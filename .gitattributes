@@ -1,0 +1,35 @@
+# Git LFS — PRÉPARÉ MAIS NON ACTIF (voir RESEARCH_LEDGER R-005).
+#
+# §7.15 impose de vérifier que LFS est réellement disponible AVANT d'en dépendre.
+# `git lfs` n'est pas installé ici et la prise en charge du dépôt distant n'est pas
+# confirmée. Activer prématurément produirait un dépôt que personne ne peut cloner.
+#
+# Pour activer, une fois LFS confirmé des deux côtés :
+#   git lfs install && git lfs track "*.blend" "*.glb" "*.png" "*.wav" "*.ogg"
+# puis décommenter les lignes ci-dessous et migrer l'historique si nécessaire.
+#
+# *.blend  filter=lfs diff=lfs merge=lfs -text
+# *.glb    filter=lfs diff=lfs merge=lfs -text
+# *.fbx    filter=lfs diff=lfs merge=lfs -text
+# *.png    filter=lfs diff=lfs merge=lfs -text
+# *.exr    filter=lfs diff=lfs merge=lfs -text
+# *.wav    filter=lfs diff=lfs merge=lfs -text
+# *.ogg    filter=lfs diff=lfs merge=lfs -text
+# *.mp4    filter=lfs diff=lfs merge=lfs -text
+
+# Les binaires ne doivent jamais subir de conversion de fin de ligne.
+*.blend  binary
+*.glb    binary
+*.png    binary
+*.wav    binary
+*.ogg    binary
+
+# Fichiers texte du moteur : fins de ligne normalisées.
+*.gd        text eol=lf
+*.tscn      text eol=lf
+*.tres      text eol=lf
+*.godot     text eol=lf
+*.gdshader  text eol=lf
+*.md        text eol=lf
+*.sh        text eol=lf
+*.py        text eol=lf

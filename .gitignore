@@ -1,0 +1,27 @@
+# Godot
+.godot/
+/android/
+*.translation
+
+# Builds — produits, jamais versionnés (le build candidat est archivé hors dépôt)
+builds/macos/*
+builds/windows/*
+builds/linux/*
+builds/web/*
+!builds/*/.gitkeep
+
+# Logs de validation : les preuves retenues sont copiées dans evidence/<gate>/,
+# les logs bruts de chaque exécution ne sont pas versionnés.
+evidence/validate_fast/
+evidence/validate_release/
+evidence/pipeline/
+evidence/captures/
+
+# Blender
+*.blend1
+*.blend2
+
+# Système
+.DS_Store
+Thumbs.db
+*~
