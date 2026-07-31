@@ -105,10 +105,11 @@ tools/validate_fast.sh; echo $?
 |---|---|
 | 0. Version | `4.7.1.stable.custom_build.a13da4feb` ✅ |
 | 1. Import des ressources | 0 erreur ✅ |
-| 1b. Parse de **tous** les `.gd` (`--check-only`) | 7 scripts, 0 erreur ✅ |
-| 2. Tests unitaires et d'intégration | **12 réussis, 0 échoué** ✅ |
+| 1b. Parse de **tous** les `.gd` (`--check-only`, syntaxe et typage statique) | 8 scripts, 0 erreur ✅ |
+| 2. Tests unitaires et d'intégration | **13 réussis, 0 échoué** ✅ |
 | 2b. Erreurs signalées dans le journal (`ERROR:` inclus) | aucune ✅ |
 | 3. Scène principale | chargée et quittée proprement ✅ |
+| 4. Plancher de couverture | 13 tests pour un plancher de 13 ✅ |
 
 Sortie relue depuis le moteur en exécution :
 
@@ -172,7 +173,7 @@ l'hypothèse initiale de R-004. Manifeste `evidence/captures/pipeline_lab.json` 
 | Résolution | 1920 × 1080, 40 frames attendues |
 | Méthode de rendu | `forward_plus` |
 | Pilote | `llvmpipe (LLVM 20.1.2, 256 bits)` |
-| Géométrie | VisualInstance3D comptés dans la scène, minimum exigé 1 |
+| Géométrie | géométries visibles comptées après stabilisation, minimum exigé 1 (obtenu : 2) |
 | Couleurs distinctes (échantillon) | 705 |
 | Écart-type de luminance | 0,1988 |
 | Commit | inscrit dans le manifeste, capture refusée s'il est indéterminé |
@@ -181,10 +182,11 @@ l'hypothèse initiale de R-004. Manifeste `evidence/captures/pipeline_lab.json` 
 proportions 1 m / 2 m, matériaux corrects, aucune surface magenta.
 
 **Ce que les statistiques ne prouvent pas** : couleurs distinctes et écart-type
-détectent une image *vide*, pas une image *fausse*. C'est le comptage des
-`VisualInstance3D` qui garantit que la scène contient bien la géométrie attendue.
-Juger qu'un rendu est correct exigera la comparaison à une image de référence
-(§21.8), non encore construite faute de contenu.
+détectent une image *uniforme*, pas une image *fausse* ni une image *vide de
+contenu utile* — la 3e revue a produit 906 couleurs avec un simple ciel. Le
+comptage de géométrie visible (T-09) ferme ce cas précis. Juger qu'un rendu est
+*correct* exigera la comparaison à une image de référence (§21.8), non encore
+construite faute de contenu.
 
 **Limites maintenues** :
 - llvmpipe est un rendu **logiciel** : aucune mesure de performance n'en découle
@@ -227,14 +229,8 @@ par un contrôle négatif **rejoué et archivé** dans `evidence/gate0/negative_
 - **N1** : le filtre d'erreurs du niveau 2 couvre désormais `ERROR:` générique, au
   lieu d'une liste de messages précis qui laissait passer ressource manquante,
   `push_error` et échec de chargement.
-- **N3** : suppression complète de l'indirection par méthode. `GateTestCase`
-  accumule les échecs dans ses **membres** (`_checks`, `_failures`), que le runner
-  lit via `get()`. GDScript interdisant à une sous-classe de redéclarer un membre
-  du parent, le contrat n'est plus contournable en redéfinissant une méthode.
-- **N4** : la capture compte les `VisualInstance3D` de la scène instanciée et
-  refuse en dessous du minimum exigé. Compter les couleurs ne suffisait pas — un
-  ciel procédural produisait 863 couleurs distinctes, **plus** que la capture de
-  référence (705).
+- **N3** : *(cette correction a été réfutée par la 3e revue — voir T-09)*.
+- **N4** : *(cette correction a été réfutée par la 3e revue — voir T-09)*.
 - **N5** : la capture échoue si le commit est indéterminé, **avant** toute écriture
   (la première correction laissait un PNG orphelin sans manifeste).
 - **N2** : `tests/playthrough` ajouté aux racines collectées.
@@ -245,6 +241,49 @@ qu'il n'en reste aucune autre — les deux revues successives sont précisément
 preuve du contraire. La comparaison d'images de référence (§21.8), seule capable de
 juger qu'un rendu est *correct* et pas seulement *non vide*, reste à construire
 quand il y aura du contenu à comparer.
+
+---
+
+### T-09 — Troisième revue adverse : deux correctifs réfutés, huit défauts nouveaux
+
+La 3e revue a démontré que **deux** correctifs de la passe précédente ne tenaient pas,
+et en a trouvé huit autres. Ce tableau remplace les affirmations correspondantes de
+T-08, qui étaient fausses.
+
+| Défaut | Ce qui était affirmé à tort | Ce que la revue a démontré | Correctif |
+|---|---|---|---|
+| N3 | « le contrat n'est plus contournable en redéfinissant une méthode » | 3 vecteurs : redéfinir `check()` (les helpers l'appellent en dispatch virtuel) ; `_failures.clear()` ; `_checks += 42`. `check_equal(2, 3)` passait **vert**. | La comptabilité sort du cas de test : `GateTestRecorder`, créé et lu par le runner seul. Le runner **refuse** tout fichier qui déclare localement une méthode du contrat. |
+| N4 | « le comptage des `VisualInstance3D` garantit la géométrie attendue » | `Light3D` **est** un `VisualInstance3D` → scène ciel + soleil acceptée, 906 couleurs. Idem `MeshInstance3D` sans maillage, et vrai cube sous parent masqué (`visible` local ≠ `is_visible_in_tree()`). | Seules comptent les `GeometryInstance3D` **visibles dans l'arbre** et porteuses d'une ressource réelle. Comptage déplacé après stabilisation. |
+| B1 | — | Renommer un fichier de test faisait disparaître 3 tests, suite **verte**. | Plancher de couverture (`MIN_TESTS`) au niveau 4. |
+| B2 | — | Un fichier de test illisible était avalé, runner **RC=0**. | `script.can_instantiate()` vérifié avant `new()`. |
+| B3 | — | « 0 réussi, 0 échoué » sortait en **RC=0**. | Une exécution sans aucun test est un échec. |
+| B4 | « parse réel » | `--check-only` ne résout pas les appels dynamiques : `n.methode_inexistante()` passe. | Aucune correction possible à ce niveau — **limite désormais écrite** dans le script et ici. Le niveau 1b vérifie la syntaxe et le typage statique, rien de plus. |
+| B5 | — | `tests/playthrough/` n'existait pas dans HEAD : le correctif N2 était inerte sur un clone frais. | `.gitkeep` versionné. |
+| B6 | — | Les journaux archivés ne portaient pas les codes retour revendiqués. | Chaque contrôle négatif archive maintenant son `RC=` en fin de fichier. |
+| B7 | — | Affirmations réfutées dans `TEST_REPORT` et `tests/test_case.gd`. | Corrigées ici et dans le code. |
+| B8 | — | `STATUS` classait « image de référence » en `Validé` alors qu'elle n'est pas versionnée. | Ramené à `NON VÉRIFIÉ`. |
+
+#### Contrôles négatifs rejoués et archivés (`evidence/gate0/negative_controls/`)
+
+| Scénario | Attendu | Obtenu |
+|---|---|---|
+| N3 v1 — redéfinition de `check()` | ÉCHEC | `RC=1`, « redéfinit des méthodes du contrat (check) » ✅ |
+| N3 v2 — effacement des échecs | ÉCHEC | `RC=1`, l'échec remonte ✅ |
+| N3 v3 — gonflement du compteur | ÉCHEC | `RC=1`, l'assertion fausse remonte ✅ |
+| N4a — ciel + caméra + lumière seule | ÉCHEC | `RC=5`, « 0 géométrie visible », aucun PNG ✅ |
+| N4b — `MeshInstance3D` sans maillage | ÉCHEC | `RC=5`, aucun PNG ✅ |
+| N4c — cube sous parent masqué | ÉCHEC | `RC=5`, aucun PNG ✅ |
+| B1 — renommage d'un fichier de test | ÉCHEC | `RC=1`, « 10 tests pour un plancher de 13 » ✅ |
+| B2 — fichier de test illisible | ÉCHEC | `RC=1`, aux niveaux 1b **et** 2 ✅ |
+| nominal | VERT | `RC=0`, **13 tests** ✅ |
+
+#### Limite que je n'essaie plus de masquer
+
+Le harnais arrête la **perte de signal accidentelle** — câblage oublié, refactor,
+fichier renommé, asset supprimé — et les vecteurs précisément démontrés. Il
+n'arrête pas un auteur de test qui mentirait délibérément : il reste possible de
+remplacer l'enregistreur depuis une méthode de test. Trois revues ont chacune
+réfuté une affirmation d'exhaustivité ; cette section n'en formule donc aucune.
 
 ---
 

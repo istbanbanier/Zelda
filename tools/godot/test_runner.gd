@@ -13,10 +13,12 @@
 ##     silencieux. Le câblage du reporter n'est plus du boilerplate recopiable.
 ##   - une méthode de test qui n'exécute aucune assertion est un ÉCHEC : elle donne
 ##     l'illusion d'une couverture inexistante.
-##   - N3 : le contrat ne doit pas reposer sur des méthodes redéfinissables. Le
-##     runner lit les échecs et le compteur d'assertions **directement dans les
-##     membres** de `GateTestCase` via `get()`, ce qu'une sous-classe ne peut pas
-##     détourner (GDScript interdit de redéclarer un membre du parent).
+##   - N3 : la comptabilité ne vit plus dans le cas de test. Le runner crée un
+##     `GateTestRecorder` par méthode, l'injecte, et ne lit QUE son propre
+##     enregistreur. Il refuse en outre tout script qui redéfinit une méthode du
+##     contrat (`GateTestCase.CONTRACT_METHODS`), vecteur démontré par la 3e revue.
+##   - B2/B3 : un fichier qui ne s'instancie pas, ou une exécution qui n'a lancé
+##     aucun test, sont des ÉCHECS. Le runner sortait 0 dans les deux cas.
 ##   - D2 : les erreurs d'exécution GDScript n'interrompent pas l'appel et ne
 ##     peuvent pas être interceptées ici ; c'est `validate_fast.sh` qui inspecte le
 ##     journal. Les deux protections sont nécessaires, aucune ne suffit seule.
@@ -57,6 +59,12 @@ func _init() -> void:
 			continue
 		_run_script(path)
 
+	# B3 : « 0 réussi, 0 échoué » sortait en 0. Une suite qui n'exécute rien ne
+	# prouve rien — c'est un échec, pas un succès.
+	if _passed == 0 and _failed == 0:
+		_fail("aucun test n'a été exécuté alors que %d fichier(s) ont été collecté(s)"
+			% scripts.size())
+
 	print("")
 	print("=== RÉSULTAT: %d réussi(s), %d échoué(s) ===" % [_passed, _failed])
 	for f: String in _failures:
@@ -88,11 +96,51 @@ func _collect(dir_path: String, out: Array[String]) -> void:
 	dir.list_dir_end()
 
 
+## Méthodes du contrat déclarées localement par un fichier de test.
+func _declared_contract_methods(path: String) -> Array[String]:
+	var found: Array[String] = []
+	var source: String = FileAccess.get_file_as_string(path)
+	if source.is_empty():
+		return found
+	for line: String in source.split("\n"):
+		var trimmed: String = line.strip_edges()
+		if not trimmed.begins_with("func "):
+			continue
+		var signature: String = trimmed.trim_prefix("func ").strip_edges()
+		var paren: int = signature.find("(")
+		if paren <= 0:
+			continue
+		var method_name: String = signature.substr(0, paren).strip_edges()
+		if GateTestCase.CONTRACT_METHODS.has(method_name) and not found.has(method_name):
+			found.append(method_name)
+	return found
+
+
 func _run_script(path: String) -> void:
 	var script: Script = load(path) as Script
 	if script == null:
 		_fail("%s: chargement impossible" % path)
 		return
+
+	# B2 : un script avec erreur de parsing se charge en GDScript invalide ; l'appel
+	# à new() échouait AVANT le garde et le fichier disparaissait en silence.
+	if not script.can_instantiate():
+		_fail("%s: script illisible ou non instanciable (erreur de parsing ?)" % path)
+		return
+
+	# N3 (3e revue) : un cas de test qui redéfinit `check()` neutralise toute la
+	# comptabilité, y compris via les helpers qui l'appellent en dispatch virtuel.
+	#
+	# `get_script_method_list()` inclut les méthodes HÉRITÉES (vérifié sur 4.7.1 :
+	# tous les cas de test paraissaient redéfinir le contrat), il ne permet donc pas
+	# de distinguer une déclaration locale. On lit la source, seule à porter
+	# l'information « ce fichier déclare lui-même cette méthode ».
+	var overridden: Array[String] = _declared_contract_methods(path)
+	if not overridden.is_empty():
+		_fail("%s: redéfinit des méthodes du contrat (%s) — interdit, la " % [path, ", ".join(overridden)]
+			+ "comptabilité des assertions cesserait de fonctionner")
+		return
+
 	var instance: Object = script.new()
 	if instance == null:
 		_fail("%s: instanciation impossible" % path)
@@ -118,26 +166,23 @@ func _run_script(path: String) -> void:
 	for method_name: String in methods:
 		_current = "%s::%s" % [path.get_file(), method_name]
 
-		# Lecture directe des membres : aucune méthode du cas de test n'est
-		# consultée pour établir le résultat (N3).
-		var checks_before: int = int(test_case.get("_checks"))
-		var failures_before: int = (test_case.get("_failures") as Array).size()
+		# Enregistreur neuf par méthode, détenu par le runner. Le résultat est lu
+		# ici et nulle part ailleurs : le cas de test ne participe pas au verdict.
+		var recorder: GateTestRecorder = GateTestRecorder.new()
+		test_case.set("_recorder", recorder)
 
 		test_case.call(method_name)
 
-		var checks_after: int = int(test_case.get("_checks"))
-		var all_failures: Array = test_case.get("_failures") as Array
-		var new_failures: Array = all_failures.slice(failures_before)
-
-		if not new_failures.is_empty():
-			for message: Variant in new_failures:
-				_fail("%s — %s" % [_current, String(message)])
+		var failures: Array[String] = recorder.failures()
+		if not failures.is_empty():
+			for message: String in failures:
+				_fail("%s — %s" % [_current, message])
 			continue
-		if checks_after == checks_before:
+		if recorder.checks() == 0:
 			_fail("%s — aucune assertion exécutée (couverture illusoire)" % _current)
 			continue
 		_passed += 1
-		print("  ok   %s (%d assertions)" % [_current, checks_after - checks_before])
+		print("  ok   %s (%d assertions)" % [_current, recorder.checks()])
 
 
 func _fail(message: String) -> void:

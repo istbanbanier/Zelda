@@ -46,7 +46,7 @@ else
   ok "import sans parse error (code retour 0)"
 fi
 
-step "1b. Parse réel de TOUS les scripts GDScript"
+step "1b. Parse de TOUS les scripts GDScript"
 # N9 : l'import ne parse que les scripts atteignables depuis une ressource. Un
 # script non référencé pouvait contenir une erreur de syntaxe sans que
 # `validate_fast.sh` ne rougisse — la promesse « parse smoke » était fausse.
@@ -69,6 +69,9 @@ else
   bad "$PARSE_FAILED script(s) en erreur de parsing sur $PARSE_COUNT (voir $PARSE_LOG)"
   grep -E 'PARSE ERROR|Parse Error' "$PARSE_LOG" | head -10 | sed 's/^/    /'
 fi
+# Limite honnête (B4) : --check-only vérifie la SYNTAXE et le typage statique, pas
+# la résolution des appels dynamiques. `n.methode_inexistante()` passe ce niveau et
+# ne plantera qu'à l'exécution. Ce niveau ne remplace donc pas des tests.
 
 step "2. Tests unitaires"
 UNIT_LOG="$LOG_DIR/02_unit.log"
@@ -105,6 +108,19 @@ elif [ $SCENE_RC -ne 0 ]; then
 else
   ok "scène principale chargée et quittée proprement"
   grep '^\[boot\]' "$SCENE_LOG" | sed 's/^/    /'
+fi
+
+step "4. Plancher de couverture"
+# B1 : renommer un fichier de test faisait disparaître 3 tests sans que rien ne
+# rougisse. Le nombre de tests attendu est donc épinglé ; le baisser exige une
+# modification explicite de ce fichier, visible en revue.
+MIN_TESTS="${MIN_TESTS:-13}"
+ACTUAL_TESTS=$(grep -oE '=== RÉSULTAT: ([0-9]+) réussi' "$UNIT_LOG" | grep -oE '[0-9]+' | head -1)
+ACTUAL_TESTS="${ACTUAL_TESTS:-0}"
+if [ "$ACTUAL_TESTS" -ge "$MIN_TESTS" ]; then
+  ok "$ACTUAL_TESTS test(s) exécuté(s), plancher $MIN_TESTS respecté"
+else
+  bad "$ACTUAL_TESTS test(s) exécuté(s) pour un plancher de $MIN_TESTS — couverture perdue en silence ?"
 fi
 
 printf '\n=== VALIDATE_FAST : %s ===\n' "$([ $FAIL -eq 0 ] && echo VERT || echo ROUGE)"

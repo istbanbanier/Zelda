@@ -6,27 +6,32 @@
 === 1. Import des ressources (parse/import smoke) ===
   [OK]   import sans parse error (code retour 0)
 
-=== 1b. Parse réel de TOUS les scripts GDScript ===
-  [ÉCHEC] 1 script(s) en erreur de parsing sur 8 (voir evidence/validate_fast/01b_parse.log)
+=== 1b. Parse de TOUS les scripts GDScript ===
+  [ÉCHEC] 1 script(s) en erreur de parsing sur 9 (voir evidence/validate_fast/01b_parse.log)
     SCRIPT ERROR: Parse Error: Unexpected "Indent" in class body.
-    PARSE ERROR: res://scripts/core/nc_broken.gd
+    PARSE ERROR: res://tests/unit/test_nc_b2_broken.gd
 
 === 2. Tests unitaires ===
     ok   test_gltf_import.gd::test_static_cube_imports_with_material_and_scale (8 assertions)
     ok   test_gltf_import.gd::test_rig_imports_with_skeleton_and_animation (11 assertions)
     ok   test_gltf_import.gd::test_no_pink_missing_resources (4 assertions)
-    ok   test_harness_contract.gd::test_check_counts_assertions (2 assertions)
-    ok   test_harness_contract.gd::test_failures_are_recorded_in_member_not_via_method (2 assertions)
-    ok   test_harness_contract.gd::test_helpers_are_available (3 assertions)
+    ok   test_harness_contract.gd::test_recorder_is_injected_by_runner (2 assertions)
+    ok   test_harness_contract.gd::test_recorder_counts_and_records (4 assertions)
+    ok   test_harness_contract.gd::test_failures_list_is_a_copy (1 assertions)
+    ok   test_harness_contract.gd::test_contract_methods_are_declared (4 assertions)
     ok   test_harness_contract.gd::test_this_case_extends_gate_test_case (1 assertions)
+    ÉCHEC res://tests/unit/test_nc_b2_broken.gd: script illisible ou non instanciable (erreur de parsing ?)
     ok   test_smoke.gd::test_engine_version_is_4_7_1_stable (4 assertions)
     ok   test_smoke.gd::test_physics_engine_is_jolt (1 assertions)
     ok   test_smoke.gd::test_renderer_is_forward_plus (1 assertions)
     ok   test_smoke.gd::test_physics_tick_is_60hz (1 assertions)
     ok   test_smoke.gd::test_metre_scale_convention (2 assertions)
-  === RÉSULTAT: 12 réussi(s), 0 échoué(s) ===
-  [OK]   suite unitaire verte
-  [OK]   aucune erreur signalée dans le journal des tests
+  === RÉSULTAT: 13 réussi(s), 1 échoué(s) ===
+    ÉCHEC: res://tests/unit/test_nc_b2_broken.gd: script illisible ou non instanciable (erreur de parsing ?)
+  [ÉCHEC] suite unitaire rouge (code 1, voir evidence/validate_fast/02_unit.log)
+  [ÉCHEC] erreurs signalées pendant la suite de tests (voir evidence/validate_fast/02_unit.log)
+    SCRIPT ERROR: Parse Error: Unexpected "Indent" in class body.
+    ERROR: Failed to load script "res://tests/unit/test_nc_b2_broken.gd" with error "Parse error".
 
 === 3. Scène d'intégration (chargement réel de la scène principale) ===
   [OK]   scène principale chargée et quittée proprement
@@ -37,5 +42,9 @@
     [boot] pilote de rendu  : headless
     [boot] scène principale chargée — Phase 0, aucun gameplay attendu ici.
 
+=== 4. Plancher de couverture ===
+  [OK]   13 test(s) exécuté(s), plancher 13 respecté
+
 === VALIDATE_FAST : ROUGE ===
 logs: evidence/validate_fast
+RC=1

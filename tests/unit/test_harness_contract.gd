@@ -1,36 +1,52 @@
 ## Teste le harnais de test lui-même.
 ##
-## Les deux revues adverses du Gate 0 ont montré qu'un harnais peut rester vert
-## alors qu'il a cessé de détecter les échecs. Ces cas verrouillent les invariants
-## du contrat pour que la régression soit visible.
+## Trois revues adverses ont montré qu'un harnais peut rester vert alors qu'il a
+## cessé de détecter les échecs. Ces cas verrouillent les invariants du contrat.
+##
+## Note : ce fichier ne manipule aucun compteur interne. La version précédente
+## appelait `_failures.remove_at()` — c'est-à-dire qu'elle pratiquait dans l'arbre
+## l'échappatoire même que le contrat devait interdire. Les vecteurs de
+## contournement sont désormais testés par des contrôles négatifs externes
+## (`evidence/gate0/negative_controls/`), pas depuis l'intérieur de la suite.
 extends GateTestCase
 
 
-func test_check_counts_assertions() -> void:
-	# `_checks` est lu directement par le runner : c'est lui qui permet de repérer
-	# une méthode de test qui n'assertionne rien.
-	var before: int = _checks
-	check(true, "assertion vraie de contrôle")
-	check(_checks == before + 1,
-		"check() doit incrémenter _checks de 1 (avant=%d, après=%d)" % [before, _checks])
+func test_recorder_is_injected_by_runner() -> void:
+	# Sans enregistreur, aucune assertion ne peut être comptabilisée : le runner
+	# doit donc toujours en injecter un avant d'appeler une méthode de test.
+	check(_recorder != null, "le runner doit injecter un GateTestRecorder")
+	check(_recorder is GateTestRecorder, "l'enregistreur doit être un GateTestRecorder")
 
 
-func test_failures_are_recorded_in_member_not_via_method() -> void:
-	# N3 : la comptabilité ne doit dépendre d'aucune méthode redéfinissable.
-	# On provoque un échec, on vérifie qu'il est bien inscrit dans `_failures`,
-	# puis on le retire pour ne pas faire échouer ce test volontairement.
-	var before: int = _failures.size()
-	check(false, "échec volontaire de contrôle interne")
-	var recorded: bool = _failures.size() == before + 1
-	if recorded:
-		_failures.remove_at(_failures.size() - 1)
-	check(recorded, "un échec doit être inscrit dans le membre _failures")
+func test_recorder_counts_and_records() -> void:
+	# On vérifie le comportement de l'enregistreur sur une instance séparée, sans
+	# toucher à celle qui juge ce test.
+	var probe: GateTestRecorder = GateTestRecorder.new()
+	probe.record(true, "assertion vraie")
+	check_equal(probe.checks(), 1, "une assertion enregistrée")
+	check_equal(probe.failures().size(), 0, "aucun échec pour une assertion vraie")
+
+	probe.record(false, "assertion fausse")
+	check_equal(probe.checks(), 2, "deux assertions enregistrées")
+	check_equal(probe.failures().size(), 1, "un échec pour une assertion fausse")
 
 
-func test_helpers_are_available() -> void:
-	check(has_method("check_equal"), "check_equal doit être hérité de GateTestCase")
-	check(has_method("check_approx"), "check_approx doit être hérité de GateTestCase")
-	check(has_method("check_not_null"), "check_not_null doit être hérité de GateTestCase")
+func test_failures_list_is_a_copy() -> void:
+	# `failures()` rend une copie : un appelant ne peut pas vider la liste réelle.
+	var probe: GateTestRecorder = GateTestRecorder.new()
+	probe.record(false, "échec de contrôle")
+	var copy: Array[String] = probe.failures()
+	copy.clear()
+	check_equal(probe.failures().size(), 1,
+		"vider la copie ne doit pas effacer les échecs enregistrés")
+
+
+func test_contract_methods_are_declared() -> void:
+	# Le runner s'appuie sur cette liste pour refuser une redéfinition.
+	check(GateTestCase.CONTRACT_METHODS.has("check"), "check doit être protégé")
+	check(GateTestCase.CONTRACT_METHODS.has("check_equal"), "check_equal doit être protégé")
+	check(GateTestCase.CONTRACT_METHODS.has("check_approx"), "check_approx doit être protégé")
+	check(GateTestCase.CONTRACT_METHODS.has("check_not_null"), "check_not_null doit être protégé")
 
 
 func test_this_case_extends_gate_test_case() -> void:

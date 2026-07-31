@@ -116,15 +116,35 @@ func _parse_args() -> void:
 				_height = parts[1].to_int()
 
 
-## Compte les nœuds réellement rendus (MeshInstance3D, MultiMeshInstance3D,
-## GPUParticles3D… tous dérivent de VisualInstance3D).
+## Compte la géométrie réellement susceptible d'apparaître à l'image.
+##
+## Trois pièges démontrés par la 3e revue adverse, tous corrigés ici :
+##   - `Light3D` dérive de `VisualInstance3D` : une scène « ciel + caméra + soleil »
+##     passait pour de la géométrie. On exige donc `GeometryInstance3D`.
+##   - un `MeshInstance3D` sans maillage assigné comptait quand même : on vérifie
+##     que la ressource existe et possède au moins une surface.
+##   - `node.visible` est LOCAL : un vrai cube sous un parent masqué comptait.
+##     On utilise `is_visible_in_tree()`.
 func _count_visual_instances(node: Node) -> int:
 	var total: int = 0
-	if node is VisualInstance3D and node.visible:
-		total += 1
+	if node is GeometryInstance3D and (node as Node3D).is_visible_in_tree():
+		if _has_renderable_geometry(node as GeometryInstance3D):
+			total += 1
 	for child: Node in node.get_children():
 		total += _count_visual_instances(child)
 	return total
+
+
+func _has_renderable_geometry(instance: GeometryInstance3D) -> bool:
+	if instance is MeshInstance3D:
+		var mesh: Mesh = (instance as MeshInstance3D).mesh
+		return mesh != null and mesh.get_surface_count() > 0
+	if instance is MultiMeshInstance3D:
+		var mm: MultiMesh = (instance as MultiMeshInstance3D).multimesh
+		return mm != null and mm.mesh != null and mm.instance_count > 0
+	# CSG, particules, labels 3D… : pas de ressource simple à interroger, on les
+	# accepte plutôt que de rejeter à tort une scène légitime.
+	return true
 
 
 func _capture() -> void:
@@ -140,24 +160,25 @@ func _capture() -> void:
 	var instance: Node = packed.instantiate()
 	root.add_child(instance)
 
+	# Laisser passer des frames réelles : chargement, compilation de shaders et
+	# stabilisation temporelle. Une capture à la frame 0 ne prouve rien.
+	for i: int in range(_frames):
+		await process_frame
+
 	# N4 : compter les couleurs ne prouve pas qu'une géométrie a été rendue — une
 	# scène réduite à un ciel procédural produisait 863 couleurs distinctes, plus
-	# que la vraie capture de référence. On vérifie donc la scène elle-même :
-	# contient-elle au moins un objet visuel ?
+	# que la vraie capture de référence. On interroge donc la scène elle-même.
+	# Le comptage a lieu APRÈS les frames d'attente : la visibilité héritée et les
+	# `_ready()` ne sont pas encore établis au moment de `add_child()`.
 	var visuals: int = _count_visual_instances(instance)
-	print("[capture] géométrie : %d VisualInstance3D dans la scène" % visuals)
+	print("[capture] géométrie : %d géométrie(s) visible(s) dans la scène" % visuals)
 	if visuals < _min_visuals:
-		printerr("[capture] ÉCHEC: %d VisualInstance3D, minimum exigé %d — "
+		printerr("[capture] ÉCHEC: %d géométrie(s) visible(s), minimum exigé %d — "
 			% [visuals, _min_visuals]
 			+ "la scène ne contient pas la géométrie attendue. "
 			+ "Utiliser --min-visuals=0 si une scène sans mesh est réellement voulue.")
 		quit(5)
 		return
-
-	# Laisser passer des frames réelles : chargement, compilation de shaders et
-	# stabilisation temporelle. Une capture à la frame 0 ne prouve rien.
-	for i: int in range(_frames):
-		await process_frame
 
 	var image: Image = root.get_texture().get_image()
 	if image == null:

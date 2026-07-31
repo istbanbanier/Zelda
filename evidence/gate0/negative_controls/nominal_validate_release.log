@@ -1,0 +1,19 @@
+=== Prérequis de rendu ===
+  AVERTISSEMENT: aucun GPU (/dev/dri absent) — rendu logiciel llvmpipe au mieux.
+  Les mesures de performance obtenues ainsi ne sont PAS représentatives et
+  ne doivent jamais être publiées comme budget de frame (MASTER_SPEC §20.1).
+  affichage : via xvfb-run
+  gpu       : aucun (llvmpipe logiciel)
+
+=== 5. Capture de référence ===
+  [OK] voir evidence/validate_release/05_capture.log et evidence/captures/
+
+=== 4/6/7. Golden path, performance, soak ===
+  NON EXÉCUTÉS : ces niveaux exigent respectivement la boucle complète
+  (Gate G), un matériel de référence documenté (§20.1) et un build exporté.
+  De plus, aucun GPU : toute mesure de performance serait invalide.
+
+=== VALIDATE_RELEASE : BLOQUÉ (niveau 5 vert, niveaux 4/6/7 non exécutés) ===
+  Le niveau 5 (capture) a réussi, mais un script qui saute des étapes ne
+  retourne pas vert (.claude/rules/evidence.md). Code 3 = BLOQUÉ, à ne jamais
+  interpréter comme un PASS de gate visuel ou de performance.
