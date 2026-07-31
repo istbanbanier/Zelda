@@ -97,18 +97,19 @@ la chaîne d'outils a fait son travail au lieu de retourner un faux vert.
 ### T-05 — `tools/validate_fast.sh` (niveaux 1-3)
 
 ```bash
-tools/validate_fast.sh
+tools/validate_fast.sh; echo $?
 ```
 **Code retour** : `0` — VERT. Log : `evidence/gate0/validate_fast.log`.
 
 | Niveau | Résultat |
 |---|---|
 | 0. Version | `4.7.1.stable.custom_build.a13da4feb` ✅ |
-| 1. Import / parse smoke | 0 parse error, code retour 0 ✅ |
-| 2. Tests unitaires | **8 réussis, 0 échoué** ✅ |
+| 1. Import / parse smoke | 0 parse error ✅ |
+| 2. Tests unitaires et d'intégration | **11 réussis, 0 échoué** ✅ |
+| 2b. Erreurs d'exécution dans le journal | aucune ✅ |
 | 3. Scène principale | chargée et quittée proprement ✅ |
 
-Sortie de la scène principale, relue depuis le moteur en exécution :
+Sortie relue depuis le moteur en exécution :
 
 ```
 [boot] Godot            : 4.7.1-stable (custom_build)
@@ -121,34 +122,20 @@ Sortie de la scène principale, relue depuis le moteur en exécution :
 
 ---
 
-### T-05b — Contrôle négatif : le runner détecte-t-il réellement un échec ?
-
-Un test incapable d'échouer ne prouve rien. Un cas d'échec délibéré a été ajouté
-temporairement, puis retiré.
-
-| Situation | Code retour attendu | Obtenu |
-|---|---|---|
-| Avec le test fautif | non nul | `1` ✅ (`8 réussis, 1 échoué`) |
-| Après retrait | `0` | `0` ✅ |
-
-**Verdict** : ✅ PASS — la suite peut échouer, donc son vert a une valeur.
-
----
-
 ### T-05c — Import glTF côté moteur (§0.5)
 
-Couvert par `tests/integration/test_gltf_import.gd`, exécuté en headless :
+`tests/integration/test_gltf_import.gd`, en headless :
 
 | Contrôle | Obtenu |
 |---|---|
-| Cube : 1 surface, arêtes 1 × 1 × 1 m, base à Y ≈ 0 | ✅ |
-| Cube : matériau résolu (aucune surface rose) | ✅ |
-| Rig : `Skeleton3D` avec 2 os `bone_root` / `bone_upper` | ✅ |
-| Rig : `AnimationPlayer` avec `AN_TestRig_Idle`, durée > 0, pistes > 0 | ✅ |
+| Cube : 1 surface, 1 × 1 × 1 m, base à Y ≈ 0 | ✅ |
+| Cube : matériau résolu (aucune surface magenta) | ✅ |
+| Rig : `Skeleton3D`, 2 os `bone_root` / `bone_upper` | ✅ |
+| Rig : `AnimationPlayer`, `AN_TestRig_Idle`, durée > 0, pistes > 0 | ✅ |
 | Rig : hauteur 2,0 m | ✅ |
 
-**Verdict** : ✅ PASS — la moitié **moteur** du pipeline est vérifiée. Combinée à
-T-04, la chaîne Blender → glTF → Godot est prouvée de bout en bout.
+**Verdict** : ✅ PASS — combiné à T-04, la chaîne Blender → glTF → Godot est
+prouvée de bout en bout.
 
 ---
 
@@ -157,58 +144,86 @@ T-04, la chaîne Blender → glTF → Godot est prouvée de bout en bout.
 **Observé** au premier import :
 ```
 ERROR: Blender path is invalid or not set, check your Editor Settings.
-Cannot configure blender path in headless mode.
    at: query (modules/gltf/editor/editor_scene_importer_blend.cpp:552)
 ```
-**Cause** : `source_assets/` est dans le dossier du projet ; Godot y a trouvé les
-`.blend` et a voulu les importer via Blender — exactement la dépendance de poste
-que D-003 interdit.
-**Correctif** : `.gdignore` dans `source_assets/`, `docs/`, `evidence/` et `builds/`.
-**Après correctif** : import sans aucune erreur ni avertissement.
-**Verdict** : ✅ corrigé et couvert par le niveau 1 de `validate_fast.sh`.
+**Cause** : `source_assets/` étant dans le dossier du projet, Godot voulait importer
+les `.blend` via Blender — la dépendance de poste que D-003 interdit.
+**Correctif** : `.gdignore` dans `source_assets/`, `docs/`, `evidence/`, `builds/`.
+**Verdict** : ✅ corrigé, couvert par le niveau 1.
 
 ---
 
 ### T-06 — Capture depuis le renderer réel
 
 ```bash
-tools/validate_release.sh
+tools/validate_release.sh; echo $?
 ```
-**Code retour** : `0`.
+**Code retour** : `3` — **BLOQUÉ**, et c'est le résultat correct : le niveau 5
+réussit mais les niveaux 4, 6 et 7 ne sont pas exécutés, donc le script ne retourne
+pas vert.
 
-**Résultat : la capture fonctionne**, contrairement à l'hypothèse initiale (R-004).
-Godot rend en **Forward+** via **Mesa llvmpipe** (rastériseur logiciel) sous Xvfb.
+Le niveau 5 lui-même **réussit** — la capture fonctionne, contrairement à
+l'hypothèse initiale de R-004. Manifeste `evidence/captures/pipeline_lab.json` :
 
-| Champ du manifeste | Valeur |
+| Champ | Valeur |
 |---|---|
 | Scène | `res://scenes/tests/PipelineLab.tscn` |
-| Résolution | 1920 × 1080 |
-| Frames attendues | 40 |
-| Moteur | 4.7.1-stable (custom_build) |
+| Résolution | 1920 × 1080, 40 frames attendues |
 | Méthode de rendu | `forward_plus` |
 | Pilote | `llvmpipe (LLVM 20.1.2, 256 bits)` |
-| Serveur d'affichage | X11 (Xvfb) |
+| Couleurs distinctes (échantillon) | 705 |
+| Écart-type de luminance | 0,1988 |
+| Commit | inscrit dans le manifeste |
 
-Preuves : `evidence/captures/pipeline_lab.png` + `pipeline_lab.json`,
-`evidence/gate0/pipeline_lab.png`.
+**Contenu vérifié à l'image** : cube ocre et cylindre turquoise rendus, éclairés,
+proportions 1 m / 2 m, matériaux corrects, aucune surface magenta.
 
-**Contenu vérifié à l'image** : le cube ocre (`MAT_TestCube`) et le cylindre
-turquoise rigué (`MAT_TestRig`) sont rendus, éclairés, aux bonnes proportions et
-avec leurs matériaux — aucune surface magenta. La chaîne Blender → glTF → import →
-**renderer réel** → PNG est donc close.
+**Limites maintenues** :
+- llvmpipe est un rendu **logiciel** : aucune mesure de performance n'en découle
+  (§20.1) ; `docs/PERFORMANCE.md` reste sans mesure.
+- Prouve le **pipeline**, pas la qualité artistique. Le WOW Gate reste **non noté** :
+  il n'existe aucune scène North Star.
+- Aucun périphérique audio (ISS-004) : test audio impossible ici.
 
-**Limites explicitement maintenues** :
-- llvmpipe est un rendu **logiciel**. Aucune mesure de performance ne peut en être
-  tirée (§20.1) ; les budgets de `docs/PERFORMANCE.md` restent **non mesurés**.
-- Cette capture prouve le **pipeline**, pas la qualité artistique. Le WOW Gate reste
-  **non noté** : il n'existe aucune scène North Star à évaluer.
-- Défaut d'environnement constaté : aucun périphérique ALSA
-  (`ERR_CANT_OPEN` sur `audio_driver_alsa.cpp:97`), Godot se rabat sur le pilote
-  audio muet. Contourné par `--audio-driver Dummy`. Le test audio réel (§18) devra
-  se faire ailleurs.
+**Verdict** : ✅ PASS pour le pipeline de capture · ⛔ gates visuel et performance
+toujours BLOQUÉS.
 
-**Verdict** : ✅ PASS pour le pipeline de capture · ⛔ les gates visuels et de
-performance restent BLOQUÉS faute de GPU et de contenu à évaluer.
+---
+
+### T-08 — Contrôles négatifs du harnais (suite à la revue adverse)
+
+La première revue adverse du Gate 0 a rendu **FAIL** en démontrant que le harnais
+pouvait rester vert alors qu'il ne détectait plus les échecs. Chaque défaut est
+maintenant verrouillé par un contrôle négatif rejoué :
+
+| Défaut | Scénario injecté | Attendu | Obtenu |
+|---|---|---|---|
+| D2 | erreur d'exécution GDScript (déréférencement nul) dans un test | ROUGE | `RC=1`, « erreurs d'exécution dans la suite unitaire » ✅ |
+| D3 | fichier de test n'étendant pas `GateTestCase` | ÉCHEC | `RC=1`, « doit étendre GateTestCase » ✅ |
+| — | méthode `test_*` n'exécutant aucune assertion | ÉCHEC | `RC=1`, « aucune assertion exécutée (couverture illusoire) » ✅ |
+| D6 | capture d'une scène **vide** (Node3D nu) | ÉCHEC | `RC=4`, « image uniforme (1 couleur) », **aucun PNG écrit** ✅ |
+| D5 | `validate_release.sh` sautant les niveaux 4/6/7 | BLOQUÉ | `RC=3` ✅ |
+| — | retour à l'état nominal | VERT | `RC=0` ✅ |
+
+**Correctifs structurels** :
+- `tests/test_case.gd` (`GateTestCase`) : le câblage du reporter n'est plus du
+  boilerplate recopiable, donc plus oubliable. Le runner **refuse** tout test hors
+  de ce contrat.
+- Le runner compte les assertions par méthode et échoue si une méthode n'en
+  exécute aucune.
+- `validate_fast.sh` inspecte le journal à la recherche de `SCRIPT ERROR` : un test
+  ne peut plus « réussir » en levant une erreur d'exécution.
+- `capture_reference.gd` analyse le contenu de l'image et refuse une image uniforme.
+- Le manifeste de capture porte désormais `commit` et `repo_dirty` (défaut D7).
+- `tests/unit/test_harness_contract.gd` teste le harnais lui-même.
+
+**Défaut trouvé dans mes propres correctifs** : la première version de
+`test_check_counts_assertions` était fausse d'une unité (elle comparait le compteur
+avant l'incrément de sa propre assertion) et faisait échouer la suite. Corrigée,
+puis re-vérifiée.
+
+**Verdict** : ✅ PASS — le harnais peut désormais rougir sur chacune des classes
+d'échec identifiées.
 
 ---
 

@@ -53,6 +53,17 @@ UNIT_RC=$?
 grep -E '^\s+(ok|ÉCHEC)|^=== RÉSULTAT' "$UNIT_LOG" | sed 's/^/  /'
 if [ $UNIT_RC -eq 0 ]; then ok "suite unitaire verte"; else bad "suite unitaire rouge (code $UNIT_RC, voir $UNIT_LOG)"; fi
 
+# Une erreur d'exécution GDScript (déréférencement nul, index hors bornes, format
+# invalide) n'interrompt pas l'appel : le test serait compté « ok » et le runner
+# sortirait 0. Le journal doit donc être inspecté séparément — sans quoi une classe
+# entière d'échecs reste invisible.
+if grep -qiE 'SCRIPT ERROR|Cannot call method|Invalid access|String formatting error|Out of bounds' "$UNIT_LOG"; then
+  bad "erreurs d'exécution dans la suite unitaire (voir $UNIT_LOG)"
+  grep -iE 'SCRIPT ERROR|Cannot call method|Invalid access|String formatting error|Out of bounds' "$UNIT_LOG" | head -10 | sed 's/^/    /'
+else
+  ok "aucune erreur d'exécution dans le journal des tests"
+fi
+
 step "3. Scène d'intégration (chargement réel de la scène principale)"
 SCENE_LOG="$LOG_DIR/03_scene.log"
 "$GODOT_BIN" --headless --path "$PROJECT_DIR" --quit-after 5 > "$SCENE_LOG" 2>&1

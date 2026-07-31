@@ -25,16 +25,16 @@ logiciel llvmpipe uniquement, aucun GPU.
 | 0.1 | Inspection dépôt, outils, versions, réseau | **Validé** | `evidence/gate0/env_report.txt`, `docs/BUILD_ENVIRONMENT.md` | 2026-07-31 |
 | 0.1 | Vérification de l'image de référence | **Validé** | analyse consignée dans `docs/ART_BIBLE.md` §1.1 | 2026-07-31 |
 | 0.2 | Système de continuité (§0.3) | **Validé** | 12 artefacts présents, voir tableau ci-dessous | 2026-07-31 |
-| 0.3 | Commandes de parse/test/capture | **Validé** | `tools/validate_fast.sh`, `test_runner.gd`, `capture_reference.gd` | 2026-07-31 |
-| 0.3 | Scène laboratoire de pipeline | **Validé** | `scenes/tests/PipelineLab.tscn` capturée depuis le renderer | 2026-07-31 |
+| 0.3 | Commandes de parse/test/capture | **Validé** (contrôles négatifs T-08) | `tools/validate_fast.sh`, `test_runner.gd`, `capture_reference.gd` | 2026-07-31 |
+| 0.3 | Scène laboratoire de pipeline | **Fonctionnel** | `scenes/tests/PipelineLab.tscn` capturée depuis le renderer | 2026-07-31 |
 | 0.3 | Laboratoires de look-dev (§7.16) | **Non commencé** | reportés en Phase C.5 : sans contenu à juger, ce seraient des coquilles | — |
 | 0.3 | Journal de recherche | **Validé** | `docs/RESEARCH_LEDGER.md`, 5 entrées sourcées | 2026-07-31 |
 | 0.4 | Godot 4.7.1 vérifié | **Validé** | `evidence/gate0/env_report.txt` : `4.7.1.stable.custom_build.a13da4feb` | 2026-07-31 |
 | 0.4 | Renderer Forward+ configuré | **Validé** | relu au runtime : `[boot] renderer : forward_plus` | 2026-07-31 |
 | 0.4 | Jolt configuré | **Validé** | relu au runtime : `[boot] physique 3D : Jolt Physics` | 2026-07-31 |
 | 0.4 | Blender / glTF vérifiés | **Validé** | `evidence/gate0/pipeline/` | 2026-07-31 |
-| 0.5 | Import cube + matériau | **Validé** | `test_gltf_import.gd` : 1 m, base Y≈0, matériau résolu | 2026-07-31 |
-| 0.5 | Import rig + clip animé | **Validé** | `test_gltf_import.gd` : 2 os, `AN_TestRig_Idle` | 2026-07-31 |
+| 0.5 | Import cube + matériau | **Fonctionnel** | `test_gltf_import.gd` : 1 m, base Y≈0, matériau résolu | 2026-07-31 |
+| 0.5 | Import rig + clip animé | **Fonctionnel** | `test_gltf_import.gd` : 2 os, `AN_TestRig_Idle` | 2026-07-31 |
 | 0.6 | Risques classés | **Validé** | `docs/RISKS.md`, 9 risques avec plan et signal | 2026-07-31 |
 
 ### Artefacts de continuité exigés par §0.3
@@ -48,7 +48,7 @@ logiciel llvmpipe uniquement, aucun GPU.
 | `docs/PROGRESS.md` | ✅ | journal + handoff |
 | `docs/DECISIONS.md` | ✅ | 5 décisions avec alternatives rejetées |
 | `docs/RESEARCH_LEDGER.md` | ✅ | 5 entrées + 5 questions ouvertes |
-| `docs/KNOWN_ISSUES.md` | ✅ | 3 ouverts, 2 résolus |
+| `docs/KNOWN_ISSUES.md` | ✅ | 4 ouverts (ISS-001..004), 2 résolus |
 | `docs/TEST_REPORT.md` | ✅ | résultats et commandes exactes |
 | `docs/PERFORMANCE.md` | ✅ | protocole ; aucune mesure (assumé) |
 | `docs/ART_BIBLE.md` | ✅ | North Star analysée, palette, budgets |
@@ -80,12 +80,12 @@ ne dépendent pas du rendu, seulement de l'exécution headless.
 
 ## Checklist finale (§26) — état réel
 
-Toutes les cases sont vides et le resteront jusqu'à preuve. Ne jamais cocher sur la
-base d'une intention.
+Une case n'est cochée que si une preuve datée la soutient. Ne jamais cocher sur la
+base d'une intention. Les cases cochées ci-dessous renvoient toutes à `TEST_REPORT`.
 
 | Domaine | Critère | État |
 |---|---|---|
-| Build | Ouvre et lance sans erreur bloquante | ✅ |
+| Build | Ouvre et lance sans erreur bloquante | partiel — se lance en headless (T-05) ; **jamais ouvert dans l'éditeur**, critère de Gate A |
 | Continuité | Une session neuve reprend via CLAUDE/STATUS/PROGRESS | ✅ sous réserve (T-07) |
 | Recherche | Décisions risquées sourcées, expérimentées, consignées | ✅ |
 | Loop | Du spawn à la victoire sans debug | ⬜ |

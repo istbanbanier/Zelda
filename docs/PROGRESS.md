@@ -31,9 +31,10 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ### Ce qui n'a pas été fait, et pourquoi
 
-- **Aucune capture du moteur** : la machine n'a ni GPU ni affichage (ISS-002).
-  Conséquence assumée : aucun score visuel, aucune mesure de performance. Les
-  gates C.5, H, I et J sont bloqués **ici**, pas dans l'absolu.
+- **Aucune mesure de performance ni score visuel.** La capture, elle, s'est
+  révélée possible via Xvfb + llvmpipe (rendu logiciel) — hypothèse R-004
+  infirmée dans le bon sens. Mais llvmpipe interdit toute mesure, et il n'existe
+  aucune scène North Star à noter. Gates H, I et J restent bloqués ici.
 - **Aucune scène laboratoire** (`StyleLab`, `HeroShotLab`…) : elles n'ont de sens
   qu'avec un rendu, et §7.16 exige de les capturer. Les créer aveuglément
   produirait des coquilles vides.

@@ -23,6 +23,60 @@ var _width: int = 2560
 var _height: int = 1440
 var _frames: int = DEFAULT_FRAMES
 var _label: String = "unlabeled"
+var _allow_uniform: bool = false
+
+
+## Statistiques de contenu : sert à prouver qu'une image a été *rendue*, pas
+## seulement écrite. Échantillonnage régulier pour rester peu coûteux en 1440p.
+func _analyse(image: Image) -> Dictionary:
+	var width: int = image.get_width()
+	var height: int = image.get_height()
+	var step: int = maxi(1, mini(width, height) / 64)
+	var seen: Dictionary = {}
+	var lumas: Array[float] = []
+	var y: int = 0
+	while y < height:
+		var x: int = 0
+		while x < width:
+			var c: Color = image.get_pixel(x, y)
+			seen[c.to_rgba32()] = true
+			lumas.append(c.get_luminance())
+			x += step
+		y += step
+	var mean: float = 0.0
+	for l: float in lumas:
+		mean += l
+	mean /= maxf(1.0, float(lumas.size()))
+	var variance: float = 0.0
+	for l: float in lumas:
+		variance += (l - mean) * (l - mean)
+	variance /= maxf(1.0, float(lumas.size()))
+	return {
+		"distinct": seen.size(),
+		"mean_luma": mean,
+		"stddev": sqrt(variance),
+		"samples": lumas.size(),
+	}
+
+
+## Commit auquel la capture correspond : sans lui une preuve visuelle n'est
+## rattachable à aucun état du dépôt (défaut D7).
+func _current_commit() -> String:
+	var out: Array = []
+	var rc: int = OS.execute("git", ["-C", ProjectSettings.globalize_path("res://"),
+		"rev-parse", "HEAD"], out, true)
+	if rc != 0 or out.is_empty():
+		return "inconnu"
+	return String(out[0]).strip_edges()
+
+
+func _repo_is_dirty() -> bool:
+	var out: Array = []
+	var rc: int = OS.execute("git", ["-C", ProjectSettings.globalize_path("res://"),
+		"status", "--porcelain"], out, true)
+	if rc != 0 or out.is_empty():
+		return true
+	return String(out[0]).strip_edges() != ""
 
 
 func _initialize() -> void:
@@ -47,6 +101,8 @@ func _parse_args() -> void:
 			_frames = maxi(1, arg.trim_prefix("--frames=").to_int())
 		elif arg.begins_with("--label="):
 			_label = arg.trim_prefix("--label=")
+		elif arg == "--allow-uniform":
+			_allow_uniform = true
 		elif arg.begins_with("--size="):
 			var parts: PackedStringArray = arg.trim_prefix("--size=").split("x")
 			if parts.size() == 2:
@@ -78,6 +134,19 @@ func _capture() -> void:
 		quit(2)
 		return
 
+	# Défaut D6 de la revue adverse : écrire un PNG ne prouve pas qu'une scène a été
+	# rendue. Une scène vide produisait un fichier valide, avec manifeste complet,
+	# indiscernable d'une vraie capture. On exige donc un contenu non uniforme.
+	var stats: Dictionary = _analyse(image)
+	print("[capture] contenu   : %d couleurs distinctes (échantillon), écart-type luma %.2f"
+		% [stats["distinct"], stats["stddev"]])
+	if not _allow_uniform and int(stats["distinct"]) < 2:
+		printerr("[capture] ÉCHEC: image uniforme (%d couleur) — aucune géométrie rendue. "
+			% int(stats["distinct"])
+			+ "Utiliser --allow-uniform si une image unie est réellement attendue.")
+		quit(4)
+		return
+
 	# --out accepte un chemin relatif au projet ou un chemin absolu ; joindre
 	# aveuglément un chemin absolu à res:// crée un dossier fantôme dans le dépôt.
 	var abs_out: String = _out_path
@@ -90,14 +159,19 @@ func _capture() -> void:
 		quit(3)
 		return
 
-	_write_manifest(abs_out, image)
+	_write_manifest(abs_out, image, stats)
 	print("[capture] OK -> %s (%dx%d)" % [abs_out, image.get_width(), image.get_height()])
 	quit(0)
 
 
-func _write_manifest(png_abs: String, image: Image) -> void:
+func _write_manifest(png_abs: String, image: Image, stats: Dictionary) -> void:
 	var manifest: Dictionary = {
 		"label": _label,
+		"commit": _current_commit(),
+		"repo_dirty": _repo_is_dirty(),
+		"distinct_colors_sampled": stats.get("distinct", 0),
+		"luma_mean": snappedf(float(stats.get("mean_luma", 0.0)), 0.0001),
+		"luma_stddev": snappedf(float(stats.get("stddev", 0.0)), 0.0001),
 		"scene": _scene_path,
 		"png": _out_path,
 		"width": image.get_width(),

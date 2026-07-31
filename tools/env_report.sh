@@ -21,15 +21,25 @@ report() {
     echo "godot_bin           : $GODOT_BIN"
     echo "godot_version       : $("$GODOT_BIN" --version 2>&1 | tail -1)"
     echo "godot_headless_ok   : $("$GODOT_BIN" --headless --quit >/dev/null 2>&1 && echo oui || echo non)"
+    echo "godot_src_commit    : $(git -C "${GODOT_SRC_DIR:-/opt/src/godot}" rev-parse HEAD 2>/dev/null || echo '<source absente>')"
+    echo "godot_build_target  : $(readlink -f "$GODOT_BIN" 2>/dev/null | xargs -r basename)"
   else
     echo "godot_bin           : ABSENT ($GODOT_BIN) — lancer tools/setup_godot.sh"
   fi
+  echo "config_version      : $(grep -m1 '^config_version=' project.godot 2>/dev/null | cut -d= -f2)"
+  echo "renderer_projet     : $(grep -m1 'rendering_method=' project.godot 2>/dev/null | cut -d= -f2 | tr -d '\"')"
+  echo "physique_3d_projet  : $(grep -m1 '3d/physics_engine=' project.godot 2>/dev/null | cut -d= -f2 | tr -d '\"')"
+  echo "tick_physique       : $(grep -m1 'physics_ticks_per_second=' project.godot 2>/dev/null | cut -d= -f2)"
   echo
   echo "--- Blender / pipeline glTF ---"
   if command -v blender >/dev/null 2>&1; then
     echo "blender_version     : $(blender --version 2>/dev/null | head -1)"
     echo "blender_python      : $(blender --background --python-expr 'import sys;print(sys.version.split()[0])' 2>/dev/null | grep -m1 -E '^[0-9]+\.')"
     echo "gltf_exporter       : $(blender --background --python-expr 'import addon_utils;print([m.bl_info.get("version") for m,_ in [(m,None) for m in addon_utils.modules()] if m.__name__=="io_scene_gltf2"])' 2>/dev/null | grep -m1 '\[')"
+    # numpy est une dépendance dure de l'exporter glTF, et c'est le Python EMBARQUÉ
+    # de Blender qui doit l'avoir — pas nécessairement le python3 du système.
+    echo "numpy_blender       : $(blender --background --python-expr 'import numpy;print(numpy.__version__)' 2>/dev/null | grep -m1 -E '^[0-9]+\.' || echo 'ABSENT — export glTF impossible')"
+    echo "numpy_python3_sys   : $(python3 -c 'import numpy;print(numpy.__version__)' 2>/dev/null || echo 'absent (sans conséquence : seul Blender en a besoin)')"
   else
     echo "blender             : ABSENT"
   fi

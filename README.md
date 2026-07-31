@@ -97,8 +97,9 @@ tools/validate_release.sh  # niveaux 4-7 : exige un rendu réel
 tools/blender/run_export.sh # pipeline Blender -> glTF -> validation
 ```
 
-`validate_release.sh` sort en **code 3 « BLOQUÉ »** si la machine ne peut pas rendre
-d'image, au lieu de retourner un faux vert.
+`validate_release.sh` sort en **code 3 « BLOQUÉ »** dès qu'un de ses niveaux n'est
+pas exécuté — y compris quand la capture réussit — au lieu de retourner un faux vert.
+Codes : `0` vert · `1` rouge · `3` bloqué.
 
 ## 11. Presets graphiques
 
@@ -108,10 +109,11 @@ voir §17.6 et §20.8.
 ## 12. Limites honnêtes
 
 - **Aucun gameplay.** Le projet est à la Phase 0 ; la boucle de jeu n'existe pas.
-- **Aucune capture du moteur n'a pu être produite** : la machine de développement
-  actuelle n'a ni GPU ni affichage (`docs/KNOWN_ISSUES.md` ISS-002). Aucun score
-  visuel et aucune mesure de performance ne sont donc annoncés — et ne doivent
-  pas l'être tant que ce blocage subsiste.
+- **Aucun GPU ni affichage** sur la machine de développement actuelle
+  (`docs/KNOWN_ISSUES.md` ISS-002). La capture fonctionne malgré tout via Xvfb +
+  Mesa llvmpipe (rendu **logiciel**) : la régression visuelle est donc possible,
+  mais **aucune mesure de performance n'en est tirable** et aucun score visuel
+  n'est annoncé. Profilage, frame pacing, session longue et export restent bloqués.
 - **Les binaires officiels de Godot et Blender ne sont pas téléchargeables** dans cet
   environnement (politique d'egress, ISS-001). Le moteur est compilé depuis la
   source ; compter ~60-120 min pour une session neuve.

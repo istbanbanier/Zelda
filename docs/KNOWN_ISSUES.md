@@ -26,8 +26,10 @@ Aucun `S0`/`S1` ouvert n'est admis pour un build candidat.
 ## ISS-002 — Aucune capacité de rendu : GPU et affichage absents · `S2` · OUVERT
 
 - **Étapes** : `ls /dev/dri` → absent · `echo $DISPLAY` → vide.
-- **Impact** : bloque les niveaux 5-7 de la pyramide de validation — capture North
-  Star, régression visuelle, profilage, soak. Donc bloque **Gate C.5, H, I et J**.
+- **Impact** : bloque les niveaux **6 et 7** de la pyramide de validation —
+  profilage, frame pacing, session longue, export. Donc bloque **Gates H, I et J**,
+  et interdit la notation WOW fine du Gate C.5. Le niveau 5 (capture) est, lui,
+  praticable en rendu logiciel : voir le contournement mesuré ci-dessous.
 - **N'affecte pas** : import, parse, tests unitaires et d'intégration headless,
   logique de jeu, données, sauvegarde, graphe électrique — soit tout le chemin
   jusqu'au Gate G (graybox jouable).
@@ -67,6 +69,19 @@ Aucun `S0`/`S1` ouvert n'est admis pour un build candidat.
   `ATTRIBUTIONS.md`.
 - **Rappel** : cette image reste une **référence de cadrage uniquement**. Elle ne
   doit jamais devenir skybox, matte painting, billboard ou texture (§0.2).
+
+## ISS-005 — Licence sortante du projet non définie · `S3` · OUVERT — décision utilisateur requise
+
+- **Constat** : aucun fichier `LICENSE` ni `COPYING` à la racine, alors que
+  `ATTRIBUTIONS.md` range les assets produits sous « licence du projet ».
+  Cette licence n'existe donc nulle part.
+- **Impact** : les licences **entrantes** sont saines (Godot MIT, exporter glTF
+  Apache-2.0, numpy BSD-3, Blender GPL non redistribué). C'est la licence
+  **sortante** qui est indéterminée : personne ne peut savoir sous quelles
+  conditions le jeu et ses assets sont diffusables.
+- **Action requise** : choix du propriétaire du projet (propriétaire, MIT, CC-BY
+  pour les assets, etc.). Ce n'est pas une décision technique.
+- **Ne bloque pas** la Phase A.
 
 ---
 

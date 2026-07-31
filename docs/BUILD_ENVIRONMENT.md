@@ -28,7 +28,7 @@ seulement documentée, elle est testée.
 |---|---|---|
 | Blender | 4.0.2 | paquet Ubuntu noble (`blender`) |
 | Exporter glTF `io_scene_gltf2` | 4.0.44 | fourni avec Blender |
-| numpy | 1.26.4 | `python3-numpy` — **dépendance obligatoire** de l'exporter |
+| numpy | 1.26.4 | `python3-numpy` — **dépendance obligatoire** de l'exporter glTF, requise par le Python **embarqué de Blender** (3.12), pas par le python3 d'outillage |
 | Python | 3.11.15 (outillage) / 3.12.3 (embarqué Blender) | système |
 | SCons | 4.5.2 | paquet Ubuntu |
 | GCC | 13.3.0 | paquet Ubuntu |
@@ -54,8 +54,12 @@ seulement documentée, elle est testée.
 
 - ✅ Possible : import, parse, tests unitaires et d'intégration headless, logique de
   jeu, données, sauvegarde, graphe électrique, pipeline d'assets.
-- ❌ Impossible : capture North Star, régression visuelle, profilage, soak, export
-  et test de build. Donc **Gates C.5, H, I et J sont bloqués ici** (ISS-002).
+- ⚠️ Possible mais dégradé : la **capture** et donc la régression visuelle, via
+  Xvfb + Mesa llvmpipe (rendu **logiciel**). Couleurs et filtrage diffèrent d'un
+  GPU réel : tolérances larges obligatoires, notation artistique fine exclue.
+- ❌ Impossible : profilage, frame pacing, session 60 min, export de build, test
+  audio. Donc **Gates H, I et J restent bloqués ici**, et la notation WOW du
+  Gate C.5 devra se faire sur une machine avec GPU (ISS-002, ISS-004).
 - Cette machine **n'est pas** un matériel de référence de performance. Aucun budget
   de frame ne peut en être tiré (§20.1).
 

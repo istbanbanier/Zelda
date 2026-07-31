@@ -14,10 +14,19 @@ FAIL=0
 echo "=== Blender: $("$BLENDER" --version 2>/dev/null | head -1) ==="
 
 echo
-echo "--- 1. Génération des sources de test ---"
-"$BLENDER" --background --python tools/blender/make_test_assets.py \
-  > "$LOG_DIR/blender_make.log" 2>&1 || FAIL=1
-grep '^\[make_test_assets\]' "$LOG_DIR/blender_make.log" | sed 's/^/  /'
+echo "--- 1. Sources de test ---"
+# Blender ne réécrit pas un .blend octet pour octet à l'identique : régénérer
+# systématiquement salissait l'arbre git à chaque exécution. Les sources ne sont
+# donc reconstruites que si elles manquent, ou sur demande explicite.
+if [ "${REGEN_SOURCES:-0}" = "1" ] \
+   || [ ! -f source_assets/blender/props/SM_TestCube.blend ] \
+   || [ ! -f source_assets/blender/props/SK_TestRigAnim.blend ]; then
+  "$BLENDER" --background --python tools/blender/make_test_assets.py \
+    > "$LOG_DIR/blender_make.log" 2>&1 || FAIL=1
+  grep '^\[make_test_assets\]' "$LOG_DIR/blender_make.log" | sed 's/^/  /'
+else
+  echo "  sources déjà présentes, régénération ignorée (REGEN_SOURCES=1 pour forcer)"
+fi
 
 echo
 echo "--- 2. Export .glb ---"

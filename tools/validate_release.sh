@@ -62,7 +62,13 @@ echo "  [OK] voir $CAP_LOG et evidence/captures/"
 
 echo
 echo "=== 4/6/7. Golden path, performance, soak ==="
-echo "  NON IMPLÉMENTÉ à ce stade : ces niveaux exigent respectivement la boucle"
-echo "  complète (Gate G), un matériel de référence documenté (§20.1) et un build"
-echo "  exporté. Les activer dans leurs phases, pas avant."
-exit 0
+echo "  NON EXÉCUTÉS : ces niveaux exigent respectivement la boucle complète"
+echo "  (Gate G), un matériel de référence documenté (§20.1) et un build exporté."
+[ $SOFTWARE_ONLY -eq 1 ] && echo "  De plus, aucun GPU : toute mesure de performance serait invalide."
+
+echo
+echo "=== VALIDATE_RELEASE : BLOQUÉ (niveau 5 vert, niveaux 4/6/7 non exécutés) ==="
+echo "  Le niveau 5 (capture) a réussi, mais un script qui saute des étapes ne"
+echo "  retourne pas vert (.claude/rules/evidence.md). Code 3 = BLOQUÉ, à ne jamais"
+echo "  interpréter comme un PASS de gate visuel ou de performance."
+exit 3

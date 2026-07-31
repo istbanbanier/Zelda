@@ -21,7 +21,7 @@ Une session = **un jalon borné ou un seul bug complexe**. Jamais « tout le jeu
 tools/env_report.sh                  # versions exactes -> docs/BUILD_ENVIRONMENT.md
 tools/setup_godot.sh                 # (re)construit Godot 4.7.1 si absent — ~90 min
 tools/validate_fast.sh               # niveaux 1-3 : import, parse, tests unitaires
-tools/validate_release.sh            # niveaux 4-7 : nécessite GPU/build (voir limites)
+tools/validate_release.sh            # niveaux 4-7 ; codes: 0 vert, 1 rouge, 3 BLOQUÉ
 tools/blender/run_export.sh          # Blender -> .glb dans assets/
 python3 tools/gltf_inspect.py <glb>  # validation glTF hors Godot
 ```
@@ -97,6 +97,8 @@ Ne jamais passer au Gate suivant sans le Gate courant vert ou explicitement `BLO
 
 ## Limites connues de cet environnement
 
-Conteneur Linux **headless, sans GPU**. Les niveaux 5-7 de la pyramide de
-validation (capture visuelle, performance, soak) ne sont **pas** exécutables ici et
-ne doivent pas être annoncés comme réussis. Détail : `docs/BUILD_ENVIRONMENT.md`.
+Conteneur Linux **headless, sans GPU**. Le niveau 5 (capture) fonctionne via
+Xvfb + Mesa llvmpipe, en rendu **logiciel** : utilisable pour la régression
+visuelle, jamais pour une mesure. Les niveaux **6 et 7** (performance, soak,
+export) ne sont **pas** exécutables ici et ne doivent pas être annoncés comme
+réussis. Aucun périphérique audio non plus. Détail : `docs/BUILD_ENVIRONMENT.md`.

@@ -6,7 +6,17 @@
 ##
 ## Découvre res://tests/**/test_*.gd, instancie chaque script, appelle toute
 ## méthode commençant par `test_`, et sort avec un code retour non nul si un seul
-## test échoue. Un test échoue par `assert_*` ou par exception de parsing.
+## test échoue.
+##
+## Garde-fous issus de la revue adverse du Gate 0 :
+##   - D3 : un script qui n'étend pas `GateTestCase` est un ÉCHEC, pas un test
+##     silencieux. Le câblage du reporter n'est plus du boilerplate recopiable.
+##   - une méthode de test qui n'exécute aucune assertion est un ÉCHEC : elle donne
+##     l'illusion d'une couverture inexistante.
+##   - D2 : les erreurs d'exécution GDScript n'interrompent pas l'appel et ne
+##     peuvent pas être interceptées ici ; c'est `validate_fast.sh` qui inspecte le
+##     journal à la recherche de `SCRIPT ERROR`. Les deux protections sont
+##     nécessaires, aucune ne suffit seule.
 extends SceneTree
 
 const TEST_ROOTS: Array[String] = ["res://tests/unit", "res://tests/integration"]
@@ -29,9 +39,8 @@ func _init() -> void:
 	scripts.sort()
 
 	if scripts.is_empty():
-		print("AUCUN TEST TROUVÉ dans %s" % ", ".join(TEST_ROOTS))
-		print("RÉSULTAT: 0 réussi, 0 échoué — runner opérationnel, suite vide.")
-		quit(0)
+		printerr("AUCUN TEST TROUVÉ dans %s — suite vide traitée comme un échec." % ", ".join(TEST_ROOTS))
+		quit(1)
 		return
 
 	for path: String in scripts:
@@ -80,26 +89,38 @@ func _run_script(path: String) -> void:
 		_fail("%s: instanciation impossible" % path)
 		return
 
-	for method: Dictionary in instance.get_method_list():
-		var name: String = String(method.get("name", ""))
-		if not name.begins_with("test_"):
-			continue
-		_current = "%s::%s" % [path.get_file(), name]
+	# D3 : refuser tout test hors du contrat commun.
+	if not (instance is GateTestCase):
+		_fail("%s: doit étendre GateTestCase (res://tests/test_case.gd) — " % path
+			+ "sans ce contrat les assertions seraient avalées en silence")
+		return
+	var test_case: GateTestCase = instance as GateTestCase
+
+	var methods: Array[String] = []
+	for method: Dictionary in test_case.get_method_list():
+		var method_name: String = String(method.get("name", ""))
+		if method_name.begins_with("test_") and not methods.has(method_name):
+			methods.append(method_name)
+
+	if methods.is_empty():
+		_fail("%s: aucune méthode test_*" % path)
+		return
+
+	for method_name: String in methods:
+		_current = "%s::%s" % [path.get_file(), method_name]
 		var before_failed: int = _failed
-		if instance.has_method("set_reporter"):
-			instance.call("set_reporter", self)
-		instance.call(name)
+		test_case.set_reporter(self)
+		test_case.call(method_name)
+
+		if test_case.get_check_count() == 0:
+			_fail("%s — aucune assertion exécutée (couverture illusoire)" % _current)
+			continue
 		if _failed == before_failed:
 			_passed += 1
-			print("  ok   %s" % _current)
-
-	if instance is RefCounted:
-		pass
-	elif instance is Node:
-		(instance as Node).free()
+			print("  ok   %s (%d assertions)" % [_current, test_case.get_check_count()])
 
 
-## Appelé par les cas de test via set_reporter().
+## Appelé par les cas de test via le reporter injecté.
 func report_failure(message: String) -> void:
 	_fail("%s — %s" % [_current, message])
 
