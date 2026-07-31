@@ -6,21 +6,25 @@
 === 1. Import des ressources (parse/import smoke) ===
   [OK]   import sans parse error (code retour 0)
 
+=== 1b. Parse réel de TOUS les scripts GDScript ===
+  [OK]   7 script(s) GDScript parsés sans erreur
+
 === 2. Tests unitaires ===
     ok   test_gltf_import.gd::test_static_cube_imports_with_material_and_scale (8 assertions)
     ok   test_gltf_import.gd::test_rig_imports_with_skeleton_and_animation (11 assertions)
     ok   test_gltf_import.gd::test_no_pink_missing_resources (4 assertions)
     ok   test_harness_contract.gd::test_check_counts_assertions (2 assertions)
-    ok   test_harness_contract.gd::test_helpers_are_available (4 assertions)
+    ok   test_harness_contract.gd::test_failures_are_recorded_in_member_not_via_method (2 assertions)
+    ok   test_harness_contract.gd::test_helpers_are_available (3 assertions)
     ok   test_harness_contract.gd::test_this_case_extends_gate_test_case (1 assertions)
     ok   test_smoke.gd::test_engine_version_is_4_7_1_stable (4 assertions)
     ok   test_smoke.gd::test_physics_engine_is_jolt (1 assertions)
     ok   test_smoke.gd::test_renderer_is_forward_plus (1 assertions)
     ok   test_smoke.gd::test_physics_tick_is_60hz (1 assertions)
     ok   test_smoke.gd::test_metre_scale_convention (2 assertions)
-  === RÉSULTAT: 11 réussi(s), 0 échoué(s) ===
+  === RÉSULTAT: 12 réussi(s), 0 échoué(s) ===
   [OK]   suite unitaire verte
-  [OK]   aucune erreur d'exécution dans le journal des tests
+  [OK]   aucune erreur signalée dans le journal des tests
 
 === 3. Scène d'intégration (chargement réel de la scène principale) ===
   [OK]   scène principale chargée et quittée proprement
