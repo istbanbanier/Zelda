@@ -1,0 +1,16 @@
+=== INSPECTION glTF : assets/environment/props/SM_TestCube.glb ===
+  format                 : GLB v2, 2520 octets
+  chunk_binaire          : 1224 octets
+  generateur             : Khronos glTF Blender I/O v4.0.44
+  version_gltf           : 2.0
+  meshes                 : 1
+  materiaux              : 1 (MAT_TestCube)
+  textures               : 0 image(s), 0 texture(s)
+  noeuds                 : 1 (SM_TestCube_LOD0)
+  skins                  : 0
+  animations             : 0 (aucune)
+  triangles              : 12
+  bbox_min               : [-0.5, 0, -0.5]
+  bbox_max               : [0.5, 1, 0.5]
+  dimensions_m           : [1.0, 1, 1.0]
+=== VALIDE ===

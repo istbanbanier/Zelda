@@ -1,0 +1,18 @@
+=== INSPECTION glTF : assets/characters/hero/SK_TestRigAnim.glb ===
+  format                 : GLB v2, 16276 octets
+  chunk_binaire          : 12956 octets
+  generateur             : Khronos glTF Blender I/O v4.0.44
+  version_gltf           : 2.0
+  meshes                 : 1
+  materiaux              : 1 (MAT_TestRig)
+  textures               : 0 image(s), 0 texture(s)
+  noeuds                 : 4 (bone_upper, bone_root, SK_TestRig, ARM_TestRig)
+  skins                  : 1
+  animations             : 1 (AN_TestRig_Idle)
+  triangles              : 124
+  bbox_min               : [-0.15, 0, -0.15]
+  bbox_max               : [0.15, 2, 0.15]
+  dimensions_m           : [0.3, 2, 0.3]
+  anim:AN_TestRig_Idle   : 6 canaux, 6 samplers
+  skin:ARM_TestRig       : 2 os
+=== VALIDE ===
