@@ -78,7 +78,11 @@ func _capture() -> void:
 		quit(2)
 		return
 
-	var abs_out: String = ProjectSettings.globalize_path("res://").path_join(_out_path)
+	# --out accepte un chemin relatif au projet ou un chemin absolu ; joindre
+	# aveuglément un chemin absolu à res:// crée un dossier fantôme dans le dépôt.
+	var abs_out: String = _out_path
+	if not _out_path.is_absolute_path():
+		abs_out = ProjectSettings.globalize_path("res://").path_join(_out_path)
 	DirAccess.make_dir_recursive_absolute(abs_out.get_base_dir())
 	var err: Error = image.save_png(abs_out)
 	if err != OK:
