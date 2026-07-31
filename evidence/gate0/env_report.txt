@@ -1,5 +1,5 @@
 === RAPPORT D'ENVIRONNEMENT ===
-date_utc            : 2026-07-31T23:28:31Z
+date_utc            : 2026-07-31T23:51:37Z
 hote                : Linux 6.18.5 x86_64
 distribution        : Ubuntu 24.04.4 LTS
 cpu_coeurs          : 4
@@ -39,5 +39,5 @@ gcc                 : gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
 
 --- Dépôt ---
 branche             : claude/phase-0-gate-0-setup-t72ibt
-commit              : b1ba9b9a992b170714938c29ed94fb1db629e238
+commit              : ecca33134c26e9d8405b08e614c5ab2e5550983a
 arbre_propre        : non

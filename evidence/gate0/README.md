@@ -1,7 +1,7 @@
 # Preuves du Gate 0
 
-**Commit de référence** : `b1ba9b9a992b170714938c29ed94fb1db629e238`
-(« Gate 0 : corrige les défauts de la SECONDE revue adverse »).
+**Commit de référence** : `ecca33134c26e9d8405b08e614c5ab2e5550983a`
+(« Gate 0 : corrige la TROISIEME revue adverse »).
 
 Tous les fichiers de ce dossier ont été produits **après** ce commit, sur un arbre
 dont les seules modifications étaient ces fichiers de preuve eux-mêmes. C'est
@@ -21,7 +21,7 @@ qui en faisait autre chose qu'un artefact machine. Le champ `png` de
 | Fichier | Produit par | Code retour |
 |---|---|---|
 | `env_report.txt` | `tools/env_report.sh` | 0 |
-| `validate_fast.log` | `tools/validate_fast.sh` | **0** (VERT, 12 tests) |
+| `validate_fast.log` | `tools/validate_fast.sh` | **0** (VERT, 13 tests) |
 | `validate_release.log` | `tools/validate_release.sh` | **3** (BLOQUÉ — attendu) |
 | `pipeline_blender_gltf.log` | `tools/blender/run_export.sh` | 0 |
 | `pipeline_lab.png` / `.json` | `tools/godot/capture_reference.gd` | 0 |
@@ -34,14 +34,20 @@ Gate 0 ont chacune démontré qu'il restait vert sur des pannes réelles. Le dos
 `negative_controls/` archive les journaux des scénarios d'échec **réinjectés**,
 avec leur code retour :
 
-| Fichier | Scénario | Code attendu |
+| Fichier | Scénario | Code |
 |---|---|---|
-| `N9_parse_error_script_non_reference.log` | erreur de syntaxe dans un `.gd` non référencé | 1 |
-| `N1_ressource_manquante_push_error.log` | `load()` d'un asset absent + `push_error` | 1 |
-| `N3_contournement_contrat.log` | test neutralisant le contrat pour masquer 2 assertions fausses | 1 |
-| `N4_scene_sans_geometrie.log` | capture d'une scène ciel + caméra, zéro mesh | 5 |
-| `N5_commit_indetermine.log` | capture avec `git` indisponible | 6 |
-| `N2_playthrough_collecte.log` | test déposé dans `tests/playthrough/` | 1 |
+| `N3v1_redefinition_de_check.log` | test redéfinissant `check()` pour neutraliser la comptabilité | 1 |
+| `N3v2_effacement_des_echecs.log` | test tentant d'effacer les échecs enregistrés | 1 |
+| `N3v3_gonflement_compteur.log` | test gonflant le compteur d'assertions | 1 |
+| `N4a_lumiere_seule.log` | capture d'une scène ciel + caméra + lumière, zéro géométrie | 5 |
+| `N4b_mesh_sans_maillage.log` | capture avec un `MeshInstance3D` sans ressource | 5 |
+| `N4c_parent_masque.log` | capture d'un vrai cube sous un parent masqué | 5 |
+| `B1_perte_de_couverture.log` | fichier de test renommé, 3 tests disparus | 1 |
+| `B2_fichier_test_illisible.log` | fichier de test avec erreur de parsing | 1 |
+| `nominal_validate_release.log` | exécution nominale de `validate_release.sh` | 3 |
+
+Chaque journal se termine par la ligne `RC=<code>` réellement observée : la 3e revue
+avait relevé que les codes retour revendiqués n'apparaissaient dans aucun artefact.
 
 ## Lecture rapide
 
@@ -58,5 +64,8 @@ avec leur code retour :
 - **Aucune qualité artistique** : `PipelineLab` vérifie l'outillage, ce n'est pas
   une composition. Le WOW Gate reste non noté.
 - **Aucun gameplay** : la Phase A n'a pas commencé.
-- **Aucune exhaustivité** : les contrôles négatifs couvrent les classes d'échec
-  identifiées par deux revues. Rien ne garantit qu'il n'en reste aucune autre.
+- **Aucune exhaustivité.** Trois revues adverses successives ont chacune réfuté
+  une affirmation d'exhaustivité, la deuxième et la troisième en cassant les
+  correctifs de la précédente. Ces contrôles couvrent les classes d'échec
+  identifiées à ce jour, rien de plus. Le harnais arrête la perte de signal
+  accidentelle ; il n'arrête pas un auteur de test qui mentirait délibérément.

@@ -17,3 +17,4 @@
   Le niveau 5 (capture) a réussi, mais un script qui saute des étapes ne
   retourne pas vert (.claude/rules/evidence.md). Code 3 = BLOQUÉ, à ne jamais
   interpréter comme un PASS de gate visuel ou de performance.
+RC=3
