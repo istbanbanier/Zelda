@@ -1,5 +1,5 @@
 === RAPPORT D'ENVIRONNEMENT ===
-date_utc            : 2026-07-31T22:50:44Z
+date_utc            : 2026-07-31T23:09:52Z
 hote                : Linux 6.18.5 x86_64
 distribution        : Ubuntu 24.04.4 LTS
 cpu_coeurs          : 4
@@ -10,11 +10,19 @@ disque_dispo        : 28G
 godot_bin           : /usr/local/bin/godot
 godot_version       : 4.7.1.stable.custom_build.a13da4feb
 godot_headless_ok   : oui
+godot_src_commit    : a13da4feb8d8aefc283c3763d33a2f170a18d541
+godot_build_target  : godot.linuxbsd.editor.x86_64
+config_version      : 5
+renderer_projet     : forward_plus
+physique_3d_projet  : Jolt Physics
+tick_physique       : 60
 
 --- Blender / pipeline glTF ---
 blender_version     : Blender 4.0.2
 blender_python      : 3.12.3
 gltf_exporter       : [(4, 0, 44)]
+numpy_blender       : 1.26.4
+numpy_python3_sys   : absent (sans conséquence : seul Blender en a besoin)
 
 --- Capacité de rendu / capture ---
 DISPLAY             : <vide>
@@ -31,5 +39,5 @@ gcc                 : gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
 
 --- Dépôt ---
 branche             : claude/phase-0-gate-0-setup-t72ibt
-commit              : d012c64eaa2c00058fd04a626c359031bb8d2b5b
+commit              : 0104b1e7fa185cb07e6b28f030575f08862462ce
 arbre_propre        : non
