@@ -31,11 +31,28 @@ Aucun `S0`/`S1` ouvert n'est admis pour un build candidat.
 - **N'affecte pas** : import, parse, tests unitaires et d'intégration headless,
   logique de jeu, données, sauvegarde, graphe électrique — soit tout le chemin
   jusqu'au Gate G (graybox jouable).
-- **Contournement partiel** : `xvfb-run` + Mesa llvmpipe (rendu logiciel) est
-  installé et sera tenté. Statut réel : voir R-004 et TEST_REPORT.
+- **Contournement mesuré (R-004)** : `xvfb-run` + Mesa **llvmpipe** rend réellement
+  en Forward+ et produit des PNG exploitables — vérifié sur
+  `scenes/tests/PipelineLab.tscn`. La **régression visuelle** (niveau 5) est donc
+  possible ici ; seuls les niveaux **6 (performance)** et **7 (soak/export)**
+  restent hors de portée.
+- **Reste bloqué** : notation WOW fine (les couleurs et le filtrage logiciel ne sont
+  pas ceux d'un GPU), profilage, frame pacing, session 60 min, export de build.
 - **Interdiction associée** : ne jamais publier une mesure de performance obtenue
   en llvmpipe comme budget de frame (§20.1).
 - **Propriétaire** : administrateur de l'environnement.
+
+## ISS-004 — Aucun périphérique audio dans le conteneur · `S4` · OUVERT
+
+- **Observé** : `ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN`
+  depuis `drivers/alsa/audio_driver_alsa.cpp:97`, puis
+  `WARNING: All audio drivers failed, falling back to the dummy driver.`
+- **Cause** : pas de carte son ni de serveur audio dans le conteneur.
+- **Impact** : nul sur l'import, les tests et la capture. Bloque en revanche toute
+  vérification réelle du mixage et des bus audio (§18).
+- **Contournement** : `--audio-driver Dummy` passé explicitement par
+  `tools/validate_release.sh`, ce qui supprime une erreur trompeuse dans les logs.
+- **Propriétaire** : administrateur de l'environnement. À rouvrir en Phase H/I.
 
 ## ISS-003 — Image de référence North Star absente du dépôt · `S3` · OUVERT
 

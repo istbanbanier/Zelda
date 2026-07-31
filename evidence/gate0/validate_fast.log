@@ -1,0 +1,31 @@
+
+=== 0. Version du moteur ===
+  4.7.1.stable.custom_build.a13da4feb
+  [OK]   Godot 4.7.1-stable confirmé
+
+=== 1. Import des ressources (parse/import smoke) ===
+  [OK]   import sans parse error (code retour 0)
+
+=== 2. Tests unitaires ===
+    ok   test_gltf_import.gd::test_static_cube_imports_with_material_and_scale
+    ok   test_gltf_import.gd::test_rig_imports_with_skeleton_and_animation
+    ok   test_gltf_import.gd::test_no_pink_missing_resources
+    ok   test_smoke.gd::test_engine_version_is_4_7_1_stable
+    ok   test_smoke.gd::test_physics_engine_is_jolt
+    ok   test_smoke.gd::test_renderer_is_forward_plus
+    ok   test_smoke.gd::test_physics_tick_is_60hz
+    ok   test_smoke.gd::test_metre_scale_convention
+  === RÉSULTAT: 8 réussi(s), 0 échoué(s) ===
+  [OK]   suite unitaire verte
+
+=== 3. Scène d'intégration (chargement réel de la scène principale) ===
+  [OK]   scène principale chargée et quittée proprement
+    [boot] Godot            : 4.7.1-stable (custom_build)
+    [boot] renderer         : forward_plus
+    [boot] physique 3D      : Jolt Physics
+    [boot] tick physique    : 60 Hz
+    [boot] pilote de rendu  : headless
+    [boot] scène principale chargée — Phase 0, aucun gameplay attendu ici.
+
+=== VALIDATE_FAST : VERT ===
+logs: evidence/validate_fast

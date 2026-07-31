@@ -45,8 +45,13 @@ RUN() { if [ -n "${DISPLAY:-}" ]; then "$@"; else xvfb-run -a -s "-screen 0 2560
 echo
 echo "=== 5. Capture de référence ==="
 CAP_LOG="$LOG_DIR/05_capture.log"
-RUN "$GODOT_BIN" --path . --rendering-driver opengl3 \
-    --script tools/godot/capture_reference.gd > "$CAP_LOG" 2>&1
+# --audio-driver Dummy : les conteneurs CI n'ont pas de périphérique ALSA ; sans
+# cela Godot journalise un ERR_CANT_OPEN trompeur avant de se rabattre tout seul.
+RUN "$GODOT_BIN" --path . --rendering-driver opengl3 --audio-driver Dummy \
+    --script tools/godot/capture_reference.gd -- \
+    --scene=res://scenes/tests/PipelineLab.tscn \
+    --out=evidence/captures/pipeline_lab.png --size=1920x1080 --frames=40 \
+    --label=pipeline_lab > "$CAP_LOG" 2>&1
 CAP_RC=$?
 if [ $CAP_RC -ne 0 ]; then
   echo "  [ÉCHEC] capture impossible (code $CAP_RC) — voir $CAP_LOG"

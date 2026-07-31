@@ -96,7 +96,76 @@ la chaîne d'outils a fait son travail au lieu de retourner un faux vert.
 
 ### T-05 — `tools/validate_fast.sh` (niveaux 1-3)
 
-*Résultat : voir la section « Exécution de validate_fast » ci-dessous.*
+```bash
+tools/validate_fast.sh
+```
+**Code retour** : `0` — VERT. Log : `evidence/gate0/validate_fast.log`.
+
+| Niveau | Résultat |
+|---|---|
+| 0. Version | `4.7.1.stable.custom_build.a13da4feb` ✅ |
+| 1. Import / parse smoke | 0 parse error, code retour 0 ✅ |
+| 2. Tests unitaires | **8 réussis, 0 échoué** ✅ |
+| 3. Scène principale | chargée et quittée proprement ✅ |
+
+Sortie de la scène principale, relue depuis le moteur en exécution :
+
+```
+[boot] Godot            : 4.7.1-stable (custom_build)
+[boot] renderer         : forward_plus
+[boot] physique 3D      : Jolt Physics
+[boot] tick physique    : 60 Hz
+```
+
+**Verdict** : ✅ PASS.
+
+---
+
+### T-05b — Contrôle négatif : le runner détecte-t-il réellement un échec ?
+
+Un test incapable d'échouer ne prouve rien. Un cas d'échec délibéré a été ajouté
+temporairement, puis retiré.
+
+| Situation | Code retour attendu | Obtenu |
+|---|---|---|
+| Avec le test fautif | non nul | `1` ✅ (`8 réussis, 1 échoué`) |
+| Après retrait | `0` | `0` ✅ |
+
+**Verdict** : ✅ PASS — la suite peut échouer, donc son vert a une valeur.
+
+---
+
+### T-05c — Import glTF côté moteur (§0.5)
+
+Couvert par `tests/integration/test_gltf_import.gd`, exécuté en headless :
+
+| Contrôle | Obtenu |
+|---|---|
+| Cube : 1 surface, arêtes 1 × 1 × 1 m, base à Y ≈ 0 | ✅ |
+| Cube : matériau résolu (aucune surface rose) | ✅ |
+| Rig : `Skeleton3D` avec 2 os `bone_root` / `bone_upper` | ✅ |
+| Rig : `AnimationPlayer` avec `AN_TestRig_Idle`, durée > 0, pistes > 0 | ✅ |
+| Rig : hauteur 2,0 m | ✅ |
+
+**Verdict** : ✅ PASS — la moitié **moteur** du pipeline est vérifiée. Combinée à
+T-04, la chaîne Blender → glTF → Godot est prouvée de bout en bout.
+
+---
+
+### T-05d — Défaut trouvé : Godot tentait d'importer les `.blend`
+
+**Observé** au premier import :
+```
+ERROR: Blender path is invalid or not set, check your Editor Settings.
+Cannot configure blender path in headless mode.
+   at: query (modules/gltf/editor/editor_scene_importer_blend.cpp:552)
+```
+**Cause** : `source_assets/` est dans le dossier du projet ; Godot y a trouvé les
+`.blend` et a voulu les importer via Blender — exactement la dépendance de poste
+que D-003 interdit.
+**Correctif** : `.gdignore` dans `source_assets/`, `docs/`, `evidence/` et `builds/`.
+**Après correctif** : import sans aucune erreur ni avertissement.
+**Verdict** : ✅ corrigé et couvert par le niveau 1 de `validate_fast.sh`.
 
 ---
 
@@ -105,11 +174,41 @@ la chaîne d'outils a fait son travail au lieu de retourner un faux vert.
 ```bash
 tools/validate_release.sh
 ```
-*Résultat : voir ci-dessous.*
+**Code retour** : `0`.
 
-**Position de principe** : quel que soit le résultat, une image obtenue en rendu
-logiciel llvmpipe ne constitue **pas** une mesure de performance (§20.1) et ne peut
-pas servir à noter le WOW Gate.
+**Résultat : la capture fonctionne**, contrairement à l'hypothèse initiale (R-004).
+Godot rend en **Forward+** via **Mesa llvmpipe** (rastériseur logiciel) sous Xvfb.
+
+| Champ du manifeste | Valeur |
+|---|---|
+| Scène | `res://scenes/tests/PipelineLab.tscn` |
+| Résolution | 1920 × 1080 |
+| Frames attendues | 40 |
+| Moteur | 4.7.1-stable (custom_build) |
+| Méthode de rendu | `forward_plus` |
+| Pilote | `llvmpipe (LLVM 20.1.2, 256 bits)` |
+| Serveur d'affichage | X11 (Xvfb) |
+
+Preuves : `evidence/captures/pipeline_lab.png` + `pipeline_lab.json`,
+`evidence/gate0/pipeline_lab.png`.
+
+**Contenu vérifié à l'image** : le cube ocre (`MAT_TestCube`) et le cylindre
+turquoise rigué (`MAT_TestRig`) sont rendus, éclairés, aux bonnes proportions et
+avec leurs matériaux — aucune surface magenta. La chaîne Blender → glTF → import →
+**renderer réel** → PNG est donc close.
+
+**Limites explicitement maintenues** :
+- llvmpipe est un rendu **logiciel**. Aucune mesure de performance ne peut en être
+  tirée (§20.1) ; les budgets de `docs/PERFORMANCE.md` restent **non mesurés**.
+- Cette capture prouve le **pipeline**, pas la qualité artistique. Le WOW Gate reste
+  **non noté** : il n'existe aucune scène North Star à évaluer.
+- Défaut d'environnement constaté : aucun périphérique ALSA
+  (`ERR_CANT_OPEN` sur `audio_driver_alsa.cpp:97`), Godot se rabat sur le pilote
+  audio muet. Contourné par `--audio-driver Dummy`. Le test audio réel (§18) devra
+  se faire ailleurs.
+
+**Verdict** : ✅ PASS pour le pipeline de capture · ⛔ les gates visuels et de
+performance restent BLOQUÉS faute de GPU et de contenu à évaluer.
 
 ---
 

@@ -1,0 +1,2 @@
+# Godot ignore ce dossier : il ne contient aucune ressource du moteur.
+# Les .blend restent des sources de production, jamais importées directement (DECISIONS D-003).

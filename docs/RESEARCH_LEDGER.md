@@ -73,18 +73,32 @@ ou une mesure locale) · `OUVERT`.
 
 ## R-004 — Peut-on produire une capture depuis le renderer réel dans cet environnement ?
 
-- **Date** : 2026-07-31 · **Statut** : À VÉRIFIER
+- **Date** : 2026-07-31 · **Statut** : **RÉSOLU — oui, partiellement**
 - **Ce qui change selon la réponse** : les Gates C.5, H et I reposent entièrement
   sur des captures issues du moteur (§21.5). Sans elles, aucun score WOW ne peut
   être annoncé — jamais estimé.
-- **Constat** : la machine n'a **aucun GPU** (`/dev/dri` absent), aucun affichage
-  (`DISPLAY` vide). `xvfb-run` et Mesa/llvmpipe sont présents, donc un rendu
-  **logiciel** est théoriquement possible avec `--rendering-driver opengl3`.
-- **Expérience prévue** : dès le binaire disponible, `tools/validate_release.sh`
-  tente la capture via Xvfb + llvmpipe et consigne le résultat réel.
-- **Position tenue tant que non mesuré** : la capture est déclarée **NON VÉRIFIÉE**.
-  Même en cas de succès, un rendu llvmpipe ne vaut **pas** comme mesure de
-  performance (§20.1) — seulement comme preuve de non-régression visuelle grossière.
+- **Constat initial** : la machine n'a **aucun GPU** (`/dev/dri` absent), aucun
+  affichage (`DISPLAY` vide). `xvfb-run` et Mesa/llvmpipe sont présents.
+- **Expérience réalisée** : `scenes/tests/PipelineLab.tscn` (cube + rig importés,
+  soleil, sky, caméra) capturée via
+  `xvfb-run -a -s "-screen 0 2560x1440x24" godot --rendering-driver opengl3 --audio-driver Dummy`.
+- **Mesure** : PNG 1920 × 1080 produit après 40 frames. Manifeste :
+  `rendering_method=forward_plus`, `rendering_driver=llvmpipe (LLVM 20.1.2, 256 bits)`,
+  `display_server=X11`. À l'image : les deux assets rendus, éclairés, matériaux
+  corrects, aucune surface magenta.
+- **Décision** : `tools/validate_release.sh` exécute réellement le niveau 5. La
+  **régression visuelle** est donc possible dans cet environnement, ce qui n'était
+  pas acquis. Le contrôle de non-régression du pipeline peut être automatisé dès
+  maintenant plutôt que reporté.
+- **Limites maintenues** :
+  - llvmpipe est un rendu **logiciel** : aucune mesure de performance n'en découle
+    (§20.1). Les niveaux 6 et 7 restent bloqués.
+  - Les couleurs et le filtrage peuvent différer d'un GPU réel : les tolérances de
+    comparaison visuelle devront être larges, et toute notation artistique fine
+    exigera un vrai GPU.
+  - Aucun périphérique audio (ALSA absent) : le test audio réel est impossible ici.
+- **Réévaluer** : dès qu'une machine avec GPU est disponible — refaire une capture
+  de la même scène et comparer.
 
 ---
 

@@ -1,0 +1,35 @@
+=== RAPPORT D'ENVIRONNEMENT ===
+date_utc            : 2026-07-31T22:50:44Z
+hote                : Linux 6.18.5 x86_64
+distribution        : Ubuntu 24.04.4 LTS
+cpu_coeurs          : 4
+ram_totale          : 15Gi
+disque_dispo        : 28G
+
+--- Godot ---
+godot_bin           : /usr/local/bin/godot
+godot_version       : 4.7.1.stable.custom_build.a13da4feb
+godot_headless_ok   : oui
+
+--- Blender / pipeline glTF ---
+blender_version     : Blender 4.0.2
+blender_python      : 3.12.3
+gltf_exporter       : [(4, 0, 44)]
+
+--- Capacité de rendu / capture ---
+DISPLAY             : <vide>
+gpu_dri             : <aucun /dev/dri>
+xvfb                : /usr/bin/xvfb-run
+mesa_llvmpipe       : /usr/lib/x86_64-linux-gnu/dri/swrast_dri.so
+
+--- Outils annexes ---
+git                 : git version 2.43.0
+git_lfs             : ABSENT
+python3             : Python 3.11.15
+scons               : SCons: v4.5.2.120fd4f633e9ef3cafbc0fec35306d7555ffd1db, Tue, 21 Mar 2023 12:11:27 -0400, by bdbaddog on M1DOG2021
+gcc                 : gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+
+--- Dépôt ---
+branche             : claude/phase-0-gate-0-setup-t72ibt
+commit              : d012c64eaa2c00058fd04a626c359031bb8d2b5b
+arbre_propre        : non

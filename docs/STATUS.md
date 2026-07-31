@@ -10,9 +10,11 @@ Vocabulaire imposé (§0.2) : `Non commencé` · `Implémenté` (raccordé) ·
 
 ## Résumé en une ligne
 
-Le système de continuité et le pipeline d'assets sont en place et vérifiés ;
-**aucun gameplay n'existe** ; les gates visuels et de performance sont bloqués par
-l'absence de GPU dans l'environnement d'exécution.
+Le système de continuité et le pipeline d'assets sont en place et **vérifiés par
+exécution réelle** — Blender → glTF → import Godot → renderer → PNG. Godot 4.7.1
+tourne, `validate_fast.sh` est vert (8 tests). **Aucun gameplay n'existe.** La
+notation visuelle et les mesures de performance restent impossibles ici : rendu
+logiciel llvmpipe uniquement, aucun GPU.
 
 ---
 
@@ -23,15 +25,16 @@ l'absence de GPU dans l'environnement d'exécution.
 | 0.1 | Inspection dépôt, outils, versions, réseau | **Validé** | `evidence/gate0/env_report.txt`, `docs/BUILD_ENVIRONMENT.md` | 2026-07-31 |
 | 0.1 | Vérification de l'image de référence | **Validé** | analyse consignée dans `docs/ART_BIBLE.md` §1.1 | 2026-07-31 |
 | 0.2 | Système de continuité (§0.3) | **Validé** | 12 artefacts présents, voir tableau ci-dessous | 2026-07-31 |
-| 0.3 | Commandes de parse/test/capture | **Fonctionnel** | `tools/validate_fast.sh`, `test_runner.gd`, `capture_reference.gd` | 2026-07-31 |
-| 0.3 | Scènes laboratoire | **Non commencé** | — | — |
+| 0.3 | Commandes de parse/test/capture | **Validé** | `tools/validate_fast.sh`, `test_runner.gd`, `capture_reference.gd` | 2026-07-31 |
+| 0.3 | Scène laboratoire de pipeline | **Validé** | `scenes/tests/PipelineLab.tscn` capturée depuis le renderer | 2026-07-31 |
+| 0.3 | Laboratoires de look-dev (§7.16) | **Non commencé** | reportés en Phase C.5 : sans contenu à juger, ce seraient des coquilles | — |
 | 0.3 | Journal de recherche | **Validé** | `docs/RESEARCH_LEDGER.md`, 5 entrées sourcées | 2026-07-31 |
-| 0.4 | Godot 4.7.1 vérifié | *voir TEST_REPORT* | `evidence/gate0/` | 2026-07-31 |
-| 0.4 | Renderer Forward+ configuré | *voir TEST_REPORT* | `project.godot`, `test_smoke.gd` | 2026-07-31 |
-| 0.4 | Jolt configuré | *voir TEST_REPORT* | `project.godot`, `test_smoke.gd` | 2026-07-31 |
+| 0.4 | Godot 4.7.1 vérifié | **Validé** | `evidence/gate0/env_report.txt` : `4.7.1.stable.custom_build.a13da4feb` | 2026-07-31 |
+| 0.4 | Renderer Forward+ configuré | **Validé** | relu au runtime : `[boot] renderer : forward_plus` | 2026-07-31 |
+| 0.4 | Jolt configuré | **Validé** | relu au runtime : `[boot] physique 3D : Jolt Physics` | 2026-07-31 |
 | 0.4 | Blender / glTF vérifiés | **Validé** | `evidence/gate0/pipeline/` | 2026-07-31 |
-| 0.5 | Import cube + matériau | *voir TEST_REPORT* | `assets/environment/props/SM_TestCube.glb` | 2026-07-31 |
-| 0.5 | Import rig + clip animé | *voir TEST_REPORT* | `assets/characters/hero/SK_TestRigAnim.glb` | 2026-07-31 |
+| 0.5 | Import cube + matériau | **Validé** | `test_gltf_import.gd` : 1 m, base Y≈0, matériau résolu | 2026-07-31 |
+| 0.5 | Import rig + clip animé | **Validé** | `test_gltf_import.gd` : 2 os, `AN_TestRig_Idle` | 2026-07-31 |
 | 0.6 | Risques classés | **Validé** | `docs/RISKS.md`, 9 risques avec plan et signal | 2026-07-31 |
 
 ### Artefacts de continuité exigés par §0.3
@@ -61,7 +64,7 @@ l'absence de GPU dans l'environnement d'exécution.
 | A | Boot, autoloads, InputMap AZERTY, couches de collision | Non commencé |
 | B | Player, caméra, locomotion, endurance, escalade, mantle | Non commencé |
 | C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | Non commencé |
-| C.5 | `HeroShotLab`, première composition North Star | **Bloqué** — ISS-002 (aucun rendu) |
+| C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
 | D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | Non commencé |
 | E | Récolte, cuisine, buffs, sauvegarde et migrations | Non commencé |
 | F | Graphe électrique, 4 salles, salle centrale, antichambre | Non commencé |
@@ -82,8 +85,8 @@ base d'une intention.
 
 | Domaine | Critère | État |
 |---|---|---|
-| Build | Ouvre et lance sans erreur bloquante | voir TEST_REPORT |
-| Continuité | Une session neuve reprend via CLAUDE/STATUS/PROGRESS | voir TEST_REPORT |
+| Build | Ouvre et lance sans erreur bloquante | ✅ |
+| Continuité | Une session neuve reprend via CLAUDE/STATUS/PROGRESS | ✅ sous réserve (T-07) |
 | Recherche | Décisions risquées sourcées, expérimentées, consignées | ✅ |
 | Loop | Du spawn à la victoire sans debug | ⬜ |
 | Démo | Parcours trois minutes fluide, non truqué | ⬜ |
@@ -102,7 +105,7 @@ base d'une intention.
 | North Star | Score ≥ 85/100 | ⬜ **bloqué** |
 | Look-dev | Labs validés | ⬜ **bloqué** |
 | Art | Aucun placeholder critique | ⬜ |
-| Assets | Blender/glTF/import/manifest/licences reproductibles | partiel — voir TEST_REPORT |
+| Assets | Blender/glTF/import/manifest/licences reproductibles | ✅ pour la chaîne ; contenu réel à venir |
 | Animation | IK/alignement sans défaut majeur | ⬜ |
 | Audio | Feedback des actions importantes | ⬜ |
 | Performance | Mesurée et conforme au preset annoncé | ⬜ **bloqué** |
