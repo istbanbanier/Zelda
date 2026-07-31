@@ -104,9 +104,10 @@ tools/validate_fast.sh; echo $?
 | Niveau | Résultat |
 |---|---|
 | 0. Version | `4.7.1.stable.custom_build.a13da4feb` ✅ |
-| 1. Import / parse smoke | 0 parse error ✅ |
-| 2. Tests unitaires et d'intégration | **11 réussis, 0 échoué** ✅ |
-| 2b. Erreurs d'exécution dans le journal | aucune ✅ |
+| 1. Import des ressources | 0 erreur ✅ |
+| 1b. Parse de **tous** les `.gd` (`--check-only`) | 7 scripts, 0 erreur ✅ |
+| 2. Tests unitaires et d'intégration | **12 réussis, 0 échoué** ✅ |
+| 2b. Erreurs signalées dans le journal (`ERROR:` inclus) | aucune ✅ |
 | 3. Scène principale | chargée et quittée proprement ✅ |
 
 Sortie relue depuis le moteur en exécution :
@@ -171,12 +172,19 @@ l'hypothèse initiale de R-004. Manifeste `evidence/captures/pipeline_lab.json` 
 | Résolution | 1920 × 1080, 40 frames attendues |
 | Méthode de rendu | `forward_plus` |
 | Pilote | `llvmpipe (LLVM 20.1.2, 256 bits)` |
+| Géométrie | VisualInstance3D comptés dans la scène, minimum exigé 1 |
 | Couleurs distinctes (échantillon) | 705 |
 | Écart-type de luminance | 0,1988 |
-| Commit | inscrit dans le manifeste |
+| Commit | inscrit dans le manifeste, capture refusée s'il est indéterminé |
 
 **Contenu vérifié à l'image** : cube ocre et cylindre turquoise rendus, éclairés,
 proportions 1 m / 2 m, matériaux corrects, aucune surface magenta.
+
+**Ce que les statistiques ne prouvent pas** : couleurs distinctes et écart-type
+détectent une image *vide*, pas une image *fausse*. C'est le comptage des
+`VisualInstance3D` qui garantit que la scène contient bien la géométrie attendue.
+Juger qu'un rendu est correct exigera la comparaison à une image de référence
+(§21.8), non encore construite faute de contenu.
 
 **Limites maintenues** :
 - llvmpipe est un rendu **logiciel** : aucune mesure de performance n'en découle
@@ -190,40 +198,53 @@ toujours BLOQUÉS.
 
 ---
 
-### T-08 — Contrôles négatifs du harnais (suite à la revue adverse)
+### T-08 — Contrôles négatifs du harnais (après DEUX revues adverses)
 
-La première revue adverse du Gate 0 a rendu **FAIL** en démontrant que le harnais
-pouvait rester vert alors qu'il ne détectait plus les échecs. Chaque défaut est
-maintenant verrouillé par un contrôle négatif rejoué :
+Les deux revues adverses du Gate 0 ont rendu **FAIL**, chacune en démontrant que le
+harnais pouvait rester vert alors qu'il ne détectait plus les échecs. La seconde a
+notamment cassé les correctifs de la première. Chaque défaut est désormais verrouillé
+par un contrôle négatif **rejoué et archivé** dans `evidence/gate0/negative_controls/`.
 
 | Défaut | Scénario injecté | Attendu | Obtenu |
 |---|---|---|---|
-| D2 | erreur d'exécution GDScript (déréférencement nul) dans un test | ROUGE | `RC=1`, « erreurs d'exécution dans la suite unitaire » ✅ |
-| D3 | fichier de test n'étendant pas `GateTestCase` | ÉCHEC | `RC=1`, « doit étendre GateTestCase » ✅ |
-| — | méthode `test_*` n'exécutant aucune assertion | ÉCHEC | `RC=1`, « aucune assertion exécutée (couverture illusoire) » ✅ |
-| D6 | capture d'une scène **vide** (Node3D nu) | ÉCHEC | `RC=4`, « image uniforme (1 couleur) », **aucun PNG écrit** ✅ |
+| D2 | erreur d'exécution GDScript dans un test | ROUGE | `RC=1` ✅ |
+| D3 | fichier de test n'étendant pas `GateTestCase` | ÉCHEC | `RC=1` ✅ |
+| — | méthode `test_*` sans aucune assertion | ÉCHEC | `RC=1` ✅ |
 | D5 | `validate_release.sh` sautant les niveaux 4/6/7 | BLOQUÉ | `RC=3` ✅ |
-| — | retour à l'état nominal | VERT | `RC=0` ✅ |
+| D6 | capture d'une scène vide (Node3D nu) | ÉCHEC | `RC=4`, aucun PNG ✅ |
+| **N9** | parse error dans un script **non référencé** | ROUGE | `RC=1`, « 1 script en erreur de parsing sur 8 » ✅ |
+| **N1** | ressource manquante + `push_error` dans un test | ROUGE | `RC=1`, « erreurs signalées pendant la suite » ✅ |
+| **N3** | test redéfinissant `set_reporter()` et `get_check_count()` pour masquer 2 assertions fausses | ÉCHEC | `RC=1`, les 2 échecs remontés ✅ |
+| **N4** | capture d'une scène **sans géométrie** (ciel + caméra) | ÉCHEC | `RC=5`, « 0 VisualInstance3D », aucun PNG ✅ |
+| **N5** | capture avec `git` indisponible | ÉCHEC | `RC=6`, aucun PNG ✅ |
+| **N2** | test déposé dans `tests/playthrough/` | collecté | `RC=1`, échec remonté ✅ |
+| — | retour à l'état nominal | VERT | `RC=0`, **12 tests** ✅ |
 
-**Correctifs structurels** :
-- `tests/test_case.gd` (`GateTestCase`) : le câblage du reporter n'est plus du
-  boilerplate recopiable, donc plus oubliable. Le runner **refuse** tout test hors
-  de ce contrat.
-- Le runner compte les assertions par méthode et échoue si une méthode n'en
-  exécute aucune.
-- `validate_fast.sh` inspecte le journal à la recherche de `SCRIPT ERROR` : un test
-  ne peut plus « réussir » en levant une erreur d'exécution.
-- `capture_reference.gd` analyse le contenu de l'image et refuse une image uniforme.
-- Le manifeste de capture porte désormais `commit` et `repo_dirty` (défaut D7).
-- `tests/unit/test_harness_contract.gd` teste le harnais lui-même.
+**Correctifs structurels de la seconde passe** :
+- **N9** : nouveau niveau `1b` — chaque `.gd` du dépôt est parsé individuellement
+  avec `--check-only`. L'import ne parse que les scripts atteignables ; la promesse
+  « parse smoke » était fausse pour tout script non référencé.
+- **N1** : le filtre d'erreurs du niveau 2 couvre désormais `ERROR:` générique, au
+  lieu d'une liste de messages précis qui laissait passer ressource manquante,
+  `push_error` et échec de chargement.
+- **N3** : suppression complète de l'indirection par méthode. `GateTestCase`
+  accumule les échecs dans ses **membres** (`_checks`, `_failures`), que le runner
+  lit via `get()`. GDScript interdisant à une sous-classe de redéclarer un membre
+  du parent, le contrat n'est plus contournable en redéfinissant une méthode.
+- **N4** : la capture compte les `VisualInstance3D` de la scène instanciée et
+  refuse en dessous du minimum exigé. Compter les couleurs ne suffisait pas — un
+  ciel procédural produisait 863 couleurs distinctes, **plus** que la capture de
+  référence (705).
+- **N5** : la capture échoue si le commit est indéterminé, **avant** toute écriture
+  (la première correction laissait un PNG orphelin sans manifeste).
+- **N2** : `tests/playthrough` ajouté aux racines collectées.
 
-**Défaut trouvé dans mes propres correctifs** : la première version de
-`test_check_counts_assertions` était fausse d'une unité (elle comparait le compteur
-avant l'incrément de sa propre assertion) et faisait échouer la suite. Corrigée,
-puis re-vérifiée.
-
-**Verdict** : ✅ PASS — le harnais peut désormais rougir sur chacune des classes
-d'échec identifiées.
+**Honnêteté sur ce que T-08 ne prouve pas** : ces contrôles montrent que le harnais
+rougit sur les classes d'échec **identifiées à ce jour**. Ils ne démontrent pas
+qu'il n'en reste aucune autre — les deux revues successives sont précisément la
+preuve du contraire. La comparaison d'images de référence (§21.8), seule capable de
+juger qu'un rendu est *correct* et pas seulement *non vide*, reste à construire
+quand il y aura du contenu à comparer.
 
 ---
 

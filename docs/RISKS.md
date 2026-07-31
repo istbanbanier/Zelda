@@ -25,10 +25,13 @@ raide.
 
 ## RSK-02 — Aucune capacité de rendu dans l'environnement d'exécution · `G1` · `P-haute` (avérée)
 
-Pas de GPU, pas d'affichage. Tous les gates visuels et de performance (C.5, H, I, J)
-en dépendent directement.
+Pas de GPU, pas d'affichage. La capture reste possible en rendu **logiciel**
+(llvmpipe), mais la notation visuelle fine et toute mesure de performance ne le
+sont pas : les gates C.5 (notation), H, I et J en dépendent directement.
 
 - **Statut** : **avéré**, pas hypothétique. Voir KNOWN_ISSUES ISS-002.
+- **Signal d'alerte** : `tools/validate_release.sh` sort en code 3, ou une capture
+  échoue en code 5/6.
 - **Plan** : `validate_release.sh` sort en code 3 « BLOQUÉ » plutôt que faux vert.
   Tenter le rendu logiciel llvmpipe pour la non-régression grossière uniquement.
 - **Repli** : ces gates devront être exécutés sur une machine avec GPU. Le projet
@@ -40,6 +43,8 @@ en dépendent directement.
 
 - **Statut** : **avéré**. Contourné légitimement : moteur compilé depuis la source
   git (D-001), Blender depuis le dépôt Ubuntu (D-002).
+- **Signal d'alerte** : un `curl`/`git` qui renvoie 403 sur un nouvel hôte, ou
+  `tools/setup_godot.sh` qui échoue au clonage.
 - **Risque résiduel** : toute future dépendance (addon, police, banque de sons)
   peut être injoignable. Le prompt interdit de toute façon d'installer un addon
   sans audit, version épinglée, licence et plan de retrait (§0.5).
@@ -62,6 +67,8 @@ Cinq familles d'ennemis, boss trois phases, donjon quatre salles, cuisine, sauve
 
 Les budgets de §20.2 (≤ 16,6 ms, p95 ≤ 18,5 ms) supposent un matériel de référence.
 
+- **Signal d'alerte** : un chiffre de performance apparaissant dans un document
+  sans matériel, build, preset et durée associés.
 - **Plan** : ne jamais annoncer de FPS non mesuré. Construire les scénarios
   reproductibles `Perf_*` (§20.11) dès que possible pour qu'ils soient prêts le jour
   où un GPU est disponible ; ils sont utiles même non exécutés, car ils fixent le
@@ -72,6 +79,8 @@ Les budgets de §20.2 (≤ 16,6 ms, p95 ≤ 18,5 ms) supposent un matériel de r
 
 Le brief hérite de noms et d'une inspiration Nintendo.
 
+- **Signal d'alerte** : un nom, une silhouette ou un son évoquant directement une
+  œuvre existante lors d'une revue artistique.
 - **Plan** : noms de code uniquement en interne (`raider_red`…), noms affichés
   pilotés par données, silhouettes et comportements originaux. `ATTRIBUTIONS.md`
   tenu **avant** qu'un asset entre dans le build. L'image de référence ne sert
@@ -82,6 +91,8 @@ Le brief hérite de noms et d'une inspiration Nintendo.
 
 §5.2 interdit volumetric fog, SDFGI, SSIL, SSR, TAA, FSR2, decals et compute en Web.
 
+- **Signal d'alerte** : une fonctionnalité de la liste interdite utilisée sur le
+  chemin critique sans fallback Compatibility.
 - **Plan** : le Web reste optionnel et arrive en Phase I. Ne jamais promettre une
   identité visuelle entre Web et natif.
 
@@ -92,14 +103,20 @@ Un agent qui perd le contexte réimplémente, casse, ou déclare « terminé » 
 - **Plan** : c'est précisément l'objet de la Phase 0. `STATUS`, `PROGRESS`,
   `KNOWN_ISSUES` et `DECISIONS` sont mis à jour **à chaque fin de session**, et le
   handoff indique exactement la prochaine action.
-- **Contrôle** : le critère « une session neuve reprend en moins de 5 min » est
-  testé, pas supposé (voir TEST_REPORT).
+- **Signal d'alerte** : une session qui repose une question déjà tranchée dans
+  `DECISIONS.md`, ou qui réimplémente quelque chose de `STATUS.md`.
+- **Contrôle** : le critère « une session neuve reprend en moins de 5 min » n'est
+  à ce jour vérifié que par **relecture** de la chaîne documentaire — voir
+  TEST_REPORT T-07, qui le classe `PASS sous réserve`. Il ne sera réellement testé
+  que par une session repartie de zéro.
 
 ## RSK-09 — Coût de reconstruction du moteur pour chaque session neuve · `G3` · `P-haute`
 
 Le conteneur est éphémère : Godot devra être recompilé (~60-120 min) à chaque
 session neuve tant que la politique réseau ne change pas.
 
+- **Signal d'alerte** : `godot --version` absent ou différent de 4.7.1-stable en
+  début de session.
 - **Plan** : `tools/setup_godot.sh` est idempotent et vérifie le commit. Lancer la
   compilation **en arrière-plan dès le début** d'une session et travailler sur la
   documentation, les données et les scripts pendant ce temps.

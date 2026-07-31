@@ -24,6 +24,8 @@ var _height: int = 1440
 var _frames: int = DEFAULT_FRAMES
 var _label: String = "unlabeled"
 var _allow_uniform: bool = false
+var _min_visuals: int = 1
+var _allow_unknown_commit: bool = false
 
 
 ## Statistiques de contenu : sert à prouver qu'une image a été *rendue*, pas
@@ -103,11 +105,26 @@ func _parse_args() -> void:
 			_label = arg.trim_prefix("--label=")
 		elif arg == "--allow-uniform":
 			_allow_uniform = true
+		elif arg == "--allow-unknown-commit":
+			_allow_unknown_commit = true
+		elif arg.begins_with("--min-visuals="):
+			_min_visuals = maxi(0, arg.trim_prefix("--min-visuals=").to_int())
 		elif arg.begins_with("--size="):
 			var parts: PackedStringArray = arg.trim_prefix("--size=").split("x")
 			if parts.size() == 2:
 				_width = parts[0].to_int()
 				_height = parts[1].to_int()
+
+
+## Compte les nœuds réellement rendus (MeshInstance3D, MultiMeshInstance3D,
+## GPUParticles3D… tous dérivent de VisualInstance3D).
+func _count_visual_instances(node: Node) -> int:
+	var total: int = 0
+	if node is VisualInstance3D and node.visible:
+		total += 1
+	for child: Node in node.get_children():
+		total += _count_visual_instances(child)
+	return total
 
 
 func _capture() -> void:
@@ -122,6 +139,20 @@ func _capture() -> void:
 
 	var instance: Node = packed.instantiate()
 	root.add_child(instance)
+
+	# N4 : compter les couleurs ne prouve pas qu'une géométrie a été rendue — une
+	# scène réduite à un ciel procédural produisait 863 couleurs distinctes, plus
+	# que la vraie capture de référence. On vérifie donc la scène elle-même :
+	# contient-elle au moins un objet visuel ?
+	var visuals: int = _count_visual_instances(instance)
+	print("[capture] géométrie : %d VisualInstance3D dans la scène" % visuals)
+	if visuals < _min_visuals:
+		printerr("[capture] ÉCHEC: %d VisualInstance3D, minimum exigé %d — "
+			% [visuals, _min_visuals]
+			+ "la scène ne contient pas la géométrie attendue. "
+			+ "Utiliser --min-visuals=0 si une scène sans mesh est réellement voulue.")
+		quit(5)
+		return
 
 	# Laisser passer des frames réelles : chargement, compilation de shaders et
 	# stabilisation temporelle. Une capture à la frame 0 ne prouve rien.
@@ -147,6 +178,16 @@ func _capture() -> void:
 		quit(4)
 		return
 
+	# Le rattachement au commit est vérifié AVANT toute écriture : sinon un PNG
+	# orphelin, sans manifeste, restait sur le disque après l'échec.
+	var commit: String = _current_commit()
+	if commit == "inconnu" and not _allow_unknown_commit:
+		printerr("[capture] ÉCHEC: commit indéterminé — une preuve visuelle non "
+			+ "rattachable à un état du dépôt n'a pas de valeur (§21.8). "
+			+ "Utiliser --allow-unknown-commit pour une capture jetable.")
+		quit(6)
+		return
+
 	# --out accepte un chemin relatif au projet ou un chemin absolu ; joindre
 	# aveuglément un chemin absolu à res:// crée un dossier fantôme dans le dépôt.
 	var abs_out: String = _out_path
@@ -159,15 +200,15 @@ func _capture() -> void:
 		quit(3)
 		return
 
-	_write_manifest(abs_out, image, stats)
+	_write_manifest(abs_out, image, stats, commit)
 	print("[capture] OK -> %s (%dx%d)" % [abs_out, image.get_width(), image.get_height()])
 	quit(0)
 
 
-func _write_manifest(png_abs: String, image: Image, stats: Dictionary) -> void:
+func _write_manifest(png_abs: String, image: Image, stats: Dictionary, commit: String) -> void:
 	var manifest: Dictionary = {
 		"label": _label,
-		"commit": _current_commit(),
+		"commit": commit,
 		"repo_dirty": _repo_is_dirty(),
 		"distinct_colors_sampled": stats.get("distinct", 0),
 		"luma_mean": snappedf(float(stats.get("mean_luma", 0.0)), 0.0001),

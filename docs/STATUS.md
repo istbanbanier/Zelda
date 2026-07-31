@@ -12,7 +12,7 @@ Vocabulaire imposé (§0.2) : `Non commencé` · `Implémenté` (raccordé) ·
 
 Le système de continuité et le pipeline d'assets sont en place et **vérifiés par
 exécution réelle** — Blender → glTF → import Godot → renderer → PNG. Godot 4.7.1
-tourne, `validate_fast.sh` est vert (8 tests). **Aucun gameplay n'existe.** La
+tourne, `validate_fast.sh` est vert (12 tests, voir TEST_REPORT T-05). **Aucun gameplay n'existe.** La
 notation visuelle et les mesures de performance restent impossibles ici : rendu
 logiciel llvmpipe uniquement, aucun GPU.
 
@@ -32,10 +32,10 @@ logiciel llvmpipe uniquement, aucun GPU.
 | 0.4 | Godot 4.7.1 vérifié | **Validé** | `evidence/gate0/env_report.txt` : `4.7.1.stable.custom_build.a13da4feb` | 2026-07-31 |
 | 0.4 | Renderer Forward+ configuré | **Validé** | relu au runtime : `[boot] renderer : forward_plus` | 2026-07-31 |
 | 0.4 | Jolt configuré | **Validé** | relu au runtime : `[boot] physique 3D : Jolt Physics` | 2026-07-31 |
-| 0.4 | Blender / glTF vérifiés | **Validé** | `evidence/gate0/pipeline/` | 2026-07-31 |
+| 0.4 | Blender / glTF vérifiés | **Validé** | `evidence/gate0/pipeline_blender_gltf.log` | 2026-07-31 |
 | 0.5 | Import cube + matériau | **Fonctionnel** | `test_gltf_import.gd` : 1 m, base Y≈0, matériau résolu | 2026-07-31 |
 | 0.5 | Import rig + clip animé | **Fonctionnel** | `test_gltf_import.gd` : 2 os, `AN_TestRig_Idle` | 2026-07-31 |
-| 0.6 | Risques classés | **Validé** | `docs/RISKS.md`, 9 risques avec plan et signal | 2026-07-31 |
+| 0.6 | Risques classés | **Validé** | `docs/RISKS.md` : 9 risques, gravité, probabilité, plan et signal d'alerte | 2026-07-31 |
 
 ### Artefacts de continuité exigés par §0.3
 
@@ -48,7 +48,7 @@ logiciel llvmpipe uniquement, aucun GPU.
 | `docs/PROGRESS.md` | ✅ | journal + handoff |
 | `docs/DECISIONS.md` | ✅ | 5 décisions avec alternatives rejetées |
 | `docs/RESEARCH_LEDGER.md` | ✅ | 5 entrées + 5 questions ouvertes |
-| `docs/KNOWN_ISSUES.md` | ✅ | 4 ouverts (ISS-001..004), 2 résolus |
+| `docs/KNOWN_ISSUES.md` | ✅ | 5 ouverts (ISS-001 à ISS-005), 2 résolus |
 | `docs/TEST_REPORT.md` | ✅ | résultats et commandes exactes |
 | `docs/PERFORMANCE.md` | ✅ | protocole ; aucune mesure (assumé) |
 | `docs/ART_BIBLE.md` | ✅ | North Star analysée, palette, budgets |

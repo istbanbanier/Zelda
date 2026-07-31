@@ -46,6 +46,30 @@ else
   ok "import sans parse error (code retour 0)"
 fi
 
+step "1b. Parse réel de TOUS les scripts GDScript"
+# N9 : l'import ne parse que les scripts atteignables depuis une ressource. Un
+# script non référencé pouvait contenir une erreur de syntaxe sans que
+# `validate_fast.sh` ne rougisse — la promesse « parse smoke » était fausse.
+# Chaque .gd est donc vérifié individuellement avec --check-only.
+PARSE_LOG="$LOG_DIR/01b_parse.log"
+: > "$PARSE_LOG"
+PARSE_FAILED=0
+PARSE_COUNT=0
+while IFS= read -r script; do
+  PARSE_COUNT=$((PARSE_COUNT + 1))
+  if ! "$GODOT_BIN" --headless --path "$PROJECT_DIR" --check-only --script "$script" \
+       >> "$PARSE_LOG" 2>&1; then
+    echo "PARSE ERROR: $script" >> "$PARSE_LOG"
+    PARSE_FAILED=$((PARSE_FAILED + 1))
+  fi
+done < <(find "$PROJECT_DIR" -name '*.gd' -not -path '*/.godot/*' -printf 'res://%P\n' | sort)
+if [ $PARSE_FAILED -eq 0 ]; then
+  ok "$PARSE_COUNT script(s) GDScript parsés sans erreur"
+else
+  bad "$PARSE_FAILED script(s) en erreur de parsing sur $PARSE_COUNT (voir $PARSE_LOG)"
+  grep -E 'PARSE ERROR|Parse Error' "$PARSE_LOG" | head -10 | sed 's/^/    /'
+fi
+
 step "2. Tests unitaires"
 UNIT_LOG="$LOG_DIR/02_unit.log"
 "$GODOT_BIN" --headless --path "$PROJECT_DIR" --script tools/godot/test_runner.gd > "$UNIT_LOG" 2>&1
@@ -55,13 +79,18 @@ if [ $UNIT_RC -eq 0 ]; then ok "suite unitaire verte"; else bad "suite unitaire 
 
 # Une erreur d'exécution GDScript (déréférencement nul, index hors bornes, format
 # invalide) n'interrompt pas l'appel : le test serait compté « ok » et le runner
-# sortirait 0. Le journal doit donc être inspecté séparément — sans quoi une classe
-# entière d'échecs reste invisible.
-if grep -qiE 'SCRIPT ERROR|Cannot call method|Invalid access|String formatting error|Out of bounds' "$UNIT_LOG"; then
-  bad "erreurs d'exécution dans la suite unitaire (voir $UNIT_LOG)"
-  grep -iE 'SCRIPT ERROR|Cannot call method|Invalid access|String formatting error|Out of bounds' "$UNIT_LOG" | head -10 | sed 's/^/    /'
+# sortirait 0. Le journal doit donc être inspecté séparément.
+#
+# N1 : la première version de ce filtre énumérait des messages précis et laissait
+# passer tout `ERROR:` générique — ressource manquante, échec de chargement,
+# `push_error` d'un invariant violé. Un asset supprimé laissait la suite verte.
+# Le filtre couvre donc maintenant `ERROR:` comme le niveau 3.
+UNIT_ERR_PATTERN='SCRIPT ERROR|^ERROR:|ASSERTION ÉCHOUÉE SANS REPORTER|Cannot call method|Invalid access|String formatting error|Out of bounds|Method not found|Cannot open file|Failed loading resource|Resource file not found'
+if grep -qE "$UNIT_ERR_PATTERN" "$UNIT_LOG"; then
+  bad "erreurs signalées pendant la suite de tests (voir $UNIT_LOG)"
+  grep -E "$UNIT_ERR_PATTERN" "$UNIT_LOG" | head -10 | sed 's/^/    /'
 else
-  ok "aucune erreur d'exécution dans le journal des tests"
+  ok "aucune erreur signalée dans le journal des tests"
 fi
 
 step "3. Scène d'intégration (chargement réel de la scène principale)"

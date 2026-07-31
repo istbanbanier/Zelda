@@ -99,7 +99,13 @@ tools/blender/run_export.sh # pipeline Blender -> glTF -> validation
 
 `validate_release.sh` sort en **code 3 « BLOQUÉ »** dès qu'un de ses niveaux n'est
 pas exécuté — y compris quand la capture réussit — au lieu de retourner un faux vert.
-Codes : `0` vert · `1` rouge · `3` bloqué.
+Dans l'état actuel du projet il sort **toujours** en 3, puisque les niveaux 4, 6 et 7
+n'existent pas encore ; il sort en `1` si la capture elle-même échoue. Le code `0`
+ne deviendra atteignable qu'une fois ces niveaux implémentés.
+
+Codes de `capture_reference.gd` : `1` scène illisible · `2` aucun rendu ·
+`3` écriture impossible · `4` image uniforme · `5` scène sans géométrie ·
+`6` commit indéterminé.
 
 ## 11. Presets graphiques
 

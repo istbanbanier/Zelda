@@ -1,40 +1,30 @@
 ## Classe de base obligatoire de tous les cas de test.
 ##
-## Raison d'être (défaut D3 de la revue adverse du Gate 0) : quand chaque fichier
-## de test recopiait son propre `_assert` et son propre `set_reporter`, un fichier
-## qui oubliait ce câblage voyait **toutes** ses assertions avalées en silence et
-## comptées comme réussies. Un test incapable d'échouer est pire qu'un test absent.
+## Historique des deux revues adverses du Gate 0 :
+##   - D3 : chaque fichier recopiait son `_assert` et son `set_reporter` ; un
+##     fichier qui oubliait ce câblage voyait toutes ses assertions avalées.
+##   - N3 : la première correction passait par un *reporter injecté via méthode*.
+##     Un cas de test pouvait redéfinir `set_reporter()` en no-op et
+##     `get_check_count()` en constante, et faire passer des assertions fausses
+##     pour 42 assertions réussies. Le contrat était contournable.
 ##
-## Le runner refuse désormais tout script de test qui n'étend pas cette classe.
+## Correction retenue : **aucune indirection par méthode**. Les échecs sont
+## accumulés dans des membres de cette classe, que le runner lit directement via
+## `get()`. GDScript interdit à une sous-classe de redéclarer un membre du parent
+## (« already exists in parent class »), donc ces champs ne peuvent pas être
+## masqués, et redéfinir une méthode ne change plus rien à la comptabilité.
 class_name GateTestCase
 extends RefCounted
 
-var _reporter: Object = null
+## Lus par le runner via get(), jamais via un accesseur redéfinissable.
 var _checks: int = 0
-
-
-## Injecté par le runner avant chaque méthode de test.
-func set_reporter(reporter: Object) -> void:
-	_reporter = reporter
-	_checks = 0
-
-
-## Nombre d'assertions réellement exécutées, lu par le runner : une méthode de test
-## qui n'assertionne rien est signalée plutôt que comptée comme réussie.
-func get_check_count() -> int:
-	return _checks
+var _failures: Array[String] = []
 
 
 func check(condition: bool, message: String) -> void:
 	_checks += 1
-	if condition:
-		return
-	if _reporter == null:
-		# Ne doit pas arriver : le runner injecte toujours le reporter. Si cela
-		# survient, échouer bruyamment plutôt que d'avaler l'échec.
-		printerr("ASSERTION ÉCHOUÉE SANS REPORTER: %s" % message)
-		return
-	_reporter.call("report_failure", message)
+	if not condition:
+		_failures.append(message)
 
 
 func check_equal(actual: Variant, expected: Variant, context: String) -> void:

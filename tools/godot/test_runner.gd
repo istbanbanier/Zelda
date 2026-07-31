@@ -13,13 +13,22 @@
 ##     silencieux. Le câblage du reporter n'est plus du boilerplate recopiable.
 ##   - une méthode de test qui n'exécute aucune assertion est un ÉCHEC : elle donne
 ##     l'illusion d'une couverture inexistante.
+##   - N3 : le contrat ne doit pas reposer sur des méthodes redéfinissables. Le
+##     runner lit les échecs et le compteur d'assertions **directement dans les
+##     membres** de `GateTestCase` via `get()`, ce qu'une sous-classe ne peut pas
+##     détourner (GDScript interdit de redéclarer un membre du parent).
 ##   - D2 : les erreurs d'exécution GDScript n'interrompent pas l'appel et ne
 ##     peuvent pas être interceptées ici ; c'est `validate_fast.sh` qui inspecte le
-##     journal à la recherche de `SCRIPT ERROR`. Les deux protections sont
-##     nécessaires, aucune ne suffit seule.
+##     journal. Les deux protections sont nécessaires, aucune ne suffit seule.
 extends SceneTree
 
-const TEST_ROOTS: Array[String] = ["res://tests/unit", "res://tests/integration"]
+# N2 : `tests/playthrough` existait, était annoncé dans le README, et n'était
+# jamais collecté — un test déposé là disparaissait en silence.
+const TEST_ROOTS: Array[String] = [
+	"res://tests/unit",
+	"res://tests/integration",
+	"res://tests/playthrough",
+]
 
 var _passed: int = 0
 var _failed: int = 0
@@ -108,21 +117,27 @@ func _run_script(path: String) -> void:
 
 	for method_name: String in methods:
 		_current = "%s::%s" % [path.get_file(), method_name]
-		var before_failed: int = _failed
-		test_case.set_reporter(self)
+
+		# Lecture directe des membres : aucune méthode du cas de test n'est
+		# consultée pour établir le résultat (N3).
+		var checks_before: int = int(test_case.get("_checks"))
+		var failures_before: int = (test_case.get("_failures") as Array).size()
+
 		test_case.call(method_name)
 
-		if test_case.get_check_count() == 0:
+		var checks_after: int = int(test_case.get("_checks"))
+		var all_failures: Array = test_case.get("_failures") as Array
+		var new_failures: Array = all_failures.slice(failures_before)
+
+		if not new_failures.is_empty():
+			for message: Variant in new_failures:
+				_fail("%s — %s" % [_current, String(message)])
+			continue
+		if checks_after == checks_before:
 			_fail("%s — aucune assertion exécutée (couverture illusoire)" % _current)
 			continue
-		if _failed == before_failed:
-			_passed += 1
-			print("  ok   %s (%d assertions)" % [_current, test_case.get_check_count()])
-
-
-## Appelé par les cas de test via le reporter injecté.
-func report_failure(message: String) -> void:
-	_fail("%s — %s" % [_current, message])
+		_passed += 1
+		print("  ok   %s (%d assertions)" % [_current, checks_after - checks_before])
 
 
 func _fail(message: String) -> void:

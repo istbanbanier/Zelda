@@ -21,7 +21,8 @@ Une session = **un jalon borné ou un seul bug complexe**. Jamais « tout le jeu
 tools/env_report.sh                  # versions exactes -> docs/BUILD_ENVIRONMENT.md
 tools/setup_godot.sh                 # (re)construit Godot 4.7.1 si absent — ~90 min
 tools/validate_fast.sh               # niveaux 1-3 : import, parse, tests unitaires
-tools/validate_release.sh            # niveaux 4-7 ; codes: 0 vert, 1 rouge, 3 BLOQUÉ
+tools/validate_release.sh            # niveaux 4-7 ; sort en 3 (BLOQUÉ) tant que 4/6/7
+                                     # ne sont pas exécutés ; 1 si la capture échoue
 tools/blender/run_export.sh          # Blender -> .glb dans assets/
 python3 tools/gltf_inspect.py <glb>  # validation glTF hors Godot
 ```
