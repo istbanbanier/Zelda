@@ -1,0 +1,10 @@
+# Contrôle négatif — Z3_origine_de_fleche_avancee
+# L'origine du tir est avancée de 1,5 m dans la direction caméra : elle passe DERRIÈRE le mur à 0,8 m, le balayage ne le rencontre plus, le mannequin abrité prend 9 — l'anti-tir-à-travers-mur de §10.4 tenait à cette origine-poitrine.
+# Test visé : test_a_shot_against_a_wall_never_reaches_what_is_behind
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_bow.gd::test_a_shot_against_a_wall_never_reaches_what_is_behind — le mannequin derrière le mur est intact : attendu 45.0000 ± 0.0010, obtenu 36.0000
+=== RÉSULTAT: 199 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_bow.gd::test_a_shot_against_a_wall_never_reaches_what_is_behind — le mannequin derrière le mur est intact : attendu 45.0000 ± 0.0010, obtenu 36.0000
+RC=1

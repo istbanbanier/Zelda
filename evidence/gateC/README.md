@@ -59,3 +59,26 @@ nombre de ticks fixe — la leçon de B.2, version infrastructure.
 Y5 illustre la doctrine post-revue-B au complet : la valeur de spec est défendue
 par un test d'enveloppe ET par une mesure comportementale — la mutation fait
 rougir les deux, indépendamment.
+
+## Jalon C.3 — Attaque lourde, réaction du joueur, arc (2026-08-01)
+
+| Log | Mutation | Test visé | Résultat |
+|---|---|---|---|
+| `Z1_portail_endurance_lourde_retire` | `can_spend` retiré de la lourde | refus à jauge 10 | ÉCHEC — le mannequin encaisse 21,6 ✅ |
+| `Z2_grace_antistunlock_annulee` | `stunlock_grace` → 0 **dans le `.tres`** | second coup en cadence | ÉCHEC — le contrôle est repris, stun-lock possible ✅ |
+| `Z3_origine_de_fleche_avancee` | origine du tir avancée de 1,5 m | mur à 0,8 m | ÉCHEC — le mannequin abrité prend 9 ✅ |
+| `Z4_vitesse_de_fleche_mutee` | `arrow_speed` 48 → 80 dans le `.tres` | enveloppe §10.4 | ÉCHEC — « vitesse hors §10.4 : 80.0 » ✅ |
+| `Z5_connexion_hurtbox_retiree` | connexion hurtbox → contrôleur retirée | réaction + grâce | ÉCHEC ×4 — dégâts passés, zéro réaction ✅ |
+| `Z6_recul_non_applique` | impulsion de recul seule retirée | déplacement dz | ÉCHEC ×1 — le mode HURT s'ouvre, dz = 0,00 ✅ |
+
+**Z5 rejoue un défaut réel du code livré.** La première exécution de
+`test_heavy_and_hurt` a trouvé `_on_hit_received` écrit **mais jamais connecté**
+à la hurtbox : les dégâts passaient (la hurtbox blesse la santé directement),
+la réaction restait lettre morte — 4 assertions rouges, mêmes lignes que Z5.
+Corrigé le jour même (connexion dans `_ready`), et Z6 précise la granularité :
+sans l'impulsion, seule l'assertion de déplacement rougit — chaque assertion
+surveille sa pièce, pas un effet de bord d'une autre.
+
+Z3 chiffre pourquoi l'origine du tir est LA POITRINE et ne s'avance jamais
+(§10.4) : avancée de 1,5 m, elle passe derrière un mur mince et la flèche
+naît de l'autre côté.

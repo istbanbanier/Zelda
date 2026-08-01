@@ -1,0 +1,10 @@
+# Contrôle négatif — Z1_portail_endurance_lourde_retire
+# Le portail can_spend de la lourde est retiré : la lourde part a jauge 10, le mannequin encaisse 21,6 — §9.1 « lourde refusée » violé.
+# Test visé : test_heavy_attack_is_refused_when_stamina_is_low
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_heavy_and_hurt.gd::test_heavy_attack_is_refused_when_stamina_is_low — le mannequin est intact : attendu 45.0000 ± 0.0010, obtenu 23.4000
+=== RÉSULTAT: 199 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_heavy_and_hurt.gd::test_heavy_attack_is_refused_when_stamina_is_low — le mannequin est intact : attendu 45.0000 ± 0.0010, obtenu 23.4000
+RC=1

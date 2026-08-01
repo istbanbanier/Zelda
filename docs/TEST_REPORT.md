@@ -1009,3 +1009,73 @@ issue de la revue du Gate B, appliquée en routine.
   différée aux événements sonores.
 - **Le ressenti du duel n'est pas prouvé** — le CombatLab avec pillard vivant est
   prêt pour l'essai humain (dettes de passe finale).
+
+---
+
+# Jalon C.3 — Attaque lourde, réaction du joueur, arc (2026-08-01)
+
+## Commande et résultat
+
+```bash
+tools/validate_fast.sh; echo $?
+```
+
+**Code retour** : `0` — VERT. **200 réussis, 0 échoué**, plancher 200.
+
+> **Nombre de tests de référence : 200.** C'est ici, et nulle part ailleurs, qu'il
+> doit être lu.
+
+Nouveaux fichiers : `heavy_1.tres` (lourde ×1,8, poise 25, hit-stop 0,08),
+`HurtTuning` + `hurt_default.tres` (réaction 0,25 s, grâce 0,85 s),
+`BowTuning` + `bow_default.tres` (48 m/s, 9 de dégâts, pool 8),
+`ArrowProjectile` (balistique par balayage, CCD §5.3), `BowComponent` (pool,
+origine-poitrine), `switch_target` directionnel dans `LockOnComponent`,
+mode `HURT` du joueur ; 14 cas de test (`test_heavy_and_hurt`, `test_bow`,
+changement de cible dans `test_lock_on`).
+
+## Les cas centraux
+
+- **Lourde** (§10.2, §9.1) : 12 × 1,8 = 21,6 de dégâts et 20 d'endurance mesurés
+  sur le même coup ; **refusée** à jauge 10 — rien ne part, rien n'est prélevé ;
+  une seule lourde brise la poise du pillard (25 ≥ 20) là où il fallait deux
+  coups légers.
+- **Réaction** (§8.1 Hurt, §10.5) : le `knockback` transporté depuis C.0 est
+  enfin consommé — recul mesuré dans la direction du coup, contrôle rendu après
+  0,25 s ; deux coups en cadence **blessent tous les deux** mais seul le premier
+  renverse (la grâce protège le contrôle, jamais les PV) ; la grâce expirée, la
+  réaction revient.
+- **Arc** (§10.4, §11.1) : 9 de dégâts là où la caméra regarde ; chute de
+  gravité mesurée (vy ≈ −4 après 1/3 s) ; un mur à 0,8 m arrête la flèche, le
+  mannequin derrière est intact ; la flèche meurt à sa **première** victime
+  (deux mannequins alignés : 9 / 0) ; le pool refuse le tir excédentaire au lieu
+  d'instancier ; le tir exige la visée tenue.
+- **Changement de cible** (§8.4) : trois cibles dont une derrière un mur — pas
+  vers la droite caméra, pas de boucle aux bords, jamais à travers le mur.
+
+## Défaut trouvé dans le code livré — corrigé le jour même
+
+`_on_hit_received` était écrit **mais jamais connecté** au signal de la hurtbox :
+les dégâts passaient, la réaction n'existait pas. La première exécution de
+`test_heavy_and_hurt` l'a démontré (4 assertions rouges), la connexion manquante
+est posée dans `_ready`, et **Z5** rejoue la panne à l'identique en contrôle
+négatif. Deux défauts de mes tests corrigés au passage : la mesure d'endurance
+ignorait la régénération pendant le recovery (C2-5 récidivé — mesurer
+**immédiatement après le prélèvement**), et la géométrie du changement de cible
+se comptait depuis le joueur au lieu de la **caméra** (épaule x +0,32 : la
+« gauche » du joueur n'est pas celle de la caméra).
+
+## Contrôles négatifs
+
+Z1–Z6, tous ÉCHEC, logs avec `RC=` dans `evidence/gateC/negative_controls/`.
+Détail et enseignements : `evidence/gateC/README.md`.
+
+## Limites de C.3 — à ne pas confondre avec des oublis
+
+- **Pas de munitions** : l'arc tire sans flèches comptées — l'inventaire de
+  §11.3 et la durabilité « 28 tirs » arrivent en C.4.
+- **Dégâts d'arc sans point faible exploité** : le multiplicateur est raccordé
+  (même formule §10.3 que la mêlée), aucun ennemi n'expose encore de point
+  faible — troll en Phase D.
+- **Pas de réticule, ni de hit-stop/VFX/son** (§10.7) — présentation à venir.
+- **Le ressenti (lourde, recul, visée) n'est pas prouvé** — dettes d'essai
+  humain de la passe finale, comme depuis B.5.

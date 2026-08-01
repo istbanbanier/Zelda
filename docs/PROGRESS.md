@@ -631,41 +631,82 @@ pillard vivant est prêt pour lui.
 
 ---
 
+## 2026-08-01 — Jalon C.3 : attaque lourde, réaction du joueur, arc
+
+**Fait** : l'item 12 de §22 est complet et l'item 13 ouvert. La lourde (×1,8,
+poise 25, 20 d'endurance prélevés à l'amorce, refusée à jauge insuffisante), la
+réaction Hurt (recul dans la direction du coup, 0,25 s de perte de contrôle,
+grâce anti-stunlock 0,85 s qui protège le contrôle mais jamais les PV), l'arc
+complet (balistique par balayage CCD, origine-poitrine anti-tir-à-travers-mur,
+pool, chute de gravité mesurée, mort à la première victime, visée obligatoire),
+et le changement de cible directionnel de §8.4 (sans boucle, jamais à travers un
+mur). 14 cas de test, plancher relevé 186 → **200**, `validate_fast` VERT.
+
+**Défaut réel trouvé par la première exécution** : `_on_hit_received` écrit mais
+**jamais connecté** à la hurtbox — dégâts passés, réaction morte. Corrigé
+(connexion dans `_ready`), rejoué en contrôle négatif (Z5). C'est exactement le
+scénario que la doctrine « le test doit pouvoir échouer » existe pour attraper :
+sans test comportemental, la réaction serait restée décorative jusqu'au premier
+essai humain.
+
+**Défauts de mes tests** : mesure d'endurance polluée par la régénération du
+recovery (C2-5 récidivé — mesurer immédiatement après le prélèvement) ; géométrie
+du changement de cible comptée depuis le joueur au lieu de la caméra (épaule
+x +0,32 — la « gauche » de la caméra n'est pas celle du joueur) et mur trop
+étroit que la caméra voyait par-dessus le côté.
+
+**Contrôles négatifs** : Z1–Z6, tous ÉCHEC avec `RC=`, dans
+`evidence/gateC/negative_controls/`. Z6 isole l'impulsion de recul : sans elle,
+le mode HURT s'ouvre encore et seule l'assertion de déplacement rougit.
+
+**Limites** : arc sans munitions comptées (C.4), pas de réticule ni de
+présentation (§10.7), ressenti non prouvé (dette de passe finale), gardes
+Hurt-pendant-escalade/mantle non testées.
+
+---
+
 ## HANDOFF — prochaine action exacte
 
 > **Gates** : A `ACCEPTÉ AVEC RÉSERVE` (D-012) · B `ACCEPTÉ POUR CONTINUATION`
-> (D-021) · C **en cours** — C.0 à C.2 livrés.
+> (D-021) · C **en cours** — C.0 à C.3 livrés.
 
-### Action suivante : jalon C.3 — attaque lourde, réaction du joueur, arc
+### Action suivante : jalon C.4 — inventaire, durabilité, rupture (§22 items 13–14)
 
-Dans l'ordre, pour finir l'item 12 de §22 puis ouvrir l'item 13 :
+Dans l'ordre :
 
-1. **Attaque lourde** (§10.2) : coût 20 d'endurance (déclaré depuis B.2),
-   `AttackDefinition` dédiée (dégâts ×~1,8, poise forte, startup long), refusée à
-   jauge insuffisante (§9.1 : « lourde refusée »). L'action `attack_heavy` est
-   liée depuis A.1.
-2. **Réaction du joueur** (§8.1 Hurt, §10.5) : consommer `knockback` transporté
-   depuis C.0, brève perte de contrôle, et la **protection anti-stunlock** que
-   §10.5 exige — sans elle, deux pillards suffiraient à verrouiller le joueur.
-3. **Arc** (§10.4) : visée épaule (`aim_held` existe), projectile physique
-   42–58 m/s, pooling, raycast anti-tir-à-travers-mur proche, CCD (§5.3).
-4. **Changement de cible** (§8.4) : `target_prev/next`, par direction.
+1. **`WeaponDefinition`** (§5.9) : ressource immuable — le `base_damage = 12`
+   provisoire du `AttackControllerComponent` (posé en C.1) est remplacé par la
+   vraie table §11.1 (gourdin 8/18, épée usée 12/24, lance 10/30/2,7 m…).
+   L'instance mutable porte `instance_id`, `definition_id`,
+   `current_durability` : **deux exemplaires ne partagent jamais leur
+   durabilité** (invariant CLAUDE.md — test obligatoire).
+2. **Durabilité** (§11.2) : décrémente seulement sur coup qui touche (le set
+   `_already_hit` de C.0 donne l'événement exact), jamais dans le vide.
+   Avertissement à 25 %, rupture à zéro : couper la hitbox, retirer l'instance,
+   équiper la suivante ou mains nues.
+3. **Inventaire de 8 armes** (§11.3) : sélection, auto-équipement après rupture,
+   aucun doublon d'instance.
+4. **Flèches comptées** (§11.3) : l'arc de C.3 tire sans munitions — brancher un
+   compteur consommé par `try_fire`.
 
-### Pièges connus, cumulés — les nouveaux de C.2 d'abord
+### Pièges connus, cumulés — le nouveau de C.3 d'abord
 
-- **Une assertion verte pour la mauvaise raison** : prouver LES DEUX SENS (le
-  coup refusé dans la fenêtre ET porté hors fenêtre). C'est le contrôle inverse
-  qui a révélé le masque de hitbox par défaut (C2-1).
-- **Brancher les signaux avant que l'événement ne puisse exister** — la distance
-  de spawn achète la marge (C2-3).
-- **La géométrie de test se vérifie contre l'orientation réelle** (C2-2) ; la
-  cinétique complète compte, pas la durée nominale (C2-4) ; « jamais descendu
-  sous X », pas « figé à X » (C2-5).
+- **Un handler écrit n'est pas un handler branché** (Z5) : toute réaction à un
+  signal se prouve par un test comportemental qui échoue quand la connexion
+  manque — le test de C.3 l'a attrapé dans le code livré.
+- **La géométrie de test se compte depuis la CAMÉRA** quand le système est
+  caméra-relatif (épaule x +0,32) — et un mur de test doit être assez large pour
+  la ligne caméra, pas seulement la ligne joueur.
+- **Mesurer immédiatement après un prélèvement** d'endurance — la régénération
+  repart après 1 s et pollue toute mesure tardive (C2-5, récidivé en C.3).
+- **Prouver LES DEUX SENS** (C2-1) ; brancher les signaux avant l'événement
+  (C2-3) ; cinétique complète, pas durée nominale (C2-4).
 - **Le monde `queue_free` du test précédent survit une frame** : attendre l'état.
 - **`Area3D.monitoring` ne se toggle pas entre deux ticks** (R-014).
-- **Mesurer ce qui discrimine** (D-020 amendée) ; muter le `.tres` (R-006bis) ;
-  épingler les valeurs de spec ET les mesurer en comportement (Y5).
-- **Un `Node` de test se libère** ; `SpringArm3D` réécrit ses enfants directs
-  (D-014/D-015) ; D-009/D-010 sur le runner.
-- **`MIN_TESTS` relevé à chaque ajout** ; nombre de référence dans
-  `docs/TEST_REPORT.md` uniquement ; doc bloquée → mesurer et consigner (ISS-001).
+- **Muter le `.tres`** (R-006bis) ; épingler ET mesurer (Y5) ; mesurer ce qui
+  discrimine (D-020 amendée).
+- `SpringArm3D` réécrit ses enfants directs (D-014/D-015) ; D-009/D-010 sur le
+  runner ; **`MIN_TESTS` relevé à chaque ajout** (200 actuellement) ; nombre de
+  référence dans `docs/TEST_REPORT.md` uniquement.
+- **R-012 / R-013** (saut pendant mantle, coût du mantle) restent ouvertes — à
+  trancher pendant la Phase C. **D-022** : navmesh obligatoire dès la Phase D.

@@ -8,11 +8,12 @@
 ## §20.9 : toute la logique de mouvement vit dans `_physics_process()`. Aucun
 ## transform de gameplay n'est écrit depuis `_process()`.
 ##
-## ÉTAT C.2 : traversal complet (Phase B), attaque légère au combo de trois
-## (C.1), **esquive à i-frames** (§10.2), **verrouillage de cible** (§8.4). Le
-## `Mode` à cinq états EST la machine de §8.1 — plate, une fonction par état,
-## priorités par ordre de garde (D-018 amendée) ; une machine nodale serait de la
-## structure sans contenu supplémentaire.
+## ÉTAT C.3 : traversal complet, combo de trois + **attaque lourde** (§10.2, 20
+## d'endurance, refusée à jauge vide), esquive à i-frames, verrouillage avec
+## **changement de cible**, **réaction de dégât + anti-stunlock** (§10.5), et
+## **l'arc** (§10.4) — visée en modificateur de locomotion, flèches balistiques
+## par balayage, poolées. Le `Mode` à six états reste la machine plate de §8.1
+## (D-018 amendée).
 class_name PlayerController
 extends CharacterBody3D
 
@@ -37,7 +38,7 @@ signal mantle_refused(reason: StringName)
 ## machine complète maintenant reviendrait à écrire dix-huit états vides : ce
 ## `Mode` couvre exactement ce qui existe, et la `StateMachine` de §8.1 arrivera
 ## avec la Phase C, quand les états de combat auront un contenu (D-018).
-enum Mode { LOCOMOTION, CLIMBING, MANTLING, ATTACKING, DODGING }
+enum Mode { LOCOMOTION, CLIMBING, MANTLING, ATTACKING, DODGING, HURT }
 
 ## Rappel vers la distance de paroi : gain en (m/s) par mètre d'écart, et vitesse
 ## maximale de correction. Bornés à dessein — voir `_apply_climb_motion()`.
@@ -69,10 +70,14 @@ const WALL_PUSH_MIN_DOT: float = 0.3
 @onready var _attack: AttackControllerComponent = $Components/AttackController
 @onready var _health: HealthComponent = $Components/HealthComponent
 @onready var _lock_on: LockOnComponent = $Components/LockOnComponent
+@onready var _bow: BowComponent = $Components/BowComponent
+@onready var _hurtbox: HurtboxComponent = $Hurtbox
 @onready var _collision: CollisionShape3D = $CollisionShape3D
 
 ## Esquive (§10.2) : fenêtres et vitesse en ressource, coût dans StaminaTuning.
 @export var dodge: DodgeDefinition
+## Réaction de dégât et anti-stunlock (§8.1 Hurt, §10.5).
+@export var hurt: HurtTuning
 
 ## Intention courante. Remplacée par un test via `set_intent_source()`.
 var _intent: InputIntent = null
@@ -97,6 +102,12 @@ var _dodge_direction: Vector3 = Vector3.ZERO
 ## dès la première fenêtre légale (recovery annulable ou retour à la locomotion).
 var _dodge_buffer: float = 0.0
 
+var _hurt_elapsed: float = 0.0
+## Fenêtre anti-stunlock (§10.5) : tant qu'elle court, un coup blesse mais ne
+## reprend pas le contrôle. Décrémentée dans `_physics_process`, pas dans les
+## timers de locomotion — elle doit courir dans TOUS les modes.
+var _stunlock_grace: float = 0.0
+
 
 func _ready() -> void:
 	if tuning == null:
@@ -111,6 +122,10 @@ func _ready() -> void:
 	# cela le `CameraRig`, enfant du corps, hériterait de sa rotation et tournerait
 	# avec le personnage — la caméra deviendrait incontrôlable.
 	floor_stop_on_slope = true
+	# §8.1 Hurt : la hurtbox blesse la santé elle-même ; le contrôleur, lui,
+	# écoute pour RÉAGIR — recul et perte de contrôle brève (§10.5).
+	if _hurtbox != null:
+		_hurtbox.hit_received.connect(_on_hit_received)
 
 
 ## Permet à un test de piloter le contrôleur sans aucun périphérique.
@@ -134,6 +149,8 @@ func _physics_process(delta: float) -> void:
 	# « avant » est celui que le joueur voit à cet instant.
 	_camera_rig.apply_look(intent.look, delta)
 
+	_stunlock_grace = maxf(0.0, _stunlock_grace - delta)
+
 	# Verrouillage : bascule et suivi, quel que soit le mode — la caméra doit
 	# suivre la cible pendant une esquive autant qu'en course (§8.4).
 	_handle_lock_on(delta, intent)
@@ -147,6 +164,8 @@ func _physics_process(delta: float) -> void:
 			_process_attack(delta, intent)
 		Mode.DODGING:
 			_process_dodge(delta)
+		Mode.HURT:
+			_process_hurt(delta)
 		_:
 			_process_locomotion(delta, intent)
 
@@ -189,12 +208,28 @@ func _process_locomotion(delta: float, intent: InputIntent) -> void:
 	# la position réellement atteinte, pas depuis celle du tick précédent.
 	_try_grab(intent)
 
-	# L'attaque s'engage depuis le sol uniquement (§8.1 : LightAttack est un état
-	# terrestre ; l'attaque aérienne n'existe pas dans la spec de la 0.1).
-	if _mode == Mode.LOCOMOTION and intent.attack_pressed and is_on_floor() \
-			and _attack != null and _attack.try_attack():
-		_mode = Mode.ATTACKING
-		return
+	# Visée et tir (§10.4) : tant que la visée est tenue, le bouton d'attaque
+	# sert au tir — les portails d'épée sont suspendus.
+	if intent.aim_held:
+		if intent.shoot_pressed:
+			_try_shoot()
+	else:
+		# L'attaque s'engage depuis le sol uniquement (§8.1 : LightAttack est un
+		# état terrestre ; l'attaque aérienne n'existe pas dans la spec de la 0.1).
+		if _mode == Mode.LOCOMOTION and intent.attack_pressed and is_on_floor() \
+				and _attack != null and _attack.try_attack():
+			_mode = Mode.ATTACKING
+			return
+		# Attaque lourde (§10.2) : 20 d'endurance (§9.1), REFUSÉE à jauge
+		# insuffisante — l'appui est alors perdu, pas mémorisé.
+		if _mode == Mode.LOCOMOTION and intent.heavy_pressed and is_on_floor() \
+				and _attack != null:
+			var cost: float = _stamina.tuning.heavy_attack_cost if _stamina != null else 0.0
+			if (_stamina == null or _stamina.can_spend(cost)) and _attack.try_heavy():
+				if _stamina != null:
+					_stamina.try_spend(cost)
+				_mode = Mode.ATTACKING
+				return
 
 	# Esquive (§10.2) : depuis le sol, contre 15 d'endurance. L'appui mémorisé
 	# pendant une autre action est honoré ici, à la première fenêtre légale.
@@ -257,6 +292,11 @@ func _apply_horizontal_motion(delta: float, intent: InputIntent, sprinting: bool
 	# n'y ajoute pas de branche : il se contente de faire arriver `sprinting` à
 	# faux (§9.1, « sprint → course »).
 	var speed: float = tuning.target_speed(magnitude, sprinting)
+	# En visée (§10.4), on marche : le tir demande de la stabilité, pas un sprint.
+	# La visée est un MODIFICATEUR de la locomotion, pas un mode — mêmes règles de
+	# mouvement, vitesse plafonnée (l'état Aim de §8.1 est documenté ainsi).
+	if intent.aim_held and is_on_floor():
+		speed = minf(speed, tuning.walk_speed)
 	var desired: Vector3 = wish * speed
 
 	var horizontal: Vector3 = Vector3(velocity.x, 0.0, velocity.z)
@@ -446,6 +486,61 @@ func _process_attack(delta: float, intent: InputIntent) -> void:
 
 
 ## ---------------------------------------------------------------------------
+## Réaction de dégât (§8.1 Hurt, §10.5) et arc (§10.4)
+## ---------------------------------------------------------------------------
+
+## Un coup encaissé reprend brièvement le contrôle — SAUF dans la fenêtre
+## anti-stunlock (§10.5), où il blesse sans réaction, et pendant les modes où une
+## réaction créerait pire que le mal (escalade : lâcher serait une chute ;
+## franchissement : téléporter ; esquive : la santé a déjà refusé le dégât).
+func _on_hit_received(event: DamageEvent) -> void:
+	if _health == null or _health.is_invulnerable() or _health.is_dead():
+		return
+	if _stunlock_grace > 0.0:
+		return
+	if _mode == Mode.CLIMBING or _mode == Mode.MANTLING or _mode == Mode.DODGING:
+		return
+	if _mode == Mode.ATTACKING and _attack != null:
+		_attack.cancel()
+	_stunlock_grace = hurt.stunlock_grace
+	_hurt_elapsed = 0.0
+	velocity.x = event.direction.x * event.knockback
+	velocity.z = event.direction.z * event.knockback
+	_mode = Mode.HURT
+
+
+func _process_hurt(delta: float) -> void:
+	_camera_rig.update_fov(false, delta)
+	_hurt_elapsed += delta
+	_apply_gravity(delta)
+	var horizontal: Vector3 = Vector3(velocity.x, 0.0, velocity.z)
+	horizontal = horizontal.move_toward(Vector3.ZERO, hurt.knockback_decay * delta)
+	velocity.x = horizontal.x
+	velocity.z = horizontal.z
+	move_and_slide()
+	if _hurt_elapsed >= hurt.reaction_duration:
+		_mode = Mode.LOCOMOTION
+
+
+## Tir à l'arc (§10.4). Direction : le point que la caméra vise à 100 m, corrigé
+## vers l'origine — LA POITRINE. L'origine ne s'avance jamais dans la direction
+## du tir : le balayage de la flèche part de l'intérieur du corps (RID exclus) et
+## rencontre donc tout mur qu'on étreint, au lieu d'apparaître derrière.
+func _try_shoot() -> void:
+	if _bow == null:
+		return
+	var camera: Camera3D = _camera_rig.get_camera()
+	var aim_point: Vector3 = camera.global_position \
+		- camera.global_transform.basis.z * 100.0
+	var origin: Vector3 = global_position + Vector3.UP * 1.3
+	var direction: Vector3 = (aim_point - origin).normalized()
+	var exclude: Array[RID] = [get_rid()]
+	if _hurtbox != null:
+		exclude.append(_hurtbox.get_rid())
+	_bow.try_fire(origin, direction, &"player", self, exclude)
+
+
+## ---------------------------------------------------------------------------
 ## Esquive (§10.2) et verrouillage (§8.4)
 ## ---------------------------------------------------------------------------
 
@@ -512,6 +607,14 @@ func _handle_lock_on(delta: float, intent: InputIntent) -> void:
 			if found != null:
 				_camera_rig.set_lock_target(found)
 	elif _lock_on.has_target():
+		# §8.4 : changement de cible directionnel, sans boucler.
+		if intent.target_next_pressed or intent.target_prev_pressed:
+			var camera: Camera3D = _camera_rig.get_camera()
+			var step: int = 1 if intent.target_next_pressed else -1
+			var switched: Node3D = _lock_on.switch_target(self,
+				camera.global_position, -camera.global_transform.basis.z, step)
+			if switched != null:
+				_camera_rig.set_lock_target(switched)
 		_lock_on.update(self, _camera_rig.get_camera().global_position, delta)
 		if not _lock_on.has_target():
 			_camera_rig.clear_lock_target()

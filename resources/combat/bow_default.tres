@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="BowTuning" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/combat/bow_tuning.gd" id="1_bow"]
+
+[resource]
+script = ExtResource("1_bow")
+arrow_speed = 48.0
+arrow_gravity = 12.0
+base_damage = 9.0
+shot_cooldown = 0.6
+pool_size = 8
+lifetime = 5.0

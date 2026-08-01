@@ -94,6 +94,49 @@ func update(owner_body: PhysicsBody3D, origin: Vector3, delta: float) -> void:
 				release(&"line_of_sight_lost")
 
 
+## Changement de cible directionnel (§8.4). Les candidates valides sont triées
+## par azimut caméra (gauche → droite) ; `direction` +1 va vers la droite, -1
+## vers la gauche, sans boucler — un pas au-delà du bord ne fait rien, ce qui
+## évite le « target switch absurde » que §10.8 traque.
+func switch_target(owner_body: PhysicsBody3D, origin: Vector3,
+		camera_forward: Vector3, direction: int) -> Node3D:
+	if _target == null:
+		return null
+	var forward: Vector3 = camera_forward.normalized()
+	var right: Vector3 = forward.cross(Vector3.UP).normalized()
+	var candidates: Array[Node3D] = []
+	for node: Node in owner_body.get_tree().get_nodes_in_group("lock_on_targets"):
+		var candidate: Node3D = node as Node3D
+		if candidate == null or candidate == owner_body \
+				or candidate.is_ancestor_of(owner_body) or owner_body.is_ancestor_of(candidate):
+			continue
+		if _is_dead(candidate):
+			continue
+		if (_aim_point(candidate) - origin).length() > release_range:
+			continue
+		if not _has_los(owner_body, origin, candidate):
+			continue
+		candidates.append(candidate)
+	if candidates.size() < 2 or not candidates.has(_target):
+		return _target
+	# Azimut signé : négatif à gauche de la caméra, positif à droite.
+	candidates.sort_custom(func(a: Node3D, b: Node3D) -> bool:
+		return _bearing(origin, right, forward, a) < _bearing(origin, right, forward, b))
+	var index: int = candidates.find(_target)
+	var next_index: int = clampi(index + signi(direction), 0, candidates.size() - 1)
+	if next_index == index:
+		return _target
+	_target = candidates[next_index]
+	_los_lost_for = 0.0
+	target_acquired.emit(_target)
+	return _target
+
+
+func _bearing(origin: Vector3, right: Vector3, forward: Vector3, node: Node3D) -> float:
+	var to_node: Vector3 = _aim_point(node) - origin
+	return atan2(to_node.dot(right), to_node.dot(forward))
+
+
 func target() -> Node3D:
 	return _target if _target != null and is_instance_valid(_target) else null
 

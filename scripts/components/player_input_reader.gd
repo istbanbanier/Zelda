@@ -80,5 +80,13 @@ func _input(event: InputEvent) -> void:
 		_intent.attack_pressed = true
 	elif event.is_action_pressed("lock_on", false, true):
 		_intent.lock_pressed = true
+	elif event.is_action_pressed("attack_heavy", false, true):
+		_intent.heavy_pressed = true
+	elif event.is_action_pressed("shoot", false, true):
+		_intent.shoot_pressed = true
+	elif event.is_action_pressed("target_next", false, true):
+		_intent.target_next_pressed = true
+	elif event.is_action_pressed("target_prev", false, true):
+		_intent.target_prev_pressed = true
 	elif event is InputEventMouseMotion:
 		_mouse_delta += (event as InputEventMouseMotion).relative * MOUSE_LOOK_SCALE

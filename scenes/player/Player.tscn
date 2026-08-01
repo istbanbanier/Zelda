@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3]
+[gd_scene load_steps=32 format=3]
 
 ; Joueur — hiérarchie de MASTER_SPEC §6.2, réduite au périmètre de B.3.
 ; Absents et assumés : StateMachine (§8.1) — le contrôleur porte un Mode couvrant
@@ -28,6 +28,10 @@
 [ext_resource type="Resource" path="res://resources/combat/sword/light_3.tres" id="17_light3"]
 [ext_resource type="Script" path="res://scripts/components/lock_on_component.gd" id="18_lock"]
 [ext_resource type="Resource" path="res://resources/combat/dodge_default.tres" id="19_dodge"]
+[ext_resource type="Resource" path="res://resources/combat/hurt_default.tres" id="20_hurt"]
+[ext_resource type="Script" path="res://scripts/combat/bow_component.gd" id="21_bow"]
+[ext_resource type="Resource" path="res://resources/combat/bow_default.tres" id="22_bow_tuning"]
+[ext_resource type="Resource" path="res://resources/combat/sword/heavy_1.tres" id="23_heavy"]
 
 [sub_resource type="CapsuleShape3D" id="Capsule"]
 radius = 0.35
@@ -67,6 +71,7 @@ collision_mask = 1
 script = ExtResource("1_player")
 tuning = ExtResource("4_tuning")
 dodge = ExtResource("19_dodge")
+hurt = ExtResource("20_hurt")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -141,8 +146,13 @@ script = ExtResource("18_lock")
 [node name="AttackController" type="Node" parent="Components"]
 script = ExtResource("14_attack")
 attacks = [ExtResource("15_light1"), ExtResource("16_light2"), ExtResource("17_light3")]
+heavy_attack = ExtResource("23_heavy")
 hitbox_path = NodePath("../../VisualRoot/WeaponHitbox")
 base_damage = 12.0
+
+[node name="BowComponent" type="Node3D" parent="Components"]
+script = ExtResource("21_bow")
+tuning = ExtResource("22_bow_tuning")
 
 [node name="CameraRig" type="Node3D" parent="."]
 script = ExtResource("2_rig")

@@ -1,0 +1,10 @@
+# Contrôle négatif — Z2_grace_antistunlock_annulee
+# stunlock_grace mutee a 0.0 dans hurt_default.tres (R-006bis : la ressource chargée, pas le défaut de script) : le second coup en cadence reprend le contrôle — stun-lock possible, §10.5 violé.
+# Test visé : test_stunlock_grace_blocks_the_reaction_but_never_the_damage
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_heavy_and_hurt.gd::test_stunlock_grace_blocks_the_reaction_but_never_the_damage — le second coup, dans la grâce, ne reprend pas le contrôle : attendu 0, obtenu 5
+=== RÉSULTAT: 199 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_heavy_and_hurt.gd::test_stunlock_grace_blocks_the_reaction_but_never_the_damage — le second coup, dans la grâce, ne reprend pas le contrôle : attendu 0, obtenu 5
+RC=1

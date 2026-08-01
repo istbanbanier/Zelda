@@ -1,0 +1,16 @@
+# Contrôle négatif — Z5_connexion_hurtbox_retiree
+# La connexion hurtbox.hit_received -> _on_hit_received est retirée : les dégâts passent (la hurtbox blesse la santé directement) mais AUCUNE réaction — reproduction exacte du défaut réel que la première exécution de test_heavy_and_hurt a attrapé ce matin dans le code livré : la connexion manquait.
+# Tests visés : test_a_blow_knocks_the_player_back_with_brief_control_loss, test_stunlock_grace_blocks_the_reaction_but_never_the_damage
+# Attendu : ÉCHEC (4 assertions). Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_heavy_and_hurt.gd::test_a_blow_knocks_the_player_back_with_brief_control_loss — le coup reprend brièvement le contrôle : attendu 5, obtenu 0
+  ÉCHEC test_heavy_and_hurt.gd::test_a_blow_knocks_the_player_back_with_brief_control_loss — le recul pousse dans la direction du coup (dz = 0.00)
+  ÉCHEC test_heavy_and_hurt.gd::test_stunlock_grace_blocks_the_reaction_but_never_the_damage — premier coup : réaction : attendu 5, obtenu 0
+  ÉCHEC test_heavy_and_hurt.gd::test_stunlock_grace_blocks_the_reaction_but_never_the_damage — la grâce expirée, la réaction revient : attendu 5, obtenu 0
+=== RÉSULTAT: 198 réussi(s), 4 échoué(s) ===
+  ÉCHEC: test_heavy_and_hurt.gd::test_a_blow_knocks_the_player_back_with_brief_control_loss — le coup reprend brièvement le contrôle : attendu 5, obtenu 0
+  ÉCHEC: test_heavy_and_hurt.gd::test_a_blow_knocks_the_player_back_with_brief_control_loss — le recul pousse dans la direction du coup (dz = 0.00)
+  ÉCHEC: test_heavy_and_hurt.gd::test_stunlock_grace_blocks_the_reaction_but_never_the_damage — premier coup : réaction : attendu 5, obtenu 0
+  ÉCHEC: test_heavy_and_hurt.gd::test_stunlock_grace_blocks_the_reaction_but_never_the_damage — la grâce expirée, la réaction revient : attendu 5, obtenu 0
+RC=1

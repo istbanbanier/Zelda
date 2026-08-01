@@ -195,3 +195,43 @@ func test_lock_ranges_match_the_spec() -> void:
 	check(lock.release_range > lock.acquire_range,
 		"la libération doit dépasser l'acquisition (hystérésis)")
 	player.free()
+
+
+func test_target_switch_steps_sideways_and_never_wraps() -> void:
+	## §8.4 : « cible préc./suiv. » directionnel. Trois cibles : gauche, droite,
+	## et une troisième derrière un mur — le pas suivant va vers la droite de la
+	## caméra, ne boucle jamais au bord (§10.8 : pas de « target switch
+	## absurde »), et ne traverse jamais un mur.
+	##
+	## Géométrie comptée depuis la CAMÉRA (épaule x +0,32, recul z ≈ +4,5) : la
+	## gauche à x -1 est mieux alignée que la droite à x +3 ; le mur s'étend
+	## jusqu'à x 3 pour couper la ligne caméra → troisième cible (qui croise
+	## z = -4 vers x ≈ 4,2), sans masquer la cible de droite (croisement x ≈ 2,1).
+	await _setup()
+	var left: CombatDummy = _dummy_at(Vector3(-1, 0, -8))
+	var right: CombatDummy = _dummy_at(Vector3(3, 0, -8))
+	var _walled: CombatDummy = _dummy_at(Vector3(6, 0, -8))
+	_wall_at(Vector3(5.5, 1.5, -4), Vector3(5, 3, 0.4))
+	await _settle(3)
+
+	_intent.lock_pressed = true
+	await _settle(2)
+	check_equal(_player.lock_target(), left, "acquisition : la cible la plus alignée")
+
+	_intent.target_next_pressed = true
+	await _settle(2)
+	check_equal(_player.lock_target(), right, "suivant : un pas vers la droite caméra")
+
+	_intent.target_next_pressed = true
+	await _settle(2)
+	check_equal(_player.lock_target(), right,
+		"au bord : pas de boucle, pas de cible à travers le mur")
+
+	_intent.target_prev_pressed = true
+	await _settle(2)
+	check_equal(_player.lock_target(), left, "précédent : retour vers la gauche")
+
+	_intent.target_prev_pressed = true
+	await _settle(2)
+	check_equal(_player.lock_target(), left, "au bord gauche : pas de boucle non plus")
+	_teardown()

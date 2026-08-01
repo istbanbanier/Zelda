@@ -26,6 +26,11 @@ enum Phase { IDLE, STARTUP, ACTIVE, RECOVERY }
 
 ## Chaîne du combo léger, dans l'ordre (§10.2 : trois pour l'épée).
 @export var attacks: Array[AttackDefinition] = []
+## Attaque lourde (§10.2), hors chaîne : elle part de l'idle, ne s'enchaîne pas.
+## Son coût d'endurance (§9.1 : 20) est vérifié par le PROPRIÉTAIRE avant
+## `try_heavy()` — ce composant ne connaît pas l'endurance, comme la hitbox ne
+## connaît pas les armes.
+@export var heavy_attack: AttackDefinition
 @export var hitbox_path: NodePath
 ## Dégâts de base côté attaquant — PROVISOIRE : la `WeaponDefinition` de §5.9
 ## portera cette valeur en C.3 (durabilité). 12 = épée usée (§11.1). Le terme
@@ -36,6 +41,9 @@ enum Phase { IDLE, STARTUP, ACTIVE, RECOVERY }
 
 var _phase: Phase = Phase.IDLE
 var _index: int = 0
+## Définition en cours d'exécution : un maillon de `attacks`, ou `heavy_attack`
+## (auquel cas `_index` vaut -1 et rien ne s'enchaîne).
+var _current: AttackDefinition = null
 var _elapsed: float = 0.0
 ## Temps restant de validité de l'appui mémorisé (§10.2 : 0,15 s).
 var _buffer_timer: float = 0.0
@@ -49,14 +57,30 @@ func try_attack() -> bool:
 	if _phase == Phase.IDLE:
 		_begin(0)
 		return true
-	var current: AttackDefinition = attacks[_index]
-	if _phase == Phase.RECOVERY and _elapsed >= current.combo_open_time() \
-			and _index + 1 < attacks.size():
+	if _phase == Phase.RECOVERY and _index >= 0 \
+			and _elapsed >= _current.combo_open_time() and _index + 1 < attacks.size():
 		# Fenêtre déjà ouverte : le coup suivant part sans attendre le tick d'après.
 		_begin(_index + 1)
 		return true
-	_buffer_timer = current.input_buffer
+	_buffer_timer = _current.input_buffer
 	return false
+
+
+## Attaque lourde (§10.2) : depuis l'idle uniquement. Pas de buffer — un appui
+## lourd pendant une autre action est perdu, limite assumée de C.3.
+func try_heavy() -> bool:
+	if heavy_attack == null or _hitbox == null:
+		return false
+	if _phase != Phase.IDLE:
+		return false
+	_current = heavy_attack
+	_index = -1
+	_elapsed = 0.0
+	_buffer_timer = 0.0
+	_phase = Phase.STARTUP
+	attack_started.emit(heavy_attack, -1)
+	attack_phase_changed.emit(&"startup")
+	return true
 
 
 ## À appeler une fois par tick physique. Retourne `true` tant qu'une attaque est
@@ -66,27 +90,29 @@ func update(delta: float) -> bool:
 		return false
 	_elapsed += delta
 	_buffer_timer = maxf(0.0, _buffer_timer - delta)
-	var current: AttackDefinition = attacks[_index]
 
 	match _phase:
 		Phase.STARTUP:
-			if _elapsed >= current.startup:
+			if _elapsed >= _current.startup:
 				_phase = Phase.ACTIVE
-				_hitbox.activate(base_damage * current.damage_multiplier,
-					current.poise_damage, current.knockback, &"melee", current.element)
+				_hitbox.activate(base_damage * _current.damage_multiplier,
+					_current.poise_damage, _current.knockback, &"melee", _current.element)
 				attack_phase_changed.emit(&"active")
 		Phase.ACTIVE:
-			if _elapsed >= current.startup + current.active:
+			if _elapsed >= _current.startup + _current.active:
 				_phase = Phase.RECOVERY
 				_hitbox.deactivate()
 				attack_phase_changed.emit(&"recovery")
 		Phase.RECOVERY:
 			# §10.2 : l'appui mémorisé enchaîne dès l'ouverture de la fenêtre.
-			if _buffer_timer > 0.0 and _elapsed >= current.combo_open_time() \
+			# Jamais depuis la lourde (_index -1) : elle ne fait pas partie de la
+			# chaîne.
+			if _buffer_timer > 0.0 and _index >= 0 \
+					and _elapsed >= _current.combo_open_time() \
 					and _index + 1 < attacks.size():
 				_begin(_index + 1)
 				return true
-			if _elapsed >= current.total_duration():
+			if _elapsed >= _current.total_duration():
 				# §10.6 : « l'action bufferisée part à la première fenêtre légale ».
 				# Au bout du DERNIER coup, la première fenêtre légale est la fin du
 				# combo : un appui encore frais relance un combo neuf. Sans ce
@@ -119,10 +145,11 @@ func _begin(index: int) -> void:
 	if _hitbox.is_active():
 		_hitbox.deactivate()
 	_index = index
+	_current = attacks[index]
 	_elapsed = 0.0
 	_buffer_timer = 0.0
 	_phase = Phase.STARTUP
-	attack_started.emit(attacks[_index], _index)
+	attack_started.emit(_current, _index)
 	attack_phase_changed.emit(&"startup")
 
 

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="AttackDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/combat/attack_definition.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"sword_heavy_1"
+damage_multiplier = 1.8
+poise_damage = 25.0
+knockback = 4.5
+element = &""
+startup = 0.35
+active = 0.12
+recovery = 0.55
+input_buffer = 0.15
+combo_window_fraction = 0.3
+hit_stop = 0.08

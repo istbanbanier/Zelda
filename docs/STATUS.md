@@ -131,7 +131,7 @@ llvmpipe uniquement, aucun GPU.
 |---|---|---|
 | A | Boot, autoloads, InputMap AZERTY, couches de collision | **A.1 et A.2 livrés et gelés (`9414fd0`)** ; Gate A **EN ATTENTE** de validation humaine |
 | B | Player, caméra, locomotion, endurance, escalade, mantle | **Clos par D-021 : accepté pour continuation** — volet automatique vert (137 tests), dettes VALIDATION-B-001 + CONTROLLER-001 à la passe finale |
-| C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | **C.0 à C.2 livrés** — esquive à i-frames, lock-on, poise/stagger, premier pillard IA ; lourde et arc en C.3 |
+| C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | **C.0 à C.3 livrés** — esquive à i-frames, lock-on, poise/stagger, pillard IA, lourde, réaction Hurt/anti-stunlock, arc ; durabilité/inventaire en C.4 |
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
 | D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | Non commencé |
 | E | Récolte, cuisine, buffs, sauvegarde et migrations | Non commencé |
@@ -351,7 +351,7 @@ enchaîne trois légères contre de vrais mannequins.
 | `CombatLab` (§10.8) | **Implémenté** — embryon | lancé réellement (RC=0) ; mannequins, panneau, journal des coups ; timeline et export à venir |
 | `cancel()` d'interruption (stagger/mort, §16.2) | **Fonctionnel** | testé ; le stagger qui l'appellera arrive en C.2 |
 | Esquive + i-frames, lock-on, réactions (§10.2, §8.4) | **Non commencé** | jalon C.2 |
-| Attaque lourde, arc (§10.2, §10.4) | **Non commencé** | C.2 / C.3 |
+| Attaque lourde, arc (§10.2, §10.4) | **Fonctionnel** | jalon C.3 — voir sa section |
 | Hit-stop, VFX, sons (§10.7) | **Non commencé** | valeurs déclarées dans les `.tres`, aucun système de présentation |
 
 ---
@@ -374,9 +374,30 @@ enchaîne trois légères contre de vrais mannequins.
 | Télégraphe 0,65–0,95 s mesuré ET épinglé | **Fonctionnel** | coup jamais avant 0,65 s (mesuré : ~0,8) ; Y5 dans les deux sens |
 | **Repli après esquive réussie** (§12.1) | **Fonctionnel** | esquive réelle chronométrée sur le télégraphe → 0 dégât + distance de repli ; Y4 |
 | Duel gagnable (Gate C) | **Fonctionnel** | martèlement → pillard mort, inerte, joueur vivant |
-| Changement de cible (§8.4 suivant/précédent) | **Non commencé** | actions `target_prev/next` liées depuis A.1, logique en C.3+ |
+| Changement de cible (§8.4 suivant/précédent) | **Fonctionnel** | jalon C.3 : directionnel, sans boucle, jamais à travers mur |
 | Audition (§12.6), navmesh (§12.7) | **Différés** | D-022 — événements sonores et Phase D |
-| Réaction de dégât du joueur (§8.1 Hurt), anti-stunlock (§10.5) | **Non commencé** | le joueur encaisse sans broncher ; C.3 |
+| Réaction de dégât du joueur (§8.1 Hurt), anti-stunlock (§10.5) | **Fonctionnel** | jalon C.3 — voir sa section |
+
+---
+
+## Phase C — jalon C.3 : attaque lourde, réaction du joueur, arc
+
+| Élément (§) | État | Preuve |
+|---|---|---|
+| Attaque lourde : ×1,8, poise 25, hit-stop 0,08 déclaré (§10.2) | **Fonctionnel** | `test_heavy_and_hurt.gd` : 21,6 de dégâts ET 20 d'endurance mesurés sur le même coup |
+| « Lourde refusée » à jauge insuffisante (§9.1) | **Fonctionnel** | à jauge 10 : rien ne part, rien n'est prélevé, mannequin intact ; Z1 |
+| Une lourde brise la poise du pillard (25 ≥ 20) | **Fonctionnel** | 1 stagger, pas mort — l'« ouverture claire » version pillard |
+| Réaction Hurt : recul + perte de contrôle 0,25 s (§8.1) | **Fonctionnel** | déplacement mesuré dans la direction du coup, contrôle rendu ; Z6 isole l'impulsion |
+| Anti-stunlock 0,85 s : protège le CONTRÔLE, jamais les PV (§10.5) | **Fonctionnel** | deux coups en cadence : les deux blessent, seul le premier renverse ; grâce expirée → réaction revient ; Z2 |
+| Hurt refusé pendant escalade/mantle/esquive | **Implémenté** | gardes en place ; l'esquive est couverte par les i-frames (C.2), les autres non testés |
+| Arc : 9 de dégâts à distance, visée obligatoire (§10.4, §11.1, §8.5) | **Fonctionnel** | `test_bow.gd` ; sans visée, rien ne part |
+| Balistique par balayage — CCD, chute de gravité (§5.3, §10.4) | **Fonctionnel** | vy ≈ −4 mesurée après 1/3 s de vol à plat |
+| Anti-tir-à-travers-mur : origine-poitrine (§10.4) | **Fonctionnel** | mur à 0,8 m : flèche arrêtée, mannequin abrité intact ; Z3 chiffre la contre-hypothèse |
+| La flèche meurt à sa première victime (§10.1) | **Fonctionnel** | deux mannequins alignés : 9 / 0 |
+| Pool de flèches sans instanciation en rafale (§20.6) | **Fonctionnel** | 4ᵉ tir refusé à pool 3 ; cadence refuse le tir immédiat |
+| Enveloppes : vitesse 42–58, dégâts 9, hit-stop lourd 0,070–0,095 | **Fonctionnel** | épinglées sur les `.tres` livrés ; Z4 |
+| Changement de cible directionnel (§8.4) | **Fonctionnel** | 3 cibles dont une derrière un mur : pas à droite, pas de boucle, pas à travers |
+| Munitions comptées, réticule, présentation (§11.3, §10.7) | **Non commencé** | C.4 et passe de présentation |
 
 ---
 

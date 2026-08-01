@@ -1,0 +1,10 @@
+# Contrôle négatif — Z6_recul_non_applique
+# Les deux lignes d'impulsion de recul sont retirées de _on_hit_received : le mode HURT s'ouvre toujours (les checks de mode restent verts) mais le déplacement est nul — seule l'assertion de dz rougit. Elle mesure donc bien l'impulsion, pas un effet de bord du mode.
+# Test visé : test_a_blow_knocks_the_player_back_with_brief_control_loss
+# Attendu : ÉCHEC (1 assertion : dz). Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_heavy_and_hurt.gd::test_a_blow_knocks_the_player_back_with_brief_control_loss — le recul pousse dans la direction du coup (dz = 0.00)
+=== RÉSULTAT: 199 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_heavy_and_hurt.gd::test_a_blow_knocks_the_player_back_with_brief_control_loss — le recul pousse dans la direction du coup (dz = 0.00)
+RC=1

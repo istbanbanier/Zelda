@@ -1,0 +1,10 @@
+# Contrôle négatif — Z4_vitesse_de_fleche_mutee
+# arrow_speed mutee 48 -> 80 dans bow_default.tres : hors de la bande 42-58 de §10.4. L'enveloppe garde bien la ressource LIVRÉE, pas un défaut de script (R-006bis).
+# Test visé : test_bow_tuning_matches_the_spec
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_bow.gd::test_bow_tuning_matches_the_spec — vitesse hors §10.4 : 80.0
+=== RÉSULTAT: 199 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_bow.gd::test_bow_tuning_matches_the_spec — vitesse hors §10.4 : 80.0
+RC=1

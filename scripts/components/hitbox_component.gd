@@ -25,8 +25,16 @@ signal hit_confirmed(event: DamageEvent, target: HurtboxComponent)
 @export var instigator_path: NodePath
 
 ## Compteur global d'identifiants de swing (§10.1, §10.8) : deux activations ne
-## partagent jamais un ID, même sur deux hitbox différentes.
+## partagent jamais un ID, même sur deux hitbox différentes. Les projectiles
+## (§10.4) puisent au même compteur via `next_attack_id()` : un ID unique par
+## flèche, comme par swing.
 static var _next_attack_id: int = 1
+
+
+static func next_attack_id() -> int:
+	var id: int = _next_attack_id
+	_next_attack_id += 1
+	return id
 
 @onready var _instigator: Node = get_node_or_null(instigator_path)
 
@@ -68,8 +76,7 @@ func activate(attacker_damage: float, poise_damage: float = 0.0,
 	_damage_type = damage_type
 	_element = element
 	_already_hit.clear()
-	_attack_id = _next_attack_id
-	_next_attack_id += 1
+	_attack_id = next_attack_id()
 	_active = true
 	set_physics_process(true)
 	return _attack_id

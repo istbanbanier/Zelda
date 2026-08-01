@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="HurtTuning" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/combat/hurt_tuning.gd" id="1_hurt"]
+
+[resource]
+script = ExtResource("1_hurt")
+reaction_duration = 0.25
+stunlock_grace = 0.85
+knockback_decay = 14.0
