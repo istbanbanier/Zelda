@@ -143,6 +143,36 @@ func test_the_lock_plaque_shows_the_real_enemy_health() -> void:
 	_teardown()
 
 
+func test_the_inventory_grid_shows_eight_cards_and_a_truthful_detail() -> void:
+	## Réf. 04 : HUIT cartes toujours visibles (les vides estompées — la
+	## capacité réelle ne se cache pas), et un panneau de détail dont CHAQUE
+	## valeur vient de la définition sélectionnée — comparée ici à la vraie
+	## ressource, pas à une constante recopiée.
+	await _setup()
+	var spear: WeaponDefinition = load("res://resources/weapons/spear.tres") \
+		as WeaponDefinition
+	_player.inventory().add_weapon(WeaponInstance.create(spear))
+	_shell.toggle_inventory()
+	await _settle(3)
+	check(_shell.is_inventory_open(), "préalable : inventaire ouvert")
+	check_equal(_shell.inventory_card_count(), 8,
+		"HUIT cartes affichées, vides comprises (§11.3)")
+
+	_shell.equip_slot(1)   # la lance, derrière l'épée de départ
+	await _settle(2)
+	check_equal(_shell.detail_name_text(), spear.display_name.to_upper(),
+		"le détail nomme l'arme sélectionnée")
+	check_approx(_shell.detail_conductivity_shown(), spear.conductivity, 0.001,
+		"conductivité affichée = définition (%.2f)" % spear.conductivity)
+	check(_shell.detail_stats_text().contains("%.1f" % spear.reach_m),
+		"la portée affichée vient de la définition")
+	check(_shell.detail_stats_text().contains("%.0f" % spear.base_damage),
+		"les dégâts affichés aussi")
+	_shell.toggle_inventory()
+	await _settle(2)
+	_teardown()
+
+
 func test_the_weapon_card_segments_follow_real_durability() -> void:
 	## Réf. 03/04 : durabilité SEGMENTÉE depuis l'instance réelle — 24/24 →
 	## 4 crans pleins ; 6/24 → un seul. Aucune valeur recopiée à la main.

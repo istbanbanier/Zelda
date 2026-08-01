@@ -65,6 +65,11 @@ var _lock_plaque: PanelContainer = null
 var _lock_target_bar: ProgressBar = null
 var _lock_health: HealthComponent = null
 var _prompt_panel: PanelContainer = null
+## Inventaire V4.5 (réf. 04) — grille de cartes + détail aux données réelles.
+var _inventory_grid: GridContainer = null
+var _detail_name: Label = null
+var _detail_stats: Label = null
+var _detail_conductivity: ProgressBar = null
 
 
 func _ready() -> void:
@@ -218,7 +223,7 @@ func _apply_v4_style() -> void:
 	_prompt_panel.visible = false
 	# 6. Panneaux (pause, mort) : colonne posée sur une plaque d'ardoise, dim
 	# adouci — le monde reste VISIBLE derrière (réf. 05 : jamais un écran noir).
-	for panel_name: String in ["PausePanel", "DeathPanel"]:
+	for panel_name: String in ["PausePanel", "DeathPanel", "InventoryPanel"]:
 		var panel: Control = get_node("%" + panel_name) as Control
 		var dim: ColorRect = panel.get_node("Dim") as ColorRect
 		dim.color = Color(0.02, 0.03, 0.05, 0.45)
@@ -226,14 +231,66 @@ func _apply_v4_style() -> void:
 		var plate: PanelContainer = PanelContainer.new()
 		plate.name = "Plate"
 		plate.add_theme_stylebox_override(&"panel", HudStyle.plaque(0.8))
-		var column_position: Vector2 = column.position
 		panel.remove_child(column)
 		plate.add_child(column)
 		panel.add_child(plate)
-		plate.position = column_position - Vector2(18.0, 12.0)
+		# Ancrage CENTRE + croissance des deux côtés : le conteneur reste
+		# centré quelle que soit sa taille de contenu — un placement par
+		# `position` avant le premier layout serait faux.
+		plate.set_anchors_preset(Control.PRESET_CENTER)
+		plate.grow_horizontal = Control.GROW_DIRECTION_BOTH
+		plate.grow_vertical = Control.GROW_DIRECTION_BOTH
 		var title: Label = column.get_node_or_null("Title") as Label
 		if title != null:
 			title.add_theme_color_override(&"font_color", HudStyle.GOLD)
+	# 7. Inventaire (réf. 04) : grille 2 × 4 de cartes + panneau de détail aux
+	# données RÉELLES (définition + instance). Pas d'onglet OBJETS : il
+	# n'existe pas encore — on n'affiche pas un système absent (§0.2).
+	(_inventory_panel.get_node("Plate/Column/Title") as Label).text = "INVENTAIRE"
+	var body: HBoxContainer = HBoxContainer.new()
+	body.name = "Body"
+	body.add_theme_constant_override(&"separation", 18)
+	_inventory_grid = GridContainer.new()
+	_inventory_grid.name = "Cards"
+	_inventory_grid.columns = 4
+	_inventory_grid.add_theme_constant_override(&"h_separation", 6)
+	_inventory_grid.add_theme_constant_override(&"v_separation", 6)
+	body.add_child(_inventory_grid)
+	var detail_plate: PanelContainer = PanelContainer.new()
+	detail_plate.name = "Detail"
+	detail_plate.add_theme_stylebox_override(&"panel", HudStyle.plaque(0.5))
+	detail_plate.custom_minimum_size = Vector2(230, 0)
+	var detail_column: VBoxContainer = VBoxContainer.new()
+	_detail_name = Label.new()
+	_detail_name.add_theme_color_override(&"font_color", HudStyle.GOLD)
+	_detail_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	detail_column.add_child(_detail_name)
+	_detail_stats = Label.new()
+	_detail_stats.add_theme_color_override(&"font_color", HudStyle.IVORY)
+	detail_column.add_child(_detail_stats)
+	var conductivity_title: Label = Label.new()
+	conductivity_title.text = "Conductivité"
+	conductivity_title.add_theme_color_override(&"font_color", HudStyle.IVORY)
+	detail_column.add_child(conductivity_title)
+	_detail_conductivity = ProgressBar.new()
+	_detail_conductivity.custom_minimum_size = Vector2(0, 10)
+	_detail_conductivity.max_value = 1.0
+	_detail_conductivity.show_percentage = false
+	_detail_conductivity.add_theme_stylebox_override(&"background",
+		HudStyle.gauge_background(Color(0.05, 0.15, 0.17, 0.9)))
+	_detail_conductivity.add_theme_stylebox_override(&"fill",
+		HudStyle.gauge_fill(Color(0.133, 0.851, 0.925)))
+	detail_column.add_child(_detail_conductivity)
+	detail_plate.add_child(detail_column)
+	body.add_child(detail_plate)
+	_slot_list.add_child(body)
+	var hint: Label = Label.new()
+	hint.name = "Hints"
+	hint.text = "Tab / Échap — Fermer"
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint.add_theme_color_override(&"font_color",
+		Color(HudStyle.IVORY.r, HudStyle.IVORY.g, HudStyle.IVORY.b, 0.6))
+	_slot_list.add_child(hint)
 	for button_node: Button in [_resume_button, _quit_button, _retry_button,
 			_death_quit_button, _equip_button, _move_up_button, _move_down_button,
 			_close_inventory_button]:
@@ -417,8 +474,10 @@ func _on_quit_to_menu() -> void:
 ## Panneau d'inventaire (PT-D1-03 : équiper, sélectionner, réordonner)
 ## ---------------------------------------------------------------------------
 
+## Grille 2 × 4 (réf. 04) : huit cartes, cases vides VISIBLES avec emblème
+## estompé — jamais une liste tronquée qui cacherait la capacité réelle.
 func _rebuild_inventory_panel() -> void:
-	for child: Node in _slot_list.get_children():
+	for child: Node in _inventory_grid.get_children():
 		child.queue_free()
 	if _player == null or _player.inventory() == null:
 		return
@@ -427,32 +486,58 @@ func _rebuild_inventory_panel() -> void:
 	_selected_slot = clampi(_selected_slot, 0, maxi(0, weapons.size() - 1))
 	for i: int in range(InventoryComponent.MAX_WEAPONS):
 		var button: Button = Button.new()
-		button.custom_minimum_size = Vector2(460, 34)
+		button.custom_minimum_size = Vector2(168, 64)
 		button.toggle_mode = true
+		button.add_theme_stylebox_override(&"normal", HudStyle.plaque(0.3))
+		var selected_style: StyleBoxFlat = HudStyle.plaque(1.0)
+		selected_style.border_color = HudStyle.GOLD
+		selected_style.set_border_width_all(2)
+		button.add_theme_stylebox_override(&"pressed", selected_style)
+		HudStyle.style_button(button)
 		if i < weapons.size():
 			var weapon: WeaponInstance = weapons[i]
 			var definition: WeaponDefinition = weapon.definition
-			var marker: String = "▶ " if weapon == inventory.equipped() else "   "
-			button.text = "%s%d. %s — %.0f dég · %.1f m · %d/%d" % [
-				marker, i + 1, definition.display_name, definition.base_damage,
-				definition.reach_m, weapon.current_durability, definition.max_durability]
+			var marker: String = "▶ " if weapon == inventory.equipped() else ""
+			button.text = "%s%s\n%d/%d" % [marker, definition.display_name,
+				weapon.current_durability, definition.max_durability]
 			var slot: int = i
 			button.pressed.connect(func() -> void:
 				_selected_slot = slot
 				_refresh_slot_selection())
 		else:
-			button.text = "   %d. —" % (i + 1)
+			button.text = "◇"
 			button.disabled = true
-		_slot_list.add_child(button)
+		_inventory_grid.add_child(button)
 	_refresh_slot_selection()
 
 
 func _refresh_slot_selection() -> void:
-	var buttons: Array[Node] = _slot_list.get_children()
+	var buttons: Array[Node] = _inventory_grid.get_children()
 	for i: int in range(buttons.size()):
 		var button: Button = buttons[i] as Button
 		if button != null and not button.is_queued_for_deletion():
 			button.button_pressed = i == _selected_slot
+	_refresh_detail()
+
+
+## Panneau de détail (réf. 04) : chaque valeur vient de la DÉFINITION et de
+## l'INSTANCE sélectionnées — rien n'est recopié en dur dans l'interface.
+func _refresh_detail() -> void:
+	if _player == null or _player.inventory() == null:
+		return
+	var weapons: Array[WeaponInstance] = _player.inventory().weapons()
+	if _selected_slot < 0 or _selected_slot >= weapons.size():
+		_detail_name.text = "—"
+		_detail_stats.text = ""
+		_detail_conductivity.value = 0.0
+		return
+	var weapon: WeaponInstance = weapons[_selected_slot]
+	var definition: WeaponDefinition = weapon.definition
+	_detail_name.text = definition.display_name.to_upper()
+	_detail_stats.text = "Dégâts  %.0f\nPortée  %.1f m\nDurabilité  %d / %d" % [
+		definition.base_damage, definition.reach_m,
+		weapon.current_durability, definition.max_durability]
+	_detail_conductivity.value = definition.conductivity
 
 
 func _on_equip_selected() -> void:
@@ -602,6 +687,26 @@ func durability_segment_values() -> Array[float]:
 	for segment: ProgressBar in _durability_segments:
 		values.append(segment.value)
 	return values
+
+
+func inventory_card_count() -> int:
+	var count: int = 0
+	for child: Node in _inventory_grid.get_children():
+		if not child.is_queued_for_deletion():
+			count += 1
+	return count
+
+
+func detail_name_text() -> String:
+	return _detail_name.text
+
+
+func detail_stats_text() -> String:
+	return _detail_stats.text
+
+
+func detail_conductivity_shown() -> float:
+	return _detail_conductivity.value
 
 
 func hud_stamina() -> float:
