@@ -21,3 +21,8 @@ APRÈS V4.2 (eau en S, chemins, variations de sol, pics en tentes 2 rangées,
 contreforts physiques, prairie 1400 touffes MultiMesh + 130 fleurs, vent
 shader) : 300 frames 720p llvmpipe : 46,93 s (V4.1 : 42,65 s, +10 %).
 Navmesh rebaké : 646 polygones (contreforts). Le shader de vent est GPU pur.
+
+APRÈS V4.3 (camp : 3 tentes + foyer + lumière ; pylône : socle/anneaux/runes ;
+citadelle : gradins, piliers à conduits, linteau, braseros, marches ;
+vestibule 26 m à 4 braseros) : 300 frames 720p llvmpipe : 49.247763291 s.
+Navmesh rebaké : 749 polygones.

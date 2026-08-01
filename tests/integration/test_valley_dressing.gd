@@ -117,6 +117,110 @@ func test_paths_guide_both_routes_as_pure_visuals() -> void:
 	await _cleanup(valley)
 
 
+func test_the_camp_reads_as_inhabited_with_tents_and_fire() -> void:
+	## V4.3, réf. 01 : le camp se lit depuis la crête — tentes SOLIDES (on ne
+	## marche pas au travers) sur la terrasse, foyer émissif, lumière chaude.
+	var valley: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(valley)
+	await _settle(5)
+	var tents: Array[Node] = valley.find_children("Tent?", "StaticBody3D", true, false)
+	check(tents.size() >= 3, "au moins trois tentes physiques (%d)" % tents.size())
+	for tent: Node in tents:
+		var at: Vector3 = (tent as StaticBody3D).global_position
+		check(at.x > 26.0 and at.x < 64.0 and at.z > 46.0 and at.z < 82.0
+			and absf(at.y - 6.0) < 1.5,
+			"tente SUR la terrasse du camp (%.0f, %.1f, %.0f)" % [at.x, at.y, at.z])
+	var fire: OmniLight3D = valley.find_children("CampFireLight", "OmniLight3D",
+		true, false)[0] as OmniLight3D
+	check(fire.light_color.r > fire.light_color.b + 0.3,
+		"lumière de feu CHAUDE (r %.2f / b %.2f)" % [fire.light_color.r,
+			fire.light_color.b])
+	var coals: MeshInstance3D = valley.find_children("FireCoals", "MeshInstance3D",
+		true, false)[0] as MeshInstance3D
+	check((coals.material_override as StandardMaterial3D).emission_enabled,
+		"la braise du foyer émet")
+	await _cleanup(valley)
+
+
+func test_the_pylon_is_dressed_and_its_runes_glow() -> void:
+	## V4.3, réf. 01 : socle de pierre, anneaux de bronze, bande runique cyan
+	## ÉMISSIVE — l'ancre verticale du tiers droit n'est plus un simple fût.
+	var valley: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(valley)
+	await _settle(5)
+	check(valley.find_children("PylonPlinth", "StaticBody3D", true, false).size() == 1,
+		"socle physique")
+	check(valley.find_children("PylonRing*", "MeshInstance3D", true, false).size() >= 2,
+		"anneaux de bronze")
+	var runes: MeshInstance3D = valley.find_children("PylonRunes", "MeshInstance3D",
+		true, false)[0] as MeshInstance3D
+	var rune_material: StandardMaterial3D = runes.material_override as StandardMaterial3D
+	check(rune_material.emission_enabled, "la bande runique émet en cyan")
+	check(rune_material.emission.b > rune_material.emission.r,
+		"…et c'est bien du cyan, pas un feu")
+	await _cleanup(valley)
+
+
+func test_the_citadel_gate_is_monumental_and_still_enterable() -> void:
+	## V4.3, réf. 02 : piliers + conduits cyan + linteau + braseros + marches
+	## basses (≤ 0,30 m : franchissables §8.2) — et la porte reste la VRAIE
+	## entrée du vestibule. Les marches sont mesurées par rayon physique.
+	var valley: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(valley)
+	await _settle(5)
+	check(valley.find_children("GatePillar?", "StaticBody3D", true, false).size() >= 2,
+		"deux piliers porteurs")
+	var conduits: Array[Node] = valley.find_children("GateConduit?", "MeshInstance3D",
+		true, false)
+	check(conduits.size() >= 2, "conduits d'énergie sur les piliers")
+	for conduit: Node in conduits:
+		check(((conduit as MeshInstance3D).material_override as StandardMaterial3D)
+			.emission_enabled, "conduit émissif")
+	check(valley.find_children("GateBrazierLight?", "OmniLight3D", true, false).size() >= 2,
+		"braseros de seuil")
+	var space: PhysicsDirectSpaceState3D = valley.player().get_world_3d().direct_space_state
+	var previous_top: float = 34.0
+	for step_data: Array in [["GateStepLow", -192.0], ["GateStepMid", -194.2],
+			["GateStepHigh", -196.2]]:
+		var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(
+			Vector3(0, 40, float(step_data[1])), Vector3(0, 30, float(step_data[1])), 1)
+		var hit: Dictionary = space.intersect_ray(query)
+		check(not hit.is_empty(), "la marche %s porte" % String(step_data[0]))
+		var top: float = (hit.get("position") as Vector3).y
+		check(top - previous_top > 0.05 and top - previous_top <= 0.31,
+			"emmarchement %.2f m franchissable (§8.2 step height)" % (top - previous_top))
+		previous_top = top
+	var door: SceneDoor = valley.find_children("CitadelDoor", "SceneDoor", true, false)[0] \
+		as SceneDoor
+	check_equal(door.prompt_verb(), "Entrer", "la porte reste la vraie entrée")
+	await _cleanup(valley)
+
+
+func test_the_vestibule_is_deep_and_warmly_lit() -> void:
+	## V4.3, réf. 02 : profondeur jouable ≥ 24 m, braseros chauds contre veine
+	## cyan, second seuil scellé au fond sous son linteau.
+	var vestibule: CitadelVestibule = (load(
+		"res://scenes/world/citadel/CitadelVestibule.tscn") as PackedScene) \
+		.instantiate() as CitadelVestibule
+	_tree().root.add_child(vestibule)
+	await _settle(5)
+	var north: StaticBody3D = vestibule.get_node("WallNorth") as StaticBody3D
+	var south: StaticBody3D = vestibule.get_node("WallSouthTop") as StaticBody3D
+	check(absf(south.position.z - north.position.z) >= 24.0,
+		"profondeur jouable %.1f m (réf. 02 : 20-30 m)"
+		% absf(south.position.z - north.position.z))
+	var braziers: Array[Node] = vestibule.find_children("BrazierLight?",
+		"OmniLight3D", true, false)
+	check(braziers.size() >= 4, "quatre braseros (%d)" % braziers.size())
+	for brazier: Node in braziers:
+		var light: OmniLight3D = brazier as OmniLight3D
+		check(light.light_color.r > light.light_color.b + 0.3, "flamme CHAUDE")
+	var sealed: StaticBody3D = vestibule.get_node("SealedDoor") as StaticBody3D
+	check(sealed.position.z < -12.0, "le second seuil ferme le FOND de la salle")
+	check_not_null(vestibule.get_node_or_null("SealedLintel"), "…sous son linteau")
+	await _cleanup(vestibule)
+
+
 func test_the_mountain_dressing_adds_depth_and_buttresses_really_block() -> void:
 	## La 4e capture V4.1 montrait un rideau plat : l'anneau porte maintenant
 	## des pics superposés (deux rangées, la lointaine bleuie) et des

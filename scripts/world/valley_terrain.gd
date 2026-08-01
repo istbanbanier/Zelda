@@ -116,6 +116,60 @@ func _build_camp_terrace() -> void:
 	# Terrasse du camp (§3.3 : (45, 6, 65)) et sa sortie vers la plaine sud.
 	_slab("CampTerrace", Vector2(45, 65), Vector2(44, 40), 6.0, COL_GRASS)
 	_ramp("CampExit", Vector3(40, 6, 47), Vector3(40, 2, 30), 10.0, COL_GRASS_DARK)
+	# V4.3 (réf. 01 : tentes + feux) — le camp se LIT depuis la crête. Tentes
+	# en tente (PrismMesh) avec collision boîte, à l'écart du chemin ; foyer de
+	# pierre, braise émissive et lumière chaude. La colonne de fumée vit déjà
+	# dans ValleyWorld.tscn.
+	var camp: Node3D = Node3D.new()
+	camp.name = "CampDressing"
+	add_child(camp)
+	var tents: Array[Array] = [
+		# [pied xz, yaw, teinte]
+		[Vector2(54, 58), 0.4, Color(0.55, 0.25, 0.18)],
+		[Vector2(57, 70), -0.7, Color(0.50, 0.30, 0.16)],
+		[Vector2(34, 76), 1.2, Color(0.45, 0.24, 0.20)],
+	]
+	for i: int in range(tents.size()):
+		var tent: Array = tents[i]
+		var foot: Vector2 = tent[0]
+		var body: StaticBody3D = StaticBody3D.new()
+		body.name = "Tent%d" % i
+		body.collision_layer = 1
+		body.collision_mask = 0
+		var shape: CollisionShape3D = CollisionShape3D.new()
+		var box: BoxShape3D = BoxShape3D.new()
+		box.size = Vector3(3.6, 2.4, 3.2)
+		shape.shape = box
+		shape.position = Vector3(0, 1.2, 0)
+		body.add_child(shape)
+		var mesh: MeshInstance3D = MeshInstance3D.new()
+		mesh.name = "Tent%dMesh" % i
+		var prism: PrismMesh = PrismMesh.new()
+		prism.size = Vector3(3.8, 2.6, 3.4)
+		mesh.mesh = prism
+		mesh.material_override = _material(tent[2] as Color, false)
+		mesh.position = Vector3(0, 1.3, 0)
+		body.add_child(mesh)
+		body.rotation.y = float(tent[1])
+		body.position = Vector3(foot.x, 6.0, foot.y)   # AVANT add_child (règle D.0)
+		camp.add_child(body)
+	# Foyer : anneau de pierre, braise émissive, lumière chaude motivée (§7.7 :
+	# « aucun visage de combat noir » — le camp reste lisible au crépuscule).
+	_cylinder_in("FirePit", camp, Vector3(45, 6.0, 64), 1.1, 0.4, COL_STONE, false)
+	_cylinder_in("FireCoals", camp, Vector3(45, 6.35, 64), 0.7, 0.3,
+		Color(0.98, 0.55, 0.18), false)
+	var coals: MeshInstance3D = camp.get_node("FireCoals") as MeshInstance3D
+	var coal_material: StandardMaterial3D = coals.material_override as StandardMaterial3D
+	coal_material.emission_enabled = true
+	coal_material.emission = Color(0.98, 0.45, 0.12)
+	coal_material.emission_energy_multiplier = 2.4
+	var fire_light: OmniLight3D = OmniLight3D.new()
+	fire_light.name = "CampFireLight"
+	fire_light.light_color = Color(1.0, 0.62, 0.28)
+	fire_light.light_energy = 1.8
+	fire_light.omni_range = 14.0
+	fire_light.position = Vector3(45, 7.4, 64)
+	camp.add_child(fire_light)
 
 
 func _build_learning_cliff() -> void:
@@ -134,9 +188,21 @@ func _build_pylon_terrace_and_proxy() -> void:
 	# de l'emprise laisserait un mur en travers de la pente — mesuré à la sonde
 	# (y = 18 rencontré à mi-rampe avant correction).
 	_ramp("PylonRamp", Vector3(64, 2, 2), Vector3(87, 18, -14), 10.0, COL_ROCK)
-	# Proxy du pylône : fût de cuivre + tête cyan émissive — le point d'intérêt
-	# du tiers droit de la vue d'ouverture (§3.2).
-	_cylinder("PylonShaft", Vector3(115, 18, -25), 2.5, 22.0, COL_COPPER, true)
+	# Proxy du pylône (V4.3, réf. 01 : tour de pierre ouvragée, anneaux, orbe) :
+	# socle de pierre, fût de cuivre, deux anneaux de bronze, bande RUNIQUE
+	# cyan émissive, tête-orbe — l'ancre verticale du tiers droit (§3.2).
+	_cylinder("PylonPlinth", Vector3(115, 18, -25), 4.2, 2.4, COL_STONE, true)
+	_cylinder("PylonShaft", Vector3(115, 20.4, -25), 2.5, 19.6, COL_COPPER, true)
+	_cylinder("PylonRingLow", Vector3(115, 27.5, -25), 3.3, 1.0,
+		Color(0.42, 0.30, 0.18), false)
+	_cylinder("PylonRingHigh", Vector3(115, 35.0, -25), 3.1, 0.8,
+		Color(0.42, 0.30, 0.18), false)
+	_cylinder("PylonRunes", Vector3(115, 31.4, -25), 2.65, 1.2, COL_CYAN, false)
+	var runes: MeshInstance3D = get_node("PylonRunes") as MeshInstance3D
+	var rune_material: StandardMaterial3D = runes.material_override as StandardMaterial3D
+	rune_material.emission_enabled = true
+	rune_material.emission = COL_CYAN
+	rune_material.emission_energy_multiplier = 1.6
 	_orb("PylonHead", Vector3(115, 41.5, -25), 3.0, COL_CYAN)
 
 
@@ -213,9 +279,53 @@ func _build_dungeon_plateau_and_citadel() -> void:
 			Vector3(8, 56, 8), COL_STONE, true)
 	_box_in("EnergyCore", citadel, Vector3(0, 34 + 32, -210 + 12.2),
 		Vector3(3, 10, 0.6), COL_CYAN, false, true)
-	# Entrée de la citadelle (D.1R.4, PT-D1-10) : ouverture sombre encadrée de
-	# cyan sur la face avant du donjon, et une VRAIE porte qui charge le
-	# vestibule — la promesse vue depuis la crête n'est plus fausse.
+	# V4.3 (réf. 02) : étagement de la masse — deux gradins sous le donjon pour
+	# la silhouette pyramidale de la référence 01. Collision : on marche dessus.
+	# Gradins DERRIÈRE le plan de la porte (z ≤ −200 : une première pose à
+	# z −194 aurait muré la façade, cotes vérifiées avant capture).
+	_box_in("TierLow", citadel, Vector3(0, 34 + 4, -215), Vector3(40, 8, 30),
+		COL_STONE, true)
+	_box_in("TierHigh", citadel, Vector3(0, 34 + 9, -217), Vector3(32, 10, 24),
+		COL_STONE, true)
+	# Façade monumentale (réf. 02) : piliers de bronze gravés de CONDUITS cyan
+	# verticaux, linteau massif, large ouverture sombre en retrait — le
+	# personnage est dominé par le bâtiment.
+	for side_index: int in range(2):
+		var x_side: float = -6.5 if side_index == 0 else 6.5
+		_box_in("GatePillar%d" % side_index, citadel,
+			Vector3(x_side, 34 + 8, -197.2), Vector3(3.0, 16.0, 3.0),
+			Color(0.40, 0.30, 0.20), true)
+		_box_in("GateConduit%d" % side_index, citadel,
+			Vector3(x_side, 34 + 8, -195.6), Vector3(0.5, 13.0, 0.2),
+			COL_CYAN, false, true)
+	_box_in("GateLintel", citadel, Vector3(0, 34 + 16.6, -197.2),
+		Vector3(16.0, 3.2, 3.4), Color(0.40, 0.30, 0.20), true)
+	# Retrait sombre AFFLEURANT la face du donjon (z −198) : la porte
+	# interactive garde 0,2 m d'avance — l'ouverture paraît large, l'entrée
+	# reste la vraie porte.
+	_box_in("GateRecess", citadel, Vector3(0, 34 + 6.5, -198.35),
+		Vector3(10.0, 13.0, 1.0), Color(0.05, 0.06, 0.09), false)
+	# Braseros de seuil : le chaud motive l'approche, le cyan reste la menace.
+	for side_index: int in range(2):
+		var x_side: float = -5.0 if side_index == 0 else 5.0
+		_box_in("GateBrazier%d" % side_index, citadel,
+			Vector3(x_side, 34 + 0.6, -194.5), Vector3(0.9, 1.2, 0.9),
+			Color(0.30, 0.22, 0.16), true)
+		_box_in("GateBrazierCoal%d" % side_index, citadel,
+			Vector3(x_side, 34 + 1.35, -194.5), Vector3(0.6, 0.3, 0.6),
+			Color(0.98, 0.55, 0.18), false, true)
+		var brazier_light: OmniLight3D = OmniLight3D.new()
+		brazier_light.name = "GateBrazierLight%d" % side_index
+		brazier_light.light_color = Color(1.0, 0.62, 0.28)
+		brazier_light.light_energy = 1.5
+		brazier_light.omni_range = 10.0
+		brazier_light.position = Vector3(x_side, 34 + 2.2, -194.5)
+		citadel.add_child(brazier_light)
+	# Marches processionnelles : trois emmarchements bas (≤ step height 0,30).
+	_slab("GateStepLow", Vector2(0, -192.0), Vector2(14, 2.4), 34.15, COL_STONE)
+	_slab("GateStepMid", Vector2(0, -194.2), Vector2(12, 2.2), 34.3, COL_STONE)
+	_slab("GateStepHigh", Vector2(0, -196.2), Vector2(10, 1.8), 34.45, COL_STONE)
+	# Ouverture encadrée de cyan (D.1R.4) : le seuil intérieur, dans le retrait.
 	_box_in("DoorFrameLeft", citadel, Vector3(-2.2, 34 + 3, -197.8),
 		Vector3(0.8, 6.0, 0.6), COL_CYAN, false, true)
 	_box_in("DoorFrameRight", citadel, Vector3(2.2, 34 + 3, -197.8),

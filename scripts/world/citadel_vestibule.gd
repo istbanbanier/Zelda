@@ -29,24 +29,44 @@ func _ready() -> void:
 
 
 func _build_room() -> void:
-	# Salle 22 × 14, murs de 8 m, plafond plein — la porte d'entrée (sud) est
+	# Salle 22 × 26 (V4.3, réf. 02 : vestibule « jouable sur environ 20 à
+	# 30 mètres »), murs de 9 m, plafond plein — la porte d'entrée (sud) est
 	# le seul percement.
-	_box("Floor", Vector3(0, -0.5, 0), Vector3(22, 1, 14), COL_FLOOR)
-	_box("Ceiling", Vector3(0, 8.5, 0), Vector3(22, 1, 14), COL_STONE)
-	_box("WallNorth", Vector3(0, 4, -7.25), Vector3(22, 8, 0.5), COL_STONE)
-	_box("WallWestSouth", Vector3(-6.6, 4, 7.25), Vector3(8.8, 8, 0.5), COL_STONE)
-	_box("WallEastSouth", Vector3(6.6, 4, 7.25), Vector3(8.8, 8, 0.5), COL_STONE)
-	_box("WallSouthTop", Vector3(0, 7, 7.25), Vector3(4.4, 2, 0.5), COL_STONE)
-	_box("WallWest", Vector3(-11.25, 4, 0), Vector3(0.5, 8, 14), COL_STONE)
-	_box("WallEast", Vector3(11.25, 4, 0), Vector3(0.5, 8, 14), COL_STONE)
+	_box("Floor", Vector3(0, -0.5, 0), Vector3(22, 1, 26), COL_FLOOR)
+	_box("Ceiling", Vector3(0, 9.5, 0), Vector3(22, 1, 26), COL_STONE)
+	_box("WallNorth", Vector3(0, 4.5, -13.25), Vector3(22, 9, 0.5), COL_STONE)
+	_box("WallWestSouth", Vector3(-6.6, 4.5, 13.25), Vector3(8.8, 9, 0.5), COL_STONE)
+	_box("WallEastSouth", Vector3(6.6, 4.5, 13.25), Vector3(8.8, 9, 0.5), COL_STONE)
+	_box("WallSouthTop", Vector3(0, 7.5, 13.25), Vector3(4.4, 3, 0.5), COL_STONE)
+	_box("WallWest", Vector3(-11.25, 4.5, 0), Vector3(0.5, 9, 26), COL_STONE)
+	_box("WallEast", Vector3(11.25, 4.5, 0), Vector3(0.5, 9, 26), COL_STONE)
+	for i: int in range(6):
+		var x: float = -6.0 if i % 2 == 0 else 6.0
+		var z: float = -9.0 + 9.0 * float(i / 2)
+		_box("Column%d" % i, Vector3(x, 4.5, z), Vector3(1.2, 9, 1.2), COL_STONE)
+	# Braseros (réf. 02 : flammes chaudes dans l'axe) — le CONTRASTE chaud/froid
+	# du donjon commence ici : ambre motivé contre veine cyan (§7.8).
 	for i: int in range(4):
 		var x: float = -6.0 if i % 2 == 0 else 6.0
-		var z: float = -3.0 if i < 2 else 3.0
-		_box("Column%d" % i, Vector3(x, 4, z), Vector3(1.2, 8, 1.2), COL_STONE)
-	# La porte SCELLÉE du fond : masse sombre + veine cyan — « visiblement et
-	# honnêtement scellée », le donjon quatre-salles est Phase F.
-	_box("SealedDoor", Vector3(0, 3, -6.9), Vector3(5, 6, 0.4), Color(0.1, 0.1, 0.14))
-	_box("SealedSeam", Vector3(0, 3, -6.65), Vector3(0.3, 5.4, 0.1), COL_CYAN, true)
+		var z: float = -6.0 if i < 2 else 6.0
+		_box("Brazier%d" % i, Vector3(x, 0.55, z), Vector3(0.9, 1.1, 0.9),
+			Color(0.30, 0.22, 0.16))
+		_box("BrazierCoal%d" % i, Vector3(x, 1.2, z), Vector3(0.6, 0.25, 0.6),
+			Color(0.98, 0.55, 0.18), true)
+		var flame: OmniLight3D = OmniLight3D.new()
+		flame.name = "BrazierLight%d" % i
+		flame.light_color = Color(1.0, 0.62, 0.28)
+		flame.light_energy = 1.6
+		flame.omni_range = 9.0
+		flame.position = Vector3(x, 2.0, z)
+		add_child(flame)
+	# La porte SCELLÉE du fond : masse sombre + veine cyan sous un linteau de
+	# bronze — « visiblement et honnêtement scellée », le donjon quatre-salles
+	# est Phase F. C'est le « second seuil » de la référence 02.
+	_box("SealedDoor", Vector3(0, 3, -12.9), Vector3(5, 6, 0.4), Color(0.1, 0.1, 0.14))
+	_box("SealedSeam", Vector3(0, 3, -12.65), Vector3(0.3, 5.4, 0.1), COL_CYAN, true)
+	_box("SealedLintel", Vector3(0, 6.6, -12.8), Vector3(6.4, 0.8, 0.7),
+		Color(0.42, 0.30, 0.18))
 
 	var exit_door: SceneDoor = SceneDoor.new()
 	exit_door.name = "ExitDoor"
@@ -68,7 +88,7 @@ func _build_room() -> void:
 	material.albedo_color = Color(0.14, 0.16, 0.2)
 	mesh.material_override = material
 	exit_door.add_child(mesh)
-	exit_door.position = Vector3(0, 3, 7.4)   # AVANT add_child (règle D.0)
+	exit_door.position = Vector3(0, 3, 13.4)   # AVANT add_child (règle D.0)
 	add_child(exit_door)
 
 
@@ -101,15 +121,16 @@ func _box(box_name: String, center: Vector3, size: Vector3, color: Color,
 
 
 func _setup_lighting() -> void:
-	# §7.8 : sources motivées, aucun couloir noir. Deux omni cyan aux colonnes.
+	# §7.8 : sources motivées, aucun couloir noir. Deux omni cyan près du seuil
+	# scellé — l'énergie du donjon filtre par la veine.
 	for i: int in range(2):
 		var light: OmniLight3D = OmniLight3D.new()
 		light.name = "CyanLight%d" % i
 		light.light_color = Color(0.5, 0.9, 0.95)
-		light.light_energy = 2.4
+		light.light_energy = 2.2
 		light.omni_range = 14.0
+		light.position = Vector3(-4.0 if i == 0 else 4.0, 5.5, -8.0)
 		add_child(light)
-		light.position = Vector3(-4.0 if i == 0 else 4.0, 5.5, 0)
 	var environment: Environment = Environment.new()
 	environment.background_mode = Environment.BG_COLOR
 	environment.background_color = Color(0.04, 0.05, 0.07)
