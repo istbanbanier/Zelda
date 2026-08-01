@@ -264,6 +264,12 @@ func _process_locomotion(delta: float, intent: InputIntent) -> void:
 	if _mode == Mode.LOCOMOTION and (intent.dodge_pressed or _dodge_buffer > 0.0) \
 			and is_on_floor():
 		_try_dodge(intent)
+		return
+
+	# Interaction contextuelle (§14.2) : cône court devant le personnage, l'objet
+	# le plus proche l'emporte.
+	if _mode == Mode.LOCOMOTION and intent.interact_pressed and is_on_floor():
+		_try_interact()
 
 
 ## Le sprint n'est accordé que s'il est demandé, que le joueur se déplace
@@ -594,6 +600,39 @@ func _on_weapon_equipped(weapon: WeaponInstance) -> void:
 		reach = weapon.definition.reach_m
 	if _weapon_hitbox != null:
 		_weapon_hitbox.position.z = reach - _hitbox_half_depth
+
+
+## Interaction contextuelle (§14.2) : portée ordinaire 2,2 m (bande 1,8–2,4),
+## cône avant du VISUEL (le corps ne tourne jamais), le plus proche l'emporte.
+## Contrat : un « interactable » est dans le groupe éponyme et expose
+## `interact(player) -> bool` — `false` signifie « refusé, l'objet reste ».
+const INTERACT_RANGE: float = 2.2
+const INTERACT_MIN_DOT: float = 0.25
+
+func _try_interact() -> void:
+	var forward: Vector3 = _visual_root.global_transform.basis.z
+	forward.y = 0.0
+	if forward.length_squared() < 0.0001:
+		return
+	forward = forward.normalized()
+	var best: Node3D = null
+	var best_distance: float = INF
+	for node: Node in get_tree().get_nodes_in_group("interactable"):
+		var candidate: Node3D = node as Node3D
+		if candidate == null or not candidate.has_method("interact"):
+			continue
+		var to_candidate: Vector3 = candidate.global_position - global_position
+		to_candidate.y = 0.0
+		var distance: float = to_candidate.length()
+		if distance > INTERACT_RANGE or distance < 0.001:
+			continue
+		if to_candidate.normalized().dot(forward) < INTERACT_MIN_DOT:
+			continue
+		if distance < best_distance:
+			best_distance = distance
+			best = candidate
+	if best != null:
+		best.call("interact", self)
 
 
 ## §11.2, à la lettre : l'usure vient d'un coup qui TOUCHE — jamais du vide.

@@ -12,6 +12,7 @@ extends Control
 
 const DEFAULT_SLOT: String = "slot0"
 const INPUT_AUDIT_SCENE: String = "res://scenes/tests/InputAudit.tscn"
+const VALLEY_SCENE: String = "res://scenes/world/valley/ValleyWorld.tscn"
 
 @onready var _continue_button: Button = %ContinueButton
 @onready var _new_game_button: Button = %NewGameButton
@@ -99,7 +100,18 @@ func _on_continue() -> void:
 	if data.is_empty():
 		_status_label.text = "Sauvegarde illisible — voir le journal."
 		return
-	_status_label.text = "Sauvegarde chargée. Le monde à charger arrive en Phase D."
+	# D.0 : la vallée existe et se charge. L'APPLICATION de l'état sauvegardé
+	# (checkpoint, inventaire, coffres) arrive avec SaveSystem complet (Phase E) —
+	# d'ici là, « Continuer » repart du spawn, et c'est dit.
+	_enter_valley()
+
+
+func _enter_valley() -> void:
+	var flow: Node = get_node_or_null("/root/SceneFlow")
+	if flow == null or not bool(flow.call("can_go_to", VALLEY_SCENE)):
+		_status_label.text = "Vallée indisponible — voir le journal."
+		return
+	flow.call("go_to", VALLEY_SCENE)
 
 
 ## §17.3 : confirmation avant écrasement d'une sauvegarde. Deux appuis successifs
@@ -122,9 +134,11 @@ func _on_new_game() -> void:
 		return
 	if _game_state != null:
 		_game_state.call("set_difficulty", 1)  # Difficulty.STANDARD
+	# Rafraîchir AVANT de partir : si la transition échoue (flux occupé, scène
+	# absente), le menu reste cohérent — « Continuer » reflète la sauvegarde.
 	_refresh()
 	_wire_focus_cycle()
-	_status_label.text = "Nouvelle partie créée. La vallée arrive en Phase D."
+	_enter_valley()
 
 
 ## Contenu minimal et honnête d'une partie neuve : ce que la Phase A sait déjà

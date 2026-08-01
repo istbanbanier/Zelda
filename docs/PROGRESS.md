@@ -697,42 +697,63 @@ Phase D).
 
 ---
 
+## 2026-08-01 — Revue du Gate C (passe unique, D-024) · Jalon D.0 : la vallée existe
+
+**Revue** : passe unique à contexte frais (décision propriétaire), code jugé
+`78f2b9a`, rapport dans `evidence/gateC/REVUE.md`. Quatre critères **PASS au
+volet automatique**, rejoués. Constats traités le jour même : **D1 (S2) — la
+mort du joueur n'existait pas** (cadavre courant/attaquant/esquivant, pillard
+frappant le cadavre sans fin) → `Mode.DEAD` + désengagement du pillard +
+régression `test_player_death.gd` rejouant la sonde du réviseur ; D2 — lignes
+`RC=` des logs W/X/Y annotées invalides (artefact de capture), sans
+régénération ; D3 — garde null. Verdict prononcé : **ACCEPTÉ POUR CONTINUATION
+AVEC VALIDATION HUMAINE DIFFÉRÉE** (D-024).
+
+**D.0** (ordonné par D-024, sans laboratoire préalable) : `ValleyWorld.tscn` —
+sol 512 × 512 m, spawn sud (§3.3), camp à (45, 0, 65) avec trois pillards, le
+coffre garanti du camp (`valley.chest.camp.01`, hache + 12 flèches, jamais de
+second loot) et un gourdin ramassable. Le geste d'interaction de §14.2 existe
+enfin (2,2 m, cône avant, le plus proche gagne) ; `WeaponPickup` et `Chest`
+versent dans l'inventaire de C.4 — inventaire plein = l'objet RESTE, rien n'est
+perdu. « Nouvelle partie » (et « Continuer ») entrent réellement dans la vallée
+via `SceneFlow`. 7 cas de test, plancher 216 → **221**, `validate_fast` VERT.
+
+**Pièges mesurés** : StaticBody3D ajouté puis déplacé = un tick DANS le joueur,
+dépénétration de 0,6 m (positionner AVANT `add_child`) ; les tests du menu
+doivent bloquer `SceneFlow` pendant l'appui, sinon la transition réelle
+remplace la scène du runner et fige l'arbre en pause.
+
+**Limites** : sol plat sans relief/rivière/pylône/citadelle ; « Continuer »
+repart du spawn (état : Phase E) ; pas d'invite d'interaction à l'écran ;
+filet anti-chute à −20 m en attendant les bords réels.
+
+---
+
 ## HANDOFF — prochaine action exacte
 
 > **Gates** : A `ACCEPTÉ AVEC RÉSERVE` (D-012) · B `ACCEPTÉ POUR CONTINUATION`
-> (D-021) · C — **les cinq items de §22 sont livrés (C.0 à C.4)**.
+> (D-021) · C `ACCEPTÉ POUR CONTINUATION` (D-024) · D **en cours** — D.0 livré.
 
-### Action suivante : REVUE DU GATE C
+### Action suivante : jalon D.1 — relief graybox et navmesh (D-022 échoit ICI)
 
-Les items 11–15 de §22 sont couverts ; le Gate C (« combat gagnable, une touche
-par swing, aucune référence invalide ») se joue maintenant. Suivre
-`.claude/skills/gate-review` :
+1. **Relief** : remplacer le sol plat par des chunks sculptés simples (§7.4 :
+   64–128 m, collisions simplifiées) portant la relation de §3.3 — spawn en
+   hauteur (0, 24, 170), descente vers le camp, rivière en S autour de Z = 10,
+   falaise d'apprentissage à l'ouest, emplacements pylône (115, 18, −25) et
+   donjon (0, 34, −210) en proxys.
+2. **Navmesh OBLIGATOIRE** (D-022, échéance atteinte) : `NavigationRegion3D`
+   baké depuis les collisions (§20.10), `NavigationAgent3D` dans `RaiderRed` —
+   les tests pillard existants doivent rester verts (même comportement à plat).
+3. **Bords de monde** par relief crédible (§7.4), remplaçant le filet à −20 m.
+4. Huit coffres §4.1 et le validateur d'IDs §19.3 quand les emplacements
+   existent.
 
-1. `tools/env_report.sh evidence/gateC/env_report.txt` puis
-   `tools/validate_fast.sh 2>&1 | tee evidence/gateC/validate_fast.log` ;
-   noter le commit exact.
-2. Confronter les critères du Gate C (`docs/ROADMAP.md`) un par un, tableau
-   critère / preuve / verdict — `NON VÉRIFIÉ` sans preuve, jamais `PASS`.
-3. Lancer `adversarial-qa` à contexte frais : critères, diff C.0→C.4, chemins
-   des preuves (W/X/Y/Z/AA dans `evidence/gateC/negative_controls/`). Il REJOUE
-   les commandes.
-4. Verdict global = le plus faible. Les essais humains du CombatLab n'ont pas eu
-   lieu : le verdict ne peut pas dépasser l'équivalent « accepté pour
-   continuation » de D-021 — comme pour le Gate B, seule une décision
-   propriétaire peut le clore ainsi.
-5. Transmettre : STATUS, TEST_REPORT, PROGRESS, DECISIONS, KNOWN_ISSUES si
-   échec ; commit propre.
+### Rappels
 
-### Rappels pour la revue
-
-- Le compte de tests de référence (214) se lit dans `docs/TEST_REPORT.md`
-  UNIQUEMENT.
-- Dettes jamais automatisables : CONTROLLER-001, VALIDATION-B-001 (+ le ressenti
-  du combat §10.6/§10.8 — essai humain à l'aveugle, passe finale).
-- R-012 / R-013 (saut pendant mantle, coût du mantle) : encore ouvertes — les
-  trancher pendant ou juste après la revue, la Phase D les attend.
-- D-022 : navmesh OBLIGATOIRE dès l'ouverture de la Phase D.
-- Pièges cumulés : un handler écrit n'est pas branché (Z5) ; purger les refus
-  concurrents avant de tester un portail (AA6) ; géométrie comptée depuis la
-  caméra ; mesurer après prélèvement ; deux sens ; monde fantôme une frame ;
-  R-014 ; muter le `.tres` (R-006bis) ; épingler ET mesurer (Y5).
+- **C.5 reste dû avant l'habillage artistique** (D-024 : D.0 était une
+  intégration graybox — le verrou North Star tient pour la production d'art).
+- R-012 / R-013 encore ouvertes (saut pendant mantle, coût mantle).
+- Pièges : positionner un StaticBody AVANT `add_child` ; bloquer SceneFlow dans
+  les tests de menu ; purger les refus concurrents (AA6) ; un handler écrit
+  n'est pas branché (Z5) ; géométrie comptée depuis la caméra ; R-014 ; muter
+  le `.tres` (R-006bis) ; épingler ET mesurer (Y5) ; `MIN_TESTS` = 221.

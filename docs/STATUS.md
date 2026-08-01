@@ -148,7 +148,7 @@ llvmpipe uniquement, aucun GPU.
 | B | Player, caméra, locomotion, endurance, escalade, mantle | **Clos par D-021 : accepté pour continuation** — volet automatique vert (137 tests), dettes VALIDATION-B-001 + CONTROLLER-001 à la passe finale |
 | C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | **Clos par D-024 : accepté pour continuation** — 4 critères PASS rejoués en revue, D1 (mort du joueur) corrigé + régression, dettes humaines à la passe finale |
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
-| D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | Non commencé |
+| D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | **D.0 livré** (D-024) — vallée graybox 512 × 512 chargée depuis « Nouvelle partie » : joueur, camp (3 pillards), coffre, armes ramassables. Relief/rivière/pylône/citadelle et navmesh (D-022) : jalons D suivants |
 | E | Récolte, cuisine, buffs, sauvegarde et migrations | Non commencé |
 | F | Graphe électrique, 4 salles, salle centrale, antichambre | Non commencé |
 | G | Arène, boss 3 phases, solvabilité, victoire | Non commencé |

@@ -1,0 +1,89 @@
+[gd_scene load_steps=13 format=3]
+
+; Vallée de Néris — graybox D.0 (D-024). Sol plat 512 × 512 m (1 unité = 1 m),
+; spawn au sud (§3.3 : (0, ., 170), regard vers -Z), camp ennemi à (45, ., 65)
+; avec trois pillards, un coffre garanti et un gourdin au sol. Relief, rivière,
+; pylône, citadelle : jalons D suivants.
+
+[ext_resource type="Script" path="res://scripts/world/valley_world.gd" id="1_world"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/RaiderRed.tscn" id="3_raider"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/Chest.tscn" id="4_chest"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/WeaponPickup.tscn" id="5_pickup"]
+[ext_resource type="Resource" path="res://resources/weapons/heavy_axe.tres" id="6_axe"]
+[ext_resource type="Resource" path="res://resources/weapons/wood_club.tres" id="7_club"]
+
+[sub_resource type="BoxShape3D" id="GroundShape"]
+size = Vector3(512, 2, 512)
+
+[sub_resource type="BoxMesh" id="GroundMesh"]
+size = Vector3(512, 2, 512)
+
+[sub_resource type="StandardMaterial3D" id="GroundMat"]
+albedo_color = Color(0.36, 0.48, 0.26, 1)
+
+[sub_resource type="CylinderMesh" id="CampfireMesh"]
+top_radius = 0.5
+bottom_radius = 0.7
+height = 0.5
+
+[sub_resource type="StandardMaterial3D" id="CampfireMat"]
+albedo_color = Color(0.35, 0.22, 0.14, 1)
+
+[node name="ValleyWorld" type="Node3D"]
+script = ExtResource("1_world")
+
+; Surface au niveau y = 0 (boîte de 2 m d'épaisseur centrée à -1).
+[node name="Ground" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+shape = SubResource("GroundShape")
+
+[node name="GroundMesh" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+mesh = SubResource("GroundMesh")
+surface_material_override/0 = SubResource("GroundMat")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, 0.25, -0.433013, 0, 0.866025, 0.5, 0.5, -0.433013, 0.75, 0, 40, 0)
+shadow_enabled = true
+
+[node name="SpawnPoint" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 170)
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 170)
+
+; --- Camp ennemi (§3.3 : (45, ., 65)) ------------------------------------
+
+[node name="Camp" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 0, 65)
+
+[node name="Campfire" type="MeshInstance3D" parent="Camp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+mesh = SubResource("CampfireMesh")
+surface_material_override/0 = SubResource("CampfireMat")
+
+[node name="Raider1" parent="Camp" instance=ExtResource("3_raider")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.1, 4)
+
+[node name="Raider2" parent="Camp" instance=ExtResource("3_raider")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -4, 0.1, 2)
+
+[node name="Raider3" parent="Camp" instance=ExtResource("3_raider")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 2, 0.1, -5)
+
+; Coffre garanti du camp (§11.4 : « un au camp ») — hache lourde + 12 flèches.
+[node name="CampChest" parent="Camp" instance=ExtResource("4_chest")]
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 4, 0, -2)
+chest_id = &"valley.chest.camp.01"
+weapon_loot = ExtResource("6_axe")
+arrows_loot = 12
+
+; Gourdin abandonné près du feu — la première arme ramassable du monde.
+[node name="ClubPickup" parent="Camp" instance=ExtResource("5_pickup")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 5)
+definition = ExtResource("7_club")

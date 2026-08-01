@@ -44,6 +44,23 @@ func _save_system() -> Node:
 	return null if tree == null else tree.root.get_node_or_null(NodePath("SaveSystem"))
 
 
+## Depuis D.0, « Nouvelle partie » enchaîne sur une VRAIE transition vers la
+## vallée. L'exécuter dans le runner remplacerait la scène courante et mettrait
+## l'arbre en pause — poison pour tous les tests suivants. On rend donc
+## SceneFlow « occupé » le temps de l'appui : la demande de transition est
+## refusée proprement (chemin d'échec réel du menu), observable via le label.
+func _block_flow() -> void:
+	var flow: Node = _tree().root.get_node_or_null(NodePath("SceneFlow"))
+	if flow != null:
+		flow.set("_busy", true)
+
+
+func _unblock_flow() -> void:
+	var flow: Node = _tree().root.get_node_or_null(NodePath("SceneFlow"))
+	if flow != null:
+		flow.set("_busy", false)
+
+
 func _clear_save() -> void:
 	var system: Node = _save_system()
 	if system == null:
@@ -149,8 +166,10 @@ func test_new_game_creates_a_save_and_enables_continue() -> void:
 		_close_menu()
 		return
 
+	_block_flow()
 	new_game.pressed.emit()
 	await _tree().process_frame
+	_unblock_flow()
 
 	var system: Node = _save_system()
 	check(system != null and bool(system.call("has_save", SLOT)),
@@ -158,6 +177,12 @@ func test_new_game_creates_a_save_and_enables_continue() -> void:
 	if continue_button != null:
 		check(not continue_button.disabled,
 			"« Continuer » doit s'activer une fois la sauvegarde créée")
+	# D.0 : la transition vers la vallée a été DEMANDÉE — le flux bloqué l'a
+	# refusée par le chemin d'échec prévu, et le menu l'a dit.
+	var status: Label = menu.find_child("StatusLabel", true, false) as Label
+	if status != null:
+		check_equal(status.text, "Vallée indisponible — voir le journal.",
+			"« Nouvelle partie » tente bien d'entrer dans la vallée")
 	_close_menu()
 	_clear_save()
 
@@ -184,6 +209,7 @@ func test_new_game_asks_confirmation_before_overwriting() -> void:
 		return
 
 	# Premier appui : demande de confirmation, la sauvegarde reste intacte.
+	_block_flow()
 	new_game.pressed.emit()
 	await _tree().process_frame
 	var still_there: Dictionary = system.call("load_slot", SLOT)
@@ -193,6 +219,7 @@ func test_new_game_asks_confirmation_before_overwriting() -> void:
 	# Second appui : confirmation, la sauvegarde est remplacée.
 	new_game.pressed.emit()
 	await _tree().process_frame
+	_unblock_flow()
 	var replaced: Dictionary = system.call("load_slot", SLOT)
 	check(not replaced.has("marqueur"), "le second appui doit écraser la sauvegarde")
 

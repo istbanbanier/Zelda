@@ -1,0 +1,41 @@
+[gd_scene load_steps=6 format=3]
+
+; Coffre graybox (§11.4). Corps sur la couche 1 (World Static) : on bute dessus.
+; Le couvercle `Lid` bascule à l'ouverture — l'état se voit sans texture.
+
+[ext_resource type="Script" path="res://scripts/interaction/chest.gd" id="1_chest"]
+
+[sub_resource type="BoxShape3D" id="ChestShape"]
+size = Vector3(1.0, 0.7, 0.7)
+
+[sub_resource type="BoxMesh" id="ChestBody"]
+size = Vector3(1.0, 0.6, 0.7)
+
+[sub_resource type="BoxMesh" id="ChestLid"]
+size = Vector3(1.0, 0.12, 0.7)
+
+[sub_resource type="StandardMaterial3D" id="ChestMat"]
+albedo_color = Color(0.42, 0.3, 0.16, 1)
+
+[node name="Chest" type="StaticBody3D"]
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("1_chest")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+shape = SubResource("ChestShape")
+
+[node name="BodyMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+mesh = SubResource("ChestBody")
+surface_material_override/0 = SubResource("ChestMat")
+
+; Pivot du couvercle sur l'arête arrière : `chest.gd` le bascule à l'ouverture.
+[node name="Lid" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.66, -0.35)
+
+[node name="LidMesh" type="MeshInstance3D" parent="Lid"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.35)
+mesh = SubResource("ChestLid")
+surface_material_override/0 = SubResource("ChestMat")

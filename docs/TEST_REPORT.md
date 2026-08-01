@@ -1146,3 +1146,55 @@ Détail : `evidence/gateC/README.md`.
   arrive en Phase H.
 - **Ramassage au sol inexistant** : les armes entrent par API ; le flux coffre →
   loot arrive en Phase D (§11.4).
+
+---
+
+# Jalon D.0 — Vallée de Néris : intégration graybox (2026-08-01)
+
+## Commande et résultat
+
+```bash
+tools/validate_fast.sh; echo $?
+```
+
+**Code retour** : `0` — VERT. **221 réussis, 0 échoué**, plancher 221.
+
+> **Nombre de tests de référence : 221.** C'est ici, et nulle part ailleurs, qu'il
+> doit être lu.
+
+Nouveaux fichiers : `ValleyWorld.tscn` (sol 512 × 512 m, spawn sud §3.3, camp à
+(45, 0, 65) avec trois pillards, coffre `valley.chest.camp.01`, gourdin au sol),
+`valley_world.gd` (flux VALLEY, filet anti-hors-monde), `Chest.tscn`/`chest.gd`
+(loot garanti versé une fois, ID stable §19.3), `WeaponPickup.tscn`/
+`weapon_pickup.gd`, geste d'interaction §14.2 dans le contrôleur (2,2 m, cône
+avant), « Nouvelle partie » et « Continuer » → `SceneFlow.go_to(vallée)`.
+Inclut la revue du Gate C du même jour : `Mode.DEAD` + `test_player_death.gd`.
+
+## Les cas centraux
+
+- La vallée charge avec joueur au spawn (atterri), trois pillards, coffre et
+  arme au sol ; le flux passe à VALLEY.
+- Ramassage : l'interaction verse le gourdin dans l'inventaire, l'objet
+  disparaît ; inventaire PLEIN → l'arme reste au sol, rien n'est perdu.
+- Coffre : hache + 12 flèches versées une fois ; le second appui ne donne RIEN
+  (§11.4 « jamais de second loot » — en session ; persistance Phase E).
+- Le menu atteint réellement la scène (`can_go_to` vrai sur la constante).
+
+## Pièges mesurés pendant D.0
+
+- Un **StaticBody3D ajouté puis déplacé** passe un tick dans le joueur : Jolt
+  dépénètre le personnage (~0,6 m mesurés) et l'objet sort de la portée
+  d'interaction. Règle : POSITIONNER AVANT `add_child`.
+- « Nouvelle partie » exécutant une vraie transition, les tests du menu doivent
+  BLOQUER `SceneFlow` (occupé) pendant l'appui : sinon la scène du runner est
+  remplacée et l'arbre reste en pause — cascade sur toutes les suites suivantes.
+
+## Limites de D.0 — dites sans détour
+
+- **Sol plat** : ni relief, ni rivière, ni pylône, ni citadelle, ni composition
+  North Star — c'est une INTÉGRATION, pas le monde de §3.3. Le navmesh (D-022)
+  arrive avec le premier relief.
+- **« Continuer » repart du spawn** : l'application de l'état sauvegardé arrive
+  avec SaveSystem complet (Phase E).
+- **Pas d'invite d'interaction à l'écran** (§14.2 : reticle/outline — UI §17).
+- Pas de bords de monde : filet anti-chute à −20 m en attendant le relief.
