@@ -3,9 +3,9 @@
 ; Sonde d'entrée — outil de validation manuelle (docs/MANUAL_VALIDATION.md).
 ; Jamais atteignable depuis le jeu : elle se lance explicitement.
 
-[ext_resource type="Script" path="res://scripts/tools/input_probe.gd" id="1_probe"]
+[ext_resource type="Script" path="res://scripts/tools/input_audit.gd" id="1_probe"]
 
-[node name="InputProbe" type="Control"]
+[node name="InputAudit" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -41,7 +41,7 @@ theme_override_constants/separation = 8
 
 [node name="Title" type="Label" parent="Margin/Column"]
 layout_mode = 2
-text = "Sonde d'entrée — validation manuelle du Gate A"
+text = "InputAudit — validation manuelle du Gate A (build de développement uniquement)"
 
 [node name="LayoutLabel" type="Label" parent="Margin/Column"]
 unique_name_in_owner = true
@@ -65,13 +65,28 @@ layout_mode = 2
 autowrap_mode = 3
 text = "Dernière entrée : —"
 
+[node name="VerdictSeparator" type="HSeparator" parent="Margin/Column"]
+layout_mode = 2
+
+[node name="QLeftLabel" type="Label" parent="Margin/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+text = "1. …"
+
+[node name="QLockLabel" type="Label" parent="Margin/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+text = "2. …"
+
 [node name="Separator" type="HSeparator" parent="Margin/Column"]
 layout_mode = 2
 
 [node name="Hint" type="Label" parent="Margin/Column"]
 layout_mode = 2
 autowrap_mode = 3
-text = "Appuyer sur chaque touche et chaque bouton. Une action ACTIVE prouve que la liaison fonctionne. Échap n'est PAS un raccourci de sortie ici : fermer la fenêtre."
+text = "Appuyer sur chaque touche et chaque bouton : une action ACTIVE prouve que la liaison fonctionne. Échap revient au menu. Les deux verdicts ci-dessus se verrouillent une fois observés — une capture suffit alors comme preuve."
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Margin/Column"]
 layout_mode = 2

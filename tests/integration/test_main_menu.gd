@@ -224,3 +224,44 @@ func test_builtin_ui_actions_exist_for_menu_navigation() -> void:
 	for action: String in ["ui_accept", "ui_cancel", "ui_up", "ui_down", "ui_focus_next"]:
 		check(InputMap.has_action(action),
 			"action intégrée absente, navigation clavier/manette cassée : %s" % action)
+
+
+func test_debug_entry_follows_build_type() -> void:
+	## §6.1 : « un debug overlay désactivé dans le build final ». La règle est
+	## vérifiée dans les deux sens, sans supposer le type de build courant : en
+	## développement l'entrée est présente et utilisable, en export release elle
+	## disparaît de l'arbre de focus au lieu d'être seulement grisée.
+	var menu: Node = _open_menu()
+	if menu == null:
+		check(false, "menu non instancié")
+		return
+	await _tree().process_frame
+
+	var debug_button: Button = menu.find_child("DebugAuditButton", true, false) as Button
+	check_not_null(debug_button, "DebugAuditButton")
+	if debug_button == null:
+		_close_menu()
+		return
+
+	var is_debug: bool = OS.is_debug_build()
+	check_equal(debug_button.visible, is_debug,
+		"visibilité de l'entrée debug (OS.is_debug_build() = %s)" % is_debug)
+	check_equal(debug_button.disabled, not is_debug,
+		"activation de l'entrée debug (OS.is_debug_build() = %s)" % is_debug)
+	if not is_debug:
+		check_equal(debug_button.focus_mode, Control.FOCUS_NONE,
+			"hors développement, l'entrée debug ne doit pas être focalisable")
+	_close_menu()
+
+
+func test_debug_audit_scene_is_reachable_in_development() -> void:
+	## L'outil ne sert à rien s'il n'est pas atteignable : c'est le seul chemin
+	## prévu par docs/MANUAL_GATE_A.md pour les étapes clavier et manette.
+	if not OS.is_debug_build():
+		check(true, "build release : atteignabilité de l'audit volontairement non testée")
+		return
+	var flow: Node = _tree().root.get_node_or_null(NodePath("SceneFlow"))
+	check_not_null(flow, "SceneFlow")
+	if flow != null:
+		check(bool(flow.call("can_go_to", "res://scenes/tests/InputAudit.tscn")),
+			"la scène InputAudit doit être atteignable en développement")

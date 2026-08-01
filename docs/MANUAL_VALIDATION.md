@@ -15,6 +15,12 @@ manette, ni périphérique audio (`docs/KNOWN_ISSUES.md` ISS-002, ISS-004).
 
 > **État du Gate A : `EN ATTENTE`** — ni `PASS`, ni `FAIL`. Il le reste tant que
 > les six étapes ci-dessous n'ont pas produit leurs preuves.
+>
+> 👉 **Pour exécuter la campagne sur un Mac, suivre `docs/MANUAL_GATE_A.md`** :
+> c'est la version opérateur, pas à pas, avec l'installation de Godot, le déballage
+> du paquet et la procédure de reprise en session Claude Code. Le présent document
+> reste la référence de **politique** (critères, preuves attendues, règle de
+> verdict) ; les deux ne doivent jamais diverger sur les critères.
 
 ---
 
@@ -79,7 +85,7 @@ peuvent pas presser une touche.
 dans les réglages du système d'exploitation, pas seulement sur les touches.
 
 ```bash
-godot --path . --scene res://scenes/tests/InputProbe.tscn
+godot --path . --scene res://scenes/tests/InputAudit.tscn
 ```
 
 La sonde affiche la disposition détectée et un verdict automatique. Elle existe

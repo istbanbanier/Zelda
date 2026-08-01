@@ -13,7 +13,8 @@ mais six contrôles de §21.4 exigent une machine avec écran, clavier AZERTY et
 manette, dont ce conteneur ne dispose pas (ISS-002, ISS-004).
 
 Protocole prêt à exécuter : **`docs/MANUAL_VALIDATION.md`**, outillé par
-`tools/manual_validation_kit.sh` et `scenes/tests/InputProbe.tscn`.
+`tools/manual_validation_kit.sh` et `scenes/tests/InputAudit.tscn`.
+Procédure opérateur macOS : **`docs/MANUAL_GATE_A.md`**.
 
 | Étape de validation manuelle | État |
 |---|---|
@@ -121,7 +122,7 @@ ne dépendent pas du rendu, seulement de l'exécution headless.
 | Simulation physique Jolt (§5.3) | **Fonctionnel** | `test_physics_simulation.gd` : chute de 4 m, arrêt à 0,5 m, stabilisation | 2026-08-01 |
 | Masques de collision par entité | Non commencé | aucune entité n'existe encore | — |
 | Apparence et lisibilité du menu | **NON VÉRIFIÉ** | exige un écran ; seule la structure est testable ici | — |
-| Sonde d'entrée (outil de validation) | **Fonctionnel** | `test_input_probe.gd`, 4 cas : la sonde reste synchronisée avec l'InputMap | 2026-08-01 |
+| `InputAudit` + entrée debug du menu | **Fonctionnel** | `test_input_audit.gd` (4 cas) et `test_main_menu.gd` (entrée debug absente hors développement) | 2026-08-01 |
 | Protocole de validation manuelle | **Implémenté** | `docs/MANUAL_VALIDATION.md` + `tools/manual_validation_kit.sh` (mode `--finalize` sort en 3 tant qu'il manque une preuve) | 2026-08-01 |
 
 **Reste avant Gate A** : les six étapes de `docs/MANUAL_VALIDATION.md`, toutes

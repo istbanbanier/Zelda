@@ -10,8 +10,8 @@
 ## précisément de la validation humaine.
 extends GateTestCase
 
-const PROBE_SCENE: String = "res://scenes/tests/InputProbe.tscn"
-const PROBE_SCRIPT: String = "res://scripts/tools/input_probe.gd"
+const AUDIT_SCENE: String = "res://scenes/tests/InputAudit.tscn"
+const AUDIT_SCRIPT: String = "res://scripts/tools/input_audit.gd"
 
 ## Doit rester identique à `EXPECTED_ACTIONS` de `test_input_map.gd`.
 const EXPECTED_ACTIONS: Array[String] = [
@@ -24,15 +24,15 @@ const EXPECTED_ACTIONS: Array[String] = [
 
 
 func test_probe_scene_exists_and_loads() -> void:
-	check(ResourceLoader.exists(PROBE_SCENE), "la scène de sonde doit exister")
-	var packed: PackedScene = load(PROBE_SCENE) as PackedScene
+	check(ResourceLoader.exists(AUDIT_SCENE), "la scène de sonde doit exister")
+	var packed: PackedScene = load(AUDIT_SCENE) as PackedScene
 	check_not_null(packed, "la scène de sonde doit se charger")
 
 
 func test_probe_watches_every_input_action() -> void:
 	## Le point sensible : une action ajoutée à l'InputMap mais absente de la
 	## sonde ne serait jamais testée à la main.
-	var script: Script = load(PROBE_SCRIPT) as Script
+	var script: Script = load(AUDIT_SCRIPT) as Script
 	check_not_null(script, "script de la sonde")
 	if script == null:
 		return
@@ -48,7 +48,7 @@ func test_probe_left_key_matches_the_input_map() -> void:
 	## La sonde annonce à l'opérateur quelle position physique porte « gauche ».
 	## Si cette constante divergeait de l'InputMap réel, le bandeau afficherait un
 	## verdict AZERTY faux — le pire cas possible pour ce protocole.
-	var script: Script = load(PROBE_SCRIPT) as Script
+	var script: Script = load(AUDIT_SCRIPT) as Script
 	if script == null:
 		check(false, "script de la sonde")
 		return
@@ -65,5 +65,5 @@ func test_probe_left_key_matches_the_input_map() -> void:
 
 func test_probe_is_not_reachable_from_the_game() -> void:
 	## Outil de développement : il ne doit pas être la scène principale.
-	check(String(ProjectSettings.get_setting("application/run/main_scene", "")) != PROBE_SCENE,
+	check(String(ProjectSettings.get_setting("application/run/main_scene", "")) != AUDIT_SCENE,
 		"la sonde ne doit jamais être la scène principale du projet")

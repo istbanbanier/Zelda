@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Prépare et clôt la campagne de validation manuelle du Gate A.
-# Protocole complet : docs/MANUAL_VALIDATION.md
+# Procédure opérateur (macOS) : docs/MANUAL_GATE_A.md
+# Politique et critères  : docs/MANUAL_VALIDATION.md
 #
 #   tools/manual_validation_kit.sh              prépare evidence/gateA/
 #   tools/manual_validation_kit.sh --finalize   écrit le manifeste et contrôle
@@ -89,7 +90,7 @@ if [ ! -f "$DIR/RAPPORT.md" ]; then
   cat > "$DIR/RAPPORT.md" <<'TEMPLATE'
 # RAPPORT DE VALIDATION MANUELLE — Gate A
 
-Protocole : `docs/MANUAL_VALIDATION.md`. Remplir en exécutant, pas de mémoire.
+Procédure : `docs/MANUAL_GATE_A.md`. Remplir en exécutant, jamais de mémoire.
 
 - **Opérateur** :
 - **Date** :
@@ -159,12 +160,14 @@ cat <<EOF
 Commandes de la campagne :
 
   1. Lancement          godot --path . 2>&1 | tee $DIR/01_lancement.log
-  2. Clavier AZERTY     godot --path . --scene res://scenes/tests/InputProbe.tscn
+  2. Clavier AZERTY     godot --path .  puis menu > « Debug — Audit d'entrée »
+                        (ou : godot --path . --scene res://scenes/tests/InputAudit.tscn)
   3. Manette            même scène, manette branchée AVANT le lancement
   4. Menu               godot --path .
   5. Reprise            clone neuf + chronomètre, puis tools/validate_fast.sh
   6. Clôture            tools/manual_validation_kit.sh --finalize
 
 Déposer les captures dans $DIR/ avec les noms attendus par le protocole.
-Protocole détaillé et critères PASS/FAIL : docs/MANUAL_VALIDATION.md
+Procédure pas à pas (macOS) : docs/MANUAL_GATE_A.md
+Politique et critères       : docs/MANUAL_VALIDATION.md
 EOF

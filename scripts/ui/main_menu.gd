@@ -11,11 +11,13 @@
 extends Control
 
 const DEFAULT_SLOT: String = "slot0"
+const INPUT_AUDIT_SCENE: String = "res://scenes/tests/InputAudit.tscn"
 
 @onready var _continue_button: Button = %ContinueButton
 @onready var _new_game_button: Button = %NewGameButton
 @onready var _options_button: Button = %OptionsButton
 @onready var _quit_button: Button = %QuitButton
+@onready var _debug_audit_button: Button = %DebugAuditButton
 @onready var _status_label: Label = %StatusLabel
 
 var _save_system: Node = null
@@ -31,6 +33,7 @@ func _ready() -> void:
 	_new_game_button.pressed.connect(_on_new_game)
 	_options_button.pressed.connect(_on_options)
 	_quit_button.pressed.connect(_on_quit)
+	_debug_audit_button.pressed.connect(_on_debug_audit)
 
 	_refresh()
 	_wire_focus_cycle()
@@ -49,18 +52,27 @@ func _refresh() -> void:
 	_options_button.disabled = true
 	_options_button.tooltip_text = "Options : Phase I"
 
+	# §6.1 : l'outillage de debug est absent du build final. `OS.is_debug_build()`
+	# est faux dans un export release ; l'entrée disparaît alors entièrement de
+	# l'arbre de focus, elle n'est pas seulement grisée.
+	var debug_build: bool = OS.is_debug_build()
+	_debug_audit_button.visible = debug_build
+	_debug_audit_button.disabled = not debug_build
+
 
 ## §17.3 : « pas de piège de focus ». Les voisins sont câblés explicitement en
 ## cycle plutôt que laissés à la détection géométrique, qui saute les boutons
 ## désactivés et peut laisser le focus sans issue.
 func _wire_focus_cycle() -> void:
 	var order: Array[Button] = [
-		_continue_button, _new_game_button, _options_button, _quit_button,
+		_continue_button, _new_game_button, _options_button,
+		_debug_audit_button, _quit_button,
 	]
 	var usable: Array[Button] = []
 	for button: Button in order:
-		button.focus_mode = Control.FOCUS_NONE if button.disabled else Control.FOCUS_ALL
-		if not button.disabled:
+		var reachable: bool = not button.disabled and button.visible
+		button.focus_mode = Control.FOCUS_ALL if reachable else Control.FOCUS_NONE
+		if reachable:
 			usable.append(button)
 	for i: int in range(usable.size()):
 		var current: Button = usable[i]
@@ -73,8 +85,9 @@ func _wire_focus_cycle() -> void:
 
 
 func _focus_first_available() -> void:
-	for button: Button in [_continue_button, _new_game_button, _options_button, _quit_button]:
-		if not button.disabled:
+	for button: Button in [_continue_button, _new_game_button, _options_button,
+			_debug_audit_button, _quit_button]:
+		if not button.disabled and button.visible:
 			button.grab_focus()
 			return
 
@@ -126,6 +139,19 @@ func _new_game_payload() -> Dictionary:
 
 func _on_options() -> void:
 	_status_label.text = "Options : Phase I."
+
+
+## Entrée de debug (§6.1). Refuse d'agir hors build de développement, même si le
+## bouton était rendu visible par erreur : la garde est dans le comportement, pas
+## seulement dans l'affichage.
+func _on_debug_audit() -> void:
+	if not OS.is_debug_build():
+		return
+	var flow: Node = get_node_or_null("/root/SceneFlow")
+	if flow == null or not bool(flow.call("can_go_to", INPUT_AUDIT_SCENE)):
+		_status_label.text = "Scène d'audit indisponible."
+		return
+	flow.call("go_to", INPUT_AUDIT_SCENE)
 
 
 func _on_quit() -> void:
