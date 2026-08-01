@@ -903,6 +903,17 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
    localisé, routes guidantes, HUD discret).
 3. Déposer le retour dans `evidence/gateD/playtest02/FORMULAIRE.md`.
 
+### Verdict propriétaire sur la Passe V4 (2026-08-01, plus récent)
+
+> Infrastructure technique et fonctionnelle ACCEPTÉE ; gate artistique
+> **REFUSÉ** — un graybox décoré de primitives n'est pas la cible V4.
+> Livré en réponse : `docs/assets/ASSET_READINESS_AUDIT.md` (inventaire
+> complet, primitives vs production, manquants, créer/acquérir/remplacer,
+> licences/formats, risques). Les 5 PNG V4 ne peuvent PAS être déposés
+> depuis le conteneur (jamais arrivés sur disque — vérifié) : dépôt à faire
+> depuis la machine du propriétaire. **ARRÊT — aucune couche artistique
+> supplémentaire avant validation de l'audit et décision propriétaire.**
+
 ### Rappels
 
 - Rebaker le navmesh après TOUTE modification du relief (749 poly).
