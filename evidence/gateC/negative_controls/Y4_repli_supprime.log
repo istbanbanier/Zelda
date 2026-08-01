@@ -1,0 +1,10 @@
+# Contrôle négatif — Y4_repli_supprime
+# Le pillard ne recule plus apres une esquive reussie — le comportement-tutoriel de §12.1 disparait.
+# Test visé : test_a_timed_dodge_avoids_the_blow_and_makes_the_raider_retreat
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_raider.gd::test_a_timed_dodge_avoids_the_blow_and_makes_the_raider_retreat — après l'esquive, le pillard a reculé (état : attack)
+=== RÉSULTAT: 185 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_raider.gd::test_a_timed_dodge_avoids_the_blow_and_makes_the_raider_retreat — après l'esquive, le pillard a reculé (état : attack)
+RC=0

@@ -410,6 +410,39 @@ est une préférence, pas une décision.
   d'états avant de connaître les besoins du combat, avec un coût de migration
   supérieur à celui de trois valeurs d'énumération.
 
+### Amendement 2026-08-01 — C.2 : l'absorption a eu lieu, en place
+
+Les états de combat existent (`ATTACKING`, `DODGING`) et la promesse est tenue
+**sans machine nodale** : le `Mode` à cinq états, une fonction de traitement par
+état, des gardes ordonnées pour les priorités et des transitions explicites, EST
+la machine de §8.1 — plate. La convertir en nœuds n'ajouterait aujourd'hui ni un
+comportement ni un test : ce serait la structure spéculative que §7.14 proscrit.
+Ce constat sera réexaminé si un état exige une hiérarchie (sous-états de visée,
+Phase C.3+) — le critère de bascule est un BESOIN, pas un compte d'états. L'IA du
+pillard a sa propre machine (enum également), distincte par conception : §12.7
+la fait vivre côté ennemi.
+
+---
+
+## D-022 — Le pillard pilote en direct, sans navmesh, jusqu'à la Phase D
+
+- **Date** : 2026-08-01 · **Phase** : C.2 · **Statut** : ADOPTÉE, à échéance
+- **Contexte** : §12.7 demande `NavigationRegion3D` + `NavigationAgent3D`. Les
+  arènes de la Phase C — CombatLab, scènes de test — sont des sols plans et vides.
+- **Choix** : le `raider_red` se dirige en ligne droite vers sa cible (poursuite,
+  repli), sans navmesh. Sa perception respecte déjà §12.7 en entier : cône par
+  cadence (1 tick sur 6, §12.9), raycast de LOS, « aucune vision à travers mur »
+  testée, et un impact reçu révèle l'attaquant.
+- **Pourquoi** : un navmesh sur un rectangle vide ne teste rien du navmesh — il
+  ajoute une dépendance de bake à chaque scène de test pour un chemin qui est
+  toujours la ligne droite. Le pilotage arrivera avec une géométrie qui le met
+  réellement à l'épreuve (Phase D), et `EnemyTuning` n'aura pas à changer.
+- **Échéance dure** : à la Phase D, AUCUN ennemi n'entre dans la vallée sans
+  `NavigationAgent3D`. Cette décision expire avec le premier terrain non plan.
+- **Aussi différé** : l'audition de §12.6 (15 m) attend les événements sonores de
+  §12.7 — le champ est déclaré dans `EnemyTuning`, non consommé, et le test du
+  « dos du pillard » documente cette absence.
+
 ---
 
 ## D-019 — Le seuil de paroi est borné par l'angle de sol praticable

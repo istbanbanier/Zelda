@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 ; CombatLab (§10.8), embryon. Lancement :
 ;   godot --path . scenes/tests/CombatLab.tscn
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="1_player"]
 [ext_resource type="PackedScene" path="res://scenes/tests/CombatDummy.tscn" id="2_dummy"]
 [ext_resource type="Script" path="res://scripts/tools/combat_lab.gd" id="3_lab"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/RaiderRed.tscn" id="4_raider"]
 
 [sub_resource type="BoxShape3D" id="FloorShape"]
 size = Vector3(40, 1, 40)
@@ -47,6 +48,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0, 8)
 
 [node name="DummyPairB" parent="." instance=ExtResource("2_dummy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 0, 8)
+
+; Le duel vivant : un pillard braise à 12 m, dans l'axe. Il voit le joueur en
+; s'approchant — télégraphe, esquive, repli et stagger s'essaient ici.
+[node name="Raider" parent="." instance=ExtResource("4_raider")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, -12)
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0, 15, 0)

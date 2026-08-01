@@ -953,3 +953,59 @@ X1–X4, tous ÉCHEC comme attendu, logs avec `RC=` dans
   viennent avec les systèmes qu'ils instrumentent.
 - **Le ressenti n'est pas prouvé** : §10.6 exige aussi un essai humain — même
   dette de passe finale que le traversal.
+
+---
+
+# Jalon C.2 — Esquive, i-frames, lock-on, premier pillard (2026-08-01)
+
+## Commande et résultat
+
+```bash
+tools/validate_fast.sh; echo $?
+```
+
+**Code retour** : `0` — VERT. **186 réussis, 0 échoué**, plancher 186.
+
+> **Nombre de tests de référence : 186.** C'est ici, et nulle part ailleurs, qu'il
+> doit être lu.
+
+Nouveaux fichiers : `DodgeDefinition` + `.tres`, `PoiseComponent`,
+`LockOnComponent`, `EnemyTuning` + `raider_red_default.tres`, `club_1.tres`,
+`RaiderRed` (scène + IA), 21 cas de test (`test_dodge`, `test_lock_on`,
+`test_raider`). Le `CombatLab` gagne un pillard vivant à 12 m.
+
+## Le cas central, §12.1 au complet
+
+Le pillard télégraphie 0,8 s (mesuré ≥ 0,65, jamais avant), frappe pour 8
+(gourdin bois §11.1) un joueur immobile — et face à une **esquive réelle
+chronométrée sur son annonce** (déclenchée +0,65 s, i-frames 0,02–0,27 couvrant
+la fenêtre active 0,80–0,95), le coup ne porte pas **et le pillard recule** :
+état de repli, distance mesurée. Le tutoriel vivant fonctionne, en assertion.
+
+## Défauts trouvés pendant C.2 — tous dans mes tests, aucun dans le code livré
+
+| # | Défaut | Leçon |
+|---|---|---|
+| C2-1 | La hitbox de test gardait le masque par défaut (1) : elle ne voyait pas la couche Hurtbox (32) du joueur — la première assertion des i-frames passait **pour la mauvaise raison** (aucun coup ne portait jamais) | c'est le contrôle inverse — « le coup DOIT porter hors fenêtre » — qui l'a révélé. Toujours prouver les deux sens (B3-1) |
+| C2-2 | Deux tests posaient le pillard **derrière** le joueur : l'épée frappait dans le vide, la poise ne montait jamais | une géométrie de test se vérifie contre l'orientation réelle du personnage |
+| C2-3 | À 2 m, la première attaque du pillard partait **pendant le `_setup`**, avant le branchement des signaux — annonce manquée, chronomètre faux | brancher les signaux avant que l'événement ne puisse exister : distance de spawn = marge de temps |
+| C2-4 | L'élan résiduel de fin d'esquive (~1,2 m) sortait le joueur de la sphère de frappe du second coup | une mesure post-action tient compte de la cinétique complète, pas de la durée nominale |
+| C2-5 | Mon assertion « rien n'est prélevé » ignorait la régénération repartie pendant l'attente | vérifier « jamais descendu sous X », pas « figé à X » |
+
+## Contrôles négatifs
+
+Y1–Y5, tous ÉCHEC, logs avec `RC=` dans `evidence/gateC/negative_controls/`.
+**Y5** fait rougir la valeur du télégraphe **dans les deux sens** : la mesure
+comportementale (« 0,13 s ») et l'enveloppe épinglée (« 0,10 ») — la doctrine
+issue de la revue du Gate B, appliquée en routine.
+
+## Limites de C.2 — à ne pas confondre avec des oublis
+
+- **Le joueur encaisse sans réaction** : ni état Hurt, ni knockback appliqué, ni
+  anti-stunlock (§10.5) — C.3, avec la protection que §10.5 exige.
+- **Pas de changement de cible** (`target_prev/next` liés depuis A.1, logique à
+  venir) ni de hit-stop/VFX/son (§10.7).
+- **D-022** : pilotage direct sans navmesh (expire à la Phase D), audition
+  différée aux événements sonores.
+- **Le ressenti du duel n'est pas prouvé** — le CombatLab avec pillard vivant est
+  prêt pour l'essai humain (dettes de passe finale).

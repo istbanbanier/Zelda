@@ -1,0 +1,83 @@
+[gd_scene load_steps=12 format=3]
+
+; Pillard braise (§12.1) — graybox : capsule terre cuite, nez indiquant le
+; regard, gourdin invisible (le volume de frappe suffit ; le modèle vient en
+; Phase H). Corps couche Enemy (4), hurtbox couche Hurtbox (32), hitbox couche
+; Enemy Hitbox (16) masquée sur Hurtbox (32).
+
+[ext_resource type="Script" path="res://scripts/enemies/raider_red.gd" id="1_raider"]
+[ext_resource type="Resource" path="res://resources/enemies/raider_red_default.tres" id="2_tuning"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="3_health"]
+[ext_resource type="Script" path="res://scripts/components/poise_component.gd" id="4_poise"]
+[ext_resource type="Script" path="res://scripts/components/hurtbox_component.gd" id="5_hurtbox"]
+[ext_resource type="Script" path="res://scripts/components/hitbox_component.gd" id="6_hitbox"]
+[ext_resource type="Script" path="res://scripts/combat/attack_controller.gd" id="7_attack"]
+[ext_resource type="Resource" path="res://resources/combat/raider/club_1.tres" id="8_club"]
+
+[sub_resource type="CapsuleShape3D" id="BodyShape"]
+radius = 0.38
+height = 1.6
+
+[sub_resource type="CapsuleMesh" id="BodyMesh"]
+radius = 0.38
+height = 1.6
+
+[sub_resource type="StandardMaterial3D" id="RaiderMat"]
+albedo_color = Color(0.72, 0.24, 0.16, 1)
+
+[sub_resource type="BoxShape3D" id="ClubSweep"]
+size = Vector3(1.1, 0.9, 1.0)
+
+[node name="RaiderRed" type="CharacterBody3D" groups=["enemies", "damageable", "lock_on_targets"]]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1_raider")
+tuning = ExtResource("2_tuning")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("BodyShape")
+
+[node name="Pivot" type="Node3D" parent="."]
+
+[node name="BodyMesh" type="MeshInstance3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+mesh = SubResource("BodyMesh")
+surface_material_override/0 = SubResource("RaiderMat")
+
+; Volume de frappe du gourdin : devant le pivot (+Z local), à hauteur de torse.
+[node name="ClubHitbox" type="Area3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0.9)
+collision_layer = 16
+collision_mask = 32
+script = ExtResource("6_hitbox")
+team = &"enemies"
+instigator_path = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pivot/ClubHitbox"]
+shape = SubResource("ClubSweep")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("3_health")
+max_health = 45.0
+
+[node name="PoiseComponent" type="Node" parent="."]
+script = ExtResource("4_poise")
+max_poise = 20.0
+
+[node name="Hurtbox" type="Area3D" parent="."]
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("5_hurtbox")
+team = &"enemies"
+health_path = NodePath("../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hurtbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("BodyShape")
+
+[node name="AttackController" type="Node" parent="."]
+script = ExtResource("7_attack")
+attacks = [ExtResource("8_club")]
+hitbox_path = NodePath("../Pivot/ClubHitbox")
+base_damage = 8.0

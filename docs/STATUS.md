@@ -131,7 +131,7 @@ llvmpipe uniquement, aucun GPU.
 |---|---|---|
 | A | Boot, autoloads, InputMap AZERTY, couches de collision | **A.1 et A.2 livrés et gelés (`9414fd0`)** ; Gate A **EN ATTENTE** de validation humaine |
 | B | Player, caméra, locomotion, endurance, escalade, mantle | **Clos par D-021 : accepté pour continuation** — volet automatique vert (137 tests), dettes VALIDATION-B-001 + CONTROLLER-001 à la passe finale |
-| C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | **C.0 et C.1 livrés** — dégâts, épée, combo de trois, premier échange gagné ; esquive/lock-on en C.2 |
+| C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | **C.0 à C.2 livrés** — esquive à i-frames, lock-on, poise/stagger, premier pillard IA ; lourde et arc en C.3 |
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
 | D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | Non commencé |
 | E | Récolte, cuisine, buffs, sauvegarde et migrations | Non commencé |
@@ -353,6 +353,30 @@ enchaîne trois légères contre de vrais mannequins.
 | Esquive + i-frames, lock-on, réactions (§10.2, §8.4) | **Non commencé** | jalon C.2 |
 | Attaque lourde, arc (§10.2, §10.4) | **Non commencé** | C.2 / C.3 |
 | Hit-stop, VFX, sons (§10.7) | **Non commencé** | valeurs déclarées dans les `.tres`, aucun système de présentation |
+
+---
+
+## Phase C — jalon C.2 : esquive, i-frames, lock-on, premier pillard
+
+| Élément (§) | État | Preuve |
+|---|---|---|
+| Esquive quatre directions, repère caméra (§10.2) | **Fonctionnel** | `test_dodge.gd` : direction du stick + reculade sans direction |
+| I-frames par l'effet : coup refusé DANS la fenêtre, porté APRÈS (§10.2) | **Fonctionnel** | `test_iframes_refuse_a_real_blow_then_expire` ; longueur 0,25 s épinglée dans 0,22–0,27 |
+| Coût 15 d'endurance, esquive refusée à jauge insuffisante (§9.1) | **Fonctionnel** | déclaré en B.2, consommé depuis C.2 ; Y2 |
+| Dodge cancel : recovery annulable, engagement non (§10.6) | **Fonctionnel** | `test_dodge_cancels_attack_recovery_but_not_startup` |
+| Lock-on : acquisition cône caméra 18–24 m (§8.4) | **Fonctionnel** | `test_lock_on.gd`, 7 cas ; enveloppe épinglée |
+| « Jamais à travers mur » (§8.4) | **Fonctionnel** | mur réel, même cône — seul le mur change ; Y3 |
+| Libérations : mort, distance (hystérésis), bascule (§8.4) | **Fonctionnel** | 3 cas |
+| Caméra convergente, butées conservées, strafe face à la cible (§8.4) | **Fonctionnel** | convergence mesurée en angle ; face au mannequin en déplacement |
+| Poise → stagger → récupération (§10.3, §12.3) | **Fonctionnel** | 2 coups d'épée (10+10 ≥ 20) étourdissent le pillard une fois |
+| **Pillard braise complet** (§12.1, §12.6, §12.7) | **Fonctionnel** | `test_raider.gd`, 8 cas — voir ci-dessous |
+| Perception : cône 95°/22 m par cadence, LOS réelle, impact révélateur | **Fonctionnel** | aggro devant, rien dans le dos, rien à travers mur |
+| Télégraphe 0,65–0,95 s mesuré ET épinglé | **Fonctionnel** | coup jamais avant 0,65 s (mesuré : ~0,8) ; Y5 dans les deux sens |
+| **Repli après esquive réussie** (§12.1) | **Fonctionnel** | esquive réelle chronométrée sur le télégraphe → 0 dégât + distance de repli ; Y4 |
+| Duel gagnable (Gate C) | **Fonctionnel** | martèlement → pillard mort, inerte, joueur vivant |
+| Changement de cible (§8.4 suivant/précédent) | **Non commencé** | actions `target_prev/next` liées depuis A.1, logique en C.3+ |
+| Audition (§12.6), navmesh (§12.7) | **Différés** | D-022 — événements sonores et Phase D |
+| Réaction de dégât du joueur (§8.1 Hurt), anti-stunlock (§10.5) | **Non commencé** | le joueur encaisse sans broncher ; C.3 |
 
 ---
 

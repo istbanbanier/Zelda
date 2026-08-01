@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="DodgeDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/combat/dodge_definition.gd" id="1_dodge"]
+
+[resource]
+script = ExtResource("1_dodge")
+id = &"dodge_roll"
+duration = 0.42
+speed = 8.5
+iframes_start = 0.02
+iframes_end = 0.27
+input_buffer = 0.12

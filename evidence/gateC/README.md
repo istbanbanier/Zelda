@@ -44,3 +44,18 @@ lieu de 0,1), chuter quand elle disparaît, et voir son premier appui consommé 
 l'air par le portail `is_on_floor()`. Symptôme trompeur : l'appui unique échouait,
 le martèlement réussissait. Règle : attendre l'**état** (atterri), jamais un
 nombre de ticks fixe — la leçon de B.2, version infrastructure.
+
+
+## Jalon C.2 — Esquive, i-frames, lock-on, premier pillard (2026-08-01)
+
+| Log | Mutation | Test visé | Résultat |
+|---|---|---|---|
+| `Y1_iframes_jamais_ouvertes` | l'esquive n'ouvre plus la fenêtre | i-frames + esquive chronométrée | ÉCHEC — le coup porte pendant la roulade ✅ |
+| `Y2_esquive_gratuite` | coût et refus d'endurance retirés | coût de l'esquive | ÉCHEC — « obtenu 0.0000 » ✅ |
+| `Y3_verrouillage_a_travers_mur` | LOS ignorée à l'acquisition | mur de §8.4 | ÉCHEC ✅ |
+| `Y4_repli_supprime` | le pillard ignore l'esquive réussie | repli de §12.1 | ÉCHEC — « état : attack » ✅ |
+| `Y5_telegraphe_escamote` | startup du gourdin à 0,1 s **dans le `.tres`** | télégraphe, comportement ET enveloppe | ÉCHEC ×2 — « 0.13 s » mesuré + « 0.10 » épinglé ✅ |
+
+Y5 illustre la doctrine post-revue-B au complet : la valeur de spec est défendue
+par un test d'enveloppe ET par une mesure comportementale — la mutation fait
+rougir les deux, indépendamment.

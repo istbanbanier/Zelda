@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3]
+[gd_scene load_steps=28 format=3]
 
 ; Joueur — hiérarchie de MASTER_SPEC §6.2, réduite au périmètre de B.3.
 ; Absents et assumés : StateMachine (§8.1) — le contrôleur porte un Mode couvrant
@@ -26,6 +26,8 @@
 [ext_resource type="Resource" path="res://resources/combat/sword/light_1.tres" id="15_light1"]
 [ext_resource type="Resource" path="res://resources/combat/sword/light_2.tres" id="16_light2"]
 [ext_resource type="Resource" path="res://resources/combat/sword/light_3.tres" id="17_light3"]
+[ext_resource type="Script" path="res://scripts/components/lock_on_component.gd" id="18_lock"]
+[ext_resource type="Resource" path="res://resources/combat/dodge_default.tres" id="19_dodge"]
 
 [sub_resource type="CapsuleShape3D" id="Capsule"]
 radius = 0.35
@@ -59,11 +61,12 @@ height = 1.8
 [sub_resource type="BoxShape3D" id="SwordSweep"]
 size = Vector3(1.4, 1.0, 1.1)
 
-[node name="Player" type="CharacterBody3D"]
+[node name="Player" type="CharacterBody3D" groups=["player", "damageable"]]
 collision_layer = 2
 collision_mask = 1
 script = ExtResource("1_player")
 tuning = ExtResource("4_tuning")
+dodge = ExtResource("19_dodge")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -131,6 +134,9 @@ script = ExtResource("9_align")
 [node name="HealthComponent" type="Node" parent="Components"]
 script = ExtResource("11_health")
 max_health = 100.0
+
+[node name="LockOnComponent" type="Node" parent="Components"]
+script = ExtResource("18_lock")
 
 [node name="AttackController" type="Node" parent="Components"]
 script = ExtResource("14_attack")

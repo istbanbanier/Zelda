@@ -8,11 +8,11 @@
 ## §20.9 : toute la logique de mouvement vit dans `_physics_process()`. Aucun
 ## transform de gameplay n'est écrit depuis `_process()`.
 ##
-## ÉTAT C.1 : tout le traversal de la Phase B (§8.2, §9.2, §9.3), plus
-## l'**attaque légère au sol** (§10.1, §10.2) — trois phases pilotées par
-## `AttackDefinition`, combo de trois, buffer de 0,15 s. L'esquive, le lock-on et
-## les réactions arrivent en C.2 ; c'est là que le `Mode` sera absorbé dans la
-## `StateMachine` de §8.1 (D-018).
+## ÉTAT C.2 : traversal complet (Phase B), attaque légère au combo de trois
+## (C.1), **esquive à i-frames** (§10.2), **verrouillage de cible** (§8.4). Le
+## `Mode` à cinq états EST la machine de §8.1 — plate, une fonction par état,
+## priorités par ordre de garde (D-018 amendée) ; une machine nodale serait de la
+## structure sans contenu supplémentaire.
 class_name PlayerController
 extends CharacterBody3D
 
@@ -37,7 +37,7 @@ signal mantle_refused(reason: StringName)
 ## machine complète maintenant reviendrait à écrire dix-huit états vides : ce
 ## `Mode` couvre exactement ce qui existe, et la `StateMachine` de §8.1 arrivera
 ## avec la Phase C, quand les états de combat auront un contenu (D-018).
-enum Mode { LOCOMOTION, CLIMBING, MANTLING, ATTACKING }
+enum Mode { LOCOMOTION, CLIMBING, MANTLING, ATTACKING, DODGING }
 
 ## Rappel vers la distance de paroi : gain en (m/s) par mètre d'écart, et vitesse
 ## maximale de correction. Bornés à dessein — voir `_apply_climb_motion()`.
@@ -67,7 +67,12 @@ const WALL_PUSH_MIN_DOT: float = 0.3
 @onready var _ledge: LedgeDetectorComponent = $Components/LedgeDetectorComponent
 @onready var _alignment: ActionAlignmentComponent = $Components/ActionAlignmentComponent
 @onready var _attack: AttackControllerComponent = $Components/AttackController
+@onready var _health: HealthComponent = $Components/HealthComponent
+@onready var _lock_on: LockOnComponent = $Components/LockOnComponent
 @onready var _collision: CollisionShape3D = $CollisionShape3D
+
+## Esquive (§10.2) : fenêtres et vitesse en ressource, coût dans StaminaTuning.
+@export var dodge: DodgeDefinition
 
 ## Intention courante. Remplacée par un test via `set_intent_source()`.
 var _intent: InputIntent = null
@@ -85,6 +90,12 @@ var _wall_normal: Vector3 = Vector3.ZERO
 ## ou un saut d'escalade : le joueur est encore contre le mur, il se rattraperait
 ## immédiatement et ne partirait jamais.
 var _grab_cooldown: float = 0.0
+
+var _dodge_elapsed: float = 0.0
+var _dodge_direction: Vector3 = Vector3.ZERO
+## Appui d'esquive mémorisé (§10.2 : 0,12 s) — posé pendant une attaque, il part
+## dès la première fenêtre légale (recovery annulable ou retour à la locomotion).
+var _dodge_buffer: float = 0.0
 
 
 func _ready() -> void:
@@ -123,6 +134,10 @@ func _physics_process(delta: float) -> void:
 	# « avant » est celui que le joueur voit à cet instant.
 	_camera_rig.apply_look(intent.look, delta)
 
+	# Verrouillage : bascule et suivi, quel que soit le mode — la caméra doit
+	# suivre la cible pendant une esquive autant qu'en course (§8.4).
+	_handle_lock_on(delta, intent)
+
 	match _mode:
 		Mode.MANTLING:
 			_process_mantle(delta)
@@ -130,6 +145,8 @@ func _physics_process(delta: float) -> void:
 			_process_climb(delta, intent)
 		Mode.ATTACKING:
 			_process_attack(delta, intent)
+		Mode.DODGING:
+			_process_dodge(delta)
 		_:
 			_process_locomotion(delta, intent)
 
@@ -177,6 +194,13 @@ func _process_locomotion(delta: float, intent: InputIntent) -> void:
 	if _mode == Mode.LOCOMOTION and intent.attack_pressed and is_on_floor() \
 			and _attack != null and _attack.try_attack():
 		_mode = Mode.ATTACKING
+		return
+
+	# Esquive (§10.2) : depuis le sol, contre 15 d'endurance. L'appui mémorisé
+	# pendant une autre action est honoré ici, à la première fenêtre légale.
+	if _mode == Mode.LOCOMOTION and (intent.dodge_pressed or _dodge_buffer > 0.0) \
+			and is_on_floor():
+		_try_dodge(intent)
 
 
 ## Le sprint n'est accordé que s'il est demandé, que le joueur se déplace
@@ -195,6 +219,7 @@ func _resolve_sprint(delta: float, intent: InputIntent) -> bool:
 
 func _update_timers(delta: float, intent: InputIntent) -> void:
 	_grab_cooldown = maxf(0.0, _grab_cooldown - delta)
+	_dodge_buffer = maxf(0.0, _dodge_buffer - delta)
 	if is_on_floor():
 		_coyote_timer = tuning.coyote_time
 	else:
@@ -269,6 +294,16 @@ func _detect_ground_transitions(was_on_floor: bool, vertical_before: float) -> v
 ## Oriente la représentation visuelle vers le déplacement. Le corps, lui, garde
 ## une rotation nulle : voir `_ready()`.
 func _orient_visual(delta: float) -> void:
+	# §8.4 : verrouillé, le personnage fait face à la menace — le déplacement
+	# devient un strafe. La vitesse d'interpolation reste la même.
+	var lock: Node3D = lock_target()
+	if lock != null and _mode != Mode.CLIMBING:
+		var to_target: Vector3 = lock.global_position - global_position
+		if Vector2(to_target.x, to_target.z).length_squared() > 0.01:
+			var lock_yaw: float = atan2(to_target.x, to_target.z)
+			var lock_weight: float = 1.0 - exp(-tuning.visual_turn_speed * delta)
+			_visual_root.rotation.y = lerp_angle(_visual_root.rotation.y, lock_yaw, lock_weight)
+		return
 	var horizontal: Vector3 = Vector3(velocity.x, 0.0, velocity.z)
 	if horizontal.length_squared() < 0.04:
 		return
@@ -388,6 +423,16 @@ func _process_attack(delta: float, intent: InputIntent) -> void:
 	if intent.attack_pressed:
 		_attack.try_attack()
 
+	# Dodge cancel (§10.6) : la recovery est annulable par l'esquive — startup et
+	# fenêtre active ne le sont pas, l'engagement fait partie du contrat. Un appui
+	# hors fenêtre est mémorisé 0,12 s et part au retour à la locomotion.
+	if intent.dodge_pressed:
+		if _attack.phase() == AttackControllerComponent.Phase.RECOVERY:
+			_attack.cancel()
+			_try_dodge(intent)
+			return
+		_dodge_buffer = dodge.input_buffer if dodge != null else 0.12
+
 	if not _attack.update(delta):
 		_mode = Mode.LOCOMOTION
 		return
@@ -398,6 +443,82 @@ func _process_attack(delta: float, intent: InputIntent) -> void:
 	velocity.x = horizontal.x
 	velocity.z = horizontal.z
 	move_and_slide()
+
+
+## ---------------------------------------------------------------------------
+## Esquive (§10.2) et verrouillage (§8.4)
+## ---------------------------------------------------------------------------
+
+## Tente l'esquive. Refus possibles : endurance insuffisante (le coût de 15,
+## déclaré dans `StaminaTuning` depuis B.2, est enfin consommé) — l'appui est
+## alors simplement perdu, pas mémorisé : marteler l'esquive à jauge vide ne doit
+## pas construire une dette d'esquives.
+func _try_dodge(intent: InputIntent) -> void:
+	if dodge == null:
+		return
+	if _stamina != null and not _stamina.try_spend(_stamina.tuning.dodge_cost):
+		_dodge_buffer = 0.0
+		return
+	# §10.2 « esquive quatre directions » : celle du stick, en repère caméra ;
+	# sans direction, une reculade — le dos du personnage, pas celui de la caméra.
+	var wish: Vector3 = _wish_direction(intent)
+	if wish.length_squared() > 0.04:
+		_dodge_direction = wish.normalized()
+	else:
+		_dodge_direction = -(_visual_root.global_transform.basis.z).normalized()
+		_dodge_direction.y = 0.0
+	_dodge_elapsed = 0.0
+	_dodge_buffer = 0.0
+	_mode = Mode.DODGING
+
+
+func _process_dodge(delta: float) -> void:
+	_camera_rig.update_fov(false, delta)
+	var was_invulnerable: bool = _health != null and _health.is_invulnerable()
+	_dodge_elapsed += delta
+
+	# Fenêtre d'invulnérabilité (§10.2) : portée par la santé, comme le stagger et
+	# les futurs buffs — l'esquive ne fait qu'ouvrir et fermer la porte.
+	if _health != null:
+		var inside: bool = _dodge_elapsed >= dodge.iframes_start \
+			and _dodge_elapsed < dodge.iframes_end
+		if inside != was_invulnerable:
+			_health.set_invulnerable(inside)
+
+	velocity.x = _dodge_direction.x * dodge.speed
+	velocity.z = _dodge_direction.z * dodge.speed
+	_apply_gravity(delta)
+	move_and_slide()
+
+	if _dodge_elapsed >= dodge.duration:
+		if _health != null:
+			_health.set_invulnerable(false)
+		_mode = Mode.LOCOMOTION
+
+
+## Bascule et suivi du verrouillage (§8.4). L'appui décroche si une cible est
+## tenue, accroche sinon ; la caméra reçoit la cible et la rend au décrochage.
+func _handle_lock_on(delta: float, intent: InputIntent) -> void:
+	if _lock_on == null:
+		return
+	if intent.lock_pressed:
+		if _lock_on.has_target():
+			_lock_on.release(&"toggled")
+			_camera_rig.clear_lock_target()
+		else:
+			var camera: Camera3D = _camera_rig.get_camera()
+			var forward: Vector3 = -camera.global_transform.basis.z
+			var found: Node3D = _lock_on.acquire(self, camera.global_position, forward)
+			if found != null:
+				_camera_rig.set_lock_target(found)
+	elif _lock_on.has_target():
+		_lock_on.update(self, _camera_rig.get_camera().global_position, delta)
+		if not _lock_on.has_target():
+			_camera_rig.clear_lock_target()
+
+
+func lock_target() -> Node3D:
+	return _lock_on.target() if _lock_on != null else null
 
 
 ## ---------------------------------------------------------------------------
@@ -671,6 +792,10 @@ func is_mantling() -> bool:
 
 func is_attacking() -> bool:
 	return _mode == Mode.ATTACKING
+
+
+func is_dodging() -> bool:
+	return _mode == Mode.DODGING
 
 
 func attack_controller() -> AttackControllerComponent:

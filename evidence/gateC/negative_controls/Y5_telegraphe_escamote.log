@@ -1,0 +1,12 @@
+# Contrôle négatif — Y5_telegraphe_escamote
+# Le startup du gourdin tombe a 0,1 s dans le .tres : coup illisible, hors de la fenetre 0,65-0,95 de §12.1.
+# Test visé : test_raider_telegraphs_then_lands_its_blow|test_raider_tuning_matches_the_spec
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_raider.gd::test_raider_telegraphs_then_lands_its_blow — le coup ne porte jamais avant le télégraphe de §12.1 (0.13 s)
+  ÉCHEC test_raider.gd::test_raider_tuning_matches_the_spec — télégraphe hors §12.1 (0,65–0,95 s) : 0.10
+=== RÉSULTAT: 183 réussi(s), 4 échoué(s) ===
+  ÉCHEC: test_raider.gd::test_raider_telegraphs_then_lands_its_blow — le coup ne porte jamais avant le télégraphe de §12.1 (0.13 s)
+  ÉCHEC: test_raider.gd::test_raider_tuning_matches_the_spec — télégraphe hors §12.1 (0,65–0,95 s) : 0.10
+RC=0

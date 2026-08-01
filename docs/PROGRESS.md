@@ -588,48 +588,84 @@ reste une dette de passe finale.
 
 ---
 
+## 2026-08-01 — Jalon C.2 : esquive, i-frames, lock-on, premier pillard
+
+**Gate visé** : C. **État à l'ouverture** : C.1 livré, personne ne frappait le
+joueur.
+
+### Changement réel
+
+L'esquive (§10.2 : quatre directions, i-frames 0,02–0,27 par l'effet, coût de 15
+enfin consommé, dodge cancel de la recovery), le verrouillage (§8.4 : cône
+caméra, LOS réelle, hystérésis de distance, strafe face à la cible, convergence
+caméra sous butées), la poise (transportée depuis C.0, consommée : 2 coups
+d'épée étourdissent), et le **pillard braise** — perception en cône par cadence,
+télégraphe de 0,8 s, repli après esquive réussie, mort inerte. Le duel complet
+de §12.1 tient en assertions : télégraphe mesuré, esquive chronométrée sur
+l'annonce, 0 dégât, repli à distance. 21 cas, plancher à 186.
+
+D-018 amendée : l'absorption du Mode a eu lieu **en place** — la machine plate à
+cinq états EST celle de §8.1, la version nodale restant un besoin, pas un dogme.
+D-022 : pilotage direct sans navmesh, à échéance dure (Phase D).
+
+### Cinq défauts — tous dans MES TESTS, aucun dans le code livré
+
+Masque de hitbox par défaut (assertion verte pour la mauvaise raison, révélée
+par le contrôle inverse), pillard posé derrière le joueur (l'épée battait
+l'air), course de signaux au setup (annonce manquée), élan résiduel d'esquive
+(cible sortie du volume), assertion ignorant la régénération. Détail et leçons :
+`TEST_REPORT`, C2-1 à C2-5. Le code livré, lui, n'a pas bougé d'une ligne après
+l'écriture — les cinq corrections sont des corrections de mesure.
+
+### Vérification
+
+`tools/validate_fast.sh` → `RC=0`, VERT, **186 tests**. Y1–Y5 archivés avec
+`RC=` ; Y5 rougit comportement ET enveloppe, indépendamment.
+
+### Ce que C.2 ne prouve pas
+
+Le joueur encaisse sans réaction (Hurt/knockback/anti-stunlock : C.3). Pas de
+changement de cible, ni de présentation (hit-stop/VFX/son). Navmesh et audition
+différés (D-022). Le ressenti du duel attend l'essai humain — le CombatLab avec
+pillard vivant est prêt pour lui.
+
+---
+
 ## HANDOFF — prochaine action exacte
 
 > **Gates** : A `ACCEPTÉ AVEC RÉSERVE` (D-012) · B `ACCEPTÉ POUR CONTINUATION`
-> (D-021) · C **en cours** — C.0 et C.1 livrés.
+> (D-021) · C **en cours** — C.0 à C.2 livrés.
 
-### Action suivante : jalon C.2 — esquive, i-frames, lock-on, premier pillard
+### Action suivante : jalon C.3 — attaque lourde, réaction du joueur, arc
 
-Dans l'ordre :
+Dans l'ordre, pour finir l'item 12 de §22 puis ouvrir l'item 13 :
 
-1. **Esquive** (§10.2) : quatre directions, i-frames 0,22–0,27 s via
-   `HealthComponent.set_invulnerable()` (déjà testé), coût 15 d'endurance (déjà
-   déclaré dans `stamina_default.tres`), buffer 0,12 s. `AttackDefinition` a
-   montré le patron : l'esquive mérite sa `DodgeDefinition` ou un bloc de tuning.
-2. **Lock-on** (§8.4) : cône caméra, 18–24 m, LOS, cible dans le cadre. L'action
-   `lock_on` existe depuis A.1 (jamais sur `Q` — invariant). Groupe
-   `lock_on_targets` déjà posé sur le joueur et les mannequins.
-3. **Stagger/poise** : consommer `poise_damage` transporté depuis C.0 ;
-   le stagger appelle `AttackController.cancel()` (déjà testé).
-4. **Premier pillard** (§12.1, §22 item 15) : `raider_red` — 45 PV, télégraphes
-   0,65–0,95 s, un ou deux coups, recule après une esquive réussie. Machine
-   d'états IA minimale (§12.7), premier vrai duel dans le CombatLab.
-5. **C'est ici que D-018 se paie** : absorber le `Mode` du joueur dans la
-   `StateMachine` de §8.1 — les états de combat existent désormais.
+1. **Attaque lourde** (§10.2) : coût 20 d'endurance (déclaré depuis B.2),
+   `AttackDefinition` dédiée (dégâts ×~1,8, poise forte, startup long), refusée à
+   jauge insuffisante (§9.1 : « lourde refusée »). L'action `attack_heavy` est
+   liée depuis A.1.
+2. **Réaction du joueur** (§8.1 Hurt, §10.5) : consommer `knockback` transporté
+   depuis C.0, brève perte de contrôle, et la **protection anti-stunlock** que
+   §10.5 exige — sans elle, deux pillards suffiraient à verrouiller le joueur.
+3. **Arc** (§10.4) : visée épaule (`aim_held` existe), projectile physique
+   42–58 m/s, pooling, raycast anti-tir-à-travers-mur proche, CCD (§5.3).
+4. **Changement de cible** (§8.4) : `target_prev/next`, par direction.
 
-Questions ouvertes en route : R-012 (saut pendant mantle), R-013 (coût du
-mantle).
+### Pièges connus, cumulés — les nouveaux de C.2 d'abord
 
-### Pièges connus, cumulés de B.1 à C.1
-
-- **Le monde `queue_free` du test précédent survit une frame** : attendre
-  l'ÉTAT (atterri), jamais un nombre de ticks fixe, avant la première assertion.
-- **Sonder dans le contexte réel** : la sonde isolée « prouvait » le bon
-  fonctionnement, seule la sonde en contexte de runner a montré le fantôme.
+- **Une assertion verte pour la mauvaise raison** : prouver LES DEUX SENS (le
+  coup refusé dans la fenêtre ET porté hors fenêtre). C'est le contrôle inverse
+  qui a révélé le masque de hitbox par défaut (C2-1).
+- **Brancher les signaux avant que l'événement ne puisse exister** — la distance
+  de spawn achète la marge (C2-3).
+- **La géométrie de test se vérifie contre l'orientation réelle** (C2-2) ; la
+  cinétique complète compte, pas la durée nominale (C2-4) ; « jamais descendu
+  sous X », pas « figé à X » (C2-5).
+- **Le monde `queue_free` du test précédent survit une frame** : attendre l'état.
 - **`Area3D.monitoring` ne se toggle pas entre deux ticks** (R-014).
-- **Mesurer ce qui discrimine** (D-020 amendée) ; sonder l'état des modes avant
-  de conclure sur un drapeau moteur.
-- **Un contrôle négatif qui ne casse rien est une information** ; chaque log se
-  termine par `RC=`.
-- **Muter le `.tres`** (R-006bis) ; **épingler les valeurs de spec** (revue B).
-- **Un `Node` créé dans un test doit être libéré.**
-- **`SpringArm3D` réécrit la position de ses enfants directs** (D-014/D-015).
-- D-009/D-010 : autoloads et `await` du runner.
+- **Mesurer ce qui discrimine** (D-020 amendée) ; muter le `.tres` (R-006bis) ;
+  épingler les valeurs de spec ET les mesurer en comportement (Y5).
+- **Un `Node` de test se libère** ; `SpringArm3D` réécrit ses enfants directs
+  (D-014/D-015) ; D-009/D-010 sur le runner.
 - **`MIN_TESTS` relevé à chaque ajout** ; nombre de référence dans
-  `docs/TEST_REPORT.md` uniquement.
-- Doc en ligne bloquée (ISS-001) : mesurer sur le binaire, consigner au ledger.
+  `docs/TEST_REPORT.md` uniquement ; doc bloquée → mesurer et consigner (ISS-001).

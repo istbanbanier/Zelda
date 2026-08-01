@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="AttackDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/combat/attack_definition.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"raider_club_1"
+damage_multiplier = 1.0
+poise_damage = 12.0
+knockback = 3.0
+element = &""
+startup = 0.8
+active = 0.15
+recovery = 0.7
+input_buffer = 0.15
+combo_window_fraction = 0.3
+hit_stop = 0.045

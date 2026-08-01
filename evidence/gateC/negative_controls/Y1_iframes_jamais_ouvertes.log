@@ -1,0 +1,16 @@
+# Contrôle négatif — Y1_iframes_jamais_ouvertes
+# L esquive n ouvre plus la fenetre d invulnerabilite : le coup pendant la roulade porte, et le pillard ne detecte plus d esquive reussie.
+# Test visé : test_iframes_refuse_a_real_blow_then_expire|test_a_timed_dodge_avoids_the_blow_and_makes_the_raider_retreat
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_dodge.gd::test_iframes_refuse_a_real_blow_then_expire — aucun dégât pendant la fenêtre d'invulnérabilité : attendu 100.0000 ± 0.0010, obtenu 90.0000
+  ÉCHEC test_dodge.gd::test_iframes_refuse_a_real_blow_then_expire — le même coup porte une fois la fenêtre fermée : attendu 90.0000 ± 0.0010, obtenu 80.0000
+  ÉCHEC test_raider.gd::test_a_timed_dodge_avoids_the_blow_and_makes_the_raider_retreat — l'esquive chronométrée doit annuler le coup (santé 92.0) : attendu 100.0000 ± 0.0010, obtenu 92.0000
+  ÉCHEC test_raider.gd::test_a_timed_dodge_avoids_the_blow_and_makes_the_raider_retreat — après l'esquive, le pillard a reculé (état : attack)
+=== RÉSULTAT: 184 réussi(s), 4 échoué(s) ===
+  ÉCHEC: test_dodge.gd::test_iframes_refuse_a_real_blow_then_expire — aucun dégât pendant la fenêtre d'invulnérabilité : attendu 100.0000 ± 0.0010, obtenu 90.0000
+  ÉCHEC: test_dodge.gd::test_iframes_refuse_a_real_blow_then_expire — le même coup porte une fois la fenêtre fermée : attendu 90.0000 ± 0.0010, obtenu 80.0000
+  ÉCHEC: test_raider.gd::test_a_timed_dodge_avoids_the_blow_and_makes_the_raider_retreat — l'esquive chronométrée doit annuler le coup (santé 92.0) : attendu 100.0000 ± 0.0010, obtenu 92.0000
+  ÉCHEC: test_raider.gd::test_a_timed_dodge_avoids_the_blow_and_makes_the_raider_retreat — après l'esquive, le pillard a reculé (état : attack)
+RC=0

@@ -27,8 +27,13 @@ func _ready() -> void:
 	var hitbox: HitboxComponent = _player.get_node("VisualRoot/WeaponHitbox")
 	hitbox.hit_confirmed.connect(func(e: DamageEvent, _t: HurtboxComponent) -> void:
 		_log("touche : %.1f dégâts (id %d)" % [e.amount, e.attack_id]))
-	for dummy: CombatDummy in get_tree().get_nodes_in_group("enemies"):
-		dummy.dummy_died.connect(func() -> void: _log("mannequin à terre"))
+	for enemy: Node in get_tree().get_nodes_in_group("enemies"):
+		# Mannequins et pillards cohabitent dans le groupe : signaux distincts.
+		if enemy.has_signal("dummy_died"):
+			enemy.connect("dummy_died", func() -> void: _log("mannequin à terre"))
+		elif enemy.has_signal("died"):
+			var name_captured: String = enemy.name
+			enemy.connect("died", func() -> void: _log("%s à terre" % name_captured))
 	print("[combat_lab] clic gauche : attaque. Échap : souris. §10.8 — instrumentation partielle, complétée au fil de la Phase C.")
 
 
@@ -49,9 +54,13 @@ func _process(_delta: float) -> void:
 	var lines: Array[String] = []
 	lines.append("phase %s · coup %d/3 · t=%.2fs" % [
 		_phase_names.get(attack.phase(), "?"), attack.combo_index() + 1, attack.elapsed()])
-	for dummy: CombatDummy in get_tree().get_nodes_in_group("enemies"):
-		lines.append("%s : %.0f / %.0f PV" % [dummy.name,
-			dummy.health().current(), dummy.health().maximum()])
+	for enemy: Node in get_tree().get_nodes_in_group("enemies"):
+		if not enemy.has_method("health"):
+			continue
+		var enemy_health: HealthComponent = enemy.call("health") as HealthComponent
+		if enemy_health != null:
+			lines.append("%s : %.0f / %.0f PV" % [enemy.name,
+				enemy_health.current(), enemy_health.maximum()])
 	lines.append("— derniers événements —")
 	lines.append_array(_events)
 	_readout.text = "\n".join(lines)

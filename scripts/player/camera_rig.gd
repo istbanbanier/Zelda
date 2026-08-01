@@ -21,6 +21,10 @@
 class_name CameraRig
 extends Node3D
 
+## Vitesse de convergence vers la cible verrouillée (§8.4), en unités
+## exponentielles par seconde — même famille que l'interpolation de FOV.
+const LOCK_CONVERGENCE_SPEED: float = 6.0
+
 @export var tuning: LocomotionTuning
 
 @onready var _yaw_pivot: Node3D = $YawPivot
@@ -30,6 +34,11 @@ extends Node3D
 
 var _pitch: float = -0.15
 var _yaw: float = 0.0
+## Cible de verrouillage (§8.4, §10.9 mode LockOn). Tant qu'elle est valide, le
+## lacet et le tangage convergent vers elle et l'entrée de regard est ignorée —
+## reprendre brutalement la main au décrochage est interdit (§10.9), d'où la
+## convergence lissée dans les deux sens.
+var _lock_target: Node3D = null
 
 
 func _ready() -> void:
@@ -58,11 +67,35 @@ func _ready() -> void:
 func apply_look(look: Vector2, delta: float) -> void:
 	if tuning == null:
 		return
+	if _lock_target != null and is_instance_valid(_lock_target):
+		_apply_lock_look(delta)
+		return
 	_yaw -= look.x * tuning.camera_stick_speed * delta
 	_pitch -= look.y * tuning.camera_stick_speed * delta
 	_pitch = clampf(_pitch,
 		deg_to_rad(tuning.camera_pitch_min_deg),
 		deg_to_rad(tuning.camera_pitch_max_deg))
+	_apply_rotation()
+
+
+## Convergence vers la cible verrouillée : framerate-independent, butées de
+## pitch conservées — le verrouillage n'a pas le droit de retourner la caméra.
+func _apply_lock_look(delta: float) -> void:
+	var to_target: Vector3 = (_lock_target.global_position + Vector3.UP * 1.0) \
+		- global_position
+	var flat: Vector2 = Vector2(to_target.x, to_target.z)
+	if flat.length_squared() < 0.0001:
+		return
+	# Lacet : -Z regarde la cible. atan2(-x, -z) donne l'angle du repère Godot.
+	var desired_yaw: float = atan2(-to_target.x, -to_target.z)
+	# Tangage : léger plongé vers la cible, sans jamais dépasser les butées.
+	var desired_pitch: float = clampf(
+		atan2(to_target.y - tuning.camera_target_height, flat.length()) * 0.5 - 0.12,
+		deg_to_rad(tuning.camera_pitch_min_deg),
+		deg_to_rad(tuning.camera_pitch_max_deg))
+	var weight: float = 1.0 - exp(-LOCK_CONVERGENCE_SPEED * delta)
+	_yaw = lerp_angle(_yaw, desired_yaw, weight)
+	_pitch = lerpf(_pitch, desired_pitch, weight)
 	_apply_rotation()
 
 
@@ -93,6 +126,14 @@ func get_yaw() -> float:
 ## Se tromper de nœud ici ferait ignorer la caméra par le déplacement.
 func get_yaw_basis() -> Basis:
 	return _yaw_pivot.global_transform.basis
+
+
+func set_lock_target(target: Node3D) -> void:
+	_lock_target = target
+
+
+func clear_lock_target() -> void:
+	_lock_target = null
 
 
 func get_camera() -> Camera3D:

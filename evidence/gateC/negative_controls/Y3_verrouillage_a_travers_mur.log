@@ -1,0 +1,10 @@
+# Contrôle négatif — Y3_verrouillage_a_travers_mur
+# La ligne de vue est ignoree a l acquisition : §8.4 « jamais a travers mur » cesse d etre tenu.
+# Test visé : test_lock_never_acquires_through_a_wall
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_lock_on.gd::test_lock_never_acquires_through_a_wall — aucune cible à travers un mur
+=== RÉSULTAT: 185 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_lock_on.gd::test_lock_never_acquires_through_a_wall — aucune cible à travers un mur
+RC=0

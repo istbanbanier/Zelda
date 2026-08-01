@@ -1,0 +1,12 @@
+# Contrôle négatif — Y2_esquive_gratuite
+# L esquive ne consomme plus les 15 d endurance de §9.1 et part meme a jauge vide.
+# Test visé : test_dodge_consumes_stamina_and_is_refused_when_broke
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_dodge.gd::test_dodge_consumes_stamina_and_is_refused_when_broke — coût d'endurance de l'esquive : attendu 15.0000 ± 0.5000, obtenu 0.0000
+  ÉCHEC test_dodge.gd::test_dodge_consumes_stamina_and_is_refused_when_broke — à 5 d'endurance, l'esquive est refusée — le corps ne part pas
+=== RÉSULTAT: 185 réussi(s), 2 échoué(s) ===
+  ÉCHEC: test_dodge.gd::test_dodge_consumes_stamina_and_is_refused_when_broke — coût d'endurance de l'esquive : attendu 15.0000 ± 0.5000, obtenu 0.0000
+  ÉCHEC: test_dodge.gd::test_dodge_consumes_stamina_and_is_refused_when_broke — à 5 d'endurance, l'esquive est refusée — le corps ne part pas
+RC=0
