@@ -80,6 +80,41 @@ func test_chest_and_inventory_survive_a_reload_without_loot_duplication() -> voi
 	_clear_save()
 
 
+func test_a_taken_pickup_never_respawns_after_reload() -> void:
+	## QA-D1R-01 (revue contradictoire) : le gourdin ramassé au camp réapparaissait
+	## après « Continuer » — le reprendre donnait DEUX gourdins, à l'infini. Le
+	## pickup est maintenant persisté comme les coffres ; ce test mesure l'effet :
+	## un seul exemplaire, et plus rien de ramassable au sol.
+	_clear_save()
+	var valley: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(valley)
+	await _settle(10)
+	var player: PlayerController = valley.player()
+	var pickup: WeaponPickup = valley.get_node("Camp/ClubPickup") as WeaponPickup
+	check(pickup.interact(player), "le gourdin se ramasse")
+	check_equal(player.inventory().weapon_count(), 2, "épée + gourdin en main")
+	await _settle(2)   # l'instantané part sur le signal picked_up
+	await _cleanup(valley)
+
+	var reloaded: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(reloaded)
+	await _settle(10)
+	var back: PlayerController = reloaded.player()
+	check_equal(back.inventory().weapon_count(), 2, "épée + gourdin restaurés")
+	var takeable: int = 0
+	for node: Node in reloaded.find_children("*", "WeaponPickup", true, false):
+		if node.is_in_group("interactable"):
+			takeable += 1
+	check_equal(takeable, 0, "AUCUN pickup ramassable ne réapparaît au sol")
+	var clubs: int = 0
+	for weapon: WeaponInstance in back.inventory().weapons():
+		if String(weapon.definition_id()) == "wood_club":
+			clubs += 1
+	check_equal(clubs, 1, "UN seul gourdin — jamais deux (§11.4)")
+	await _cleanup(reloaded)
+	_clear_save()
+
+
 func test_a_fresh_new_game_save_applies_nothing() -> void:
 	## L'instantané minimal d'une partie neuve (sans clé d'inventaire) laisse
 	## les défauts du bac à sable intacts : épée neuve, 8 flèches, coffres clos.
@@ -97,5 +132,7 @@ func test_a_fresh_new_game_save_applies_nothing() -> void:
 	check_equal(inventory.arrows(), 8, "dotation de départ")
 	check(not (valley.get_node("Camp/CampChest") as Chest).is_opened(),
 		"coffre du camp fermé")
+	check(valley.get_node("Camp/ClubPickup").is_in_group("interactable"),
+		"…et le gourdin du camp est bien AU SOL en partie neuve")
 	await _cleanup(valley)
 	_clear_save()

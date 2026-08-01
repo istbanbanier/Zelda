@@ -12,6 +12,10 @@ extends Node3D
 signal picked_up(weapon: WeaponInstance)
 
 @export var definition: WeaponDefinition
+## Identifiant persistant (§19.3, format `zone.category.name.index`). Un pickup
+## ramassé est consigné dans la sauvegarde : sans cet ID, il réapparaîtrait à
+## chaque « Continuer » et dupliquerait son arme à l'infini (QA-D1R-01).
+@export var pickup_id: StringName = &""
 
 
 func _ready() -> void:
@@ -39,3 +43,13 @@ func interact(player: PlayerController) -> bool:
 	picked_up.emit(weapon)
 	queue_free()
 	return true
+
+
+## Application d'état (§19.4) : un pickup déjà ramassé disparaît sans signal ni
+## notification — appliquer une sauvegarde n'est pas du gameplay. Rendu inerte
+## immédiatement : `queue_free` ne prend effet qu'à la fin de la frame.
+func mark_taken_silently() -> void:
+	remove_from_group("interactable")
+	definition = null
+	visible = false
+	queue_free()

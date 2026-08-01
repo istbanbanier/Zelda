@@ -820,8 +820,15 @@ séparés). C.5 et toute passe artistique SUSPENDUS jusqu'à version corrective.
   de loot après rechargement (prouvé).
 
 **Validation** : `tools/validate_fast.sh` VERT après chaque sous-jalon —
-**251 réussis, 0 échoué**, plancher relevé à 251. Les 18 régressions exigées
-mesurent l'EFFET (distances, positions, états), pas la présence d'un nœud.
+251 réussis, 0 échoué. Les 18 régressions exigées mesurent l'EFFET (distances,
+positions, états), pas la présence d'un nœud.
+
+**Revue contradictoire consolidée** (`evidence/gateD/REVUE_D1R.md`) : 23
+critères rejoués à contexte frais — aucun S0/S1/S2, trois S3 démontrés
+(QA-D1R-01 pickup dupliqué après « Continuer », QA-D1R-02 settings.cfg hostile
+contournant les bornes, QA-D1R-03 souris recapturée sous l'écran de mort),
+**corrigés le jour même** avec une régression chacun → **254 réussis,
+plancher 254**. QA-D1R-04 (S4) : surdéclarations de TEST_REPORT corrigées.
 
 **Hors périmètre maintenu** : cuisine, salles électriques, boss, art/animation/
 audio finaux, optimisation, manette.
@@ -854,4 +861,4 @@ audio finaux, optimisation, manette.
   d'agent (D-025) ; SceneFlow bloqué dans les tests de menu (`_busy`) ;
   matériaux de scène partagés → `duplicate()` avant teinte par instance ;
   un test qui crashe saute son teardown et empoisonne les suites suivantes.
-- `MIN_TESTS` = 251 ; compte de référence dans TEST_REPORT uniquement.
+- `MIN_TESTS` = 254 ; compte de référence dans TEST_REPORT uniquement.

@@ -123,6 +123,41 @@ func test_death_offers_retry_toward_the_checkpoint_world() -> void:
 	await _cleanup(valley)
 
 
+func test_the_death_panel_is_modal_no_pause_inventory_or_mouse_grab() -> void:
+	## QA-D1R-03 (revue contradictoire) : mort → Échap → Reprendre recapturait la
+	## souris SOUS l'écran de mort (curseur avalé au-dessus d'une UI à cliquer),
+	## et Tab ouvrait l'inventaire par-dessus. L'écran de mort est maintenant
+	## modal : mesuré sur l'état voulu de la souris et sur les panneaux.
+	var valley: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(valley)
+	await _settle(10)
+	var player: PlayerController = valley.player()
+	var shell: GameplayShell = valley.get_node("GameplayShell") as GameplayShell
+
+	var blow: DamageEvent = DamageEvent.new()
+	blow.amount = 999.0
+	blow.attack_id = HitboxComponent.next_attack_id()
+	(player.get_node("Hurtbox") as HurtboxComponent).receive_hit(blow)
+	for i: int in range(300):
+		await _tree().process_frame
+		if shell.is_death_panel_open():
+			break
+	check(shell.is_death_panel_open(), "préalable : écran de mort affiché")
+	check(not shell.wants_mouse_captured(), "préalable : souris rendue au curseur")
+
+	# Le scénario malheureux exact de la revue : pause puis reprise.
+	shell.toggle_pause()
+	check(not _tree().paused, "Échap ne met PAS en pause par-dessus la mort")
+	shell.toggle_pause()
+	check(not shell.wants_mouse_captured(),
+		"…et aucun aller-retour ne recapture la souris sous l'écran de mort")
+	shell.toggle_inventory()
+	check(not shell.is_inventory_open(),
+		"Tab n'ouvre pas l'inventaire par-dessus l'écran de mort")
+	check(shell.is_death_panel_open(), "l'écran de mort est resté seul maître")
+	await _cleanup(valley)
+
+
 func test_the_citadel_door_leads_to_the_vestibule() -> void:
 	## PT-D1-10, maillon 1 : la porte existe sur le plateau, invite « Entrer »,
 	## et vise le vestibule — une structure-promesse enfin accessible.

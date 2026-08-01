@@ -18,6 +18,10 @@ const MAX_MOUSE_SENSITIVITY: float = 0.005
 
 
 static func clamp_sensitivity(value: float) -> float:
+	# `clampf(nan, …)` retourne nan : un non-nombre DOIT retomber sur le défaut,
+	# sinon la caméra gèle sans message (QA-D1R-02).
+	if not is_finite(value):
+		return DEFAULT_MOUSE_SENSITIVITY
 	return clampf(value, MIN_MOUSE_SENSITIVITY, MAX_MOUSE_SENSITIVITY)
 
 
@@ -25,9 +29,14 @@ static func load_mouse_sensitivity() -> float:
 	var config: ConfigFile = ConfigFile.new()
 	if config.load(PATH) != OK:
 		return DEFAULT_MOUSE_SENSITIVITY
-	var raw: float = float(config.get_value(SECTION, "mouse_sensitivity",
-		DEFAULT_MOUSE_SENSITIVITY))
-	return clamp_sensitivity(raw)
+	# Fichier éditable à la main : la valeur peut être n'importe quel Variant.
+	# Tout ce qui n'est pas un nombre fini vaut le défaut — jamais 0 (souris
+	# morte), jamais nan, jamais un crash de constructeur (QA-D1R-02).
+	var raw: Variant = config.get_value(SECTION, "mouse_sensitivity",
+		DEFAULT_MOUSE_SENSITIVITY)
+	if typeof(raw) != TYPE_FLOAT and typeof(raw) != TYPE_INT:
+		return DEFAULT_MOUSE_SENSITIVITY
+	return clamp_sensitivity(float(raw))
 
 
 static func save_mouse_sensitivity(value: float) -> bool:

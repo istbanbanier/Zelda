@@ -46,6 +46,9 @@ const VISTA_FOV: float = 42.0
 @onready var _shell: GameplayShell = $GameplayShell
 
 var _last_safe: Vector3 = Vector3.ZERO
+## IDs des pickups déjà ramassés — mémoire de monde, car l'objet lui-même a
+## quitté l'arbre au moment de l'instantané (QA-D1R-01).
+var _taken_pickups: Array[String] = []
 
 
 func _ready() -> void:
@@ -62,10 +65,15 @@ func _ready() -> void:
 	# vient d'écrire un instantané minimal (sans inventaire) qui n'applique
 	# rien ; une reprise applique tout. Aucun drapeau à transporter.
 	_apply_save()
-	# Instantanés : chaque coffre ouvert, et toute transition sortante (porte de
-	# la citadelle, retour menu) — le loot acquis survit à « Continuer ».
+	# Instantanés : chaque coffre ouvert, chaque arme ramassée, et toute
+	# transition sortante (porte de la citadelle, retour menu) — le loot acquis
+	# survit à « Continuer » sans JAMAIS réapparaître au sol (QA-D1R-01).
 	for chest: Node in find_children("*", "Chest", true, false):
 		(chest as Chest).opened.connect(func(_id: StringName) -> void: _autosave())
+	for pickup: Node in find_children("*", "WeaponPickup", true, false):
+		var typed: WeaponPickup = pickup as WeaponPickup
+		typed.picked_up.connect(func(_weapon: WeaponInstance) -> void:
+			_on_pickup_taken(typed))
 	var flow: Node = get_node_or_null("/root/SceneFlow")
 	if flow != null:
 		flow.connect("transition_started", _on_transition_started)
@@ -162,6 +170,18 @@ func _on_transition_started(_target: String) -> void:
 		_autosave()
 
 
+## Le pickup se libère lui-même (`queue_free` au ramassage) : son ID doit donc
+## être mémorisé ICI, sinon l'instantané suivant ne saurait plus qu'il a
+## disparu — et « Continuer » le ferait réapparaître (QA-D1R-01).
+func _on_pickup_taken(pickup: WeaponPickup) -> void:
+	var id: String = String(pickup.pickup_id)
+	if id.is_empty():
+		push_warning("[save] pickup sans pickup_id — il réapparaîtra au rechargement.")
+	elif not id in _taken_pickups:
+		_taken_pickups.append(id)
+	_autosave()
+
+
 func _autosave() -> void:
 	var save_system: Node = get_node_or_null("/root/SaveSystem")
 	if save_system == null or _player == null or _player.inventory() == null:
@@ -184,6 +204,7 @@ func _autosave() -> void:
 		"equipped_index": inventory.equipped_index(),
 		"arrows": inventory.arrows(),
 		"opened_chests": opened,
+		"taken_pickups": _taken_pickups.duplicate(),
 		"boss_defeated": false,
 	})
 
@@ -220,6 +241,17 @@ func _apply_save() -> void:
 		for chest: Node in find_children("*", "Chest", true, false):
 			if String((chest as Chest).chest_id) in opened:
 				(chest as Chest).mark_opened_silently()
+	if data.has("taken_pickups"):
+		# Reconstruit la mémoire des pickups pris (élément par élément : un
+		# fichier édité peut contenir autre chose que des chaînes), puis retire
+		# du monde ceux déjà ramassés — jamais de second exemplaire (§11.4).
+		for entry: Variant in (data["taken_pickups"] as Array):
+			var id: String = String(entry)
+			if not id.is_empty() and not id in _taken_pickups:
+				_taken_pickups.append(id)
+		for pickup: Node in find_children("*", "WeaponPickup", true, false):
+			if String((pickup as WeaponPickup).pickup_id) in _taken_pickups:
+				(pickup as WeaponPickup).mark_taken_silently()
 
 
 func player() -> PlayerController:

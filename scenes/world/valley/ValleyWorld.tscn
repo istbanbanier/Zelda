@@ -100,6 +100,7 @@ arrows_loot = 12
 [node name="ClubPickup" parent="Camp" instance=ExtResource("6_pickup")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 5)
 definition = ExtResource("8_club")
+pickup_id = &"valley.pickup.camp_club.01"
 
 ; --- Coffres extérieurs (§11.4 : « trois dans la vallée ») -------------------
 ; IDs stables §19.3, loot déterministe, emplacements volontairement

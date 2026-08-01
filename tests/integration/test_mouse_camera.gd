@@ -223,3 +223,35 @@ func test_sensitivity_setting_persists_and_reaches_the_reader() -> void:
 	check(rotations[2] > rotations[0] * 5.0, "l'écart est mesurable, pas cosmétique")
 	UserSettings.save_mouse_sensitivity(UserSettings.DEFAULT_MOUSE_SENSITIVITY)
 	_teardown()
+
+
+func test_a_corrupt_settings_file_falls_back_within_bounds() -> void:
+	## QA-D1R-02 (revue contradictoire) : `settings.cfg` est éditable à la main.
+	## Un tableau y produisait une erreur de constructeur puis 0,0 (souris morte,
+	## SOUS le minimum) ; `nan` traversait `clampf` jusqu'au lecteur (caméra
+	## gelée). Chaque valeur hostile doit retomber DANS les bornes — mesuré
+	## jusqu'au lecteur d'entrée, pas seulement dans l'utilitaire.
+	var config: ConfigFile = ConfigFile.new()
+	for hostile: Variant in [[1, 2, 3], "vite", NAN, INF, -5.0, null]:
+		config.set_value("input", "mouse_sensitivity", hostile)
+		check_equal(config.save(UserSettings.PATH), OK,
+			"préalable : fichier hostile écrit (%s)" % str(hostile))
+		var loaded: float = UserSettings.load_mouse_sensitivity()
+		check(is_finite(loaded)
+			and loaded >= UserSettings.MIN_MOUSE_SENSITIVITY
+			and loaded <= UserSettings.MAX_MOUSE_SENSITIVITY,
+			"valeur hostile %s → %.5f, dans [%.4f, %.4f]" % [str(hostile), loaded,
+				UserSettings.MIN_MOUSE_SENSITIVITY, UserSettings.MAX_MOUSE_SENSITIVITY])
+
+	# Défense en profondeur : le LECTEUR aussi part borné, même si le fichier
+	# est resté hostile au moment de son _ready.
+	config.set_value("input", "mouse_sensitivity", NAN)
+	config.save(UserSettings.PATH)
+	await _setup_with_reader()
+	var sensitivity: float = _reader().mouse_sensitivity
+	check(is_finite(sensitivity)
+		and sensitivity >= UserSettings.MIN_MOUSE_SENSITIVITY
+		and sensitivity <= UserSettings.MAX_MOUSE_SENSITIVITY,
+		"le lecteur démarre borné malgré un fichier nan (%.5f)" % sensitivity)
+	UserSettings.save_mouse_sensitivity(UserSettings.DEFAULT_MOUSE_SENSITIVITY)
+	_teardown()

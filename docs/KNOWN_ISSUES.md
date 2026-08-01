@@ -169,3 +169,13 @@ continues, secours précoce au point sûr, écran de mort, citadelle accessible
 avec vestibule) · PT-D1-05 → D.1R.5 (restauration minimale : inventaire,
 durabilités, arme équipée, flèches, coffres — sans second loot). Tous corrigés
 avec régressions ; la CONFIRMATION humaine appartient au playtest n° 2.
+
+**Revue contradictoire consolidée D.1R (2026-08-01,
+`evidence/gateD/REVUE_D1R.md`)** : 23 critères rejoués — aucun S0/S1/S2, trois
+S3 démontrés et **corrigés le jour même**, chacun avec sa régression :
+QA-D1R-01 pickup non persisté → gourdin dupliqué après « Continuer » ;
+QA-D1R-02 `settings.cfg` hostile (tableau → 0,0 sous le MIN ; nan traversait
+`clampf`) ; QA-D1R-03 Échap/Reprendre recapturait la souris sous l'écran de
+mort, Tab ouvrait l'inventaire par-dessus. QA-D1R-04 (S4) : surdéclarations de
+TEST_REPORT corrigées — réticule-en-visée et plafond de notifications restent
+NON ASSERTÉS, à vérifier visuellement au playtest n° 2.

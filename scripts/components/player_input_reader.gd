@@ -46,7 +46,9 @@ func set_mouse_sensitivity(value: float) -> void:
 
 
 func _ready() -> void:
-	mouse_sensitivity = UserSettings.load_mouse_sensitivity()
+	# Par le setter, jamais en direct : la borne s'applique aussi à ce qui sort
+	# du fichier (défense en profondeur, QA-D1R-02).
+	set_mouse_sensitivity(UserSettings.load_mouse_sensitivity())
 	# Les fronts sont détectés dans `_input`, mais les états maintenus sont relus
 	# au rythme physique : c'est là que la logique de mouvement les consomme
 	# (§20.9 — aucune écriture de transform gameplay depuis `_process`).

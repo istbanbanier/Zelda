@@ -129,6 +129,11 @@ func _notification(what: int) -> void:
 
 
 func _input(event: InputEvent) -> void:
+	# L'écran de mort est MODAL (QA-D1R-03) : ni pause ni inventaire par-dessus,
+	# et jamais de recapture souris sous une UI à cliquer. Ses propres boutons
+	# (Réessayer / Menu, focus posé) restent la seule issue — clavier compris.
+	if _death_panel.visible:
+		return
 	if event.is_action_pressed("pause", false, true):
 		if _inventory_panel.visible:
 			toggle_inventory()
@@ -164,6 +169,8 @@ func _process(delta: float) -> void:
 ## ---------------------------------------------------------------------------
 
 func toggle_pause() -> void:
+	if _death_panel.visible:
+		return  # modal (QA-D1R-03) — la garde tient aussi hors du chemin _input
 	if is_paused() and _pause_panel.visible:
 		_on_resume()
 	elif not is_paused():
@@ -194,6 +201,8 @@ func _on_resume() -> void:
 ## Inventaire (§11.3, §13.4 : le monde est réellement en pause pendant qu'on y
 ## navigue — aucune minuterie de gameplay ne court).
 func toggle_inventory() -> void:
+	if _death_panel.visible:
+		return  # modal (QA-D1R-03)
 	if _inventory_panel.visible:
 		_inventory_panel.visible = false
 		get_tree().paused = false
@@ -416,7 +425,9 @@ func wants_mouse_captured() -> bool:
 
 
 func _set_mouse_captured(captured: bool) -> void:
-	_mouse_captured_wanted = captured
+	# Ceinture et bretelles (QA-D1R-03) : tant que l'écran de mort est affiché,
+	# AUCUN chemin ne peut avaler le curseur.
+	_mouse_captured_wanted = captured and not _death_panel.visible
 	_apply_mouse_mode()
 
 

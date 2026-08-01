@@ -1261,9 +1261,13 @@ CONSOMME l'avancement : l'observation doit se faire de l'intérieur.
 tools/validate_fast.sh; echo $?
 ```
 
-**Code retour** : `0` — VERT. **251 réussis, 0 échoué**, plancher 251.
+**Code retour** : `0` — VERT. 251 réussis à la fin des cinq sous-jalons, puis
+**254 réussis, 0 échoué, plancher 254** après les trois régressions issues de
+la revue contradictoire consolidée (`evidence/gateD/REVUE_D1R.md` : QA-D1R-01
+duplication de pickup, QA-D1R-02 settings hostile, QA-D1R-03 écran de mort
+modal — trois S3 corrigés le jour même).
 
-> **Nombre de tests de référence : 251.** C'est ici, et nulle part ailleurs,
+> **Nombre de tests de référence : 254.** C'est ici, et nulle part ailleurs,
 > qu'il doit être lu.
 
 Exécuté après CHAQUE sous-jalon (D.1R.1 → D.1R.5), pas seulement à la fin.
@@ -1280,17 +1284,21 @@ Exécuté après CHAQUE sous-jalon (D.1R.1 → D.1R.5), pas seulement à la fin.
   pas le joueur, deux pillards convergents gardent ≥ 1 m d'écart (séparation),
   le détour navmesh de la salle en U reste prouvé après changement de masques.
 - `test_hud_and_inventory.gd` (9) : barres branchées aux VRAIS signaux (une
-  perte de vie bouge la barre), flèches/arme/durabilité affichées, réticule
-  seulement en visée, invite refusée SANS ligne de vue (paroi interposée =
-  aucune invite), inventaire Tab pause + équipe + réordonne, molette hors
-  lock = arme / pendant lock = cible, notifications plafonnées.
-- `test_world_bounds_and_death.gd` (5) : anneau montagneux continu (16 rayons,
+  perte de vie bouge la barre), flèches/arme/durabilité affichées, invite
+  refusée SANS ligne de vue (paroi interposée = aucune invite), inventaire Tab
+  pause + équipe + réordonne, molette hors lock = arme / pendant lock = cible.
+  Réticule-en-visée et plafond de notifications : implémentés et lus, **non
+  assertés** (QA-D1R-04) — vérification visuelle au playtest n° 2.
+- `test_world_bounds_and_death.gd` (6) : anneau montagneux continu (16 rayons,
   aucun trou, tout `unclimbable`), chute repêchée TÔT au dernier point sûr,
-  panneau de mort + cible de retry, porte citadelle → vestibule, vestibule
-  explorable + sortie → DEVANT la porte (tag `citadel_door` honoré).
-- `test_save_continuity.gd` (2) : coffre ouvert + arme prise → autosave →
+  panneau de mort + cible de retry, écran de mort MODAL (QA-D1R-03), porte
+  citadelle → vestibule, vestibule explorable + sortie → DEVANT la porte (tag
+  `citadel_door` honoré). Le détour navmesh de la salle en U vit dans
+  `test_valley_world.gd` (attribution corrigée, QA-D1R-04).
+- `test_save_continuity.gd` (3) : coffre ouvert + arme prise → autosave →
   rechargement → inventaire/durabilité/équipée/flèches restaurés et coffre
-  ouvert SILENCIEUX (aucune duplication de loot) ; partie neuve → no-op.
+  ouvert SILENCIEUX ; pickup ramassé JAMAIS réapparu (QA-D1R-01) ; partie
+  neuve → no-op, gourdin bien au sol.
 
 ## Pièges mesurés pendant D.1R
 
