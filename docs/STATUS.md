@@ -4,13 +4,17 @@ Vocabulaire imposé (§0.2) : `Non commencé` · `Implémenté` (raccordé) ·
 `Fonctionnel` (testé en scène exécutable) · `Validé` (conforme, sans régression) ·
 `Bloqué`. Tout critère non testé est `NON VÉRIFIÉ`, jamais implicitement réussi.
 
-**Dernière mise à jour** : 2026-08-01 · **Phase** : A (jalon A.1) · **Commit** : voir `git log`
+**Dernière mise à jour** : 2026-08-01 · **Phase** : A (jalons A.1 et A.2 livrés) · **État gelé** : `9414fd0` · **Commit courant** : voir `git log`
 
-## Verdict Gate A : **EN ATTENTE** — validation humaine non réalisée
+## Verdict Gate A : **ACCEPTÉ AVEC RÉSERVE / BLOQUÉ SUR LA VALIDATION MANETTE**
 
-Ni `PASS`, ni `FAIL`. Tout ce qui est vérifiable sans écran est vert (52 tests),
-mais six contrôles de §21.4 exigent une machine avec écran, clavier AZERTY et
-manette, dont ce conteneur ne dispose pas (ISS-002, ISS-004).
+Décision du propriétaire, 2026-08-01 (D-012). **Ce n'est pas un `PASS`** : §23.1
+exige « clavier AZERTY **et** manette fonctionnels », et la manette n'a pas été
+testée. La Phase B est autorisée à démarrer, la dette est portée explicitement.
+
+Le nombre de tests de référence est publié dans `docs/TEST_REPORT.md` — il ne doit
+pas être recopié ailleurs, sous peine de diverger (défaut relevé par le test de
+reprise).
 
 Protocole prêt à exécuter : **`docs/MANUAL_VALIDATION.md`**, outillé par
 `tools/manual_validation_kit.sh` et `scenes/tests/InputAudit.tscn`.
@@ -18,15 +22,16 @@ Procédure opérateur macOS : **`docs/MANUAL_GATE_A.md`**.
 
 | Étape de validation manuelle | État |
 |---|---|
-| 1. Lancement sur machine avec écran | NON VÉRIFIÉ |
-| 2. Clavier AZERTY réel, `Q` = gauche | NON VÉRIFIÉ |
-| 3. Manette | NON VÉRIFIÉ |
-| 4. Lisibilité et focus du MainMenu | NON VÉRIFIÉ |
-| 5. Reprise réelle depuis une session neuve | NON VÉRIFIÉ |
-| 6. Archivage des preuves | NON VÉRIFIÉ |
+| 1. Lancement sur machine avec écran | **PASS** *(déclaré, sans capture)* |
+| 2. Clavier AZERTY réel, `Q` = gauche | **PASS** *(déclaré, sans capture)* |
+| 3. Manette | **BLOQUÉ** — aucune manette ; dette **CONTROLLER-001** |
+| 4. Lisibilité et focus du MainMenu | **PASS** *(déclaré, sans capture)* |
+| 5. Reprise depuis une session neuve | **PASS** — 1 min 12 s, `evidence/gateA/05_reprise.md` |
+| 6. Archivage des preuves | partiel — rapport et reprise archivés, captures absentes |
 
-`tools/manual_validation_kit.sh --finalize` sort actuellement en **3 (BLOQUÉ)** :
-13 preuves attendues manquent. La Phase B ne démarre pas avant le verdict.
+`tools/manual_validation_kit.sh --finalize` sort toujours en **3 (BLOQUÉ)** : les
+captures d'écran manquent. C'est cohérent — le manifeste ne certifie pas ce qu'il
+n'a pas vu.
 
 ## Verdict Gate 0 : **GELÉ / ACCEPTÉ AVEC RÉSERVES** (décision propriétaire, D-006)
 

@@ -44,18 +44,6 @@ Aucun `S0`/`S1` ouvert n'est admis pour un build candidat.
   en llvmpipe comme budget de frame (§20.1).
 - **Propriétaire** : administrateur de l'environnement.
 
-## ISS-004 — Aucun périphérique audio dans le conteneur · `S4` · OUVERT
-
-- **Observé** : `ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN`
-  depuis `drivers/alsa/audio_driver_alsa.cpp:97`, puis
-  `WARNING: All audio drivers failed, falling back to the dummy driver.`
-- **Cause** : pas de carte son ni de serveur audio dans le conteneur.
-- **Impact** : nul sur l'import, les tests et la capture. Bloque en revanche toute
-  vérification réelle du mixage et des bus audio (§18).
-- **Contournement** : `--audio-driver Dummy` passé explicitement par
-  `tools/validate_release.sh`, ce qui supprime une erreur trompeuse dans les logs.
-- **Propriétaire** : administrateur de l'environnement. À rouvrir en Phase H/I.
-
 ## ISS-003 — Image de référence North Star absente du dépôt · `S3` · OUVERT
 
 - **Contexte** : l'image de référence a été fournie dans la conversation, pas comme
@@ -69,6 +57,41 @@ Aucun `S0`/`S1` ouvert n'est admis pour un build candidat.
   `ATTRIBUTIONS.md`.
 - **Rappel** : cette image reste une **référence de cadrage uniquement**. Elle ne
   doit jamais devenir skybox, matte painting, billboard ou texture (§0.2).
+
+## ISS-004 — Aucun périphérique audio dans le conteneur · `S4` · OUVERT
+
+- **Observé** : `ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN`
+  depuis `drivers/alsa/audio_driver_alsa.cpp:97`, puis
+  `WARNING: All audio drivers failed, falling back to the dummy driver.`
+- **Cause** : pas de carte son ni de serveur audio dans le conteneur.
+- **Impact** : nul sur l'import, les tests et la capture. Bloque en revanche toute
+  vérification réelle du mixage et des bus audio (§18).
+- **Contournement** : `--audio-driver Dummy` passé explicitement par
+  `tools/validate_release.sh`, ce qui supprime une erreur trompeuse dans les logs.
+- **Propriétaire** : administrateur de l'environnement. À rouvrir en Phase H/I.
+
+## CONTROLLER-001 — Test manuel manette non réalisé · `S2` · **DETTE OBLIGATOIRE**
+
+- **Ouvert le** : 2026-08-01, par décision du propriétaire (D-012).
+- **Constat** : la campagne de validation du Gate A a été menée sans manette. Les
+  étapes clavier, menu et lancement sont rapportées conformes ; **l'étape manette
+  n'a pas été jouée du tout**.
+- **Pourquoi ce n'est pas déductible du clavier** : les liaisons manette sont des
+  événements d'un autre type (`InputEventJoypadButton`, `InputEventJoypadMotion`),
+  et leur correspondance dépend de la base SDL du modèle branché. Un clavier qui
+  fonctionne ne dit **rien** d'une manette.
+- **Ce que les tests automatiques prouvent** : que chaque action **possède** une
+  liaison manette (`test_input_map.gd::test_core_actions_have_gamepad_bindings`).
+- **Ce qu'ils ne prouveront JAMAIS** : qu'un bouton pressé produit l'action
+  attendue sur un vrai périphérique. **Cette dette ne peut pas être levée par un
+  test automatisé, quel qu'il soit.** Ajouter des tests ne la réduit pas.
+- **Échéance** : **avant la release finale** (Gate J). Recommandé bien plus tôt —
+  avant le **Gate C**, car le combat (§10) dépend des gâchettes, des sticks et du
+  lock-on d'une façon que le clavier ne représente pas.
+- **Comment la lever** : jouer §4.3 de `docs/MANUAL_GATE_A.md` avec une manette,
+  archiver `03_manette_detectee.png` et `03_manette_tableau.md`, puis mettre à jour
+  cette entrée **et** le verdict du Gate A.
+- **Propriétaire** : propriétaire du projet (matériel requis).
 
 ## ISS-005 — Licence sortante du projet non définie · `S3` · OUVERT — décision utilisateur requise
 

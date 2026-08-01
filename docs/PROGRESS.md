@@ -22,7 +22,7 @@ manifeste (commit, machine, versions, SHA-256 de chaque preuve) et **sort en cod
 tant qu'une preuve manque** — cohérent avec `validate_release.sh`, et empêchant de
 clore la campagne sur un dossier incomplet.
 
-`scenes/tests/InputProbe.tscn` : **sans elle, le protocole serait inexécutable.**
+`scenes/tests/InputAudit.tscn` : **sans elle, le protocole serait inexécutable.**
 À ce stade il n'existe ni joueur ni monde, donc appuyer sur `Q` ne produit rien de
 visible. La sonde rend l'InputMap observable et, surtout, interroge la disposition
 clavier réelle du système via `DisplayServer.keyboard_get_keycode_from_physical()` :
@@ -91,7 +91,7 @@ le projet n'a aucun gameplay et que son risque dominant est l'art (RSK-01).
 | Contrôle | Résultat |
 |---|---|
 | Arbre Git propre, synchronisé avec l'origine | ✅ |
-| `validate_fast.sh` nominal | `RC=0`, 13 tests, plancher 13 |
+| `validate_fast.sh` nominal | `RC=0` (compte de tests : voir `docs/TEST_REPORT.md`) |
 | `validate_release.sh` nominal | `RC=3` (BLOQUÉ, attendu) |
 | Contrat de test — classe de base intermédiaire | `RC=1` ✅ |
 | Capture — géométrie hors champ avec ciel | `RC=7`, aucun PNG ✅ |

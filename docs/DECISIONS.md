@@ -224,3 +224,60 @@ est une préférence, pas une décision.
   appelant depuis un `_ready()` rencontrerait le même problème.
 - **Vérifié par** : niveau 3 de `validate_fast.sh`, qui lance réellement le jeu
   sur 90 frames et exige la trace d'arrivée au menu — un import vert ne suffit pas.
+
+---
+
+## D-012 — Gate A accepté avec réserve, bloqué sur la validation manette
+
+- **Date** : 2026-08-01 · **Phase** : A → B · **Statut** : ADOPTÉE
+- **Contexte** : la campagne manuelle du Gate A a été menée sur Mac. Les étapes
+  lancement, clavier AZERTY et navigation du menu sont rapportées conformes ;
+  aucune manette n'était disponible. La reprise en session à contexte frais a
+  ensuite été mesurée et réussie (1 min 12 s, `evidence/gateA/05_reprise.md`).
+- **Options pesées** :
+  1. *Attendre une manette* — rejeté par le propriétaire : arrêt indéfini du
+     projet pour un critère qui n'affecte pas le travail de la Phase B.
+  2. *Déclarer `PASS`* — **refusé** : §23.1 exige « clavier AZERTY **et** manette
+     fonctionnels ». Un critère non testé est `NON VÉRIFIÉ`, jamais implicitement
+     réussi. Ce serait la validation prématurée que §0.7 interdit.
+  3. *Accepter avec réserve, dette explicite* — **choisi par le propriétaire**.
+- **Verdict enregistré** : Gate A = **ACCEPTÉ AVEC RÉSERVE / BLOQUÉ SUR LA
+  VALIDATION MANETTE**. Jamais `PASS`.
+- **Dette** : `CONTROLLER-001`, `S2`, à lever **avant la release finale** et
+  recommandée avant le Gate C — le combat dépend des gâchettes, des sticks et du
+  lock-on d'une façon que le clavier ne représente pas.
+- **Contrainte imposée à la Phase B**, pour que la dette reste payable sans
+  réécriture :
+  - l'InputMap est **séparé** de la logique de gameplay par une couche d'intention ;
+  - aucune logique ne dépend du clavier ; rien ne lit `Input.is_key_pressed()` ni
+    une constante `KEY_*` hors de la couche d'entrée et de l'outillage ;
+  - toute action nouvelle naît avec sa liaison manette, sans exception ;
+  - aucun raccourci clavier codé en dur.
+  Ces quatre points sont **vérifiés par un test**, pas seulement écrits.
+- **Réévaluer** : à la levée de `CONTROLLER-001`, ou au Gate C si elle traîne.
+
+---
+
+## D-013 — La couche d'intention d'entrée sépare le périphérique du gameplay
+
+- **Date** : 2026-08-01 · **Phase** : B · **Statut** : ADOPTÉE
+- **Contexte** : la Phase B se développe au clavier alors que la manette n'est pas
+  testée (CONTROLLER-001). Le risque n'est pas que la manette soit cassée — les
+  liaisons existent — mais que du code de gameplay finisse par **supposer** un
+  clavier, rendant la dette impayable sans réécriture.
+- **Choix** : le gameplay ne lit jamais l'InputMap directement. Il consomme une
+  **intention** typée (`InputIntent`), produite par un seul lecteur
+  (`PlayerInputReader`) : vecteur de déplacement normalisé, états maintenus,
+  fronts montants. Le gameplay ignore d'où vient l'entrée.
+- **Bénéfices concrets** :
+  - un test peut injecter une intention sans périphérique, donc la locomotion est
+    testable en headless sans simuler de touches ;
+  - le remapping (§17.5) et la détection de périphérique (§8.5) auront un seul
+    point d'entrée ;
+  - une zone morte de stick se traite au même endroit que la normalisation
+    clavier, au lieu d'être dispersée.
+- **Rejeté** : lire `Input.get_vector()` directement dans le contrôleur du joueur —
+  plus court, mais lie la logique au périphérique et rend la dette manette
+  invérifiable autrement qu'en jouant.
+- **Vérifié par** : `test_input_layer_isolation.gd`, qui échoue si un script de
+  gameplay lit une touche ou une constante `KEY_*`.
