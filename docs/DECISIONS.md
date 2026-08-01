@@ -125,3 +125,65 @@ est une préférence, pas une décision.
 - **Réévaluer** : le critère 1 sera exercé pour de vrai au démarrage de la prochaine
   session neuve — c'est son premier acte. Les autres réserves sont réévaluées au
   Gate C.5, quand il existera du contenu visuel à juger.
+
+---
+
+## D-007 — Le voile de fondu appartient à `SceneFlow`, pas à `Boot.tscn`
+
+- **Date** : 2026-08-01 · **Phase** : A · **Statut** : ADOPTÉE
+- **Contexte** : §6.1 place `FadeLayer` et `LoadingUI` dans `Boot.tscn`.
+- **Problème** : `Boot.tscn` est déchargé au premier changement de scène. Un voile
+  de fondu qui y vit disparaît donc au moment exact où il sert — pendant la
+  transition. L'écran serait noir sans voile, ou le fondu sauterait.
+- **Choix** : `SceneFlow` (autoload, donc persistant) crée et détient son propre
+  `CanvasLayer` + `ColorRect`. Écart assumé et documenté par rapport à la lettre de
+  §6.1, en respectant son intention : « les transitions ne laissent aucun ancien
+  nœud actif ».
+- **`LoadingUI`** : non créé. Aucune scène n'est assez lourde pour le justifier et
+  rien ne permettrait de mesurer s'il aide. Il arrive en Phase I avec le chargement
+  en arrière-plan (§20.10), pas avant.
+- **Vérifié par** : `test_autoloads.gd::test_scene_flow_owns_its_fade_layer`.
+
+---
+
+## D-008 — `EventBus` volontairement vide à la Phase A
+
+- **Date** : 2026-08-01 · **Phase** : A · **Statut** : ADOPTÉE
+- **Contexte** : §5.6 impose que l'EventBus ne porte que des événements
+  **réellement globaux**.
+- **Constat** : à la Phase A, aucun événement ne remplit ce critère. Le flux et la
+  pause appartiennent à `GameState`, les transitions à `SceneFlow`, la sauvegarde à
+  `SaveSystem` ; les dégâts, la mort et le butin appartiendront aux composants de
+  l'entité concernée.
+- **Options pesées** :
+  1. *Pré-déclarer des signaux « au cas où »* — rejeté : API spéculative que
+     personne n'écoute, et surtout invitation à tout faire transiter par le bus dès
+     la phase suivante, soit exactement le couplage global que §5.6 veut éviter.
+  2. *Ne pas créer l'autoload du tout* — rejeté : l'emplacement architectural doit
+     exister pour que le premier vrai besoin ne parte pas ailleurs.
+  3. *Le créer vide, avec une politique explicite* — **choisi**.
+- **Règle d'ajout** : un signal n'entre dans l'EventBus qu'accompagné, dans le même
+  changement, d'un émetteur réel, d'au moins un récepteur réel et d'une entrée ici.
+- **Vérifié par** : `test_autoloads.gd::test_event_bus_is_intentionally_empty`,
+  qui échoue dès qu'un signal est ajouté — l'ajout devient une décision visible en
+  revue plutôt qu'une dérive.
+
+---
+
+## D-009 — Le runner de tests reconstitue les autoloads et travaille dans `_initialize()`
+
+- **Date** : 2026-08-01 · **Phase** : A · **Statut** : ADOPTÉE
+- **Contexte** : un `MainLoop` personnalisé lancé par `--script` remplace la
+  `SceneTree` par défaut. Deux conséquences mesurées sur 4.7.1 :
+  1. Godot n'y installe **pas** les autoloads déclarés dans `project.godot` ;
+  2. pendant `_init()`, `Engine.get_main_loop()` renvoie `null` — vérifié par sonde.
+- **Symptôme** : tous les tests de fondation échouaient dans le runner alors que le
+  jeu démarrait correctement — un **faux rouge**, aussi trompeur qu'un faux vert.
+- **Choix** : le runner instancie les autoloads déclarés, laisse passer une frame
+  pour que leurs `_ready()` s'exécutent, et déplace tout son travail de `_init()`
+  vers `_initialize()`.
+- **Bénéfice** : la présence, l'instanciation et l'initialisation de chaque autoload
+  déclaré deviennent elles-mêmes testées.
+- **Limite** : l'ordre d'installation suit celui de `project.godot`. Un autoload qui
+  dépendrait d'un autre pendant son `_ready()` exigerait un ordre explicite ; aucun
+  ne le fait aujourd'hui.

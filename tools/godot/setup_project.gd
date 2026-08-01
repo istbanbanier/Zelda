@@ -1,7 +1,8 @@
-## Génère l'InputMap et les couches de collision dans `project.godot` (§8.5, §5.7).
+## Génère InputMap, couches de collision et autoloads dans `project.godot`
+## (MASTER_SPEC §8.5, §5.7, §5.6).
 ##
 ## Usage :
-##   godot --headless --path . --script tools/godot/setup_input_map.gd
+##   godot --headless --path . --script tools/godot/setup_project.gd
 ##
 ## Pourquoi un générateur plutôt qu'une édition à la main : la section `[input]`
 ## de `project.godot` contient des `Object(InputEventKey, …)` sérialisés. Écrire ce
@@ -79,15 +80,27 @@ const COLLISION_LAYERS: Array[String] = [
 ]
 
 
+## Autoloads (§5.6). L'ordre compte : `GameState` et `EventBus` ne dépendent de
+## rien ; `SceneFlow` manipule l'arbre et vient donc après.
+const AUTOLOADS: Array = [
+	["GameState", "res://scripts/core/game_state.gd"],
+	["EventBus", "res://scripts/core/event_bus.gd"],
+	["SaveSystem", "res://scripts/save/save_system.gd"],
+	["AudioManager", "res://scripts/core/audio_manager.gd"],
+	["SceneFlow", "res://scripts/core/scene_flow.gd"],
+]
+
+
 func _initialize() -> void:
 	_write_input_map()
 	_write_collision_layers()
+	_write_autoloads()
 	var err: Error = ProjectSettings.save()
 	if err != OK:
-		printerr("[input_map] ÉCHEC: écriture de project.godot impossible (%d)" % err)
+		printerr("[setup_project] ÉCHEC: écriture de project.godot impossible (%d)" % err)
 		quit(1)
 		return
-	print("[input_map] project.godot mis à jour.")
+	print("[setup_project] project.godot mis à jour.")
 	quit(0)
 
 
@@ -161,3 +174,15 @@ func _write_collision_layers() -> void:
 	for i: int in range(COLLISION_LAYERS.size()):
 		ProjectSettings.set_setting(
 			"layer_names/3d_physics/layer_%d" % (i + 1), COLLISION_LAYERS[i])
+
+
+func _write_autoloads() -> void:
+	for entry: Array in AUTOLOADS:
+		var autoload_name: String = String(entry[0])
+		var path: String = String(entry[1])
+		if not FileAccess.file_exists(path):
+			printerr("[setup_project] ÉCHEC: script d'autoload introuvable : %s" % path)
+			continue
+		# Le préfixe « * » active le singleton — sans lui l'autoload est déclaré
+		# mais désactivé, et l'erreur ne se voit qu'à l'exécution.
+		ProjectSettings.set_setting("autoload/%s" % autoload_name, "*%s" % path)

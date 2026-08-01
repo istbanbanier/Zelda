@@ -1,13 +1,26 @@
-## Amorce minimale de Phase 0.
+## Scène d'amorce (MASTER_SPEC §6.1).
 ##
-## Rôle actuel : prouver que le projet se charge et s'exécute réellement, et
-## journaliser l'environnement d'exécution vérifié (version, renderer, physique).
+## Rôle : vérifier que la fondation est réellement en place, journaliser
+## l'environnement d'exécution vérifié, puis passer la main au flux.
 ##
-## Phase A remplacera ce nœud par le vrai Boot décrit dans MASTER_SPEC §6.1
-## (SceneFlow, FadeLayer, LoadingUI, overlay debug désactivé en build final).
+## `FadeLayer` n'est pas ici mais dans l'autoload `SceneFlow` : une couche de
+## fondu placée dans cette scène serait libérée au premier changement de scène,
+## c'est-à-dire au moment exact où elle sert (DECISIONS D-007).
+##
+## `LoadingUI` n'existe pas encore : aucune scène n'est assez lourde pour en
+## justifier une, et rien ne permettrait de mesurer si elle aide. Elle arrive en
+## Phase I avec le chargement en arrière-plan (§20.10).
+##
+## ÉTAT PHASE A : il n'existe **aucun menu principal ni monde** vers lequel
+## enchaîner. Boot s'arrête donc après vérification, et le dit. Il ne simule pas
+## une suite qui n'existe pas.
 extends Node
 
-## Nombre de frames à laisser passer avant l'auto-quit en mode non interactif.
+## Autoloads dont l'absence est une erreur de fondation, pas un détail.
+const REQUIRED_AUTOLOADS: Array[String] = [
+	"GameState", "EventBus", "SaveSystem", "AudioManager", "SceneFlow",
+]
+
 const AUTOQUIT_FRAMES: int = 3
 
 var _frames: int = 0
@@ -17,13 +30,40 @@ var _autoquit: bool = false
 func _ready() -> void:
 	_autoquit = "--autoquit" in OS.get_cmdline_user_args()
 
-	var v: Dictionary = Engine.get_version_info()
-	print("[boot] Godot            : %s" % v.get("string", "?"))
+	var version: Dictionary = Engine.get_version_info()
+	print("[boot] Godot            : %s" % version.get("string", "?"))
 	print("[boot] renderer         : %s" % ProjectSettings.get_setting("rendering/renderer/rendering_method", "?"))
 	print("[boot] physique 3D      : %s" % ProjectSettings.get_setting("physics/3d/physics_engine", "?"))
 	print("[boot] tick physique    : %s Hz" % ProjectSettings.get_setting("physics/common/physics_ticks_per_second", "?"))
 	print("[boot] pilote de rendu  : %s" % DisplayServer.get_name())
-	print("[boot] scène principale chargée — Phase 0, aucun gameplay attendu ici.")
+
+	if not _verify_autoloads():
+		return
+
+	print("[boot] autoloads        : %s" % ", ".join(REQUIRED_AUTOLOADS))
+	# Résolution par le nœud plutôt que par l'identifiant global `GameState` :
+	# `--check-only` n'enregistre pas les singletons d'autoload et rejetterait ce
+	# fichier, alors que le code serait correct à l'exécution. Passer par l'arbre
+	# garde le script vérifiable par le niveau 1b de validate_fast.sh.
+	var state: Node = get_node_or_null("/root/GameState")
+	if state != null:
+		print("[boot] flux             : %s" % state.call("flow_name", state.call("get_flow")))
+	print("[boot] fondation vérifiée — Phase A. Aucun menu ni monde à charger pour l'instant.")
+
+
+## Un autoload manquant doit arrêter le démarrage bruyamment. Le laisser passer
+## produirait des « Nonexistent function » disséminés bien plus loin, dans des
+## systèmes qui n'y sont pour rien.
+func _verify_autoloads() -> bool:
+	var missing: Array[String] = []
+	for autoload_name: String in REQUIRED_AUTOLOADS:
+		if get_node_or_null("/root/%s" % autoload_name) == null:
+			missing.append(autoload_name)
+	if missing.is_empty():
+		return true
+	push_error("[boot] autoload(s) absent(s) : %s — relancer tools/godot/setup_project.gd"
+		% ", ".join(missing))
+	return false
 
 
 func _process(_delta: float) -> void:

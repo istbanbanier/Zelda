@@ -38,9 +38,18 @@ var _failures: Array[String] = []
 var _current: String = ""
 
 
-func _init() -> void:
+## Tout le travail a lieu dans `_initialize()`, pas dans `_init()` : pendant
+## `_init()` la `SceneTree` n'est pas encore installée comme boucle principale et
+## `Engine.get_main_loop()` renvoie null. Un test qui interroge l'arbre — c'est le
+## cas de tout test de fondation — échouerait alors alors que le jeu fonctionne.
+func _initialize() -> void:
 	var filter: String = _read_filter()
 	print("=== TEST RUNNER — Godot %s ===" % Engine.get_version_info().get("string", "?"))
+	_install_autoloads()
+	# Les `_ready()` des autoloads ne s'exécutent qu'au premier traitement de
+	# l'arbre. Sans cette frame, un autoload est présent mais non initialisé —
+	# `AudioManager` n'aurait pas encore créé ses bus, par exemple.
+	await process_frame
 	if filter != "":
 		print("filtre: %s" % filter)
 
@@ -70,6 +79,44 @@ func _init() -> void:
 	for f: String in _failures:
 		print("  ÉCHEC: %s" % f)
 	quit(1 if _failed > 0 else 0)
+
+
+## Un `MainLoop` personnalisé lancé par `--script` remplace la `SceneTree` par
+## défaut, et Godot n'y installe PAS les autoloads déclarés dans `project.godot`.
+## Sans cela, tout test touchant à la fondation échouerait ici alors que le jeu
+## fonctionne — un faux rouge aussi trompeur qu'un faux vert. On reconstitue donc
+## l'environnement réel : chaque autoload déclaré est instancié et ajouté à la
+## racine, dans l'ordre du fichier.
+func _install_autoloads() -> void:
+	var installed: Array[String] = []
+	for setting: Dictionary in ProjectSettings.get_property_list():
+		var key: String = String(setting.get("name", ""))
+		if not key.begins_with("autoload/"):
+			continue
+		var autoload_name: String = key.trim_prefix("autoload/")
+		var value: String = String(ProjectSettings.get_setting(key, ""))
+		if value == "":
+			continue
+		# Le préfixe « * » marque un singleton activé ; son absence = désactivé.
+		if not value.begins_with("*"):
+			printerr("  autoload « %s » déclaré mais désactivé — ignoré" % autoload_name)
+			continue
+		var path: String = value.substr(1)
+		if root.has_node(NodePath(autoload_name)):
+			continue
+		var script: Script = load(path) as Script
+		if script == null or not script.can_instantiate():
+			printerr("  autoload « %s » : script illisible (%s)" % [autoload_name, path])
+			continue
+		var node: Node = script.new() as Node
+		if node == null:
+			printerr("  autoload « %s » : le script n'est pas un Node (%s)" % [autoload_name, path])
+			continue
+		node.name = autoload_name
+		root.add_child(node)
+		installed.append(autoload_name)
+	if not installed.is_empty():
+		print("autoloads installés: %s" % ", ".join(installed))
 
 
 func _read_filter() -> String:
