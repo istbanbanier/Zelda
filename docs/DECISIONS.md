@@ -90,3 +90,38 @@ est une préférence, pas une décision.
   déclaré PASS par un chemin qui n'a rendu aucune frame.
 - **Conséquence** : les Gates C.5, H et I resteront `BLOQUÉ` tant que ce projet
   n'est pas construit sur une machine avec GPU.
+
+---
+
+## D-006 — Gate 0 gelé « accepté avec réserves », sur décision du propriétaire
+
+- **Date** : 2026-08-01 · **Phase** : 0 → A · **Statut** : ADOPTÉE
+- **Contexte** : quatre revues adverses à contexte frais ont rendu `FAIL`. Chacune
+  a trouvé des défauts réels et trois ont réfuté un correctif de la précédente.
+  Tous les défauts bloquants identifiés sont corrigés et couverts par des contrôles
+  négatifs rejoués (TEST_REPORT T-08, T-09, T-10). Les critères 3, 4 et 5 du Gate 0
+  sont `PASS` depuis la deuxième revue.
+- **Problème** : la boucle de durcissement portait sur un harnais de test évalué
+  **contre un auteur de test hostile**, alors que le projet n'a aucun gameplay et
+  que son risque dominant est ailleurs (RSK-01, art et animation, `G1`).
+- **Options pesées** :
+  1. *Poursuivre les revues jusqu'à un `PASS` franc* — rejeté : rendements
+     décroissants, et rien n'indique qu'une passe supplémentaire ne trouverait pas
+     encore un vecteur d'attaque théorique.
+  2. *Déclarer `PASS`* — **refusé** : aucune revue ne l'a prononcé, ce serait
+     exactement la validation prématurée que §0.7 interdit.
+  3. *Geler en « accepté avec réserves » et passer en Phase A* — **choisi par le
+     propriétaire du projet**, avec les réserves écrites ci-dessous.
+- **Verdict enregistré** : Gate 0 = **GELÉ / ACCEPTÉ AVEC RÉSERVES**, jamais `PASS`.
+- **Réserves qui restent ouvertes** :
+  - critère 1 (reprise d'une session neuve en < 5 min) : `NON VÉRIFIÉ` — vérifié
+    par relecture, pas par une session réellement repartie de zéro ;
+  - un auteur de test peut encore remplacer l'enregistreur depuis une méthode ;
+  - `--check-only` ne résout pas les appels dynamiques ;
+  - le contrôle de contribution prouve que la géométrie apparaît, pas qu'elle
+    apparaît correctement — la comparaison à une image de référence (§21.8) reste
+    à construire quand il y aura du contenu ;
+  - ISS-003 (image North Star non versionnée) et ISS-005 (licence sortante).
+- **Réévaluer** : le critère 1 sera exercé pour de vrai au démarrage de la prochaine
+  session neuve — c'est son premier acte. Les autres réserves sont réévaluées au
+  Gate C.5, quand il existera du contenu visuel à juger.

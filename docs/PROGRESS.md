@@ -5,6 +5,61 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-01 — Session 1 (suite) — Durcissement du harnais, gel du Gate 0
+
+**Quatre revues adverses à contexte frais, quatre `FAIL`.** Chacune a trouvé des
+défauts réels ; trois ont réfuté un correctif de la précédente. C'est le résultat le
+plus utile de la Phase 0 : sans elles, un harnais qui ne détectait plus rien aurait
+été déclaré vert.
+
+### Défauts corrigés, par revue
+
+- **1re** (D1-D17) : erreur d'exécution comptée « ok » ; test sans reporter avalant
+  ses assertions ; `validate_release.sh` vert en sautant des étapes ; capture d'une
+  scène vide indiscernable d'une vraie.
+- **2e** (N1-N11) : parse error dans un script non référencé → vert ; filtre
+  d'erreurs trop étroit (asset supprimé invisible) ; contrat de test contournable ;
+  comptage de couleurs ne distinguant pas plein de vide.
+- **3e** (B1-B8) : contrat contournable par 3 vecteurs de plus ; `Light3D` compté
+  comme géométrie ; perte de couverture par renommage ; fichier de test illisible
+  avalé ; « 0 test exécuté » sortant en 0.
+- **4e** (Q1-Q8) : `func<TAB>check(` et classe de base intermédiaire échappant au
+  scan ; plancher de couverture franchissable par un faux résumé imprimé ; géométrie
+  hors champ acceptée ; **deux journaux de preuve produits par une version
+  antérieure du code**.
+
+### Les deux corrections de fond
+
+Les tentatives 1 à 3 reposaient sur de l'**inspection statique** — lire le code pour
+deviner s'il triche. Toutes ont été contournées. Remplacées par de la **mesure** :
+
+1. **Sonde comportementale du contrat de test** : le runner appelle lui-même les
+   quatre méthodes d'assertion et vérifie qu'elles atteignent son enregistreur.
+   Ne lit rien, mesure un effet — insensible à la syntaxe et à l'héritage.
+2. **Rendu différentiel pour la capture** : la scène est rendue deux fois, dont une
+   géométrie masquée, et les images doivent différer. Référence : 1,414 % des pixels.
+   Les trois attaques : 0,000 %.
+
+### Décision
+
+D-006 : Gate 0 **gelé, accepté avec réserves** sur décision du propriétaire — pas
+`PASS`. La boucle durcissait un harnais contre un auteur de test hostile alors que
+le projet n'a aucun gameplay et que son risque dominant est l'art (RSK-01).
+
+### Vérification de clôture (2026-08-01)
+
+| Contrôle | Résultat |
+|---|---|
+| Arbre Git propre, synchronisé avec l'origine | ✅ |
+| `validate_fast.sh` nominal | `RC=0`, 13 tests, plancher 13 |
+| `validate_release.sh` nominal | `RC=3` (BLOQUÉ, attendu) |
+| Contrat de test — classe de base intermédiaire | `RC=1` ✅ |
+| Capture — géométrie hors champ avec ciel | `RC=7`, aucun PNG ✅ |
+| Erreur d'exécution dans un test | `RC=1` ✅ |
+| Manifeste de capture rattaché à un commit existant | ✅ |
+
+---
+
 ## 2026-07-31 — Session 1 — Phase 0 : initialisation et continuité
 
 **Jalon pris** : Phase 0 uniquement, jusqu'au Gate 0. Aucun gameplay.
@@ -63,9 +118,9 @@ a réellement tourné.
 
 ## HANDOFF — prochaine action exacte
 
-> **Prochaine session : Phase A, jalon A.1 — fondation exécutable.**
+> **En cours : Phase A, jalon A.1 — fondation exécutable.** Gate 0 gelé (D-006).
 
-Avant tout, dans un conteneur neuf :
+Dans un conteneur neuf, avant tout :
 
 ```bash
 tools/setup_godot.sh          # ~60-120 min — LANCER EN ARRIÈRE-PLAN IMMÉDIATEMENT
@@ -74,28 +129,26 @@ tools/env_report.sh           # confirmer les versions obtenues
 tools/validate_fast.sh        # doit être vert avant d'écrire la moindre ligne
 ```
 
-Pendant la compilation, travailler sur ce qui n'exige pas le moteur : données,
-documentation, définitions de `Resource`.
+**Premier acte obligatoire de la prochaine session neuve** : mesurer réellement le
+critère 1 du Gate 0 — le temps qu'il faut pour comprendre l'état du projet à partir
+de `CLAUDE.md` + `STATUS` + `PROGRESS` seuls, sans relire l'historique. C'est la
+réserve principale de D-006 et elle ne peut être levée que comme ça.
 
 Contenu du jalon A.1, dans cet ordre :
 
-1. **InputMap AZERTY** dans `project.godot`, table de §8.5. Vérifier explicitement
-   que `Q` est mappé sur « gauche » et **jamais** sur le lock-on.
-2. **Couches de collision nommées** (§5.7) : World Static, Player, Enemy, Player
-   Hitbox, Enemy Hitbox, Hurtbox, Projectile, Physics Prop, Interactable, Climb
-   Probe, Conductive, Water/Danger, Navigation Obstacle, Camera Collision.
-   Chaque masque reste minimal.
+1. **InputMap AZERTY** — via `physical_keycode`, qui sert AZERTY et QWERTY d'une
+   seule liaison. Vérifier que `Q` déplace à gauche et **jamais** le lock-on.
+2. **Couches de collision nommées** (§5.7), masques minimaux.
 3. **Autoloads** (§5.6) : `GameState`, `SaveSystem`, `AudioManager`, `SceneFlow`,
-   `EventBus`. Ne pas y dupliquer de références fragiles au joueur ou aux ennemis.
-4. **Boot réel** (§6.1) remplaçant le placeholder actuel de `scripts/core/boot.gd` :
-   `SceneFlow`, `FadeLayer`, `LoadingUI`, overlay debug désactivé en build final.
-5. **Tests** : étendre `tests/unit/` — présence et unicité des actions d'entrée,
-   cohérence des couches de collision, autoloads chargés.
+   `EventBus`. Aucune référence fragile au joueur ou aux ennemis dedans.
+4. **Boot réel** (§6.1) remplaçant le placeholder de `scripts/core/boot.gd`.
+5. **Tests** : actions d'entrée présentes et uniques, couches cohérentes, autoloads
+   chargés. Relever `MIN_TESTS` dans `validate_fast.sh` en conséquence.
 
 **Gate A** : le projet ouvre et se lance, zéro parse error, InputMap AZERTY correct.
 Le lancer réellement, ne pas se contenter d'un import vert.
 
-### Pièges connus pour la prochaine session
+### Pièges connus
 
 - Ne pas croire un souvenir d'API : la doc en ligne est bloquée, la source du tag
   sous `/opt/src/godot` est la référence. Utiliser l'agent `godot-researcher`.

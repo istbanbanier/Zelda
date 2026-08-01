@@ -4,7 +4,15 @@ Vocabulaire imposé (§0.2) : `Non commencé` · `Implémenté` (raccordé) ·
 `Fonctionnel` (testé en scène exécutable) · `Validé` (conforme, sans régression) ·
 `Bloqué`. Tout critère non testé est `NON VÉRIFIÉ`, jamais implicitement réussi.
 
-**Dernière mise à jour** : 2026-07-31 · **Phase** : 0 · **Commit** : voir `git log`
+**Dernière mise à jour** : 2026-08-01 · **Phase** : A (jalon A.1) · **Commit** : voir `git log`
+
+## Verdict Gate 0 : **GELÉ / ACCEPTÉ AVEC RÉSERVES** (décision propriétaire, D-006)
+
+Ce n'est **pas** un `PASS` : aucune des quatre revues adverses ne l'a prononcé.
+Les critères 3, 4 et 5 sont `PASS`. Le critère 1 reste `NON VÉRIFIÉ` (vérifié par
+relecture, pas par une session réellement repartie de zéro). Le critère 2 a vu tous
+ses défauts bloquants corrigés et couverts par 18 contrôles négatifs rejoués, sans
+qu'une revue l'ait pour autant validé. Réserves détaillées : D-006.
 
 ---
 

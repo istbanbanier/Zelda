@@ -29,7 +29,7 @@ qui en faisait autre chose qu'un artefact machine. Le champ `png` de
 
 ## Contrôles négatifs
 
-Un harnais qui ne peut pas rougir n'a aucune valeur. Les deux revues adverses du
+Un harnais qui ne peut pas rougir n'a aucune valeur. **Quatre** revues adverses du
 Gate 0 ont chacune démontré qu'il restait vert sur des pannes réelles. Le dossier
 `negative_controls/` archive les journaux des scénarios d'échec **réinjectés**,
 avec leur code retour :
@@ -80,8 +80,7 @@ au contrôle de contribution ; les variantes sans ciel échouent plus tôt, en *
 - **Aucune qualité artistique** : `PipelineLab` vérifie l'outillage, ce n'est pas
   une composition. Le WOW Gate reste non noté.
 - **Aucun gameplay** : la Phase A n'a pas commencé.
-- **Aucune exhaustivité.** Trois revues adverses successives ont chacune réfuté
-  une affirmation d'exhaustivité, la deuxième et la troisième en cassant les
-  correctifs de la précédente. Ces contrôles couvrent les classes d'échec
+- **Aucune exhaustivité.** Quatre revues adverses successives ont chacune rendu
+  `FAIL` ; trois d'entre elles ont réfuté un correctif de la précédente. Ces contrôles couvrent les classes d'échec
   identifiées à ce jour, rien de plus. Le harnais arrête la perte de signal
   accidentelle ; il n'arrête pas un auteur de test qui mentirait délibérément.
