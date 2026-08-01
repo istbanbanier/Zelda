@@ -33,7 +33,16 @@ Procédure opérateur macOS : **`docs/MANUAL_GATE_A.md`**.
 captures d'écran manquent. C'est cohérent — le manifeste ne certifie pas ce qu'il
 n'a pas vu.
 
-## Verdict Gate B : **BLOQUÉ / EN ATTENTE** (revue contradictoire du 2026-08-01)
+## Verdict Gate B : **ACCEPTÉ POUR CONTINUATION / VALIDATION HUMAINE FINALE DIFFÉRÉE** (D-021)
+
+Décision du propriétaire, 2026-08-01, sur revue contradictoire rendue : les essais
+manuels (manette comprise) sont reportés à la **passe finale** et ne bloquent pas
+la poursuite ; les limitations GPU ne bloquent pas le Gate B. La revue n'avait
+démontré **aucun défaut bloquant** ; ses constats non bloquants étaient déjà tous
+traités. **Ce n'est pas un `PASS`** : dettes VALIDATION-B-001 et CONTROLLER-001
+ouvertes, à solder avant toute déclaration `Final`. La Phase C est autorisée.
+
+### Historique du verdict — revue du 2026-08-01
 
 Revue à contexte frais rendue et archivée : `evidence/gateB/REVUE.md`. **Aucun
 `FAIL`** — huit critères `PASS` par ré-exécution indépendante (clone frais
@@ -121,8 +130,8 @@ llvmpipe uniquement, aucun GPU.
 | Phase | Système | État |
 |---|---|---|
 | A | Boot, autoloads, InputMap AZERTY, couches de collision | **A.1 et A.2 livrés et gelés (`9414fd0`)** ; Gate A **EN ATTENTE** de validation humaine |
-| B | Player, caméra, locomotion, endurance, escalade, mantle | **B.0 à B.5 livrés, revue contradictoire rendue** — Gate B **BLOQUÉ / EN ATTENTE** des essais humains ; volet automatique clos, aucun FAIL |
-| C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | Non commencé |
+| B | Player, caméra, locomotion, endurance, escalade, mantle | **Clos par D-021 : accepté pour continuation** — volet automatique vert (137 tests), dettes VALIDATION-B-001 + CONTROLLER-001 à la passe finale |
+| C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | **C.0 en cours** — fondations de dégâts |
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
 | D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | Non commencé |
 | E | Récolte, cuisine, buffs, sauvegarde et migrations | Non commencé |
@@ -294,6 +303,29 @@ aussi aux coffres, à la cuisine et au pylône.
 **Ce qui sépare encore le Gate B d'un verdict** : la revue contradictoire (§0.7),
 puis les six essais humains du protocole. Le code et l'instrumentation sont
 complets.
+
+---
+
+## Phase C — jalon C.0 : fondations de dégâts
+
+Pipeline de §10.1 et formule de §10.3, en composants (§5.8). Aucune arme, aucun
+ennemi encore : C.1 branchera l'épée et le premier pillard sur ces fondations.
+
+| Élément (§) | État | Preuve |
+|---|---|---|
+| `DamageEvent` complet (§10.3 : instigateur, équipe, type, quantité, direction, stagger, point, élément, attack ID) | **Fonctionnel** | `test_the_event_carries_what_the_spec_demands` |
+| Formule base×…×weak_point×resistance−armor, clampée (§10.3, §21.2) | **Fonctionnel** | `test_damage.gd`, 3 cas dont l'ordre point faible/armure |
+| `HealthComponent` : clamp, mort idempotente, revive | **Fonctionnel** | `test_damage.gd`, 4 cas |
+| Invulnérabilité (future porteuse des i-frames §10.2) | **Fonctionnel** | `test_invulnerability_refuses_damage_without_consuming_it` |
+| **« Une touche par swing »** (§10.1, critère du Gate C) | **Fonctionnel** | `test_an_overlapping_swing_hits_exactly_once` — 30 frames de chevauchement, 1 coup ; contrôle W1 : sans le set, 30 coups |
+| Deux swings = deux coups, attack ID distincts | **Fonctionnel** | `test_a_second_swing_hits_again` |
+| Un swing touche chaque cible à portée une fois (§21.4) | **Fonctionnel** | `test_one_swing_hits_every_target_in_range_once` |
+| Refus du tir ami par équipe (§10.3) | **Fonctionnel** | `test_friendly_fire_is_refused_by_team` |
+| Point faible porté par la hurtbox (§10.3) | **Fonctionnel** | `test_weak_point_multiplier_is_applied_by_the_formula` |
+| Fenêtre active par méthode (§10.1) | **Fonctionnel** | `test_an_inactive_hitbox_never_hits` |
+| Poise, recul, élément | **Implémenté** — transportés, non consommés | la jauge de poise et le recul appliqué arrivent en C.1/C.2 |
+| Résistance et armure côté défenseur | **Implémenté** — paramètres neutres | branchés aux buffs (§13.5) et définitions d'ennemis (C.2) |
+| `AttackDefinition` en ressource (§5.9, §10.6) | **Non commencé** | C.1, avec l'épée et le combo |
 
 ---
 

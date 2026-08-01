@@ -1,0 +1,10 @@
+# Contrôle négatif — W2_formule_sans_clamp
+# Le clamp de §10.3 est retire : une armure epaisse produirait des degats negatifs, donc un soin.
+# Test visé : test_formula_never_returns_negative_damage
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_damage.gd::test_formula_never_returns_negative_damage — armure supérieure aux dégâts : attendu 0.0000 ± 0.0010, obtenu -45.0000
+=== RÉSULTAT: 150 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_damage.gd::test_formula_never_returns_negative_damage — armure supérieure aux dégâts : attendu 0.0000 ± 0.0010, obtenu -45.0000
+RC=0

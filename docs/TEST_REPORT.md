@@ -826,3 +826,65 @@ manquait à Q5.
 - R-012 (saut pendant mantle) et R-013 (coût du mantle) sont des questions de
   design ouvertes, pas des défauts.
 - **CONTROLLER-001 reste ouverte.**
+
+---
+
+# Jalon C.0 — Fondations de dégâts (2026-08-01)
+
+## Contexte d'ouverture de la Phase C
+
+Gate B clos par décision propriétaire **D-021** : « accepté pour continuation,
+validation humaine finale différée ». La revue n'avait démontré aucun défaut
+bloquant ; ses constats non bloquants étaient tous traités. Dettes ouvertes et
+enregistrées : VALIDATION-B-001, CONTROLLER-001 — à solder à la passe finale.
+
+## Commande et résultat
+
+```bash
+tools/validate_fast.sh; echo $?
+```
+
+**Code retour** : `0` — VERT. **151 réussis, 0 échoué**, plancher 151.
+
+> **Nombre de tests de référence : 151.** C'est ici, et nulle part ailleurs, qu'il
+> doit être lu.
+
+Nouveaux fichiers : `scripts/combat/damage_event.gd`, `damage_formula.gd`,
+`scripts/components/{health,hitbox,hurtbox}_component.gd`,
+`tests/unit/test_damage.gd` (7 cas), `tests/integration/test_hit_detection.gd`
+(7 cas, physique réelle — les chevauchements sont de vrais chevauchements).
+
+## Le critère du Gate C, prouvé dans les deux sens
+
+« Une touche par swing » : 30 frames de chevauchement continu → **1 coup**
+(`test_an_overlapping_swing_hits_exactly_once`). Contrôle négatif W1 — set des
+cibles retiré → **30 coups, santé 100 → 0**. Le chiffre du dommage évité est
+archivé, pas allégué.
+
+## Défaut réel trouvé pendant C.0
+
+**`Area3D.monitoring` coupé puis rallumé entre deux ticks perd les chevauchements
+pour toujours** (R-014). Symptôme : le second swing d'un enchaînement ne touchait
+jamais — `overlaps=0` six frames après réactivation, hurtbox en plein
+chevauchement. Mesuré à la sonde, pas déduit. Correctif : `monitoring` permanent,
+fenêtre portée par `_active` + balayage coupé hors fenêtre (§5.4). Sans le test
+du second swing, ce bug serait arrivé jusqu'au combat réel en C.1, où il aurait
+été un « coup fantôme » intraçable.
+
+## Contrôles négatifs
+
+W1–W4, tous ÉCHEC comme attendu, logs avec `RC=` dans
+`evidence/gateC/negative_controls/`. Détail : `evidence/gateC/README.md`.
+
+## Limites de C.0 — à ne pas confondre avec des oublis
+
+- **Aucune arme, aucun ennemi, aucun état d'attaque** : la hitbox s'active par
+  méthode, personne ne l'appelle encore en gameplay. C.1 branche l'épée, le
+  combo et le premier pillard.
+- **Poise, recul, élément transportés mais non consommés** — la jauge de poise
+  et les réactions arrivent en C.1/C.2.
+- **Résistance et armure neutres** — branchées aux buffs (§13.5) et aux
+  définitions d'ennemis (C.2) ; leur place dans la formule est déjà testée.
+- **Le joueur n'a ni hurtbox ni santé câblées** — C.1, avec le premier échange
+  de coups.
+- Dettes de validation humaine inchangées : VALIDATION-B-001, CONTROLLER-001.

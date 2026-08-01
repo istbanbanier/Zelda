@@ -128,3 +128,20 @@ Aucun `S0`/`S1` ouvert n'est admis pour un build candidat.
   n'embarque pas numpy, dont l'exporter dépend.
 - **Correctif** : `python3-numpy` (1.26.4), consigné comme dépendance obligatoire
   dans `docs/BUILD_ENVIRONMENT.md`.
+
+
+---
+
+## VALIDATION-B-001 — Essais humains du Gate B différés à la passe finale
+
+- **Sévérité** : `S2` (même classe que CONTROLLER-001 : critères de §8.3, §21.4 et
+  §23.1 non vérifiables sans humain devant un écran)
+- **Statut** : **DETTE OBLIGATOIRE**, ouverte par décision propriétaire D-021
+- **Contenu** : les six essais de `docs/MANUAL_VALIDATION.md`, section Gate B —
+  caméra contre murs (jitter), escalade et refus, mantle sous plafond (à-coups),
+  endurance nulle (seuil D-016 au ressenti), latence perçue, parcours à la main.
+- **Reproduction** : `godot --path . --debug-collisions scenes/tests/TraversalPlayground.tscn`,
+  protocole section Gate B, preuves dans `evidence/gateB/manual/`.
+- **Règle** : ne **jamais** considérer cette dette levée par des tests
+  automatiques. Elle se solde à la passe finale, avant toute déclaration `Final`.
+- **Propriétaire** : opérateur humain (machine avec écran) + Product Owner.

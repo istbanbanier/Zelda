@@ -1,0 +1,12 @@
+# Contrôle négatif — W1_degats_a_chaque_frame
+# Le set des cibles deja touchees est retire : la victime encaisse a chaque frame d overlap, l interdit central de §10.1.
+# Test visé : test_an_overlapping_swing_hits_exactly_once
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_hit_detection.gd::test_an_overlapping_swing_hits_exactly_once — coups reçus pendant 30 frames de chevauchement : attendu 1, obtenu 30
+  ÉCHEC test_hit_detection.gd::test_an_overlapping_swing_hits_exactly_once — santé après un seul coup de 10 : attendu 90.0000 ± 0.0010, obtenu 0.0000
+=== RÉSULTAT: 144 réussi(s), 12 échoué(s) ===
+  ÉCHEC: test_hit_detection.gd::test_an_overlapping_swing_hits_exactly_once — coups reçus pendant 30 frames de chevauchement : attendu 1, obtenu 30
+  ÉCHEC: test_hit_detection.gd::test_an_overlapping_swing_hits_exactly_once — santé après un seul coup de 10 : attendu 90.0000 ± 0.0010, obtenu 0.0000
+RC=0

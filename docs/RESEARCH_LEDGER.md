@@ -222,6 +222,28 @@ ou une mesure locale) · `OUVERT`.
 
 ---
 
+## R-014 — `Area3D.monitoring` coupé puis rallumé entre deux ticks : chevauchements perdus
+
+- **Date** : 2026-08-01 · **Phase** : C.0 · **Statut** : RÉSOLU, règle adoptée
+- **Ce qui change selon la réponse** : la manière d'ouvrir et fermer la fenêtre
+  active d'une hitbox (§10.1) — et tout futur usage d'`Area3D` intermittent.
+- **Constat, mesuré sur le binaire installé** : hurtbox en plein chevauchement ;
+  `monitoring = false` puis `monitoring = true` posés dans le même intervalle
+  entre deux ticks physiques (fin d'un swing, début du suivant). Résultat :
+  `get_overlapping_areas()` reste **définitivement vide** — encore 0 six frames
+  plus tard, alors que le premier swing voyait 1 chevauchement dès le tick
+  suivant son activation.
+- **Règle adoptée** : `monitoring` reste allumé en permanence sur les hitbox ; la
+  fenêtre active est portée par un drapeau `_active` et le balayage en
+  `_physics_process`, coupé hors fenêtre (§5.4). Le suivi de paires permanent est
+  un coût négligeable ; un swing muet un tick sur deux serait un bug de gameplay
+  intraçable.
+- **Limite** : mesuré pour la séquence off→on dans la même frame. Un toggle
+  espacé de plusieurs frames n'a pas été caractérisé — inutile tant que la règle
+  ci-dessus tient.
+
+---
+
 ## Questions ouvertes pour les phases suivantes
 
 | ID | Question | Phase | Décidera |

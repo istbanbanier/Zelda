@@ -1,0 +1,10 @@
+# Contrôle négatif — W4_tir_ami_autorise
+# Le controle d equipe est retire : une erreur de couche suffirait a blesser un allie.
+# Test visé : test_friendly_fire_is_refused_by_team
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_hit_detection.gd::test_friendly_fire_is_refused_by_team — l'allié n'est jamais touché : attendu 100.0000 ± 0.0010, obtenu 90.0000
+=== RÉSULTAT: 150 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_hit_detection.gd::test_friendly_fire_is_refused_by_team — l'allié n'est jamais touché : attendu 100.0000 ± 0.0010, obtenu 90.0000
+RC=0

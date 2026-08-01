@@ -1,0 +1,12 @@
+# Contrôle négatif — W3_mort_non_idempotente
+# La garde _dead est retiree de take_damage : un mort encaisse encore et died est reemis a chaque coup — l anti-pattern que §16.2 interdit au boss.
+# Test visé : test_death_is_emitted_once_and_is_final
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_damage.gd::test_death_is_emitted_once_and_is_final — un mort n'encaisse plus rien
+  ÉCHEC test_damage.gd::test_death_is_emitted_once_and_is_final — died jamais réémis : attendu 1, obtenu 2
+=== RÉSULTAT: 150 réussi(s), 2 échoué(s) ===
+  ÉCHEC: test_damage.gd::test_death_is_emitted_once_and_is_final — un mort n'encaisse plus rien
+  ÉCHEC: test_damage.gd::test_death_is_emitted_once_and_is_final — died jamais réémis : attendu 1, obtenu 2
+RC=0

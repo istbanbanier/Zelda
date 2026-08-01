@@ -474,3 +474,28 @@ est une préférence, pas une décision.
   qui départage réellement les variantes de déclencheur, ce que Q5 avait montré
   manquant — et le contrôle négatif V4. Q5 est **caduc** : sa mutation visait un
   code qui n'existe plus sous cette forme.
+
+
+---
+
+## D-021 — Gate B clos « accepté pour continuation », validation humaine finale différée
+
+- **Date** : 2026-08-01 · **Phase** : B → C · **Statut** : DÉCISION PROPRIÉTAIRE
+- **Décision, aux termes du propriétaire** : les essais manuels à la manette sont
+  reportés à la passe finale et ne bloquent pas la poursuite ; les limitations GPU
+  de l'environnement ne bloquent pas le Gate B ; seuls d'éventuels défauts P0/P1
+  réellement démontrés par la revue devaient être corrigés ; pas de deuxième revue
+  contradictoire ; si rien de bloquant ne subsiste, Gate B est clos « **accepté
+  pour continuation, validation humaine finale différée** » et la Phase C démarre.
+- **Constat d'application** : la revue (`evidence/gateB/REVUE.md`) n'a démontré
+  **aucun défaut bloquant** — ses mots : « aucun défaut de code bloquant trouvé ».
+  Ses six constats non bloquants ont tous été traités au commit `806ef9b`
+  (137 tests, RC=0). Il n'y avait donc aucun P0/P1 à corriger.
+- **Ce que ce verdict n'est pas** : un `PASS`. Le vocabulaire de §0.2 tient — les
+  critères jitter (§8.3), ressenti (§21.4) et manette (§23.1) restent
+  `NON VÉRIFIÉ`/`BLOQUÉ` jusqu'à la passe finale. La dette est enregistrée :
+  **VALIDATION-B-001** (essais humains du Gate B) s'ajoute à **CONTROLLER-001**
+  (manette, D-012). Aucune des deux ne sera jamais levée par un test automatique.
+- **Précédent** : même mécanique que D-012 pour le Gate A — le propriétaire assume
+  explicitement le risque de continuer, la dette est portée par écrit, et la
+  passe finale la solde ou la transforme en `FAIL`.

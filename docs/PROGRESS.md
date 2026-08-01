@@ -496,57 +496,95 @@ rattrapées. Mesurer ne suffit pas ; il faut mesurer **ce qui discrimine**.
 
 ---
 
+## 2026-08-01 — D-021 : Gate B clos pour continuation · Jalon C.0 : fondations de dégâts
+
+### La décision
+
+Product Owner, sur revue rendue : essais manuels (manette comprise) reportés à la
+passe finale, limitations GPU non bloquantes, pas de deuxième revue. La revue
+n'ayant démontré **aucun défaut bloquant** (ses constats non bloquants étaient
+déjà traités), Gate B est clos « **accepté pour continuation, validation humaine
+finale différée** » (D-021). Dettes enregistrées : VALIDATION-B-001 s'ajoute à
+CONTROLLER-001, toutes deux `S2`, à solder avant toute déclaration `Final`.
+
+### C.0 — changement réel
+
+Le pipeline de §10.1 et la formule de §10.3, en composants : `DamageEvent`
+(l'événement complet exigé par la spec), `DamageFormula` (fonction pure, côté
+attaquant / côté défenseur séparés), `HealthComponent` (mort idempotente),
+`HurtboxComponent` (récepteur pur, point faible déclaré), `HitboxComponent`
+(fenêtre active par méthode, set des cibles touchées, attack ID globalement
+uniques). 14 nouveaux cas de test, plancher à 151.
+
+Le critère central du Gate C — « une touche par swing » — est prouvé dans les
+deux sens : 30 frames de chevauchement → 1 coup, et le contrôle W1 montre 30
+coups (santé 100 → 0) dès que le set disparaît.
+
+### Le piège moteur du jour (R-014)
+
+`Area3D.monitoring` coupé puis rallumé entre deux ticks laisse
+`get_overlapping_areas()` **définitivement vide** — le second swing d'un
+enchaînement ne touchait jamais. Mesuré à la sonde. Correctif : `monitoring`
+permanent, la fenêtre active vit dans `_active`, le balayage est coupé hors
+fenêtre. C'est le test « deux swings, deux coups » qui l'a attrapé — en C.1 ce
+bug aurait été un coup fantôme intraçable en plein combat.
+
+### Vérification
+
+`tools/validate_fast.sh` → `RC=0`, VERT, **151 tests**, plancher 151. Contrôles
+W1–W4 archivés avec `RC=`.
+
+### Ce que C.0 ne prouve pas
+
+Personne n'appelle encore `activate()` en gameplay : ni arme, ni ennemi, ni état
+d'attaque, ni hurtbox sur le joueur. Poise, recul, élément transportés mais non
+consommés ; résistance et armure neutres. C'est le squelette du combat, pas le
+combat.
+
+---
+
 ## HANDOFF — prochaine action exacte
 
-> **Gate A : `ACCEPTÉ AVEC RÉSERVE / BLOQUÉ SUR LA VALIDATION MANETTE`** (D-012).
-> **Gate B : `BLOQUÉ / EN ATTENTE`** — revue rendue, aucun `FAIL`, volet
-> automatique clos à 137 tests (`evidence/gateB/REVUE.md`).
+> **Gate A** : `ACCEPTÉ AVEC RÉSERVE` (D-012). **Gate B** : `ACCEPTÉ POUR
+> CONTINUATION, VALIDATION HUMAINE FINALE DIFFÉRÉE` (D-021). Dettes
+> VALIDATION-B-001 + CONTROLLER-001 ouvertes, passe finale.
+> **Phase C en cours** — C.0 livré.
 
-### Deux actions possibles, et elles n'appartiennent pas à la même personne
+### Action suivante : jalon C.1 — l'épée, le combo, le premier échange
 
-1. **L'opérateur** (machine avec écran) : jouer les six essais de
-   `docs/MANUAL_VALIDATION.md`, section Gate B — environ 45 min :
+Dans l'ordre, sur les fondations de C.0 :
 
-   ```bash
-   godot --path . --debug-collisions scenes/tests/TraversalPlayground.tscn
-   ```
+1. **`AttackDefinition` en ressource** (§5.9, §10.6) : startup/active/recovery,
+   fenêtres de buffer/combo, multiplicateur de dégâts, poise, recul, hit-stop —
+   les nombres inspectables que §10.6 exige. `resources/combat/`.
+2. **État d'attaque du joueur** : `Mode` étendu ou début de la `StateMachine` de
+   §8.1 (décision D-018 à honorer : le Mode est absorbé, pas doublé). L'attaque
+   appelle `activate()`/`deactivate()` sur la fenêtre active de la définition.
+3. **Hurtbox + santé sur le joueur** ; buffer d'attaque 0,15 s (§10.2) dans
+   `InputIntent` (l'action `attack_light` existe déjà dans l'InputMap).
+4. **Combo trois coups** (§10.2) : enchaînement dans les derniers 25–35 % de la
+   fenêtre, sinon retour à l'idle.
+5. **CombatLab.tscn** (§10.8) : la scène d'instrumentation — mannequins,
+   timeline de l'action, historique d'inputs. Compléter au fil de C.
 
-   Preuves dans `evidence/gateB/manual/`, un fichier par essai plus `RAPPORT.md`
-   (commit testé, machine, verdicts). Le verdict final du Gate B sera le plus
-   faible de : automatique (clos, vert), essais humains, revue (rendue).
+Questions ouvertes à trancher en route : R-012 (saut pendant mantle), R-013
+(coût du mantle), absorption du `Mode` (D-018).
 
-2. **Le propriétaire** : décider si la Phase C démarre avec un Gate B
-   explicitement `EN ATTENTE`, comme D-012 l'a permis pour le Gate A. Sans cette
-   décision, **ne pas entamer la Phase C** — la règle « jamais de gate suivant
-   sans gate courant vert ou explicitement BLOQUÉ » est satisfaite par le verdict,
-   mais l'autorisation de continuer reste un choix du propriétaire.
+### Pièges connus, cumulés de B.1 à C.0
 
-### Si la Phase C est autorisée, son premier jalon
-
-C.0 : `HealthComponent`, `HitboxComponent`, `HurtboxComponent` (§5.8), pipeline de
-dégâts de §10.1 — une touche par swing via le set de cibles déjà touchées.
-Questions ouvertes à trancher en route : R-012 (saut pendant mantle), R-013 (coût
-du mantle), et l'absorption du `Mode` dans la `StateMachine` de §8.1 (D-018).
-
-### Pièges connus, vérifiés de B.1 à la revue
-
-- **Mesurer ne suffit pas : mesurer ce qui discrimine.** Deux décisions de suite
-  fondées sur des mesures fausses ou incomplètes (D-020 amendée). En cas de
-  comportement étrange, sonder AUSSI l'état des modes (escalade ?) avant de
-  conclure sur un drapeau du moteur.
-- **Un contrôle négatif qui ne casse rien est une information** — et depuis la
-  revue, chaque log se termine par `RC=` pour être distinguable d'un log tronqué.
-- **Un contrôle négatif sur un réglage doit muter le `.tres`** (R-006bis) ; les
-  valeurs de spec doivent être **épinglées** quelque part, jamais seulement
-  comparées au tuning qui les porte (revue, constat 2).
-- **Une mesure d'intégration ne doit pas dépendre de la taille du décor** — le
-  test diagonal relâche la poussée dès le franchissement.
-- **Un composant `Node` créé dans un test doit être libéré.**
-- **Une rampe de test ne doit pas être une boîte tournée.**
-- **`SpringArm3D` réécrit la position de ses enfants directs** (D-014) ; `margin`
-  sans effet, `shape` donne le dégagement (D-015).
-- D-009/D-010 : autoloads et `await` dans le runner — ne pas défaire.
-- **Relever `MIN_TESTS` à chaque ajout** ; le nombre de référence vit dans
+- **`Area3D.monitoring` ne se toggle pas entre deux ticks** (R-014) : permanent +
+  drapeau, sinon chevauchements perdus pour toujours.
+- **Mesurer ne suffit pas : mesurer ce qui discrimine** (D-020 amendée) — sonder
+  l'état des modes avant de conclure sur un drapeau moteur.
+- **Un contrôle négatif qui ne casse rien est une information** ; chaque log se
+  termine par `RC=`.
+- **Muter le `.tres`, pas la valeur par défaut** (R-006bis) ; **épingler les
+  valeurs de spec**, jamais seulement les comparer au tuning (revue B, constat 2).
+- **Une mesure d'intégration ne dépend pas de la taille du décor.**
+- **Un `Node` créé dans un test doit être libéré.**
+- **Une rampe de test n'est pas une boîte tournée.**
+- **`SpringArm3D` réécrit la position de ses enfants directs** (D-014/D-015).
+- D-009/D-010 : autoloads et `await` du runner — ne pas défaire.
+- **`MIN_TESTS` relevé à chaque ajout** ; nombre de référence dans
   `docs/TEST_REPORT.md` uniquement.
-- Doc en ligne bloquée (ISS-001) : mesurer sur le binaire, consigner dans
-  `RESEARCH_LEDGER.md`.
+- Doc en ligne bloquée (ISS-001) : mesurer sur le binaire, consigner au ledger.

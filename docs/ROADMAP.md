@@ -9,8 +9,8 @@ Règle : **aucune phase ne démarre avant que le gate précédent soit `PASS` ou
 |---|---|---|---|
 | 0 | Initialisation, continuité, réduction des risques | Gate 0 | 🔒 **GELÉ / ACCEPTÉ AVEC RÉSERVES** (D-006) |
 | A | Fondation (projet, boot, autoloads, inputs, runner) | Gate A | 🟠 **EN ATTENTE** — A.1/A.2 livrés, validation humaine à jouer |
-| B | Traversal (player, caméra, locomotion, endurance, escalade) | Gate B | ⬜ Non commencé |
-| C | Combat (santé, hitbox, combo, esquive, lock-on, arc, durabilité) | Gate C | ⬜ Non commencé |
+| B | Traversal (player, caméra, locomotion, endurance, escalade) | Gate B | 🟢 **ACCEPTÉ POUR CONTINUATION** (D-021) — validation humaine finale différée (VALIDATION-B-001) |
+| C | Combat (santé, hitbox, combo, esquive, lock-on, arc, durabilité) | Gate C | 🔵 **EN COURS** — C.0 fondations de dégâts |
 | C.5 | Micro-verticale + benchmark artistique `HeroShotLab` | Gate C.5 | ⬜ Non commencé |
 | D | Monde graybox 512 m | Gate D | ⬜ Non commencé |
 | E | Récolte, cuisine, buffs, sauvegarde | Gate E | ⬜ Non commencé |
@@ -59,6 +59,11 @@ manette n'est disponible ici. Verdict global = le plus faible des six étapes.
 
 ### Gate B — Traversal
 Parcours de test complet sans blocage ni caméra cassée ; sprint/saut/escalade/mantle fiables.
+
+État : **ACCEPTÉ POUR CONTINUATION, VALIDATION HUMAINE FINALE DIFFÉRÉE** (D-021).
+Revue contradictoire rendue (`evidence/gateB/REVUE.md`) : aucun `FAIL`, volet
+automatique clos à 137 tests. Les essais humains (VALIDATION-B-001) et la manette
+(CONTROLLER-001) se soldent à la passe finale. Ce n'est pas un `PASS`.
 
 ### Gate C — Combat
 Combat gagnable, **une touche par swing**, aucune référence invalide, esquive avec i-frames.
