@@ -1,0 +1,30 @@
+# Contrôle négatif — AA3_definition_mutee
+# base_damage de worn_sword.tres muté 12 -> 20 (R-006bis : la ressource LIVRÉE) : 11 échecs à travers CINQ suites — tout le combat remonte désormais à la définition d'arme, l'enveloppe §11.1 comprise. Les deux sens de la doctrine Y5.
+# Tests visés : enveloppe §11.1 + toute mesure de dégâts (échange, lourde, durabilité)
+# Attendu : ÉCHEC (11 assertions). Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_combat_exchange.gd::test_a_single_press_lands_a_single_blow — dégâts du premier coup (12 × 1,0) : attendu 12.0000 ± 0.0010, obtenu 20.0000
+  ÉCHEC test_combat_exchange.gd::test_a_single_press_lands_a_single_blow — santé du mannequin (45 − 12) : attendu 33.0000 ± 0.0010, obtenu 25.0000
+  ÉCHEC test_combat_exchange.gd::test_hammering_delivers_the_full_combo_then_resets — quatre coups reçus, puis plus rien (cadavre) : attendu 4, obtenu 3
+  ÉCHEC test_combat_exchange.gd::test_two_dummies_side_by_side_each_take_one_hit_per_swing — mannequin gauche touché une fois : attendu 33.0000 ± 0.0010, obtenu 25.0000
+  ÉCHEC test_combat_exchange.gd::test_two_dummies_side_by_side_each_take_one_hit_per_swing — mannequin droit touché une fois : attendu 33.0000 ± 0.0010, obtenu 25.0000
+  ÉCHEC test_durability.gd::test_a_connecting_hit_wears_the_weapon_and_uses_its_damage — les dégâts sont ceux de la définition (12) : attendu 33.0000 ± 0.0010, obtenu 25.0000
+  ÉCHEC test_durability.gd::test_rupture_equips_the_next_weapon_then_bare_hands_still_fight — épée 12, gourdin 8, mains nues 3 — chaque coup au tarif de son arme : attendu 22.0000 ± 0.0010, obtenu 14.0000
+  ÉCHEC test_durability.gd::test_rupture_cuts_the_hitbox_before_the_next_victim — arme cassée au premier contact : UNE seule victime (45 + 25) : attendu 78.0000 ± 0.0010, obtenu 70.0000
+  ÉCHEC test_durability.gd::test_rupture_cuts_the_hitbox_before_the_next_victim — avec de la durabilité, le même coup touche les DEUX (25 + 25) : attendu 66.0000 ± 0.0010, obtenu 50.0000
+  ÉCHEC test_heavy_and_hurt.gd::test_heavy_attack_deals_scaled_damage_and_costs_stamina — dégâts de la lourde (12 × 1,8) : attendu 23.4000 ± 0.0010, obtenu 9.0000
+  ÉCHEC test_weapon_data.gd::test_the_six_definitions_match_the_spec_table — worn_sword : dégâts §11.1 : attendu 12.0000 ± 0.0010, obtenu 20.0000
+=== RÉSULTAT: 206 réussi(s), 11 échoué(s) ===
+  ÉCHEC: test_combat_exchange.gd::test_a_single_press_lands_a_single_blow — dégâts du premier coup (12 × 1,0) : attendu 12.0000 ± 0.0010, obtenu 20.0000
+  ÉCHEC: test_combat_exchange.gd::test_a_single_press_lands_a_single_blow — santé du mannequin (45 − 12) : attendu 33.0000 ± 0.0010, obtenu 25.0000
+  ÉCHEC: test_combat_exchange.gd::test_hammering_delivers_the_full_combo_then_resets — quatre coups reçus, puis plus rien (cadavre) : attendu 4, obtenu 3
+  ÉCHEC: test_combat_exchange.gd::test_two_dummies_side_by_side_each_take_one_hit_per_swing — mannequin gauche touché une fois : attendu 33.0000 ± 0.0010, obtenu 25.0000
+  ÉCHEC: test_combat_exchange.gd::test_two_dummies_side_by_side_each_take_one_hit_per_swing — mannequin droit touché une fois : attendu 33.0000 ± 0.0010, obtenu 25.0000
+  ÉCHEC: test_durability.gd::test_a_connecting_hit_wears_the_weapon_and_uses_its_damage — les dégâts sont ceux de la définition (12) : attendu 33.0000 ± 0.0010, obtenu 25.0000
+  ÉCHEC: test_durability.gd::test_rupture_equips_the_next_weapon_then_bare_hands_still_fight — épée 12, gourdin 8, mains nues 3 — chaque coup au tarif de son arme : attendu 22.0000 ± 0.0010, obtenu 14.0000
+  ÉCHEC: test_durability.gd::test_rupture_cuts_the_hitbox_before_the_next_victim — arme cassée au premier contact : UNE seule victime (45 + 25) : attendu 78.0000 ± 0.0010, obtenu 70.0000
+  ÉCHEC: test_durability.gd::test_rupture_cuts_the_hitbox_before_the_next_victim — avec de la durabilité, le même coup touche les DEUX (25 + 25) : attendu 66.0000 ± 0.0010, obtenu 50.0000
+  ÉCHEC: test_heavy_and_hurt.gd::test_heavy_attack_deals_scaled_damage_and_costs_stamina — dégâts de la lourde (12 × 1,8) : attendu 23.4000 ± 0.0010, obtenu 9.0000
+  ÉCHEC: test_weapon_data.gd::test_the_six_definitions_match_the_spec_table — worn_sword : dégâts §11.1 : attendu 12.0000 ± 0.0010, obtenu 20.0000
+RC=1

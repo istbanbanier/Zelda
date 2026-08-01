@@ -1,0 +1,16 @@
+# Contrôle négatif — AA5_plafond_et_doublon_retires
+# Les gardes d'add_weapon sont retirées : la neuvième arme entre, le même exemplaire entre deux fois — §11.3 (« huit armes », « aucun doublon d'instance ») violé.
+# Test visé : test_inventory_refuses_overflow_and_duplicates
+# Attendu : ÉCHEC (4 assertions). Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_weapon_data.gd::test_inventory_refuses_overflow_and_duplicates — la neuvième est refusée (§11.3)
+  ÉCHEC test_weapon_data.gd::test_inventory_refuses_overflow_and_duplicates — le compte est plafonné : attendu 8, obtenu 9
+  ÉCHEC test_weapon_data.gd::test_inventory_refuses_overflow_and_duplicates — le MÊME exemplaire est refusé — pas de doublon
+  ÉCHEC test_weapon_data.gd::test_inventory_refuses_overflow_and_duplicates — un seul exemplaire détenu : attendu 1, obtenu 2
+=== RÉSULTAT: 213 réussi(s), 4 échoué(s) ===
+  ÉCHEC: test_weapon_data.gd::test_inventory_refuses_overflow_and_duplicates — la neuvième est refusée (§11.3)
+  ÉCHEC: test_weapon_data.gd::test_inventory_refuses_overflow_and_duplicates — le compte est plafonné : attendu 8, obtenu 9
+  ÉCHEC: test_weapon_data.gd::test_inventory_refuses_overflow_and_duplicates — le MÊME exemplaire est refusé — pas de doublon
+  ÉCHEC: test_weapon_data.gd::test_inventory_refuses_overflow_and_duplicates — un seul exemplaire détenu : attendu 1, obtenu 2
+RC=1

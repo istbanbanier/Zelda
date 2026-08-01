@@ -1,0 +1,12 @@
+# Contrôle négatif — AA6_fleche_gratuite
+# Portail et consommation retirés de _try_shoot : le tir ne coûte rien et part à carquois vide. PREMIÈRE PASSE : seule la consommation rougissait — l'assertion du tir à vide était verte pour la mauvaise raison, la CADENCE (0,6 s) bloquait le second tir à la place du compteur. Test corrigé (purge de la cadence avant le tir à vide), mutation rejouée : les DEUX assertions rougissent.
+# Test visé : test_arrows_are_consumed_and_gate_the_shot
+# Attendu : ÉCHEC (2 assertions). Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_durability.gd::test_arrows_are_consumed_and_gate_the_shot — une flèche consommée par tir : attendu 7, obtenu 8
+  ÉCHEC test_durability.gd::test_arrows_are_consumed_and_gate_the_shot — à zéro flèche, AUCUN tir ne part : attendu 36.0000 ± 0.0010, obtenu 27.0000
+=== RÉSULTAT: 213 réussi(s), 2 échoué(s) ===
+  ÉCHEC: test_durability.gd::test_arrows_are_consumed_and_gate_the_shot — une flèche consommée par tir : attendu 7, obtenu 8
+  ÉCHEC: test_durability.gd::test_arrows_are_consumed_and_gate_the_shot — à zéro flèche, AUCUN tir ne part : attendu 36.0000 ± 0.0010, obtenu 27.0000
+RC=1

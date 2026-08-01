@@ -1,0 +1,132 @@
+## Inventaire d'armes et de flèches (MASTER_SPEC §5.8, §11.3).
+##
+## §11.3 : huit armes maximum, flèches à part, « aucun doublon d'instance ».
+## L'équipement fait partie de l'inventaire : c'est lui qui sait quelle arme est
+## en main et qui « équipe la suivante » après une rupture (§11.2) — le porteur
+## écoute `weapon_equipped` et raccorde dégâts et portée, il ne choisit pas.
+##
+## `null` équipé = mains nues : un état légitime (§11.2), pas une erreur.
+## Les ingrédients et les plats (§11.3) arrivent avec la cuisine (Phase E).
+class_name InventoryComponent
+extends Node
+
+## `weapon` vaut `null` pour les mains nues.
+signal weapon_equipped(weapon: WeaponInstance)
+signal weapon_added(weapon: WeaponInstance)
+signal weapon_removed(weapon: WeaponInstance)
+signal arrows_changed(count: int)
+
+## §11.3 : « huit armes ».
+const MAX_WEAPONS: int = 8
+
+## Arme de départ, instanciée à l'initialisation — le flux « trouve un coffre et
+## une arme » (§1) la remplacera par du butin réel en Phase D.
+@export var default_weapon: WeaponDefinition
+## Dotation de départ du bac à sable ; les flèches se gagnent en coffre (§11.4).
+@export var starting_arrows: int = 0
+
+var _weapons: Array[WeaponInstance] = []
+var _equipped_index: int = -1
+var _arrows: int = 0
+
+
+func _ready() -> void:
+	_arrows = maxi(0, starting_arrows)
+	if default_weapon != null:
+		add_weapon(WeaponInstance.create(default_weapon))
+
+
+## Refuse le plein (§11.3 : huit) et le doublon d'instance. La première arme
+## ajoutée à mains nues est équipée d'office (§1 : trouver une arme, c'est la
+## prendre en main).
+func add_weapon(weapon: WeaponInstance) -> bool:
+	if weapon == null or _weapons.size() >= MAX_WEAPONS:
+		return false
+	for held: WeaponInstance in _weapons:
+		if held.instance_id == weapon.instance_id:
+			return false  # §11.3 : aucun doublon d'instance
+	_weapons.append(weapon)
+	weapon_added.emit(weapon)
+	if _equipped_index < 0:
+		equip_index(_weapons.size() - 1)
+	return true
+
+
+## Retire l'exemplaire (rupture §11.2, ou dépôt plus tard). Si c'était l'arme en
+## main : « équiper suivante ou mains nues ».
+func remove_weapon(weapon: WeaponInstance) -> bool:
+	var index: int = _weapons.find(weapon)
+	if index < 0:
+		return false
+	var was_equipped: bool = index == _equipped_index
+	_weapons.remove_at(index)
+	if _equipped_index > index:
+		_equipped_index -= 1
+	weapon_removed.emit(weapon)
+	if was_equipped:
+		if _weapons.is_empty():
+			_equipped_index = -1
+			weapon_equipped.emit(null)
+		else:
+			# La « suivante » : l'arme qui occupe maintenant la place de la
+			# disparue, ou la dernière si elle fermait la liste.
+			_equipped_index = -1
+			equip_index(mini(index, _weapons.size() - 1))
+	return true
+
+
+func equip_index(index: int) -> bool:
+	if index < 0 or index >= _weapons.size() or index == _equipped_index:
+		return false
+	_equipped_index = index
+	weapon_equipped.emit(_weapons[index])
+	return true
+
+
+## Sélection rapide (§11.3) — cycle vers l'arme suivante, en boucle.
+func equip_next() -> void:
+	if _weapons.size() < 2:
+		return
+	equip_index((_equipped_index + 1) % _weapons.size())
+
+
+func equipped() -> WeaponInstance:
+	if _equipped_index < 0 or _equipped_index >= _weapons.size():
+		return null
+	return _weapons[_equipped_index]
+
+
+func weapon_count() -> int:
+	return _weapons.size()
+
+
+func weapons() -> Array[WeaponInstance]:
+	return _weapons.duplicate()
+
+
+## ---------------------------------------------------------------------------
+## Flèches (§11.3 : à part des armes)
+## ---------------------------------------------------------------------------
+
+func arrows() -> int:
+	return _arrows
+
+
+func has_arrows() -> bool:
+	return _arrows > 0
+
+
+func add_arrows(count: int) -> void:
+	if count <= 0:
+		return
+	_arrows += count
+	arrows_changed.emit(_arrows)
+
+
+## `false` à zéro : le tir n'a pas lieu — jamais de compteur négatif.
+func consume_arrow() -> bool:
+	if _arrows <= 0:
+		return false
+	_arrows -= 1
+	arrows_changed.emit(_arrows)
+	return true

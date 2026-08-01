@@ -131,7 +131,7 @@ llvmpipe uniquement, aucun GPU.
 |---|---|---|
 | A | Boot, autoloads, InputMap AZERTY, couches de collision | **A.1 et A.2 livrés et gelés (`9414fd0`)** ; Gate A **EN ATTENTE** de validation humaine |
 | B | Player, caméra, locomotion, endurance, escalade, mantle | **Clos par D-021 : accepté pour continuation** — volet automatique vert (137 tests), dettes VALIDATION-B-001 + CONTROLLER-001 à la passe finale |
-| C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | **C.0 à C.3 livrés** — esquive à i-frames, lock-on, poise/stagger, pillard IA, lourde, réaction Hurt/anti-stunlock, arc ; durabilité/inventaire en C.4 |
+| C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | **C.0 à C.4 livrés** — les items 11 à 15 de §22 sont tous couverts ; prochaine étape : revue du Gate C |
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
 | D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | Non commencé |
 | E | Récolte, cuisine, buffs, sauvegarde et migrations | Non commencé |
@@ -401,6 +401,23 @@ enchaîne trois légères contre de vrais mannequins.
 
 ---
 
+## Phase C — jalon C.4 : inventaire, durabilité, rupture
+
+| Élément (§) | État | Preuve |
+|---|---|---|
+| `WeaponDefinition` immuable + table §11.1 complète (6 armes) | **Fonctionnel** | `test_weapon_data.gd` : les 6 `.tres` épinglés ligne à ligne (dégâts/durabilité/portée/conductivité) ; AA3 |
+| **Invariant CLAUDE.md : deux exemplaires ne partagent jamais leur durabilité** | **Fonctionnel** | jumeau ET définition intacts après usure ; AA4 le prouve dans les trois directions (15 échecs en cascade) |
+| Usure au contact seulement — « jamais dans le vide » (§11.2) | **Fonctionnel** | 2 moulinets à vide = 0 point ; 1 coup qui touche = 1 point ; AA2 |
+| Avertissement à 25 %, une fois, sans spam (§11.2) | **Fonctionnel** | émis au passage sous le quart, jamais deux fois |
+| Rupture : hitbox coupée, exemplaire retiré, suivante ou mains nues (§11.2) | **Fonctionnel** | épée 12 → gourdin 8 → poings 3 sur le même mannequin ; coupe au milieu du tick (2 mannequins, 1 point → 1 seule victime) |
+| Dégâts et PORTÉE par arme (§11.1) | **Fonctionnel** | lance 2,7 m touche à 2,4 m, épée 1,7 m non — même geste |
+| Inventaire : 8 armes max, aucun doublon d'instance (§11.3) | **Fonctionnel** | 9ᵉ refusée, même exemplaire refusé ; AA5 |
+| Flèches comptées, consommées par tir, tir refusé à zéro (§11.3) | **Fonctionnel** | 8 → 7 ; carquois vide + cadence purgée → rien ne part ; AA6 |
+| Durabilité de l'arc en tirs (28, §11.1) | **Non commencé** | définition présente, décompte au raccordement de l'arc à l'inventaire |
+| Entrée clavier de sélection, ramassage, UI (§17.3, §11.4) | **Non commencé** | `equip_next` est une API ; coffres Phase D, UI §17 |
+
+---
+
 ## Checklist finale (§26) — état réel
 
 Une case n'est cochée que si une preuve datée la soutient. Ne jamais cocher sur la
@@ -418,7 +435,7 @@ base d'une intention. Les cases cochées ci-dessous renvoient toutes à `TEST_RE
 | Traversal | Sprint, saut, escalade, mantle | ⬜ |
 | Combat | Une touche par swing, esquive juste | ⬜ |
 | Arc | Visée et projectiles fiables | ⬜ |
-| Durabilité | Avertissement, rupture, auto-équipement | ⬜ |
+| Durabilité | Avertissement, rupture, auto-équipement | logique testée ✅ (C.4) ; usure visuelle et son : Phase H |
 | IA | Cinq familles distinctes, LOS réelle | ⬜ |
 | Cuisine | 1-5 ingrédients et cinq buffs | ⬜ |
 | Électricité | Graphe générique, pas booléens de salle | ⬜ |

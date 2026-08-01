@@ -1,0 +1,12 @@
+# Contrôle négatif — AA2_usure_dans_le_vide
+# L'usure est déplacée au DÉBUT du geste (dans _begin) : un moulinet dans le vide coûte un point — la lettre de §11.2 (« jamais dans le vide ») violée.
+# Test visé : test_swings_in_the_void_cost_no_durability
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_durability.gd::test_swings_in_the_void_cost_no_durability — deux coups dans le vide n'usent RIEN : attendu 24, obtenu 22
+  ÉCHEC test_durability.gd::test_a_connecting_hit_wears_the_weapon_and_uses_its_damage — le coup qui touche coûte UN point : attendu 23, obtenu 22
+=== RÉSULTAT: 212 réussi(s), 2 échoué(s) ===
+  ÉCHEC: test_durability.gd::test_swings_in_the_void_cost_no_durability — deux coups dans le vide n'usent RIEN : attendu 24, obtenu 22
+  ÉCHEC: test_durability.gd::test_a_connecting_hit_wears_the_weapon_and_uses_its_damage — le coup qui touche coûte UN point : attendu 23, obtenu 22
+RC=1

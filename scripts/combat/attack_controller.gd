@@ -32,12 +32,49 @@ enum Phase { IDLE, STARTUP, ACTIVE, RECOVERY }
 ## connaît pas les armes.
 @export var heavy_attack: AttackDefinition
 @export var hitbox_path: NodePath
-## Dégâts de base côté attaquant — PROVISOIRE : la `WeaponDefinition` de §5.9
-## portera cette valeur en C.3 (durabilité). 12 = épée usée (§11.1). Le terme
-## « buff » de §10.3 arrivera avec la cuisine (Phase E).
+## Dégâts SANS arme : les mains nues du joueur, ou l'arme « de corps » d'un
+## ennemi qui n'a pas d'inventaire (le gourdin du pillard est son bras). Une
+## `WeaponInstance` équipée via `set_weapon()` remplace cette valeur par le
+## `base_damage` de sa définition (§11.1). Le terme « buff » de §10.3 arrivera
+## avec la cuisine (Phase E).
 @export var base_damage: float = 12.0
 
 @onready var _hitbox: HitboxComponent = get_node_or_null(hitbox_path) as HitboxComponent
+
+## Arme en main (§11.1) — `null` = mains nues, la valeur exportée s'applique.
+var _weapon: WeaponInstance = null
+## Chaîne exportée d'origine, restaurée quand l'arme (et son `attack_set`) part.
+var _default_attacks: Array[AttackDefinition] = []
+
+func _ready() -> void:
+	_default_attacks = attacks
+
+
+## Équipe une arme (§11.1) : ses dégâts remplacent la valeur exportée, son
+## `attack_set` remplace la chaîne si elle en déclare un. `null` rend les mains
+## nues. Un changement en plein coup interrompt le coup — le contrat de §10.6
+## appartient à l'action en cours, pas à la suivante.
+func set_weapon(weapon: WeaponInstance) -> void:
+	if _phase != Phase.IDLE:
+		cancel()
+	_weapon = weapon
+	if weapon != null and not weapon.definition.attack_set.is_empty():
+		attacks = weapon.definition.attack_set
+	else:
+		attacks = _default_attacks
+
+
+func weapon() -> WeaponInstance:
+	return _weapon
+
+
+## Base côté attaquant de la formule §10.3 : l'arme si elle existe, sinon la
+## valeur exportée (mains nues).
+func attack_damage_base() -> float:
+	if _weapon != null and _weapon.definition != null:
+		return _weapon.definition.base_damage
+	return base_damage
+
 
 var _phase: Phase = Phase.IDLE
 var _index: int = 0
@@ -95,7 +132,7 @@ func update(delta: float) -> bool:
 		Phase.STARTUP:
 			if _elapsed >= _current.startup:
 				_phase = Phase.ACTIVE
-				_hitbox.activate(base_damage * _current.damage_multiplier,
+				_hitbox.activate(attack_damage_base() * _current.damage_multiplier,
 					_current.poise_damage, _current.knockback, &"melee", _current.element)
 				attack_phase_changed.emit(&"active")
 		Phase.ACTIVE:

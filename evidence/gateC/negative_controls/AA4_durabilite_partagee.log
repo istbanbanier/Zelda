@@ -1,0 +1,38 @@
+# Contrôle négatif — AA4_durabilite_partagee
+# L'usure s'écrit dans la RESSOURCE partagée (definition.max_durability) : le jumeau tombe à 18, la définition à 13, et 15 échecs en cascade dans quatre suites. C'est LE bug de conception que l'invariant de CLAUDE.md interdit — le test le voit dans les trois directions : exemplaire usé, jumeau, définition.
+# Test visé : test_two_instances_never_share_durability (3 assertions) + cascade
+# Attendu : ÉCHEC (15 assertions). Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_durability.gd::test_swings_in_the_void_cost_no_durability — neuve (§11.1) : attendu 24, obtenu 13
+  ÉCHEC test_durability.gd::test_swings_in_the_void_cost_no_durability — deux coups dans le vide n'usent RIEN : attendu 24, obtenu 13
+  ÉCHEC test_durability.gd::test_a_connecting_hit_wears_the_weapon_and_uses_its_damage — le coup qui touche coûte UN point : attendu 23, obtenu 12
+  ÉCHEC test_durability.gd::test_rupture_equips_the_next_weapon_then_bare_hands_still_fight — l'exemplaire cassé est RETIRÉ : attendu 1, obtenu 2
+  ÉCHEC test_durability.gd::test_rupture_equips_the_next_weapon_then_bare_hands_still_fight — la suivante est équipée d'office : attendu <RefCounted#-9223371814556662264>, obtenu <RefCounted#-9223371815445854616>
+  ÉCHEC test_durability.gd::test_rupture_equips_the_next_weapon_then_bare_hands_still_fight — plus d'armes : mains nues
+  ÉCHEC test_durability.gd::test_rupture_equips_the_next_weapon_then_bare_hands_still_fight — épée 12, gourdin 8, mains nues 3 — chaque coup au tarif de son arme : attendu 22.0000 ± 0.0010, obtenu 9.0000
+  ÉCHEC test_durability.gd::test_rupture_cuts_the_hitbox_before_the_next_victim — arme cassée au premier contact : UNE seule victime (33 + 33) : attendu 78.0000 ± 0.0010, obtenu 66.0000
+  ÉCHEC test_weapon_data.gd::test_two_instances_never_share_durability — l'exemplaire usé a perdu 5 points : attendu 19, obtenu 13
+  ÉCHEC test_weapon_data.gd::test_two_instances_never_share_durability — le jumeau est INTACT — sa durabilité n'est pas partagée : attendu 24, obtenu 18
+  ÉCHEC test_weapon_data.gd::test_two_instances_never_share_durability — la DÉFINITION est immuable — l'usure ne s'écrit jamais dans la ressource : attendu 24, obtenu 13
+  ÉCHEC test_weapon_data.gd::test_the_six_definitions_match_the_spec_table — worn_sword : durabilité §11.1 : attendu 24, obtenu 13
+  ÉCHEC test_weapon_data.gd::test_the_warning_fires_once_at_a_quarter — l'avertissement part au passage sous 25 % : attendu 1, obtenu 0
+  ÉCHEC test_weapon_data.gd::test_the_warning_fires_once_at_a_quarter — et jamais une deuxième fois — pas de spam : attendu 1, obtenu 0
+  ÉCHEC test_weapon_data.gd::test_rupture_is_emitted_once_and_durability_never_negative — la rupture est émise une seule fois : attendu 1, obtenu 0
+=== RÉSULTAT: 206 réussi(s), 15 échoué(s) ===
+  ÉCHEC: test_durability.gd::test_swings_in_the_void_cost_no_durability — neuve (§11.1) : attendu 24, obtenu 13
+  ÉCHEC: test_durability.gd::test_swings_in_the_void_cost_no_durability — deux coups dans le vide n'usent RIEN : attendu 24, obtenu 13
+  ÉCHEC: test_durability.gd::test_a_connecting_hit_wears_the_weapon_and_uses_its_damage — le coup qui touche coûte UN point : attendu 23, obtenu 12
+  ÉCHEC: test_durability.gd::test_rupture_equips_the_next_weapon_then_bare_hands_still_fight — l'exemplaire cassé est RETIRÉ : attendu 1, obtenu 2
+  ÉCHEC: test_durability.gd::test_rupture_equips_the_next_weapon_then_bare_hands_still_fight — la suivante est équipée d'office : attendu <RefCounted#-9223371814556662264>, obtenu <RefCounted#-9223371815445854616>
+  ÉCHEC: test_durability.gd::test_rupture_equips_the_next_weapon_then_bare_hands_still_fight — plus d'armes : mains nues
+  ÉCHEC: test_durability.gd::test_rupture_equips_the_next_weapon_then_bare_hands_still_fight — épée 12, gourdin 8, mains nues 3 — chaque coup au tarif de son arme : attendu 22.0000 ± 0.0010, obtenu 9.0000
+  ÉCHEC: test_durability.gd::test_rupture_cuts_the_hitbox_before_the_next_victim — arme cassée au premier contact : UNE seule victime (33 + 33) : attendu 78.0000 ± 0.0010, obtenu 66.0000
+  ÉCHEC: test_weapon_data.gd::test_two_instances_never_share_durability — l'exemplaire usé a perdu 5 points : attendu 19, obtenu 13
+  ÉCHEC: test_weapon_data.gd::test_two_instances_never_share_durability — le jumeau est INTACT — sa durabilité n'est pas partagée : attendu 24, obtenu 18
+  ÉCHEC: test_weapon_data.gd::test_two_instances_never_share_durability — la DÉFINITION est immuable — l'usure ne s'écrit jamais dans la ressource : attendu 24, obtenu 13
+  ÉCHEC: test_weapon_data.gd::test_the_six_definitions_match_the_spec_table — worn_sword : durabilité §11.1 : attendu 24, obtenu 13
+  ÉCHEC: test_weapon_data.gd::test_the_warning_fires_once_at_a_quarter — l'avertissement part au passage sous 25 % : attendu 1, obtenu 0
+  ÉCHEC: test_weapon_data.gd::test_the_warning_fires_once_at_a_quarter — et jamais une deuxième fois — pas de spam : attendu 1, obtenu 0
+  ÉCHEC: test_weapon_data.gd::test_rupture_is_emitted_once_and_durability_never_negative — la rupture est émise une seule fois : attendu 1, obtenu 0
+RC=1

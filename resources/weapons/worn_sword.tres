@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=5 format=3]
+
+; §11.1 — Épée usée : 12.0 dégâts, durabilité 24, portée 1.7 m, conductivité 0.85.
+
+[ext_resource type="Script" path="res://resources/weapons/weapon_definition.gd" id="1_def"]
+[ext_resource type="Resource" path="res://resources/combat/sword/light_1.tres" id="2_l1"]
+[ext_resource type="Resource" path="res://resources/combat/sword/light_2.tres" id="3_l2"]
+[ext_resource type="Resource" path="res://resources/combat/sword/light_3.tres" id="4_l3"]
+[resource]
+script = ExtResource("1_def")
+id = &"worn_sword"
+display_name_key = &"weapon.worn_sword"
+weapon_type = &"sword"
+base_damage = 12.0
+attack_speed = 1.0
+reach_m = 1.7
+max_durability = 24
+conductivity = 0.85
+rarity = 0
+attack_set = [ExtResource("2_l1"), ExtResource("3_l2"), ExtResource("4_l3")]

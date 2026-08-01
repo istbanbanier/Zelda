@@ -82,3 +82,30 @@ surveille sa pièce, pas un effet de bord d'une autre.
 Z3 chiffre pourquoi l'origine du tir est LA POITRINE et ne s'avance jamais
 (§10.4) : avancée de 1,5 m, elle passe derrière un mur mince et la flèche
 naît de l'autre côté.
+
+## Jalon C.4 — Inventaire, durabilité, rupture (2026-08-01)
+
+| Log | Mutation | Test visé | Résultat |
+|---|---|---|---|
+| `AA1_usure_retiree` | `apply_hit_wear` ne décrémente plus | usure, ruptures, avertissement | ÉCHEC ×12+ ✅ |
+| `AA2_usure_dans_le_vide` | usure déplacée au début du geste | « jamais dans le vide » (§11.2) | ÉCHEC — 24 → 22 sur deux moulinets ✅ |
+| `AA3_definition_mutee` | `base_damage` 12 → 20 dans le `.tres` | enveloppe §11.1 + toutes les mesures de dégâts | ÉCHEC ×11, **cinq suites** ✅ |
+| `AA4_durabilite_partagee` | l'usure s'écrit dans la ressource partagée | invariant CLAUDE.md, trois directions | ÉCHEC ×15 — jumeau à 18, définition à 13 ✅ |
+| `AA5_plafond_et_doublon_retires` | gardes d'`add_weapon` retirées | « huit armes », « aucun doublon » (§11.3) | ÉCHEC ×4 ✅ |
+| `AA6_fleche_gratuite` | portail et consommation de flèche retirés | flèches comptées (§11.3) | ÉCHEC ×2 — **après correction du test** ✅ |
+
+**AA4 est le contrôle de l'invariant central** : une durabilité écrite dans la
+`Resource` partagée fait tomber le jumeau ET la définition, et 15 assertions
+dans quatre suites le voient. C'est le « bug de conception, pas un raccourci »
+que CLAUDE.md nomme explicitement.
+
+**AA6 a d'abord attrapé MON test** : l'assertion « à zéro flèche, aucun tir »
+restait verte portail retiré — la cadence de l'arc (0,6 s) bloquait le second
+tir à la place du compteur. Verte pour la mauvaise raison (C2-1, récidive).
+Purge de la cadence ajoutée au test, mutation rejouée : les deux assertions
+rougissent. Un contrôle négatif qui ne fait pas tout rougir est un
+avertissement, pas une formalité.
+
+**AA3 chiffre la centralisation** : muter UNE valeur du `.tres` de l'épée fait
+rougir onze assertions dans cinq suites — tout le pipeline de dégâts remonte
+désormais à la définition d'arme, comme §5.9 l'exige.

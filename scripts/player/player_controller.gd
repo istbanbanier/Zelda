@@ -71,7 +71,9 @@ const WALL_PUSH_MIN_DOT: float = 0.3
 @onready var _health: HealthComponent = $Components/HealthComponent
 @onready var _lock_on: LockOnComponent = $Components/LockOnComponent
 @onready var _bow: BowComponent = $Components/BowComponent
+@onready var _inventory: InventoryComponent = $Components/InventoryComponent
 @onready var _hurtbox: HurtboxComponent = $Hurtbox
+@onready var _weapon_hitbox: HitboxComponent = $VisualRoot/WeaponHitbox
 @onready var _collision: CollisionShape3D = $CollisionShape3D
 
 ## Esquive (§10.2) : fenêtres et vitesse en ressource, coût dans StaminaTuning.
@@ -108,6 +110,13 @@ var _hurt_elapsed: float = 0.0
 ## timers de locomotion — elle doit courir dans TOUS les modes.
 var _stunlock_grace: float = 0.0
 
+## Portée des mains nues, en mètres — §11.1 n'en donne pas : plus courte que la
+## plus courte arme (gourdin, 1,6 m). Décision D-023.
+const BARE_REACH: float = 1.2
+## Demi-profondeur du volume de frappe, lue une fois sur la forme réelle : la
+## FACE AVANT du volume est placée à `reach_m` de l'axe du personnage.
+var _hitbox_half_depth: float = 0.55
+
 
 func _ready() -> void:
 	if tuning == null:
@@ -126,6 +135,18 @@ func _ready() -> void:
 	# écoute pour RÉAGIR — recul et perte de contrôle brève (§10.5).
 	if _hurtbox != null:
 		_hurtbox.hit_received.connect(_on_hit_received)
+	# §11.2 : l'usure ne vient QUE d'un coup qui touche — `hit_confirmed`, jamais
+	# l'activation. Puis application de l'état déjà émis : l'inventaire (enfant)
+	# a équipé l'arme par défaut AVANT ce `_ready` — le signal est passé, on
+	# raccorde donc l'état courant à la main, de façon idempotente (§6.4).
+	if _weapon_hitbox != null:
+		_weapon_hitbox.hit_confirmed.connect(_on_own_hit_confirmed)
+	var box: BoxShape3D = _weapon_hitbox.get_node("CollisionShape3D").shape as BoxShape3D
+	if box != null:
+		_hitbox_half_depth = box.size.z * 0.5
+	if _inventory != null:
+		_inventory.weapon_equipped.connect(_on_weapon_equipped)
+		_on_weapon_equipped(_inventory.equipped())
 
 
 ## Permet à un test de piloter le contrôleur sans aucun périphérique.
@@ -522,12 +543,50 @@ func _process_hurt(delta: float) -> void:
 		_mode = Mode.LOCOMOTION
 
 
+## ---------------------------------------------------------------------------
+## Arme équipée, usure et rupture (§11.1, §11.2)
+## ---------------------------------------------------------------------------
+
+## L'inventaire a décidé (équipement, ou « suivante » après rupture) ; ici on
+## raccorde : dégâts au contrôleur d'attaque, PORTÉE au volume de frappe — la
+## face avant du volume est posée à `reach_m` (§11.1 : la lance à 2,7 m touche
+## ce que l'épée à 1,7 m ne touche pas).
+func _on_weapon_equipped(weapon: WeaponInstance) -> void:
+	if _attack != null:
+		_attack.set_weapon(weapon)
+	var reach: float = BARE_REACH
+	if weapon != null and weapon.definition != null and weapon.definition.reach_m > 0.0:
+		reach = weapon.definition.reach_m
+	if _weapon_hitbox != null:
+		_weapon_hitbox.position.z = reach - _hitbox_half_depth
+
+
+## §11.2, à la lettre : l'usure vient d'un coup qui TOUCHE — jamais du vide.
+## À zéro : couper la hitbox (le `cancel()` de §16.2), retirer l'exemplaire ;
+## l'inventaire équipe la suivante ou les mains nues, et `_on_weapon_equipped`
+## raccorde le tout.
+func _on_own_hit_confirmed(_event: DamageEvent, _target: HurtboxComponent) -> void:
+	if _inventory == null:
+		return
+	var weapon: WeaponInstance = _inventory.equipped()
+	if weapon == null:
+		return  # mains nues : rien ne s'use
+	weapon.apply_hit_wear()
+	if weapon.is_broken():
+		_attack.cancel()
+		_inventory.remove_weapon(weapon)
+
+
 ## Tir à l'arc (§10.4). Direction : le point que la caméra vise à 100 m, corrigé
 ## vers l'origine — LA POITRINE. L'origine ne s'avance jamais dans la direction
 ## du tir : le balayage de la flèche part de l'intérieur du corps (RID exclus) et
 ## rencontre donc tout mur qu'on étreint, au lieu d'apparaître derrière.
+## Flèches comptées (§11.3) : pas de munition, pas de tir ; la flèche n'est
+## consommée QUE si le tir part vraiment — un refus de cadence ne coûte rien.
 func _try_shoot() -> void:
 	if _bow == null:
+		return
+	if _inventory != null and not _inventory.has_arrows():
 		return
 	var camera: Camera3D = _camera_rig.get_camera()
 	var aim_point: Vector3 = camera.global_position \
@@ -537,7 +596,9 @@ func _try_shoot() -> void:
 	var exclude: Array[RID] = [get_rid()]
 	if _hurtbox != null:
 		exclude.append(_hurtbox.get_rid())
-	_bow.try_fire(origin, direction, &"player", self, exclude)
+	if _bow.try_fire(origin, direction, &"player", self, exclude) \
+			and _inventory != null:
+		_inventory.consume_arrow()
 
 
 ## ---------------------------------------------------------------------------
@@ -918,3 +979,8 @@ func horizontal_speed() -> float:
 ## Exposé pour les tests, la jauge de §17.2 et la sauvegarde de §19.1.
 func stamina() -> StaminaComponent:
 	return _stamina
+
+
+## Exposé pour les tests, l'UI d'inventaire (§17.3) et la sauvegarde de §19.1.
+func inventory() -> InventoryComponent:
+	return _inventory

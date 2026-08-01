@@ -1079,3 +1079,70 @@ Détail et enseignements : `evidence/gateC/README.md`.
 - **Pas de réticule, ni de hit-stop/VFX/son** (§10.7) — présentation à venir.
 - **Le ressenti (lourde, recul, visée) n'est pas prouvé** — dettes d'essai
   humain de la passe finale, comme depuis B.5.
+
+---
+
+# Jalon C.4 — Inventaire, durabilité, rupture (2026-08-01)
+
+## Commande et résultat
+
+```bash
+tools/validate_fast.sh; echo $?
+```
+
+**Code retour** : `0` — VERT. **214 réussis, 0 échoué**, plancher 214.
+
+> **Nombre de tests de référence : 214.** C'est ici, et nulle part ailleurs, qu'il
+> doit être lu.
+
+Nouveaux fichiers : `WeaponDefinition` (§5.9) + les **six** `.tres` de la table
+§11.1, `WeaponInstance` (état mutable séparé : `instance_id`, `definition_id`,
+`current_durability`), `InventoryComponent` (8 armes, flèches à part),
+14 cas de test (`test_weapon_data`, `test_durability`). Le `base_damage = 12`
+provisoire du contrôleur d'attaque (C.1) est remplacé : l'export devient la
+valeur **mains nues** (3, D-023), l'arme équipée fournit dégâts ET portée.
+
+## Les cas centraux
+
+- **L'invariant de CLAUDE.md** : deux exemplaires créés de la même définition —
+  user l'un de 5 points laisse le jumeau à 24 ET la définition à 24. Le contrôle
+  AA4 (durabilité écrite dans la ressource partagée) fait rougir les trois
+  directions et 15 assertions en cascade.
+- **Usure au contact seulement** (§11.2) : deux moulinets dans le vide = 0 point ;
+  un coup qui touche = 1 point. AA2 (usure au début du geste) rougit.
+- **Rupture** (§11.2) : à zéro — exemplaire retiré, suivante équipée d'office,
+  puis mains nues qui restent un état de combat (épée 12, gourdin 8, poings 3
+  mesurés sur le même mannequin). La coupe est effective AU MILIEU du tick :
+  deux mannequins dans le même volume, arme à 1 point → une seule victime
+  (78 = 90 − 12) ; avec durabilité → les deux (66).
+- **Portée §11.1 raccordée** : mannequin à 2,4 m — l'épée (1,7 m) ne touche pas,
+  la lance (2,7 m) touche pour 10. Même position, même geste.
+- **Avertissement à 25 %** : émis au passage sous le quart, une seule fois.
+- **Flèches comptées** (§11.3) : 8 → 7 après un tir ; carquois vide, cadence
+  purgée → aucun tir ne part.
+
+## Défaut trouvé dans MON test par son propre contrôle négatif
+
+L'assertion « à zéro flèche, aucun tir » restait verte quand AA6 retirait le
+portail : la **cadence** de l'arc bloquait le second tir à la place du compteur —
+verte pour la mauvaise raison (récidive de C2-1, chaque système de refus
+concurrent doit être purgé avant de tester celui qu'on vise). Test corrigé,
+mutation rejouée, deux assertions rouges.
+
+## Contrôles négatifs
+
+AA1–AA6, tous ÉCHEC, logs avec `RC=` dans `evidence/gateC/negative_controls/`.
+Détail : `evidence/gateC/README.md`.
+
+## Limites de C.4 — à ne pas confondre avec des oublis
+
+- **L'arc n'est pas un exemplaire d'inventaire** : ses « 28 tirs » de durabilité
+  (§11.1) ne sont pas décomptés — la définition `simple_bow.tres` existe et
+  attend le raccordement (avec les coffres, Phase D, ou l'UI d'inventaire §17.3).
+- **Pas d'entrée clavier pour changer d'arme** (`equip_next` est une API) — la
+  sélection rapide passe par l'UI d'inventaire (§17.3), hors périmètre C.
+- **Pas d'usure visuelle ni de son d'avertissement** (§11.2 : « son altéré,
+  usure visuelle ») — le signal `durability_warned` existe, la présentation
+  arrive en Phase H.
+- **Ramassage au sol inexistant** : les armes entrent par API ; le flux coffre →
+  loot arrive en Phase D (§11.4).

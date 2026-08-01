@@ -665,48 +665,74 @@ Hurt-pendant-escalade/mantle non testées.
 
 ---
 
+## 2026-08-01 — Jalon C.4 : inventaire, durabilité, rupture
+
+**Fait** : les items 13–14 de §22 sont clos — la Phase C a couvert ses cinq
+items. `WeaponDefinition` immuable + les six `.tres` de la table §11.1 ;
+`WeaponInstance` (état mutable séparé) ; `InventoryComponent` (8 armes, aucun
+doublon, flèches à part). Le `base_damage = 12` provisoire de C.1 est remplacé :
+l'export du contrôleur devient la valeur mains nues (3, D-023), l'arme fournit
+dégâts ET portée (face avant du volume de frappe posée à `reach_m` — la lance
+touche à 2,4 m, l'épée non). Usure au contact seulement, avertissement à 25 %
+une fois, rupture qui coupe la fenêtre AU MILIEU du tick, retire l'exemplaire
+et équipe la suivante — jusqu'aux mains nues qui restent un état de combat.
+Flèches comptées, consommées par tir réel uniquement. 14 cas de test, plancher
+200 → **214**, `validate_fast` VERT. Six choix non fixés par la spec actés en
+D-023.
+
+**L'invariant de CLAUDE.md est prouvé dans les trois directions** : user un
+exemplaire laisse le jumeau ET la définition intacts ; le contrôle AA4
+(durabilité écrite dans la ressource partagée) déclenche 15 échecs dans quatre
+suites.
+
+**Défaut de MON test attrapé par son propre contrôle** : « à zéro flèche, aucun
+tir » restait verte portail retiré — la CADENCE de l'arc bloquait le tir à la
+place du compteur (récidive C2-1 : purger tout système de refus concurrent avant
+de tester celui qu'on vise). Test corrigé, AA6 rejoué, deux rouges.
+
+**Limites** : durabilité de l'arc (28 tirs) non décomptée — l'arc n'est pas
+encore un exemplaire d'inventaire ; pas d'entrée clavier de sélection (API
+`equip_next`) ; pas d'usure visuelle/son (Phase H) ; pas de ramassage (coffres,
+Phase D).
+
+---
+
 ## HANDOFF — prochaine action exacte
 
 > **Gates** : A `ACCEPTÉ AVEC RÉSERVE` (D-012) · B `ACCEPTÉ POUR CONTINUATION`
-> (D-021) · C **en cours** — C.0 à C.3 livrés.
+> (D-021) · C — **les cinq items de §22 sont livrés (C.0 à C.4)**.
 
-### Action suivante : jalon C.4 — inventaire, durabilité, rupture (§22 items 13–14)
+### Action suivante : REVUE DU GATE C
 
-Dans l'ordre :
+Les items 11–15 de §22 sont couverts ; le Gate C (« combat gagnable, une touche
+par swing, aucune référence invalide ») se joue maintenant. Suivre
+`.claude/skills/gate-review` :
 
-1. **`WeaponDefinition`** (§5.9) : ressource immuable — le `base_damage = 12`
-   provisoire du `AttackControllerComponent` (posé en C.1) est remplacé par la
-   vraie table §11.1 (gourdin 8/18, épée usée 12/24, lance 10/30/2,7 m…).
-   L'instance mutable porte `instance_id`, `definition_id`,
-   `current_durability` : **deux exemplaires ne partagent jamais leur
-   durabilité** (invariant CLAUDE.md — test obligatoire).
-2. **Durabilité** (§11.2) : décrémente seulement sur coup qui touche (le set
-   `_already_hit` de C.0 donne l'événement exact), jamais dans le vide.
-   Avertissement à 25 %, rupture à zéro : couper la hitbox, retirer l'instance,
-   équiper la suivante ou mains nues.
-3. **Inventaire de 8 armes** (§11.3) : sélection, auto-équipement après rupture,
-   aucun doublon d'instance.
-4. **Flèches comptées** (§11.3) : l'arc de C.3 tire sans munitions — brancher un
-   compteur consommé par `try_fire`.
+1. `tools/env_report.sh evidence/gateC/env_report.txt` puis
+   `tools/validate_fast.sh 2>&1 | tee evidence/gateC/validate_fast.log` ;
+   noter le commit exact.
+2. Confronter les critères du Gate C (`docs/ROADMAP.md`) un par un, tableau
+   critère / preuve / verdict — `NON VÉRIFIÉ` sans preuve, jamais `PASS`.
+3. Lancer `adversarial-qa` à contexte frais : critères, diff C.0→C.4, chemins
+   des preuves (W/X/Y/Z/AA dans `evidence/gateC/negative_controls/`). Il REJOUE
+   les commandes.
+4. Verdict global = le plus faible. Les essais humains du CombatLab n'ont pas eu
+   lieu : le verdict ne peut pas dépasser l'équivalent « accepté pour
+   continuation » de D-021 — comme pour le Gate B, seule une décision
+   propriétaire peut le clore ainsi.
+5. Transmettre : STATUS, TEST_REPORT, PROGRESS, DECISIONS, KNOWN_ISSUES si
+   échec ; commit propre.
 
-### Pièges connus, cumulés — le nouveau de C.3 d'abord
+### Rappels pour la revue
 
-- **Un handler écrit n'est pas un handler branché** (Z5) : toute réaction à un
-  signal se prouve par un test comportemental qui échoue quand la connexion
-  manque — le test de C.3 l'a attrapé dans le code livré.
-- **La géométrie de test se compte depuis la CAMÉRA** quand le système est
-  caméra-relatif (épaule x +0,32) — et un mur de test doit être assez large pour
-  la ligne caméra, pas seulement la ligne joueur.
-- **Mesurer immédiatement après un prélèvement** d'endurance — la régénération
-  repart après 1 s et pollue toute mesure tardive (C2-5, récidivé en C.3).
-- **Prouver LES DEUX SENS** (C2-1) ; brancher les signaux avant l'événement
-  (C2-3) ; cinétique complète, pas durée nominale (C2-4).
-- **Le monde `queue_free` du test précédent survit une frame** : attendre l'état.
-- **`Area3D.monitoring` ne se toggle pas entre deux ticks** (R-014).
-- **Muter le `.tres`** (R-006bis) ; épingler ET mesurer (Y5) ; mesurer ce qui
-  discrimine (D-020 amendée).
-- `SpringArm3D` réécrit ses enfants directs (D-014/D-015) ; D-009/D-010 sur le
-  runner ; **`MIN_TESTS` relevé à chaque ajout** (200 actuellement) ; nombre de
-  référence dans `docs/TEST_REPORT.md` uniquement.
-- **R-012 / R-013** (saut pendant mantle, coût du mantle) restent ouvertes — à
-  trancher pendant la Phase C. **D-022** : navmesh obligatoire dès la Phase D.
+- Le compte de tests de référence (214) se lit dans `docs/TEST_REPORT.md`
+  UNIQUEMENT.
+- Dettes jamais automatisables : CONTROLLER-001, VALIDATION-B-001 (+ le ressenti
+  du combat §10.6/§10.8 — essai humain à l'aveugle, passe finale).
+- R-012 / R-013 (saut pendant mantle, coût du mantle) : encore ouvertes — les
+  trancher pendant ou juste après la revue, la Phase D les attend.
+- D-022 : navmesh OBLIGATOIRE dès l'ouverture de la Phase D.
+- Pièges cumulés : un handler écrit n'est pas branché (Z5) ; purger les refus
+  concurrents avant de tester un portail (AA6) ; géométrie comptée depuis la
+  caméra ; mesurer après prélèvement ; deux sens ; monde fantôme une frame ;
+  R-014 ; muter le `.tres` (R-006bis) ; épingler ET mesurer (Y5).

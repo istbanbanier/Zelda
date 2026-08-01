@@ -532,3 +532,35 @@ la fait vivre côté ennemi.
 - **Précédent** : même mécanique que D-012 pour le Gate A — le propriétaire assume
   explicitement le risque de continuer, la dette est portée par écrit, et la
   passe finale la solde ou la transforme en `FAIL`.
+
+---
+
+## D-023 — Choix d'implémentation armes/durabilité non fixés par la spec (C.4)
+
+- **Date** : 2026-08-01 · **Phase** : C · **Statut** : ACTÉ
+- **Contexte** : §11.1–§11.3 fixent la table des armes, « huit armes », « aucun
+  doublon d'instance », l'usure « jamais dans le vide » et la rupture — mais
+  laissent quatre points ouverts. Chaque choix ci-dessous est testé.
+- **Décisions** :
+  1. **Usure par CIBLE touchée**, pas par swing : un moulinet qui traverse deux
+     pillards coûte deux points (`hit_confirmed` est l'événement d'usure). Rejeté
+     « par swing qui a touché au moins une cible » : demande un état par swing de
+     plus, sans gain de lisibilité — révisable en équilibrage.
+  2. **La rupture coupe la fenêtre AU MILIEU du tick** : `_process_target`
+     revérifie `_active` par cible ; la victime suivante de la même frame n'est
+     pas touchée. C'est la lecture stricte de « couper hitbox » (§11.2), prouvée
+     par le test des deux mannequins (78 = une seule victime).
+  3. **Mains nues : dégâts 3, portée 1,2 m** — §11.1 n'en donne pas ; en dessous
+     du gourdin (8, 1,6 m) pour que la pire arme reste préférable aux poings.
+     `base_damage` exporté du contrôleur = valeur mains nues ; l'ennemi sans
+     inventaire (pillard) s'en sert comme « arme de corps ».
+  4. **Portée raccordée à la géométrie** : la FACE AVANT du volume de frappe est
+     posée à `reach_m` de l'axe (la demi-profondeur est lue sur la forme réelle,
+     pas codée en dur). La lance touche à 2,4 m, l'épée non — testé.
+  5. **Dotation de départ du bac à sable** : épée usée + 8 flèches dans
+     `Player.tscn` — préserve les nombres de C.1–C.3 (12 ; 12,6 ; 15,6 ; 21,6) et
+     disparaîtra au profit du butin réel (coffres, Phase D).
+  6. **Set d'attaques partagé pour la 0.1** : toutes les armes de mêlée déclarent
+     le set d'épée dans `attack_set` — les « combos par arme » de §7.12 sont une
+     passe d'animation (Phase H), pas une donnée manquante. La lourde reste sur le
+     contrôleur, hors définition d'arme, même logique.

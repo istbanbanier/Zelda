@@ -105,6 +105,12 @@ func _physics_process(_delta: float) -> void:
 
 
 func _process_target(area: Area3D) -> void:
+	# Revérifié PAR CIBLE, pas seulement en tête de boucle : un `hit_confirmed`
+	# est synchrone, et son écouteur peut couper la fenêtre au milieu du tick —
+	# une arme qui casse sur ce contact (§11.2 : « couper hitbox ») ne doit pas
+	# toucher la cible suivante de la même frame.
+	if not _active:
+		return
 	var hurtbox: HurtboxComponent = area as HurtboxComponent
 	if hurtbox == null:
 		return
