@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3]
+
+; Vestibule graybox de la citadelle (D.1R.4). Le décor est construit par le
+; script — cette scène ne porte que le joueur, la coquille et l'entrée.
+
+[ext_resource type="Script" path="res://scripts/world/citadel_vestibule.gd" id="1_vestibule"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/ui/GameplayShell.tscn" id="3_shell"]
+
+[node name="CitadelVestibule" type="Node3D"]
+script = ExtResource("1_vestibule")
+
+[node name="GameplayShell" parent="." instance=ExtResource("3_shell")]
+
+; Le joueur entre par la porte sud, face au fond (regard -Z).
+[node name="Player" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 5.4)
+
+[node name="VisualRoot" parent="Player"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)

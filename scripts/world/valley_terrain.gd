@@ -31,6 +31,7 @@ const COL_RIVERBED: Color = Color(0.35, 0.42, 0.45)
 
 
 func _ready() -> void:
+	_build_border_mountains()
 	_build_plains_and_river()
 	_build_spawn_ridge_and_descent()
 	_build_camp_terrace()
@@ -44,6 +45,32 @@ func _ready() -> void:
 ## ---------------------------------------------------------------------------
 ## Zones
 ## ---------------------------------------------------------------------------
+
+## Limites du monde (D.1R.4, PT-D1-09) : une chaîne montagneuse continue,
+## PHYSIQUE, remplace l'absence de bords — pas un mur invisible. Faces internes
+## à ±250, 70 m de haut, marquées `unclimbable` (§9.2 : le groupe de refus
+## existe depuis B.3) — l'endurance n'y suffirait de toute façon pas.
+const BORDER_INNER: float = 250.0
+const BORDER_OUTER: float = 292.0
+const BORDER_TOP: float = 70.0
+const COL_MOUNTAIN: Color = Color(0.42, 0.38, 0.4)
+
+
+func _build_border_mountains() -> void:
+	var mid: float = (BORDER_INNER + BORDER_OUTER) * 0.5
+	var depth: float = BORDER_OUTER - BORDER_INNER
+	var span: float = BORDER_OUTER * 2.0
+	var walls: Array[Array] = [
+		["BorderNorth", Vector2(0, -mid), Vector2(span, depth)],
+		["BorderSouth", Vector2(0, mid), Vector2(span, depth)],
+		["BorderWest", Vector2(-mid, 0), Vector2(depth, span)],
+		["BorderEast", Vector2(mid, 0), Vector2(depth, span)],
+	]
+	for wall: Array in walls:
+		_slab(wall[0], wall[1], wall[2], BORDER_TOP, COL_MOUNTAIN)
+		var body: StaticBody3D = get_node_or_null(NodePath(String(wall[0]))) as StaticBody3D
+		if body != null:
+			body.add_to_group("unclimbable")
 
 func _build_plains_and_river() -> void:
 	# Plaine sud (côté spawn/camp) et plaine nord (côté donjon/pylône), séparées
@@ -163,6 +190,37 @@ func _build_dungeon_plateau_and_citadel() -> void:
 			Vector3(8, 56, 8), COL_STONE, true)
 	_box_in("EnergyCore", citadel, Vector3(0, 34 + 32, -210 + 12.2),
 		Vector3(3, 10, 0.6), COL_CYAN, false, true)
+	# Entrée de la citadelle (D.1R.4, PT-D1-10) : ouverture sombre encadrée de
+	# cyan sur la face avant du donjon, et une VRAIE porte qui charge le
+	# vestibule — la promesse vue depuis la crête n'est plus fausse.
+	_box_in("DoorFrameLeft", citadel, Vector3(-2.2, 34 + 3, -197.8),
+		Vector3(0.8, 6.0, 0.6), COL_CYAN, false, true)
+	_box_in("DoorFrameRight", citadel, Vector3(2.2, 34 + 3, -197.8),
+		Vector3(0.8, 6.0, 0.6), COL_CYAN, false, true)
+	_box_in("DoorFrameTop", citadel, Vector3(0, 34 + 6.2, -197.8),
+		Vector3(5.2, 0.8, 0.6), COL_CYAN, false, true)
+	var door: SceneDoor = SceneDoor.new()
+	door.name = "CitadelDoor"
+	door.verb = "Entrer"
+	door.target_scene = "res://scenes/world/citadel/CitadelVestibule.tscn"
+	door.spawn_tag = &"from_valley"
+	door.collision_layer = 1
+	door.collision_mask = 0
+	var door_shape: CollisionShape3D = CollisionShape3D.new()
+	var door_box: BoxShape3D = BoxShape3D.new()
+	door_box.size = Vector3(3.6, 6.0, 0.5)
+	door_shape.shape = door_box
+	door.add_child(door_shape)
+	var door_mesh: MeshInstance3D = MeshInstance3D.new()
+	var door_mesh_box: BoxMesh = BoxMesh.new()
+	door_mesh_box.size = Vector3(3.6, 6.0, 0.5)
+	door_mesh.mesh = door_mesh_box
+	var door_material: StandardMaterial3D = StandardMaterial3D.new()
+	door_material.albedo_color = Color(0.08, 0.09, 0.12)
+	door_mesh.material_override = door_material
+	door.add_child(door_mesh)
+	door.position = Vector3(0, 34 + 3, -197.9)   # AVANT add_child (règle D.0)
+	citadel.add_child(door)
 
 
 ## ---------------------------------------------------------------------------
@@ -198,12 +256,16 @@ func _box_in(box_name: String, parent: Node3D, center: Vector3, size: Vector3,
 		shape.shape = box_shape
 		body.add_child(shape)
 		body.add_child(mesh)
+		# Position AVANT add_child — règle D.0 : un corps ajouté à l'origine puis
+		# déplacé y passe un tick physique. Mesuré ici même : les montagnes
+		# périmétrales à l'origine enveloppaient le spawn et catapultaient le
+		# joueur de 4,6 m au premier tick (sonde BorderWest).
+		body.position = center
 		parent.add_child(body)
-		body.global_position = center
 	else:
 		mesh.name = box_name
+		mesh.position = center
 		parent.add_child(mesh)
-		mesh.global_position = center
 
 
 ## Rampe : prisme convexe PLEIN entre deux extrémités de surface (centres des
@@ -289,12 +351,12 @@ func _cylinder_in(cyl_name: String, parent: Node3D, base: Vector3, radius: float
 		shape.shape = cyl_shape
 		body.add_child(shape)
 		body.add_child(mesh)
+		body.position = center   # AVANT add_child (règle D.0)
 		parent.add_child(body)
-		body.global_position = center
 	else:
 		mesh.name = cyl_name
+		mesh.position = center
 		parent.add_child(mesh)
-		mesh.global_position = center
 
 
 func _orb(orb_name: String, center: Vector3, radius: float, color: Color) -> void:
@@ -312,8 +374,8 @@ func _orb_in(orb_name: String, parent: Node3D, center: Vector3, radius: float,
 	mesh.mesh = sphere
 	var emissive: bool = color == COL_CYAN
 	mesh.material_override = _material(color, emissive)
+	mesh.position = center
 	parent.add_child(mesh)
-	mesh.global_position = center
 
 
 func _material(color: Color, emissive: bool) -> StandardMaterial3D:

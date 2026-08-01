@@ -17,6 +17,10 @@ extends CanvasLayer
 
 signal pause_toggled(paused: bool)
 
+## Scène rechargée par « Réessayer » — le checkpoint de D.1R (le monde jouable
+## principal), posé par la scène qui instancie la coquille.
+@export var world_scene_path: String = "res://scenes/world/valley/ValleyWorld.tscn"
+
 ## Rythme de rafraîchissement des textes du HUD (§5.4 : pas d'allocation de
 ## chaînes à chaque frame pour des valeurs qui bougent rarement).
 const HUD_TEXT_REFRESH: float = 0.1
@@ -42,6 +46,10 @@ const MAX_NOTIFICATIONS: int = 4
 @onready var _move_up_button: Button = %MoveUpButton
 @onready var _move_down_button: Button = %MoveDownButton
 @onready var _close_inventory_button: Button = %CloseInventoryButton
+@onready var _death_panel: Control = %DeathPanel
+@onready var _retry_button: Button = %RetryButton
+@onready var _death_quit_button: Button = %DeathQuitButton
+@onready var _fade_rect: ColorRect = %RescueFade
 
 var _mouse_captured_wanted: bool = true
 var _player: PlayerController = null
@@ -56,8 +64,12 @@ func _ready() -> void:
 	_prompt_label.text = ""
 	_lock_label.visible = false
 	_reticle.visible = false
+	_death_panel.visible = false
+	_fade_rect.modulate.a = 0.0
 	_resume_button.pressed.connect(_on_resume)
 	_quit_button.pressed.connect(_on_quit_to_menu)
+	_retry_button.pressed.connect(_on_retry)
+	_death_quit_button.pressed.connect(_on_quit_to_menu)
 	_equip_button.pressed.connect(_on_equip_selected)
 	_move_up_button.pressed.connect(func() -> void: _move_selected(-1))
 	_move_down_button.pressed.connect(func() -> void: _move_selected(1))
@@ -98,6 +110,8 @@ func _bind_player() -> void:
 		_on_arrows_changed(inventory.arrows())
 		inventory.weapon_equipped.connect(_on_weapon_changed)
 	_player.interact_focus_changed.connect(_on_interact_focus_changed)
+	if health != null:
+		health.died.connect(_on_player_died)
 	var lock: LockOnComponent = _player.lock_component()
 	if lock != null:
 		lock.target_acquired.connect(func(_target: Node3D) -> void:
@@ -134,6 +148,8 @@ func _input(event: InputEvent) -> void:
 
 
 func _process(delta: float) -> void:
+	if _fade_rect.modulate.a > 0.0:
+		_fade_rect.modulate.a = maxf(0.0, _fade_rect.modulate.a - delta * 1.6)
 	if _player == null or not is_instance_valid(_player):
 		return
 	_reticle.visible = _player.is_aiming()
@@ -345,6 +361,50 @@ func hud_health() -> float:
 
 func hud_stamina() -> float:
 	return _stamina_bar.value
+
+
+## ---------------------------------------------------------------------------
+## Mort et secours (D.1R.4, PT-D1-04)
+## ---------------------------------------------------------------------------
+
+## La mort affiche un vrai choix — plus jamais « fermer et relancer ».
+func _on_player_died(_event: DamageEvent) -> void:
+	# Petit délai : laisser la chute du corps se voir avant l'écran.
+	var timer: Timer = Timer.new()
+	timer.wait_time = 1.2
+	timer.one_shot = true
+	timer.autostart = true
+	add_child(timer)
+	timer.timeout.connect(func() -> void:
+		_death_panel.visible = true
+		_set_mouse_captured(false)
+		_retry_button.grab_focus()
+		timer.queue_free())
+
+
+func is_death_panel_open() -> bool:
+	return _death_panel.visible
+
+
+## Cible du bouton « Réessayer » — exposée pour les tests : la transition
+## réelle s'exécute sur poste, le choix de la cible se prouve ici.
+func retry_target() -> String:
+	return world_scene_path
+
+
+func _on_retry() -> void:
+	get_tree().paused = false
+	var game_state: Node = get_node_or_null("/root/GameState")
+	if game_state != null:
+		game_state.call("set_pending_spawn", &"retry_checkpoint")
+	var flow: Node = get_node_or_null("/root/SceneFlow")
+	if flow != null and bool(flow.call("can_go_to", world_scene_path)):
+		flow.call("go_to", world_scene_path)
+
+
+## Fondu bref après un repêchage de chute (§14.3 : lisible, jamais punitif).
+func play_rescue_fade() -> void:
+	_fade_rect.modulate.a = 1.0
 
 
 ## ---------------------------------------------------------------------------

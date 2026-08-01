@@ -11,10 +11,13 @@
 class_name ValleyWorld
 extends Node3D
 
-## Filet anti-hors-monde (§14.3, esprit) : le graybox n'a pas encore de bords —
-## un joueur tombé du monde est replacé au spawn au lieu de chuter sans fin.
-const FALL_LIMIT_Y: float = -20.0
-const RESCUE_CHECK_INTERVAL: float = 1.0
+## Filet de sécurité TECHNIQUE (D.1R.4) : les montagnes périmétrales sont la
+## vraie limite — ce filet ne rattrape que l'inattendu, TÔT (sous le plancher
+## le plus bas, -1,5) et vite (cadence 0,25 s), vers le DERNIER POINT SÛR.
+const FALL_LIMIT_Y: float = -6.0
+const RESCUE_CHECK_INTERVAL: float = 0.25
+## Cadence d'enregistrement du dernier point sûr (au sol uniquement).
+const SAFE_POINT_INTERVAL: float = 2.0
 
 ## §7.7 : soleil à l'ouest (rayons vers +X), plongée 22°.
 const SUN_ROTATION_DEG: Vector3 = Vector3(-22.0, -90.0, 0.0)
@@ -33,24 +36,37 @@ const VISTA_FOV: float = 42.0
 @onready var _player: PlayerController = $Player
 @onready var _spawn: Node3D = $SpawnPoint
 @onready var _sun: DirectionalLight3D = $Sun
+@onready var _shell: GameplayShell = $GameplayShell
+
+var _last_safe: Vector3 = Vector3.ZERO
 
 
 func _ready() -> void:
 	var game_state: Node = get_node_or_null("/root/GameState")
 	if game_state != null:
 		game_state.call("set_flow", 2)  # GameState.Flow.VALLEY
+		# Retour du vestibule : DEVANT la porte de la citadelle, pas au spawn
+		# (PT-D1-10 : « ressortir replace correctement le joueur devant la porte »).
+		var tag: StringName = game_state.call("consume_pending_spawn")
+		if tag == &"citadel_door":
+			_player.position = Vector3(0, 34.3, -193.0)
+	_last_safe = _player.position
 
 	_sun.rotation_degrees = SUN_ROTATION_DEG
 	_setup_environment()
 	_setup_vista_camera()
 
-	# Cadence lente plutôt que _process : une comparaison par seconde suffit
-	# largement à rattraper une chute (§5.4 : timers plutôt que polling).
-	var timer: Timer = Timer.new()
-	timer.wait_time = RESCUE_CHECK_INTERVAL
-	timer.autostart = true
-	timer.timeout.connect(_check_fall_rescue)
-	add_child(timer)
+	# Timers plutôt que polling par frame (§5.4).
+	var rescue_timer: Timer = Timer.new()
+	rescue_timer.wait_time = RESCUE_CHECK_INTERVAL
+	rescue_timer.autostart = true
+	rescue_timer.timeout.connect(_check_fall_rescue)
+	add_child(rescue_timer)
+	var safe_timer: Timer = Timer.new()
+	safe_timer.wait_time = SAFE_POINT_INTERVAL
+	safe_timer.autostart = true
+	safe_timer.timeout.connect(_record_safe_point)
+	add_child(safe_timer)
 
 
 ## Ciel pastel, brume bleutée, lumière ambiante du ciel — les ancres de §3.4 en
@@ -92,13 +108,25 @@ func _setup_vista_camera() -> void:
 		vista.make_current.call_deferred()
 
 
+func _record_safe_point() -> void:
+	if _player != null and is_instance_valid(_player) and _player.is_on_floor() \
+			and not _player.health().is_dead():
+		_last_safe = _player.global_position
+
+
 func _check_fall_rescue() -> void:
 	if _player == null or not is_instance_valid(_player):
 		return
 	if _player.global_position.y < FALL_LIMIT_Y:
 		_player.velocity = Vector3.ZERO
-		_player.global_position = _spawn.global_position
+		_player.global_position = _last_safe
 		_player.reset_physics_interpolation()
+		if _shell != null:
+			_shell.play_rescue_fade()
+
+
+func last_safe_point() -> Vector3:
+	return _last_safe
 
 
 func player() -> PlayerController:

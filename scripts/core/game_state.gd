@@ -49,6 +49,24 @@ func set_flow(next: Flow) -> void:
 	flow_changed.emit(previous, _flow)
 
 
+## Point d'apparition demandé pour la PROCHAINE scène chargée (D.1R.4) : une
+## porte le pose, la scène cible le consomme — état de flux, pas référence de
+## nœud (§5.6). Vide = spawn par défaut de la scène.
+var _pending_spawn: StringName = &""
+
+
+func set_pending_spawn(tag: StringName) -> void:
+	_pending_spawn = tag
+
+
+## Consommation destructive : un tag ne sert qu'une fois — recharger la scène
+## ensuite repart du spawn normal.
+func consume_pending_spawn() -> StringName:
+	var tag: StringName = _pending_spawn
+	_pending_spawn = &""
+	return tag
+
+
 func get_difficulty() -> Difficulty:
 	return _difficulty
 
