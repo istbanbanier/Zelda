@@ -7,8 +7,8 @@ Règle : **aucune phase ne démarre avant que le gate précédent soit `PASS` ou
 
 | Phase | Objet | Gate | État |
 |---|---|---|---|
-| 0 | Initialisation, continuité, réduction des risques | Gate 0 | 🟡 EN COURS |
-| A | Fondation (projet, boot, autoloads, inputs, runner) | Gate A | ⬜ Non commencé |
+| 0 | Initialisation, continuité, réduction des risques | Gate 0 | 🔒 **GELÉ / ACCEPTÉ AVEC RÉSERVES** (D-006) |
+| A | Fondation (projet, boot, autoloads, inputs, runner) | Gate A | 🟠 **EN ATTENTE** — A.1/A.2 livrés, validation humaine à jouer |
 | B | Traversal (player, caméra, locomotion, endurance, escalade) | Gate B | ⬜ Non commencé |
 | C | Combat (santé, hitbox, combo, esquive, lock-on, arc, durabilité) | Gate C | ⬜ Non commencé |
 | C.5 | Micro-verticale + benchmark artistique `HeroShotLab` | Gate C.5 | ⬜ Non commencé |
@@ -49,7 +49,13 @@ Règle : **aucune phase ne démarre avant que le gate précédent soit `PASS` ou
 - Risques classés dans `docs/RISKS.md`.
 
 ### Gate A — Fondation
-Projet ouvre et lance, zéro parse error, InputMap AZERTY correct (`Q` = gauche vérifié en jeu).
+Projet ouvre et lance, zéro parse error, InputMap AZERTY correct (`Q` = gauche
+**vérifié en jeu**, pas seulement dans `project.godot`).
+
+État : **EN ATTENTE**. Le volet automatisable est vert (52 tests) ; les six
+contrôles humains sont décrits et outillés dans `docs/MANUAL_VALIDATION.md` et
+n'ont pas encore été exécutés — aucune machine avec écran, clavier AZERTY ou
+manette n'est disponible ici. Verdict global = le plus faible des six étapes.
 
 ### Gate B — Traversal
 Parcours de test complet sans blocage ni caméra cassée ; sprint/saut/escalade/mantle fiables.

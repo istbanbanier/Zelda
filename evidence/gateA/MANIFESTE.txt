@@ -1,0 +1,23 @@
+commit          : 9414fd0871bdc7cb0257370fbc4daab224982330
+commit_court    : 9414fd0
+arbre_propre    : non
+date_utc        : 2026-08-01T01:01:08Z
+machine         : Linux 6.18.5 x86_64
+godot           : 4.7.1.stable.custom_build.a13da4feb
+operateur       : <non renseigné : exporter VALIDATION_OPERATOR>
+
+--- fichiers de preuve ---
+01_lancement.png                   NON VÉRIFIÉ  1. Lancement avec écran
+01_lancement.log                   NON VÉRIFIÉ  1. Journal de lancement
+02_azerty_bandeau.png              NON VÉRIFIÉ  2. Bandeau de disposition AZERTY
+02_azerty_q_gauche.png             NON VÉRIFIÉ  2. Q maintenu, move_left ACTIF
+02_azerty_tableau.md               NON VÉRIFIÉ  2. Tableau clavier rempli
+03_manette_detectee.png            NON VÉRIFIÉ  3. Manette détectée
+03_manette_tableau.md              NON VÉRIFIÉ  3. Tableau manette rempli
+04_menu_focus.png                  NON VÉRIFIÉ  4. Focus visible dans le menu
+04_menu_petit.png                  NON VÉRIFIÉ  4. Menu en petite fenêtre
+04_menu_grand.png                  NON VÉRIFIÉ  4. Menu en grande fenêtre
+04_menu_confirmation.png           NON VÉRIFIÉ  4. Confirmation d'écrasement
+05_reprise.md                      NON VÉRIFIÉ  5. Reprise chronométrée
+05_validate_fast.log               NON VÉRIFIÉ  5. validate_fast sur clone neuf
+RAPPORT.md                         PRÉSENT  sha256=1404235c7612560b  6. Rapport rempli

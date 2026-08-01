@@ -5,6 +5,46 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-01 — A.2 gelé, protocole de validation humaine préparé
+
+**A.2 validé et gelé sur `9414fd0`** par décision du propriétaire.
+
+### Livré
+
+`docs/MANUAL_VALIDATION.md` : protocole en six étapes, écrit pour être exécuté
+**sans moi** par une personne disposant d'un écran, d'un clavier AZERTY et d'une
+manette. Chaque étape a ses commandes exactes, ses preuves attendues et ses
+critères `PASS`/`FAIL` — jamais « vérifier que ça marche ».
+
+`tools/manual_validation_kit.sh` prépare `evidence/gateA/`, y dépose le rapport
+d'environnement et un gabarit de rapport à remplir. Son mode `--finalize` écrit un
+manifeste (commit, machine, versions, SHA-256 de chaque preuve) et **sort en code 3
+tant qu'une preuve manque** — cohérent avec `validate_release.sh`, et empêchant de
+clore la campagne sur un dossier incomplet.
+
+`scenes/tests/InputProbe.tscn` : **sans elle, le protocole serait inexécutable.**
+À ce stade il n'existe ni joueur ni monde, donc appuyer sur `Q` ne produit rien de
+visible. La sonde rend l'InputMap observable et, surtout, interroge la disposition
+clavier réelle du système via `DisplayServer.keyboard_get_keycode_from_physical()` :
+elle affiche quel nom la disposition courante donne à la position liée à
+« gauche ». Sur AZERTY, ce doit être « Q ». L'invariant devient objectif et
+capturable, au lieu d'être ressenti.
+
+Quatre tests verrouillent la sonde elle-même : si une action est ajoutée à
+l'InputMap sans être ajoutée à la sonde, la validation manuelle testerait un
+sous-ensemble sans que personne ne s'en aperçoive.
+
+### État des gates
+
+- **Gate 0** : `GELÉ / ACCEPTÉ AVEC RÉSERVES` (D-006).
+- **Gate A** : **`EN ATTENTE`**. Volet automatisable vert — 52 tests. Les six
+  contrôles humains sont `NON VÉRIFIÉ`, et `--finalize` le confirme : 13 preuves
+  manquantes, code 3.
+
+**La Phase B ne démarre pas.** Elle attend le verdict du Gate A.
+
+---
+
 ## 2026-08-01 — Session 1 (suite) — Durcissement du harnais, gel du Gate 0
 
 **Quatre revues adverses à contexte frais, quatre `FAIL`.** Chacune a trouvé des
@@ -118,61 +158,46 @@ a réellement tourné.
 
 ## HANDOFF — prochaine action exacte
 
-> **Phase A : A.1 et A.2 livrés.** Gate 0 gelé (D-006). 48 tests verts.
+> **Gate A : `EN ATTENTE`.** Rien de neuf ne commence avant son verdict.
 
-Démarrage dans un conteneur neuf :
+### Action suivante, et elle n'est pas de mon ressort
+
+Exécuter `docs/MANUAL_VALIDATION.md` sur une machine avec écran, clavier **AZERTY**
+et manette. Six étapes, environ une heure hors reconstruction de Godot :
 
 ```bash
-tools/setup_godot.sh          # ~60-120 min — LANCER EN ARRIÈRE-PLAN IMMÉDIATEMENT
-apt-get install -y blender python3-numpy
-tools/env_report.sh
-tools/validate_fast.sh        # doit être VERT (48 tests) avant toute modification
+tools/manual_validation_kit.sh        # prépare evidence/gateA/ et le rapport
+# … jouer les six étapes du protocole, déposer les captures …
+tools/manual_validation_kit.sh --finalize   # manifeste ; sort en 3 s'il manque une preuve
 ```
 
-**Premier acte obligatoire** : mesurer réellement le critère 1 du Gate 0 — combien
-de temps faut-il pour comprendre l'état du projet à partir de `CLAUDE.md` +
-`STATUS` + `PROGRESS` seuls ? Réserve principale de D-006, levable seulement ainsi.
+### Ensuite, selon le résultat
 
-### Fait en A.2
+- **Six `PASS`** → déclarer Gate A `PASS` dans `STATUS`, `TEST_REPORT` et ici,
+  puis démarrer la **Phase B — Traversal**.
+- **Un `FAIL`** → ouvrir l'entrée correspondante dans `docs/KNOWN_ISSUES.md` avec
+  sa sévérité, corriger, rejouer **la seule étape concernée**, re-conclure.
+- **Matériel indisponible** → Gate A reste `EN ATTENTE`. Ne pas le contourner :
+  les tests automatiques prouvent qu'une liaison existe dans `project.godot`, pas
+  qu'une personne appuyant sur `Q` va vers la gauche.
 
-Menu principal navigable (focus en cycle, aucun bouton désactivé focalisable,
-confirmation avant écrasement), enchaînement Boot → MainMenu par `SceneFlow`
-vérifié par un lancement réel, et **simulation Jolt prouvée** — une bille tombe et
-se stabilise sur le sol. Trois défauts réels corrigés (D-010, D-011, et le retrait
-d'une vérification Jolt mal fondée).
+### Contenu prévu de la Phase B, à ne pas entamer avant le verdict
 
-### Prochaine action : clore la Phase A
-
-Gate A n'a plus que deux critères ouverts, tous deux **impossibles ici** : l'essai
-humain AZERTY/manette et la lisibilité du menu (§21.4). Deux options, à trancher
-par le propriétaire :
-
-- **(a)** exécuter ces deux contrôles sur une machine avec écran, puis lancer la
-  revue `adversarial-qa` et déclarer Gate A ;
-- **(b)** déclarer Gate A `BLOQUÉ` sur ces deux critères, en le consignant comme
-  pour D-006, et entamer la Phase B.
-
-Ne pas déclarer Gate A `PASS` sans l'un des deux — la liaison testée n'est pas
-l'essai humain.
-
-### Si l'on entame la Phase B (traversal)
-
-1. `Player` en `CharacterBody3D` avec la hiérarchie de §6.2.
+1. `Player` en `CharacterBody3D`, hiérarchie de §6.2.
 2. `CameraRig` : pivots + `SpringArm3D`, `Camera3D` enfant direct (§8.3).
-3. Locomotion caméra-relative, valeurs de départ de §8.2, **toute la logique dans
+3. Locomotion caméra-relative, valeurs de §8.2, **toute la logique dans
    `_physics_process()`** (§20.9).
 4. `StaminaComponent` avant le sprint : §9.1 fixe déjà ses valeurs.
-5. Tests : latence d'entrée en ticks, pentes, marches, plafond, absence de
-   traversée de mur par la caméra.
+5. Tests : latence d'entrée en ticks, pentes, marches, plafond, caméra ne
+   traversant aucun mur.
 
 ### Pièges connus
 
 - Doc en ligne bloquée : la source du tag sous `/opt/src/godot` est la référence.
-  Utiliser l'agent `godot-researcher`.
 - Un `MainLoop` par `--script` n'a ni autoloads ni `Engine.get_main_loop()` pendant
   `_init()` (D-009) ; le runner compense, ne pas défaire.
-- Toute méthode de test avec `await` doit être attendue par le runner (D-010) ;
-  la boucle appelante aussi, sinon des tests disparaissent en silence.
+- Toute méthode de test avec `await` doit être attendue, **et la boucle appelante
+  aussi** (D-010) — sinon des tests disparaissent en silence, suite verte.
 - Ne pas faire déclencher un `push_error` de production par un test : isoler la
   décision (modèle `can_go_to()`).
 - Relever `MIN_TESTS` dans `tools/validate_fast.sh` à chaque ajout de test.

@@ -1,0 +1,86 @@
+[gd_scene load_steps=2 format=3]
+
+; Sonde d'entrée — outil de validation manuelle (docs/MANUAL_VALIDATION.md).
+; Jamais atteignable depuis le jeu : elle se lance explicitement.
+
+[ext_resource type="Script" path="res://scripts/tools/input_probe.gd" id="1_probe"]
+
+[node name="InputProbe" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_probe")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.086, 0.098, 0.129, 1)
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="Column" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Margin/Column"]
+layout_mode = 2
+text = "Sonde d'entrée — validation manuelle du Gate A"
+
+[node name="LayoutLabel" type="Label" parent="Margin/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Disposition système : …"
+
+[node name="VerdictLabel" type="Label" parent="Margin/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+text = "…"
+
+[node name="DeviceLabel" type="Label" parent="Margin/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Manette : …"
+
+[node name="LastInputLabel" type="Label" parent="Margin/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+text = "Dernière entrée : —"
+
+[node name="Separator" type="HSeparator" parent="Margin/Column"]
+layout_mode = 2
+
+[node name="Hint" type="Label" parent="Margin/Column"]
+layout_mode = 2
+autowrap_mode = 3
+text = "Appuyer sur chaque touche et chaque bouton. Une action ACTIVE prouve que la liaison fonctionne. Échap n'est PAS un raccourci de sortie ici : fermer la fenêtre."
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Margin/Column"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ActionsGrid" type="GridContainer" parent="Margin/Column/ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+columns = 2
+theme_override_constants/h_separation = 32
+theme_override_constants/v_separation = 4

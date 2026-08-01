@@ -6,6 +6,27 @@ Vocabulaire imposé (§0.2) : `Non commencé` · `Implémenté` (raccordé) ·
 
 **Dernière mise à jour** : 2026-08-01 · **Phase** : A (jalon A.1) · **Commit** : voir `git log`
 
+## Verdict Gate A : **EN ATTENTE** — validation humaine non réalisée
+
+Ni `PASS`, ni `FAIL`. Tout ce qui est vérifiable sans écran est vert (52 tests),
+mais six contrôles de §21.4 exigent une machine avec écran, clavier AZERTY et
+manette, dont ce conteneur ne dispose pas (ISS-002, ISS-004).
+
+Protocole prêt à exécuter : **`docs/MANUAL_VALIDATION.md`**, outillé par
+`tools/manual_validation_kit.sh` et `scenes/tests/InputProbe.tscn`.
+
+| Étape de validation manuelle | État |
+|---|---|
+| 1. Lancement sur machine avec écran | NON VÉRIFIÉ |
+| 2. Clavier AZERTY réel, `Q` = gauche | NON VÉRIFIÉ |
+| 3. Manette | NON VÉRIFIÉ |
+| 4. Lisibilité et focus du MainMenu | NON VÉRIFIÉ |
+| 5. Reprise réelle depuis une session neuve | NON VÉRIFIÉ |
+| 6. Archivage des preuves | NON VÉRIFIÉ |
+
+`tools/manual_validation_kit.sh --finalize` sort actuellement en **3 (BLOQUÉ)** :
+13 preuves attendues manquent. La Phase B ne démarre pas avant le verdict.
+
 ## Verdict Gate 0 : **GELÉ / ACCEPTÉ AVEC RÉSERVES** (décision propriétaire, D-006)
 
 Ce n'est **pas** un `PASS` : aucune des quatre revues adverses ne l'a prononcé.
@@ -69,7 +90,7 @@ logiciel llvmpipe uniquement, aucun GPU.
 
 | Phase | Système | État |
 |---|---|---|
-| A | Boot, autoloads, InputMap AZERTY, couches de collision | **A.1 et A.2 livrés** — voir détail ci-dessous |
+| A | Boot, autoloads, InputMap AZERTY, couches de collision | **A.1 et A.2 livrés et gelés (`9414fd0`)** ; Gate A **EN ATTENTE** de validation humaine |
 | B | Player, caméra, locomotion, endurance, escalade, mantle | Non commencé |
 | C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | Non commencé |
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
@@ -100,17 +121,12 @@ ne dépendent pas du rendu, seulement de l'exécution headless.
 | Simulation physique Jolt (§5.3) | **Fonctionnel** | `test_physics_simulation.gd` : chute de 4 m, arrêt à 0,5 m, stabilisation | 2026-08-01 |
 | Masques de collision par entité | Non commencé | aucune entité n'existe encore | — |
 | Apparence et lisibilité du menu | **NON VÉRIFIÉ** | exige un écran ; seule la structure est testable ici | — |
+| Sonde d'entrée (outil de validation) | **Fonctionnel** | `test_input_probe.gd`, 4 cas : la sonde reste synchronisée avec l'InputMap | 2026-08-01 |
+| Protocole de validation manuelle | **Implémenté** | `docs/MANUAL_VALIDATION.md` + `tools/manual_validation_kit.sh` (mode `--finalize` sort en 3 tant qu'il manque une preuve) | 2026-08-01 |
 
-**Reste avant Gate A** — deux points, tous deux hors de portée de ce conteneur :
-
-1. **Essai humain sur clavier AZERTY** (§21.4) : `Q` déplace-t-il réellement à
-   gauche ? Le test verrouille la *liaison* ; il ne remplace pas l'essai. De même
-   pour la navigation du menu à la manette.
-2. **Lisibilité du menu à l'écran** : structure et focus sont testés, l'apparence
-   ne l'est pas.
-
-Tout le reste d'A est vert. Gate A ne pourra donc être déclaré `PASS` que sur une
-machine avec écran — ou déclaré `BLOQUÉ` en le disant, jamais contourné.
+**Reste avant Gate A** : les six étapes de `docs/MANUAL_VALIDATION.md`, toutes
+hors de portée de ce conteneur. Le protocole est écrit, outillé et exécutable par
+une personne disposant du matériel ; il n'attend plus que d'être joué.
 
 ---
 

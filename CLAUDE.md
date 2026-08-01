@@ -24,6 +24,7 @@ tools/validate_fast.sh               # niveaux 1-3 : import, parse, tests unitai
 tools/validate_release.sh            # niveaux 4-7 ; sort en 3 (BLOQUÉ) tant que 4/6/7
                                      # ne sont pas exécutés ; 1 si la capture échoue
 tools/blender/run_export.sh          # Blender -> .glb dans assets/
+tools/manual_validation_kit.sh       # prépare/clôt la validation humaine d'un gate
 python3 tools/gltf_inspect.py <glb>  # validation glTF hors Godot
 ```
 
@@ -95,6 +96,15 @@ Ne jamais passer au Gate suivant sans le Gate courant vert ou explicitement `BLO
 `0` init/continuité · `A` fondation · `B` traversal · `C` combat ·
 `C.5` micro-verticale ≥ 75/100 · `D` graybox monde · `E` cuisine/save ·
 `F` donjon électrique · `G` boss · `H` art ≥ 85/100 · `I` perf/livraison · `J` démo 3 min.
+
+## Ce qui ne peut PAS être validé ici
+
+Aucun écran, aucun clavier, aucune manette, aucun périphérique audio. Les contrôles
+manuels de §21.4 — `Q` réellement à gauche sur AZERTY, manette, lisibilité de
+l'interface — sont donc **impossibles** dans ce conteneur. Le protocole prêt à
+jouer est `docs/MANUAL_VALIDATION.md`. Un gate qui en dépend reste `EN ATTENTE` :
+ne jamais le déclarer `PASS` sur la foi des tests automatiques, qui prouvent une
+liaison, pas un appui de touche.
 
 ## Limites connues de cet environnement
 
