@@ -59,6 +59,94 @@ continu.
 
 ---
 
+## 1bis. Pack V4 — références faisant autorité (Passe visuelle V4.1)
+
+Les cinq images de `source_assets/concepts/final_v4/` **remplacent** la
+référence unique de Phase 0 pour paysage, architecture, HUD, inventaire et
+pause. Analysées directement (2026-08-01) ; binaires à déposer (voir le README
+du dossier). Ce sont des concepts hors moteur : références de relations, jamais
+d'assets, jamais de preuves.
+
+### 01 — Monde (North Star V4)
+
+- Héros de dos, bas gauche, cape turquoise déchirée + épaulière or : inchangé.
+- **Lumière** : fin d'après-midi dorée venant de la GAUCHE, halo diffus ; le
+  premier plan (herbe, fleurs blanches/jaunes/violettes) est chaud et contrasté.
+- **Orage LOCAL** : nuage ardoise concentré sur la citadelle, colonne d'éclair
+  cyan à cœur blanc frappant la flèche ; le reste du ciel reste doré/nuageux.
+  Le monde n'est JAMAIS uniformément sombre.
+- **Profondeur** : trois plans nets — herbe/fleurs → vallée habitée (camp de
+  tentes + feux en bas droite, ruines, rivière turquoise en S, ponts) → mesas
+  ocre/terracotta étagées puis montagnes bleues ; cascade au bord gauche.
+- **Pylône** : tour de pierre gravée, orbe cyan au sommet, runes cyan — ancre
+  verticale droite. Le cyan reste : éclair, orbe, runes, rivière — rien d'autre.
+- Roches : strates horizontales ocre/terracotta, arêtes chaudes, creux froids.
+
+### 02 — Entrée du donjon
+
+- Façade **hors cadre** : piliers colossaux pierre + bronze gravés de motifs
+  géométriques, conduits d'énergie cyan VERTICAUX intégrés à l'architecture.
+- Porte centrale gigantesque **réellement ouverte** : on voit un vestibule
+  profond et éclairé — braseros à flamme chaude, second seuil cyan au fond,
+  mécanisme central lumineux. AUCUN rectangle noir.
+- Accès lisible : large escalier de pierre usée, dalles, végétation qui
+  reprend ses droits (lierre, touffes) ; le héros est minuscule devant.
+- Chaud (braseros, pierre dorée) contre froid (conduits cyan) : la grammaire
+  électrique du donjon commence à la façade.
+
+### 03 — HUD (cible fonctionnelle)
+
+- **Vie** : fragments de rubis facettés en haut à gauche (le dernier se vide
+  partiellement), petit emblème or à gauche. Icône + forme + couleur (§17.4).
+- **Endurance** : arc radial turquoise DISCRET près du personnage, visible
+  seulement pendant l'usage — jamais une barre pleine largeur.
+- **Interaction** : chip de touche `E` + « — Interagir » près de la cible,
+  crochets blancs fins de verrouillage sur la cible.
+- **Arme** (bas droite) : plaque ardoise translucide, nom en capitales ivoire,
+  icône de l'arme, compteur de flèches avec glyphe, **durabilité segmentée**
+  (4 segments) sous la plaque.
+- Occupation d'écran minimale, traits or pâle fins, aucune notification sur le
+  réticule.
+
+### 04 — Inventaire (cible fonctionnelle)
+
+- Plein écran ardoise ; le monde (citadelle sous orage) reste visible derrière,
+  assombri. Titre haut gauche, onglets ARMES / OBJETS soulignés d'or (OBJETS
+  n'existe pas encore : ne pas l'afficher comme fonctionnel).
+- Grille 2 × 4 : HUIT cases d'armes, cases vides visibles avec emblème estompé,
+  case sélectionnée cadrée d'or + losange, mini-barre de durabilité segmentée
+  par case. Lame conductrice : lueur cyan discrète dans sa case.
+- Panneau droit : rendu de l'arme + stats RÉELLES depuis WeaponDefinition et
+  l'instance — dégâts, portée, durabilité n/max segmentée, conductivité en
+  barre cyan avec glyphe éclair.
+- Bandeau bas : chips de touches (ENTRÉE Équiper · R Déplacer · X Arme
+  suivante · ÉCHAP Retour). Plaque flèches en bas gauche.
+
+### 05 — Menu pause (cible fonctionnelle)
+
+- Panneau VERTICAL gauche ardoise translucide, filet or, titre PAUSE ; le
+  monde reste visible et net à droite (légère désaturation acceptable,
+  JAMAIS un écran noir).
+- Entrées : Reprendre (focus or + losange), Inventaire, Options, Commandes,
+  Retour au menu — ce qui n'existe pas est honnêtement désactivé.
+- Sensibilité souris : curseur turquoise avec valeur affichée, effet immédiat,
+  borné, persisté. Inverser axe Y : bascule (si affichée, elle fonctionne).
+- Chips de touches en pied : ÉCHAP Reprendre · ENTRÉE Valider.
+
+### Règles opérantes extraites (pour tous les lots V4.x)
+
+1. L'orage n'assombrit QUE la zone citadelle ; camp, routes, rivière et héros
+   restent lisibles au soleil doré.
+2. Trois plans séparés par la brume, montagnes superposées en silhouettes.
+3. Palette §2 inchangée + terracotta/basalte charbon/bronze vieilli/céramique
+   ivoire pour l'architecture.
+4. Cyan = électricité, repères, interactions importantes. Rien d'autre.
+5. UI : ardoise sombre translucide, ivoire, or pâle, rubis (vie), turquoise
+   (endurance/curseurs) ; contours fins ; chips de touches uniformes.
+6. Tout est reconstruit : aucun usage direct des images dans le build.
+
+---
+
 ## 2. Palette ancre
 
 | Usage | Hex | Note d'emploi |

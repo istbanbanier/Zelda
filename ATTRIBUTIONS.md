@@ -36,13 +36,25 @@ Le moteur Godot est sous licence MIT : sa redistribution avec le jeu est autoris
 à condition de conserver l'avis de copyright. Blender est un outil de production et
 n'est pas redistribué ; sa licence GPL **ne contamine pas** les assets produits avec.
 
-## Image de référence North Star
+## Image de référence North Star (Phase 0 — remplacée)
 
-Fournie par l'auteur du projet comme **référence de cadrage uniquement**. Elle n'est
-pas versionnée à ce jour (KNOWN_ISSUES ISS-003) et ne doit **jamais** devenir une
-ressource du jeu : ni skybox, ni matte painting, ni billboard, ni texture (§0.2).
-Si elle est déposée dans `source_assets/concepts/`, l'inscrire ici avec son origine
-exacte et son statut de droits.
+Fournie par l'auteur du projet comme **référence de cadrage uniquement**. Jamais
+versionnée (KNOWN_ISSUES ISS-003). Depuis la Passe visuelle V4.1, elle est
+**remplacée comme autorité** par le pack V4 ci-dessous et ne garde qu'une valeur
+historique.
+
+## Pack visuel V4 (`source_assets/concepts/final_v4/`)
+
+| Élément | Valeur |
+|---|---|
+| Source | `ECLATS_ORAGE_FINAL_ATMOSPHERE_PACK_V4.zip`, fourni par le propriétaire du projet (2026-08-01) |
+| Auteur / droits | concepts commandés par le propriétaire pour ce projet ; usage interne de référence |
+| Nature | illustrations générées/peintes **hors moteur** — références de composition, ambiance, palette et hiérarchie |
+| Statut dans le build | **AUCUN** : jamais asset, jamais skybox, jamais billboard, jamais texture d'UI, jamais preuve (§0.2) |
+| Binaires | pas encore sur le disque du conteneur — analyse détaillée dans `docs/ART_BIBLE.md` §1bis ; PNG à déposer dans `source_assets/concepts/final_v4/` |
+
+Tout ce que ces images montrent est **reconstruit** en 3D réelle et en interface
+Godot alimentée par les données réelles. Rien n'en est extrait ni copié-collé.
 
 ## Contrôle avant chaque gate artistique
 

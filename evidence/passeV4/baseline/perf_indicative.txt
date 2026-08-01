@@ -1,0 +1,11 @@
+300 frames 720p llvmpipe : 29.053674786 s (mur, import+chargement compris)
+
+Protocole : xvfb-run, Mesa llvmpipe (rendu LOGICIEL, 256 bits), Godot
+4.7.1-stable custom a13da4feb, Forward+ (repli GL Compatibility à l'écran),
+scène ValleyWorld.tscn, 300 frames, 1280×720, conteneur headless sans GPU.
+
+AVERTISSEMENT (CLAUDE.md) : une mesure llvmpipe n'est JAMAIS un budget de
+frame. Cette valeur ne sert qu'à la COMPARAISON RELATIVE avant/après de la
+Passe V4 sur cette même machine — détecter un effet devenu 2× plus lourd,
+rien d'autre. Capture vista 2560×1440/60 frames : ~16,8 s mur au baseline.
+Commit baseline : 40dd4d4.
