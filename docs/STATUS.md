@@ -69,7 +69,7 @@ logiciel llvmpipe uniquement, aucun GPU.
 
 | Phase | Système | État |
 |---|---|---|
-| A | Boot, autoloads, InputMap AZERTY, couches de collision | **A.1 livré** — voir détail ci-dessous |
+| A | Boot, autoloads, InputMap AZERTY, couches de collision | **A.1 et A.2 livrés** — voir détail ci-dessous |
 | B | Player, caméra, locomotion, endurance, escalade, mantle | Non commencé |
 | C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | Non commencé |
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
@@ -86,7 +86,7 @@ ne dépendent pas du rendu, seulement de l'exécution headless.
 
 ---
 
-## Phase A — jalon A.1
+## Phase A — jalons A.1 et A.2
 
 | Élément | État | Preuve | Dernier test |
 |---|---|---|---|
@@ -95,14 +95,22 @@ ne dépendent pas du rendu, seulement de l'exécution headless.
 | 5 autoloads (§5.6) | **Fonctionnel** | `test_autoloads.gd`, 9 cas | 2026-08-01 |
 | Écriture atomique de sauvegarde (§19.2) | **Fonctionnel** | `test_save_system.gd`, 6 cas | 2026-08-01 |
 | Boot réel (§6.1) | **Fonctionnel** | lancé réellement, sortie `[boot]` dans `validate_fast` niveau 3 | 2026-08-01 |
-| Masques de collision par entité | Non commencé | — | — |
-| Menu principal | Non commencé | — | — |
+| Menu principal (§17.3) | **Fonctionnel** | `test_main_menu.gd`, 8 cas : cycle de focus, boutons désactivés non focalisables, confirmation d'écrasement | 2026-08-01 |
+| Transition Boot → MainMenu (§6.1) | **Fonctionnel** | `validate_fast` niveau 3 : lancement réel sur 90 frames, trace d'arrivée exigée | 2026-08-01 |
+| Simulation physique Jolt (§5.3) | **Fonctionnel** | `test_physics_simulation.gd` : chute de 4 m, arrêt à 0,5 m, stabilisation | 2026-08-01 |
+| Masques de collision par entité | Non commencé | aucune entité n'existe encore | — |
+| Apparence et lisibilité du menu | **NON VÉRIFIÉ** | exige un écran ; seule la structure est testable ici | — |
 
-**Reste avant Gate A** : masques de collision réellement assignés à des entités
-(il n'y a pas encore d'entité), et surtout **lancer le jeu avec un affichage** pour
-vérifier l'InputMap à la main — `Q` déplace-t-il à gauche sur un vrai clavier
-AZERTY ? Le test verrouille la *liaison* ; il ne remplace pas l'essai humain exigé
-par §21.4. Ce contrôle ne peut pas être fait dans ce conteneur.
+**Reste avant Gate A** — deux points, tous deux hors de portée de ce conteneur :
+
+1. **Essai humain sur clavier AZERTY** (§21.4) : `Q` déplace-t-il réellement à
+   gauche ? Le test verrouille la *liaison* ; il ne remplace pas l'essai. De même
+   pour la navigation du menu à la manette.
+2. **Lisibilité du menu à l'écran** : structure et focus sont testés, l'apparence
+   ne l'est pas.
+
+Tout le reste d'A est vert. Gate A ne pourra donc être déclaré `PASS` que sur une
+machine avec écran — ou déclaré `BLOQUÉ` en le disant, jamais contourné.
 
 ---
 

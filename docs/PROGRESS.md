@@ -118,7 +118,7 @@ a réellement tourné.
 
 ## HANDOFF — prochaine action exacte
 
-> **En cours : Phase A. A.1 est livré ; A.2 suit.** Gate 0 gelé (D-006).
+> **Phase A : A.1 et A.2 livrés.** Gate 0 gelé (D-006). 48 tests verts.
 
 Démarrage dans un conteneur neuf :
 
@@ -126,42 +126,53 @@ Démarrage dans un conteneur neuf :
 tools/setup_godot.sh          # ~60-120 min — LANCER EN ARRIÈRE-PLAN IMMÉDIATEMENT
 apt-get install -y blender python3-numpy
 tools/env_report.sh
-tools/validate_fast.sh        # doit être VERT (37 tests) avant toute modification
+tools/validate_fast.sh        # doit être VERT (48 tests) avant toute modification
 ```
 
 **Premier acte obligatoire** : mesurer réellement le critère 1 du Gate 0 — combien
 de temps faut-il pour comprendre l'état du projet à partir de `CLAUDE.md` +
-`STATUS` + `PROGRESS` seuls ? C'est la réserve principale de D-006 et elle ne peut
-être levée que comme ça.
+`STATUS` + `PROGRESS` seuls ? Réserve principale de D-006, levable seulement ainsi.
 
-### Fait en A.1
+### Fait en A.2
 
-InputMap AZERTY (18 actions, `physical_keycode`), 14 couches de collision nommées,
-5 autoloads, écriture atomique de sauvegarde, Boot réel. 37 tests verts.
+Menu principal navigable (focus en cycle, aucun bouton désactivé focalisable,
+confirmation avant écrasement), enchaînement Boot → MainMenu par `SceneFlow`
+vérifié par un lancement réel, et **simulation Jolt prouvée** — une bille tombe et
+se stabilise sur le sol. Trois défauts réels corrigés (D-010, D-011, et le retrait
+d'une vérification Jolt mal fondée).
 
-### A.2 — prochaine action
+### Prochaine action : clore la Phase A
 
-1. **Scène `MainMenu`** minimale (§17.3) : continuer / nouvelle partie / options /
-   quitter, navigable au clavier ET à la manette, focus visible, aucun piège de
-   focus. C'est ce qui donnera enfin une cible à `SceneFlow.go_to()`.
-2. **Brancher Boot → MainMenu** et écrire le test d'intégration de la transition :
-   `SceneFlow` libère bien `_busy`, l'ancienne scène ne reste pas active.
-3. **Scène sandbox** (`scenes/tests/`) avec un sol et un corps physique, pour
-   vérifier que **Jolt simule réellement** — aujourd'hui, seul le *réglage* est
-   testé, pas la simulation.
-4. Relever `MIN_TESTS` dans `tools/validate_fast.sh` à chaque ajout.
+Gate A n'a plus que deux critères ouverts, tous deux **impossibles ici** : l'essai
+humain AZERTY/manette et la lisibilité du menu (§21.4). Deux options, à trancher
+par le propriétaire :
 
-**Gate A** : le projet ouvre et se lance, zéro parse error, InputMap AZERTY correct.
-⚠️ Gate A exige un **essai humain sur clavier AZERTY** (§21.4) : impossible dans ce
-conteneur sans affichage. Le prévoir sur une machine avec écran, ou déclarer ce
-critère `BLOQUÉ` en le disant.
+- **(a)** exécuter ces deux contrôles sur une machine avec écran, puis lancer la
+  revue `adversarial-qa` et déclarer Gate A ;
+- **(b)** déclarer Gate A `BLOQUÉ` sur ces deux critères, en le consignant comme
+  pour D-006, et entamer la Phase B.
+
+Ne pas déclarer Gate A `PASS` sans l'un des deux — la liaison testée n'est pas
+l'essai humain.
+
+### Si l'on entame la Phase B (traversal)
+
+1. `Player` en `CharacterBody3D` avec la hiérarchie de §6.2.
+2. `CameraRig` : pivots + `SpringArm3D`, `Camera3D` enfant direct (§8.3).
+3. Locomotion caméra-relative, valeurs de départ de §8.2, **toute la logique dans
+   `_physics_process()`** (§20.9).
+4. `StaminaComponent` avant le sprint : §9.1 fixe déjà ses valeurs.
+5. Tests : latence d'entrée en ticks, pentes, marches, plafond, absence de
+   traversée de mur par la caméra.
 
 ### Pièges connus
 
-- Ne pas croire un souvenir d'API : la doc en ligne est bloquée, la source du tag
-  sous `/opt/src/godot` est la référence. Utiliser l'agent `godot-researcher`.
+- Doc en ligne bloquée : la source du tag sous `/opt/src/godot` est la référence.
+  Utiliser l'agent `godot-researcher`.
 - Un `MainLoop` par `--script` n'a ni autoloads ni `Engine.get_main_loop()` pendant
-  `_init()` (D-009). Le runner compense ; ne pas défaire ce contournement.
-- Ne pas faire déclencher un `push_error` de production par un test : le niveau 2b
-  le compte comme échec, à raison. Isoler la décision (modèle `can_go_to()`).
-- Ne pas déclarer Gate A `PASS` sans revue `adversarial-qa` à contexte frais.
+  `_init()` (D-009) ; le runner compense, ne pas défaire.
+- Toute méthode de test avec `await` doit être attendue par le runner (D-010) ;
+  la boucle appelante aussi, sinon des tests disparaissent en silence.
+- Ne pas faire déclencher un `push_error` de production par un test : isoler la
+  décision (modèle `can_go_to()`).
+- Relever `MIN_TESTS` dans `tools/validate_fast.sh` à chaque ajout de test.
