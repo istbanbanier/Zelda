@@ -1,0 +1,9 @@
+# Contrôle négatif — P3_degagement_de_capsule_retire
+# Le test de degagement de capsule est retire : le mantle sous plafond est accorde (§9.3, §21.4).
+# Test visé : test_a_ledge_under_a_ceiling_refuses_the_mantle
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_climbing.gd::test_a_ledge_under_a_ceiling_refuses_the_mantle — raison du refus : attendu blocked, obtenu blocked_midway
+=== RÉSULTAT: 122 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_climbing.gd::test_a_ledge_under_a_ceiling_refuses_the_mantle — raison du refus : attendu blocked, obtenu blocked_midway

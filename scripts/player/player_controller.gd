@@ -8,16 +8,41 @@
 ## §20.9 : toute la logique de mouvement vit dans `_physics_process()`. Aucun
 ## transform de gameplay n'est écrit depuis `_process()`.
 ##
-## ÉTAT B.2 : marche, course, sprint **à l'endurance**, saut, gravité, coyote
-## time, jump buffer. Escalade et mantle (§9.2, §9.3) suivent en B.3 ; ils
-## consommeront le même `StaminaComponent`, sans le modifier.
+## ÉTAT B.3 : marche, course, sprint, saut, gravité, coyote time, jump buffer,
+## **escalade** (§9.2) et **mantle** (§9.3). Tous consomment le même
+## `StaminaComponent`, qui n'a pas eu à changer pour les accueillir.
 class_name PlayerController
 extends CharacterBody3D
 
 ## Émis au contact du sol, avec la vitesse verticale d'impact (négative).
-## Les dégâts de chute (§8.2) s'y brancheront en B.2 sans modifier ce script.
+## Les dégâts de chute (§8.2) s'y brancheront sans modifier ce script.
 signal landed(impact_speed: float)
 signal left_ground()
+## Accroche et lâcher de paroi (§9.2). `reason` dit pourquoi le mur a été lâché :
+## `released`, `exhausted`, `mantled` ou `lost_contact`.
+signal grabbed_wall(normal: Vector3)
+signal released_wall(reason: StringName)
+## Franchissement (§9.3). `refused` porte la raison nommée par le détecteur.
+signal mantle_started(target: Vector3)
+signal mantle_finished()
+signal mantle_refused(reason: StringName)
+
+## Modes de locomotion effectivement implémentés.
+##
+## §8.1 énumère vingt états, dont la moitié appartient au combat. Construire la
+## machine complète maintenant reviendrait à écrire dix-huit états vides : ce
+## `Mode` couvre exactement ce qui existe, et la `StateMachine` de §8.1 arrivera
+## avec la Phase C, quand les états de combat auront un contenu (D-018).
+enum Mode { LOCOMOTION, CLIMBING, MANTLING }
+
+## Rappel vers la distance de paroi : gain en (m/s) par mètre d'écart, et vitesse
+## maximale de correction. Bornés à dessein — voir `_apply_climb_motion()`.
+const WALL_HOLD_GAIN: float = 8.0
+const WALL_HOLD_MAX_SPEED: float = 1.5
+
+## Hauteur dont le sommet du trajet de mantle dépasse la surface d'arrivée.
+## Voir `_try_mantle()`.
+const LEDGE_RISE_CLEARANCE: float = 0.06
 
 @export var tuning: LocomotionTuning
 
@@ -25,6 +50,10 @@ signal left_ground()
 @onready var _camera_rig: CameraRig = $CameraRig
 @onready var _input_reader: PlayerInputReader = $Components/PlayerInputReader
 @onready var _stamina: StaminaComponent = $Components/StaminaComponent
+@onready var _climbing: ClimbingComponent = $Components/ClimbingComponent
+@onready var _ledge: LedgeDetectorComponent = $Components/LedgeDetectorComponent
+@onready var _alignment: ActionAlignmentComponent = $Components/ActionAlignmentComponent
+@onready var _collision: CollisionShape3D = $CollisionShape3D
 
 ## Intention courante. Remplacée par un test via `set_intent_source()`.
 var _intent: InputIntent = null
@@ -33,6 +62,15 @@ var _use_reader: bool = true
 var _coyote_timer: float = 0.0
 var _jump_buffer_timer: float = 0.0
 var _was_on_floor: bool = true
+
+var _mode: Mode = Mode.LOCOMOTION
+## Normale de paroi lissée (§9.2 : « lissage normale 0,08–0,16 s »). Sans ce
+## lissage, la moindre aspérité ferait pivoter le personnage d'un coup.
+var _wall_normal: Vector3 = Vector3.ZERO
+## Empêche de se raccrocher à la paroi dans le tick qui suit un lâcher volontaire
+## ou un saut d'escalade : le joueur est encore contre le mur, il se rattraperait
+## immédiatement et ne partirait jamais.
+var _grab_cooldown: float = 0.0
 
 
 func _ready() -> void:
@@ -67,26 +105,17 @@ func current_intent() -> InputIntent:
 func _physics_process(delta: float) -> void:
 	var intent: InputIntent = current_intent()
 
-	# Une seule décision de sprint par tick, prise ici et transmise ensuite. La
-	# caméra, la vitesse et l'endurance doivent s'accorder sur la même réponse :
-	# recalculer la condition à trois endroits les ferait diverger au moment précis
-	# où la jauge se vide.
-	var sprinting: bool = _resolve_sprint(delta, intent)
-
-	# La caméra est mise à jour avant le déplacement : le repère utilisé pour
+	# La caméra est mise à jour avant tout le reste : le repère utilisé pour
 	# « avant » est celui que le joueur voit à cet instant.
 	_camera_rig.apply_look(intent.look, delta)
-	_camera_rig.update_fov(sprinting, delta)
 
-	_update_timers(delta, intent)
-	_apply_gravity(delta)
-	_apply_horizontal_motion(delta, intent, sprinting)
-	_try_jump()
-
-	var was_on_floor: bool = is_on_floor()
-	var vertical_before: float = velocity.y
-	move_and_slide()
-	_detect_ground_transitions(was_on_floor, vertical_before)
+	match _mode:
+		Mode.MANTLING:
+			_process_mantle(delta)
+		Mode.CLIMBING:
+			_process_climb(delta, intent)
+		_:
+			_process_locomotion(delta, intent)
 
 	_orient_visual(delta)
 
@@ -99,6 +128,29 @@ func _physics_process(delta: float) -> void:
 		_input_reader.clear_edges()
 	elif _intent != null:
 		_intent.consume_edges()
+
+
+func _process_locomotion(delta: float, intent: InputIntent) -> void:
+	# Une seule décision de sprint par tick, prise ici et transmise ensuite. La
+	# caméra, la vitesse et l'endurance doivent s'accorder sur la même réponse :
+	# recalculer la condition à trois endroits les ferait diverger au moment précis
+	# où la jauge se vide.
+	var sprinting: bool = _resolve_sprint(delta, intent)
+	_camera_rig.update_fov(sprinting, delta)
+
+	_update_timers(delta, intent)
+	_apply_gravity(delta)
+	_apply_horizontal_motion(delta, intent, sprinting)
+	_try_jump()
+
+	var was_on_floor: bool = is_on_floor()
+	var vertical_before: float = velocity.y
+	move_and_slide()
+	_detect_ground_transitions(was_on_floor, vertical_before)
+
+	# L'accroche est tentée **après** le déplacement : la paroi est sondée depuis
+	# la position réellement atteinte, pas depuis celle du tick précédent.
+	_try_grab(intent)
 
 
 ## Le sprint n'est accordé que s'il est demandé, que le joueur se déplace
@@ -116,6 +168,7 @@ func _resolve_sprint(delta: float, intent: InputIntent) -> bool:
 
 
 func _update_timers(delta: float, intent: InputIntent) -> void:
+	_grab_cooldown = maxf(0.0, _grab_cooldown - delta)
 	if is_on_floor():
 		_coyote_timer = tuning.coyote_time
 	else:
@@ -198,6 +251,280 @@ func _orient_visual(delta: float) -> void:
 	# rotation met le même temps réel à converger.
 	var weight: float = 1.0 - exp(-tuning.visual_turn_speed * delta)
 	_visual_root.rotation.y = lerp_angle(_visual_root.rotation.y, target_yaw, weight)
+
+
+## ---------------------------------------------------------------------------
+## Escalade (§9.2) et mantle (§9.3)
+## ---------------------------------------------------------------------------
+
+## Direction horizontale demandée, exprimée dans le monde (repère caméra).
+func _wish_direction(intent: InputIntent) -> Vector3:
+	var basis_yaw: Basis = _camera_rig.get_yaw_basis()
+	var forward: Vector3 = -basis_yaw.z
+	var right: Vector3 = basis_yaw.x
+	forward.y = 0.0
+	right.y = 0.0
+	var wish: Vector3 = right.normalized() * intent.move.x + forward.normalized() * intent.move.y
+	wish.y = 0.0
+	return wish
+
+
+func _space() -> PhysicsDirectSpaceState3D:
+	var world: World3D = get_world_3d()
+	if world == null:
+		return null
+	return world.direct_space_state
+
+
+## Tente l'accroche. §9.2 ne fixe aucune touche : pousser vers une paroi
+## saisissable suffit, au sol comme en l'air (D-017). Une action dédiée obligerait
+## à l'ajouter partout — clavier, manette, remapping — pour un geste que le joueur
+## fait déjà naturellement.
+func _try_grab(intent: InputIntent) -> void:
+	if _grab_cooldown > 0.0 or _climbing == null or not intent.has_move():
+		return
+	if _stamina != null and not _stamina.can_sustain():
+		return  # épuisé : §9.1 fait lâcher le mur, s'y raccrocher serait absurde
+
+	var wish: Vector3 = _wish_direction(intent)
+	if wish.length_squared() < 0.04:
+		return
+
+	var probe: ClimbingComponent.WallProbe = _climbing.probe_wall(
+		_space(), global_position, wish.normalized(), [get_rid()])
+	if not probe.grabbable:
+		return
+
+	_enter_climb(probe.normal)
+
+
+func _enter_climb(normal: Vector3) -> void:
+	_mode = Mode.CLIMBING
+	_wall_normal = normal
+	velocity = Vector3.ZERO
+	# L'accroche au sol doit être coupée pendant l'escalade : `floor_snap_length`
+	# rabattrait le personnage vers le sol dès qu'il décolle du bas de la paroi,
+	# et la montée s'arrêterait au premier mètre sans qu'aucune erreur ne le dise.
+	floor_snap_length = 0.0
+	grabbed_wall.emit(normal)
+
+
+## Rétablit les réglages de locomotion coupés pendant l'escalade.
+func _restore_ground_settings() -> void:
+	floor_snap_length = tuning.floor_snap_length
+
+
+## Lâche la paroi. Nommer la raison n'est pas cosmétique : `exhausted` et
+## `released` produisent la même chute mais pas le même retour au joueur (§9.1
+## demande une respiration), et un test doit pouvoir les distinguer.
+func _release_wall(reason: StringName) -> void:
+	if _mode != Mode.CLIMBING:
+		return
+	_mode = Mode.LOCOMOTION
+	_wall_normal = Vector3.ZERO
+	_grab_cooldown = 0.25
+	_restore_ground_settings()
+	released_wall.emit(reason)
+
+
+func _process_climb(delta: float, intent: InputIntent) -> void:
+	_camera_rig.update_fov(false, delta)
+	_grab_cooldown = maxf(0.0, _grab_cooldown - delta)
+
+	# §9.1 : à endurance nulle, le personnage lâche la paroi. La condition vit dans
+	# le composant ; ici on ne fait qu'en tirer la conséquence.
+	if _stamina != null and not _stamina.can_sustain():
+		_release_wall(&"exhausted")
+		return
+
+	# §9.2 : « valider contact à chaque mouvement ». Une paroi qui s'interrompt
+	# doit faire lâcher, pas laisser le personnage grimper dans le vide.
+	var into_wall: Vector3 = -_wall_normal
+	into_wall.y = 0.0
+	if into_wall.length_squared() < 0.0001:
+		_release_wall(&"lost_contact")
+		return
+	into_wall = into_wall.normalized()
+
+	var probe: ClimbingComponent.WallProbe = _climbing.probe_wall(
+		_space(), global_position, into_wall, [get_rid()])
+	if not probe.grabbable:
+		# Torse encore en contact mais pieds dans le vide : c'est le haut de la
+		# paroi. On tente le franchissement avant de conclure à une perte de contact.
+		if probe.chest_hit and _try_mantle(into_wall):
+			return
+		_release_wall(&"lost_contact")
+		return
+
+	# Lissage de la normale (§9.2) : framerate-independent, comme le reste.
+	var weight: float = 1.0
+	if _climb_tuning().normal_smoothing > 0.0:
+		weight = 1.0 - exp(-delta / _climb_tuning().normal_smoothing)
+	_wall_normal = _wall_normal.lerp(probe.normal, weight).normalized()
+
+	# Le haut atteint : si un rebord franchissable existe et que le joueur pousse
+	# vers le haut, on franchit (§9.3).
+	if probe.ledge_likely and intent.move.y > 0.1 and _try_mantle(into_wall):
+		return
+
+	if intent.jump_pressed:
+		_climb_jump(into_wall)
+		return
+
+	_apply_climb_motion(delta, intent, probe)
+
+
+func _apply_climb_motion(delta: float, intent: InputIntent,
+		probe: ClimbingComponent.WallProbe) -> void:
+	var tune: ClimbTuning = _climb_tuning()
+	# Repère de la paroi : « haut » reste le haut du monde, « droite » suit le mur.
+	var wall_right: Vector3 = Vector3.UP.cross(_wall_normal).normalized()
+	var vertical: float = intent.move.y * tune.climb_speed_up
+	var lateral: float = intent.move.x * tune.climb_speed_lateral
+
+	# §9.1 : l'escalade coûte 18/s, le latéral 16/s. On facture le mouvement
+	# réellement demandé, dominante d'abord — cumuler les deux ferait payer deux
+	# fois une diagonale.
+	if _stamina != null:
+		var rate: float = 0.0
+		if absf(vertical) > 0.01 or absf(lateral) > 0.01:
+			rate = _stamina.tuning.climb_drain if absf(intent.move.y) >= absf(intent.move.x) \
+				else _stamina.tuning.climb_lateral_drain
+		if rate > 0.0 and not _stamina.try_sustain(rate, delta):
+			_release_wall(&"exhausted")
+			return
+
+	velocity = Vector3.UP * vertical + wall_right * lateral
+
+	# Maintien à la bonne distance de la paroi (§9.2) : sans ce rappel, le
+	# personnage dérive et finit par perdre le contact sur une paroi irrégulière.
+	# Rappel **proportionnel et borné**, jamais une correction divisée par delta :
+	# celle-ci ramènerait l'écart à zéro en une image, ce qui est un snap — et
+	# ferait osciller le personnage contre la paroi, la capsule ne pouvant pas
+	# s'approcher plus près que son rayon.
+	var flat: Vector3 = Vector3(probe.point.x - global_position.x, 0.0,
+		probe.point.z - global_position.z)
+	var error: float = flat.length() - tune.wall_distance_m
+	velocity += -_wall_normal * clampf(error * WALL_HOLD_GAIN, -WALL_HOLD_MAX_SPEED, WALL_HOLD_MAX_SPEED)
+
+	move_and_slide()
+
+
+## Saut d'escalade (§9.2 : 0,75–1,0 m ; §9.1 : 20 d'endurance).
+func _climb_jump(into_wall: Vector3) -> void:
+	var tune: ClimbTuning = _climb_tuning()
+	if _stamina != null and not _stamina.try_spend(_stamina.tuning.climb_jump_cost):
+		return
+	_release_wall(&"released")
+	# v = sqrt(2gh) : la hauteur demandée par §9.2 détermine la vitesse, pas
+	# l'inverse. Coder la vitesse en dur rendrait la hauteur dépendante de la
+	# gravité et donc fausse au premier réglage.
+	velocity = Vector3.UP * sqrt(2.0 * tuning.gravity * tune.climb_jump_height)
+	velocity += -into_wall * 1.5
+
+
+## Tente le franchissement. Retourne `true` si le mantle démarre.
+func _try_mantle(into_wall: Vector3) -> bool:
+	if _ledge == null or _alignment == null or _collision == null:
+		return false
+	var result: LedgeDetectorComponent.LedgeResult = _ledge.find_ledge(
+		_space(), global_position, into_wall, _collision.shape,
+		_collision.position.y, tuning.max_floor_angle_deg, [get_rid()])
+	if not result.valid:
+		mantle_refused.emit(result.refusal)
+		return false
+
+	# Trajet en deux temps : monter au-dessus du rebord, puis avancer (§9.3,
+	# « mantle bas/haut »). La droite du pied au dessus traverserait le rebord
+	# lui-même, et le contrôle de capsule l'annulerait à mi-chemin — défaut
+	# constaté, le franchissement nominal échouait sans qu'aucune géométrie ne soit
+	# en cause. Le point haut dépasse la cible de `LEDGE_RISE_CLEARANCE` pour que
+	# les pieds soient déjà au-dessus de la surface quand ils passent au-dessus.
+	var tune: ClimbTuning = _climb_tuning()
+	var apex: Vector3 = Vector3(global_position.x,
+		result.target_feet.y + LEDGE_RISE_CLEARANCE, global_position.z)
+	var path: PackedVector3Array = PackedVector3Array([global_position, apex, result.target_feet])
+	if not _alignment.begin_path(path, tune.mantle_duration, tune.mantle_max_correction_m):
+		mantle_refused.emit(&"correction_capped")
+		return false
+
+	_mode = Mode.MANTLING
+	_wall_normal = Vector3.ZERO
+	velocity = Vector3.ZERO
+	floor_snap_length = 0.0
+	mantle_started.emit(result.target_feet)
+	return true
+
+
+func _process_mantle(delta: float) -> void:
+	_camera_rig.update_fov(false, delta)
+	if not _alignment.is_active():
+		_finish_mantle()
+		return
+
+	var next: Vector3 = _alignment.advance(delta)
+	# §7.12 : annuler si la capsule se retrouve bloquée. Le décor peut bouger
+	# pendant les 0,45 s du franchissement ; le valider une seule fois au départ ne
+	# suffirait pas.
+	if _capsule_blocked_at(next):
+		_alignment.cancel(&"blocked")
+		_mode = Mode.LOCOMOTION
+		_grab_cooldown = 0.25
+		_restore_ground_settings()
+		mantle_refused.emit(&"blocked_midway")
+		return
+
+	global_position = next
+	velocity = Vector3.ZERO
+	if not _alignment.is_active():
+		_finish_mantle()
+
+
+func _finish_mantle() -> void:
+	_mode = Mode.LOCOMOTION
+	_grab_cooldown = 0.25
+	velocity = Vector3.ZERO
+	_restore_ground_settings()
+	mantle_finished.emit()
+
+
+func _capsule_blocked_at(feet: Vector3) -> bool:
+	var space: PhysicsDirectSpaceState3D = _space()
+	if space == null or _collision == null or _collision.shape == null:
+		return false
+	var query: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
+	query.shape = _collision.shape
+	query.transform = Transform3D(Basis.IDENTITY, feet + Vector3.UP * _collision.position.y)
+	query.collision_mask = collision_mask
+	query.exclude = [get_rid()]
+	# Marge négative : frôler une surface pendant un franchissement est normal,
+	# seule une pénétration franche doit annuler.
+	query.margin = -0.05
+	return not space.intersect_shape(query, 1).is_empty()
+
+
+func _climb_tuning() -> ClimbTuning:
+	if _climbing != null and _climbing.tuning != null:
+		return _climbing.tuning
+	return ClimbTuning.new()
+
+
+## Mode courant, exposé pour les tests et le debug.
+func mode() -> Mode:
+	return _mode
+
+
+func is_climbing() -> bool:
+	return _mode == Mode.CLIMBING
+
+
+func is_mantling() -> bool:
+	return _mode == Mode.MANTLING
+
+
+## Normale de paroi lissée, nulle hors escalade.
+func wall_normal() -> Vector3:
+	return _wall_normal
 
 
 ## Vitesse horizontale, exposée pour les tests et l'UI de debug.

@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=11 format=3]
 
 ; Bac à sable de traversal (Phase B). Géométrie de test uniquement.
 ;
@@ -36,6 +36,21 @@ points = PackedVector3Array(-3, -0.1, 3, 3, -0.1, 3, -3, -0.1, -10, 3, -0.1, -10
 [sub_resource type="BoxShape3D" id="WallShape"]
 size = Vector3(0.5, 6, 20)
 
+; Parois d'escalade (§9.2, §9.3), alignées en z = -30, écartées les unes des
+; autres pour qu'aucun test n'en percute deux.
+[sub_resource type="BoxShape3D" id="ClimbWallShape"]
+size = Vector3(8, 4, 1)
+
+[sub_resource type="BoxShape3D" id="LowLedgeShape"]
+size = Vector3(8, 1.2, 1)
+
+[sub_resource type="BoxShape3D" id="CapShape"]
+size = Vector3(8, 0.4, 3)
+
+; Surplomb : paroi flottante dont le bas est hors de portée de la sonde des pieds.
+[sub_resource type="BoxShape3D" id="OverhangShape"]
+size = Vector3(8, 2.2, 1)
+
 [node name="TraversalSandbox" type="Node3D"]
 
 [node name="Floor" type="StaticBody3D" parent="."]
@@ -72,3 +87,61 @@ collision_layer = 1
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Wall"]
 shape = SubResource("WallShape")
+
+; --- Escalade (§9.2) et mantle (§9.3) -------------------------------------
+; Chaque paroi isole UN cas. Une seule paroi « générique » ne pourrait pas
+; distinguer un refus de surface d'un refus de dégagement, et un test qui échoue
+; ne dirait pas pourquoi.
+
+; Paroi de 4 m, dessus dégagé : escalade complète puis franchissement.
+[node name="ClimbWall" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 2, -30)
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ClimbWall"]
+shape = SubResource("ClimbWallShape")
+
+; Même géométrie, groupe `unclimbable` : §9.2 exige qu'elle soit refusée.
+; Sans ce jumeau, un test d'accroche ne distinguerait pas « la surface est
+; interdite » de « la sonde n'a rien touché ».
+[node name="UnclimbableWall" type="StaticBody3D" parent="." groups=["unclimbable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25, 2, -30)
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="UnclimbableWall"]
+shape = SubResource("ClimbWallShape")
+
+; Rebord bas : franchissement atteint en quelques dixièmes de seconde.
+[node name="LowLedge" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0.6, -30)
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LowLedge"]
+shape = SubResource("LowLedgeShape")
+
+; Rebord bas surmonté d'un plafond : le cas manuel de §21.4 « tenter mantle sous
+; plafond ». Le dessus est marchable, mais la capsule n'y tient pas.
+[node name="CappedLedge" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28, 0.6, -30)
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CappedLedge"]
+shape = SubResource("LowLedgeShape")
+
+[node name="Ceiling" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28, 2.6, -30.7)
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ceiling"]
+shape = SubResource("CapShape")
+
+; Paroi flottant de y = 0,8 à y = 3,0 : le torse la touche, les pieds sont dans le
+; vide. §9.2 refuse « vides/concavités » — s'y accrocher laisserait le personnage
+; pendre sans appui. Sans cette géométrie, la branche `overhang` n'était couverte
+; par aucun test : le contrôle négatif P2 l'a démontré en ne cassant rien.
+[node name="OverhangWall" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15, 1.9, -30)
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="OverhangWall"]
+shape = SubResource("OverhangShape")

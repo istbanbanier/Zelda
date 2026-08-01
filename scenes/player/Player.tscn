@@ -1,9 +1,13 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=12 format=3]
 
-; Joueur — hiérarchie de MASTER_SPEC §6.2, réduite au périmètre de B.1.
-; Absents et assumés : StateMachine (§8.1), Probes (§9.2), Hurtbox et AimOrigin
-; (Phase C), HeroModel réel (Phase H). Le corps ne tourne jamais : seul
-; VisualRoot s'oriente, sinon CameraRig hériterait de sa rotation.
+; Joueur — hiérarchie de MASTER_SPEC §6.2, réduite au périmètre de B.3.
+; Absents et assumés : StateMachine (§8.1) — le contrôleur porte un Mode couvrant
+; exactement les états implémentés, voir D-018 ; Hurtbox et AimOrigin (Phase C) ;
+; HeroModel réel (Phase H). Les sondes de §9.2 ne sont pas des nœuds : elles sont
+; lancées à la demande par ClimbingComponent, ce qui évite six RayCast3D mis à
+; jour à chaque image alors qu'ils ne servent qu'au contact d'une paroi.
+; Le corps ne tourne jamais : seul VisualRoot s'oriente, sinon CameraRig
+; hériterait de sa rotation.
 
 [ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/player/camera_rig.gd" id="2_rig"]
@@ -11,6 +15,10 @@
 [ext_resource type="Resource" path="res://resources/tuning/locomotion_default.tres" id="4_tuning"]
 [ext_resource type="Script" path="res://scripts/components/stamina_component.gd" id="5_stamina"]
 [ext_resource type="Resource" path="res://resources/tuning/stamina_default.tres" id="6_stamina_tuning"]
+[ext_resource type="Script" path="res://scripts/components/climbing_component.gd" id="7_climb"]
+[ext_resource type="Script" path="res://scripts/components/ledge_detector_component.gd" id="8_ledge"]
+[ext_resource type="Script" path="res://scripts/components/action_alignment_component.gd" id="9_align"]
+[ext_resource type="Resource" path="res://resources/tuning/climb_default.tres" id="10_climb_tuning"]
 
 [sub_resource type="CapsuleShape3D" id="Capsule"]
 radius = 0.35
@@ -36,6 +44,17 @@ script = ExtResource("3_input")
 [node name="StaminaComponent" type="Node" parent="Components"]
 script = ExtResource("5_stamina")
 tuning = ExtResource("6_stamina_tuning")
+
+[node name="ClimbingComponent" type="Node" parent="Components"]
+script = ExtResource("7_climb")
+tuning = ExtResource("10_climb_tuning")
+
+[node name="LedgeDetectorComponent" type="Node" parent="Components"]
+script = ExtResource("8_ledge")
+tuning = ExtResource("10_climb_tuning")
+
+[node name="ActionAlignmentComponent" type="Node" parent="Components"]
+script = ExtResource("9_align")
 
 [node name="CameraRig" type="Node3D" parent="."]
 script = ExtResource("2_rig")

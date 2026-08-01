@@ -1,0 +1,9 @@
+# Contrôle négatif — P6_seuil_de_paroi_au_dessus_du_sol
+# min_wall_angle_deg reporte a 50 dans le .tres : reouverture de la bande d angles ni marchables ni escaladables.
+# Test visé : test_no_angle_is_both_unwalkable_and_unclimbable
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_climbing.gd::test_no_angle_is_both_unwalkable_and_unclimbable — seuil de paroi (50.0°) au-dessus de l'angle de sol praticable (46.0°) : une bande d'angles deviendrait infranchissable
+=== RÉSULTAT: 123 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_climbing.gd::test_no_angle_is_both_unwalkable_and_unclimbable — seuil de paroi (50.0°) au-dessus de l'angle de sol praticable (46.0°) : une bande d'angles deviendrait infranchissable

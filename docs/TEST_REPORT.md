@@ -521,3 +521,79 @@ règle tirée de B.1 (R-006bis) — muter le script n'aurait rien cassé.
 - **Le seuil de récupération n'est pas validé par un joueur.** 20 est un point de
   départ raisonné, pas une mesure de ressenti (§21.9).
 - **CONTROLLER-001 reste ouverte.**
+
+---
+
+# Jalon B.3 — Escalade et mantle (2026-08-01)
+
+## Commande et résultat
+
+```bash
+tools/validate_fast.sh; echo $?
+```
+
+**Code retour** : `0` — VERT.
+
+| Niveau | Résultat |
+|---|---|
+| 0. Version | `4.7.1.stable.custom_build.a13da4feb` ✅ |
+| 1 / 1b. Import et parse de **tous** les `.gd` | 0 erreur ✅ |
+| 2. Tests unitaires et d'intégration | **124 réussis, 0 échoué** ✅ |
+| 2b. Erreurs signalées dans le journal | aucune ✅ |
+| 3. Scène principale (Boot → MainMenu, lancement réel) | ✅ |
+| 4. Plancher de couverture | 124 tests pour un plancher de 124 ✅ |
+
+> **Nombre de tests de référence : 124.** C'est ici, et nulle part ailleurs, qu'il
+> doit être lu.
+
+Nouveaux fichiers : `tests/integration/test_climbing.gd` (14 cas) et
+`tests/unit/test_action_alignment.gd` (9 cas).
+
+## Quatre défauts réels trouvés pendant B.3
+
+| # | Défaut | Comment il a été trouvé | Correctif |
+|---|---|---|---|
+| B3-1 | **Le contrôle de dégagement de capsule refusait tout rebord dégagé.** Posée exactement sur la surface d'arrivée, la capsule la **touche** ; avec une marge de requête de 2 cm, tout franchissement se déclarait `blocked`. Doublement trompeur : le cas nominal échouait, et le test du plafond passait en accusant le rebord au lieu du plafond. | le cas nominal échouait, le cas « refusé » réussissait — la combinaison a mis sur la piste | capsule décollée de 5 cm, marge de requête nulle |
+| B3-2 | **Le trajet de franchissement traversait le rebord.** Une interpolation directe du pied au dessus coupe le coin ; le contrôle de capsule annulait à mi-parcours, comme il doit. Le mantle ne s'achevait jamais. | après B3-1, le franchissement démarrait puis s'annulait | trajet en deux temps (monter, puis avancer) via `begin_path()` — c'est la réponse à **R-009** |
+| B3-3 | **Bande d'angles infranchissable.** Seuil de paroi à 50°, sol praticable à 46° : entre les deux, le joueur glisse sans pouvoir s'accrocher. Aucune erreur, aucun test rouge — un piège silencieux. | en écrivant le test du filtre d'angle, en cherchant quelle surface l'exercerait | seuils alignés à 46° et invariant verrouillé par un test (D-019) |
+| B3-4 | **La branche « surplomb » n'était couverte par aucun test.** | le contrôle négatif P2 a retiré l'exigence de contact aux pieds **sans rien casser** | paroi flottante ajoutée au bac à sable, test dédié |
+
+B3-4 mérite d'être souligné : c'est le contrôle négatif qui a révélé le trou, pas
+une relecture. Un test qui reste vert alors qu'on casse le code qu'il prétend
+couvrir en dit plus long qu'un test qui rougit.
+
+## Contrôles négatifs rejoués
+
+| # | Mutation appliquée | Test visé | Obtenu |
+|---|---|---|---|
+| P1 | `is_surface_climbable()` accepte tout | `test_an_unclimbable_surface_is_refused` | ÉCHEC ✅ |
+| P2 | contact aux pieds non exigé | `test_an_overhang_is_refused` | ÉCHEC ✅ *(vert avant l'ajout du test — voir B3-4)* |
+| P3 | contrôle de dégagement de capsule retiré | `test_a_ledge_under_a_ceiling_refuses_the_mantle` | ÉCHEC — bascule en `blocked_midway` ✅ |
+| P4 | trajet de mantle en ligne droite | `test_reaching_a_ledge_mantles_onto_it` | ÉCHEC — « le franchissement doit s'achever » ✅ |
+| P5 | l'escalade ne consomme plus d'endurance | `test_climbing_drains_stamina` | ÉCHEC — « obtenu 0.0000 » ✅ |
+| P6 | seuil de paroi reporté à 50° **dans le `.tres`** | `test_no_angle_is_both_unwalkable_and_unclimbable` | ÉCHEC ✅ |
+| P7 | `floor_snap_length` non rétabli au lâcher | `test_releasing_the_wall_restores_ground_settings` | ÉCHEC ✅ |
+| P8 | saut d'escalade gratuit | `test_climb_jump_costs_stamina_and_pushes_off` | ÉCHEC — « obtenu 0.0000 » ✅ |
+
+Logs archivés : `evidence/gateB/negative_controls/P1…P8*.log`. Fichiers restaurés
+et comparés à l'octet près entre chaque contrôle.
+
+**P3 est instructif** : la mutation ne rend pas le franchissement possible, elle
+déplace seulement le refus du détecteur de rebord vers le contrôle de mi-parcours
+(`blocked_midway`). Il existe donc deux lignes de défense, et le test les
+distingue par la raison rapportée.
+
+## Limites de B.3 — à ne pas confondre avec des oublis
+
+- **Le lissage de la normale n'est pas testé.** Le code existe et est
+  framerate-independent, mais le bac à sable n'a que des parois planes : rien à
+  lisser. Un test exigerait une paroi irrégulière.
+- **Le déplacement latéral n'est pas mesuré.** Il facture bien 16/s, mais aucun
+  test ne vérifie les 1,65 m/s de §9.2.
+- **L'annulation en cours de franchissement n'a pas de test dédié.** Elle est
+  exercée indirectement par P3.
+- **`ClimbRest` et les corniches de repos** (§8.1, §9.3) relèvent du level design.
+- **Aucune IK de main, aucune animation** (§9.2) : il n'y a ni squelette ni modèle.
+- **« Aucun snap visible » est mesuré, pas vu.** Le plus grand pas est borné et la
+  trajectoire continue ; aucun œil humain n'a regardé un franchissement.
+- **CONTROLLER-001 reste ouverte.**

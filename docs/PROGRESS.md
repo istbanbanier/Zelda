@@ -267,53 +267,119 @@ de récupération n'a été validé par aucun joueur. `CONTROLLER-001` reste ouv
 
 ---
 
+## 2026-08-01 — Jalon B.3 : escalade et mantle
+
+**Gate visé** : B (traversal). **État à l'ouverture** : B.2 livré, aucune escalade.
+
+### Changement réel
+
+Trois composants, aucun n'appartenant au contrôleur : `ClimbingComponent` (les
+trois sondes de §9.2, qui **répondent** au lieu de décider), `LedgeDetectorComponent`
+(§9.3, refus nommés) et `ActionAlignmentComponent` (§7.12, celui qui servira aussi
+aux coffres, à la cuisine et au pylône). Le contrôleur gagne un `Mode` à trois
+valeurs plutôt que la `StateMachine` de §8.1, qui attendra d'avoir des états de
+combat à porter (D-018).
+
+L'endurance n'a pas eu à changer : les coûts d'escalade déclarés en B.2 n'avaient
+qu'à être appelés, et `can_sustain()` produisait déjà le « lâcher du mur » de §9.1.
+
+23 nouveaux cas de test. Plancher relevé à 124.
+
+### Quatre défauts, dont deux se masquaient mutuellement
+
+- **Le contrôle de dégagement refusait tout rebord dégagé.** Posée pile sur la
+  surface d'arrivée, la capsule la touche ; avec 2 cm de marge, tout franchissement
+  se déclarait `blocked`. Le piège : le test du plafond **passait** — en accusant le
+  rebord au lieu du plafond. Un test vert pour la mauvaise raison est pire qu'un
+  test rouge.
+- **Le trajet traversait le rebord.** La droite qui relie le pied d'un rebord à son
+  dessus coupe le coin ; le contrôle de capsule annulait à mi-parcours, comme il
+  doit. Le composant faisait son travail, c'est la forme du trajet qui était fausse.
+  D'où `begin_path()` — monter, puis avancer. C'est la réponse à **R-009**, restée
+  ouverte depuis le Gate 0.
+- **Une bande d'angles ni marchable ni escaladable.** Seuil de paroi à 50°, sol à
+  46° : quatre degrés où l'on glisse sans pouvoir s'accrocher. Aucune erreur, aucun
+  test rouge. Trouvé en cherchant quelle surface exercerait le filtre d'angle
+  (D-019).
+- **La branche « surplomb » n'était couverte par aucun test** — révélé par le
+  contrôle négatif P2, qui a retiré l'exigence de contact aux pieds **sans rien
+  casser**. Un contrôle négatif qui ne casse rien désigne un trou de couverture,
+  pas un test robuste.
+
+### Un constat de géométrie qui a corrigé un test, pas le code
+
+Un test devait vérifier qu'une pente à 40° est refusée pour `too_shallow`. Elle est
+refusée, mais pour `no_wall` : un rayon horizontal parti de la hauteur du torse ne
+rencontre une pente d'angle θ qu'à la distance `1,10 / tan θ`, laquelle dépasse la
+portée d'accroche sous environ 57°. Le filtre d'angle ne peut donc rien départager
+à l'approche depuis le sol — il agit sur les parois irrégulières rencontrées **en
+cours d'escalade**. Le test affirmait une raison qu'il ne pouvait pas obtenir ;
+c'est lui qui a été corrigé, et le constat consigné (R-011).
+
+### Vérification
+
+`tools/validate_fast.sh` → `RC=0`, VERT, 124 tests. Huit contrôles négatifs rejoués
+et archivés.
+
+### Ce que B.3 ne prouve pas
+
+Le lissage de la normale et la vitesse latérale ne sont **pas testés** — le bac à
+sable n'a que des parois planes. « Aucun snap visible » est mesuré, pas vu : aucun
+œil humain n'a regardé un franchissement, et il n'y a ni squelette ni animation.
+`ClimbRest` et les corniches de repos relèvent du level design. `CONTROLLER-001`
+reste ouverte.
+
+---
+
 ## HANDOFF — prochaine action exacte
 
 > **Gate A : `ACCEPTÉ AVEC RÉSERVE / BLOQUÉ SUR LA VALIDATION MANETTE`** (D-012).
-> Ce n'est pas un `PASS`. La dette `CONTROLLER-001` court.
-> **Phase B en cours** : B.0, B.1 et B.2 livrés.
+> **Phase B : B.0 à B.3 livrés.** Tout le périmètre de traversal est implémenté.
+> **Gate B n'est PAS acquis** : §22 exige « parcours test complet sans blocage ni
+> caméra cassée », c'est-à-dire un parcours **rejoué**, pas seulement compilé.
 
-### Action suivante : jalon B.3 — escalade et mantle
+### Action suivante : B.4 — clore la Phase B
 
-§9.2 et §9.3, dans cet ordre : la paroi d'abord, le franchissement ensuite.
-
-**Escalade (§9.2)** — valeurs déjà fixées, rien à inventer :
-- sondes tête / torse / pieds, côtés, dessus, plus dégagement de capsule ;
-- accroche 0,55–0,80 m ; distance au mur 0,38–0,48 m ;
-- vitesse verticale 1,9–2,2 m/s ; latérale 1,5–1,8 m/s ;
-- lissage de normale 0,08–0,16 s ; saut d'escalade 0,75–1,0 m ;
-- surfaces refusées : `unclimbable`, `electrified`, `burning`, `spiked`,
-  `fragile_unsupported`, eau, plateformes trop rapides.
-
-**Mantle (§9.3)** : détection du haut → surface marchable → dégagement de capsule →
-mantle bas/haut → transform cible → alignement animation/capsule → réactivation.
-Annulation propre si invalide, **aucun snap visible**. C'est ici que
-`ActionAlignmentComponent` (§7.12) devient nécessaire, et que la question ouverte
-**R-009** doit être tranchée.
+1. **Shape cast de marche** (§8.2 : step 0,30–0,38 m). C'est le dernier élément de
+   §8.2 non implémenté : aujourd'hui les petites marches reposent sur le
+   comportement par défaut de `move_and_slide()`, non mesuré. Le bac à sable a déjà
+   une marche de 0,32 m en `(0, 0,16, 20)`.
+2. **Parcours de traversal enchaîné**, joué d'un bout à l'autre dans une seule
+   exécution : sol → marche → pente → mur → escalade → franchissement → chute.
+   Aujourd'hui chaque capacité est testée isolément ; rien ne prouve qu'elles
+   s'enchaînent sans blocage — sauf `test_climbing_a_tall_wall_ends_in_a_mantle`,
+   qui n'en couvre que deux.
+3. **Les essais manuels de §21.4 touchant le traversal**, à ajouter au protocole
+   de `docs/MANUAL_VALIDATION.md` : tourner la caméra contre tous types de murs,
+   gravir une falaise irrégulière et ses coins, tenter un mantle sous plafond
+   (automatisé, mais l'œil doit confirmer l'absence d'à-coup), sprinter à endurance
+   nulle.
 
 Points d'accroche déjà en place, à ne pas reconstruire :
 
-- `StaminaComponent.try_sustain()` pour l'escalade continue (18/s) et le latéral
-  (16/s) ; `try_spend()` pour le saut d'escalade (20). Les trois valeurs sont déjà
-  dans `stamina_default.tres`, déclarées et non consommées — il ne reste qu'à les
-  appeler.
-- À endurance nulle, §9.1 impose de **lâcher le mur** : `can_sustain()` renvoie
-  déjà faux, le composant n'a pas à changer.
-- Le bac à sable a un mur vertical en `x = 30` (`z` de -10 à 10, haut de 6 m) et
-  deux pentes encadrant le seuil de 46°.
+- Le bac à sable contient désormais huit obstacles distincts, chacun isolant **un**
+  cas : marche 0,32 m, pentes 40° et 60°, mur vertical, paroi de 4 m, paroi
+  `unclimbable`, surplomb flottant, rebord bas, rebord sous plafond.
+- `ActionAlignmentComponent.begin_path()` est générique : les coffres, la cuisine
+  et le pylône (§7.12) l'utiliseront sans le modifier.
+- Les signaux `grabbed_wall`, `released_wall(reason)`, `mantle_started`,
+  `mantle_finished`, `mantle_refused(reason)` sont émis et attendent l'UI, l'audio
+  et les animations.
 
-### Pièges connus, vérifiés en B.1 et B.2
+### Pièges connus, vérifiés en B.1, B.2 et B.3
 
-- **Un contrôle négatif sur un réglage doit muter le `.tres`**, pas la valeur par
-  défaut du `@export` : sinon il ne casse rien et le test paraît faussement inutile
-  (R-006bis).
-- **Un effort maintenu ne reste pas épuisé** : mesurer « après N secondes » attrape
-  un cycle plus tard. S'arrêter à la transition (`_drain_until_exhausted`).
-- **Une mesure d'intégration ne doit pas dépendre de la taille du décor** : le sol
-  du bac à sable fait 80 m, un sprint de 8 s en sort.
+- **Un contrôle négatif qui ne casse rien désigne un trou de couverture**, pas un
+  test robuste. C'est ainsi que la branche « surplomb » a été trouvée (B3-4).
+- **Un contrôle négatif sur un réglage doit muter le `.tres`**, jamais la valeur par
+  défaut du `@export` (R-006bis).
+- **Un test vert peut l'être pour la mauvaise raison.** Le test du mantle sous
+  plafond passait en accusant le rebord au lieu du plafond (B3-1).
+- **Une mesure d'intégration ne doit pas dépendre de la taille du décor** : trois
+  secondes de poussée après un franchissement font sortir du bac à sable.
+- **Un composant `Node` créé dans un test doit être libéré** : sinon « resources
+  still in use at exit », que `validate_fast.sh` traite en rouge.
 - **Une rampe de test ne doit pas être une boîte tournée** : son dessous forme un
-  surplomb sous lequel la capsule se faufile, sans aucun drapeau de collision pour
-  le signaler.
+  surplomb sous lequel la capsule se faufile, sans drapeau de collision.
 - **`SpringArm3D` réécrit la position de ses enfants directs** (D-014) ; son
   `margin` est sans effet, c'est `shape` qui donne un dégagement (D-015).
 - Un `MainLoop` lancé par `--script` n'a ni autoloads ni tree prêt pendant

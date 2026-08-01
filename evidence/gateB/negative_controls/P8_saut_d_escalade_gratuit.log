@@ -1,0 +1,9 @@
+# Contrôle négatif — P8_saut_d_escalade_gratuit
+# Le saut d escalade ne coute plus les 20 d endurance de §9.1.
+# Test visé : test_climb_jump_costs_stamina_and_pushes_off
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_climbing.gd::test_climb_jump_costs_stamina_and_pushes_off — endurance consommée par le saut d'escalade : attendu 20.0000 ± 0.5000, obtenu 0.0000
+=== RÉSULTAT: 123 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_climbing.gd::test_climb_jump_costs_stamina_and_pushes_off — endurance consommée par le saut d'escalade : attendu 20.0000 ± 0.5000, obtenu 0.0000

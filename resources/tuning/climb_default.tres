@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ClimbTuning" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/tuning/climb_tuning.gd" id="1_climb"]
+
+[resource]
+script = ExtResource("1_climb")
+grab_reach_m = 0.7
+wall_distance_m = 0.42
+min_wall_angle_deg = 46.0
+probe_foot_height = 0.35
+probe_chest_height = 1.1
+probe_head_height = 1.7
+climb_speed_up = 2.0
+climb_speed_lateral = 1.65
+normal_smoothing = 0.12
+climb_jump_height = 0.9
+ledge_search_height = 2.3
+ledge_depth_m = 0.55
+mantle_duration = 0.45
+mantle_max_correction_m = 2.6

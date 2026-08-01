@@ -4,7 +4,7 @@ Vocabulaire imposé (§0.2) : `Non commencé` · `Implémenté` (raccordé) ·
 `Fonctionnel` (testé en scène exécutable) · `Validé` (conforme, sans régression) ·
 `Bloqué`. Tout critère non testé est `NON VÉRIFIÉ`, jamais implicitement réussi.
 
-**Dernière mise à jour** : 2026-08-01 · **Phase** : B (jalons B.0 à B.2 livrés) · **Gate A gelé** : `9414fd0` · **Commit courant** : voir `git log`
+**Dernière mise à jour** : 2026-08-01 · **Phase** : B (jalons B.0 à B.3 livrés) · **Gate A gelé** : `9414fd0` · **Commit courant** : voir `git log`
 
 ## Verdict Gate A : **ACCEPTÉ AVEC RÉSERVE / BLOQUÉ SUR LA VALIDATION MANETTE**
 
@@ -50,8 +50,8 @@ exécution réelle** — Blender → glTF → import Godot → renderer → PNG.
 tourne, `validate_fast.sh` est vert (nombre de tests : voir `docs/TEST_REPORT.md`,
 seule source à jour). Le premier gameplay existe : **un joueur se déplace, saute,
 sprinte et grimpe une pente, caméra à l'épaule qui ne traverse pas les murs**
-(B.1), et son sprint est limité par l'endurance de §9.1 (B.2). Il n'a ni
-escalade, ni animation, ni modèle. La notation
+(B.1), son sprint est limité par l'endurance de §9.1 (B.2), et il grimpe les
+parois puis franchit les rebords (B.3). Il n'a ni animation, ni modèle. La notation
 visuelle et les mesures de performance restent impossibles ici : rendu logiciel
 llvmpipe uniquement, aucun GPU.
 
@@ -101,7 +101,7 @@ llvmpipe uniquement, aucun GPU.
 | Phase | Système | État |
 |---|---|---|
 | A | Boot, autoloads, InputMap AZERTY, couches de collision | **A.1 et A.2 livrés et gelés (`9414fd0`)** ; Gate A **EN ATTENTE** de validation humaine |
-| B | Player, caméra, locomotion, endurance, escalade, mantle | **B.0 à B.2 livrés** — entrée, player, caméra, locomotion, endurance ; escalade et mantle à venir |
+| B | Player, caméra, locomotion, endurance, escalade, mantle | **B.0 à B.3 livrés** — tout le périmètre de traversal est implémenté ; Gate B exige encore un parcours rejoué et les essais manuels de §21.4 |
 | C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | Non commencé |
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
 | D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | Non commencé |
@@ -179,7 +179,7 @@ CONTROLLER-001.
 | FOV sprint sans snap, interpolation framerate-independent (§8.3) | **Fonctionnel** | 2 cas, dont une comparaison 60 Hz / 120 Hz |
 | Réglages dans une `Resource` de `resources/tuning/` (§5.4) | **Fonctionnel** | `locomotion_default.tres`, enveloppes §8.3 vérifiées par test |
 | **Endurance (§9.1)** | **Fonctionnel** — voir jalon B.2 | `test_stamina.gd` (15 cas) et `test_locomotion.gd` (5 cas) |
-| Escalade et mantle (§9.2, §9.3) | **Non commencé** | jalon B.3 |
+| Escalade et mantle (§9.2, §9.3) | **Fonctionnel** — voir jalon B.3 | `test_climbing.gd` (14 cas), `test_action_alignment.gd` (9 cas) |
 | Dégâts de chute (§8.2) | **Non commencé** | le signal `landed(impact_speed)` existe et porte déjà la vitesse d'impact |
 | Ressenti, latence en ticks (§10.6) | **NON VÉRIFIÉ** | exige un essai humain à framerate réel ; aucun équivalent automatique |
 | Absence de jitter caméra (§8.3) | **NON VÉRIFIÉ** | la traversée est testable ici, le jitter demande une observation en mouvement |
@@ -204,9 +204,43 @@ sprint le consomme dès maintenant, l'escalade (§9.2), l'esquive et l'attaque l
 | Verrou d'épuisement de 0,45 s | **Fonctionnel** | 2 cas, dont celui qui documente qu'il est masqué par le délai de régénération |
 | Seuil de récupération (hors §9.1) | **Fonctionnel** | `test_a_held_sprint_produces_usable_bursts_not_a_stutter` — défaut réel corrigé, D-016 |
 | Coût d'esquive et d'attaque lourde | **Implémenté**, non consommé | déclarés dans le `.tres` ; la Phase C les câblera. Un coût déclaré n'est pas une fonctionnalité |
-| Coûts d'escalade (18/s, 16/s, 20) | **Implémenté**, non consommé | idem, jalon B.3 |
+| Coûts d'escalade (18/s, 16/s, 20) | **Fonctionnel** depuis B.3 | `test_climbing.gd` : escalade et saut d'escalade mesurés |
 | Jauge contextuelle près du héros (§17.2) | **Non commencé** | les signaux `changed` / `exhausted` / `recovered` sont émis et attendent l'UI |
 | Souffle et animation d'épuisement (§9.1, §18.2) | **Non commencé** | aucun périphérique audio ici (ISS-004) ; aucune animation avant la Phase H |
+
+---
+
+## Phase B — jalon B.3 : escalade et mantle
+
+Trois composants (§5.8), aucun n'appartenant au contrôleur : les sondes répondent,
+le contrôleur décide. `ActionAlignmentComponent` est celui de §7.12 — il servira
+aussi aux coffres, à la cuisine et au pylône.
+
+| Élément | État | Preuve |
+|---|---|---|
+| Trois sondes tête / torse / pieds (§9.2) | **Fonctionnel** | `test_climbing.gd`, refus nommés |
+| Accroche en poussant vers la paroi (D-017) | **Fonctionnel** | `test_pushing_into_a_wall_grabs_it` |
+| Refus des groupes interdits (§9.2) | **Fonctionnel** | `test_an_unclimbable_surface_is_refused` — géométrie identique, seul le groupe change |
+| Refus des surplombs (§9.2 : « vides/concavités ») | **Fonctionnel** | `test_an_overhang_is_refused` |
+| Filtre d'angle de paroi | **Fonctionnel** | `test_the_angle_filter_rejects_a_surface_below_the_threshold` |
+| Aucune bande d'angles ni marchable ni escaladable (D-019) | **Fonctionnel** | `test_no_angle_is_both_unwalkable_and_unclimbable` |
+| Montée à 2,0 m/s (§9.2) | **Fonctionnel** | `test_climbing_rises_at_the_declared_speed` |
+| Coût d'escalade 18/s (§9.1) | **Fonctionnel** | `test_climbing_drains_stamina` |
+| À zéro : lâcher du mur (§9.1) | **Fonctionnel** | `test_exhaustion_releases_the_wall`, raison `exhausted` |
+| Saut d'escalade : 0,9 m, 20 d'endurance (§9.2, §9.1) | **Fonctionnel** | `test_climb_jump_costs_stamina_and_pushes_off` |
+| Lissage de la normale (§9.2) | **Implémenté** | code présent et framerate-independent ; **aucun test** — il faudrait une paroi irrégulière que le bac à sable n'a pas |
+| Franchissement d'un rebord (§9.3) | **Fonctionnel** | `test_reaching_a_ledge_mantles_onto_it` |
+| Ascension de 4 m conclue par un franchissement | **Fonctionnel** | `test_climbing_a_tall_wall_ends_in_a_mantle` — l'enchaînement complet |
+| Refus sous plafond (§9.3, §21.4) | **Fonctionnel** | `test_a_ledge_under_a_ceiling_refuses_the_mantle`, raison `blocked` |
+| Correction plafonnée, aucun snap (§7.12, §9.3) | **Fonctionnel** | `test_action_alignment.gd` : plus grand pas mesuré |
+| Annulation en cours de franchissement (§7.12) | **Implémenté** | seconde ligne de défense, révélée par le contrôle négatif P3 ; aucun test ne la déclenche seule |
+| Déplacement latéral sur paroi 1,65 m/s (§9.2) | **Implémenté**, non mesuré | le code existe et facture 16/s ; aucun test ne vérifie la vitesse |
+| `ClimbRest` / corniches de repos (§8.1, §9.3) | **Non commencé** | relève du level design, pas du contrôleur |
+| IK visuelle des mains (§9.2) | **Non commencé** | Phase H — il n'y a ni squelette ni modèle |
+
+**Reste pour clore la Phase B** : shape cast de marche (§8.2, step 0,30–0,38 m),
+parcours de traversal **rejoué** et non seulement compilé (Gate B), essais manuels
+de §21.4 touchant le traversal.
 
 ---
 

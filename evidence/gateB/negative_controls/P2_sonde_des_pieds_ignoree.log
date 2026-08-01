@@ -1,0 +1,13 @@
+# Contrôle négatif — P2_sonde_des_pieds_ignoree
+# La sonde des pieds n est plus exigee : un surplomb devient saisissable (§9.2 refuse vides et concavites).
+# Test visé : test_an_overhang_is_refused
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_climbing.gd::test_an_overhang_is_refused — un surplomb ne doit jamais être saisi
+  ÉCHEC test_climbing.gd::test_an_overhang_is_refused — un surplomb ne doit pas être saisissable
+  ÉCHEC test_climbing.gd::test_an_overhang_is_refused — raison du refus : attendu overhang, obtenu 
+=== RÉSULTAT: 123 réussi(s), 3 échoué(s) ===
+  ÉCHEC: test_climbing.gd::test_an_overhang_is_refused — un surplomb ne doit jamais être saisi
+  ÉCHEC: test_climbing.gd::test_an_overhang_is_refused — un surplomb ne doit pas être saisissable
+  ÉCHEC: test_climbing.gd::test_an_overhang_is_refused — raison du refus : attendu overhang, obtenu 

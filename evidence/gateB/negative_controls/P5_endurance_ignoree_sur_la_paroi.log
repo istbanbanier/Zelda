@@ -1,0 +1,9 @@
+# Contrôle négatif — P5_endurance_ignoree_sur_la_paroi
+# L escalade ne consomme plus d endurance : §9.1 (18/s) cesse de s appliquer au mur.
+# Test visé : test_climbing_drains_stamina
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_climbing.gd::test_climbing_drains_stamina — endurance consommée par 1 s d'escalade : attendu 18.0000 ± 2.0000, obtenu 0.0000
+=== RÉSULTAT: 121 réussi(s), 4 échoué(s) ===
+  ÉCHEC: test_climbing.gd::test_climbing_drains_stamina — endurance consommée par 1 s d'escalade : attendu 18.0000 ± 2.0000, obtenu 0.0000

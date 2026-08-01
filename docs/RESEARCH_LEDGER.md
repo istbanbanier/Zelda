@@ -169,6 +169,59 @@ ou une mesure locale) · `OUVERT`.
 
 ---
 
+## R-009 — `ActionAlignmentComponent` suffit-il au mantle ? — RÉSOLU : oui, à une condition
+
+- **Date** : 2026-08-01 · **Phase** : B.3 · **Statut** : RÉSOLU
+- **Question ouverte depuis le Gate 0** : §7.12 propose ce composant comme
+  « substitut ciblé au motion warping ». Tient-il pour le franchissement de §9.3,
+  qui exige « aucun snap visible » et une annulation propre ?
+- **Réponse mesurée** : oui, **à condition qu'il suive un chemin et non un
+  segment**. La version à interpolation directe échouait — non par à-coup, mais
+  parce que la droite reliant le pied d'un rebord à son dessus **traverse le
+  rebord**. Le contrôle de capsule de §7.12 faisait alors ce qu'on lui demande :
+  il annulait à mi-parcours. Le cas nominal ne franchissait jamais, et la cause
+  n'était ni le composant ni la géométrie mais la forme du trajet.
+- **Correctif** : `begin_path()` accepte une polyligne, parcourue à vitesse
+  maîtrisée par abscisse curviligne. Le mantle passe par un sommet situé
+  `LEDGE_RISE_CLEARANCE` (6 cm) au-dessus de la surface d'arrivée — monter, puis
+  avancer, ce que §9.3 appelle « mantle bas/haut ».
+- **Pourquoi pas une courbe** : une Bézier quadratique a été écartée après calcul,
+  pas par principe. Pour que les pieds soient déjà au-dessus du rebord au moment
+  d'entrer dans son emprise, son point de contrôle devait culminer à 0,40 m
+  au-dessus de la cible — un bond visible. La polyligne obtient le même résultat
+  avec 6 cm.
+- **Ce qui reste non prouvé** : le rendu. « Aucun snap visible » est vérifié par la
+  mesure du plus grand pas et par l'absence de discontinuité, pas par un œil
+  humain sur une animation — laquelle n'existe pas (Phase H).
+- **À réévaluer** : quand `ActionAlignmentComponent` servira aux coffres, à la
+  cuisine et au pylône (§7.12). Ces actions n'ont pas d'obstacle sur le trajet ;
+  `begin()` devrait leur suffire.
+
+---
+
+## R-011 — Une sonde horizontale ne rencontre jamais une pente douce
+
+- **Date** : 2026-08-01 · **Phase** : B.3 · **Statut** : RÉSOLU, contrainte géométrique
+- **Ce qui change selon la réponse** : la couverture réelle du filtre d'angle de
+  §9.2, et la façon d'écrire un test qui prétend l'exercer.
+- **Constat** : un test devait vérifier qu'une pente à 40° est refusée pour
+  `too_shallow`. Elle est refusée — mais pour `no_wall`. Un rayon horizontal parti
+  de la hauteur du torse `h` ne rencontre une pente d'angle θ qu'à la distance
+  `h / tan θ`. Avec `h = 1,10 m` et une portée d'accroche de 0,70 m, la sonde ne
+  touche que les surfaces telles que `tan θ ≥ 1,571`, soit **θ ≥ 57,5°**.
+- **Conséquence** : à l'approche depuis le sol, le filtre d'angle ne peut pas
+  départager quoi que ce soit — la géométrie s'en charge avant lui. Il agit
+  seulement sur les parois irrégulières rencontrées **en cours d'escalade**, où
+  l'origine de la sonde est déjà en hauteur (§9.2, « suivre irrégularités »).
+- **Décision de test** : le filtre est vérifié là où il agit, sur la pente à 60° du
+  bac à sable, en comparant deux seuils sur la même sonde au même endroit. Le test
+  d'approche, lui, n'affirme plus qu'une raison de refus qu'il ne peut pas obtenir.
+- **Limite** : cette borne dépend de trois réglages (`probe_chest_height`,
+  `grab_reach_m`, et l'angle). Les changer déplace le seuil de 57,5° sans que rien
+  ne le signale.
+
+---
+
 ## Questions ouvertes pour les phases suivantes
 
 | ID | Question | Phase | Décidera |
@@ -176,5 +229,5 @@ ou une mesure locale) · `OUVERT`.
 | R-006 | Interpolation physique : gain réel vs coût sur la cible ? (§20.9) | B | activer ou non |
 | R-007 | Terrain : ArrayMesh déterministe ou addon audité/épinglé ? (§7.4) | D | pipeline terrain |
 | R-008 | SDFGI demi-résolution vs LightmapGI sur la vue d'ouverture ? (§7.7) | H | preset High |
-| R-009 | Substitut au motion warping : `ActionAlignmentComponent` suffit-il au mantle ? (§7.12) | B | qualité du mantle |
+| ~~R-009~~ | ~~Substitut au motion warping~~ | B | **RÉSOLU en B.3** — voir l'entrée R-009 ci-dessus |
 | R-010 | Nuage d'orage : couches de dômes vs raymarch Cinematic ? (§7.6) | H | coût de la North Star |

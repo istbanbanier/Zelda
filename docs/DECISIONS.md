@@ -363,3 +363,67 @@ est une préférence, pas une décision.
 - **Vérifié par** : `test_stamina.gd::test_a_held_sprint_produces_usable_bursts_not_a_stutter`,
   qui mesure la durée de la seconde rafale — un tick sans le seuil, plus d'une
   seconde avec. Contrôle négatif `N3_seuil_de_recuperation_retire`.
+
+---
+
+## D-017 — Pousser vers une paroi suffit à s'y accrocher
+
+- **Date** : 2026-08-01 · **Phase** : B.3 · **Statut** : ADOPTÉE
+- **Contexte** : §9.2 décrit l'escalade en détail — sondes, distances, vitesses —
+  mais ne nomme **aucune touche**. §8.5 n'en réserve pas non plus : les dix-huit
+  actions de l'InputMap sont toutes attribuées, et aucune ne concerne la paroi.
+- **Choix** : l'accroche se déclenche quand le joueur pousse vers une paroi
+  saisissable, au sol comme en l'air. Aucune entrée nouvelle.
+- **Pourquoi** : ajouter une action obligerait à la lier au clavier **et** à la
+  manette, à l'inscrire au remapping (§17.5) et à la documenter — pour un geste que
+  le joueur fait déjà. `CONTROLLER-001` étant ouverte, chaque action nouvelle est
+  une liaison manette de plus qui ne sera vérifiée qu'à l'essai manuel.
+- **Conséquence à surveiller** : une paroi longeant un chemin s'accroche sans qu'on
+  l'ait demandé. Le garde-fou est le filtre d'angle (D-018) et le refus des
+  surplombs ; si le désagrément se confirme à l'essai humain, la réponse est un
+  seuil d'intention (durée de poussée), pas une touche dédiée.
+- **Rejeté** : réserver une action `climb`. Plus explicite, mais coûteux sur tous
+  les périphériques et redondant avec la direction déjà donnée.
+- **Vérifié par** : `test_climbing.gd::test_pushing_into_a_wall_grabs_it` et son
+  jumeau négatif `test_an_unclimbable_surface_is_refused`, sur deux parois de
+  géométrie identique.
+
+---
+
+## D-018 — Un `Mode` à trois valeurs plutôt que la `StateMachine` de §8.1
+
+- **Date** : 2026-08-01 · **Phase** : B.3 · **Statut** : ADOPTÉE, à réviser en Phase C
+- **Contexte** : §8.1 énumère vingt états (`Idle`, `Climb`, `Mantle`, `LightAttack`,
+  `Dodge`, `Stagger`…). L'escalade et le mantle en réclament un mécanisme.
+- **Choix** : le contrôleur porte un `enum Mode { LOCOMOTION, CLIMBING, MANTLING }`,
+  et la logique de chaque mode vit dans un composant — sondes dans
+  `ClimbingComponent`, rebord dans `LedgeDetectorComponent`, franchissement dans
+  `ActionAlignmentComponent`.
+- **Pourquoi** : construire la machine complète maintenant reviendrait à écrire
+  dix-huit états vides, dont la moitié appartient à un combat qui n'existe pas. Ce
+  serait de la structure spéculative, et §7.14 met en garde contre l'inverse de la
+  méthode : bâtir l'échafaudage avant de savoir ce qu'il porte.
+- **Ce que ce choix n'excuse pas** : la `StateMachine` de §8.1 reste due. Elle
+  arrivera en Phase C, quand les états de combat auront un contenu, et le `Mode`
+  sera absorbé — pas conservé en parallèle.
+- **Rejeté** : une machine à états nodale immédiate. Elle aurait figé une hiérarchie
+  d'états avant de connaître les besoins du combat, avec un coût de migration
+  supérieur à celui de trois valeurs d'énumération.
+
+---
+
+## D-019 — Le seuil de paroi est borné par l'angle de sol praticable
+
+- **Date** : 2026-08-01 · **Phase** : B.3 · **Statut** : ADOPTÉE
+- **Contexte** : §8.2 fixe la pente marchable à environ 46°. §9.2 ne donne **aucun**
+  angle minimal pour qu'une surface compte comme paroi ; il a fallu en inventer un.
+- **Défaut introduit puis corrigé** : le premier jet retenait 50°, valeur d'apparence
+  raisonnable. Elle ouvrait une bande de quatre degrés — 46° à 50° — où le joueur
+  glisse sans pouvoir s'accrocher. Un piège invisible : aucune erreur, aucun test
+  rouge, juste une pente sur laquelle on retombe sans comprendre.
+- **Choix** : `ClimbTuning.min_wall_angle_deg` ≤ `LocomotionTuning.max_floor_angle_deg`,
+  les deux à 46°. Toute surface qui ne se marche pas se grimpe.
+- **Verrouillé par un test** : `test_no_angle_is_both_unwalkable_and_unclimbable`
+  compare les deux ressources, qui s'ignorent par ailleurs. Contrôle négatif P6.
+- **Limite honnête** : la relation est vérifiée, pas *dérivée*. Deux ressources
+  distinctes restent deux valeurs à tenir cohérentes ; le test est le garde-fou.

@@ -1,0 +1,9 @@
+# Contrôle négatif — P7_accroche_au_sol_non_retablie
+# floor_snap_length n est pas retabli au lacher : le joueur decolle sur chaque bosse pour le reste de la partie.
+# Test visé : test_releasing_the_wall_restores_ground_settings
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_climbing.gd::test_releasing_the_wall_restores_ground_settings — accroche au sol rétablie après le lâcher : attendu 0.4000 ± 0.0010, obtenu 0.0000
+=== RÉSULTAT: 123 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_climbing.gd::test_releasing_the_wall_restores_ground_settings — accroche au sol rétablie après le lâcher : attendu 0.4000 ± 0.0010, obtenu 0.0000

@@ -1,0 +1,13 @@
+# Contrôle négatif — P4_trajet_de_mantle_en_ligne_droite
+# Le mantle interpole en ligne droite : le trajet traverse le rebord et l annulation de securite se declenche (§9.3).
+# Test visé : test_reaching_a_ledge_mantles_onto_it
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_climbing.gd::test_reaching_a_ledge_mantles_onto_it — le franchissement doit s'achever
+  ÉCHEC test_climbing.gd::test_reaching_a_ledge_mantles_onto_it — le joueur doit se tenir sur le dessus du rebord : attendu 1.2000 ± 0.1500, obtenu 0.0009
+  ÉCHEC test_climbing.gd::test_reaching_a_ledge_mantles_onto_it — le joueur doit avoir franchi le rebord (z = -29.15)
+=== RÉSULTAT: 122 réussi(s), 6 échoué(s) ===
+  ÉCHEC: test_climbing.gd::test_reaching_a_ledge_mantles_onto_it — le franchissement doit s'achever
+  ÉCHEC: test_climbing.gd::test_reaching_a_ledge_mantles_onto_it — le joueur doit se tenir sur le dessus du rebord : attendu 1.2000 ± 0.1500, obtenu 0.0009
+  ÉCHEC: test_climbing.gd::test_reaching_a_ledge_mantles_onto_it — le joueur doit avoir franchi le rebord (z = -29.15)

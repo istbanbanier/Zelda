@@ -63,9 +63,39 @@ qui a établi que l'implémentation littérale de §9.1 faisait bégayer le spri
 de B.1 (R-006bis). Muter le script n'aurait rien cassé et le contrôle aurait conclu
 à tort que le test était inutile.
 
+## Jalon B.3 — Escalade et mantle (2026-08-01)
+
+| Log | Mutation | Test visé |
+|---|---|---|
+| `P1_groupe_unclimbable_ignore` | `is_surface_climbable()` accepte tout | `test_an_unclimbable_surface_is_refused` |
+| `P2_sonde_des_pieds_ignoree` | contact aux pieds non exigé | `test_an_overhang_is_refused` |
+| `P3_degagement_de_capsule_retire` | contrôle de dégagement retiré | `test_a_ledge_under_a_ceiling_refuses_the_mantle` |
+| `P4_trajet_de_mantle_en_ligne_droite` | trajet direct au lieu de deux temps | `test_reaching_a_ledge_mantles_onto_it` |
+| `P5_endurance_ignoree_sur_la_paroi` | l'escalade ne consomme plus rien | `test_climbing_drains_stamina` |
+| `P6_seuil_de_paroi_au_dessus_du_sol` | seuil à 50° **dans le `.tres`** | `test_no_angle_is_both_unwalkable_and_unclimbable` |
+| `P7_accroche_au_sol_non_retablie` | `floor_snap_length` non rétabli | `test_releasing_the_wall_restores_ground_settings` |
+| `P8_saut_d_escalade_gratuit` | saut d'escalade sans coût | `test_climb_jump_costs_stamina_and_pushes_off` |
+
+Deux d'entre eux ont appris quelque chose plutôt que confirmé :
+
+- **P2 n'a rien cassé** lors de sa première exécution. Ce n'était pas un test
+  robuste, c'était une branche — le refus des surplombs — que **rien** ne couvrait.
+  La paroi flottante du bac à sable et `test_an_overhang_is_refused` ont été ajoutés
+  pour ça, et P2 a été rejoué contre le nouveau test.
+- **P3 ne rend pas le franchissement possible** : il déplace le refus du détecteur
+  de rebord vers le contrôle de mi-parcours, et la raison rapportée passe de
+  `blocked` à `blocked_midway`. Il y a donc deux lignes de défense, et le test les
+  distingue.
+
 ## Ce que Gate B exigera encore, et que rien ici ne couvre
 
 - Parcours de traversal rejoué **réellement**, pas seulement compilé (§22, Gate B).
+  Chaque capacité est testée isolément ; seul `test_climbing_a_tall_wall_ends_in_a_mantle`
+  en enchaîne deux.
+- Shape cast de marche (§8.2, step 0,30–0,38 m) : dernier élément de §8.2 non
+  implémenté.
+- Lissage de la normale de paroi et vitesse latérale (§9.2) : implémentés, **non
+  mesurés** — le bac à sable n'a que des parois planes.
 - Ressenti et latence en ticks (§10.6) : mesure instrumentée + essai humain.
 - Absence de jitter caméra (§8.3) : observation en mouvement à framerate réel.
 - Tests manuels de §21.4 touchant le traversal : caméra contre tous types de murs,

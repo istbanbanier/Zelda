@@ -1,0 +1,11 @@
+# Contrôle négatif — P1_groupe_unclimbable_ignore
+# is_surface_climbable() accepte tout : le groupe unclimbable de §9.2 cesse d agir.
+# Test visé : test_an_unclimbable_surface_is_refused
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_climbing.gd::test_an_unclimbable_surface_is_refused — une paroi `unclimbable` ne doit jamais être saisie
+  ÉCHEC test_climbing.gd::test_an_unclimbable_surface_is_refused — le mode doit rester LOCOMOTION
+=== RÉSULTAT: 122 réussi(s), 2 échoué(s) ===
+  ÉCHEC: test_climbing.gd::test_an_unclimbable_surface_is_refused — une paroi `unclimbable` ne doit jamais être saisie
+  ÉCHEC: test_climbing.gd::test_an_unclimbable_surface_is_refused — le mode doit rester LOCOMOTION
