@@ -1,73 +1,43 @@
-# Playtest D.1 — formulaire de retour (§21.9)
+# Playtest D.1 — retour humain n° 1 (2026-08-01)
 
-À remplir APRÈS la partie, sans revenir corriger vos réponses en rejouant :
-la première impression est la donnée. « Je ne sais pas / je n'ai pas vu »
-sont des réponses valides et précieuses.
+Package : `EclatsDOrage_D1_Playtest_329b55e.zip` · code jouable `316e4dd`.
+Verdict propriétaire : **D.1 n'est pas une expérience jouable** — C.5 et toute
+passe artistique suspendus jusqu'à une version corrective rejouable (D.1R).
 
-## Contexte
+## Observé par le TESTEUR (verbatim consolidé)
 
-| Champ | Valeur |
-|---|---|
-| Date / heure | |
-| Testeur (initiales suffisent) | |
-| Machine (CPU / GPU / RAM) | |
-| OS | |
-| `godot --version` | |
-| `git rev-parse --short HEAD` | |
-| Durée réellement jouée | |
-| Nombre de morts | |
+Le testeur a lancé la vallée et l'a explorée. Défauts bloquants :
 
-## Chronologie libre
+1. Caméra beaucoup trop lente.
+2. Souris non capturée — le curseur quitte la fenêtre avant de pouvoir regarder autour.
+3. Le joueur et les pillards se traversent.
+4. Les pillards se superposent entre eux.
+5. Aucun HUD (vie, endurance invisibles).
+6. Armes ramassées versées silencieusement dans un inventaire inaccessible.
+7. Aucun moyen compréhensible d'équiper/sélectionner/intervertir les armes.
+8. Coffres et armes au sol sans invite d'interaction ni confirmation claire.
+9. On peut quitter le terrain et tomber dans le vide.
+10. Les structures (citadelle comprise) n'ont ni entrée ni intérieur.
+11. Ni menu pause ni réglage de sensibilité.
+12. Combat illisible : pas d'arme visible, pas d'animation, pas de télégraphe visuel.
 
-Notez de mémoire ce que vous avez fait, dans l'ordre, avec les moments
-d'hésitation (« je ne savais pas où aller / quoi faire ») et leur durée
-approximative :
+## Découvert par AUDIT DU CODE (fourni avec le retour — causes vérifiées)
 
-```
--
--
--
-```
+- `ValleyWorld` ne passe jamais `Input.MOUSE_MODE_CAPTURED` (seuls les labos le font).
+- Delta souris multiplié par `MOUSE_LOOK_SCALE` PUIS re-multiplié par
+  `camera_stick_speed * delta` dans `CameraRig.apply_look()` — unités souris et
+  stick mélangées (≈ ÷25 sur la rotation).
+- `Player.tscn` masque 1, `RaiderRed.tscn` masque 1 : personne ne collisionne
+  qu'avec le décor — jamais entre corps.
+- `_try_interact()` : distance + cône seulement, aucune ligne de vue (§14.2 violé).
+- Aucun `CanvasLayer` de gameplay dans la vallée ; `GameState.set_paused()` jamais
+  appelé ; filet de chute tardif (−20, 1 s) ; « Continuer » n'applique rien ;
+  mort sans retry ; aucun test sur capture souris, conversion delta, séparation
+  des corps, interaction à travers mur.
 
-## Les cinq questions (§21.9, au mot près)
+## Triage (fréquence × gravité × coût — §21.9)
 
-1. **Quel était ton but ?**
-
-2. **Qu'est-ce qui semblait le plus beau ?** *(en graybox : le plus lisible,
-   le plus prometteur)*
-
-3. **Quand as-tu perdu le contrôle ou la compréhension ?**
-
-4. **Quel élément semblait amateur ?**
-
-5. **Que voudrais-tu refaire ?**
-
-## Questions propres à D.1
-
-- Depuis la crête de départ, qu'avez-vous identifié dans le paysage, et
-  qu'avez-vous eu envie d'aller voir en premier ?
-- Avez-vous trouvé le chemin de descente sans errer ? Combien de temps ?
-- Le camp : l'avez-vous repéré de loin ? Grâce à quoi ?
-- Le combat contre les pillards : lisible ? juste ? injuste ? (télégraphes
-  vus ? esquive utile ? mort comprise ?)
-- Le coffre et l'arme au sol : trouvés ? ouverts/ramassés du premier coup
-  avec E, ou après tâtonnement ?
-- Une arme a-t-elle cassé ? L'avez-vous compris sur le moment ?
-- L'arc : essayé ? la visée épaule fonctionne-t-elle comme attendu ?
-- La falaise ouest : trouvée ? escaladée ? les corniches servent-elles ?
-- Êtes-vous allé vers le pylône ou la citadelle ? Jusqu'où ?
-- Fluidité perçue (machine réelle) : constante / saccades / autre ?
-
-## Bugs observés
-
-Sévérités : S0 corruption · S1 crash/softlock · S2 système majeur incorrect ·
-S3 défaut visible contournable · S4 finition.
-
-| # | Sévérité | Étapes de reproduction | Attendu | Observé |
-|---|---|---|---|---|
-| 1 | | | | |
-| 2 | | | | |
-
-## Verdict libre
-
-Trois phrases maximum — la chose à corriger EN PREMIER selon vous :
+Tout est S2 sauf mention : contrôle caméra (1, 2, 11) → **D.1R.1** ; corps
+traversables (3, 4) → **D.1R.2** ; lisibilité/HUD/inventaire/invites (5–8, 12)
+→ **D.1R.3** ; monde/mort/structures (9, 10 — S3) → **D.1R.4** ; honnêteté de
+« Continuer » → **D.1R.5**.

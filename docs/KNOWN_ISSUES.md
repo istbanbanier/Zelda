@@ -145,3 +145,18 @@ Aucun `S0`/`S1` ouvert n'est admis pour un build candidat.
 - **Règle** : ne **jamais** considérer cette dette levée par des tests
   automatiques. Elle se solde à la passe finale, avant toute déclaration `Final`.
 - **Propriétaire** : opérateur humain (machine avec écran) + Product Owner.
+
+---
+
+## PT-D1 — retour du playtest humain n° 1 (2026-08-01) → jalon correctif D.1R
+
+Source : `evidence/gateD/playtest01/FORMULAIRE.md` (12 constats testeur + audit
+de code fourni). Décision propriétaire : C.5 suspendu jusqu'à D.1R rejouable.
+
+| ID | Constat | Sévérité | Traité par |
+|---|---|---|---|
+| PT-D1-01 | caméra ÷25 (unités souris/stick mélangées) + souris non capturée + ni pause ni sensibilité | S2 | D.1R.1 |
+| PT-D1-02 | joueur/pillards se traversent ; pillards superposés | S2 | D.1R.2 |
+| PT-D1-03 | aucun HUD ; inventaire inaccessible ; aucune invite d'interaction ; combat illisible | S2 | D.1R.3 |
+| PT-D1-04 | chute hors monde possible ; mort sans retry ; citadelle sans entrée | S2/S3 | D.1R.4 |
+| PT-D1-05 | « Continuer » n'applique aucun état sauvegardé | S3 | D.1R.5 |
