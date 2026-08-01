@@ -11,9 +11,9 @@
 ## justifier une, et rien ne permettrait de mesurer si elle aide. Elle arrive en
 ## Phase I avec le chargement en arrière-plan (§20.10).
 ##
-## ÉTAT PHASE A : il n'existe **aucun menu principal ni monde** vers lequel
-## enchaîner. Boot s'arrête donc après vérification, et le dit. Il ne simule pas
-## une suite qui n'existe pas.
+## ÉTAT PHASE A : Boot enchaîne sur le menu principal via `SceneFlow`. Il n'y a
+## en revanche **aucun monde** derrière le menu ; celui-ci le dit lui-même plutôt
+## que de simuler une transition vers une scène inexistante.
 extends Node
 
 ## Autoloads dont l'absence est une erreur de fondation, pas un détail.
@@ -21,6 +21,7 @@ const REQUIRED_AUTOLOADS: Array[String] = [
 	"GameState", "EventBus", "SaveSystem", "AudioManager", "SceneFlow",
 ]
 
+const MAIN_MENU: String = "res://scenes/ui/MainMenu.tscn"
 const AUTOQUIT_FRAMES: int = 3
 
 var _frames: int = 0
@@ -48,7 +49,30 @@ func _ready() -> void:
 	var state: Node = get_node_or_null("/root/GameState")
 	if state != null:
 		print("[boot] flux             : %s" % state.call("flow_name", state.call("get_flow")))
-	print("[boot] fondation vérifiée — Phase A. Aucun menu ni monde à charger pour l'instant.")
+	print("[boot] fondation vérifiée — Phase A.")
+	_go_to_main_menu()
+
+
+## L'enchaînement passe par `SceneFlow` et non par `change_scene_to_file()` :
+## c'est le seul chemin qui coupe les entrées, gère le fondu et garantit qu'aucun
+## ancien nœud ne reste actif (§6.1).
+func _go_to_main_menu() -> void:
+	if _autoquit:
+		# En capture automatisée, on veut observer Boot lui-même, pas le menu.
+		print("[boot] --autoquit : transition vers le menu principal ignorée.")
+		return
+	var flow: Node = get_node_or_null("/root/SceneFlow")
+	if flow == null:
+		push_error("[boot] SceneFlow absent : impossible d'enchaîner sur le menu.")
+		return
+	if not bool(flow.call("can_go_to", MAIN_MENU)):
+		push_error("[boot] menu principal introuvable : %s" % MAIN_MENU)
+		return
+	var state: Node = get_node_or_null("/root/GameState")
+	if state != null:
+		state.call("set_flow", 1)  # GameState.Flow.MAIN_MENU
+	print("[boot] transition vers le menu principal.")
+	flow.call("go_to", MAIN_MENU)
 
 
 ## Un autoload manquant doit arrêter le démarrage bruyamment. Le laisser passer

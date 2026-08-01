@@ -1,0 +1,88 @@
+[gd_scene load_steps=2 format=3]
+
+; Menu principal (§17.3). Mise en page par conteneurs, jamais par positions
+; absolues : §17.1 l'exige pour que l'interface survive au changement de
+; résolution. Le thème central arrive avec la passe d'interface (§17.1).
+
+[ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_menu"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.098, 0.11, 0.145, 1)
+
+[node name="Layout" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 64
+theme_override_constants/margin_top = 64
+theme_override_constants/margin_right = 64
+theme_override_constants/margin_bottom = 64
+
+[node name="Column" type="VBoxContainer" parent="Layout"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Layout/Column"]
+layout_mode = 2
+text = "Éclats d'Orage"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Layout/Column"]
+layout_mode = 2
+text = "Vallée de Néris"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="Layout/Column"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+
+[node name="ContinueButton" type="Button" parent="Layout/Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 44)
+layout_mode = 2
+text = "Continuer"
+
+[node name="NewGameButton" type="Button" parent="Layout/Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 44)
+layout_mode = 2
+text = "Nouvelle partie"
+
+[node name="OptionsButton" type="Button" parent="Layout/Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 44)
+layout_mode = 2
+text = "Options"
+
+[node name="QuitButton" type="Button" parent="Layout/Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 44)
+layout_mode = 2
+text = "Quitter"
+
+[node name="StatusLabel" type="Label" parent="Layout/Column"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(320, 32)
+layout_mode = 2
+horizontal_alignment = 1
+autowrap_mode = 3

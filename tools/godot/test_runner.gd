@@ -19,6 +19,8 @@
 ##     contrat (`GateTestCase.CONTRACT_METHODS`), vecteur démontré par la 3e revue.
 ##   - B2/B3 : un fichier qui ne s'instancie pas, ou une exécution qui n'a lancé
 ##     aucun test, sont des ÉCHECS. Le runner sortait 0 dans les deux cas.
+##   - les méthodes de test **asynchrones** (`await`) sont attendues. Sans cela
+##     leurs assertions seraient comptabilisées dans un autre test, ou perdues.
 ##   - D2 : les erreurs d'exécution GDScript n'interrompent pas l'appel et ne
 ##     peuvent pas être interceptées ici ; c'est `validate_fast.sh` qui inspecte le
 ##     journal. Les deux protections sont nécessaires, aucune ne suffit seule.
@@ -66,7 +68,12 @@ func _initialize() -> void:
 	for path: String in scripts:
 		if filter != "" and not path.contains(filter):
 			continue
-		_run_script(path)
+		# `_run_script()` attend les tests asynchrones : elle est donc elle-même une
+		# coroutine. L'appeler sans `await` la ferait rendre la main au premier
+		# `await` interne, et le runner passerait au fichier suivant en abandonnant
+		# silencieusement les tests restants — c'est arrivé, et seul le décompte
+		# l'a révélé. Le plancher MIN_TESTS est la seconde ligne de défense.
+		await _run_script(path)
 
 	# B3 : « 0 réussi, 0 échoué » sortait en 0. Une suite qui n'exécute rien ne
 	# prouve rien — c'est un échec, pas un succès.
@@ -250,7 +257,14 @@ func _run_script(path: String) -> void:
 		var recorder: GateTestRecorder = GateTestRecorder.new()
 		test_case.set("_recorder", recorder)
 
-		test_case.call(method_name)
+		# Une méthode de test contenant `await` rend la main immédiatement en
+		# renvoyant un objet de coroutine (TYPE_OBJECT), et non `null`. Sans
+		# l'attendre, le runner enchaînerait sur le test suivant et les assertions
+		# tardives atterriraient dans l'enregistreur d'un AUTRE test. Vérifié par
+		# sonde sur 4.7.1 : appel synchrone -> NIL, appel de coroutine -> objet.
+		var pending: Variant = test_case.call(method_name)
+		if typeof(pending) == TYPE_OBJECT and pending != null:
+			await pending
 
 		var failures: Array[String] = recorder.failures()
 		if not failures.is_empty():

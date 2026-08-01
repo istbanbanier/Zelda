@@ -187,3 +187,40 @@ est une préférence, pas une décision.
 - **Limite** : l'ordre d'installation suit celui de `project.godot`. Un autoload qui
   dépendrait d'un autre pendant son `_ready()` exigerait un ordre explicite ; aucun
   ne le fait aujourd'hui.
+
+---
+
+## D-010 — Le runner de tests attend les méthodes asynchrones
+
+- **Date** : 2026-08-01 · **Phase** : A · **Statut** : ADOPTÉE
+- **Contexte** : vérifier que Jolt **simule** exige de faire avancer de vraies
+  frames physiques, donc des méthodes de test asynchrones.
+- **Constat mesuré par sonde (4.7.1)** : un appel synchrone renvoie `NIL` ; l'appel
+  d'une méthode contenant `await` rend la main immédiatement en renvoyant un objet
+  de coroutine (`TYPE_OBJECT`), qui n'est pas un `Signal`.
+- **Défaut réel rencontré** : `_run_script()` est devenue coroutine en attendant
+  les tests, mais la boucle d'appel ne l'attendait pas. Deux tests sur trois du
+  fichier de physique étaient **silencieusement abandonnés** — la suite affichait
+  vert. Seul l'écart de décompte l'a révélé.
+- **Choix** : le runner attend la coroutine du test **et** attend `_run_script()`.
+  Le plancher `MIN_TESTS` reste la seconde ligne de défense contre cette classe
+  d'échec, qui est invisible autrement.
+- **Vérifié par** : contrôle négatif `A2_test_asynchrone_echec_tardif.log` — une
+  assertion fausse placée après deux `await` est bien attribuée à son test et fait
+  sortir le runner en 1.
+
+---
+
+## D-011 — `SceneFlow` laisse toujours passer une frame avant de changer de scène
+
+- **Date** : 2026-08-01 · **Phase** : A · **Statut** : ADOPTÉE
+- **Défaut réel** : `Boot._ready()` appelait `SceneFlow.go_to()`, qui appelait
+  `change_scene_to_file()` alors que l'arbre ajoutait encore des enfants →
+  `ERROR: Parent node is busy adding/removing children`. En mode headless le fondu
+  rend la main sans attendre, donc rien ne garantissait le délai que le fondu
+  procurait accidentellement en mode graphique.
+- **Choix** : `go_to()` attend une frame complète avant le changement, quel que
+  soit le mode de rendu. Correction dans `SceneFlow` et non dans `Boot` : tout
+  appelant depuis un `_ready()` rencontrerait le même problème.
+- **Vérifié par** : niveau 3 de `validate_fast.sh`, qui lance réellement le jeu
+  sur 90 frames et exige la trace d'arrivée au menu — un import vert ne suffit pas.

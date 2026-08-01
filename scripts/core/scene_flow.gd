@@ -62,6 +62,13 @@ func go_to(target_path: String) -> bool:
 	get_tree().paused = true
 	await _fade_to(1.0)
 
+	# Une frame complète AVANT de changer de scène, toujours. `go_to()` est
+	# souvent appelée depuis le `_ready()` de la scène courante : l'arbre est
+	# alors en train d'ajouter des enfants et refuse `remove_child()`
+	# (« Parent node is busy adding/removing children »). En mode headless le
+	# fondu rend la main sans attendre, donc rien ne garantissait ce délai.
+	await get_tree().process_frame
+
 	var err: Error = get_tree().change_scene_to_file(target_path)
 	if err != OK:
 		get_tree().paused = false

@@ -96,9 +96,12 @@ else
   ok "aucune erreur signalée dans le journal des tests"
 fi
 
-step "3. Scène d'intégration (chargement réel de la scène principale)"
+step "3. Scène d'intégration (lancement réel : Boot -> MainMenu)"
 SCENE_LOG="$LOG_DIR/03_scene.log"
-"$GODOT_BIN" --headless --path "$PROJECT_DIR" --quit-after 5 > "$SCENE_LOG" 2>&1
+# Assez de frames pour que la transition de SceneFlow aboutisse réellement : le
+# but de ce niveau est d'exercer le chemin de démarrage complet, pas seulement de
+# constater que la première scène se charge.
+"$GODOT_BIN" --headless --path "$PROJECT_DIR" --quit-after 90 > "$SCENE_LOG" 2>&1
 SCENE_RC=$?
 if grep -qiE 'SCRIPT ERROR|Failed to instantiate|Cannot open|ERROR:' "$SCENE_LOG"; then
   bad "erreurs au chargement de la scène (voir $SCENE_LOG)"
@@ -110,6 +113,14 @@ else
   grep '^\[boot\]' "$SCENE_LOG" | sed 's/^/    /'
 fi
 
+# Le démarrage doit réellement atteindre le menu. Sans ce contrôle, une
+# transition cassée passerait inaperçue tant que Boot lui-même se charge.
+if grep -q 'transition vers le menu principal' "$SCENE_LOG"; then
+  ok "Boot atteint le menu principal"
+else
+  bad "Boot n'a pas enchaîné sur le menu principal (voir $SCENE_LOG)"
+fi
+
 step "4. Plancher de couverture"
 # B1 : renommer un fichier de test faisait disparaître 3 tests sans que rien ne
 # rougisse. Le nombre de tests attendu est donc épinglé ; le baisser exige une
@@ -119,7 +130,7 @@ step "4. Plancher de couverture"
 # On prend la dernière (celle du runner) et on refuse toute ligne en double.
 # Le plancher est une constante du fichier : l'abaisser doit se voir en revue, il
 # n'est donc pas surchargeable par l'environnement.
-MIN_TESTS=37
+MIN_TESTS=48
 RESULT_LINES=$(grep -cE '^=== RÉSULTAT: [0-9]+ réussi' "$UNIT_LOG")
 ACTUAL_TESTS=$(grep -oE '^=== RÉSULTAT: [0-9]+ réussi' "$UNIT_LOG" | grep -oE '[0-9]+' | tail -1)
 ACTUAL_TESTS="${ACTUAL_TESTS:-0}"
