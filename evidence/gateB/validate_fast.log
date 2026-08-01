@@ -1,0 +1,167 @@
+
+=== 0. Version du moteur ===
+  4.7.1.stable.custom_build.a13da4feb
+  [OK]   Godot 4.7.1-stable confirmé
+
+=== 1. Import des ressources (parse/import smoke) ===
+  [OK]   import sans parse error (code retour 0)
+
+=== 1b. Parse de TOUS les scripts GDScript ===
+  [OK]   43 script(s) GDScript parsés sans erreur
+
+=== 2. Tests unitaires ===
+    ok   test_camera_rig.gd::test_camera_is_a_direct_child_of_the_spring_arm (3 assertions)
+    ok   test_camera_rig.gd::test_camera_sits_behind_and_above_the_player (3 assertions)
+    ok   test_camera_rig.gd::test_shoulder_offset_survives_the_spring_arm (2 assertions)
+    ok   test_camera_rig.gd::test_pitch_is_clamped_to_the_specified_range (2 assertions)
+    ok   test_camera_rig.gd::test_spring_arm_pulls_the_camera_in_front_of_a_wall (4 assertions)
+    ok   test_camera_rig.gd::test_fov_widens_on_sprint_without_snapping (5 assertions)
+    ok   test_camera_rig.gd::test_fov_interpolation_is_framerate_independent (1 assertions)
+    ok   test_camera_rig.gd::test_look_is_framerate_independent (1 assertions)
+    ok   test_camera_rig.gd::test_tuning_stays_within_the_spec_envelopes (7 assertions)
+    ok   test_climbing.gd::test_pushing_into_a_wall_grabs_it (4 assertions)
+    ok   test_climbing.gd::test_an_unclimbable_surface_is_refused (3 assertions)
+    ok   test_climbing.gd::test_a_shallow_slope_is_never_grabbed (2 assertions)
+    ok   test_climbing.gd::test_an_overhang_is_refused (5 assertions)
+    ok   test_climbing.gd::test_the_angle_filter_rejects_a_surface_below_the_threshold (3 assertions)
+    ok   test_climbing.gd::test_no_angle_is_both_unwalkable_and_unclimbable (3 assertions)
+    ok   test_climbing.gd::test_climbing_rises_at_the_declared_speed (2 assertions)
+    ok   test_climbing.gd::test_climbing_drains_stamina (3 assertions)
+    ok   test_climbing.gd::test_exhaustion_releases_the_wall (4 assertions)
+    ok   test_climbing.gd::test_climb_jump_costs_stamina_and_pushes_off (5 assertions)
+    ok   test_climbing.gd::test_reaching_a_ledge_mantles_onto_it (6 assertions)
+    ok   test_climbing.gd::test_climbing_a_tall_wall_ends_in_a_mantle (4 assertions)
+    ok   test_climbing.gd::test_a_ledge_under_a_ceiling_refuses_the_mantle (4 assertions)
+    ok   test_climbing.gd::test_the_body_never_rotates_while_climbing (3 assertions)
+    ok   test_climbing.gd::test_releasing_the_wall_restores_ground_settings (3 assertions)
+    ok   test_gltf_import.gd::test_static_cube_imports_with_material_and_scale (8 assertions)
+    ok   test_gltf_import.gd::test_rig_imports_with_skeleton_and_animation (11 assertions)
+    ok   test_gltf_import.gd::test_no_pink_missing_resources (4 assertions)
+    ok   test_latency.gd::test_movement_responds_at_the_next_physics_tick (3 assertions)
+    ok   test_latency.gd::test_jump_responds_at_the_next_physics_tick (3 assertions)
+    ok   test_latency.gd::test_latency_is_stable_across_repeated_trials (2 assertions)
+    ok   test_latency.gd::test_the_report_converts_ticks_at_the_real_tick_rate (2 assertions)
+    ok   test_locomotion.gd::test_player_falls_and_rests_on_the_floor (3 assertions)
+    ok   test_locomotion.gd::test_run_speed_matches_tuning (1 assertions)
+    ok   test_locomotion.gd::test_partial_stick_walks_instead_of_running (1 assertions)
+    ok   test_locomotion.gd::test_sprint_is_faster_than_running (2 assertions)
+    ok   test_locomotion.gd::test_release_decelerates_to_a_stop (2 assertions)
+    ok   test_locomotion.gd::test_movement_is_camera_relative (2 assertions)
+    ok   test_locomotion.gd::test_jump_reaches_expected_apex (1 assertions)
+    ok   test_locomotion.gd::test_coyote_time_allows_a_late_jump (2 assertions)
+    ok   test_locomotion.gd::test_jump_buffer_survives_an_early_press (3 assertions)
+    ok   test_locomotion.gd::test_gentle_slope_is_climbable (2 assertions)
+    ok   test_locomotion.gd::test_steep_slope_is_rejected (2 assertions)
+    ok   test_locomotion.gd::test_sprint_drains_stamina (2 assertions)
+    ok   test_locomotion.gd::test_running_without_sprinting_costs_nothing (1 assertions)
+    ok   test_locomotion.gd::test_holding_sprint_while_standing_still_costs_nothing (1 assertions)
+    ok   test_locomotion.gd::test_exhaustion_drops_the_sprint_back_to_running (3 assertions)
+    ok   test_locomotion.gd::test_stamina_recovers_after_releasing_sprint (2 assertions)
+    ok   test_locomotion.gd::test_a_low_step_is_climbed_by_walking (4 assertions)
+    ok   test_locomotion.gd::test_a_tall_wall_is_not_treated_as_a_step (2 assertions)
+    ok   test_locomotion.gd::test_a_step_under_a_low_ceiling_is_refused (3 assertions)
+    ok   test_locomotion.gd::test_step_height_stays_within_the_spec_envelope (3 assertions)
+    ok   test_locomotion.gd::test_body_never_rotates (4 assertions)
+    ok   test_main_menu.gd::test_menu_scene_loads_and_has_its_buttons (5 assertions)
+    ok   test_main_menu.gd::test_focus_cycle_has_no_dead_end (12 assertions)
+    ok   test_main_menu.gd::test_disabled_buttons_are_not_focusable (2 assertions)
+    ok   test_main_menu.gd::test_continue_is_disabled_without_a_save (2 assertions)
+    ok   test_main_menu.gd::test_new_game_creates_a_save_and_enables_continue (3 assertions)
+    ok   test_main_menu.gd::test_new_game_asks_confirmation_before_overwriting (3 assertions)
+    ok   test_main_menu.gd::test_boot_can_reach_the_main_menu (4 assertions)
+    ok   test_main_menu.gd::test_builtin_ui_actions_exist_for_menu_navigation (5 assertions)
+    ok   test_main_menu.gd::test_debug_entry_follows_build_type (3 assertions)
+    ok   test_main_menu.gd::test_debug_audit_scene_is_reachable_in_development (2 assertions)
+    ok   test_physics_simulation.gd::test_jolt_module_is_present_in_the_build (1 assertions)
+    ok   test_physics_simulation.gd::test_a_body_actually_falls_and_settles_on_the_floor (7 assertions)
+    ok   test_physics_simulation.gd::test_physics_tick_matches_project_setting (2 assertions)
+    ok   test_traversal_course.gd::test_the_full_traversal_course_is_completed_without_a_softlock (13 assertions)
+    ok   test_action_alignment.gd::test_begin_refuses_a_correction_beyond_the_cap (2 assertions)
+    ok   test_action_alignment.gd::test_begin_accepts_a_correction_within_the_cap (2 assertions)
+    ok   test_action_alignment.gd::test_begin_refuses_a_null_duration (1 assertions)
+    ok   test_action_alignment.gd::test_advance_reaches_the_target_exactly (2 assertions)
+    ok   test_action_alignment.gd::test_no_single_step_is_a_snap (2 assertions)
+    ok   test_action_alignment.gd::test_motion_starts_and_ends_gently (3 assertions)
+    ok   test_action_alignment.gd::test_finished_is_emitted_once (1 assertions)
+    ok   test_action_alignment.gd::test_cancel_reports_the_reason_and_stops (3 assertions)
+    ok   test_action_alignment.gd::test_cancelling_an_inactive_component_is_silent (2 assertions)
+    ok   test_autoloads.gd::test_all_autoloads_are_registered_and_active (10 assertions)
+    ok   test_autoloads.gd::test_autoloads_are_present_in_the_tree (5 assertions)
+    ok   test_autoloads.gd::test_game_state_flow_transitions_are_idempotent (2 assertions)
+    ok   test_autoloads.gd::test_game_state_holds_no_scene_reference (2 assertions)
+    ok   test_autoloads.gd::test_event_bus_is_intentionally_empty (2 assertions)
+    ok   test_autoloads.gd::test_audio_buses_exist (7 assertions)
+    ok   test_autoloads.gd::test_audio_volume_roundtrip_and_clamp (3 assertions)
+    ok   test_autoloads.gd::test_scene_flow_owns_its_fade_layer (3 assertions)
+    ok   test_autoloads.gd::test_scene_flow_refuses_a_missing_scene (3 assertions)
+    ok   test_harness_contract.gd::test_recorder_is_injected_by_runner (2 assertions)
+    ok   test_harness_contract.gd::test_recorder_counts_and_records (4 assertions)
+    ok   test_harness_contract.gd::test_failures_list_is_a_copy (1 assertions)
+    ok   test_harness_contract.gd::test_contract_methods_are_declared (4 assertions)
+    ok   test_harness_contract.gd::test_this_case_extends_gate_test_case (1 assertions)
+    ok   test_input_audit.gd::test_probe_scene_exists_and_loads (2 assertions)
+    ok   test_input_audit.gd::test_probe_watches_every_input_action (20 assertions)
+    ok   test_input_audit.gd::test_probe_left_key_matches_the_input_map (1 assertions)
+    ok   test_input_audit.gd::test_probe_is_not_reachable_from_the_game (1 assertions)
+    ok   test_input_layer_isolation.gd::test_no_gameplay_script_reads_the_keyboard (81 assertions)
+    ok   test_input_layer_isolation.gd::test_only_the_reader_queries_the_input_map (45 assertions)
+    ok   test_input_layer_isolation.gd::test_every_action_still_has_a_gamepad_binding (23 assertions)
+    ok   test_input_layer_isolation.gd::test_intent_carries_no_device_information (7 assertions)
+    ok   test_input_layer_isolation.gd::test_intent_consumes_edges_but_keeps_held_states (5 assertions)
+    ok   test_input_map.gd::test_all_expected_actions_exist (18 assertions)
+    ok   test_input_map.gd::test_no_action_is_empty (18 assertions)
+    ok   test_input_map.gd::test_azerty_q_moves_left (1 assertions)
+    ok   test_input_map.gd::test_lock_on_never_uses_the_azerty_q_position (3 assertions)
+    ok   test_input_map.gd::test_movement_uses_zqsd_positions (3 assertions)
+    ok   test_input_map.gd::test_no_physical_key_is_bound_to_two_actions (1 assertions)
+    ok   test_input_map.gd::test_core_actions_have_gamepad_bindings (18 assertions)
+    ok   test_input_map.gd::test_essential_keys_are_bound (2 assertions)
+    ok   test_input_map.gd::test_collision_layers_are_named (14 assertions)
+    ok   test_save_system.gd::test_roundtrip_preserves_payload (7 assertions)
+    ok   test_save_system.gd::test_previous_save_is_kept_as_backup (4 assertions)
+    ok   test_save_system.gd::test_no_temporary_file_survives_a_successful_save (2 assertions)
+    ok   test_save_system.gd::test_corrupted_file_is_refused_not_half_applied (2 assertions)
+    ok   test_save_system.gd::test_future_schema_is_refused (2 assertions)
+    ok   test_save_system.gd::test_missing_slot_reports_failure (2 assertions)
+    ok   test_smoke.gd::test_engine_version_is_4_7_1_stable (4 assertions)
+    ok   test_smoke.gd::test_physics_engine_is_jolt (1 assertions)
+    ok   test_smoke.gd::test_renderer_is_forward_plus (1 assertions)
+    ok   test_smoke.gd::test_physics_tick_is_60hz (1 assertions)
+    ok   test_smoke.gd::test_metre_scale_convention (2 assertions)
+    ok   test_stamina.gd::test_starts_full (3 assertions)
+    ok   test_stamina.gd::test_sustained_effort_drains_at_the_declared_rate (1 assertions)
+    ok   test_stamina.gd::test_the_gauge_never_falls_below_zero (2 assertions)
+    ok   test_stamina.gd::test_reaching_zero_raises_exhaustion_once_per_depletion (4 assertions)
+    ok   test_stamina.gd::test_a_held_sprint_produces_usable_bursts_not_a_stutter (3 assertions)
+    ok   test_stamina.gd::test_regeneration_waits_the_declared_delay (2 assertions)
+    ok   test_stamina.gd::test_regeneration_ramps_in_instead_of_snapping (2 assertions)
+    ok   test_stamina.gd::test_regeneration_reaches_the_declared_rate_after_the_ramp (1 assertions)
+    ok   test_stamina.gd::test_the_gauge_never_exceeds_its_maximum (2 assertions)
+    ok   test_stamina.gd::test_an_unaffordable_cost_is_refused_and_consumes_nothing (2 assertions)
+    ok   test_stamina.gd::test_an_affordable_cost_is_deducted_exactly_once (2 assertions)
+    ok   test_stamina.gd::test_the_exhaustion_lockout_refuses_an_otherwise_affordable_cost (5 assertions)
+    ok   test_stamina.gd::test_with_spec_values_the_lockout_is_subsumed_by_the_regen_delay (3 assertions)
+    ok   test_stamina.gd::test_recovery_requires_the_lockout_and_a_usable_reserve (8 assertions)
+    ok   test_stamina.gd::test_declared_values_match_the_spec (13 assertions)
+  === RÉSULTAT: 133 réussi(s), 0 échoué(s) ===
+  [OK]   suite unitaire verte
+  [OK]   aucune erreur signalée dans le journal des tests
+
+=== 3. Scène d'intégration (lancement réel : Boot -> MainMenu) ===
+  [OK]   scène principale chargée et quittée proprement
+    [boot] Godot            : 4.7.1-stable (custom_build)
+    [boot] renderer         : forward_plus
+    [boot] physique 3D      : Jolt Physics
+    [boot] tick physique    : 60 Hz
+    [boot] pilote de rendu  : headless
+    [boot] autoloads        : GameState, EventBus, SaveSystem, AudioManager, SceneFlow
+    [boot] flux             : BOOT
+    [boot] fondation vérifiée — Phase A.
+    [boot] transition vers le menu principal.
+  [OK]   Boot atteint le menu principal
+
+=== 4. Plancher de couverture ===
+  [OK]   133 test(s) exécuté(s), plancher 133 respecté
+
+=== VALIDATE_FAST : VERT ===
+logs: evidence/validate_fast
