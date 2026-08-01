@@ -1318,3 +1318,54 @@ Exécuté après CHAQUE sous-jalon (D.1R.1 → D.1R.5), pas seulement à la fin.
 - Vestibule = graybox honnête ; donjon quatre salles : Phase F.
 - Sauvegarde minimale (armes/flèches/coffres/équipée) ; schéma §19.1 complet :
   Phase E.
+
+---
+
+# Passe visuelle V4.1 — lots V4.0 à V4.6 (2026-08-01)
+
+## Commande et résultat
+
+```bash
+tools/validate_fast.sh; echo $?
+```
+
+**Code retour** : `0` — VERT à CHAQUE lot. **270 réussis, 0 échoué, plancher
+270** (261 → +4 atmosphère V4.1, +4 repères V4.3 — comptés en V4.2/V4.3 —,
++5 style HUD/inventaire V4.4/V4.5).
+
+> **Nombre de tests de référence : 270.** C'est ici, et nulle part ailleurs,
+> qu'il doit être lu.
+
+## Suites nouvelles
+
+- `test_valley_atmosphere.gd` (3) : orage LOCAL borné épargnant la crête,
+  éclair qui FRAPPE puis s'éteint (états et lumière mesurés dans le temps),
+  soleil chaud + brume bornée qui étage sans noyer.
+- `test_valley_dressing.gd` (8) : eau serpentant DANS le lit sans collision,
+  prairie MultiMesh partitionnée posée sur la bande avant de la crête (seam
+  origins/tints — le RenderingServer headless ne relit pas les tampons),
+  chemins visuels des deux routes, pics deux rangées + contreforts frappés
+  par rayon, camp habité (tentes physiques, feu chaud), pylône runique,
+  façade monumentale aux marches mesurées ≤ 0,31 m, vestibule 26,5 m à
+  braseros.
+- `test_hud_style.gd` (5) : rubis qui se vident DANS L'ORDRE (somme = santé
+  affichée), jauge d'endurance visible pendant l'usage seulement, plaque de
+  cible suivant la vraie vie de l'ennemi, durabilité segmentée depuis
+  l'instance, inventaire 8 cartes + détail comparé à la ressource .tres.
+
+## Lancements réels et perfs
+
+Vallée, vestibule, boot→menu : 300 frames Xvfb chacun, zéro erreur de script
+après chaque lot. Perf llvmpipe INDICATIVE (jamais un budget) :
+29,1 s → 42,7 s (V4.1, glow plein-écran en software) → 46,9 s (V4.2) →
+49,2 s (V4.3) pour 300 frames 720p. Échelle de dégradation §20.8 : Phase I.
+
+## Limites honnêtes
+
+- Le RESSENTI visuel (lisibilité, ambiance, vent, HUD en jeu) plafonne à
+  EN ATTENTE du regard humain — les captures llvmpipe prouvent la
+  composition, pas la qualité perçue sur GPU réel.
+- Le pack V4 binaire n'est pas encore dans le dépôt (voir
+  source_assets/concepts/final_v4/README.md).
+- La capture vista tient l'éclair en frappe majeure (mode VALLEY_VISTA,
+  documenté) — en jeu la cadence est irrégulière temps-réel.

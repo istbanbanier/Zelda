@@ -148,7 +148,7 @@ llvmpipe uniquement, aucun GPU.
 | B | Player, caméra, locomotion, endurance, escalade, mantle | **Clos par D-021 : accepté pour continuation** — volet automatique vert (137 tests), dettes VALIDATION-B-001 + CONTROLLER-001 à la passe finale |
 | C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | **Clos par D-024 : accepté pour continuation** — 4 critères PASS rejoués en revue, D1 (mort du joueur) corrigé + régression, dettes humaines à la passe finale |
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
-| D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | **D.0–D.1 + correctif D.1R livrés** — relief macro, navmesh, ET la jouabilité du playtest n° 1 : souris/caméra/pause, corps séparés, HUD/inventaire/invites, montagnes continues, mort avec Retry, citadelle accessible (vestibule), « Continuer » honnête. 4 coffres. En attente : retour humain n° 2, puis C.5 |
+| D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | **D.0–D.1 + D.1R + Passe visuelle V4.1 livrés** — jouabilité corrigée (souris/pause, corps, HUD, montagnes, mort, vestibule, « Continuer ») PUIS langage visuel V4 dans la vraie build : orage local avec éclair, eau en S, prairie, chemins, chaîne superposée, camp habité, façade monumentale, HUD rubis, inventaire en grille. 270 tests. En attente : retour humain n° 2 (tient lieu de notation C.5 sur la crête réelle) |
 | E | Récolte, cuisine, buffs, sauvegarde et migrations | Non commencé |
 | F | Graphe électrique, 4 salles, salle centrale, antichambre | Non commencé |
 | G | Arène, boss 3 phases, solvabilité, victoire | Non commencé |

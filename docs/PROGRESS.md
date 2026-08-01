@@ -834,31 +834,81 @@ plancher 254**. QA-D1R-04 (S4) : surdéclarations de TEST_REPORT corrigées.
 audio finaux, optimisation, manette.
 
 ---
+## 2026-08-01 — Passe visuelle V4.1 (lots V4.0 → V4.6)
+
+**Ordre propriétaire** : D.1R validé pour continuation (playtest de contrôle
+sans blocage), pack visuel V4 (5 images) érigé en référence d'autorité —
+installer le langage visuel dans la VRAIE build sans toucher aux systèmes
+D.1R. Le ZIP binaire n'a pas atteint le conteneur : provenance et lecture
+consignées (`source_assets/concepts/final_v4/README.md`, ART_BIBLE §1bis),
+PNG à déposer.
+
+**Livré, un commit poussé par lot** :
+
+- **V4.0 (`b777772`)** : provenance + lecture d'autorité + état initial
+  (capture baseline, minutage llvmpipe indicatif).
+- **V4.1 (`ccaa4c7`)** lumière/atmosphère : soleil #FFD68A + ombres, horizon
+  réchauffé, filmic + glow faible seuil haut, brume étagée (aerial 0,35,
+  densité 0,0009 — la première passe NOYAIT le plan moyen, ÷2), brume basse
+  y<6, StormCell : orage LOCAL (8 grumeaux disable_fog, voile de pluie,
+  éclair déterministe cœur blanc/halo cyan, tenu en mode vista — llvmpipe :
+  ~250 ms/frame réels, la cadence temps-réel échappait à la capture), motes.
+  3 itérations sur capture.
+- **V4.2 (`42e1c87`)** terrain/limites/profondeur : eau turquoise en S dans
+  le lit (visuel sans collision), chemins des deux routes, variations de sol,
+  pics en TENTES sur deux rangées (lointaine bleuie) plafonnés derrière la
+  citadelle, 8 contreforts physiques unclimbable (navmesh 646), prairie §7.5
+  partitionnée en GRAPPES de touffes (3 quads croisés) sur la bande avant de
+  la crête + fleurs. Piège : le RenderingServer headless ne relit pas les
+  tampons MultiMesh → seam origins/tints.
+- **V4.3 (`6e67ef8`)** repères : camp habité (3 tentes physiques, foyer
+  chaud), pylône ouvragé (socle/anneaux/runes émissives), façade monumentale
+  (gradins DERRIÈRE le plan de la porte, piliers à conduits cyan, linteau,
+  braseros, marches mesurées ≤ 0,31 m), vestibule 22 × 26 m à 6 colonnes et
+  4 braseros contre la veine cyan du seuil scellé. Navmesh 749.
+- **V4.4 (`370cdec`)** HUD (réf. 03) : HudStyle source unique — vie en 5
+  RUBIS (somme affichée = seam), endurance turquoise pendant l'usage
+  seulement, plaque de cible à la vraie vie de l'ennemi, carte d'arme à
+  durabilité SEGMENTÉE, invite en cartouche, notifications sur plaque.
+- **V4.5/V4.6 (`4289d5e`)** inventaire (réf. 04) : grille 2 × 4, huit cartes
+  (vides estompées), détail véridique (dégâts/portée/durabilité/conductivité
+  comparés à la .tres par le test) ; pause sur plaque centrée par ancrage,
+  monde visible ; rien d'inexistant affiché.
+
+**Validation** : `validate_fast` VERT après CHAQUE lot — **270 réussis,
+plancher 270** (+12 régressions V4 qui mesurent l'effet). Lancements réels
+Xvfb sans erreur de script après chaque lot. Perfs llvmpipe INDICATIVES
+consignées (`evidence/passeV4/baseline/perf_indicative.txt`). Captures
+par lot dans `evidence/passeV4/` avec manifestes.
+
+**Hors périmètre tenu** : aucun système D.1R réécrit, pas de décor définitif
+au mètre carré, pas de personnages finaux, pas de donjon complet.
+
+---
 
 ## HANDOFF — prochaine action exacte
 
-> **Gates** : A `RÉSERVE` (D-012) · B `CONTINUATION` (D-021) · C `CONTINUATION`
-> (D-024) · D **en cours** — D.1 corrigé par D.1R, revue consolidée puis
-> package de playtest n° 2 en préparation.
-> **C.5 RESTE SUSPENDU** : décision propriétaire — attendre le retour du
-> playtest humain n° 2.
+> **Gates** : A `RÉSERVE` (D-012) · B `CONTINUATION` (D-021) · C
+> `CONTINUATION` (D-024) · D **en cours** — D.1R corrigé post-revue, Passe
+> visuelle V4.1 livrée (V4.0 → V4.6).
+> **C.5** : la Passe V4 en tient lieu sur la crête réelle — la notation
+> §3.5 sur capture et le verdict appartiennent au REGARD HUMAIN.
 
-### Action suivante : jouer le playtest D.1R (HUMAIN, hors conteneur)
+### Action suivante : playtest humain n° 2 (hors conteneur)
 
-1. Suivre `docs/PLAYTEST_D1R.md` sur une machine avec écran, clavier AZERTY et
-   GPU — contrôles à jour : souris capturée, Échap pause, Tab inventaire,
-   molette pour changer d'arme.
-2. Vérifier en particulier les 12 constats du n° 1 : caméra, HUD, séparation
-   des corps, coffres, citadelle, mort, « Continuer ».
-3. Déposer le retour dans `evidence/gateD/playtest02/`. SEULEMENT ENSUITE :
-   C.5 sur la crête réelle (plan dans l'entrée D.1).
+1. Suivre `docs/PLAYTEST_D1R.md` (contrôles inchangés) — le build a EN PLUS
+   l'atmosphère V4 : orage local, éclairs, eau, prairie, chemins, camp
+   habité, façade monumentale, HUD rubis, inventaire en grille.
+2. Vérifier les 12 constats du n° 1 ET la lisibilité V4 (trois plans, orage
+   localisé, routes guidantes, HUD discret).
+3. Déposer le retour dans `evidence/gateD/playtest02/FORMULAIRE.md`.
 
 ### Rappels
 
-- Rebaker le navmesh après TOUTE modification du relief
-  (`tools/godot/bake_valley_navmesh.gd`).
-- Pièges frais : position-avant-add_child pour TOUT corps physique ; suiveur
-  d'agent (D-025) ; SceneFlow bloqué dans les tests de menu (`_busy`) ;
-  matériaux de scène partagés → `duplicate()` avant teinte par instance ;
-  un test qui crashe saute son teardown et empoisonne les suites suivantes.
-- `MIN_TESTS` = 254 ; compte de référence dans TEST_REPORT uniquement.
+- Rebaker le navmesh après TOUTE modification du relief (749 poly).
+- Pièges frais : position-avant-add_child ; tampons MultiMesh illisibles en
+  headless (seam origins/tints) ; cadence Timer temps-réel vs frames
+  llvmpipe (~250 ms) ; PrismMesh : arête le long de Z ; plaques UI ancrées
+  centre, jamais par `position` avant le premier layout.
+- `MIN_TESTS` = 270 ; compte de référence dans TEST_REPORT uniquement.
+- Le pack V4 binaire reste à déposer dans `source_assets/concepts/final_v4/`.
