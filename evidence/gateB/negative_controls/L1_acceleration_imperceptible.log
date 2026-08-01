@@ -1,0 +1,9 @@
+# Contrôle négatif — L1_acceleration_imperceptible
+# ground_acceleration reduite a 0,3 dans le .tres : le premier tick produit 0,005 m/s, sous le seuil mesurable — le mouvement n est PLUS visible au tick suivant.
+# Test visé : test_movement_responds_at_the_next_physics_tick
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_latency.gd::test_movement_responds_at_the_next_physics_tick — le mouvement doit être visible au tick suivant — mesuré : 5 essai(s) : min 3, max 3, moyenne 3.00 tick(s) (50.0 ms à 60 Hz)
+=== RÉSULTAT: 115 réussi(s), 28 échoué(s) ===
+  ÉCHEC: test_latency.gd::test_movement_responds_at_the_next_physics_tick — le mouvement doit être visible au tick suivant — mesuré : 5 essai(s) : min 3, max 3, moyenne 3.00 tick(s) (50.0 ms à 60 Hz)

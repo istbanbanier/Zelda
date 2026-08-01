@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=16 format=3]
 
 ; Joueur — hiérarchie de MASTER_SPEC §6.2, réduite au périmètre de B.3.
 ; Absents et assumés : StateMachine (§8.1) — le contrôleur porte un Mode couvrant
@@ -24,6 +24,23 @@
 radius = 0.35
 height = 1.8
 
+; Silhouette graybox : une capsule et un « nez » indiquant le regard. Ce n'est PAS
+; un personnage (§7.14 interdit d'appeler « final » un volume gris) — c'est le
+; minimum pour que l'opérateur des essais manuels voie où est le corps et où il
+; s'oriente. Le HeroModel réel arrive en Phase H.
+[sub_resource type="CapsuleMesh" id="GrayboxCapsule"]
+radius = 0.35
+height = 1.8
+
+[sub_resource type="BoxMesh" id="GrayboxNose"]
+size = Vector3(0.14, 0.14, 0.3)
+
+[sub_resource type="StandardMaterial3D" id="GrayboxBody"]
+albedo_color = Color(0.55, 0.58, 0.62, 1)
+
+[sub_resource type="StandardMaterial3D" id="GrayboxAccent"]
+albedo_color = Color(0.09, 0.56, 0.61, 1)
+
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 2
 collision_mask = 1
@@ -35,6 +52,18 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("Capsule")
 
 [node name="VisualRoot" type="Node3D" parent="."]
+
+[node name="BodyMesh" type="MeshInstance3D" parent="VisualRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("GrayboxCapsule")
+surface_material_override/0 = SubResource("GrayboxBody")
+
+; Le nez pointe vers +Z local : `_orient_visual()` calcule le lacet avec
+; atan2(x, z), qui oriente +Z vers le déplacement.
+[node name="NoseMesh" type="MeshInstance3D" parent="VisualRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0.38)
+mesh = SubResource("GrayboxNose")
+surface_material_override/0 = SubResource("GrayboxAccent")
 
 [node name="Components" type="Node" parent="."]
 

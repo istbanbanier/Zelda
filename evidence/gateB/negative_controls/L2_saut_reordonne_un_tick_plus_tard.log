@@ -1,0 +1,9 @@
+# Contrôle négatif — L2_saut_reordonne_un_tick_plus_tard
+# _try_jump() deplace AVANT _update_timers() : le buffer pose ce tick n est vu qu au tick suivant, latence de saut 2 ticks au lieu de 1.
+# Test visé : test_jump_responds_at_the_next_physics_tick
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_latency.gd::test_jump_responds_at_the_next_physics_tick — le saut au repos doit partir au tick suivant — mesuré : 5 essai(s) : min 2, max 2, moyenne 2.00 tick(s) (33.3 ms à 60 Hz)
+=== RÉSULTAT: 132 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_latency.gd::test_jump_responds_at_the_next_physics_tick — le saut au repos doit partir au tick suivant — mesuré : 5 essai(s) : min 2, max 2, moyenne 2.00 tick(s) (33.3 ms à 60 Hz)

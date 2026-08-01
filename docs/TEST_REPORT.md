@@ -692,3 +692,72 @@ Logs archivés : `evidence/gateB/negative_controls/Q1…Q5*.log`.
   aucune observation en mouvement à framerate réel.
 - **Aucune mesure de latence en ticks** (§10.6).
 - **CONTROLLER-001 reste ouverte.**
+
+---
+
+# Jalon B.5 — Latence instrumentée et protocole manuel Gate B (2026-08-01)
+
+## Commande et résultat
+
+```bash
+tools/validate_fast.sh; echo $?
+```
+
+**Code retour** : `0` — VERT. **133 réussis, 0 échoué**, plancher 133.
+
+> **Nombre de tests de référence : 133.** C'est ici, et nulle part ailleurs, qu'il
+> doit être lu.
+
+## Mesures de latence (§10.6, §23.1)
+
+`LatencyInstrument` pose l'intention **entre deux ticks** — la position temporelle
+exacte d'un événement de périphérique relayé par `PlayerInputReader` — puis compte
+les ticks jusqu'au premier effet observable.
+
+| Mesure | Essais | Pire cas | En ms (60 Hz) |
+|---|---|---|---|
+| Intention de déplacement → vitesse horizontale | 5 | **1 tick** | 16,7 |
+| Demande de saut (repos) → vitesse verticale | 5 | **1 tick** | 16,7 |
+| Stabilité inter-essais | 5 | min = max | — |
+
+§23.1 (« entrée mouvement visible au tick physique suivant ») est donc **mesuré**,
+pas affirmé. Le pire cas est exigé, pas la moyenne : une latence intermittente est
+une latence.
+
+**Périmètre honnête** : c'est le pipeline intention → mouvement. La latence
+périphérique → intention et la latence d'affichage sont hors de portée headless —
+§10.6 les exclut d'ailleurs (« hors latence écran/périphérique »). L'affichage
+debug à l'écran viendra avec le `CombatLab` (Phase C) ; l'instrument est écrit pour
+y être branché tel quel.
+
+## Contrôles négatifs rejoués
+
+| # | Mutation | Test visé | Obtenu |
+|---|---|---|---|
+| L1 | `ground_acceleration` à 0,3 **dans le `.tres`** | `test_movement_responds_at_the_next_physics_tick` | ÉCHEC — « min 3, max 3, moyenne 3.00 tick(s) (50.0 ms) » ✅ |
+| L2 | `_try_jump()` réordonné avant `_update_timers()` | `test_jump_responds_at_the_next_physics_tick` | ÉCHEC — « min 2, max 2, moyenne 2.00 tick(s) (33.3 ms) » ✅ |
+
+L2 reproduit exactement la régression que §10.6 vise : une action tardive **par
+architecture** — le buffer posé ce tick n'est vu qu'au suivant. Le test la chiffre.
+
+## Protocole manuel et terrain d'essai
+
+- `docs/MANUAL_VALIDATION.md`, section Gate B : six essais (caméra contre murs,
+  escalade et refus, mantle sous plafond, endurance nulle, ressenti, parcours à la
+  main), chacun avec but, procédure, critère PASS et preuve attendue.
+- `TraversalPlayground.tscn` : sandbox + joueur + panneau d'état (endurance, mode,
+  vitesse, événements journalisés). **Lancé réellement** en headless : souris
+  capturée, aucun log d'erreur, RC=0. Ce que ce lancement ne prouve pas : le rendu
+  à l'écran et la jouabilité — c'est précisément l'objet du protocole.
+- Silhouette graybox (capsule + nez d'orientation) sur le joueur : le strict
+  minimum pour qu'un opérateur voie le corps et son orientation. Ce n'est **pas**
+  un personnage (§7.14).
+
+## Limites de B.5
+
+- **L'essai humain n'a pas eu lieu** : le protocole est prêt, pas joué. Ressenti,
+  jitter et lisibilité restent `NON VÉRIFIÉ`.
+- **La falaise irrégulière de §21.4 n'est pas jugeable en graybox** (parois
+  planes) : l'essai B-2 le consigne et sera rejoué en Phase D.
+- **CONTROLLER-001 reste ouverte** — et le protocole Gate B dit explicitement
+  qu'il ne la lève pas.

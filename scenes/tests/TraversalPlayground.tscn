@@ -1,0 +1,42 @@
+[gd_scene load_steps=7 format=3]
+
+; Terrain d'essai manuel du Gate B (§21.4). Lancer avec --debug-collisions :
+; le bac à sable est un décor d'épreuves sans meshes, seules ses formes de
+; collision sont visibles. Voir docs/MANUAL_VALIDATION.md, section Gate B.
+
+[ext_resource type="PackedScene" path="res://scenes/tests/TraversalSandbox.tscn" id="1_sandbox"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2_player"]
+[ext_resource type="Script" path="res://scripts/tools/traversal_playground.gd" id="3_playground"]
+
+[sub_resource type="ProceduralSkyMaterial" id="Sky"]
+
+[sub_resource type="Sky" id="SkyRes"]
+sky_material = SubResource("Sky")
+
+[sub_resource type="Environment" id="Env"]
+background_mode = 2
+sky = SubResource("SkyRes")
+
+[node name="TraversalPlayground" type="Node3D"]
+script = ExtResource("3_playground")
+
+[node name="Sandbox" parent="." instance=ExtResource("1_sandbox")]
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0, 20, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env")
+
+[node name="DebugUI" type="CanvasLayer" parent="."]
+
+[node name="Readout" type="Label" parent="DebugUI"]
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 420.0
+offset_bottom = 220.0
+theme_override_font_sizes/font_size = 18

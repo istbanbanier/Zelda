@@ -4,7 +4,7 @@ Vocabulaire imposé (§0.2) : `Non commencé` · `Implémenté` (raccordé) ·
 `Fonctionnel` (testé en scène exécutable) · `Validé` (conforme, sans régression) ·
 `Bloqué`. Tout critère non testé est `NON VÉRIFIÉ`, jamais implicitement réussi.
 
-**Dernière mise à jour** : 2026-08-01 · **Phase** : B (jalons B.0 à B.4 livrés) · **Gate A gelé** : `9414fd0` · **Commit courant** : voir `git log`
+**Dernière mise à jour** : 2026-08-01 · **Phase** : B (jalons B.0 à B.5 livrés) · **Gate A gelé** : `9414fd0` · **Commit courant** : voir `git log`
 
 ## Verdict Gate A : **ACCEPTÉ AVEC RÉSERVE / BLOQUÉ SUR LA VALIDATION MANETTE**
 
@@ -53,7 +53,9 @@ sprinte et grimpe une pente, caméra à l'épaule qui ne traverse pas les murs**
 (B.1), son sprint est limité par l'endurance de §9.1 (B.2), il grimpe les parois
 puis franchit les rebords (B.3), et un parcours enchaîné — marche, pente, saut
 par-dessus un vide, escalade, franchissement — est joué de bout en bout par un
-pilote scripté sans triche (B.4). Il n'a ni animation, ni modèle. La notation
+pilote scripté sans triche (B.4). La latence intention → mouvement est
+**instrumentée et mesurée à 1 tick** (B.5), et le protocole d'essais humains du
+Gate B est prêt à jouer. Il n'a ni animation, ni modèle. La notation
 visuelle et les mesures de performance restent impossibles ici : rendu logiciel
 llvmpipe uniquement, aucun GPU.
 
@@ -103,7 +105,7 @@ llvmpipe uniquement, aucun GPU.
 | Phase | Système | État |
 |---|---|---|
 | A | Boot, autoloads, InputMap AZERTY, couches de collision | **A.1 et A.2 livrés et gelés (`9414fd0`)** ; Gate A **EN ATTENTE** de validation humaine |
-| B | Player, caméra, locomotion, endurance, escalade, mantle | **B.0 à B.4 livrés** — §8.2 couvert en entier, parcours enchaîné vert ; Gate B attend encore les essais manuels de §21.4 |
+| B | Player, caméra, locomotion, endurance, escalade, mantle | **B.0 à B.5 livrés** — latence instrumentée (1 tick mesuré), protocole manuel Gate B prêt à jouer ; reste la revue contradictoire puis les essais humains |
 | C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | Non commencé |
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
 | D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | Non commencé |
@@ -254,11 +256,28 @@ aussi aux coffres, à la cuisine et au pylône.
 | Caméra jamais dans la géométrie sur tout le parcours (§23.1) | **Fonctionnel** | sonde au point de vue à chaque tick : 0 image sur ~1 400 |
 | Chaque capacité réellement employée | **Fonctionnel** | compteurs sur `stepped_up`, `grabbed_wall`, `mantle_finished` |
 | Déclencheur de franchissement (D-020) | **Implémenté** | justifié par une mesure ; **aucun test ne le départage** de l'ancien (Q5) |
-| Latence en ticks (§10.6) | **Non commencé** | instrumentation à écrire |
+| Latence en ticks (§10.6, §23.1) | **Fonctionnel** — voir jalon B.5 | `LatencyInstrument` + `test_latency.gd` : 1 tick mesuré, mouvement et saut |
 
-**§8.2 est désormais couvert en entier.** Ce qui manque pour Gate B ne relève plus
-du code : essais manuels de §21.4 touchant le traversal, mesure de latence (§10.6),
-observation du jitter caméra à framerate réel (§8.3).
+**§8.2 est désormais couvert en entier.**
+
+---
+
+## Phase B — jalon B.5 : latence instrumentée et protocole manuel
+
+| Élément | État | Preuve |
+|---|---|---|
+| Latence intention → mouvement (§23.1 : « au tick physique suivant ») | **Fonctionnel** | `test_latency.gd` : 5 essais, pire cas **1 tick** (16,7 ms à 60 Hz) |
+| Latence de saut depuis le repos (§10.6) | **Fonctionnel** | idem : **1 tick**, stable sur tous les essais |
+| Conversion ticks → ms au taux réel | **Fonctionnel** | `test_the_report_converts_ticks_at_the_real_tick_rate` |
+| Instrument réutilisable par un affichage debug | **Implémenté** | `LatencyInstrument` ; l'affichage écran viendra avec `CombatLab` (Phase C) |
+| Protocole manuel Gate B (§21.4) | **Implémenté** | `docs/MANUAL_VALIDATION.md`, six essais B-1…B-6, prêt à jouer |
+| Terrain d'essai jouable | **Fonctionnel** | `TraversalPlayground.tscn` : lancé réellement (headless), souris capturée, panneau d'état, événements journalisés |
+| Silhouette graybox du joueur | **Implémenté** | capsule + nez d'orientation ; **pas un personnage** (§7.14), Phase H |
+| Ressenti humain (§10.6), jitter (§8.3) | **NON VÉRIFIÉ** | essais B-1 et B-5 du protocole — exigent un écran |
+
+**Ce qui sépare encore le Gate B d'un verdict** : la revue contradictoire (§0.7),
+puis les six essais humains du protocole. Le code et l'instrumentation sont
+complets.
 
 ---
 

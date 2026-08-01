@@ -293,3 +293,164 @@ Le verdict global est le **plus faible** des six étapes, jamais leur moyenne
 **Interdiction explicite** : ne pas déclarer `PASS` sur la foi des tests
 automatiques. Ils prouvent que la liaison `Q` → gauche existe dans `project.godot`.
 Ils ne prouvent pas qu'une personne appuyant sur `Q` va vers la gauche.
+
+---
+---
+
+# PROTOCOLE DE VALIDATION MANUELLE — Gate B (traversal)
+
+Essais de §21.4 touchant le traversal, plus les deux observations que l'automatique
+ne peut pas produire : le jitter caméra (§8.3) et le ressenti de latence (§10.6).
+Ce que les tests automatiques prouvent déjà — et qu'il est donc inutile de
+re-prouver à la main — est listé en fin de section.
+
+## Préparation
+
+```bash
+# 1. Se placer sur le commit à valider (le noter : il ira dans le rapport)
+git log --oneline -1
+
+# 2. Lancer le terrain d'essai. --debug-collisions est INDISPENSABLE : le bac à
+#    sable est un décor d'épreuves sans meshes, seules ses formes de collision
+#    sont visibles.
+godot --path . --debug-collisions scenes/tests/TraversalPlayground.tscn
+```
+
+Contrôles : `ZQSD` (AZERTY), souris pour la caméra, `Espace` saut, `Maj G` sprint,
+`Échap` rend/reprend la souris. Un panneau en haut à gauche affiche endurance,
+mode, vitesse et les derniers événements (accroche, franchissement, refus) — s'y
+fier plutôt qu'à l'interprétation de la silhouette.
+
+Plan du bac à sable (positions monde ; le joueur apparaît en (0, 1, 0)) :
+
+| Épreuve | Où |
+|---|---|
+| Marche 0,32 m | (0 ; 20), abordée en s'éloignant du spawn vers +Z |
+| Marche sous plafond bas | (−36 ; −30) |
+| Pente 40° (marchable) | (−20 ; 0) |
+| Pente 60° (mur) | (−30 ; 0) |
+| Mur vertical 6 m | (30 ; 0) |
+| Paroi d'escalade 4 m | (−5 ; −30) |
+| Paroi `unclimbable` (jumelle) | (−25 ; −30) |
+| Surplomb flottant | (−15 ; −30) |
+| Rebord bas | (12 ; −30) |
+| Rebord sous plafond | (28 ; −30) |
+
+## Essai B-1 — Caméra contre tous types de murs (§21.4, §8.3)
+
+**But** : « tourner caméra contre tous types de murs » ; « zéro traversée/jitter ».
+
+1. Se coller successivement au mur de 6 m, à la paroi d'escalade, dans le coin
+   que forment deux parois, et sous le plafond du rebord (28 ; −30).
+2. À chaque poste : faire un tour complet de caméra, lentement puis vite ;
+   puis un demi-tour en sprintant le long du mur.
+3. Observer : la caméra montre-t-elle jamais l'envers de la géométrie ? L'image
+   tremble-t-elle quand le bras se raccourcit (jitter) ? Le retour à distance
+   pleine est-il doux ?
+
+**PASS** : aucune traversée, aucun tremblement visible, récupération douce.
+**Preuve** : `evidence/gateB/manual/B1_camera_murs.md` (verdict + description de
+tout défaut), capture ou courte vidéo si un défaut apparaît.
+
+## Essai B-2 — Escalade : parois, coins, refus (§21.4, §9.2)
+
+**But** : « gravir une falaise irrégulière et coins » — adapté au graybox.
+
+1. Gravir la paroi de 4 m (−5 ; −30) : monter, descendre, latéral, saut d'escalade
+   (`Espace`), franchir le sommet en poussant vers le haut.
+2. Contourner un **coin vertical** de cette paroi en latéral.
+3. Vérifier les trois refus : paroi jumelle `unclimbable` (−25 ; −30), surplomb
+   flottant (−15 ; −30), pente à 60° (−30 ; 0) — aucune ne doit s'accrocher.
+
+**LIMITE ASSUMÉE** : le graybox n'a que des parois **planes**. « Falaise
+irrégulière » (et le lissage de normale qui va avec) ne peut pas être jugé ici ;
+cet essai sera **rejoué en Phase D** sur le vrai terrain. Le noter au rapport.
+
+**PASS** : montée fluide, coins franchis sans décrochage brutal, les trois refus
+tiennent, le panneau nomme chaque événement.
+**Preuve** : `evidence/gateB/manual/B2_escalade.md`.
+
+## Essai B-3 — Mantle, y compris sous plafond (§21.4, §9.3)
+
+**But** : « tenter mantle sous plafond » ; « aucun snap visible ».
+
+1. Franchir le rebord bas (12 ; −30) dix fois, sous des angles d'approche variés.
+   L'œil cherche l'à-coup : le test automatique borne le plus grand pas, il ne
+   voit pas une trajectoire « mécanique ».
+2. Tenter le rebord sous plafond (28 ; −30) : le franchissement doit être
+   **refusé** (panneau : « mantle refusé (blocked) »), sans à-coup, sans
+   encastrement, et le joueur doit pouvoir repartir librement.
+3. Franchir la marche sous plafond bas (−36 ; −30) : refus attendu, le joueur
+   reste devant, jamais dedans.
+
+**PASS** : franchissements lisibles sans téléportation perçue, refus nets sans
+softlock.
+**Preuve** : `evidence/gateB/manual/B3_mantle.md`.
+
+## Essai B-4 — Sprint à endurance nulle (§21.4, §9.1, D-016)
+
+**But** : « sprinter à zéro endurance » — et valider humainement le seuil de
+récupération, que D-016 a fixé par mesure, pas par ressenti.
+
+1. Sprinter en boucle jusqu'à `ÉPUISÉ` (panneau). Constater : vitesse retombe en
+   course, pas d'arrêt brutal.
+2. **Maintenir** sprint enfoncé sans le relâcher : la reprise doit produire des
+   rafales franches (~1,7 s), jamais une oscillation rapide de vitesse.
+3. Épuisé, tenter de s'accrocher à la paroi de 4 m : l'accroche doit être refusée
+   tant que la récupération n'a pas eu lieu ; en cours d'escalade, l'épuisement
+   doit faire lâcher.
+
+**PASS** : bascules lisibles, aucune oscillation, la valeur du seuil (20) ne
+produit ni attente frustrante ni bégaiement. Si l'attente semble trop longue ou
+trop courte : le dire au rapport — c'est exactement la donnée que D-016 attend.
+**Preuve** : `evidence/gateB/manual/B4_endurance.md`.
+
+## Essai B-5 — Ressenti de latence et de contrôle (§10.6)
+
+**But** : l'essai humain que §10.6 exige en complément de la mesure (1 tick,
+instrumentée par `test_latency.gd`).
+
+1. Alterner arrêts nets, départs, demi-tours, petits sauts, à 60 FPS.
+2. Chercher : un retard perceptible entre touche et mouvement, un arrêt
+   « robotique », un saut avalé (appuyer juste avant de retomber : le buffer doit
+   le conserver), un saut au bord d'une plateforme juste après l'avoir quittée
+   (coyote time).
+
+**PASS** : aucune commande perçue comme perdue ou tardive.
+**Preuve** : `evidence/gateB/manual/B5_ressenti.md`.
+
+## Essai B-6 — Parcours enchaîné, à la main (§22)
+
+**But** : rejouer humainement ce que le pilote scripté réussit, dans
+`TraversalCourse.tscn` cette fois.
+
+```bash
+# Ouvrir la scène du parcours dans l'éditeur, y glisser une instance de
+# Player.tscn en (0, 1, 0), puis F6. Ne pas committer cette modification.
+```
+
+Sol → marche → rampe → saut du vide → escalade de la tour → sommet. Trois
+tentatives ; noter tout endroit où l'on se sent bloqué, ou où la caméra gêne.
+
+**PASS** : parcours bouclé aux trois tentatives sans blocage ni combat contre la
+caméra.
+**Preuve** : `evidence/gateB/manual/B6_parcours.md`.
+
+## Archivage et conclusion
+
+Rassembler `evidence/gateB/manual/`, y ajouter `RAPPORT.md` : commit testé,
+machine, OS, verdicts par essai, défauts décrits. Committer le dossier.
+
+Le verdict du Gate B est le **plus faible** de : tests automatiques (dont le
+parcours scripté et la latence instrumentée), ces six essais, et la revue
+contradictoire. Jamais leur moyenne.
+
+**Ce que l'automatique prouve déjà** — ne pas le re-prouver à la main : vitesses
+de §8.2/§9.2, coûts d'endurance de §9.1, une seule accroche par contact, refus
+nommés (`unclimbable`, `overhang`, `blocked`, `too_shallow`), caméra jamais dans
+la géométrie sur le parcours scripté (sonde à chaque tick), latence intention →
+mouvement de 1 tick. Ces essais manuels cherchent ce que les sondes ne voient
+pas : le tremblement, l'à-coup, le ressenti, l'envie de rejouer.
+
+**CONTROLLER-001 ne fait PAS partie de ce protocole** : la dette manette reste
+ouverte et se lève par l'étape 3 du protocole Gate A, jamais par le Gate B.

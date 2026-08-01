@@ -400,66 +400,98 @@ latence en ticks (§10.6) restent hors de portée d'un test headless.
 
 ---
 
+## 2026-08-01 — Jalon B.5 : latence instrumentée, protocole manuel, terrain d'essai
+
+**Gate visé** : B. **État à l'ouverture** : B.4 livré ; il manquait la mesure de
+latence, le protocole humain et la revue.
+
+### Changement réel
+
+- **`LatencyInstrument`** (§10.6, §23.1) : pose l'intention entre deux ticks — la
+  position temporelle exacte d'un événement de périphérique — et compte les ticks
+  jusqu'au premier effet. Mesuré : **1 tick** (16,7 ms à 60 Hz), pire cas sur cinq
+  essais, mouvement comme saut, stable. §23.1 (« visible au tick physique
+  suivant ») est un chiffre, plus une intention.
+- **Protocole Gate B** dans `docs/MANUAL_VALIDATION.md` : six essais (B-1 à B-6)
+  couvrant §21.4, le jitter (§8.3) et le ressenti (§10.6), chacun avec but,
+  procédure, critère et preuve attendue. Il dit aussi ce que l'automatique prouve
+  déjà, pour que l'opérateur ne perde pas son temps à le re-prouver.
+- **`TraversalPlayground.tscn`** : le terrain d'essai jouable qui manquait au
+  protocole — sandbox + joueur + panneau d'état (endurance, mode, vitesse,
+  événements journalisés), souris capturée, lancé réellement en headless (RC=0).
+  Lancement documenté : `--debug-collisions`, car le bac à sable n'a pas de meshes.
+- **Silhouette graybox** (capsule + nez d'orientation) : le minimum pour qu'un
+  opérateur voie le corps et son orientation. Pas un personnage (§7.14).
+
+### Contrôles négatifs
+
+L1 (accélération réduite à l'imperceptible dans le `.tres`) : la mesure passe à
+3 ticks, le test rougit. **L2 (réordonnancement `_try_jump()` avant
+`_update_timers()`)** : latence de saut mesurée à 2 ticks — c'est exactement la
+régression d'architecture que §10.6 vise, une action tardive par ordre
+d'exécution. Le test la chiffre : « min 2, max 2, 33,3 ms ».
+
+### Vérification
+
+`tools/validate_fast.sh` → `RC=0`, VERT, 133 tests, plancher 133.
+
+### Ce que B.5 ne prouve pas
+
+Le protocole est **prêt, pas joué** : ressenti, jitter et lisibilité restent
+`NON VÉRIFIÉ`. La latence mesurée est celle du pipeline intention → mouvement —
+périphérique et écran exclus, comme §10.6 le fait lui-même. La falaise
+irrégulière de §21.4 n'est pas jugeable en graybox (essai B-2, rejouer en
+Phase D). `CONTROLLER-001` reste ouverte.
+
+---
+
 ## HANDOFF — prochaine action exacte
 
 > **Gate A : `ACCEPTÉ AVEC RÉSERVE / BLOQUÉ SUR LA VALIDATION MANETTE`** (D-012).
-> **Phase B : B.0 à B.4 livrés.** §8.2 et §9.2/§9.3 sont couverts, le parcours
-> enchaîné est vert.
-> **Gate B n'est PAS acquis** — mais ce qui manque ne relève plus du code.
+> **Phase B : B.0 à B.5 livrés.** Code, instrumentation et protocole complets.
 
-### Action suivante : instruire le Gate B, puis le faire trancher
+### Action suivante : la revue contradictoire du Gate B
 
-Trois choses, dans cet ordre :
+Invoquer la procédure `gate-review` (`.claude/skills/`) avec :
 
-1. **Mesure de latence (§10.6).** Horodater réception de l'intention, consommation,
-   début logique et premier déplacement, puis exposer le résultat en **ticks et en
-   millisecondes**. §23.1 exige « entrée mouvement visible au tick physique suivant
-   et latence d'action instrumentée » : c'est le seul critère chiffré du Gate B
-   encore absent, et il est atteignable en headless.
-2. **Compléter `docs/MANUAL_VALIDATION.md`** avec les essais de §21.4 touchant le
-   traversal : caméra contre tous types de murs, falaise irrégulière et coins,
-   mantle sous plafond (automatisé, mais l'œil doit confirmer l'absence d'à-coup),
-   sprint à endurance nulle. Le protocole existe déjà pour le Gate A ; il s'agit de
-   l'étendre, pas d'en créer un.
-3. **Lancer la revue contradictoire** (`gate-review`, `adversarial-qa`) sur le
-   Gate B avec la spécification, le diff et les preuves. §0.7 l'exige avant toute
-   déclaration `PASS`, et l'approbation de l'auteur ne la remplace jamais.
+- la spécification : §8 (contrôle), §9 (endurance/escalade/mantle), §22 Gate B,
+  §23.1 (critères chiffrés) ;
+- le diff : commits de B.0 à B.5 sur cette branche ;
+- les preuves : `docs/TEST_REPORT.md` (jalons B.1 à B.5),
+  `evidence/gateB/README.md` et ses 26 contrôles négatifs archivés.
 
-Ne pas déclarer Gate B `PASS` sans ces trois éléments. Ne pas entamer la Phase C
-avant que le Gate B soit `PASS` ou explicitement `BLOQUÉ`.
+La revue doit rendre un verdict **par critère** : `PASS` / `FAIL` / `BLOQUÉ`, le
+verdict global étant le plus faible. Issues possibles :
 
-### Ce qui reste implémenté mais non mesuré, à traiter en Phase C ou plus tard
+- défauts bloquants → corriger, rejouer les tests ciblés, re-réviser ;
+- rien de bloquant côté code → **Gate B = `EN ATTENTE`** des six essais humains
+  (protocole prêt) ; consigner et passer la main à l'opérateur ;
+- ne **jamais** déclarer `PASS` tant que les essais humains n'ont pas rendu leur
+  verdict — ils font partie du gate, pas de sa décoration.
 
-- Lissage de la normale de paroi et vitesse latérale (§9.2) : le bac à sable n'a
-  que des parois planes, il n'y a rien à lisser.
-- Annulation en cours de franchissement (§7.12) : exercée indirectement par P3.
-- Dégâts de chute (§8.2) : `landed(impact_speed)` porte déjà la vitesse d'impact.
-- `ClimbRest` et corniches de repos (§8.1, §9.3) : level design.
-- La `StateMachine` de §8.1 reste due — le `Mode` à trois valeurs sera absorbé,
-  pas conservé en parallèle (D-018).
+### Après le verdict de la revue
 
-### Pièges connus, vérifiés de B.1 à B.4
+Si `EN ATTENTE` : l'opérateur joue les six essais de `docs/MANUAL_VALIDATION.md`
+(section Gate B), dépose les preuves dans `evidence/gateB/manual/`, et le Gate B
+se conclut sur le plus faible des trois volets — automatique, humain, revue.
+La Phase C ne commence pas avant.
+
+### Pièges connus, vérifiés de B.1 à B.5
 
 - **Un contrôle négatif qui ne casse rien est une information** : trou de
-  couverture (B.3/P2) ou limite de ce que le test prouve (B.4/Q3 et Q5). Ne jamais
-  le lire comme « le test est robuste ».
-- **Un contrôle négatif sur un réglage doit muter le `.tres`**, jamais la valeur
-  par défaut du `@export` (R-006bis).
+  couverture (B.3/P2) ou limite de ce que le test prouve (B.4/Q3, Q5).
+- **Un contrôle négatif sur un réglage doit muter le `.tres`** (R-006bis).
 - **Un test vert peut l'être pour la mauvaise raison** (B.3/B3-1).
 - **Ne pas croire un drapeau du moteur sans le mesurer** : `is_on_wall()` est faux
   contre un mur (D-020).
 - **Une mesure d'intégration ne doit pas dépendre de la taille du décor.**
-- **Un composant `Node` créé dans un test doit être libéré**, sinon « resources
-  still in use at exit », que `validate_fast.sh` traite en rouge.
-- **Une rampe de test ne doit pas être une boîte tournée** : son dessous forme un
-  surplomb sous lequel la capsule se faufile.
-- **`SpringArm3D` réécrit la position de ses enfants directs** (D-014) ; son
-  `margin` est sans effet, c'est `shape` qui donne un dégagement (D-015).
-- Un `MainLoop` lancé par `--script` n'a ni autoloads ni tree prêt pendant
-  `_initialize()` (D-009).
-- Toute méthode de test avec `await` doit être attendue, **et la boucle appelante
-  aussi** (D-010).
-- **Relever `MIN_TESTS` dans `tools/validate_fast.sh` à chaque ajout de test.**
-- Le nombre de tests de référence vit dans `docs/TEST_REPORT.md` **uniquement**.
-- Doc Godot en ligne bloquée (ISS-001) : mesurer sur le binaire installé et
-  consigner la mesure dans `RESEARCH_LEDGER.md`.
+- **Un composant `Node` créé dans un test doit être libéré.**
+- **Une rampe de test ne doit pas être une boîte tournée.**
+- **`SpringArm3D` réécrit la position de ses enfants directs** (D-014) ; `margin`
+  sans effet, `shape` donne le dégagement (D-015).
+- Un `MainLoop` `--script` n'a ni autoloads ni tree prêt dans `_initialize()`
+  (D-009) ; toute boucle d'`await` doit être attendue (D-010).
+- **Relever `MIN_TESTS` à chaque ajout de test** ; le nombre de référence vit dans
+  `docs/TEST_REPORT.md` uniquement.
+- Doc en ligne bloquée (ISS-001) : mesurer sur le binaire, consigner dans
+  `RESEARCH_LEDGER.md`.

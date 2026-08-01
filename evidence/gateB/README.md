@@ -109,14 +109,22 @@ précisément ce que les tests prouvent :
   qu'il remplace (`is_on_wall()`). Le changement repose sur une mesure directe —
   `is_on_wall()` renvoie faux contre le mur de 6 m — et non sur ce test (D-020).
 
+## Jalon B.5 — Latence instrumentée (2026-08-01)
+
+| Log | Mutation | Test visé | Résultat |
+|---|---|---|---|
+| `L1_acceleration_imperceptible` | `ground_acceleration` à 0,3 **dans le `.tres`** | `test_movement_responds_at_the_next_physics_tick` | ÉCHEC — « min 3, max 3 » mesuré ✅ |
+| `L2_saut_reordonne_un_tick_plus_tard` | `_try_jump()` déplacé avant `_update_timers()` | `test_jump_responds_at_the_next_physics_tick` | ÉCHEC — « min 2, max 2, 33,3 ms » ✅ |
+
+**L2 est la mutation qui compte** : elle reproduit la régression d'architecture
+que §10.6 vise — une action tardive **par ordre d'exécution**, pas par intention.
+Le test la chiffre : 2 ticks au lieu de 1.
+
 ## Ce que Gate B exigera encore, et que rien ici ne couvre
 
-- Mesure de latence en ticks et en millisecondes (§10.6, §23.1) : seul critère
-  chiffré du Gate B encore absent, et atteignable en headless.
 - Lissage de la normale de paroi et vitesse latérale (§9.2) : implémentés, **non
   mesurés** — le bac à sable n'a que des parois planes.
-- Ressenti et latence en ticks (§10.6) : mesure instrumentée + essai humain.
-- Absence de jitter caméra (§8.3) : observation en mouvement à framerate réel.
-- Tests manuels de §21.4 touchant le traversal : caméra contre tous types de murs,
-  falaise irrégulière, mantle sous plafond, sprint à endurance nulle.
+- Ressenti humain (§10.6) et jitter caméra (§8.3) : la mesure est instrumentée
+  (1 tick), le protocole des essais est écrit (B-1…B-6) — il reste à le **jouer**
+  sur une machine avec écran.
 - **CONTROLLER-001** : l'essai manette. Aucun test automatique ne la lèvera jamais.
