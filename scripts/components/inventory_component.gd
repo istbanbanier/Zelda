@@ -121,6 +121,23 @@ func weapon_count() -> int:
 	return _weapons.size()
 
 
+func equipped_index() -> int:
+	return _equipped_index
+
+
+## Restauration de sauvegarde (§19.4) : repart d'un inventaire vide, sans
+## émettre un signal par retrait — l'application d'état n'est pas du gameplay.
+func clear_weapons() -> void:
+	_weapons.clear()
+	_equipped_index = -1
+
+
+## Restauration : pose la valeur exacte, borne à zéro.
+func set_arrows(count: int) -> void:
+	_arrows = maxi(0, count)
+	arrows_changed.emit(_arrows)
+
+
 func weapons() -> Array[WeaponInstance]:
 	return _weapons.duplicate()
 

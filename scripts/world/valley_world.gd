@@ -19,6 +19,13 @@ const RESCUE_CHECK_INTERVAL: float = 0.25
 ## Cadence d'enregistrement du dernier point sûr (au sol uniquement).
 const SAFE_POINT_INTERVAL: float = 2.0
 
+## Sauvegarde minimale honnête (D.1R.5, PT-D1-05) : ce que « Continuer »
+## restaure VRAIMENT — inventaire (armes + durabilités), arme équipée, flèches,
+## coffres ouverts. Point de reprise DOCUMENTÉ : le spawn de la crête (le
+## checkpoint d'entrée du donjon arrive avec la Phase E/F).
+const SAVE_SLOT: String = "slot0"
+const SAVE_SCHEMA: int = 2
+
 ## §7.7 : soleil à l'ouest (rayons vers +X), plongée 22°.
 const SUN_ROTATION_DEG: Vector3 = Vector3(-22.0, -90.0, 0.0)
 
@@ -51,6 +58,17 @@ func _ready() -> void:
 		if tag == &"citadel_door":
 			_player.position = Vector3(0, 34.3, -193.0)
 	_last_safe = _player.position
+	# Application de la sauvegarde — TOUJOURS si elle existe : une partie neuve
+	# vient d'écrire un instantané minimal (sans inventaire) qui n'applique
+	# rien ; une reprise applique tout. Aucun drapeau à transporter.
+	_apply_save()
+	# Instantanés : chaque coffre ouvert, et toute transition sortante (porte de
+	# la citadelle, retour menu) — le loot acquis survit à « Continuer ».
+	for chest: Node in find_children("*", "Chest", true, false):
+		(chest as Chest).opened.connect(func(_id: StringName) -> void: _autosave())
+	var flow: Node = get_node_or_null("/root/SceneFlow")
+	if flow != null:
+		flow.connect("transition_started", _on_transition_started)
 
 	_sun.rotation_degrees = SUN_ROTATION_DEG
 	_setup_environment()
@@ -127,6 +145,81 @@ func _check_fall_rescue() -> void:
 
 func last_safe_point() -> Vector3:
 	return _last_safe
+
+
+## ---------------------------------------------------------------------------
+## Sauvegarde minimale (D.1R.5) — §19.4 : lire → valider → appliquer, idempotent
+## ---------------------------------------------------------------------------
+
+func _exit_tree() -> void:
+	var flow: Node = get_node_or_null("/root/SceneFlow")
+	if flow != null and flow.is_connected("transition_started", _on_transition_started):
+		flow.disconnect("transition_started", _on_transition_started)
+
+
+func _on_transition_started(_target: String) -> void:
+	if is_inside_tree():
+		_autosave()
+
+
+func _autosave() -> void:
+	var save_system: Node = get_node_or_null("/root/SaveSystem")
+	if save_system == null or _player == null or _player.inventory() == null:
+		return
+	var inventory: InventoryComponent = _player.inventory()
+	var weapons: Array[Dictionary] = []
+	for weapon: WeaponInstance in inventory.weapons():
+		weapons.append({
+			"id": String(weapon.definition_id()),
+			"durability": weapon.current_durability,
+		})
+	var opened: Array[String] = []
+	for chest: Node in find_children("*", "Chest", true, false):
+		if (chest as Chest).is_opened():
+			opened.append(String((chest as Chest).chest_id))
+	save_system.call("save_slot", SAVE_SLOT, {
+		"schema": SAVE_SCHEMA,
+		"checkpoint": "valley.camp.start",
+		"weapons": weapons,
+		"equipped_index": inventory.equipped_index(),
+		"arrows": inventory.arrows(),
+		"opened_chests": opened,
+		"boss_defeated": false,
+	})
+
+
+func _apply_save() -> void:
+	var save_system: Node = get_node_or_null("/root/SaveSystem")
+	if save_system == null or not bool(save_system.call("has_save", SAVE_SLOT)):
+		return
+	var data: Dictionary = save_system.call("load_slot", SAVE_SLOT)
+	if data.is_empty():
+		return
+	# §19.4 : un item inconnu se journalise et n'arrête rien.
+	if data.has("weapons") and _player != null and _player.inventory() != null:
+		var inventory: InventoryComponent = _player.inventory()
+		inventory.clear_weapons()
+		for entry: Variant in (data["weapons"] as Array):
+			var weapon_data: Dictionary = entry as Dictionary
+			var id: String = String(weapon_data.get("id", ""))
+			var path: String = "res://resources/weapons/%s.tres" % id
+			if not ResourceLoader.exists(path):
+				push_warning("[save] arme inconnue ignorée : %s" % id)
+				continue
+			var instance: WeaponInstance = WeaponInstance.create(
+				load(path) as WeaponDefinition)
+			instance.current_durability = int(weapon_data.get("durability",
+				instance.current_durability))
+			inventory.add_weapon(instance)
+		var equipped: int = int(data.get("equipped_index", 0))
+		inventory.equip_index(equipped)
+		if data.has("arrows"):
+			inventory.set_arrows(int(data["arrows"]))
+	if data.has("opened_chests"):
+		var opened: Array = data["opened_chests"] as Array
+		for chest: Node in find_children("*", "Chest", true, false):
+			if String((chest as Chest).chest_id) in opened:
+				(chest as Chest).mark_opened_silently()
 
 
 func player() -> PlayerController:

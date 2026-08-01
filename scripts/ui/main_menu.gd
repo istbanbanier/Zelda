@@ -100,9 +100,9 @@ func _on_continue() -> void:
 	if data.is_empty():
 		_status_label.text = "Sauvegarde illisible — voir le journal."
 		return
-	# D.0 : la vallée existe et se charge. L'APPLICATION de l'état sauvegardé
-	# (checkpoint, inventaire, coffres) arrive avec SaveSystem complet (Phase E) —
-	# d'ici là, « Continuer » repart du spawn, et c'est dit.
+	# D.1R.5 : la vallée applique elle-même la sauvegarde à son chargement —
+	# inventaire, durabilités, arme équipée, flèches, coffres ouverts. Point de
+	# reprise documenté : le spawn de la crête (checkpoints riches : Phase E).
 	_enter_valley()
 
 
@@ -145,6 +145,7 @@ func _on_new_game() -> void:
 ## représenter. Le schéma complet (§19.1) arrive avec les systèmes concernés.
 func _new_game_payload() -> Dictionary:
 	return {
+		"schema": 2,
 		"checkpoint": "valley.camp.start",
 		"playtime_seconds": 0.0,
 		"boss_defeated": false,

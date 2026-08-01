@@ -32,6 +32,14 @@ func is_opened() -> bool:
 	return _opened
 
 
+## Application d'une sauvegarde (§19.4, §11.4 : « jamais de second loot après
+## chargement ») : l'état s'applique SANS loot, sans signal, idempotent (§6.4).
+func mark_opened_silently() -> void:
+	_opened = true
+	if _lid != null:
+		_lid.rotation.x = -1.2
+
+
 ## Invite contextuelle (§14.2). Un coffre déjà ouvert n'invite plus.
 func prompt_verb() -> String:
 	if _opened:
