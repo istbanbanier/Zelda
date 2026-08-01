@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=25 format=3]
 
 ; Joueur — hiérarchie de MASTER_SPEC §6.2, réduite au périmètre de B.3.
 ; Absents et assumés : StateMachine (§8.1) — le contrôleur porte un Mode couvrant
@@ -19,6 +19,13 @@
 [ext_resource type="Script" path="res://scripts/components/ledge_detector_component.gd" id="8_ledge"]
 [ext_resource type="Script" path="res://scripts/components/action_alignment_component.gd" id="9_align"]
 [ext_resource type="Resource" path="res://resources/tuning/climb_default.tres" id="10_climb_tuning"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="11_health"]
+[ext_resource type="Script" path="res://scripts/components/hurtbox_component.gd" id="12_hurtbox"]
+[ext_resource type="Script" path="res://scripts/components/hitbox_component.gd" id="13_hitbox"]
+[ext_resource type="Script" path="res://scripts/combat/attack_controller.gd" id="14_attack"]
+[ext_resource type="Resource" path="res://resources/combat/sword/light_1.tres" id="15_light1"]
+[ext_resource type="Resource" path="res://resources/combat/sword/light_2.tres" id="16_light2"]
+[ext_resource type="Resource" path="res://resources/combat/sword/light_3.tres" id="17_light3"]
 
 [sub_resource type="CapsuleShape3D" id="Capsule"]
 radius = 0.35
@@ -40,6 +47,17 @@ albedo_color = Color(0.55, 0.58, 0.62, 1)
 
 [sub_resource type="StandardMaterial3D" id="GrayboxAccent"]
 albedo_color = Color(0.09, 0.56, 0.61, 1)
+
+; Hurtbox du joueur : capsule légèrement plus large que la collision, pour que
+; les coups « qui touchent visiblement » touchent (§10.5, fairness).
+[sub_resource type="CapsuleShape3D" id="HurtCapsule"]
+radius = 0.4
+height = 1.8
+
+; Volume de frappe de l'épée : devant le personnage, à hauteur de torse. Enfant
+; de VisualRoot : il suit l'orientation du regard, le corps ne tournant jamais.
+[sub_resource type="BoxShape3D" id="SwordSweep"]
+size = Vector3(1.4, 1.0, 1.1)
 
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 2
@@ -65,6 +83,31 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0.38)
 mesh = SubResource("GrayboxNose")
 surface_material_override/0 = SubResource("GrayboxAccent")
 
+; Couche 4 (Player Hitbox), masque 32 (Hurtbox). Sous VisualRoot : le volume de
+; frappe suit l'orientation du personnage (+Z local = face, cf. NoseMesh).
+[node name="WeaponHitbox" type="Area3D" parent="VisualRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0.85)
+collision_layer = 8
+collision_mask = 32
+script = ExtResource("13_hitbox")
+team = &"player"
+instigator_path = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="VisualRoot/WeaponHitbox"]
+shape = SubResource("SwordSweep")
+
+; Couche 6 (Hurtbox), masque nul : récepteur pur (§5.7).
+[node name="Hurtbox" type="Area3D" parent="." groups=["lock_on_targets"]]
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("12_hurtbox")
+team = &"player"
+health_path = NodePath("../Components/HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hurtbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("HurtCapsule")
+
 [node name="Components" type="Node" parent="."]
 
 [node name="PlayerInputReader" type="Node" parent="Components"]
@@ -84,6 +127,16 @@ tuning = ExtResource("10_climb_tuning")
 
 [node name="ActionAlignmentComponent" type="Node" parent="Components"]
 script = ExtResource("9_align")
+
+[node name="HealthComponent" type="Node" parent="Components"]
+script = ExtResource("11_health")
+max_health = 100.0
+
+[node name="AttackController" type="Node" parent="Components"]
+script = ExtResource("14_attack")
+attacks = [ExtResource("15_light1"), ExtResource("16_light2"), ExtResource("17_light3")]
+hitbox_path = NodePath("../../VisualRoot/WeaponHitbox")
+base_damage = 12.0
 
 [node name="CameraRig" type="Node3D" parent="."]
 script = ExtResource("2_rig")

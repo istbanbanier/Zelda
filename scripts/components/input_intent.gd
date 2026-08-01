@@ -25,6 +25,7 @@ var aim_held: bool = false
 var jump_pressed: bool = false
 var dodge_pressed: bool = false
 var interact_pressed: bool = false
+var attack_pressed: bool = false
 
 ## Regard voulu (souris ou stick droit), en unités déjà normalisées par le lecteur.
 var look: Vector2 = Vector2.ZERO
@@ -40,6 +41,7 @@ func consume_edges() -> void:
 	jump_pressed = false
 	dodge_pressed = false
 	interact_pressed = false
+	attack_pressed = false
 
 
 func clear() -> void:
@@ -59,4 +61,5 @@ func duplicate_intent() -> InputIntent:
 	copy.jump_pressed = jump_pressed
 	copy.dodge_pressed = dodge_pressed
 	copy.interact_pressed = interact_pressed
+	copy.attack_pressed = attack_pressed
 	return copy

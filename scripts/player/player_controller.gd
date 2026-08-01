@@ -8,10 +8,11 @@
 ## §20.9 : toute la logique de mouvement vit dans `_physics_process()`. Aucun
 ## transform de gameplay n'est écrit depuis `_process()`.
 ##
-## ÉTAT B.4 : marche, course, sprint, saut, gravité, coyote time, jump buffer,
-## **franchissement de marche** (§8.2), **escalade** (§9.2) et **mantle** (§9.3).
-## Tous consomment le même `StaminaComponent`, qui n'a pas eu à changer pour les
-## accueillir. §8.2 est désormais couvert en entier.
+## ÉTAT C.1 : tout le traversal de la Phase B (§8.2, §9.2, §9.3), plus
+## l'**attaque légère au sol** (§10.1, §10.2) — trois phases pilotées par
+## `AttackDefinition`, combo de trois, buffer de 0,15 s. L'esquive, le lock-on et
+## les réactions arrivent en C.2 ; c'est là que le `Mode` sera absorbé dans la
+## `StateMachine` de §8.1 (D-018).
 class_name PlayerController
 extends CharacterBody3D
 
@@ -36,7 +37,7 @@ signal mantle_refused(reason: StringName)
 ## machine complète maintenant reviendrait à écrire dix-huit états vides : ce
 ## `Mode` couvre exactement ce qui existe, et la `StateMachine` de §8.1 arrivera
 ## avec la Phase C, quand les états de combat auront un contenu (D-018).
-enum Mode { LOCOMOTION, CLIMBING, MANTLING }
+enum Mode { LOCOMOTION, CLIMBING, MANTLING, ATTACKING }
 
 ## Rappel vers la distance de paroi : gain en (m/s) par mètre d'écart, et vitesse
 ## maximale de correction. Bornés à dessein — voir `_apply_climb_motion()`.
@@ -65,6 +66,7 @@ const WALL_PUSH_MIN_DOT: float = 0.3
 @onready var _climbing: ClimbingComponent = $Components/ClimbingComponent
 @onready var _ledge: LedgeDetectorComponent = $Components/LedgeDetectorComponent
 @onready var _alignment: ActionAlignmentComponent = $Components/ActionAlignmentComponent
+@onready var _attack: AttackControllerComponent = $Components/AttackController
 @onready var _collision: CollisionShape3D = $CollisionShape3D
 
 ## Intention courante. Remplacée par un test via `set_intent_source()`.
@@ -126,6 +128,8 @@ func _physics_process(delta: float) -> void:
 			_process_mantle(delta)
 		Mode.CLIMBING:
 			_process_climb(delta, intent)
+		Mode.ATTACKING:
+			_process_attack(delta, intent)
 		_:
 			_process_locomotion(delta, intent)
 
@@ -167,6 +171,12 @@ func _process_locomotion(delta: float, intent: InputIntent) -> void:
 	# L'accroche est tentée **après** le déplacement : la paroi est sondée depuis
 	# la position réellement atteinte, pas depuis celle du tick précédent.
 	_try_grab(intent)
+
+	# L'attaque s'engage depuis le sol uniquement (§8.1 : LightAttack est un état
+	# terrestre ; l'attaque aérienne n'existe pas dans la spec de la 0.1).
+	if _mode == Mode.LOCOMOTION and intent.attack_pressed and is_on_floor() \
+			and _attack != null and _attack.try_attack():
+		_mode = Mode.ATTACKING
 
 
 ## Le sprint n'est accordé que s'il est demandé, que le joueur se déplace
@@ -359,6 +369,35 @@ func _try_step_up(direction: Vector3) -> bool:
 	global_position = advanced.origin + landing.get_travel()
 	stepped_up.emit(global_position.y)
 	return true
+
+
+## ---------------------------------------------------------------------------
+## Attaque (§10.1, §10.2)
+## ---------------------------------------------------------------------------
+
+## Pendant une attaque, le corps est engagé : la locomotion ne pilote plus, la
+## vitesse horizontale s'éteint à la décélération du sol et la gravité continue
+## de s'appliquer. Les nombres de l'attaque vivent dans `AttackDefinition` ; ce
+## contrôleur ne fait qu'exécuter les phases et rendre la main.
+func _process_attack(delta: float, intent: InputIntent) -> void:
+	_camera_rig.update_fov(false, delta)
+	_update_timers(delta, intent)
+
+	# Un nouvel appui pendant l'attaque nourrit le buffer ou enchaîne (§10.2) —
+	# la décision appartient au composant, qui connaît fenêtres et index.
+	if intent.attack_pressed:
+		_attack.try_attack()
+
+	if not _attack.update(delta):
+		_mode = Mode.LOCOMOTION
+		return
+
+	_apply_gravity(delta)
+	var horizontal: Vector3 = Vector3(velocity.x, 0.0, velocity.z)
+	horizontal = horizontal.move_toward(Vector3.ZERO, tuning.ground_deceleration * delta)
+	velocity.x = horizontal.x
+	velocity.z = horizontal.z
+	move_and_slide()
 
 
 ## ---------------------------------------------------------------------------
@@ -628,6 +667,14 @@ func is_climbing() -> bool:
 
 func is_mantling() -> bool:
 	return _mode == Mode.MANTLING
+
+
+func is_attacking() -> bool:
+	return _mode == Mode.ATTACKING
+
+
+func attack_controller() -> AttackControllerComponent:
+	return _attack
 
 
 ## Normale de paroi lissée, nulle hors escalade.

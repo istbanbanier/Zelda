@@ -25,3 +25,22 @@ chevauchements **définitivement vide** (R-014). Les hitbox gardent donc
 `monitoring` allumé en permanence ; la fenêtre active est portée par `_active`
 et le balayage. Sans cette mesure, un swing sur deux aurait été muet — un bug de
 gameplay presque intraçable.
+
+
+## Jalon C.1 — Épée, combo, premier échange (2026-08-01)
+
+| Log | Mutation | Test visé | Résultat |
+|---|---|---|---|
+| `X1_coup_sans_anticipation` | startup sauté, hitbox allumée au premier tick | fenêtre active | ÉCHEC ✅ |
+| `X2_enchainement_hors_fenetre` | condition de fenêtre retirée | enchaînement à la fenêtre | ÉCHEC — enchaîne dès la recovery ✅ |
+| `X3_buffer_immortel` | le buffer ne décroît plus | expiration de l'appui | ÉCHEC ✅ |
+| `X4_multiplicateur_ignore` | terme « attack » de §10.3 ignoré | montants du combo | ÉCHEC — « obtenu 12.0000 » aux coups 2 et 3 ✅ |
+
+## Piège d'infrastructure consigné pendant C.1
+
+Le monde `queue_free` du test précédent survit une frame : le joueur du test
+suivant peut apparaître **posé sur sa géométrie fantôme** (mesuré : y = 0,87 au
+lieu de 0,1), chuter quand elle disparaît, et voir son premier appui consommé en
+l'air par le portail `is_on_floor()`. Symptôme trompeur : l'appui unique échouait,
+le martèlement réussissait. Règle : attendre l'**état** (atterri), jamais un
+nombre de ticks fixe — la leçon de B.2, version infrastructure.

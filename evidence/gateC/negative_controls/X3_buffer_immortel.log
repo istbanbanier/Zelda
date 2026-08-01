@@ -1,0 +1,14 @@
+# Contrôle négatif — X3_buffer_immortel
+# Le buffer ne decroit plus : tout appui pendant une attaque enchaine tot ou tard — le double-clic nerveux devient un combo complet.
+# Test visé : test_an_early_press_expires_before_the_window|test_a_stale_press_does_not_restart_after_the_last_attack
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_attack_controller.gd::test_an_early_press_expires_before_the_window — l'attaque doit s'être terminée SANS enchaîner
+  ÉCHEC test_attack_controller.gd::test_an_early_press_expires_before_the_window — le combo est revenu à zéro : attendu 0, obtenu 1
+  ÉCHEC test_attack_controller.gd::test_a_stale_press_does_not_restart_after_the_last_attack — l'appui périmé ne relance rien : combo terminé
+=== RÉSULTAT: 163 réussi(s), 3 échoué(s) ===
+  ÉCHEC: test_attack_controller.gd::test_an_early_press_expires_before_the_window — l'attaque doit s'être terminée SANS enchaîner
+  ÉCHEC: test_attack_controller.gd::test_an_early_press_expires_before_the_window — le combo est revenu à zéro : attendu 0, obtenu 1
+  ÉCHEC: test_attack_controller.gd::test_a_stale_press_does_not_restart_after_the_last_attack — l'appui périmé ne relance rien : combo terminé
+RC=0

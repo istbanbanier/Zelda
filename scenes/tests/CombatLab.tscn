@@ -1,0 +1,65 @@
+[gd_scene load_steps=10 format=3]
+
+; CombatLab (§10.8), embryon. Lancement :
+;   godot --path . scenes/tests/CombatLab.tscn
+; Trois mannequins : un devant, deux côte à côte pour le balayage multi-cibles.
+
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://scenes/tests/CombatDummy.tscn" id="2_dummy"]
+[ext_resource type="Script" path="res://scripts/tools/combat_lab.gd" id="3_lab"]
+
+[sub_resource type="BoxShape3D" id="FloorShape"]
+size = Vector3(40, 1, 40)
+
+[sub_resource type="BoxMesh" id="FloorMesh"]
+size = Vector3(40, 1, 40)
+
+[sub_resource type="ProceduralSkyMaterial" id="Sky"]
+
+[sub_resource type="Sky" id="SkyRes"]
+sky_material = SubResource("Sky")
+
+[sub_resource type="Environment" id="EnvRes"]
+background_mode = 2
+sky = SubResource("SkyRes")
+
+[node name="CombatLab" type="Node3D"]
+script = ExtResource("3_lab")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("FloorShape")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("FloorMesh")
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="DummyFront" parent="." instance=ExtResource("2_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
+
+[node name="DummyPairA" parent="." instance=ExtResource("2_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7, 0, 8)
+
+[node name="DummyPairB" parent="." instance=ExtResource("2_dummy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 0, 8)
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0, 15, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("EnvRes")
+
+[node name="DebugUI" type="CanvasLayer" parent="."]
+
+[node name="Readout" type="Label" parent="DebugUI"]
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 460.0
+offset_bottom = 260.0
+theme_override_font_sizes/font_size = 18

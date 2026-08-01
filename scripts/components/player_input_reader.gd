@@ -76,5 +76,7 @@ func _input(event: InputEvent) -> void:
 		_intent.dodge_pressed = true
 	elif event.is_action_pressed("interact", false, true):
 		_intent.interact_pressed = true
+	elif event.is_action_pressed("attack_light", false, true):
+		_intent.attack_pressed = true
 	elif event is InputEventMouseMotion:
 		_mouse_delta += (event as InputEventMouseMotion).relative * MOUSE_LOOK_SCALE

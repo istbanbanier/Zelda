@@ -131,7 +131,7 @@ llvmpipe uniquement, aucun GPU.
 |---|---|---|
 | A | Boot, autoloads, InputMap AZERTY, couches de collision | **A.1 et A.2 livrés et gelés (`9414fd0`)** ; Gate A **EN ATTENTE** de validation humaine |
 | B | Player, caméra, locomotion, endurance, escalade, mantle | **Clos par D-021 : accepté pour continuation** — volet automatique vert (137 tests), dettes VALIDATION-B-001 + CONTROLLER-001 à la passe finale |
-| C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | **C.0 en cours** — fondations de dégâts |
+| C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | **C.0 et C.1 livrés** — dégâts, épée, combo de trois, premier échange gagné ; esquive/lock-on en C.2 |
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
 | D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | Non commencé |
 | E | Récolte, cuisine, buffs, sauvegarde et migrations | Non commencé |
@@ -326,6 +326,33 @@ ennemi encore : C.1 branchera l'épée et le premier pillard sur ces fondations.
 | Poise, recul, élément | **Implémenté** — transportés, non consommés | la jauge de poise et le recul appliqué arrivent en C.1/C.2 |
 | Résistance et armure côté défenseur | **Implémenté** — paramètres neutres | branchés aux buffs (§13.5) et définitions d'ennemis (C.2) |
 | `AttackDefinition` en ressource (§5.9, §10.6) | **Non commencé** | C.1, avec l'épée et le combo |
+
+---
+
+## Phase C — jalon C.1 : épée, combo, premier échange
+
+L'attaque est un contrat de données (§10.6) : `AttackDefinition` porte startup /
+actif / recovery / fenêtres, `AttackControllerComponent` l'exécute, le joueur
+enchaîne trois légères contre de vrais mannequins.
+
+| Élément (§) | État | Preuve |
+|---|---|---|
+| `AttackDefinition` en ressource (§5.9, §10.6) | **Fonctionnel** | 3 `.tres` d'épée ; enveloppes §10.2 épinglées (buffer 0,15, fenêtre 25–35 %, hit-stop 0,035–0,055) |
+| Hitbox allumée exactement pendant la fenêtre active (§10.1, §10.5) | **Fonctionnel** | `test_the_hitbox_is_active_exactly_during_the_active_window` ; X1 |
+| Combo trois légères (§10.2) | **Fonctionnel** | chaîne 0→1→2, jamais d'index 3 ; multiplicateurs 1,0 / 1,05 / 1,3 mesurés sur mannequin |
+| Buffer d'attaque 0,15 s, expiration comprise (§10.2) | **Fonctionnel** | 2 cas + X3 |
+| Enchaînement dans les derniers 25–35 % de la recovery (§10.2) | **Fonctionnel** | `test_a_buffered_press_chains_at_the_window_not_before` ; X2 |
+| Report de buffer en fin de combo (§10.6 : « première fenêtre légale ») | **Fonctionnel** | relance à zéro si l'appui est frais, rien s'il est périmé |
+| Attaque engagée au tick suivant l'intention (§10.6, §23.1) | **Fonctionnel** | `test_attack_engages_at_the_next_tick` |
+| Mode `ATTACKING` : locomotion figée, gravité conservée | **Fonctionnel** | `test_movement_is_locked_during_the_attack` |
+| Hurtbox + santé sur le joueur (§6.2) | **Implémenté** | câblées dans `Player.tscn` ; personne ne frappe encore le joueur (C.2) |
+| Premier échange complet : 4 coups couchent un pillard braise (45 PV) | **Fonctionnel** | `test_hammering_delivers_the_full_combo_then_resets` |
+| Cadavre inerte (§12.10) | **Fonctionnel** | `test_a_dead_dummy_takes_no_further_hits` |
+| `CombatLab` (§10.8) | **Implémenté** — embryon | lancé réellement (RC=0) ; mannequins, panneau, journal des coups ; timeline et export à venir |
+| `cancel()` d'interruption (stagger/mort, §16.2) | **Fonctionnel** | testé ; le stagger qui l'appellera arrive en C.2 |
+| Esquive + i-frames, lock-on, réactions (§10.2, §8.4) | **Non commencé** | jalon C.2 |
+| Attaque lourde, arc (§10.2, §10.4) | **Non commencé** | C.2 / C.3 |
+| Hit-stop, VFX, sons (§10.7) | **Non commencé** | valeurs déclarées dans les `.tres`, aucun système de présentation |
 
 ---
 

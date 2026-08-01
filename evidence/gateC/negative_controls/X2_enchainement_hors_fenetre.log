@@ -1,0 +1,10 @@
+# Contrôle négatif — X2_enchainement_hors_fenetre
+# La condition de fenetre est retiree : l appui memorise enchaine des le debut de la recovery, hors des 25-35 % de §10.2.
+# Test visé : test_a_buffered_press_chains_at_the_window_not_before
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_attack_controller.gd::test_a_buffered_press_chains_at_the_window_not_before — aucun enchaînement avant la fenêtre : attendu 0, obtenu 1
+=== RÉSULTAT: 164 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_attack_controller.gd::test_a_buffered_press_chains_at_the_window_not_before — aucun enchaînement avant la fenêtre : attendu 0, obtenu 1
+RC=0

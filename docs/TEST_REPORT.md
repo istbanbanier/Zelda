@@ -888,3 +888,68 @@ W1–W4, tous ÉCHEC comme attendu, logs avec `RC=` dans
 - **Le joueur n'a ni hurtbox ni santé câblées** — C.1, avec le premier échange
   de coups.
 - Dettes de validation humaine inchangées : VALIDATION-B-001, CONTROLLER-001.
+
+---
+
+# Jalon C.1 — Épée, combo, premier échange (2026-08-01)
+
+## Commande et résultat
+
+```bash
+tools/validate_fast.sh; echo $?
+```
+
+**Code retour** : `0` — VERT. **165 réussis, 0 échoué**, plancher 165.
+
+> **Nombre de tests de référence : 165.** C'est ici, et nulle part ailleurs, qu'il
+> doit être lu.
+
+Nouveaux fichiers : `resources/combat/attack_definition.gd` + 3 `.tres` d'épée,
+`scripts/combat/attack_controller.gd`, `scenes/tests/CombatDummy.tscn`,
+`scenes/tests/CombatLab.tscn` (lancé réellement, RC=0),
+`tests/unit/test_attack_controller.gd` (9 cas),
+`tests/integration/test_combat_exchange.gd` (6 cas). L'InputMap n'a pas changé —
+l'action `attack_light` existait depuis A.1 avec sa liaison manette.
+
+## Le premier échange, chiffré
+
+Quatre appuis couchent un pillard braise (45 PV, §12.1) : 12 ; 12,6 ; 15,6 —
+le combo complet fait 40,2, le mannequin y survit — puis 12 (nouveau combo, la
+remise à zéro est prouvée par le montant). Le cadavre coupe sa hurtbox : marteler
+ensuite ne produit plus rien (§12.10).
+
+## Trois défauts réels trouvés pendant C.1
+
+| # | Défaut | Correctif |
+|---|---|---|
+| C1-1 | **Mon arithmétique, pas le code** : le test affirmait que le combo complet (40,2) tue 45 PV. Corrigé dans le test — et transformé en preuve plus riche : la survie au combo + la mort au 4ᵉ coup prouvent la remise à zéro |
+| C1-2 | **Appui unique perdu à l'arrêt** : le monde `queue_free` du test précédent survit une frame ; le joueur apparaissait posé dessus (y = 0,87 mesuré), chutait, et l'appui arrivait en plein vol — consommé par le portail `is_on_floor()`. Le setup attend désormais l'ÉTAT atterri, jamais un nombre de ticks |
+| C1-3 | **Appui de fin de combo avalé** : le buffer mourait à l'idle — un appui 0,1 s avant la fin du 3ᵉ coup était perdu, l'entrée avalée que §10.6 interdit. Report ajouté : à la fin du dernier coup, un appui frais relance un combo à zéro ; un appui périmé ne relance rien (2 tests) |
+
+C1-2 mérite le détail : le symptôme — appui unique perdu, martèlement
+fonctionnel — ressemblait à un bug de front d'intention. La sonde en contexte
+isolé fonctionnait parfaitement ; seule la sonde EN CONTEXTE DE RUNNER a montré
+`sol=false` puis la position fantôme. Une mesure dans le mauvais contexte aurait
+« prouvé » que tout allait bien.
+
+## Contrôles négatifs
+
+X1–X4, tous ÉCHEC comme attendu, logs avec `RC=` dans
+`evidence/gateC/negative_controls/`. X4 chiffre la perte : sans le terme
+« attack » de §10.3, les coups 2 et 3 retombent à 12,0.
+
+## Limites de C.1 — à ne pas confondre avec des oublis
+
+- **Personne ne frappe le joueur** : sa hurtbox et sa santé sont câblées mais
+  aucun ennemi n'attaque (C.2, premier pillard avec IA).
+- **Ni esquive, ni i-frames, ni lock-on, ni stagger** (C.2). `cancel()` attend le
+  stagger qui l'appellera.
+- **Ni hit-stop, ni VFX, ni son** (§10.7) : les valeurs sont déclarées dans les
+  `.tres`, aucun système de présentation ne les consomme.
+- **`base_damage` est provisoire** sur le contrôleur d'attaque : la
+  `WeaponDefinition` de §5.9 le portera en C.3 avec la durabilité.
+- **Le CombatLab est un embryon** : mannequins, panneau, journal — la timeline
+  dessinée, l'historique d'inputs avec raisons de rejet et l'export CSV de §10.8
+  viennent avec les systèmes qu'ils instrumentent.
+- **Le ressenti n'est pas prouvé** : §10.6 exige aussi un essai humain — même
+  dette de passe finale que le traversal.

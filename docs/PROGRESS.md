@@ -543,48 +543,93 @@ combat.
 
 ---
 
+## 2026-08-01 — Jalon C.1 : épée, combo, premier échange
+
+**Gate visé** : C. **État à l'ouverture** : C.0 livré, personne n'appelait
+`activate()`.
+
+### Changement réel
+
+L'attaque est un contrat de données : `AttackDefinition` (startup / actif /
+recovery / buffer / fenêtre de combo / hit-stop, §10.6) exécutée par
+`AttackControllerComponent`, trois `.tres` d'épée (multiplicateurs 1,0 / 1,05 /
+1,3), mode `ATTACKING` du joueur (locomotion figée, gravité conservée), hurtbox
+et santé câblées sur le joueur, `CombatDummy` (45 PV — pillard braise) et
+l'embryon du `CombatLab`. 15 nouveaux cas, plancher à 165.
+
+Le premier échange est chiffré : 12 ; 12,6 ; 15,6 ; puis 12 — le combo complet
+(40,2) laisse le mannequin à 4,8 PV, le quatrième coup le couche, et son montant
+« 12 tout rond » prouve la remise à zéro du combo.
+
+### Trois défauts, trois natures
+
+- **Mon arithmétique** (test) : j'affirmais 40,2 ≥ 45. Le test corrigé prouve
+  plus qu'avant.
+- **L'infrastructure** : le monde `queue_free` du test précédent survit une
+  frame — le joueur apparaissait posé dessus (y = 0,87), chutait, et son premier
+  appui était consommé en l'air. Symptôme trompeur (appui unique perdu,
+  martèlement OK), diagnostic obtenu par sonde EN CONTEXTE DE RUNNER — la sonde
+  isolée « prouvait » que tout allait bien. Règle : attendre l'état, jamais des
+  ticks.
+- **Le contrat** : un appui 0,1 s avant la fin du combo mourait à l'idle —
+  l'entrée avalée que §10.6 interdit. Report de buffer ajouté, borné par le même
+  0,15 s, deux tests (frais → relance à zéro ; périmé → rien).
+
+### Vérification
+
+`tools/validate_fast.sh` → `RC=0`, VERT, **165 tests**. X1–X4 archivés avec `RC=`,
+dont X4 qui chiffre la perte du terme « attack » de la formule.
+
+### Ce que C.1 ne prouve pas
+
+Personne ne frappe le joueur. Ni esquive, ni lock-on, ni stagger, ni hit-stop, ni
+son. `base_damage` provisoire en attendant `WeaponDefinition` (C.3). Le ressenti
+reste une dette de passe finale.
+
+---
+
 ## HANDOFF — prochaine action exacte
 
-> **Gate A** : `ACCEPTÉ AVEC RÉSERVE` (D-012). **Gate B** : `ACCEPTÉ POUR
-> CONTINUATION, VALIDATION HUMAINE FINALE DIFFÉRÉE` (D-021). Dettes
-> VALIDATION-B-001 + CONTROLLER-001 ouvertes, passe finale.
-> **Phase C en cours** — C.0 livré.
+> **Gates** : A `ACCEPTÉ AVEC RÉSERVE` (D-012) · B `ACCEPTÉ POUR CONTINUATION`
+> (D-021) · C **en cours** — C.0 et C.1 livrés.
 
-### Action suivante : jalon C.1 — l'épée, le combo, le premier échange
+### Action suivante : jalon C.2 — esquive, i-frames, lock-on, premier pillard
 
-Dans l'ordre, sur les fondations de C.0 :
+Dans l'ordre :
 
-1. **`AttackDefinition` en ressource** (§5.9, §10.6) : startup/active/recovery,
-   fenêtres de buffer/combo, multiplicateur de dégâts, poise, recul, hit-stop —
-   les nombres inspectables que §10.6 exige. `resources/combat/`.
-2. **État d'attaque du joueur** : `Mode` étendu ou début de la `StateMachine` de
-   §8.1 (décision D-018 à honorer : le Mode est absorbé, pas doublé). L'attaque
-   appelle `activate()`/`deactivate()` sur la fenêtre active de la définition.
-3. **Hurtbox + santé sur le joueur** ; buffer d'attaque 0,15 s (§10.2) dans
-   `InputIntent` (l'action `attack_light` existe déjà dans l'InputMap).
-4. **Combo trois coups** (§10.2) : enchaînement dans les derniers 25–35 % de la
-   fenêtre, sinon retour à l'idle.
-5. **CombatLab.tscn** (§10.8) : la scène d'instrumentation — mannequins,
-   timeline de l'action, historique d'inputs. Compléter au fil de C.
+1. **Esquive** (§10.2) : quatre directions, i-frames 0,22–0,27 s via
+   `HealthComponent.set_invulnerable()` (déjà testé), coût 15 d'endurance (déjà
+   déclaré dans `stamina_default.tres`), buffer 0,12 s. `AttackDefinition` a
+   montré le patron : l'esquive mérite sa `DodgeDefinition` ou un bloc de tuning.
+2. **Lock-on** (§8.4) : cône caméra, 18–24 m, LOS, cible dans le cadre. L'action
+   `lock_on` existe depuis A.1 (jamais sur `Q` — invariant). Groupe
+   `lock_on_targets` déjà posé sur le joueur et les mannequins.
+3. **Stagger/poise** : consommer `poise_damage` transporté depuis C.0 ;
+   le stagger appelle `AttackController.cancel()` (déjà testé).
+4. **Premier pillard** (§12.1, §22 item 15) : `raider_red` — 45 PV, télégraphes
+   0,65–0,95 s, un ou deux coups, recule après une esquive réussie. Machine
+   d'états IA minimale (§12.7), premier vrai duel dans le CombatLab.
+5. **C'est ici que D-018 se paie** : absorber le `Mode` du joueur dans la
+   `StateMachine` de §8.1 — les états de combat existent désormais.
 
-Questions ouvertes à trancher en route : R-012 (saut pendant mantle), R-013
-(coût du mantle), absorption du `Mode` (D-018).
+Questions ouvertes en route : R-012 (saut pendant mantle), R-013 (coût du
+mantle).
 
-### Pièges connus, cumulés de B.1 à C.0
+### Pièges connus, cumulés de B.1 à C.1
 
-- **`Area3D.monitoring` ne se toggle pas entre deux ticks** (R-014) : permanent +
-  drapeau, sinon chevauchements perdus pour toujours.
-- **Mesurer ne suffit pas : mesurer ce qui discrimine** (D-020 amendée) — sonder
-  l'état des modes avant de conclure sur un drapeau moteur.
+- **Le monde `queue_free` du test précédent survit une frame** : attendre
+  l'ÉTAT (atterri), jamais un nombre de ticks fixe, avant la première assertion.
+- **Sonder dans le contexte réel** : la sonde isolée « prouvait » le bon
+  fonctionnement, seule la sonde en contexte de runner a montré le fantôme.
+- **`Area3D.monitoring` ne se toggle pas entre deux ticks** (R-014).
+- **Mesurer ce qui discrimine** (D-020 amendée) ; sonder l'état des modes avant
+  de conclure sur un drapeau moteur.
 - **Un contrôle négatif qui ne casse rien est une information** ; chaque log se
   termine par `RC=`.
-- **Muter le `.tres`, pas la valeur par défaut** (R-006bis) ; **épingler les
-  valeurs de spec**, jamais seulement les comparer au tuning (revue B, constat 2).
-- **Une mesure d'intégration ne dépend pas de la taille du décor.**
+- **Muter le `.tres`** (R-006bis) ; **épingler les valeurs de spec** (revue B).
 - **Un `Node` créé dans un test doit être libéré.**
-- **Une rampe de test n'est pas une boîte tournée.**
 - **`SpringArm3D` réécrit la position de ses enfants directs** (D-014/D-015).
-- D-009/D-010 : autoloads et `await` du runner — ne pas défaire.
+- D-009/D-010 : autoloads et `await` du runner.
 - **`MIN_TESTS` relevé à chaque ajout** ; nombre de référence dans
   `docs/TEST_REPORT.md` uniquement.
 - Doc en ligne bloquée (ISS-001) : mesurer sur le binaire, consigner au ledger.
