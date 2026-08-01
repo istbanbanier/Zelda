@@ -231,3 +231,5 @@ ou une mesure locale) · `OUVERT`.
 | R-008 | SDFGI demi-résolution vs LightmapGI sur la vue d'ouverture ? (§7.7) | H | preset High |
 | ~~R-009~~ | ~~Substitut au motion warping~~ | B | **RÉSOLU en B.3** — voir l'entrée R-009 ci-dessus |
 | R-010 | Nuage d'orage : couches de dômes vs raymarch Cinematic ? (§7.6) | H | coût de la North Star |
+| R-012 | Saut pressé pendant un mantle : perdu aujourd'hui (fronts consommés chaque tick). Faut-il un buffer inter-modes ? | C | ressenti des enchaînements |
+| R-013 | Le mantle est gratuit, même à endurance quasi nulle. Coût ou pas ? §9.1 ne le tarife pas. | C | équilibrage traversal |

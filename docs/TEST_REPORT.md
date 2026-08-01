@@ -761,3 +761,68 @@ architecture** — le buffer posé ce tick n'est vu qu'au suivant. Le test la ch
   planes) : l'essai B-2 le consigne et sera rejoué en Phase D.
 - **CONTROLLER-001 reste ouverte** — et le protocole Gate B dit explicitement
   qu'il ne la lève pas.
+
+---
+
+# Revue contradictoire du Gate B et clôture du volet automatique (2026-08-01)
+
+## Verdict
+
+**Gate B : BLOQUÉ / EN ATTENTE — aucun `FAIL`.** Rendu par la revue à contexte
+frais après ré-exécution indépendante (dépôt principal **et** clone frais, RC=0 ;
+playground lancé ; release RC=3 conforme). Détail par critère et traitement des
+constats : `evidence/gateB/REVUE.md`.
+
+## Commande et résultat après traitement des constats
+
+```bash
+tools/validate_fast.sh; echo $?
+```
+
+**Code retour** : `0` — VERT. **137 réussis, 0 échoué**, plancher 137.
+
+> **Nombre de tests de référence : 137.** C'est ici, et nulle part ailleurs, qu'il
+> doit être lu.
+
+## Ce que la revue a démontré, et ce qui en a été fait
+
+| Démonstration de la revue | Réponse |
+|---|---|
+| `coyote_time`/`jump_buffer` mutés à **5,0 s** dans le `.tres` : 133/133 vert | deux tests comportementaux — la fenêtre de coyote doit **se fermer**, le tampon doit **expirer** avant un long atterrissage — plus l'épinglage §8.2 valeur par valeur ; V1/V2 rougissent désormais |
+| tests de vitesse **circulaires** (mesure comparée à `tuning.*`) | `test_locomotion_tuning_matches_the_spec` : 12 valeurs de §8.2 épinglées ; V3 (`run_speed = 12`) rougit |
+| poussée diagonale à 45° contre la marche : **jamais franchie** | déclencheur remplacé par l'écoute des collisions de glissement ; test diagonal ajouté ; V4 rougit sur la face **et** la diagonale |
+
+## Correction d'une justification fausse (D-020 amendée)
+
+En traitant le contre-exemple diagonal, la mesure fondatrice de D-020 s'est
+révélée être un **artefact** : « `is_on_wall()` faux contre le mur de 6 m » — le
+joueur n'était pas contre le mur, il l'avait **saisi** (x = 29,33 = exactement la
+distance de paroi de 0,42 m ; en escalade le corps est tenu sans contact). La
+sonde de collisions de glissement l'a montré : `collisions=0` parce qu'il n'y a
+pas de contact à avoir, et, en poussée diagonale contre la marche, une collision
+bien réelle de normale (0 ; 0,12 ; −0,99).
+
+Conséquences honnêtes : D-020 porte un amendement daté, la docstring qui citait la
+fausse mesure est corrigée, **Q5 est caduc** (sa mutation visait un déclencheur
+disparu) et son log est conservé comme archive datée, jamais retouché. Le test qui
+départage désormais les variantes de déclencheur est le cas diagonal — ce qui
+manquait à Q5.
+
+## Chaîne des trois déclencheurs de franchissement de marche
+
+1. `is_on_wall()` — écarté sur une mesure **mal interprétée** (artefact ci-dessus) ;
+2. distance parcourue vs demandée — muet en diagonale (contre-exemple de la revue) ;
+3. **collisions de glissement + poussée dirigée dedans** — mesuré présent de face
+   et en diagonale, jamais sur sol libre, donc aucun faux déclenchement pendant
+   une accélération.
+
+## Limites au moment de la clôture du volet automatique
+
+- Les six essais humains ne sont **pas joués** : jitter, ressenti, lisibilité
+  restent `NON VÉRIFIÉ`.
+- Le mur saisissable est agrippé avant tout contact : le cas « mur non
+  saisissable heurté de face » n'existe pas dans le bac à sable actuel — Q3 reste
+  non concluant, pour deux raisons empilées désormais documentées.
+- R-012 (saut pendant mantle) et R-013 (coût du mantle) sont des questions de
+  design ouvertes, pas des défauts.
+- **CONTROLLER-001 reste ouverte.**

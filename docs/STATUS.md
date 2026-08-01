@@ -33,6 +33,22 @@ Procédure opérateur macOS : **`docs/MANUAL_GATE_A.md`**.
 captures d'écran manquent. C'est cohérent — le manifeste ne certifie pas ce qu'il
 n'a pas vu.
 
+## Verdict Gate B : **BLOQUÉ / EN ATTENTE** (revue contradictoire du 2026-08-01)
+
+Revue à contexte frais rendue et archivée : `evidence/gateB/REVUE.md`. **Aucun
+`FAIL`** — huit critères `PASS` par ré-exécution indépendante (clone frais
+compris), mais le verdict global est le plus faible des onze : jitter et essais
+humains `NON VÉRIFIÉ` (protocole prêt, pas joué), manette `BLOQUÉ`
+(CONTROLLER-001). Les six constats de la revue sont **traités le jour même** :
+deux trous de couverture fermés (fenêtres de saut, dérive du `.tres`), un
+contre-exemple corrigé (marche abordée en diagonale, D-020 amendée), convention
+`RC=` appliquée aux logs, compte de contrôles retiré de PROGRESS, deux questions
+de design consignées (R-012, R-013).
+
+**Le volet automatique est clos.** La suite : six essais humains
+(`docs/MANUAL_VALIDATION.md`, section Gate B), et décision du propriétaire pour
+la Phase C.
+
 ## Verdict Gate 0 : **GELÉ / ACCEPTÉ AVEC RÉSERVES** (décision propriétaire, D-006)
 
 Ce n'est **pas** un `PASS` : aucune des quatre revues adverses ne l'a prononcé.
@@ -105,7 +121,7 @@ llvmpipe uniquement, aucun GPU.
 | Phase | Système | État |
 |---|---|---|
 | A | Boot, autoloads, InputMap AZERTY, couches de collision | **A.1 et A.2 livrés et gelés (`9414fd0`)** ; Gate A **EN ATTENTE** de validation humaine |
-| B | Player, caméra, locomotion, endurance, escalade, mantle | **B.0 à B.5 livrés** — latence instrumentée (1 tick mesuré), protocole manuel Gate B prêt à jouer ; reste la revue contradictoire puis les essais humains |
+| B | Player, caméra, locomotion, endurance, escalade, mantle | **B.0 à B.5 livrés, revue contradictoire rendue** — Gate B **BLOQUÉ / EN ATTENTE** des essais humains ; volet automatique clos, aucun FAIL |
 | C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | Non commencé |
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
 | D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | Non commencé |

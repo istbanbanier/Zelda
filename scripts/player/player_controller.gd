@@ -51,9 +51,10 @@ const LEDGE_RISE_CLEARANCE: float = 0.06
 ## `_try_step_up()`.
 const STEP_LANDING_MARGIN: float = 0.05
 
-## Fraction de la distance demandée en deçà de laquelle le tick est considéré comme
-## bloqué, et un franchissement tenté. Voir `_maybe_step_up()`.
-const STEP_BLOCKED_RATIO: float = 0.5
+## Composante minimale de la poussée dirigée VERS l'obstacle pour tenter un
+## franchissement de marche. En deçà, le joueur longe l'obstacle et un
+## franchissement serait une surprise, pas un service. Voir `_maybe_step_up()`.
+const WALL_PUSH_MIN_DOT: float = 0.3
 
 @export var tuning: LocomotionTuning
 
@@ -156,16 +157,12 @@ func _process_locomotion(delta: float, intent: InputIntent) -> void:
 
 	var was_on_floor: bool = is_on_floor()
 	var vertical_before: float = velocity.y
-	# Repères pris **avant** le déplacement : ils servent à mesurer ce que le tick
-	# a réellement accompli, donc à détecter un blocage.
-	var before: Vector3 = global_position
-	var intended_speed: float = Vector2(velocity.x, velocity.z).length()
 	move_and_slide()
 	_detect_ground_transitions(was_on_floor, vertical_before)
 
 	# Franchissement de marche avant l'accroche : une marche de 30 cm doit se
 	# monter en marchant, pas déclencher une escalade.
-	_maybe_step_up(delta, intent, before, intended_speed)
+	_maybe_step_up(intent)
 
 	# L'accroche est tentée **après** le déplacement : la paroi est sondée depuis
 	# la position réellement atteinte, pas depuis celle du tick précédent.
@@ -274,24 +271,44 @@ func _orient_visual(delta: float) -> void:
 
 ## Décide s'il y a lieu de tenter un franchissement de marche.
 ##
-## Le déclencheur est le **blocage mesuré** — la distance réellement parcourue
-## comparée à celle qui était demandée — et non `is_on_wall()`. Ce dernier a été
-## mesuré peu fiable : plaqué contre le mur de 6 m du bac à sable, poussant depuis
-## deux secondes, `is_on_wall()` renvoie **faux**. Y adosser le franchissement le
-## rendait muet précisément dans les situations qu'il doit traiter, sans que rien
-## ne le signale — la marche du bac à sable, elle, le déclenchait.
-func _maybe_step_up(delta: float, intent: InputIntent, before: Vector3,
-		intended_speed: float) -> void:
-	if not is_on_floor() or intended_speed <= 0.001:
+## Le déclencheur est la **collision de glissement** que `move_and_slide()` vient
+## de rapporter : une normale plus raide que le sol praticable, dans laquelle le
+## joueur pousse. C'est le troisième déclencheur de ce mécanisme, et le premier
+## fondé sur une mesure complète :
+##   - `is_on_wall()` avait été écarté sur une mesure MAL INTERPRÉTÉE — « faux
+##     contre le mur de 6 m » : le joueur avait en réalité SAISI ce mur (mode
+##     escalade, tenu à 0,42 m, aucun contact). L'artefact est corrigé dans
+##     D-020 (amendée) ;
+##   - la comparaison distance parcourue / distance demandée, qui l'a remplacé,
+##     restait muette en poussée diagonale : le glissement le long de la face
+##     conserve ~71 % de la distance totale — contre-exemple démontré par la
+##     revue contradictoire du Gate B ;
+##   - la collision de glissement, elle, est rapportée dans les deux cas —
+##     mesuré : normale (0 ; 0,12 ; −0,99) en poussée à 45° contre la marche —
+##     et jamais sur sol libre, donc aucun faux déclenchement pendant une
+##     accélération.
+func _maybe_step_up(intent: InputIntent) -> void:
+	if not is_on_floor():
 		return
 	var wish: Vector3 = _wish_direction(intent)
 	if wish.length_squared() < 0.04:
 		return
-	var travelled: float = Vector2(global_position.x - before.x,
-		global_position.z - before.z).length()
-	if travelled >= intended_speed * delta * STEP_BLOCKED_RATIO:
-		return  # le tick a avancé normalement : rien ne gêne
-	_try_step_up(wish)
+	var wish_dir: Vector3 = wish.normalized()
+	for i: int in range(get_slide_collision_count()):
+		var collision: KinematicCollision3D = get_slide_collision(i)
+		var normal: Vector3 = collision.get_normal()
+		var angle: float = rad_to_deg(acos(clampf(normal.dot(Vector3.UP), -1.0, 1.0)))
+		if angle <= tuning.max_floor_angle_deg:
+			continue  # c'est le sol, pas un obstacle
+		# Un plafond a une normale quasi verticale : sa composante horizontale ne
+		# se normalise pas — et on ne « marche » pas par-dessus un plafond.
+		var horizontal: Vector3 = Vector3(normal.x, 0.0, normal.z)
+		if horizontal.length_squared() < 0.0001:
+			continue
+		if wish_dir.dot(-horizontal.normalized()) < WALL_PUSH_MIN_DOT:
+			continue  # le joueur longe l'obstacle, il ne pousse pas dedans
+		if _try_step_up(wish_dir):
+			return
 
 
 ## Franchit une marche basse (§8.2 : 0,30–0,38 m).

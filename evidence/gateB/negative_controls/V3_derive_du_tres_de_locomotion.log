@@ -1,0 +1,10 @@
+# Contrôle négatif — V3_derive_du_tres_de_locomotion
+# run_speed a 12,0 dans le .tres : la derive que la revue a demontree invisible — les tests de vitesse comparaient la mesure au tuning lui-meme (comparaison circulaire).
+# Test visé : test_locomotion_tuning_matches_the_spec
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_locomotion.gd::test_locomotion_tuning_matches_the_spec — course (§8.2) : attendu 6.0000 ± 0.0010, obtenu 12.0000
+=== RÉSULTAT: 133 réussi(s), 4 échoué(s) ===
+  ÉCHEC: test_locomotion.gd::test_locomotion_tuning_matches_the_spec — course (§8.2) : attendu 6.0000 ± 0.0010, obtenu 12.0000
+RC=0

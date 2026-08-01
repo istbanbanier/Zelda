@@ -160,7 +160,7 @@ func test_the_full_traversal_course_is_completed_without_a_softlock() -> void:
 	check(mantled[0] >= 1, "le franchissement de rebord doit avoir servi")
 
 	check_equal(camera_clipped, 0,
-		"images où la caméra était dans la géométrie (§23.1 : aucune traversée)")
+		"images où la caméra était dans la géométrie sur %d ticks sondés (§23.1)" % ticks)
 
 	# État final cohérent : le personnage rend la main prêt à rejouer.
 	check(not _player.is_climbing(), "le joueur ne doit pas rester accroché")

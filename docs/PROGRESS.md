@@ -445,53 +445,108 @@ Phase D). `CONTROLLER-001` reste ouverte.
 
 ---
 
+## 2026-08-01 — Revue contradictoire du Gate B, constats traités, volet automatique clos
+
+**Gate visé** : B. **État à l'ouverture** : B.5 livré, revue à lancer.
+
+### La revue
+
+Menée à contexte frais sur `c31534c`, preuves ré-exécutées (dépôt principal + clone
+frais, playground, release) et sondes adverses propres. **Verdict : BLOQUÉ / EN
+ATTENTE, aucun `FAIL`** — identique à ma proposition mais établi indépendamment.
+Rapport intégral : `evidence/gateB/REVUE.md`.
+
+Elle a démontré ce que mes propres contrôles n'avaient pas vu :
+
+- **fenêtres de saut non défendues** — coyote et buffer mutés à 5,0 s, suite
+  verte ;
+- **tests de vitesse circulaires** — mesure comparée au tuning lui-même ;
+- **poussée diagonale contre la marche jamais franchie** — glissement à ~71 % de
+  la distance demandée, déclencheur muet.
+
+### Le traitement, et une découverte en cascade
+
+Quatre tests ajoutés (fermeture de fenêtre, expiration de tampon, épinglage §8.2,
+franchissement diagonal), quatre contrôles négatifs V1–V4 tous rouges comme
+attendu, plancher à 137.
+
+En corrigeant le déclencheur diagonal, la mesure fondatrice de D-020 s'est révélée
+**fausse** : « `is_on_wall()` faux contre le mur » était un artefact — le joueur
+avait SAISI le mur (tenu à 0,42 m, aucun contact). Ni moi ni la revue ne l'avions
+vu ; c'est la sonde de collisions de glissement qui l'a montré. D-020 porte un
+amendement daté, Q5 est caduc (archive conservée intacte), et le déclencheur
+définitif écoute les collisions de glissement — présent de face et en diagonale,
+jamais sur sol libre.
+
+Constats mineurs traités : convention `RC=` en fin de log (V-série + Q3
+régénéré), compte de contrôles retiré de PROGRESS, nombre de ticks sondés archivé
+dans le message caméra du parcours, R-012/R-013 consignées.
+
+### Vérification
+
+`tools/validate_fast.sh` → `RC=0`, VERT, **137 tests**, plancher 137.
+
+### Ce que cette clôture ne dit pas
+
+Le Gate B n'est **pas** `PASS`. Les six essais humains restent à jouer, la dette
+manette court, et la leçon de la session vaut d'être écrite : deux mesures de
+suite ont fondé des décisions — l'une mal interprétée (D-020), l'autre incomplète
+(distance vs projection) — et c'est la revue plus une troisième mesure qui les ont
+rattrapées. Mesurer ne suffit pas ; il faut mesurer **ce qui discrimine**.
+
+---
+
 ## HANDOFF — prochaine action exacte
 
 > **Gate A : `ACCEPTÉ AVEC RÉSERVE / BLOQUÉ SUR LA VALIDATION MANETTE`** (D-012).
-> **Phase B : B.0 à B.5 livrés.** Code, instrumentation et protocole complets.
+> **Gate B : `BLOQUÉ / EN ATTENTE`** — revue rendue, aucun `FAIL`, volet
+> automatique clos à 137 tests (`evidence/gateB/REVUE.md`).
 
-### Action suivante : la revue contradictoire du Gate B
+### Deux actions possibles, et elles n'appartiennent pas à la même personne
 
-Invoquer la procédure `gate-review` (`.claude/skills/`) avec :
+1. **L'opérateur** (machine avec écran) : jouer les six essais de
+   `docs/MANUAL_VALIDATION.md`, section Gate B — environ 45 min :
 
-- la spécification : §8 (contrôle), §9 (endurance/escalade/mantle), §22 Gate B,
-  §23.1 (critères chiffrés) ;
-- le diff : commits de B.0 à B.5 sur cette branche ;
-- les preuves : `docs/TEST_REPORT.md` (jalons B.1 à B.5),
-  `evidence/gateB/README.md` et ses 26 contrôles négatifs archivés.
+   ```bash
+   godot --path . --debug-collisions scenes/tests/TraversalPlayground.tscn
+   ```
 
-La revue doit rendre un verdict **par critère** : `PASS` / `FAIL` / `BLOQUÉ`, le
-verdict global étant le plus faible. Issues possibles :
+   Preuves dans `evidence/gateB/manual/`, un fichier par essai plus `RAPPORT.md`
+   (commit testé, machine, verdicts). Le verdict final du Gate B sera le plus
+   faible de : automatique (clos, vert), essais humains, revue (rendue).
 
-- défauts bloquants → corriger, rejouer les tests ciblés, re-réviser ;
-- rien de bloquant côté code → **Gate B = `EN ATTENTE`** des six essais humains
-  (protocole prêt) ; consigner et passer la main à l'opérateur ;
-- ne **jamais** déclarer `PASS` tant que les essais humains n'ont pas rendu leur
-  verdict — ils font partie du gate, pas de sa décoration.
+2. **Le propriétaire** : décider si la Phase C démarre avec un Gate B
+   explicitement `EN ATTENTE`, comme D-012 l'a permis pour le Gate A. Sans cette
+   décision, **ne pas entamer la Phase C** — la règle « jamais de gate suivant
+   sans gate courant vert ou explicitement BLOQUÉ » est satisfaite par le verdict,
+   mais l'autorisation de continuer reste un choix du propriétaire.
 
-### Après le verdict de la revue
+### Si la Phase C est autorisée, son premier jalon
 
-Si `EN ATTENTE` : l'opérateur joue les six essais de `docs/MANUAL_VALIDATION.md`
-(section Gate B), dépose les preuves dans `evidence/gateB/manual/`, et le Gate B
-se conclut sur le plus faible des trois volets — automatique, humain, revue.
-La Phase C ne commence pas avant.
+C.0 : `HealthComponent`, `HitboxComponent`, `HurtboxComponent` (§5.8), pipeline de
+dégâts de §10.1 — une touche par swing via le set de cibles déjà touchées.
+Questions ouvertes à trancher en route : R-012 (saut pendant mantle), R-013 (coût
+du mantle), et l'absorption du `Mode` dans la `StateMachine` de §8.1 (D-018).
 
-### Pièges connus, vérifiés de B.1 à B.5
+### Pièges connus, vérifiés de B.1 à la revue
 
-- **Un contrôle négatif qui ne casse rien est une information** : trou de
-  couverture (B.3/P2) ou limite de ce que le test prouve (B.4/Q3, Q5).
-- **Un contrôle négatif sur un réglage doit muter le `.tres`** (R-006bis).
-- **Un test vert peut l'être pour la mauvaise raison** (B.3/B3-1).
-- **Ne pas croire un drapeau du moteur sans le mesurer** : `is_on_wall()` est faux
-  contre un mur (D-020).
-- **Une mesure d'intégration ne doit pas dépendre de la taille du décor.**
+- **Mesurer ne suffit pas : mesurer ce qui discrimine.** Deux décisions de suite
+  fondées sur des mesures fausses ou incomplètes (D-020 amendée). En cas de
+  comportement étrange, sonder AUSSI l'état des modes (escalade ?) avant de
+  conclure sur un drapeau du moteur.
+- **Un contrôle négatif qui ne casse rien est une information** — et depuis la
+  revue, chaque log se termine par `RC=` pour être distinguable d'un log tronqué.
+- **Un contrôle négatif sur un réglage doit muter le `.tres`** (R-006bis) ; les
+  valeurs de spec doivent être **épinglées** quelque part, jamais seulement
+  comparées au tuning qui les porte (revue, constat 2).
+- **Une mesure d'intégration ne doit pas dépendre de la taille du décor** — le
+  test diagonal relâche la poussée dès le franchissement.
 - **Un composant `Node` créé dans un test doit être libéré.**
 - **Une rampe de test ne doit pas être une boîte tournée.**
 - **`SpringArm3D` réécrit la position de ses enfants directs** (D-014) ; `margin`
   sans effet, `shape` donne le dégagement (D-015).
-- Un `MainLoop` `--script` n'a ni autoloads ni tree prêt dans `_initialize()`
-  (D-009) ; toute boucle d'`await` doit être attendue (D-010).
-- **Relever `MIN_TESTS` à chaque ajout de test** ; le nombre de référence vit dans
+- D-009/D-010 : autoloads et `await` dans le runner — ne pas défaire.
+- **Relever `MIN_TESTS` à chaque ajout** ; le nombre de référence vit dans
   `docs/TEST_REPORT.md` uniquement.
 - Doc en ligne bloquée (ISS-001) : mesurer sur le binaire, consigner dans
   `RESEARCH_LEDGER.md`.

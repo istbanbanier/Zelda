@@ -453,3 +453,24 @@ est une préférence, pas une décision.
   cela est écrit dans le test concerné plutôt que passé sous silence.
 - **Coût** : trois `test_move` par tick **uniquement** quand le déplacement est
   entravé. Nul en marche normale.
+
+### Amendement 2026-08-01 — post-revue Gate B : la justification était fausse, le déclencheur a changé
+
+- **L'artefact** : la mesure fondatrice de cette décision — « plaqué contre le mur
+  de 6 m, `is_on_wall()` renvoie faux » — était mal interprétée. Le joueur n'était
+  pas plaqué contre le mur : il l'avait **saisi** (§9.2). La position mesurée,
+  x = 29,33, est exactement la distance de paroi (0,42 m de la face) ; en mode
+  escalade le corps est tenu sans contact, donc ni collision ni `is_on_wall()`.
+  Découvert en traitant le contre-exemple de la revue contradictoire.
+- **Le contre-exemple de la revue** : poussée à 45° contre la marche, le
+  déclencheur « distance parcourue vs demandée » restait muet — le glissement
+  diagonal conserve ~71 % de la distance. Jamais franchie.
+- **Décision amendée** : le déclencheur écoute les **collisions de glissement**
+  rapportées par `move_and_slide()` — normale plus raide que le sol praticable,
+  composante horizontale non nulle, poussée du joueur dirigée dedans
+  (`WALL_PUSH_MIN_DOT`). Mesuré présent en poussée diagonale (normale
+  0 ; 0,12 ; −0,99) comme de face, et jamais sur sol libre.
+- **Vérifié par** : `test_a_step_is_climbed_when_approached_diagonally` — le test
+  qui départage réellement les variantes de déclencheur, ce que Q5 avait montré
+  manquant — et le contrôle négatif V4. Q5 est **caduc** : sa mutation visait un
+  code qui n'existe plus sous cette forme.

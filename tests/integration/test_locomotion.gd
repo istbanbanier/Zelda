@@ -360,10 +360,11 @@ func test_a_low_step_is_climbed_by_walking() -> void:
 	## vrai, position figée pendant trois secondes, aucune erreur. Le franchissement
 	## est un shape cast explicite, pas un effet de bord du moteur.
 	##
-	## LIMITE : ce test ne distingue pas le déclencheur retenu (blocage mesuré) de
-	## celui qu'il remplace (`is_on_wall()`) — le contrôle négatif Q5 l'a montré en
-	## ne cassant rien. Le changement de déclencheur repose sur une mesure directe
-	## (`is_on_wall()` faux contre le mur de 6 m), pas sur ce test.
+	## HISTORIQUE : le déclencheur a changé deux fois, et la mesure qui avait
+	## écarté `is_on_wall()` était un artefact — le joueur avait saisi le mur
+	## (mode escalade, aucun contact), voir D-020 amendée. Le déclencheur actuel
+	## écoute les collisions de glissement ; le cas diagonal, plus bas, est le
+	## test qui départage réellement les variantes.
 	if not await _setup(Vector3(0, 1.0, 14)):
 		return
 	var heights: Array[float] = []
@@ -389,13 +390,15 @@ func test_a_tall_wall_is_not_treated_as_a_step() -> void:
 	## n'importe quel mur en marchant, et l'escalade de §9.2 n'aurait plus d'objet.
 	##
 	## CE QUE CE TEST NE DISCRIMINE PAS, mesuré et non supposé : aucune mutation de
-	## `_try_step_up()` ne le fait rougir, pas même le retrait simultané du
-	## dégagement avant **et** du contrôle de praticabilité. La raison est
-	## géométrique — devant un mur plein, la sonde descendante ne trouve aucun sol
-	## (`test_move` renvoie faux), et la fonction refuse avant d'atteindre le moindre
-	## de ses contrôles. C'est une défense en profondeur réelle, pas une couverture
-	## de test : ce cas garde un comportement observable, il ne valide aucune ligne
-	## en particulier. Voir les contrôles négatifs Q3 et Q5.
+	## `_try_step_up()` ne le fait rougir (contrôle négatif Q3). Deux couches l'en
+	## empêchent, mesurées l'une après l'autre :
+	##   1. en poussant vers ce mur — saisissable — le joueur l'AGRIPPE (§9.2) et
+	##      passe en escalade avant tout contact : plus aucune collision de
+	##      glissement, donc plus aucun déclencheur de marche ;
+	##   2. même sans la saisie, la sonde descendante de `_try_step_up()` ne trouve
+	##      aucun sol devant un mur plein et refuse avant ses autres contrôles.
+	## Défense en profondeur réelle — mais ce test valide un comportement
+	## observable, pas une ligne de code en particulier.
 	if not await _setup(Vector3(26, 1.0, 0)):
 		return
 	var heights: Array[float] = []
@@ -448,6 +451,143 @@ func test_step_height_stays_within_the_spec_envelope() -> void:
 	check(tuning.step_forward_probe > 0.35,
 		"sonde avant trop courte (%.2f m) : elle heurterait la face de la marche"
 		% tuning.step_forward_probe)
+
+
+func test_locomotion_tuning_matches_the_spec() -> void:
+	## §8.2 épinglé valeur par valeur, comme `test_declared_values_match_the_spec`
+	## le fait pour l'endurance. Ajouté sur constat de la revue contradictoire du
+	## Gate B : les tests de vitesse comparaient la mesure à `tuning.*` — une
+	## dérive du `.tres` (course à 12 m/s, coyote à 5 s) laissait TOUTE la suite
+	## verte. Comparaison circulaire ; celle-ci ne l'est pas.
+	var t: LocomotionTuning = load("res://resources/tuning/locomotion_default.tres")
+	check_not_null(t, "locomotion_default.tres")
+	if t == null:
+		return
+	check_approx(t.walk_speed, 3.5, 0.001, "marche (§8.2)")
+	check_approx(t.run_speed, 6.0, 0.001, "course (§8.2)")
+	check_approx(t.sprint_speed, 9.0, 0.001, "sprint (§8.2)")
+	check_approx(t.ground_acceleration, 24.0, 0.001, "accélération sol (§8.2)")
+	check_approx(t.ground_deceleration, 30.0, 0.001, "décélération (§8.2)")
+	check_approx(t.air_acceleration, 8.4, 0.001, "accélération air (§8.2)")
+	check_approx(t.air_control, 0.35, 0.001, "contrôle aérien (§8.2)")
+	check_approx(t.gravity, 24.0, 0.001, "gravité (§8.2)")
+	check_approx(t.jump_velocity, 8.2, 0.001, "vitesse de saut (§8.2)")
+	check_approx(t.coyote_time, 0.12, 0.001, "coyote time (§8.2)")
+	check_approx(t.jump_buffer, 0.12, 0.001, "jump buffer (§8.2)")
+	check_approx(t.max_floor_angle_deg, 46.0, 0.001, "pente praticable (§8.2)")
+
+
+func test_a_jump_after_the_coyote_window_is_refused() -> void:
+	## La moitié manquante du coyote time, exigée par la revue du Gate B : la
+	## fenêtre doit aussi SE FERMER. Sans ce test, `coyote_time = 5.0` dans le
+	## `.tres` laissait la suite verte — un saut accepté n'importe quand en l'air
+	## passait pour un coyote time conforme.
+	##
+	## Le plateau de la rampe douce (dessus y ≈ 4,10, x ∈ [−23 ; −17]) fournit la
+	## chute longue qu'une marche de 0,32 m ne donne pas : ~0,59 s, assez pour
+	## laisser expirer 0,12 s de fenêtre avant d'appuyer.
+	if not await _setup(Vector3(-20, 4.4, -10)):
+		return
+	await _settle(30)
+	check(_player.is_on_floor(), "préalable : le joueur doit être posé sur le plateau")
+
+	_intent.move = Vector2(1.0, 0.0)
+	var left: bool = false
+	for i: int in range(180):
+		await _tree().physics_frame
+		if not _player.is_on_floor():
+			left = true
+			break
+	check(left, "le joueur doit avoir quitté le plateau")
+	if not left:
+		_teardown()
+		return
+
+	_intent.move = Vector2.ZERO
+	# 15 ticks = 0,25 s : la fenêtre de 0,12 s est expirée, la chute continue.
+	await _settle(15)
+	check(not _player.is_on_floor(), "préalable : encore en l'air au moment de l'appui")
+	_intent.jump_pressed = true
+	await _settle(2)
+	check(_player.velocity.y < 1.0,
+		"un saut demandé après la fenêtre de coyote doit être refusé (vy = %.2f)"
+		% _player.velocity.y)
+	_teardown()
+
+
+func test_a_buffered_jump_expires_before_landing() -> void:
+	## La moitié manquante du jump buffer : un appui trop tôt avant l'atterrissage
+	## doit être OUBLIÉ, pas conservé indéfiniment. Sans ce test,
+	## `jump_buffer = 5.0` laissait la suite verte. Même chute que ci-dessus :
+	## appui à ~0,25 s après le départ, atterrissage à ~0,59 s — le tampon de
+	## 0,12 s expire largement avant le contact.
+	if not await _setup(Vector3(-20, 4.4, -10)):
+		return
+	await _settle(30)
+	_intent.move = Vector2(1.0, 0.0)
+	var left: bool = false
+	for i: int in range(180):
+		await _tree().physics_frame
+		if not _player.is_on_floor():
+			left = true
+			break
+	check(left, "le joueur doit avoir quitté le plateau")
+	if not left:
+		_teardown()
+		return
+
+	_intent.move = Vector2.ZERO
+	await _settle(15)   # coyote expiré : l'appui ne peut pas partir immédiatement
+	_intent.jump_pressed = true
+
+	var landed: bool = false
+	for i: int in range(180):
+		await _tree().physics_frame
+		if _player.is_on_floor():
+			landed = true
+			break
+	check(landed, "le joueur doit finir par atterrir")
+	await _settle(3)
+	check(_player.is_on_floor(),
+		"aucun rebond : le tampon expiré ne doit pas déclencher de saut à l'atterrissage")
+	check(_player.velocity.y < 1.0,
+		"vitesse verticale au sol après l'atterrissage (vy = %.2f)" % _player.velocity.y)
+	_teardown()
+
+
+func test_a_step_is_climbed_when_approached_diagonally() -> void:
+	## Contre-exemple démontré par la revue du Gate B : poussée à 45° contre la
+	## marche, le joueur GLISSAIT le long de la face sans jamais la franchir. Le
+	## déclencheur comparait la distance parcourue à la distance demandée — or le
+	## glissement diagonal en conserve ~71 %, au-dessus du seuil. Le déclencheur
+	## écoute désormais la collision de glissement rapportée par move_and_slide()
+	## — mesurée présente dans ce cas précis, normale (0 ; 0,12 ; −0,99) — quand
+	## le joueur pousse dedans.
+	if not await _setup(Vector3(-2, 1.0, 14)):
+		return
+	var heights: Array[float] = []
+	_player.stepped_up.connect(func(h: float) -> void: heights.append(h))
+
+	# Diagonale +X/+Z : `move.y = -1` pousse vers +Z (la face de la marche),
+	# `move.x = 1` la longe vers +X. Normalisée comme le ferait un stick.
+	# On relâche dès le franchissement : la marche ne fait que 8 m de côté, et la
+	# poussée diagonale maintenue en ressortirait par le flanc est — la mesure
+	# porterait alors sur une chute, pas sur le franchissement.
+	_intent.move = Vector2(0.7071, -0.7071)
+	for i: int in range(120):
+		await _tree().physics_frame
+		if heights.size() >= 1:
+			break
+	_intent.move = Vector2.ZERO
+	await _settle(15)
+
+	check(heights.size() >= 1,
+		"la marche doit être franchie même abordée à 45° (glissement : %d franchissement(s))"
+		% heights.size())
+	check_approx(_player.global_position.y, 0.32, 0.06,
+		"le joueur doit se tenir sur la marche")
+	check(_player.is_on_floor(), "le joueur doit reposer sur la marche")
+	_teardown()
 
 
 func test_body_never_rotates() -> void:

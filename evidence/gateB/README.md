@@ -120,6 +120,32 @@ précisément ce que les tests prouvent :
 que §10.6 vise — une action tardive **par ordre d'exécution**, pas par intention.
 Le test la chiffre : 2 ticks au lieu de 1.
 
+## Post-revue — Série V et convention `RC=` (2026-08-01)
+
+La revue contradictoire du Gate B (`REVUE.md`) a démontré deux trous de couverture
+par mutation restée verte, et un contre-exemple comportemental. Les contrôles V
+vérifient les correctifs. **Convention appliquée depuis cette série (constat 4,
+règle B6)** : chaque log se termine par sa ligne `RC=`, pour qu'un log vert soit
+distinguable d'un log tronqué. Les logs antérieurs restent intacts — on ne
+retouche pas une archive — leur absence de `RC=` est la limite documentée ici.
+
+| Log | Mutation | Test visé | Résultat |
+|---|---|---|---|
+| `V1_coyote_de_cinq_secondes` | `coyote_time = 5.0` **dans le `.tres`** — la mutation exacte de la revue | `test_a_jump_after_the_coyote_window_is_refused` | ÉCHEC — « vy = 7.80 » ✅ |
+| `V2_buffer_de_cinq_secondes` | `jump_buffer = 5.0` | `test_a_buffered_jump_expires_before_landing` | ÉCHEC — rebond à l'atterrissage ✅ |
+| `V3_derive_du_tres_de_locomotion` | `run_speed = 12.0` | `test_locomotion_tuning_matches_the_spec` | ÉCHEC ✅ |
+| `V4_declencheur_de_marche_retire` | écoute des collisions retirée | marche de face **et** diagonale | ÉCHEC ✅ |
+
+**Q3 a été régénéré** sous la nouvelle convention (`RC=0` explicite) : toujours
+vert, toujours non concluant, et la raison s'est enrichie — le mur saisissable est
+**agrippé** avant tout contact, donc aucune collision de glissement n'atteint le
+déclencheur de marche. **Q5 est caduc** : sa mutation visait un déclencheur qui
+n'existe plus (D-020 amendée — la mesure qui l'avait fondé était un artefact, le
+joueur avait saisi le mur au lieu de le heurter). Le log est conservé comme
+archive de l'état du 2026-08-01 au commit `e11fd24` ; le test qui départage
+désormais les variantes de déclencheur est
+`test_a_step_is_climbed_when_approached_diagonally`.
+
 ## Ce que Gate B exigera encore, et que rien ici ne couvre
 
 - Lissage de la normale de paroi et vitesse latérale (§9.2) : implémentés, **non

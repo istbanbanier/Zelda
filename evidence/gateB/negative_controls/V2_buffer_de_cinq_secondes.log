@@ -1,0 +1,12 @@
+# Contrôle négatif — V2_buffer_de_cinq_secondes
+# jump_buffer a 5,0 s dans le .tres : un appui oublie depuis longtemps declencherait un rebond a l atterrissage.
+# Test visé : test_a_buffered_jump_expires_before_landing
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_locomotion.gd::test_a_buffered_jump_expires_before_landing — aucun rebond : le tampon expiré ne doit pas déclencher de saut à l'atterrissage
+  ÉCHEC test_locomotion.gd::test_a_buffered_jump_expires_before_landing — vitesse verticale au sol après l'atterrissage (vy = 7.40)
+=== RÉSULTAT: 135 réussi(s), 3 échoué(s) ===
+  ÉCHEC: test_locomotion.gd::test_a_buffered_jump_expires_before_landing — aucun rebond : le tampon expiré ne doit pas déclencher de saut à l'atterrissage
+  ÉCHEC: test_locomotion.gd::test_a_buffered_jump_expires_before_landing — vitesse verticale au sol après l'atterrissage (vy = 7.40)
+RC=0

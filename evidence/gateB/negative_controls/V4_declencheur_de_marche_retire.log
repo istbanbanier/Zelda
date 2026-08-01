@@ -1,0 +1,19 @@
+# Contrôle négatif — V4_declencheur_de_marche_retire
+# Le bloc d'écoute des collisions de glissement est retiré : ni la marche de
+# face ni la diagonale ne se franchissent.
+# Tests visés : test_a_low_step_is_climbed_by_walking, test_a_step_is_climbed_when_approached_diagonally
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_locomotion.gd::test_a_low_step_is_climbed_by_walking — le franchissement de marche doit être signalé
+  ÉCHEC test_locomotion.gd::test_a_low_step_is_climbed_by_walking — le joueur doit se tenir sur la marche : attendu 0.3200 ± 0.0500, obtenu 0.0004
+  ÉCHEC test_locomotion.gd::test_a_low_step_is_climbed_by_walking — le joueur doit avoir dépassé le bord de la marche (z = 15.65)
+  ÉCHEC test_locomotion.gd::test_a_step_is_climbed_when_approached_diagonally — la marche doit être franchie même abordée à 45° (glissement : 0 franchissement(s))
+  ÉCHEC test_locomotion.gd::test_a_step_is_climbed_when_approached_diagonally — le joueur doit se tenir sur la marche : attendu 0.3200 ± 0.0600, obtenu 0.0010
+=== RÉSULTAT: 134 réussi(s), 13 échoué(s) ===
+  ÉCHEC: test_locomotion.gd::test_a_low_step_is_climbed_by_walking — le franchissement de marche doit être signalé
+  ÉCHEC: test_locomotion.gd::test_a_low_step_is_climbed_by_walking — le joueur doit se tenir sur la marche : attendu 0.3200 ± 0.0500, obtenu 0.0004
+  ÉCHEC: test_locomotion.gd::test_a_low_step_is_climbed_by_walking — le joueur doit avoir dépassé le bord de la marche (z = 15.65)
+  ÉCHEC: test_locomotion.gd::test_a_step_is_climbed_when_approached_diagonally — la marche doit être franchie même abordée à 45° (glissement : 0 franchissement(s))
+  ÉCHEC: test_locomotion.gd::test_a_step_is_climbed_when_approached_diagonally — le joueur doit se tenir sur la marche : attendu 0.3200 ± 0.0600, obtenu 0.0010
+RC=0
