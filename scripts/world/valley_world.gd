@@ -24,7 +24,9 @@ const SUN_ROTATION_DEG: Vector3 = Vector3(-22.0, -90.0, 0.0)
 ## capture. Reculée à ~7,2 m et montée à 2,6 m au-dessus des pieds : héros à
 ## ~32 % de la hauteur, dans la bande 32–40 % de §3.2, légèrement à gauche
 ## (décalage caméra +0,8). FOV horizontal ≈ 68° (vertical 42° en 16:9).
-const VISTA_POSITION: Vector3 = Vector3(0.8, 26.9, 177.4)
+## Spawn avancé à z = 150, à 6 m du bord de crête : depuis z = 170, 26 m de
+## plateau plat masquaient TOUTE la vallée (2e capture) — ici elle se révèle.
+const VISTA_POSITION: Vector3 = Vector3(0.8, 26.9, 157.4)
 const VISTA_ROTATION_DEG: Vector3 = Vector3(-6.0, 0.0, 0.0)
 const VISTA_FOV: float = 42.0
 

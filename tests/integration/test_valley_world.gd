@@ -70,7 +70,7 @@ func test_the_valley_loads_with_player_camp_and_flow() -> void:
 	var player: PlayerController = valley.player()
 	check_not_null(player, "le joueur est dans la vallée")
 	if player != null:
-		check(player.global_position.z > 160.0, "au spawn sud (§3.3 : z = 170)")
+		check(player.global_position.z > 140.0, "au spawn sud, sur la crête")
 		var grounded: bool = false
 		for i: int in range(120):
 			if player.is_on_floor():
@@ -314,7 +314,7 @@ func test_a_fall_out_of_the_world_is_rescued_to_spawn() -> void:
 			break
 	check(rescued, "le joueur est repêché")
 	if rescued:
-		check((player.global_position - Vector3(0, 24.3, 170)).length() < 3.0,
+		check((player.global_position - Vector3(0, 24.3, 150)).length() < 3.0,
 			"…au spawn de la crête")
 	_tree().root.remove_child(valley)
 	valley.queue_free()

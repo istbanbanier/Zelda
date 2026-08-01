@@ -51,10 +51,10 @@ navigation_mesh = ExtResource("9_navmesh")
 shadow_enabled = true
 
 [node name="SpawnPoint" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 24.3, 170)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 24.3, 150)
 
 [node name="Player" parent="." instance=ExtResource("3_player")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 24.3, 170)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 24.3, 150)
 
 ; §3.3 : « regard vers -Z » — le visuel fait demi-tour au spawn ; la première
 ; capture montrait le héros de FACE (nez cyan vers la caméra), §3.2 exige le dos.
