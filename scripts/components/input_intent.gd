@@ -33,7 +33,13 @@ var target_next_pressed: bool = false
 var target_prev_pressed: bool = false
 
 ## Regard voulu (souris ou stick droit), en unités déjà normalisées par le lecteur.
-var look: Vector2 = Vector2.ZERO
+## Regard au stick : axe sans unité (-1..1), converti en vitesse angulaire par
+## la caméra (× vitesse × delta).
+var look_analog: Vector2 = Vector2.ZERO
+## Regard à la souris : déjà en RADIANS (pixels × sensibilité), appliqué tel
+## quel — JAMAIS re-multiplié par un delta (constat PT-D1-01 : le mélange des
+## deux unités divisait la rotation souris par ~25).
+var look_mouse: Vector2 = Vector2.ZERO
 
 
 func has_move() -> bool:
@@ -56,7 +62,8 @@ func consume_edges() -> void:
 
 func clear() -> void:
 	move = Vector2.ZERO
-	look = Vector2.ZERO
+	look_analog = Vector2.ZERO
+	look_mouse = Vector2.ZERO
 	sprint_held = false
 	aim_held = false
 	consume_edges()
@@ -65,7 +72,8 @@ func clear() -> void:
 func duplicate_intent() -> InputIntent:
 	var copy: InputIntent = InputIntent.new()
 	copy.move = move
-	copy.look = look
+	copy.look_analog = look_analog
+	copy.look_mouse = look_mouse
 	copy.sprint_held = sprint_held
 	copy.aim_held = aim_held
 	copy.jump_pressed = jump_pressed

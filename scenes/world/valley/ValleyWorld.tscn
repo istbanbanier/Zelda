@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=15 format=3]
 
 ; Vallée de Néris — D.1 : relief macro blockout (voir scripts/world/valley_terrain.gd
 ; pour toutes les cotes). Spawn sur la crête (§3.3 : (0, 24, 170)), camp sur sa
@@ -14,6 +14,7 @@
 [ext_resource type="Resource" path="res://resources/weapons/heavy_axe.tres" id="7_axe"]
 [ext_resource type="Resource" path="res://resources/weapons/wood_club.tres" id="8_club"]
 [ext_resource type="NavigationMesh" path="res://scenes/world/valley/valley_navmesh.tres" id="9_navmesh"]
+[ext_resource type="PackedScene" path="res://scenes/ui/GameplayShell.tscn" id="10_shell"]
 
 [sub_resource type="CylinderMesh" id="CampfireMesh"]
 top_radius = 0.5
@@ -36,6 +37,9 @@ transparency = 1
 
 [node name="ValleyWorld" type="Node3D"]
 script = ExtResource("1_world")
+
+; Capture souris, pause, sensibilité (PT-D1-01/-11).
+[node name="GameplayShell" parent="." instance=ExtResource("10_shell")]
 
 [node name="Terrain" type="Node3D" parent="."]
 script = ExtResource("2_terrain")

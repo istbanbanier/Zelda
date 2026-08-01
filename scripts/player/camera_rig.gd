@@ -64,14 +64,18 @@ func _ready() -> void:
 ## Le regard est appliqué au rythme physique, comme le reste du mouvement (§20.9).
 ## `look` est déjà normalisé par `PlayerInputReader` : ce script ignore si l'ordre
 ## vient d'une souris ou d'un stick.
-func apply_look(look: Vector2, delta: float) -> void:
+func apply_look(analog: Vector2, mouse: Vector2, delta: float) -> void:
 	if tuning == null:
 		return
 	if _lock_target != null and is_instance_valid(_lock_target):
 		_apply_lock_look(delta)
 		return
-	_yaw -= look.x * tuning.camera_stick_speed * delta
-	_pitch -= look.y * tuning.camera_stick_speed * delta
+	# Stick : vitesse angulaire × delta. Souris : radians, TELS QUELS — la même
+	# distance de tapis produit la même rotation quel que soit le framerate
+	# (PT-D1-01). Lacet libre sur 360°, replié pour rester borné.
+	_yaw -= analog.x * tuning.camera_stick_speed * delta + mouse.x
+	_yaw = wrapf(_yaw, -PI, PI)
+	_pitch -= analog.y * tuning.camera_stick_speed * delta + mouse.y
 	_pitch = clampf(_pitch,
 		deg_to_rad(tuning.camera_pitch_min_deg),
 		deg_to_rad(tuning.camera_pitch_max_deg))

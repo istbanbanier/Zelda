@@ -76,7 +76,7 @@ func _settle(ticks: int) -> void:
 ## test ne prouverait rien du chemin réellement emprunté par le jeu.
 func _turn_to_yaw(target: float) -> void:
 	var delta_yaw: float = target - _rig.get_yaw()
-	_rig.apply_look(Vector2(-delta_yaw / (_rig.tuning.camera_stick_speed * TICK), 0.0), TICK)
+	_rig.apply_look(Vector2(-delta_yaw / (_rig.tuning.camera_stick_speed * TICK), 0.0), Vector2.ZERO, TICK)
 
 
 func test_camera_is_a_direct_child_of_the_spring_arm() -> void:
@@ -140,12 +140,12 @@ func test_pitch_is_clamped_to_the_specified_range() -> void:
 		return
 	# Ordre volontairement démesuré, appliqué plusieurs fois.
 	for i: int in range(10):
-		_rig.apply_look(Vector2(0.0, 500.0), TICK)
+		_rig.apply_look(Vector2(0.0, 500.0), Vector2.ZERO, TICK)
 	check(_rig.get_pitch() >= deg_to_rad(_rig.tuning.camera_pitch_min_deg) - 0.001,
 		"butée basse franchie : %.1f°" % rad_to_deg(_rig.get_pitch()))
 
 	for i: int in range(10):
-		_rig.apply_look(Vector2(0.0, -500.0), TICK)
+		_rig.apply_look(Vector2(0.0, -500.0), Vector2.ZERO, TICK)
 	check(_rig.get_pitch() <= deg_to_rad(_rig.tuning.camera_pitch_max_deg) + 0.001,
 		"butée haute franchie : %.1f°" % rad_to_deg(_rig.get_pitch()))
 	_teardown()
@@ -242,7 +242,7 @@ func test_look_is_framerate_independent() -> void:
 		_teardown()
 		return
 	for i: int in range(30):
-		_rig.apply_look(Vector2(1.0, 0.0), TICK)
+		_rig.apply_look(Vector2(1.0, 0.0), Vector2.ZERO, TICK)
 	var yaw_60: float = _rig.get_yaw()
 
 	_teardown()
@@ -250,7 +250,7 @@ func test_look_is_framerate_independent() -> void:
 		_teardown()
 		return
 	for i: int in range(60):
-		_rig.apply_look(Vector2(1.0, 0.0), TICK / 2.0)
+		_rig.apply_look(Vector2(1.0, 0.0), Vector2.ZERO, TICK / 2.0)
 	var yaw_120: float = _rig.get_yaw()
 
 	check_approx(yaw_120, yaw_60, 0.001,

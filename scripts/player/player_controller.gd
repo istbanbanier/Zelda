@@ -173,7 +173,7 @@ func _physics_process(delta: float) -> void:
 
 	# La caméra est mise à jour avant tout le reste : le repère utilisé pour
 	# « avant » est celui que le joueur voit à cet instant.
-	_camera_rig.apply_look(intent.look, delta)
+	_camera_rig.apply_look(intent.look_analog, intent.look_mouse, delta)
 
 	_stunlock_grace = maxf(0.0, _stunlock_grace - delta)
 

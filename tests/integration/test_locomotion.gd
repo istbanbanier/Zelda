@@ -148,7 +148,7 @@ func test_movement_is_camera_relative() -> void:
 	var dir_default: Vector3 = (_player.global_position - start).normalized()
 
 	# Quart de tour de la caméra vers la gauche.
-	rig.apply_look(Vector2(PI / 2.0 / (rig.tuning.camera_stick_speed * TICK), 0.0), TICK)
+	rig.apply_look(Vector2(PI / 2.0 / (rig.tuning.camera_stick_speed * TICK), 0.0), Vector2.ZERO, TICK)
 	await _settle(60)
 	var start2: Vector3 = _player.global_position
 	await _settle(30)

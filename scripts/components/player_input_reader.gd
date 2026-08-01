@@ -15,8 +15,9 @@
 class_name PlayerInputReader
 extends Node
 
-## Sensibilité du regard à la souris, en radians par pixel.
-const MOUSE_LOOK_SCALE: float = 0.0022
+## Sensibilité du regard à la souris, en radians par pixel. Valeur par défaut
+## et bornes : `UserSettings` — modifiable dans le menu pause, persistée.
+var mouse_sensitivity: float = UserSettings.DEFAULT_MOUSE_SENSITIVITY
 
 var _intent: InputIntent = InputIntent.new()
 var _mouse_delta: Vector2 = Vector2.ZERO
@@ -40,7 +41,12 @@ func clear_edges() -> void:
 	_intent.consume_edges()
 
 
+func set_mouse_sensitivity(value: float) -> void:
+	mouse_sensitivity = UserSettings.clamp_sensitivity(value)
+
+
 func _ready() -> void:
+	mouse_sensitivity = UserSettings.load_mouse_sensitivity()
 	# Les fronts sont détectés dans `_input`, mais les états maintenus sont relus
 	# au rythme physique : c'est là que la logique de mouvement les consomme
 	# (§20.9 — aucune écriture de transform gameplay depuis `_process`).
@@ -57,10 +63,11 @@ func _physics_process(_delta: float) -> void:
 	_intent.sprint_held = Input.is_action_pressed("sprint")
 	_intent.aim_held = Input.is_action_pressed("aim")
 
-	# Le regard au stick droit est un axe continu, celui de la souris un delta
-	# d'événements : les deux sont ramenés ici à la même unité.
-	var stick: Vector2 = Input.get_vector("look_left", "look_right", "look_down", "look_up")
-	_intent.look = stick + _mouse_delta
+	# Deux canaux, deux unités — JAMAIS mélangés (PT-D1-01) : le stick est un
+	# axe (-1..1) que la caméra convertit en vitesse angulaire ; la souris est un
+	# déplacement en pixels déjà converti en radians, appliqué tel quel.
+	_intent.look_analog = Input.get_vector("look_left", "look_right", "look_down", "look_up")
+	_intent.look_mouse = _mouse_delta
 	_mouse_delta = Vector2.ZERO
 
 
@@ -89,4 +96,4 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_pressed("target_prev", false, true):
 		_intent.target_prev_pressed = true
 	elif event is InputEventMouseMotion:
-		_mouse_delta += (event as InputEventMouseMotion).relative * MOUSE_LOOK_SCALE
+		_mouse_delta += (event as InputEventMouseMotion).relative * mouse_sensitivity
