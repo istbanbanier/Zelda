@@ -22,6 +22,26 @@ func _ready() -> void:
 	add_to_group("interactable")
 	if definition == null:
 		push_warning("[pickup] arme au sol sans définition — inerte.")
+		return
+	# ART-P0 : si la définition porte un modèle de PRODUCTION, il remplace la
+	# boîte graybox — posé à plat sur le sol, lame vers l'avant. Sans modèle :
+	# repli contrôlé sur la boîte (normal tant que la bibliothèque est
+	# incomplète).
+	if definition.mesh_scene != null:
+		var model: Node3D = definition.mesh_scene.instantiate() as Node3D
+		if model == null:
+			push_error("[pickup] mesh_scene de %s n'est pas un Node3D — repli boîte."
+				% String(definition.id))
+			return
+		var box: Node = get_node_or_null("Mesh")
+		if box != null:
+			(box as MeshInstance3D).visible = false
+		model.name = "ProductionModel"
+		# Le modèle est naturellement à PLAT (lame +Z, plat de lame vers le
+		# haut — l'épaisseur suit Y après conversion glTF) : un lacet suffit.
+		model.rotation_degrees = Vector3(0.0, 25.0, 0.0)
+		model.position = Vector3(0, 0.05, 0)
+		add_child(model)
 
 
 func prompt_verb() -> String:

@@ -303,17 +303,22 @@ func test_the_telegraph_is_visible_on_the_raider_body() -> void:
 
 
 func test_the_player_weapon_is_visible_and_matches_the_equipment() -> void:
-	## PT-D1-12 : « aucune arme visible » — corrigé : une lame visible qui suit
-	## l'équipement, et disparaît à mains nues.
+	## PT-D1-12 : « aucune arme visible » — corrigé : une arme VISIBLE qui suit
+	## l'équipement (modèle de production depuis ART-P0, boîte graybox en
+	## repli), et qui disparaît à mains nues.
 	await _setup(false)
 	await _settle(3)
-	var mesh: MeshInstance3D = \
-		_player.get_node("VisualRoot/WeaponPivot/WeaponMesh") as MeshInstance3D
-	check(mesh.visible, "l'épée de départ se voit")
+	var pivot: Node3D = _player.get_node("VisualRoot/WeaponPivot") as Node3D
+	var mesh: MeshInstance3D = pivot.get_node("WeaponMesh") as MeshInstance3D
+	var models: Array[Node] = pivot.find_children("*", "WeaponModel", false, false)
+	check(mesh.visible or not models.is_empty(),
+		"l'épée de départ se voit (modèle ART-P0 ou boîte de repli)")
 
 	var inventory: InventoryComponent = _player.inventory()
 	var sword: WeaponInstance = inventory.equipped()
 	inventory.remove_weapon(sword)
 	await _settle(2)
-	check(not mesh.visible, "mains nues : plus de lame affichée")
+	check(not mesh.visible
+		and pivot.find_children("*", "WeaponModel", false, false).is_empty(),
+		"mains nues : plus aucune arme affichée, ni boîte ni modèle")
 	_teardown()

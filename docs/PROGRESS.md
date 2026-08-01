@@ -903,6 +903,27 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
    localisé, routes guidantes, HUD discret).
 3. Déposer le retour dans `evidence/gateD/playtest02/FORMULAIRE.md`.
 
+### ART-P0 livré (2026-08-01, plus récent) — ARRÊT pour validation
+
+> Décision propriétaire : audit validé, stratégie hybride, premier asset =
+> l'ÉPÉE USÉE de bout en bout. **Livré** : `SM_WornSword` — création
+> originale procédurale (tools/blender/make_worn_sword.py, seed fixe,
+> 414 tris, lame patinée à entailles de silhouette, garde bronze
+> asymétrique, poignée cuir à gorges, pommeau vieilli, goupille+pastille
+> ivoire, ZÉRO cyan), textures 512 BaseColor+MR générées, .blend 448 Ko /
+> .glb 190 Ko (Git LFS INDISPONIBLE — vérifié — donc tailles contenues),
+> gltf_inspect VALIDE, icône RENDUE du modèle (256, fond transparent).
+> Intégré sans toucher un chiffre de gameplay : en main (WeaponModel via
+> mesh_scene, usure < 25 % par instance), au sol (pickup), inventaire
+> (icône carte + détail), repli boîte CONTRÔLÉ pour les armes sans modèle.
+> validate_fast VERT 276/276 (6 régressions ART-P0, plancher 276), vallée
+> et inventaire lancés réellement sans erreur. Captures gate :
+> evidence/artP0/ (Blender, Godot socle/usée/sol/main, inventaire).
+> S4 consigné : la plaque d'inventaire se cale en haut-gauche sous le
+> harnais de capture (CenterContainer ajouté ; position à vérifier sur
+> poste). **Le verdict du gate visuel est HUMAIN — arrêt : ni héros, ni
+> autres armes, ni remplacement massif avant décision.**
+
 ### Verdict propriétaire sur la Passe V4 (2026-08-01, plus récent)
 
 > Infrastructure technique et fonctionnelle ACCEPTÉE ; gate artistique

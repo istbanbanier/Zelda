@@ -70,6 +70,7 @@ var _inventory_grid: GridContainer = null
 var _detail_name: Label = null
 var _detail_stats: Label = null
 var _detail_conductivity: ProgressBar = null
+var _detail_icon: TextureRect = null
 
 
 func _ready() -> void:
@@ -233,20 +234,22 @@ func _apply_v4_style() -> void:
 		plate.add_theme_stylebox_override(&"panel", HudStyle.plaque(0.8))
 		panel.remove_child(column)
 		plate.add_child(column)
-		panel.add_child(plate)
-		# Ancrage CENTRE + croissance des deux côtés : le conteneur reste
-		# centré quelle que soit sa taille de contenu — un placement par
-		# `position` avant le premier layout serait faux.
-		plate.set_anchors_preset(Control.PRESET_CENTER)
-		plate.grow_horizontal = Control.GROW_DIRECTION_BOTH
-		plate.grow_vertical = Control.GROW_DIRECTION_BOTH
+		# Centrage ROBUSTE (ART-P0 : la capture d'inventaire montrait la plaque
+		# hors cadre avec des ancres calculées) : un CenterContainer plein
+		# écran centre son contenu quelle que soit sa taille — mesurable, sans
+		# arithmétique d'offsets.
+		var centerer: CenterContainer = CenterContainer.new()
+		centerer.name = "Centerer"
+		panel.add_child(centerer)
+		centerer.set_anchors_preset(Control.PRESET_FULL_RECT)
+		centerer.add_child(plate)
 		var title: Label = column.get_node_or_null("Title") as Label
 		if title != null:
 			title.add_theme_color_override(&"font_color", HudStyle.GOLD)
 	# 7. Inventaire (réf. 04) : grille 2 × 4 de cartes + panneau de détail aux
 	# données RÉELLES (définition + instance). Pas d'onglet OBJETS : il
 	# n'existe pas encore — on n'affiche pas un système absent (§0.2).
-	(_inventory_panel.get_node("Plate/Column/Title") as Label).text = "INVENTAIRE"
+	(_inventory_panel.get_node("Centerer/Plate/Column/Title") as Label).text = "INVENTAIRE"
 	var body: HBoxContainer = HBoxContainer.new()
 	body.name = "Body"
 	body.add_theme_constant_override(&"separation", 18)
@@ -261,6 +264,11 @@ func _apply_v4_style() -> void:
 	detail_plate.add_theme_stylebox_override(&"panel", HudStyle.plaque(0.5))
 	detail_plate.custom_minimum_size = Vector2(230, 0)
 	var detail_column: VBoxContainer = VBoxContainer.new()
+	_detail_icon = TextureRect.new()
+	_detail_icon.custom_minimum_size = Vector2(0, 110)
+	_detail_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_detail_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	detail_column.add_child(_detail_icon)
 	_detail_name = Label.new()
 	_detail_name.add_theme_color_override(&"font_color", HudStyle.GOLD)
 	_detail_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -500,6 +508,11 @@ func _rebuild_inventory_panel() -> void:
 			var marker: String = "▶ " if weapon == inventory.equipped() else ""
 			button.text = "%s%s\n%d/%d" % [marker, definition.display_name,
 				weapon.current_durability, definition.max_durability]
+			if definition.icon != null:
+				# ART-P0 : icône RENDUE depuis le vrai modèle (jamais dessinée).
+				button.icon = definition.icon
+				button.expand_icon = true
+				button.add_theme_constant_override(&"icon_max_width", 44)
 			var slot: int = i
 			button.pressed.connect(func() -> void:
 				_selected_slot = slot
@@ -530,9 +543,12 @@ func _refresh_detail() -> void:
 		_detail_name.text = "—"
 		_detail_stats.text = ""
 		_detail_conductivity.value = 0.0
+		_detail_icon.texture = null
 		return
 	var weapon: WeaponInstance = weapons[_selected_slot]
 	var definition: WeaponDefinition = weapon.definition
+	_detail_icon.texture = definition.icon
+	_detail_icon.visible = definition.icon != null
 	_detail_name.text = definition.display_name.to_upper()
 	_detail_stats.text = "Dégâts  %.0f\nPortée  %.1f m\nDurabilité  %d / %d" % [
 		definition.base_damage, definition.reach_m,

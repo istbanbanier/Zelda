@@ -23,6 +23,15 @@ Ces quatre fichiers sont des **assets de test du pipeline**, pas du contenu de j
 Ils prouvent que la chaîne Blender → glTF transporte échelle, pivot, matériaux,
 armature et animation. Ils ne doivent apparaître dans aucune scène jouable.
 
+## Assets de production (ART-P0)
+
+| Asset | Origine | Licence |
+|---|---|---|
+| `SM_WornSword` (.blend, .glb, textures) | **création originale du projet** — géométrie, UV et textures générées par `tools/blender/make_worn_sword.py` (reproductible, seed fixe) | licence du projet |
+| `T_WornSword_Icon.png` | rendu Godot du modèle ci-dessus (`tools/godot/render_weapon_icon.gd`) | licence du projet |
+
+Aucun contenu externe, aucun symbole d'une licence existante.
+
 ## Outils (non redistribués avec le jeu)
 
 | Outil | Version installée | Licence | Rôle |

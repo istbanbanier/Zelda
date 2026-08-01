@@ -120,6 +120,9 @@ const BARE_REACH: float = 1.2
 var _weapon_pivot: Node3D = null
 var _weapon_mesh: MeshInstance3D = null
 var _weapon_material: StandardMaterial3D = null
+## ART-P0 : modèle de production en main (null = boîte graybox de repli).
+var _weapon_model: Node3D = null
+var _weapon_model_for: WeaponInstance = null
 var _body_material: StandardMaterial3D = null
 var _flash_timer: float = 0.0
 
@@ -673,9 +676,43 @@ func _build_weapon_visual() -> void:
 func _refresh_weapon_visual(weapon: WeaponInstance) -> void:
 	if _weapon_mesh == null:
 		return
+	# Même arme déjà en main avec son modèle : seule l'USURE se rafraîchit —
+	# pas de ré-instanciation à chaque coup porté (§5.4).
+	if _weapon_model != null and is_instance_valid(_weapon_model) \
+			and weapon != null and weapon == _weapon_model_for:
+		if _weapon_model.has_method("set_worn"):
+			_weapon_model.call("set_worn", weapon.durability_fraction()
+				<= WeaponInstance.WARNING_FRACTION)
+		return
+	# ART-P0 : le modèle de PRODUCTION précédent quitte la main quoi qu'il
+	# arrive — un changement d'arme ne doit jamais empiler deux visuels.
+	if _weapon_model != null and is_instance_valid(_weapon_model):
+		_weapon_model.queue_free()
+	_weapon_model = null
+	_weapon_model_for = null
 	if weapon == null or weapon.definition == null:
 		_weapon_mesh.visible = false
 		return
+	if weapon.definition.mesh_scene != null:
+		# Modèle de production (mesh_scene de la définition). La géométrie de
+		# GAMEPLAY n'y est jamais liée : hitbox et portée restent les volumes
+		# du contrôleur (_weapon_hitbox), le modèle est un visuel.
+		var instantiated: Node = weapon.definition.mesh_scene.instantiate()
+		_weapon_model = instantiated as Node3D
+		if _weapon_model == null:
+			instantiated.queue_free()
+			push_error("[weapon] mesh_scene de %s n'est pas un Node3D — repli boîte."
+				% String(weapon.definition.id))
+		else:
+			_weapon_mesh.visible = false
+			_weapon_pivot.add_child(_weapon_model)
+			_weapon_model_for = weapon
+			if _weapon_model.has_method("set_worn"):
+				_weapon_model.call("set_worn", weapon.durability_fraction()
+					<= WeaponInstance.WARNING_FRACTION)
+			return
+	# Repli CONTRÔLÉ (arme sans modèle de production — normal tant que la
+	# bibliothèque ART n'est pas complète) : la boîte graybox de D.1R.3.
 	_weapon_mesh.visible = true
 	var color: Color = WEAPON_COLORS.get(weapon.definition.weapon_type,
 		Color(0.7, 0.7, 0.7)) as Color
