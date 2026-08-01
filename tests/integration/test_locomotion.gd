@@ -352,6 +352,104 @@ func test_stamina_recovers_after_releasing_sprint() -> void:
 	_teardown()
 
 
+func test_a_low_step_is_climbed_by_walking() -> void:
+	## §8.2 : marche de 0,30–0,38 m franchie sans saut.
+	##
+	## Mesuré avant d'implémenter quoi que ce soit : `move_and_slide()` n'en monte
+	## **aucune**. Une marche de 0,32 m arrêtait le personnage net — `is_on_wall()`
+	## vrai, position figée pendant trois secondes, aucune erreur. Le franchissement
+	## est un shape cast explicite, pas un effet de bord du moteur.
+	##
+	## LIMITE : ce test ne distingue pas le déclencheur retenu (blocage mesuré) de
+	## celui qu'il remplace (`is_on_wall()`) — le contrôle négatif Q5 l'a montré en
+	## ne cassant rien. Le changement de déclencheur repose sur une mesure directe
+	## (`is_on_wall()` faux contre le mur de 6 m), pas sur ce test.
+	if not await _setup(Vector3(0, 1.0, 14)):
+		return
+	var heights: Array[float] = []
+	_player.stepped_up.connect(func(h: float) -> void: heights.append(h))
+
+	# La marche du bac à sable occupe z de 16 à 24, dessus à y = 0,32. On l'aborde
+	# donc vers +Z, soit `move.y = -1`.
+	_intent.move = Vector2(0.0, -1.0)
+	await _settle(90)
+
+	check(heights.size() >= 1, "le franchissement de marche doit être signalé")
+	check_approx(_player.global_position.y, 0.32, 0.05,
+		"le joueur doit se tenir sur la marche")
+	check(_player.global_position.z > 16.0,
+		"le joueur doit avoir dépassé le bord de la marche (z = %.2f)"
+		% _player.global_position.z)
+	check(_player.is_on_floor(), "le joueur doit reposer sur la marche")
+	_teardown()
+
+
+func test_a_tall_wall_is_not_treated_as_a_step() -> void:
+	## Contre-épreuve : sans elle, un franchissement trop permissif escaladerait
+	## n'importe quel mur en marchant, et l'escalade de §9.2 n'aurait plus d'objet.
+	##
+	## CE QUE CE TEST NE DISCRIMINE PAS, mesuré et non supposé : aucune mutation de
+	## `_try_step_up()` ne le fait rougir, pas même le retrait simultané du
+	## dégagement avant **et** du contrôle de praticabilité. La raison est
+	## géométrique — devant un mur plein, la sonde descendante ne trouve aucun sol
+	## (`test_move` renvoie faux), et la fonction refuse avant d'atteindre le moindre
+	## de ses contrôles. C'est une défense en profondeur réelle, pas une couverture
+	## de test : ce cas garde un comportement observable, il ne valide aucune ligne
+	## en particulier. Voir les contrôles négatifs Q3 et Q5.
+	if not await _setup(Vector3(26, 1.0, 0)):
+		return
+	var heights: Array[float] = []
+	_player.stepped_up.connect(func(h: float) -> void: heights.append(h))
+
+	# Le mur du bac à sable est en x = 30, haut de 6 m.
+	_intent.move = Vector2(1.0, 0.0)
+	await _settle(120)
+
+	check_equal(heights.size(), 0, "un mur de 6 m ne doit jamais être franchi en marchant")
+	check(_player.global_position.y < 0.4,
+		"le joueur doit rester au sol (y = %.2f)" % _player.global_position.y)
+	_teardown()
+
+
+func test_a_step_under_a_low_ceiling_is_refused() -> void:
+	## Premier des trois refus de `_try_step_up()` : se hisser exige d'abord la
+	## place de le faire. Sous un plafond à 1,90 m, la capsule tient debout mais pas
+	## surélevée d'une hauteur de marche — le franchissement doit être refusé plutôt
+	## que d'encastrer le personnage.
+	if not await _setup(Vector3(-36, 1.0, -28.0)):
+		return
+	var heights: Array[float] = []
+	_player.stepped_up.connect(func(h: float) -> void: heights.append(h))
+
+	_intent.move = Vector2(0.0, 1.0)
+	await _settle(120)
+
+	check_equal(heights.size(), 0,
+		"aucun franchissement ne doit avoir lieu sous un plafond trop bas")
+	check(_player.global_position.y < 0.2,
+		"le joueur doit rester en contrebas (y = %.2f)" % _player.global_position.y)
+	# Anti-softlock : bloqué n'est pas encastré.
+	check(_player.global_position.z > -30.0,
+		"le joueur ne doit pas s'être enfoncé dans la géométrie (z = %.2f)"
+		% _player.global_position.z)
+	_teardown()
+
+
+func test_step_height_stays_within_the_spec_envelope() -> void:
+	## §8.2 : « Step height 0,30–0,38 m ».
+	var tuning: LocomotionTuning = load("res://resources/tuning/locomotion_default.tres")
+	check_not_null(tuning, "locomotion_default.tres")
+	if tuning == null:
+		return
+	check(tuning.step_height >= 0.30 and tuning.step_height <= 0.38,
+		"hauteur de marche hors §8.2 (0,30–0,38 m) : %.2f" % tuning.step_height)
+	# La sonde avant doit dépasser le rayon de la capsule (0,35 m), sinon elle
+	# retombe sur la face verticale que l'on cherche à franchir.
+	check(tuning.step_forward_probe > 0.35,
+		"sonde avant trop courte (%.2f m) : elle heurterait la face de la marche"
+		% tuning.step_forward_probe)
+
+
 func test_body_never_rotates() -> void:
 	## Le `CameraRig` est enfant du corps : si le corps tournait, la caméra
 	## tournerait avec le personnage et deviendrait incontrôlable.

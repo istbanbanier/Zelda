@@ -427,3 +427,29 @@ est une préférence, pas une décision.
   compare les deux ressources, qui s'ignorent par ailleurs. Contrôle négatif P6.
 - **Limite honnête** : la relation est vérifiée, pas *dérivée*. Deux ressources
   distinctes restent deux valeurs à tenir cohérentes ; le test est le garde-fou.
+
+---
+
+## D-020 — Le franchissement de marche se déclenche sur un blocage mesuré, pas sur `is_on_wall()`
+
+- **Date** : 2026-08-01 · **Phase** : B.4 · **Statut** : ADOPTÉE
+- **Contexte** : §8.2 exige une marche de 0,30–0,38 m franchie sans saut. Mesuré
+  d'abord, implémenté ensuite : `move_and_slide()` n'en monte **aucune**. Une
+  marche de 0,32 m arrête le personnage net — `is_on_wall()` vrai, position figée
+  trois secondes, aucune erreur. Le franchissement est donc un shape cast
+  explicite, pas un réglage du moteur.
+- **Le déclencheur, lui, a dû changer.** La première version s'adossait à
+  `is_on_wall()`. Mesure contradictoire : plaqué contre le mur de 6 m du bac à
+  sable, poussant depuis deux secondes, `is_on_wall()` renvoie **faux**. Un
+  déclencheur qui se tait précisément là où il faudrait décider est inutilisable —
+  même si, par chance, il fonctionnait contre la marche.
+- **Choix** : comparer la distance réellement parcourue dans le tick à celle qui
+  était demandée. En deçà de la moitié, le tick est bloqué et un franchissement est
+  tenté. C'est une mesure du résultat, pas une lecture d'un drapeau du moteur dont
+  la sémantique nous échappe.
+- **Honnêteté sur la vérification** : **aucun test ne distingue les deux
+  déclencheurs.** Le contrôle négatif Q5 a remis `is_on_wall()` et la suite est
+  restée verte. Le changement repose sur la mesure directe, pas sur un test — et
+  cela est écrit dans le test concerné plutôt que passé sous silence.
+- **Coût** : trois `test_move` par tick **uniquement** quand le déplacement est
+  entravé. Nul en marche normale.

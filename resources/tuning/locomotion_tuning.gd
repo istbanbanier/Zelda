@@ -38,6 +38,18 @@ extends Resource
 ## Longueur d'accroche au sol : évite de décoller sur une bosse ou en descente.
 @export var floor_snap_length: float = 0.4
 
+@export_group("Franchissement de marche (§8.2)")
+## Hauteur de marche franchie sans saut (§8.2 : 0,30–0,38 m).
+##
+## `move_and_slide()` ne monte **aucune** marche par lui-même — mesuré : une marche
+## de 0,32 m arrête net le personnage, `is_on_wall()` vrai, sans progression. Le
+## franchissement est donc un shape cast explicite, pas un effet de bord du moteur.
+@export var step_height: float = 0.34
+## Distance sondée devant le personnage, une fois surélevé, pour trouver le dessus
+## de la marche. Doit dépasser le rayon de la capsule, sinon la sonde retombe sur
+## la face verticale que l'on cherche justement à franchir.
+@export var step_forward_probe: float = 0.40
+
 @export_group("Rotation du personnage")
 ## Le corps ne tourne pas ; seule la représentation visuelle s'oriente. Vitesse de
 ## rotation en tours par seconde, pour rester indépendante du framerate.

@@ -1,0 +1,8 @@
+# Contrôle négatif — Q3_mur_confondu_avec_une_marche
+# Les DEUX controles qui distinguent un mur d une marche sont retires : degagement devant, et praticabilite de la surface d arrivee. Un seul des deux ne suffit pas — ils se relaient (defense en profondeur mesuree).
+# Test visé : test_a_tall_wall_is_not_treated_as_a_step
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ok   test_locomotion.gd::test_a_tall_wall_is_not_treated_as_a_step (2 assertions)
+=== RÉSULTAT: 129 réussi(s), 0 échoué(s) ===

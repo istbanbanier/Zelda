@@ -4,7 +4,7 @@ Vocabulaire imposé (§0.2) : `Non commencé` · `Implémenté` (raccordé) ·
 `Fonctionnel` (testé en scène exécutable) · `Validé` (conforme, sans régression) ·
 `Bloqué`. Tout critère non testé est `NON VÉRIFIÉ`, jamais implicitement réussi.
 
-**Dernière mise à jour** : 2026-08-01 · **Phase** : B (jalons B.0 à B.3 livrés) · **Gate A gelé** : `9414fd0` · **Commit courant** : voir `git log`
+**Dernière mise à jour** : 2026-08-01 · **Phase** : B (jalons B.0 à B.4 livrés) · **Gate A gelé** : `9414fd0` · **Commit courant** : voir `git log`
 
 ## Verdict Gate A : **ACCEPTÉ AVEC RÉSERVE / BLOQUÉ SUR LA VALIDATION MANETTE**
 
@@ -50,8 +50,10 @@ exécution réelle** — Blender → glTF → import Godot → renderer → PNG.
 tourne, `validate_fast.sh` est vert (nombre de tests : voir `docs/TEST_REPORT.md`,
 seule source à jour). Le premier gameplay existe : **un joueur se déplace, saute,
 sprinte et grimpe une pente, caméra à l'épaule qui ne traverse pas les murs**
-(B.1), son sprint est limité par l'endurance de §9.1 (B.2), et il grimpe les
-parois puis franchit les rebords (B.3). Il n'a ni animation, ni modèle. La notation
+(B.1), son sprint est limité par l'endurance de §9.1 (B.2), il grimpe les parois
+puis franchit les rebords (B.3), et un parcours enchaîné — marche, pente, saut
+par-dessus un vide, escalade, franchissement — est joué de bout en bout par un
+pilote scripté sans triche (B.4). Il n'a ni animation, ni modèle. La notation
 visuelle et les mesures de performance restent impossibles ici : rendu logiciel
 llvmpipe uniquement, aucun GPU.
 
@@ -101,7 +103,7 @@ llvmpipe uniquement, aucun GPU.
 | Phase | Système | État |
 |---|---|---|
 | A | Boot, autoloads, InputMap AZERTY, couches de collision | **A.1 et A.2 livrés et gelés (`9414fd0`)** ; Gate A **EN ATTENTE** de validation humaine |
-| B | Player, caméra, locomotion, endurance, escalade, mantle | **B.0 à B.3 livrés** — tout le périmètre de traversal est implémenté ; Gate B exige encore un parcours rejoué et les essais manuels de §21.4 |
+| B | Player, caméra, locomotion, endurance, escalade, mantle | **B.0 à B.4 livrés** — §8.2 couvert en entier, parcours enchaîné vert ; Gate B attend encore les essais manuels de §21.4 |
 | C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | Non commencé |
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
 | D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | Non commencé |
@@ -238,9 +240,25 @@ aussi aux coffres, à la cuisine et au pylône.
 | `ClimbRest` / corniches de repos (§8.1, §9.3) | **Non commencé** | relève du level design, pas du contrôleur |
 | IK visuelle des mains (§9.2) | **Non commencé** | Phase H — il n'y a ni squelette ni modèle |
 
-**Reste pour clore la Phase B** : shape cast de marche (§8.2, step 0,30–0,38 m),
-parcours de traversal **rejoué** et non seulement compilé (Gate B), essais manuels
-de §21.4 touchant le traversal.
+---
+
+## Phase B — jalon B.4 : franchissement de marche et parcours enchaîné
+
+| Élément | État | Preuve |
+|---|---|---|
+| Marche de 0,30–0,38 m franchie sans saut (§8.2) | **Fonctionnel** | `test_a_low_step_is_climbed_by_walking` |
+| Refus sous un plafond trop bas | **Fonctionnel** | `test_a_step_under_a_low_ceiling_is_refused` |
+| Un mur n'est pas une marche | **Fonctionnel** *(comportement, pas couverture — voir Q3)* | `test_a_tall_wall_is_not_treated_as_a_step` |
+| Enveloppe §8.2 respectée | **Fonctionnel** | `test_step_height_stays_within_the_spec_envelope` |
+| **Parcours enchaîné complet** (§22, Gate B) | **Fonctionnel** | `test_traversal_course.gd`, 13 assertions |
+| Caméra jamais dans la géométrie sur tout le parcours (§23.1) | **Fonctionnel** | sonde au point de vue à chaque tick : 0 image sur ~1 400 |
+| Chaque capacité réellement employée | **Fonctionnel** | compteurs sur `stepped_up`, `grabbed_wall`, `mantle_finished` |
+| Déclencheur de franchissement (D-020) | **Implémenté** | justifié par une mesure ; **aucun test ne le départage** de l'ancien (Q5) |
+| Latence en ticks (§10.6) | **Non commencé** | instrumentation à écrire |
+
+**§8.2 est désormais couvert en entier.** Ce qui manque pour Gate B ne relève plus
+du code : essais manuels de §21.4 touchant le traversal, mesure de latence (§10.6),
+observation du jitter caméra à framerate réel (§8.3).
 
 ---
 

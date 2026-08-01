@@ -597,3 +597,98 @@ distingue par la raison rapportée.
 - **« Aucun snap visible » est mesuré, pas vu.** Le plus grand pas est borné et la
   trajectoire continue ; aucun œil humain n'a regardé un franchissement.
 - **CONTROLLER-001 reste ouverte.**
+
+---
+
+# Jalon B.4 — Franchissement de marche et parcours enchaîné (2026-08-01)
+
+## Commande et résultat
+
+```bash
+tools/validate_fast.sh; echo $?
+```
+
+**Code retour** : `0` — VERT.
+
+| Niveau | Résultat |
+|---|---|
+| 0. Version | `4.7.1.stable.custom_build.a13da4feb` ✅ |
+| 1 / 1b. Import et parse de **tous** les `.gd` | 0 erreur ✅ |
+| 2. Tests unitaires, d'intégration et de parcours | **129 réussis, 0 échoué** ✅ |
+| 2b. Erreurs signalées dans le journal | aucune ✅ |
+| 3. Scène principale (Boot → MainMenu, lancement réel) | ✅ |
+| 4. Plancher de couverture | 129 tests pour un plancher de 129 ✅ |
+
+> **Nombre de tests de référence : 129.** C'est ici, et nulle part ailleurs, qu'il
+> doit être lu.
+
+Nouveau fichier : `tests/playthrough/test_traversal_course.gd` — premier test du
+répertoire `playthrough`, resté vide depuis le Gate 0.
+
+## Le parcours enchaîné
+
+`scenes/tests/TraversalCourse.tscn` : sol → marche 0,32 m → rampe 40° → plateau →
+vide de 2 m → plateau d'arrivée → tour de 4 m à escalader et franchir. Un pilote
+scripté tient « avant » et saute au bord du vide. **Aucune triche** : pas de
+téléportation, pas d'état forcé, aucune méthode de debug (§0.8).
+
+13 assertions, dont trois qui ne relèvent d'aucun test unitaire :
+
+- **chaque capacité a réellement servi** — compteurs sur `stepped_up`,
+  `grabbed_wall` et `mantle_finished`. Sans eux, un parcours réussi par un chemin
+  imprévu passerait pour une validation du traversal ;
+- **la caméra n'est jamais dans la géométrie** — une sphère de 12 cm testée au
+  point de vue à **chaque tick** du parcours. C'est la mesure la plus directe de
+  §23.1 : non pas que le bras se raccourcisse, mais que l'œil ne soit jamais dans
+  la roche. Résultat : 0 image sur ~1 400 ;
+- **l'état final est cohérent** — ni accroché, ni en franchissement, accroche au
+  sol rétablie.
+
+Un filet de sécurité est posé sous le vide. Il ne fait pas partie du parcours :
+sans lui, un saut raté produirait une chute infinie que le test lirait comme
+« toujours en mouvement ». Avec lui, l'échec est **observable**.
+
+## Défaut réel trouvé pendant B.4
+
+**`is_on_wall()` est faux contre un mur.** Plaqué contre le mur de 6 m du bac à
+sable, poussant depuis deux secondes, `is_on_wall()` renvoie `false` — mesuré. Le
+franchissement de marche y était adossé : il se serait tu précisément dans les
+situations qu'il doit traiter. Remplacé par une comparaison entre distance
+demandée et distance parcourue (D-020).
+
+## Contrôles négatifs rejoués
+
+| # | Mutation appliquée | Test visé | Obtenu |
+|---|---|---|---|
+| Q1 | `_try_step_up()` n'est plus appelé | `test_a_low_step_is_climbed_by_walking` | ÉCHEC — « obtenu 0.0004 » ✅ |
+| Q2 | contrôle de dégagement au-dessus retiré | `test_a_step_under_a_low_ceiling_is_refused` | ÉCHEC — le joueur traverse jusqu'à z = −38,30 ✅ |
+| Q4 | `_try_step_up()` retiré, parcours enchaîné | `test_the_full_traversal_course...` | ÉCHEC dès le segment 1, en cascade ✅ |
+
+### Deux contrôles négatifs **non concluants**, et ce qu'ils apprennent
+
+Ils sont archivés au même titre que les autres : un contrôle qui ne casse rien est
+un résultat, pas un échec de procédure.
+
+- **Q3** — retrait *simultané* du dégagement avant **et** du contrôle de
+  praticabilité : `test_a_tall_wall_is_not_treated_as_a_step` reste **vert**. Cause
+  mesurée : devant un mur plein, la sonde descendante ne trouve aucun sol
+  (`test_move` renvoie `false`) et la fonction refuse avant d'atteindre ses
+  contrôles. C'est une défense en profondeur réelle — mais ce test ne valide
+  **aucune ligne en particulier**, seulement un comportement observable. C'est écrit
+  dans sa docstring.
+- **Q5** — retour au déclencheur `is_on_wall()` : la suite reste **verte**. Aucun
+  test ne distingue les deux déclencheurs. Le changement de D-020 repose sur une
+  mesure directe, pas sur un test, et le test concerné le dit.
+
+Logs archivés : `evidence/gateB/negative_controls/Q1…Q5*.log`.
+
+## Limites de B.4
+
+- **Le déclencheur de franchissement n'est pas départagé par un test** (Q5).
+- **Le cas « mur » ne valide aucune ligne précise** (Q3).
+- **Le parcours est joué par un pilote scripté, pas par une personne.** Il prouve
+  l'absence de blocage mécanique, pas l'agrément.
+- **La caméra est vérifiée contre la géométrie, pas contre le jitter** (§8.3) :
+  aucune observation en mouvement à framerate réel.
+- **Aucune mesure de latence en ticks** (§10.6).
+- **CONTROLLER-001 reste ouverte.**

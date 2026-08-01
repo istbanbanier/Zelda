@@ -87,13 +87,32 @@ Deux d'entre eux ont appris quelque chose plutôt que confirmé :
   `blocked` à `blocked_midway`. Il y a donc deux lignes de défense, et le test les
   distingue.
 
+## Jalon B.4 — Franchissement de marche et parcours enchaîné (2026-08-01)
+
+| Log | Mutation | Test visé | Résultat |
+|---|---|---|---|
+| `Q1_franchissement_de_marche_retire` | `_try_step_up()` n'est plus appelé | `test_a_low_step_is_climbed_by_walking` | ÉCHEC ✅ |
+| `Q2_degagement_au_dessus_ignore` | contrôle de dégagement au-dessus retiré | `test_a_step_under_a_low_ceiling_is_refused` | ÉCHEC — traverse jusqu'à z = −38,30 ✅ |
+| `Q3_mur_confondu_avec_une_marche` | dégagement avant **et** praticabilité retirés | `test_a_tall_wall_is_not_treated_as_a_step` | **vert — non concluant** |
+| `Q4_parcours_sans_franchissement_de_marche` | `_try_step_up()` retiré | `test_the_full_traversal_course...` | ÉCHEC dès le segment 1 ✅ |
+| `Q5_declencheur_adosse_a_is_on_wall` | retour au déclencheur `is_on_wall()` | `test_a_low_step_is_climbed_by_walking` | **vert — non concluant** |
+
+**Q3 et Q5 sont archivés bien qu'ils n'aient rien cassé.** Un contrôle négatif qui
+reste vert est un résultat, pas un raté de procédure — et ces deux-là délimitent
+précisément ce que les tests prouvent :
+
+- **Q3** : devant un mur plein, la sonde descendante ne trouve aucun sol et
+  `_try_step_up()` refuse **avant** d'atteindre ses contrôles. Défense en
+  profondeur réelle, mais le test ne valide aucune ligne en particulier. Sa
+  docstring le dit désormais.
+- **Q5** : aucun test ne départage le déclencheur retenu (blocage mesuré) de celui
+  qu'il remplace (`is_on_wall()`). Le changement repose sur une mesure directe —
+  `is_on_wall()` renvoie faux contre le mur de 6 m — et non sur ce test (D-020).
+
 ## Ce que Gate B exigera encore, et que rien ici ne couvre
 
-- Parcours de traversal rejoué **réellement**, pas seulement compilé (§22, Gate B).
-  Chaque capacité est testée isolément ; seul `test_climbing_a_tall_wall_ends_in_a_mantle`
-  en enchaîne deux.
-- Shape cast de marche (§8.2, step 0,30–0,38 m) : dernier élément de §8.2 non
-  implémenté.
+- Mesure de latence en ticks et en millisecondes (§10.6, §23.1) : seul critère
+  chiffré du Gate B encore absent, et atteignable en headless.
 - Lissage de la normale de paroi et vitesse latérale (§9.2) : implémentés, **non
   mesurés** — le bac à sable n'a que des parois planes.
 - Ressenti et latence en ticks (§10.6) : mesure instrumentée + essai humain.

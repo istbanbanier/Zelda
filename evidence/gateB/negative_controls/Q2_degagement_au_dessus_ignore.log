@@ -1,0 +1,11 @@
+# Contrôle négatif — Q2_degagement_au_dessus_ignore
+# Le controle de degagement au-dessus est retire : le joueur se hisse sous un plafond trop bas.
+# Test visé : test_a_step_under_a_low_ceiling_is_refused
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_locomotion.gd::test_a_step_under_a_low_ceiling_is_refused — aucun franchissement ne doit avoir lieu sous un plafond trop bas : attendu 0, obtenu 1
+  ÉCHEC test_locomotion.gd::test_a_step_under_a_low_ceiling_is_refused — le joueur ne doit pas s'être enfoncé dans la géométrie (z = -38.30)
+=== RÉSULTAT: 128 réussi(s), 2 échoué(s) ===
+  ÉCHEC: test_locomotion.gd::test_a_step_under_a_low_ceiling_is_refused — aucun franchissement ne doit avoir lieu sous un plafond trop bas : attendu 0, obtenu 1
+  ÉCHEC: test_locomotion.gd::test_a_step_under_a_low_ceiling_is_refused — le joueur ne doit pas s'être enfoncé dans la géométrie (z = -38.30)

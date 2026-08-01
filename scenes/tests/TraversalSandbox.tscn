@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=13 format=3]
 
 ; Bac à sable de traversal (Phase B). Géométrie de test uniquement.
 ;
@@ -50,6 +50,13 @@ size = Vector3(8, 0.4, 3)
 ; Surplomb : paroi flottante dont le bas est hors de portée de la sonde des pieds.
 [sub_resource type="BoxShape3D" id="OverhangShape"]
 size = Vector3(8, 2.2, 1)
+
+; Marche basse surmontée d'un plafond trop bas pour se hisser (§8.2).
+[sub_resource type="BoxShape3D" id="LowStepShape"]
+size = Vector3(8, 0.32, 1)
+
+[sub_resource type="BoxShape3D" id="LowCeilingShape"]
+size = Vector3(8, 0.2, 2)
 
 [node name="TraversalSandbox" type="Node3D"]
 
@@ -145,3 +152,23 @@ collision_layer = 1
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="OverhangWall"]
 shape = SubResource("OverhangShape")
+
+; Marche de 0,32 m — franchissable — mais surmontée d'un plafond à 1,90 m : la
+; capsule tient debout dessous, pas une fois surélevée d'une hauteur de marche.
+; Le franchissement doit donc être refusé, et le joueur rester en bas plutôt que
+; de s'encastrer. Sans cette géométrie, le refus de dégagement de `_try_step_up()`
+; ne serait couvert par aucun test — l'erreur exacte qu'un contrôle négatif a
+; révélée en B.3 sur le refus des surplombs.
+[node name="LowCeilingStep" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36, 0.16, -30)
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LowCeilingStep"]
+shape = SubResource("LowStepShape")
+
+[node name="LowCeiling" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36, 2.0, -28.5)
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LowCeiling"]
+shape = SubResource("LowCeilingShape")

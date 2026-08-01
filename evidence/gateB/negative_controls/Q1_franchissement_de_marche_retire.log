@@ -1,0 +1,13 @@
+# Contrôle négatif — Q1_franchissement_de_marche_retire
+# _try_step_up() n est plus appele : on revient au comportement mesure du moteur, une marche de 0,32 m bloque net.
+# Test visé : test_a_low_step_is_climbed_by_walking
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_locomotion.gd::test_a_low_step_is_climbed_by_walking — le franchissement de marche doit être signalé
+  ÉCHEC test_locomotion.gd::test_a_low_step_is_climbed_by_walking — le joueur doit se tenir sur la marche : attendu 0.3200 ± 0.0500, obtenu 0.0004
+  ÉCHEC test_locomotion.gd::test_a_low_step_is_climbed_by_walking — le joueur doit avoir dépassé le bord de la marche (z = 15.65)
+=== RÉSULTAT: 127 réussi(s), 11 échoué(s) ===
+  ÉCHEC: test_locomotion.gd::test_a_low_step_is_climbed_by_walking — le franchissement de marche doit être signalé
+  ÉCHEC: test_locomotion.gd::test_a_low_step_is_climbed_by_walking — le joueur doit se tenir sur la marche : attendu 0.3200 ± 0.0500, obtenu 0.0004
+  ÉCHEC: test_locomotion.gd::test_a_low_step_is_climbed_by_walking — le joueur doit avoir dépassé le bord de la marche (z = 15.65)

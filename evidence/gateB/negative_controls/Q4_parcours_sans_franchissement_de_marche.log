@@ -1,0 +1,23 @@
+# Contrôle négatif — Q4_parcours_sans_franchissement_de_marche
+# _try_step_up() retire : le parcours enchaine bute des le premier segment.
+# Test visé : test_the_full_traversal_course_is_completed_without_a_softlock
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_traversal_course.gd::test_the_full_traversal_course_is_completed_without_a_softlock — segment 1 : la marche de 0,32 m doit être franchie
+  ÉCHEC test_traversal_course.gd::test_the_full_traversal_course_is_completed_without_a_softlock — segment 2 : le haut de la rampe à 40° doit être atteint
+  ÉCHEC test_traversal_course.gd::test_the_full_traversal_course_is_completed_without_a_softlock — segment 3 : le vide doit être franchi d'un saut
+  ÉCHEC test_traversal_course.gd::test_the_full_traversal_course_is_completed_without_a_softlock — segment 4 : le sommet de la tour doit être atteint (x = 9.66, y = 0.00)
+  ÉCHEC test_traversal_course.gd::test_the_full_traversal_course_is_completed_without_a_softlock — le parcours doit s'achever dans le budget (2400 ticks écoulés)
+  ÉCHEC test_traversal_course.gd::test_the_full_traversal_course_is_completed_without_a_softlock — le franchissement de marche doit avoir servi
+  ÉCHEC test_traversal_course.gd::test_the_full_traversal_course_is_completed_without_a_softlock — l'escalade doit avoir servi
+  ÉCHEC test_traversal_course.gd::test_the_full_traversal_course_is_completed_without_a_softlock — le franchissement de rebord doit avoir servi
+=== RÉSULTAT: 127 réussi(s), 11 échoué(s) ===
+  ÉCHEC: test_traversal_course.gd::test_the_full_traversal_course_is_completed_without_a_softlock — segment 1 : la marche de 0,32 m doit être franchie
+  ÉCHEC: test_traversal_course.gd::test_the_full_traversal_course_is_completed_without_a_softlock — segment 2 : le haut de la rampe à 40° doit être atteint
+  ÉCHEC: test_traversal_course.gd::test_the_full_traversal_course_is_completed_without_a_softlock — segment 3 : le vide doit être franchi d'un saut
+  ÉCHEC: test_traversal_course.gd::test_the_full_traversal_course_is_completed_without_a_softlock — segment 4 : le sommet de la tour doit être atteint (x = 9.66, y = 0.00)
+  ÉCHEC: test_traversal_course.gd::test_the_full_traversal_course_is_completed_without_a_softlock — le parcours doit s'achever dans le budget (2400 ticks écoulés)
+  ÉCHEC: test_traversal_course.gd::test_the_full_traversal_course_is_completed_without_a_softlock — le franchissement de marche doit avoir servi
+  ÉCHEC: test_traversal_course.gd::test_the_full_traversal_course_is_completed_without_a_softlock — l'escalade doit avoir servi
+  ÉCHEC: test_traversal_course.gd::test_the_full_traversal_course_is_completed_without_a_softlock — le franchissement de rebord doit avoir servi

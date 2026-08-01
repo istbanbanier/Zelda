@@ -8,9 +8,10 @@
 ## §20.9 : toute la logique de mouvement vit dans `_physics_process()`. Aucun
 ## transform de gameplay n'est écrit depuis `_process()`.
 ##
-## ÉTAT B.3 : marche, course, sprint, saut, gravité, coyote time, jump buffer,
-## **escalade** (§9.2) et **mantle** (§9.3). Tous consomment le même
-## `StaminaComponent`, qui n'a pas eu à changer pour les accueillir.
+## ÉTAT B.4 : marche, course, sprint, saut, gravité, coyote time, jump buffer,
+## **franchissement de marche** (§8.2), **escalade** (§9.2) et **mantle** (§9.3).
+## Tous consomment le même `StaminaComponent`, qui n'a pas eu à changer pour les
+## accueillir. §8.2 est désormais couvert en entier.
 class_name PlayerController
 extends CharacterBody3D
 
@@ -18,8 +19,10 @@ extends CharacterBody3D
 ## Les dégâts de chute (§8.2) s'y brancheront sans modifier ce script.
 signal landed(impact_speed: float)
 signal left_ground()
+## Émis au franchissement d'une marche (§8.2), avec l'altitude atteinte.
+signal stepped_up(new_height: float)
 ## Accroche et lâcher de paroi (§9.2). `reason` dit pourquoi le mur a été lâché :
-## `released`, `exhausted`, `mantled` ou `lost_contact`.
+## `released`, `exhausted` ou `lost_contact`.
 signal grabbed_wall(normal: Vector3)
 signal released_wall(reason: StringName)
 ## Franchissement (§9.3). `refused` porte la raison nommée par le détecteur.
@@ -43,6 +46,14 @@ const WALL_HOLD_MAX_SPEED: float = 1.5
 ## Hauteur dont le sommet du trajet de mantle dépasse la surface d'arrivée.
 ## Voir `_try_mantle()`.
 const LEDGE_RISE_CLEARANCE: float = 0.06
+
+## Marge de descente lors de la recherche du dessus d'une marche. Voir
+## `_try_step_up()`.
+const STEP_LANDING_MARGIN: float = 0.05
+
+## Fraction de la distance demandée en deçà de laquelle le tick est considéré comme
+## bloqué, et un franchissement tenté. Voir `_maybe_step_up()`.
+const STEP_BLOCKED_RATIO: float = 0.5
 
 @export var tuning: LocomotionTuning
 
@@ -145,8 +156,16 @@ func _process_locomotion(delta: float, intent: InputIntent) -> void:
 
 	var was_on_floor: bool = is_on_floor()
 	var vertical_before: float = velocity.y
+	# Repères pris **avant** le déplacement : ils servent à mesurer ce que le tick
+	# a réellement accompli, donc à détecter un blocage.
+	var before: Vector3 = global_position
+	var intended_speed: float = Vector2(velocity.x, velocity.z).length()
 	move_and_slide()
 	_detect_ground_transitions(was_on_floor, vertical_before)
+
+	# Franchissement de marche avant l'accroche : une marche de 30 cm doit se
+	# monter en marchant, pas déclencher une escalade.
+	_maybe_step_up(delta, intent, before, intended_speed)
 
 	# L'accroche est tentée **après** le déplacement : la paroi est sondée depuis
 	# la position réellement atteinte, pas depuis celle du tick précédent.
@@ -251,6 +270,78 @@ func _orient_visual(delta: float) -> void:
 	# rotation met le même temps réel à converger.
 	var weight: float = 1.0 - exp(-tuning.visual_turn_speed * delta)
 	_visual_root.rotation.y = lerp_angle(_visual_root.rotation.y, target_yaw, weight)
+
+
+## Décide s'il y a lieu de tenter un franchissement de marche.
+##
+## Le déclencheur est le **blocage mesuré** — la distance réellement parcourue
+## comparée à celle qui était demandée — et non `is_on_wall()`. Ce dernier a été
+## mesuré peu fiable : plaqué contre le mur de 6 m du bac à sable, poussant depuis
+## deux secondes, `is_on_wall()` renvoie **faux**. Y adosser le franchissement le
+## rendait muet précisément dans les situations qu'il doit traiter, sans que rien
+## ne le signale — la marche du bac à sable, elle, le déclenchait.
+func _maybe_step_up(delta: float, intent: InputIntent, before: Vector3,
+		intended_speed: float) -> void:
+	if not is_on_floor() or intended_speed <= 0.001:
+		return
+	var wish: Vector3 = _wish_direction(intent)
+	if wish.length_squared() < 0.04:
+		return
+	var travelled: float = Vector2(global_position.x - before.x,
+		global_position.z - before.z).length()
+	if travelled >= intended_speed * delta * STEP_BLOCKED_RATIO:
+		return  # le tick a avancé normalement : rien ne gêne
+	_try_step_up(wish)
+
+
+## Franchit une marche basse (§8.2 : 0,30–0,38 m).
+##
+## `move_and_slide()` n'en monte aucune : mesuré sur le moteur installé, une marche
+## de 0,32 m arrête le personnage net — `is_on_wall()` vrai, position figée, aucune
+## erreur. Sans ce shape cast, le moindre rebord de décor devient un mur.
+##
+## Trois questions, dans cet ordre, chacune pouvant refuser :
+##   1. y a-t-il la place de se hisser d'une hauteur de marche ?
+##   2. une fois surélevé, la place d'avancer ?
+##   3. y a-t-il, sous ce point, un sol **praticable** à moins d'une marche ?
+## Un « non » à l'une des trois signifie que ce n'était pas une marche mais un mur,
+## un plafond ou un vide — et le personnage reste où il est.
+func _try_step_up(direction: Vector3) -> bool:
+	if _collision == null or _collision.shape == null:
+		return false
+	var flat: Vector3 = Vector3(direction.x, 0.0, direction.z)
+	if flat.length_squared() < 0.0001:
+		return false
+
+	var step: float = tuning.step_height
+	var up: Vector3 = Vector3.UP * step
+	var ahead: Vector3 = flat.normalized() * tuning.step_forward_probe
+
+	# 1. Dégagement au-dessus. Un plafond bas interdit de se hisser.
+	if test_move(global_transform, up):
+		return false
+	var raised: Transform3D = global_transform.translated(up)
+
+	# 2. Dégagement devant, une fois surélevé. S'il n'y en a pas, l'obstacle est
+	# plus haut qu'une marche : c'est un mur, et l'escalade s'en chargera.
+	if test_move(raised, ahead):
+		return false
+	var advanced: Transform3D = raised.translated(ahead)
+
+	# 3. Sol praticable dessous, à moins d'une hauteur de marche. La marge évite de
+	# rater un contact au millimètre près ; sans sol, on serait au bord d'un vide et
+	# se hisser reviendrait à léviter.
+	var landing: KinematicCollision3D = KinematicCollision3D.new()
+	if not test_move(advanced, Vector3.DOWN * (step + STEP_LANDING_MARGIN), landing):
+		return false
+	var normal: Vector3 = landing.get_normal()
+	var angle: float = rad_to_deg(acos(clampf(normal.dot(Vector3.UP), -1.0, 1.0)))
+	if angle > tuning.max_floor_angle_deg:
+		return false
+
+	global_position = advanced.origin + landing.get_travel()
+	stepped_up.emit(global_position.y)
+	return true
 
 
 ## ---------------------------------------------------------------------------

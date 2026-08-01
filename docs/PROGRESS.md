@@ -331,59 +331,132 @@ reste ouverte.
 
 ---
 
+## 2026-08-01 — Jalon B.4 : franchissement de marche et parcours enchaîné
+
+**Gate visé** : B (traversal). **État à l'ouverture** : B.3 livré ; §8.2 incomplet,
+aucun parcours enchaîné.
+
+### Changement réel
+
+`_try_step_up()` — trois sondes, trois refus possibles — et
+`scenes/tests/TraversalCourse.tscn`, un tracé linéaire qu'un pilote scripté
+parcourt d'un bout à l'autre : sol, marche de 0,32 m, rampe à 40°, saut par-dessus
+un vide, escalade d'une tour de 4 m, franchissement du sommet. **§8.2 est
+désormais couvert en entier.**
+
+Le parcours est le premier test de `tests/playthrough/`, resté vide depuis le
+Gate 0. Il vérifie ce qu'aucun test unitaire ne peut dire : que les capacités
+s'enchaînent, et qu'aucune ne laisse le personnage dans un état qui casse la
+suivante.
+
+### Deux mesures avant d'écrire une ligne
+
+- **`move_and_slide()` ne monte aucune marche.** Une marche de 0,32 m arrêtait le
+  personnage net, `is_on_wall()` vrai, position figée trois secondes, aucune
+  erreur. Le franchissement ne pouvait donc pas être un réglage — il fallait un
+  shape cast.
+- **`is_on_wall()` est faux contre un mur.** Plaqué contre le mur de 6 m du bac à
+  sable, poussant depuis deux secondes : `false`. Le franchissement y était
+  adossé ; il se serait tu précisément là où il faut décider. Remplacé par une
+  comparaison entre distance demandée et distance parcourue (D-020).
+
+### Deux contrôles négatifs non concluants, et pourquoi c'est un résultat
+
+- **Q3** : le retrait *simultané* des deux contrôles censés distinguer un mur d'une
+  marche laisse `test_a_tall_wall_is_not_treated_as_a_step` **vert**. Cause
+  mesurée : devant un mur plein, la sonde descendante ne trouve aucun sol et la
+  fonction refuse avant d'atteindre ses contrôles. Défense en profondeur réelle —
+  mais ce test ne valide aucune ligne précise, et sa docstring le dit désormais.
+- **Q5** : remettre `is_on_wall()` comme déclencheur laisse la suite verte. **Aucun
+  test ne départage les deux déclencheurs.** Le changement repose sur la mesure,
+  pas sur un test ; c'est écrit dans D-020 et dans le test concerné.
+
+Les deux logs sont archivés au même titre que les autres. Un contrôle négatif qui
+ne casse rien est une information — en B.3 il avait révélé un trou de couverture,
+ici il délimite ce qu'un test prouve réellement.
+
+### Ce que le parcours mesure et que rien d'autre ne mesurait
+
+La caméra est sondée **à chaque tick** par une sphère de 12 cm posée au point de
+vue : 0 image sur environ 1 400 où l'œil se trouve dans la géométrie. C'est la
+formulation la plus directe de §23.1 — non pas que le bras se raccourcisse, mais
+que la caméra ne soit jamais dans la roche.
+
+Un filet est posé sous le vide. Il ne fait pas partie du parcours : sans lui, un
+saut raté produirait une chute infinie que le test lirait comme « toujours en
+mouvement ».
+
+### Vérification
+
+`tools/validate_fast.sh` → `RC=0`, VERT, 129 tests. Cinq contrôles négatifs joués,
+trois concluants, deux informatifs.
+
+### Ce que B.4 ne prouve pas
+
+Le parcours est joué par un **pilote scripté, pas par une personne** : il prouve
+l'absence de blocage mécanique, pas l'agrément. Le jitter caméra (§8.3) et la
+latence en ticks (§10.6) restent hors de portée d'un test headless.
+`CONTROLLER-001` reste ouverte.
+
+---
+
 ## HANDOFF — prochaine action exacte
 
 > **Gate A : `ACCEPTÉ AVEC RÉSERVE / BLOQUÉ SUR LA VALIDATION MANETTE`** (D-012).
-> **Phase B : B.0 à B.3 livrés.** Tout le périmètre de traversal est implémenté.
-> **Gate B n'est PAS acquis** : §22 exige « parcours test complet sans blocage ni
-> caméra cassée », c'est-à-dire un parcours **rejoué**, pas seulement compilé.
+> **Phase B : B.0 à B.4 livrés.** §8.2 et §9.2/§9.3 sont couverts, le parcours
+> enchaîné est vert.
+> **Gate B n'est PAS acquis** — mais ce qui manque ne relève plus du code.
 
-### Action suivante : B.4 — clore la Phase B
+### Action suivante : instruire le Gate B, puis le faire trancher
 
-1. **Shape cast de marche** (§8.2 : step 0,30–0,38 m). C'est le dernier élément de
-   §8.2 non implémenté : aujourd'hui les petites marches reposent sur le
-   comportement par défaut de `move_and_slide()`, non mesuré. Le bac à sable a déjà
-   une marche de 0,32 m en `(0, 0,16, 20)`.
-2. **Parcours de traversal enchaîné**, joué d'un bout à l'autre dans une seule
-   exécution : sol → marche → pente → mur → escalade → franchissement → chute.
-   Aujourd'hui chaque capacité est testée isolément ; rien ne prouve qu'elles
-   s'enchaînent sans blocage — sauf `test_climbing_a_tall_wall_ends_in_a_mantle`,
-   qui n'en couvre que deux.
-3. **Les essais manuels de §21.4 touchant le traversal**, à ajouter au protocole
-   de `docs/MANUAL_VALIDATION.md` : tourner la caméra contre tous types de murs,
-   gravir une falaise irrégulière et ses coins, tenter un mantle sous plafond
-   (automatisé, mais l'œil doit confirmer l'absence d'à-coup), sprinter à endurance
-   nulle.
+Trois choses, dans cet ordre :
 
-Points d'accroche déjà en place, à ne pas reconstruire :
+1. **Mesure de latence (§10.6).** Horodater réception de l'intention, consommation,
+   début logique et premier déplacement, puis exposer le résultat en **ticks et en
+   millisecondes**. §23.1 exige « entrée mouvement visible au tick physique suivant
+   et latence d'action instrumentée » : c'est le seul critère chiffré du Gate B
+   encore absent, et il est atteignable en headless.
+2. **Compléter `docs/MANUAL_VALIDATION.md`** avec les essais de §21.4 touchant le
+   traversal : caméra contre tous types de murs, falaise irrégulière et coins,
+   mantle sous plafond (automatisé, mais l'œil doit confirmer l'absence d'à-coup),
+   sprint à endurance nulle. Le protocole existe déjà pour le Gate A ; il s'agit de
+   l'étendre, pas d'en créer un.
+3. **Lancer la revue contradictoire** (`gate-review`, `adversarial-qa`) sur le
+   Gate B avec la spécification, le diff et les preuves. §0.7 l'exige avant toute
+   déclaration `PASS`, et l'approbation de l'auteur ne la remplace jamais.
 
-- Le bac à sable contient désormais huit obstacles distincts, chacun isolant **un**
-  cas : marche 0,32 m, pentes 40° et 60°, mur vertical, paroi de 4 m, paroi
-  `unclimbable`, surplomb flottant, rebord bas, rebord sous plafond.
-- `ActionAlignmentComponent.begin_path()` est générique : les coffres, la cuisine
-  et le pylône (§7.12) l'utiliseront sans le modifier.
-- Les signaux `grabbed_wall`, `released_wall(reason)`, `mantle_started`,
-  `mantle_finished`, `mantle_refused(reason)` sont émis et attendent l'UI, l'audio
-  et les animations.
+Ne pas déclarer Gate B `PASS` sans ces trois éléments. Ne pas entamer la Phase C
+avant que le Gate B soit `PASS` ou explicitement `BLOQUÉ`.
 
-### Pièges connus, vérifiés en B.1, B.2 et B.3
+### Ce qui reste implémenté mais non mesuré, à traiter en Phase C ou plus tard
 
-- **Un contrôle négatif qui ne casse rien désigne un trou de couverture**, pas un
-  test robuste. C'est ainsi que la branche « surplomb » a été trouvée (B3-4).
-- **Un contrôle négatif sur un réglage doit muter le `.tres`**, jamais la valeur par
-  défaut du `@export` (R-006bis).
-- **Un test vert peut l'être pour la mauvaise raison.** Le test du mantle sous
-  plafond passait en accusant le rebord au lieu du plafond (B3-1).
-- **Une mesure d'intégration ne doit pas dépendre de la taille du décor** : trois
-  secondes de poussée après un franchissement font sortir du bac à sable.
-- **Un composant `Node` créé dans un test doit être libéré** : sinon « resources
+- Lissage de la normale de paroi et vitesse latérale (§9.2) : le bac à sable n'a
+  que des parois planes, il n'y a rien à lisser.
+- Annulation en cours de franchissement (§7.12) : exercée indirectement par P3.
+- Dégâts de chute (§8.2) : `landed(impact_speed)` porte déjà la vitesse d'impact.
+- `ClimbRest` et corniches de repos (§8.1, §9.3) : level design.
+- La `StateMachine` de §8.1 reste due — le `Mode` à trois valeurs sera absorbé,
+  pas conservé en parallèle (D-018).
+
+### Pièges connus, vérifiés de B.1 à B.4
+
+- **Un contrôle négatif qui ne casse rien est une information** : trou de
+  couverture (B.3/P2) ou limite de ce que le test prouve (B.4/Q3 et Q5). Ne jamais
+  le lire comme « le test est robuste ».
+- **Un contrôle négatif sur un réglage doit muter le `.tres`**, jamais la valeur
+  par défaut du `@export` (R-006bis).
+- **Un test vert peut l'être pour la mauvaise raison** (B.3/B3-1).
+- **Ne pas croire un drapeau du moteur sans le mesurer** : `is_on_wall()` est faux
+  contre un mur (D-020).
+- **Une mesure d'intégration ne doit pas dépendre de la taille du décor.**
+- **Un composant `Node` créé dans un test doit être libéré**, sinon « resources
   still in use at exit », que `validate_fast.sh` traite en rouge.
 - **Une rampe de test ne doit pas être une boîte tournée** : son dessous forme un
-  surplomb sous lequel la capsule se faufile, sans drapeau de collision.
+  surplomb sous lequel la capsule se faufile.
 - **`SpringArm3D` réécrit la position de ses enfants directs** (D-014) ; son
   `margin` est sans effet, c'est `shape` qui donne un dégagement (D-015).
 - Un `MainLoop` lancé par `--script` n'a ni autoloads ni tree prêt pendant
-  `_initialize()` (D-009) ; le runner attend une frame, ne pas défaire.
+  `_initialize()` (D-009).
 - Toute méthode de test avec `await` doit être attendue, **et la boucle appelante
   aussi** (D-010).
 - **Relever `MIN_TESTS` dans `tools/validate_fast.sh` à chaque ajout de test.**

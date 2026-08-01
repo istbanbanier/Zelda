@@ -1,0 +1,100 @@
+[gd_scene load_steps=8 format=3]
+
+; Parcours de traversal enchaîné (Gate B, MASTER_SPEC §22).
+;
+; Le bac à sable teste chaque capacité **isolément** ; ce parcours vérifie
+; qu'elles s'enchaînent. C'est une question différente : un franchissement qui
+; laisse le personnage dans un état incohérent ne se voit qu'au segment suivant.
+;
+; Tracé linéaire vers +X, à z = 0, pour qu'un pilote scripté n'ait qu'à tenir
+; « avant » et sauter au bon endroit :
+;
+;   x  -2 .. 10   sol plat                        dessus y = 0
+;   x  10 .. 14   marche de 0,32 m                dessus y = 0,32
+;   x  14 .. 17   rampe à 40°                     0,32 -> 2,837
+;   x  17 .. 22   plateau                         dessus y = 2,837
+;   x  22 .. 24   VIDE — exige un saut
+;   x  24 .. 30   plateau d'arrivée               dessus y = 2,837
+;   x  30 .. 38   tour de 4 m au-dessus du plateau, à escalader puis franchir
+;                                                 dessus y = 6,837
+;
+; Toutes les pièces font 8 m en Z : le parcours reste large, l'échec ne peut pas
+; venir d'un écart latéral.
+
+[sub_resource type="BoxShape3D" id="GroundShape"]
+size = Vector3(12, 1, 8)
+
+[sub_resource type="BoxShape3D" id="StepShape"]
+size = Vector3(4, 1.32, 8)
+
+; Rampe à 40° : prisme plein, jamais une boîte tournée (le dessous d'une boîte
+; inclinée forme un surplomb sous lequel la capsule se faufile — défaut constaté
+; en B.1).
+[sub_resource type="ConvexPolygonShape3D" id="RampShape"]
+points = PackedVector3Array(14, -0.5, -4, 14, -0.5, 4, 17, -0.5, -4, 17, -0.5, 4, 14, 0.32, -4, 14, 0.32, 4, 17, 2.837, -4, 17, 2.837, 4)
+
+[sub_resource type="BoxShape3D" id="PlateauShape"]
+size = Vector3(5, 6, 8)
+
+[sub_resource type="BoxShape3D" id="LandingShape"]
+size = Vector3(6, 6, 8)
+
+[sub_resource type="BoxShape3D" id="TowerShape"]
+size = Vector3(8, 6.837, 8)
+
+[sub_resource type="BoxShape3D" id="CatchShape"]
+size = Vector3(60, 1, 40)
+
+[node name="TraversalCourse" type="Node3D"]
+
+[node name="Ground" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.5, 0)
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("GroundShape")
+
+[node name="Step" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, -0.34, 0)
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Step"]
+shape = SubResource("StepShape")
+
+[node name="Ramp" type="StaticBody3D" parent="."]
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ramp"]
+shape = SubResource("RampShape")
+
+[node name="Plateau" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.5, -0.163, 0)
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Plateau"]
+shape = SubResource("PlateauShape")
+
+[node name="Landing" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27, -0.163, 0)
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Landing"]
+shape = SubResource("LandingShape")
+
+[node name="Tower" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34, 3.4185, 0)
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Tower"]
+shape = SubResource("TowerShape")
+
+; Filet sous le vide. Il ne fait pas partie du parcours : sans lui, un saut raté
+; laisserait le joueur tomber indéfiniment et le test lirait « pas de blocage »
+; alors qu'il vient d'échouer. Avec le filet, un échec est **observable** — le
+; joueur se retrouve en contrebas, à une altitude que le test rejette.
+[node name="SafetyNet" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, -8.5, 0)
+collision_layer = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SafetyNet"]
+shape = SubResource("CatchShape")
