@@ -69,7 +69,7 @@ logiciel llvmpipe uniquement, aucun GPU.
 
 | Phase | Système | État |
 |---|---|---|
-| A | Boot, autoloads, InputMap AZERTY, couches de collision | Non commencé |
+| A | Boot, autoloads, InputMap AZERTY, couches de collision | **A.1 livré** — voir détail ci-dessous |
 | B | Player, caméra, locomotion, endurance, escalade, mantle | Non commencé |
 | C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | Non commencé |
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
@@ -86,6 +86,26 @@ ne dépendent pas du rendu, seulement de l'exécution headless.
 
 ---
 
+## Phase A — jalon A.1
+
+| Élément | État | Preuve | Dernier test |
+|---|---|---|---|
+| InputMap AZERTY, 18 actions (§8.5) | **Fonctionnel** | `test_input_map.gd` : Q = gauche, lock-on jamais sur Q | 2026-08-01 |
+| 14 couches de collision nommées (§5.7) | **Fonctionnel** | `test_input_map.gd::test_collision_layers_are_named` | 2026-08-01 |
+| 5 autoloads (§5.6) | **Fonctionnel** | `test_autoloads.gd`, 9 cas | 2026-08-01 |
+| Écriture atomique de sauvegarde (§19.2) | **Fonctionnel** | `test_save_system.gd`, 6 cas | 2026-08-01 |
+| Boot réel (§6.1) | **Fonctionnel** | lancé réellement, sortie `[boot]` dans `validate_fast` niveau 3 | 2026-08-01 |
+| Masques de collision par entité | Non commencé | — | — |
+| Menu principal | Non commencé | — | — |
+
+**Reste avant Gate A** : masques de collision réellement assignés à des entités
+(il n'y a pas encore d'entité), et surtout **lancer le jeu avec un affichage** pour
+vérifier l'InputMap à la main — `Q` déplace-t-il à gauche sur un vrai clavier
+AZERTY ? Le test verrouille la *liaison* ; il ne remplace pas l'essai humain exigé
+par §21.4. Ce contrôle ne peut pas être fait dans ce conteneur.
+
+---
+
 ## Checklist finale (§26) — état réel
 
 Une case n'est cochée que si une preuve datée la soutient. Ne jamais cocher sur la
@@ -98,7 +118,7 @@ base d'une intention. Les cases cochées ci-dessous renvoient toutes à `TEST_RE
 | Recherche | Décisions risquées sourcées, expérimentées, consignées | ✅ |
 | Loop | Du spawn à la victoire sans debug | ⬜ |
 | Démo | Parcours trois minutes fluide, non truqué | ⬜ |
-| AZERTY | ZQSD et Q=gauche | ⬜ |
+| AZERTY | ZQSD et Q=gauche | liaison testée ✅ ; essai humain sur clavier AZERTY **non fait** |
 | Caméra | Aucun mur/jitter critique | ⬜ |
 | Traversal | Sprint, saut, escalade, mantle | ⬜ |
 | Combat | Une touche par swing, esquive juste | ⬜ |

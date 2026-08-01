@@ -118,39 +118,50 @@ a réellement tourné.
 
 ## HANDOFF — prochaine action exacte
 
-> **En cours : Phase A, jalon A.1 — fondation exécutable.** Gate 0 gelé (D-006).
+> **En cours : Phase A. A.1 est livré ; A.2 suit.** Gate 0 gelé (D-006).
 
-Dans un conteneur neuf, avant tout :
+Démarrage dans un conteneur neuf :
 
 ```bash
 tools/setup_godot.sh          # ~60-120 min — LANCER EN ARRIÈRE-PLAN IMMÉDIATEMENT
 apt-get install -y blender python3-numpy
-tools/env_report.sh           # confirmer les versions obtenues
-tools/validate_fast.sh        # doit être vert avant d'écrire la moindre ligne
+tools/env_report.sh
+tools/validate_fast.sh        # doit être VERT (37 tests) avant toute modification
 ```
 
-**Premier acte obligatoire de la prochaine session neuve** : mesurer réellement le
-critère 1 du Gate 0 — le temps qu'il faut pour comprendre l'état du projet à partir
-de `CLAUDE.md` + `STATUS` + `PROGRESS` seuls, sans relire l'historique. C'est la
-réserve principale de D-006 et elle ne peut être levée que comme ça.
+**Premier acte obligatoire** : mesurer réellement le critère 1 du Gate 0 — combien
+de temps faut-il pour comprendre l'état du projet à partir de `CLAUDE.md` +
+`STATUS` + `PROGRESS` seuls ? C'est la réserve principale de D-006 et elle ne peut
+être levée que comme ça.
 
-Contenu du jalon A.1, dans cet ordre :
+### Fait en A.1
 
-1. **InputMap AZERTY** — via `physical_keycode`, qui sert AZERTY et QWERTY d'une
-   seule liaison. Vérifier que `Q` déplace à gauche et **jamais** le lock-on.
-2. **Couches de collision nommées** (§5.7), masques minimaux.
-3. **Autoloads** (§5.6) : `GameState`, `SaveSystem`, `AudioManager`, `SceneFlow`,
-   `EventBus`. Aucune référence fragile au joueur ou aux ennemis dedans.
-4. **Boot réel** (§6.1) remplaçant le placeholder de `scripts/core/boot.gd`.
-5. **Tests** : actions d'entrée présentes et uniques, couches cohérentes, autoloads
-   chargés. Relever `MIN_TESTS` dans `validate_fast.sh` en conséquence.
+InputMap AZERTY (18 actions, `physical_keycode`), 14 couches de collision nommées,
+5 autoloads, écriture atomique de sauvegarde, Boot réel. 37 tests verts.
+
+### A.2 — prochaine action
+
+1. **Scène `MainMenu`** minimale (§17.3) : continuer / nouvelle partie / options /
+   quitter, navigable au clavier ET à la manette, focus visible, aucun piège de
+   focus. C'est ce qui donnera enfin une cible à `SceneFlow.go_to()`.
+2. **Brancher Boot → MainMenu** et écrire le test d'intégration de la transition :
+   `SceneFlow` libère bien `_busy`, l'ancienne scène ne reste pas active.
+3. **Scène sandbox** (`scenes/tests/`) avec un sol et un corps physique, pour
+   vérifier que **Jolt simule réellement** — aujourd'hui, seul le *réglage* est
+   testé, pas la simulation.
+4. Relever `MIN_TESTS` dans `tools/validate_fast.sh` à chaque ajout.
 
 **Gate A** : le projet ouvre et se lance, zéro parse error, InputMap AZERTY correct.
-Le lancer réellement, ne pas se contenter d'un import vert.
+⚠️ Gate A exige un **essai humain sur clavier AZERTY** (§21.4) : impossible dans ce
+conteneur sans affichage. Le prévoir sur une machine avec écran, ou déclarer ce
+critère `BLOQUÉ` en le disant.
 
 ### Pièges connus
 
 - Ne pas croire un souvenir d'API : la doc en ligne est bloquée, la source du tag
   sous `/opt/src/godot` est la référence. Utiliser l'agent `godot-researcher`.
+- Un `MainLoop` par `--script` n'a ni autoloads ni `Engine.get_main_loop()` pendant
+  `_init()` (D-009). Le runner compense ; ne pas défaire ce contournement.
+- Ne pas faire déclencher un `push_error` de production par un test : le niveau 2b
+  le compte comme échec, à raison. Isoler la décision (modèle `can_go_to()`).
 - Ne pas déclarer Gate A `PASS` sans revue `adversarial-qa` à contexte frais.
-- Ne pas commencer la Phase B avant que Gate A soit vert.
