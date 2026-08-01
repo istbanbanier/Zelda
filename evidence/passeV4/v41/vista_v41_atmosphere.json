@@ -1,0 +1,18 @@
+{
+  "commit": "b7777723c69046e79c54d89a2855936c3835c987",
+  "display_server": "X11",
+  "distinct_colors_sampled": 807,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 60,
+  "height": 1440,
+  "label": "v41_atmosphere",
+  "luma_mean": 0.7636,
+  "luma_stddev": 0.1447,
+  "png": "evidence/passeV4/v41/vista_v41_atmosphere.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "timestamp_utc": "2026-08-01 21:09:36",
+  "width": 2560
+}

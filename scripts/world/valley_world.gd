@@ -95,14 +95,24 @@ func _ready() -> void:
 	add_child(safe_timer)
 
 
-## Ciel pastel, brume bleutée, lumière ambiante du ciel — les ancres de §3.4 en
-## version graybox. Construit en code : une seule source de vérité chiffrée.
+## Lumière et atmosphère V4.1 (réf. 01 du pack V4) : soleil doré de fin
+## d'après-midi venant de la gauche, ciel chaud vers l'horizon, brume qui
+## sépare les trois plans, brume basse dans les creux, orage LOCAL sur la
+## citadelle. Construit en code : une seule source de vérité chiffrée.
 func _setup_environment() -> void:
+	# Soleil #FFD68A (§3.4) — chaud, ombres longues lisibles (§7.7). La rotation
+	# vient de SUN_ROTATION_DEG (ouest/gauche, plongée 22°).
+	_sun.light_color = Color(1.0, 0.839, 0.541)
+	_sun.light_energy = 1.25
+	_sun.shadow_enabled = true
+	_sun.directional_shadow_max_distance = 180.0
+
 	var sky_material: ProceduralSkyMaterial = ProceduralSkyMaterial.new()
 	sky_material.sky_top_color = Color(0.663, 0.831, 0.918)      # #A9D4EA
-	sky_material.sky_horizon_color = Color(0.686, 0.784, 0.827)  # #AFC8D3
+	# Horizon réchauffé (V4 : ciel doré côté soleil) — entre pastel et sable.
+	sky_material.sky_horizon_color = Color(0.82, 0.78, 0.68)
 	sky_material.ground_bottom_color = Color(0.365, 0.561, 0.239)
-	sky_material.ground_horizon_color = Color(0.686, 0.784, 0.827)
+	sky_material.ground_horizon_color = Color(0.78, 0.74, 0.66)
 	var sky: Sky = Sky.new()
 	sky.sky_material = sky_material
 	var environment: Environment = Environment.new()
@@ -110,15 +120,75 @@ func _setup_environment() -> void:
 	environment.sky = sky
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
 	environment.ambient_light_sky_contribution = 0.6
-	# Brume de distance (§7.7 fog classique) : l'étagement atmosphérique de §3.2,
-	# sans fog volumétrique (hors budget graybox et hors Compatibility).
+	# Filmic : hautes lumières chaudes sans écrêtage plastique (§7.1).
+	environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
+	# Glow FAIBLE, seuil haut (§7.7 : « bloom faible, seuil élevé ») : seuls
+	# les émissifs — éclair, noyaux cyan — rayonnent, jamais le ciel.
+	environment.glow_enabled = true
+	environment.glow_intensity = 0.5
+	environment.glow_bloom = 0.0
+	environment.glow_hdr_threshold = 1.2
+	# Brume de distance (§7.7 fog classique) : l'étagement atmosphérique de
+	# §3.2, sans fog volumétrique (hors budget graybox et hors Compatibility).
+	# L'aerial perspective fond les lointains vers le ciel — la profondeur
+	# COLORIMÉTRIQUE demandée par V4.1 ; sky_affect bas garde le ciel propre.
+	# 1re capture V4.1 : 0,0016 + aerial 0,55 NOYAIENT le plan moyen (ruines
+	# dissoutes à 150 m) — l'inverse de « vallée lisible à 300 m ». Divisé.
 	environment.fog_enabled = true
-	environment.fog_light_color = Color(0.686, 0.784, 0.827)
-	environment.fog_density = 0.0018
+	environment.fog_light_color = Color(0.72, 0.77, 0.80)
+	environment.fog_density = 0.0009
+	environment.fog_aerial_perspective = 0.35
+	environment.fog_sky_affect = 0.08
+	# Brume basse dans les creux (lit de rivière y≈0-6) : densité douce sous
+	# y = 6 — la crête (y 24) et le plateau (y 34) restent clairs.
+	environment.fog_height = 6.0
+	environment.fog_height_density = 0.035
 	var world_environment: WorldEnvironment = WorldEnvironment.new()
 	world_environment.name = "ValleyEnvironment"
 	world_environment.environment = environment
 	add_child(world_environment)
+
+	# Orage LOCAL au-dessus de la citadelle (donjon culminant à y = 80). À
+	# y 102, l'écart nuage-sommet (18 m) rendait l'éclair invisible depuis la
+	# crête (2e capture) : à y 130, la colonne fait ~46 m et se LIT. Localité
+	# testée.
+	var storm: StormCell = StormCell.new()
+	storm.name = "CitadelStorm"
+	storm.position = Vector3(0, 115, -215)
+	add_child(storm)
+	if OS.get_environment("VALLEY_VISTA") == "1":
+		storm.hold_flash()   # éclair majeur tenu pour la capture (§3.2, §21.8)
+	_setup_dust()
+
+
+## Poussière/pollen très contrôlés (V4.1) : quelques motes chaudes qui dérivent
+## au-dessus de la crête de départ — visibles en contre-jour, jamais un rideau.
+func _setup_dust() -> void:
+	var particles: GPUParticles3D = GPUParticles3D.new()
+	particles.name = "CrestDust"
+	particles.amount = 24
+	particles.lifetime = 7.0
+	particles.preprocess = 7.0   # déjà en dérive à l'arrivée du joueur
+	var process: ParticleProcessMaterial = ParticleProcessMaterial.new()
+	process.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+	process.emission_box_extents = Vector3(20.0, 4.0, 16.0)
+	process.gravity = Vector3(0.12, -0.02, 0.0)   # dérive douce vers l'est
+	process.initial_velocity_min = 0.05
+	process.initial_velocity_max = 0.25
+	process.scale_min = 0.5
+	process.scale_max = 1.0
+	particles.process_material = process
+	var quad: QuadMesh = QuadMesh.new()
+	quad.size = Vector2(0.06, 0.06)
+	var material: StandardMaterial3D = StandardMaterial3D.new()
+	material.albedo_color = Color(1.0, 0.91, 0.75, 0.4)
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	material.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	quad.material = material
+	particles.draw_pass_1 = quad
+	particles.position = Vector3(0, 26.5, 152)
+	add_child(particles)
 
 
 func _setup_vista_camera() -> void:

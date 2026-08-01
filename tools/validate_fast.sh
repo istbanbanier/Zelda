@@ -130,7 +130,7 @@ step "4. Plancher de couverture"
 # On prend la dernière (celle du runner) et on refuse toute ligne en double.
 # Le plancher est une constante du fichier : l'abaisser doit se voir en revue, il
 # n'est donc pas surchargeable par l'environnement.
-MIN_TESTS=254
+MIN_TESTS=257
 RESULT_LINES=$(grep -cE '^=== RÉSULTAT: [0-9]+ réussi' "$UNIT_LOG")
 ACTUAL_TESTS=$(grep -oE '^=== RÉSULTAT: [0-9]+ réussi' "$UNIT_LOG" | grep -oE '[0-9]+' | tail -1)
 ACTUAL_TESTS="${ACTUAL_TESTS:-0}"

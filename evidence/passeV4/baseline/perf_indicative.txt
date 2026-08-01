@@ -9,3 +9,10 @@ frame. Cette valeur ne sert qu'à la COMPARAISON RELATIVE avant/après de la
 Passe V4 sur cette même machine — détecter un effet devenu 2× plus lourd,
 rien d'autre. Capture vista 2560×1440/60 frames : ~16,8 s mur au baseline.
 Commit baseline : 40dd4d4.
+
+APRÈS V4.1 (soleil chaud + ombres 180 m, fog étagé + aerial, tonemap filmic,
+glow faible, orage local : nuage 8 grumeaux + voile de pluie + éclair, motes) :
+300 frames 720p llvmpipe : 42,65 s (baseline : 29,05 s, +47 %).
+Suspect dominant : glow (passe plein-écran, très coûteuse en rendu LOGICIEL,
+banale sur GPU). Rappel : llvmpipe ne mesure PAS le matériel cible ; l'échelle
+de dégradation §20.8 rendra glow/ombres dépendants du preset en Phase I.
