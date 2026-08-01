@@ -1,0 +1,9 @@
+# Contrôle négatif — C3_fov_poids_fixe
+# Interpolation FOV à poids fixe (0,08) : convergence deux fois plus rapide à 120 Hz.
+# Test visé : test_fov_interpolation_is_framerate_independent
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_camera_rig.gd::test_fov_interpolation_is_framerate_independent — 0,5 s de sprint doit donner le même FOV à 60 Hz (75.508) et à 120 Hz (75.960) : attendu 75.5082 ± 0.0500, obtenu 75.9597
+=== RÉSULTAT: 79 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_camera_rig.gd::test_fov_interpolation_is_framerate_independent — 0,5 s de sprint doit donner le même FOV à 60 Hz (75.508) et à 120 Hz (75.960) : attendu 75.5082 ± 0.0500, obtenu 75.9597

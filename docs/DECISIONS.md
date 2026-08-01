@@ -281,3 +281,53 @@ est une préférence, pas une décision.
   invérifiable autrement qu'en jouant.
 - **Vérifié par** : `test_input_layer_isolation.gd`, qui échoue si un script de
   gameplay lit une touche ou une constante `KEY_*`.
+
+---
+
+## D-014 — Le décalage d'épaule vit sur le `SpringArm3D`, pas sur la `Camera3D`
+
+- **Date** : 2026-08-01 · **Phase** : B.1 · **Statut** : ADOPTÉE
+- **Contexte** : §8.3 exige **deux** choses qui semblent se contredire — une
+  `Camera3D` **enfant direct** du `SpringArm3D`, et un décalage d'épaule de
+  0,25–0,40 m.
+- **Comportement mesuré** sur Godot 4.7.1-stable (pas lu dans une doc, pas déduit) :
+  - `SpringArm3D` **réécrit intégralement** la position locale de ses enfants
+    directs à chaque image. Une `Camera3D` posée en `x = 0,32` est relue en
+    `x = 0` : le décalage disparaît sans erreur ni avertissement. C'est le défaut
+    réel qui a motivé cette décision — il était présent et invisible.
+  - Un descendant **plus profond** conserve son décalage, mais le cast du bras n'en
+    tient pas compte : caméra petite-fille décalée de 1 m sur l'axe du bras,
+    mesurée **0,64 m au-delà** de la face du mur du bac à sable. C'est exactement
+    la traversée que §23.1 interdit — et la vraie raison de l'exigence « enfant
+    direct ».
+- **Choix** : le décalage d'épaule est porté par le **bras** ; la caméra reste
+  enfant direct, à position nulle. Effet secondaire recherché : l'origine du cast
+  se décale aussi, donc l'obstacle est testé depuis l'épaule et non depuis l'axe
+  du personnage.
+- **Rejeté** : intercaler un nœud d'offset sous le bras — le décalage y est soit
+  effacé (enfant direct), soit ignoré par le cast (descendant), selon la
+  profondeur. Les deux ont été mesurés.
+- **Vérifié par** : `test_camera_rig.gd::test_shoulder_offset_survives_the_spring_arm`
+  et `::test_spring_arm_pulls_the_camera_in_front_of_a_wall`, tous deux avec
+  contrôle négatif rejoué.
+
+---
+
+## D-015 — La caméra sonde les obstacles avec un volume, pas un rayon
+
+- **Date** : 2026-08-01 · **Phase** : B.1 · **Statut** : ADOPTÉE
+- **Contexte** : §8.3 exige « zéro traversée ». Le `SpringArm3D` par défaut lance
+  un **rayon**.
+- **Comportement mesuré** : avec un rayon, la caméra s'arrête à **0,8 mm** de la
+  face du mur — techniquement en deçà, visuellement dedans, et le moindre mouvement
+  la fait basculer de l'autre côté. `SpringArm3D.margin` **ne corrige pas** ce
+  point : testé à 0,01 / 0,25 / 0,50, la longueur mesurée est restée identique
+  (1,2650 m dans les trois cas).
+- **Choix** : assigner une `SphereShape3D` de rayon `camera_probe_radius` (0,35 m)
+  au bras. Mesuré : la caméra s'arrête exactement à 0,35 m de la face
+  (29,75 − 0,35 = 29,40). Le dégagement devient une valeur réglable, pas un hasard.
+  La forme est créée dans `_ready()`, jamais partagée depuis la scène : deux
+  joueurs ne doivent pas écrire dans la même ressource.
+- **Limite assumée** : une sonde volumique rapproche la caméra plus tôt qu'un rayon
+  dans les passages étroits. C'est le compromis voulu ici ; s'il devient gênant en
+  jeu, c'est `camera_probe_radius` qu'on ajuste, pas la structure.

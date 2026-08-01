@@ -360,3 +360,89 @@ connus) → `docs/BUILD_ENVIRONMENT.md` (comment reconstruire l'environnement).
 documentaire, **pas** par une session réellement repartie de zéro. Il reste donc
 `PASS sous réserve` jusqu'à ce qu'une session neuve l'exerce réellement — ce qui
 sera le premier acte de la prochaine session.
+
+---
+
+# Jalon B.1 — Player, CameraRig, locomotion (2026-08-01)
+
+## Commande et résultat
+
+```bash
+tools/validate_fast.sh; echo $?
+```
+
+**Code retour** : `0` — VERT.
+
+| Niveau | Résultat |
+|---|---|
+| 0. Version | `4.7.1.stable.custom_build.a13da4feb` ✅ |
+| 1. Import des ressources | 0 erreur ✅ |
+| 1b. Parse de **tous** les `.gd` | 0 erreur ✅ |
+| 2. Tests unitaires et d'intégration | **80 réussis, 0 échoué** ✅ |
+| 2b. Erreurs signalées dans le journal | aucune ✅ |
+| 3. Scène principale (Boot → MainMenu, lancement réel) | ✅ |
+| 4. Plancher de couverture | 80 tests pour un plancher de 80 ✅ |
+
+> **Nombre de tests de référence : 80.** C'est ici, et nulle part ailleurs, qu'il
+> doit être lu. Un chiffre recopié dans un autre document diverge au premier ajout.
+
+Nouveaux fichiers de test : `tests/integration/test_locomotion.gd` (12 cas) et
+`tests/integration/test_camera_rig.gd` (9 cas). Tous pilotent le contrôleur par
+`InputIntent` injectée — **aucune touche simulée**, aucun périphérique requis.
+
+## Contrôles négatifs rejoués
+
+Un test qui ne peut pas échouer ne prouve rien. Chaque défense de B.1 a été cassée
+volontairement, la suite relancée, l'état restauré.
+
+| # | Mutation appliquée | Test visé | Résultat attendu | Obtenu |
+|---|---|---|---|---|
+| C1 | Épaule reposée sur la `Camera3D` (le défaut d'origine) | `test_shoulder_offset_survives_the_spring_arm` | ÉCHEC | ÉCHEC ✅ |
+| C2 | Sonde volumique retirée (retour au rayon simple) | `test_spring_arm_pulls_the_camera_in_front_of_a_wall` | ÉCHEC | ÉCHEC ✅ |
+| C3 | Interpolation FOV à poids fixe (0,08) | `test_fov_interpolation_is_framerate_independent` | ÉCHEC | ÉCHEC ✅ |
+| C4 | Interpolation FOV à poids 1,0 (snap franc) | `test_fov_widens_on_sprint_without_snapping` | ÉCHEC | ÉCHEC — « progression de 6.00° » ✅ |
+| C5 | Butées de pitch supprimées | `test_pitch_is_clamped_to_the_specified_range` | ÉCHEC | ÉCHEC — « butée basse franchie : -14332.5° » ✅ |
+| C6 | `max_floor_angle_deg` relevé à 70° **dans le `.tres`** | `test_steep_slope_is_rejected` | ÉCHEC | ÉCHEC — « Y 0.00 -> 4.31 » ✅ |
+| C7 | Nœud intercalé sous le `SpringArm3D` | `test_camera_is_a_direct_child_of_the_spring_arm` | ÉCHEC | ÉCHEC — « parent réel : Intercale » ✅ |
+| C8 | Caméra petite-fille décalée de 1 m sur l'axe du bras | `test_spring_arm_pulls_the_camera_in_front_of_a_wall` | ÉCHEC | ÉCHEC — « dégagement -0,638 m » ✅ |
+
+Logs archivés : `evidence/gateB/negative_controls/C1…C8*.log`. Après chaque
+contrôle, les fichiers mutés ont été restaurés et comparés à l'octet près à leur
+état d'origine avant de passer au suivant.
+
+### Deux enseignements que ces contrôles ont produits, et qui ne sont pas cosmétiques
+
+- **C6 a d'abord donné un faux négatif.** La mutation portait sur la valeur par
+  défaut de `@export` dans `locomotion_tuning.gd` ; le test est resté vert et se
+  lisait « le test ne mesure pas ce qu'il prétend ». La ressource réellement
+  chargée est `locomotion_default.tres`, qui sérialise sa propre valeur. Règle
+  adoptée : muter la ressource chargée, jamais la valeur par défaut du script
+  (R-006bis).
+- **C7 a réfuté la justification écrite dans le code.** Le commentaire affirmait
+  qu'une caméra non-enfant-direct « traverserait les murs ». Faux : avec un nœud
+  intercalé à position nulle, l'anti-traversée tient toujours. Le vrai mécanisme,
+  isolé par C8, est qu'un descendant conserve un décalage dont le cast ne tient pas
+  compte. Le commentaire et l'en-tête du test ont été corrigés pour dire ce qui a
+  été mesuré (R-006ter, D-014).
+
+## Défauts réels trouvés pendant B.1
+
+| # | Défaut | Comment il a été trouvé | Correctif |
+|---|---|---|---|
+| B1-1 | Rampe de test en **boîte tournée** : sa face basse formait un surplomb, la capsule passait **sous** la rampe au lieu de la gravir. `is_on_floor()` vrai, `is_on_wall()` faux, aucun drapeau ne signalait l'anomalie. | sonde imprimant position et drapeaux à chaque tick | rampes reconstruites en **prismes pleins** (`ConvexPolygonShape3D`), sans dessous |
+| B1-2 | Décalage d'épaule de 0,32 m **silencieusement perdu** : `SpringArm3D` réécrit la position de ses enfants directs. §8.3 n'était pas tenu, sans aucun signe. | sonde relisant `camera.position` après quelques frames | décalage porté par le bras (D-014) |
+| B1-3 | Caméra s'arrêtant à **0,8 mm** de la face du mur — techniquement en deçà, visuellement dedans. | assertion de dégagement, initialement écrite en `< 29.75` : passait sur la frontière exacte | sonde volumique (D-015) |
+
+## Limites de B.1 — à ne pas confondre avec des oublis
+
+- **Le sprint n'a aucun coût.** `StaminaComponent` (§9.1) arrive en B.2. Écrit dans
+  l'en-tête de `player_controller.gd`, pas seulement ici.
+- **Le ressenti n'est pas testé.** §10.6 exige des mesures de latence en ticks et un
+  essai humain ; rien d'automatique ne les remplace.
+- **L'absence de jitter caméra n'est pas testée.** La traversée l'est ; le jitter
+  demande une observation en mouvement à framerate réel.
+- **Aucun modèle, aucune animation.** `VisualRoot` est un `Node3D` vide qui
+  s'oriente. §7.14 interdit d'appeler « personnage » un pivot nu.
+- **CONTROLLER-001 reste ouverte.** B.1 est intégralement piloté par intention
+  injectée : cela prouve que le contrôleur n'exige pas de clavier, **jamais** que la
+  manette fonctionne.

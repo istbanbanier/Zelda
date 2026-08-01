@@ -1,0 +1,11 @@
+# Contrôle négatif — C6_seuil_de_pente_releve
+# max_floor_angle_deg porté à 70° DANS LE .tres : une pente à 60° devient franchissable. Muter la valeur par défaut du script n'aurait rien cassé (R-006bis).
+# Test visé : test_steep_slope_is_rejected
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_locomotion.gd::test_steep_slope_is_rejected — une pente à 60° ne doit pas être gravie : Y 0.00 -> 4.31
+  ÉCHEC test_locomotion.gd::test_steep_slope_is_rejected — le joueur doit être arrêté par la pente (6.00 m/s)
+=== RÉSULTAT: 78 réussi(s), 3 échoué(s) ===
+  ÉCHEC: test_locomotion.gd::test_steep_slope_is_rejected — une pente à 60° ne doit pas être gravie : Y 0.00 -> 4.31
+  ÉCHEC: test_locomotion.gd::test_steep_slope_is_rejected — le joueur doit être arrêté par la pente (6.00 m/s)

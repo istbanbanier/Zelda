@@ -1,0 +1,9 @@
+# Contrôle négatif — C8_camera_petite_fille_decalee
+# Caméra petite-fille décalée de 1 m sur l'axe du bras : le décalage survit mais le cast ne le voit pas — traversée réelle (D-014).
+# Test visé : test_spring_arm_pulls_the_camera_in_front_of_a_wall
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_camera_rig.gd::test_spring_arm_pulls_the_camera_in_front_of_a_wall — la caméra doit garder un dégagement devant le mur (-0.638 m)
+=== RÉSULTAT: 77 réussi(s), 3 échoué(s) ===
+  ÉCHEC: test_camera_rig.gd::test_spring_arm_pulls_the_camera_in_front_of_a_wall — la caméra doit garder un dégagement devant le mur (-0.638 m)

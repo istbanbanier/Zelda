@@ -118,6 +118,57 @@ ou une mesure locale) · `OUVERT`.
 
 ---
 
+## R-006bis — Un contrôle négatif qui mute la valeur par défaut d'un `@export` ne prouve rien
+
+- **Date** : 2026-08-01 · **Phase** : B.1 · **Statut** : RÉSOLU, règle adoptée
+- **Ce qui change selon la réponse** : la fiabilité de **tous** les contrôles
+  négatifs portant sur du réglage. Un contrôle négatif qui ne casse rien renvoie
+  « le test reste vert » et se lit à tort comme « le test est robuste ».
+- **Constat, obtenu par accident puis reproduit** : pour vérifier que
+  `test_steep_slope_is_rejected` mesure bien `max_floor_angle`, la valeur par
+  défaut du script `locomotion_tuning.gd` a été passée de 46 à 70°. Le test est
+  resté **vert** — lecture naturelle : « le test ne teste pas ce qu'il prétend ».
+  C'était faux. La ressource réellement chargée est `locomotion_default.tres`, qui
+  **sérialise sa propre valeur** ; la valeur par défaut du script n'est utilisée
+  que pour une instance créée par `LocomotionTuning.new()`. En mutant le `.tres`,
+  le test échoue comme attendu : « une pente à 60° ne doit pas être gravie :
+  Y 0.00 -> 4.31 ».
+- **Règle adoptée** : un contrôle négatif sur un réglage mute **la ressource
+  effectivement chargée**, jamais la valeur par défaut du script. En cas de doute,
+  relire le `.tres` avant de conclure.
+- **Portée** : aucun contrôle négatif antérieur n'est invalidé — les ressources de
+  tuning n'existent que depuis B.1. La règle vaut pour la suite.
+- **Limite** : ce piège est silencieux par construction. Rien dans le moteur ne
+  signale qu'une valeur par défaut est masquée par une ressource sérialisée.
+
+---
+
+## R-006ter — `SpringArm3D` : ce que le nœud fait réellement à ses enfants
+
+- **Date** : 2026-08-01 · **Phase** : B.1 · **Statut** : RÉSOLU
+- **Ce qui change selon la réponse** : la structure du `CameraRig` (§8.3) et la
+  tenue du critère « la caméra ne traverse pas les murs » (§23.1).
+- **Méthode** : documentation en ligne inaccessible (ISS-001) ; tout ci-dessous est
+  **mesuré** sur le binaire 4.7.1-stable installé, dans `TraversalSandbox.tscn`.
+- **Mesures** :
+
+  | Configuration | Résultat mesuré |
+  |---|---|
+  | `Camera3D` enfant direct, `position.x = 0,32` | relue en `x = 0` — décalage effacé |
+  | Nœud intercalé à position nulle, caméra dessous | caméra au bout du bras, anti-traversée intacte |
+  | Nœud intercalé décalé de 1 m | décalage effacé (c'est lui l'enfant direct) |
+  | Caméra petite-fille décalée de 1 m | **0,64 m au-delà** de la face du mur |
+  | `margin` = 0,01 / 0,25 / 0,50 | longueur identique : 1,2650 m — sans effet ici |
+  | `shape` = sphère r = 0,20 | caméra à 29,549 (face à 29,75) |
+  | `shape` = sphère r = 0,35 | caméra à 29,399 — dégagement exactement égal au rayon |
+
+- **Décisions qui en découlent** : D-014 (épaule sur le bras) et D-015 (sonde
+  volumique).
+- **À réévaluer** : si une version ultérieure de Godot est un jour imposée, ces
+  sept mesures sont à rejouer avant de croire le code encore correct.
+
+---
+
 ## Questions ouvertes pour les phases suivantes
 
 | ID | Question | Phase | Décidera |

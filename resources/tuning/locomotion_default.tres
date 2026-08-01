@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="LocomotionTuning" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/tuning/locomotion_tuning.gd" id="1_tuning"]
+
+[resource]
+script = ExtResource("1_tuning")
+walk_speed = 3.5
+run_speed = 6.0
+sprint_speed = 9.0
+ground_acceleration = 24.0
+ground_deceleration = 30.0
+air_acceleration = 8.4
+air_control = 0.35
+gravity = 24.0
+jump_velocity = 8.2
+coyote_time = 0.12
+jump_buffer = 0.12
+max_floor_angle_deg = 46.0
+floor_snap_length = 0.4
+visual_turn_speed = 12.0
+camera_distance = 4.3
+camera_target_height = 1.45
+camera_shoulder_offset = 0.32
+camera_fov = 70.0
+camera_fov_sprint = 76.0
+camera_fov_speed = 4.0
+camera_pitch_min_deg = -65.0
+camera_pitch_max_deg = 45.0
+camera_stick_speed = 3.0
+camera_probe_radius = 0.35

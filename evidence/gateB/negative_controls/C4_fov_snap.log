@@ -1,0 +1,9 @@
+# Contrôle négatif — C4_fov_snap
+# Interpolation FOV à poids 1,0 : la cible est atteinte en une image (snap interdit par §8.3).
+# Test visé : test_fov_widens_on_sprint_without_snapping
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_camera_rig.gd::test_fov_widens_on_sprint_without_snapping — un seul tick ne doit pas suffire : progression de 6.00°
+=== RÉSULTAT: 79 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_camera_rig.gd::test_fov_widens_on_sprint_without_snapping — un seul tick ne doit pas suffire : progression de 6.00°

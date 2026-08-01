@@ -1,0 +1,9 @@
+# Contrôle négatif — C5_butees_pitch_supprimees
+# Butées de pitch supprimées : la caméra se retourne, §8.3 (-65°/+45°) violé.
+# Test visé : test_pitch_is_clamped_to_the_specified_range
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_camera_rig.gd::test_pitch_is_clamped_to_the_specified_range — butée basse franchie : -14332.5°
+=== RÉSULTAT: 79 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_camera_rig.gd::test_pitch_is_clamped_to_the_specified_range — butée basse franchie : -14332.5°

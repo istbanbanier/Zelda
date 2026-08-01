@@ -1,0 +1,9 @@
+# Contrôle négatif — C2_sonde_volumique_retiree
+# Sonde volumique retirée : retour au rayon simple, la caméra colle au mur (D-015).
+# Test visé : test_spring_arm_pulls_the_camera_in_front_of_a_wall
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_camera_rig.gd::test_spring_arm_pulls_the_camera_in_front_of_a_wall — la caméra doit garder un dégagement devant le mur (-0.001 m)
+=== RÉSULTAT: 79 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_camera_rig.gd::test_spring_arm_pulls_the_camera_in_front_of_a_wall — la caméra doit garder un dégagement devant le mur (-0.001 m)

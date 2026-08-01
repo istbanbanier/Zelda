@@ -1,0 +1,9 @@
+# Contrôle négatif — C1_epaule_sur_la_camera
+# Décalage d'épaule reposé sur la Camera3D : SpringArm3D l'efface (défaut d'origine, D-014).
+# Test visé : test_shoulder_offset_survives_the_spring_arm
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_camera_rig.gd::test_shoulder_offset_survives_the_spring_arm — décalage d'épaule effectif : attendu 0.3200 ± 0.0500, obtenu 0.0000
+=== RÉSULTAT: 79 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_camera_rig.gd::test_shoulder_offset_survives_the_spring_arm — décalage d'épaule effectif : attendu 0.3200 ± 0.0500, obtenu 0.0000

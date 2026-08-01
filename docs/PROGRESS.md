@@ -156,48 +156,117 @@ a réellement tourné.
 
 ---
 
+## 2026-08-01 — Jalon B.1 : Player, CameraRig, locomotion
+
+**Gate visé** : B (traversal). **État du dépôt à l'ouverture** : Gate A gelé sur
+`9414fd0`, B.0 (couche d'entrée) livré, aucun joueur.
+
+### Changement réel
+
+Un joueur existe et se déplace. `PlayerController` (`CharacterBody3D`), `CameraRig`
+(pivots + `SpringArm3D`), réglages dans `resources/tuning/locomotion_default.tres`,
+bac à sable `TraversalSandbox.tscn`. 21 nouveaux cas de test, tous pilotés par
+`InputIntent` **injectée** : aucune touche simulée, aucun périphérique requis.
+
+### Trois défauts réels, dont deux étaient invisibles
+
+- **La rampe de test était une boîte tournée.** Sa face basse formait un surplomb :
+  la capsule passait **sous** la rampe au lieu de la gravir, s'arrêtait net au ras
+  du sol, `is_on_floor()` vrai et `is_on_wall()` faux. Aucun drapeau de collision ne
+  signalait quoi que ce soit. Trouvé en imprimant position et drapeaux à chaque
+  tick, pas en relisant le code. Les rampes sont désormais des **prismes pleins**.
+- **Le décalage d'épaule de §8.3 était silencieusement perdu.** `SpringArm3D`
+  réécrit intégralement la position de ses enfants directs ; la caméra placée en
+  `x = 0,32` revenait en `x = 0`. Rien ne le signalait — ni erreur, ni
+  avertissement, ni test rouge. Trouvé en relisant la position **après** quelques
+  frames au lieu de faire confiance à la scène (D-014).
+- **La caméra s'arrêtait à 0,8 mm du mur.** Techniquement en deçà de la face, donc
+  « conforme » ; visuellement dedans. `SpringArm3D.margin` s'est révélé sans effet
+  (mesuré à 0,01 / 0,25 / 0,50 : longueur identique). Corrigé par une sonde
+  volumique, dégagement mesuré exactement égal au rayon (D-015).
+
+### Deux enseignements de méthode
+
+- **Un contrôle négatif peut mentir.** Muter la valeur par défaut d'un `@export`
+  n'a aucun effet si une ressource `.tres` sérialise sa propre valeur : le test
+  reste vert et se lit à tort « ce test ne prouve rien ». Il fallait muter le
+  `.tres`. Consigné en R-006bis, avec la règle qui en découle.
+- **Un commentaire de justification est une affirmation, donc une dette de
+  preuve.** Le code affirmait qu'une caméra non-enfant-direct « traverserait les
+  murs ». Le contrôle négatif C7 l'a **réfuté** : avec un nœud intercalé à position
+  nulle, l'anti-traversée tient. Le vrai mécanisme, isolé par C8, est autre. Le
+  commentaire a été réécrit pour dire ce qui a été mesuré, pas ce qui semblait
+  plausible.
+
+### Vérification
+
+`tools/validate_fast.sh` → `RC=0`, VERT, plancher relevé à 80. Huit contrôles
+négatifs rejoués et archivés dans `docs/TEST_REPORT.md` : chacun casse une défense
+et fait rougir le test visé.
+
+### Ce que B.1 ne prouve pas
+
+Le sprint n'a **aucun coût** (§9.1 en B.2). Le ressenti et la latence en ticks
+(§10.6) ne sont pas mesurés. Le jitter caméra n'est pas testé. Il n'y a ni modèle
+ni animation. Et piloter le contrôleur par intention injectée prouve qu'il n'exige
+pas de clavier — **jamais** que la manette fonctionne : `CONTROLLER-001` reste
+ouverte et ne sera jamais levée par un test automatique.
+
+---
+
 ## HANDOFF — prochaine action exacte
 
-> **Gate A : `EN ATTENTE`.** Rien de neuf ne commence avant son verdict.
+> **Gate A : `ACCEPTÉ AVEC RÉSERVE / BLOQUÉ SUR LA VALIDATION MANETTE`** (D-012).
+> Ce n'est pas un `PASS`. La dette `CONTROLLER-001` court.
+> **Phase B en cours** : B.0 et B.1 livrés.
 
-### Action suivante, et elle n'est pas de mon ressort
+### Action suivante : jalon B.2 — endurance
 
-Exécuter `docs/MANUAL_VALIDATION.md` sur une machine avec écran, clavier **AZERTY**
-et manette. Six étapes, environ une heure hors reconstruction de Godot :
+`StaminaComponent` (§9.1), à brancher sur le sprint qui n'a aujourd'hui **aucun
+coût**. §9.1 fixe déjà toutes les valeurs, il n'y a rien à inventer :
 
-```bash
-tools/manual_validation_kit.sh        # prépare evidence/gateA/ et le rapport
-# … jouer les six étapes du protocole, déposer les captures …
-tools/manual_validation_kit.sh --finalize   # manifeste ; sort en 3 s'il manque une preuve
-```
+- maximum 100 ; sprint 12/s ; régénération après 1 s d'inaction, à 22/s ;
+- reprise progressive sur 0,20 s ; clamp 0–max ;
+- à zéro : le sprint retombe en course, l'épuisement dure 0,45 s avant toute
+  action consommatrice.
 
-### Ensuite, selon le résultat
+Les coûts d'escalade (18/s), de latéral (16/s), de saut d'escalade (20), d'esquive
+(15) et d'attaque lourde (20) appartiennent à B.3 et à la Phase C : les déclarer
+dans la ressource de réglage est utile, les câbler serait prématuré.
 
-- **Six `PASS`** → déclarer Gate A `PASS` dans `STATUS`, `TEST_REPORT` et ici,
-  puis démarrer la **Phase B — Traversal**.
-- **Un `FAIL`** → ouvrir l'entrée correspondante dans `docs/KNOWN_ISSUES.md` avec
-  sa sévérité, corriger, rejouer **la seule étape concernée**, re-conclure.
-- **Matériel indisponible** → Gate A reste `EN ATTENTE`. Ne pas le contourner :
-  les tests automatiques prouvent qu'une liaison existe dans `project.godot`, pas
-  qu'une personne appuyant sur `Q` va vers la gauche.
+Points d'accroche déjà en place, à ne pas reconstruire :
 
-### Contenu prévu de la Phase B, à ne pas entamer avant le verdict
+- `PlayerController.current_intent()` expose `sprint_held` ;
+- `LocomotionTuning.target_speed(magnitude, sprinting)` est le **seul** endroit qui
+  décide de la vitesse — c'est là que l'épuisement doit agir, pas dans le contrôleur ;
+- `signal landed(impact_speed)` porte déjà la vitesse d'impact pour les dégâts de
+  chute (§8.2, ≥ 6 m).
 
-1. `Player` en `CharacterBody3D`, hiérarchie de §6.2.
-2. `CameraRig` : pivots + `SpringArm3D`, `Camera3D` enfant direct (§8.3).
-3. Locomotion caméra-relative, valeurs de §8.2, **toute la logique dans
-   `_physics_process()`** (§20.9).
-4. `StaminaComponent` avant le sprint : §9.1 fixe déjà ses valeurs.
-5. Tests : latence d'entrée en ticks, pentes, marches, plafond, caméra ne
-   traversant aucun mur.
+### Ensuite
 
-### Pièges connus
+- **B.3** : escalade (§9.2) et mantle (§9.3) avec `ActionAlignmentComponent`
+  (§7.12). Question ouverte R-009 à trancher là.
+- **Avant de clore la Phase B** : shape cast de marche (§8.2, step 0,30–0,38 m),
+  et les tests manuels de §21.4 qui concernent le traversal — caméra contre tous
+  types de murs, falaise irrégulière, mantle sous plafond, sprint à zéro endurance.
 
-- Doc en ligne bloquée : la source du tag sous `/opt/src/godot` est la référence.
-- Un `MainLoop` par `--script` n'a ni autoloads ni `Engine.get_main_loop()` pendant
-  `_init()` (D-009) ; le runner compense, ne pas défaire.
+### Pièges connus, vérifiés dans cette session
+
+- **Un contrôle négatif sur un réglage doit muter le `.tres`**, pas la valeur par
+  défaut du `@export` : sinon il ne casse rien et le test paraît faussement
+  inutile (R-006bis).
+- **Une rampe de test ne doit pas être une boîte tournée** : son dessous forme un
+  surplomb sous lequel la capsule se faufile, sans aucun drapeau de collision pour
+  le signaler. Utiliser des prismes pleins.
+- **`SpringArm3D` réécrit la position de ses enfants directs.** Tout décalage posé
+  là disparaît en silence (D-014). Son `margin` est sans effet ; c'est `shape` qui
+  donne un dégagement (D-015).
+- Un `MainLoop` lancé par `--script` n'a ni autoloads ni tree prêt pendant
+  `_initialize()` (D-009) : `add_child` suivi de `global_position` y déclenche un
+  `!is_inside_tree()`. Le runner attend une frame, ne pas défaire.
 - Toute méthode de test avec `await` doit être attendue, **et la boucle appelante
   aussi** (D-010) — sinon des tests disparaissent en silence, suite verte.
-- Ne pas faire déclencher un `push_error` de production par un test : isoler la
-  décision (modèle `can_go_to()`).
-- Relever `MIN_TESTS` dans `tools/validate_fast.sh` à chaque ajout de test.
+- **Relever `MIN_TESTS` dans `tools/validate_fast.sh` à chaque ajout de test.**
+- Le nombre de tests de référence vit dans `docs/TEST_REPORT.md` **uniquement**.
+- Doc Godot en ligne bloquée (ISS-001) : mesurer sur le binaire installé, et
+  consigner la mesure dans `RESEARCH_LEDGER.md`.

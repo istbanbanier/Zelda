@@ -4,7 +4,7 @@ Vocabulaire imposé (§0.2) : `Non commencé` · `Implémenté` (raccordé) ·
 `Fonctionnel` (testé en scène exécutable) · `Validé` (conforme, sans régression) ·
 `Bloqué`. Tout critère non testé est `NON VÉRIFIÉ`, jamais implicitement réussi.
 
-**Dernière mise à jour** : 2026-08-01 · **Phase** : A (jalons A.1 et A.2 livrés) · **État gelé** : `9414fd0` · **Commit courant** : voir `git log`
+**Dernière mise à jour** : 2026-08-01 · **Phase** : B (jalons B.0 et B.1 livrés) · **Gate A gelé** : `9414fd0` · **Commit courant** : voir `git log`
 
 ## Verdict Gate A : **ACCEPTÉ AVEC RÉSERVE / BLOQUÉ SUR LA VALIDATION MANETTE**
 
@@ -47,9 +47,12 @@ qu'une revue l'ait pour autant validé. Réserves détaillées : D-006.
 
 Le système de continuité et le pipeline d'assets sont en place et **vérifiés par
 exécution réelle** — Blender → glTF → import Godot → renderer → PNG. Godot 4.7.1
-tourne, `validate_fast.sh` est vert (13 tests, plancher épinglé). **Aucun gameplay n'existe.** La
-notation visuelle et les mesures de performance restent impossibles ici : rendu
-logiciel llvmpipe uniquement, aucun GPU.
+tourne, `validate_fast.sh` est vert (nombre de tests : voir `docs/TEST_REPORT.md`,
+seule source à jour). Le premier gameplay existe : **un joueur se déplace, saute,
+sprinte et grimpe une pente, caméra à l'épaule qui ne traverse pas les murs**
+(B.1). Il n'a ni endurance, ni escalade, ni animation, ni modèle. La notation
+visuelle et les mesures de performance restent impossibles ici : rendu logiciel
+llvmpipe uniquement, aucun GPU.
 
 ---
 
@@ -81,9 +84,9 @@ logiciel llvmpipe uniquement, aucun GPU.
 | `docs/ROADMAP.md` | ✅ | 12 phases, dépendances, critères de sortie |
 | `docs/STATUS.md` | ✅ | ce fichier |
 | `docs/PROGRESS.md` | ✅ | journal + handoff |
-| `docs/DECISIONS.md` | ✅ | 5 décisions avec alternatives rejetées |
+| `docs/DECISIONS.md` | ✅ | décisions avec alternatives rejetées (D-001…) |
 | `docs/RESEARCH_LEDGER.md` | ✅ | 5 entrées + 5 questions ouvertes |
-| `docs/KNOWN_ISSUES.md` | ✅ | 5 ouverts (ISS-001 à ISS-005), 2 résolus |
+| `docs/KNOWN_ISSUES.md` | ✅ | ISS-001…ISS-005 ouverts + dette CONTROLLER-001 |
 | `docs/TEST_REPORT.md` | ✅ | résultats et commandes exactes |
 | `docs/PERFORMANCE.md` | ✅ | protocole ; aucune mesure (assumé) |
 | `docs/ART_BIBLE.md` | ✅ | North Star analysée, palette, budgets |
@@ -92,12 +95,12 @@ logiciel llvmpipe uniquement, aucun GPU.
 
 ---
 
-## Phases A à J — non commencées
+## Phases A à J — vue d'ensemble
 
 | Phase | Système | État |
 |---|---|---|
 | A | Boot, autoloads, InputMap AZERTY, couches de collision | **A.1 et A.2 livrés et gelés (`9414fd0`)** ; Gate A **EN ATTENTE** de validation humaine |
-| B | Player, caméra, locomotion, endurance, escalade, mantle | **B.0 livré** — couche d'entrée ; player et caméra à venir |
+| B | Player, caméra, locomotion, endurance, escalade, mantle | **B.0 et B.1 livrés** — entrée, player, caméra, locomotion ; endurance, escalade et mantle à venir |
 | C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | Non commencé |
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
 | D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | Non commencé |
@@ -151,8 +154,37 @@ impayable sans réécriture.
 | Générateur d'InputMap autoritatif (retire les actions inconnues) | **Fonctionnel** | contrôle négatif `B1_action_sans_liaison_manette.log` |
 | Les 4 contraintes de D-012 vérifiées par test | **Fonctionnel** | 2 contrôles négatifs archivés |
 
-**Reste pour la Phase B** : `Player` (`CharacterBody3D`), `CameraRig`
-(`SpringArm3D`), locomotion caméra-relative, `StaminaComponent`, escalade, mantle.
+---
+
+## Phase B — jalon B.1 : Player, CameraRig, locomotion
+
+Tous les cas ci-dessous pilotent le contrôleur par `InputIntent` **injectée** :
+aucune touche n'est simulée, aucun périphérique n'est requis. C'est le bénéfice
+direct de D-013, et la raison pour laquelle B.1 est vérifiable ici malgré
+CONTROLLER-001.
+
+| Élément (§) | État | Preuve |
+|---|---|---|
+| `PlayerController` en `CharacterBody3D` (§6.2, §8.2) | **Fonctionnel** | `test_locomotion.gd`, 12 cas |
+| Marche / course / sprint pilotés par l'amplitude (§8.2) | **Fonctionnel** | 3 cas : 3,5 / 6,0 / 9,0 m/s mesurés |
+| Déplacement caméra-relatif (§8.2) | **Fonctionnel** | `test_movement_is_camera_relative` : écart de direction mesuré après un quart de tour |
+| Saut, apex ≈ 1,40 m (§8.2) | **Fonctionnel** | `test_jump_reaches_expected_apex` |
+| Coyote time 0,12 s et jump buffer 0,12 s (§8.2) | **Fonctionnel** | 2 cas |
+| Pente franchissable à 40°, refusée à 60° (§8.2) | **Fonctionnel** | 2 cas, dont la contre-épreuve |
+| Corps à rotation nulle, seul `VisualRoot` s'oriente | **Fonctionnel** | `test_body_never_rotates` |
+| `CameraRig` : pivots + `SpringArm3D`, `Camera3D` enfant direct (§8.3) | **Fonctionnel** | `test_camera_rig.gd`, 9 cas |
+| Anti-traversée de mur (§23.1) | **Fonctionnel** | bras raccourci **et** dégagement mesuré devant la face |
+| Butées de pitch −65°/+45° (§8.3) | **Fonctionnel** | `test_pitch_is_clamped_to_the_specified_range` |
+| FOV sprint sans snap, interpolation framerate-independent (§8.3) | **Fonctionnel** | 2 cas, dont une comparaison 60 Hz / 120 Hz |
+| Réglages dans une `Resource` de `resources/tuning/` (§5.4) | **Fonctionnel** | `locomotion_default.tres`, enveloppes §8.3 vérifiées par test |
+| **Endurance (§9.1)** | **Non commencé** | le sprint n'a aujourd'hui **aucun coût** — limite assumée et consignée, pas un oubli |
+| Escalade et mantle (§9.2, §9.3) | **Non commencé** | jalon B.2 |
+| Dégâts de chute (§8.2) | **Non commencé** | le signal `landed(impact_speed)` existe et porte déjà la vitesse d'impact |
+| Ressenti, latence en ticks (§10.6) | **NON VÉRIFIÉ** | exige un essai humain à framerate réel ; aucun équivalent automatique |
+| Absence de jitter caméra (§8.3) | **NON VÉRIFIÉ** | la traversée est testable ici, le jitter demande une observation en mouvement |
+
+**Reste pour la Phase B** : `StaminaComponent` (§9.1), escalade (§9.2), mantle
+(§9.3) avec `ActionAlignmentComponent` (§7.12), shape cast de marche (§8.2).
 
 ---
 

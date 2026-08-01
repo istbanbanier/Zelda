@@ -1,0 +1,103 @@
+## Support de caméra (MASTER_SPEC §8.3).
+##
+## Structure imposée : pivots + `SpringArm3D` avec `Camera3D` **enfant direct**.
+##
+## Comportement de `SpringArm3D` mesuré sur le moteur installé, pas supposé :
+##   - il **réécrit intégralement** la position locale de ses enfants directs à
+##     chaque image ; un décalage posé là est perdu en silence (constaté : caméra
+##     placée en x = 0,32, relue en x = 0) ;
+##   - un descendant plus profond conserve, lui, son décalage — mais le cast n'en
+##     tient pas compte : caméra petite-fille décalée de 1 m sur l'axe du bras,
+##     mesurée **0,64 m au-delà** de la face du mur. C'est là, précisément, que
+##     l'exigence « enfant direct » de §8.3 protège de la traversée.
+## D'où la répartition retenue : décalage d'épaule sur le bras, caméra enfant
+## direct à position nulle.
+##
+## Le rig n'hérite d'aucune rotation du personnage : `PlayerController` maintient
+## le corps à rotation nulle et n'oriente que `VisualRoot`. Sans cette séparation,
+## la caméra tournerait avec le personnage et deviendrait incontrôlable.
+##
+## §8.3 : « interpolation framerate-independent », « aucun snap de FOV ».
+class_name CameraRig
+extends Node3D
+
+@export var tuning: LocomotionTuning
+
+@onready var _yaw_pivot: Node3D = $YawPivot
+@onready var _pitch_pivot: Node3D = $YawPivot/PitchPivot
+@onready var _spring_arm: SpringArm3D = $YawPivot/PitchPivot/SpringArm3D
+@onready var _camera: Camera3D = $YawPivot/PitchPivot/SpringArm3D/Camera3D
+
+var _pitch: float = -0.15
+var _yaw: float = 0.0
+
+
+func _ready() -> void:
+	if tuning == null:
+		tuning = LocomotionTuning.new()
+	position.y = tuning.camera_target_height
+	_spring_arm.spring_length = tuning.camera_distance
+	# Épaule portée par le bras (voir l'en-tête). Effet secondaire recherché :
+	# l'origine du cast se décale aussi — c'est bien depuis l'épaule, et non
+	# depuis l'axe du personnage, qu'il faut tester l'obstacle.
+	_spring_arm.position.x = tuning.camera_shoulder_offset
+	_camera.position = Vector3.ZERO
+	_camera.fov = tuning.camera_fov
+	# Sonde volumique plutôt que rayon : voir `camera_probe_radius`. La forme est
+	# créée ici, pas partagée dans la scène — deux joueurs ne doivent jamais
+	# écrire dans la même ressource.
+	var probe: SphereShape3D = SphereShape3D.new()
+	probe.radius = tuning.camera_probe_radius
+	_spring_arm.shape = probe
+	_apply_rotation()
+
+
+## Le regard est appliqué au rythme physique, comme le reste du mouvement (§20.9).
+## `look` est déjà normalisé par `PlayerInputReader` : ce script ignore si l'ordre
+## vient d'une souris ou d'un stick.
+func apply_look(look: Vector2, delta: float) -> void:
+	if tuning == null:
+		return
+	_yaw -= look.x * tuning.camera_stick_speed * delta
+	_pitch -= look.y * tuning.camera_stick_speed * delta
+	_pitch = clampf(_pitch,
+		deg_to_rad(tuning.camera_pitch_min_deg),
+		deg_to_rad(tuning.camera_pitch_max_deg))
+	_apply_rotation()
+
+
+## Élargit le champ pendant le sprint, par interpolation : §8.3 interdit tout snap.
+func update_fov(sprinting: bool, delta: float) -> void:
+	if tuning == null:
+		return
+	var target: float = tuning.camera_fov_sprint if sprinting else tuning.camera_fov
+	var weight: float = 1.0 - exp(-tuning.camera_fov_speed * delta)
+	_camera.fov = lerpf(_camera.fov, target, weight)
+
+
+func _apply_rotation() -> void:
+	_yaw_pivot.rotation.y = _yaw
+	_pitch_pivot.rotation.x = _pitch
+
+
+func get_pitch() -> float:
+	return _pitch
+
+
+func get_yaw() -> float:
+	return _yaw
+
+
+## Base de référence du déplacement caméra-relatif : c'est le **pivot de lacet**
+## qui porte l'orientation, pas le rig lui-même dont la rotation reste nulle.
+## Se tromper de nœud ici ferait ignorer la caméra par le déplacement.
+func get_yaw_basis() -> Basis:
+	return _yaw_pivot.global_transform.basis
+
+
+func get_camera() -> Camera3D:
+	return _camera
+
+
+func get_spring_arm() -> SpringArm3D:
+	return _spring_arm

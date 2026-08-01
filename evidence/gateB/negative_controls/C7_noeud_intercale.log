@@ -1,0 +1,9 @@
+# Contrôle négatif — C7_noeud_intercale
+# Node3D intercalé entre le SpringArm3D et la Camera3D : §8.3 exige un enfant direct.
+# Test visé : test_camera_is_a_direct_child_of_the_spring_arm
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_camera_rig.gd::test_camera_is_a_direct_child_of_the_spring_arm — la Camera3D doit être enfant DIRECT du SpringArm3D (parent réel : Intercale)
+=== RÉSULTAT: 79 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_camera_rig.gd::test_camera_is_a_direct_child_of_the_spring_arm — la Camera3D doit être enfant DIRECT du SpringArm3D (parent réel : Intercale)
