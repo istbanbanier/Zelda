@@ -56,6 +56,7 @@ const JOY_DPAD_DOWN: int = 12
 const AXIS_LEFT_X: int = 0
 const AXIS_LEFT_Y: int = 1
 const AXIS_RIGHT_X: int = 2
+const AXIS_RIGHT_Y: int = 3
 const AXIS_TRIGGER_LEFT: int = 4
 const AXIS_TRIGGER_RIGHT: int = 5
 
@@ -93,6 +94,7 @@ const AUTOLOADS: Array = [
 
 func _initialize() -> void:
 	_write_input_map()
+	_prune_unknown_actions()
 	_write_collision_layers()
 	_write_autoloads()
 	var err: Error = ProjectSettings.save()
@@ -130,6 +132,10 @@ func _axis(axis: int, value: float) -> InputEventJoypadMotion:
 	return e
 
 
+## Actions réellement déclarées par ce générateur, tenues à jour par `_set_action`.
+var _declared_actions: Array[String] = []
+
+
 func _set_action(action: String, events: Array) -> void:
 	var typed: Array[InputEvent] = []
 	for e: InputEvent in events:
@@ -138,6 +144,30 @@ func _set_action(action: String, events: Array) -> void:
 		"deadzone": DEADZONE,
 		"events": typed,
 	})
+	if not _declared_actions.has(action):
+		_declared_actions.append(action)
+
+
+## Supprime toute action `input/` que ce générateur ne déclare pas.
+##
+## Sans cela le générateur n'était qu'additif : une action introduite à la main ou
+## par un test survivait indéfiniment dans `project.godot`, sans propriétaire ni
+## liaison manette. Constaté lors d'un contrôle négatif. Le générateur est la
+## source de vérité de l'InputMap ; il doit donc aussi pouvoir retirer.
+func _prune_unknown_actions() -> void:
+	var to_remove: Array[String] = []
+	for setting: Dictionary in ProjectSettings.get_property_list():
+		var key: String = String(setting.get("name", ""))
+		if not key.begins_with("input/"):
+			continue
+		var action: String = key.trim_prefix("input/")
+		# Les actions `ui_*` appartiennent au moteur : ne jamais y toucher.
+		if action.begins_with("ui_") or _declared_actions.has(action):
+			continue
+		to_remove.append(key)
+	for key: String in to_remove:
+		ProjectSettings.set_setting(key, null)
+		print("[setup_project] action inconnue retirée : %s" % key)
 
 
 func _write_input_map() -> void:
@@ -164,6 +194,15 @@ func _write_input_map() -> void:
 	# le code qu'en mode lock-on ; l'axe reste par ailleurs celui de la caméra.
 	_set_action("target_prev", [_key(KEY_X), _mouse(MOUSE_WHEEL_DOWN), _axis(AXIS_RIGHT_X, -1.0)])
 	_set_action("target_next", [_key(KEY_V), _mouse(MOUSE_WHEEL_UP), _axis(AXIS_RIGHT_X, 1.0)])
+
+	# Caméra au stick droit. Le clavier n'a pas d'équivalent : la souris fournit un
+	# delta d'événements, traité séparément par PlayerInputReader. Sans ces quatre
+	# actions, la caméra ne serait pilotable qu'à la souris et l'architecture ne
+	# serait pas réellement compatible manette (CONTROLLER-001).
+	_set_action("look_left", [_axis(AXIS_RIGHT_X, -1.0)])
+	_set_action("look_right", [_axis(AXIS_RIGHT_X, 1.0)])
+	_set_action("look_up", [_axis(AXIS_RIGHT_Y, -1.0)])
+	_set_action("look_down", [_axis(AXIS_RIGHT_Y, 1.0)])
 
 	_set_action("inventory", [_key(KEY_TAB), _button(JOY_Y)])
 	_set_action("quick_meal", [_key(KEY_F), _button(JOY_DPAD_DOWN)])

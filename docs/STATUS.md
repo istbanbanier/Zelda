@@ -97,7 +97,7 @@ logiciel llvmpipe uniquement, aucun GPU.
 | Phase | Système | État |
 |---|---|---|
 | A | Boot, autoloads, InputMap AZERTY, couches de collision | **A.1 et A.2 livrés et gelés (`9414fd0`)** ; Gate A **EN ATTENTE** de validation humaine |
-| B | Player, caméra, locomotion, endurance, escalade, mantle | Non commencé |
+| B | Player, caméra, locomotion, endurance, escalade, mantle | **B.0 livré** — couche d'entrée ; player et caméra à venir |
 | C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | Non commencé |
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
 | D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | Non commencé |
@@ -133,6 +133,26 @@ ne dépendent pas du rendu, seulement de l'exécution headless.
 **Reste avant Gate A** : les six étapes de `docs/MANUAL_VALIDATION.md`, toutes
 hors de portée de ce conteneur. Le protocole est écrit, outillé et exécutable par
 une personne disposant du matériel ; il n'attend plus que d'être joué.
+
+---
+
+## Phase B — jalon B.0 : couche d'entrée
+
+Livré **avant** tout code de joueur, et volontairement : la Phase B se développe
+au clavier alors que la manette n'est pas testée (CONTROLLER-001). Sans cette
+séparation, du gameplay finirait par supposer un clavier et la dette deviendrait
+impayable sans réécriture.
+
+| Élément | État | Preuve |
+|---|---|---|
+| `InputIntent` — intention typée, ignorante du périphérique | **Fonctionnel** | `test_input_layer_isolation.gd` |
+| `PlayerInputReader` — seul lecteur de l'InputMap | **Fonctionnel** | idem |
+| Actions caméra manette (`look_*`, stick droit) | **Fonctionnel** | sans elles, la caméra n'aurait été pilotable qu'à la souris |
+| Générateur d'InputMap autoritatif (retire les actions inconnues) | **Fonctionnel** | contrôle négatif `B1_action_sans_liaison_manette.log` |
+| Les 4 contraintes de D-012 vérifiées par test | **Fonctionnel** | 2 contrôles négatifs archivés |
+
+**Reste pour la Phase B** : `Player` (`CharacterBody3D`), `CameraRig`
+(`SpringArm3D`), locomotion caméra-relative, `StaminaComponent`, escalade, mantle.
 
 ---
 
