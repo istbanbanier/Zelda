@@ -16,6 +16,10 @@
 extends SceneTree
 
 const DEFAULT_FRAMES: int = 30
+## Frames laissées au renderer après masquage de la géométrie.
+const HIDE_SETTLE_FRAMES: int = 4
+## Fraction minimale de pixels devant changer quand la géométrie est masquée.
+const MIN_CONTRIBUTION_RATIO: float = 0.002
 
 var _scene_path: String = "res://scenes/boot/Boot.tscn"
 var _out_path: String = "evidence/captures/capture.png"
@@ -135,6 +139,38 @@ func _count_visual_instances(node: Node) -> int:
 	return total
 
 
+## Masque toute la géométrie et renvoie les nœuds effectivement masqués.
+func _hide_geometry(node: Node) -> Array[Node]:
+	var hidden: Array[Node] = []
+	if node is GeometryInstance3D and (node as Node3D).is_visible_in_tree():
+		(node as GeometryInstance3D).visible = false
+		hidden.append(node)
+	for child: Node in node.get_children():
+		hidden.append_array(_hide_geometry(child))
+	return hidden
+
+
+## Fraction des pixels échantillonnés qui diffèrent entre deux rendus.
+func _difference_ratio(a: Image, b: Image) -> float:
+	if a.get_width() != b.get_width() or a.get_height() != b.get_height():
+		return 1.0
+	var step: int = maxi(1, mini(a.get_width(), a.get_height()) / 96)
+	var differing: int = 0
+	var total: int = 0
+	var y: int = 0
+	while y < a.get_height():
+		var x: int = 0
+		while x < a.get_width():
+			total += 1
+			var ca: Color = a.get_pixel(x, y)
+			var cb: Color = b.get_pixel(x, y)
+			if absf(ca.r - cb.r) + absf(ca.g - cb.g) + absf(ca.b - cb.b) > 0.02:
+				differing += 1
+			x += step
+		y += step
+	return float(differing) / maxf(1.0, float(total))
+
+
 func _has_renderable_geometry(instance: GeometryInstance3D) -> bool:
 	if instance is MeshInstance3D:
 		var mesh: Mesh = (instance as MeshInstance3D).mesh
@@ -198,6 +234,30 @@ func _capture() -> void:
 			+ "Utiliser --allow-uniform si une image unie est réellement attendue.")
 		quit(4)
 		return
+
+	# Q4 (4e revue) : compter la géométrie de l'arbre ne dit rien de ce que la
+	# caméra voit. Une géométrie placée à z=9000 ou à l'échelle nulle donnait une
+	# image de ciel pur, avec RC=0 et 1087 couleurs distinctes. On rend donc une
+	# seconde fois la MÊME scène, géométrie masquée, et on exige que les deux
+	# images diffèrent : c'est la seule preuve que la géométrie apparaît vraiment.
+	if _min_visuals > 0:
+		var hidden: Array[Node] = _hide_geometry(instance)
+		for i: int in range(HIDE_SETTLE_FRAMES):
+			await process_frame
+		var without: Image = root.get_texture().get_image()
+		for node: Node in hidden:
+			(node as GeometryInstance3D).visible = true
+		var ratio: float = _difference_ratio(image, without)
+		print("[capture] contribution : %.3f %% des pixels échantillonnés changent "
+			% (ratio * 100.0) + "quand la géométrie est masquée")
+		if ratio < MIN_CONTRIBUTION_RATIO:
+			printerr("[capture] ÉCHEC: la géométrie ne contribue pas à l'image "
+				+ "(%.3f %% < %.3f %% exigé) — hors champ, derrière la caméra, "
+				% [ratio * 100.0, MIN_CONTRIBUTION_RATIO * 100.0]
+				+ "à l'échelle nulle ou entièrement transparente. "
+				+ "Utiliser --min-visuals=0 pour une scène volontairement vide.")
+			quit(7)
+			return
 
 	# Le rattachement au commit est vérifié AVANT toute écriture : sinon un PNG
 	# orphelin, sans manifeste, restait sur le disque après l'échec.

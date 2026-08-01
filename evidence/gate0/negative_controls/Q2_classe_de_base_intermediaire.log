@@ -7,7 +7,7 @@
   [OK]   import sans parse error (code retour 0)
 
 === 1b. Parse de TOUS les scripts GDScript ===
-  [OK]   9 script(s) GDScript parsés sans erreur
+  [OK]   10 script(s) GDScript parsés sans erreur
 
 === 2. Tests unitaires ===
     ok   test_gltf_import.gd::test_static_cube_imports_with_material_and_scale (8 assertions)
@@ -18,14 +18,14 @@
     ok   test_harness_contract.gd::test_failures_list_is_a_copy (1 assertions)
     ok   test_harness_contract.gd::test_contract_methods_are_declared (4 assertions)
     ok   test_harness_contract.gd::test_this_case_extends_gate_test_case (1 assertions)
-    ÉCHEC res://tests/unit/test_nc_v1_override.gd: redéfinit des méthodes du contrat (check) — interdit, la comptabilité des assertions cesserait de fonctionner
+    ÉCHEC res://tests/unit/test_nc_q2_base.gd: redéfinit des méthodes du contrat (check) — interdit, la comptabilité des assertions cesserait de fonctionner
     ok   test_smoke.gd::test_engine_version_is_4_7_1_stable (4 assertions)
     ok   test_smoke.gd::test_physics_engine_is_jolt (1 assertions)
     ok   test_smoke.gd::test_renderer_is_forward_plus (1 assertions)
     ok   test_smoke.gd::test_physics_tick_is_60hz (1 assertions)
     ok   test_smoke.gd::test_metre_scale_convention (2 assertions)
   === RÉSULTAT: 13 réussi(s), 1 échoué(s) ===
-    ÉCHEC: res://tests/unit/test_nc_v1_override.gd: redéfinit des méthodes du contrat (check) — interdit, la comptabilité des assertions cesserait de fonctionner
+    ÉCHEC: res://tests/unit/test_nc_q2_base.gd: redéfinit des méthodes du contrat (check) — interdit, la comptabilité des assertions cesserait de fonctionner
   [ÉCHEC] suite unitaire rouge (code 1, voir evidence/validate_fast/02_unit.log)
   [OK]   aucune erreur signalée dans le journal des tests
 

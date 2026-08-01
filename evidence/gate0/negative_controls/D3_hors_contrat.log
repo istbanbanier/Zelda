@@ -18,14 +18,14 @@
     ok   test_harness_contract.gd::test_failures_list_is_a_copy (1 assertions)
     ok   test_harness_contract.gd::test_contract_methods_are_declared (4 assertions)
     ok   test_harness_contract.gd::test_this_case_extends_gate_test_case (1 assertions)
-    ÉCHEC test_nc_v3_inflate.gd::test_gonfle_le_compteur — assertion fausse qui doit malgre tout remonter
+    ÉCHEC res://tests/unit/test_nc_d3.gd: doit étendre GateTestCase (res://tests/test_case.gd) — sans ce contrat les assertions seraient avalées en silence
     ok   test_smoke.gd::test_engine_version_is_4_7_1_stable (4 assertions)
     ok   test_smoke.gd::test_physics_engine_is_jolt (1 assertions)
     ok   test_smoke.gd::test_renderer_is_forward_plus (1 assertions)
     ok   test_smoke.gd::test_physics_tick_is_60hz (1 assertions)
     ok   test_smoke.gd::test_metre_scale_convention (2 assertions)
   === RÉSULTAT: 13 réussi(s), 1 échoué(s) ===
-    ÉCHEC: test_nc_v3_inflate.gd::test_gonfle_le_compteur — assertion fausse qui doit malgre tout remonter
+    ÉCHEC: res://tests/unit/test_nc_d3.gd: doit étendre GateTestCase (res://tests/test_case.gd) — sans ce contrat les assertions seraient avalées en silence
   [ÉCHEC] suite unitaire rouge (code 1, voir evidence/validate_fast/02_unit.log)
   [OK]   aucune erreur signalée dans le journal des tests
 

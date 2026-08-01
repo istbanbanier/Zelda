@@ -7,9 +7,7 @@
   [OK]   import sans parse error (code retour 0)
 
 === 1b. Parse de TOUS les scripts GDScript ===
-  [ÉCHEC] 1 script(s) en erreur de parsing sur 9 (voir evidence/validate_fast/01b_parse.log)
-    SCRIPT ERROR: Parse Error: Unexpected "Indent" in class body.
-    PARSE ERROR: res://tests/unit/test_nc_b2.gd
+  [OK]   9 script(s) GDScript parsés sans erreur
 
 === 2. Tests unitaires ===
     ok   test_gltf_import.gd::test_static_cube_imports_with_material_and_scale (8 assertions)
@@ -20,18 +18,17 @@
     ok   test_harness_contract.gd::test_failures_list_is_a_copy (1 assertions)
     ok   test_harness_contract.gd::test_contract_methods_are_declared (4 assertions)
     ok   test_harness_contract.gd::test_this_case_extends_gate_test_case (1 assertions)
-    ÉCHEC res://tests/unit/test_nc_b2.gd: script illisible ou non instanciable (erreur de parsing ?)
+    ok   test_nc_n1.gd::test_ressource_absente (1 assertions)
     ok   test_smoke.gd::test_engine_version_is_4_7_1_stable (4 assertions)
     ok   test_smoke.gd::test_physics_engine_is_jolt (1 assertions)
     ok   test_smoke.gd::test_renderer_is_forward_plus (1 assertions)
     ok   test_smoke.gd::test_physics_tick_is_60hz (1 assertions)
     ok   test_smoke.gd::test_metre_scale_convention (2 assertions)
-  === RÉSULTAT: 13 réussi(s), 1 échoué(s) ===
-    ÉCHEC: res://tests/unit/test_nc_b2.gd: script illisible ou non instanciable (erreur de parsing ?)
-  [ÉCHEC] suite unitaire rouge (code 1, voir evidence/validate_fast/02_unit.log)
+  === RÉSULTAT: 14 réussi(s), 0 échoué(s) ===
+  [OK]   suite unitaire verte
   [ÉCHEC] erreurs signalées pendant la suite de tests (voir evidence/validate_fast/02_unit.log)
-    SCRIPT ERROR: Parse Error: Unexpected "Indent" in class body.
-    ERROR: Failed to load script "res://tests/unit/test_nc_b2.gd" with error "Parse error".
+    ERROR: Resource file not found: res://assets/environment/props/SM_Disparu.glb (expected type: unknown)
+    ERROR: invariant de gameplay viole
 
 === 3. Scène d'intégration (chargement réel de la scène principale) ===
   [OK]   scène principale chargée et quittée proprement
@@ -43,7 +40,7 @@
     [boot] scène principale chargée — Phase 0, aucun gameplay attendu ici.
 
 === 4. Plancher de couverture ===
-  [OK]   13 test(s) exécuté(s), plancher 13 respecté
+  [OK]   14 test(s) exécuté(s), plancher 13 respecté
 
 === VALIDATE_FAST : ROUGE ===
 logs: evidence/validate_fast

@@ -114,10 +114,18 @@ step "4. Plancher de couverture"
 # B1 : renommer un fichier de test faisait disparaître 3 tests sans que rien ne
 # rougisse. Le nombre de tests attendu est donc épinglé ; le baisser exige une
 # modification explicite de ce fichier, visible en revue.
-MIN_TESTS="${MIN_TESTS:-13}"
-ACTUAL_TESTS=$(grep -oE '=== RÉSULTAT: ([0-9]+) réussi' "$UNIT_LOG" | grep -oE '[0-9]+' | head -1)
+# Q3 (4e revue) : `head -1` prenait la PREMIÈRE ligne « === RÉSULTAT », qu'un test
+# pouvait imprimer lui-même pour annoncer 99 réussites alors que 9 tests tournaient.
+# On prend la dernière (celle du runner) et on refuse toute ligne en double.
+# Le plancher est une constante du fichier : l'abaisser doit se voir en revue, il
+# n'est donc pas surchargeable par l'environnement.
+MIN_TESTS=13
+RESULT_LINES=$(grep -cE '^=== RÉSULTAT: [0-9]+ réussi' "$UNIT_LOG")
+ACTUAL_TESTS=$(grep -oE '^=== RÉSULTAT: [0-9]+ réussi' "$UNIT_LOG" | grep -oE '[0-9]+' | tail -1)
 ACTUAL_TESTS="${ACTUAL_TESTS:-0}"
-if [ "$ACTUAL_TESTS" -ge "$MIN_TESTS" ]; then
+if [ "$RESULT_LINES" -gt 1 ]; then
+  bad "$RESULT_LINES lignes « === RÉSULTAT » dans le journal — un test imprime-t-il un faux résumé ?"
+elif [ "$ACTUAL_TESTS" -ge "$MIN_TESTS" ]; then
   ok "$ACTUAL_TESTS test(s) exécuté(s), plancher $MIN_TESTS respecté"
 else
   bad "$ACTUAL_TESTS test(s) exécuté(s) pour un plancher de $MIN_TESTS — couverture perdue en silence ?"

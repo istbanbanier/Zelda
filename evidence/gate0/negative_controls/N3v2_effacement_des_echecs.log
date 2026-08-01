@@ -18,14 +18,14 @@
     ok   test_harness_contract.gd::test_failures_list_is_a_copy (1 assertions)
     ok   test_harness_contract.gd::test_contract_methods_are_declared (4 assertions)
     ok   test_harness_contract.gd::test_this_case_extends_gate_test_case (1 assertions)
-    ÉCHEC test_nc_v2_clear.gd::test_efface_les_echecs — echec qui doit remonter malgre la tentative d'effacement
+    ÉCHEC test_nc_n3v2.gd::test_efface — echec qui doit remonter malgre la tentative d'effacement
     ok   test_smoke.gd::test_engine_version_is_4_7_1_stable (4 assertions)
     ok   test_smoke.gd::test_physics_engine_is_jolt (1 assertions)
     ok   test_smoke.gd::test_renderer_is_forward_plus (1 assertions)
     ok   test_smoke.gd::test_physics_tick_is_60hz (1 assertions)
     ok   test_smoke.gd::test_metre_scale_convention (2 assertions)
   === RÉSULTAT: 13 réussi(s), 1 échoué(s) ===
-    ÉCHEC: test_nc_v2_clear.gd::test_efface_les_echecs — echec qui doit remonter malgre la tentative d'effacement
+    ÉCHEC: test_nc_n3v2.gd::test_efface — echec qui doit remonter malgre la tentative d'effacement
   [ÉCHEC] suite unitaire rouge (code 1, voir evidence/validate_fast/02_unit.log)
   [OK]   aucune erreur signalée dans le journal des tests
 

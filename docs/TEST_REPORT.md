@@ -287,6 +287,65 @@ réfuté une affirmation d'exhaustivité ; cette section n'en formule donc aucun
 
 ---
 
+### T-10 — Quatrième revue adverse : N3 et N4 rouverts, intégrité des preuves en défaut
+
+La 4e revue a rouvert deux défauts que je croyais fermés, et relevé que deux de mes
+propres journaux de preuve ne provenaient pas du code qu'ils prétendaient valider.
+
+| Défaut | Ce qui était affirmé à tort | Démonstration | Correctif |
+|---|---|---|---|
+| Q1 | « le runner refuse tout fichier qui déclare une méthode du contrat » | `func<TAB>check(` est du GDScript valide et échappait au scan, qui testait `begins_with("func ")` avec un espace littéral. `check_equal(2, 3)` passait **vert**. | Regex tolérant tout blanc et `static`. |
+| Q2 | idem | Le scan ne lisait que le fichier de test : une **classe de base intermédiaire** (nommée hors du motif `test_*`, donc jamais collectée) redéfinissait `check()` sans être vue. C'est exactement la classe « refactor » que le harnais prétendait couvrir. | Remontée de la chaîne `get_base_script()` **et**, surtout, sonde comportementale. |
+| Q3 | « le plancher exige une modification explicite du fichier » | `head -1` prenait la **première** ligne `=== RÉSULTAT`, qu'un test pouvait imprimer lui-même : 9 tests réels, « 99 » annoncés, VERT. `MIN_TESTS=0` en variable d'environnement suffisait aussi. | `tail -1`, refus des lignes en double, plancher devenu constante non surchargeable. |
+| Q4 | « le comptage de géométrie visible ferme ce cas » | Le comptage porte sur l'**arbre de scène**, jamais sur ce que la caméra voit. Cube à z=9000 ou à l'échelle nulle → **RC=0**, PNG de ciel pur, 1087 couleurs distinctes. | Rendu différentiel : la scène est rendue une seconde fois géométrie masquée, et les deux images doivent différer. |
+| Q5 | « tous les fichiers de preuve ont été produits après ce commit » | Deux journaux contenaient une chaîne (`VisualInstance3D`) supprimée du code deux commits plus tôt. Ils validaient une version antérieure. | **Tous** les contrôles négatifs régénérés avec le code courant. |
+| Q6 | `evidence/gate0/README.md` republiait le critère `VisualInstance3D` | Contredisait le code et T-09. | Corrigé. |
+| Q7 | « chaque journal se termine par `RC=` » | `nominal_validate_release.log` n'en portait aucun. | Vérifié fichier par fichier : 18/18. |
+| Q8 | `STATUS` justifiait « Validé » par T-08 | Les lignes N3 et N4 de T-08 avaient été rétractées par T-09. | Ramené à `Fonctionnel`, preuve = T-10. |
+
+#### La correction de fond sur le contrat de test
+
+Les trois tentatives précédentes reposaient sur une inspection *statique* :
+« ce fichier déclare-t-il `check()` ? ». Trois revues l'ont contournée (méthode
+redéfinie, membres manipulés, tabulation, classe de base). L'inspection statique
+est remplacée par une **sonde comportementale** exécutée avant chaque fichier :
+le runner injecte un enregistreur neuf, appelle lui-même les quatre méthodes du
+contrat et vérifie que **quatre** assertions parviennent bien à cet enregistreur.
+Aucune astuce de syntaxe ni chaîne d'héritage ne passe ce contrôle, parce qu'il ne
+lit rien : il mesure un effet.
+
+#### La correction de fond sur la capture
+
+Même logique. Compter des nœuds répond à « la scène contient-elle de la
+géométrie ? », jamais à « cette géométrie apparaît-elle à l'image ? ». La capture
+rend donc la scène **deux fois** — normalement, puis géométrie masquée — et exige
+que les deux images diffèrent d'au moins 0,2 % des pixels échantillonnés. Sur la
+scène de référence : **1,414 %**. Sur les trois attaques de la revue : **0,000 %**.
+
+#### Contrôles négatifs rejoués (`evidence/gate0/negative_controls/`, 18 journaux)
+
+| Scénario | Attendu | Obtenu |
+|---|---|---|
+| Q1 — `func<TAB>check(` | ÉCHEC | `RC=1` ✅ |
+| Q2 — classe de base intermédiaire | ÉCHEC | `RC=1` ✅ |
+| Q3 — faux résumé imprimé par un test | ÉCHEC | `RC=1`, « 2 lignes === RÉSULTAT » ✅ |
+| Q4a/b/c — géométrie hors champ, échelle nulle, derrière la caméra, **avec ciel** | ÉCHEC | `RC=7`, contribution 0,000 %, aucun PNG ✅ |
+| Q4a/b/c — mêmes scènes **sans ciel** | ÉCHEC | `RC=4` (uniformité), aucun PNG ✅ |
+| D2, D3, N1, N9, N3v2, B1, B2 | ÉCHEC | `RC=1` ✅ |
+| nominal | VERT / BLOQUÉ | `RC=0` (13 tests) / `RC=3` ✅ |
+
+#### Ce que je n'affirme toujours pas
+
+Quatre revues, quatre `FAIL`, et trois d'entre elles ont réfuté un correctif de la
+précédente. Aucune affirmation d'exhaustivité n'est faite ici. Les limites connues
+et assumées : un auteur de test peut encore remplacer l'enregistreur depuis une
+méthode de test ; `--check-only` ne résout pas les appels dynamiques ; le contrôle
+de contribution prouve que la géométrie apparaît, **pas** qu'elle apparaît
+correctement — cela exigera la comparaison à une image de référence (§21.8), qui
+n'a pas de sens tant qu'il n'y a pas de contenu à comparer.
+
+---
+
 ### T-07 — Reprise par une session neuve (critère Gate 0)
 
 Protocole : un lecteur ne disposant que du dépôt doit savoir, en moins de 5 minutes,

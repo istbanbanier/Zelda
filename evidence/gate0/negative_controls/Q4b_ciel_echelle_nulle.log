@@ -1,0 +1,14 @@
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.2 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+
+[capture] scène    : res://scenes/tests/NCSkyZero.tscn
+[capture] sortie   : /tmp/claude-0/-home-user-Zelda/88177312-883e-5495-b1e1-6a21e7e792a0/scratchpad/nc_skyzero.png
+[capture] taille   : 640x360, frames=12
+[capture] renderer : forward_plus / llvmpipe (LLVM 20.1.2, 256 bits)
+[capture] géométrie : 1 géométrie(s) visible(s) dans la scène
+[capture] contenu   : 906 couleurs distinctes (échantillon), écart-type luma 0.17
+[capture] contribution : 0.000 % des pixels échantillonnés changent quand la géométrie est masquée
+[capture] ÉCHEC: la géométrie ne contribue pas à l'image (0.000 % < 0.200 % exigé) — hors champ, derrière la caméra, à l'échelle nulle ou entièrement transparente. Utiliser --min-visuals=0 pour une scène volontairement vide.
+RC=7

@@ -96,24 +96,50 @@ func _collect(dir_path: String, out: Array[String]) -> void:
 	dir.list_dir_end()
 
 
-## Méthodes du contrat déclarées localement par un fichier de test.
-func _declared_contract_methods(path: String) -> Array[String]:
+## Méthodes du contrat déclarées quelque part dans la chaîne d'héritage du test.
+##
+## Q1/Q2 (4e revue) : la version précédente testait `begins_with("func ")` avec un
+## espace littéral — `func<TAB>check(` passait — et ne lisait que le fichier de
+## test, donc une classe de base intermédiaire (nommée hors du motif `test_*`)
+## passait aussi. On utilise une regex tolérante et on remonte les scripts parents
+## jusqu'à `GateTestCase` exclu.
+func _declared_contract_methods(script: Script) -> Array[String]:
 	var found: Array[String] = []
-	var source: String = FileAccess.get_file_as_string(path)
-	if source.is_empty():
-		return found
-	for line: String in source.split("\n"):
-		var trimmed: String = line.strip_edges()
-		if not trimmed.begins_with("func "):
-			continue
-		var signature: String = trimmed.trim_prefix("func ").strip_edges()
-		var paren: int = signature.find("(")
-		if paren <= 0:
-			continue
-		var method_name: String = signature.substr(0, paren).strip_edges()
-		if GateTestCase.CONTRACT_METHODS.has(method_name) and not found.has(method_name):
-			found.append(method_name)
+	var names: String = "|".join(GateTestCase.CONTRACT_METHODS)
+	var regex: RegEx = RegEx.new()
+	regex.compile("(?m)^[ \\t]*(static[ \\t]+)?func[ \\t]+(%s)[ \\t]*\\(" % names)
+
+	var current: Script = script
+	while current != null:
+		var path: String = current.resource_path
+		# S'arrêter à la classe de base du contrat : ses déclarations sont légitimes.
+		if path == "res://tests/test_case.gd":
+			break
+		if path != "":
+			var source: String = FileAccess.get_file_as_string(path)
+			for m: RegExMatch in regex.search_all(source):
+				var method_name: String = m.get_string(2)
+				if not found.has(method_name):
+					found.append(method_name)
+		current = current.get_base_script()
 	return found
+
+
+## Vérifie par le COMPORTEMENT que les méthodes d'assertion parviennent bien à
+## l'enregistreur du runner. Contrairement à l'analyse de source, ce contrôle est
+## insensible aux astuces de syntaxe et couvre toute la chaîne d'héritage.
+func _contract_probe_fails(test_case: GateTestCase) -> String:
+	var probe: GateTestRecorder = GateTestRecorder.new()
+	test_case.set("_recorder", probe)
+	test_case.check(true, "sonde de contrat")
+	test_case.check_equal(1, 1, "sonde de contrat")
+	test_case.check_approx(0.0, 0.0, 0.0001, "sonde de contrat")
+	test_case.check_not_null(self, "sonde de contrat")
+	if probe.checks() != 4:
+		return "%d assertion(s) parvenues à l'enregistreur au lieu de 4" % probe.checks()
+	if not probe.failures().is_empty():
+		return "la sonde a produit %d échec(s) inattendu(s)" % probe.failures().size()
+	return ""
 
 
 func _run_script(path: String) -> void:
@@ -135,7 +161,7 @@ func _run_script(path: String) -> void:
 	# tous les cas de test paraissaient redéfinir le contrat), il ne permet donc pas
 	# de distinguer une déclaration locale. On lit la source, seule à porter
 	# l'information « ce fichier déclare lui-même cette méthode ».
-	var overridden: Array[String] = _declared_contract_methods(path)
+	var overridden: Array[String] = _declared_contract_methods(script)
 	if not overridden.is_empty():
 		_fail("%s: redéfinit des méthodes du contrat (%s) — interdit, la " % [path, ", ".join(overridden)]
 			+ "comptabilité des assertions cesserait de fonctionner")
@@ -152,6 +178,12 @@ func _run_script(path: String) -> void:
 			+ "sans ce contrat les assertions seraient avalées en silence")
 		return
 	var test_case: GateTestCase = instance as GateTestCase
+
+	# Contrôle comportemental du contrat, indépendant de toute analyse textuelle.
+	var probe_error: String = _contract_probe_fails(test_case)
+	if probe_error != "":
+		_fail("%s: contrat d'assertion rompu — %s" % [path, probe_error])
+		return
 
 	var methods: Array[String] = []
 	for method: Dictionary in test_case.get_method_list():
