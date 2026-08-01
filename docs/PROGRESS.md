@@ -761,32 +761,50 @@ proxys ≠ art.
 
 ---
 
+## 2026-08-01 — Package de playtest D.1, C.5 mis en attente du premier retour humain
+
+**Fait** (ordre propriétaire) : `docs/PLAYTEST_D1.md` — package auto-suffisant
+pour un testeur : commit de référence du code jouable (`316e4dd`), Godot
+4.7.1-stable exigé et vérifiable, lancement, table AZERTY **honnête** (chaque
+ligne dit si l'action a un effet réel : Tab/F/Échap liées mais inertes, manette
+jamais validée), limites connues distinguées des bugs (silence total, aucun
+HUD — l'endurance invisible est LA confusion prévisible —, mort définitive,
+« Continuer » au spawn, proxys). Formulaire de retour dans
+`evidence/gateD/playtest01/` : contexte machine, chronologie de mémoire, les
+cinq questions de §21.9 au mot près, questions D.1 (lecture de la vallée,
+descente, camp, combat, falaise, arc), tableau de bugs S0–S4. README remis à
+l'état réel (il annonçait la Phase 0).
+
+---
+
 ## HANDOFF — prochaine action exacte
 
 > **Gates** : A `RÉSERVE` (D-012) · B `CONTINUATION` (D-021) · C `CONTINUATION`
-> (D-024) · D **en cours** — D.0–D.1 livrés, D-022 soldée.
+> (D-024) · D **en cours** — D.0–D.1 livrés, capture archivée.
+> **C.5 EST EN ATTENTE** : décision propriétaire — ne pas le commencer avant le
+> retour du premier test humain.
 
-### Action suivante : C.5 SUR LA CRÊTE RÉELLE (redéfini par D-025)
+### Action suivante : jouer le playtest D.1 (HUMAIN, hors conteneur)
 
-Le `HeroShotLab` n'est plus une scène indépendante : il travaille sur la vraie
-crête de `ValleyWorld` et valide SUR PLACE, avant toute propagation aux
-512 × 512 m :
-1. **Caméra** : composition §3.2 depuis `VistaCamera_Hero01` (tiers inférieur,
-   trois plans, trajectoire du regard) — itérer sur les constantes de
-   `valley_world.gd`, capturer avant/après à chaque passe (§7.16).
-2. **Lumière** : soleil/ombres/exposition (§7.7) mesurés sur la capture llvmpipe
-   (régression visuelle uniquement — jamais une mesure de qualité, CLAUDE.md).
-3. **Matériaux pilotes** : herbe/roche/eau du lit — remplacer les aplats par les
-   premiers matériaux §7.9 sur la crête et la descente SEULEMENT.
-4. **Végétation proche** : premières touffes `MultiMesh` sur la crête (§7.5,
-   cellules 24–48 m), densité mesurée.
-5. Puis notation §3.5 sur la capture réelle et propagation si ≥ 75/100.
+1. Suivre `docs/PLAYTEST_D1.md` sur une machine avec écran, clavier AZERTY et
+   GPU. 10–15 min de jeu libre, PUIS le formulaire.
+2. Déposer `FORMULAIRE.md` rempli + captures dans `evidence/gateD/playtest01/`.
+3. Au retour : triage §21.9 (fréquence × gravité × coût — blocages,
+   incompréhensions et injustices d'abord), consignation dans KNOWN_ISSUES,
+   correction des points bloquants. SEULEMENT ENSUITE : C.5 sur la crête réelle
+   (plan détaillé dans l'entrée D.1 ci-dessus — caméra, lumière, matériaux
+   pilotes, végétation proche, notation §3.5 sur capture).
+
+### Ce qu'une session conteneur PEUT faire en attendant (si sollicitée)
+
+Rien qui touche C.5 ni l'habillage. Dettes candidates bornées : R-012/R-013 à
+trancher (saut pendant mantle, coût du mantle) ; durabilité de l'arc en tirs
+(§11.1 : 28) ; entrée clavier de sélection d'arme si le propriétaire la veut
+avant l'UI. Ne pas les entamer sans demande explicite.
 
 ### Rappels
 
-- Rebaker le navmesh après TOUTE modification du relief (`bake_valley_navmesh.gd`).
-- R-012/R-013 toujours ouvertes ; ISS-002 (notation WOW) le restera tant qu'un
-  humain n'a pas noté.
-- Pièges frais : suiveur d'agent (D-025) ; rampe au ras du bord ; StaticBody
-  positionné AVANT add_child ; bloquer SceneFlow dans les tests de menu.
+- Rebaker le navmesh après TOUTE modification du relief.
+- Pièges frais : suiveur d'agent (D-025) ; rampes au ras du bord ; StaticBody
+  positionné AVANT add_child ; SceneFlow bloqué dans les tests de menu.
 - `MIN_TESTS` = 225 ; compte de référence dans TEST_REPORT uniquement.
