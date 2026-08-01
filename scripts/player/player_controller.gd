@@ -38,7 +38,7 @@ signal mantle_refused(reason: StringName)
 ## machine complète maintenant reviendrait à écrire dix-huit états vides : ce
 ## `Mode` couvre exactement ce qui existe, et la `StateMachine` de §8.1 arrivera
 ## avec la Phase C, quand les états de combat auront un contenu (D-018).
-enum Mode { LOCOMOTION, CLIMBING, MANTLING, ATTACKING, DODGING, HURT }
+enum Mode { LOCOMOTION, CLIMBING, MANTLING, ATTACKING, DODGING, HURT, DEAD }
 
 ## Rappel vers la distance de paroi : gain en (m/s) par mètre d'écart, et vitesse
 ## maximale de correction. Bornés à dessein — voir `_apply_climb_motion()`.
@@ -141,9 +141,14 @@ func _ready() -> void:
 	# raccorde donc l'état courant à la main, de façon idempotente (§6.4).
 	if _weapon_hitbox != null:
 		_weapon_hitbox.hit_confirmed.connect(_on_own_hit_confirmed)
-	var box: BoxShape3D = _weapon_hitbox.get_node("CollisionShape3D").shape as BoxShape3D
-	if box != null:
-		_hitbox_half_depth = box.size.z * 0.5
+		var shape_holder: CollisionShape3D = \
+			_weapon_hitbox.get_node_or_null("CollisionShape3D") as CollisionShape3D
+		var box: BoxShape3D = shape_holder.shape as BoxShape3D if shape_holder != null else null
+		if box != null:
+			_hitbox_half_depth = box.size.z * 0.5
+	# §16.2 généralisé au joueur : la mort interrompt tout et libère la caméra.
+	if _health != null:
+		_health.died.connect(_on_died)
 	if _inventory != null:
 		_inventory.weapon_equipped.connect(_on_weapon_equipped)
 		_on_weapon_equipped(_inventory.equipped())
@@ -187,6 +192,8 @@ func _physics_process(delta: float) -> void:
 			_process_dodge(delta)
 		Mode.HURT:
 			_process_hurt(delta)
+		Mode.DEAD:
+			_process_dead(delta)
 		_:
 			_process_locomotion(delta, intent)
 
@@ -543,6 +550,34 @@ func _process_hurt(delta: float) -> void:
 		_mode = Mode.LOCOMOTION
 
 
+## Mort (§8.1 Dead, §16.2 généralisé) — constat D1 de la revue du Gate C : sans
+## cet état, le cadavre courait, attaquait et esquivait. Ici : plus aucune
+## intention n'est consommée, le corps s'immobilise, la caméra reste libre.
+## Le retour au checkpoint (§10.2 « mort/checkpoint ») exige la sauvegarde —
+## Phase E, consigné dans STATUS.
+func _process_dead(delta: float) -> void:
+	_apply_gravity(delta)
+	velocity.x = 0.0
+	velocity.z = 0.0
+	move_and_slide()
+
+
+func _on_died(_event: DamageEvent) -> void:
+	if _mode == Mode.DEAD:
+		return
+	if _attack != null:
+		_attack.cancel()
+	if _lock_on != null and _lock_on.has_target():
+		_lock_on.release(&"owner_dead")
+		_camera_rig.clear_lock_target()
+	# Le coup fatal vient de poser sa réaction HURT et son recul (`hit_received`
+	# part AVANT `take_damage`) : la mort les écrase — un mort ne recule pas en
+	# courant à 6 m/s.
+	velocity.x = 0.0
+	velocity.z = 0.0
+	_mode = Mode.DEAD
+
+
 ## ---------------------------------------------------------------------------
 ## Arme équipée, usure et rupture (§11.1, §11.2)
 ## ---------------------------------------------------------------------------
@@ -655,7 +690,7 @@ func _process_dodge(delta: float) -> void:
 ## Bascule et suivi du verrouillage (§8.4). L'appui décroche si une cible est
 ## tenue, accroche sinon ; la caméra reçoit la cible et la rend au décrochage.
 func _handle_lock_on(delta: float, intent: InputIntent) -> void:
-	if _lock_on == null:
+	if _lock_on == null or _mode == Mode.DEAD:
 		return
 	if intent.lock_pressed:
 		if _lock_on.has_target():
@@ -984,3 +1019,9 @@ func stamina() -> StaminaComponent:
 ## Exposé pour les tests, l'UI d'inventaire (§17.3) et la sauvegarde de §19.1.
 func inventory() -> InventoryComponent:
 	return _inventory
+
+
+## Convention des cibles (§8.4, §12.7) : quiconque expose `health()` peut être
+## jugé mort — le pillard s'en sert pour lâcher un cadavre.
+func health() -> HealthComponent:
+	return _health

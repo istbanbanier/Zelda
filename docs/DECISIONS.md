@@ -564,3 +564,30 @@ la fait vivre côté ennemi.
      le set d'épée dans `attack_set` — les « combos par arme » de §7.12 sont une
      passe d'animation (Phase H), pas une donnée manquante. La lourde reste sur le
      contrôleur, hors définition d'arme, même logique.
+
+---
+
+## D-024 — Gate C clos « accepté pour continuation avec validation humaine différée » · D.0 ordonné sans C.5 préalable
+
+- **Date** : 2026-08-01 · **Phase** : C → D · **Statut** : DÉCISION PROPRIÉTAIRE
+- **Décision, aux termes du propriétaire** : une **unique** revue contradictoire
+  du Gate C, limitée à une passe, sans nouvelle boucle de contrôles négatifs, de
+  documentation ou de revue récursive ; correction des seuls défauts
+  reproductibles bloquant le chemin critique ; verdict prononcé « accepté pour
+  continuation avec validation humaine différée ». Puis **D.0 immédiatement** :
+  `ValleyWorld.tscn` 512 × 512 m, chargée depuis « Nouvelle partie », intégrant
+  le Player, le combat existant, un camp avec ennemis, un coffre et des armes
+  ramassables — « aucun laboratoire ou rapport supplémentaire ne doit précéder
+  cette intégration ».
+- **Exécution** : revue rendue (`evidence/gateC/REVUE.md`) — 4 critères PASS
+  rejoués ; D1 (mort du joueur inexistante, S2, chemin critique du combat)
+  **corrigé** avec régression rejouant la sonde du réviseur ; D3 (garde
+  manquante, S4) corrigé ; D2 (lignes `RC=` des logs W/X/Y invalides comme
+  preuve) **annoté** sans régénération, conformément à la limite d'une passe.
+- **Conséquence assumée sur la ROADMAP** : la marche `C.5 → D` est réordonnée
+  par le propriétaire — l'intégration D.0 précède le benchmark artistique. Le
+  verrou C.5 (interdiction d'AGRANDIR/habiller la vallée si la micro-scène
+  North Star ne tient pas) reste dû avant la production artistique de la
+  vallée ; D.0 est une intégration graybox, pas un habillage.
+- **Comme D-021** : ce verdict n'est PAS un `PASS`. Dettes maintenues :
+  CONTROLLER-001, VALIDATION-B-001, ressenti §10.6/§10.8, hit-stop/VFX/sons.

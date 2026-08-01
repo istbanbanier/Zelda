@@ -33,6 +33,21 @@ Procédure opérateur macOS : **`docs/MANUAL_GATE_A.md`**.
 captures d'écran manquent. C'est cohérent — le manifeste ne certifie pas ce qu'il
 n'a pas vu.
 
+## Verdict Gate C : **ACCEPTÉ POUR CONTINUATION AVEC VALIDATION HUMAINE DIFFÉRÉE** (D-024)
+
+Décision du propriétaire, 2026-08-01, sur revue contradictoire à passe unique
+(`evidence/gateC/REVUE.md`, code jugé `78f2b9a`) : les quatre critères du Gate C
+— combat gagnable, une touche par swing, aucune référence invalide, esquive avec
+i-frames — sont **PASS au volet automatique**, rejoués par le réviseur
+(validate_fast VERT RC=0, import propre, 75 scripts parsés, 0 chemin `res://`
+manquant). Constat majeur D1 (S2) : **la mort du joueur n'existait pas** —
+corrigée le jour même (`Mode.DEAD`, pillard qui lâche le cadavre) avec
+régression rejouant la sonde du réviseur (`test_player_death.gd`) ; D3 corrigé ;
+D2 (lignes `RC=` des logs W/X/Y) annoté sans régénération. Ce verdict n'est PAS
+un `PASS` : ressenti, manette et AZERTY physiques restent dus à la passe finale.
+Reste de la Phase C consigné : checkpoint/retry après la mort (Phase E),
+hit-stop/VFX/sons (§10.7), durabilité de l'arc en tirs.
+
 ## Verdict Gate B : **ACCEPTÉ POUR CONTINUATION / VALIDATION HUMAINE FINALE DIFFÉRÉE** (D-021)
 
 Décision du propriétaire, 2026-08-01, sur revue contradictoire rendue : les essais
@@ -131,7 +146,7 @@ llvmpipe uniquement, aucun GPU.
 |---|---|---|
 | A | Boot, autoloads, InputMap AZERTY, couches de collision | **A.1 et A.2 livrés et gelés (`9414fd0`)** ; Gate A **EN ATTENTE** de validation humaine |
 | B | Player, caméra, locomotion, endurance, escalade, mantle | **Clos par D-021 : accepté pour continuation** — volet automatique vert (137 tests), dettes VALIDATION-B-001 + CONTROLLER-001 à la passe finale |
-| C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | **C.0 à C.4 livrés** — les items 11 à 15 de §22 sont tous couverts ; prochaine étape : revue du Gate C |
+| C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | **Clos par D-024 : accepté pour continuation** — 4 critères PASS rejoués en revue, D1 (mort du joueur) corrigé + régression, dettes humaines à la passe finale |
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
 | D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | Non commencé |
 | E | Récolte, cuisine, buffs, sauvegarde et migrations | Non commencé |

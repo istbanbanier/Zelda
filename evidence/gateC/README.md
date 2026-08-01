@@ -109,3 +109,15 @@ avertissement, pas une formalité.
 **AA3 chiffre la centralisation** : muter UNE valeur du `.tres` de l'épée fait
 rougir onze assertions dans cinq suites — tout le pipeline de dégâts remonte
 désormais à la définition d'arme, comme §5.9 l'exige.
+
+## Annotation D2 (revue du Gate C, 2026-08-01) — lignes `RC=` des séries W/X/Y
+
+Les 13 logs des séries **W, X, Y** portent `RC=0` alors qu'ils listent des
+échecs : leur ligne `RC=` a capturé le code retour du pipeline de filtrage, pas
+celui du runner. Le runner, lui, propage bien l'échec (`quit(1)` — inchangé
+depuis A.2, vérifié par sonde pendant la revue). **Ces 13 lignes `RC=` ne
+prouvent donc pas la propagation du code retour** ; le contenu des échecs
+listés (les assertions qui rougissent) reste valide et c'est lui qui porte la
+preuve. Les séries **Z** et **AA** capturent le code réel (`PIPESTATUS[0]`,
+`RC=1` partout) — convention corrigée depuis C.3. Décision propriétaire : pas
+de régénération des logs anciens (pas de nouvelle boucle de contrôles).

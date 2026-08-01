@@ -136,6 +136,11 @@ func _tick_perception() -> void:
 	var player: PlayerController = _find_player()
 	if player == null:
 		return
+	# Un cadavre ne se « perçoit » pas comme une menace : sans cette garde, la
+	# perception ré-acquérait le joueur mort à chaque cadence (D1, revue Gate C).
+	var player_health: HealthComponent = player.health()
+	if player_health != null and player_health.is_dead():
+		return
 	var to_player: Vector3 = player.global_position - global_position
 	to_player.y = 0.0
 	if to_player.length() > tuning.vision_range:
@@ -169,8 +174,17 @@ func _find_player() -> PlayerController:
 	return null
 
 
+## Une cible morte cesse d'en être une (constat D1 de la revue du Gate C : sans
+## ce contrôle, le pillard frappait le cadavre indéfiniment). Même convention
+## `health()` que le lock-on.
 func _target_valid() -> bool:
-	return _target != null and is_instance_valid(_target)
+	if _target == null or not is_instance_valid(_target):
+		return false
+	if _target.has_method("health"):
+		var target_health: HealthComponent = _target.call("health") as HealthComponent
+		if target_health != null and target_health.is_dead():
+			return false
+	return true
 
 
 func _face(direction: Vector3, delta: float) -> void:
