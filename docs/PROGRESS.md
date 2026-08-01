@@ -777,34 +777,81 @@ l'état réel (il annonçait la Phase 0).
 
 ---
 
+## 2026-08-01 — D.1R : version corrective après le playtest humain n° 1
+
+**Verdict propriétaire consigné** : D.1 n'était pas jouable (12 constats,
+`evidence/gateD/playtest01/FORMULAIRE.md` — retour testeur et audit technique
+séparés). C.5 et toute passe artistique SUSPENDUS jusqu'à version corrective.
+
+**Fait**, cinq sous-jalons enchaînés, chacun commité avec ses régressions :
+
+- **D.1R.1 souris/caméra/pause** (`d3a5214`) : capture souris (seam
+  `wants_mouse_captured()` — headless refuse CAPTURED, mesuré), 360° de lacet
+  (`wrapf`), canaux de regard séparés — `look_mouse` en radians appliqués TELS
+  QUELS, `look_analog` en vitesse×delta ; le bug originel était un
+  double-échelonnage ÷25. Échap = pause réellement suspensive
+  (`tree.paused`), sensibilité persistée `user://settings.cfg` (UserSettings).
+- **D.1R.2 corps séparés** (`4ebd987`) : masques joueur 5 (World+Enemy) et
+  pillard 7 (World+Player+Enemy) — on ne traverse plus personne ; séparation
+  locale des pillards (poussée 1,7 m, morts exclus) — plus de tas ; le détour
+  navmesh de la salle en U reste prouvé.
+- **D.1R.3 lisibilité** (`c7fb7cd`) : `GameplayShell` (CanvasLayer 64) — HUD
+  vie/endurance/flèches/arme+durabilité/verrouillage/réticule/notifications
+  (EventBus `gameplay_notification`, D-026) ; invite unique « E — Verbe » avec
+  LIGNE DE VUE (paroi = ni invite ni interaction) ; inventaire Tab (8 cases,
+  équiper, réordonner) ; molette = arme hors lock, cible pendant lock ; 3
+  coffres extérieurs ajoutés (rivière, falaise, pylône — IDs stables, loot
+  déterministe) ; feedback graybox : arme visible en main (couleur par type),
+  pose d'attaque, télégraphe rouge du pillard, flash de touche, stagger, mort
+  visibles.
+- **D.1R.4 limites et promesses** (`5d55766`) : anneau montagneux continu
+  (BORDER 250→292, h 70, `unclimbable` ; prouvé par 16 rayons — les diagonales
+  exigent 200 m de portée) ; filet précoce −6 m + fondu + retour au DERNIER
+  POINT SÛR ; interface de mort (Retry → monde-checkpoint via
+  `pending_spawn`) ; VRAIE porte de citadelle → vestibule graybox explorable
+  (colonnes, omni cyan, porte scellée honnête, sortie → DEVANT la porte).
+  Piège moteur : `ValleyTerrain` positionnait ses StaticBody APRÈS `add_child`
+  — montagnes-fantômes catapultant le joueur (+4,6 m mesuré). Règle
+  position-avant-add_child généralisée à TOUS les générateurs.
+- **D.1R.5 « Continuer » honnête** (`b0c681e`) : la vallée applique slot0 à
+  son chargement — armes par id + durabilités, arme équipée, flèches, coffres
+  ouverts (silencieux) ; autosave sur ouverture de coffre et départ de scène ;
+  partie neuve = instantané sans clés d'inventaire → no-op. Aucune duplication
+  de loot après rechargement (prouvé).
+
+**Validation** : `tools/validate_fast.sh` VERT après chaque sous-jalon —
+**251 réussis, 0 échoué**, plancher relevé à 251. Les 18 régressions exigées
+mesurent l'EFFET (distances, positions, états), pas la présence d'un nœud.
+
+**Hors périmètre maintenu** : cuisine, salles électriques, boss, art/animation/
+audio finaux, optimisation, manette.
+
+---
+
 ## HANDOFF — prochaine action exacte
 
 > **Gates** : A `RÉSERVE` (D-012) · B `CONTINUATION` (D-021) · C `CONTINUATION`
-> (D-024) · D **en cours** — D.0–D.1 livrés, capture archivée.
-> **C.5 EST EN ATTENTE** : décision propriétaire — ne pas le commencer avant le
-> retour du premier test humain.
+> (D-024) · D **en cours** — D.1 corrigé par D.1R, revue consolidée puis
+> package de playtest n° 2 en préparation.
+> **C.5 RESTE SUSPENDU** : décision propriétaire — attendre le retour du
+> playtest humain n° 2.
 
-### Action suivante : jouer le playtest D.1 (HUMAIN, hors conteneur)
+### Action suivante : jouer le playtest D.1R (HUMAIN, hors conteneur)
 
-1. Suivre `docs/PLAYTEST_D1.md` sur une machine avec écran, clavier AZERTY et
-   GPU. 10–15 min de jeu libre, PUIS le formulaire.
-2. Déposer `FORMULAIRE.md` rempli + captures dans `evidence/gateD/playtest01/`.
-3. Au retour : triage §21.9 (fréquence × gravité × coût — blocages,
-   incompréhensions et injustices d'abord), consignation dans KNOWN_ISSUES,
-   correction des points bloquants. SEULEMENT ENSUITE : C.5 sur la crête réelle
-   (plan détaillé dans l'entrée D.1 ci-dessus — caméra, lumière, matériaux
-   pilotes, végétation proche, notation §3.5 sur capture).
-
-### Ce qu'une session conteneur PEUT faire en attendant (si sollicitée)
-
-Rien qui touche C.5 ni l'habillage. Dettes candidates bornées : R-012/R-013 à
-trancher (saut pendant mantle, coût du mantle) ; durabilité de l'arc en tirs
-(§11.1 : 28) ; entrée clavier de sélection d'arme si le propriétaire la veut
-avant l'UI. Ne pas les entamer sans demande explicite.
+1. Suivre `docs/PLAYTEST_D1R.md` sur une machine avec écran, clavier AZERTY et
+   GPU — contrôles à jour : souris capturée, Échap pause, Tab inventaire,
+   molette pour changer d'arme.
+2. Vérifier en particulier les 12 constats du n° 1 : caméra, HUD, séparation
+   des corps, coffres, citadelle, mort, « Continuer ».
+3. Déposer le retour dans `evidence/gateD/playtest02/`. SEULEMENT ENSUITE :
+   C.5 sur la crête réelle (plan dans l'entrée D.1).
 
 ### Rappels
 
-- Rebaker le navmesh après TOUTE modification du relief.
-- Pièges frais : suiveur d'agent (D-025) ; rampes au ras du bord ; StaticBody
-  positionné AVANT add_child ; SceneFlow bloqué dans les tests de menu.
-- `MIN_TESTS` = 225 ; compte de référence dans TEST_REPORT uniquement.
+- Rebaker le navmesh après TOUTE modification du relief
+  (`tools/godot/bake_valley_navmesh.gd`).
+- Pièges frais : position-avant-add_child pour TOUT corps physique ; suiveur
+  d'agent (D-025) ; SceneFlow bloqué dans les tests de menu (`_busy`) ;
+  matériaux de scène partagés → `duplicate()` avant teinte par instance ;
+  un test qui crashe saute son teardown et empoisonne les suites suivantes.
+- `MIN_TESTS` = 251 ; compte de référence dans TEST_REPORT uniquement.

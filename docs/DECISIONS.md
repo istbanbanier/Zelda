@@ -619,3 +619,28 @@ la fait vivre côté ennemi.
   cadence fixe réinitialise l'index (troisième gel). Trois sondes successives,
   puis changement d'hypothèse (règle des deux tentatives). L'agent reviendra si
   l'évitement de §12.9 le justifie.
+
+---
+
+## D-026 — D.1R : choix d'implémentation du jalon correctif post-playtest
+
+- **Date** : 2026-08-01 · **Phase** : D (correctif D.1R) · **Statut** : ACTÉ
+- **EventBus, premier signal admis** : `gameplay_notification(text)` — émetteurs
+  réels sans lien (coffres, armes au sol, rupture d'arme côté contrôleur),
+  récepteur réel (HUD de `GameplayShell`), aucun propriétaire naturel. Le test
+  de vacuité devient un REGISTRE de signaux admis.
+- **Unités de regard** : souris = radians (pixels × sensibilité), appliqués tels
+  quels ; stick = vitesse angulaire × delta. Sensibilité 0,0004–0,005 rad/px,
+  défaut 0,0015, persistée dans `user://settings.cfg` (§19.1 : options séparées
+  des sauvegardes).
+- **Pause et inventaire suspendent l'arbre** (`GameplayShell` en
+  `PROCESS_MODE_ALWAYS`) — §13.4 : aucune minuterie de gameplay ne court.
+- **Molette** : arme suivante/précédente hors verrouillage, cible pendant — le
+  verrouillage consomme les fronts en premier, aucun conflit possible.
+- **Retry de mort** : recharge le monde-checkpoint (la vallée), qui applique la
+  sauvegarde ; le loot acquis aux coffres survit, la position repart du spawn
+  documenté.
+- **Règle position-avant-add_child généralisée** : mesurée trois fois (coffre
+  D.0, mannequins de test D.1R.2, montagnes du terrain D.1R.4 — joueur
+  catapulté de 4,6 m par une dalle-fantôme à l'origine). Tout corps physique se
+  positionne AVANT son entrée dans l'arbre, y compris dans les générateurs.

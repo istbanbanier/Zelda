@@ -160,3 +160,12 @@ de code fourni). Décision propriétaire : C.5 suspendu jusqu'à D.1R rejouable.
 | PT-D1-03 | aucun HUD ; inventaire inaccessible ; aucune invite d'interaction ; combat illisible | S2 | D.1R.3 |
 | PT-D1-04 | chute hors monde possible ; mort sans retry ; citadelle sans entrée | S2/S3 | D.1R.4 |
 | PT-D1-05 | « Continuer » n'applique aucun état sauvegardé | S3 | D.1R.5 |
+
+**Résolution D.1R (2026-08-01)** : PT-D1-01 → D.1R.1 (canaux souris/stick
+séparés, capture, pause, sensibilité persistée) · PT-D1-02 → D.1R.2 (masques
+5/7, séparation locale) · PT-D1-03 → D.1R.3 (HUD, invites avec LOS, inventaire
+Tab, molette, feedback graybox, 4 coffres) · PT-D1-04 → D.1R.4 (montagnes
+continues, secours précoce au point sûr, écran de mort, citadelle accessible
+avec vestibule) · PT-D1-05 → D.1R.5 (restauration minimale : inventaire,
+durabilités, arme équipée, flèches, coffres — sans second loot). Tous corrigés
+avec régressions ; la CONFIRMATION humaine appartient au playtest n° 2.

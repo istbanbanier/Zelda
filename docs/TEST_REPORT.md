@@ -1250,3 +1250,63 @@ CONSOMME l'avancement : l'observation doit se faire de l'intérieur.
   §3.2 (ruban guidant le regard) attend l'habillage.
 - Proxys = masses aux bonnes places, pas de l'art (§7.14 respecté : rien de
   « final »).
+
+---
+
+# Jalon D.1R — Version corrective post-playtest n° 1 (2026-08-01)
+
+## Commande et résultat
+
+```bash
+tools/validate_fast.sh; echo $?
+```
+
+**Code retour** : `0` — VERT. **251 réussis, 0 échoué**, plancher 251.
+
+> **Nombre de tests de référence : 251.** C'est ici, et nulle part ailleurs,
+> qu'il doit être lu.
+
+Exécuté après CHAQUE sous-jalon (D.1R.1 → D.1R.5), pas seulement à la fin.
+
+## Les 18 régressions exigées, réparties en 5 suites nouvelles
+
+- `test_mouse_camera.gd` (6) : delta souris → rotation en radians appliqués
+  tels quels (le double-échelonnage ÷25 réintroduit ferait échouer la mesure
+  d'angle) ; 360° de lacet sans butée ; canal stick distinct (vitesse×delta) ;
+  pause réellement suspensive (le monde ne bouge plus) ; sensibilité écrite et
+  relue depuis `user://settings.cfg` ; bornes MIN/MAX.
+- `test_body_separation.gd` (4) : à vrais CharacterBody3D — le joueur ne
+  traverse PAS un pillard (distance finale mesurée), le pillard ne traverse
+  pas le joueur, deux pillards convergents gardent ≥ 1 m d'écart (séparation),
+  le détour navmesh de la salle en U reste prouvé après changement de masques.
+- `test_hud_and_inventory.gd` (9) : barres branchées aux VRAIS signaux (une
+  perte de vie bouge la barre), flèches/arme/durabilité affichées, réticule
+  seulement en visée, invite refusée SANS ligne de vue (paroi interposée =
+  aucune invite), inventaire Tab pause + équipe + réordonne, molette hors
+  lock = arme / pendant lock = cible, notifications plafonnées.
+- `test_world_bounds_and_death.gd` (5) : anneau montagneux continu (16 rayons,
+  aucun trou, tout `unclimbable`), chute repêchée TÔT au dernier point sûr,
+  panneau de mort + cible de retry, porte citadelle → vestibule, vestibule
+  explorable + sortie → DEVANT la porte (tag `citadel_door` honoré).
+- `test_save_continuity.gd` (2) : coffre ouvert + arme prise → autosave →
+  rechargement → inventaire/durabilité/équipée/flèches restaurés et coffre
+  ouvert SILENCIEUX (aucune duplication de loot) ; partie neuve → no-op.
+
+## Pièges mesurés pendant D.1R
+
+- Un corps physique positionné APRÈS `add_child` passe un tick à l'origine —
+  dépénétration Jolt : le joueur a été catapulté +4,6 m par une
+  montagne-fantôme à l'origine. Règle : position AVANT add_child, partout.
+- Headless refuse `MOUSE_MODE_CAPTURED` (reste VISIBLE, mesuré) — d'où le
+  seam `wants_mouse_captured()` testable.
+- Les mannequins de test en couche 4 dépénétraient le joueur avec les
+  nouveaux masques → balayage position-avant-add sur 9 suites.
+
+## Limites de D.1R
+
+- Le rendu/ressenti réel (souris, lisibilité HUD, feel §10.6) reste à valider
+  par le playtest humain n° 2 — les tests prouvent des liaisons et des
+  distances, pas un appui de touche (CLAUDE.md).
+- Vestibule = graybox honnête ; donjon quatre salles : Phase F.
+- Sauvegarde minimale (armes/flèches/coffres/équipée) ; schéma §19.1 complet :
+  Phase E.

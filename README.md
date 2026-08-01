@@ -3,12 +3,15 @@
 Action-aventure 3D stylisée — verticale jouable compacte.
 Monde : **Vallée de Néris**. Donjon : **Citadelle de l'Œil-Tempête**.
 
-> **État : Phase D (monde graybox), jalon D.1.** Jouable : vallée graybox
-> 512 × 512 m avec relief, traversal complet (sprint/saut/escalade/mantle),
-> combat (combo, lourde, esquive à i-frames, lock-on, arc), inventaire et
-> durabilité, camp ennemi sur navmesh, coffre et armes ramassables — le tout en
-> volumes gris, sans art, sans son, sans HUD. Voir `docs/STATUS.md` pour l'état
-> exact, preuve par preuve, et **`docs/PLAYTEST_D1.md`** pour jouer le build.
+> **État : Phase D (monde graybox), jalon D.1 + correctif D.1R.** Jouable :
+> vallée graybox 512 × 512 m avec relief clos par des montagnes, traversal
+> complet (sprint/saut/escalade/mantle), combat lisible en graybox (combo,
+> lourde, esquive à i-frames, lock-on, arc, télégraphes), HUD, inventaire
+> (Tab) et durabilité, souris capturée + pause + sensibilité réglable, camp
+> ennemi sur navmesh, 4 coffres, vestibule de la citadelle, écran de mort et
+> « Continuer » fidèle — le tout en volumes gris, sans art ni son. Voir
+> `docs/STATUS.md` pour l'état exact, preuve par preuve, et
+> **`docs/PLAYTEST_D1R.md`** pour jouer le build.
 
 ---
 
