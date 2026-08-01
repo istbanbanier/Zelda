@@ -20,13 +20,22 @@ func _ready() -> void:
 		push_warning("[pickup] arme au sol sans définition — inerte.")
 
 
+func prompt_verb() -> String:
+	return "Ramasser"
+
+
 ## Contrat des interactables : `false` = refusé, l'objet reste.
 func interact(player: PlayerController) -> bool:
 	if definition == null or player == null or player.inventory() == null:
 		return false
+	var bus: Node = get_node_or_null("/root/EventBus")
 	var weapon: WeaponInstance = WeaponInstance.create(definition)
 	if not player.inventory().add_weapon(weapon):
+		if bus != null:
+			bus.call("notify", "Inventaire plein (8 armes) — l'arme reste au sol")
 		return false  # inventaire plein : l'arme reste au sol
+	if bus != null:
+		bus.call("notify", "Ramassé : " + definition.display_name)
 	picked_up.emit(weapon)
 	queue_free()
 	return true

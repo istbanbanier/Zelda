@@ -66,18 +66,25 @@ func test_game_state_holds_no_scene_reference() -> void:
 		"GameState conserve une référence de nœud : %s" % str(offenders))
 
 
-func test_event_bus_is_intentionally_empty() -> void:
-	## §5.6 : l'EventBus ne porte que des événements réellement globaux. À la
-	## Phase A il n'en existe aucun. Ce test transforme l'ajout d'un signal en
-	## décision visible plutôt qu'en dérive silencieuse : le faire échouer est
-	## normal, il faut alors justifier l'ajout dans docs/DECISIONS.md.
+func test_event_bus_carries_exactly_the_admitted_signals() -> void:
+	## §5.6 : l'EventBus ne porte que des événements réellement globaux. Le
+	## registre ci-dessous EST la décision visible : tout signal absent de cette
+	## liste fait échouer le test — l'ajout se justifie dans docs/DECISIONS.md
+	## et se déclare ici dans le même changement. Admis : gameplay_notification
+	## (D.1R.3, D-026 — coffres/armes/contrôleur → HUD, aucun propriétaire).
 	var bus: Node = _autoload("EventBus")
 	check_not_null(bus, "EventBus")
 	if bus == null:
 		return
-	check(bool(bus.call("is_intentionally_empty")),
-		"l'EventBus porte désormais des signaux : les justifier dans DECISIONS.md "
-		+ "et mettre ce test à jour dans le même changement")
+	var admitted: Array[String] = ["gameplay_notification"]
+	var declared: Array[String] = []
+	for entry: Dictionary in bus.get_script().get_script_signal_list():
+		declared.append(String(entry.get("name", "")))
+	declared.sort()
+	admitted.sort()
+	check(declared == admitted,
+		"signaux de l'EventBus hors registre : déclarés %s, admis %s"
+		% [str(declared), str(admitted)])
 
 
 func test_audio_buses_exist() -> void:

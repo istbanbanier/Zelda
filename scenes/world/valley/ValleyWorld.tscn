@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=17 format=3]
 
 ; Vallée de Néris — D.1 : relief macro blockout (voir scripts/world/valley_terrain.gd
 ; pour toutes les cotes). Spawn sur la crête (§3.3 : (0, 24, 170)), camp sur sa
@@ -13,6 +13,8 @@
 [ext_resource type="PackedScene" path="res://scenes/interactables/WeaponPickup.tscn" id="6_pickup"]
 [ext_resource type="Resource" path="res://resources/weapons/heavy_axe.tres" id="7_axe"]
 [ext_resource type="Resource" path="res://resources/weapons/wood_club.tres" id="8_club"]
+[ext_resource type="Resource" path="res://resources/weapons/spear.tres" id="11_spear"]
+[ext_resource type="Resource" path="res://resources/weapons/conductive_blade.tres" id="12_blade"]
 [ext_resource type="NavigationMesh" path="res://scenes/world/valley/valley_navmesh.tres" id="9_navmesh"]
 [ext_resource type="PackedScene" path="res://scenes/ui/GameplayShell.tscn" id="10_shell"]
 
@@ -98,3 +100,26 @@ arrows_loot = 12
 [node name="ClubPickup" parent="Camp" instance=ExtResource("6_pickup")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 5)
 definition = ExtResource("8_club")
+
+; --- Coffres extérieurs (§11.4 : « trois dans la vallée ») -------------------
+; IDs stables §19.3, loot déterministe, emplacements volontairement
+; découvrables : la rive du gué ouest, le sommet de la falaise d'apprentissage
+; (récompense d'ascension §9.3), la terrasse du pylône.
+
+[node name="RiverChest" parent="." instance=ExtResource("5_chest")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 13, 2, 19)
+chest_id = &"valley.chest.river_ledge.01"
+weapon_loot = ExtResource("11_spear")
+arrows_loot = 6
+
+[node name="CliffChest" parent="." instance=ExtResource("5_chest")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -110, 14, 65)
+chest_id = &"valley.chest.cliff_top.01"
+weapon_loot = ExtResource("12_blade")
+arrows_loot = 0
+
+[node name="PylonChest" parent="." instance=ExtResource("5_chest")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 110, 18, -32)
+chest_id = &"valley.chest.pylon.01"
+weapon_loot = ExtResource("8_club")
+arrows_loot = 14

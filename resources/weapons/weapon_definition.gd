@@ -14,6 +14,10 @@ extends Resource
 
 @export var id: StringName
 @export var display_name_key: StringName
+## Nom affiché graybox (HUD, inventaire). La table de localisation par clé
+## arrive avec l'UI complète (§17) — d'ici là, la donnée reste dans la donnée.
+@export var display_name: String = ""
+
 @export var weapon_type: StringName
 
 @export_group("Table §11.1")

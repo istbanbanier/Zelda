@@ -208,6 +208,12 @@ func combo_index() -> int:
 	return _index
 
 
+## Définition en cours d'exécution — consommée par la pose d'arme graybox
+## (PT-D1-03) et l'instrumentation du CombatLab (§10.8).
+func current_attack() -> AttackDefinition:
+	return _current if _phase != Phase.IDLE else null
+
+
 ## Exposé pour l'instrumentation du `CombatLab` (§10.8) : temps écoulé dans
 ## l'action courante.
 func elapsed() -> float:

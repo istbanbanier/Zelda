@@ -32,13 +32,23 @@ func is_opened() -> bool:
 	return _opened
 
 
+## Invite contextuelle (§14.2). Un coffre déjà ouvert n'invite plus.
+func prompt_verb() -> String:
+	if _opened:
+		return ""
+	return "Ouvrir"
+
+
 ## Contrat des interactables : `false` = refusé (déjà ouvert, ou loot impossible).
 func interact(player: PlayerController) -> bool:
 	if _opened or player == null or player.inventory() == null:
 		return false
 	var inventory: InventoryComponent = player.inventory()
+	var bus: Node = get_node_or_null("/root/EventBus")
 	if weapon_loot != null:
 		if not inventory.add_weapon(WeaponInstance.create(weapon_loot)):
+			if bus != null:
+				bus.call("notify", "Inventaire plein (8 armes) — le coffre reste fermé")
 			return false  # plein : le coffre reste fermé, loot intact
 	if arrows_loot > 0:
 		inventory.add_arrows(arrows_loot)
@@ -47,5 +57,12 @@ func interact(player: PlayerController) -> bool:
 	# même principe : chaque activation a une conséquence visible).
 	if _lid != null:
 		_lid.rotation.x = -1.2
+	if bus != null:
+		var parts: Array[String] = []
+		if weapon_loot != null:
+			parts.append(weapon_loot.display_name)
+		if arrows_loot > 0:
+			parts.append("%d flèches" % arrows_loot)
+		bus.call("notify", "Coffre ouvert : " + " + ".join(parts))
 	opened.emit(chest_id)
 	return true

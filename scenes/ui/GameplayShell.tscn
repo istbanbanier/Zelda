@@ -1,13 +1,147 @@
 [gd_scene load_steps=2 format=3]
 
-; Coquille de gameplay (PT-D1-01/-11) : pause, sensibilité, capture souris.
-; Le HUD de D.1R.3 s'ajoutera dans cette même coquille.
+; Coquille de gameplay (D.1R) : HUD §17.2, pause, sensibilité, inventaire Tab.
+; Conteneurs et ancres uniquement — §17.1 interdit les positions absolues.
 
 [ext_resource type="Script" path="res://scripts/ui/gameplay_shell.gd" id="1_shell"]
 
 [node name="GameplayShell" type="CanvasLayer"]
 layer = 64
 script = ExtResource("1_shell")
+
+; --- HUD permanent -----------------------------------------------------------
+
+[node name="HUD" type="Control" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Vitals" type="VBoxContainer" parent="HUD"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 304.0
+offset_bottom = 90.0
+
+[node name="HealthBar" type="ProgressBar" parent="HUD/Vitals"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 20)
+layout_mode = 2
+max_value = 100.0
+value = 100.0
+show_percentage = false
+modulate = Color(0.85, 0.25, 0.25, 1)
+
+[node name="StaminaBar" type="ProgressBar" parent="HUD/Vitals"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 14)
+layout_mode = 2
+max_value = 100.0
+value = 100.0
+show_percentage = false
+modulate = Color(0.09, 0.56, 0.61, 1)
+
+[node name="Gear" type="VBoxContainer" parent="HUD"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -320.0
+offset_top = -96.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="WeaponLabel" type="Label" parent="HUD/Gear"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Mains nues"
+horizontal_alignment = 2
+
+[node name="ArrowsLabel" type="Label" parent="HUD/Gear"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Flèches : 0"
+horizontal_alignment = 2
+
+[node name="LockLabel" type="Label" parent="HUD"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -80.0
+offset_top = 32.0
+offset_right = 80.0
+offset_bottom = 56.0
+grow_horizontal = 2
+text = "◆ verrouillé"
+horizontal_alignment = 1
+
+[node name="Reticle" type="Control" parent="HUD"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Dot" type="ColorRect" parent="HUD/Reticle"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -3.0
+offset_top = -3.0
+offset_right = 3.0
+offset_bottom = 3.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.847, 0.702, 0.416, 1)
+
+[node name="PromptLabel" type="Label" parent="HUD"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -160.0
+offset_top = -120.0
+offset_right = 160.0
+offset_bottom = -92.0
+grow_horizontal = 2
+grow_vertical = 0
+horizontal_alignment = 1
+
+[node name="Notifications" type="VBoxContainer" parent="HUD"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -240.0
+offset_top = 72.0
+offset_right = 240.0
+offset_bottom = 200.0
+grow_horizontal = 2
+mouse_filter = 2
+
+; --- Menu pause --------------------------------------------------------------
 
 [node name="PausePanel" type="Control" parent="."]
 unique_name_in_owner = true
@@ -67,3 +201,72 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(320, 44)
 layout_mode = 2
 text = "Menu principal"
+
+; --- Inventaire (Tab) --------------------------------------------------------
+
+[node name="InventoryPanel" type="Control" parent="."]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim" type="ColorRect" parent="InventoryPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.55)
+
+[node name="Column" type="VBoxContainer" parent="InventoryPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="InventoryPanel/Column"]
+layout_mode = 2
+text = "Inventaire — 8 armes"
+horizontal_alignment = 1
+
+[node name="SlotList" type="VBoxContainer" parent="InventoryPanel/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Actions" type="HBoxContainer" parent="InventoryPanel/Column"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="EquipButton" type="Button" parent="InventoryPanel/Column/Actions"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 40)
+layout_mode = 2
+text = "Équiper"
+
+[node name="MoveUpButton" type="Button" parent="InventoryPanel/Column/Actions"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "Monter"
+
+[node name="MoveDownButton" type="Button" parent="InventoryPanel/Column/Actions"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+text = "Descendre"
+
+[node name="CloseInventoryButton" type="Button" parent="InventoryPanel/Column/Actions"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 40)
+layout_mode = 2
+text = "Fermer (Tab)"

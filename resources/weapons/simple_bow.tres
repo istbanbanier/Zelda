@@ -8,6 +8,7 @@
 script = ExtResource("1_def")
 id = &"simple_bow"
 display_name_key = &"weapon.simple_bow"
+display_name = "Arc simple"
 weapon_type = &"bow"
 base_damage = 9.0
 attack_speed = 1.0

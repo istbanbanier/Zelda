@@ -90,6 +90,27 @@ func equip_next() -> void:
 	equip_index((_equipped_index + 1) % _weapons.size())
 
 
+func equip_previous() -> void:
+	if _weapons.size() < 2:
+		return
+	equip_index((_equipped_index - 1 + _weapons.size()) % _weapons.size())
+
+
+## Réordonne (PT-D1-03 : « possibilité de changer l'ordre des armes »). L'arme
+## ÉQUIPÉE reste équipée : c'est l'exemplaire qui compte, pas sa case.
+func move_weapon(from_index: int, to_index: int) -> bool:
+	if from_index < 0 or from_index >= _weapons.size() \
+			or to_index < 0 or to_index >= _weapons.size() or from_index == to_index:
+		return false
+	var equipped_instance: WeaponInstance = equipped()
+	var moved: WeaponInstance = _weapons[from_index]
+	_weapons.remove_at(from_index)
+	_weapons.insert(to_index, moved)
+	if equipped_instance != null:
+		_equipped_index = _weapons.find(equipped_instance)
+	return true
+
+
 func equipped() -> WeaponInstance:
 	if _equipped_index < 0 or _equipped_index >= _weapons.size():
 		return null

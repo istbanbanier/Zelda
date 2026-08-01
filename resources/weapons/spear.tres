@@ -10,6 +10,7 @@
 script = ExtResource("1_def")
 id = &"spear"
 display_name_key = &"weapon.spear"
+display_name = "Lance"
 weapon_type = &"spear"
 base_damage = 10.0
 attack_speed = 1.0

@@ -113,6 +113,21 @@ var _stunlock_grace: float = 0.0
 ## Portée des mains nues, en mètres — §11.1 n'en donne pas : plus courte que la
 ## plus courte arme (gourdin, 1,6 m). Décision D-023.
 const BARE_REACH: float = 1.2
+
+## Feedback graybox (PT-D1-03) : arme visible, pose d'attaque, flash d'impact.
+## Ce n'est PAS de l'animation (Phase H) — c'est le minimum pour qu'un humain
+## COMPRENNE le système pendant un test (§7.14 : rien ici n'est « final »).
+var _weapon_pivot: Node3D = null
+var _weapon_mesh: MeshInstance3D = null
+var _weapon_material: StandardMaterial3D = null
+var _body_material: StandardMaterial3D = null
+var _flash_timer: float = 0.0
+
+const WEAPON_COLORS: Dictionary = {
+	&"club": Color(0.45, 0.3, 0.18), &"sword": Color(0.75, 0.78, 0.82),
+	&"spear": Color(0.6, 0.5, 0.35), &"axe": Color(0.5, 0.45, 0.45),
+	&"blade": Color(0.5, 0.75, 0.8), &"bow": Color(0.55, 0.4, 0.25),
+}
 ## Demi-profondeur du volume de frappe, lue une fois sur la forme réelle : la
 ## FACE AVANT du volume est placée à `reach_m` de l'axe du personnage.
 var _hitbox_half_depth: float = 0.55
@@ -149,6 +164,16 @@ func _ready() -> void:
 	# §16.2 généralisé au joueur : la mort interrompt tout et libère la caméra.
 	if _health != null:
 		_health.died.connect(_on_died)
+	_build_weapon_visual()
+	# Matériau du corps dédoublé : le flash d'impact d'un joueur ne doit jamais
+	# éclairer un autre exemplaire du même matériau partagé (§5.4).
+	var body_mesh: MeshInstance3D = _visual_root.get_node_or_null("BodyMesh") as MeshInstance3D
+	if body_mesh != null:
+		var base: StandardMaterial3D = \
+			body_mesh.get_surface_override_material(0) as StandardMaterial3D
+		if base != null:
+			_body_material = base.duplicate() as StandardMaterial3D
+			body_mesh.set_surface_override_material(0, _body_material)
 	if _inventory != null:
 		_inventory.weapon_equipped.connect(_on_weapon_equipped)
 		_on_weapon_equipped(_inventory.equipped())
@@ -176,10 +201,27 @@ func _physics_process(delta: float) -> void:
 	_camera_rig.apply_look(intent.look_analog, intent.look_mouse, delta)
 
 	_stunlock_grace = maxf(0.0, _stunlock_grace - delta)
+	_update_flash(delta)
+	_update_weapon_pose()
 
 	# Verrouillage : bascule et suivi, quel que soit le mode — la caméra doit
 	# suivre la cible pendant une esquive autant qu'en course (§8.4).
 	_handle_lock_on(delta, intent)
+
+	# Molette / X-V HORS verrouillage : changement d'arme (PT-D1-03). Le même
+	# geste change de CIBLE quand une cible est tenue — aucun conflit : le
+	# verrouillage a consommé les fronts avant d'arriver ici.
+	if _mode == Mode.LOCOMOTION and _inventory != null \
+			and (_lock_on == null or not _lock_on.has_target()):
+		if intent.target_next_pressed:
+			_inventory.equip_next()
+		elif intent.target_prev_pressed:
+			_inventory.equip_previous()
+
+	# Invite d'interaction (§14.2) : sélection par cadence, pas par frame.
+	_interact_focus_tick += 1
+	if _interact_focus_tick % INTERACT_FOCUS_INTERVAL == 0:
+		_refresh_interact_focus()
 
 	match _mode:
 		Mode.MANTLING:
@@ -536,6 +578,7 @@ func _on_hit_received(event: DamageEvent) -> void:
 		return
 	if _mode == Mode.ATTACKING and _attack != null:
 		_attack.cancel()
+	_flash_timer = 0.12
 	_stunlock_grace = hurt.stunlock_grace
 	_hurt_elapsed = 0.0
 	velocity.x = event.direction.x * event.knockback
@@ -581,6 +624,8 @@ func _on_died(_event: DamageEvent) -> void:
 	# courant à 6 m/s.
 	velocity.x = 0.0
 	velocity.z = 0.0
+	if _visual_root != null:
+		_visual_root.rotation.x = -1.3   # le corps tombe — la mort se VOIT (PT-D1-03)
 	_mode = Mode.DEAD
 
 
@@ -591,7 +636,7 @@ func _on_died(_event: DamageEvent) -> void:
 ## L'inventaire a décidé (équipement, ou « suivante » après rupture) ; ici on
 ## raccorde : dégâts au contrôleur d'attaque, PORTÉE au volume de frappe — la
 ## face avant du volume est posée à `reach_m` (§11.1 : la lance à 2,7 m touche
-## ce que l'épée à 1,7 m ne touche pas).
+## ce que l'épée à 1,7 m ne touche pas) — et représentation visible (PT-D1-03).
 func _on_weapon_equipped(weapon: WeaponInstance) -> void:
 	if _attack != null:
 		_attack.set_weapon(weapon)
@@ -600,20 +645,122 @@ func _on_weapon_equipped(weapon: WeaponInstance) -> void:
 		reach = weapon.definition.reach_m
 	if _weapon_hitbox != null:
 		_weapon_hitbox.position.z = reach - _hitbox_half_depth
+	_refresh_weapon_visual(weapon)
+
+
+## ---------------------------------------------------------------------------
+## Feedback graybox (PT-D1-03)
+## ---------------------------------------------------------------------------
+
+func _build_weapon_visual() -> void:
+	_weapon_pivot = Node3D.new()
+	_weapon_pivot.name = "WeaponPivot"
+	_weapon_pivot.position = Vector3(0.42, 1.1, 0.1)
+	_visual_root.add_child(_weapon_pivot)
+	_weapon_mesh = MeshInstance3D.new()
+	_weapon_mesh.name = "WeaponMesh"
+	var blade: BoxMesh = BoxMesh.new()
+	blade.size = Vector3(0.09, 0.09, 1.0)
+	_weapon_mesh.mesh = blade
+	_weapon_mesh.position = Vector3(0, 0, 0.5)
+	_weapon_material = StandardMaterial3D.new()
+	_weapon_material.roughness = 0.6
+	_weapon_mesh.material_override = _weapon_material
+	_weapon_pivot.add_child(_weapon_mesh)
+	_weapon_pivot.rotation.x = 0.35   # pose de garde, pointe basse
+
+
+func _refresh_weapon_visual(weapon: WeaponInstance) -> void:
+	if _weapon_mesh == null:
+		return
+	if weapon == null or weapon.definition == null:
+		_weapon_mesh.visible = false
+		return
+	_weapon_mesh.visible = true
+	var color: Color = WEAPON_COLORS.get(weapon.definition.weapon_type,
+		Color(0.7, 0.7, 0.7)) as Color
+	# Durabilité basse (§11.2 : « usure visuelle ») : la lame s'assombrit.
+	if weapon.durability_fraction() <= WeaponInstance.WARNING_FRACTION:
+		color = color.darkened(0.45)
+	_weapon_material.albedo_color = color
+	var length: float = 1.0
+	if weapon.definition.reach_m > 0.0:
+		length = clampf(weapon.definition.reach_m - 0.6, 0.7, 2.0)
+	(_weapon_mesh.mesh as BoxMesh).size = Vector3(0.09, 0.09, length)
+	_weapon_mesh.position = Vector3(0, 0, length * 0.5)
+
+
+## Pose d'attaque par phase (§10.6 : l'animation SUIT le contrat, jamais
+## l'inverse) : lever pendant l'anticipation, balayer pendant la fenêtre
+## active, revenir pendant la récupération.
+func _update_weapon_pose() -> void:
+	if _weapon_pivot == null or _attack == null:
+		return
+	var definition: AttackDefinition = _attack.current_attack()
+	if definition == null:
+		_weapon_pivot.rotation.x = 0.35
+		return
+	var elapsed: float = _attack.elapsed()
+	match _attack.phase():
+		AttackControllerComponent.Phase.STARTUP:
+			var t: float = clampf(elapsed / maxf(definition.startup, 0.01), 0.0, 1.0)
+			_weapon_pivot.rotation.x = lerpf(0.35, -1.1, t)
+		AttackControllerComponent.Phase.ACTIVE:
+			var t: float = clampf((elapsed - definition.startup)
+				/ maxf(definition.active, 0.01), 0.0, 1.0)
+			_weapon_pivot.rotation.x = lerpf(-1.1, 0.9, t)
+		AttackControllerComponent.Phase.RECOVERY:
+			var t: float = clampf((elapsed - definition.startup - definition.active)
+				/ maxf(definition.recovery, 0.01), 0.0, 1.0)
+			_weapon_pivot.rotation.x = lerpf(0.9, 0.35, t)
+		_:
+			_weapon_pivot.rotation.x = 0.35
+
+
+## Flash d'impact (§10.7 « contact ») : émission blanche brève sur le corps.
+func _update_flash(delta: float) -> void:
+	if _body_material == null:
+		return
+	if _flash_timer > 0.0:
+		_flash_timer = maxf(0.0, _flash_timer - delta)
+		if not _body_material.emission_enabled:
+			_body_material.emission_enabled = true
+			_body_material.emission = Color(1, 1, 1)
+			_body_material.emission_energy_multiplier = 1.6
+	elif _body_material.emission_enabled:
+		_body_material.emission_enabled = false
 
 
 ## Interaction contextuelle (§14.2) : portée ordinaire 2,2 m (bande 1,8–2,4),
-## cône avant du VISUEL (le corps ne tourne jamais), le plus proche l'emporte.
-## Contrat : un « interactable » est dans le groupe éponyme et expose
-## `interact(player) -> bool` — `false` signifie « refusé, l'objet reste ».
+## cône avant du VISUEL (le corps ne tourne jamais), LIGNE DE VUE exigée — une
+## paroi empêche l'invite ET l'interaction (constat du playtest n° 1) —, le
+## plus proche l'emporte. Contrat : un « interactable » est dans le groupe
+## éponyme et expose `interact(player) -> bool` et `prompt_verb() -> String`.
 const INTERACT_RANGE: float = 2.2
 const INTERACT_MIN_DOT: float = 0.25
+## Cadence de la sélection continue qui alimente l'invite du HUD (§12.9 :
+## timers plutôt que polling par frame).
+const INTERACT_FOCUS_INTERVAL: int = 6
+
+## Meilleur interactable courant — consommé par le HUD via le signal.
+var _interact_focus: Node3D = null
+var _interact_focus_tick: int = 0
+
+signal interact_focus_changed(target: Node3D)
+
 
 func _try_interact() -> void:
+	var best: Node3D = _select_interactable()
+	if best != null:
+		best.call("interact", self)
+		_refresh_interact_focus()   # l'objet a pu disparaître ou changer d'état
+
+
+func _select_interactable() -> Node3D:
 	var forward: Vector3 = _visual_root.global_transform.basis.z
 	forward.y = 0.0
 	if forward.length_squared() < 0.0001:
-		return
+		return null
 	forward = forward.normalized()
 	var best: Node3D = null
 	var best_distance: float = INF
@@ -628,11 +775,41 @@ func _try_interact() -> void:
 			continue
 		if to_candidate.normalized().dot(forward) < INTERACT_MIN_DOT:
 			continue
+		if not _has_interact_los(candidate):
+			continue
 		if distance < best_distance:
 			best_distance = distance
 			best = candidate
-	if best != null:
-		best.call("interact", self)
+	return best
+
+
+## §14.2 : « interaction refusée si obstacle ». Rayon poitrine → objet, décor
+## seul (couche 1), l'objet lui-même exclu s'il est un corps.
+func _has_interact_los(candidate: Node3D) -> bool:
+	var exclude: Array[RID] = [get_rid()]
+	var body: CollisionObject3D = candidate as CollisionObject3D
+	if body != null:
+		exclude.append(body.get_rid())
+	var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(
+		global_position + Vector3.UP * 1.2,
+		candidate.global_position + Vector3.UP * 0.5,
+		1, exclude)
+	return get_world_3d().direct_space_state.intersect_ray(query).is_empty()
+
+
+func _refresh_interact_focus() -> void:
+	var current: Node3D = _select_interactable() if _mode == Mode.LOCOMOTION else null
+	if current != null and current.has_method("prompt_verb") \
+			and String(current.call("prompt_verb")) == "":
+		current = null   # un coffre déjà ouvert n'invite plus
+	if current != _interact_focus:
+		_interact_focus = current
+		interact_focus_changed.emit(current)
+
+
+func current_interact_target() -> Node3D:
+	return _interact_focus if _interact_focus != null \
+		and is_instance_valid(_interact_focus) else null
 
 
 ## §11.2, à la lettre : l'usure vient d'un coup qui TOUCHE — jamais du vide.
@@ -647,8 +824,13 @@ func _on_own_hit_confirmed(_event: DamageEvent, _target: HurtboxComponent) -> vo
 		return  # mains nues : rien ne s'use
 	weapon.apply_hit_wear()
 	if weapon.is_broken():
+		var bus: Node = get_node_or_null("/root/EventBus")
+		if bus != null and weapon.definition != null:
+			bus.call("notify", "%s cassée !" % weapon.definition.display_name)
 		_attack.cancel()
 		_inventory.remove_weapon(weapon)
+	else:
+		_refresh_weapon_visual(weapon)
 
 
 ## Tir à l'arc (§10.4). Direction : le point que la caméra vise à 100 m, corrigé
@@ -1064,3 +1246,12 @@ func inventory() -> InventoryComponent:
 ## jugé mort — le pillard s'en sert pour lâcher un cadavre.
 func health() -> HealthComponent:
 	return _health
+
+
+## Consommé par le réticule du HUD (§17.2 : « réticule en visée »).
+func is_aiming() -> bool:
+	return _mode == Mode.LOCOMOTION and current_intent().aim_held
+
+
+func lock_component() -> LockOnComponent:
+	return _lock_on

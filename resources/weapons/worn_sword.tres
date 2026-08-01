@@ -10,6 +10,7 @@
 script = ExtResource("1_def")
 id = &"worn_sword"
 display_name_key = &"weapon.worn_sword"
+display_name = "Épée usée"
 weapon_type = &"sword"
 base_damage = 12.0
 attack_speed = 1.0

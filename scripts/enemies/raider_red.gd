@@ -60,6 +60,14 @@ var _path_index: int = 0
 ## que si elle a bougé significativement.
 var _path_goal: Vector3 = Vector3.INF
 
+## Feedback graybox (PT-D1-03) : télégraphe TEINTÉ pendant l'annonce, flash
+## d'impact, étourdissement penché, mort couchée. Pas de l'art (§7.14) — de la
+## lisibilité pour un testeur humain.
+var _body_material: StandardMaterial3D = null
+var _base_color: Color = Color.WHITE
+var _flash_timer: float = 0.0
+const TELEGRAPH_COLOR: Color = Color(0.95, 0.2, 0.12)
+
 
 func _ready() -> void:
 	if tuning == null:
@@ -74,6 +82,29 @@ func _ready() -> void:
 	# §12.1 : il recule après une esquive réussie. Sa propre hitbox le lui apprend :
 	# un coup confirmé sur une cible invulnérable est un coup esquivé.
 	_hitbox.hit_confirmed.connect(_on_own_hit_confirmed)
+	# Matériau dédoublé : trois pillards partagent la ressource de scène — le
+	# télégraphe de l'un ne doit jamais rougir les autres (§5.4).
+	var body_mesh: MeshInstance3D = get_node_or_null("Pivot/BodyMesh") as MeshInstance3D
+	if body_mesh != null:
+		var base: StandardMaterial3D = \
+			body_mesh.get_surface_override_material(0) as StandardMaterial3D
+		if base == null and body_mesh.mesh != null:
+			base = body_mesh.mesh.surface_get_material(0) as StandardMaterial3D
+		if base != null:
+			_body_material = base.duplicate() as StandardMaterial3D
+			_base_color = _body_material.albedo_color
+			body_mesh.set_surface_override_material(0, _body_material)
+	# Gourdin visible (PT-D1-03 : « aucune arme visible »).
+	var club: MeshInstance3D = MeshInstance3D.new()
+	club.name = "ClubMesh"
+	var club_box: BoxMesh = BoxMesh.new()
+	club_box.size = Vector3(0.11, 0.11, 0.7)
+	club.mesh = club_box
+	var club_material: StandardMaterial3D = StandardMaterial3D.new()
+	club_material.albedo_color = Color(0.4, 0.26, 0.14)
+	club.material_override = club_material
+	club.position = Vector3(0.35, 1.0, 0.35)
+	_pivot.add_child(club)
 
 
 func _physics_process(delta: float) -> void:
@@ -85,6 +116,8 @@ func _physics_process(delta: float) -> void:
 
 	if not is_on_floor():
 		velocity.y -= GRAVITY * delta
+
+	_update_feedback(delta)
 
 	match _state:
 		State.IDLE:
@@ -284,6 +317,7 @@ func _face(direction: Vector3, delta: float) -> void:
 func _on_hit_received(event: DamageEvent) -> void:
 	if _state == State.DEAD:
 		return
+	_flash_timer = 0.12
 	_poise.take_poise_damage(event)
 	# Être frappé révèle l'attaquant, même hors du cône (§12.7 : un impact est un
 	# événement sonore à lui seul).
@@ -318,8 +352,39 @@ func _on_died(_event: DamageEvent) -> void:
 	_enter(State.DEAD)
 	_hurtbox.set_deferred("monitorable", false)
 	set_deferred("collision_layer", 0)
+	# La mort se VOIT (PT-D1-03) : le corps bascule au sol.
+	_pivot.rotation.x = -1.45
+	if _body_material != null:
+		_body_material.albedo_color = _base_color.darkened(0.5)
+		_body_material.emission_enabled = false
 	set_physics_process(false)
 	died.emit()
+
+
+## Télégraphe, flash et étourdissement — pilotés par l'ÉTAT, jamais l'inverse
+## (§10.6 : la présentation suit le contrat).
+func _update_feedback(delta: float) -> void:
+	if _body_material == null:
+		return
+	if _flash_timer > 0.0:
+		_flash_timer = maxf(0.0, _flash_timer - delta)
+		if not _body_material.emission_enabled:
+			_body_material.emission_enabled = true
+			_body_material.emission = Color(1, 1, 1)
+			_body_material.emission_energy_multiplier = 1.6
+	elif _body_material.emission_enabled:
+		_body_material.emission_enabled = false
+	# Annonce (§12.1 : télégraphe 0,65-0,95 s) : rouge franc pendant le startup.
+	if _state == State.ATTACK \
+			and _attack.phase() == AttackControllerComponent.Phase.STARTUP:
+		_body_material.albedo_color = TELEGRAPH_COLOR
+	elif _state != State.DEAD:
+		_body_material.albedo_color = _base_color
+	# Étourdissement penché, redressé partout ailleurs (sauf mort, couchée).
+	if _state == State.STAGGERED:
+		_pivot.rotation.x = 0.4
+	elif _state != State.DEAD:
+		_pivot.rotation.x = 0.0
 
 
 func _enter(state: State) -> void:

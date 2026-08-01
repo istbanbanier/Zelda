@@ -21,6 +21,17 @@
 ## au moins un récepteur réel, et une justification dans `docs/DECISIONS.md`.
 extends Node
 
+## PREMIER signal admis (D.1R.3, D-026) — il remplit le critère au complet :
+## émetteurs réels sans lien entre eux (coffres, armes au sol, contrôleur
+## joueur), récepteur réel (le HUD de `GameplayShell`), et aucun propriétaire
+## naturel — une notification de gameplay traverse interactables, combat et
+## interface. PT-D1-03 : « les armes sont versées silencieusement ».
+signal gameplay_notification(text: String)
+
+
+func notify(text: String) -> void:
+	gameplay_notification.emit(text)
+
 
 ## Vrai tant qu'aucun événement global n'a été jugé nécessaire. Lu par les tests
 ## pour que le passage de « vide » à « non vide » soit un choix visible en revue,
