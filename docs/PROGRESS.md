@@ -729,31 +729,64 @@ filet anti-chute à −20 m en attendant les bords réels.
 
 ---
 
+## 2026-08-01 — Jalon D.1 : relief macro, proxys, navmesh prouvé
+
+**Fait** (portée D-025) : `ValleyTerrain` — blockout déclaratif portant TOUTE la
+relation de §3.3 : crête de départ (0, 24, 170), descente en S (3 rampes, 2
+paliers, 14–18°), terrasse du camp (45, 6, 65), lit de rivière (bande z 4–16,
+deux gués), falaise d'apprentissage ouest (12 m, deux corniches de repos §9.3),
+terrasse du pylône (115, 18, −25) et sa rampe, forêt SE (12 troncs à collision),
+ruines centrales avec salle en U, plateau monumental (0, 34, −210), rampe
+processionnelle, **proxys émissifs du pylône et de la citadelle** — la relation
+héros → camp → pylône → objectif se lit depuis la crête. Soleil ouest 22°
+(§7.7), ciel/brume §3.4, `VistaCamera_Hero01` à constantes fixes (§21.8).
+Navmesh baké versionné (488 polygones, outil `bake_valley_navmesh.gd`) ;
+navigation du pillard par requêtes serveur + suivi 2D manuel. 4 tests de
+risques critiques (parcours piloté 11 jalons, détour hors d'une salle en U,
+filet de chute, spawn/jalons), plancher 221 → **225**, `validate_fast` VERT.
+Capture de la caméra de départ : `evidence/gateD/` (commit suivant).
+
+**Pièges moteur, trois sondes** (détail D-025) : le suiveur de
+`NavigationAgent3D` compare en 3D contre des hauteurs voxelisées (~0,45 m
+au-dessus des pieds) — gel sur place (seuil 0,4), gel au coin (0,8),
+réinitialisation d'index en reposant la cible à cadence fixe. Remplacé par
+`map_get_path` + avancement 2D. Et une sonde qui interroge l'agent CONSOMME ses
+waypoints — instrumenter DANS le code observé. Corrigé aussi en route : une
+rampe qui atterrit DANS l'emprise d'un plateau laisse un mur en travers —
+atterrir AU RAS du bord (sondé aux points clés, 21 hauteurs vérifiées).
+
+**Limites** : pas d'eau dans le lit, un seul coffre (les 8 + validateur d'IDs :
+emplacements définitifs), pas de bords de monde, S de rivière rectiligne,
+proxys ≠ art.
+
+---
+
 ## HANDOFF — prochaine action exacte
 
-> **Gates** : A `ACCEPTÉ AVEC RÉSERVE` (D-012) · B `ACCEPTÉ POUR CONTINUATION`
-> (D-021) · C `ACCEPTÉ POUR CONTINUATION` (D-024) · D **en cours** — D.0 livré.
+> **Gates** : A `RÉSERVE` (D-012) · B `CONTINUATION` (D-021) · C `CONTINUATION`
+> (D-024) · D **en cours** — D.0–D.1 livrés, D-022 soldée.
 
-### Action suivante : jalon D.1 — relief graybox et navmesh (D-022 échoit ICI)
+### Action suivante : C.5 SUR LA CRÊTE RÉELLE (redéfini par D-025)
 
-1. **Relief** : remplacer le sol plat par des chunks sculptés simples (§7.4 :
-   64–128 m, collisions simplifiées) portant la relation de §3.3 — spawn en
-   hauteur (0, 24, 170), descente vers le camp, rivière en S autour de Z = 10,
-   falaise d'apprentissage à l'ouest, emplacements pylône (115, 18, −25) et
-   donjon (0, 34, −210) en proxys.
-2. **Navmesh OBLIGATOIRE** (D-022, échéance atteinte) : `NavigationRegion3D`
-   baké depuis les collisions (§20.10), `NavigationAgent3D` dans `RaiderRed` —
-   les tests pillard existants doivent rester verts (même comportement à plat).
-3. **Bords de monde** par relief crédible (§7.4), remplaçant le filet à −20 m.
-4. Huit coffres §4.1 et le validateur d'IDs §19.3 quand les emplacements
-   existent.
+Le `HeroShotLab` n'est plus une scène indépendante : il travaille sur la vraie
+crête de `ValleyWorld` et valide SUR PLACE, avant toute propagation aux
+512 × 512 m :
+1. **Caméra** : composition §3.2 depuis `VistaCamera_Hero01` (tiers inférieur,
+   trois plans, trajectoire du regard) — itérer sur les constantes de
+   `valley_world.gd`, capturer avant/après à chaque passe (§7.16).
+2. **Lumière** : soleil/ombres/exposition (§7.7) mesurés sur la capture llvmpipe
+   (régression visuelle uniquement — jamais une mesure de qualité, CLAUDE.md).
+3. **Matériaux pilotes** : herbe/roche/eau du lit — remplacer les aplats par les
+   premiers matériaux §7.9 sur la crête et la descente SEULEMENT.
+4. **Végétation proche** : premières touffes `MultiMesh` sur la crête (§7.5,
+   cellules 24–48 m), densité mesurée.
+5. Puis notation §3.5 sur la capture réelle et propagation si ≥ 75/100.
 
 ### Rappels
 
-- **C.5 reste dû avant l'habillage artistique** (D-024 : D.0 était une
-  intégration graybox — le verrou North Star tient pour la production d'art).
-- R-012 / R-013 encore ouvertes (saut pendant mantle, coût mantle).
-- Pièges : positionner un StaticBody AVANT `add_child` ; bloquer SceneFlow dans
-  les tests de menu ; purger les refus concurrents (AA6) ; un handler écrit
-  n'est pas branché (Z5) ; géométrie comptée depuis la caméra ; R-014 ; muter
-  le `.tres` (R-006bis) ; épingler ET mesurer (Y5) ; `MIN_TESTS` = 221.
+- Rebaker le navmesh après TOUTE modification du relief (`bake_valley_navmesh.gd`).
+- R-012/R-013 toujours ouvertes ; ISS-002 (notation WOW) le restera tant qu'un
+  humain n'a pas noté.
+- Pièges frais : suiveur d'agent (D-025) ; rampe au ras du bord ; StaticBody
+  positionné AVANT add_child ; bloquer SceneFlow dans les tests de menu.
+- `MIN_TESTS` = 225 ; compte de référence dans TEST_REPORT uniquement.

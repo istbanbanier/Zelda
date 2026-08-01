@@ -1198,3 +1198,55 @@ Inclut la revue du Gate C du même jour : `Mode.DEAD` + `test_player_death.gd`.
   avec SaveSystem complet (Phase E).
 - **Pas d'invite d'interaction à l'écran** (§14.2 : reticle/outline — UI §17).
 - Pas de bords de monde : filet anti-chute à −20 m en attendant le relief.
+
+---
+
+# Jalon D.1 — Relief macro, proxys, navmesh (2026-08-01)
+
+## Commande et résultat
+
+```bash
+tools/validate_fast.sh; echo $?
+```
+
+**Code retour** : `0` — VERT. **225 réussis, 0 échoué**, plancher 225.
+
+> **Nombre de tests de référence : 225.** C'est ici, et nulle part ailleurs, qu'il
+> doit être lu.
+
+`ValleyTerrain` (blockout déclaratif : dalles + prismes convexes, cotes §3.3),
+proxys pylône/citadelle émissifs, soleil ouest 22° + ciel/brume §3.4,
+`VistaCamera_Hero01` (§3.2, constantes fixes), navmesh baké versionné
+(`valley_navmesh.tres`, 488 polygones) + suivi serveur manuel dans le pillard.
+
+## Les risques critiques, chacun son test
+
+- **Spawn sûr** : atterrissage sur la crête à y ≈ 24, proxys présents aux cotes.
+- **Parcours praticable** : pilote scripté sans triche — crête → descente en S →
+  terrasse du camp → sortie → gué ouest → plaine nord, 11 jalons dans l'ordre,
+  jamais sous le niveau du monde, sans blocage (~35 s simulées).
+- **Navigation ennemie** : pillard posé au FOND d'une salle en U des ruines —
+  le pilotage direct s'y coince par construction ; il sort par l'ouverture SUD
+  (prouvé par sa trajectoire) et ARRIVE au contact du joueur posté derrière le
+  mur (~10 s). 21 hauteurs de relief sondées par rayons aux points clés.
+- **Chute hors monde** : sous −20, repêché au spawn de la crête.
+- **Chargement normal** : scène chargée avec joueur/camp/coffre/pillards, flux
+  VALLEY ; le menu atteint la scène (`can_go_to`).
+
+## Pièges moteur mesurés (détail : D-025)
+
+Le suiveur de `NavigationAgent3D` compare waypoints en 3D contre des hauteurs
+voxelisées → deux modes de gel selon le seuil, plus un troisième en reposant la
+cible à cadence fixe (réinitialisation de l'index). Sondé trois fois, remplacé
+par le suivi serveur manuel. Une sonde qui appelle `get_next_path_position`
+CONSOMME l'avancement : l'observation doit se faire de l'intérieur.
+
+## Limites de D.1
+
+- Lit de rivière sans EAU (matériau/shader : habillage, après C.5-sur-crête).
+- Un seul coffre ; les huit de §4.1 et le validateur d'IDs viennent avec les
+  emplacements définitifs. Pas de bords de monde (filet à −20 m maintenu).
+- Le S de la rivière est un lit rectiligne graybox ; la composition fine de
+  §3.2 (ruban guidant le regard) attend l'habillage.
+- Proxys = masses aux bonnes places, pas de l'art (§7.14 respecté : rien de
+  « final »).

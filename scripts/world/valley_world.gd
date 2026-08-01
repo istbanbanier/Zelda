@@ -1,11 +1,13 @@
-## Vallée de Néris — monde graybox (MASTER_SPEC §22 Phase D, D.0 par D-024).
+## Vallée de Néris — monde graybox (MASTER_SPEC §22 Phase D, D.1 par D-024).
 ##
-## D.0 est une INTÉGRATION : le sol 512 × 512, le joueur, le combat existant, un
-## camp avec pillards, un coffre et une arme au sol — dans une seule scène
-## chargée depuis « Nouvelle partie ». Le relief, la rivière, le pylône, la
-## citadelle et la composition North Star arrivent avec les jalons D suivants ;
-## le navmesh (D-022) arrive avec le premier relief, un sol plat n'ayant rien à
-## baker que le pilotage direct ne sache déjà traverser.
+## D.1 : relief macro complet (voir `ValleyTerrain`), proxys du pylône et de la
+## citadelle, soleil de fin d'après-midi (§7.7 : ouest/gauche, plongée 18–28°),
+## ciel et brume aux couleurs ancres (§3.4), et la caméra de la vue d'ouverture
+## `VistaCamera_Hero01` (§3.2) — constantes FIXES : une capture de référence doit
+## être reproductible au millimètre (§21.8).
+##
+## `VALLEY_VISTA=1` dans l'environnement rend la VistaCamera active au chargement
+## — c'est le chemin de `tools/godot/capture_reference.gd`, jamais celui du jeu.
 class_name ValleyWorld
 extends Node3D
 
@@ -14,14 +16,29 @@ extends Node3D
 const FALL_LIMIT_Y: float = -20.0
 const RESCUE_CHECK_INTERVAL: float = 1.0
 
+## §7.7 : soleil à l'ouest (rayons vers +X), plongée 22°.
+const SUN_ROTATION_DEG: Vector3 = Vector3(-22.0, -90.0, 0.0)
+
+## §3.2 : caméra ~4,2 m derrière le héros, 1,7 m au-dessus des pieds, héros au
+## tiers inférieur (plongée légère), FOV horizontal ≈ 68° (vertical 42° en 16:9).
+const VISTA_POSITION: Vector3 = Vector3(0.0, 26.0, 174.2)
+const VISTA_ROTATION_DEG: Vector3 = Vector3(-7.0, 0.0, 0.0)
+const VISTA_FOV: float = 42.0
+
 @onready var _player: PlayerController = $Player
 @onready var _spawn: Node3D = $SpawnPoint
+@onready var _sun: DirectionalLight3D = $Sun
 
 
 func _ready() -> void:
 	var game_state: Node = get_node_or_null("/root/GameState")
 	if game_state != null:
 		game_state.call("set_flow", 2)  # GameState.Flow.VALLEY
+
+	_sun.rotation_degrees = SUN_ROTATION_DEG
+	_setup_environment()
+	_setup_vista_camera()
+
 	# Cadence lente plutôt que _process : une comparaison par seconde suffit
 	# largement à rattraper une chute (§5.4 : timers plutôt que polling).
 	var timer: Timer = Timer.new()
@@ -29,6 +46,45 @@ func _ready() -> void:
 	timer.autostart = true
 	timer.timeout.connect(_check_fall_rescue)
 	add_child(timer)
+
+
+## Ciel pastel, brume bleutée, lumière ambiante du ciel — les ancres de §3.4 en
+## version graybox. Construit en code : une seule source de vérité chiffrée.
+func _setup_environment() -> void:
+	var sky_material: ProceduralSkyMaterial = ProceduralSkyMaterial.new()
+	sky_material.sky_top_color = Color(0.663, 0.831, 0.918)      # #A9D4EA
+	sky_material.sky_horizon_color = Color(0.686, 0.784, 0.827)  # #AFC8D3
+	sky_material.ground_bottom_color = Color(0.365, 0.561, 0.239)
+	sky_material.ground_horizon_color = Color(0.686, 0.784, 0.827)
+	var sky: Sky = Sky.new()
+	sky.sky_material = sky_material
+	var environment: Environment = Environment.new()
+	environment.background_mode = Environment.BG_SKY
+	environment.sky = sky
+	environment.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
+	environment.ambient_light_sky_contribution = 0.6
+	# Brume de distance (§7.7 fog classique) : l'étagement atmosphérique de §3.2,
+	# sans fog volumétrique (hors budget graybox et hors Compatibility).
+	environment.fog_enabled = true
+	environment.fog_light_color = Color(0.686, 0.784, 0.827)
+	environment.fog_density = 0.0018
+	var world_environment: WorldEnvironment = WorldEnvironment.new()
+	world_environment.name = "ValleyEnvironment"
+	world_environment.environment = environment
+	add_child(world_environment)
+
+
+func _setup_vista_camera() -> void:
+	var vista: Camera3D = Camera3D.new()
+	vista.name = "VistaCamera_Hero01"
+	vista.position = VISTA_POSITION
+	vista.rotation_degrees = VISTA_ROTATION_DEG
+	vista.fov = VISTA_FOV
+	vista.current = false
+	add_child(vista)
+	if OS.get_environment("VALLEY_VISTA") == "1":
+		# Après que la caméra du joueur s'est déclarée : le différé gagne.
+		vista.make_current.call_deferred()
 
 
 func _check_fall_rescue() -> void:

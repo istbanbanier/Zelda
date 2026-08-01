@@ -8,9 +8,17 @@
 ##
 ## Machine d'états : sous-ensemble de §12.7 réellement peuplé — `Patrol`,
 ## `Investigate`, `Flee` et les autres arriveront avec les familles suivantes.
-## LIMITE ASSUMÉE (D-022) : pas de `NavigationAgent3D` — l'arène du CombatLab est
-## plate et vide, le pilotage direct suffit ; la navigation arrive avec le monde
-## (Phase D). L'audition de §12.6 attend les événements sonores de §12.7.
+##
+## Navigation (D-022, soldée en D.1) : chemin du navmesh baké par requêtes
+## DIRECTES au serveur (`map_get_path`), suivi manuel avec avancement de
+## waypoint en 2D. ADAPTATION MESURÉE, pas un choix de confort : le suiveur
+## intégré de `NavigationAgent3D` compare position et waypoint en 3D, or les
+## points du chemin vivent à la hauteur VOXELISÉE du navmesh (~0,45 m au-dessus
+## des pieds) — `path_desired_distance` 0,4 ne validait jamais un waypoint
+## (pillard gelé sur place), 0,8 les validait trop tôt (gelé contre un coin de
+## mur). Trois sondes archivées dans PROGRESS. L'agent reviendra si l'évitement
+## de §12.9 l'exige. Sans navmesh (arènes de test, CombatLab) : pilotage direct.
+## L'audition de §12.6 attend les événements sonores de §12.7.
 class_name RaiderRed
 extends CharacterBody3D
 
@@ -21,6 +29,9 @@ enum State { IDLE, CHASE, ATTACK, RETREAT, STAGGERED, DEAD }
 
 ## Cadence de perception (§12.9 : jamais de perception complète par frame).
 const PERCEPTION_INTERVAL: int = 6
+## Cadence de re-calcul du chemin (§12.9 : « cadence 0,15–0,35 s », 0,25 s ici —
+## jamais de pathfinding par frame).
+const REPATH_INTERVAL: int = 15
 const GRAVITY: float = 24.0
 
 @export var tuning: EnemyTuning
@@ -35,8 +46,15 @@ const GRAVITY: float = 24.0
 var _state: State = State.IDLE
 var _target: Node3D = null
 var _perception_tick: int = 0
+var _repath_tick: int = 0
 var _state_timer: float = 0.0
 var _attack_cooldown: float = 0.0
+## Chemin courant sur le navmesh et son index de waypoint (voir l'en-tête).
+var _path: PackedVector3Array = PackedVector3Array()
+var _path_index: int = 0
+## Position de la cible au moment du dernier calcul — §12.9 : on ne recalcule
+## que si elle a bougé significativement.
+var _path_goal: Vector3 = Vector3.INF
 
 
 func _ready() -> void:
@@ -106,9 +124,44 @@ func _process_chase(delta: float) -> void:
 			_enter(State.ATTACK)
 		return
 
-	var direction: Vector3 = to_target.normalized() if distance > 0.001 else Vector3.ZERO
+	var direction: Vector3 = _pursuit_direction(to_target, distance)
 	velocity.x = direction.x * tuning.pursuit_speed
 	velocity.z = direction.z * tuning.pursuit_speed
+
+
+## Direction de poursuite : le chemin du navmesh quand la carte en offre un, la
+## ligne directe sinon. Recalcul seulement si la cible a bougé de plus de 1,5 m,
+## vérifié par cadence (§12.9 : jamais de pathfinding par frame).
+func _pursuit_direction(to_target: Vector3, distance: float) -> Vector3:
+	if distance <= 0.001:
+		return Vector3.ZERO
+	var map: RID = get_world_3d().navigation_map
+	_repath_tick += 1
+	if _path.is_empty() or (_repath_tick % REPATH_INTERVAL == 1
+			and _path_goal.distance_to(_target.global_position) > 1.5):
+		_path = NavigationServer3D.map_get_path(
+			map, global_position, _target.global_position, true)
+		_path_index = 0
+		_path_goal = _target.global_position
+	# Carte sans navmesh (arène de test), pas encore synchronisée (§20.10), ou
+	# cible dans le même polygone : la ligne directe est le bon mouvement.
+	if _path.size() < 2:
+		return to_target.normalized()
+	# Avancement en 2D : la hauteur des waypoints est celle du navmesh voxelisé,
+	# pas celle des pieds — la comparer ferait geler le suivi (voir l'en-tête).
+	while _path_index < _path.size() - 1:
+		var reached: Vector3 = _path[_path_index]
+		if Vector2(reached.x - global_position.x, reached.z - global_position.z) \
+				.length() < 0.6:
+			_path_index += 1
+		else:
+			break
+	var waypoint: Vector3 = _path[_path_index]
+	var direction: Vector3 = Vector3(
+		waypoint.x - global_position.x, 0.0, waypoint.z - global_position.z)
+	if direction.length_squared() < 0.0001:
+		return to_target.normalized()
+	return direction.normalized()
 
 
 func _process_retreat(delta: float) -> void:

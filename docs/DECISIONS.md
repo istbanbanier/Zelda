@@ -591,3 +591,31 @@ la fait vivre côté ennemi.
   vallée ; D.0 est une intégration graybox, pas un habillage.
 - **Comme D-021** : ce verdict n'est PAS un `PASS`. Dettes maintenues :
   CONTROLLER-001, VALIDATION-B-001, ressenti §10.6/§10.8, hit-stop/VFX/sons.
+
+---
+
+## D-025 — D.1 : relief macro d'un bloc, C.5 redéfini sur le monde réel, navigation par requêtes serveur
+
+- **Date** : 2026-08-01 · **Phase** : D · **Statut** : DÉCISION PROPRIÉTAIRE (portée) + ADAPTATIONS MESURÉES
+- **Portée ordonnée** : relief macro complet de `ValleyWorld` en une passe (crête,
+  descente en S, terrasse du camp, lit de rivière, falaise à corniches, terrasse
+  du pylône, forêt, ruines, plateau monumental) avec proxys VISIBLES du pylône et
+  de la citadelle ; navmesh après stabilisation du relief ; **C.5 n'est plus une
+  scène indépendante** — son `HeroShotLab` utilise la vraie crête et la vraie
+  vallée pour valider caméra, lumière, matériaux pilotes et végétation proche
+  AVANT propagation ; pas de nouveau cycle de revue ; tests limités aux risques
+  critiques ; livrable avec capture depuis la caméra de départ.
+- **Blockout par dalles + prismes convexes** (rejeté : heightmap procédurale —
+  pentes non garanties à l'aveugle ; le blockout donne des cotes exactes que les
+  tests vérifient, et la leçon B.1 sur les prismes pleins s'applique telle
+  quelle).
+- **Amendement D-022 — navigation** : le navmesh est baké depuis les collisions
+  (`tools/godot/bake_valley_navmesh.gd`, ressource versionnée) mais le SUIVI est
+  manuel via `NavigationServer3D.map_get_path` + index de waypoint avancé en 2D.
+  Le suiveur intégré de `NavigationAgent3D` est écarté sur MESURE : il compare
+  agent et waypoint en 3D alors que les waypoints vivent à la hauteur voxelisée
+  du navmesh (~0,45 m au-dessus des pieds) — seuil 0,4 : gel sur place ; 0,8 :
+  validation prématurée et gel contre un coin ; reposer `target_position` à
+  cadence fixe réinitialise l'index (troisième gel). Trois sondes successives,
+  puis changement d'hypothèse (règle des deux tentatives). L'agent reviendra si
+  l'évitement de §12.9 le justifie.
