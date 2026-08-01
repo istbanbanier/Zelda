@@ -1,0 +1,18 @@
+{
+  "commit": "ccaa4c728e178596584a462c12b04ddbed314619",
+  "display_server": "X11",
+  "distinct_colors_sampled": 1055,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 60,
+  "height": 1440,
+  "label": "v42_terrain",
+  "luma_mean": 0.7319,
+  "luma_stddev": 0.1572,
+  "png": "evidence/passeV4/v42/vista_v42_terrain.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "timestamp_utc": "2026-08-01 21:37:12",
+  "width": 2560
+}

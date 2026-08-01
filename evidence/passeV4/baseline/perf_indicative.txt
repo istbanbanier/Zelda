@@ -16,3 +16,8 @@ glow faible, orage local : nuage 8 grumeaux + voile de pluie + éclair, motes) :
 Suspect dominant : glow (passe plein-écran, très coûteuse en rendu LOGICIEL,
 banale sur GPU). Rappel : llvmpipe ne mesure PAS le matériel cible ; l'échelle
 de dégradation §20.8 rendra glow/ombres dépendants du preset en Phase I.
+
+APRÈS V4.2 (eau en S, chemins, variations de sol, pics en tentes 2 rangées,
+contreforts physiques, prairie 1400 touffes MultiMesh + 130 fleurs, vent
+shader) : 300 frames 720p llvmpipe : 46,93 s (V4.1 : 42,65 s, +10 %).
+Navmesh rebaké : 646 polygones (contreforts). Le shader de vent est GPU pur.

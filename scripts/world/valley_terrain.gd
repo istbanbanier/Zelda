@@ -29,6 +29,16 @@ const COL_COPPER: Color = Color(0.55, 0.36, 0.22)
 const COL_CYAN: Color = Color(0.133, 0.851, 0.925)
 const COL_RIVERBED: Color = Color(0.35, 0.42, 0.45)
 
+## Habillage V4.2 (réf. 01 du pack V4) — différenciation des sols, eau, chemins,
+## reliefs superposés. Le cyan de l'eau appartient à la bande « ciel/brume/eau »
+## de §3.4, pas aux accents.
+const COL_GRASS_LIT: Color = Color(0.58, 0.70, 0.35)     # crêtes exposées
+const COL_GRASS_WET: Color = Color(0.28, 0.47, 0.26)     # berges humides
+const COL_WATER: Color = Color(0.09, 0.55, 0.60, 0.82)   # ruban turquoise
+const COL_PATH: Color = Color(0.62, 0.51, 0.34)          # terre battue
+const COL_MOUNTAIN_WARM: Color = Color(0.47, 0.39, 0.33) # grès chaud
+const COL_MOUNTAIN_FAR: Color = Color(0.52, 0.56, 0.65)  # lointain bleui
+
 
 func _ready() -> void:
 	_build_border_mountains()
@@ -40,6 +50,13 @@ func _ready() -> void:
 	_build_forest()
 	_build_central_ruins()
 	_build_dungeon_plateau_and_citadel()
+	# Habillage V4.2 — visuel après les masses (l'eau et les chemins se posent
+	# SUR le relief stabilisé ; les contreforts, eux, portent une collision).
+	_dress_border_mountains()
+	_build_river_water()
+	_build_paths()
+	_build_ground_variation()
+	_build_crest_meadow()
 
 
 ## ---------------------------------------------------------------------------
@@ -135,11 +152,17 @@ func _build_forest() -> void:
 	var forest: Node3D = Node3D.new()
 	forest.name = "Forest"
 	add_child(forest)
+	# Trois tons de couronne (V4.2 : casser l'uniformité — §7.17, variation de
+	# teinte contrôlée).
+	var canopy_tones: Array[Color] = [
+		COL_GRASS_DARK, Color(0.26, 0.42, 0.23), Color(0.34, 0.50, 0.20),
+	]
 	for i: int in range(trunks.size()):
 		var at: Vector2 = trunks[i]
 		_cylinder_in("Trunk%02d" % i, forest, Vector3(at.x, 2.0, at.y),
 			0.5, 7.0, COL_WOOD, true)
-		_orb_in("Canopy%02d" % i, forest, Vector3(at.x, 9.5, at.y), 2.6, COL_GRASS_DARK)
+		_orb_in("Canopy%02d" % i, forest, Vector3(at.x, 9.5, at.y), 2.6,
+			canopy_tones[i % canopy_tones.size()])
 
 
 func _build_central_ruins() -> void:
@@ -221,6 +244,339 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	door.add_child(door_mesh)
 	door.position = Vector3(0, 34 + 3, -197.9)   # AVANT add_child (règle D.0)
 	citadel.add_child(door)
+
+
+## ---------------------------------------------------------------------------
+## Habillage V4.2 — profondeur, eau, chemins, prairie
+## ---------------------------------------------------------------------------
+
+## Pics et contreforts sur l'anneau : la 4e capture V4.1 montrait quatre murs
+## plats gris — un rideau, pas des montagnes. Pics VISUELS au-dessus de la
+## crête de l'anneau (inatteignables), rangée lointaine bleuie pour la
+## superposition atmosphérique, et contreforts À COLLISION (`unclimbable`) qui
+## avancent dans la plaine — aucun décor plat ne masque un vide accessible.
+func _dress_border_mountains() -> void:
+	var dressing: Node3D = Node3D.new()
+	dressing.name = "MountainDressing"
+	add_child(dressing)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 20260802
+	var mid: float = (BORDER_INNER + BORDER_OUTER) * 0.5
+	# [axe (0 = mur X constant, 1 = mur Z constant), signe]
+	var sides: Array[Array] = [[0, -1.0], [0, 1.0], [1, -1.0], [1, 1.0]]
+	var peak_index: int = 0
+	for side: Array in sides:
+		var axis: int = side[0]
+		var sign_value: float = side[1]
+		# Le mur nord (axe 0, signe −1) porte la citadelle devant lui (sommet
+		# y = 80) : ses pics proches de l'axe restent SOUS elle — la silhouette
+		# du donjon domine le fond (réf. 01), les montagnes ne l'écrasent pas.
+		var behind_citadel: bool = axis == 0 and sign_value < 0.0
+		for i: int in range(9):
+			var along: float = -240.0 + 60.0 * float(i) + rng.randf_range(-9.0, 9.0)
+			var height: float = rng.randf_range(58.0, 96.0)
+			if behind_citadel and absf(along) < 100.0:
+				height = minf(height, 58.0)
+			var warm: bool = rng.randf() < 0.45
+			var center: Vector3 = Vector3(along, 38.0 + height * 0.5, mid * sign_value) \
+				if axis == 0 else Vector3(mid * sign_value, 38.0 + height * 0.5, along)
+			# Tente (PrismMesh, arête le long de Z) : une boîte lisait
+			# « gratte-ciel », pas « montagne » (capture V4.2 n° 1).
+			_visual_prism("Peak%02d" % peak_index, dressing, center,
+				Vector3(rng.randf_range(22.0, 34.0), height,
+					rng.randf_range(38.0, 60.0)),
+				COL_MOUNTAIN_WARM if warm else COL_MOUNTAIN, axis == 0)
+			peak_index += 1
+		# Rangée lointaine bleuie : plus haute, au bord extérieur — la
+		# superposition qui fait lire « chaîne », pas « mur ».
+		for i: int in range(5):
+			var along_far: float = -220.0 + 110.0 * float(i) + rng.randf_range(-14.0, 14.0)
+			var height_far: float = rng.randf_range(96.0, 122.0)
+			if behind_citadel and absf(along_far) < 110.0:
+				height_far = minf(height_far, 84.0)
+			var center_far: Vector3 = Vector3(along_far, 20.0 + height_far * 0.5,
+				(BORDER_OUTER - 3.0) * sign_value) if axis == 0 \
+				else Vector3((BORDER_OUTER - 3.0) * sign_value, 20.0 + height_far * 0.5,
+					along_far)
+			_visual_prism("FarPeak%02d" % peak_index, dressing, center_far,
+				Vector3(10.0, height_far, 88.0), COL_MOUNTAIN_FAR, axis == 0)
+			peak_index += 1
+	# Contreforts : avancées PHYSIQUES du massif dans la plaine (2 par côté).
+	var buttresses: Array[Array] = [
+		[Vector2(-150, -244), Vector2(44, 14)], [Vector2(130, -243), Vector2(38, 12)],
+		[Vector2(-120, 244), Vector2(40, 13)], [Vector2(160, 243), Vector2(46, 14)],
+		[Vector2(-244, -120), Vector2(13, 42)], [Vector2(-243, 100), Vector2(12, 38)],
+		[Vector2(244, -90), Vector2(14, 44)], [Vector2(243, 140), Vector2(13, 40)],
+	]
+	for i: int in range(buttresses.size()):
+		var foot: Array = buttresses[i]
+		_slab("Buttress%02d" % i, foot[0], foot[1], 46.0,
+			COL_MOUNTAIN_WARM if i % 2 == 0 else COL_MOUNTAIN)
+		var body: StaticBody3D = get_node_or_null(
+			NodePath("Buttress%02d" % i)) as StaticBody3D
+		if body != null:
+			body.add_to_group("unclimbable")
+
+
+## Ruban d'eau turquoise en S DANS le lit (réf. 01 : « rivière turquoise
+## lisible formant une direction en S »). Visuel pur : pas de collision, pas de
+## nage — l'eau-gameplay est hors périmètre V4. Surface à −0,55, sous les gués.
+func _build_river_water() -> void:
+	var water: Node3D = Node3D.new()
+	water.name = "RiverWater"
+	add_child(water)
+	var segment_index: int = 0
+	var x: float = -250.0
+	while x <= 250.0:
+		var meander: float = 10.0 + 3.1 * sin(x * 0.030)
+		var mesh: MeshInstance3D = MeshInstance3D.new()
+		mesh.name = "WaterRibbon%02d" % segment_index
+		var box: BoxMesh = BoxMesh.new()
+		box.size = Vector3(13.0, 0.3, 7.6)
+		mesh.mesh = box
+		var material: StandardMaterial3D = StandardMaterial3D.new()
+		material.albedo_color = COL_WATER
+		material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		material.roughness = 0.15
+		material.metallic = 0.1
+		mesh.material_override = material
+		mesh.position = Vector3(x, -0.7, meander)
+		water.add_child(mesh)
+		segment_index += 1
+		x += 11.0
+
+
+## Chemins de terre battue (réf. 01 : « routes guidant naturellement la
+## descente »). Bandes VISUELLES posées 4 cm au-dessus des zones planes — les
+## rampes gardent leur teinte sombre qui fait déjà office de route.
+func _build_paths() -> void:
+	var paths: Node3D = Node3D.new()
+	paths.name = "Paths"
+	add_child(paths)
+	# [de (x,z), à (x,z), hauteur du sol]
+	var segments: Array[Array] = [
+		[Vector2(0, 154), Vector2(17, 147), 24.0],       # crête → rampe A
+		[Vector2(33, 112), Vector2(37, 106), 16.0],      # palier 1
+		[Vector2(16, 80), Vector2(20, 76), 8.0],         # palier 2
+		[Vector2(34, 64), Vector2(41, 52), 6.0],         # terrasse du camp
+		[Vector2(40, 29), Vector2(21, 13), 2.0],         # sortie camp → gué ouest
+		[Vector2(20, 8), Vector2(2, -28), 2.0],          # gué → ruines
+		[Vector2(0, -50), Vector2(-1, -107), 2.0],       # ruines → rampe du donjon
+		[Vector2(24, 10), Vector2(60, 10), 2.0],         # gué ouest → route est
+		[Vector2(60, 10), Vector2(93, 11), 2.0],         # …devant la forêt
+		[Vector2(94, 8), Vector2(66, 3), 2.0],           # gué est → rampe du pylône
+	]
+	for i: int in range(segments.size()):
+		var segment: Array = segments[i]
+		var from: Vector2 = segment[0]
+		var to: Vector2 = segment[1]
+		var ground: float = segment[2]
+		var delta: Vector2 = to - from
+		var mesh: MeshInstance3D = MeshInstance3D.new()
+		mesh.name = "PathStrip%02d" % i
+		var box: BoxMesh = BoxMesh.new()
+		box.size = Vector3(delta.length() + 2.0, 0.08, 2.4)
+		mesh.mesh = box
+		var material: StandardMaterial3D = StandardMaterial3D.new()
+		material.albedo_color = COL_PATH
+		material.roughness = 0.95
+		mesh.material_override = material
+		var center: Vector2 = (from + to) * 0.5
+		mesh.position = Vector3(center.x, ground + 0.04, center.y)
+		mesh.rotation.y = -atan2(delta.y, delta.x)
+		paths.add_child(mesh)
+
+
+## Variation des sols (réf. 01 : « matériaux de sol mieux différenciés ») :
+## crête exposée éclaircie, berges humides, taches de prairie — des aplats
+## visuels 2 cm au-dessus des dalles, sans collision.
+func _build_ground_variation() -> void:
+	var variation: Node3D = Node3D.new()
+	variation.name = "GroundVariation"
+	add_child(variation)
+	var patches: Array[Array] = [
+		# [nom, centre xz, taille xz, sommet, couleur]
+		["CrestLit", Vector2(-8, 172), Vector2(64, 36), 24.02, COL_GRASS_LIT],
+		["BankSouth", Vector2(0, 18.6), Vector2(512, 5.0), 2.02, COL_GRASS_WET],
+		["BankNorth", Vector2(0, 1.4), Vector2(512, 5.0), 2.02, COL_GRASS_WET],
+		["MeadowEast", Vector2(150, 60), Vector2(90, 70), 2.02, COL_GRASS_LIT],
+		["MeadowWest", Vector2(-160, -60), Vector2(100, 80), 2.02, COL_GRASS_DARK],
+		["ScrubNorth", Vector2(120, -150), Vector2(110, 70), 2.02, COL_GRASS_DARK],
+	]
+	for patch: Array in patches:
+		var mesh: MeshInstance3D = MeshInstance3D.new()
+		mesh.name = String(patch[0])
+		var box: BoxMesh = BoxMesh.new()
+		var size_xz: Vector2 = patch[2]
+		box.size = Vector3(size_xz.x, 0.05, size_xz.y)
+		mesh.mesh = box
+		var material: StandardMaterial3D = StandardMaterial3D.new()
+		material.albedo_color = patch[4] as Color
+		material.roughness = 0.95
+		mesh.material_override = material
+		var center_xz: Vector2 = patch[1]
+		mesh.position = Vector3(center_xz.x, float(patch[3]), center_xz.y)
+		variation.add_child(mesh)
+
+
+## Prairie de la crête (réf. 01 : herbe et fleurs au premier plan). §7.5 :
+## MultiMesh PARTITIONNÉ (deux cellules + fleurs), scatter déterministe,
+## exclusion du chemin, vent par `SH_FoliageWind` — aucun recalcul CPU.
+func _build_crest_meadow() -> void:
+	var meadow: Node3D = Node3D.new()
+	meadow.name = "CrestMeadow"
+	add_child(meadow)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 20260803
+	var shader: Shader = load("res://shaders/foliage/foliage_wind.gdshader") as Shader
+	# Deux cellules de brins (§7.5 : « jamais toute la vallée dans un
+	# MultiMesh unique ») : ouest et est de la crête.
+	var cells: Array[Array] = [
+		[Vector2(-46, 2), "CellWest"], [Vector2(2, 46), "CellEast"],
+	]
+	var tuft: ArrayMesh = _tuft_mesh()
+	var tuft_material: ShaderMaterial = ShaderMaterial.new()
+	tuft_material.shader = shader
+	tuft_material.set_shader_parameter(&"blade_height", 0.42)
+	for cell: Array in cells:
+		var bounds: Vector2 = cell[0]
+		var blades: MultiMeshInstance3D = MultiMeshInstance3D.new()
+		blades.name = String(cell[1])
+		blades.material_override = tuft_material
+		var multimesh: MultiMesh = MultiMesh.new()
+		multimesh.transform_format = MultiMesh.TRANSFORM_3D
+		multimesh.use_colors = true
+		multimesh.mesh = tuft
+		multimesh.instance_count = 700
+		# Seam de test : en headless, le RenderingServer factice ne stocke pas
+		# les tampons MultiMesh (get_instance_transform rend l'identité —
+		# mesuré). Les origines et teintes écrites dans le tampon sont donc
+		# AUSSI consignées en métadonnées, par la même boucle.
+		var origins: PackedVector3Array = PackedVector3Array()
+		var tints: PackedColorArray = PackedColorArray()
+		var placed: int = 0
+		# §7.5/§7.17 : « touffes regroupées plutôt qu'uniformes » — grappes de
+		# 5 à 9 touffes autour d'un centre, avec de vrais VIDES entre elles
+		# (les 700 brins isolés de la capture précédente lisaient « bâtons »).
+		while placed < multimesh.instance_count:
+			var cluster_center: Vector3 = _meadow_point(rng, bounds)
+			var cluster_size: int = rng.randi_range(5, 9)
+			for j: int in range(cluster_size):
+				if placed >= multimesh.instance_count:
+					break
+				var position: Vector3 = cluster_center + Vector3(
+					rng.randf_range(-0.9, 0.9), 0.0, rng.randf_range(-0.9, 0.9))
+				var basis: Basis = Basis(Vector3.UP, rng.randf_range(0.0, TAU)) \
+					.scaled(Vector3.ONE * rng.randf_range(0.7, 1.15))
+				var tint: Color = COL_GRASS.lerp(COL_GRASS_LIT, rng.randf())
+				multimesh.set_instance_transform(placed,
+					Transform3D(basis, position))
+				multimesh.set_instance_color(placed, tint)
+				origins.append(position)
+				tints.append(tint)
+				placed += 1
+		blades.multimesh = multimesh
+		blades.set_meta(&"origins", origins)
+		blades.set_meta(&"tints", tints)
+		meadow.add_child(blades)
+	# Fleurs blanches/jaunes/bleues (§7.5), une seule petite cellule.
+	var flowers: MultiMeshInstance3D = MultiMeshInstance3D.new()
+	flowers.name = "Flowers"
+	var flower_multimesh: MultiMesh = MultiMesh.new()
+	flower_multimesh.transform_format = MultiMesh.TRANSFORM_3D
+	flower_multimesh.use_colors = true
+	var petal: BoxMesh = BoxMesh.new()
+	petal.size = Vector3(0.11, 0.09, 0.11)
+	var petal_material: ShaderMaterial = ShaderMaterial.new()
+	petal_material.shader = shader
+	petal.material = petal_material
+	flower_multimesh.mesh = petal
+	flower_multimesh.instance_count = 130
+	var petal_colors: Array[Color] = [
+		Color(0.95, 0.95, 0.91), Color(0.91, 0.79, 0.30), Color(0.42, 0.56, 0.83),
+	]
+	for i: int in range(flower_multimesh.instance_count):
+		var position: Vector3 = _meadow_point(rng, Vector2(-44, 44))
+		flower_multimesh.set_instance_transform(i,
+			Transform3D(Basis(Vector3.UP, rng.randf_range(0.0, TAU)),
+				position + Vector3(0, 0.22, 0)))
+		flower_multimesh.set_instance_color(i, petal_colors[i % petal_colors.size()])
+	flowers.multimesh = flower_multimesh
+	meadow.add_child(flowers)
+
+
+## Touffe d'herbe : trois quads croisés à 60°, effilés vers le haut, origine au
+## SOL. Une touffe, pas un brin — c'est la grappe de quads qui donne la
+## silhouette pleine à 5 m sans coûter plus de 6 triangles.
+func _tuft_mesh() -> ArrayMesh:
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for k: int in range(3):
+		var basis: Basis = Basis(Vector3.UP, PI * float(k) / 3.0)
+		var a: Vector3 = basis * Vector3(-0.17, 0.0, 0.0)
+		var b: Vector3 = basis * Vector3(0.17, 0.0, 0.0)
+		var c: Vector3 = basis * Vector3(0.05, 0.42, 0.0)
+		var d: Vector3 = basis * Vector3(-0.05, 0.42, 0.0)
+		st.add_vertex(a)
+		st.add_vertex(b)
+		st.add_vertex(c)
+		st.add_vertex(a)
+		st.add_vertex(c)
+		st.add_vertex(d)
+	st.generate_normals()
+	return st.commit()
+
+
+## Point de prairie sur la crête (sommet y = 24), HORS du couloir du chemin
+## crête → rampe A (exclusion de gameplay §7.5 : le chemin reste lisible).
+func _meadow_point(rng: RandomNumberGenerator, x_bounds: Vector2) -> Vector3:
+	for attempt: int in range(12):
+		var x: float = rng.randf_range(x_bounds.x, x_bounds.y)
+		# Bande AVANT de la crête (z 144-170) : le cadre §3.2 montre z ≤ 160 —
+		# une prairie étalée jusqu'à 203 vivait derrière la caméra (capture
+		# V4.2 n° 1 : un seul brin visible).
+		var z: float = rng.randf_range(144.5, 170.0)
+		var to_path: float = _distance_to_segment(Vector2(x, z),
+			Vector2(0, 154), Vector2(17, 147))
+		if to_path > 2.6:
+			return Vector3(x, 24.0, z)
+	return Vector3(x_bounds.x, 24.0, 168.0)
+
+
+func _distance_to_segment(point: Vector2, a: Vector2, b: Vector2) -> float:
+	var ab: Vector2 = b - a
+	var t: float = clampf((point - a).dot(ab) / ab.length_squared(), 0.0, 1.0)
+	return point.distance_to(a + ab * t)
+
+
+## Boîte purement visuelle (décor hors de portée).
+func _visual_box(box_name: String, parent: Node3D, center: Vector3, size: Vector3,
+		color: Color) -> void:
+	var mesh: MeshInstance3D = MeshInstance3D.new()
+	mesh.name = box_name
+	var box: BoxMesh = BoxMesh.new()
+	box.size = size
+	mesh.mesh = box
+	mesh.material_override = _material(color, false)
+	mesh.position = center
+	parent.add_child(mesh)
+
+
+## Tente purement visuelle (pics). L'arête du PrismMesh court le long de Z
+## (vérifié dans la source 4.7.1) : `ridge_along_x` pivote de 90° pour les
+## murs nord/sud, longs en X.
+func _visual_prism(prism_name: String, parent: Node3D, center: Vector3,
+		size: Vector3, color: Color, ridge_along_x: bool) -> void:
+	var mesh: MeshInstance3D = MeshInstance3D.new()
+	mesh.name = prism_name
+	var prism: PrismMesh = PrismMesh.new()
+	prism.size = size
+	mesh.mesh = prism
+	mesh.material_override = _material(color, false)
+	mesh.position = center
+	if ridge_along_x:
+		mesh.rotation.y = PI * 0.5
+	parent.add_child(mesh)
 
 
 ## ---------------------------------------------------------------------------
