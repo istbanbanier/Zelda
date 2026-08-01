@@ -31,12 +31,12 @@ func _setup(player_at: Vector3, raider_at: Vector3,
 	box.size = Vector3(80, 1, 80)
 	cs.shape = box
 	floor_body.add_child(cs)
+	floor_body.position = Vector3(0, -0.5, 0)
 	_world.add_child(floor_body)
-	floor_body.global_position = Vector3(0, -0.5, 0)
 
 	_player = (load(PLAYER) as PackedScene).instantiate() as PlayerController
+	_player.position = player_at
 	_world.add_child(_player)
-	_player.global_position = player_at
 	_intent = InputIntent.new()
 	_player.set_intent_source(_intent)
 
@@ -44,8 +44,8 @@ func _setup(player_at: Vector3, raider_at: Vector3,
 		_wall_at(wall_at, wall_size)
 
 	var raider: RaiderRed = (load(RAIDER) as PackedScene).instantiate() as RaiderRed
+	raider.position = raider_at
 	_world.add_child(raider)
-	raider.global_position = raider_at
 
 	await _settle(2)
 	for i: int in range(120):
@@ -64,8 +64,8 @@ func _wall_at(position: Vector3, size: Vector3) -> void:
 	box.size = size
 	cs.shape = box
 	wall.add_child(cs)
+	wall.position = position
 	_world.add_child(wall)
-	wall.global_position = position
 
 
 func _teardown() -> void:

@@ -33,11 +33,11 @@ func _setup() -> void:
 	box.size = Vector3(80, 1, 80)
 	cs.shape = box
 	floor_body.add_child(cs)
+	floor_body.position = Vector3(0, -0.5, 0)
 	_world.add_child(floor_body)
-	floor_body.global_position = Vector3(0, -0.5, 0)
 	_player = (load(PLAYER) as PackedScene).instantiate() as PlayerController
+	_player.position = Vector3(0, 0.1, 0)
 	_world.add_child(_player)
-	_player.global_position = Vector3(0, 0.1, 0)
 	_intent = InputIntent.new()
 	_player.set_intent_source(_intent)
 	await _settle(2)
@@ -64,8 +64,8 @@ func _settle(ticks: int) -> void:
 
 func _dummy_at(position: Vector3) -> CombatDummy:
 	var dummy: CombatDummy = (load(DUMMY) as PackedScene).instantiate() as CombatDummy
+	dummy.position = position
 	_world.add_child(dummy)
-	dummy.global_position = position
 	return dummy
 
 
@@ -77,8 +77,8 @@ func _wall_at(position: Vector3, size: Vector3) -> void:
 	box.size = size
 	cs.shape = box
 	wall.add_child(cs)
+	wall.position = position
 	_world.add_child(wall)
-	wall.global_position = position
 
 
 func _bow() -> BowComponent:

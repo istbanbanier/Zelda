@@ -34,8 +34,8 @@ func _make_hitbox(team: StringName, at: Vector3) -> HitboxComponent:
 	sphere.radius = 0.6
 	shape.shape = sphere
 	hitbox.add_child(shape)
+	hitbox.position = at
 	_world.add_child(hitbox)
-	hitbox.global_position = at
 	return hitbox
 
 
@@ -61,8 +61,8 @@ func _make_victim(team: StringName, at: Vector3, max_health: float = 100.0,
 	hurtbox.add_child(shape)
 	root.add_child(hurtbox)
 
+	root.position = at
 	_world.add_child(root)
-	root.global_position = at
 	return hurtbox
 
 

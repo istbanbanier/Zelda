@@ -27,11 +27,11 @@ func _setup() -> void:
 	box.size = Vector3(60, 1, 60)
 	cs.shape = box
 	floor_body.add_child(cs)
+	floor_body.position = Vector3(0, -0.5, 0)
 	_world.add_child(floor_body)
-	floor_body.global_position = Vector3(0, -0.5, 0)
 	_player = (load(PLAYER) as PackedScene).instantiate() as PlayerController
+	_player.position = Vector3(0, 0.1, 0)
 	_world.add_child(_player)
-	_player.global_position = Vector3(0, 0.1, 0)
 	_intent = InputIntent.new()
 	_player.set_intent_source(_intent)
 	await _settle(2)
@@ -66,8 +66,8 @@ func _strike(damage: float) -> void:
 	sphere.radius = 1.5
 	cs.shape = sphere
 	hitbox.add_child(cs)
+	hitbox.position = _player.global_position + Vector3(0, 1, -0.8)
 	_world.add_child(hitbox)
-	hitbox.global_position = _player.global_position + Vector3(0, 1, -0.8)
 	await _settle(3)
 	hitbox.activate(damage, 0.0, 3.0)
 	await _settle(3)
@@ -117,8 +117,8 @@ func test_the_raider_disengages_from_a_corpse() -> void:
 	## pleine poursuite → le pillard retourne à l'IDLE et n'y revient pas.
 	await _setup()
 	var raider: RaiderRed = (load(RAIDER) as PackedScene).instantiate() as RaiderRed
+	raider.position = Vector3(0, 0, 6.0)
 	_world.add_child(raider)
-	raider.global_position = Vector3(0, 0, 6.0)
 	await _settle(2)
 
 	# Révéler l'attaquant (un impact est un événement sonore, §12.7) : le pillard

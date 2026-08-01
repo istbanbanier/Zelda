@@ -28,11 +28,11 @@ func _setup() -> void:
 	box.size = Vector3(60, 1, 60)
 	cs.shape = box
 	floor_body.add_child(cs)
+	floor_body.position = Vector3(0, -0.5, 0)
 	_world.add_child(floor_body)
-	floor_body.global_position = Vector3(0, -0.5, 0)
 	_player = (load(PLAYER) as PackedScene).instantiate() as PlayerController
+	_player.position = Vector3(0, 0.1, 0)
 	_world.add_child(_player)
-	_player.global_position = Vector3(0, 0.1, 0)
 	_intent = InputIntent.new()
 	_player.set_intent_source(_intent)
 	await _settle(2)
@@ -59,8 +59,8 @@ func _settle(ticks: int) -> void:
 
 func _spawn_dummy(at: Vector3) -> CombatDummy:
 	var dummy: CombatDummy = (load(DUMMY) as PackedScene).instantiate() as CombatDummy
+	dummy.position = at
 	_world.add_child(dummy)
-	dummy.global_position = at
 	return dummy
 
 
@@ -111,8 +111,8 @@ func test_one_heavy_blow_breaks_the_raider_poise() -> void:
 	## pillard.
 	await _setup()
 	var raider: RaiderRed = (load(RAIDER) as PackedScene).instantiate() as RaiderRed
+	raider.position = Vector3(0, 0, 1.3)
 	_world.add_child(raider)
-	raider.global_position = Vector3(0, 0, 1.3)
 	var staggered: Array[int] = [0]
 	raider.state_changed.connect(func(state: StringName) -> void:
 		if state == &"staggered":
@@ -174,8 +174,8 @@ func test_stunlock_grace_blocks_the_reaction_but_never_the_damage() -> void:
 	sphere.radius = 2.0
 	cs.shape = sphere
 	hitbox.add_child(cs)
+	hitbox.position = _player.global_position + Vector3(0, 1, -0.8)
 	_world.add_child(hitbox)
-	hitbox.global_position = _player.global_position + Vector3(0, 1, -0.8)
 	await _settle(3)
 
 	var health: HealthComponent = _player.get_node("Components/HealthComponent")

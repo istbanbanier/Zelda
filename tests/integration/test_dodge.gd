@@ -27,11 +27,11 @@ func _setup() -> void:
 	box.size = Vector3(30, 1, 30)
 	cs.shape = box
 	floor_body.add_child(cs)
+	floor_body.position = Vector3(0, -0.5, 0)
 	_world.add_child(floor_body)
-	floor_body.global_position = Vector3(0, -0.5, 0)
 	_player = (load(PLAYER) as PackedScene).instantiate() as PlayerController
+	_player.position = Vector3(0, 0.1, 0)
 	_world.add_child(_player)
-	_player.global_position = Vector3(0, 0.1, 0)
 	_intent = InputIntent.new()
 	_player.set_intent_source(_intent)
 	# Leçon C1-2 : attendre l'ÉTAT atterri, jamais un nombre de ticks.
@@ -99,8 +99,8 @@ func test_iframes_refuse_a_real_blow_then_expire() -> void:
 	sphere.radius = 4.0   # englobe le joueur pendant toute la roulade
 	cs.shape = sphere
 	hitbox.add_child(cs)
+	hitbox.position = _player.global_position
 	_world.add_child(hitbox)
-	hitbox.global_position = _player.global_position
 	await _settle(3)
 
 	var health: HealthComponent = _player.get_node("Components/HealthComponent")

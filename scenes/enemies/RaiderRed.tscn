@@ -30,7 +30,7 @@ size = Vector3(1.1, 0.9, 1.0)
 
 [node name="RaiderRed" type="CharacterBody3D" groups=["enemies", "damageable", "lock_on_targets"]]
 collision_layer = 4
-collision_mask = 1
+collision_mask = 7
 script = ExtResource("1_raider")
 tuning = ExtResource("2_tuning")
 

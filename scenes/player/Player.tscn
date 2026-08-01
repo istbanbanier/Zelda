@@ -67,9 +67,10 @@ height = 1.8
 [sub_resource type="BoxShape3D" id="SwordSweep"]
 size = Vector3(1.4, 1.0, 1.1)
 
+; Masque 1|4 : décor + ennemis (PT-D1-02 : les corps ne se traversent plus).
 [node name="Player" type="CharacterBody3D" groups=["player", "damageable"]]
 collision_layer = 2
-collision_mask = 1
+collision_mask = 5
 script = ExtResource("1_player")
 tuning = ExtResource("4_tuning")
 dodge = ExtResource("19_dodge")

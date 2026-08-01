@@ -33,6 +33,10 @@ const PERCEPTION_INTERVAL: int = 6
 ## jamais de pathfinding par frame).
 const REPATH_INTERVAL: int = 15
 const GRAVITY: float = 24.0
+## Séparation locale entre corps ennemis (PT-D1-02) : rayon d'influence et
+## poids de la poussée mélangée à la direction de poursuite.
+const SEPARATION_RADIUS: float = 1.7
+const SEPARATION_WEIGHT: float = 0.9
 
 @export var tuning: EnemyTuning
 
@@ -125,8 +129,14 @@ func _process_chase(delta: float) -> void:
 		return
 
 	var direction: Vector3 = _pursuit_direction(to_target, distance)
-	velocity.x = direction.x * tuning.pursuit_speed
-	velocity.z = direction.z * tuning.pursuit_speed
+	# Séparation locale (PT-D1-02, §12.9 « avoidance seulement pour agents
+	# proches ») : la collision empêche le chevauchement mais laisse trois
+	# poursuivants en file indienne — la poussée latérale les déploie.
+	var steered: Vector3 = direction + _separation_push() * SEPARATION_WEIGHT
+	if steered.length_squared() > 0.0001:
+		steered = steered.normalized()
+	velocity.x = steered.x * tuning.pursuit_speed
+	velocity.z = steered.z * tuning.pursuit_speed
 
 
 ## Direction de poursuite : le chemin du navmesh quand la carte en offre un, la
@@ -178,6 +188,29 @@ func _process_retreat(delta: float) -> void:
 	velocity.z = away.z * tuning.retreat_speed
 	if _state_timer >= tuning.retreat_duration:
 		_enter(State.CHASE)
+
+
+## Poussée d'éloignement des autres corps ennemis proches. Le groupe `enemies`
+## reste petit (≤ 14 IA actives, §12.9) — la boucle est bornée par conception.
+func _separation_push() -> Vector3:
+	var push: Vector3 = Vector3.ZERO
+	for node: Node in get_tree().get_nodes_in_group("enemies"):
+		if node == self:
+			continue
+		var other: Node3D = node as Node3D
+		if other == null:
+			continue
+		if other.has_method("health"):
+			var other_health: HealthComponent = other.call("health") as HealthComponent
+			if other_health != null and other_health.is_dead():
+				continue  # un cadavre ne repousse personne
+		var away: Vector3 = global_position - other.global_position
+		away.y = 0.0
+		var gap: float = away.length()
+		if gap >= SEPARATION_RADIUS or gap < 0.001:
+			continue
+		push += away / gap * (1.0 - gap / SEPARATION_RADIUS)
+	return push
 
 
 ## Perception par cadence (§12.9) : distance, cône, puis raycast de LOS —

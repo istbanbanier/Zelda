@@ -33,18 +33,18 @@ func _setup(dummy_position: Vector3) -> CombatDummy:
 	box.size = Vector3(30, 1, 30)
 	floor_shape.shape = box
 	floor_body.add_child(floor_shape)
+	floor_body.position = Vector3(0, -0.5, 0)
 	_world.add_child(floor_body)
-	floor_body.global_position = Vector3(0, -0.5, 0)
 
 	_player = (load(PLAYER) as PackedScene).instantiate() as PlayerController
+	_player.position = Vector3(0, 0.1, 0)
 	_world.add_child(_player)
-	_player.global_position = Vector3(0, 0.1, 0)
 	_intent = InputIntent.new()
 	_player.set_intent_source(_intent)
 
 	var dummy: CombatDummy = (load(DUMMY) as PackedScene).instantiate() as CombatDummy
+	dummy.position = dummy_position
 	_world.add_child(dummy)
-	dummy.global_position = dummy_position
 
 	# PIÈGE MESURÉ : le monde du test précédent, en `queue_free`, survit encore une
 	# frame — le joueur peut apparaître posé sur sa géométrie fantôme (mesuré :
@@ -183,8 +183,8 @@ func test_two_dummies_side_by_side_each_take_one_hit_per_swing() -> void:
 	## volume d'épée du joueur, pas une hitbox de test.
 	var a: CombatDummy = await _setup(Vector3(-0.45, 0, 1.3))
 	var b: CombatDummy = (load(DUMMY) as PackedScene).instantiate() as CombatDummy
+	b.position = Vector3(0.45, 0, 1.3)
 	_world.add_child(b)
-	b.global_position = Vector3(0.45, 0, 1.3)
 	await _settle(10)
 
 	_intent.attack_pressed = true
