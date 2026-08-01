@@ -98,6 +98,12 @@ godot --path . 2>&1 | tee evidence/gateA/01_lancement.log
 `[boot] transition vers le menu principal.` ; le menu apparaît, titré
 « Éclats d'Orage ».
 
+> ⚠️ **Le menu est l'aboutissement attendu, pas une étape intermédiaire.** Il
+> n'existe aucun monde ni personnage à ce stade : la Phase A ne livre que la
+> fondation. Si le menu s'affiche et répond, l'étape est réussie — il n'y a rien
+> d'autre à atteindre. « Continuer » et « Nouvelle partie » agissent réellement
+> sur la sauvegarde puis annoncent que la vallée arrive en Phase D.
+
 - **PASS** : menu affiché, **aucune ligne `ERROR:`** dans le log.
 - **FAIL** : erreur bloquante, fenêtre noire, ou menu jamais atteint.
 
