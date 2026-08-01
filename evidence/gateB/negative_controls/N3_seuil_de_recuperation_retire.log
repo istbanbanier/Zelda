@@ -1,0 +1,9 @@
+# Contrôle négatif — N3_seuil_de_recuperation_retire
+# Récupération dès la première unité régénérée : c'est le défaut réel de la première implémentation (D-016).
+# Test visé : test_a_held_sprint_produces_usable_bursts_not_a_stutter
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_stamina.gd::test_a_held_sprint_produces_usable_bursts_not_a_stutter — la rafale doit être utilisable, pas un bégaiement : 0.017 s (un tick = 0.017 s)
+=== RÉSULTAT: 97 réussi(s), 3 échoué(s) ===
+  ÉCHEC: test_stamina.gd::test_a_held_sprint_produces_usable_bursts_not_a_stutter — la rafale doit être utilisable, pas un bégaiement : 0.017 s (un tick = 0.017 s)

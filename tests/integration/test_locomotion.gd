@@ -263,6 +263,95 @@ func test_steep_slope_is_rejected() -> void:
 	_teardown()
 
 
+func test_sprint_drains_stamina() -> void:
+	## §9.1 : 12/s. Ici la mesure passe par le contrôleur réel, pas par le composant
+	## isolé : c'est le câblage qu'on vérifie, pas l'arithmétique.
+	if not await _setup(Vector3(0, 1, 0)):
+		return
+	var stamina: StaminaComponent = _player.stamina()
+	check_not_null(stamina, "StaminaComponent")
+	if stamina == null:
+		_teardown()
+		return
+	var before: float = stamina.current()
+	_intent.move = Vector2(1.0, 0.0)
+	_intent.sprint_held = true
+	await _settle(60)
+	var spent: float = before - stamina.current()
+	check_approx(spent, stamina.tuning.sprint_drain, 1.5,
+		"endurance consommée par 1 s de sprint")
+	_teardown()
+
+
+func test_running_without_sprinting_costs_nothing() -> void:
+	## Seul le sprint consomme en B.2 ; la course est gratuite (§9.1).
+	if not await _setup(Vector3(0, 1, 0)):
+		return
+	var stamina: StaminaComponent = _player.stamina()
+	var before: float = stamina.current()
+	_intent.move = Vector2(1.0, 0.0)
+	await _settle(60)
+	check_approx(stamina.current(), before, 0.001, "endurance après 1 s de course")
+	_teardown()
+
+
+func test_holding_sprint_while_standing_still_costs_nothing() -> void:
+	## Le sprint est un état de locomotion, pas une posture : maintenir la touche à
+	## l'arrêt ne doit rien coûter, sinon le joueur se vide sans avancer.
+	if not await _setup(Vector3(0, 1, 0)):
+		return
+	var stamina: StaminaComponent = _player.stamina()
+	var before: float = stamina.current()
+	_intent.sprint_held = true
+	await _settle(60)
+	check_approx(stamina.current(), before, 0.001,
+		"endurance après 1 s de sprint immobile")
+	_teardown()
+
+
+func test_exhaustion_drops_the_sprint_back_to_running() -> void:
+	## §9.1 : « à zéro : sprint → course ». C'est le comportement observable qui
+	## compte, pas la valeur de la jauge — on mesure donc la **vitesse**.
+	if not await _setup(Vector3(0, 1, 0)):
+		return
+	var stamina: StaminaComponent = _player.stamina()
+	# Réserve amorcée basse plutôt que vidée par un sprint complet : à 12/s il
+	# faudrait 8,3 s, soit près de 75 m à la vitesse de sprint — le joueur
+	# quitterait le sol du bac à sable et la mesure porterait sur une chute.
+	# Ce qu'on vérifie ici est la bascule, pas la durée qu'il faut pour l'atteindre
+	# (celle-ci est mesurée dans `test_stamina.gd`).
+	stamina.set_current(6.0)
+	_intent.move = Vector2(1.0, 0.0)
+	_intent.sprint_held = true
+
+	await _settle(90)
+	check(stamina.is_exhausted(),
+		"préalable : la réserve doit être vidée (%.1f)" % stamina.current())
+	check_approx(_player.horizontal_speed(), _player.tuning.run_speed, 0.3,
+		"vitesse une fois épuisé — le sprint doit être retombé en course")
+	check(_player.tuning.run_speed < _player.tuning.sprint_speed,
+		"préalable de lecture : la course est bien plus lente que le sprint")
+	_teardown()
+
+
+func test_stamina_recovers_after_releasing_sprint() -> void:
+	if not await _setup(Vector3(0, 1, 0)):
+		return
+	var stamina: StaminaComponent = _player.stamina()
+	_intent.move = Vector2(1.0, 0.0)
+	_intent.sprint_held = true
+	await _settle(120)
+	var low: float = stamina.current()
+	check(low < stamina.maximum(), "préalable : la réserve doit avoir baissé")
+
+	_intent.sprint_held = false
+	_intent.move = Vector2.ZERO
+	await _settle(180)
+	check(stamina.current() > low,
+		"la réserve doit remonter au repos (%.1f -> %.1f)" % [low, stamina.current()])
+	_teardown()
+
+
 func test_body_never_rotates() -> void:
 	## Le `CameraRig` est enfant du corps : si le corps tournait, la caméra
 	## tournerait avec le personnage et deviendrait incontrôlable.

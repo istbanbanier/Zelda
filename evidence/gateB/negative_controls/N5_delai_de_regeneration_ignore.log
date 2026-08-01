@@ -1,0 +1,9 @@
+# Contrôle négatif — N5_delai_de_regeneration_ignore
+# La régénération démarre immédiatement après l effort, sans le délai de 1 s de §9.1.
+# Test visé : test_regeneration_waits_the_declared_delay
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_stamina.gd::test_regeneration_waits_the_declared_delay — aucune régénération avant le délai de 1.00 s : attendu 76.0000 ± 0.0010, obtenu 93.7833
+=== RÉSULTAT: 94 réussi(s), 7 échoué(s) ===
+  ÉCHEC: test_stamina.gd::test_regeneration_waits_the_declared_delay — aucune régénération avant le délai de 1.00 s : attendu 76.0000 ± 0.0010, obtenu 93.7833

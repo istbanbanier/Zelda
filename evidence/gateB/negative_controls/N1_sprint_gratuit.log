@@ -1,0 +1,9 @@
+# Contrôle négatif — N1_sprint_gratuit
+# Le sprint n'appelle plus try_sustain : il redevient gratuit, comme en B.1.
+# Test visé : test_sprint_drains_stamina
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_locomotion.gd::test_sprint_drains_stamina — endurance consommée par 1 s de sprint : attendu 12.0000 ± 1.5000, obtenu 0.0000
+=== RÉSULTAT: 97 réussi(s), 5 échoué(s) ===
+  ÉCHEC: test_locomotion.gd::test_sprint_drains_stamina — endurance consommée par 1 s de sprint : attendu 12.0000 ± 1.5000, obtenu 0.0000

@@ -1,0 +1,9 @@
+# Contrôle négatif — N4_reprise_sans_rampe
+# Régénération au régime nominal dès la première image : la jauge repart par un à-coup (§9.1 « reprise progressive »).
+# Test visé : test_regeneration_ramps_in_instead_of_snapping
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_stamina.gd::test_regeneration_ramps_in_instead_of_snapping — la rampe doit rendre nettement moins que le régime nominal : 4.767 contre 4.400
+=== RÉSULTAT: 99 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_stamina.gd::test_regeneration_ramps_in_instead_of_snapping — la rampe doit rendre nettement moins que le régime nominal : 4.767 contre 4.400

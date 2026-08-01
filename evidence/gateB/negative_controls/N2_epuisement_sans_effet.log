@@ -1,0 +1,9 @@
+# Contrôle négatif — N2_epuisement_sans_effet
+# can_sustain() ignore l'épuisement et la réserve : le sprint ne retombe jamais en course (§9.1).
+# Test visé : test_exhaustion_drops_the_sprint_back_to_running
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_locomotion.gd::test_exhaustion_drops_the_sprint_back_to_running — vitesse une fois épuisé — le sprint doit être retombé en course : attendu 6.0000 ± 0.3000, obtenu 9.0000
+=== RÉSULTAT: 98 réussi(s), 2 échoué(s) ===
+  ÉCHEC: test_locomotion.gd::test_exhaustion_drops_the_sprint_back_to_running — vitesse une fois épuisé — le sprint doit être retombé en course : attendu 6.0000 ± 0.3000, obtenu 9.0000

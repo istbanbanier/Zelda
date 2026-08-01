@@ -1,0 +1,9 @@
+# Contrôle négatif — N7_cout_preleve_malgre_le_refus
+# try_spend deduit le cout meme quand il refuse l action : vol silencieux de la reserve.
+# Test visé : test_an_unaffordable_cost_is_refused_and_consumes_nothing
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_stamina.gd::test_an_unaffordable_cost_is_refused_and_consumes_nothing — réserve inchangée après un refus : attendu 10.0000 ± 0.0010, obtenu 0.0000
+=== RÉSULTAT: 99 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_stamina.gd::test_an_unaffordable_cost_is_refused_and_consumes_nothing — réserve inchangée après un refus : attendu 10.0000 ± 0.0010, obtenu 0.0000

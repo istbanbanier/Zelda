@@ -41,6 +41,28 @@ Les huit ont échoué comme attendu. Deux méritent une lecture attentive :
   par **C8**, est qu'un descendant conserve un décalage que le cast du bras ignore.
   Commentaires et en-têtes corrigés en conséquence (D-014).
 
+## Jalon B.2 — Endurance (2026-08-01)
+
+| Log | Mutation | Test visé |
+|---|---|---|
+| `N1_sprint_gratuit` | le sprint n'appelle plus `try_sustain()` | `test_sprint_drains_stamina` |
+| `N2_epuisement_sans_effet` | `can_sustain()` ignore épuisement et réserve | `test_exhaustion_drops_the_sprint_back_to_running` |
+| `N3_seuil_de_recuperation_retire` | **le défaut d'origine** : récupération dès la première unité | `test_a_held_sprint_produces_usable_bursts_not_a_stutter` |
+| `N4_reprise_sans_rampe` | régénération à plein régime dès la première image | `test_regeneration_ramps_in_instead_of_snapping` |
+| `N5_delai_de_regeneration_ignore` | délai de 1 s ignoré | `test_regeneration_waits_the_declared_delay` |
+| `N6_verrou_annule_dans_le_tres` | `exhaustion_lockout` à 0 **dans le `.tres`** | `test_the_exhaustion_lockout_refuses_an_otherwise_affordable_cost` |
+| `N7_cout_preleve_malgre_le_refus` | `try_spend()` prélève malgré le refus | `test_an_unaffordable_cost_is_refused_and_consumes_nothing` |
+| `N8_sprint_immobile_consomme` | `has_move()` retiré | `test_holding_sprint_while_standing_still_costs_nothing` |
+
+**N3 reproduit le défaut réel de B.2** et affiche la rafale mesurée : `0.017 s`,
+soit exactement un tick physique. C'est ce chiffre, et non une relecture du code,
+qui a établi que l'implémentation littérale de §9.1 faisait bégayer le sprint
+(D-016).
+
+**N6** mute la ressource et non la valeur par défaut du `@export` : la règle tirée
+de B.1 (R-006bis). Muter le script n'aurait rien cassé et le contrôle aurait conclu
+à tort que le test était inutile.
+
 ## Ce que Gate B exigera encore, et que rien ici ne couvre
 
 - Parcours de traversal rejoué **réellement**, pas seulement compilé (§22, Gate B).

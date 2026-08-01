@@ -331,3 +331,35 @@ est une préférence, pas une décision.
 - **Limite assumée** : une sonde volumique rapproche la caméra plus tôt qu'un rayon
   dans les passages étroits. C'est le compromis voulu ici ; s'il devient gênant en
   jeu, c'est `camera_probe_radius` qu'on ajuste, pas la structure.
+
+---
+
+## D-016 — L'épuisement se lève à un seuil de réserve, pas à la première unité
+
+- **Date** : 2026-08-01 · **Phase** : B.2 · **Statut** : ADOPTÉE
+- **Contexte** : §9.1 décrit ce qui arrive à zéro — « sprint → course, lâcher du
+  mur, lourde refusée, épuisement » — mais ne dit **pas** à quelle condition
+  l'épuisement se lève. L'implémentation littérale le levait dès que la jauge
+  repassait au-dessus de zéro.
+- **Défaut mesuré, pas supposé** : sprint maintenu, jauge vidée. La régénération
+  démarre après 1 s ; à la première unité rendue, l'épuisement se levait, le sprint
+  repartait **un seul tick** (0,017 s), revidait la jauge et l'épuisement
+  revenait. Le test a compté **7 cycles en 15 secondes**. Le joueur aurait vu sa
+  vitesse osciller entre 6 et 9 m/s six fois par seconde de course.
+- **Choix** : l'épuisement se lève quand le verrou de 0,45 s est écoulé **et** que
+  la réserve atteint `exhaustion_recovery_threshold` (20, soit environ 1,7 s de
+  sprint à 12/s). Le seuil est borné au maximum de la jauge, sinon un réglage
+  supérieur à 100 rendrait la récupération impossible.
+- **Portée délibérément limitée à l'effort continu** : `can_sustain()` tient compte
+  de l'épuisement, `can_spend()` non. Une esquive payable doit rester possible dès
+  le verrou écoulé ; ce sont les efforts soutenus qui bégaient, pas les actions
+  ponctuelles.
+- **Rejeté** : allonger le verrou d'épuisement à la place. Il est exprimé en
+  secondes et §9.1 en fixe la valeur ; le régler pour compenser un seuil manquant
+  aurait masqué le vrai paramètre et faussé une valeur de la spec.
+- **Valeur hors spec, donc à réévaluer** : 20 est un point de départ crédible, pas
+  un résultat mesuré sur un joueur. Le premier essai humain de traversal (§21.9)
+  doit le confirmer ou le corriger.
+- **Vérifié par** : `test_stamina.gd::test_a_held_sprint_produces_usable_bursts_not_a_stutter`,
+  qui mesure la durée de la seconde rafale — un tick sans le seuil, plus d'une
+  seconde avec. Contrôle négatif `N3_seuil_de_recuperation_retire`.

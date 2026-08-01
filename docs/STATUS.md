@@ -4,7 +4,7 @@ Vocabulaire imposé (§0.2) : `Non commencé` · `Implémenté` (raccordé) ·
 `Fonctionnel` (testé en scène exécutable) · `Validé` (conforme, sans régression) ·
 `Bloqué`. Tout critère non testé est `NON VÉRIFIÉ`, jamais implicitement réussi.
 
-**Dernière mise à jour** : 2026-08-01 · **Phase** : B (jalons B.0 et B.1 livrés) · **Gate A gelé** : `9414fd0` · **Commit courant** : voir `git log`
+**Dernière mise à jour** : 2026-08-01 · **Phase** : B (jalons B.0 à B.2 livrés) · **Gate A gelé** : `9414fd0` · **Commit courant** : voir `git log`
 
 ## Verdict Gate A : **ACCEPTÉ AVEC RÉSERVE / BLOQUÉ SUR LA VALIDATION MANETTE**
 
@@ -50,7 +50,8 @@ exécution réelle** — Blender → glTF → import Godot → renderer → PNG.
 tourne, `validate_fast.sh` est vert (nombre de tests : voir `docs/TEST_REPORT.md`,
 seule source à jour). Le premier gameplay existe : **un joueur se déplace, saute,
 sprinte et grimpe une pente, caméra à l'épaule qui ne traverse pas les murs**
-(B.1). Il n'a ni endurance, ni escalade, ni animation, ni modèle. La notation
+(B.1), et son sprint est limité par l'endurance de §9.1 (B.2). Il n'a ni
+escalade, ni animation, ni modèle. La notation
 visuelle et les mesures de performance restent impossibles ici : rendu logiciel
 llvmpipe uniquement, aucun GPU.
 
@@ -100,7 +101,7 @@ llvmpipe uniquement, aucun GPU.
 | Phase | Système | État |
 |---|---|---|
 | A | Boot, autoloads, InputMap AZERTY, couches de collision | **A.1 et A.2 livrés et gelés (`9414fd0`)** ; Gate A **EN ATTENTE** de validation humaine |
-| B | Player, caméra, locomotion, endurance, escalade, mantle | **B.0 et B.1 livrés** — entrée, player, caméra, locomotion ; endurance, escalade et mantle à venir |
+| B | Player, caméra, locomotion, endurance, escalade, mantle | **B.0 à B.2 livrés** — entrée, player, caméra, locomotion, endurance ; escalade et mantle à venir |
 | C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | Non commencé |
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
 | D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | Non commencé |
@@ -177,14 +178,35 @@ CONTROLLER-001.
 | Butées de pitch −65°/+45° (§8.3) | **Fonctionnel** | `test_pitch_is_clamped_to_the_specified_range` |
 | FOV sprint sans snap, interpolation framerate-independent (§8.3) | **Fonctionnel** | 2 cas, dont une comparaison 60 Hz / 120 Hz |
 | Réglages dans une `Resource` de `resources/tuning/` (§5.4) | **Fonctionnel** | `locomotion_default.tres`, enveloppes §8.3 vérifiées par test |
-| **Endurance (§9.1)** | **Non commencé** | le sprint n'a aujourd'hui **aucun coût** — limite assumée et consignée, pas un oubli |
-| Escalade et mantle (§9.2, §9.3) | **Non commencé** | jalon B.2 |
+| **Endurance (§9.1)** | **Fonctionnel** — voir jalon B.2 | `test_stamina.gd` (15 cas) et `test_locomotion.gd` (5 cas) |
+| Escalade et mantle (§9.2, §9.3) | **Non commencé** | jalon B.3 |
 | Dégâts de chute (§8.2) | **Non commencé** | le signal `landed(impact_speed)` existe et porte déjà la vitesse d'impact |
 | Ressenti, latence en ticks (§10.6) | **NON VÉRIFIÉ** | exige un essai humain à framerate réel ; aucun équivalent automatique |
 | Absence de jitter caméra (§8.3) | **NON VÉRIFIÉ** | la traversée est testable ici, le jitter demande une observation en mouvement |
 
-**Reste pour la Phase B** : `StaminaComponent` (§9.1), escalade (§9.2), mantle
-(§9.3) avec `ActionAlignmentComponent` (§7.12), shape cast de marche (§8.2).
+---
+
+## Phase B — jalon B.2 : endurance
+
+`StaminaComponent` est un composant (§5.8), pas une branche du contrôleur : le
+sprint le consomme dès maintenant, l'escalade (§9.2), l'esquive et l'attaque lourde
+(§10.2) s'y brancheront sans le modifier.
+
+| Élément (§9.1) | État | Preuve |
+|---|---|---|
+| Réserve de 100, jamais hors bornes | **Fonctionnel** | `test_stamina.gd`, 3 cas |
+| Sprint à 12/s, câblé au contrôleur | **Fonctionnel** | `test_sprint_drains_stamina` — mesuré via le joueur réel |
+| Sprint immobile gratuit | **Fonctionnel** | `test_holding_sprint_while_standing_still_costs_nothing` |
+| Course sans coût | **Fonctionnel** | `test_running_without_sprinting_costs_nothing` |
+| **À zéro : sprint → course** | **Fonctionnel** | `test_exhaustion_drops_the_sprint_back_to_running` — vitesse mesurée, pas jauge |
+| Régénération après 1 s, à 22/s | **Fonctionnel** | 3 cas |
+| Reprise progressive sur 0,20 s | **Fonctionnel** | `test_regeneration_ramps_in_instead_of_snapping` |
+| Verrou d'épuisement de 0,45 s | **Fonctionnel** | 2 cas, dont celui qui documente qu'il est masqué par le délai de régénération |
+| Seuil de récupération (hors §9.1) | **Fonctionnel** | `test_a_held_sprint_produces_usable_bursts_not_a_stutter` — défaut réel corrigé, D-016 |
+| Coût d'esquive et d'attaque lourde | **Implémenté**, non consommé | déclarés dans le `.tres` ; la Phase C les câblera. Un coût déclaré n'est pas une fonctionnalité |
+| Coûts d'escalade (18/s, 16/s, 20) | **Implémenté**, non consommé | idem, jalon B.3 |
+| Jauge contextuelle près du héros (§17.2) | **Non commencé** | les signaux `changed` / `exhausted` / `recovered` sont émis et attendent l'UI |
+| Souffle et animation d'épuisement (§9.1, §18.2) | **Non commencé** | aucun périphérique audio ici (ISS-004) ; aucune animation avant la Phase H |
 
 ---
 

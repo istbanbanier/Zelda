@@ -1,0 +1,9 @@
+# Contrôle négatif — N6_verrou_annule_dans_le_tres
+# exhaustion_lockout mis a 0 DANS LE .tres (R-006bis : muter la valeur par defaut du script ne casserait rien).
+# Test visé : test_the_exhaustion_lockout_refuses_an_otherwise_affordable_cost
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_stamina.gd::test_the_exhaustion_lockout_refuses_an_otherwise_affordable_cost — le verrou d'épuisement doit refuser une action pourtant payable
+=== RÉSULTAT: 98 réussi(s), 2 échoué(s) ===
+  ÉCHEC: test_stamina.gd::test_the_exhaustion_lockout_refuses_an_otherwise_affordable_cost — le verrou d'épuisement doit refuser une action pourtant payable

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="StaminaTuning" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://resources/tuning/stamina_tuning.gd" id="1_stamina"]
+
+[resource]
+script = ExtResource("1_stamina")
+max_stamina = 100.0
+sprint_drain = 12.0
+climb_drain = 18.0
+climb_lateral_drain = 16.0
+climb_jump_cost = 20.0
+dodge_cost = 15.0
+heavy_attack_cost = 20.0
+regen_delay = 1.0
+regen_rate = 22.0
+regen_ramp = 0.2
+exhaustion_lockout = 0.45
+exhaustion_recovery_threshold = 20.0

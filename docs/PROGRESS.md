@@ -214,59 +214,113 @@ ouverte et ne sera jamais levée par un test automatique.
 
 ---
 
+## 2026-08-01 — Jalon B.2 : endurance
+
+**Gate visé** : B (traversal). **État à l'ouverture** : B.1 livré, sprint sans coût.
+
+### Changement réel
+
+`StaminaComponent` (§5.8, §9.1) et `StaminaTuning`, câblés au sprint. Le composant
+ne connaît ni le joueur ni la locomotion : l'escalade (§9.2), l'esquive et
+l'attaque lourde (§10.2) s'y brancheront sans le modifier. Le contrôleur prend
+**une seule** décision de sprint par tick et la transmet à la caméra, à la vitesse
+et à l'endurance — trois recalculs auraient divergé précisément au moment où la
+jauge se vide.
+
+20 nouveaux cas de test. Plancher relevé à 100.
+
+### Le défaut que §9.1 ne pouvait pas prévenir
+
+§9.1 décrit ce qui arrive à zéro, mais pas **à quelle condition l'épuisement se
+lève**. L'implémentation littérale le levait dès la première unité régénérée :
+sprint maintenu, la jauge repartait, le sprint reprenait **un seul tick**, se
+revidait. Sept cycles en quinze secondes — le joueur aurait vu sa vitesse osciller
+entre 6 et 9 m/s six fois par seconde.
+
+Rien dans le code ne clochait à la relecture : chaque ligne suivait la spec. C'est
+le **comptage du signal** `exhausted` qui a nommé le défaut (« attendu 1, obtenu
+7 »). Corrigé par un seuil de récupération, marqué comme valeur hors spec et donc à
+confirmer par un essai humain (D-016).
+
+### Deux réglages de méthode
+
+- **Un test qui sprinte « 15 s puis mesure » ne mesure pas l'épuisement** mais un
+  cycle plus tard : l'effort maintenu laisse la jauge repartir. D'où
+  `_drain_until_exhausted()`, qui s'arrête exactement à la transition.
+- **Une mesure d'intégration ne doit pas dépendre de la taille du décor.** Vider
+  100 d'endurance à 12/s demande 8,3 s, soit 75 m à la vitesse de sprint : le
+  joueur quittait le sol du bac à sable et la mesure portait sur une chute. La
+  réserve est désormais amorcée basse ; la durée réelle est mesurée côté unitaire,
+  où elle ne dépend d'aucune géométrie.
+
+### Vérification
+
+`tools/validate_fast.sh` → `RC=0`, VERT, 100 tests. Huit contrôles négatifs rejoués
+et archivés ; N3 reproduit le défaut d'origine et affiche « rafale de 0,017 s ».
+
+### Ce que B.2 ne prouve pas
+
+Les coûts d'escalade, d'esquive et d'attaque lourde sont **déclarés, pas
+consommés** — les câbler sans escalade ni combat serait du code mort. Aucune jauge
+à l'écran (§17.2), aucun souffle (ISS-004), aucune animation d'épuisement. Le seuil
+de récupération n'a été validé par aucun joueur. `CONTROLLER-001` reste ouverte.
+
+---
+
 ## HANDOFF — prochaine action exacte
 
 > **Gate A : `ACCEPTÉ AVEC RÉSERVE / BLOQUÉ SUR LA VALIDATION MANETTE`** (D-012).
 > Ce n'est pas un `PASS`. La dette `CONTROLLER-001` court.
-> **Phase B en cours** : B.0 et B.1 livrés.
+> **Phase B en cours** : B.0, B.1 et B.2 livrés.
 
-### Action suivante : jalon B.2 — endurance
+### Action suivante : jalon B.3 — escalade et mantle
 
-`StaminaComponent` (§9.1), à brancher sur le sprint qui n'a aujourd'hui **aucun
-coût**. §9.1 fixe déjà toutes les valeurs, il n'y a rien à inventer :
+§9.2 et §9.3, dans cet ordre : la paroi d'abord, le franchissement ensuite.
 
-- maximum 100 ; sprint 12/s ; régénération après 1 s d'inaction, à 22/s ;
-- reprise progressive sur 0,20 s ; clamp 0–max ;
-- à zéro : le sprint retombe en course, l'épuisement dure 0,45 s avant toute
-  action consommatrice.
+**Escalade (§9.2)** — valeurs déjà fixées, rien à inventer :
+- sondes tête / torse / pieds, côtés, dessus, plus dégagement de capsule ;
+- accroche 0,55–0,80 m ; distance au mur 0,38–0,48 m ;
+- vitesse verticale 1,9–2,2 m/s ; latérale 1,5–1,8 m/s ;
+- lissage de normale 0,08–0,16 s ; saut d'escalade 0,75–1,0 m ;
+- surfaces refusées : `unclimbable`, `electrified`, `burning`, `spiked`,
+  `fragile_unsupported`, eau, plateformes trop rapides.
 
-Les coûts d'escalade (18/s), de latéral (16/s), de saut d'escalade (20), d'esquive
-(15) et d'attaque lourde (20) appartiennent à B.3 et à la Phase C : les déclarer
-dans la ressource de réglage est utile, les câbler serait prématuré.
+**Mantle (§9.3)** : détection du haut → surface marchable → dégagement de capsule →
+mantle bas/haut → transform cible → alignement animation/capsule → réactivation.
+Annulation propre si invalide, **aucun snap visible**. C'est ici que
+`ActionAlignmentComponent` (§7.12) devient nécessaire, et que la question ouverte
+**R-009** doit être tranchée.
 
 Points d'accroche déjà en place, à ne pas reconstruire :
 
-- `PlayerController.current_intent()` expose `sprint_held` ;
-- `LocomotionTuning.target_speed(magnitude, sprinting)` est le **seul** endroit qui
-  décide de la vitesse — c'est là que l'épuisement doit agir, pas dans le contrôleur ;
-- `signal landed(impact_speed)` porte déjà la vitesse d'impact pour les dégâts de
-  chute (§8.2, ≥ 6 m).
+- `StaminaComponent.try_sustain()` pour l'escalade continue (18/s) et le latéral
+  (16/s) ; `try_spend()` pour le saut d'escalade (20). Les trois valeurs sont déjà
+  dans `stamina_default.tres`, déclarées et non consommées — il ne reste qu'à les
+  appeler.
+- À endurance nulle, §9.1 impose de **lâcher le mur** : `can_sustain()` renvoie
+  déjà faux, le composant n'a pas à changer.
+- Le bac à sable a un mur vertical en `x = 30` (`z` de -10 à 10, haut de 6 m) et
+  deux pentes encadrant le seuil de 46°.
 
-### Ensuite
-
-- **B.3** : escalade (§9.2) et mantle (§9.3) avec `ActionAlignmentComponent`
-  (§7.12). Question ouverte R-009 à trancher là.
-- **Avant de clore la Phase B** : shape cast de marche (§8.2, step 0,30–0,38 m),
-  et les tests manuels de §21.4 qui concernent le traversal — caméra contre tous
-  types de murs, falaise irrégulière, mantle sous plafond, sprint à zéro endurance.
-
-### Pièges connus, vérifiés dans cette session
+### Pièges connus, vérifiés en B.1 et B.2
 
 - **Un contrôle négatif sur un réglage doit muter le `.tres`**, pas la valeur par
-  défaut du `@export` : sinon il ne casse rien et le test paraît faussement
-  inutile (R-006bis).
+  défaut du `@export` : sinon il ne casse rien et le test paraît faussement inutile
+  (R-006bis).
+- **Un effort maintenu ne reste pas épuisé** : mesurer « après N secondes » attrape
+  un cycle plus tard. S'arrêter à la transition (`_drain_until_exhausted`).
+- **Une mesure d'intégration ne doit pas dépendre de la taille du décor** : le sol
+  du bac à sable fait 80 m, un sprint de 8 s en sort.
 - **Une rampe de test ne doit pas être une boîte tournée** : son dessous forme un
   surplomb sous lequel la capsule se faufile, sans aucun drapeau de collision pour
-  le signaler. Utiliser des prismes pleins.
-- **`SpringArm3D` réécrit la position de ses enfants directs.** Tout décalage posé
-  là disparaît en silence (D-014). Son `margin` est sans effet ; c'est `shape` qui
-  donne un dégagement (D-015).
+  le signaler.
+- **`SpringArm3D` réécrit la position de ses enfants directs** (D-014) ; son
+  `margin` est sans effet, c'est `shape` qui donne un dégagement (D-015).
 - Un `MainLoop` lancé par `--script` n'a ni autoloads ni tree prêt pendant
-  `_initialize()` (D-009) : `add_child` suivi de `global_position` y déclenche un
-  `!is_inside_tree()`. Le runner attend une frame, ne pas défaire.
+  `_initialize()` (D-009) ; le runner attend une frame, ne pas défaire.
 - Toute méthode de test avec `await` doit être attendue, **et la boucle appelante
-  aussi** (D-010) — sinon des tests disparaissent en silence, suite verte.
+  aussi** (D-010).
 - **Relever `MIN_TESTS` dans `tools/validate_fast.sh` à chaque ajout de test.**
 - Le nombre de tests de référence vit dans `docs/TEST_REPORT.md` **uniquement**.
-- Doc Godot en ligne bloquée (ISS-001) : mesurer sur le binaire installé, et
+- Doc Godot en ligne bloquée (ISS-001) : mesurer sur le binaire installé et
   consigner la mesure dans `RESEARCH_LEDGER.md`.

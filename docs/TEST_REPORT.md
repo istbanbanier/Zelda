@@ -446,3 +446,78 @@ contrôle, les fichiers mutés ont été restaurés et comparés à l'octet prè
 - **CONTROLLER-001 reste ouverte.** B.1 est intégralement piloté par intention
   injectée : cela prouve que le contrôleur n'exige pas de clavier, **jamais** que la
   manette fonctionne.
+
+---
+
+# Jalon B.2 — Endurance (2026-08-01)
+
+## Commande et résultat
+
+```bash
+tools/validate_fast.sh; echo $?
+```
+
+**Code retour** : `0` — VERT.
+
+| Niveau | Résultat |
+|---|---|
+| 0. Version | `4.7.1.stable.custom_build.a13da4feb` ✅ |
+| 1 / 1b. Import et parse de **tous** les `.gd` | 0 erreur ✅ |
+| 2. Tests unitaires et d'intégration | **100 réussis, 0 échoué** ✅ |
+| 2b. Erreurs signalées dans le journal | aucune ✅ |
+| 3. Scène principale (Boot → MainMenu, lancement réel) | ✅ |
+| 4. Plancher de couverture | 100 tests pour un plancher de 100 ✅ |
+
+> **Nombre de tests de référence : 100.** C'est ici, et nulle part ailleurs, qu'il
+> doit être lu.
+
+Nouveau fichier : `tests/unit/test_stamina.gd` (15 cas, delta piloté à la main,
+aucun tick physique). 5 cas ajoutés à `tests/integration/test_locomotion.gd` pour
+le câblage réel au contrôleur.
+
+## Défaut réel trouvé pendant B.2
+
+**Le sprint bégayait au lieu de repartir.** L'implémentation littérale de §9.1
+levait l'épuisement dès que la jauge repassait au-dessus de zéro. Sprint maintenu :
+la régénération démarre après 1 s, la première unité rendue relance le sprint pour
+**un seul tick** (0,017 s), la jauge se revide, l'épuisement revient.
+`test_reaching_zero_raises_exhaustion_once` a compté **7 émissions du signal en
+15 secondes** au lieu d'une.
+
+Ce n'était pas visible en relisant le code : chaque ligne respectait §9.1. C'est le
+test qui a nommé le défaut, et le comptage de signaux qui l'a rendu lisible.
+
+Correctif : seuil de récupération (D-016), hors §9.1 donc explicitement marqué
+comme valeur du projet, à confirmer par un essai humain (§21.9).
+
+## Contrôles négatifs rejoués
+
+| # | Mutation appliquée | Test visé | Obtenu |
+|---|---|---|---|
+| N1 | le sprint n'appelle plus `try_sustain()` | `test_sprint_drains_stamina` | ÉCHEC — « obtenu 0.0000 » ✅ |
+| N2 | `can_sustain()` ignore épuisement et réserve | `test_exhaustion_drops_the_sprint_back_to_running` | ÉCHEC — « obtenu 9.0000 » ✅ |
+| N3 | seuil de récupération retiré (**le défaut d'origine**) | `test_a_held_sprint_produces_usable_bursts_not_a_stutter` | ÉCHEC — « 0.017 s (un tick = 0.017 s) » ✅ |
+| N4 | régénération au régime nominal dès la première image | `test_regeneration_ramps_in_instead_of_snapping` | ÉCHEC ✅ |
+| N5 | délai de régénération ignoré | `test_regeneration_waits_the_declared_delay` | ÉCHEC — « obtenu 93.78 » ✅ |
+| N6 | `exhaustion_lockout` mis à 0 **dans le `.tres`** | `test_the_exhaustion_lockout_refuses_an_otherwise_affordable_cost` | ÉCHEC ✅ |
+| N7 | `try_spend()` prélève malgré le refus | `test_an_unaffordable_cost_is_refused_and_consumes_nothing` | ÉCHEC — « obtenu 0.0000 » ✅ |
+| N8 | `has_move()` retiré : le sprint immobile consomme | `test_holding_sprint_while_standing_still_costs_nothing` | ÉCHEC — « obtenu 88.0000 » ✅ |
+
+Logs archivés : `evidence/gateB/negative_controls/N1…N8*.log`. Fichiers mutés
+restaurés et comparés à l'octet près entre chaque contrôle.
+
+N6 mute la ressource et non la valeur par défaut du `@export`, conformément à la
+règle tirée de B.1 (R-006bis) — muter le script n'aurait rien cassé.
+
+## Limites de B.2 — à ne pas confondre avec des oublis
+
+- **Les coûts d'escalade, d'esquive et d'attaque lourde sont déclarés, pas
+  consommés.** §9.1 les fixe ; les câbler sans escalade ni combat serait du code
+  mort. `docs/STATUS.md` dit lequel est actif.
+- **Aucune jauge à l'écran.** Les signaux `changed` / `exhausted` / `recovered`
+  sont émis et attendent l'UI de §17.2.
+- **Ni souffle ni animation d'épuisement** (§9.1, §18.2) : aucun périphérique audio
+  ici (ISS-004), aucune animation avant la Phase H.
+- **Le seuil de récupération n'est pas validé par un joueur.** 20 est un point de
+  départ raisonné, pas une mesure de ressenti (§21.9).
+- **CONTROLLER-001 reste ouverte.**

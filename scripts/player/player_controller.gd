@@ -8,9 +8,9 @@
 ## §20.9 : toute la logique de mouvement vit dans `_physics_process()`. Aucun
 ## transform de gameplay n'est écrit depuis `_process()`.
 ##
-## ÉTAT B.1 : marche, course, sprint, saut, gravité, coyote time, jump buffer.
-## Le sprint n'a **aucun coût** pour l'instant — `StaminaComponent` (§9.1) arrive
-## en B.2 et le limitera. Escalade et mantle (§9.2, §9.3) suivent.
+## ÉTAT B.2 : marche, course, sprint **à l'endurance**, saut, gravité, coyote
+## time, jump buffer. Escalade et mantle (§9.2, §9.3) suivent en B.3 ; ils
+## consommeront le même `StaminaComponent`, sans le modifier.
 class_name PlayerController
 extends CharacterBody3D
 
@@ -24,6 +24,7 @@ signal left_ground()
 @onready var _visual_root: Node3D = $VisualRoot
 @onready var _camera_rig: CameraRig = $CameraRig
 @onready var _input_reader: PlayerInputReader = $Components/PlayerInputReader
+@onready var _stamina: StaminaComponent = $Components/StaminaComponent
 
 ## Intention courante. Remplacée par un test via `set_intent_source()`.
 var _intent: InputIntent = null
@@ -66,14 +67,20 @@ func current_intent() -> InputIntent:
 func _physics_process(delta: float) -> void:
 	var intent: InputIntent = current_intent()
 
+	# Une seule décision de sprint par tick, prise ici et transmise ensuite. La
+	# caméra, la vitesse et l'endurance doivent s'accorder sur la même réponse :
+	# recalculer la condition à trois endroits les ferait diverger au moment précis
+	# où la jauge se vide.
+	var sprinting: bool = _resolve_sprint(delta, intent)
+
 	# La caméra est mise à jour avant le déplacement : le repère utilisé pour
 	# « avant » est celui que le joueur voit à cet instant.
 	_camera_rig.apply_look(intent.look, delta)
-	_camera_rig.update_fov(intent.sprint_held, delta)
+	_camera_rig.update_fov(sprinting, delta)
 
 	_update_timers(delta, intent)
 	_apply_gravity(delta)
-	_apply_horizontal_motion(delta, intent)
+	_apply_horizontal_motion(delta, intent, sprinting)
 	_try_jump()
 
 	var was_on_floor: bool = is_on_floor()
@@ -83,10 +90,29 @@ func _physics_process(delta: float) -> void:
 
 	_orient_visual(delta)
 
+	# Après les demandes d'effort, jamais avant : c'est `update()` qui décide si le
+	# tick a consommé ou s'il faut régénérer.
+	if _stamina != null:
+		_stamina.update(delta)
+
 	if _use_reader and _input_reader != null:
 		_input_reader.clear_edges()
 	elif _intent != null:
 		_intent.consume_edges()
+
+
+## Le sprint n'est accordé que s'il est demandé, que le joueur se déplace
+## réellement, et que l'endurance le soutient (§9.1). Sprinter sur place ne
+## consomme rien : c'est un état de locomotion, pas une posture.
+##
+## À zéro, `try_sustain()` refuse et le joueur retombe en course — la bascule de
+## §9.1 est donc portée par le composant, pas par une condition dispersée ici.
+func _resolve_sprint(delta: float, intent: InputIntent) -> bool:
+	if not intent.sprint_held or not intent.has_move():
+		return false
+	if _stamina == null:
+		return true
+	return _stamina.try_sustain(_stamina.tuning.sprint_drain, delta)
 
 
 func _update_timers(delta: float, intent: InputIntent) -> void:
@@ -109,7 +135,7 @@ func _apply_gravity(delta: float) -> void:
 
 ## Déplacement **relatif à la caméra** (§8.2) : « avant » signifie l'écran, pas
 ## l'axe -Z du monde. C'est le pivot de lacet qui définit ce repère.
-func _apply_horizontal_motion(delta: float, intent: InputIntent) -> void:
+func _apply_horizontal_motion(delta: float, intent: InputIntent, sprinting: bool) -> void:
 	var basis_yaw: Basis = _camera_rig.get_yaw_basis()
 	var forward: Vector3 = -basis_yaw.z
 	var right: Vector3 = basis_yaw.x
@@ -123,7 +149,10 @@ func _apply_horizontal_motion(delta: float, intent: InputIntent) -> void:
 	if magnitude > 0.0:
 		wish = wish.normalized()
 
-	var speed: float = tuning.target_speed(magnitude, intent.sprint_held)
+	# `target_speed()` reste le seul endroit qui décide d'une vitesse. L'épuisement
+	# n'y ajoute pas de branche : il se contente de faire arriver `sprinting` à
+	# faux (§9.1, « sprint → course »).
+	var speed: float = tuning.target_speed(magnitude, sprinting)
 	var desired: Vector3 = wish * speed
 
 	var horizontal: Vector3 = Vector3(velocity.x, 0.0, velocity.z)
@@ -174,3 +203,8 @@ func _orient_visual(delta: float) -> void:
 ## Vitesse horizontale, exposée pour les tests et l'UI de debug.
 func horizontal_speed() -> float:
 	return Vector2(velocity.x, velocity.z).length()
+
+
+## Exposé pour les tests, la jauge de §17.2 et la sauvegarde de §19.1.
+func stamina() -> StaminaComponent:
+	return _stamina

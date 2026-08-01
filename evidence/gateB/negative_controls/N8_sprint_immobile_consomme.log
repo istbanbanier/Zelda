@@ -1,0 +1,9 @@
+# Contrôle négatif — N8_sprint_immobile_consomme
+# Le sprint consomme meme a l arret : la condition has_move() est retiree.
+# Test visé : test_holding_sprint_while_standing_still_costs_nothing
+# Attendu : ÉCHEC. Un test incapable d'échouer ne prouve rien.
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd
+# ---
+  ÉCHEC test_locomotion.gd::test_holding_sprint_while_standing_still_costs_nothing — endurance après 1 s de sprint immobile : attendu 100.0000 ± 0.0010, obtenu 88.0000
+=== RÉSULTAT: 99 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_locomotion.gd::test_holding_sprint_while_standing_still_costs_nothing — endurance après 1 s de sprint immobile : attendu 100.0000 ± 0.0010, obtenu 88.0000
