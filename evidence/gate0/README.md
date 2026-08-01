@@ -1,7 +1,7 @@
 # Preuves du Gate 0
 
-**Commit de référence** : `ecca33134c26e9d8405b08e614c5ab2e5550983a`
-(« Gate 0 : corrige la TROISIEME revue adverse »).
+**Commit de référence** : `742eebe9e4c94d0994c31a8e6dc640a1d67e7c93`
+(« Gate 0 : corrige la QUATRIEME revue adverse »).
 
 Tous les fichiers de ce dossier ont été produits **après** ce commit, sur un arbre
 dont les seules modifications étaient ces fichiers de preuve eux-mêmes. C'est
