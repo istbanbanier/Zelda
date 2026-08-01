@@ -19,10 +19,13 @@ const RESCUE_CHECK_INTERVAL: float = 1.0
 ## §7.7 : soleil à l'ouest (rayons vers +X), plongée 22°.
 const SUN_ROTATION_DEG: Vector3 = Vector3(-22.0, -90.0, 0.0)
 
-## §3.2 : caméra ~4,2 m derrière le héros, 1,7 m au-dessus des pieds, héros au
-## tiers inférieur (plongée légère), FOV horizontal ≈ 68° (vertical 42° en 16:9).
-const VISTA_POSITION: Vector3 = Vector3(0.0, 26.0, 174.2)
-const VISTA_ROTATION_DEG: Vector3 = Vector3(-7.0, 0.0, 0.0)
+## §3.2, ajusté SUR CAPTURE (les valeurs de la spec sont des points de départ) :
+## à 4,2 m, une capsule de 1,8 m occupait 57 % du cadre — mesuré sur la première
+## capture. Reculée à ~7,2 m et montée à 2,6 m au-dessus des pieds : héros à
+## ~32 % de la hauteur, dans la bande 32–40 % de §3.2, légèrement à gauche
+## (décalage caméra +0,8). FOV horizontal ≈ 68° (vertical 42° en 16:9).
+const VISTA_POSITION: Vector3 = Vector3(0.8, 26.9, 177.4)
+const VISTA_ROTATION_DEG: Vector3 = Vector3(-6.0, 0.0, 0.0)
 const VISTA_FOV: float = 42.0
 
 @onready var _player: PlayerController = $Player

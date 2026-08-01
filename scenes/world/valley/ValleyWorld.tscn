@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=14 format=3]
 
 ; Vallée de Néris — D.1 : relief macro blockout (voir scripts/world/valley_terrain.gd
 ; pour toutes les cotes). Spawn sur la crête (§3.3 : (0, 24, 170)), camp sur sa
@@ -23,6 +23,17 @@ height = 0.5
 [sub_resource type="StandardMaterial3D" id="CampfireMat"]
 albedo_color = Color(0.35, 0.22, 0.14, 1)
 
+; Colonne de fumée graybox : §24 veut le « feu du camp visible à distance » —
+; sans elle, la terrasse du camp ne se lisait pas depuis la crête (1re capture).
+[sub_resource type="CylinderMesh" id="SmokeMesh"]
+top_radius = 1.1
+bottom_radius = 0.35
+height = 14.0
+
+[sub_resource type="StandardMaterial3D" id="SmokeMat"]
+albedo_color = Color(0.78, 0.78, 0.8, 0.85)
+transparency = 1
+
 [node name="ValleyWorld" type="Node3D"]
 script = ExtResource("1_world")
 
@@ -45,6 +56,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 24.3, 170)
 [node name="Player" parent="." instance=ExtResource("3_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 24.3, 170)
 
+; §3.3 : « regard vers -Z » — le visuel fait demi-tour au spawn ; la première
+; capture montrait le héros de FACE (nez cyan vers la caméra), §3.2 exige le dos.
+[node name="VisualRoot" parent="Player"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+
 ; --- Camp ennemi, sur SA terrasse (§3.3 : (45, 6, 65)) ---------------------
 
 [node name="Camp" type="Node3D" parent="."]
@@ -54,6 +70,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 6, 65)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 mesh = SubResource("CampfireMesh")
 surface_material_override/0 = SubResource("CampfireMat")
+
+[node name="SmokeColumn" type="MeshInstance3D" parent="Camp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.5, 0)
+mesh = SubResource("SmokeMesh")
+surface_material_override/0 = SubResource("SmokeMat")
 
 [node name="Raider1" parent="Camp" instance=ExtResource("4_raider")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.1, 4)
