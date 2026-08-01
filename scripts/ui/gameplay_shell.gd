@@ -56,6 +56,16 @@ var _player: PlayerController = null
 var _hud_refresh_accumulator: float = 0.0
 var _selected_slot: int = 0
 
+## Habillage V4.4 (réf. 03) — construits en code par `_apply_v4_style()`.
+const RUBY_SHARDS: int = 5
+const DURABILITY_SEGMENTS: int = 4
+var _ruby_shards: Array[ProgressBar] = []
+var _durability_segments: Array[ProgressBar] = []
+var _lock_plaque: PanelContainer = null
+var _lock_target_bar: ProgressBar = null
+var _lock_health: HealthComponent = null
+var _prompt_panel: PanelContainer = null
+
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -83,9 +93,151 @@ func _ready() -> void:
 	var bus: Node = get_node_or_null("/root/EventBus")
 	if bus != null:
 		bus.connect("gameplay_notification", _on_notification)
+	_apply_v4_style()
 	_set_mouse_captured(true)
 	# Le joueur peut entrer dans l'arbre après la coquille : liaison différée.
 	_bind_player.call_deferred()
+
+
+## ---------------------------------------------------------------------------
+## Habillage V4.4 (réf. 03/05) — ardoise, or pâle, rubis, turquoise.
+## La LOGIQUE D.1R n'est pas reconstruite : les mêmes signaux alimentent des
+## contrôles restylés ; chaque valeur affichée vient d'un composant réel.
+## ---------------------------------------------------------------------------
+
+func _apply_v4_style() -> void:
+	var hud: Control = _health_bar.get_node("../..") as Control
+	# 1. Vie en fragments de rubis (réf. 03) : la barre d'origine devient le
+	# MODÈLE caché — mêmes signaux, seuls les éclats s'affichent. `hud_health()`
+	# lit la SOMME des éclats : le seam mesure ce qui est réellement montré.
+	_health_bar.visible = false
+	var vitals: VBoxContainer = _health_bar.get_parent() as VBoxContainer
+	var ruby_row: HBoxContainer = HBoxContainer.new()
+	ruby_row.name = "RubyRow"
+	ruby_row.add_theme_constant_override(&"separation", 4)
+	var emblem: Label = Label.new()
+	emblem.text = "❖"
+	emblem.add_theme_color_override(&"font_color", HudStyle.GOLD)
+	ruby_row.add_child(emblem)
+	for i: int in range(RUBY_SHARDS):
+		var shard: ProgressBar = ProgressBar.new()
+		shard.custom_minimum_size = Vector2(30, 20)
+		shard.show_percentage = false
+		shard.max_value = 100.0 / float(RUBY_SHARDS)
+		shard.value = shard.max_value
+		shard.add_theme_stylebox_override(&"background",
+			HudStyle.gauge_background(HudStyle.RUBY_DARK))
+		shard.add_theme_stylebox_override(&"fill", HudStyle.gauge_fill(HudStyle.RUBY))
+		ruby_row.add_child(shard)
+		_ruby_shards.append(shard)
+	vitals.add_child(ruby_row)
+	vitals.move_child(ruby_row, 0)
+	# 2. Endurance turquoise DISCRÈTE près du personnage, visible pendant
+	# l'usage seulement (réf. 03) — sortie de la colonne haut-gauche.
+	vitals.remove_child(_stamina_bar)
+	hud.add_child(_stamina_bar)
+	_stamina_bar.custom_minimum_size = Vector2(130, 7)
+	_stamina_bar.show_percentage = false
+	_stamina_bar.set_anchors_preset(Control.PRESET_CENTER)
+	_stamina_bar.offset_left = 90.0
+	_stamina_bar.offset_right = 220.0
+	_stamina_bar.offset_top = 30.0
+	_stamina_bar.offset_bottom = 37.0
+	_stamina_bar.add_theme_stylebox_override(&"background",
+		HudStyle.gauge_background(HudStyle.TURQUOISE_DARK))
+	_stamina_bar.add_theme_stylebox_override(&"fill",
+		HudStyle.gauge_fill(HudStyle.TURQUOISE))
+	_stamina_bar.visible = false
+	# 3. Plaque de cible verrouillée : nom sobre + vie RÉELLE de l'ennemi.
+	_lock_plaque = PanelContainer.new()
+	_lock_plaque.name = "LockPlaque"
+	_lock_plaque.add_theme_stylebox_override(&"panel", HudStyle.plaque())
+	var lock_column: VBoxContainer = VBoxContainer.new()
+	_lock_label.get_parent().remove_child(_lock_label)
+	_lock_label.add_theme_color_override(&"font_color", HudStyle.IVORY)
+	lock_column.add_child(_lock_label)
+	_lock_target_bar = ProgressBar.new()
+	_lock_target_bar.custom_minimum_size = Vector2(180, 9)
+	_lock_target_bar.show_percentage = false
+	_lock_target_bar.add_theme_stylebox_override(&"background",
+		HudStyle.gauge_background(HudStyle.RUBY_DARK))
+	_lock_target_bar.add_theme_stylebox_override(&"fill",
+		HudStyle.gauge_fill(HudStyle.RUBY))
+	lock_column.add_child(_lock_target_bar)
+	_lock_plaque.add_child(lock_column)
+	hud.add_child(_lock_plaque)
+	_lock_plaque.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	_lock_plaque.offset_left = -110.0
+	_lock_plaque.offset_right = 110.0
+	_lock_plaque.offset_top = 18.0
+	_lock_plaque.visible = false
+	# 4. Carte d'arme (réf. 03) : plaque bas-droite — nom, durabilité
+	# SEGMENTÉE, flèches. Les labels existants y déménagent tels quels.
+	var gear: VBoxContainer = _weapon_label.get_parent() as VBoxContainer
+	var card: PanelContainer = PanelContainer.new()
+	card.name = "WeaponCard"
+	card.add_theme_stylebox_override(&"panel", HudStyle.plaque())
+	hud.add_child(card)
+	card.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	card.offset_left = -250.0
+	card.offset_top = -110.0
+	card.offset_right = -16.0
+	card.offset_bottom = -16.0
+	gear.get_parent().remove_child(gear)
+	card.add_child(gear)
+	_weapon_label.add_theme_color_override(&"font_color", HudStyle.IVORY)
+	_arrows_label.add_theme_color_override(&"font_color", HudStyle.IVORY)
+	var durability_row: HBoxContainer = HBoxContainer.new()
+	durability_row.name = "DurabilityRow"
+	durability_row.add_theme_constant_override(&"separation", 3)
+	for i: int in range(DURABILITY_SEGMENTS):
+		var segment: ProgressBar = ProgressBar.new()
+		segment.custom_minimum_size = Vector2(28, 8)
+		segment.show_percentage = false
+		segment.max_value = 1.0
+		segment.add_theme_stylebox_override(&"background",
+			HudStyle.gauge_background(Color(0.16, 0.14, 0.10, 0.9)))
+		segment.add_theme_stylebox_override(&"fill", HudStyle.gauge_fill(HudStyle.GOLD))
+		durability_row.add_child(segment)
+		_durability_segments.append(segment)
+	gear.add_child(durability_row)
+	gear.move_child(durability_row, 1)
+	# 5. Invite en cartouche (réf. 03 : chip de touche + verbe).
+	_prompt_panel = PanelContainer.new()
+	_prompt_panel.name = "PromptPanel"
+	_prompt_panel.add_theme_stylebox_override(&"panel", HudStyle.chip())
+	var prompt_anchor_top: float = _prompt_label.offset_top
+	_prompt_label.get_parent().remove_child(_prompt_label)
+	_prompt_label.add_theme_color_override(&"font_color", HudStyle.IVORY)
+	_prompt_panel.add_child(_prompt_label)
+	hud.add_child(_prompt_panel)
+	_prompt_panel.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	_prompt_panel.offset_left = -110.0
+	_prompt_panel.offset_right = 110.0
+	_prompt_panel.offset_top = prompt_anchor_top
+	_prompt_panel.visible = false
+	# 6. Panneaux (pause, mort) : colonne posée sur une plaque d'ardoise, dim
+	# adouci — le monde reste VISIBLE derrière (réf. 05 : jamais un écran noir).
+	for panel_name: String in ["PausePanel", "DeathPanel"]:
+		var panel: Control = get_node("%" + panel_name) as Control
+		var dim: ColorRect = panel.get_node("Dim") as ColorRect
+		dim.color = Color(0.02, 0.03, 0.05, 0.45)
+		var column: VBoxContainer = panel.get_node("Column") as VBoxContainer
+		var plate: PanelContainer = PanelContainer.new()
+		plate.name = "Plate"
+		plate.add_theme_stylebox_override(&"panel", HudStyle.plaque(0.8))
+		var column_position: Vector2 = column.position
+		panel.remove_child(column)
+		plate.add_child(column)
+		panel.add_child(plate)
+		plate.position = column_position - Vector2(18.0, 12.0)
+		var title: Label = column.get_node_or_null("Title") as Label
+		if title != null:
+			title.add_theme_color_override(&"font_color", HudStyle.GOLD)
+	for button_node: Button in [_resume_button, _quit_button, _retry_button,
+			_death_quit_button, _equip_button, _move_up_button, _move_down_button,
+			_close_inventory_button]:
+		HudStyle.style_button(button_node)
 
 
 func _bind_player() -> void:
@@ -114,11 +266,44 @@ func _bind_player() -> void:
 		health.died.connect(_on_player_died)
 	var lock: LockOnComponent = _player.lock_component()
 	if lock != null:
-		lock.target_acquired.connect(func(_target: Node3D) -> void:
-			_lock_label.visible = true)
-		lock.target_released.connect(func(_reason: StringName) -> void:
-			_lock_label.visible = false)
+		lock.target_acquired.connect(_on_lock_acquired)
+		lock.target_released.connect(_on_lock_released)
 	_refresh_weapon_text()
+
+
+## Plaque de cible (V4.4, réf. 03) : la vie de l'ennemi verrouillé, depuis SON
+## HealthComponent — connectée à l'acquisition, déconnectée au relâchement
+## (règle CLAUDE.md : déconnecter les signaux dynamiques).
+func _on_lock_acquired(target: Node3D) -> void:
+	_lock_label.visible = true
+	_lock_plaque.visible = true
+	_disconnect_lock_health()
+	if target.has_method("health"):
+		_lock_health = target.call("health") as HealthComponent
+	if _lock_health != null:
+		_lock_health.health_changed.connect(_on_lock_target_health)
+		_on_lock_target_health(_lock_health.current(), _lock_health.maximum())
+		_lock_target_bar.visible = true
+	else:
+		_lock_target_bar.visible = false
+
+
+func _on_lock_released(_reason: StringName) -> void:
+	_lock_label.visible = false
+	_lock_plaque.visible = false
+	_disconnect_lock_health()
+
+
+func _disconnect_lock_health() -> void:
+	if _lock_health != null and is_instance_valid(_lock_health) \
+			and _lock_health.health_changed.is_connected(_on_lock_target_health):
+		_lock_health.health_changed.disconnect(_on_lock_target_health)
+	_lock_health = null
+
+
+func _on_lock_target_health(current: float, maximum: float) -> void:
+	_lock_target_bar.max_value = maximum
+	_lock_target_bar.value = current
 
 
 func _notification(what: int) -> void:
@@ -300,11 +485,20 @@ func equip_slot(index: int) -> void:
 func _on_health_changed(current: float, maximum: float) -> void:
 	_health_bar.max_value = maximum
 	_health_bar.value = current
+	# Fragments de rubis (V4.4) : chaque éclat porte une part égale du maximum,
+	# le dernier entamé se vide partiellement (réf. 03).
+	var per_shard: float = maximum / float(RUBY_SHARDS)
+	for i: int in range(_ruby_shards.size()):
+		_ruby_shards[i].max_value = per_shard
+		_ruby_shards[i].value = clampf(current - per_shard * float(i), 0.0, per_shard)
 
 
 func _on_stamina_changed(current: float, maximum: float) -> void:
 	_stamina_bar.max_value = maximum
 	_stamina_bar.value = current
+	# Réf. 03 : « près du personnage PENDANT son utilisation » — la jauge
+	# n'occupe l'écran que quand l'endurance travaille.
+	_stamina_bar.visible = current < maximum - 0.5
 
 
 func _on_arrows_changed(count: int) -> void:
@@ -323,23 +517,34 @@ func _refresh_weapon_text() -> void:
 	var weapon: WeaponInstance = _player.inventory().equipped()
 	if weapon == null or weapon.definition == null:
 		_weapon_label.text = "Mains nues"
+		for segment: ProgressBar in _durability_segments:
+			segment.value = 0.0
 		return
 	_weapon_label.text = "%s  %d/%d" % [weapon.definition.display_name,
 		weapon.current_durability, weapon.definition.max_durability]
+	# Durabilité SEGMENTÉE (réf. 03) : fraction réelle répartie sur 4 crans.
+	var fraction: float = float(weapon.current_durability) \
+		/ float(weapon.definition.max_durability) * float(DURABILITY_SEGMENTS)
+	for i: int in range(_durability_segments.size()):
+		_durability_segments[i].value = clampf(fraction - float(i), 0.0, 1.0)
 
 
 func _on_interact_focus_changed(target: Node3D) -> void:
 	if target == null or not target.has_method("prompt_verb"):
 		_prompt_label.text = ""
+		_prompt_panel.visible = false
 		return
 	var verb: String = String(target.call("prompt_verb"))
 	_prompt_label.text = "" if verb == "" else "E — %s" % verb
+	_prompt_panel.visible = _prompt_label.text != ""
 
 
 func _on_notification(text: String) -> void:
 	var label: Label = Label.new()
 	label.text = text
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_color_override(&"font_color", HudStyle.IVORY)
+	label.add_theme_stylebox_override(&"normal", HudStyle.plaque(0.35))
 	_notifications.add_child(label)
 	while _notifications.get_child_count() > MAX_NOTIFICATIONS:
 		_notifications.get_child(0).free()
@@ -364,8 +569,39 @@ func prompt_text() -> String:
 	return _prompt_label.text
 
 
+## Somme des éclats de rubis : le seam mesure ce qui est réellement AFFICHÉ
+## (V4.4), pas le modèle caché.
 func hud_health() -> float:
-	return _health_bar.value
+	var total: float = 0.0
+	for shard: ProgressBar in _ruby_shards:
+		total += shard.value
+	return total
+
+
+func ruby_shard_values() -> Array[float]:
+	var values: Array[float] = []
+	for shard: ProgressBar in _ruby_shards:
+		values.append(shard.value)
+	return values
+
+
+func is_stamina_gauge_visible() -> bool:
+	return _stamina_bar.visible
+
+
+func is_lock_plaque_visible() -> bool:
+	return _lock_plaque.visible
+
+
+func lock_target_health_shown() -> float:
+	return _lock_target_bar.value
+
+
+func durability_segment_values() -> Array[float]:
+	var values: Array[float] = []
+	for segment: ProgressBar in _durability_segments:
+		values.append(segment.value)
+	return values
 
 
 func hud_stamina() -> float:
