@@ -190,3 +190,35 @@ func test_meals_and_remaining_buff_survive_a_reload() -> void:
 		"…et les multiplicateurs se sont RETENDUS à la restauration")
 	await _cleanup_valley(reloaded)
 	_clear_save()
+
+
+func test_an_expired_buff_never_resurrects_after_a_reload() -> void:
+	## Correctif V4 lot 1 : l'EXPIRATION doit aussi produire un instantané —
+	## sans cela, le buff sauvegardé à l'application ressuscite au
+	## rechargement avec tout son temps. Expiration pilotée (déterministe),
+	## AUCUN autre événement de sauvegarde entre l'expiration et le
+	## rechargement.
+	_clear_save()
+	var valley: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(valley)
+	await _settle(5)
+	var player: PlayerController = valley.player()
+	player.status().apply_buff(&"attack", 2.0, 0.5)   # autosave : buff PRÉSENT
+	await _settle(2)
+	player.status()._process(1.0)   # expiration pilotée — buff_expired émis
+	await _settle(2)
+	check_equal(String(player.status().active_effect()), "", "préalable : expiré")
+	await _cleanup_valley(valley)
+
+	var reloaded: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(reloaded)
+	await _settle(5)
+	var back: PlayerController = reloaded.player()
+	check_equal(String(back.status().active_effect()), "",
+		"le buff expiré ne RESSUSCITE pas au rechargement")
+	var hitbox: HitboxComponent = back.get_node("VisualRoot/WeaponHitbox") \
+		as HitboxComponent
+	check_approx(hitbox.damage_multiplier, 1.0, 0.001,
+		"…aucun multiplicateur résiduel")
+	await _cleanup_valley(reloaded)
+	_clear_save()

@@ -1125,3 +1125,13 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > 312 → **315**. **RESTE (E.2b)** : UI de cuisine au feu de camp
 > (sélection 1-5, aperçu §13.3), label de buff au HUD (§17.2), déclencheur
 > feu de camp. Les règles pures (RecipeRules) sont déjà testées.
+
+## 2026-08-02 (nuit V4, lot 1) — correctif : expiration de buff persistée
+
+> Défaut CONFIRMÉ par test rouge : `buff_expired` remettait le composant à
+> neutre mais ne produisait AUCUN instantané — le buff sauvegardé à
+> l'application ressuscitait au rechargement avec tout son temps et son
+> multiplicateur (×1.25 mesuré). Correctif : `buff_expired` → autosave
+> (valley_world). Testé : expiration pilotée → rechargement → aucun buff,
+> aucun multiplicateur résiduel ; le remplacement restait couvert. Aucune
+> valeur de gameplay modifiée. Plancher 315 → **316**.

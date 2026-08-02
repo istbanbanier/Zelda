@@ -96,6 +96,11 @@ func _ready() -> void:
 	if _player.status() != null:
 		_player.status().buff_applied.connect(
 			func(_e: StringName, _p: float, _d: float) -> void: _autosave())
+		# Correctif V4 lot 1 : l'EXPIRATION aussi — sans cet instantané, le
+		# buff sauvegardé à l'application ressuscitait au rechargement avec
+		# tout son temps (test « never_resurrects », rouge avant ce commit).
+		_player.status().buff_expired.connect(
+			func(_e: StringName) -> void: _autosave())
 	var flow: Node = get_node_or_null("/root/SceneFlow")
 	if flow != null:
 		flow.connect("transition_started", _on_transition_started)
