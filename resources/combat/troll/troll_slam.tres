@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="AttackDefinition" load_steps=2 format=3]
+
+; D-EN.4 — coup au sol (attaque LOURDE) : l'impact émet l'onde de choc.
+
+[ext_resource type="Script" path="res://resources/combat/attack_definition.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"troll_slam"
+damage_multiplier = 1.2
+poise_damage = 50.0
+knockback = 7.0
+element = &""
+startup = 1.2
+active = 0.2
+recovery = 1.6
+input_buffer = 0.15
+combo_window_fraction = 0.3
+hit_stop = 0.095

@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="AttackDefinition" load_steps=2 format=3]
+
+; D-EN.4 — frappe verticale (chaînée au balayage) : plus forte, plus lente.
+
+[ext_resource type="Script" path="res://resources/combat/attack_definition.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"troll_vertical"
+damage_multiplier = 1.4
+poise_damage = 40.0
+knockback = 4.0
+element = &""
+startup = 1.1
+active = 0.15
+recovery = 1.3
+input_buffer = 0.15
+combo_window_fraction = 0.3
+hit_stop = 0.09

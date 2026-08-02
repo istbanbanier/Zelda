@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EnemyTuning" load_steps=2 format=3]
+
+; Colosse des ravins (§12.4, §12.6) : ~420 PV, vision 35 m / 115°,
+; audition 30 m, poursuite 4,8 m/s, LENT au virage, territoire serré.
+
+[ext_resource type="Script" path="res://resources/enemies/enemy_tuning.gd" id="1_tuning"]
+
+[resource]
+script = ExtResource("1_tuning")
+id = &"ravine_troll"
+max_health = 420.0
+poise = 100.0
+stagger_duration = 1.2
+vision_range = 35.0
+vision_half_angle_deg = 57.5
+hearing_range = 30.0
+pursuit_speed = 4.8
+turn_speed = 3.5
+attack_reach = 3.2
+attack_cooldown = 2.2
+retreat_speed = 2.5
+retreat_duration = 1.0
+memory_duration = 6.0
+search_duration = 3.0
+max_pursuit_distance = 35.0
+patrol_speed = 2.2
+alert_radius = 0.0
+flee_duration = 3.0

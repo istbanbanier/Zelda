@@ -1,0 +1,103 @@
+[gd_scene load_steps=15 format=3]
+
+; Colosse des ravins (§12.4) — graybox : capsule de 3,8 m (rayon 1,1 — sa
+; taille EST sa navigation : une porte étroite le refuse physiquement).
+; DEUX hurtbox NON chevauchantes : avant ×1, DOS ×2 (le point faible de
+; §12.4/§10.3, appliqué par la formule côté hitbox).
+
+[ext_resource type="Script" path="res://scripts/enemies/ravine_troll.gd" id="1_troll"]
+[ext_resource type="Resource" path="res://resources/enemies/ravine_troll_default.tres" id="2_tuning"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="3_health"]
+[ext_resource type="Script" path="res://scripts/components/poise_component.gd" id="4_poise"]
+[ext_resource type="Script" path="res://scripts/components/hurtbox_component.gd" id="5_hurtbox"]
+[ext_resource type="Script" path="res://scripts/components/hitbox_component.gd" id="6_hitbox"]
+[ext_resource type="Script" path="res://scripts/combat/attack_controller.gd" id="7_attack"]
+[ext_resource type="Resource" path="res://resources/combat/troll/troll_sweep.tres" id="8_sweep"]
+[ext_resource type="Resource" path="res://resources/combat/troll/troll_vertical.tres" id="9_vertical"]
+[ext_resource type="Resource" path="res://resources/combat/troll/troll_slam.tres" id="10_slam"]
+
+[sub_resource type="CapsuleShape3D" id="BodyShape"]
+radius = 1.1
+height = 3.8
+
+[sub_resource type="CapsuleMesh" id="BodyMesh"]
+radius = 1.1
+height = 3.8
+
+[sub_resource type="StandardMaterial3D" id="TrollMat"]
+albedo_color = Color(0.42, 0.36, 0.28, 1)
+
+[sub_resource type="BoxShape3D" id="ArmSweep"]
+size = Vector3(3.4, 2.2, 2.6)
+
+[sub_resource type="BoxShape3D" id="HalfBody"]
+size = Vector3(2.2, 3.8, 1.1)
+
+[node name="RavineTroll" type="CharacterBody3D" groups=["enemies", "damageable", "lock_on_targets"]]
+collision_layer = 4
+collision_mask = 7
+script = ExtResource("1_troll")
+tuning = ExtResource("2_tuning")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0)
+shape = SubResource("BodyShape")
+
+[node name="Pivot" type="Node3D" parent="."]
+
+[node name="BodyMesh" type="MeshInstance3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0)
+mesh = SubResource("BodyMesh")
+surface_material_override/0 = SubResource("TrollMat")
+
+; Volume de bras : large et profond, jusqu'à la portée 3,2 m.
+[node name="ArmHitbox" type="Area3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 1.9)
+collision_layer = 16
+collision_mask = 32
+script = ExtResource("6_hitbox")
+team = &"enemies"
+instigator_path = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pivot/ArmHitbox"]
+shape = SubResource("ArmSweep")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("3_health")
+max_health = 420.0
+
+[node name="PoiseComponent" type="Node" parent="."]
+script = ExtResource("4_poise")
+max_poise = 100.0
+
+; AVANT du corps (multiplicateur 1) — moitié +Z du pivot.
+[node name="Hurtbox" type="Area3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0.56)
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("5_hurtbox")
+team = &"enemies"
+health_path = NodePath("../../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pivot/Hurtbox"]
+shape = SubResource("HalfBody")
+
+; DOS (point faible ×2, §12.4) — moitié -Z du pivot, jamais chevauchante.
+[node name="BackHurtbox" type="Area3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, -0.56)
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("5_hurtbox")
+team = &"enemies"
+weak_point_multiplier = 2.0
+health_path = NodePath("../../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pivot/BackHurtbox"]
+shape = SubResource("HalfBody")
+
+[node name="AttackController" type="Node" parent="."]
+script = ExtResource("7_attack")
+attacks = [ExtResource("8_sweep"), ExtResource("9_vertical")]
+heavy_attack = ExtResource("10_slam")
+hitbox_path = NodePath("../Pivot/ArmHitbox")
+base_damage = 18.0

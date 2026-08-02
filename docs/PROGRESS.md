@@ -1499,3 +1499,28 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > **PROCHAINE ACTION (D-EN.4)** : colosse des ravins §12.4 — 420 PV,
 > 3,5-4,5 m, balayage/verticale/onde de choc évitable, lancer de
 > rocher, point faible dorsal, token lourd.
+
+## 2026-08-02 (Gate D, D-EN.4) — colosse des ravins : quatrième famille
+
+> §12.4 : 420 PV, poise 100, capsule de 3,8 m (rayon 1,1 — sa TAILLE
+> est sa navigation : un test prouve qu'une porte de 1,6 m le refuse
+> physiquement alors qu'il pousse contre elle), vision 35 m/115°,
+> audition 30 m, poursuite 4,8, virage LENT (3,5). Trois attaques :
+> balayage (renversement, knockback 6) chaîné d'une frappe VERTICALE,
+> et COUP AU SOL lourd dont l'impact émet une ONDE DE CHOC — anneau
+> autonome qui s'étend à 9 m/s jusqu'à 8 m, frappe UNE fois, et
+> ÉPARGNE un joueur DÉCOLLÉ (§12.4 « évitable par saut » — les deux cas
+> mesurés sur la même onde). LANCER DE ROCHER entre 6 et 16 m :
+> annonce immobile orientée 0,9 s (rougeoiement de télégraphe), vrai
+> projectile balistique (le balayage CCD de la flèche, réutilisé, jamais
+> ré-instancié). POINT FAIBLE DORSAL : deux hurtbox non chevauchantes,
+> le dos à ×2 (§10.3, appliqué par la formule). Token LOURD (§12.8).
+> Deux défauts réels trouvés par les tests : (1) le socle exigeait la
+> hurtbox à la RACINE — le dos doit tourner avec le pivot, résolution
+> par recherche de nom dans le sous-arbre ; (2) le rocher naissait DANS
+> la carrure du colosse et mourait au premier tick — il part désormais
+> devant et au-dessus. 5 tests colosse, 22/22 pillards, 5/5 socle.
+> Plancher 352.
+> **PROCHAINE ACTION (D-EN.5)** : chasseur quadrupède §12.5 — ~650 PV,
+> centauroïde original, charge télégraphiée, salve d'arc plafonnée,
+> combo rapproché, cri d'annonce, territoire à frontière d'abandon.

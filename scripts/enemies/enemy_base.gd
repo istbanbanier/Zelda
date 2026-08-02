@@ -60,9 +60,18 @@ const ATTACK_FACING_DEG: float = 30.0
 
 @onready var _health: HealthComponent = $HealthComponent
 @onready var _poise: PoiseComponent = $PoiseComponent
-@onready var _hurtbox: HurtboxComponent = $Hurtbox
 @onready var _attack: AttackControllerComponent = $AttackController
 @onready var _pivot: Node3D = $Pivot
+## Hurtbox PRINCIPALE, cherchée par nom dans tout le sous-arbre : une
+## anatomie peut exiger de la porter sous le pivot (le point faible
+## DORSAL du colosse doit tourner avec lui) — mesuré en D-EN.4.
+@onready var _hurtbox: HurtboxComponent = _find_primary_hurtbox()
+
+
+func _find_primary_hurtbox() -> HurtboxComponent:
+	var found: Array[Node] = find_children("Hurtbox", "HurtboxComponent",
+		true, false)
+	return found[0] as HurtboxComponent if not found.is_empty() else null
 
 var _state: State = State.IDLE
 var _target: Node3D = null
