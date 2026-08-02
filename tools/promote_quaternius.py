@@ -29,6 +29,16 @@ import urllib.parse
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROMOTIONS = os.path.join(REPO, "docs", "assets", "PROMOTIONS.csv")
 
+# Défauts de nommage AMONT (revue V4 lot 16, point 8) : ces gltf
+# référencent des textures sous un nom ABSENT de l'archive. Le fichier
+# réel est copié SOUS le nom référencé — dérivation consignée dans
+# ATTRIBUTIONS.md. Clé = nom référencé ; valeur = nom réel dans
+# l'archive, présent dans le même dossier que le gltf.
+UPSTREAM_RENAMES = {
+    "T_Hair_1_Normal_png.png": "T_Hair_1_Normal.png",
+    "T_Eye_Normal_png.png": "T_Eye_Normal.png",
+}
+
 
 def sha256_of(path: str) -> str:
     h = hashlib.sha256()
@@ -88,6 +98,8 @@ def main() -> int:
         for f in files:
             source = os.path.join(src_dir, f)
             target = os.path.join(dest_dir, f)
+            if not os.path.isfile(source) and f in UPSTREAM_RENAMES:
+                source = os.path.join(src_dir, UPSTREAM_RENAMES[f])
             if not os.path.isfile(source):
                 raise SystemExit("dépendance manquante : %s" % source)
             if os.path.isfile(target):

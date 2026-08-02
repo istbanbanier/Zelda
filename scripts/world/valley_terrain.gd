@@ -891,9 +891,11 @@ func _build_nature_phrases() -> void:
 		[&"env.plant.bush", Vector3(56.2, 2.0, 30.4), 2.1, 0.9],
 		[&"env.plant.bush", Vector3(53.1, 2.0, 31.6), 4.4, 1.0],
 		[&"env.plant.bush", Vector3(61.0, 2.0, 49.0), 1.2, 1.25],
-		# Bord de crête (départ) : deux buissons qui cadrent la descente.
+		# Bord de crête (départ) : deux buissons qui cadrent la descente —
+		# TOUS deux hors du couloir de vista x −12..12 (revue V4 lot 16 :
+		# celui de droite était à x = 11, 1,5 m de haut dans le couloir).
 		[&"env.plant.bush", Vector3(-14.0, 24.0, 162.0), 0.9, 1.1],
-		[&"env.plant.bush", Vector3(11.0, 24.0, 158.0), 3.6, 0.95],
+		[&"env.plant.bush", Vector3(14.5, 24.0, 158.0), 3.6, 0.95],
 		# Coude de rivière : galets en langue, humides de contexte (§7.5).
 		[&"env.rock.pebble_a", Vector3(24.0, 2.02, 23.5), 0.3, 2.4],
 		[&"env.rock.pebble_b", Vector3(25.8, 2.02, 24.6), 1.7, 2.0],

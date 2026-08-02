@@ -64,18 +64,27 @@ func test_the_three_zones_mount_their_compositions() -> void:
 func test_the_vista_corridor_stays_clear_of_tall_silhouettes() -> void:
 	## §11.A : « aucune végétation devant la citadelle » — dans le couloir
 	## x −12..12 de la crête, rien au-dessus de 1 m (fleurs et herbes
-	## seulement). Les arbres et rochers du cadre sont TOUS hors couloir.
+	## seulement). Revue V4 lot 16 : le balayage couvre TOUS les nœuds
+	## montés sur la crête (zones, phrases de nature, tout parent) — le
+	## contre-exemple était un buisson des phrases, hors du périmètre de
+	## l'ancienne version qui n'auditait que DressZoneCrest.
 	await _load_valley()
-	var crest: Node3D = _zone("DressZoneCrest")
-	for prop: Node in crest.get_children():
-		var node: Node3D = prop as Node3D
-		if absf(node.position.x) >= 12.0:
+	var terrain: Node3D = _valley.find_children("*", "ValleyTerrain", true,
+		false)[0] as Node3D
+	var swept: int = 0
+	for node: Node in terrain.find_children("*", "Node3D", true, false):
+		var prop: Node3D = node as Node3D
+		var at: Vector3 = prop.global_position
+		# Couloir : bande centrale de la crête, du spawn au bord (y ~24).
+		if absf(at.x) >= 12.0 or at.y < 20.0 or at.z < 148.0 or at.z > 176.0:
 			continue
-		var name_low: String = String(node.name).to_lower()
-		check(not ("tree" in name_low or "pine" in name_low
+		swept += 1
+		var name_low: String = String(prop.name).to_lower()
+		check(not ("tree" in name_low or "pine" in name_low or "bush" in name_low
 			or "rock_medium" in name_low),
 			"couloir de vista : %s est BAS (fleur/herbe), pas une silhouette"
-			% node.name)
+			% prop.name)
+	check(swept >= 8, "le balayage a réellement couvert le couloir (%d)" % swept)
 	# Les obstacles francs des zones portent leur collision.
 	var collisions: int = 0
 	for zone_name: String in ["DressZoneCrest", "DressZoneDescent",

@@ -43,3 +43,9 @@ Ne pas employer un mot du niveau supérieur sans la preuve correspondante.
 Mettre à jour `docs/STATUS.md`, `docs/PROGRESS.md`, et `docs/KNOWN_ISSUES.md` si un
 échec a été observé. Le handoff doit indiquer **exactement** la prochaine action —
 pas une intention vague.
+
+## Capture depuis un arbre COMMITTÉ (revue V4 lot 16)
+
+Toute capture de preuve se fait APRÈS le commit du code qu'elle prouve —
+jamais depuis un arbre sale : le manifeste doit porter `repo_dirty: false`
+et le hash du commit livré. Le commit d'evidence suit immédiatement.

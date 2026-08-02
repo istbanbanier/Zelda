@@ -1331,3 +1331,30 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > Plancher 325.
 > **PROCHAINE ACTION (V4 lot 16)** : revue contradictoire à contexte
 > frais (liste de chasse §20 de l'ordre V4) puis lot 17 package.
+
+## 2026-08-02 (nuit V4, lot 16) — revue contradictoire et correctifs
+
+> Revue à contexte frais (agent adversarial-qa, périmètre
+> 2bf9e2b..71748e7, liste de chasse §20 de l'ordre V4) : 11 points
+> rejoués commande par commande. Verdict initial **FAIL** — deux défauts
+> réels, corrigés dans ce lot :
+> 1. **Reproductibilité (principal)** : le rejeu de la promotion sur
+>    clone frais sortait en erreur sur les 2 textures au nommage amont
+>    défectueux (Superhero_Male_FullBody). Correctif : table
+>    UPSTREAM_RENAMES dans tools/promote_quaternius.py (repli documenté,
+>    renvoie vers ATTRIBUTIONS.md). Rejeu prouvé : « 0 fichier à copier,
+>    744 identiques », exit 0.
+> 2. **Couloir de vista (mineur)** : un buisson de _build_nature_phrases
+>    (ART-Q4) à x=11, 1,5 m de haut, DANS le couloir x −12..12 — hors du
+>    périmètre de l'ancien test (enfants de DressZoneCrest seulement).
+>    Correctifs : buisson déplacé à x=14,5 ET test étendu à TOUS les
+>    nœuds de la crête (20 assertions ; échec avant / succès après
+>    prouvé en re-plaçant temporairement le buisson).
+> Signal transversal admis : preuves capturées en arbre sale au commit
+> précédent — règle ajoutée à .claude/rules/evidence.md : capturer APRÈS
+> le commit du code (manifeste repo_dirty:false), commit d'evidence
+> immédiat ensuite. Points PASS notables : compositions non uniformes,
+> structures pénétrables, personnages, audits d'animation, sauvegarde,
+> dépôt < 100 Mo, mesures honnêtes, validate_fast VERT 325.
+> **PROCHAINE ACTION (V4 lot 17)** : clore le package de playtest
+> (document déjà commité 7059ae9), puis §17 : E.2b cuisine visible.
