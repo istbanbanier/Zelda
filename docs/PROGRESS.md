@@ -1358,3 +1358,20 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > dépôt < 100 Mo, mesures honnêtes, validate_fast VERT 325.
 > **PROCHAINE ACTION (V4 lot 17)** : clore le package de playtest
 > (document déjà commité 7059ae9), puis §17 : E.2b cuisine visible.
+
+## 2026-08-02 (nuit V4, lot 17) — package de playtest clos
+
+> docs/PLAYTEST_PACKAGE.md (commité 7059ae9) : le package EST le dépôt —
+> archive HEAD ~310 Mo SANS ZIP source, plus gros fichier suivi 12,1 Mo,
+> reconstruction de la promotion prouvée depuis la Release (« 0 à
+> copier, 744 identiques » après le correctif lot 16). Prérequis,
+> import, scènes de contrôle, protocole humain §21.4 + points V4,
+> limites honnêtes. Première capture conforme à la nouvelle règle
+> d'evidence : vista rejouée depuis l'arbre COMMITTÉ (95b757d,
+> repo_dirty:false) — evidence/v4lot16/vista_post_review.png : couloir
+> dégagé (buisson déplacé), capuche turquoise lisible de dos.
+> **Les 17 lots de l'ordre V4 sont livrés.**
+> **PROCHAINE ACTION (§17 de l'ordre)** : E.2b cuisine visible au feu
+> (code prêt en scratchpad : Campfire interactable + atelier du shell +
+> label de buff HUD + 4 tests), puis revue Gate E, puis Phase F selon
+> l'addendum multi-étages (graphe sandbox d'abord).
