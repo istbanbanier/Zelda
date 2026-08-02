@@ -1,0 +1,18 @@
+{
+  "commit": "8af8bd3c95a7f7b48da9d351c66162cab1faa077",
+  "display_server": "X11",
+  "distinct_colors_sampled": 1452,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 60,
+  "height": 1080,
+  "label": "artq7_ref_camp",
+  "luma_mean": 0.7595,
+  "luma_stddev": 0.1491,
+  "png": "evidence/artQ7/ref_camp.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "timestamp_utc": "2026-08-02 06:36:02",
+  "width": 1920
+}
