@@ -53,6 +53,8 @@ const DELIVERED_Q0: Array[StringName] = [
 	&"char.hero",
 	# ART-Q2 :
 	&"char.raider_red", &"char.raider_blue", &"char.raider_black",
+	# ART-Q3 :
+	&"env.rock.pebble_a", &"env.rock.pebble_b", &"env.rock.pebble_c",
 ]
 
 

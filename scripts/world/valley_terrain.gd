@@ -170,6 +170,67 @@ func _build_camp_terrace() -> void:
 	fire_light.omni_range = 14.0
 	fire_light.position = Vector3(45, 7.4, 64)
 	camp.add_child(fire_light)
+	# ART-Q3 : props de production (registre ; repli boîte graybox). Le camp
+	# vit : caisses empilées près des tentes, tonneaux au bord du foyer.
+	# COLLISION à hauteur du modèle — le décor bloque, comme les boîtes.
+	var camp_props: Array[Array] = [
+		# [id, position, lacet, taille de collision]
+		[&"prop.crate", Vector3(51.5, 6.0, 59.5), 0.35, Vector3(1.1, 1.2, 1.17)],
+		[&"prop.crate", Vector3(52.7, 6.0, 60.8), 1.15, Vector3(1.1, 1.2, 1.17)],
+		[&"prop.barrel", Vector3(41.2, 6.0, 61.0), 0.0, Vector3(0.72, 0.9, 0.72)],
+		[&"prop.barrel", Vector3(40.4, 6.0, 62.2), 0.9, Vector3(0.72, 0.9, 0.72)],
+	]
+	for entry: Array in camp_props:
+		_mount_camp_prop(camp, entry[0] as StringName, entry[1] as Vector3,
+			float(entry[2]), entry[3] as Vector3)
+	# Anneau de galets autour du foyer (env.rock.pebble_*) — décor pur, sans
+	# collision : le foyer de pierre garde la sienne.
+	var pebble_ids: Array[StringName] = [&"env.rock.pebble_a",
+		&"env.rock.pebble_b", &"env.rock.pebble_c"]
+	for i: int in range(8):
+		var packed: PackedScene = AssetRegistry.resolve(pebble_ids[i % 3])
+		if packed == null:
+			break   # galets pas livrés : le cylindre de pierre suffit
+		var pebble: Node3D = packed.instantiate() as Node3D
+		pebble.name = "Pebble%d" % i   # noms uniques — pas de renommage @auto@
+		var angle: float = TAU * float(i) / 8.0 + 0.23
+		pebble.position = Vector3(45.0 + cos(angle) * 1.05, 6.28,
+			64.0 + sin(angle) * 1.05)
+		pebble.rotation.y = angle * 3.1
+		pebble.scale = Vector3.ONE * (1.35 + 0.25 * float(i % 3))
+		camp.add_child(pebble)
+
+
+## Monte un prop du registre (ou sa boîte graybox de repli) avec une
+## collision fixe : les IDs, le loot et les interactions du camp ne passent
+## JAMAIS par ces décors — ce sont des obstacles muets (§14.1).
+func _mount_camp_prop(parent: Node3D, id: StringName, at: Vector3,
+		yaw: float, collision_size: Vector3) -> void:
+	var body: StaticBody3D = StaticBody3D.new()
+	body.name = "CampProp_%s_%d" % [String(id).get_slice(".", 1),
+		parent.get_child_count()]
+	body.collision_layer = 1
+	body.collision_mask = 0
+	var shape: CollisionShape3D = CollisionShape3D.new()
+	var box: BoxShape3D = BoxShape3D.new()
+	box.size = collision_size
+	shape.shape = box
+	shape.position = Vector3(0, collision_size.y * 0.5, 0)
+	body.add_child(shape)
+	var packed: PackedScene = AssetRegistry.resolve(id)
+	if packed != null:
+		body.add_child(packed.instantiate())
+	else:
+		var mesh: MeshInstance3D = MeshInstance3D.new()
+		var fallback: BoxMesh = BoxMesh.new()
+		fallback.size = collision_size
+		mesh.mesh = fallback
+		mesh.material_override = _material(Color(0.5, 0.36, 0.2), false)
+		mesh.position = Vector3(0, collision_size.y * 0.5, 0)
+		body.add_child(mesh)
+	body.rotation.y = yaw
+	body.position = at   # AVANT add_child (règle D.0)
+	parent.add_child(body)
 
 
 func _build_learning_cliff() -> void:

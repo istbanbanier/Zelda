@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+; ART-Q3 — galet Quaternius (CC0) : anneau de foyer et dispersion Q4.
+
+[ext_resource type="PackedScene" path="res://assets/environment/rocks/Pebble_Round_1.gltf" id="1_model"]
+
+[node name="PebbleA" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]

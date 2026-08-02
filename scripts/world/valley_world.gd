@@ -214,6 +214,17 @@ func _setup_vista_camera() -> void:
 	if OS.get_environment("VALLEY_VISTA") == "1":
 		# Après que la caméra du joueur s'est déclarée : le différé gagne.
 		vista.make_current.call_deferred()
+	# ART-Q3 — caméra de contrôle du CAMP (§21.5 : « vue camp ») : fixe et
+	# reproductible, activée par VALLEY_CAMP=1, même mécanique que la vista.
+	var camp_camera: Camera3D = Camera3D.new()
+	camp_camera.name = "CampCamera_01"
+	camp_camera.position = Vector3(38.0, 9.2, 76.0)
+	camp_camera.rotation_degrees = Vector3(-14.0, -28.0, 0.0)
+	camp_camera.fov = 62.0
+	camp_camera.current = false
+	add_child(camp_camera)
+	if OS.get_environment("VALLEY_CAMP") == "1":
+		camp_camera.make_current.call_deferred()
 
 
 func _record_safe_point() -> void:

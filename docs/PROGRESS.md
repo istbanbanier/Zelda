@@ -1026,3 +1026,22 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > **PROCHAINE ACTION (ART-Q3)** : camp props production (coffre/caisse/
 > tonneau déjà livrés : les brancher dans la vallée en préservant IDs,
 > loot, interactions ; feu de camp composé ou graybox documenté).
+
+## 2026-08-02 (nuit) — ART-Q3 : props de production au camp
+
+> **Coffre réel** : le modèle Quaternius est RIGGÉ avec ses clips
+> (Chest_Open/Chest_Opened/Close) — chest.gd le monte via le registre,
+> masque son graybox, garde sa collision, joue Chest_Open à l'ouverture
+> et la POSE Chest_Opened à l'application d'état (§19.4, sans loot ni
+> geste). IDs, loot garanti, atomicité inventaire-plein : INTACTS
+> (tests). **Camp** : 2 caisses + 2 tonneaux de production en obstacles
+> physiques (repli graybox conservé), anneau de 8 galets autour du foyer
+> (Pebble_Round_1-3 ingérés, texture PathRocks 1K). Caméra de contrôle
+> reproductible du camp (VALLEY_CAMP=1, §21.5 « vue camp »). Les
+> pillards du camp portent AUTOMATIQUEMENT le modèle Q2 — la capture
+> montre trois pillards braise animés, gourdin en main. Tentes : AUCUN
+> asset dans les 7 packs — PrismMesh graybox conservé, documenté.
+> Tests 304 → **307**. Capture : evidence/artQ3/camp_props.png.
+> **PROCHAINE ACTION (ART-Q4)** : biome nature composé (arbres/buissons/
+> rochers réels dans la vallée, pas de dispersion uniforme, navmesh
+> rebaké 749 poly à revalider).

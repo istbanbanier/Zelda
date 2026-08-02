@@ -20,12 +20,35 @@ signal opened(chest_id: StringName)
 @export var arrows_loot: int = 0
 
 var _opened: bool = false
+## ART-Q3 : lecteur d'animation du modèle de production (prop.chest) —
+## le coffre Quaternius embarque ses clips Chest_Open/Chest_Opened. Null en
+## repli graybox : le couvercle bascule comme avant.
+var _model_anim: AnimationPlayer = null
 
 @onready var _lid: Node3D = get_node_or_null("Lid") as Node3D
 
 
 func _ready() -> void:
 	add_to_group("interactable")
+	# ART-Q3 : modèle de production. La COLLISION du coffre ne change pas —
+	# le modèle est un visuel, comme l'arme du joueur (règle ART-P0).
+	var packed: PackedScene = AssetRegistry.resolve(&"prop.chest")
+	if packed == null:
+		return
+	var model: Node3D = packed.instantiate() as Node3D
+	add_child(model)
+	var players: Array[Node] = model.find_children("*", "AnimationPlayer",
+		true, false)
+	_model_anim = players[0] as AnimationPlayer if not players.is_empty() else null
+	for graybox_name: String in ["BodyMesh", "Lid"]:
+		var node: Node3D = get_node_or_null(graybox_name) as Node3D
+		if node != null:
+			node.visible = false
+	# L'état a pu être appliqué AVANT _ready (§19.4, ordre chargement/ready
+	# indifférent) : un coffre déjà ouvert monte ouvert.
+	if _opened and _model_anim != null \
+			and _model_anim.has_animation(&"Chest_Opened"):
+		_model_anim.play(&"Chest_Opened")
 
 
 func is_opened() -> bool:
@@ -36,7 +59,9 @@ func is_opened() -> bool:
 ## chargement ») : l'état s'applique SANS loot, sans signal, idempotent (§6.4).
 func mark_opened_silently() -> void:
 	_opened = true
-	if _lid != null:
+	if _model_anim != null and _model_anim.has_animation(&"Chest_Opened"):
+		_model_anim.play(&"Chest_Opened")   # pose ouverte, sans geste
+	elif _lid != null:
 		_lid.rotation.x = -1.2
 
 
@@ -61,9 +86,11 @@ func interact(player: PlayerController) -> bool:
 	if arrows_loot > 0:
 		inventory.add_arrows(arrows_loot)
 	_opened = true
-	# Graybox : le couvercle bascule — assez pour que l'état se VOIE (§15.4,
-	# même principe : chaque activation a une conséquence visible).
-	if _lid != null:
+	# L'état se VOIT (§15.4 : chaque activation a une conséquence visible) :
+	# le clip d'ouverture du modèle, ou la bascule du couvercle graybox.
+	if _model_anim != null and _model_anim.has_animation(&"Chest_Open"):
+		_model_anim.play(&"Chest_Open")   # LOOP_NONE : la pose ouverte tient
+	elif _lid != null:
 		_lid.rotation.x = -1.2
 	if bus != null:
 		var parts: Array[String] = []

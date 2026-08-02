@@ -27,6 +27,9 @@ const CATALOG: Dictionary = {
 	&"env.rock.large": "res://scenes/environment/RockLarge.tscn",
 	&"env.rock.medium": "res://scenes/environment/RockMedium.tscn",
 	&"env.plant.bush": "res://scenes/environment/Bush.tscn",
+	&"env.rock.pebble_a": "res://scenes/environment/PebbleA.tscn",
+	&"env.rock.pebble_b": "res://scenes/environment/PebbleB.tscn",
+	&"env.rock.pebble_c": "res://scenes/environment/PebbleC.tscn",
 	# Camp : chest/crate/barrel LIVRÉS (ART-Q0) ; tent et campfire ABSENTS
 	# des sept packs (vérifié) — repli graybox conservé, voir QUATERNIUS_INBOX.
 	&"prop.tent": "res://scenes/environment/Tent.tscn",
