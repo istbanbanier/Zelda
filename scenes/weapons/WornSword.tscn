@@ -1,8 +1,10 @@
 [gd_scene load_steps=3 format=3]
 
-; ART-P0 — présentation de l'Épée usée : le .glb importé, orienté lame vers
-; +Z (convention du visuel d'arme du contrôleur), pivot à la prise. Le script
-; WeaponModel porte la variation d'usure sous 25 % de durabilité.
+; ART-P0R — présentation de l'Épée usée : le .glb importé, lame vers +Z
+; (convention du visuel d'arme), PIVOT AU MILIEU DE LA POIGNÉE : la prise
+; (y −0,012..−0,142 côté Blender) est recentrée par le décalage +0,077 —
+; l'arme tient dans la main, elle ne flotte pas devant. Le script WeaponModel
+; porte la variation d'usure sous 25 %, réversible, par instance.
 
 [ext_resource type="Script" path="res://scripts/combat/weapon_model.gd" id="1_model"]
 [ext_resource type="PackedScene" path="res://assets/weapons/SM_WornSword.glb" id="2_glb"]
@@ -11,4 +13,4 @@
 script = ExtResource("1_model")
 
 [node name="SM_WornSword" parent="." instance=ExtResource("2_glb")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0.077)

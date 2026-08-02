@@ -1,0 +1,18 @@
+{
+  "commit": "04b7cc9cbff11f1dd38f701b0072118a59782880",
+  "display_server": "X11",
+  "distinct_colors_sampled": 521,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 40,
+  "height": 1080,
+  "label": "artp0r_pair",
+  "luma_mean": 0.6208,
+  "luma_stddev": 0.0877,
+  "png": "evidence/artP0R/godot_pair.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/weapons/WeaponShowcase.tscn",
+  "timestamp_utc": "2026-08-02 01:45:36",
+  "width": 1920
+}

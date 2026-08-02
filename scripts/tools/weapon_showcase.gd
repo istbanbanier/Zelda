@@ -10,6 +10,9 @@ extends Node3D
 
 const SWORD_SCENE: String = "res://scenes/weapons/WornSword.tscn"
 
+var _camera: Camera3D = null
+var _attack_intent: InputIntent = null
+
 
 func _ready() -> void:
 	_build_stage()
@@ -40,6 +43,26 @@ func _ready() -> void:
 			as PackedScene).instantiate() as GameplayShell
 		add_child(shell)
 		_open_inventory.call_deferred(shell)
+	# Modes de capture ART-P0R : cadrages dédiés — main au repos, ATTAQUE
+	# réelle (intention injectée, le vrai pipeline §10.1 s'exécute), paire
+	# neuf/usé en gros plan.
+	if OS.get_environment("SHOWCASE_HAND") == "1" \
+			or OS.get_environment("SHOWCASE_ATTACK") == "1":
+		_camera.position = player.position + Vector3(-1.15, 1.35, 1.55)
+		_camera.look_at(player.position + Vector3(0.1, 1.05, 0.0))
+		if OS.get_environment("SHOWCASE_ATTACK") == "1":
+			_attack_intent = InputIntent.new()
+			player.set_intent_source(_attack_intent)
+	elif OS.get_environment("SHOWCASE_PAIR") == "1":
+		_camera.position = Vector3(-0.75, 0.95, 1.5)
+		_camera.look_at(Vector3(-0.75, 0.55, 0.15))
+
+
+func _process(_delta: float) -> void:
+	# Attaque continue : chaque frame demande un coup — la capture attrape le
+	# vrai balayage, quelle que soit la cadence des frames llvmpipe.
+	if _attack_intent != null:
+		_attack_intent.attack_pressed = true
 
 
 func _open_inventory(shell: GameplayShell) -> void:
@@ -108,10 +131,10 @@ func _build_stage() -> void:
 	world_environment.environment = environment
 	add_child(world_environment)
 
-	var camera: Camera3D = Camera3D.new()
-	camera.name = "ShowcaseCamera"
-	camera.position = Vector3(0.15, 1.15, 2.7)
-	camera.rotation_degrees = Vector3(-14, 0, 0)
-	camera.fov = 45
-	add_child(camera)
-	camera.make_current()
+	_camera = Camera3D.new()
+	_camera.name = "ShowcaseCamera"
+	_camera.position = Vector3(0.15, 1.15, 2.7)
+	_camera.rotation_degrees = Vector3(-14, 0, 0)
+	_camera.fov = 45
+	add_child(_camera)
+	_camera.make_current()

@@ -82,11 +82,41 @@ func test_the_glb_imports_a_real_uv_mapped_mesh_not_a_box() -> void:
 		triangles += mesh.surface_get_arrays(surface)[Mesh.ARRAY_INDEX].size() / 3
 		check(mesh.surface_get_arrays(surface)[Mesh.ARRAY_TEX_UV] != null,
 			"la surface %d est UV-mappée" % surface)
-	check(triangles >= 300 and triangles <= 5000,
-		"%d triangles : travaillé, dans le budget prop §7.10 (une boîte = 12)"
-		% triangles)
+	check(triangles >= 1500 and triangles <= 4000,
+		"%d triangles : budget ART-P0R (1 500-4 000)" % triangles)
 	check_equal(mesh.get_surface_count(), 1, "un matériau unique (atlas)")
+	# Proportions ART-P0R mesurées sur l'AABB : longueur (axe Z après glTF),
+	# envergure de garde (X), épaisseur perceptible (Y).
+	var aabb: AABB = mesh.get_aabb()
+	check(aabb.size.z >= 0.95 and aabb.size.z <= 1.05,
+		"longueur totale %.3f m (cible 0,95-1,05)" % aabb.size.z)
+	check(aabb.size.x >= 0.19 and aabb.size.x <= 0.22,
+		"garde %.3f m (cible 0,19-0,22)" % aabb.size.x)
+	check(aabb.size.y >= 0.040,
+		"épaisseur d'ensemble %.3f m : volumes réels, pas une planche" % aabb.size.y)
+	# Les TROIS textures exigées (BaseColor, Normal, MR) — lues dans le JSON
+	# du GLB, pas supposées.
+	var gltf_json: Dictionary = _read_glb_json(GLB)
+	check_equal((gltf_json.get("images", []) as Array).size(), 3,
+		"trois images embarquées")
+	var material_json: Dictionary = (gltf_json["materials"] as Array)[0] as Dictionary
+	check(material_json.has("normalTexture"), "normalTexture branchée")
+	var pbr: Dictionary = material_json.get("pbrMetallicRoughness", {}) as Dictionary
+	check(pbr.has("baseColorTexture"), "baseColorTexture branchée")
+	check(pbr.has("metallicRoughnessTexture"), "metallicRoughnessTexture branchée")
 	instance.free()
+
+
+## Lit le chunk JSON d'un GLB (format binaire glTF 2.0 : en-tête 12 octets
+## puis chunk 0 = JSON).
+func _read_glb_json(path: String) -> Dictionary:
+	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
+	file.seek(12)
+	var chunk_length: int = file.get_32()
+	file.get_32()   # type "JSON"
+	var text: String = file.get_buffer(chunk_length).get_string_from_utf8()
+	file.close()
+	return JSON.parse_string(text) as Dictionary
 
 
 func test_the_tres_gameplay_data_is_untouched_and_now_carries_the_model() -> void:
@@ -148,7 +178,40 @@ func test_wear_under_25_percent_dulls_the_instance_not_the_shared_resource() -> 
 	await _settle(1)
 	check(not bool(fresh.call("is_worn")),
 		"un exemplaire NEUF de la même scène reste neuf — rien de partagé n'a été terni")
+
+	# ART-P0R : l'usure est RÉVERSIBLE — un aller-retour restaure exactement
+	# les valeurs d'origine du matériau (mesuré, pas déclaré).
+	var probe: WeaponModel = (load(MODEL_SCENE) as PackedScene).instantiate() \
+		as WeaponModel
+	_world.add_child(probe)
+	await _settle(1)
+	var probe_mesh: MeshInstance3D = probe.find_children("*", "MeshInstance3D",
+		true, false)[0] as MeshInstance3D
+	var original_albedo: Color = \
+		(probe_mesh.get_active_material(0) as BaseMaterial3D).albedo_color
+	probe.set_worn(true)
+	var worn_albedo: Color = \
+		(probe_mesh.get_active_material(0) as BaseMaterial3D).albedo_color
+	check(worn_albedo != original_albedo, "usé : la teinte change réellement")
+	probe.set_worn(false)
+	check_equal((probe_mesh.get_active_material(0) as BaseMaterial3D).albedo_color,
+		original_albedo, "retour : la teinte d'origine est RESTAURÉE")
+	probe.queue_free()
 	fresh.queue_free()
+
+	# Pivot ART-P0R : la prise au milieu de la poignée — la lame s'étend
+	# devant (+Z), poignée et pommeau derrière, mesuré sur le transform réel.
+	var wrapper: Node3D = (load(MODEL_SCENE) as PackedScene).instantiate() as Node3D
+	_world.add_child(wrapper)
+	await _settle(1)
+	var wrapped_mesh: MeshInstance3D = wrapper.find_children("*", "MeshInstance3D",
+		true, false)[0] as MeshInstance3D
+	var world_aabb: AABB = wrapped_mesh.global_transform * wrapped_mesh.mesh.get_aabb()
+	check(world_aabb.position.z > -0.16 and world_aabb.position.z < -0.08,
+		"le pommeau finit derrière la prise (z arrière %.3f)" % world_aabb.position.z)
+	check(world_aabb.end.z > 0.80 and world_aabb.end.z < 0.92,
+		"la lame s'étend devant la prise (z avant %.3f)" % world_aabb.end.z)
+	wrapper.queue_free()
 	_teardown()
 
 

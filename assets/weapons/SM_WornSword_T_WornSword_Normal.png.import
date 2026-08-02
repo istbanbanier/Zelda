@@ -2,19 +2,19 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dmfurbk05ai0e"
-path="res://.godot/imported/SM_WornSword_T_WornSword_MR.png-1440ba0f976f8c25b8a151bc187dd279.ctex"
+uid="uid://cdm4ajy1t2xxg"
+path="res://.godot/imported/SM_WornSword_T_WornSword_Normal.png-dc0e4d8cb2ae4ddfe8c7a89fc288e134.ctex"
 metadata={
 "vram_texture": false
 }
 generator_parameters={
-"md5": "da29f11c387a45e3180167f441ef0e22"
+"md5": "a84a4d453d3a89b04ef830a4843d4de8"
 }
 
 [deps]
 
-source_file="res://assets/weapons/SM_WornSword_T_WornSword_MR.png"
-dest_files=["res://.godot/imported/SM_WornSword_T_WornSword_MR.png-1440ba0f976f8c25b8a151bc187dd279.ctex"]
+source_file="res://assets/weapons/SM_WornSword_T_WornSword_Normal.png"
+dest_files=["res://.godot/imported/SM_WornSword_T_WornSword_Normal.png-dc0e4d8cb2ae4ddfe8c7a89fc288e134.ctex"]
 
 [params]
 

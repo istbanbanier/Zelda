@@ -705,6 +705,11 @@ func _refresh_weapon_visual(weapon: WeaponInstance) -> void:
 				% String(weapon.definition.id))
 		else:
 			_weapon_mesh.visible = false
+			# Roulis de 90° autour de l'axe de lame (ART-P0R §6) : EN MAIN, le
+			# plat de lame regarde le côté caméra — fil vers le bas, comme une
+			# épée tenue. Sans lui, la caméra 3e personne ne voit que la
+			# tranche : une « aiguille » (mesuré sur capture).
+			_weapon_model.rotation.z = PI * 0.5
 			_weapon_pivot.add_child(_weapon_model)
 			_weapon_model_for = weapon
 			if _weapon_model.has_method("set_worn"):

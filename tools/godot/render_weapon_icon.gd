@@ -56,9 +56,9 @@ func _render() -> void:
 	var camera: Camera3D = Camera3D.new()
 	camera.projection = Camera3D.PROJECTION_ORTHOGONAL
 	camera.size = 0.86
-	# Vue plongeante sur le plat de lame ; l'épée s'étend de z −0.19 à +0.78,
-	# recentrée par la cible.
-	camera.position = Vector3(0.0, 2.0, 0.295)
+	# Vue plongeante sur le plat de lame ; pivot au milieu de la poignée
+	# (ART-P0R) : l'épée s'étend de z −0,12 à +0,86, recentrée ici.
+	camera.position = Vector3(0.0, 2.0, 0.37)
 	camera.rotation_degrees = Vector3(-90, 0, 45)
 	root.add_child(camera)
 	camera.make_current()

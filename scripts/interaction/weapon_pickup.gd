@@ -39,8 +39,10 @@ func _ready() -> void:
 		model.name = "ProductionModel"
 		# Le modèle est naturellement à PLAT (lame +Z, plat de lame vers le
 		# haut — l'épaisseur suit Y après conversion glTF) : un lacet suffit.
+		# Hauteur = demi-épaisseur du POMMEAU (le point bas de l'arme couchée) :
+		# elle REPOSE, ni flottante ni enfoncée (ART-P0R §6).
 		model.rotation_degrees = Vector3(0.0, 25.0, 0.0)
-		model.position = Vector3(0, 0.05, 0)
+		model.position = Vector3(0, 0.026, 0)
 		add_child(model)
 
 
