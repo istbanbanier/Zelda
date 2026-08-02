@@ -217,9 +217,12 @@ func _build_block() -> void:
 	# comme du métal, sinon rien ne dit au joueur qu'il conduit — mesuré
 	# sur la capture d'entrée : sans matériau, il passait pour une caisse.
 	var metal: StandardMaterial3D = StandardMaterial3D.new()
-	metal.albedo_color = Color(0.46, 0.44, 0.40)
-	metal.metallic = 0.75
-	metal.roughness = 0.38
+	# Métal patiné CLAIR : sous ces lampes, un métallique élevé sans sonde
+	# de réflexion rend noir (mesuré sur la capture d'entrée). L'albédo
+	# porte donc la lecture, et la bande conductrice tranchera dessus.
+	metal.albedo_color = Color(0.60, 0.62, 0.60)
+	metal.metallic = 0.2
+	metal.roughness = 0.45
 	mesh.material_override = metal
 	_block.add_child(mesh)
 	_block.position = BLOCK_START   # AVANT add_child (règle D.0)
