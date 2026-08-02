@@ -309,6 +309,158 @@ func _build_forest() -> void:
 			_orb_in("Canopy%02d" % i, forest, Vector3(at.x, 9.5, at.y), 2.6,
 				canopy_tones[i % canopy_tones.size()])
 	_build_nature_phrases()
+	_dress_zone_crest()
+	_dress_zone_descent()
+	_dress_zone_prairie()
+
+
+## ---------------------------------------------------------------------------
+## V4 lot 4 — habillage par zones (§10-§11) : compositions DÉLIBÉRÉES sur la
+## topologie existante, via les modèles promus (AssetRegistry.model). Un
+## modèle absent laisse un vide — jamais une boîte. Les cotes fonctionnelles
+## (rampes, paliers, chemins, couloir de la vista x −12..12) ne bougent pas.
+## ---------------------------------------------------------------------------
+
+## Pose un modèle promu. `collision` : ZERO = décor pur ; sinon boîte
+## (x,y,z) ou tronc cylindrique si `trunk` (x = rayon, y = hauteur).
+func _place_model(parent: Node3D, model_name: StringName, at: Vector3,
+		yaw: float, scale_factor: float = 1.0,
+		collision: Vector3 = Vector3.ZERO, trunk: bool = false) -> void:
+	var packed: PackedScene = AssetRegistry.model(model_name)
+	if packed == null:
+		return   # pas promu : le vide reste un vide
+	var prop: Node3D = packed.instantiate() as Node3D
+	prop.name = "%s_%d" % [String(model_name), parent.get_child_count()]
+	prop.position = at
+	prop.rotation.y = yaw
+	prop.scale = Vector3.ONE * scale_factor
+	parent.add_child(prop)
+	if collision == Vector3.ZERO:
+		return
+	var body: StaticBody3D = StaticBody3D.new()
+	body.collision_layer = 1
+	body.collision_mask = 0
+	var shape: CollisionShape3D = CollisionShape3D.new()
+	if trunk:
+		var cylinder: CylinderShape3D = CylinderShape3D.new()
+		cylinder.radius = collision.x
+		cylinder.height = collision.y
+		shape.shape = cylinder
+		shape.position = Vector3(0, collision.y * 0.5, 0)
+	else:
+		var box: BoxShape3D = BoxShape3D.new()
+		box.size = collision
+		shape.shape = box
+		shape.position = Vector3(0, collision.y * 0.5, 0)
+	body.add_child(shape)
+	prop.add_child(body)
+
+
+func _dress_zone(zone_name: String, placements: Array[Array]) -> Node3D:
+	var zone: Node3D = Node3D.new()
+	zone.name = zone_name
+	add_child(zone)
+	for entry: Array in placements:
+		var collision: Vector3 = entry[4] if entry.size() > 4 else Vector3.ZERO
+		var trunk: bool = bool(entry[5]) if entry.size() > 5 else false
+		_place_model(zone, entry[0] as StringName, entry[1] as Vector3,
+			float(entry[2]), float(entry[3]), collision, trunk)
+	return zone
+
+
+## Zone A — crête d'ouverture (§11.A) : cadre végétal LATÉRAL, rochers
+## héroïques, fleurs au premier plan — le couloir central (x −12..12) vers
+## la citadelle reste VIDE de toute silhouette haute.
+func _dress_zone_crest() -> void:
+	const TRUNK: Vector3 = Vector3(0.45, 6.0, 0.0)
+	_dress_zone("DressZoneCrest", [
+		# Cadre gauche (ouest) — feuillus étagés.
+		[&"CommonTree_2", Vector3(-34, 24, 154), 0.8, 1.1, TRUNK, true],
+		[&"CommonTree_5", Vector3(-42, 24, 161), 2.3, 0.95, TRUNK, true],
+		[&"TwistedTree_1", Vector3(-25, 24, 169), 4.1, 1.0, TRUNK, true],
+		# Cadre droit (est) — un pin marque la hauteur, un feuillu ferme.
+		[&"Pine_2", Vector3(38, 24, 157), 1.6, 1.1, TRUNK, true],
+		[&"CommonTree_3", Vector3(45, 24, 164), 5.0, 1.0, TRUNK, true],
+		# Rochers héroïques aux épaules du cadre, HORS couloir.
+		[&"Rock_Medium_3", Vector3(-18, 24, 151), 0.7, 1.15,
+			Vector3(3.6, 2.4, 3.6), false],
+		[&"Rock_Medium_1", Vector3(22, 24, 153), 2.9, 0.9,
+			Vector3(3.0, 2.0, 2.8), false],
+		# Premier plan fleuri (bas : n'obstrue pas la vue) et touffes.
+		[&"Flower_3_Group", Vector3(-7.5, 24, 155.5), 0.4, 1.2],
+		[&"Flower_3_Group", Vector3(-5.2, 24, 157.8), 2.2, 0.9],
+		[&"Flower_4_Group", Vector3(6.5, 24, 155.0), 1.1, 1.1],
+		[&"Flower_4_Group", Vector3(9.0, 24, 157.5), 3.6, 0.85],
+		[&"Flower_3_Single", Vector3(-3.0, 24, 154.2), 5.2, 1.0],
+		[&"Grass_Common_Tall", Vector3(-10.5, 24, 156.5), 0.9, 1.3],
+		[&"Grass_Common_Tall", Vector3(-12.5, 24, 159.0), 2.7, 1.1],
+		[&"Grass_Wispy_Tall", Vector3(11.5, 24, 156.0), 1.8, 1.2],
+		[&"Grass_Wispy_Tall", Vector3(13.0, 24, 158.5), 4.4, 1.0],
+		[&"Fern_1", Vector3(-16.5, 24, 152.5), 3.3, 1.1],
+		[&"Fern_1", Vector3(20.0, 24, 155.0), 0.6, 0.9],
+		[&"Clover_1", Vector3(4.0, 24, 158.5), 1.4, 1.2],
+		[&"Pebble_Round_4", Vector3(-14.0, 24, 154.0), 2.1, 1.4],
+		[&"Pebble_Round_5", Vector3(16.5, 24, 153.5), 5.0, 1.2],
+	])
+
+
+## Zone B — descente principale (§11.B) : la lecture du relief se fait par
+## bornes de pierre aux paliers, buissons aux bords EXTÉRIEURS des rampes,
+## un pin en jalon — jamais rien SUR la surface de course.
+func _dress_zone_descent() -> void:
+	const TRUNK: Vector3 = Vector3(0.45, 6.0, 0.0)
+	_dress_zone("DressZoneDescent", [
+		# Bornes de palier (pierres plates lisibles).
+		[&"RockPath_Round_Wide", Vector3(42.5, 16, 110), 0.3, 1.3],
+		[&"RockPath_Round_Thin", Vector3(11.5, 8, 78), 1.7, 1.2],
+		[&"RockPath_Round_Small_1", Vector3(27.0, 6, 66.5), 0.9, 1.3],
+		# Buissons aux bords extérieurs des rampes.
+		[&"Bush_Common", Vector3(28.5, 20.2, 134), 0.7, 1.1],
+		[&"Bush_Common", Vector3(41.5, 16, 116), 2.4, 0.95],
+		[&"Bush_Common", Vector3(27.5, 12.2, 95), 4.0, 1.05],
+		[&"Bush_Common_Flowers", Vector3(12.5, 8, 82), 1.2, 1.0],
+		# Jalons verticaux : un pin au premier palier, un feuillu au pied.
+		[&"Pine_4", Vector3(44.5, 16, 106), 2.0, 1.0, TRUNK, true],
+		[&"CommonTree_5", Vector3(10.0, 6.2, 63), 3.8, 0.9, TRUNK, true],
+		# Petites pierres dans les virages (jamais sur l'axe).
+		[&"Pebble_Round_4", Vector3(38.5, 16, 119), 1.1, 1.6],
+		[&"Pebble_Round_4", Vector3(15.0, 8, 75), 2.8, 1.4],
+		[&"Rock_Medium_2", Vector3(46.5, 16, 112), 3.5, 0.8,
+			Vector3(2.4, 1.5, 2.0), false],
+	])
+
+
+## Zone C — prairie centrale (§11.C) : respiration — arbres ISOLÉS, bouquets,
+## herbes de berge humide, lignes de vue dégagées vers camp/pylône/citadelle.
+func _dress_zone_prairie() -> void:
+	const TRUNK: Vector3 = Vector3(0.45, 6.0, 0.0)
+	_dress_zone("DressZonePrairie", [
+		# Deux arbres isolés, appuis de composition — loin des chemins.
+		[&"CommonTree_1", Vector3(-30, 2, 42), 1.9, 1.1, TRUNK, true],
+		[&"TwistedTree_2", Vector3(-27, 2, 25), 4.6, 1.0, TRUNK, true],
+		# Bouquets de fleurs, groupés avec de vrais vides entre eux.
+		[&"Flower_4_Group", Vector3(-21, 2, 36), 0.8, 1.2],
+		[&"Flower_4_Group", Vector3(-18.5, 2, 38.5), 2.5, 0.9],
+		[&"Flower_3_Group", Vector3(-45, 2, 30), 1.3, 1.1],
+		[&"Flower_3_Single", Vector3(-43, 2, 32.5), 3.9, 1.0],
+		[&"Flower_4_Single", Vector3(4, 2, 44), 0.2, 1.0],
+		# Herbes hautes de berge (bande humide z 20-24).
+		[&"Grass_Wispy_Tall", Vector3(-14, 2.02, 21.5), 0.5, 1.3],
+		[&"Grass_Wispy_Tall", Vector3(-11.5, 2.02, 23), 2.1, 1.1],
+		[&"Grass_Common_Tall", Vector3(8, 2.02, 22), 3.3, 1.2],
+		[&"Grass_Common_Tall", Vector3(10.5, 2.02, 23.5), 5.1, 1.0],
+		[&"Plant_7", Vector3(-26, 2.02, 22.5), 1.6, 1.1],
+		# Trèfles et fougères en accents discrets.
+		[&"Clover_2", Vector3(-32, 2, 45.5), 2.2, 1.3],
+		[&"Fern_1", Vector3(-7, 2, 30), 4.2, 1.0],
+		# Un rocher franc à l'ouest, obstacle honnête.
+		[&"Rock_Medium_2", Vector3(-50, 2, 50), 0.9, 1.1,
+			Vector3(3.2, 2.0, 2.6), false],
+		# Galets du gué OUEST (route du donjon, x 20 z 10).
+		[&"RockPath_Square_Small_1", Vector3(16, 2.02, 15.5), 1.0, 1.5],
+		[&"Pebble_Round_5", Vector3(23.5, 2.02, 15), 2.6, 1.8],
+		[&"Pebble_Round_4", Vector3(18.5, 2.02, 13.5), 4.1, 1.5],
+	])
 
 
 ## ART-Q4 — « phrases » de végétation (§7.17 : grande touffe + moyenne +

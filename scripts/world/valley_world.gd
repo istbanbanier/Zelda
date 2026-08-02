@@ -240,6 +240,17 @@ func _setup_vista_camera() -> void:
 	add_child(camp_camera)
 	if OS.get_environment("VALLEY_CAMP") == "1":
 		camp_camera.make_current.call_deferred()
+	# V4 lot 4 — caméra de contrôle de la DESCENTE (§15 : « descente »),
+	# regard le long des rampes vers le camp.
+	var descent_camera: Camera3D = Camera3D.new()
+	descent_camera.name = "DescentCamera_01"
+	descent_camera.position = Vector3(14.0, 27.0, 152.0)
+	descent_camera.rotation_degrees = Vector3(-16.0, 12.0, 0.0)
+	descent_camera.fov = 58.0
+	descent_camera.current = false
+	add_child(descent_camera)
+	if OS.get_environment("VALLEY_DESCENT") == "1":
+		descent_camera.make_current.call_deferred()
 
 
 func _record_safe_point() -> void:

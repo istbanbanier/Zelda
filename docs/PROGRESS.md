@@ -1163,3 +1163,17 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > consigné. **35 planches-contact** capturées (toutes les pages de toutes
 > les catégories) : evidence/v4lot3/. Tests : index ≥110 + page pleine
 > sans perte. Plancher 316 → **318**.
+
+## 2026-08-02 (nuit V4, lot 4) — zones A/B/C : crête, descente, prairie
+
+> Système de placement par zone (`_place_model`/`_dress_zone`) sur la
+> topologie INTACTE : crête (cadre latéral d'arbres, rochers héroïques,
+> premier plan fleuri — **couloir de vista x −12..12 vide de toute
+> silhouette haute, TESTÉ**), descente (bornes de pierre aux paliers,
+> buissons aux bords EXTÉRIEURS, jalons verticaux — jamais rien sur l'axe
+> de course), prairie (arbres isolés à collision de tronc, bouquets
+> groupés avec vides, herbes de berge, galets du gué ouest). 51
+> placements, ~25 modèles distincts. Correction sur capture : l'arbre
+> tordu ROUGE quittait l'axe de la citadelle pour marquer le coude ouest
+> (accent hors axe, §11.A). Caméra de contrôle DESCENTE (VALLEY_DESCENT).
+> Tests zones+couloir. Plancher 318 → **320**. evidence/v4lot4/.
