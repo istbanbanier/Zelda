@@ -150,7 +150,7 @@ llvmpipe uniquement, aucun GPU.
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
 | D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres, CINQ familles ennemies | **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE** (`docs/GATE_D_AUDIT.md`, passe 2) : items 16/17/19 PASS, 18 PARTIEL (4 coffres sur 8, solde en Phase F, documenté), 20 PASS automatique sans essai humain. Les cinq familles de §12 existent, diffèrent par stats/arme/portée/carrure/comportement et sont testées (107 assertions transverses + 47 par famille) |
 | E | Récolte, cuisine, buffs, sauvegarde et migrations | **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE** (`docs/GATE_E_AUDIT.md`) : les huit items §22 Phase E PASS sur preuves rejouées, chaîne complète récolte→cuisine→buff→save/load testée de bout en bout. Non couvert : animation de cuisson (Phase H) et essai humain |
-| F | Graphe électrique, 4 salles, salle centrale, antichambre | **En cours** — F.1 (graphe en sandbox, 11 tests), F.2 (salle 1, 12 tests) et F.3 (salle 2, 12 tests) livrés ; F.4 à F.8 restants |
+| F | Graphe électrique, 4 salles, salle centrale, antichambre | **En cours** — F.1 (graphe, 11 tests), F.2 (salle 1, 12), F.3 (salle 2, 12) et F.4 (salle 3, 8) livrés ; F.5 à F.8 restants |
 | G | Arène, boss 3 phases, solvabilité, victoire | Non commencé |
 | H | Art « wahou », WOW Gate ≥ 85/100 | **Bloqué** — ISS-002 |
 | I | LOD, profilage, presets, exports, session 60 min | **Bloqué** — ISS-002 |
@@ -473,6 +473,8 @@ automatisée** avant qu'une seule salle n'existe.
 | Résistance électrique de §13.5 réellement utile | **Fonctionnel** | `test_electric_resistance_softens_the_shock` : première source de dégâts électriques du jeu |
 | Montée réelle du joueur, arrêt de l'ascenseur devant un corps, chute sur palier | **Fonctionnel** | `test_the_player_really_climbs_the_shaft`, `test_the_elevator_stops_rather_than_crushing_the_player`, `test_a_fall_lands_on_the_ledge_below` |
 | Ergonomie de l'escalade sous électrodes, lisibilité du rythme | **EN ATTENTE** (verdict humain) | `docs/MANUAL_VALIDATION.md` |
+| Salle 3 §15.7 — quatre relais, ports visibles, rotations discrètes, chemin partiel lisible, aucune punition, reset | **Fonctionnel** | `--filter=room3` (8 tests) |
+| Solveur automatique de §15.7 : une solution existe, le départ n'en est pas une | **Validé** | `test_the_solver_proves_a_solution_exists` : 256 configurations jouées sur le vrai graphe, 1 solution |
 
 ## Checklist finale (§26) — état réel
 

@@ -1755,3 +1755,29 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > segments valides, aucune erreur mortelle, retour distinct sur chemin
 > partiel, solveur automatique qui prouve qu'au moins une configuration
 > résout, bouton reset qui restaure la configuration initiale.
+
+## 2026-08-02 (Phase F, F.4) — salle 3, relais rotatifs
+
+> §15.7 implémenté : quatre colonnes-relais dont les DEUX bras de cuivre
+> sont exactement les deux ports du graphe (§15.3 : « pour une colonne
+> rotative, dépendre de l'orientation des ports »). Rotations discrètes
+> d'un quart de tour, une à la fois, 0,35 s ; le graphe n'est marqué qu'à
+> l'arrivée, si bien qu'une colonne qui tourne ne fait pas clignoter le
+> circuit. Le chemin fait un créneau autour de la salle : source à
+> l'ouest, récepteur à l'est, et la ligne cyan s'arrête EXACTEMENT à la
+> première colonne mal tournée — c'est le « feedback distinct si chemin
+> partiel » de §15.7, sans un mot de texte.
+> Le solveur automatique exigé par §15.7 est un test : il énumère les 256
+> configurations sur le VRAI graphe et prouve qu'il existe exactement UNE
+> solution, que la configuration de départ n'en est pas une, et que la
+> solution reste rare. Aucun danger dans cette salle : se tromper coûte
+> un quart de tour, jamais un point de vie — un test le vérifie aussi.
+> 8 tests `--filter=room3`, dont la résolution complète par le VRAI
+> chemin d'interaction (7 quarts de tour) et le rechargement qui restaure
+> l'orientation des colonnes.
+> **PROCHAINE ACTION (F.5)** : salle 4, batterie transportable (§15.8) —
+> une source, deux mécanismes successifs, batterie chargeable et
+> transportable, socket explicite, zone d'eau conductrice dangereuse
+> quand elle est alimentée, couper le courant ou construire une
+> passerelle isolante, batterie hors limites qui réapparaît, aucune porte
+> qui verrouille la batterie du mauvais côté, retour toujours possible.
