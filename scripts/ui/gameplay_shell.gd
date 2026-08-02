@@ -100,6 +100,10 @@ func _ready() -> void:
 	if bus != null:
 		bus.connect("gameplay_notification", _on_notification)
 	_apply_v4_style()
+	# E.2b : les interactables (feu de camp) trouvent la coquille par groupe.
+	add_to_group("gameplay_shell")
+	_build_cooking_panel()
+	_build_buff_label()
 	_set_mouse_captured(true)
 	# Le joueur peut entrer dans l'arbre après la coquille : liaison différée.
 	_bind_player.call_deferred()
@@ -417,6 +421,7 @@ func _process(delta: float) -> void:
 	if _hud_refresh_accumulator >= HUD_TEXT_REFRESH:
 		_hud_refresh_accumulator = 0.0
 		_refresh_weapon_text()
+		_refresh_buff_label()
 
 
 ## ---------------------------------------------------------------------------
@@ -819,3 +824,224 @@ func _refresh_sensitivity_label(value: float) -> void:
 ## Seam de test : applique une valeur comme si le curseur avait bougé.
 func set_sensitivity(value: float) -> void:
 	_sensitivity_slider.value = UserSettings.clamp_sensitivity(value)
+
+
+## ---------------------------------------------------------------------------
+## E.2b — Atelier de cuisine (§13.3) : sélection 1 à 5, aperçu honnête
+## (nom de famille et soin — pas les valeurs secrètes), confirmation
+## ATOMIQUE : place à plats et stocks revérifiés AVANT tout retrait,
+## puis retrait complet et plat, ou rien du tout. Annuler ne coûte
+## rien : la sélection n'est qu'un plan, rien n'est retiré avant la
+## confirmation. L'UI est construite en code, comme le style V4.
+## ---------------------------------------------------------------------------
+
+const COOKING_MAX_SELECTION: int = 5
+const BUFF_LABELS: Dictionary = {
+	&"attack": "Attaque",
+	&"defense": "Défense",
+	&"stamina": "Endurance",
+	&"elec_resist": "Résist. élec.",
+}
+
+var _cooking_panel: PanelContainer = null
+var _cooking_stock: VBoxContainer = null
+var _cooking_selection_label: Label = null
+var _cooking_preview: Label = null
+var _cooking_confirm: Button = null
+var _cooking_selection: Array[StringName] = []
+var _buff_label: Label = null
+
+
+func _build_cooking_panel() -> void:
+	_cooking_panel = PanelContainer.new()
+	_cooking_panel.name = "CookingPanel"
+	_cooking_panel.visible = false
+	_cooking_panel.process_mode = Node.PROCESS_MODE_WHEN_PAUSED
+	_cooking_panel.add_theme_stylebox_override(&"panel", HudStyle.plaque(0.92))
+	var column: VBoxContainer = VBoxContainer.new()
+	column.custom_minimum_size = Vector2(430, 0)
+	column.add_theme_constant_override(&"separation", 10)
+	_cooking_panel.add_child(column)
+	var title: Label = Label.new()
+	title.text = "CUISINE"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_color_override(&"font_color", HudStyle.GOLD)
+	title.add_theme_font_size_override(&"font_size", 26)
+	column.add_child(title)
+	_cooking_stock = VBoxContainer.new()
+	_cooking_stock.name = "Stock"
+	column.add_child(_cooking_stock)
+	_cooking_selection_label = Label.new()
+	column.add_child(_cooking_selection_label)
+	_cooking_preview = Label.new()
+	_cooking_preview.add_theme_color_override(&"font_color", HudStyle.GOLD)
+	column.add_child(_cooking_preview)
+	var row: HBoxContainer = HBoxContainer.new()
+	row.add_theme_constant_override(&"separation", 12)
+	column.add_child(row)
+	_cooking_confirm = Button.new()
+	_cooking_confirm.text = "Cuisiner"
+	HudStyle.style_button(_cooking_confirm)
+	_cooking_confirm.pressed.connect(cooking_confirm)
+	row.add_child(_cooking_confirm)
+	var remove_button: Button = Button.new()
+	remove_button.text = "Retirer le dernier"
+	HudStyle.style_button(remove_button)
+	remove_button.pressed.connect(cooking_remove_last)
+	row.add_child(remove_button)
+	var cancel: Button = Button.new()
+	cancel.text = "Reprendre"
+	HudStyle.style_button(cancel)
+	cancel.pressed.connect(close_cooking)
+	row.add_child(cancel)
+	add_child(_cooking_panel)
+	_cooking_panel.set_anchors_preset(Control.PRESET_CENTER)
+
+
+## Ouvre l'atelier — vrai si ouvert. Le monde est réellement en pause
+## (§13.3 : aucune minuterie de gameplay ne court pendant la cuisine).
+func open_cooking(_who: Node) -> bool:
+	if _death_panel.visible or is_paused() or _player == null \
+			or _player.inventory() == null:
+		return false
+	_cooking_selection.clear()
+	_rebuild_cooking_panel()
+	_cooking_panel.visible = true
+	get_tree().paused = true
+	_set_mouse_captured(false)
+	return true
+
+
+## Annuler rend toujours les ingrédients (§13.3) : rien n'a été retiré.
+func close_cooking() -> void:
+	_cooking_selection.clear()
+	_cooking_panel.visible = false
+	get_tree().paused = false
+	_set_mouse_captured(true)
+
+
+func is_cooking_open() -> bool:
+	return _cooking_panel != null and _cooking_panel.visible
+
+
+## Ajoute un ingrédient au plan de cuisson — refuse au-delà de 5 ou du
+## stock réellement possédé.
+func cooking_add(id: StringName) -> bool:
+	if _cooking_selection.size() >= COOKING_MAX_SELECTION:
+		return false
+	if _player.inventory().ingredient_count(id) <= _cooking_selection.count(id):
+		return false
+	_cooking_selection.append(id)
+	_rebuild_cooking_panel()
+	return true
+
+
+func cooking_remove_last() -> void:
+	if not _cooking_selection.is_empty():
+		_cooking_selection.pop_back()
+		_rebuild_cooking_panel()
+
+
+func cooking_preview_text() -> String:
+	return _cooking_preview.text if _cooking_preview != null else ""
+
+
+func cooking_selection_size() -> int:
+	return _cooking_selection.size()
+
+
+func cooking_confirm() -> void:
+	if _cooking_selection.is_empty() or _player == null:
+		return
+	var inventory: InventoryComponent = _player.inventory()
+	if inventory.meal_count() >= InventoryComponent.MAX_MEALS:
+		_on_notification("Réserve de plats pleine")
+		return
+	var needed: Dictionary = {}
+	for id: StringName in _cooking_selection:
+		needed[id] = int(needed.get(id, 0)) + 1
+	for id: StringName in needed:
+		if inventory.ingredient_count(id) < int(needed[id]):
+			_rebuild_cooking_panel()   # le stock a bougé : re-mesurer
+			return
+	var result: Dictionary = RecipeRules.cook(_cooking_definitions())
+	if not bool(result.get("valid", false)):
+		return
+	for id: StringName in needed:
+		inventory.consume_ingredients(id, int(needed[id]))
+	inventory.add_meal(result)
+	_on_notification("Cuisiné : %s" % String(result.get("name", "Plat")))
+	close_cooking()
+
+
+func _cooking_definitions() -> Array[IngredientDefinition]:
+	var definitions: Array[IngredientDefinition] = []
+	for id: StringName in _cooking_selection:
+		definitions.append(load("res://resources/ingredients/%s.tres"
+			% String(id)) as IngredientDefinition)
+	return definitions
+
+
+func _rebuild_cooking_panel() -> void:
+	for child: Node in _cooking_stock.get_children():
+		child.queue_free()
+	var inventory: InventoryComponent = _player.inventory()
+	for id: StringName in inventory.ingredient_ids():
+		var definition: IngredientDefinition = load(
+			"res://resources/ingredients/%s.tres" % String(id)) \
+			as IngredientDefinition
+		if definition == null:
+			continue
+		var stock_row: Button = Button.new()
+		stock_row.text = "%s  ×%d" % [definition.display_name,
+			inventory.ingredient_count(id)]
+		HudStyle.style_button(stock_row)
+		stock_row.pressed.connect(cooking_add.bind(id))
+		_cooking_stock.add_child(stock_row)
+	if _cooking_selection.is_empty():
+		_cooking_selection_label.text = "Choisis 1 à 5 ingrédients"
+	else:
+		var names: Array[String] = []
+		for id: StringName in _cooking_selection:
+			names.append(String(id))
+		_cooking_selection_label.text = "Choisis (%d/5) : %s" % [
+			_cooking_selection.size(), ", ".join(names)]
+	var result: Dictionary = RecipeRules.cook(_cooking_definitions())
+	if bool(result.get("valid", false)):
+		_cooking_preview.text = "%s — soigne %d PV" % [
+			String(result.get("name", "")), int(result.get("heal", 0.0))]
+	else:
+		_cooking_preview.text = "—"
+	_cooking_confirm.disabled = _cooking_selection.is_empty()
+
+
+## ---------------------------------------------------------------------------
+## E.2b — label de buff au HUD : famille + secondes restantes, rien sinon.
+## ---------------------------------------------------------------------------
+
+func _build_buff_label() -> void:
+	_buff_label = Label.new()
+	_buff_label.name = "BuffLabel"
+	_buff_label.text = ""
+	_buff_label.add_theme_color_override(&"font_color", HudStyle.GOLD)
+	_buff_label.add_theme_font_size_override(&"font_size", 15)
+	add_child(_buff_label)
+	_buff_label.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	_buff_label.offset_left = 26.0
+	_buff_label.offset_top = 46.0
+
+
+func _refresh_buff_label() -> void:
+	if _buff_label == null or _player == null or _player.status() == null:
+		return
+	var effect: StringName = _player.status().active_effect()
+	if effect == &"":
+		_buff_label.text = ""
+		return
+	_buff_label.text = "%s — %d s" % [
+		String(BUFF_LABELS.get(effect, String(effect))),
+		int(ceilf(_player.status().remaining()))]
+
+
+func buff_label_text() -> String:
+	return _buff_label.text if _buff_label != null else ""

@@ -77,6 +77,13 @@ func _ready() -> void:
 		var typed: WeaponPickup = pickup as WeaponPickup
 		typed.picked_up.connect(func(_weapon: WeaponInstance) -> void:
 			_on_pickup_taken(typed))
+	# E.2b : le feu de cuisine — un interactable posé SUR le foyer réel du
+	# camp (§13.3). L'atelier vit dans la coquille ; le feu n'est que la
+	# porte, comme la collision reste celle du foyer existant.
+	var campfire: Campfire = Campfire.new()
+	campfire.name = "CampCookingFire"
+	campfire.position = Vector3(44.6, 6.1, 63.2)
+	add_child(campfire)
 	# E.1 : les ingrédients de la vallée (§13.1) — posés en code comme le
 	# relief, AVANT l'application de la sauvegarde qui retire les récoltés.
 	_spawn_ingredients()

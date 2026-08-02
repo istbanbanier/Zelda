@@ -1375,3 +1375,22 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > (code prêt en scratchpad : Campfire interactable + atelier du shell +
 > label de buff HUD + 4 tests), puis revue Gate E, puis Phase F selon
 > l'addendum multi-étages (graphe sandbox d'abord).
+
+## 2026-08-02 (E.2b, travail en vol clos — ordre corrigé reçu)
+
+> E.2b était en cours d'écriture à l'arrivée de la CORRECTION du
+> propriétaire (arrêt des lots artistiques V4, réouverture du Gate D).
+> Le travail produit est conservé et clos proprement : feu de cuisine
+> interactable SUR le foyer du camp (Campfire, groupe interactable,
+> « Cuisiner »), atelier du shell (§13.3 : sélection 1-5 bornée au stock
+> possédé, aperçu honnête nom+soin via RecipeRules, confirmation
+> ATOMIQUE — place et stocks revérifiés avant tout retrait, annulation
+> gratuite car la sélection n'est qu'un plan), label de buff au HUD
+> (famille + secondes restantes), autosave déjà câblé (meals_changed,
+> E.2a). 4 tests d'intégration (28 assertions) sur la vraie scène ;
+> le geste d'interaction (lot 14) part à l'ouverture du feu.
+> **Gate E : NON fermé** — la revue attendra le Gate D (ordre corrigé).
+> **PROCHAINE ACTION (ordre corrigé)** : audit complet du Gate D —
+> matrice de preuve items 16-20, puis implémentation des QUATRE familles
+> ennemies manquantes (§12.2-12.5 : azur, obsidienne, colosse,
+> chasseur), batterie de tests §12, aplats des cinq familles.
