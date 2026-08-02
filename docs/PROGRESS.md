@@ -1225,3 +1225,21 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > pilier d'angle (variantes), panneaux muraux, allée de dalles, mobilier
 > martial ; puis lot 12 structures pénétrables (avant-poste, abri
 > rivière, sanctuaire falaise, poste de garde).
+
+## 2026-08-02 (nuit V4, lot 11) — vestibule varié et meublé
+
+> §11.J : la répétition du pilier d'angle unique est cassée — les piles
+> de colonnes alternent module LARGE (arch.column.module ×1.6) et
+> variante ÉTROITE (Corner_Exterior_Brick ×2.1, repli propre sur le
+> large si absente). Intérieur habité : allée processionnelle de 6
+> dalles Floor_Brick vers la porte de sortie, 2 panneaux muraux
+> plâtre au nord, mobilier martial (râtelier d'armes, bouclier, banc,
+> caisse+parchemin — un poste de garde, pas un hall vide), 2 bannières
+> latérales, 2 lanternes murales avec OmniLight chauds MOTIVÉS (§7.8 :
+> sources visibles, aucun couloir noir). 17 placements + 2 lumières.
+> Tests citadel_dressing 2/2 (structure ColumnStack/Segment préservée).
+> Capture : evidence/v4lot11/vestibule_dressed.png (manifeste).
+> **PROCHAINE ACTION (V4 lot 12)** : structures secondaires pénétrables
+> (avant-poste route nord, abri rivière, sanctuaire falaise, poste de
+> garde citadelle) — chaque intérieur : raison d'être, récompense,
+> dimensions joueur, sortie sûre.

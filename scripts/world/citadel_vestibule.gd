@@ -79,6 +79,8 @@ func _build_room() -> void:
 		frame.scale = Vector3(2.3, 2.3, 1.4)
 		add_child(frame)
 
+	_dress_interior()
+
 	var exit_door: SceneDoor = SceneDoor.new()
 	exit_door.name = "ExitDoor"
 	exit_door.verb = "Sortir"
@@ -103,12 +105,69 @@ func _build_room() -> void:
 	add_child(exit_door)
 
 
+## V4 lot 11 — habillage intérieur (§11.J) : allée de dalles vers le seuil
+## scellé, panneaux muraux au nord, mobilier martial, lanternes MOTIVÉES
+## sur les colonnes médianes. Décor pur : collisions et portes intactes.
+func _dress_interior() -> void:
+	var dressing: Node3D = Node3D.new()
+	dressing.name = "VestibuleDressing"
+	add_child(dressing)
+	var placements: Array[Array] = [
+		# Allée processionnelle : dalles de brique de l'entrée au seuil.
+		[&"Floor_Brick", Vector3(0, 0.03, 10), 0.0, 1.0],
+		[&"Floor_Brick", Vector3(0, 0.03, 6), 1.57, 1.0],
+		[&"Floor_Brick", Vector3(0, 0.03, 2), 0.0, 1.0],
+		[&"Floor_Brick", Vector3(0, 0.03, -2), 1.57, 1.0],
+		[&"Floor_Brick", Vector3(0, 0.03, -6), 0.0, 1.0],
+		[&"Floor_Brick", Vector3(0, 0.03, -10), 1.57, 1.0],
+		# Panneaux muraux nord, de part et d'autre du portail scellé.
+		[&"Wall_Plaster_Straight", Vector3(-6.5, 0, -12.7), 0.0, 1.35],
+		[&"Wall_Plaster_Straight", Vector3(6.5, 0, -12.7), 0.0, 1.35],
+		# Mobilier martial : râtelier, bouclier, banc d'attente, caisse.
+		[&"WeaponStand", Vector3(-9.6, 0, 4), 1.57, 1.1],
+		[&"Shield_Wooden", Vector3(-9.9, 0.3, 5.6), 1.9, 1.1],
+		[&"Bench", Vector3(9.6, 0, 8), -1.57, 1.1],
+		[&"FarmCrate_Empty", Vector3(9.7, 0, -8.5), 0.4, 1.0],
+		[&"Scroll_1", Vector3(9.6, 0.62, -8.4), 2.1, 1.0],
+		# Bannières latérales et lanternes sur les colonnes médianes.
+		[&"Banner_1", Vector3(-10.9, 5.2, -4), 1.57, 1.4],
+		[&"Banner_1", Vector3(10.9, 5.2, -4), -1.57, 1.4],
+		[&"Lantern_Wall", Vector3(-5.2, 2.6, 0), 1.57, 1.1],
+		[&"Lantern_Wall", Vector3(5.2, 2.6, 0), -1.57, 1.1],
+	]
+	for entry: Array in placements:
+		var packed: PackedScene = AssetRegistry.model(entry[0] as StringName)
+		if packed == null:
+			continue
+		var prop: Node3D = packed.instantiate() as Node3D
+		prop.name = "%s_%d" % [String(entry[0] as StringName),
+			dressing.get_child_count()]
+		prop.position = entry[1] as Vector3
+		prop.rotation.y = float(entry[2])
+		prop.scale = Vector3.ONE * float(entry[3])
+		dressing.add_child(prop)
+	# Lumières chaudes MOTIVÉES par les deux lanternes (§7.8 : sources
+	# motivées, aucun couloir noir).
+	for x: float in [-5.2, 5.2]:
+		var glow: OmniLight3D = OmniLight3D.new()
+		glow.light_color = Color(1.0, 0.72, 0.38)
+		glow.light_energy = 0.9
+		glow.omni_range = 6.0
+		glow.position = Vector3(x, 2.9, 0)
+		dressing.add_child(glow)
+
+
 ## ART-Q5 — colonne de production : TROIS modules de pilier empilés
 ## (3 × 3,04 m ≈ 9,1 m, architecture modulaire réelle) remplacent le visuel
 ## graybox ; la COLLISION boîte de la colonne reste l'autorité. Repli :
 ## le graybox reste visible, rien d'autre ne change.
 func _dress_column(index: int, foot: Vector3) -> void:
-	var packed: PackedScene = AssetRegistry.resolve(&"arch.column.module")
+	# V4 lot 11 : CASSER la répétition (§11.J) — piliers larges et étroits
+	# alternés, le même module ne se répète jamais côte à côte.
+	var packed: PackedScene = AssetRegistry.resolve(&"arch.column.module") \
+		if index % 2 == 0 else AssetRegistry.model(&"Corner_Exterior_Brick")
+	if packed == null:
+		packed = AssetRegistry.resolve(&"arch.column.module")
 	if packed == null:
 		return
 	var column_body: Node = get_node_or_null("Column%d" % index)
@@ -126,7 +185,8 @@ func _dress_column(index: int, foot: Vector3) -> void:
 		segment.name = "Segment%d" % level
 		segment.position = Vector3(0, 3.04 * float(level), 0)
 		segment.rotation.y = PI * 0.5 * float((index + level) % 4)
-		segment.scale = Vector3(1.6, 1.0, 1.6)
+		segment.scale = Vector3(1.6, 1.0, 1.6) if index % 2 == 0 \
+			else Vector3(2.1, 1.0, 2.1)
 		stack.add_child(segment)
 	add_child(stack)
 
