@@ -44,6 +44,45 @@ const CATALOG: Dictionary = {
 }
 
 
+## V4 lot 3 — dossiers scannés par l'index de modèles directs.
+const MODEL_DIRS: Array[String] = [
+	"res://assets/environment/foliage", "res://assets/environment/rocks",
+	"res://assets/environment/props", "res://assets/environment/dungeon",
+	"res://assets/characters/hero", "res://assets/characters/enemies",
+]
+static var _model_index: Dictionary = {}
+
+
+## Résolution DIRECTE par nom canonique de modèle promu (V4 lot 3) : les
+## ~130 modèles Quaternius du dépôt n'ont pas chacun un id de CATALOG —
+## l'index paresseux associe `Pine_1` → `res://assets/.../Pine_1.gltf`.
+## `null` si absent : l'appelant garde son repli, jamais de ressource rose.
+static func model(model_name: StringName) -> PackedScene:
+	if _model_index.is_empty():
+		for dir_path: String in MODEL_DIRS:
+			var dir: DirAccess = DirAccess.open(dir_path)
+			if dir == null:
+				continue
+			for file: String in dir.get_files():
+				var lower: String = file.to_lower()
+				if lower.ends_with(".gltf") or lower.ends_with(".glb"):
+					_model_index[StringName(file.get_basename())] = \
+						dir_path + "/" + file
+	var path: String = String(_model_index.get(model_name, ""))
+	if path.is_empty() or not ResourceLoader.exists(path, "PackedScene"):
+		return null
+	return load(path) as PackedScene
+
+
+static func known_models() -> Array[StringName]:
+	model(&"")   # force l'index
+	var names: Array[StringName] = []
+	for key: Variant in _model_index.keys():
+		names.append(key as StringName)
+	names.sort()
+	return names
+
+
 ## `null` si l'id est inconnu OU si la ressource n'est pas encore livrée —
 ## l'appelant garde son repli. Jamais d'exception, jamais de ressource rose.
 static func resolve(id: StringName) -> PackedScene:

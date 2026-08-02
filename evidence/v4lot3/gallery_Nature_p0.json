@@ -1,0 +1,18 @@
+{
+  "commit": "ba8b27b7518564bb70c8ffb780feef413da086d3",
+  "display_server": "X11",
+  "distinct_colors_sampled": 814,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 25,
+  "height": 900,
+  "label": "v4_gallery_Nature_p0",
+  "luma_mean": 0.4562,
+  "luma_stddev": 0.163,
+  "png": "evidence/v4lot3/gallery_Nature_p0.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/tests/AssetGallery.tscn",
+  "timestamp_utc": "2026-08-02 09:10:52",
+  "width": 1600
+}

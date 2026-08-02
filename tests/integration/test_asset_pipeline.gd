@@ -177,3 +177,44 @@ func test_the_calibration_scene_labels_every_missing_asset_and_keeps_scale() -> 
 	calibration.get_parent().remove_child(calibration)
 	calibration.queue_free()
 	await _settle(1)
+
+
+func test_the_model_index_serves_the_promoted_library() -> void:
+	## V4 lot 3 : l'index paresseux dessert les ~130 modèles promus par NOM
+	## canonique — de vrais maillages, null propre pour l'inconnu.
+	check(AssetRegistry.known_models().size() >= 110,
+		"au moins 110 modèles promus (%d)" % AssetRegistry.known_models().size())
+	for name: StringName in [&"Pine_1", &"Cauldron", &"Wall_Arch",
+			&"Grass_Common_Tall", &"Stairs_Exterior_Straight"]:
+		var packed: PackedScene = AssetRegistry.model(name)
+		check(packed != null, "%s : promu et résolu" % String(name))
+		if packed != null:
+			var instance: Node = packed.instantiate()
+			var has_mesh: bool = false
+			for mesh: Node in instance.find_children("*", "MeshInstance3D",
+					true, false):
+				if (mesh as MeshInstance3D).mesh != null:
+					has_mesh = true
+			check(has_mesh, "%s : maillage réel" % String(name))
+			instance.free()
+	check(AssetRegistry.model(&"Modele_Inconnu_XYZ") == null,
+		"inconnu : null propre, jamais une ressource rose")
+
+
+func test_the_gallery_mounts_a_full_page_without_losses() -> void:
+	## V4 lot 3 (§8) : une page de galerie monte ses 12 modèles — une erreur
+	## d'asset serait un jalon orange consigné, jamais une perte silencieuse.
+	OS.set_environment("GALLERY_CATEGORY", "Props")
+	OS.set_environment("GALLERY_PAGE", "0")
+	var gallery: AssetGallery = (load("res://scenes/tests/AssetGallery.tscn")
+		as PackedScene).instantiate() as AssetGallery
+	_tree().root.add_child(gallery)
+	await _settle(2)
+	check_equal(gallery.page_entries, 12, "page pleine : 12 entrées")
+	check_equal(gallery.mounted_models, 12, "12 modèles réellement montés")
+	check_equal(gallery.failed_models, 0, "aucun échec de chargement")
+	OS.set_environment("GALLERY_CATEGORY", "")
+	OS.set_environment("GALLERY_PAGE", "")
+	gallery.get_parent().remove_child(gallery)
+	gallery.queue_free()
+	await _settle(2)

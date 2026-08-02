@@ -1148,3 +1148,18 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > modèle (tris, bbox TOUS meshes, matériaux, os, clips). Sorties : JSON
 > (946 Ko), CSV, CATALOG_REPORT.md. Le score est un TRI préparatoire —
 > le verdict artistique reste humain.
+
+## 2026-08-02 (nuit V4, lot 3) — promotion massive, index direct, galerie
+
+> `tools/promote_quaternius.py` + `docs/assets/PROMOTIONS.csv` (sélection
+> commentée par zone, rejouable depuis la Release) : **113 nouveaux modèles
+> promus** (265 fichiers, 76,5 Mo — nature 30, rochers 8, props 43,
+> architecture 32), import Godot ZÉRO erreur, 119 lignes de manifeste
+> générées depuis le catalogue. `AssetRegistry.model(nom)` : index
+> paresseux nom canonique → PackedScene (jamais 130 constantes à la main).
+> Galerie paginée `AssetGallery.tscn` (§8) : 12 modèles/page, catégorie/
+> page/espacement par environnement, promus depuis le dépôt + candidats
+> depuis l'extraction (GLTFDocument runtime), échec d'asset = jalon orange
+> consigné. **35 planches-contact** capturées (toutes les pages de toutes
+> les catégories) : evidence/v4lot3/. Tests : index ≥110 + page pleine
+> sans perte. Plancher 316 → **318**.
