@@ -8,17 +8,18 @@ Base : MASTER_SPEC §22 Phase D (items 16-20), §12 (bestiaire), §23
 | Passe | Date | Verdict | Motif |
 |---|---|---|---|
 | 1 | 2026-08-02 (commit `056788c`) | **FAIL** | item 19 : une seule famille ennemie sur cinq |
-| 2 | 2026-08-02 (après D-EN.0..6) | voir ci-dessous | les cinq familles livrées et testées |
+| 2 | 2026-08-02 (après D-EN.0..6) | **auto-évaluation trop généreuse** | item 19 déclaré PASS alors que proportions et animations échouaient |
+| 3 | 2026-08-02 (après revue contradictoire) | voir ci-dessous | six défauts réels corrigés, item 19 ramené à PARTIEL |
 
-## Matrice de preuve — passe 2
+## Matrice de preuve — passe 3 (après revue contradictoire)
 
 | Item | Critère | Preuve rejouée | Verdict |
 |---|---|---|---|
 | 16 | Terrain 512 m, composition North Star en formes simples | `--filter=world_dressing` 4/4 ; `evidence/v4lot16/vista_post_review.png` capturée à l'arbre PROPRE (`repo_dirty:false`) : trois plans, citadelle + éclair, pylône, camp | **PASS** |
 | 17 | Camp, falaise, rivière, pylône, citadelle, chemins | `--filter=world_dressing`, `--filter=camp_props` 3/3, `--filter=valley` ; huit zones habillées, comptages testés | **PASS** |
 | 18 | Huit coffres, sept ingrédients, checkpoint | 4 coffres dans la vallée (conforme à la répartition §11.4 : « trois dans la vallée, un au camp ») ; les 4 autres appartiennent aux salles du donjon (Phase F). 12 ingrédients, 7 familles testées (`--filter=ingredients` 4/4). Checkpoint `valley.camp.start` sauvegardé/testé | **PARTIEL** — 4/8 placés ; solde structurellement lié à la Phase F, consigné |
-| 19 | Cinq familles ennemies réellement distinctes | `--filter=bestiary` 5/5 (**107 assertions**), + 5 suites par famille : braise 22/22, azur 5/5, obsidienne 5/5, colosse 5/5, chasseur 5/5, socle 5/5, coordinateur 3/3. Silhouettes : `evidence/gateD/bestiary_flat.png` (aplats noirs, même échelle) | **PASS** |
-| 20 | Extérieur complet, terminable, sans zone vide injustifiée | La vallée porte les cinq familles à leur poste (test dédié) ; boucle spawn→camp→citadelle jouable (`--filter=valley_world`) | **PASS automatique** — l'essai humain manque |
+| 19 | Cinq familles ennemies réellement distinctes | `--filter=bestiary` 6/6, + suites par famille : braise 8/8, azur 5/5, obsidienne 5/5, colosse 5/5, chasseur 6/6, socle 5/5, coordinateur 4/4. Silhouettes : `evidence/gateD/bestiary_flat.png` | **PARTIEL** — voir la réserve ci-dessous |
+| 20 | Extérieur complet, terminable, sans zone vide injustifiée | `test_the_north_road_to_the_citadel_stays_walkable_with_the_bestiary` : pilote scripté, AUCUNE téléportation, bestiaire EN PLACE, six jalons de la plaine nord au seuil de la citadelle — le colosse ne barre pas la route, le joueur arrive vivant | **PASS automatique** — l'essai humain manque |
 
 ## Ce que l'item 19 prouve, famille par famille (§12.1-§12.5)
 
@@ -32,6 +33,27 @@ Base : MASTER_SPEC §22 Phase D (items 16-20), §12 (bestiaire), §23
 
 Aucune famille ne partage ses PV, sa portée, sa carrure ni un seul
 identifiant de contrat d'attaque (vérifié par assertion croisée).
+
+### Réserve sur l'item 19 — ce qui n'est PAS encore distinct
+
+§12 exige que les familles diffèrent par « silhouette, proportions,
+équipement, animations, rythme et décisions ». Les **décisions, le
+rythme, l'équipement et les statistiques** sont distincts et prouvés.
+En revanche, ce qui suit ne l'est pas encore, et cela suffit à retirer
+le `PASS` à cet item :
+
+- **les trois pillards partagent le maillage `Male_Peasant.gltf` et LA
+  MÊME bibliothèque d'animations `AL_RaiderStates.res`.** Leurs
+  différences visuelles sont une teinte, une à deux pièces greffées et
+  des proportions non uniformes (le briseur : 18 % plus large, 6 % plus
+  court — corrigé après la revue, un facteur uniforme le rendait
+  simplement plus GRAND, en contradiction avec sa capsule) ;
+- **le colosse et le chasseur n'ont aucun `CharacterVisual`** : ni
+  modèle riggé, ni animation. Ce sont des graybox (capsule, boîtes).
+
+Ces deux points appartiennent à la **Phase H** (§22 : art « wahou »,
+ennemis et boss finalisés). Ils sont consignés ici pour qu'aucune
+lecture du gate ne les croie réglés.
 
 ## Exigences transverses de l'ordre corrigé
 
@@ -56,6 +78,8 @@ identifiant de contrat d'attaque (vérifié par assertion croisée).
 
 ## Défauts RÉELS trouvés par cette campagne et corrigés
 
+Trouvés par mes propres tests (D-EN.0 à D-EN.6) :
+
 1. Attaque déclenchée sans être tourné vers la cible (coups dans le vide).
 2. Portée d'engagement supérieure à l'extension de la hitbox (boucle de
    coups courts perpétuels) — braise et briseur.
@@ -65,10 +89,39 @@ identifiant de contrat d'attaque (vérifié par assertion croisée).
 5. Rocher du colosse né dans sa propre carrure (mort au premier tick).
 6. Carte de navigation créée en code jamais libérée (fuite de RID).
 
+Trouvés par la **revue contradictoire** — que mes 362 tests n'avaient
+PAS vus :
+
+7. **`move_and_slide()` appelé DEUX FOIS par tick** pour toute famille
+   dont `_process_family_state()` bougeait puis rendait `true` : toutes
+   les vitesses de manœuvre étaient doublées en silence (charge du
+   chasseur mesurée à **30 m/s pour 15 déclarés**, soit plus du double
+   du plafond de §12.6). Le socle appelle désormais `move_and_slide()`
+   une fois, les familles jamais. Test de non-régression ajouté
+   (`test_the_charge_runs_at_its_declared_speed`).
+8. **Le plafond d'IA gelait un ennemi en pleine attaque** : sa fenêtre
+   de frappe restait armée indéfiniment (§12.10) et son token de mêlée
+   n'était jamais rendu (§12.8) — une file de deux qui se vide à un.
+   Le plafond appelle maintenant `sleep_for_activity_cap()`, qui annule
+   l'attaque et rend le token avant de geler. Test ajouté.
+9. Le briseur d'obsidienne réécrivait la sortie d'attaque **sans rendre
+   son token** (masqué en production par la purge).
+10. Proportions du briseur : facteur uniforme 1,12 = simplement **plus
+    grand**, en contradiction avec §12.3 (« large et bas ») et avec sa
+    propre capsule. Remplacé par 1,18 × 0,94 × 1,18.
+11. Une assertion **tautologique** (`x == x`) et deux assertions dont le
+    message affirmait plus que la condition (coordinateur, colosse).
+12. La preuve invoquée pour l'item 20 **retirait les ennemis** et
+    s'arrêtait 190 m avant la porte de la citadelle. Remplacée par un
+    pilote scripté qui marche réellement jusqu'au seuil, bestiaire en
+    place.
+13. `docs/ROADMAP.md` déclarait encore le Gate D « non commencé ».
+
 ## Verdict global
 
-Le plus faible des items : **item 18 PARTIEL** (4 coffres sur 8, solde en
-Phase F) et **item 20 sans essai humain**.
+Le plus faible des items : **18 PARTIEL** (4 coffres sur 8, solde en
+Phase F), **19 PARTIEL** (maillage et animations partagés, graybox pour
+les deux grandes familles — Phase H) et **20 sans essai humain**.
 
 > **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE**
 
@@ -80,9 +133,15 @@ un oubli.
 
 ## Limites honnêtes à cet instant
 
-- Colosse et chasseur sont des **graybox** (capsule / boîtes) : le
-  modelage appartient à la Phase H (§22). Leur silhouette est néanmoins
-  distincte en aplat, ce que le gate exige.
+- Colosse et chasseur sont des **graybox** (capsule / boîtes) sans
+  aucune animation : le modelage appartient à la Phase H (§22). Leur
+  silhouette est néanmoins distincte en aplat.
+- Les trois pillards partagent **un maillage et une bibliothèque
+  d'animations** : leur distinction est comportementale et statistique,
+  pas encore animée (Phase H).
+- Le navmesh des grandes carrures met ~6 ticks physiques à se
+  synchroniser après création ; pendant cette fenêtre le pathfinding
+  retombe sur la ligne directe (repli mesuré, jamais un chemin faux).
 - Aucun essai clavier/manette possible dans ce conteneur (CLAUDE.md).
 - Le rendu des captures est logiciel (llvmpipe) : aucune mesure de
   performance n'en est tirée.

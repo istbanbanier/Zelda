@@ -67,6 +67,17 @@ func release_token(enemy: EnemyBase) -> void:
 	_heavy_holders.erase(enemy)
 
 
+## Seam de test : les porteurs actuels, toutes files confondues — permet
+## d'affirmer QUI tient un token, pas seulement combien (revue Gate D).
+func token_holders() -> Array[EnemyBase]:
+	_purge(_melee_holders)
+	_purge(_heavy_holders)
+	var holders: Array[EnemyBase] = []
+	holders.append_array(_melee_holders)
+	holders.append_array(_heavy_holders)
+	return holders
+
+
 func melee_holder_count() -> int:
 	_purge(_melee_holders)
 	return _melee_holders.size()
@@ -98,8 +109,15 @@ func _enforce_activity_cap() -> void:
 			< b.global_position.distance_squared_to(player.global_position))
 	for i: int in range(living.size()):
 		var should_run: bool = i < MAX_ACTIVE_AI
-		if living[i].is_physics_processing() != should_run:
-			living[i].set_physics_process(should_run)
+		if living[i].is_physics_processing() == should_run:
+			continue
+		if not should_run:
+			# JAMAIS endormir en pleine attaque (revue Gate D) : la
+			# fenêtre de frappe resterait armée à jamais (§12.10) et le
+			# token ne reviendrait jamais dans la file (§12.8). L'ennemi
+			# est SORTI DU COMBAT proprement, puis gelé.
+			living[i].sleep_for_activity_cap()
+		living[i].set_physics_process(should_run)
 
 
 func active_enemy_count() -> int:

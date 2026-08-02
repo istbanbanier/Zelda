@@ -95,13 +95,11 @@ func _process_family_state(delta: float) -> bool:
 		if _throw_timer <= 0.0:
 			_launch_rock()
 			_throw_recovering = THROW_RECOVERY
-		move_and_slide()
 		return true
 	if _throw_recovering > 0.0:
 		_throw_recovering -= delta
 		velocity.x = 0.0
 		velocity.z = 0.0
-		move_and_slide()
 		return true
 	# Déclenchement du lancer : bande 6-16 m, prêt, orienté.
 	if _state == State.CHASE and _throw_cooldown <= 0.0 and _target_valid():

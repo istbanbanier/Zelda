@@ -230,9 +230,16 @@ func test_the_character_variants_have_distinct_silhouettes() -> void:
 		if id == &"char.raider_black":
 			check(not visual.find_children("*Head_Hood*", "MeshInstance3D",
 				true, false).is_empty(), "obsidienne : capuche greffée")
-			check((visual.get_node("Model") as Node3D).scale
-				.is_equal_approx(Vector3.ONE * 1.12),
-				"obsidienne : carrure ×1,12")
+			# §12.3 « silhouette LARGE, centre de gravité BAS » : des
+			# proportions NON uniformes. Le facteur uniforme d'origine
+			# donnait un pillard simplement PLUS GRAND — corrigé après
+			# la revue contradictoire du Gate D.
+			var model_scale: Vector3 = (visual.get_node("Model") as Node3D).scale
+			check(model_scale.x > 1.1 and model_scale.z > 1.1,
+				"obsidienne : plus LARGE (%.2f)" % model_scale.x)
+			check(model_scale.y < 1.0,
+				"…et plus BASSE (%.2f) — jamais un simple agrandissement"
+				% model_scale.y)
 		visual.queue_free()
 		await _settle(1)
 	check(counts[&"char.raider_blue"] == counts[&"char.raider_red"] + 2,

@@ -1571,3 +1571,37 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > Phase F). Plancher 362.
 > **PROCHAINE ACTION** : revue contradictoire du Gate D à contexte frais
 > (ordre corrigé §5), puis fin de Phase E (Gate E) puis Phase F.
+
+## 2026-08-02 (Gate D) — revue contradictoire : FAIL, sept correctifs
+
+> Verdict de la revue à contexte frais sur a465299 : **FAIL**. Mon
+> auto-évaluation était trop généreuse. Sept défauts réels, tous
+> corrigés dans ce lot :
+> 1. **`move_and_slide()` appelé DEUX FOIS par tick** dès qu'une famille
+>    bougeait puis rendait `true` — toutes les vitesses de manœuvre
+>    doublées EN SILENCE (charge du chasseur mesurée à 30 m/s pour 15
+>    déclarés, soit le double du plafond §12.6). Le socle bouge une
+>    fois, les familles jamais. Test de vitesse réelle ajouté.
+> 2. **Le plafond d'IA gelait un attaquant en pleine attaque** : hitbox
+>    armée à jamais (§12.10) et token confisqué (§12.8). Nouvelle sortie
+>    propre sleep_for_activity_cap(). Test de reproduction ajouté.
+> 3. Le briseur rendait la main sans rendre son token.
+> 4. Proportions du briseur : 1,12 UNIFORME le rendait simplement plus
+>    grand, contre §12.3 (« large et bas ») et contre sa capsule —
+>    remplacé par 1,18 × 0,94 × 1,18.
+> 5. Assertion tautologique (x == x) + deux messages qui affirmaient
+>    plus que leur condition (coordinateur, colosse) — resserrés.
+> 6. La preuve de l'item 20 RETIRAIT les ennemis et s'arrêtait 190 m
+>    avant la porte. Remplacée par un pilote scripté qui marche
+>    réellement de la plaine nord au seuil, bestiaire en place, en
+>    contournant les ruines (blocage franc mesuré à z = −29 : le détour
+>    est délibéré).
+> 7. ROADMAP.md déclarait encore le Gate D « non commencé ».
+> Item 19 ramené à **PARTIEL** et limites CONSIGNÉES : les trois
+> pillards partagent maillage et bibliothèque d'animations ; colosse et
+> chasseur n'ont ni modèle riggé ni animation (Phase H). Le verdict
+> global reste **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE
+> DIFFÉRÉE**, désormais sur des preuves qui tiennent. Plancher 364.
+> **PROCHAINE ACTION** : recapturer les planches du bestiaire depuis
+> l'arbre COMMITTÉ (manifestes au bon commit), puis fin de Phase E
+> (migration de schéma + chaîne complète), puis Gate E.

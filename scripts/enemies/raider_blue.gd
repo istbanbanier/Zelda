@@ -73,7 +73,6 @@ func _process_family_state(delta: float) -> bool:
 		_sidestep_timer -= delta
 		velocity.x = _sidestep_direction.x * SIDESTEP_SPEED
 		velocity.z = _sidestep_direction.z * SIDESTEP_SPEED
-		move_and_slide()
 		return true
 	if _state == State.CHASE and _dodge_cooldown <= 0.0:
 		_maybe_dodge_telegraphed_heavy()

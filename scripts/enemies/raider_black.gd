@@ -79,8 +79,10 @@ func _process_family_state(delta: float) -> bool:
 			_combo_left -= 1
 	if not _attack.update(delta):
 		_attack_cooldown = tuning.attack_cooldown
+		# §12.8 : la sortie d'attaque REND le token — cette famille
+		# réécrit la sortie, elle doit donc la rendre elle-même.
+		_release_attack_token()
 		_enter(State.CHASE)
-	move_and_slide()
 	return true
 
 

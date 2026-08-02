@@ -98,8 +98,14 @@ func test_the_five_families_have_distinct_stats_weapons_and_silhouettes() -> voi
 	check(heights.max() - heights.min() > 2.0,
 		"éventail de tailles réel (%.1f m d'écart)"
 		% (heights.max() - heights.min()))
-	check_equal(attack_ids.size(), attack_ids.size(),
-		"tous les contrats d'attaque sont uniques (%d)" % attack_ids.size())
+	var unique_ids: Dictionary[String, bool] = {}
+	for id: String in attack_ids:
+		unique_ids[id] = true
+	check_equal(unique_ids.size(), attack_ids.size(),
+		"les %d contrats d'attaque sont TOUS uniques" % attack_ids.size())
+	check(attack_ids.size() >= 9,
+		"le bestiaire porte un vrai éventail de contrats (%d)"
+		% attack_ids.size())
 	await _teardown()
 
 
@@ -258,3 +264,81 @@ func test_the_bestiary_lineup_mounts_the_five_families() -> void:
 	lineup.get_parent().remove_child(lineup)
 	lineup.queue_free()
 	await _settle(1)
+
+
+func test_the_north_road_to_the_citadel_stays_walkable_with_the_bestiary() -> void:
+	## Item 20 du Gate D : « extérieur complet et TERMINABLE ». La preuve
+	## invoquée jusqu'ici (test_valley_world) RETIRE les ennemis et
+	## s'arrête 190 m avant la porte — elle ne couvrait donc pas le
+	## risque réel : le colosse posté à (-16, 2, -48) est SUR la route du
+	## donjon. Ici le joueur marche pour de vrai, bestiaire EN PLACE,
+	## jusqu'au seuil de la citadelle. Aucune téléportation.
+	var valley: Node3D = (load("res://scenes/world/valley/ValleyWorld.tscn")
+		as PackedScene).instantiate() as Node3D
+	_tree().root.add_child(valley)
+	await _settle(6)
+	var player: PlayerController = valley.call("player") as PlayerController
+	var intent: InputIntent = InputIntent.new()
+	player.set_intent_source(intent)
+	var doors: Array[Node] = valley.find_children("*", "SceneDoor", true, false)
+	check(not doors.is_empty(), "la porte de la citadelle existe")
+	var door_position: Vector3 = (doors[0] as Node3D).global_position \
+		if not doors.is_empty() else Vector3(0, 37, -198)
+	# Le joueur part de la plaine nord (après les gués) et remonte la
+	# route du donjon en passant DEVANT le poste du colosse.
+	player.global_position = Vector3(0, 2.5, -20)
+	await _settle(20)
+	# Itinéraire de JOUEUR : les ruines centrales barrent la ligne droite
+	# (obstacle délibéré du blockout — mesuré : blocage franc à z = -29).
+	# On les contourne par l'est, puis on rejoint la rampe processionnelle.
+	var waypoints: Array[Vector3] = [
+		Vector3(20, 2, -34), Vector3(20, 2, -72), Vector3(4, 2, -100),
+		Vector3(0, 12, -132), Vector3(0, 26, -162),
+		Vector3(door_position.x, door_position.y, door_position.z + 8.0),
+	]
+	var reached: int = 0
+	var ticks: int = 0
+	for goal: Vector3 in waypoints:
+		var arrived: bool = false
+		for i: int in range(1400):
+			ticks += 1
+			var to_goal: Vector3 = goal - player.global_position
+			to_goal.y = 0.0
+			if to_goal.length() < 4.0:
+				arrived = true
+				break
+			# §8.2 : le déplacement est RELATIF À LA CAMÉRA — projeter la
+			# direction monde dans le repère du lacet, sinon le pilote
+			# marche à l'envers (mesuré : 0 jalon, 217 m d'écart).
+			var yaw: Basis = (player.get_node("CameraRig/YawPivot") as Node3D) \
+				.global_transform.basis
+			var camera_forward: Vector3 = -yaw.z
+			var camera_right: Vector3 = yaw.x
+			camera_forward.y = 0.0
+			camera_right.y = 0.0
+			var wish: Vector3 = to_goal.normalized()
+			intent.move = Vector2(
+				wish.dot(camera_right.normalized()),
+				wish.dot(camera_forward.normalized())).normalized()
+			intent.sprint_held = true
+			await _tree().physics_frame
+		if not arrived:
+			break
+		reached += 1
+	intent.move = Vector2.ZERO
+	intent.sprint_held = false
+	check_equal(reached, waypoints.size(),
+		"la route du donjon est PRATICABLE avec le bestiaire en place (%d/%d jalons, %d ticks)"
+		% [reached, waypoints.size(), ticks])
+	check(player.global_position.distance_to(door_position) < 18.0,
+		"le joueur atteint le seuil de la citadelle (%.1f m)"
+		% player.global_position.distance_to(door_position))
+	check(not player.health().is_dead(),
+		"…et il y arrive VIVANT (le colosse ne barre pas la route)")
+	valley.get_parent().remove_child(valley)
+	valley.queue_free()
+	var game_state: Node = _tree().root.get_node_or_null("/root/GameState")
+	if game_state != null:
+		game_state.call("set_flow", 0)
+		game_state.call("consume_pending_spawn")
+	await _settle(2)

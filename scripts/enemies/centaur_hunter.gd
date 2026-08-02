@@ -86,7 +86,6 @@ func _process_family_state(delta: float) -> bool:
 	_volley_cooldown = maxf(0.0, _volley_cooldown - delta)
 	if _move != Move.NONE:
 		_process_move(delta)
-		move_and_slide()
 		return true
 	if _state != State.CHASE or not _target_valid():
 		return false

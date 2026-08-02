@@ -205,3 +205,36 @@ func test_the_hunter_abandons_at_its_territory_border() -> void:
 		"…et il ne s'éloigne jamais de son territoire (%.1f m)"
 		% hunter.global_position.distance_to(hunter.territory_origin()))
 	await _teardown()
+
+
+func test_the_charge_runs_at_its_declared_speed() -> void:
+	## §10.6 : « les nombres d'une action sont éditables et inspectables ;
+	## l'animation et les effets se calent sur le contrat, ils ne le
+	## redéfinissent pas ». La revue du Gate D a mesuré 30 m/s pour 15
+	## déclarés — `move_and_slide()` était appelé DEUX FOIS par tick.
+	## Ce test mesure le déplacement RÉEL par tick physique.
+	var hunter: CentaurHunter = await _setup(Vector3(0, 0.1, 14.0), Vector3(0, 0.1, 0))
+	var charging: bool = false
+	for i: int in range(300):
+		await _tree().physics_frame
+		if hunter.current_move() == CentaurHunter.Move.CHARGE:
+			charging = true
+			break
+	check(charging, "préalable : la charge est partie")
+	var previous: Vector3 = hunter.global_position
+	var fastest: float = 0.0
+	for i: int in range(15):
+		await _tree().physics_frame
+		if hunter.current_move() != CentaurHunter.Move.CHARGE:
+			break
+		var step: Vector3 = hunter.global_position - previous
+		step.y = 0.0
+		previous = hunter.global_position
+		fastest = maxf(fastest, step.length() * 60.0)
+	check(fastest > CentaurHunter.CHARGE_SPEED * 0.7,
+		"la charge atteint sa vitesse déclarée (%.1f m/s pour %.1f)"
+		% [fastest, CentaurHunter.CHARGE_SPEED])
+	check(fastest <= CentaurHunter.CHARGE_SPEED * 1.15,
+		"…et ne la DÉPASSE PAS (%.1f m/s ≤ %.1f) — aucun déplacement double"
+		% [fastest, CentaurHunter.CHARGE_SPEED * 1.15])
+	await _teardown()

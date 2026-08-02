@@ -817,6 +817,20 @@ func last_known_position() -> Vector3:
 	return _last_known
 
 
+## Sortie de combat PROPRE avant un gel par le plafond d'IA (§12.9) :
+## l'attaque en cours est annulée — donc sa fenêtre de frappe fermée
+## (§12.10) — et le token rendu à la file (§12.8). Sans cela, une IA
+## gelée en pleine attaque garderait une hitbox armée et un token
+## confisqué à jamais (défaut mesuré par la revue du Gate D).
+func sleep_for_activity_cap() -> void:
+	if _state == State.DEAD:
+		return
+	_attack.cancel()
+	_release_attack_token()
+	if _state == State.ATTACK:
+		_enter(State.CHASE)
+
+
 ## Seam de test : forcer une fuite depuis une position donnée.
 func start_flee(from_position: Vector3) -> void:
 	_flee_from = from_position

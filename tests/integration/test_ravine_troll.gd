@@ -190,6 +190,11 @@ func test_the_troll_cannot_squeeze_through_a_narrow_door() -> void:
 	check(troll.global_position.z < 4.0,
 		"le colosse reste du MAUVAIS côté du mur (z = %.2f)"
 		% troll.global_position.z)
-	check(troll.global_position.z > start_z - 0.5,
-		"…il a bien tenté d'avancer, il est BLOQUÉ par sa carrure")
+	# « Bloqué » ne se prouve pas par l'immobilité : il faut qu'il ait
+	# réellement POUSSÉ vers l'ouverture (revue Gate D).
+	check(troll.global_position.z > start_z + 0.5,
+		"…il a bien AVANCÉ vers la porte avant d'être arrêté (%.2f -> %.2f)"
+		% [start_z, troll.global_position.z])
+	check_equal(troll.state(), RavineTroll.State.CHASE,
+		"…et il chasse toujours : c'est sa CARRURE qui l'arrête")
 	await _teardown()

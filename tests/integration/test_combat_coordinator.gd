@@ -121,8 +121,9 @@ func test_a_dead_holder_frees_its_token() -> void:
 	event.amount = 999.0
 	victim.health().take_damage(event)
 	await _settle(20)
-	check_equal(int(coordinator.melee_holder_count() <= 2), 1,
-		"la purge a sorti le mort de la file")
+	check(not coordinator.token_holders().has(victim),
+		"la purge a sorti LE MORT de la file")
+	check(coordinator.melee_holder_count() <= 2, "la file reste bornée")
 	# Les survivants continuent d'attaquer — la file n'est pas bloquée.
 	var someone_attacked: bool = false
 	for i: int in range(300):
@@ -165,4 +166,37 @@ func test_the_activity_cap_puts_the_farthest_to_sleep() -> void:
 	check(min_sleeping_distance >= max_active_distance - 0.1,
 		"les dormeuses sont les plus lointaines (%.1f ≥ %.1f)"
 		% [min_sleeping_distance, max_active_distance])
+	await _teardown()
+
+
+func test_a_capped_enemy_never_freezes_with_an_armed_hitbox() -> void:
+	## §12.9 + §12.10 (revue Gate D) : le plafond ne doit JAMAIS geler une
+	## IA en pleine attaque — sa fenêtre de frappe resterait armée à
+	## jamais et son token confisqué. Reproduction exacte du défaut :
+	## un attaquant au contact, quinze alliés lointains, puis le joueur
+	## téléporté au milieu du paquet (l'attaquant devient le plus loin).
+	var coordinator: CombatCoordinator = await _setup(Vector3(0, 0.1, 0))
+	var attacker: RaiderRed = _spawn_raider(Vector3(0, 0.1, 1.3))
+	var crowd: Array[RaiderRed] = []
+	for i: int in range(15):
+		crowd.append(_spawn_raider(Vector3(60.0 + float(i), 0.1, 60.0)))
+	await _settle(10)
+	var attacking: bool = false
+	for i: int in range(240):
+		await _tree().physics_frame
+		if attacker.state() == RaiderRed.State.ATTACK:
+			attacking = true
+			break
+	check(attacking, "préalable : l'attaquant est en pleine attaque")
+	# Le joueur rejoint la foule : l'attaquant devient le plus lointain.
+	_player.global_position = Vector3(67.0, 0.1, 60.0)
+	await _settle(40)
+	check(not attacker.is_physics_processing(),
+		"le plafond a bien gelé le plus lointain")
+	var hitbox: HitboxComponent = attacker.get_node("Pivot/ClubHitbox") \
+		as HitboxComponent
+	check(not hitbox.is_active(),
+		"…mais sa fenêtre de frappe est FERMÉE (§12.10)")
+	check(not coordinator.token_holders().has(attacker),
+		"…et son token est RENDU à la file (§12.8)")
 	await _teardown()
