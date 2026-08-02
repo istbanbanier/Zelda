@@ -213,6 +213,14 @@ func _build_block() -> void:
 	var mesh_box: BoxMesh = BoxMesh.new()
 	mesh_box.size = Vector3(1.6, 1.6, 1.6)
 	mesh.mesh = mesh_box
+	# §15.4 : « conducteur : cuivre/métal patiné ». Le bloc doit se LIRE
+	# comme du métal, sinon rien ne dit au joueur qu'il conduit — mesuré
+	# sur la capture d'entrée : sans matériau, il passait pour une caisse.
+	var metal: StandardMaterial3D = StandardMaterial3D.new()
+	metal.albedo_color = Color(0.46, 0.44, 0.40)
+	metal.metallic = 0.75
+	metal.roughness = 0.38
+	mesh.material_override = metal
 	_block.add_child(mesh)
 	_block.position = BLOCK_START   # AVANT add_child (règle D.0)
 	add_child(_block)
@@ -355,24 +363,47 @@ func _setup_lighting() -> void:
 	door_light.omni_range = 11.0
 	door_light.position = Vector3(2.4, 3.0, -12.0)
 	add_child(door_light)
-	for i: int in range(2):
+	# §7.8 : « aucun couloir noir », et §15.5 : l'énigme doit se lire sans
+	# texte — donc se VOIR. Mesuré sur la première capture d'entrée : le
+	# premier plan tombait dans le noir et le bloc disparaissait. Quatre
+	# braseros ambre jalonnent le couloir de poussée.
+	for i: int in range(4):
 		var warm: OmniLight3D = OmniLight3D.new()
 		warm.name = "EntryGlow%d" % i
-		warm.light_color = Color(1.0, 0.72, 0.38)
-		warm.light_energy = 1.1
-		warm.omni_range = 10.0
-		warm.position = Vector3(-6.0 if i == 0 else 6.0, 3.4, 8.0)
+		warm.light_color = Color(1.0, 0.74, 0.42)
+		warm.light_energy = 2.2
+		warm.omni_range = 14.0
+		warm.position = Vector3(-6.5 if i % 2 == 0 else 6.5, 3.6,
+			10.0 - 7.0 * float(i / 2))
 		add_child(warm)
+		box("Brazier%d" % i, warm.position - Vector3(0, 2.85, 0),
+			Vector3(0.7, 1.5, 0.7), COL_BRONZE)
+		decor("BrazierCoal%d" % i, warm.position - Vector3(0, 2.0, 0),
+			Vector3(0.5, 0.22, 0.5), Color(0.98, 0.58, 0.22), true)
 	var environment: Environment = Environment.new()
 	environment.background_mode = Environment.BG_COLOR
 	environment.background_color = Color(0.04, 0.05, 0.07)
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	environment.ambient_light_color = Color(0.24, 0.28, 0.34)
-	environment.ambient_light_energy = 0.7
+	environment.ambient_light_color = Color(0.26, 0.29, 0.34)
+	environment.ambient_light_energy = 1.05
 	var world_environment: WorldEnvironment = WorldEnvironment.new()
 	world_environment.name = "RoomEnvironment"
 	world_environment.environment = environment
 	add_child(world_environment)
+
+
+## Amène la salle à l'état QUE LE JOUEUR ATTEINT en poussant le bloc :
+## le conducteur au contact, et rien d'autre. La suite — courant, anneau,
+## délai, mécanisme — se déroule toute seule par le chemin normal. Utilisé
+## par `capture_reference.gd --call=` pour photographier un état de jeu, et
+## par aucune règle de gameplay.
+func capture_state_solved() -> void:
+	if _block == null:
+		return
+	_block.place_at(Transform3D(Basis.IDENTITY,
+		Vector3(CHANNEL_X, BLOCK_START.y, CONTACT_Z)))
+	if graph() != null:
+		graph().mark_dirty()
 
 
 func door() -> ElectricDoor:

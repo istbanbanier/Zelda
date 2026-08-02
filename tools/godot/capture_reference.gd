@@ -6,6 +6,11 @@
 ##       --scene=res://scenes/boot/Boot.tscn --out=evidence/captures/boot.png \
 ##       --size=2560x1440 --frames=30 --label=phase0_smoke
 ##
+## `--call=methode` demande à la RACINE de la scène de se mettre dans un état
+## atteignable avant l'attente (salle résolue, circuit alimenté). L'outil
+## n'invente rien : la méthode appartient à la scène et fait ce qu'un joueur
+## ferait.
+##
 ## Écrit aussi un manifeste JSON à côté du PNG : commit, version du moteur,
 ## renderer, résolution, nombre de frames, scène et horodatage — sans quoi une
 ## capture n'est pas reproductible et ne vaut pas comme preuve.
@@ -30,6 +35,11 @@ var _label: String = "unlabeled"
 var _allow_uniform: bool = false
 var _min_visuals: int = 1
 var _allow_unknown_commit: bool = false
+## Méthode sans argument appelée sur la racine de la scène AVANT les frames
+## d'attente. Sert à capturer un état de jeu atteignable (une salle résolue,
+## un circuit alimenté) plutôt qu'un seul instant initial. La méthode vit
+## dans la SCÈNE, pas ici : cet outil ne connaît aucune règle de jeu.
+var _prepare_call: String = ""
 
 
 ## Statistiques de contenu : sert à prouver qu'une image a été *rendue*, pas
@@ -128,6 +138,8 @@ func _parse_args() -> void:
 			_allow_uniform = true
 		elif arg == "--allow-unknown-commit":
 			_allow_unknown_commit = true
+		elif arg.begins_with("--call="):
+			_prepare_call = arg.trim_prefix("--call=")
 		elif arg.begins_with("--min-visuals="):
 			_min_visuals = maxi(0, arg.trim_prefix("--min-visuals=").to_int())
 		elif arg.begins_with("--size="):
@@ -212,6 +224,14 @@ func _capture() -> void:
 
 	var instance: Node = packed.instantiate()
 	root.add_child(instance)
+
+	if _prepare_call != "":
+		if not instance.has_method(_prepare_call):
+			printerr("[capture] ÉCHEC: la scène n'expose pas %s()" % _prepare_call)
+			quit(6)
+			return
+		instance.call(_prepare_call)
+		print("[capture] préparation : %s()" % _prepare_call)
 
 	# Laisser passer des frames réelles : chargement, compilation de shaders et
 	# stabilisation temporelle. Une capture à la frame 0 ne prouve rien.
