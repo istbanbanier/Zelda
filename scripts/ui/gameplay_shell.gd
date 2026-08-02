@@ -241,7 +241,12 @@ func _apply_v4_style() -> void:
 		var centerer: CenterContainer = CenterContainer.new()
 		centerer.name = "Centerer"
 		panel.add_child(centerer)
-		centerer.set_anchors_preset(Control.PRESET_FULL_RECT)
+		# ANCRES **ET OFFSETS** (ART-P0R.2) : `set_anchors_preset` seul
+		# recalcule les offsets pour PRÉSERVER le rect courant — le conteneur
+		# restait 0 × 0 en haut-gauche (mesuré sur la capture ART-P0). La
+		# variante _and_offsets remplit réellement l'écran ; le centrage suit
+		# ensuite chaque redimensionnement, sans position calculée au 1er frame.
+		centerer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		centerer.add_child(plate)
 		var title: Label = column.get_node_or_null("Title") as Label
 		if title != null:
