@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="IngredientDefinition" load_steps=2 format=3]
+
+; §13.1 — Herbe d'endurance
+
+[ext_resource type="Script" path="res://resources/ingredients/ingredient_definition.gd" id="1_def"]
+[resource]
+script = ExtResource("1_def")
+id = &"stamina_herb"
+display_name = "Herbe d'endurance"
+heal_amount = 4.0
+effect_tag = &"stamina"
+potency = 1.0
+is_spice = false
+rarity = 0
+max_stack = 10
+color = Color(0.42, 0.72, 0.35, 1)

@@ -49,6 +49,9 @@ var _last_safe: Vector3 = Vector3.ZERO
 ## IDs des pickups déjà ramassés — mémoire de monde, car l'objet lui-même a
 ## quitté l'arbre au moment de l'instantané (QA-D1R-01).
 var _taken_pickups: Array[String] = []
+## E.1 : même mémoire pour les ingrédients récoltés — politique v0.1
+## EXPLICITE (§13.1) : pas de respawn, un ingrédient récolté reste récolté.
+var _taken_ingredients: Array[String] = []
 
 
 func _ready() -> void:
@@ -74,6 +77,15 @@ func _ready() -> void:
 		var typed: WeaponPickup = pickup as WeaponPickup
 		typed.picked_up.connect(func(_weapon: WeaponInstance) -> void:
 			_on_pickup_taken(typed))
+	# E.1 : les ingrédients de la vallée (§13.1) — posés en code comme le
+	# relief, AVANT l'application de la sauvegarde qui retire les récoltés.
+	_spawn_ingredients()
+	_apply_ingredient_save()
+	for pickup: Node in find_children("*", "IngredientPickup", true, false):
+		var typed_ingredient: IngredientPickup = pickup as IngredientPickup
+		typed_ingredient.collected.connect(
+			func(_definition: IngredientDefinition) -> void:
+				_on_ingredient_taken(typed_ingredient))
 	var flow: Node = get_node_or_null("/root/SceneFlow")
 	if flow != null:
 		flow.connect("transition_started", _on_transition_started)
@@ -252,6 +264,62 @@ func _on_pickup_taken(pickup: WeaponPickup) -> void:
 	_autosave()
 
 
+func _on_ingredient_taken(pickup: IngredientPickup) -> void:
+	var id: String = String(pickup.pickup_id)
+	if not id.is_empty() and not id in _taken_ingredients:
+		_taken_ingredients.append(id)
+	_autosave()
+
+
+## E.1 (§13.1) : les ingrédients de la vallée, posés en code comme le relief —
+## deux fruits sur la crête, l'herbe au palier, la viande au camp, les
+## champignons en forêt, la racine aux ruines, la BAIE près du pylône (§13.5 :
+## enseigner la résistance près du danger), l'épice au sommet de la falaise
+## (récompense d'ascension §9.3).
+func _spawn_ingredients() -> void:
+	var placements: Array[Array] = [
+		["heal_fruit", Vector3(-9, 24.0, 153), "valley.ingredient.crest_fruit.01"],
+		["heal_fruit", Vector3(7, 24.0, 147), "valley.ingredient.crest_fruit.02"],
+		["stamina_herb", Vector3(35, 16.0, 109), "valley.ingredient.landing_herb.01"],
+		["meat", Vector3(50, 6.0, 60), "valley.ingredient.camp_meat.01"],
+		["heal_mushroom", Vector3(68, 2.0, 38), "valley.ingredient.forest_mushroom.01"],
+		["heal_mushroom", Vector3(80, 2.0, 50), "valley.ingredient.forest_mushroom.02"],
+		["defense_root", Vector3(4, 2.0, -44), "valley.ingredient.ruins_root.01"],
+		["storm_berry", Vector3(96, 2.0, 4), "valley.ingredient.pylon_berry.01"],
+		["rare_spice", Vector3(-108, 14.0, 62), "valley.ingredient.cliff_spice.01"],
+	]
+	var holder: Node3D = Node3D.new()
+	holder.name = "Ingredients"
+	add_child(holder)
+	for placement: Array in placements:
+		var pickup: IngredientPickup = IngredientPickup.new()
+		pickup.name = String(placement[2]).replace(".", "_")
+		pickup.definition = load("res://resources/ingredients/%s.tres"
+			% String(placement[0])) as IngredientDefinition
+		pickup.pickup_id = StringName(String(placement[2]))
+		pickup.position = placement[1] as Vector3
+		holder.add_child(pickup)
+
+
+## Les pickups d'ingrédients naissent APRÈS `_apply_save()` : leur part de
+## sauvegarde s'applique ici, sur le même instantané (§19.4, idempotent).
+func _apply_ingredient_save() -> void:
+	var save_system: Node = get_node_or_null("/root/SaveSystem")
+	if save_system == null or not bool(save_system.call("has_save", SAVE_SLOT)):
+		return
+	var data: Dictionary = save_system.call("load_slot", SAVE_SLOT)
+	if data.has("ingredients") and _player != null and _player.inventory() != null:
+		_player.inventory().set_ingredients(data["ingredients"] as Dictionary)
+	if data.has("taken_ingredients"):
+		for entry: Variant in (data["taken_ingredients"] as Array):
+			var id: String = String(entry)
+			if not id.is_empty() and not id in _taken_ingredients:
+				_taken_ingredients.append(id)
+		for pickup: Node in find_children("*", "IngredientPickup", true, false):
+			if String((pickup as IngredientPickup).pickup_id) in _taken_ingredients:
+				(pickup as IngredientPickup).mark_taken_silently()
+
+
 func _autosave() -> void:
 	var save_system: Node = get_node_or_null("/root/SaveSystem")
 	if save_system == null or _player == null or _player.inventory() == null:
@@ -275,6 +343,8 @@ func _autosave() -> void:
 		"arrows": inventory.arrows(),
 		"opened_chests": opened,
 		"taken_pickups": _taken_pickups.duplicate(),
+		"ingredients": inventory.ingredients_snapshot(),
+		"taken_ingredients": _taken_ingredients.duplicate(),
 		"boss_defeated": false,
 	})
 

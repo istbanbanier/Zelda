@@ -15,6 +15,7 @@ signal weapon_equipped(weapon: WeaponInstance)
 signal weapon_added(weapon: WeaponInstance)
 signal weapon_removed(weapon: WeaponInstance)
 signal arrows_changed(count: int)
+signal ingredients_changed(id: StringName, count: int)
 
 ## §11.3 : « huit armes ».
 const MAX_WEAPONS: int = 8
@@ -28,6 +29,8 @@ const MAX_WEAPONS: int = 8
 var _weapons: Array[WeaponInstance] = []
 var _equipped_index: int = -1
 var _arrows: int = 0
+## §11.3/§13 : ingrédients EMPILABLES, à part des armes — id → compte.
+var _ingredients: Dictionary = {}
 
 
 func _ready() -> void:
@@ -168,3 +171,62 @@ func consume_arrow() -> bool:
 	_arrows -= 1
 	arrows_changed.emit(_arrows)
 	return true
+
+
+## ---------------------------------------------------------------------------
+## Ingrédients (§13.1, §13.2) — empilables, ajout ATOMIQUE
+## ---------------------------------------------------------------------------
+
+## Refuse au-delà du stack maximum de la DÉFINITION (§13.1) : l'appelant garde
+## alors l'objet au sol — rien n'est jamais perdu (§13.2).
+func add_ingredient(definition: IngredientDefinition, amount: int = 1) -> bool:
+	if definition == null or amount <= 0:
+		return false
+	var current: int = int(_ingredients.get(definition.id, 0))
+	if current + amount > definition.max_stack:
+		return false
+	_ingredients[definition.id] = current + amount
+	ingredients_changed.emit(definition.id, current + amount)
+	return true
+
+
+func ingredient_count(id: StringName) -> int:
+	return int(_ingredients.get(id, 0))
+
+
+## Consommation (cuisine §13.3) : tout ou rien — jamais de compte négatif.
+func consume_ingredients(id: StringName, amount: int) -> bool:
+	var current: int = int(_ingredients.get(id, 0))
+	if amount <= 0 or current < amount:
+		return false
+	if current == amount:
+		_ingredients.erase(id)
+	else:
+		_ingredients[id] = current - amount
+	ingredients_changed.emit(id, ingredient_count(id))
+	return true
+
+
+func ingredient_ids() -> Array[StringName]:
+	var ids: Array[StringName] = []
+	for id: Variant in _ingredients.keys():
+		ids.append(id as StringName)
+	return ids
+
+
+## Instantané pour la sauvegarde (clés String, §19.2 : primitives seulement).
+func ingredients_snapshot() -> Dictionary:
+	var snapshot: Dictionary = {}
+	for id: Variant in _ingredients.keys():
+		snapshot[String(id as StringName)] = int(_ingredients[id])
+	return snapshot
+
+
+## Restauration (§19.4) : pose l'état exact, silencieusement — l'application
+## d'une sauvegarde n'est pas du gameplay.
+func set_ingredients(snapshot: Dictionary) -> void:
+	_ingredients.clear()
+	for key: Variant in snapshot.keys():
+		var count: int = int(snapshot[key])
+		if count > 0:
+			_ingredients[StringName(String(key))] = count

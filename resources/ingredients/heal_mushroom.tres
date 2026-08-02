@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="IngredientDefinition" load_steps=2 format=3]
+
+; §13.1 — Champignon de soin
+
+[ext_resource type="Script" path="res://resources/ingredients/ingredient_definition.gd" id="1_def"]
+[resource]
+script = ExtResource("1_def")
+id = &"heal_mushroom"
+display_name = "Champignon de soin"
+heal_amount = 10.0
+effect_tag = &""
+potency = 0.0
+is_spice = false
+rarity = 0
+max_stack = 10
+color = Color(0.80, 0.66, 0.52, 1)

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="IngredientDefinition" load_steps=2 format=3]
+
+; §13.1 — Épice rare
+
+[ext_resource type="Script" path="res://resources/ingredients/ingredient_definition.gd" id="1_def"]
+[resource]
+script = ExtResource("1_def")
+id = &"rare_spice"
+display_name = "Épice rare"
+heal_amount = 2.0
+effect_tag = &""
+potency = 0.0
+is_spice = true
+rarity = 2
+max_stack = 4
+color = Color(0.90, 0.75, 0.30, 1)
