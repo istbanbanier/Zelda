@@ -1,0 +1,18 @@
+{
+  "commit": "2eb71ed5f6fc2e8c1be84dfe8a9aff7a761debb9",
+  "display_server": "X11",
+  "distinct_colors_sampled": 2742,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 200,
+  "height": 1080,
+  "label": "f3_room2_mezzanine",
+  "luma_mean": 0.1738,
+  "luma_stddev": 0.1227,
+  "png": "evidence/F3/room2_mezzanine.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/dungeon/rooms/Room2Vertical.tscn",
+  "timestamp_utc": "2026-08-02 20:22:04",
+  "width": 1920
+}
