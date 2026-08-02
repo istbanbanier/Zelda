@@ -1394,3 +1394,17 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > matrice de preuve items 16-20, puis implémentation des QUATRE familles
 > ennemies manquantes (§12.2-12.5 : azur, obsidienne, colosse,
 > chasseur), batterie de tests §12, aplats des cinq familles.
+
+## 2026-08-02 (ordre corrigé, jalon 1) — audit du Gate D : ROUVERT
+
+> Matrice de preuve items 16-20 rejouée au commit 056788c
+> (docs/GATE_D_AUDIT.md) : 16 PASS, 17 PASS, 18 PARTIEL (4/8 coffres —
+> les 4 de la vallée conformes §11.4, le solde appartient aux salles de
+> Phase F, consigné), 19 **FAIL** (0/4 familles au-delà du pillard
+> braise — le lot V4-13 n'a produit que des variantes visuelles), 20
+> PARTIEL (bloqué par 19). Verdict global FAIL : Gate D rouvert. Plan
+> de fermeture en 7 jalons D-EN.0..6 (socle+mémoire+territoire, azur,
+> obsidienne, coordinateur, colosse, chasseur, placements+aplats+revue).
+> **PROCHAINE ACTION** : D-EN.0 — socle commun extrait de raider_red,
+> mémoire de dernière position (§12.7) et territoire/retour (§12.9),
+> raider_red re-testé à l'identique.

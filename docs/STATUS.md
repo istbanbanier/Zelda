@@ -148,9 +148,9 @@ llvmpipe uniquement, aucun GPU.
 | B | Player, caméra, locomotion, endurance, escalade, mantle | **Clos par D-021 : accepté pour continuation** — volet automatique vert (137 tests), dettes VALIDATION-B-001 + CONTROLLER-001 à la passe finale |
 | C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | **Clos par D-024 : accepté pour continuation** — 4 critères PASS rejoués en revue, D1 (mort du joueur) corrigé + régression, dettes humaines à la passe finale |
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
-| D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | **D.0–D.1 + D.1R + Passe visuelle V4.1 livrés** — jouabilité corrigée (souris/pause, corps, HUD, montagnes, mort, vestibule, « Continuer ») PUIS langage visuel V4 dans la vraie build : orage local avec éclair, eau en S, prairie, chemins, chaîne superposée, camp habité, façade monumentale, HUD rubis, inventaire en grille. 270 tests. En attente : retour humain n° 2 (tient lieu de notation C.5 sur la crête réelle) |
-| E | Récolte, cuisine, buffs, sauvegarde et migrations | Non commencé |
-| F | Graphe électrique, 4 salles, salle centrale, antichambre | Non commencé |
+| D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | **ROUVERT (FAIL item 19)** — audit du 2026-08-02 (`docs/GATE_D_AUDIT.md`) : monde et composition PASS, coffres/checkpoint PARTIEL (4/8, solde en Phase F), mais UNE seule famille ennemie sur cinq — les quatre autres familles (§12.2-12.5) sont le jalon courant |
+| E | Récolte, cuisine, buffs, sauvegarde et migrations | E.1/E.2a/E.2b Fonctionnels — Gate NON fermé (attend Gate D, ordre corrigé) |
+| F | Graphe électrique, 4 salles, salle centrale, antichambre | Non commencé (après fermeture du Gate D) |
 | G | Arène, boss 3 phases, solvabilité, victoire | Non commencé |
 | H | Art « wahou », WOW Gate ≥ 85/100 | **Bloqué** — ISS-002 |
 | I | LOD, profilage, presets, exports, session 60 min | **Bloqué** — ISS-002 |
