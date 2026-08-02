@@ -76,10 +76,14 @@ func _current_commit() -> String:
 	return String(out[0]).strip_edges()
 
 
+## « Sale » = des fichiers SUIVIS diffèrent du commit — c'est ce qui casse le
+## rattachement preuve↔commit (revue ART-Q7, S4). Les fichiers non suivis
+## sont ignorés : la capture elle-même écrit ses sorties dans evidence/
+## avant ce contrôle, et un PNG tout neuf ne change pas ce qui a été rendu.
 func _repo_is_dirty() -> bool:
 	var out: Array = []
 	var rc: int = OS.execute("git", ["-C", ProjectSettings.globalize_path("res://"),
-		"status", "--porcelain"], out, true)
+		"status", "--porcelain", "--untracked-files=no"], out, true)
 	if rc != 0 or out.is_empty():
 		return true
 	return String(out[0]).strip_edges() != ""

@@ -1425,3 +1425,52 @@ Male_Ranger = UAL1 = UAL2 = 65 os, différences ensemblistes vides.
 `evidence/artQ0/calibration_q0_neutral.png` et
 `calibration_q0_valley_light.png` — rangée complète (les 11 livrés + jalons
 orange des manquants + préview héros T-pose étiquetée « candidat »).
+
+---
+
+# Nuit ART-Q1→Q7 — 2026-08-02 (suite de l'entrée ART-Q0 ci-dessus)
+
+Chaque lot : import → tests ciblés → `tools/validate_fast.sh` (RC=0) →
+lancement/captures Xvfb → commit isolé poussé. Plancher monotone :
+292 → 294 (Q0) → 300 (Q1) → 304 (Q2) → 307 (Q3) → 309 (Q4) → 311 (Q5) →
+**312** (Q6). Zéro plancher baissé, zéro seuil affaibli.
+
+## Suites ajoutées
+
+- `test_hero_visual.gd` (7) : bibliothèque cuite (12 clips, bouclage
+  explicite), audit root motion (boucles 0,000 m, node_motion=false),
+  scène héros (65 os, 3 sockets aux bons os), montage dans le VRAI
+  Player.tscn (graybox masqué, capsule 1,8 m intacte, épée dans la main),
+  pilote d'états (idle/run/sprint mesurés sur le vrai contrôleur, sens
+  unique), mort jouée UNE fois sans double bascule, teinte sélective
+  (tenue teintée, peau vierge).
+- `test_raider_visual.gd` (4) : grammaire d'attaque distincte
+  (Melee_Hook), 3 variantes aux teintes mesurées, montage dans la vraie
+  scène IA (gourdin dans la main, télégraphe sur matériaux ACTIFS,
+  capsule 1,6 m), états IA → clips par signal, mort sans double tilt.
+- `test_camp_props.gd` (3) : coffre rigged ouvert par SON clip avec loot
+  atomique intact, application d'état sans loot ni geste, camp réel avec
+  collisions et anneau de 8 galets.
+- `test_nature_biome.gd` (2) : 12 arbres réels sur 12 collisions de
+  troncs intactes (variation lacet/échelle mesurée), phrases végétales
+  groupées (serré < 3 m ET vide > 15 m — anti-grille).
+- `test_citadel_dressing.gd` (2) : 6 piles modulaires sur collisions
+  intactes, portails de pierre, SceneDoors préservées.
+
+## Défauts réels trouvés et corrigés pendant la nuit
+
+- Chemin dur `VisualRoot/WeaponPivot` dans test_hud_and_inventory :
+  cascade de 19 tests perdus quand le pivot a rejoint la main (Q1).
+- « material is null » (RenderingServer headless) : la mise à jour
+  différée citait des matériaux teintés déjà libérés — surcharges vidées
+  à NOTIFICATION_EXIT_TREE (Q2, cause racine lue dans la source moteur).
+- Retenue de réception du pilote visuel en ms MURALES : instable quand
+  les ticks headless battent le temps réel — passée en ticks (§20.9, Q5).
+- Noms de galets en collision (@auto@) : noms explicites (Q3).
+
+## Revue contradictoire (ART-Q7)
+
+`evidence/artQ7/REVUE.md` : **PASS global**, 8 lots rejoués, 7 règles de
+l'ordre PASS, zéro S0-S3, quatre S4 traités (repo_dirty resserré aux
+fichiers suivis + recapture post-commit ; ISS-013/ISS-014 consignés ;
+audits régénérés). validate_fast rejoué par le réviseur : 312/312, RC=0.

@@ -433,17 +433,25 @@ enchaîne trois légères contre de vrais mannequins.
 
 ---
 
-## ART-Q0 — acquisition Quaternius et premiers assets de production (2026-08-02)
+## Nuit ART-Q (2026-08-02) — assets de production Quaternius, Q0→Q7
+
+Revue contradictoire à contexte frais : **PASS global, zéro S0-S3**
+(`evidence/artQ7/REVUE.md`). Le verdict ESTHÉTIQUE reste humain
+(`docs/PLAYTEST_ARTQ.md`).
 
 | Élément | État | Preuve |
 |---|---|---|
-| Acquisition des 7 archives (Release GitHub) | **Validé** | SHA-256 = digests GitHub, licences CC0 lues sur pièce — `docs/assets/QUATERNIUS_INBOX.md` |
-| 12 modèles ingérés (5 nature, 3 props, 3 arch, 1 héros candidat) | **Fonctionnel** | `gltf_inspect` 12/12 + import headless zéro erreur ; `ATTRIBUTIONS.md`, `ASSET_MANIFEST.csv` |
-| Registre : 11 ids env/prop/arch **livrés** | **Fonctionnel** | `test_asset_pipeline` : chaque id livré monte un maillage réel (294 tests verts) |
-| Héros candidat riggé (65 os = UAL, vérifié par script) | **Fonctionnel** | test « keeps_its_rig » : 1 armature, 65 os, meshes skinnés après import |
-| Calibration : rangée complète + préview héros + manquants orange | **Fonctionnel** | `evidence/artQ0/calibration_q0_{neutral,valley_light}.png` + manifestes |
-| `prop.tent`, `prop.campfire` | **Bloqué** (absents des 7 packs) | inventaire complet consigné — options en ART-Q3 |
-| Qualité artistique perçue | **EN ATTENTE** (verdict humain) | les captures llvmpipe prouvent le montage, pas le rendu GPU |
+| Acquisition 7 archives (Release GitHub, CC0 sur pièce) | **Validé** | SHA-256 = digests GitHub, recoupés indépendamment par la revue — `docs/assets/QUATERNIUS_INBOX.md` |
+| 18 ids du registre livrés (env ×8, prop ×3, arch ×3, char ×4) + épée | **Fonctionnel** | `test_asset_pipeline` : chaque id livré monte un maillage réel |
+| Héros riggé animé dans le VRAI joueur (12 états, sockets main/dos/arc, épée en main, capsule autorité) | **Fonctionnel** | `test_hero_visual` (7 tests) ; audit root motion rejoué par la revue |
+| Pillard animé sur la vraie IA + variantes azur/obsidienne | **Fonctionnel** | `test_raider_visual` (4 tests) ; capsule 1,6 m intacte au diff |
+| Coffre rigged (clips Chest_Open/Opened), loot/IDs/atomicité intacts | **Fonctionnel** | `test_camp_props` |
+| Camp habillé (caisses, tonneaux, galets de foyer) + caméra de contrôle | **Fonctionnel** | `evidence/artQ3/camp_props.png` |
+| Forêt réelle sur collisions INCHANGÉES + phrases végétales §7.17 | **Fonctionnel** | `test_nature_biome` ; diff des collisions vide |
+| Vestibule : piliers modulaires, portails de pierre, SceneDoors intactes | **Fonctionnel** | `test_citadel_dressing` |
+| Liaison turquoise héros↔citadelle (§7.11), peau non teintée | **Fonctionnel** | `test_the_turquoise_tint…` ; `evidence/artQ6/ref_vista.png` |
+| `prop.tent`, `prop.campfire` | **Bloqué** (absents des 7 packs) | inventaire consigné — options futures |
+| Qualité artistique perçue | **EN ATTENTE** (verdict humain, §0.2) | protocole : `docs/PLAYTEST_ARTQ.md` |
 
 ## Checklist finale (§26) — état réel
 

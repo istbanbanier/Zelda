@@ -1093,3 +1093,19 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > même état, mêmes caméras — la base de la revue Q7. Tests 311 → **312**.
 > **PROCHAINE ACTION (ART-Q7)** : revue contradictoire à contexte frais,
 > corrections S0/S1/S2 (+S3 contraires à l'ordre), package playtest.
+
+## 2026-08-02 (aube) — ART-Q7 : revue contradictoire PASS, package playtest
+
+> Revue adverse à contexte frais sur f9a0e0d..ed39f8e : **PASS global,
+> zéro S0-S3** (evidence/artQ7/REVUE.md — acquisition recoupée
+> INDÉPENDAMMENT via l'API GitHub, stats gameplay au diff VIDE, plancher
+> strictement croissant, validate_fast rejoué 312/312). Quatre S4
+> traités : repo_dirty resserré aux fichiers SUIVIS (capture_reference),
+> paquet de référence recapturé post-commit, ISS-013 (bbox skinnés) et
+> ISS-014 (couture WEAPON_GRIP, à retirer Phase I) consignés, audits de
+> bake régénérés. Package playtest SANS ZIP : docs/PLAYTEST_ARTQ.md —
+> le dépôt est le package. STATUS/TEST_REPORT à jour.
+> **PROCHAINE ACTION** : reprise du prompt maître — E.2 (cuisine/buffs) :
+> câblage des fondations déjà commitées (meal_pressed, multiplicateurs
+> hitbox/hurtbox/stamina, _meals, StatusEffect dans Player.tscn,
+> _eat_quick_meal, autosave meals/buff, label HUD, tests).

@@ -179,3 +179,10 @@ QA-D1R-02 `settings.cfg` hostile (tableau → 0,0 sous le MIN ; nan traversait
 mort, Tab ouvrait l'inventaire par-dessus. QA-D1R-04 (S4) : surdéclarations de
 TEST_REPORT corrigées — réticule-en-visée et plafond de notifications restent
 NON ASSERTÉS, à vérifier visuellement au playtest n° 2.
+
+## Nuit ART-Q (2026-08-02) — revue contradictoire PASS, S4 consignés
+
+| ID | Constat | Sévérité | Propriétaire / échéance |
+|---|---|---|---|
+| ISS-013 | `tools/gltf_inspect.py` ne mesure la bbox que du PREMIER mesh : dimensions non fiables sur les personnages skinnés multi-meshes (Male_Ranger rapporte 0,23 m) ; la règle « min Y ≈ 0 » y est de fait un simple avertissement | S4 | outillage — améliorer avant le prochain lot de personnages |
+| ISS-014 | Coutures d'alignement `WEAPON_GRIP_EULER/OFFSET` lues depuis l'environnement sur le chemin runtime de `_build_weapon_visual` (valeurs figées par défaut, documentées) | S4 | à retirer en Phase I — un build final ne lit pas de réglage visuel dans l'environnement |
