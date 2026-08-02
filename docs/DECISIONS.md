@@ -712,3 +712,33 @@ la fait vivre côté ennemi.
   observable ») : 1,1 s de décharge pour 1,7 s de calme, phases décalées de
   0,9 s. Un test mesure que la fenêtre calme dépasse le temps de traversée à la
   vitesse d'escalade de §9.2.
+
+---
+
+## D-029 — F.5 : porter un objet, stocker du courant, franchir une eau vive
+
+- **Date** : 2026-08-02 · **Phase** : F (jalon F.5) · **Statut** : ACTÉ
+- **Un objet porté est un corps GELÉ en mode cinématique**, suivi au tick
+  physique sur un point de port. §14.1 interdit d'écrire le transform d'un
+  rigid body ACTIF ; un corps gelé prévu pour cela est le cas légitime.
+  Alternative rejetée : reparenter le corps sous le joueur — la physique
+  d'un corps reparenté à chaud est une source de bugs sans contrepartie.
+- **Le socket n'ajoute AUCUNE règle électrique.** Il cale l'objet, et ce sont
+  les PORTS qui se touchent (§15.3). Sans cela, on aurait un booléen
+  « batterie posée » que §26 interdit explicitement.
+- **La batterie distingue trois choses** (§15.3) : la charge stockée, le
+  socket, la décharge. Elle se remplit quand une source extérieure l'alimente,
+  débite partout ailleurs, et se vide lentement — 90 s d'autonomie, assez pour
+  traverser deux fois, jamais assez court pour piéger.
+- **Le canal fait 6 m.** Mesuré sur les valeurs de §8.2 : un saut couvre
+  environ 4,1 m au sprint. À 4 m, l'énigme se sautait ; à 6 m, il faut
+  vraiment couper le courant ou poser la planche.
+- **Les deux solutions de §15.8 existent VRAIMENT**, et chacune a son test :
+  couper le courant (au prix du berceau de charge, qui s'éteint avec la
+  nappe), ou poser la planche isolante et passer au-dessus. La zone de la
+  nappe s'arrête sous le niveau de la planche : c'est la géométrie qui
+  protège, pas une exception dans le code.
+- **Le levier de la salle 4 est RÉVERSIBLE**, contrairement à celui de la
+  salle 2 : il faut pouvoir remettre le courant pour recharger. Ce qui rend
+  cela sûr, c'est que l'eau blesse sans tuer (12 points par seconde) et que la
+  porte, une fois ouverte, le reste.

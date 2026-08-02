@@ -26,8 +26,14 @@ const COL_CYAN: Color = Color(0.133, 0.851, 0.925)
 const COL_CORE: Color = Color(0.925, 1.0, 1.0)
 
 @export var hazard_id: StringName = &""
+## Type de nœud : `HAZARD` pour une électrode, `WATER_ZONE` pour une nappe
+## d'eau conductrice (§15.1). Le comportement de décharge est le même ; ce
+## qui change, c'est ce que le graphe et la carte murale en disent.
+@export var node_kind: ElectricNode.Kind = ElectricNode.Kind.HAZARD
 ## Durée de décharge, puis durée de repos. §15.6 : le rythme doit être
-## OBSERVABLE — la fenêtre calme doit suffire à franchir la zone.
+## OBSERVABLE — la fenêtre calme doit suffire à franchir la zone. Un
+## `off_time` nul donne une décharge CONTINUE : c'est le cas d'une nappe
+## d'eau alimentée (§15.8), qui n'est pas un piège rythmé mais un état.
 @export var on_time: float = 1.1
 @export var off_time: float = 1.7
 ## Décalage de phase : deux électrodes voisines ne battent pas ensemble.
@@ -69,7 +75,7 @@ func _build() -> void:
 	_node = ElectricNode.new()
 	_node.name = "HazardNode"
 	_node.node_id = hazard_id
-	_node.kind = ElectricNode.Kind.HAZARD
+	_node.kind = node_kind
 	_node.conductivity = 1.0
 	_node.port_offsets = node_port_offsets
 	_node.port_reach = node_port_reach

@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3]
+
+; Citadelle de l'Œil-Tempête — salle 4, batterie transportable (F.5, §15.8).
+; Canal, nappe conductrice, socles et objets sont construits par le script.
+
+[ext_resource type="Script" path="res://scripts/dungeon/room4_battery.gd" id="1_room"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/ui/GameplayShell.tscn" id="3_shell"]
+
+[node name="Room4Battery" type="Node3D"]
+script = ExtResource("1_room")
+
+[node name="GameplayShell" parent="." instance=ExtResource("3_shell")]
+
+; Le joueur entre par le seuil sud-ouest : il voit la source, la batterie,
+; puis le canal et, au-delà, la porte.
+[node name="Player" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.2, 6.5)
+
+[node name="VisualRoot" parent="Player"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)

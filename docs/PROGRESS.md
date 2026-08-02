@@ -1781,3 +1781,36 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > quand elle est alimentée, couper le courant ou construire une
 > passerelle isolante, batterie hors limites qui réapparaît, aucune porte
 > qui verrouille la batterie du mauvais côté, retour toujours possible.
+
+## 2026-08-02 (Phase F, F.5) — salle 4, batterie transportable
+
+> §15.8 implémenté avec ses DEUX solutions, pas une. Un canal de 6 m —
+> au-delà de la portée d'un saut de §8.2 — coupe la salle en deux ; la
+> nappe est un nœud `WATER_ZONE` du graphe, pas un décor : sous tension
+> elle frappe en continu. Aucun câble ne traverse : le courant ne passe
+> de l'autre côté que DANS la batterie.
+> Trois briques nouvelles, toutes réutilisables : `CarryableObject`
+> (prendre / porter / poser, §14.2 ; corps gelé en cinématique pendant le
+> transport, jamais un transform écrit sur un corps actif),
+> `PortableBattery` (charge stockée, socket et décharge sont trois choses
+> distinctes comme l'exige §15.3) et `ObjectSocket` (berceau visible,
+> zone réelle, calage franc — §15.3 refuse « proche d'un point invisible
+> sans retour visuel »). Le socket n'ajoute AUCUNE règle électrique : une
+> fois l'objet calé, ce sont les ports qui se touchent.
+> Les deux chemins de §15.8 sont testés séparément : couper le courant au
+> levier (la nappe meurt, et le berceau de charge avec elle — c'est le
+> prix, et c'est ce qui rend l'ordre des gestes intéressant), ou poser la
+> planche de bois isolante sur ses berceaux et passer au-dessus de l'eau
+> vive sans prendre un point de dégât.
+> Anti-softlock vérifié plutôt qu'affirmé : la seule porte est à l'est,
+> au-delà du récepteur ; le berceau de charge, le point de secours de la
+> batterie ET celui de la planche sont tous à l'ouest ; patauger coûte
+> mais ne tue pas ; le levier est rebasculable.
+> 11 tests `--filter=room4`, dont le ramassage/transport/dépose par le
+> vrai chemin d'interaction et le retour de la batterie tombée au canal.
+> **PROCHAINE ACTION (F.6)** : salle centrale et antichambre (§15.9,
+> §15.10) — trois récepteurs indépendants alimentés par les trois
+> circuits permanents, trois anneaux, ouverture MÉCANIQUE de la porte du
+> boss, carte murale, checkpoint, coffre garanti, station de cuisine,
+> baies électriques, aperçu de l'arène, retour possible ; plus
+> l'architecture multi-niveaux qui relie enfin les quatre salles.
