@@ -47,6 +47,11 @@ const BAKES: Dictionary = {
 				"loop": false},
 			&"hurt": {"source": UAL1, "clip": &"Hit_Chest", "loop": false},
 			&"death": {"source": UAL1, "clip": &"Death01", "loop": false},
+			# V4 lot 14 — états OPTIONNELS (hors contrat des douze) : mantle
+			# réel, geste d'interaction, geste de consommation (E.2b cuisine).
+			&"mantle": {"source": UAL2, "clip": &"ClimbUp_1m", "loop": false},
+			&"interact": {"source": UAL1, "clip": &"Interact", "loop": false},
+			&"consume": {"source": UAL2, "clip": &"Consume", "loop": false},
 		},
 	},
 	# ART-Q2 — pillard braise : gourdin (crochet de mêlée), marche de

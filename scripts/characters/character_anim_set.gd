@@ -27,6 +27,11 @@ const REQUIRED_STATES: Array[StringName] = [
 @export var attack_heavy: StringName = &""
 @export var hurt: StringName = &""
 @export var death: StringName = &""
+## États OPTIONNELS (V4 lot 14) — hors du contrat des douze : un vide ici
+## n'est pas un trou, le pilote garde sa lecture de repli (mantle → jump).
+@export var mantle: StringName = &""
+@export var interact: StringName = &""
+@export var consume: StringName = &""
 ## Os du squelette portant l'arme (BoneAttachment3D) — vide = pas de socket
 ## squelette, le pivot procédural du contrôleur reste l'attache.
 @export var weapon_bone: StringName = &""
@@ -46,6 +51,9 @@ func clip_for(state: StringName) -> StringName:
 		&"attack_heavy": return attack_heavy
 		&"hurt": return hurt
 		&"death": return death
+		&"mantle": return mantle
+		&"interact": return interact
+		&"consume": return consume
 	return &""
 
 

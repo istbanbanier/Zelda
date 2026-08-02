@@ -845,12 +845,17 @@ var _interact_focus: Node3D = null
 var _interact_focus_tick: int = 0
 
 signal interact_focus_changed(target: Node3D)
+## V4 lot 14 : interaction ACCEPTÉE par la cible — le pilote visuel y
+## accroche le geste (l'animation visualise, ne décide pas, §7.18).
+signal interacted(target: Node3D)
 
 
 func _try_interact() -> void:
 	var best: Node3D = _select_interactable()
 	if best != null:
-		best.call("interact", self)
+		var accepted: Variant = best.call("interact", self)
+		if accepted is bool and bool(accepted):
+			interacted.emit(best)
 		_refresh_interact_focus()   # l'objet a pu disparaître ou changer d'état
 
 
@@ -1341,6 +1346,10 @@ func status() -> StatusEffectComponent:
 
 ## E.2a — consommation du plat rapide (§13.3/§13.4). Le plat quitte la
 ## réserve au prélèvement : jamais deux effets pour un plat.
+## V4 lot 14 : plat réellement avalé — le pilote visuel joue le geste.
+signal meal_eaten(meal_name: String)
+
+
 func _eat_quick_meal() -> void:
 	if _inventory == null or _status == null or _health == null:
 		return
@@ -1357,6 +1366,7 @@ func _eat_quick_meal() -> void:
 	if effect != &"":
 		_status.apply_buff(effect, float(meal.get("potency", 0.0)),
 			float(meal.get("duration", 0.0)))
+	meal_eaten.emit(String(meal.get("name", "Plat")))
 	if bus != null:
 		bus.call("notify", "Mangé : %s (+%d PV)"
 			% [String(meal.get("name", "Plat")), int(heal)])

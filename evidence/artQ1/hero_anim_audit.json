@@ -1,5 +1,25 @@
 {
   "clips": {
+    "ClimbUp_1m": {
+      "drift_m": 0.0,
+      "length_s": 0.666666686534882,
+      "loop": false,
+      "node_motion": false,
+      "pelvis_track": true,
+      "range_m": 0.268235296010971,
+      "source": "UAL2_Standard.glb",
+      "state": "mantle"
+    },
+    "Consume": {
+      "drift_m": 0.0,
+      "length_s": 1.33333337306976,
+      "loop": false,
+      "node_motion": false,
+      "pelvis_track": true,
+      "range_m": 0.00199105963110924,
+      "source": "UAL2_Standard.glb",
+      "state": "consume"
+    },
     "Death01": {
       "drift_m": 0.814491629600525,
       "length_s": 2.40000009536743,
@@ -29,6 +49,16 @@
       "range_m": 0.011408032849431,
       "source": "UAL1_Standard.glb",
       "state": "idle"
+    },
+    "Interact": {
+      "drift_m": 0.0,
+      "length_s": 2.0,
+      "loop": false,
+      "node_motion": false,
+      "pelvis_track": true,
+      "range_m": 0.0114815859124064,
+      "source": "UAL1_Standard.glb",
+      "state": "interact"
     },
     "Jog_Fwd": {
       "drift_m": 0.0,
@@ -121,7 +151,7 @@
       "state": "walk"
     }
   },
-  "commit": "8af8bd3c95a7f7b48da9d351c66162cab1faa077",
+  "commit": "4445e8f2f9567b5cb428dc89adac66942b8f8fa1",
   "max_loop_drift_m": 0.05,
   "max_oneshot_drift_m": 1.2,
   "pelvis_path": "Armature/Skeleton3D:pelvis"

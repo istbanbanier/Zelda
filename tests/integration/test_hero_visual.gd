@@ -13,7 +13,9 @@ const PLAYER: String = "res://scenes/player/Player.tscn"
 const LOOPING: Array[StringName] = [&"Idle", &"Walk", &"Jog_Fwd", &"Sprint",
 	&"Jump"]
 const ONE_SHOT: Array[StringName] = [&"Jump_Start", &"Jump_Land", &"Roll",
-	&"Sword_Regular_A", &"Sword_Heavy_Combo", &"Hit_Chest", &"Death01"]
+	&"Sword_Regular_A", &"Sword_Heavy_Combo", &"Hit_Chest", &"Death01",
+	# V4 lot 14 — états optionnels, tous one-shot :
+	&"ClimbUp_1m", &"Interact", &"Consume"]
 
 var _world: Node3D = null
 var _player: PlayerController = null
@@ -68,7 +70,8 @@ func test_the_baked_library_has_the_twelve_states_with_explicit_loops() -> void:
 	## (une mort qui boucle est un bug visible).
 	var library: AnimationLibrary = load(LIBRARY) as AnimationLibrary
 	check(library != null, "AL_HeroStates.res charge")
-	check_equal(library.get_animation_list().size(), 12, "douze clips exactement")
+	check_equal(library.get_animation_list().size(), 15,
+		"quinze clips exactement (douze obligatoires + trois optionnels lot 14)")
 	for clip: StringName in LOOPING:
 		check(library.has_animation(clip), "clip présent : %s" % String(clip))
 		check_equal(int(library.get_animation(clip).loop_mode),
@@ -87,7 +90,7 @@ func test_the_root_motion_audit_proves_in_place_loops() -> void:
 	var parsed: Variant = JSON.parse_string(
 		FileAccess.get_file_as_string(AUDIT))
 	var clips: Dictionary = (parsed as Dictionary).get("clips", {})
-	check_equal(clips.size(), 12, "douze clips audités")
+	check_equal(clips.size(), 15, "quinze clips audités (12 + 3 optionnels)")
 	for clip: Variant in clips:
 		var measures: Dictionary = clips[clip]
 		check(not bool(measures.get("node_motion", true)),
@@ -182,6 +185,36 @@ func test_the_driver_follows_gameplay_states_without_touching_them() -> void:
 		"le pilote n'a PAS touché le mode gameplay")
 	_intent.move = Vector2.ZERO
 	_intent.sprint_held = false
+	await _teardown()
+
+
+func test_the_optional_gestures_play_and_yield_to_movement() -> void:
+	## V4 lot 14 : les états OPTIONNELS existent (mantle/interact/consume
+	## déclarés ET cuits — ClimbUp_1m, Interact, Consume, in-place audités),
+	## le geste de consommation se joue à l'arrêt, et BOUGER l'annule — le
+	## contrôle prime toujours sur la pose (§7.18).
+	await _setup_player()
+	var visual: CharacterVisual = _hero_visual()
+	var player_anim: AnimationPlayer = visual.find_children("*",
+		"AnimationPlayer", true, false)[0] as AnimationPlayer
+	for clip: StringName in [&"ClimbUp_1m", &"Interact", &"Consume"]:
+		check(player_anim.has_animation(clip),
+			"clip optionnel cuit dans la bibliothèque : %s" % String(clip))
+	await _settle(30)
+	# Plat en réserve, puis consommation par le vrai chemin (plat rapide).
+	_player.inventory().add_meal({"valid": true, "name": "Test", "heal": 2.0})
+	_intent.meal_pressed = true
+	await _settle(2)
+	_intent.meal_pressed = false
+	check_equal(String(visual.current_state()), "consume",
+		"le geste de consommation se joue")
+	check_equal(player_anim.current_animation, "Consume", "…clip Consume")
+	# Bouger annule le geste : la locomotion reprend l'autorité.
+	_intent.move = Vector2(1.0, 0.0)
+	await _settle(25)
+	check(String(visual.current_state()) in ["walk", "run"],
+		"bouger annule le geste (%s)" % String(visual.current_state()))
+	_intent.move = Vector2.ZERO
 	await _teardown()
 
 

@@ -111,7 +111,7 @@
       "state": "walk"
     }
   },
-  "commit": "8af8bd3c95a7f7b48da9d351c66162cab1faa077",
+  "commit": "4445e8f2f9567b5cb428dc89adac66942b8f8fa1",
   "max_loop_drift_m": 0.05,
   "max_oneshot_drift_m": 1.2,
   "pelvis_path": "Armature/Skeleton3D:pelvis"

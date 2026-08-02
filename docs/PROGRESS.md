@@ -1294,3 +1294,22 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > liées, comptes relatifs, carrure) + test lineup. Plancher 323.
 > **PROCHAINE ACTION (V4 lot 14)** : animations supplémentaires
 > (escalade, interaction, cuisine, arc) depuis les bibliothèques UAL.
+
+## 2026-08-02 (nuit V4, lot 14) — animations supplémentaires
+
+> Trois états OPTIONNELS cuits dans AL_HeroStates (15 clips : 12
+> obligatoires + 3), audités in-place (dérive pelvis 0,0000 m chacun) :
+> mantle = ClimbUp_1m (le franchissement joue enfin un vrai clip, la
+> limite « départ de saut » du TEST_REPORT est levée), interact =
+> Interact, consume = Consume. CharacterAnimSet : exports optionnels
+> hors du contrat des douze (un vide n'est pas un trou). Câblage §7.18
+> (l'animation visualise, ne décide pas) : signal typé interacted(cible)
+> émis quand l'interactable ACCEPTE, meal_eaten(nom) émis au plat
+> rapide ; le pilote joue le geste et le TIENT 45 ticks à l'arrêt —
+> bouger l'annule immédiatement, le contrôle prime. Le geste de cuisine
+> (E.2b) branchera consume au feu de camp. Tests : bibliothèque 15
+> clips épinglée, audit 15 entrées, nouveau test geste (consommation
+> réelle par le chemin plat rapide + annulation par mouvement).
+> Plancher 324.
+> **PROCHAINE ACTION (V4 lot 15)** : optimisation (matériaux partagés,
+> mesures taille/temps d'import) puis lot 16 revue contradictoire.

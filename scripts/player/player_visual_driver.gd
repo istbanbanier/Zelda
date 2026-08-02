@@ -20,6 +20,9 @@ const IDLE_MAX_SPEED: float = 0.35
 ## En TICKS physiques (§20.9) : le temps mural dérive en headless — 33
 ## ticks peuvent passer en 200 ms comme en 3 s selon la charge.
 const LAND_HOLD_TICKS: int = 18
+## V4 lot 14 : un GESTE (interaction, consommation) tient ce compte de
+## ticks à l'arrêt — bouger l'annule immédiatement, le contrôle prime.
+const GESTURE_HOLD_TICKS: int = 45
 
 @export var visual_path: NodePath = NodePath("../../VisualRoot/CharacterVisual")
 
@@ -29,6 +32,7 @@ var _last_mode: int = -1
 var _attack_restart: bool = false
 var _land_hold_ticks: int = 0
 var _was_airborne: bool = false
+var _gesture_ticks: int = 0
 
 
 func _ready() -> void:
@@ -47,6 +51,16 @@ func _ready() -> void:
 	var controller: AttackControllerComponent = _player.attack_controller()
 	if controller != null:
 		controller.attack_started.connect(_on_attack_started)
+	_player.interacted.connect(_on_gesture.bind(&"interact"))
+	_player.meal_eaten.connect(
+		func(_meal_name: String) -> void: _on_gesture(null, &"consume"))
+
+
+## Geste one-shot (V4 lot 14) : joué immédiatement, tenu par
+## `_play_locomotion` tant que le joueur reste immobile au sol.
+func _on_gesture(_target: Node3D, state: StringName) -> void:
+	_gesture_ticks = GESTURE_HOLD_TICKS
+	_visual.play_state(state, true)
 
 
 func _on_attack_started(_definition: AttackDefinition, _link: int) -> void:
@@ -69,9 +83,9 @@ func _physics_process(_delta: float) -> void:
 		PlayerController.Mode.ATTACKING:
 			_play_attack()
 		PlayerController.Mode.MANTLING:
-			# Pas de clip de mantle dans les douze états : le départ de saut
-			# est la lecture la plus proche (limite documentée, TEST_REPORT).
-			_visual.play_state(&"jump", entered)
+			# V4 lot 14 : clip de franchissement réel (ClimbUp_1m, état
+			# optionnel). L'alignement reste piloté par le contrôleur.
+			_visual.play_state(&"mantle", entered)
 		PlayerController.Mode.CLIMBING:
 			_visual.play_state(&"walk" if _player.velocity.length()
 				> IDLE_MAX_SPEED else &"idle")
@@ -97,8 +111,16 @@ func _play_locomotion() -> void:
 	if _was_airborne:
 		_was_airborne = false
 		_land_hold_ticks = LAND_HOLD_TICKS
+		_gesture_ticks = 0
 		_visual.play_state(&"land", true)
 		return
+	# Un geste en cours tient tant que le joueur reste immobile ; bouger
+	# l'annule — le contrôle prime toujours sur la pose (§7.18).
+	if _gesture_ticks > 0:
+		_gesture_ticks -= 1
+		if speed <= IDLE_MAX_SPEED:
+			return
+		_gesture_ticks = 0
 	# La réception tient son compte de ticks, mais la course reprend sans figer.
 	if _land_hold_ticks > 0:
 		_land_hold_ticks -= 1
