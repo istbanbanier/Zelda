@@ -1,18 +1,18 @@
 {
-  "commit": "0301673cfaaf515c29b0aeccbcffddd044d93ff3",
+  "commit": "e8c9980960e038071d19ac82e5741061565fc036",
   "display_server": "X11",
-  "distinct_colors_sampled": 831,
+  "distinct_colors_sampled": 1253,
   "engine_version": "4.7.1-stable (custom_build)",
   "frames_waited": 60,
   "height": 1080,
   "label": "f3_room2_shaft",
-  "luma_mean": 0.1519,
-  "luma_stddev": 0.1746,
+  "luma_mean": 0.2058,
+  "luma_stddev": 0.127,
   "png": "evidence/F3/room2_shaft.png",
   "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
   "rendering_method": "forward_plus",
   "repo_dirty": false,
   "scene": "res://scenes/dungeon/rooms/Room2Vertical.tscn",
-  "timestamp_utc": "2026-08-02 20:18:54",
+  "timestamp_utc": "2026-08-02 20:21:13",
   "width": 1920
 }

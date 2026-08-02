@@ -412,6 +412,14 @@ func capture_state_rerouted() -> void:
 		_switch.interact(null)
 
 
+## Même chose, vue d'en haut : le joueur est posé sur la mezzanine, là où
+## l'escalade le mène. Sert aux captures de preuve, jamais au jeu.
+func capture_state_mezzanine() -> void:
+	capture_state_rerouted()
+	if _player != null:
+		_player.global_position = Vector3(-1.5, MEZZANINE_Y + 0.6, -2.0)
+
+
 func elevator() -> ElevatorPlatform:
 	return _elevator
 
