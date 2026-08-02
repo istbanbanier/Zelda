@@ -1,18 +1,18 @@
 {
-  "commit": "4007e928d6674f179339f74a1ae2bdb0c6c24fcb",
+  "commit": "c720b48f6d17b3ca6e011e27f40d9ebe8b80f5b8",
   "display_server": "X11",
   "distinct_colors_sampled": 3,
   "engine_version": "4.7.1-stable (custom_build)",
   "frames_waited": 30,
   "height": 1080,
   "label": "gateD_bestiary_flat",
-  "luma_mean": 0.6611,
-  "luma_stddev": 0.3363,
+  "luma_mean": 0.6614,
+  "luma_stddev": 0.3361,
   "png": "evidence/gateD/bestiary_flat.png",
   "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
   "rendering_method": "forward_plus",
   "repo_dirty": true,
   "scene": "res://scenes/tests/BestiaryLineup.tscn",
-  "timestamp_utc": "2026-08-02 15:11:53",
+  "timestamp_utc": "2026-08-02 16:38:26",
   "width": 1920
 }

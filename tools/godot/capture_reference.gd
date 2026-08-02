@@ -86,7 +86,20 @@ func _repo_is_dirty() -> bool:
 		"status", "--porcelain", "--untracked-files=no"], out, true)
 	if rc != 0 or out.is_empty():
 		return true
-	return String(out[0]).strip_edges() != ""
+	# `evidence/` est la SORTIE de cet outil, jamais son entrée : une
+	# capture qui réécrit sa propre preuve précédente salissait l'arbre
+	# et se déclarait elle-même non reproductible. Ce qui compte est que
+	# le CODE rendu soit celui du commit — les images ne peuvent pas
+	# influencer le rendu.
+	for line: String in String(out[0]).split("\n", false):
+		var entry: String = line.strip_edges()
+		if entry == "":
+			continue
+		var path: String = entry.substr(2).strip_edges()
+		if path.begins_with("evidence/"):
+			continue
+		return true
+	return false
 
 
 func _initialize() -> void:
