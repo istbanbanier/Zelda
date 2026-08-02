@@ -1,0 +1,18 @@
+{
+  "commit": "f9a0e0d99d5d8a3a9d8db61667daddf47766f6b9",
+  "display_server": "X11",
+  "distinct_colors_sampled": 342,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 30,
+  "height": 1080,
+  "label": "artq0_calibration_lumiere_vallee",
+  "luma_mean": 0.4385,
+  "luma_stddev": 0.0902,
+  "png": "evidence/artQ0/calibration_q0_valley_light.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/tests/AssetCalibration.tscn",
+  "timestamp_utc": "2026-08-02 03:59:43",
+  "width": 1920
+}

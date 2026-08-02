@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3]
+
+; ART-Q0 — wrapper de production : le modèle Quaternius (CC0, voir
+; ATTRIBUTIONS.md) importé tel quel derrière l'id stable du registre.
+; Les consommateurs passent par AssetRegistry.resolve() — jamais ce chemin.
+
+[ext_resource type="PackedScene" path="res://assets/environment/rocks/Rock_Medium_3.gltf" id="1_model"]
+
+[node name="RockLarge" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)

@@ -1369,3 +1369,59 @@ après chaque lot. Perf llvmpipe INDICATIVE (jamais un budget) :
   source_assets/concepts/final_v4/README.md).
 - La capture vista tient l'éclair en frappe majeure (mode VALLEY_VISTA,
   documenté) — en jeu la cadence est irrégulière temps-réel.
+
+---
+
+# E.2 fondations + ART-Q0 — nuit du 2026-08-02
+
+## E.2 (fondations) — commit f9a0e0d
+
+```bash
+tools/validate_fast.sh   # RC=0
+```
+**292 tests** (plancher monté 285 → 292). 7 nouveaux tests unitaires PURS
+(`test_cooking_rules.gd`) : bornes 1-5 ingrédients, soin sommé/clampé,
+famille dominante + puissance cumulée + durée 60+30/compatible,
+épice +45 s sans changer la famille (cas extrême réel 270 s), ragoût
+instable ×0.3 sans effet, buff appliqué/remplacé/expiré (minuterie pilotée
+à la main, déterministe), snapshot/restore en primitives via le chemin
+normal des signaux.
+
+## ART-Q0 — acquisition et ingestion Quaternius
+
+**Acquisition** (hors dépôt, `/tmp/eclats-quaternius.X2JMwF/`) :
+
+```bash
+curl --fail --location --retry 3 -o <archive> <browser_download_url>  # ×7, RC=0
+sha256sum *.zip   # 7/7 IDENTIQUES aux digests GitHub de la Release
+file *.zip        # 7/7 « Zip archive data » (aucune page HTML)
+unzip -tq         # 7/7 OK
+zipinfo -1 | grep -E '^/|^[A-Za-z]:|\.\.'   # 7/7 : AUCUN chemin dangereux
+```
+
+Licences : CC0 1.0 Universal lue dans `License*.txt` de CHAQUE archive.
+
+**Ingestion** (12 modèles, inscrits dans ATTRIBUTIONS/MANIFEST avant build) :
+
+```bash
+python3 tools/gltf_inspect.py <modele>.gltf          # 12/12 VALIDE en place
+python3 tools/gltf_inspect.py Male_Ranger.gltf --expect-skin   # VALIDE
+godot --headless --path . --import                   # zéro erreur
+tools/validate_fast.sh                               # RC=0
+```
+
+**294 tests** (plancher monté 292 → 294). Nouveaux tests
+(`test_asset_pipeline.gd`) :
+- `test_the_q0_delivered_assets_resolve_with_real_meshes` : les ONZE ids
+  livrés (env ×5, prop ×3, arch ×3) résolvent ET montent au moins un
+  `MeshInstance3D` avec un maillage réel — un wrapper vide échoue.
+- `test_the_hero_candidate_keeps_its_rig_through_the_godot_import` :
+  1 armature, **65 os**, meshes skinnés après import Godot.
+
+Compatibilité squelette (script de comparaison par noms, hors moteur) :
+Male_Ranger = UAL1 = UAL2 = 65 os, différences ensemblistes vides.
+
+**Captures** (renderer réel llvmpipe via Xvfb, manifestes JSON liés) :
+`evidence/artQ0/calibration_q0_neutral.png` et
+`calibration_q0_valley_light.png` — rangée complète (les 11 livrés + jalons
+orange des manquants + préview héros T-pose étiquetée « candidat »).

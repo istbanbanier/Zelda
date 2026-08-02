@@ -7,8 +7,24 @@ personnel du joueur ni un service payant.
 
 ## État à ce jour
 
-Le projet ne contient **aucune ressource d'origine externe**. Tout ce qui est
-versionné a été généré par les scripts du dépôt.
+Le projet contient des ressources externes d'une seule provenance : les packs
+**Quaternius Standard (CC0 1.0)**, inscrits ci-dessous AVANT leur entrée dans
+le build (2026-08-02). Tout le reste a été généré par les scripts du dépôt.
+
+## Packs Quaternius Standard — CC0 1.0 Universal (ART-Q0)
+
+| Élément | Valeur |
+|---|---|
+| Auteur | **Quaternius** (https://quaternius.com) |
+| Licence | **CC0 1.0 Universal (Public Domain Dedication)** — confirmée sur le fichier `License*.txt` PRÉSENT DANS CHACUNE des sept archives, https://creativecommons.org/publicdomain/zero/1.0/ |
+| Canal d'acquisition | GitHub Release `asset-inbox-quaternius-free-v1` du dépôt du projet (boîte de transport déposée par le propriétaire) ; empreintes SHA-256 vérifiées identiques aux digests GitHub — détail dans `docs/assets/QUATERNIUS_INBOX.md` |
+| Archives sources | Stylized Nature MegaKit, Fantasy Props MegaKit, Medieval Village MegaKit, Universal Base Characters, Modular Character Outfits – Fantasy, Universal Animation Library 1 et 2 (éditions Standard, gratuites) |
+| Modifications | **AUCUNE** — fichiers `.gltf`/`.bin`/textures copiés à l'octet près depuis les archives ; la sélection (12 modèles sur ~900) est documentée dans `docs/assets/ASSET_MANIFEST.csv` |
+| Fichiers dans le build | `assets/environment/{foliage,rocks,props,dungeon}/` et `assets/characters/hero/` — voir manifeste |
+
+CC0 : aucune attribution exigée légalement ; elle est donnée ici par honnêteté
+de provenance. Aucun compte, aucun paiement, aucune restriction de
+redistribution. Les archives elles-mêmes ne sont **pas** versionnées.
 
 ## Ressources produites par le projet
 

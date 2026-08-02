@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+; ART-Q0 — wrapper de production : le modèle Quaternius (CC0, voir
+; ATTRIBUTIONS.md) importé tel quel derrière l'id stable du registre.
+; Les consommateurs passent par AssetRegistry.resolve() — jamais ce chemin.
+
+[ext_resource type="PackedScene" path="res://assets/environment/props/Crate_Wooden.gltf" id="1_model"]
+
+[node name="Crate" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]

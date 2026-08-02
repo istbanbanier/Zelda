@@ -958,3 +958,24 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > multiplicateurs câblés (hitbox/hurtbox/stamina), _meals en inventaire,
 > composant dans Player.tscn, _eat_quick_meal, autosave meals/buff,
 > label HUD, tests d'intégration.
+
+## 2026-08-02 (nuit) — ART-Q0 : acquisition Quaternius + 11 ids livrés
+
+> **Acquisition** : les 7 archives depuis la Release GitHub
+> `asset-inbox-quaternius-free-v1` (canal API + curl), SHA-256 identiques
+> aux digests GitHub, `unzip -tq` OK, zéro chemin dangereux, licences
+> **CC0 1.0 lues dans chaque archive**. Zone : /tmp, jamais dans le dépôt.
+> **Ingestion** : 12 modèles copiés à l'octet près (~101 Mo, max 12,7 Mo/f),
+> inscrits dans ATTRIBUTIONS + MANIFEST AVANT import ; `gltf_inspect`
+> étendu au .gltf texte (mêmes contrôles) ; import headless zéro erreur.
+> **Livraison** : 11 wrappers .tscn aux chemins réservés du registre
+> (arbres ×2, rochers ×2, buisson, coffre/caisse/tonneau, porte/mur/colonne).
+> Héros `Male_Ranger` importé en CANDIDAT (préview calibration, étiqueté) —
+> câblage animé = ART-Q1. **Squelette héros = squelette UAL (65 os,
+> différence ensembliste vide, vérifié par script)** : retargeting direct.
+> Tests 292 → **294** (ids livrés montent des maillages réels ; rig du
+> héros survit à l'import). Captures : evidence/artQ0/ (2 lumières,
+> manifestes). tent/campfire ABSENTS des packs — consigné, options Q3.
+> **PROCHAINE ACTION (ART-Q1)** : ingérer UAL1/UAL2 in-place + créer
+> HeroVisual.tscn animé (12 états via CharacterAnimSet), sockets main/dos,
+> capsule autorité, root motion neutralisé documenté par clip.

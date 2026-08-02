@@ -15,22 +15,24 @@ extends RefCounted
 const CATALOG: Dictionary = {
 	# Production livrée (ART-P0R).
 	&"weapon.worn_sword": "res://scenes/weapons/WornSword.tscn",
-	# Personnages — en attente d'acquisition (repli : capsules graybox).
+	# Personnages — modèle héros IMPORTÉ (ART-Q0, préview calibration) ;
+	# le câblage animé qui remplit ces .tscn est le lot ART-Q1/Q2.
 	&"char.hero": "res://scenes/characters/HeroVisual.tscn",
 	&"char.raider_red": "res://scenes/characters/RaiderRedVisual.tscn",
-	# Environnement — en attente (repli : primitives des générateurs).
+	# Environnement — LIVRÉ (ART-Q0, packs Quaternius CC0, ATTRIBUTIONS.md).
 	&"env.tree.large": "res://scenes/environment/TreeLarge.tscn",
 	&"env.tree.medium": "res://scenes/environment/TreeMedium.tscn",
 	&"env.rock.large": "res://scenes/environment/RockLarge.tscn",
 	&"env.rock.medium": "res://scenes/environment/RockMedium.tscn",
 	&"env.plant.bush": "res://scenes/environment/Bush.tscn",
-	# Camp et interactions — en attente (repli : boîtes/prismes actuels).
+	# Camp : chest/crate/barrel LIVRÉS (ART-Q0) ; tent et campfire ABSENTS
+	# des sept packs (vérifié) — repli graybox conservé, voir QUATERNIUS_INBOX.
 	&"prop.tent": "res://scenes/environment/Tent.tscn",
 	&"prop.campfire": "res://scenes/environment/Campfire.tscn",
 	&"prop.chest": "res://scenes/environment/ChestModel.tscn",
 	&"prop.crate": "res://scenes/environment/Crate.tscn",
 	&"prop.barrel": "res://scenes/environment/Barrel.tscn",
-	# Architecture — en attente (repli : blockout citadelle/vestibule).
+	# Architecture — LIVRÉ (ART-Q0) ; harmonisation matière citadelle = ART-Q6.
 	&"arch.gate.module": "res://scenes/environment/GateModule.tscn",
 	&"arch.wall.module": "res://scenes/environment/WallModule.tscn",
 	&"arch.column.module": "res://scenes/environment/ColumnModule.tscn",

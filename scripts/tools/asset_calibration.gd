@@ -11,6 +11,15 @@ extends Node3D
 
 const SLOT_SPACING: float = 2.4
 
+## Modèles IMPORTÉS mais pas encore câblés au registre (le contrat .tscn
+## arrive avec leur lot) — montrés sur une rangée arrière, étiquetés
+## « candidat » : visibles pour le jugement d'échelle/matériaux, sans
+## mentir sur l'état du catalogue.
+const PREVIEWS: Dictionary = {
+	"char.hero — candidat (câblage ART-Q1)":
+		"res://assets/characters/hero/Male_Ranger.gltf",
+}
+
 
 func _ready() -> void:
 	_build_stage()
@@ -21,6 +30,33 @@ func _ready() -> void:
 		var x: float = -float(ids.size() - 1) * SLOT_SPACING * 0.5 \
 			+ float(i) * SLOT_SPACING
 		_build_slot(ids[i], Vector3(x, 0.0, 0.0))
+	var labels: Array = PREVIEWS.keys()
+	labels.sort()
+	for i: int in range(labels.size()):
+		var x: float = -float(labels.size() - 1) * SLOT_SPACING * 0.5 \
+			+ float(i) * SLOT_SPACING
+		_build_preview(String(labels[i]), String(PREVIEWS[labels[i]]),
+			Vector3(x, 0.0, -3.2))
+
+
+func _build_preview(text: String, path: String, at: Vector3) -> void:
+	var slot: Node3D = Node3D.new()
+	slot.name = "Preview_%s" % text.get_slice(" ", 0).replace(".", "_")
+	slot.position = at
+	add_child(slot)
+	var label: Label3D = Label3D.new()
+	label.text = text
+	label.font_size = 36
+	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	label.position = Vector3(0, 2.4, 0)
+	label.modulate = Color(0.55, 0.8, 1.0)
+	slot.add_child(label)
+	if not ResourceLoader.exists(path, "PackedScene"):
+		label.modulate = Color(1.0, 0.65, 0.25)
+		label.text += " — ABSENT"
+		return
+	var instance: Node = (load(path) as PackedScene).instantiate()
+	slot.add_child(instance)
 
 
 func _build_slot(id: StringName, at: Vector3) -> void:
@@ -86,7 +122,7 @@ func _build_stage() -> void:
 	var floor_mesh: MeshInstance3D = MeshInstance3D.new()
 	floor_mesh.name = "Floor"
 	var plane: PlaneMesh = PlaneMesh.new()
-	plane.size = Vector2(60, 20)
+	plane.size = Vector2(80, 50)
 	floor_mesh.mesh = plane
 	var floor_material: StandardMaterial3D = StandardMaterial3D.new()
 	floor_material.albedo_color = Color(0.45, 0.45, 0.47)
@@ -115,9 +151,14 @@ func _build_stage() -> void:
 	world_environment.environment = environment
 	add_child(world_environment)
 
+	# Cadrage AUTO : la rangée grandit avec le catalogue — la caméra recule
+	# pour la tenir entière (la capture doit montrer TOUS les socles, y
+	# compris arches et arbres, pas les sept du centre).
+	var row_width: float = float(AssetRegistry.known_ids().size()) * SLOT_SPACING
+	var distance: float = maxf(9.5, row_width * 0.62)
 	var camera: Camera3D = Camera3D.new()
-	camera.position = Vector3(0, 3.2, 9.5)
-	camera.rotation_degrees = Vector3(-12, 0, 0)
-	camera.fov = 55
+	camera.position = Vector3(0, 3.2 + distance * 0.22, distance)
+	camera.rotation_degrees = Vector3(-14, 0, 0)
+	camera.fov = 62
 	add_child(camera)
 	camera.make_current()

@@ -9,15 +9,22 @@ et bouclage d'animation.
 Ne remplace pas l'import Godot : il prouve la moitié « source » du pipeline et
 permet de localiser un défaut avant d'accuser le moteur.
 
+Accepte le .glb autonome ET le .gltf texte (+ .bin/textures relatives, format
+de livraison des packs tiers type Quaternius) : mêmes contrôles, seul le
+parsing du conteneur diffère. Pour un .gltf, l'existence de chaque fichier
+référencé (tampon, image) est vérifiée — un URI cassé est une erreur.
+
 Usage :
-    python3 tools/gltf_inspect.py <fichier.glb> [--expect-anim] [--expect-skin]
-    python3 tools/gltf_inspect.py <fichier.glb> --json
+    python3 tools/gltf_inspect.py <fichier.glb|.gltf> [--expect-anim] [--expect-skin]
+    python3 tools/gltf_inspect.py <fichier.glb|.gltf> --json
 """
 
 import argparse
 import json
+import os
 import struct
 import sys
+import urllib.parse
 
 GLB_MAGIC = 0x46546C67   # 'glTF'
 CHUNK_JSON = 0x4E4F534A  # 'JSON'
@@ -75,6 +82,36 @@ def read_glb(path: str, rep: Report) -> dict:
     return gltf
 
 
+def read_gltf_text(path: str, rep: Report) -> dict:
+    """Charge un .gltf texte et vérifie que chaque fichier référencé existe."""
+    try:
+        with open(path, "r", encoding="utf-8") as handle:
+            gltf = json.load(handle)
+    except (ValueError, OSError) as exc:
+        rep.error("JSON illisible : %s" % exc)
+        return {}
+    base_dir = os.path.dirname(os.path.abspath(path))
+    bin_len = 0
+    for entry, kind in [(b, "tampon") for b in gltf.get("buffers", [])] + \
+            [(i, "image") for i in gltf.get("images", [])]:
+        uri = entry.get("uri")
+        if uri is None or uri.startswith("data:"):
+            continue
+        ref = os.path.join(base_dir, urllib.parse.unquote(uri))
+        if not os.path.isfile(ref):
+            rep.error("%s référencé manquant : %s" % (kind, uri))
+        elif kind == "tampon":
+            bin_len += os.path.getsize(ref)
+    rep.info("format", "glTF texte, tampons externes %d octets" % bin_len)
+    return gltf
+
+
+def read_source(path: str, rep: Report) -> dict:
+    if path.lower().endswith(".gltf"):
+        return read_gltf_text(path, rep)
+    return read_glb(path, rep)
+
+
 def accessor_bounds(gltf: dict, mesh_index: int) -> tuple:
     """Bounding box monde-local approximée depuis min/max des accessors POSITION."""
     lo = [float("inf")] * 3
@@ -96,7 +133,7 @@ def accessor_bounds(gltf: dict, mesh_index: int) -> tuple:
 
 def inspect(path: str, expect_anim: bool, expect_skin: bool) -> Report:
     rep = Report()
-    gltf = read_glb(path, rep)
+    gltf = read_source(path, rep)
     if not gltf:
         return rep
 

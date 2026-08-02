@@ -433,6 +433,18 @@ enchaîne trois légères contre de vrais mannequins.
 
 ---
 
+## ART-Q0 — acquisition Quaternius et premiers assets de production (2026-08-02)
+
+| Élément | État | Preuve |
+|---|---|---|
+| Acquisition des 7 archives (Release GitHub) | **Validé** | SHA-256 = digests GitHub, licences CC0 lues sur pièce — `docs/assets/QUATERNIUS_INBOX.md` |
+| 12 modèles ingérés (5 nature, 3 props, 3 arch, 1 héros candidat) | **Fonctionnel** | `gltf_inspect` 12/12 + import headless zéro erreur ; `ATTRIBUTIONS.md`, `ASSET_MANIFEST.csv` |
+| Registre : 11 ids env/prop/arch **livrés** | **Fonctionnel** | `test_asset_pipeline` : chaque id livré monte un maillage réel (294 tests verts) |
+| Héros candidat riggé (65 os = UAL, vérifié par script) | **Fonctionnel** | test « keeps_its_rig » : 1 armature, 65 os, meshes skinnés après import |
+| Calibration : rangée complète + préview héros + manquants orange | **Fonctionnel** | `evidence/artQ0/calibration_q0_{neutral,valley_light}.png` + manifestes |
+| `prop.tent`, `prop.campfire` | **Bloqué** (absents des 7 packs) | inventaire complet consigné — options en ART-Q3 |
+| Qualité artistique perçue | **EN ATTENTE** (verdict humain) | les captures llvmpipe prouvent le montage, pas le rendu GPU |
+
 ## Checklist finale (§26) — état réel
 
 Une case n'est cochée que si une preuve datée la soutient. Ne jamais cocher sur la
@@ -460,11 +472,11 @@ base d'une intention. Les cases cochées ci-dessous renvoient toutes à `TEST_RE
 | North Star | Score ≥ 85/100 | ⬜ **bloqué** |
 | Look-dev | Labs validés | ⬜ **bloqué** |
 | Art | Aucun placeholder critique | ⬜ |
-| Assets | Blender/glTF/import/manifest/licences reproductibles | ✅ pour la chaîne ; contenu réel à venir |
+| Assets | Blender/glTF/import/manifest/licences reproductibles | ✅ chaîne + 12 premiers assets Quaternius CC0 ingérés (ART-Q0) |
 | Animation | IK/alignement sans défaut majeur | ⬜ |
 | Audio | Feedback des actions importantes | ⬜ |
 | Performance | Mesurée et conforme au preset annoncé | ⬜ **bloqué** |
 | Frame pacing | Aucun hitch critique de première utilisation | ⬜ **bloqué** |
 | Stabilité | 60 min sans crash | ⬜ **bloqué** |
 | Web | Compatibility et fallback cohérent | ⬜ |
-| Légalité | Assets originaux/licenciés/attribués | ✅ à ce stade (aucun asset externe) |
+| Légalité | Assets originaux/licenciés/attribués | ✅ externe = Quaternius CC0 uniquement, licences sur pièce, ATTRIBUTIONS avant build |

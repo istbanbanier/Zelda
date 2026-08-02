@@ -38,6 +38,55 @@ func test_the_registry_resolves_delivered_assets_and_declines_missing_ones() -> 
 		"un id inconnu rend null sans crash")
 
 
+## Les onze ids env/prop/arch livrés par ART-Q0. Chaque lot suivant ALLONGE
+## cette liste — la retirer ou la raccourcir est une régression.
+const DELIVERED_Q0: Array[StringName] = [
+	&"env.tree.large", &"env.tree.medium", &"env.rock.large",
+	&"env.rock.medium", &"env.plant.bush", &"prop.chest", &"prop.crate",
+	&"prop.barrel", &"arch.gate.module", &"arch.wall.module",
+	&"arch.column.module",
+]
+
+
+func test_the_q0_delivered_assets_resolve_with_real_meshes() -> void:
+	## ART-Q0 : chaque id livré monte une scène qui contient AU MOINS un
+	## maillage réel — pas un wrapper vide qui « résout » sans rien montrer.
+	for id: StringName in DELIVERED_Q0:
+		var packed: PackedScene = AssetRegistry.resolve(id)
+		check(packed != null, "%s : LIVRÉ, doit résoudre" % String(id))
+		if packed == null:
+			continue
+		var instance: Node = packed.instantiate()
+		var has_mesh: bool = false
+		for node: Node in instance.find_children("*", "MeshInstance3D", true, false):
+			if (node as MeshInstance3D).mesh != null:
+				has_mesh = true
+		check(has_mesh, "%s : au moins un maillage réel monté" % String(id))
+		instance.free()
+
+
+func test_the_hero_candidate_keeps_its_rig_through_the_godot_import() -> void:
+	## ART-Q0 : le modèle héros importé (préview, câblage en Q1) transporte
+	## son armature — 65 os, mesh skinné. Sans cela, Q1 partirait d'un
+	## modèle mort.
+	var path: String = "res://assets/characters/hero/Male_Ranger.gltf"
+	check(ResourceLoader.exists(path, "PackedScene"),
+		"le modèle héros candidat est importé")
+	var instance: Node = (load(path) as PackedScene).instantiate()
+	var skeletons: Array[Node] = instance.find_children("*", "Skeleton3D", true, false)
+	check_equal(skeletons.size(), 1, "une armature exactement")
+	if skeletons.size() == 1:
+		var skeleton: Skeleton3D = skeletons[0] as Skeleton3D
+		check_equal(skeleton.get_bone_count(), 65,
+			"les 65 os du squelette UAL (compatibilité animations vérifiée)")
+	var skinned: int = 0
+	for node: Node in instance.find_children("*", "MeshInstance3D", true, false):
+		if (node as MeshInstance3D).skin != null:
+			skinned += 1
+	check(skinned > 0, "au moins un maillage réellement skinné")
+	instance.free()
+
+
 func test_the_anim_set_validator_measures_real_gaps_in_both_directions() -> void:
 	## Le validateur compte les DOUZE états obligatoires, voit un clip présent
 	## dans un vrai AnimationPlayer, et signale ceux qui manquent.
