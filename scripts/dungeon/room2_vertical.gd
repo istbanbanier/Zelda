@@ -68,15 +68,18 @@ func _ready() -> void:
 ## porte au nord en haut, couloir de sortie honnêtement scellé (F.6
 ## raccordera les salles entre elles).
 func _build_shell() -> void:
-	box("Floor", Vector3(0, -0.5, 0), Vector3(14, 1, 14), COL_FLOOR)
-	box("Ceiling", Vector3(0, 22.5, 0), Vector3(14, 1, 14), COL_STONE)
+	# Le puits est prolongé de 6 m vers le sud : sans ce recul, la caméra
+	# d'épaule bute dans le mur d'entrée et le joueur remplit l'image —
+	# mesuré sur la première capture, la salle y était illisible.
+	box("Floor", Vector3(0, -0.5, 3), Vector3(14, 1, 20), COL_FLOOR)
+	box("Ceiling", Vector3(0, 22.5, 3), Vector3(14, 1, 20), COL_STONE)
 	# Le mur ouest est INACCROCHABLE : sans cela, on grimperait à côté des
 	# électrodes et l'énigme n'existerait pas (§9.2, groupe de refus).
-	var west: StaticBody3D = box("WallWest", Vector3(-7.25, 11, 0),
-		Vector3(0.5, 22, 14), COL_STONE)
+	var west: StaticBody3D = box("WallWest", Vector3(-7.25, 11, 3),
+		Vector3(0.5, 22, 20), COL_STONE)
 	west.add_to_group("unclimbable")
-	var east: StaticBody3D = box("WallEast", Vector3(7.25, 11, 0),
-		Vector3(0.5, 22, 14), COL_STONE)
+	var east: StaticBody3D = box("WallEast", Vector3(7.25, 11, 3),
+		Vector3(0.5, 22, 20), COL_STONE)
 	east.add_to_group("unclimbable")
 	# Nord : percement de 4 m au niveau de la mezzanine.
 	box("WallNorthWest", Vector3(-3.5, 11, -7.25), Vector3(7, 22, 0.5), COL_STONE)
@@ -84,9 +87,9 @@ func _build_shell() -> void:
 	box("WallNorthUnder", Vector3(2, 8.25, -7.25), Vector3(4, 16.5, 0.5), COL_STONE)
 	box("WallNorthLintel", Vector3(2, 21.75, -7.25), Vector3(4, 1.5, 0.5), COL_BRONZE)
 	# Sud : seuil d'entrée en bas.
-	box("WallSouthWest", Vector3(-4.8, 11, 7.25), Vector3(4.4, 22, 0.5), COL_STONE)
-	box("WallSouthEast", Vector3(4.8, 11, 7.25), Vector3(4.4, 22, 0.5), COL_STONE)
-	box("WallSouthLintel", Vector3(0, 13.5, 7.25), Vector3(5.2, 17, 0.5), COL_STONE)
+	box("WallSouthWest", Vector3(-4.8, 11, 13.25), Vector3(4.4, 22, 0.5), COL_STONE)
+	box("WallSouthEast", Vector3(4.8, 11, 13.25), Vector3(4.4, 22, 0.5), COL_STONE)
+	box("WallSouthLintel", Vector3(0, 13.5, 13.25), Vector3(5.2, 17, 0.5), COL_STONE)
 	# Mezzanine : le palier d'arrivée, à l'est de la voie d'escalade.
 	# La mezzanine s'arrête à 0,6 m du mur est : cette gaine laisse passer
 	# la colonne montante de la branche ascenseur, qui doit se VOIR (§7.8 :
@@ -127,7 +130,7 @@ func _build_shell() -> void:
 	material.albedo_color = Color(0.14, 0.16, 0.2)
 	mesh.material_override = material
 	entry.add_child(mesh)
-	entry.position = Vector3(0, 2.5, 7.4)   # AVANT add_child (règle D.0)
+	entry.position = Vector3(0, 2.5, 13.4)   # AVANT add_child (règle D.0)
 	add_child(entry)
 
 
@@ -366,13 +369,18 @@ func _setup_lighting() -> void:
 	# §7.8 : ocre/bronze sombre, énergie cyan directionnelle, aucun couloir
 	# noir. Les braseros jalonnent la montée : on voit toujours la corniche
 	# suivante.
-	for i: int in range(4):
+	var lamps: Array[Vector3] = [
+		Vector3(5.6, 2.6, 10.5), Vector3(-5.6, 2.6, 10.5),
+		Vector3(5.6, 2.6, 5.4), Vector3(5.6, 7.6, 2.4),
+		Vector3(5.6, 12.6, -0.6), Vector3(5.6, 17.6, -3.6),
+	]
+	for i: int in range(lamps.size()):
 		var warm: OmniLight3D = OmniLight3D.new()
 		warm.name = "ShaftGlow%d" % i
 		warm.light_color = Color(1.0, 0.74, 0.42)
-		warm.light_energy = 2.4
-		warm.omni_range = 15.0
-		warm.position = Vector3(5.6, 2.6 + 5.0 * float(i), 5.4 - 3.0 * float(i))
+		warm.light_energy = 2.6
+		warm.omni_range = 16.0
+		warm.position = lamps[i]
 		add_child(warm)
 		box("Brazier%d" % i, warm.position - Vector3(0, 1.9, 0),
 			Vector3(0.7, 1.4, 0.7), COL_BRONZE)

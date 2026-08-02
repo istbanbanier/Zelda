@@ -15,7 +15,7 @@ script = ExtResource("1_room")
 
 ; Le joueur entre par le seuil sud, en bas, face au puits (regard -Z).
 [node name="Player" parent="." instance=ExtResource("2_player")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 5.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.2, 10)
 
 [node name="VisualRoot" parent="Player"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
