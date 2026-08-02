@@ -50,6 +50,8 @@ const SEPARATION_RADIUS: float = 1.7
 const SEPARATION_WEIGHT: float = 0.9
 ## Pause orientée avant d'aller voir (état SUSPICIOUS).
 const SUSPICION_PAUSE: float = 0.6
+## Désaxement maximal pour DÉCLENCHER une attaque (D-EN.2).
+const ATTACK_FACING_DEG: float = 30.0
 
 @export var tuning: EnemyTuning
 ## Points de patrouille RELATIFS à l'origine du territoire — vide = poste
@@ -343,10 +345,15 @@ func _process_chase(delta: float) -> void:
 	var distance: float = to_target.length()
 	_face(to_target, delta)
 
-	if distance <= tuning.attack_reach and _attack_cooldown <= 0.0:
+	if distance <= tuning.attack_reach:
 		velocity.x = 0.0
 		velocity.z = 0.0
-		if _family_try_attack(distance):
+		# On n'attaque qu'EN FACE (mesuré D-EN.2 : acquis de dos, le
+		# briseur frappait le vide sans s'être retourné) — à portée mais
+		# désaxé, l'ennemi PIVOTE d'abord ; le _face ci-dessus travaille.
+		if _attack_cooldown <= 0.0 \
+				and _facing_angle_deg(to_target) <= ATTACK_FACING_DEG \
+				and _family_try_attack(distance):
 			_enter(State.ATTACK)
 		return
 
@@ -593,6 +600,16 @@ func _face(direction: Vector3, delta: float) -> void:
 	var target_yaw: float = atan2(direction.x, direction.z)
 	var weight: float = 1.0 - exp(-tuning.turn_speed * delta)
 	_pivot.rotation.y = lerp_angle(_pivot.rotation.y, target_yaw, weight)
+
+
+## Angle (degrés) entre le regard du pivot et une direction XZ.
+func _facing_angle_deg(direction: Vector3) -> float:
+	var forward: Vector3 = _pivot.global_transform.basis.z
+	forward.y = 0.0
+	if forward.length_squared() < 0.0001 \
+			or direction.length_squared() < 0.0001:
+		return 180.0
+	return rad_to_deg(forward.normalized().angle_to(direction.normalized()))
 
 
 ## ---------------------------------------------------------------------------

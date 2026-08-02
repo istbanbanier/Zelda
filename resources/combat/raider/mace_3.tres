@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AttackDefinition" load_steps=2 format=3]
+
+; D-EN.2 — masse, coup 3 (final) : le plus fort, recovery le plus long —
+; l'ouverture maximale après le combo complet (§12.3).
+
+[ext_resource type="Script" path="res://resources/combat/attack_definition.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"raider_mace_3"
+damage_multiplier = 1.3
+poise_damage = 28.0
+knockback = 5.5
+element = &""
+startup = 0.45
+active = 0.18
+recovery = 1.4
+input_buffer = 0.15
+combo_window_fraction = 0.3
+hit_stop = 0.085

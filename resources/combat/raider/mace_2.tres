@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AttackDefinition" load_steps=2 format=3]
+
+; D-EN.2 — masse, coup 2 : enchaîné plus vite, recovery LONG — si le
+; combo s'arrête ici, c'est l'ouverture de §12.3.
+
+[ext_resource type="Script" path="res://resources/combat/attack_definition.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"raider_mace_2"
+damage_multiplier = 1.1
+poise_damage = 24.0
+knockback = 4.5
+element = &""
+startup = 0.4
+active = 0.15
+recovery = 1.2
+input_buffer = 0.15
+combo_window_fraction = 0.3
+hit_stop = 0.07

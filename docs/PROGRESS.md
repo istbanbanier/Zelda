@@ -1453,3 +1453,28 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > **PROCHAINE ACTION (D-EN.2)** : briseur d'obsidienne — 150 PV, masse
 > en combo 2-3 coups (chaînage par la vraie fenêtre), garde frontale à
 > jauge (amorti + rupture = ouverture), poise 60.
+
+## 2026-08-02 (Gate D, D-EN.2) — briseur d'obsidienne : troisième famille
+
+> §12.3 au complet : 150 PV, poise 60 (la séquence qui couche le braise
+> laisse le briseur DEBOUT — mesuré), capsule large et basse (0,5/1,5),
+> vision 26 m/90°, audition 22 m, poursuite 5,0. MASSE en chaîne de 3
+> contrats (mace_1/2/3 — le chaînage passe par la VRAIE fenêtre de
+> combo, attack_started ré-émis avec index > 0 ; recovery 1,2-1,4 s sur
+> les derniers coups = l'ouverture §12.3). GARDE FRONTALE À JAUGE :
+> amorti ×0,25 dans l'arc de 120° face à la menace (levée pendant sa
+> propre ANNONCE — l'ouverture est après le combo, pas pendant le
+> télégraphe), drain par coup encaissé, rupture = STAGGER, régénération
+> après 5 s d'accalmie. DEUX DÉFAUTS RÉELS trouvés par les tests et
+> corrigés au socle et aux scènes : (1) attaquer sans être TOURNÉ vers
+> la cible (acquis de dos, le coup partait dans le vide — le socle exige
+> désormais ≤30° de désaxement, le pivot travaille d'abord) ; (2) portée
+> d'engagement > extension de la hitbox (boucle de coups courts à
+> jamais — volumes de masse ET de gourdin étendus à la portée). Test de
+> rupture par injection aux instants de garde (le duel réel est prouvé
+> par le test frontal ; le duel complet est trop bruité pour compter des
+> drains). 5 tests briseur, 22/22 sur toutes les suites pillards.
+> Plancher 344.
+> **PROCHAINE ACTION (D-EN.3)** : CombatCoordinator §12.8 (2 tokens
+> mêlée, 1 lourd, libération garantie, plafond 10-14 IA), puis D-EN.4
+> colosse des ravins.

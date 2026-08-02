@@ -1,0 +1,96 @@
+[gd_scene load_steps=16 format=3]
+
+; Briseur d'obsidienne (§12.3) — graybox : capsule LARGE ET BASSE (rayon
+; 0,5, hauteur 1,5 — centre de gravité bas), masse lourde, volume de
+; frappe massif. Mêmes couches de combat que les autres pillards.
+
+[ext_resource type="Script" path="res://scripts/enemies/raider_black.gd" id="1_raider"]
+[ext_resource type="Resource" path="res://resources/enemies/raider_black_default.tres" id="2_tuning"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="3_health"]
+[ext_resource type="Script" path="res://scripts/components/poise_component.gd" id="4_poise"]
+[ext_resource type="Script" path="res://scripts/components/hurtbox_component.gd" id="5_hurtbox"]
+[ext_resource type="Script" path="res://scripts/components/hitbox_component.gd" id="6_hitbox"]
+[ext_resource type="Script" path="res://scripts/combat/attack_controller.gd" id="7_attack"]
+[ext_resource type="Resource" path="res://resources/combat/raider/mace_1.tres" id="8_mace1"]
+[ext_resource type="Resource" path="res://resources/combat/raider/mace_2.tres" id="9_mace2"]
+[ext_resource type="Resource" path="res://resources/combat/raider/mace_3.tres" id="10_mace3"]
+[ext_resource type="Script" path="res://scripts/characters/character_visual.gd" id="11_visual"]
+[ext_resource type="Resource" path="res://resources/characters/raider_anim_set.tres" id="12_animset"]
+
+[sub_resource type="CapsuleShape3D" id="BodyShape"]
+radius = 0.5
+height = 1.5
+
+[sub_resource type="CapsuleMesh" id="BodyMesh"]
+radius = 0.5
+height = 1.5
+
+[sub_resource type="StandardMaterial3D" id="RaiderMat"]
+albedo_color = Color(0.16, 0.14, 0.18, 1)
+
+[sub_resource type="BoxShape3D" id="MaceSweep"]
+size = Vector3(1.4, 1.0, 1.6)
+
+[node name="RaiderBlack" type="CharacterBody3D" groups=["enemies", "damageable", "lock_on_targets"]]
+collision_layer = 4
+collision_mask = 7
+script = ExtResource("1_raider")
+tuning = ExtResource("2_tuning")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+shape = SubResource("BodyShape")
+
+[node name="Pivot" type="Node3D" parent="."]
+
+; ART-Q2/V4-13 : adaptateur du modèle riggé (char.raider_black — capuche,
+; épaulière, carrure ×1,12). Repli graybox total sinon.
+[node name="CharacterVisual" type="Node3D" parent="Pivot"]
+script = ExtResource("11_visual")
+model_id = &"char.raider_black"
+anim_set = ExtResource("12_animset")
+
+[node name="BodyMesh" type="MeshInstance3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+mesh = SubResource("BodyMesh")
+surface_material_override/0 = SubResource("RaiderMat")
+
+; Volume de MASSE : large, devant le pivot — un coup de briseur balaie.
+; Volume ÉTENDU JUSQU'À la portée d'engagement (1,9 m) — mesuré D-EN.2 :
+; une portée supérieure à l'extension du volume crée une boucle de coups
+; dans le vide (l'ennemi s'arrête à portée et frappe court, à jamais).
+[node name="MaceHitbox" type="Area3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 1.1)
+collision_layer = 16
+collision_mask = 32
+script = ExtResource("6_hitbox")
+team = &"enemies"
+instigator_path = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pivot/MaceHitbox"]
+shape = SubResource("MaceSweep")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("3_health")
+max_health = 150.0
+
+[node name="PoiseComponent" type="Node" parent="."]
+script = ExtResource("4_poise")
+max_poise = 60.0
+
+[node name="Hurtbox" type="Area3D" parent="."]
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("5_hurtbox")
+team = &"enemies"
+health_path = NodePath("../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hurtbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+shape = SubResource("BodyShape")
+
+[node name="AttackController" type="Node" parent="."]
+script = ExtResource("7_attack")
+attacks = [ExtResource("8_mace1"), ExtResource("9_mace2"), ExtResource("10_mace3")]
+hitbox_path = NodePath("../Pivot/MaceHitbox")
+base_damage = 16.0
