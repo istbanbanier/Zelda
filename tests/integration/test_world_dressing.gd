@@ -88,6 +88,34 @@ func test_the_vista_corridor_stays_clear_of_tall_silhouettes() -> void:
 	await _unload_valley()
 
 
+func test_the_graybox_materials_are_shared_by_key() -> void:
+	## V4 lot 15 : les volumes graybox de même (couleur, émission) partagent
+	## UNE ressource matériau — et les personnalisations (braises, runes)
+	## sont des DUPLICATAS, jamais une mutation du matériau partagé.
+	await _load_valley()
+	var terrain: Node3D = _valley.find_children("*", "ValleyTerrain", true,
+		false)[0] as Node3D
+	var south: MeshInstance3D = terrain.get_node("PlainSouth/PlainSouthMesh") \
+		as MeshInstance3D
+	var ridge: MeshInstance3D = terrain.get_node("SpawnRidge/SpawnRidgeMesh") \
+		as MeshInstance3D
+	check(south.material_override == ridge.material_override,
+		"deux dalles d'herbe partagent LE même matériau")
+	var coals: MeshInstance3D = terrain.find_children("FireCoals",
+		"MeshInstance3D", true, false)[0] as MeshInstance3D
+	var coal_material: StandardMaterial3D = \
+		coals.material_override as StandardMaterial3D
+	check(coal_material.emission_enabled,
+		"les braises gardent leur émission personnalisée")
+	var runes: MeshInstance3D = terrain.get_node("PylonRunes") as MeshInstance3D
+	var head: MeshInstance3D = terrain.get_node("PylonHead") as MeshInstance3D
+	check(runes.material_override != head.material_override,
+		"la personnalisation des runes est un duplicata, pas le partagé")
+	check((head.material_override as StandardMaterial3D).emission_enabled,
+		"…et l'orbe cyan émissif du pylône n'a pas été dépossédé")
+	await _unload_valley()
+
+
 func test_the_secondary_structures_are_penetrable_with_rewards() -> void:
 	## V4 lot 12 : quatre abris complets (coquille 4×6 : 6 dalles, 10 murs,
 	## 4 angles, toit, lanterne + lumière motivée), la PORTE jamais barrée

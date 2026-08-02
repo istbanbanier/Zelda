@@ -80,4 +80,26 @@ performance et ne doit apparaître dans aucun budget de frame.
 
 ## 6. Journal des mesures
 
-*(vide — aucune mesure effectuée)*
+### 2026-08-02 — V4 lot 15, mesures CPU-indicatives du monde (headless)
+
+Protocole : `tools/godot/measure_world_metrics.gd` (headless, 10 frames de
+stabilisation, commit 590e5db). **CPU seulement — jamais un budget de
+frame** (§5). Sortie brute : `evidence/v4lot15/world_metrics.json`.
+
+| Mesure | Valeur |
+|---|---:|
+| Chargement de ValleyWorld.tscn (load) | 395 ms |
+| Instanciation (hors construction différée) | 10,4 ms |
+| Nœuds après construction | 1 627 |
+| MeshInstance3D | 647 |
+| CollisionShape3D | 194 |
+| Lumières | 9 |
+| Matériaux uniques référencés | 353 |
+
+Optimisation du lot : cache de matériaux graybox par clé (couleur,
+émission) dans `ValleyTerrain._material()` — ~150 volumes graybox
+partagent désormais ~10 ressources au lieu d'en créer une chacun. Les
+personnalisations (braises, runes) sont des duplicatas explicites. Le
+partage est prouvé par test (`test_the_graybox_materials_are_shared_by_key`).
+Taille dépôt : `.git` 258 Mo, arbre 315 Mo, aucun fichier suivi > 12,1 Mo
+(plafond 100 Mo respecté, textures 4K du héros en tête).

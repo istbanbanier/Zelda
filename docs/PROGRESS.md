@@ -1313,3 +1313,21 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > Plancher 324.
 > **PROCHAINE ACTION (V4 lot 15)** : optimisation (matériaux partagés,
 > mesures taille/temps d'import) puis lot 16 revue contradictoire.
+
+## 2026-08-02 (nuit V4, lot 15) — optimisation et mesures
+
+> Cache de matériaux graybox par clé (couleur, émission) : ~150 volumes
+> partagent ~10 ressources au lieu d'une chacun ; les personnalisations
+> (braises du camp, runes du pylône) deviennent des DUPLICATAS explicites
+> — la mutation en place aurait teinté tous les volumes de même clé.
+> Outil de mesure reproductible tools/godot/measure_world_metrics.gd
+> (CPU headless, JAMAIS un budget de frame) : vallée = 1627 nœuds, 647
+> maillages, 194 collisions, 9 lumières, 353 matériaux uniques, load
+> 395 ms. Dépôt : .git 258 Mo, plus gros fichier suivi 12,1 Mo (<100).
+> PERFORMANCE.md §6 : première entrée du journal. Test de partage (4
+> assertions). Leçon consignée : ne JAMAIS éditer un script pendant
+> qu'une validation tourne — le processus garde l'ancienne version en
+> cache et le verdict devient un état mixte (mesuré cette nuit).
+> Plancher 325.
+> **PROCHAINE ACTION (V4 lot 16)** : revue contradictoire à contexte
+> frais (liste de chasse §20 de l'ordre V4) puis lot 17 package.

@@ -160,10 +160,14 @@ func _build_camp_terrace() -> void:
 	_cylinder_in("FireCoals", camp, Vector3(45, 6.35, 64), 0.7, 0.3,
 		Color(0.98, 0.55, 0.18), false)
 	var coals: MeshInstance3D = camp.get_node("FireCoals") as MeshInstance3D
-	var coal_material: StandardMaterial3D = coals.material_override as StandardMaterial3D
+	# DUPLIQUER avant de personnaliser : le matériau vient du cache partagé
+	# (lot 15) — le muter en place teinterait tous les volumes de même clé.
+	var coal_material: StandardMaterial3D = \
+		coals.material_override.duplicate() as StandardMaterial3D
 	coal_material.emission_enabled = true
 	coal_material.emission = Color(0.98, 0.45, 0.12)
 	coal_material.emission_energy_multiplier = 2.4
+	coals.material_override = coal_material
 	var fire_light: OmniLight3D = OmniLight3D.new()
 	fire_light.name = "CampFireLight"
 	fire_light.light_color = Color(1.0, 0.62, 0.28)
@@ -328,10 +332,13 @@ func _build_pylon_terrace_and_proxy() -> void:
 		Color(0.42, 0.30, 0.18), false)
 	_cylinder("PylonRunes", Vector3(115, 31.4, -25), 2.65, 1.2, COL_CYAN, false)
 	var runes: MeshInstance3D = get_node("PylonRunes") as MeshInstance3D
-	var rune_material: StandardMaterial3D = runes.material_override as StandardMaterial3D
+	# Même règle que les braises : dupliquer avant de personnaliser (lot 15).
+	var rune_material: StandardMaterial3D = \
+		runes.material_override.duplicate() as StandardMaterial3D
 	rune_material.emission_enabled = true
 	rune_material.emission = COL_CYAN
 	rune_material.emission_energy_multiplier = 1.6
+	runes.material_override = rune_material
 	_orb("PylonHead", Vector3(115, 41.5, -25), 3.0, COL_CYAN)
 
 
@@ -1558,7 +1565,19 @@ func _orb_in(orb_name: String, parent: Node3D, center: Vector3, radius: float,
 	parent.add_child(mesh)
 
 
+## V4 lot 15 — matériaux graybox PARTAGÉS par clé (couleur, émission) :
+## des centaines de volumes réutilisent la même ressource au lieu d'en
+## créer chacun une. Quiconde veut PERSONNALISER un matériau issu d'ici
+## doit le DUPLIQUER d'abord (braises, runes) — muter en place teinterait
+## tous les volumes de même clé.
+var _material_cache: Dictionary[String, StandardMaterial3D] = {}
+
+
 func _material(color: Color, emissive: bool) -> StandardMaterial3D:
+	var key: String = "%s|%s" % [color.to_html(), emissive]
+	var cached: StandardMaterial3D = _material_cache.get(key) as StandardMaterial3D
+	if cached != null:
+		return cached
 	var mat: StandardMaterial3D = StandardMaterial3D.new()
 	mat.albedo_color = color
 	mat.roughness = 0.9
@@ -1567,4 +1586,5 @@ func _material(color: Color, emissive: bool) -> StandardMaterial3D:
 		mat.emission_enabled = true
 		mat.emission = color
 		mat.emission_energy_multiplier = 2.0
+	_material_cache[key] = mat
 	return mat

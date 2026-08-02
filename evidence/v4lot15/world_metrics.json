@@ -1,0 +1,14 @@
+{
+  "caveat": "mesures CPU headless : jamais un budget de frame (llvmpipe)",
+  "collision_shapes": 194,
+  "commit": "590e5db",
+  "date": "2026-08-02T11:59:38",
+  "engine": "4.7.1-stable (custom_build)",
+  "instantiate_ms": 10.41,
+  "lights": 9,
+  "load_ms": 395.3,
+  "mesh_instances": 647,
+  "nodes": 1627,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "unique_materials": 353
+}
