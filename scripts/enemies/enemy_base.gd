@@ -245,6 +245,7 @@ func _physics_process(delta: float) -> void:
 				velocity.z = 0.0
 				if not _attack.update(delta):
 					_attack_cooldown = tuning.attack_cooldown
+					_release_attack_token()
 					_enter(State.CHASE)
 			State.RETREAT:
 				_process_retreat(delta)
@@ -352,9 +353,17 @@ func _process_chase(delta: float) -> void:
 		# briseur frappait le vide sans s'être retourné) — à portée mais
 		# désaxé, l'ennemi PIVOTE d'abord ; le _face ci-dessus travaille.
 		if _attack_cooldown <= 0.0 \
-				and _facing_angle_deg(to_target) <= ATTACK_FACING_DEG \
-				and _family_try_attack(distance):
-			_enter(State.ATTACK)
+				and _facing_angle_deg(to_target) <= ATTACK_FACING_DEG:
+			# §12.8 : le TOKEN d'attaque avant le coup — refusé, l'ennemi
+			# ENCERCLE (menace mobile) au lieu de s'empiler sur la cible.
+			if not _request_attack_token():
+				var orbit: Vector3 = direction_or_zero(to_target) \
+					.cross(Vector3.UP)
+				velocity.x = orbit.x * tuning.patrol_speed
+				velocity.z = orbit.z * tuning.patrol_speed
+				return
+			if _family_try_attack(distance):
+				_enter(State.ATTACK)
 		return
 
 	var direction: Vector3 = _pursuit_direction_toward(
@@ -602,6 +611,40 @@ func _face(direction: Vector3, delta: float) -> void:
 	_pivot.rotation.y = lerp_angle(_pivot.rotation.y, target_yaw, weight)
 
 
+## ---------------------------------------------------------------------------
+## Tokens d'attaque (§12.8) — coordination par groupe, implicite en solo
+## ---------------------------------------------------------------------------
+
+## Sans coordinateur dans la scène : accordé d'office (duels, labos).
+func _request_attack_token() -> bool:
+	var coordinator: CombatCoordinator = _find_coordinator()
+	if coordinator == null:
+		return true
+	return coordinator.request_token(self, _attack_token_kind())
+
+
+func _release_attack_token() -> void:
+	var coordinator: CombatCoordinator = _find_coordinator()
+	if coordinator != null:
+		coordinator.release_token(self)
+
+
+## Les familles lourdes (colosse, chasseur) demanderont &"heavy".
+func _attack_token_kind() -> StringName:
+	return &"melee"
+
+
+func _find_coordinator() -> CombatCoordinator:
+	for node: Node in get_tree().get_nodes_in_group("combat_coordinator"):
+		return node as CombatCoordinator
+	return null
+
+
+func direction_or_zero(direction: Vector3) -> Vector3:
+	return direction.normalized() \
+		if direction.length_squared() > 0.0001 else Vector3.ZERO
+
+
 ## Angle (degrés) entre le regard du pivot et une direction XZ.
 func _facing_angle_deg(direction: Vector3) -> float:
 	var forward: Vector3 = _pivot.global_transform.basis.z
@@ -636,11 +679,13 @@ func _on_poise_broken() -> void:
 	if _state == State.DEAD:
 		return
 	_attack.cancel()
+	_release_attack_token()
 	_enter(State.STAGGERED)
 
 
 func _on_died(_event: DamageEvent) -> void:
 	_attack.cancel()
+	_release_attack_token()
 	_enter(State.DEAD)
 	_hurtbox.set_deferred("monitorable", false)
 	set_deferred("collision_layer", 0)

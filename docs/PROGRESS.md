@@ -1478,3 +1478,24 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > **PROCHAINE ACTION (D-EN.3)** : CombatCoordinator §12.8 (2 tokens
 > mêlée, 1 lourd, libération garantie, plafond 10-14 IA), puis D-EN.4
 > colosse des ravins.
+
+## 2026-08-02 (Gate D, D-EN.3) — coordinateur de combat §12.8
+
+> CombatCoordinator par groupe : DEUX tokens mêlée, UN lourd (réservé
+> colosse/chasseur), purge par cadence — un token n'est tenu que par un
+> porteur VIVANT et EN ATTAQUE, la libération est STRUCTURELLE (mort,
+> stagger, interruption, sortie : rien ne bloque la file, aucune
+> référence morte). Sans token : l'ennemi ENCERCLE (orbite au lieu de
+> s'empiler). Plafond §12.9 : au-delà de 14 IA vivantes, les plus
+> lointaines du joueur DORMENT (physique coupée, réveil au rang).
+> SANS coordinateur en scène : accord implicite — aucun duel existant
+> ne change. Libérations câblées au socle (fin d'attaque, poise brisée,
+> mort). 3 tests : ≤2 attaquants simultanés mesuré sur 6 s avec
+> encerclement réel du tiers, token du mort repris par un survivant,
+> 16 vivantes → 2 dormeuses (les plus lointaines exactement). Leçon :
+> un test avorté (erreur script) saute son teardown et contamine le
+> suivant par le groupe global — l'isolation du cas l'a démontré.
+> Plancher 347.
+> **PROCHAINE ACTION (D-EN.4)** : colosse des ravins §12.4 — 420 PV,
+> 3,5-4,5 m, balayage/verticale/onde de choc évitable, lancer de
+> rocher, point faible dorsal, token lourd.
