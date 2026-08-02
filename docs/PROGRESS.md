@@ -944,3 +944,17 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
   centre, jamais par `position` avant le premier layout.
 - `MIN_TESTS` = 270 ; compte de référence dans TEST_REPORT uniquement.
 - Le pack V4 binaire reste à déposer dans `source_assets/concepts/final_v4/`.
+
+## 2026-08-02 — E.2 (fondations) : règles de cuisine et effets d'état
+
+> **Logique pure livrée AVANT le câblage** (interrompu par l'ordre de nuit
+> V3 — acquisition Quaternius prioritaire). `RecipeRules.cook()` (§13.4 :
+> soin sommé clampé 100, familles majeures, ragoût instable ×0.3, durée
+> 60+30/compatible+45/épice max 300 — D-027) et `StatusEffectComponent`
+> (§13.5 : un seul buff, remplacement signalé, minuterie `_process`
+> pausable, multiplicateurs 1.25/0.75/1.6/0.4, snapshot/restore
+> primitives). 7 tests unitaires purs ; plancher 285 → **292**.
+> **RESTE À FAIRE (reprise E.2)** : meal_pressed dans l'intent,
+> multiplicateurs câblés (hitbox/hurtbox/stamina), _meals en inventaire,
+> composant dans Player.tscn, _eat_quick_meal, autosave meals/buff,
+> label HUD, tests d'intégration.
