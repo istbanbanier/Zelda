@@ -1,0 +1,18 @@
+{
+  "commit": "d2b83e0dc01d8f4cdf4b1c4b22c1e1f8b0bba0bd",
+  "display_server": "X11",
+  "distinct_colors_sampled": 1383,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 60,
+  "height": 1080,
+  "label": "v4lot6_forest_river",
+  "luma_mean": 0.7306,
+  "luma_stddev": 0.1512,
+  "png": "evidence/v4lot6/forest_river_from_descent.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "timestamp_utc": "2026-08-02 09:48:08",
+  "width": 1920
+}

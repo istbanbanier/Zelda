@@ -379,6 +379,8 @@ func _build_forest() -> void:
 	_dress_zone_crest()
 	_dress_zone_descent()
 	_dress_zone_prairie()
+	_dress_zone_forest()
+	_dress_zone_river()
 
 
 ## ---------------------------------------------------------------------------
@@ -433,6 +435,79 @@ func _dress_zone(zone_name: String, placements: Array[Array]) -> Node3D:
 		_place_model(zone, entry[0] as StringName, entry[1] as Vector3,
 			float(entry[2]), float(entry[3]), collision, trunk)
 	return zone
+
+
+## Zone E — forêt (§11.E) : lisière lisible à l'ouest, intérieur densifié
+## avec DEUX clairières préservées, sous-bois aux pieds des troncs, morts-
+## bois au nord, et une ruine-curiosité (arche + briques) comme repère.
+## Le couloir diagonal (60,50)→(90,28) reste praticable.
+func _dress_zone_forest() -> void:
+	const TRUNK: Vector3 = Vector3(0.45, 6.0, 0.0)
+	_dress_zone("DressZoneForest", [
+		# Densification intérieure — jamais dans le couloir diagonal.
+		[&"CommonTree_2", Vector3(61, 2, 37), 0.7, 1.05, TRUNK, true],
+		[&"CommonTree_5", Vector3(68, 2, 47), 2.1, 0.95, TRUNK, true],
+		[&"CommonTree_3", Vector3(77, 2, 31), 3.9, 1.1, TRUNK, true],
+		[&"DeadTree_1", Vector3(86, 2, 36), 1.3, 1.0, TRUNK, true],
+		[&"DeadTree_2", Vector3(57, 2, 50), 4.7, 0.9, TRUNK, true],
+		[&"Pine_3", Vector3(95, 2, 45), 0.4, 1.05, TRUNK, true],
+		# Lisière ouest : buissons en phrase, jeunes plants.
+		[&"Bush_Common", Vector3(55.5, 2, 26), 0.9, 1.1],
+		[&"Bush_Common", Vector3(54.8, 2, 34), 2.6, 0.9],
+		[&"Bush_Common_Flowers", Vector3(56.2, 2, 42), 4.2, 1.05],
+		[&"Plant_1", Vector3(57.5, 2, 46.5), 1.5, 1.0],
+		# Sous-bois : fougères aux pieds des troncs, trèfles, grandes plantes.
+		[&"Fern_1", Vector3(65.2, 2, 32.5), 0.3, 1.2],
+		[&"Fern_1", Vector3(74.5, 2, 23.5), 2.0, 1.0],
+		[&"Fern_1", Vector3(83.0, 2, 31.5), 3.7, 1.15],
+		[&"Plant_1_Big", Vector3(71.5, 2, 41.5), 1.1, 1.0],
+		[&"Plant_1_Big", Vector3(90.0, 2, 39.5), 4.4, 0.9],
+		[&"Clover_1", Vector3(63.5, 2, 45.5), 2.4, 1.3],
+		[&"Clover_2", Vector3(80.5, 2, 47.5), 0.6, 1.2],
+		# Champignons : ronde commune (repère 1) + laetiporus sur morts-bois.
+		[&"Mushroom_Common", Vector3(73.0, 2, 44.0), 0.0, 1.2],
+		[&"Mushroom_Common", Vector3(73.9, 2, 44.6), 2.1, 0.9],
+		[&"Mushroom_Common", Vector3(72.4, 2, 44.9), 4.2, 1.05],
+		[&"Mushroom_Laetiporus", Vector3(86.4, 2, 36.6), 1.7, 1.1],
+		[&"Mushroom_Laetiporus", Vector3(57.4, 2, 50.6), 3.2, 0.95],
+		# Ruine-curiosité (repère 2) : arche moussue, briques tombées, lierre.
+		[&"Wall_Arch", Vector3(85, 2, 49), 0.8, 1.3],
+		[&"Prop_Brick1", Vector3(84.1, 2, 50.2), 1.9, 1.2],
+		[&"Prop_Brick1", Vector3(86.2, 2, 48.1), 3.4, 1.0],
+		[&"Prop_Vine1", Vector3(85, 3.4, 49.2), 0.8, 1.3],
+	])
+
+
+## Zone F — rivière et gués (§11.F) : berges de roseaux, pierres émergentes
+## dans le lit, saule tordu au coude OUEST, accessoires abandonnés au gué
+## EST — l'axe de profondeur turquoise vers la citadelle reste dégagé.
+func _dress_zone_river() -> void:
+	const TRUNK: Vector3 = Vector3(0.5, 5.0, 0.0)
+	_dress_zone("DressZoneRiver", [
+		# Coude ouest : arbre tordu penché + roseaux, la corniche au coffre.
+		[&"TwistedTree_3", Vector3(-42, 2, 16.5), 1.2, 1.1, TRUNK, true],
+		[&"Grass_Wispy_Tall", Vector3(-38.5, 2.02, 17.5), 0.4, 1.3],
+		[&"Grass_Wispy_Tall", Vector3(-36, 2.02, 16.2), 2.2, 1.1],
+		[&"Plant_7", Vector3(-44.5, 2.02, 17.8), 3.6, 1.45],
+		# Pierres émergentes du lit (hors des deux gués praticables).
+		[&"RockPath_Round_Wide", Vector3(-15, 0.55, 10), 0.7, 1.4],
+		[&"RockPath_Round_Thin", Vector3(4, 0.5, 9), 2.3, 1.2],
+		[&"RockPath_Square_Wide", Vector3(48, 0.55, 11), 4.0, 1.3],
+		[&"RockPath_Round_Small_1", Vector3(-28, 0.5, 10.5), 1.1, 1.5],
+		# Berge nord (côté donjon) : herbes éparses, plante humide.
+		[&"Grass_Wispy_Short", Vector3(-8, 2.02, 3.5), 0.8, 1.2],
+		[&"Grass_Wispy_Short", Vector3(12, 2.02, 4.2), 2.5, 1.0],
+		[&"Plant_7", Vector3(34, 2.02, 3.8), 4.3, 1.1],
+		# Gué est : bivouac abandonné — seau renversé, corde, bouteille.
+		[&"Bucket_Metal", Vector3(99, 2.05, 15.5), 1.9, 1.0],
+		[&"Rope_1", Vector3(97.5, 2.02, 16.3), 0.5, 1.0],
+		[&"Bottle_1", Vector3(98.6, 2.02, 14.8), 3.1, 1.0],
+		[&"Grass_Common_Short", Vector3(101, 2.02, 16.5), 2.7, 1.2],
+	])
+	var river: Node3D = get_node("DressZoneRiver") as Node3D
+	for child: Node in river.get_children():
+		if String(child.name).begins_with("Bucket_Metal"):
+			(child as Node3D).rotation.z = 1.35   # renversé, §11.F
 
 
 ## Zone A — crête d'ouverture (§11.A) : cadre végétal LATÉRAL, rochers

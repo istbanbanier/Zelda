@@ -1188,3 +1188,15 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > ASSEMBLÉ (panneau de toit incliné + couche + chandelle — un pillard dort
 > là). Aucune entité gameplay dupliquée (feu, coffre, viande intouchés,
 > §11.D). Test : 30/30 maillages réels. Capture : evidence/v4lot5/.
+
+## 2026-08-02 (nuit V4, lots 6-7) — forêt et rivière
+
+> Forêt (§11.E) : +6 troncs à collision (feuillus, morts-bois au nord,
+> pin de lisière est) — le couloir diagonal (60,50)→(90,28) reste
+> praticable ; sous-bois aux pieds des troncs (fougères, grandes plantes,
+> trèfles), lisière ouest en phrase de buissons, ronde de champignons
+> (repère 1), ruine-curiosité arche+briques+lierre (repère 2). Rivière
+> (§11.F) : arbre tordu penché au coude ouest (près du coffre-corniche
+> existant, récompense route 2), roseaux de berge, 4 pierres émergentes
+> HORS des gués, bivouac abandonné au gué est (seau renversé, corde,
+> bouteille). 41 placements. Tests de zones étendus (26 + 15).
