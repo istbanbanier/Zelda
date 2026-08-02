@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+; Bibliothèque de silhouettes V4 lot 13 (§7.18) — scène de DEV, exclue de
+; l'export final. SILHOUETTE_FLAT=1 : aplats noirs sur fond clair.
+; Tout est construit en code : voir scripts/tools/silhouette_lineup.gd.
+
+[ext_resource type="Script" path="res://scripts/tools/silhouette_lineup.gd" id="1_lineup"]
+
+[node name="SilhouetteLineup" type="Node3D"]
+script = ExtResource("1_lineup")

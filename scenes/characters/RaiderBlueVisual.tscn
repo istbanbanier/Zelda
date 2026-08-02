@@ -1,5 +1,7 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=8 format=3]
 
+; V4 lot 13 — SILHOUETTE distincte (§12.2 : « protections bois/céramique,
+; plus droit ») : épaulière et bottes de ranger greffées au squelette.
 ; ART-Q2 — pillard azur : modèle Male_Peasant (Quaternius CC0) teinté
 ; « azur », AnimationPlayer chargé de AL_RaiderStates.res (audit de root
 ; motion : evidence/artQ2/). Même squelette 65 os que les UAL : les pistes
@@ -8,10 +10,16 @@
 [ext_resource type="Script" path="res://scripts/characters/character_model_sockets.gd" id="1_sockets"]
 [ext_resource type="PackedScene" path="res://assets/characters/enemies/Male_Peasant.gltf" id="2_peasant"]
 [ext_resource type="AnimationLibrary" path="res://assets/animations/AL_RaiderStates.res" id="3_states"]
+[ext_resource type="PackedScene" path="res://assets/characters/parts/Superhero_Male_FullBody.gltf" id="9_base_body"]
+[ext_resource type="PackedScene" path="res://assets/characters/parts/Male_Ranger_Acc_Pauldron.gltf" id="4_pauldron"]
+[ext_resource type="PackedScene" path="res://assets/characters/parts/Male_Ranger_Feet_Boots.gltf" id="5_boots"]
 
 [node name="RaiderBlueVisual" type="Node3D"]
 script = ExtResource("1_sockets")
 tint = Color(0.42, 0.62, 1.0, 1.0)
+modular_parts = Array[PackedScene]([ExtResource("4_pauldron"), ExtResource("5_boots"), ExtResource("9_base_body")])
+tint_material_filter = PackedStringArray("MI_Peasant", "MI_Ranger")
+shrink_materials = PackedStringArray("MI_Superhero_Male")
 
 [node name="Model" parent="." instance=ExtResource("2_peasant")]
 

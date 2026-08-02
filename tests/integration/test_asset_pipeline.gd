@@ -201,6 +201,79 @@ func test_the_model_index_serves_the_promoted_library() -> void:
 		"inconnu : null propre, jamais une ressource rose")
 
 
+func test_the_character_variants_have_distinct_silhouettes() -> void:
+	## V4 lot 13 (§12 : « pas de simples recolorations ») : l'azur porte
+	## épaulière + bottes GREFFÉES au squelette, l'obsidienne capuche +
+	## épaulière et carrure ×1,12, le héros une texture DÉRIVÉE (capuche
+	## turquoise) — mesuré sur les scènes réelles, maillages skinnés liés.
+	var counts: Dictionary[StringName, int] = {}
+	for id: StringName in [&"char.raider_red", &"char.raider_blue",
+			&"char.raider_black"]:
+		var visual: Node3D = (AssetRegistry.resolve(id) as PackedScene) \
+			.instantiate() as Node3D
+		_tree().root.add_child(visual)
+		await _settle(2)
+		var skinned: int = 0
+		for node: Node in visual.find_children("*", "MeshInstance3D", true, false):
+			var mesh: MeshInstance3D = node as MeshInstance3D
+			if mesh.skin != null:
+				skinned += 1
+				check(mesh.get_node_or_null(mesh.skeleton) is Skeleton3D,
+					"%s/%s : maillage skinné LIÉ au squelette"
+					% [String(id), mesh.name])
+		counts[id] = skinned
+		if id == &"char.raider_blue":
+			check(not visual.find_children("*Pauldron*", "MeshInstance3D",
+				true, false).is_empty(), "azur : épaulière greffée")
+			check(not visual.find_children("*Boots*", "MeshInstance3D",
+				true, false).is_empty(), "azur : bottes greffées")
+		if id == &"char.raider_black":
+			check(not visual.find_children("*Head_Hood*", "MeshInstance3D",
+				true, false).is_empty(), "obsidienne : capuche greffée")
+			check((visual.get_node("Model") as Node3D).scale
+				.is_equal_approx(Vector3.ONE * 1.12),
+				"obsidienne : carrure ×1,12")
+		visual.queue_free()
+		await _settle(1)
+	check(counts[&"char.raider_blue"] == counts[&"char.raider_red"] + 2,
+		"azur = braise + 2 pièces (%d vs %d)"
+		% [counts[&"char.raider_blue"], counts[&"char.raider_red"]])
+	check(counts[&"char.raider_black"] == counts[&"char.raider_red"] + 2,
+		"obsidienne = braise + 2 pièces (%d vs %d)"
+		% [counts[&"char.raider_black"], counts[&"char.raider_red"]])
+	# Héros : la capuche est re-teinte DANS la texture dérivée committée.
+	var hero: Node3D = (AssetRegistry.resolve(&"char.hero") as PackedScene) \
+		.instantiate() as Node3D
+	_tree().root.add_child(hero)
+	await _settle(2)
+	var substituted: bool = false
+	for node: Node in hero.find_children("*", "MeshInstance3D", true, false):
+		var mesh: MeshInstance3D = node as MeshInstance3D
+		for surface: int in range(mesh.mesh.get_surface_count()
+				if mesh.mesh != null else 0):
+			var override: BaseMaterial3D = mesh \
+				.get_surface_override_material(surface) as BaseMaterial3D
+			if override != null and override.albedo_texture != null \
+					and override.albedo_texture.resource_path \
+					.ends_with("T_Ranger_Hero_BaseColor.png"):
+				substituted = true
+	check(substituted, "héros : texture dérivée (capuche turquoise) montée")
+	hero.queue_free()
+	await _settle(1)
+
+
+func test_the_silhouette_lineup_mounts_the_four_characters() -> void:
+	## §7.18 : la bibliothèque de silhouettes monte les QUATRE personnages
+	## — c'est la scène du jugement en aplats, elle ne peut pas être vide.
+	var lineup: SilhouetteLineup = (load("res://scenes/tests/SilhouetteLineup.tscn")
+		as PackedScene).instantiate() as SilhouetteLineup
+	_tree().root.add_child(lineup)
+	await _settle(2)
+	check_equal(lineup.mounted_characters, 4, "les quatre personnages montés")
+	lineup.queue_free()
+	await _settle(1)
+
+
 func test_the_gallery_mounts_a_full_page_without_losses() -> void:
 	## V4 lot 3 (§8) : une page de galerie monte ses 12 modèles — une erreur
 	## d'asset serait un jalon orange consigné, jamais une perte silencieuse.

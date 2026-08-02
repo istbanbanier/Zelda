@@ -1267,3 +1267,30 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > VALLEY_STRUCTURES=1/2. Captures : evidence/v4lot12/. Plancher 321.
 > **PROCHAINE ACTION (V4 lot 13)** : personnages et palettes (capuche
 > héros bleu-vert réel, pillards ≠ paysans recolorés, silhouettes).
+
+## 2026-08-02 (nuit V4, lot 13) — personnages et palettes
+
+> §12 « pas de simples recolorations » TENU : les trois pillards partagent
+> le squelette UAL 65 os mais plus la silhouette. Système de GREFFE de
+> pièces modulaires (maillages skinnés re-parentés sous le Skeleton3D,
+> binds identiques vérifiés) : azur = épaulière + bottes de ranger ;
+> obsidienne = capuche sombre + épaulière + carrure ×1,12 (visuel seul,
+> capsule intacte) ; braise = ligne de base. Les trois reçoivent le CORPS
+> DE BASE Superhero_Male (tête, yeux, sourcils — ils étaient SANS TÊTE de
+> face, invisible jusqu'ici faute de capture frontale) ; la peau est
+> RETRACTÉE (grow −8 mm) sous la tenue contre le z-fighting §21.8, et la
+> teinte de faction est désormais limitée aux VÊTEMENTS (MI_Peasant +
+> MI_Ranger) — peau et visage naturels. Héros : la teinte globale
+> turquoise est REMPLACÉE par une texture dérivée où seule la capuche est
+> #168F9B — script reproductible tools/godot/recolor_hero_hood.gd
+> (masque = UV de la pièce capuche rasterisées, 2136 triangles, manifeste
+> JSON), peau/cuir/tunique intacts (§7.11). Bibliothèque de silhouettes
+> scenes/tests/SilhouetteLineup.tscn (§7.18) : 4 personnages, mode
+> SILHOUETTE_FLAT=1 en aplats noirs — captures matière + aplats dans
+> evidence/v4lot13/. Défaut amont consigné : 2 normal maps du corps de
+> base référencées sous un nom absent de l'archive (copies renommées,
+> ATTRIBUTIONS.md). Test hero_visual mis à jour vers le nouveau contrat
+> (substitution blanche, peau vierge) ; nouveau test variantes (greffes
+> liées, comptes relatifs, carrure) + test lineup. Plancher 323.
+> **PROCHAINE ACTION (V4 lot 14)** : animations supplémentaires
+> (escalade, interaction, cuisine, arc) depuis les bibliothèques UAL.

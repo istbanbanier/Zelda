@@ -126,3 +126,10 @@ Window_Wide_Round1,assets/environment/dungeon
 WindowShutters_Wide_Round_Open,assets/environment/dungeon
 Prop_ExteriorBorder_Straight1,assets/environment/dungeon
 Prop_Wagon,assets/environment/dungeon
+# ---- PIÈCES MODULAIRES UAL (V4 lot 13) — silhouettes de pillards (§12 :
+# « pas de simples recolorations ») et retouche capuche héros. Même
+# squelette 65 os que Ranger/Peasant, matériau MI_Ranger.
+Male_Ranger_Acc_Pauldron,assets/characters/parts
+Male_Ranger_Head_Hood,assets/characters/parts
+Male_Ranger_Feet_Boots,assets/characters/parts
+Superhero_Male_FullBody,assets/characters/parts

@@ -208,14 +208,16 @@ func _damage_event(amount: float) -> DamageEvent:
 
 
 func test_the_turquoise_tint_touches_the_outfit_and_never_the_skin() -> void:
-	## ART-Q6, §7.11 : « le turquoise relie le héros à la citadelle » — la
-	## teinte est SÉLECTIVE : les surfaces MI_Ranger portent une surcharge
-	## bleutée (b > r), les surfaces MI_Regular_Male (peau) restent VIERGES.
+	## §7.11 : « le turquoise relie le héros à la citadelle ». V4 lot 13 : la
+	## teinte GLOBALE d'ART-Q6 est remplacée par une texture DÉRIVÉE où seule
+	## la capuche est turquoise — les surfaces MI_Ranger portent la
+	## substitution (albedo_color BLANC : plus aucune multiplication), les
+	## surfaces MI_Regular_Male (peau) restent VIERGES.
 	var hero: CharacterModelSockets = (load("res://scenes/characters/HeroVisual.tscn")
 		as PackedScene).instantiate() as CharacterModelSockets
 	_tree().root.add_child(hero)
 	await _settle(1)
-	var tinted: int = 0
+	var substituted: int = 0
 	var skin_untouched: bool = true
 	for node: Node in hero.find_children("*", "MeshInstance3D", true, false):
 		var mesh: MeshInstance3D = node as MeshInstance3D
@@ -228,10 +230,14 @@ func test_the_turquoise_tint_touches_the_outfit_and_never_the_skin() -> void:
 			if base != null and base.resource_name == "MI_Regular_Male" \
 					and override != null:
 				skin_untouched = false
-			if override != null and override.albedo_color.b \
-					> override.albedo_color.r + 0.2:
-				tinted += 1
-	check(tinted >= 8, "les surfaces de la tenue portent la teinte (%d)" % tinted)
+			if override != null and override.albedo_texture != null \
+					and override.albedo_texture.resource_path \
+					.ends_with("T_Ranger_Hero_BaseColor.png"):
+				substituted += 1
+				check(override.albedo_color.is_equal_approx(Color.WHITE),
+					"substitution sans teinte résiduelle : couleur blanche")
+	check(substituted >= 1,
+		"la tenue porte la texture dérivée à capuche turquoise (%d)" % substituted)
 	check(skin_untouched, "la peau (MI_Regular_Male) n'est JAMAIS teintée")
 	hero.get_parent().remove_child(hero)
 	hero.queue_free()

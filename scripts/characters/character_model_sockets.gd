@@ -30,6 +30,20 @@ const SOCKETS: Dictionary = {
 ## Noms de matériaux à teinter — VIDE = tous. Le héros ne teinte que sa
 ## tenue (MI_Ranger) vers le turquoise de §7.11 : la peau reste la peau.
 @export var tint_material_filter: PackedStringArray = PackedStringArray()
+## Pièces modulaires UAL greffées au squelette (V4 lot 13) : maillages
+## skinnés du MÊME squelette 65 os, re-parentés sous le Skeleton3D — la
+## silhouette change réellement (§12 : « pas de simples recolorations »).
+@export var modular_parts: Array[PackedScene] = []
+## Substitution d'albédo par nom de matériau (V4 lot 13, héros) : la
+## capuche est re-teinte DANS une texture dérivée committée — la peau et
+## le cuir restent intacts, contrairement à une teinte globale.
+@export var albedo_substitutions: Dictionary[String, Texture2D] = {}
+## Matériaux RÉTRACTÉS le long des normales (grow négatif) : le corps de
+## base porté SOUS la tenue ne doit jamais transpercer le tissu — un
+## z-fighting peau/vêtement scintillerait en mouvement (§21.8).
+@export var shrink_materials: PackedStringArray = PackedStringArray()
+
+const SHRINK_AMOUNT: float = -0.008
 
 var _skeleton: Skeleton3D = null
 
@@ -49,8 +63,29 @@ func _ready() -> void:
 		attachment.name = socket_name
 		_skeleton.add_child(attachment)
 		attachment.bone_name = bone
-	if tint != Color.WHITE:
+	# Les greffes précèdent teinte et substitutions : les pièces reçoivent
+	# le même traitement de matériaux que le costume de base.
+	for part_scene: PackedScene in modular_parts:
+		_graft_part(part_scene)
+	if tint != Color.WHITE or not albedo_substitutions.is_empty():
 		_apply_tint()
+
+
+## Greffe les maillages skinnés d'une pièce modulaire sur le squelette du
+## modèle. Les poses de bind sont identiques (squelette UAL 65 os partagé,
+## vérifié au catalogue) : le Skin importé résout directement.
+func _graft_part(part_scene: PackedScene) -> void:
+	if part_scene == null or _skeleton == null:
+		return
+	var part_root: Node = part_scene.instantiate()
+	for node: Node in part_root.find_children("*", "MeshInstance3D", true, false):
+		var mesh: MeshInstance3D = node as MeshInstance3D
+		mesh.owner = null   # l'owner mourrait avec la racine de la pièce
+		mesh.get_parent().remove_child(mesh)
+		mesh.name = "Part_%s_%d" % [mesh.name, _skeleton.get_child_count()]
+		_skeleton.add_child(mesh)
+		mesh.skeleton = NodePath("..")
+	part_root.free()
 
 
 func _notification(what: int) -> void:
@@ -77,11 +112,23 @@ func _apply_tint() -> void:
 				mesh.get_active_material(surface) as BaseMaterial3D
 			if material == null:
 				continue
-			if not tint_material_filter.is_empty() \
-					and not tint_material_filter.has(material.resource_name):
+			var substitution: Texture2D = \
+				albedo_substitutions.get(material.resource_name) as Texture2D
+			var wants_tint: bool = tint != Color.WHITE \
+				and (tint_material_filter.is_empty()
+					or tint_material_filter.has(material.resource_name))
+			var wants_shrink: bool = \
+				shrink_materials.has(material.resource_name)
+			if substitution == null and not wants_tint and not wants_shrink:
 				continue
 			var tinted: BaseMaterial3D = material.duplicate() as BaseMaterial3D
-			tinted.albedo_color = material.albedo_color * tint
+			if substitution != null:
+				tinted.albedo_texture = substitution
+			if wants_tint:
+				tinted.albedo_color = material.albedo_color * tint
+			if wants_shrink:
+				tinted.grow = true
+				tinted.grow_amount = SHRINK_AMOUNT
 			mesh.set_surface_override_material(surface, tinted)
 
 

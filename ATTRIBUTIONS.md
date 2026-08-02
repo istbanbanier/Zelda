@@ -19,8 +19,16 @@ le build (2026-08-02). Tout le reste a été généré par les scripts du dépô
 | Licence | **CC0 1.0 Universal (Public Domain Dedication)** — confirmée sur le fichier `License*.txt` PRÉSENT DANS CHACUNE des sept archives, https://creativecommons.org/publicdomain/zero/1.0/ |
 | Canal d'acquisition | GitHub Release `asset-inbox-quaternius-free-v1` du dépôt du projet (boîte de transport déposée par le propriétaire) ; empreintes SHA-256 vérifiées identiques aux digests GitHub — détail dans `docs/assets/QUATERNIUS_INBOX.md` |
 | Archives sources | Stylized Nature MegaKit, Fantasy Props MegaKit, Medieval Village MegaKit, Universal Base Characters, Modular Character Outfits – Fantasy, Universal Animation Library 1 et 2 (éditions Standard, gratuites) |
-| Modifications | **AUCUNE** — fichiers `.gltf`/`.bin`/textures copiés à l'octet près depuis les archives ; la sélection (12 modèles sur ~900) est documentée dans `docs/assets/ASSET_MANIFEST.csv` |
-| Fichiers dans le build | `assets/environment/{foliage,rocks,props,dungeon}/` et `assets/characters/hero/` — voir manifeste |
+| Modifications | copies à l'octet près depuis les archives, SAUF les trois dérivations listées ci-dessous ; la sélection (~130 modèles promus sur 2162 entrées) est documentée dans `docs/assets/PROMOTIONS.csv` et `docs/assets/ASSET_MANIFEST.csv` |
+| Fichiers dans le build | `assets/environment/{foliage,rocks,props,dungeon}/` et `assets/characters/{hero,enemies,parts}/` — voir manifeste |
+
+### Dérivations d'assets Quaternius (V4 lot 13) — licites en CC0, consignées
+
+| Fichier | Nature de la modification |
+|---|---|
+| `assets/characters/hero/T_Ranger_Hero_BaseColor.png` | dérivée de `T_Ranger_BaseColor.png` : recoloration turquoise (#168F9B) de la seule région UV de la capuche, script reproductible `tools/godot/recolor_hero_hood.gd`, manifeste JSON à côté du fichier |
+| `assets/characters/parts/T_Hair_1_Normal_png.png` | copie octet à octet de `T_Hair_1_Normal.png` sous le nom que le gltf `Superhero_Male_FullBody` référence — correction d'un défaut de nommage AMONT du pack, aucune retouche d'image |
+| `assets/characters/parts/T_Eye_Normal_png.png` | idem, copie de `T_Eye_Normal.png` |
 
 CC0 : aucune attribution exigée légalement ; elle est donnée ici par honnêteté
 de provenance. Aucun compte, aucun paiement, aucune restriction de

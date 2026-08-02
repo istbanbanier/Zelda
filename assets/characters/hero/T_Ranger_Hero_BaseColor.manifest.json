@@ -1,0 +1,10 @@
+{
+  "dilation": 2,
+  "engine": "4.7.1-stable (custom_build)",
+  "mask_part": "res://assets/characters/parts/Male_Ranger_Head_Hood.gltf",
+  "output": "res://assets/characters/hero/T_Ranger_Hero_BaseColor.png",
+  "pixels_recolored": 1425769,
+  "source": "res://assets/characters/hero/T_Ranger_BaseColor.png",
+  "target_hue": 0.518,
+  "triangles": 2136
+}

@@ -1,0 +1,18 @@
+{
+  "commit": "febf8021648f46cd9e2699562e834d9a67f35b96",
+  "display_server": "X11",
+  "distinct_colors_sampled": 3,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 30,
+  "height": 1080,
+  "label": "v4lot13_lineup_flat",
+  "luma_mean": 0.7193,
+  "luma_stddev": 0.3436,
+  "png": "evidence/v4lot13/silhouettes_flat.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/tests/SilhouetteLineup.tscn",
+  "timestamp_utc": "2026-08-02 11:07:44",
+  "width": 1920
+}
