@@ -1,0 +1,18 @@
+{
+  "commit": "46f33a3e8c46939b8c1decf032860d1f70b71cc7",
+  "display_server": "X11",
+  "distinct_colors_sampled": 1133,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 60,
+  "height": 1080,
+  "label": "artq4_vista_nature",
+  "luma_mean": 0.722,
+  "luma_stddev": 0.1677,
+  "png": "evidence/artQ4/vista_nature.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "timestamp_utc": "2026-08-02 05:37:43",
+  "width": 1920
+}

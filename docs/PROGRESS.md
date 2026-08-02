@@ -1045,3 +1045,19 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > **PROCHAINE ACTION (ART-Q4)** : biome nature composé (arbres/buissons/
 > rochers réels dans la vallée, pas de dispersion uniforme, navmesh
 > rebaké 749 poly à revalider).
+
+## 2026-08-02 (nuit) — ART-Q4 : biome nature composé
+
+> Forêt : les 12 troncs graybox gardent leurs COLLISIONS (le navmesh et la
+> preuve de navigation ne bougent pas d'un polygone — suite verte), les
+> visuels sont les vrais arbres (large/medium alternés en motif
+> irrégulier, lacet à l'angle d'or, échelle variée — testé : ≥10 lacets et
+> ≥8 échelles distincts). « Phrases » végétales §7.17 : lisière de forêt
+> (3 buissons serrés + isolé), cadrage de crête, langue de galets au coude
+> de rivière, 2 rochers-obstacles au pied de la falaise — groupes
+> délibérés, test de composition (voisin < 3 m ET vide > 15 m). Un asset
+> manquant laisse un VIDE, jamais une boîte. Tests 307 → **309**.
+> Captures : evidence/artQ4/ (vista + camp avec forêt réelle).
+> **PROCHAINE ACTION (ART-Q5)** : architecture pénétrable — façade
+> citadelle + vestibule avec les modules pierre (porte/mur/colonne),
+> système de scène préservé.

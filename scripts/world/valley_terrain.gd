@@ -279,17 +279,90 @@ func _build_forest() -> void:
 	var forest: Node3D = Node3D.new()
 	forest.name = "Forest"
 	add_child(forest)
-	# Trois tons de couronne (V4.2 : casser l'uniformité — §7.17, variation de
-	# teinte contrôlée).
+	# ART-Q4 : arbres de PRODUCTION (registre) sur les MÊMES collisions de
+	# tronc — le navmesh et la preuve de navigation ne bougent pas d'un
+	# polygone. Variation lacet/échelle par index (§7.3 : « une simple
+	# rotation de 90° ne suffit pas »), grands et moyens alternés en motif
+	# irrégulier. Repli : le graybox cylindre+couronne d'avant.
 	var canopy_tones: Array[Color] = [
 		COL_GRASS_DARK, Color(0.26, 0.42, 0.23), Color(0.34, 0.50, 0.20),
 	]
 	for i: int in range(trunks.size()):
 		var at: Vector2 = trunks[i]
-		_cylinder_in("Trunk%02d" % i, forest, Vector3(at.x, 2.0, at.y),
-			0.5, 7.0, COL_WOOD, true)
-		_orb_in("Canopy%02d" % i, forest, Vector3(at.x, 9.5, at.y), 2.6,
-			canopy_tones[i % canopy_tones.size()])
+		var tree_id: StringName = &"env.tree.large" if (i % 3 == 0) \
+			else &"env.tree.medium"
+		var packed: PackedScene = AssetRegistry.resolve(tree_id)
+		if packed != null:
+			_cylinder_in("Trunk%02d" % i, forest, Vector3(at.x, 2.0, at.y),
+				0.5, 7.0, COL_WOOD, true)
+			(forest.get_node("Trunk%02d/Trunk%02dMesh" % [i, i])
+				as MeshInstance3D).visible = false   # collision gardée, visuel = arbre
+			var tree: Node3D = packed.instantiate() as Node3D
+			tree.name = "Tree%02d" % i
+			tree.position = Vector3(at.x, 2.0, at.y)
+			tree.rotation.y = float(i) * 2.399   # angle d'or : jamais aligné
+			tree.scale = Vector3.ONE * (0.9 + 0.011 * float((i * 7) % 25))
+			forest.add_child(tree)
+		else:
+			_cylinder_in("Trunk%02d" % i, forest, Vector3(at.x, 2.0, at.y),
+				0.5, 7.0, COL_WOOD, true)
+			_orb_in("Canopy%02d" % i, forest, Vector3(at.x, 9.5, at.y), 2.6,
+				canopy_tones[i % canopy_tones.size()])
+	_build_nature_phrases()
+
+
+## ART-Q4 — « phrases » de végétation (§7.17 : grande touffe + moyenne +
+## vide, répétition irrégulière). Placements DÉTERMINISTES à la main, en
+## groupes autour des focales — jamais une dispersion uniforme. Buissons et
+## galets sont du décor sans collision ; les rochers moyens bloquent.
+func _build_nature_phrases() -> void:
+	var phrases: Node3D = Node3D.new()
+	phrases.name = "NaturePhrases"
+	add_child(phrases)
+	# [id, position, lacet, échelle]
+	var placements: Array[Array] = [
+		# Lisière ouest de la forêt : trois buissons serrés, un vide, un isolé.
+		[&"env.plant.bush", Vector3(54.0, 2.0, 28.0), 0.4, 1.15],
+		[&"env.plant.bush", Vector3(56.2, 2.0, 30.4), 2.1, 0.9],
+		[&"env.plant.bush", Vector3(53.1, 2.0, 31.6), 4.4, 1.0],
+		[&"env.plant.bush", Vector3(61.0, 2.0, 49.0), 1.2, 1.25],
+		# Bord de crête (départ) : deux buissons qui cadrent la descente.
+		[&"env.plant.bush", Vector3(-14.0, 24.0, 162.0), 0.9, 1.1],
+		[&"env.plant.bush", Vector3(11.0, 24.0, 158.0), 3.6, 0.95],
+		# Coude de rivière : galets en langue, humides de contexte (§7.5).
+		[&"env.rock.pebble_a", Vector3(24.0, 2.02, 23.5), 0.3, 2.4],
+		[&"env.rock.pebble_b", Vector3(25.8, 2.02, 24.6), 1.7, 2.0],
+		[&"env.rock.pebble_c", Vector3(23.2, 2.02, 25.8), 3.1, 2.2],
+		[&"env.rock.pebble_a", Vector3(27.5, 2.02, 22.9), 4.6, 1.6],
+		# Pied de la falaise d'apprentissage : deux rochers francs.
+		[&"env.rock.medium", Vector3(-72.0, 2.0, 58.0), 0.7, 1.0],
+		[&"env.rock.large", Vector3(-76.5, 2.0, 64.0), 2.3, 0.8],
+	]
+	for entry: Array in placements:
+		var packed: PackedScene = AssetRegistry.resolve(entry[0] as StringName)
+		if packed == null:
+			continue   # pas livré : le vide reste un vide, jamais une boîte
+		var prop: Node3D = packed.instantiate() as Node3D
+		prop.name = "Phrase_%s_%d" % [String(entry[0] as StringName)
+			.get_slice(".", 1), phrases.get_child_count()]
+		prop.position = entry[1] as Vector3
+		prop.rotation.y = float(entry[2])
+		prop.scale = Vector3.ONE * float(entry[3])
+		phrases.add_child(prop)
+		# Les rochers moyens/grands sont des OBSTACLES : collision boîte
+		# approchée, hors chemins (positions choisies pour).
+		if String(entry[0] as StringName).begins_with("env.rock.medium") \
+				or String(entry[0] as StringName).begins_with("env.rock.large"):
+			var body: StaticBody3D = StaticBody3D.new()
+			body.collision_layer = 1
+			body.collision_mask = 0
+			var shape: CollisionShape3D = CollisionShape3D.new()
+			var box: BoxShape3D = BoxShape3D.new()
+			box.size = Vector3(2.6, 2.0, 2.6) * float(entry[3])
+			shape.shape = box
+			shape.position = Vector3(0, 1.0 * float(entry[3]), 0)
+			body.add_child(shape)
+			prop.add_child(body)
 
 
 func _build_central_ruins() -> void:
