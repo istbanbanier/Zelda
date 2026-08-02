@@ -34,3 +34,19 @@ extends Resource
 @export_group("Repli (§12.1 : « recule après une esquive réussie »)")
 @export var retreat_speed: float = 3.5
 @export var retreat_duration: float = 1.2
+
+@export_group("Mémoire et territoire (D-EN.0, §12.7 et §12.9)")
+## Temps pendant lequel une cible PERDUE DE VUE reste poursuivie avant de
+## devenir une position à investiguer (§12.7 : 3-8 s selon le type).
+@export var memory_duration: float = 4.0
+## Recherche immobile sur la dernière position connue avant le retour.
+@export var search_duration: float = 2.0
+## Distance maximale de poursuite depuis l'origine du territoire (§12.9 :
+## aucune poursuite infinie).
+@export var max_pursuit_distance: float = 45.0
+## Vitesse de patrouille/retour/investigation (marche, pas la poursuite).
+@export var patrol_speed: float = 3.0
+## §12.2 : rayon d'alerte des alliés à l'acquisition (0 = n'alerte pas).
+@export var alert_radius: float = 0.0
+## §12.1 : durée de la fuite (familles qui fuient — le braise : 2-4 s).
+@export var flee_duration: float = 3.0

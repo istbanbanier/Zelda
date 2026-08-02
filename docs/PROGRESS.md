@@ -1408,3 +1408,28 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > **PROCHAINE ACTION** : D-EN.0 — socle commun extrait de raider_red,
 > mémoire de dernière position (§12.7) et territoire/retour (§12.9),
 > raider_red re-testé à l'identique.
+
+## 2026-08-02 (Gate D, D-EN.0) — socle ennemi : mémoire, territoire, ouïe
+
+> EnemyBase extrait de raider_red et GÉNÉRALISÉ (§12.6-§12.10) — les 12
+> tests pillard existants passent inchangés. États communs de §12.7 :
+> Idle, Patrol (points optionnels), Suspicious (pause orientée),
+> Investigate, Chase, Reposition (réservé familles), Attack, Retreat,
+> Staggered, Flee, Return, Dead ; « Alert » = instant d'acquisition,
+> « Recover » = phase RECOVERY du contrat d'attaque (mappings
+> documentés). NOUVEAU : mémoire de dernière position (poursuite de
+> mémoire, investigation, recherche, retour), territoire borné avec
+> garde anti-oscillation (une cible hors territoire n'intéresse pas),
+> ouïe par événements réels (NoiseEvents : sprint du joueur ÉMET toutes
+> les 0,5 s, l'impact reçu ÉMET — rupture/flèche à câbler avec l'arc de
+> l'azur), LOS torse PUIS tête, fuite à la mort d'un allié (§12.1 : le
+> braise détale, les autres familles décideront), alerte §12.2 (le
+> receveur endormi adopte la cible). EnemyTuning : 6 champs nouveaux.
+> raider_red devient une sous-classe MINCE (gourdin, recul sur esquive,
+> fuite). 5 tests D-EN.0 (18 assertions) : mémoire→recherche→maison,
+> frontière SANS oscillation, bruit→suspicion→investigation (+ bruit
+> hors d'audition ignoré), fuite réelle mesurée, alerte reçue.
+> Plancher 334.
+> **PROCHAINE ACTION (D-EN.1)** : pillard azur — 85 PV, LANCE (contrat
+> d'attaque propre), contournement (crochet de vitesse de chasse),
+> maintien de distance, esquive de lourde (cooldown 8 s), alerte 14 m.

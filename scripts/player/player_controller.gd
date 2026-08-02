@@ -45,6 +45,10 @@ enum Mode { LOCOMOTION, CLIMBING, MANTLING, ATTACKING, DODGING, HURT, DEAD }
 const WALL_HOLD_GAIN: float = 8.0
 const WALL_HOLD_MAX_SPEED: float = 1.5
 
+## §12.7 (D-EN.0) : cadence de l'annonce sonore du sprint.
+const SPRINT_NOISE_INTERVAL: float = 0.5
+var _sprint_noise_timer: float = 0.0
+
 ## Hauteur dont le sommet du trajet de mantle dépasse la surface d'arrivée.
 ## Voir `_try_mantle()`.
 const LEDGE_RISE_CLEARANCE: float = 0.06
@@ -270,6 +274,16 @@ func _process_locomotion(delta: float, intent: InputIntent) -> void:
 	# recalculer la condition à trois endroits les ferait diverger au moment précis
 	# où la jauge se vide.
 	var sprinting: bool = _resolve_sprint(delta, intent)
+	# §12.7 (D-EN.0) : le sprint fait du BRUIT — annonce périodique aux
+	# oreilles ennemies, jamais par frame.
+	if sprinting:
+		_sprint_noise_timer -= delta
+		if _sprint_noise_timer <= 0.0:
+			_sprint_noise_timer = SPRINT_NOISE_INTERVAL
+			NoiseEvents.emit(get_tree(), global_position,
+				NoiseEvents.SPRINT_RADIUS, &"sprint")
+	else:
+		_sprint_noise_timer = 0.0
 	_camera_rig.update_fov(sprinting, delta)
 
 	_update_timers(delta, intent)

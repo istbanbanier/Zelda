@@ -1,0 +1,726 @@
+## Socle commun des familles d'ennemis (D-EN.0, MASTER_SPEC §12.6-§12.10).
+##
+## Extrait de `raider_red` (Gate C/D.1) et GÉNÉRALISÉ : perception par
+## cadence (distance → cône → raycasts de LOS torse ET tête, jamais par
+## frame), chemin navmesh par requêtes directes (leçon D-022), séparation
+## locale, feedback matière (télégraphe/flash/mort), mort §12.10 (IA,
+## hitbox et collision coupées UNE fois).
+##
+## États communs de §12.7 portés ici : Idle, Patrol, Suspicious,
+## Investigate, Chase, Attack, Retreat, Staggered, Flee, Return, Dead —
+## plus Reposition, réservé aux familles qui tournent autour de la cible.
+## `Alert` est l'INSTANT d'acquisition (`_acquire_target`), pas un état
+## persistant ; `Recover` est la phase RECOVERY du contrat d'attaque
+## (`AttackController.Phase`) — mappings documentés, pas des trous.
+##
+## NOUVEAU au socle (réouverture du Gate D, correctif d'autorité) :
+## - MÉMOIRE de dernière position (§12.7) : cible perdue de vue →
+##   poursuite de mémoire `memory_duration` s, puis INVESTIGATE de la
+##   dernière position, recherche courte, RETURN ;
+## - TERRITOIRE (§12.9) : origine au spawn + distance maximale de
+##   poursuite — aucune poursuite infinie ; le retour re-perçoit ;
+## - OUÏE (§12.7) : `hear_noise()` — sprint, impact, rupture, flèche ;
+##   un bruit dans l'audition rend SUSPICIOUS (pause orientée) puis
+##   INVESTIGATE vers la position du bruit ;
+## - FUITE (§12.1, consommée par le braise) : `witness_ally_death()` —
+##   la famille décide si la mort d'un allié proche la fait fuir ;
+## - ALERTE (§12.2, consommée par l'azur) : `alert_radius` > 0 partage
+##   la cible acquise avec les alliés proches ;
+## - PATROUILLE : points optionnels autour de l'origine, sens en éveil.
+##
+## Chaque famille est une SOUS-CLASSE mince : son arme, ses attaques,
+## ses états propres, son rythme — le contrat §12 (« pas de simples
+## recolorations ») vit dans ces différences.
+class_name EnemyBase
+extends CharacterBody3D
+
+signal died()
+signal state_changed(state: StringName)
+
+enum State {
+	IDLE, PATROL, SUSPICIOUS, INVESTIGATE, CHASE, REPOSITION,
+	ATTACK, RETREAT, STAGGERED, FLEE, RETURN, DEAD,
+}
+
+## Cadences §12.9 : jamais de perception ni de pathfinding par frame.
+const PERCEPTION_INTERVAL: int = 6
+const REPATH_INTERVAL: int = 15
+const GRAVITY: float = 24.0
+const SEPARATION_RADIUS: float = 1.7
+const SEPARATION_WEIGHT: float = 0.9
+## Pause orientée avant d'aller voir (état SUSPICIOUS).
+const SUSPICION_PAUSE: float = 0.6
+
+@export var tuning: EnemyTuning
+## Points de patrouille RELATIFS à l'origine du territoire — vide = poste
+## fixe (IDLE). La perception reste active en patrouille.
+@export var patrol_offsets: Array[Vector3] = []
+
+@onready var _health: HealthComponent = $HealthComponent
+@onready var _poise: PoiseComponent = $PoiseComponent
+@onready var _hurtbox: HurtboxComponent = $Hurtbox
+@onready var _attack: AttackControllerComponent = $AttackController
+@onready var _pivot: Node3D = $Pivot
+
+var _state: State = State.IDLE
+var _target: Node3D = null
+var _perception_tick: int = 0
+var _repath_tick: int = 0
+var _state_timer: float = 0.0
+var _attack_cooldown: float = 0.0
+var _path: PackedVector3Array = PackedVector3Array()
+var _path_index: int = 0
+var _path_goal: Vector3 = Vector3.INF
+
+## Mémoire (§12.7), territoire (§12.9), patrouille, fuite.
+var _territory_origin: Vector3 = Vector3.ZERO
+var _last_known: Vector3 = Vector3.ZERO
+var _memory_timer: float = 0.0
+var _patrol_index: int = 0
+var _flee_from: Vector3 = Vector3.ZERO
+
+## Feedback matière : graybox OU matériaux par instance du modèle monté.
+var _body_material: StandardMaterial3D = null
+var _base_color: Color = Color.WHITE
+var _feedback_materials: Array[BaseMaterial3D] = []
+var _feedback_bases: Array[Color] = []
+var _visual: CharacterVisual = null
+var _model_mounted: bool = false
+var _flash_timer: float = 0.0
+## Couleur d'annonce — chaque famille pose la sienne (lisibilité §10.5).
+var telegraph_color: Color = Color(0.95, 0.2, 0.12)
+
+
+func _ready() -> void:
+	if tuning == null:
+		tuning = EnemyTuning.new()
+		push_warning("[%s] aucun EnemyTuning assigné — valeurs par défaut."
+			% name)
+	_territory_origin = global_position
+	_health.max_health = tuning.max_health
+	_health.revive()
+	_poise.max_poise = tuning.poise
+	_health.died.connect(_on_died)
+	_poise.poise_broken.connect(_on_poise_broken)
+	_hurtbox.hit_received.connect(_on_hit_received)
+	_setup_graybox_material()
+	_family_ready()
+	_mount_visual()
+
+
+## Matériau graybox dédoublé : le télégraphe de l'un ne rougit jamais les
+## autres (§5.4).
+func _setup_graybox_material() -> void:
+	var body_mesh: MeshInstance3D = _pivot.get_node_or_null("BodyMesh") \
+		as MeshInstance3D
+	if body_mesh == null:
+		return
+	var base: StandardMaterial3D = \
+		body_mesh.get_surface_override_material(0) as StandardMaterial3D
+	if base == null and body_mesh.mesh != null:
+		base = body_mesh.mesh.surface_get_material(0) as StandardMaterial3D
+	if base != null:
+		_body_material = base.duplicate() as StandardMaterial3D
+		_base_color = _body_material.albedo_color
+		body_mesh.set_surface_override_material(0, _body_material)
+	if _body_material != null:
+		_feedback_materials = [_body_material]
+		_feedback_bases = [_base_color]
+
+
+## Montage du modèle riggé si la famille en a un (CharacterVisual sous le
+## pivot) — graybox masqué, matériaux par instance collectés.
+func _mount_visual() -> void:
+	_visual = _pivot.get_node_or_null("CharacterVisual") as CharacterVisual
+	if _visual == null or _visual.is_fallback_active():
+		return
+	_model_mounted = true
+	var body_mesh: MeshInstance3D = _pivot.get_node_or_null("BodyMesh") \
+		as MeshInstance3D
+	if body_mesh != null:
+		body_mesh.visible = false
+	_collect_model_materials()
+	state_changed.connect(_on_state_changed_visual)
+	_visual.play_state(&"idle")
+	_family_visual_mounted()
+
+
+func _collect_model_materials() -> void:
+	_feedback_materials.clear()
+	_feedback_bases.clear()
+	for node: Node in _visual.find_children("*", "MeshInstance3D", true, false):
+		var mesh: MeshInstance3D = node as MeshInstance3D
+		var surfaces: int = mesh.mesh.get_surface_count() if mesh.mesh != null else 0
+		for surface: int in range(surfaces):
+			var material: BaseMaterial3D = \
+				mesh.get_surface_override_material(surface) as BaseMaterial3D
+			if material != null and not _feedback_materials.has(material):
+				_feedback_materials.append(material)
+				_feedback_bases.append(material.albedo_color)
+
+
+## ---------------------------------------------------------------------------
+## Crochets de famille — la sous-classe EST la famille (§12).
+## ---------------------------------------------------------------------------
+
+func _family_ready() -> void:
+	pass
+
+
+func _family_visual_mounted() -> void:
+	pass
+
+
+## À portée et hors cooldown : la famille CHOISIT et lance son attaque.
+func _family_try_attack(_distance: float) -> bool:
+	return _attack.try_attack()
+
+
+## États PROPRES à la famille (garde, escarmouche, charge…). Vrai si
+## l'état a été traité — sinon le socle traite les états communs.
+func _process_family_state(_delta: float) -> bool:
+	return false
+
+
+## La mort d'un allié s'est vue/entendue — chaque famille décide (§12.1 :
+## le braise peut fuir 2-4 s ; les autres ignorent par défaut).
+func _family_on_ally_death(_position: Vector3) -> void:
+	pass
+
+
+func _on_state_changed_visual(state: StringName) -> void:
+	match state:
+		&"idle": _visual.play_state(&"idle")
+		&"patrol": _visual.play_state(&"walk")
+		&"suspicious": _visual.play_state(&"idle")
+		&"investigate": _visual.play_state(&"walk")
+		&"chase": _visual.play_state(&"run")
+		&"reposition": _visual.play_state(&"walk")
+		&"return": _visual.play_state(&"walk")
+		&"retreat": _visual.play_state(&"walk")
+		&"flee": _visual.play_state(&"run")
+		&"attack": _visual.play_state(&"attack_light", true)
+		&"staggered": _visual.play_state(&"hurt", true)
+		&"dead": _visual.play_state(&"death")
+
+
+func _family_state_name(_state: State) -> StringName:
+	return &"?"
+
+
+## ---------------------------------------------------------------------------
+## Boucle
+## ---------------------------------------------------------------------------
+
+func _physics_process(delta: float) -> void:
+	if _state == State.DEAD:
+		return
+	_state_timer += delta
+	_attack_cooldown = maxf(0.0, _attack_cooldown - delta)
+	_poise.update(delta)
+	if not is_on_floor():
+		velocity.y -= GRAVITY * delta
+	_update_feedback(delta)
+
+	if not _process_family_state(delta):
+		match _state:
+			State.IDLE:
+				velocity.x = 0.0
+				velocity.z = 0.0
+				_tick_perception()
+				if _state == State.IDLE and not patrol_offsets.is_empty():
+					_enter(State.PATROL)
+			State.PATROL:
+				_process_patrol(delta)
+			State.SUSPICIOUS:
+				_process_suspicious(delta)
+			State.INVESTIGATE:
+				_process_investigate(delta)
+			State.CHASE:
+				_process_chase(delta)
+			State.ATTACK:
+				velocity.x = 0.0
+				velocity.z = 0.0
+				if not _attack.update(delta):
+					_attack_cooldown = tuning.attack_cooldown
+					_enter(State.CHASE)
+			State.RETREAT:
+				_process_retreat(delta)
+			State.STAGGERED:
+				velocity.x = 0.0
+				velocity.z = 0.0
+				if _state_timer >= tuning.stagger_duration:
+					_poise.recover()
+					_enter(State.CHASE)
+			State.FLEE:
+				_process_flee(delta)
+			State.RETURN:
+				_process_return(delta)
+			_:
+				pass
+
+	move_and_slide()
+
+
+func _process_patrol(delta: float) -> void:
+	_tick_perception()
+	if _state != State.PATROL:
+		return
+	if patrol_offsets.is_empty():
+		_enter(State.IDLE)
+		return
+	var goal: Vector3 = _territory_origin + patrol_offsets[_patrol_index]
+	var to_goal: Vector3 = goal - global_position
+	to_goal.y = 0.0
+	if to_goal.length() <= 0.7:
+		_patrol_index = (_patrol_index + 1) % patrol_offsets.size()
+		return
+	_face(to_goal, delta)
+	var direction: Vector3 = _pursuit_direction_toward(
+		goal, to_goal, to_goal.length())
+	velocity.x = direction.x * tuning.patrol_speed
+	velocity.z = direction.z * tuning.patrol_speed
+
+
+## §12.7 « Suspicious » : pause ORIENTÉE vers le bruit, puis aller voir.
+func _process_suspicious(delta: float) -> void:
+	velocity.x = 0.0
+	velocity.z = 0.0
+	var toward: Vector3 = _last_known - global_position
+	toward.y = 0.0
+	_face(toward, delta)
+	_tick_perception()   # voir la cible pendant la pause = aggro direct
+	if _state == State.SUSPICIOUS and _state_timer >= SUSPICION_PAUSE:
+		_enter(State.INVESTIGATE)
+
+
+## §12.7 : « mémoire de dernière position, recherche courte, puis retour ».
+func _process_investigate(delta: float) -> void:
+	_tick_perception()   # re-voir la cible pendant la recherche ré-aggro
+	if _state != State.INVESTIGATE:
+		return
+	var to_spot: Vector3 = _last_known - global_position
+	to_spot.y = 0.0
+	if to_spot.length() > 0.8:
+		_face(to_spot, delta)
+		var direction: Vector3 = _pursuit_direction_toward(
+			_last_known, to_spot, to_spot.length())
+		velocity.x = direction.x * tuning.patrol_speed
+		velocity.z = direction.z * tuning.patrol_speed
+		return
+	velocity.x = 0.0
+	velocity.z = 0.0
+	if _state_timer >= tuning.search_duration:
+		_enter(State.RETURN)
+
+
+func _process_chase(delta: float) -> void:
+	if not _target_valid():
+		_target = null
+		_enter(State.IDLE)
+		return
+	# Territoire (§12.9) : au-delà de la distance maximale, l'ennemi
+	# ABANDONNE et rentre — aucune poursuite infinie.
+	if global_position.distance_to(_territory_origin) \
+			> tuning.max_pursuit_distance:
+		_target = null
+		_enter(State.RETURN)
+		return
+	# Mémoire (§12.7) : la vue est re-testée par cadence ; perdue trop
+	# longtemps, la cible devient une DERNIÈRE POSITION à investiguer.
+	_memory_timer += delta
+	_perception_tick += 1
+	if _perception_tick % PERCEPTION_INTERVAL == 0 and _has_los(_target):
+		_last_known = _target.global_position
+		_memory_timer = 0.0
+	if _memory_timer > tuning.memory_duration:
+		_target = null
+		_enter(State.INVESTIGATE)
+		return
+
+	var to_target: Vector3 = _target.global_position - global_position
+	to_target.y = 0.0
+	var distance: float = to_target.length()
+	_face(to_target, delta)
+
+	if distance <= tuning.attack_reach and _attack_cooldown <= 0.0:
+		velocity.x = 0.0
+		velocity.z = 0.0
+		if _family_try_attack(distance):
+			_enter(State.ATTACK)
+		return
+
+	var direction: Vector3 = _pursuit_direction_toward(
+		_target.global_position, to_target, distance)
+	var steered: Vector3 = direction + _separation_push() * SEPARATION_WEIGHT
+	if steered.length_squared() > 0.0001:
+		steered = steered.normalized()
+	velocity.x = steered.x * tuning.pursuit_speed
+	velocity.z = steered.z * tuning.pursuit_speed
+
+
+func _process_retreat(delta: float) -> void:
+	if not _target_valid():
+		_enter(State.IDLE)
+		return
+	var away: Vector3 = global_position - _target.global_position
+	away.y = 0.0
+	# Reculer EN FAISANT FACE : prise de distance, pas une fuite.
+	_face(-away, delta)
+	if away.length() > 0.001:
+		away = away.normalized()
+	velocity.x = away.x * tuning.retreat_speed
+	velocity.z = away.z * tuning.retreat_speed
+	if _state_timer >= tuning.retreat_duration:
+		_enter(State.CHASE)
+
+
+## §12.1 : fuite courte (dos au danger), puis retour aux sens normaux.
+func _process_flee(delta: float) -> void:
+	var away: Vector3 = global_position - _flee_from
+	away.y = 0.0
+	if away.length() > 0.001:
+		away = away.normalized()
+	_face(away, delta)
+	velocity.x = away.x * tuning.pursuit_speed
+	velocity.z = away.z * tuning.pursuit_speed
+	if _state_timer >= tuning.flee_duration:
+		_enter(State.RETURN)
+
+
+func _process_return(delta: float) -> void:
+	_tick_perception()   # rentrer n'aveugle pas : re-visible = ré-aggro
+	if _state != State.RETURN:
+		return
+	var home: Vector3 = _territory_origin - global_position
+	home.y = 0.0
+	if home.length() <= 1.0:
+		velocity.x = 0.0
+		velocity.z = 0.0
+		_enter(State.IDLE)
+		return
+	_face(home, delta)
+	var direction: Vector3 = _pursuit_direction_toward(
+		_territory_origin, home, home.length())
+	velocity.x = direction.x * tuning.patrol_speed
+	velocity.z = direction.z * tuning.patrol_speed
+
+
+## Chemin navmesh vers un BUT quelconque (cible, dernière position,
+## territoire) — requêtes directes, recalcul par cadence et seulement si
+## le but a bougé (§12.9). Ligne directe sans carte.
+func _pursuit_direction_toward(goal: Vector3, to_goal: Vector3,
+		distance: float) -> Vector3:
+	if distance <= 0.001:
+		return Vector3.ZERO
+	var map: RID = get_world_3d().navigation_map
+	_repath_tick += 1
+	if _path.is_empty() or (_repath_tick % REPATH_INTERVAL == 1
+			and _path_goal.distance_to(goal) > 1.5):
+		_path = NavigationServer3D.map_get_path(
+			map, global_position, goal, true)
+		_path_index = 0
+		_path_goal = goal
+	if _path.size() < 2:
+		return to_goal.normalized()
+	while _path_index < _path.size() - 1:
+		var reached: Vector3 = _path[_path_index]
+		if Vector2(reached.x - global_position.x,
+				reached.z - global_position.z).length() < 0.6:
+			_path_index += 1
+		else:
+			break
+	var waypoint: Vector3 = _path[_path_index]
+	var direction: Vector3 = Vector3(
+		waypoint.x - global_position.x, 0.0, waypoint.z - global_position.z)
+	if direction.length_squared() < 0.0001:
+		return to_goal.normalized()
+	return direction.normalized()
+
+
+func _separation_push() -> Vector3:
+	var push: Vector3 = Vector3.ZERO
+	for node: Node in get_tree().get_nodes_in_group("enemies"):
+		if node == self:
+			continue
+		var other: Node3D = node as Node3D
+		if other == null:
+			continue
+		if other.has_method("health"):
+			var other_health: HealthComponent = other.call("health") as HealthComponent
+			if other_health != null and other_health.is_dead():
+				continue  # un cadavre ne repousse personne
+		var away: Vector3 = global_position - other.global_position
+		away.y = 0.0
+		var gap: float = away.length()
+		if gap >= SEPARATION_RADIUS or gap < 0.001:
+			continue
+		push += away / gap * (1.0 - gap / SEPARATION_RADIUS)
+	return push
+
+
+## ---------------------------------------------------------------------------
+## Perception (§12.6-§12.7) — vue, ouïe, alerte, mort d'allié
+## ---------------------------------------------------------------------------
+
+func _tick_perception() -> void:
+	_perception_tick += 1
+	if _perception_tick % PERCEPTION_INTERVAL != 0:
+		return
+	var player: PlayerController = _find_player()
+	if player == null:
+		return
+	var player_health: HealthComponent = player.health()
+	if player_health != null and player_health.is_dead():
+		return
+	# Une cible DÉJÀ hors du territoire ne m'intéresse pas : sans cette
+	# garde, RETURN et CHASE oscilleraient tant que le joueur reste
+	# visible depuis la frontière (§12.9 — l'abandon doit tenir).
+	if player.global_position.distance_to(_territory_origin) \
+			> tuning.max_pursuit_distance:
+		return
+	var to_player: Vector3 = player.global_position - global_position
+	to_player.y = 0.0
+	if to_player.length() > tuning.vision_range:
+		return
+	var forward: Vector3 = _pivot.global_transform.basis.z
+	forward.y = 0.0
+	if to_player.length() > 0.001 and forward.length() > 0.001:
+		var angle: float = rad_to_deg(
+			forward.normalized().angle_to(to_player.normalized()))
+		if angle > tuning.vision_half_angle_deg:
+			return
+	if not _has_los(player):
+		return
+	_acquire_target(player)
+
+
+## L'instant « Alert » de §12.7 : acquisition + partage éventuel (§12.2).
+func _acquire_target(target: Node3D) -> void:
+	_target = target
+	_last_known = target.global_position
+	_memory_timer = 0.0
+	_enter(State.CHASE)
+	if tuning.alert_radius > 0.0:
+		_alert_allies(target)
+
+
+## §12.2 : « alerte les alliés dans un rayon limité » — les receveurs
+## endormis adoptent la cible.
+func _alert_allies(target: Node3D) -> void:
+	for node: Node in get_tree().get_nodes_in_group("enemies"):
+		if node == self or not node.has_method("receive_alert"):
+			continue
+		var ally: Node3D = node as Node3D
+		if ally.global_position.distance_to(global_position) \
+				<= tuning.alert_radius:
+			ally.call("receive_alert", target)
+
+
+func receive_alert(target: Node3D) -> void:
+	if _state in [State.IDLE, State.PATROL, State.SUSPICIOUS,
+			State.INVESTIGATE, State.RETURN] and is_instance_valid(target):
+		_acquire_target(target)
+
+
+## Ouïe (§12.7) : un bruit dans MON audition ET dans le rayon du bruit
+## rend suspicieux — pause orientée puis investigation de la position.
+## Un ennemi déjà en chasse/combat n'est pas distrait.
+func hear_noise(position: Vector3, radius: float, _kind: StringName) -> void:
+	if _state in [State.CHASE, State.ATTACK, State.RETREAT,
+			State.STAGGERED, State.FLEE, State.DEAD]:
+		return
+	var distance: float = global_position.distance_to(position)
+	if distance > minf(radius, tuning.hearing_range):
+		return
+	_last_known = position
+	_enter(State.SUSPICIOUS)
+
+
+## Mort d'un allié : diffusée par le socle à la mort (§12.1 — le braise
+## peut fuir). Vue OU entendue : rayon d'audition.
+func witness_ally_death(position: Vector3) -> void:
+	if _state == State.DEAD:
+		return
+	if global_position.distance_to(position) > tuning.hearing_range:
+		return
+	_family_on_ally_death(position)
+
+
+## LOS torse PUIS tête (correctif : « raycast vers torse et tête ») —
+## voir l'un des deux suffit ; aucune vision à travers mur.
+func _has_los(target: Node3D) -> bool:
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	for target_height: float in [1.0, 1.6]:
+		var query: PhysicsRayQueryParameters3D = \
+			PhysicsRayQueryParameters3D.create(
+				global_position + Vector3.UP * 1.2,
+				target.global_position + Vector3.UP * target_height,
+				1, [get_rid()])
+		if space.intersect_ray(query).is_empty():
+			return true
+	return false
+
+
+func _find_player() -> PlayerController:
+	for node: Node in get_tree().get_nodes_in_group("player"):
+		if node is PlayerController:
+			return node as PlayerController
+	return null
+
+
+func _target_valid() -> bool:
+	if _target == null or not is_instance_valid(_target):
+		return false
+	if _target.has_method("health"):
+		var target_health: HealthComponent = _target.call("health") as HealthComponent
+		if target_health != null and target_health.is_dead():
+			return false
+	return true
+
+
+func _face(direction: Vector3, delta: float) -> void:
+	if direction.length_squared() < 0.0001:
+		return
+	var target_yaw: float = atan2(direction.x, direction.z)
+	var weight: float = 1.0 - exp(-tuning.turn_speed * delta)
+	_pivot.rotation.y = lerp_angle(_pivot.rotation.y, target_yaw, weight)
+
+
+## ---------------------------------------------------------------------------
+## Dégâts, stagger, mort (§12.10)
+## ---------------------------------------------------------------------------
+
+func _on_hit_received(event: DamageEvent) -> void:
+	if _state == State.DEAD:
+		return
+	_flash_timer = 0.12
+	_poise.take_poise_damage(event)
+	# L'impact est un événement sonore (§12.7) : les voisins l'entendent.
+	NoiseEvents.emit(get_tree(), global_position, NoiseEvents.IMPACT_RADIUS,
+		&"impact")
+	# Être frappé révèle l'attaquant, même hors du cône.
+	if _target == null and event != null and is_instance_valid(event.instigator):
+		var attacker: Node3D = event.instigator as Node3D
+		if attacker != null and _state in [State.IDLE, State.PATROL,
+				State.SUSPICIOUS, State.INVESTIGATE, State.RETURN]:
+			_acquire_target(attacker)
+
+
+func _on_poise_broken() -> void:
+	if _state == State.DEAD:
+		return
+	_attack.cancel()
+	_enter(State.STAGGERED)
+
+
+func _on_died(_event: DamageEvent) -> void:
+	_attack.cancel()
+	_enter(State.DEAD)
+	_hurtbox.set_deferred("monitorable", false)
+	set_deferred("collision_layer", 0)
+	if not _model_mounted:
+		_pivot.rotation.x = -1.45
+	for i: int in range(_feedback_materials.size()):
+		_feedback_materials[i].albedo_color = _feedback_bases[i].darkened(0.5)
+		_feedback_materials[i].emission_enabled = false
+	set_physics_process(false)
+	# §12.1 : la mort d'un allié se voit — les familles proches décident.
+	for node: Node in get_tree().get_nodes_in_group("enemies"):
+		if node != self and node.has_method("witness_ally_death"):
+			node.call("witness_ally_death", global_position)
+	died.emit()
+
+
+## ---------------------------------------------------------------------------
+## Feedback matière — piloté par l'ÉTAT, jamais l'inverse (§10.6)
+## ---------------------------------------------------------------------------
+
+func _update_feedback(delta: float) -> void:
+	if _feedback_materials.is_empty():
+		return
+	if _flash_timer > 0.0:
+		_flash_timer = maxf(0.0, _flash_timer - delta)
+	var flash_on: bool = _flash_timer > 0.0
+	var telegraphing: bool = _is_telegraphing()
+	for i: int in range(_feedback_materials.size()):
+		var material: BaseMaterial3D = _feedback_materials[i]
+		if flash_on and not material.emission_enabled:
+			material.emission_enabled = true
+			material.emission = Color(1, 1, 1)
+			material.emission_energy_multiplier = 1.6
+		elif not flash_on and material.emission_enabled:
+			material.emission_enabled = false
+		if telegraphing:
+			material.albedo_color = telegraph_color
+		elif _state != State.DEAD:
+			material.albedo_color = _feedback_bases[i]
+	if _model_mounted:
+		return
+	if _state == State.STAGGERED:
+		_pivot.rotation.x = 0.4
+	elif _state != State.DEAD:
+		_pivot.rotation.x = 0.0
+
+
+## L'annonce par défaut : startup de l'attaque courante (« Recover » de
+## §12.7 = phase RECOVERY du même contrat). Les familles élargissent.
+func _is_telegraphing() -> bool:
+	return _state == State.ATTACK \
+		and _attack.phase() == AttackControllerComponent.Phase.STARTUP
+
+
+func telegraph_materials() -> Array[BaseMaterial3D]:
+	return _feedback_materials
+
+
+## ---------------------------------------------------------------------------
+## Plomberie d'état
+## ---------------------------------------------------------------------------
+
+func _enter(state: State) -> void:
+	if _state == state:
+		return
+	_state = state
+	_state_timer = 0.0
+	state_changed.emit(state_name())
+
+
+func state() -> State:
+	return _state
+
+
+func state_name() -> StringName:
+	match _state:
+		State.IDLE: return &"idle"
+		State.PATROL: return &"patrol"
+		State.SUSPICIOUS: return &"suspicious"
+		State.INVESTIGATE: return &"investigate"
+		State.CHASE: return &"chase"
+		State.REPOSITION: return &"reposition"
+		State.ATTACK: return &"attack"
+		State.RETREAT: return &"retreat"
+		State.STAGGERED: return &"staggered"
+		State.FLEE: return &"flee"
+		State.RETURN: return &"return"
+		State.DEAD: return &"dead"
+	return _family_state_name(_state)
+
+
+## Conventions des cibles verrouillables et des tests.
+func health() -> HealthComponent:
+	return _health
+
+
+func territory_origin() -> Vector3:
+	return _territory_origin
+
+
+func last_known_position() -> Vector3:
+	return _last_known
+
+
+## Seam de test : forcer une fuite depuis une position donnée.
+func start_flee(from_position: Vector3) -> void:
+	_flee_from = from_position
+	_enter(State.FLEE)
