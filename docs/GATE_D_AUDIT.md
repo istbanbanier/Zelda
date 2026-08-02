@@ -15,7 +15,7 @@ Base : MASTER_SPEC §22 Phase D (items 16-20), §12 (bestiaire), §23
 
 | Item | Critère | Preuve rejouée | Verdict |
 |---|---|---|---|
-| 16 | Terrain 512 m, composition North Star en formes simples | `--filter=world_dressing` 4/4 ; `evidence/v4lot16/vista_post_review.png` capturée à l'arbre PROPRE (`repo_dirty:false`) : trois plans, citadelle + éclair, pylône, camp | **PASS** |
+| 16 | Terrain 512 m, composition North Star en formes simples | `--filter=world_dressing` 4/4 ; `evidence/gateD/vista_with_bestiary.png` — capture du monde de HEAD (commit `c049070`, `repo_dirty:false`), bestiaire en place : trois plans, citadelle + éclair, pylône, camp | **PASS** |
 | 17 | Camp, falaise, rivière, pylône, citadelle, chemins | `--filter=world_dressing`, `--filter=camp_props` 3/3, `--filter=valley` ; huit zones habillées, comptages testés | **PASS** |
 | 18 | Huit coffres, sept ingrédients, checkpoint | 4 coffres dans la vallée (conforme à la répartition §11.4 : « trois dans la vallée, un au camp ») ; les 4 autres appartiennent aux salles du donjon (Phase F). 12 ingrédients, 7 familles testées (`--filter=ingredients` 4/4). Checkpoint `valley.camp.start` sauvegardé/testé | **PARTIEL** — 4/8 placés ; solde structurellement lié à la Phase F, consigné |
 | 19 | Cinq familles ennemies réellement distinctes | `--filter=bestiary` 6/6, + suites par famille : braise 8/8, azur 5/5, obsidienne 5/5, colosse 5/5, chasseur 6/6, socle 5/5, coordinateur 4/4. Silhouettes : `evidence/gateD/bestiary_flat.png` | **PARTIEL** — voir la réserve ci-dessous |
@@ -74,7 +74,7 @@ lecture du gate ne les croie réglés.
 | Loot unique et persistant | `--filter=camp_props` (pose ouverte sans re-loot), `--filter=ingredients` | **PASS** |
 | Absence de hitbox après la mort | `test_no_family_keeps_an_active_hitbox_after_death` : hurtbox ÉTEINTES (toutes, y compris le dos du colosse), fenêtres de frappe fermées, IA coupée | **PASS** |
 | Maximum 10-14 IA actives | `test_the_activity_cap_puts_the_farthest_to_sleep` : 16 vivantes → 14 actives, les 2 plus lointaines dorment | **PASS** |
-| Capture de silhouettes en aplats | `evidence/gateD/bestiary_flat.png` + `bestiary_material.png`, même échelle, aucune mise à l'échelle pour la photo (testé) | **PASS** |
+| Capture de silhouettes en aplats | `evidence/gateD/bestiary_flat.png` + `bestiary_material.png`, même échelle, aucune mise à l'échelle pour la photo (testé) — recapturées au commit de HEAD, arbre propre | **PASS** |
 
 ## Défauts RÉELS trouvés par cette campagne et corrigés
 
@@ -116,6 +116,11 @@ PAS vus :
     pilote scripté qui marche réellement jusqu'au seuil, bestiaire en
     place.
 13. `docs/ROADMAP.md` déclarait encore le Gate D « non commencé ».
+14. Les manifestes de capture portaient le commit du lot PRÉCÉDENT et
+    `repo_dirty:true`. Deux causes : les captures étaient prises avant
+    le commit, et l'outil comptait **sa propre sortie** `evidence/`
+    comme une saleté d'arbre. Les deux sont corrigées ; les trois
+    preuves du Gate D sont recapturées au commit de HEAD, arbre propre.
 
 ## Verdict global
 
