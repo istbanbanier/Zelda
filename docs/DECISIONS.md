@@ -680,3 +680,35 @@ la fait vivre côté ennemi.
 - **`DungeonRoom` comme coque commune** (une seule couche d'héritage) : reset,
   respawn, sauvegarde fusionnée dans le slot commun et helpers de graybox. Les
   salles 2 à 4 en héritent au lieu de recopier leur anti-softlock.
+
+---
+
+## D-028 — F.3 : aiguiller le courant, battre le danger, ne pas écraser
+
+- **Date** : 2026-08-02 · **Phase** : F (jalon F.3) · **Statut** : ACTÉ
+- **Un aiguillage est DEUX nœuds `SWITCH`, pas un booléen.** `ElectricSwitch`
+  ferme une branche et en ouvre une autre dans le même geste ; la redirection
+  est une propriété du graphe, vérifiable par `--filter=electric_graph` comme
+  par la salle. §26 l'exige explicitement : « graphe générique, pas booléens
+  de salle ».
+- **Les branches doivent être géométriquement SÉPARÉES.** Mesuré : avec les
+  deux sorties du carrefour à 0,4 m l'une de l'autre, les branches se
+  touchaient directement, les aiguillages étaient contournés et tout le
+  circuit s'allumait d'un bloc — électrodes ET porte. Les ports de sortie sont
+  désormais distants de plus du double de leur portée, et un test le mesure.
+- **Le mur ouest est `unclimbable`.** Sans ce refus explicite (§9.2), on
+  grimperait à côté des électrodes et l'énigme de §15.6 n'existerait pas. La
+  voie passe par trois blocs décalés dont le toit sert de corniche.
+- **La garde haute de l'ascenseur ne surveille pas la tête de son passager.**
+  Mesuré : collée à la plateforme, elle prenait le voyageur pour un obstacle et
+  l'ascenseur ne démarrait jamais. Elle surveille la tranche 1,9-3,9 m
+  au-dessus du plancher ; la garde BASSE, elle, reste collée — c'est là qu'un
+  corps se ferait écraser. Alternative rejetée : distinguer le passager par sa
+  vitesse ou son contact au sol, fragile et invérifiable.
+- **L'aiguillage de la salle 2 est IRRÉVERSIBLE.** Le rebasculer réarmerait les
+  électrodes sous les pieds d'un joueur déjà en haut : hostile sans être
+  intéressant. Anti-softlock, même famille que la porte latchée de la salle 1.
+- **Les électrodes battent, elles ne surprennent pas** (§15.6, « rythme
+  observable ») : 1,1 s de décharge pour 1,7 s de calme, phases décalées de
+  0,9 s. Un test mesure que la fenêtre calme dépasse le temps de traversée à la
+  vitesse d'escalade de §9.2.

@@ -144,13 +144,13 @@ func _build_circuit() -> void:
 	# Source : socle à l'ouest, pulsation lente (§15.4).
 	box("SourcePedestal", Vector3(-7, 0.45, CONTACT_Z), Vector3(1.0, 0.9, 1.0),
 		COL_BRONZE)
-	_source = _make_node(&"dungeon.node.room1_source.01",
+	_source = make_node(&"dungeon.node.room1_source.01",
 		ElectricNode.Kind.SOURCE, Vector3(-7, 1.15, CONTACT_Z),
 		[Vector3(0.1, WIRE_Y - 1.15, 0)], 0.55)
 	_source.name = "Source"
-	_visual_for(_source, Vector3(0.7, 0.7, 0.7), Vector3.ZERO, true)
+	attach_visual(_source, Vector3(0.7, 0.7, 0.7), Vector3.ZERO, true)
 
-	_cable_run("WireWest", Vector3(-6.4, WIRE_Y, CONTACT_Z),
+	cable_run("WireWest", Vector3(-6.4, WIRE_Y, CONTACT_Z),
 		Vector3(-2.4, WIRE_Y, CONTACT_Z), Vector3.RIGHT, 5)
 
 	_make_plate(&"dungeon.node.room1_plate.01",
@@ -161,17 +161,17 @@ func _build_circuit() -> void:
 	_make_plate(&"dungeon.node.room1_plate.02",
 		"PlateEast", Vector3(1.4, 0.55, CONTACT_Z), 1.0)
 
-	_cable_run("WireEast", Vector3(2.4, WIRE_Y, CONTACT_Z),
+	cable_run("WireEast", Vector3(2.4, WIRE_Y, CONTACT_Z),
 		Vector3(6.4, WIRE_Y, CONTACT_Z), Vector3.RIGHT, 5)
-	_cable_run("WireNorth", Vector3(6.9, WIRE_Y, -4.9),
+	cable_run("WireNorth", Vector3(6.9, WIRE_Y, -4.9),
 		Vector3(6.9, WIRE_Y, -11.9), Vector3.FORWARD, 8)
-	_cable_run("WireDoor", Vector3(6.4, WIRE_Y, -12.4),
+	cable_run("WireDoor", Vector3(6.4, WIRE_Y, -12.4),
 		Vector3(4.4, WIRE_Y, -12.4), Vector3.RIGHT, 3)
 
 	# Récepteur : l'anneau qui se ferme, à hauteur d'œil près de la porte.
 	box("ReceiverPedestal", Vector3(3.4, 0.6, -12.4), Vector3(0.8, 1.2, 0.6),
 		COL_BRONZE)
-	_receiver = _make_node(&"dungeon.node.room1_receiver.01",
+	_receiver = make_node(&"dungeon.node.room1_receiver.01",
 		ElectricNode.Kind.RECEIVER, Vector3(3.4, 1.7, -12.4),
 		[Vector3(0.5, WIRE_Y - 1.7, 0), Vector3(-0.5, WIRE_Y - 1.7, 0)], 0.55)
 	_receiver.name = "Receiver"
@@ -179,7 +179,7 @@ func _build_circuit() -> void:
 	ring.name = "Ring"
 	_receiver.add_child(ring)
 
-	_cable_run("WireDoorSpur", Vector3(2.4, WIRE_Y, -12.4),
+	cable_run("WireDoorSpur", Vector3(2.4, WIRE_Y, -12.4),
 		Vector3(1.4, WIRE_Y, -12.4), Vector3.RIGHT, 2)
 
 	_door = ElectricDoor.new()
@@ -232,12 +232,12 @@ func _build_block() -> void:
 
 	# Le conducteur mobile de §15.1, porté par le bloc : ses deux ports
 	# sortent par les faces est et ouest, à hauteur des plaques.
-	var conductor: ElectricNode = _make_node(
+	var conductor: ElectricNode = make_node(
 		&"dungeon.node.room1_block.01", ElectricNode.Kind.MOVABLE_CONDUCTOR,
 		Vector3.ZERO, [Vector3(-0.85, 0, 0), Vector3(0.85, 0, 0)], 0.85,
 		_block)
 	conductor.name = "Conductor"
-	_visual_for(conductor, Vector3(1.62, 0.3, 1.62), Vector3(0, 0.2, 0), false)
+	attach_visual(conductor, Vector3(1.62, 0.3, 1.62), Vector3(0, 0.2, 0), false)
 	_last_block_position = BLOCK_START
 
 
@@ -263,66 +263,17 @@ func _build_reset_button() -> void:
 		COL_IVORY)
 
 
-func _make_node(id: StringName, kind: ElectricNode.Kind, at: Vector3,
-		ports: Array[Vector3], reach: float,
-		parent: Node = null) -> ElectricNode:
-	var node: ElectricNode = ElectricNode.new()
-	node.node_id = id
-	node.kind = kind
-	node.port_offsets = ports
-	node.port_reach = reach
-	node.position = at
-	var host: Node = parent if parent != null else self
-	host.add_child(node)
-	return node
-
-
 func _make_plate(id: StringName, plate_name: String, at: Vector3,
 		facing: float) -> ElectricNode:
 	box(plate_name + "Pedestal", at + Vector3(0, -0.3, 0),
 		Vector3(0.7, 0.6, 1.4), COL_BRONZE)
-	var plate: ElectricNode = _make_node(id, ElectricNode.Kind.CONNECTOR, at,
+	var plate: ElectricNode = make_node(id, ElectricNode.Kind.CONNECTOR, at,
 		[Vector3(-0.45 * facing, 0.25, 0), Vector3(0.5 * facing, -0.43, 0)],
 		0.85)
 	plate.name = plate_name
-	_visual_for(plate, Vector3(0.22, 0.8, 1.2),
+	attach_visual(plate, Vector3(0.22, 0.8, 1.2),
 		Vector3(-0.3 * facing, 0.1, 0), false)
 	return plate
-
-
-## Ligne de câbles : `count` barres d'un mètre dont les ports d'extrémité
-## coïncident deux à deux (§15.3, contact RÉEL entre ports).
-func _cable_run(prefix: String, from_pos: Vector3, to_pos: Vector3,
-		axis: Vector3, count: int) -> void:
-	var step: Vector3 = (to_pos - from_pos) / float(maxi(1, count - 1))
-	for i: int in range(count):
-		var at: Vector3 = from_pos + step * float(i)
-		var cable: ElectricNode = _make_node(
-			StringName("dungeon.node.%s.%02d" % [prefix.to_snake_case(), i + 1]),
-			ElectricNode.Kind.CABLE, at,
-			[axis * -0.5, axis * 0.5], 0.55)
-		cable.name = "%s%02d" % [prefix, i + 1]
-		var size: Vector3 = Vector3(1.0, 0.1, 0.22) if absf(axis.x) > 0.5 \
-			else Vector3(0.22, 0.1, 1.0)
-		_visual_for(cable, size, Vector3.ZERO, false)
-
-
-## Attache une présentation à un nœud : un maillage + `ElectricVisual`.
-func _visual_for(node: ElectricNode, size: Vector3, offset: Vector3,
-		pulse: bool) -> void:
-	var mesh: MeshInstance3D = MeshInstance3D.new()
-	mesh.name = "Mesh"
-	var box_mesh: BoxMesh = BoxMesh.new()
-	box_mesh.size = size
-	mesh.mesh = box_mesh
-	mesh.position = offset
-	node.add_child(mesh)
-	var visual: ElectricVisual = ElectricVisual.new()
-	visual.name = "Visual"
-	visual.node_path = NodePath("..")
-	visual.mesh_path = NodePath("../Mesh")
-	visual.pulse = pulse
-	node.add_child(visual)
 
 
 func _on_receiver_power_changed(powered: bool, _power: float) -> void:

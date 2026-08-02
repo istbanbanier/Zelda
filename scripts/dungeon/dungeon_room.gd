@@ -135,6 +135,63 @@ func load_room_state() -> Dictionary:
 	return rooms.get(String(room_id), {}) as Dictionary
 
 
+## Fabrique un nœud du graphe et le pose. `ports` en coordonnées LOCALES
+## (§15.3 : la rotation du nœud emmène ses ports avec elle).
+func make_node(id: StringName, kind: ElectricNode.Kind, at: Vector3,
+		ports: Array[Vector3], reach: float,
+		parent: Node = null) -> ElectricNode:
+	var node: ElectricNode = ElectricNode.new()
+	node.node_id = id
+	node.kind = kind
+	node.port_offsets = ports
+	node.port_reach = reach
+	node.position = at
+	var host: Node = parent if parent != null else self
+	host.add_child(node)
+	return node
+
+
+## Ligne de câbles : `count` barres d'un mètre dont les ports d'extrémité
+## coïncident deux à deux (§15.3, contact RÉEL entre ports). `axis` donne
+## la direction de la ligne — horizontale ou verticale.
+func cable_run(prefix: String, from_pos: Vector3, to_pos: Vector3,
+		axis: Vector3, count: int) -> void:
+	var step: Vector3 = (to_pos - from_pos) / float(maxi(1, count - 1))
+	var size: Vector3 = Vector3(0.22, 0.12, 0.22)
+	if absf(axis.x) > 0.5:
+		size.x = 1.0
+	elif absf(axis.y) > 0.5:
+		size.y = 1.0
+	else:
+		size.z = 1.0
+	for i: int in range(count):
+		var at: Vector3 = from_pos + step * float(i)
+		var cable: ElectricNode = make_node(
+			StringName("dungeon.node.%s.%02d" % [prefix.to_snake_case(), i + 1]),
+			ElectricNode.Kind.CABLE, at,
+			[axis * -0.5, axis * 0.5], 0.55)
+		cable.name = "%s%02d" % [prefix, i + 1]
+		attach_visual(cable, size, Vector3.ZERO, false)
+
+
+## Attache une présentation à un nœud : un maillage + `ElectricVisual`.
+func attach_visual(node: ElectricNode, size: Vector3, offset: Vector3,
+		pulse: bool) -> void:
+	var mesh: MeshInstance3D = MeshInstance3D.new()
+	mesh.name = "Mesh"
+	var box_mesh: BoxMesh = BoxMesh.new()
+	box_mesh.size = size
+	mesh.mesh = box_mesh
+	mesh.position = offset
+	node.add_child(mesh)
+	var visual: ElectricVisual = ElectricVisual.new()
+	visual.name = "Visual"
+	visual.node_path = NodePath("..")
+	visual.mesh_path = NodePath("../Mesh")
+	visual.pulse = pulse
+	node.add_child(visual)
+
+
 ## Boîte statique de graybox : collision + maillage, une seule ligne par
 ## volume. `emissive` pour les veines et les noyaux.
 func box(box_name: String, center: Vector3, size: Vector3, color: Color,

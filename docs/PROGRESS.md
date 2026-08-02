@@ -1719,3 +1719,39 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > redirige le courant, corniches de repos, une jauge d'endurance pleine
 > qui suffit, chute qui renvoie à un palier proche, ascenseur qui ne
 > peut ni écraser ni coincer le joueur, état sauvegardé cohérent.
+
+## 2026-08-02 (Phase F, F.3) — salle 2, circuit vertical
+
+> §15.6 implémenté dans une scène jouable et testable seule. Un puits de
+> 22 m : trois blocs de pierre décalés le long du mur ouest (le mur
+> lui-même est `unclimbable` — la voie passe par eux, sinon l'énigme
+> n'existerait pas), trois électrodes intermittentes qui battent 1,1 s de
+> décharge pour 1,7 s de calme, phases décalées, un ascenseur SANS
+> courant, et sur la mezzanine un levier qui REDIRIGE le courant : la
+> branche danger meurt, la branche ascenseur vit, la porte du haut
+> s'ouvre.
+> Trois briques réutilisables sont nées avec la salle : `ElectricSwitch`
+> (aiguillage réel — deux nœuds `SWITCH` commandés d'un seul geste, pas
+> un booléen de salle), `ElectricHazard` (décharge rythmée qui blesse ET
+> retire la prise via le groupe `electrified` de §9.2) et
+> `ElevatorPlatform` (`AnimatableBody3D`, deux zones de garde).
+> Le buff de résistance électrique de §13.5 SERT enfin : c'est la
+> première source de dégâts électriques du jeu, et un test mesure que la
+> décharge coûte nettement moins avec le plat de baies.
+> Deux défauts trouvés par la mesure, pas par relecture : (1) les deux
+> branches se touchaient directement au carrefour, si bien que les
+> aiguillages ne servaient à rien et que TOUT était alimenté d'un bloc —
+> corrigé en éloignant les ports de sortie ; (2) la garde haute de
+> l'ascenseur prenait son propre passager pour un obstacle, et la
+> plateforme ne démarrait jamais — elle surveille désormais la tranche
+> 1,9-3,9 m au-dessus du plancher.
+> 12 tests `--filter=room2`, dont une montée RÉELLE du joueur (poussée
+> vers la paroi, 5 m gravis, aucun transform écrit pendant la montée),
+> l'arrêt de l'ascenseur devant un corps, le transport du joueur, la
+> chute qui retombe sur le palier du dessous sans dégâts, et le
+> rechargement depuis le disque.
+> **PROCHAINE ACTION (F.4)** : salle 3, relais rotatifs (§15.7) — quatre
+> colonnes à ports visibles, rotations discrètes, allumage progressif des
+> segments valides, aucune erreur mortelle, retour distinct sur chemin
+> partiel, solveur automatique qui prouve qu'au moins une configuration
+> résout, bouton reset qui restaure la configuration initiale.
