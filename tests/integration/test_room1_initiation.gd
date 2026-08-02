@@ -336,6 +336,25 @@ func test_reloading_mid_resolution_never_locks_the_room() -> void:
 	await _erase_save()
 
 
+func test_the_block_can_be_placed_in_its_very_first_frame() -> void:
+	## Un chargement replace le bloc depuis `_ready()` (§19.4) : le
+	## placement doit donc tenir dans la frame même où le corps naît,
+	## avant que le solveur ait fait un pas avec lui.
+	await _erase_save()
+	var room: Room1Initiation = (load(ROOM) as PackedScene).instantiate() \
+		as Room1Initiation
+	_tree().root.add_child(room)
+	# AUCUNE frame ici : on est dans la fenêtre exacte du blocage.
+	room.capture_state_solved()
+	check_approx(room.block().global_position.z, CONTACT_Z, 0.01,
+		"le bloc est posé au contact dès l'appel")
+	await _settle(30)
+	check_approx(room.block().global_position.z, CONTACT_Z, 0.3,
+		"…il y est encore après 30 ticks (le moteur a continué de tourner)")
+	check(room.receiver().is_powered(), "…et le circuit s'est fermé")
+	await _close(room)
+
+
 func test_the_room_ids_are_unique_and_the_exit_exists() -> void:
 	## §19.3 : ID vide ou dupliqué = faute de conception. §15.11 : « chemin
 	## retour » — la salle a une sortie vers le vestibule.

@@ -70,7 +70,8 @@ func rescue_transform() -> Transform3D:
 
 ## Repose le bloc, immobile, à un transform sûr. Passe par
 ## `PhysicsServer3D` : écrire `transform` sur un corps ÉVEILLÉ laisserait
-## le solveur avec un état incohérent (§14.1).
+## le solveur avec un état incohérent (§14.1). Appelable dès la frame où
+## le bloc naît — c'est ce que fait un chargement de salle (§19.4).
 func place_at(target: Transform3D) -> void:
 	linear_velocity = Vector3.ZERO
 	angular_velocity = Vector3.ZERO

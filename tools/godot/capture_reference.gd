@@ -226,6 +226,13 @@ func _capture() -> void:
 	root.add_child(instance)
 
 	if _prepare_call != "":
+		# `_ready()` n'a PAS encore tourné : dans un script `SceneTree`, les
+		# callbacks des nœuds sont déclenchés à la première frame, pas dans
+		# `add_child()`. Mesuré : appeler la préparation tout de suite la
+		# trouvait devant une scène à moitié construite, elle ne faisait
+		# rien, et la capture montrait l'état initial en se croyant préparée.
+		if not instance.is_node_ready():
+			await instance.ready
 		if not instance.has_method(_prepare_call):
 			printerr("[capture] ÉCHEC: la scène n'expose pas %s()" % _prepare_call)
 			quit(6)
