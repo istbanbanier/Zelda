@@ -1699,7 +1699,20 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > en 1-2 s à son transform de secours (§14.3), rechargement DEPUIS LE
 > DISQUE d'une salle résolue (porte ouverte à la première image) et
 > d'une salle à mi-résolution (ni résolue, ni bloquée, encore soluble).
-> 11 tests `--filter=room1`, plancher relevé.
+> 12 tests `--filter=room1`, plancher relevé.
+> Deux captures depuis l'arbre COMMITTÉ (`evidence/F2/`, `repo_dirty:
+> false`) : l'énigme telle qu'on la découvre — la ligne cyan s'arrête net
+> au vide — et la même image une fois le bloc au contact, circuit allumé
+> jusqu'à la porte, anneau fermé, panneau monté. La première capture a
+> d'ailleurs révélé deux défauts qu'aucun test ne pouvait voir : le bloc
+> conducteur, sans matériau, passait pour une caisse de bois, et le
+> premier plan tombait dans le noir (§7.8 : « aucun couloir noir »).
+> Un diagnostic FAUX a été corrigé au passage : la capture « salle
+> résolue » montrait l'état initial, ce que j'ai d'abord attribué à un
+> blocage du solveur — la vraie cause est que `_ready()` ne tourne pas
+> dans `add_child()` depuis un script `SceneTree`, si bien que la
+> préparation tombait sur une scène à moitié construite. Le contournement
+> bâti sur la fausse cause a été retiré, pas empilé.
 > **PROCHAINE ACTION (F.3)** : salle 2, circuit vertical (§15.6) —
 > ascenseur non alimenté, puits latéral escaladable, électrodes
 > intermittentes au rythme observable, interrupteur supérieur qui

@@ -462,7 +462,7 @@ automatisée** avant qu'une seule salle n'existe.
 |---|---|---|
 | `ElectricNode` — §15.1 complet (ID stable, ports orientés en local, conductivité, `enabled`, signaux, `set_powered` idempotent, zéro rendu) | **Fonctionnel** | `--filter=electric_graph` (11 tests) |
 | `ElectricGraph` — §15.2 point par point (marquage `dirty`, regroupement par tick, contacts réels port-à-port, BFS depuis toutes les sources, cycles bornés, signaux au seul changement) | **Fonctionnel** | idem : cycle de 4 câbles qui termine, 10 marquages = 1 recalcul, 20 ticks inactifs = 0 |
-| Salle 1 §15.5 — source, vide court, deux plaques, bloc mobile, propagation visible, porte différée, reset, solution imperdable | **Fonctionnel** | `--filter=room1` (11 tests) |
+| Salle 1 §15.5 — source, vide court, deux plaques, bloc mobile, propagation visible, porte différée, reset, solution imperdable | **Fonctionnel** | `--filter=room1` (12 tests) ; captures `evidence/F2/` (entrée et salle résolue, arbre propre) |
 | Le bloc est poussé **par le joueur**, à la marche, sans téléportation | **Fonctionnel** | `test_the_player_pushes_the_block_and_opens_the_door` : 7 m de poussée réelle, porte ouverte |
 | Délai d'ouverture dans la fenêtre 0,6-1,2 s | **Validé** | mesuré tick par tick (`test_the_door_waits_between_06_and_12_seconds`) |
 | Propagation lumineuse (le cyan voyage, il ne s'allume pas d'un bloc) | **Fonctionnel** | `test_the_light_travels_along_the_circuit` : le début du circuit est allumé avant sa fin |
