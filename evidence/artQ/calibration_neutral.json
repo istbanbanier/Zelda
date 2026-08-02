@@ -1,0 +1,18 @@
+{
+  "commit": "b3da9ccec6a9bb1b4c5cd6dff63f278eb8b5b0d6",
+  "display_server": "X11",
+  "distinct_colors_sampled": 211,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 30,
+  "height": 1080,
+  "label": "artq0_calibration",
+  "luma_mean": 0.5189,
+  "luma_stddev": 0.1522,
+  "png": "evidence/artQ/calibration_neutral.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/tests/AssetCalibration.tscn",
+  "timestamp_utc": "2026-08-02 03:06:48",
+  "width": 1920
+}
