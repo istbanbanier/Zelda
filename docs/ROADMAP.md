@@ -13,7 +13,7 @@ Règle : **aucune phase ne démarre avant que le gate précédent soit `PASS` ou
 | C | Combat (santé, hitbox, combo, esquive, lock-on, arc, durabilité) | Gate C | 🟢 **ACCEPTÉ POUR CONTINUATION** — C.0 à C.5 livrés (duel gagnable, arc, durabilité, lock-on) ; validation humaine différée |
 | C.5 | Micro-verticale + benchmark artistique `HeroShotLab` | Gate C.5 | 🟠 **EN ATTENTE** — la notation visuelle exige un œil humain sur la crête réelle (V4.1) |
 | D | Monde graybox 512 m + cinq familles ennemies | Gate D | 🟢 **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE** (`docs/GATE_D_AUDIT.md`, passe 3 après revue contradictoire) ; item 18 PARTIEL assumé (4 coffres sur 8, solde en Phase F) |
-| E | Récolte, cuisine, buffs, sauvegarde | Gate E | 🔵 **EN COURS** — E.1, E.2a et E.2b livrés ; reste migrations et chaîne complète |
+| E | Récolte, cuisine, buffs, sauvegarde | Gate E | 🟢 **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE** (`docs/GATE_E_AUDIT.md`) — E.1 à E.3 livrés |
 | F | Graphe électrique + 4 salles du donjon | Gate F | ⬜ Non commencé |
 | G | Boss trois phases + victoire | Gate G | ⬜ Non commencé |
 | H | Art « wahou » | Gate H | ⬜ Non commencé |

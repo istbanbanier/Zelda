@@ -1627,3 +1627,23 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > couverts ; verdict attendu ACCEPTÉ POUR CONTINUATION — VALIDATION
 > HUMAINE DIFFÉRÉE), puis Phase F : graphe électrique en sandbox
 > automatisée AVANT toute salle (§22 ordre obligatoire).
+
+## 2026-08-02 (Gate E) — revue et verdict
+
+> `docs/GATE_E_AUDIT.md` : les HUIT items de la Phase E (§22) rejoués un
+> par un — récolte (ingredients 4/4), atelier du feu (cooking_ui 4/4),
+> sélection 1-5 bornée au stock, aperçu honnête, règles de recettes
+> (cooking_rules 7/7), label de buff au HUD, sauvegarde et migration
+> (phase_e 2/2, save 9/9, meals_and_buffs 4/4), chaîne complète de bout
+> en bout. Transverses §13.3/§19 : annulation gratuite, confirmation
+> atomique, un seul buff majeur, écriture atomique, refus d'un schéma
+> plus récent. Un filtre cité dans le premier jet de l'audit
+> (`--filter=recipes`) N'EXISTAIT PAS : corrigé en `cooking_rules` après
+> rejeu — exactement le défaut que la revue du Gate D avait reproché.
+> Non couvert et consigné : animation de cuisson (Phase H), essai
+> humain (impossible ici). Verdict : **ACCEPTÉ POUR CONTINUATION —
+> VALIDATION HUMAINE DIFFÉRÉE**.
+> **PROCHAINE ACTION (Phase F, ordre §22 obligatoire)** : le graphe
+> électrique dans une SANDBOX AUTOMATISÉE, avant toute salle — types de
+> nœuds §15.1, algorithme §15.2 (marquage dirty, BFS depuis les sources,
+> cycles sans récursion infinie, signaux seulement au changement).
