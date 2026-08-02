@@ -17,7 +17,9 @@ const WALK_MAX_SPEED: float = 4.75
 const RUN_MAX_SPEED: float = 7.5
 const IDLE_MAX_SPEED: float = 0.35
 ## La réception se tient un court instant, sauf si la course reprend.
-const LAND_HOLD_S: float = 0.30
+## En TICKS physiques (§20.9) : le temps mural dérive en headless — 33
+## ticks peuvent passer en 200 ms comme en 3 s selon la charge.
+const LAND_HOLD_TICKS: int = 18
 
 @export var visual_path: NodePath = NodePath("../../VisualRoot/CharacterVisual")
 
@@ -25,7 +27,7 @@ var _player: PlayerController = null
 var _visual: CharacterVisual = null
 var _last_mode: int = -1
 var _attack_restart: bool = false
-var _land_until_ms: int = 0
+var _land_hold_ticks: int = 0
 var _was_airborne: bool = false
 
 
@@ -87,7 +89,6 @@ func _play_attack() -> void:
 
 
 func _play_locomotion() -> void:
-	var now: int = Time.get_ticks_msec()
 	if not _player.is_on_floor():
 		_was_airborne = true
 		_visual.play_state(&"jump" if _player.velocity.y > 0.5 else &"fall")
@@ -95,12 +96,14 @@ func _play_locomotion() -> void:
 	var speed: float = _player.horizontal_speed()
 	if _was_airborne:
 		_was_airborne = false
-		_land_until_ms = now + int(LAND_HOLD_S * 1000.0)
+		_land_hold_ticks = LAND_HOLD_TICKS
 		_visual.play_state(&"land", true)
 		return
-	# La réception tient LAND_HOLD_S, mais la course reprend sans figer.
-	if now < _land_until_ms and speed <= WALK_MAX_SPEED:
-		return
+	# La réception tient son compte de ticks, mais la course reprend sans figer.
+	if _land_hold_ticks > 0:
+		_land_hold_ticks -= 1
+		if speed <= WALK_MAX_SPEED:
+			return
 	if speed <= IDLE_MAX_SPEED:
 		_visual.play_state(&"idle")
 	elif speed <= WALK_MAX_SPEED:

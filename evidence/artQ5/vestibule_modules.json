@@ -1,0 +1,18 @@
+{
+  "commit": "888b7036ec04b0eb7da7fc667475db2cfcd72afa",
+  "display_server": "X11",
+  "distinct_colors_sampled": 2200,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 60,
+  "height": 1080,
+  "label": "artq5_vestibule_modules",
+  "luma_mean": 0.119,
+  "luma_stddev": 0.0833,
+  "png": "evidence/artQ5/vestibule_modules.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/world/citadel/CitadelVestibule.tscn",
+  "timestamp_utc": "2026-08-02 05:49:04",
+  "width": 1920
+}

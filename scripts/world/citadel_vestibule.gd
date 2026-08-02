@@ -44,6 +44,7 @@ func _build_room() -> void:
 		var x: float = -6.0 if i % 2 == 0 else 6.0
 		var z: float = -9.0 + 9.0 * float(i / 2)
 		_box("Column%d" % i, Vector3(x, 4.5, z), Vector3(1.2, 9, 1.2), COL_STONE)
+		_dress_column(i, Vector3(x, 0.0, z))
 	# Braseros (réf. 02 : flammes chaudes dans l'axe) — le CONTRASTE chaud/froid
 	# du donjon commence ici : ambre motivé contre veine cyan (§7.8).
 	for i: int in range(4):
@@ -67,6 +68,16 @@ func _build_room() -> void:
 	_box("SealedSeam", Vector3(0, 3, -12.65), Vector3(0.3, 5.4, 0.1), COL_CYAN, true)
 	_box("SealedLintel", Vector3(0, 6.6, -12.8), Vector3(6.4, 0.8, 0.7),
 		Color(0.42, 0.30, 0.18))
+	# ART-Q5 : portail de pierre de production autour du seuil scellé —
+	# l'arche encadre la masse sombre, décor pur (la collision du mur nord et
+	# le SealedDoor gameplay ne bougent pas). ×2.3 : ouverture 3,7 × 5,9 m.
+	var seal_frame: PackedScene = AssetRegistry.resolve(&"arch.gate.module")
+	if seal_frame != null:
+		var frame: Node3D = seal_frame.instantiate() as Node3D
+		frame.name = "SealedDoorFrame"
+		frame.position = Vector3(0, 0, -12.45)
+		frame.scale = Vector3(2.3, 2.3, 1.4)
+		add_child(frame)
 
 	var exit_door: SceneDoor = SceneDoor.new()
 	exit_door.name = "ExitDoor"
@@ -90,6 +101,34 @@ func _build_room() -> void:
 	exit_door.add_child(mesh)
 	exit_door.position = Vector3(0, 3, 13.4)   # AVANT add_child (règle D.0)
 	add_child(exit_door)
+
+
+## ART-Q5 — colonne de production : TROIS modules de pilier empilés
+## (3 × 3,04 m ≈ 9,1 m, architecture modulaire réelle) remplacent le visuel
+## graybox ; la COLLISION boîte de la colonne reste l'autorité. Repli :
+## le graybox reste visible, rien d'autre ne change.
+func _dress_column(index: int, foot: Vector3) -> void:
+	var packed: PackedScene = AssetRegistry.resolve(&"arch.column.module")
+	if packed == null:
+		return
+	var column_body: Node = get_node_or_null("Column%d" % index)
+	if column_body != null:
+		for child: Node in column_body.get_children():
+			if child is MeshInstance3D:
+				(child as MeshInstance3D).visible = false
+	var stack: Node3D = Node3D.new()
+	stack.name = "ColumnStack%d" % index
+	stack.position = foot
+	# Alternance de lacet par segment : les briques ne se répètent pas en
+	# pile parfaite (§7.3 : variation contre la répétition).
+	for level: int in range(3):
+		var segment: Node3D = packed.instantiate() as Node3D
+		segment.name = "Segment%d" % level
+		segment.position = Vector3(0, 3.04 * float(level), 0)
+		segment.rotation.y = PI * 0.5 * float((index + level) % 4)
+		segment.scale = Vector3(1.6, 1.0, 1.6)
+		stack.add_child(segment)
+	add_child(stack)
 
 
 func _box(box_name: String, center: Vector3, size: Vector3, color: Color,

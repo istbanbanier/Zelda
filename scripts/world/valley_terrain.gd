@@ -466,6 +466,28 @@ func _build_dungeon_plateau_and_citadel() -> void:
 		Vector3(0.8, 6.0, 0.6), COL_CYAN, false, true)
 	_box_in("DoorFrameTop", citadel, Vector3(0, 34 + 6.2, -197.8),
 		Vector3(5.2, 0.8, 0.6), COL_CYAN, false, true)
+	# ART-Q5 : l'arche de pierre de production HABILLE le seuil réel — même
+	# module que le vestibule (continuité de matière), à l'échelle
+	# monumentale. Décor pur : la SceneDoor et ses cotes ne bougent pas.
+	var gate_frame: PackedScene = AssetRegistry.resolve(&"arch.gate.module")
+	if gate_frame != null:
+		var frame: Node3D = gate_frame.instantiate() as Node3D
+		frame.name = "GateStoneArch"
+		frame.position = Vector3(0, 34.0, -197.4)
+		frame.scale = Vector3(2.5, 2.45, 1.5)
+		citadel.add_child(frame)
+	# Piliers de production au pied des marches : le langage modulaire de la
+	# citadelle commence AVANT la porte.
+	var flank: PackedScene = AssetRegistry.resolve(&"arch.column.module")
+	if flank != null:
+		for side_index: int in range(2):
+			var pillar: Node3D = flank.instantiate() as Node3D
+			pillar.name = "GateFlankPillar%d" % side_index
+			pillar.position = Vector3(-8.6 if side_index == 0 else 8.6,
+				34.0, -191.2)
+			pillar.rotation.y = PI * 0.5 * float(side_index)
+			pillar.scale = Vector3(1.8, 1.5, 1.8)
+			citadel.add_child(pillar)
 	var door: SceneDoor = SceneDoor.new()
 	door.name = "CitadelDoor"
 	door.verb = "Entrer"

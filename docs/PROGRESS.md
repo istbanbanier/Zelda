@@ -1061,3 +1061,20 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > **PROCHAINE ACTION (ART-Q5)** : architecture pénétrable — façade
 > citadelle + vestibule avec les modules pierre (porte/mur/colonne),
 > système de scène préservé.
+
+## 2026-08-02 (nuit) — ART-Q5 : architecture pénétrable
+
+> Vestibule : les SIX colonnes graybox gardent leurs collisions boîte ;
+> le visuel est une PILE de trois modules de pilier (3×3,04 m ≈ 9,1 m,
+> lacet alterné par segment — le module étant une pièce d'angle, la pile
+> lit « tour brute » ; candidate à l'harmonisation Q6, verdict humain).
+> Seuil scellé encadré du portail de pierre (×2,3). Façade vallée : la
+> MÊME arche à l'échelle monumentale (continuité de matière) + deux
+> piliers de flanc au pied des marches. SceneDoors aller/retour, cotes
+> et volumes d'interaction : INTACTS (testés). **Correctif au passage** :
+> la retenue de réception du pilote visuel comptait en ms murales —
+> instable en headless rapide ; passée en TICKS physiques (§20.9).
+> Tests 309 → **311**. Capture : evidence/artQ5/vestibule_modules.png
+> (contraste ambre/cyan §7.8 sur vraie pierre).
+> **PROCHAINE ACTION (ART-Q6)** : cohérence lumière/matériaux/palette V4
+> sur les captures de référence (vista, camp, vestibule, calibration).
