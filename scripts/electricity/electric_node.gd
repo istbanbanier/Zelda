@@ -58,6 +58,11 @@ var _powered: bool = false
 var _power: float = 0.0
 ## Voisins RÉELLEMENT connectés au dernier calcul (§15.1).
 var _neighbours: Array[ElectricNode] = []
+## Nombre de sauts depuis la source la plus proche au dernier calcul.
+## -1 = non atteint. C'est ce qui permet à la présentation d'étaler la
+## montée du cyan le long du câble (§15.4 : « ligne cyan qui se PROPAGE
+## de 0 à 1 »), sans que la logique connaisse le rendu.
+var _hop: int = -1
 
 
 func _ready() -> void:
@@ -125,6 +130,16 @@ func is_powered() -> bool:
 
 func power() -> float:
 	return _power
+
+
+## Posé par le graphe AVANT `set_powered` : la présentation lit une
+## profondeur déjà à jour quand le signal arrive.
+func set_hop_depth(value: int) -> void:
+	_hop = value
+
+
+func hop_depth() -> int:
+	return _hop
 
 
 ## Remplacé par le graphe à chaque reconstruction. Émet

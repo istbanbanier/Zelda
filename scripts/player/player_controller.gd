@@ -62,6 +62,20 @@ const STEP_LANDING_MARGIN: float = 0.05
 ## franchissement serait une surprise, pas un service. Voir `_maybe_step_up()`.
 const WALL_PUSH_MIN_DOT: float = 0.3
 
+## Poussée des objets physiques (§14.1). `move_and_slide()` ne pousse rien
+## de lui-même : un `CharacterBody3D` traverse la scène sans jamais déplacer
+## un `RigidBody3D`. La poussée se fait donc par IMPULSION, sur les corps
+## rapportés par les collisions de glissement — jamais en écrivant leur
+## transform (§14.1 : « pas de modification directe répétée de transform
+## d'un rigid body actif »).
+## Réponse : fraction de l'écart de vitesse rattrapé par tick — 0,35 donne
+## un démarrage franc en ~3 ticks, sans le à-coup d'une impulsion pleine.
+const PUSH_RESPONSE: float = 0.35
+## §14.1 : « vitesses maximum ». Un bloc ne dépasse jamais la marche.
+const PUSH_MAX_SPEED: float = 2.2
+## Sous cette vitesse d'approche, le joueur frôle l'objet, il ne pousse pas.
+const PUSH_MIN_SPEED: float = 0.15
+
 @export var tuning: LocomotionTuning
 
 @onready var _visual_root: Node3D = $VisualRoot
@@ -93,6 +107,9 @@ var _use_reader: bool = true
 var _coyote_timer: float = 0.0
 var _jump_buffer_timer: float = 0.0
 var _was_on_floor: bool = true
+## Vitesse horizontale VOULUE au dernier tick (avant collision) — sert à
+## la poussée des objets physiques.
+var _desired_horizontal: Vector3 = Vector3.ZERO
 
 var _mode: Mode = Mode.LOCOMOTION
 ## Normale de paroi lissée (§9.2 : « lissage normale 0,08–0,16 s »). Sans ce
@@ -294,6 +311,12 @@ func _process_locomotion(delta: float, intent: InputIntent) -> void:
 	var was_on_floor: bool = is_on_floor()
 	var vertical_before: float = velocity.y
 	move_and_slide()
+	# La vitesse VOULUE, jamais la vitesse constatée : contre un obstacle,
+	# `move_and_slide()` remet la composante entrante à ~0 et l'accélération
+	# repart de zéro au tick suivant — mesuré : impulsion plafonnée à
+	# 5,6 N·s, sous le seuil de frottement du bloc, donc bloc immobile en
+	# 600 ticks de marche.
+	_push_physics_props(_desired_horizontal)
 	_detect_ground_transitions(was_on_floor, vertical_before)
 
 	# Franchissement de marche avant l'accroche : une marche de 30 cm doit se
@@ -404,6 +427,10 @@ func _apply_horizontal_motion(delta: float, intent: InputIntent, sprinting: bool
 	if intent.aim_held and is_on_floor():
 		speed = minf(speed, tuning.walk_speed)
 	var desired: Vector3 = wish * speed
+	# Mémorisée pour la poussée des objets physiques : contre un obstacle,
+	# la vitesse RÉELLE est rabotée à chaque tick par le glissement, alors
+	# que l'intention, elle, reste pleine (§14.1).
+	_desired_horizontal = desired
 
 	var horizontal: Vector3 = Vector3(velocity.x, 0.0, velocity.z)
 	var rate: float = 0.0
@@ -458,6 +485,40 @@ func _orient_visual(delta: float) -> void:
 	# rotation met le même temps réel à converger.
 	var weight: float = 1.0 - exp(-tuning.visual_turn_speed * delta)
 	_visual_root.rotation.y = lerp_angle(_visual_root.rotation.y, target_yaw, weight)
+
+
+## Pousse les corps simulés que le personnage vient de heurter (§14.1).
+##
+## Trois garde-fous, tous nécessaires :
+##   - seuls les corps du groupe `pushable` bougent — un cadavre, une flèche
+##     ou un débris ne se transforment pas en bélier ;
+##   - la vitesse visée est celle du JOUEUR dans l'axe de la poussée, plafonnée
+##     à `PUSH_MAX_SPEED` : impossible de lancer un bloc de 40 kg à travers la
+##     salle en sprintant ;
+##   - l'impulsion est proportionnelle à l'ÉCART restant, donc nulle une fois
+##     le corps à la bonne vitesse : le bloc suit le joueur au lieu de fuir.
+func _push_physics_props(desired_velocity: Vector3) -> void:
+	for i: int in range(get_slide_collision_count()):
+		var collision: KinematicCollision3D = get_slide_collision(i)
+		var body: RigidBody3D = collision.get_collider() as RigidBody3D
+		if body == null or not body.is_in_group("pushable"):
+			continue
+		# La normale pointe VERS le joueur : la poussée va à l'opposé, à plat.
+		var normal: Vector3 = collision.get_normal()
+		var push: Vector3 = Vector3(-normal.x, 0.0, -normal.z)
+		if push.length_squared() < 0.0001:
+			continue
+		push = push.normalized()
+		var approach: float = desired_velocity.dot(push)
+		if approach < PUSH_MIN_SPEED:
+			continue
+		var target: float = minf(approach, PUSH_MAX_SPEED)
+		var current: float = Vector3(body.linear_velocity.x, 0.0,
+			body.linear_velocity.z).dot(push)
+		if current >= target:
+			continue
+		body.apply_central_impulse(
+			push * body.mass * (target - current) * PUSH_RESPONSE)
 
 
 ## Décide s'il y a lieu de tenter un franchissement de marche.

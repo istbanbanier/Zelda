@@ -644,3 +644,39 @@ la fait vivre côté ennemi.
   D.0, mannequins de test D.1R.2, montagnes du terrain D.1R.4 — joueur
   catapulté de 4,6 m par une dalle-fantôme à l'origine). Tout corps physique se
   positionne AVANT son entrée dans l'arbre, y compris dans les générateurs.
+
+---
+
+## D-027 — F.2 : comment un joueur pousse 40 kg, et comment la lumière voyage
+
+- **Date** : 2026-08-02 · **Phase** : F (jalon F.2) · **Statut** : ACTÉ
+- **Poussée par IMPULSION, jamais par transform** (§14.1). `move_and_slide()` ne
+  déplace aucun `RigidBody3D` : la poussée est une impulsion appliquée aux corps
+  du groupe `pushable` rapportés par les collisions de glissement. Alternative
+  rejetée : écrire le transform du bloc (interdit par §14.1, et le solveur
+  reprend la main au tick suivant avec un état incohérent).
+- **La poussée se mesure sur la vitesse VOULUE, pas sur la vitesse constatée.**
+  Mesuré : contre un obstacle, `move_and_slide()` remet à ~0 la composante
+  entrante, l'accélération repart de zéro et l'impulsion plafonne à 5,6 N·s —
+  sous le seuil de frottement du bloc, qui reste alors immobile 600 ticks
+  durant. Le contrôleur mémorise donc `_desired_horizontal` avant collision.
+- **Frottement du bloc à 0,4** (`PhysicsMaterial`). À 1,0 (défaut), le seuil de
+  glissement d'un corps de 40 kg dépasse ce qu'une poussée plafonnée peut
+  fournir : métal poli sur dalle de pierre, c'est aussi le choix physique juste.
+- **Vitesse de poussée plafonnée à 2,2 m/s** (§14.1 « vitesses maximum ») :
+  impossible de catapulter un objet d'énigme en sprintant dedans.
+- **La porte du puzzle est LATCHÉE ouverte** (§15.11 anti-softlock). Une porte
+  qui se refermerait dès que le bloc bouge pourrait enfermer le joueur du
+  mauvais côté. Le reset rejoue l'énigme ; il ne retire jamais un acquis.
+- **La propagation visible passe par la profondeur BFS**, pas par un timer de
+  salle : le graphe publie `hop_depth` avant d'émettre `power_changed`, et la
+  présentation en fait un retard (0,05 s par saut). La logique reste
+  instantanée — c'est la LUMIÈRE qui voyage (§15.4). Alternative rejetée :
+  animer la propagation dans le graphe, qui aurait mêlé rendu et logique et
+  rendu les tests de §15.2 dépendants du temps.
+- **Une butée matérielle ferme le couloir de poussée.** Mesuré : même lancé à
+  40 m/s, le bloc s'arrête au contact et le circuit se ferme. C'est la lecture
+  littérale de « solution impossible à perdre » (§15.5).
+- **`DungeonRoom` comme coque commune** (une seule couche d'héritage) : reset,
+  respawn, sauvegarde fusionnée dans le slot commun et helpers de graybox. Les
+  salles 2 à 4 en héritent au lieu de recopier leur anti-softlock.

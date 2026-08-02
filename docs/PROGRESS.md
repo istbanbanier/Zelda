@@ -1672,3 +1672,37 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > exactement : source et récepteur séparés par un vide court, bloc
 > métallique mobile, deux plaques, ouverture différée 0,6-1,2 s, bouton
 > reset, solution impossible à perdre).
+
+## 2026-08-02 (Phase F, F.2) — salle 1 d'initiation, testable seule
+
+> §15.5 implémenté ligne à ligne dans une scène qui se joue et se teste
+> **isolément** : source à l'ouest, deux plaques séparées par 2,8 m de
+> vide (contre 0,85 m de portée de port : le vide est un VRAI vide),
+> bloc métallique de 40 kg poussé dans un couloir guidé, butée qui
+> l'arrête EXACTEMENT au contact, propagation lumineuse qui parcourt le
+> circuit, anneau du récepteur qui se ferme, porte différée de 0,9 s
+> (fenêtre 0,6-1,2 s mesurée tick par tick), bouton de reset, aucun
+> texte dans la salle. La salle ouvre sur un couloir réel terminé par un
+> seuil honnêtement scellé — une porte qui donnerait sur le néant serait
+> un mensonge, pas un raccourci.
+> Le test central ne triche pas : le joueur MARCHE (déplacement relatif
+> à la caméra, aucune téléportation, aucun transform écrit), pousse le
+> bloc sur 7 m et la porte s'ouvre. Pour qu'il passe, il a fallu ajouter
+> au contrôleur la poussée d'objets physiques de §14.1 — impulsions
+> bornées sur les corps du groupe `pushable`, jamais d'écriture de
+> transform — et découvrir par la mesure que la poussée doit se calculer
+> sur la vitesse VOULUE : après `move_and_slide()`, la composante qui
+> entre dans l'obstacle vaut ~0, l'impulsion tombe sous le seuil de
+> frottement et le bloc reste immobile 600 ticks durant (mesuré, D-027).
+> Anti-softlock §15.11 couvert par quatre tests : reset qui rejoue
+> l'énigme sans refermer la porte, bloc jeté hors du monde qui revient
+> en 1-2 s à son transform de secours (§14.3), rechargement DEPUIS LE
+> DISQUE d'une salle résolue (porte ouverte à la première image) et
+> d'une salle à mi-résolution (ni résolue, ni bloquée, encore soluble).
+> 11 tests `--filter=room1`, plancher relevé.
+> **PROCHAINE ACTION (F.3)** : salle 2, circuit vertical (§15.6) —
+> ascenseur non alimenté, puits latéral escaladable, électrodes
+> intermittentes au rythme observable, interrupteur supérieur qui
+> redirige le courant, corniches de repos, une jauge d'endurance pleine
+> qui suffit, chute qui renvoie à un palier proche, ascenseur qui ne
+> peut ni écraser ni coincer le joueur, état sauvegardé cohérent.

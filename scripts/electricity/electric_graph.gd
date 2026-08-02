@@ -30,6 +30,9 @@ signal graph_recomputed(powered_receivers: int)
 var _dirty: bool = true
 var _recompute_count: int = 0
 var _nodes: Array[ElectricNode] = []
+## Profondeur BFS par nœud au dernier calcul (0 = source). Sert à la
+## PRÉSENTATION seule ; la propagation logique, elle, est instantanée.
+var _hops: Dictionary[ElectricNode, int] = {}
 
 
 func _ready() -> void:
@@ -59,6 +62,9 @@ func recompute() -> void:
 	var powered_receivers: int = 0
 	for node: ElectricNode in _nodes:
 		var power: float = float(reached.get(node, 0.0))
+		# La profondeur AVANT le signal : la présentation en a besoin au
+		# moment même où elle apprend qu'elle s'allume.
+		node.set_hop_depth(int(_hops.get(node, -1)))
 		# §15.2 pt. 8-9 : idempotent — le signal ne part qu'au changement.
 		node.set_powered(power > 0.0, power)
 		if node.kind == ElectricNode.Kind.RECEIVER and power > 0.0:
@@ -128,9 +134,11 @@ func _flows_compatible(flow_a: int, flow_b: int) -> bool:
 func _propagate() -> Dictionary[ElectricNode, float]:
 	var reached: Dictionary[ElectricNode, float] = {}
 	var queue: Array[ElectricNode] = []
+	_hops.clear()
 	for node: ElectricNode in _nodes:
 		if node.is_emitting():
 			reached[node] = node.source_power
+			_hops[node] = 0
 			queue.append(node)
 	var head: int = 0
 	while head < queue.size():
@@ -152,6 +160,11 @@ func _propagate() -> Dictionary[ElectricNode, float]:
 					and float(reached[neighbour]) >= transmitted - 0.0001:
 				continue
 			reached[neighbour] = transmitted
+			# Le chemin le plus court l'emporte : un nœud re-visité par une
+			# branche plus longue garde sa profondeur d'origine.
+			var depth: int = int(_hops.get(current, 0)) + 1
+			if not _hops.has(neighbour) or depth < int(_hops[neighbour]):
+				_hops[neighbour] = depth
 			queue.append(neighbour)
 	return reached
 

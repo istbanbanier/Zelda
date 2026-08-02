@@ -71,10 +71,12 @@ height = 1.8
 [sub_resource type="BoxShape3D" id="SwordSweep"]
 size = Vector3(1.4, 1.0, 1.1)
 
-; Masque 1|4 : décor + ennemis (PT-D1-02 : les corps ne se traversent plus).
+; Masque 1|4|128 : décor + ennemis (PT-D1-02 : les corps ne se traversent plus)
+; + Physics Prop (F.2, §14.1 : sans ce bit, aucune collision de glissement n'est
+; rapportée contre un bloc poussable — le joueur le traverserait).
 [node name="Player" type="CharacterBody3D" groups=["player", "damageable"]]
 collision_layer = 2
-collision_mask = 5
+collision_mask = 133
 script = ExtResource("1_player")
 tuning = ExtResource("4_tuning")
 dodge = ExtResource("19_dodge")

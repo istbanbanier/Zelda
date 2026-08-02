@@ -150,7 +150,7 @@ llvmpipe uniquement, aucun GPU.
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
 | D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres, CINQ familles ennemies | **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE** (`docs/GATE_D_AUDIT.md`, passe 2) : items 16/17/19 PASS, 18 PARTIEL (4 coffres sur 8, solde en Phase F, documenté), 20 PASS automatique sans essai humain. Les cinq familles de §12 existent, diffèrent par stats/arme/portée/carrure/comportement et sont testées (107 assertions transverses + 47 par famille) |
 | E | Récolte, cuisine, buffs, sauvegarde et migrations | **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE** (`docs/GATE_E_AUDIT.md`) : les huit items §22 Phase E PASS sur preuves rejouées, chaîne complète récolte→cuisine→buff→save/load testée de bout en bout. Non couvert : animation de cuisson (Phase H) et essai humain |
-| F | Graphe électrique, 4 salles, salle centrale, antichambre | Non commencé (après fermeture du Gate D) |
+| F | Graphe électrique, 4 salles, salle centrale, antichambre | **En cours** — F.1 (graphe en sandbox automatisée, 11 tests) et F.2 (salle 1 d'initiation, 11 tests) livrés ; F.3 à F.8 restants |
 | G | Arène, boss 3 phases, solvabilité, victoire | Non commencé |
 | H | Art « wahou », WOW Gate ≥ 85/100 | **Bloqué** — ISS-002 |
 | I | LOD, profilage, presets, exports, session 60 min | **Bloqué** — ISS-002 |
@@ -452,6 +452,23 @@ Revue contradictoire à contexte frais : **PASS global, zéro S0-S3**
 | Liaison turquoise héros↔citadelle (§7.11), peau non teintée | **Fonctionnel** | `test_the_turquoise_tint…` ; `evidence/artQ6/ref_vista.png` |
 | `prop.tent`, `prop.campfire` | **Bloqué** (absents des 7 packs) | inventaire consigné — options futures |
 | Qualité artistique perçue | **EN ATTENTE** (verdict humain, §0.2) | protocole : `docs/PLAYTEST_ARTQ.md` |
+
+## Phase F — jalons F.1 et F.2 : graphe électrique et salle d'initiation
+
+L'ordre de §22 est respecté : le graphe a été construit et testé en **sandbox
+automatisée** avant qu'une seule salle n'existe.
+
+| Élément | État | Preuve |
+|---|---|---|
+| `ElectricNode` — §15.1 complet (ID stable, ports orientés en local, conductivité, `enabled`, signaux, `set_powered` idempotent, zéro rendu) | **Fonctionnel** | `--filter=electric_graph` (11 tests) |
+| `ElectricGraph` — §15.2 point par point (marquage `dirty`, regroupement par tick, contacts réels port-à-port, BFS depuis toutes les sources, cycles bornés, signaux au seul changement) | **Fonctionnel** | idem : cycle de 4 câbles qui termine, 10 marquages = 1 recalcul, 20 ticks inactifs = 0 |
+| Salle 1 §15.5 — source, vide court, deux plaques, bloc mobile, propagation visible, porte différée, reset, solution imperdable | **Fonctionnel** | `--filter=room1` (11 tests) |
+| Le bloc est poussé **par le joueur**, à la marche, sans téléportation | **Fonctionnel** | `test_the_player_pushes_the_block_and_opens_the_door` : 7 m de poussée réelle, porte ouverte |
+| Délai d'ouverture dans la fenêtre 0,6-1,2 s | **Validé** | mesuré tick par tick (`test_the_door_waits_between_06_and_12_seconds`) |
+| Propagation lumineuse (le cyan voyage, il ne s'allume pas d'un bloc) | **Fonctionnel** | `test_the_light_travels_along_the_circuit` : le début du circuit est allumé avant sa fin |
+| Anti-softlock §15.11 : reset, respawn hors-monde, porte latchée, rechargement en milieu de résolution | **Fonctionnel** | 4 tests dédiés, dont le rechargement depuis le disque |
+| Poussée d'objets physiques par le joueur (§14.1, impulsions bornées) | **Fonctionnel** | `PlayerController._push_physics_props` ; masque du joueur étendu à la couche Physics Prop |
+| Ergonomie de la poussée, lisibilité de l'énigme sans texte | **EN ATTENTE** (verdict humain) | `docs/MANUAL_VALIDATION.md` |
 
 ## Checklist finale (§26) — état réel
 
