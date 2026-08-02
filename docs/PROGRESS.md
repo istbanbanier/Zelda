@@ -1647,3 +1647,28 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > électrique dans une SANDBOX AUTOMATISÉE, avant toute salle — types de
 > nœuds §15.1, algorithme §15.2 (marquage dirty, BFS depuis les sources,
 > cycles sans récursion infinie, signaux seulement au changement).
+
+## 2026-08-02 (Phase F, F.1) — graphe électrique en sandbox automatisée
+
+> §22 exige le graphe AVANT toute salle : c'est fait, et rien d'autre
+> n'a été construit. `ElectricNode` (§15.1 au complet : ID stable, ports
+> ORIENTÉS en espace local, conductivité, enabled, signaux
+> connection_changed/power_changed, set_powered IDEMPOTENT, aucune
+> ligne de rendu) et `ElectricGraph` (§15.2 point par point : marquage
+> dirty, regroupement jusqu'à la fin du tick, reconstruction des
+> contacts réels port-à-port avec tolérance et sens, BFS depuis TOUTES
+> les sources avec ensemble visited, signaux au seul changement).
+> 11 tests en sandbox — aucun n'est une salle : circuit droit et nœud
+> orphelin hors de portée, interrupteur ouvert qui reçoit sans
+> transmettre, isolant sans même un voisin, CYCLE de quatre câbles qui
+> termine, dix marquages = UN recalcul et vingt ticks inactifs = ZÉRO,
+> trois recalculs identiques = un seul signal, bloc mobile qui relie
+> deux plaques (le cœur de §15.5, prouvé hors salle), relais tourné d'un
+> quart qui COUPE la ligne (§15.7), batterie qui alimente loin de toute
+> source (§15.8), sauvegarde qui restaure les interrupteurs et RECALCULE
+> l'alimentation (§19.1), validateur d'IDs vides et dupliqués (§19.3).
+> Plancher 378.
+> **PROCHAINE ACTION (F.2)** : salle 1 grayboxée et testée SEULE (§15.5
+> exactement : source et récepteur séparés par un vide court, bloc
+> métallique mobile, deux plaques, ouverture différée 0,6-1,2 s, bouton
+> reset, solution impossible à perdre).
