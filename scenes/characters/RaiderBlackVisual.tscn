@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3]
+
+; ART-Q2 — pillard obsidienne : modèle Male_Peasant (Quaternius CC0) teinté
+; « obsidienne », AnimationPlayer chargé de AL_RaiderStates.res (audit de root
+; motion : evidence/artQ2/). Même squelette 65 os que les UAL : les pistes
+; "Armature/Skeleton3D:<os>" résolvent directement.
+
+[ext_resource type="Script" path="res://scripts/characters/character_model_sockets.gd" id="1_sockets"]
+[ext_resource type="PackedScene" path="res://assets/characters/enemies/Male_Peasant.gltf" id="2_peasant"]
+[ext_resource type="AnimationLibrary" path="res://assets/animations/AL_RaiderStates.res" id="3_states"]
+
+[node name="RaiderBlackVisual" type="Node3D"]
+script = ExtResource("1_sockets")
+tint = Color(0.28, 0.26, 0.3, 1.0)
+
+[node name="Model" parent="." instance=ExtResource("2_peasant")]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+root_node = NodePath("../Model")
+libraries = {
+&"": ExtResource("3_states")
+}
+autoplay = "Idle"

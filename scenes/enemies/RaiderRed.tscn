@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=14 format=3]
 
 ; Pillard braise (§12.1) — graybox : capsule terre cuite, nez indiquant le
 ; regard, gourdin invisible (le volume de frappe suffit ; le modèle vient en
@@ -13,6 +13,8 @@
 [ext_resource type="Script" path="res://scripts/components/hitbox_component.gd" id="6_hitbox"]
 [ext_resource type="Script" path="res://scripts/combat/attack_controller.gd" id="7_attack"]
 [ext_resource type="Resource" path="res://resources/combat/raider/club_1.tres" id="8_club"]
+[ext_resource type="Script" path="res://scripts/characters/character_visual.gd" id="9_visual"]
+[ext_resource type="Resource" path="res://resources/characters/raider_anim_set.tres" id="10_animset"]
 
 [sub_resource type="CapsuleShape3D" id="BodyShape"]
 radius = 0.38
@@ -39,6 +41,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
 shape = SubResource("BodyShape")
 
 [node name="Pivot" type="Node3D" parent="."]
+
+; ART-Q2 : adaptateur du modèle riggé (char.raider_red). S'il résout, le
+; graybox se masque et le gourdin rejoint la main animée ; sinon repli
+; total. Capsule et volumes de combat inchangés.
+[node name="CharacterVisual" type="Node3D" parent="Pivot"]
+script = ExtResource("9_visual")
+model_id = &"char.raider_red"
+anim_set = ExtResource("10_animset")
 
 [node name="BodyMesh" type="MeshInstance3D" parent="Pivot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)

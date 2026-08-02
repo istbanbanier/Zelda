@@ -102,8 +102,8 @@ func test_the_hero_scene_mounts_skeleton_clips_and_the_three_sockets() -> void:
 	## HeroVisual.tscn : squelette 65 os, AnimationPlayer couvrant les 12
 	## états du CharacterAnimSet, et les TROIS sockets de l'ordre (main
 	## d'arme, dos, arc) attachés aux bons os.
-	var hero: HeroVisualModel = (load("res://scenes/characters/HeroVisual.tscn")
-		as PackedScene).instantiate() as HeroVisualModel
+	var hero: CharacterModelSockets = (load("res://scenes/characters/HeroVisual.tscn")
+		as PackedScene).instantiate() as CharacterModelSockets
 	_tree().root.add_child(hero)
 	await _settle(1)
 	var skeleton: Skeleton3D = hero.find_children("*", "Skeleton3D", true,

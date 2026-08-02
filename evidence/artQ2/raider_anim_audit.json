@@ -38,7 +38,7 @@
       "pelvis_track": true,
       "range_m": 0.237270310521126,
       "source": "UAL1_Standard.glb",
-      "state": "run"
+      "state": "sprint"
     },
     "Jump": {
       "drift_m": 0.0,
@@ -70,6 +70,26 @@
       "source": "UAL1_Standard.glb",
       "state": "jump"
     },
+    "Melee_Hook": {
+      "drift_m": 0.210479378700256,
+      "length_s": 0.466666668653488,
+      "loop": false,
+      "node_motion": false,
+      "pelvis_track": true,
+      "range_m": 0.30735045671463,
+      "source": "UAL2_Standard.glb",
+      "state": "attack_light"
+    },
+    "OverhandThrow": {
+      "drift_m": 0.0,
+      "length_s": 1.33333337306976,
+      "loop": false,
+      "node_motion": false,
+      "pelvis_track": true,
+      "range_m": 0.265975028276443,
+      "source": "UAL2_Standard.glb",
+      "state": "attack_heavy"
+    },
     "Roll": {
       "drift_m": 0.367854744195938,
       "length_s": 1.46666669845581,
@@ -79,36 +99,6 @@
       "range_m": 1.09191811084747,
       "source": "UAL1_Standard.glb",
       "state": "dodge"
-    },
-    "Sprint": {
-      "drift_m": 0.0,
-      "length_s": 0.666666686534882,
-      "loop": true,
-      "node_motion": false,
-      "pelvis_track": true,
-      "range_m": 0.139278769493103,
-      "source": "UAL1_Standard.glb",
-      "state": "sprint"
-    },
-    "Sword_Heavy_Combo": {
-      "drift_m": 0.00242569111287594,
-      "length_s": 4.33333349227905,
-      "loop": false,
-      "node_motion": false,
-      "pelvis_track": true,
-      "range_m": 0.618836641311646,
-      "source": "UAL2_Standard.glb",
-      "state": "attack_heavy"
-    },
-    "Sword_Regular_A": {
-      "drift_m": 0.302420824766159,
-      "length_s": 0.433333337306976,
-      "loop": false,
-      "node_motion": false,
-      "pelvis_track": true,
-      "range_m": 0.302420824766159,
-      "source": "UAL2_Standard.glb",
-      "state": "attack_light"
     },
     "Walk": {
       "drift_m": 0.0,

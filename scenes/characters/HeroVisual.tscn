@@ -7,7 +7,7 @@
 ; clips UAL résolvent directement — squelettes identiques (65 os).
 ; Face du modèle = +Z local, convention du NoseMesh graybox.
 
-[ext_resource type="Script" path="res://scripts/characters/hero_visual_model.gd" id="1_model_script"]
+[ext_resource type="Script" path="res://scripts/characters/character_model_sockets.gd" id="1_model_script"]
 [ext_resource type="PackedScene" path="res://assets/characters/hero/Male_Ranger.gltf" id="2_ranger"]
 [ext_resource type="AnimationLibrary" path="res://assets/animations/AL_HeroStates.res" id="3_states"]
 

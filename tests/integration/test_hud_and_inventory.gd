@@ -275,9 +275,9 @@ func test_the_telegraph_is_visible_on_the_raider_body() -> void:
 	raider.position = Vector3(0, 0.1, 1.4)
 	_world.add_child(raider)
 	await _settle(5)
-	var body: MeshInstance3D = raider.get_node("Pivot/BodyMesh") as MeshInstance3D
-	var material: StandardMaterial3D = \
-		body.get_surface_override_material(0) as StandardMaterial3D
+	# ART-Q2 : l'annonce vit sur les matériaux ACTIFS (graybox ou modèle
+	# riggé) — l'accesseur du pillard dit lesquels, le test mesure l'effet.
+	var material: BaseMaterial3D = raider.telegraph_materials()[0]
 	var base_color: Color = material.albedo_color
 
 	var poke: DamageEvent = DamageEvent.new()
@@ -297,8 +297,9 @@ func test_the_telegraph_is_visible_on_the_raider_body() -> void:
 	check(telegraphed, "le corps du pillard change de couleur pendant l'annonce")
 	check(material.albedo_color.r > 0.85 and material.albedo_color.g < 0.35,
 		"…et c'est un rouge franc, pas une nuance")
-	check(raider.get_node_or_null("Pivot/ClubMesh") != null,
-		"le gourdin du pillard est VISIBLE (PT-D1-12)")
+	check(not raider.find_children("ClubMesh", "MeshInstance3D", true,
+		false).is_empty(),
+		"le gourdin du pillard est VISIBLE (PT-D1-12 — dans la main animée)")
 	_teardown()
 
 

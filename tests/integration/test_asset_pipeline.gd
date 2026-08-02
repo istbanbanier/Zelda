@@ -34,8 +34,10 @@ func test_the_registry_resolves_delivered_assets_and_declines_missing_ones() -> 
 		"l'asset LIVRÉ (Épée usée) résout")
 	check(AssetRegistry.resolve(&"char.hero") != null,
 		"le héros LIVRÉ (ART-Q1) résout")
-	check(AssetRegistry.resolve(&"char.raider_red") == null,
-		"l'asset EN ATTENTE (pillard, Q2) replie sur null — graybox autoritaire")
+	check(AssetRegistry.resolve(&"char.raider_red") != null,
+		"le pillard LIVRÉ (ART-Q2) résout")
+	check(AssetRegistry.resolve(&"prop.tent") == null,
+		"l'asset EN ATTENTE (tente, absente des packs) replie sur null")
 	check(AssetRegistry.resolve(&"id.inconnu.xyz") == null,
 		"un id inconnu rend null sans crash")
 
@@ -49,6 +51,8 @@ const DELIVERED_Q0: Array[StringName] = [
 	&"arch.column.module",
 	# ART-Q1 :
 	&"char.hero",
+	# ART-Q2 :
+	&"char.raider_red", &"char.raider_blue", &"char.raider_black",
 ]
 
 
@@ -122,7 +126,7 @@ func test_the_character_visual_falls_back_cleanly_when_the_model_is_missing() ->
 	## ne casse, rien ne s'affiche, le socket est nul (le pivot procédural du
 	## contrôleur reste l'attache), et validate() DIT l'absence.
 	var visual: CharacterVisual = CharacterVisual.new()
-	visual.model_id = &"char.raider_red"   # toujours absent (livraison Q2)
+	visual.model_id = &"prop.tent"   # id connu, fichier absent (aucune tente)
 	visual.anim_set = CharacterAnimSet.new()
 	_tree().root.add_child(visual)
 	await _settle(1)

@@ -65,6 +65,14 @@ var _path_goal: Vector3 = Vector3.INF
 ## lisibilité pour un testeur humain.
 var _body_material: StandardMaterial3D = null
 var _base_color: Color = Color.WHITE
+## ART-Q2 : matériaux qui portent télégraphe/flash/assombrissement de mort —
+## le graybox, OU les matériaux par instance du modèle riggé monté.
+var _feedback_materials: Array[BaseMaterial3D] = []
+var _feedback_bases: Array[Color] = []
+## Modèle de production monté : graybox masqué, gourdin dans la MAIN,
+## bascules procédurales (mort, étourdissement) coupées — les clips portent.
+var _visual: CharacterVisual = null
+var _model_mounted: bool = false
 var _flash_timer: float = 0.0
 const TELEGRAPH_COLOR: Color = Color(0.95, 0.2, 0.12)
 
@@ -105,6 +113,70 @@ func _ready() -> void:
 	club.material_override = club_material
 	club.position = Vector3(0.35, 1.0, 0.35)
 	_pivot.add_child(club)
+	if _body_material != null:
+		_feedback_materials = [_body_material]
+		_feedback_bases = [_base_color]
+	# ART-Q2 : montage du modèle riggé (char.raider_red via le registre).
+	_visual = _pivot.get_node_or_null("CharacterVisual") as CharacterVisual
+	if _visual != null and not _visual.is_fallback_active():
+		_model_mounted = true
+		if body_mesh != null:
+			body_mesh.visible = false
+		_mount_club_in_hand(club)
+		_collect_model_materials()
+		state_changed.connect(_on_state_changed_visual)
+		_visual.play_state(&"idle")
+
+
+## Le gourdin graybox rejoint la main animée : même grammaire de prise que
+## l'épée du joueur — rotation (90,0,0) retenue par capture, longueur du
+## gourdin le long de +Z de la prise.
+func _mount_club_in_hand(club: MeshInstance3D) -> void:
+	var socket: BoneAttachment3D = _visual.weapon_socket()
+	if socket == null:
+		return
+	var grip: Node3D = Node3D.new()
+	grip.name = "ClubGrip"
+	socket.add_child(grip)
+	grip.rotation_degrees = Vector3(90.0, 0.0, 0.0)
+	grip.position = Vector3(0.0, 0.05, 0.0)
+	club.get_parent().remove_child(club)
+	grip.add_child(club)
+	club.position = Vector3(0.0, 0.0, 0.22)
+	club.rotation = Vector3.ZERO
+
+
+## Les matériaux PAR INSTANCE du modèle (dupliqués par la teinte de
+## variante) reçoivent télégraphe et flash — l'annonce de §12.1 survit au
+## masquage du graybox.
+func _collect_model_materials() -> void:
+	_feedback_materials.clear()
+	_feedback_bases.clear()
+	for node: Node in _visual.find_children("*", "MeshInstance3D", true, false):
+		var mesh: MeshInstance3D = node as MeshInstance3D
+		var surfaces: int = mesh.mesh.get_surface_count() if mesh.mesh != null else 0
+		for surface: int in range(surfaces):
+			var material: BaseMaterial3D = 				mesh.get_surface_override_material(surface) as BaseMaterial3D
+			if material != null and not _feedback_materials.has(material):
+				_feedback_materials.append(material)
+				_feedback_bases.append(material.albedo_color)
+
+
+## État IA → clip. Les one-shots (attaque, réaction) redémarrent à chaque
+## entrée d'état ; le reste boucle. Sens unique : rien ne remonte vers l'IA.
+func _on_state_changed_visual(state: StringName) -> void:
+	match state:
+		&"idle": _visual.play_state(&"idle")
+		&"chase": _visual.play_state(&"run")
+		&"retreat": _visual.play_state(&"walk")
+		&"attack": _visual.play_state(&"attack_light", true)
+		&"staggered": _visual.play_state(&"hurt", true)
+		&"dead": _visual.play_state(&"death")
+
+
+## Matériaux actifs du feedback — accesseur de test : l'annonce se MESURE.
+func telegraph_materials() -> Array[BaseMaterial3D]:
+	return _feedback_materials
 
 
 func _physics_process(delta: float) -> void:
@@ -352,11 +424,13 @@ func _on_died(_event: DamageEvent) -> void:
 	_enter(State.DEAD)
 	_hurtbox.set_deferred("monitorable", false)
 	set_deferred("collision_layer", 0)
-	# La mort se VOIT (PT-D1-03) : le corps bascule au sol.
-	_pivot.rotation.x = -1.45
-	if _body_material != null:
-		_body_material.albedo_color = _base_color.darkened(0.5)
-		_body_material.emission_enabled = false
+	# La mort se VOIT (PT-D1-03) : bascule graybox, ou clip Death01 qui
+	# couche le corps quand le modèle est monté (jamais les deux).
+	if not _model_mounted:
+		_pivot.rotation.x = -1.45
+	for i: int in range(_feedback_materials.size()):
+		_feedback_materials[i].albedo_color = _feedback_bases[i].darkened(0.5)
+		_feedback_materials[i].emission_enabled = false
 	set_physics_process(false)
 	died.emit()
 
@@ -364,23 +438,30 @@ func _on_died(_event: DamageEvent) -> void:
 ## Télégraphe, flash et étourdissement — pilotés par l'ÉTAT, jamais l'inverse
 ## (§10.6 : la présentation suit le contrat).
 func _update_feedback(delta: float) -> void:
-	if _body_material == null:
+	if _feedback_materials.is_empty():
 		return
 	if _flash_timer > 0.0:
 		_flash_timer = maxf(0.0, _flash_timer - delta)
-		if not _body_material.emission_enabled:
-			_body_material.emission_enabled = true
-			_body_material.emission = Color(1, 1, 1)
-			_body_material.emission_energy_multiplier = 1.6
-	elif _body_material.emission_enabled:
-		_body_material.emission_enabled = false
-	# Annonce (§12.1 : télégraphe 0,65-0,95 s) : rouge franc pendant le startup.
-	if _state == State.ATTACK \
-			and _attack.phase() == AttackControllerComponent.Phase.STARTUP:
-		_body_material.albedo_color = TELEGRAPH_COLOR
-	elif _state != State.DEAD:
-		_body_material.albedo_color = _base_color
-	# Étourdissement penché, redressé partout ailleurs (sauf mort, couchée).
+	var flash_on: bool = _flash_timer > 0.0
+	var telegraphing: bool = _state == State.ATTACK \
+		and _attack.phase() == AttackControllerComponent.Phase.STARTUP
+	for i: int in range(_feedback_materials.size()):
+		var material: BaseMaterial3D = _feedback_materials[i]
+		if flash_on and not material.emission_enabled:
+			material.emission_enabled = true
+			material.emission = Color(1, 1, 1)
+			material.emission_energy_multiplier = 1.6
+		elif not flash_on and material.emission_enabled:
+			material.emission_enabled = false
+		# Annonce (§12.1 : télégraphe 0,65-0,95 s) : rouge franc au startup.
+		if telegraphing:
+			material.albedo_color = TELEGRAPH_COLOR
+		elif _state != State.DEAD:
+			material.albedo_color = _feedback_bases[i]
+	# Étourdissement penché (graybox seulement — le clip Hit_Chest porte la
+	# réaction quand le modèle est monté), redressé partout ailleurs.
+	if _model_mounted:
+		return
 	if _state == State.STAGGERED:
 		_pivot.rotation.x = 0.4
 	elif _state != State.DEAD:

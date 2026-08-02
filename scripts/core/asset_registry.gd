@@ -15,10 +15,12 @@ extends RefCounted
 const CATALOG: Dictionary = {
 	# Production livrée (ART-P0R).
 	&"weapon.worn_sword": "res://scenes/weapons/WornSword.tscn",
-	# Personnages — modèle héros IMPORTÉ (ART-Q0, préview calibration) ;
-	# le câblage animé qui remplit ces .tscn est le lot ART-Q1/Q2.
+	# Personnages — LIVRÉS : héros animé (ART-Q1), pillard animé + variantes
+	# de faction azur/obsidienne prêtes pour la Phase D (ART-Q2).
 	&"char.hero": "res://scenes/characters/HeroVisual.tscn",
 	&"char.raider_red": "res://scenes/characters/RaiderRedVisual.tscn",
+	&"char.raider_blue": "res://scenes/characters/RaiderBlueVisual.tscn",
+	&"char.raider_black": "res://scenes/characters/RaiderBlackVisual.tscn",
 	# Environnement — LIVRÉ (ART-Q0, packs Quaternius CC0, ATTRIBUTIONS.md).
 	&"env.tree.large": "res://scenes/environment/TreeLarge.tscn",
 	&"env.tree.medium": "res://scenes/environment/TreeMedium.tscn",

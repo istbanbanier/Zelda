@@ -1,0 +1,18 @@
+{
+  "commit": "c97efd27ec9b67f6f62e10749f2cba34d77ff461",
+  "display_server": "X11",
+  "distinct_colors_sampled": 260,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 30,
+  "height": 1080,
+  "label": "artq2_calibration_raiders",
+  "luma_mean": 0.5112,
+  "luma_stddev": 0.1426,
+  "png": "evidence/artQ2/calibration_q2_raiders.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/tests/AssetCalibration.tscn",
+  "timestamp_utc": "2026-08-02 05:11:22",
+  "width": 1920
+}

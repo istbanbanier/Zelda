@@ -1002,3 +1002,27 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > vallée héros de dos, épée main/attaque).
 > **PROCHAINE ACTION (ART-Q2)** : pillard animé sur la VRAIE IA
 > (raider_red) + 2 variantes de teinte, mêmes contrats (capsule, hitbox).
+
+## 2026-08-02 (nuit) — ART-Q2 : pillard animé sur la vraie IA + variantes
+
+> Male_Peasant ingéré (12 894 tris, 65 os ; textures Peasant RÉDUITES
+> 4K→2K par Blender — budget §7.10 ennemi standard, réduction mécanique
+> documentée au manifeste). Outil de cuisson GÉNÉRALISÉ
+> (bake_character_animations.gd) : AL_RaiderStates (11 clips, attaque =
+> Melee_Hook — grammaire distincte de l'épée du héros, §12), audit root
+> motion evidence/artQ2/. Wrappers RaiderRed/Blue/BlackVisual (teintes de
+> faction par instance, matériaux dupliqués §5.4) ; CharacterModelSockets
+> généralisé (ex-HeroVisualModel) + teinte. RaiderRed.tscn RÉEL :
+> CharacterVisual sous Pivot, graybox masqué, gourdin REPARENTÉ dans la
+> main animée (même grammaire de prise que l'épée), télégraphe §12.1
+> refondu sur les matériaux ACTIFS (survit au masquage du graybox),
+> bascules procédurales (mort, étourdissement) coupées sous modèle —
+> Death01/Hit_Chest portent. Clips pilotés par le signal state_changed
+> (zéro polling). **Bug moteur compris et traité** : la mise à jour
+> différée du RenderingServer citait des matériaux teintés déjà libérés
+> (« material is null » headless) → surcharges vidées à la sortie de
+> l'arbre (NOTIFICATION_EXIT_TREE). Tests 300 → **304**. Captures :
+> calibration 18 socles, 4 personnages teintés distincts.
+> **PROCHAINE ACTION (ART-Q3)** : camp props production (coffre/caisse/
+> tonneau déjà livrés : les brancher dans la vallée en préservant IDs,
+> loot, interactions ; feu de camp composé ou graybox documenté).
