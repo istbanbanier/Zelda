@@ -1135,3 +1135,16 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > (valley_world). Testé : expiration pilotée → rechargement → aucun buff,
 > aucun multiplicateur résiduel ; le remplacement restait couvert. Aucune
 > valeur de gameplay modifiée. Plancher 315 → **316**.
+
+## 2026-08-02 (nuit V4, lot 2) — catalogue exhaustif automatisé
+
+> `tools/catalog_quaternius.py` (reproductible depuis la Release) : **2162
+> entrées brutes traitées à 100 %** — 805 DOUBLON_FORMAT (FBX/OBJ/copies
+> Unity-UE), 495 SOURCE_TECHNIQUE (bins/licences/blend/mtl), 359
+> DOUBLON_CONTENU (hash identique), 4 VARIANTE_ROOT_MOTION, 81 GALERIE
+> (textures), 61 UTILISÉ_RUNTIME, et **375 modèles canoniques scorés**
+> (grille §7 transparente, mots-clés lisibles dans le script) : 249
+> CANDIDAT_RUNTIME (≥65), 102 À_ADAPTER, 6 REJETÉ. Métriques réelles par
+> modèle (tris, bbox TOUS meshes, matériaux, os, clips). Sorties : JSON
+> (946 Ko), CSV, CATALOG_REPORT.md. Le score est un TRI préparatoire —
+> le verdict artistique reste humain.
