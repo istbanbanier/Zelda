@@ -1177,3 +1177,14 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > tordu ROUGE quittait l'axe de la citadelle pour marquer le coude ouest
 > (accent hors axe, §11.A). Caméra de contrôle DESCENTE (VALLEY_DESCENT).
 > Tests zones+couloir. Plancher 318 → **320**. evidence/v4lot4/.
+
+## 2026-08-02 (nuit V4, lot 5) — le camp habité
+
+> `_dress_camp_life` : 30 éléments — cuisine (chaudron SUR le foyer, table
+> dressée avec pot/tasse/bouteille/carotte, banc, tabouret, seau), réserve
+> (tonneau de pommes, cageots, sacs), coin de travail (enclume, billot +
+> hache, pierre à affûter, corde), râtelier d'armes + épée + bouclier,
+> charrette et bannière à l'entrée, clôture PARTIELLE au nord, abri
+> ASSEMBLÉ (panneau de toit incliné + couche + chandelle — un pillard dort
+> là). Aucune entité gameplay dupliquée (feu, coffre, viande intouchés,
+> §11.D). Test : 30/30 maillages réels. Capture : evidence/v4lot5/.

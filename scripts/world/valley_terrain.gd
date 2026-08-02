@@ -183,6 +183,7 @@ func _build_camp_terrace() -> void:
 	for entry: Array in camp_props:
 		_mount_camp_prop(camp, entry[0] as StringName, entry[1] as Vector3,
 			float(entry[2]), entry[3] as Vector3)
+	_dress_camp_life(camp)
 	# Anneau de galets autour du foyer (env.rock.pebble_*) — décor pur, sans
 	# collision : le foyer de pierre garde la sienne.
 	var pebble_ids: Array[StringName] = [&"env.rock.pebble_a",
@@ -199,6 +200,72 @@ func _build_camp_terrace() -> void:
 		pebble.rotation.y = angle * 3.1
 		pebble.scale = Vector3.ONE * (1.35 + 0.25 * float(i % 3))
 		camp.add_child(pebble)
+
+
+## V4 lot 5 — le camp HABITÉ (§11.D) : cuisine autour du feu, réserve,
+## coin de travail, râtelier d'armes, charrette, clôture partielle, abri
+## assemblé. Décor PUR autour des entités gameplay existantes (feu, coffre,
+## viande) — jamais un doublon d'entité, jamais leur collision.
+func _dress_camp_life(camp: Node3D) -> void:
+	var life: Node3D = Node3D.new()
+	life.name = "CampLife"
+	camp.add_child(life)
+	var placements: Array[Array] = [
+		# Cuisine : chaudron SUR le foyer, table dressée, banc, seau.
+		[&"Cauldron", Vector3(45, 6.18, 64), 0.0, 1.0],
+		[&"Table_Large", Vector3(47.8, 6, 60.3), 0.45, 1.0,
+			Vector3(1.9, 0.9, 1.0), false],
+		[&"Bench", Vector3(47.2, 6, 59.0), 0.45, 1.0],
+		[&"Stool", Vector3(49.4, 6, 61.3), 1.2, 1.0],
+		[&"Pot_1", Vector3(47.5, 6.78, 60.2), 0.8, 1.0],
+		[&"Mug", Vector3(48.1, 6.78, 60.6), 2.1, 1.0],
+		[&"Bottle_1", Vector3(47.9, 6.78, 59.9), 0.0, 1.0],
+		[&"Carrot", Vector3(47.2, 6.78, 60.5), 1.5, 1.0],
+		[&"Bucket_Wooden_1", Vector3(46.6, 6, 61.2), 2.8, 1.0],
+		# Réserve : tonneau de pommes, cageots, sacs à l'entrée de tente.
+		[&"Barrel_Apples", Vector3(50.4, 6, 58.4), 0.6, 1.0],
+		[&"FarmCrate_Apple", Vector3(52.9, 6, 58.1), 1.9, 1.0],
+		[&"FarmCrate_Empty", Vector3(52.2, 6, 57.0), 0.3, 1.0],
+		[&"Bag", Vector3(53.4, 6, 56.2), 2.4, 1.0],
+		[&"Pouch_Large", Vector3(54.3, 6, 56.8), 4.0, 1.0],
+		# Coin de travail : enclume, billot avec hache, pierre à affûter.
+		[&"Anvil", Vector3(41.0, 6, 58.0), 1.1, 1.0,
+			Vector3(0.9, 0.8, 0.6), false],
+		[&"Anvil_Log", Vector3(40.0, 6, 59.3), 0.2, 1.0],
+		[&"Axe_Bronze", Vector3(40.0, 6.55, 59.3), 2.6, 1.0],
+		[&"Whetstone", Vector3(41.9, 6, 57.1), 3.3, 1.0],
+		[&"Rope_1", Vector3(42.6, 6, 58.8), 0.9, 1.0],
+		# Râtelier d'armes près des tentes nord, bouclier appuyé.
+		[&"WeaponStand", Vector3(43.5, 6, 70.2), 2.1, 1.0,
+			Vector3(1.4, 1.6, 0.5), false],
+		[&"Sword_Bronze", Vector3(43.5, 6.62, 70.1), 2.1, 1.0],
+		[&"Shield_Wooden", Vector3(42.6, 6.25, 70.9), 2.6, 1.0],
+		# Charrette à l'entrée sud du camp, bannière de faction.
+		[&"Stall_Cart_Empty", Vector3(40.0, 6, 50.5), 1.35, 1.0,
+			Vector3(2.4, 1.4, 1.6), false],
+		[&"Banner_2", Vector3(41.2, 6, 48.3), 0.1, 1.2],
+		# Clôture PARTIELLE au nord (indice de limite, pas une cage).
+		[&"Prop_WoodenFence_Single", Vector3(38.5, 6, 79.0), 0.15, 1.1],
+		[&"Prop_WoodenFence_Extension1", Vector3(42.6, 6, 79.4), 0.15, 1.1],
+		[&"Prop_WoodenFence_Single", Vector3(47.0, 6, 79.6), 0.4, 1.1],
+		# Abri ASSEMBLÉ (§11.D « abris assemblés ») : panneau de toit incliné
+		# sur la caisse, couche en dessous — un pillard dort là.
+		[&"Roof_Wooden_2x1", Vector3(30.0, 7.4, 72.5), 0.0, 1.6],
+		[&"Bed_Twin1", Vector3(30.0, 6, 73.2), 3.14, 1.0],
+		[&"CandleStick", Vector3(31.3, 6, 71.8), 0.7, 1.0],
+	]
+	for entry: Array in placements:
+		var collision: Vector3 = entry[4] if entry.size() > 4 else Vector3.ZERO
+		_place_model(life, entry[0] as StringName, entry[1] as Vector3,
+			float(entry[2]), float(entry[3]), collision, false)
+	# Le panneau de toit de l'abri s'incline APRÈS le placement.
+	var roof: Node3D = life.get_node_or_null("Roof_Wooden_2x1_27") as Node3D
+	if roof == null:
+		for child: Node in life.get_children():
+			if String(child.name).begins_with("Roof_Wooden"):
+				roof = child as Node3D
+	if roof != null:
+		roof.rotation.z = 0.42   # appui caisse → sol
 
 
 ## Monte un prop du registre (ou sa boîte graybox de repli) avec une

@@ -1,0 +1,18 @@
+{
+  "commit": "74fc5ab684b309fb86b6a64702a14fef2d81bd9f",
+  "display_server": "X11",
+  "distinct_colors_sampled": 1577,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 60,
+  "height": 1080,
+  "label": "v4lot5_camp_life",
+  "luma_mean": 0.7526,
+  "luma_stddev": 0.1545,
+  "png": "evidence/v4lot5/camp_life.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "timestamp_utc": "2026-08-02 09:38:11",
+  "width": 1920
+}
