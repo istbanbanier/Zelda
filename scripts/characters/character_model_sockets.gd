@@ -24,9 +24,12 @@ const SOCKETS: Dictionary = {
 }
 
 ## Teinte de variante multipliée sur l'albédo des matériaux du costume.
-## Blanc = modèle tel que livré (le héros). Les variantes de pillard posent
-## leur couleur de faction ici, dans leur .tscn.
+## Blanc = modèle tel que livré. Les variantes de pillard posent leur
+## couleur de faction ici, dans leur .tscn.
 @export var tint: Color = Color.WHITE
+## Noms de matériaux à teinter — VIDE = tous. Le héros ne teinte que sa
+## tenue (MI_Ranger) vers le turquoise de §7.11 : la peau reste la peau.
+@export var tint_material_filter: PackedStringArray = PackedStringArray()
 
 var _skeleton: Skeleton3D = null
 
@@ -73,6 +76,9 @@ func _apply_tint() -> void:
 			var material: BaseMaterial3D = \
 				mesh.get_active_material(surface) as BaseMaterial3D
 			if material == null:
+				continue
+			if not tint_material_filter.is_empty() \
+					and not tint_material_filter.has(material.resource_name):
 				continue
 			var tinted: BaseMaterial3D = material.duplicate() as BaseMaterial3D
 			tinted.albedo_color = material.albedo_color * tint

@@ -13,6 +13,8 @@
 
 [node name="HeroVisual" type="Node3D"]
 script = ExtResource("1_model_script")
+tint = Color(0.38, 0.92, 1.7, 1.0)
+tint_material_filter = PackedStringArray("MI_Ranger")
 
 [node name="Model" parent="." instance=ExtResource("2_ranger")]
 

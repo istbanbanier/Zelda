@@ -205,3 +205,34 @@ func _damage_event(amount: float) -> DamageEvent:
 	var event: DamageEvent = DamageEvent.new()
 	event.amount = amount
 	return event
+
+
+func test_the_turquoise_tint_touches_the_outfit_and_never_the_skin() -> void:
+	## ART-Q6, §7.11 : « le turquoise relie le héros à la citadelle » — la
+	## teinte est SÉLECTIVE : les surfaces MI_Ranger portent une surcharge
+	## bleutée (b > r), les surfaces MI_Regular_Male (peau) restent VIERGES.
+	var hero: CharacterModelSockets = (load("res://scenes/characters/HeroVisual.tscn")
+		as PackedScene).instantiate() as CharacterModelSockets
+	_tree().root.add_child(hero)
+	await _settle(1)
+	var tinted: int = 0
+	var skin_untouched: bool = true
+	for node: Node in hero.find_children("*", "MeshInstance3D", true, false):
+		var mesh: MeshInstance3D = node as MeshInstance3D
+		var surfaces: int = mesh.mesh.get_surface_count() if mesh.mesh != null else 0
+		for surface: int in range(surfaces):
+			var override: BaseMaterial3D = mesh.get_surface_override_material(
+				surface) as BaseMaterial3D
+			var base: BaseMaterial3D = (mesh.mesh.surface_get_material(surface)
+				if mesh.mesh != null else null) as BaseMaterial3D
+			if base != null and base.resource_name == "MI_Regular_Male" \
+					and override != null:
+				skin_untouched = false
+			if override != null and override.albedo_color.b \
+					> override.albedo_color.r + 0.2:
+				tinted += 1
+	check(tinted >= 8, "les surfaces de la tenue portent la teinte (%d)" % tinted)
+	check(skin_untouched, "la peau (MI_Regular_Male) n'est JAMAIS teintée")
+	hero.get_parent().remove_child(hero)
+	hero.queue_free()
+	await _settle(2)

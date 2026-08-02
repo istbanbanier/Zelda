@@ -1078,3 +1078,18 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > (contraste ambre/cyan §7.8 sur vraie pierre).
 > **PROCHAINE ACTION (ART-Q6)** : cohérence lumière/matériaux/palette V4
 > sur les captures de référence (vista, camp, vestibule, calibration).
+
+## 2026-08-02 (nuit) — ART-Q6 : cohérence palette V4
+
+> Teinte SÉLECTIVE par matériau (tint_material_filter) : le héros teinte
+> sa tenue MI_Ranger vers le turquoise (§7.11 : « le turquoise relie le
+> héros à la citadelle » — accents épaulière/sangles/bottes répondant au
+> cyan de la porte/éclair/pylône dans la vista), la PEAU reste vierge
+> (testé). Choix (0.38, 0.92, 1.7) par balayage de 3 candidates en
+> capture. LIMITE honnête : la capuche saturée résiste au multiplicatif
+> (pas de bleu dans la texture à amplifier) — re-texture complète =
+> décision humaine de Phase H, consignée. Paquet de référence Q6 :
+> evidence/artQ6/ (vista, camp, vestibule, calibration lumière vallée),
+> même état, mêmes caméras — la base de la revue Q7. Tests 311 → **312**.
+> **PROCHAINE ACTION (ART-Q7)** : revue contradictoire à contexte frais,
+> corrections S0/S1/S2 (+S3 contraires à l'ordre), package playtest.

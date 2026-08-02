@@ -1,0 +1,18 @@
+{
+  "commit": "fc9847c57ee0d6fbcc1929338df4d09e5f8747c3",
+  "display_server": "X11",
+  "distinct_colors_sampled": 217,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 30,
+  "height": 1080,
+  "label": "artq6_ref_calibration",
+  "luma_mean": 0.4409,
+  "luma_stddev": 0.0837,
+  "png": "evidence/artQ6/ref_calibration_valley_light.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/tests/AssetCalibration.tscn",
+  "timestamp_utc": "2026-08-02 06:05:31",
+  "width": 1920
+}
