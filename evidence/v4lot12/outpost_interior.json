@@ -1,0 +1,18 @@
+{
+  "commit": "5378f7a82cadfa396a3f04403517e98ea060293b",
+  "display_server": "X11",
+  "distinct_colors_sampled": 6000,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 30,
+  "height": 1080,
+  "label": "v4lot12_outpost_interior",
+  "luma_mean": 0.59,
+  "luma_stddev": 0.1381,
+  "png": "evidence/v4lot12/outpost_interior.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "timestamp_utc": "2026-08-02 10:40:40",
+  "width": 1920
+}

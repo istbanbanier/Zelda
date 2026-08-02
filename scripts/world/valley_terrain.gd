@@ -50,6 +50,7 @@ func _ready() -> void:
 	_build_forest()
 	_build_central_ruins()
 	_build_dungeon_plateau_and_citadel()
+	_build_secondary_structures()
 	# Habillage V4.2 — visuel après les masses (l'eau et les chemins se posent
 	# SUR le relief stabilisé ; les contreforts, eux, portent une collision).
 	_dress_border_mountains()
@@ -438,6 +439,162 @@ func _dress_zone(zone_name: String, placements: Array[Array]) -> Node3D:
 		_place_model(zone, entry[0] as StringName, entry[1] as Vector3,
 			float(entry[2]), float(entry[3]), collision, trunk)
 	return zone
+
+
+## ---------------------------------------------------------------------------
+## V4 lot 12 — structures secondaires PÉNÉTRABLES : aucun bâtiment visible
+## important ne reste une boîte fermée. Quatre abris de 4×6 m sur le kit
+## modulaire 2 m (murs 2,0×3,12×0,4 mesurés au catalogue) ; chaque intérieur
+## a une raison d'être, une récompense (ingrédient posé par ValleyWorld, ou
+## le récit), une lumière MOTIVÉE (§7.8) et une sortie sûre — l'ouverture de
+## porte n'est JAMAIS barrée par une collision pleine (deux flancs + linteau).
+## ---------------------------------------------------------------------------
+
+## Un mur modulaire AVEC sa collision. `doorway` : l'arche (~1,2 × 2,3 m)
+## reste franche — flancs à |x| ≥ 0,6 et linteau au-dessus de 2,35 m.
+func _structure_wall(shelter: Node3D, model_name: StringName, at: Vector3,
+		yaw: float, doorway: bool = false) -> void:
+	var packed: PackedScene = AssetRegistry.model(model_name)
+	if packed == null:
+		return   # pas promu : le vide reste un vide
+	var wall: Node3D = packed.instantiate() as Node3D
+	wall.name = "%s_%d" % [String(model_name), shelter.get_child_count()]
+	wall.position = at
+	wall.rotation.y = yaw
+	shelter.add_child(wall)
+	var body: StaticBody3D = StaticBody3D.new()
+	body.collision_layer = 1
+	body.collision_mask = 0
+	if doorway:
+		for side: float in [-0.8, 0.8]:
+			var flank: CollisionShape3D = CollisionShape3D.new()
+			var flank_box: BoxShape3D = BoxShape3D.new()
+			flank_box.size = Vector3(0.4, 3.12, 0.4)
+			flank.shape = flank_box
+			flank.position = Vector3(side, 1.56, -0.11)
+			body.add_child(flank)
+		var lintel: CollisionShape3D = CollisionShape3D.new()
+		var lintel_box: BoxShape3D = BoxShape3D.new()
+		lintel_box.size = Vector3(2.0, 0.76, 0.4)
+		lintel.shape = lintel_box
+		lintel.position = Vector3(0, 2.74, -0.11)
+		body.add_child(lintel)
+	else:
+		var shape: CollisionShape3D = CollisionShape3D.new()
+		var box: BoxShape3D = BoxShape3D.new()
+		box.size = Vector3(2.0, 3.12, 0.4)
+		shape.shape = box
+		shape.position = Vector3(0, 1.56, -0.11)
+		body.add_child(shape)
+	wall.add_child(body)
+
+
+## Coquille d'abri 4×6 m : six dalles, dix murs (porte au sud local, en x=+1),
+## quatre pierres d'angle, toit 4×6, lanterne murale et omni chaude. Les faces
+## épaisses des murs pointent vers l'extérieur ; le toit se pose au sommet des
+## murs (3,05 m, pivot base mesuré au catalogue).
+func _build_shelter(holder: Node3D, shelter_name: String, origin: Vector3,
+		yaw: float, wall: StringName, door_wall: StringName,
+		window_wall: StringName, floor_tile: StringName) -> Node3D:
+	var shelter: Node3D = Node3D.new()
+	shelter.name = shelter_name
+	shelter.position = origin
+	shelter.rotation.y = yaw
+	holder.add_child(shelter)
+	for tile_x: float in [-1.0, 1.0]:
+		for tile_z: float in [-2.0, 0.0, 2.0]:
+			_place_model(shelter, floor_tile, Vector3(tile_x, 0.03, tile_z),
+				0.0, 1.0)
+	_structure_wall(shelter, window_wall, Vector3(-1, 0, -3), 0.0)
+	_structure_wall(shelter, wall, Vector3(1, 0, -3), 0.0)
+	_structure_wall(shelter, wall, Vector3(-1, 0, 3), PI)
+	_structure_wall(shelter, door_wall, Vector3(1, 0, 3), PI, true)
+	for wall_z: float in [-2.0, 0.0, 2.0]:
+		_structure_wall(shelter, wall, Vector3(2, 0, wall_z), -PI * 0.5)
+		_structure_wall(shelter, wall, Vector3(-2, 0, wall_z), PI * 0.5)
+	for corner: Array in [[-2.0, -3.0, 0.0], [2.0, -3.0, PI * 0.5],
+			[2.0, 3.0, PI], [-2.0, 3.0, -PI * 0.5]]:
+		_place_model(shelter, &"Corner_Exterior_Brick",
+			Vector3(float(corner[0]), 0, float(corner[1])), float(corner[2]), 1.0)
+	_place_model(shelter, &"Roof_RoundTiles_4x6", Vector3(0, 3.05, 0), 0.0, 1.0)
+	_place_model(shelter, &"Lantern_Wall", Vector3(0, 2.1, -2.8), 0.0, 1.0)
+	var light: OmniLight3D = OmniLight3D.new()
+	light.name = "ShelterLight"
+	light.light_color = Color(1.0, 0.72, 0.38)
+	light.light_energy = 0.9
+	light.omni_range = 5.0
+	light.position = Vector3(0, 2.3, -2.0)
+	shelter.add_child(light)
+	return shelter
+
+
+func _build_secondary_structures() -> void:
+	var holder: Node3D = Node3D.new()
+	holder.name = "SecondaryStructures"
+	add_child(holder)
+	# Avant-poste de la route nord : le guet des ruines centrales. Porte à
+	# l'OUEST, face à la route du donjon. Récompense : viande (ValleyWorld,
+	# valley.ingredient.outpost_meat.01) ; récit : les ordres sur la table.
+	var outpost: Node3D = _build_shelter(holder, "OutpostNorthRoad",
+		Vector3(22, 2, -52), -PI * 0.5, &"Wall_UnevenBrick_Straight",
+		&"Wall_UnevenBrick_Door_Round", &"Wall_UnevenBrick_Window_Thin_Round",
+		&"Floor_UnevenBrick")
+	_place_model(outpost, &"Table_Large", Vector3(-0.8, 0.05, -1.8), 0.2, 1.0,
+		Vector3(1.9, 0.9, 1.0))
+	_place_model(outpost, &"Scroll_1", Vector3(-0.9, 0.83, -1.7), 1.2, 1.0)
+	_place_model(outpost, &"Stool", Vector3(-0.9, 0.05, -0.6), 2.4, 1.0)
+	_place_model(outpost, &"WeaponStand", Vector3(1.5, 0.05, -1.0), -PI * 0.5,
+		1.0, Vector3(0.6, 1.6, 0.9))
+	_place_model(outpost, &"Axe_Bronze", Vector3(1.45, 0.6, -1.0), 1.9, 1.0)
+	_place_model(outpost, &"Barrel_Apples", Vector3(-1.4, 0.05, 1.9), 0.9, 1.0,
+		Vector3(0.8, 0.9, 0.8))
+	_place_model(outpost, &"Banner_2", Vector3(-0.9, 2.5, 3.32), 0.0, 1.1)
+	# Abri de rivière : la cabane du pêcheur du coude ouest. Porte au NORD,
+	# face à l'eau. Récompense : fruit de soin (valley.ingredient
+	# .shelter_fruit.01) ; récit : le lit, l'étagère, la corde.
+	var shelter: Node3D = _build_shelter(holder, "RiverShelter",
+		Vector3(-30, 2, 22), PI, &"Wall_Plaster_Straight",
+		&"Wall_Plaster_Door_Round", &"Wall_Plaster_Window_Wide_Round",
+		&"Floor_WoodDark")
+	_place_model(shelter, &"Bed_Twin1", Vector3(-1.2, 0.05, -1.9), PI * 0.5,
+		1.0, Vector3(1.0, 0.6, 2.0))
+	_place_model(shelter, &"Shelf_Simple", Vector3(0.9, 0.05, -2.75), 0.0, 1.0)
+	_place_model(shelter, &"Bottle_1", Vector3(0.85, 1.0, -2.72), 0.7, 1.0)
+	_place_model(shelter, &"Bucket_Wooden_1", Vector3(1.5, 0.05, 0.6), 2.1, 1.0)
+	_place_model(shelter, &"Rope_1", Vector3(1.3, 0.05, 1.6), 0.4, 1.0)
+	_place_model(shelter, &"Chair_1", Vector3(0.2, 0.05, -1.2), 2.6, 1.0)
+	_place_model(shelter, &"FarmCrate_Empty", Vector3(-1.2, 0, 3.6), 0.5, 1.0)
+	# Sanctuaire de la falaise : l'autel au sommet de l'ascension (§9.3) —
+	# l'épice rare EXISTANTE (valley.ingredient.cliff_spice.01, au centre)
+	# devient l'offrande devant l'autel. Porte à l'EST, face à l'arrivée.
+	var sanctuary: Node3D = _build_shelter(holder, "CliffSanctuary",
+		Vector3(-108, 14, 62), PI * 0.5, &"Wall_Plaster_Straight",
+		&"Wall_Plaster_Door_Round", &"Wall_Plaster_Window_Wide_Round",
+		&"Floor_Brick")
+	_place_model(sanctuary, &"Bench", Vector3(0, 0.05, -2.2), 0.0, 1.0,
+		Vector3(1.6, 0.5, 0.6))
+	_place_model(sanctuary, &"CandleStick", Vector3(-0.7, 0.05, -2.0), 0.3, 1.0)
+	_place_model(sanctuary, &"CandleStick", Vector3(0.7, 0.05, -2.0), 3.9, 1.0)
+	_place_model(sanctuary, &"Book_Stack_1", Vector3(0.25, 0.05, -1.55), 1.1, 1.0)
+	_place_model(sanctuary, &"Pot_1", Vector3(-1.5, 0.05, 1.2), 0.8, 1.0)
+	_place_model(sanctuary, &"Prop_Vine1", Vector3(0.5, 1.6, -3.2), 0.0, 1.1)
+	_place_model(sanctuary, &"Banner_1", Vector3(-0.9, 2.5, 3.32), 0.0, 1.0)
+	# Poste de garde de la citadelle : le dernier seuil avant la rampe. Porte
+	# à l'OUEST, face à la route. Récompense : baie d'orage (valley.ingredient
+	# .guardpost_berry.01 — §13.5 : enseigner la résistance AVANT le donjon).
+	var guard_post: Node3D = _build_shelter(holder, "CitadelGuardPost",
+		Vector3(13, 2, -102), -PI * 0.5, &"Wall_UnevenBrick_Straight",
+		&"Wall_UnevenBrick_Door_Round", &"Wall_UnevenBrick_Window_Thin_Round",
+		&"Floor_UnevenBrick")
+	_place_model(guard_post, &"WeaponStand", Vector3(-1.4, 0.05, -2.2), 0.4,
+		1.0, Vector3(0.6, 1.6, 0.9))
+	_place_model(guard_post, &"Shield_Wooden", Vector3(-1.6, 0.05, -1.3), 1.1, 1.0)
+	_place_model(guard_post, &"Bench", Vector3(1.4, 0.05, -1.0), -PI * 0.5,
+		1.0, Vector3(0.6, 0.5, 1.6))
+	_place_model(guard_post, &"Chain_Coil", Vector3(-1.5, 0.05, 1.6), 2.2, 1.0)
+	_place_model(guard_post, &"Pouch_Large", Vector3(0.9, 0.05, -2.5), 0.9, 1.0)
+	_place_model(guard_post, &"Torch_Metal", Vector3(-0.3, 0, 3.5), 0.0, 1.0)
+	_place_model(guard_post, &"Banner_2", Vector3(-0.9, 2.5, 3.32), 0.0, 1.1)
 
 
 ## Zone E — forêt (§11.E) : lisière lisible à l'ouest, intérieur densifié

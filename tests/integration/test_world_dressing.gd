@@ -86,3 +86,68 @@ func test_the_vista_corridor_stays_clear_of_tall_silhouettes() -> void:
 				collisions += 1
 	check(collisions >= 10, "au moins dix obstacles réels (%d)" % collisions)
 	await _unload_valley()
+
+
+func test_the_secondary_structures_are_penetrable_with_rewards() -> void:
+	## V4 lot 12 : quatre abris complets (coquille 4×6 : 6 dalles, 10 murs,
+	## 4 angles, toit, lanterne + lumière motivée), la PORTE jamais barrée
+	## (flancs |x| ≥ 0,6, linteau ≥ 2,3 m — l'arche reste franche), et une
+	## récompense À L'INTÉRIEUR de chacun (l'épice existante pour le
+	## sanctuaire) — entrer paye toujours.
+	await _load_valley()
+	var holder: Node3D = _valley.find_children("SecondaryStructures", "Node3D",
+		true, false)[0] as Node3D
+	for shelter_name: String in ["OutpostNorthRoad", "RiverShelter",
+			"CliffSanctuary", "CitadelGuardPost"]:
+		var shelter: Node3D = holder.get_node(shelter_name) as Node3D
+		var walls: int = 0
+		var floors: int = 0
+		var corners: int = 0
+		var roofs: int = 0
+		var door: Node3D = null
+		for child: Node in shelter.get_children():
+			var child_name: String = String(child.name)
+			if child_name.begins_with("Wall_"):
+				walls += 1
+			if child_name.begins_with("Floor_"):
+				floors += 1
+			if child_name.begins_with("Corner_"):
+				corners += 1
+			if child_name.begins_with("Roof_"):
+				roofs += 1
+			if "Door_Round" in child_name:
+				door = child as Node3D
+		check_equal(walls, 10, "%s : dix murs" % shelter_name)
+		check_equal(floors, 6, "%s : six dalles" % shelter_name)
+		check_equal(corners, 4, "%s : quatre angles" % shelter_name)
+		check_equal(roofs, 1, "%s : un toit" % shelter_name)
+		check(shelter.get_node_or_null("ShelterLight") != null,
+			"%s : lumière intérieure motivée" % shelter_name)
+		check(door != null, "%s : un module de porte" % shelter_name)
+		if door != null:
+			var shapes: Array[Node] = door.find_children("*", "CollisionShape3D",
+				true, false)
+			check_equal(shapes.size(), 3,
+				"%s : porte = deux flancs + linteau" % shelter_name)
+			for shape: Node in shapes:
+				var local: Vector3 = (shape as CollisionShape3D).position
+				check(absf(local.x) >= 0.6 or local.y >= 2.3,
+					"%s : aucune collision ne barre l'arche (%.2f, %.2f)"
+					% [shelter_name, local.x, local.y])
+	# Chaque récompense est bien DANS son abri (≤ 3,2 m du centre, hauteur
+	# de plain-pied) — la promesse « entrer paye » est mesurée, pas déclarée.
+	for reward: Array in [
+			["OutpostNorthRoad", "valley_ingredient_outpost_meat_01"],
+			["RiverShelter", "valley_ingredient_shelter_fruit_01"],
+			["CliffSanctuary", "valley_ingredient_cliff_spice_01"],
+			["CitadelGuardPost", "valley_ingredient_guardpost_berry_01"]]:
+		var shelter: Node3D = holder.get_node(String(reward[0])) as Node3D
+		var pickup: Node3D = _valley.find_children(String(reward[1]),
+			"", true, false)[0] as Node3D
+		var offset: Vector3 = pickup.global_position - shelter.global_position
+		check(Vector2(offset.x, offset.z).length() <= 3.2,
+			"%s : la récompense est dans l'abri (%.1f m)"
+			% [String(reward[0]), Vector2(offset.x, offset.z).length()])
+		check(offset.y >= -0.5 and offset.y <= 1.0,
+			"%s : …de plain-pied" % String(reward[0]))
+	await _unload_valley()

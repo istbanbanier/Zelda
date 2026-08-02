@@ -251,6 +251,27 @@ func _setup_vista_camera() -> void:
 	add_child(descent_camera)
 	if OS.get_environment("VALLEY_DESCENT") == "1":
 		descent_camera.make_current.call_deferred()
+	# V4 lot 12 — caméras de contrôle des STRUCTURES : VALLEY_STRUCTURES=1,
+	# le poste de garde depuis la route (la rampe derrière) ; =2, l'intérieur
+	# de l'avant-poste depuis le seuil de sa porte.
+	var structures_camera: Camera3D = Camera3D.new()
+	structures_camera.name = "StructuresCamera_01"
+	structures_camera.position = Vector3(4.0, 4.2, -95.0)
+	structures_camera.rotation_degrees = Vector3(-10.9, -52.1, 0.0)
+	structures_camera.fov = 62.0
+	structures_camera.current = false
+	add_child(structures_camera)
+	if OS.get_environment("VALLEY_STRUCTURES") == "1":
+		structures_camera.make_current.call_deferred()
+	var interior_camera: Camera3D = Camera3D.new()
+	interior_camera.name = "StructuresCamera_02"
+	interior_camera.position = Vector3(19.8, 3.3, -52.0)
+	interior_camera.rotation_degrees = Vector3(-9.8, -81.5, 0.0)
+	interior_camera.fov = 66.0
+	interior_camera.current = false
+	add_child(interior_camera)
+	if OS.get_environment("VALLEY_STRUCTURES") == "2":
+		interior_camera.make_current.call_deferred()
 
 
 func _record_safe_point() -> void:
@@ -324,6 +345,12 @@ func _spawn_ingredients() -> void:
 		["defense_root", Vector3(4, 2.0, -44), "valley.ingredient.ruins_root.01"],
 		["storm_berry", Vector3(96, 2.0, 4), "valley.ingredient.pylon_berry.01"],
 		["rare_spice", Vector3(-108, 14.0, 62), "valley.ingredient.cliff_spice.01"],
+		# V4 lot 12 : récompenses INTÉRIEURES des structures pénétrables —
+		# entrer doit toujours payer (viande au guet, fruit chez le pêcheur,
+		# baie d'orage au poste de garde : §13.5, la résistance AVANT le donjon).
+		["meat", Vector3(21.5, 2.1, -52.5), "valley.ingredient.outpost_meat.01"],
+		["heal_fruit", Vector3(-30.4, 2.1, 22.6), "valley.ingredient.shelter_fruit.01"],
+		["storm_berry", Vector3(14.2, 2.1, -101.7), "valley.ingredient.guardpost_berry.01"],
 	]
 	var holder: Node3D = Node3D.new()
 	holder.name = "Ingredients"

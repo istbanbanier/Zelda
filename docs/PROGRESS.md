@@ -1243,3 +1243,27 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > (avant-poste route nord, abri rivière, sanctuaire falaise, poste de
 > garde citadelle) — chaque intérieur : raison d'être, récompense,
 > dimensions joueur, sortie sûre.
+
+## 2026-08-02 (nuit V4, lot 12) — structures secondaires pénétrables
+
+> Aucun bâtiment important ne reste une boîte fermée : quatre abris 4×6 m
+> sur le kit modulaire 2 m (cotes mesurées au catalogue), coquille
+> complète (6 dalles, 10 murs à collision, 4 angles, toit, lanterne +
+> omni chaude MOTIVÉE §7.8), porte JAMAIS barrée (deux flancs + linteau,
+> l'arche 1,2×2,3 m reste franche). Avant-poste route nord (guet des
+> ruines : table+ordres, râtelier+hache, tonneau — récompense VIANDE),
+> abri de rivière (pêcheur : lit, étagère, corde — récompense FRUIT),
+> sanctuaire de falaise (autel, chandelles, livres — l'épice rare
+> EXISTANTE devient l'offrande au centre), poste de garde citadelle
+> (râtelier, bouclier, chaîne — récompense BAIE D'ORAGE, §13.5 : la
+> résistance AVANT le donjon). 3 nouveaux IngredientPickup persistants.
+> Face en relief des murs vers l'INTÉRIEUR (l'expérience pénétrable
+> prime) ; angles de pierre + bannière/torche portent l'extérieur.
+> Limite connue : pignons ouverts sous le toit (aucune pièce de gable
+> promue) ; navmesh non recuit (aucune IA ne fréquente ces abris).
+> Wall_UnevenBrick_Straight ajouté à PROMOTIONS.csv (présent depuis
+> ART-Q0, vérifié identique à l'octet). Test : 48 assertions (coquilles,
+> portes franches, récompenses DANS les abris). Caméras de contrôle
+> VALLEY_STRUCTURES=1/2. Captures : evidence/v4lot12/. Plancher 321.
+> **PROCHAINE ACTION (V4 lot 13)** : personnages et palettes (capuche
+> héros bleu-vert réel, pillards ≠ paysans recolorés, silhouettes).
