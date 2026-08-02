@@ -157,7 +157,7 @@ défini par les références V4.
 
 ---
 
-## Pack V4 — état du dépôt des PNG (bloquant documentaire)
+## Pack V4 — état du dépôt des PNG (RÉSOLU le 2026-08-02 : ZIP fourni et versionné, SHA-256 au README du dossier — le paragraphe ci-dessous décrit le blocage d'origine)
 
 Ordre : « dépose réellement les cinq PNG ». **Impossible depuis ce
 conteneur** : recherche exhaustive du disque (hors dépôt) — aucun

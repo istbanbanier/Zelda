@@ -60,7 +60,7 @@ historique.
 | Auteur / droits | concepts commandés par le propriétaire pour ce projet ; usage interne de référence |
 | Nature | illustrations générées/peintes **hors moteur** — références de composition, ambiance, palette et hiérarchie |
 | Statut dans le build | **AUCUN** : jamais asset, jamais skybox, jamais billboard, jamais texture d'UI, jamais preuve (§0.2) |
-| Binaires | pas encore sur le disque du conteneur — analyse détaillée dans `docs/ART_BIBLE.md` §1bis ; PNG à déposer dans `source_assets/concepts/final_v4/` |
+| Binaires | **versionnés** (2026-08-02) dans `source_assets/concepts/final_v4/` — SHA-256 dans le README du dossier ; ~12,7 Mo en git simple, LFS indisponible (décision consignée) |
 
 Tout ce que ces images montrent est **reconstruit** en 3D réelle et en interface
 Godot alimentée par les données réelles. Rien n'en est extrait ni copié-collé.
