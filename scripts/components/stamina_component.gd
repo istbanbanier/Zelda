@@ -23,6 +23,10 @@ signal exhausted()
 ## Émis quand l'épuisement se lève : verrou écoulé **et** jauge non nulle.
 signal recovered()
 
+## E.2a (§13.5) : buff d'ENDURANCE — régénération ×1.6 pendant le buff,
+## posé par signal, jamais en polling. 1.0 = neutre.
+var regen_multiplier: float = 1.0
+
 @export var tuning: StaminaTuning
 
 var _current: float = 0.0
@@ -109,7 +113,8 @@ func _regenerate(delta: float) -> void:
 	if tuning.regen_ramp > 0.0:
 		ramp = clampf(_regen_ramp_timer / tuning.regen_ramp, 0.0, 1.0)
 	var before: float = _current
-	_current = minf(tuning.max_stamina, _current + tuning.regen_rate * ramp * delta)
+	_current = minf(tuning.max_stamina,
+		_current + tuning.regen_rate * ramp * regen_multiplier * delta)
 	if not is_equal_approx(before, _current):
 		changed.emit(_current, tuning.max_stamina)
 

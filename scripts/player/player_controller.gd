@@ -72,6 +72,7 @@ const WALL_PUSH_MIN_DOT: float = 0.3
 @onready var _lock_on: LockOnComponent = $Components/LockOnComponent
 @onready var _bow: BowComponent = $Components/BowComponent
 @onready var _inventory: InventoryComponent = $Components/InventoryComponent
+@onready var _status: StatusEffectComponent = $Components/StatusEffectComponent
 @onready var _hurtbox: HurtboxComponent = $Hurtbox
 @onready var _weapon_hitbox: HitboxComponent = $VisualRoot/WeaponHitbox
 @onready var _collision: CollisionShape3D = $CollisionShape3D
@@ -170,6 +171,11 @@ func _ready() -> void:
 	# §16.2 généralisé au joueur : la mort interrompt tout et libère la caméra.
 	if _health != null:
 		_health.died.connect(_on_died)
+	# E.2a : les multiplicateurs de buff (§13.5) se RETENDENT au changement —
+	# jamais de polling (règle du composant).
+	if _status != null:
+		_status.buff_applied.connect(_on_buff_changed_apply)
+		_status.buff_expired.connect(_on_buff_changed_expire)
 	_build_weapon_visual()
 	# Matériau du corps dédoublé : le flash d'impact d'un joueur ne doit jamais
 	# éclairer un autre exemplaire du même matériau partagé (§5.4).
@@ -318,6 +324,10 @@ func _process_locomotion(delta: float, intent: InputIntent) -> void:
 	# le plus proche l'emporte.
 	if _mode == Mode.LOCOMOTION and intent.interact_pressed and is_on_floor():
 		_try_interact()
+	# E.2a (§8.5 « Plat rapide ») : consommer le plus ancien plat cuisiné —
+	# soin immédiat TOUJOURS appliqué, buff majeur remplacé (§13.4).
+	if _mode == Mode.LOCOMOTION and intent.meal_pressed:
+		_eat_quick_meal()
 
 
 ## Le sprint n'est accordé que s'il est demandé, que le joueur se déplace
@@ -1323,6 +1333,56 @@ func horizontal_speed() -> float:
 ## Exposé pour les tests, la jauge de §17.2 et la sauvegarde de §19.1.
 func stamina() -> StaminaComponent:
 	return _stamina
+
+
+func status() -> StatusEffectComponent:
+	return _status
+
+
+## E.2a — consommation du plat rapide (§13.3/§13.4). Le plat quitte la
+## réserve au prélèvement : jamais deux effets pour un plat.
+func _eat_quick_meal() -> void:
+	if _inventory == null or _status == null or _health == null:
+		return
+	var bus: Node = get_node_or_null("/root/EventBus")
+	var meal: Dictionary = _inventory.take_first_meal()
+	if meal.is_empty():
+		if bus != null:
+			bus.call("notify", "Aucun plat — cuisinez au feu de camp")
+		return
+	var heal: float = float(meal.get("heal", 0.0))
+	if heal > 0.0:
+		_health.heal(heal)
+	var effect: StringName = StringName(String(meal.get("effect", "")))
+	if effect != &"":
+		_status.apply_buff(effect, float(meal.get("potency", 0.0)),
+			float(meal.get("duration", 0.0)))
+	if bus != null:
+		bus.call("notify", "Mangé : %s (+%d PV)"
+			% [String(meal.get("name", "Plat")), int(heal)])
+
+
+## E.2a — propagation des multiplicateurs de §13.5 : posés au signal, sur
+## les composants qui les consomment. Le composant d'état reste la source ;
+## hitbox/hurtbox/stamina n'apprennent JAMAIS l'existence des buffs.
+func _on_buff_changed_apply(_effect: StringName, _potency: float,
+		_duration: float) -> void:
+	_refresh_buff_multipliers()
+
+
+func _on_buff_changed_expire(_effect: StringName) -> void:
+	_refresh_buff_multipliers()
+
+
+func _refresh_buff_multipliers() -> void:
+	if _status == null:
+		return
+	if _weapon_hitbox != null:
+		_weapon_hitbox.damage_multiplier = _status.attack_multiplier()
+	if _hurtbox != null:
+		_hurtbox.damage_taken_multiplier = _status.damage_taken_multiplier()
+	if _stamina != null:
+		_stamina.regen_multiplier = _status.stamina_regen_multiplier()
 
 
 ## Exposé pour les tests, l'UI d'inventaire (§17.3) et la sauvegarde de §19.1.

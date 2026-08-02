@@ -43,6 +43,9 @@ var _attack_id: int = 0
 ## Dégâts côté attaquant : base × weapon × attack × buff (§10.3), calculés par
 ## l'appelant AVANT l'activation. Le côté défenseur est appliqué au contact.
 var _attacker_damage: float = 0.0
+## E.2a (§13.5) : multiplicateur du buff d'ATTAQUE — posé par le porteur au
+## changement de buff (signal), jamais lu en polling. 1.0 = neutre.
+var damage_multiplier: float = 1.0
 var _poise_damage: float = 0.0
 var _knockback: float = 0.0
 var _damage_type: StringName = &""
@@ -128,7 +131,8 @@ func _process_target(area: Area3D) -> void:
 	# Côté défenseur de la formule (§10.3) : point faible déclaré par la hurtbox.
 	# Résistance et armure arriveront avec les buffs et les définitions d'ennemis
 	# (C.2) — neutres d'ici là, et déjà à leur place dans la formule.
-	event.amount = DamageFormula.compute(_attacker_damage, hurtbox.weak_point_multiplier)
+	event.amount = DamageFormula.compute(_attacker_damage,
+		hurtbox.weak_point_multiplier) * damage_multiplier
 	event.poise_damage = _poise_damage
 	event.knockback = _knockback
 	event.element = _element

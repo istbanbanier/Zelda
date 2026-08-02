@@ -1109,3 +1109,19 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > câblage des fondations déjà commitées (meal_pressed, multiplicateurs
 > hitbox/hurtbox/stamina, _meals, StatusEffect dans Player.tscn,
 > _eat_quick_meal, autosave meals/buff, label HUD, tests).
+
+## 2026-08-02 (aube) — E.2a : plats et buffs câblés (reprise prompt maître)
+
+> Sur les fondations E.2 (f9a0e0d) : `meal_pressed` (intention + lecteur,
+> action `quick_meal` de §8.5), plats FIFO bornée (6) en primitives dans
+> l'inventaire (§11.3 « plats séparés »), StatusEffectComponent dans
+> Player.tscn, `_eat_quick_meal` (soin TOUJOURS appliqué, buff majeur
+> remplacé, plat consommé UNE fois), multiplicateurs §13.5 propagés PAR
+> SIGNAL (hitbox ×1.25 infligé, hurtbox ×0.75 reçu AVANT émission,
+> stamina ×1.6 régén) et retombés à l'expiration. Autosave : "meals" +
+> "buff" (déclencheurs meals_changed ET buff_applied — le buff s'applique
+> APRÈS le prélèvement du plat, mesuré par le test de rechargement).
+> 3 tests (25 assertions) sur le VRAI joueur et la VRAIE vallée ; plancher
+> 312 → **315**. **RESTE (E.2b)** : UI de cuisine au feu de camp
+> (sélection 1-5, aperçu §13.3), label de buff au HUD (§17.2), déclencheur
+> feu de camp. Les règles pures (RecipeRules) sont déjà testées.

@@ -16,6 +16,7 @@ signal weapon_added(weapon: WeaponInstance)
 signal weapon_removed(weapon: WeaponInstance)
 signal arrows_changed(count: int)
 signal ingredients_changed(id: StringName, count: int)
+signal meals_changed(count: int)
 
 ## §11.3 : « huit armes ».
 const MAX_WEAPONS: int = 8
@@ -31,6 +32,11 @@ var _equipped_index: int = -1
 var _arrows: int = 0
 ## §11.3/§13 : ingrédients EMPILABLES, à part des armes — id → compte.
 var _ingredients: Dictionary = {}
+## E.2a — plats cuisinés (§13.4) : FIFO de dictionnaires de PRIMITIVES
+## (résultat de RecipeRules.cook) — sérialisables tels quels (§19.2).
+## §11.3 : « plats séparés » des ingrédients et des armes.
+const MAX_MEALS: int = 6
+var _meals: Array[Dictionary] = []
 
 
 func _ready() -> void:
@@ -230,3 +236,43 @@ func set_ingredients(snapshot: Dictionary) -> void:
 		var count: int = int(snapshot[key])
 		if count > 0:
 			_ingredients[StringName(String(key))] = count
+
+
+## ---------------------------------------------------------------------------
+## Plats cuisinés (E.2a, §13.4) — FIFO bornée, primitives seulement
+## ---------------------------------------------------------------------------
+
+func add_meal(meal: Dictionary) -> bool:
+	if not bool(meal.get("valid", false)) or _meals.size() >= MAX_MEALS:
+		return false
+	_meals.append(meal.duplicate())
+	meals_changed.emit(_meals.size())
+	return true
+
+
+## Prélève le PREMIER plat (le plus ancien) — vide si aucun. Le plat quitte
+## la réserve au moment du prélèvement : jamais consommé deux fois.
+func take_first_meal() -> Dictionary:
+	if _meals.is_empty():
+		return {}
+	var meal: Dictionary = _meals.pop_front()
+	meals_changed.emit(_meals.size())
+	return meal
+
+
+func meal_count() -> int:
+	return _meals.size()
+
+
+func meals_snapshot() -> Array:
+	var snapshot: Array = []
+	for meal: Dictionary in _meals:
+		snapshot.append(meal.duplicate())
+	return snapshot
+
+
+func set_meals(snapshot: Array) -> void:
+	_meals.clear()
+	for entry: Variant in snapshot:
+		if entry is Dictionary and bool((entry as Dictionary).get("valid", false)):
+			_meals.append((entry as Dictionary).duplicate())

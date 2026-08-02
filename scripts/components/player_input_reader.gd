@@ -97,5 +97,7 @@ func _input(event: InputEvent) -> void:
 		_intent.target_next_pressed = true
 	elif event.is_action_pressed("target_prev", false, true):
 		_intent.target_prev_pressed = true
+	elif event.is_action_pressed("quick_meal", false, true):
+		_intent.meal_pressed = true
 	elif event is InputEventMouseMotion:
 		_mouse_delta += (event as InputEventMouseMotion).relative * mouse_sensitivity

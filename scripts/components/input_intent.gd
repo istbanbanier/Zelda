@@ -31,6 +31,8 @@ var shoot_pressed: bool = false
 var lock_pressed: bool = false
 var target_next_pressed: bool = false
 var target_prev_pressed: bool = false
+## E.2a : plat rapide (§8.5 « Plat rapide », action `quick_meal`).
+var meal_pressed: bool = false
 
 ## Regard voulu (souris ou stick droit), en unités déjà normalisées par le lecteur.
 ## Regard au stick : axe sans unité (-1..1), converti en vitesse angulaire par
@@ -58,6 +60,7 @@ func consume_edges() -> void:
 	lock_pressed = false
 	target_next_pressed = false
 	target_prev_pressed = false
+	meal_pressed = false
 
 
 func clear() -> void:

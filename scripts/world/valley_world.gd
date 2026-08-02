@@ -86,6 +86,16 @@ func _ready() -> void:
 		typed_ingredient.collected.connect(
 			func(_definition: IngredientDefinition) -> void:
 				_on_ingredient_taken(typed_ingredient))
+	# E.2a : cuisiner ou manger change la réserve de plats — instantané
+	# immédiat, comme les coffres (le buff part dans le même instantané).
+	if _player.inventory() != null:
+		_player.inventory().meals_changed.connect(
+			func(_count: int) -> void: _autosave())
+	# Le signal des plats part AU PRÉLÈVEMENT, avant l'application du buff :
+	# l'instantané du buff se prend sur SON propre signal, juste après.
+	if _player.status() != null:
+		_player.status().buff_applied.connect(
+			func(_e: StringName, _p: float, _d: float) -> void: _autosave())
 	var flow: Node = get_node_or_null("/root/SceneFlow")
 	if flow != null:
 		flow.connect("transition_started", _on_transition_started)
@@ -321,6 +331,12 @@ func _apply_ingredient_save() -> void:
 	var data: Dictionary = save_system.call("load_slot", SAVE_SLOT)
 	if data.has("ingredients") and _player != null and _player.inventory() != null:
 		_player.inventory().set_ingredients(data["ingredients"] as Dictionary)
+	# E.2a (§19.1 : plats et « buff restant ») — restauration par le chemin
+	# normal : les multiplicateurs se retendent via les signaux.
+	if data.has("meals") and _player != null and _player.inventory() != null:
+		_player.inventory().set_meals(data["meals"] as Array)
+	if data.has("buff") and _player != null and _player.status() != null:
+		_player.status().restore(data["buff"] as Dictionary)
 	if data.has("taken_ingredients"):
 		for entry: Variant in (data["taken_ingredients"] as Array):
 			var id: String = String(entry)
@@ -356,6 +372,8 @@ func _autosave() -> void:
 		"taken_pickups": _taken_pickups.duplicate(),
 		"ingredients": inventory.ingredients_snapshot(),
 		"taken_ingredients": _taken_ingredients.duplicate(),
+		"meals": inventory.meals_snapshot(),
+		"buff": _player.status().snapshot() if _player.status() != null else {},
 		"boss_defeated": false,
 	})
 

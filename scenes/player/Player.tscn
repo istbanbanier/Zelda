@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3]
+[gd_scene load_steps=38 format=3]
 
 ; Joueur — hiérarchie de MASTER_SPEC §6.2, réduite au périmètre de B.3.
 ; Absents et assumés : StateMachine (§8.1) — le contrôleur porte un Mode couvrant
@@ -37,6 +37,7 @@
 [ext_resource type="Script" path="res://scripts/characters/character_visual.gd" id="26_visual"]
 [ext_resource type="Resource" path="res://resources/characters/hero_anim_set.tres" id="27_animset"]
 [ext_resource type="Script" path="res://scripts/player/player_visual_driver.gd" id="28_visdriver"]
+[ext_resource type="Script" path="res://scripts/components/status_effect_component.gd" id="29_status"]
 
 [sub_resource type="CapsuleShape3D" id="Capsule"]
 radius = 0.35
@@ -180,6 +181,11 @@ tuning = ExtResource("22_bow_tuning")
 ; gameplay ne lit RIEN de l'animation.
 [node name="PlayerVisualDriver" type="Node" parent="Components"]
 script = ExtResource("28_visdriver")
+
+; E.2a (§13.4/§13.5) : UN buff majeur, minuterie pausable ; les
+; multiplicateurs se propagent par signal vers hitbox/hurtbox/stamina.
+[node name="StatusEffectComponent" type="Node" parent="Components"]
+script = ExtResource("29_status")
 
 [node name="CameraRig" type="Node3D" parent="."]
 script = ExtResource("2_rig")

@@ -33,9 +33,15 @@ func _ready() -> void:
 
 ## Point d'entrée unique des dégâts. L'événement arrive complet (§10.3) : il est
 ## transmis, jamais recalculé.
+## E.2a (§13.5) : multiplicateur du buff de DÉFENSE (×0.75 actif) — appliqué
+## AVANT l'émission : le recul, la réaction et la santé voient le même chiffre.
+var damage_taken_multiplier: float = 1.0
+
+
 func receive_hit(event: DamageEvent) -> void:
 	if event == null:
 		return
+	event.amount *= damage_taken_multiplier
 	hit_received.emit(event)
 	if _health != null and is_instance_valid(_health):
 		_health.take_damage(event)
