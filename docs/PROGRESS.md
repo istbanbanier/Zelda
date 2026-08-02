@@ -1524,3 +1524,24 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > **PROCHAINE ACTION (D-EN.5)** : chasseur quadrupède §12.5 — ~650 PV,
 > centauroïde original, charge télégraphiée, salve d'arc plafonnée,
 > combo rapproché, cri d'annonce, territoire à frontière d'abandon.
+
+## 2026-08-02 (Gate D, D-EN.5) — chasseur quadrupède : CINQUIÈME famille
+
+> §12.5 : 650 PV, poise 80, silhouette CENTAUROÏDE originale et mesurée
+> (corps bas allongé 1,6×1,1×3,0 — plus long que large, quadrupède —
+> surmonté d'un torse haut porté vers l'avant ; aucun élément d'une
+> licence existante), vision 48 m/130°, audition 38 m, poursuite 11 m/s
+> (le plus rapide du bestiaire), token lourd. Quatre comportements
+> propres : CRI d'annonce 0,8 s immobile et orienté avant toute manœuvre
+> majeure (mesuré : vitesse < 0,5 m/s pendant l'annonce) ; CHARGE en
+> ligne FIGÉE au départ — la trajectoire réelle garde son cap malgré un
+> décalage latéral de la proie (alignement > 0,95 sur tous les pas),
+> donc esquivable ; SALVE d'arc de 3 flèches espacées suivie d'un repos
+> de 5 s (cadence plafonnée par construction, pool de projectiles) ;
+> REPOSITIONNEMENT CIRCULAIRE entre 4 et 9 m. Territoire à frontière
+> d'abandon (rencontre FACULTATIVE §4.1) : mesuré, il rentre. 5 tests.
+> Plancher 357. **Les cinq familles de §12 existent et sont testées.**
+> **PROCHAINE ACTION (D-EN.6)** : placements dans la vallée, aplats
+> noirs des cinq familles à la même échelle, batterie transverse
+> (occlusion, mémoire, retour, séparations, cadavres, loot unique),
+> puis revue contradictoire du Gate D.

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AttackDefinition" load_steps=2 format=3]
+
+; D-EN.5 — combo rapproché, coup 2 : enchaîné, plus fort, recovery long
+; (l'ouverture du chasseur — il est rapide, jamais imprenable).
+
+[ext_resource type="Script" path="res://resources/combat/attack_definition.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"hunter_slash_2"
+damage_multiplier = 1.35
+poise_damage = 32.0
+knockback = 5.0
+element = &""
+startup = 0.35
+active = 0.16
+recovery = 1.1
+input_buffer = 0.15
+combo_window_fraction = 0.3
+hit_stop = 0.085

@@ -1,0 +1,93 @@
+[gd_scene load_steps=15 format=3]
+
+; Chasseur quadrupède (§12.5) — graybox d'une créature CENTAUROÏDE
+; originale : corps bas ALLONGÉ (boîte 1,6 × 1,1 × 3,0 — quadrupède, pas
+; un cheval générique) surmonté d'un torse haut décalé vers l'avant. La
+; collision est une capsule unique (2,3 m) ; les deux volumes visuels
+; portent la silhouette. Aucun élément d'une licence existante.
+
+[ext_resource type="Script" path="res://scripts/enemies/centaur_hunter.gd" id="1_hunter"]
+[ext_resource type="Resource" path="res://resources/enemies/centaur_hunter_default.tres" id="2_tuning"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="3_health"]
+[ext_resource type="Script" path="res://scripts/components/poise_component.gd" id="4_poise"]
+[ext_resource type="Script" path="res://scripts/components/hurtbox_component.gd" id="5_hurtbox"]
+[ext_resource type="Script" path="res://scripts/components/hitbox_component.gd" id="6_hitbox"]
+[ext_resource type="Script" path="res://scripts/combat/attack_controller.gd" id="7_attack"]
+[ext_resource type="Resource" path="res://resources/combat/hunter/hunter_slash_1.tres" id="8_slash1"]
+[ext_resource type="Resource" path="res://resources/combat/hunter/hunter_slash_2.tres" id="9_slash2"]
+
+[sub_resource type="CapsuleShape3D" id="BodyShape"]
+radius = 0.85
+height = 2.3
+
+[sub_resource type="BoxMesh" id="LowerBody"]
+size = Vector3(1.6, 1.1, 3.0)
+
+[sub_resource type="BoxMesh" id="UpperTorso"]
+size = Vector3(1.1, 1.3, 0.9)
+
+[sub_resource type="StandardMaterial3D" id="HunterMat"]
+albedo_color = Color(0.55, 0.24, 0.16, 1)
+
+[sub_resource type="BoxShape3D" id="SlashSweep"]
+size = Vector3(2.0, 1.4, 2.0)
+
+[node name="CentaurHunter" type="CharacterBody3D" groups=["enemies", "damageable", "lock_on_targets"]]
+collision_layer = 4
+collision_mask = 7
+script = ExtResource("1_hunter")
+tuning = ExtResource("2_tuning")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
+shape = SubResource("BodyShape")
+
+[node name="Pivot" type="Node3D" parent="."]
+
+; Corps bas quadrupède : long, ras du sol.
+[node name="BodyMesh" type="MeshInstance3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("LowerBody")
+surface_material_override/0 = SubResource("HunterMat")
+
+; Torse humanoïde, HAUT et décalé vers l'avant : la silhouette lue de loin.
+[node name="TorsoMesh" type="MeshInstance3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.05, 0.85)
+mesh = SubResource("UpperTorso")
+surface_material_override/0 = SubResource("HunterMat")
+
+[node name="SlashHitbox" type="Area3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 1.7)
+collision_layer = 16
+collision_mask = 32
+script = ExtResource("6_hitbox")
+team = &"enemies"
+instigator_path = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pivot/SlashHitbox"]
+shape = SubResource("SlashSweep")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("3_health")
+max_health = 650.0
+
+[node name="PoiseComponent" type="Node" parent="."]
+script = ExtResource("4_poise")
+max_poise = 80.0
+
+[node name="Hurtbox" type="Area3D" parent="."]
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("5_hurtbox")
+team = &"enemies"
+health_path = NodePath("../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hurtbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
+shape = SubResource("BodyShape")
+
+[node name="AttackController" type="Node" parent="."]
+script = ExtResource("7_attack")
+attacks = [ExtResource("8_slash1"), ExtResource("9_slash2")]
+hitbox_path = NodePath("../Pivot/SlashHitbox")
+base_damage = 20.0

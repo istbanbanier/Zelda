@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="EnemyTuning" load_steps=2 format=3]
+
+; Chasseur quadrupède (§12.5, §12.6) : ~650 PV, vision 48 m / 130°,
+; audition 38 m, poursuite 11 m/s (bande 10-13), territoire DANGEREUX
+; mais borné — la poursuite s'arrête à la frontière (§12.5).
+
+[ext_resource type="Script" path="res://resources/enemies/enemy_tuning.gd" id="1_tuning"]
+
+[resource]
+script = ExtResource("1_tuning")
+id = &"centaur_hunter"
+max_health = 650.0
+poise = 80.0
+stagger_duration = 0.8
+vision_range = 48.0
+vision_half_angle_deg = 65.0
+hearing_range = 38.0
+pursuit_speed = 11.0
+turn_speed = 7.0
+attack_reach = 2.6
+attack_cooldown = 1.6
+retreat_speed = 6.0
+retreat_duration = 0.8
+memory_duration = 8.0
+search_duration = 3.0
+max_pursuit_distance = 55.0
+patrol_speed = 4.0
+alert_radius = 0.0
+flee_duration = 2.0
