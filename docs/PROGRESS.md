@@ -1605,3 +1605,25 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > **PROCHAINE ACTION** : recapturer les planches du bestiaire depuis
 > l'arbre COMMITTÉ (manifestes au bon commit), puis fin de Phase E
 > (migration de schéma + chaîne complète), puis Gate E.
+
+## 2026-08-02 (Phase E, E.3) — migrations et chaîne complète
+
+> Les deux derniers items de la Phase E (§19, §22 Gate E) :
+> 1. **Migration RÉELLE de schéma** (SaveSystem 1 → 2) : une sauvegarde
+>    d'avant la cuisine n'a ni plats, ni buff, ni ingrédients récoltés —
+>    la migration les pose À VIDE, en chaîne, sur une COPIE. La source
+>    n'est jamais réécrite (§19.4), le contenu d'origine (armes,
+>    durabilités, flèches, coffres) est intact — 10 assertions.
+> 2. **Chaîne complète de bout en bout** sur la vraie vallée : récolte
+>    par interaction réelle → cuisine à l'atelier du feu (sélection,
+>    confirmation atomique) → buff actif et NOMMÉ au HUD → sauvegarde
+>    contenant plat, buff et ingrédients → vallée DÉCHARGÉE et rejouée
+>    depuis le disque → plat et buff survivent, les ingrédients récoltés
+>    ne repoussent pas. 15 assertions.
+> Leçon consignée : le label du HUD se rafraîchit sur la cadence de
+> _process (0,1 s), pas au tick physique — un test qui n'attend que des
+> frames physiques ne le voit jamais. Plancher 367.
+> **PROCHAINE ACTION** : revue de Gate E (les critères §22 sont
+> couverts ; verdict attendu ACCEPTÉ POUR CONTINUATION — VALIDATION
+> HUMAINE DIFFÉRÉE), puis Phase F : graphe électrique en sandbox
+> automatisée AVANT toute salle (§22 ordre obligatoire).

@@ -19,7 +19,10 @@
 ## dictionnaires contrôlés.
 extends Node
 
-const SCHEMA_VERSION: int = 1
+## Schéma 2 (E.3) : la cuisine ajoute `meals`, `buff` et
+## `taken_ingredients`. Une sauvegarde de schéma 1 (avant la Phase E)
+## reste chargeable — la migration pose les champs manquants à vide.
+const SCHEMA_VERSION: int = 2
 const SAVE_DIR: String = "user://saves"
 const BACKUP_SUFFIX: String = ".bak"
 
@@ -120,15 +123,35 @@ func load_slot(slot: String) -> Dictionary:
 	return data
 
 
-## Point d'entrée des migrations. Aucune migration n'existe encore : la version 1
-## est la première. Chaque incrément futur ajoute ici une étape explicite et un
-## test dédié (§21.2).
+## Point d'entrée des migrations (§19.4) : une ÉTAPE EXPLICITE par
+## incrément, appliquée en chaîne, sur une COPIE — la sauvegarde source
+## n'est jamais réécrite avant un chargement réussi.
+##
+## 1 → 2 (E.3) : la Phase E ajoute la cuisine. Une sauvegarde d'avant
+## n'a ni plats, ni buff, ni ingrédients récoltés ; les poser à vide est
+## la seule lecture correcte de « ce joueur n'avait pas encore cuisiné ».
 func migrate(data: Dictionary, from_version: int, to_version: int) -> Dictionary:
 	if from_version == to_version:
 		return data
-	push_warning("[save] aucune migration définie de %d vers %d — données rendues telles quelles"
-		% [from_version, to_version])
-	return data
+	var migrated: Dictionary = data.duplicate(true)
+	var version: int = from_version
+	while version < to_version:
+		match version:
+			1:
+				if not migrated.has("meals"):
+					migrated["meals"] = []
+				if not migrated.has("buff"):
+					migrated["buff"] = {}
+				if not migrated.has("taken_ingredients"):
+					migrated["taken_ingredients"] = []
+				if not migrated.has("ingredients"):
+					migrated["ingredients"] = {}
+			_:
+				push_warning("[save] aucune migration définie de %d vers %d — "
+					% [version, version + 1] + "données rendues telles quelles")
+		version += 1
+	migrated["schema"] = to_version
+	return migrated
 
 
 func _read_json(path: String) -> Variant:
