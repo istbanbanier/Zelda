@@ -1545,3 +1545,29 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > noirs des cinq familles à la même échelle, batterie transverse
 > (occlusion, mémoire, retour, séparations, cadavres, loot unique),
 > puis revue contradictoire du Gate D.
+
+## 2026-08-02 (Gate D, D-EN.6) — placements, aplats, batterie transverse
+
+> Les cinq familles sont DANS la vallée à leur poste (§12.2-§12.5) :
+> azur au gué est et en lisière de forêt (lignes de tir), briseur au
+> sommet de la falaise ouest gardant la Lame conductrice, colosse aux
+> ruines centrales sur la route du donjon, chasseur à l'est DERRIÈRE le
+> pylône (territoire optionnel, hors corridor principal — testé). Un
+> CombatCoordinator gouverne le groupe. Planche du bestiaire
+> (scenes/tests/BestiaryLineup.tscn, BESTIARY_FLAT=1) : les cinq à la
+> MÊME échelle, en matière et en aplats noirs — evidence/gateD/. §12.9 :
+> DEUX navmesh cuits depuis la même géométrie (agent 0,7 m : 1098
+> polygones ; agent 1,2 m : 1044) sur des cartes SÉPARÉES ; colosse et
+> chasseur empruntent la grande via tuning.uses_large_navmesh. Batterie
+> transverse test_bestiary_gate (107 assertions) : stats/armes/carrures
+> toutes distinctes et aucun identifiant de contrat partagé, aucune
+> vision à travers un mur sur les cinq, aucune hitbox ni hurtbox active
+> après la mort, placements et navigation vérifiés. TROIS défauts réels
+> corrigés : hurtbox secondaire (dos du colosse) encore frappable après
+> la mort ; deux _exit_tree concurrents ; fuite de RID de la carte de
+> navigation créée en code. Audit du Gate D réécrit avec preuves
+> rejouées : **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE**
+> (jamais de PASS humain ; item 18 PARTIEL assumé, coffres du donjon en
+> Phase F). Plancher 362.
+> **PROCHAINE ACTION** : revue contradictoire du Gate D à contexte frais
+> (ordre corrigé §5), puis fin de Phase E (Gate E) puis Phase F.

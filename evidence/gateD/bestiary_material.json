@@ -1,0 +1,18 @@
+{
+  "commit": "4007e928d6674f179339f74a1ae2bdb0c6c24fcb",
+  "display_server": "X11",
+  "distinct_colors_sampled": 221,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 30,
+  "height": 1080,
+  "label": "gateD_bestiary",
+  "luma_mean": 0.5463,
+  "luma_stddev": 0.2093,
+  "png": "evidence/gateD/bestiary_material.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/tests/BestiaryLineup.tscn",
+  "timestamp_utc": "2026-08-02 15:11:22",
+  "width": 1920
+}

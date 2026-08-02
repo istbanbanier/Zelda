@@ -23,6 +23,13 @@ const OUT: String = "res://scenes/world/valley/valley_navmesh.tres"
 const CELL_SIZE: float = 0.5
 const AGENT_RADIUS: float = 0.7
 const AGENT_HEIGHT: float = 1.8
+## D-EN.6 (§12.9 : « navmesh validé avec capsule de chaque famille ») —
+## un SECOND maillage pour les grandes carrures : le colosse (rayon
+## 1,1 m) et le chasseur (0,85 m) ne peuvent pas emprunter les passages
+## calculés pour un agent de 0,7 m. Marge au-dessus du colosse.
+const LARGE_AGENT_RADIUS: float = 1.2
+const LARGE_AGENT_HEIGHT: float = 4.0
+const OUT_LARGE: String = "res://scenes/world/valley/valley_navmesh_large.tres"
 const AGENT_MAX_CLIMB: float = 0.4
 const AGENT_MAX_SLOPE_DEG: float = 44.0
 
@@ -39,35 +46,51 @@ func _run() -> void:
 	await process_frame
 	await process_frame
 
-	var nav_mesh: NavigationMesh = NavigationMesh.new()
-	nav_mesh.geometry_parsed_geometry_type = NavigationMesh.PARSED_GEOMETRY_STATIC_COLLIDERS
-	nav_mesh.geometry_collision_mask = 1
-	nav_mesh.cell_size = CELL_SIZE
-	nav_mesh.cell_height = 0.25
-	nav_mesh.agent_radius = AGENT_RADIUS
-	nav_mesh.agent_height = AGENT_HEIGHT
-	nav_mesh.agent_max_climb = AGENT_MAX_CLIMB
-	nav_mesh.agent_max_slope = deg_to_rad(AGENT_MAX_SLOPE_DEG)
-
+	# Les DEUX maillages partagent la géométrie source : seuls le rayon et
+	# la hauteur d'agent changent (§12.9).
 	var source: NavigationMeshSourceGeometryData3D = NavigationMeshSourceGeometryData3D.new()
-	NavigationServer3D.parse_source_geometry_data(nav_mesh, source, world)
+	var probe: NavigationMesh = _make_mesh(AGENT_RADIUS, AGENT_HEIGHT)
+	NavigationServer3D.parse_source_geometry_data(probe, source, world)
 	if not source.has_data():
 		push_error("[bake] aucune géometrie source parsée — rien à baker.")
 		quit(1)
 		return
 	print("[bake] géométrie parsée, bake en cours…")
-	NavigationServer3D.bake_from_source_geometry_data(nav_mesh, source)
-
-	var polygons: int = nav_mesh.get_polygon_count()
-	print("[bake] polygones : %d" % polygons)
-	if polygons <= 0:
-		push_error("[bake] navmesh VIDE — échec.")
+	if not _bake_and_save(probe, source, OUT, "standard"):
 		quit(1)
 		return
-	var err: Error = ResourceSaver.save(nav_mesh, OUT)
-	if err != OK:
-		push_error("[bake] échec d'écriture de %s (%d)" % [OUT, err])
+	var large: NavigationMesh = _make_mesh(LARGE_AGENT_RADIUS, LARGE_AGENT_HEIGHT)
+	if not _bake_and_save(large, source, OUT_LARGE, "grandes carrures"):
 		quit(1)
 		return
-	print("[bake] écrit : %s" % OUT)
 	quit(0)
+
+
+func _make_mesh(radius: float, height: float) -> NavigationMesh:
+	var nav_mesh: NavigationMesh = NavigationMesh.new()
+	nav_mesh.geometry_parsed_geometry_type = NavigationMesh.PARSED_GEOMETRY_STATIC_COLLIDERS
+	nav_mesh.geometry_collision_mask = 1
+	nav_mesh.cell_size = CELL_SIZE
+	nav_mesh.cell_height = 0.25
+	nav_mesh.agent_radius = radius
+	nav_mesh.agent_height = height
+	nav_mesh.agent_max_climb = AGENT_MAX_CLIMB
+	nav_mesh.agent_max_slope = deg_to_rad(AGENT_MAX_SLOPE_DEG)
+	return nav_mesh
+
+
+func _bake_and_save(nav_mesh: NavigationMesh,
+		source: NavigationMeshSourceGeometryData3D, path: String,
+		label: String) -> bool:
+	NavigationServer3D.bake_from_source_geometry_data(nav_mesh, source)
+	var polygons: int = nav_mesh.get_polygon_count()
+	print("[bake] %s : %d polygone(s)" % [label, polygons])
+	if polygons <= 0:
+		push_error("[bake] navmesh VIDE (%s) — échec." % label)
+		return false
+	var err: Error = ResourceSaver.save(nav_mesh, path)
+	if err != OK:
+		push_error("[bake] échec d'écriture de %s (%d)" % [path, err])
+		return false
+	print("[bake] écrit : %s" % path)
+	return true

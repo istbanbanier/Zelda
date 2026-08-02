@@ -148,7 +148,7 @@ llvmpipe uniquement, aucun GPU.
 | B | Player, caméra, locomotion, endurance, escalade, mantle | **Clos par D-021 : accepté pour continuation** — volet automatique vert (137 tests), dettes VALIDATION-B-001 + CONTROLLER-001 à la passe finale |
 | C | Santé, hitbox, combo, esquive, lock-on, arc, durabilité | **Clos par D-024 : accepté pour continuation** — 4 critères PASS rejoués en revue, D1 (mort du joueur) corrigé + régression, dettes humaines à la passe finale |
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
-| D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres | **ROUVERT (FAIL item 19)** — audit du 2026-08-02 (`docs/GATE_D_AUDIT.md`) : monde et composition PASS, coffres/checkpoint PARTIEL (4/8, solde en Phase F), mais UNE seule famille ennemie sur cinq — les quatre autres familles (§12.2-12.5) sont le jalon courant |
+| D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres, CINQ familles ennemies | **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE** (`docs/GATE_D_AUDIT.md`, passe 2) : items 16/17/19 PASS, 18 PARTIEL (4 coffres sur 8, solde en Phase F, documenté), 20 PASS automatique sans essai humain. Les cinq familles de §12 existent, diffèrent par stats/arme/portée/carrure/comportement et sont testées (107 assertions transverses + 47 par famille) |
 | E | Récolte, cuisine, buffs, sauvegarde et migrations | E.1/E.2a/E.2b Fonctionnels — Gate NON fermé (attend Gate D, ordre corrigé) |
 | F | Graphe électrique, 4 salles, salle centrale, antichambre | Non commencé (après fermeture du Gate D) |
 | G | Arène, boss 3 phases, solvabilité, victoire | Non commencé |

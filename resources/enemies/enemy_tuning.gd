@@ -50,3 +50,7 @@ extends Resource
 @export var alert_radius: float = 0.0
 ## §12.1 : durée de la fuite (familles qui fuient — le braise : 2-4 s).
 @export var flee_duration: float = 3.0
+## §12.9 (D-EN.6) : cette famille emprunte le navmesh des GRANDES
+## CARRURES — le colosse (rayon 1,1 m) et le chasseur (0,85 m) ne
+## peuvent pas passer là où un pillard (0,38 m) passe.
+@export var uses_large_navmesh: bool = false

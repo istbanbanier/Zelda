@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+; Planche du bestiaire D-EN.6 (§12, §7.18) — scène de DEV, exclue de
+; l'export final. BESTIARY_FLAT=1 : aplats noirs sur fond clair, à la
+; MÊME échelle : c'est là que se juge « cinq familles distinctes ».
+; Tout est construit en code : voir scripts/tools/bestiary_lineup.gd.
+
+[ext_resource type="Script" path="res://scripts/tools/bestiary_lineup.gd" id="1_bestiary"]
+
+[node name="BestiaryLineup" type="Node3D"]
+script = ExtResource("1_bestiary")

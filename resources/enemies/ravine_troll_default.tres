@@ -26,3 +26,4 @@ max_pursuit_distance = 35.0
 patrol_speed = 2.2
 alert_radius = 0.0
 flee_duration = 3.0
+uses_large_navmesh = true

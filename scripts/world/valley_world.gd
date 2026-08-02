@@ -52,6 +52,10 @@ var _taken_pickups: Array[String] = []
 ## E.1 : même mémoire pour les ingrédients récoltés — politique v0.1
 ## EXPLICITE (§13.1) : pas de respawn, un ingrédient récolté reste récolté.
 var _taken_ingredients: Array[String] = []
+## §12.9 (D-EN.6) : carte de navigation des grandes carrures. Créée à la
+## main, donc LIBÉRÉE à la main — sans quoi elle fuit à la sortie de
+## scène (fuite de RID mesurée au test).
+var _large_navigation_map: RID = RID()
 
 
 func _ready() -> void:
@@ -77,6 +81,10 @@ func _ready() -> void:
 		var typed: WeaponPickup = pickup as WeaponPickup
 		typed.picked_up.connect(func(_weapon: WeaponInstance) -> void:
 			_on_pickup_taken(typed))
+	# D-EN.6 : les QUATRE familles au-delà du braise (§12.2-§12.5), posées
+	# selon leur rôle de level design ; le coordinateur de combat (§12.8)
+	# les gouverne toutes.
+	_spawn_bestiary()
 	# E.2b : le feu de cuisine — un interactable posé SUR le foyer réel du
 	# camp (§13.3). L'atelier vit dans la coquille ; le feu n'est que la
 	# porte, comme la collision reste celle du foyer existant.
@@ -310,6 +318,11 @@ func _exit_tree() -> void:
 	var flow: Node = get_node_or_null("/root/SceneFlow")
 	if flow != null and flow.is_connected("transition_started", _on_transition_started):
 		flow.disconnect("transition_started", _on_transition_started)
+	# La carte de navigation des grandes carrures est créée en code : elle
+	# appartient à cette scène et meurt avec elle (fuite de RID mesurée).
+	if _large_navigation_map.is_valid():
+		NavigationServer3D.free_rid(_large_navigation_map)
+		_large_navigation_map = RID()
 
 
 func _on_transition_started(_target: String) -> void:
@@ -334,6 +347,70 @@ func _on_ingredient_taken(pickup: IngredientPickup) -> void:
 	if not id.is_empty() and not id in _taken_ingredients:
 		_taken_ingredients.append(id)
 	_autosave()
+
+
+## D-EN.6 (§12.2-§12.5, §12.8) — le bestiaire de la vallée. Les trois
+## braises du camp restent dans la scène (première rencontre, §12.1) ;
+## ces familles-ci occupent leurs rôles :
+## - AZUR près de la rivière et en lisière de forêt : de vraies lignes de
+##   tir et des angles de contournement (§12.2) ;
+## - BRISEUR au sommet de la falaise ouest, gardien de la Lame conductrice
+##   (§12.3 : « rare, gardien d'une forte récompense ») ;
+## - COLOSSE dans les ruines centrales de la plaine nord, sur la route du
+##   donjon — sa carrure interdit les passages étroits (§12.4) ;
+## - CHASSEUR à l'est, DERRIÈRE le pylône : territoire optionnel signalé
+##   par le relief, jamais sur le chemin principal (§12.5, §4.1).
+func _spawn_bestiary() -> void:
+	var holder: Node3D = Node3D.new()
+	holder.name = "Bestiary"
+	add_child(holder)
+	_setup_large_navigation(holder)
+	# Le coordinateur de groupe (§12.8) : tokens et plafond d'IA actives.
+	var coordinator: CombatCoordinator = CombatCoordinator.new()
+	coordinator.name = "CombatCoordinator"
+	holder.add_child(coordinator)
+	var placements: Array[Array] = [
+		["res://scenes/enemies/RaiderBlue.tscn", Vector3(92, 2.1, 16), 3.0],
+		["res://scenes/enemies/RaiderBlue.tscn", Vector3(58, 2.1, 30), 1.4],
+		["res://scenes/enemies/RaiderBlack.tscn", Vector3(-104, 14.1, 62), 1.6],
+		["res://scenes/enemies/RavineTroll.tscn", Vector3(-16, 2.1, -48), 0.4],
+		["res://scenes/enemies/CentaurHunter.tscn", Vector3(150, 2.1, 52), 4.2],
+	]
+	for placement: Array in placements:
+		var packed: PackedScene = load(String(placement[0])) as PackedScene
+		if packed == null:
+			push_warning("[bestiaire] scène absente : %s" % String(placement[0]))
+			continue
+		var enemy: Node3D = packed.instantiate() as Node3D
+		enemy.position = placement[1] as Vector3
+		holder.add_child(enemy)
+		# Le regard initial fixe le TERRITOIRE, pas le joueur : chacun
+		# garde son poste jusqu'à ce qu'il perçoive quelque chose.
+		(enemy.get_node("Pivot") as Node3D).rotation.y = float(placement[2])
+
+
+## §12.9 (D-EN.6) : une seconde carte de navigation, cuite pour un agent
+## de 1,2 m de rayon — le colosse et le chasseur n'empruntent PAS les
+## passages taillés pour un pillard. Carte SÉPARÉE (map_create) : les
+## deux maillages ne se fusionnent jamais.
+func _setup_large_navigation(holder: Node3D) -> void:
+	var mesh: NavigationMesh = load(
+		"res://scenes/world/valley/valley_navmesh_large.tres") as NavigationMesh
+	if mesh == null:
+		push_warning("[bestiaire] navmesh des grandes carrures absent — "
+			+ "les grandes familles retombent sur la ligne directe.")
+		return
+	var region: NavigationRegion3D = NavigationRegion3D.new()
+	region.name = "LargeNavigation"
+	region.navigation_mesh = mesh
+	region.add_to_group("large_navigation")
+	holder.add_child(region)
+	var map: RID = NavigationServer3D.map_create()
+	NavigationServer3D.map_set_active(map, true)
+	NavigationServer3D.map_set_up(map, Vector3.UP)
+	NavigationServer3D.map_set_cell_size(map, mesh.cell_size)
+	region.set_navigation_map(map)
+	_large_navigation_map = map
 
 
 ## E.1 (§13.1) : les ingrédients de la vallée, posés en code comme le relief —

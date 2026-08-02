@@ -446,7 +446,7 @@ func _pursuit_direction_toward(goal: Vector3, to_goal: Vector3,
 		distance: float) -> Vector3:
 	if distance <= 0.001:
 		return Vector3.ZERO
-	var map: RID = get_world_3d().navigation_map
+	var map: RID = _navigation_map()
 	_repath_tick += 1
 	if _path.is_empty() or (_repath_tick % REPATH_INTERVAL == 1
 			and _path_goal.distance_to(goal) > 1.5):
@@ -469,6 +469,20 @@ func _pursuit_direction_toward(goal: Vector3, to_goal: Vector3,
 	if direction.length_squared() < 0.0001:
 		return to_goal.normalized()
 	return direction.normalized()
+
+
+## §12.9 : la carte de navigation de MA carrure. Les grandes familles
+## empruntent la carte dédiée (`LargeNavigation` dans le monde) ; sans
+## elle (labo, arène de test), la carte du monde fait office — le
+## pathfinding retombe alors sur la ligne directe, jamais sur un chemin
+## impraticable, car la physique reste l'arbitre final.
+func _navigation_map() -> RID:
+	if tuning != null and tuning.uses_large_navmesh:
+		for node: Node in get_tree().get_nodes_in_group("large_navigation"):
+			var region: NavigationRegion3D = node as NavigationRegion3D
+			if region != null:
+				return region.get_navigation_map()
+	return get_world_3d().navigation_map
 
 
 func _separation_push() -> Vector3:
@@ -696,7 +710,11 @@ func _on_died(_event: DamageEvent) -> void:
 	_attack.cancel()
 	_release_attack_token()
 	_enter(State.DEAD)
-	_hurtbox.set_deferred("monitorable", false)
+	# TOUTES les hurtbox s'éteignent, pas seulement la principale : le
+	# point faible dorsal du colosse restait frappable après sa mort
+	# (§12.10, défaut mesuré par la batterie transverse du Gate D).
+	for node: Node in find_children("*", "HurtboxComponent", true, false):
+		(node as HurtboxComponent).set_deferred("monitorable", false)
 	set_deferred("collision_layer", 0)
 	if not _model_mounted:
 		_pivot.rotation.x = -1.45
