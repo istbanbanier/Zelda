@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EnemyTuning" load_steps=2 format=3]
+
+; Pillard azur (§12.2, §12.6) : 85 PV, vision 30 m / 105°, audition 20 m,
+; poursuite 5,8 m/s, lance (portée 2,4), alerte 14 m, mémoire 5 s.
+
+[ext_resource type="Script" path="res://resources/enemies/enemy_tuning.gd" id="1_tuning"]
+
+[resource]
+script = ExtResource("1_tuning")
+id = &"raider_blue"
+max_health = 85.0
+poise = 30.0
+stagger_duration = 0.7
+vision_range = 30.0
+vision_half_angle_deg = 52.5
+hearing_range = 20.0
+pursuit_speed = 5.8
+turn_speed = 8.0
+attack_reach = 2.4
+attack_cooldown = 1.4
+retreat_speed = 4.2
+retreat_duration = 1.0
+memory_duration = 5.0
+search_duration = 2.0
+max_pursuit_distance = 50.0
+patrol_speed = 3.2
+alert_radius = 14.0
+flee_duration = 3.0

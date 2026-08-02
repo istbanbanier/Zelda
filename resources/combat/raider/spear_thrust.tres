@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AttackDefinition" load_steps=2 format=3]
+
+; D-EN.1 — coup de lance du pillard azur (§12.2) : pique plus vive que le
+; gourdin mais toujours annoncée, portée longue (la hitbox de la scène).
+
+[ext_resource type="Script" path="res://resources/combat/attack_definition.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"raider_spear_thrust"
+damage_multiplier = 1.0
+poise_damage = 10.0
+knockback = 2.6
+element = &""
+startup = 0.55
+active = 0.18
+recovery = 0.85
+input_buffer = 0.15
+combo_window_fraction = 0.3
+hit_stop = 0.045

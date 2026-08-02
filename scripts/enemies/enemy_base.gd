@@ -355,8 +355,16 @@ func _process_chase(delta: float) -> void:
 	var steered: Vector3 = direction + _separation_push() * SEPARATION_WEIGHT
 	if steered.length_squared() > 0.0001:
 		steered = steered.normalized()
-	velocity.x = steered.x * tuning.pursuit_speed
-	velocity.z = steered.z * tuning.pursuit_speed
+	var desired: Vector3 = _family_chase_velocity(steered, distance)
+	velocity.x = desired.x
+	velocity.z = desired.z
+
+
+## La famille MODÈLE son approche (contournement de l'azur, bande de
+## distance…) : reçoit la direction d'approche normalisée (chemin +
+## séparation) et la distance, renvoie la vitesse XZ désirée.
+func _family_chase_velocity(direction: Vector3, _distance: float) -> Vector3:
+	return direction * tuning.pursuit_speed
 
 
 func _process_retreat(delta: float) -> void:

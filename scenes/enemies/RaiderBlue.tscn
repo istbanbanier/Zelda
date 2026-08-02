@@ -1,0 +1,93 @@
+[gd_scene load_steps=14 format=3]
+
+; Pillard azur (§12.2) — graybox : capsule DROITE (1,75 m, silhouette plus
+; haute que le braise voûté), lance longue, volume de pique étroit et long.
+; Corps couche Enemy (4), hurtbox couche Hurtbox (32), hitbox couche
+; Enemy Hitbox (16) masquée sur Hurtbox (32) — mêmes règles que le braise.
+
+[ext_resource type="Script" path="res://scripts/enemies/raider_blue.gd" id="1_raider"]
+[ext_resource type="Resource" path="res://resources/enemies/raider_blue_default.tres" id="2_tuning"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="3_health"]
+[ext_resource type="Script" path="res://scripts/components/poise_component.gd" id="4_poise"]
+[ext_resource type="Script" path="res://scripts/components/hurtbox_component.gd" id="5_hurtbox"]
+[ext_resource type="Script" path="res://scripts/components/hitbox_component.gd" id="6_hitbox"]
+[ext_resource type="Script" path="res://scripts/combat/attack_controller.gd" id="7_attack"]
+[ext_resource type="Resource" path="res://resources/combat/raider/spear_thrust.tres" id="8_spear"]
+[ext_resource type="Script" path="res://scripts/characters/character_visual.gd" id="9_visual"]
+[ext_resource type="Resource" path="res://resources/characters/raider_anim_set.tres" id="10_animset"]
+
+[sub_resource type="CapsuleShape3D" id="BodyShape"]
+radius = 0.36
+height = 1.75
+
+[sub_resource type="CapsuleMesh" id="BodyMesh"]
+radius = 0.36
+height = 1.75
+
+[sub_resource type="StandardMaterial3D" id="RaiderMat"]
+albedo_color = Color(0.2, 0.38, 0.68, 1)
+
+[sub_resource type="BoxShape3D" id="SpearThrust"]
+size = Vector3(0.45, 0.8, 1.9)
+
+[node name="RaiderBlue" type="CharacterBody3D" groups=["enemies", "damageable", "lock_on_targets"]]
+collision_layer = 4
+collision_mask = 7
+script = ExtResource("1_raider")
+tuning = ExtResource("2_tuning")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, 0)
+shape = SubResource("BodyShape")
+
+[node name="Pivot" type="Node3D" parent="."]
+
+; ART-Q2 : adaptateur du modèle riggé (char.raider_blue — épaulière et
+; bottes greffées, V4 lot 13). Repli graybox total sinon.
+[node name="CharacterVisual" type="Node3D" parent="Pivot"]
+script = ExtResource("9_visual")
+model_id = &"char.raider_blue"
+anim_set = ExtResource("10_animset")
+
+[node name="BodyMesh" type="MeshInstance3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, 0)
+mesh = SubResource("BodyMesh")
+surface_material_override/0 = SubResource("RaiderMat")
+
+; Volume de PIQUE : étroit et long, devant le pivot — la portée de la
+; lance (§11.1 : 2,7 m pour l'arme joueur ; 2,4 de portée d'engagement).
+[node name="SpearHitbox" type="Area3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 1.5)
+collision_layer = 16
+collision_mask = 32
+script = ExtResource("6_hitbox")
+team = &"enemies"
+instigator_path = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pivot/SpearHitbox"]
+shape = SubResource("SpearThrust")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("3_health")
+max_health = 85.0
+
+[node name="PoiseComponent" type="Node" parent="."]
+script = ExtResource("4_poise")
+max_poise = 30.0
+
+[node name="Hurtbox" type="Area3D" parent="."]
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("5_hurtbox")
+team = &"enemies"
+health_path = NodePath("../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hurtbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, 0)
+shape = SubResource("BodyShape")
+
+[node name="AttackController" type="Node" parent="."]
+script = ExtResource("7_attack")
+attacks = [ExtResource("8_spear")]
+hitbox_path = NodePath("../Pivot/SpearHitbox")
+base_damage = 9.0

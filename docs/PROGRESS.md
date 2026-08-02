@@ -1433,3 +1433,23 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > **PROCHAINE ACTION (D-EN.1)** : pillard azur — 85 PV, LANCE (contrat
 > d'attaque propre), contournement (crochet de vitesse de chasse),
 > maintien de distance, esquive de lourde (cooldown 8 s), alerte 14 m.
+
+## 2026-08-02 (Gate D, D-EN.1) — pillard azur : deuxième famille RÉELLE
+
+> §12.2 au complet, prouvé en physique réelle : 85 PV, LANCE (contrat
+> d'attaque propre spear_thrust — pique 0,55 s/0,18/0,85, hitbox longue
+> et étroite, portée 2,4 m où le gourdin ne touche pas), silhouette
+> droite (capsule 1,75), vision 30 m/105°, audition 20 m, poursuite
+> 5,8 m/s. Comportements PROPRES : contournement (crochet
+> _family_chase_velocity du socle — composante latérale 45 % à
+> mi-distance, flanc déterministe par spawn), alternance
+> distance/attaque (il ROUVRE l'écart pendant son cooldown), esquive
+> d'une lourde télégraphiée (lecture du CONTRAT d'attaque du joueur —
+> startup d'une lourde à portée —, pas latéral 0,28 s, cooldown 8 s
+> mesuré : la 2e lourde n'est PAS esquivée), alerte 14 m via le socle.
+> 5 tests (18 assertions). Leçon de test consignée : l'attente
+> d'atterrissage du setup laisse le temps d'attaquer — démarrer le
+> joueur hors de vue puis le téléporter dans le scénario. Plancher 339.
+> **PROCHAINE ACTION (D-EN.2)** : briseur d'obsidienne — 150 PV, masse
+> en combo 2-3 coups (chaînage par la vraie fenêtre), garde frontale à
+> jauge (amorti + rupture = ouverture), poise 60.
