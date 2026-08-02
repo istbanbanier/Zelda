@@ -1200,3 +1200,14 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > existant, récompense route 2), roseaux de berge, 4 pierres émergentes
 > HORS des gués, bivouac abandonné au gué est (seau renversé, corde,
 > bouteille). 41 placements. Tests de zones étendus (26 + 15).
+
+## 2026-08-02 (nuit V4, lots 8-9) — falaise ouest et pylône rituel
+
+> Falaise (§11.G) : bosquet de pins au sommet (les hauteurs §12),
+> mort-bois en repère de corniche, gros rochers d'appui au pied dont une
+> formation EMPILÉE, herbes sèches clairsemées — surfaces d'escalade et
+> corniches de repos intactes. Pylône (§11.H) : composition rituelle —
+> cercle de dalles autour du socle, piliers de brique encadrant
+> l'approche, bannières de seuil (lieu entretenu), pierres votives,
+> végétation quasi absente (§7.5 près du danger électrique). 24
+> placements. Tests de zones : 7 zones couvertes.

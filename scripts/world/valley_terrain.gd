@@ -381,6 +381,8 @@ func _build_forest() -> void:
 	_dress_zone_prairie()
 	_dress_zone_forest()
 	_dress_zone_river()
+	_dress_zone_cliff()
+	_dress_zone_pylon()
 
 
 ## ---------------------------------------------------------------------------
@@ -508,6 +510,60 @@ func _dress_zone_river() -> void:
 	for child: Node in river.get_children():
 		if String(child.name).begins_with("Bucket_Metal"):
 			(child as Node3D).rotation.z = 1.35   # renversé, §11.F
+
+
+## Zone G — falaise ouest (§11.G) : pins au sommet (les hauteurs), gros
+## rochers au pied, formation empilée, mort-bois en repère de corniche.
+## Les surfaces d'escalade et les deux corniches de repos ne changent pas.
+func _dress_zone_cliff() -> void:
+	const TRUNK: Vector3 = Vector3(0.45, 6.0, 0.0)
+	_dress_zone("DressZoneCliff", [
+		# Sommet : bosquet de pins — silhouette de hauteur (§12 Nature).
+		[&"Pine_1", Vector3(-95, 14, 60), 0.6, 1.15, TRUNK, true],
+		[&"Pine_3", Vector3(-104, 14, 51), 2.3, 1.0, TRUNK, true],
+		[&"Pine_5", Vector3(-88, 14, 68), 4.0, 0.9, TRUNK, true],
+		[&"DeadTree_1", Vector3(-82.5, 14, 57), 1.4, 0.95, TRUNK, true],
+		# Sommet : sous-bois de pins clairsemé.
+		[&"Fern_1", Vector3(-97, 14, 57), 3.1, 1.1],
+		[&"Clover_2", Vector3(-91, 14, 63), 0.8, 1.2],
+		[&"Pebble_Round_5", Vector3(-99, 14, 63.5), 2.0, 1.6],
+		# Pied de falaise : gros rochers d'appui et formation EMPILÉE.
+		[&"Rock_Medium_3", Vector3(-76.5, 2, 44), 0.9, 1.4,
+			Vector3(4.4, 3.0, 4.4), false],
+		[&"Rock_Medium_1", Vector3(-77.5, 2, 71), 2.5, 1.25,
+			Vector3(3.8, 2.6, 3.4), false],
+		[&"Rock_Medium_2", Vector3(-76.8, 3.6, 70.2), 4.2, 0.8],
+		# Herbes sèches au pied (zone minérale, végétation clairsemée).
+		[&"Grass_Wispy_Short", Vector3(-74, 2.02, 52), 1.2, 1.2],
+		[&"Grass_Wispy_Short", Vector3(-75.5, 2.02, 62), 3.5, 1.0],
+	])
+
+
+## Zone H — pylône (§11.H) : composition RITUELLE — cercle de dalles,
+## piliers de brique encadrant l'approche, bannières — l'énergie cyan
+## existante reste la seule « électricité », rien de gameplay ne change.
+func _dress_zone_pylon() -> void:
+	_dress_zone("DressZonePylon", [
+		# Cercle de dalles autour du socle (115, 18, -25).
+		[&"RockPath_Square_Wide", Vector3(111.5, 18.02, -25), 0.0, 1.2],
+		[&"RockPath_Square_Wide", Vector3(118.5, 18.02, -25), 1.57, 1.2],
+		[&"RockPath_Square_Wide", Vector3(115, 18.02, -21.5), 0.79, 1.2],
+		[&"RockPath_Square_Wide", Vector3(115, 18.02, -28.5), 2.36, 1.2],
+		[&"RockPath_Square_Small_1", Vector3(112.2, 18.02, -22.2), 1.1, 1.3],
+		[&"RockPath_Square_Small_1", Vector3(117.8, 18.02, -27.8), 2.7, 1.3],
+		# Piliers de brique encadrant l'approche est (rampe du pylône).
+		[&"Corner_Exterior_Brick", Vector3(120.5, 18, -20.5), 0.3, 1.2,
+			Vector3(0.8, 3.2, 0.8), false],
+		[&"Corner_Exterior_Brick", Vector3(120.5, 18, -29.5), 0.3, 1.2,
+			Vector3(0.8, 3.2, 0.8), false],
+		# Bannières de seuil — le lieu est ENTRETENU, pas abandonné.
+		[&"Banner_2", Vector3(119.6, 18, -21.2), 4.71, 1.25],
+		[&"Banner_2", Vector3(119.6, 18, -28.8), 4.71, 1.25],
+		# Pierres votives éparses, végétation quasi absente (§7.5 : rare
+		# près des dangers électriques).
+		[&"Pebble_Round_4", Vector3(110.5, 18.02, -28.5), 0.6, 1.5],
+		[&"Pebble_Round_5", Vector3(112, 18.02, -20), 2.9, 1.3],
+	])
 
 
 ## Zone A — crête d'ouverture (§11.A) : cadre végétal LATÉRAL, rochers

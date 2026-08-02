@@ -45,7 +45,8 @@ func test_the_three_zones_mount_their_compositions() -> void:
 	await _load_valley()
 	for expected: Array in [["DressZoneCrest", 21], ["DressZoneDescent", 12],
 			["DressZonePrairie", 18], ["DressZoneForest", 26],
-			["DressZoneRiver", 15]]:
+			["DressZoneRiver", 15], ["DressZoneCliff", 12],
+			["DressZonePylon", 12]]:
 		var zone: Node3D = _zone(String(expected[0]))
 		check_equal(zone.get_child_count(), int(expected[1]),
 			"%s : tous les placements montés" % String(expected[0]))
