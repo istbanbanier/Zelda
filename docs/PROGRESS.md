@@ -979,3 +979,26 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > **PROCHAINE ACTION (ART-Q1)** : ingérer UAL1/UAL2 in-place + créer
 > HeroVisual.tscn animé (12 états via CharacterAnimSet), sockets main/dos,
 > capsule autorité, root motion neutralisé documenté par clip.
+
+## 2026-08-02 (nuit) — ART-Q1 : héros riggé vertical LIVRÉ
+
+> UAL1+UAL2 in-place ingérés (.glb, 65 os = squelette Ranger).
+> `bake_hero_animations.gd` cuit AL_HeroStates.res : 12 états, bouclage
+> EXPLICITE, **audit root motion par clip** (boucles fermées à 0,000 m ;
+> one-shots = déplacement de POSE documenté, ex. Death01 0,81 m corps
+> couché ; seuils : boucle 0,05 m / one-shot 1,2 m anti-_RM ; zéro piste
+> de position de nœud). `HeroVisual.tscn` = Male_Ranger + AnimationPlayer
+> (root_node→modèle, chemins de pistes identiques) + sockets
+> SOCKET_HAND_R/SOCKET_BACK/SOCKET_BOW (hand_r/spine_03/hand_l).
+> Player.tscn : CharacterVisual (char.hero) + PlayerVisualDriver — mode et
+> vitesse RÉELS → clips ; graybox masqué ; **capsule intouchée** ; épée
+> dans la MAIN (pivot sous le socket, prise (90,0,0) retenue par balayage
+> de 6 orientations par capture) ; balayage procédural et tilt de mort
+> coupés quand le modèle est monté (Death01 couche le corps).
+> Régression corrigée : chemin dur `VisualRoot/WeaponPivot` dans
+> test_hud_and_inventory (cascade de 19 tests) → find_children.
+> Tests 294 → **300**. Lancements vallée + vestibule 300 frames zéro
+> erreur script. Preuves : evidence/artQ1/ (audit JSON, calibration,
+> vallée héros de dos, épée main/attaque).
+> **PROCHAINE ACTION (ART-Q2)** : pillard animé sur la VRAIE IA
+> (raider_red) + 2 variantes de teinte, mêmes contrats (capsule, hitbox).

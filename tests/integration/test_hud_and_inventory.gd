@@ -308,7 +308,10 @@ func test_the_player_weapon_is_visible_and_matches_the_equipment() -> void:
 	## repli), et qui disparaît à mains nues.
 	await _setup(false)
 	await _settle(3)
-	var pivot: Node3D = _player.get_node("VisualRoot/WeaponPivot") as Node3D
+	# ART-Q1 : le pivot vit dans la MAIN du modèle riggé quand il est monté
+	# (BoneAttachment3D au fond du squelette) — chercher, pas supposer le chemin.
+	var pivot: Node3D = _player.find_children("WeaponPivot", "Node3D", true,
+		false)[0] as Node3D
 	var mesh: MeshInstance3D = pivot.get_node("WeaponMesh") as MeshInstance3D
 	var models: Array[Node] = pivot.find_children("*", "WeaponModel", false, false)
 	check(mesh.visible or not models.is_empty(),

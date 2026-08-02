@@ -40,10 +40,19 @@ func _ready() -> void:
 	_skeleton = skeletons[0] as Skeleton3D if not skeletons.is_empty() else null
 	if anim_set != null and _skeleton != null and anim_set.weapon_bone != &"" \
 			and _skeleton.find_bone(String(anim_set.weapon_bone)) >= 0:
-		_socket = BoneAttachment3D.new()
-		_socket.name = "WeaponSocket"
-		_skeleton.add_child(_socket)
-		_socket.bone_name = String(anim_set.weapon_bone)
+		# Le modèle (HeroVisualModel) a pu créer ses propres sockets — les
+		# réutiliser plutôt qu'empiler un second attachement sur le même os.
+		for child: Node in _skeleton.get_children():
+			if child is BoneAttachment3D \
+					and (child as BoneAttachment3D).bone_name \
+						== String(anim_set.weapon_bone):
+				_socket = child as BoneAttachment3D
+				break
+		if _socket == null:
+			_socket = BoneAttachment3D.new()
+			_socket.name = "WeaponSocket"
+			_skeleton.add_child(_socket)
+			_socket.bone_name = String(anim_set.weapon_bone)
 
 
 ## Vrai quand AUCUN modèle riggé n'est monté : le graybox reste l'autorité
@@ -54,15 +63,22 @@ func is_fallback_active() -> bool:
 
 ## Joue le clip correspondant à l'état gameplay. Sans modèle ou sans clip :
 ## no-op silencieux — l'état est TOUJOURS accepté, jamais bloquant.
-func play_state(state: StringName) -> void:
+## Dédoublonnage PAR ÉTAT : un one-shot terminé ne repart pas tant que
+## l'état ne change pas (la mort ne se rejoue pas en boucle). `force`
+## redémarre le clip depuis zéro — le combo qui ré-entre dans
+## `attack_light` DOIT relancer l'animation, pas la laisser finie.
+func play_state(state: StringName, force: bool = false) -> void:
+	if state == _current_state and not force:
+		return
 	_current_state = state
 	if _player == null or anim_set == null:
 		return
 	var clip: StringName = anim_set.clip_for(state)
 	if clip == &"" or not _player.has_animation(clip):
 		return
-	if _player.current_animation != String(clip):
-		_player.play(clip)
+	_player.play(clip)
+	if force:
+		_player.seek(0.0, true)
 
 
 func current_state() -> StringName:

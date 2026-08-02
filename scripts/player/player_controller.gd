@@ -118,6 +118,9 @@ const BARE_REACH: float = 1.2
 ## Ce n'est PAS de l'animation (Phase H) — c'est le minimum pour qu'un humain
 ## COMPRENNE le système pendant un test (§7.14 : rien ici n'est « final »).
 var _weapon_pivot: Node3D = null
+## Vrai quand le pivot d'arme vit dans la MAIN du modèle riggé (ART-Q1) —
+## le balayage procédural et la pose de garde graybox sont alors coupés.
+var _weapon_in_hand: bool = false
 var _weapon_mesh: MeshInstance3D = null
 var _weapon_material: StandardMaterial3D = null
 ## ART-P0 : modèle de production en main (null = boîte graybox de repli).
@@ -627,8 +630,13 @@ func _on_died(_event: DamageEvent) -> void:
 	# courant à 6 m/s.
 	velocity.x = 0.0
 	velocity.z = 0.0
-	if _visual_root != null:
-		_visual_root.rotation.x = -1.3   # le corps tombe — la mort se VOIT (PT-D1-03)
+	# Le corps tombe — la mort se VOIT (PT-D1-03). Avec le modèle riggé,
+	# c'est le clip Death01 qui couche le corps : basculer AUSSI la racine
+	# ferait tomber le cadavre deux fois (ART-Q1).
+	var visual: CharacterVisual = _visual_root.get_node_or_null(
+		"CharacterVisual") as CharacterVisual if _visual_root != null else null
+	if _visual_root != null and (visual == null or visual.is_fallback_active()):
+		_visual_root.rotation.x = -1.3
 	_mode = Mode.DEAD
 
 
@@ -658,8 +666,31 @@ func _on_weapon_equipped(weapon: WeaponInstance) -> void:
 func _build_weapon_visual() -> void:
 	_weapon_pivot = Node3D.new()
 	_weapon_pivot.name = "WeaponPivot"
-	_weapon_pivot.position = Vector3(0.42, 1.1, 0.1)
-	_visual_root.add_child(_weapon_pivot)
+	# ART-Q1 : si le modèle riggé est monté, l'arme s'attache à la MAIN
+	# (BoneAttachment3D `hand_r`) et suit les clips — le balayage procédural
+	# du graybox se coupe (_update_weapon_pose). Le repli graybox garde le
+	# pivot à l'épaule et son balayage. Dans les deux cas la hitbox de
+	# combat reste le volume du contrôleur — jamais le modèle.
+	var visual: CharacterVisual = _visual_root.get_node_or_null(
+		"CharacterVisual") as CharacterVisual
+	var socket: BoneAttachment3D = visual.weapon_socket() \
+		if visual != null else null
+	if socket != null:
+		socket.add_child(_weapon_pivot)
+		_weapon_in_hand = true
+		# Alignement prise/paume, VÉRIFIÉ PAR CAPTURE (evidence/artQ1) : la
+		# lame (+Z du pivot) traverse le poing fermé, la prise posée dans la
+		# paume. `WEAPON_GRIP_EULER`/`WEAPON_GRIP_OFFSET` sont des coutures
+		# de réglage dev (même famille que SHOWCASE_*) — jamais du gameplay.
+		# (90,0,0) retenu par balayage de six orientations canoniques
+		# (captures scratchpad puis evidence/artQ1/hero_sword_*).
+		_weapon_pivot.rotation_degrees = _grip_tuning_vector(
+			"WEAPON_GRIP_EULER", Vector3(90.0, 0.0, 0.0))
+		_weapon_pivot.position = _grip_tuning_vector(
+			"WEAPON_GRIP_OFFSET", Vector3(0.0, 0.05, 0.0))
+	else:
+		_weapon_pivot.position = Vector3(0.42, 1.1, 0.1)
+		_visual_root.add_child(_weapon_pivot)
 	_weapon_mesh = MeshInstance3D.new()
 	_weapon_mesh.name = "WeaponMesh"
 	var blade: BoxMesh = BoxMesh.new()
@@ -670,7 +701,8 @@ func _build_weapon_visual() -> void:
 	_weapon_material.roughness = 0.6
 	_weapon_mesh.material_override = _weapon_material
 	_weapon_pivot.add_child(_weapon_mesh)
-	_weapon_pivot.rotation.x = 0.35   # pose de garde, pointe basse
+	if not _weapon_in_hand:
+		_weapon_pivot.rotation.x = 0.35   # pose de garde, pointe basse
 
 
 func _refresh_weapon_visual(weapon: WeaponInstance) -> void:
@@ -735,9 +767,23 @@ func _refresh_weapon_visual(weapon: WeaponInstance) -> void:
 ## Pose d'attaque par phase (§10.6 : l'animation SUIT le contrat, jamais
 ## l'inverse) : lever pendant l'anticipation, balayer pendant la fenêtre
 ## active, revenir pendant la récupération.
+## Couture de réglage visuel : "x,y,z" depuis l'environnement, sinon la
+## valeur figée. Ne touche que l'ALIGNEMENT du modèle d'arme dans la main.
+func _grip_tuning_vector(variable: String, fallback: Vector3) -> Vector3:
+	var raw: String = OS.get_environment(variable)
+	if raw.is_empty():
+		return fallback
+	var parts: PackedStringArray = raw.split(",")
+	if parts.size() != 3:
+		return fallback
+	return Vector3(parts[0].to_float(), parts[1].to_float(), parts[2].to_float())
+
+
 func _update_weapon_pose() -> void:
 	if _weapon_pivot == null or _attack == null:
 		return
+	if _weapon_in_hand:
+		return   # la main animée porte le geste — pas de balayage procédural
 	var definition: AttackDefinition = _attack.current_attack()
 	if definition == null:
 		_weapon_pivot.rotation.x = 0.35

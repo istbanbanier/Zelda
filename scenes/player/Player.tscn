@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3]
+[gd_scene load_steps=37 format=3]
 
 ; Joueur — hiérarchie de MASTER_SPEC §6.2, réduite au périmètre de B.3.
 ; Absents et assumés : StateMachine (§8.1) — le contrôleur porte un Mode couvrant
@@ -34,6 +34,9 @@
 [ext_resource type="Resource" path="res://resources/combat/sword/heavy_1.tres" id="23_heavy"]
 [ext_resource type="Script" path="res://scripts/components/inventory_component.gd" id="24_inventory"]
 [ext_resource type="Resource" path="res://resources/weapons/worn_sword.tres" id="25_worn_sword"]
+[ext_resource type="Script" path="res://scripts/characters/character_visual.gd" id="26_visual"]
+[ext_resource type="Resource" path="res://resources/characters/hero_anim_set.tres" id="27_animset"]
+[ext_resource type="Script" path="res://scripts/player/player_visual_driver.gd" id="28_visdriver"]
 
 [sub_resource type="CapsuleShape3D" id="Capsule"]
 radius = 0.35
@@ -93,6 +96,14 @@ surface_material_override/0 = SubResource("GrayboxBody")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0.38)
 mesh = SubResource("GrayboxNose")
 surface_material_override/0 = SubResource("GrayboxAccent")
+
+; ART-Q1 : adaptateur du modèle riggé (char.hero via AssetRegistry). S'il
+; résout, le graybox se masque (PlayerVisualDriver) ; sinon repli total.
+; La capsule de collision et les volumes de combat ne dépendent JAMAIS de lui.
+[node name="CharacterVisual" type="Node3D" parent="VisualRoot"]
+script = ExtResource("26_visual")
+model_id = &"char.hero"
+anim_set = ExtResource("27_animset")
 
 ; Couche 4 (Player Hitbox), masque 32 (Hurtbox). Sous VisualRoot : le volume de
 ; frappe suit l'orientation du personnage (+Z local = face, cf. NoseMesh).
@@ -164,6 +175,11 @@ starting_arrows = 8
 [node name="BowComponent" type="Node3D" parent="Components"]
 script = ExtResource("21_bow")
 tuning = ExtResource("22_bow_tuning")
+
+; ART-Q1 : traduit mode/vitesse du contrôleur en clips — sens unique, le
+; gameplay ne lit RIEN de l'animation.
+[node name="PlayerVisualDriver" type="Node" parent="Components"]
+script = ExtResource("28_visdriver")
 
 [node name="CameraRig" type="Node3D" parent="."]
 script = ExtResource("2_rig")

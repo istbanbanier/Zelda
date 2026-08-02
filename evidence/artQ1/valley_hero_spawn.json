@@ -1,0 +1,18 @@
+{
+  "commit": "d55b0d40281c1da1fed46aa8faf4bd0a0c1480df",
+  "display_server": "X11",
+  "distinct_colors_sampled": 1192,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 60,
+  "height": 1080,
+  "label": "artq1_valley_hero_spawn",
+  "luma_mean": 0.7653,
+  "luma_stddev": 0.1563,
+  "png": "evidence/artQ1/valley_hero_spawn.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "timestamp_utc": "2026-08-02 04:36:51",
+  "width": 1920
+}

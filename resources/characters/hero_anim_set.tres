@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CharacterAnimSet" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/characters/character_anim_set.gd" id="1_set"]
+
+[resource]
+script = ExtResource("1_set")
+idle = &"Idle"
+walk = &"Walk"
+run = &"Jog_Fwd"
+sprint = &"Sprint"
+jump = &"Jump_Start"
+fall = &"Jump"
+land = &"Jump_Land"
+dodge = &"Roll"
+attack_light = &"Sword_Regular_A"
+attack_heavy = &"Sword_Heavy_Combo"
+hurt = &"Hit_Chest"
+death = &"Death01"
+weapon_bone = &"hand_r"

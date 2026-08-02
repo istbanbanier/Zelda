@@ -32,8 +32,10 @@ func test_the_registry_resolves_delivered_assets_and_declines_missing_ones() -> 
 			"%s : available() dit la même chose que resolve()" % String(id))
 	check(AssetRegistry.resolve(&"weapon.worn_sword") != null,
 		"l'asset LIVRÉ (Épée usée) résout")
-	check(AssetRegistry.resolve(&"char.hero") == null,
-		"l'asset EN ATTENTE (héros) replie sur null — le graybox reste l'autorité")
+	check(AssetRegistry.resolve(&"char.hero") != null,
+		"le héros LIVRÉ (ART-Q1) résout")
+	check(AssetRegistry.resolve(&"char.raider_red") == null,
+		"l'asset EN ATTENTE (pillard, Q2) replie sur null — graybox autoritaire")
 	check(AssetRegistry.resolve(&"id.inconnu.xyz") == null,
 		"un id inconnu rend null sans crash")
 
@@ -45,11 +47,13 @@ const DELIVERED_Q0: Array[StringName] = [
 	&"env.rock.medium", &"env.plant.bush", &"prop.chest", &"prop.crate",
 	&"prop.barrel", &"arch.gate.module", &"arch.wall.module",
 	&"arch.column.module",
+	# ART-Q1 :
+	&"char.hero",
 ]
 
 
 func test_the_q0_delivered_assets_resolve_with_real_meshes() -> void:
-	## ART-Q0 : chaque id livré monte une scène qui contient AU MOINS un
+	## ART-Q0/Q1 : chaque id livré monte une scène qui contient AU MOINS un
 	## maillage réel — pas un wrapper vide qui « résout » sans rien montrer.
 	for id: StringName in DELIVERED_Q0:
 		var packed: PackedScene = AssetRegistry.resolve(id)
@@ -118,7 +122,7 @@ func test_the_character_visual_falls_back_cleanly_when_the_model_is_missing() ->
 	## ne casse, rien ne s'affiche, le socket est nul (le pivot procédural du
 	## contrôleur reste l'attache), et validate() DIT l'absence.
 	var visual: CharacterVisual = CharacterVisual.new()
-	visual.model_id = &"char.hero"
+	visual.model_id = &"char.raider_red"   # toujours absent (livraison Q2)
 	visual.anim_set = CharacterAnimSet.new()
 	_tree().root.add_child(visual)
 	await _settle(1)

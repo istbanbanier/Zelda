@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3]
+
+; ART-Q1 — héros de production : modèle Male_Ranger (Quaternius CC0) +
+; AnimationPlayer chargé de la bibliothèque CUITE AL_HeroStates.res
+; (12 états, in-place, audit de root motion dans evidence/artQ1/).
+; root_node vise le modèle : les pistes "Armature/Skeleton3D:<os>" des
+; clips UAL résolvent directement — squelettes identiques (65 os).
+; Face du modèle = +Z local, convention du NoseMesh graybox.
+
+[ext_resource type="Script" path="res://scripts/characters/hero_visual_model.gd" id="1_model_script"]
+[ext_resource type="PackedScene" path="res://assets/characters/hero/Male_Ranger.gltf" id="2_ranger"]
+[ext_resource type="AnimationLibrary" path="res://assets/animations/AL_HeroStates.res" id="3_states"]
+
+[node name="HeroVisual" type="Node3D"]
+script = ExtResource("1_model_script")
+
+[node name="Model" parent="." instance=ExtResource("2_ranger")]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+root_node = NodePath("../Model")
+libraries = {
+&"": ExtResource("3_states")
+}
+autoplay = "Idle"

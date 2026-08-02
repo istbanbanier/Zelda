@@ -1,0 +1,18 @@
+{
+  "commit": "d55b0d40281c1da1fed46aa8faf4bd0a0c1480df",
+  "display_server": "X11",
+  "distinct_colors_sampled": 807,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 45,
+  "height": 1080,
+  "label": "artq1_hero_sword_attack",
+  "luma_mean": 0.5822,
+  "luma_stddev": 0.1252,
+  "png": "evidence/artQ1/hero_sword_attack.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/weapons/WeaponShowcase.tscn",
+  "timestamp_utc": "2026-08-02 04:36:20",
+  "width": 1920
+}

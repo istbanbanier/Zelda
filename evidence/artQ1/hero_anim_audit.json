@@ -1,0 +1,128 @@
+{
+  "clips": {
+    "Death01": {
+      "drift_m": 0.814491629600525,
+      "length_s": 2.40000009536743,
+      "loop": false,
+      "node_motion": false,
+      "pelvis_track": true,
+      "range_m": 0.823776066303253,
+      "source": "UAL1_Standard.glb",
+      "state": "death"
+    },
+    "Hit_Chest": {
+      "drift_m": 0.020678274333477,
+      "length_s": 0.333333343267441,
+      "loop": false,
+      "node_motion": false,
+      "pelvis_track": true,
+      "range_m": 0.020678274333477,
+      "source": "UAL1_Standard.glb",
+      "state": "hurt"
+    },
+    "Idle": {
+      "drift_m": 0.0000588189432164654,
+      "length_s": 2.5,
+      "loop": true,
+      "node_motion": false,
+      "pelvis_track": true,
+      "range_m": 0.011408032849431,
+      "source": "UAL1_Standard.glb",
+      "state": "idle"
+    },
+    "Jog_Fwd": {
+      "drift_m": 0.0,
+      "length_s": 0.933333337306976,
+      "loop": true,
+      "node_motion": false,
+      "pelvis_track": true,
+      "range_m": 0.237270310521126,
+      "source": "UAL1_Standard.glb",
+      "state": "run"
+    },
+    "Jump": {
+      "drift_m": 0.0,
+      "length_s": 2.5,
+      "loop": true,
+      "node_motion": false,
+      "pelvis_track": true,
+      "range_m": 0.0209660772234201,
+      "source": "UAL1_Standard.glb",
+      "state": "fall"
+    },
+    "Jump_Land": {
+      "drift_m": 0.0577065944671631,
+      "length_s": 1.26666665077209,
+      "loop": false,
+      "node_motion": false,
+      "pelvis_track": true,
+      "range_m": 0.496864676475525,
+      "source": "UAL1_Standard.glb",
+      "state": "land"
+    },
+    "Jump_Start": {
+      "drift_m": 0.346862345933914,
+      "length_s": 1.33333337306976,
+      "loop": false,
+      "node_motion": false,
+      "pelvis_track": true,
+      "range_m": 0.356375634670258,
+      "source": "UAL1_Standard.glb",
+      "state": "jump"
+    },
+    "Roll": {
+      "drift_m": 0.367854744195938,
+      "length_s": 1.46666669845581,
+      "loop": false,
+      "node_motion": false,
+      "pelvis_track": true,
+      "range_m": 1.09191811084747,
+      "source": "UAL1_Standard.glb",
+      "state": "dodge"
+    },
+    "Sprint": {
+      "drift_m": 0.0,
+      "length_s": 0.666666686534882,
+      "loop": true,
+      "node_motion": false,
+      "pelvis_track": true,
+      "range_m": 0.139278769493103,
+      "source": "UAL1_Standard.glb",
+      "state": "sprint"
+    },
+    "Sword_Heavy_Combo": {
+      "drift_m": 0.00242569111287594,
+      "length_s": 4.33333349227905,
+      "loop": false,
+      "node_motion": false,
+      "pelvis_track": true,
+      "range_m": 0.618836641311646,
+      "source": "UAL2_Standard.glb",
+      "state": "attack_heavy"
+    },
+    "Sword_Regular_A": {
+      "drift_m": 0.302420824766159,
+      "length_s": 0.433333337306976,
+      "loop": false,
+      "node_motion": false,
+      "pelvis_track": true,
+      "range_m": 0.302420824766159,
+      "source": "UAL2_Standard.glb",
+      "state": "attack_light"
+    },
+    "Walk": {
+      "drift_m": 0.0,
+      "length_s": 1.33333337306976,
+      "loop": true,
+      "node_motion": false,
+      "pelvis_track": true,
+      "range_m": 0.0870887488126755,
+      "source": "UAL1_Standard.glb",
+      "state": "walk"
+    }
+  },
+  "commit": "d55b0d40281c1da1fed46aa8faf4bd0a0c1480df",
+  "max_loop_drift_m": 0.05,
+  "max_oneshot_drift_m": 1.2,
+  "pelvis_path": "Armature/Skeleton3D:pelvis"
+}
