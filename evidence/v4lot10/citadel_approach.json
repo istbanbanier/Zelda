@@ -1,0 +1,18 @@
+{
+  "commit": "c8f2d29b38b8dabd6c11463b8842bc8615c61537",
+  "display_server": "X11",
+  "distinct_colors_sampled": 1237,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 60,
+  "height": 1080,
+  "label": "v4lot10_citadel_approach",
+  "luma_mean": 0.7619,
+  "luma_stddev": 0.1592,
+  "png": "evidence/v4lot10/citadel_approach.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "timestamp_utc": "2026-08-02 10:07:50",
+  "width": 1920
+}

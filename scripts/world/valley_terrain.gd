@@ -383,6 +383,7 @@ func _build_forest() -> void:
 	_dress_zone_river()
 	_dress_zone_cliff()
 	_dress_zone_pylon()
+	_dress_zone_citadel_approach()
 
 
 ## ---------------------------------------------------------------------------
@@ -563,6 +564,56 @@ func _dress_zone_pylon() -> void:
 		# près des dangers électriques).
 		[&"Pebble_Round_4", Vector3(110.5, 18.02, -28.5), 0.6, 1.5],
 		[&"Pebble_Round_5", Vector3(112, 18.02, -20), 2.9, 1.3],
+	])
+
+
+## Zone I — approche de la citadelle (§11.I), en QUATRE couches : ruines
+## extérieures dans la plaine, rampe fortifiée (piliers-torchères,
+## bannières), terrasse d'accueil (murs d'enceinte partiels, charrette,
+## ravitaillement), seuil monumental (bannières sur les piliers V4.3).
+## La rampe processionnelle et la SceneDoor ne changent pas.
+func _dress_zone_citadel_approach() -> void:
+	_dress_zone("DressZoneCitadel", [
+		# 1. Ruines extérieures — la route traverse un passé effondré.
+		[&"Wall_UnevenBrick_Window_Thin_Round", Vector3(-13, 2, -88), 0.35, 1.2,
+			Vector3(2.2, 3.4, 0.6), false],
+		[&"Corner_Exterior_Brick", Vector3(-10.5, 2, -84), 0.35, 1.2,
+			Vector3(0.8, 3.2, 0.8), false],
+		[&"Prop_Brick1", Vector3(-11.5, 2, -86), 1.8, 1.3],
+		[&"Prop_Brick1", Vector3(-8.9, 2, -83), 3.9, 1.1],
+		[&"Wall_UnevenBrick_Door_Round", Vector3(14, 2, -96), 2.9, 1.25,
+			Vector3(2.2, 3.6, 0.6), false],
+		[&"Prop_Vine2", Vector3(14, 3.2, -95.6), 2.9, 1.2],
+		[&"Prop_Brick1", Vector3(12.2, 2, -93.5), 0.7, 1.2],
+		# 2. Rampe fortifiée : deux paires pilier+torchère, bannières.
+		[&"Corner_Exterior_Brick", Vector3(-6.8, 10.7, -125), 0.0, 1.3,
+			Vector3(0.9, 3.6, 0.9), false],
+		[&"Corner_Exterior_Brick", Vector3(6.8, 10.7, -125), 0.0, 1.3,
+			Vector3(0.9, 3.6, 0.9), false],
+		[&"Torch_Metal", Vector3(-6.8, 13.6, -124.4), 3.14, 1.2],
+		[&"Torch_Metal", Vector3(6.8, 13.6, -124.4), 3.14, 1.2],
+		[&"Corner_Exterior_Brick", Vector3(-6.8, 22.4, -145), 0.0, 1.3,
+			Vector3(0.9, 3.6, 0.9), false],
+		[&"Corner_Exterior_Brick", Vector3(6.8, 22.4, -145), 0.0, 1.3,
+			Vector3(0.9, 3.6, 0.9), false],
+		[&"Banner_1", Vector3(-6.8, 25.4, -144.6), 3.14, 1.3],
+		[&"Banner_1", Vector3(6.8, 25.4, -144.6), 3.14, 1.3],
+		# 3. Terrasse : murs d'enceinte PARTIELS en corridor, ravitaillement.
+		[&"Wall_UnevenBrick_Straight", Vector3(-11, 34, -180), 0.0, 1.4,
+			Vector3(2.8, 4.4, 0.6), false],
+		[&"Wall_UnevenBrick_Straight", Vector3(11, 34, -180), 0.0, 1.4,
+			Vector3(2.8, 4.4, 0.6), false],
+		[&"Wall_UnevenBrick_Window_Wide_Round", Vector3(-14, 34, -182.5), 0.5,
+			1.4, Vector3(2.8, 4.4, 0.6), false],
+		[&"Wall_UnevenBrick_Window_Wide_Round", Vector3(14, 34, -182.5), -0.5,
+			1.4, Vector3(2.8, 4.4, 0.6), false],
+		[&"Prop_Wagon", Vector3(-16, 34, -188), 1.1, 1.0,
+			Vector3(2.2, 1.4, 1.5), false],
+		[&"FarmCrate_Empty", Vector3(16.5, 34, -187), 0.4, 1.0],
+		[&"Bag", Vector3(17.4, 34, -186.2), 2.2, 1.0],
+		# 4. Seuil : bannières sur les piliers de bronze existants.
+		[&"Banner_1", Vector3(-6.5, 42.5, -195.6), 0.0, 1.5],
+		[&"Banner_1", Vector3(6.5, 42.5, -195.6), 0.0, 1.5],
 	])
 
 

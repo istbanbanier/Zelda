@@ -1211,3 +1211,17 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > l'approche, bannières de seuil (lieu entretenu), pierres votives,
 > végétation quasi absente (§7.5 près du danger électrique). 24
 > placements. Tests de zones : 7 zones couvertes.
+
+## 2026-08-02 (nuit V4, lot 10) — approche de la citadelle en quatre couches
+
+> §11.I : ruines extérieures dans la plaine (murs effondrés, briques,
+> lierre — la route traverse un passé), rampe fortifiée (deux paires
+> pilier+torchère à mi-montée, bannières hautes), terrasse d'accueil
+> (murs d'enceinte PARTIELS en corridor, fenêtres, charrette de siège,
+> ravitaillement), seuil monumental (bannières sur les piliers de bronze
+> V4.3). 24 placements à collisions d'obstacle. Rampe processionnelle et
+> SceneDoor intactes. Test de zone. evidence/v4lot10/.
+> **PROCHAINE ACTION (V4 lot 11)** : vestibule — casser la répétition du
+> pilier d'angle (variantes), panneaux muraux, allée de dalles, mobilier
+> martial ; puis lot 12 structures pénétrables (avant-poste, abri
+> rivière, sanctuaire falaise, poste de garde).
