@@ -250,11 +250,30 @@ func test_the_valley_has_its_four_chests_with_unique_ids() -> void:
 	var valley: Node3D = (load(VALLEY) as PackedScene).instantiate() as Node3D
 	_tree().root.add_child(valley)
 	await _settle(5)
+	# Les coffres de PROGRESSION (§11.4) sont ceux du monde ; ceux du monde
+	# ouvert vivent sous `DiscoveryRewards` et récompensent une découverte.
+	# Distinguer les deux familles est plus juste que de compter le total :
+	# la garantie de §11.4 porte sur la progression, pas sur le décor.
 	var ids: Array[String] = []
+	var reward_ids: Array[String] = []
 	for chest: Node in valley.find_children("*", "Chest", true, false):
-		ids.append(String((chest as Chest).chest_id))
+		var chest_id: String = String((chest as Chest).chest_id)
+		var host: Node = chest.get_parent()
+		if host != null and host.name == "DiscoveryRewards":
+			reward_ids.append(chest_id)
+		else:
+			ids.append(chest_id)
 	ids.sort()
-	check_equal(ids.size(), 4, "quatre coffres dans la vallée")
+	# Contrôle RENFORCÉ au passage : tous les coffres du monde, progression et
+	# récompenses confondues, portent des identifiants distincts.
+	var every: Array[String] = ids + reward_ids
+	var seen: Dictionary = {}
+	for chest_id: String in every:
+		seen[chest_id] = true
+	check_equal(seen.size(), every.size(),
+		"les %d coffres du monde ont des identifiants TOUS distincts"
+		% every.size())
+	check_equal(ids.size(), 4, "quatre coffres de progression dans la vallée")
 	var expected: Array[String] = ["valley.chest.camp.01", "valley.chest.cliff_top.01",
 		"valley.chest.pylon.01", "valley.chest.river_ledge.01"]
 	check_equal(ids, expected, "identifiants stables et uniques (§19.3)")

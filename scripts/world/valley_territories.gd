@@ -80,11 +80,17 @@ const POI_LAIR: StringName = &"valley.poi.colossus_lair.01"
 const POI_HUNTER: StringName = &"valley.poi.hunter_range.01"
 
 ## Clés de comptage — un territoire figurant se repère à son décompte.
-const KEY_BRAISE: StringName = &"camps_braise"
-const KEY_AZURE: StringName = &"patrouille_azur"
-const KEY_BASTION: StringName = &"bastion_obsidienne"
-const KEY_LAIR: StringName = &"taniere_colosse"
-const KEY_HUNTER: StringName = &"territoire_chasseur"
+# Préfixe TERR_ et non le préfixe de touche : le garde-fou D-013 refuse ce
+# dernier dans un script de gameplay, parce qu'il y traque la lecture directe
+# du clavier. Ce sont des clés de dictionnaire, pas des touches — mais on ne
+# désarme pas un garde-fou pour un faux positif, on écarte l'ambiguïté. Et le
+# contrôle ne distingue pas code et commentaire, ce qui est la bonne rigueur :
+# le citer même en prose le déclenche.
+const TERR_BRAISE: StringName = &"camps_braise"
+const TERR_AZURE: StringName = &"patrouille_azur"
+const TERR_BASTION: StringName = &"bastion_obsidienne"
+const TERR_LAIR: StringName = &"taniere_colosse"
+const TERR_HUNTER: StringName = &"territoire_chasseur"
 
 ## Rayon du balisage du chasseur. Il tient largement à l'intérieur de
 ## l'écart au lieu voisin le plus proche : l'avertissement ne déborde sur
@@ -159,7 +165,7 @@ func piece_count_of(key: StringName) -> int:
 
 func territory_keys() -> Array[StringName]:
 	var keys: Array[StringName] = [
-		KEY_BRAISE, KEY_AZURE, KEY_BASTION, KEY_LAIR, KEY_HUNTER,
+		TERR_BRAISE, TERR_AZURE, TERR_BASTION, TERR_LAIR, TERR_HUNTER,
 	]
 	return keys
 
@@ -426,7 +432,7 @@ func _build_braise_camps() -> void:
 	braise_poi = _make_poi(braise_camps, POI_BRAISE,
 		"Camps des pillards braise", &"prairie_est", Vector3(2, 5, 1),
 		Vector3(46, 12, 46))
-	_counts[KEY_BRAISE] = _built - before
+	_counts[TERR_BRAISE] = _built - before
 
 
 func _build_one_braise_camp(camp: Node3D, index: int) -> void:
@@ -518,7 +524,7 @@ func _build_azure_patrol() -> void:
 	azure_poi = _make_poi(azure_patrol, POI_AZURE,
 		"Ronde des pillards azur", &"plaine_nord", Vector3(0, 5, 0),
 		Vector3(46, 12, 40))
-	_counts[KEY_AZURE] = _built - before
+	_counts[TERR_AZURE] = _built - before
 
 
 ## La ronde s'est IMPRIMÉE dans le sol : dalles usées le long du trajet, un
@@ -645,7 +651,7 @@ func _build_obsidian_bastion() -> void:
 	bastion_poi = _make_poi(obsidian_bastion, POI_BASTION,
 		"Bastion des briseurs d'obsidienne", &"contreforts", Vector3(0, 5, 0),
 		Vector3(40, 12, 40))
-	_counts[KEY_BASTION] = _built - before
+	_counts[TERR_BASTION] = _built - before
 
 
 ## COUR : un sol porteur qui déborde l'enceinte de quelques dizaines de
@@ -788,7 +794,7 @@ func _build_colossus_lair() -> void:
 	lair_poi = _make_poi(colossus_lair, POI_LAIR,
 		"Tanière du colosse des ravins", &"ravins", Vector3(0, 5, 2),
 		Vector3(42, 14, 42))
-	_counts[KEY_LAIR] = _built - before
+	_counts[TERR_LAIR] = _built - before
 
 
 ## ANTRE : sept blocs énormes en fer à cheval, ouverture au SUD vers la
@@ -916,7 +922,7 @@ func _build_hunter_range() -> void:
 	hunter_poi = _make_poi(hunter_range, POI_HUNTER,
 		"Territoire du chasseur", &"confins_sud_est", Vector3(0, 6, 0),
 		Vector3(54, 14, 54))
-	_counts[KEY_HUNTER] = _built - before
+	_counts[TERR_HUNTER] = _built - before
 
 
 func _build_hunter_frontier(parent: Node3D) -> void:
