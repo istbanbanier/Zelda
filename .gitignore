@@ -13,6 +13,17 @@ builds/web/*
 builds/*.zip
 builds/*.tar.gz
 builds/*.dmg
+# Fragments, empreintes et dossiers d'assemblage produits par
+# `tools/make_playable_zip.sh` et par le workflow de publication. L'archive est
+# téléversée en GitHub Release, jamais committée : quelques centaines de Mo
+# dans l'historique Git seraient irréversibles.
+builds/*.sha256
+builds/*.zip.*
+builds/*.z[0-9][0-9]
+builds/*.part
+builds/*.partaa
+builds/EclatsDOrage_*/
+builds/selftest_*/
 !builds/*/.gitkeep
 
 # Logs de validation : les preuves retenues sont copiées dans evidence/<gate>/,

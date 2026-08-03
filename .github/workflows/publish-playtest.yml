@@ -1,0 +1,155 @@
+# Publication de l'archive jouable en GitHub Release.
+#
+# Pourquoi un workflow plutôt qu'un dépôt de fichier : l'archive pèse quelques
+# centaines de mégaoctets. Une Release accepte 2 Gio par asset, le dépôt Git
+# non — et une archive committée pollue l'historique à jamais. Le ZIP est donc
+# CONSTRUIT ici, à partir du commit taggé, et n'entre jamais dans Git.
+#
+# Le tag est la seule commande : `playtest-<short_sha>` pointant exactement sur
+# le commit validé. Ce qui est publié est donc reconstructible à l'identique.
+name: Publier l'archive jouable
+
+on:
+  push:
+    tags:
+      - 'playtest-*'
+
+# Le minimum pour créer une Release et y téléverser des assets.
+permissions:
+  contents: write
+
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le commit taggé
+        uses: actions/checkout@v4
+
+      - name: Contexte
+        run: |
+          echo "tag    : ${GITHUB_REF_NAME}"
+          echo "commit : $(git rev-parse HEAD)"
+          echo "court  : $(git rev-parse --short HEAD)"
+
+      # Un tag `playtest-selftest*` ne sert qu'à prouver que les permissions de
+      # Release fonctionnent. Il produit un paquet minimal au lieu des ~400 Mo :
+      # tester la plomberie ne demande pas de transporter le jeu entier.
+      - name: Mode
+        id: mode
+        run: |
+          case "${GITHUB_REF_NAME}" in
+            playtest-selftest*) echo "selftest=true" >> "$GITHUB_OUTPUT" ;;
+            *)                  echo "selftest=false" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Construire l'archive jouable
+        if: steps.mode.outputs.selftest == 'false'
+        run: |
+          set -euo pipefail
+          bash tools/make_playable_zip.sh
+
+      - name: Construire un paquet minimal (auto-test)
+        if: steps.mode.outputs.selftest == 'true'
+        run: |
+          set -euo pipefail
+          STAMP="$(git rev-parse --short HEAD)"
+          mkdir -p "builds/selftest_${STAMP}"
+          cp README.md "builds/selftest_${STAMP}/" 2>/dev/null || true
+          {
+            echo "# Auto-test de publication"
+            echo
+            echo "Paquet minimal produit pour vérifier que le workflow sait"
+            echo "créer une Release et y téléverser un asset. Ne contient pas"
+            echo "le jeu. Commit : $(git rev-parse HEAD)"
+          } > "builds/selftest_${STAMP}/LISEZ_MOI.md"
+          ( cd builds && zip -qr "EclatsDOrage_SelfTest_${STAMP}.zip" \
+              "selftest_${STAMP}" )
+          rm -rf "builds/selftest_${STAMP}"
+
+      # Une archive qui ne se décompresse pas est pire qu'une absence
+      # d'archive : elle se découvre chez celui qui la télécharge.
+      - name: Vérifier l'archive et calculer son empreinte
+        id: paquet
+        run: |
+          set -euo pipefail
+          ZIP="$(ls -1 builds/*.zip | head -1)"
+          [ -n "$ZIP" ] || { echo "aucune archive produite"; exit 1; }
+          unzip -t "$ZIP"
+          sha256sum "$ZIP" | awk '{print $1}' > "${ZIP}.sha256"
+          NAME="$(basename "$ZIP")"
+          SUM="$(cat "${ZIP}.sha256")"
+          SIZE="$(du -h "$ZIP" | cut -f1)"
+          BYTES="$(stat -c%s "$ZIP")"
+          echo "zip=$ZIP"       >> "$GITHUB_OUTPUT"
+          echo "name=$NAME"     >> "$GITHUB_OUTPUT"
+          echo "sha256=$SUM"    >> "$GITHUB_OUTPUT"
+          echo "size=$SIZE"     >> "$GITHUB_OUTPUT"
+          echo "bytes=$BYTES"   >> "$GITHUB_OUTPUT"
+          echo "archive : $NAME ($SIZE, $BYTES octets)"
+          echo "sha256  : $SUM"
+
+      # Garde-fou explicite : rien de ce qui vient d'être produit ne doit
+      # pouvoir entrer dans Git, même par accident d'un futur `git add -A`.
+      - name: L'archive n'entre pas dans le dépôt
+        run: |
+          set -euo pipefail
+          DIRTY="$(git status --porcelain)"
+          if [ -n "$DIRTY" ]; then
+            echo "des artefacts de build sont visibles par Git :"
+            echo "$DIRTY"
+            echo "→ compléter .gitignore avant de publier"
+            exit 1
+          fi
+          echo "arbre propre : l'archive reste hors du dépôt"
+
+      - name: Créer la Release et téléverser
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          COMMIT="$(git rev-parse HEAD)"
+          NOTES="$(mktemp)"
+          {
+            echo "Archive jouable d'Éclats d'Orage, construite à partir du"
+            echo "commit \`${COMMIT}\`."
+            echo
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Fichier | \`${{ steps.paquet.outputs.name }}\` |"
+            echo "| Taille | ${{ steps.paquet.outputs.size }} (${{ steps.paquet.outputs.bytes }} octets) |"
+            echo "| SHA-256 | \`${{ steps.paquet.outputs.sha256 }}\` |"
+            echo "| Commit | \`${COMMIT}\` |"
+            echo "| Moteur requis | Godot **4.7.1-stable**, édition standard |"
+            echo
+            echo "### Lancer"
+            echo
+            echo "1. Décompresser l'archive."
+            echo "2. Ouvrir Godot 4.7.1-stable, **Importer**, choisir le \`project.godot\`."
+            echo "3. Attendre le premier import (plusieurs minutes, une seule fois), puis **F5**."
+            echo
+            echo "Détails, commandes AZERTY et limites connues : \`COMMENT_JOUER.md\`"
+            echo "à la racine de l'archive."
+          } > "$NOTES"
+          gh release create "$TAG" \
+            --title "Éclats d'Orage — archive jouable ($TAG)" \
+            --notes-file "$NOTES" \
+            --target "$COMMIT" \
+            "${{ steps.paquet.outputs.zip }}" \
+            "${{ steps.paquet.outputs.zip }}.sha256"
+
+      # Créer n'est pas publier : on relit la Release pour constater que les
+      # deux assets y sont réellement.
+      - name: Vérifier la Release publiée
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          gh release view "$TAG" --json assets \
+            --jq '.assets[] | "\(.name)  \(.size) octets  \(.url)"'
+          COUNT="$(gh release view "$TAG" --json assets --jq '.assets | length')"
+          [ "$COUNT" -ge 2 ] || { echo "assets manquants ($COUNT)"; exit 1; }
+          echo
+          echo "Lien direct :"
+          echo "https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/${{ steps.paquet.outputs.name }}"
