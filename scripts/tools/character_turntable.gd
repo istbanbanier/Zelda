@@ -51,7 +51,7 @@ func _ready() -> void:
 	var entry: Array = SUBJECTS[subject_id] as Array
 	var spacing: float = float(entry[2])
 	var span: float = spacing * float(ANGLES.size() - 1)
-	_build_stage(span, float(entry[3]))
+	_build_stage(span, float(entry[3]), spacing)
 	var packed: PackedScene = load(String(entry[0])) as PackedScene
 	if packed == null:
 		push_warning("[tourne] scène absente : %s" % String(entry[0]))
@@ -95,7 +95,8 @@ func _label(text: String, at: Vector3, height: float) -> void:
 	add_child(label)
 
 
-func _build_stage(span: float, subject_height: float) -> void:
+func _build_stage(span: float, subject_height: float,
+		spacing: float) -> void:
 	var backdrop: MeshInstance3D = MeshInstance3D.new()
 	backdrop.name = "Backdrop"
 	var backdrop_mesh: QuadMesh = QuadMesh.new()
@@ -140,10 +141,14 @@ func _build_stage(span: float, subject_height: float) -> void:
 	# Recul calculé pour que les cinq vues tiennent dans le cadre quelle que
 	# soit la taille du sujet : demi-portée / tan(champ horizontal / 2).
 	var fov: float = 45.0
-	var half_width: float = (span + 3.0) * 0.5
+	# La marge doit valoir l'ENCOMBREMENT d'un sujet, pas trois mètres fixes :
+	# vu de profil, le Gardien occupe ses 9,4 m de long, et les vues des deux
+	# bords sortaient du cadre. L'espacement est déjà proportionnel au sujet,
+	# on s'en sert comme mesure de son encombrement.
+	var half_width: float = span * 0.5 + spacing * 0.80
 	var aspect: float = 16.0 / 9.0
 	var horizontal: float = 2.0 * atan(tan(deg_to_rad(fov) * 0.5) * aspect)
-	camera.position = Vector3(0, subject_height * 1.15,
+	camera.position = Vector3(0, subject_height * 1.25,
 		half_width / tan(horizontal * 0.5) + 2.0)
 	camera.fov = fov
 	camera.current = true
