@@ -443,14 +443,32 @@ def build_hunter() -> None:
     carapace.append(add_box("Chestplate", (0.46, 0.14, 0.40),
                             (0.0, 1.26, 2.72), (math.radians(-12.0), 0, 0)))
     # Tête ÉTROITE à plaque frontale et deux mandibules latérales.
-    flesh.append(add_box("Neck", (0.30, 0.32, 0.40), (0.0, 1.40, 2.94)))
-    flesh.append(add_box("Head", (0.30, 0.46, 0.34), (0.0, 1.30, 3.13)))
-    carapace.append(add_box("Frontplate", (0.24, 0.12, 0.28),
-                            (0.0, 1.14, 3.25), (math.radians(-16.0), 0, 0)))
+    #
+    # Sur la planche d'inspection, la tête n'était qu'un petit cube : à la
+    # distance de jeu, le chasseur n'avait pas de visage, donc pas de regard,
+    # donc aucune direction de menace lisible. Elle est reconstruite en
+    # quatre masses — nuque, crâne, museau effilé, mâchoire — pour que le
+    # profil dise où la bête regarde.
+    flesh.append(add_box("Nape", (0.34, 0.34, 0.42), (0.0, 1.40, 2.92)))
+    flesh.append(add_box("Skull", (0.34, 0.40, 0.38),
+                         (0.0, 1.28, 3.14), (math.radians(-12.0), 0, 0)))
+    flesh.append(add_box("Muzzle", (0.22, 0.34, 0.22),
+                         (0.0, 1.02, 3.09), (math.radians(-16.0), 0, 0)))
+    flesh.append(add_box("Jaw", (0.20, 0.28, 0.13),
+                         (0.0, 1.06, 2.95), (math.radians(-10.0), 0, 0)))
+    # Plaque frontale : le front cuirassé de §14.5, incliné vers l'avant.
+    carapace.append(add_box("Frontplate", (0.30, 0.16, 0.34),
+                            (0.0, 1.16, 3.26), (math.radians(-22.0), 0, 0)))
+    # Deux cornes courtes qui filent vers l'ARRIÈRE : elles donnent au crâne
+    # une direction sans emprunter de silhouette existante.
     for side in (-1, 1):
-        carapace.append(add_box("Mandible%d" % (side + 1), (0.05, 0.24, 0.06),
-            (side * 0.19, 1.18, 3.07),
-            (math.radians(-10.0), 0.0, math.radians(side * 13.0))))
+        carapace.append(add_box("Horn%d" % (side + 1), (0.07, 0.30, 0.07),
+            (side * 0.13, 1.46, 3.24),
+            (math.radians(34.0), 0.0, math.radians(side * 10.0))))
+    for side in (-1, 1):
+        carapace.append(add_box("Mandible%d" % (side + 1), (0.06, 0.30, 0.08),
+            (side * 0.16, 1.06, 3.02),
+            (math.radians(-14.0), 0.0, math.radians(side * 16.0))))
 
     # Deux bras LONGS.
     for side in (-1, 1):
