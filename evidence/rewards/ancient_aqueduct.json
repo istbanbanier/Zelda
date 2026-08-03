@@ -1,0 +1,18 @@
+{
+  "commit": "018b8b6343f01492f43002a51578cd83309f38d9",
+  "display_server": "X11",
+  "distinct_colors_sampled": 2410,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 16,
+  "height": 540,
+  "label": "anchor_ancient_aqueduct",
+  "luma_mean": 0.5663,
+  "luma_stddev": 0.1701,
+  "png": "evidence/rewards/ancient_aqueduct.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/tests/RewardAnchorShot.tscn",
+  "timestamp_utc": "2026-08-03 21:08:30",
+  "width": 960
+}

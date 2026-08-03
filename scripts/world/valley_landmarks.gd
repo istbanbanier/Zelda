@@ -86,11 +86,11 @@ const OVERLOOK_SUMMIT_Y: float = 22.0
 ## réellement l'échine au lieu de croire un navmesh.
 const ANCHORS: Dictionary = {
 	POI_ANCIENT_TREE: {
-		"at": Vector3(1.40, 0.0, 0.0), "approach": Vector3(4.40, 0.0, 0.0),
+		"at": Vector3(2.0, 0.0, 0.0), "approach": Vector3(5.0, 0.0, 0.0),
 		"kind": RewardAnchor.Kind.INGREDIENT,
 	},
 	POI_SPRING: {
-		"at": Vector3(0.0, 0.0, 0.0), "approach": Vector3(3.0, 0.0, 0.0),
+		"at": Vector3(-2.49, 0.0, 6.01), "approach": Vector3(-3.64, 0.0, 8.78),
 		"kind": RewardAnchor.Kind.INGREDIENT,
 	},
 	POI_FLOWER_FIELD: {
@@ -98,7 +98,7 @@ const ANCHORS: Dictionary = {
 		"kind": RewardAnchor.Kind.INGREDIENT,
 	},
 	POI_STONE_BRIDGE: {
-		"at": Vector3(0.0, -1.50, 0.0), "approach": Vector3(3.0, -1.50, 0.0),
+		"at": Vector3(-1.15, -1.50, 2.77), "approach": Vector3(-2.30, -1.50, 5.54),
 		"kind": RewardAnchor.Kind.STORY,
 	},
 	POI_OVERLOOK: {

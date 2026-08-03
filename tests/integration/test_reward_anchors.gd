@@ -33,6 +33,16 @@ func _wipe_save() -> void:
 
 func _open_valley() -> ValleyWorld:
 	_wipe_save()
+	return await _mount_valley()
+
+
+## Rouvre la vallée SANS effacer la sauvegarde — c'est le geste du joueur qui
+## clique « Continuer ».
+func _reopen_valley() -> ValleyWorld:
+	return await _mount_valley()
+
+
+func _mount_valley() -> ValleyWorld:
 	var valley: ValleyWorld = (load("res://scenes/world/valley/ValleyWorld.tscn")
 		as PackedScene).instantiate() as ValleyWorld
 	_tree().root.add_child(valley)
@@ -294,3 +304,57 @@ func test_story_fragments_are_read_once() -> void:
 		"la découverte n'est annoncée qu'à la PREMIÈRE lecture")
 
 	await _close(valley)
+
+
+## L'ALLER-RETOUR complet par la sauvegarde : ouvrir un coffre, ramasser une
+## arme, quitter la vallée, la rouvrir. Marquer un objet « déjà pris » à la
+## main prouve que la restauration fonctionne ; seul ce test prouve que
+## l'ÉCRITURE a eu lieu — et c'est elle qui manquait, les récompenses étant
+## bâties après l'application de la sauvegarde.
+func test_rewards_survive_a_real_save_and_reload() -> void:
+	var valley: ValleyWorld = await _open_valley()
+	var player: PlayerController = valley.player()
+	player.inventory().clear_weapons()
+
+	var chest_id: StringName = &""
+	for node: Node in valley.find_children("*", "Chest", true, false):
+		var chest: Chest = node as Chest
+		if String(chest.chest_id).contains(".chest.") and not chest.is_opened():
+			chest_id = chest.chest_id
+			check(chest.interact(player), "E ouvre le coffre %s" % chest_id)
+			break
+	check(not String(chest_id).is_empty(), "un coffre de découverte a été ouvert")
+
+	var pickup_id: StringName = &""
+	for node: Node in valley.find_children("*", "WeaponPickup", true, false):
+		var pickup: WeaponPickup = node as WeaponPickup
+		if String(pickup.pickup_id).contains(".pickup."):
+			pickup_id = pickup.pickup_id
+			check(pickup.interact(player),
+				"E ramasse l'arme %s" % pickup_id)
+			break
+	check(not String(pickup_id).is_empty(), "une arme de lieu a été ramassée")
+	await _settle(4)
+	await _close(valley)
+
+	# « Continuer » : la sauvegarde est celle que le jeu vient d'écrire.
+	var again: ValleyWorld = await _reopen_valley()
+	var found_chest: Chest = null
+	for node: Node in again.find_children("*", "Chest", true, false):
+		if (node as Chest).chest_id == chest_id:
+			found_chest = node as Chest
+			break
+	check_not_null(found_chest, "le coffre existe toujours après rechargement")
+	check(found_chest.is_opened(),
+		"…et il est TOUJOURS ouvert : pas de second butin")
+
+	var still_there: bool = false
+	for node: Node in again.find_children("*", "WeaponPickup", true, false):
+		if (node as WeaponPickup).pickup_id == pickup_id:
+			still_there = true
+			break
+	check(not still_there,
+		"l'arme ramassée n'est pas revenue au sol (%s)" % pickup_id)
+
+	await _close(again)
+	_wipe_save()

@@ -1,0 +1,490 @@
+{
+  "commit": "9538dcfe33b6143190c3f15cdab0ddce7cef3351",
+  "engine": {
+    "build": "custom_build",
+    "hash": "a13da4feb8d8aefc283c3763d33a2f170a18d541",
+    "hex": 263937,
+    "major": 4,
+    "minor": 7,
+    "patch": 1,
+    "status": "stable",
+    "string": "4.7.1-stable (custom_build)",
+    "timestamp": 1783976428
+  },
+  "failures": 0,
+  "generated_utc": "2026-08-03T21:23:33",
+  "label": "reward_anchors",
+  "renderer": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "repo_dirty": true,
+  "shots": [
+    {
+      "camera": [
+        -68.8000030517578,
+        3.54999995231628,
+        40.0
+      ],
+      "kind": 1,
+      "place": "valley.poi.riverside_village.01",
+      "png": "evidence/rewards/riverside_village.png",
+      "target": [
+        -70.0,
+        2.0,
+        40.0
+      ]
+    },
+    {
+      "camera": [
+        113.199996948242,
+        3.54999995231628,
+        44.0
+      ],
+      "kind": 1,
+      "place": "valley.poi.logging_hamlet.01",
+      "png": "evidence/rewards/logging_hamlet.png",
+      "target": [
+        112.0,
+        2.0,
+        44.0
+      ]
+    },
+    {
+      "camera": [
+        -68.108283996582,
+        3.54999995231628,
+        87.4601211547852
+      ],
+      "kind": 0,
+      "place": "valley.poi.mining_post.01",
+      "png": "evidence/rewards/mining_post.png",
+      "target": [
+        -67.0,
+        2.0,
+        87.0
+      ]
+    },
+    {
+      "camera": [
+        -124.800003051758,
+        15.5500001907349,
+        80.0
+      ],
+      "kind": 0,
+      "place": "valley.poi.watchtower_ruin.01",
+      "png": "evidence/rewards/watchtower_ruin.png",
+      "target": [
+        -126.0,
+        14.0,
+        80.0
+      ]
+    },
+    {
+      "camera": [
+        -6.39999961853027,
+        3.54999995231628,
+        10.0
+      ],
+      "kind": 4,
+      "place": "valley.poi.ancient_aqueduct.01",
+      "png": "evidence/rewards/ancient_aqueduct.png",
+      "target": [
+        -7.59999990463257,
+        2.0,
+        10.0
+      ]
+    },
+    {
+      "camera": [
+        -10.8000001907349,
+        3.54999995231628,
+        80.0
+      ],
+      "kind": 2,
+      "place": "valley.poi.abandoned_farm.01",
+      "png": "evidence/rewards/abandoned_farm.png",
+      "target": [
+        -12.0,
+        2.0,
+        80.0
+      ]
+    },
+    {
+      "camera": [
+        -36.7999992370605,
+        3.54999995231628,
+        -124.0
+      ],
+      "kind": 0,
+      "place": "valley.poi.storm_caravan.01",
+      "png": "evidence/rewards/storm_caravan.png",
+      "target": [
+        -38.0,
+        2.0,
+        -124.0
+      ]
+    },
+    {
+      "camera": [
+        78.0,
+        3.54999995231628,
+        128.199996948242
+      ],
+      "kind": 4,
+      "place": "valley.poi.ruined_observatory.01",
+      "png": "evidence/rewards/ruined_observatory.png",
+      "target": [
+        78.0,
+        2.0,
+        127.0
+      ]
+    },
+    {
+      "camera": [
+        58.0,
+        3.54999995231628,
+        -77.8000030517578
+      ],
+      "kind": 0,
+      "place": "valley.poi.barrow_cemetery.01",
+      "png": "evidence/rewards/barrow_cemetery.png",
+      "target": [
+        58.0,
+        2.0,
+        -79.0
+      ]
+    },
+    {
+      "camera": [
+        -102.800003051758,
+        3.54999995231628,
+        -138.0
+      ],
+      "kind": 0,
+      "place": "valley.poi.old_rampart.01",
+      "png": "evidence/rewards/old_rampart.png",
+      "target": [
+        -104.0,
+        2.0,
+        -138.0
+      ]
+    },
+    {
+      "camera": [
+        20.400276184082,
+        3.54999995231628,
+        100.995292663574
+      ],
+      "kind": 3,
+      "place": "valley.poi.forest_shrine.01",
+      "png": "evidence/rewards/forest_shrine.png",
+      "target": [
+        19.2900009155273,
+        2.0,
+        100.540000915527
+      ]
+    },
+    {
+      "camera": [
+        -116.800003051758,
+        3.54999995231628,
+        28.0
+      ],
+      "kind": 2,
+      "place": "valley.poi.waterfall_cave.01",
+      "png": "evidence/rewards/waterfall_cave.png",
+      "target": [
+        -118.0,
+        2.0,
+        28.0
+      ]
+    },
+    {
+      "camera": [
+        164.199996948242,
+        3.54999995231628,
+        -70.0
+      ],
+      "kind": 1,
+      "place": "valley.poi.abandoned_mine.01",
+      "png": "evidence/rewards/abandoned_mine.png",
+      "target": [
+        163.0,
+        2.0,
+        -70.0
+      ]
+    },
+    {
+      "camera": [
+        -58.7999992370605,
+        3.54999995231628,
+        -92.0
+      ],
+      "kind": 0,
+      "place": "valley.poi.hollow_crypt.01",
+      "png": "evidence/rewards/hollow_crypt.png",
+      "target": [
+        -60.0,
+        2.0,
+        -92.0
+      ]
+    },
+    {
+      "camera": [
+        -133.151473999023,
+        3.54999995231628,
+        120.848526000977
+      ],
+      "kind": 0,
+      "place": "valley.poi.hidden_passage.01",
+      "png": "evidence/rewards/hidden_passage.png",
+      "target": [
+        -134.0,
+        2.0,
+        120.0
+      ]
+    },
+    {
+      "camera": [
+        -140.298675537109,
+        3.54999995231628,
+        -150.789733886719
+      ],
+      "kind": 5,
+      "place": "valley.poi.crystal_hollow.01",
+      "png": "evidence/rewards/crystal_hollow.png",
+      "target": [
+        -141.147155761719,
+        2.0,
+        -151.638305664062
+      ]
+    },
+    {
+      "camera": [
+        -92.8000030517578,
+        3.54999995231628,
+        -62.0
+      ],
+      "kind": 2,
+      "place": "valley.poi.ancient_tree.01",
+      "png": "evidence/rewards/ancient_tree.png",
+      "target": [
+        -94.0,
+        2.0,
+        -62.0
+      ]
+    },
+    {
+      "camera": [
+        -74.9501190185547,
+        3.54999995231628,
+        85.1182861328125
+      ],
+      "kind": 2,
+      "place": "valley.poi.turquoise_spring.01",
+      "png": "evidence/rewards/turquoise_spring.png",
+      "target": [
+        -74.4899978637695,
+        2.0,
+        84.0100021362305
+      ]
+    },
+    {
+      "camera": [
+        -32.7999992370605,
+        3.54999995231628,
+        112.0
+      ],
+      "kind": 2,
+      "place": "valley.poi.flower_field.01",
+      "png": "evidence/rewards/flower_field.png",
+      "target": [
+        -34.0,
+        2.0,
+        112.0
+      ]
+    },
+    {
+      "camera": [
+        -15.6101169586182,
+        0.0499999523162842,
+        13.8782835006714
+      ],
+      "kind": 4,
+      "place": "valley.poi.stone_bridge.01",
+      "png": "evidence/rewards/stone_bridge.png",
+      "target": [
+        -15.1499996185303,
+        -1.5,
+        12.7700004577637
+      ]
+    },
+    {
+      "camera": [
+        168.0,
+        23.5499992370605,
+        31.2000007629395
+      ],
+      "kind": 1,
+      "place": "valley.poi.overlook_summit.01",
+      "png": "evidence/rewards/overlook_summit.png",
+      "target": [
+        168.0,
+        22.0,
+        30.0
+      ]
+    },
+    {
+      "camera": [
+        156.508529663086,
+        4.44999980926514,
+        124.508529663086
+      ],
+      "kind": 0,
+      "place": "valley.poi.veil_falls.01",
+      "png": "evidence/rewards/veil_falls.png",
+      "target": [
+        155.660003662109,
+        2.90000009536743,
+        123.660003662109
+      ]
+    },
+    {
+      "camera": [
+        -129.400009155273,
+        4.25,
+        -28.0
+      ],
+      "kind": 4,
+      "place": "valley.poi.watchers_circle.01",
+      "png": "evidence/rewards/watchers_circle.png",
+      "target": [
+        -130.600006103516,
+        2.70000004768372,
+        -28.0
+      ]
+    },
+    {
+      "camera": [
+        68.8501281738281,
+        3.54999995231628,
+        -95.153076171875
+      ],
+      "kind": 2,
+      "place": "valley.poi.wind_gorge.01",
+      "png": "evidence/rewards/wind_gorge.png",
+      "target": [
+        68.0,
+        2.0,
+        -96.0
+      ]
+    },
+    {
+      "camera": [
+        -8.99529075622559,
+        3.54999995231628,
+        -149.599731445312
+      ],
+      "kind": 2,
+      "place": "valley.poi.storm_grove.01",
+      "png": "evidence/rewards/storm_grove.png",
+      "target": [
+        -8.53999996185303,
+        2.0,
+        -150.710006713867
+      ]
+    },
+    {
+      "camera": [
+        -91.0047073364258,
+        3.54999995231628,
+        150.400268554688
+      ],
+      "kind": 3,
+      "place": "valley.poi.thunderstruck_tree.01",
+      "png": "evidence/rewards/thunderstruck_tree.png",
+      "target": [
+        -91.4599990844727,
+        2.0,
+        149.289993286133
+      ]
+    },
+    {
+      "camera": [
+        75.108283996582,
+        3.54999995231628,
+        113.460121154785
+      ],
+      "kind": 6,
+      "place": "valley.poi.ember_raider_camps.01",
+      "png": "evidence/rewards/ember_raider_camps.png",
+      "target": [
+        74.0,
+        2.0,
+        113.0
+      ]
+    },
+    {
+      "camera": [
+        80.9685287475586,
+        3.54999995231628,
+        -75.0314712524414
+      ],
+      "kind": 6,
+      "place": "valley.poi.azure_patrol_run.01",
+      "png": "evidence/rewards/azure_patrol_run.png",
+      "target": [
+        80.120002746582,
+        2.0,
+        -75.879997253418
+      ]
+    },
+    {
+      "camera": [
+        -138.800003051758,
+        3.54999995231628,
+        -60.0
+      ],
+      "kind": 6,
+      "place": "valley.poi.obsidian_bastion.01",
+      "png": "evidence/rewards/obsidian_bastion.png",
+      "target": [
+        -140.0,
+        2.0,
+        -60.0
+      ]
+    },
+    {
+      "camera": [
+        151.199996948242,
+        3.54999995231628,
+        -138.0
+      ],
+      "kind": 6,
+      "place": "valley.poi.colossus_lair.01",
+      "png": "evidence/rewards/colossus_lair.png",
+      "target": [
+        150.0,
+        2.0,
+        -138.0
+      ]
+    },
+    {
+      "camera": [
+        134.199996948242,
+        4.34999990463257,
+        150.0
+      ],
+      "kind": 6,
+      "place": "valley.poi.hunter_range.01",
+      "png": "evidence/rewards/hunter_range.png",
+      "target": [
+        133.0,
+        2.79999995231628,
+        150.0
+      ]
+    }
+  ],
+  "size": [
+    960,
+    540
+  ]
+}

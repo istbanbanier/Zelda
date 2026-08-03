@@ -1,0 +1,18 @@
+{
+  "commit": "018b8b6343f01492f43002a51578cd83309f38d9",
+  "display_server": "X11",
+  "distinct_colors_sampled": 3345,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 16,
+  "height": 540,
+  "label": "anchor_watchtower_ruin",
+  "luma_mean": 0.4547,
+  "luma_stddev": 0.1242,
+  "png": "evidence/rewards/watchtower_ruin.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/tests/RewardAnchorShot.tscn",
+  "timestamp_utc": "2026-08-03 21:08:00",
+  "width": 960
+}

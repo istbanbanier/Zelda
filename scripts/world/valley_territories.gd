@@ -92,7 +92,7 @@ const ANCHORS: Dictionary = {
 		"kind": RewardAnchor.Kind.COMBAT,
 	},
 	POI_AZURE: {
-		"at": Vector3(0.54, 0.0, 1.29), "approach": Vector3(1.68, 0.0, 4.07),
+		"at": Vector3(2.12, 0.0, 2.12), "approach": Vector3(4.24, 0.0, 4.24),
 		"kind": RewardAnchor.Kind.COMBAT,
 	},
 	POI_BASTION: {

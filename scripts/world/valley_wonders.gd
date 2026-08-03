@@ -89,7 +89,7 @@ const POI_STRUCK: StringName = &"valley.poi.thunderstruck_tree.01"
 ## dégagement au gabarit du joueur — puis figées ici pour être relisibles.
 const ANCHORS: Dictionary = {
 	POI_FALLS: {
-		"at": Vector3(0.0, 0.0, 0.0), "approach": Vector3(3.0, 0.0, 0.0),
+		"at": Vector3(5.66, 0.90, 5.66), "approach": Vector3(7.78, 0.0, 7.78),
 		"kind": RewardAnchor.Kind.CHEST,
 	},
 	POI_CIRCLE: {
@@ -101,11 +101,11 @@ const ANCHORS: Dictionary = {
 		"kind": RewardAnchor.Kind.INGREDIENT,
 	},
 	POI_GROVE: {
-		"at": Vector3(0.0, 0.0, 0.0), "approach": Vector3(-1.15, 0.0, 2.77),
+		"at": Vector3(-0.54, 0.0, 1.29), "approach": Vector3(-1.68, 0.0, 4.07),
 		"kind": RewardAnchor.Kind.INGREDIENT,
 	},
 	POI_STRUCK: {
-		"at": Vector3(1.40, 0.0, 0.0), "approach": Vector3(4.40, 0.0, 0.0),
+		"at": Vector3(0.54, 0.0, 1.29), "approach": Vector3(1.68, 0.0, 4.07),
 		"kind": RewardAnchor.Kind.RECIPE,
 	},
 }

@@ -102,7 +102,7 @@ const ANCHORS: Dictionary = {
 		"kind": RewardAnchor.Kind.CHEST,
 	},
 	POI_SHRINE: {
-		"at": Vector3(0.0, 0.0, -2.0), "approach": Vector3(-2.12, 0.0, -4.12),
+		"at": Vector3(1.29, 0.0, -1.46), "approach": Vector3(4.07, 0.0, -0.32),
 		"kind": RewardAnchor.Kind.RECIPE,
 	},
 }

@@ -2402,3 +2402,60 @@ les ruines, les grottes, les lieux naturels mémorables, les territoires
 ennemis, les habitants, les histoires environnementales, la carte des POI et
 le parcours d'atteignabilité de toute la carte. La vallée reste un graybox
 hors premier plan et hors village. Aucun score visuel n'est revendiqué.
+
+## 2026-08-03 — Monde ouvert MO.4 : les ancrages de récompense
+
+Commits `2bf440f`, `018b8b6`, `9538dcf`.
+
+### Ce qui a changé
+
+Les 31 lieux portent chacun un `RewardAnchor` explicite, nommé, déclaré dans
+la table de son bâtisseur. Plus aucun repli au centre du volume.
+
+Les positions ne sont pas choisies : `tools/godot/probe_reward_anchors.gd`
+monte la vallée réelle et éprouve, autour de chaque lieu, sol, dégagement au
+gabarit du joueur, couloir d'approche, absence d'eau et LIGNE DE VUE depuis le
+point de station. Le résultat est figé dans le code.
+
+`RewardAnchorAudit` fait ensuite marcher un corps : aller, retour, et pour le
+belvédère la montée complète de l'échine — un navmesh aurait répondu
+« accessible » sans rien prouver.
+
+Les récompenses sont diversifiées et pilotées par données : coffres, armes au
+sol, ingrédients, savoirs, fragments d'histoire lisibles.
+
+### Ce que les preuves ont réellement trouvé
+
+L'audit physique a rendu 14 défauts au premier passage, puis 3, puis 1. Quatre
+causes distinctes, aucune contournée : la récompense masquait le sol sous son
+propre ancrage ; la sonde prenait pour sol le coffre du tour précédent ; un
+rocher en surplomb servait de sol ; un point d'arrivée dégagé au bout d'un
+couloir muré.
+
+Puis les 31 captures ont montré ce que la physique ne pouvait pas voir : trois
+récompenses **dans l'eau**, deux **derrière le tronc** de l'arbre qui donne son
+nom au lieu, une **hors champ**. D'où les deux règles ajoutées à la sonde —
+volumes d'eau lus par leur nom, et ligne de vue exigée.
+
+Deux bogues réels ont été corrigés au passage, tous deux masqués par l'ordre de
+construction : les découvertes n'étaient **jamais** restaurées au rechargement,
+et les récompenses échappaient à la persistance — une arme ramassée revenait.
+
+### Prochaine action exacte
+
+1. Relancer `tools/godot/capture_reward_anchors.gd` et réinspecter les 31 vues
+   après le déplacement des huit ancrages.
+2. Relever `MIN_TESTS` dans `tools/validate_fast.sh` au nombre réellement
+   exécuté, puis lancer la validation complète.
+3. Commit propre, puis publication de l'archive par le workflow
+   `publish-playtest.yml` (éprouvé en mode auto-test : Release créée, ZIP et
+   `.sha256` téléversés).
+
+### Limites honnêtes
+
+Six lieux — les cinq territoires et la cavité de cristal — portent une
+récompense dont la condition d'ouverture n'existe pas. Le coffre est réel et
+persistant ; le verrou, non. `DiscoveryRewards.deferred_gates()` les nomme.
+
+La vallée reste un graybox hors premier plan et hors lieux. Aucun score visuel
+n'est revendiqué.

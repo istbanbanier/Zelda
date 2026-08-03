@@ -33,11 +33,29 @@ const SAME_LEVEL: float = 3.0
 ## Distance supplémentaire du point d'approche, au-delà du candidat.
 const APPROACH_EXTRA: float = 3.0
 
+## Hauteur des yeux, pour la ligne de vue.
+const EYE: float = 1.55
+
 ## Corps des récompenses déjà posées, exclus de toutes les sondes.
 var _excluded: Array[RID] = []
+## Emprises d'eau du monde, en boîtes globales. L'eau n'a PAS de collision :
+## une sonde purement physique pose donc volontiers un coffre au fond d'un
+## bassin — sol réel, accès réel, à demi immergé. Trois lieux sur trente et un
+## en sont sortis ainsi. On lit donc les volumes par leur nom, comme les
+## bâtisseurs les nomment.
+var _water: Array[AABB] = []
+## Lieu dont on veut l'éventail complet des candidats (`--list=<identifiant>`).
+var _list_place: String = ""
+const WATER_WORDS: Array[String] = [
+	"eau", "water", "bassin", "vasque", "riviere", "rivière", "lac", "mare",
+	"onde", "cascade", "torrent", "gue", "gué",
+]
 
 
 func _initialize() -> void:
+	for argument: String in OS.get_cmdline_user_args():
+		if argument.begins_with("--list="):
+			_list_place = argument.substr(7)
 	var packed: PackedScene = load("res://scenes/world/valley/ValleyWorld.tscn") \
 		as PackedScene
 	if packed == null:
@@ -56,6 +74,8 @@ func _initialize() -> void:
 	_excluded.clear()
 	for node: Node in world.find_children("*", "RewardAnchor", true, false):
 		_excluded.append_array((node as RewardAnchor).own_bodies())
+	_collect_water(world)
+	print("[sonde] %d volume(s) d'eau repérés" % _water.size())
 	var found: int = 0
 	var missing: Array[String] = []
 	print("=== SONDE DES ANCRAGES ===")
@@ -73,6 +93,15 @@ func _initialize() -> void:
 		# parce que le lieu flottait, mais parce qu'elle regardait trop haut.
 		var center: Vector3 = Vector3(poi.global_position.x,
 			host.global_position.y, poi.global_position.z)
+		if _list_place == String(poi.poi_id):
+			# Mode inventaire : tous les candidats valides d'un lieu, pour
+			# choisir en connaissance de cause quand le premier venu se lit
+			# mal. Choisir reste un jugement ; l'ÉVENTAIL, lui, est mesuré.
+			for candidate: Dictionary in _all(space, center):
+				var here: Vector3 = host.to_local(candidate["at"] as Vector3)
+				var from: Vector3 = host.to_local(candidate["approach"] as Vector3)
+				print("  candidat at=(%.2f, %.2f, %.2f) approche=(%.2f, %.2f, %.2f)"
+					% [here.x, here.y, here.z, from.x, from.y, from.z])
 		var result: Dictionary = _search(space, center)
 		if result.is_empty():
 			missing.append(String(poi.poi_id))
@@ -109,8 +138,11 @@ func _search(space: PhysicsDirectSpaceState3D, center: Vector3) -> Dictionary:
 				center + offset * (radius + 1.2))
 			if stand == Vector3.INF or absf(stand.y - center.y) > SAME_LEVEL:
 				continue
-			if absf(stand.y - at.y) > 0.9:
-				continue   # marche trop haute entre la station et l'objet
+			# La récompense doit être au NIVEAU d'où l'on se tient. Tolérer
+			# 90 cm laissait poser un ingrédient sur un rocher qui, vu depuis
+			# le sol voisin, disparaissait derrière ce même rocher.
+			if absf(stand.y - at.y) > 0.45:
+				continue
 			if not _clear(space, stand):
 				continue
 			# COULOIR : le point d'arrivée peut être dégagé et le chemin pour
@@ -127,6 +159,16 @@ func _search(space: PhysicsDirectSpaceState3D, center: Vector3) -> Dictionary:
 			# On rejoue donc la sonde depuis la cote du candidat.
 			var confirm: Vector3 = _ground(space, at)
 			if confirm == Vector3.INF or absf(confirm.y - at.y) > 0.15:
+				continue
+			# L'eau ne porte pas de collision : sans ce contrôle, la sonde pose
+			# la récompense au fond du bassin sans rien remarquer.
+			if _in_water(at):
+				continue
+			# LIGNE DE VUE : une récompense qu'on ne voit pas depuis l'endroit
+			# où l'on se tient n'existe pas pour le joueur. Deux ingrédients
+			# étaient posés DERRIÈRE le tronc de l'arbre qui donnait son nom
+			# au lieu — sol réel, accès réel, invisibles.
+			if not _visible(space, stand, at):
 				continue
 			var approach: Vector3 = _ground(space,
 				center + offset * (radius + APPROACH_EXTRA))
@@ -174,3 +216,81 @@ func _clear(space: PhysicsDirectSpaceState3D, ground: Vector3) -> bool:
 	query.collide_with_areas = false
 	query.exclude = _excluded
 	return space.intersect_shape(query, 1).is_empty()
+
+
+## Recense les volumes d'eau visuels du monde. Ils n'ont pas de collision : la
+## seule trace exploitable est la façon dont les bâtisseurs les NOMMENT.
+## Heuristique assumée — et documentée — plutôt qu'un coffre immergé.
+func _collect_water(world: Node3D) -> void:
+	for node: Node in world.find_children("*", "MeshInstance3D", true, false):
+		var mesh: MeshInstance3D = node as MeshInstance3D
+		var label: String = mesh.name.to_lower()
+		var watery: bool = false
+		for word: String in WATER_WORDS:
+			if label.contains(word):
+				watery = true
+				break
+		if not watery:
+			continue
+		var box: AABB = mesh.get_aabb()
+		_water.append(AABB(mesh.global_transform * box.position,
+			mesh.global_transform.basis * box.size))
+
+
+## Le point est-il sous une surface d'eau ? On teste l'emprise horizontale et
+## le fait d'être SOUS le dessus du volume : une berge à côté du bassin reste
+## valide, le fond du bassin non.
+func _in_water(at: Vector3) -> bool:
+	for box: AABB in _water:
+		var low: Vector3 = box.position
+		var high: Vector3 = box.position + box.size
+		var x0: float = minf(low.x, high.x)
+		var x1: float = maxf(low.x, high.x)
+		var z0: float = minf(low.z, high.z)
+		var z1: float = maxf(low.z, high.z)
+		var top: float = maxf(low.y, high.y)
+		if at.x >= x0 - 0.4 and at.x <= x1 + 0.4 \
+				and at.z >= z0 - 0.4 and at.z <= z1 + 0.4 \
+				and at.y <= top + 0.1:
+			return true
+	return false
+
+
+## Voit-on la récompense depuis le point de station, à hauteur d'yeux ?
+func _visible(space: PhysicsDirectSpaceState3D, stand: Vector3,
+		at: Vector3) -> bool:
+	var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(
+		stand + Vector3(0, EYE, 0), at + Vector3(0, 0.45, 0))
+	query.collide_with_areas = false
+	query.exclude = _excluded
+	return space.intersect_ray(query).is_empty()
+
+
+## Tous les candidats valides d'un lieu, dans l'ordre de la recherche.
+func _all(space: PhysicsDirectSpaceState3D, center: Vector3) -> Array[Dictionary]:
+	var found: Array[Dictionary] = []
+	for radius: float in RADII:
+		for i: int in range(ANGLES):
+			var angle: float = TAU * float(i) / float(ANGLES)
+			var offset: Vector3 = Vector3(cos(angle), 0.0, sin(angle))
+			var at: Vector3 = _ground(space, center + offset * radius)
+			if at == Vector3.INF or absf(at.y - center.y) > SAME_LEVEL:
+				continue
+			var stand: Vector3 = _ground(space, center + offset * (radius + 1.2))
+			if stand == Vector3.INF or absf(stand.y - center.y) > SAME_LEVEL:
+				continue
+			if absf(stand.y - at.y) > 0.45 or not _clear(space, stand):
+				continue
+			if not _corridor(space, center + offset * (radius + APPROACH_EXTRA),
+					center + offset * (radius + 1.2)):
+				continue
+			var confirm: Vector3 = _ground(space, at)
+			if confirm == Vector3.INF or absf(confirm.y - at.y) > 0.15:
+				continue
+			if _in_water(at) or not _visible(space, stand, at):
+				continue
+			var approach: Vector3 = _ground(space,
+				center + offset * (radius + APPROACH_EXTRA))
+			found.append({"at": at,
+				"approach": stand if approach == Vector3.INF else approach})
+	return found
