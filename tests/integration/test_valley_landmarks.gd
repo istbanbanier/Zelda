@@ -316,7 +316,7 @@ func test_the_flower_field_keeps_the_gaps_that_make_it_readable() -> void:
 
 		# Centre de la cellule déduit de son nom (« Corolles » + ix + iz) :
 		# une cellule dont les fleurs débordent n'est plus une partition.
-		var suffix: String = String(cell.name).substr(len("Corolles"))
+		var suffix: String = String(cell.name).substr("Corolles".length())
 		var centre: Vector3 = Vector3.ZERO
 		if suffix.length() == 2 and suffix.is_valid_int():
 			centre = Vector3(
