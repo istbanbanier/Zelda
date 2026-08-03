@@ -541,7 +541,12 @@ automatisée** avant qu'une seule salle n'existe.
 | Traits exigés : torse incliné, bassin massif, bras ASYMÉTRIQUES dont un à croissance rocheuse, petites jambes puissantes, nodule minéral pâle entre omoplate et nuque | **Implémenté** | construits pièce par pièce dans le script ; **pas encore vérifiés dans Godot** |
 | Chasseur quadrupède — modèle ORIGINAL rigged, corps inférieur NON équin | **Implémenté** | `SK_CentaurHunter.glb` (3 240 tris, 6 os) ; haut **3,20 m** (bande 3,0-3,5), long **4,69 m** (bande 4,0-4,8) |
 | Traits exigés : quatre pattes à trois doigts, épaules avant plus hautes, queue de lames, torse supérieur né EN AVANT du bassin, plaque frontale et mandibules latérales | **Implémenté** | idem |
-| Montage dans `RavineTroll.tscn` et `CentaurHunter.tscn` | **Non commencé** | les deux `.glb` sont dans le dépôt et valides `gltf_inspect`, mais **aucune scène ne les monte encore** : les deux ennemis restent en graybox en jeu. C'est la prochaine action |
+| Montage dans `RavineTroll.tscn` et `CentaurHunter.tscn` | **Fonctionnel** | `--filter=creature_assets` 4/4 : modèles montés, graybox masqués (les DEUX boîtes du chasseur), cotes vérifiées **dans Godot** — colosse 3,97 m, chasseur 3,20 × 4,69 m |
+| §12.4 — le nodule point faible est du côté de la hurtbox arrière ×2 | **Validé** | `test_the_weak_point_nodule_sits_on_the_side_the_back_hurtbox_guards` |
+| §12.5 — corps ALLONGÉ, pas un cheval | **Validé** | plus de 2,5 fois plus long que large, et plus long que haut |
+| Les deux créatures regardent le côté où elles frappent | **Validé** | `test_both_creatures_face_the_direction_they_strike` |
+| Envergure du colosse (4,06 m) plus large que sa capsule (rayon 1,1 m) | **Limite assumée** | règle ART-P0 : le modèle est un visuel, la capsule reste l'autorité de gameplay. Le joueur peut passer « à travers » les bras tendus |
+| Animations propres au colosse et au chasseur | **Non commencé** | rigs livrés (8 et 6 os), aucun clip — les deux créatures gardent leur pose de repos |
 | Silhouettes des cinq familles en aplat noir à 25 m (§30.3 de la bible) | **EN ATTENTE** (verdict humain) | `docs/MANUAL_VALIDATION.md` |
 
 ## Checklist finale (§26) — état réel

@@ -146,10 +146,14 @@ func _mount_visual() -> void:
 	if _visual == null or _visual.is_fallback_active():
 		return
 	_model_mounted = true
-	var body_mesh: MeshInstance3D = _pivot.get_node_or_null("BodyMesh") \
-		as MeshInstance3D
-	if body_mesh != null:
-		body_mesh.visible = false
+	# TOUS les maillages graybox enfants DIRECTS du pivot disparaissent, pas
+	# seulement `BodyMesh` : le chasseur en porte deux (corps + torse), et
+	# n'en masquer qu'un laissait une boîte plantée dans le modèle. Le
+	# modèle riggé, lui, vit sous `CharacterVisual` — il n'est jamais
+	# atteint par cette boucle.
+	for child: Node in _pivot.get_children():
+		if child is MeshInstance3D:
+			(child as MeshInstance3D).visible = false
 	_collect_model_materials()
 	state_changed.connect(_on_state_changed_visual)
 	_visual.play_state(&"idle")

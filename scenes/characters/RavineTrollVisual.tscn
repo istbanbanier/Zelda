@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3]
+
+; Phase H lot H.3 — colosse des ravins, modèle de production.
+; Produit par tools/blender/make_creatures.py : torse INCLINÉ, bassin
+; massif, bras ASYMÉTRIQUES dont un porte une croissance rocheuse, petites
+; jambes puissantes, et le nodule minéral pâle entre omoplate et nuque qui
+; est son point faible (§12.4). Aucune massue : ses mains servent à
+; arracher et à lancer.
+; Cotes mesurées en sortie de Blender : 3,97 m de haut (bande §14.4 :
+; 3,7-4,3) pour 4,06 m d'envergure.
+;
+; La tête est vers +Z après conversion Y-up — c'est l'avant du pivot des
+; ennemis, celui que porte `EnemyBase`.
+
+[ext_resource type="PackedScene" path="res://assets/characters/creatures/SK_RavineTroll.glb" id="1_model"]
+
+[node name="RavineTrollVisual" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]

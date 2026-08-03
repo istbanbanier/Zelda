@@ -24,6 +24,9 @@ const CATALOG: Dictionary = {
 	# Boss — LIVRÉ (Phase H lot H.1) : hero asset ORIGINAL du projet, produit
 	# par `tools/blender/make_storm_guardian.py`. Pas un pack externe.
 	&"char.boss_guardian": "res://scenes/boss/GuardianVisual.tscn",
+	# Créatures — LIVRÉES (lots H.3 et H.4), créations originales elles aussi.
+	&"char.ravine_troll": "res://scenes/characters/RavineTrollVisual.tscn",
+	&"char.centaur_hunter": "res://scenes/characters/CentaurHunterVisual.tscn",
 	# Environnement — LIVRÉ (ART-Q0, packs Quaternius CC0, ATTRIBUTIONS.md).
 	&"env.tree.large": "res://scenes/environment/TreeLarge.tscn",
 	&"env.tree.medium": "res://scenes/environment/TreeMedium.tscn",

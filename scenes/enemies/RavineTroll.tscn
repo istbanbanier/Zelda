@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=16 format=3]
 
 ; Colosse des ravins (§12.4) — graybox : capsule de 3,8 m (rayon 1,1 — sa
 ; taille EST sa navigation : une porte étroite le refuse physiquement).
@@ -12,6 +12,7 @@
 [ext_resource type="Script" path="res://scripts/components/hurtbox_component.gd" id="5_hurtbox"]
 [ext_resource type="Script" path="res://scripts/components/hitbox_component.gd" id="6_hitbox"]
 [ext_resource type="Script" path="res://scripts/combat/attack_controller.gd" id="7_attack"]
+[ext_resource type="Script" path="res://scripts/characters/character_visual.gd" id="11_visual"]
 [ext_resource type="Resource" path="res://resources/combat/troll/troll_sweep.tres" id="8_sweep"]
 [ext_resource type="Resource" path="res://resources/combat/troll/troll_vertical.tres" id="9_vertical"]
 [ext_resource type="Resource" path="res://resources/combat/troll/troll_slam.tres" id="10_slam"]
@@ -44,6 +45,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0)
 shape = SubResource("BodyShape")
 
 [node name="Pivot" type="Node3D" parent="."]
+
+; Phase H : modèle de production ORIGINAL. S'il résout, `EnemyBase`
+; masque le graybox et collecte les matériaux d'instance ; sinon repli
+; total. Les volumes de combat et la capsule ne changent pas.
+[node name="CharacterVisual" type="Node3D" parent="Pivot"]
+script = ExtResource("11_visual")
+model_id = &"char.ravine_troll"
 
 [node name="BodyMesh" type="MeshInstance3D" parent="Pivot"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0)

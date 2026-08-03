@@ -2047,3 +2047,30 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > au registre, `CharacterVisual` sous le Pivot comme les pillards, graybox
 > masqué, volumes de combat replacés SUR la géométrie et vérifiés par un
 > test du même type que `test_the_combat_volumes_sit_inside_the_body_you_can_see`).
+
+## 2026-08-03 — Phase H, H.3/H.4 montés : les cinq familles ont un corps
+
+> Les deux modèles bâtis au lot précédent sont maintenant DANS le jeu.
+> Colosse et chasseur passent par `CharacterVisual` comme les pillards :
+> registre → wrapper → montage sous le pivot, graybox masqué.
+> Un vrai défaut au passage : `EnemyBase._mount_visual()` ne masquait que
+> `BodyMesh`. Le chasseur en porte DEUX (corps et torse) — n'en cacher
+> qu'une laissait une boîte plantée dans le modèle. Tous les maillages
+> enfants directs du pivot disparaissent désormais ; le modèle riggé, lui,
+> vit sous `CharacterVisual` et n'est jamais atteint par cette boucle.
+> Le chasseur a dû être RETOURNÉ : construit tête vers +Y en Blender, donc
+> vers -Z après conversion, alors que les ennemis regardent +Z. Le colosse,
+> lui, tombait juste — vérifié en mesurant, pas en raisonnant.
+> Quatre tests neufs : cotes dans Godot, graybox masqués, nodule du colosse
+> du même côté que la hurtbox arrière ×2, corps du chasseur plus de deux
+> fois et demie plus long que large, et les deux créatures qui regardent le
+> côté où elles frappent.
+> **Limite assumée** : l'envergure du colosse (4,06 m) dépasse sa capsule
+> (rayon 1,1 m). Règle ART-P0 — le modèle est un visuel, la capsule reste
+> l'autorité. Le joueur peut passer « à travers » les bras tendus.
+> **Limite** : aucune animation pour ces deux créatures. Les rigs sont là
+> (8 et 6 os), les clips non : elles gardent leur pose de repos.
+> **PROCHAINE ACTION** : les clips d'animation du colosse et du chasseur
+> (locomotion lourde, balayage, frappe verticale, coup au sol pour l'un ;
+> pas/trot/galop, charge, salve, cri pour l'autre — §14.4 et §14.5), puis
+> ceux du Gardien (entrée 5-8 s, dégâts visuels progressifs, mort).

@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=16 format=3]
 
 ; Chasseur quadrupède (§12.5) — graybox d'une créature CENTAUROÏDE
 ; originale : corps bas ALLONGÉ (boîte 1,6 × 1,1 × 3,0 — quadrupède, pas
@@ -13,6 +13,7 @@
 [ext_resource type="Script" path="res://scripts/components/hurtbox_component.gd" id="5_hurtbox"]
 [ext_resource type="Script" path="res://scripts/components/hitbox_component.gd" id="6_hitbox"]
 [ext_resource type="Script" path="res://scripts/combat/attack_controller.gd" id="7_attack"]
+[ext_resource type="Script" path="res://scripts/characters/character_visual.gd" id="11_visual"]
 [ext_resource type="Resource" path="res://resources/combat/hunter/hunter_slash_1.tres" id="8_slash1"]
 [ext_resource type="Resource" path="res://resources/combat/hunter/hunter_slash_2.tres" id="9_slash2"]
 
@@ -43,6 +44,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.15, 0)
 shape = SubResource("BodyShape")
 
 [node name="Pivot" type="Node3D" parent="."]
+
+; Phase H : modèle de production ORIGINAL. S'il résout, `EnemyBase`
+; masque le graybox et collecte les matériaux d'instance ; sinon repli
+; total. Les volumes de combat et la capsule ne changent pas.
+[node name="CharacterVisual" type="Node3D" parent="Pivot"]
+script = ExtResource("11_visual")
+model_id = &"char.centaur_hunter"
 
 ; Corps bas quadrupède : long, ras du sol.
 [node name="BodyMesh" type="MeshInstance3D" parent="Pivot"]

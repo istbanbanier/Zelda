@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3]
+
+; Phase H lot H.4 — chasseur quadrupède, modèle de production.
+; Produit par tools/blender/make_creatures.py : corps inférieur bas et
+; ALLONGÉ, ni sabots, ni crinière, ni croupe de cheval ; quatre pattes à
+; trois doigts larges, épaules avant plus hautes que la croupe, queue
+; courte en lames. Le torse supérieur naît EN AVANT du bassin inférieur —
+; c'est ce qui le distingue d'un centaure classique. Tête étroite à plaque
+; frontale et deux mandibules latérales (§12.5, bible §14.5).
+; Cotes en sortie de Blender : 3,20 m de haut (bande 3,0-3,5), 4,69 m de
+; long (bande 4,0-4,8).
+;
+; Le modèle est construit tête vers +Y (Blender), donc vers -Z après
+; conversion : il est RETOURNÉ ici pour regarder le +Z du pivot ennemi.
+
+[ext_resource type="PackedScene" path="res://assets/characters/creatures/SK_CentaurHunter.glb" id="1_model"]
+
+[node name="CentaurHunterVisual" type="Node3D"]
+
+[node name="Model" parent="." instance=ExtResource("1_model")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
