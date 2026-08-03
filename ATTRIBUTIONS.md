@@ -53,6 +53,9 @@ armature et animation. Ils ne doivent apparaître dans aucune scène jouable.
 |---|---|---|
 | `SM_WornSword` (.blend, .glb, textures) | **création originale du projet** — géométrie, UV et textures générées par `tools/blender/make_worn_sword.py` (reproductible, seed fixe) | licence du projet |
 | `T_WornSword_Icon.png` | rendu Godot du modèle ci-dessus (`tools/godot/render_weapon_icon.gd`) | licence du projet |
+| `SK_Raider{Red,Blue,Black}` (.blend, .glb) — Phase H lot H.2 | **création originale du projet** — géométrie générée par `tools/blender/make_raiders.py`. Le SQUELETTE réutilisé est celui du pack Quaternius CC0 déjà attribué ci-dessus (65 os UAL) : seules les formes sont neuves, et c'est ce qui permet de garder les animations existantes | licence du projet (géométrie) · CC0 (squelette, cf. Quaternius) |
+| `SK_RavineTroll`, `SK_CentaurHunter` (.blend, .glb) — Phase H lots H.3-H.4 | **création originale du projet** — géométrie et rigs générés par `tools/blender/make_creatures.py`. Aucune anatomie réelle citable : le chasseur n'a ni sabots, ni crinière, ni croupe équine | licence du projet |
+| `SK_StormGuardian` (.blend, .glb, textures) — Phase H lot H.1 | **création originale du projet** — géométrie, rig 22 os, UV et atlas générés par `tools/blender/make_storm_guardian.py` (reproductible, seed 20260803). Bête-machine à six appuis : aucune anatomie réelle citable, aucune silhouette empruntée, aucun symbole d'une autre licence | licence du projet |
 
 Aucun contenu externe, aucun symbole d'une licence existante.
 

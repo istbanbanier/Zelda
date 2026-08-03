@@ -67,7 +67,11 @@ const PHASE3_SPEED_GAIN: float = 1.15
 @export var max_health: float = 560.0
 @export var move_speed: float = 4.6
 @export var turn_speed: float = 2.6
-@export var melee_reach: float = 4.6
+## Phase H : la portée suit le CORPS. Le hero asset mesure 9,58 m de long ;
+## sa griffe balaie de -2,8 à -6,4 m devant le pivot. 4,6 m — valeur du
+## graybox, qui faisait 6,4 m — laissait le Gardien frapper à l'intérieur
+## de lui-même.
+@export var melee_reach: float = 6.0
 @export var arc_reach: float = 14.0
 ## Seuils de phase, en fraction de vie (§16.3-§16.5).
 @export var phase2_threshold: float = 0.65
@@ -94,6 +98,10 @@ var _attack_cooldown: float = 1.4
 var _strike_marks: Array[Node3D] = []
 var _armour_intact: bool = true
 
+## Phase H : le hero asset. `null` en repli — un banc de test peut monter le
+## Gardien sans son modèle, et la logique ne doit pas s'en apercevoir.
+@onready var _visual: GuardianVisual = get_node_or_null("Pivot/GuardianVisual") \
+	as GuardianVisual
 @onready var _health: HealthComponent = $HealthComponent
 @onready var _attack: AttackControllerComponent = $AttackController
 @onready var _body_hurtbox: HurtboxComponent = $Pivot/BodyHurtbox
@@ -300,6 +308,10 @@ func _apply_armour(intact: bool) -> void:
 	_armour_intact = intact
 	_body_hurtbox.damage_taken_multiplier = ARMOURED_MULTIPLIER if intact else 0.6
 	_core_hurtbox.monitorable = not intact
+	# Le noyau s'ALLUME quand il est frappable : c'est le seul retour qui
+	# dit au joueur que la fenêtre est ouverte (§16.3, §15.4 de la bible).
+	if _visual != null:
+		_visual.set_core_exposed(not intact)
 
 
 func _tick_overload(delta: float) -> void:
@@ -371,10 +383,8 @@ func _on_crystal_hit(event: DamageEvent, crystal: HurtboxComponent) -> void:
 	if _crystal_health[index] > 0.0:
 		return
 	crystal.monitorable = false
-	var mesh: Node3D = crystal.get_parent().get_node_or_null(
-		"%sMesh" % crystal.name) as Node3D
-	if mesh != null:
-		mesh.visible = false
+	if _visual != null:
+		_visual.set_crystal_visible(crystal.name, false)
 	crystal_destroyed.emit(_crystals_alive())
 	# §16.5 : « noyau exposé après destruction des cristaux ».
 	if _crystals_alive() == 0:
@@ -425,6 +435,10 @@ func _enter(state: State) -> void:
 			_apply_armour(_crystals_alive() > 0)
 		State.PHASE3:
 			_apply_armour(_crystals_alive() > 0)
+			# §16.5 de la bible : « certaines plaques pendent », l'anneau
+			# divisé tourne de travers. La silhouette raconte la phase.
+			if _visual != null:
+				_visual.hang_armour(0.5)
 	phase_changed.emit(state_name())
 
 
@@ -434,10 +448,8 @@ func _reveal_crystals() -> void:
 		if _crystal_health[i] <= 0.0:
 			continue
 		_crystals[i].monitorable = true
-		var mesh: Node3D = _crystals[i].get_parent().get_node_or_null(
-			"%sMesh" % _crystals[i].name) as Node3D
-		if mesh != null:
-			mesh.visible = true
+		if _visual != null:
+			_visual.set_crystal_visible(_crystals[i].name, true)
 
 
 func _phase_state() -> State:

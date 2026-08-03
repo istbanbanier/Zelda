@@ -1546,3 +1546,60 @@ tools/validate_fast.sh
 Ce chiffre est le résultat d'une simulation, pas d'une partie humaine : le
 balayage de hitbox est postulé et la précision fixée à deux coups sur
 trois. La durée d'une première victoire (§16.1 : 4-7 min) n'est PAS mesurée.
+
+---
+
+## Phase H — lots H.1 à H.4 (2026-08-03)
+
+Commandes : `blender --background --python tools/blender/<script>.py`,
+`blender --background <blend> --python tools/blender/export_gltf.py -- --out <glb>`,
+`python3 tools/gltf_inspect.py <glb>`, puis `tools/validate_fast.sh`.
+
+### Nouveaux assets, mesurés
+
+| Asset | Cotes mesurées **dans Godot** | Bande de la bible | Triangles | Os |
+|---|---|---|---|---|
+| `SK_StormGuardian` | 9,58 × 5,30 × 5,60 m | §15.1 : 8-10 × 5-7 × 5,2-6 | 6 324 | 22 |
+| `SK_RaiderRed` | h 1,42 m | §14.1 : 1,40-1,52 | 1 200 | 65 (UAL) |
+| `SK_RaiderBlue` | h 1,63 m | §14.2 : 1,58-1,72 | 1 620 | 65 (UAL) |
+| `SK_RaiderBlack` | h 1,88 m | §14.3 : 1,85-2,05 | 1 440 | 65 (UAL) |
+| `SK_RavineTroll` | h 3,97 m (mesuré Blender) | §14.4 : 3,7-4,3 | 2 580 | 8 |
+| `SK_CentaurHunter` | h 3,20 m, long 4,69 m (Blender) | §14.5 : 3,0-3,5 · 4,0-4,8 | 3 240 | 6 |
+
+Les cotes des deux dernières créatures viennent de Blender : **elles ne sont
+pas encore vérifiées dans Godot, faute de scène qui les monte.** Toutes les
+autres sont mesurées sur la géométrie importée — c'est la seule autorité,
+après avoir constaté deux fois que le log de l'outil pouvait mentir.
+
+### Nouveau fichier de test
+
+- `tests/integration/test_guardian_asset.gd` (6) : livraison et import
+  propres, cotes de §15.1, anatomie par NOM de mesh, cristaux cachés au
+  repos, **volumes de combat DANS le corps visible**, noyau qui s'allume.
+
+### Tests RENFORCÉS (l'exigence a monté avec la Phase H)
+
+- `test_the_three_families_have_distinct_bodies_not_just_distinct_tints`
+  remplace un test de TEINTES par un test de CORPS : tailles dans les
+  bandes, ordonnées, briseur le plus large, maillages distincts.
+- `test_the_character_variants_have_distinct_silhouettes` ne compte plus
+  les pièces greffées : il mesure les formes. Une assertion a été RETIRÉE
+  parce qu'elle n'était pas mesurable — le rapport largeur/hauteur d'une
+  AABB en pose T est dominé par l'envergure des bras et disait le contraire
+  de la vérité. Ce critère relève de l'essai humain, et c'est écrit.
+- `test_the_turquoise_tint_touches_the_outfit_and_never_the_skin` vérifie
+  désormais que la peau garde SA couleur et SA texture, plutôt que
+  l'absence de toute surcharge — l'isolation des matériaux est devenue
+  inconditionnelle.
+
+### Défauts réels trouvés
+
+1. `matrix_world` PÉRIMÉE après reparentage : Blender annonçait 9,58 m
+   quand Godot mesurait 14,50.
+2. Le parentage « BONE » accroche l'objet à la QUEUE de l'os.
+3. La boîte de collision du Gardien flottait à 0,80 m du sol : il tombait
+   indéfiniment, ce qui le rendait plus lent en phase 3 qu'en phase 1.
+4. L'isolation des matériaux n'était déclenchée que par une teinte : sans
+   teinte, le télégraphe d'attaque n'avait plus rien où écrire.
+5. L'échelle partait DEUX fois vers glTF (cuite par `export_apply` ET
+   portée par le nœud) : 1,17 m mesuré pour 1,42 m attendu.

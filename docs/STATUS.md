@@ -506,6 +506,44 @@ automatisée** avant qu'une seule salle n'existe.
 | Ressenti du combat, lisibilité des télégraphes, durée réelle d'une première victoire (§16.1 : 4-7 min) | **EN ATTENTE** (verdict humain) | `docs/MANUAL_VALIDATION.md` |
 | Conclusion §16.8 (coffre final, tempête qui se dissipe, écran de victoire) | **Non commencé** | jalon G.3 |
 
+## Phase H — lot H.1 : le Gardien devient un hero asset
+
+| Élément | État | Preuve |
+|---|---|---|
+| Modèle ORIGINAL du boss, procédural et reproductible | **Fonctionnel** | `tools/blender/make_storm_guardian.py` (seed 20260803) → `SK_StormGuardian.glb` ; `--filter=guardian_asset` 6/6 |
+| Cotes de VISUAL_ASSET_BIBLE §15.1 (8-10 × 5-7 × 5,2-6 m) | **Validé** | mesurées **dans Godot** sur la géométrie importée : 9,58 × 5,30 × 5,60 m, min Y = 0 |
+| Anatomie exigée : six appuis, tête à trois plaques, épaules de bronze, queue segmentée à fourche, anneau incomplet en trois segments, noyau fendu | **Validé** | `test_the_anatomy_the_bible_asks_for_is_actually_there` : 20 assertions par NOM de mesh |
+| 27 meshes séparés parce que le gameplay les manipule (§16.4, §16.5) | **Fonctionnel** | cristaux révélés/cachés sur le vrai modèle, plaques qui pendent en phase 3 |
+| Les volumes de combat sont DANS le corps visible | **Validé** | `test_the_combat_volumes_sit_inside_the_body_you_can_see` : hurtbox de noyau à moins d'un mètre du noyau modélisé, cristaux à moins de 1,2 m |
+| Le noyau s'allume quand l'armure s'ouvre (§16.3) | **Fonctionnel** | matériau propre à l'instance, émission mesurée avant/après |
+| Licence et provenance | **Validé** | création originale du projet — `ATTRIBUTIONS.md`, `docs/assets/ASSET_MANIFEST.csv` |
+| Densité de surface (bible §4.5 : 110-160k tris LOD0) | **PARTIEL assumé** | 6 324 triangles : silhouette et structure présentes, détail de surface absent. Consigné au manifeste |
+| Animation du boss (§16.1 : entrée 5-8 s, dégâts visuels progressifs) | **Non commencé** | rig 22 os livré ; les clips viennent au lot suivant |
+| Trois pillards, colosse, chasseur en silhouettes distinctes | **PARTIEL** | pillards faits (lot H.2) ; colosse et chasseur restent dus (H.3, H.4) |
+
+## Phase H — lot H.2 : trois pillards, trois corps
+
+| Élément | État | Preuve |
+|---|---|---|
+| Géométrie ORIGINALE pour braise, azur et obsidienne | **Fonctionnel** | `tools/blender/make_raiders.py` → trois `.glb` ; `--filter=raider` 22/22 |
+| Le squelette des animations est CONSERVÉ (65 os UAL) | **Validé** | `gltf_inspect` : `skin:Armature 65 os` sur les trois ; `AL_RaiderStates.res` s'applique sans retargeting |
+| Tailles de VISUAL_ASSET_BIBLE §14.1-14.3 | **Validé** | mesurées dans Godot : 1,42 · 1,63 · 1,88 m, dans leurs bandes et ORDONNÉES |
+| Silhouettes réellement distinctes, pas des recolorations | **Validé** | `test_the_three_families_have_distinct_bodies_not_just_distinct_tints` : le briseur est 19 % plus large, les maillages ont des comptes différents |
+| Traits de famille : excroissances vers l'arrière, crête verticale, visière fendue, plaques inégales | **Implémenté** | construits par profil dans le script ; **la lisibilité en silhouette noire à 25 m reste un essai humain** |
+| §5.4 — matériaux propres à chaque exemplaire | **Validé** | isolation rendue inconditionnelle ; régression du télégraphe attrapée par `test_the_real_raider_mounts_the_model_and_keeps_its_gameplay_volumes` |
+| Textures et détail de surface | **Non commencé** | couleurs de matériau seules, aucune texture. Consigné au manifeste |
+
+## Phase H — lots H.3 et H.4 : colosse et chasseur, modèles bâtis
+
+| Élément | État | Preuve |
+|---|---|---|
+| Colosse des ravins — modèle ORIGINAL rigged | **Implémenté** | `tools/blender/make_creatures.py` → `SK_RavineTroll.glb` (2 580 tris, 8 os) ; haut **3,97 m**, bande §14.4 = 3,7-4,3 |
+| Traits exigés : torse incliné, bassin massif, bras ASYMÉTRIQUES dont un à croissance rocheuse, petites jambes puissantes, nodule minéral pâle entre omoplate et nuque | **Implémenté** | construits pièce par pièce dans le script ; **pas encore vérifiés dans Godot** |
+| Chasseur quadrupède — modèle ORIGINAL rigged, corps inférieur NON équin | **Implémenté** | `SK_CentaurHunter.glb` (3 240 tris, 6 os) ; haut **3,20 m** (bande 3,0-3,5), long **4,69 m** (bande 4,0-4,8) |
+| Traits exigés : quatre pattes à trois doigts, épaules avant plus hautes, queue de lames, torse supérieur né EN AVANT du bassin, plaque frontale et mandibules latérales | **Implémenté** | idem |
+| Montage dans `RavineTroll.tscn` et `CentaurHunter.tscn` | **Non commencé** | les deux `.glb` sont dans le dépôt et valides `gltf_inspect`, mais **aucune scène ne les monte encore** : les deux ennemis restent en graybox en jeu. C'est la prochaine action |
+| Silhouettes des cinq familles en aplat noir à 25 m (§30.3 de la bible) | **EN ATTENTE** (verdict humain) | `docs/MANUAL_VALIDATION.md` |
+
 ## Checklist finale (§26) — état réel
 
 Une case n'est cochée que si une preuve datée la soutient. Ne jamais cocher sur la

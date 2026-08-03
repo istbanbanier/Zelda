@@ -1,33 +1,24 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=4 format=3]
 
-; V4 lot 13 — SILHOUETTE distincte (§12.3 : « silhouette large, armure
-; partielle sombre ») : capuche + épaulière greffées, carrure ×1.12
-; (visuel seul — la capsule de gameplay reste l'autorité).
-; ART-Q2 — pillard obsidienne : modèle Male_Peasant (Quaternius CC0) teinté
-; « obsidienne », AnimationPlayer chargé de AL_RaiderStates.res (audit de root
-; motion : evidence/artQ2/). Même squelette 65 os que les UAL : les pistes
-; "Armature/Skeleton3D:<os>" résolvent directement.
+; Phase H lot H.2 — pillard obsidienne, CORPS PROPRE.
+; Jusqu'ici les trois pillards étaient le même modèle acheté, teinté trois
+; fois : exactement ce que l'ordre de la Phase H interdit. La géométrie est
+; désormais une création du projet (tools/blender/make_raiders.py) :
+; bassin bas, torse TRÈS large, cou presque absent, visière fendue en diagonale, deux plaques d'épaule INÉGALES en trapèze.
+; Hauteur mesurée : 1,88 m (bible §14.3 : 1,85-2,05).
+;
+; Le SQUELETTE, lui, reste celui des animations existantes — 65 os UAL. La
+; bibliothèque AL_RaiderStates.res s'applique donc sans retargeting, et les
+; sockets d'équipement se montent comme avant.
 
 [ext_resource type="Script" path="res://scripts/characters/character_model_sockets.gd" id="1_sockets"]
-[ext_resource type="PackedScene" path="res://assets/characters/enemies/Male_Peasant.gltf" id="2_peasant"]
+[ext_resource type="PackedScene" path="res://assets/characters/enemies/SK_RaiderBlack.glb" id="2_model"]
 [ext_resource type="AnimationLibrary" path="res://assets/animations/AL_RaiderStates.res" id="3_states"]
-[ext_resource type="PackedScene" path="res://assets/characters/parts/Superhero_Male_FullBody.gltf" id="9_base_body"]
-[ext_resource type="PackedScene" path="res://assets/characters/parts/Male_Ranger_Head_Hood.gltf" id="4_hood"]
-[ext_resource type="PackedScene" path="res://assets/characters/parts/Male_Ranger_Acc_Pauldron.gltf" id="5_pauldron"]
 
 [node name="RaiderBlackVisual" type="Node3D"]
 script = ExtResource("1_sockets")
-tint = Color(0.28, 0.26, 0.3, 1.0)
-modular_parts = Array[PackedScene]([ExtResource("4_hood"), ExtResource("5_pauldron"), ExtResource("9_base_body")])
-tint_material_filter = PackedStringArray("MI_Peasant", "MI_Ranger")
-shrink_materials = PackedStringArray("MI_Superhero_Male")
 
-; §12.3 « silhouette LARGE, centre de gravité BAS » : proportions NON
-; uniformes — 18 % plus large, 6 % plus court. Un facteur uniforme
-; donnait un pillard simplement PLUS GRAND, en contradiction avec sa
-; capsule (rayon 0,50 / hauteur 1,50, la plus basse du bestiaire).
-[node name="Model" parent="." instance=ExtResource("2_peasant")]
-transform = Transform3D(1.18, 0, 0, 0, 0.94, 0, 0, 0, 1.18, 0, 0, 0)
+[node name="Model" parent="." instance=ExtResource("2_model")]
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 root_node = NodePath("../Model")

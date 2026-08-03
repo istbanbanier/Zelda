@@ -866,3 +866,87 @@ la fait vivre côté ennemi.
   tableau. Et `HitboxComponent.monitoring` reste allumé en permanence par
   conception (R-014) : pour savoir si une hitbox frappe encore, on lit
   `is_active()`, jamais `monitoring`.
+
+
+---
+
+## D-034 — H.1 : le Gardien cesse d'être une capsule
+
+- **Date** : 2026-08-03 · **Phase** : H (lot H.1) · **Statut** : ACTÉ
+- **Le boss est modélisé, pas acheté.** `tools/blender/make_storm_guardian.py`
+  construit la bête-machine de VISUAL_ASSET_BIBLE §15.1 depuis des primitives,
+  avec un seed fixe : six appuis dont deux antérieurs lourds, dos voûté de
+  pierre, trois plaques de céramique sur la tête, épaules de bronze, queue
+  segmentée à fourche de terre, anneau vertical incomplet en trois segments,
+  noyau fendu au sternum. Aucune anatomie réelle citable, aucune silhouette
+  empruntée, aucun asset externe. Alternative rejetée : réutiliser un
+  humanoïde du pack et l'agrandir — c'est précisément ce que l'ordre de la
+  Phase H interdit.
+- **27 meshes NOMMÉS, et c'est le point.** `Core`, `CrystalA/B`,
+  `ArmourPlate0..7`, `GuardianRing0..2`, la queue : la phase 2 révèle, la
+  phase 3 fait pendre, la mise à la terre allume. Rien de tout cela n'est
+  possible depuis une masse unique — le découpage est une exigence de
+  gameplay avant d'être un choix d'art.
+- **Les volumes de combat ont suivi le modèle, pas l'inverse.** La collision
+  et les quatre hurtbox ont été replacées sur la géométrie réelle, et un test
+  refuse désormais toute hurtbox qui ne serait pas DANS le corps visible.
+  Une hitbox qui flotte à côté du modèle est un mensonge qu'aucune capture ne
+  révèle ; la géométrie, elle, le dit.
+- **Trois défauts trouvés en mesurant, pas en relisant.**
+  1. `matrix_world` est PÉRIMÉE après un reparentage tant que
+     `view_layer.update()` n'a pas tourné : Blender annonçait 9,58 m de long
+     quand Godot en mesurait 14,50. Les cotes de la bible se vérifient
+     désormais **dans Godot**, sur la géométrie importée.
+  2. Le parentage « BONE » de Blender accroche l'objet à la QUEUE de l'os,
+     pas à sa tête — d'où le décalage. Remplacé par des groupes de sommets à
+     poids 1 : chaque volume rigide suit exactement un os, ce qui est de
+     toute façon ce que veut une machine de pierre.
+  3. La nouvelle boîte de collision, posée sur la masse centrale, avait son
+     bas à 0,80 m du sol : le Gardien ne trouvait plus le plancher et tombait
+     indéfiniment. Symptôme observé : il était plus LENT en phase 3 qu'en
+     phase 1. La boîte part maintenant de zéro.
+- **Densité assumée.** 6 324 triangles, très en dessous du plafond de
+  110-160k de la bible §4.5. La silhouette, la structure et les matériaux
+  sont là ; le détail de surface ne l'est pas. C'est écrit au manifeste
+  plutôt que passé sous silence.
+
+
+---
+
+## D-035 — H.2 : trois pillards, trois CORPS, un seul squelette
+
+- **Date** : 2026-08-03 · **Phase** : H (lot H.2) · **Statut** : ACTÉ
+- **La géométrie est neuve, le squelette ne l'est pas.** Les trois corps sont
+  construits par `tools/blender/make_raiders.py` autour du squelette UAL à
+  65 os déjà présent dans le dépôt, puis liés par poids automatiques.
+  Conséquence directe et voulue : `AL_RaiderStates.res` continue de
+  s'appliquer sans retargeting. Alternative rejetée : trois rigs neufs — il
+  aurait fallu réécrire toutes les animations, c'est-à-dire remplacer un
+  système qui marche par un prototype moins complet.
+- **Ce qui distingue les familles est désormais MESURÉ.** Le test qui
+  vérifiait des teintes vérifie maintenant des corps : tailles dans les
+  bandes de la bible (1,42 · 1,63 · 1,88 m), tailles ORDONNÉES, briseur le
+  plus large, maillages de comptes différents, palettes distinctes. La
+  teinte reste un marqueur de faction, elle n'est plus le seul.
+- **Un vrai bug attrapé au passage.** `character_model_sockets.gd` ne
+  dupliquait les matériaux QUE s'il y avait une teinte ou une substitution.
+  Les nouveaux modèles portent leur couleur dans leur propre matériau, donc
+  plus de teinte, donc plus de duplication — et le télégraphe d'attaque, qui
+  écrit dans les matériaux d'instance, n'avait soudain plus rien où écrire.
+  L'isolation est maintenant INCONDITIONNELLE, ce que §5.4 exigeait déjà
+  (« deux exemplaires ne partagent jamais leur matériau »).
+- **L'échelle partait deux fois vers glTF.** `export_apply` cuit la
+  transformation dans les sommets, et le nœud exporté la reportait :
+  Blender annonçait 1,42 m quand Godot mesurait 1,17. Le script APPLIQUE
+  désormais l'échelle avant export. Règle générale à retenir : **une cote
+  se vérifie dans Godot, sur la géométrie importée** — jamais sur le log de
+  l'outil qui l'a produite.
+
+## Règle de travail — ne pas éditer l'arbre pendant une validation
+
+Deux runs de `validate_fast.sh` ont été perdus parce que des scènes
+référençant des `.glb` non encore importés ont été ajoutées PENDANT le run :
+la première fois deux erreurs isolées, la seconde 62 tests rouges en
+cascade. Le contenu du dépôt doit être figé entre le lancement de la
+validation et son verdict ; les seules éditions sûres sont celles que Godot
+ne charge pas (documentation).

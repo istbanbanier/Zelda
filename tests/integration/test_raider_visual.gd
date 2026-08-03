@@ -84,10 +84,15 @@ func test_the_raider_library_is_baked_with_its_own_attack_grammar() -> void:
 				"%s : boucle refermée" % String(clip))
 
 
-func test_the_three_faction_variants_mount_with_distinct_tints() -> void:
-	## §12 : braise, azur, obsidienne — trois scènes du registre, même
-	## squelette, teintes RÉELLEMENT différentes sur les matériaux montés.
-	var albedos: Dictionary = {}
+func test_the_three_families_have_distinct_bodies_not_just_distinct_tints() -> void:
+	## Phase H lot H.2 — l'exigence a MONTÉ, et ce test avec elle.
+	##
+	## Avant : les trois pillards étaient le même modèle acheté, teinté trois
+	## fois, et ce test vérifiait les teintes. C'est exactement ce que
+	## l'ordre de la Phase H interdit — « ne jamais confondre une variante
+	## de couleur avec une famille visuelle distincte ». La teinte reste
+	## vérifiée, mais elle ne suffit plus : on mesure d'abord les CORPS.
+	var bodies: Dictionary = {}
 	for id: StringName in [&"char.raider_red", &"char.raider_blue",
 			&"char.raider_black"]:
 		var packed: PackedScene = AssetRegistry.resolve(id)
@@ -95,29 +100,68 @@ func test_the_three_faction_variants_mount_with_distinct_tints() -> void:
 		var instance: CharacterModelSockets = packed.instantiate() \
 			as CharacterModelSockets
 		_tree().root.add_child(instance)
-		await _settle(1)
+		await _settle(2)
 		check_equal(instance.find_children("*", "Skeleton3D", true, false).size(),
 			1, "%s : squelette monté" % String(id))
-		var sample: Color = Color.WHITE
+		var bounds: AABB = AABB()
+		var first: bool = true
+		var colour: Color = Color.WHITE
+		var triangles: int = 0
 		for node: Node in instance.find_children("*", "MeshInstance3D", true, false):
 			var mesh: MeshInstance3D = node as MeshInstance3D
+			if mesh.mesh == null:
+				continue
+			triangles += mesh.mesh.get_faces().size() / 3
+			var world: AABB = mesh.global_transform * mesh.get_aabb()
+			bounds = world if first else bounds.merge(world)
+			first = false
 			var material: BaseMaterial3D = \
 				mesh.get_surface_override_material(0) as BaseMaterial3D
-			if material != null:
-				sample = material.albedo_color
-				break
-		albedos[id] = sample
+			if material != null and colour == Color.WHITE:
+				colour = material.albedo_color
+		bodies[id] = {"bounds": bounds, "colour": colour, "tris": triangles}
 		# Libération DIFFÉRÉE : le renderer (même factice) référence encore
 		# les matériaux par instance pendant la frame — un free() immédiat
 		# le fait crier « material is null » à la frame suivante.
 		instance.queue_free()
 		await _settle(2)
-	var red: Color = albedos[&"char.raider_red"]
-	var blue: Color = albedos[&"char.raider_blue"]
-	var black: Color = albedos[&"char.raider_black"]
-	check(red.r > red.b + 0.1, "la braise tire au rouge (%s)" % red)
-	check(blue.b > blue.r + 0.1, "l'azur tire au bleu (%s)" % blue)
-	check(black.r < 0.4 and black.b < 0.4, "l'obsidienne est sombre (%s)" % black)
+
+	# 1. Les TAILLES respectent les bandes de VISUAL_ASSET_BIBLE §14.1-14.3.
+	var red_h: float = (bodies[&"char.raider_red"]["bounds"] as AABB).size.y
+	var blue_h: float = (bodies[&"char.raider_blue"]["bounds"] as AABB).size.y
+	var black_h: float = (bodies[&"char.raider_black"]["bounds"] as AABB).size.y
+	check(red_h >= 1.40 and red_h <= 1.52,
+		"braise : %.2f m (bible §14.1 : 1,40-1,52)" % red_h)
+	check(blue_h >= 1.58 and blue_h <= 1.72,
+		"azur : %.2f m (bible §14.2 : 1,58-1,72)" % blue_h)
+	check(black_h >= 1.85 and black_h <= 2.05,
+		"obsidienne : %.2f m (bible §14.3 : 1,85-2,05)" % black_h)
+	# 2. Et elles sont ORDONNÉES : on les distingue à la taille seule.
+	check(red_h < blue_h and blue_h < black_h,
+		"trois tailles croissantes : %.2f < %.2f < %.2f"
+		% [red_h, blue_h, black_h])
+	# 3. Le briseur est le plus LARGE — §14.3, « torse très large ».
+	var red_w: float = (bodies[&"char.raider_red"]["bounds"] as AABB).size.x
+	var black_w: float = (bodies[&"char.raider_black"]["bounds"] as AABB).size.x
+	check(black_w > red_w * 1.1,
+		"le briseur est nettement plus large (%.2f m contre %.2f m)"
+		% [black_w, red_w])
+	# 4. Les GÉOMÉTRIES diffèrent : ce ne sont pas trois copies teintées.
+	var red_tris: int = int(bodies[&"char.raider_red"]["tris"])
+	var blue_tris: int = int(bodies[&"char.raider_blue"]["tris"])
+	var black_tris: int = int(bodies[&"char.raider_black"]["tris"])
+	check(red_tris != blue_tris or blue_tris != black_tris,
+		"les maillages diffèrent (%d / %d / %d triangles)"
+		% [red_tris, blue_tris, black_tris])
+	# 5. La couleur reste un marqueur de faction lisible, en plus du corps.
+	var red_c: Color = bodies[&"char.raider_red"]["colour"]
+	var blue_c: Color = bodies[&"char.raider_blue"]["colour"]
+	var black_c: Color = bodies[&"char.raider_black"]["colour"]
+	check(red_c != blue_c and blue_c != black_c,
+		"trois palettes distinctes (%s / %s / %s)" % [red_c, blue_c, black_c])
+	# 6. §5.4 : chaque exemplaire a SES matériaux, jamais partagés.
+	check(red_c != Color.WHITE,
+		"les matériaux sont bien des surcharges d'instance")
 
 
 func test_the_real_raider_mounts_the_model_and_keeps_its_gameplay_volumes() -> void:

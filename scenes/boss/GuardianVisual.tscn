@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3]
+
+; Phase H lot H.1 — hero asset ORIGINAL du Gardien de l'Orage.
+; Modèle produit par tools/blender/make_storm_guardian.py (création du
+; projet, procédurale, seed 20260803) : six appuis, dos voûté de pierre,
+; trois plaques de céramique sur la tête, épaules de bronze, queue
+; segmentée à fourche de terre, anneau vertical incomplet en trois
+; segments, noyau fendu au sternum. Cotes MESURÉES en sortie de Blender :
+; 9,58 m de long · 5,30 m de large · 5,60 m de haut — dans les bandes de
+; VISUAL_ASSET_BIBLE §15.1 (8-10 · 5-7 · 5,2-6).
+;
+; La tête pointe vers -Z après conversion Y-up : c'est l'avant du `Pivot`
+; de StormGuardian, qui s'oriente avec atan2(-x, -z).
+
+[ext_resource type="Script" path="res://scripts/boss/guardian_visual.gd" id="1_visual"]
+[ext_resource type="PackedScene" path="res://assets/characters/boss/SK_StormGuardian.glb" id="2_model"]
+
+[node name="GuardianVisual" type="Node3D"]
+script = ExtResource("1_visual")
+
+[node name="Model" parent="." instance=ExtResource("2_model")]

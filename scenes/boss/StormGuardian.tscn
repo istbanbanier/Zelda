@@ -1,9 +1,18 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
-; GARDIEN DE L'ORAGE (§16) — graybox : quadrupède trapu de 4,2 m au garrot
-; pour 6,4 m de long, dos hérissé de deux cristaux conducteurs (§16.4) et
-; noyau cyan sous l'armure (§16.3). Deux hurtbox NON chevauchantes : le
-; CORPS (armuré) et le NOYAU (nu seulement une fois l'armure percée).
+; GARDIEN DE L'ORAGE (§16). Phase H lot H.1 : le graybox a laissé place au
+; HERO ASSET original (scenes/boss/GuardianVisual.tscn, modèle produit par
+; tools/blender/make_storm_guardian.py). Les volumes de gameplay ont suivi
+; le modèle, pas l'inverse — une hurtbox qui ne recouvre pas le corps visible
+; est un mensonge de combat.
+;
+; Cotes du modèle, mesurées en sortie de Blender : 9,58 m de long · 5,30 m
+; de large · 5,60 m de haut (bible §15.1 : 8-10 · 5-7 · 5,2-6).
+; La collision ne couvre que la MASSE CENTRALE : ni la tête ni la queue ne
+; doivent bloquer le joueur qui contourne la bête.
+;
+; Deux hurtbox NON chevauchantes : le CORPS (armuré) et le NOYAU, au
+; sternum, nu seulement une fois l'armure percée.
 
 [ext_resource type="Script" path="res://scripts/boss/storm_guardian.gd" id="1_boss"]
 [ext_resource type="Script" path="res://scripts/components/health_component.gd" id="2_health"]
@@ -14,32 +23,40 @@
 [ext_resource type="Resource" path="res://resources/combat/boss/guardian_swipe.tres" id="7_swipe"]
 [ext_resource type="Resource" path="res://resources/combat/boss/guardian_slam.tres" id="8_slam"]
 [ext_resource type="Resource" path="res://resources/combat/boss/guardian_arc.tres" id="9_arc"]
+[ext_resource type="PackedScene" path="res://scenes/boss/GuardianVisual.tscn" id="10_visual"]
 
 [sub_resource type="BoxShape3D" id="BodyShape"]
-size = Vector3(3.2, 4.2, 6.4)
+size = Vector3(4.6, 3.2, 5.4)
 
 [sub_resource type="BoxShape3D" id="ClawSweep"]
-size = Vector3(4.2, 2.6, 3.4)
+size = Vector3(5.0, 3.0, 3.6)
 
 [sub_resource type="BoxShape3D" id="CoreShape"]
-size = Vector3(1.6, 1.6, 1.6)
+size = Vector3(1.3, 1.3, 0.9)
+
+[sub_resource type="BoxShape3D" id="CrystalShape"]
+size = Vector3(0.9, 1.7, 0.9)
 
 [node name="StormGuardian" type="CharacterBody3D" groups=["enemies", "damageable", "lock_on_targets", "boss"]]
 collision_layer = 4
 collision_mask = 7
 script = ExtResource("1_boss")
 
+; La boîte DOIT toucher le sol : centrée à 1,6 m pour 3,2 m de haut, elle
+; part de zéro. Posée sur la masse centrale (2,4 m), son bas flottait à
+; 0,80 m — le Gardien ne trouvait plus le sol et tombait indéfiniment,
+; ce qui l'a rendu plus LENT en phase 3 qu'en phase 1 (mesuré).
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 shape = SubResource("BodyShape")
 
 [node name="Pivot" type="Node3D" parent="."]
 
-[node name="BodyMesh" type="MeshInstance3D" parent="Pivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+[node name="GuardianVisual" parent="Pivot" instance=ExtResource("10_visual")]
 
+; Les antérieurs frappent DEVANT : la tête est à -Z, la griffe aussi.
 [node name="ClawHitbox" type="Area3D" parent="Pivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 3.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -4.6)
 collision_layer = 16
 collision_mask = 32
 script = ExtResource("5_hitbox")
@@ -50,7 +67,7 @@ instigator_path = NodePath("../..")
 shape = SubResource("ClawSweep")
 
 [node name="BodyHurtbox" type="Area3D" parent="Pivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
 collision_layer = 32
 collision_mask = 0
 script = ExtResource("4_hurtbox")
@@ -60,9 +77,10 @@ health_path = NodePath("../../HealthComponent")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Pivot/BodyHurtbox"]
 shape = SubResource("BodyShape")
 
-; Le NOYAU : sous le poitrail, exposé seulement armure percée (§16.3).
+; Le NOYAU : au sternum du modèle, exposé seulement armure percée (§16.3).
+; Position relevée sur la géométrie : Blender (0 ; 3,12 ; 1,90) -> Y-up.
 [node name="CoreHurtbox" type="Area3D" parent="Pivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 2.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, -3.12)
 collision_layer = 32
 collision_mask = 0
 script = ExtResource("4_hurtbox")
@@ -75,7 +93,7 @@ shape = SubResource("CoreShape")
 
 ; Deux cristaux conducteurs sur le dos (§16.4), masqués hors phase 2.
 [node name="CrystalA" type="Area3D" parent="Pivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 4.3, -1.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.92, 3.9, 0.55)
 collision_layer = 32
 collision_mask = 0
 script = ExtResource("4_hurtbox")
@@ -84,14 +102,10 @@ weak_point_multiplier = 1.0
 health_path = NodePath("../../HealthComponent")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Pivot/CrystalA"]
-shape = SubResource("CoreShape")
-
-[node name="CrystalAMesh" type="MeshInstance3D" parent="Pivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 4.3, -1.2)
-visible = false
+shape = SubResource("CrystalShape")
 
 [node name="CrystalB" type="Area3D" parent="Pivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 4.3, -1.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.92, 3.9, 0.55)
 collision_layer = 32
 collision_mask = 0
 script = ExtResource("4_hurtbox")
@@ -100,11 +114,7 @@ weak_point_multiplier = 1.0
 health_path = NodePath("../../HealthComponent")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Pivot/CrystalB"]
-shape = SubResource("CoreShape")
-
-[node name="CrystalBMesh" type="MeshInstance3D" parent="Pivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 4.3, -1.2)
-visible = false
+shape = SubResource("CrystalShape")
 
 [node name="HealthComponent" type="Node" parent="."]
 script = ExtResource("2_health")

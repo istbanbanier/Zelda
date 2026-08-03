@@ -266,8 +266,9 @@ func _spawn_boss() -> void:
 		paths.append(NodePath("../%s" % pylon.name))
 	_boss.pylon_paths = paths
 	_boss.arena_center = Vector3.ZERO
-	# Marge : le Gardien fait 3,2 m de large, il ne colle pas au mur.
-	_boss.arena_radius = ARENA_RADIUS - 2.6
+	# Marge : le hero asset fait 5,3 m de large et 9,58 m de long. La bête
+	# ne doit jamais racler le mur — §16.6 l'interdit explicitement.
+	_boss.arena_radius = ARENA_RADIUS - 3.4
 	_boss.position = BOSS_SPAWN
 	add_child(_boss)
 	if _player != null:

@@ -1964,3 +1964,86 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > confirmation avant d'écraser une partie terminée.
 > **PROCHAINE ACTION (G.4)** : le run complet de 25-40 minutes du Gate G,
 > du spawn à la victoire, sans debug — puis l'audit contradictoire.
+
+## 2026-08-03 — Phase H, lot H.1 : le Gardien cesse d'être une capsule
+
+> Le boss de la Phase G était un `CharacterBody3D` avec des `MeshInstance3D`
+> VIDES : il n'avait littéralement aucun corps visible. H.1 lui en donne un,
+> et c'est une création du projet — `tools/blender/make_storm_guardian.py`
+> bâtit la bête-machine de VISUAL_ASSET_BIBLE §15.1 depuis des primitives,
+> avec un seed fixe : six appuis dont deux antérieurs lourds, dos voûté,
+> tête à trois plaques de céramique, épaules de bronze, queue segmentée
+> terminée par une fourche de terre, anneau vertical incomplet en trois
+> segments, noyau fendu au sternum. Aucun pack externe, aucune anatomie
+> réelle citable.
+> 27 meshes NOMMÉS, parce que les phases 2 et 3 les manipulent un par un.
+> Les volumes de combat ont été replacés SUR le modèle, et un test refuse
+> maintenant toute hurtbox qui ne serait pas dans le corps visible.
+> Trois défauts trouvés en mesurant : `matrix_world` périmée après un
+> reparentage (Blender annonçait 9,58 m quand Godot en mesurait 14,50) ; le
+> parentage « BONE » qui accroche à la QUEUE de l'os (remplacé par des
+> groupes de sommets à poids 1) ; et une boîte de collision dont le bas
+> flottait à 0,80 m — le Gardien tombait indéfiniment, ce qui le rendait
+> plus lent en phase 3 qu'en phase 1.
+> Densité assumée : 6 324 triangles contre un plafond de 110-160k. La
+> silhouette et la structure y sont, le détail de surface non. C'est au
+> manifeste, pas caché.
+> **PROCHAINE ACTION (H.2)** : les trois pillards en silhouettes réellement
+> distinctes — l'ordre de la Phase H interdit qu'une variante de couleur
+> tienne lieu de famille visuelle. Puis le colosse (H.3, modèle original
+> rigged : « un humain agrandi ne constitue pas un colosse ») et le
+> chasseur quadrupède (H.4, corps inférieur non équin).
+
+## 2026-08-03 — Phase H, lot H.2 : trois pillards, trois corps
+
+> Les trois pillards étaient le même modèle acheté, teinté trois fois —
+> exactement ce que l'ordre de la Phase H interdit. Ils ont désormais trois
+> géométries construites par le projet : le braise voûté aux avant-bras
+> longs et aux excroissances tournées vers l'arrière, l'azur droit aux
+> épaules segmentées en parenthèses, le briseur bas et très large à la
+> visière fendue et aux deux plaques d'épaule inégales.
+> Le SQUELETTE, lui, est celui qui existait : 65 os UAL, poids
+> automatiques. `AL_RaiderStates.res` s'applique donc sans retargeting —
+> refaire les rigs aurait voulu dire réécrire toutes les animations.
+> Le test qui vérifiait des teintes vérifie maintenant des corps : tailles
+> dans les bandes de la bible, ordonnées, briseur le plus large, maillages
+> distincts. La couleur reste un marqueur de faction, plus une preuve.
+> Deux défauts trouvés en mesurant : l'isolation des matériaux n'était
+> déclenchée que par une teinte, si bien que le télégraphe d'attaque n'avait
+> plus rien où écrire une fois la teinte supprimée ; et l'échelle partait
+> DEUX fois vers glTF (cuite dans les sommets par `export_apply`, puis
+> reportée par le nœud), Blender annonçant 1,42 m quand Godot mesurait 1,17.
+> Règle qui en sort : une cote se vérifie dans Godot, jamais sur le log de
+> l'outil qui l'a produite.
+> Deux runs de validation ont aussi été perdus parce que j'ai ajouté des
+> scènes référençant des `.glb` non importés PENDANT le run. Le dépôt doit
+> rester figé entre le lancement et le verdict.
+> **PROCHAINE ACTION (H.3)** : le colosse des ravins — modèle original
+> rigged, torse incliné, bassin massif, bras ASYMÉTRIQUES dont un couvert
+> d'une croissance rocheuse, nodule minéral pâle entre omoplate et nuque
+> comme point faible. « Un humain agrandi ne constitue pas un colosse. »
+
+## 2026-08-03 — Phase H, lots H.3 et H.4 : colosse et chasseur BÂTIS
+
+> Les deux dernières familles n'existaient qu'en boîtes de graybox — une
+> capsule de 3,8 m pour le colosse, deux boîtes pour le chasseur. Elles ont
+> maintenant des modèles : `tools/blender/make_creatures.py`.
+> Le colosse (3,97 m, bande 3,7-4,3) porte ce que la bible §14.4 demande :
+> torse incliné, bassin massif, bras ASYMÉTRIQUES dont un couvert d'une
+> croissance rocheuse, petites jambes puissantes, et le nodule minéral pâle
+> entre omoplate et nuque qui est son point faible. Aucune massue : ses
+> mains servent à arracher et à lancer.
+> Le chasseur (3,20 m de haut, 4,69 m de long) a un corps inférieur bas et
+> allongé, quatre pattes à trois doigts larges, les épaules avant plus
+> hautes que la croupe, une queue courte en lames — ni sabots, ni crinière,
+> ni croupe de cheval. Son torse supérieur naît EN AVANT du bassin
+> inférieur, ce qui le distingue d'un centaure classique.
+> **LIMITE À DIRE FRANCHEMENT** : les deux `.glb` sont dans le dépôt,
+> valides à l'inspection, mais AUCUNE SCÈNE NE LES MONTE encore. En jeu,
+> le colosse et le chasseur restent des boîtes. Le travail n'est pas perdu,
+> il n'est pas fini.
+> **PROCHAINE ACTION** : monter les deux modèles dans `RavineTroll.tscn` et
+> `CentaurHunter.tscn` (entrées `char.ravine_troll` et `char.centaur_hunter`
+> au registre, `CharacterVisual` sous le Pivot comme les pillards, graybox
+> masqué, volumes de combat replacés SUR la géométrie et vérifiés par un
+> test du même type que `test_the_combat_volumes_sit_inside_the_body_you_can_see`).

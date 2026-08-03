@@ -201,7 +201,12 @@ func test_the_crystals_appear_in_phase_two_and_open_the_core() -> void:
 	boss.debug_force_state(StormGuardian.State.PHASE1)
 	var crystal_a: HurtboxComponent = boss.get_node("Pivot/CrystalA") \
 		as HurtboxComponent
-	var crystal_mesh: Node3D = boss.get_node("Pivot/CrystalAMesh") as Node3D
+	# Phase H : les cristaux sont des meshes du HERO ASSET, plus des boîtes
+	# graybox posées à côté. C'est donc le modèle qu'on interroge.
+	var visual: GuardianVisual = boss.get_node("Pivot/GuardianVisual") \
+		as GuardianVisual
+	var crystal_mesh: Node3D = visual.mesh("CrystalA")
+	check_not_null(crystal_mesh, "le cristal A existe dans le modèle")
 	check(not crystal_a.monitorable, "en phase 1, les cristaux sont dedans")
 	check(not crystal_mesh.visible, "…et invisibles")
 

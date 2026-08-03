@@ -260,9 +260,17 @@ func test_the_turquoise_tint_touches_the_outfit_and_never_the_skin() -> void:
 				surface) as BaseMaterial3D
 			var base: BaseMaterial3D = (mesh.mesh.surface_get_material(surface)
 				if mesh.mesh != null else null) as BaseMaterial3D
+			# Phase H lot H.2 : l'isolation des matériaux est devenue
+			# INCONDITIONNELLE (§5.4 — deux exemplaires ne partagent jamais
+			# leur matériau, et le télégraphe de combat a besoin d'une
+			# surcharge où écrire). La peau a donc désormais une surcharge :
+			# ce qui doit rester vrai, et qui est le SENS de ce test, c'est
+			# qu'elle n'est pas TEINTÉE — même couleur, même texture.
 			if base != null and base.resource_name == "MI_Regular_Male" \
 					and override != null:
-				skin_untouched = false
+				if not override.albedo_color.is_equal_approx(base.albedo_color) \
+						or override.albedo_texture != base.albedo_texture:
+					skin_untouched = false
 			if override != null and override.albedo_texture != null \
 					and override.albedo_texture.resource_path \
 					.ends_with("T_Ranger_Hero_BaseColor.png"):
@@ -271,7 +279,8 @@ func test_the_turquoise_tint_touches_the_outfit_and_never_the_skin() -> void:
 					"substitution sans teinte résiduelle : couleur blanche")
 	check(substituted >= 1,
 		"la tenue porte la texture dérivée à capuche turquoise (%d)" % substituted)
-	check(skin_untouched, "la peau (MI_Regular_Male) n'est JAMAIS teintée")
+	check(skin_untouched,
+		"la peau (MI_Regular_Male) garde SA couleur et SA texture")
 	hero.get_parent().remove_child(hero)
 	hero.queue_free()
 	await _settle(2)

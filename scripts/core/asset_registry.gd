@@ -21,6 +21,9 @@ const CATALOG: Dictionary = {
 	&"char.raider_red": "res://scenes/characters/RaiderRedVisual.tscn",
 	&"char.raider_blue": "res://scenes/characters/RaiderBlueVisual.tscn",
 	&"char.raider_black": "res://scenes/characters/RaiderBlackVisual.tscn",
+	# Boss — LIVRÉ (Phase H lot H.1) : hero asset ORIGINAL du projet, produit
+	# par `tools/blender/make_storm_guardian.py`. Pas un pack externe.
+	&"char.boss_guardian": "res://scenes/boss/GuardianVisual.tscn",
 	# Environnement — LIVRÉ (ART-Q0, packs Quaternius CC0, ATTRIBUTIONS.md).
 	&"env.tree.large": "res://scenes/environment/TreeLarge.tscn",
 	&"env.tree.medium": "res://scenes/environment/TreeMedium.tscn",

@@ -67,8 +67,13 @@ func _ready() -> void:
 	# le même traitement de matériaux que le costume de base.
 	for part_scene: PackedScene in modular_parts:
 		_graft_part(part_scene)
-	if tint != Color.WHITE or not albedo_substitutions.is_empty():
-		_apply_tint()
+	# TOUJOURS : §5.4 — « deux exemplaires ne partagent jamais leur
+	# matériau ». La duplication n'était déclenchée que par une teinte ou
+	# une substitution ; les modèles de la Phase H portent leur couleur
+	# dans leur propre matériau, donc plus de teinte, donc plus de
+	# duplication — et le télégraphe de combat, qui écrit dans les
+	# matériaux d'instance, n'avait soudain plus rien où écrire.
+	_isolate_materials()
 
 
 ## Greffe les maillages skinnés d'une pièce modulaire sur le squelette du
@@ -103,7 +108,11 @@ func _notification(what: int) -> void:
 					mesh.set_surface_override_material(surface, null)
 
 
-func _apply_tint() -> void:
+## Chaque surface reçoit une COPIE de son matériau, en surcharge
+## d'instance. C'est la condition de §5.4, et c'est aussi ce qui donne au
+## télégraphe d'attaque et au flash de dégâts une surface où écrire sans
+## repeindre tous les pillards de la scène.
+func _isolate_materials() -> void:
 	for node: Node in find_children("*", "MeshInstance3D", true, false):
 		var mesh: MeshInstance3D = node as MeshInstance3D
 		for surface: int in range(mesh.mesh.get_surface_count()
@@ -119,8 +128,6 @@ func _apply_tint() -> void:
 					or tint_material_filter.has(material.resource_name))
 			var wants_shrink: bool = \
 				shrink_materials.has(material.resource_name)
-			if substitution == null and not wants_tint and not wants_shrink:
-				continue
 			var tinted: BaseMaterial3D = material.duplicate() as BaseMaterial3D
 			if substitution != null:
 				tinted.albedo_texture = substitution
