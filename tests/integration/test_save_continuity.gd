@@ -91,6 +91,9 @@ func test_a_taken_pickup_never_respawns_after_reload() -> void:
 	await _settle(10)
 	var player: PlayerController = valley.player()
 	var pickup: WeaponPickup = valley.get_node("Camp/ClubPickup") as WeaponPickup
+	# L'identifiant est relevé AVANT le ramassage : le pickup se libère
+	# lui-même en se donnant, et l'interroger ensuite lit un objet mort.
+	var taken_id: StringName = pickup.pickup_id
 	check(pickup.interact(player), "le gourdin se ramasse")
 	check_equal(player.inventory().weapon_count(), 2, "épée + gourdin en main")
 	await _settle(2)   # l'instantané part sur le signal picked_up
@@ -110,12 +113,12 @@ func test_a_taken_pickup_never_respawns_after_reload() -> void:
 	for node: Node in reloaded.find_children("*", "WeaponPickup", true, false):
 		if not node.is_in_group("interactable"):
 			continue
-		if (node as WeaponPickup).pickup_id == pickup.pickup_id:
+		if (node as WeaponPickup).pickup_id == taken_id:
 			respawned = true
 		else:
 			others += 1
 	check(not respawned,
-		"le pickup RAMASSÉ (%s) ne réapparaît pas au sol" % pickup.pickup_id)
+		"le pickup RAMASSÉ (%s) ne réapparaît pas au sol" % taken_id)
 	check(others >= 1,
 		"…et les pickups jamais touchés sont toujours là (%d)" % others)
 	var clubs: int = 0
