@@ -1,0 +1,18 @@
+{
+  "commit": "35aaf52669a59fad4e8e7f4f2f832d6887881bee",
+  "display_server": "X11",
+  "distinct_colors_sampled": 232,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 40,
+  "height": 1080,
+  "label": "lineup_matiere",
+  "luma_mean": 0.5322,
+  "luma_stddev": 0.2113,
+  "png": "evidence/phaseH/lineup_matiere.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/tests/SilhouetteLineup.tscn",
+  "timestamp_utc": "2026-08-03 11:40:33",
+  "width": 1920
+}

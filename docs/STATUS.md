@@ -547,7 +547,10 @@ automatisée** avant qu'une seule salle n'existe.
 | Les deux créatures regardent le côté où elles frappent | **Validé** | `test_both_creatures_face_the_direction_they_strike` |
 | Envergure du colosse (4,06 m) plus large que sa capsule (rayon 1,1 m) | **Limite assumée** | règle ART-P0 : le modèle est un visuel, la capsule reste l'autorité de gameplay. Le joueur peut passer « à travers » les bras tendus |
 | Animations propres au colosse et au chasseur | **Non commencé** | rigs livrés (8 et 6 os), aucun clip — les deux créatures gardent leur pose de repos |
-| Silhouettes des cinq familles en aplat noir à 25 m (§30.3 de la bible) | **EN ATTENTE** (verdict humain) | `docs/MANUAL_VALIDATION.md` |
+| Silhouettes des cinq familles en aplat noir à 25 m (§30.3 de la bible) | **FAIL** | `evidence/phaseH/lineup_silhouettes.png` : la ligne des sept sujets est capturée, mais plusieurs corps se lisent en pièces détachées (ISS-018). Le critère ne peut pas être jugé tant que l'assemblage n'est pas fini |
+| Assemblage des volumes (aucune articulation ouverte) | **PARTIEL** | passe de mordant faite sur les trois pillards et le tronc du colosse ; avant-bras et pieds du colosse, chasseur entier et extrémités du Gardien restent ouverts (ISS-018, S2) |
+| Bibliothèque de silhouettes étendue à SEPT sujets (héros + cinq familles + boss) | **Fonctionnel** | `test_the_silhouette_lineup_mounts_every_character_of_the_game` : personne ne chevauche son voisin, le plus grand fait plus du triple du plus petit |
+| Captures depuis le VRAI moteur | **Fonctionnel** | `evidence/phaseH/lineup_matiere.png` et `lineup_silhouettes.png`, avec leurs manifestes JSON |
 
 ## Checklist finale (§26) — état réel
 

@@ -83,8 +83,12 @@ def add_box(name: str, size, location, rotation=(0.0, 0.0, 0.0)):
 
 
 def limb(name: str, start: Vector, end: Vector, girth: float):
+    """Segment allongé d'un diamètre : les pièces se RECOUVRENT au lieu de
+    se frôler. Sans ce mordant la créature se lit comme un tas de boîtes —
+    défaut vu sur la capture du vrai moteur, invisible aux boîtes
+    englobantes des tests."""
     delta = end - start
-    obj = add_box(name, (girth, girth, max(0.02, delta.length) * 0.5),
+    obj = add_box(name, (girth, girth, (max(0.02, delta.length) + girth) * 0.5),
                   tuple((start + end) * 0.5))
     obj.rotation_mode = "QUATERNION"
     obj.rotation_quaternion = delta.to_track_quat("Z", "Y")
@@ -137,6 +141,28 @@ def scale_creature(objects: list, factor: float) -> None:
         obj.select_set(True)
     bpy.context.view_layer.objects.active = objects[0]
     bpy.ops.object.transform_apply(location=True, rotation=False, scale=True)
+    bpy.context.view_layer.update()
+
+
+def apply_transforms(objects: list) -> None:
+    """APPLIQUE la transformation de chaque maillage dans ses sommets.
+
+    Sans cela le modèle EXPLOSE à l'affichage, et aucun test de géométrie ne
+    le voit : un maillage SKINNÉ ignore la transformation de son nœud —
+    glTF le place par ses joints et ses matrices de liaison inverse. Chaque
+    pièce posée par `obj.location` se rabattait donc sur la position de son
+    os, et la créature arrivait dans Godot en tas de boîtes éparpillées.
+    Constaté sur une CAPTURE du vrai moteur, pas sur une assertion : les
+    boîtes englobantes, elles, restaient dans les bonnes bandes.
+
+    C'est aussi ce qu'exigeait déjà `.claude/rules/assets.md` — « rotation et
+    échelle appliquées avant export ».
+    """
+    bpy.ops.object.select_all(action="DESELECT")
+    for obj in objects:
+        obj.select_set(True)
+    bpy.context.view_layer.objects.active = objects[0]
+    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
     bpy.context.view_layer.update()
 
 
@@ -215,15 +241,15 @@ def build_colossus() -> None:
 
     # Bassin MASSIF, bas. C'est lui qui porte la lecture « colosse » : la
     # masse est en bas, pas en haut comme sur un humain agrandi.
-    hide.append(add_box("Pelvis", (0.86, 0.62, 0.52), (0.0, 0.0, 1.62)))
+    hide.append(add_box("Pelvis", (0.86, 0.66, 0.78), (0.0, 0.0, 1.58)))
     # Torse INCLINÉ vers l'avant, épaules très larges.
-    hide.append(add_box("TorsoLow", (0.92, 0.60, 0.46),
-                        (0.0, -0.12, 2.28), (math.radians(-16.0), 0, 0)))
-    hide.append(add_box("TorsoHigh", (1.10, 0.62, 0.48),
-                        (0.0, -0.34, 2.94), (math.radians(-22.0), 0, 0)))
+    hide.append(add_box("TorsoLow", (0.94, 0.66, 0.86),
+                        (0.0, -0.12, 2.24), (math.radians(-16.0), 0, 0)))
+    hide.append(add_box("TorsoHigh", (1.14, 0.68, 0.88),
+                        (0.0, -0.30, 2.86), (math.radians(-22.0), 0, 0)))
     # Tête ENFONCÉE entre les épaules, mais le visage reste lisible.
-    hide.append(add_box("Head", (0.40, 0.46, 0.36),
-                        (0.0, -0.62, 3.24), (math.radians(-10.0), 0, 0)))
+    hide.append(add_box("Head", (0.46, 0.56, 0.50),
+                        (0.0, -0.56, 3.22), (math.radians(-10.0), 0, 0)))
     hide.append(add_box("Brow", (0.44, 0.16, 0.10),
                         (0.0, -0.84, 3.36), (math.radians(-14.0), 0, 0)))
     hide.append(add_box("Jaw", (0.32, 0.30, 0.16), (0.0, -0.80, 3.02)))
@@ -242,7 +268,7 @@ def build_colossus() -> None:
     # BRAS ASYMÉTRIQUES : le droit porte une croissance rocheuse, le gauche
     # est nu. L'asymétrie est le signe de reconnaissance de la famille.
     for side, rocky in ((-1, False), (1, True)):
-        shoulder = Vector((side * 1.02, -0.28, 2.98))
+        shoulder = Vector((side * 0.52, -0.26, 2.92))
         elbow = Vector((side * 1.44, -0.16, 2.02))
         wrist = Vector((side * 1.52, -0.34, 1.12))
         girth = 0.30 if not rocky else 0.36
@@ -266,8 +292,8 @@ def build_colossus() -> None:
 
     # Petites jambes PUISSANTES : courtes, épaisses, très écartées.
     for side in (-1, 1):
-        hip = Vector((side * 0.52, 0.0, 1.44))
-        knee = Vector((side * 0.60, 0.06, 0.80))
+        hip = Vector((side * 0.34, 0.0, 1.62))
+        knee = Vector((side * 0.56, 0.06, 0.84))
         ankle = Vector((side * 0.62, -0.02, 0.22))
         hide.append(limb("Thigh%d" % (side + 1), hip, knee, 0.34))
         hide.append(limb("Calf%d" % (side + 1), knee, ankle, 0.30))
@@ -299,6 +325,7 @@ def build_colossus() -> None:
 
     scale_creature(list(meshes.values()), TROLL_SCALE)
     rest_on_ground(list(meshes.values()))
+    apply_transforms(list(meshes.values()))
     k = TROLL_SCALE
     armature = new_armature("TrollArmature", [
         ("Root", (0, 0, 0), (0, 0.5 * k, 0), None),
@@ -335,8 +362,8 @@ def build_hunter() -> None:
 
     # Corps inférieur : cage thoracique LONGUE et basse, épaules avant plus
     # hautes que la croupe. Aucune croupe de cheval, aucune crinière.
-    spans = [(1.10, 0.62, 0.52), (1.16, 0.60, 0.58), (1.08, 0.58, 0.56),
-             (0.94, 0.54, 0.50), (0.78, 0.50, 0.42)]
+    spans = [(1.10, 0.92, 0.62), (1.16, 0.92, 0.68), (1.08, 0.90, 0.66),
+             (0.94, 0.86, 0.60), (0.78, 0.82, 0.52)]
     for i, (w, d, h) in enumerate(spans):
         y = 1.45 - i * 0.72
         z = 1.38 - i * 0.055        # l'avant est PLUS HAUT que l'arrière
@@ -351,8 +378,8 @@ def build_hunter() -> None:
     # Quatre pattes à TROIS doigts larges. Pas de sabot.
     for side in (-1, 1):
         for pair, (y, hip_z, upper, lower) in enumerate(
-                ((1.24, 1.12, 0.62, 0.56), (-1.62, 1.02, 0.58, 0.52))):
-            hip = Vector((side * 0.52, y, hip_z))
+                ((1.24, 1.20, 0.68, 0.58), (-1.62, 1.10, 0.64, 0.54))):
+            hip = Vector((side * 0.38, y, hip_z))
             knee = Vector((side * 0.58, y - 0.14, hip_z - upper))
             ankle = Vector((side * 0.56, y + 0.06, hip_z - upper - lower))
             flesh.append(limb("Upper%d_%d" % (side + 1, pair), hip, knee, 0.17))
@@ -374,14 +401,15 @@ def build_hunter() -> None:
 
     # Torse supérieur : il naît EN AVANT du bassin inférieur et reste
     # INCLINÉ. C'est ce qui distingue la créature d'un centaure classique.
-    flesh.append(add_box("TorsoLow", (0.44, 0.34, 0.42),
-                         (0.0, 1.62, 1.86), (math.radians(-18.0), 0, 0)))
-    flesh.append(add_box("TorsoHigh", (0.50, 0.32, 0.44),
-                         (0.0, 1.48, 2.62), (math.radians(-14.0), 0, 0)))
+    flesh.append(add_box("TorsoLow", (0.50, 0.44, 0.78),
+                         (0.0, 1.56, 1.76), (math.radians(-18.0), 0, 0)))
+    flesh.append(add_box("TorsoHigh", (0.54, 0.40, 0.82),
+                         (0.0, 1.50, 2.42), (math.radians(-14.0), 0, 0)))
     carapace.append(add_box("Chestplate", (0.46, 0.14, 0.40),
                             (0.0, 1.24, 2.52), (math.radians(-12.0), 0, 0)))
     # Tête ÉTROITE à plaque frontale et deux mandibules latérales.
-    flesh.append(add_box("Head", (0.20, 0.34, 0.24), (0.0, 1.32, 3.06)))
+    flesh.append(add_box("Neck", (0.24, 0.26, 0.34), (0.0, 1.40, 2.86)))
+    flesh.append(add_box("Head", (0.26, 0.40, 0.30), (0.0, 1.30, 3.02)))
     carapace.append(add_box("Frontplate", (0.24, 0.12, 0.28),
                             (0.0, 1.16, 3.14), (math.radians(-16.0), 0, 0)))
     for side in (-1, 1):
@@ -421,6 +449,7 @@ def build_hunter() -> None:
 
     scale_creature(list(meshes.values()), HUNTER_SCALE)
     rest_on_ground(list(meshes.values()))
+    apply_transforms(list(meshes.values()))
     k = HUNTER_SCALE
     armature = new_armature("HunterArmature", [
         ("Root", (0, 0, 0), (0, 0.5 * k, 0), None),

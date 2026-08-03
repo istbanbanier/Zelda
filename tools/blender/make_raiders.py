@@ -35,6 +35,8 @@ Sorties :
 import math
 import os
 
+maxf = max
+
 import bmesh
 import bpy
 from mathutils import Vector
@@ -88,15 +90,42 @@ def add_box(name: str, size, location, rotation=(0.0, 0.0, 0.0)):
 
 
 def limb(name: str, start: Vector, end: Vector, girth: float):
-    """Volume tendu entre deux points — un membre suit son os."""
+    """Volume tendu entre deux points — un membre suit son os.
+
+    Il est allongé d'un demi-diamètre à chaque bout : sans ce mordant, les
+    segments se touchent sans se recouvrir et le corps se désassemble à
+    l'œil dès qu'on le regarde de trois quarts.
+    """
     delta = end - start
-    length = max(0.02, delta.length)
+    length = max(0.02, delta.length) + girth
     centre = (start + end) * 0.5
     obj = add_box(name, (girth, girth, length * 0.5), tuple(centre))
     # Oriente +Z local le long du segment.
     obj.rotation_mode = "QUATERNION"
     obj.rotation_quaternion = delta.to_track_quat("Z", "Y")
     return obj
+
+
+def apply_transforms(objects: list) -> None:
+    """APPLIQUE la transformation de chaque maillage dans ses sommets.
+
+    Sans cela le modèle EXPLOSE à l'affichage, et aucun test de géométrie ne
+    le voit : un maillage SKINNÉ ignore la transformation de son nœud —
+    glTF le place par ses joints et ses matrices de liaison inverse. Chaque
+    pièce posée par `obj.location` se rabattait donc sur la position de son
+    os, et la créature arrivait dans Godot en tas de boîtes éparpillées.
+    Constaté sur une CAPTURE du vrai moteur, pas sur une assertion : les
+    boîtes englobantes, elles, restaient dans les bonnes bandes.
+
+    C'est aussi ce qu'exigeait déjà `.claude/rules/assets.md` — « rotation et
+    échelle appliquées avant export ».
+    """
+    bpy.ops.object.select_all(action="DESELECT")
+    for obj in objects:
+        obj.select_set(True)
+    bpy.context.view_layer.objects.active = objects[0]
+    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    bpy.context.view_layer.update()
 
 
 def join_all(name: str, objects: list):
@@ -182,23 +211,33 @@ def build_raider(armature, profile: dict) -> dict:
     # --- Bassin et torse. Le LEAN est la première chose qu'on lit à 25 m.
     groups["cloth"].append(add_box("Pelvis",
         (torso_w * 0.46, torso_d * 0.46, 0.11), tuple(pelvis + Vector((0, 0, 0.02)))))
+    # WELD : chaque volume MORD sur son voisin. Sans ce recouvrement le corps
+    # se lit comme un tas de boîtes flottantes — constaté sur la capture du
+    # vrai moteur, jamais sur une boîte englobante, qui reste juste.
     lower = (spine1 + spine3) * 0.5
     groups["skin"].append(add_box("TorsoLower",
-        (torso_w * 0.5, torso_d * 0.5, (spine3.z - spine1.z) * 0.55),
-        tuple(lower + Vector((0, profile["lean_shift"] * 0.5, 0))),
+        (torso_w * 0.5, torso_d * 0.5, (spine3.z - pelvis.z) * 1.05),
+        tuple(lower + Vector((0, profile["lean_shift"] * 0.5, -0.03))),
         (lean, 0.0, 0.0)))
     upper = (spine3 + neck) * 0.5
     groups["skin"].append(add_box("TorsoUpper",
         (torso_w * 0.52 * profile["shoulder_spread"], torso_d * 0.48,
-         (neck.z - spine3.z) * 0.6),
-        tuple(upper + Vector((0, profile["lean_shift"], 0))),
+         (neck.z - spine1.z) * 0.66),
+        tuple(upper + Vector((0, profile["lean_shift"], -0.02))),
         (lean, 0.0, 0.0)))
 
     # --- Cou et tête. Chaque famille a la sienne.
-    if profile["neck_visible"]:
-        groups["skin"].append(add_box("Neck", (0.055, 0.055, 0.05),
-                                      tuple(neck + Vector((0, 0, 0.02)))))
-    head_centre = head + Vector((0, profile["head_shift"], 0.075))
+    # Le cou REJOINT la tête : il part du sommet du torse et monte jusqu'à
+    # elle, au lieu de flotter entre les deux.
+    neck_top = head.z + profile["head_shift_z"] - 0.02
+    groups["skin"].append(add_box("Neck",
+        (0.075 if profile["neck_visible"] else 0.12,
+         0.075 if profile["neck_visible"] else 0.13,
+         maxf(0.06, (neck_top - neck.z) + 0.10)),
+        tuple(neck + Vector((0, profile["lean_shift"] * 0.6,
+                             (neck_top - neck.z) * 0.5 - 0.02)))))
+    head_centre = head + Vector((0, profile["head_shift"],
+                                 profile["head_shift_z"]))
     groups["skin"].append(add_box("Head", profile["head_size"],
                                   tuple(head_centre), (profile["head_tilt"], 0, 0)))
     for part in profile["head_features"](head_centre):
@@ -327,7 +366,7 @@ PROFILES = {
         "arm_gain": 0.92, "leg_gain": 0.95,
         "forearm_gain": 1.34,      # avant-bras LONGS (§14.1)
         "neck_visible": False,     # tête enfoncée dans les épaules
-        "head_shift": -0.02, "head_tilt": math.radians(12.0),
+        "head_shift": -0.02, "head_shift_z": 0.055, "head_tilt": math.radians(12.0),
         "head_size": (0.075, 0.085, 0.070),
         "head_features": braise_head_features,
         "shoulder_features": no_shoulder_features,
@@ -344,7 +383,7 @@ PROFILES = {
         "arm_gain": 0.88, "leg_gain": 1.06,   # jambes LONGUES
         "forearm_gain": 1.0,
         "neck_visible": True,
-        "head_shift": 0.0, "head_tilt": 0.0,
+        "head_shift": 0.0, "head_shift_z": 0.075, "head_tilt": 0.0,
         "head_size": (0.066, 0.078, 0.078),
         "head_features": azur_head_features,
         "shoulder_features": azur_shoulder_features,
@@ -361,7 +400,7 @@ PROFILES = {
         "arm_gain": 1.24, "leg_gain": 1.16,
         "forearm_gain": 0.94,
         "neck_visible": False,     # cou presque absent
-        "head_shift": -0.01, "head_tilt": math.radians(6.0),
+        "head_shift": -0.01, "head_shift_z": 0.06, "head_tilt": math.radians(6.0),
         "head_size": (0.085, 0.082, 0.072),
         "head_features": obsidian_head_features,
         "shoulder_features": obsidian_shoulder_features,
@@ -388,6 +427,7 @@ def build_one(key: str, profile: dict) -> None:
         merged.data.materials.append(materials[group_name])
         meshes.append(merged)
 
+    apply_transforms(meshes)
     # Liaison par POIDS AUTOMATIQUES au squelette UAL : la géométrie est
     # neuve, le squelette est celui des animations existantes.
     bpy.ops.object.select_all(action="DESELECT")

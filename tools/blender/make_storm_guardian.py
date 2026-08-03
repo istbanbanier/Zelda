@@ -48,7 +48,7 @@ TEX_SIZE = 1024
 
 # --- Cotes, en mètres. Bible §15.1 : long 8-10, haut 5,2-6, large 5-7.
 BODY_LEN = 5.0          # masse centrale seule ; tête et queue portent le reste
-BODY_W = 4.4
+BODY_W = 4.75          # élargi : la fermeture des articulations avait ramené la bête à 4,89 m, sous la bande 5-7 de §15.1
 BODY_H = 2.2
 BODY_Z = 2.35           # hauteur du centre de la masse au-dessus du sol
 HEAD_LEN = 1.5
@@ -145,6 +145,28 @@ def triangulate(obj: bpy.types.Object) -> None:
     bm.free()
 
 
+def apply_transforms(objects: list) -> None:
+    """APPLIQUE la transformation de chaque maillage dans ses sommets.
+
+    Sans cela le modèle EXPLOSE à l'affichage, et aucun test de géométrie ne
+    le voit : un maillage SKINNÉ ignore la transformation de son nœud —
+    glTF le place par ses joints et ses matrices de liaison inverse. Chaque
+    pièce posée par `obj.location` se rabattait donc sur la position de son
+    os, et la créature arrivait dans Godot en tas de boîtes éparpillées.
+    Constaté sur une CAPTURE du vrai moteur, pas sur une assertion : les
+    boîtes englobantes, elles, restaient dans les bonnes bandes.
+
+    C'est aussi ce qu'exigeait déjà `.claude/rules/assets.md` — « rotation et
+    échelle appliquées avant export ».
+    """
+    bpy.ops.object.select_all(action="DESELECT")
+    for obj in objects:
+        obj.select_set(True)
+    bpy.context.view_layer.objects.active = objects[0]
+    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    bpy.context.view_layer.update()
+
+
 def join(name: str, objects: list) -> bpy.types.Object:
     """Fusionne une liste d'objets en un seul mesh nommé."""
     bpy.ops.object.select_all(action="DESELECT")
@@ -196,10 +218,10 @@ def build_body(generator) -> bpy.types.Object:
 def build_head() -> list:
     """Tête COURTE, protégée par trois plaques de céramique distinctes."""
     y0 = BODY_LEN * 0.5 + 0.9
-    skull = add_box("HeadSkull", (0.72, HEAD_LEN * 0.5, 0.62),
-                    (0.0, y0, BODY_Z + 0.15), (math.radians(-8.0), 0.0, 0.0))
-    jaw = add_box("HeadJaw", (0.58, 0.55, 0.26),
-                  (0.0, y0 + 0.45, BODY_Z - 0.42))
+    skull = add_box("HeadSkull", (0.86, HEAD_LEN * 0.72, 0.78),
+                    (0.0, y0 - 0.30, BODY_Z + 0.10), (math.radians(-8.0), 0.0, 0.0))
+    jaw = add_box("HeadJaw", (0.62, 0.80, 0.44),
+                  (0.0, y0 + 0.25, BODY_Z - 0.34))
     plates = []
     for i in range(3):
         offset = (i - 1) * 0.46
@@ -220,9 +242,9 @@ def build_limb(name: str, side: int, y: float, attach_z: float,
     frappent, et la silhouette doit le dire avant l'attaque (§16.1).
     """
     girth = 0.38 if heavy else 0.26
-    x = side * (BODY_W * 0.46 + girth * 0.4)
+    x = side * (BODY_W * 0.40 + girth * 0.2)
     parts = []
-    parts.append(add_box("%sThigh" % name, (girth, girth * 0.9, thigh * 0.5),
+    parts.append(add_box("%sThigh" % name, (girth, girth * 0.9, thigh * 0.62),
                          (x, y, attach_z - thigh * 0.5),
                          (0.0, side * math.radians(7.0), 0.0)))
     knee_z = attach_z - thigh
@@ -230,7 +252,7 @@ def build_limb(name: str, side: int, y: float, attach_z: float,
                               (x, y, knee_z),
                               (0.0, math.radians(90.0), 0.0)))
     parts.append(add_box("%sShin" % name,
-                         (girth * 0.74, girth * 0.74, shin * 0.5),
+                         (girth * 0.80, girth * 0.80, shin * 0.62),
                          (x + side * 0.10, y - 0.08, knee_z - shin * 0.5),
                          (math.radians(6.0), 0.0, 0.0)))
     foot_z = knee_z - shin
@@ -276,12 +298,12 @@ def build_ring() -> list:
 def build_tail() -> list:
     """Queue-conducteur segmentée, terminée par une FOURCHE de terre."""
     parts = []
-    y = -BODY_LEN * 0.5
-    z = BODY_Z - 0.1
+    y = -BODY_LEN * 0.5 + 0.42
+    z = BODY_Z - 0.05
     for i in range(TAIL_SEGMENTS):
         t = i / float(TAIL_SEGMENTS - 1)
-        radius = 0.34 * (1.0 - 0.55 * t)
-        length = 0.48
+        radius = 0.38 * (1.0 - 0.50 * t)
+        length = 0.58
         y -= length * 0.92
         z -= 0.20 + 0.04 * i
         parts.append(add_box("TailSeg%d" % i, (radius, length * 0.5, radius),
@@ -345,9 +367,13 @@ def build_shoulders() -> bpy.types.Object:
     """Épaules de BRONZE : la masse qui annonce les coups des antérieurs."""
     parts = []
     for side in (-1, 1):
-        parts.append(add_box("Shoulder%d" % (side + 1), (0.62, 0.72, 0.58),
-                             (side * (BODY_W * 0.42), BODY_LEN * 0.30,
-                              LEG_FRONT_Z + 0.55),
+        # Épaules ÉLARGIES : ramener les attaches de membres dans la masse
+        # (pour fermer les articulations) avait fait tomber la largeur à
+        # 4,89 m, sous la bande 5-7 de §15.1. Le test l'a vu ; c'est la
+        # carrure qui reprend la place, pas les jambes qui ressortent.
+        parts.append(add_box("Shoulder%d" % (side + 1), (0.78, 0.80, 0.66),
+                             (side * (BODY_W * 0.44), BODY_LEN * 0.30,
+                              LEG_FRONT_Z + 0.52),
                              (0.0, side * math.radians(14.0), 0.0)))
     return join("GuardianShoulders", parts)
 
@@ -670,6 +696,7 @@ def main() -> None:
                             obj.location.z - lowest)
         log("modèle reposé au sol : décalage de %+.3f m" % -lowest)
 
+    apply_transforms(list(meshes.values()))
     build_armature(meshes)
 
     # Contrôle de cotes : la bible §15.1 est une exigence, pas une intention.

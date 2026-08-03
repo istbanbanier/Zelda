@@ -164,3 +164,83 @@ func test_both_creatures_face_the_direction_they_strike() -> void:
 			"%s : la masse haute et avancée est du côté de la frappe (z = %+.2f)"
 			% [(entry[0] as String).get_file(), head_z])
 		await _close(scene)
+
+
+## Le point dur du montage : un modèle ne doit RIEN changer au combat.
+## Ces deux tests laissent l'IA décider, comme en jeu — perception, choix,
+## télégraphe, frappe — et vérifient que le joueur PERD DES POINTS DE VIE
+## avec le hero asset monté. C'est ce qui distingue « le modèle s'affiche »
+## de « le modèle est intégré ».
+##
+## Première version écartée : elle appelait `AttackController.try_attack()`
+## puis `update()` à la main. Le socle `EnemyBase` n'avance l'attaque QUE
+## dans l'état ATTACK — le coup partait sans jamais devenir actif, et le
+## test mesurait mon harnais, pas le jeu.
+const PLAYER: String = "res://scenes/player/Player.tscn"
+
+
+func _arena_with(enemy_path: String, player_at: Vector3,
+		enemy_at: Vector3) -> Array:
+	var world: Node3D = Node3D.new()
+	_tree().root.add_child(world)
+	var floor_body: StaticBody3D = StaticBody3D.new()
+	floor_body.collision_layer = 1
+	var shape: CollisionShape3D = CollisionShape3D.new()
+	var box: BoxShape3D = BoxShape3D.new()
+	box.size = Vector3(160, 1, 160)
+	shape.shape = box
+	floor_body.add_child(shape)
+	floor_body.position = Vector3(0, -0.5, 0)
+	world.add_child(floor_body)
+	var player: PlayerController = (load(PLAYER) as PackedScene) \
+		.instantiate() as PlayerController
+	player.position = player_at
+	world.add_child(player)
+	player.set_intent_source(InputIntent.new())
+	var enemy: Node3D = (load(enemy_path) as PackedScene).instantiate() as Node3D
+	enemy.position = enemy_at
+	world.add_child(enemy)
+	var to_player: Vector3 = player_at - enemy_at
+	(enemy.get_node("Pivot") as Node3D).rotation.y = atan2(to_player.x,
+		to_player.z)
+	await _settle(2)
+	for i: int in range(120):
+		if player.is_on_floor():
+			break
+		await _tree().physics_frame
+	return [world, player, enemy]
+
+
+func _fight(enemy_path: String, label: String) -> void:
+	var setup: Array = await _arena_with(enemy_path, Vector3(0, 0.1, 2.2),
+		Vector3(0, 0.1, 0))
+	var world: Node3D = setup[0]
+	var player: PlayerController = setup[1]
+	var enemy: Node3D = setup[2]
+	var visual: CharacterVisual = enemy.get_node("Pivot/CharacterVisual") \
+		as CharacterVisual
+	check(not visual.is_fallback_active(), "%s : le modèle est monté" % label)
+	var health: HealthComponent = player.health()
+	var before: float = health.current()
+	var attacked: bool = false
+	for i: int in range(600):
+		await _tree().physics_frame
+		if String(enemy.call("state_name")) == "attack":
+			attacked = true
+		if health.current() < before:
+			break
+	check(attacked, "%s : l'IA a bien engagé une attaque" % label)
+	check(health.current() < before,
+		"%s : le coup PORTE avec le hero asset monté (%.0f → %.0f PV)"
+		% [label, before, health.current()])
+	world.get_parent().remove_child(world)
+	world.queue_free()
+	await _settle(2)
+
+
+func test_the_colossus_still_lands_a_blow_with_the_model_mounted() -> void:
+	await _fight(TROLL, "colosse")
+
+
+func test_the_hunter_still_lands_a_blow_with_the_model_mounted() -> void:
+	await _fight(HUNTER, "chasseur")

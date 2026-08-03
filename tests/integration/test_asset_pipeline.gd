@@ -281,16 +281,55 @@ func test_the_character_variants_have_distinct_silhouettes() -> void:
 	await _settle(1)
 
 
-func test_the_silhouette_lineup_mounts_the_four_characters() -> void:
-	## §7.18 : la bibliothèque de silhouettes monte les QUATRE personnages
-	## — c'est la scène du jugement en aplats, elle ne peut pas être vide.
+func test_the_silhouette_lineup_mounts_every_character_of_the_game() -> void:
+	## §7.18 et bible §30.3 : la bibliothèque de silhouettes est la scène du
+	## jugement en aplats noirs. Elle n'en montait que QUATRE, donc elle ne
+	## pouvait pas servir au test qu'elle est censée porter — « les cinq
+	## familles à 10, 25 et 50 m ; le boss à 15, 25 et 40 m ». Elle en monte
+	## désormais sept, et l'écart de taille doit être RÉEL.
 	var lineup: SilhouetteLineup = (load("res://scenes/tests/SilhouetteLineup.tscn")
 		as PackedScene).instantiate() as SilhouetteLineup
 	_tree().root.add_child(lineup)
-	await _settle(2)
-	check_equal(lineup.mounted_characters, 4, "les quatre personnages montés")
+	await _settle(3)
+	check_equal(lineup.mounted_characters, SilhouetteLineup.CHARACTERS.size(),
+		"tous les sujets déclarés sont montés (%d)" % lineup.mounted_characters)
+	check(lineup.mounted_characters >= 7,
+		"héros + cinq familles + boss : %d sujets" % lineup.mounted_characters)
+	# Personne ne chevauche son voisin : sans cela l'aplat noir devient une
+	# masse unique et le test d'affordance ne veut plus rien dire.
+	var boxes: Array[AABB] = []
+	for i: int in range(lineup.mounted_characters):
+		var visual: Node3D = lineup.get_node_or_null("Character_%d" % i) as Node3D
+		if visual == null:
+			continue
+		var bounds: AABB = AABB()
+		var first: bool = true
+		for node: Node in visual.find_children("*", "MeshInstance3D", true, false):
+			var mesh: MeshInstance3D = node as MeshInstance3D
+			if mesh.mesh == null or not mesh.visible:
+				continue
+			var world: AABB = mesh.global_transform * mesh.get_aabb()
+			bounds = world if first else bounds.merge(world)
+			first = false
+		if not first:
+			boxes.append(bounds)
+	for i: int in range(boxes.size() - 1):
+		var right: float = boxes[i].position.x + boxes[i].size.x
+		var next_left: float = boxes[i + 1].position.x
+		check(next_left > right - 0.5,
+			"sujet %d et %d se distinguent (bord %.2f, voisin %.2f)"
+			% [i, i + 1, right, next_left])
+	# Et la ligne montre bien un ÉCART d'échelle : du plus petit au plus grand.
+	var smallest: float = 99.0
+	var tallest: float = 0.0
+	for box: AABB in boxes:
+		smallest = minf(smallest, box.size.y)
+		tallest = maxf(tallest, box.size.y)
+	check(tallest > smallest * 3.0,
+		"le plus grand fait plus du triple du plus petit (%.2f m contre %.2f m)"
+		% [tallest, smallest])
 	lineup.queue_free()
-	await _settle(1)
+	await _settle(2)
 
 
 func test_the_gallery_mounts_a_full_page_without_losses() -> void:

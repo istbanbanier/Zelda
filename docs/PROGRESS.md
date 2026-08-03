@@ -2074,3 +2074,36 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > (locomotion lourde, balayage, frappe verticale, coup au sol pour l'un ;
 > pas/trot/galop, charge, salve, cri pour l'autre — §14.4 et §14.5), puis
 > ceux du Gardien (entrée 5-8 s, dégâts visuels progressifs, mort).
+
+## 2026-08-03 — Phase H lot H.5 : la capture dit ce que les tests ne voient pas
+
+> Le lot précédent avait « monté » les cinq familles, et tous les tests
+> étaient verts. La première CAPTURE du vrai moteur a montré autre chose :
+> les six modèles générés se lisent en PIÈCES DÉTACHÉES. Construits comme
+> des empilements de boîtes indépendantes, ils laissent des jours de 0,15 à
+> 0,25 m à chaque articulation — tête flottant au-dessus des épaules,
+> avant-bras séparés du coude, queue en chapelet.
+> Aucun test ne pouvait le voir : `get_aabb()` d'un maillage skinné rend la
+> géométrie de LIAISON, pas le rendu, et les boîtes englobantes restaient
+> dans les bonnes bandes pendant que les pièces flottaient.
+> **Diagnostic initial FAUX, consigné** : j'ai d'abord accusé le skinning
+> (transformation de nœud ignorée par glTF). Un ré-import du `.glb` dans
+> Blender a montré le modèle correctement assemblé après déformation — la
+> cause était la géométrie source. Le durcissement appliqué entre-temps
+> (`apply_transforms` avant liaison) reste juste, et il est de toute façon
+> exigé par `.claude/rules/assets.md`, mais il ne corrigeait pas ce
+> défaut-là.
+> Une passe de « mordant » — chaque volume RECOUVRE son voisin, les membres
+> sont allongés d'un diamètre, les attaches ramenées dans la masse — a
+> réparé les trois pillards et le tronc du colosse. C'est visible sur
+> `evidence/phaseH/lineup_matiere.png`.
+> **CE QUI N'EST PAS FINI** : avant-bras et pieds du colosse, chasseur
+> presque entier, extrémités du Gardien. ISS-018, sévérité S2. Aucun
+> critère visuel de la Phase H n'est déclaré tenu.
+> La bibliothèque de silhouettes est passée de quatre à SEPT sujets — sans
+> le colosse, le chasseur et le Gardien, elle ne pouvait pas servir au test
+> d'affordance de §30.3 qu'elle est censée porter.
+> **PROCHAINE ACTION** : poursuivre la passe de mordant créature par
+> créature, en RE-CAPTURANT après chacune — c'est le seul contrôle qui voit
+> ce défaut. Puis écrire le test de contiguïté d'ISS-019 pour qu'il ne
+> revienne pas en silence.
