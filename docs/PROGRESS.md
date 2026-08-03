@@ -2280,3 +2280,76 @@ plein contraste, citadelle sans terrasses qui se confond avec elles, sol en
 aplat vert, cubes de placeholder, HUD visible dans les captures de
 référence. Aucun score WOW n'est revendiqué (§30.2 demande un œil humain et
 un GPU réel — ISS-002).
+
+---
+
+## 2026-08-03 — Ordre d'extension : assets sécurisés, chasseur, registre des découvertes
+
+**Commits** : promotion CC0, `b7ec49d` (tête du chasseur), puis le présent
+lot (registre des découvertes).
+
+### 1. Assets du monde ouvert sauvés de `/tmp`
+
+Les sept packs Quaternius vivaient dans `/tmp`, éphémère, et leur
+réacquisition avait échoué (403). 63 modèles promus par sélection
+**fonctionnelle** — pas en vrac, comme l'exige §7 de l'ordre : toitures et
+débords, sols d'intérieur, portes, fenêtres de toit, escaliers, balcons,
+clôtures, cheminée ; puis essences par biome, herbes hautes, plantes,
+rochers, dalles. Nouveau dossier `assets/environment/village/` : 53 pièces
+d'architecture modulaire, de quoi bâtir un village à VRAIS intérieurs, deux
+hameaux et des ruines. 56,8 Mo après déduplication des textures par dossier
+cible — le chiffrage brut annonçait 715 Mo en comptant chaque texture une
+fois par modèle. `ATTRIBUTIONS.md` : ART-Q8, même CC0 que ART-Q0.
+
+### 2. Chasseur — point 1 de l'ordre
+
+La tête n'était qu'un cube : à distance de jeu la bête n'avait pas de
+regard, donc aucune direction de menace avant la charge. Crâne refait en
+quatre masses (nuque, crâne, museau, mâchoire), plaque frontale inclinée,
+deux cornes filant vers l'arrière, mandibules élargies. Cotes tenues :
+3,45 m de haut, 4,20 m de long. Continuité : 64 morceaux, un seul corps.
+
+### 3. Registre des découvertes — la fondation du monde ouvert
+
+`DiscoveryLog` + `PointOfInterest`. Choix structurant : **un lieu ne sait
+pas s'il a déjà été vu, il le DEMANDE**. La règle « aucune seconde
+récompense après rechargement » devient donc vraie par construction, pas par
+discipline — un lieu ne peut pas se déclarer neuf tout seul.
+
+Identifiants au format §19.3 `zone.category.name.index`, unicité refusée en
+double, sauvegarde ne sérialisant que des chaînes (§19.2), lieu supprimé par
+une mise à jour journalisé puis ignoré (§19.4), regroupement par région pour
+une carte.
+
+12 tests : 9 unitaires, 3 d'intégration avec un vrai corps physique qui
+traverse le volume. Le scénario central de l'ordre est couvert de bout en
+bout — découvrir, sauvegarder, recharger, repasser, ne rien recevoir.
+
+Détail qui aurait fait rougir la suite entière : les refus (identifiant en
+double, lieu non déclaré) étaient signalés par `push_error`, et
+`validate_fast` traite — à raison — tout `ERROR:` du journal comme un échec.
+Un refus lu dans la valeur de retour n'est pas une erreur moteur : ils sont
+passés en avertissement.
+
+Plancher de couverture 493 → 505.
+
+### PROCHAINE ACTION
+
+Poser le CONTENU, maintenant que chaque lieu peut naître avec son
+identifiant, sa sauvegarde et son test :
+
+1. **Village de la rivière** (§2 de l'ordre) avec le kit promu : place,
+   auberge visitable, forge, marché, moulin, sanctuaire, habitations, quai.
+   Au moins un intérieur réel — §1 interdit une porte visible qui n'ouvre
+   sur rien.
+2. Deux hameaux, puis les ruines, puis les grottes.
+3. À chaque lieu : un `PointOfInterest` avec identifiant, un contenu
+   significatif (§3), et un test d'atteignabilité (§8).
+4. Carte des POI et liste des identifiants (§8) — le registre les fournit
+   déjà par `registered_ids()` et `by_region()`.
+
+### Limites honnêtes
+
+Aucun contenu de monde ouvert n'est encore posé : le lot ci-dessus livre les
+FONDATIONS et les assets, pas les lieux. La vallée reste un graybox hors
+premier plan.
