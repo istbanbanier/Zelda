@@ -11,6 +11,24 @@ Le projet contient des ressources externes d'une seule provenance : les packs
 **Quaternius Standard (CC0 1.0)**, inscrits ci-dessous AVANT leur entrée dans
 le build (2026-08-02). Tout le reste a été généré par les scripts du dépôt.
 
+## Promotion « monde ouvert » — CC0 Quaternius (ART-Q8)
+
+63 modèles supplémentaires promus depuis les mêmes archives Quaternius
+Standard déjà attribuées ci-dessous (ART-Q0), pour l'ordre d'extension
+« monde entièrement explorable » : toitures, débords, sols d'intérieur,
+portes, fenêtres de toit, escaliers intérieurs et extérieurs, balcons,
+clôtures, cheminée, plus des essences d'arbres, herbes hautes, plantes,
+rochers et dalles de chemin.
+
+| | |
+|---|---|
+| Licence | **CC0 1.0 Universal** — identique à ART-Q0, même archives |
+| Dossier neuf | `assets/environment/village/` (53 pièces d'architecture modulaire) |
+| Autres cibles | `assets/environment/{foliage,rocks,props}/` |
+| Sélection | `docs/assets/PROMOTIONS.csv`, section « Monde ouvert » — un clone rejoue `python3 tools/promote_quaternius.py <extraction> --apply` et reconstruit les mêmes fichiers |
+| Modifications | aucune : copie à l'octet près, textures dédupliquées par dossier cible |
+| Poids | 56,8 Mo (139 fichiers ; les textures partagées ne sont copiées qu'une fois par dossier) |
+
 ## Packs Quaternius Standard — CC0 1.0 Universal (ART-Q0)
 
 | Élément | Valeur |
