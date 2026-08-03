@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3]
+
+; ARÈNE DU GARDIEN DE L'ORAGE (G.1, §16.1 et §16.6) — disque de 38 m,
+; quatre pylônes de mise à la terre branchés sur le rail, seuil sud ouvert
+; vers l'antichambre. Tout est bâti par le script : cotes lisibles en diff.
+;
+; `world_scene_path` de la coquille pointe sur CETTE scène : « Réessayer »
+; après la mort relance le combat depuis le checkpoint de l'antichambre,
+; jamais depuis la vallée (§16.6 : retry en moins de 20 s).
+
+[ext_resource type="Script" path="res://scripts/boss/boss_arena.gd" id="1_arena"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/ui/GameplayShell.tscn" id="3_shell"]
+
+[node name="BossArena" type="Node3D"]
+script = ExtResource("1_arena")
+
+[node name="GameplayShell" parent="." instance=ExtResource("3_shell")]
+world_scene_path = "res://scenes/boss/BossArena.tscn"
+
+; Le joueur entre par le seuil sud : le Gardien est en face, entier, et
+; les deux premiers pylônes sont sur son chemin.
+[node name="Player" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 16.5)
+
+[node name="VisualRoot" parent="Player"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)

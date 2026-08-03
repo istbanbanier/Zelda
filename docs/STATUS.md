@@ -481,6 +481,31 @@ automatisée** avant qu'une seule salle n'existe.
 | Antichambre §15.10 — checkpoint, coffre garanti, cuisine, baies, retour, fresque bois/métal, aperçu de l'arène | **Fonctionnel** | idem |
 | Donjon ASSEMBLÉ : vestibule → salle 1 → hall → salles 2/3/4 → antichambre, chemins retour, arrivée devant la porte franchie | **Fonctionnel** | `--filter=topology` (5 tests, 75 assertions) |
 
+## Phase G — jalons G.1 et G.2 : arène du Gardien et combat de boss
+
+| Élément | État | Preuve |
+|---|---|---|
+| Arène §16.1 — disque de **38 m** (bornes 32-42), mur circulaire continu, trois zones de sol distinctes, aucun pilier au centre | **Fonctionnel** | `--filter=boss_arena` : la géométrie est mesurée (`CylinderShape3D`, rayons emboîtés), et le disque est balayé à la recherche d'un obstacle de cadrage |
+| Quatre pylônes de mise à la terre, branchés sur le **même graphe** que le donjon (§16.3) | **Fonctionnel** | `test_a_raised_pylon_is_powered_by_the_ground_rail` : dresser allume, couper le puits de terre éteint — un mât rétracté ne peut pas toucher le rail |
+| Anneau de terre fermé = un **cycle** du graphe (§15.2 pt. 5) | **Validé** | `test_the_closed_ground_ring_terminates` : 50 recalculs chronométrés, courant faisant le tour des 24 nœuds |
+| §16.6 — le Gardien reste dans l'arène ; il ne pousse pas le joueur dehors | **Fonctionnel** | deux tests de 240 ticks, joueur placé hors arène puis collé au mur |
+| §16.6 — la caméra élargit distance et FOV **progressivement** | **Fonctionnel** | `test_the_camera_widens_progressively_near_the_boss` : plus grand pas mesuré < 0,25 m/tick, retour au cadrage normal après la mort |
+| §16.6 — checkpoint juste avant, retry qui relance le COMBAT | **Fonctionnel** | l'arène relit le checkpoint de l'antichambre (armes, flèches, santé) ; `retry_target()` pointe sur l'arène ; rechargement chronométré |
+| §17.2 — barre de boss originale (vie réelle + nom de phase) | **Fonctionnel** | `test_the_hud_shows_a_boss_bar_only_in_the_arena` |
+| §15.11 jusqu'à l'arène : le seuil sud reste ouvert vers l'antichambre | **Fonctionnel** | `test_the_arena_is_never_a_one_way_trap`, dans les deux sens |
+| §16.2 — machine à dix états, transitions **idempotentes** | **Validé** | `test_a_health_threshold_never_fires_twice` : seuil traversé, remonté, retraversé |
+| §16.1 — les 5 s d'éveil existent vraiment | **Fonctionnel** | défaut trouvé par test : `_enter()` étant idempotent, l'INTRO n'était jamais armée et le Gardien basculait en phase 1 au premier tick |
+| §16.3 — armure ×0,2 sans invulnérabilité, DEUX pylônes pour la mise à la terre, étourdissement 6 s, noyau exposé puis armure refermée | **Fonctionnel** | `--filter=boss_guardian` (5 tests dédiés) |
+| §16.4 — cristaux révélés en phase 2, destructibles, noyau exposé à leur chute | **Fonctionnel** | `test_the_crystals_appear_in_phase_two_and_open_the_core` |
+| §16.4 — le métal renvoie pendant la surcharge, le bois non, la résistance électrique amortit | **Fonctionnel** | joué avec les VRAIES armes du jeu (gourdin, lame conductrice) et le vrai buff |
+| §16.5 — fenêtre de télégraphe au sol **chronométrée** entre 0,7 et 1,0 s, borne fermée | **Validé** | `test_the_ground_strike_gives_a_real_warning_window` : un télégraphe réglé à 0,05 s est ramené à 0,7 |
+| §16.5 — phase 3 « +10 à +18 %, pas doublement » | **Validé** | distance parcourue mesurée en phase 1 et en phase 3 |
+| §16.2/§16.8 — la mort coupe attaques, hitboxes et timers ; la victoire est écrite | **Fonctionnel** | `test_death_cuts_everything_and_writes_the_victory`, relecture du fichier |
+| §16.7 — **solvabilité** avec le loot garanti, marge 30-50 % | **Validé** | `test_the_guardian_is_beatable_with_the_guaranteed_loot` : c'est ce test qui a fait descendre les PV de 900 (marge -16 %, combat impossible) à 560 (+35 %) |
+| §16.6 — « boss visible ≥ 80 % du temps en lock-on » | **Fonctionnel** (partie automatisable) | 180 positions autour de l'arène, projection écran réelle ; le confort de cadrage reste un jugement humain |
+| Ressenti du combat, lisibilité des télégraphes, durée réelle d'une première victoire (§16.1 : 4-7 min) | **EN ATTENTE** (verdict humain) | `docs/MANUAL_VALIDATION.md` |
+| Conclusion §16.8 (coffre final, tempête qui se dissipe, écran de victoire) | **Non commencé** | jalon G.3 |
+
 ## Checklist finale (§26) — état réel
 
 Une case n'est cochée que si une preuve datée la soutient. Ne jamais cocher sur la
@@ -501,9 +526,9 @@ base d'une intention. Les cases cochées ci-dessous renvoient toutes à `TEST_RE
 | Durabilité | Avertissement, rupture, auto-équipement | logique testée ✅ (C.4) ; usure visuelle et son : Phase H |
 | IA | Cinq familles distinctes, LOS réelle | ⬜ |
 | Cuisine | 1-5 ingrédients et cinq buffs | ⬜ |
-| Électricité | Graphe générique, pas booléens de salle | ⬜ |
-| Donjon | Quatre salles et anti-softlock | ⬜ |
-| Boss | Trois phases et solvabilité | ⬜ |
+| Électricité | Graphe générique, pas booléens de salle | ✅ 4 salles + les pylônes du boss sur le MÊME graphe (`--filter=electric_graph`, `boss_arena`) |
+| Donjon | Quatre salles et anti-softlock | ✅ automatique (`docs/GATE_F_AUDIT.md`) ; lisibilité **EN ATTENTE** humaine |
+| Boss | Trois phases et solvabilité | ✅ automatique (`docs/GATE_G_AUDIT.md`) : trois phases traversées par un run joué, solvabilité mesurée à +35 % de marge ; ressenti **EN ATTENTE** humaine |
 | Save | Coffres/circuits/inventaire/boss persistants | ⬜ |
 | North Star | Score ≥ 85/100 | ⬜ **bloqué** |
 | Look-dev | Labs validés | ⬜ **bloqué** |

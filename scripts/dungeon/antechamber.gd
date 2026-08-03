@@ -48,6 +48,8 @@ func _ready() -> void:
 	add_child(debug_overlay)
 	place_player_at_spawn(_player, spawn_tag, {
 		&"antechamber_from_hall": Vector3(0, 0.3, 8.0),
+		# §15.11 : on ressort de l'arène DEVANT son seuil, pas au spawn.
+		&"antechamber_from_arena": Vector3(6.0, 0.3, -8.0),
 	})
 	# §19.5 : le checkpoint est POSÉ en entrant, pas promis.
 	call_deferred("_write_checkpoint")
@@ -64,21 +66,27 @@ func _build_shell() -> void:
 		COL_STONE)
 	box("WallSouthLintel", Vector3(0, 6.5, 10.25), Vector3(5.2, 3, 0.5),
 		COL_STONE)
-	# Nord : une baie vitrée sur l'arène (aperçu de §15.10), et à côté le
-	# seuil qui y mène.
-	box("WallNorthWest", Vector3(-6.5, 4, -10.25), Vector3(5, 8, 0.5),
-		COL_STONE)
-	box("WallNorthEast", Vector3(6.5, 4, -10.25), Vector3(5, 8, 0.5),
+	# Nord : une baie vitrée sur l'arène (aperçu de §15.10) de x = -4 à 4,
+	# fermée par un appui — on REGARDE — et, à sa droite, le seuil qui mène
+	# vraiment à l'arène, de x = 4,5 à 7,5.
+	box("WallNorthWest", Vector3(-6.6, 4, -10.25), Vector3(5.3, 8, 0.5),
 		COL_STONE)
 	box("WallNorthPier", Vector3(0, 4, -10.25), Vector3(1.2, 8, 0.5), COL_STONE)
-	box("WallNorthSill", Vector3(0, 0.6, -10.25), Vector3(9, 1.2, 0.5),
+	box("WallNorthSill", Vector3(0, 0.6, -10.25), Vector3(8, 1.2, 0.5),
 		COL_STONE)
-	box("WallNorthHead", Vector3(0, 6.6, -10.25), Vector3(9, 3.8, 0.5),
+	box("WallNorthHead", Vector3(0, 6.6, -10.25), Vector3(8, 3.8, 0.5),
 		COL_BRONZE)
+	box("WallNorthMullion", Vector3(4.25, 4, -10.25), Vector3(0.5, 8, 0.5),
+		COL_STONE)
+	box("WallNorthEast", Vector3(8.4, 4, -10.25), Vector3(1.7, 8, 0.5),
+		COL_STONE)
 	_build_arena_preview()
 
 	scene_door("DoorBack", "Revenir à la salle centrale", HALL,
 		&"hall_from_antechamber", Vector3(0, 2.5, 10.4), Vector3(4.2, 5.0, 0.4))
+	scene_door("DoorArena", "Entrer dans l'arène", ARENA,
+		&"arena_from_antechamber", Vector3(6.0, 2.5, -10.4),
+		Vector3(3.0, 5.0, 0.4))
 
 
 ## §15.10 : « aperçu de l'arène ». Derrière la baie, l'arène existe pour de

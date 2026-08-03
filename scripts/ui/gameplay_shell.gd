@@ -104,6 +104,7 @@ func _ready() -> void:
 	add_to_group("gameplay_shell")
 	_build_cooking_panel()
 	_build_buff_label()
+	_build_boss_bar()
 	_set_mouse_captured(true)
 	# Le joueur peut entrer dans l'arbre après la coquille : liaison différée.
 	_bind_player.call_deferred()
@@ -448,6 +449,7 @@ func _process(delta: float) -> void:
 		_hud_refresh_accumulator = 0.0
 		_refresh_weapon_text()
 		_refresh_buff_label()
+		_refresh_boss_bar()
 
 
 ## ---------------------------------------------------------------------------
@@ -1076,3 +1078,114 @@ func _refresh_buff_label() -> void:
 
 func buff_label_text() -> String:
 	return _buff_label.text if _buff_label != null else ""
+
+
+## ---------------------------------------------------------------------------
+## Barre de boss (§17.2 « barre de boss », §16.1 « barre de vie ORIGINALE »)
+## ---------------------------------------------------------------------------
+## Un bandeau bas, large, en ardoise et or pâle : la vie du Gardien en une
+## seule veine cyan, et sous elle le nom de la phase en cours. Rien n'est
+## recopié — la valeur vient du `HealthComponent` du boss, le texte de sa
+## machine à états. Elle n'existe que quand un boss VIVANT est dans la
+## scène : ailleurs, elle ne prend pas un pixel.
+
+const BOSS_PHASE_LABELS: Dictionary[StringName, String] = {
+	&"intro": "Le Gardien s'éveille",
+	&"phase1": "Armure chargée",
+	&"grounded_stun": "Mis à la terre — le noyau est nu",
+	&"transition12": "L'armure se fend",
+	&"phase2": "Surcharge",
+	&"overload": "SURCHARGE — le métal renvoie",
+	&"transition23": "La tempête monte",
+	&"phase3": "Tempête",
+	&"stagger": "Chancelant",
+	&"dead": "Silence",
+}
+
+var _boss_panel: PanelContainer = null
+var _boss_bar: ProgressBar = null
+var _boss_phase_label: Label = null
+var _boss_node: Node = null
+
+
+func _build_boss_bar() -> void:
+	_boss_panel = PanelContainer.new()
+	_boss_panel.name = "BossPlaque"
+	_boss_panel.add_theme_stylebox_override(&"panel", HudStyle.plaque())
+	var column: VBoxContainer = VBoxContainer.new()
+	var title: Label = Label.new()
+	title.name = "BossName"
+	title.text = "GARDIEN DE L'ORAGE"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_color_override(&"font_color", HudStyle.GOLD)
+	title.add_theme_font_size_override(&"font_size", 18)
+	column.add_child(title)
+	_boss_bar = ProgressBar.new()
+	_boss_bar.name = "BossBar"
+	_boss_bar.custom_minimum_size = Vector2(520, 12)
+	_boss_bar.show_percentage = false
+	_boss_bar.add_theme_stylebox_override(&"background",
+		HudStyle.gauge_background(HudStyle.TURQUOISE_DARK))
+	_boss_bar.add_theme_stylebox_override(&"fill",
+		HudStyle.gauge_fill(HudStyle.TURQUOISE))
+	column.add_child(_boss_bar)
+	_boss_phase_label = Label.new()
+	_boss_phase_label.name = "BossPhase"
+	_boss_phase_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_boss_phase_label.add_theme_color_override(&"font_color", HudStyle.IVORY)
+	_boss_phase_label.add_theme_font_size_override(&"font_size", 14)
+	column.add_child(_boss_phase_label)
+	_boss_panel.add_child(column)
+	add_child(_boss_panel)
+	_boss_panel.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	_boss_panel.offset_left = -280.0
+	_boss_panel.offset_right = 280.0
+	_boss_panel.offset_top = -96.0
+	_boss_panel.offset_bottom = -24.0
+	_boss_panel.visible = false
+
+
+## Le boss est cherché dans LA SCÈNE DE CETTE COQUILLE, comme le joueur :
+## deux scènes chargées côte à côte (tests, transitions) ne doivent pas se
+## voler leur HUD.
+func _find_boss() -> Node:
+	if _boss_node != null and is_instance_valid(_boss_node):
+		return _boss_node
+	var scene_root: Node = owner if owner != null else get_parent()
+	if scene_root == null:
+		return null
+	for node: Node in scene_root.find_children("*", "StormGuardian", true, false):
+		_boss_node = node
+		return node
+	return null
+
+
+func _refresh_boss_bar() -> void:
+	if _boss_panel == null:
+		return
+	var boss: Node = _find_boss()
+	if boss == null:
+		_boss_panel.visible = false
+		return
+	var health: HealthComponent = boss.call("health") as HealthComponent
+	if health == null:
+		_boss_panel.visible = false
+		return
+	var phase: StringName = StringName(String(boss.call("state_name")))
+	_boss_panel.visible = phase != &"intro"
+	_boss_bar.max_value = health.maximum()
+	_boss_bar.value = health.current()
+	_boss_phase_label.text = BOSS_PHASE_LABELS.get(phase, String(phase))
+
+
+## Seams de test : ce que la barre affiche RÉELLEMENT.
+func is_boss_bar_visible() -> bool:
+	return _boss_panel != null and _boss_panel.visible
+
+
+func boss_bar_value() -> float:
+	return _boss_bar.value if _boss_bar != null else 0.0
+
+
+func boss_phase_text() -> String:
+	return _boss_phase_label.text if _boss_phase_label != null else ""

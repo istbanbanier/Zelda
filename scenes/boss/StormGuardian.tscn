@@ -1,0 +1,122 @@
+[gd_scene load_steps=13 format=3]
+
+; GARDIEN DE L'ORAGE (§16) — graybox : quadrupède trapu de 4,2 m au garrot
+; pour 6,4 m de long, dos hérissé de deux cristaux conducteurs (§16.4) et
+; noyau cyan sous l'armure (§16.3). Deux hurtbox NON chevauchantes : le
+; CORPS (armuré) et le NOYAU (nu seulement une fois l'armure percée).
+
+[ext_resource type="Script" path="res://scripts/boss/storm_guardian.gd" id="1_boss"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="2_health"]
+[ext_resource type="Script" path="res://scripts/components/poise_component.gd" id="3_poise"]
+[ext_resource type="Script" path="res://scripts/components/hurtbox_component.gd" id="4_hurtbox"]
+[ext_resource type="Script" path="res://scripts/components/hitbox_component.gd" id="5_hitbox"]
+[ext_resource type="Script" path="res://scripts/combat/attack_controller.gd" id="6_attack"]
+[ext_resource type="Resource" path="res://resources/combat/boss/guardian_swipe.tres" id="7_swipe"]
+[ext_resource type="Resource" path="res://resources/combat/boss/guardian_slam.tres" id="8_slam"]
+[ext_resource type="Resource" path="res://resources/combat/boss/guardian_arc.tres" id="9_arc"]
+
+[sub_resource type="BoxShape3D" id="BodyShape"]
+size = Vector3(3.2, 4.2, 6.4)
+
+[sub_resource type="BoxShape3D" id="ClawSweep"]
+size = Vector3(4.2, 2.6, 3.4)
+
+[sub_resource type="BoxShape3D" id="CoreShape"]
+size = Vector3(1.6, 1.6, 1.6)
+
+[node name="StormGuardian" type="CharacterBody3D" groups=["enemies", "damageable", "lock_on_targets", "boss"]]
+collision_layer = 4
+collision_mask = 7
+script = ExtResource("1_boss")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+shape = SubResource("BodyShape")
+
+[node name="Pivot" type="Node3D" parent="."]
+
+[node name="BodyMesh" type="MeshInstance3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+
+[node name="ClawHitbox" type="Area3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 3.6)
+collision_layer = 16
+collision_mask = 32
+script = ExtResource("5_hitbox")
+team = &"enemies"
+instigator_path = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pivot/ClawHitbox"]
+shape = SubResource("ClawSweep")
+
+[node name="BodyHurtbox" type="Area3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("4_hurtbox")
+team = &"enemies"
+health_path = NodePath("../../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pivot/BodyHurtbox"]
+shape = SubResource("BodyShape")
+
+; Le NOYAU : sous le poitrail, exposé seulement armure percée (§16.3).
+[node name="CoreHurtbox" type="Area3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 2.2)
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("4_hurtbox")
+team = &"enemies"
+weak_point_multiplier = 2.5
+health_path = NodePath("../../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pivot/CoreHurtbox"]
+shape = SubResource("CoreShape")
+
+; Deux cristaux conducteurs sur le dos (§16.4), masqués hors phase 2.
+[node name="CrystalA" type="Area3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 4.3, -1.2)
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("4_hurtbox")
+team = &"enemies"
+weak_point_multiplier = 1.0
+health_path = NodePath("../../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pivot/CrystalA"]
+shape = SubResource("CoreShape")
+
+[node name="CrystalAMesh" type="MeshInstance3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 4.3, -1.2)
+visible = false
+
+[node name="CrystalB" type="Area3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 4.3, -1.2)
+collision_layer = 32
+collision_mask = 0
+script = ExtResource("4_hurtbox")
+team = &"enemies"
+weak_point_multiplier = 1.0
+health_path = NodePath("../../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pivot/CrystalB"]
+shape = SubResource("CoreShape")
+
+[node name="CrystalBMesh" type="MeshInstance3D" parent="Pivot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1, 4.3, -1.2)
+visible = false
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("2_health")
+max_health = 560.0
+
+[node name="PoiseComponent" type="Node" parent="."]
+script = ExtResource("3_poise")
+max_poise = 160.0
+
+[node name="AttackController" type="Node" parent="."]
+script = ExtResource("6_attack")
+attacks = [ExtResource("7_swipe")]
+heavy_attack = ExtResource("9_arc")
+hitbox_path = NodePath("../Pivot/ClawHitbox")
+base_damage = 22.0

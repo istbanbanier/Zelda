@@ -799,3 +799,70 @@ la fait vivre côté ennemi.
   en réalité la cadence du moteur, qui varie du simple au double en headless
   selon ce qui a tourné avant. Les deux tests concernés attendent maintenant
   4 s de temps réel.
+
+
+---
+
+## D-032 — G.1 : les pylônes se BRANCHENT, ils ne se cochent pas
+
+- **Date** : 2026-08-03 · **Phase** : G (jalon G.1) · **Statut** : ACTÉ
+- **Le drapeau `enabled` ne convient pas à un RELAY.** Première version du
+  pylône : le levier basculait `ElectricNode.enabled`. Le graphe ne consulte ce
+  drapeau que pour `SOURCE`, `SWITCH` et `BATTERY` — `conducts()` retourne
+  `true` sans condition pour tous les autres types. Résultat mesuré à
+  l'ouverture de la scène : les quatre pylônes alimentés, cyan, alors qu'aucun
+  n'était dressé. Le test `test_a_raised_pylon_is_powered_by_the_ground_rail`
+  l'a montré en deux assertions.
+- **Corrigé par la GÉOMÉTRIE, pas par une exception dans le graphe.** Le mât est
+  télescopique : déployé, son sabot de cuivre descend sur le siège du rail et
+  le port du nœud tombe dessus ; rétracté, le sabot est relevé de 1,6 m, très
+  au-delà des 0,5 m de portée. C'est exactement la doctrine de §15.3 — « la
+  logique ne doit pas s'activer seulement parce que l'objet est proche d'un
+  point invisible » — et c'est la même que le bloc de la salle 1, les bras des
+  relais de la salle 3 et la batterie de la salle 4. Ajouter `RELAY` à la liste
+  des types sensibles à `enabled` aurait marché aussi, mais aurait rendu la
+  connexion invisible : rien, à l'écran, n'aurait dit pourquoi le courant passe.
+- **L'anneau de terre est un CYCLE, volontairement.** Vingt-quatre câbles
+  refermés sur eux-mêmes autour de l'arène, alimentés par un puits au nord.
+  §15.2 pt. 5 exige que les cycles soient inoffensifs ; l'arène en fait la
+  démonstration en jeu plutôt qu'en test de laboratoire. Cinquante recalculs
+  consécutifs sont chronométrés par `test_the_closed_ground_ring_terminates`.
+- **La caméra reçoit un SUPPLÉMENT de cadrage, pas un réglage absolu.**
+  `CameraRig.set_boss_framing(distance, fov)` s'ajoute à la base et converge
+  sur la même courbe framerate-independent que le FOV de sprint (§8.3 : aucun
+  snap). Le `SpringArm3D` continue de sonder : reculer ne fait donc jamais
+  traverser un mur. Alternative rejetée : un mode caméra dédié qui écrase les
+  valeurs — il aurait fallu restaurer l'état d'avant à la sortie, et toute
+  sortie manquée aurait laissé la caméra du boss dans la vallée.
+- **L'arène n'est pas un piège.** Son seuil sud reste ouvert vers
+  l'antichambre, donc vers le feu de cuisine et le coffre garanti. Un joueur
+  qui entre sans plat de résistance électrique peut ressortir en préparer un.
+  §15.11 ne s'arrête pas à la porte du boss.
+
+
+---
+
+## D-033 — G.2 : les PV du boss sont DÉRIVÉS de la solvabilité
+
+- **Date** : 2026-08-03 · **Phase** : G (jalon G.2) · **Statut** : ACTÉ
+- **900 PV étaient un chiffre inventé ; 560 sont un chiffre calculé.** §16.7
+  demande « un test qui échoue si le boss est mathématiquement impossible avec
+  le loot garanti » et « une marge de 30-50 % au-dessus du minimum théorique ».
+  Écrit d'abord, ce test a immédiatement recalé la valeur choisie : sous des
+  hypothèses délibérément pessimistes — deux coups sur trois portent, la moitié
+  seulement dans une fenêtre de noyau, le reste sur l'armure à ×0,2 — le loot
+  garanti (lame conductrice 26×16, épée usée 12×24, gourdin 8×18) plafonne à
+  environ 755 dégâts utiles. Contre 900 PV, la marge valait **-16 %** : le
+  combat était infaisable. 560 PV la portent à **+35 %**.
+- **La borne HAUTE est testée aussi.** Un boss qu'on abat avec le tiers de son
+  arsenal n'est plus un examen de maîtrise. L'assertion encadre donc la marge
+  entre 30 et 50 % : toute dérive future, dans un sens comme dans l'autre,
+  devra être une décision, pas un effet de bord.
+- **Aucune arme rare n'est requise** : le test vérifie en plus que la lame
+  conductrice seule ne suffit PAS. Gérer son arsenal fait partie du combat.
+- **Deux pièges d'écriture de test, notés parce qu'ils reviendront.** Une lambda
+  GDScript capture les variables locales **par valeur** : `var vu := false` puis
+  `signal.connect(func(): vu = true)` ne remonte jamais rien — il faut un
+  tableau. Et `HitboxComponent.monitoring` reste allumé en permanence par
+  conception (R-014) : pour savoir si une hitbox frappe encore, on lit
+  `is_active()`, jamais `monitoring`.

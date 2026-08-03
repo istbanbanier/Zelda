@@ -240,8 +240,18 @@ func test_the_antechamber_holds_everything_15_10_asks_for() -> void:
 	for berry: IngredientPickup in ante.berries():
 		check_equal(String(berry.definition.id), "storm_berry",
 			"…de la bonne famille (résistance électrique, §13.5)")
+	# Deux seuils depuis G.1 : le RETOUR vers la salle centrale (§15.10 :
+	# « possibilité de revenir ») et l'entrée dans l'arène. On les nomme
+	# tous les deux plutôt que d'en compter un — un compte se casse au
+	# prochain ajout sans rien dire de ce qui manque.
 	var doors: Array[Node] = ante.find_children("*", "SceneDoor", true, false)
-	check_equal(doors.size(), 1, "un seuil de RETOUR vers la salle centrale")
+	var targets: Array[String] = []
+	for door: Node in doors:
+		targets.append((door as SceneDoor).target_scene)
+	check(targets.has(HALL), "un seuil de RETOUR vers la salle centrale")
+	check(targets.has("res://scenes/boss/BossArena.tscn"),
+		"…et le seuil qui mène à l'arène du boss")
+	check_equal(doors.size(), 2, "et rien d'autre : deux seuils, pas plus")
 	check_equal(String((doors[0] as SceneDoor).target_scene), Antechamber.HALL,
 		"…qui pointe vraiment sur elle")
 	check(not ante.find_children("ArenaPylon*", "StaticBody3D", true, false)

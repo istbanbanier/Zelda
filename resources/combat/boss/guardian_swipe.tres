@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AttackDefinition" load_steps=2 format=3]
+
+; G.2 — griffe du Gardien (§16.3 : « combo mêlée court »). Télégraphe long
+; et lisible : c'est un boss, pas une embuscade.
+
+[ext_resource type="Script" path="res://resources/combat/attack_definition.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"guardian_swipe"
+damage_multiplier = 1.0
+poise_damage = 30.0
+knockback = 4.0
+element = &""
+startup = 0.75
+active = 0.18
+recovery = 0.9
+input_buffer = 0.15
+combo_window_fraction = 0.35
+hit_stop = 0.07

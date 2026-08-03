@@ -1488,3 +1488,9 @@ func is_aiming() -> bool:
 
 func lock_component() -> LockOnComponent:
 	return _lock_on
+
+
+## §16.6 : l'arène a besoin du rig pour élargir le cadrage face au boss.
+## Exposé en lecture — personne n'écrit dans la caméra du joueur d'ailleurs.
+func camera_rig() -> CameraRig:
+	return _camera_rig

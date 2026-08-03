@@ -454,3 +454,62 @@ pas : le tremblement, l'à-coup, le ressenti, l'envie de rejouer.
 
 **CONTROLLER-001 ne fait PAS partie de ce protocole** : la dette manette reste
 ouverte et se lève par l'étape 3 du protocole Gate A, jamais par le Gate B.
+
+---
+
+# Protocole G — combat du Gardien de l'Orage
+
+Rien de ce qui suit n'a été jugé dans le conteneur : ni écran, ni manette,
+ni oreille. Les tests automatiques prouvent des LIAISONS et des BORNES —
+qu'une fenêtre dure 0,85 s, qu'un pylône est branché, que le combat est
+mathématiquement gagnable. Ils ne disent rien de ce qu'on ressent.
+
+Lancer : `godot --path .`, puis charger la sauvegarde de l'antichambre, ou
+directement `scenes/boss/BossArena.tscn` depuis l'éditeur.
+
+## Essai G-1 — Lecture de la première phase (§16.3)
+
+1. Entrer dans l'arène sans rien savoir du combat.
+2. Sans consulter ce document : combien de temps avant de comprendre que
+   l'armure encaisse presque tout ?
+3. Combien de temps avant de remarquer les pylônes ?
+4. Combien de temps avant de comprendre qu'il en faut DEUX ?
+
+À noter : la durée de chaque prise de conscience, et ce qui l'a déclenchée
+(la couleur du noyau, le levier, l'arc qui rate). Si rien ne la déclenche
+en deux minutes, l'affordance est à revoir — pas le texte à ajouter.
+
+## Essai G-2 — Les télégraphes (§16.4, §16.5)
+
+1. Jouer la phase 2 en gardant la lame conductrice.
+2. Le renvoi de surcharge est-il compris comme une CONSÉQUENCE de l'arme,
+   ou vécu comme une punition arbitraire ?
+3. Changer pour le gourdin : la différence se sent-elle sans la lire ?
+4. En phase 3, les marques au sol laissent-elles vraiment le temps de
+   sortir ? Compter les fois où l'on est touché en ayant vu la marque.
+
+## Essai G-3 — Caméra (§16.6)
+
+1. Combattre au contact, dos au mur, puis au centre.
+2. Le Gardien sort-il du cadre ? Combien de fois, et à quel moment ?
+3. L'élargissement de la caméra se remarque-t-il ? Il ne DOIT pas.
+4. Un pylône passe-t-il durablement entre la caméra et le héros ?
+
+## Essai G-4 — Durée et retry (§16.1, §16.6)
+
+1. Chronométrer la PREMIÈRE victoire. Cible §16.1 : 4 à 7 minutes.
+2. Mourir volontairement. Chronométrer du dernier point de vie à
+   l'instant où l'on redevient maître du personnage. Cible : < 20 s.
+3. Vérifier qu'on revient avec l'équipement du checkpoint.
+
+## Essai G-5 — Conclusion (§16.8)
+
+1. Après la victoire : l'apaisement du ciel se voit-il ?
+2. Le coffre final se trouve-t-il sans le chercher ?
+3. L'écran de victoire arrive-t-il trop tôt, trop tard, ou au bon moment ?
+
+## Verdict
+
+Tant que ces cinq essais n'ont pas eu lieu, le Gate G reste
+**ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE**. Aucune case
+`PASS humain` ne peut être cochée sur la foi des tests automatiques.

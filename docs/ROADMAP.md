@@ -15,7 +15,7 @@ Règle : **aucune phase ne démarre avant que le gate précédent soit `PASS` ou
 | D | Monde graybox 512 m + cinq familles ennemies | Gate D | 🟢 **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE** (`docs/GATE_D_AUDIT.md`, passe 3 après revue contradictoire) ; item 18 PARTIEL assumé (4 coffres sur 8, solde en Phase F) |
 | E | Récolte, cuisine, buffs, sauvegarde | Gate E | 🟢 **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE** (`docs/GATE_E_AUDIT.md`) — E.1 à E.3 livrés |
 | F | Graphe électrique + 4 salles du donjon | Gate F | ⬜ Non commencé |
-| G | Boss trois phases + victoire | Gate G | ⬜ Non commencé |
+| G | Boss trois phases + victoire | Gate G | 🟨 **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE** (`docs/GATE_G_AUDIT.md`) : tous les items §16 automatisables PASS, run boss joué de bout en bout ; le « run de 25-40 min » reste NON VÉRIFIÉ faute de joueur |
 | H | Art « wahou » | Gate H | ⬜ Non commencé |
 | I | Optimisation et livraison | Gate I | ⬜ Non commencé |
 | J | Démo 3 min, revue externe, release candidate | Gate J | ⬜ Non commencé |

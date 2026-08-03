@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="AttackDefinition" load_steps=2 format=3]
+
+; G.2 — arc électrique frontal (§16.3). C'est l'attaque que les pylônes
+; de mise à la terre CAPTURENT : élément électrique, télégraphe d'une
+; seconde, portée longue.
+
+[ext_resource type="Script" path="res://resources/combat/attack_definition.gd" id="1_def"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"guardian_arc"
+damage_multiplier = 1.3
+poise_damage = 40.0
+knockback = 5.0
+element = &"electric"
+startup = 1.0
+active = 0.25
+recovery = 1.1
+input_buffer = 0.15
+combo_window_fraction = 0.3
+hit_stop = 0.08

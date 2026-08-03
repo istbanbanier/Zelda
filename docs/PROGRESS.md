@@ -1911,3 +1911,56 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > **PROCHAINE ACTION (Phase G)** : arène circulaire 32-42 m, quatre
 > pylônes de mise à la terre branchés sur le MÊME système électrique que
 > le donjon, puis machine à états du boss et ses trois phases.
+
+## 2026-08-03 — Phase G, jalons G.1 à G.3 : l'arène, le combat, la conclusion
+
+> G.1 : l'arène du Gardien est un DISQUE de 38 m (§16.1 : 32-42), fermé
+> par un mur circulaire continu, avec trois zones de sol emboîtées — dalle
+> du noyau, anneau de combat, marge de terre — et rien au milieu qui
+> puisse gêner la caméra. Les quatre pylônes de mise à la terre sont de
+> vrais nœuds du graphe du donjon, comme §16.3 l'exige nommément : un
+> anneau fermé de 24 câbles court à leurs pieds, alimenté par un puits de
+> terre au nord. C'est un CYCLE, et c'en est la démonstration en jeu
+> plutôt qu'en laboratoire (§15.2 pt. 5).
+> Le premier pylône était FAUX et un test l'a dit : il basculait
+> `ElectricNode.enabled`, drapeau que le graphe n'écoute que pour SOURCE,
+> SWITCH et BATTERY. Les quatre s'allumaient à l'ouverture de la scène.
+> Corrigé par la géométrie, pas par une exception : le mât est
+> télescopique et son sabot de cuivre descend sur le rail quand on le
+> dresse. Rétracté, il est relevé de 1,6 m, très au-delà des 0,5 m de
+> portée. Même doctrine que le bloc de la salle 1 et la batterie de la
+> salle 4 (§15.3).
+> La caméra reçoit un SUPPLÉMENT de cadrage tant que le Gardien vit — la
+> distance et le FOV s'ouvrent sur la même courbe interpolée que le FOV de
+> sprint, donc sans snap (§8.3), et le `SpringArm3D` continue de sonder :
+> reculer ne fait jamais traverser un mur. Le HUD gagne sa barre de boss
+> (§17.2), qui affiche la vie réelle et nomme la phase.
+> L'arène n'enferme personne : son seuil sud reste ouvert vers
+> l'antichambre, donc vers le feu de cuisine. §15.11 ne s'arrête pas à la
+> porte du boss.
+> G.2 : le combat. Un test par exigence chiffrée de §16, écrits pour faire
+> échouer plutôt que pour confirmer. Deux défauts trouvés ainsi :
+> — les 5 s d'éveil de §16.1 n'existaient pas. `_enter()` étant idempotent
+> (ce qui protège les seuils de PV, §16.2), entrer dans INTRO depuis INTRO
+> ne faisait rien : le timer restait à zéro et le Gardien basculait en
+> phase 1 au premier tick. L'intro est désormais armée explicitement ;
+> — le boss était INFAISABLE. Le test de solvabilité de §16.7, écrit avant
+> tout réglage, a mesuré la marge à -16 % : sous des hypothèses
+> pessimistes, le loot garanti plafonne à ~755 dégâts utiles, contre
+> 900 PV. Les PV sont maintenant DÉRIVÉS de ce calcul — 560, marge +35 %,
+> dans la bande 30-50 % que §16.7 impose. La borne haute est testée aussi.
+> Le reste est joué avec les vraies pièces du jeu : deux pylônes (pas un)
+> pour la mise à la terre, l'armure à ×0,2 qui n'est pas une
+> invulnérabilité, les cristaux révélés en phase 2, le gourdin qui ne
+> renvoie rien et la lame conductrice qui brûle les doigts en surcharge,
+> le buff de résistance qui amortit, la fenêtre de télégraphe chronométrée
+> entre 0,7 et 1,0 s et bornée à la construction.
+> G.3 : la conclusion de §16.8, dans son ordre. Les hazards s'arrêtent, le
+> puits de terre se tait et le rail s'éteint, le ciel se dissipe
+> PARTIELLEMENT — il s'ouvre sans redevenir un midi bleu —, le coffre
+> final naît au centre, `boss_defeated` est écrit, et la cinématique est
+> passable : ouvrir le coffre la termine sur-le-champ. L'écran de victoire
+> offre les trois issues exigées, avec cycle de focus fermé et
+> confirmation avant d'écraser une partie terminée.
+> **PROCHAINE ACTION (G.4)** : le run complet de 25-40 minutes du Gate G,
+> du spawn à la victoire, sans debug — puis l'audit contradictoire.

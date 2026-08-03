@@ -1474,3 +1474,75 @@ lancement/captures Xvfb → commit isolé poussé. Plancher monotone :
 l'ordre PASS, zéro S0-S3, quatre S4 traités (repo_dirty resserré aux
 fichiers suivis + recapture post-commit ; ISS-013/ISS-014 consignés ;
 audits régénérés). validate_fast rejoué par le réviseur : 312/312, RC=0.
+
+---
+
+## Phase G — jalons G.1 à G.4 (2026-08-03)
+
+Environnement : Godot 4.7.1-stable custom_build a13da4feb, Linux headless
+sans GPU, Forward+ / Jolt, `tools/validate_fast.sh`.
+
+Commandes exactes :
+
+```bash
+export GODOT_BIN=/usr/local/bin/godot
+godot --headless --path . --import
+godot --headless --path . --script tools/godot/test_runner.gd -- --filter=boss
+tools/validate_fast.sh
+```
+
+### Nouveaux fichiers de test
+
+- `tests/integration/test_boss_arena.gd` (11) : géométrie du disque mesurée
+  sur la forme de collision, absence d'obstacle central, pylônes branchés
+  sur l'anneau de terre (avec la preuve INVERSE : puits coupé = pylône
+  dressé mais éteint), cycle fermé chronométré sur 50 recalculs, boss tenu
+  dans l'arène, joueur non poussé à travers le mur, cadrage caméra
+  progressif (plus grand pas mesuré), checkpoint relu, cible du retry,
+  barre de boss, seuil sud dans les deux sens.
+- `tests/integration/test_boss_guardian.gd` (12) : armure non-invulnérable,
+  DEUX pylônes exigés, étourdissement 5-8 s puis armure refermée, seuil de
+  PV non rejouable, cristaux de phase 2, renvoi conducteur fenêtré (bois vs
+  métal vs hors surcharge), résistance électrique, fenêtre de télégraphe
+  chronométrée et bornée, gain de vitesse de phase 3, mort qui coupe tout,
+  solvabilité, cadrage en verrouillage.
+- `tests/integration/test_boss_victory.gd` (7) : coffre final, rail éteint,
+  apaisement mesuré du ciel, cinématique passable, écran de victoire à
+  trois issues avec cycle de focus fermé, refus d'annoncer une victoire
+  non acquise, confirmation avant écrasement.
+- `tests/playthrough/test_boss_run.gd` (1, 17 assertions) : antichambre →
+  coffre garanti → arène → victoire, à travers `DamageFormula` et les
+  vraies hurtbox, avec durabilité et rupture d'arme.
+
+### Défauts réels trouvés par ces tests
+
+1. **Les pylônes étaient un compteur déguisé.** `ElectricNode.enabled` est
+   ignoré par le graphe pour un `RELAY` : les quatre pylônes s'allumaient à
+   l'ouverture de la scène. Corrigé par la géométrie (mât télescopique dont
+   le sabot descend sur le rail).
+2. **Les 5 s d'éveil de §16.1 n'existaient pas.** `_enter()` étant
+   idempotent, entrer dans INTRO depuis INTRO ne posait pas le timer : le
+   Gardien basculait en phase 1 au premier tick physique.
+3. **Le boss était infaisable.** Le test de solvabilité de §16.7 a mesuré
+   une marge de **-16 %** avec le loot garanti. Les PV sont désormais
+   dérivés du calcul : 560, marge **+35 %**.
+4. **Le combat ne montrait jamais les phases 2 et 3.** Les seuils de PV
+   étant gelés pendant l'étourdissement, le run complet tuait le Gardien
+   dans sa première fenêtre de noyau. Un seuil franchi interrompt
+   maintenant la mise à la terre.
+5. **Un bouton de l'écran de victoire changeait vraiment de scène pendant
+   un test** — détecté par le contrôle de fuite du runner ajouté en F.6.
+
+### Résultat mesuré du run de boss
+
+```
+[run boss] 1 mise(s) à la terre · 37 coups (15 noyau, 10 cristal)
+           · 1 arme(s) brisée(s)
+           · phases : phase1, grounded_stun, transition12, phase2,
+                      transition23, phase3
+           · vie restante 0/560
+```
+
+Ce chiffre est le résultat d'une simulation, pas d'une partie humaine : le
+balayage de hitbox est postulé et la précision fixée à deux coups sur
+trois. La durée d'une première victoire (§16.1 : 4-7 min) n'est PAS mesurée.

@@ -186,3 +186,11 @@ NON ASSERTÉS, à vérifier visuellement au playtest n° 2.
 |---|---|---|---|
 | ISS-013 | `tools/gltf_inspect.py` ne mesure la bbox que du PREMIER mesh : dimensions non fiables sur les personnages skinnés multi-meshes (Male_Ranger rapporte 0,23 m) ; la règle « min Y ≈ 0 » y est de fait un simple avertissement | S4 | outillage — améliorer avant le prochain lot de personnages |
 | ISS-014 | Coutures d'alignement `WEAPON_GRIP_EULER/OFFSET` lues depuis l'environnement sur le chemin runtime de `_build_weapon_visual` (valeurs figées par défaut, documentées) | S4 | à retirer en Phase I — un build final ne lit pas de réglage visuel dans l'environnement |
+
+## Phase G (2026-08-03)
+
+| ID | Constat | Sévérité | Propriétaire / échéance |
+|---|---|---|---|
+| ISS-015 | La SURCHARGE de §16.4 peut ne jamais s'afficher : elle part sur un intervalle de 9 s en phase 2, et le run automatisé traverse la phase 2 plus vite que cela. Un joueur efficace pourrait donc ne jamais rencontrer le risque « métal pendant la surcharge », qui est pourtant l'idée tactique de la phase. Le mécanisme est correct et testé (`test_conductive_weapons_backfire_during_overload_and_wood_does_not`) ; c'est son DÉCLENCHEMENT qui est à revoir — par exemple une première surcharge garantie peu après l'entrée en phase 2. | S3 | réglage de combat — à trancher au playtest du protocole G-2 |
+| ISS-016 | `test_boss_run.gd` postule le contact : il appelle `HurtboxComponent.receive_hit()` au lieu de faire balayer une vraie hitbox. Il respecte `monitorable` (donc ne frappe pas un noyau fermé) et se donne une précision de deux coups sur trois, mais il ne prouve rien sur la portée, l'angle ni le timing des attaques du joueur. | S4 | à renforcer quand `CombatLab` du Prompt 2 existera (P2-1) |
+| ISS-017 | La durée d'une première victoire (§16.1 : 4-7 min) et le délai réel de retry (§16.6 : < 20 s) ne sont mesurés par aucun test — ce sont des temps humains. Le chargement de l'arène est chronométré, le reste ne l'est pas. | S4 | protocole `docs/MANUAL_VALIDATION.md`, essai G-4 |

@@ -1,0 +1,75 @@
+[gd_scene load_steps=2 format=3]
+
+; Écran de victoire (§16.8, §17.3) — trois issues réelles : continuer
+; l'exploration, recommencer (avec confirmation), revenir au menu.
+; Mise en page par conteneurs, jamais par positions absolues (§17.1).
+
+[ext_resource type="Script" path="res://scripts/ui/victory_screen.gd" id="1_victory"]
+
+[node name="VictoryScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_victory")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.11, 0.106, 0.094, 1)
+
+[node name="Layout" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 64
+theme_override_constants/margin_top = 64
+theme_override_constants/margin_right = 64
+theme_override_constants/margin_bottom = 64
+
+[node name="Column" type="VBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="Layout/Column"]
+layout_mode = 2
+text = "LE GARDIEN EST TOMBÉ"
+theme_override_font_sizes/font_size = 44
+
+[node name="StatusLabel" type="Label" parent="Layout/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "La tempête s'est ouverte au-dessus de la Citadelle."
+
+[node name="TimeLabel" type="Label" parent="Layout/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = ""
+
+[node name="Spacer" type="Control" parent="Layout/Column"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 24)
+
+[node name="ExploreButton" type="Button" parent="Layout/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Continuer l'exploration"
+
+[node name="RestartButton" type="Button" parent="Layout/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Recommencer"
+
+[node name="MenuButton" type="Button" parent="Layout/Column"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Menu principal"

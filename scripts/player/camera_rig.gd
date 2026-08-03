@@ -39,6 +39,15 @@ var _yaw: float = 0.0
 ## reprendre brutalement la main au décrochage est interdit (§10.9), d'où la
 ## convergence lissée dans les deux sens.
 var _lock_target: Node3D = null
+## §16.6 : « la caméra élargit distance/FOV PROGRESSIVEMENT » face au boss.
+## Ce sont des SUPPLÉMENTS demandés par la scène (l'arène), jamais des
+## valeurs absolues écrasant le réglage : le rig reste maître de sa base,
+## et §8.3 (« aucun snap de FOV ») s'applique aussi à la distance — les
+## deux convergent par interpolation framerate-independent.
+var _framing_distance_target: float = 0.0
+var _framing_fov_target: float = 0.0
+var _framing_distance: float = 0.0
+var _framing_fov: float = 0.0
 
 
 func _ready() -> void:
@@ -104,12 +113,36 @@ func _apply_lock_look(delta: float) -> void:
 
 
 ## Élargit le champ pendant le sprint, par interpolation : §8.3 interdit tout snap.
+## Le supplément de cadrage boss (§16.6) s'ajoute ici, sur la MÊME courbe :
+## un colosse de 6,4 m ne tient pas dans le cadre d'exploration, et le
+## recul doit se sentir sans qu'on le voie arriver d'un coup.
 func update_fov(sprinting: bool, delta: float) -> void:
 	if tuning == null:
 		return
-	var target: float = tuning.camera_fov_sprint if sprinting else tuning.camera_fov
 	var weight: float = 1.0 - exp(-tuning.camera_fov_speed * delta)
-	_camera.fov = lerpf(_camera.fov, target, weight)
+	_framing_fov = lerpf(_framing_fov, _framing_fov_target, weight)
+	_framing_distance = lerpf(_framing_distance, _framing_distance_target, weight)
+	var target: float = tuning.camera_fov_sprint if sprinting else tuning.camera_fov
+	_camera.fov = lerpf(_camera.fov, target + _framing_fov, weight)
+	# Le bras s'allonge, mais le `SpringArm3D` continue de sonder : reculer
+	# ne fait donc jamais traverser un mur (§8.3), il fait seulement place.
+	_spring_arm.spring_length = tuning.camera_distance + _framing_distance
+
+
+## §16.6 — appelé par l'arène tant que le boss est vivant et proche. Deux
+## suppléments, pas deux réglages absolus ; `0, 0` rend la caméra normale.
+func set_boss_framing(extra_distance: float, extra_fov: float) -> void:
+	_framing_distance_target = maxf(0.0, extra_distance)
+	_framing_fov_target = maxf(0.0, extra_fov)
+
+
+## Seams de mesure : c'est le supplément RÉELLEMENT appliqué, pas la consigne.
+func boss_framing_distance() -> float:
+	return _framing_distance
+
+
+func boss_framing_fov() -> float:
+	return _framing_fov
 
 
 func _apply_rotation() -> void:
