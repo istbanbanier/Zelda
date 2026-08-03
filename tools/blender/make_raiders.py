@@ -95,11 +95,17 @@ def limb(name: str, start: Vector, end: Vector, girth: float):
     Il est allongé d'un demi-diamètre à chaque bout : sans ce mordant, les
     segments se touchent sans se recouvrir et le corps se désassemble à
     l'œil dès qu'on le regarde de trois quarts.
+
+    CAUSE RACINE d'ISS-018 : `add_box` prend une taille PLEINE, puisque
+    `bmesh.ops.create_cube(size=1.0)` pose ses sommets à ±0,5. Le `* 0.5`
+    qui traînait ici bâtissait chaque membre à la MOITIÉ de sa portée : il
+    s'arrêtait à mi-chemin de son articulation, et le mordant décrit
+    ci-dessus n'a jamais existé.
     """
     delta = end - start
     length = max(0.02, delta.length) + girth
     centre = (start + end) * 0.5
-    obj = add_box(name, (girth, girth, length * 0.5), tuple(centre))
+    obj = add_box(name, (girth, girth, length), tuple(centre))
     # Oriente +Z local le long du segment.
     obj.rotation_mode = "QUATERNION"
     obj.rotation_quaternion = delta.to_track_quat("Z", "Y")
@@ -250,6 +256,14 @@ def build_raider(armature, profile: dict) -> dict:
         elbow = head_of(armature, "lowerarm_%s" % side)
         wrist = head_of(armature, "hand_%s" % side)
         forearm_end = wrist + (wrist - elbow) * (profile["forearm_gain"] - 1.0)
+        # Clavicule : elle relie l'axe du corps à l'os d'épaule. Sans elle le
+        # bras ne touchait pas le buste — chaque bras formait une grappe
+        # solidaire de lui seul, ce que « chaque pièce a un voisin » ne voit
+        # pas. Partir de x = 0 garantit l'ancrage quelle que soit la carrure
+        # de la famille.
+        groups["skin"].append(limb("Clavicle_%s" % side,
+                                   Vector((0.0, shoulder.y, shoulder.z)),
+                                   shoulder, girth * 1.15 * profile["arm_gain"]))
         groups["skin"].append(limb("UpperArm_%s" % side, shoulder, elbow,
                                    girth * profile["arm_gain"]))
         groups["skin"].append(limb("LowerArm_%s" % side, elbow, forearm_end,

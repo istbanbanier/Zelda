@@ -121,6 +121,47 @@ else
   bad "Boot n'a pas enchaîné sur le menu principal (voir $SCENE_LOG)"
 fi
 
+step "3b. Continuité des personnages livrés (ISS-019)"
+# ISS-018 : les créatures s'affichaient en pièces détachées alors que TOUS les
+# tests étaient verts, parce qu'ils mesuraient des boîtes englobantes — et
+# qu'une boîte englobante de maillage SKINNÉ décrit la pose de liaison, pas ce
+# que le moteur dessine. Aucun assemblage n'était donc jamais vérifié.
+#
+# Ce niveau lit la géométrie du .glb LIVRÉ après évaluation du graphe de
+# dépendances, donc APRÈS déformation par l'armature, et exige que chaque
+# personnage forme UN SEUL corps solidaire. Il tourne en quelques secondes.
+CONT_LOG="$LOG_DIR/03b_continuity.log"
+: > "$CONT_LOG"
+BLENDER_BIN="${BLENDER_BIN:-blender}"
+if ! command -v "$BLENDER_BIN" >/dev/null 2>&1; then
+  bad "Blender absent — la continuité des personnages n'est PAS vérifiée"
+else
+  CONT_FAILED=0
+  CONT_COUNT=0
+  while IFS='|' read -r label glb; do
+    [ -f "$glb" ] || { bad "modèle absent : $glb"; continue; }
+    CONT_COUNT=$((CONT_COUNT + 1))
+    if ! "$BLENDER_BIN" --background --python tools/blender/check_continuity.py -- \
+         --glb "$glb" --label "$label" >> "$CONT_LOG" 2>&1; then
+      CONT_FAILED=$((CONT_FAILED + 1))
+    fi
+  done <<'MODELS'
+colosse|assets/characters/creatures/SK_RavineTroll.glb
+chasseur|assets/characters/creatures/SK_CentaurHunter.glb
+gardien|assets/characters/boss/SK_StormGuardian.glb
+raider_red|assets/characters/enemies/SK_RaiderRed.glb
+raider_blue|assets/characters/enemies/SK_RaiderBlue.glb
+raider_black|assets/characters/enemies/SK_RaiderBlack.glb
+MODELS
+  grep -E '^\[continuité\] .* : (UN SEUL|[0-9]+ (PIÈCE|GRAPPE))' "$CONT_LOG" \
+    | sed 's/^/    /'
+  if [ $CONT_FAILED -eq 0 ]; then
+    ok "$CONT_COUNT personnage(s) : un seul corps solidaire, aucune pièce détachée"
+  else
+    bad "$CONT_FAILED personnage(s) en pièces détachées sur $CONT_COUNT (voir $CONT_LOG)"
+  fi
+fi
+
 step "4. Plancher de couverture"
 # B1 : renommer un fichier de test faisait disparaître 3 tests sans que rien ne
 # rougisse. Le nombre de tests attendu est donc épinglé ; le baisser exige une

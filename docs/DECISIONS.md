@@ -950,3 +950,42 @@ la première fois deux erreurs isolées, la seconde 62 tests rouges en
 cascade. Le contenu du dépôt doit être figé entre le lancement de la
 validation et son verdict ; les seules éditions sûres sont celles que Godot
 ne charge pas (documentation).
+
+## D-036 — Une taille de boîte est PLEINE, pas une demi-taille (ISS-018)
+
+`bmesh.ops.create_cube(size=1.0)` pose ses sommets à ±0,5 : la « taille »
+qu'attendent nos fabriques `add_box` et `limb` est donc la dimension
+COMPLÈTE. Trois scripts la traitaient par endroits comme une demi-taille
+(`* 0.5`, `* 0.62`, `* 0.52`). Chaque membre, chaque travée de dos, chaque
+maillon d'anneau et chaque segment de queue était bâti à la moitié — ou aux
+deux tiers — de sa portée, et s'arrêtait avant son articulation. Les
+créatures arrivaient donc en pièces détachées, exactement comme si le
+pipeline était cassé, alors que le pipeline était juste.
+
+Vérifié plutôt que supposé : un script d'une ligne dans Blender confirme
+l'étendue ±0,5. C'est la règle « ne jamais halluciner une API » appliquée à
+une bibliothèque qu'on croyait connaître.
+
+Alternative rejetée : compenser en allongeant les portées à la main créature
+par créature. C'est ce que la « passe de mordant » précédente avait commencé
+à faire — elle traitait le symptôme, masquait la cause, et n'aurait jamais
+convergé.
+
+## D-037 — Le critère de continuité est « UN SEUL corps », pas « chaque pièce a un voisin »
+
+Le premier contrôle d'ISS-019 demandait à chaque morceau d'avoir un voisin.
+Le chasseur l'a passé alors que ses deux bras flottaient à 11 cm du buste :
+chaque bras touchait son propre avant-bras, donc chacun avait bien un
+voisin. Le critère retenu est la CONNEXITÉ globale — un seul groupe — ce qui
+a immédiatement révélé la même faute sur deux des trois pillards.
+
+Deux autres pièges de mesure, corrigés parce qu'ils faisaient dire au test
+n'importe quoi :
+
+- **sans ressoudure des sommets**, l'export glTF sépare les sommets par
+  normale et par UV : le Gardien comptait 1520 « îlots » de une face, tous
+  voisins les uns des autres, et le contrôle ne voyait aucun défaut ;
+- **la distance sommet à sommet** ment sur des boîtes tournées l'une par
+  rapport à l'autre — l'anneau du Gardien ressortait « détaché » alors que
+  ses maillons s'enfilaient. La mesure retenue va des sommets de l'un vers
+  la BOÎTE de l'autre, dans les deux sens.

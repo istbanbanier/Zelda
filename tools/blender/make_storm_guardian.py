@@ -54,6 +54,7 @@ BODY_Z = 2.35           # hauteur du centre de la masse au-dessus du sol
 HEAD_LEN = 1.5
 TAIL_SEGMENTS = 5
 RING_RADIUS = 1.85
+RING_Z = 3.40           # centre de l'anneau : abaissé pour qu'il TRAVERSE le dos
 LEG_FRONT_Z = 2.05      # attache des membres antérieurs
 LEG_REAR_Z = 1.75
 
@@ -195,13 +196,18 @@ def build_body(generator) -> bpy.types.Object:
     for i in range(5):
         t = i / 4.0
         arch = math.sin(math.pi * (0.25 + 0.5 * t)) * 0.55
-        width = BODY_W * (1.0 - 0.16 * t)
+        width = BODY_W * (1.0 - 0.08 * t)
         length = BODY_LEN / 5.0
         y = BODY_LEN * (0.5 - t) - length * 0.5
         jitter = float(generator.uniform(-0.03, 0.03))
+        # Cotes PLEINES : `add_box` ne prend pas une demi-taille. Les travées
+        # bâties à 0,52 m de profondeur pour un pas de 1,00 m laissaient un
+        # trou de 48 cm entre chacune — le dos du Gardien arrivait en
+        # rondelles, et sa masse à mi-largeur laissait plaques, câbles et
+        # membres flotter autour du vide (ISS-018).
         parts.append(add_box(
             "BodySpan%d" % i,
-            (width * 0.5, length * 0.52, (BODY_H * 0.5) * (0.82 + arch * 0.4)),
+            (width, length * 1.15, BODY_H * (0.82 + arch * 0.4)),
             (0.0, y, BODY_Z + arch * 0.32 + jitter)))
     # Poitrail : plus bas et plus étroit, il porte le noyau.
     parts.append(add_box("Chest", (BODY_W * 0.36, 0.55, BODY_H * 0.42),
@@ -244,7 +250,11 @@ def build_limb(name: str, side: int, y: float, attach_z: float,
     girth = 0.38 if heavy else 0.26
     x = side * (BODY_W * 0.40 + girth * 0.2)
     parts = []
-    parts.append(add_box("%sThigh" % name, (girth, girth * 0.9, thigh * 0.62),
+    # Chaque segment couvre TOUTE sa portée, plus un diamètre de mordant :
+    # bâtis à 62 % ils s'arrêtaient à 19 % de la hanche et à 19 % du genou,
+    # et la bête se lisait en morceaux (ISS-018).
+    parts.append(add_box("%sThigh" % name,
+                         (girth, girth * 0.9, thigh + girth),
                          (x, y, attach_z - thigh * 0.5),
                          (0.0, side * math.radians(7.0), 0.0)))
     knee_z = attach_z - thigh
@@ -252,17 +262,17 @@ def build_limb(name: str, side: int, y: float, attach_z: float,
                               (x, y, knee_z),
                               (0.0, math.radians(90.0), 0.0)))
     parts.append(add_box("%sShin" % name,
-                         (girth * 0.80, girth * 0.80, shin * 0.62),
+                         (girth * 0.80, girth * 0.80, shin + girth * 0.8),
                          (x + side * 0.10, y - 0.08, knee_z - shin * 0.5),
                          (math.radians(6.0), 0.0, 0.0)))
     foot_z = knee_z - shin
-    parts.append(add_box("%sPad" % name, (girth * 0.95, girth * 1.0, 0.16),
-                         (x + side * 0.14, y - 0.14, foot_z + 0.08)))
+    parts.append(add_box("%sPad" % name, (girth * 1.9, girth * 1.0, 0.22),
+                         (x + side * 0.14, y - 0.14, foot_z + 0.10)))
     for toe in range(3):
         spread = (toe - 1) * girth * 0.72
         parts.append(add_box(
-            "%sToe%d" % (name, toe), (girth * 0.26, 0.34, 0.11),
-            (x + side * 0.14 + spread, y - 0.48, foot_z + 0.07),
+            "%sToe%d" % (name, toe), (girth * 0.26, 0.34, 0.13),
+            (x + side * 0.14 + spread, y - 0.30, foot_z + 0.08),
             (0.0, 0.0, math.radians(spread * 14.0))))
     return join(name, parts)
 
@@ -275,21 +285,36 @@ def build_ring() -> list:
     se divise et tourne de travers.
     """
     segments = []
-    spans = [(math.radians(200.0), math.radians(295.0)),
-             (math.radians(305.0), math.radians(60.0)),
-             (math.radians(70.0), math.radians(165.0))]
+    # Chaque arc PLONGE dans la masse par au moins une de ses extrémités :
+    # l'arc 70°-165° d'origine restait entièrement au-dessus du dos et
+    # flottait donc en l'air, un tiers d'anneau sans attache (ISS-018).
+    # Les trois brèches (10°, 12°, 10°) gardent l'anneau « incomplet ».
+    spans = [(math.radians(190.0), math.radians(285.0)),
+             (math.radians(295.0), math.radians(35.0)),
+             (math.radians(45.0), math.radians(178.0))]
     for index, (start, end) in enumerate(spans):
         if end < start:
             end += math.tau
-        steps = 7
+        steps = 9
+        # Le maillon doit couvrir le PAS de l'arc, sinon l'anneau devient un
+        # collier de perles flottantes : 7 blocs de 0,20 m sur un arc de
+        # 3,07 m laissaient 31 cm entre chacun (ISS-018).
+        #
+        # La longueur à allonger est celle de l'axe TANGENT. Avec une
+        # rotation de `angle` autour de X, c'est le +Z local qui suit la
+        # tangente et le +Y local qui pointe vers le centre : allonger Y,
+        # comme je l'avais fait d'abord, épaississait les rayons sans jamais
+        # combler l'écart entre eux.
+        step_arc = abs(end - start) * RING_RADIUS / float(steps - 1)
         parts = []
         for step in range(steps):
             angle = start + (end - start) * (step / float(steps - 1))
             parts.append(add_box(
-                "RingChunk%d_%d" % (index, step), (0.13, 0.20, 0.15),
+                "RingChunk%d_%d" % (index, step),
+                (0.13, 0.20, step_arc * 1.30),
                 (0.0,
                  math.cos(angle) * RING_RADIUS - 0.2,
-                 BODY_Z + 1.25 + math.sin(angle) * RING_RADIUS),
+                 RING_Z + math.sin(angle) * RING_RADIUS),
                 (angle, 0.0, 0.0)))
         segments.append(join("GuardianRing%d" % index, parts))
     return segments
@@ -306,12 +331,14 @@ def build_tail() -> list:
         length = 0.58
         y -= length * 0.92
         z -= 0.20 + 0.04 * i
-        parts.append(add_box("TailSeg%d" % i, (radius, length * 0.5, radius),
+        # Le segment couvre son pas plus un mordant : à `length * 0.5` la
+        # queue se désenfilait vertèbre par vertèbre (ISS-018).
+        parts.append(add_box("TailSeg%d" % i, (radius, length * 1.15, radius),
                              (0.0, y, z), (math.radians(-16.0 - 4.0 * i), 0, 0)))
     fork = []
     for prong in (-1, 1):
-        fork.append(add_box("TailProng%d" % (prong + 1), (0.09, 0.42, 0.09),
-                            (prong * 0.22, y - 0.55, z - 0.34),
+        fork.append(add_box("TailProng%d" % (prong + 1), (0.09, 0.52, 0.09),
+                            (prong * 0.13, y - 0.34, z - 0.20),
                             (math.radians(-34.0), 0.0,
                              math.radians(prong * 12.0))))
     return [join("GuardianTail", parts), join("GuardianTailFork", fork)]
@@ -339,9 +366,11 @@ def build_crystals() -> list:
                        (side * 0.92, -0.55, BODY_Z + 1.15))
         parts.append(base)
         for prong in (-1, 1):
+            # Les branches repartent DE la base : à +1,78 elles flottaient
+            # 20 cm au-dessus d'elle (ISS-018).
             parts.append(add_box(
                 "CrystalProng%d" % (prong + 1), (0.09, 0.09, 0.52),
-                (side * 0.92 + prong * 0.17, -0.55, BODY_Z + 1.78),
+                (side * 0.92 + prong * 0.17, -0.55, BODY_Z + 1.45),
                 (0.0, math.radians(prong * 11.0), 0.0)))
         crystals.append(join("Crystal%s" % "AB"[index], parts))
     return crystals

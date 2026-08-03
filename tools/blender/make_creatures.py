@@ -86,9 +86,17 @@ def limb(name: str, start: Vector, end: Vector, girth: float):
     """Segment allongé d'un diamètre : les pièces se RECOUVRENT au lieu de
     se frôler. Sans ce mordant la créature se lit comme un tas de boîtes —
     défaut vu sur la capture du vrai moteur, invisible aux boîtes
-    englobantes des tests."""
+    englobantes des tests.
+
+    CAUSE RACINE d'ISS-018, corrigée ici : le `* 0.5` qui traînait sur la
+    longueur. `bmesh.ops.create_cube(size=1.0)` produit des sommets à ±0,5,
+    donc `add_box` reçoit une taille PLEINE, pas une demi-taille. Chaque
+    membre était bâti à la moitié de sa portée et s'arrêtait à mi-chemin de
+    son articulation — d'où un trou de 15 à 25 cm à CHAQUE jonction. Le
+    mordant voulu par le commentaire ci-dessus n'a donc jamais existé.
+    """
     delta = end - start
-    obj = add_box(name, (girth, girth, (max(0.02, delta.length) + girth) * 0.5),
+    obj = add_box(name, (girth, girth, max(0.02, delta.length) + girth),
                   tuple((start + end) * 0.5))
     obj.rotation_mode = "QUATERNION"
     obj.rotation_quaternion = delta.to_track_quat("Z", "Y")
@@ -256,8 +264,11 @@ def build_colossus() -> None:
 
     # POINT FAIBLE (§12.4) : nodule minéral pâle entre omoplate et nuque.
     # Il n'est visible que de dos et par le haut — pas une cible peinte.
+    # Il est ENCASTRÉ dans le dos : son centre passe sous la face arrière du
+    # torse incliné et il n'en dépasse que de 7 cm. Posé à y=0,30 il flottait
+    # à 39 cm derrière la créature — le plus gros défaut d'ISS-018.
     nodule.append(add_box("WeakNodule", (0.26, 0.22, 0.20),
-                          (0.0, 0.30, 3.16), (math.radians(18.0), 0, 0)))
+                          (0.0, 0.10, 3.05), (math.radians(18.0), 0, 0)))
 
     # Plaques naturelles suivant l'omoplate.
     for side in (-1, 1):
@@ -277,10 +288,12 @@ def build_colossus() -> None:
         hide.append(add_box("Hand%d" % (side + 1), (0.30, 0.26, 0.30),
                             tuple(wrist + Vector((0, -0.04, -0.28)))))
         for finger in range(3):
+            # Remontés dans la paume : à −0,58 ils pendaient 7 cm sous la
+            # main, doigts flottants (ISS-018).
             hide.append(add_box("Finger%d_%d" % (side + 1, finger),
-                (0.075, 0.075, 0.16),
+                (0.075, 0.075, 0.20),
                 tuple(wrist + Vector((side * 0.0 + (finger - 1) * 0.16,
-                                      -0.12, -0.58)))))
+                                      -0.12, -0.48)))))
         if rocky:
             for i in range(4):
                 t = i / 3.0
@@ -307,8 +320,10 @@ def build_colossus() -> None:
     # Ceinture de troncs TRESSÉS et protection de bois sur UNE jambe.
     for i in range(5):
         angle = math.pi * (-0.4 + 0.2 * i)
+        # Rayon ramené sur la taille réelle du bassin (demi-cotes 0,43 × 0,33) :
+        # à 0,84 × 0,58 la ceinture flottait autour du colosse sans le toucher.
         wood.append(add_box("BeltLog%d" % i, (0.14, 0.14, 0.34),
-            (math.sin(angle) * 0.84, math.cos(angle) * 0.58, 1.52),
+            (math.sin(angle) * 0.44, math.cos(angle) * 0.32, 1.52),
             (math.radians(88.0), 0.0, angle)))
     wood.append(add_box("ShinGuard", (0.34, 0.20, 0.42),
                         (-0.62, -0.22, 0.72), (math.radians(-8.0), 0, 0)))
@@ -367,8 +382,10 @@ def build_hunter() -> None:
     for i, (w, d, h) in enumerate(spans):
         y = 1.45 - i * 0.72
         z = 1.38 - i * 0.055        # l'avant est PLUS HAUT que l'arrière
-        flesh.append(add_box("Rib%d" % i, (w * 0.5, d * 0.5, h * 0.5),
-                             (0.0, y, z)))
+        # `add_box` prend une taille PLEINE : le `* 0.5` d'origine réduisait
+        # chaque tranche à 0,46 m de profondeur pour un pas de 0,72 m, et la
+        # cage thoracique arrivait en rondelles séparées (ISS-018).
+        flesh.append(add_box("Rib%d" % i, (w, d, h), (0.0, y, z)))
     # Plaques dorsales en flèches vers l'arrière : la vitesse se lit à l'arrêt.
     for i in range(5):
         carapace.append(add_box("Fin%d" % i, (0.30 - 0.03 * i, 0.34, 0.09),
@@ -393,17 +410,20 @@ def build_hunter() -> None:
                 (0, math.radians(side * 12.0), 0)))
 
     # Queue COURTE, en lames de céramique — stabilisatrice, pas décorative.
+    # La première lame MORD dans la dernière côte (bord arrière à −1,84) et
+    # chaque suivante recouvre la précédente : posée à −2,24 la queue partait
+    # 26 cm derrière le corps, détachée (ISS-018).
     for i in range(3):
         carapace.append(add_box("TailBlade%d" % i,
-            (0.10 - 0.02 * i, 0.28, 0.07),
-            (0.0, -2.24 - i * 0.42, 1.06 - i * 0.10),
+            (0.10 - 0.02 * i, 0.42, 0.07),
+            (0.0, -1.70 - i * 0.36, 1.06 - i * 0.10),
             (math.radians(-18.0 - 8.0 * i), 0, 0)))
 
     # Torse supérieur : il naît EN AVANT du bassin inférieur et reste
     # INCLINÉ. C'est ce qui distingue la créature d'un centaure classique.
     flesh.append(add_box("TorsoLow", (0.50, 0.44, 0.78),
                          (0.0, 1.56, 1.76), (math.radians(-18.0), 0, 0)))
-    flesh.append(add_box("TorsoHigh", (0.54, 0.40, 0.82),
+    flesh.append(add_box("TorsoHigh", (0.62, 0.40, 0.82),
                          (0.0, 1.50, 2.42), (math.radians(-14.0), 0, 0)))
     carapace.append(add_box("Chestplate", (0.46, 0.14, 0.40),
                             (0.0, 1.24, 2.52), (math.radians(-12.0), 0, 0)))
@@ -419,7 +439,11 @@ def build_hunter() -> None:
 
     # Deux bras LONGS.
     for side in (-1, 1):
-        shoulder = Vector((side * 0.44, 1.44, 2.72))
+        # Épaule ramenée DANS le torse : à ±0,44 les deux bras formaient une
+        # grappe solidaire… d'eux-mêmes, à 11 cm du buste. Chaque bras avait
+        # bien un voisin, ce qui suffisait au premier critère — d'où le
+        # contrôle par grappes connexes.
+        shoulder = Vector((side * 0.32, 1.44, 2.72))
         elbow = Vector((side * 0.66, 1.30, 2.18))
         wrist = Vector((side * 0.72, 1.42, 1.66))
         flesh.append(limb("Arm%d" % (side + 1), shoulder, elbow, 0.115))
