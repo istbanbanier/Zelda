@@ -1603,3 +1603,54 @@ après avoir constaté deux fois que le log de l'outil pouvait mentir.
    teinte, le télégraphe d'attaque n'avait plus rien où écrire.
 5. L'échelle partait DEUX fois vers glTF (cuite par `export_apply` ET
    portée par le nœud) : 1,17 m mesuré pour 1,42 m attendu.
+
+## 2026-08-03 — Phase H lot H.6 : continuité des personnages
+
+Environnement : Godot 4.7.1.stable.custom_build a13da4feb, Blender 4.0.2,
+conteneur Linux headless sans GPU (rendu logiciel Mesa llvmpipe pour les
+captures).
+
+### Commandes exécutées
+
+```bash
+tools/blender/rebuild_characters.sh all      # sources -> .glb -> continuité
+blender --background --python tools/blender/check_continuity.py -- \
+    --glb <modèle> --label <nom> [--gap 0.02] [--report N]
+godot --headless --path . --script tools/godot/test_runner.gd -- --filter=creature
+godot --headless --path . --script tools/godot/test_runner.gd -- --filter=raider
+godot --headless --path . --script tools/godot/test_runner.gd -- --filter=guardian_asset
+tools/validate_fast.sh
+xvfb-run -a -s "-screen 0 1920x1080x24" godot --path . --rendering-driver opengl3 \
+    --script tools/godot/capture_reference.gd -- \
+    --scene=res://scenes/tests/CharacterTurntable.tscn --creature=<id> ...
+```
+
+### Continuité — six personnages livrés
+
+| Modèle | Morceaux | Verdict |
+|---|---:|---|
+| `SK_RavineTroll.glb` | 43 | un seul corps solidaire |
+| `SK_CentaurHunter.glb` | 60 | un seul corps solidaire |
+| `SK_StormGuardian.glb` | 113 | un seul corps solidaire |
+| `SK_RaiderRed.glb` | 20 | un seul corps solidaire |
+| `SK_RaiderBlue.glb` | 26 | un seul corps solidaire |
+| `SK_RaiderBlack.glb` | 24 | un seul corps solidaire |
+
+Tolérance 0,02 m. Géométrie lue APRÈS évaluation du graphe de dépendances,
+donc après déformation par l'armature.
+
+### Contrôle négatif du contrôle lui-même
+
+Un test qui ne peut pas échouer ne prouve rien. Une copie du colosse dont le
+nodule a été déplacé de 0,60 m est passée au même script :
+
+| Modèle | Sortie |
+|---|---|
+| colosse avec une pièce déplacée de 0,60 m | **code 1** — « 1 PIÈCE DÉTACHÉE », « 2 GRAPPES SÉPARÉES » |
+| colosse réparé | **code 0** — « UN SEUL corps solidaire » |
+
+### Ce que ces mesures ne prouvent pas
+
+La continuité géométrique n'est pas la beauté. Elle établit qu'aucune pièce
+ne flotte ; elle ne dit rien de la qualité de sculpture, ni de la lisibilité
+des silhouettes en aplat noir à 25 m, qui reste un essai humain (§30.3).

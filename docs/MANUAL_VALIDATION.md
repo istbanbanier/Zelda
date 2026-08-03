@@ -513,3 +513,59 @@ en deux minutes, l'affordance est à revoir — pas le texte à ajouter.
 Tant que ces cinq essais n'ont pas eu lieu, le Gate G reste
 **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE**. Aucune case
 `PASS humain` ne peut être cochée sur la foi des tests automatiques.
+
+---
+
+# Protocole H — silhouettes du bestiaire (bible §30.3)
+
+Ce protocole ne peut PAS être exécuté dans le conteneur : il demande un œil
+humain sur un écran. Les tests automatiques établissent que chaque créature
+forme un seul corps solidaire et respecte ses cotes ; ils ne disent rien de
+la lisibilité d'une silhouette.
+
+## Préparation
+
+```bash
+BESTIARY_FLAT=1 godot --path . --script tools/godot/capture_reference.gd -- \
+    --scene=res://scenes/tests/BestiaryLineup.tscn \
+    --out=evidence/phaseH/silhouettes.png --size=1920x1080 --frames=40
+```
+
+Pour inspecter un sujet seul sous cinq angles :
+
+```bash
+godot --path . --script tools/godot/capture_reference.gd -- \
+    --scene=res://scenes/tests/CharacterTurntable.tscn \
+    --creature=colosse --out=evidence/phaseH/turntable_colosse.png \
+    --size=1920x1080 --frames=40
+```
+
+Sujets disponibles : `braise`, `azur`, `briseur`, `colosse`, `chasseur`,
+`gardien`.
+
+## Essai H-1 — Distinction des cinq familles
+
+Montrer la planche en aplats noirs à quelqu'un qui n'a pas construit le jeu,
+pendant **trois secondes**, puis masquer. Demander combien de familles
+différentes il a vues.
+
+- `PASS` : cinq silhouettes distinctes citées, sans confusion entre les trois
+  pillards.
+- `FAIL` : deux silhouettes décrites comme « la même en plus grand ».
+
+## Essai H-2 — Reconnaissance de la menace
+
+Montrer chaque silhouette seule et demander : « quel est le danger ? »
+
+Attendu, sans souffler : le briseur porte une garde, le colosse frappe de
+haut, le chasseur charge, l'azur tient à distance, le braise se jette.
+
+## Essai H-3 — Lecture à la distance de jeu
+
+En jeu, lock-on coupé, reculer jusqu'à 25 m et vérifier que la famille reste
+identifiable **sans** regarder sa couleur.
+
+## Verdict H
+
+Aucun essai de ce protocole ne peut être déclaré `PASS` depuis le conteneur.
+Tant qu'ils n'ont pas eu lieu, l'état reste **VALIDATION HUMAINE DIFFÉRÉE**.

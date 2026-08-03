@@ -2107,3 +2107,96 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > créature, en RE-CAPTURANT après chacune — c'est le seul contrôle qui voit
 > ce défaut. Puis écrire le test de contiguïté d'ISS-019 pour qu'il ne
 > revienne pas en silence.
+
+---
+
+## 2026-08-03 — Phase H, lot H.6 : ISS-018 clos par la cause, pas par retouches
+
+**Commits** : `30ae2d3` (continuité), `29a3303` (corps des pillards),
+`be96545` (chasseur + planche d'inspection).
+
+### La cause racine, enfin
+
+La passe de « mordant » de la session précédente traitait un symptôme.
+La cause tient en une ligne : `bmesh.ops.create_cube(size=1.0)` pose ses
+sommets à **±0,5**, donc la taille passée à `add_box` et `limb` est la
+dimension **pleine**. Un `* 0.5` traînait sur la longueur de chaque segment
+dans `make_creatures.py` et `make_raiders.py` ; les mêmes facteurs `* 0.62`
+et `* 0.52` dans `make_storm_guardian.py`. Chaque membre était donc bâti à
+la moitié — ou aux deux tiers — de sa portée et s'arrêtait à mi-chemin de
+son articulation. Le mordant que les commentaires décrivaient n'a jamais
+existé.
+
+Vérifié par un script d'une ligne dans Blender, pas déduit.
+
+Corrigé à la source, puis pièce par pièce sur ce que la MESURE indiquait :
+nodule du colosse à 39 cm du dos, ceinture de troncs autour du vide, doigts
+sous la paume, cage thoracique du chasseur en rondelles, bras du chasseur et
+des pillards sans clavicule, anneau du Gardien orienté radialement au lieu
+de tangentiellement, et un tiers d'anneau entièrement en l'air.
+
+### Le contrôle qui manquait (ISS-019)
+
+`tools/blender/check_continuity.py` lit le `.glb` LIVRÉ, évalue le graphe de
+dépendances — donc **après déformation par l'armature** —, ressoude les
+sommets que l'export glTF sépare, découpe en morceaux connexes et exige
+**un seul corps solidaire**.
+
+Trois pièges de mesure, tous rencontrés et tous corrigés :
+
+1. **sans ressoudure**, l'export sépare les sommets par normale et par UV :
+   le Gardien comptait 1520 « îlots » d'une face, tous voisins entre eux, et
+   le contrôle ne voyait rien ;
+2. **« chaque pièce a un voisin » ne suffit pas** : le chasseur passait ce
+   critère avec ses deux bras flottant à 11 cm du buste, chaque bras
+   touchant son propre avant-bras. D'où le critère de connexité globale, qui
+   a immédiatement révélé la même faute sur deux des trois pillards ;
+3. **la distance sommet à sommet ment** sur deux boîtes tournées l'une par
+   rapport à l'autre : l'anneau du Gardien ressortait « détaché » alors que
+   ses maillons s'enfilaient.
+
+Câblé en niveau **3b** de `tools/validate_fast.sh`. Contrôle négatif : une
+pièce déplacée de 0,60 m fait sortir le script en code 1, le modèle réparé
+en code 0.
+
+### Deux décisions de qualité prises seules
+
+**Les pillards reprennent le corps du pack CC0.** La capture les montrait en
+figurines de fil de fer : membres de 4 cm de section. Le pack Quaternius
+« Universal Base Characters », déjà dans le dépôt et déjà attribué, fournit
+un humanoïde de 12 894 triangles texturé en PBR et pesé sur les mêmes 65 os
+— et `load_skeleton` le JETAIT pour ne garder que l'armature. Le corps est
+conservé ; restent construites les pièces qui distinguent les familles. La
+tête en fait partie : les personnages Quaternius sont modulaires et livrés
+sans tête, ce qui tombe bien puisque la bible §14.1-14.3 demande des crânes
+non humains. `ATTRIBUTIONS.md` requalifie les pillards en œuvre dérivée avec
+la liste exacte des modifications.
+
+**Le chasseur passe du plateau à la bête.** Cage thoracique portée de 0,52 à
+1,00 m de profondeur, poitrail nettement plus haut que la croupe, tronc de
+liaison entre le poitrail et le buste — la jonction que l'ordre nommait —,
+épaules et hanches ajoutées, pattes épaissies.
+
+### Preuves
+
+- `evidence/phaseH/turntable_*.png` + manifestes : chaque personnage de
+  face, de trois quarts, de profil, de dos et en aplat noir ;
+- `evidence/phaseH/bestiaire_apres.png` : les cinq familles côte à côte ;
+- `evidence/pipeline/continuity_*.log` : six personnages, un seul corps.
+
+Nouvelle scène de DEV `CharacterTurntable` (`--creature=<id>`). L'alignement
+du bestiaire ne montrait que la face à 25 m : une pièce détachée sur le
+flanc ou dans le dos y restait invisible, et c'est ainsi qu'ISS-018 avait
+survécu à une capture.
+
+### Ce qui reste honnêtement à faire
+
+Les créatures restent des assemblages de primitives : lisibles, cohérentes,
+aux bonnes cotes, mais sans sculpture. Le Gardien et le colosse sont au
+plafond de qualité de cette approche. Aucun score visuel n'est revendiqué —
+le WOW Gate de §30.2 porte sur la vue d'ouverture, pas sur le bestiaire, et
+il n'a pas été rejoué.
+
+**PROCHAINE ACTION** : Phase H suite — reprendre l'ordre des lots là où
+`docs/ROADMAP.md` le laisse, la continuité des personnages n'étant plus un
+obstacle.

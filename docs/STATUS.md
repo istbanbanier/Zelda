@@ -587,3 +587,19 @@ base d'une intention. Les cases cochées ci-dessous renvoient toutes à `TEST_RE
 | Stabilité | 60 min sans crash | ⬜ **bloqué** |
 | Web | Compatibility et fallback cohérent | ⬜ |
 | Légalité | Assets originaux/licenciés/attribués | ✅ externe = Quaternius CC0 uniquement, licences sur pièce, ATTRIBUTIONS avant build |
+
+## Phase H — lot H.6 : assemblage des personnages (ISS-018, ISS-019)
+
+Commits `30ae2d3`, `29a3303`, `be96545`.
+
+| Fonctionnalité | État | Preuve |
+|---|---|---|
+| Assemblage des volumes — aucune articulation ouverte | **Validé** | `check_continuity.py` sur les six `.glb` livrés : un seul corps solidaire, 43 / 60 / 113 / 20 / 26 / 24 morceaux, aucun détaché. Journaux `evidence/pipeline/continuity_*.log` |
+| Contrôle automatique de continuité (ISS-019) | **Validé** | niveau 3b de `tools/validate_fast.sh`. Contrôle NÉGATIF : pièce déplacée de 0,60 m → code 1 ; modèle réparé → code 0 |
+| Corps des pillards | **Fonctionnel** | corps CC0 Quaternius conservé (12 894 tris, PBR) au lieu des primitives ; stature 1,42 / 1,65 / 1,88 m, carrure 0,90 à 1,26, teintes de faction exportées en `baseColorFactor` vérifié dans le `.glb` |
+| Chasseur — jonction torse/quadrupède | **Fonctionnel** | tronc de liaison ajouté, cage portée à 1,00 m de profondeur, épaules et hanches ; haut 3,41 m (bande 3,0-3,5), long 4,20 m (bande 4,0-4,8) |
+| Colosse — avant-bras, mains, jambes, pieds | **Fonctionnel** | membres bâtis à leur portée pleine ; haut 4,03 m (bande 3,7-4,3) |
+| Gardien — extrémités et jonctions | **Fonctionnel** | anneau réorienté tangentiellement et abaissé pour traverser le dos, queue, câbles, plaques et cristaux rattachés ; long 9,38 m · large 5,24 m · haut 5,59 m (bandes §15.1 : 8-10 / 5-7 / 5,2-6) |
+| Planche d'inspection par angles | **Fonctionnel** | `scenes/tests/CharacterTurntable.tscn`, `--creature=<id>` : face, trois quarts, profil, dos, aplat noir |
+| Silhouettes des cinq familles en aplat noir à 25 m (§30.3) | **NON VÉRIFIÉ** | la planche est capturable et les corps sont assemblés, mais le jugement « deux silhouettes ne se confondent pas » est un essai HUMAIN — `docs/MANUAL_VALIDATION.md` |
+| Qualité sculpturale des créatures | **Limite assumée** | colosse, chasseur et Gardien restent des assemblages de primitives : cotes justes, volumes solidaires, lisibles — mais sans sculpture. Aucun score visuel n'est revendiqué |
