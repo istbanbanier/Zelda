@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3]
+
+; Planche d'INSPECTION d'un ancrage de récompense — scène de DEV, exclue de
+; l'export final. La caméra se place au point de station du joueur et regarde
+; la récompense : ce qu'on voit est ce que le joueur verra. Le lieu se choisit
+; par `--place=<identifiant>` sur la ligne de commande.
+; Tout est construit en code : voir scripts/tools/reward_anchor_shot.gd.
+
+[ext_resource type="Script" path="res://scripts/tools/reward_anchor_shot.gd" id="1_shot"]
+
+[node name="RewardAnchorShot" type="Node3D"]
+script = ExtResource("1_shot")
