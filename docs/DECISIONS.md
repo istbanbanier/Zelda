@@ -989,3 +989,42 @@ n'importe quoi :
   rapport à l'autre — l'anneau du Gardien ressortait « détaché » alors que
   ses maillons s'enfilaient. La mesure retenue va des sommets de l'un vers
   la BOÎTE de l'autre, dans les deux sens.
+
+## D-038 — Le corps des pillards revient au pack CC0, les têtes restent originales
+
+La capture du bestiaire a tranché : les trois pillards bâtis en primitives
+étaient des figurines de fil de fer, membres de 4 cm de section, torse en
+boîte. Aucune retouche de constantes n'en aurait fait des personnages.
+
+Le pack Quaternius « Universal Base Characters » (CC0, déjà dans le dépôt et
+déjà attribué) fournit exactement ce qui manquait : un humanoïde de 12 894
+triangles, texturé en PBR, **pesé sur les mêmes 65 os UAL**. Il était importé
+puis JETÉ par `load_skeleton`, qui ne gardait que l'armature. Le corps est
+désormais conservé ; ne restent construites que les pièces qui distinguent
+les familles.
+
+Ce que le pack ne fournit pas : la TÊTE. Les personnages modulaires
+Quaternius sont livrés sans tête, ce qui tombe bien — la bible §14.1-14.3
+demande des crânes non humains (coin à excroissances arrière, crête osseuse,
+visière fendue). Une tête du commerce les aurait rendus identiques.
+
+Distinction des familles, désormais sur quatre axes mesurés : stature
+(1,42 · 1,65 · 1,88 m), carrure (X/Y du corps, 0,90 à 1,26), teinte de
+faction, tête et armure propres.
+
+Alternative rejetée : rendre les membres procéduraux plus épais. C'était
+poursuivre un chemin qui avait déjà produit un résultat inacceptable, et
+ignorer un asset légalement disponible, meilleur, et déjà dans le dépôt.
+
+Deux pièges rencontrés, tous deux vérifiés plutôt que supposés :
+
+- l'importateur glTF fabrique une **icosphère d'affichage** pour les os. Elle
+  n'est dans aucun fichier : gardée par erreur comme géométrie du corps, elle
+  ajoutait une boule de 2 m à l'origine, faisait annoncer 2,42 m de stature
+  et comptait comme une pièce détachée. Elle est écartée par son RÔLE
+  (`pose_bone.custom_shape`), pas par son nom ;
+- le `ShaderNodeMixRGB` hérité n'est **pas** reconnu par l'exporteur glTF
+  comme un facteur de couleur de base. Les trois familles sortaient de
+  l'export avec la même texture de paysan. `ShaderNodeMix` en RGBA fonctionne
+  — vérifié en relisant le `baseColorFactor` du `.glb` produit, pas en
+  faisant confiance au rendu Blender.

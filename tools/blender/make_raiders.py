@@ -162,26 +162,102 @@ def make_material(name: str, colour, roughness: float = 0.82,
 # ---------------------------------------------------------------------------
 
 def load_skeleton():
-    """Importe le squelette UAL et JETTE ses maillages.
+    """Importe le squelette UAL **et son corps**.
 
     On garde l'armature, ses 65 os et leurs noms — c'est ce qui rend les
     bibliothèques d'animation existantes réutilisables telles quelles.
+
+    On garde AUSSI les maillages du corps, ce que la version précédente
+    jetait. C'était une erreur de jugement coûteuse : le pack Quaternius
+    « Universal Base Characters » (CC0, déjà attribué) fournit un humanoïde
+    complet de 12 894 triangles, texturé en PBR et correctement pesé sur ces
+    mêmes os. Il était remplacé par des membres bâtis en barres de 4 cm de
+    section — la capture du bestiaire montrait trois figurines de fil de fer
+    au lieu de trois familles de pillards. Les formes propres à chaque
+    famille (cornes, crête, visière, épaulières, ceinture) restent, elles,
+    des créations du projet : c'est ce qui les rend reconnaissables.
     """
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.context.scene.unit_settings.system = "METRIC"
     bpy.ops.import_scene.gltf(filepath=SKELETON)
     armature = None
-    doomed = []
-    for obj in list(bpy.data.objects):
+    for obj in bpy.data.objects:
         if obj.type == "ARMATURE":
             armature = obj
+            break
+    # L'importateur glTF fabrique une icosphère d'affichage pour les os. Elle
+    # n'appartient pas au personnage : gardée par erreur, elle ajoutait une
+    # boule de 2 m à l'origine — qui gonflait la stature mesurée et comptait
+    # évidemment comme une pièce détachée.
+    helpers = {bone.custom_shape.name for bone in armature.pose.bones
+               if bone.custom_shape is not None}
+    body = []
+    for obj in list(bpy.data.objects):
+        if obj.type == "ARMATURE":
+            continue
+        if obj.type == "MESH" and obj.name not in helpers:
+            body.append(obj)
         else:
-            doomed.append(obj)
-    for obj in doomed:
-        bpy.data.objects.remove(obj, do_unlink=True)
+            bpy.data.objects.remove(obj, do_unlink=True)
     armature.name = "Armature"
     armature.animation_data_clear()
-    return armature
+    return armature, body
+
+
+def reshape_body(body: list, wide: float, deep: float) -> None:
+    """Change la CARRURE sans toucher à la hauteur.
+
+    Seuls X et Y sont mis à l'échelle : Z reste celui des os, sinon les
+    membres ne suivraient plus leur squelette. La stature vient de
+    `height_scale`, appliquée à l'armature.
+    """
+    for obj in body:
+        for vertex in obj.data.vertices:
+            vertex.co.x *= wide
+            vertex.co.y *= deep
+
+
+def tint_body(body: list, colour, key: str) -> None:
+    """Teinte les matériaux du corps SANS perdre leurs textures.
+
+    Un `MixRGB` en multiplication est inséré entre la texture de couleur de
+    base et le BSDF. Remplacer le matériau par un aplat aurait jeté la
+    normal map et l'ORM du pack, c'est-à-dire l'essentiel de sa qualité.
+    """
+    done = set()
+    for obj in body:
+        for slot in obj.material_slots:
+            material = slot.material
+            # Suivre le DATABLOC, pas son nom : la première version testait le
+            # nom puis le renommait, si bien qu'un matériau partagé par les
+            # quatre maillages du corps se faisait préfixer quatre fois.
+            if material is None or material in done:
+                continue
+            done.add(material)
+            material.name = "MAT_Raider%s_%s" % (key, material.name)
+            if not material.use_nodes:
+                continue
+            tree = material.node_tree
+            bsdf = next((n for n in tree.nodes
+                         if n.type == "BSDF_PRINCIPLED"), None)
+            if bsdf is None:
+                continue
+            socket = bsdf.inputs["Base Color"]
+            # `ShaderNodeMix` en RGBA, pas le `ShaderNodeMixRGB` hérité :
+            # l'exporteur glTF ne reconnaît que le premier comme un
+            # « facteur de couleur de base ». Avec l'ancien nœud, le mélange
+            # était simplement ignoré et les trois familles sortaient de
+            # l'export avec exactement la même texture de paysan.
+            mix = tree.nodes.new("ShaderNodeMix")
+            mix.data_type = "RGBA"
+            mix.blend_type = "MULTIPLY"
+            mix.inputs["Factor"].default_value = 1.0
+            mix.inputs["B"].default_value = colour
+            if socket.is_linked:
+                tree.links.new(mix.inputs["A"], socket.links[0].from_socket)
+            else:
+                mix.inputs["A"].default_value = socket.default_value
+            tree.links.new(socket, mix.outputs["Result"])
 
 
 def head_of(armature, bone_name: str) -> Vector:
@@ -203,84 +279,39 @@ def build_raider(armature, profile: dict) -> dict:
     cote absolue recopiée, donc aucune dérive si le squelette change.
     """
     groups = {"skin": [], "cloth": [], "hard": []}
-    pelvis = head_of(armature, "pelvis")
     spine1 = head_of(armature, "spine_01")
-    spine3 = head_of(armature, "spine_03")
-    neck = head_of(armature, "neck_01")
     head = head_of(armature, "Head")   # majuscule : nom réel du squelette UAL
 
-    lean = profile["lean"]          # inclinaison du torse, radians
     torso_w = profile["torso_w"]
     torso_d = profile["torso_d"]
-    girth = profile["limb_girth"]
 
-    # --- Bassin et torse. Le LEAN est la première chose qu'on lit à 25 m.
-    groups["cloth"].append(add_box("Pelvis",
-        (torso_w * 0.46, torso_d * 0.46, 0.11), tuple(pelvis + Vector((0, 0, 0.02)))))
-    # WELD : chaque volume MORD sur son voisin. Sans ce recouvrement le corps
-    # se lit comme un tas de boîtes flottantes — constaté sur la capture du
-    # vrai moteur, jamais sur une boîte englobante, qui reste juste.
-    lower = (spine1 + spine3) * 0.5
-    groups["skin"].append(add_box("TorsoLower",
-        (torso_w * 0.5, torso_d * 0.5, (spine3.z - pelvis.z) * 1.05),
-        tuple(lower + Vector((0, profile["lean_shift"] * 0.5, -0.03))),
-        (lean, 0.0, 0.0)))
-    upper = (spine3 + neck) * 0.5
-    groups["skin"].append(add_box("TorsoUpper",
-        (torso_w * 0.52 * profile["shoulder_spread"], torso_d * 0.48,
-         (neck.z - spine1.z) * 0.66),
-        tuple(upper + Vector((0, profile["lean_shift"], -0.02))),
-        (lean, 0.0, 0.0)))
-
-    # --- Cou et tête. Chaque famille a la sienne.
-    # Le cou REJOINT la tête : il part du sommet du torse et monte jusqu'à
-    # elle, au lieu de flotter entre les deux.
-    neck_top = head.z + profile["head_shift_z"] - 0.02
-    groups["skin"].append(add_box("Neck",
-        (0.075 if profile["neck_visible"] else 0.12,
-         0.075 if profile["neck_visible"] else 0.13,
-         maxf(0.06, (neck_top - neck.z) + 0.10)),
-        tuple(neck + Vector((0, profile["lean_shift"] * 0.6,
-                             (neck_top - neck.z) * 0.5 - 0.02)))))
+    # --- Le CORPS (torse, bras, jambes, pieds) vient du pack CC0 : voir
+    # `load_skeleton`. Ne restent ici que les pièces propres aux familles.
+    #
+    # La TÊTE en fait partie : les personnages modulaires de Quaternius sont
+    # livrés SANS tête, et c'est tant mieux — la bible §14.1-14.3 demande des
+    # crânes qui ne sont pas humains (coin à excroissances arrière, crête
+    # osseuse, visière fendue). Une tête humaine du commerce les aurait tous
+    # rendus identiques.
+    neck = head_of(armature, "neck_01")
     head_centre = head + Vector((0, profile["head_shift"],
                                  profile["head_shift_z"]))
+    neck_top = head_centre.z - profile["head_size"][2] * 0.35
+    groups["skin"].append(add_box("Neck",
+        (0.085 if profile["neck_visible"] else 0.13,
+         0.085 if profile["neck_visible"] else 0.14,
+         maxf(0.08, (neck_top - neck.z) + 0.12)),
+        tuple(neck + Vector((0, profile["lean_shift"] * 0.6,
+                             (neck_top - neck.z) * 0.5)))))
     groups["skin"].append(add_box("Head", profile["head_size"],
-                                  tuple(head_centre), (profile["head_tilt"], 0, 0)))
+                                  tuple(head_centre),
+                                  (profile["head_tilt"], 0, 0)))
     for part in profile["head_features"](head_centre):
         groups[part[0]].append(part[1])
 
-    # --- Membres, os par os. Les avant-bras du braise sont longs : c'est
-    # une proportion, pas un accessoire.
+    # --- Épaules : épaulières, gardes, protections.
     for side, sign in (("l", 1.0), ("r", -1.0)):
         shoulder = head_of(armature, "upperarm_%s" % side)
-        elbow = head_of(armature, "lowerarm_%s" % side)
-        wrist = head_of(armature, "hand_%s" % side)
-        forearm_end = wrist + (wrist - elbow) * (profile["forearm_gain"] - 1.0)
-        # Clavicule : elle relie l'axe du corps à l'os d'épaule. Sans elle le
-        # bras ne touchait pas le buste — chaque bras formait une grappe
-        # solidaire de lui seul, ce que « chaque pièce a un voisin » ne voit
-        # pas. Partir de x = 0 garantit l'ancrage quelle que soit la carrure
-        # de la famille.
-        groups["skin"].append(limb("Clavicle_%s" % side,
-                                   Vector((0.0, shoulder.y, shoulder.z)),
-                                   shoulder, girth * 1.15 * profile["arm_gain"]))
-        groups["skin"].append(limb("UpperArm_%s" % side, shoulder, elbow,
-                                   girth * profile["arm_gain"]))
-        groups["skin"].append(limb("LowerArm_%s" % side, elbow, forearm_end,
-                                   girth * 0.82 * profile["arm_gain"]))
-        groups["skin"].append(add_box("Hand_%s" % side,
-            (girth * 0.9, girth * 0.7, girth * 0.9), tuple(forearm_end)))
-        hip = head_of(armature, "thigh_%s" % side)
-        knee = head_of(armature, "calf_%s" % side)
-        ankle = head_of(armature, "foot_%s" % side)
-        toe = tail_of(armature, "ball_%s" % side)
-        groups["skin"].append(limb("Thigh_%s" % side, hip, knee,
-                                   girth * profile["leg_gain"]))
-        groups["skin"].append(limb("Calf_%s" % side, knee, ankle,
-                                   girth * 0.86 * profile["leg_gain"]))
-        groups["cloth"].append(add_box("Foot_%s" % side,
-            (girth * 0.95, (toe - ankle).length * 0.8, 0.045),
-            tuple(ankle + (toe - ankle) * 0.45 + Vector((0, 0, -0.02)))))
         for part in profile["shoulder_features"](shoulder, sign):
             groups[part[0]].append(part[1])
 
@@ -377,6 +408,10 @@ PROFILES = {
         "torso_w": 0.34, "torso_d": 0.21,
         "shoulder_spread": 0.92,
         "limb_girth": 0.048,
+        "body_wide": 1.02, "body_deep": 1.06,   # trapu, ramassé
+        # Teinte du corps : elle MULTIPLIE la texture du pack, donc elle doit
+        # être plus claire que la couleur visée sinon tout vire au noir.
+        "body_tint": (0.88, 0.42, 0.30, 1.0),   # terre cuite
         "arm_gain": 0.92, "leg_gain": 0.95,
         "forearm_gain": 1.34,      # avant-bras LONGS (§14.1)
         "neck_visible": False,     # tête enfoncée dans les épaules
@@ -394,6 +429,8 @@ PROFILES = {
         "torso_w": 0.30, "torso_d": 0.19,
         "shoulder_spread": 0.88,   # épaules ÉTROITES
         "limb_girth": 0.044,
+        "body_wide": 0.90, "body_deep": 0.90,   # épaules ÉTROITES (§14.2)
+        "body_tint": (0.40, 0.50, 0.82, 1.0),   # indigo délavé
         "arm_gain": 0.88, "leg_gain": 1.06,   # jambes LONGUES
         "forearm_gain": 1.0,
         "neck_visible": True,
@@ -411,6 +448,8 @@ PROFILES = {
         "torso_w": 0.52, "torso_d": 0.30,     # torse TRÈS large
         "shoulder_spread": 1.18,
         "limb_girth": 0.072,
+        "body_wide": 1.26, "body_deep": 1.18,   # torse TRÈS large (§14.3)
+        "body_tint": (0.42, 0.40, 0.44, 1.0),   # pierre vitreuse, froide
         "arm_gain": 1.24, "leg_gain": 1.16,
         "forearm_gain": 0.94,
         "neck_visible": False,     # cou presque absent
@@ -424,7 +463,11 @@ PROFILES = {
 
 
 def build_one(key: str, profile: dict) -> None:
-    armature = load_skeleton()
+    armature, body = load_skeleton()
+    # La CARRURE distingue les familles autant que la stature : le briseur
+    # est « TRÈS large » (§14.3), l'azur a les « épaules étroites » (§14.2).
+    reshape_body(body, profile["body_wide"], profile["body_deep"])
+    tint_body(body, profile["body_tint"], key)
     groups = build_raider(armature, profile)
 
     materials = {
@@ -442,14 +485,16 @@ def build_one(key: str, profile: dict) -> None:
         meshes.append(merged)
 
     apply_transforms(meshes)
-    # Liaison par POIDS AUTOMATIQUES au squelette UAL : la géométrie est
-    # neuve, le squelette est celui des animations existantes.
+    # Liaison par POIDS AUTOMATIQUES au squelette UAL, pour les pièces
+    # NEUVES seulement : le corps du pack porte déjà ses poids d'origine, et
+    # les recalculer les dégraderait.
     bpy.ops.object.select_all(action="DESELECT")
     for merged in meshes:
         merged.select_set(True)
     armature.select_set(True)
     bpy.context.view_layer.objects.active = armature
     bpy.ops.object.parent_set(type="ARMATURE_AUTO")
+    meshes = body + meshes
 
     # La taille de la famille (§14.1-14.3) s'applique à l'armature — les
     # animations, qui sont des rotations d'os, y survivent intactes — puis
