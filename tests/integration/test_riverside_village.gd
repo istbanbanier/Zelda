@@ -208,3 +208,46 @@ func test_the_whole_open_world_is_declared_in_the_playable_valley() -> void:
 	valley.get_parent().remove_child(valley)
 	valley.queue_free()
 	await _settle(2)
+
+
+## §3 : « chaque point d'intérêt doit offrir au moins un élément » — coffre,
+## arme, ingrédients… Sans cela un lieu n'est qu'un nom sur une carte.
+##
+## Le test NOMME les lieux sans récompense au lieu de se contenter d'un
+## total : un manque tu est un manque qui reste.
+func test_the_places_hand_out_real_rewards() -> void:
+	var valley: ValleyWorld = (load("res://scenes/world/valley/ValleyWorld.tscn")
+		as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(valley)
+	await _settle(10)
+
+	check_not_null(valley.rewards, "la vallée pose des récompenses")
+	var placed: int = valley.rewards.placed_count()
+	var skipped: Array[StringName] = valley.rewards.skipped_places()
+	check(placed >= 31,
+		"%d coffre(s) posé(s) — un par lieu, §3 tenu" % placed)
+	check(skipped.is_empty(),
+		"aucun lieu laissé sans récompense (%d)" % skipped.size())
+	var fallback: Array[StringName] = valley.rewards.fallback_places()
+	print("[récompenses] %d coffre(s) posé(s) au centre du lieu faute "
+		% fallback.size() + "d'ancrage — placement À VÉRIFIER en capture")
+	if not skipped.is_empty():
+		var names: Array[String] = []
+		for poi_id: StringName in skipped:
+			names.append(String(poi_id))
+		print("[récompenses] lieux SANS ancrage (%d) : %s"
+			% [skipped.size(), ", ".join(names)])
+
+	# Les identifiants de coffre dérivent de ceux des lieux : uniques par
+	# construction, et distincts des coffres déjà posés dans la vallée.
+	var ids: Dictionary = {}
+	for node: Node in valley.find_children("*", "Chest", true, false):
+		var chest_id: StringName = (node as Chest).chest_id
+		check(not ids.has(chest_id), "coffre %s unique" % chest_id)
+		ids[chest_id] = true
+	check(ids.size() >= placed,
+		"les %d coffres du monde portent des identifiants distincts" % ids.size())
+
+	valley.get_parent().remove_child(valley)
+	valley.queue_free()
+	await _settle(2)

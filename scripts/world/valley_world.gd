@@ -274,11 +274,21 @@ func _build_open_world() -> void:
 	add_child(territories)
 	for poi: Node in find_children("*", "PointOfInterest", true, false):
 		(poi as PointOfInterest).bind(discoveries)
+	# §3 : un lieu sans récompense n'est pas une découverte. Les familles
+	# posent des ancrages vides ; c'est ici qu'ils reçoivent un vrai coffre,
+	# dont l'identifiant dérive de celui du lieu — donc unique et stable.
+	rewards = DiscoveryRewards.new()
+	rewards.name = "DiscoveryRewards"
+	add_child(rewards)
+	rewards.furnish(self)
 
 
 ## Journal des découvertes de la partie — public, pour que la sauvegarde de
 ## la vallée le collecte et que l'interface puisse s'y abonner.
 var discoveries: DiscoveryLog = DiscoveryLog.new()
+
+## Coffres posés sur les ancrages des lieux — public pour les tests.
+var rewards: DiscoveryRewards = null
 
 
 func _setup_vista_camera() -> void:
