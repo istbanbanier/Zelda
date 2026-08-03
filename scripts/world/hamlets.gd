@@ -58,6 +58,19 @@ const SITE_MINING: Vector3 = Vector3(-68.0, 2.0, 86.0)
 const LOGGING_POI_ID: StringName = &"valley.poi.logging_hamlet.01"
 const MINING_POI_ID: StringName = &"valley.poi.mining_post.01"
 
+## ANCRAGES de récompense (contrat `RewardAnchor`). Positions éprouvées par
+## `tools/godot/probe_reward_anchors.gd` dans la vallée montée, puis figées.
+const ANCHORS: Dictionary = {
+	LOGGING_POI_ID: {
+		"at": Vector3(2.0, 0.0, 4.0), "approach": Vector3(5.0, 0.0, 4.0),
+		"kind": RewardAnchor.Kind.WEAPON,
+	},
+	MINING_POI_ID: {
+		"at": Vector3(1.0, 0.0, 1.0), "approach": Vector3(-1.77, 0.0, 2.15),
+		"kind": RewardAnchor.Kind.CHEST,
+	},
+}
+
 ## Quartiers exposés pour que les tests puissent les interroger sans deviner
 ## un chemin de nœud.
 var logging_camp: Node3D = null
@@ -642,4 +655,5 @@ func _make_poi(parent: Node3D, poi_id: StringName, label: String,
 	poi.add_child(shape)
 	poi.position = centre
 	parent.add_child(poi)
+	RewardAnchor.attach_from_table(parent, poi_id, ANCHORS, "hameaux")
 	return poi

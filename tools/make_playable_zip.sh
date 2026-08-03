@@ -82,8 +82,13 @@ Manette prise en charge.
 
 La vallée porte **31 lieux** : le village de la rivière (auberge visitable),
 deux hameaux, huit ruines, cinq espaces souterrains, dix repères naturels et
-cinq territoires ennemis. Chacun se nomme à la première visite, se
-sauvegarde, et porte un coffre.
+cinq territoires ennemis. Chacun se nomme à la première visite et se
+sauvegarde.
+
+Chaque lieu porte une récompense, et pas la même : coffres, armes posées au
+sol, ingrédients rares, savoirs de cuisine et fragments d'histoire à lire.
+Leur emplacement a été éprouvé par un corps physique — sol réel, place pour
+s'en approcher, et possibilité de repartir.
 
 La boucle du jeu de base fonctionne : crête de départ → vallée → camp →
 donjon électrique → boss → victoire.
@@ -99,8 +104,10 @@ donjon électrique → boss → victoire.
 - La vallée reste un **graybox** hors du premier plan et des lieux :
   montagnes en boîtes, citadelle sans terrasses.
 - Les habitants, leurs routines et les dialogues ne sont pas faits.
-- Le placement de 23 des 31 coffres est un **repli automatique** au centre du
-  lieu, jamais vérifié à l'œil : certains peuvent flotter ou s'encastrer.
+- Six lieux — les cinq territoires ennemis et la cavité de cristal — portent
+  une récompense dont la **condition d'ouverture n'est pas implémentée** : le
+  coffre est là, mais rien n'exige encore d'avoir nettoyé le territoire ou
+  résolu l'énigme.
 
 ## Pourquoi pas un .exe
 

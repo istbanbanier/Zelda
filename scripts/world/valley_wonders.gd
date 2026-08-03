@@ -84,6 +84,32 @@ const POI_GORGE: StringName = &"valley.poi.wind_gorge.01"
 const POI_GROVE: StringName = &"valley.poi.storm_grove.01"
 const POI_STRUCK: StringName = &"valley.poi.thunderstruck_tree.01"
 
+## ANCRAGES de récompense (contrat `RewardAnchor`). Positions éprouvées par
+## `tools/godot/probe_reward_anchors.gd` dans la vallée montée — sol réel et
+## dégagement au gabarit du joueur — puis figées ici pour être relisibles.
+const ANCHORS: Dictionary = {
+	POI_FALLS: {
+		"at": Vector3(0.0, 0.0, 0.0), "approach": Vector3(3.0, 0.0, 0.0),
+		"kind": RewardAnchor.Kind.CHEST,
+	},
+	POI_CIRCLE: {
+		"at": Vector3(1.40, 0.70, 0.0), "approach": Vector3(4.40, 0.0, 0.0),
+		"kind": RewardAnchor.Kind.STORY,
+	},
+	POI_GORGE: {
+		"at": Vector3(0.0, 0.0, 0.0), "approach": Vector3(1.56, 0.0, 2.56),
+		"kind": RewardAnchor.Kind.INGREDIENT,
+	},
+	POI_GROVE: {
+		"at": Vector3(0.0, 0.0, 0.0), "approach": Vector3(-1.15, 0.0, 2.77),
+		"kind": RewardAnchor.Kind.INGREDIENT,
+	},
+	POI_STRUCK: {
+		"at": Vector3(1.40, 0.0, 0.0), "approach": Vector3(4.40, 0.0, 0.0),
+		"kind": RewardAnchor.Kind.RECIPE,
+	},
+}
+
 # --- Cotes de la chute ------------------------------------------------------
 
 ## Lèvre de la chute et plateau panoramique (local, donc au-dessus du sol).
@@ -383,6 +409,7 @@ func _declare(parent: Node3D, poi_id: StringName, display_name: String,
 	poi.position = offset
 	parent.add_child(poi)
 	pois.append(poi)
+	RewardAnchor.attach_from_table(parent, poi_id, ANCHORS, "merveilles")
 	return poi
 
 

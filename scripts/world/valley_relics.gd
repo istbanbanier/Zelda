@@ -86,6 +86,27 @@ const POI_CEMETERY: StringName = &"valley.poi.barrow_cemetery.01"
 const POI_RAMPART: StringName = &"valley.poi.old_rampart.01"
 const POI_SHRINE: StringName = &"valley.poi.forest_shrine.01"
 
+## ANCRAGES de récompense (contrat `RewardAnchor`). Positions éprouvées par
+## `tools/godot/probe_reward_anchors.gd` dans la vallée montée, puis figées.
+const ANCHORS: Dictionary = {
+	POI_OBSERVATORY: {
+		"at": Vector3(2.0, 0.0, -1.0), "approach": Vector3(2.0, 0.0, 2.0),
+		"kind": RewardAnchor.Kind.STORY,
+	},
+	POI_CEMETERY: {
+		"at": Vector3(0.0, 0.0, -1.0), "approach": Vector3(0.0, 0.0, 2.0),
+		"kind": RewardAnchor.Kind.CHEST,
+	},
+	POI_RAMPART: {
+		"at": Vector3(0.0, 0.0, 0.0), "approach": Vector3(3.0, 0.0, 0.0),
+		"kind": RewardAnchor.Kind.CHEST,
+	},
+	POI_SHRINE: {
+		"at": Vector3(0.0, 0.0, -2.0), "approach": Vector3(-2.12, 0.0, -4.12),
+		"kind": RewardAnchor.Kind.RECIPE,
+	},
+}
+
 ## Noms des quatre nœuds de vestige, dans l'ordre de construction.
 const RELIC_NODES: Array[String] = [
 	"ObservatoireEnRuine", "CimetiereDuTertre", "FortificationAncienne",
@@ -336,6 +357,7 @@ func _place_poi(parent: Node3D, poi_id: StringName, display: String,
 	place.position = centre
 	parent.add_child(place)
 	pois.append(place)
+	RewardAnchor.attach_from_table(parent, poi_id, ANCHORS, "vestiges")
 	return place
 
 

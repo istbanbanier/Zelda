@@ -73,6 +73,42 @@ const BRIDGE_DECK_THICKNESS: float = 1.3
 ## Plateforme sommitale du belvédère.
 const OVERLOOK_SUMMIT_Y: float = 22.0
 
+## ANCRAGES de récompense (contrat `RewardAnchor`).
+##
+## Ces positions ne sont pas choisies à l'œil. Elles viennent de
+## `tools/godot/probe_reward_anchors.gd`, qui monte la vallée réelle et éprouve
+## physiquement, autour de chaque lieu, le sol et le dégagement au gabarit du
+## joueur. Les figer ici les rend relisibles, versionnées et vérifiables :
+## `RewardAnchorAudit` refait le trajet à chaque suite de tests.
+##
+## Le belvédère est le seul lieu à GRAVIR : son ancrage est au sommet, son
+## pied de traversée sur la plaine, et l'audit exige qu'un corps monte
+## réellement l'échine au lieu de croire un navmesh.
+const ANCHORS: Dictionary = {
+	POI_ANCIENT_TREE: {
+		"at": Vector3(1.40, 0.0, 0.0), "approach": Vector3(4.40, 0.0, 0.0),
+		"kind": RewardAnchor.Kind.INGREDIENT,
+	},
+	POI_SPRING: {
+		"at": Vector3(0.0, 0.0, 0.0), "approach": Vector3(3.0, 0.0, 0.0),
+		"kind": RewardAnchor.Kind.INGREDIENT,
+	},
+	POI_FLOWER_FIELD: {
+		"at": Vector3(0.0, 0.0, 0.0), "approach": Vector3(3.0, 0.0, 0.0),
+		"kind": RewardAnchor.Kind.INGREDIENT,
+	},
+	POI_STONE_BRIDGE: {
+		"at": Vector3(0.0, -1.50, 0.0), "approach": Vector3(3.0, -1.50, 0.0),
+		"kind": RewardAnchor.Kind.STORY,
+	},
+	POI_OVERLOOK: {
+		"at": Vector3(0.0, OVERLOOK_SUMMIT_Y, -10.0),
+		"approach": Vector3(0.0, OVERLOOK_SUMMIT_Y, -7.0),
+		"kind": RewardAnchor.Kind.WEAPON,
+		"traversal": true, "base": Vector3(0.0, 2.5, 32.0),
+	},
+}
+
 ## §19.3 : `zone.category.name.index`.
 const POI_ANCIENT_TREE: StringName = &"valley.poi.ancient_tree.01"
 const POI_SPRING: StringName = &"valley.poi.turquoise_spring.01"
@@ -297,6 +333,9 @@ func _declare(parent: Node3D, poi_id: StringName, display_name: String,
 	poi.position = offset
 	parent.add_child(poi)
 	pois.append(poi)
+	# L'ancrage naît avec le lieu, pas après coup : un lieu déclaré sans point
+	# de récompense est exactement le défaut que ce contrat corrige.
+	RewardAnchor.attach_from_table(parent, poi_id, ANCHORS, "repères")
 	return poi
 
 

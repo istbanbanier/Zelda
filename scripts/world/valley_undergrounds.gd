@@ -70,6 +70,19 @@ const MIN_CLEARANCE: float = 2.2
 const UNDER_PASSAGE: StringName = &"passage"
 const UNDER_CRYSTAL: StringName = &"cristal"
 
+## ANCRAGES de récompense (contrat `RewardAnchor`). Positions éprouvées par
+## `tools/godot/probe_reward_anchors.gd` dans la vallée montée, puis figées.
+const ANCHORS: Dictionary = {
+	&"valley.poi.hidden_passage.01": {
+		"at": Vector3(0.0, 0.0, 2.0), "approach": Vector3(-2.12, 0.0, -0.12),
+		"kind": RewardAnchor.Kind.CHEST,
+	},
+	&"valley.poi.crystal_hollow.01": {
+		"at": Vector3(0.0, 0.0, -2.0), "approach": Vector3(0.52, 0.0, 0.95),
+		"kind": RewardAnchor.Kind.PUZZLE,
+	},
+}
+
 ## Dénivelé et allonge de la galerie inclinée. 9 m gagnés sur 22 m de course :
 ## une pente de 22,2°, franchement sous les 45° que `CharacterBody3D` accepte
 ## comme sol. Une pente plus raide raccourcirait le boyau mais rendrait la
@@ -520,6 +533,7 @@ func _declare(root: Node3D, poi_id: StringName, display_name: String,
 	poi.add_child(shape)
 	poi.position = at
 	root.add_child(poi)
+	RewardAnchor.attach_from_table(root, poi_id, ANCHORS, "souterrains")
 	return poi
 
 

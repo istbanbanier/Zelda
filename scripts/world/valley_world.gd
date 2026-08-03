@@ -68,6 +68,16 @@ func _ready() -> void:
 		if tag == &"citadel_door":
 			_player.position = Vector3(0, 34.3, -193.0)
 	_last_safe = _player.position
+	# Monde ouvert : les 31 lieux, leur journal de découvertes et leurs
+	# récompenses. AVANT `_apply_save()`, et ce n'est pas un détail d'ordre :
+	#
+	#  - `discoveries.apply_state()` ignore tout lieu non encore déclaré. Bâtir
+	#    après aurait rechargé une partie où AUCUN lieu n'est découvert, en
+	#    silence — l'avertissement « lieu inconnu » l'avait masqué ;
+	#  - les coffres et armes des lieux doivent exister quand la sauvegarde
+	#    retire ce qui a déjà été pris, sinon une arme ramassée réapparaît au
+	#    rechargement et se ramasse une seconde fois (§11.4).
+	_build_open_world()
 	# Application de la sauvegarde — TOUJOURS si elle existe : une partie neuve
 	# vient d'écrire un instantané minimal (sans inventaire) qui n'applique
 	# rien ; une reprise applique tout. Aucun drapeau à transporter.
@@ -84,10 +94,6 @@ func _ready() -> void:
 	# D-EN.6 : les QUATRE familles au-delà du braise (§12.2-§12.5), posées
 	# selon leur rôle de level design ; le coordinateur de combat (§12.8)
 	# les gouverne toutes.
-	# Monde ouvert : le village de la rivière et le journal des découvertes.
-	# Le journal vit ici parce que la vallée est le monde ; chaque lieu s'y
-	# déclare en arrivant, et son état part dans la sauvegarde de la vallée.
-	_build_open_world()
 	_spawn_bestiary()
 	# E.2b : le feu de cuisine — un interactable posé SUR le foyer réel du
 	# camp (§13.3). L'atelier vit dans la coquille ; le feu n'est que la

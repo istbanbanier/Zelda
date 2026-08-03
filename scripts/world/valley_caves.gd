@@ -55,6 +55,24 @@ const CAVE_WATERFALL: StringName = &"cascade"
 const CAVE_MINE: StringName = &"mine"
 const CAVE_CRYPT: StringName = &"crypte"
 
+## ANCRAGES de récompense (contrat `RewardAnchor`). Positions éprouvées par
+## `tools/godot/probe_reward_anchors.gd` dans la vallée montée — le sol sondé
+## est bien celui de la salle, jamais le dessus de la colline — puis figées.
+const ANCHORS: Dictionary = {
+	&"valley.poi.waterfall_cave.01": {
+		"at": Vector3(0.0, 0.0, 2.0), "approach": Vector3(3.0, 0.0, 2.0),
+		"kind": RewardAnchor.Kind.INGREDIENT,
+	},
+	&"valley.poi.abandoned_mine.01": {
+		"at": Vector3(0.0, 0.0, -3.0), "approach": Vector3(0.0, 0.0, -6.0),
+		"kind": RewardAnchor.Kind.WEAPON,
+	},
+	&"valley.poi.hollow_crypt.01": {
+		"at": Vector3(0.0, 0.0, 2.0), "approach": Vector3(-3.0, 0.0, 2.0),
+		"kind": RewardAnchor.Kind.CHEST,
+	},
+}
+
 ## Implantations, en coordonnées de la vallée (plaines à y = 2).
 ## Cascade : plaine sud-ouest, au pied de la falaise d'apprentissage mais en
 ## dehors de son emprise (z 40…90) et de celle du village (x −93…−47).
@@ -393,6 +411,7 @@ func _declare(root: Node3D, poi_id: StringName, display_name: String,
 	poi.add_child(shape)
 	poi.position = at
 	root.add_child(poi)
+	RewardAnchor.attach_from_table(root, poi_id, ANCHORS, "grottes")
 	return poi
 
 

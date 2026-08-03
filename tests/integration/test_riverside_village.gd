@@ -225,18 +225,12 @@ func test_the_places_hand_out_real_rewards() -> void:
 	var placed: int = valley.rewards.placed_count()
 	var skipped: Array[StringName] = valley.rewards.skipped_places()
 	check(placed >= 31,
-		"%d coffre(s) posé(s) — un par lieu, §3 tenu" % placed)
+		"%d récompense(s) posée(s) — une par lieu, §3 tenu" % placed)
+	var names: Array[String] = []
+	for poi_id: StringName in skipped:
+		names.append(String(poi_id))
 	check(skipped.is_empty(),
-		"aucun lieu laissé sans récompense (%d)" % skipped.size())
-	var fallback: Array[StringName] = valley.rewards.fallback_places()
-	print("[récompenses] %d coffre(s) posé(s) au centre du lieu faute "
-		% fallback.size() + "d'ancrage — placement À VÉRIFIER en capture")
-	if not skipped.is_empty():
-		var names: Array[String] = []
-		for poi_id: StringName in skipped:
-			names.append(String(poi_id))
-		print("[récompenses] lieux SANS ancrage (%d) : %s"
-			% [skipped.size(), ", ".join(names)])
+		"aucun lieu laissé sans récompense — manquants : %s" % ", ".join(names))
 
 	# Les identifiants de coffre dérivent de ceux des lieux : uniques par
 	# construction, et distincts des coffres déjà posés dans la vallée.
@@ -245,8 +239,11 @@ func test_the_places_hand_out_real_rewards() -> void:
 		var chest_id: StringName = (node as Chest).chest_id
 		check(not ids.has(chest_id), "coffre %s unique" % chest_id)
 		ids[chest_id] = true
-	check(ids.size() >= placed,
-		"les %d coffres du monde portent des identifiants distincts" % ids.size())
+	# La variété est vérifiée en détail par `test_reward_anchors.gd` ; ici on
+	# refuse seulement le retour en arrière : 31 coffres identiques.
+	check(ids.size() < placed,
+		"%d coffres pour %d récompenses — toutes ne sont pas des coffres"
+		% [ids.size(), placed])
 
 	valley.get_parent().remove_child(valley)
 	valley.queue_free()

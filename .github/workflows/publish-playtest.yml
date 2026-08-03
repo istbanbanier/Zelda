@@ -3,16 +3,31 @@
 # Pourquoi un workflow plutôt qu'un dépôt de fichier : l'archive pèse quelques
 # centaines de mégaoctets. Une Release accepte 2 Gio par asset, le dépôt Git
 # non — et une archive committée pollue l'historique à jamais. Le ZIP est donc
-# CONSTRUIT ici, à partir du commit taggé, et n'entre jamais dans Git.
+# CONSTRUIT ici, à partir du commit publié, et n'entre jamais dans Git.
 #
-# Le tag est la seule commande : `playtest-<short_sha>` pointant exactement sur
-# le commit validé. Ce qui est publié est donc reconstructible à l'identique.
+# Deux façons de déclencher, une seule sémantique : « publie CE commit ».
+#
+#  1. `push` d'un tag `playtest-*` — le mode nominal.
+#  2. `workflow_dispatch` — nécessaire ici : le mandataire Git du conteneur de
+#     développement n'autorise que la branche de travail et refuse les refs de
+#     tag (HTTP 403). Le tag ne peut donc pas être poussé depuis la machine
+#     qui valide. Dans ce mode le workflow CRÉE le tag `playtest-<short_sha>`
+#     sur le commit qu'il vient de construire : le tag pointe toujours
+#     exactement sur le commit publié, et l'archive reste reconstructible.
 name: Publier l'archive jouable
 
 on:
   push:
     tags:
       - 'playtest-*'
+  workflow_dispatch:
+    inputs:
+      selftest:
+        description: >-
+          Publier un paquet minimal au lieu du jeu, pour éprouver les
+          permissions de Release sans transporter 400 Mo.
+        type: boolean
+        default: false
 
 # Le minimum pour créer une Release et y téléverser des assets.
 permissions:
@@ -22,45 +37,63 @@ jobs:
   publier:
     runs-on: ubuntu-latest
     steps:
-      - name: Récupérer le commit taggé
+      - name: Récupérer le commit à publier
         uses: actions/checkout@v4
 
-      - name: Contexte
+      # Le tag est déduit, jamais inventé : soit c'est celui qui a déclenché le
+      # workflow, soit il est construit sur l'empreinte courte du commit
+      # réellement présent dans le runner.
+      - name: Déterminer le tag et le mode
+        id: cible
         run: |
-          echo "tag    : ${GITHUB_REF_NAME}"
-          echo "commit : $(git rev-parse HEAD)"
-          echo "court  : $(git rev-parse --short HEAD)"
-
-      # Un tag `playtest-selftest*` ne sert qu'à prouver que les permissions de
-      # Release fonctionnent. Il produit un paquet minimal au lieu des ~400 Mo :
-      # tester la plomberie ne demande pas de transporter le jeu entier.
-      - name: Mode
-        id: mode
-        run: |
-          case "${GITHUB_REF_NAME}" in
-            playtest-selftest*) echo "selftest=true" >> "$GITHUB_OUTPUT" ;;
-            *)                  echo "selftest=false" >> "$GITHUB_OUTPUT" ;;
-          esac
+          set -euo pipefail
+          COMMIT="$(git rev-parse HEAD)"
+          SHORT="$(git rev-parse --short HEAD)"
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            TAG="${GITHUB_REF_NAME}"
+            case "$TAG" in
+              playtest-selftest*) SELFTEST=true ;;
+              *)                  SELFTEST=false ;;
+            esac
+          else
+            SELFTEST="${{ inputs.selftest }}"
+            if [ "$SELFTEST" = "true" ]; then
+              TAG="playtest-selftest-${SHORT}"
+            else
+              TAG="playtest-${SHORT}"
+            fi
+          fi
+          {
+            echo "commit=$COMMIT"
+            echo "short=$SHORT"
+            echo "tag=$TAG"
+            echo "selftest=$SELFTEST"
+          } >> "$GITHUB_OUTPUT"
+          echo "commit   : $COMMIT"
+          echo "tag      : $TAG"
+          echo "selftest : $SELFTEST"
 
       - name: Construire l'archive jouable
-        if: steps.mode.outputs.selftest == 'false'
+        if: steps.cible.outputs.selftest == 'false'
         run: |
           set -euo pipefail
           bash tools/make_playable_zip.sh
 
+      # Un paquet minimal ne sert qu'à prouver que les permissions de Release
+      # fonctionnent : éprouver la plomberie ne demande pas de transporter le
+      # jeu entier.
       - name: Construire un paquet minimal (auto-test)
-        if: steps.mode.outputs.selftest == 'true'
+        if: steps.cible.outputs.selftest == 'true'
         run: |
           set -euo pipefail
-          STAMP="$(git rev-parse --short HEAD)"
+          STAMP="${{ steps.cible.outputs.short }}"
           mkdir -p "builds/selftest_${STAMP}"
-          cp README.md "builds/selftest_${STAMP}/" 2>/dev/null || true
           {
             echo "# Auto-test de publication"
             echo
             echo "Paquet minimal produit pour vérifier que le workflow sait"
-            echo "créer une Release et y téléverser un asset. Ne contient pas"
-            echo "le jeu. Commit : $(git rev-parse HEAD)"
+            echo "créer une Release et y téléverser un asset. Il ne contient"
+            echo "PAS le jeu. Commit : ${{ steps.cible.outputs.commit }}"
           } > "builds/selftest_${STAMP}/LISEZ_MOI.md"
           ( cd builds && zip -qr "EclatsDOrage_SelfTest_${STAMP}.zip" \
               "selftest_${STAMP}" )
@@ -80,11 +113,13 @@ jobs:
           SUM="$(cat "${ZIP}.sha256")"
           SIZE="$(du -h "$ZIP" | cut -f1)"
           BYTES="$(stat -c%s "$ZIP")"
-          echo "zip=$ZIP"       >> "$GITHUB_OUTPUT"
-          echo "name=$NAME"     >> "$GITHUB_OUTPUT"
-          echo "sha256=$SUM"    >> "$GITHUB_OUTPUT"
-          echo "size=$SIZE"     >> "$GITHUB_OUTPUT"
-          echo "bytes=$BYTES"   >> "$GITHUB_OUTPUT"
+          {
+            echo "zip=$ZIP"
+            echo "name=$NAME"
+            echo "sha256=$SUM"
+            echo "size=$SIZE"
+            echo "bytes=$BYTES"
+          } >> "$GITHUB_OUTPUT"
           echo "archive : $NAME ($SIZE, $BYTES octets)"
           echo "sha256  : $SUM"
 
@@ -107,8 +142,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          TAG="${GITHUB_REF_NAME}"
-          COMMIT="$(git rev-parse HEAD)"
+          TAG="${{ steps.cible.outputs.tag }}"
+          COMMIT="${{ steps.cible.outputs.commit }}"
           NOTES="$(mktemp)"
           {
             echo "Archive jouable d'Éclats d'Orage, construite à partir du"
@@ -131,6 +166,7 @@ jobs:
             echo "Détails, commandes AZERTY et limites connues : \`COMMENT_JOUER.md\`"
             echo "à la racine de l'archive."
           } > "$NOTES"
+          # `--target` crée le tag s'il n'existe pas encore, sur CE commit.
           gh release create "$TAG" \
             --title "Éclats d'Orage — archive jouable ($TAG)" \
             --notes-file "$NOTES" \
@@ -139,17 +175,24 @@ jobs:
             "${{ steps.paquet.outputs.zip }}.sha256"
 
       # Créer n'est pas publier : on relit la Release pour constater que les
-      # deux assets y sont réellement.
+      # deux assets y sont réellement, et que le tag pointe sur le bon commit.
       - name: Vérifier la Release publiée
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          TAG="${GITHUB_REF_NAME}"
+          TAG="${{ steps.cible.outputs.tag }}"
           gh release view "$TAG" --json assets \
-            --jq '.assets[] | "\(.name)  \(.size) octets  \(.url)"'
+            --jq '.assets[] | "\(.name)  \(.size) octets"'
           COUNT="$(gh release view "$TAG" --json assets --jq '.assets | length')"
           [ "$COUNT" -ge 2 ] || { echo "assets manquants ($COUNT)"; exit 1; }
+          # `commits/<ref>` déréférence le tag jusqu'au commit, qu'il soit
+          # léger ou annoté — `git/ref/tags` renverrait l'objet tag lui-même.
+          TAGGED="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${TAG}" \
+            --jq '.sha')"
+          echo "tag $TAG -> $TAGGED"
+          [ "$TAGGED" = "${{ steps.cible.outputs.commit }}" ] \
+            || { echo "le tag ne pointe pas sur le commit publié"; exit 1; }
           echo
           echo "Lien direct :"
           echo "https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/${{ steps.paquet.outputs.name }}"

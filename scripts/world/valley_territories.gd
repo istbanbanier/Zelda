@@ -79,6 +79,36 @@ const POI_BASTION: StringName = &"valley.poi.obsidian_bastion.01"
 const POI_LAIR: StringName = &"valley.poi.colossus_lair.01"
 const POI_HUNTER: StringName = &"valley.poi.hunter_range.01"
 
+## ANCRAGES de récompense (contrat `RewardAnchor`). Positions éprouvées par
+## `tools/godot/probe_reward_anchors.gd` dans la vallée montée, puis figées.
+##
+## Les cinq territoires portent une récompense de nature `COMBAT` : c'est
+## l'INTENTION du lieu. Il faut le dire sans détour — le coffre est réel et
+## persistant, mais sa condition d'ouverture (territoire nettoyé) n'est pas
+## implémentée ; `DiscoveryRewards.deferred_gates()` les nomme.
+const ANCHORS: Dictionary = {
+	POI_BRAISE: {
+		"at": Vector3(2.0, 0.0, 1.0), "approach": Vector3(4.77, 0.0, 2.15),
+		"kind": RewardAnchor.Kind.COMBAT,
+	},
+	POI_AZURE: {
+		"at": Vector3(0.54, 0.0, 1.29), "approach": Vector3(1.68, 0.0, 4.07),
+		"kind": RewardAnchor.Kind.COMBAT,
+	},
+	POI_BASTION: {
+		"at": Vector3(0.0, 0.0, 0.0), "approach": Vector3(3.0, 0.0, 0.0),
+		"kind": RewardAnchor.Kind.COMBAT,
+	},
+	POI_LAIR: {
+		"at": Vector3(0.0, 0.0, 2.0), "approach": Vector3(3.0, 0.0, 2.0),
+		"kind": RewardAnchor.Kind.COMBAT,
+	},
+	POI_HUNTER: {
+		"at": Vector3(5.0, 0.80, 0.0), "approach": Vector3(8.0, 0.0, 0.0),
+		"kind": RewardAnchor.Kind.COMBAT,
+	},
+}
+
 ## Clés de comptage — un territoire figurant se repère à son décompte.
 # Préfixe TERR_ et non le préfixe de touche : le garde-fou D-013 refuse ce
 # dernier dans un script de gameplay, parce qu'il y traque la lecture directe
@@ -1036,4 +1066,5 @@ func _make_poi(parent: Node3D, poi_id: StringName, label: String,
 	poi.add_child(shape)
 	poi.position = centre
 	parent.add_child(poi)
+	RewardAnchor.attach_from_table(parent, poi_id, ANCHORS, "territoires")
 	return poi

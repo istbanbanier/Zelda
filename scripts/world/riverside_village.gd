@@ -290,3 +290,9 @@ func _build_poi() -> void:
 	poi.add_child(shape)
 	poi.position = Vector3(0, 4, 4)
 	add_child(poi)
+	# ANCRAGE de récompense (contrat `RewardAnchor`) : sur la place, devant
+	# l'auberge. Position éprouvée par `tools/godot/probe_reward_anchors.gd`
+	# dans la vallée montée — sol réel, dégagement au gabarit du joueur — puis
+	# figée ici. Le village de forge rend une arme, pas un coffre de plus.
+	RewardAnchor.attach(self, poi.poi_id, RewardAnchor.Kind.WEAPON,
+		Vector3(0.0, 0.0, 4.0), Vector3(3.0, 0.0, 4.0))

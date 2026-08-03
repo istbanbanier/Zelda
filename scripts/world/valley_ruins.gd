@@ -84,6 +84,27 @@ const POI_AQUEDUCT: StringName = &"valley.poi.ancient_aqueduct.01"
 const POI_FARM: StringName = &"valley.poi.abandoned_farm.01"
 const POI_CARAVAN: StringName = &"valley.poi.storm_caravan.01"
 
+## ANCRAGES de récompense (contrat `RewardAnchor`). Positions éprouvées par
+## `tools/godot/probe_reward_anchors.gd` dans la vallée montée, puis figées.
+const ANCHORS: Dictionary = {
+	POI_WATCHTOWER: {
+		"at": Vector3(2.0, 0.0, -2.0), "approach": Vector3(5.0, 0.0, -2.0),
+		"kind": RewardAnchor.Kind.CHEST,
+	},
+	POI_AQUEDUCT: {
+		"at": Vector3(4.40, 0.0, 0.0), "approach": Vector3(7.40, 0.0, 0.0),
+		"kind": RewardAnchor.Kind.STORY,
+	},
+	POI_FARM: {
+		"at": Vector3(4.0, 0.0, 2.0), "approach": Vector3(7.0, 0.0, 2.0),
+		"kind": RewardAnchor.Kind.INGREDIENT,
+	},
+	POI_CARAVAN: {
+		"at": Vector3(0.0, 0.0, -4.0), "approach": Vector3(3.0, 0.0, -4.0),
+		"kind": RewardAnchor.Kind.CHEST,
+	},
+}
+
 ## Noms des quatre nœuds de ruine, dans l'ordre de construction.
 const RUIN_NODES: Array[String] = [
 	"TourDeGuet", "Aqueduc", "FermeAbandonnee", "CaravaneFoudroyee",
@@ -301,6 +322,7 @@ func _place_poi(parent: Node3D, poi_id: StringName, display: String,
 	place.position = centre
 	parent.add_child(place)
 	pois.append(place)
+	RewardAnchor.attach_from_table(parent, poi_id, ANCHORS, "ruines")
 	return place
 
 

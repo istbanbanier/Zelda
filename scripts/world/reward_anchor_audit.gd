@@ -22,6 +22,9 @@ const GRAVITY: float = 24.0
 ## Budget de ticks pour rejoindre l'ancrage, puis pour en repartir.
 const APPROACH_TICKS: int = 420
 const RETURN_TICKS: int = 420
+## Budget de la traversée elle-même : gravir une échine de 36 m à 29° prend
+## bien plus longtemps que franchir les trois derniers mètres.
+const TRAVERSAL_TICKS: int = 1800
 ## Distance à laquelle on considère l'ancrage atteint — la portée
 ## d'interaction du jeu.
 const ARRIVAL: float = RewardAnchor.INTERACTION_REACH
@@ -76,6 +79,25 @@ static func audit(tree: SceneTree, world: Node3D,
 	world.add_child(body)
 	var start: Vector3 = anchor.approach_point()
 	var target: Vector3 = anchor.global_position
+
+	# TRAVERSÉE : pour un lieu qui exige de monter, la question n'est pas
+	# « peut-on faire les trois derniers mètres » mais « peut-on y aller ».
+	# Un corps part donc du pied déclaré et doit ARRIVER, en gravissant sous
+	# gravité ce que le bâtisseur prétend gravissable.
+	if anchor.requires_traversal:
+		var base: Vector3 = anchor.traversal_base_point()
+		if base == Vector3.INF:
+			verdict.reason = ("lieu déclaré à traverser mais sans pied de "
+				+ "traversée : l'accès n'est pas démontré")
+			body.queue_free()
+			return verdict
+		var climbed: float = await _walk(tree, body, base, target,
+			TRAVERSAL_TICKS)
+		if climbed > ARRIVAL:
+			verdict.reason = ("traversée impossible : le corps s'arrête à "
+				+ "%.1f m de l'ancrage en partant du pied") % climbed
+			body.queue_free()
+			return verdict
 
 	# ALLER : le corps doit arriver à portée d'interaction.
 	var reached: float = await _walk(tree, body, start, target, APPROACH_TICKS)
