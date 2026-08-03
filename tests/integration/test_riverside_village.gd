@@ -169,3 +169,42 @@ func test_the_village_stands_in_the_playable_valley() -> void:
 	valley.get_parent().remove_child(valley)
 	valley.queue_free()
 	await _settle(2)
+
+
+## LE test du monde ouvert : les 31 lieux existent-ils DANS LA PARTIE ?
+##
+## Chaque famille a ses propres tests, qui montent sa classe isolément. Ils
+## prouvent que les lieux sont bâtissables — pas qu'ils sont posés. Un lieu
+## qui n'est jamais instancié n'existe que dans son test, et le joueur ne le
+## verra jamais. C'est l'écart que ce test ferme.
+func test_the_whole_open_world_is_declared_in_the_playable_valley() -> void:
+	var valley: ValleyWorld = (load("res://scenes/world/valley/ValleyWorld.tscn")
+		as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(valley)
+	await _settle(10)
+
+	for family: String in ["RiversideVillage", "Hamlets", "ValleyRuins",
+			"ValleyRelics", "ValleyCaves", "ValleyUndergrounds",
+			"ValleyLandmarks", "ValleyWonders", "ValleyTerritories"]:
+		check_not_null(valley.get_node_or_null(family),
+			"la vallée porte « %s »" % family)
+
+	var ids: Array[StringName] = valley.discoveries.registered_ids()
+	check(ids.size() >= 31,
+		"%d lieux déclarés au journal de la partie (cible : 31)" % ids.size())
+	# Unicité : deux lieux qui partagent un identifiant se marqueraient
+	# découverts l'un l'autre, et le journal en refuserait un en silence.
+	var seen: Dictionary = {}
+	for poi_id: StringName in ids:
+		seen[poi_id] = true
+	check_equal(seen.size(), ids.size(),
+		"les %d identifiants sont TOUS distincts" % ids.size())
+	check_equal(valley.discoveries.discovered_count(), 0,
+		"rien n'est découvert avant d'y être allé")
+	# Les régions permettent une carte : plusieurs, pas une seule fourre-tout.
+	check(valley.discoveries.by_region().size() >= 5,
+		"%d régions distinctes" % valley.discoveries.by_region().size())
+
+	valley.get_parent().remove_child(valley)
+	valley.queue_free()
+	await _settle(2)

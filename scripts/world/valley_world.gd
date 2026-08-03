@@ -241,9 +241,37 @@ func _setup_dust() -> void:
 ## c'est ce qui rend « aucune seconde récompense après rechargement » vrai
 ## sans que le lieu ait à s'en souvenir lui-même.
 func _build_open_world() -> void:
+	# Les huit familles de lieux. Chacune est bâtie par sa propre classe, puis
+	# TOUS les points d'intérêt du monde sont reliés au journal en une passe :
+	# un lieu qui n'est pas posé ici n'existe que dans ses tests, et le joueur
+	# ne le verra jamais. C'est l'écueil déjà corrigé pour le village.
 	var village: RiversideVillage = RiversideVillage.new()
 	village.name = "RiversideVillage"
 	add_child(village)
+	var hamlets: Hamlets = Hamlets.new()
+	hamlets.name = "Hamlets"
+	add_child(hamlets)
+	var ruins: ValleyRuins = ValleyRuins.new()
+	ruins.name = "ValleyRuins"
+	add_child(ruins)
+	var relics: ValleyRelics = ValleyRelics.new()
+	relics.name = "ValleyRelics"
+	add_child(relics)
+	var caves: ValleyCaves = ValleyCaves.new()
+	caves.name = "ValleyCaves"
+	add_child(caves)
+	var undergrounds: ValleyUndergrounds = ValleyUndergrounds.new()
+	undergrounds.name = "ValleyUndergrounds"
+	add_child(undergrounds)
+	var landmarks: ValleyLandmarks = ValleyLandmarks.new()
+	landmarks.name = "ValleyLandmarks"
+	add_child(landmarks)
+	var wonders: ValleyWonders = ValleyWonders.new()
+	wonders.name = "ValleyWonders"
+	add_child(wonders)
+	var territories: ValleyTerritories = ValleyTerritories.new()
+	territories.name = "ValleyTerritories"
+	add_child(territories)
 	for poi: Node in find_children("*", "PointOfInterest", true, false):
 		(poi as PointOfInterest).bind(discoveries)
 
