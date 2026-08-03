@@ -156,10 +156,10 @@ func _assert_standing_room(places: ValleyUndergrounds, inside: Vector3,
 		"%s : un PLAFOND couvre le point de station" % label)
 	if not hit.is_empty():
 		var ceiling: Vector3 = hit.get("position")
-		check(ceiling.y - body.global_position.y
-				> ValleyUndergrounds.MIN_CLEARANCE - 0.9,
+		var headroom: float = ceiling.y - body.global_position.y
+		check(headroom > ValleyUndergrounds.MIN_CLEARANCE - 0.9,
 			"%s : …assez haut pour s'y tenir debout (%.2f m de dégagement)"
-			% [label, ceiling.y - body.global_position.y])
+			% [label, headroom])
 	_despawn(body)
 	await _settle(1)
 
@@ -260,6 +260,10 @@ func test_the_hidden_passage_really_comes_out_at_the_other_end() -> void:
 		"les deux bouches sont à des HAUTEURS différentes (%.2f m d'écart)"
 		% gain_declared)
 
+	# Le repère est celui du CENTRE de la capsule : posée sur un sol à y, elle
+	# tient son centre à y + 0,85. Toutes les bornes ci-dessous en tiennent
+	# compte — les confondre ferait échouer un passage pourtant correct.
+	var exit_floor: float = places.exit_floor_level(key)
 	var inward: Vector3 = -places.door_normal(key)
 	var body: CharacterBody3D = _spawn_body(places.entrance_point(key))
 	await _drop(body, 60)
@@ -271,18 +275,20 @@ func test_the_hidden_passage_really_comes_out_at_the_other_end() -> void:
 		body.move_and_slide()
 		await _tree().physics_frame
 		climbed = body.global_position.y - start_y
-		if climbed >= 8.0:
+		if body.global_position.y >= exit_floor + 0.5:
 			break
 	check(climbed >= 7.0,
 		("le corps traverse le boyau et RESSORT en hauteur (%.2f m gagnés "
 		+ "sans saut ni téléportation)") % climbed)
 	# …et il ressort bien au niveau du haut, pas coincé à mi-pente.
-	var exit_floor: float = places.exit_floor_level(key)
-	check(body.global_position.y > exit_floor - 1.2,
-		"il atteint le niveau de la sortie (y = %.2f, sol haut y = %.2f)"
+	check(body.global_position.y > exit_floor,
+		"il atteint le niveau de la sortie (centre y = %.2f, sol haut y = %.2f)"
 		% [body.global_position.y, exit_floor])
+	# Une dernière chute laisse la capsule se poser : la preuve porte sur la
+	# roche sous ses pieds, pas sur l'instant précis où la boucle s'arrête.
+	await _drop(body, 40)
 	check(body.is_on_floor(),
-		"…debout sur la roche, pas suspendu dans le vide")
+		"…debout sur la roche du haut, pas suspendu dans le vide")
 	_despawn(body)
 	await _settle(1)
 	await _close(places)
@@ -296,6 +302,7 @@ func test_the_hidden_passage_can_be_walked_back_down() -> void:
 	# La descente suit la normale sortante de la bouche BASSE : depuis le haut,
 	# c'est la direction qui redescend vers le vestibule puis vers la plaine.
 	var downward: Vector3 = places.door_normal(key)
+	var bottom: float = places.floor_level(key)
 	var body: CharacterBody3D = _spawn_body(places.second_room_point(key))
 	await _drop(body, 90)
 	var start_y: float = body.global_position.y
@@ -306,14 +313,16 @@ func test_the_hidden_passage_can_be_walked_back_down() -> void:
 		body.move_and_slide()
 		await _tree().physics_frame
 		dropped = start_y - body.global_position.y
-		if dropped >= 8.0:
+		# Arrêt dès que la capsule est revenue à hauteur du vestibule : son
+		# centre repose alors à 0,85 m au-dessus du sol bas.
+		if body.global_position.y <= bottom + 1.2:
 			break
-	check(dropped >= 7.0,
+	check(dropped >= 7.5,
 		"le boyau se redescend aussi (%.2f m perdus vers le vestibule)"
 		% dropped)
-	check(body.global_position.y < places.floor_level(key) + 1.5,
-		"…et ramène au niveau de la plaine (y = %.2f, sol bas y = %.2f)"
-		% [body.global_position.y, places.floor_level(key)])
+	check(body.global_position.y < bottom + 2.0,
+		"…et ramène au niveau de la plaine (centre y = %.2f, sol bas y = %.2f)"
+		% [body.global_position.y, bottom])
 	_despawn(body)
 	await _settle(1)
 	await _close(places)

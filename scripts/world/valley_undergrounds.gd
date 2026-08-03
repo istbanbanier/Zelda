@@ -538,7 +538,12 @@ func _register(key: StringName, root: Node3D, poi: PointOfInterest,
 	record.interior = root.transform * interior_local
 	record.second_room = root.transform * second_local
 	record.entrance_normal = (root.basis * Vector3.BACK).normalized()
-	record.exit_normal = (root.basis * Vector3.FORWARD).normalized()
+	# Un lieu à bouche unique n'a pas de « seconde normale » : lui en inventer
+	# une opposée ferait croire à un second débouché. Sa sortie est son entrée.
+	if through:
+		record.exit_normal = (root.basis * Vector3.FORWARD).normalized()
+	else:
+		record.exit_normal = record.entrance_normal
 	record.floor_y = root.position.y
 	record.exit_floor_y = root.position.y + exit_floor_local
 	record.through = through
