@@ -1,9 +1,10 @@
-[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=3 format=3]
 
 ; §11.1 — Arc simple : 9.0 dégâts, durabilité 28, portée 0.0 m, conductivité 0.2.
 
 [ext_resource type="Script" path="res://resources/weapons/weapon_definition.gd" id="1_def"]
 
+[ext_resource type="PackedScene" path="res://scenes/weapons/SimpleBow.tscn" id="9_model"]
 [resource]
 script = ExtResource("1_def")
 id = &"simple_bow"
@@ -16,4 +17,5 @@ reach_m = 0.0
 max_durability = 28
 conductivity = 0.2
 rarity = 0
+mesh_scene = ExtResource("9_model")
 attack_set = []

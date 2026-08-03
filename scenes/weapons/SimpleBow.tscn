@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3]
+
+; ISS-020 — présentation de « Arc simple » : le .glb importé, pointe vers +Z
+; (convention du visuel d'arme, la même que l'Épée usée), PIVOT AU MILIEU DE
+; LA PRISE — le décalage +0.000 recentre la main sur la poignée, l'arme ne
+; flotte pas devant elle. composite asymétrique, branche haute plus longue, corde tendue (§16.5)
+; Le script WeaponModel porte la variation d'usure, réversible, par instance.
+
+[ext_resource type="Script" path="res://scripts/combat/weapon_model.gd" id="1_model"]
+[ext_resource type="PackedScene" path="res://assets/weapons/SM_SimpleBow.glb" id="2_glb"]
+
+[node name="SimpleBowModel" type="Node3D"]
+script = ExtResource("1_model")
+
+[node name="SM_SimpleBow" parent="." instance=ExtResource("2_glb")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0.0)

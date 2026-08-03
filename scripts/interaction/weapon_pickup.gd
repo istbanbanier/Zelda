@@ -37,13 +37,52 @@ func _ready() -> void:
 		if box != null:
 			(box as MeshInstance3D).visible = false
 		model.name = "ProductionModel"
-		# Le modèle est naturellement à PLAT (lame +Z, plat de lame vers le
-		# haut — l'épaisseur suit Y après conversion glTF) : un lacet suffit.
-		# Hauteur = demi-épaisseur du POMMEAU (le point bas de l'arme couchée) :
-		# elle REPOSE, ni flottante ni enfoncée (ART-P0R §6).
-		model.rotation_degrees = Vector3(0.0, 25.0, 0.0)
-		model.position = Vector3(0, 0.026, 0)
 		add_child(model)
+		_pose(model)
+
+
+## POSE au sol. Une épée d'un mètre couchée à plat se lit ; une lance de deux
+## mètres, une hache de 1,43 m ou un arc de 1,52 m couchés dans l'axe du regard
+## ne sont plus qu'un trait — les captures des récompenses l'ont montré, l'une
+## d'elles ne montrait plus rien du tout.
+##
+## Les armes longues sont donc FICHÉES en terre, inclinées : la silhouette se
+## lit de n'importe quelle direction, et c'est déjà le langage du monde (les
+## armes brisées plantées du territoire du chasseur).
+##
+## La hauteur n'est jamais devinée : elle se déduit de la boîte englobante
+## APRÈS rotation, pour que le point bas touche exactement le sol.
+func _pose(model: Node3D) -> void:
+	var extent: AABB = _model_bounds(model)
+	var length: float = maxf(extent.size.z, extent.size.x)
+	if length > 1.05:
+		# Plantée : inclinée vers l'arrière, un quart de tour de biais pour ne
+		# jamais présenter la tranche à celui qui arrive.
+		model.rotation_degrees = Vector3(-62.0, 34.0, 0.0)
+	else:
+		model.rotation_degrees = Vector3(0.0, 25.0, 0.0)
+	var posed: AABB = _model_bounds(model)
+	model.position = Vector3(0.0, -posed.position.y, 0.0)
+
+
+## Boîte englobante du modèle dans le repère du pickup, rotation comprise.
+func _model_bounds(model: Node3D) -> AABB:
+	var box: AABB = AABB()
+	var first: bool = true
+	# Les maillages sont ramenés dans le repère du MODÈLE, puis la transformée
+	# du modèle est appliquée : passer par le global mêlerait la position du
+	# pickup dans le monde, et la pose dépendrait de l'endroit où il est posé.
+	var into_model: Transform3D = model.global_transform.affine_inverse()
+	for node: Node in model.find_children("*", "MeshInstance3D", true, false):
+		var mesh: MeshInstance3D = node as MeshInstance3D
+		var here: AABB = model.transform \
+			* ((into_model * mesh.global_transform) * mesh.get_aabb())
+		if first:
+			box = here
+			first = false
+		else:
+			box = box.merge(here)
+	return box
 
 
 func prompt_verb() -> String:

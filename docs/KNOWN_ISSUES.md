@@ -203,7 +203,7 @@ NON ASSERTÉS, à vérifier visuellement au playtest n° 2.
 | ISS-019 | ~~**Aucun test automatique ne voit ce défaut.**~~ **CORRIGÉ.** `tools/blender/check_continuity.py` lit le `.glb` LIVRÉ, évalue le graphe de dépendances (donc APRÈS déformation par l'armature), ressoude les sommets séparés par l'export glTF, découpe en morceaux connexes et exige **un seul corps solidaire** — pas seulement « chaque pièce a un voisin », critère que deux bras flottants satisfaisaient. Câblé en niveau 3b de `tools/validate_fast.sh`. Contrôle négatif : une pièce déplacée de 0,60 m fait sortir le script en code 1, le modèle réparé en code 0. | S3 | **clos** |
 | ISS-020 | Diagnostic initial ERRONÉ consigné pour mémoire : j'ai d'abord attribué l'éclatement au skinning (transformation de nœud ignorée par glTF). Un ré-import du `.glb` dans Blender a montré le modèle correctement assemblé après déformation — la cause était la géométrie source, pas le pipeline. Le durcissement appliqué entre-temps (`apply_transforms` avant liaison) reste juste et exigé par `.claude/rules/assets.md`, mais il ne corrigeait pas ce défaut-là. | S4 | consigné, rien à corriger |
 
-## ISS-020 — Cinq armes sur six n'ont pas de modèle : la boîte graybox se voit sur le chemin des récompenses · `S3` · OUVERT
+## ISS-020 — Cinq armes sur six n'avaient pas de modèle · `S3` · CORRIGÉ le 2026-08-03, sans textures
 
 **Constaté le** 2026-08-03, sur `evidence/rewards/abandoned_mine.png` — la
 hache lourde posée au sol de la mine est une boîte olive, pas une hache.
@@ -226,3 +226,24 @@ d'armes était déjà incomplète. Ce lot l'a seulement rendu visible.
 visuelle) ou, à défaut, une silhouette de repli par famille qui se lise mieux
 qu'une boîte. Tant que ce n'est pas fait, aucune de ces récompenses ne peut
 être appelée `final`.
+
+**Correction (commit du lot armes).** `tools/blender/make_weapons.py` bâtit les
+cinq modèles manquants d'après VISUAL_ASSET_BIBLE §16 — gourdin torsadé à masse
+noueuse, lance à tête foliacée et insert de céramique, hache à coin
+dissymétrique et contrepoids minéral, arc composite asymétrique, lame à deux
+rails de cuivre séparés par une âme d'ivoire. Dimensions dans les bandes de la
+bible, export glTF validé, les six armes portent un modèle distinct
+(`test_every_weapon_carries_its_own_production_model`).
+
+**Ce qui reste, et qu'il ne faut pas appeler fini :**
+
+- **aucune texture.** Ces cinq modèles portent des matériaux PBR à facteurs
+  plats. L'Épée usée, elle, a ses cartes peintes (base color, MR, normale). Un
+  cran au-dessus de la boîte grise, un cran en dessous de l'épée ;
+- **densité géométrique faible** : 296 à 504 triangles, contre 1k-8k pour un
+  prop selon §4.5. Les silhouettes se lisent, les surfaces sont facettées ;
+- **lisibilité au sol inégale.** Les armes longues sont désormais FICHÉES en
+  terre plutôt que couchées — une lance de deux mètres couchée dans l'axe du
+  regard n'était qu'un trait, et la hache avait carrément disparu d'une
+  capture. Après correction, la hache de la mine reste fine vue dans l'axe du
+  couloir. Preuve : `evidence/rewards/abandoned_mine.png`.

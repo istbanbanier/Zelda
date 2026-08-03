@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3]
+
+; ISS-020 — présentation de « Lame conductrice » : le .glb importé, pointe vers +Z
+; (convention du visuel d'arme, la même que l'Épée usée), PIVOT AU MILIEU DE
+; LA PRISE — le décalage +0.080 recentre la main sur la poignée, l'arme ne
+; flotte pas devant elle. deux rails de cuivre, âme de céramique ivoire, pointe fourchue (§16.6)
+; Le script WeaponModel porte la variation d'usure, réversible, par instance.
+
+[ext_resource type="Script" path="res://scripts/combat/weapon_model.gd" id="1_model"]
+[ext_resource type="PackedScene" path="res://assets/weapons/SM_ConductiveBlade.glb" id="2_glb"]
+
+[node name="ConductiveBladeModel" type="Node3D"]
+script = ExtResource("1_model")
+
+[node name="SM_ConductiveBlade" parent="." instance=ExtResource("2_glb")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0.08)

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=6 format=3]
 
 ; §11.1 — Hache lourde : 22.0 dégâts, durabilité 20, portée 1.9 m, conductivité 0.8.
 
@@ -6,6 +6,7 @@
 [ext_resource type="Resource" path="res://resources/combat/sword/light_1.tres" id="2_l1"]
 [ext_resource type="Resource" path="res://resources/combat/sword/light_2.tres" id="3_l2"]
 [ext_resource type="Resource" path="res://resources/combat/sword/light_3.tres" id="4_l3"]
+[ext_resource type="PackedScene" path="res://scenes/weapons/HeavyAxe.tscn" id="9_model"]
 [resource]
 script = ExtResource("1_def")
 id = &"heavy_axe"
@@ -18,4 +19,5 @@ reach_m = 1.9
 max_durability = 20
 conductivity = 0.8
 rarity = 1
+mesh_scene = ExtResource("9_model")
 attack_set = [ExtResource("2_l1"), ExtResource("3_l2"), ExtResource("4_l3")]

@@ -134,8 +134,10 @@ func test_the_tres_gameplay_data_is_untouched_and_now_carries_the_model() -> voi
 
 
 func test_the_equipped_sword_wears_the_model_and_others_fall_back_to_the_box() -> void:
-	## En main : le modèle remplace la boîte pour l'Épée usée ; la lance (sans
-	## modèle) garde la boîte graybox — le repli est CONTRÔLÉ, pas un trou.
+	## En main : le modèle remplace la boîte. Ce test disait « la lance n'a pas
+	## de modèle » — c'était vrai, et ISS-020 l'a corrigé : les SIX armes en ont
+	## un désormais. Le repli sur la boîte reste éprouvé, mais sur une
+	## définition volontairement dépourvue de modèle, pas sur un manque du jeu.
 	await _setup_player()
 	await _settle(3)
 	var model: Node3D = _hand_model()
@@ -147,7 +149,19 @@ func test_the_equipped_sword_wears_the_model_and_others_fall_back_to_the_box() -
 		load("res://resources/weapons/spear.tres") as WeaponDefinition))
 	inventory.equip_next()
 	await _settle(2)
-	check(_hand_model() == null, "la lance n'a pas de modèle : le sien est libéré")
+	check_not_null(_hand_model(),
+		"la lance porte MAINTENANT son propre modèle (ISS-020)")
+	check(not _hand_box().visible, "…et range la boîte à son tour")
+
+	# Le repli : une définition sans `mesh_scene` doit ramener la boîte.
+	var bare: WeaponDefinition = WeaponDefinition.new()
+	bare.id = &"test_sans_modele"
+	bare.display_name = "Arme sans modèle"
+	bare.max_durability = 5
+	inventory.add_weapon(WeaponInstance.create(bare))
+	inventory.equip_next()
+	await _settle(2)
+	check(_hand_model() == null, "sans modèle, rien n'est instancié")
 	check(_hand_box().visible, "…et la boîte graybox revient (repli contrôlé)")
 
 	inventory.equip_next()   # retour à l'épée
@@ -280,3 +294,39 @@ func _game_scene_files(root: String) -> Array[String]:
 		entry = dir.get_next()
 	dir.list_dir_end()
 	return found
+
+
+## ISS-020 : les SIX armes portent un modèle, et six modèles DISTINCTS.
+##
+## Le défaut d'origine n'était pas visible en jeu tant qu'aucune arme n'était
+## posée au sol ; il l'est devenu quand quatre des 31 récompenses sont devenues
+## des armes au sol. Ce test le rendrait visible AVANT, et refuse aussi qu'une
+## arme emprunte le modèle d'une autre — un raccourci tentant.
+func test_every_weapon_carries_its_own_production_model() -> void:
+	var ids: Array[String] = ["worn_sword", "wood_club", "spear", "heavy_axe",
+		"simple_bow", "conductive_blade"]
+	var scenes: Dictionary = {}
+	var without: Array[String] = []
+	for id: String in ids:
+		var definition: WeaponDefinition = \
+			load("res://resources/weapons/%s.tres" % id) as WeaponDefinition
+		check_not_null(definition, "la définition de %s se charge" % id)
+		if definition.mesh_scene == null:
+			without.append(id)
+			continue
+		var path: String = definition.mesh_scene.resource_path
+		check(not scenes.has(path),
+			"%s ne réutilise pas le modèle de %s" % [id, scenes.get(path, "?")])
+		scenes[path] = id
+		# Le modèle doit s'instancier ET porter de la géométrie : une scène
+		# vide passerait un simple contrôle de non-nullité.
+		var model: Node3D = definition.mesh_scene.instantiate() as Node3D
+		check_not_null(model, "le modèle de %s s'instancie" % id)
+		var meshes: Array[Node] = model.find_children("*", "MeshInstance3D",
+			true, false)
+		check(not meshes.is_empty(), "…et porte un maillage (%s)" % id)
+		model.queue_free()
+	check(without.is_empty(),
+		"aucune arme sans modèle — sans : %s" % ", ".join(without))
+	check_equal(scenes.size(), ids.size(),
+		"%d modèles distincts pour %d armes" % [scenes.size(), ids.size()])
