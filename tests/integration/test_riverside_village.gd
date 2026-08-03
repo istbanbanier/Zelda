@@ -144,3 +144,28 @@ func test_the_village_square_is_reachable_from_the_plain() -> void:
 		node.get_parent().remove_child(node)
 		node.queue_free()
 	await _close(village)
+
+
+## Le village est-il DANS le monde jouable, ou seulement dans sa scène de
+## test ? Un lieu construit mais jamais posé ne compte pas.
+func test_the_village_stands_in_the_playable_valley() -> void:
+	var valley: ValleyWorld = (load("res://scenes/world/valley/ValleyWorld.tscn")
+		as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(valley)
+	await _settle(8)
+	var village: Node = valley.get_node_or_null("RiversideVillage")
+	check_not_null(village, "la vallée porte le village de la rivière")
+	check(valley.discoveries.is_registered(&"valley.poi.riverside_village.01"),
+		"…et il s'est déclaré au journal de la partie")
+	check_equal(valley.discoveries.discovered_count(), 0,
+		"rien n'est découvert avant d'y être allé")
+
+	# Découvrir, puis vérifier que l'état part bien dans la sauvegarde.
+	valley.discoveries.visit(&"valley.poi.riverside_village.01")
+	var state: Dictionary = valley.discoveries.collect_state()
+	check_equal((state["discovered"] as Array).size(), 1,
+		"la découverte entre dans l'instantané de la vallée")
+
+	valley.get_parent().remove_child(valley)
+	valley.queue_free()
+	await _settle(2)

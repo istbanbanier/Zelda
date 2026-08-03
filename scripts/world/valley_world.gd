@@ -84,6 +84,10 @@ func _ready() -> void:
 	# D-EN.6 : les QUATRE familles au-delà du braise (§12.2-§12.5), posées
 	# selon leur rôle de level design ; le coordinateur de combat (§12.8)
 	# les gouverne toutes.
+	# Monde ouvert : le village de la rivière et le journal des découvertes.
+	# Le journal vit ici parce que la vallée est le monde ; chaque lieu s'y
+	# déclare en arrivant, et son état part dans la sauvegarde de la vallée.
+	_build_open_world()
 	_spawn_bestiary()
 	# E.2b : le feu de cuisine — un interactable posé SUR le foyer réel du
 	# camp (§13.3). L'atelier vit dans la coquille ; le feu n'est que la
@@ -231,6 +235,22 @@ func _setup_dust() -> void:
 	particles.draw_pass_1 = quad
 	particles.position = Vector3(0, 26.5, 152)
 	add_child(particles)
+
+
+## Lieux du monde ouvert. Chaque lieu se DÉCLARE au journal en naissant :
+## c'est ce qui rend « aucune seconde récompense après rechargement » vrai
+## sans que le lieu ait à s'en souvenir lui-même.
+func _build_open_world() -> void:
+	var village: RiversideVillage = RiversideVillage.new()
+	village.name = "RiversideVillage"
+	add_child(village)
+	for poi: Node in find_children("*", "PointOfInterest", true, false):
+		(poi as PointOfInterest).bind(discoveries)
+
+
+## Journal des découvertes de la partie — public, pour que la sauvegarde de
+## la vallée le collecte et que l'interface puisse s'y abonner.
+var discoveries: DiscoveryLog = DiscoveryLog.new()
 
 
 func _setup_vista_camera() -> void:
@@ -501,6 +521,9 @@ func _autosave() -> void:
 		"taken_ingredients": _taken_ingredients.duplicate(),
 		"meals": inventory.meals_snapshot(),
 		"buff": _player.status().snapshot() if _player.status() != null else {},
+		# Lieux découverts : seuls des identifiants partent en sauvegarde
+		# (§19.2), et le journal refuse d'en re-récompenser un au retour.
+		"discoveries": discoveries.collect_state(),
 		"boss_defeated": false,
 	})
 
@@ -512,6 +535,8 @@ func _apply_save() -> void:
 	var data: Dictionary = save_system.call("load_slot", SAVE_SLOT)
 	if data.is_empty():
 		return
+	if data.has("discoveries"):
+		discoveries.apply_state(data["discoveries"] as Dictionary)
 	# §19.4 : un item inconnu se journalise et n'arrête rien.
 	if data.has("weapons") and _player != null and _player.inventory() != null:
 		var inventory: InventoryComponent = _player.inventory()
