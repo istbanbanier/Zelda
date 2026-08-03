@@ -1028,3 +1028,36 @@ Deux pièges rencontrés, tous deux vérifiés plutôt que supposés :
   l'export avec la même texture de paysan. `ShaderNodeMix` en RGBA fonctionne
   — vérifié en relisant le `baseColorFactor` du `.glb` produit, pas en
   faisant confiance au rendu Blender.
+
+## D-039 — Une densité se mesure par unité de surface
+
+La prairie de crête portait 1400 touffes sur 2346 m², soit **0,6 touffe/m²**
+là où §7.2 en demande 7 à 14 en zone héroïque. Le tiers inférieur du cadre
+de §3.2, censé porter « une pente herbeuse riche », était un aplat vert avec
+quelques cônes posés dessus.
+
+Le test qui couvrait la prairie demandait « au moins 300 instances par
+cellule ». Une prairie vide de sens satisfait ce critère du moment qu'elle
+est assez large : le nombre d'instances ne dit rien sans la surface. Le test
+compare désormais **instances / m²** aux bandes de la bible, et vérifie que
+la largeur des cellules reste dans les 24-48 m de §7.5.
+
+## D-040 — Un brin d'herbe fait 3 cm, et ses normales regardent le ciel
+
+Monter la densité a révélé la vraie faute, invisible tant que la prairie
+était clairsemée : la « touffe » était faite de trois quads de **34 cm** de
+large qui s'effilaient vers le haut. À la densité de la bible, le premier
+plan s'est couvert de petits sapins vert foncé.
+
+Deux causes, séparées :
+
+- la **largeur**. Sept brins de 3,6 cm, écartés, inclinés et ployés vers la
+  pointe lisent « touffe » ; trois plaques larges lisent « cône » ;
+- les **normales**. `generate_normals()` sur des quads verticaux produit des
+  normales horizontales : la touffe ne recevait presque rien du ciel et
+  ressortait bien plus sombre que le sol qu'elle prolonge. Les normales sont
+  inclinées à 72 % vers le haut — l'usage courant pour l'herbe — et la masse
+  s'éclaire au lieu de se découper en carton.
+
+Leçon générale : une densité trop faible **cache** les défauts de forme de
+l'élément répété. Corriger la densité d'abord, regarder ensuite.

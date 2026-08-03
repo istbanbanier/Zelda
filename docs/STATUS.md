@@ -603,3 +603,13 @@ Commits `30ae2d3`, `29a3303`, `be96545`.
 | Planche d'inspection par angles | **Fonctionnel** | `scenes/tests/CharacterTurntable.tscn`, `--creature=<id>` : face, trois quarts, profil, dos, aplat noir |
 | Silhouettes des cinq familles en aplat noir à 25 m (§30.3) | **NON VÉRIFIÉ** | la planche est capturable et les corps sont assemblés, mais le jugement « deux silhouettes ne se confondent pas » est un essai HUMAIN — `docs/MANUAL_VALIDATION.md` |
 | Qualité sculpturale des créatures | **Limite assumée** | colosse, chasseur et Gardien restent des assemblages de primitives : cotes justes, volumes solidaires, lisibles — mais sans sculpture. Aucun score visuel n'est revendiqué |
+
+## Phase H — lot H.7 : prairie de crête à la densité de la bible
+
+| Fonctionnalité | État | Preuve |
+|---|---|---|
+| Densité de la prairie (§7.2 : 7-14 touffes/m² en zone héroïque) | **Validé** | `test_the_meadow_reaches_the_density_the_bible_asks_for` : densité mesurée par m² sur chaque cellule, bande 4-14, deux cellules au moins en zone héroïque, ≥ 10 000 touffes sur la crête |
+| Partition en cellules (§7.5 : 24-48 m) | **Validé** | quatre cellules de 23 m, largeur vérifiée par le même test |
+| Forme du brin (§3.1 : herbe longue 0,65-0,95 m au premier plan) | **Fonctionnel** | éventail de sept brins de 3,6 cm, ployés vers la pointe, normales inclinées à 72 % vers le ciel ; hauteur 0,41 à 0,74 m selon l'instance |
+| Premier plan de la vue d'ouverture (§3.2 : « pente herbeuse sur les 22-30 % inférieurs ») | **Fonctionnel** | `evidence/phaseH/vista_prairie.png` — comparer à `evidence/artQ6/ref_vista.png` |
+| Score WOW de la vue d'ouverture (§30.2) | **NON VÉRIFIÉ** | la notation demande un œil humain et un GPU réel (ISS-002). Le reste du cadre est encore graybox : montagnes en boîtes grises, citadelle sans terrasses, sol en aplat vert, cubes de placeholder |

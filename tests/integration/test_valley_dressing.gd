@@ -93,6 +93,44 @@ func test_the_crest_meadow_is_partitioned_and_sits_on_the_ridge() -> void:
 	await _cleanup(valley)
 
 
+## §7.2 : la densité de la prairie est une EXIGENCE CHIFFRÉE — 7 à 14
+## touffes/m² en zone héroïque, 4 à 8 au-delà. Elle tournait à 0,6, vingt
+## fois sous la bande, et rien ne le voyait : le test précédent demandait
+## « au moins 300 instances » par cellule, ce qu'une prairie vide de sens
+## satisfait tant qu'elle est assez large. Une densité se mesure par unité
+## de SURFACE, sinon elle ne mesure rien.
+func test_the_meadow_reaches_the_density_the_bible_asks_for() -> void:
+	var valley: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(valley)
+	await _settle(5)
+	var meadow: Node3D = valley.find_children("CrestMeadow", "Node3D", true, false)[0] \
+		as Node3D
+	var cells: Array[Node] = meadow.find_children("Cell*", "MultiMeshInstance3D",
+		false, false)
+	var cell_width: float = (ValleyTerrain.MEADOW_X.y - ValleyTerrain.MEADOW_X.x) \
+		/ float(ValleyTerrain.MEADOW_CELLS)
+	var cell_area: float = cell_width * (ValleyTerrain.MEADOW_Z.y - ValleyTerrain.MEADOW_Z.x)
+	check(cell_width >= 24.0 - 2.0 and cell_width <= 48.0,
+		"cellules de %.0f m — §7.5 demande 24 à 48 m" % cell_width)
+	var total: int = 0
+	var hero_cells: int = 0
+	for cell: Node in cells:
+		var multimesh: MultiMesh = (cell as MultiMeshInstance3D).multimesh
+		var density: float = float(multimesh.instance_count) / cell_area
+		total += multimesh.instance_count
+		check(density >= 4.0 and density <= 14.0,
+			"%s : %.1f touffes/m² (bande §7.2 : 4 à 14)" % [cell.name, density])
+		if density >= 7.0:
+			hero_cells += 1
+	check(hero_cells >= 2,
+		"au moins deux cellules en zone HÉROÏQUE (7-14 touffes/m²) : %d"
+		% hero_cells)
+	check(total >= 10000,
+		"la crête porte %d touffes — le premier plan de §3.2 n'est plus un aplat"
+		% total)
+	await _cleanup(valley)
+
+
 func test_paths_guide_both_routes_as_pure_visuals() -> void:
 	## Réf. 01 : les routes guident la descente et les DEUX itinéraires (§4.1).
 	## Bandes visuelles seulement : rien à percuter sur le chemin.

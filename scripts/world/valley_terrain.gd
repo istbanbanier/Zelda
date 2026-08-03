@@ -1253,7 +1253,23 @@ func _build_ground_variation() -> void:
 
 
 ## Prairie de la crête (réf. 01 : herbe et fleurs au premier plan). §7.5 :
-## MultiMesh PARTITIONNÉ (deux cellules + fleurs), scatter déterministe,
+## Emprise de la prairie de crête, en mètres.
+const MEADOW_X: Vector2 = Vector2(-46.0, 46.0)
+const MEADOW_Z: Vector2 = Vector2(144.5, 170.0)
+## §7.5 : « cellules de 24-48 m ». Quatre cellules de 23 m de large.
+const MEADOW_CELLS: int = 4
+## §7.2, densités en TOUFFES par m² : 7-14 dans la zone héroïque (0-18 m de
+## la caméra), 4-8 au-delà. La prairie tournait à 0,6 touffe/m² — vingt fois
+## sous la bande — et le tiers inférieur du cadre §3.2, censé porter « une
+## pente herbeuse riche », se lisait comme un aplat vert avec quelques
+## cônes posés dessus.
+const MEADOW_NEAR_DENSITY: float = 9.0
+const MEADOW_FAR_DENSITY: float = 4.5
+## Rayon de la zone héroïque autour de la caméra d'ouverture.
+const MEADOW_NEAR_RADIUS: float = 18.0
+
+
+## MultiMesh PARTITIONNÉ (quatre cellules + fleurs), scatter déterministe,
 ## exclusion du chemin, vent par `SH_FoliageWind` — aucun recalcul CPU.
 func _build_crest_meadow() -> void:
 	var meadow: Node3D = Node3D.new()
@@ -1262,15 +1278,21 @@ func _build_crest_meadow() -> void:
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = 20260803
 	var shader: Shader = load("res://shaders/foliage/foliage_wind.gdshader") as Shader
-	# Deux cellules de brins (§7.5 : « jamais toute la vallée dans un
-	# MultiMesh unique ») : ouest et est de la crête.
-	var cells: Array[Array] = [
-		[Vector2(-46, 2), "CellWest"], [Vector2(2, 46), "CellEast"],
-	]
+	# Cellules de brins (§7.5 : « jamais toute la vallée dans un MultiMesh
+	# unique »), découpées en bandes de 23 m sur la largeur de la crête.
+	var cells: Array[Array] = []
+	var cell_width: float = (MEADOW_X.y - MEADOW_X.x) / float(MEADOW_CELLS)
+	for index: int in range(MEADOW_CELLS):
+		var low: float = MEADOW_X.x + cell_width * float(index)
+		cells.append([Vector2(low, low + cell_width), "Cell%d" % index])
 	var tuft: ArrayMesh = _tuft_mesh()
 	var tuft_material: ShaderMaterial = ShaderMaterial.new()
 	tuft_material.shader = shader
-	tuft_material.set_shader_parameter(&"blade_height", 0.42)
+	# §3.1 : le premier plan porte de l'herbe LONGUE. Avec 0,42 m et une
+	# échelle de 0,7-1,15, aucune touffe ne dépassait 0,48 m — la bande
+	# « herbe longue héroïque » de la bible commence à 0,65 m.
+	tuft_material.set_shader_parameter(&"blade_height", 0.55)
+	var cell_area: float = cell_width * (MEADOW_Z.y - MEADOW_Z.x)
 	for cell: Array in cells:
 		var bounds: Vector2 = cell[0]
 		var blades: MultiMeshInstance3D = MultiMeshInstance3D.new()
@@ -1280,7 +1302,14 @@ func _build_crest_meadow() -> void:
 		multimesh.transform_format = MultiMesh.TRANSFORM_3D
 		multimesh.use_colors = true
 		multimesh.mesh = tuft
-		multimesh.instance_count = 700
+		# La densité TOMBE avec la distance (§7.2) : plein tarif dans la zone
+		# héroïque autour de la caméra d'ouverture, moitié moins sur les
+		# bandes latérales, qu'on ne voit qu'en tournant.
+		var centre_x: float = (bounds.x + bounds.y) * 0.5
+		var density: float = MEADOW_NEAR_DENSITY \
+			if absf(centre_x - ValleyWorld.VISTA_POSITION.x) < MEADOW_NEAR_RADIUS \
+			else MEADOW_FAR_DENSITY
+		multimesh.instance_count = int(cell_area * density)
 		# Seam de test : en headless, le RenderingServer factice ne stocke pas
 		# les tampons MultiMesh (get_instance_transform rend l'identité —
 		# mesuré). Les origines et teintes écrites dans le tampon sont donc
@@ -1300,7 +1329,7 @@ func _build_crest_meadow() -> void:
 				var position: Vector3 = cluster_center + Vector3(
 					rng.randf_range(-0.9, 0.9), 0.0, rng.randf_range(-0.9, 0.9))
 				var basis: Basis = Basis(Vector3.UP, rng.randf_range(0.0, TAU)) \
-					.scaled(Vector3.ONE * rng.randf_range(0.7, 1.15))
+					.scaled(Vector3.ONE * rng.randf_range(0.75, 1.35))
 				var tint: Color = COL_GRASS.lerp(COL_GRASS_LIT, rng.randf())
 				multimesh.set_instance_transform(placed,
 					Transform3D(basis, position))
@@ -1324,7 +1353,7 @@ func _build_crest_meadow() -> void:
 	petal_material.shader = shader
 	petal.material = petal_material
 	flower_multimesh.mesh = petal
-	flower_multimesh.instance_count = 130
+	flower_multimesh.instance_count = 420
 	var petal_colors: Array[Color] = [
 		Color(0.95, 0.95, 0.91), Color(0.91, 0.79, 0.30), Color(0.42, 0.56, 0.83),
 	]
@@ -1341,22 +1370,55 @@ func _build_crest_meadow() -> void:
 ## Touffe d'herbe : trois quads croisés à 60°, effilés vers le haut, origine au
 ## SOL. Une touffe, pas un brin — c'est la grappe de quads qui donne la
 ## silhouette pleine à 5 m sans coûter plus de 6 triangles.
+## Touffe = un ÉVENTAIL DE BRINS FINS, pas trois quads larges.
+##
+## La version précédente croisait trois quads de 34 cm de large qui
+## s'effilaient vers le haut : à faible densité on ne les voyait pas, mais
+## une fois la prairie à la densité de la bible, le premier plan s'est
+## couvert de petits sapins vert foncé. Deux causes, corrigées ici :
+##
+##  - la LARGEUR. Un brin fait 3 à 4 cm, pas 34. Sept brins étroits, écartés
+##    et inclinés, lisent « touffe » ; trois plaques larges lisent « cône » ;
+##  - les NORMALES. `generate_normals()` sur des quads verticaux donne des
+##    normales horizontales : la touffe ne recevait presque rien du ciel et
+##    ressortait bien plus sombre que le sol qu'elle est censée prolonger.
+##    Les normales sont donc inclinées vers le haut, comme le veut l'usage
+##    pour l'herbe — la masse s'éclaire, elle ne se découpe plus en carton.
 func _tuft_mesh() -> ArrayMesh:
+	const BLADES: int = 7
+	const BASE_WIDTH: float = 0.036
+	const TIP_WIDTH: float = 0.012
+	## Part de la normale ramenée vers le ciel.
+	const SKY_BIAS: float = 0.72
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	for k: int in range(3):
-		var basis: Basis = Basis(Vector3.UP, PI * float(k) / 3.0)
-		var a: Vector3 = basis * Vector3(-0.17, 0.0, 0.0)
-		var b: Vector3 = basis * Vector3(0.17, 0.0, 0.0)
-		var c: Vector3 = basis * Vector3(0.05, 0.42, 0.0)
-		var d: Vector3 = basis * Vector3(-0.05, 0.42, 0.0)
-		st.add_vertex(a)
-		st.add_vertex(b)
-		st.add_vertex(c)
-		st.add_vertex(a)
-		st.add_vertex(c)
-		st.add_vertex(d)
-	st.generate_normals()
+	for k: int in range(BLADES):
+		var yaw: float = TAU * float(k) / float(BLADES) + 0.31 * float(k % 3)
+		var basis: Basis = Basis(Vector3.UP, yaw)
+		# Chaque brin s'écarte du centre et se COUCHE vers sa pointe : c'est
+		# ce ploiement qui donne la silhouette d'une touffe au repos.
+		var lean: float = 0.10 + 0.055 * float(k % 4)
+		var height: float = 0.42 * (0.72 + 0.09 * float(k % 4))
+		var root: Vector3 = basis * Vector3(0.0, 0.0, 0.028 * float(k % 3))
+		var mid: Vector3 = root + basis * Vector3(lean * 0.45, height * 0.58, 0.0)
+		var tip: Vector3 = root + basis * Vector3(lean, height, 0.0)
+		var side: Vector3 = basis * Vector3(0.0, 0.0, 1.0)
+		var face: Vector3 = basis * Vector3(1.0, 0.0, 0.0)
+		var normal: Vector3 = (face.lerp(Vector3.UP, SKY_BIAS)).normalized()
+		var levels: Array[Array] = [
+			[root, BASE_WIDTH], [mid, BASE_WIDTH * 0.62], [tip, TIP_WIDTH],
+		]
+		for level: int in range(levels.size() - 1):
+			var low: Vector3 = levels[level][0] as Vector3
+			var low_w: float = levels[level][1] as float
+			var high: Vector3 = levels[level + 1][0] as Vector3
+			var high_w: float = levels[level + 1][1] as float
+			for vertex: Vector3 in [
+				low - side * low_w, low + side * low_w, high + side * high_w,
+				low - side * low_w, high + side * high_w, high - side * high_w,
+			]:
+				st.set_normal(normal)
+				st.add_vertex(vertex)
 	return st.commit()
 
 
