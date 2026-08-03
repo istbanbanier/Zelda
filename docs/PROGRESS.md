@@ -2200,3 +2200,83 @@ il n'a pas été rejoué.
 **PROCHAINE ACTION** : Phase H suite — reprendre l'ordre des lots là où
 `docs/ROADMAP.md` le laisse, la continuité des personnages n'étant plus un
 obstacle.
+
+---
+
+## 2026-08-03 — Phase H, lot H.7 : prairie de crête · et prise en compte de l'ordre d'EXTENSION
+
+**Commit** : `96950f0`. `validate_fast.sh` **VERT**, 493 tests, plancher
+relevé 490 → 493. Preuve : `evidence/phaseH/vista_prairie.png` (manifeste
+`repo_dirty: false`, commit `96950f0`).
+
+### Ce qui a été fait
+
+La vue d'ouverture a d'abord été capturée telle quelle : c'est un graybox.
+Le tiers inférieur du cadre, que §3.2 veut porter « une pente herbeuse
+riche », était un aplat vert. La prairie tournait à **0,6 touffe/m²** contre
+7 à 14 exigées par §7.2 — et le test qui la couvrait demandait « au moins
+300 instances par cellule », critère qu'une prairie vide satisfait du moment
+qu'elle est large. **Un nombre d'instances ne dit rien sans la surface.**
+
+Densité portée à 9 touffes/m² en zone héroïque et 4,5 sur les côtés, quatre
+cellules de 23 m (§7.5). Monter la densité a révélé la faute que la rareté
+cachait : la touffe était faite de trois quads de 34 cm, et le premier plan
+s'est couvert de petits sapins. Brins refaits à 3,6 cm, sept par touffe,
+ployés, normales inclinées à 72 % vers le ciel (voir D-039 et D-040).
+
+### ORDRE D'EXTENSION reçu — état des lieux fait, travail NON commencé
+
+L'ordre demande un monde 500 × 500 m entièrement explorable : village de la
+rivière, deux hameaux, ruines, grottes, lieux naturels, territoires ennemis,
+système de découverte, densité d'un intérêt toutes les 45-75 s, itinéraires
+multiples, vie et narration environnementale.
+
+**Découverte importante pour la suite** : tout le nécessaire est DÉJÀ sur
+disque, en CC0, sans aucun téléchargement.
+
+- Les sept packs Quaternius sont extraits dans
+  `/tmp/eclats-quaternius.X2JMwF/extracted/` (992 Mo, 2162 fichiers).
+- `Medieval.Village.MegaKit` (936 fichiers) est un kit modulaire complet :
+  murs plâtre et brique, portes et encadrements, fenêtres, sols, toits,
+  balcons, débords, angles, escaliers, clôtures, cheminée, chariot. C'est le
+  village, les hameaux, les ruines ET les intérieurs.
+- `Stylized.Nature.MegaKit` (454) : 31 familles — 5 arbres communs,
+  5 pins, 3 tordus, arbres morts, buissons, fougères, fleurs, champignons,
+  trèfle, VRAIS modèles d'herbe, galets, dalles de chemin, rochers.
+- `Fantasy.Props.MegaKit` (517) : enclume, établi, étal de marché, tonneaux,
+  caisses, lits, tables, bibliothèques, chaudron, bannières, torches,
+  lanternes, râteliers, outils.
+
+`tools/promote_quaternius.py` promeut une sélection CURATÉE : ses 744
+fichiers sont déjà dans le dépôt (~140 `.gltf`). Étendre le monde demande
+donc d'**élargir la sélection de l'outil**, pas de retélécharger.
+
+**RISQUE À TRAITER EN PRIORITÉ** : `/tmp` est éphémère. Si ce répertoire est
+recyclé, les packs sont perdus — la réacquisition avait échoué (403 du
+Godot Asset Store, voir `docs/assets/QUATERNIUS_INBOX.md`). La première
+action de la prochaine session doit être de promouvoir dans le dépôt les
+familles nécessaires au monde ouvert.
+
+### PROCHAINE ACTION, dans cet ordre
+
+1. **Sauver les assets** : élargir la sélection de `promote_quaternius.py`
+   (kit village complet, arbres et rochers manquants, props de village) et
+   promouvoir depuis `/tmp/eclats-quaternius.X2JMwF/extracted/`, tant qu'il
+   existe. Mettre à jour `ATTRIBUTIONS.md` et le manifeste.
+2. **Chasseur de production** (point 1 de l'ordre) : tête et silhouette
+   restent faibles ; la planche `CharacterTurntable --creature=chasseur` est
+   l'outil de jugement.
+3. **Registre des points d'intérêt et système de découverte** (§3 et §8 de
+   l'ordre) AVANT de poser du contenu en masse : identifiant stable, nom au
+   premier passage, sauvegarde, aucune seconde récompense au rechargement,
+   test d'atteignabilité. C'est vérifiable en headless, donc réellement
+   validable ici — contrairement à la géométrie.
+4. Puis le contenu : village de la rivière, hameaux, ruines, grottes.
+
+### Limites honnêtes de l'état actuel
+
+La vallée reste un graybox hors premier plan : montagnes en boîtes grises à
+plein contraste, citadelle sans terrasses qui se confond avec elles, sol en
+aplat vert, cubes de placeholder, HUD visible dans les captures de
+référence. Aucun score WOW n'est revendiqué (§30.2 demande un œil humain et
+un GPU réel — ISS-002).

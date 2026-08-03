@@ -1,0 +1,18 @@
+{
+  "commit": "96950f0272d4fb3a0bbc0a84da456857e1531bfc",
+  "display_server": "X11",
+  "distinct_colors_sampled": 1862,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 60,
+  "height": 1440,
+  "label": "vista_prairie",
+  "luma_mean": 0.6291,
+  "luma_stddev": 0.2159,
+  "png": "evidence/phaseH/vista_prairie.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "timestamp_utc": "2026-08-03 15:11:38",
+  "width": 2560
+}
