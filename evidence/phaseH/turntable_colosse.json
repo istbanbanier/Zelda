@@ -1,18 +1,18 @@
 {
-  "commit": "50c2fae9bfe23034834dc51eb2d3a529fcab0f1f",
+  "commit": "1075676a97cb665c7556f016b2d6c2389e43c395",
   "display_server": "X11",
-  "distinct_colors_sampled": 312,
+  "distinct_colors_sampled": 280,
   "engine_version": "4.7.1-stable (custom_build)",
   "frames_waited": 40,
   "height": 1080,
   "label": "turntable_colosse",
-  "luma_mean": 0.5454,
-  "luma_stddev": 0.2229,
+  "luma_mean": 0.5051,
+  "luma_stddev": 0.2245,
   "png": "evidence/phaseH/turntable_colosse.png",
   "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
   "rendering_method": "forward_plus",
   "repo_dirty": false,
   "scene": "res://scenes/tests/CharacterTurntable.tscn",
-  "timestamp_utc": "2026-08-03 14:08:23",
+  "timestamp_utc": "2026-08-03 14:10:18",
   "width": 1920
 }
