@@ -1061,3 +1061,59 @@ Deux causes, séparées :
 
 Leçon générale : une densité trop faible **cache** les défauts de forme de
 l'élément répété. Corriger la densité d'abord, regarder ensuite.
+
+## D-041 — Une position d'ancrage se MESURE, elle ne se choisit pas
+
+**Contexte.** Trente et un lieux devaient recevoir une récompense. La première
+tentative a produit 23 placements « au centre du volume du lieu » : plausibles,
+jamais vérifiés, plusieurs dans un mur ou dans le vide. Le test d'alors était
+vert — il comptait des coffres.
+
+**Décision.** Les positions viennent d'une sonde physique
+(`tools/godot/probe_reward_anchors.gd`) qui monte la vallée réelle et éprouve,
+autour de chaque lieu, le sol, le dégagement au gabarit du joueur et le couloir
+d'approche. Le résultat est FIGÉ dans la table du bâtisseur, pas recalculé au
+lancement : une position trouvée par recherche à chaque démarrage serait
+irreproductible et masquerait une régression du terrain.
+
+**Alternative rejetée.** Chercher l'emplacement à la construction. Le monde
+serait toujours « correct » et un lieu cassé ne se signalerait jamais.
+
+**Limite honnête.** La sonde prouve la géométrie, pas l'esthétique. Elle a
+validé un coffre au milieu d'un bassin — sol réel, accès réel, à demi immergé.
+D'où `scenes/tests/RewardAnchorShot.tscn`, qui montre chaque récompense depuis
+l'œil du joueur.
+
+## D-042 — Un lieu à gravir refuse la preuve par navigation
+
+**Contexte.** Le belvédère du guetteur est au sommet d'une échine de 36 m. Un
+`NavigationServer3D` répond volontiers « accessible » pour ce genre de point,
+parce qu'un navmesh ignore la hauteur de saut, l'endurance et les surfaces
+réellement escaladables.
+
+**Décision.** `RewardAnchor.requires_traversal` marque ces lieux, et
+`RewardAnchorAudit` y exige un corps qui part du PIED déclaré
+(`traversal_base`) et arrive réellement, sous gravité, en gravissant ce que le
+bâtisseur prétend gravissable. Aucun chemin de navigation n'est accepté comme
+preuve.
+
+**Alternative rejetée.** Faire confiance au navmesh et signaler « à vérifier ».
+Un critère non testé serait resté `NON VÉRIFIÉ` jusqu'à la livraison.
+
+## D-043 — L'archive jouable se publie en Release, jamais dans le dépôt
+
+**Contexte.** L'archive pèse quelques centaines de mégaoctets. Un dépôt Git la
+garderait pour toujours, et la découper en fragments committés reporterait le
+problème sur celui qui télécharge.
+
+**Décision.** Un workflow (`.github/workflows/publish-playtest.yml`) reconstruit
+le ZIP depuis le commit publié, vérifie `unzip -t`, calcule le SHA-256, crée la
+Release et téléverse. Un garde-fou fait échouer le workflow si `git status` voit
+le moindre artefact : la protection ne repose pas sur la vigilance de l'auteur.
+
+**Adaptation contrainte.** Le mandataire Git du conteneur de développement
+n'autorise que la branche de travail et refuse les refs de tag (HTTP 403). Le
+tag ne peut donc pas être poussé depuis la machine qui valide : le workflow
+accepte aussi un déclenchement manuel et CRÉE alors le tag
+`playtest-<short_sha>` sur le commit qu'il vient de construire. Le tag pointe
+toujours exactement sur le commit publié.

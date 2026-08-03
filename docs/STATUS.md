@@ -613,3 +613,22 @@ Commits `30ae2d3`, `29a3303`, `be96545`.
 | Forme du brin (§3.1 : herbe longue 0,65-0,95 m au premier plan) | **Fonctionnel** | éventail de sept brins de 3,6 cm, ployés vers la pointe, normales inclinées à 72 % vers le ciel ; hauteur 0,41 à 0,74 m selon l'instance |
 | Premier plan de la vue d'ouverture (§3.2 : « pente herbeuse sur les 22-30 % inférieurs ») | **Fonctionnel** | `evidence/phaseH/vista_prairie.png` — comparer à `evidence/artQ6/ref_vista.png` |
 | Score WOW de la vue d'ouverture (§30.2) | **NON VÉRIFIÉ** | la notation demande un œil humain et un GPU réel (ISS-002). Le reste du cadre est encore graybox : montagnes en boîtes grises, citadelle sans terrasses, sol en aplat vert, cubes de placeholder |
+
+## Monde ouvert — lot MO.4 : ancrages et récompenses des 31 lieux
+
+Commits `2bf440f`, `018b8b6`.
+
+| Fonctionnalité | État | Preuve |
+|---|---|---|
+| Un ancrage explicite et nommé par lieu (§3) | **Validé** | `test_every_place_carries_exactly_one_anchor` : 31 lieux, 31 ancrages, aucun orphelin, aucun sans point d'approche déclaré |
+| Emplacement éprouvé physiquement — sol, dégagement, couloir | **Validé** | positions produites par `tools/godot/probe_reward_anchors.gd` sur la vallée montée, figées dans la table de chaque bâtisseur |
+| Accès et retour démontrés par un corps | **Validé** | `test_a_body_reaches_every_reward_and_leaves_again` : `RewardAnchorAudit` marche l'aller puis le retour sur les 31 ancrages ; 14 défauts au premier passage, 0 après correction des causes |
+| Traversée du belvédère prouvée sans navmesh (D-042) | **Validé** | ancrage `requires_traversal`, corps parti du pied de l'échine, montée de 20 m sous gravité |
+| Variété des récompenses (§3) | **Validé** | `test_the_rewards_are_varied_and_none_is_missing` : 5 natures, aucune au-delà de 45 % du total |
+| Armes au sol réellement ramassables (`WeaponPickup`) | **Validé** | `test_ground_weapons_are_real_pickups` : E ramasse, inventaire plein refuse, l'arme refusée reste au sol |
+| Fragments d'histoire lisibles et annoncés une fois | **Validé** | `test_story_fragments_are_read_once` |
+| Identifiants persistants uniques | **Validé** | `test_reward_identifiers_are_unique_across_the_whole_valley` sur coffres, armes, ingrédients et fragments |
+| Aucun second butin après sauvegarde/rechargement | **Validé** | `test_rewards_survive_a_real_save_and_reload` : aller-retour réel par `user://slot0` |
+| Restauration des découvertes au rechargement | **Corrigé** | le journal était appliqué AVANT que les lieux ne se déclarent : aucune découverte n'était jamais restaurée. `_build_open_world()` passe devant `_apply_save()` |
+| Inspection visuelle de chaque ancrage | **En cours** | `scenes/tests/RewardAnchorShot.tscn` ; captures dans `evidence/rewards/` |
+| Condition d'ouverture des récompenses de territoire et d'énigme | **Non commencé** | six lieux concernés, nommés par `DiscoveryRewards.deferred_gates()`. Le coffre est réel et persistant ; le verrou n'existe pas |
