@@ -1654,3 +1654,42 @@ nodule a été déplacé de 0,60 m est passée au même script :
 La continuité géométrique n'est pas la beauté. Elle établit qu'aucune pièce
 ne flotte ; elle ne dit rien de la qualité de sculpture, ni de la lisibilité
 des silhouettes en aplat noir à 25 m, qui reste un essai humain (§30.3).
+
+## 2026-08-03 — Validation complète après le lot des ancrages de récompense
+
+**Commit** `b07c9cc` · **Moteur** Godot 4.7.1.stable.custom_build.a13da4feb ·
+**Commande** `tools/validate_fast.sh`
+
+| Niveau | Résultat |
+|---|---|
+| 0. Version du moteur | `[OK]` 4.7.1-stable confirmé |
+| 1. Import des ressources | `[OK]` aucun parse error, code retour 0 |
+| 1b. Parse de tous les scripts | `[OK]` 221 scripts, aucune erreur |
+| 2. Tests unitaires et d'intégration | **584 réussis, 0 échoué** |
+| 2b. Journal des tests | `[OK]` aucune erreur signalée |
+| 3. Scène d'intégration (Boot → menu) | `[OK]` chargée, transition atteinte, quittée proprement |
+| 3b. Continuité des personnages (ISS-019) | `[OK]` 6 modèles, un seul corps solidaire chacun |
+| 4. Plancher de couverture | `[OK]` 584 exécutés, plancher 580 |
+
+**Verdict : VERT.**
+
+### Ce que deux passes précédentes ont appris
+
+La première passe (commit `4100da7`) a rendu **3 échecs réels**, tous causés par
+les nouvelles récompenses : un test reconnaissait le coffre de découverte au
+NOM de son parent — critère devenu faux quand les récompenses sont devenues
+filles de leur ancrage — et un autre exigeait « aucun pickup au sol », ce qui
+n'avait de sens que tant qu'il n'en existait qu'un. Les deux ont été
+**renforcés**, jamais assouplis.
+
+La deuxième passe est à jeter : j'ai lancé un test filtré pendant qu'elle
+tournait, et deux processus Godot partagent `user://slot0`. Elle a rendu onze
+échecs sur le donjon et le traversal — sans rapport avec le lot — et un compte
+de 576 tests au lieu de 584. La règle était déjà consignée (`docs/DECISIONS.md`) ;
+elle a été enfreinte, et le résultat n'a servi qu'à le rappeler.
+
+### Preuves visuelles jointes
+
+`evidence/rewards/` — 31 vues, une par récompense, prises depuis le point où le
+joueur se tiendra pour interagir, plus `manifest.json` (commit, moteur,
+renderer, résolution, caméra et cible de chaque vue).
