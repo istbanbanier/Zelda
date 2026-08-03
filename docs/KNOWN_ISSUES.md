@@ -202,3 +202,27 @@ NON ASSERTÉS, à vérifier visuellement au playtest n° 2.
 | ISS-018 | ~~**Les modèles générés se lisent en pièces détachées.**~~ **CORRIGÉ.** CAUSE RACINE trouvée : `bmesh.ops.create_cube(size=1.0)` pose ses sommets à ±0,5, donc les fabriques `add_box`/`limb` reçoivent une taille PLEINE. Un `* 0.5` traînait sur la longueur de chaque segment dans `make_creatures.py` ET `make_raiders.py`, et les mêmes facteurs `* 0.62` / `* 0.5` dans `make_storm_guardian.py` : chaque membre était bâti à la moitié de sa portée et s'arrêtait à mi-chemin de son articulation. Le « mordant » que les commentaires décrivaient n'avait donc jamais existé. Corrigé à la source, plus quelques pièces mal placées trouvées par mesure (nodule du colosse à 39 cm du dos, ceinture de troncs autour du vide, anneau du Gardien orienté radialement au lieu de tangentiellement, tiers d'anneau entièrement en l'air, bras du chasseur et des pillards sans clavicule). Les six personnages forment maintenant **un seul corps solidaire** : 43, 55, 113, 23, 29 et 27 morceaux, aucun détaché. | S2 | **clos** — vérifié par ISS-019, contrôle négatif inclus |
 | ISS-019 | ~~**Aucun test automatique ne voit ce défaut.**~~ **CORRIGÉ.** `tools/blender/check_continuity.py` lit le `.glb` LIVRÉ, évalue le graphe de dépendances (donc APRÈS déformation par l'armature), ressoude les sommets séparés par l'export glTF, découpe en morceaux connexes et exige **un seul corps solidaire** — pas seulement « chaque pièce a un voisin », critère que deux bras flottants satisfaisaient. Câblé en niveau 3b de `tools/validate_fast.sh`. Contrôle négatif : une pièce déplacée de 0,60 m fait sortir le script en code 1, le modèle réparé en code 0. | S3 | **clos** |
 | ISS-020 | Diagnostic initial ERRONÉ consigné pour mémoire : j'ai d'abord attribué l'éclatement au skinning (transformation de nœud ignorée par glTF). Un ré-import du `.glb` dans Blender a montré le modèle correctement assemblé après déformation — la cause était la géométrie source, pas le pipeline. Le durcissement appliqué entre-temps (`apply_transforms` avant liaison) reste juste et exigé par `.claude/rules/assets.md`, mais il ne corrigeait pas ce défaut-là. | S4 | consigné, rien à corriger |
+
+## ISS-020 — Cinq armes sur six n'ont pas de modèle : la boîte graybox se voit sur le chemin des récompenses · `S3` · OUVERT
+
+**Constaté le** 2026-08-03, sur `evidence/rewards/abandoned_mine.png` — la
+hache lourde posée au sol de la mine est une boîte olive, pas une hache.
+
+**Reproduction.** `grep -c mesh_scene resources/weapons/*.tres` : seul
+`worn_sword.tres` porte un modèle. `WeaponPickup` le dit lui-même dans son
+code (« repli contrôlé sur la boîte, normal tant que la bibliothèque est
+incomplète ») — le repli fonctionne, mais il est désormais VISIBLE : quatre
+des 31 récompenses sont des armes au sol, dont trois sans modèle.
+
+**Portée.** `wood_club`, `spear`, `heavy_axe`, `simple_bow`,
+`conductive_blade`. Trois d'entre elles sont sur le chemin des récompenses
+(hameau des bûcherons, mine abandonnée, belvédère).
+
+**Ce que cela n'est pas.** Ni un défaut de placement — l'objet repose sur un
+sol réel, s'atteint et se ramasse —, ni une régression : la bibliothèque
+d'armes était déjà incomplète. Ce lot l'a seulement rendu visible.
+
+**Correction.** Modéliser les cinq armes manquantes (Passe V5 de la bible
+visuelle) ou, à défaut, une silhouette de repli par famille qui se lise mieux
+qu'une boîte. Tant que ce n'est pas fait, aucune de ces récompenses ne peut
+être appelée `final`.
