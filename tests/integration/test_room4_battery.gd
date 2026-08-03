@@ -100,6 +100,32 @@ func test_cutting_the_current_makes_the_channel_safe() -> void:
 	await _close(room)
 
 
+func test_a_battery_left_in_its_cradle_keeps_the_circuit_alive() -> void:
+	## Conséquence SYSTÉMIQUE, trouvée par le run complet et gardée : une
+	## batterie chargée posée dans son berceau est une source. Couper le
+	## levier ne suffit donc pas tant qu'elle est branchée — il faut la
+	## REPRENDRE, puis couper. C'est cohérent avec §15.1 (une batterie
+	## débite) et avec §15.3 (socket, charge et décharge sont distincts),
+	## et cela n'enferme personne : la batterie se reprend toujours.
+	await _erase_save()
+	var room: Room4Battery = await _open_room()
+	var battery: PortableBattery = room.battery()
+	battery.set_charge_seconds(battery.capacity)
+	battery.place_at(Transform3D(Basis.IDENTITY, Vector3(-8.0, 1.2, 0.5)))
+	await _settle(30)
+	check(room.charge_socket().is_loaded(), "la batterie est dans son berceau")
+	check(room.main_switch().interact(room.player()), "le levier coupe la source")
+	await _settle(10)
+	check(room.water().is_discharging(),
+		"…mais la nappe reste vive : la batterie alimente encore le circuit")
+	# On la reprend : le circuit perd sa dernière source.
+	check(battery.interact(room.player()), "on reprend la batterie")
+	await _settle(12)
+	check(not room.water().is_discharging(),
+		"…et l'eau s'éteint enfin — la cause est lisible et réversible")
+	await _close(room)
+
+
 func test_the_carried_battery_powers_the_far_door() -> void:
 	## Deuxième mécanisme de §15.8 : la batterie chargée APPORTE le courant
 	## là où aucun câble ne va.

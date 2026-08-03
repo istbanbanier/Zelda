@@ -1881,3 +1881,33 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > validate_fast VERT, 438 tests, aucune fuite détectée.
 > **PROCHAINE ACTION (F.7)** : anti-softlock et persistance sur le donjon
 > entier.
+
+## 2026-08-03 (Phase F, F.7 et F.8) — anti-softlock, run complet, Gate F
+
+> F.7 : les garanties de §15.11 sont vérifiées pour les SIX scènes d'un
+> seul tenant — chargement depuis une sauvegarde vierge, rechargement à
+> mi-résolution, objets essentiels jetés hors du monde qui reviennent
+> tous, reset qui ne retire jamais un acquis, sortie/retour qui conserve,
+> cent recalculs de graphe sans blocage ni voisin mort, indice visuel
+> sans une ligne de texte. L'outil de debug exigé nommément par §15.11
+> existe : `ElectricDebugOverlay` liste IDs, types, ports, voisins et
+> état `powered`, et se RETIRE de l'arbre dans un build non-debug.
+> Il a d'ailleurs servi immédiatement : son compteur d'orphelins a
+> désigné le seul nœud sans voisin de la salle 1 — le conducteur du bloc,
+> normal avant qu'on le pousse. La métrique distingue donc désormais un
+> nœud FIXE mal posé (faute) d'un objet mobile en attente (normal).
+> F.8 : le donjon est résolu de bout en bout par ses GESTES RÉELS — le
+> bloc poussé à la marche, le levier basculé, les quatre colonnes
+> tournées une à une, la batterie prise, chargée, reprise et posée. Deux
+> runs : depuis une sauvegarde vierge, et coupé en deux avec relecture du
+> fichier depuis le disque. Dans les deux cas, les trois circuits de la
+> salle centrale débitent et la porte du boss s'ouvre.
+> Le run a trouvé un comportement systémique qu'on a GARDÉ : une batterie
+> laissée dans son berceau continue d'alimenter le circuit, donc l'eau.
+> Il faut la reprendre PUIS couper. Cohérent avec §15.1 et §15.3, sans
+> risque d'enfermement, et désormais couvert par un test qui l'énonce.
+> `docs/GATE_F_AUDIT.md` : tous les items automatisables PASS.
+> validate_fast VERT, 449 tests, plancher 449.
+> **PROCHAINE ACTION (Phase G)** : arène circulaire 32-42 m, quatre
+> pylônes de mise à la terre branchés sur le MÊME système électrique que
+> le donjon, puis machine à états du boss et ses trois phases.

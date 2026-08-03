@@ -150,7 +150,7 @@ llvmpipe uniquement, aucun GPU.
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
 | D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres, CINQ familles ennemies | **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE** (`docs/GATE_D_AUDIT.md`, passe 2) : items 16/17/19 PASS, 18 PARTIEL (4 coffres sur 8, solde en Phase F, documenté), 20 PASS automatique sans essai humain. Les cinq familles de §12 existent, diffèrent par stats/arme/portée/carrure/comportement et sont testées (107 assertions transverses + 47 par famille) |
 | E | Récolte, cuisine, buffs, sauvegarde et migrations | **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE** (`docs/GATE_E_AUDIT.md`) : les huit items §22 Phase E PASS sur preuves rejouées, chaîne complète récolte→cuisine→buff→save/load testée de bout en bout. Non couvert : animation de cuisson (Phase H) et essai humain |
-| F | Graphe électrique, 4 salles, salle centrale, antichambre | **En cours** — F.1 à F.6 livrés (graphe, quatre salles, salle centrale, antichambre, donjon ASSEMBLÉ du vestibule à l'antichambre) ; F.7 et F.8 restants |
+| F | Graphe électrique, 4 salles, salle centrale, antichambre | **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE** (`docs/GATE_F_AUDIT.md`) : F.1 à F.8 livrés ; donjon résolu de bout en bout depuis une sauvegarde vierge ET une sauvegarde intermédiaire |
 | G | Arène, boss 3 phases, solvabilité, victoire | Non commencé |
 | H | Art « wahou », WOW Gate ≥ 85/100 | **Bloqué** — ISS-002 |
 | I | LOD, profilage, presets, exports, session 60 min | **Bloqué** — ISS-002 |

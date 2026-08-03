@@ -40,6 +40,12 @@ func _ready() -> void:
 	graph_node.name = "Graph"
 	add_child(graph_node)
 	set_graph(graph_node)
+	# §15.11 : outil de debug des IDs, ports, voisins et états. Il se
+	# RETIRE de lui-même dans un build non-debug.
+	var debug_overlay: ElectricDebugOverlay = ElectricDebugOverlay.new()
+	debug_overlay.name = "ElectricDebug"
+	debug_overlay.graph_path = NodePath("../Graph")
+	add_child(debug_overlay)
 	place_player_at_spawn(_player, spawn_tag, {
 		&"antechamber_from_hall": Vector3(0, 0.3, 8.0),
 	})
