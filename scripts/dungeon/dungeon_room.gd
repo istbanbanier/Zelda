@@ -135,6 +135,52 @@ func load_room_state() -> Dictionary:
 	return rooms.get(String(room_id), {}) as Dictionary
 
 
+## Consomme le tag d'apparition posé par la porte qu'on vient de franchir
+## (§6.1 : « ressortir replace le joueur DEVANT la porte, jamais au
+## spawn »). Vide quand la salle est lancée directement.
+func consume_spawn_tag() -> StringName:
+	var game_state: Node = get_node_or_null("/root/GameState")
+	if game_state == null:
+		return &""
+	return StringName(String(game_state.call("consume_pending_spawn")))
+
+
+## Place le joueur au seuil correspondant au tag. Un tag inconnu laisse la
+## position de la scène : jamais de téléportation au hasard.
+func place_player_at_spawn(player: Node3D, tag: StringName,
+		spawns: Dictionary) -> void:
+	if player == null or tag == &"" or not spawns.has(tag):
+		return
+	player.global_position = spawns[tag] as Vector3
+
+## Porte de transition entre scènes (§6.1). Toutes les salles en posent :
+## le helper vit donc ici, pas recopié six fois.
+func scene_door(door_name: String, verb: String, target: String,
+		tag: StringName, at: Vector3, size: Vector3) -> SceneDoor:
+	var door: SceneDoor = SceneDoor.new()
+	door.name = door_name
+	door.verb = verb
+	door.target_scene = target
+	door.spawn_tag = tag
+	door.collision_layer = 1
+	door.collision_mask = 0
+	var shape: CollisionShape3D = CollisionShape3D.new()
+	var box_shape: BoxShape3D = BoxShape3D.new()
+	box_shape.size = size
+	shape.shape = box_shape
+	door.add_child(shape)
+	var mesh: MeshInstance3D = MeshInstance3D.new()
+	var mesh_box: BoxMesh = BoxMesh.new()
+	mesh_box.size = size
+	mesh.mesh = mesh_box
+	var material: StandardMaterial3D = StandardMaterial3D.new()
+	material.albedo_color = Color(0.14, 0.16, 0.2)
+	mesh.material_override = material
+	door.add_child(mesh)
+	door.position = at   # AVANT add_child (règle D.0)
+	add_child(door)
+	return door
+
 ## Fabrique un nœud du graphe et le pose. `ports` en coordonnées LOCALES
 ## (§15.3 : la rotation du nœud emmène ses ports avec elle).
 func make_node(id: StringName, kind: ElectricNode.Kind, at: Vector3,

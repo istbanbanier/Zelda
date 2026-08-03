@@ -1,9 +1,9 @@
-## Vestibule de la Citadelle de l'Œil-Tempête — intérieur graybox (D.1R.4).
+## Vestibule de la Citadelle de l'Œil-Tempête — intérieur graybox (D.1R.4,
+## raccordé au donjon en F.6).
 ##
 ## PT-D1-10 : l'entrée vue depuis la crête n'est plus une fausse promesse — on
 ## entre, on explore un vestibule à colonnes éclairé de cyan, et la porte
-## SCELLÉE du fond dit honnêtement que le donjon électrique est plus loin
-## (Phase F). La sortie replace le joueur DEVANT la porte de la vallée, jamais
+## du fond ouvre désormais sur la salle 1 du donjon électrique (F.6). La sortie replace le joueur DEVANT la porte de la vallée, jamais
 ## au spawn (§6.1 : « les transitions ne laissent aucun ancien nœud actif »).
 ##
 ## Le décor est construit en code, comme `ValleyTerrain` : déclaratif,
@@ -21,11 +21,15 @@ const COL_CYAN: Color = Color(0.133, 0.851, 0.925)
 
 func _ready() -> void:
 	var game_state: Node = get_node_or_null("/root/GameState")
+	var spawn_tag: StringName = &""
 	if game_state != null:
 		game_state.call("set_flow", 3)  # GameState.Flow.DUNGEON
-		game_state.call("consume_pending_spawn")  # tag d'entrée consommé
+		spawn_tag = StringName(String(game_state.call("consume_pending_spawn")))
 	_build_room()
 	_setup_lighting()
+	# §6.1 : revenir du donjon replace DEVANT le seuil du fond, pas à l'entrée.
+	if spawn_tag == &"vestibule_from_room1" and _player != null:
+		_player.global_position = Vector3(0, 0.3, -10.5)
 
 
 func _build_room() -> void:
@@ -64,8 +68,31 @@ func _build_room() -> void:
 	# La porte SCELLÉE du fond : masse sombre + veine cyan sous un linteau de
 	# bronze — « visiblement et honnêtement scellée », le donjon quatre-salles
 	# est Phase F. C'est le « second seuil » de la référence 02.
-	_box("SealedDoor", Vector3(0, 3, -12.9), Vector3(5, 6, 0.4), Color(0.1, 0.1, 0.14))
+	# F.6 : le seuil du fond n'est plus scellé — il OUVRE sur la salle 1 du
+	# donjon électrique. La promesse de D.1R.4 est tenue.
 	_box("SealedSeam", Vector3(0, 3, -12.65), Vector3(0.3, 5.4, 0.1), COL_CYAN, true)
+	var dungeon_door: SceneDoor = SceneDoor.new()
+	dungeon_door.name = "DungeonDoor"
+	dungeon_door.verb = "Entrer dans le donjon"
+	dungeon_door.target_scene = "res://scenes/dungeon/rooms/Room1Initiation.tscn"
+	dungeon_door.spawn_tag = &"room1_from_vestibule"
+	dungeon_door.collision_layer = 1
+	dungeon_door.collision_mask = 0
+	var dungeon_shape: CollisionShape3D = CollisionShape3D.new()
+	var dungeon_box: BoxShape3D = BoxShape3D.new()
+	dungeon_box.size = Vector3(5, 6, 0.4)
+	dungeon_shape.shape = dungeon_box
+	dungeon_door.add_child(dungeon_shape)
+	var dungeon_mesh: MeshInstance3D = MeshInstance3D.new()
+	var dungeon_mesh_box: BoxMesh = BoxMesh.new()
+	dungeon_mesh_box.size = Vector3(5, 6, 0.4)
+	dungeon_mesh.mesh = dungeon_mesh_box
+	var dungeon_material: StandardMaterial3D = StandardMaterial3D.new()
+	dungeon_material.albedo_color = Color(0.12, 0.13, 0.17)
+	dungeon_mesh.material_override = dungeon_material
+	dungeon_door.add_child(dungeon_mesh)
+	dungeon_door.position = Vector3(0, 3, -12.9)   # AVANT add_child
+	add_child(dungeon_door)
 	_box("SealedLintel", Vector3(0, 6.6, -12.8), Vector3(6.4, 0.8, 0.7),
 		Color(0.42, 0.30, 0.18))
 	# ART-Q5 : portail de pierre de production autour du seuil scellé —

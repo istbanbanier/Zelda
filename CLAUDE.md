@@ -3,8 +3,21 @@
 Action-aventure 3D stylisée, Godot **4.7.1-stable**, GDScript typé, Forward+, Jolt.
 Monde : Vallée de Néris. Donjon : Citadelle de l'Œil-Tempête.
 
-La source de vérité produit est @docs/MASTER_SPEC.md — ce fichier ne contient que
-les invariants, les commandes réelles et la définition de « terminé ».
+## Trois cahiers des charges CUMULATIFS
+
+| Document | Autorité |
+|---|---|
+| @docs/MASTER_SPEC.md | base fonctionnelle : boucle vallée → donjon → boss → victoire |
+| @docs/PROMPT2_SPEC.md | autorité la plus récente pour les améliorations systémiques et professionnelles |
+| @docs/VISUAL_ASSET_BIBLE.md | autorité la plus récente pour l'art, les assets, matériaux, shaders, VFX, UI et validation visuelle |
+
+Une exigence récente RENFORCE les précédentes ; elle ne supprime jamais une
+mécanique déjà obligatoire. En cas de conflit réel, appliquer la règle la plus
+récente et la plus exigeante dans son domaine, en préservant une boucle
+complète lançable.
+
+Ce fichier ne contient que les invariants, les commandes réelles et la
+définition de « terminé ».
 
 ## Démarrage de session (5 min max)
 

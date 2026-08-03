@@ -15,7 +15,7 @@ extends DungeonRoom
 
 signal solved()
 
-const ROOM3: String = "res://scenes/dungeon/rooms/Room3Relays.tscn"
+const HALL: String = "res://scenes/dungeon/rooms/CentralHall.tscn"
 const WIRE_Y: float = 0.12
 ## Position de départ de la batterie : côté charge, jamais côté porte.
 const BATTERY_START: Vector3 = Vector3(-9.5, 0.6, 2.0)
@@ -42,7 +42,7 @@ func _ready() -> void:
 	var game_state: Node = get_node_or_null("/root/GameState")
 	if game_state != null:
 		game_state.call("set_flow", 3)  # GameState.Flow.DUNGEON
-		game_state.call("consume_pending_spawn")
+	var spawn_tag: StringName = consume_spawn_tag()
 	_build_shell()
 	_build_channel()
 	_build_circuit()
@@ -57,6 +57,11 @@ func _ready() -> void:
 	var state: Dictionary = load_room_state()
 	if not state.is_empty():
 		apply_room_state(state)
+	# §6.1 : on réapparaît DEVANT la porte franchie, jamais au spawn.
+	place_player_at_spawn(_player, spawn_tag, {
+		&"room4_from_hall": Vector3(-6.0, 0.3, 7.5),
+		&"room4_from_shortcut": Vector3(16.5, 0.3, -2),
+	})
 
 
 func _build_shell() -> void:
@@ -84,16 +89,18 @@ func _build_shell() -> void:
 	box("CorridorNorth", Vector3(16.5, 3, -5.25), Vector3(7, 8, 0.5), COL_STONE)
 	box("CorridorSouth", Vector3(16.5, 3, 1.25), Vector3(7, 8, 0.5), COL_STONE)
 	box("CorridorCeiling", Vector3(16.5, 6.5, -2), Vector3(7, 1, 6), COL_STONE)
-	box("CorridorSeal", Vector3(19.75, 2.5, -2), Vector3(0.5, 6, 6),
-		Color(0.1, 0.1, 0.14))
-	decor("CorridorSealSeam", Vector3(19.45, 2.5, -2), Vector3(0.1, 4.4, 0.25),
+	box("CorridorEnd", Vector3(20.0, 2.5, -2), Vector3(0.5, 6, 6),
+		Color(0.12, 0.12, 0.16))
+	decor("CorridorEndSeam", Vector3(19.7, 2.5, -2), Vector3(0.1, 4.4, 0.25),
 		COL_CYAN, true)
+	scene_door("DoorToHall", "Rejoindre la salle centrale", HALL,
+		&"hall_from_room4", Vector3(19.6, 2.5, -2), Vector3(0.4, 5.0, 4.2))
 
 	var entry: SceneDoor = SceneDoor.new()
 	entry.name = "ExitDoor"
 	entry.verb = "Sortir"
-	entry.target_scene = ROOM3
-	entry.spawn_tag = &"room4_door"
+	entry.target_scene = HALL
+	entry.spawn_tag = &"hall_from_room4"
 	entry.collision_layer = 1
 	entry.collision_mask = 0
 	var shape: CollisionShape3D = CollisionShape3D.new()

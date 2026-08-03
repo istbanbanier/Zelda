@@ -34,6 +34,14 @@ const DELAY_MAX: float = 1.2
 ## Récepteur qui commande la porte. Vide : la porte obéit à sa propre
 ## alimentation dans le graphe.
 @export var receiver_path: NodePath
+## Porte à PLUSIEURS conditions (§15.9 : « trois récepteurs indépendants
+## alimentent la porte du boss SIMULTANÉMENT »). Quand cette liste n'est
+## pas vide, elle remplace `receiver_path` : la porte n'ouvre que si TOUS
+## les nœuds listés sont alimentés en même temps. Les branches restent
+## électriquement SÉPARÉES — les relier à un nœud commun ferait remonter
+## le courant d'un circuit dans les deux autres, et les trois anneaux se
+## fermeraient ensemble au premier circuit résolu.
+@export var required_paths: Array[NodePath] = []
 @export var open_delay: float = 0.9
 ## Durée du mouvement mécanique, une fois le délai écoulé.
 @export var open_time: float = 1.4
@@ -53,11 +61,22 @@ var _closed_y: float = 0.0
 var _countdown: float = -1.0
 var _open_ratio: float = 0.0
 var _latched: bool = false
+var _required: Array[ElectricNode] = []
 
 
 func _ready() -> void:
 	open_delay = clampf(open_delay, DELAY_MIN, DELAY_MAX)
 	_build()
+	if not required_paths.is_empty():
+		for path: NodePath in required_paths:
+			var required: ElectricNode = get_node_or_null(path) as ElectricNode
+			if required == null:
+				push_warning("[porte] condition introuvable : %s" % str(path))
+				continue
+			_required.append(required)
+			required.power_changed.connect(_on_required_power_changed)
+		_on_required_power_changed(false, 0.0)
+		return
 	_receiver = get_node_or_null(receiver_path) as ElectricNode
 	if _receiver == null:
 		_receiver = _node
@@ -108,6 +127,28 @@ func _build() -> void:
 	_seam.material_override = seam_material
 	_seam.position = Vector3(0, panel_size.y * 0.5, panel_size.z * 0.5 + 0.06)
 	add_child(_seam)
+
+
+## Toutes les conditions réunies, et seulement alors.
+func _on_required_power_changed(_powered: bool, _power: float) -> void:
+	if _latched:
+		return
+	for required: ElectricNode in _required:
+		if not required.is_powered():
+			return
+	_on_power_changed(true, 1.0)
+
+
+func satisfied_conditions() -> int:
+	var count: int = 0
+	for required: ElectricNode in _required:
+		if required.is_powered():
+			count += 1
+	return count
+
+
+func required_count() -> int:
+	return _required.size()
 
 
 func _on_power_changed(powered: bool, _power: float) -> void:

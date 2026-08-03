@@ -23,6 +23,7 @@ extends DungeonRoom
 signal solved()
 
 const VESTIBULE: String = "res://scenes/world/citadel/CitadelVestibule.tscn"
+const HALL: String = "res://scenes/dungeon/rooms/CentralHall.tscn"
 ## Hauteur du plan de câblage : tout le circuit court au ras du sol.
 const WIRE_Y: float = 0.12
 ## Axe du couloir de poussée et ligne des plaques.
@@ -48,7 +49,7 @@ func _ready() -> void:
 	var game_state: Node = get_node_or_null("/root/GameState")
 	if game_state != null:
 		game_state.call("set_flow", 3)  # GameState.Flow.DUNGEON
-		game_state.call("consume_pending_spawn")
+	var spawn_tag: StringName = consume_spawn_tag()
 	_build_shell()
 	_build_channel()
 	_build_circuit()
@@ -65,6 +66,11 @@ func _ready() -> void:
 	var state: Dictionary = load_room_state()
 	if not state.is_empty():
 		apply_room_state(state)
+	# §6.1 : on réapparaît DEVANT la porte qu'on vient de franchir.
+	place_player_at_spawn(_player, spawn_tag, {
+		&"room1_from_hall": Vector3(0, 0.3, -17.5),
+		&"room1_from_vestibule": Vector3(0, 0.3, 11.0),
+	})
 
 
 ## Coque : sol, plafond, murs, seuil d'entrée au sud, porte au nord et
@@ -89,33 +95,17 @@ func _build_shell() -> void:
 	box("CorridorCeiling", Vector3(0, 6.5, -16.8), Vector3(6, 1, 7), COL_STONE)
 	box("CorridorWest", Vector3(-3.25, 3, -16.8), Vector3(0.5, 8, 7), COL_STONE)
 	box("CorridorEast", Vector3(3.25, 3, -16.8), Vector3(0.5, 8, 7), COL_STONE)
-	box("CorridorSeal", Vector3(0, 2.5, -20.05), Vector3(6, 6, 0.5),
-		Color(0.1, 0.1, 0.14))
-	decor("CorridorSealSeam", Vector3(0, 2.5, -19.75), Vector3(0.25, 4.4, 0.1),
+	# F.6 : le couloir nord ne se termine plus sur un seuil scellé — il
+	# MÈNE à la salle centrale. La promesse faite au joueur est tenue.
+	box("CorridorEnd", Vector3(0, 2.5, -20.3), Vector3(6, 6, 0.5),
+		Color(0.12, 0.12, 0.16))
+	decor("CorridorEndSeam", Vector3(0, 2.5, -20.0), Vector3(0.25, 4.4, 0.1),
 		COL_CYAN, true)
+	scene_door("DoorToHall", "Entrer dans la salle centrale", HALL,
+		&"hall_from_room1", Vector3(0, 2.5, -19.9), Vector3(4.2, 5.0, 0.4))
 
-	var exit_door: SceneDoor = SceneDoor.new()
-	exit_door.name = "ExitDoor"
-	exit_door.verb = "Sortir"
-	exit_door.target_scene = VESTIBULE
-	exit_door.spawn_tag = &"room1_door"
-	exit_door.collision_layer = 1
-	exit_door.collision_mask = 0
-	var shape: CollisionShape3D = CollisionShape3D.new()
-	var box_shape: BoxShape3D = BoxShape3D.new()
-	box_shape.size = Vector3(4.2, 5.0, 0.4)
-	shape.shape = box_shape
-	exit_door.add_child(shape)
-	var mesh: MeshInstance3D = MeshInstance3D.new()
-	var mesh_box: BoxMesh = BoxMesh.new()
-	mesh_box.size = Vector3(4.2, 5.0, 0.4)
-	mesh.mesh = mesh_box
-	var material: StandardMaterial3D = StandardMaterial3D.new()
-	material.albedo_color = Color(0.14, 0.16, 0.2)
-	mesh.material_override = material
-	exit_door.add_child(mesh)
-	exit_door.position = Vector3(0, 2.5, 13.4)   # AVANT add_child (règle D.0)
-	add_child(exit_door)
+	scene_door("ExitDoor", "Sortir", VESTIBULE, &"vestibule_from_room1",
+		Vector3(0, 2.5, 13.4), Vector3(4.2, 5.0, 0.4))
 
 
 ## Le couloir de poussée : deux rails bas, une butée au nord, trois

@@ -390,11 +390,14 @@ func test_the_ids_are_unique_and_the_exit_exists() -> void:
 	check(room.graph().node_count() >= 50,
 		"le circuit compte %d nœuds réels" % room.graph().node_count())
 	var doors: Array[Node] = room.find_children("*", "SceneDoor", true, false)
-	check_equal(doors.size(), 1, "une porte de retour")
-	if not doors.is_empty():
-		check_equal(String((doors[0] as SceneDoor).target_scene),
-			"res://scenes/dungeon/rooms/Room1Initiation.tscn",
-			"…qui pointe sur la salle 1")
+	check(not doors.is_empty(), "des seuils de sortie existent")
+	# F.6 : la salle est une branche du hall — on y entre et on en ressort
+	# par la salle centrale, et le puzzle ouvre un second passage vers elle.
+	check_equal(doors.size(), 2, "…deux seuils vers la salle centrale")
+	for door: Node in doors:
+		check_equal(String((door as SceneDoor).target_scene),
+			"res://scenes/dungeon/rooms/CentralHall.tscn",
+			"…qui pointe sur la salle centrale")
 	check(room.get_node("WallWest").is_in_group("unclimbable"),
 		"le mur ouest est inaccrochable : la voie passe par les blocs")
 	await _close(room)

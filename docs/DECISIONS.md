@@ -742,3 +742,60 @@ la fait vivre côté ennemi.
   salle 2 : il faut pouvoir remettre le courant pour recharger. Ce qui rend
   cela sûr, c'est que l'eau blesse sans tuer (12 points par seconde) et que la
   porte, une fois ouverte, le reste.
+
+---
+
+## D-030 — F.6 : trois circuits qui ne se parlent pas, et un donjon relié
+
+- **Date** : 2026-08-02 · **Phase** : F (jalon F.6) · **Statut** : ACTÉ
+- **Les trois branches de la salle centrale sont ÉLECTRIQUEMENT séparées.**
+  Une porte du boss branchée sur les trois aurait relié les branches entre
+  elles : le courant du premier circuit résolu serait remonté dans les deux
+  autres et les trois anneaux se seraient fermés d'un coup. La porte reçoit
+  donc une liste de CONDITIONS (`required_paths`) et n'ouvre qu'une fois
+  toutes alimentées. Les « lignes continues » de §15.9 sont la présentation
+  de chaque récepteur, pas des câbles partagés.
+- **Le tableau salle → récepteur est dans le code**, en tête de
+  `central_hall.gd`, comme §15.9 l'exige — et un test le rejoue salle par
+  salle au lieu de faire confiance au commentaire.
+- **La salle 1 n'alimente aucun récepteur.** Elle est sur le CHEMIN
+  (vestibule → hall). C'est le cas prévu par §15.9 pour un quatrième puzzle
+  séquentiel ; il est documenté plutôt que caché.
+- **Le pied d'une rampe s'enterre.** Mesuré : une rampe inclinée posée sur le
+  sol présente une tranche de 0,75 m — un mur pour §8.2, dont la marche
+  franchissable s'arrête à 0,38 m. La surface doit émerger du sol au niveau
+  zéro, sans ressaut.
+- **Convention de tag d'apparition** : `<destination>_from_<origine>`. Le tag
+  nomme l'ARRIVÉE. Sans cette règle, le même tag servait dans les deux sens et
+  le joueur réapparaissait du mauvais côté ; un test vérifie désormais que
+  chaque traversée dépose à moins de six mètres du seuil de retour.
+- **Chaque salle à énigme a DEUX seuils vers le hall** : celui par lequel on
+  entre, et celui que le puzzle ouvre. Le raccourci EST la récompense, et il
+  garantit qu'aucune salle ne peut devenir un cul-de-sac.
+
+
+---
+
+## D-031 — F.6 : un shell sert SON joueur, et un test qui fuit se nomme
+
+- **Date** : 2026-08-03 · **Phase** : F (jalon F.6) · **Statut** : ACTÉ
+- **`GameplayShell` se lie au joueur de sa propre scène.** Il prenait le premier
+  nœud du groupe `player` : dès que deux mondes coexistent — transition de
+  scène, monde préchargé, suite de tests — un shell servait le joueur d'un
+  AUTRE monde. Symptôme mesuré : la mort manquée (le panneau n'apparaissait
+  jamais, le shell écoutant la santé d'un joueur qui ne mourait pas). Le groupe
+  ne sert plus que de repli pour un shell posé seul. Régression couverte par
+  `test_shell_binding.gd`.
+- **Le runner refuse désormais qu'un test laisse une scène dans l'arbre.** La
+  cascade observée était instructive : une assertion périmée (`SealedDoor`,
+  supprimée par l'assemblage F.6) provoquait une erreur de script AU MILIEU
+  d'un test ; sa fonction s'arrêtait avant le nettoyage ; le vestibule restait
+  chargé ; et le parcours de traversal, trente fichiers plus loin, démarrait
+  entre ses colonnes. Trois tests rouges, aucun au bon endroit. Le runner
+  photographie la racine avant chaque test et échoue le test FAUTIF en nommant
+  ce qu'il a laissé.
+- **Une attente de test se compte en TEMPS, pas en images.** Le panneau de mort
+  part sur un `Timer` de 1,2 s ; l'attendre pendant 300 `process_frame` mesurait
+  en réalité la cadence du moteur, qui varie du simple au double en headless
+  selon ce qui a tourné avant. Les deux tests concernés attendent maintenant
+  4 s de temps réel.

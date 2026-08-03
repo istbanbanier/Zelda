@@ -215,8 +215,15 @@ func test_the_vestibule_is_deep_and_warmly_lit() -> void:
 	for brazier: Node in braziers:
 		var light: OmniLight3D = brazier as OmniLight3D
 		check(light.light_color.r > light.light_color.b + 0.3, "flamme CHAUDE")
-	var sealed: StaticBody3D = vestibule.get_node("SealedDoor") as StaticBody3D
-	check(sealed.position.z < -12.0, "le second seuil ferme le FOND de la salle")
+	# F.6 : ce second seuil n'est plus une masse SCELLÉE — il ouvre sur la
+	# salle 1 du donjon. Le décor (linteau, portail de pierre) reste ; ce
+	# qui change, c'est qu'on peut désormais le franchir.
+	var threshold: SceneDoor = vestibule.get_node("DungeonDoor") as SceneDoor
+	check_not_null(threshold, "le second seuil existe toujours")
+	check(threshold.position.z < -12.0, "…et ferme le FOND de la salle")
+	check_equal(String(threshold.target_scene),
+		"res://scenes/dungeon/rooms/Room1Initiation.tscn",
+		"…en menant au donjon, plus à une promesse")
 	check_not_null(vestibule.get_node_or_null("SealedLintel"), "…sous son linteau")
 	await _cleanup(vestibule)
 

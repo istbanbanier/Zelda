@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3]
+
+; Citadelle de l'Œil-Tempête — antichambre du boss (F.6, §15.10) :
+; checkpoint, coffre garanti, feu de cuisine, baies électriques, fresque
+; bois/métal et baie vitrée sur l'arène.
+
+[ext_resource type="Script" path="res://scripts/dungeon/antechamber.gd" id="1_room"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/ui/GameplayShell.tscn" id="3_shell"]
+
+[node name="Antechamber" type="Node3D"]
+script = ExtResource("1_room")
+
+[node name="GameplayShell" parent="." instance=ExtResource("3_shell")]
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 8)
+
+[node name="VisualRoot" parent="Player"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)

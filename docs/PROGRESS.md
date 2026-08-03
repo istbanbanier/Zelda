@@ -1814,3 +1814,70 @@ au mètre carré, pas de personnages finaux, pas de donjon complet.
 > boss, carte murale, checkpoint, coffre garanti, station de cuisine,
 > baies électriques, aperçu de l'arène, retour possible ; plus
 > l'architecture multi-niveaux qui relie enfin les quatre salles.
+
+## 2026-08-02 (Phase F, F.6) — salle centrale, antichambre, donjon assemblé
+
+> §15.9 et §15.10 livrés, et surtout : **les six scènes du donjon sont
+> enfin reliées**. Vestibule → salle 1 → salle centrale → salles 2/3/4 →
+> salle centrale → antichambre, avec un chemin retour partout et, pour
+> chaque salle à énigme, un SECOND seuil ouvert par son puzzle : le
+> raccourci est la récompense.
+> Salle centrale (§15.9) : trois récepteurs sur trois piliers, trois
+> anneaux, et trois branches **électriquement séparées**. C'est le point
+> dur : relier les trois branches à un nœud commun (la porte, par
+> exemple) ferait remonter le courant du premier circuit dans les deux
+> autres et fermerait les trois anneaux d'un coup. La porte du boss a
+> donc TROIS CONDITIONS (`ElectricDoor.required_paths`) et n'ouvre qu'à
+> la troisième. Un test le prouve : une salle résolue n'allume que SON
+> anneau. Le tableau « quelle salle fournit quel récepteur », exigé
+> nommément par §15.9, est en tête de `central_hall.gd` et vérifié salle
+> par salle par un test.
+> Architecture à deux niveaux : les portes des salles au sol, la porte du
+> boss six mètres plus haut sur la galerie, deux rampes à 36,9° — sous
+> les 46° praticables de §8.2. Le pied des rampes est ENTERRÉ dans la
+> dalle : mesuré, une rampe posée sur le sol présente une tranche de
+> 0,75 m, c'est-à-dire un mur. Un test fait monter le joueur en marchant.
+> Antichambre (§15.10) : checkpoint écrit à l'entrée, coffre garanti
+> (lame conductrice + 12 flèches), feu de cuisine, quatre baies de
+> tempête, retour libre, aperçu réel de l'arène et ses quatre pylônes
+> derrière la baie — et une fresque qui ENSEIGNE §14.4 par la
+> démonstration : deux lignes du graphe, celle du métal arrive au bout,
+> celle du bois meurt au barreau.
+> 15 tests neufs (`--filter=dungeon_hub`, `--filter=topology`), dont la
+> vérification que chaque traversée dépose le joueur DEVANT la porte de
+> retour, et que toutes les salles sont atteignables depuis le vestibule.
+> **PROCHAINE ACTION (F.7)** : anti-softlock et persistance sur le donjon
+> ENTIER — reprise depuis une sauvegarde vierge, reprise en milieu de
+> résolution dans chaque salle, objets essentiels hors limites, mort et
+> retour au checkpoint, aucune ressource obligatoire destructible.
+
+## 2026-08-03 (Phase F, F.6 — suite) — trois rouges, une seule cause utile
+
+> La suite complète est repassée ROUGE après l'assemblage, sur des tests
+> qui n'avaient pas changé : mort du joueur et parcours de traversal. La
+> chaîne réelle, trouvée par la mesure et non par relecture :
+> 1. `test_valley_dressing` interrogeait encore `SealedDoor` — le mur que
+>    F.6 vient de remplacer par une vraie porte. `get_node()` renvoie
+>    null, l'accès suivant lève une erreur de script, et la fonction de
+>    test s'arrête AVANT son nettoyage ;
+> 2. le vestibule reste donc dans l'arbre, avec son joueur et ses
+>    colonnes ;
+> 3. trente fichiers plus loin, le parcours de traversal démarre entre
+>    ces colonnes et se bloque à x = 5,05 (`Column3` nommée par le
+>    diagnostic) ;
+> 4. en parallèle, `GameplayShell` liait son affichage au PREMIER joueur
+>    du groupe global : avec deux mondes chargés, le shell de la vallée
+>    écoutait la santé d'un autre joueur, et la mort ne déclenchait plus
+>    rien.
+> Trois corrections, aucune cosmétique : l'assertion périmée est mise à
+> jour (la porte du fond EXISTE, elle mène au donjon), le shell se lie au
+> joueur de SA scène (`test_shell_binding.gd` couvre la régression), et
+> le **runner refuse maintenant qu'un test laisse une scène dans
+> l'arbre** — il photographie la racine avant chaque test et échoue le
+> test fautif en nommant ce qu'il a laissé. Sans ce garde, la prochaine
+> fuite coûterait à nouveau une demi-journée à un autre endroit.
+> Les deux attentes de panneau de mort se comptent désormais en temps
+> réel, pas en images : en headless la cadence varie du simple au double.
+> validate_fast VERT, 438 tests, aucune fuite détectée.
+> **PROCHAINE ACTION (F.7)** : anti-softlock et persistance sur le donjon
+> entier.

@@ -365,9 +365,13 @@ func test_the_room_ids_are_unique_and_the_exit_exists() -> void:
 	check(room.graph().node_count() >= 25,
 		"le circuit compte %d nœuds réels" % room.graph().node_count())
 	var doors: Array[Node] = room.find_children("*", "SceneDoor", true, false)
-	check_equal(doors.size(), 1, "une porte de retour vers le vestibule")
-	if not doors.is_empty():
-		check_equal(String((doors[0] as SceneDoor).target_scene),
-			"res://scenes/world/citadel/CitadelVestibule.tscn",
-			"…qui pointe vraiment sur le vestibule")
+	check_equal(doors.size(), 2,
+		"deux seuils : le vestibule au sud, la salle centrale au nord")
+	var targets: Array[String] = []
+	for door: Node in doors:
+		targets.append(String((door as SceneDoor).target_scene))
+	check(targets.has("res://scenes/world/citadel/CitadelVestibule.tscn"),
+		"…l'un revient au vestibule")
+	check(targets.has("res://scenes/dungeon/rooms/CentralHall.tscn"),
+		"…l'autre mène à la salle centrale (F.6 : la porte du puzzle SERT)")
 	await _close(room)

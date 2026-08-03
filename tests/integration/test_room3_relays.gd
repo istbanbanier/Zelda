@@ -239,9 +239,10 @@ func test_the_ids_are_unique_and_the_exit_exists() -> void:
 	var problems: Array[String] = room.graph().validate_ids()
 	check(problems.is_empty(), "aucun ID vide ni dupliqué : %s" % str(problems))
 	var doors: Array[Node] = room.find_children("*", "SceneDoor", true, false)
-	check_equal(doors.size(), 1, "une porte de retour")
-	if not doors.is_empty():
-		check_equal(String((doors[0] as SceneDoor).target_scene),
-			"res://scenes/dungeon/rooms/Room2Vertical.tscn",
-			"…qui pointe sur la salle 2")
+	check(not doors.is_empty(), "des seuils de sortie existent")
+	check_equal(doors.size(), 2, "…deux seuils vers la salle centrale")
+	for door: Node in doors:
+		check_equal(String((door as SceneDoor).target_scene),
+			"res://scenes/dungeon/rooms/CentralHall.tscn",
+			"…qui pointe sur la salle centrale")
 	await _close(room)

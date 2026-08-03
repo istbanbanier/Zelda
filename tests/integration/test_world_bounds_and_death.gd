@@ -111,8 +111,14 @@ func test_death_offers_retry_toward_the_checkpoint_world() -> void:
 	(player.get_node("Hurtbox") as HurtboxComponent).receive_hit(blow)
 	check(player.health().is_dead(), "préalable : mort")
 
+	# Le panneau part sur un `Timer` de 1,2 s : on attend donc du TEMPS, pas
+	# des images. Mesuré : en headless la cadence de `process_frame` varie
+	# du simple au double selon ce qui a tourné avant, et 300 images ont pu
+	# ne représenter que 0,6 s — le test échouait alors sans qu'aucun code
+	# de jeu n'ait changé.
 	var opened: bool = false
-	for i: int in range(300):   # délai d'1,2 s + marge
+	var deadline: int = Time.get_ticks_msec() + 4000
+	while Time.get_ticks_msec() < deadline:
 		await _tree().process_frame
 		if shell.is_death_panel_open():
 			opened = true
@@ -138,7 +144,8 @@ func test_the_death_panel_is_modal_no_pause_inventory_or_mouse_grab() -> void:
 	blow.amount = 999.0
 	blow.attack_id = HitboxComponent.next_attack_id()
 	(player.get_node("Hurtbox") as HurtboxComponent).receive_hit(blow)
-	for i: int in range(300):
+	var wait_until: int = Time.get_ticks_msec() + 4000
+	while Time.get_ticks_msec() < wait_until:
 		await _tree().process_frame
 		if shell.is_death_panel_open():
 			break

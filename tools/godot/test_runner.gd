@@ -251,6 +251,8 @@ func _run_script(path: String) -> void:
 
 	for method_name: String in methods:
 		_current = "%s::%s" % [path.get_file(), method_name]
+		# Photo de la racine AVANT le test : ce qui reste APRÈS est une fuite.
+		var roots_before: Array[String] = _root_children()
 
 		# Enregistreur neuf par méthode, détenu par le runner. Le résultat est lu
 		# ici et nulle part ailleurs : le cas de test ne participe pas au verdict.
@@ -266,16 +268,54 @@ func _run_script(path: String) -> void:
 		if typeof(pending) == TYPE_OBJECT and pending != null:
 			await pending
 
+		# Une scène laissée dans l'arbre POISONNE tous les tests suivants.
+		# Mesuré (F.6) : une erreur de script au milieu d'un test avortait sa
+		# fonction avant le nettoyage ; le vestibule restait chargé, et le
+		# parcours de traversal — trente fichiers plus loin — démarrait à
+		# l'intérieur de ses colonnes. Le vrai défaut était invisible et le
+		# faux coupable était ailleurs. On le nomme donc ICI, tout de suite.
+		var leaked: Array[String] = await _leaked_roots(roots_before)
 		var failures: Array[String] = recorder.failures()
 		if not failures.is_empty():
 			for message: String in failures:
 				_fail("%s — %s" % [_current, message])
+			if not leaked.is_empty():
+				_fail("%s — et laisse %s dans l'arbre" % [_current,
+					", ".join(leaked)])
 			continue
 		if recorder.checks() == 0:
 			_fail("%s — aucune assertion exécutée (couverture illusoire)" % _current)
 			continue
+		if not leaked.is_empty():
+			_fail("%s — laisse %s dans l'arbre : les tests suivants hériteraient de sa géométrie"
+				% [_current, ", ".join(leaked)])
+			continue
 		_passed += 1
 		print("  ok   %s (%d assertions)" % [_current, recorder.checks()])
+
+
+## Noms des enfants de la racine, autoloads compris.
+func _root_children() -> Array[String]:
+	var names: Array[String] = []
+	var tree_root: Window = root
+	if tree_root == null:
+		return names
+	for child: Node in tree_root.get_children():
+		names.append(child.name)
+	return names
+
+
+## Ce que le test a laissé derrière lui. Deux frames de grâce : `queue_free()`
+## ne libère qu'en fin de frame, et un test propre a le droit de finir sur un
+## `queue_free()` sans attendre lui-même.
+func _leaked_roots(before: Array[String]) -> Array[String]:
+	await process_frame
+	await physics_frame
+	var leaked: Array[String] = []
+	for name: String in _root_children():
+		if not before.has(name) and not leaked.has(name):
+			leaked.append(name)
+	return leaked
 
 
 func _fail(message: String) -> void:

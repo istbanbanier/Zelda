@@ -22,7 +22,7 @@ extends DungeonRoom
 ## L'aiguillage vient d'être basculé : ascenseur vivant, électrodes mortes.
 signal rerouted()
 
-const ROOM1: String = "res://scenes/dungeon/rooms/Room1Initiation.tscn"
+const HALL: String = "res://scenes/dungeon/rooms/CentralHall.tscn"
 const WIRE_Y: float = 0.12
 ## Ligne d'escalade : le mur ouest, trois blocs décalés en Z.
 const CLIMB_X: float = -6.2
@@ -46,7 +46,7 @@ func _ready() -> void:
 	var game_state: Node = get_node_or_null("/root/GameState")
 	if game_state != null:
 		game_state.call("set_flow", 3)  # GameState.Flow.DUNGEON
-		game_state.call("consume_pending_spawn")
+	var spawn_tag: StringName = consume_spawn_tag()
 	_build_shell()
 	_build_climb()
 	_build_circuit()
@@ -62,6 +62,11 @@ func _ready() -> void:
 	var state: Dictionary = load_room_state()
 	if not state.is_empty():
 		apply_room_state(state)
+	# §6.1 : on réapparaît DEVANT la porte franchie, jamais au spawn.
+	place_player_at_spawn(_player, spawn_tag, {
+		&"room2_from_hall": Vector3(1.5, 0.3, 9.0),
+		&"room2_from_shortcut": Vector3(2, 16.8, -11.0),
+	})
 
 
 ## Puits de 22 m : sol, murs, mezzanine nord au sommet, seuil sud en bas,
@@ -105,16 +110,21 @@ func _build_shell() -> void:
 		Vector3(0.5, 6, 7), COL_STONE)
 	box("CorridorCeiling", Vector3(2, MEZZANINE_Y + 6.25, -10.5),
 		Vector3(6, 0.5, 7), COL_STONE)
-	box("CorridorSeal", Vector3(2, MEZZANINE_Y + 2.5, -13.75),
-		Vector3(6, 5.5, 0.5), Color(0.1, 0.1, 0.14))
-	decor("CorridorSealSeam", Vector3(2, MEZZANINE_Y + 2.5, -13.45),
+	# F.6 : le couloir du haut débouche sur la salle centrale — le puzzle
+	# ouvre un VRAI raccourci, pas un seuil scellé.
+	box("CorridorEnd", Vector3(2, MEZZANINE_Y + 2.5, -14.0),
+		Vector3(6, 5.5, 0.5), Color(0.12, 0.12, 0.16))
+	decor("CorridorEndSeam", Vector3(2, MEZZANINE_Y + 2.5, -13.7),
 		Vector3(0.25, 4.0, 0.1), COL_CYAN, true)
+	scene_door("DoorToHall", "Rejoindre la salle centrale", HALL,
+		&"hall_from_room2", Vector3(2, MEZZANINE_Y + 2.5, -13.6),
+		Vector3(4.2, 5.0, 0.4))
 
 	var entry: SceneDoor = SceneDoor.new()
 	entry.name = "ExitDoor"
 	entry.verb = "Sortir"
-	entry.target_scene = ROOM1
-	entry.spawn_tag = &"room2_door"
+	entry.target_scene = HALL
+	entry.spawn_tag = &"hall_from_room2"
 	entry.collision_layer = 1
 	entry.collision_mask = 0
 	var shape: CollisionShape3D = CollisionShape3D.new()

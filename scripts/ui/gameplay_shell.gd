@@ -314,12 +314,38 @@ func _apply_v4_style() -> void:
 		HudStyle.style_button(button_node)
 
 
-func _bind_player() -> void:
-	for node: Node in get_tree().get_nodes_in_group("player"):
+## Racine de la scène du shell, puis recherche descendante. `owner` est
+## renseigné pour un shell instancié dans un `.tscn` ; sinon le parent
+## direct fait office de racine.
+func _find_player_in_own_scene() -> PlayerController:
+	var scene_root: Node = owner if owner != null else get_parent()
+	if scene_root == null:
+		return null
+	for node: Node in scene_root.find_children("*", "PlayerController",
+			true, false):
 		var player: PlayerController = node as PlayerController
 		if player != null:
-			_player = player
-			break
+			return player
+	return null
+
+
+## Lie le shell au joueur de SA scène.
+##
+## Défaut mesuré (F.6) : la liaison prenait le premier nœud du groupe
+## `player` — donc, dès que deux mondes coexistent (transition de scène,
+## suite de tests, monde préchargé), le shell d'une scène servait le
+## joueur d'une AUTRE. Conséquence observée : la MORT MANQUÉE — le
+## panneau de mort n'apparaissait jamais parce que le shell écoutait la
+## santé d'un joueur qui, lui, ne mourait pas. On cherche donc d'abord
+## dans sa propre scène ; le groupe ne sert plus que de repli.
+func _bind_player() -> void:
+	_player = _find_player_in_own_scene()
+	if _player == null:
+		for node: Node in get_tree().get_nodes_in_group("player"):
+			var player: PlayerController = node as PlayerController
+			if player != null:
+				_player = player
+				break
 	if _player == null:
 		return
 	var health: HealthComponent = _player.health()
@@ -756,6 +782,11 @@ func _on_player_died(_event: DamageEvent) -> void:
 		_set_mouse_captured(false)
 		_retry_button.grab_focus()
 		timer.queue_free())
+
+
+## Seam de test : quel joueur ce shell sert-il réellement ?
+func bound_player() -> PlayerController:
+	return _player
 
 
 func is_death_panel_open() -> bool:

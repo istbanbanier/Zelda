@@ -19,7 +19,7 @@ extends DungeonRoom
 
 signal solved()
 
-const ROOM2: String = "res://scenes/dungeon/rooms/Room2Vertical.tscn"
+const HALL: String = "res://scenes/dungeon/rooms/CentralHall.tscn"
 ## Le circuit court à hauteur de main : une énigme de rotation se lit
 ## debout, pas au ras du sol.
 const WIRE_Y: float = 1.0
@@ -40,7 +40,7 @@ func _ready() -> void:
 	var game_state: Node = get_node_or_null("/root/GameState")
 	if game_state != null:
 		game_state.call("set_flow", 3)  # GameState.Flow.DUNGEON
-		game_state.call("consume_pending_spawn")
+	var spawn_tag: StringName = consume_spawn_tag()
 	_build_shell()
 	_build_circuit()
 	_build_reset_button()
@@ -53,6 +53,11 @@ func _ready() -> void:
 	var state: Dictionary = load_room_state()
 	if not state.is_empty():
 		apply_room_state(state)
+	# §6.1 : on réapparaît DEVANT la porte franchie, jamais au spawn.
+	place_player_at_spawn(_player, spawn_tag, {
+		&"room3_from_hall": Vector3(0, 0.3, 9.0),
+		&"room3_from_shortcut": Vector3(13.5, 0.3, -4),
+	})
 
 
 func _build_shell() -> void:
@@ -73,16 +78,18 @@ func _build_shell() -> void:
 	box("CorridorNorth", Vector3(13.5, 3, -7.25), Vector3(7, 8, 0.5), COL_STONE)
 	box("CorridorSouth", Vector3(13.5, 3, -0.75), Vector3(7, 8, 0.5), COL_STONE)
 	box("CorridorCeiling", Vector3(13.5, 6.5, -4), Vector3(7, 1, 6), COL_STONE)
-	box("CorridorSeal", Vector3(16.75, 2.5, -4), Vector3(0.5, 6, 6),
-		Color(0.1, 0.1, 0.14))
-	decor("CorridorSealSeam", Vector3(16.45, 2.5, -4),
+	box("CorridorEnd", Vector3(17.0, 2.5, -4), Vector3(0.5, 6, 6),
+		Color(0.12, 0.12, 0.16))
+	decor("CorridorEndSeam", Vector3(16.7, 2.5, -4),
 		Vector3(0.1, 4.4, 0.25), COL_CYAN, true)
+	scene_door("DoorToHall", "Rejoindre la salle centrale", HALL,
+		&"hall_from_room3", Vector3(16.6, 2.5, -4), Vector3(0.4, 5.0, 4.2))
 
 	var entry: SceneDoor = SceneDoor.new()
 	entry.name = "ExitDoor"
 	entry.verb = "Sortir"
-	entry.target_scene = ROOM2
-	entry.spawn_tag = &"room3_door"
+	entry.target_scene = HALL
+	entry.spawn_tag = &"hall_from_room3"
 	entry.collision_layer = 1
 	entry.collision_mask = 0
 	var shape: CollisionShape3D = CollisionShape3D.new()

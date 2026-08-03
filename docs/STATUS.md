@@ -150,7 +150,7 @@ llvmpipe uniquement, aucun GPU.
 | C.5 | `HeroShotLab`, première composition North Star | Non commencé — notation WOW bloquée (voir ISS-002) |
 | D | Terrain 512 m, camp, rivière, pylône, citadelle, coffres, CINQ familles ennemies | **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE** (`docs/GATE_D_AUDIT.md`, passe 2) : items 16/17/19 PASS, 18 PARTIEL (4 coffres sur 8, solde en Phase F, documenté), 20 PASS automatique sans essai humain. Les cinq familles de §12 existent, diffèrent par stats/arme/portée/carrure/comportement et sont testées (107 assertions transverses + 47 par famille) |
 | E | Récolte, cuisine, buffs, sauvegarde et migrations | **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE** (`docs/GATE_E_AUDIT.md`) : les huit items §22 Phase E PASS sur preuves rejouées, chaîne complète récolte→cuisine→buff→save/load testée de bout en bout. Non couvert : animation de cuisson (Phase H) et essai humain |
-| F | Graphe électrique, 4 salles, salle centrale, antichambre | **En cours** — F.1 (graphe, 11 tests), F.2 (salle 1, 12), F.3 (salle 2, 12), F.4 (salle 3, 8) et F.5 (salle 4, 11) livrés ; F.6 à F.8 restants |
+| F | Graphe électrique, 4 salles, salle centrale, antichambre | **En cours** — F.1 à F.6 livrés (graphe, quatre salles, salle centrale, antichambre, donjon ASSEMBLÉ du vestibule à l'antichambre) ; F.7 et F.8 restants |
 | G | Arène, boss 3 phases, solvabilité, victoire | Non commencé |
 | H | Art « wahou », WOW Gate ≥ 85/100 | **Bloqué** — ISS-002 |
 | I | LOD, profilage, presets, exports, session 60 min | **Bloqué** — ISS-002 |
@@ -477,6 +477,9 @@ automatisée** avant qu'une seule salle n'existe.
 | Solveur automatique de §15.7 : une solution existe, le départ n'en est pas une | **Validé** | `test_the_solver_proves_a_solution_exists` : 256 configurations jouées sur le vrai graphe, 1 solution |
 | Salle 4 §15.8 — source, deux mécanismes, batterie transportable, socket explicite, eau conductrice, DEUX solutions, respawn, aucune porte du mauvais côté | **Fonctionnel** | `--filter=room4` (11 tests) |
 | Prendre / porter / poser (§14.2) | **Fonctionnel** | `test_the_player_picks_up_carries_and_drops_the_battery` |
+| Salle centrale §15.9 — trois récepteurs INDÉPENDANTS, trois anneaux, porte à trois conditions, carte murale, tableau salle→récepteur | **Fonctionnel** | `--filter=dungeon_hub` (10 tests) |
+| Antichambre §15.10 — checkpoint, coffre garanti, cuisine, baies, retour, fresque bois/métal, aperçu de l'arène | **Fonctionnel** | idem |
+| Donjon ASSEMBLÉ : vestibule → salle 1 → hall → salles 2/3/4 → antichambre, chemins retour, arrivée devant la porte franchie | **Fonctionnel** | `--filter=topology` (5 tests, 75 assertions) |
 
 ## Checklist finale (§26) — état réel
 
