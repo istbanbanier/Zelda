@@ -602,11 +602,12 @@ func _build_cemetery() -> void:
 
 	# LA DALLE DESCELLÉE : sa feuillure est vide et noire, elle-même repose de
 	# biais à moitié dehors. La traînée de gravats sort par la porte.
-	_block(tomb, "Feuillure", Vector3(0.0, 0.0, -0.5),
+	_block(tomb, "Feuillure", Vector3(0.0, 0.04, -0.5),
 		Vector3(1.7, 0.14, 1.05), Vector3.ZERO, COL_VOID, false)
 	_block(tomb, "DalleDescellee", Vector3(0.55, 0.16, 0.55),
 		Vector3(1.75, 0.24, 1.15), Vector3(0, 16, 5), COL_STONE_DARK, true)
-	_marker(yard, "DalleDescellee", Vector3(0.55, -9.45, 0.0))
+	# Repère en coordonnées du cimetière : le tombeau est décalé de 10 m au nord.
+	_marker(yard, "DalleDescellee", Vector3(0.55, 0.3, -9.45))
 	var drag: Array[String] = [
 		"Pebble_Round_1", "Pebble_Square_2", "Prop_Brick1", "Pebble_Round_4",
 		"Pebble_Square_1", "Pebble_Round_3",
@@ -681,7 +682,7 @@ func _build_cemetery() -> void:
 		for side: float in [-1.0, 1.0]:
 			if i == 2 and side > 0.0:
 				continue                       # une brèche du muret, à l'est
-			_block(fence, "Muret%d" % (i * 2 + int(side + 1.0)),
+			_block(fence, "Muret%d%s" % [i, "O" if side < 0.0 else "E"],
 				Vector3(side * 9.0, 0.28, z), Vector3(0.42, 0.56, 2.9),
 				Vector3(0, 1.5 * float(i), 0), COL_STONE, true)
 	for side: float in [-1.0, 1.0]:
