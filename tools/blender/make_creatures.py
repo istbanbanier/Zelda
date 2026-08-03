@@ -377,36 +377,45 @@ def build_hunter() -> None:
 
     # Corps inférieur : cage thoracique LONGUE et basse, épaules avant plus
     # hautes que la croupe. Aucune croupe de cheval, aucune crinière.
-    spans = [(1.10, 0.92, 0.62), (1.16, 0.92, 0.68), (1.08, 0.90, 0.66),
-             (0.94, 0.86, 0.60), (0.78, 0.82, 0.52)]
+    # Cage PROFONDE et non un plateau : à 0,52-0,68 m de haut pour 4,20 m de
+    # long, le chasseur se lisait comme une table sur laquelle un buste était
+    # posé — le défaut que l'ordre nomme « assemblage de boîtes ». Le poitrail
+    # est le plus haut, la croupe descend franchement.
+    spans = [(1.08, 0.92, 0.94), (1.14, 0.92, 1.00), (1.06, 0.90, 0.92),
+             (0.92, 0.86, 0.80), (0.76, 0.82, 0.64)]
     for i, (w, d, h) in enumerate(spans):
         y = 1.45 - i * 0.72
-        z = 1.38 - i * 0.055        # l'avant est PLUS HAUT que l'arrière
+        z = 1.50 - i * 0.105        # l'avant est NETTEMENT plus haut
         # `add_box` prend une taille PLEINE : le `* 0.5` d'origine réduisait
         # chaque tranche à 0,46 m de profondeur pour un pas de 0,72 m, et la
         # cage thoracique arrivait en rondelles séparées (ISS-018).
         flesh.append(add_box("Rib%d" % i, (w, d, h), (0.0, y, z)))
     # Plaques dorsales en flèches vers l'arrière : la vitesse se lit à l'arrêt.
     for i in range(5):
-        carapace.append(add_box("Fin%d" % i, (0.30 - 0.03 * i, 0.34, 0.09),
-            (0.0, 1.20 - i * 0.70, 1.66 - i * 0.05),
+        carapace.append(add_box("Fin%d" % i, (0.26 - 0.03 * i, 0.38, 0.20),
+            (0.0, 1.20 - i * 0.70, 1.96 - i * 0.105),
             (math.radians(-24.0 - 4.0 * i), 0, 0)))
 
     # Quatre pattes à TROIS doigts larges. Pas de sabot.
     for side in (-1, 1):
         for pair, (y, hip_z, upper, lower) in enumerate(
-                ((1.24, 1.20, 0.68, 0.58), (-1.62, 1.10, 0.64, 0.54))):
+                ((1.24, 1.24, 0.74, 0.62), (-1.62, 1.10, 0.68, 0.58))):
             hip = Vector((side * 0.38, y, hip_z))
-            knee = Vector((side * 0.58, y - 0.14, hip_z - upper))
+            knee = Vector((side * 0.58, y - 0.16, hip_z - upper))
             ankle = Vector((side * 0.56, y + 0.06, hip_z - upper - lower))
-            flesh.append(limb("Upper%d_%d" % (side + 1, pair), hip, knee, 0.17))
-            flesh.append(limb("Lower%d_%d" % (side + 1, pair), knee, ankle, 0.14))
+            # Épaule et hanche : la masse musculaire qui rattache le membre au
+            # tronc. Sans elle, quatre bâtons de 17 cm sortaient d'un caisson.
+            flesh.append(add_box("Haunch%d_%d" % (side + 1, pair),
+                (0.34, 0.52, 0.52),
+                tuple(hip + Vector((side * -0.04, 0.02, 0.06)))))
+            flesh.append(limb("Upper%d_%d" % (side + 1, pair), hip, knee, 0.25))
+            flesh.append(limb("Lower%d_%d" % (side + 1, pair), knee, ankle, 0.19))
             for toe in range(3):
                 flesh.append(add_box("Toe%d_%d_%d" % (side + 1, pair, toe),
-                    (0.055, 0.115, 0.045),
-                    tuple(ankle + Vector(((toe - 1) * 0.10, -0.14, -0.05)))))
+                    (0.075, 0.145, 0.065),
+                    tuple(ankle + Vector(((toe - 1) * 0.11, -0.13, -0.04)))))
             carapace.append(add_box("Greave%d_%d" % (side + 1, pair),
-                (0.13, 0.17, 0.22), tuple(hip + Vector((side * 0.10, 0, -0.20))),
+                (0.17, 0.21, 0.28), tuple(hip + Vector((side * 0.13, 0, -0.24))),
                 (0, math.radians(side * 12.0), 0)))
 
     # Queue COURTE, en lames de céramique — stabilisatrice, pas décorative.
@@ -421,20 +430,26 @@ def build_hunter() -> None:
 
     # Torse supérieur : il naît EN AVANT du bassin inférieur et reste
     # INCLINÉ. C'est ce qui distingue la créature d'un centaure classique.
-    flesh.append(add_box("TorsoLow", (0.50, 0.44, 0.78),
-                         (0.0, 1.56, 1.76), (math.radians(-18.0), 0, 0)))
-    flesh.append(add_box("TorsoHigh", (0.62, 0.40, 0.82),
-                         (0.0, 1.50, 2.42), (math.radians(-14.0), 0, 0)))
+    # JONCTION : le buste ne se pose pas sur le dos, il en SORT. Ce tronc de
+    # liaison, large en bas et resserré en haut, part du poitrail et monte
+    # vers les épaules — sans lui le chasseur se lisait comme un humain assis
+    # sur un animal, ce que la bible §14.5 interdit explicitement.
+    flesh.append(add_box("Barrel", (0.86, 0.80, 0.92),
+                         (0.0, 1.42, 1.72), (math.radians(-12.0), 0, 0)))
+    flesh.append(add_box("TorsoLow", (0.66, 0.56, 0.86),
+                         (0.0, 1.52, 2.10), (math.radians(-18.0), 0, 0)))
+    flesh.append(add_box("TorsoHigh", (0.62, 0.44, 0.82),
+                         (0.0, 1.50, 2.62), (math.radians(-14.0), 0, 0)))
     carapace.append(add_box("Chestplate", (0.46, 0.14, 0.40),
-                            (0.0, 1.24, 2.52), (math.radians(-12.0), 0, 0)))
+                            (0.0, 1.26, 2.72), (math.radians(-12.0), 0, 0)))
     # Tête ÉTROITE à plaque frontale et deux mandibules latérales.
-    flesh.append(add_box("Neck", (0.24, 0.26, 0.34), (0.0, 1.40, 2.86)))
-    flesh.append(add_box("Head", (0.26, 0.40, 0.30), (0.0, 1.30, 3.02)))
+    flesh.append(add_box("Neck", (0.30, 0.32, 0.40), (0.0, 1.40, 2.94)))
+    flesh.append(add_box("Head", (0.30, 0.46, 0.34), (0.0, 1.30, 3.13)))
     carapace.append(add_box("Frontplate", (0.24, 0.12, 0.28),
-                            (0.0, 1.16, 3.14), (math.radians(-16.0), 0, 0)))
+                            (0.0, 1.14, 3.25), (math.radians(-16.0), 0, 0)))
     for side in (-1, 1):
         carapace.append(add_box("Mandible%d" % (side + 1), (0.05, 0.24, 0.06),
-            (side * 0.17, 1.20, 2.96),
+            (side * 0.19, 1.18, 3.07),
             (math.radians(-10.0), 0.0, math.radians(side * 13.0))))
 
     # Deux bras LONGS.
@@ -443,23 +458,23 @@ def build_hunter() -> None:
         # grappe solidaire… d'eux-mêmes, à 11 cm du buste. Chaque bras avait
         # bien un voisin, ce qui suffisait au premier critère — d'où le
         # contrôle par grappes connexes.
-        shoulder = Vector((side * 0.32, 1.44, 2.72))
-        elbow = Vector((side * 0.66, 1.30, 2.18))
-        wrist = Vector((side * 0.72, 1.42, 1.66))
-        flesh.append(limb("Arm%d" % (side + 1), shoulder, elbow, 0.115))
-        flesh.append(limb("Forearm%d" % (side + 1), elbow, wrist, 0.10))
-        flesh.append(add_box("Hand%d" % (side + 1), (0.10, 0.09, 0.12),
-                             tuple(wrist + Vector((0, 0.04, -0.10)))))
-        carapace.append(add_box("Pauldron%d" % (side + 1), (0.19, 0.21, 0.13),
+        shoulder = Vector((side * 0.32, 1.44, 2.92))
+        elbow = Vector((side * 0.70, 1.30, 2.34))
+        wrist = Vector((side * 0.78, 1.42, 1.78))
+        flesh.append(limb("Arm%d" % (side + 1), shoulder, elbow, 0.155))
+        flesh.append(limb("Forearm%d" % (side + 1), elbow, wrist, 0.135))
+        flesh.append(add_box("Hand%d" % (side + 1), (0.15, 0.13, 0.17),
+                             tuple(wrist + Vector((0, 0.04, -0.13)))))
+        carapace.append(add_box("Pauldron%d" % (side + 1), (0.25, 0.27, 0.18),
             tuple(shoulder + Vector((side * 0.08, 0, 0.06))),
             (0, math.radians(side * 20.0), 0)))
 
     # Carquois latéral FIXÉ AU CORPS INFÉRIEUR (§14.5), pas dans le dos.
     bronze.append(add_box("Quiver", (0.11, 0.15, 0.44),
-                          (0.62, 0.30, 1.52),
+                          (0.68, 0.30, 1.66),
                           (math.radians(16.0), math.radians(-14.0), 0)))
     textile.append(add_box("Sash", (0.42, 0.10, 0.26),
-                           (0.0, 1.38, 2.30), (math.radians(-14.0), 0, 0)))
+                           (0.0, 1.38, 2.52), (math.radians(-14.0), 0, 0)))
 
     groups = {"Flesh": (flesh, COL_FLESH, 0.86, 0.0),
               "Carapace": (carapace, COL_CARAPACE, 0.52, 0.0),
