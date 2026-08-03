@@ -101,11 +101,23 @@ func test_a_taken_pickup_never_respawns_after_reload() -> void:
 	await _settle(10)
 	var back: PlayerController = reloaded.player()
 	check_equal(back.inventory().weapon_count(), 2, "épée + gourdin restaurés")
-	var takeable: int = 0
+	# Le test portait sur le NOMBRE de pickups restants, parce qu'il n'en
+	# existait qu'un dans la vallée. Les lieux du monde ouvert en posent
+	# maintenant d'autres, jamais ramassés — un total ne dit donc plus rien.
+	# La question exacte est : CELUI qu'on a pris est-il revenu ?
+	var respawned: bool = false
+	var others: int = 0
 	for node: Node in reloaded.find_children("*", "WeaponPickup", true, false):
-		if node.is_in_group("interactable"):
-			takeable += 1
-	check_equal(takeable, 0, "AUCUN pickup ramassable ne réapparaît au sol")
+		if not node.is_in_group("interactable"):
+			continue
+		if (node as WeaponPickup).pickup_id == pickup.pickup_id:
+			respawned = true
+		else:
+			others += 1
+	check(not respawned,
+		"le pickup RAMASSÉ (%s) ne réapparaît pas au sol" % pickup.pickup_id)
+	check(others >= 1,
+		"…et les pickups jamais touchés sont toujours là (%d)" % others)
 	var clubs: int = 0
 	for weapon: WeaponInstance in back.inventory().weapons():
 		if String(weapon.definition_id()) == "wood_club":

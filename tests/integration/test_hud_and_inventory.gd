@@ -251,18 +251,25 @@ func test_the_valley_has_its_four_chests_with_unique_ids() -> void:
 	_tree().root.add_child(valley)
 	await _settle(5)
 	# Les coffres de PROGRESSION (§11.4) sont ceux du monde ; ceux du monde
-	# ouvert vivent sous `DiscoveryRewards` et récompensent une découverte.
+	# ouvert pendent à un `RewardAnchor` et récompensent une découverte.
 	# Distinguer les deux familles est plus juste que de compter le total :
 	# la garantie de §11.4 porte sur la progression, pas sur le décor.
+	#
+	# Le critère est le PARENT RÉEL, un `RewardAnchor`. Il fut un temps le nom
+	# du nœud « DiscoveryRewards » — critère fragile, qui a cessé d'être vrai
+	# le jour où les récompenses sont devenues filles de leur ancrage pour
+	# suivre le point éprouvé. Un type se renomme moins facilement qu'un nom.
 	var ids: Array[String] = []
 	var reward_ids: Array[String] = []
 	for chest: Node in valley.find_children("*", "Chest", true, false):
 		var chest_id: String = String((chest as Chest).chest_id)
-		var host: Node = chest.get_parent()
-		if host != null and host.name == "DiscoveryRewards":
+		if chest.get_parent() is RewardAnchor:
 			reward_ids.append(chest_id)
 		else:
 			ids.append(chest_id)
+	check(reward_ids.size() >= 8,
+		"%d coffre(s) de découverte, distincts de la progression"
+		% reward_ids.size())
 	ids.sort()
 	# Contrôle RENFORCÉ au passage : tous les coffres du monde, progression et
 	# récompenses confondues, portent des identifiants distincts.
