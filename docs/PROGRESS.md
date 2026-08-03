@@ -2353,3 +2353,52 @@ identifiant, sa sauvegarde et son test :
 Aucun contenu de monde ouvert n'est encore posé : le lot ci-dessus livre les
 FONDATIONS et les assets, pas les lieux. La vallée reste un graybox hors
 premier plan.
+
+---
+
+## 2026-08-03 — Monde ouvert : premier lieu posé, village de la rivière
+
+`validate_fast.sh` VERT à 509 tests avant ce lot ; plancher désormais 510.
+
+### Fait
+
+**Village de la rivière**, bâti du kit modulaire CC0 promu juste avant :
+auberge, forge, moulin, sanctuaire, deux habitations, place de marché,
+quai. Monté dans `ValleyWorld` — un lieu bâti mais jamais posé ne compte
+pas — et déclaré au journal sous `valley.poi.riverside_village.01`.
+
+**Le point dur de §1 est tenu et PROUVÉ** : l'auberge a un intérieur réel.
+Le test y fait entrer un corps physique, exige qu'il se pose sur un
+plancher, puis le pousse contre chaque mur et exige qu'il reste dedans. Un
+décor de façades aurait passé n'importe quel test de comptage.
+
+Cela imposait une collision posée à la main : le kit est purement visuel, et
+un collider unique par mur aurait muré l'auberge de l'intérieur. Un mur à
+baie reçoit deux jambages et un linteau. Les habitations, elles, sont
+fermées — pas de porte praticable, donc aucune promesse trompeuse.
+
+Les découvertes partent dans la sauvegarde de la vallée et en reviennent.
+
+### PROCHAINE ACTION
+
+1. **Resserrer le village** : la capture le montre en maisons éparpillées,
+   pas en bourg groupé autour d'une place. Rapprocher les corps de bâtiment,
+   dessiner la place au sol, poser des chemins entre les portes.
+2. **Habitants** (§6) : quelques villageois qui marchent entre deux points,
+   fumée de cheminée, lumière aux fenêtres.
+3. **Deux hameaux** (§2), puis les RUINES, puis les GROTTES — chacun avec
+   son `PointOfInterest`, son contenu significatif (§3) et son test
+   d'atteignabilité.
+4. **Carte des POI et liste des identifiants** (§8) : `registered_ids()` et
+   `by_region()` les fournissent déjà, il reste à les écrire dans un
+   document et à les relier aux captures de région.
+5. Puis §4 (rythme d'exploration), §5 (itinéraires multiples), §9 (passe
+   artistique de la vallée, performances, Phase H, puis I et J).
+
+### Limites honnêtes
+
+**Un seul lieu sur la liste de §2 est posé.** Manquent : les deux hameaux,
+les ruines, les grottes, les lieux naturels mémorables, les territoires
+ennemis, les habitants, les histoires environnementales, la carte des POI et
+le parcours d'atteignabilité de toute la carte. La vallée reste un graybox
+hors premier plan et hors village. Aucun score visuel n'est revendiqué.
