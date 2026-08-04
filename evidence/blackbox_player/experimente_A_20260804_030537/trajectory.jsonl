@@ -1,0 +1,7 @@
+{"evenement": "demarrage", "display": ":77", "resolution": [1024, 768], "session": "experimente_A_20260804_030537", "fenetre": "2097155", "image_dessinee": true, "t_reel": 3.75}
+{"pas": 1, "outil": "observe", "capture": "evidence/blackbox_player/experimente_A_20260804_030537/captures/pas_0001_observe.png", "t_reel": 3.82}
+{"pas": 2, "outil": "click", "capture": "evidence/blackbox_player/experimente_A_20260804_030537/captures/pas_0002_click.png", "bouton": 1, "x": 511, "y": 387, "t_reel": 9.04}
+{"pas": 3, "outil": "wait", "capture": "evidence/blackbox_player/experimente_A_20260804_030537/captures/pas_0003_wait.png", "duree_ms": 1500, "t_reel": 13.36}
+{"pas": 4, "outil": "wait", "capture": "evidence/blackbox_player/experimente_A_20260804_030537/captures/pas_0004_wait.png", "duree_ms": 3000, "t_reel": 20.0}
+{"pas": 5, "outil": "act", "capture": "evidence/blackbox_player/experimente_A_20260804_030537/captures/pas_0005_act.png", "touches": ["Return"], "souris": [0, 0], "duree_ms": 200, "refusees": [], "t_reel": 27.43}
+{"pas": 6, "outil": "wait", "capture": "evidence/blackbox_player/experimente_A_20260804_030537/captures/pas_0006_wait.png", "duree_ms": 5000, "t_reel": 35.96}
