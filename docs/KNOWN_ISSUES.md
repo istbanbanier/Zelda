@@ -301,3 +301,83 @@ capture « Chargement…  46 % » puis vallée jouable. Test de régression
 **Reste ouvert : la LENTEUR.** Le chargement demeure de l'ordre de 25 à 60 s en
 rendu logiciel llvmpipe, sans GPU. Le joueur sait désormais que le jeu travaille,
 mais il attend toujours. Mesurer sur matériel représentatif avant d'optimiser.
+
+---
+
+# Apport du playtest externe ChatGPT n°1 — build `8649d7b` (2026-08-04)
+
+Test indépendant, hors du harnais MCP, avec de vraies entrées clavier/souris
+sur le Godot 4.7.1 officiel. Rapport et 12 captures :
+`evidence/external_playtests/chatgpt_test1_8649d7b/`.
+
+**Ce que ce test confirme d'abord : le jeu répond.** Caméra à la souris,
+sensibilité, déplacement, saut, sprint, pause, inventaire, combo (12 / 12,6 /
+15,6, lourde 21,6), salle 1 du donjon résolue. Les échecs répétés de nos
+joueurs en boîte noire étaient donc bien des défauts du harnais, pas du jeu —
+diagnostic désormais recoupé par un environnement tiers.
+
+## S1 — Ouverture du boss injouable en lancement direct (À CONFIRMER en parcours normal)
+
+Constat externe : lancement autonome de `BossArena`, joueur plein de vie mort
+vers la **sixième seconde**. Le Gardien ferme la distance dès la fin de
+l'intro et enchaîne ; une esquive au réveil ne fait que retarder de ~2 s.
+Capture `10-boss-death.png` : joueur mort, boss à pleine vie, **caméra à
+l'intérieur du modèle du boss**.
+
+Lecture du code qui rend le constat plausible sans le requalifier :
+`INTRO_TIME = 5.0` puis poursuite immédiate, `melee_reach = 6.0` m (énorme),
+cooldown 2,2 s, aucun délai de grâce après l'intro. §16.1 exige une entrée
+« passable » et une première victoire en 4-7 min ; §16.6 exige le boss visible
+80 % du temps — la caméra dans le modèle viole aussi ce point.
+
+À faire : reproduire depuis l'antichambre avec l'équipement garanti avant de
+trancher la sévérité définitive ; ajouter une fenêtre de grâce post-intro ;
+faire collisionner la caméra avec le corps du boss.
+
+## S2 — L'escalade se déclenche sans intention (CONFIRMÉ dans le code)
+
+Constat externe : courir contre un arbre, une maison ou un mur du donjon
+déclenche l'escalade ; le héros reste suspendu ; la caméra traverse tronc/toit
+et masque l'écran. Capture `04-auto-climb-tree.png`.
+
+Vérifié dans le code : D-017 fait de « pousser vers une paroi » le seul
+déclencheur, et `is_surface_climbable()` accepte TOUT sauf six groupes de refus
+(`unclimbable`, `electrified`, `burning`, `spiked`, `fragile_unsupported`,
+`water`). Ni les arbres ni les bâtiments du village ne sont dans ces groupes :
+tout le décor est donc saisissable par accident.
+
+Pistes, au choix ou combinées : marquer arbres/bâtiments `unclimbable` ;
+exiger un maintien franc (durée minimale d'appui vers le mur) avant l'accroche ;
+liaison caméra→fade dither (`SH_CameraFadeDither`, §21.12) sur l'obstacle.
+
+## S2 — « Continuer » ne restaure pas la position (CONFIRMÉ dans le code)
+
+Constat externe : `Continuer` recharge bien la partie mais replace le joueur
+sur la crête de départ.
+
+Vérifié : `_apply_save()` (`valley_world.gd`) restaure découvertes, armes,
+flèches, coffres et pickups — **jamais `player_position`**, pourtant exigée
+par §19.1 (« position/rotation sûre du joueur »). Le `SaveSystem` ne l'écrit
+pas non plus.
+
+## S2 — Pillard superposé au joueur sans attaquer (À CONFIRMER en vallée)
+
+Constat externe, dans `CombatLab` : le pillard encaisse mais peut rester
+chevauché avec le joueur sans porter de coup (`06-raider-overlap.png`).
+À reproduire au camp réel avant conclusion — les corps ne devraient de toute
+façon jamais s'interpénétrer (§12.7, collisions par couches).
+
+## S3 — Guidage initial absent (RECOUPÉ trois fois)
+
+Constat externe : « aucune mission, direction, marqueur ou indication de but » ;
+le camp n'a pas été trouvé naturellement malgré une traversée prolongée. Nos
+trois playtests internes disaient déjà la même chose. Même après correction de
+la caméra du harnais, le monde lui-même n'oriente pas : pas de fumée visible de
+loin, pas de son, pas de cadrage. §2.2/P2 (« curiosité plutôt que checklist »)
+exige des affordances, pas des icônes — mais il en faut AU MOINS UNE.
+
+## S3 — Lisibilité du monde (RECOUPÉ)
+
+Mélange de bâtiments détaillés et de grands volumes bruts ; éléments du village
+en intersection ; intérieurs vides. Cohérent avec Gate H non atteint — pas un
+défaut nouveau, mais une confirmation externe de l'écart.
