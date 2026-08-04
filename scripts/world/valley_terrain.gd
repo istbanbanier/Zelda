@@ -193,6 +193,21 @@ func _build_plains_and_river() -> void:
 	_slab("PlainSouth", Vector2(0, 136), Vector2(512, 240), 2.0, COL_GRASS)
 	_slab("PlainNorth", Vector2(0, -126), Vector2(512, 260), 2.0, COL_GRASS)
 	_slab("Riverbed", Vector2(0, 10), Vector2(512, 12), -1.5, COL_RIVERBED)
+	# BERGES EN PENTE, sur toute la longueur du lit.
+	#
+	# Sans elles, le lit est une tranchée de 3,5 m à parois VERTICALES qui
+	# traverse les 512 m de la vallée, avec deux gués pour seules sorties. Un
+	# playtest en boîte noire s'y est retrouvé prisonnier, à se débattre dans
+	# une pose disloquée : il a cru à un bug d'animation, c'était une géométrie
+	# dont on ne peut pas sortir. Une marche de 3,5 m n'est ni franchissable
+	# (`step_height` 0,30-0,38 m) ni escaladable (le lit n'est pas `climbable`).
+	#
+	# 3,5 m de dénivelé sur 4 m d'emprise = 41°, sous la limite de pente de 46°
+	# (§8.2) : la berge se remonte à pied, partout, sans détour par un gué.
+	_ramp("RiverBankSouth", Vector3(0, 2.0, 16), Vector3(0, -1.5, 12), 512.0,
+		COL_RIVERBED)
+	_ramp("RiverBankNorth", Vector3(0, 2.0, 4), Vector3(0, -1.5, 8), 512.0,
+		COL_RIVERBED)
 	# Deux gués : la route du donjon (ouest) et la route du pylône (est).
 	_slab("FordWest", Vector2(20, 10), Vector2(12, 12), 2.0, COL_GRASS_DARK)
 	_slab("FordEast", Vector2(95, 10), Vector2(12, 12), 2.0, COL_GRASS_DARK)

@@ -1,0 +1,18 @@
+[
+  {
+    "pas": 10,
+    "note": "CONTROLES: mouse_delta ne tourne PAS la camera (2 essais, 350px et 600px = image identique). Ce sont les touches z/q/s/d qui orientent le heros ET la camera suit. 700ms de 'd' = ~30-35 deg de rotation.\nHUD: 5 carres rouges = vie. Bas droite: \"Epee usee 24/24\" + jauge tirets orange, \"Fleches : 8\".\nDEPART: prairie herbes hautes. Devant (vue initiale): citadelle grise + nuage noir + eclair cyan au centre; pylone a sommet cyan a droite; arbres feuillage rouge au plan moyen.\nCANDIDATS CAMP: structures rouge/blanc rayees (tentes/auvents) vues a x=560 dans la vue initiale, et petites formes brun-rouge plus a gauche x=130-250."
+  },
+  {
+    "pas": 14,
+    "note": "CORRECTION CONTROLES: mouse_delta FONCTIONNE mais son effet n'apparait qu'a l'ACTION SUIVANTE (rendu en retard). Ordre de grandeur: ~600 px = ~30 deg. Positif = droite.\nq/d = strafe lateral (pas de rotation). z = avancer. shift+z = sprint (barre bleue endurance apparait pres du heros).\nCible retenue: structure rouge rayee + petites silhouettes a x~550 y~350 (legerement a droite du centre, direction citadelle). 2e candidat: huttes brun-rouge a gauche x~130-230."
+  },
+  {
+    "pas": 35,
+    "note": "CONTROLES DEFINITIFS: mouse_delta NE FAIT RIEN (teste 350/600/900/-500 px, images identiques). La camera tourne uniquement quand on maintient d (droite) ou q (gauche) LONGTEMPS (>1200ms): le heros pivote et la camera se realigne derriere lui. z = avancer dans l'axe camera. C'est un defaut majeur: pas de controle camera a la souris.\nAutre defaut: le heros est reste bloque plusieurs secondes en animation de chute (bras ecartes, ombre loin sous lui) en descendant la pente.\nEXPLORATION: hameau atteint (maison pierre + toit chaume, appentis, charrette, cloture) = DESERT, aucun PNJ/ennemi. Le camp ennemi n'est pas la."
+  },
+  {
+    "pas": 80,
+    "note": "BILAN: aucun ennemi rencontre en ~60 deplacements couvrant un large secteur (prairie de depart -> hameau de pierre -> village ocre -> pied du pylone cyan -> plateau boise). Seule entite non-decor apercue: une forme brun-orange a 4 pattes (animal) posee sur le plateau, jamais atteinte car un mur d'herbe vertical de ~2-3 m barre l'acces et ni le saut ni l'escalade ne l'ont franchi.\nLock-on (c) essaye 1x: aucun verrouillage = aucune cible a portee.\nClic droit (viser): aucun reticule ni mode arc visible.\nAucun combat livre. Aucun feu de camp, aucune tente rayee reelle (les formes \"rayees\" etaient des toits de tuiles), aucun coffre.\nDefauts: camera non pilotable a la souris; heros fige en animation de chute/plane pendant de longues secondes; animations de strafe en grand ecart; collisions bloquantes sur rocher/cloture/mur d'herbe sans affordance."
+  }
+]
