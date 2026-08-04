@@ -27,7 +27,9 @@ const COL_ROCK: Color = Color(0.608, 0.408, 0.259)
 ## capture de référence : la bande d'horizon tenait entre 55 % et 80 % de
 ## valeur, monument compris — le but du jeu ne se détachait de rien. Un sujet
 ## se lit par sa valeur avant sa forme.
-const COL_STONE: Color = Color(0.255, 0.238, 0.243)
+# H-6 : ocre/bronze SOMBRE (§12.1 « base ocre/bronze sombre ») — l'ancien
+# gris quasi neutre (0.255/0.238/0.243, r − b = 0,012) lisait « béton ».
+const COL_STONE: Color = Color(0.285, 0.245, 0.205)
 const COL_WOOD: Color = Color(0.408, 0.251, 0.157)
 const COL_COPPER: Color = Color(0.55, 0.36, 0.22)
 const COL_CYAN: Color = Color(0.133, 0.851, 0.925)
@@ -1233,6 +1235,35 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	spire_tip.material_override = _material(COL_STONE, false)
 	spire_tip.position = Vector3(0, 97.5, -212)
 	citadel.add_child(spire_tip)
+	# COURONNE DE CAPTURE (§2.4 : « la spire capte l'orage ») : l'anneau que
+	# la foudre frappe. Cuivre patiné, inclinée de 12° — un anneau parfait
+	# et plat lirait « antenne » (§2.2 : anneaux inclinés/incomplets).
+	var crown: MeshInstance3D = MeshInstance3D.new()
+	crown.name = "SpireCrown"
+	var ring: TorusMesh = TorusMesh.new()
+	ring.inner_radius = 3.4
+	ring.outer_radius = 4.2
+	crown.mesh = ring
+	crown.material_override = _material(Color(0.43, 0.36, 0.24), false)
+	crown.position = Vector3(0, 97.8, -212)
+	crown.rotation_degrees = Vector3(12.0, 0.0, 4.0)
+	citadel.add_child(crown)
+	# TROIS lignes d'énergie descendent de la couronne (§2.4) : la centrale
+	# (SpireConduit) existait — deux flancs la rejoignent sur la face avant.
+	for side_index: int in range(2):
+		var x_conduit: float = -2.9 if side_index == 0 else 2.9
+		_box_in("CrownConduit%d" % side_index, citadel,
+			Vector3(x_conduit, 84, -207.4), Vector3(0.4, 8, 0.25),
+			COL_CYAN, false, true)
+	# CONTREFORTS (§2.4 : socle, terrasses, contreforts) : quatre coins
+	# évasés à la base — la masse est PORTÉE, pas posée.
+	for buttress_index: int in range(4):
+		var x_buttress: float = -13.0 if buttress_index % 2 == 0 else 13.0
+		var front: bool = buttress_index < 2
+		_visual_prism("CitadelButtress%d" % buttress_index, citadel,
+			Vector3(x_buttress, 34 + 7, -196.8 if front else -227.2),
+			Vector3(4.5, 14, 5.0), COL_STONE, true,
+			0.42 if buttress_index % 2 == 0 else 0.58)
 	# Conduit cyan sur la face avant du segment bas : la ligne d'énergie qui
 	# relie visuellement l'impact de foudre au cœur de la façade (§2.4 :
 	# « moins de 5 % d'émission cyan »).

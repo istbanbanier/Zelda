@@ -418,6 +418,67 @@ func test_h5_le_contrebas_se_creuse() -> void:
 	await _settle(2)
 
 
+func test_h6_la_citadelle_parle_le_langage_de_resonance() -> void:
+	## Passe H-6 — §2.4, les éléments qui manquent au proxy pour lire
+	## « citadelle de Résonance » et non « tour de bureaux » :
+	##  - la COURONNE DE CAPTURE au sommet de la spire (anneau, ce que la
+	##    foudre frappe — §2.4 « la spire capte l'orage ») ;
+	##  - TROIS lignes d'énergie descendant de la couronne (§2.4), pas une ;
+	##  - des CONTREFORTS à la base (§2.4 : socle, terrasses, contreforts) ;
+	##  - une pierre OCRE/BRONZE SOMBRE (§12.1) — le gris neutre actuel
+	##    (r − b = 0,012) lit « béton », pas « bronze ancien ».
+	var game_state: Node = _tree().root.get_node_or_null("/root/GameState")
+	var valley: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(valley)
+	await _settle(8)
+
+	var citadel: Node3D = valley.get_node("Terrain/CitadelProxy") as Node3D
+	check_not_null(citadel, "le proxy de citadelle existe")
+	if citadel == null:
+		_tree().root.remove_child(valley)
+		valley.queue_free()
+		return
+
+	var crown: MeshInstance3D = citadel.get_node_or_null("SpireCrown") \
+		as MeshInstance3D
+	check(crown != null and crown.mesh is TorusMesh,
+		"la couronne de capture existe (anneau au sommet de la spire)")
+	if crown != null:
+		check(absf(crown.position.y - 100.0) <= 4.0,
+			"…à hauteur du sommet (y %.1f, spire à 100)" % crown.position.y)
+
+	var crown_conduits: int = 0
+	var buttresses: int = 0
+	for child: Node in citadel.get_children():
+		if child.name.begins_with("CrownConduit"):
+			crown_conduits += 1
+		if child.name.begins_with("CitadelButtress"):
+			var buttress: MeshInstance3D = child as MeshInstance3D
+			if buttress != null and buttress.mesh is PrismMesh:
+				buttresses += 1
+	check(crown_conduits >= 2,
+		"avec la ligne centrale, TROIS lignes d'énergie descendent (%d flancs)"
+			% crown_conduits)
+	check(buttresses >= 4, "des contreforts portent la base (%d ≥ 4)" % buttresses)
+
+	var keep: MeshInstance3D = citadel.get_node_or_null("Keep/KeepMesh") \
+		as MeshInstance3D
+	check_not_null(keep, "la masse centrale existe")
+	if keep != null:
+		var stone: StandardMaterial3D = keep.material_override as StandardMaterial3D
+		check(stone != null
+			and stone.albedo_color.r - stone.albedo_color.b >= 0.04,
+			"la pierre est chaude — ocre/bronze sombre §12.1 (r − b = %.3f ≥ 0,04)"
+				% (stone.albedo_color.r - stone.albedo_color.b
+					if stone != null else 0.0))
+
+	_tree().root.remove_child(valley)
+	valley.queue_free()
+	if game_state != null:
+		game_state.call("set_flow", 0)
+	await _settle(2)
+
+
 func test_les_feuilles_torsadees_sont_olive() -> void:
 	## La texture rouge sang (moyenne RGB 95/13/13) reste sur disque, mais plus
 	## AUCUN arbre du monde ne la référence : les quatre `.gltf` pointent vers
