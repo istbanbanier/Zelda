@@ -119,6 +119,10 @@ var _wall_normal: Vector3 = Vector3.ZERO
 ## ou un saut d'escalade : le joueur est encore contre le mur, il se rattraperait
 ## immédiatement et ne partirait jamais.
 var _grab_cooldown: float = 0.0
+## Durée d'appui continu vers une paroi saisissable, pieds au sol. Remise à zéro
+## dès que l'une des conditions d'accroche cesse d'être vraie : le seuil mesure
+## une INTENTION tenue, pas un cumul de frôlements successifs (D-017).
+var _wall_push_time: float = 0.0
 
 var _dodge_elapsed: float = 0.0
 var _dodge_direction: Vector3 = Vector3.ZERO
@@ -325,7 +329,7 @@ func _process_locomotion(delta: float, intent: InputIntent) -> void:
 
 	# L'accroche est tentée **après** le déplacement : la paroi est sondée depuis
 	# la position réellement atteinte, pas depuis celle du tick précédent.
-	_try_grab(intent)
+	_try_grab(delta, intent)
 
 	# Visée et tir (§10.4) : tant que la visée est tenue, le bouton d'attaque
 	# sert au tir — les portails d'épée sont suspendus.
@@ -1146,20 +1150,41 @@ func _space() -> PhysicsDirectSpaceState3D:
 ## saisissable suffit, au sol comme en l'air (D-017). Une action dédiée obligerait
 ## à l'ajouter partout — clavier, manette, remapping — pour un geste que le joueur
 ## fait déjà naturellement.
-func _try_grab(intent: InputIntent) -> void:
+func _try_grab(delta: float, intent: InputIntent) -> void:
 	if _grab_cooldown > 0.0 or _climbing == null or not intent.has_move():
+		_wall_push_time = 0.0
 		return
 	if _stamina != null and not _stamina.can_sustain():
+		_wall_push_time = 0.0
 		return  # épuisé : §9.1 fait lâcher le mur, s'y raccrocher serait absurde
 
 	var wish: Vector3 = _wish_direction(intent)
 	if wish.length_squared() < 0.04:
+		_wall_push_time = 0.0
 		return
 
 	var probe: ClimbingComponent.WallProbe = _climbing.probe_wall(
 		_space(), global_position, wish.normalized(), [get_rid()])
 	if not probe.grabbable:
+		_wall_push_time = 0.0
 		return
+
+	# SEUIL D'INTENTION (D-017). Pousser un instant vers une paroi ne suffit
+	# plus : il faut insister. D-017 avait nommé ce risque en s'adoptant —
+	# « une paroi longeant un chemin s'accroche sans qu'on l'ait demandé » — et
+	# fixé d'avance le remède. Un playtest externe l'a confirmé : courir contre
+	# un arbre ou une maison déclenchait l'escalade, et la caméra traversait
+	# alors le tronc ou le toit.
+	#
+	# Le délai ne vaut QU'AU SOL. En l'air, l'accroche reste immédiate : on ne
+	# saute pas vers un mur par accident, et attendre ferait manquer le rebord
+	# visé — ce serait échanger une gêne contre une chute.
+	if is_on_floor():
+		var required: float = _climb_tuning().grab_intent_delay_s
+		_wall_push_time += delta
+		if _wall_push_time < required:
+			return
+	_wall_push_time = 0.0
 
 	_enter_climb(probe.normal)
 

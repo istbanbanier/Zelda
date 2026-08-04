@@ -26,6 +26,21 @@ extends Resource
 ## s'accrocher — un piège invisible en lecture, d'où le test qui verrouille la
 ## relation entre les deux ressources.
 @export var min_wall_angle_deg: float = 46.0
+## Durée pendant laquelle il faut POUSSER vers une paroi, pieds au sol, avant de
+## s'y accrocher (D-017).
+##
+## D-017 avait nommé le risque en l'adoptant : « une paroi longeant un chemin
+## s'accroche sans qu'on l'ait demandé », et fixé d'avance la réponse — « un
+## seuil d'intention (durée de poussée), pas une touche dédiée ». Un playtest
+## externe indépendant l'a confirmé : courir contre un arbre, une maison ou un
+## mur du donjon déclenchait l'escalade, le héros restait suspendu et la caméra
+## traversait le tronc ou le toit.
+##
+## 0,22 s : au-dessus du bruit d'un frôlement en courant, sous le seuil où une
+## escalade voulue paraîtrait poussive. Ne s'applique QU'AU SOL — en l'air,
+## attendre ferait manquer le rebord qu'on visait, et personne ne saute vers un
+## mur par accident.
+@export var grab_intent_delay_s: float = 0.22
 
 @export_group("Sondes (§9.2)")
 ## Hauteurs des trois sondes, mesurées depuis les pieds. §9.2 : « sondes tête /

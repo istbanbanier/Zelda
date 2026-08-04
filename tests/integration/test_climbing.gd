@@ -78,6 +78,65 @@ func _push_into_wall(max_ticks: int) -> int:
 	return -1
 
 
+func test_brushing_a_wall_while_running_does_not_grab_it() -> void:
+	## Le jumeau négatif de `test_pushing_into_a_wall_grabs_it`, et la preuve du
+	## seuil d'intention de D-017.
+	##
+	## D-017 avait nommé le risque en s'adoptant : « une paroi longeant un chemin
+	## s'accroche sans qu'on l'ait demandé », et fixé d'avance le remède — « un
+	## seuil d'intention (durée de poussée), pas une touche dédiée ». Un playtest
+	## externe indépendant l'a confirmé : courir contre un arbre, une maison ou un
+	## mur du donjon déclenchait l'escalade, le héros restait suspendu et la
+	## caméra traversait le tronc ou le toit.
+	##
+	## Ici on FRÔLE : on pousse moins longtemps que le seuil, puis on relâche.
+	## Aucune accroche ne doit se produire. Sans le seuil, ce test échoue dès les
+	## premiers ticks — c'est ce qui le rend probant.
+	if not await _setup(Vector3(X_CLIMB_WALL, 1.0, -28.0)):
+		return
+	# On mesure la DIFFÉRENCE que le seuil introduit, pas une durée absolue.
+	#
+	# Deux écritures naïves de ce test sont restées vertes seuil désarmé, et
+	# n'auraient donc rien prouvé. La première dérivait la durée du frôlement du
+	# réglage testé : neutraliser le réglage raccourcissait aussi le frôlement.
+	# La seconde fixait 8 ticks, moins que le trajet nécessaire pour atteindre
+	# la paroi — aucune accroche dans les deux cas, pour la mauvaise raison.
+	#
+	# Comparer la même approche avec et sans seuil élimine le trajet de
+	# l'équation : il est identique des deux côtés.
+	var tuning: ClimbTuning = _player._climb_tuning()
+	check_not_null(tuning, "le tuning d'escalade doit être lisible")
+	if tuning == null:
+		_teardown()
+		return
+	var configured: float = tuning.grab_intent_delay_s
+	check(configured > 0.0, "un seuil d'intention doit être réglé (D-017)")
+
+	tuning.grab_intent_delay_s = 0.0
+	var ticks_sans_seuil: int = await _push_into_wall(240)
+	_teardown()
+
+	tuning.grab_intent_delay_s = configured
+	if not await _setup(Vector3(X_CLIMB_WALL, 1.0, -28.0)):
+		tuning.grab_intent_delay_s = configured
+		return
+	var ticks_avec_seuil: int = await _push_into_wall(240)
+
+	# Le réglage est une ressource partagée : on le rend tel qu'on l'a trouvé,
+	# succès ou échec, sinon les tests suivants hériteraient de nos mesures.
+	tuning.grab_intent_delay_s = configured
+
+	check(ticks_sans_seuil > 0, "sans seuil, pousser doit accrocher")
+	check(ticks_avec_seuil > 0, "avec seuil, insister doit encore accrocher")
+	# Marge de 2 ticks : le seuil est consommé en temps, pas en nombre entier
+	# de frames, et l'accroche ne peut être testée qu'aux bornes de tick.
+	var attendu: int = int(floor(configured * 60.0)) - 2
+	check(ticks_avec_seuil - ticks_sans_seuil >= attendu,
+		"le seuil doit retarder l'accroche d'environ %d ticks (constaté : %d)"
+			% [attendu, ticks_avec_seuil - ticks_sans_seuil])
+	_teardown()
+
+
 func test_pushing_into_a_wall_grabs_it() -> void:
 	## §9.2 ne fixe aucune touche d'escalade : pousser vers une paroi saisissable
 	## suffit (D-017).

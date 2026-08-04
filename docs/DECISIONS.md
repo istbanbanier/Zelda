@@ -387,6 +387,19 @@ est une préférence, pas une décision.
 - **Vérifié par** : `test_climbing.gd::test_pushing_into_a_wall_grabs_it` et son
   jumeau négatif `test_an_unclimbable_surface_is_refused`, sur deux parois de
   géométrie identique.
+- **Suite, 2026-08-04 — la conséquence surveillée s'est produite.** Un playtest
+  externe indépendant, sur Godot officiel et vraies entrées, a rapporté :
+  « courir normalement contre un arbre, une maison ou un mur du donjon déclenche
+  l'escalade sans intention explicite ; le personnage peut rester suspendu, la
+  caméra traverse alors tronc, toit ou mur ». Le remède prévu ici a donc été
+  appliqué tel quel : `ClimbTuning.grab_intent_delay_s`, 0,22 s d'appui continu
+  vers la paroi, **au sol uniquement**. En l'air l'accroche reste immédiate —
+  personne ne saute vers un mur par accident, et attendre ferait manquer le
+  rebord visé. Aucune touche n'a été ajoutée : D-017 tient toujours.
+  Vérifié par `test_brushing_a_wall_while_running_does_not_grab_it`, qui compare
+  l'accroche avec et sans seuil sur le même trajet. Ce test a dû être réécrit
+  deux fois : les deux premières versions restaient vertes seuil désarmé, donc
+  ne prouvaient rien.
 
 ---
 
