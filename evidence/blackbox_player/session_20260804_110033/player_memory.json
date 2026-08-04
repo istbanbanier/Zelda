@@ -1,0 +1,6 @@
+[
+  {
+    "pas": 15,
+    "note": "CAMÉRA : le 1er mouse_delta après un changement de sens est ignoré ; il faut le renvoyer une 2e fois. Deltas de 200 px = très grande rotation (plus que 55°).\nRepères vus depuis le spawn : citadelle sombre + nuage d'orage noir dans une direction ; pylône à anneau cyan à sa droite ; chemin de terre ocre ; grosses falaises grises tout autour ; toits de tuiles rouges (probables maisons, pas des tentes).\nPas encore de fumée ni de silhouettes identifiées."
+  }
+]

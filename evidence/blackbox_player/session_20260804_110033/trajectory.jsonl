@@ -1,0 +1,21 @@
+{"evenement": "demarrage", "display": ":77", "resolution": [1024, 768], "session": "session_20260804_110033", "fenetre": "2097155", "image_dessinee": true, "t_reel": 3.82}
+{"pas": 1, "outil": "observe", "capture": "evidence/blackbox_player/session_20260804_110033/captures/pas_0001_observe.png", "t_reel": 3.9}
+{"pas": 2, "outil": "click", "capture": "evidence/blackbox_player/session_20260804_110033/captures/pas_0002_click.png", "bouton": 1, "x": 511, "y": 387, "t_reel": 21.13}
+{"pas": 3, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_110033/captures/pas_0003_wait.png", "duree_ms": 8000, "t_reel": 38.85}
+{"pas": 4, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_110033/captures/pas_0004_wait.png", "duree_ms": 8000, "t_reel": 56.24}
+{"pas": 5, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_110033/captures/pas_0005_act.png", "touches": [], "souris": [400.0, 0.0], "duree_ms": 700, "refusees": [], "t_reel": 71.11}
+{"pas": 6, "outil": "observe", "capture": "evidence/blackbox_player/session_20260804_110033/captures/pas_0006_observe.png", "t_reel": 140.94}
+{"pas": 7, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_110033/captures/pas_0007_act.png", "touches": [], "souris": [400.0, 0.0], "duree_ms": 250, "refusees": [], "t_reel": 155.45}
+{"pas": 8, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_110033/captures/pas_0008_act.png", "touches": [], "souris": [400.0, 0.0], "duree_ms": 250, "refusees": [], "t_reel": 165.12}
+{"pas": 9, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_110033/captures/pas_0009_act.png", "touches": [], "souris": [400.0, 0.0], "duree_ms": 250, "refusees": [], "t_reel": 175.5}
+{"pas": 10, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_110033/captures/pas_0010_act.png", "touches": [], "souris": [-400.0, 0.0], "duree_ms": 250, "refusees": [], "t_reel": 195.41}
+{"pas": 11, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_110033/captures/pas_0011_act.png", "touches": [], "souris": [-200.0, 0.0], "duree_ms": 300, "refusees": [], "t_reel": 221.62}
+{"pas": 12, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_110033/captures/pas_0012_act.png", "touches": [], "souris": [-200.0, 0.0], "duree_ms": 300, "refusees": [], "t_reel": 247.97}
+{"pas": 13, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_110033/captures/pas_0013_act.png", "touches": [], "souris": [-200.0, 0.0], "duree_ms": 300, "refusees": [], "t_reel": 262.47}
+{"pas": 14, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_110033/captures/pas_0014_act.png", "touches": [], "souris": [200.0, 0.0], "duree_ms": 300, "refusees": [], "t_reel": 280.34}
+{"pas": 15, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_110033/captures/pas_0015_act.png", "touches": [], "souris": [200.0, 0.0], "duree_ms": 300, "refusees": [], "t_reel": 297.14}
+{"pas": 15, "outil": "game_note", "note": "CAMÉRA : le 1er mouse_delta après un changement de sens est ignoré ; il faut le renvoyer une 2e fois. Deltas de 200 px = très grande rotation (plus que 55°).\nRepères vus depuis le spawn : citadelle sombre + nuage d'orage noir dans une direction ; pylône à anneau cyan à sa droite ; chemin de terre ocre ; grosses falaises grises tout autour ; toits de tuiles rouges (probables maisons, pas des tentes).\nPas encore de fumée ni de silhouettes identifiées.", "t_reel": 315.95}
+{"pas": 16, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_110033/captures/pas_0016_act.png", "touches": [], "souris": [200.0, 0.0], "duree_ms": 300, "refusees": [], "t_reel": 324.31}
+{"pas": 17, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_110033/captures/pas_0017_act.png", "touches": [], "souris": [100.0, 0.0], "duree_ms": 250, "refusees": [], "t_reel": 339.33}
+{"pas": 18, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_110033/captures/pas_0018_act.png", "touches": [], "souris": [-60.0, 0.0], "duree_ms": 250, "refusees": [], "t_reel": 358.6}
+{"pas": 19, "outil": "observe", "capture": "evidence/blackbox_player/session_20260804_110033/captures/pas_0019_observe.png", "t_reel": 376.47}
