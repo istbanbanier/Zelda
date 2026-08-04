@@ -2679,13 +2679,25 @@ Fail-first : 13 échecs avant, 22 assertions vertes après
    de l'Arche de pierre 0,67 m sous leur pente. Berges percées sur la
    travée du pont (x −24..−4) : le site garde son lit aménagé.
 
-### Prochaine action exacte
+### Verdict de la capture (`vista_h1_silhouettes`, commit 2ca5713)
 
-Capture `VistaCamera_Hero01` depuis l'arbre committé (mêmes paramètres que
-la baseline `vista_horizon_etage` : 2560×1440, 60 frames, VALLEY_VISTA=1),
-comparaison avant/après, score §30.2 honnête, evidence + STATUS. Puis
-passe H-2 : composition de crête (le spawn regarde un pré plat — la
-North Star regarde une vallée EN CONTREBAS) et sol/chemins.
+Gagné : arbres olive, nuage cumuliforme accroché au haut du cadre, spire et
+étagement de citadelle lisibles, crêtes triangulaires. Score §30.2
+auto-évalué ≈ 47/100 (baseline ≈ 40).
+
+### Prochaine action exacte (passe H-2)
+
+1. **Mur-barrage** : les dalles de bordure physiques (70 m, plates) forment
+   toujours une bande grise monolithique — habiller leurs faces internes de
+   prismes intermédiaires (surtout la bande nord derrière la citadelle, où
+   les pics sont volontairement écrêtés).
+2. **Sol/herbe fluo** : recaler lumière×tonemap (énergie du soleil,
+   saturation des dalles COL_GRASS) — mesurer sur capture, une famille de
+   variables à la fois (§7.16).
+3. **Éclair** : la colonne de 14 m se lit mal — épaissir/rallonger le tracé
+   ou abaisser le point de départ sous la jupe du nuage.
+4. Ensuite seulement : composition de crête (la North Star regarde une
+   vallée EN CONTREBAS, le spawn regarde un pré plat) — chantier terrain.
 
 ### Limites honnêtes
 
