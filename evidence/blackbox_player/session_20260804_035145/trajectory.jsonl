@@ -1,0 +1,8 @@
+{"evenement": "demarrage", "display": ":77", "resolution": [1024, 768], "session": "session_20260804_035145", "fenetre": "2097155", "image_dessinee": true, "t_reel": 4.86}
+{"pas": 1, "outil": "observe", "capture": "evidence/blackbox_player/session_20260804_035145/captures/pas_0001_observe.png", "t_reel": 4.97}
+{"pas": 2, "outil": "click", "capture": "evidence/blackbox_player/session_20260804_035145/captures/pas_0002_click.png", "bouton": 1, "x": 511, "y": 387, "t_reel": 27.62}
+{"pas": 3, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_035145/captures/pas_0003_wait.png", "duree_ms": 8000, "t_reel": 42.26}
+{"pas": 4, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_035145/captures/pas_0004_wait.png", "duree_ms": 8000, "t_reel": 56.34}
+{"pas": 5, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_035145/captures/pas_0005_wait.png", "duree_ms": 8000, "t_reel": 75.03}
+{"pas": 6, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_035145/captures/pas_0006_wait.png", "duree_ms": 8000, "t_reel": 89.8}
+{"pas": 7, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_035145/captures/pas_0007_act.png", "touches": ["w", "Shift_L"], "souris": [0, 0], "duree_ms": 2000, "refusees": [], "t_reel": 101.04}

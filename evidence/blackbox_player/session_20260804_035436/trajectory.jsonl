@@ -1,0 +1,13 @@
+{"evenement": "demarrage", "display": ":77", "resolution": [1024, 768], "session": "session_20260804_035436", "fenetre": "2097155", "image_dessinee": true, "t_reel": 3.72}
+{"pas": 1, "outil": "observe", "capture": "evidence/blackbox_player/session_20260804_035436/captures/pas_0001_observe.png", "t_reel": 3.79}
+{"pas": 2, "outil": "observe", "capture": "evidence/blackbox_player/session_20260804_035436/captures/pas_0002_observe.png", "t_reel": 35.87}
+{"pas": 3, "outil": "click", "capture": "evidence/blackbox_player/session_20260804_035436/captures/pas_0003_click.png", "bouton": 1, "x": 511, "y": 387, "t_reel": 42.02}
+{"pas": 4, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_035436/captures/pas_0004_wait.png", "duree_ms": 8000, "t_reel": 55.06}
+{"pas": 5, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_035436/captures/pas_0005_wait.png", "duree_ms": 8000, "t_reel": 70.42}
+{"pas": 6, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_035436/captures/pas_0006_wait.png", "duree_ms": 8000, "t_reel": 84.64}
+{"pas": 6, "outil": "game_note", "note": "Partie lancée. Chargement initial : ~24s d'écran noir après clic Nouvelle Partie (attendu). Vue de départ : héros de dos dans herbe haute stylisée (low-poly), citadelle grise au loin avec nuage sombre + lueur cyan au sommet. Des structures claires à droite (possible camp ou village). HUD : 5 cœurs, épée usée 24/24, flèches 8. Je vais explorer pour repérer le campement.", "t_reel": 97.15}
+{"pas": 7, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_035436/captures/pas_0007_act.png", "touches": [], "souris": [100.0, 0.0], "duree_ms": 400, "refusees": [], "t_reel": 103.43}
+{"pas": 8, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_035436/captures/pas_0008_act.png", "touches": [], "souris": [200.0, 0.0], "duree_ms": 400, "refusees": [], "t_reel": 113.23}
+{"pas": 9, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_035436/captures/pas_0009_act.png", "touches": ["w"], "souris": [0, 0], "duree_ms": 800, "refusees": [], "t_reel": 121.77}
+{"pas": 10, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_035436/captures/pas_0010_act.png", "touches": ["w"], "souris": [0, 0], "duree_ms": 1000, "refusees": [], "t_reel": 130.76}
+{"pas": 11, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_035436/captures/pas_0011_act.png", "touches": [], "souris": [150.0, 0.0], "duree_ms": 300, "refusees": [], "t_reel": 138.61}
