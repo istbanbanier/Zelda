@@ -42,6 +42,9 @@ const COL_WATER: Color = Color(0.09, 0.55, 0.60, 0.82)   # ruban turquoise
 const COL_PATH: Color = Color(0.62, 0.51, 0.34)          # terre battue
 const COL_MOUNTAIN_WARM: Color = Color(0.47, 0.39, 0.33) # grès chaud
 const COL_MOUNTAIN_FAR: Color = Color(0.52, 0.56, 0.65)  # lointain bleui
+## Jupes de mur : un cran plus sombres que la face qu'elles habillent — c'est
+## l'écart de valeur qui fait lire le relief, pas la forme seule.
+const COL_MOUNTAIN_SHADE: Color = Color(0.485, 0.51, 0.575)
 
 
 func _ready() -> void:
@@ -100,6 +103,42 @@ func _build_border_mountains() -> void:
 			body.add_to_group("unclimbable")
 	_build_border_crests()
 	_build_far_skyline()
+	_build_wall_skirts()
+
+
+## Jupes contre les faces INTERNES des murs de bordure. La mesure sur
+## `vista_h1_silhouettes` a tranché : la dalle plate de 70 m lisait « barrage »
+## (#A9B5B8 uniforme sur 500 m de cadre). Des prismes intermédiaires, posés au
+## pied du mur et se chevauchant, cassent le plan — éboulis et contreforts
+## naturels, pas un rideau. Sans collision : le mur derrière porte la sienne.
+## Derrière la citadelle, les jupes restent SOUS ses gradins (top ≤ 44 < 46) :
+## le monument domine, règle déjà appliquée aux pics (invariant testé).
+func _build_wall_skirts() -> void:
+	var skirts: Node3D = Node3D.new()
+	skirts.name = "WallSkirts"
+	add_child(skirts)
+	var face: float = BORDER_INNER - 2.0
+	for axis: int in range(4):
+		for i: int in range(13):
+			var t: float = (float(i) + 0.5) / 13.0
+			var along: float = lerpf(-BORDER_OUTER, BORDER_OUTER, t) \
+				+ 9.0 * sin(t * 21.3 + float(axis))
+			var height: float = 38.0 + 13.0 * sin(t * 8.1 + float(axis) * 1.7) \
+				+ 8.0 * sin(t * 15.7 + float(axis) * 2.9)
+			if axis == 0 and absf(along) < 110.0:
+				height = minf(height, 40.0)   # sommet ≤ 32 : sous les gradins (42)
+			var depth: float = 13.0 + 5.0 * sin(t * 6.7 + float(axis))
+			var width: float = 52.0 + 18.0 * sin(t * 4.9 + float(axis) * 1.3)
+			var centre: Vector3
+			match axis:
+				0: centre = Vector3(along, BASE_Y + height * 0.5, -face)
+				1: centre = Vector3(along, BASE_Y + height * 0.5, face)
+				2: centre = Vector3(-face, BASE_Y + height * 0.5, along)
+				_: centre = Vector3(face, BASE_Y + height * 0.5, along)
+			_visual_prism("Skirt%d_%d" % [axis, i], skirts, centre,
+				Vector3(depth, height, width),
+				COL_MOUNTAIN_WARM if i % 4 == 2 else COL_MOUNTAIN_SHADE,
+				axis < 2, 0.5 + 0.26 * sin(t * 9.7 + float(axis) * 2.1))
 
 
 ## CRÊTES sur la bordure, et MASSIFS LOINTAINS derrière.
@@ -1817,7 +1856,43 @@ func _orb_in(orb_name: String, parent: Node3D, center: Vector3, radius: float,
 var _material_cache: Dictionary[String, StandardMaterial3D] = {}
 
 
+## Sol herbeux : variation MACRO (§5.1) par bruit triplanar MONDE — un aplat
+## uniforme lisait « plastique » quelle que soit sa teinte (mesure H-2 :
+## #7AAB54 constant sur toute la plaine). Le gradient encadre l'ancre #5D8F3D ;
+## la projection monde rend le motif continu d'une dalle à l'autre. Période
+## ~40 m : macro, pas microbruit (interdit visuel §1.6).
+var _ground_material_cache: StandardMaterial3D = null
+
+
+func _ground_material() -> StandardMaterial3D:
+	if _ground_material_cache != null:
+		return _ground_material_cache
+	var noise: FastNoiseLite = FastNoiseLite.new()
+	noise.seed = 20260804
+	noise.frequency = 0.007
+	var ramp: Gradient = Gradient.new()
+	ramp.set_color(0, Color(0.298, 0.478, 0.192))   # olive sombre #4C7A31
+	ramp.set_color(1, Color(0.486, 0.659, 0.310))   # olive éclairé #7CA84F
+	var texture: NoiseTexture2D = NoiseTexture2D.new()
+	texture.noise = noise
+	texture.color_ramp = ramp
+	texture.seamless = true
+	texture.width = 256
+	texture.height = 256
+	var mat: StandardMaterial3D = StandardMaterial3D.new()
+	mat.albedo_color = Color.WHITE
+	mat.albedo_texture = texture
+	mat.roughness = 0.95
+	mat.uv1_triplanar = true
+	mat.uv1_world_triplanar = true
+	mat.uv1_scale = Vector3.ONE * 0.025   # la texture couvre 40 m monde
+	_ground_material_cache = mat
+	return mat
+
+
 func _material(color: Color, emissive: bool) -> StandardMaterial3D:
+	if not emissive and color == COL_GRASS:
+		return _ground_material()
 	var key: String = "%s|%s" % [color.to_html(), emissive]
 	var cached: StandardMaterial3D = _material_cache.get(key) as StandardMaterial3D
 	if cached != null:

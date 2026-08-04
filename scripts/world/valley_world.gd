@@ -252,12 +252,12 @@ func _setup_environment() -> void:
 	# testée.
 	var storm: StormCell = StormCell.new()
 	storm.name = "CitadelStorm"
-	# Passe H-1 : la spire monte à y = 100 — la cellule remonte à 118 pour
-	# garder une colonne d'éclair lisible (ventre à 114, impact à 100) sans
-	# sortir du cadre (haut de frame ≈ y 123 à 360 m ; le sommet des grumeaux
-	# hauts peut être rogné par le bord — c'est la place du nuage dans la
-	# référence, Y 0-17 % de l'image).
-	storm.position = Vector3(0, 118, -215)
+	# Passe H-2 : cellule à y 122 — la colonne d'éclair passe de 14 à ~18 m
+	# (ventre à 118, impact au sommet de la spire à 100), les 14 m de H-1 se
+	# perdaient dans la jupe du nuage. Haut de frame ≈ y 123 à 360 m : seuls
+	# les grumeaux hauts sont rognés — c'est la place du nuage dans la
+	# référence (Y 0-17 % de l'image).
+	storm.position = Vector3(0, 122, -215)
 	add_child(storm)
 	if OS.get_environment("VALLEY_VISTA") == "1":
 		storm.hold_flash()   # éclair majeur tenu pour la capture (§3.2, §21.8)

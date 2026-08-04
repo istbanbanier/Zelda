@@ -128,6 +128,71 @@ func test_silhouettes_montagnes_nuage_et_citadelle() -> void:
 	await _settle(2)
 
 
+func test_h2_jupes_de_mur_sol_macro_et_colonne_d_eclair() -> void:
+	## Passe H-2, trois offenseurs MESURÉS sur `vista_h1_silhouettes` :
+	##  - le mur de bordure (dalle plate de 70 m) lisait « barrage » (#A9B5B8
+	##    uniforme sur 500 m) → jupes de prismes contre les faces internes,
+	##    écrêtées derrière la citadelle pour qu'elle domine ;
+	##  - le sol nu était un aplat sans variation macro (§5.1) → bruit
+	##    triplanar MONDE (continu d'une dalle à l'autre) ;
+	##  - la colonne d'éclair (14 m) se perdait dans la jupe du nuage →
+	##    ≥ 15 m entre l'origine du tracé et l'impact.
+	var game_state: Node = _tree().root.get_node_or_null("/root/GameState")
+	var valley: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(valley)
+	await _settle(8)
+
+	var terrain: Node = valley.get_node("Terrain")
+	var skirts: Node = terrain.get_node_or_null("WallSkirts")
+	check_not_null(skirts, "les jupes de mur existent")
+	if skirts != null:
+		var shapes: Dictionary = _count_shapes(skirts)
+		check_equal(int(shapes["boxes"]), 0, "aucune jupe n'est une boîte")
+		check(int(shapes["prisms"]) >= 40,
+			"les jupes sont des prismes (%d)" % int(shapes["prisms"]))
+		var worst_behind: float = -INF
+		for child: Node in skirts.get_children():
+			var skirt: MeshInstance3D = child as MeshInstance3D
+			if skirt == null:
+				continue
+			var prism: PrismMesh = skirt.mesh as PrismMesh
+			if prism == null:
+				continue
+			if skirt.position.z < -240.0 and absf(skirt.position.x) < 110.0:
+				worst_behind = maxf(worst_behind,
+					skirt.position.y + prism.size.y * 0.5)
+		check(worst_behind > -INF and worst_behind <= 44.0,
+			"derrière la citadelle, les jupes restent SOUS ses gradins (top %.1f ≤ 44)"
+				% worst_behind)
+
+	var plain: MeshInstance3D = terrain.get_node_or_null("PlainSouth/PlainSouthMesh") \
+		as MeshInstance3D
+	check_not_null(plain, "la dalle de plaine sud existe")
+	if plain != null:
+		var ground: StandardMaterial3D = plain.material_override as StandardMaterial3D
+		check(ground != null and ground.albedo_texture is NoiseTexture2D,
+			"le sol porte une variation macro (NoiseTexture2D)")
+		check(ground != null and ground.uv1_triplanar and ground.uv1_world_triplanar,
+			"…projetée en triplanar MONDE : continue d'une dalle à l'autre")
+
+	var storm: StormCell = valley.get_node("CitadelStorm") as StormCell
+	check_not_null(storm, "la cellule d'orage existe")
+	if storm != null:
+		var origin: Variant = storm.get_script().get_script_constant_map() \
+			.get("BOLT_ORIGIN")
+		check(origin is Vector3, "l'origine du tracé d'éclair est une constante nommée")
+		if origin is Vector3:
+			var column: float = (origin as Vector3).distance_to(storm.strike_offset)
+			check(column >= 15.0,
+				"la colonne d'éclair fait %.1f m ≥ 15 (avant : 14,0)" % column)
+
+	_tree().root.remove_child(valley)
+	valley.queue_free()
+	if game_state != null:
+		game_state.call("set_flow", 0)
+	await _settle(2)
+
+
 func test_les_feuilles_torsadees_sont_olive() -> void:
 	## La texture rouge sang (moyenne RGB 95/13/13) reste sur disque, mais plus
 	## AUCUN arbre du monde ne la référence : les quatre `.gltf` pointent vers

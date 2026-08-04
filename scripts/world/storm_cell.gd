@@ -26,13 +26,19 @@ const MAX_CLOUD_RADIUS: float = 90.0
 const STORM_SEED: int = 20260801
 
 @export var cloud_radius: float = 68.0
+## Origine du tracé d'éclair, dans le ventre du nuage. Constante NOMMÉE :
+## le test de la colonne (≥ 15 m) mesure |BOLT_ORIGIN − strike_offset|.
+const BOLT_ORIGIN: Vector3 = Vector3(0, -4.0, 0)
+
 ## Point d'impact, en coordonnées LOCALES de la cellule. L'éclair frappe le
 ## SOMMET DE LA SPIRE (y = 100, z = −212 — passe H-1), pas un toit : la
-## cellule plane à y 118, z −215 → local (0, −18, 3). Colonne de ~14 m depuis
-## le ventre (−4), dans le cadre §3.2 (haut de frame à 360 m ≈ y 123 — un
-## nuage à 130 sortait entièrement du cadre, 3e capture). Invariant testé :
-## |impact − sommet de spire| ≤ 6 m.
-@export var strike_offset: Vector3 = Vector3(0, -18.0, 3.0)
+## cellule plane à y 122, z −215 → local (0, −22, 3). Colonne de ~18 m depuis
+## le ventre (−4) — les 14 m de H-1 se perdaient dans la jupe du nuage
+## (mesure H-2). Toujours dans le cadre §3.2 (haut de frame à 360 m ≈ y 123 ;
+## un nuage à 130 en sortait entièrement, 3e capture — à 122, seuls les
+## grumeaux hauts sont rognés, c'est la place du nuage dans la référence).
+## Invariants testés : |impact − sommet de spire| ≤ 6 m ; colonne ≥ 15 m.
+@export var strike_offset: Vector3 = Vector3(0, -22.0, 3.0)
 ## Première frappe : allumée à 0,6 s, éteinte à 1,1 s — la capture (60 frames,
 ## ~1 s) tombe DANS la fenêtre.
 @export var first_flash_at: float = 0.6
@@ -158,13 +164,15 @@ func _build_bolt() -> void:
 	_bolt_root.name = "Bolt"
 	_bolt_root.visible = false
 	add_child(_bolt_root)
-	var from: Vector3 = Vector3(0, -4.0, 0)
-	_build_bolt_branch(from, strike_offset, 6, 2.6, true)
-	# Deux branches courtes qui meurent en l'air.
+	var from: Vector3 = BOLT_ORIGIN
+	_build_bolt_branch(from, strike_offset, 6, 3.4, true)
+	# Trois branches courtes qui meurent en l'air (§7.6 : 2-4 branches).
 	var mid: Vector3 = from.lerp(strike_offset, 0.45)
 	_build_bolt_branch(mid, mid + Vector3(7, -10, 3), 3, 1.8, false)
 	var mid2: Vector3 = from.lerp(strike_offset, 0.65)
 	_build_bolt_branch(mid2, mid2 + Vector3(-6, -8, -2), 3, 1.5, false)
+	var mid3: Vector3 = from.lerp(strike_offset, 0.8)
+	_build_bolt_branch(mid3, mid3 + Vector3(4, -7, -4), 3, 1.4, false)
 
 
 func _build_bolt_branch(from: Vector3, to: Vector3, segments: int,
@@ -178,8 +186,10 @@ func _build_bolt_branch(from: Vector3, to: Vector3, segments: int,
 				_rng.randf_range(-jitter, jitter))
 		# Épais : le tracé doit se lire à 350 m depuis la crête (~5 px/m à
 		# cette distance dans le cadre §3.2 — 1,6 m ≈ 8 px de halo).
-		_add_bolt_segment(previous, point, 1.6 if main else 0.7, BOLT_HALO, 2.6)
-		_add_bolt_segment(previous, point, 0.6 if main else 0.26, BOLT_CORE, 5.0)
+		# Épaissi en H-2 : à 360 m, la colonne de H-1 (halo 1,6 m) restait un
+		# fil — 2,2 m de halo ≈ 11 px dans le cadre §3.2, le trait se lit.
+		_add_bolt_segment(previous, point, 2.2 if main else 0.9, BOLT_HALO, 2.6)
+		_add_bolt_segment(previous, point, 0.85 if main else 0.34, BOLT_CORE, 5.0)
 		previous = point
 
 
