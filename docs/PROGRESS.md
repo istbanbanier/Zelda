@@ -2696,21 +2696,38 @@ gaussienne → gradient resserré, et mips en vue rasante → anisotrope +
 motifs 15 m — R-016). Score §30.2 auto-évalué ≈ 50/100 : les gains sont
 réels mais l'image reste dominée par les chantiers différés.
 
-### Prochaine action exacte (passe H-3 — terrain et composition)
+### Passe H-3 exécutée (a/b/c — verdict)
 
-1. **Composition de crête** : la North Star regarde une vallée EN CONTREBAS
-   (pente fleurie 22-30 % du bas de cadre, trois plans) ; le spawn regarde
-   un pré plat. Descendre le plan moyen ou relever la crête + recadrer
-   `VistaCamera_Hero01` (§1.1 : héros 39-43 % X, camp 61-66 %, pylône
-   75-79 %). C'est LE chantier qui pèse 20 pts (§30.2 composition).
-2. **Skyline pâle** : la bande des massifs lointains (560/860 m) reste un
-   à-plat clair — réduire leur LUMINOSITÉ relative ou l'aerial du fog les
-   fond mal ; mesurer d'abord (règle H-2 : viser la bonne dalle).
-3. **Tour blanche du village** (centre-droit) : elle rivalise avec la
-   citadelle dans le cadre — la teinter/raccourcir ou l'exclure du cône.
-4. **Herbe de crête** : brins uniformes vert franc — teinte par instance
-   déjà présente, élargir la variation vers l'ancre olive + pointes
-   #B2C85A, et vérifier en vue rasante (R-016).
+LA transformation de la Phase H à ce jour : la crête descend en PENTE
+vers la vallée (SpawnSlope ~15°, invariant testé : aucune marche > 4 m
+sur l'axe), le héros se tient au bord de la rupture (spawn z 146), la
+caméra plonge à −8° — la vallée est enfin EN CONTREBAS comme dans la
+référence, trois plans réels, l'éclair frappe la spire dans le cadre.
+L'audit des ancrages a gouverné le tracé deux fois (ferme abandonnée,
+puis sanctuaire forestier — déplacé à (34, 94), aucun test ne
+l'épinglait). Navmesh rebaké deux fois. Score §30.2 ≈ 52/100.
+
+### Prochaine action exacte (passe H-4)
+
+1. **Ciel trop mince** (~15-20 % du cadre vs 38-48 % référence) : la
+   crête devrait dominer la vallée davantage, ou l'horizon descendre —
+   chantier macro-terrain (crête +8-12 m ? plaine −4 m ?), à trancher
+   avec l'audit des ancrages dès l'ouverture.
+2. **Fond pâle en boîtes** : la bande skyline/mur au-dessus du plateau
+   reste l'élément le plus « graybox » du cadre — passer les GRANDES
+   faces au langage prismes/jupes, ou les fondre davantage (fog).
+3. **Fleurs et brins sur la pente** : la rupture est nue — la référence
+   y met fleurs et herbes longues (§1.1 : premier plan végétal Y 72-100 %).
+4. **Flancs verticaux de la SpawnSlope** (dette H-3) : adoucir par
+   éboulis/prismes.
+
+### Passe H-3 — limites honnêtes
+
+Camera §1.1 vérifiée par calcul avant travaux : azimuts déjà conformes
+(héros 0,42, citadelle 0,50, camp 0,85, pylône 0,96 — l'ordre de la
+référence) ; le manque était VERTICAL, d'où la pente. La « tour blanche »
+suspectée était la cascade (écume COL_FOAM) — conforme à la référence,
+conservée.
 
 ### Limites honnêtes
 
