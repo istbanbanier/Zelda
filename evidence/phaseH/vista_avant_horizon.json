@@ -1,0 +1,18 @@
+{
+  "commit": "d5b4c794ed6da0aa85a2f9d9d954aad6699ba09b",
+  "display_server": "X11",
+  "distinct_colors_sampled": 2121,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 60,
+  "height": 1440,
+  "label": "vista_before_citadel",
+  "luma_mean": 0.6059,
+  "luma_stddev": 0.2159,
+  "png": "/tmp/claude-0/-home-user-Zelda/88177312-883e-5495-b1e1-6a21e7e792a0/scratchpad/vista_before.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "timestamp_utc": "2026-08-04 00:08:24",
+  "width": 2560
+}

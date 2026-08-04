@@ -71,7 +71,12 @@ func _ready() -> void:
 const BORDER_INNER: float = 250.0
 const BORDER_OUTER: float = 292.0
 const BORDER_TOP: float = 70.0
-const COL_MOUNTAIN: Color = Color(0.42, 0.38, 0.4)
+## Bordure : plus CLAIRE et plus FROIDE que la citadelle (0,45 / 0,44 / 0,47).
+## La capture de la vue d'ouverture montrait les deux à la même valeur : le
+## monument se fondait dans la montagne, exactement le « focales fusionnées »
+## que §30.2 compte comme un échec. La perspective aérienne se peint dans la
+## couleur — monter la densité du brouillard dissolvait le plan moyen.
+const COL_MOUNTAIN: Color = Color(0.545, 0.575, 0.635)
 
 
 func _build_border_mountains() -> void:
@@ -89,6 +94,93 @@ func _build_border_mountains() -> void:
 		var body: StaticBody3D = get_node_or_null(NodePath(String(wall[0]))) as StaticBody3D
 		if body != null:
 			body.add_to_group("unclimbable")
+	_build_border_crests()
+	_build_far_skyline()
+
+
+## CRÊTES sur la bordure, et MASSIFS LOINTAINS derrière.
+##
+## La capture de la vue d'ouverture a tranché : la bordure formait un MUR gris
+## uniforme d'un bord à l'autre du cadre, à hauteur constante, à 440 m. Aucun
+## étagement, donc aucune profondeur — §1.3 demande trois plans, et §9.4 des
+## montagnes « éclaircies, refroidies et simplifiées » entre 550 et 1 200 m.
+##
+## Deux gestes, pas un shader :
+##
+##  1. la ligne de crête se BRISE — des sommets de hauteurs et de largeurs
+##     irrégulières posés sur la bordure ;
+##  2. un ARRIÈRE-PLAN s'ajoute au-delà, en deux rangs de plus en plus clairs
+##     et bleutés. La perspective aérienne est ainsi PEINTE dans la couleur
+##     plutôt que confiée au brouillard : monter la densité du fog avait dissous
+##     le plan moyen à 150 m, l'inverse de ce qu'on cherche.
+##
+## Sans collision : ces masses sont hors du monde jouable, derrière une
+## bordure qui, elle, porte la sienne. Rien d'accessible ne devient traversable.
+func _build_border_crests() -> void:
+	var crests: Node3D = Node3D.new()
+	crests.name = "BorderCrests"
+	add_child(crests)
+	var mid: float = (BORDER_INNER + BORDER_OUTER) * 0.5
+	# Déterministe : une capture de référence doit être rejouable (§21.8).
+	var seed_value: int = 0
+	for axis: int in range(4):
+		for i: int in range(11):
+			seed_value += 1
+			var t: float = float(i) / 10.0
+			var along: float = lerpf(-BORDER_OUTER, BORDER_OUTER, t)
+			# Hauteurs irrégulières : deux sinus de périodes premières entre
+			# elles évitent la répétition visible à laquelle un seul mènerait.
+			var height: float = 18.0 + 14.0 * sin(t * 7.3 + float(axis)) \
+				+ 9.0 * sin(t * 17.1 + float(axis) * 2.1)
+			var width: float = 34.0 + 16.0 * sin(t * 5.7 + float(axis) * 1.3)
+			var depth: float = BORDER_OUTER - BORDER_INNER
+			var centre: Vector3
+			match axis:
+				0: centre = Vector3(along, BORDER_TOP + height * 0.5, -mid)
+				1: centre = Vector3(along, BORDER_TOP + height * 0.5, mid)
+				2: centre = Vector3(-mid, BORDER_TOP + height * 0.5, along)
+				_: centre = Vector3(mid, BORDER_TOP + height * 0.5, along)
+			var size: Vector3 = Vector3(width, height, depth * 0.8) if axis < 2 \
+				else Vector3(depth * 0.8, height, width)
+			_visual_box("Crest%d_%d" % [axis, i], crests, centre, size,
+				COL_MOUNTAIN_WARM if i % 3 == 0 else COL_MOUNTAIN)
+
+
+func _build_far_skyline() -> void:
+	var far: Node3D = Node3D.new()
+	far.name = "FarSkyline"
+	add_child(far)
+	# Deux rangs : 560 m et 860 m. Le second est plus clair et plus froid —
+	# c'est ainsi que l'œil lit la distance, bien avant la taille apparente.
+	var rows: Array[Array] = [
+		[560.0, 9, 120.0, 60.0, COL_MOUNTAIN_FAR],
+		[860.0, 7, 175.0, 95.0, Color(0.63, 0.68, 0.76)],
+	]
+	for row_index: int in range(rows.size()):
+		var row: Array = rows[row_index]
+		var distance: float = row[0]
+		var count: int = int(row[1])
+		var spread: float = float(row[2])
+		var tall: float = float(row[3])
+		var tint: Color = row[4]
+		for axis: int in range(4):
+			for i: int in range(count):
+				var t: float = (float(i) + 0.5) / float(count)
+				var along: float = lerpf(-distance * 1.15, distance * 1.15, t)
+				var height: float = tall * (0.55 + 0.45
+					* absf(sin(t * 9.1 + float(axis) * 1.7 + float(row_index))))
+				var width: float = spread * (0.7 + 0.5
+					* absf(sin(t * 4.3 + float(axis))))
+				var centre: Vector3
+				match axis:
+					0: centre = Vector3(along, height * 0.5 - 8.0, -distance)
+					1: centre = Vector3(along, height * 0.5 - 8.0, distance)
+					2: centre = Vector3(-distance, height * 0.5 - 8.0, along)
+					_: centre = Vector3(distance, height * 0.5 - 8.0, along)
+				var size: Vector3 = Vector3(width, height, spread * 0.6) \
+					if axis < 2 else Vector3(spread * 0.6, height, width)
+				_visual_box("Far%d_%d_%d" % [row_index, axis, i], far,
+					centre, size, tint)
 
 func _build_plains_and_river() -> void:
 	# Plaine sud (côté spawn/camp) et plaine nord (côté donjon/pylône), séparées
