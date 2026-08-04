@@ -51,7 +51,9 @@ const SUN_ROTATION_DEG: Vector3 = Vector3(-22.0, -90.0, 0.0)
 # regard plus plongeant (−10°) pour que la SpawnSlope occupe le bas du
 # cadre au lieu d'être cachée par les brins de la prairie.
 const VISTA_POSITION: Vector3 = Vector3(0.8, 26.9, 153.4)
-const VISTA_ROTATION_DEG: Vector3 = Vector3(-10.0, 0.0, 0.0)
+# −8° : à −10, le nuage d'orage et la spire sortaient du cadre (ciel
+# réduit à ~10 % — la référence en veut 38-48 %). Mesuré sur capture.
+const VISTA_ROTATION_DEG: Vector3 = Vector3(-8.0, 0.0, 0.0)
 const VISTA_FOV: float = 42.0
 
 @onready var _player: PlayerController = $Player
