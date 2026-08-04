@@ -305,6 +305,11 @@ func _piece(asset: String, at: Vector3, yaw_deg: float = 0.0,
 		return null
 	var node: Node3D = packed.instantiate() as Node3D
 	node.position = at
+	# §3 : le kit végétal est importé sans normalisation d'échelle ; la
+	# correction mesurée vit dans `KitScale`, en un seul point.
+	var corrected: float = KitScale.factor(asset)
+	if not is_equal_approx(corrected, 1.0):
+		node.scale = Vector3.ONE * corrected
 	node.rotation_degrees = Vector3(tilt_deg.x, yaw_deg + tilt_deg.y, tilt_deg.z)
 	(parent if parent != null else self).add_child(node)
 	_built += 1

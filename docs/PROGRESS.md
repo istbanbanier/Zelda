@@ -2459,3 +2459,78 @@ persistant ; le verrou, non. `DiscoveryRewards.deferred_gates()` les nomme.
 
 La vallée reste un graybox hors premier plan et hors lieux. Aucun score visuel
 n'est revendiqué.
+
+---
+
+## 2026-08-04 — Un vrai joueur visuel, et ce qu'il a trouvé du premier coup
+
+Commit `96ad94a` (dispositif) puis le lot d'échelle du kit.
+
+### Le problème qu'on a arrêté de contourner
+
+Les deux « playtests » précédents n'en étaient pas. Le premier exécutait un
+plan écrit à l'avance ; le second fermait la boucle mais la décision venait de
+moi — quelqu'un qui a lu le code, connaît la carte et sait où sont les
+coffres. Un joueur qui connaît la solution ne mesure rien.
+
+### Ce qui a été construit
+
+Un serveur MCP stdio (`tools/blackbox_player/server.py`) qui expose cinq
+outils et rien d'autre : regarder, agir, cliquer, attendre, noter. Chaque appel
+renvoie la nouvelle image — le joueur ne PEUT pas agir deux fois sans regarder.
+
+Les entrées sont réelles : `xdotool` parle au serveur X, Godot les reçoit comme
+un clavier, elles traversent l'InputMap puis `PlayerInputReader`. Aucune
+méthode de gameplay n'est appelée. Le jeu est suspendu par `SIGSTOP` pendant
+que le modèle réfléchit — extérieur au jeu, donc sans fuite d'état privé.
+
+Le joueur est un processus `claude -p` **neuf**, dont les outils sont imposés
+par `--allowedTools`/`--disallowedTools` : ni Read, ni Bash, ni Grep, ni Glob,
+ni Web. Il ne peut pas lire le code même s'il le voulait.
+
+### Deux vérifications qui ont changé le plan
+
+`.mcp.json` et `.claude/agents/*.md` sont lus au **démarrage** de Claude Code.
+Créés en cours de session, ils ne sont pas chargés — constaté deux fois. D'où
+le processus séparé plutôt que le sous-agent.
+
+L'API Computer Use n'est pas accessible ici : ni clé, ni SDK `anthropic`.
+Vérifié, pas supposé.
+
+### Ce que le joueur a compris seul
+
+`Z Q S D`, l'orientation du personnage, le sprint, et **l'endurance déduite de
+la barre bleue** apparue pendant le sprint. Personne ne le lui a dit. Il a vu
+la citadelle, l'éclair, le camp de bois, et s'y est dirigé.
+
+### Ce qu'il a trouvé, et que 585 tests n'avaient pas vu
+
+Une fleur jaune occupant un quart de l'écran, plus haute que la poitrine du
+héros. Mesure : `Flower_4_Group` = **2,49 m**, quand la bible §3 borne les
+fleurs à 0,18–0,55 m. Et ce n'était pas un cas isolé : `Fern_1` fait **9,05 m
+de large**, `Grass_Common_Tall` 1,87 m, `Clover_2` 1,26 m.
+
+Le kit végétal entier avait été importé sans normalisation et posé à l'échelle
+native par **sept** modules. C'est une violation de l'invariant « 1 unité =
+1 m », pas un désaccord de goût : une fougère de neuf mètres détruit la lecture
+d'échelle, donc la profondeur, donc la composition North Star.
+
+Corrigé par `KitScale` — un seul point, une table qui garde hauteur mesurée ET
+hauteur visée pour rester vérifiable. Deux tests de régression : un à la source
+(un asset ajouté demain sans échelle échoue), un dans la vallée montée (une
+table correcte mais non appliquée échoue).
+
+### Prochaine action exacte
+
+1. Lancer les trois contrôles négatifs
+   (`tools/blackbox_player/negative_controls.sh`). **Tant qu'ils n'ont pas
+   tourné, on ne sait pas si un joueur privé d'image continuerait de « raconter »
+   le jeu — auquel cas tous les verdicts seraient sans valeur.**
+2. Valider l'arbre courant : `tools/validate_fast.sh` (plancher 586).
+3. Enchaîner les parcours B à E, un profil par parcours, jusqu'au boss.
+
+### Limites honnêtes
+
+Le parcours A s'est arrêté à l'approche du camp : **aucun combat n'a été
+gagné**, donc aucune note sur le combat n'est recevable. `BL-01` reste ouvert —
+le jeu complet n'a jamais été terminé en boîte noire.

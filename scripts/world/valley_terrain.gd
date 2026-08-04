@@ -509,7 +509,12 @@ func _place_model(parent: Node3D, model_name: StringName, at: Vector3,
 	prop.name = "%s_%d" % [String(model_name), parent.get_child_count()]
 	prop.position = at
 	prop.rotation.y = yaw
-	prop.scale = Vector3.ONE * scale_factor
+	# §3 : le kit végétal est importé sans normalisation d'échelle ; `KitScale`
+	# corrige en un point. Le facteur du site reste une VARIATION et se
+	# multiplie. Ce chemin-ci passe par `AssetRegistry`, pas par les KIT_DIRS —
+	# il avait été oublié au premier lot, et le test de la vallée montée l'a
+	# rattrapé en signalant une fleur à 2,98 m.
+	prop.scale = Vector3.ONE * scale_factor * KitScale.factor(String(model_name))
 	parent.add_child(prop)
 	if collision == Vector3.ZERO:
 		return

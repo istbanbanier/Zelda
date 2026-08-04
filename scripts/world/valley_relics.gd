@@ -216,8 +216,12 @@ func _spawn(asset: String, at: Vector3, rot_deg: Vector3, parent: Node3D,
 	node.name = "%s_%03d" % [asset, _built]
 	node.position = at
 	node.rotation_degrees = rot_deg
-	if not is_equal_approx(factor, 1.0):
-		node.scale = Vector3.ONE * factor
+	# §3 : le kit végétal est importé sans normalisation — une fleur y fait
+	# 2,49 m. `KitScale` corrige à la source unique ; le facteur du site reste
+	# une variation et se multiplie.
+	var corrected: float = factor * KitScale.factor(asset)
+	if not is_equal_approx(corrected, 1.0):
+		node.scale = Vector3.ONE * corrected
 	(parent if parent != null else self).add_child(node)
 	_built += 1
 	return node

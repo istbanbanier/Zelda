@@ -57,6 +57,40 @@ devrait se reconnaître à sa récompense. `evidence/rewards/`.
 cinq territoires et la cavité de cristal : le coffre est réel et persistant, le
 verrou « territoire nettoyé » n'existe pas. `DiscoveryRewards.deferred_gates()`.
 
+**BL-18 — Le kit végétal était posé à son échelle native.** Trouvé par le
+premier playtest en boucle fermée (`decouverte_A_20260804_021956`, capture
+`pas_0036_act.png`) : une fleur jaune occupe un quart de l'écran et dépasse la
+poitrine d'un héros d'1,78 m. Mesure : `Flower_4_Group` = **2,49 m**, quand la
+bible §3 borne les fleurs à 0,18–0,55 m ; `Fern_1` = **9,05 m de large**.
+Violation de l'invariant « 1 unité = 1 m ». **CORRIGÉ** par `KitScale`, point
+unique consulté par les sept modules de placement, avec deux tests de
+régression (source et vallée montée).
+
+**BL-19 — La jauge d'endurance flotte à côté du héros, pas au-dessus.**
+Capture `pas_0069_act.png` : la barre bleue est à environ 150 px à droite du
+personnage, détachée, à hauteur de poitrine. §17.2 demande une « endurance
+contextuelle près du héros ». Non expliqué, non reproduit à ce jour.
+
+**BL-21 — Hors prairie, le sol est un aplat vert absolument nu.** Capture
+`pas_0086_act.png` : le joueur a quitté la crête, la moitié basse de l'image
+est un vert uniforme sans un caillou, sans une trace, sans une variation de
+teinte, et l'arrière-plan est un mur de boîtes beiges sans perspective
+atmosphérique. C'est la forme la plus sévère de `BL-06`, vue cette fois en
+cours de traversée et non depuis le point d'ouverture.
+
+**BL-22 — « Bloqué près des arbres », à reproduire.** Le joueur écrit au pas 73
+qu'il est « régulièrement bloqué près des arbres, possible collision qui
+empêche l'avancée ». Vérification faite : les collisions de tronc sont des
+`BoxShape3D` de `size` 1 × 5 × 1 m, et `size` est bien la dimension PLEINE en
+Godot 4 — rien d'anormal à la lecture. Le symptôme est donc réel mais la cause
+supposée par le joueur n'est pas démontrée : **observation, pas diagnostic**.
+À reproduire avec la trace avant toute correction.
+
+**BL-20 — Le visage du héros est un aplat sous la capuche.** Capture
+`pas_0073_act.png`, vue de face à quelques mètres : aucun trait lisible. §13.2
+demande un visage original et crédible, « même si la caméra montre surtout le
+dos », avec des expressions minimales.
+
 ## 6. Placeholders dominants et ambiance
 
 **BL-09 — Trois récompenses sur dix sont des primitives brutes** : une sphère

@@ -171,7 +171,9 @@ func _dress_interior() -> void:
 			dressing.get_child_count()]
 		prop.position = entry[1] as Vector3
 		prop.rotation.y = float(entry[2])
-		prop.scale = Vector3.ONE * float(entry[3])
+		# §3 : correction d'échelle du kit végétal, point unique (`KitScale`).
+		prop.scale = Vector3.ONE * float(entry[3]) \
+			* KitScale.factor(String(entry[0] as StringName))
 		dressing.add_child(prop)
 	# Lumières chaudes MOTIVÉES par les deux lanternes (§7.8 : sources
 	# motivées, aucun couloir noir).

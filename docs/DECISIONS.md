@@ -1117,3 +1117,86 @@ tag ne peut donc pas être poussé depuis la machine qui valide : le workflow
 accepte aussi un déclenchement manuel et CRÉE alors le tag
 `playtest-<short_sha>` sur le commit qu'il vient de construire. Le tag pointe
 toujours exactement sur le commit publié.
+
+---
+
+## D-044 — Le joueur de playtest est un PROCESSUS séparé, pas un sous-agent
+
+**Date** : 2026-08-04. **Contexte** : rendre le playtest réellement en boucle
+fermée, avec une séparation technique et non déclarative.
+
+**Décision** : le joueur est un `claude -p` neuf, lancé par
+`tools/blackbox_player/play.sh`, dont les outils sont imposés en ligne de
+commande (`--allowedTools`, `--disallowedTools`) et se limitent aux cinq outils
+du serveur MCP `blackbox`.
+
+**Pourquoi pas un sous-agent de la session courante, comme prévu** :
+`.mcp.json` et `.claude/agents/*.md` sont lus au **démarrage** de Claude Code.
+Créés en cours de session ils ne sont pas chargés — vérifié deux fois :
+`ToolSearch` ne trouvait aucun `mcp__blackbox__*`, et le type d'agent
+`blackbox-player` était introuvable. Les deux fichiers restent versionnés :
+une session ouverte après ce commit disposera du sous-agent directement, et le
+texte de consignes est partagé entre les deux voies.
+
+**Alternative rejetée** : donner `Read` au joueur et lui demander de ne lire
+que la capture. Rejetée parce que la séparation serait déclarative — il
+pourrait lire le code, la trace ou les tests, et rien ne le prouverait.
+
+**Alternative indisponible** : l'API Computer Use (`computer_20251124`). Ni
+`ANTHROPIC_API_KEY`, ni `ANTHROPIC_AUTH_TOKEN`, ni SDK `anthropic` dans ce
+conteneur. Vérifié, pas supposé.
+
+---
+
+## D-045 — Le verrouillage par pas est EXTÉRIEUR au jeu
+
+**Date** : 2026-08-04.
+
+**Décision** : suspendre le processus Godot par `SIGSTOP` pendant que le modèle
+regarde l'image, le reprendre par `SIGCONT` pendant l'action.
+
+**Pourquoi** : le modèle met plusieurs secondes à décider ; un jeu qui continue
+tue le joueur pour une raison étrangère au jeu. Une pause interne aurait exigé
+de **modifier le jeu pour le mesurer** — et aurait pu fuiter un état privé vers
+le joueur. `SIGSTOP` est invisible du programme suspendu.
+
+**Contrepartie assumée, et écrite dans le protocole** : la durée perçue n'est
+pas la durée réelle. Tout enchaînement jugé confortable sous verrouillage doit
+être rejoué **sans** suspension avant qu'on affirme qu'il est jouable. Ce rejeu
+est un contrôle de faisabilité, pas un nouveau playtest, et ne produit aucune
+note.
+
+**Effet de bord corrigé le jour même** : plafonner l'attente à 2,5 s comme les
+actions a forcé le premier joueur à prendre huit « décisions » consécutives
+pendant un simple écran de chargement, jusqu'à soupçonner un blocage
+inexistant. Attendre n'est pas agir : `game_wait` va désormais jusqu'à 8 s.
+
+---
+
+## D-046 — L'échelle du kit végétal se corrige en UN point, pas sept
+
+**Date** : 2026-08-04. **Origine** : premier playtest en boucle fermée.
+
+**Constat mesuré** : le kit `assets/environment/foliage/` a été importé sans
+normalisation. `Flower_4_Group` fait 2,49 m quand la bible §3 borne les fleurs
+à 0,18–0,55 m ; `Fern_1` fait 9,05 m de large ; `Grass_Common_Tall` 1,87 m pour
+une borne à 0,95 m. Sept modules le posaient à l'échelle native.
+
+**Décision** : `scripts/world/kit_scale.gd` porte une table
+`asset → [hauteur native mesurée, hauteur visée]` et le facteur en découle par
+division. Les sept `_spawn`/`_piece` la consultent ; le facteur du site d'appel
+reste une **variation** (0,85 à 1,3 dans l'existant) et se multiplie.
+
+**Pourquoi la table garde les deux hauteurs** : pour rester vérifiable. On peut
+remesurer le `.gltf` avec `tools/gltf_inspect.py` et refaire la division. Une
+table de facteurs nus serait invérifiable.
+
+**Alternative rejetée** : redimensionner les `.gltf` à la source. Rejetée parce
+que ce sont des assets externes attribués ; les modifier ferait diverger le
+fichier de sa provenance déclarée dans `ATTRIBUTIONS.md`, pour un gain nul —
+l'échelle est une décision de placement, pas une propriété de l'asset.
+
+**Alternative rejetée** : corriger seulement la fleur signalée. Rejetée : le
+joueur avait vu UN symptôme ; la mesure de tout le dossier a montré treize
+assets hors bornes. Corriger le symptôme aurait laissé la fougère de neuf
+mètres en place.

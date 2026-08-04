@@ -304,8 +304,10 @@ func _dress(parent: Node3D, placements: Array[Array]) -> void:
 		if entry.size() > 3:
 			factor = entry[3]
 		var node: Node3D = _piece(asset, at, yaw, parent)
-		if node != null and not is_equal_approx(factor, 1.0):
-			node.scale = Vector3.ONE * factor
+		# §3 : correction d'échelle du kit végétal, point unique (`KitScale`).
+		var corrected: float = factor * KitScale.factor(asset)
+		if node != null and not is_equal_approx(corrected, 1.0):
+			node.scale = Vector3.ONE * corrected
 
 
 ## COQUE d'une salle réellement creuse : sol porteur, plafond, quatre parois —

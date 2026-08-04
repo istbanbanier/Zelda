@@ -167,9 +167,21 @@ def _ensure_game() -> None:
         if ids:
             _state["window"] = ids[-1]
             break
+    # Xvfb n'a AUCUN gestionnaire de fenêtres : `windowactivate` s'appuie sur
+    # le protocole EWMH et n'a personne à qui parler, donc il échoue en
+    # silence. Le premier joueur a dû cliquer lui-même pour que le clavier
+    # réponde, et l'a écrit : « le clic gauche est nécessaire pour donner le
+    # focus ». `windowfocus` appelle XSetInputFocus directement, sans WM ; le
+    # clic au centre achève de rendre la fenêtre active côté Godot.
     if _state["window"]:
-        _run(["xdotool", "windowactivate", "--sync", _state["window"]])
-        _run(["xdotool", "windowfocus", _state["window"]])
+        _run(["xdotool", "windowfocus", "--sync", _state["window"]])
+        _run(["xdotool", "windowraise", _state["window"]])
+    # Le clic vise un COIN VIDE, pas le centre : à 1024x768, le centre tombe
+    # exactement sur « Nouvelle partie » et le harnais lancerait la partie à la
+    # place du joueur.
+    _run(["xdotool", "mousemove", "--sync", "18", str(HEIGHT - 18)])
+    _run(["xdotool", "click", "1"])
+    time.sleep(0.5)
     # Une fenêtre existante n'est pas une image dessinée. On attend que l'écran
     # cesse d'être uniforme : sinon le joueur reçoit du noir et « observe » du
     # vide sans que personne s'en aperçoive.
@@ -249,10 +261,23 @@ def _reply(label: str, note: str, extra: dict | None = None) -> list:
 
 
 def _mouse(dx: float, dy: float) -> None:
+    """Déplacement de souris, exprimé en ABSOLU depuis le centre de l'écran.
+
+    Le premier joueur a écrit : « bouger la souris pour tourner la caméra :
+    aucune réaction, à aucun moment de la session ». C'était un défaut du
+    harnais, pas du jeu.
+
+    Le jeu capture la souris (`MOUSE_MODE_CAPTURED`) : Godot ramène le curseur
+    au centre à chaque lecture. Un `mousemove_relative` part alors du centre
+    déjà rétabli et le delta se perd. En visant `centre + delta` en absolu, le
+    déplacement mesuré par Godot vaut exactement le delta voulu, que la souris
+    soit capturée ou libre.
+    """
     if not dx and not dy:
         return
-    _run(["xdotool", "mousemove_relative", "--sync", "--",
-          str(int(round(dx))), str(int(round(dy)))])
+    cx, cy = WIDTH // 2, HEIGHT // 2
+    _run(["xdotool", "mousemove", "--sync",
+          str(int(round(cx + dx))), str(int(round(cy + dy)))])
 
 
 # --- Outils -----------------------------------------------------------------

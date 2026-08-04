@@ -1,0 +1,46 @@
+[
+  {
+    "pas": 6,
+    "note": "Après \"Nouvelle partie\", écran noir prolongé (~8s et plus). Possible long chargement/fondu d'ouverture de la vallée. J'attends encore avant de conclure à un blocage."
+  },
+  {
+    "pas": 15,
+    "note": "Chargement terminé après ~35-40s de noir. Vue de dos d'un personnage vert avec capuche pointue, bras écartés (pose bizarre, peut-être bug d'animation ou chute). Autour: herbe verte dense low-poly, arbres roses/rouges. Au loin: une citadelle grise avec un nuage sombre au-dessus et un éclair cyan, un pylône cyan à droite avec sphère turquoise au sommet. HUD: 5 coeurs rouges (vie) en haut à gauche + un losange orange. En bas à droite: \"Épée usée 24/24\" et \"Flèches : 8\". Le camp mentionné dans la consigne n'est pas encore visible - il faudra explorer."
+  },
+  {
+    "pas": 26,
+    "note": "Le déplacement Z/D fonctionne mais semble irrégulier (parfois aucun changement visible entre deux actions). L'épée est dégainée en main. Aperçu d'une silhouette marron à gauche du champ (possible tente/camp) vers x=220,y=350. Un chemin de terre clair apparaît en bas à droite. Direction générale: continuer vers la citadelle/structures au loin pour trouver le camp ennemi."
+  },
+  {
+    "pas": 33,
+    "note": "Compris: le déplacement fonctionne mais est très saccadé/inconstant selon les tours - parfois aucune progression visible, parfois nette. Le personnage s'oriente dans la direction du déplacement (vu de face après Q). Structures en bois clair repérées à droite du champ de vision (possible camp), avec une rampe. Objectif: s'y diriger."
+  },
+  {
+    "pas": 41,
+    "note": "Camp repéré: tente/dôme gris-beige visible à droite de l'écran. Direction à suivre pour y arriver."
+  },
+  {
+    "pas": 50,
+    "note": "Une barre bleue horizontale apparaît au-dessus du personnage pendant le sprint (Shift+direction) - probablement l'endurance. Éclair cyan visible frappant la citadelle au loin, bel effet visuel. Le sprint semble plus efficace pour franchir les obstacles d'herbe/blé que la marche normale."
+  },
+  {
+    "pas": 73,
+    "note": "Je semble régulièrement bloqué près des arbres (sapin, arbre feuillu) - possible collision qui empêche l'avancée. Le personnage tourne bien (Q le fait face à la caméra) mais n'avance pas toujours. Je vais essayer de contourner largement les arbres pour rejoindre les structures beiges qui pourraient être le camp."
+  },
+  {
+    "pas": 87,
+    "note": "Approche du camp confirmée: structures en bois clair, buisson rouge dense, arbustes/branches sèches noires en X, petites flèches oranges au sol. Pas encore d'ennemi visible clairement. Je continue d'avancer prudemment."
+  },
+  {
+    "pas": 93,
+    "note": "Camp bien visible maintenant: deux tentes triangulaires marron à gauche, structure en pierre grise (autel/puits) au centre, petit bassin d'eau turquoise, buissons rouges, rampe en bois. Pas encore d'ennemi visible distinctement - je vais m'approcher et scruter les environs."
+  },
+  {
+    "pas": 96,
+    "note": "Possibles ennemis repérés: deux petites silhouettes debout à droite du camp (x=712,y=270 et x=822,y=270). Je m'approche pour confirmer."
+  },
+  {
+    "pas": 105,
+    "note": "Session terminée: bloqué à une bande sombre/limite de terrain juste avant le camp, malgré de nombreuses tentatives (avancer, contourner, sauter, sprinter). Camp visible mais aucun ennemi clairement identifié parmi les éléments observés (arbustes secs pris d'abord pour des silhouettes). Combat non engagé faute d'ennemi trouvé/accessible."
+  }
+]

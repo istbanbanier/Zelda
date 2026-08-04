@@ -238,8 +238,10 @@ func _piece(asset: String, at: Vector3, yaw: float, parent: Node3D,
 	node.name = "%s_%d" % [asset, _built]
 	node.position = at
 	node.rotation = Vector3(tilt.x, yaw, tilt.y)
-	if not is_equal_approx(factor, 1.0):
-		node.scale = Vector3.ONE * factor
+	# §3 : correction d'échelle du kit végétal, point unique (`KitScale`).
+	var corrected: float = factor * KitScale.factor(asset)
+	if not is_equal_approx(corrected, 1.0):
+		node.scale = Vector3.ONE * corrected
 	parent.add_child(node)
 	_built += 1
 	return node
