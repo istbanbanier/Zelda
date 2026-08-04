@@ -1,0 +1,6 @@
+[
+  {
+    "pas": 10,
+    "note": "CAMÉRA : mouse_delta est CLAMPÉ. 350px = 0 rotation. 1000px = ~23°. 1500px = ~10°. 2500px = 0 rotation (ignoré). => utiliser des pas de ~1000px, pas plus.\nDÉPART : crête herbeuse. Citadelle grise + nuage noir + éclair cyan droit devant (au nord). Pylône à anneau cyan à droite de la citadelle. Chemin de terre ocre part vers la droite/est.\nCANDIDAT CAMP : formes rayées ROUGE ET BLANC (auvents ?) visibles vers l'ouest/gauche quand on regarde le chemin ocre. Dans la vue de départ elles étaient au centre-droit, plan moyen, sous les arbres rouges.\nHUD : 5 carrés rouges = vie. Épée usée 24/24. Flèches 8."
+  }
+]
