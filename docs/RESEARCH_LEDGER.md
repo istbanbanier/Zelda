@@ -243,6 +243,27 @@ ou une mesure locale) · `OUVERT`.
 
 ---
 
+## R-016 — La vue rasante mange la variation macro : anisotrope obligatoire
+
+- **Date** : 2026-08-04 · **Phase** : H-2c · **Statut** : RÉSOLU, appliqué
+- **Ce qui change selon la réponse** : pourquoi deux versions successives du sol
+  moucheté, CORRECTES vues du dessus (sondes : écart-type 0,093-0,094), rendaient
+  un aplat parfait dans la vista (stddev inchangé au pixel près).
+- **Constat** (mesuré, trois sondes) : (1) la distribution FBM est gaussienne —
+  un gradient étalé sur 0..1 donne un quasi-aplat (0,039) ; le resserrer sur la
+  bande centrale double le contraste (0,094). (2) Même contrasté, le motif
+  disparaît à la caméra de JEU : à 1,7 m du sol, l'angle est rasant, le
+  trilinéaire retombe dans les mips basses et moyenne tout motif de ~4 m en
+  aplat à quelques mètres. Vue plongeante : moucheté ; vue rasante : rien.
+- **Décision** : `TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC` sur le
+  matériau de sol + motifs portés à ~15 m (fréquence 0,008, tuile 60 m).
+  Sonde rasante après correctif : écart-type 0,114, motifs lisibles à l'horizon.
+- **Règle durable** : toute validation d'un matériau de SOL se fait en vue
+  rasante à hauteur de caméra de jeu — jamais en vue plongeante seule. Le test
+  de régression mesure la texture générée (≥ 0,06), la sonde valide la vue.
+
+---
+
 ## R-014 — `Area3D.monitoring` coupé puis rallumé entre deux ticks : chevauchements perdus
 
 - **Date** : 2026-08-01 · **Phase** : C.0 · **Statut** : RÉSOLU, règle adoptée

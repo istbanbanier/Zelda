@@ -1897,7 +1897,11 @@ func _ground_material() -> StandardMaterial3D:
 	# H-2b : 0,007 sur 256 px donnait ~1,8 motif par tuile — un quasi-aplat,
 	# aggravé par la perte de contraste du seamless (notée dans la doc 4.7).
 	# 0,02 sur 512 px : motifs ~8 m monde (méso), contraste réel.
-	noise.frequency = 0.02
+	# 0,008 (motifs ~15 m monde avec la tuile de 60 m) : à la caméra de jeu
+	# (1,7 m du sol, vue RASANTE), les mips moyennent tout motif plus petit
+	# en aplat a quelques metres — c'est ce qui a englouti les deux
+	# premieres versions, pourtant correctes vues du dessus.
+	noise.frequency = 0.008
 	# La distribution FBM est gaussienne : presque tout tombe autour de 0,5.
 	# Un gradient étalé sur 0..1 donnait un quasi-aplat (sonde : écart-type
 	# 0,039). Trois octaves + gradient RESSERRÉ sur la bande centrale
@@ -1907,9 +1911,9 @@ func _ground_material() -> StandardMaterial3D:
 	noise.fractal_octaves = 3
 	var ramp: Gradient = Gradient.new()
 	ramp.set_color(0, Color(0.267, 0.408, 0.169))     # olive profond #446B2B
-	ramp.add_point(0.36, Color(0.267, 0.408, 0.169))
+	ramp.add_point(0.38, Color(0.267, 0.408, 0.169))
 	ramp.add_point(0.52, Color(0.365, 0.561, 0.239))  # ancre #5D8F3D
-	ramp.add_point(0.66, Color(0.498, 0.663, 0.306))  # olive éclairé #7FA94E
+	ramp.add_point(0.62, Color(0.498, 0.663, 0.306))  # olive éclairé #7FA94E
 	ramp.set_color(ramp.get_point_count() - 1, Color(0.498, 0.663, 0.306))
 	var texture: NoiseTexture2D = NoiseTexture2D.new()
 	texture.noise = noise
@@ -1923,7 +1927,10 @@ func _ground_material() -> StandardMaterial3D:
 	mat.roughness = 0.95
 	mat.uv1_triplanar = true
 	mat.uv1_world_triplanar = true
-	mat.uv1_scale = Vector3.ONE * 0.025   # la texture couvre 40 m monde
+	mat.uv1_scale = Vector3.ONE / 60.0   # la texture couvre 60 m monde
+	# Anisotrope : sans lui, la vue rasante retombe dans les mips basses et
+	# la variation disparaît — la cause exacte tracée en H-2c.
+	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 	_ground_material_cache = mat
 	return mat
 
