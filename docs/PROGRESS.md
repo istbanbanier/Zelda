@@ -2595,3 +2595,48 @@ sont visibles, et la **jauge d'endurance turquoise** apparaît au sprint — un
 
 Le correctif prouve la **locomotion**, rien d'autre. Combat, endurance,
 durabilité, arc, esquive, donjon et boss restent `UNVERIFIED` en boîte noire.
+
+---
+
+## 2026-08-04 — Phase I (volet export) : premier binaire Linux autonome publié
+
+### Ce qui a été fait
+
+- **Export local prouvé** : templates `linux_release` compilés depuis
+  `/opt/src/godot` (le proxy refuse godotengine.org), installés sous
+  `4.7.1.stable` ET `4.7.1.stable.custom_build` ; export du preset
+  `Linux x86_64` (PCK embarqué) → `builds/linux/EclatsDOrage.x86_64`
+  (371 Mo), `savepack DONE`, `--version` répond `4.7.1.stable.custom_build`.
+- **Workflow enrichi** (`publish-playtest.yml`) : le runner GitHub télécharge
+  le Godot 4.7.1-stable officiel + templates, exporte le binaire et le joint
+  à la Release (zip + sha256), en *meilleur effort* (`continue-on-error`) —
+  un échec du binaire ne bloque jamais l'archive source.
+- Deux itérations de mise au point, chacune tracée au run exact :
+  1. `ls motif_A motif_B` sous `pipefail` mourait quand UN motif ne matchait
+     rien (run 30940389658) → `|| true` + garde-fou conservé ;
+  2. `rm -rf builds/linux` emportait le `.gitkeep` suivi et le garde-fou de
+     propreté refusait (run 30941179807) → suppression du seul binaire.
+- **Release verte** : `playtest-3038fc5` (run 30941820988), 4 assets —
+  archive source 396 Mo, binaire Linux 287 Mo, deux `.sha256`.
+
+### Ce que cela change
+
+§25.1 « build natif disponible » passe de promesse à fait : un testeur Linux
+lance le jeu sans installer Godot. Chaque prochaine Release embarquera le
+binaire automatiquement.
+
+### Prochaine action exacte
+
+1. Répondre à la question Phase H en attente : « le jeu doit ressembler à
+   l'image North Star — comment faire ? » (plan honnête, limites du conteneur).
+2. Relancer la suite playthrough (golden path) tuée par le redémarrage du
+   conteneur — peu coûteuse, verdict requis avant toute note Gate G/J.
+3. `BL-01` (victoire en combat en boîte noire) reste ouvert — ne PAS relancer
+   de joueur visuel sans accord explicite (coût).
+
+### Limites honnêtes
+
+Le binaire runner n'a pas été **lancé** (pas de GPU sur le runner non plus) :
+il est le produit de la même chaîne d'export que le binaire local vérifié,
+rien de plus. Profilage, budgets de frame et session 60 min : toujours
+impossibles ici (ISS-002).

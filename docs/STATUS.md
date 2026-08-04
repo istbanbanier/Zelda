@@ -153,7 +153,7 @@ llvmpipe uniquement, aucun GPU.
 | F | Graphe électrique, 4 salles, salle centrale, antichambre | **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE** (`docs/GATE_F_AUDIT.md`) : F.1 à F.8 livrés ; donjon résolu de bout en bout depuis une sauvegarde vierge ET une sauvegarde intermédiaire |
 | G | Arène, boss 3 phases, solvabilité, victoire | Non commencé |
 | H | Art « wahou », WOW Gate ≥ 85/100 | **Bloqué** — ISS-002 |
-| I | LOD, profilage, presets, exports, session 60 min | **Bloqué** — ISS-002 |
+| I | LOD, profilage, presets, exports, session 60 min | **Partiel** — volet EXPORT prouvé (2026-08-04) : preset `Linux x86_64` versionné, templates compilés depuis `/opt/src/godot`, binaire local 371 Mo qui répond `--version`, et Release CI `playtest-3038fc5` avec binaire autonome exporté par le runner (Godot 4.7.1-stable officiel). Profilage GPU et session 60 min restent **Bloqués** — ISS-002 |
 | J | DemoRoute, vidéo 3 min, revue externe | **Bloqué** — ISS-002 |
 
 Les phases A à G restent **entièrement réalisables** dans cet environnement : elles
