@@ -250,28 +250,34 @@ bible, export glTF validé, les six armes portent un modèle distinct
 
 ---
 
-## S1 — Le menu Pause enferme le joueur (OUVERT)
+## ~~S1 — Le menu Pause enferme le joueur~~ — RETIRÉ : défaut du HARNAIS
 
-**Reproduction.** Session blackbox `session_20260804_031040`. Un panneau
-« Pause » (Reprendre / Sensibilité souris / Menu principal) s'affiche, avec
-« Reprendre » encadré en doré.
+**Ce constat était FAUX et accusait le jeu à tort.** Il est conservé ici parce
+qu'une erreur de diagnostic effacée se répète.
 
-**Observé.** Il ne se referme ni par `Échap`, ni par `Entrée`, ni par `Espace`,
-ni par un clic sur le curseur de sensibilité, ni par un clic à (511, 320) sur
-le bouton lui-même. Seul un clic à **(512, 319)** — le centre exact — l'a levé.
+Ce qui avait été observé, en session blackbox `session_20260804_031040` : un
+panneau « Pause » qui ne se refermait ni par `Échap`, ni par `Entrée`, ni par
+`Espace`, ni par un clic — sauf au centre exact du bouton « Reprendre ».
 
-**Aggravant.** Pendant la pause, le jeu continue à dessiner : l'herbe ondule,
-l'éclair cyan retombe. Rien ne distingue « je suis en pause » de « je suis
-bloqué par le décor ». Le joueur a passé une dizaine d'actions à chercher un
-obstacle inexistant.
+**Cause réelle, mesurée : deux défauts du harnais de test, aucun du jeu.**
 
-**Piste.** À instruire : `process_mode` des nœuds du menu. Un `Control` laissé
-en `INHERIT` est gelé avec l'arbre quand `get_tree().paused = true`, et cesse
-donc de traiter les entrées qui devraient précisément lever la pause. Le
-panneau doit être en `PROCESS_MODE_WHEN_PAUSED` (ou `ALWAYS`), et la navigation
-clavier doit être vérifiée en plus de la souris.
+1. `game_act` suspendait le processus Godot dans la même milliseconde que la
+   dernière entrée. En rendu logiciel une image coûte 100 à 300 ms : la capture
+   rendue au joueur était donc ANTÉRIEURE à sa propre action, et le jeu restait
+   figé sur cette image. `game_click` attendait déjà 0,45 s — c'est exactement
+   pourquoi seuls les clics semblaient fonctionner.
+2. La table de touches envoyait les étiquettes AZERTY comme keysyms, alors que
+   le jeu mappe des `physical_keycode`. Aucune commande de déplacement
+   n'arrivait.
 
-**Sévérité.** S1 : sans souris précise, la partie est perdue sur place.
+**Vérifié après correction du harnais**, dans le chemin MCP complet : `Échap`
+ouvre la pause, `Échap` la referme, le monde reprend. Aucune manipulation
+particulière n'est nécessaire.
+
+**Leçon.** Un joueur qui rapporte « la commande ne répond pas » peut décrire
+un défaut de l'instrument de mesure. Avant d'ouvrir un ticket contre le jeu,
+vérifier que l'entrée atteint réellement le moteur ET que la capture est
+postérieure à l'action.
 
 ## S2 — Chargement muet et très variable (OUVERT)
 

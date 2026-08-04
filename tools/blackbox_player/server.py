@@ -72,6 +72,13 @@ MIN_MS, MAX_MS = 80, 2500
 # chargement, ce qui l'a conduit à soupçonner un blocage inexistant. Un humain
 # devant un fondu attend, il ne décide pas.
 MAX_WAIT_MS = 8000
+# Temps laissé au jeu pour DESSINER la conséquence d'une action avant qu'il ne
+# soit figé. Mesuré sur llvmpipe : une image de la vallée coûte 100 à 300 ms,
+# et la capture doit venir APRÈS. Voir `_settle()`.
+SETTLE_MS = 700
+# Temps laissé à Godot pour reprendre la main après SIGCONT avant qu'on lui
+# envoie des entrées. Voir le préchauffage dans `game_act`.
+WARMUP_MS = 180
 
 # --- Contrôles négatifs -----------------------------------------------------
 # Un protocole qu'on ne peut pas faire échouer ne prouve rien. Ces deux
@@ -220,6 +227,27 @@ def _resume() -> None:
         _state["suspended"] = False
 
 
+async def _settle() -> None:
+    """Laisse le jeu DESSINER la conséquence de l'action avant de le figer.
+
+    Sans cette attente, `game_act` suspendait le processus dans la même
+    milliseconde que la dernière entrée. En rendu logiciel llvmpipe une image
+    coûte 100 à 300 ms : le joueur recevait donc une capture ANTÉRIEURE à sa
+    propre action, et le jeu restait gelé sur cette image tant qu'aucun autre
+    outil ne le relançait.
+
+    Le symptôme était spectaculairement trompeur pour la caméra. La rotation
+    était bien appliquée — mesurée : 25.6 de différence de fond, jeu laissé en
+    marche — mais jamais rendue avant le gel. Deux joueurs successifs en ont
+    conclu, chacun de son côté, que « la souris ne tourne pas la caméra ».
+
+    `game_click` ne souffrait pas du défaut : il attendait déjà 0,45 s. C'est
+    pourquoi les clics ont toujours paru fonctionner alors que les touches et
+    la souris semblaient mortes.
+    """
+    await asyncio.sleep(SETTLE_MS / 1000.0)
+
+
 def _suspend() -> None:
     """Suspend le jeu pendant que le modèle réfléchit.
 
@@ -346,6 +374,13 @@ async def game_act(keys_down: list[str] | None = None,
     delta = list(mouse_delta or [0, 0])
     ms = max(MIN_MS, min(MAX_MS, int(duration_ms)))
     _resume()
+    # Préchauffage : à la sortie de SIGSTOP, Godot draine d'abord la file
+    # d'événements X accumulée pendant la suspension. Les mouvements souris
+    # envoyés dans cette fenêtre se mélangeaient à ce drainage et se perdaient
+    # de façon INTERMITTENTE — mesuré : la même rotation passait à un essai et
+    # disparaissait au suivant. On laisse le processus reprendre la main avant
+    # de lui parler.
+    await asyncio.sleep(WARMUP_MS / 1000.0)
     try:
         for key in keys:
             _run(["xdotool", "keydown", key])
@@ -364,6 +399,7 @@ async def game_act(keys_down: list[str] | None = None,
                 _run(["xdotool", "keyup", key], timeout=5.0)
             except Exception:
                 pass
+    await _settle()
     _suspend()
     note = "Tu as tenu %s pendant %d ms." % (", ".join(asked) or "aucune touche", ms)
     if delta and (delta[0] or (len(delta) > 1 and delta[1])):
@@ -403,6 +439,7 @@ async def game_wait(duration_ms: int = 500) -> list:
     ms = max(MIN_MS, min(MAX_WAIT_MS, int(duration_ms)))
     _resume()
     await asyncio.sleep(ms / 1000.0)
+    await _settle()
     _suspend()
     return _reply("wait", "Tu as attendu %d ms." % ms, {"duree_ms": ms})
 
