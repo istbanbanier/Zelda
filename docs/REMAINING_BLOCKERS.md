@@ -65,8 +65,11 @@ modèle.
 
 **BL-10 — Le fond est un empilement de boîtes qui concurrence la citadelle.**
 Mesure : sur la bande d'horizon, toute l'image tient entre 55 % et 80 % de
-valeur. Après le lot « ombres froides », 57 % à 81 % — le gain est réel et
-modeste, le problème demeure.
+valeur. Après le lot « ombres froides », 57 % à 81 %. **L'écart passe de 25 à
+24 points : négligeable, et dans le mauvais sens.** Les deux lots visuels
+(horizon étagé, ombres froides) sont donc classés **NON CONCLUANTS** — ils ne
+sont pas démontrés. Un diff de pixels n'est pas une amélioration esthétique, et
+une mesure qui ne va pas dans le sens annoncé n'autorise aucune revendication.
 
 **BL-11 — Le nuage d'orage est un disque plat.** Deux ellipses noires opaques,
 sans volume ni éclairement interne.
