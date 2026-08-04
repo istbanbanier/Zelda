@@ -126,7 +126,9 @@ jobs:
           STAMP="${{ steps.cible.outputs.short }}"
           ( cd builds/linux && zip -q \
               "../EclatsDOrage_Linux_x86_64_${STAMP}.zip" EclatsDOrage.x86_64 )
-          rm -rf builds/linux
+          # Seulement le binaire : `rm -rf builds/linux` emportait le
+          # `.gitkeep` SUIVI, et le garde-fou de propreté voyait « D ».
+          rm -f builds/linux/EclatsDOrage.x86_64
           echo "binaire exporté et empaqueté"
 
       # Une archive qui ne se décompresse pas est pire qu'une absence
