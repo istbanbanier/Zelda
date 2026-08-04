@@ -223,6 +223,25 @@ func test_the_spawn_ridge_holds_the_player_and_shows_the_landmarks() -> void:
 	check_not_null(vista, "VistaCamera_Hero01 en place (§3.2)")
 	if vista != null:
 		check(not vista.current, "…inactive en jeu : elle ne vole pas la caméra du joueur")
+
+	# Guidage vers le camp (S3, quatre playtests perdus) : la fumée doit COUPER
+	# la ligne d'horizon depuis la crête — sommet au-dessus de l'œil du joueur
+	# (~27 m), sinon elle se fond dans les falaises grises, invisible par
+	# construction. Et elle doit BOUGER (§2.2 P2 : « le mouvement attire ») —
+	# le script de balancement est ce qui la distingue d'un décor.
+	var smoke: MeshInstance3D = valley.get_node_or_null("Camp/SmokeColumn") as MeshInstance3D
+	check_not_null(smoke, "colonne de fumée du camp présente")
+	if smoke != null:
+		var mesh_height: float = (smoke.mesh as CylinderMesh).height
+		var top_y: float = smoke.global_position.y + mesh_height * 0.5
+		check(top_y > 30.0,
+			"le sommet de la fumée dépasse l'œil de crête (%.1f m > 30)" % top_y)
+		check(smoke.get_script() != null,
+			"la fumée est animée — une colonne statique est un décor, pas un signal")
+	check_not_null(valley.get_node_or_null("Camp/CampFireLight"),
+		"le feu du camp éclaire (§24 : « feu du camp visible à distance »)")
+	check_not_null(valley.get_node_or_null("Camp/CampFlame"),
+		"la flamme orange existe (§10.1 bible : elle rend le camp lisible à 100 m)")
 	_tree().root.remove_child(valley)
 	valley.queue_free()
 	var game_state: Node = _tree().root.get_node_or_null("/root/GameState")

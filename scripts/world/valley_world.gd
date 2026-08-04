@@ -67,6 +67,12 @@ var _taken_ingredients: Array[String] = []
 ## de transition a été pris SUR le déclencheur de la porte, y replacer le
 ## joueur le renverrait dans le vestibule en boucle.
 var _pending_spawn_applied: bool = false
+## Vrai sur une partie NEUVE (instantané du menu, sans inventaire) : la seule
+## fois où l'invite d'interprétation de la fumée a un sens. S3 des playtests :
+## quatre testeurs n'ont jamais trouvé le camp — la fumée montre OÙ, cette
+## ligne dit QUOI. Une fois, jamais de marqueur (§2.2 P2 : curiosité, pas
+## checklist).
+var _fresh_run: bool = false
 ## §12.9 (D-EN.6) : carte de navigation des grandes carrures. Créée à la
 ## main, donc LIBÉRÉE à la main — sans quoi elle fuit à la sortie de
 ## scène (fuite de RID mesurée au test).
@@ -111,6 +117,14 @@ func _ready() -> void:
 	# selon leur rôle de level design ; le coordinateur de combat (§12.8)
 	# les gouverne toutes.
 	_spawn_bestiary()
+	if _fresh_run:
+		var hint_timer: SceneTreeTimer = get_tree().create_timer(4.0)
+		hint_timer.timeout.connect(func() -> void:
+			if not is_inside_tree():
+				return
+			var bus: Node = get_node_or_null("/root/EventBus")
+			if bus != null:
+				bus.call("notify", "De la fumée s'élève au loin — un campement ?"))
 	# E.2b : le feu de cuisine — un interactable posé SUR le foyer réel du
 	# camp (§13.3). L'atelier vit dans la coquille ; le feu n'est que la
 	# porte, comme la collision reste celle du foyer existant.
@@ -638,6 +652,9 @@ func _apply_save() -> void:
 	var data: Dictionary = save_system.call("load_slot", SAVE_SLOT)
 	if data.is_empty():
 		return
+	# Partie neuve : l'instantané du menu n'a pas encore d'inventaire. C'est le
+	# seul moment où le joueur ignore ce qu'est la colonne au loin.
+	_fresh_run = not data.has("weapons")
 	if data.has("discoveries"):
 		discoveries.apply_state(data["discoveries"] as Dictionary)
 	# §19.4 : un item inconnu se journalise et n'arrête rien.

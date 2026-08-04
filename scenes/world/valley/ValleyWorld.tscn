@@ -17,6 +17,7 @@
 [ext_resource type="Resource" path="res://resources/weapons/conductive_blade.tres" id="12_blade"]
 [ext_resource type="NavigationMesh" path="res://scenes/world/valley/valley_navmesh.tres" id="9_navmesh"]
 [ext_resource type="PackedScene" path="res://scenes/ui/GameplayShell.tscn" id="10_shell"]
+[ext_resource type="Script" path="res://scripts/world/camp_smoke.gd" id="12_smoke"]
 
 [sub_resource type="CylinderMesh" id="CampfireMesh"]
 top_radius = 0.5
@@ -29,13 +30,24 @@ albedo_color = Color(0.35, 0.22, 0.14, 1)
 ; Colonne de fumée graybox : §24 veut le « feu du camp visible à distance » —
 ; sans elle, la terrasse du camp ne se lisait pas depuis la crête (1re capture).
 [sub_resource type="CylinderMesh" id="SmokeMesh"]
-top_radius = 1.1
+top_radius = 2.2
 bottom_radius = 0.35
-height = 14.0
+height = 28.0
 
 [sub_resource type="StandardMaterial3D" id="SmokeMat"]
-albedo_color = Color(0.78, 0.78, 0.8, 0.85)
+albedo_color = Color(0.42, 0.44, 0.5, 0.92)
 transparency = 1
+shading_mode = 0
+
+[sub_resource type="StandardMaterial3D" id="CampFlameMat"]
+albedo_color = Color(1, 0.6, 0.24, 1)
+emission_enabled = true
+emission = Color(1, 0.55, 0.2, 1)
+emission_energy_multiplier = 2.4
+
+[sub_resource type="SphereMesh" id="CampFlameMesh"]
+radius = 0.45
+height = 1.1
 
 [node name="ValleyWorld" type="Node3D"]
 script = ExtResource("1_world")
@@ -78,9 +90,23 @@ mesh = SubResource("CampfireMesh")
 surface_material_override/0 = SubResource("CampfireMat")
 
 [node name="SmokeColumn" type="MeshInstance3D" parent="Camp"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 14.5, 0)
 mesh = SubResource("SmokeMesh")
 surface_material_override/0 = SubResource("SmokeMat")
+script = ExtResource("12_smoke")
+
+; §24/§10.1 (bible) : « flamme orange » et « reflet chaud » — la flamme emissive
+; et sa lumiere font exister le feu a 100 m, la ou le foyer brun disparaissait.
+[node name="CampFlame" type="MeshInstance3D" parent="Camp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+mesh = SubResource("CampFlameMesh")
+surface_material_override/0 = SubResource("CampFlameMat")
+
+[node name="CampFireLight" type="OmniLight3D" parent="Camp"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+light_color = Color(1, 0.62, 0.3, 1)
+light_energy = 2.2
+omni_range = 14.0
 
 [node name="Raider1" parent="Camp" instance=ExtResource("4_raider")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.1, 4)
