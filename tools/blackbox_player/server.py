@@ -90,9 +90,26 @@ START_SCENE = os.environ.get("ECLATS_SCENE", "")
 # Touches acceptées, exprimées comme un joueur les nomme. Rien d'autre ne
 # passe : le serveur ne doit pas devenir une porte vers des capacités qu'un
 # joueur n'a pas.
+# Le joueur demande les touches TELLES QU'ELLES SONT ÉCRITES SUR UN CLAVIER
+# AZERTY (« z » pour avancer, « q » pour aller à gauche). Le serveur X de Xvfb,
+# lui, est en disposition US : `xdotool keydown z` y produit la touche située à
+# la position du Z **américain**.
+#
+# Or le projet mappe ses actions en `physical_keycode` (`keycode: 0` dans
+# `project.godot`) : `move_forward` vaut 87 = W, `move_left` vaut 65 = A. Un
+# code physique désigne une POSITION, étiquetée selon le clavier US — c'est
+# précisément ainsi qu'on écrit « AZERTY : Z avance, Q va à gauche » sans
+# casser le QWERTY.
+#
+# Il faut donc traduire l'étiquette AZERTY vers la position physique :
+#   Z (azerty) occupe la position du W (us)   -> keysym « w »
+#   Q (azerty) occupe la position du A (us)   -> keysym « a »
+# Les autres touches utilisées occupent la même position dans les deux
+# dispositions. Sans cette traduction, aucune commande de déplacement
+# n'atteint le jeu : le joueur reste immobile, sans le moindre message.
 KEYMAP = {
-    "z": "z", "q": "q", "s": "s", "d": "d",
-    "space": "space", "shift": "shift", "ctrl": "ctrl",
+    "z": "w", "q": "a", "s": "s", "d": "d",
+    "space": "space", "shift": "Shift_L", "ctrl": "Control_L",
     "e": "e", "r": "r", "c": "c", "x": "x", "v": "v", "f": "f",
     "tab": "Tab", "escape": "Escape", "enter": "Return",
     "up": "Up", "down": "Down", "left": "Left", "right": "Right",

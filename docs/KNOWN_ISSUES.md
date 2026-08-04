@@ -247,3 +247,42 @@ bible, export glTF validé, les six armes portent un modèle distinct
   regard n'était qu'un trait, et la hache avait carrément disparu d'une
   capture. Après correction, la hache de la mine reste fine vue dans l'axe du
   couloir. Preuve : `evidence/rewards/abandoned_mine.png`.
+
+---
+
+## S1 — Le menu Pause enferme le joueur (OUVERT)
+
+**Reproduction.** Session blackbox `session_20260804_031040`. Un panneau
+« Pause » (Reprendre / Sensibilité souris / Menu principal) s'affiche, avec
+« Reprendre » encadré en doré.
+
+**Observé.** Il ne se referme ni par `Échap`, ni par `Entrée`, ni par `Espace`,
+ni par un clic sur le curseur de sensibilité, ni par un clic à (511, 320) sur
+le bouton lui-même. Seul un clic à **(512, 319)** — le centre exact — l'a levé.
+
+**Aggravant.** Pendant la pause, le jeu continue à dessiner : l'herbe ondule,
+l'éclair cyan retombe. Rien ne distingue « je suis en pause » de « je suis
+bloqué par le décor ». Le joueur a passé une dizaine d'actions à chercher un
+obstacle inexistant.
+
+**Piste.** À instruire : `process_mode` des nœuds du menu. Un `Control` laissé
+en `INHERIT` est gelé avec l'arbre quand `get_tree().paused = true`, et cesse
+donc de traiter les entrées qui devraient précisément lever la pause. Le
+panneau doit être en `PROCESS_MODE_WHEN_PAUSED` (ou `ALWAYS`), et la navigation
+clavier doit être vérifiée en plus de la souris.
+
+**Sévérité.** S1 : sans souris précise, la partie est perdue sur place.
+
+## S2 — Chargement muet et très variable (OUVERT)
+
+**Observé.** Entre le clic « Nouvelle partie » et l'affichage de la vallée :
+**~64 s** de noir total en session blackbox, **52 s** sur une instance isolée,
+**~23 s** sur une instance antérieure. Aucune barre, aucun texte, aucun logo.
+
+Pendant ce temps le processus travaille réellement (CPU actif, état `D`,
+mémoire de 1,82 à 1,99 Go). Mais rien à l'écran ne distingue un chargement d'un
+plantage : deux joueurs successifs ont commencé à chercher des logs.
+
+**Correction attendue.** Un écran de chargement, même minimal, dès la sortie du
+menu. Le rendu logiciel llvmpipe explique la lenteur ; il n'excuse pas le
+silence.
