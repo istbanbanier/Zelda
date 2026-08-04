@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "blackbox": {
+      "type": "stdio",
+      "command": "python3",
+      "args": ["tools/blackbox_player/server.py"],
+      "env": {
+        "ECLATS_PROJECT": "/home/user/Zelda",
+        "ECLATS_DISPLAY": ":77"
+      }
+    }
+  }
+}

@@ -33,6 +33,13 @@ evidence/validate_release/
 evidence/pipeline/
 evidence/captures/
 
+# Playtest en boîte noire : on versionne la trajectoire, la mémoire du joueur
+# et son verdict — la preuve de ce qu'il a fait et compris. Pas le dossier de
+# sauvegarde Godot qu'il a généré (une vingtaine de mégaoctets de cache
+# d'import par session, sans valeur de preuve), ni le contrôle de plomberie.
+evidence/blackbox_player/*/user_home/
+evidence/blackbox_player/smoke_*/
+
 # Blender
 *.blend1
 *.blend2
