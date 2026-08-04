@@ -99,13 +99,43 @@ jobs:
               "selftest_${STAMP}" )
           rm -rf "builds/selftest_${STAMP}"
 
+      # Binaire Linux autonome (Phase I, §25.1 « build natif disponible »).
+      # MEILLEUR EFFORT : le runner télécharge le Godot officiel et ses
+      # templates — impossible depuis le conteneur de développement, dont le
+      # proxy refuse godotengine.org (403). Un échec ici n'empêche JAMAIS la
+      # publication de l'archive source : c'est le sens du continue-on-error.
+      - name: Exporter le binaire Linux (meilleur effort)
+        if: steps.cible.outputs.selftest == 'false'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          VER=4.7.1
+          BASE="https://github.com/godotengine/godot-builds/releases/download/${VER}-stable"
+          curl -fsSL -o /tmp/godot.zip "$BASE/Godot_v${VER}-stable_linux.x86_64.zip"
+          curl -fsSL -o /tmp/tpl.tpz "$BASE/Godot_v${VER}-stable_export_templates.tpz"
+          unzip -q /tmp/godot.zip -d /tmp
+          chmod +x "/tmp/Godot_v${VER}-stable_linux.x86_64"
+          mkdir -p "$HOME/.local/share/godot/export_templates/${VER}.stable"
+          unzip -q /tmp/tpl.tpz -d /tmp/tpl
+          mv /tmp/tpl/templates/* "$HOME/.local/share/godot/export_templates/${VER}.stable/"
+          G="/tmp/Godot_v${VER}-stable_linux.x86_64"
+          "$G" --headless --path . --import || true
+          mkdir -p builds/linux
+          "$G" --headless --path . --export-release "Linux x86_64" \
+            builds/linux/EclatsDOrage.x86_64
+          STAMP="${{ steps.cible.outputs.short }}"
+          ( cd builds/linux && zip -q \
+              "../EclatsDOrage_Linux_x86_64_${STAMP}.zip" EclatsDOrage.x86_64 )
+          rm -rf builds/linux
+          echo "binaire exporté et empaqueté"
+
       # Une archive qui ne se décompresse pas est pire qu'une absence
       # d'archive : elle se découvre chez celui qui la télécharge.
       - name: Vérifier l'archive et calculer son empreinte
         id: paquet
         run: |
           set -euo pipefail
-          ZIP="$(ls -1 builds/*.zip | head -1)"
+          ZIP="$(ls -1 builds/EclatsDOrage_MondeOuvert_*.zip builds/EclatsDOrage_SelfTest_*.zip 2>/dev/null | head -1)"
           [ -n "$ZIP" ] || { echo "aucune archive produite"; exit 1; }
           unzip -t "$ZIP"
           sha256sum "$ZIP" | awk '{print $1}' > "${ZIP}.sha256"
@@ -167,12 +197,25 @@ jobs:
             echo "à la racine de l'archive."
           } > "$NOTES"
           # `--target` crée le tag s'il n'existe pas encore, sur CE commit.
+          ASSETS=( "${{ steps.paquet.outputs.zip }}" \
+                   "${{ steps.paquet.outputs.zip }}.sha256" )
+          BIN_ZIP="$(ls builds/EclatsDOrage_Linux_x86_64_*.zip 2>/dev/null | head -1 || true)"
+          if [ -n "$BIN_ZIP" ]; then
+            sha256sum "$BIN_ZIP" | awk '{print $1}' > "$BIN_ZIP.sha256"
+            ASSETS+=( "$BIN_ZIP" "$BIN_ZIP.sha256" )
+            {
+              echo
+              echo "### Binaire Linux autonome"
+              echo
+              echo "\`$(basename "$BIN_ZIP")\` : exécutable x86_64, jeu embarqué —"
+              echo "décompresser, \`chmod +x\`, lancer. Aucune installation requise."
+            } >> "$NOTES"
+          fi
           gh release create "$TAG" \
             --title "Éclats d'Orage — archive jouable ($TAG)" \
             --notes-file "$NOTES" \
             --target "$COMMIT" \
-            "${{ steps.paquet.outputs.zip }}" \
-            "${{ steps.paquet.outputs.zip }}.sha256"
+            "${ASSETS[@]}"
 
       # Créer n'est pas publier : on relit la Release pour constater que les
       # deux assets y sont réellement, et que le tag pointe sur le bon commit.
