@@ -22,7 +22,12 @@ extends Node
 ## Schéma 2 (E.3) : la cuisine ajoute `meals`, `buff` et
 ## `taken_ingredients`. Une sauvegarde de schéma 1 (avant la Phase E)
 ## reste chargeable — la migration pose les champs manquants à vide.
-const SCHEMA_VERSION: int = 2
+## Schéma 3 (S2 « Continuer au spawn ») : la vallée écrit `player_position`
+## et `player_yaw` (§19.1 : « position/rotation sûre du joueur »). L'ABSENCE
+## de ces champs est un état valide — « position inconnue » — et le monde
+## replace alors le joueur à son point d'apparition (§19.4) : la migration
+## 2 → 3 ne pose donc AUCUN champ.
+const SCHEMA_VERSION: int = 3
 const SAVE_DIR: String = "user://saves"
 const BACKUP_SUFFIX: String = ".bak"
 
@@ -146,6 +151,12 @@ func migrate(data: Dictionary, from_version: int, to_version: int) -> Dictionary
 					migrated["taken_ingredients"] = []
 				if not migrated.has("ingredients"):
 					migrated["ingredients"] = {}
+			2:
+				# 2 → 3 : position/rotation du joueur (§19.1). Rien à poser —
+				# une sauvegarde sans `player_position` signifie « position
+				# inconnue », et le monde reprend au point d'apparition
+				# (§19.4). Inventer une position ici serait mentir.
+				pass
 			_:
 				push_warning("[save] aucune migration définie de %d vers %d — "
 					% [version, version + 1] + "données rendues telles quelles")
