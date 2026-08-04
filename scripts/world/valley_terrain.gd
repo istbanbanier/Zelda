@@ -44,7 +44,7 @@ const COL_MOUNTAIN_WARM: Color = Color(0.47, 0.39, 0.33) # grès chaud
 const COL_MOUNTAIN_FAR: Color = Color(0.52, 0.56, 0.65)  # lointain bleui
 ## Jupes de mur : un cran plus sombres que la face qu'elles habillent — c'est
 ## l'écart de valeur qui fait lire le relief, pas la forme seule.
-const COL_MOUNTAIN_SHADE: Color = Color(0.485, 0.51, 0.575)
+const COL_MOUNTAIN_SHADE: Color = Color(0.44, 0.465, 0.535)
 
 
 func _ready() -> void:
@@ -123,8 +123,11 @@ func _build_wall_skirts() -> void:
 			var t: float = (float(i) + 0.5) / 13.0
 			var along: float = lerpf(-BORDER_OUTER, BORDER_OUTER, t) \
 				+ 9.0 * sin(t * 21.3 + float(axis))
-			var height: float = 38.0 + 13.0 * sin(t * 8.1 + float(axis) * 1.7) \
-				+ 8.0 * sin(t * 15.7 + float(axis) * 2.9)
+			# H-2b : 38±21 m et −6 % de valeur etaient SOUS le seuil de
+			# perception a 250 m sous brume (capture H-2) — 52±16 m couvrent
+			# l'essentiel de la face de 70 m, et l'ecart de valeur est double.
+			var height: float = 52.0 + 10.0 * sin(t * 8.1 + float(axis) * 1.7) \
+				+ 6.0 * sin(t * 15.7 + float(axis) * 2.9)
 			if axis == 0 and absf(along) < 110.0:
 				height = minf(height, 40.0)   # sommet ≤ 32 : sous les gradins (42)
 			var depth: float = 13.0 + 5.0 * sin(t * 6.7 + float(axis))
@@ -1869,16 +1872,20 @@ func _ground_material() -> StandardMaterial3D:
 		return _ground_material_cache
 	var noise: FastNoiseLite = FastNoiseLite.new()
 	noise.seed = 20260804
-	noise.frequency = 0.007
+	# H-2b : 0,007 sur 256 px donnait ~1,8 motif par tuile — un quasi-aplat,
+	# aggravé par la perte de contraste du seamless (notée dans la doc 4.7).
+	# 0,02 sur 512 px : motifs ~8 m monde (méso), contraste réel.
+	noise.frequency = 0.02
 	var ramp: Gradient = Gradient.new()
-	ramp.set_color(0, Color(0.298, 0.478, 0.192))   # olive sombre #4C7A31
-	ramp.set_color(1, Color(0.486, 0.659, 0.310))   # olive éclairé #7CA84F
+	ramp.set_color(0, Color(0.267, 0.408, 0.169))   # olive profond #446B2B
+	ramp.add_point(0.55, Color(0.365, 0.561, 0.239))  # ancre #5D8F3D au médian
+	ramp.set_color(2, Color(0.498, 0.663, 0.306))   # olive éclairé #7FA94E
 	var texture: NoiseTexture2D = NoiseTexture2D.new()
 	texture.noise = noise
 	texture.color_ramp = ramp
 	texture.seamless = true
-	texture.width = 256
-	texture.height = 256
+	texture.width = 512
+	texture.height = 512
 	var mat: StandardMaterial3D = StandardMaterial3D.new()
 	mat.albedo_color = Color.WHITE
 	mat.albedo_texture = texture
