@@ -2707,7 +2707,29 @@ L'audit des ancrages a gouverné le tracé deux fois (ferme abandonnée,
 puis sanctuaire forestier — déplacé à (34, 94), aucun test ne
 l'épinglait). Navmesh rebaké deux fois. Score §30.2 ≈ 52/100.
 
-### Prochaine action exacte (passe H-4)
+### Passe H-4 exécutée — verdict
+
+Plafonds du fond nord testés (crêtes ≤ 96, pics ≤ 96 coins compris,
+rangée éloignée ≤ 112) et flore de pente (3600 brins qui épousent
+l'inclinaison ±0,6 m testé, 340 fleurs concentrées vers la rupture).
+Gain réel mais BORNÉ par la géométrie : à pitch −8° (haut de cadre
++13°), un fond à 96 m sur 400 m pointe encore à ~10° — le ciel ne peut
+pas dépasser ~20 % du cadre tant que le CONTREBAS ne se creuse pas.
+La référence a ~60 m de dénivelé héros→vallée ; nous en avons 22.
+Score §30.2 ≈ 53/100.
+
+### Prochaine action exacte (passe H-5 — le dénivelé, chantier macro)
+
+1. **Creuser le contrebas** : crête 24 → ~36-40 m (spawn, vista, pente
+   rallongée, paliers, meadow) OU plaine nord abaissée — à trancher en
+   ouvrant avec l'audit des ancrages ET le golden path (la descente
+   fait partie du chemin critique). C'est LE déblocage du ciel et de
+   la profondeur — les deux domaines §30.2 encore à la traîne.
+2. Fleurs de pente : les pétales-cubes lisent « Minecraft » en gros
+   plan — passer à 2 quads croisés ou réduire à 0,08 m.
+3. Flancs de la SpawnSlope (dette H-3, toujours ouverte).
+
+### Ancien plan H-4 (réalisé)
 
 1. **Ciel trop mince** (~15-20 % du cadre vs 38-48 % référence) : la
    crête devrait dominer la vallée davantage, ou l'horizon descendre —

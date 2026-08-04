@@ -1,0 +1,18 @@
+{
+  "commit": "409153a69d67d3bbfad088c22458e8716602bff7",
+  "display_server": "X11",
+  "distinct_colors_sampled": 2908,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 90,
+  "height": 1440,
+  "label": "vista_h4_ciel_fleurs",
+  "luma_mean": 0.5914,
+  "luma_stddev": 0.231,
+  "png": "evidence/phaseH/vista_h4_ciel_fleurs.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "timestamp_utc": "2026-08-04 22:59:49",
+  "width": 2560
+}
