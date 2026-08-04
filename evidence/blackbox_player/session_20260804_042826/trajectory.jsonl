@@ -1,0 +1,6 @@
+{"evenement": "demarrage", "display": ":77", "resolution": [1024, 768], "session": "session_20260804_042826", "fenetre": "2097155", "image_dessinee": true, "t_reel": 4.81}
+{"pas": 1, "outil": "observe", "capture": "evidence/blackbox_player/session_20260804_042826/captures/pas_0001_observe.png", "t_reel": 4.94}
+{"pas": 2, "outil": "observe", "capture": "evidence/blackbox_player/session_20260804_042826/captures/pas_0002_observe.png", "t_reel": 35.93}
+{"pas": 3, "outil": "click", "capture": "evidence/blackbox_player/session_20260804_042826/captures/pas_0003_click.png", "bouton": 1, "x": 512, "y": 387, "t_reel": 43.15}
+{"pas": 4, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_042826/captures/pas_0004_wait.png", "duree_ms": 8000, "t_reel": 55.86}
+{"pas": 5, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_042826/captures/pas_0005_wait.png", "duree_ms": 8000, "t_reel": 69.43}
