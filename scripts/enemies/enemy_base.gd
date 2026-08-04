@@ -45,6 +45,11 @@ enum State {
 ## Cadences §12.9 : jamais de perception ni de pathfinding par frame.
 const PERCEPTION_INTERVAL: int = 6
 const REPATH_INTERVAL: int = 15
+## Fenêtre et décroissance du recul (§10.2) : assez pour se LIRE (l'attaquant
+## et la cible « se séparent visiblement »), assez court pour ne pas devenir
+## un stun déguisé — le stagger, lui, appartient à la poise.
+const KNOCKBACK_TIME: float = 0.18
+const KNOCKBACK_DECAY: float = 22.0
 const GRAVITY: float = 24.0
 const SEPARATION_RADIUS: float = 1.7
 const SEPARATION_WEIGHT: float = 0.9
@@ -98,6 +103,14 @@ var _feedback_bases: Array[Color] = []
 var _visual: CharacterVisual = null
 var _model_mounted: bool = false
 var _flash_timer: float = 0.0
+## Gel d'impact (§10.2), consommé depuis `event.hit_stop` — la valeur que
+## l'attaque DÉCLARE depuis C.1 et que personne ne lisait (TESTS.md, abs. 2.4).
+var _hitstop_timer: float = 0.0
+## Recul reçu (§10.2). Sans cette fenêtre dédiée, le steering réécrivait la
+## vélocité au tick suivant et `event.knockback` (2,0-4,5 dans les données)
+## ne déplaçait JAMAIS la cible (TESTS.md, bug 5).
+var _knockback_impulse: Vector3 = Vector3.ZERO
+var _knockback_timer: float = 0.0
 ## Couleur d'annonce — chaque famille pose la sienne (lisibilité §10.5).
 var telegraph_color: Color = Color(0.95, 0.2, 0.12)
 
@@ -230,12 +243,28 @@ func _family_state_name(_state: State) -> StringName:
 func _physics_process(delta: float) -> void:
 	if _state == State.DEAD:
 		return
+	# Hit-stop (§10.2) : le corps se FIGE — ni décision, ni déplacement, ni
+	# décompte. C'est le poids du coup ; 0,045-0,085 s selon l'attaque.
+	if _hitstop_timer > 0.0:
+		_hitstop_timer = maxf(0.0, _hitstop_timer - delta)
+		return
 	_state_timer += delta
 	_attack_cooldown = maxf(0.0, _attack_cooldown - delta)
 	_poise.update(delta)
 	if not is_on_floor():
 		velocity.y -= GRAVITY * delta
 	_update_feedback(delta)
+
+	# Recul (§10.2) : pendant la poussée, l'impulsion gouverne — pas le
+	# steering. Décroissance vers zéro, puis la machine à états reprend.
+	if _knockback_timer > 0.0:
+		_knockback_timer = maxf(0.0, _knockback_timer - delta)
+		velocity.x = _knockback_impulse.x
+		velocity.z = _knockback_impulse.z
+		_knockback_impulse = _knockback_impulse.move_toward(
+			Vector3.ZERO, KNOCKBACK_DECAY * delta)
+		move_and_slide()
+		return
 
 	if not _process_family_state(delta):
 		match _state:
@@ -690,6 +719,13 @@ func _on_hit_received(event: DamageEvent) -> void:
 	if _state == State.DEAD:
 		return
 	_flash_timer = 0.12
+	# §10.2, enfin consommés : gel d'impact et recul viennent DES DONNÉES de
+	# l'attaque, portées par l'événement — aucune constante locale inventée.
+	_hitstop_timer = maxf(_hitstop_timer, event.hit_stop)
+	if event.knockback > 0.0 and event.direction.length_squared() > 0.0001:
+		var shove: Vector3 = Vector3(event.direction.x, 0.0, event.direction.z)
+		_knockback_impulse = shove.normalized() * event.knockback
+		_knockback_timer = KNOCKBACK_TIME
 	_poise.take_poise_damage(event)
 	# L'impact est un événement sonore (§12.7) : les voisins l'entendent.
 	NoiseEvents.emit(get_tree(), global_position, NoiseEvents.IMPACT_RADIUS,

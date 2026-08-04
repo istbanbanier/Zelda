@@ -48,6 +48,7 @@ var _attacker_damage: float = 0.0
 var damage_multiplier: float = 1.0
 var _poise_damage: float = 0.0
 var _knockback: float = 0.0
+var _hit_stop: float = 0.0
 var _damage_type: StringName = &""
 var _element: StringName = &""
 ## Cibles déjà touchées pendant CE swing, par identifiant d'instance.
@@ -72,12 +73,13 @@ func _ready() -> void:
 ## en C.1) le calcule ; la hitbox ne connaît pas les armes.
 func activate(attacker_damage: float, poise_damage: float = 0.0,
 		knockback: float = 0.0, damage_type: StringName = &"melee",
-		element: StringName = &"") -> int:
+		element: StringName = &"", hit_stop: float = 0.0) -> int:
 	_attacker_damage = attacker_damage
 	_poise_damage = poise_damage
 	_knockback = knockback
 	_damage_type = damage_type
 	_element = element
+	_hit_stop = hit_stop
 	_already_hit.clear()
 	_attack_id = next_attack_id()
 	_active = true
@@ -135,6 +137,7 @@ func _process_target(area: Area3D) -> void:
 		hurtbox.weak_point_multiplier) * damage_multiplier
 	event.poise_damage = _poise_damage
 	event.knockback = _knockback
+	event.hit_stop = _hit_stop
 	event.element = _element
 	event.attack_id = _attack_id
 	event.position = hurtbox.global_position

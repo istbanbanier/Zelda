@@ -123,6 +123,10 @@ var _grab_cooldown: float = 0.0
 ## dès que l'une des conditions d'accroche cesse d'être vraie : le seuil mesure
 ## une INTENTION tenue, pas un cumul de frôlements successifs (D-017).
 var _wall_push_time: float = 0.0
+## Gel d'impact (§10.2, §10.6 « hit-stop attaquant/cible ») : le héros se fige
+## au contact, qu'il donne le coup ou le reçoive — même durée des deux côtés,
+## lue dans `event.hit_stop`, jamais inventée ici.
+var _hitstop_timer: float = 0.0
 
 var _dodge_elapsed: float = 0.0
 var _dodge_direction: Vector3 = Vector3.ZERO
@@ -231,6 +235,12 @@ func current_intent() -> InputIntent:
 
 
 func _physics_process(delta: float) -> void:
+	# Hit-stop (§10.2) : tout se fige, caméra comprise — geler l'acteur en
+	# laissant courir sa caméra désynchroniserait les deux (§10.7). Les fronts
+	# d'entrée saisis pendant le gel restent dans l'intent : rien n'est perdu.
+	if _hitstop_timer > 0.0:
+		_hitstop_timer = maxf(0.0, _hitstop_timer - delta)
+		return
 	var intent: InputIntent = current_intent()
 
 	# La caméra est mise à jour avant tout le reste : le repère utilisé pour
@@ -353,6 +363,9 @@ func _process_locomotion(delta: float, intent: InputIntent) -> void:
 					_stamina.try_spend(cost)
 				_mode = Mode.ATTACKING
 				return
+			# 6.10 du plan de test : « jamais de silence sur une action
+			# impossible ». Le refus (endurance ou phase) s'entend.
+			_sfx(&"refuse")
 
 	# Esquive (§10.2) : depuis le sol, contre 15 d'endurance. L'appui mémorisé
 	# pendant une autre action est honoré ici, à la première fenêtre légale.
@@ -674,6 +687,8 @@ func _on_hit_received(event: DamageEvent) -> void:
 	if _mode == Mode.ATTACKING and _attack != null:
 		_attack.cancel()
 	_flash_timer = 0.12
+	_hitstop_timer = maxf(_hitstop_timer, event.hit_stop)
+	_sfx(&"hit_taken")
 	_stunlock_grace = hurt.stunlock_grace
 	_hurt_elapsed = 0.0
 	velocity.x = event.direction.x * event.knockback
@@ -726,6 +741,7 @@ func _on_died(_event: DamageEvent) -> void:
 		"CharacterVisual") as CharacterVisual if _visual_root != null else null
 	if _visual_root != null and (visual == null or visual.is_fallback_active()):
 		_visual_root.rotation.x = -1.3
+	_sfx(&"death")
 	_mode = Mode.DEAD
 
 
@@ -998,7 +1014,11 @@ func current_interact_target() -> Node3D:
 ## À zéro : couper la hitbox (le `cancel()` de §16.2), retirer l'exemplaire ;
 ## l'inventaire équipe la suivante ou les mains nues, et `_on_weapon_equipped`
 ## raccorde le tout.
-func _on_own_hit_confirmed(_event: DamageEvent, _target: HurtboxComponent) -> void:
+func _on_own_hit_confirmed(event: DamageEvent, _target: HurtboxComponent) -> void:
+	# §10.6 : le hit-stop vaut pour l'ATTAQUANT aussi — c'est le contact qui
+	# pèse, pas seulement l'encaissement.
+	_hitstop_timer = maxf(_hitstop_timer, event.hit_stop)
+	_sfx(&"hit_land")
 	if _inventory == null:
 		return
 	var weapon: WeaponInstance = _inventory.equipped()
@@ -1450,15 +1470,25 @@ func status() -> StatusEffectComponent:
 signal meal_eaten(meal_name: String)
 
 
+## §18.2 : un son par action importante. Passe par l'autoload — silencieux
+## si le son manque, jamais bloquant pour le gameplay.
+func _sfx(sound: StringName) -> void:
+	var audio: Node = get_node_or_null("/root/AudioManager")
+	if audio != null:
+		audio.call("play_sfx", sound)
+
+
 func _eat_quick_meal() -> void:
 	if _inventory == null or _status == null or _health == null:
 		return
 	var bus: Node = get_node_or_null("/root/EventBus")
 	var meal: Dictionary = _inventory.take_first_meal()
 	if meal.is_empty():
+		_sfx(&"refuse")
 		if bus != null:
 			bus.call("notify", "Aucun plat — cuisinez au feu de camp")
 		return
+	_sfx(&"ui_accept")
 	var heal: float = float(meal.get("heal", 0.0))
 	if heal > 0.0:
 		_health.heal(heal)

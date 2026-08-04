@@ -30,6 +30,10 @@ var direction: Vector3 = Vector3.ZERO
 var poise_damage: float = 0.0
 ## Impulsion de recul, en m/s à appliquer à la victime.
 var knockback: float = 0.0
+## Gel d'impact (§10.2, §10.6 : « hit-stop attaquant/cible ») — durée en
+## secondes pendant laquelle les DEUX corps se figent au contact. Portée par
+## l'événement pour que chaque camp lise LA MÊME valeur, celle de l'attaque.
+var hit_stop: float = 0.0
 ## Point d'impact approximatif, pour les VFX et les décals (§7.13).
 var position: Vector3 = Vector3.ZERO
 ## Élément (`electric`, …). Vide pour un coup neutre.
