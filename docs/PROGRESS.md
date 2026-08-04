@@ -2640,3 +2640,55 @@ Le binaire runner n'a pas été **lancé** (pas de GPU sur le runner non plus) :
 il est le produit de la même chaîne d'export que le binaire local vérifié,
 rien de plus. Profilage, budgets de frame et session 60 min : toujours
 impossibles ici (ISS-002).
+
+---
+
+## 2026-08-04 — Passe H-1 : silhouettes (montagnes, nuage, citadelle, arbres)
+
+### Ce qui a été fait
+
+Diagnostic sur `evidence/phaseH/vista_horizon_etage.png` contre la grille
+§30.2 (≈ 40/100, honnêtement), puis correction des quatre pires défauts :
+
+- **Montagnes** : 44 crêtes + 64 massifs lointains convertis de `BoxMesh`
+  (« mur de gratte-ciels ») en `PrismMesh` à sommet décentré déterministe
+  (R-015 : `left_to_right`, vérifié dans la source 4.7.1).
+- **Nuage** : 14 grumeaux en deux étages, hauteur proportionnelle au rayon
+  (0,9-1,5×), jupe sombre — la « soucoupe » venait de lobes de 8-13 m de
+  haut pour ~26 m de rayon.
+- **Citadelle §2.4** : masse 24→34 m, épaules latérales, tours coupées à
+  4 hauteurs, spire en 3 segments + cône (sommet y = 100), conduit cyan.
+  L'éclair frappe désormais le SOMMET DE LA SPIRE (cellule remontée à
+  y 118 ; invariant testé |impact − spire| ≤ 6 m).
+- **Arbres torsadés** : feuilles rouge sang (RGB 95/13/13) → variante olive
+  (ratio V/R 1,48), 4 gltf repointés, dérivation dans `ATTRIBUTIONS.md`.
+- **Palette** : `COL_GRASS_LIT` recalé sur l'ancre `#B2C85A`.
+
+Fail-first : 13 échecs avant, 22 assertions vertes après
+(`test_phase_h_silhouettes.gd`).
+
+### Dettes découvertes par la suite complète (corrigées dans la foulée)
+
+1. Deux worktrees d'agents FUSIONNÉS traînaient dans `.claude/worktrees/`
+   → 228 faux « parse errors » (doublons de `class_name`). Supprimés.
+2. Le test de grâce anti-stunlock frappait 2× en 0,45 s : la fenêtre de
+   mercy (0,6 s, commit 9d55cf1) bloque désormais le 2e coup. Test recalé
+   sur [0,60 ; 0,85] s — son esprit (la grâce ne protège que la réaction)
+   est intact.
+3. Les berges de rivière pleine longueur (d3edd75) enterraient l'ancrage
+   de l'Arche de pierre 0,67 m sous leur pente. Berges percées sur la
+   travée du pont (x −24..−4) : le site garde son lit aménagé.
+
+### Prochaine action exacte
+
+Capture `VistaCamera_Hero01` depuis l'arbre committé (mêmes paramètres que
+la baseline `vista_horizon_etage` : 2560×1440, 60 frames, VALLEY_VISTA=1),
+comparaison avant/après, score §30.2 honnête, evidence + STATUS. Puis
+passe H-2 : composition de crête (le spawn regarde un pré plat — la
+North Star regarde une vallée EN CONTREBAS) et sol/chemins.
+
+### Limites honnêtes
+
+Rendu llvmpipe : la capture prouve la composition et les couleurs, jamais
+la performance. Le score §30.2 restera une auto-évaluation tant qu'aucune
+revue contradictoire à contexte frais n'a tranché.

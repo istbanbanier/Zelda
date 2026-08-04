@@ -163,8 +163,14 @@ func test_a_blow_knocks_the_player_back_with_brief_control_loss() -> void:
 
 func test_stunlock_grace_blocks_the_reaction_but_never_the_damage() -> void:
 	## §10.5, au mot près : la protection anti-stunlock rend le CONTRÔLE, jamais
-	## les points de vie. Deux coups en cadence : les deux blessent, seul le
+	## les points de vie. Deux coups espacés : les deux blessent, seul le
 	## premier renverse.
+	##
+	## Depuis la fenêtre de MERCY (0,6 s d'invulnérabilité aux dégâts après un
+	## coup encaissé — plan de test 2.6), le second coup doit tomber dans
+	## [0,60 ; 0,85] s : après la mercy (sinon il ne coûte rien — c'est voulu,
+	## et testé ailleurs), mais encore DANS la grâce anti-stunlock, dont ce
+	## test-ci prouve qu'elle ne protège que la réaction.
 	await _setup()
 	var hitbox: HitboxComponent = HitboxComponent.new()
 	hitbox.team = &"enemies"
@@ -186,8 +192,9 @@ func test_stunlock_grace_blocks_the_reaction_but_never_the_damage() -> void:
 	hitbox.deactivate()
 	check_equal(_player.mode(), PlayerController.Mode.HURT, "premier coup : réaction")
 
-	# Attendre la fin de la réaction (0,25 s) mais rester DANS la grâce (0,85 s).
-	await _settle(20)
+	# Attendre la fin de la réaction (0,25 s) ET l'expiration de la mercy
+	# (0,6 s), mais rester DANS la grâce (0,85 s) : ~tick 41 ≈ 0,70 s.
+	await _settle(38)
 	check_equal(_player.mode(), PlayerController.Mode.LOCOMOTION, "contrôle rendu")
 	hitbox.activate(8.0, 0.0, 3.0)
 	await _settle(3)
@@ -198,8 +205,10 @@ func test_stunlock_grace_blocks_the_reaction_but_never_the_damage() -> void:
 	check_equal(_player.mode(), PlayerController.Mode.LOCOMOTION,
 		"le second coup, dans la grâce, ne reprend pas le contrôle")
 
-	# La grâce expire : un troisième coup renverse à nouveau.
-	await _settle(40)   # au-delà des 0,85 s depuis le premier
+	# La grâce expire (0,85 s depuis le premier), et la mercy du DEUXIÈME
+	# dégât (0,6 s depuis ~0,70 s → ~1,31 s) aussi : un troisième coup blesse
+	# et renverse à nouveau.
+	await _settle(48)
 	hitbox.activate(8.0, 0.0, 3.0)
 	await _settle(3)
 	hitbox.deactivate()

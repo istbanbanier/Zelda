@@ -212,10 +212,22 @@ func _build_plains_and_river() -> void:
 	#
 	# 3,5 m de dénivelé sur 4 m d'emprise = 41°, sous la limite de pente de 46°
 	# (§8.2) : la berge se remonte à pied, partout, sans détour par un gué.
-	_ramp("RiverBankSouth", Vector3(0, 2.0, 16), Vector3(0, -1.5, 12), 512.0,
-		COL_RIVERBED)
-	_ramp("RiverBankNorth", Vector3(0, 2.0, 4), Vector3(0, -1.5, 8), 512.0,
-		COL_RIVERBED)
+	# Les berges ÉPARGNENT la travée de l'Arche de pierre (x −24 à −4) : le
+	# site du pont aménage son propre lit — berge sèche, champignons à l'ombre
+	# du tablier, ancrage de récompense à y −1,5 et « RampeDeRive » dédiée.
+	# La berge pleine longueur enterrait cet ancrage 0,67 m sous sa pente
+	# (audit des ancrages, suite H-1). La sortie du lit reste garantie sous
+	# l'arche : rampe du site, et segments de berge à moins de 10 m.
+	for segment: Array in [
+		["West", -140.0, 232.0], ["East", 126.0, 260.0],
+	]:
+		var seg_name: String = segment[0]
+		var seg_x: float = segment[1]
+		var seg_width: float = segment[2]
+		_ramp("RiverBankSouth%s" % seg_name, Vector3(seg_x, 2.0, 16),
+			Vector3(seg_x, -1.5, 12), seg_width, COL_RIVERBED)
+		_ramp("RiverBankNorth%s" % seg_name, Vector3(seg_x, 2.0, 4),
+			Vector3(seg_x, -1.5, 8), seg_width, COL_RIVERBED)
 	# Deux gués : la route du donjon (ouest) et la route du pylône (est).
 	_slab("FordWest", Vector2(20, 10), Vector2(12, 12), 2.0, COL_GRASS_DARK)
 	_slab("FordEast", Vector2(95, 10), Vector2(12, 12), 2.0, COL_GRASS_DARK)
