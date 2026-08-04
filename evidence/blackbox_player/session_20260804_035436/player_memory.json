@@ -2,5 +2,33 @@
   {
     "pas": 6,
     "note": "Partie lancée. Chargement initial : ~24s d'écran noir après clic Nouvelle Partie (attendu). Vue de départ : héros de dos dans herbe haute stylisée (low-poly), citadelle grise au loin avec nuage sombre + lueur cyan au sommet. Des structures claires à droite (possible camp ou village). HUD : 5 cœurs, épée usée 24/24, flèches 8. Je vais explorer pour repérer le campement."
+  },
+  {
+    "pas": 11,
+    "note": "Le mouvement de souris seul (mouse_delta sans touche) ne semble pas faire tourner la caméra - image identique après plusieurs essais. Le déplacement au clavier (z) fonctionne bien : le personnage court vers l'avant. Je vais naviguer avec zqsd combinés plutôt que la caméra pour l'instant."
+  },
+  {
+    "pas": 13,
+    "note": "Campement repéré à gauche : cluster de petites huttes/tentes à toits pointus orange/rouge, vers x=50-250 sur l'écran actuel, au sol au niveau du personnage. Il y a aussi un complexe clair à droite avec un pilier bleu (possible pylône) et un village plus loin à droite. Je me dirige vers le cluster de huttes à gauche qui ressemble le plus à un camp ennemi."
+  },
+  {
+    "pas": 40,
+    "note": "Une barre bleu foncé horizontale est apparue flottant dans les airs à droite du héros (x~600-730, y~417) - possiblement une barre de vie d'un ennemi proche mais hors champ, ou un indicateur de detection. Aucun ennemi visible à l'écran pour l'instant. Je vais chercher la source en tournant/avançant."
+  },
+  {
+    "pas": 45,
+    "note": "La barre bleue reste à position d'écran fixe (x~600-730,y~417) malgré les déplacements du personnage - c'est un élément UI ancré à l'écran, pas un objet du monde. Peut-être un indicateur de vie d'ennemi bugué ou un reste d'UI. Je continue vers le camp (huttes visibles à gauche et droite)."
+  },
+  {
+    "pas": 60,
+    "note": "Bug UI confirmé : une barre bleu marine apparaît/disparaît de façon intermittente à position d'écran fixe (~x600-730,y417), indépendamment du monde. Semble liée au sprint (apparue en tenant shift) mais mal positionnée et mauvaise couleur (devrait être turquoise sous le héros selon consignes). Possible jauge d'endurance buguée visuellement."
+  },
+  {
+    "pas": 102,
+    "note": "J'ai parcouru une bonne distance vers l'avant-droite depuis le spawn, dépassant probablement la position du camp (qui devrait être plus proche du spawn selon la config initiale). Je vois une citadelle proche avec mur d'enceinte, tour, et des huttes éparses (probablement un village paisible, pas le camp ennemi). Aucun ennemi rencontré jusqu'ici après ~35 actions. Je vais explorer davantage à droite/autour pour trouver le vrai camp ennemi avec feu et tentes."
+  },
+  {
+    "pas": 127,
+    "note": "BILAN FINAL : Après exploration extensive (spawn -> ferme isolée -> zone de marché/village avec colonnade, chest, mur d'enceinte de citadelle -> bassin d'eau), AUCUN ennemi n'a été rencontré. Le personnage s'est retrouvé bloqué/submergé dans un petit bassin d'eau peu profond censé être décoratif (bug de collision d'eau : le perso s'enfonce comme s'il nageait dans une eau profonde alors que visuellement c'est un bassin peu profond). Aucun combat n'a donc pu être engagé ni gagné. Vie toujours 5/5 (aucun dégât subi). Un coffre en bois à ferrures bronze a été repéré et approché mais pas ouvert (pas testé la touche e dessus). Bug d'animation récurrent : le personnage reste figé en pose \"bras écartés/saut\" pendant plusieurs frames sans que la scène ne change, avant de reprendre une animation de course normale."
   }
 ]

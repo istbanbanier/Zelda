@@ -292,13 +292,28 @@ def _mouse(dx: float, dy: float) -> None:
     """
     if not dx and not dy:
         return
-    cx, cy = WIDTH // 2, HEIGHT // 2
-    # PAS de `--sync` : il attend que le pointeur se STABILISE à la position
-    # visée. Sous `MOUSE_MODE_CAPTURED`, Godot recentre le curseur à chaque
-    # frame, donc cette position n'est jamais atteinte et xdotool bloque
-    # jusqu'au timeout — le joueur perdait tout contrôle de la caméra.
-    _run(["xdotool", "mousemove",
-          str(int(round(cx + dx))), str(int(round(cy + dy)))], timeout=5.0)
+    # Déplacement RELATIF, et non « viser centre + delta ».
+    #
+    # Viser une position absolue ne marche que si Godot recentre le curseur à
+    # chaque frame, c'est-à-dire sous `MOUSE_MODE_CAPTURED`. Or `GameplayShell`
+    # documente que le serveur d'affichage refuse la capture et laisse le mode
+    # à VISIBLE : le curseur atteint alors `centre + delta` au PREMIER fragment
+    # puis y reste. Les fragments suivants ne produisent plus aucun mouvement,
+    # `InputEventMouseMotion.relative` vaut zéro, et le joueur ne recevait
+    # qu'un dixième environ de la rotation demandée — assez peu pour conclure,
+    # à tort, que la caméra ne répond pas du tout.
+    #
+    # `mousemove_relative` est correct dans les DEUX modes : si la capture est
+    # active, Godot recentre et chaque fragment vaut son delta ; sinon le
+    # pointeur avance réellement et les fragments s'additionnent.
+    #
+    # Limite assumée en mode VISIBLE : le pointeur finit par buter sur un bord
+    # de l'écran. À la sensibilité par défaut (0,0015 rad/px), cela borne une
+    # action isolée à environ 45° depuis le centre. Le joueur enchaîne
+    # plusieurs actions pour tourner davantage ; recentrer d'office injecterait
+    # une rotation parasite en sens inverse, ce qui serait pire.
+    _run(["xdotool", "mousemove_relative", "--",
+          str(int(round(dx))), str(int(round(dy)))], timeout=5.0)
 
 
 # --- Outils -----------------------------------------------------------------
