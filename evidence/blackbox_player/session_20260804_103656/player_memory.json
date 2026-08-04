@@ -1,0 +1,14 @@
+[
+  {
+    "pas": 2,
+    "note": "CRASH : après ~13 min de jeu, en avançant simplement (touche z, terrain plat, prairie, près d'un hameau à huttes de pierre et étals rayés au sud-ouest de la citadelle), écran noir soudain puis RETOUR A L'ECRAN-TITRE. \"Continuer\" toujours grisé => aucune sauvegarde, progression perdue. Aucun combat, aucune interaction déclenchée avant.\nAUTRES DEFAUTS OBSERVES :\n- Pose bras-en-croix (T-pose) du héros à l'apparition et en permanence dès qu'il quitte le sol => animation de saut/chute absente.\n- Endurance : jauge turquoise apparait au 1er sprint, se vide, puis ne se régénère plus (sprint indisponible ensuite).\n- Rotation caméra clampée : 350px=rien, 1000px=~23°, 2500px=rien.\n- Aucun ennemi rencontré sur tout le trajet ; hameau visité désert (huttes, étals rayés, charrette), pas de feu de camp.\nPLAN 2 : au spawn, la citadelle est au CENTRE. Aller vers la DROITE (~1000px) puis avancer : c'est là qu'était le pylône cyan et, entre les deux, la zone la plus construite."
+  },
+  {
+    "pas": 2,
+    "note": "CORRECTION IMPORTANTE : l'écran noir puis le retour au titre N'ÉTAIENT PAS UN CRASH DU JEU. C'était un redémarrage externe accidentel de la session. NE PAS le rapporter comme un défaut du jeu. Un écran de chargement avec pourcentage a été ajouté depuis.\nRESTENT VALIDES (observés à l'image) : pose bras-en-croix hors du sol, endurance non régénérée, rotation caméra clampée, hameau désert sans feu ni ennemi.\nPLAN 2 inchangé : depuis le spawn, citadelle au centre => balayer, puis privilégier la DROITE (zone du pylône cyan)."
+  },
+  {
+    "pas": 59,
+    "note": "BILAN FINAL : objectif NON atteint. Aucun ennemi rencontré en 2 sessions et plusieurs centaines de mètres parcourus (crête de départ -> prairie -> hameau -> esplanade au pied de la citadelle -> rivière). Aucun feu de camp, aucune silhouette mobile, aucun PNJ. Seul être vivant aperçu : un oiseau noir qui traverse le ciel.\nVERIFIE : clic gauche déclenche bien 2 poses d'attaque différentes (l'attaque répond). Touche c : jamais aucun effet visible, donc jamais de cible à portée.\nDEFAUTS CONFIRMES A L'IMAGE : pose bras-en-croix dès que le héros quitte le sol ; caméra qui bute puis se libère par à-coups ; caméra qui traverse le héros (gros plan sur son bras) ; caméra qui passe sous la surface de l'eau ; caméra plaquée contre les talus (2/3 d'écran vert opaque) ; eau qui englue ; endurance très lente à revenir ; barre de chargement qui stagne longtemps à 45%."
+  }
+]
