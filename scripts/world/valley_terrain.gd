@@ -1145,6 +1145,28 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	_slab("DungeonPlateau", Vector2(0, -210), Vector2(130, 90), 34.0, COL_ROCK)
 	# Même règle que la rampe du pylône : arrivée au ras du bord nord (z = -165).
 	_ramp("DungeonRamp", Vector3(0, 2, -110), Vector3(0, 34, -165), 16.0, COL_ROCK)
+	# Jupes de la FACE SUD du plateau : c'est ELLE, pas le mur de bordure,
+	# qui formait la bande plate au centre du cadre (mesure H-2b : la zone
+	# #A9B5B8 uniforme est à 315 m, le mur est à 250 m derrière). Prismes
+	# ocre sombre de part et d'autre de la rampe, sommets sous le rebord —
+	# la falaise porte la citadelle, elle ne peut pas être une dalle.
+	var plateau_skirts: Node3D = Node3D.new()
+	plateau_skirts.name = "PlateauSkirts"
+	add_child(plateau_skirts)
+	var rock_shade: Color = Color(0.50, 0.33, 0.21)
+	for side_sign: float in [-1.0, 1.0]:
+		for i: int in range(7):
+			var t_skirt: float = (float(i) + 0.5) / 7.0
+			var x_skirt: float = side_sign * (12.0 + 51.0 * t_skirt) 				+ 3.0 * sin(t_skirt * 17.3 + side_sign)
+			var h_skirt: float = 26.0 + 9.0 * sin(t_skirt * 9.1 + side_sign * 2.3) 				+ 5.0 * sin(t_skirt * 19.7)
+			var d_skirt: float = 9.0 + 4.0 * sin(t_skirt * 7.9 + side_sign)
+			var w_skirt: float = 15.0 + 6.0 * sin(t_skirt * 5.3 + side_sign * 1.7)
+			_visual_prism("PlateauSkirt%s%d" % ["W" if side_sign < 0.0 else "E", i],
+				plateau_skirts,
+				Vector3(x_skirt, BASE_Y + h_skirt * 0.5, -164.0),
+				Vector3(d_skirt, h_skirt, w_skirt),
+				rock_shade if i % 3 != 1 else COL_ROCK,
+				true, 0.5 + 0.24 * sin(t_skirt * 11.9 + side_sign * 2.9))
 	# Proxy de citadelle : masse centrale, quatre tours, cœur cyan — la
 	# silhouette du fond de la vue d'ouverture (§3.2 : 300–420 m du spawn).
 	var citadel: Node3D = Node3D.new()
@@ -1876,10 +1898,19 @@ func _ground_material() -> StandardMaterial3D:
 	# aggravé par la perte de contraste du seamless (notée dans la doc 4.7).
 	# 0,02 sur 512 px : motifs ~8 m monde (méso), contraste réel.
 	noise.frequency = 0.02
+	# La distribution FBM est gaussienne : presque tout tombe autour de 0,5.
+	# Un gradient étalé sur 0..1 donnait un quasi-aplat (sonde : écart-type
+	# 0,039). Trois octaves + gradient RESSERRÉ sur la bande centrale
+	# [0,36 ; 0,66] : écart-type 0,094 mesuré par la même sonde — la
+	# variation macro existe VRAIMENT, et l'invariant est testé sur la
+	# texture générée, pas sur les réglages.
+	noise.fractal_octaves = 3
 	var ramp: Gradient = Gradient.new()
-	ramp.set_color(0, Color(0.267, 0.408, 0.169))   # olive profond #446B2B
-	ramp.add_point(0.55, Color(0.365, 0.561, 0.239))  # ancre #5D8F3D au médian
-	ramp.set_color(2, Color(0.498, 0.663, 0.306))   # olive éclairé #7FA94E
+	ramp.set_color(0, Color(0.267, 0.408, 0.169))     # olive profond #446B2B
+	ramp.add_point(0.36, Color(0.267, 0.408, 0.169))
+	ramp.add_point(0.52, Color(0.365, 0.561, 0.239))  # ancre #5D8F3D
+	ramp.add_point(0.66, Color(0.498, 0.663, 0.306))  # olive éclairé #7FA94E
+	ramp.set_color(ramp.get_point_count() - 1, Color(0.498, 0.663, 0.306))
 	var texture: NoiseTexture2D = NoiseTexture2D.new()
 	texture.noise = noise
 	texture.color_ramp = ramp

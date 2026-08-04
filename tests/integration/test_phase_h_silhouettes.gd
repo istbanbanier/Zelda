@@ -165,6 +165,29 @@ func test_h2_jupes_de_mur_sol_macro_et_colonne_d_eclair() -> void:
 			"derrière la citadelle, les jupes restent SOUS ses gradins (top %.1f ≤ 44)"
 				% worst_behind)
 
+	# H-2c : la bande plate au CENTRE du cadre était la face sud du plateau
+	# du donjon (130 × 42 m à 315 m), pas le mur de bordure — l'habiller.
+	var plateau_skirts: Node = terrain.get_node_or_null("PlateauSkirts")
+	check_not_null(plateau_skirts, "les jupes du plateau du donjon existent")
+	if plateau_skirts != null:
+		var plateau_shapes: Dictionary = _count_shapes(plateau_skirts)
+		check_equal(int(plateau_shapes["boxes"]), 0,
+			"aucune jupe de plateau n'est une boîte")
+		check(int(plateau_shapes["prisms"]) >= 12,
+			"la falaise du plateau est habillée (%d prismes)"
+				% int(plateau_shapes["prisms"]))
+		var rim_break: bool = false
+		for child: Node in plateau_skirts.get_children():
+			var skirt: MeshInstance3D = child as MeshInstance3D
+			if skirt == null:
+				continue
+			var prism: PrismMesh = skirt.mesh as PrismMesh
+			if prism != null \
+					and skirt.position.y + prism.size.y * 0.5 > 34.2:
+				rim_break = true
+		check(not rim_break,
+			"aucune jupe ne dépasse le rebord du plateau (la voie vers la porte reste dégagée)")
+
 	var plain: MeshInstance3D = terrain.get_node_or_null("PlainSouth/PlainSouthMesh") \
 		as MeshInstance3D
 	check_not_null(plain, "la dalle de plaine sud existe")
@@ -174,6 +197,33 @@ func test_h2_jupes_de_mur_sol_macro_et_colonne_d_eclair() -> void:
 			"le sol porte une variation macro (NoiseTexture2D)")
 		check(ground != null and ground.uv1_triplanar and ground.uv1_world_triplanar,
 			"…projetée en triplanar MONDE : continue d'une dalle à l'autre")
+		# L'invariant se mesure sur la TEXTURE GÉNÉRÉE, pas sur les réglages :
+		# la première version avait tous les drapeaux corrects et un
+		# quasi-aplat (écart-type 0,039 — la distribution FBM concentre tout
+		# autour de 0,5). Seuil 0,06 : en dessous, la « variation » ne se
+		# voit pas.
+		if ground != null and ground.albedo_texture is NoiseTexture2D:
+			var noise_texture: NoiseTexture2D = ground.albedo_texture as NoiseTexture2D
+			var image: Image = noise_texture.get_image()
+			if image == null:
+				await noise_texture.changed
+				image = noise_texture.get_image()
+			check_not_null(image, "la texture de bruit est générée")
+			if image != null:
+				var total: float = 0.0
+				var squares: float = 0.0
+				var samples: int = 0
+				for py: int in range(0, image.get_height(), 8):
+					for px: int in range(0, image.get_width(), 8):
+						var luma: float = image.get_pixel(px, py).get_luminance()
+						total += luma
+						squares += luma * luma
+						samples += 1
+				var mean: float = total / float(samples)
+				var deviation: float = sqrt(maxf(0.0, squares / float(samples) - mean * mean))
+				check(deviation >= 0.06,
+					"la variation macro se VOIT : écart-type luma %.3f ≥ 0,06 (aplat : 0,039)"
+						% deviation)
 
 	var storm: StormCell = valley.get_node("CitadelStorm") as StormCell
 	check_not_null(storm, "la cellule d'orage existe")
