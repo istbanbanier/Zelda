@@ -2534,3 +2534,64 @@ table correcte mais non appliquée échoue).
 Le parcours A s'est arrêté à l'approche du camp : **aucun combat n'a été
 gagné**, donc aucune note sur le combat n'est recevable. `BL-01` reste ouvert —
 le jeu complet n'a jamais été terminé en boîte noire.
+
+---
+
+## 2026-08-04 — Le joueur ne bougeait pas : le harnais parlait la mauvaise disposition
+
+Deux sessions blackbox successives se sont arrêtées avant le camp, sans combat.
+La première a conclu à une « limite invisible » du monde. C'était faux, et la
+mesure le montre : entre deux captures séparées par 2 s de sprint, la bande de
+**fond** (y = 100..300) ne variait pas d'un pixel — `0.000`. Un personnage
+bloqué par une collision fait quand même bouger la caméra. Là, rien.
+
+### La cause
+
+`project.godot` mappe ses actions en `physical_keycode` : `move_forward` = 87
+(W), `move_left` = 65 (A). C'est **correct** — un code physique désigne une
+position, étiquetée selon le clavier US, et c'est exactement ainsi qu'on écrit
+« AZERTY : Z avance, Q va à gauche » sans casser le QWERTY.
+
+Le harnais, lui, envoyait `xdotool keydown z` sur un Xvfb en disposition **US** :
+la position du Z américain, jamais celle du W. Aucune action de déplacement ne
+pouvait se déclencher.
+
+Ce qui a mis sur la piste, c'est une **asymétrie** : `Échap` ouvrait bien la
+pause et les clics de menu fonctionnaient. Or ce sont précisément les entrées
+identiques dans les deux dispositions. Seules les lettres déplacées échouaient.
+
+### Correction et preuve
+
+`KEYMAP` traduit désormais l'étiquette AZERTY vers la position physique
+(`z` → keysym `w`, `q` → keysym `a`), et `shift`/`ctrl` passent aux keysyms
+canoniques. Vérifié à deux niveaux — livraison des touches par `xev` sur un
+Xvfb jetable, puis bout en bout dans le jeu : ancien mapping `0.013` (bruit),
+nouveau `1.782`, puis sprint `13.27`, gauche `50.80`, arrière `20.25`, droite
+`28.58`, saut `17.19`. Preuve : `evidence/blackbox_player/fix_clavier_20260804_034919/`.
+
+Un second défaut du harnais a été corrigé au passage : `xdotool mousemove
+--sync` gelait 60 s chaque rotation de caméra, parce qu'il attend une position
+que Godot ne laisse jamais atteindre en souris capturée. Le joueur n'avait donc
+aucune caméra non plus.
+
+### Ce que cela change
+
+Le héros traverse la prairie, atteint une clairière d'où les huttes du camp
+sont visibles, et la **jauge d'endurance turquoise** apparaît au sprint — un
+élément d'interface qu'aucun playtest n'avait encore pu observer.
+
+### Prochaine action exacte
+
+1. Dépouiller le parcours du joueur vierge lancé sur la version corrigée, dont
+   l'objectif unique est de **gagner un combat**. Tant qu'aucun combat n'est
+   gagné, `BL-01` reste ouvert et aucune note de combat n'est recevable.
+2. Corriger `S1 — Le menu Pause enferme le joueur` (voir `KNOWN_ISSUES.md`) :
+   c'est le prochain blocage sur le chemin critique, et il perd la partie sur
+   place. Piste à instruire : `process_mode` des nœuds du panneau.
+3. Ajouter un écran de chargement (`S2`) : 32 à 65 s de noir muet, deux joueurs
+   ont cru à un plantage.
+
+### Limites honnêtes
+
+Le correctif prouve la **locomotion**, rien d'autre. Combat, endurance,
+durabilité, arc, esquive, donjon et boss restent `UNVERIFIED` en boîte noire.
