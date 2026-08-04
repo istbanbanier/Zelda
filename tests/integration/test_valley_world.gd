@@ -206,8 +206,12 @@ func test_the_spawn_ridge_holds_the_player_and_shows_the_landmarks() -> void:
 			break
 		await _tree().physics_frame
 	check(grounded, "le joueur atterrit sur la crête")
-	check(absf(player.global_position.y - 24.0) < 1.0,
-		"…à l'altitude de la crête (§3.3 : 24) — y = %.1f" % player.global_position.y)
+	# H-5 : crête à 32 m — §3.3 donne 24 comme point de départ ET la clause
+	# « les coordonnées peuvent évoluer » ; le contrebas de 22 m bornait ciel
+	# et profondeur (mesure H-4), la relation héros→camp→pylône→citadelle
+	# est inchangée.
+	check(absf(player.global_position.y - 32.0) < 1.0,
+		"…à l'altitude de la crête (H-5 : 32) — y = %.1f" % player.global_position.y)
 
 	var pylon: Node3D = valley.get_node_or_null("Terrain/PylonShaft") as Node3D
 	var keep: Node3D = valley.get_node_or_null("Terrain/CitadelProxy/Keep") as Node3D
@@ -234,8 +238,8 @@ func test_the_spawn_ridge_holds_the_player_and_shows_the_landmarks() -> void:
 	if smoke != null:
 		var mesh_height: float = (smoke.mesh as CylinderMesh).height
 		var top_y: float = smoke.global_position.y + mesh_height * 0.5
-		check(top_y > 30.0,
-			"le sommet de la fumée dépasse l'œil de crête (%.1f m > 30)" % top_y)
+		check(top_y > 40.0,
+			"le sommet de la fumée dépasse l'œil de crête (%.1f m > 40 — H-5)" % top_y)
 		check(smoke.get_script() != null,
 			"la fumée est animée — une colonne statique est un décor, pas un signal")
 	check_not_null(valley.get_node_or_null("Camp/CampFireLight"),
@@ -334,7 +338,7 @@ func test_a_fall_out_of_the_world_is_rescued_to_spawn() -> void:
 	check(rescued, "le joueur est repêché")
 	if rescued:
 		# H-3 : le spawn est au BORD de la rupture de pente (z 146, §1.1).
-		check((player.global_position - Vector3(0, 24.3, 146)).length() < 3.0,
+		check((player.global_position - Vector3(0, 32.3, 146)).length() < 3.0,
 			"…au spawn de la crête")
 	_tree().root.remove_child(valley)
 	valley.queue_free()

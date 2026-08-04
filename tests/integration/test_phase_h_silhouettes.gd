@@ -352,13 +352,64 @@ func test_h4_le_fond_nord_laisse_le_ciel_et_la_pente_fleurit() -> void:
 			var off_slope: int = 0
 			for i: int in range(0, origins.size(), 97):
 				var origin: Vector3 = origins[i]
-				var slope_height: float = 2.0 + 22.0 * (origin.z - 60.0) / 84.0
+				var slope_height: float = 2.0 + 30.0 * (origin.z - 60.0) / 84.0
 				if absf(origin.y - slope_height) > 0.6:
 					off_slope += 1
 			check_equal(off_slope, 0,
 				"chaque brin échantillonné est À la hauteur de la pente (±0,6 m)")
 		check_not_null(flora.get_node_or_null("SlopeFlowers"),
 			"…et des fleurs, concentrées vers la rupture")
+
+	_tree().root.remove_child(valley)
+	valley.queue_free()
+	if game_state != null:
+		game_state.call("set_flow", 0)
+	await _settle(2)
+
+
+func test_h5_le_contrebas_se_creuse() -> void:
+	## Passe H-5 — le constat géométrique de H-4 : le ciel et la profondeur
+	## sont BORNÉS par le dénivelé héros→vallée (22 m ; la référence en a
+	## ~60). Crête relevée à 32 m : le contrebas passe à 30 m, la pente garde
+	## SON emprise (aucun nouveau conflit d'ancrage) en se raidissant à
+	## 19,6° — toujours marchable (§8.2 : 46° max).
+	##
+	## Invariant de GUIDAGE embarqué : la fumée du camp (S3 — quatre
+	## testeurs perdus sans elle) doit continuer de dépasser l'œil de crête.
+	## Relever la crête sans relever la fumée aurait silencieusement défait
+	## le correctif — c'est exactement le genre de régression croisée que ce
+	## test verrouille.
+	var game_state: Node = _tree().root.get_node_or_null("/root/GameState")
+	var valley: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(valley)
+	await _settle(10)
+
+	var space: PhysicsDirectSpaceState3D = valley.get_world_3d().direct_space_state
+	var crest_query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D \
+		.create(Vector3(0.0, 70.0, 150.0), Vector3(0.0, -10.0, 150.0))
+	crest_query.collision_mask = 1
+	var crest_hit: Dictionary = space.intersect_ray(crest_query)
+	var plain_query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D \
+		.create(Vector3(7.5, 70.0, 52.0), Vector3(7.5, -10.0, 52.0))
+	plain_query.collision_mask = 1
+	var plain_hit: Dictionary = space.intersect_ray(plain_query)
+	check(not crest_hit.is_empty() and not plain_hit.is_empty(),
+		"les deux sondes touchent le sol")
+	if not crest_hit.is_empty() and not plain_hit.is_empty():
+		var drop: float = (crest_hit["position"] as Vector3).y \
+			- (plain_hit["position"] as Vector3).y
+		check(drop >= 28.0,
+			"le contrebas héros→vallée fait %.1f m ≥ 28 (avant : 22)" % drop)
+
+	var smoke: MeshInstance3D = valley.get_node_or_null("Camp/SmokeColumn") \
+		as MeshInstance3D
+	check_not_null(smoke, "la colonne de fumée du camp existe toujours")
+	if smoke != null:
+		var top_y: float = smoke.global_position.y \
+			+ (smoke.mesh as CylinderMesh).height * 0.5
+		check(top_y > 40.0,
+			"la fumée dépasse le NOUVEL œil de crête (%.1f m > 40 — l'œil vista est à 34,9)"
+				% top_y)
 
 	_tree().root.remove_child(valley)
 	valley.queue_free()

@@ -32,7 +32,7 @@ albedo_color = Color(0.35, 0.22, 0.14, 1)
 [sub_resource type="CylinderMesh" id="SmokeMesh"]
 top_radius = 2.2
 bottom_radius = 0.35
-height = 28.0
+height = 40.0
 
 [sub_resource type="StandardMaterial3D" id="SmokeMat"]
 albedo_color = Color(0.42, 0.44, 0.5, 0.92)
@@ -69,10 +69,10 @@ navigation_mesh = ExtResource("9_navmesh")
 shadow_enabled = true
 
 [node name="SpawnPoint" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 24.3, 146)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 32.3, 146)
 
 [node name="Player" parent="." instance=ExtResource("3_player")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 24.3, 146)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 32.3, 146)
 
 ; §3.3 : « regard vers -Z » — le visuel fait demi-tour au spawn ; la première
 ; capture montrait le héros de FACE (nez cyan vers la caméra), §3.2 exige le dos.
@@ -90,7 +90,7 @@ mesh = SubResource("CampfireMesh")
 surface_material_override/0 = SubResource("CampfireMat")
 
 [node name="SmokeColumn" type="MeshInstance3D" parent="Camp"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 14.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 18.5, 0)
 mesh = SubResource("SmokeMesh")
 surface_material_override/0 = SubResource("SmokeMat")
 script = ExtResource("12_smoke")

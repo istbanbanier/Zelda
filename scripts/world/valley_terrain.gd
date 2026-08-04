@@ -284,7 +284,9 @@ func _build_plains_and_river() -> void:
 
 func _build_spawn_ridge_and_descent() -> void:
 	# Crête de départ : le héros domine la vallée (§3.2, spawn §3.3 (0, 24, 170)).
-	_slab("SpawnRidge", Vector2(0, 176), Vector2(100, 64), 24.0, COL_GRASS)
+	# H-5 : crete a 32 m — le contrebas passe de 22 a 30 m (la reference
+	# en a ~60 ; a 22, ciel et profondeur restaient bornes — mesure H-4).
+	_slab("SpawnRidge", Vector2(0, 176), Vector2(100, 64), 32.0, COL_GRASS)
 	# H-3 (§1.1, §3.3) : la North Star regarde la vallée EN CONTREBAS — la
 	# crête tombait en falaise de 22 m à z 144, la vista lisait « pré plat
 	# posé devant un décor ». Pente herbeuse marchable (22 m sur 84, ~15°),
@@ -296,9 +298,9 @@ func _build_spawn_ridge_and_descent() -> void:
 	# restent la route est. Invariant testé : aucune marche > 4 m sur l'axe.
 	# Dette graybox assumée : flancs verticaux (x −7,5 et 22,5), la ferme
 	# s'adosse au flanc ouest.
-	_ramp("SpawnSlope", Vector3(7.5, 24, 144), Vector3(7.5, 2, 60), 30.0, COL_GRASS)
+	_ramp("SpawnSlope", Vector3(7.5, 32, 144), Vector3(7.5, 2, 60), 30.0, COL_GRASS)
 	# Descente en S : trois rampes douces alternant la direction, deux paliers.
-	_ramp("DescentA", Vector3(20, 24, 146), Vector3(34, 16, 118), 10.0, COL_GRASS_DARK)
+	_ramp("DescentA", Vector3(20, 32, 146), Vector3(34, 16, 118), 10.0, COL_GRASS_DARK)
 	_slab("DescentLanding1", Vector2(36, 110), Vector2(14, 16), 16.0, COL_GRASS)
 	_ramp("DescentB", Vector3(34, 16, 104), Vector3(20, 8, 84), 10.0, COL_GRASS_DARK)
 	_slab("DescentLanding2", Vector2(18, 78), Vector2(14, 12), 8.0, COL_GRASS)
@@ -1491,7 +1493,7 @@ func _build_ground_variation() -> void:
 	add_child(variation)
 	var patches: Array[Array] = [
 		# [nom, centre xz, taille xz, sommet, couleur]
-		["CrestLit", Vector2(-8, 172), Vector2(64, 36), 24.02, COL_GRASS_LIT],
+		["CrestLit", Vector2(-8, 172), Vector2(64, 36), 32.02, COL_GRASS_LIT],
 		["BankSouth", Vector2(0, 18.6), Vector2(512, 5.0), 2.02, COL_GRASS_WET],
 		["BankNorth", Vector2(0, 1.4), Vector2(512, 5.0), 2.02, COL_GRASS_WET],
 		["MeadowEast", Vector2(150, 60), Vector2(90, 70), 2.02, COL_GRASS_LIT],
@@ -1612,10 +1614,10 @@ func _build_slope_flora() -> void:
 	flora.add_child(flowers)
 
 
-## Hauteur de la surface de la SpawnSlope (rampe (7,5, 24, 144) → (7,5, 2, 60))
+## Hauteur de la surface de la SpawnSlope (rampe (7,5, 32, 144) → (7,5, 2, 60))
 ## à une profondeur z donnée. La flore et le test partagent CETTE formule.
 func _slope_height(z: float) -> float:
-	return 2.0 + 22.0 * (clampf(z, 60.0, 144.0) - 60.0) / 84.0
+	return 2.0 + 30.0 * (clampf(z, 60.0, 144.0) - 60.0) / 84.0
 
 
 func _build_crest_meadow() -> void:
@@ -1781,8 +1783,8 @@ func _meadow_point(rng: RandomNumberGenerator, x_bounds: Vector2) -> Vector3:
 		var to_path: float = _distance_to_segment(Vector2(x, z),
 			Vector2(0, 154), Vector2(17, 147))
 		if to_path > 2.6:
-			return Vector3(x, 24.0, z)
-	return Vector3(x_bounds.x, 24.0, 168.0)
+			return Vector3(x, 32.0, z)
+	return Vector3(x_bounds.x, 32.0, 168.0)
 
 
 func _distance_to_segment(point: Vector2, a: Vector2, b: Vector2) -> float:
