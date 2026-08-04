@@ -27,7 +27,7 @@ extends Node
 ## de ces champs est un état valide — « position inconnue » — et le monde
 ## replace alors le joueur à son point d'apparition (§19.4) : la migration
 ## 2 → 3 ne pose donc AUCUN champ.
-const SCHEMA_VERSION: int = 3
+const SCHEMA_VERSION: int = 4
 const SAVE_DIR: String = "user://saves"
 const BACKUP_SUFFIX: String = ".bak"
 
@@ -156,6 +156,12 @@ func migrate(data: Dictionary, from_version: int, to_version: int) -> Dictionary
 				# une sauvegarde sans `player_position` signifie « position
 				# inconnue », et le monde reprend au point d'apparition
 				# (§19.4). Inventer une position ici serait mentir.
+				pass
+			3:
+				# 3 → 4 : santé/endurance (§19.1) et autosave par FUSION.
+				# Même doctrine : l'absence de `player_health` vaut « santé
+				# inconnue », et le monde repart à pleine vie — c'est ce que
+				# faisaient déjà toutes les sauvegardes v3.
 				pass
 			_:
 				push_warning("[save] aucune migration définie de %d vers %d — "

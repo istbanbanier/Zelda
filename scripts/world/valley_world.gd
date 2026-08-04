@@ -25,7 +25,7 @@ const SAFE_POINT_INTERVAL: float = 2.0
 ## (§19.1, défaut S2 du playtest externe no1 : « Continuer » replaçait sur la
 ## crête). Repli DOCUMENTÉ si la position est absente ou invalide : le spawn.
 const SAVE_SLOT: String = "slot0"
-const SAVE_SCHEMA: int = 3
+const SAVE_SCHEMA: int = 4
 
 ## §19.4 : « si position invalide, utiliser checkpoint ». Le fichier de
 ## sauvegarde est éditable à la main — bornes du monde jouable, PAS des
@@ -585,7 +585,17 @@ func _autosave() -> void:
 	for chest: Node in find_children("*", "Chest", true, false):
 		if (chest as Chest).is_opened():
 			opened.append(String((chest as Chest).chest_id))
-	save_system.call("save_slot", SAVE_SLOT, {
+	# FUSION, jamais écrasement (TESTS.md, bugs 2 et 3). Ce payload écrivait un
+	# dictionnaire figé : tout champ posé par une AUTRE scène disparaissait à
+	# chaque autosave — dont `boss_defeated`, que l'arène pose en fusionnant,
+	# et que le premier coffre ouvert après le retour en vallée remettait à
+	# false EN DUR. La victoire du joueur était effacée par sa propre
+	# exploration. On charge, on recouvre les champs que CETTE scène possède,
+	# on réécrit — exactement le modèle de `boss_arena.gd`.
+	var payload: Dictionary = {}
+	if bool(save_system.call("has_save", SAVE_SLOT)):
+		payload = save_system.call("load_slot", SAVE_SLOT) as Dictionary
+	payload.merge({
 		"schema": SAVE_SCHEMA,
 		"checkpoint": "valley.camp.start",
 		# §19.1 : position/rotation du joueur — en PRIMITIFS (§19.2 : jamais
@@ -597,6 +607,12 @@ func _autosave() -> void:
 			"z": _player.global_position.z,
 		},
 		"player_yaw": _player_visual_yaw(),
+		# §19.1 : « santé/endurance ». Sans elles, recharger soignait
+		# gratuitement — l'exploit qui vide le danger de son sens.
+		"player_health": _player.health().current() \
+			if _player.health() != null else 0.0,
+		"player_stamina": _player.stamina().current() \
+			if _player.stamina() != null else 0.0,
 		"weapons": weapons,
 		"equipped_index": inventory.equipped_index(),
 		"arrows": inventory.arrows(),
@@ -609,8 +625,10 @@ func _autosave() -> void:
 		# Lieux découverts : seuls des identifiants partent en sauvegarde
 		# (§19.2), et le journal refuse d'en re-récompenser un au retour.
 		"discoveries": discoveries.collect_state(),
-		"boss_defeated": false,
-	})
+	}, true)
+	# `boss_defeated` n'apparaît plus ici : ce champ appartient à l'ARÈNE. Une
+	# partie neuve le reçoit du menu principal ; la fusion le préserve ensuite.
+	save_system.call("save_slot", SAVE_SLOT, payload)
 
 
 func _apply_save() -> void:
@@ -659,6 +677,30 @@ func _apply_save() -> void:
 			if String((pickup as WeaponPickup).pickup_id) in _taken_pickups:
 				(pickup as WeaponPickup).mark_taken_silently()
 	_restore_player_transform(data)
+	_restore_player_vitals(data)
+
+
+## Santé/endurance (§19.1), traitées comme le transform : entrée NON FIABLE.
+## Un champ absent (sauvegarde v3), non numérique ou hors bornes est ignoré et
+## le joueur repart aux valeurs pleines — jamais de crash, jamais de mort au
+## chargement : une santé sauvegardée à zéro est un fichier incohérent (on ne
+## sauvegarde pas un mort), le plancher est donc 1.
+func _restore_player_vitals(data: Dictionary) -> void:
+	if _player == null:
+		return
+	var raw_health: Variant = data.get("player_health")
+	if _player.health() != null and (raw_health is float or raw_health is int):
+		var value: float = float(raw_health)
+		if is_finite(value) and value > 0.0:
+			_player.health().revive(maxf(1.0, value))
+		elif value <= 0.0:
+			push_warning("[save] santé sauvegardée invalide (%s) — pleine vie"
+				% str(raw_health))
+	var raw_stamina: Variant = data.get("player_stamina")
+	if _player.stamina() != null and (raw_stamina is float or raw_stamina is int):
+		var stamina: float = float(raw_stamina)
+		if is_finite(stamina) and stamina >= 0.0:
+			_player.stamina().set_current(stamina)
 
 
 ## §19.4 : « placer joueur au transform sûr » — APRÈS l'état du monde, AVANT
