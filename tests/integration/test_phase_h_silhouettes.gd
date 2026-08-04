@@ -289,6 +289,84 @@ func test_h3_la_crete_descend_en_pente_pas_en_falaise() -> void:
 	await _settle(2)
 
 
+func test_h4_le_fond_nord_laisse_le_ciel_et_la_pente_fleurit() -> void:
+	## Passe H-4. Deux offenseurs mesurés sur `vista_h3c_final` :
+	##  - le fond NORD culmine à 134 m (mur 70 + crêtes + pics) : depuis la
+	##    caméra (y 27, 400 m), il monte à ~15° d'élévation et réduit le ciel
+	##    à ~15-20 % du cadre — la référence en veut 38-48 %, avec un horizon
+	##    montagneux à Y 24-43 % de l'image (élévation ~4-10°). Plafonds côté
+	##    nord : crêtes ≤ 96 m, pics proches ≤ 96, rangée éloignée ≤ 112.
+	##  - la SpawnSlope est NUE : le « premier plan végétal » de §1.1 (Y
+	##    72-100 % du cadre) est la pente — brins et fleurs doivent
+	##    l'habiller, à SA hauteur (ils épousent l'inclinaison, pas un plan).
+	var game_state: Node = _tree().root.get_node_or_null("/root/GameState")
+	var valley: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(valley)
+	await _settle(8)
+
+	var terrain: Node = valley.get_node("Terrain")
+	# --- Plafonds du fond nord. ---
+	var worst_crest: float = -INF
+	for child: Node in terrain.get_node("BorderCrests").get_children():
+		var crest: MeshInstance3D = child as MeshInstance3D
+		if crest == null or not (crest.mesh is PrismMesh):
+			continue
+		if crest.position.z < -240.0:
+			worst_crest = maxf(worst_crest,
+				crest.position.y + (crest.mesh as PrismMesh).size.y * 0.5)
+	check(worst_crest > -INF and worst_crest <= 96.0,
+		"crêtes nord sous le plafond : sommet %.0f ≤ 96 (avant : 111)" % worst_crest)
+	var worst_peak: float = -INF
+	var worst_far_peak: float = -INF
+	var dressing: Node = terrain.get_node("MountainDressing")
+	for child: Node in dressing.get_children():
+		var peak: MeshInstance3D = child as MeshInstance3D
+		if peak == null or not (peak.mesh is PrismMesh):
+			continue
+		if peak.position.z > -240.0:
+			continue
+		var top: float = peak.position.y + (peak.mesh as PrismMesh).size.y * 0.5
+		if child.name.begins_with("FarPeak"):
+			worst_far_peak = maxf(worst_far_peak, top)
+		elif child.name.begins_with("Peak"):
+			worst_peak = maxf(worst_peak, top)
+	check(worst_peak > -INF and worst_peak <= 96.0,
+		"pics proches nord sous le plafond : %.0f ≤ 96 (avant : 134)" % worst_peak)
+	check(worst_far_peak > -INF and worst_far_peak <= 112.0,
+		"rangée éloignée nord sous le plafond : %.0f ≤ 112 (avant : 142)"
+			% worst_far_peak)
+
+	# --- Flore de la pente : les brins épousent l'inclinaison. ---
+	var flora: Node = terrain.get_node_or_null("SlopeFlora")
+	check_not_null(flora, "la pente porte sa flore")
+	if flora != null:
+		var blades: MultiMeshInstance3D = flora.get_node_or_null("SlopeBlades") \
+			as MultiMeshInstance3D
+		check_not_null(blades, "…des brins d'herbe")
+		if blades != null:
+			check(blades.multimesh.instance_count >= 3000,
+				"…en nombre (%d ≥ 3000)" % blades.multimesh.instance_count)
+			var origins: PackedVector3Array = blades.get_meta(&"origins",
+				PackedVector3Array()) as PackedVector3Array
+			check(origins.size() >= 3000, "…origines consignées pour la preuve")
+			var off_slope: int = 0
+			for i: int in range(0, origins.size(), 97):
+				var origin: Vector3 = origins[i]
+				var slope_height: float = 2.0 + 22.0 * (origin.z - 60.0) / 84.0
+				if absf(origin.y - slope_height) > 0.6:
+					off_slope += 1
+			check_equal(off_slope, 0,
+				"chaque brin échantillonné est À la hauteur de la pente (±0,6 m)")
+		check_not_null(flora.get_node_or_null("SlopeFlowers"),
+			"…et des fleurs, concentrées vers la rupture")
+
+	_tree().root.remove_child(valley)
+	valley.queue_free()
+	if game_state != null:
+		game_state.call("set_flow", 0)
+	await _settle(2)
+
+
 func test_les_feuilles_torsadees_sont_olive() -> void:
 	## La texture rouge sang (moyenne RGB 95/13/13) reste sur disque, mais plus
 	## AUCUN arbre du monde ne la référence : les quatre `.gltf` pointent vers

@@ -65,6 +65,7 @@ func _ready() -> void:
 	_build_paths()
 	_build_ground_variation()
 	_build_crest_meadow()
+	_build_slope_flora()
 
 
 ## ---------------------------------------------------------------------------
@@ -178,6 +179,12 @@ func _build_border_crests() -> void:
 			# elles évitent la répétition visible à laquelle un seul mènerait.
 			var height: float = 18.0 + 14.0 * sin(t * 7.3 + float(axis)) \
 				+ 9.0 * sin(t * 17.1 + float(axis) * 2.1)
+			# H-4 : côté NORD (axe 0), le fond mange le ciel — depuis la vista
+			# (y 27, ~400 m), un sommet à 111 m monte à ~12° d'élévation. La
+			# référence tient son horizon à Y 24-43 % du cadre (~4-10°).
+			# Plafond testé : sommet ≤ 96 (mur 70 + crête ≤ 26).
+			if axis == 0:
+				height = minf(height, 26.0)
 			var width: float = 34.0 + 16.0 * sin(t * 5.7 + float(axis) * 1.3)
 			var depth: float = BORDER_OUTER - BORDER_INNER
 			var centre: Vector3
@@ -1359,7 +1366,10 @@ func _dress_border_mountains() -> void:
 		for i: int in range(9):
 			var along: float = -240.0 + 60.0 * float(i) + rng.randf_range(-9.0, 9.0)
 			var height: float = rng.randf_range(58.0, 96.0)
-			if behind_citadel and absf(along) < 100.0:
+			if behind_citadel or (axis == 1 and along < -230.0):
+				# H-4 : plafond sur TOUT le côté nord (sommet ≤ 96), pas
+				# seulement l'axe de la citadelle — le ciel de la vista. Les
+				# COINS nord des murs est/ouest (z < −230) y participent.
 				height = minf(height, 58.0)
 			var warm: bool = rng.randf() < 0.45
 			var center: Vector3 = Vector3(along, 38.0 + height * 0.5, mid * sign_value) \
@@ -1376,8 +1386,9 @@ func _dress_border_mountains() -> void:
 		for i: int in range(5):
 			var along_far: float = -220.0 + 110.0 * float(i) + rng.randf_range(-14.0, 14.0)
 			var height_far: float = rng.randf_range(96.0, 122.0)
-			if behind_citadel and absf(along_far) < 110.0:
-				height_far = minf(height_far, 84.0)
+			if behind_citadel or (axis == 1 and along_far < -230.0):
+				height_far = minf(height_far,
+					84.0 if behind_citadel and absf(along_far) < 110.0 else 92.0)
 			var center_far: Vector3 = Vector3(along_far, 20.0 + height_far * 0.5,
 				(BORDER_OUTER - 3.0) * sign_value) if axis == 0 \
 				else Vector3((BORDER_OUTER - 3.0) * sign_value, 20.0 + height_far * 0.5,
@@ -1522,6 +1533,91 @@ const MEADOW_NEAR_RADIUS: float = 18.0
 
 ## MultiMesh PARTITIONNÉ (quatre cellules + fleurs), scatter déterministe,
 ## exclusion du chemin, vent par `SH_FoliageWind` — aucun recalcul CPU.
+## H-4 : la SpawnSlope est le PREMIER PLAN VÉGÉTAL de la vista (§1.1, la
+## « pente fleurie » de la référence) — nue, elle lisait « toboggan de golf ».
+## Brins qui ÉPOUSENT l'inclinaison (y calculé par la géométrie de la rampe,
+## invariant testé ±0,6 m) et fleurs concentrées vers la rupture, là où le
+## cadre les montre. Une seule cellule MultiMesh : 30 × 84 m, bien sous la
+## taille des cellules §7.5.
+func _build_slope_flora() -> void:
+	var flora: Node3D = Node3D.new()
+	flora.name = "SlopeFlora"
+	add_child(flora)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 20260805
+	var shader: Shader = load("res://shaders/foliage/foliage_wind.gdshader") as Shader
+	var tuft_material: ShaderMaterial = ShaderMaterial.new()
+	tuft_material.shader = shader
+	tuft_material.set_shader_parameter(&"blade_height", 0.45)
+	var blades: MultiMeshInstance3D = MultiMeshInstance3D.new()
+	blades.name = "SlopeBlades"
+	blades.material_override = tuft_material
+	var multimesh: MultiMesh = MultiMesh.new()
+	multimesh.transform_format = MultiMesh.TRANSFORM_3D
+	multimesh.use_colors = true
+	multimesh.mesh = _tuft_mesh()
+	multimesh.instance_count = 3600
+	var origins: PackedVector3Array = PackedVector3Array()
+	var placed: int = 0
+	while placed < multimesh.instance_count:
+		# Grappes comme la prairie (§7.5/§7.17) — un semis uniforme est un
+		# échec même à forte densité.
+		var cluster_x: float = rng.randf_range(-7.0, 22.0)
+		var cluster_z: float = rng.randf_range(62.0, 143.5)
+		var cluster_size: int = rng.randi_range(4, 8)
+		for j: int in range(cluster_size):
+			if placed >= multimesh.instance_count:
+				break
+			var x: float = clampf(cluster_x + rng.randf_range(-0.9, 0.9), -7.2, 22.2)
+			var z: float = clampf(cluster_z + rng.randf_range(-0.9, 0.9), 61.0, 143.8)
+			var y: float = _slope_height(z)
+			var basis: Basis = Basis(Vector3.UP, rng.randf_range(0.0, TAU)) \
+				.scaled(Vector3.ONE * rng.randf_range(0.7, 1.2))
+			var position: Vector3 = Vector3(x, y, z)
+			multimesh.set_instance_transform(placed, Transform3D(basis, position))
+			multimesh.set_instance_color(placed,
+				COL_GRASS.lerp(COL_GRASS_LIT, rng.randf()))
+			origins.append(position)
+			placed += 1
+	blades.multimesh = multimesh
+	blades.set_meta(&"origins", origins)
+	flora.add_child(blades)
+	# Fleurs : blanches et jaunes dominantes (§7.5), CONCENTRÉES vers la
+	# rupture (z 118-144) — c'est la bande que le cadre §3.2 montre en gros.
+	var flowers: MultiMeshInstance3D = MultiMeshInstance3D.new()
+	flowers.name = "SlopeFlowers"
+	var flower_multimesh: MultiMesh = MultiMesh.new()
+	flower_multimesh.transform_format = MultiMesh.TRANSFORM_3D
+	flower_multimesh.use_colors = true
+	var petal: BoxMesh = BoxMesh.new()
+	petal.size = Vector3(0.11, 0.09, 0.11)
+	var petal_material: ShaderMaterial = ShaderMaterial.new()
+	petal_material.shader = shader
+	petal.material = petal_material
+	flower_multimesh.mesh = petal
+	flower_multimesh.instance_count = 340
+	var petal_colors: Array[Color] = [
+		Color(0.95, 0.95, 0.91), Color(0.91, 0.79, 0.30), Color(0.95, 0.95, 0.91),
+		Color(0.91, 0.79, 0.30), Color(0.42, 0.56, 0.83),
+	]
+	for i: int in range(flower_multimesh.instance_count):
+		var z_flower: float = 144.0 - absf(rng.randf_range(0.0, 26.0)
+			* rng.randf())   # densité qui DÉCROÎT en descendant
+		var x_flower: float = rng.randf_range(-7.0, 22.0)
+		flower_multimesh.set_instance_transform(i,
+			Transform3D(Basis(Vector3.UP, rng.randf_range(0.0, TAU)),
+				Vector3(x_flower, _slope_height(z_flower) + 0.2, z_flower)))
+		flower_multimesh.set_instance_color(i, petal_colors[i % petal_colors.size()])
+	flowers.multimesh = flower_multimesh
+	flora.add_child(flowers)
+
+
+## Hauteur de la surface de la SpawnSlope (rampe (7,5, 24, 144) → (7,5, 2, 60))
+## à une profondeur z donnée. La flore et le test partagent CETTE formule.
+func _slope_height(z: float) -> float:
+	return 2.0 + 22.0 * (clampf(z, 60.0, 144.0) - 60.0) / 84.0
+
+
 func _build_crest_meadow() -> void:
 	var meadow: Node3D = Node3D.new()
 	meadow.name = "CrestMeadow"
