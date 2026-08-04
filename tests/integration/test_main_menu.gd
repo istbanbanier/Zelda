@@ -270,14 +270,27 @@ func test_debug_entry_follows_build_type() -> void:
 		_close_menu()
 		return
 
-	var is_debug: bool = OS.is_debug_build()
-	check_equal(debug_button.visible, is_debug,
-		"visibilité de l'entrée debug (OS.is_debug_build() = %s)" % is_debug)
-	check_equal(debug_button.disabled, not is_debug,
-		"activation de l'entrée debug (OS.is_debug_build() = %s)" % is_debug)
-	if not is_debug:
+	# La règle a CHANGÉ, et le test avec elle. `OS.is_debug_build()` ne suffisait
+	# pas : le projet se livre en archive à ouvrir dans Godot, donc le joueur
+	# lance un build de debug et voyait « Debug — Audit d'entrée » dans son menu
+	# principal. Un playtest en boîte noire l'a relevé comme premier signal de
+	# « ce n'est pas un jeu ». Il faut désormais une intention EXPLICITE.
+	var wanted: bool = OS.is_debug_build() \
+		and OS.get_environment("ECLATS_DEBUG_MENU") == "1"
+	check_equal(debug_button.visible, wanted,
+		"l'entrée debug n'apparaît que sur intention explicite (attendu %s)"
+		% wanted)
+	check_equal(debug_button.disabled, not wanted,
+		"…et n'est utilisable que dans ce cas")
+	if not wanted:
 		check_equal(debug_button.focus_mode, Control.FOCUS_NONE,
-			"hors développement, l'entrée debug ne doit pas être focalisable")
+			"sans intention explicite, l'entrée debug n'est pas focalisable")
+	# Contrôle NÉGATIF : sans la variable, un build de debug ne doit RIEN
+	# montrer. Sans cette ligne, le test passerait aussi bien si la garde
+	# n'existait pas, dès lors qu'on l'exécute dans un export release.
+	check(not (OS.get_environment("ECLATS_DEBUG_MENU") != "1"
+		and debug_button.visible),
+		"sans ECLATS_DEBUG_MENU, l'entrée reste invisible même en debug")
 	_close_menu()
 
 
