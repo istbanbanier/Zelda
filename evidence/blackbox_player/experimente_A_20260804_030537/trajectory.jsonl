@@ -5,3 +5,12 @@
 {"pas": 4, "outil": "wait", "capture": "evidence/blackbox_player/experimente_A_20260804_030537/captures/pas_0004_wait.png", "duree_ms": 3000, "t_reel": 20.0}
 {"pas": 5, "outil": "act", "capture": "evidence/blackbox_player/experimente_A_20260804_030537/captures/pas_0005_act.png", "touches": ["Return"], "souris": [0, 0], "duree_ms": 200, "refusees": [], "t_reel": 27.43}
 {"pas": 6, "outil": "wait", "capture": "evidence/blackbox_player/experimente_A_20260804_030537/captures/pas_0006_wait.png", "duree_ms": 5000, "t_reel": 35.96}
+{"pas": 6, "outil": "game_note", "note": "Après clic sur \"Nouvelle partie\", l'écran est resté totalement noir pendant plus de 10 secondes (attentes cumulées + une pression enter), sans aucune indication de chargement (pas de barre, pas de texte). Possible chargement long ou bug d'affichage.", "t_reel": 41.76}
+{"pas": 7, "outil": "wait", "capture": "evidence/blackbox_player/experimente_A_20260804_030537/captures/pas_0007_wait.png", "duree_ms": 5000, "t_reel": 49.37}
+{"pas": 8, "outil": "wait", "capture": "evidence/blackbox_player/experimente_A_20260804_030537/captures/pas_0008_wait.png", "duree_ms": 8000, "t_reel": 64.11}
+{"pas": 9, "outil": "act", "capture": "evidence/blackbox_player/experimente_A_20260804_030537/captures/pas_0009_act.png", "touches": ["z"], "souris": [0, 0], "duree_ms": 1000, "refusees": [], "t_reel": 78.29}
+{"pas": 10, "outil": "observe", "capture": "evidence/blackbox_player/experimente_A_20260804_030537/captures/pas_0010_observe.png", "t_reel": 151.15}
+{"pas": 11, "outil": "observe", "capture": "evidence/blackbox_player/experimente_A_20260804_030537/captures/pas_0011_observe.png", "t_reel": 222.38}
+{"pas": 11, "outil": "game_note", "note": "Deux appels game_act utilisant mouse_delta ont timeout (60s) sans erreur affichée dans le jeu ; la caméra ne semble pas avoir tourné. Possible problème de rotation caméra à la souris. Je vais essayer d'éviter mouse_delta seul et tester avec des durées plus courtes ou combiné à des touches.", "t_reel": 229.98}
+{"pas": 12, "outil": "act", "capture": "evidence/blackbox_player/experimente_A_20260804_030537/captures/pas_0012_act.png", "touches": ["z"], "souris": [0, 0], "duree_ms": 1200, "refusees": [], "t_reel": 234.86}
+{"pas": 13, "outil": "observe", "capture": "evidence/blackbox_player/experimente_A_20260804_030537/captures/pas_0013_observe.png", "t_reel": 243.62}

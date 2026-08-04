@@ -1,0 +1,6 @@
+[
+  {
+    "pas": 24,
+    "note": "BLOCAGE DÉFINITIF. Chronologie : (1) chargement de la vallée = ~64 s d'écran noir total, sans barre ni texte, après le clic \"Nouvelle partie\". (2) Une fois la vallée affichée, le héros n'a JAMAIS bougé : z, q, d, z+q, z+Maj (sprint) — le décor de fond est resté identique au pixel près sur toutes les captures. (3) Un panneau \"Pause\" a fini par s'afficher avec \"Reprendre\" encadré en doré. (4) Rien ne le referme : Échap, Entrée, Espace, clic sur \"Reprendre\", clic sur le curseur de sensibilité — aucun effet, l'image ne change pas d'un pixel hormis l'herbe qui ondule. Le jeu continue à dessiner (herbe animée, éclair cyan) mais n'accepte plus aucune commande. Je n'ai donc pas pu atteindre le campement ni engager le moindre combat. Éléments vus mais jamais atteints : tentes orange à gauche (x≈210), barricade rayée orange au centre-droit, pylône à sommet cyan à droite, citadelle sombre au centre sous un nuage d'orage avec éclair cyan récurrent."
+  }
+]

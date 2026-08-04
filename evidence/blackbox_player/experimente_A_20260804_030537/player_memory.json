@@ -1,0 +1,10 @@
+[
+  {
+    "pas": 6,
+    "note": "Après clic sur \"Nouvelle partie\", l'écran est resté totalement noir pendant plus de 10 secondes (attentes cumulées + une pression enter), sans aucune indication de chargement (pas de barre, pas de texte). Possible chargement long ou bug d'affichage."
+  },
+  {
+    "pas": 11,
+    "note": "Deux appels game_act utilisant mouse_delta ont timeout (60s) sans erreur affichée dans le jeu ; la caméra ne semble pas avoir tourné. Possible problème de rotation caméra à la souris. Je vais essayer d'éviter mouse_delta seul et tester avec des durées plus courtes ou combiné à des touches."
+  }
+]

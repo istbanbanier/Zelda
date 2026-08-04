@@ -1,0 +1,30 @@
+{"evenement": "demarrage", "display": ":77", "resolution": [1024, 768], "session": "session_20260804_031040", "fenetre": "2097155", "image_dessinee": true, "t_reel": 19.46}
+{"pas": 1, "outil": "observe", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0001_observe.png", "t_reel": 19.77}
+{"pas": 2, "outil": "click", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0002_click.png", "bouton": 1, "x": 511, "y": 387, "t_reel": 74.68}
+{"pas": 3, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0003_wait.png", "duree_ms": 8000, "t_reel": 88.21}
+{"pas": 4, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0004_wait.png", "duree_ms": 8000, "t_reel": 101.16}
+{"pas": 5, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0005_wait.png", "duree_ms": 8000, "t_reel": 115.7}
+{"pas": 6, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0006_wait.png", "duree_ms": 8000, "t_reel": 128.83}
+{"pas": 7, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0007_wait.png", "duree_ms": 8000, "t_reel": 142.7}
+{"pas": 8, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0008_wait.png", "duree_ms": 8000, "t_reel": 228.11}
+{"pas": 9, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0009_act.png", "touches": ["Escape"], "souris": [0, 0], "duree_ms": 150, "refusees": [], "t_reel": 242.31}
+{"pas": 10, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0010_wait.png", "duree_ms": 8000, "t_reel": 286.13}
+{"pas": 11, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0011_wait.png", "duree_ms": 8000, "t_reel": 298.52}
+{"pas": 12, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0012_wait.png", "duree_ms": 2000, "t_reel": 309.9}
+{"pas": 13, "outil": "observe", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0013_observe.png", "t_reel": 472.11}
+{"pas": 14, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0014_act.png", "touches": ["Left"], "souris": [0, 0], "duree_ms": 600, "refusees": [], "t_reel": 483.44}
+{"pas": 15, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0015_act.png", "touches": ["z", "q"], "souris": [0, 0], "duree_ms": 1800, "refusees": [], "t_reel": 500.65}
+{"pas": 16, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0016_act.png", "touches": ["z", "shift"], "souris": [0, 0], "duree_ms": 2500, "refusees": [], "t_reel": 522.96}
+{"pas": 17, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0017_act.png", "touches": ["Escape"], "souris": [0, 0], "duree_ms": 200, "refusees": [], "t_reel": 577.89}
+{"pas": 18, "outil": "click", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0018_click.png", "bouton": 1, "x": null, "y": null, "t_reel": 763.76}
+{"pas": 19, "outil": "click", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0019_click.png", "bouton": 1, "x": 511, "y": 320, "t_reel": 784.01}
+{"pas": 20, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0020_act.png", "touches": ["Escape"], "souris": [0, 0], "duree_ms": 150, "refusees": [], "t_reel": 810.52}
+{"pas": 21, "outil": "wait", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0021_wait.png", "duree_ms": 800, "t_reel": 819.41}
+{"pas": 22, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0022_act.png", "touches": ["Return"], "souris": [0, 0], "duree_ms": 150, "refusees": [], "t_reel": 830.16}
+{"pas": 23, "outil": "click", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0023_click.png", "bouton": 1, "x": 640, "y": 400, "t_reel": 849.12}
+{"pas": 24, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0024_act.png", "touches": ["space"], "souris": [0, 0], "duree_ms": 150, "refusees": [], "t_reel": 900.39}
+{"pas": 24, "outil": "game_note", "note": "BLOCAGE DÉFINITIF. Chronologie : (1) chargement de la vallée = ~64 s d'écran noir total, sans barre ni texte, après le clic \"Nouvelle partie\". (2) Une fois la vallée affichée, le héros n'a JAMAIS bougé : z, q, d, z+q, z+Maj (sprint) — le décor de fond est resté identique au pixel près sur toutes les captures. (3) Un panneau \"Pause\" a fini par s'afficher avec \"Reprendre\" encadré en doré. (4) Rien ne le referme : Échap, Entrée, Espace, clic sur \"Reprendre\", clic sur le curseur de sensibilité — aucun effet, l'image ne change pas d'un pixel hormis l'herbe qui ondule. Le jeu continue à dessiner (herbe animée, éclair cyan) mais n'accepte plus aucune commande. Je n'ai donc pas pu atteindre le campement ni engager le moindre combat. Éléments vus mais jamais atteints : tentes orange à gauche (x≈210), barricade rayée orange au centre-droit, pylône à sommet cyan à droite, citadelle sombre au centre sous un nuage d'orage avec éclair cyan récurrent.", "t_reel": 915.31}
+{"pas": 25, "outil": "click", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0025_click.png", "bouton": 1, "x": 512, "y": 319, "t_reel": 922.14}
+{"pas": 26, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0026_act.png", "touches": ["z"], "souris": [0, 0], "duree_ms": 1200, "refusees": [], "t_reel": 941.94}
+{"pas": 27, "outil": "act", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0027_act.png", "touches": ["z", "shift"], "souris": [0, 0], "duree_ms": 2000, "refusees": [], "t_reel": 969.97}
+{"pas": 28, "outil": "click", "capture": "evidence/blackbox_player/session_20260804_031040/captures/pas_0028_click.png", "bouton": 1, "x": null, "y": null, "t_reel": 995.66}
