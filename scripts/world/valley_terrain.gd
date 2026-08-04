@@ -36,7 +36,7 @@ const COL_RIVERBED: Color = Color(0.35, 0.42, 0.45)
 ## Habillage V4.2 (réf. 01 du pack V4) — différenciation des sols, eau, chemins,
 ## reliefs superposés. Le cyan de l'eau appartient à la bande « ciel/brume/eau »
 ## de §3.4, pas aux accents.
-const COL_GRASS_LIT: Color = Color(0.58, 0.70, 0.35)     # crêtes exposées
+const COL_GRASS_LIT: Color = Color(0.698, 0.784, 0.353)  # #B2C85A, ancre §3.4
 const COL_GRASS_WET: Color = Color(0.28, 0.47, 0.26)     # berges humides
 const COL_WATER: Color = Color(0.09, 0.55, 0.60, 0.82)   # ruban turquoise
 const COL_PATH: Color = Color(0.62, 0.51, 0.34)          # terre battue
@@ -144,10 +144,15 @@ func _build_border_crests() -> void:
 				1: centre = Vector3(along, BORDER_TOP + height * 0.5, mid)
 				2: centre = Vector3(-mid, BORDER_TOP + height * 0.5, along)
 				_: centre = Vector3(mid, BORDER_TOP + height * 0.5, along)
-			var size: Vector3 = Vector3(width, height, depth * 0.8) if axis < 2 \
-				else Vector3(depth * 0.8, height, width)
-			_visual_box("Crest%d_%d" % [axis, i], crests, centre, size,
-				COL_MOUNTAIN_WARM if i % 3 == 0 else COL_MOUNTAIN)
+			# Prisme, jamais boîte : la capture `vista_horizon_etage` montrait
+			# un mur de gratte-ciels — le sommet plat est le défaut, pas la
+			# hauteur. Taille en repère LOCAL du prisme (x = emprise
+			# perpendiculaire à l'arête, z = longueur le long du mur) ;
+			# `ridge_along_x` remet l'arête dans l'axe du mur.
+			var size: Vector3 = Vector3(depth * 0.8, height, width)
+			_visual_prism("Crest%d_%d" % [axis, i], crests, centre, size,
+				COL_MOUNTAIN_WARM if i % 3 == 0 else COL_MOUNTAIN,
+				axis < 2, 0.5 + 0.28 * sin(t * 13.7 + float(axis) * 3.1))
 
 
 func _build_far_skyline() -> void:
@@ -181,10 +186,13 @@ func _build_far_skyline() -> void:
 					1: centre = Vector3(along, height * 0.5 - 8.0, distance)
 					2: centre = Vector3(-distance, height * 0.5 - 8.0, along)
 					_: centre = Vector3(distance, height * 0.5 - 8.0, along)
-				var size: Vector3 = Vector3(width, height, spread * 0.6) \
-					if axis < 2 else Vector3(spread * 0.6, height, width)
-				_visual_box("Far%d_%d_%d" % [row_index, axis, i], far,
-					centre, size, tint)
+				# Même règle que les crêtes : silhouette triangulaire, taille
+				# en repère local du prisme, sommet décentré déterministe.
+				var size: Vector3 = Vector3(spread * 0.6, height, width)
+				_visual_prism("Far%d_%d_%d" % [row_index, axis, i], far,
+					centre, size, tint, axis < 2,
+					0.5 + 0.24 * sin(t * 11.3 + float(axis) * 2.3
+						+ float(row_index) * 1.7))
 
 func _build_plains_and_river() -> void:
 	# Plaine sud (côté spawn/camp) et plaine nord (côté donjon/pylône), séparées
@@ -1088,12 +1096,51 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	var citadel: Node3D = Node3D.new()
 	citadel.name = "CitadelProxy"
 	add_child(citadel)
-	_box_in("Keep", citadel, Vector3(0, 34 + 23, -210), Vector3(24, 46, 24), COL_STONE, true)
+	# Masse centrale ÉLARGIE (§2.4 : socle horizontal très large). À 24 m de
+	# large la citadelle lisait « cabane devant la montagne » sur la capture
+	# `vista_horizon_etage` — la face avant reste au plan z = −198, la masse
+	# s'étend vers l'arrière.
+	_box_in("Keep", citadel, Vector3(0, 34 + 23, -212), Vector3(34, 46, 28), COL_STONE, true)
+	# Épaules latérales plus basses (§2.4) : la silhouette s'étage au lieu de
+	# tomber d'un seul front.
+	for side_index: int in range(2):
+		var x_shoulder: float = -26.0 if side_index == 0 else 26.0
+		_box_in("Shoulder%d" % side_index, citadel,
+			Vector3(x_shoulder, 34 + 15, -214), Vector3(14, 30, 18),
+			COL_STONE, true)
+	# Tours COUPÉES à des hauteurs différentes (§2.4) : quatre tops égaux
+	# à 90 m lisaient « créneaux d'usine », pas « ruine monumentale ».
+	var tower_heights: Array[float] = [50.0, 44.0, 58.0, 40.0]
 	for i: int in range(4):
-		var dx: float = -14.0 if i % 2 == 0 else 14.0
-		var dz: float = -14.0 if i < 2 else 14.0
-		_box_in("Tower%d" % i, citadel, Vector3(dx, 34 + 28, -210 + dz),
-			Vector3(8, 56, 8), COL_STONE, true)
+		var dx: float = -21.0 if i % 2 == 0 else 21.0
+		var dz: float = -16.0 if i < 2 else 14.0
+		var tower_height: float = tower_heights[i]
+		_box_in("Tower%d" % i, citadel,
+			Vector3(dx, 34 + tower_height * 0.5, -210 + dz),
+			Vector3(8, tower_height, 8), COL_STONE, true)
+	# SPIRE centrale (§2.4 : « spire centrale verticale ») : trois segments
+	# effilés au-dessus du Keep (sommet y = 100) — c'est ELLE que l'éclair
+	# frappe, et elle que l'œil accroche à 360 m. Sans collision : le sommet
+	# est hors de portée du joueur, le Keep en dessous porte la sienne.
+	_box_in("SpireBase", citadel, Vector3(0, 84, -212), Vector3(9, 8, 9),
+		COL_STONE, false)
+	_box_in("SpireMid", citadel, Vector3(0, 91.5, -212), Vector3(6.5, 7, 6.5),
+		COL_STONE, false)
+	var spire_tip: MeshInstance3D = MeshInstance3D.new()
+	spire_tip.name = "SpireTip"
+	var cone: CylinderMesh = CylinderMesh.new()
+	cone.top_radius = 0.0
+	cone.bottom_radius = 2.4
+	cone.height = 5.0
+	spire_tip.mesh = cone
+	spire_tip.material_override = _material(COL_STONE, false)
+	spire_tip.position = Vector3(0, 97.5, -212)
+	citadel.add_child(spire_tip)
+	# Conduit cyan sur la face avant du segment bas : la ligne d'énergie qui
+	# relie visuellement l'impact de foudre au cœur de la façade (§2.4 :
+	# « moins de 5 % d'émission cyan »).
+	_box_in("SpireConduit", citadel, Vector3(0, 84, -207.6),
+		Vector3(0.5, 8, 0.25), COL_CYAN, false, true)
 	_box_in("EnergyCore", citadel, Vector3(0, 34 + 32, -210 + 12.2),
 		Vector3(3, 10, 0.6), COL_CYAN, false, true)
 	# V4.3 (réf. 02) : étagement de la masse — deux gradins sous le donjon pour
@@ -1577,11 +1624,16 @@ func _visual_box(box_name: String, parent: Node3D, center: Vector3, size: Vector
 ## (vérifié dans la source 4.7.1) : `ridge_along_x` pivote de 90° pour les
 ## murs nord/sud, longs en X.
 func _visual_prism(prism_name: String, parent: Node3D, center: Vector3,
-		size: Vector3, color: Color, ridge_along_x: bool) -> void:
+		size: Vector3, color: Color, ridge_along_x: bool,
+		apex: float = 0.5) -> void:
 	var mesh: MeshInstance3D = MeshInstance3D.new()
 	mesh.name = prism_name
 	var prism: PrismMesh = PrismMesh.new()
 	prism.size = size
+	# Sommet DÉCENTRÉ (`left_to_right`, vérifié dans la source 4.7.1) : deux
+	# pentes inégales par pic — la symétrie parfaite est le premier indice
+	# « procédural » que §7.17 demande de casser.
+	prism.left_to_right = clampf(apex, 0.15, 0.85)
 	mesh.mesh = prism
 	mesh.material_override = _material(color, false)
 	mesh.position = center

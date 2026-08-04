@@ -26,11 +26,13 @@ const MAX_CLOUD_RADIUS: float = 90.0
 const STORM_SEED: int = 20260801
 
 @export var cloud_radius: float = 68.0
-## Point d'impact, en coordonnées LOCALES de la cellule. Le donjon culmine à
-## y = 80 (Keep 34+46), la cellule plane à y 115 : colonne de ~31 m, dans le
-## cadre §3.2 (le haut de frame à 360 m est à ~123 m — un nuage à 130 sortait
-## entièrement du cadre, 3e capture).
-@export var strike_offset: Vector3 = Vector3(0, -35.0, 5.0)
+## Point d'impact, en coordonnées LOCALES de la cellule. L'éclair frappe le
+## SOMMET DE LA SPIRE (y = 100, z = −212 — passe H-1), pas un toit : la
+## cellule plane à y 118, z −215 → local (0, −18, 3). Colonne de ~14 m depuis
+## le ventre (−4), dans le cadre §3.2 (haut de frame à 360 m ≈ y 123 — un
+## nuage à 130 sortait entièrement du cadre, 3e capture). Invariant testé :
+## |impact − sommet de spire| ≤ 6 m.
+@export var strike_offset: Vector3 = Vector3(0, -18.0, 3.0)
 ## Première frappe : allumée à 0,6 s, éteinte à 1,1 s — la capture (60 frames,
 ## ~1 s) tombe DANS la fenêtre.
 @export var first_flash_at: float = 0.6
@@ -71,29 +73,58 @@ func _ready() -> void:
 ## la brume le fondait dans l'horizon.
 func _build_clouds() -> void:
 	cloud_radius = minf(cloud_radius, MAX_CLOUD_RADIUS)
-	for i: int in range(8):
-		var radius: float = _rng.randf_range(0.3, 0.52) * cloud_radius
-		var reach: float = cloud_radius - radius
+	# Grumeaux DODUS en deux étages, sur une jupe basse sombre. La capture
+	# `vista_horizon_etage` a tranché : des lobes de 8-13 m de haut pour ~26 m
+	# de rayon lisaient « soucoupe » à 360 m — la hauteur d'un grumeau doit
+	# suivre son rayon, et la masse doit s'EMPILER, pas s'étaler.
+	#
+	# Jupe : le ventre plat et sombre d'un cumulonimbus, d'où sort l'éclair.
+	var skirt: MeshInstance3D = MeshInstance3D.new()
+	skirt.name = "CloudBase"
+	var skirt_sphere: SphereMesh = SphereMesh.new()
+	skirt_sphere.radius = cloud_radius * 0.62
+	skirt_sphere.height = 9.0
+	skirt_sphere.radial_segments = 24
+	skirt_sphere.rings = 8
+	skirt.mesh = skirt_sphere
+	skirt.material_override = _cloud_material(CLOUD_DARK)
+	skirt.position = Vector3(0, -2.0, 0)
+	add_child(skirt)
+	for i: int in range(14):
+		# Étage bas (i < 8) : gros grumeaux du ventre. Étage haut : plus
+		# petits, plus clairs, plus serrés vers l'axe — la tour du nuage.
+		var lower: bool = i < 8
+		var radius: float = (_rng.randf_range(0.30, 0.46) if lower
+			else _rng.randf_range(0.18, 0.32)) * cloud_radius
+		var reach: float = (cloud_radius - radius) * (1.0 if lower else 0.55)
 		var angle: float = _rng.randf_range(0.0, TAU)
-		var span: float = _rng.randf_range(0.3, 1.0) * reach
-		var height: float = _rng.randf_range(0.0, 15.0)
+		var span: float = _rng.randf_range(0.25, 1.0) * reach
+		var height: float = _rng.randf_range(1.0, 7.0) if lower \
+			else _rng.randf_range(8.0, 19.0)
 		var mesh: MeshInstance3D = MeshInstance3D.new()
 		mesh.name = "CloudLayer%d" % i
 		var sphere: SphereMesh = SphereMesh.new()
 		sphere.radius = radius
-		sphere.height = _rng.randf_range(8.0, 13.0)
+		# Hauteur PROPORTIONNELLE au rayon (ratio 0,9-1,5) : un grumeau est
+		# une masse, pas une assiette. L'invariant est testé (ratio moyen ≥ 0,8).
+		sphere.height = radius * _rng.randf_range(0.9, 1.5)
 		sphere.radial_segments = 24
 		sphere.rings = 8
 		mesh.mesh = sphere
-		var material: StandardMaterial3D = StandardMaterial3D.new()
-		# Ventre (bas) sombre, sommets ardoise — la menace vient du dessous.
-		material.albedo_color = CLOUD_DARK if height < 5.0 else CLOUD_SLATE
-		material.roughness = 1.0
-		material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		material.disable_fog = true
-		mesh.material_override = material
+		# Ventre sombre, sommets ardoise — la menace vient du dessous.
+		mesh.material_override = _cloud_material(
+			CLOUD_DARK if height < 5.0 else CLOUD_SLATE)
 		mesh.position = Vector3(cos(angle) * span, height, sin(angle) * span)
 		add_child(mesh)
+
+
+func _cloud_material(color: Color) -> StandardMaterial3D:
+	var material: StandardMaterial3D = StandardMaterial3D.new()
+	material.albedo_color = color
+	material.roughness = 1.0
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.disable_fog = true
+	return material
 
 
 ## Rideau de pluie DERRIÈRE la citadelle (réf. 01 : la colonne d'éclair claque

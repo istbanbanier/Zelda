@@ -222,6 +222,27 @@ ou une mesure locale) · `OUVERT`.
 
 ---
 
+## R-015 — Silhouette de montagne : `PrismMesh.left_to_right` fait le pic asymétrique
+
+- **Date** : 2026-08-04 · **Phase** : H-1 · **Statut** : RÉSOLU, appliqué
+- **Ce qui change selon la réponse** : le remplacement du « mur de gratte-ciels »
+  (crêtes et skyline en `BoxMesh`) par des silhouettes de montagne, sans ArrayMesh
+  sur mesure ni asset sculpté.
+- **Constat** (source `4.7.1-stable`, `doc/classes/PrismMesh.xml`) : `PrismMesh`
+  expose `left_to_right` (défaut 0,5) qui déplace le sommet le long de l'arête —
+  deux pentes inégales par pic, en une primitive. L'arête court le long de Z local
+  (déjà vérifié par le helper `_visual_prism` de V4.2) ; `CylinderMesh` avec
+  `top_radius = 0` donne le cône de la pointe de spire (la doc le dit explicitement).
+- **Décision** : crêtes (44) et massifs lointains (64) convertis en prismes à sommet
+  décentré déterministe (formules sinusoïdales, pas de RNG) ; la spire de la
+  citadelle finit en cône. Invariant testé : zéro `BoxMesh` sous `BorderCrests` et
+  `FarSkyline` (`test_phase_h_silhouettes.gd`).
+- **Limite** : un prisme reste une tente — le vrai modelé attend des masses
+  sculptées (Phase H suite). C'est la silhouette qui était fausse, elle seule est
+  corrigée ici.
+
+---
+
 ## R-014 — `Area3D.monitoring` coupé puis rallumé entre deux ticks : chevauchements perdus
 
 - **Date** : 2026-08-01 · **Phase** : C.0 · **Statut** : RÉSOLU, règle adoptée

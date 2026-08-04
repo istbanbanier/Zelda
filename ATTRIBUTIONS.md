@@ -47,6 +47,7 @@ rochers et dalles de chemin.
 | `assets/characters/hero/T_Ranger_Hero_BaseColor.png` | dérivée de `T_Ranger_BaseColor.png` : recoloration turquoise (#168F9B) de la seule région UV de la capuche, script reproductible `tools/godot/recolor_hero_hood.gd`, manifeste JSON à côté du fichier |
 | `assets/characters/parts/T_Hair_1_Normal_png.png` | copie octet à octet de `T_Hair_1_Normal.png` sous le nom que le gltf `Superhero_Male_FullBody` référence — correction d'un défaut de nommage AMONT du pack, aucune retouche d'image |
 | `assets/characters/parts/T_Eye_Normal_png.png` | idem, copie de `T_Eye_Normal.png` |
+| `assets/environment/foliage/Leaves_TwistedTree_C_olive.png` | dérivée de `Leaves_TwistedTree_C.png` (passe H-1) : rotation de teinte rouge→vert-olive (HSV : teinte recentrée sur 0,24, saturation ×0,9, valeur conservée) — les feuilles d'automne du pack couvraient la vallée de rouge sang, contre le ratio 60 % verts/ocres de la palette §3.4. Les quatre `.gltf` (`TwistedTree_1/2/3`, `Bush_Common`) référencent la variante ; l'originale reste sur disque, non référencée |
 
 CC0 : aucune attribution exigée légalement ; elle est donnée ici par honnêteté
 de provenance. Aucun compte, aucun paiement, aucune restriction de
