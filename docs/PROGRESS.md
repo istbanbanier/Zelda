@@ -2685,19 +2685,32 @@ Gagné : arbres olive, nuage cumuliforme accroché au haut du cadre, spire et
 étagement de citadelle lisibles, crêtes triangulaires. Score §30.2
 auto-évalué ≈ 47/100 (baseline ≈ 40).
 
-### Prochaine action exacte (passe H-2)
+### Passe H-2 exécutée (a/b/c/d — verdict)
 
-1. **Mur-barrage** : les dalles de bordure physiques (70 m, plates) forment
-   toujours une bande grise monolithique — habiller leurs faces internes de
-   prismes intermédiaires (surtout la bande nord derrière la citadelle, où
-   les pics sont volontairement écrêtés).
-2. **Sol/herbe fluo** : recaler lumière×tonemap (énergie du soleil,
-   saturation des dalles COL_GRASS) — mesurer sur capture, une famille de
-   variables à la fois (§7.16).
-3. **Éclair** : la colonne de 14 m se lit mal — épaissir/rallonger le tracé
-   ou abaisser le point de départ sous la jupe du nuage.
-4. Ensuite seulement : composition de crête (la North Star regarde une
-   vallée EN CONTREBAS, le spawn regarde un pré plat) — chantier terrain.
+Quatre itérations tracées à l'instrument (sondes + mesures de zones) :
+l'éclair frappe la spire et se lit (colonne 18 m, halo 2,2 m) ; la face
+sud du plateau — le VRAI « mur-barrage » mesuré, pas le mur de bordure —
+porte 14 jupes ocre ; le mur de bordure porte 52 jupes hautes ; le sol a
+une variation macro RÉELLE (deux causes racines : distribution FBM
+gaussienne → gradient resserré, et mips en vue rasante → anisotrope +
+motifs 15 m — R-016). Score §30.2 auto-évalué ≈ 50/100 : les gains sont
+réels mais l'image reste dominée par les chantiers différés.
+
+### Prochaine action exacte (passe H-3 — terrain et composition)
+
+1. **Composition de crête** : la North Star regarde une vallée EN CONTREBAS
+   (pente fleurie 22-30 % du bas de cadre, trois plans) ; le spawn regarde
+   un pré plat. Descendre le plan moyen ou relever la crête + recadrer
+   `VistaCamera_Hero01` (§1.1 : héros 39-43 % X, camp 61-66 %, pylône
+   75-79 %). C'est LE chantier qui pèse 20 pts (§30.2 composition).
+2. **Skyline pâle** : la bande des massifs lointains (560/860 m) reste un
+   à-plat clair — réduire leur LUMINOSITÉ relative ou l'aerial du fog les
+   fond mal ; mesurer d'abord (règle H-2 : viser la bonne dalle).
+3. **Tour blanche du village** (centre-droit) : elle rivalise avec la
+   citadelle dans le cadre — la teinter/raccourcir ou l'exclure du cône.
+4. **Herbe de crête** : brins uniformes vert franc — teinte par instance
+   déjà présente, élargir la variation vers l'ancre olive + pointes
+   #B2C85A, et vérifier en vue rasante (R-016).
 
 ### Limites honnêtes
 
