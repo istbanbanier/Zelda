@@ -2729,7 +2729,15 @@ calculé). Score §30.2 ≈ 55/100. AVANT le patch : fausse alerte S1 donjon
 réfutée par bissection des journaux (R-017 — contention CPU, zéro
 régression réelle).
 
-### Prochaine action exacte (H-6 et au-delà — le mur de l'art)
+### Passe H-6 exécutée — verdict
+
+Couronne de capture (anneau de cuivre patiné incliné, TorusMesh — la
+foudre la frappe), trois lignes d'énergie descendantes, quatre
+contreforts, pierre ocre/bronze (r−b 0,012 → 0,08). La couronne et les
+lignes portent l'identité « Résonance » de la focale ; la chaleur de la
+pierre se perd dans la brume à 360 m. Score §30.2 ≈ 56/100.
+
+### Prochaine action exacte (H-7 et au-delà — le mur de l'art)
 
 Les passes géométriques ont donné l'essentiel de leur valeur (40 → 55).
 Ce qui sépare 55 de 85 est désormais de l'ASSET : citadelle au langage
