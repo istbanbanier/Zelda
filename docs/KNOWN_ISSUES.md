@@ -381,3 +381,13 @@ exige des affordances, pas des icônes — mais il en faut AU MOINS UNE.
 Mélange de bâtiments détaillés et de grands volumes bruts ; éléments du village
 en intersection ; intérieurs vides. Cohérent avec Gate H non atteint — pas un
 défaut nouveau, mais une confirmation externe de l'écart.
+
+## ISS-024 — Tests d'intégration sensibles à la contention CPU (S3, ouvert)
+
+Les suites électriques du donjon (`room4_battery`, `dungeon_hub`,
+`dungeon_topology`, `dungeon_run`) échouent de manière INSTABLE quand la
+machine est chargée (capture llvmpipe ou autre suite en parallèle) : circuits
+à 1/3 puis 2/3, porte du boss « fermée ». Reproduit trois fois en H-2→H-5,
+réfuté trois fois sur machine au repos (R-017). Cause : timings par temps réel
+dans des tests par ticks. Contournement : sérialiser (règle R-017).
+Correction de fond : budgets en TICKS logiques dans les tests concernés.

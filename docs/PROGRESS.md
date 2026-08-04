@@ -2718,7 +2718,28 @@ pas dépasser ~20 % du cadre tant que le CONTREBAS ne se creuse pas.
 La référence a ~60 m de dénivelé héros→vallée ; nous en avons 22.
 Score §30.2 ≈ 53/100.
 
-### Prochaine action exacte (passe H-5 — le dénivelé, chantier macro)
+### Passe H-5 exécutée — verdict
+
+Crête à 32 m, contrebas 30 m (testé ≥ 28), pente raidie à 19,6° à emprise
+IDENTIQUE (zéro nouveau conflit d'ancrage), rampe A ré-ancrée, fumée du
+camp relevée avec l'œil (invariant croisé S3 verrouillé par le test :
+sommet 44,5 > 40). Le village se lit nettement EN DESSOUS — la profondeur
+a gagné ce que la géométrie promettait ; le ciel, peu (~+3 %, comme
+calculé). Score §30.2 ≈ 55/100. AVANT le patch : fausse alerte S1 donjon
+réfutée par bissection des journaux (R-017 — contention CPU, zéro
+régression réelle).
+
+### Prochaine action exacte (H-6 et au-delà — le mur de l'art)
+
+Les passes géométriques ont donné l'essentiel de leur valeur (40 → 55).
+Ce qui sépare 55 de 85 est désormais de l'ASSET : citadelle au langage
+§2.4 complet, camp lisible dans le cadre, matériaux painterly
+(SH_RockTriplanar/SH_GroundBlend réels), silhouettes de montagnes
+sculptées, pétales-quads. Chantiers plus longs, à séquencer en sessions.
+Reste aussi : flancs de SpawnSlope (dette H-3), correction de fond
+ISS-024 (budgets en ticks).
+
+### (ancien plan H-5)
 
 1. **Creuser le contrebas** : crête 24 → ~36-40 m (spawn, vista, pente
    rallongée, paliers, meadow) OU plaine nord abaissée — à trancher en

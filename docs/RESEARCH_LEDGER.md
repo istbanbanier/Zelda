@@ -222,6 +222,31 @@ ou une mesure locale) · `OUVERT`.
 
 ---
 
+## R-017 — Une suite lancée pendant une capture llvmpipe ment
+
+- **Date** : 2026-08-04 · **Phase** : H-5 · **Statut** : RÉSOLU, règle adoptée
+- **Ce qui change selon la réponse** : la confiance dans TOUT verdict de
+  `validate_fast` — trois suites successives ont déclaré le donjon cassé
+  (S1 apparent : porte du boss fermée, circuits à 1/3 puis 2/3, INSTABLE).
+- **Constat (bissection par les journaux)** : vert sur l'arbre H-1 au repos ;
+  rouge sur H-2/H-3… qui ont TOUTES tourné pendant des captures llvmpipe ou
+  d'autres suites. Contre-épreuve sur machine au repos, arbre final :
+  donjon 29+32 assertions vertes, suites électriques 12/10/5 vertes.
+  Zéro régression réelle. Les tests d'intégration électriques (batteries,
+  portes, débits) dépendent du temps réel par tick — la contention CPU les
+  fait dériver. Second facteur : une suite longue lit les fichiers PENDANT
+  les éditions de la session (dérive d'arbre) — 4 des 14 rouges étaient un
+  test chargé avant son implémentation.
+- **Règle adoptée** : sérialiser suites complètes et captures llvmpipe —
+  jamais en parallèle ; ne JUGER une suite complète que lancée sur un arbre
+  committé et une machine au repos. Un rouge instable (1/3 puis 2/3) est un
+  symptôme de contention avant d'être un bug.
+- **Dette réelle notée** (KNOWN_ISSUES) : des tests sensibles au wall-clock
+  restent fragiles par construction — un budget de ticks logique plutôt que
+  du temps réel serait la vraie correction.
+
+---
+
 ## R-015 — Silhouette de montagne : `PrismMesh.left_to_right` fait le pic asymétrique
 
 - **Date** : 2026-08-04 · **Phase** : H-1 · **Statut** : RÉSOLU, appliqué
