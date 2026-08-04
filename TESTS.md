@@ -125,7 +125,7 @@ Autrement dit : un agent peut trancher seul sur environ la moitié du plan, pré
   Vérifier la présence d'un recul appliqué à l'ennemi touché et au joueur touché.
   **Réussi si :** attaquant et cible se séparent visiblement à chaque impact — c'est ce qui rend le combat lisible.
 
-- [ ] **2.6 Invincibilité après un coup (i-frames)** `[CODE]`
+- [x] **2.6 Invincibilité après un coup (i-frames)** `[CODE]`
   Relever la durée d'invincibilité et le retour visuel associé.
   **Réussi si :** 0,5 à 1 s d'invincibilité avec clignotement. Rester collé à un ennemi ne doit jamais coûter plusieurs cœurs en une seconde.
 
@@ -592,8 +592,11 @@ knockback ennemi + hit-stop consommés depuis les données (`hit_impact` 2/2,
 « déplacement : 0.00 m » avant), neuf sons générés et câblés sur onze points
 (`audio` 3/3). Voisinage re-testé : `combat` 10/10, `enemy_base` 5/5,
 `menu` 10/10, `boss_guardian` 14/14. Le bug 6 (télégraphe couleur seule en
-graybox) reste ouvert — il appartient à la passe artistique. L'absence 2.6
-(invulnérabilité post-coup) reste une décision de design à prendre.
+graybox) reste ouvert — il appartient à la passe artistique. L'absence 2.6 a depuis été comblée (« amélioration bonus » appliquée) :
+fenêtre de mercy de 0,6 s aux dégâts après un coup encaissé, clignotement à
+~9 Hz sur toute la durée, cumulée par OU avec les i-frames d'esquive —
+`mercy` 2/2 (le test a d'abord photographié l'injustice : « obtenu 80.0000 »,
+les deux coups blessaient), `combat` 10/10, `boss_guardian` 14/14.
 
 **Amélioration bonus** — le changement qui aurait le plus d'effet sur le plaisir de jeu :
 

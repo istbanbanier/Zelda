@@ -22,6 +22,7 @@ var _dead: bool = false
 ## Les i-frames d'esquive (§10.2) basculeront ce drapeau — le composant n'a pas
 ## à savoir POURQUOI il est invulnérable.
 var _invulnerable: bool = false
+var _timed_invulnerable_until: int = 0
 
 
 func _ready() -> void:
@@ -32,7 +33,11 @@ func _ready() -> void:
 ## été appliqués — le refus (mort, invulnérable) n'est pas une erreur, c'est une
 ## information dont la hitbox n'a d'ailleurs pas besoin.
 func take_damage(event: DamageEvent) -> bool:
-	if _dead or _invulnerable:
+	# `is_invulnerable()`, jamais la variable brute : la fenêtre TEMPORISÉE
+	# (mercy) compte autant que le drapeau des i-frames d'esquive. Tester le
+	# drapeau seul est exactement le bug qui a fait rougir le premier essai —
+	# invulnérable au sens de l'API, blessé quand même.
+	if _dead or is_invulnerable():
 		return false
 	if event == null or event.amount <= 0.0:
 		return false
@@ -68,8 +73,20 @@ func set_invulnerable(value: bool) -> void:
 	_invulnerable = value
 
 
+## Invulnérabilité TEMPORISÉE (mercy après un coup — 2.6 du plan de test),
+## cumulée par OU avec le drapeau manuel des i-frames d'esquive : l'un et
+## l'autre protègent, aucun n'éteint l'autre — c'est ce qui permet à l'esquive
+## de retomber sans annuler une fenêtre de mercy en cours. Horloge moteur
+## plutôt qu'un `_process` sur un nœud autrement dormant (règle GDScript).
+func grant_invulnerability(duration: float) -> void:
+	if duration <= 0.0:
+		return
+	_timed_invulnerable_until = maxi(_timed_invulnerable_until,
+		Time.get_ticks_msec() + int(duration * 1000.0))
+
+
 func is_invulnerable() -> bool:
-	return _invulnerable
+	return _invulnerable or Time.get_ticks_msec() < _timed_invulnerable_until
 
 
 func current() -> float:

@@ -15,3 +15,9 @@ extends Resource
 @export var stunlock_grace: float = 0.85
 ## Décélération du recul pendant la réaction (m/s²).
 @export var knockback_decay: float = 14.0
+## Fenêtre de mercy après un coup ENCAISSÉ (plan de test 2.6 : « rester collé
+## à un ennemi ne doit jamais coûter plusieurs cœurs en une seconde ») :
+## invulnérabilité aux dégâts, signalée par le clignotement du héros. Distincte
+## de `stunlock_grace`, qui ne bloque que la RÉACTION et laisse passer les
+## dégâts — c'était l'injustice mesurée au contact de deux pillards.
+@export var mercy_invulnerability: float = 0.6

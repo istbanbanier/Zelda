@@ -686,7 +686,14 @@ func _on_hit_received(event: DamageEvent) -> void:
 		return
 	if _mode == Mode.ATTACKING and _attack != null:
 		_attack.cancel()
-	_flash_timer = 0.12
+	# Mercy (2.6) : invulnérable aux DÉGÂTS pendant la fenêtre, et le flash
+	# couvre toute sa durée — le clignotement EST l'affichage de la fenêtre.
+	# En DIFFÉRÉ, impérativement : la hurtbox émet `hit_received` AVANT
+	# d'appliquer les dégâts du même événement — un octroi immédiat rendait le
+	# coup déclencheur lui-même gratuit (« attendu 10, obtenu 0.0000 » au
+	# premier passage du test). La mercy suit une blessure RÉELLE.
+	_health.grant_invulnerability.call_deferred(hurt.mercy_invulnerability)
+	_flash_timer = maxf(0.12, hurt.mercy_invulnerability)
 	_hitstop_timer = maxf(_hitstop_timer, event.hit_stop)
 	_sfx(&"hit_taken")
 	_stunlock_grace = hurt.stunlock_grace
@@ -916,8 +923,12 @@ func _update_flash(delta: float) -> void:
 		return
 	if _flash_timer > 0.0:
 		_flash_timer = maxf(0.0, _flash_timer - delta)
-		if not _body_material.emission_enabled:
-			_body_material.emission_enabled = true
+		# CLIGNOTEMENT (~9 Hz) plutôt que lueur continue : c'est le langage
+		# universel de l'invulnérabilité post-coup (plan de test 2.6), et il
+		# se voit même sur un modèle sombre.
+		var lit: bool = fmod(_flash_timer, 0.11) > 0.055
+		if _body_material.emission_enabled != lit:
+			_body_material.emission_enabled = lit
 			_body_material.emission = Color(1, 1, 1)
 			_body_material.emission_energy_multiplier = 1.6
 	elif _body_material.emission_enabled:
