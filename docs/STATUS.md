@@ -632,3 +632,16 @@ Commits `2bf440f`, `018b8b6`.
 | Restauration des découvertes au rechargement | **Corrigé** | le journal était appliqué AVANT que les lieux ne se déclarent : aucune découverte n'était jamais restaurée. `_build_open_world()` passe devant `_apply_save()` |
 | Inspection visuelle de chaque ancrage | **En cours** | `scenes/tests/RewardAnchorShot.tscn` ; captures dans `evidence/rewards/` |
 | Condition d'ouverture des récompenses de territoire et d'énigme | **Non commencé** | six lieux concernés, nommés par `DiscoveryRewards.deferred_gates()`. Le coffre est réel et persistant ; le verrou n'existe pas |
+
+## Phase H — lot H.8 : armes de production et étagement de l'horizon
+
+Commits `d5b4c79`, `9d107a2`.
+
+| Fonctionnalité | État | Preuve |
+|---|---|---|
+| Les six armes portent un modèle de production (ISS-020) | **Fonctionnel** | `test_every_weapon_carries_its_own_production_model` : six modèles distincts, chacun instanciable et porteur de géométrie. Dimensions dans les bandes §16 |
+| Pose des armes au sol | **Fonctionnel** | les armes de plus de 1,05 m sont fichées en terre, hauteur déduite de la boîte englobante après rotation. `evidence/rewards/logging_hamlet.png` |
+| Textures des cinq nouvelles armes | **Non commencé** | facteurs PBR plats ; seule l'Épée usée a ses cartes peintes. ISS-020 reste ouvert sur ce point |
+| Trois plans dans la vue d'ouverture (§1.3) | **Fonctionnel** | `evidence/phaseH/vista_horizon_etage.png` (commit `9d107a2`, arbre propre) comparé à `vista_avant_horizon.png` : crêtes brisées, deux rangs lointains à 560 et 860 m, bordure éclaircie et refroidie |
+| Citadelle détachée de la montagne (§30.2) | **Fonctionnel** | la bordure passe de 0,42/0,38/0,40 à 0,545/0,575/0,635 ; le monument redevient une silhouette sombre |
+| Score WOW de la vue d'ouverture (§30.2) | **NON VÉRIFIÉ** | la notation demande un œil humain et un GPU réel (ISS-002). La vallée reste un graybox : citadelle sans terrasses, montagnes en boîtes, sol en aplat |
