@@ -170,8 +170,21 @@ func _setup_environment() -> void:
 	var environment: Environment = Environment.new()
 	environment.background_mode = Environment.BG_SKY
 	environment.sky = sky
+	# OMBRES FROIDES (§3.4 « ombre froide #4C5B75 », §7.7 « ombres bleues/violettes »).
+	#
+	# Le ciel seul remplissait les ombres à 0,6 : mesurée sur la capture de
+	# référence, la vallée entière tenait entre 55 % et 80 % de valeur, sans
+	# une seule masse sombre. Un monde sans ombre n'a pas d'heure — c'est le
+	# reproche exact d'une revue à contexte frais, et la mesure lui donne
+	# raison même si sa cause supposée (« soleil blanc ») était fausse : le
+	# soleil EST miel, ce sont les ombres qui étaient remplies à ras bord.
+	#
+	# Contribution du ciel abaissée, et une couleur d'ambiance FROIDE explicite
+	# prend le relais : les creux virent au bleu-violet au lieu du gris.
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	environment.ambient_light_sky_contribution = 0.6
+	environment.ambient_light_sky_contribution = 0.34
+	environment.ambient_light_color = Color(0.298, 0.357, 0.459)   # #4C5B75
+	environment.ambient_light_energy = 0.85
 	# Filmic : hautes lumières chaudes sans écrêtage plastique (§7.1).
 	environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	# Glow FAIBLE, seuil haut (§7.7 : « bloom faible, seuil élevé ») : seuls
@@ -188,8 +201,11 @@ func _setup_environment() -> void:
 	# dissoutes à 150 m) — l'inverse de « vallée lisible à 300 m ». Divisé.
 	environment.fog_enabled = true
 	environment.fog_light_color = Color(0.72, 0.77, 0.80)
-	environment.fog_density = 0.0009
-	environment.fog_aerial_perspective = 0.35
+	environment.fog_density = 0.0011
+	# Perspective aérienne RENFORCÉE plutôt que densité : elle fond les lointains
+	# vers la couleur du CIEL en fonction de la profondeur, sans épaissir l'air
+	# du plan moyen. Monter la densité avait dissous les ruines à 150 m.
+	environment.fog_aerial_perspective = 0.62
 	environment.fog_sky_affect = 0.08
 	# Brume basse dans les creux (lit de rivière y≈0-6) : densité douce sous
 	# y = 6 — la crête (y 24) et le plateau (y 34) restent clairs.

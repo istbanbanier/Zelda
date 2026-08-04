@@ -23,7 +23,11 @@ const BASE_Y: float = -8.0
 const COL_GRASS: Color = Color(0.365, 0.561, 0.239)
 const COL_GRASS_DARK: Color = Color(0.30, 0.46, 0.21)
 const COL_ROCK: Color = Color(0.608, 0.408, 0.259)
-const COL_STONE: Color = Color(0.45, 0.44, 0.47)
+## Pierre de la citadelle : ASSOMBRIE et légèrement chaude. Mesure sur la
+## capture de référence : la bande d'horizon tenait entre 55 % et 80 % de
+## valeur, monument compris — le but du jeu ne se détachait de rien. Un sujet
+## se lit par sa valeur avant sa forme.
+const COL_STONE: Color = Color(0.255, 0.238, 0.243)
 const COL_WOOD: Color = Color(0.408, 0.251, 0.157)
 const COL_COPPER: Color = Color(0.55, 0.36, 0.22)
 const COL_CYAN: Color = Color(0.133, 0.851, 0.925)
