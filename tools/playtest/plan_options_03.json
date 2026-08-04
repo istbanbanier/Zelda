@@ -1,0 +1,10 @@
+[
+  {"do": "shot", "name": "menu_avant"},
+  {"do": "press", "action": "ui_down", "after": 0.4},
+  {"do": "press", "action": "ui_down", "after": 0.4},
+  {"do": "shot", "name": "focus_options"},
+  {"do": "press", "action": "ui_accept", "after": 1.5},
+  {"do": "shot", "name": "ecran_options"},
+  {"do": "wait", "seconds": 1.0},
+  {"do": "shot", "name": "options_lisibles"}
+]

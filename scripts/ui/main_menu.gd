@@ -19,6 +19,11 @@ const VALLEY_SCENE: String = "res://scenes/world/valley/ValleyWorld.tscn"
 @onready var _options_button: Button = %OptionsButton
 @onready var _quit_button: Button = %QuitButton
 @onready var _debug_audit_button: Button = %DebugAuditButton
+
+var _options_panel: OptionsPanel = null
+var _options_layer: CanvasLayer = null
+## Éléments du menu masqués pendant les options, restaurés à la fermeture.
+var _hidden_behind: Array[CanvasItem] = []
 @onready var _status_label: Label = %StatusLabel
 
 var _save_system: Node = null
@@ -49,14 +54,23 @@ func _refresh() -> void:
 	if not has_save:
 		_continue_button.tooltip_text = "Aucune sauvegarde"
 
-	# §0.2 : ne pas présenter comme disponible ce qui ne l'est pas.
-	_options_button.disabled = true
-	_options_button.tooltip_text = "Options : Phase I"
+	# Les options EXISTENT désormais (§12.3) : sensibilité, inversion du regard,
+	# trois volumes et le rappel des commandes. Le bouton cesse d'être grisé —
+	# un playtest en boîte noire avait relevé qu'on partait jouer sans savoir
+	# quelles touches existaient.
+	_options_button.disabled = false
+	_options_button.tooltip_text = "Sensibilité, regard, volumes, commandes"
 
 	# §6.1 : l'outillage de debug est absent du build final. `OS.is_debug_build()`
 	# est faux dans un export release ; l'entrée disparaît alors entièrement de
 	# l'arbre de focus, elle n'est pas seulement grisée.
-	var debug_build: bool = OS.is_debug_build()
+	# Une garde par `OS.is_debug_build()` NE SUFFIT PAS : le projet se livre en
+	# archive à ouvrir dans Godot, donc le joueur lance un build de debug et
+	# voyait « Debug — Audit d'entrée » dans son menu principal. Un playtest en
+	# boîte noire l'a relevé comme premier signal de « ce n'est pas un jeu ».
+	# L'entrée demande maintenant une intention EXPLICITE.
+	var debug_build: bool = OS.is_debug_build() \
+		and OS.get_environment("ECLATS_DEBUG_MENU") == "1"
 	_debug_audit_button.visible = debug_build
 	_debug_audit_button.disabled = not debug_build
 
@@ -153,7 +167,40 @@ func _new_game_payload() -> Dictionary:
 
 
 func _on_options() -> void:
-	_status_label.text = "Options : Phase I."
+	if _options_panel != null and is_instance_valid(_options_panel):
+		return
+	# Une COUCHE au-dessus, pas un simple enfant : la première pose laissait
+	# les boutons du menu transparaître à travers le panneau, parce qu'ils
+	# vivent dans un `CanvasLayer` qui gagne sur l'ordre d'arbre.
+	# Le menu se RETIRE pendant les options. Une couche au-dessus ne suffisait
+	# pas — vu sur capture, ses libellés se superposaient encore à la table des
+	# commandes. Masquer ce qui n'est plus actif est de toute façon plus juste :
+	# le menu ne doit pas rester navigable derrière un panneau modal.
+	for child: Node in get_children():
+		var visual: CanvasItem = child as CanvasItem
+		if visual != null:
+			_hidden_behind.append(visual)
+			visual.visible = false
+	_options_layer = CanvasLayer.new()
+	_options_layer.name = "OptionsLayer"
+	_options_layer.layer = 20
+	add_child(_options_layer)
+	_options_panel = OptionsPanel.new()
+	_options_panel.name = "OptionsPanel"
+	_options_panel.closed.connect(_on_options_closed)
+	_options_layer.add_child(_options_panel)
+
+
+func _on_options_closed() -> void:
+	if _options_layer != null and is_instance_valid(_options_layer):
+		_options_layer.queue_free()
+	_options_layer = null
+	for visual: CanvasItem in _hidden_behind:
+		if is_instance_valid(visual):
+			visual.visible = true
+	_hidden_behind.clear()
+	_options_panel = null
+	_focus_first_available()
 
 
 ## Entrée de debug (§6.1). Refuse d'agir hors build de développement, même si le

@@ -1,0 +1,10 @@
+{"do":"shot","png":"shot_001_depart.png","t":2.0}
+{"do":"shot","png":"shot_002_menu_avant.png","t":2.0}
+{"action":"ui_down","do":"press","t":2.4}
+{"action":"ui_down","do":"press","t":2.8}
+{"do":"shot","png":"shot_003_focus_options.png","t":2.8}
+{"action":"ui_accept","do":"press","t":4.3}
+{"do":"shot","png":"shot_004_ecran_options.png","t":4.3}
+{"do":"wait","t":5.3}
+{"do":"shot","png":"shot_005_options_lisibles.png","t":5.3}
+{"do":"shot","png":"shot_006_fin.png","t":5.3}

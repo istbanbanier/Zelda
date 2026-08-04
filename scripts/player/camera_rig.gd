@@ -33,6 +33,8 @@ const LOCK_CONVERGENCE_SPEED: float = 6.0
 @onready var _camera: Camera3D = $YawPivot/PitchPivot/SpringArm3D/Camera3D
 
 var _pitch: float = -0.15
+## Inversion du regard vertical, chargée une fois depuis `user://settings.cfg`.
+var invert_look_y: bool = false
 var _yaw: float = 0.0
 ## Cible de verrouillage (§8.4, §10.9 mode LockOn). Tant qu'elle est valide, le
 ## lacet et le tangage convergent vers elle et l'entrée de regard est ignorée —
@@ -53,6 +55,7 @@ var _framing_fov: float = 0.0
 func _ready() -> void:
 	if tuning == null:
 		tuning = LocomotionTuning.new()
+	invert_look_y = UserSettings.load_invert_look_y()
 	position.y = tuning.camera_target_height
 	_spring_arm.spring_length = tuning.camera_distance
 	# Épaule portée par le bras (voir l'en-tête). Effet secondaire recherché :
@@ -84,7 +87,11 @@ func apply_look(analog: Vector2, mouse: Vector2, delta: float) -> void:
 	# (PT-D1-01). Lacet libre sur 360°, replié pour rester borné.
 	_yaw -= analog.x * tuning.camera_stick_speed * delta + mouse.x
 	_yaw = wrapf(_yaw, -PI, PI)
-	_pitch -= analog.y * tuning.camera_stick_speed * delta + mouse.y
+	# Inversion de l'axe vertical (§17.5) : un réglage, pas une opinion. Lu au
+	# chargement, pas par frame — un `ConfigFile` par image serait un accès
+	# disque à 60 Hz.
+	var vertical: float = analog.y * tuning.camera_stick_speed * delta + mouse.y
+	_pitch -= -vertical if invert_look_y else vertical
 	_pitch = clampf(_pitch,
 		deg_to_rad(tuning.camera_pitch_min_deg),
 		deg_to_rad(tuning.camera_pitch_max_deg))
