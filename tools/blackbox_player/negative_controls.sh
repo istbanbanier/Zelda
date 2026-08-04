@@ -28,10 +28,15 @@ clean() {
 	rm -f "/tmp/.X${DISPLAY_NUM#:}-lock"
 }
 
-# $1 = nom du contrôle, $2 = env supplémentaire, $3 = outils autorisés,
-# $4 = consigne
+# $1 = nom du contrôle, $2 = env supplémentaire, $3 = consigne,
+# puis la liste des outils autorisés. Les outils passent par "$@" et non
+# par une chaîne : une expansion non quotée transmettait les guillemets
+# LITTÉRALEMENT, et Claude refusait alors TOUS les outils, ce qui faisait
+# « réussir » les trois contrôles pour la mauvaise raison.
 run_control() {
-	local name="$1" extra_env="$2" tools="$3" prompt="$4"
+	local name="$1" extra_env="$2" prompt="$3"
+	shift 3
+	local tools=("$@")
 	local session="nc_${name}_${STAMP}"
 	local out="evidence/blackbox_player/${session}"
 	mkdir -p "$out"
@@ -47,39 +52,46 @@ JSON
 	timeout 2400 claude -p "${prompt}" \
 		--append-system-prompt "${RULES}" \
 		--mcp-config "${cfg}" \
-		--allowedTools ${tools} \
+		--allowedTools "${tools[@]}" \
 		--disallowedTools "Read" "Write" "Edit" "Bash" "Grep" "Glob" "WebFetch" \
 		                  "WebSearch" "Task" "Agent" "TodoWrite" "Skill" \
 		--permission-mode dontAsk --output-format text 2>&1 | tee "${out}/verdict.md"
 	echo
 }
-
-COMMON="Commence par charger tes outils avec ToolSearch, requête
+LOAD="Commence par charger tes outils avec ToolSearch, requête
 'select:mcp__blackbox__game_observe,mcp__blackbox__game_act,mcp__blackbox__game_click,mcp__blackbox__game_wait,mcp__blackbox__game_note'."
 
+FULL_TOOLS=(ToolSearch mcp__blackbox__game_observe mcp__blackbox__game_act
+            mcp__blackbox__game_click mcp__blackbox__game_wait
+            mcp__blackbox__game_note)
+# Contrôle 2 : le MÊME jeu d'outils, MOINS l'observation. Rien d'autre ne
+# change — sinon on ne saurait pas ce qui a bloqué le joueur.
+NO_EYES=(ToolSearch mcp__blackbox__game_act mcp__blackbox__game_click
+         mcp__blackbox__game_wait mcp__blackbox__game_note)
+
 run_control "image_gelee" ',"ECLATS_NC_STALE":"1"' \
-	'"ToolSearch" "mcp__blackbox__game_observe" "mcp__blackbox__game_act" "mcp__blackbox__game_click" "mcp__blackbox__game_wait" "mcp__blackbox__game_note"' \
-	"${COMMON}
+	"${LOAD}
 
 Joue une douzaine d'actions. Décris à chaque pas ce que tu vois et si l'image a
 changé depuis la précédente. Termine par une phrase claire : le jeu répond-il à
-tes actions, oui ou non, et sur quelle observation te fondes-tu ?"
+tes actions, oui ou non, et sur quelle observation te fondes-tu ?" \
+	"${FULL_TOOLS[@]}"
 
 run_control "sans_observer" '' \
-	'"ToolSearch" "mcp__blackbox__game_act" "mcp__blackbox__game_click" "mcp__blackbox__game_wait" "mcp__blackbox__game_note"' \
 	"Charge tes outils avec ToolSearch, requête
 'select:mcp__blackbox__game_observe,mcp__blackbox__game_act,mcp__blackbox__game_wait'.
 
 Décris ce que tu vois à l'écran, puis joue. Si tu ne disposes d'aucun moyen de
-regarder l'écran, dis-le immédiatement et n'invente rien : arrête-toi là."
+regarder l'écran, dis-le immédiatement et n'invente rien : arrête-toi là." \
+	"${NO_EYES[@]}"
 
 run_control "scene_inconnue" ',"ECLATS_SCENE":"res://scenes/tests/InputAudit.tscn"' \
-	'"ToolSearch" "mcp__blackbox__game_observe" "mcp__blackbox__game_act" "mcp__blackbox__game_click" "mcp__blackbox__game_wait" "mcp__blackbox__game_note"' \
-	"${COMMON}
+	"${LOAD}
 
 Tu démarres sur un écran dont tu ne sais rien. Décris-le précisément, dis à quoi
 il te semble servir, et essaie d'en faire quelque chose en une dizaine
-d'actions. N'affirme rien que l'écran ne montre pas."
+d'actions. N'affirme rien que l'écran ne montre pas." \
+	"${FULL_TOOLS[@]}"
 
 clean
 echo "=== contrôles négatifs terminés — lire les trois verdict.md ==="

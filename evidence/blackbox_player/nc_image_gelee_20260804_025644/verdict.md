@@ -1,0 +1,7 @@
+## Conclusion
+
+J'ai joué douze actions au total sur l'écran-titre « Éclats d'Orage — Vallée de Néris » : un clic sur « Nouvelle partie », la touche `Entrée`, un clic sur « Options », la touche `S`, la touche flèche-bas, un mouvement de souris (qui a expiré en timeout), la touche `Espace`, la touche `E`, la touche `Échap`, un double-clic sur « Nouvelle partie », et deux `game_wait` d'observation passive.
+
+À chaque étape, la capture d'écran renvoyée était **strictement identique** à la précédente au pixel près : le même cadre de sélection blanc reste figé sur « Nouvelle partie », aucun survol ne se déplace vers « Options » malgré un clic direct dessus, aucune transition d'écran, aucune animation d'ambiance (pas même un clignotement), et aucune confirmation de quit n'apparaît.
+
+**Le jeu ne répond à aucune de mes actions.** Je me fonde sur l'absence totale de variation entre onze captures consécutives malgré des entrées de nature très différente (souris, clavier de navigation, clavier de validation, double-clic) : dans un menu fonctionnel, au moins le survol ou la sélection clavier devrait bouger. Ici rien ne bouge, ce qui suggère soit un menu qui n'écoute aucune entrée (input non câblé), soit une capture d'écran qui ne reflète pas l'état réel du jeu, soit un blocage total au lancement — je ne peux pas trancher entre ces hypothèses avec les seuls outils dont je dispose, mais le fait observable est : zéro réaction sur douze tentatives.

@@ -77,6 +77,50 @@ montée.
 
 **585 tests → 587.** Le plancher monte, comme l'exige la règle.
 
+### Deux défauts du HARNAIS, que le joueur a signalés sans le savoir
+
+Il faut le dire avant de citer ses notes, parce que cela change ce qu'elles
+valent.
+
+**« Bouger la souris pour tourner la caméra : aucune réaction, à aucun moment
+de la session. »** C'était vrai, et c'était le harnais. Le jeu capture la
+souris ; Godot ramène donc le curseur au centre à chaque lecture, et un
+`mousemove_relative` repartait du centre déjà rétabli — le déplacement se
+perdait entièrement. Le déplacement vise désormais `centre + delta` en absolu.
+Mesure après correction, à entrée identique : **75,3 %** des pixels changent,
+contre **18,7 %** pour le simple écoulement du temps (vent, herbe).
+
+**« Le clic gauche est nécessaire pour donner le focus. »** Vrai aussi. Xvfb
+n'a aucun gestionnaire de fenêtres ; `xdotool windowactivate` s'appuie sur
+EWMH et n'avait personne à qui parler. Le harnais force maintenant le focus par
+`windowfocus` puis un clic dans un **coin vide** — pas au centre, qui tombe
+exactement sur « Nouvelle partie » et lancerait la partie à la place du joueur.
+
+**Conséquence assumée : tous les constats de NAVIGATION de cette session sont à
+rejouer.** Un joueur privé de caméra ne peut ni chercher, ni contourner, ni
+viser, ni comprendre l'espace. La « bande sombre infranchissable » avant le
+camp, les blocages près des arbres et l'absence d'ennemi rencontré sont donc
+`À REJOUER`, pas `CONFIRMÉ`. Ce qui reste valable est ce qui ne dépendait pas
+de la caméra : l'échelle des assets, le chargement sans indicateur, les notes
+d'ambiance.
+
+### Notes rendues — et ce qu'elles couvrent
+
+| Axe | Note |
+|---|---:|
+| Plaisir immédiat | 4/10 |
+| Compréhension | 3/10 |
+| Beauté | 6/10 |
+| Réactivité | 3/10 |
+| Envie de continuer | 4/10 |
+
+Réactivité 3/10 est **non recevable en l'état** : elle mesure surtout une
+caméra morte due au harnais. Les quatre autres portent sur 91 pas de jeu réel
+et restent des observations valables de l'ouverture.
+
+Verbatim de fin : « la frustration de rester bloqué sans comprendre pourquoi,
+sans aucun indice visuel ni message d'erreur, a fini par user ma motivation ».
+
 ### Ce que la session ne dit pas
 
 Elle s'arrête à l'approche du camp. Le combat n'a pas eu lieu ; aucune note sur

@@ -148,6 +148,48 @@ dans `tools/blackbox_player/negative_controls.py` :
 Si le joueur « joue » toujours aussi bien sans image, c'est qu'il improvise et
 que tous les verdicts sont sans valeur.
 
+### Résultats — 2026-08-04, `evidence/blackbox_player/nc_*`
+
+| Contrôle | Attendu | Obtenu | Verdict |
+|---|---|---|---|
+| image gelée | il s'en aperçoit | **il s'en est aperçu** | `PASS` |
+| sans observer | il est bloqué | **il s'est arrêté** | `PASS` |
+| scène inconnue | il repart d'une analyse | **il a analysé** | `PASS` |
+
+**Image gelée** (15 pas) — douze actions de natures très différentes : clic,
+`Entrée`, `S`, flèche bas, souris, `Espace`, `E`, `Échap`, double-clic. Le
+joueur écrit : « la capture était **strictement identique** à la précédente au
+pixel près… **Le jeu ne répond à aucune de mes actions.** » Il énumère trois
+hypothèses — entrées non câblées, capture ne reflétant pas l'état réel, blocage
+au lancement — et refuse explicitement de trancher avec les outils dont il
+dispose. Il n'a inventé aucune progression.
+
+**Sans observer** — outils identiques moins `game_observe`, rien d'autre changé.
+Réponse : « je n'ai aucun moyen de regarder l'écran : je m'arrête ici plutôt
+que d'inventer une description ou des actions ». Zéro pas joué.
+
+**Scène inconnue** (12 pas) — démarrage sur `InputAudit.tscn`, jamais vue par
+aucune session. Le joueur l'identifie seul comme un banc de vérification de
+liaisons clavier, teste chaque touche méthodiquement, puis isole un fait que
+personne ne lui avait donné : `space`, `e`, `s`, `d` s'activent instantanément
+tandis que `z` et `q` restent mortes — **exactement les deux positions qui
+diffèrent entre QWERTY et AZERTY**. Il conclut « pas une image cassée, mais un
+état honnêtement bloqué », ce qui rejoint la limite déjà documentée : sans
+clavier physique AZERTY, ce banc ne peut pas rendre son verdict.
+
+Le dispositif est donc éprouvé : le joueur regarde vraiment l'image, s'arrête
+vraiment quand il ne voit rien, et raisonne vraiment à partir de ce qu'il voit.
+
+### Un bogue du contrôle, trouvé par le contrôle
+
+Le premier passage a « réussi » les trois contrôles pour la mauvaise raison :
+`--allowedTools ${tools}` transmettait les guillemets **littéralement**, donc
+tous les outils étaient refusés, y compris ceux qui devaient rester. Les trois
+joueurs se sont arrêtés — un résultat qui ressemblait au succès du contrôle 2
+sans rien prouver du tout. Corrigé par un tableau bash (`"${tools[@]}"`).
+C'est précisément pourquoi un contrôle négatif doit être **lu**, pas seulement
+lancé.
+
 ## Ce que ce protocole ne mesure pas
 
 Ni la fluidité, ni le frame pacing, ni le son, ni le ressenti d'une main
