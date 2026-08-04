@@ -77,7 +77,10 @@ const STEP_RUN: float = 0.55
 const SITE_OBSERVATORY: Vector3 = Vector3(76.0, 2.0, 128.0)
 const SITE_CEMETERY: Vector3 = Vector3(58.0, 2.0, -78.0)
 const SITE_RAMPART: Vector3 = Vector3(-104.0, 2.0, -138.0)
-const SITE_SHRINE: Vector3 = Vector3(18.0, 2.0, 102.0)
+# H-3 : deplace de (18, 102) — l'ancien site est en plein axe de la
+# SpawnSlope (§1.1), qui l'encastrait sous 11 m de pente (audit des
+# ancrages). Adosse a la route des paliers, a 31 m du camp.
+const SITE_SHRINE: Vector3 = Vector3(34.0, 2.0, 94.0)
 
 ## Identifiants §19.3 : `zone.category.name.index`. Quatre lieux DISTINCTS, et
 ## distincts des quinze déjà déclarés ailleurs dans la vallée.

@@ -243,6 +243,52 @@ func test_h2_jupes_de_mur_sol_macro_et_colonne_d_eclair() -> void:
 	await _settle(2)
 
 
+func test_h3_la_crete_descend_en_pente_pas_en_falaise() -> void:
+	## Passe H-3, composition (§1.1, §3.3) : la North Star regarde une vallée
+	## EN CONTREBAS — une pente fleurie occupe le bas du cadre. Chez nous, le
+	## bord nord de la crête (z 144) tombait de 22 m d'un coup : la vista
+	## lisait « pré plat posé devant un décor ». Le profil du sol le long de
+	## l'axe de descente doit être une PENTE : aucune marche de plus de 4 m
+	## entre deux sondes espacées de 4 m (46° max — au-delà, ni marchable ni
+	## crédible comme prairie), et la plaine est atteinte sans rupture.
+	var game_state: Node = _tree().root.get_node_or_null("/root/GameState")
+	var valley: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(valley)
+	await _settle(10)
+
+	var space: PhysicsDirectSpaceState3D = valley.get_world_3d().direct_space_state
+	var previous_height: float = INF
+	var worst_drop: float = 0.0
+	var reached_plain: bool = false
+	for step: int in range(21):
+		var z: float = 144.0 - 4.0 * float(step)   # z 144 → 64
+		# x 7,5 : l'axe de la pente — recentrée après que l'audit des
+		# ancrages a refusé le tracé x −4 (ferme abandonnée encastrée).
+		var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D \
+			.create(Vector3(7.5, 45.0, z), Vector3(7.5, -10.0, z))
+		# Sol seulement (couche 1), pas le joueur ni un prop.
+		query.collision_mask = 1
+		var hit: Dictionary = space.intersect_ray(query)
+		if hit.is_empty():
+			continue
+		var height: float = (hit["position"] as Vector3).y
+		if previous_height < INF:
+			worst_drop = maxf(worst_drop, previous_height - height)
+		previous_height = height
+		if height <= 4.0:
+			reached_plain = true
+	check(worst_drop <= 4.0,
+		"aucune falaise sur l'axe de descente : pire marche %.1f m ≤ 4 (avant : 22)"
+			% worst_drop)
+	check(reached_plain, "la pente atteint réellement la plaine (y ≤ 4)")
+
+	_tree().root.remove_child(valley)
+	valley.queue_free()
+	if game_state != null:
+		game_state.call("set_flow", 0)
+	await _settle(2)
+
+
 func test_les_feuilles_torsadees_sont_olive() -> void:
 	## La texture rouge sang (moyenne RGB 95/13/13) reste sur disque, mais plus
 	## AUCUN arbre du monde ne la référence : les quatre `.gltf` pointent vers

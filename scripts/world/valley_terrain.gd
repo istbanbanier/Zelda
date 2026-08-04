@@ -83,7 +83,7 @@ const BORDER_TOP: float = 70.0
 ## monument se fondait dans la montagne, exactement le « focales fusionnées »
 ## que §30.2 compte comme un échec. La perspective aérienne se peint dans la
 ## couleur — monter la densité du brouillard dissolvait le plan moyen.
-const COL_MOUNTAIN: Color = Color(0.545, 0.575, 0.635)
+const COL_MOUNTAIN: Color = Color(0.515, 0.545, 0.608)
 
 
 func _build_border_mountains() -> void:
@@ -170,9 +170,9 @@ func _build_border_crests() -> void:
 	# Déterministe : une capture de référence doit être rejouable (§21.8).
 	var seed_value: int = 0
 	for axis: int in range(4):
-		for i: int in range(11):
+		for i: int in range(14):
 			seed_value += 1
-			var t: float = float(i) / 10.0
+			var t: float = float(i) / 13.0
 			var along: float = lerpf(-BORDER_OUTER, BORDER_OUTER, t)
 			# Hauteurs irrégulières : deux sinus de périodes premières entre
 			# elles évitent la répétition visible à laquelle un seul mènerait.
@@ -278,6 +278,18 @@ func _build_plains_and_river() -> void:
 func _build_spawn_ridge_and_descent() -> void:
 	# Crête de départ : le héros domine la vallée (§3.2, spawn §3.3 (0, 24, 170)).
 	_slab("SpawnRidge", Vector2(0, 176), Vector2(100, 64), 24.0, COL_GRASS)
+	# H-3 (§1.1, §3.3) : la North Star regarde la vallée EN CONTREBAS — la
+	# crête tombait en falaise de 22 m à z 144, la vista lisait « pré plat
+	# posé devant un décor ». Pente herbeuse marchable (22 m sur 84, ~15°),
+	# centrée x −4 pour ÉPARGNER le champ de fleurs (−34) et la terrasse du
+	# camp (x ≥ 23) ET la ferme abandonnée (−16, 78 — l'audit des ancrages a
+	# refusé le premier tracé, centré x −4, qui l'encastrait sous 4,7 m de
+	# pente). Corridor libre mesuré : x −8..23 → centre 7,5, largeur 30.
+	# Les paliers historiques (x 11-43) percent la pente en affleurements et
+	# restent la route est. Invariant testé : aucune marche > 4 m sur l'axe.
+	# Dette graybox assumée : flancs verticaux (x −7,5 et 22,5), la ferme
+	# s'adosse au flanc ouest.
+	_ramp("SpawnSlope", Vector3(7.5, 24, 144), Vector3(7.5, 2, 60), 30.0, COL_GRASS)
 	# Descente en S : trois rampes douces alternant la direction, deux paliers.
 	_ramp("DescentA", Vector3(20, 24, 146), Vector3(34, 16, 118), 10.0, COL_GRASS_DARK)
 	_slab("DescentLanding1", Vector2(36, 110), Vector2(14, 16), 16.0, COL_GRASS)
