@@ -150,6 +150,35 @@ def _run(args: list[str], timeout: float = 20.0) -> subprocess.CompletedProcess:
                           timeout=timeout)
 
 
+def _write_max_sensitivity(home: Path) -> None:
+    """Monte la sensibilité souris au maximum que le jeu autorise.
+
+    Le jeu ne capture pas la souris sous ce serveur d'affichage : le pointeur
+    se déplace donc RÉELLEMENT et finit par buter sur un bord de la fenêtre,
+    après quoi tout mouvement supplémentaire est perdu. La rotation possible en
+    une action est donc bornée par la largeur de fenêtre restante, pas par ce
+    que le joueur demande.
+
+    À la sensibilité par défaut (0,0015 rad/px), les 512 px disponibles depuis
+    le centre ne valent que 44°. Un joueur ne peut pas balayer l'horizon, et
+    trois playtests successifs ont conclu — chacun de son côté — que « la caméra
+    bute » ou « ne tourne pas », avant de renoncer à trouver le camp. L'un
+    d'eux l'a mesuré sans le savoir : « 350 px ne font rien, 1000 px tournent de
+    ~23°, 2500 px ne font rien du tout ».
+
+    Au maximum autorisé par le jeu (0,005 rad/px, `UserSettings`), ces mêmes
+    512 px valent 146° : deux actions suffisent à faire un tour d'horizon.
+
+    Ce n'est pas une triche : c'est le réglage que n'importe quel joueur peut
+    pousser au curseur dans le menu Pause, écrit ici dans la configuration
+    ISOLÉE de la session. Le jeu livré garde sa valeur par défaut.
+    """
+    settings = home / "godot" / "app_userdata" / "Eclats d'Orage"
+    settings.mkdir(parents=True, exist_ok=True)
+    (settings / "settings.cfg").write_text(
+        "[input]\n\nmouse_sensitivity=0.005\n", encoding="utf-8")
+
+
 def _ensure_game() -> None:
     """Démarre Xvfb puis Godot, une seule fois, en fenêtre 1024x768.
 
@@ -170,6 +199,7 @@ def _ensure_game() -> None:
 
     home = OUT_DIR / "user_home"
     home.mkdir(parents=True, exist_ok=True)
+    _write_max_sensitivity(home)
     env = dict(os.environ, DISPLAY=DISPLAY_NUM, XDG_DATA_HOME=str(home),
                XDG_CONFIG_HOME=str(home))
     log = (OUT_DIR / "godot_stdout.log").open("w", encoding="utf-8")
