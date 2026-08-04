@@ -77,6 +77,56 @@ func _equip(player: PlayerController, path: String) -> WeaponInstance:
 	return instance
 
 
+func test_the_awakening_grants_a_grace_window_before_the_first_attack() -> void:
+	## S1 du playtest externe : joueur plein de vie mort vers la 6e seconde d'un
+	## lancement direct de l'arène. Cause mesurée : `_attack_cooldown` part à
+	## 1,4 s et se décrémente sans condition dès `_ready()`, INTRO comprise — il
+	## vaut donc toujours zéro au réveil, et le premier coup part au premier
+	## tick de la Phase 1, sur un joueur encore en train de comprendre où il
+	## est. §10.5 exige télégraphes et protection ; §16.1 exige une entrée
+	## lisible. Le répit attendu s'AJOUTE au startup de l'attaque, il ne le
+	## remplace pas.
+	##
+	## Valeurs en dur, à dessein : référencer la constante du correctif rendrait
+	## ce test impossible à exécuter sur le code d'origine — on veut qu'il y
+	## ÉCHOUE, pas qu'il refuse de parser.
+	var arena: BossArena = await _open(ARENA) as BossArena
+	var boss: StormGuardian = arena.boss()
+	check_equal(boss.state(), StormGuardian.State.INTRO,
+		"le Gardien démarre en intro")
+
+	# L'intro s'écoule EN ENTIER, comme en jeu — pas de raccourci : c'est
+	# précisément ce chemin-là qui tuait.
+	var ticks: int = 0
+	while boss.state() == StormGuardian.State.INTRO and ticks < 60 * 8:
+		await _tree().physics_frame
+		ticks += 1
+	check_equal(boss.state(), StormGuardian.State.PHASE1,
+		"l'intro doit déboucher sur la Phase 1 (état : %s)" % boss.state_name())
+
+	check(boss._attack_cooldown >= 1.3,
+		"au réveil, le Gardien doit laisser un répit avant sa première attaque "
+		+ "(cooldown constaté : %.2f s)" % boss._attack_cooldown)
+	await _close(arena)
+
+
+func test_a_stun_recovery_gets_no_grace() -> void:
+	## Le répit protège la PREMIÈRE prise de contact, pas chaque retour en
+	## Phase 1 : une sortie de mise à la terre qui offrirait la même
+	## tranquillité rendrait le combat plus facile que ce que §16.7 annonce
+	## dans son calcul de solvabilité.
+	var arena: BossArena = await _open(ARENA) as BossArena
+	var boss: StormGuardian = arena.boss()
+	boss.debug_force_state(StormGuardian.State.PHASE1)
+	boss.debug_force_state(StormGuardian.State.GROUNDED_STUN)
+	boss._attack_cooldown = 0.0
+	boss.debug_force_state(StormGuardian.State.PHASE1)
+	check(boss._attack_cooldown < 0.5,
+		"une sortie de stun ne reçoit AUCUN répit supplémentaire "
+		+ "(cooldown constaté : %.2f s)" % boss._attack_cooldown)
+	await _close(arena)
+
+
 ## §16.3 : « l'armure réduit FORTEMENT les dégâts, sans invulnérabilité
 ## totale obscure ». Donc : elle divise, et elle ne bloque pas.
 func test_the_armour_divides_damage_without_making_him_invulnerable() -> void:

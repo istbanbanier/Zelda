@@ -49,6 +49,17 @@ const OVERLOAD_TIME: float = 4.0
 const OVERLOAD_INTERVAL: float = 9.0
 ## §16.5 : « éclairs marqués au sol 0,7-1,0 s avant impact ».
 const STRIKE_TELEGRAPH: float = 0.85
+## Playtest externe (KNOWN_ISSUES, S1) : `_attack_cooldown` démarre à 1,4 s
+## et se décrémente sans condition dès `_ready()` — il est donc TOUJOURS à
+## zéro quand l'intro se termine, quelle que soit sa durée. Un joueur déjà à
+## portée au réveil du Gardien encaissait alors une attaque dès le premier
+## tick physique de la Phase 1 : zéro répit au-delà du startup de l'attaque
+## elle-même (`test_zzz_grace_window_baseline`, avant correction : 0 tick).
+## §10.5 exige des « télégraphes » et une « brève protection anti-stunlock » ;
+## ce répit en est l'équivalent côté ÉVEIL — la borne basse d'une attaque
+## (`guardian_swipe.startup` = 0,75 s) reste, elle, inchangée : ce délai
+## s'AJOUTE, il ne la remplace pas.
+const POST_INTRO_GRACE: float = 1.5
 ## §16.3 : l'armure réduit fortement, sans invulnérabilité obscure.
 const ARMOURED_MULTIPLIER: float = 0.2
 ## §16.5 : « vitesse +10 à +18 %, pas doublement brutal ».
@@ -414,10 +425,18 @@ func _tick_strike_marks(_delta: float) -> void:
 func _enter(state: State) -> void:
 	if _state == state:
 		return
+	var previous: State = _state
 	_state = state
 	match state:
 		State.INTRO:
 			_timer = INTRO_TIME
+		State.PHASE1:
+			# Uniquement au RÉVEIL (§16.1) : la fenêtre de grâce protège la
+			# première prise de contact, pas chaque retour en Phase 1 (une
+			# sortie de `GROUNDED_STUN` n'y a pas droit — le combat ne doit
+			# pas devenir plus facile qu'annoncé par §16.7).
+			if previous == State.INTRO:
+				_attack_cooldown = maxf(_attack_cooldown, POST_INTRO_GRACE)
 		State.GROUNDED_STUN:
 			_timer = GROUNDED_TIME
 		State.TRANSITION12, State.TRANSITION23:
