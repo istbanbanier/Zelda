@@ -333,7 +333,8 @@ func test_a_fall_out_of_the_world_is_rescued_to_spawn() -> void:
 			break
 	check(rescued, "le joueur est repêché")
 	if rescued:
-		check((player.global_position - Vector3(0, 24.3, 150)).length() < 3.0,
+		# H-3 : le spawn est au BORD de la rupture de pente (z 146, §1.1).
+		check((player.global_position - Vector3(0, 24.3, 146)).length() < 3.0,
 			"…au spawn de la crête")
 	_tree().root.remove_child(valley)
 	valley.queue_free()

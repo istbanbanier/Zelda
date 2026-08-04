@@ -46,8 +46,12 @@ const SUN_ROTATION_DEG: Vector3 = Vector3(-22.0, -90.0, 0.0)
 ## (décalage caméra +0,8). FOV horizontal ≈ 68° (vertical 42° en 16:9).
 ## Spawn avancé à z = 150, à 6 m du bord de crête : depuis z = 170, 26 m de
 ## plateau plat masquaient TOUTE la vallée (2e capture) — ici elle se révèle.
-const VISTA_POSITION: Vector3 = Vector3(0.8, 26.9, 157.4)
-const VISTA_ROTATION_DEG: Vector3 = Vector3(-6.0, 0.0, 0.0)
+# H-3 : le héros se tient AU BORD de la rupture de pente (§1.1 — la
+# référence regarde la vallée en contrebas) ; caméra avancée d'autant et
+# regard plus plongeant (−10°) pour que la SpawnSlope occupe le bas du
+# cadre au lieu d'être cachée par les brins de la prairie.
+const VISTA_POSITION: Vector3 = Vector3(0.8, 26.9, 153.4)
+const VISTA_ROTATION_DEG: Vector3 = Vector3(-10.0, 0.0, 0.0)
 const VISTA_FOV: float = 42.0
 
 @onready var _player: PlayerController = $Player
