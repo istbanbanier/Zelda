@@ -116,3 +116,13 @@ Godot alimentée par les données réelles. Rien n'en est extrait ni copié-coll
 - [ ] Aucune ressource extraite d'une œuvre commerciale.
 - [ ] Aucun nom, symbole, silhouette ou son appartenant à une licence existante.
 - [ ] Aucune dépendance à un compte personnel ou à un service payant.
+
+## Sons de remplacement générés (`assets/audio/sfx/*.wav`)
+
+- **Source** : synthétisés par `tools/audio/make_placeholder_sfx.py` (sinus,
+  bruit filtré, enveloppes) — aucun échantillon externe, aucune bibliothèque.
+- **Auteur** : ce dépôt. **Licence** : domaine public de fait (générés par un
+  script versionné, reproductibles à l'octet près hors jitter de compilation).
+- **Statut** : PLACEHOLDERS. Leur rôle est qu'aucune action ne soit muette
+  (§18.2) ; ils ne prétendent pas à la qualité finale — pas de variation par
+  matière, pas de mixage écouté (conteneur sans périphérique audio, ISS-004).

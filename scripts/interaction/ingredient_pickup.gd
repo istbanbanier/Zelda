@@ -68,6 +68,9 @@ func interact(player: PlayerController) -> bool:
 	_collected = true   # verrou AVANT toute émission — §13.2, double collecte
 	if bus != null:
 		bus.call("notify", "Récolté : " + definition.display_name)
+	var audio: Node = get_node_or_null("/root/AudioManager")
+	if audio != null:
+		audio.call("play_sfx", &"pickup")
 	collected.emit(definition)
 	queue_free()
 	return true

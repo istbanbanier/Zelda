@@ -99,5 +99,8 @@ func interact(player: PlayerController) -> bool:
 		if arrows_loot > 0:
 			parts.append("%d flèches" % arrows_loot)
 		bus.call("notify", "Coffre ouvert : " + " + ".join(parts))
+	var audio: Node = get_node_or_null("/root/AudioManager")
+	if audio != null:
+		audio.call("play_sfx", &"chest_open")
 	opened.emit(chest_id)
 	return true

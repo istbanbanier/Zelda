@@ -101,6 +101,9 @@ func interact(player: PlayerController) -> bool:
 		return false  # inventaire plein : l'arme reste au sol
 	if bus != null:
 		bus.call("notify", "Ramassé : " + definition.display_name)
+	var audio: Node = get_node_or_null("/root/AudioManager")
+	if audio != null:
+		audio.call("play_sfx", &"pickup")
 	picked_up.emit(weapon)
 	queue_free()
 	return true

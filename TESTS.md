@@ -113,15 +113,15 @@ Autrement dit : un agent peut trancher seul sur environ la moitié du plan, pré
   Comparer les dimensions des hitbox d'attaque et de réception aux dimensions des sprites.
   **Réussi si :** ce qui semble toucher touche, ce qui semble rater rate. Aucune hitbox significativement plus grande ou plus petite que son visuel.
 
-- [ ] **2.3 Feedback de coup porté** `[CODE]`
+- [x] **2.3 Feedback de coup porté** `[CODE]`
   Vérifier qu'un coup réussi déclenche au minimum un retour visuel (flash, clignotement) ET un retour sonore.
   **Réussi si :** aucun coup n'est silencieux et invisible.
 
-- [ ] **2.4 Hit-stop** `[CODE]`
+- [x] **2.4 Hit-stop** `[CODE]`
   Chercher une micro-pause au moment de l'impact ; l'ajouter si absente.
   **Réussi si :** un gel de **40 à 80 ms** est appliqué à l'impact. C'est la technique qui donne du poids aux coups (Hollow Knight, Zelda).
 
-- [ ] **2.5 Knockback des deux côtés** `[CODE]`
+- [x] **2.5 Knockback des deux côtés** `[CODE]`
   Vérifier la présence d'un recul appliqué à l'ennemi touché et au joueur touché.
   **Réussi si :** attaquant et cible se séparent visiblement à chaque impact — c'est ce qui rend le combat lisible.
 
@@ -293,7 +293,7 @@ Autrement dit : un agent peut trancher seul sur environ la moitié du plan, pré
   Vérifier le comportement de la pause pendant un combat, un dialogue et une transition.
   **Réussi si :** le temps est réellement gelé (les ennemis n'avancent pas) et la reprise est propre dans les trois cas.
 
-- [ ] **6.4 Sauvegarde complète** `[CODE]`
+- [x] **6.4 Sauvegarde complète** `[CODE]`
   Comparer la structure de sauvegarde à l'état complet du jeu, champ par champ.
   **Réussi si :** position, vie, inventaire, monnaie, coffres ouverts, boss vaincus et portes déverrouillées sont tous persistés et restaurés.
 
@@ -317,7 +317,7 @@ Autrement dit : un agent peut trancher seul sur environ la moitié du plan, pré
   Tester plein écran, fenêtré et redimensionnement.
   **Réussi si :** rien n'est coupé, étiré ou déformé, quel que soit le format.
 
-- [ ] **6.10 Jamais de silence sur une action impossible** `[CODE]`
+- [x] **6.10 Jamais de silence sur une action impossible** `[CODE]`
   Vérifier le retour donné lors d'un achat trop cher, d'une porte verrouillée sans clé, d'un objet inutilisable.
   **Réussi si :** le jeu répond systématiquement (son de refus, message, animation). Le silence est interprété comme un bug.
 
@@ -377,7 +377,7 @@ Autrement dit : un agent peut trancher seul sur environ la moitié du plan, pré
   Vérifier le bornage (clamping) de tous les compteurs : monnaie à zéro, inventaire plein, dernier consommable utilisé.
   **Réussi si :** aucun compteur ne passe en négatif, aucun débordement, aucun crash.
 
-- [ ] **8.6 Retour dans les zones terminées** `[CODE]`
+- [x] **8.6 Retour dans les zones terminées** `[CODE]`
   Vérifier la persistance de l'état des donjons achevés.
   **Réussi si :** boss non réapparu, coffres restés ouverts, portes restées déverrouillées — sauf choix contraire assumé.
 
@@ -556,11 +556,11 @@ Une ligne par défaut constaté. Gravité : **bloquant** (empêche de finir le j
 
 | # | Test | Description | Fichier / ligne | Reproduction | Gravité | Statut |
 |---|------|-------------|-----------------|--------------|---------|--------|
-| 1 | 2.3 / 6.10 | Tous les coups sont muets : zéro asset audio dans le projet (`assets/audio` vide) et aucun appel de lecture depuis le gameplay. `AudioManager` n'expose que des bus et des volumes que rien n'utilise. Le flash visuel (0,12 s des deux côtés) existe, le canal sonore non. | `assets/audio/` (0 fichier) ; `scripts/core/audio_manager.gd` (jamais appelé hors tests) | Frapper un pillard au camp : flash rouge, aucun son. Naviguer les menus : aucun son. | majeur | ouvert |
-| 2 | 6.4 | La santé et l'endurance ne sont pas sauvegardées : le payload d'autosave (position, armes, flèches, coffres, découvertes…) ne contient ni `health` ni `stamina`, pourtant exigées par MASTER_SPEC §19.1. Recharger soigne gratuitement. | `scripts/world/valley_world.gd:588-613` | Perdre 4 cœurs → ouvrir un coffre (déclenche l'autosave) → quitter → « Continuer » : vie pleine. | majeur | ouvert |
-| 3 | 8.6 | La victoire sur le boss est effacée par l'autosave de la vallée : `BossArena` écrit `boss_defeated=true` en FUSIONNANT la sauvegarde, mais l'autosave vallée réécrit un payload complet avec `"boss_defeated": false` EN DUR. | `scripts/world/valley_world.gd:612` (écrase) vs `scripts/boss/boss_arena.gd:358-363` (fusionne) | Vaincre le boss → « Continuer l'exploration » → ouvrir n'importe quel coffre → relancer : l'écran de victoire dit « Aucune victoire enregistrée dans ce slot ». | majeur | ouvert |
-| 4 | 6.10 | Refus silencieux : l'attaque lourde refusée (`try_heavy` → `return false` sans aucun retour), le coffre déjà ouvert (`interact` → `return false`), l'endurance insuffisante pour la lourde. Quelques refus notifient (« Réserve de plats pleine ») — la règle n'est pas systématique. | `scripts/combat/attack_controller.gd:108-112` ; `scripts/interaction/chest.gd:77-78` | Marteler R pendant une attaque : rien ne se passe, rien ne l'explique. | majeur | ouvert |
-| 5 | 2.5 | Le recul n'est jamais appliqué aux ennemis touchés : `event.knockback` (2,0 à 4,5 selon l'attaque, présent dans les `.tres`) est ignoré par `_on_hit_received`, qui n'applique que flash + poise. L'ennemi ne se sépare du joueur qu'à la rupture de poise (stagger). Le joueur, lui, reçoit bien son recul. | `scripts/enemies/enemy_base.gd:689-702` | Frapper un pillard avec la 1re légère : il flashe mais ne bouge pas d'un centimètre. | mineur | ouvert |
+| 1 | 2.3 / 6.10 | Tous les coups sont muets : zéro asset audio dans le projet (`assets/audio` vide) et aucun appel de lecture depuis le gameplay. `AudioManager` n'expose que des bus et des volumes que rien n'utilise. Le flash visuel (0,12 s des deux côtés) existe, le canal sonore non. | `assets/audio/` (0 fichier) ; `scripts/core/audio_manager.gd` (jamais appelé hors tests) | Frapper un pillard au camp : flash rouge, aucun son. Naviguer les menus : aucun son. | majeur | corrigé |
+| 2 | 6.4 | La santé et l'endurance ne sont pas sauvegardées : le payload d'autosave (position, armes, flèches, coffres, découvertes…) ne contient ni `health` ni `stamina`, pourtant exigées par MASTER_SPEC §19.1. Recharger soigne gratuitement. | `scripts/world/valley_world.gd:588-613` | Perdre 4 cœurs → ouvrir un coffre (déclenche l'autosave) → quitter → « Continuer » : vie pleine. | majeur | corrigé |
+| 3 | 8.6 | La victoire sur le boss est effacée par l'autosave de la vallée : `BossArena` écrit `boss_defeated=true` en FUSIONNANT la sauvegarde, mais l'autosave vallée réécrit un payload complet avec `"boss_defeated": false` EN DUR. | `scripts/world/valley_world.gd:612` (écrase) vs `scripts/boss/boss_arena.gd:358-363` (fusionne) | Vaincre le boss → « Continuer l'exploration » → ouvrir n'importe quel coffre → relancer : l'écran de victoire dit « Aucune victoire enregistrée dans ce slot ». | majeur | corrigé |
+| 4 | 6.10 | Refus silencieux : l'attaque lourde refusée (`try_heavy` → `return false` sans aucun retour), le coffre déjà ouvert (`interact` → `return false`), l'endurance insuffisante pour la lourde. Quelques refus notifient (« Réserve de plats pleine ») — la règle n'est pas systématique. | `scripts/combat/attack_controller.gd:108-112` ; `scripts/interaction/chest.gd:77-78` | Marteler R pendant une attaque : rien ne se passe, rien ne l'explique. | majeur | corrigé |
+| 5 | 2.5 | Le recul n'est jamais appliqué aux ennemis touchés : `event.knockback` (2,0 à 4,5 selon l'attaque, présent dans les `.tres`) est ignoré par `_on_hit_received`, qui n'applique que flash + poise. L'ennemi ne se sépare du joueur qu'à la rupture de poise (stagger). Le joueur, lui, reçoit bien son recul. | `scripts/enemies/enemy_base.gd:689-702` | Frapper un pillard avec la 1re légère : il flashe mais ne bouge pas d'un centimètre. | mineur | corrigé |
 | 6 | 2.8 | Le télégraphe repose sur la couleur seule dans le repli graybox : pendant le startup, le modèle rougit (`telegraph_color`), mais si le modèle riggé n'est pas monté il n'y a ni pose d'anticipation ni forme distinctive — violation de la règle « jamais couleur seule » (§17.4, daltonisme). | `scripts/enemies/enemy_base.gd:746-756` | Observer un pillard graybox qui attaque : seule la teinte change. | mineur | ouvert |
 
 ---
@@ -584,6 +584,16 @@ Une ligne par défaut constaté. Gravité : **bloquant** (empêche de finir le j
    `.tres`, fenêtres chiffrées par §10.2) : il ne manque que l'application dans
    `enemy_base._on_hit_received` et un gel local de 40-80 ms. Impact fort sur
    le ressenti, effort faible, zéro décision de design à prendre.
+
+**État après application (2026-08-04)** — les trois correctifs sont appliqués
+et re-testés, chacun avec un test qui échouait avant : autosave par fusion +
+santé/endurance (`save` 15/15, « obtenu 100.0000 » avant → 37.0 après),
+knockback ennemi + hit-stop consommés depuis les données (`hit_impact` 2/2,
+« déplacement : 0.00 m » avant), neuf sons générés et câblés sur onze points
+(`audio` 3/3). Voisinage re-testé : `combat` 10/10, `enemy_base` 5/5,
+`menu` 10/10, `boss_guardian` 14/14. Le bug 6 (télégraphe couleur seule en
+graybox) reste ouvert — il appartient à la passe artistique. L'absence 2.6
+(invulnérabilité post-coup) reste une décision de design à prendre.
 
 **Amélioration bonus** — le changement qui aurait le plus d'effet sur le plaisir de jeu :
 

@@ -41,6 +41,17 @@ func _ready() -> void:
 	_quit_button.pressed.connect(_on_quit)
 	_debug_audit_button.pressed.connect(_on_debug_audit)
 
+	# §18.2 : la navigation s'entend — un tic au déplacement du focus, un toc
+	# à la validation. Bus UI, jamais SFX : les curseurs de volume restent vrais.
+	var audio: Node = get_node_or_null("/root/AudioManager")
+	if audio != null:
+		for button: Button in [_continue_button, _new_game_button,
+				_options_button, _quit_button, _debug_audit_button]:
+			button.focus_entered.connect(
+				func() -> void: audio.call("play_sfx", &"ui_move", "UI"))
+			button.pressed.connect(
+				func() -> void: audio.call("play_sfx", &"ui_accept", "UI"))
+
 	_refresh()
 	_wire_focus_cycle()
 	_focus_first_available()

@@ -25,9 +25,61 @@ const BUSES: Array[String] = [
 
 signal volume_changed(bus_name: String, linear: float)
 
+## Sons courts du jeu (TESTS.md, bug 1 : « le jeu entier est muet »). Des
+## placeholders GÉNÉRÉS par `tools/audio/make_placeholder_sfx.py` — leur rôle
+## est qu'aucune action ne soit muette (§18.2), pas de sonner final. La
+## variation de pitch (§18.2 : « aucun effet mitraillette ») est bornée ici.
+const SFX_DIR: String = "res://assets/audio/sfx"
+const SFX_PLAYERS: int = 8
+const PITCH_JITTER: float = 0.07
+
+var _sfx_streams: Dictionary = {}
+var _sfx_pool: Array[AudioStreamPlayer] = []
+var _sfx_next: int = 0
+
 
 func _ready() -> void:
 	_ensure_buses()
+	_build_sfx_pool()
+
+
+## Joue un son court par nom (`hit_land`, `refuse`, `ui_move`, …).
+## Silencieusement sans effet si le fichier n'existe pas : un son manquant ne
+## doit jamais casser une action de gameplay — il se voit dans les tests.
+func play_sfx(sound: StringName, bus: String = "SFX") -> void:
+	var stream: AudioStream = _sfx_stream(sound)
+	if stream == null:
+		return
+	var player: AudioStreamPlayer = _sfx_pool[_sfx_next]
+	_sfx_next = (_sfx_next + 1) % _sfx_pool.size()
+	player.bus = bus if has_bus(bus) else "Master"
+	player.stream = stream
+	player.pitch_scale = 1.0 + randf_range(-PITCH_JITTER, PITCH_JITTER)
+	player.play()
+
+
+func has_sfx(sound: StringName) -> bool:
+	return _sfx_stream(sound) != null
+
+
+func _sfx_stream(sound: StringName) -> AudioStream:
+	if _sfx_streams.has(sound):
+		return _sfx_streams[sound] as AudioStream
+	var path: String = "%s/%s.wav" % [SFX_DIR, String(sound)]
+	var stream: AudioStream = null
+	if ResourceLoader.exists(path):
+		stream = load(path) as AudioStream
+	_sfx_streams[sound] = stream
+	return stream
+
+
+func _build_sfx_pool() -> void:
+	for i: int in range(SFX_PLAYERS):
+		var player: AudioStreamPlayer = AudioStreamPlayer.new()
+		player.name = "SfxVoice%d" % i
+		player.bus = "SFX"
+		add_child(player)
+		_sfx_pool.append(player)
 
 
 func _ensure_buses() -> void:
