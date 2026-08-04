@@ -135,7 +135,10 @@ jobs:
         id: paquet
         run: |
           set -euo pipefail
-          ZIP="$(ls -1 builds/EclatsDOrage_MondeOuvert_*.zip builds/EclatsDOrage_SelfTest_*.zip 2>/dev/null | head -1)"
+          # `|| true` : avec pipefail, un `ls` dont UN des deux motifs ne
+          # matche rien (cas normal — on produit l'un OU l'autre) sort en 2
+          # et tuait l'étape. Le garde-fou "aucune archive" suffit derrière.
+          ZIP="$(ls -1 builds/EclatsDOrage_MondeOuvert_*.zip builds/EclatsDOrage_SelfTest_*.zip 2>/dev/null | head -1 || true)"
           [ -n "$ZIP" ] || { echo "aucune archive produite"; exit 1; }
           unzip -t "$ZIP"
           sha256sum "$ZIP" | awk '{print $1}' > "${ZIP}.sha256"
