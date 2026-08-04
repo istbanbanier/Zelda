@@ -21,10 +21,20 @@ const SAFE_POINT_INTERVAL: float = 2.0
 
 ## Sauvegarde minimale honnête (D.1R.5, PT-D1-05) : ce que « Continuer »
 ## restaure VRAIMENT — inventaire (armes + durabilités), arme équipée, flèches,
-## coffres ouverts. Point de reprise DOCUMENTÉ : le spawn de la crête (le
-## checkpoint d'entrée du donjon arrive avec la Phase E/F).
+## coffres ouverts, et depuis le schéma 3 la position/rotation du joueur
+## (§19.1, défaut S2 du playtest externe no1 : « Continuer » replaçait sur la
+## crête). Repli DOCUMENTÉ si la position est absente ou invalide : le spawn.
 const SAVE_SLOT: String = "slot0"
-const SAVE_SCHEMA: int = 2
+const SAVE_SCHEMA: int = 3
+
+## §19.4 : « si position invalide, utiliser checkpoint ». Le fichier de
+## sauvegarde est éditable à la main — bornes du monde jouable, PAS des
+## suppositions : terrain 512 × 512 m centré (±256, petite marge), plafond
+## au-dessus de tout sol praticable (donjon y = 34, citadelle y = 80),
+## plancher STRICTEMENT au-dessus du filet de secours — une position qui
+## déclencherait le sauvetage à la première frame n'est pas une reprise.
+const SAVED_POSITION_LIMIT_XZ: float = 260.0
+const SAVED_POSITION_LIMIT_Y: float = 120.0
 
 ## §7.7 : soleil à l'ouest (rayons vers +X), plongée 22°.
 const SUN_ROTATION_DEG: Vector3 = Vector3(-22.0, -90.0, 0.0)
@@ -52,6 +62,11 @@ var _taken_pickups: Array[String] = []
 ## E.1 : même mémoire pour les ingrédients récoltés — politique v0.1
 ## EXPLICITE (§13.1) : pas de respawn, un ingrédient récolté reste récolté.
 var _taken_ingredients: Array[String] = []
+## PT-D1-10 : le retour du vestibule place le joueur devant la porte de la
+## citadelle. Ce placement GAGNE sur la position sauvegardée — l'instantané
+## de transition a été pris SUR le déclencheur de la porte, y replacer le
+## joueur le renverrait dans le vestibule en boucle.
+var _pending_spawn_applied: bool = false
 ## §12.9 (D-EN.6) : carte de navigation des grandes carrures. Créée à la
 ## main, donc LIBÉRÉE à la main — sans quoi elle fuit à la sortie de
 ## scène (fuite de RID mesurée au test).
@@ -67,6 +82,7 @@ func _ready() -> void:
 		var tag: StringName = game_state.call("consume_pending_spawn")
 		if tag == &"citadel_door":
 			_player.position = Vector3(0, 34.3, -193.0)
+			_pending_spawn_applied = true
 	_last_safe = _player.position
 	# Monde ouvert : les 31 lieux, leur journal de découvertes et leurs
 	# récompenses. AVANT `_apply_save()`, et ce n'est pas un détail d'ordre :
@@ -572,6 +588,15 @@ func _autosave() -> void:
 	save_system.call("save_slot", SAVE_SLOT, {
 		"schema": SAVE_SCHEMA,
 		"checkpoint": "valley.camp.start",
+		# §19.1 : position/rotation du joueur — en PRIMITIFS (§19.2 : jamais
+		# un Variant Godot sérialisé). Le corps ne tourne jamais (voir
+		# PlayerController._ready) : le lacet vit sur VisualRoot.
+		"player_position": {
+			"x": _player.global_position.x,
+			"y": _player.global_position.y,
+			"z": _player.global_position.z,
+		},
+		"player_yaw": _player_visual_yaw(),
 		"weapons": weapons,
 		"equipped_index": inventory.equipped_index(),
 		"arrows": inventory.arrows(),
@@ -633,6 +658,69 @@ func _apply_save() -> void:
 		for pickup: Node in find_children("*", "WeaponPickup", true, false):
 			if String((pickup as WeaponPickup).pickup_id) in _taken_pickups:
 				(pickup as WeaponPickup).mark_taken_silently()
+	_restore_player_transform(data)
+
+
+## §19.4 : « placer joueur au transform sûr » — APRÈS l'état du monde, AVANT
+## la reprise du contrôle. Défaut S2 : sans cette étape, « Continuer »
+## replaçait toujours sur la crête. Toute position absente, malformée ou hors
+## monde retombe sur le point d'apparition (comportement documenté d'avant le
+## schéma 3) — jamais un crash, jamais une téléportation dans le vide.
+## `_last_safe` reste volontairement au spawn : si un fichier édité place le
+## joueur en l'air à l'intérieur des bornes, la chute passe sous le filet
+## (`FALL_LIMIT_Y`) et le sauvetage ramène à un point réellement sûr.
+func _restore_player_transform(data: Dictionary) -> void:
+	if _pending_spawn_applied or _player == null or not data.has("player_position"):
+		return
+	var restored: Vector3 = _read_saved_position(data["player_position"])
+	if not _is_saved_position_safe(restored):
+		push_warning("[save] position sauvegardée invalide (%s) — reprise au "
+			% str(data["player_position"]) + "point d'apparition (§19.4).")
+		return
+	_player.velocity = Vector3.ZERO
+	_player.global_position = restored
+	# §20.9 : reset d'interpolation après tout repositionnement instantané.
+	_player.reset_physics_interpolation()
+	var yaw: Variant = data.get("player_yaw")
+	if yaw is float and is_finite(yaw as float):
+		var visual: Node3D = _player.get_node_or_null("VisualRoot") as Node3D
+		if visual != null:
+			visual.rotation.y = wrapf(yaw as float, -PI, PI)
+
+
+## Lit `player_position` comme une ENTRÉE NON FIABLE (§19.2 : primitifs
+## seulement ; le fichier peut être édité à la main). Tout écart de forme —
+## pas un dictionnaire, composante absente ou non numérique — renvoie
+## Vector3.INF, qui échoue ensuite la validation de bornes : un seul chemin
+## de rejet, et JSON ne sait de toute façon pas transporter NaN/inf.
+func _read_saved_position(raw: Variant) -> Vector3:
+	if not (raw is Dictionary):
+		return Vector3.INF
+	var dict: Dictionary = raw as Dictionary
+	var components: Array[float] = []
+	for key: String in ["x", "y", "z"]:
+		var value: Variant = dict.get(key)
+		if not (value is float):
+			return Vector3.INF
+		components.append(value as float)
+	return Vector3(components[0], components[1], components[2])
+
+
+func _is_saved_position_safe(position: Vector3) -> bool:
+	if not (is_finite(position.x) and is_finite(position.y) and is_finite(position.z)):
+		return false
+	if absf(position.x) > SAVED_POSITION_LIMIT_XZ \
+			or absf(position.z) > SAVED_POSITION_LIMIT_XZ:
+		return false
+	return position.y > FALL_LIMIT_Y and position.y <= SAVED_POSITION_LIMIT_Y
+
+
+## Le corps ne tourne jamais (PlayerController._ready) : l'orientation du
+## héros vit sur VisualRoot. Enfant DIRECT du contrat de scène du joueur
+## (§6.2) — s'il manque, 0 est un lacet honnête, pas une erreur.
+func _player_visual_yaw() -> float:
+	var visual: Node3D = _player.get_node_or_null("VisualRoot") as Node3D
+	return visual.rotation.y if visual != null else 0.0
 
 
 func player() -> PlayerController:
