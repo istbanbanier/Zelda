@@ -37,8 +37,9 @@
 extends SceneTree
 
 const BOOT: String = "res://scenes/boot/Boot.tscn"
-## Cadence de rendu supposée pour convertir des secondes en frames.
-const FPS: float = 60.0
+## Plafond de frames pour une attente : garde-fou si le temps de jeu n'avance
+## plus (fenêtre perdue, scène bloquée).
+const MAX_FRAMES: int = 6000
 ## Une capture au moins toutes les N secondes, même sans pas « shot » : un
 ## joueur regarde l'écran en continu, pas seulement quand il agit.
 const AUTO_SHOT_SECONDS: float = 4.0
@@ -95,7 +96,7 @@ func _initialize() -> void:
 	if bus != null and bus.has_signal("gameplay_notification"):
 		bus.connect("gameplay_notification", func(text: String) -> void:
 			_notices.append(text))
-	await _settle(90)   # boot -> menu principal
+	await _wait(2.0)   # boot -> menu principal
 	await _shoot("depart")
 
 	for step: Variant in plan:
@@ -127,10 +128,27 @@ func _absolute(path: String) -> String:
 	return ProjectSettings.globalize_path("res://%s" % path)
 
 
+## Attente en TEMPS DE JEU, pas en frames.
+##
+## La première version comptait des frames en supposant 60 par seconde. En
+## rendu logiciel une frame dure dix fois plus, et chacune fait avancer
+## plusieurs ticks physiques : « marcher trois secondes » a envoyé le joueur à
+## plus de cent mètres, jusque dans la rivière. Un playtest dont les durées
+## mentent ne mesure rien — et c'est le harnais qui mentait, pas le jeu.
+func _wait(seconds: float) -> void:
+	var spent: float = 0.0
+	var frames: int = 0
+	while spent < seconds and frames < MAX_FRAMES:
+		await process_frame
+		spent += root.get_process_delta_time()
+		frames += 1
+	_elapsed += spent
+
+
+## Quelques frames, quand ce qu'on attend est un RENDU et non une durée.
 func _settle(frames: int) -> void:
 	for i: int in range(frames):
 		await process_frame
-	_elapsed += float(frames) / FPS
 
 
 ## Exécute un pas. Chaque pas dure un temps RÉALISTE : un joueur ne traverse
@@ -144,13 +162,13 @@ func _run(step: Dictionary) -> void:
 			_fire(action, true)
 			await _settle(3)
 			_fire(action, false)
-			await _settle(int(maxf(0.25, float(step.get("after", 0.35))) * FPS))
+			await _wait(maxf(0.25, float(step.get("after", 0.35))))
 			_note({"do": "press", "action": action})
 		"hold":
 			var held: String = String(step.get("action", ""))
 			var seconds: float = float(step.get("seconds", 1.0))
 			Input.action_press(held, 1.0)
-			await _settle(int(seconds * FPS))
+			await _wait(seconds)
 			Input.action_release(held)
 			await _settle(6)
 			_note({"do": "hold", "action": held, "seconds": seconds})
@@ -164,7 +182,7 @@ func _run(step: Dictionary) -> void:
 				var motion: InputEventMouseMotion = InputEventMouseMotion.new()
 				motion.relative = Vector2(dx / float(slices), dy / float(slices))
 				Input.parse_input_event(motion)
-				await _settle(2)
+				await _wait(0.05)
 			_note({"do": "look", "dx": dx, "dy": dy})
 		"move_look":
 			# Marcher EN regardant : le cas normal, et celui qui casse les
@@ -172,20 +190,20 @@ func _run(step: Dictionary) -> void:
 			var walk: String = String(step.get("action", "move_forward"))
 			var turn: float = float(step.get("dx", 0.0))
 			var span: float = float(step.get("seconds", 2.0))
-			var ticks: int = int(span * FPS)
+			var slices: int = 24
 			Input.action_press(walk, 1.0)
-			for i: int in range(ticks):
+			for i: int in range(slices):
 				if turn != 0.0:
 					var motion: InputEventMouseMotion = InputEventMouseMotion.new()
-					motion.relative = Vector2(turn / float(ticks), 0.0)
+					motion.relative = Vector2(turn / float(slices), 0.0)
 					Input.parse_input_event(motion)
-				await _settle(1)
+				await _wait(span / float(slices))
 			Input.action_release(walk)
 			await _settle(6)
 			_note({"do": "move_look", "action": walk, "dx": turn,
 				"seconds": span})
 		"wait":
-			await _settle(int(float(step.get("seconds", 1.0)) * FPS))
+			await _wait(float(step.get("seconds", 1.0)))
 			_note({"do": "wait"})
 		"shot":
 			await _shoot(String(step.get("name", "vue")))
