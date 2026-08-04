@@ -127,6 +127,40 @@ func test_scene_flow_owns_its_fade_layer() -> void:
 			"FadeLayer doit contenir un FadeRect")
 
 
+func test_scene_flow_shows_a_loading_screen_that_survives_the_pause() -> void:
+	## Le chargement de la vallée dure 25 à 65 s en rendu logiciel. Tant qu'il
+	## était SYNCHRONE, aucune image ne pouvait être dessinée : deux playtests en
+	## boîte noire ont pris cet écran noir muet pour un plantage et sont partis
+	## chercher des journaux d'erreur.
+	##
+	## L'écran de chargement doit donc exister ET tourner en pause : `go_to()`
+	## met l'arbre en pause avant de charger, et un Control laissé en `INHERIT`
+	## serait gelé au moment précis où il doit informer.
+	var flow: Node = _autoload("SceneFlow")
+	check_not_null(flow, "SceneFlow")
+	if flow == null:
+		return
+	var layer: Node = flow.get_node_or_null(NodePath("FadeLayer"))
+	check_not_null(layer, "FadeLayer")
+	if layer == null:
+		return
+	var loading: Node = layer.get_node_or_null(NodePath("LoadingUI"))
+	check_not_null(loading, "SceneFlow doit détenir un écran de chargement")
+	if loading == null:
+		return
+	check_equal(loading.process_mode, Node.PROCESS_MODE_ALWAYS,
+		"l'écran de chargement doit tourner alors que l'arbre est en pause")
+	var control: Control = loading as Control
+	check_not_null(control, "LoadingUI doit être un Control")
+	if control != null:
+		check(not control.visible,
+			"l'écran de chargement reste caché hors transition")
+	check_not_null(loading.get_node_or_null(NodePath("LoadingLabel")),
+		"il doit porter un libellé lisible")
+	check_not_null(loading.get_node_or_null(NodePath("Track/Bar")),
+		"il doit porter une barre de progression")
+
+
 func test_scene_flow_refuses_a_missing_scene() -> void:
 	var flow: Node = _autoload("SceneFlow")
 	if flow == null:

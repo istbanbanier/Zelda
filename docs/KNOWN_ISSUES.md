@@ -279,7 +279,7 @@ un défaut de l'instrument de mesure. Avant d'ouvrir un ticket contre le jeu,
 vérifier que l'entrée atteint réellement le moteur ET que la capture est
 postérieure à l'action.
 
-## S2 — Chargement muet et très variable (OUVERT)
+## ~~S2 — Chargement muet~~ — CORRIGÉ (le silence, pas la lenteur)
 
 **Observé.** Entre le clic « Nouvelle partie » et l'affichage de la vallée :
 **~64 s** de noir total en session blackbox, **52 s** sur une instance isolée,
@@ -289,6 +289,15 @@ Pendant ce temps le processus travaille réellement (CPU actif, état `D`,
 mémoire de 1,82 à 1,99 Go). Mais rien à l'écran ne distingue un chargement d'un
 plantage : deux joueurs successifs ont commencé à chercher des logs.
 
-**Correction attendue.** Un écran de chargement, même minimal, dès la sortie du
-menu. Le rendu logiciel llvmpipe explique la lenteur ; il n'excuse pas le
-silence.
+**Corrigé.** `SceneFlow.go_to()` appelait `change_scene_to_file()`, synchrone :
+elle bloque le thread principal, donc aucune image ne pouvait être dessinée.
+Remplacé par `ResourceLoader.load_threaded_request()` (§20.10) avec écran de
+chargement, progression réelle et bascule par `change_scene_to_packed()`.
+
+Preuve : `evidence/blackbox_player/fix_ecran_chargement_20260804_103524/` —
+capture « Chargement…  46 % » puis vallée jouable. Test de régression
+`test_scene_flow_shows_a_loading_screen_that_survives_the_pause`.
+
+**Reste ouvert : la LENTEUR.** Le chargement demeure de l'ordre de 25 à 60 s en
+rendu logiciel llvmpipe, sans GPU. Le joueur sait désormais que le jeu travaille,
+mais il attend toujours. Mesurer sur matériel représentatif avant d'optimiser.
