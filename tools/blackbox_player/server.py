@@ -276,8 +276,12 @@ def _mouse(dx: float, dy: float) -> None:
     if not dx and not dy:
         return
     cx, cy = WIDTH // 2, HEIGHT // 2
-    _run(["xdotool", "mousemove", "--sync",
-          str(int(round(cx + dx))), str(int(round(cy + dy)))])
+    # PAS de `--sync` : il attend que le pointeur se STABILISE à la position
+    # visée. Sous `MOUSE_MODE_CAPTURED`, Godot recentre le curseur à chaque
+    # frame, donc cette position n'est jamais atteinte et xdotool bloque
+    # jusqu'au timeout — le joueur perdait tout contrôle de la caméra.
+    _run(["xdotool", "mousemove",
+          str(int(round(cx + dx))), str(int(round(cy + dy)))], timeout=5.0)
 
 
 # --- Outils -----------------------------------------------------------------
@@ -321,9 +325,13 @@ async def game_act(keys_down: list[str] | None = None,
             await asyncio.sleep(ms / 1000.0 / slices)
     finally:
         # Relâchement GARANTI : une touche restée enfoncée ferait courir le
-        # personnage jusqu'à la fin de la session.
+        # personnage jusqu'à la fin de la session. Chaque relâche est bornée et
+        # isolée : un xdotool lent ne doit jamais empêcher les suivantes.
         for key in keys:
-            _run(["xdotool", "keyup", key])
+            try:
+                _run(["xdotool", "keyup", key], timeout=5.0)
+            except Exception:
+                pass
     _suspend()
     note = "Tu as tenu %s pendant %d ms." % (", ".join(asked) or "aucune touche", ms)
     if delta and (delta[0] or (len(delta) > 1 and delta[1])):
@@ -344,7 +352,8 @@ async def game_click(button: int = 1, x: int | None = None,
     which = 3 if int(button) == 3 else 1
     _resume()
     if x is not None and y is not None:
-        _run(["xdotool", "mousemove", "--sync", str(int(x)), str(int(y))])
+        # Borné : sous souris capturée, `--sync` n'aboutirait jamais.
+        _run(["xdotool", "mousemove", str(int(x)), str(int(y))], timeout=5.0)
     _run(["xdotool", "click", str(which)])
     await asyncio.sleep(0.45)
     _suspend()
