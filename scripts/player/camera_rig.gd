@@ -25,6 +25,22 @@ extends Node3D
 ## exponentielles par seconde — même famille que l'interpolation de FOV.
 const LOCK_CONVERGENCE_SPEED: float = 6.0
 
+## Couches physiques (project.godot [layer_names]) pertinentes pour la sonde
+## de caméra. `Player.tscn` pose `SpringArm3D.collision_mask = 1` — la seule
+## couche « World Static ». Playtest externe (KNOWN_ISSUES, S1), capture
+## `10-boss-death.png` : « caméra à l'intérieur du modèle du boss ». Cause
+## RÉELLE, prouvée par bitmask (`1 & StormGuardian.collision_layer(4) == 0`)
+## et par un cast isolé sans le monde du jeu (SpringArm3D sur `WORLD_STATIC`
+## seul : franchit un corps posé sur `ENEMY` sans jamais raccourcir son bras,
+## `get_hit_length()` reste au maximum) : les ennemis — le Gardien y compris,
+## 9,58 m de long — sont posés sur la couche « Enemy », invisible à la sonde.
+## §8.3 exige « zéro traversée » et PROMPT2_SPEC §5.5 exige d'« empêcher
+## géométrie entre caméra et héros » ; un corps solide qui se tient devant la
+## caméra en fait partie autant qu'un mur. Ce n'est PAS spécifique au boss :
+## toute la classe « Enemy » (raiders, colosse, chasseur) partage la couche.
+const WORLD_STATIC_LAYER: int = 1
+const ENEMY_LAYER: int = 4
+
 @export var tuning: LocomotionTuning
 
 @onready var _yaw_pivot: Node3D = $YawPivot
@@ -70,6 +86,10 @@ func _ready() -> void:
 	var probe: SphereShape3D = SphereShape3D.new()
 	probe.radius = tuning.camera_probe_radius
 	_spring_arm.shape = probe
+	# `Player.tscn` pose `collision_mask = 1` (World Static seul) : on l'étend
+	# ICI, en code, pour que la caméra voie aussi les corps ennemis — voir
+	# `ENEMY_LAYER` ci-dessus pour la preuve et la référence au bug.
+	_spring_arm.collision_mask = WORLD_STATIC_LAYER | ENEMY_LAYER
 	_apply_rotation()
 
 

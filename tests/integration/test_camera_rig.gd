@@ -184,6 +184,48 @@ func test_spring_arm_pulls_the_camera_in_front_of_a_wall() -> void:
 	_teardown()
 
 
+func test_spring_arm_pulls_the_camera_in_front_of_an_enemy_body() -> void:
+	## Jumeau du test du mur, avec un corps ENNEMI comme obstacle.
+	##
+	## Playtest externe (`10-boss-death.png`) : « caméra à l'intérieur du modèle
+	## du boss ». Cause prouvée au bitmask : `Player.tscn` pose
+	## `SpringArm3D.collision_mask = 1` (World Static seul) alors que les
+	## ennemis — Gardien de 9,58 m compris — vivent sur la couche « Enemy »
+	## (valeur 4). La sonde ne les voyait pas, le bras ne se raccourcissait
+	## jamais, la caméra entrait dans le corps. §8.3 exige « zéro traversée »,
+	## PROMPT2 §5.5 exige d'« empêcher géométrie entre caméra et héros » — un
+	## corps solide devant la caméra en fait partie autant qu'un mur.
+	if not await _setup(Vector3(0, 1, 0)):
+		_teardown()
+		return
+	var arm: SpringArm3D = _rig.get_spring_arm()
+
+	check_approx(arm.get_hit_length(), _rig.tuning.camera_distance, 0.05,
+		"bras à pleine longueur avant l'obstacle")
+
+	# Un bloc plein sur la couche Enemy, planté sur l'axe du bras (le bras
+	# regarde vers +Z local du rig au lacet 0 — même géométrie que le mur du
+	# test précédent, seule la COUCHE change : c'est elle qu'on teste.
+	var body: StaticBody3D = StaticBody3D.new()
+	body.collision_layer = 4  # « Enemy » (layer_names 3d_physics/layer_3)
+	body.collision_mask = 0
+	var shape: CollisionShape3D = CollisionShape3D.new()
+	var box: BoxShape3D = BoxShape3D.new()
+	box.size = Vector3(4.0, 4.0, 1.0)
+	shape.shape = box
+	body.add_child(shape)
+	_world.add_child(body)
+	var arm_dir: Vector3 = arm.global_transform.basis.z.normalized()
+	body.global_position = _player.global_position \
+		+ arm_dir * 2.0 + Vector3.UP * 1.0
+	await _settle(10)
+
+	check(arm.get_hit_length() < _rig.tuning.camera_distance - 1.0,
+		"le bras doit se raccourcir devant un corps ennemi (%.2f m au lieu de %.2f)"
+		% [arm.get_hit_length(), _rig.tuning.camera_distance])
+	_teardown()
+
+
 func test_fov_widens_on_sprint_without_snapping() -> void:
 	## §8.3 : « aucun snap de FOV ». On vérifie les deux moitiés de l'exigence —
 	## le FOV atteint bien la cible de sprint, et il ne l'atteint pas en une image.
