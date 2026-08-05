@@ -21,6 +21,9 @@ var mouse_sensitivity: float = UserSettings.DEFAULT_MOUSE_SENSITIVITY
 
 var _intent: InputIntent = InputIntent.new()
 var _mouse_delta: Vector2 = Vector2.ZERO
+## Sonde de latence P2-1 : réception marquée ici (front d'événement),
+## consommation marquée par le contrôleur au changement d'état réel.
+var probe: LatencyProbe = LatencyProbe.new()
 ## Neutralise la lecture des périphériques : les tests injectent alors l'intention
 ## directement, sans dépendre d'aucun matériel.
 var _capture_enabled: bool = true
@@ -81,18 +84,24 @@ func _input(event: InputEvent) -> void:
 	# ne doit pas être avalée).
 	if event.is_action_pressed("jump", false, true):
 		_intent.jump_pressed = true
+		probe.mark_received(&"jump")
 	elif event.is_action_pressed("dodge", false, true):
 		_intent.dodge_pressed = true
+		probe.mark_received(&"dodge")
 	elif event.is_action_pressed("interact", false, true):
 		_intent.interact_pressed = true
+		probe.mark_received(&"interact")
 	elif event.is_action_pressed("attack_light", false, true):
 		_intent.attack_pressed = true
+		probe.mark_received(&"attack_light")
 	elif event.is_action_pressed("lock_on", false, true):
 		_intent.lock_pressed = true
 	elif event.is_action_pressed("attack_heavy", false, true):
 		_intent.heavy_pressed = true
+		probe.mark_received(&"attack_heavy")
 	elif event.is_action_pressed("shoot", false, true):
 		_intent.shoot_pressed = true
+		probe.mark_received(&"shoot")
 	elif event.is_action_pressed("target_next", false, true):
 		_intent.target_next_pressed = true
 	elif event.is_action_pressed("target_prev", false, true):

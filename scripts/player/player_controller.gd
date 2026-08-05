@@ -234,6 +234,18 @@ func current_intent() -> InputIntent:
 	return _intent if _intent != null else InputIntent.new()
 
 
+## Latence P2-1 : la consommation est marquée AU changement d'état, pas à la
+## lecture de l'intent — c'est l'écart réception→effet que mesure la sonde.
+func _mark_consumed(action: StringName) -> void:
+	if _use_reader and _input_reader != null:
+		_input_reader.probe.mark_consumed(action)
+
+
+func _mark_refused(action: StringName, reason: StringName) -> void:
+	if _use_reader and _input_reader != null:
+		_input_reader.probe.mark_refused(action, reason)
+
+
 func _physics_process(delta: float) -> void:
 	# Hit-stop (§10.2) : tout se fige, caméra comprise — geler l'acteur en
 	# laissant courir sa caméra désynchroniserait les deux (§10.7). Les fronts
@@ -352,6 +364,7 @@ func _process_locomotion(delta: float, intent: InputIntent) -> void:
 		if _mode == Mode.LOCOMOTION and intent.attack_pressed and is_on_floor() \
 				and _attack != null and _attack.try_attack():
 			_mode = Mode.ATTACKING
+			_mark_consumed(&"attack_light")
 			return
 		# Attaque lourde (§10.2) : 20 d'endurance (§9.1), REFUSÉE à jauge
 		# insuffisante — l'appui est alors perdu, pas mémorisé.
@@ -362,10 +375,12 @@ func _process_locomotion(delta: float, intent: InputIntent) -> void:
 				if _stamina != null:
 					_stamina.try_spend(cost)
 				_mode = Mode.ATTACKING
+				_mark_consumed(&"attack_heavy")
 				return
 			# 6.10 du plan de test : « jamais de silence sur une action
 			# impossible ». Le refus (endurance ou phase) s'entend.
 			_sfx(&"refuse")
+			_mark_refused(&"attack_heavy", &"endurance_ou_phase")
 
 	# Esquive (§10.2) : depuis le sol, contre 15 d'endurance. L'appui mémorisé
 	# pendant une autre action est honoré ici, à la première fenêtre légale.
@@ -470,6 +485,7 @@ func _try_jump() -> void:
 	_jump_buffer_timer = 0.0
 	# Consommer le coyote empêche un second saut pendant la fenêtre restante.
 	_coyote_timer = 0.0
+	_mark_consumed(&"jump")
 
 
 func _detect_ground_transitions(was_on_floor: bool, vertical_before: float) -> void:
@@ -1083,6 +1099,7 @@ func _try_dodge(intent: InputIntent) -> void:
 		return
 	if _stamina != null and not _stamina.try_spend(_stamina.tuning.dodge_cost):
 		_dodge_buffer = 0.0
+		_mark_refused(&"dodge", &"endurance")
 		return
 	# §10.2 « esquive quatre directions » : celle du stick, en repère caméra ;
 	# sans direction, une reculade — le dos du personnage, pas celui de la caméra.
@@ -1095,6 +1112,7 @@ func _try_dodge(intent: InputIntent) -> void:
 	_dodge_elapsed = 0.0
 	_dodge_buffer = 0.0
 	_mode = Mode.DODGING
+	_mark_consumed(&"dodge")
 
 
 func _process_dodge(delta: float) -> void:

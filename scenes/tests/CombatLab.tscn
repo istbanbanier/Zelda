@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 ; CombatLab (§10.8), embryon. Lancement :
 ;   godot --path . scenes/tests/CombatLab.tscn
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://scenes/tests/CombatDummy.tscn" id="2_dummy"]
 [ext_resource type="Script" path="res://scripts/tools/combat_lab.gd" id="3_lab"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/RaiderRed.tscn" id="4_raider"]
+[ext_resource type="Script" path="res://scripts/tools/lab_overlay.gd" id="5_overlay"]
 
 [sub_resource type="BoxShape3D" id="FloorShape"]
 size = Vector3(40, 1, 40)
@@ -69,3 +70,7 @@ offset_top = 12.0
 offset_right = 460.0
 offset_bottom = 260.0
 theme_override_font_sizes/font_size = 18
+
+[node name="LabOverlay" type="CanvasLayer" parent="."]
+script = ExtResource("5_overlay")
+top_left = Vector2(480, 12)

@@ -1213,3 +1213,39 @@ l'échelle est une décision de placement, pas une propriété de l'asset.
 joueur avait vu UN symptôme ; la mesure de tout le dossier a montré treize
 assets hors bornes. Corriger le symptôme aurait laissé la fougère de neuf
 mètres en place.
+
+## D-047 — ReactionSystem : nœud de scène découvert par groupe, PAS un autoload
+
+Date : 2026-08-05 (P2-1, préparation P2-2).
+
+Le `ReactionSystem` du Prompt 2 (§4) sera un `Node` instancié par chaque monde
+et chaque laboratoire, retrouvé par le groupe `reaction_system` via un helper
+statique — jamais un sixième autoload.
+
+**Raisons.** (1) Hermétisme des tests : l'état d'une réaction ne survit jamais
+à la scène qui l'a créée — la leçon R-017 (suites mensongères par état
+partagé/contention) interdit un arbitre global mutable traversant les suites.
+(2) La liste d'autoloads de CLAUDE.md est un invariant stable ; l'étendre
+exige plus qu'une commodité de câblage. (3) Un lab peut instancier DEUX
+systèmes côte à côte pour comparer des budgets — impossible avec un singleton.
+
+**Alternative rejetée** : autoload à la manière d'`EventBus`. Rejetée car
+`EventBus` ne porte que des signaux sans état ; le ReactionSystem porte des
+files de paquets et des sous-graphes `dirty` — de l'état mutable, exactement
+ce qui pollue les suites.
+
+## D-048 — La latence se mesure en ticks physiques, aux points de vérité
+
+Date : 2026-08-05 (P2-1).
+
+La sonde (`LatencyProbe`) marque la réception au front d'événement dans
+`PlayerInputReader._input` — le SEUL lecteur d'InputMap (D-013) — et la
+consommation à l'endroit exact du changement d'état (`_try_jump` réussi,
+`_mode = ATTACKING`, départ d'esquive), jamais à la lecture de l'intent.
+Le critère de gate est en **ticks physiques** ; les millisecondes sont
+affichées mais jamais assertées (R-017 : wall-clock non probant ici).
+
+**Alternative rejetée** : mesurer dans `_process` du contrôleur (plus simple,
+un seul fichier). Rejetée : cela mesurerait la latence de LECTURE, pas celle
+de l'EFFET — un appui lu puis refusé compterait comme consommé, et le refus
+perdrait sa raison (P2 §5.7 exige la raison de refus dans l'overlay).
