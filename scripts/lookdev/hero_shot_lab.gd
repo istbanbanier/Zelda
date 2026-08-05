@@ -29,9 +29,15 @@ const COL_GRASS: Color = Color(0.365, 0.561, 0.239)      # #5D8F3D
 const COL_GRASS_LIT: Color = Color(0.698, 0.784, 0.353)  # #B2C85A
 const COL_EARTH: Color = Color(0.541, 0.353, 0.212)      # terre #8A5A36
 const COL_ROCK: Color = Color(0.608, 0.408, 0.259)       # ocre #9B6842
-const COL_WATER: Color = Color(0.310, 0.686, 0.698)      # turquoise #4FAFB2
-const COL_CANVAS: Color = Color(0.72, 0.42, 0.30)        # toile de camp
+## Passe de VALEURS v3 (§1.5, verdict du test en gris v2) : la rivière
+## doit se lire EN GRIS (valeur ~40 %), pas seulement par son cyan.
+const COL_WATER: Color = Color(0.13, 0.42, 0.46)         # turquoise sombre
+const COL_WATER_BANK: Color = Color(0.30, 0.20, 0.13)    # berge sombre
+const COL_CANVAS: Color = Color(0.45, 0.24, 0.17)        # toile sombre (v3)
 const COL_STONE_COLD: Color = Color(0.298, 0.357, 0.459) # ombre froide
+## Citadelle : masse 35-60 % (§1.5) — plus sombre que les montagnes
+## pâles pour que le lointain S'ÉTAGE en valeurs, pas seulement en brume.
+const COL_CITADEL: Color = Color(0.16, 0.20, 0.28)
 const COL_COPPER: Color = Color(0.43, 0.46, 0.37)        # cuivre patiné
 const COL_IVORY: Color = Color(0.847, 0.784, 0.631)
 const COL_CYAN: Color = Color(0.133, 0.851, 0.925)
@@ -235,15 +241,17 @@ func _build_terrain() -> void:
 	add_child(path)
 	# Falaises d'encadrement (§1.1), enracinées dans la pente — strates
 	# décalées, tons rabattus (le mur plat orange est un échec nommé v0).
+	# v3 : premier plan plus SOMBRE et chaud, lointain plus froid — c'est
+	# l'étagement §1.3 en VALEURS (le gris v2 montrait tout fusionné).
 	_slab("CliffLeftNear", Vector3(-26, _slope_height(-30.0) + 5.0, -30),
-		Vector3(14, 10, 40), COL_ROCK.lerp(COL_STONE_COLD, 0.25))
+		Vector3(14, 10, 40), COL_ROCK.lerp(Color(0.30, 0.19, 0.12), 0.45))
 	_slab("CliffLeftLip", Vector3(-22.5, _slope_height(-34.0) + 10.6, -34),
 		Vector3(9, 3.2, 34), COL_ROCK.lerp(COL_GRASS, 0.3))
 	_slab("CliffLeftFar", Vector3(-36, _slope_height(-95.0) + 6.0, -95),
-		Vector3(20, 16, 70), COL_ROCK.lerp(COL_STONE_COLD, 0.45))
+		Vector3(20, 16, 70), COL_ROCK.lerp(COL_STONE_COLD, 0.35))
 	# Décalée à droite (leçon v0 : à x 46 elle avalait le pylône).
 	_slab("CliffRightFar", Vector3(62, _slope_height(-120.0) + 4.0, -120),
-		Vector3(18, 13, 50), COL_ROCK.lerp(COL_STONE_COLD, 0.4))
+		Vector3(18, 13, 50), COL_ROCK.lerp(COL_STONE_COLD, 0.3))
 	_build_mountains()
 	_grass_foreground()
 
@@ -260,7 +268,7 @@ func _build_mountains() -> void:
 		["MesaD", Vector3(280, 16, -680), Vector3(220, 76, 70)],
 		["MesaE", Vector3(30, 30, -760), Vector3(260, 104, 80)],
 	]
-	var pale: Color = COL_STONE_COLD.lerp(Color(0.66, 0.73, 0.80), 0.55)
+	var pale: Color = COL_STONE_COLD.lerp(Color(0.70, 0.77, 0.84), 0.75)
 	for mesa: Array in mountains:
 		_slab(mesa[0] as String, mesa[1] as Vector3, mesa[2] as Vector3,
 			pale)
@@ -385,6 +393,17 @@ func _build_river() -> void:
 		var flat: Vector3 = to_point - from_point
 		segment.rotation.y = atan2(-flat.x, -flat.z)
 		river.add_child(segment)
+		# Berge sombre sous le lit (v3, §1.5) : le ruban se lit EN GRIS
+		# par le contraste berge/eau, pas seulement par le cyan.
+		var bank: MeshInstance3D = MeshInstance3D.new()
+		bank.name = "Bank%d" % i
+		var bank_box: BoxMesh = BoxMesh.new()
+		bank_box.size = Vector3(box.size.x + 3.0, 0.22, box.size.z + 2.0)
+		bank.mesh = bank_box
+		bank.material_override = _material(COL_WATER_BANK)
+		bank.position = segment.position - Vector3(0.0, 0.18, 0.0)
+		bank.rotation.y = segment.rotation.y
+		river.add_child(bank)
 
 
 ## Camp simplifié au plan moyen (61-66 % X — correction #4) : terrasse,
@@ -520,7 +539,7 @@ func _build_citadel_proxy() -> void:
 		var box: BoxMesh = BoxMesh.new()
 		box.size = mass[2] as Vector3
 		mesh.mesh = box
-		mesh.material_override = _material(COL_STONE_COLD, 0.85)
+		mesh.material_override = _material(COL_CITADEL, 0.85)
 		mesh.position = mass[1] as Vector3
 		citadel.add_child(mesh)
 	# La spire : elle capte l'orage (ancre au sommet).
@@ -529,7 +548,7 @@ func _build_citadel_proxy() -> void:
 	var spire_box: BoxMesh = BoxMesh.new()
 	spire_box.size = Vector3(12, 46, 12)
 	spire.mesh = spire_box
-	spire.material_override = _material(COL_STONE_COLD, 0.8)
+	spire.material_override = _material(COL_CITADEL, 0.8)
 	spire.position = Vector3(0, 62, -2)
 	citadel.add_child(spire)
 	_mark(&"citadel_spire", centre + Vector3(0, 85, -2))
@@ -568,9 +587,10 @@ func _build_light() -> void:
 	environment.ambient_light_energy = 0.55
 	environment.fog_enabled = true
 	environment.fog_light_color = Color(0.686, 0.784, 0.827)
-	# 0,0045 + perspective aérienne (leçon v0 : à 0,0016 la citadelle
-	# COLLAIT au premier plan — §1.3 exige l'étagement atmosphérique).
-	environment.fog_density = 0.0045
+	# 0,0022 : le point v3 — assez de brume pour l'étagement (§1.3),
+	# assez peu pour que la citadelle garde une VALEUR §1.5 (35-60 %) —
+	# à 0,0045 le brouillard plafonnait tout le lointain à ~65 %.
+	environment.fog_density = 0.0022
 	environment.fog_aerial_perspective = 0.5
 	var world_environment: WorldEnvironment = WorldEnvironment.new()
 	world_environment.name = "LabEnvironment"
