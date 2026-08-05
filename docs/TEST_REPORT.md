@@ -5,6 +5,12 @@ Un résultat sans commande reproductible ne vaut pas comme preuve (§0.7).
 
 ---
 
+## Campagne du 2026-08-05 (matin, 2) — P2-3 tranche 2 : posture
+
+Arbre `be1aa7a`. `PostureComponent` (3/3 fail-first), `posture_damage` de
+bout en bout, Briseur migré (5/5 historiques intacts), dispatch
+parade→posture/poise. Intégration complète : **547/547, zéro échec**.
+
 ## Campagne du 2026-08-05 (matin) — P2-2 clos + P2-3 tranche 1
 
 Arbre `1f796e6`. Depuis la campagne précédente : Focus/sélection (6/6),
