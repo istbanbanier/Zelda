@@ -104,3 +104,48 @@ Trois minutes fluides, non truquées, sans placeholder ; rapport final = build l
 3. Tout critère non testé est `NON VÉRIFIÉ` — jamais implicitement réussi.
 4. Le verdict du gate est le **plus faible** des critères, pas leur moyenne.
 5. Résultat consigné dans `docs/STATUS.md` et `docs/TEST_REPORT.md`.
+
+---
+
+## Cadence complète jusqu'à la fin (2026-08-05, mandat utilisateur)
+
+Ordre imposé par la logique cumulative des prompts : le Prompt 2 (systémique)
+AVANT la production d'assets du Prompt 3 — décorer un gameplay qui va rebouger
+serait du travail jeté. Chaque jalon = une session bornée, DoD du CLAUDE.md.
+
+### Cycle 1 — Prompt 2, fondations (P2-0 → P2-2)
+1. **P2-0 Audit** : `PROMPT2_AUDIT.md`, baseline visuelle/perf, backlog classé.
+2. **P2-1 Réponse** : InputLab/TraversalLab (CombatLab existe), instrumentation
+   des latences, pipeline d'action data-driven audité 30/60/120.
+3. **P2-2 Bracelet** (le cœur) : `ResonanceController` + profils matériaux +
+   `ReactionSystem` ; Pulse → Arc Link → Polarité → Arc Step → Ground, chacun
+   fail-first dans `ReactionLab` ; Gate Bracelet + Gate ReactionSystem.
+   ~4-6 sessions à lui seul, INCOUPABLE (échelle de réduction P2 §18).
+
+### Cycle 2 — Prompt 2, profondeur (P2-3 → P2-5)
+4. **P2-3 Combat/IA** : garde/déviation/posture, 6 identités d'armes,
+   perception honnête + tokens, camp à trois approches.
+5. **P2-4 Exploration** : trois routes nommées, 8-10 POI (base existante),
+   progression Bracelet, infiltration/bruit.
+6. **P2-5 Donjon/Boss** : migration des salles vers les lois communes,
+   solveur/hints, boss director à patterns tagués.
+
+### Cycle 3 — Prompt 3/4, art (Phase H complète, passes V3 → V9)
+7. **V3 Héros** : 5 signes §13.1, Bracelet visible (dépend de P2-2).
+8. **V4 Vallée** : eau (§8 — MISSING intégral), terrain sculpté, focales.
+9. **V5-V6** : props/UI/icônes, famille ennemie pilote puis les quatre.
+10. **V7 Donjon** : kit modulaire + éclairage motivé (règle ISS-025).
+11. **V8 Boss** : sous-meshes destructibles, arène.
+12. **V9 + shaders** : SH_CharacterPainterly d'abord (arbitrage verrouillé n°2),
+    VFX, cinématiques. Re-scoring §30.2 à chaque palier, revue contradictoire
+    au Gate H final.
+
+### Cycle 4 — Phases I/J (partagées conteneur/humain)
+13. Ici : presets, LOD/HLOD, DemoRoute, budgets IA, ISS-024 (budgets en ticks).
+14. **Chez l'utilisateur uniquement** (protocole `MANUAL_VALIDATION.md`) :
+    60 FPS mesurés, session 60 min, vidéo démo 3 min, AZERTY/manette réels,
+    playtests §21.9. Ces critères resteront EN ATTENTE ici — jamais cochés
+    sur la foi du conteneur.
+
+Règle de cadence : jamais deux cycles en parallèle ; un gate rouge arrête la
+progression ; toute découverte S1/S2 prime sur le jalon en cours.
