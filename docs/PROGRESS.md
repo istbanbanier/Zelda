@@ -2959,10 +2959,26 @@ la cascade historique (22/22 raiders verts), mais chaque décision se lit
 cette nuit : le pivot ennemi regarde +Z par défaut — placer le joueur
 côté +Z ou tourner le pivot, sinon pas d'aggro.
 
+### Fait ensuite : P2-3 tranche 4b — camp trois approches. P2-3 TERMINÉ.
+
+La diversion s'est prouvée SYSTÉMIQUE du premier coup : Pulse depuis un
+couvert plein → le garde passe suspicious/investigate, quitte son poste
+vers le bruit, et n'atteint JAMAIS alert (il n'a rien vu — §12.7, zéro
+omniscience). Aucun code d'infiltration dédié : la chaîne P2-2 × bruit
+existante suffisait — c'est le pilier « le monde écoute » qui paie.
+L'approche environnement : une caisse métallique chargeable par
+campement braise (RigidBody + profil métal + marqueur Polarité), cible
+légitime de Polarité (projeter) et Ground. 2/2 (10 assertions),
+territoires 8/8.
+
+**P2-3 est TERMINÉ** : garde/déviation, posture, identités d'armes,
+utility explicable, tokens (déjà conformes), camp trois approches.
+
 ### Prochaine action exacte
 
-P2-3 tranche 4b (FIN de P2-3) : le camp à TROIS approches — vérifier en
-test que le camp braise offre (1) frontal : combat direct viable,
-(2) infiltration : un Pulse/bruit depuis un couvert DÉTOURNE un garde
-(INVESTIGATE — mécanique déjà systémique), (3) environnement : un prop
-métallique chargeable au camp (Polarité/Ground). Puis P2-4.
+**P2-4** : routes nommées (rivière/hauteurs/ruines — le dressing existe,
+il faut les IDENTITÉS et les raccourcis), POI Bracelet-dépendants
+(pont magnétique, bassin conducteur, autel de terre — GAMEPLAY_BIBLE
+§3.4), Fragments facultatifs (Écho/Flux/Élan), infiltration/bruit déjà
+acquise. Machine utilisateur : le camp braise se joue désormais de trois
+façons (frontal / Pulse-diversion depuis un couvert / caisse chargée).
