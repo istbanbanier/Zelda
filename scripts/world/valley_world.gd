@@ -191,7 +191,10 @@ func _setup_environment() -> void:
 	# Soleil #FFD68A (§3.4) — chaud, ombres longues lisibles (§7.7). La rotation
 	# vient de SUN_ROTATION_DEG (ouest/gauche, plongée 22°).
 	_sun.light_color = Color(1.0, 0.839, 0.541)
-	_sun.light_energy = 1.25
+	# Revue Gate H (correction n°1) : l'image lisait « zénithal plat » —
+	# l'ambiance à 0,85 remplissait les ombres à ras bord, le modelé
+	# disparaissait. Direct RENFORCÉ (1,45), ambiance à voir plus bas.
+	_sun.light_energy = 1.45
 	_sun.shadow_enabled = true
 	_sun.directional_shadow_max_distance = 180.0
 
@@ -220,7 +223,7 @@ func _setup_environment() -> void:
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
 	environment.ambient_light_sky_contribution = 0.34
 	environment.ambient_light_color = Color(0.298, 0.357, 0.459)   # #4C5B75
-	environment.ambient_light_energy = 0.85
+	environment.ambient_light_energy = 0.55
 	# Filmic : hautes lumières chaudes sans écrêtage plastique (§7.1).
 	environment.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	# Glow FAIBLE, seuil haut (§7.7 : « bloom faible, seuil élevé ») : seuls
@@ -804,7 +807,9 @@ func capture_camp_view() -> void:
 	var camera: Camera3D = Camera3D.new()
 	camera.name = "CampReferenceCamera"
 	add_child(camera)
-	camera.global_position = Vector3(18.0, 14.0, 96.0)
-	camera.look_at(Vector3(45.0, 6.0, 65.0), Vector3.UP)
+	# Revue Gate H : à (18, 14, 96) le cadre était à 45 % un talus nu et
+	# des brins clippés — reculé, monté, décalé ouest.
+	camera.global_position = Vector3(6.0, 22.0, 108.0)
+	camera.look_at(Vector3(45.0, 6.0, 63.0), Vector3.UP)
 	camera.fov = 55.0
 	camera.current = true

@@ -14,7 +14,7 @@ Règle : **aucune phase ne démarre avant que le gate précédent soit `PASS` ou
 | C.5 | Micro-verticale + benchmark artistique `HeroShotLab` | Gate C.5 | 🟠 **EN ATTENTE** — la notation visuelle exige un œil humain sur la crête réelle (V4.1) |
 | D | Monde graybox 512 m + cinq familles ennemies | Gate D | 🟢 **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE** (`docs/GATE_D_AUDIT.md`, passe 3 après revue contradictoire) ; item 18 PARTIEL assumé (4 coffres sur 8, solde en Phase F) |
 | E | Récolte, cuisine, buffs, sauvegarde | Gate E | 🟢 **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE** (`docs/GATE_E_AUDIT.md`) — E.1 à E.3 livrés |
-| F | Graphe électrique + 4 salles du donjon | Gate F | ⬜ Non commencé |
+| F | Graphe électrique + 4 salles du donjon | Gate F | 🟨 **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE** (`docs/GATE_F_AUDIT.md`) — ligne corrigée le 2026-08-05, elle contredisait STATUS et l'audit (relevé par la revue contradictoire) |
 | G | Boss trois phases + victoire | Gate G | 🟨 **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE** (`docs/GATE_G_AUDIT.md`) : tous les items §16 automatisables PASS, run boss joué de bout en bout ; le « run de 25-40 min » reste NON VÉRIFIÉ faute de joueur |
 | H | Art « wahou » | Gate H | 🟠 **EN COURS** — lots H.1 à H.6 faits : Gardien, trois pillards, colosse et chasseur montés, tous assemblés en un seul corps (ISS-018 clos, contrôle ISS-019 câblé en validate_fast 3b). Le WOW Gate porte sur la vue d'ouverture et n'a pas été rejoué |
 | I | Optimisation et livraison | Gate I | ⬜ Non commencé |

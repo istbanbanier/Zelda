@@ -553,3 +553,16 @@ func victory_shown() -> bool:
 ## s'exécute en jeu, le choix de la cible se prouve ici.
 func victory_target() -> String:
 	return VICTORY
+
+
+## Caméra de référence §21.5 — l'AABB générique de DungeonRoom finit dans
+## une masse (ISS-026) : cadrage SPÉCIFIQUE à l'arène circulaire (rayon 19),
+## surplomb du bord, Gardien et pylônes dans le cadre.
+func capture_reference_view() -> void:
+	var camera: Camera3D = Camera3D.new()
+	camera.name = "ReferenceCamera"
+	add_child(camera)
+	camera.global_position = Vector3(0, 13.0, ARENA_RADIUS + 8.0)
+	camera.look_at(Vector3(0, 2.5, -4.0), Vector3.UP)
+	camera.fov = 62.0
+	camera.current = true

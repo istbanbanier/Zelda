@@ -2785,3 +2785,48 @@ conservée.
 Rendu llvmpipe : la capture prouve la composition et les couleurs, jamais
 la performance. Le score §30.2 restera une auto-évaluation tant qu'aucune
 revue contradictoire à contexte frais n'a tranché.
+
+---
+
+## 2026-08-05 — Blocs A→D : Prompt 4 installé, H-7, golden path, release, VERDICT DE GATE
+
+(Entrée de rattrapage — la revue contradictoire a relevé, à raison, que le
+journal s'arrêtait avant H-7.)
+
+### Fait
+
+- **Prompt 4 installé** (`ART_DIRECTION_MODE.md`) + `ART_DECISIONS.md`.
+- **Bloc A** : `AUDIT_V0_PHASE_H.md`, `SOURCING_MATRIX.md`, AD-001/002/003.
+- **Bloc B — H-7 a/b/c** : matière macro étendue à roche et montagne, fleurs
+  ellipsoïdes, flancs de pente (surdimensionnés puis réduits sur capture),
+  fog aerial 0,62→0,48 mesuré. Dette du verdict sérialisé soldée
+  (test_valley_dressing recalé crête 32).
+- **Bloc C** : golden path 4/4 VERT (boss, donjon ×2, traversal) ;
+  Release `playtest-65709df` (source + binaire Linux).
+- **Bloc D** : cinq caméras de gate (§21.5), captures produites — deux
+  aveugles CONSIGNÉES (ISS-025 salle noire, ISS-026 caméra boss) ;
+  cadence complète 4 cycles dans `ROADMAP.md`.
+
+### VERDICT GATE H : FAIL (revue contradictoire à contexte frais)
+
+Score prouvé ≈ 31-41/100 (auto-éval 56 trop généreuse de 15-25 pts) ;
+2 captures aveugles sur 5 ; chemin critique en placeholders assumés ;
+HeroShotLab jamais construit ; VICE DE FORME : la North Star précédait
+H-7c (capture ≠ code livré). Détail complet : `TEST_REPORT.md`.
+
+### Corrections adoptées (les 5 de la revue, ordonnées)
+
+1. Lumière fin d'après-midi réelle (direct 1,45 / ambiance 0,55) — FAIT,
+   à prouver par recapture ;
+2. Recadrages boss/camp + recapture North Star depuis HEAD — FAIT au
+   commit suivant ;
+3. Rivière en S turquoise (Cycle 3, chantier eau) ;
+4. Camp dans le cadre North Star + pylône 75-79 % X (Cycle 3) ;
+5. Éclair cœur blanc + nuage modelé + cape héros (Cycle 3) ; vidéo
+   10-20 s = machine utilisateur.
+
+### Prochaine action exacte
+
+Cycle 1 de la cadence : **P2-0** (audit Prompt 2, `PROMPT2_AUDIT.md`,
+baseline, backlog) puis P2-1/P2-2 (Bracelet). Les corrections 3-5
+attendent le Cycle 3 — ne pas re-décorer avant le systémique.

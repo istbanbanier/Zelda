@@ -401,3 +401,11 @@ le § « aucun couloir noir » (§12.8/§22.2 bible) n'est pas tenu. À corriger
 la passe V7 (éclairage motivé du donjon : ambre de circulation plus présent,
 exposition stable). La capture reste au dossier telle quelle — §0.2 : on ne
 maquille pas une preuve.
+
+
+## ISS-026 — Caméra de référence du boss enterrée (S3, ouvert)
+
+`gate_boss.png` (v1 et v2) : la caméra AABB finit contre une masse bleu nuit —
+ni arène, ni pylônes, ni Gardien. Relevé par la revue contradictoire du Gate H
+(défaut équivalent à ISS-025, non consigné à l'époque — corrigé ici). Correctif :
+cadrage spécifique à l'arène (surplomb du bord, rayon 19 m) au commit suivant.

@@ -1693,3 +1693,19 @@ elle a été enfreinte, et le résultat n'a servi qu'à le rappeler.
 `evidence/rewards/` — 31 vues, une par récompense, prises depuis le point où le
 joueur se tiendra pour interagir, plus `manifest.json` (commit, moteur,
 renderer, résolution, caméra et cible de chaque vue).
+
+---
+
+## 2026-08-05 — Revue contradictoire du Gate H (contexte frais)
+
+Agent adversarial-qa, lecture seule, dossier `evidence/phaseH/`. VERDICT :
+**FAIL**. North Star (`vista_h7_matiere.png`) scorée §30.2 domaine par
+domaine : ≈ 31/90 vérifiables (~41/100 si le mouvement était parfait) —
+défauts nommés : éclairage plat zénithal, camp hors cadre, pylône coupé,
+éclair sans cœur blanc, trois langages de matériaux incompatibles, échelle
+citadelle non crédible, herbe coupée net. §23.2 : 6 FAIL, 6 PARTIAL,
+3 UNVERIFIED (aucune vidéo), 1 PASS (originalité/licences). Vices de
+procédure relevés et corrigés dans la foulée : capture antérieure au code
+livré, gate_boss aveugle non consigné (→ ISS-026), PROGRESS en retard,
+lignes F/G contradictoires entre STATUS et ROADMAP. Stabilité temporelle :
+BLOQUÉE sans vidéo/GPU réel (machine utilisateur).
