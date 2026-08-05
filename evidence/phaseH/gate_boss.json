@@ -1,18 +1,18 @@
 {
-  "commit": "eea6f7dd8155cff81d69a540aa919594bb2fa6ea",
+  "commit": "ff751e1bed8da07c117ea60997ea6168ed36d8b7",
   "display_server": "X11",
-  "distinct_colors_sampled": 137,
+  "distinct_colors_sampled": 266,
   "engine_version": "4.7.1-stable (custom_build)",
   "frames_waited": 60,
   "height": 1440,
   "label": "gate_boss",
-  "luma_mean": 0.2547,
-  "luma_stddev": 0.1173,
+  "luma_mean": 0.2541,
+  "luma_stddev": 0.091,
   "png": "evidence/phaseH/gate_boss.png",
   "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
   "rendering_method": "forward_plus",
   "repo_dirty": false,
   "scene": "res://scenes/boss/BossArena.tscn",
-  "timestamp_utc": "2026-08-05 00:45:44",
+  "timestamp_utc": "2026-08-05 00:58:53",
   "width": 2560
 }
