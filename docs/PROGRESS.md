@@ -3050,13 +3050,31 @@ boucle que les armes au sol). 2/2 (17 assertions) ; non-régression
 reliques 7/7, monde 9/9, save 15/15. Intégration 566/566 (post-
 Fragments). **P2-4 est TERMINÉ.**
 
+### Fait ensuite : P2-5 tranche 1 — le BossDirector (5/5, 122 assertions)
+
+L'audit a trouvé le `randf() < 0.45` pur dans `_choose_attack` de
+StormGuardian — exactement ce que P2 §10.5 interdit. Fail-first :
+`test_boss_director.gd` rouge prouvé, puis `BossDirector` (RefCounted,
+seed 0 = tirée puis CONSIGNÉE) : bibliothèque taguée {portée, phases,
+cooldown, poids}, filtre de légalité → anti-répétition (le dernier
+choix s'écarte SI une alternative légale existe) → tirage pondéré sur
+générateur semé → historique. `&""` = rien de légal, le boss ATTEND
+(fallback déterministe). Contrats verts : légalité seule (60 tirs),
+jamais deux de suite, pas de famine du seul légal, seed 42 rejoue la
+même séquence ×15, cooldown + historique ordonné. StormGuardian migré :
+`director_seed` exporté, bibliothèque combo/frappe_sol/arc reflétant
+le comportement historique, cadences 2,2/1,7 et 3,4/2,6 conservées,
+`_phase_tag()` (PHASE2/OVERLOAD → phase2). Suites boss 38/38 ;
+playthrough boss_run 1/1 (toutes phases traversées, boss vaincu 0/560)
+— le directeur décide désormais chaque coup du Gardien.
+
 ### Prochaine action exacte
 
-**P2-5** : migration du donjon et du boss vers les lois communes —
-les salles électriques parlent déjà ElectricNode (Gate F), le chantier
-est : états matière sur les mécanismes (eau de la salle 4 =
-MaterialState, dangers = ElementPacket), le boss porte PostureComponent
-(rupture → noyau exposé, remplace le script de stun), et le BOSS
-DIRECTOR (bibliothèque de patterns taguée, anti-répétition, seed
-reproductible — P2 §10.5). Commencer par l'audit des scripts de phase
-du boss.
+**P2-5 suite** : migration des mécanismes vers les lois communes —
+l'eau de la salle 4 porte `MaterialStateComponent` (état Wet/Charged au
+lieu du booléen local), les dangers électriques transmettent des
+`ElementPacket` (chaîne causale, anti-boucle), et le boss porte
+`PostureComponent` (rupture → noyau exposé, remplace le compteur de
+stun ad hoc). Commencer par lire `dungeon_room_battery.gd` (salle 4)
+et `storm_guardian.gd` (chemin du stun/noyau) pour cartographier les
+booléens à remplacer.
