@@ -5,6 +5,13 @@ Un résultat sans commande reproductible ne vaut pas comme preuve (§0.7).
 
 ---
 
+## Campagne du 2026-08-05 (midi) — P2-3 TERMINÉ
+
+Arbre `497dd5f`. Utility explicable (2/2), camp trois approches (2/2 —
+diversion par Pulse purement systémique). Intégration complète de
+clôture : **553/553, zéro échec**. P2-3 au complet : garde/déviation,
+posture, identités d'armes, utility, tokens, camp.
+
 ## Campagne du 2026-08-05 (matin, 3) — P2-3 tranche 3 : identités d'armes
 
 Arbre `6af76c6`. Cinq lourdes de famille en data (2/2, 45 assertions),
