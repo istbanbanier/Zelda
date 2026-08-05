@@ -3214,17 +3214,28 @@ n'existe pas (4.7.1). Suites héros 17/17 ; evidence v4 + carte des
 masses sombres (étiquetée honnêtement : PAS la silhouette §30.3 — le
 vrai outil est `SilhouetteLineup` SILHOUETTE_FLAT=1).
 
+### Fait ensuite : v5 (doigts/ruban/fumée) + planche de silhouettes signée
+
+v5 (`03fb65c`) : phalanges repliées (l'éventail de bind pose trahissait
+le mannequin), amorce de rivière resserrée en ruban, fumée assombrie —
+17/17. Puis `SilhouetteLineup` monte le héros SIGNÉ et DE DOS
+(`fc66774`) : la planche §30.3 en aplats montre SEPT silhouettes toutes
+distinctes — le X et le mantelet cassent le contour du héros
+(`evidence/cycle3/silhouettes_signees.png`, suites 8/8).
+
 ### Prochaine action exacte
 
-Dans l'ordre de rendement (Cycle 3 continue) :
-1. **Creusement du lit de rivière** : l'amorce lit « bassin » — donner
-   au premier segment une berge visible et un rétrécissement (le
-   contrat 5/5 du lab reste le garde-fou) ; doigts du héros (poser
-   les phalanges comme les bras — os hand_l/r sondés) ; fumée du camp
-   plus lisible (colonne plus sombre sur fond brumeux).
-2. **SilhouetteLineup avec le héros SIGNÉ** : brancher le glTF +
-   HeroSigns dans l'outil existant (SILHOUETTE_FLAT=1) et capturer la
-   vraie planche §30.3 à 3/10/25 m.
-3. Puis V4 ROADMAP (propagation de la recette à la vallée réelle) —
-   NE PAS commencer avant que le lab ait son gate intermédiaire
-   (§29 V2 : ≥ 75/100, score machine utilisateur).
+**Le Cycle 3 côté conteneur est au taquet : les prochaines étapes
+passent par la machine utilisateur.**
+1. MACHINE UTILISATEUR (`docs/MANUAL_VALIDATION.md`) : juger le
+   HeroShotLab v5 au protocole §30.2 (score /100) — le gate
+   intermédiaire §29 V2 exige ≥ 75 avant tout remplacement de proxies,
+   ≥ 85 avant propagation ; plus les contrôles §21.4 en souffrance
+   (AZERTY réel, manette) et le feel des labs (Resonance/Combat).
+2. Si le gate passe : **V4 ROADMAP** (propagation de la recette du lab
+   à la vallée réelle — pente/valeurs/phrases d'herbe/berges sur
+   `ValleyWorld`, mêmes contrats de composition en tests).
+3. Sinon : itérer le lab sur les défauts nommés par le score.
+Chantiers conteneur encore ouverts si besoin : ISS-027 (tranche
+outillage du runner), ISS-030 (bassin de la vallée aux lois matière),
+ISS-031 (sources d'échec des hints salles 2-3).
