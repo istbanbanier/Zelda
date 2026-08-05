@@ -138,3 +138,43 @@ Si une boucle simple produit > 70 % des victoires sans raison contextuelle :
 analyse (sécurité ? coût ? lisibilité ?) avant tout nerf. Les données locales
 de playtest (télémétrie P2 §14.4, désactivable, sans réseau) arrivent avec
 P2-3 ; d'ici là, l'observation manuelle des sessions utilisateur fait foi.
+
+## 7. Défense expressive (P2-3) — contrats
+
+### 7.1 Acquis (tranche 1, 2026-08-05)
+
+Garde = clic D tenu avec une arme de mêlée (l'arc vise — un seul geste,
+deux métiers selon l'outil). Cône frontal 135°. Blocage : 20 % de dégâts
+résiduels contre endurance — `GuardBreak` à jauge vide. Déviation parfaite
+(appui < 0,12 s avant l'impact) : zéro dégât, zéro endurance, Clarity
+0,35 s, la poise de l'attaquant encaisse 40 par le composant. Un coup
+bloqué ne déclenche ni HURT ni mercy. Mécanisme : `damage_gate` générique
+de la hurtbox — réutilisable par la garde du Briseur (§14.3).
+
+### 7.2 À faire — les trois jauges (P2 §7.4, décision d'architecture)
+
+- **poise** (existe) : résistance INSTANTANÉE au stagger d'une action —
+  RefCounted du moment, se recharge vite ;
+- **posture** (à faire) : jauge TACTIQUE des porteurs de garde (Briseur,
+  boss) — nourrie par lourdes et déviations parfaites (`posture_damage`
+  à ajouter sur DamageEvent/AttackDefinition), sa rupture ouvre une
+  fenêtre POSITIONNELLE courte, jamais une cinématique ;
+- **santé** : la survie. Aucune des trois ne se déduit des autres.
+
+Règle de dispatch d'une déviation parfaite : si la cible porte une
+`PostureComponent`, c'est la posture qui encaisse (les gardiens plient
+avant de rompre) ; sinon la poise (les légers sont étourdis net).
+
+### 7.3 Matrice menace × réponse (P2 §7.4) — état d'implémentation
+
+| Menace | Garde | Déviation | Esquive | Systémique |
+|---|---|---|---|---|
+| légère | ✅ sûre, coûteuse | ✅ forte (poise 40) | ✅ i-frames | interruption (P2-3.3) |
+| lourde | ✅ gros coût (×0,8 dégâts) | tag `deflectable` à poser (P2-3.2) | ✅ | sortir de l'axe |
+| brise-garde | tag à poser (P2-3.2) | interdite | ✅ | hauteur/impact |
+| imblocable | tag à poser | non | ✅ | Arc Step ✅ |
+| projectile | selon arme (P2-3.3) | renvoi (P2-3.3) | ✅ | couverture/Polarité ✅ |
+| arc électrique | risque métal (lois ✅) | Ground contextuel ✅ | ✅ | isolant/eau (lois ✅) |
+
+Les tags `blockable/deflectable/dodgeable/interruptible` entrent dans
+`AttackDefinition` à la tranche 2 — data, jamais des `if` par ennemi.
