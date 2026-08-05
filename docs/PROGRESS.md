@@ -2931,8 +2931,24 @@ posture_damage 12 brise sa garde en UN coup même à 2 de dégâts ; la
 déviation parfaite nourrit la POSTURE quand la cible en porte (6 par
 parade → 2 parades brisent un Briseur), la POISE sinon. 3/3 fail-first.
 
+### Fait ensuite : P2-3 tranche 3 — identités d'armes
+
+Constat d'entrée : TOUTES les familles empruntaient les attaques de
+l'épée, lourde comprise (câblée en dur dans Player.tscn) — les « six
+recolorations » que P2 §7.5 interdit. Fait : `heavy_attack` et
+`parry_window_bonus` sur WeaponDefinition ; le contrôleur échange la
+lourde avec l'arme (repli = export historique) ; CINQ lourdes de famille
+en pure data — gourdin `club_heavy_sweep` (recul 7, projette), lance
+`spear_heavy_thrust` (perce vite, recovery long), hache `axe_heavy_break`
+(posture 12 = brise la garde d'un Briseur EN UN COUP, startup 0,55 très
+annoncé), lame `blade_heavy_surge` (élément électrique), épée garde la
+sienne + bonus de déviation 0,04 s. 2/2 (45 assertions) ; non-régression
+armes 9/9, combat 10/10, garde 24/24, boss 11/11. ISS-027 consigné
+(faux « ok » du runner sur erreur post-assertion).
+
 ### Prochaine action exacte
 
-P2-3 tranche 3 : identités d'armes — 4-6 actions utiles par famille,
-lourdes avec posture_damage/tags (`blockable/deflectable/…`) en data ;
-puis IA utility bornée + tokens et camp trois approches.
+P2-3 tranche 4 (fin) : IA utility bornée + tokens formels
+(`EncounterCoordinator` : mêlée ×2, lourde ×1, timeout, libération
+garantie) et le camp à TROIS approches (frontal/infiltration/
+environnement). Puis P2-4 (routes, POI, Fragments).

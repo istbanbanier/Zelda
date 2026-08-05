@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=7 format=3]
+[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=8 format=3]
 
 ; §11.1 — Épée usée : 12.0 dégâts, durabilité 24, portée 1.7 m, conductivité 0.85.
 ; ART-P0 : premier modèle de PRODUCTION (SM_WornSword) — les données de
@@ -10,6 +10,7 @@
 [ext_resource type="Resource" path="res://resources/combat/sword/light_1.tres" id="2_l1"]
 [ext_resource type="Resource" path="res://resources/combat/sword/light_2.tres" id="3_l2"]
 [ext_resource type="Resource" path="res://resources/combat/sword/light_3.tres" id="4_l3"]
+[ext_resource type="Resource" path="res://resources/combat/sword/heavy_1.tres" id="9_heavy"]
 [resource]
 script = ExtResource("1_def")
 id = &"worn_sword"
@@ -25,3 +26,5 @@ rarity = 0
 mesh_scene = ExtResource("5_model")
 icon = ExtResource("6_icon")
 attack_set = [ExtResource("2_l1"), ExtResource("3_l2"), ExtResource("4_l3")]
+heavy_attack = ExtResource("9_heavy")
+parry_window_bonus = 0.04

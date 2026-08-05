@@ -38,3 +38,9 @@ extends Resource
 ## partagent le set d'épée — les « combos par arme » de §7.12 sont une passe
 ## d'animation, pas une donnée manquante.
 @export var attack_set: Array[AttackDefinition] = []
+## Lourde PROPRE à la famille (P2 §7.5) : déplacer, briser, percer, charger
+## ou contrôler — jamais seulement « dégâts ×2 ». Nul = repli du contrôleur.
+@export var heavy_attack: AttackDefinition = null
+## Bonus de fenêtre de déviation parfaite (P2 §7.5 « lire et dévier ») —
+## la signature de l'épée ; 0 partout ailleurs.
+@export var parry_window_bonus: float = 0.0

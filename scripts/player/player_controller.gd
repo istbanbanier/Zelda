@@ -868,9 +868,14 @@ func _gate_damage(event: DamageEvent) -> StringName:
 	if facing.normalized().dot(toward_attacker.normalized()) < cos_half:
 		return &"subie"
 	# Déviation parfaite : la garde vient d'être levée (P2 §7.4 — fenêtre
-	# initiale 0,12 s). Aucun dégât, aucune endurance, Clarity, et
-	# l'attaquant paie en poise — par le système, pas par un script spécial.
-	if _guard_held_time <= guard.parry_window:
+	# initiale 0,12 s, + bonus d'arme : l'épée « lit et dévie », §7.5).
+	# Aucun dégât, aucune endurance, Clarity, et l'attaquant paie en
+	# posture/poise — par le système, pas par un script spécial.
+	var window: float = guard.parry_window
+	var equipped: WeaponInstance = _inventory.equipped() if _inventory != null else null
+	if equipped != null and equipped.definition != null:
+		window += equipped.definition.parry_window_bonus
+	if _guard_held_time <= window:
 		_clarity_timer = guard.clarity_duration
 		_jolt_attacker_poise(event)
 		parried.emit(event)

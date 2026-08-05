@@ -44,10 +44,12 @@ enum Phase { IDLE, STARTUP, ACTIVE, RECOVERY }
 ## Arme en main (§11.1) — `null` = mains nues, la valeur exportée s'applique.
 var _weapon: WeaponInstance = null
 ## Chaîne exportée d'origine, restaurée quand l'arme (et son `attack_set`) part.
+var _default_heavy: AttackDefinition = null
 var _default_attacks: Array[AttackDefinition] = []
 
 func _ready() -> void:
 	_default_attacks = attacks
+	_default_heavy = heavy_attack
 
 
 ## Équipe une arme (§11.1) : ses dégâts remplacent la valeur exportée, son
@@ -62,6 +64,12 @@ func set_weapon(weapon: WeaponInstance) -> void:
 		attacks = weapon.definition.attack_set
 	else:
 		attacks = _default_attacks
+	# P2 §7.5 : la LOURDE aussi suit la famille — plus jamais la lourde
+	# d'épée pour tout le monde. Repli : l'export historique de la scène.
+	if weapon != null and weapon.definition.heavy_attack != null:
+		heavy_attack = weapon.definition.heavy_attack
+	else:
+		heavy_attack = _default_heavy
 
 
 func weapon() -> WeaponInstance:

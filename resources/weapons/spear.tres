@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=6 format=3]
+[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=7 format=3]
 
 ; §11.1 — Lance : 10.0 dégâts, durabilité 30, portée 2.7 m, conductivité 0.7.
 
@@ -7,6 +7,7 @@
 [ext_resource type="Resource" path="res://resources/combat/sword/light_2.tres" id="3_l2"]
 [ext_resource type="Resource" path="res://resources/combat/sword/light_3.tres" id="4_l3"]
 [ext_resource type="PackedScene" path="res://scenes/weapons/Spear.tscn" id="9_model"]
+[ext_resource type="Resource" path="res://resources/combat/spear/heavy_1.tres" id="9_heavy"]
 [resource]
 script = ExtResource("1_def")
 id = &"spear"
@@ -21,3 +22,4 @@ conductivity = 0.7
 rarity = 1
 mesh_scene = ExtResource("9_model")
 attack_set = [ExtResource("2_l1"), ExtResource("3_l2"), ExtResource("4_l3")]
+heavy_attack = ExtResource("9_heavy")

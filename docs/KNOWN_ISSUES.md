@@ -409,3 +409,22 @@ maquille pas une preuve.
 ni arène, ni pylônes, ni Gardien. Relevé par la revue contradictoire du Gate H
 (défaut équivalent à ISS-025, non consigné à l'époque — corrigé ici). Correctif :
 cadrage spécifique à l'arène (surplomb du bord, rayon 19 m) au commit suivant.
+
+## ISS-027 — Faux « ok » du runner : erreur de script après une assertion passée (S2 outillage, ouvert)
+
+**Observé** le 2026-08-05 (P2-3, `test_weapon_identities`) : un test dont le
+script lève une erreur d'exécution (propriété absente sur un objet typé)
+APRÈS au moins une assertion passée est compté « ok (1 assertions) » — la
+méthode est avortée en silence, ses assertions restantes ne courent jamais.
+Le garde-fou existant (« aucune assertion exécutée = couverture illusoire »)
+ne couvre que le cas zéro assertion.
+
+**Impact** : un fail-first peut paraître rouge-puis-vert alors que le rouge
+était un avortement, pas un échec d'assertion — risque de fausse preuve.
+Contournement actuel : lire les `SCRIPT ERROR` du journal du runner (fait
+systématiquement dans les sessions récentes).
+
+**Correctif proposé** : le runner devrait détecter qu'une méthode de test
+s'est terminée par erreur (comparer un drapeau « fin atteinte » posé par le
+test ? intercepter les erreurs de script ?) et la compter ÉCHEC. À traiter
+comme tranche outillage dédiée — pas en passant.
