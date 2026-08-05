@@ -3200,16 +3200,31 @@ pâles au fond). Protocole §30.1 exécuté sur la v3 (couleur + vignette
 + gris, capture officielle depuis arbre committé). Contrat 5/5
 maintenu à chaque itération.
 
+### Fait ensuite : Passe V3 — les 5 signes du héros (0/8 → 4/4)
+
+`HeroSigns` réutilisable (`scripts/player/hero_signs.gd`), volumes
+graybox aux os sondés : mantelet turquoise (#168F9B désaturé, JAMAIS le
+cyan électrique — écart RGB testé) couvrant les épaules à deux pointes
+INÉGALES, épaulière ivoire/bronze côté OPPOSÉ au Bracelet, Bracelet à
+l'avant-bras gauche (canal cyan, émission 0,8 discrète), X arc/carquois
+en diagonales opposées (28°/−20°). Placement en GLOBAL à l'attache (les
+axes locaux d'un rig importé ne sont pas fiables), itéré par capture
+(« sac à dos » → cape d'épaules). Leçon API : `Color.distance_to`
+n'existe pas (4.7.1). Suites héros 17/17 ; evidence v4 + carte des
+masses sombres (étiquetée honnêtement : PAS la silhouette §30.3 — le
+vrai outil est `SilhouetteLineup` SILHOUETTE_FLAT=1).
+
 ### Prochaine action exacte
 
-**Passe V3 du ROADMAP — le héros porte ses 5 signes (§13.1)** sur le
-modèle du lab (et du jeu — même glTF) : mantelet turquoise court à
-deux pointes, épaulière unique ivoire/bronze, Bracelet de Résonance à
-l'avant-bras gauche, diagonale arc/carquois en X, cheveux sculptés.
-Approche graybox honnête : attacher des volumes simples aux os
-(`BoneAttachment3D` sur clavicle/spine/forearm — les noms d'os sont
-sondés : upperarm/lowerarm/clavicle l-r) et vérifier au test de
-SILHOUETTE §30.3 (héros noirci à 3/10/25 m — un nouveau test à écrire
-fail-first sur le modèle du contrat de composition). Ensuite :
-creusement du lit de rivière (l'amorce lit « bassin »), doigts du
-héros, fumée. Le score /100 attend la machine utilisateur.
+Dans l'ordre de rendement (Cycle 3 continue) :
+1. **Creusement du lit de rivière** : l'amorce lit « bassin » — donner
+   au premier segment une berge visible et un rétrécissement (le
+   contrat 5/5 du lab reste le garde-fou) ; doigts du héros (poser
+   les phalanges comme les bras — os hand_l/r sondés) ; fumée du camp
+   plus lisible (colonne plus sombre sur fond brumeux).
+2. **SilhouetteLineup avec le héros SIGNÉ** : brancher le glTF +
+   HeroSigns dans l'outil existant (SILHOUETTE_FLAT=1) et capturer la
+   vraie planche §30.3 à 3/10/25 m.
+3. Puis V4 ROADMAP (propagation de la recette à la vallée réelle) —
+   NE PAS commencer avant que le lab ait son gate intermédiaire
+   (§29 V2 : ≥ 75/100, score machine utilisateur).
