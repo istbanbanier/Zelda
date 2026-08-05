@@ -2946,9 +2946,23 @@ sienne + bonus de déviation 0,04 s. 2/2 (45 assertions) ; non-régression
 armes 9/9, combat 10/10, garde 24/24, boss 11/11. ISS-027 consigné
 (faux « ok » du runner sur erreur post-assertion).
 
+### Fait ensuite : P2-3 tranche 4a — sélection utilitaire explicable
+
+Constat : le `CombatCoordinator` était DÉJÀ conforme §12.8 (tokens 2
+mêlée + 1 lourde, purge structurelle — jamais de référence morte —,
+plafond 14 IA) : rien à refaire. Le manque réel était l'EXPLICABILITÉ
+(P2 §8.1). Fait : `UtilityBrain` (choix scoré, trace des trois meilleurs
+avec raisons, égalité départagée par priorité de déclaration) 2/2 ;
+l'azur refactoré dessus — rouvrir/flanquer/presser aux MÊMES seuils que
+la cascade historique (22/22 raiders verts), mais chaque décision se lit
+(`chase_trace()`). Leçon de mise en scène récurrente consignée deux fois
+cette nuit : le pivot ennemi regarde +Z par défaut — placer le joueur
+côté +Z ou tourner le pivot, sinon pas d'aggro.
+
 ### Prochaine action exacte
 
-P2-3 tranche 4 (fin) : IA utility bornée + tokens formels
-(`EncounterCoordinator` : mêlée ×2, lourde ×1, timeout, libération
-garantie) et le camp à TROIS approches (frontal/infiltration/
-environnement). Puis P2-4 (routes, POI, Fragments).
+P2-3 tranche 4b (FIN de P2-3) : le camp à TROIS approches — vérifier en
+test que le camp braise offre (1) frontal : combat direct viable,
+(2) infiltration : un Pulse/bruit depuis un couvert DÉTOURNE un garde
+(INVESTIGATE — mécanique déjà systémique), (3) environnement : un prop
+métallique chargeable au camp (Polarité/Ground). Puis P2-4.

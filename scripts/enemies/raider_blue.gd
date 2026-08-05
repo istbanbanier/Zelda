@@ -29,6 +29,9 @@ var _sidestep_direction: Vector3 = Vector3.ZERO
 var _dodge_cooldown: float = 0.0
 
 
+var _brain: UtilityBrain = UtilityBrain.new()
+
+
 func _family_ready() -> void:
 	telegraph_color = Color(0.25, 0.55, 1.0)
 	# Lance visible (même règle PT-D1-03 que le gourdin du braise).
@@ -108,21 +111,53 @@ func _maybe_dodge_telegraphed_heavy() -> void:
 ## Contournement et alternance distance/attaque (§12.2) : pendant le
 ## cooldown il ROUVRE la distance ; à mi-distance il aborde de FLANC.
 func _family_chase_velocity(direction: Vector3, distance: float) -> Vector3:
-	if _attack_cooldown > 0.0 and distance < SPACING_DISTANCE:
-		return -direction * tuning.retreat_speed
-	if distance >= FLANK_MIN and distance <= FLANK_MAX:
-		var flank: Vector3 = direction.cross(Vector3.UP) * _flank_side
-		var blended: Vector3 = (direction * (1.0 - FLANK_BLEND)
-			+ flank * FLANK_BLEND)
-		if blended.length_squared() > 0.0001:
-			blended = blended.normalized()
-		return blended * tuning.pursuit_speed
-	return direction * tuning.pursuit_speed
+	# P2 §8.1 : le choix de poursuite est une SÉLECTION SCORÉE EXPLICABLE —
+	# mêmes seuils, même comportement que la cascade historique (les scores
+	# reproduisent exactement ses priorités), mais la décision se LIT.
+	var options: Array[Dictionary] = [
+		{
+			"id": &"rouvrir",
+			"score": 2.0 if _attack_cooldown > 0.0 \
+				and distance < SPACING_DISTANCE else 0.0,
+			"reason": "cooldown %.1fs et %.1f m < espacement %.1f" \
+				% [_attack_cooldown, distance, SPACING_DISTANCE],
+		},
+		{
+			"id": &"flanquer",
+			"score": 1.0 if distance >= FLANK_MIN \
+				and distance <= FLANK_MAX else 0.0,
+			"reason": "%.1f m dans la bande de flanc [%.1f;%.1f]" \
+				% [distance, FLANK_MIN, FLANK_MAX],
+		},
+		{
+			"id": &"presser",
+			"score": 0.5,
+			"reason": "défaut : fermer la distance (%.1f m)" % distance,
+		},
+	]
+	match _brain.choose(options):
+		&"rouvrir":
+			return -direction * tuning.retreat_speed
+		&"flanquer":
+			var flank: Vector3 = direction.cross(Vector3.UP) * _flank_side
+			var blended: Vector3 = (direction * (1.0 - FLANK_BLEND)
+				+ flank * FLANK_BLEND)
+			if blended.length_squared() > 0.0001:
+				blended = blended.normalized()
+			return blended * tuning.pursuit_speed
+		_:
+			return direction * tuning.pursuit_speed
 
 
 ## Seam de test : le flanc choisi (±1) et l'état de l'esquive.
 func flank_side() -> float:
 	return _flank_side
+
+
+## Trace de la dernière décision de poursuite (P2 §8.1) — pour les tests
+## et l'overlay : [0] est l'élu, raisons incluses.
+func chase_trace() -> Array[Dictionary]:
+	return _brain.trace()
 
 
 func is_sidestepping() -> bool:
