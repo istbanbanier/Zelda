@@ -261,18 +261,17 @@ func _physics_process(delta: float) -> void:
 	# « avant » est celui que le joueur voit à cet instant.
 	_camera_rig.apply_look(intent.look_analog, intent.look_mouse, delta)
 
-	# Bracelet de Résonance (P2 §3) : cooldown tické quel que soit le mode ;
-	# le Pulse ne part que depuis un état où le héros a la main (§3.5 : jamais
-	# pendant HURT/DEAD, ni au milieu d'un mantle/attaque/esquive).
-	if _resonance != null:
-		_resonance.tick(delta)
-		if intent.pulse_pressed \
-				and (_mode == Mode.LOCOMOTION or _mode == Mode.CLIMBING):
-			match _resonance.try_pulse(self):
-				&"fired":
-					_mark_consumed(&"resonance_pulse")
-				&"cooldown":
-					_mark_refused(&"resonance_pulse", &"cooldown")
+	# Bracelet de Résonance (P2 §3) : le composant s'auto-pilote (cooldowns,
+	# engagement Polarité) ; ici, seulement la DÉCISION — le Pulse ne part que
+	# depuis un état où le héros a la main (§3.5 : jamais pendant HURT/DEAD,
+	# ni au milieu d'un mantle/attaque/esquive).
+	if _resonance != null and intent.pulse_pressed \
+			and (_mode == Mode.LOCOMOTION or _mode == Mode.CLIMBING):
+		match _resonance.try_pulse(self):
+			&"fired":
+				_mark_consumed(&"resonance_pulse")
+			&"cooldown":
+				_mark_refused(&"resonance_pulse", &"cooldown")
 
 	_stunlock_grace = maxf(0.0, _stunlock_grace - delta)
 	_update_flash(delta)

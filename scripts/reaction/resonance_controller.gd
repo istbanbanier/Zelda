@@ -29,13 +29,31 @@ const EYE_HEIGHT: float = 1.4
 const LINK_SELECT_RANGE: float = 16.0
 const LINK_MAX_SPAN: float = 14.0
 
+## Polarité (P2 §3.4) — impulsions bornées, jamais de téléport, jamais un
+## acteur vivant (RigidBody3D structurellement). Valeurs de départ.
+const POLARITY_RANGE: float = 12.0
+const POLARITY_MASS_MAX: float = 90.0
+const POLARITY_SPEED: float = 4.5
+const POLARITY_ACCEL: float = 12.0
+const POLARITY_DURATION: float = 2.5
+
 var _pulse_cooldown: float = 0.0
 var _link: ResonanceLinkNode = null
+var _polarity_target: RigidBody3D = null
+var _polarity_anchor: CharacterBody3D = null
+var _polarity_sign: float = 1.0
+var _polarity_timer: float = 0.0
 
 
-## À appeler chaque tick physique par le propriétaire, quel que soit le mode.
-func tick(delta: float) -> void:
+func _ready() -> void:
+	# Auto-piloté : cooldowns et engagement Polarité vivent au tick physique
+	# du composant lui-même — le propriétaire ne fait que DÉCIDER (try_*).
+	set_physics_process(true)
+
+
+func _physics_process(delta: float) -> void:
 	_pulse_cooldown = maxf(0.0, _pulse_cooldown - delta)
+	_drive_polarity(delta)
 
 
 ## Tente un Pulse depuis `body`. Retourne `&"fired"` ou `&"cooldown"` — le
@@ -64,6 +82,84 @@ func try_pulse(body: CharacterBody3D) -> StringName:
 	NoiseEvents.emit(get_tree(), body.global_position, PULSE_NOISE_RADIUS, &"pulse")
 	pulse_fired.emit(revealed_count)
 	return &"fired"
+
+
+## --- Polarité (P2 §3.4) ---
+
+func polarity_engaged() -> bool:
+	return _polarity_target != null and is_instance_valid(_polarity_target)
+
+
+## Engage la Polarité sur `target`. Verdicts : `engaged`, `invalide`,
+## `pas_metal`, `pas_charge`, `trop_lourd`, `hors_portee`.
+func try_polarity(body: CharacterBody3D, target: RigidBody3D,
+		mode: StringName) -> StringName:
+	if body == null or target == null or not target.is_inside_tree():
+		return &"invalide"
+	var state: MaterialStateComponent = _material_state_of(target)
+	if state == null or state.profile == null \
+			or not state.profile.has_tag(&"metal"):
+		return &"pas_metal"
+	if not state.is_charged():
+		return &"pas_charge"
+	if target.mass > POLARITY_MASS_MAX:
+		return &"trop_lourd"
+	if body.global_position.distance_to(target.global_position) > POLARITY_RANGE:
+		return &"hors_portee"
+	_polarity_target = target
+	_polarity_anchor = body
+	_polarity_sign = -1.0 if mode == &"repousser" else 1.0
+	_polarity_timer = POLARITY_DURATION
+	return &"engaged"
+
+
+func polarity_stop() -> void:
+	_polarity_target = null
+	_polarity_anchor = null
+	_polarity_timer = 0.0
+
+
+## Pilotage par impulsions bornées (Jolt) : on corrige la vitesse PLANE vers
+## la vitesse cible, sous plafond d'accélération — jamais d'écriture de
+## transform, la gravité et les collisions restent souveraines.
+func _drive_polarity(delta: float) -> void:
+	if _polarity_target == null:
+		return
+	if not is_instance_valid(_polarity_target) \
+			or not _polarity_target.is_inside_tree() \
+			or _polarity_anchor == null or not is_instance_valid(_polarity_anchor):
+		polarity_stop()
+		return
+	_polarity_timer -= delta
+	var state: MaterialStateComponent = _material_state_of(_polarity_target)
+	var out_of_range: bool = _polarity_anchor.global_position.distance_to(
+		_polarity_target.global_position) > POLARITY_RANGE + 2.0
+	if _polarity_timer <= 0.0 or out_of_range \
+			or state == null or not state.is_charged():
+		polarity_stop()
+		return
+	var toward: Vector3 = _polarity_anchor.global_position \
+		- _polarity_target.global_position
+	toward.y = 0.0
+	if toward.length_squared() < 0.25:
+		# Assez proche : l'attraction s'arrête au lieu d'aspirer dans le corps.
+		if _polarity_sign > 0.0:
+			polarity_stop()
+			return
+	var direction: Vector3 = toward.normalized() * _polarity_sign
+	var desired: Vector3 = direction * POLARITY_SPEED
+	var current: Vector3 = _polarity_target.linear_velocity
+	var planar: Vector3 = Vector3(current.x, 0.0, current.z)
+	var correction: Vector3 = (desired - planar).limit_length(POLARITY_ACCEL * delta)
+	_polarity_target.sleeping = false
+	_polarity_target.apply_central_impulse(correction * _polarity_target.mass)
+
+
+func _material_state_of(target: Node) -> MaterialStateComponent:
+	for child: Node in target.get_children():
+		if child is MaterialStateComponent:
+			return child as MaterialStateComponent
+	return null
 
 
 ## --- Arc Link (P2 §3.3) ---
