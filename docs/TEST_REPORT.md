@@ -5,6 +5,18 @@ Un résultat sans commande reproductible ne vaut pas comme preuve (§0.7).
 
 ---
 
+## Campagne du 2026-08-05 (nuit) — Cycle 3 : HeroShotLab v0→v5 + signes
+
+Arbres `ce76b24`→`39bb653`. HeroShotLab construit et itéré (contrat de
+composition 5/5, 41 assertions, MAINTENU sur v0→v5) ; cinq signes du
+héros fail-first 0/8→4/4 ; planche de silhouettes signée 8/8 ; suites
+héros 17/17. Suite intégrale de FIN DE SESSION sur arbre propre
+`39bb653` : **713/713, zéro échec** (relancée après un redémarrage du
+conteneur qui avait tué la première — seul le passage COMPLET compte).
+Captures officielles v0→v5 + planche depuis arbres committés, manifestes
+et dérivés §30.1 dans `evidence/cycle3/`. Score /100 : machine
+utilisateur.
+
 ## Campagne du 2026-08-05 (soir) — P2-5 tranches 1-2 : directeur + posture du boss
 
 Arbre `bde635d`+posture. **BossDirector** (P2 §10.5) : fail-first 5/5
