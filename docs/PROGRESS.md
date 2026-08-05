@@ -2974,11 +2974,20 @@ territoires 8/8.
 **P2-3 est TERMINÉ** : garde/déviation, posture, identités d'armes,
 utility explicable, tokens (déjà conformes), camp trois approches.
 
+### Fait ensuite : P2-4a — l'autel de terre (premier POI Bracelet)
+
+Greffé au sanctuaire forestier existant (densité avant étalement) : un
+cœur PRÉ-CHARGÉ (profil terre conductrice, 4 d'énergie) posé sur l'autel,
+ciblable au Bracelet ; le mettre à la terre allume la stèle dormante —
+conséquence par SIGNAUX d'états réels (patron ResonanceLab), et la
+recharge lente du composant ré-arme l'exercice (la stèle s'éteint quand
+le cœur se rallume — cohérence lisible). C'est l'« exercice sûr » de
+Ground que P2 §3.7 exige avant le donjon. 2/2 fail-first (10 assertions),
+reliques 7/7, monde 9/9.
+
 ### Prochaine action exacte
 
-**P2-4** : routes nommées (rivière/hauteurs/ruines — le dressing existe,
-il faut les IDENTITÉS et les raccourcis), POI Bracelet-dépendants
-(pont magnétique, bassin conducteur, autel de terre — GAMEPLAY_BIBLE
-§3.4), Fragments facultatifs (Écho/Flux/Élan), infiltration/bruit déjà
-acquise. Machine utilisateur : le camp braise se joue désormais de trois
-façons (frontal / Pulse-diversion depuis un couvert / caisse chargée).
+P2-4b : le PONT MAGNÉTIQUE (route des ruines) — tablier métallique
+RigidBody chargé, tiré en place par Polarité jusqu'à une zone de
+verrouillage (gel + signal), ouvre un raccourci. Puis bassin conducteur
+(Arc Link au-dessus de l'eau) et Fragments (Écho/Flux/Élan).

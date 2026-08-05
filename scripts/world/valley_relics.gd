@@ -1068,6 +1068,7 @@ func _build_shrine() -> void:
 
 	# L'AUTEL et ses offrandes : la raison de venir. Rien n'a été repris.
 	var altar: Node3D = _part(shrine, "Autel", Vector3(0.0, 0.0, -1.15))
+	_earth_core(altar)
 	_block(altar, "Table", Vector3(0.0, 0.47, 0.0), Vector3(1.7, 0.94, 0.72),
 		Vector3(0, 2, 1), COL_STONE, true)
 	_block(altar, "SocleFissure", Vector3(0.05, 0.09, 0.5),
@@ -1223,3 +1224,60 @@ func _build_shrine() -> void:
 
 	_place_poi(shrine, POI_SHRINE, "Sanctuaire forestier", &"foret",
 		Vector3(0.0, 4.0, -2.0), Vector3(36.0, 14.0, 40.0))
+
+
+## Autel de terre (P2-4, bible §3.4) : le cœur PRÉ-CHARGÉ posé sur l'autel
+## est l'exercice SÛR de la mise à la terre (P2 §3.7) — le drainer par
+## Ground allume la stèle dormante. La conséquence est pilotée par l'ÉTAT
+## réel (signaux du composant, patron ResonanceLab), jamais par sondage.
+func _earth_core(altar: Node3D) -> void:
+	var holder: Node3D = Node3D.new()
+	holder.name = "CoeurDeTerre"
+	altar.add_child(holder)
+	holder.position = Vector3(0.0, 1.08, -0.15)
+	var mesh: MeshInstance3D = MeshInstance3D.new()
+	var orb: SphereMesh = SphereMesh.new()
+	orb.radius = 0.16
+	orb.height = 0.32
+	mesh.mesh = orb
+	var core_material: StandardMaterial3D = StandardMaterial3D.new()
+	core_material.albedo_color = Color(0.33, 0.4, 0.36)
+	core_material.emission_enabled = true
+	core_material.emission = Color(0.133, 0.851, 0.925)
+	core_material.emission_energy_multiplier = 1.4
+	mesh.material_override = core_material
+	holder.add_child(mesh)
+	var state: MaterialStateComponent = MaterialStateComponent.new()
+	state.name = "MaterialStateComponent"
+	state.profile = load(
+		"res://resources/materials/MAT_PROFILE_terre_conductrice.tres") \
+		as MaterialProfile
+	holder.add_child(state)
+	var marker: ResonanceTargetComponent = ResonanceTargetComponent.new()
+	marker.kind = &"material"
+	holder.add_child(marker)
+	state.add_charge(4.0)
+	# La stèle dormante : éteinte tant que le cœur porte sa charge.
+	var stele: MeshInstance3D = MeshInstance3D.new()
+	stele.name = "SteleDormante"
+	var slab: BoxMesh = BoxMesh.new()
+	slab.size = Vector3(0.5, 1.7, 0.22)
+	stele.mesh = slab
+	var stele_material: StandardMaterial3D = StandardMaterial3D.new()
+	stele_material.albedo_color = COL_STONE_DARK
+	stele_material.emission_enabled = true
+	stele_material.emission = Color(0.133, 0.851, 0.925)
+	stele_material.emission_energy_multiplier = 0.0
+	stele.material_override = stele_material
+	altar.add_child(stele)
+	stele.position = Vector3(0.0, 0.85, -0.62)
+	# Conséquence par SIGNAUX : terre réussie → la stèle s'allume, le cœur
+	# s'éteint ; la recharge lente du composant rallume le cœur et ré-arme
+	# l'exercice (la stèle s'éteint alors — cohérence lisible).
+	state.state_changed.connect(func(which: StringName, active: bool) -> void:
+		if which == &"grounded" and active:
+			stele_material.emission_energy_multiplier = 2.4
+		elif which == &"charged":
+			core_material.emission_energy_multiplier = 1.4 if active else 0.0
+			if active:
+				stele_material.emission_energy_multiplier = 0.0)
