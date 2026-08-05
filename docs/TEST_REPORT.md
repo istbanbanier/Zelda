@@ -5,6 +5,23 @@ Un résultat sans commande reproductible ne vaut pas comme preuve (§0.7).
 
 ---
 
+## Campagne du 2026-08-05 (fin de nuit) — P2-2 Bracelet complet
+
+Arbre `1aba02e`. Après la série Bracelet (lois + 5 opérations, chaque tranche
+fail-first), validation complète par tranches, machine au repos :
+
+| Tranche | Résultat |
+|---|---|
+| Unitaires (`--filter=unit/`) | **111/111** |
+| Intégration (`--filter=integration/`) | **532/532** |
+| Playthrough (`--filter=playthrough/`) | **4/4** (boss vaincu, loot garanti) |
+| **Total** | **647/647, zéro échec** |
+
+Nouvelles suites : `test_reaction_system` (6), `test_material_profiles` (2),
+`test_resonance_pulse` (5), `test_resonance_link` (6), `test_resonance_polarity`
+(5), `test_resonance_arc_step` (5), `test_resonance_ground` (3) — toutes
+écrites AVANT leur implémentation, rouge prouvé dans le journal de session.
+
 ## Campagne du 2026-08-05 (nuit) — P2-1, validation par tranches
 
 Environnement : conteneur headless, machine au repos entre tranches (R-017),
