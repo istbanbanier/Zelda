@@ -5,6 +5,27 @@ Un résultat sans commande reproductible ne vaut pas comme preuve (§0.7).
 
 ---
 
+## Campagne du 2026-08-05 (nuit) — P2-1, validation par tranches
+
+Environnement : conteneur headless, machine au repos entre tranches (R-017),
+arbre `f07bde6`→`82f1f99`. La suite monolithique `validate_fast.sh` est morte
+deux fois en silence entre les tours (pause conteneur) — leçon : **valider par
+tranches, chaque godot en avant-plan ou surveillé dans le tour**.
+
+| Tranche | Commande (`$GODOT_BIN --headless --path .` +) | Résultat |
+|---|---|---|
+| Version | `--version` | 4.7.1.stable.custom_build ✔ |
+| Import | `--import` | code 0, zéro parse error |
+| Parse | (étape 1b de `validate_fast.sh`) | 236 scripts sans erreur |
+| Unitaires | `--script tools/godot/test_runner.gd -- --filter=unit/` | **109/109** |
+| Intégration | idem `--filter=integration/` | **502/502** |
+| Playthrough | idem `--filter=playthrough/` | **4/4** (boss vaincu, loot garanti) |
+
+Nouveau depuis la dernière campagne : `test_p2_latency.gd` (fail-first, rouge
+d'abord) — saut et attaque légale consommés **≤ 1 tick physique** via la vraie
+chaîne `Input.parse_input_event → _input → PlayerInputReader → intent → tick`.
+Critère en ticks logiques uniquement (jamais en ms sous llvmpipe).
+
 ## Campagne du 2026-07-31 — Phase 0 / Gate 0
 
 **Environnement** : Ubuntu 24.04.4, Linux 6.18.5 x86_64, 4 cœurs, 15 Gio RAM,

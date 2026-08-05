@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MaterialProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/reaction/material_profile.gd" id="1_profile"]
+
+[resource]
+script = ExtResource("1_profile")
+id = &"organique"
+conductivity = 0.2
+charge_capacity = 0.0
+flammability = 0.5
+fragility = 0.2
+fracture_threshold = 10.0
+logical_mass = 15.0
+absorbs_water = true
+tags = Array[StringName]([&"organic"])
