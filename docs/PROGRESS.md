@@ -2907,11 +2907,21 @@ test structurel 1/1, Résonance 32/32. Liens d'Arc Link éphémères par design
 (D-049) : rien à persister. **P2-2 est TERMINÉ hors présentation** — les
 VFX/audio des cinq opérations rejoignent la passe visuelle du Cycle 3.
 
+### Fait ensuite : P2-3 tranche 1 — garde et déviation parfaite
+
+`damage_gate` GÉNÉRIQUE sur la hurtbox (le Briseur §14.3 pourra s'en
+servir) ; garde = clic D tenu avec une arme de mêlée (l'arc vise), cône
+frontal 135°, blocage à 20 % de dégâts contre endurance (GuardBreak à
+jauge vide), déviation parfaite dans les 0,12 s de la levée : zéro dégât,
+zéro endurance, Clarity 0,35 s, et la POISE de l'attaquant paie (40) — le
+stagger passe par le composant, pas par un script spécial. Un coup bloqué
+ne déclenche NI HURT NI mercy (recul court seulement). Tuning data-driven
+(`guard_default.tres`). 4/4 fail-first ; non-régression hurt 6/6, combat
+10/10, raiders 22/22, boss 11/11, buffs 4/4.
+
 ### Prochaine action exacte
 
-**P2-3** : défense expressive — garde tenue, déviation parfaite (fenêtre
-0,12 s ±), posture/poise séparées de la santé, anti-stunlock — fail-first
-dans CombatLab ; puis identités d'armes (6 familles, 4-6 actions utiles
-chacune) ; puis IA utility bornée + tokens (EncounterCoordinator) et le
-camp à trois approches. Sur la machine utilisateur : lancer
-`scenes/tests/ResonanceLab.tscn` (A=Pulse, G+molette+clic=focus, T=Ground).
+P2-3 tranche 2 : POSTURE ennemie séparée de la poise (jauge tactique →
+fenêtre positionnelle), puis identités d'armes (6 familles), puis IA
+utility bornée + tokens et camp trois approches. Machine utilisateur :
+la garde se sent dans CombatLab (clic D tenu face au mannequin).

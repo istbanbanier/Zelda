@@ -31,6 +31,10 @@ signal released_wall(reason: StringName)
 signal mantle_started(target: Vector3)
 signal mantle_finished()
 signal mantle_refused(reason: StringName)
+## Garde et déviation (P2 §7.4) — la présentation (VFX/audio) s'y branche.
+signal guard_blocked(event: DamageEvent)
+signal parried(event: DamageEvent)
+signal guard_broken()
 
 ## Modes de locomotion effectivement implémentés.
 ##
@@ -101,6 +105,8 @@ const PUSH_MIN_SPEED: float = 0.15
 @export var dodge: DodgeDefinition
 ## Réaction de dégât et anti-stunlock (§8.1 Hurt, §10.5).
 @export var hurt: HurtTuning
+## Garde et déviation parfaite (P2 §7.4).
+@export var guard: GuardTuning
 
 ## Intention courante. Remplacée par un test via `set_intent_source()`.
 var _intent: InputIntent = null
@@ -115,6 +121,14 @@ var _arc_step_target: Vector3 = Vector3.ZERO
 var _arc_step_time_left: float = 0.0
 ## Ground (P2 §3.6) : immobilité assumée pendant le startup de mise à la terre.
 var _ground_lock_timer: float = 0.0
+## Garde (P2 §7.4) : âge du maintien (-1 = pas en garde). L'âge distingue la
+## déviation parfaite (appui récent) du blocage ordinaire (maintien ancien).
+var _guard_held_time: float = -1.0
+## Clarity : fenêtre de lecture ouverte par une déviation parfaite.
+var _clarity_timer: float = 0.0
+## Vrai le temps d'un événement : le coup courant a été bloqué par la garde —
+## `_on_hit_received` le consomme pour refuser la réaction HURT.
+var _hit_was_blocked: bool = false
 var _was_on_floor: bool = true
 ## Vitesse horizontale VOULUE au dernier tick (avant collision) — sert à
 ## la poussée des objets physiques.
@@ -195,6 +209,7 @@ func _ready() -> void:
 	# écoute pour RÉAGIR — recul et perte de contrôle brève (§10.5).
 	if _hurtbox != null:
 		_hurtbox.hit_received.connect(_on_hit_received)
+		_hurtbox.damage_gate = _gate_damage
 	# §11.2 : l'usure ne vient QUE d'un coup qui touche — `hit_confirmed`, jamais
 	# l'activation. Puis application de l'état déjà émis : l'inventaire (enfant)
 	# a équipé l'arme par défaut AVANT ce `_ready` — le signal est passé, on
@@ -277,6 +292,16 @@ func _physics_process(delta: float) -> void:
 	if _mode != Mode.LOCOMOTION:
 		_arc_step_active = false
 		_ground_lock_timer = 0.0
+
+	# Garde (P2 §7.4) : clic D tenu avec une arme de MÊLÉE (l'arc, lui, vise).
+	# L'âge du maintien distingue parade (récent) et blocage (ancien).
+	_clarity_timer = maxf(0.0, _clarity_timer - delta)
+	var wants_guard: bool = intent.aim_held and not intent.focus_held \
+		and _mode == Mode.LOCOMOTION and is_on_floor() and not _is_bow_equipped()
+	if wants_guard:
+		_guard_held_time = 0.0 if _guard_held_time < 0.0 else _guard_held_time + delta
+	else:
+		_guard_held_time = -1.0
 
 	if _resonance != null and intent.pulse_pressed \
 			and (_mode == Mode.LOCOMOTION or _mode == Mode.CLIMBING):
@@ -806,6 +831,78 @@ func _process_attack(delta: float, intent: InputIntent) -> void:
 
 
 ## ---------------------------------------------------------------------------
+## Garde et déviation parfaite (P2 §7.4)
+## ---------------------------------------------------------------------------
+
+func is_guarding() -> bool:
+	return _guard_held_time >= 0.0
+
+
+func is_clarity_active() -> bool:
+	return _clarity_timer > 0.0
+
+
+func _is_bow_equipped() -> bool:
+	if _inventory == null:
+		return false
+	var weapon: WeaponInstance = _inventory.equipped()
+	return weapon != null and weapon.definition != null \
+		and weapon.definition.weapon_type == &"bow"
+
+
+## Porte installée sur la hurtbox — appelée AVANT dégâts et réaction.
+## Verdicts : `annule` (déviation parfaite), `bloquee` (événement atténué
+## par mutation), `subie` (la garde ne s'applique pas).
+func _gate_damage(event: DamageEvent) -> StringName:
+	if guard == null or _guard_held_time < 0.0 or event == null:
+		return &"subie"
+	# La garde est FRONTALE : le modèle fait face à +Z local du VisualRoot,
+	# et `direction` pointe de l'attaquant vers le joueur.
+	var facing: Vector3 = _visual_root.global_transform.basis.z
+	facing.y = 0.0
+	var toward_attacker: Vector3 = -event.direction
+	toward_attacker.y = 0.0
+	if facing.length_squared() < 0.001 or toward_attacker.length_squared() < 0.001:
+		return &"subie"
+	var cos_half: float = cos(deg_to_rad(guard.front_angle_deg * 0.5))
+	if facing.normalized().dot(toward_attacker.normalized()) < cos_half:
+		return &"subie"
+	# Déviation parfaite : la garde vient d'être levée (P2 §7.4 — fenêtre
+	# initiale 0,12 s). Aucun dégât, aucune endurance, Clarity, et
+	# l'attaquant paie en poise — par le système, pas par un script spécial.
+	if _guard_held_time <= guard.parry_window:
+		_clarity_timer = guard.clarity_duration
+		_jolt_attacker_poise(event)
+		parried.emit(event)
+		return &"annule"
+	# Blocage ordinaire : l'endurance paie ; jauge insuffisante = GuardBreak.
+	var cost: float = maxf(guard.block_cost_min, event.amount * guard.block_cost_factor)
+	if _stamina == null or not _stamina.try_spend(cost):
+		_guard_held_time = -1.0
+		guard_broken.emit()
+		return &"subie"
+	event.amount *= guard.block_damage_factor
+	event.knockback *= guard.block_knockback_factor
+	_hit_was_blocked = true
+	guard_blocked.emit(event)
+	return &"bloquee"
+
+
+## Une déviation parfaite frappe la POISE de l'attaquant : assez pour
+## étourdir un pillard (poise 40), pas un colosse — le composant décide.
+func _jolt_attacker_poise(event: DamageEvent) -> void:
+	if event.instigator == null or not is_instance_valid(event.instigator):
+		return
+	var poise: PoiseComponent = \
+		event.instigator.get_node_or_null("PoiseComponent") as PoiseComponent
+	if poise == null:
+		return
+	var jolt: DamageEvent = DamageEvent.new()
+	jolt.poise_damage = guard.parry_poise_damage
+	jolt.attack_id = HitboxComponent.next_attack_id()
+	poise.take_poise_damage(jolt)
+
+
 ## Réaction de dégât (§8.1 Hurt, §10.5) et arc (§10.4)
 ## ---------------------------------------------------------------------------
 
@@ -819,6 +916,15 @@ func _on_hit_received(event: DamageEvent) -> void:
 	if _stunlock_grace > 0.0:
 		return
 	if _mode == Mode.CLIMBING or _mode == Mode.MANTLING or _mode == Mode.DODGING:
+		return
+	# Coup BLOQUÉ (P2 §7.4) : la garde a tenu — recul court, pas de réaction
+	# HURT, pas de mercy (la garde EST la défense ; la mercy suit une vraie
+	# blessure subie).
+	if _hit_was_blocked:
+		_hit_was_blocked = false
+		velocity.x = event.direction.x * event.knockback
+		velocity.z = event.direction.z * event.knockback
+		_sfx(&"hit_taken")
 		return
 	if _mode == Mode.ATTACKING and _attack != null:
 		_attack.cancel()

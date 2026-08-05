@@ -37,10 +37,21 @@ func _ready() -> void:
 ## AVANT l'émission : le recul, la réaction et la santé voient le même chiffre.
 var damage_taken_multiplier: float = 1.0
 
+## Porte de défense (P2 §7.4) : appelée AVANT tout le reste, elle rend
+## `&"annule"` (déviation parfaite — l'événement s'arrête net), `&"bloquee"`
+## (l'événement a été ATTÉNUÉ par mutation) ou `&"subie"`. Installée par le
+## propriétaire — garde du joueur aujourd'hui, garde du Briseur (§14.3)
+## demain. Invalide = tout passe, comportement historique inchangé.
+var damage_gate: Callable = Callable()
+
 
 func receive_hit(event: DamageEvent) -> void:
 	if event == null:
 		return
+	if damage_gate.is_valid():
+		var verdict: StringName = damage_gate.call(event) as StringName
+		if verdict == &"annule":
+			return
 	event.amount *= damage_taken_multiplier
 	hit_received.emit(event)
 	if _health != null and is_instance_valid(_health):

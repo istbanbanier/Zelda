@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3]
+[gd_scene load_steps=40 format=3]
 
 ; Joueur — hiérarchie de MASTER_SPEC §6.2, réduite au périmètre de B.3.
 ; Absents et assumés : StateMachine (§8.1) — le contrôleur porte un Mode couvrant
@@ -29,6 +29,7 @@
 [ext_resource type="Script" path="res://scripts/components/lock_on_component.gd" id="18_lock"]
 [ext_resource type="Resource" path="res://resources/combat/dodge_default.tres" id="19_dodge"]
 [ext_resource type="Resource" path="res://resources/combat/hurt_default.tres" id="20_hurt"]
+[ext_resource type="Resource" path="res://resources/combat/guard_default.tres" id="31_guard"]
 [ext_resource type="Script" path="res://scripts/combat/bow_component.gd" id="21_bow"]
 [ext_resource type="Resource" path="res://resources/combat/bow_default.tres" id="22_bow_tuning"]
 [ext_resource type="Resource" path="res://resources/combat/sword/heavy_1.tres" id="23_heavy"]
@@ -82,6 +83,7 @@ script = ExtResource("1_player")
 tuning = ExtResource("4_tuning")
 dodge = ExtResource("19_dodge")
 hurt = ExtResource("20_hurt")
+guard = ExtResource("31_guard")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
