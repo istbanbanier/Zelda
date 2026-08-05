@@ -142,6 +142,11 @@ func _ready() -> void:
 	# relief, AVANT l'application de la sauvegarde qui retire les récoltés.
 	_spawn_ingredients()
 	_apply_ingredient_save()
+	for shard: Node in find_children("*", "FragmentPickup", true, false):
+		var typed_shard: FragmentPickup = shard as FragmentPickup
+		if typed_shard != null:
+			typed_shard.picked_up.connect(
+				_on_fragment_shard_taken.bind(typed_shard))
 	for pickup: Node in find_children("*", "IngredientPickup", true, false):
 		var typed_ingredient: IngredientPickup = pickup as IngredientPickup
 		typed_ingredient.collected.connect(
@@ -468,6 +473,17 @@ func _on_pickup_taken(pickup: WeaponPickup) -> void:
 	_autosave()
 
 
+## L'éclat se libère au ramassage : mémoriser son ID ici (même règle que
+## les armes au sol, QA-D1R-01) — et le Fragment lui-même part dans le
+## champ `fragments` du payload à l'autosave qui suit.
+func _on_fragment_shard_taken(_fragment_id: StringName,
+		pickup: FragmentPickup) -> void:
+	var id: String = String(pickup.pickup_id)
+	if not id.is_empty() and not id in _taken_pickups:
+		_taken_pickups.append(id)
+	_autosave()
+
+
 func _on_ingredient_taken(pickup: IngredientPickup) -> void:
 	var id: String = String(pickup.pickup_id)
 	if not id.is_empty() and not id in _taken_ingredients:
@@ -655,10 +671,25 @@ func _autosave() -> void:
 		# Lieux découverts : seuls des identifiants partent en sauvegarde
 		# (§19.2), et le journal refuse d'en re-récompenser un au retour.
 		"discoveries": discoveries.collect_state(),
+		"fragments": _fragments_snapshot(),
 	}, true)
 	# `boss_defeated` n'apparaît plus ici : ce champ appartient à l'ARÈNE. Une
 	# partie neuve le reçoit du menu principal ; la fusion le préserve ensuite.
 	save_system.call("save_slot", SAVE_SLOT, payload)
+
+
+## Fragments détenus (P2-4e), en chaînes primitives (§19.2).
+func _fragments_snapshot() -> Array[String]:
+	var held: Array[String] = []
+	if _player == null:
+		return held
+	var resonance: ResonanceController = _player.get_node_or_null(
+		"Components/ResonanceController") as ResonanceController
+	if resonance == null:
+		return held
+	for id: StringName in resonance.fragments():
+		held.append(String(id))
+	return held
 
 
 func _apply_save() -> void:
@@ -709,6 +740,17 @@ func _apply_save() -> void:
 		for pickup: Node in find_children("*", "WeaponPickup", true, false):
 			if String((pickup as WeaponPickup).pickup_id) in _taken_pickups:
 				(pickup as WeaponPickup).mark_taken_silently()
+		for shard: Node in find_children("*", "FragmentPickup", true, false):
+			if String((shard as FragmentPickup).pickup_id) in _taken_pickups:
+				(shard as FragmentPickup).mark_taken_silently()
+	# Fragments détenus (P2-4e) : re-accordés — grant refuse les doublons,
+	# un identifiant inconnu se journalise par le refus, rien ne casse.
+	if data.has("fragments") and _player != null:
+		var resonance: ResonanceController = _player.get_node_or_null(
+			"Components/ResonanceController") as ResonanceController
+		if resonance != null:
+			for entry: Variant in (data["fragments"] as Array):
+				resonance.grant_fragment(StringName(String(entry)))
 	_restore_player_transform(data)
 	_restore_player_vitals(data)
 

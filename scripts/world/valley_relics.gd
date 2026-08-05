@@ -1278,6 +1278,12 @@ func _earth_core(altar: Node3D) -> void:
 	holder.add_child(marker)
 	state.add_charge(4.0)
 	# La stèle dormante : éteinte tant que le cœur porte sa charge.
+	var shard: FragmentPickup = FragmentPickup.new()
+	shard.name = "EclatFlux"
+	shard.fragment_id = &"flux"
+	shard.pickup_id = &"valley.fragment.flux.01"
+	altar.add_child(shard)
+	shard.position = Vector3(-0.9, 0.94, 0.3)
 	var stele: MeshInstance3D = MeshInstance3D.new()
 	stele.name = "SteleDormante"
 	var slab: BoxMesh = BoxMesh.new()
@@ -1315,6 +1321,12 @@ func _build_magnetic_bridge() -> void:
 	# `_place_poi` attache déjà l'ancrage depuis la table — ne pas doubler.
 	_place_poi(site, POI_BRIDGE, "Pont magnétique", &"vestiges",
 		Vector3(0.0, 1.0, 0.0), Vector3(24.0, 8.0, 12.0))
+	var shard: FragmentPickup = FragmentPickup.new()
+	shard.name = "EclatElan"
+	shard.fragment_id = &"elan"
+	shard.pickup_id = &"valley.fragment.elan.01"
+	site.add_child(shard)
+	shard.position = Vector3(6.0, 0.0, -2.0)
 
 
 ## Bassin conducteur (P2-4d) — l'école d'eau×électricité de la route de la
@@ -1326,3 +1338,9 @@ func _build_conductive_basin() -> void:
 	site.add_child(basin)
 	_place_poi(site, POI_BASIN, "Bassin conducteur", &"riviere",
 		Vector3(0.0, 1.0, 0.0), Vector3(20.0, 8.0, 12.0))
+	var shard: FragmentPickup = FragmentPickup.new()
+	shard.name = "EclatEcho"
+	shard.fragment_id = &"echo"
+	shard.pickup_id = &"valley.fragment.echo.01"
+	site.add_child(shard)
+	shard.position = Vector3(4.5, 0.0, 2.0)

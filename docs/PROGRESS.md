@@ -3037,10 +3037,26 @@ plafonné à la vitesse de course. Deux bugs de MESURE corrigés en route
 (pic capté pendant le dash encore actif ; régénération naturelle
 polluant la phase cooldown — dépenser juste avant mesure).
 
+### Fait ensuite : éclats posés + persistance — P2-4 TERMINÉ
+
+`FragmentPickup` (contrat WeaponPickup : interactable, §19.3,
+mark_taken_silently) ; les trois éclats posés à LEURS écoles — Flux à
+l'autel de terre, Élan sur la rive lointaine du pont, Écho au bassin —
+la leçon et sa récompense au même endroit. Un éclat d'un fragment déjà
+détenu REFUSE et reste en place. Persistance : champ `fragments` du
+payload ValleyWorld (chaînes primitives §19.2), re-accord au chargement
+(grant refuse les doublons), suppression des éclats déjà pris (même
+boucle que les armes au sol). 2/2 (17 assertions) ; non-régression
+reliques 7/7, monde 9/9, save 15/15. Intégration 566/566 (post-
+Fragments). **P2-4 est TERMINÉ.**
+
 ### Prochaine action exacte
 
-Sous-tranche restante de P2-4 : PERSISTANCE des Fragments (audit du
-constructeur de payload du save v4) + POSE des trois pickups en monde
-(nid vertical pour Élan, territoire d'écoute pour Écho, autel pour
-Flux ?) — puis revue de fin de P2-4. Ensuite : P2-5 (migration
-donjon/boss vers les lois, boss director).
+**P2-5** : migration du donjon et du boss vers les lois communes —
+les salles électriques parlent déjà ElectricNode (Gate F), le chantier
+est : états matière sur les mécanismes (eau de la salle 4 =
+MaterialState, dangers = ElementPacket), le boss porte PostureComponent
+(rupture → noyau exposé, remplace le script de stun), et le BOSS
+DIRECTOR (bibliothèque de patterns taguée, anti-répétition, seed
+reproductible — P2 §10.5). Commencer par l'audit des scripts de phase
+du boss.

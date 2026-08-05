@@ -5,6 +5,15 @@ Un résultat sans commande reproductible ne vaut pas comme preuve (§0.7).
 
 ---
 
+## Campagne du 2026-08-05 (après-midi) — P2-4 TERMINÉ
+
+Arbres `c98b40e`→`1ad0954`+éclats. Autel de terre (2/2), pont magnétique
+(3/3 : composant + placement sondé), bassin conducteur (3/3), correctif
+`charge_decay_enabled` (7/7 lois), Fragments Écho/Flux/Élan (4/4, 22
+assertions), éclats posés aux trois écoles + persistance save (2/2).
+Intégration complète post-Fragments : **566/566, zéro échec**.
+33 lieux (34 ancres saines), reliques à SIX sites.
+
 ## Campagne du 2026-08-05 (midi) — P2-3 TERMINÉ
 
 Arbre `497dd5f`. Utility explicable (2/2), camp trois approches (2/2 —
