@@ -12,7 +12,7 @@ Vocabulaire imposé (§0.2) : `Non commencé` · `Implémenté` (raccordé) ·
 |---|---|---|
 | P2-0 audit | **Fait** | `PROMPT2_AUDIT.md`, golden path 4/4 (2026-08-05) |
 | P2-1 latence + labs | **Fonctionnel** | `test_p2_latency.gd` 2/2 : ≤ 1 tick via chaîne réelle ; `LabOverlay` ; D-047/D-048 |
-| P2-2 Bracelet | **En cours** | lois 6/6 + 8 profils ; Pulse 5/5 ; Arc Link 6/6 ; Polarité 5/5 ; **Arc Step** 5/5 (sweep de capsule intégral, coût à l'exécution seulement, validation d'arrivée, budget de secours) ; reste : Ground |
+| P2-2 Bracelet | **Fonctionnel** (cœur) | LES CINQ opérations fail-first : lois 6/6, profils 2/2, Pulse 5/5, Arc Link 6/6, Polarité 5/5, Arc Step 5/5, Ground 3/3. Reste (P2-2 suite) : UX focus/sélection, VFX/audio, ResonanceLab, persistance des liaisons |
 | Validation du 2026-08-05 | tranches | unitaires 109/109, intégration 502/502, playthrough : voir `TEST_REPORT.md` |
 
 ## Verdict Gate A : **ACCEPTÉ AVEC RÉSERVE / BLOQUÉ SUR LA VALIDATION MANETTE**

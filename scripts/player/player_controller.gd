@@ -113,6 +113,8 @@ var _jump_buffer_timer: float = 0.0
 var _arc_step_active: bool = false
 var _arc_step_target: Vector3 = Vector3.ZERO
 var _arc_step_time_left: float = 0.0
+## Ground (P2 §3.6) : immobilité assumée pendant le startup de mise à la terre.
+var _ground_lock_timer: float = 0.0
 var _was_on_floor: bool = true
 ## Vitesse horizontale VOULUE au dernier tick (avant collision) — sert à
 ## la poussée des objets physiques.
@@ -270,10 +272,11 @@ func _physics_process(delta: float) -> void:
 	# engagement Polarité) ; ici, seulement la DÉCISION — le Pulse ne part que
 	# depuis un état où le héros a la main (§3.5 : jamais pendant HURT/DEAD,
 	# ni au milieu d'un mantle/attaque/esquive).
-	# Un dash Arc Step ne survit jamais à un changement de mode (coup reçu,
-	# chute, mort) : l'état sûr, c'est le mode courant.
+	# Un dash Arc Step ou un verrou de terre ne survivent jamais à un
+	# changement de mode (coup reçu, chute, mort) : l'état sûr, c'est le mode.
 	if _mode != Mode.LOCOMOTION:
 		_arc_step_active = false
+		_ground_lock_timer = 0.0
 
 	if _resonance != null and intent.pulse_pressed \
 			and (_mode == Mode.LOCOMOTION or _mode == Mode.CLIMBING):
@@ -369,11 +372,29 @@ func _drive_arc_step(delta: float) -> void:
 		velocity = Vector3.ZERO
 
 
+## Ground (P2 §3.6) : verrouille le héros sur place pendant le startup —
+## l'immobilité est le COÛT de l'opération, elle ne peut pas être esquivée.
+func begin_ground_lock(duration: float) -> bool:
+	if _mode != Mode.LOCOMOTION or not is_on_floor():
+		return false
+	_ground_lock_timer = duration
+	_mark_consumed(&"resonance_ground")
+	return true
+
+
 func _process_locomotion(delta: float, intent: InputIntent) -> void:
 	# Arc Step en cours : le dash a l'autorité, l'entrée est suspendue le
 	# temps du trajet (< 0,8 s garanti par le budget de secours).
 	if _arc_step_active:
 		_drive_arc_step(delta)
+		return
+	# Mise à la terre en cours : immobile, gravité conservée.
+	if _ground_lock_timer > 0.0:
+		_ground_lock_timer -= delta
+		velocity.x = 0.0
+		velocity.z = 0.0
+		velocity.y -= tuning.gravity * delta
+		move_and_slide()
 		return
 	# Une seule décision de sprint par tick, prise ici et transmise ensuite. La
 	# caméra, la vitesse et l'endurance doivent s'accorder sur la même réponse :

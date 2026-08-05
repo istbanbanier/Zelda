@@ -38,6 +38,14 @@ cette matrice, sinon elle n'entre pas.
 
 ## 3. Bracelet de Résonance — décisions d'architecture (P2-2)
 
+**État 2026-08-05 : le cœur des cinq opérations est prouvé** (fail-first,
+suites `test_resonance_*`) — Pulse (LOS, cooldown, bruit), Arc Link (nœud
+CABLE du graphe du Gate F), Polarité (impulsions bornées), Arc Step (sweep
+intégral + validation d'arrivée), Ground (startup immobile, drainage entier
+ou rien). Manquent encore : l'UX de focus/sélection (liaison aux actions
+`resonance_focus/confirm/cycle`), la présentation (VFX/audio), le
+ResonanceLab jouable et la persistance éventuelle des liaisons.
+
 ### 3.1 Composants (P2 §3.1)
 
 - `MaterialProfile` (Resource immuable) : conductivité, isolation, masse

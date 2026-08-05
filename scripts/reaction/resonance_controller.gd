@@ -13,6 +13,8 @@ extends Node
 signal pulse_fired(revealed_count: int)
 signal link_created(a: ElectricNode, b: ElectricNode)
 signal link_dissolved()
+signal ground_completed(target: Node)
+signal ground_cancelled(reason: StringName)
 
 ## Valeurs de départ P2 §3.2 — à migrer en Resource de tuning quand les
 ## cinq opérations existeront (une `ResonanceActionDefinition` par opération).
@@ -43,9 +45,16 @@ const ARC_STEP_SPEED: float = 18.0
 const ARC_STEP_COST: float = 20.0
 const ARC_STEP_COOLDOWN: float = 0.35
 
+## Ground (P2 §3.6) — mise à la terre volontaire. Valeurs de départ.
+const GROUND_RANGE: float = 3.0
+const GROUND_STARTUP: float = 0.35
+
 var _pulse_cooldown: float = 0.0
 var _arc_step_cooldown: float = 0.0
 var _link: ResonanceLinkNode = null
+var _ground_target: MaterialStateComponent = null
+var _ground_player: PlayerController = null
+var _ground_timer: float = 0.0
 var _polarity_target: RigidBody3D = null
 var _polarity_anchor: CharacterBody3D = null
 var _polarity_sign: float = 1.0
@@ -62,6 +71,7 @@ func _physics_process(delta: float) -> void:
 	_pulse_cooldown = maxf(0.0, _pulse_cooldown - delta)
 	_arc_step_cooldown = maxf(0.0, _arc_step_cooldown - delta)
 	_drive_polarity(delta)
+	_drive_ground(delta)
 
 
 ## Tente un Pulse depuis `body`. Retourne `&"fired"` ou `&"cooldown"` — le
@@ -168,6 +178,73 @@ func _material_state_of(target: Node) -> MaterialStateComponent:
 		if child is MaterialStateComponent:
 			return child as MaterialStateComponent
 	return null
+
+
+## --- Ground (P2 §3.6) ---
+
+## Engage la mise à la terre d'une cible chargée. Verdicts : `grounding`,
+## `invalide`, `pas_de_charge`, `hors_portee`, `pas_au_sol`, `occupe`.
+## RIEN n'est appliqué avant la fin du startup — jamais d'effet à moitié.
+func try_ground(player: PlayerController, target: Node) -> StringName:
+	if player == null or target == null or not is_instance_valid(target):
+		return &"invalide"
+	var state: MaterialStateComponent = target as MaterialStateComponent
+	if state == null:
+		state = _material_state_of(target)
+	if state == null or not state.is_inside_tree():
+		return &"invalide"
+	if _ground_target != null:
+		return &"occupe"
+	var anchor: Node3D = state.get_parent() as Node3D
+	if anchor == null:
+		return &"invalide"
+	if not state.is_charged() and not state.is_overloaded():
+		return &"pas_de_charge"
+	if anchor.global_position.distance_to(player.global_position) > GROUND_RANGE:
+		return &"hors_portee"
+	# Support valide (P2 §3.6) : le héros touche une terre réelle.
+	if not player.is_on_floor():
+		return &"pas_au_sol"
+	if not player.begin_ground_lock(GROUND_STARTUP):
+		return &"invalide"
+	_ground_target = state
+	_ground_player = player
+	_ground_timer = GROUND_STARTUP
+	return &"grounding"
+
+
+func _drive_ground(delta: float) -> void:
+	if _ground_target == null:
+		return
+	if not is_instance_valid(_ground_target) or not _ground_target.is_inside_tree() \
+			or _ground_player == null or not is_instance_valid(_ground_player):
+		_cancel_ground(&"cible_perdue")
+		return
+	var anchor: Node3D = _ground_target.get_parent() as Node3D
+	if anchor == null or anchor.global_position.distance_to(
+			_ground_player.global_position) > GROUND_RANGE + 1.0:
+		_cancel_ground(&"hors_portee")
+		return
+	if _ground_player.mode() != PlayerController.Mode.LOCOMOTION:
+		# Le héros a perdu la main (coup, chute) : la terre n'arrive jamais.
+		_cancel_ground(&"interrompu")
+		return
+	_ground_timer -= delta
+	if _ground_timer > 0.0:
+		return
+	# Fin du startup : le drainage s'applique EN ENTIER, maintenant.
+	var target: MaterialStateComponent = _ground_target
+	_ground_target = null
+	_ground_player = null
+	target.ground()
+	ground_completed.emit(target)
+
+
+func _cancel_ground(reason: StringName) -> void:
+	_ground_target = null
+	_ground_player = null
+	_ground_timer = 0.0
+	ground_cancelled.emit(reason)
 
 
 ## --- Arc Step (P2 §3.5) ---

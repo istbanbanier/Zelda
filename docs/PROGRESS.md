@@ -2870,3 +2870,27 @@ Prochaine action : **Arc Link** (P2 §3.3) fail-first — sélection de deux
 ports compatibles, lien temporaire = nœud CABLE injecté dans le graphe
 électrique existant (propagation/cycles déjà prouvés Gate F), annulation
 sûre (port détruit, hors portée, rechargement).
+
+## 2026-08-05 (suite) — P2-2 : les CINQ opérations du Bracelet prouvées
+
+### Fait (chaque tranche fail-first : rouge prouvé avant l'implémentation)
+
+- **Lois** (`4bc430c`) : MaterialProfile/ElementPacket/MaterialStateComponent/
+  ReactionSystem — 6/6 + 8 profils canoniques 2/2.
+- **Pulse** (`0208282`) : 5/5 — LOS réelle, cooldown, expiration, bruit
+  entendu par les ennemis ; action `resonance_pulse` (étiquette AZERTY A).
+- **Arc Link** (`d481f89`) : 6/6 — nœud CABLE injecté dans le graphe du
+  Gate F ; transporte sans créer ; un seul lien ; dissolution sûre.
+- **Polarité** (`b6d607a`) : 5/5 — impulsions bornées Jolt, vitesse
+  plafonnée, continuité tick à tick, rupture à la décharge.
+- **Arc Step** (`6be890c`) : 5/5 — sweep de capsule intégral, coût à
+  l'exécution seulement, validation d'arrivée, budget de secours 0,8 s.
+- **Ground** (commit courant) : 3/3 — startup immobile 0,35 s, drainage
+  ENTIER ou RIEN, annulation propre si la cible s'échappe.
+
+### Prochaine action exacte
+
+P2-2 (suite) : UX de focus/sélection (`resonance_focus/confirm/cycle`,
+glyphes), présentation (VFX/audio des cinq opérations), `ResonanceLab`
+jouable, puis P2-3 (défense expressive + IA utility/tokens). L'intégration
+complète tourne au moment de cette entrée — verdict dans TEST_REPORT.
