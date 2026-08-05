@@ -472,6 +472,7 @@ func _build_braise_camps() -> void:
 
 func _build_one_braise_camp(camp: Node3D, index: int) -> void:
 	_fire_ring(camp, Vector3.ZERO, 1.15)
+	_metal_crate(camp, Vector3(1.9, 0.45, -1.3))
 
 	# Auvent de fortune : une toiture posée DE TRAVERS sur deux perches. Elle
 	# n'est ni horizontale ni centrée — un abri, pas un toit.
@@ -1073,3 +1074,38 @@ func _make_poi(parent: Node3D, poi_id: StringName, label: String,
 	parent.add_child(poi)
 	RewardAnchor.attach_from_table(parent, poi_id, ANCHORS, "territoires")
 	return poi
+
+
+## Caisse métallique chargeable (P2-3, camp trois approches) : l'approche
+## « environnement » — cible légitime de Polarité (projeter) et de Ground
+## (neutraliser). Butin de pillards : du métal récupéré, cabossé.
+func _metal_crate(camp: Node3D, at: Vector3) -> void:
+	var crate: RigidBody3D = RigidBody3D.new()
+	crate.name = "CaisseMetal"
+	crate.mass = 35.0
+	var shape: CollisionShape3D = CollisionShape3D.new()
+	var box: BoxShape3D = BoxShape3D.new()
+	box.size = Vector3(0.7, 0.7, 0.7)
+	shape.shape = box
+	crate.add_child(shape)
+	var mesh: MeshInstance3D = MeshInstance3D.new()
+	var box_mesh: BoxMesh = BoxMesh.new()
+	box_mesh.size = Vector3(0.7, 0.7, 0.7)
+	mesh.mesh = box_mesh
+	var material: StandardMaterial3D = StandardMaterial3D.new()
+	material.albedo_color = Color(0.36, 0.35, 0.33)
+	material.metallic = 0.7
+	material.roughness = 0.55
+	mesh.material_override = material
+	crate.add_child(mesh)
+	var state: MaterialStateComponent = MaterialStateComponent.new()
+	state.name = "MaterialStateComponent"
+	state.profile = load("res://resources/materials/MAT_PROFILE_metal.tres") \
+		as MaterialProfile
+	crate.add_child(state)
+	var marker: ResonanceTargetComponent = ResonanceTargetComponent.new()
+	marker.kind = &"polarity"
+	crate.add_child(marker)
+	camp.add_child(crate)
+	crate.position = at
+	_built += 1

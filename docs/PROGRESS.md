@@ -2946,9 +2946,296 @@ sienne + bonus de déviation 0,04 s. 2/2 (45 assertions) ; non-régression
 armes 9/9, combat 10/10, garde 24/24, boss 11/11. ISS-027 consigné
 (faux « ok » du runner sur erreur post-assertion).
 
+### Fait ensuite : P2-3 tranche 4a — sélection utilitaire explicable
+
+Constat : le `CombatCoordinator` était DÉJÀ conforme §12.8 (tokens 2
+mêlée + 1 lourde, purge structurelle — jamais de référence morte —,
+plafond 14 IA) : rien à refaire. Le manque réel était l'EXPLICABILITÉ
+(P2 §8.1). Fait : `UtilityBrain` (choix scoré, trace des trois meilleurs
+avec raisons, égalité départagée par priorité de déclaration) 2/2 ;
+l'azur refactoré dessus — rouvrir/flanquer/presser aux MÊMES seuils que
+la cascade historique (22/22 raiders verts), mais chaque décision se lit
+(`chase_trace()`). Leçon de mise en scène récurrente consignée deux fois
+cette nuit : le pivot ennemi regarde +Z par défaut — placer le joueur
+côté +Z ou tourner le pivot, sinon pas d'aggro.
+
+### Fait ensuite : P2-3 tranche 4b — camp trois approches. P2-3 TERMINÉ.
+
+La diversion s'est prouvée SYSTÉMIQUE du premier coup : Pulse depuis un
+couvert plein → le garde passe suspicious/investigate, quitte son poste
+vers le bruit, et n'atteint JAMAIS alert (il n'a rien vu — §12.7, zéro
+omniscience). Aucun code d'infiltration dédié : la chaîne P2-2 × bruit
+existante suffisait — c'est le pilier « le monde écoute » qui paie.
+L'approche environnement : une caisse métallique chargeable par
+campement braise (RigidBody + profil métal + marqueur Polarité), cible
+légitime de Polarité (projeter) et Ground. 2/2 (10 assertions),
+territoires 8/8.
+
+**P2-3 est TERMINÉ** : garde/déviation, posture, identités d'armes,
+utility explicable, tokens (déjà conformes), camp trois approches.
+
+### Fait ensuite : P2-4a — l'autel de terre (premier POI Bracelet)
+
+Greffé au sanctuaire forestier existant (densité avant étalement) : un
+cœur PRÉ-CHARGÉ (profil terre conductrice, 4 d'énergie) posé sur l'autel,
+ciblable au Bracelet ; le mettre à la terre allume la stèle dormante —
+conséquence par SIGNAUX d'états réels (patron ResonanceLab), et la
+recharge lente du composant ré-arme l'exercice (la stèle s'éteint quand
+le cœur se rallume — cohérence lisible). C'est l'« exercice sûr » de
+Ground que P2 §3.7 exige avant le donjon. 2/2 fail-first (10 assertions),
+reliques 7/7, monde 9/9.
+
+### Fait ensuite : P2-4b — pont magnétique (composant) + correctif décroissance
+
+DÉFAUT DE DESIGN repéré et corrigé fail-first : la décroissance de
+charge universelle (0,35/s) aurait vidé tout cœur de POI en ~11 s —
+l'autel se serait éteint avant l'arrivée du joueur. Correctif :
+`charge_decay_enabled` (7/7), faux sur les cœurs de POI, la loi par
+défaut inchangée partout ailleurs. L'autel corrigé.
+
+Le PONT MAGNÉTIQUE (2/2, 11 assertions, vert du premier coup) : diorama
+autonome (rives + vide + tablier chargé qui retient sa charge) ; on se
+poste DERRIÈRE et on REPOUSSE (la Polarité enseigne son second mode) ;
+l'entrée en zone verrouille — gel, alignement par transform (légitime :
+plus un corps actif), mise à la terre (le raccourci est DÉFINITIF, la
+Polarité répond ensuite pas_charge), signal unique, rayon de portance
+prouvé au centre du vide.
+
+### Fait ensuite : P2-4c — le pont est dans la vallée
+
+Sonde d'abord (`tools/godot/probe_bridge_site.gd` : 8 candidats sur la
+route des ruines, tous plats à y = 2,00) ; site retenu (−34, 3, 44),
+lacet 90°, entre l'aqueduc et la ferme. Implanté dans ValleyRelics comme
+32ᵉ LIEU déclaré (POI valley.poi.magnetic_bridge.01, ancre PUZZLE sur la
+rive lointaine). Deux défauts attrapés par les suites de lieux : ancre
+enterrée (y local −0,5 = dans la rive → 0,0) et DOUBLE attache (la table
+ANCHORS attache déjà via _place_poi). Placement 1/1 (8 assertions),
+reliques 7/7 (compte 4→5 délibéré), ancres 8/8 (33 saines).
+
+### Fait ensuite : P2-4d — le bassin conducteur (33ᵉ lieu)
+
+Composant `ConductiveBasin` 2/2 : circuit pré-arrangé avec UN maillon
+manquant (source à 6 m de l'eau, hors portée des ports), un seul Arc
+Link source→eau complète — le courant TRAVERSE l'eau (la leçon) et
+allume le récepteur ; dissoudre rend tout (transport, jamais création).
+Un défaut de géométrie attrapé par le rouge : le récepteur à 0,67 m du
+port de l'eau (portée 0,6) — rapproché à 0,5. Placement sondé (16, 2,
+28, rive est du S), 33ᵉ lieu déclaré (POI + ancre PUZZLE), reliques 7/7
+à SIX lieux, ancres 8/8 (34 saines).
+
+### Fait ensuite : P2-4e — les trois Fragments (4/4, 22 assertions)
+
+API stricte (trois identifiants connus, jamais deux fois, l'inconnu
+refusé, signal). ÉCHO : le contrôleur rejoint un groupe
+`noise_listeners` (NoiseEvents étendu — même fait de perception, un
+groupe de plus), mémorise la dernière source FRAÎCHE (≤ 8 s), et le
+Pulse émet une direction normalisée — jamais son propre bruit (garde
+anti-boucle pendant l'émission). FLUX : une terre ≥ 2 de charge rend
+15 d'endurance (nouvelle API StaminaComponent.restore, notifiée),
+cooldown 10 s. ÉLAN : l'arrivée d'Arc Step conserve 35 % de l'élan,
+plafonné à la vitesse de course. Deux bugs de MESURE corrigés en route
+(pic capté pendant le dash encore actif ; régénération naturelle
+polluant la phase cooldown — dépenser juste avant mesure).
+
+### Fait ensuite : éclats posés + persistance — P2-4 TERMINÉ
+
+`FragmentPickup` (contrat WeaponPickup : interactable, §19.3,
+mark_taken_silently) ; les trois éclats posés à LEURS écoles — Flux à
+l'autel de terre, Élan sur la rive lointaine du pont, Écho au bassin —
+la leçon et sa récompense au même endroit. Un éclat d'un fragment déjà
+détenu REFUSE et reste en place. Persistance : champ `fragments` du
+payload ValleyWorld (chaînes primitives §19.2), re-accord au chargement
+(grant refuse les doublons), suppression des éclats déjà pris (même
+boucle que les armes au sol). 2/2 (17 assertions) ; non-régression
+reliques 7/7, monde 9/9, save 15/15. Intégration 566/566 (post-
+Fragments). **P2-4 est TERMINÉ.**
+
+### Fait ensuite : P2-5 tranche 1 — le BossDirector (5/5, 122 assertions)
+
+L'audit a trouvé le `randf() < 0.45` pur dans `_choose_attack` de
+StormGuardian — exactement ce que P2 §10.5 interdit. Fail-first :
+`test_boss_director.gd` rouge prouvé, puis `BossDirector` (RefCounted,
+seed 0 = tirée puis CONSIGNÉE) : bibliothèque taguée {portée, phases,
+cooldown, poids}, filtre de légalité → anti-répétition (le dernier
+choix s'écarte SI une alternative légale existe) → tirage pondéré sur
+générateur semé → historique. `&""` = rien de légal, le boss ATTEND
+(fallback déterministe). Contrats verts : légalité seule (60 tirs),
+jamais deux de suite, pas de famine du seul légal, seed 42 rejoue la
+même séquence ×15, cooldown + historique ordonné. StormGuardian migré :
+`director_seed` exporté, bibliothèque combo/frappe_sol/arc reflétant
+le comportement historique, cadences 2,2/1,7 et 3,4/2,6 conservées,
+`_phase_tag()` (PHASE2/OVERLOAD → phase2). Suites boss 38/38 ;
+playthrough boss_run 1/1 (toutes phases traversées, boss vaincu 0/560)
+— le directeur décide désormais chaque coup du Gardien.
+
+### Fait ensuite : P2-5 tranche 2 — la posture du boss (0/11 → 5/5)
+
+Intégration complète post-directeur d'abord : **688/688, zéro échec**.
+Puis le Gardien reçoit le `PostureComponent` PARTAGÉ (celui du
+Briseur) : max 36 (trois lourdes de hache à 12), recharge 9/s après
+5 s d'accalmie. Rupture = même écroulement que la mise à la terre mais
+fenêtre de 3,5 s < 6 s — « alternative plus lente par posture »
+(P2 §10.2), la terre reste le chemin roi et REMET la jauge à neuf (pas
+de double peine). Seuls les coups à intention brise-garde
+(`posture_damage > 0`) nourrissent ; l'éveil (§16.1) et la fenêtre déjà
+ouverte sont exclus ; les pylônes ne se déchargent pas sur une rupture
+(ils n'y sont pour rien). Rouge prouvé 0/11, vert 5/5 (22 assertions),
+boss 43/43, playthrough inchangé — le golden path ne porte aucun
+`posture_damage`, dérive nulle par construction.
+
+### Fait ensuite : P2-5 tranche 3 — l'eau du donjon parle les lois (6/6)
+
+L'audit a montré que le profil `eau` ne STOCKE pas (capacité 0,
+conductivité 1) : la vérité des lois n'est donc pas « l'eau se
+charge » mais « l'eau RELAIE ». Implémenté dans `ElectricHazard`
+(WATER_ZONE seulement) : matière `eau` portée par la nappe, arbitre
+`ReactionSystem` garanti (localisé, sinon créé en nœud de scène —
+D-047), masque élargi aux props (128 — le chemin de dégâts ne lit que
+les hurtbox, dérive nulle), `body_entered` → paquet `wetness` (l'eau
+mouille, tension ou pas), et pendant la décharge : une impulsion
+électrique par cadence de dégâts et par cible À MATIÈRE (action_id
+par impulsion, chaîne anti-boucle §4.3). Le métal baigné est mouillé
+puis chargé (couplage humide ×1,5), le bois traverse sans jamais se
+charger, une eau mise à la terre SUSPEND le relais (la terre est une
+loi de matière, pas un coupe-circuit : les dégâts du graphe
+continuent). La planche de la salle 4 est du bois aux yeux des lois.
+Rouge 1/10 prouvé (le test-gardien des dégâts §13.5 vert avant ET
+après — c'est son rôle), vert 6/6 ; salles 44/44, réactions 7/7,
+playthrough donjon 2/2.
+
+### Fait ensuite : P2-5 tranche 4 — hints gradués (rouge → 5/5)
+
+`PuzzleHintTracker` (P2 §9.8) : trois échecs OBSERVÉS ouvrent le
+palier 1 (rappeler la LOI), six le palier 2 (attirer vers la CAUSE),
+neuf le palier 3 (montrer la RELATION) — le temps seul n'ouvre RIEN
+(prouvé : 120 ticks sans montée), jamais la séquence complète au
+premier palier, salle résolue = silence définitif (`close()` branché
+sur `solved`/`rerouted`). `DungeonRoom.install_hints` branche les
+échecs RÉELS que chaque salle possède déjà : bouton reset pressé,
+objet essentiel hors limites (`rescued`), décharge subie par le joueur
+(équipe `hazard` seule — un combat perdu n'est pas un échec d'énigme).
+Textes loi/cause/relation par salle. Présentation graybox intégrée
+(ligne discrète, remplacée au Cycle 3) ; l'option §12.3 viendra avec
+l'écran d'options. Rouge prouvé (classe absente), vert 5/5 dont les
+DEUX branchements réels (salle 1 : reset ×3 → palier 1 ; salle 4 :
+décharges comptées + reset → palier 1). Salles 44/44, donjon 2/2.
+Solveur : déjà prouvé au Gate F (256 configurations, salle 3).
+**P2-5 est TERMINÉ — le Cycle 2 (P2-3 → P2-5) est complet.**
+
+### Fait ensuite : clôture du Cycle 2 — 704/704 + revue PASS
+
+Suite intégrale de clôture sur arbre propre `e284ffd` : **704/704,
+zéro échec** ; preuves datées commit `1337550`
+(`evidence/p2_5/2026-08-05_cloture_cycle2.md`). **Revue contradictoire
+à contexte frais : PASS** — elle a rejoué la suite intégrale (704/704,
+code 0, zéro SCRIPT ERROR) et les suites ciblées, tenté un
+contre-exemple sur le relais mis à la terre (échoué : l'assertion
+discrimine), vérifié les textes des quatre salles (le 1er hint est la
+loi partout). Sept faiblesses non bloquantes consignées → ISS-028
+(bibliothèque du directeur partiellement taguée), ISS-029 (la parade
+contourne les gardes de posture du boss — exposition nulle
+aujourd'hui), ISS-030 (asymétrie eau vallée/donjon), ISS-031 (sources
+d'échec inégales des hints). **Cycles 1 et 2 de la cadence : CLOS.**
+
+### Fait ensuite : Cycle 3 tranche 1 — HeroShotLab construit (5/5) + capture v0
+
+Le lab que la revue du Gate H a nommé comme jamais construit EXISTE
+(`scenes/lookdev/HeroShotLab.tscn`). Idée clé : les éléments lointains
+sont AUTORÉS EN CONTRAT D'ÉCRAN — `_world_at(x %, y %, distance)`
+inverse la projection de la caméra North Star, donc un anchor posé à
+(63,5 %, 61 %, 90 m) TOMBE dans sa fenêtre par construction ; le test
+revérifie par la projection directe, indépendamment. Fail-first rouge
+(classe absente) puis 5/5 (41 assertions) : éléments §11.1, caméra
+§3.1 (FOV 44° vertical = 71,4° horizontal — le piège « 68 en
+vertical » évité et documenté), fenêtres §1.1 (héros 41,6 % X pieds
+91,9 %/tête 43,5 %, camp 63,5 %, pylône 77 % base 57 %/sommet 16,6 %,
+citadelle 50,5 %, spire 10 %), rivière en S (2 inflexions), plans
+90/105/316 m. Incohérence INTERNE de la bible documentée : un pylône
+d'asset 28-36 m ne peut pas remplir sa fenêtre verticale à 140-190 m
+(il faudrait ~52 m) — posé à 105 m, fenêtres du cadre prioritaires.
+Capture v0 réelle (llvmpipe, arbre `ce76b24` propre, manifeste) :
+le contrat TIENT à l'image (pylône 76 % X, couronne 18 % Y) ; six
+défauts v0 diagnostiqués et ORDONNÉS dans
+`evidence/cycle3/2026-08-05_herolab_v0.md`.
+
+### Fait ensuite : HeroShotLab v1 — la vallée SE LIT (v0→v1 consigné)
+
+Les six défauts v0 corrigés (`evidence/cycle3/2026-08-05_herolab_v1.md`,
+capture officielle depuis arbre committé `5e59415`). Découverte
+structurante, prouvée par calcul d'occlusion et documentée dans le
+code : un plateau à bord franc OCCULTAIT toute la vallée depuis la
+caméra quasi horizontale — le héros se tient désormais sur une PENTE
+CONTINUE de 8° (ligne de fuite ~63 %), et rivière/camp/pylône/chemin/
+herbe épousent ce profil. À l'image : ruban turquoise visible, camp
+lisible (tentes, DEUX fanions, flamme renforcée, fumée), pylône
+couronné cyan au tiers droit, citadelle étagée sous l'orage (brouillard
+0,0045 + perspective aérienne 0,5), bras du héros posés à l'os (aucune
+animation dans le glTF — sondé). Contrat `test_hero_shot_lab` 5/5
+(41 assertions) MAINTENU à chaque itération ; le test de la rivière
+encode la physique de la ligne de fuite.
+
+### Fait ensuite : HeroShotLab v2 — les 4 chantiers + le verdict du gris
+
+v2 faite et poussée (`782480d`, contrat 5/5 maintenu) : amorce de
+rivière bas-gauche DEVANT le héros, phrases d'herbe §7.4 (touffes
+inégales, densité au cœur, vides) + fleurs en groupes (bleues rares),
+éclair majeur TENU dans la fenêtre de capture (`hold_flash`, §21.5),
+horizon montagneux §1.1/§3.3 qui referme la part de ciel. Protocole
+§30.1 exécuté : capture officielle + vignette 320×180 + NIVEAUX DE
+GRIS (`evidence/cycle3/2026-08-05_herolab_v2.md`). Le gris rend un
+verdict précieux : héros et nuage tiennent (masses les plus sombres),
+mais rivière/camp/pylône/citadelle FUSIONNENT dans une bande 60-75 % —
+la rivière ne vit que par son cyan, ce que §1.5 interdit.
+
+### Fait ensuite : HeroShotLab v3 — la passe de valeurs (v2→v3 consignée)
+
+La charte du gris exécutée (`8f6fc1e`, evidence
+`2026-08-05_herolab_v3.md`) : rivière à lit sombre + BERGES (lisible en
+gris, l'interdit §1.5 levé), citadelle en masse dédiée 35-60 % avec le
+brouillard au point d'équilibre MESURÉ (0,0022 — à 0,0045 la
+transmittance de 24 % à 316 m plafonnait tout le lointain à ~65 %,
+citadelle et montagnes fusionnaient), toiles du camp assombries,
+étagement §1.3 en valeurs (falaises sombres/chaudes devant, montagnes
+pâles au fond). Protocole §30.1 exécuté sur la v3 (couleur + vignette
++ gris, capture officielle depuis arbre committé). Contrat 5/5
+maintenu à chaque itération.
+
+### Fait ensuite : Passe V3 — les 5 signes du héros (0/8 → 4/4)
+
+`HeroSigns` réutilisable (`scripts/player/hero_signs.gd`), volumes
+graybox aux os sondés : mantelet turquoise (#168F9B désaturé, JAMAIS le
+cyan électrique — écart RGB testé) couvrant les épaules à deux pointes
+INÉGALES, épaulière ivoire/bronze côté OPPOSÉ au Bracelet, Bracelet à
+l'avant-bras gauche (canal cyan, émission 0,8 discrète), X arc/carquois
+en diagonales opposées (28°/−20°). Placement en GLOBAL à l'attache (les
+axes locaux d'un rig importé ne sont pas fiables), itéré par capture
+(« sac à dos » → cape d'épaules). Leçon API : `Color.distance_to`
+n'existe pas (4.7.1). Suites héros 17/17 ; evidence v4 + carte des
+masses sombres (étiquetée honnêtement : PAS la silhouette §30.3 — le
+vrai outil est `SilhouetteLineup` SILHOUETTE_FLAT=1).
+
+### Fait ensuite : v5 (doigts/ruban/fumée) + planche de silhouettes signée
+
+v5 (`03fb65c`) : phalanges repliées (l'éventail de bind pose trahissait
+le mannequin), amorce de rivière resserrée en ruban, fumée assombrie —
+17/17. Puis `SilhouetteLineup` monte le héros SIGNÉ et DE DOS
+(`fc66774`) : la planche §30.3 en aplats montre SEPT silhouettes toutes
+distinctes — le X et le mantelet cassent le contour du héros
+(`evidence/cycle3/silhouettes_signees.png`, suites 8/8).
+
 ### Prochaine action exacte
 
-P2-3 tranche 4 (fin) : IA utility bornée + tokens formels
-(`EncounterCoordinator` : mêlée ×2, lourde ×1, timeout, libération
-garantie) et le camp à TROIS approches (frontal/infiltration/
-environnement). Puis P2-4 (routes, POI, Fragments).
+**Le Cycle 3 côté conteneur est au taquet : les prochaines étapes
+passent par la machine utilisateur.**
+1. MACHINE UTILISATEUR (`docs/MANUAL_VALIDATION.md`) : juger le
+   HeroShotLab v5 au protocole §30.2 (score /100) — le gate
+   intermédiaire §29 V2 exige ≥ 75 avant tout remplacement de proxies,
+   ≥ 85 avant propagation ; plus les contrôles §21.4 en souffrance
+   (AZERTY réel, manette) et le feel des labs (Resonance/Combat).
+2. Si le gate passe : **V4 ROADMAP** (propagation de la recette du lab
+   à la vallée réelle — pente/valeurs/phrases d'herbe/berges sur
+   `ValleyWorld`, mêmes contrats de composition en tests).
+3. Sinon : itérer le lab sur les défauts nommés par le score.
+Chantiers conteneur encore ouverts si besoin : ISS-027 (tranche
+outillage du runner), ISS-030 (bassin de la vallée aux lois matière),
+ISS-031 (sources d'échec des hints salles 2-3).

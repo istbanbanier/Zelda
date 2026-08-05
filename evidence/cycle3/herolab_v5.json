@@ -1,0 +1,18 @@
+{
+  "commit": "03fb65ce91c766b453e13e12b92c409e38e102ba",
+  "display_server": "X11",
+  "distinct_colors_sampled": 1186,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 40,
+  "height": 1080,
+  "label": "herolab_v5",
+  "luma_mean": 0.5663,
+  "luma_stddev": 0.1498,
+  "png": "evidence/cycle3/herolab_v5.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/lookdev/HeroShotLab.tscn",
+  "timestamp_utc": "2026-08-05 22:36:27",
+  "width": 1920
+}

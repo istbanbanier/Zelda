@@ -151,14 +151,16 @@ résiduels contre endurance — `GuardBreak` à jauge vide. Déviation parfaite
 bloqué ne déclenche ni HURT ni mercy. Mécanisme : `damage_gate` générique
 de la hurtbox — réutilisable par la garde du Briseur (§14.3).
 
-### 7.2 À faire — les trois jauges (P2 §7.4, décision d'architecture)
+### 7.2 Les trois jauges (P2 §7.4) — faites
 
 - **poise** (existe) : résistance INSTANTANÉE au stagger d'une action —
   RefCounted du moment, se recharge vite ;
-- **posture** (à faire) : jauge TACTIQUE des porteurs de garde (Briseur,
-  boss) — nourrie par lourdes et déviations parfaites (`posture_damage`
-  à ajouter sur DamageEvent/AttackDefinition), sa rupture ouvre une
-  fenêtre POSITIONNELLE courte, jamais une cinématique ;
+- **posture** (existe) : jauge TACTIQUE partagée `PostureComponent` —
+  le Briseur y fait vivre sa garde (P2-3), le Gardien y expose son
+  noyau 3,5 s (P2-5, « alternative plus lente » que la terre — §10.2) ;
+  nourrie par `posture_damage` (lourdes de famille, déviations
+  parfaites), sa rupture ouvre une fenêtre POSITIONNELLE courte,
+  jamais une cinématique ;
 - **santé** : la survie. Aucune des trois ne se déduit des autres.
 
 Règle de dispatch d'une déviation parfaite : si la cible porte une

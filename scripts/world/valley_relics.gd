@@ -88,10 +88,27 @@ const POI_OBSERVATORY: StringName = &"valley.poi.ruined_observatory.01"
 const POI_CEMETERY: StringName = &"valley.poi.barrow_cemetery.01"
 const POI_RAMPART: StringName = &"valley.poi.old_rampart.01"
 const POI_SHRINE: StringName = &"valley.poi.forest_shrine.01"
+const POI_BRIDGE: StringName = &"valley.poi.magnetic_bridge.01"
+const POI_BASIN: StringName = &"valley.poi.conductive_basin.01"
+## Site du bassin : SONDÉ (campagne du bassin, probe_bridge_site.gd) —
+## plaine plate à y = 2,00, rive est du S de la rivière.
+const SITE_BASIN: Vector3 = Vector3(16.0, 2.0, 28.0)
+## Site du pont : SONDÉ par `tools/godot/probe_bridge_site.gd` — plaine
+## plate à y = 2,00 (écart 0,00 sur l'emprise 20 × 6 m), rives posées sur le
+## sol. Sur la route des ruines, entre l'aqueduc et la ferme.
+const SITE_BRIDGE: Vector3 = Vector3(-34.0, 3.0, 44.0)
 
 ## ANCRAGES de récompense (contrat `RewardAnchor`). Positions éprouvées par
 ## `tools/godot/probe_reward_anchors.gd` dans la vallée montée, puis figées.
 const ANCHORS: Dictionary = {
+	POI_BRIDGE: {
+		"at": Vector3(6.0, 0.0, 2.0), "approach": Vector3(8.0, 0.0, 2.0),
+		"kind": RewardAnchor.Kind.PUZZLE,
+	},
+	POI_BASIN: {
+		"at": Vector3(5.0, 0.0, 0.0), "approach": Vector3(7.0, 0.0, 0.0),
+		"kind": RewardAnchor.Kind.PUZZLE,
+	},
 	POI_OBSERVATORY: {
 		"at": Vector3(2.0, 0.0, -1.0), "approach": Vector3(2.0, 0.0, 2.0),
 		"kind": RewardAnchor.Kind.STORY,
@@ -147,6 +164,8 @@ func _ready() -> void:
 	_build_cemetery()
 	_build_rampart()
 	_build_shrine()
+	_build_magnetic_bridge()
+	_build_conductive_basin()
 
 
 func piece_count() -> int:
@@ -1068,6 +1087,7 @@ func _build_shrine() -> void:
 
 	# L'AUTEL et ses offrandes : la raison de venir. Rien n'a été repris.
 	var altar: Node3D = _part(shrine, "Autel", Vector3(0.0, 0.0, -1.15))
+	_earth_core(altar)
 	_block(altar, "Table", Vector3(0.0, 0.47, 0.0), Vector3(1.7, 0.94, 0.72),
 		Vector3(0, 2, 1), COL_STONE, true)
 	_block(altar, "SocleFissure", Vector3(0.05, 0.09, 0.5),
@@ -1223,3 +1243,104 @@ func _build_shrine() -> void:
 
 	_place_poi(shrine, POI_SHRINE, "Sanctuaire forestier", &"foret",
 		Vector3(0.0, 4.0, -2.0), Vector3(36.0, 14.0, 40.0))
+
+
+## Autel de terre (P2-4, bible §3.4) : le cœur PRÉ-CHARGÉ posé sur l'autel
+## est l'exercice SÛR de la mise à la terre (P2 §3.7) — le drainer par
+## Ground allume la stèle dormante. La conséquence est pilotée par l'ÉTAT
+## réel (signaux du composant, patron ResonanceLab), jamais par sondage.
+func _earth_core(altar: Node3D) -> void:
+	var holder: Node3D = Node3D.new()
+	holder.name = "CoeurDeTerre"
+	altar.add_child(holder)
+	holder.position = Vector3(0.0, 1.08, -0.15)
+	var mesh: MeshInstance3D = MeshInstance3D.new()
+	var orb: SphereMesh = SphereMesh.new()
+	orb.radius = 0.16
+	orb.height = 0.32
+	mesh.mesh = orb
+	var core_material: StandardMaterial3D = StandardMaterial3D.new()
+	core_material.albedo_color = Color(0.33, 0.4, 0.36)
+	core_material.emission_enabled = true
+	core_material.emission = Color(0.133, 0.851, 0.925)
+	core_material.emission_energy_multiplier = 1.4
+	mesh.material_override = core_material
+	holder.add_child(mesh)
+	var state: MaterialStateComponent = MaterialStateComponent.new()
+	state.name = "MaterialStateComponent"
+	state.profile = load(
+		"res://resources/materials/MAT_PROFILE_terre_conductrice.tres") \
+		as MaterialProfile
+	state.charge_decay_enabled = false
+	holder.add_child(state)
+	var marker: ResonanceTargetComponent = ResonanceTargetComponent.new()
+	marker.kind = &"material"
+	holder.add_child(marker)
+	state.add_charge(4.0)
+	# La stèle dormante : éteinte tant que le cœur porte sa charge.
+	var shard: FragmentPickup = FragmentPickup.new()
+	shard.name = "EclatFlux"
+	shard.fragment_id = &"flux"
+	shard.pickup_id = &"valley.fragment.flux.01"
+	altar.add_child(shard)
+	shard.position = Vector3(-0.9, 0.94, 0.3)
+	var stele: MeshInstance3D = MeshInstance3D.new()
+	stele.name = "SteleDormante"
+	var slab: BoxMesh = BoxMesh.new()
+	slab.size = Vector3(0.5, 1.7, 0.22)
+	stele.mesh = slab
+	var stele_material: StandardMaterial3D = StandardMaterial3D.new()
+	stele_material.albedo_color = COL_STONE_DARK
+	stele_material.emission_enabled = true
+	stele_material.emission = Color(0.133, 0.851, 0.925)
+	stele_material.emission_energy_multiplier = 0.0
+	stele.material_override = stele_material
+	altar.add_child(stele)
+	stele.position = Vector3(0.0, 0.85, -0.62)
+	# Conséquence par SIGNAUX : terre réussie → la stèle s'allume, le cœur
+	# s'éteint ; la recharge lente du composant rallume le cœur et ré-arme
+	# l'exercice (la stèle s'éteint alors — cohérence lisible).
+	state.state_changed.connect(func(which: StringName, active: bool) -> void:
+		if which == &"grounded" and active:
+			stele_material.emission_energy_multiplier = 2.4
+		elif which == &"charged":
+			core_material.emission_energy_multiplier = 1.4 if active else 0.0
+			if active:
+				stele_material.emission_energy_multiplier = 0.0)
+
+
+## Pont magnétique (P2-4c) — l'exercice de Polarité de la route des ruines :
+## repousser le tablier chargé jusqu'au verrouillage ouvre la traversée et
+## le raccourci. Le diorama est autonome (`MagneticBridge`) ; ici : le site,
+## le POI et la récompense de la rive lointaine.
+func _build_magnetic_bridge() -> void:
+	var site: Node3D = _site("PontMagnetique", SITE_BRIDGE)
+	site.rotation_degrees = Vector3(0.0, 90.0, 0.0)
+	var bridge: MagneticBridge = MagneticBridge.new()
+	site.add_child(bridge)
+	# `_place_poi` attache déjà l'ancrage depuis la table — ne pas doubler.
+	_place_poi(site, POI_BRIDGE, "Pont magnétique", &"vestiges",
+		Vector3(0.0, 1.0, 0.0), Vector3(24.0, 8.0, 12.0))
+	var shard: FragmentPickup = FragmentPickup.new()
+	shard.name = "EclatElan"
+	shard.fragment_id = &"elan"
+	shard.pickup_id = &"valley.fragment.elan.01"
+	site.add_child(shard)
+	shard.position = Vector3(6.0, 0.0, -2.0)
+
+
+## Bassin conducteur (P2-4d) — l'école d'eau×électricité de la route de la
+## rivière : UN Arc Link source→eau complète le circuit, le récepteur
+## s'allume, la leçon est sûre (le danger attend au donjon, P2 §9.6).
+func _build_conductive_basin() -> void:
+	var site: Node3D = _site("BassinConducteur", SITE_BASIN)
+	var basin: ConductiveBasin = ConductiveBasin.new()
+	site.add_child(basin)
+	_place_poi(site, POI_BASIN, "Bassin conducteur", &"riviere",
+		Vector3(0.0, 1.0, 0.0), Vector3(20.0, 8.0, 12.0))
+	var shard: FragmentPickup = FragmentPickup.new()
+	shard.name = "EclatEcho"
+	shard.fragment_id = &"echo"
+	shard.pickup_id = &"valley.fragment.echo.01"
+	site.add_child(shard)
+	shard.position = Vector3(4.5, 0.0, 2.0)

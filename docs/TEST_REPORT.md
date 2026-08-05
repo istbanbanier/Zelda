@@ -5,6 +5,72 @@ Un résultat sans commande reproductible ne vaut pas comme preuve (§0.7).
 
 ---
 
+## Campagne du 2026-08-05 (soir) — P2-5 tranches 1-2 : directeur + posture du boss
+
+Arbre `bde635d`+posture. **BossDirector** (P2 §10.5) : fail-first 5/5
+(122 assertions) — légalité seule, anti-répétition, seed rejouable,
+historique ; StormGuardian migré (suites boss 38/38, playthrough 1/1).
+Intégration complète post-directeur : **688/688, zéro échec**
+(`test_runner.gd` sans filtre, arbre `bde635d`). **Posture du boss**
+(P2 §10.2) : fail-first 0/11 rouge prouvé puis 5/5 (22 assertions) —
+rupture = fenêtre de noyau 3,5 s < 6 s de la terre, intention
+brise-garde seule, éveil/fenêtre exclus, terre remet la jauge à neuf,
+fin de fenêtre referme l'armure. Boss au complet : 43/43 ; playthrough
+boss_run inchangé (mêmes phases, 0/560) — le golden path ne porte aucun
+`posture_damage`, dérive nulle par construction. **Lois du donjon**
+(P2 §4.2/§9.2) : fail-first 1/10 rouge puis 6/6 — nappe WATER_ZONE =
+matière eau + arbitre garanti, mouille à l'entrée, relaie l'électricité
+à la matière baignée (métal chargé ×1,5 humide, bois jamais), terre
+suspend le relais, chemin de dégâts §13.5 verrouillé par test-gardien
+(vert avant ET après). Salles 44/44, réactions 7/7, donjon 2/2.
+Intégration complète post-tranches 2-3 : **699/699, zéro échec**
+(arbre `85a56e7`). **Hints gradués** (P2 §9.8) : rouge prouvé (classe
+absente — même patron que le directeur) puis 5/5 (19 assertions) —
+escalade par échecs OBSERVÉS seulement (120 ticks sans montée prouvés),
+premier hint = la loi, salle résolue = silence, branchements RÉELS
+salle 1 (reset ×3) et salle 4 (décharges dans l'eau). Salles 44/44,
+donjon 2/2. **P2-5 TERMINÉ** — suite intégrale de CLÔTURE sur arbre
+`e284ffd` propre : **704/704, zéro échec** (preuves datées :
+`evidence/p2_5/2026-08-05_cloture_cycle2.md`).
+
+**Revue contradictoire P2-5 (contexte frais, HEAD `1337550`) : PASS.**
+La revue a REJOUÉ elle-même la suite intégrale (704/704, code 0,
+zéro `SCRIPT ERROR` — contournement ISS-027 appliqué) et les suites
+ciblées (directeur 5/5, posture 5/5, lois 6/6, hints 5/5, relais 8/8
+solveur inclus) ; contre-exemple tenté sur le relais mis à la terre :
+ÉCHOUÉ (avec terre 8,78→8,61 ; sans terre 8,78→9,98 — l'assertion
+discrimine). Cinq critères PASS (directeur §10.5, posture §10.2/§7.4,
+lois §4.2/§9.2, hints §9.8, solveur hérité Gate F). Sept faiblesses
+non bloquantes consignées : ISS-028 (bibliothèque partiellement
+taguée), ISS-029 (parade contourne les gardes de posture), ISS-030
+(asymétrie eau vallée/donjon), ISS-031 (sources d'échec inégales des
+hints + blindage d'un test). Le « rouge prouvé » des tranches reste
+NON VÉRIFIÉ indépendamment (exigerait un checkout des arbres
+antérieurs) — l'état vert est, lui, entièrement reproduit.
+**Le Cycle 2 (P2-3 → P2-5) est clos.**
+
+## Campagne du 2026-08-05 (après-midi) — P2-4 TERMINÉ
+
+Arbres `c98b40e`→`1ad0954`+éclats. Autel de terre (2/2), pont magnétique
+(3/3 : composant + placement sondé), bassin conducteur (3/3), correctif
+`charge_decay_enabled` (7/7 lois), Fragments Écho/Flux/Élan (4/4, 22
+assertions), éclats posés aux trois écoles + persistance save (2/2).
+Intégration complète post-Fragments : **566/566, zéro échec**.
+33 lieux (34 ancres saines), reliques à SIX sites.
+
+## Campagne du 2026-08-05 (midi) — P2-3 TERMINÉ
+
+Arbre `497dd5f`. Utility explicable (2/2), camp trois approches (2/2 —
+diversion par Pulse purement systémique). Intégration complète de
+clôture : **553/553, zéro échec**. P2-3 au complet : garde/déviation,
+posture, identités d'armes, utility, tokens, camp.
+
+## Campagne du 2026-08-05 (matin, 3) — P2-3 tranche 3 : identités d'armes
+
+Arbre `6af76c6`. Cinq lourdes de famille en data (2/2, 45 assertions),
+la lourde suit l'arme équipée. Intégration complète : **549/549**.
+ISS-027 consigné (faux « ok » du runner sur erreur post-assertion).
+
 ## Campagne du 2026-08-05 (matin, 2) — P2-3 tranche 2 : posture
 
 Arbre `be1aa7a`. `PostureComponent` (3/3 fail-first), `posture_damage` de

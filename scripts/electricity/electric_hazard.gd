@@ -25,6 +25,17 @@ const COL_DARK: Color = Color(0.26, 0.24, 0.28)
 const COL_CYAN: Color = Color(0.133, 0.851, 0.925)
 const COL_CORE: Color = Color(0.925, 1.0, 1.0)
 
+## P2-5 (P2 §4.2) : une nappe `WATER_ZONE` parle les LOIS COMMUNES — elle
+## porte la matière `eau`, mouille ce qui y entre et, sous tension, RELAIE
+## l'électricité à la matière qu'elle baigne. L'eau traverse, elle ne
+## stocke pas : même loi que le bassin de la vallée.
+const PROFILE_EAU: MaterialProfile = \
+	preload("res://resources/materials/MAT_PROFILE_eau.tres")
+## Énergie relayée par impulsion (cadence : `damage_interval`). Le métal
+## (capacité 10) se remplit en quelques impulsions — plus vite mouillé,
+## par le couplage humide des lois.
+const RELAY_ELECTRIC: float = 2.0
+
 @export var hazard_id: StringName = &""
 ## Type de nœud : `HAZARD` pour une électrode, `WATER_ZONE` pour une nappe
 ## d'eau conductrice (§15.1). Le comportement de décharge est le même ; ce
@@ -60,6 +71,9 @@ var _guarded: Node = null
 var _timer: float = 0.0
 var _active: bool = false
 var _cooldowns: Dictionary[Node, float] = {}
+var _matter: MaterialStateComponent = null
+var _reactions: ReactionSystem = null
+var _pulse_serial: int = 0
 
 
 func _ready() -> void:
@@ -67,8 +81,41 @@ func _ready() -> void:
 	_guarded = get_node_or_null(guarded_body_path)
 	_timer = phase_offset
 	_node.power_changed.connect(_on_power_changed)
+	if node_kind == ElectricNode.Kind.WATER_ZONE:
+		_setup_water_matter()
 	set_physics_process(true)
 	_apply_visual()
+
+
+## La nappe devient de la MATIÈRE (P2 §4.1) : profil `eau`, arbitre des
+## réactions garanti (un nœud de SCÈNE, D-047 — créé localement si la
+## salle n'en fournit pas), et les props (couche 128) deviennent visibles
+## de la zone — le chemin de dégâts, lui, ne lit que les hurtbox.
+func _setup_water_matter() -> void:
+	_matter = MaterialStateComponent.new()
+	_matter.name = "MaterialState"
+	_matter.profile = PROFILE_EAU
+	add_child(_matter)
+	_area.collision_mask = 2 | 128
+	_area.body_entered.connect(_on_body_entered_water)
+	_reactions = ReactionSystem.locate(get_tree())
+	if _reactions == null:
+		_reactions = ReactionSystem.new()
+		_reactions.name = "ReactionSystem"
+		add_child(_reactions)
+
+
+## L'eau MOUILLE ce qui y entre, tension ou pas — c'est de l'eau. Une
+## cible sans matière est ignorée par l'arbitre (sans_matiere).
+func _on_body_entered_water(body: Node3D) -> void:
+	if _reactions == null or not is_instance_valid(_reactions):
+		return
+	_pulse_serial += 1
+	var packet: ElementPacket = ElementPacket.new()
+	packet.wetness = 1.0
+	packet.action_id = StringName("%s.soak.%d" % [hazard_id, _pulse_serial])
+	packet.position = body.global_position
+	_reactions.submit(body, packet)
 
 
 func _build() -> void:
@@ -145,9 +192,36 @@ func _shock_bodies(delta: float) -> void:
 		if remaining > 0.0:
 			_cooldowns[body] = remaining
 			continue
-		if not _apply_shock(body):
-			continue
-		_cooldowns[body] = damage_interval
+		var acted: bool = _apply_shock(body)
+		if _relay_to_matter(body):
+			acted = true
+		if acted:
+			_cooldowns[body] = damage_interval
+
+
+## P2-5 : l'eau sous tension relaie l'électricité à la MATIÈRE qu'elle
+## baigne, à la cadence des dégâts, une impulsion = une action (chaîne
+## anti-boucle §4.3). Une eau mise à la terre DISSIPE : le relais se
+## suspend — le chemin de dégâts du graphe, lui, continue : la terre est
+## une loi de matière, pas un coupe-circuit.
+func _relay_to_matter(body: Node3D) -> bool:
+	if node_kind != ElectricNode.Kind.WATER_ZONE or _reactions == null:
+		return false
+	if _matter != null and _matter.is_grounded():
+		return false
+	var has_matter: bool = false
+	for child: Node in body.get_children():
+		if child is MaterialStateComponent:
+			has_matter = true
+			break
+	if not has_matter:
+		return false
+	_pulse_serial += 1
+	var packet: ElementPacket = ElementPacket.electric_burst(RELAY_ELECTRIC,
+		StringName("%s.pulse.%d" % [hazard_id, _pulse_serial]))
+	packet.position = body.global_position
+	_reactions.submit(body, packet)
+	return true
 
 
 func _apply_shock(body: Node3D) -> bool:

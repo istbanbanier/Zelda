@@ -73,6 +73,11 @@ func _ready() -> void:
 		&"room2_from_hall": Vector3(1.5, 0.3, 9.0),
 		&"room2_from_shortcut": Vector3(2, 16.8, -11.0),
 	})
+	# P2 §9.8 : hints gradués sur échecs OBSERVÉS — loi, cause, relation.
+	install_hints(
+		"Les électrodes battent un rythme : la fenêtre calme suffit à passer.",
+		"Observe le battement depuis le palier — compte, puis grimpe pendant le repos.",
+		"Grimpe entre deux décharges jusqu'à l'interrupteur du sommet : il détourne le courant vers l'ascenseur.")
 
 
 ## Puits de 22 m : sol, murs, mezzanine nord au sommet, seuil sud en bas,

@@ -64,6 +64,11 @@ func _ready() -> void:
 		&"room3_from_hall": Vector3(0, 0.3, 9.0),
 		&"room3_from_shortcut": Vector3(13.5, 0.3, -4),
 	})
+	# P2 §9.8 : hints gradués sur échecs OBSERVÉS — loi, cause, relation.
+	install_hints(
+		"Un relais transmet par ses ports : leur orientation décide du chemin.",
+		"Un segment ne s'allume que si deux ports se font face — cherche celui qui tourne le dos.",
+		"Tourne les colonnes pour aligner leurs ports deux à deux, de la source jusqu'au récepteur.")
 
 
 func _build_shell() -> void:

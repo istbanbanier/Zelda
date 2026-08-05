@@ -133,6 +133,17 @@ func _consume(amount: float) -> void:
 		exhausted.emit()
 
 
+## Restitution directe (Fragment Flux, P2-4e) : clampée, notifiée par la
+## même voie que la consommation — jamais de jauge silencieuse.
+func restore(amount: float) -> void:
+	if amount <= 0.0:
+		return
+	var before: float = _current
+	_current = minf(tuning.max_stamina, _current + amount)
+	if not is_equal_approx(before, _current):
+		changed.emit(_current, tuning.max_stamina)
+
+
 func current() -> float:
 	return _current
 

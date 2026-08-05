@@ -121,16 +121,19 @@ func test_the_four_relics_are_built_from_the_promoted_kit() -> void:
 func test_each_relic_declares_itself_with_its_own_identifier() -> void:
 	var relics: ValleyRelics = await _open()
 	var journal: DiscoveryLog = DiscoveryLog.new()
-	check_equal(relics.pois.size(), 4, "quatre lieux déclarables")
-	check_equal(relics.bind_all(journal), 4, "les quatre se lient au journal")
-	check_equal(journal.registered_count(), 4,
-		"quatre identifiants DISTINCTS entrent au journal")
+	# Six depuis P2-4d : pont magnétique puis bassin conducteur.
+	check_equal(relics.pois.size(), 6, "six lieux déclarables")
+	check_equal(relics.bind_all(journal), 6, "les six se lient au journal")
+	check_equal(journal.registered_count(), 6,
+		"six identifiants DISTINCTS entrent au journal")
 
 	var expected: Dictionary = {
 		ValleyRelics.POI_OBSERVATORY: "Observatoire en ruine",
 		ValleyRelics.POI_CEMETERY: "Cimetière du tertre",
 		ValleyRelics.POI_RAMPART: "Courtine effondrée",
 		ValleyRelics.POI_SHRINE: "Sanctuaire forestier",
+		ValleyRelics.POI_BRIDGE: "Pont magnétique",
+		ValleyRelics.POI_BASIN: "Bassin conducteur",
 	}
 	for poi_id: StringName in expected:
 		check(journal.is_registered(poi_id),
