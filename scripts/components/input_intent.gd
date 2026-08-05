@@ -33,6 +33,8 @@ var target_next_pressed: bool = false
 var target_prev_pressed: bool = false
 ## E.2a : plat rapide (§8.5 « Plat rapide », action `quick_meal`).
 var meal_pressed: bool = false
+## P2 §3.2 : impulsion du Bracelet (action `resonance_pulse`).
+var pulse_pressed: bool = false
 
 ## Regard voulu (souris ou stick droit), en unités déjà normalisées par le lecteur.
 ## Regard au stick : axe sans unité (-1..1), converti en vitesse angulaire par
@@ -61,6 +63,7 @@ func consume_edges() -> void:
 	target_next_pressed = false
 	target_prev_pressed = false
 	meal_pressed = false
+	pulse_pressed = false
 
 
 func clear() -> void:
@@ -88,4 +91,6 @@ func duplicate_intent() -> InputIntent:
 	copy.shoot_pressed = shoot_pressed
 	copy.target_next_pressed = target_next_pressed
 	copy.target_prev_pressed = target_prev_pressed
+	copy.meal_pressed = meal_pressed
+	copy.pulse_pressed = pulse_pressed
 	return copy

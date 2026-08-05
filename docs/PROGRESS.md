@@ -2859,9 +2859,14 @@ attendent le Cycle 3 — ne pas re-décorer avant le systémique.
 
 ### Prochaine action exacte
 
-P2-2, tranche 1 — les LOIS : basculer depuis le scratchpad les brouillons
-`MaterialProfile` / `ElementPacket` / `MaterialStateComponent` /
-`ReactionSystem` : **tests d'abord** (`test_reaction_system.gd`, rouge
-attendu : classes absentes), puis les 4 classes, puis vert sur la matrice
-§4.6 (bois×feu×eau, métal×charge×terre, plafond double source,
-anti-boucle, budget/tick). Ensuite : Pulse (première opération Bracelet).
+FAIT depuis cette entrée : lois 6/6 + 8 profils .tres 2/2 (`4bc430c`) ;
+Pulse 5/5 (`test_resonance_pulse` : rayon+LOS, jamais à travers un mur,
+cooldown refuse/rend la main, expiration, bruit entendu par les ennemis),
+action `resonance_pulse` (physique 81 = étiquette AZERTY A + d-pad haut),
+`ResonanceController`/`ResonanceTargetComponent`, câblage contrôleur avec
+sonde (consommé/refusé). Non-régression : input 18/18, latences 6/6.
+
+Prochaine action : **Arc Link** (P2 §3.3) fail-first — sélection de deux
+ports compatibles, lien temporaire = nœud CABLE injecté dans le graphe
+électrique existant (propagation/cycles déjà prouvés Gate F), annulation
+sûre (port détruit, hors portée, rechargement).

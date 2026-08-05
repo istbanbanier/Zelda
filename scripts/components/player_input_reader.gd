@@ -108,5 +108,8 @@ func _input(event: InputEvent) -> void:
 		_intent.target_prev_pressed = true
 	elif event.is_action_pressed("quick_meal", false, true):
 		_intent.meal_pressed = true
+	elif event.is_action_pressed("resonance_pulse", false, true):
+		_intent.pulse_pressed = true
+		probe.mark_received(&"resonance_pulse")
 	elif event is InputEventMouseMotion:
 		_mouse_delta += (event as InputEventMouseMotion).relative * mouse_sensitivity
