@@ -2899,9 +2899,19 @@ molette-armes/molette-lock-on pendant le maintien). Ground direct sur T
 Actions câblées : A=Pulse, G=focus (maintien)+L1, T=Ground, d-pad
 haut/gauche manette. Résonance 31/31.
 
+### Fait ensuite : ResonanceLab + clôture P2-2
+
+`ResonanceLab.tscn` jouable (zones Pulse/LOS, Link avec lampes pilotées par
+`power_changed`, Polarité avec recharge de lab, fosse d'Arc Step, Ground) —
+test structurel 1/1, Résonance 32/32. Liens d'Arc Link éphémères par design
+(D-049) : rien à persister. **P2-2 est TERMINÉ hors présentation** — les
+VFX/audio des cinq opérations rejoignent la passe visuelle du Cycle 3.
+
 ### Prochaine action exacte
 
-P2-2 (fin) : présentation (VFX/audio des cinq opérations — passe visuelle),
-`ResonanceLab` jouable, persistance des liaisons si le design la demande.
-Puis P2-3 : défense expressive (garde/déviation/posture) + IA utility/
-tokens + camp trois approches.
+**P2-3** : défense expressive — garde tenue, déviation parfaite (fenêtre
+0,12 s ±), posture/poise séparées de la santé, anti-stunlock — fail-first
+dans CombatLab ; puis identités d'armes (6 familles, 4-6 actions utiles
+chacune) ; puis IA utility bornée + tokens (EncounterCoordinator) et le
+camp à trois approches. Sur la machine utilisateur : lancer
+`scenes/tests/ResonanceLab.tscn` (A=Pulse, G+molette+clic=focus, T=Ground).

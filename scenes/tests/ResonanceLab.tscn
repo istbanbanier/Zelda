@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+; ResonanceLab (P2 §14.2) — vitrine jouable des cinq opérations du Bracelet.
+; Tout est construit par le script : géométrie de test uniquement.
+;   godot --path . scenes/tests/ResonanceLab.tscn
+
+[ext_resource type="Script" path="res://scripts/tools/resonance_lab.gd" id="1_lab"]
+
+[node name="ResonanceLab" type="Node3D"]
+script = ExtResource("1_lab")

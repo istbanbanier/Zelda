@@ -1257,3 +1257,22 @@ qu'il court-circuite par D-013) et produit des campagnes statistiques ;
 au fil de l'eau, pour l'overlay et les refus. B.5 prouve le cœur ; P2-1
 prouve la chaîne complète et l'expose en continu. Les deux tests coexistent
 (`test_latency.gd`, `test_p2_latency.gd`).
+
+## D-049 — Les liens d'Arc Link sont ÉPHÉMÈRES : jamais sauvegardés
+
+Date : 2026-08-05 (clôture P2-2).
+
+P2 §3.3 laisse le choix (« liaisons persistées uniquement si le design le
+demande »). Décision : le design ne le demande PAS. Un lien d'Arc Link est un
+arc tendu par le Bracelet — il se dissout au changement de scène, au
+rechargement d'une sauvegarde et à la destruction d'un port. Trois raisons :
+(1) cohérence de fiction — l'arc est une tension entretenue, pas une
+installation ; (2) aucune énigme ne doit DÉPENDRE d'un lien posé dans une
+session précédente (anti-softlock §15.11 : l'état persistant reste celui des
+nœuds réels) ; (3) économie de schéma — pas de migration de sauvegarde pour
+un objet dont la durée de vie naturelle est la seconde.
+
+**Alternative rejetée** : persister le lien actif dans le save v4. Rejetée :
+un lien restauré dans une géométrie qui a bougé (conducteur déplacé) serait
+soit faux, soit silencieusement dissous au premier tick — autant assumer
+l'éphémère et l'enseigner par la constance.
