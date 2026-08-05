@@ -3012,9 +3012,21 @@ enterrée (y local −0,5 = dans la rive → 0,0) et DOUBLE attache (la table
 ANCHORS attache déjà via _place_poi). Placement 1/1 (8 assertions),
 reliques 7/7 (compte 4→5 délibéré), ancres 8/8 (33 saines).
 
+### Fait ensuite : P2-4d — le bassin conducteur (33ᵉ lieu)
+
+Composant `ConductiveBasin` 2/2 : circuit pré-arrangé avec UN maillon
+manquant (source à 6 m de l'eau, hors portée des ports), un seul Arc
+Link source→eau complète — le courant TRAVERSE l'eau (la leçon) et
+allume le récepteur ; dissoudre rend tout (transport, jamais création).
+Un défaut de géométrie attrapé par le rouge : le récepteur à 0,67 m du
+port de l'eau (portée 0,6) — rapproché à 0,5. Placement sondé (16, 2,
+28, rive est du S), 33ᵉ lieu déclaré (POI + ancre PUZZLE), reliques 7/7
+à SIX lieux, ancres 8/8 (34 saines).
+
 ### Prochaine action exacte
 
-P2-4d : le BASSIN CONDUCTEUR (route de la rivière) — source + zone d'eau
-+ récepteur pré-arrangés pour qu'UN Arc Link complète le circuit
-(l'enseignement d'eau×électricité AVANT la salle 4 du donjon). Puis les
-Fragments (Écho/Flux/Élan) et la revue de fin de P2-4.
+P2-4e (FIN de P2-4) : les FRAGMENTS facultatifs (bible §5) — Écho
+(trace directionnelle de la dernière source sonore au Pulse), Flux
+(remboursement d'endurance sur mise à la terre réussie, cooldown),
+Élan (conservation bornée de l'élan d'Arc Step). Trois maximum, boss
+solvable sans. Puis revue de fin de P2-4 et TEST_REPORT.

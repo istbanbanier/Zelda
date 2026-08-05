@@ -16,15 +16,14 @@ const PROBE_DOWN: float = 60.0
 ## Candidats (centre, lacet en degrés) le long de la route des ruines —
 ## entre l'aqueduc (−12, 10), la ferme (−16, 78) et la caravane (−38, −120),
 ## à > 20 m de tout site déjà bâti.
+## Campagne du pont (2026-08-05) : (−34, 44) retenu, plat à 2,00.
+## Campagne du bassin (P2-4d) : candidats le long de la route de la rivière.
 const CANDIDATES: Array = [
-	[Vector3(-34.0, 0.0, 44.0), 0.0],
-	[Vector3(-34.0, 0.0, 44.0), 90.0],
-	[Vector3(-48.0, 0.0, 28.0), 0.0],
-	[Vector3(-48.0, 0.0, 28.0), 90.0],
-	[Vector3(-30.0, 0.0, -24.0), 0.0],
-	[Vector3(-30.0, 0.0, -24.0), 90.0],
-	[Vector3(-56.0, 0.0, -60.0), 0.0],
-	[Vector3(-56.0, 0.0, -60.0), 90.0],
+	[Vector3(16.0, 0.0, 28.0), 0.0],
+	[Vector3(30.0, 0.0, 2.0), 0.0],
+	[Vector3(10.0, 0.0, -12.0), 0.0],
+	[Vector3(44.0, 0.0, 22.0), 0.0],
+	[Vector3(22.0, 0.0, 44.0), 0.0],
 ]
 
 

@@ -89,6 +89,10 @@ const POI_CEMETERY: StringName = &"valley.poi.barrow_cemetery.01"
 const POI_RAMPART: StringName = &"valley.poi.old_rampart.01"
 const POI_SHRINE: StringName = &"valley.poi.forest_shrine.01"
 const POI_BRIDGE: StringName = &"valley.poi.magnetic_bridge.01"
+const POI_BASIN: StringName = &"valley.poi.conductive_basin.01"
+## Site du bassin : SONDÉ (campagne du bassin, probe_bridge_site.gd) —
+## plaine plate à y = 2,00, rive est du S de la rivière.
+const SITE_BASIN: Vector3 = Vector3(16.0, 2.0, 28.0)
 ## Site du pont : SONDÉ par `tools/godot/probe_bridge_site.gd` — plaine
 ## plate à y = 2,00 (écart 0,00 sur l'emprise 20 × 6 m), rives posées sur le
 ## sol. Sur la route des ruines, entre l'aqueduc et la ferme.
@@ -99,6 +103,10 @@ const SITE_BRIDGE: Vector3 = Vector3(-34.0, 3.0, 44.0)
 const ANCHORS: Dictionary = {
 	POI_BRIDGE: {
 		"at": Vector3(6.0, 0.0, 2.0), "approach": Vector3(8.0, 0.0, 2.0),
+		"kind": RewardAnchor.Kind.PUZZLE,
+	},
+	POI_BASIN: {
+		"at": Vector3(5.0, 0.0, 0.0), "approach": Vector3(7.0, 0.0, 0.0),
 		"kind": RewardAnchor.Kind.PUZZLE,
 	},
 	POI_OBSERVATORY: {
@@ -157,6 +165,7 @@ func _ready() -> void:
 	_build_rampart()
 	_build_shrine()
 	_build_magnetic_bridge()
+	_build_conductive_basin()
 
 
 func piece_count() -> int:
@@ -1306,3 +1315,14 @@ func _build_magnetic_bridge() -> void:
 	# `_place_poi` attache déjà l'ancrage depuis la table — ne pas doubler.
 	_place_poi(site, POI_BRIDGE, "Pont magnétique", &"vestiges",
 		Vector3(0.0, 1.0, 0.0), Vector3(24.0, 8.0, 12.0))
+
+
+## Bassin conducteur (P2-4d) — l'école d'eau×électricité de la route de la
+## rivière : UN Arc Link source→eau complète le circuit, le récepteur
+## s'allume, la leçon est sûre (le danger attend au donjon, P2 §9.6).
+func _build_conductive_basin() -> void:
+	var site: Node3D = _site("BassinConducteur", SITE_BASIN)
+	var basin: ConductiveBasin = ConductiveBasin.new()
+	site.add_child(basin)
+	_place_poi(site, POI_BASIN, "Bassin conducteur", &"riviere",
+		Vector3(0.0, 1.0, 0.0), Vector3(20.0, 8.0, 12.0))
