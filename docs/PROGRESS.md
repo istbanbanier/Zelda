@@ -3174,19 +3174,30 @@ animation dans le glTF — sondé). Contrat `test_hero_shot_lab` 5/5
 (41 assertions) MAINTENU à chaque itération ; le test de la rivière
 encode la physique de la ligne de fuite.
 
+### Fait ensuite : HeroShotLab v2 — les 4 chantiers + le verdict du gris
+
+v2 faite et poussée (`782480d`, contrat 5/5 maintenu) : amorce de
+rivière bas-gauche DEVANT le héros, phrases d'herbe §7.4 (touffes
+inégales, densité au cœur, vides) + fleurs en groupes (bleues rares),
+éclair majeur TENU dans la fenêtre de capture (`hold_flash`, §21.5),
+horizon montagneux §1.1/§3.3 qui referme la part de ciel. Protocole
+§30.1 exécuté : capture officielle + vignette 320×180 + NIVEAUX DE
+GRIS (`evidence/cycle3/2026-08-05_herolab_v2.md`). Le gris rend un
+verdict précieux : héros et nuage tiennent (masses les plus sombres),
+mais rivière/camp/pylône/citadelle FUSIONNENT dans une bande 60-75 % —
+la rivière ne vit que par son cyan, ce que §1.5 interdit.
+
 ### Prochaine action exacte
 
-**HeroShotLab v2** — reste ouvert consigné dans l'evidence v1 :
-1. l'amorce de la rivière passe DERRIÈRE le héros → décaler/élargir le
-   premier segment pour une entrée bas-gauche franche ;
-2. « phrases » de végétation §7.4 (touffes groupées, fleurs, vides) à
-   la place des brins-cônes uniformes ;
-3. éclair synchronisé à la fenêtre de capture (§21.5 : « un éclair
-   majeur simultané » — StormCell est déterministe, caler la première
-   frappe) ;
-4. part de ciel ~54 % contre 38-48 demandés : arbitrer (masses de fond
-   plus hautes ou pitch recalculé AVEC le cadrage héros — le contrat
-   5/5 est le garde-fou) ;
-5. protocole §30.1 sur la v2 : vignette 320×180, niveaux de gris,
-   silhouettes — puis seulement parler d'un score. JAMAIS de score
-   depuis llvmpipe seul (machine utilisateur pour l'esthétique).
+**HeroShotLab v3 — la passe de VALEURS (§1.5)**, charte tirée du test
+en gris (evidence v2) :
+1. rivière : lit turquoise SOMBRE (valeur ~40 %) + berges creusées —
+   elle doit se lire en gris, pas seulement en cyan ;
+2. citadelle : descendre sa masse vers 35-60 % pour la détacher des
+   montagnes pâles ; pylône : flanc éclairé chaud ;
+3. camp : toiles plus sombres, contraste local autour du feu ;
+4. falaises premier plan plus sombres/chaudes, montagnes encore plus
+   pâles — l'étagement §1.3 en VALEURS, pas seulement en brume ;
+5. re-protocole §30.1 (couleur + gris + vignette) et comparaison
+   v2→v3. Le contrat 5/5 reste le garde-fou ; JAMAIS de score depuis
+   llvmpipe (machine utilisateur pour l'esthétique).
