@@ -20,6 +20,8 @@ var move: Vector2 = Vector2.ZERO
 ## États maintenus.
 var sprint_held: bool = false
 var aim_held: bool = false
+## P2 §3.8 : focus de Résonance tenu (action `resonance_focus`).
+var focus_held: bool = false
 
 ## Fronts montants, consommés par le contrôleur dans le tick où ils sont vrais.
 var jump_pressed: bool = false
@@ -35,6 +37,8 @@ var target_prev_pressed: bool = false
 var meal_pressed: bool = false
 ## P2 §3.2 : impulsion du Bracelet (action `resonance_pulse`).
 var pulse_pressed: bool = false
+## P2 §3.6 : mise à la terre (action `resonance_ground`).
+var ground_pressed: bool = false
 
 ## Regard voulu (souris ou stick droit), en unités déjà normalisées par le lecteur.
 ## Regard au stick : axe sans unité (-1..1), converti en vitesse angulaire par
@@ -64,6 +68,7 @@ func consume_edges() -> void:
 	target_prev_pressed = false
 	meal_pressed = false
 	pulse_pressed = false
+	ground_pressed = false
 
 
 func clear() -> void:
@@ -93,4 +98,6 @@ func duplicate_intent() -> InputIntent:
 	copy.target_prev_pressed = target_prev_pressed
 	copy.meal_pressed = meal_pressed
 	copy.pulse_pressed = pulse_pressed
+	copy.ground_pressed = ground_pressed
+	copy.focus_held = focus_held
 	return copy

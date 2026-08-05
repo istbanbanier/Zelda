@@ -67,6 +67,7 @@ func _physics_process(_delta: float) -> void:
 	_intent.move = Input.get_vector("move_left", "move_right", "move_back", "move_forward")
 	_intent.sprint_held = Input.is_action_pressed("sprint")
 	_intent.aim_held = Input.is_action_pressed("aim")
+	_intent.focus_held = Input.is_action_pressed("resonance_focus")
 
 	# Deux canaux, deux unités — JAMAIS mélangés (PT-D1-01) : le stick est un
 	# axe (-1..1) que la caméra convertit en vitesse angulaire ; la souris est un
@@ -111,5 +112,8 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_pressed("resonance_pulse", false, true):
 		_intent.pulse_pressed = true
 		probe.mark_received(&"resonance_pulse")
+	elif event.is_action_pressed("resonance_ground", false, true):
+		_intent.ground_pressed = true
+		probe.mark_received(&"resonance_ground")
 	elif event is InputEventMouseMotion:
 		_mouse_delta += (event as InputEventMouseMotion).relative * mouse_sensitivity

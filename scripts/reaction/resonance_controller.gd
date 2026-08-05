@@ -49,12 +49,25 @@ const ARC_STEP_COOLDOWN: float = 0.35
 const GROUND_RANGE: float = 3.0
 const GROUND_STARTUP: float = 0.35
 
+## Focus (P2 §3.1/§3.8) — sélection le long de l'axe de visée.
+const FOCUS_RANGE: float = 18.0
+## Demi-cône de candidature : dot minimal entre visée et direction cible.
+const FOCUS_CONE_DOT: float = 0.25
+
 var _pulse_cooldown: float = 0.0
 var _arc_step_cooldown: float = 0.0
 var _link: ResonanceLinkNode = null
 var _ground_target: MaterialStateComponent = null
 var _ground_player: PlayerController = null
 var _ground_timer: float = 0.0
+var _focus_engaged: bool = false
+var _focus_candidates: Array[ResonanceTargetComponent] = []
+var _focus_selected: ResonanceTargetComponent = null
+## Vrai quand la sélection vient d'un cycle volontaire : l'update suivant la
+## respecte (hystérésis, P2 §5.5 — pas de target switch surprise).
+var _focus_manual: bool = false
+## Extrémité A d'un Arc Link en deux temps. Oubliée à la sortie du focus.
+var _link_first: ElectricNode = null
 var _polarity_target: RigidBody3D = null
 var _polarity_anchor: CharacterBody3D = null
 var _polarity_sign: float = 1.0
@@ -178,6 +191,133 @@ func _material_state_of(target: Node) -> MaterialStateComponent:
 		if child is MaterialStateComponent:
 			return child as MaterialStateComponent
 	return null
+
+
+## Cible du raccourci direct de mise à la terre : l'état matière CHARGÉ le
+## plus proche dans la portée — la lecture (Pulse) a déjà montré quoi viser.
+func pick_ground_target(body: CharacterBody3D) -> Node:
+	var best: Node = null
+	var best_gap: float = GROUND_RANGE
+	for node: Node in get_tree().get_nodes_in_group(&"material_states"):
+		var state: MaterialStateComponent = node as MaterialStateComponent
+		if state == null or not state.is_inside_tree():
+			continue
+		if not state.is_charged() and not state.is_overloaded():
+			continue
+		var anchor: Node3D = state.get_parent() as Node3D
+		if anchor == null:
+			continue
+		var gap: float = anchor.global_position.distance_to(body.global_position)
+		if gap <= best_gap:
+			best_gap = gap
+			best = state
+	return best
+
+
+## --- Focus et sélection (P2 §3.1/§3.8) ---
+
+func focus_active() -> bool:
+	return _focus_engaged
+
+
+## À appeler chaque tick tenu : reconstruit les candidats (portée, cône,
+## LOS) et maintient la sélection. `from`/`direction` viennent de la caméra
+## en jeu, des tests en headless — le cœur ne connaît pas la caméra.
+func focus_update(body: CharacterBody3D, from: Vector3, direction: Vector3) -> void:
+	_focus_engaged = true
+	var space: PhysicsDirectSpaceState3D = body.get_world_3d().direct_space_state
+	var scored: Array[Dictionary] = []
+	for node: Node in get_tree().get_nodes_in_group(&"resonance_targets"):
+		var target: ResonanceTargetComponent = node as ResonanceTargetComponent
+		if target == null or not target.is_inside_tree():
+			continue
+		var anchor: Node3D = target.anchor()
+		if anchor == null:
+			continue
+		var to_target: Vector3 = anchor.global_position - from
+		var gap: float = to_target.length()
+		if gap > FOCUS_RANGE or gap < 0.05:
+			continue
+		var dot: float = direction.dot(to_target / gap)
+		if dot < FOCUS_CONE_DOT:
+			continue
+		if not _has_los(space, from, anchor.global_position, body):
+			continue
+		scored.append({ "target": target, "angle": direction.angle_to(to_target) })
+	scored.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		return float(a["angle"]) < float(b["angle"]))
+	_focus_candidates.clear()
+	for entry: Dictionary in scored:
+		_focus_candidates.append(entry["target"] as ResonanceTargetComponent)
+	var still_there: bool = _focus_selected != null \
+		and is_instance_valid(_focus_selected) \
+		and _focus_selected in _focus_candidates
+	if _focus_candidates.is_empty():
+		_focus_selected = null
+		_focus_manual = false
+	elif not still_there or not _focus_manual:
+		_focus_selected = _focus_candidates[0]
+		if not still_there:
+			_focus_manual = false
+
+
+func focus_cycle(step: int) -> void:
+	if _focus_candidates.is_empty():
+		return
+	var index: int = _focus_candidates.find(_focus_selected)
+	index = wrapi(index + step, 0, _focus_candidates.size())
+	_focus_selected = _focus_candidates[index]
+	_focus_manual = true
+
+
+func focus_selected() -> ResonanceTargetComponent:
+	if _focus_selected != null and not is_instance_valid(_focus_selected):
+		_focus_selected = null
+	return _focus_selected
+
+
+## Confirme la cible visée — le DISPATCH par nature (P2 §2.3 : une entrée,
+## plusieurs contextes). `alt` inverse la Polarité (repousser).
+func focus_confirm(player: PlayerController, alt: bool) -> StringName:
+	var target: ResonanceTargetComponent = focus_selected()
+	if target == null or player == null:
+		return &"aucune_cible"
+	match target.kind:
+		&"arc_anchor":
+			return try_arc_step(player, target)
+		&"port":
+			var node: ElectricNode = target.anchor() as ElectricNode
+			if node == null:
+				return &"invalide"
+			if _link_first == null or not is_instance_valid(_link_first) \
+					or node == _link_first:
+				_link_first = node
+				return &"port_a"
+			var verdict: StringName = try_link(player, _link_first, node)
+			if verdict == &"linked":
+				_link_first = null
+			return verdict
+		&"polarity":
+			var rigid: RigidBody3D = target.anchor() as RigidBody3D
+			if rigid == null:
+				return &"invalide"
+			return try_polarity(player, rigid,
+				&"repousser" if alt else &"attirer")
+		&"material":
+			return try_ground(player, target.anchor())
+		_:
+			return &"invalide"
+
+
+## Sortir du focus oublie tout l'éphémère — y compris l'extrémité A d'un
+## lien en cours de pose (P2 §3.8 : annulation lisible), jamais les liens
+## déjà posés.
+func focus_end() -> void:
+	_focus_engaged = false
+	_focus_candidates.clear()
+	_focus_selected = null
+	_focus_manual = false
+	_link_first = null
 
 
 ## --- Ground (P2 §3.6) ---

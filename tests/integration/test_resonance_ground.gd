@@ -129,6 +129,27 @@ func test_refusals_are_explained() -> void:
 	_teardown()
 
 
+func test_the_direct_key_grounds_the_nearest_charged_object() -> void:
+	var tree: SceneTree = _tree()
+	if not _setup():
+		check(false, "mise en scène impossible")
+		return
+	# Deux blocs chargés : le plus PROCHE doit être choisi.
+	var near_block: MaterialStateComponent = _charged_block(Vector3(0.0, 0.5, -1.5))
+	var far_block: MaterialStateComponent = _charged_block(Vector3(0.0, 0.5, 2.8))
+	for i: int in range(20):
+		await tree.physics_frame
+	_intent.ground_pressed = true
+	await tree.physics_frame
+	_intent.ground_pressed = false
+	# Startup 0,35 s puis drainage.
+	for i: int in range(30):
+		await tree.physics_frame
+	check(not near_block.is_charged(), "le bloc le plus proche est drainé")
+	check(far_block.is_charged(), "l'autre n'est pas touché")
+	_teardown()
+
+
 func test_a_target_leaving_range_cancels_cleanly() -> void:
 	var tree: SceneTree = _tree()
 	if not _setup():

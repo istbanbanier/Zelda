@@ -45,6 +45,7 @@ var _fractured: bool = false
 
 
 func _ready() -> void:
+	add_to_group(&"material_states")
 	set_physics_process(false)
 
 

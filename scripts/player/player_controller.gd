@@ -286,6 +286,39 @@ func _physics_process(delta: float) -> void:
 			&"cooldown":
 				_mark_refused(&"resonance_pulse", &"cooldown")
 
+	# Ground direct (P2 §3.6, touche dédiée) : cible auto = l'objet chargé le
+	# plus proche — la lecture préalable au Pulse a montré quoi viser.
+	if _resonance != null and intent.ground_pressed and _mode == Mode.LOCOMOTION:
+		var ground_target: Node = _resonance.pick_ground_target(self)
+		if ground_target == null:
+			_mark_refused(&"resonance_ground", &"aucune_cible")
+		else:
+			var ground_verdict: StringName = _resonance.try_ground(self, ground_target)
+			if ground_verdict != &"grounding":
+				_mark_refused(&"resonance_ground", ground_verdict)
+
+	# Focus de Résonance (P2 §3.8) : tenu, il capture la molette (cycle) et le
+	# clic (confirmation contextuelle) — l'épée et le lock-on sont suspendus le
+	# temps du maintien, et tout l'éphémère s'oublie au relâchement.
+	if _resonance != null:
+		if intent.focus_held and _mode == Mode.LOCOMOTION:
+			var camera: Camera3D = _camera_rig.get_camera()
+			if camera != null:
+				_resonance.focus_update(self, camera.global_position,
+					-camera.global_transform.basis.z)
+			if intent.target_next_pressed:
+				_resonance.focus_cycle(1)
+			elif intent.target_prev_pressed:
+				_resonance.focus_cycle(-1)
+			if intent.attack_pressed:
+				var verdict: StringName = _resonance.focus_confirm(self, intent.sprint_held)
+				if verdict in [&"step", &"linked", &"engaged", &"port_a", &"grounding"]:
+					_mark_consumed(&"resonance_confirm")
+				else:
+					_mark_refused(&"resonance_confirm", verdict)
+		elif _resonance.focus_active():
+			_resonance.focus_end()
+
 	_stunlock_grace = maxf(0.0, _stunlock_grace - delta)
 	_update_flash(delta)
 	_update_weapon_pose()
@@ -298,6 +331,7 @@ func _physics_process(delta: float) -> void:
 	# geste change de CIBLE quand une cible est tenue — aucun conflit : le
 	# verrouillage a consommé les fronts avant d'arriver ici.
 	if _mode == Mode.LOCOMOTION and _inventory != null \
+			and not intent.focus_held \
 			and (_lock_on == null or not _lock_on.has_target()):
 		if intent.target_next_pressed:
 			_inventory.equip_next()
@@ -446,6 +480,7 @@ func _process_locomotion(delta: float, intent: InputIntent) -> void:
 		# L'attaque s'engage depuis le sol uniquement (§8.1 : LightAttack est un
 		# état terrestre ; l'attaque aérienne n'existe pas dans la spec de la 0.1).
 		if _mode == Mode.LOCOMOTION and intent.attack_pressed and is_on_floor() \
+				and not intent.focus_held \
 				and _attack != null and _attack.try_attack():
 			_mode = Mode.ATTACKING
 			_mark_consumed(&"attack_light")
@@ -453,6 +488,7 @@ func _process_locomotion(delta: float, intent: InputIntent) -> void:
 		# Attaque lourde (§10.2) : 20 d'endurance (§9.1), REFUSÉE à jauge
 		# insuffisante — l'appui est alors perdu, pas mémorisé.
 		if _mode == Mode.LOCOMOTION and intent.heavy_pressed and is_on_floor() \
+				and not intent.focus_held \
 				and _attack != null:
 			var cost: float = _stamina.tuning.heavy_attack_cost if _stamina != null else 0.0
 			if (_stamina == null or _stamina.can_spend(cost)) and _attack.try_heavy():
@@ -1240,7 +1276,8 @@ func _handle_lock_on(delta: float, intent: InputIntent) -> void:
 				_camera_rig.set_lock_target(found)
 	elif _lock_on.has_target():
 		# §8.4 : changement de cible directionnel, sans boucler.
-		if intent.target_next_pressed or intent.target_prev_pressed:
+		if (intent.target_next_pressed or intent.target_prev_pressed) \
+				and not intent.focus_held:
 			var camera: Camera3D = _camera_rig.get_camera()
 			var step: int = 1 if intent.target_next_pressed else -1
 			var switched: Node3D = _lock_on.switch_target(self,

@@ -42,9 +42,12 @@ cette matrice, sinon elle n'entre pas.
 suites `test_resonance_*`) — Pulse (LOS, cooldown, bruit), Arc Link (nœud
 CABLE du graphe du Gate F), Polarité (impulsions bornées), Arc Step (sweep
 intégral + validation d'arrivée), Ground (startup immobile, drainage entier
-ou rien). Manquent encore : l'UX de focus/sélection (liaison aux actions
-`resonance_focus/confirm/cycle`), la présentation (VFX/audio), le
-ResonanceLab jouable et la persistance éventuelle des liaisons.
+ou rien), et le **focus/sélection est jouable** : G tenu = focus (candidats
+par axe de visée + LOS, hystérésis au cycle molette), clic = confirmation
+DISPATCHÉE par nature de cible (ancrage→Arc Step, port→lien en deux temps,
+métal chargé→Polarité, matériau→Ground), épée/lock-on suspendus pendant le
+maintien ; T = Ground direct sur l'objet chargé le plus proche. Manquent :
+la présentation (VFX/audio), le ResonanceLab et la persistance des liaisons.
 
 ### 3.1 Composants (P2 §3.1)
 
@@ -80,15 +83,15 @@ ResonanceLab jouable et la persistance éventuelle des liaisons.
 Libres après audit : `A`, `T`, `G`, `B`. Pris : ZQSD, E, R, F, C, X, V, Tab,
 Espace, Maj, Ctrl, Échap, clics.
 
-- `resonance_pulse` : **A** (fréquent, à côté de Z) ;
-- `resonance_ground` : **T** ;
-- `resonance_focus` : **G** (maintien ou bascule — option §12.3) ;
-- `resonance_confirm` / `resonance_cancel` : clic G / clic D **en focus
-  uniquement** (aucun conflit hors focus) ;
-- `resonance_cycle` : molette en focus (hors focus, la molette reste au
-  changement de cible lock-on).
+CÂBLÉ (2026-08-05) :
+- `resonance_pulse` : **A** (physique 81) + d-pad haut ;
+- `resonance_ground` : **T** (physique 84) + d-pad gauche ;
+- `resonance_focus` : **G** (physique 71, maintien) + L1 ;
+- confirmation = clic G **en focus uniquement** (l'épée est suspendue) ;
+- cycle = molette en focus (armes et lock-on suspendus pendant le maintien).
 
-`Q` reste gauche — invariant absolu. Manette : à valider machine utilisateur.
+`Q` reste gauche — invariant absolu. Manette : à valider machine utilisateur ;
+le mode bascule (vs maintien) du focus viendra avec les options §12.3.
 
 ### 3.4 Progression d'apprentissage (P2 §3.7) sur NOTRE vallée
 

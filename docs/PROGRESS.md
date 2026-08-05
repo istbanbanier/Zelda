@@ -2888,9 +2888,20 @@ sûre (port détruit, hors portée, rechargement).
 - **Ground** (commit courant) : 3/3 — startup immobile 0,35 s, drainage
   ENTIER ou RIEN, annulation propre si la cible s'échappe.
 
+### Fait ensuite (même nuit) : le focus rend le Bracelet JOUABLE
+
+`test_resonance_focus` 6/6 (fail-first) : sélection par axe de visée + LOS,
+hystérésis au cycle, dispatch par nature de cible (ancrage→Arc Step,
+port→lien en deux temps avec oubli du A au relâchement, métal→Polarité),
+et le clic en focus ne déclenche JAMAIS l'épée (verrous épée/lourde/
+molette-armes/molette-lock-on pendant le maintien). Ground direct sur T
+(cible auto = objet chargé le plus proche, groupe `material_states`).
+Actions câblées : A=Pulse, G=focus (maintien)+L1, T=Ground, d-pad
+haut/gauche manette. Résonance 31/31.
+
 ### Prochaine action exacte
 
-P2-2 (suite) : UX de focus/sélection (`resonance_focus/confirm/cycle`,
-glyphes), présentation (VFX/audio des cinq opérations), `ResonanceLab`
-jouable, puis P2-3 (défense expressive + IA utility/tokens). L'intégration
-complète tourne au moment de cette entrée — verdict dans TEST_REPORT.
+P2-2 (fin) : présentation (VFX/audio des cinq opérations — passe visuelle),
+`ResonanceLab` jouable, persistance des liaisons si le design la demande.
+Puis P2-3 : défense expressive (garde/déviation/posture) + IA utility/
+tokens + camp trois approches.
