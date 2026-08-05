@@ -3158,23 +3158,35 @@ le contrat TIENT à l'image (pylône 76 % X, couronne 18 % Y) ; six
 défauts v0 diagnostiqués et ORDONNÉS dans
 `evidence/cycle3/2026-08-05_herolab_v0.md`.
 
+### Fait ensuite : HeroShotLab v1 — la vallée SE LIT (v0→v1 consigné)
+
+Les six défauts v0 corrigés (`evidence/cycle3/2026-08-05_herolab_v1.md`,
+capture officielle depuis arbre committé `5e59415`). Découverte
+structurante, prouvée par calcul d'occlusion et documentée dans le
+code : un plateau à bord franc OCCULTAIT toute la vallée depuis la
+caméra quasi horizontale — le héros se tient désormais sur une PENTE
+CONTINUE de 8° (ligne de fuite ~63 %), et rivière/camp/pylône/chemin/
+herbe épousent ce profil. À l'image : ruban turquoise visible, camp
+lisible (tentes, DEUX fanions, flamme renforcée, fumée), pylône
+couronné cyan au tiers droit, citadelle étagée sous l'orage (brouillard
+0,0045 + perspective aérienne 0,5), bras du héros posés à l'os (aucune
+animation dans le glTF — sondé). Contrat `test_hero_shot_lab` 5/5
+(41 assertions) MAINTENU à chaque itération ; le test de la rivière
+encode la physique de la ligne de fuite.
+
 ### Prochaine action exacte
 
-**HeroShotLab v1** — corriger dans cet ordre (liste complète et causes
-dans `evidence/cycle3/2026-08-05_herolab_v0.md`) :
-1. héros : sortir de la T-pose (jouer une frame d'idle du glTF ou
-   poser les bras — vérifier les animations embarquées de
-   `Male_Ranger.gltf`) ;
-2. rivière et camp SOUS la pente : carver/abaisser le plan de pente ou
-   surélever lit et terrasse — le ruban turquoise et le feu doivent se
-   lire (les anchors ne bougent pas, le test 5/5 reste le gardien) ;
-3. profondeur atmosphérique : brouillard 0,004-0,006 + refroidir les
-   masses lointaines (§1.3) pour décoller la citadelle du premier
-   plan ;
-4. falaise gauche en strates (§6.3), identifier la masse grise
-   parasite à droite ;
-5. recapturer MÊMES caméra/frames (`--call=capture_north_star`),
-   comparer v0→v1, consigner. Puis passes suivantes (phrases d'herbe,
-   éclair synchronisé §21.5, vignette/niveaux de gris §30.1).
-Le score /100 (§30.2) ne se prononce qu'après v1+ et jamais depuis
-llvmpipe seul — machine utilisateur pour l'esthétique finale.
+**HeroShotLab v2** — reste ouvert consigné dans l'evidence v1 :
+1. l'amorce de la rivière passe DERRIÈRE le héros → décaler/élargir le
+   premier segment pour une entrée bas-gauche franche ;
+2. « phrases » de végétation §7.4 (touffes groupées, fleurs, vides) à
+   la place des brins-cônes uniformes ;
+3. éclair synchronisé à la fenêtre de capture (§21.5 : « un éclair
+   majeur simultané » — StormCell est déterministe, caler la première
+   frappe) ;
+4. part de ciel ~54 % contre 38-48 demandés : arbitrer (masses de fond
+   plus hautes ou pitch recalculé AVEC le cadrage héros — le contrat
+   5/5 est le garde-fou) ;
+5. protocole §30.1 sur la v2 : vignette 320×180, niveaux de gris,
+   silhouettes — puis seulement parler d'un score. JAMAIS de score
+   depuis llvmpipe seul (machine utilisateur pour l'esthétique).
