@@ -37,7 +37,14 @@ const POLARITY_SPEED: float = 4.5
 const POLARITY_ACCEL: float = 12.0
 const POLARITY_DURATION: float = 2.5
 
+## Arc Step (P2 §3.5) — dash physique court vers un ancrage. Valeurs de départ.
+const ARC_STEP_RANGE: float = 10.0
+const ARC_STEP_SPEED: float = 18.0
+const ARC_STEP_COST: float = 20.0
+const ARC_STEP_COOLDOWN: float = 0.35
+
 var _pulse_cooldown: float = 0.0
+var _arc_step_cooldown: float = 0.0
 var _link: ResonanceLinkNode = null
 var _polarity_target: RigidBody3D = null
 var _polarity_anchor: CharacterBody3D = null
@@ -53,6 +60,7 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	_pulse_cooldown = maxf(0.0, _pulse_cooldown - delta)
+	_arc_step_cooldown = maxf(0.0, _arc_step_cooldown - delta)
 	_drive_polarity(delta)
 
 
@@ -160,6 +168,62 @@ func _material_state_of(target: Node) -> MaterialStateComponent:
 		if child is MaterialStateComponent:
 			return child as MaterialStateComponent
 	return null
+
+
+## --- Arc Step (P2 §3.5) ---
+
+## Valide TOUT le trajet puis délègue l'exécution au joueur. Verdicts :
+## `step`, `invalide`, `cooldown`, `hors_portee`, `obstacle`, `pas_de_sol`,
+## `endurance`. Un refus ne coûte jamais rien — le coût part à l'exécution.
+func try_arc_step(player: PlayerController,
+		anchor: ResonanceTargetComponent) -> StringName:
+	if player == null or anchor == null or not is_instance_valid(anchor) \
+			or not anchor.is_inside_tree() or anchor.kind != &"arc_anchor":
+		return &"invalide"
+	if _arc_step_cooldown > 0.0:
+		return &"cooldown"
+	var target: Node3D = anchor.anchor()
+	if target == null:
+		return &"invalide"
+	var to: Vector3 = target.global_position
+	if player.global_position.distance_to(to) > ARC_STEP_RANGE:
+		return &"hors_portee"
+	var planar: Vector3 = to - player.global_position
+	planar.y = 0.0
+	if planar.length() < 0.8:
+		return &"invalide"
+	# Arrivée : juste DEVANT l'ancrage, à hauteur du joueur — on rejoint un
+	# point d'appui, on ne fusionne pas avec le mécanisme.
+	var direction: Vector3 = planar.normalized()
+	var arrival: Vector3 = Vector3(to.x, player.global_position.y, to.z) \
+		- direction * 0.6
+	# Sweep de la VRAIE capsule sur TOUT le trajet (P2 §3.5) — un obstacle
+	# n'importe où refuse le dash, jamais de traversée.
+	var shape_node: CollisionShape3D = \
+		player.get_node_or_null("CollisionShape3D") as CollisionShape3D
+	if shape_node == null or shape_node.shape == null:
+		return &"invalide"
+	var space: PhysicsDirectSpaceState3D = player.get_world_3d().direct_space_state
+	var params: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
+	params.shape = shape_node.shape
+	params.transform = shape_node.global_transform
+	params.motion = arrival - player.global_position
+	params.collision_mask = 1
+	params.exclude = [player.get_rid()]
+	var motion: PackedFloat32Array = space.cast_motion(params)
+	if motion.size() >= 1 and motion[0] < 0.98:
+		return &"obstacle"
+	# Validation d'arrivée : un sol réel sous le point d'atterrissage.
+	var ground_query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(
+		arrival + Vector3.UP * 0.5, arrival + Vector3.DOWN * 3.5, 1,
+		[player.get_rid()])
+	if space.intersect_ray(ground_query).is_empty():
+		return &"pas_de_sol"
+	if not player.begin_arc_step(arrival, ARC_STEP_COST):
+		return &"endurance"
+	# Cooldown = durée estimée du dash + délai court (P2 §3.5 : 0,25-0,45 s).
+	_arc_step_cooldown = params.motion.length() / ARC_STEP_SPEED + ARC_STEP_COOLDOWN
+	return &"step"
 
 
 ## --- Arc Link (P2 §3.3) ---

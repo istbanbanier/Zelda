@@ -108,6 +108,11 @@ var _use_reader: bool = true
 
 var _coyote_timer: float = 0.0
 var _jump_buffer_timer: float = 0.0
+## Arc Step (P2 §3.5) : cible du dash en cours, et budget de temps de secours
+## — le contrôle revient TOUJOURS, même si l'arrivée devient inatteignable.
+var _arc_step_active: bool = false
+var _arc_step_target: Vector3 = Vector3.ZERO
+var _arc_step_time_left: float = 0.0
 var _was_on_floor: bool = true
 ## Vitesse horizontale VOULUE au dernier tick (avant collision) — sert à
 ## la poussée des objets physiques.
@@ -265,6 +270,11 @@ func _physics_process(delta: float) -> void:
 	# engagement Polarité) ; ici, seulement la DÉCISION — le Pulse ne part que
 	# depuis un état où le héros a la main (§3.5 : jamais pendant HURT/DEAD,
 	# ni au milieu d'un mantle/attaque/esquive).
+	# Un dash Arc Step ne survit jamais à un changement de mode (coup reçu,
+	# chute, mort) : l'état sûr, c'est le mode courant.
+	if _mode != Mode.LOCOMOTION:
+		_arc_step_active = false
+
 	if _resonance != null and intent.pulse_pressed \
 			and (_mode == Mode.LOCOMOTION or _mode == Mode.CLIMBING):
 		match _resonance.try_pulse(self):
@@ -325,7 +335,46 @@ func _physics_process(delta: float) -> void:
 		_intent.consume_edges()
 
 
+## Arc Step (P2 §3.5) : appelé par `ResonanceController.try_arc_step` APRÈS
+## validation complète du trajet. Paie l'endurance ici — à l'exécution, jamais
+## au refus. Retourne faux si l'état ou la jauge l'interdit.
+func begin_arc_step(arrival: Vector3, cost: float) -> bool:
+	if _mode != Mode.LOCOMOTION:
+		return false
+	if _stamina != null and not _stamina.try_spend(cost):
+		return false
+	_arc_step_active = true
+	_arc_step_target = arrival
+	_arc_step_time_left = 0.8
+	_mark_consumed(&"resonance_confirm")
+	return true
+
+
+## Le dash est un MOUVEMENT : vitesse + move_and_slide, gravité et collisions
+## souveraines. Un contact franc ou le budget de temps rendent la main — c'est
+## l'« annulation vers le dernier état sûr » de P2 §3.5.
+func _drive_arc_step(delta: float) -> void:
+	_arc_step_time_left -= delta
+	var planar: Vector3 = _arc_step_target - global_position
+	planar.y = 0.0
+	if planar.length() < 0.35 or _arc_step_time_left <= 0.0:
+		_arc_step_active = false
+		velocity = Vector3.ZERO
+		return
+	velocity = planar.normalized() * ResonanceController.ARC_STEP_SPEED
+	velocity.y = 0.0
+	move_and_slide()
+	if is_on_wall():
+		_arc_step_active = false
+		velocity = Vector3.ZERO
+
+
 func _process_locomotion(delta: float, intent: InputIntent) -> void:
+	# Arc Step en cours : le dash a l'autorité, l'entrée est suspendue le
+	# temps du trajet (< 0,8 s garanti par le budget de secours).
+	if _arc_step_active:
+		_drive_arc_step(delta)
+		return
 	# Une seule décision de sprint par tick, prise ici et transmise ensuite. La
 	# caméra, la vitesse et l'endurance doivent s'accorder sur la même réponse :
 	# recalculer la condition à trois endroits les ferait diverger au moment précis
