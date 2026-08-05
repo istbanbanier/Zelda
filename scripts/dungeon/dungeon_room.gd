@@ -304,11 +304,14 @@ func capture_reference_view() -> void:
 	if first:
 		return
 	var centre: Vector3 = merged.get_center()
-	var span: float = maxf(merged.size.x, merged.size.z)
 	var camera: Camera3D = Camera3D.new()
 	camera.name = "ReferenceCamera"
 	add_child(camera)
-	camera.global_position = centre + Vector3(-span * 0.42, span * 0.38, span * 0.52)
-	camera.look_at(centre, Vector3.UP)
-	camera.fov = 55.0
+	# À L'INTÉRIEUR de l'AABB (fractions de sa taille) : une salle est une
+	# boîte fermée — la première version plaçait la caméra dehors et
+	# capturait la coque sombre (gate_salle_electrique n°1, 31 Ko).
+	camera.global_position = centre + Vector3(
+		-merged.size.x * 0.30, merged.size.y * 0.24, merged.size.z * 0.34)
+	camera.look_at(centre + Vector3(0, -merged.size.y * 0.15, 0), Vector3.UP)
+	camera.fov = 68.0
 	camera.current = true

@@ -1,0 +1,18 @@
+{
+  "commit": "34f2aa6346c0158927e75cc45e9bb2eebf59f85d",
+  "display_server": "X11",
+  "distinct_colors_sampled": 2126,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 60,
+  "height": 1440,
+  "label": "gate_camp",
+  "luma_mean": 0.4887,
+  "luma_stddev": 0.202,
+  "png": "evidence/phaseH/gate_camp.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "timestamp_utc": "2026-08-05 00:44:03",
+  "width": 2560
+}

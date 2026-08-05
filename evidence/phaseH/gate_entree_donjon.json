@@ -1,0 +1,18 @@
+{
+  "commit": "34f2aa6346c0158927e75cc45e9bb2eebf59f85d",
+  "display_server": "X11",
+  "distinct_colors_sampled": 3305,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 60,
+  "height": 1440,
+  "label": "gate_entree_donjon",
+  "luma_mean": 0.1534,
+  "luma_stddev": 0.0915,
+  "png": "evidence/phaseH/gate_entree_donjon.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world/citadel/CitadelVestibule.tscn",
+  "timestamp_utc": "2026-08-05 00:44:23",
+  "width": 2560
+}
