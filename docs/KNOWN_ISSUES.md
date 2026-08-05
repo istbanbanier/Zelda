@@ -391,3 +391,13 @@ machine est chargée (capture llvmpipe ou autre suite en parallèle) : circuits
 réfuté trois fois sur machine au repos (R-017). Cause : timings par temps réel
 dans des tests par ticks. Contournement : sérialiser (règle R-017).
 Correction de fond : budgets en TICKS logiques dans les tests concernés.
+
+## ISS-025 — Salle électrique quasi noire en capture statique (S3, ouvert — Phase H/V7)
+
+`gate_salle_electrique.png` (caméra intérieure, 60 frames) : la salle 1 rend
+presque noir malgré 6 lumières et un WorldEnvironment propres (sondé). En jeu
+la lisibilité vient des émissifs du circuit et du mouvement ; en capture fixe,
+le § « aucun couloir noir » (§12.8/§22.2 bible) n'est pas tenu. À corriger à
+la passe V7 (éclairage motivé du donjon : ambre de circulation plus présent,
+exposition stable). La capture reste au dossier telle quelle — §0.2 : on ne
+maquille pas une preuve.

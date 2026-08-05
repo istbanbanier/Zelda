@@ -1,18 +1,18 @@
 {
-  "commit": "34f2aa6346c0158927e75cc45e9bb2eebf59f85d",
+  "commit": "eea6f7dd8155cff81d69a540aa919594bb2fa6ea",
   "display_server": "X11",
-  "distinct_colors_sampled": 11,
+  "distinct_colors_sampled": 14,
   "engine_version": "4.7.1-stable (custom_build)",
   "frames_waited": 60,
   "height": 1440,
   "label": "gate_salle_electrique",
-  "luma_mean": 0.0523,
-  "luma_stddev": 0.0259,
+  "luma_mean": 0.0535,
+  "luma_stddev": 0.0261,
   "png": "evidence/phaseH/gate_salle_electrique.png",
   "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
   "rendering_method": "forward_plus",
   "repo_dirty": false,
   "scene": "res://scenes/dungeon/rooms/Room1Initiation.tscn",
-  "timestamp_utc": "2026-08-05 00:44:31",
+  "timestamp_utc": "2026-08-05 00:45:33",
   "width": 2560
 }
