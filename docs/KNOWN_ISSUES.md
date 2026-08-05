@@ -473,7 +473,7 @@ non-régression : lois 6/6, bassin 3/3, salles 44/44, réactions 7/7,
 donjon 2/2. Reste graphe-seulement (assumé) : bloc salle 1, batterie
 salle 4 (mécanique de charge propre).
 
-## ISS-031 — Hints : sources d'échec inégales selon la salle (S3, ouvert)
+## ISS-031 — Hints : sources d'échec inégales selon la salle (S3, RÉSOLU 2026-08-05)
 
 Revue P2-5 : la salle 3 n'a qu'UNE source d'échec (bouton reset) — un
 joueur bloqué qui ne presse jamais reset ne verra jamais de hint ; le
@@ -484,3 +484,13 @@ testés end-to-end (1 et 4 le sont). Enrichir les sources par salle
 compléter les tests. Blindage mineur relevé au passage :
 `test_grounded_water_pauses_the_relay` devrait affirmer
 `before < capacité` pour rester discriminant si le plafond montait.
+
+**Résolu** : salle 3 compte les ROTATIONS SANS PROGRÈS (le geste même de
+l'énigme — `turned` + comparaison du courant après recalcul, le
+récepteur allumé ne compte jamais « vain ») ; salle 2 compte les CHUTES
+aériennes RAPIDES (> 4,5 m à > 5 m/s de moyenne — ni l'ascenseur au
+sol, ni la descente d'escalade lente ne comptent) ; les branchements des
+quatre salles sont testés end-to-end (7/7) ; le test du relais mis à la
+terre est blindé (`before < capacité`). Le « Rappeler l'ascenseur »
+légitime compté comme échec (remarque de la revue) reste assumé : c'est
+un signal faible parmi trois, pas un déclencheur seul.

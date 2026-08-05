@@ -140,6 +140,9 @@ func test_grounded_water_pauses_the_relay() -> void:
 		return
 	water_state.ground()
 	var before: float = metal.charge()
+	# Blindage (revue P2-5) : si `before` atteignait le plafond (10), le
+	# test ne discriminerait plus rien — le rouge le dirait ici.
+	check(before < 10.0, "la jauge n'est pas saturée (%.2f < 10)" % before)
 	# 0,5 s dans la fenêtre de terre (1,2 s) : aucune impulsion ne passe —
 	# la décroissance naturelle du métal peut seulement faire BAISSER.
 	await _settle(30)

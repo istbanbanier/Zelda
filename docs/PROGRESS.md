@@ -3239,6 +3239,20 @@ passent par la machine utilisateur.**
 Chantiers conteneur encore ouverts si besoin : ISS-027 (tranche
 outillage du runner), ISS-031 (sources d'échec des hints salles 2-3).
 
+### Fait ensuite : ISS-031 RÉSOLU — chaque salle observe ses vrais échecs
+
+Salle 3 : une rotation qui ne fait pas PROGRESSER le courant est un
+échec observé (§9.8) — `turned` arme, le recalcul du graphe compare
+(relais alimentés + récepteur qui VAUT la solution). Salle 2 : chute
+AÉRIENNE rapide (> 4,5 m à > 5 m/s — l'ascenseur au sol et la descente
+d'escalade lente ne comptent pas). Fail-first 5/8 → 7/7 (19 assertions)
+avec DEUX bugs de staging de test corrigés en route, prouvés par sonde :
+`turn_one_step` incrémente l'index immédiatement (attendre l'ANIMATION
+qui émet `turned`), et `is_on_floor()` reste vrai un tick après un
+téléport (laisser la chute commencer). Blindage revue P2-5 posé
+(`before < capacité` au test de terre). Non-régression : salles 44/44,
+lois 6/6, donjon 2/2.
+
 ### Fait ensuite : suite 713/713 + ISS-030 RÉSOLU (l'eau unifiée)
 
 Suite intégrale de fin de session : **713/713, zéro échec** (arbre
