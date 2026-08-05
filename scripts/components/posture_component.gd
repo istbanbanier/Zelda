@@ -4,7 +4,7 @@
 ## pas.
 ##
 ## Le propriétaire décide ce que « rupture » veut dire (le Briseur entre en
-## STAGGERED, le boss exposera son noyau — P2-5) ; le composant ne porte que
+## STAGGERED, le Gardien expose son noyau 3,5 s) ; le composant ne porte que
 ## la jauge, sa recharge après accalmie et l'idempotence du signal : brisée,
 ## elle ne ré-émet pas tant qu'elle n'est pas remontée au-dessus de zéro.
 class_name PostureComponent

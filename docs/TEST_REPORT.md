@@ -5,6 +5,20 @@ Un résultat sans commande reproductible ne vaut pas comme preuve (§0.7).
 
 ---
 
+## Campagne du 2026-08-05 (soir) — P2-5 tranches 1-2 : directeur + posture du boss
+
+Arbre `bde635d`+posture. **BossDirector** (P2 §10.5) : fail-first 5/5
+(122 assertions) — légalité seule, anti-répétition, seed rejouable,
+historique ; StormGuardian migré (suites boss 38/38, playthrough 1/1).
+Intégration complète post-directeur : **688/688, zéro échec**
+(`test_runner.gd` sans filtre, arbre `bde635d`). **Posture du boss**
+(P2 §10.2) : fail-first 0/11 rouge prouvé puis 5/5 (22 assertions) —
+rupture = fenêtre de noyau 3,5 s < 6 s de la terre, intention
+brise-garde seule, éveil/fenêtre exclus, terre remet la jauge à neuf,
+fin de fenêtre referme l'armure. Boss au complet : 43/43 ; playthrough
+boss_run inchangé (mêmes phases, 0/560) — le golden path ne porte aucun
+`posture_damage`, dérive nulle par construction.
+
 ## Campagne du 2026-08-05 (après-midi) — P2-4 TERMINÉ
 
 Arbres `c98b40e`→`1ad0954`+éclats. Autel de terre (2/2), pont magnétique

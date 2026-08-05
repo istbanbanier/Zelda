@@ -30,6 +30,7 @@ extends CharacterBody3D
 
 signal phase_changed(phase: StringName)
 signal grounded()
+signal posture_ruptured()
 signal crystal_destroyed(remaining: int)
 signal died()
 
@@ -62,6 +63,14 @@ const STRIKE_TELEGRAPH: float = 0.85
 const POST_INTRO_GRACE: float = 1.5
 ## §16.3 : l'armure réduit fortement, sans invulnérabilité obscure.
 const ARMOURED_MULTIPLIER: float = 0.2
+## P2 §10.2 : « réponse principale claire, alternative plus lente par
+## posture ». La jauge (36) demande trois lourdes de hache (posture 12)
+## sans accalmie de 5 s ; la fenêtre de rupture (3,5 s) reste PLUS COURTE
+## que la mise à la terre (6 s) — la terre demeure le chemin roi.
+const POSTURE_MAX: float = 36.0
+const POSTURE_REGEN_DELAY: float = 5.0
+const POSTURE_REGEN_RATE: float = 9.0
+const POSTURE_WINDOW: float = 3.5
 ## §16.5 : « vitesse +10 à +18 %, pas doublement brutal ».
 const PHASE3_SPEED_GAIN: float = 1.15
 
@@ -111,6 +120,7 @@ var _overload_cooldown: float = OVERLOAD_INTERVAL
 var _attack_cooldown: float = 1.4
 var _strike_marks: Array[Node3D] = []
 var _armour_intact: bool = true
+var _posture: PostureComponent = null
 
 ## Phase H : le hero asset. `null` en repli — un banc de test peut monter le
 ## Gardien sans son modèle, et la logique ne doit pas s'en apercevoir.
@@ -163,6 +173,18 @@ func _ready() -> void:
 	# L'armure est posée dès le départ : le noyau ne prend rien tant qu'il
 	# n'est pas exposé, et le corps encaisse au cinquième.
 	_apply_armour(true)
+	# P2 §7.4 : le boss porte le composant de posture PARTAGÉ — celui du
+	# Briseur. Sa rupture expose le noyau : l'« alternative plus lente par
+	# posture » de P2 §10.2. Seuls les coups à intention brise-garde
+	# (posture_damage > 0) nourrissent la jauge.
+	_posture = PostureComponent.new()
+	_posture.name = "PostureComponent"
+	_posture.max_posture = POSTURE_MAX
+	_posture.regen_delay = POSTURE_REGEN_DELAY
+	_posture.regen_rate = POSTURE_REGEN_RATE
+	add_child(_posture)
+	_posture.posture_broken.connect(_on_posture_broken)
+	_body_hurtbox.hit_received.connect(_on_body_hit)
 	# `_enter()` est IDEMPOTENT (§16.2) : entrer dans l'état déjà courant
 	# ne fait rien — c'est voulu, et c'est ce qui protège les seuils de PV.
 	# L'INTRO doit donc être ARMÉE à la main : sans cette ligne, `_timer`
@@ -350,6 +372,10 @@ func _raised_pylons() -> int:
 func _ground_out() -> void:
 	_attack.cancel()
 	_apply_armour(false)
+	# Le chemin ROI remet la jauge à neuf : les deux chemins ne
+	# s'additionnent pas en double peine pour le Gardien.
+	if _posture != null:
+		_posture.reset()
 	# Les pylônes se déchargent : il faudra les redresser.
 	for pylon: GroundingPylon in _pylons:
 		pylon.lower()
@@ -384,6 +410,37 @@ func _crystals_alive() -> int:
 		if _crystal_health[i] > 0.0:
 			alive += 1
 	return alive
+
+
+## P2 §10.2 : seuls les coups à INTENTION brise-garde nourrissent la
+## posture, armure intacte et combat en cours — l'éveil (§16.1) et la
+## fenêtre déjà ouverte n'y ont pas droit.
+func _on_body_hit(event: DamageEvent) -> void:
+	if event == null or event.posture_damage <= 0.0:
+		return
+	if not _armour_intact or not _in_combat_phase():
+		return
+	_posture.take_posture_damage(event.posture_damage)
+
+
+func _in_combat_phase() -> bool:
+	return _state == State.PHASE1 or _state == State.PHASE2 \
+		or _state == State.OVERLOAD or _state == State.PHASE3
+
+
+## Rupture de posture : même écroulement que la mise à la terre, chemin
+## plus lent, récompense plus BRÈVE (P2 §10.2) — les pylônes, eux, ne se
+## déchargent pas : ils n'y sont pour rien.
+func _on_posture_broken() -> void:
+	if not _armour_intact or not _in_combat_phase():
+		_posture.reset()
+		return
+	_attack.cancel()
+	_apply_armour(false)
+	_enter(State.GROUNDED_STUN)
+	_timer = POSTURE_WINDOW
+	_posture.reset()
+	posture_ruptured.emit()
 
 
 ## §16.4 : « métal frappant pendant la surcharge risque un stun court ;
@@ -600,6 +657,10 @@ func health() -> HealthComponent:
 
 func is_armoured() -> bool:
 	return _armour_intact
+
+
+func posture() -> PostureComponent:
+	return _posture
 
 
 func crystals_alive() -> int:

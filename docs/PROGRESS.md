@@ -3068,13 +3068,28 @@ le comportement historique, cadences 2,2/1,7 et 3,4/2,6 conservées,
 playthrough boss_run 1/1 (toutes phases traversées, boss vaincu 0/560)
 — le directeur décide désormais chaque coup du Gardien.
 
+### Fait ensuite : P2-5 tranche 2 — la posture du boss (0/11 → 5/5)
+
+Intégration complète post-directeur d'abord : **688/688, zéro échec**.
+Puis le Gardien reçoit le `PostureComponent` PARTAGÉ (celui du
+Briseur) : max 36 (trois lourdes de hache à 12), recharge 9/s après
+5 s d'accalmie. Rupture = même écroulement que la mise à la terre mais
+fenêtre de 3,5 s < 6 s — « alternative plus lente par posture »
+(P2 §10.2), la terre reste le chemin roi et REMET la jauge à neuf (pas
+de double peine). Seuls les coups à intention brise-garde
+(`posture_damage > 0`) nourrissent ; l'éveil (§16.1) et la fenêtre déjà
+ouverte sont exclus ; les pylônes ne se déchargent pas sur une rupture
+(ils n'y sont pour rien). Rouge prouvé 0/11, vert 5/5 (22 assertions),
+boss 43/43, playthrough inchangé — le golden path ne porte aucun
+`posture_damage`, dérive nulle par construction.
+
 ### Prochaine action exacte
 
-**P2-5 suite** : migration des mécanismes vers les lois communes —
-l'eau de la salle 4 porte `MaterialStateComponent` (état Wet/Charged au
-lieu du booléen local), les dangers électriques transmettent des
-`ElementPacket` (chaîne causale, anti-boucle), et le boss porte
-`PostureComponent` (rupture → noyau exposé, remplace le compteur de
-stun ad hoc). Commencer par lire `dungeon_room_battery.gd` (salle 4)
-et `storm_guardian.gd` (chemin du stun/noyau) pour cartographier les
-booléens à remplacer.
+**P2-5 suite** : migration des mécanismes du donjon vers les lois
+communes — l'eau de la salle 4 porte `MaterialStateComponent` (états
+Wet/Charged au lieu du branchement direct au graphe seul), et les
+dangers électriques (`ElectricHazard._apply_shock`) transmettent des
+`ElementPacket` via le `ReactionSystem` (chaîne causale, anti-boucle)
+au lieu de fabriquer leur `DamageEvent` local. Auditer d'abord ce que
+`ReactionSystem` attend (scène/groupe `reaction_system`) pour brancher
+une salle SANS casser les suites du donjon (30+ tests Gate F).
