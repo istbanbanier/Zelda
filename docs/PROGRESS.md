@@ -3122,16 +3122,35 @@ décharges comptées + reset → palier 1). Salles 44/44, donjon 2/2.
 Solveur : déjà prouvé au Gate F (256 configurations, salle 3).
 **P2-5 est TERMINÉ — le Cycle 2 (P2-3 → P2-5) est complet.**
 
+### Fait ensuite : clôture du Cycle 2 — 704/704 + revue PASS
+
+Suite intégrale de clôture sur arbre propre `e284ffd` : **704/704,
+zéro échec** ; preuves datées commit `1337550`
+(`evidence/p2_5/2026-08-05_cloture_cycle2.md`). **Revue contradictoire
+à contexte frais : PASS** — elle a rejoué la suite intégrale (704/704,
+code 0, zéro SCRIPT ERROR) et les suites ciblées, tenté un
+contre-exemple sur le relais mis à la terre (échoué : l'assertion
+discrimine), vérifié les textes des quatre salles (le 1er hint est la
+loi partout). Sept faiblesses non bloquantes consignées → ISS-028
+(bibliothèque du directeur partiellement taguée), ISS-029 (la parade
+contourne les gardes de posture du boss — exposition nulle
+aujourd'hui), ISS-030 (asymétrie eau vallée/donjon), ISS-031 (sources
+d'échec inégales des hints). **Cycles 1 et 2 de la cadence : CLOS.**
+
 ### Prochaine action exacte
 
-1. Suite intégrale de clôture (en cours au moment du handoff — le
-   résultat va dans `TEST_REPORT.md`).
-2. **Revue contradictoire à contexte frais du jalon P2-5** (DoD
-   CLAUDE.md) : spec P2 §9.8/§10.2/§10.5/§4.2 + diff `bde635d`→HEAD +
-   preuves → verdict PASS/FAIL/BLOQUÉ consigné.
-3. Puis **Cycle 3 (art)** s'ouvre : passe V3 héros (5 signes §13.1,
-   Bracelet visible) + la présentation différée du Bracelet (VFX/audio
-   P2-2) + corrections adversariales #3-5 (rivière en S turquoise,
-   camp dans le cadre North Star, pylône à 75-79 % X, éclair cœur
-   blanc, nuage modelé, cape du héros). Piloter par `HeroShotLab` et
-   des captures comparées, jamais par l'impression.
+**Cycle 3 (art) s'ouvre — première tranche : `HeroShotLab.tscn`**, la
+micro-scène 80×80 m que la revue du Gate H a nommée comme jamais
+construite (bible §29 passe V2 : gate intermédiaire ≥ 75/100 AVANT
+remplacement des proxies, ≥ 85/100 avant propagation). Contenu §11.1 :
+héros de dos, pente herbe/fleurs 20-30 m, chemin, eau, camp simplifié,
+pylône, proxy citadelle, falaises d'encadrement, ciel/nuage/éclair,
+`VistaCamera_Hero01` verrouillée (§3.1 : FOV horizontal 68° = ~41,6°
+vertical en KEEP_HEIGHT — ne PAS entrer 68 en vertical). Y intégrer
+les corrections adversariales #3-5 (rivière en S turquoise, camp
+61-66 % X / pylône 75-79 % X du cadre, éclair cœur blanc + nuage
+modelé + cape). Piloter par captures comparées (protocole §30.1 :
+vignette, niveaux de gris, silhouettes), jamais à l'impression.
+Rappel environnement : capture via Xvfb/llvmpipe = régression
+visuelle SEULEMENT, jamais une mesure ni un score final — le score
+WOW réel attend la machine utilisateur.

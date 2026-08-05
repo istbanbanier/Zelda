@@ -44,5 +44,8 @@ Détail des campagnes : `docs/TEST_REPORT.md`, section « Campagne du
 - La présentation des hints est un graybox assumé (ligne discrète) ;
   l'option §12.3 (désactivés/contextuels/renforcés) attend l'écran
   d'options.
-- Verdict du jalon suspendu à la revue contradictoire à contexte frais
-  (DoD CLAUDE.md) — consignée dans `docs/TEST_REPORT.md` à son arrivée.
+- Verdict de la revue contradictoire à contexte frais (HEAD `1337550`) :
+  **PASS** — suite intégrale rejouée par la revue elle-même (704/704,
+  code 0), contre-exemple tenté et échoué, cinq critères PASS, sept
+  faiblesses non bloquantes → ISS-028 à ISS-031. Détail :
+  `docs/TEST_REPORT.md`, campagne du 2026-08-05 (soir).

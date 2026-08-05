@@ -428,3 +428,50 @@ systématiquement dans les sessions récentes).
 s'est terminée par erreur (comparer un drapeau « fin atteinte » posé par le
 test ? intercepter les erreurs de script ?) et la compter ÉCHEC. À traiter
 comme tranche outillage dédiée — pas en passant.
+
+## ISS-028 — Bibliothèque du directeur partiellement taguée (S4, ouvert)
+
+Revue contradictoire P2-5 : les tags « danger, côté arène, prérequis,
+réponse » et le « budget simultané » de P2 §10.5 n'existent pas dans la
+bibliothèque du Gardien (3 patterns : portée/phases/cooldown/poids
+seulement). « Pas de répétition excessive » repose sur le seul cooldown
+quand UN pattern est légal (< 3,6 m : combo toutes les 2,2 s) — choix
+testé (pas de famine) mais non borné en nombre. `_history` croît sans
+limite sur un très long combat. À enrichir quand le répertoire du boss
+grandira (Phase H/BossLab) ; plafonner l'historique au passage.
+
+## ISS-029 — La parade écrit la posture du boss sans ses gardes (S3, ouvert)
+
+`player_controller.gd` (dispatch parade→posture) écrit directement
+`take_posture_damage` sur la cible, sans les gardes de `_on_body_hit`
+du Gardien (armure intacte / phase de combat). `_on_posture_broken`
+rattrape la rupture hors conditions (reset sans fenêtre), mais la jauge
+peut être entamée pendant l'éveil ou une fenêtre ouverte. Exposition
+pratique nulle aujourd'hui (le boss n'attaque pas hors phases de
+combat — aucune parade possible). À durcir : router le dispatch parade
+par la même porte que les coups. Relevé : revue P2-5. À surveiller
+aussi au playtest G-2 : le boss est ré-écroulable en boucle par cycles
+de 3 lourdes de hache (design « alternative plus lente », coût
+d'endurance réel, mais non plafonné en fréquence).
+
+## ISS-030 — Lois de matière : asymétrie vallée/donjon sur l'eau (S3, ouvert)
+
+Le bassin conducteur de la VALLÉE (`conductive_basin.gd`) est un
+`ElectricNode` nu : il ne mouille pas et ne relaie pas à la matière
+baignée, contrairement à la nappe du donjon (P2-5 tranche 3). Le
+commentaire « même loi que le bassin de la vallée » n'est vrai que pour
+« traverse/ne stocke pas ». Migration matière encore partielle : bloc
+métallique de salle 1 et batterie de salle 4 restent graphe-seulement.
+Unifier lors du prochain passage sur la vallée (Cycle 3, chantier eau).
+
+## ISS-031 — Hints : sources d'échec inégales selon la salle (S3, ouvert)
+
+Revue P2-5 : la salle 3 n'a qu'UNE source d'échec (bouton reset) — un
+joueur bloqué qui ne presse jamais reset ne verra jamais de hint ; le
+« Rappeler l'ascenseur » de la salle 2 est parfois une action légitime
+comptée comme échec ; les branchements des salles 2-3 ne sont pas
+testés end-to-end (1 et 4 le sont). Enrichir les sources par salle
+(rotations sans progrès en salle 3, chute dans le puits en salle 2) et
+compléter les tests. Blindage mineur relevé au passage :
+`test_grounded_water_pauses_the_relay` devrait affirmer
+`before < capacité` pour rester discriminant si le plafond montait.

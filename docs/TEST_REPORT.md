@@ -31,8 +31,23 @@ premier hint = la loi, salle résolue = silence, branchements RÉELS
 salle 1 (reset ×3) et salle 4 (décharges dans l'eau). Salles 44/44,
 donjon 2/2. **P2-5 TERMINÉ** — suite intégrale de CLÔTURE sur arbre
 `e284ffd` propre : **704/704, zéro échec** (preuves datées :
-`evidence/p2_5/2026-08-05_cloture_cycle2.md`). Revue contradictoire
-consignée ci-dessous à son arrivée.
+`evidence/p2_5/2026-08-05_cloture_cycle2.md`).
+
+**Revue contradictoire P2-5 (contexte frais, HEAD `1337550`) : PASS.**
+La revue a REJOUÉ elle-même la suite intégrale (704/704, code 0,
+zéro `SCRIPT ERROR` — contournement ISS-027 appliqué) et les suites
+ciblées (directeur 5/5, posture 5/5, lois 6/6, hints 5/5, relais 8/8
+solveur inclus) ; contre-exemple tenté sur le relais mis à la terre :
+ÉCHOUÉ (avec terre 8,78→8,61 ; sans terre 8,78→9,98 — l'assertion
+discrimine). Cinq critères PASS (directeur §10.5, posture §10.2/§7.4,
+lois §4.2/§9.2, hints §9.8, solveur hérité Gate F). Sept faiblesses
+non bloquantes consignées : ISS-028 (bibliothèque partiellement
+taguée), ISS-029 (parade contourne les gardes de posture), ISS-030
+(asymétrie eau vallée/donjon), ISS-031 (sources d'échec inégales des
+hints + blindage d'un test). Le « rouge prouvé » des tranches reste
+NON VÉRIFIÉ indépendamment (exigerait un checkout des arbres
+antérieurs) — l'état vert est, lui, entièrement reproduit.
+**Le Cycle 2 (P2-3 → P2-5) est clos.**
 
 ## Campagne du 2026-08-05 (après-midi) — P2-4 TERMINÉ
 
