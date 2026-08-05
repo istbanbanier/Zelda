@@ -5,6 +5,12 @@ Un résultat sans commande reproductible ne vaut pas comme preuve (§0.7).
 
 ---
 
+## Campagne du 2026-08-05 (matin, 3) — P2-3 tranche 3 : identités d'armes
+
+Arbre `6af76c6`. Cinq lourdes de famille en data (2/2, 45 assertions),
+la lourde suit l'arme équipée. Intégration complète : **549/549**.
+ISS-027 consigné (faux « ok » du runner sur erreur post-assertion).
+
 ## Campagne du 2026-08-05 (matin, 2) — P2-3 tranche 2 : posture
 
 Arbre `be1aa7a`. `PostureComponent` (3/3 fail-first), `posture_damage` de
