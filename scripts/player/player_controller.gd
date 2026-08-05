@@ -888,10 +888,16 @@ func _gate_damage(event: DamageEvent) -> StringName:
 	return &"bloquee"
 
 
-## Une déviation parfaite frappe la POISE de l'attaquant : assez pour
-## étourdir un pillard (poise 40), pas un colosse — le composant décide.
+## Une déviation parfaite fait payer l'attaquant — règle de dispatch de la
+## bible §7.2 : la POSTURE si la cible en porte une (les gardiens plient
+## avant de rompre), la POISE sinon (les légers sont étourdis net).
 func _jolt_attacker_poise(event: DamageEvent) -> void:
 	if event.instigator == null or not is_instance_valid(event.instigator):
+		return
+	var posture: PostureComponent = event.instigator.get_node_or_null(
+		"PostureComponent") as PostureComponent
+	if posture != null:
+		posture.take_posture_damage(guard.parry_posture_damage)
 		return
 	var poise: PoiseComponent = \
 		event.instigator.get_node_or_null("PoiseComponent") as PoiseComponent

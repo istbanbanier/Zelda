@@ -47,6 +47,7 @@ var _attacker_damage: float = 0.0
 ## changement de buff (signal), jamais lu en polling. 1.0 = neutre.
 var damage_multiplier: float = 1.0
 var _poise_damage: float = 0.0
+var _posture_damage: float = 0.0
 var _knockback: float = 0.0
 var _hit_stop: float = 0.0
 var _damage_type: StringName = &""
@@ -73,9 +74,11 @@ func _ready() -> void:
 ## en C.1) le calcule ; la hitbox ne connaît pas les armes.
 func activate(attacker_damage: float, poise_damage: float = 0.0,
 		knockback: float = 0.0, damage_type: StringName = &"melee",
-		element: StringName = &"", hit_stop: float = 0.0) -> int:
+		element: StringName = &"", hit_stop: float = 0.0,
+		posture_damage: float = 0.0) -> int:
 	_attacker_damage = attacker_damage
 	_poise_damage = poise_damage
+	_posture_damage = posture_damage
 	_knockback = knockback
 	_damage_type = damage_type
 	_element = element
@@ -136,6 +139,7 @@ func _process_target(area: Area3D) -> void:
 	event.amount = DamageFormula.compute(_attacker_damage,
 		hurtbox.weak_point_multiplier) * damage_multiplier
 	event.poise_damage = _poise_damage
+	event.posture_damage = _posture_damage
 	event.knockback = _knockback
 	event.hit_stop = _hit_stop
 	event.element = _element

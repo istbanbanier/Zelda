@@ -28,6 +28,10 @@ var amount: float = 0.0
 var direction: Vector3 = Vector3.ZERO
 ## Dégâts de poise (§10.3 « stagger »). La jauge de poise arrive en C.2.
 var poise_damage: float = 0.0
+## Dégâts de POSTURE (P2 §7.4) — la jauge tactique des porteurs de garde.
+## 0 = le coup n'a pas d'intention brise-garde particulière (les gardes
+## drainent alors selon leur propre règle, ex. les dégâts bruts).
+var posture_damage: float = 0.0
 ## Impulsion de recul, en m/s à appliquer à la victime.
 var knockback: float = 0.0
 ## Gel d'impact (§10.2, §10.6 : « hit-stop attaquant/cible ») — durée en

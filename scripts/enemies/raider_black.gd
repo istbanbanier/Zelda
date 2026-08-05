@@ -8,20 +8,30 @@
 class_name RaiderBlack
 extends EnemyBase
 
-## Garde frontale (§12.3) : jauge, arc, amorti, recharge.
+## Garde frontale (§12.3) : arc et amorti restent ici (c'est une POSTURE de
+## combat propre au Briseur) ; la JAUGE, elle, est le composant partagé
+## `PostureComponent` (P2 §7.4) — même mécanique que le futur boss.
 const GUARD_MAX: float = 12.0
 const GUARD_ARC_DEG: float = 60.0
 const GUARD_DAMAGE_FACTOR: float = 0.25
 const GUARD_REGEN_DELAY: float = 5.0
 const GUARD_REGEN_RATE: float = 4.0
 
-var _guard: float = GUARD_MAX
-var _guard_regen_timer: float = 0.0
+var _posture: PostureComponent = null
 var _combo_left: int = 0
 
 
 func _family_ready() -> void:
 	telegraph_color = Color(0.6, 0.2, 0.7)
+	_posture = PostureComponent.new()
+	_posture.name = "PostureComponent"
+	_posture.max_posture = GUARD_MAX
+	_posture.regen_delay = GUARD_REGEN_DELAY
+	_posture.regen_rate = GUARD_REGEN_RATE
+	add_child(_posture)
+	# La rupture OUVRE (§12.3) — quel que soit le chemin qui l'a vidée :
+	# coups encaissés, lourde brise-garde ou déviation parfaite du joueur.
+	_posture.posture_broken.connect(_on_guard_posture_broken)
 	# Masse lourde visible.
 	var mace: MeshInstance3D = MeshInstance3D.new()
 	mace.name = "MaceMesh"
@@ -90,16 +100,15 @@ func _process_family_state(delta: float) -> bool:
 ## est le joueur ; s'il est dans l'arc frontal pendant que la garde tient,
 ## la hurtbox amortit (multiplicateur), et chaque coup encaissé la drains.
 ## Rompue : STAGGER (l'ouverture), recharge après une accalmie.
-func _update_guard(delta: float) -> void:
-	_guard_regen_timer = maxf(0.0, _guard_regen_timer - delta)
-	if _guard_regen_timer <= 0.0 and _guard < GUARD_MAX:
-		_guard = minf(GUARD_MAX, _guard + GUARD_REGEN_RATE * delta)
+func _update_guard(_delta: float) -> void:
+	# La recharge vit dans le composant ; ici, seulement l'amorti d'état.
 	_hurtbox.damage_taken_multiplier = GUARD_DAMAGE_FACTOR \
 		if is_guarding() else 1.0
 
 
 func is_guarding() -> bool:
-	if _guard <= 0.0 or _state in [State.STAGGERED, State.DEAD]:
+	if _posture == null or _posture.is_broken() \
+			or _state in [State.STAGGERED, State.DEAD]:
 		return false
 	# La garde tient pendant l'ANNONCE de son propre coup — l'ouverture de
 	# §12.3 est APRÈS le combo (actif/recovery) ou à la rupture, jamais
@@ -124,15 +133,23 @@ func is_guarding() -> bool:
 
 
 func guard_gauge() -> float:
-	return _guard
+	return _posture.current() if _posture != null else 0.0
+
+
+func _on_guard_posture_broken() -> void:
+	if _state == State.DEAD:
+		return
+	_attack.cancel()
+	_enter(State.STAGGERED)
 
 
 func _on_hit_received(event: DamageEvent) -> void:
-	# Un coup pendant la garde la DRAINS ; la rupture ouvre (§12.3).
+	# Un coup pendant la garde DRAINE la posture ; un coup à intention
+	# brise-garde (posture_damage > 0) frappe la jauge de PLEIN FOUET,
+	# même si ses dégâts de santé sont faibles. La rupture ouvre via le
+	# signal du composant (§12.3).
 	if is_guarding():
-		_guard = maxf(0.0, _guard - event.amount)
-		_guard_regen_timer = GUARD_REGEN_DELAY
-		if _guard <= 0.0:
-			_attack.cancel()
-			_enter(State.STAGGERED)
+		var drain: float = event.posture_damage \
+			if event.posture_damage > 0.0 else event.amount
+		_posture.take_posture_damage(drain)
 	super(event)

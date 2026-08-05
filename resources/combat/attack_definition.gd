@@ -18,6 +18,9 @@ extends Resource
 ## Terme « attack » de la formule : multiplie la base de l'arme.
 @export var damage_multiplier: float = 1.0
 @export var poise_damage: float = 10.0
+## Dégâts de posture (P2 §7.4) : 0 = pas d'intention brise-garde ; les
+## lourdes et attaques dédiées en portent.
+@export var posture_damage: float = 0.0
 ## Impulsion de recul transmise à la victime, en m/s.
 @export var knockback: float = 2.0
 @export var element: StringName = &""

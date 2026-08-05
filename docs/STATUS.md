@@ -13,7 +13,7 @@ Vocabulaire imposé (§0.2) : `Non commencé` · `Implémenté` (raccordé) ·
 | P2-0 audit | **Fait** | `PROMPT2_AUDIT.md`, golden path 4/4 (2026-08-05) |
 | P2-1 latence + labs | **Fonctionnel** | `test_p2_latency.gd` 2/2 : ≤ 1 tick via chaîne réelle ; `LabOverlay` ; D-047/D-048 |
 | P2-2 Bracelet | **Fonctionnel** (cœur) | LES CINQ opérations fail-first : lois 6/6, profils 2/2, Pulse 5/5, Arc Link 6/6, Polarité 5/5, Arc Step 5/5, Ground 3/3. **Focus/sélection JOUABLE** : `test_resonance_focus` 6/6 (axe de visée, hystérésis, dispatch par nature de cible, épée verrouillée en focus) + Ground direct (T). `ResonanceLab` jouable (1/1, retours visuels par états). Liens éphémères par design (D-049). **P2-2 : TERMINÉ hors présentation** (VFX/audio → passe visuelle Cycle 3) |
-| P2-3 défense expressive | **En cours** | tranche 1 : garde/déviation parfaite/GuardBreak/Clarity 4/4 fail-first (`test_guard_deflect`) via `damage_gate` générique de la hurtbox ; reste : posture ennemie, identités d'armes, IA utility/tokens, camp 3 approches |
+| P2-3 défense expressive | **En cours** | tranche 1 : garde/déviation parfaite/GuardBreak/Clarity 4/4 fail-first (`test_guard_deflect`) via `damage_gate` générique de la hurtbox ; **posture** faite : `PostureComponent` partagé 3/3 (rupture unique, recharge, `posture_damage` de bout en bout, Briseur migré sans régression, parade→posture si portée) ; reste : identités d'armes, IA utility/tokens, camp 3 approches |
 | Validation du 2026-08-05 | tranches | dernier passage complet : 647/647 — voir `TEST_REPORT.md` |
 
 ## Verdict Gate A : **ACCEPTÉ AVEC RÉSERVE / BLOQUÉ SUR LA VALIDATION MANETTE**

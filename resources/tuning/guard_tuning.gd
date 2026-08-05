@@ -20,3 +20,6 @@ extends Resource
 ## poise d'un pillard, pas celle d'un colosse (P2 : la déviation est
 ## « forte posture », pas un stagger universel).
 @export var parry_poise_damage: float = 40.0
+## Dégâts de POSTURE d'une déviation parfaite quand la cible en porte une
+## (bible §7.2) : deux parades brisent la garde d'un Briseur (12).
+@export var parry_posture_damage: float = 6.0

@@ -134,7 +134,8 @@ func update(delta: float) -> bool:
 				_phase = Phase.ACTIVE
 				_hitbox.activate(attack_damage_base() * _current.damage_multiplier,
 					_current.poise_damage, _current.knockback, &"melee",
-					_current.element, _current.hit_stop)
+					_current.element, _current.hit_stop,
+					_current.posture_damage)
 				# §18.2 : le sifflement du swing, joueur comme ennemi — le
 				# contrôleur est partagé, le son l'est aussi.
 				var audio: Node = get_node_or_null("/root/AudioManager")

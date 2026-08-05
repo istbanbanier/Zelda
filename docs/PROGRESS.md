@@ -2919,9 +2919,20 @@ ne déclenche NI HURT NI mercy (recul court seulement). Tuning data-driven
 (`guard_default.tres`). 4/4 fail-first ; non-régression hurt 6/6, combat
 10/10, raiders 22/22, boss 11/11, buffs 4/4.
 
+### Fait ensuite : P2-3 tranche 2 — la posture
+
+`PostureComponent` partagé (jauge tactique : rupture UNIQUE, recharge
+après accalmie, jamais de re-rupture à zéro) ; `posture_damage` transporté
+de bout en bout (AttackDefinition → AttackController → Hitbox →
+DamageEvent) ; le Briseur MIGRÉ dessus sans changer un seul comportement
+observable (5/5 historiques verts — l'arc et l'amorti restent à lui, la
+jauge est le composant, le même que portera le boss en P2-5) ; un coup à
+posture_damage 12 brise sa garde en UN coup même à 2 de dégâts ; la
+déviation parfaite nourrit la POSTURE quand la cible en porte (6 par
+parade → 2 parades brisent un Briseur), la POISE sinon. 3/3 fail-first.
+
 ### Prochaine action exacte
 
-P2-3 tranche 2 : POSTURE ennemie séparée de la poise (jauge tactique →
-fenêtre positionnelle), puis identités d'armes (6 familles), puis IA
-utility bornée + tokens et camp trois approches. Machine utilisateur :
-la garde se sent dans CombatLab (clic D tenu face au mannequin).
+P2-3 tranche 3 : identités d'armes — 4-6 actions utiles par famille,
+lourdes avec posture_damage/tags (`blockable/deflectable/…`) en data ;
+puis IA utility bornée + tokens et camp trois approches.
