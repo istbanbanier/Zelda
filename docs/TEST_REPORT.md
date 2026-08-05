@@ -5,6 +5,15 @@ Un résultat sans commande reproductible ne vaut pas comme preuve (§0.7).
 
 ---
 
+## Campagne du 2026-08-05 (matin) — P2-2 clos + P2-3 tranche 1
+
+Arbre `1f796e6`. Depuis la campagne précédente : Focus/sélection (6/6),
+Ground direct (1/1), ResonanceLab (1/1), garde/déviation parfaite (4/4) —
+toutes fail-first. Intégration complète : **544/544, zéro échec** (machine
+au repos, suite surveillée dans le tour). Résonance totale : 32/32.
+La `damage_gate` (hurtbox partagée) n'a cassé aucun chemin existant :
+hurt 6/6, combat 10/10, raiders 22/22, boss_arena 11/11, buffs 4/4.
+
 ## Campagne du 2026-08-05 (fin de nuit) — P2-2 Bracelet complet
 
 Arbre `1aba02e`. Après la série Bracelet (lois + 5 opérations, chaque tranche
