@@ -3187,17 +3187,29 @@ verdict précieux : héros et nuage tiennent (masses les plus sombres),
 mais rivière/camp/pylône/citadelle FUSIONNENT dans une bande 60-75 % —
 la rivière ne vit que par son cyan, ce que §1.5 interdit.
 
+### Fait ensuite : HeroShotLab v3 — la passe de valeurs (v2→v3 consignée)
+
+La charte du gris exécutée (`8f6fc1e`, evidence
+`2026-08-05_herolab_v3.md`) : rivière à lit sombre + BERGES (lisible en
+gris, l'interdit §1.5 levé), citadelle en masse dédiée 35-60 % avec le
+brouillard au point d'équilibre MESURÉ (0,0022 — à 0,0045 la
+transmittance de 24 % à 316 m plafonnait tout le lointain à ~65 %,
+citadelle et montagnes fusionnaient), toiles du camp assombries,
+étagement §1.3 en valeurs (falaises sombres/chaudes devant, montagnes
+pâles au fond). Protocole §30.1 exécuté sur la v3 (couleur + vignette
++ gris, capture officielle depuis arbre committé). Contrat 5/5
+maintenu à chaque itération.
+
 ### Prochaine action exacte
 
-**HeroShotLab v3 — la passe de VALEURS (§1.5)**, charte tirée du test
-en gris (evidence v2) :
-1. rivière : lit turquoise SOMBRE (valeur ~40 %) + berges creusées —
-   elle doit se lire en gris, pas seulement en cyan ;
-2. citadelle : descendre sa masse vers 35-60 % pour la détacher des
-   montagnes pâles ; pylône : flanc éclairé chaud ;
-3. camp : toiles plus sombres, contraste local autour du feu ;
-4. falaises premier plan plus sombres/chaudes, montagnes encore plus
-   pâles — l'étagement §1.3 en VALEURS, pas seulement en brume ;
-5. re-protocole §30.1 (couleur + gris + vignette) et comparaison
-   v2→v3. Le contrat 5/5 reste le garde-fou ; JAMAIS de score depuis
-   llvmpipe (machine utilisateur pour l'esthétique).
+**Passe V3 du ROADMAP — le héros porte ses 5 signes (§13.1)** sur le
+modèle du lab (et du jeu — même glTF) : mantelet turquoise court à
+deux pointes, épaulière unique ivoire/bronze, Bracelet de Résonance à
+l'avant-bras gauche, diagonale arc/carquois en X, cheveux sculptés.
+Approche graybox honnête : attacher des volumes simples aux os
+(`BoneAttachment3D` sur clavicle/spine/forearm — les noms d'os sont
+sondés : upperarm/lowerarm/clavicle l-r) et vérifier au test de
+SILHOUETTE §30.3 (héros noirci à 3/10/25 m — un nouveau test à écrire
+fail-first sur le modèle du contrat de composition). Ensuite :
+creusement du lit de rivière (l'amorce lit « bassin »), doigts du
+héros, fumée. Le score /100 attend la machine utilisateur.
