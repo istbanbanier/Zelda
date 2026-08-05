@@ -1657,10 +1657,14 @@ func _build_slope_flora() -> void:
 		var x_flank: float = -9.0 if side_index == 0 else 24.0
 		for i: int in range(3):
 			var z_flank: float = 126.0 - 30.0 * float(i)
-			var h_flank: float = _slope_height(z_flank) + 1.5
+			# Capture H-7 : a hauteur pleine (jusqu'a ~29 m), les flancs
+			# lisaient « coins vert lime geants » plein soleil — pire que le
+			# mur qu'ils masquent. Epaulements BAS (<= 9 m) : ourlets de
+			# berge, pas montagnes.
+			var h_flank: float = minf(_slope_height(z_flank) * 0.45 + 1.5, 9.0)
 			_visual_prism("SlopeFlank%d_%d" % [side_index, i], flanks,
 				Vector3(x_flank, h_flank * 0.5, z_flank),
-				Vector3(9.0, h_flank, 34.0), COL_GRASS, false,
+				Vector3(7.0, h_flank, 26.0), COL_GRASS, false,
 				0.42 if side_index == 0 else 0.58)
 
 

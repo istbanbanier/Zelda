@@ -1,0 +1,18 @@
+{
+  "commit": "9e2430f1ac906571ea082140fd49f62641c19d34",
+  "display_server": "X11",
+  "distinct_colors_sampled": 3035,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 90,
+  "height": 1440,
+  "label": "vista_h7_matiere",
+  "luma_mean": 0.5965,
+  "luma_stddev": 0.2336,
+  "png": "evidence/phaseH/vista_h7_matiere.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "timestamp_utc": "2026-08-05 00:35:30",
+  "width": 2560
+}
