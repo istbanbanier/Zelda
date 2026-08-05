@@ -454,7 +454,7 @@ aussi au playtest G-2 : le boss est ré-écroulable en boucle par cycles
 de 3 lourdes de hache (design « alternative plus lente », coût
 d'endurance réel, mais non plafonné en fréquence).
 
-## ISS-030 — Lois de matière : asymétrie vallée/donjon sur l'eau (S3, ouvert)
+## ISS-030 — Lois de matière : asymétrie vallée/donjon sur l'eau (S3, RÉSOLU 2026-08-05)
 
 Le bassin conducteur de la VALLÉE (`conductive_basin.gd`) est un
 `ElectricNode` nu : il ne mouille pas et ne relaie pas à la matière
@@ -463,6 +463,15 @@ commentaire « même loi que le bassin de la vallée » n'est vrai que pour
 « traverse/ne stocke pas ». Migration matière encore partielle : bloc
 métallique de salle 1 et batterie de salle 4 restent graphe-seulement.
 Unifier lors du prochain passage sur la vallée (Cycle 3, chantier eau).
+
+**Résolu** : `WaterMatterComponent` partagé (matière `eau` sur le NŒUD,
+mouillage à l'entrée, relais borné sous tension, terre = suspension) —
+utilisé par `ElectricHazard` WATER_ZONE ET `ConductiveBasin` (zone de
+baignade ajoutée au bassin, école toujours SÛRE : zéro dégât). Prouvé
+fail-first 0/6 → `test_water_unification` 3/3 (dont un VRAI Arc Link) ;
+non-régression : lois 6/6, bassin 3/3, salles 44/44, réactions 7/7,
+donjon 2/2. Reste graphe-seulement (assumé) : bloc salle 1, batterie
+salle 4 (mécanique de charge propre).
 
 ## ISS-031 — Hints : sources d'échec inégales selon la salle (S3, ouvert)
 

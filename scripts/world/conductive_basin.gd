@@ -27,18 +27,42 @@ func _ready() -> void:
 	# (0,6 m), à portée d'un Arc Link (≤ 14 m). Le maillon manquant.
 	_source = _electric(ElectricNode.Kind.SOURCE, &"valley.basin.source.01",
 		Vector3(-9.0, 0.6, 0.0))
+	_source.name = "SourceNode"
 	_port_marker(_source)
 	_lamp(_source, AMBER, 1.8)
 	# L'EAU : un nœud zone, ports aux deux rives.
 	_water = _electric(ElectricNode.Kind.WATER_ZONE, &"valley.basin.water.01",
 		Vector3(0.0, 0.15, 0.0))
+	_water.name = "WaterNode"
 	_water.port_offsets = [Vector3(-2.5, 0.0, 0.0), Vector3(2.5, 0.0, 0.0)]
 	_port_marker(_water)
 	# Le RÉCEPTEUR : collé au port est de l'eau (0,5 m ≤ portée 0,6) — déjà
 	# connecté, il attend le courant.
 	_receiver = _electric(ElectricNode.Kind.RECEIVER, &"valley.basin.receiver.01",
 		Vector3(3.0, 0.15, 0.0))
+	_receiver.name = "ReceiverNode"
 	_lamp(_receiver, CYAN, 0.0)
+	# ISS-030 : l'eau de la VALLÉE parle les MÊMES lois que celle du
+	# donjon — matière `eau`, mouillage, relais borné — via le composant
+	# partagé. L'école reste SÛRE (P2 §9.6) : aucun dégât ici, les lois
+	# de matière seulement.
+	var bathing: Area3D = Area3D.new()
+	bathing.name = "BathingZone"
+	bathing.collision_layer = 0
+	bathing.collision_mask = 2 | 128
+	bathing.monitoring = true
+	var bathing_shape: CollisionShape3D = CollisionShape3D.new()
+	var bathing_box: BoxShape3D = BoxShape3D.new()
+	bathing_box.size = Vector3(5.6, 1.4, 4.6)
+	bathing_shape.shape = bathing_box
+	bathing.add_child(bathing_shape)
+	add_child(bathing)
+	bathing.position = Vector3(0.0, 0.4, 0.0)
+	var water_matter: WaterMatterComponent = WaterMatterComponent.new()
+	water_matter.name = "WaterMatter"
+	water_matter.node_path = NodePath("../WaterNode")
+	water_matter.area_path = NodePath("../BathingZone")
+	add_child(water_matter)
 
 
 func source() -> ElectricNode:

@@ -3237,5 +3237,20 @@ passent par la machine utilisateur.**
    `ValleyWorld`, mêmes contrats de composition en tests).
 3. Sinon : itérer le lab sur les défauts nommés par le score.
 Chantiers conteneur encore ouverts si besoin : ISS-027 (tranche
-outillage du runner), ISS-030 (bassin de la vallée aux lois matière),
-ISS-031 (sources d'échec des hints salles 2-3).
+outillage du runner), ISS-031 (sources d'échec des hints salles 2-3).
+
+### Fait ensuite : suite 713/713 + ISS-030 RÉSOLU (l'eau unifiée)
+
+Suite intégrale de fin de session : **713/713, zéro échec** (arbre
+`39bb653`, relancée après un redémarrage conteneur). Puis ISS-030 :
+`WaterMatterComponent` PARTAGÉ (scripts/reaction) — matière `eau` sur
+le NŒUD électrique des deux côtés, mouillage à l'entrée (tension ou
+pas), relais borné sous tension (cadence héritée du danger côté
+donjon), terre = suspension. Le bassin de la vallée gagne sa zone de
+baignade et reste une école SÛRE (zéro dégât — P2 §9.6) ; le hazard ne
+garde que le chemin de dégâts §13.5. Fail-first 0/6 →
+`test_water_unification` 3/3 (le relais prouvé par un VRAI Arc Link,
+et l'unification STRUCTURELLE : même classe des deux côtés).
+Non-régression : lois 6/6, bassin 3/3, salles 44/44, réactions 7/7,
+donjon 2/2. Changement délibéré documenté : les tests qui lisaient
+`MaterialState` sur la racine du hazard lisent le nœud.
