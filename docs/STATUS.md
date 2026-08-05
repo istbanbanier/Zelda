@@ -4,7 +4,16 @@ Vocabulaire imposé (§0.2) : `Non commencé` · `Implémenté` (raccordé) ·
 `Fonctionnel` (testé en scène exécutable) · `Validé` (conforme, sans régression) ·
 `Bloqué`. Tout critère non testé est `NON VÉRIFIÉ`, jamais implicitement réussi.
 
-**Dernière mise à jour** : 2026-08-01 · **Phase** : B (jalons B.0 à B.5 livrés) · **Gate A gelé** : `9414fd0` · **Commit courant** : voir `git log`
+**Dernière mise à jour** : 2026-08-05 · **Phase** : Prompt 2, Cycle 1 (P2-0 fait, P2-1 fait, P2-2 en cours) · **Gate A gelé** : `9414fd0` · **Commit courant** : voir `git log`
+
+## Prompt 2 — état (cadence, `ROADMAP.md`)
+
+| Jalon | État | Preuve |
+|---|---|---|
+| P2-0 audit | **Fait** | `PROMPT2_AUDIT.md`, golden path 4/4 (2026-08-05) |
+| P2-1 latence + labs | **Fonctionnel** | `test_p2_latency.gd` 2/2 : ≤ 1 tick via chaîne réelle ; `LabOverlay` ; D-047/D-048 |
+| P2-2 Bracelet | **En cours** | lois ReactionSystem : brouillons prêts, bascule fail-first imminente |
+| Validation du 2026-08-05 | tranches | unitaires 109/109, intégration 502/502, playthrough : voir `TEST_REPORT.md` |
 
 ## Verdict Gate A : **ACCEPTÉ AVEC RÉSERVE / BLOQUÉ SUR LA VALIDATION MANETTE**
 

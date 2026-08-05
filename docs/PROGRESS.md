@@ -2830,3 +2830,38 @@ H-7c (capture ≠ code livré). Détail complet : `TEST_REPORT.md`.
 Cycle 1 de la cadence : **P2-0** (audit Prompt 2, `PROMPT2_AUDIT.md`,
 baseline, backlog) puis P2-1/P2-2 (Bracelet). Les corrections 3-5
 attendent le Cycle 3 — ne pas re-décorer avant le systémique.
+
+## 2026-08-05 — Coursier d'assets + P2-0 + P2-1 (latence instrumentée)
+
+### Fait
+
+- **Coursier v2 vert** (workflow `asset-courier.yml`, run n°2) : 6 packs
+  Kenney dans `source_assets/external/` — Mini Arena **CC0** (colonnes,
+  murs, statue, bannière, râtelier, épée, lance : kit donjon/camp §10.2),
+  starter kits MIT (sons locomotion/impact/ambience, sprites VFX).
+  Licences lues et consignées (`ATTRIBUTIONS.md`, `SOURCING_MATRIX.md`).
+  Échecs documentés : KayKit et Quaternius absents de leurs GitHub,
+  kenney.nl direct 404. Promotion vers `assets/` manuelle, à l'usage.
+- **P2-0** : `PROMPT2_AUDIT.md` commis — constat central : le Bracelet
+  n'existe pas (zéro ligne) ; backlog P2 ordonné.
+- **P2-1** : `LatencyProbe` (réception au front d'événement dans le SEUL
+  lecteur d'InputMap, consommation au changement d'état réel, refus
+  expliqués) ; test fail-first `test_p2_latency.gd` rouge→vert : saut et
+  attaque légale **≤ 1 tick physique** via la vraie chaîne
+  `parse_input_event → _input → intent → tick`. `LabOverlay` dans
+  TraversalPlayground et CombatLab. Articulation avec `LatencyInstrument`
+  B.5 consignée (D-048) ; D-047 : ReactionSystem = nœud de scène, pas
+  d'autoload. `GAMEPLAY_BIBLE.md` créée (P2 §1.2).
+- **Validation par tranches** (leçon : la suite monolithique meurt entre
+  les tours — 2 morts silencieuses) : import OK, parse 236 scripts OK,
+  unitaires **109/109**, intégration **502/502**, playthrough en cours au
+  moment de cette entrée (verdict ci-dessous ou au commit suivant).
+
+### Prochaine action exacte
+
+P2-2, tranche 1 — les LOIS : basculer depuis le scratchpad les brouillons
+`MaterialProfile` / `ElementPacket` / `MaterialStateComponent` /
+`ReactionSystem` : **tests d'abord** (`test_reaction_system.gd`, rouge
+attendu : classes absentes), puis les 4 classes, puis vert sur la matrice
+§4.6 (bois×feu×eau, métal×charge×terre, plafond double source,
+anti-boucle, budget/tick). Ensuite : Pulse (première opération Bracelet).
