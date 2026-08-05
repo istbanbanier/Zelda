@@ -3239,6 +3239,16 @@ passent par la machine utilisateur.**
 Chantiers conteneur encore ouverts si besoin : ISS-027 (tranche
 outillage du runner), ISS-031 (sources d'échec des hints salles 2-3).
 
+### Fait ensuite : ISS-027 RÉSOLU — le runner ne ment plus
+
+Le faux « ok » (erreur de script après une assertion passée = méthode
+avortée, comptée réussie) est mort : le runner lit le journal de SON
+processus (`user://logs/godot.log`) et la moindre `SCRIPT ERROR` rend
+la suite ROUGE, ligne de vérité imprimée à chaque passage. Sonde
+rouge/vert : « ok, code 0 » avant, « ÉCHEC ISS-027, code 1 » après ;
+zéro faux positif (hints 7/7, directeur 5/5 — 0 erreur). Les preuves
+fail-first futures n'ont plus besoin du contournement manuel.
+
 ### Fait ensuite : ISS-031 RÉSOLU — chaque salle observe ses vrais échecs
 
 Salle 3 : une rotation qui ne fait pas PROGRESSER le courant est un

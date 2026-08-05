@@ -410,7 +410,7 @@ ni arène, ni pylônes, ni Gardien. Relevé par la revue contradictoire du Gate 
 (défaut équivalent à ISS-025, non consigné à l'époque — corrigé ici). Correctif :
 cadrage spécifique à l'arène (surplomb du bord, rayon 19 m) au commit suivant.
 
-## ISS-027 — Faux « ok » du runner : erreur de script après une assertion passée (S2 outillage, ouvert)
+## ISS-027 — Faux « ok » du runner : erreur de script après une assertion passée (S2 outillage, RÉSOLU 2026-08-05)
 
 **Observé** le 2026-08-05 (P2-3, `test_weapon_identities`) : un test dont le
 script lève une erreur d'exécution (propriété absente sur un objet typé)
@@ -428,6 +428,16 @@ systématiquement dans les sessions récentes).
 s'est terminée par erreur (comparer un drapeau « fin atteinte » posé par le
 test ? intercepter les erreurs de script ?) et la compter ÉCHEC. À traiter
 comme tranche outillage dédiée — pas en passant.
+
+**Résolu** : le runner lit le journal de SON processus
+(`user://logs/godot.log`, journalisation fichier active par défaut sur
+desktop, tournée par exécution) et compte les `SCRIPT ERROR` — la
+moindre rend la suite ROUGE (« une suite qui erre n'est pas une
+preuve »), avec la ligne de vérité `erreurs de script dans le journal :
+N` imprimée à chaque passage. Prouvé par sonde rouge/vert : un test qui
+erre après une assertion passée sortait « ok, code 0 » ; il sort
+désormais « ÉCHEC ISS-027, code 1 ». Zéro faux positif vérifié sur des
+suites saines (hints 7/7, directeur 5/5 — 0 erreur).
 
 ## ISS-028 — Bibliothèque du directeur partiellement taguée (S4, ouvert)
 
