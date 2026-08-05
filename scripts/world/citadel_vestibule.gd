@@ -273,3 +273,15 @@ func _setup_lighting() -> void:
 
 func player() -> PlayerController:
 	return _player
+
+
+## Caméra de référence §21.5 (« entrée du donjon ») — outil de capture
+## uniquement : depuis le seuil sud, regard vers le fond de la salle.
+func capture_reference_view() -> void:
+	var camera: Camera3D = Camera3D.new()
+	camera.name = "ReferenceCamera"
+	add_child(camera)
+	camera.global_position = Vector3(0, 3.2, 11.5)
+	camera.look_at(Vector3(0, 2.2, -13.0), Vector3.UP)
+	camera.fov = 60.0
+	camera.current = true

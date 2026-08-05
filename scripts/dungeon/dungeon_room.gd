@@ -288,3 +288,27 @@ func decor(decor_name: String, center: Vector3, size: Vector3, color: Color,
 	mesh.position = center
 	add_child(mesh)
 	return mesh
+
+
+## Caméra de référence §21.5 (outil de capture uniquement, via `--call=`) :
+## cadre la salle entière depuis un angle haut — l'AABB fusionnée des
+## visuels donne le centre et l'empreinte, quel que soit le layout.
+func capture_reference_view() -> void:
+	var merged: AABB = AABB()
+	var first: bool = true
+	for visual: Node in find_children("*", "VisualInstance3D", true, false):
+		var instance: VisualInstance3D = visual as VisualInstance3D
+		var world_aabb: AABB = instance.global_transform * instance.get_aabb()
+		merged = world_aabb if first else merged.merge(world_aabb)
+		first = false
+	if first:
+		return
+	var centre: Vector3 = merged.get_center()
+	var span: float = maxf(merged.size.x, merged.size.z)
+	var camera: Camera3D = Camera3D.new()
+	camera.name = "ReferenceCamera"
+	add_child(camera)
+	camera.global_position = centre + Vector3(-span * 0.42, span * 0.38, span * 0.52)
+	camera.look_at(centre, Vector3.UP)
+	camera.fov = 55.0
+	camera.current = true

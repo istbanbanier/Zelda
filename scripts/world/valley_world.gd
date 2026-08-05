@@ -797,3 +797,14 @@ func _player_visual_yaw() -> float:
 
 func player() -> PlayerController:
 	return _player
+
+
+## Caméra de référence §21.5 (« vue camp ») — outil de capture uniquement.
+func capture_camp_view() -> void:
+	var camera: Camera3D = Camera3D.new()
+	camera.name = "CampReferenceCamera"
+	add_child(camera)
+	camera.global_position = Vector3(18.0, 14.0, 96.0)
+	camera.look_at(Vector3(45.0, 6.0, 65.0), Vector3.UP)
+	camera.fov = 55.0
+	camera.current = true
