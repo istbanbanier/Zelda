@@ -38,15 +38,24 @@ const COL_CYAN: Color = Color(0.133, 0.851, 0.925)
 
 ## Tracé de la rivière en CONTRAT D'ÉCRAN : (X %, Y %, distance m).
 ## Deux changements de direction horizontale = le S (correction #3).
+## PHYSIQUE (leçons v0/v1) : un plateau à bord franc OCCULTE tout ce qui
+## descend derrière lui (seuls les fanions du camp émergeaient de la
+## ligne de visée). Le héros se tient donc sur une PENTE CONTINUE de 8°,
+## toujours visible, dont la ligne de fuite apparente est à ~63 %
+## (pitch −2° : horizon vrai à 54,3 %). Un ruban posé sur cette pente
+## vit dans la bande 63-66 % : le S se lit en X (34 → 50 %), la
+## profondeur par la convergence et l'amincissement.
 const RIVER_SCREEN: Array[Vector3] = [
-	Vector3(42.0, 74.0, 18.0),
-	Vector3(36.0, 68.0, 32.0),
-	Vector3(34.0, 63.0, 48.0),
-	Vector3(40.0, 58.0, 68.0),
-	Vector3(48.0, 54.0, 95.0),
-	Vector3(50.0, 50.0, 140.0),
-	Vector3(49.0, 46.0, 200.0),
+	Vector3(40.0, 66.0, 30.0),
+	Vector3(36.0, 65.2, 42.0),
+	Vector3(34.0, 64.7, 52.0),
+	Vector3(40.0, 64.3, 74.0),
+	Vector3(48.0, 63.9, 100.0),
+	Vector3(50.0, 63.7, 145.0),
+	Vector3(49.0, 63.5, 205.0),
 ]
+## Pente continue du premier plan : 8° (tan ≈ 0,1405).
+const SLOPE_TAN: float = 0.1405
 
 var _anchors: Dictionary[StringName, Node3D] = {}
 var _river_local: Array[Vector3] = []
@@ -136,6 +145,14 @@ func _build_hero() -> void:
 		hero.name = "Hero"
 		hero.rotation_degrees = Vector3(0.0, 180.0, 0.0)
 		add_child(hero)
+		# Le glTF n'embarque AUCUNE animation (sondé) : sortir de la
+		# T-pose se fait à l'os — bras posés le long du corps.
+		var skeleton: Skeleton3D = null
+		for node: Node in hero.find_children("*", "Skeleton3D", true, false):
+			skeleton = node as Skeleton3D
+		if skeleton != null:
+			_lower_arm(skeleton, "upperarm_l", -70.0)
+			_lower_arm(skeleton, "upperarm_r", 70.0)
 	else:
 		var proxy: MeshInstance3D = MeshInstance3D.new()
 		proxy.name = "Hero"
@@ -145,6 +162,16 @@ func _build_hero() -> void:
 		proxy.mesh = capsule
 		proxy.position = Vector3(0.0, HERO_HEIGHT * 0.5, 0.0)
 		add_child(proxy)
+
+
+func _lower_arm(skeleton: Skeleton3D, bone: String, degrees: float) -> void:
+	var index: int = skeleton.find_bone(bone)
+	if index < 0:
+		return
+	var rest: Quaternion = skeleton.get_bone_rest(index).basis \
+		.get_rotation_quaternion()
+	skeleton.set_bone_pose_rotation(index,
+		rest * Quaternion(Vector3(0, 0, 1), deg_to_rad(degrees)))
 
 
 func _material(colour: Color, rough: float = 0.9) -> StandardMaterial3D:
@@ -166,32 +193,50 @@ func _slab(slab_name: String, centre: Vector3, size: Vector3,
 	add_child(mesh)
 
 
+## Hauteur de la pente continue en un z donné (surface passant par les
+## pieds du héros à l'origine, descendant vers −z).
+func _slope_height(z: float) -> float:
+	return z * SLOPE_TAN
+
+
 func _build_terrain() -> void:
-	# Crête du héros : plateau herbeux dont la SURFACE est à y = 0.
-	_slab("CrestPlateau", Vector3(0, -1.0, -4), Vector3(46, 2, 36), COL_GRASS)
-	# Pente descendante vers la vallée (bible §6.1 : descente en S).
+	# UNE pente continue de 8° (leçon v1 : un bord de plateau occulte la
+	# vallée entière depuis une caméra presque horizontale). Le héros se
+	# tient dessus à l'origine ; la surface passe par (0, 0).
 	var slope: MeshInstance3D = MeshInstance3D.new()
 	slope.name = "ValleySlope"
 	var slope_box: BoxMesh = BoxMesh.new()
-	slope_box.size = Vector3(120, 2, 90)
+	slope_box.size = Vector3(130, 2, 168)
 	slope.mesh = slope_box
 	slope.material_override = _material(COL_GRASS)
-	slope.position = Vector3(4, -6.5, -62)
-	slope.rotation_degrees = Vector3(-7.5, 0, 0)
+	slope.position = Vector3(4, _slope_height(-68.0) - 1.0, -68)
+	slope.rotation_degrees = Vector3(-8.0, 0, 0)
 	add_child(slope)
-	# Fond de vallée : jusqu'au socle de la citadelle.
-	_slab("ValleyFloor", Vector3(4, -16.0, -210), Vector3(220, 2, 240),
+	# Fond de vallée PLAT (~−21 m) : la pente s'y adoucit, la queue de la
+	# rivière et le socle de la citadelle s'y posent.
+	_slab("ValleyFloor", Vector3(4, -22.0, -245), Vector3(240, 2, 210),
 		COL_GRASS)
-	# Chemin de terre : il descend de la crête vers le camp.
-	_slab("PathCrest", Vector3(2.2, 0.03, -8), Vector3(1.6, 0.06, 26),
-		COL_EARTH)
-	# Falaises d'encadrement (§1.1 : gauche continue, droite discontinue).
-	_slab("CliffLeftNear", Vector3(-26, 4.0, -30), Vector3(14, 12, 40),
-		COL_ROCK)
-	_slab("CliffLeftFar", Vector3(-34, 2.0, -95), Vector3(20, 18, 70),
-		COL_ROCK)
-	_slab("CliffRightFar", Vector3(46, 0.0, -110), Vector3(18, 14, 50),
-		COL_ROCK)
+	# Chemin de terre : il ÉPOUSE la pente (leçon v1).
+	var path: MeshInstance3D = MeshInstance3D.new()
+	path.name = "PathCrest"
+	var path_box: BoxMesh = BoxMesh.new()
+	path_box.size = Vector3(1.6, 0.06, 34)
+	path.mesh = path_box
+	path.material_override = _material(COL_EARTH)
+	path.position = Vector3(2.2, _slope_height(-9.0) + 0.05, -9)
+	path.rotation_degrees = Vector3(-8.0, 0, 0)
+	add_child(path)
+	# Falaises d'encadrement (§1.1), enracinées dans la pente — strates
+	# décalées, tons rabattus (le mur plat orange est un échec nommé v0).
+	_slab("CliffLeftNear", Vector3(-26, _slope_height(-30.0) + 5.0, -30),
+		Vector3(14, 10, 40), COL_ROCK.lerp(COL_STONE_COLD, 0.25))
+	_slab("CliffLeftLip", Vector3(-22.5, _slope_height(-34.0) + 10.6, -34),
+		Vector3(9, 3.2, 34), COL_ROCK.lerp(COL_GRASS, 0.3))
+	_slab("CliffLeftFar", Vector3(-36, _slope_height(-95.0) + 6.0, -95),
+		Vector3(20, 16, 70), COL_ROCK.lerp(COL_STONE_COLD, 0.45))
+	# Décalée à droite (leçon v0 : à x 46 elle avalait le pylône).
+	_slab("CliffRightFar", Vector3(62, _slope_height(-120.0) + 4.0, -120),
+		Vector3(18, 13, 50), COL_ROCK.lerp(COL_STONE_COLD, 0.4))
 	_grass_foreground()
 
 
@@ -221,6 +266,8 @@ func _grass_foreground() -> void:
 				var spot: Vector3 = origin + Vector3(
 					rng.randf_range(-5.0, 5.0), 0.0,
 					rng.randf_range(-5.0, 5.0))
+				# Les brins ÉPOUSENT la pente continue (leçon v1).
+				spot.y = minf(_slope_height(spot.z), 0.0)
 				multimesh.set_instance_transform(i,
 					Transform3D(basis, spot))
 			cell.multimesh = multimesh
@@ -256,13 +303,16 @@ func _build_river() -> void:
 		segment.name = "Segment%d" % i
 		var box: BoxMesh = BoxMesh.new()
 		var length: float = from_point.distance_to(to_point)
-		box.size = Vector3(4.0 + float(i) * 1.2, 0.3, length + 2.0)
+		# Large et légèrement SURÉLEVÉ (leçon v1 : un ruban affleurant
+		# disparaît sous les brins d'herbe et le bord de pente).
+		box.size = Vector3(7.0 + float(i) * 1.5, 0.3, length + 3.0)
 		segment.mesh = box
 		var material: StandardMaterial3D = _material(COL_WATER, 0.25)
 		material.emission_enabled = true
-		material.emission = COL_WATER * 0.25
+		material.emission = COL_WATER * 0.35
 		segment.material_override = material
-		segment.position = (from_point + to_point) * 0.5
+		segment.position = (from_point + to_point) * 0.5 \
+			+ Vector3(0.0, 0.3, 0.0)
 		var flat: Vector3 = to_point - from_point
 		segment.rotation.y = atan2(-flat.x, -flat.z)
 		river.add_child(segment)
@@ -271,7 +321,9 @@ func _build_river() -> void:
 ## Camp simplifié au plan moyen (61-66 % X — correction #4) : terrasse,
 ## feu, deux auvents, fumée fine. Lisible à 90 m (§10.1 de la bible).
 func _build_camp() -> void:
-	var centre: Vector3 = _world_at(63.5, 61.0, 90.0)
+	# Y 64,6 % : là où l'ancre TOMBE SUR la pente continue à 90 m — le
+	# camp se pose au sol, pas dessous (leçons v0/v1).
+	var centre: Vector3 = _world_at(63.5, 64.6, 90.0)
 	_mark(&"camp_center", centre)
 	_slab("CampTerrace", centre + Vector3(0, -0.8, 0), Vector3(24, 1.6, 20),
 		COL_EARTH)
@@ -286,28 +338,57 @@ func _build_camp() -> void:
 		Color(1.0, 0.604, 0.239))
 	flame_material.emission_enabled = true
 	flame_material.emission = Color(1.0, 0.604, 0.239)
-	flame_material.emission_energy_multiplier = 2.4
+	flame_material.emission_energy_multiplier = 4.0
 	flame.material_override = flame_material
 	flame.position = centre + Vector3(0, 1.0, 0)
 	add_child(flame)
+	# Bible §10.1 : le camp se lit à 70-110 m par flamme, FUMÉE fine et
+	# DEUX bannières — pas par ses petits props (leçon v1 : des tentes de
+	# 28 px sans signal vertical n'existent pas à l'image).
+	var smoke: MeshInstance3D = MeshInstance3D.new()
+	smoke.name = "CampSmoke"
+	var smoke_box: BoxMesh = BoxMesh.new()
+	smoke_box.size = Vector3(1.1, 9.0, 1.1)
+	smoke.mesh = smoke_box
+	smoke.material_override = _material(Color(0.78, 0.80, 0.82), 1.0)
+	smoke.position = centre + Vector3(0.4, 6.0, 0)
+	add_child(smoke)
 	for side: int in [-1, 1]:
 		var tent: MeshInstance3D = MeshInstance3D.new()
 		tent.name = "CampTent%s" % ("W" if side < 0 else "E")
 		var prism: PrismMesh = PrismMesh.new()
-		prism.size = Vector3(4.5, 2.6, 3.4)
+		prism.size = Vector3(4.8, 3.6, 3.6)
 		tent.mesh = prism
 		tent.material_override = _material(COL_CANVAS)
-		tent.position = centre + Vector3(6.0 * float(side), 1.3,
+		tent.position = centre + Vector3(6.5 * float(side), 1.8,
 			-2.0 * float(side))
 		tent.rotation_degrees = Vector3(0, 24.0 * float(side), 0)
 		add_child(tent)
+		var pole: MeshInstance3D = MeshInstance3D.new()
+		pole.name = "CampBannerPole%s" % ("W" if side < 0 else "E")
+		var pole_box: BoxMesh = BoxMesh.new()
+		pole_box.size = Vector3(0.3, 6.5, 0.3)
+		pole.mesh = pole_box
+		pole.material_override = _material(Color(0.408, 0.251, 0.157))
+		pole.position = centre + Vector3(3.2 * float(side), 3.25, 2.5)
+		add_child(pole)
+		var flag: MeshInstance3D = MeshInstance3D.new()
+		flag.name = "CampBanner%s" % ("W" if side < 0 else "E")
+		var flag_box: BoxMesh = BoxMesh.new()
+		flag_box.size = Vector3(2.1, 1.3, 0.12)
+		flag.mesh = flag_box
+		flag.material_override = _material(Color(0.78, 0.30, 0.22))
+		flag.position = centre + Vector3(3.2 * float(side) + 1.1, 5.6, 2.5)
+		add_child(flag)
 
 
 ## Pylône au tiers droit (75-79 % X — correction #4). ~105 m : là où un
 ## asset de 34 m (§3 : 28-36 m) REMPLIT sa fenêtre verticale 17 → 57 %.
 ## À 140-190 m il faudrait 52 m — les fenêtres du cadre priment.
 func _build_pylon() -> void:
-	var base: Vector3 = _world_at(77.0, 57.0, 105.0)
+	# Y 60 % : le pied émerge de la pente sur son éperon (~3,5 m) ; le
+	# sommet (base + 34 m) retombe à ~19,6 % — les deux fenêtres tenues.
+	var base: Vector3 = _world_at(77.0, 60.0, 105.0)
 	_mark(&"pylon_base", base)
 	_mark(&"pylon_top", base + Vector3(0, 34.0, 0))
 	# Éperon rocheux (§6.1) sous le pylône.
@@ -418,7 +499,10 @@ func _build_light() -> void:
 	environment.ambient_light_energy = 0.55
 	environment.fog_enabled = true
 	environment.fog_light_color = Color(0.686, 0.784, 0.827)
-	environment.fog_density = 0.0016
+	# 0,0045 + perspective aérienne (leçon v0 : à 0,0016 la citadelle
+	# COLLAIT au premier plan — §1.3 exige l'étagement atmosphérique).
+	environment.fog_density = 0.0045
+	environment.fog_aerial_perspective = 0.5
 	var world_environment: WorldEnvironment = WorldEnvironment.new()
 	world_environment.name = "LabEnvironment"
 	world_environment.environment = environment
