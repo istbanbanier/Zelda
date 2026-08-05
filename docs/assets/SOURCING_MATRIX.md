@@ -24,6 +24,17 @@ scriptée (procédurale déterministe), génération contrôlée (concepts SEULE
 | Typographie | **police libre à embarquer** | **RECOMMANDATION : ne PAS télécharger pendant la phase réseau restreinte — rester police Godot par défaut (licencié MIT avec le moteur), et embarquer plus tard une paire libre (ex. SIL OFL) validée par toi** | défaut : MIT | OUI (défaut) | fallback accents FR à tester | esthétique | police par défaut assumée PARTIAL |
 | Images générées | **concepts/moodboards UNIQUEMENT** (§0.2 bible) | génération contrôlée si demandée par toi | n/a | jamais dans le build | — | confusion concept/capture INTERDITE | planches descriptives texte |
 
+## Mise à jour 2026-08-05 — coursier d'assets (AD-001 rouvert par l'utilisateur)
+
+Le workflow `asset-courier.yml` (runner GitHub, seul à avoir le réseau) a livré
+**6 packs Kenney** dans `source_assets/external/` : Mini Arena (CC0 — colonnes,
+murs, statue, bannière, râtelier, épée, lance : kit donjon/camp §10.2), sons de
+locomotion/impact/ambience (MIT), sprites VFX sparkle/smoke/burst. Licences
+lues et consignées dans `ATTRIBUTIONS.md`. Échecs documentés : KayLousberg
+(packs absents de son GitHub), Quaternius (site seulement — packs déjà au
+dépôt), kenney.nl direct (404, URLs à empreinte). Promotion vers `assets/`
+manuelle, au moment de l'usage.
+
 ## Décision structurante soumise (recommandation appliquée par défaut)
 
 **Toute la production Phase H reste sur le trépied : Quaternius CC0 retouché +

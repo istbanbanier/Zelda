@@ -127,3 +127,25 @@ Godot alimentée par les données réelles. Rien n'en est extrait ni copié-coll
 - **Statut** : PLACEHOLDERS. Leur rôle est qu'aucune action ne soit muette
   (§18.2) ; ils ne prétendent pas à la qualité finale — pas de variation par
   matière, pas de mixage écouté (conteneur sans périphérique audio, ISS-004).
+
+## Packs Kenney livrés par le coursier (`source_assets/external/`, 2026-08-05)
+
+Téléchargés par le workflow `asset-courier.yml` (run n°2) depuis les dépôts
+GitHub officiels de KenneyNL — le conteneur de dev n'a pas d'accès réseau aux
+sites d'assets. **Hors build** : la promotion vers `assets/` reste manuelle,
+pack par pack, avec ligne dédiée ici au moment de la promotion.
+
+| Pack | Contenu retenu (après élagage) | Licence livrée |
+|---|---|---|
+| `kenneynl_starter_kit_basic_scene` | **Mini Arena** : colonnes, murs, portail, escaliers, statue, bannière, râtelier, épée, lance, sol (GLB + colormap) | **CC0 1.0** (License.txt du pack, crédit Kenney/Tony Schär facultatif) |
+| `kenneynl_starter_kit_3d_platformer` | herbe, plateformes, drapeaux, nuage, sons saut/atterrissage/pas, sprites particule/ombre | MIT (LICENSE.md, © Kenney) |
+| `kenneynl_starter_kit_fps` | murs, plateformes, sons pas/saut/atterrissage/impacts, sprites burst/hit/ombre | MIT (LICENSE.md) |
+| `kenneynl_starter_kit_city_builder` | bâtiments, routes, fontaine, arbres, **ambience.ogg**, sons de placement | MIT (LICENSE.md) |
+| `kenneynl_starter_kit_racing` | tentes/forêt de déco, sons moteur/**impact**/dérapage, sprite smoke | MIT (LICENSE) |
+| `kenneynl_starter_kit_match_3` | sprites sparkle/curseurs/tuiles | README : code MIT, **sprites CC0** |
+
+Notes : les polices `.ttf` (Lilita, SIL OFL) ont été élaguées par le workflow —
+seuls leurs fichiers de licence subsistent ; aucune police externe n'est donc
+embarquée à ce jour. MIT exige de conserver la notice de copyright : les
+`LICENSE.md` sont versionnés à côté des fichiers et devront accompagner toute
+promotion vers `assets/`.
