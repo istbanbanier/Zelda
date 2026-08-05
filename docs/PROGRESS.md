@@ -3137,20 +3137,44 @@ contourne les gardes de posture du boss — exposition nulle
 aujourd'hui), ISS-030 (asymétrie eau vallée/donjon), ISS-031 (sources
 d'échec inégales des hints). **Cycles 1 et 2 de la cadence : CLOS.**
 
+### Fait ensuite : Cycle 3 tranche 1 — HeroShotLab construit (5/5) + capture v0
+
+Le lab que la revue du Gate H a nommé comme jamais construit EXISTE
+(`scenes/lookdev/HeroShotLab.tscn`). Idée clé : les éléments lointains
+sont AUTORÉS EN CONTRAT D'ÉCRAN — `_world_at(x %, y %, distance)`
+inverse la projection de la caméra North Star, donc un anchor posé à
+(63,5 %, 61 %, 90 m) TOMBE dans sa fenêtre par construction ; le test
+revérifie par la projection directe, indépendamment. Fail-first rouge
+(classe absente) puis 5/5 (41 assertions) : éléments §11.1, caméra
+§3.1 (FOV 44° vertical = 71,4° horizontal — le piège « 68 en
+vertical » évité et documenté), fenêtres §1.1 (héros 41,6 % X pieds
+91,9 %/tête 43,5 %, camp 63,5 %, pylône 77 % base 57 %/sommet 16,6 %,
+citadelle 50,5 %, spire 10 %), rivière en S (2 inflexions), plans
+90/105/316 m. Incohérence INTERNE de la bible documentée : un pylône
+d'asset 28-36 m ne peut pas remplir sa fenêtre verticale à 140-190 m
+(il faudrait ~52 m) — posé à 105 m, fenêtres du cadre prioritaires.
+Capture v0 réelle (llvmpipe, arbre `ce76b24` propre, manifeste) :
+le contrat TIENT à l'image (pylône 76 % X, couronne 18 % Y) ; six
+défauts v0 diagnostiqués et ORDONNÉS dans
+`evidence/cycle3/2026-08-05_herolab_v0.md`.
+
 ### Prochaine action exacte
 
-**Cycle 3 (art) s'ouvre — première tranche : `HeroShotLab.tscn`**, la
-micro-scène 80×80 m que la revue du Gate H a nommée comme jamais
-construite (bible §29 passe V2 : gate intermédiaire ≥ 75/100 AVANT
-remplacement des proxies, ≥ 85/100 avant propagation). Contenu §11.1 :
-héros de dos, pente herbe/fleurs 20-30 m, chemin, eau, camp simplifié,
-pylône, proxy citadelle, falaises d'encadrement, ciel/nuage/éclair,
-`VistaCamera_Hero01` verrouillée (§3.1 : FOV horizontal 68° = ~41,6°
-vertical en KEEP_HEIGHT — ne PAS entrer 68 en vertical). Y intégrer
-les corrections adversariales #3-5 (rivière en S turquoise, camp
-61-66 % X / pylône 75-79 % X du cadre, éclair cœur blanc + nuage
-modelé + cape). Piloter par captures comparées (protocole §30.1 :
-vignette, niveaux de gris, silhouettes), jamais à l'impression.
-Rappel environnement : capture via Xvfb/llvmpipe = régression
-visuelle SEULEMENT, jamais une mesure ni un score final — le score
-WOW réel attend la machine utilisateur.
+**HeroShotLab v1** — corriger dans cet ordre (liste complète et causes
+dans `evidence/cycle3/2026-08-05_herolab_v0.md`) :
+1. héros : sortir de la T-pose (jouer une frame d'idle du glTF ou
+   poser les bras — vérifier les animations embarquées de
+   `Male_Ranger.gltf`) ;
+2. rivière et camp SOUS la pente : carver/abaisser le plan de pente ou
+   surélever lit et terrasse — le ruban turquoise et le feu doivent se
+   lire (les anchors ne bougent pas, le test 5/5 reste le gardien) ;
+3. profondeur atmosphérique : brouillard 0,004-0,006 + refroidir les
+   masses lointaines (§1.3) pour décoller la citadelle du premier
+   plan ;
+4. falaise gauche en strates (§6.3), identifier la masse grise
+   parasite à droite ;
+5. recapturer MÊMES caméra/frames (`--call=capture_north_star`),
+   comparer v0→v1, consigner. Puis passes suivantes (phrases d'herbe,
+   éclair synchronisé §21.5, vignette/niveaux de gris §30.1).
+Le score /100 (§30.2) ne se prononce qu'après v1+ et jamais depuis
+llvmpipe seul — machine utilisateur pour l'esthétique finale.
