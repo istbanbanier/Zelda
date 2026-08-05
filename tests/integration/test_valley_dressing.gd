@@ -58,7 +58,7 @@ func test_the_river_ribbon_snakes_inside_the_bed_without_collision() -> void:
 func test_the_crest_meadow_is_partitioned_and_sits_on_the_ridge() -> void:
 	## §7.5 : « ne jamais regrouper toute la vallée dans un MultiMesh unique »
 	## — au moins deux cellules de brins + les fleurs, instances mesurées SUR
-	## la crête (x ±50, z 148-205, y 24), teintes variées par instance.
+	## la crête (x ±50, z 148-205, y 32 depuis H-5), teintes variées par instance.
 	var valley: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
 	_tree().root.add_child(valley)
 	await _settle(5)
@@ -82,7 +82,7 @@ func test_the_crest_meadow_is_partitioned_and_sits_on_the_ridge() -> void:
 		for i: int in [0, origins.size() / 2, origins.size() - 1]:
 			var origin: Vector3 = origins[i]
 			check(absf(origin.x) < 50.0 and origin.z > 143.0 and origin.z < 172.0
-				and absf(origin.y - 24.27) < 1.0,
+				and absf(origin.y - 32.27) < 1.0,
 				"brin %d posé sur la bande AVANT de la crête (%.0f, %.1f, %.0f)"
 				% [i, origin.x, origin.y, origin.z])
 		check(tints[0] != tints[tints.size() - 1] or tints[0] != tints[tints.size() / 2],

@@ -1622,8 +1622,11 @@ func _build_slope_flora() -> void:
 	var flower_multimesh: MultiMesh = MultiMesh.new()
 	flower_multimesh.transform_format = MultiMesh.TRANSFORM_3D
 	flower_multimesh.use_colors = true
-	var petal: BoxMesh = BoxMesh.new()
-	petal.size = Vector3(0.11, 0.09, 0.11)
+	var petal: SphereMesh = SphereMesh.new()
+	petal.radius = 0.06
+	petal.height = 0.08
+	petal.radial_segments = 8
+	petal.rings = 4
 	var petal_material: ShaderMaterial = ShaderMaterial.new()
 	petal_material.shader = shader
 	petal.material = petal_material
@@ -1643,6 +1646,22 @@ func _build_slope_flora() -> void:
 		flower_multimesh.set_instance_color(i, petal_colors[i % petal_colors.size()])
 	flowers.multimesh = flower_multimesh
 	flora.add_child(flowers)
+	# FLANCS (dette H-3) : les murs verticaux de la rampe (x −7,5 et 22,5)
+	# recevaient la lumière en falaises vertes — des épaulements en prismes
+	# les fondent dans la pente. COL_GRASS : ils héritent du matériau macro,
+	# continuité assurée par le triplanar monde.
+	var flanks: Node3D = Node3D.new()
+	flanks.name = "SlopeFlanks"
+	flora.add_child(flanks)
+	for side_index: int in range(2):
+		var x_flank: float = -9.0 if side_index == 0 else 24.0
+		for i: int in range(3):
+			var z_flank: float = 126.0 - 30.0 * float(i)
+			var h_flank: float = _slope_height(z_flank) + 1.5
+			_visual_prism("SlopeFlank%d_%d" % [side_index, i], flanks,
+				Vector3(x_flank, h_flank * 0.5, z_flank),
+				Vector3(9.0, h_flank, 34.0), COL_GRASS, false,
+				0.42 if side_index == 0 else 0.58)
 
 
 ## Hauteur de la surface de la SpawnSlope (rampe (7,5, 32, 144) → (7,5, 2, 60))
@@ -1727,8 +1746,11 @@ func _build_crest_meadow() -> void:
 	var flower_multimesh: MultiMesh = MultiMesh.new()
 	flower_multimesh.transform_format = MultiMesh.TRANSFORM_3D
 	flower_multimesh.use_colors = true
-	var petal: BoxMesh = BoxMesh.new()
-	petal.size = Vector3(0.11, 0.09, 0.11)
+	var petal: SphereMesh = SphereMesh.new()
+	petal.radius = 0.06
+	petal.height = 0.08
+	petal.radial_segments = 8
+	petal.rings = 4
 	var petal_material: ShaderMaterial = ShaderMaterial.new()
 	petal_material.shader = shader
 	petal.material = petal_material
@@ -2027,14 +2049,44 @@ var _material_cache: Dictionary[String, StandardMaterial3D] = {}
 ## #7AAB54 constant sur toute la plaine). Le gradient encadre l'ancre #5D8F3D ;
 ## la projection monde rend le motif continu d'une dalle à l'autre. Période
 ## ~40 m : macro, pas microbruit (interdit visuel §1.6).
-var _ground_material_cache: StandardMaterial3D = null
+var _macro_material_cache: Dictionary = {}
 
 
 func _ground_material() -> StandardMaterial3D:
-	if _ground_material_cache != null:
-		return _ground_material_cache
+	return _macro_material(&"grass", 20260804, [
+		Color(0.267, 0.408, 0.169),   # olive profond #446B2B
+		Color(0.365, 0.561, 0.239),   # ancre #5D8F3D
+		Color(0.498, 0.663, 0.306),   # olive éclairé #7FA94E
+	])
+
+
+## H-7 : la même loi pour la ROCHE — les faces ocre du plateau et des
+## falaises étaient les derniers grands aplats du cadre (§5.1).
+func _rock_material() -> StandardMaterial3D:
+	return _macro_material(&"rock", 20260806, [
+		Color(0.50, 0.32, 0.19),      # ocre profond
+		Color(0.608, 0.408, 0.259),   # ancre COL_ROCK
+		Color(0.70, 0.50, 0.33),      # arête chauffée
+	])
+
+
+## …et pour la MONTAGNE (murs, crêtes, jupes) : gris-bleu froid varié.
+func _mountain_material() -> StandardMaterial3D:
+	return _macro_material(&"mountain", 20260807, [
+		Color(0.44, 0.465, 0.53),
+		Color(0.515, 0.545, 0.608),   # ancre COL_MOUNTAIN
+		Color(0.585, 0.615, 0.675),
+	])
+
+
+func _macro_material(kind: StringName, noise_seed: int,
+		colors: Array[Color]) -> StandardMaterial3D:
+	var cached_macro: StandardMaterial3D = _macro_material_cache.get(kind) \
+		as StandardMaterial3D
+	if cached_macro != null:
+		return cached_macro
 	var noise: FastNoiseLite = FastNoiseLite.new()
-	noise.seed = 20260804
+	noise.seed = noise_seed
 	# H-2b : 0,007 sur 256 px donnait ~1,8 motif par tuile — un quasi-aplat,
 	# aggravé par la perte de contraste du seamless (notée dans la doc 4.7).
 	# 0,02 sur 512 px : motifs ~8 m monde (méso), contraste réel.
@@ -2051,11 +2103,11 @@ func _ground_material() -> StandardMaterial3D:
 	# texture générée, pas sur les réglages.
 	noise.fractal_octaves = 3
 	var ramp: Gradient = Gradient.new()
-	ramp.set_color(0, Color(0.267, 0.408, 0.169))     # olive profond #446B2B
-	ramp.add_point(0.38, Color(0.267, 0.408, 0.169))
-	ramp.add_point(0.52, Color(0.365, 0.561, 0.239))  # ancre #5D8F3D
-	ramp.add_point(0.62, Color(0.498, 0.663, 0.306))  # olive éclairé #7FA94E
-	ramp.set_color(ramp.get_point_count() - 1, Color(0.498, 0.663, 0.306))
+	ramp.set_color(0, colors[0])
+	ramp.add_point(0.38, colors[0])
+	ramp.add_point(0.52, colors[1])
+	ramp.add_point(0.62, colors[2])
+	ramp.set_color(ramp.get_point_count() - 1, colors[2])
 	var texture: NoiseTexture2D = NoiseTexture2D.new()
 	texture.noise = noise
 	texture.color_ramp = ramp
@@ -2072,13 +2124,17 @@ func _ground_material() -> StandardMaterial3D:
 	# Anisotrope : sans lui, la vue rasante retombe dans les mips basses et
 	# la variation disparaît — la cause exacte tracée en H-2c.
 	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
-	_ground_material_cache = mat
+	_macro_material_cache[kind] = mat
 	return mat
 
 
 func _material(color: Color, emissive: bool) -> StandardMaterial3D:
 	if not emissive and color == COL_GRASS:
 		return _ground_material()
+	if not emissive and color == COL_ROCK:
+		return _rock_material()
+	if not emissive and color == COL_MOUNTAIN:
+		return _mountain_material()
 	var key: String = "%s|%s" % [color.to_html(), emissive]
 	var cached: StandardMaterial3D = _material_cache.get(key) as StandardMaterial3D
 	if cached != null:

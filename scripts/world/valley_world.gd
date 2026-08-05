@@ -236,12 +236,14 @@ func _setup_environment() -> void:
 	# 1re capture V4.1 : 0,0016 + aerial 0,55 NOYAIENT le plan moyen (ruines
 	# dissoutes à 150 m) — l'inverse de « vallée lisible à 300 m ». Divisé.
 	environment.fog_enabled = true
-	environment.fog_light_color = Color(0.72, 0.77, 0.80)
+	# H-7b : le niveau de gris §7.16 a tranché — tiers haut ET milieu à
+	# 185/179 de luma : l'aerial à 0,62 noyait le plan moyen dans un champ
+	# pâle unique, défaisant le relief des passes H. Redescendu à 0,48 et
+	# brume refroidie/assombrie ; cible mesurée : ≥ 15 points d'écart entre
+	# tiers haut et milieu (script make_review_pack).
+	environment.fog_light_color = Color(0.67, 0.72, 0.77)
 	environment.fog_density = 0.0011
-	# Perspective aérienne RENFORCÉE plutôt que densité : elle fond les lointains
-	# vers la couleur du CIEL en fonction de la profondeur, sans épaissir l'air
-	# du plan moyen. Monter la densité avait dissous les ruines à 150 m.
-	environment.fog_aerial_perspective = 0.62
+	environment.fog_aerial_perspective = 0.48
 	environment.fog_sky_affect = 0.08
 	# Brume basse dans les creux (lit de rivière y≈0-6) : densité douce sous
 	# y = 6 — la crête (y 24) et le plateau (y 34) restent clairs.

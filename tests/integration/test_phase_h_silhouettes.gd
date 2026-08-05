@@ -479,6 +479,59 @@ func test_h6_la_citadelle_parle_le_langage_de_resonance() -> void:
 	await _settle(2)
 
 
+func test_h7_les_grandes_faces_ont_une_matiere_et_les_fleurs_sont_rondes() -> void:
+	## Passe H-7 — les derniers grands aplats du cadre, et deux dettes :
+	##  - les faces OCRE (plateau du donjon, falaises) et GRIS-BLEU (murs de
+	##    bordure) restaient des couleurs unies — la loi macro §5.1, prouvée
+	##    sur le sol herbeux (R-016), s'applique aux trois familles ;
+	##  - les fleurs-cubes lisaient « Minecraft » en gros plan (verdict H-4) ;
+	##  - les flancs verticaux de la SpawnSlope (dette H-3) attendaient leurs
+	##    épaulements.
+	var game_state: Node = _tree().root.get_node_or_null("/root/GameState")
+	var valley: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(valley)
+	await _settle(8)
+
+	var terrain: Node = valley.get_node("Terrain")
+	for face: Array in [
+		["DungeonPlateau/DungeonPlateauMesh", "la falaise du plateau"],
+		["BorderNorth/BorderNorthMesh", "le mur de bordure nord"],
+	]:
+		var mesh_instance: MeshInstance3D = terrain.get_node_or_null(String(face[0])) \
+			as MeshInstance3D
+		check_not_null(mesh_instance, "%s existe" % String(face[1]))
+		if mesh_instance != null:
+			var material: StandardMaterial3D = mesh_instance.material_override \
+				as StandardMaterial3D
+			check(material != null and material.albedo_texture is NoiseTexture2D
+				and material.uv1_world_triplanar,
+				"%s porte la matière macro (§5.1)" % String(face[1]))
+
+	var meadow_flowers: MultiMeshInstance3D = valley.get_node_or_null(
+		"Terrain/CrestMeadow/Flowers") as MultiMeshInstance3D
+	check(meadow_flowers != null
+		and not (meadow_flowers.multimesh.mesh is BoxMesh),
+		"les fleurs de la prairie ne sont plus des cubes")
+	var slope_flowers: MultiMeshInstance3D = valley.get_node_or_null(
+		"Terrain/SlopeFlora/SlopeFlowers") as MultiMeshInstance3D
+	check(slope_flowers != null
+		and not (slope_flowers.multimesh.mesh is BoxMesh),
+		"celles de la pente non plus")
+
+	var flanks: Node = valley.get_node_or_null("Terrain/SlopeFlora/SlopeFlanks")
+	check_not_null(flanks, "les flancs de la pente existent (dette H-3)")
+	if flanks != null:
+		var flank_shapes: Dictionary = _count_shapes(flanks)
+		check(int(flank_shapes["prisms"]) >= 6,
+			"…en épaulements de prismes (%d ≥ 6)" % int(flank_shapes["prisms"]))
+
+	_tree().root.remove_child(valley)
+	valley.queue_free()
+	if game_state != null:
+		game_state.call("set_flow", 0)
+	await _settle(2)
+
+
 func test_les_feuilles_torsadees_sont_olive() -> void:
 	## La texture rouge sang (moyenne RGB 95/13/13) reste sur disque, mais plus
 	## AUCUN arbre du monde ne la référence : les quatre `.gltf` pointent vers
