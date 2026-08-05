@@ -29,8 +29,10 @@ absente — même patron que le directeur) puis 5/5 (19 assertions) —
 escalade par échecs OBSERVÉS seulement (120 ticks sans montée prouvés),
 premier hint = la loi, salle résolue = silence, branchements RÉELS
 salle 1 (reset ×3) et salle 4 (décharges dans l'eau). Salles 44/44,
-donjon 2/2. **P2-5 TERMINÉ** — suite intégrale de clôture et revue
-contradictoire consignées ci-dessous à leur arrivée.
+donjon 2/2. **P2-5 TERMINÉ** — suite intégrale de CLÔTURE sur arbre
+`e284ffd` propre : **704/704, zéro échec** (preuves datées :
+`evidence/p2_5/2026-08-05_cloture_cycle2.md`). Revue contradictoire
+consignée ci-dessous à son arrivée.
 
 ## Campagne du 2026-08-05 (après-midi) — P2-4 TERMINÉ
 
