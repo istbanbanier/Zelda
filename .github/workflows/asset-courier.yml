@@ -26,15 +26,16 @@ jobs:
 
       - name: Sonder et télécharger les packs candidats
         run: |
-          set -uo pipefail
+          set +e
           mkdir -p /tmp/packs source_assets/external
           rapport() { echo "$1" >> /tmp/packs/RAPPORT.txt; }
           essayer() {
             local nom="$1"; local url="$2"
             echo "--- $nom : $url"
-            if curl -fsSL --max-time 300 -o "/tmp/packs/$nom.zip" "$url"; then
+            curl -fsSL --max-time 300 -o "/tmp/packs/$nom.zip" "$url"
+            if [ -s "/tmp/packs/$nom.zip" ] && unzip -tq "/tmp/packs/$nom.zip" >/dev/null 2>&1; then
               local taille=$(stat -c%s "/tmp/packs/$nom.zip")
-              if [ "$taille" -gt 10000 ] && unzip -tq "/tmp/packs/$nom.zip" >/dev/null 2>&1; then
+              if [ "$taille" -gt 10000 ]; then
                 mkdir -p "source_assets/external/$nom"
                 unzip -q -o "/tmp/packs/$nom.zip" -d "source_assets/external/$nom"
                 rapport "OK    $nom ($taille octets) <- $url"
@@ -45,21 +46,37 @@ jobs:
             rapport "ECHEC $nom <- $url"
             return 1
           }
-          # --- KayKit (Kay Lousberg, CC0) : dépôts GitHub officiels ---
-          essayer kaykit_dungeon_remastered "https://github.com/KayLousberg/KayKit-DungeonRemastered/archive/refs/heads/main.zip" \
-            || essayer kaykit_dungeon_remastered "https://github.com/KayLousberg/KayKit-DungeonRemastered-Pack/archive/refs/heads/main.zip"
-          essayer kaykit_adventurers "https://github.com/KayLousberg/KayKit-Adventurers/archive/refs/heads/main.zip"
-          essayer kaykit_skeletons "https://github.com/KayLousberg/KayKit-Skeletons/archive/refs/heads/main.zip"
-          essayer kaykit_halloween "https://github.com/KayLousberg/KayKit-Halloween/archive/refs/heads/main.zip"
-          # --- Kenney (CC0) : miroirs GitHub officiels quand ils existent ---
-          essayer kenney_input_prompts "https://github.com/KenneyNL/Input-Prompts/archive/refs/heads/main.zip"
-          # --- Kenney direct (les URLs stables connues) ---
+          # DÉCOUVERTE par l'API GitHub : les vrais noms de dépôts des auteurs
+          # CC0, au lieu de les deviner (v1 : 404 sur des noms supposés).
+          decouvrir() {
+            local auteur="$1"; local motif="$2"
+            curl -fsSL --max-time 60 \
+              "https://api.github.com/users/$auteur/repos?per_page=100" \
+              | python3 -c "import json,sys,re; [print(r['name'], r['default_branch']) for r in json.load(sys.stdin) if re.search('$motif', r['name'], re.I)]"
+          }
+          echo "== dépôts KayLousberg ==" ; decouvrir KayLousberg "." | tee /tmp/packs/kay.txt
+          echo "== dépôts KenneyNL =="    ; decouvrir KenneyNL "." | tee /tmp/packs/kenney.txt
+          echo "== dépôts Quaternius =="  ; decouvrir Quaternius "." | tee /tmp/packs/quaternius.txt
+          telecharger_depots() {
+            local auteur="$1"; local fichier="$2"; local motif="$3"
+            while read -r nom branche; do
+              [ -z "$nom" ] && continue
+              echo "$nom" | grep -qiE "$motif" || continue
+              essayer "$(echo "${auteur}_${nom}" | tr 'A-Z-' 'a-z_')" \
+                "https://github.com/$auteur/$nom/archive/refs/heads/$branche.zip"
+            done < "$fichier"
+          }
+          telecharger_depots KayLousberg /tmp/packs/kay.txt "dungeon|adventur|skelet|forest|nature|resource|halloween|city"
+          telecharger_depots KenneyNL /tmp/packs/kenney.txt "prompt|input|starter|particle"
+          telecharger_depots Quaternius /tmp/packs/quaternius.txt "nature|dungeon|animated|character|monster|prop"
+          # Kenney direct — URLs à empreinte, tolérées en échec.
           essayer kenney_particle_pack "https://kenney.nl/media/pages/assets/particle-pack/c4d7b747fd-1677693518/kenney_particle-pack.zip"
-          essayer kenney_ui_pack "https://kenney.nl/media/pages/assets/ui-pack/aa4ee3f26d-1699003052/kenney_ui-pack.zip"
           essayer kenney_impact_sounds "https://kenney.nl/media/pages/assets/impact-sounds/eee567e0e9-1677589014/kenney_impact-sounds.zip"
-          essayer kenney_rpg_audio "https://kenney.nl/media/pages/assets/rpg-audio/aa9532b3d5-1677590159/kenney_rpg-audio.zip"
           echo "===== RAPPORT ====="
           cat /tmp/packs/RAPPORT.txt
+          # Budget dépôt : refuser un atterrissage > 400 Mo (avant élagage).
+          du -sh source_assets/external || true
+          exit 0
 
       - name: Élaguer les formats redondants (garder gltf/glb, textures, sons, licences)
         run: |
