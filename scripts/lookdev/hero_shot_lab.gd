@@ -166,6 +166,9 @@ func _build_hero() -> void:
 		if skeleton != null:
 			_lower_arm(skeleton, "upperarm_l", -70.0)
 			_lower_arm(skeleton, "upperarm_r", 70.0)
+			# Passe V3 : les cinq signes de dos (§13.1) — mantelet,
+			# épaulière, Bracelet, arc, carquois.
+			HeroSigns.attach(skeleton, hero)
 	else:
 		var proxy: MeshInstance3D = MeshInstance3D.new()
 		proxy.name = "Hero"
