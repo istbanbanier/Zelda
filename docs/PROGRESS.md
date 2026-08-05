@@ -3103,13 +3103,35 @@ Rouge 1/10 prouvé (le test-gardien des dégâts §13.5 vert avant ET
 après — c'est son rôle), vert 6/6 ; salles 44/44, réactions 7/7,
 playthrough donjon 2/2.
 
+### Fait ensuite : P2-5 tranche 4 — hints gradués (rouge → 5/5)
+
+`PuzzleHintTracker` (P2 §9.8) : trois échecs OBSERVÉS ouvrent le
+palier 1 (rappeler la LOI), six le palier 2 (attirer vers la CAUSE),
+neuf le palier 3 (montrer la RELATION) — le temps seul n'ouvre RIEN
+(prouvé : 120 ticks sans montée), jamais la séquence complète au
+premier palier, salle résolue = silence définitif (`close()` branché
+sur `solved`/`rerouted`). `DungeonRoom.install_hints` branche les
+échecs RÉELS que chaque salle possède déjà : bouton reset pressé,
+objet essentiel hors limites (`rescued`), décharge subie par le joueur
+(équipe `hazard` seule — un combat perdu n'est pas un échec d'énigme).
+Textes loi/cause/relation par salle. Présentation graybox intégrée
+(ligne discrète, remplacée au Cycle 3) ; l'option §12.3 viendra avec
+l'écran d'options. Rouge prouvé (classe absente), vert 5/5 dont les
+DEUX branchements réels (salle 1 : reset ×3 → palier 1 ; salle 4 :
+décharges comptées + reset → palier 1). Salles 44/44, donjon 2/2.
+Solveur : déjà prouvé au Gate F (256 configurations, salle 3).
+**P2-5 est TERMINÉ — le Cycle 2 (P2-3 → P2-5) est complet.**
+
 ### Prochaine action exacte
 
-**P2-5 fin** : le dernier morceau du jalon ROADMAP (« solveur/hints »)
-— les HINTS GRADUÉS de P2 §9.8 : déclenchés par l'OBSERVATION d'échecs
-(jamais un simple minuteur), trois paliers — rappeler la loi, attirer
-vers la cause, montrer la relation — et jamais la séquence complète au
-premier palier. Auditer d'abord ce que les salles savent déjà compter
-comme « échec » (resets pressés, chutes, décharges subies, temps sans
-progrès du graphe) pour ancrer le déclencheur dans du réel, puis un
-composant `PuzzleHintTracker` partagé par les quatre salles.
+1. Suite intégrale de clôture (en cours au moment du handoff — le
+   résultat va dans `TEST_REPORT.md`).
+2. **Revue contradictoire à contexte frais du jalon P2-5** (DoD
+   CLAUDE.md) : spec P2 §9.8/§10.2/§10.5/§4.2 + diff `bde635d`→HEAD +
+   preuves → verdict PASS/FAIL/BLOQUÉ consigné.
+3. Puis **Cycle 3 (art)** s'ouvre : passe V3 héros (5 signes §13.1,
+   Bracelet visible) + la présentation différée du Bracelet (VFX/audio
+   P2-2) + corrections adversariales #3-5 (rivière en S turquoise,
+   camp dans le cadre North Star, pylône à 75-79 % X, éclair cœur
+   blanc, nuage modelé, cape du héros). Piloter par `HeroShotLab` et
+   des captures comparées, jamais par l'impression.

@@ -28,6 +28,7 @@ const COL_COPPER: Color = Color(0.55, 0.36, 0.22)
 
 var _blocks: Array[PushableBlock] = []
 var _graph: ElectricGraph = null
+var _hints_tracker: PuzzleHintTracker = null
 
 
 ## Enregistre un objet d'énigme essentiel (§14.3) : le reset et la
@@ -133,6 +134,44 @@ func load_room_state() -> Dictionary:
 	var data: Dictionary = save_system.call("load_slot", SAVE_SLOT) as Dictionary
 	var rooms: Dictionary = data.get("dungeon", {}) as Dictionary
 	return rooms.get(String(room_id), {}) as Dictionary
+
+
+## P2 §9.8 : installe les hints gradués et BRANCHE les échecs réels que
+## la salle possède déjà — bouton reset pressé, objet essentiel hors
+## limites, décharge subie par le joueur. À appeler à la FIN du `_ready`
+## de la salle, quand boutons, blocs et joueur existent. La résolution
+## (`solved`/`rerouted`) FERME les hints : une énigme comprise n'a plus
+## besoin d'aide.
+func install_hints(law: String, cause: String, relation: String) -> void:
+	_hints_tracker = PuzzleHintTracker.new()
+	_hints_tracker.name = "PuzzleHints"
+	_hints_tracker.set_hints(law, cause, relation)
+	add_child(_hints_tracker)
+	for node: Node in find_children("*", "ResetButton", true, false):
+		(node as ResetButton).pressed.connect(
+			func() -> void: _hints_tracker.record_failure(&"reset"))
+	for block: PushableBlock in _blocks:
+		block.rescued.connect(
+			func() -> void: _hints_tracker.record_failure(&"hors_limites"))
+	var player: PlayerController = get_node_or_null("Player") \
+		as PlayerController
+	if player != null and player.health() != null:
+		player.health().damaged.connect(_on_hint_player_damaged)
+	if has_signal("solved"):
+		connect("solved", _hints_tracker.close)
+	if has_signal("rerouted"):
+		connect("rerouted", _hints_tracker.close)
+
+
+## Seules les décharges d'un DANGER comptent : un échec observé, pas un
+## combat perdu.
+func _on_hint_player_damaged(event: DamageEvent) -> void:
+	if event != null and event.team == &"hazard" and _hints_tracker != null:
+		_hints_tracker.record_failure(&"choc")
+
+
+func hints() -> PuzzleHintTracker:
+	return _hints_tracker
 
 
 ## Consomme le tag d'apparition posé par la porte qu'on vient de franchir

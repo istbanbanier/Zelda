@@ -23,6 +23,14 @@ matière eau + arbitre garanti, mouille à l'entrée, relaie l'électricité
 à la matière baignée (métal chargé ×1,5 humide, bois jamais), terre
 suspend le relais, chemin de dégâts §13.5 verrouillé par test-gardien
 (vert avant ET après). Salles 44/44, réactions 7/7, donjon 2/2.
+Intégration complète post-tranches 2-3 : **699/699, zéro échec**
+(arbre `85a56e7`). **Hints gradués** (P2 §9.8) : rouge prouvé (classe
+absente — même patron que le directeur) puis 5/5 (19 assertions) —
+escalade par échecs OBSERVÉS seulement (120 ticks sans montée prouvés),
+premier hint = la loi, salle résolue = silence, branchements RÉELS
+salle 1 (reset ×3) et salle 4 (décharges dans l'eau). Salles 44/44,
+donjon 2/2. **P2-5 TERMINÉ** — suite intégrale de clôture et revue
+contradictoire consignées ci-dessous à leur arrivée.
 
 ## Campagne du 2026-08-05 (après-midi) — P2-4 TERMINÉ
 

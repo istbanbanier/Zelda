@@ -77,6 +77,11 @@ func _ready() -> void:
 		&"room1_from_hall": Vector3(0, 0.3, -17.5),
 		&"room1_from_vestibule": Vector3(0, 0.3, 11.0),
 	})
+	# P2 §9.8 : hints gradués sur échecs OBSERVÉS — loi, cause, relation.
+	install_hints(
+		"Le courant veut une chaîne ininterrompue, de la source au récepteur.",
+		"Entre les deux plaques, il manque un maillon — quelque chose doit les toucher toutes les deux.",
+		"Pousse le bloc de métal entre les plaques : il ferme la chaîne, la porte suit.")
 
 
 ## Coque : sol, plafond, murs, seuil d'entrée au sud, porte au nord et
