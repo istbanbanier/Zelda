@@ -1252,6 +1252,7 @@ func _earth_core(altar: Node3D) -> void:
 	state.profile = load(
 		"res://resources/materials/MAT_PROFILE_terre_conductrice.tres") \
 		as MaterialProfile
+	state.charge_decay_enabled = false
 	holder.add_child(state)
 	var marker: ResonanceTargetComponent = ResonanceTargetComponent.new()
 	marker.kind = &"material"

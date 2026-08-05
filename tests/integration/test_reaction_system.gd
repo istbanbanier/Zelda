@@ -142,6 +142,26 @@ func test_a_cyclic_chain_touches_each_target_once() -> void:
 	_teardown()
 
 
+func test_a_world_core_can_refuse_charge_decay() -> void:
+	var tree: SceneTree = _tree()
+	_setup()
+	var keeper: MaterialStateComponent = _target(
+		_profile(&"terre_conductrice", 0.6, 4.0, 0.0, 0.0, false))
+	keeper.charge_decay_enabled = false
+	keeper.add_charge(4.0)
+	var leaker: MaterialStateComponent = _target(
+		_profile(&"metal", 0.9, 4.0, 0.0, 0.0, false))
+	leaker.add_charge(4.0)
+	for i: int in range(200):
+		await tree.physics_frame
+	check(keeper.charge() == 4.0,
+		"un cœur de POI RETIENT sa charge (%.2f) — l'exercice attend le joueur" \
+			% keeper.charge())
+	check(leaker.charge() < 4.0,
+		"la décroissance par défaut reste la loi (%.2f < 4)" % leaker.charge())
+	_teardown()
+
+
 func test_the_per_tick_budget_defers_overflow_without_losing_packets() -> void:
 	_setup()
 	var tree: SceneTree = _tree()

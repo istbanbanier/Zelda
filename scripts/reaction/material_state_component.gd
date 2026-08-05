@@ -35,6 +35,10 @@ const CHARGE_DECAY_PER_SECOND: float = 0.35
 const OVERLOAD_TELEGRAPH: float = 0.9
 
 @export var profile: MaterialProfile = null
+## Les cœurs de POI (autel de terre, tablier de pont) RETIENNENT leur
+## charge : l'exercice doit attendre le joueur, pas s'évaporer en 11 s.
+## Vrai partout ailleurs — la décroissance reste la loi par défaut.
+@export var charge_decay_enabled: bool = true
 
 var _wet_timer: float = 0.0
 var _burn_timer: float = 0.0
@@ -154,7 +158,7 @@ func _physics_process(delta: float) -> void:
 			overloaded.emit()
 		else:
 			busy = true
-	if _charge > 0.0 and _overload_timer <= 0.0:
+	if _charge > 0.0 and _overload_timer <= 0.0 and charge_decay_enabled:
 		var before: float = _charge
 		_charge = maxf(0.0, _charge - CHARGE_DECAY_PER_SECOND * delta)
 		if _charge <= 0.0 and before > 0.0:

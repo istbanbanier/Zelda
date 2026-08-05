@@ -2985,9 +2985,25 @@ le cœur se rallume — cohérence lisible). C'est l'« exercice sûr » de
 Ground que P2 §3.7 exige avant le donjon. 2/2 fail-first (10 assertions),
 reliques 7/7, monde 9/9.
 
+### Fait ensuite : P2-4b — pont magnétique (composant) + correctif décroissance
+
+DÉFAUT DE DESIGN repéré et corrigé fail-first : la décroissance de
+charge universelle (0,35/s) aurait vidé tout cœur de POI en ~11 s —
+l'autel se serait éteint avant l'arrivée du joueur. Correctif :
+`charge_decay_enabled` (7/7), faux sur les cœurs de POI, la loi par
+défaut inchangée partout ailleurs. L'autel corrigé.
+
+Le PONT MAGNÉTIQUE (2/2, 11 assertions, vert du premier coup) : diorama
+autonome (rives + vide + tablier chargé qui retient sa charge) ; on se
+poste DERRIÈRE et on REPOUSSE (la Polarité enseigne son second mode) ;
+l'entrée en zone verrouille — gel, alignement par transform (légitime :
+plus un corps actif), mise à la terre (le raccourci est DÉFINITIF, la
+Polarité répond ensuite pas_charge), signal unique, rayon de portance
+prouvé au centre du vide.
+
 ### Prochaine action exacte
 
-P2-4b : le PONT MAGNÉTIQUE (route des ruines) — tablier métallique
-RigidBody chargé, tiré en place par Polarité jusqu'à une zone de
-verrouillage (gel + signal), ouvre un raccourci. Puis bassin conducteur
-(Arc Link au-dessus de l'eau) et Fragments (Écho/Flux/Élan).
+P2-4c : PLACER le pont dans la vallée (route des ruines) — d'abord une
+sonde de terrain (leçon des jupes H-2 : jamais de placement aveugle),
+puis site + POI + test de monde. Ensuite bassin conducteur (Arc Link
+au-dessus de l'eau) et Fragments (Écho/Flux/Élan).
