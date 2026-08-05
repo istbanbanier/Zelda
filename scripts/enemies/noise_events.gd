@@ -21,3 +21,8 @@ static func emit(tree: SceneTree, position: Vector3, radius: float,
 	for node: Node in tree.get_nodes_in_group("enemies"):
 		if node.has_method("hear_noise"):
 			node.call("hear_noise", position, radius, kind)
+	# P2-4e (Écho) : les écouteurs déclarés entendent aussi — même fait de
+	# perception, un groupe de plus, aucun état global.
+	for node: Node in tree.get_nodes_in_group("noise_listeners"):
+		if node.has_method("hear_noise"):
+			node.call("hear_noise", position, radius, kind)

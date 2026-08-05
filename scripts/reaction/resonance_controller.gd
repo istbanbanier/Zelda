@@ -15,6 +15,10 @@ signal link_created(a: ElectricNode, b: ElectricNode)
 signal link_dissolved()
 signal ground_completed(target: Node)
 signal ground_cancelled(reason: StringName)
+signal fragment_granted(id: StringName)
+## Écho (P2-4e) : direction normalisée vers la dernière source sonore
+## perçue — une indication, jamais une vision à travers les murs.
+signal echo_trace(direction: Vector3)
 
 ## Valeurs de départ P2 §3.2 — à migrer en Resource de tuning quand les
 ## cinq opérations existeront (une `ResonanceActionDefinition` par opération).
@@ -49,6 +53,17 @@ const ARC_STEP_COOLDOWN: float = 0.35
 const GROUND_RANGE: float = 3.0
 const GROUND_STARTUP: float = 0.35
 
+## Fragments de Résonance (P2-4e, bible §5) — trois, facultatifs, le boss
+## reste solvable sans. Une propriété FORTE chacun, jamais un correctif.
+const FRAGMENT_IDS: Array[StringName] = [&"echo", &"flux", &"elan"]
+const FLUX_MIN_CHARGE: float = 2.0
+const FLUX_REFUND: float = 15.0
+const FLUX_COOLDOWN: float = 10.0
+## Fenêtre de fraîcheur d'un bruit pour l'Écho.
+const ECHO_MEMORY: float = 8.0
+## Part de l'élan du dash conservée à l'arrivée (Élan) — bornée.
+const ELAN_KEEP: float = 0.35
+
 ## Focus (P2 §3.1/§3.8) — sélection le long de l'axe de visée.
 const FOCUS_RANGE: float = 18.0
 ## Demi-cône de candidature : dot minimal entre visée et direction cible.
@@ -60,6 +75,12 @@ var _link: ResonanceLinkNode = null
 var _ground_target: MaterialStateComponent = null
 var _ground_player: PlayerController = null
 var _ground_timer: float = 0.0
+var _fragments: Array[StringName] = []
+var _flux_cooldown: float = 0.0
+var _last_noise_at: Vector3 = Vector3.ZERO
+var _last_noise_age: float = INF
+## Garde anti-boucle : vrai pendant l'émission de NOTRE propre Pulse.
+var _emitting_own_noise: bool = false
 var _focus_engaged: bool = false
 var _focus_candidates: Array[ResonanceTargetComponent] = []
 var _focus_selected: ResonanceTargetComponent = null
@@ -77,12 +98,16 @@ var _polarity_timer: float = 0.0
 func _ready() -> void:
 	# Auto-piloté : cooldowns et engagement Polarité vivent au tick physique
 	# du composant lui-même — le propriétaire ne fait que DÉCIDER (try_*).
+	add_to_group(&"noise_listeners")
 	set_physics_process(true)
 
 
 func _physics_process(delta: float) -> void:
 	_pulse_cooldown = maxf(0.0, _pulse_cooldown - delta)
 	_arc_step_cooldown = maxf(0.0, _arc_step_cooldown - delta)
+	_flux_cooldown = maxf(0.0, _flux_cooldown - delta)
+	if _last_noise_age < INF:
+		_last_noise_age += delta
 	_drive_polarity(delta)
 	_drive_ground(delta)
 
@@ -110,7 +135,14 @@ func try_pulse(body: CharacterBody3D) -> StringName:
 		target.reveal(REVEAL_DURATION)
 		revealed_count += 1
 	# Le Pulse s'entend (P2 §3.2) — même canal que sprint/impact/flèche.
+	_emitting_own_noise = true
 	NoiseEvents.emit(get_tree(), body.global_position, PULSE_NOISE_RADIUS, &"pulse")
+	_emitting_own_noise = false
+	# Écho (P2-4e) : le Pulse pointe vers la dernière source sonore FRAÎCHE.
+	if has_fragment(&"echo") and _last_noise_age <= ECHO_MEMORY:
+		var toward: Vector3 = _last_noise_at - body.global_position
+		if toward.length_squared() > 0.25:
+			echo_trace.emit(toward.normalized())
 	pulse_fired.emit(revealed_count)
 	return &"fired"
 
@@ -191,6 +223,33 @@ func _material_state_of(target: Node) -> MaterialStateComponent:
 		if child is MaterialStateComponent:
 			return child as MaterialStateComponent
 	return null
+
+
+## --- Fragments de Résonance (P2-4e) ---
+
+func grant_fragment(id: StringName) -> bool:
+	if not id in FRAGMENT_IDS or id in _fragments:
+		return false
+	_fragments.append(id)
+	fragment_granted.emit(id)
+	return true
+
+
+func has_fragment(id: StringName) -> bool:
+	return id in _fragments
+
+
+func fragments() -> Array[StringName]:
+	return _fragments.duplicate()
+
+
+## Oreille de l'Écho — même canal que la perception ennemie (§12.7).
+## Notre propre Pulse est exclu : une trace vers soi-même ne dit rien.
+func hear_noise(at: Vector3, _radius: float, _kind: StringName) -> void:
+	if _emitting_own_noise:
+		return
+	_last_noise_at = at
+	_last_noise_age = 0.0
 
 
 ## Cible du raccourci direct de mise à la terre : l'état matière CHARGÉ le
@@ -374,9 +433,19 @@ func _drive_ground(delta: float) -> void:
 		return
 	# Fin du startup : le drainage s'applique EN ENTIER, maintenant.
 	var target: MaterialStateComponent = _ground_target
+	var player: PlayerController = _ground_player
 	_ground_target = null
 	_ground_player = null
+	var drained: float = target.charge()
 	target.ground()
+	# Flux (P2-4e) : une terre SIGNIFICATIVE rembourse un peu d'endurance.
+	if has_fragment(&"flux") and drained >= FLUX_MIN_CHARGE \
+			and _flux_cooldown <= 0.0 and player != null:
+		var pool: StaminaComponent = player.get_node_or_null(
+			"Components/StaminaComponent") as StaminaComponent
+		if pool != null:
+			pool.restore(FLUX_REFUND)
+			_flux_cooldown = FLUX_COOLDOWN
 	ground_completed.emit(target)
 
 

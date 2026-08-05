@@ -421,7 +421,15 @@ func _drive_arc_step(delta: float) -> void:
 	planar.y = 0.0
 	if planar.length() < 0.35 or _arc_step_time_left <= 0.0:
 		_arc_step_active = false
-		velocity = Vector3.ZERO
+		# Élan (P2-4e) : le Fragment conserve une portion BORNÉE de l'élan
+		# de sortie — plafonnée à la vitesse de course, jamais l'élan du dash.
+		if _resonance != null and _resonance.has_fragment(&"elan"):
+			var kept: Vector3 = Vector3(velocity.x, 0.0, velocity.z) \
+				* ResonanceController.ELAN_KEEP
+			velocity = kept.limit_length(tuning.run_speed)
+			velocity.y = 0.0
+		else:
+			velocity = Vector3.ZERO
 		return
 	velocity = planar.normalized() * ResonanceController.ARC_STEP_SPEED
 	velocity.y = 0.0

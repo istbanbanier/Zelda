@@ -3023,10 +3023,24 @@ port de l'eau (portée 0,6) — rapproché à 0,5. Placement sondé (16, 2,
 28, rive est du S), 33ᵉ lieu déclaré (POI + ancre PUZZLE), reliques 7/7
 à SIX lieux, ancres 8/8 (34 saines).
 
+### Fait ensuite : P2-4e — les trois Fragments (4/4, 22 assertions)
+
+API stricte (trois identifiants connus, jamais deux fois, l'inconnu
+refusé, signal). ÉCHO : le contrôleur rejoint un groupe
+`noise_listeners` (NoiseEvents étendu — même fait de perception, un
+groupe de plus), mémorise la dernière source FRAÎCHE (≤ 8 s), et le
+Pulse émet une direction normalisée — jamais son propre bruit (garde
+anti-boucle pendant l'émission). FLUX : une terre ≥ 2 de charge rend
+15 d'endurance (nouvelle API StaminaComponent.restore, notifiée),
+cooldown 10 s. ÉLAN : l'arrivée d'Arc Step conserve 35 % de l'élan,
+plafonné à la vitesse de course. Deux bugs de MESURE corrigés en route
+(pic capté pendant le dash encore actif ; régénération naturelle
+polluant la phase cooldown — dépenser juste avant mesure).
+
 ### Prochaine action exacte
 
-P2-4e (FIN de P2-4) : les FRAGMENTS facultatifs (bible §5) — Écho
-(trace directionnelle de la dernière source sonore au Pulse), Flux
-(remboursement d'endurance sur mise à la terre réussie, cooldown),
-Élan (conservation bornée de l'élan d'Arc Step). Trois maximum, boss
-solvable sans. Puis revue de fin de P2-4 et TEST_REPORT.
+Sous-tranche restante de P2-4 : PERSISTANCE des Fragments (audit du
+constructeur de payload du save v4) + POSE des trois pickups en monde
+(nid vertical pour Élan, territoire d'écoute pour Écho, autel pour
+Flux ?) — puis revue de fin de P2-4. Ensuite : P2-5 (migration
+donjon/boss vers les lois, boss director).
