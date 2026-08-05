@@ -3083,13 +3083,33 @@ ouverte sont exclus ; les pylônes ne se déchargent pas sur une rupture
 boss 43/43, playthrough inchangé — le golden path ne porte aucun
 `posture_damage`, dérive nulle par construction.
 
+### Fait ensuite : P2-5 tranche 3 — l'eau du donjon parle les lois (6/6)
+
+L'audit a montré que le profil `eau` ne STOCKE pas (capacité 0,
+conductivité 1) : la vérité des lois n'est donc pas « l'eau se
+charge » mais « l'eau RELAIE ». Implémenté dans `ElectricHazard`
+(WATER_ZONE seulement) : matière `eau` portée par la nappe, arbitre
+`ReactionSystem` garanti (localisé, sinon créé en nœud de scène —
+D-047), masque élargi aux props (128 — le chemin de dégâts ne lit que
+les hurtbox, dérive nulle), `body_entered` → paquet `wetness` (l'eau
+mouille, tension ou pas), et pendant la décharge : une impulsion
+électrique par cadence de dégâts et par cible À MATIÈRE (action_id
+par impulsion, chaîne anti-boucle §4.3). Le métal baigné est mouillé
+puis chargé (couplage humide ×1,5), le bois traverse sans jamais se
+charger, une eau mise à la terre SUSPEND le relais (la terre est une
+loi de matière, pas un coupe-circuit : les dégâts du graphe
+continuent). La planche de la salle 4 est du bois aux yeux des lois.
+Rouge 1/10 prouvé (le test-gardien des dégâts §13.5 vert avant ET
+après — c'est son rôle), vert 6/6 ; salles 44/44, réactions 7/7,
+playthrough donjon 2/2.
+
 ### Prochaine action exacte
 
-**P2-5 suite** : migration des mécanismes du donjon vers les lois
-communes — l'eau de la salle 4 porte `MaterialStateComponent` (états
-Wet/Charged au lieu du branchement direct au graphe seul), et les
-dangers électriques (`ElectricHazard._apply_shock`) transmettent des
-`ElementPacket` via le `ReactionSystem` (chaîne causale, anti-boucle)
-au lieu de fabriquer leur `DamageEvent` local. Auditer d'abord ce que
-`ReactionSystem` attend (scène/groupe `reaction_system`) pour brancher
-une salle SANS casser les suites du donjon (30+ tests Gate F).
+**P2-5 fin** : le dernier morceau du jalon ROADMAP (« solveur/hints »)
+— les HINTS GRADUÉS de P2 §9.8 : déclenchés par l'OBSERVATION d'échecs
+(jamais un simple minuteur), trois paliers — rappeler la loi, attirer
+vers la cause, montrer la relation — et jamais la séquence complète au
+premier palier. Auditer d'abord ce que les salles savent déjà compter
+comme « échec » (resets pressés, chutes, décharges subies, temps sans
+progrès du graphe) pour ancrer le déclencheur dans du réel, puis un
+composant `PuzzleHintTracker` partagé par les quatre salles.

@@ -317,6 +317,13 @@ func _build_objects() -> void:
 	plank_mesh.material_override = plank_material
 	_plank.add_child(plank_mesh)
 	_plank.add_to_group("insulated")
+	# P2-5 : la planche est du BOIS aux yeux des lois — l'eau la mouille,
+	# le relais électrique la traverse sans jamais la charger (§4.2).
+	var plank_matter: MaterialStateComponent = MaterialStateComponent.new()
+	plank_matter.name = "MaterialState"
+	plank_matter.profile = preload(
+		"res://resources/materials/MAT_PROFILE_bois.tres") as MaterialProfile
+	_plank.add_child(plank_matter)
 	_plank.position = PLANK_START   # AVANT add_child (règle D.0)
 	add_child(_plank)
 	_plank.set_rescue_transform(Transform3D(Basis.IDENTITY, PLANK_START))

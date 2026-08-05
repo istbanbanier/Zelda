@@ -17,7 +17,12 @@ rupture = fenêtre de noyau 3,5 s < 6 s de la terre, intention
 brise-garde seule, éveil/fenêtre exclus, terre remet la jauge à neuf,
 fin de fenêtre referme l'armure. Boss au complet : 43/43 ; playthrough
 boss_run inchangé (mêmes phases, 0/560) — le golden path ne porte aucun
-`posture_damage`, dérive nulle par construction.
+`posture_damage`, dérive nulle par construction. **Lois du donjon**
+(P2 §4.2/§9.2) : fail-first 1/10 rouge puis 6/6 — nappe WATER_ZONE =
+matière eau + arbitre garanti, mouille à l'entrée, relaie l'électricité
+à la matière baignée (métal chargé ×1,5 humide, bois jamais), terre
+suspend le relais, chemin de dégâts §13.5 verrouillé par test-gardien
+(vert avant ET après). Salles 44/44, réactions 7/7, donjon 2/2.
 
 ## Campagne du 2026-08-05 (après-midi) — P2-4 TERMINÉ
 
