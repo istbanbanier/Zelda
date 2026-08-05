@@ -54,6 +54,17 @@ func _ready() -> void:
 		# Face du modèle = +Z (convention ART-Q1), caméra en +Z : de face
 		# sans rotation. Le dos du héros, lui, se juge sur la vista.
 		add_child(visual)
+		# Passe V3 : le héros porte ses CINQ SIGNES (§13.1) — la
+		# silhouette §30.3 se juge SIGNÉE, dos à la caméra (le X, le
+		# mantelet et l'épaulière vivent dans le dos).
+		if CHARACTERS[i][0] == &"char.hero":
+			var skeleton: Skeleton3D = null
+			for node: Node in visual.find_children("*", "Skeleton3D",
+					true, false):
+				skeleton = node as Skeleton3D
+			if skeleton != null:
+				HeroSigns.attach(skeleton, visual)
+				visual.rotation_degrees = Vector3(0.0, 180.0, 0.0)
 		mounted_characters += 1
 		if flat:
 			_flatten(visual)
