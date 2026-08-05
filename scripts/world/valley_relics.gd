@@ -88,10 +88,19 @@ const POI_OBSERVATORY: StringName = &"valley.poi.ruined_observatory.01"
 const POI_CEMETERY: StringName = &"valley.poi.barrow_cemetery.01"
 const POI_RAMPART: StringName = &"valley.poi.old_rampart.01"
 const POI_SHRINE: StringName = &"valley.poi.forest_shrine.01"
+const POI_BRIDGE: StringName = &"valley.poi.magnetic_bridge.01"
+## Site du pont : SONDÉ par `tools/godot/probe_bridge_site.gd` — plaine
+## plate à y = 2,00 (écart 0,00 sur l'emprise 20 × 6 m), rives posées sur le
+## sol. Sur la route des ruines, entre l'aqueduc et la ferme.
+const SITE_BRIDGE: Vector3 = Vector3(-34.0, 3.0, 44.0)
 
 ## ANCRAGES de récompense (contrat `RewardAnchor`). Positions éprouvées par
 ## `tools/godot/probe_reward_anchors.gd` dans la vallée montée, puis figées.
 const ANCHORS: Dictionary = {
+	POI_BRIDGE: {
+		"at": Vector3(6.0, 0.0, 2.0), "approach": Vector3(8.0, 0.0, 2.0),
+		"kind": RewardAnchor.Kind.PUZZLE,
+	},
 	POI_OBSERVATORY: {
 		"at": Vector3(2.0, 0.0, -1.0), "approach": Vector3(2.0, 0.0, 2.0),
 		"kind": RewardAnchor.Kind.STORY,
@@ -147,6 +156,7 @@ func _ready() -> void:
 	_build_cemetery()
 	_build_rampart()
 	_build_shrine()
+	_build_magnetic_bridge()
 
 
 func piece_count() -> int:
@@ -1282,3 +1292,17 @@ func _earth_core(altar: Node3D) -> void:
 			core_material.emission_energy_multiplier = 1.4 if active else 0.0
 			if active:
 				stele_material.emission_energy_multiplier = 0.0)
+
+
+## Pont magnétique (P2-4c) — l'exercice de Polarité de la route des ruines :
+## repousser le tablier chargé jusqu'au verrouillage ouvre la traversée et
+## le raccourci. Le diorama est autonome (`MagneticBridge`) ; ici : le site,
+## le POI et la récompense de la rive lointaine.
+func _build_magnetic_bridge() -> void:
+	var site: Node3D = _site("PontMagnetique", SITE_BRIDGE)
+	site.rotation_degrees = Vector3(0.0, 90.0, 0.0)
+	var bridge: MagneticBridge = MagneticBridge.new()
+	site.add_child(bridge)
+	# `_place_poi` attache déjà l'ancrage depuis la table — ne pas doubler.
+	_place_poi(site, POI_BRIDGE, "Pont magnétique", &"vestiges",
+		Vector3(0.0, 1.0, 0.0), Vector3(24.0, 8.0, 12.0))

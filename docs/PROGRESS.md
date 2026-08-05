@@ -3001,9 +3001,20 @@ plus un corps actif), mise à la terre (le raccourci est DÉFINITIF, la
 Polarité répond ensuite pas_charge), signal unique, rayon de portance
 prouvé au centre du vide.
 
+### Fait ensuite : P2-4c — le pont est dans la vallée
+
+Sonde d'abord (`tools/godot/probe_bridge_site.gd` : 8 candidats sur la
+route des ruines, tous plats à y = 2,00) ; site retenu (−34, 3, 44),
+lacet 90°, entre l'aqueduc et la ferme. Implanté dans ValleyRelics comme
+32ᵉ LIEU déclaré (POI valley.poi.magnetic_bridge.01, ancre PUZZLE sur la
+rive lointaine). Deux défauts attrapés par les suites de lieux : ancre
+enterrée (y local −0,5 = dans la rive → 0,0) et DOUBLE attache (la table
+ANCHORS attache déjà via _place_poi). Placement 1/1 (8 assertions),
+reliques 7/7 (compte 4→5 délibéré), ancres 8/8 (33 saines).
+
 ### Prochaine action exacte
 
-P2-4c : PLACER le pont dans la vallée (route des ruines) — d'abord une
-sonde de terrain (leçon des jupes H-2 : jamais de placement aveugle),
-puis site + POI + test de monde. Ensuite bassin conducteur (Arc Link
-au-dessus de l'eau) et Fragments (Écho/Flux/Élan).
+P2-4d : le BASSIN CONDUCTEUR (route de la rivière) — source + zone d'eau
++ récepteur pré-arrangés pour qu'UN Arc Link complète le circuit
+(l'enseignement d'eau×électricité AVANT la salle 4 du donjon). Puis les
+Fragments (Écho/Flux/Élan) et la revue de fin de P2-4.
