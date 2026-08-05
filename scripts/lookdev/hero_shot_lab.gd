@@ -45,11 +45,13 @@ const COL_CYAN: Color = Color(0.133, 0.851, 0.925)
 ## (pitch −2° : horizon vrai à 54,3 %). Un ruban posé sur cette pente
 ## vit dans la bande 63-66 % : le S se lit en X (34 → 50 %), la
 ## profondeur par la convergence et l'amincissement.
+## L'amorce entre par le BAS-GAUCHE, devant le héros (leçon v1 : à 40 %
+## X elle passait derrière lui), puis le S remonte vers le centre.
 const RIVER_SCREEN: Array[Vector3] = [
-	Vector3(40.0, 66.0, 30.0),
-	Vector3(36.0, 65.2, 42.0),
-	Vector3(34.0, 64.7, 52.0),
-	Vector3(40.0, 64.3, 74.0),
+	Vector3(34.0, 69.5, 20.0),
+	Vector3(31.0, 67.0, 30.0),
+	Vector3(34.0, 65.3, 44.0),
+	Vector3(40.0, 64.3, 66.0),
 	Vector3(48.0, 63.9, 100.0),
 	Vector3(50.0, 63.7, 145.0),
 	Vector3(49.0, 63.5, 205.0),
@@ -108,11 +110,16 @@ func grass_cell_count() -> int:
 
 
 ## État de capture (`--call=capture_north_star`, outil §21.5) : active la
-## caméra North Star — rien d'autre à préparer, le lab EST la composition.
+## caméra North Star et TIENT l'éclair majeur (§3.2 : « un éclair majeur
+## simultané dans la vue d'ouverture » — `hold_flash` est fait pour ça,
+## le jeu garde sa cadence irrégulière).
 func capture_north_star() -> void:
 	var camera: Camera3D = vista_camera()
 	if camera != null:
 		camera.current = true
+	var storm: StormCell = get_node_or_null("Storm") as StormCell
+	if storm != null:
+		storm.hold_flash()
 
 
 func _mark(anchor_name: StringName, at: Vector3) -> Node3D:
@@ -237,13 +244,32 @@ func _build_terrain() -> void:
 	# Décalée à droite (leçon v0 : à x 46 elle avalait le pylône).
 	_slab("CliffRightFar", Vector3(62, _slope_height(-120.0) + 4.0, -120),
 		Vector3(18, 13, 50), COL_ROCK.lerp(COL_STONE_COLD, 0.4))
+	_build_mountains()
 	_grass_foreground()
 
 
+## Horizon montagneux (§1.1 : Y 24-43 %, contraste faible ; §3.3 :
+## montagnes non jouables à 550-1 200 m). Il remplit aussi la bande
+## 40-54 % : la part de ciel redescend vers les 38-48 % demandés —
+## l'arbitrage v2 se fait par le DÉCOR, pas en cassant le cadrage héros.
+func _build_mountains() -> void:
+	var mountains: Array[Array] = [
+		["MesaA", Vector3(-210, 12, -560), Vector3(200, 68, 60)],
+		["MesaB", Vector3(-60, 20, -640), Vector3(180, 88, 70)],
+		["MesaC", Vector3(120, 8, -600), Vector3(160, 62, 60)],
+		["MesaD", Vector3(280, 16, -680), Vector3(220, 76, 70)],
+		["MesaE", Vector3(30, 30, -760), Vector3(260, 104, 80)],
+	]
+	var pale: Color = COL_STONE_COLD.lerp(Color(0.66, 0.73, 0.80), 0.55)
+	for mesa: Array in mountains:
+		_slab(mesa[0] as String, mesa[1] as Vector3, mesa[2] as Vector3,
+			pale)
+
+
 ## L'herbe du premier plan : cellules MultiMesh (§26.3 — jamais une seule
-## nappe), brins simples, teinte variée. La recette painterly complète
-## arrive avec la passe matériaux ; la STRUCTURE (cellules, densité,
-## variation) est posée ici.
+## nappe), organisées en « PHRASES » (§7.4) : grande touffe + moyennes +
+## fleurs + VIDE, répétition irrégulière — un scatter uniforme est un
+## échec nommé, même dense (leçon v1).
 func _grass_foreground() -> void:
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = 20260805
@@ -252,6 +278,14 @@ func _grass_foreground() -> void:
 		for cell_z: int in range(2):
 			var origin: Vector3 = Vector3(float(cell_x) * 10.0 + 5.0, 0.0,
 				-float(cell_z) * 10.0 - 2.0)
+			# 5-7 touffes par cellule, tailles inégales — et le reste en
+			# vide : la respiration fait la phrase.
+			var clumps: Array[Vector3] = []
+			var clump_scale: Array[float] = []
+			for c: int in range(rng.randi_range(5, 7)):
+				clumps.append(origin + Vector3(rng.randf_range(-4.2, 4.2),
+					0.0, rng.randf_range(-4.2, 4.2)))
+				clump_scale.append(rng.randf_range(0.8, 1.6))
 			var cell: MultiMeshInstance3D = MultiMeshInstance3D.new()
 			cell.name = "Grass_%d_%d" % [cell_x + 2, cell_z]
 			var multimesh: MultiMesh = MultiMesh.new()
@@ -259,15 +293,18 @@ func _grass_foreground() -> void:
 			multimesh.mesh = blade
 			multimesh.instance_count = 240
 			for i: int in range(multimesh.instance_count):
+				var pick: int = rng.randi_range(0, clumps.size() - 1)
+				# Densité qui retombe du cœur vers le bord de la touffe.
+				var radius: float = rng.randf_range(0.0, 2.4) * rng.randf()
+				var angle: float = rng.randf_range(0.0, TAU)
+				var spot: Vector3 = clumps[pick] + Vector3(
+					cos(angle) * radius, 0.0, sin(angle) * radius)
+				spot.y = minf(_slope_height(spot.z), 0.0)
+				var closeness: float = 1.0 - radius / 2.4
 				var basis: Basis = Basis(Vector3.UP,
 					rng.randf_range(0.0, TAU))
-				basis = basis.scaled(Vector3.ONE
-					* rng.randf_range(0.7, 1.35))
-				var spot: Vector3 = origin + Vector3(
-					rng.randf_range(-5.0, 5.0), 0.0,
-					rng.randf_range(-5.0, 5.0))
-				# Les brins ÉPOUSENT la pente continue (leçon v1).
-				spot.y = minf(_slope_height(spot.z), 0.0)
+				basis = basis.scaled(Vector3.ONE * clump_scale[pick]
+					* rng.randf_range(0.55, 0.85 + 0.7 * closeness))
 				multimesh.set_instance_transform(i,
 					Transform3D(basis, spot))
 			cell.multimesh = multimesh
@@ -276,6 +313,38 @@ func _grass_foreground() -> void:
 			cell.material_override = material
 			add_child(cell)
 			_grass_cells += 1
+			_flower_patch(rng, cell_x, cell_z, clumps)
+
+
+## Fleurs en groupes AU BORD des touffes (§7.1 : blanches/jaunes, bleues
+## rares), jamais un semis uniforme.
+func _flower_patch(rng: RandomNumberGenerator, cell_x: int, cell_z: int,
+		clumps: Array[Vector3]) -> void:
+	var palette: Array[Color] = [Color(0.94, 0.89, 0.75),
+		Color(1.0, 0.84, 0.54), Color(0.42, 0.51, 0.72)]
+	var weights: Array[int] = [0, 0, 0, 1, 1, 2]   # le bleu reste rare
+	var flowers: MultiMeshInstance3D = MultiMeshInstance3D.new()
+	flowers.name = "Flowers_%d_%d" % [cell_x + 2, cell_z]
+	var multimesh: MultiMesh = MultiMesh.new()
+	multimesh.transform_format = MultiMesh.TRANSFORM_3D
+	var head: BoxMesh = BoxMesh.new()
+	head.size = Vector3(0.09, 0.09, 0.09)
+	multimesh.mesh = head
+	multimesh.instance_count = 14
+	for i: int in range(multimesh.instance_count):
+		var clump: Vector3 = clumps[rng.randi_range(0, clumps.size() - 1)]
+		var angle: float = rng.randf_range(0.0, TAU)
+		var radius: float = rng.randf_range(1.6, 2.8)
+		var spot: Vector3 = clump + Vector3(cos(angle) * radius, 0.0,
+			sin(angle) * radius)
+		spot.y = minf(_slope_height(spot.z), 0.0) \
+			+ rng.randf_range(0.18, 0.4)
+		multimesh.set_instance_transform(i,
+			Transform3D(Basis.IDENTITY, spot))
+	flowers.multimesh = multimesh
+	flowers.material_override = _material(
+		palette[weights[rng.randi_range(0, weights.size() - 1)]], 0.7)
+	add_child(flowers)
 
 
 func _blade_mesh() -> ArrayMesh:
