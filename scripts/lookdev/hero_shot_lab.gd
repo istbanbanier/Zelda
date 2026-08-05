@@ -166,6 +166,13 @@ func _build_hero() -> void:
 		if skeleton != null:
 			_lower_arm(skeleton, "upperarm_l", -70.0)
 			_lower_arm(skeleton, "upperarm_r", 70.0)
+			# Doigts : repli léger des phalanges — la main de bind pose
+			# aux doigts écartés trahissait le mannequin (leçon v4).
+			for side: String in ["l", "r"]:
+				for finger: String in ["index", "middle", "ring", "pinky"]:
+					for joint: int in [1, 2, 3]:
+						_lower_arm(skeleton, "%s_0%d_%s"
+							% [finger, joint, side], 22.0)
 			# Passe V3 : les cinq signes de dos (§13.1) — mantelet,
 			# épaulière, Bracelet, arc, carquois.
 			HeroSigns.attach(skeleton, hero)
@@ -385,7 +392,7 @@ func _build_river() -> void:
 		var length: float = from_point.distance_to(to_point)
 		# Large et légèrement SURÉLEVÉ (leçon v1 : un ruban affleurant
 		# disparaît sous les brins d'herbe et le bord de pente).
-		box.size = Vector3(7.0 + float(i) * 1.5, 0.3, length + 3.0)
+		box.size = Vector3(4.2 + float(i) * 1.9, 0.3, length + 3.0)
 		segment.mesh = box
 		var material: StandardMaterial3D = _material(COL_WATER, 0.25)
 		material.emission_enabled = true
@@ -401,7 +408,7 @@ func _build_river() -> void:
 		var bank: MeshInstance3D = MeshInstance3D.new()
 		bank.name = "Bank%d" % i
 		var bank_box: BoxMesh = BoxMesh.new()
-		bank_box.size = Vector3(box.size.x + 3.0, 0.22, box.size.z + 2.0)
+		bank_box.size = Vector3(box.size.x + 2.2, 0.22, box.size.z + 2.0)
 		bank.mesh = bank_box
 		bank.material_override = _material(COL_WATER_BANK)
 		bank.position = segment.position - Vector3(0.0, 0.18, 0.0)
@@ -441,7 +448,7 @@ func _build_camp() -> void:
 	var smoke_box: BoxMesh = BoxMesh.new()
 	smoke_box.size = Vector3(1.1, 9.0, 1.1)
 	smoke.mesh = smoke_box
-	smoke.material_override = _material(Color(0.78, 0.80, 0.82), 1.0)
+	smoke.material_override = _material(Color(0.50, 0.52, 0.56), 1.0)
 	smoke.position = centre + Vector3(0.4, 6.0, 0)
 	add_child(smoke)
 	for side: int in [-1, 1]:
