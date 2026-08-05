@@ -99,6 +99,9 @@ pendant `HURT/DEAD`, coûter zéro.
 
 ## 4. Latences — contrat mesuré (P2-1, acquis)
 
+- Deux instruments complémentaires (D-048) : `LatencyInstrument` (B.5,
+  campagnes intention injectée → mouvement) et `LatencyProbe` (P2-1, chaîne
+  réelle événement → reader → état, au fil de l'eau).
 - Réception marquée au front d'événement (`PlayerInputReader._input`),
   consommation au changement d'état réel (`LatencyProbe`).
 - **Prouvé** (test `test_p2_latency.gd`) : saut et attaque légère légaux

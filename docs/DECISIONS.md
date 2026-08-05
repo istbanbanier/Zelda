@@ -1249,3 +1249,11 @@ affichées mais jamais assertées (R-017 : wall-clock non probant ici).
 un seul fichier). Rejetée : cela mesurerait la latence de LECTURE, pas celle
 de l'EFFET — un appui lu puis refusé compterait comme consommé, et le refus
 perdrait sa raison (P2 §5.7 exige la raison de refus dans l'overlay).
+
+**Articulation avec `LatencyInstrument` (B.5)** — pas un doublon : B.5 mesure
+le pipeline intention INJECTÉE → mouvement (il documente exclure le reader,
+qu'il court-circuite par D-013) et produit des campagnes statistiques ;
+`LatencyProbe` mesure la chaîne RÉELLE événement → `_input` → intent → état,
+au fil de l'eau, pour l'overlay et les refus. B.5 prouve le cœur ; P2-1
+prouve la chaîne complète et l'expose en continu. Les deux tests coexistent
+(`test_latency.gd`, `test_p2_latency.gd`).
