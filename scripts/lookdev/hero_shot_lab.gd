@@ -33,6 +33,13 @@ const HERO_HEIGHT: float = 1.78
 
 const COL_GRASS: Color = Color(0.365, 0.561, 0.239)      # #5D8F3D
 const COL_GRASS_LIT: Color = Color(0.698, 0.784, 0.353)  # #B2C85A
+## Lot 11 : l'albédo qui REND à l'ancre, mesuré et non deviné. Le sol
+## partait de `COL_GRASS` et rendait #5BAC3A (saturation 66 % contre
+## 55 % à l'ancre #B2C85A) : la lumière du soleil miel multiplie
+## l'albédo et SATURE le vert. On remonte donc la chaîne — albédo ≈
+## cible ÷ transfert mesuré — vers un kaki qui, éclairé, tombe sur
+## l'herbe au soleil de la bible.
+const COL_GRASS_ALBEDO: Color = Color(0.60, 0.60, 0.39)
 const COL_EARTH: Color = Color(0.541, 0.353, 0.212)      # terre #8A5A36
 const COL_ROCK: Color = Color(0.608, 0.408, 0.259)       # ocre #9B6842
 ## Passe de VALEURS v3 (§1.5, verdict du test en gris v2) : la rivière
@@ -373,6 +380,25 @@ func _painterly_material(colour: Color, rough: float,
 	return material
 
 
+## Lot 11 — applique une SURFACE réelle (ambientCG CC0, ART-T1) à un
+## matériau painterly. `tile_m` est la taille d'une tuile en MÈTRES :
+## une roche se lit à 3-4 m, un sol à 5-6 m, une toile à 1 m. La force
+## reste modérée — la bible interdit la texture photographique brute
+## (§1.6) : on prend le relief et le modelé, pas la couleur.
+func _with_surface(material: ShaderMaterial, family: String,
+		tile_m: float, blend: float = 0.45) -> ShaderMaterial:
+	var base: String = "res://assets/textures/surfaces/%s_" % family
+	material.set_shader_parameter("surface_texture",
+		load(base + "Albedo.jpg"))
+	material.set_shader_parameter("surface_normal",
+		load(base + "Normal.jpg"))
+	material.set_shader_parameter("surface_rough",
+		load(base + "Rough.jpg"))
+	material.set_shader_parameter("surface_tile_m", tile_m)
+	material.set_shader_parameter("surface_blend", blend)
+	return material
+
+
 func _foliage_material(colour: Color, blade_height: float = 0.55,
 		sway_amplitude: float = 0.07) -> ShaderMaterial:
 	var material: ShaderMaterial = ShaderMaterial.new()
@@ -429,21 +455,30 @@ func _build_terrain() -> void:
 	var slope_box: BoxMesh = BoxMesh.new()
 	slope_box.size = Vector3(130, 2, 168)
 	slope.mesh = slope_box
-	slope.material_override = _material(COL_GRASS)
+	# La prairie ÉCLAIRÉE doit tendre vers l'ancre #B2C85A (§1.4), pas
+	# vers un vert pur : mesuré à #5BAC3A (saturation 66 % contre 55 %
+	# à l'ancre), le sol partait trop vert. La base monte donc vers
+	# l'herbe au soleil ; la peinture garde le creux dans l'ombre.
+	slope.material_override = _with_surface(
+		_material(COL_GRASS_ALBEDO), "T_Grass_Field", 6.0, 0.42)
 	slope.position = Vector3(4, _slope_height(-68.0) - 1.0, -68)
 	slope.rotation_degrees = Vector3(-8.0, 0, 0)
 	add_child(slope)
 	# Fond de vallée PLAT (~−21 m) : la pente s'y adoucit, la queue de la
 	# rivière et le socle de la citadelle s'y posent.
+	# Même albédo que la pente : sans cela, une coupure nette séparait
+	# le premier plan kaki du lointain vert vif (défaut vu en capture).
+	# La brume et la distance font le reste de l'étagement (§1.3).
 	_slab("ValleyFloor", Vector3(4, -22.0, -245), Vector3(240, 2, 210),
-		COL_GRASS)
+		COL_GRASS_ALBEDO)
 	# Chemin de terre : il ÉPOUSE la pente (leçon v1).
 	var path: MeshInstance3D = MeshInstance3D.new()
 	path.name = "PathCrest"
 	var path_box: BoxMesh = BoxMesh.new()
 	path_box.size = Vector3(1.6, 0.06, 34)
 	path.mesh = path_box
-	path.material_override = _material(COL_EARTH)
+	path.material_override = _with_surface(
+		_material(COL_EARTH), "T_Ground_Earth", 5.0, 0.5)
 	path.position = Vector3(2.2, _slope_height(-9.0) + 0.05, -9)
 	path.rotation_degrees = Vector3(-8.0, 0, 0)
 	add_child(path)
@@ -455,8 +490,9 @@ func _build_terrain() -> void:
 		Vector3(14, 10, 40), COL_ROCK.lerp(Color(0.30, 0.19, 0.12), 0.45))
 	# Lot 2 : le ROCHER pilote passe au painterly.
 	(get_node("CliffLeftNear") as MeshInstance3D).material_override = \
-		_painterly_material(COL_ROCK.lerp(Color(0.30, 0.19, 0.12), 0.45),
-			0.88)
+		_with_surface(_painterly_material(
+			COL_ROCK.lerp(Color(0.30, 0.19, 0.12), 0.45), 0.88),
+			"T_Rock_Strata", 4.0, 0.5)
 	_slab("CliffLeftLip", Vector3(-22.5, _slope_height(-34.0) + 10.6, -34),
 		Vector3(9, 3.2, 34), COL_ROCK.lerp(COL_GRASS, 0.3))
 	# Lot 8 (revue) : la falaise gauche BOUCHAIT sans guider — deux
@@ -465,10 +501,16 @@ func _build_terrain() -> void:
 	# pylône ; leurs arêtes éclairées font la ligne du regard).
 	_slab("CliffStepA", Vector3(-29, _slope_height(-52.0) + 7.5, -52),
 		Vector3(16, 12, 26), COL_ROCK.lerp(COL_STONE_COLD, 0.15))
-	(get_node("CliffStepA") as MeshInstance3D).rotation_degrees.y = 12.0
+	var step_a: MeshInstance3D = get_node("CliffStepA") as MeshInstance3D
+	step_a.rotation_degrees.y = 12.0
+	_with_surface(step_a.material_override as ShaderMaterial,
+		"T_Rock_Mossy", 4.5, 0.45)
 	_slab("CliffStepB", Vector3(-33, _slope_height(-72.0) + 6.5, -72),
 		Vector3(18, 14, 30), COL_ROCK.lerp(COL_STONE_COLD, 0.25))
-	(get_node("CliffStepB") as MeshInstance3D).rotation_degrees.y = 7.0
+	var step_b: MeshInstance3D = get_node("CliffStepB") as MeshInstance3D
+	step_b.rotation_degrees.y = 7.0
+	_with_surface(step_b.material_override as ShaderMaterial,
+		"T_Rock_Mossy", 5.0, 0.4)
 	_slab("CliffLeftFar", Vector3(-36, _slope_height(-95.0) + 6.0, -95),
 		Vector3(20, 16, 70), COL_ROCK.lerp(COL_STONE_COLD, 0.35))
 	# Décalée à droite (leçon v0 : à x 46 elle avalait le pylône).
@@ -673,7 +715,8 @@ func _build_camp() -> void:
 		var prism: PrismMesh = PrismMesh.new()
 		prism.size = Vector3(4.8, 3.6, 3.6)
 		tent.mesh = prism
-		tent.material_override = _material(COL_CANVAS)
+		tent.material_override = _with_surface(
+			_material(COL_CANVAS), "T_Fabric_Canvas", 1.2, 0.4)
 		tent.position = centre + Vector3(6.5 * float(side), 1.8,
 			-2.0 * float(side))
 		tent.rotation_degrees = Vector3(0, 24.0 * float(side), 0)

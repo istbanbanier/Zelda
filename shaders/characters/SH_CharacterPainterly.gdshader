@@ -45,6 +45,25 @@ uniform float grain_scale : hint_range(0.02, 2.0) = 0.35;
 // lumière différemment d'une pierre lisse — c'est ça qui « fait matière ».
 uniform float grain_roughness : hint_range(0.0, 0.5) = 0.18;
 
+// Lot 11 — SURFACE réelle (textures ambientCG CC0 déposées par le
+// propriétaire, ART-T1). La bible INTERDIT la texture photographique
+// brute (§1.6/§7.1) : elle ne remplace donc PAS l'albedo peint — elle
+// le MODULE, désaturée vers sa luminance, à force réglable. Le vrai
+// gain est le RELIEF (normal map) : la lumière peinte a enfin de la
+// matière à sculpter.
+uniform sampler2D surface_texture : source_color, hint_default_white,
+	filter_linear_mipmap, repeat_enable;
+uniform sampler2D surface_normal : hint_normal, filter_linear_mipmap,
+	repeat_enable;
+uniform sampler2D surface_rough : hint_default_white,
+	filter_linear_mipmap, repeat_enable;
+// Taille d'UNE tuile en MÈTRES (invariant du projet : 1 unité = 1 m).
+uniform float surface_tile_m : hint_range(0.3, 12.0) = 4.0;
+uniform float surface_blend : hint_range(0.0, 1.0) = 0.0;
+uniform float surface_desaturate : hint_range(0.0, 1.0) = 0.7;
+uniform float surface_normal_depth : hint_range(0.0, 2.0) = 0.7;
+uniform float surface_roughness_blend : hint_range(0.0, 1.0) = 0.5;
+
 // Variation macro très lente (§21.1) : de grandes respirations de teinte
 // en espace monde — contre l'aplat uniforme, sans microbruit.
 uniform float macro_variation : hint_range(0.0, 0.3) = 0.06;
@@ -77,9 +96,41 @@ void fragment() {
 	// Centré sur 0 : le grain assombrit ET éclaircit, il ne salit pas.
 	float signed_grain = grain - 0.5;
 	base *= 1.0 + signed_grain * grain_strength * 2.0;
+
+	// Surface : même projection monde à deux axes, à l'échelle
+	// physique de la tuile. `surface_blend` à 0 = aucune surface,
+	// donc les matériaux qui n'en veulent pas ne paient rien.
+	float surface_rough_value = 0.0;
+	if (surface_blend > 0.001) {
+		vec3 tile_uv = world_position / max(surface_tile_m, 0.05);
+		vec2 uv_flat = tile_uv.xz;
+		vec2 uv_wall = tile_uv.xy;
+		float wall = clamp(1.0 - up, 0.0, 1.0);
+		vec3 surface = mix(
+			texture(surface_texture, uv_flat).rgb,
+			texture(surface_texture, uv_wall).rgb, wall);
+		// Désaturation : on garde le MODELÉ de la photo, pas sa
+		// couleur — la palette reste celle de la bible §1.4.
+		float surface_luma = dot(surface, vec3(0.2126, 0.7152, 0.0722));
+		surface = mix(surface, vec3(surface_luma), surface_desaturate);
+		// Centré sur le gris moyen : la surface éclaircit ET assombrit.
+		base *= mix(vec3(1.0), surface / 0.5, surface_blend);
+		vec3 packed_normal = mix(
+			texture(surface_normal, uv_flat).rgb,
+			texture(surface_normal, uv_wall).rgb, wall);
+		NORMAL_MAP = packed_normal;
+		NORMAL_MAP_DEPTH = surface_normal_depth * surface_blend;
+		surface_rough_value = mix(
+			texture(surface_rough, uv_flat).r,
+			texture(surface_rough, uv_wall).r, wall);
+	}
 	ALBEDO = base;
-	ROUGHNESS = clamp(roughness_value
-		+ signed_grain * grain_roughness, 0.0, 1.0);
+	float rough = roughness_value + signed_grain * grain_roughness;
+	if (surface_blend > 0.001) {
+		rough = mix(rough, surface_rough_value,
+			surface_roughness_blend * surface_blend);
+	}
+	ROUGHNESS = clamp(rough, 0.0, 1.0);
 	// Rim : discret, côté lumière implicite par la vue — pas un halo.
 	float rim = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), rim_power);
 	EMISSION = rim_color.rgb * rim * rim_strength;

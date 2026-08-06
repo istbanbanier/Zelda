@@ -7,9 +7,57 @@ personnel du joueur ni un service payant.
 
 ## État à ce jour
 
-Le projet contient des ressources externes d'une seule provenance : les packs
-**Quaternius Standard (CC0 1.0)**, inscrits ci-dessous AVANT leur entrée dans
-le build (2026-08-02). Tout le reste a été généré par les scripts du dépôt.
+Le projet contient des ressources externes de **quatre** provenances, toutes
+sous **CC0 1.0** (domaine public — usage commercial autorisé, crédit non
+obligatoire mais donné ici) : Quaternius Standard (ART-Q0/Q8, 2026-08-02),
+puis, déposées par le propriétaire du projet le **2026-08-06** :
+**ambientCG** (textures de surface), **Kenney** (Nature Kit) et
+**KayKit / Kay Lousberg** (Dungeon Pack). Tout le reste a été généré par les
+scripts du dépôt.
+
+## Textures de surface — ambientCG, CC0 1.0 (ART-T1, 2026-08-06)
+
+Six matériaux photoscannés, entrés dans le build pour combler le manque
+dominant nommé par trois évaluations successives (« zéro texture, albedos
+plats »).
+
+| | |
+|---|---|
+| Auteur / source | **ambientCG** (Lennart Demes) — <https://ambientcg.com> |
+| Licence | **CC0 1.0 Universal** — <https://creativecommons.org/publicdomain/zero/1.0/> |
+| Packs | `Rock030`, `Rock064`, `Ground037`, `Grass001`, `Bark006`, `Fabric030` (variantes 2K-JPG) |
+| Cible | `assets/textures/surfaces/` |
+| Noms projet | `T_Rock_Strata`, `T_Rock_Mossy`, `T_Ground_Earth`, `T_Grass_Field`, `T_Bark_Tree`, `T_Fabric_Canvas` — suffixes `_Albedo`, `_Normal`, `_Rough` |
+| Modifications | **oui** : seules 3 cartes retenues par pack (Color, NormalGL, Roughness), redimensionnées 2048 → **1024 px** (Lanczos), rugosité convertie en niveaux de gris, JPEG qualité 88. Occlusion, displacement, sources `.blend`/`.usdc`/`.mtlx` écartées |
+| Poids | **7,3 Mo** pour 18 cartes (contre 111 Mo pour les archives complètes) |
+| Reproductible | archives d'origine sur la release `assets-1` du dépôt ; recette dans `docs/assets/IMPORT_RULES.md` |
+
+## Nature Kit — Kenney, CC0 1.0 (ART-K1, 2026-08-06)
+
+| | |
+|---|---|
+| Auteur / source | **Kenney** — <https://kenney.nl/assets/nature-kit> |
+| Licence | **CC0 1.0 Universal** (fichier `License.txt` du pack, version 2.1) |
+| Formats retenus | glTF binaire (`Models/GLTF format/*.glb`) |
+| État | **déposé, non encore importé** — sélection au lot suivant, aucun fichier dans le build tant que la sélection n'est pas faite |
+
+## Dungeon Pack 1.1 FREE — KayKit / Kay Lousberg, CC0 1.0 (ART-KK1, 2026-08-06)
+
+| | |
+|---|---|
+| Auteur / source | **Kay Lousberg** — <https://www.kaylousberg.com> |
+| Licence | **CC0 1.0 Universal** (fichier `License.txt` du pack) — crédit non obligatoire, donné volontairement |
+| Formats retenus | glTF (`Assets/gltf/`) |
+| État | **déposé, non encore importé** — destiné à la Citadelle de l'Œil-Tempête (phase donjon) |
+
+## Ultimate Nature (FBX/OBJ) — Quaternius, CC0 1.0 (ART-Q9, 2026-08-06)
+
+| | |
+|---|---|
+| Auteur / source | **Quaternius** — <https://quaternius.com> (même auteur que ART-Q0/Q8) |
+| Licence | **CC0 1.0 Universal** |
+| Contenu | 150 modèles OBJ + FBX : saules, rochers moussus, troncs, blé, variantes enneigées et automnales |
+| État | **déposé, non encore importé** — l'OBJ s'importe nativement dans Godot 4.7 ; sélection au lot suivant |
 
 ## Promotion « monde ouvert » — CC0 Quaternius (ART-Q8)
 
