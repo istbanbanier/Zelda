@@ -14,7 +14,10 @@ intermittence environnementale ISS-024, voie de restauration prouvée
 synchrone) puis **724/724, zéro échec** (arbre `72ac53e`, soir — 721 +
 `test_stability_dolly` 2 + `test_painterly_lab` 1), puis **727/727,
 zéro échec** (arbre `ae9d537`, nuit — + `test_lab_dressing` 3, après
-le Lot 9 d'habillage aux modèles Quaternius CC0 du dépôt). Nouveaux contrats :
+le Lot 9 d'habillage aux modèles Quaternius CC0 du dépôt), enfin
+**745/745, zéro échec** (arbre `980612c`, clôture — + rive, falaise,
+grain, surfaces, vallée peinte ; « erreurs de script dans le journal :
+0 »). C'est le commit publié dans la release `playtest-95dd423`. Nouveaux contrats :
 painterly par SURFACE avec texture réelle exigée (fallback 1×1 rejeté),
 « aucune surface mate sans peinture » avec seuil réel d'émission,
 dolly §30.1 (timeline arrêt/marche/sprint/rotation). Revue

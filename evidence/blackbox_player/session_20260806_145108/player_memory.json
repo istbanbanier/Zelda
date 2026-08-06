@@ -1,0 +1,26 @@
+[
+  {
+    "pas": 5,
+    "note": "FRICTION 1 — Chargement. Clic \"Nouvelle partie\" -> barre monte à 46% en ~3s puis se fige. Toujours 46% après 15s cumulées. Aucun texte du type \"préparation du monde\", aucune animation, aucun conseil. Rien ne distingue \"ça charge encore\" de \"ça a planté\". En tant que joueur j'ai cru à un crash.\n\nMenu principal: écran noir/bleu nuit, texte seul, zéro illustration. \"Continuer\" grisé = pas de save. Focus par défaut sur \"Nouvelle partie\"."
+  },
+  {
+    "pas": 9,
+    "note": "CHARGEMENT: ~40s réelles, dont ~35s figées à 46%. Puis apparition directe du jeu, sans fondu.\n\nPREMIÈRE VUE: perso de dos, capuche verte. Herbe géante au 1er plan (brins à hauteur de taille, occupent 40% de l'écran bas). Vallée: maisons toit rouge à gauche, blocs orange à droite, masse grise en blocs au centre sous nuage noir + éclairs cyan. Mât gris à boule cyan à droite.\nStyle: cubes empilés, graybox coloré. Falaises = boîtes.\nHUD: 5 carrés rouges + losange orange (haut gauche). \"Épée usée 24/24\" + 4 tirets + \"Flèches: 8\" (bas droite).\n\nCONFIANCE 60 PREMIÈRES SECONDES:\n- où je suis: 4/5 (une vallée, lisible)\n- qui je suis: 4/5 (aventurier, épée+arc via HUD)\n- ce que je dois faire: 2/5. AUCUN texte, aucun objectif, aucune invite. Je déduis \"aller vers l'orage\" par composition seule. Zéro tutoriel."
+  },
+  {
+    "pas": 16,
+    "note": "FRICTION 2 — CAMÉRA (majeure). Réponse souris en tout-ou-rien, non proportionnelle:\n- mouse_delta [300,0] -> AUCUNE rotation\n- [800,0] -> ~170 degrés (demi-tour)\n- [400,0] -> ~80 degrés\n- [-600,0] -> AUCUNE rotation\n- [-1000,0] -> ~150 degrés\nImpossible de faire une correction fine de cadrage. Soit rien ne bouge, soit je fais un demi-tour et je perds mon repère. Résultat concret: j'ai perdu la citadelle de vue 2 fois en 3 mouvements.\n\nFRICTION 3 — Locomotion: z pendant 500ms = déplacement quasi nul (accélération très molle au démarrage). z pendant 1500ms = course franche + bonne anim. Le départ est mou."
+  },
+  {
+    "pas": 19,
+    "note": "CAUSE TROUVÉE de la friction caméra: la caméra a un LISSAGE d'environ 1 à 1,5 SECONDE. Preuve: après un mouvement souris, j'ai attendu 1200ms SANS AUCUN INPUT et la caméra a continué de tourner (perso de face -> perso de profil, le soleil est entré dans le cadre). Au wait suivant (1200ms de plus) elle était enfin stable.\nConséquence joueur: chaque correction de visée met >1s à se stabiliser, donc on sur-corrige, donc on fait des demi-tours involontaires. C'est la raison pour laquelle la caméra semble \"ne rien faire\" puis \"partir d'un coup\".\n\nRepères actuels: falaise grise en blocs derrière/à gauche, butte marron avec village toits rouges à droite, soleil haut-gauche. Citadelle perdue de vue."
+  },
+  {
+    "pas": 23,
+    "note": "~2min de jeu: PREMIER texte du jeu apparaît: \"De la fumée s'élève au loin — un campement ?\" (bandeau haut d'écran).\nFRICTION: le message se déclenche alors que je regarde une falaise grise. Aucune fumée visible à l'écran à cet instant. L'indice pointe vers quelque chose de hors-champ. Un joueur ne sait pas où regarder.\nConfiance objectif: passe de 2/5 à 3/5.\nToujours AUCUNE indication de touches. Aucun tutoriel de contrôles depuis le début."
+  },
+  {
+    "pas": 27,
+    "note": "FRICTION 4 — ORIENTATION. Je suis perdu à ~3min de jeu.\n- Aucune boussole, aucune minimap, aucun marqueur d'objectif, aucune flèche.\n- Le seul indice (\"fumée / campement\") ne dit pas de quel côté.\n- Combiné au lissage caméra qui me fait faire des demi-tours involontaires, je perds mes repères en permanence.\n- J'ai sprinté ~6s vers une falaise = mauvaise direction, sans jamais savoir que c'était mauvais.\n\nBON POINT: Q = gauche fonctionne (AZERTY correct). Sprint (shift) fonctionne, jauge d'endurance bleue contextuelle apparaît près du perso pendant l'effort et disparaît sinon. Animation de course lisible.\nDrain endurance lent: après ~6s de sprint la barre n'est qu'aux ~3/4."
+  }
+]
