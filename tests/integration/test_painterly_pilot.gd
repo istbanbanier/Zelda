@@ -11,6 +11,11 @@
 extends GateTestCase
 
 const SHADER_PATH: String = "res://shaders/characters/SH_CharacterPainterly.gdshader"
+## Déclinaison feuillage : le MÊME modèle de lumière peinte, plus le
+## vent au sommet (vertex) — la vidéo de stabilité a PROUVÉ (diffs 0,00
+## sur la phase immobile) que l'herbe du lab était figée, contre §11.1.
+const FOLIAGE_SHADER_PATH: String = \
+	"res://shaders/foliage/SH_FoliageWindPainterly.gdshader"
 const LAB: String = "res://scenes/lookdev/HeroShotLab.tscn"
 
 var _root: Node3D = null
@@ -73,11 +78,26 @@ func test_the_three_lab_pilots_wear_it() -> void:
 		as MeshInstance3D
 	check(cliff != null and _is_painterly(cliff.material_override),
 		"le rocher pilote porte le painterly")
-	# 2. Une TOUFFE pilote (première cellule d'herbe).
-	var grass: MultiMeshInstance3D = lab.get_node_or_null("Grass_0_0") \
-		as MultiMeshInstance3D
-	check(grass != null and _is_painterly(grass.material_override),
-		"la touffe pilote porte le painterly")
+	# 2. L'HERBE : toutes les cellules portent la déclinaison feuillage
+	# (lumière peinte + VENT — une herbe figée a échoué au dolly).
+	var grass_cells: int = 0
+	var windy_cells: int = 0
+	for node: Node in lab.get_children():
+		if node.name.begins_with("Grass_"):
+			grass_cells += 1
+			var cell: MultiMeshInstance3D = node as MultiMeshInstance3D
+			var material: ShaderMaterial = \
+				cell.material_override as ShaderMaterial
+			if material != null and material.shader != null \
+					and material.shader.resource_path == FOLIAGE_SHADER_PATH:
+				windy_cells += 1
+	check(grass_cells > 0 and windy_cells == grass_cells,
+		"TOUTES les cellules d'herbe portent le feuillage painterly venté "
+		+ "(%d/%d)" % [windy_cells, grass_cells])
+	var foliage: Shader = load(FOLIAGE_SHADER_PATH) as Shader
+	check(foliage != null and "TIME" in foliage.code
+		and "smoothstep" in foliage.code,
+		"la déclinaison feuillage a le VENT (TIME) et les ramps adoucies")
 	# 3. Le HÉROS : chaque mesh de son modèle.
 	var hero: Node3D = lab.get_node_or_null("Hero") as Node3D
 	check(hero != null, "héros présent")

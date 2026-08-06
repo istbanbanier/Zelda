@@ -68,6 +68,11 @@ const SLOPE_TAN: float = 0.1405
 ## trois PILOTES (rocher, touffe, héros) avant toute propagation.
 const PAINTERLY: Shader = \
 	preload("res://shaders/characters/SH_CharacterPainterly.gdshader")
+## Déclinaison feuillage : mêmes ramps peintes + VENT au vertex — le
+## dolly de stabilité a prouvé (diffs 0,00 en phase immobile) que
+## l'herbe du lab était figée, contre §11.1.
+const FOLIAGE_PAINTERLY: Shader = \
+	preload("res://shaders/foliage/SH_FoliageWindPainterly.gdshader")
 
 var _anchors: Dictionary[StringName, Node3D] = {}
 var _river_local: Array[Vector3] = []
@@ -238,6 +243,14 @@ func _painterly_material(colour: Color, rough: float,
 	return material
 
 
+func _foliage_material(colour: Color) -> ShaderMaterial:
+	var material: ShaderMaterial = ShaderMaterial.new()
+	material.shader = FOLIAGE_PAINTERLY
+	material.set_shader_parameter("albedo_color", colour)
+	material.set_shader_parameter("ramp_soft", 0.16)
+	return material
+
+
 func _material(colour: Color, rough: float = 0.9) -> StandardMaterial3D:
 	var material: StandardMaterial3D = StandardMaterial3D.new()
 	material.albedo_color = colour
@@ -373,11 +386,9 @@ func _grass_foreground() -> void:
 			cell.multimesh = multimesh
 			var tint: Color = COL_GRASS.lerp(COL_GRASS_LIT,
 				rng.randf_range(0.2, 0.6))
-			# Lot 2 : la TOUFFE pilote (première cellule) au painterly.
-			if cell.name == "Grass_0_0":
-				cell.material_override = _painterly_material(tint, 0.9)
-			else:
-				cell.material_override = _material(tint)
+			# Lot 3 : TOUTES les cellules au feuillage painterly VENTÉ
+			# (le dolly a prouvé l'herbe figée — §11.1 exige le vent).
+			cell.material_override = _foliage_material(tint)
 			add_child(cell)
 			_grass_cells += 1
 			_flower_patch(rng, cell_x, cell_z, clumps)
