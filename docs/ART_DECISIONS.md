@@ -127,3 +127,23 @@ variable unique. Refaite proprement, la mesure s'INVERSE (25,46 contre
 gagne en profondeur tonale et laisse mieux respirer brins et héros ; la
 variation de luminance n'est pas un test de lisibilité. La mesure est
 consignée en désaccord — c'est la règle de vérité, pas un détail.
+
+### AD-008 — La peinture du donjon est REPORTÉE, l'éclairage passe d'abord (2026-08-06, révocable)
+**Tentée puis retirée sur PREUVE.** La recette painterly a été branchée
+sur les six salles, l'arène et le vestibule, puis mesurée en capture :
+- gain réel de matière — contraste des murs de la salle 3 : **16,9 → 26,5** ;
+- mais perte de lumière — luminance des salles : **17 % → 9-11 %**, sur un
+  donjon DÉJÀ signalé trop sombre (ISS-025, « aucun couloir noir » §12.8) ;
+- et perte de lisibilité dans l'arène — contraste des marques de sol :
+  **45,5 → 16,3** (ce sont des repères de zone, pas du décor).
+**Cause** : la recette est calibrée pour un SOLEIL directionnel ; un
+intérieur éclairé par de petites lampes rasantes demande son propre
+modèle. `PainterlyRecipe.interior_mode` (plancher d'ombre relevé,
+paliers adoucis) a été écrit et essayé : il réduit le mal sans le
+supprimer.
+**Décision** : ne pas livrer une régression. `DungeonRoom.paint_room()`
+reste ÉCRIT et documenté mais N'EST PAS APPELÉ. L'ordre correct est
+**éclairage du donjon d'abord** (ambre de circulation §12.8, sources
+motivées), peinture ensuite. Alternative rejetée : livrer quand même en
+comptant sur le gain de matière — la lisibilité prime sur la matière
+(ordre de priorité §0.3).

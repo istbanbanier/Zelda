@@ -77,13 +77,27 @@ static func is_emissive(material: BaseMaterial3D) -> bool:
 
 
 ## Fabrique de base : la peinture, avec sa teinte et sa texture.
+## Réglage INTÉRIEUR : la recette a été calibrée sous un soleil
+## directionnel. Dans le donjon, éclairé par de petites lampes rasantes,
+## le même plancher d'ombre assombrissait les salles (mesuré : 17 % à
+## 9 % de luminance) alors qu'elles étaient DÉJÀ trop sombres (ISS-025,
+## « aucun couloir noir » §12.8). Un intérieur relève donc son plancher
+## et adoucit ses paliers : la matière apparaît sans que la lumière
+## parte.
+static var interior_mode: bool = false
+
+
 static func paint(colour: Color, rough: float = 0.85,
 		texture: Texture2D = null, cutout: bool = false) -> ShaderMaterial:
 	var material: ShaderMaterial = ShaderMaterial.new()
 	material.shader = shader_cutout() if cutout else shader()
 	material.set_shader_parameter("albedo_color", colour)
 	material.set_shader_parameter("roughness_value", rough)
-	material.set_shader_parameter("ramp_soft", 0.16)
+	material.set_shader_parameter("ramp_soft", 0.24 if interior_mode else 0.16)
+	if interior_mode:
+		material.set_shader_parameter("shadow_floor", 0.46)
+		material.set_shader_parameter("ramp_low", 0.10)
+		material.set_shader_parameter("ramp_high", 0.42)
 	material.set_shader_parameter("grain_texture", grain())
 	material.set_shader_parameter("grain_strength", 0.12)
 	material.set_shader_parameter("grain_scale", 0.35)
