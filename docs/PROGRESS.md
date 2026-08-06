@@ -3344,3 +3344,15 @@ entière painterly) : bandes §1.5 identiques au dixième. Note :
 2. Re-évaluation sévère §30.2 + revue contradictoire (gate-review).
 3. V4 seulement si ≥ 75 tenu, avec le garde-fou « survivre au
    mouvement » du dolly.
+
+### Fait ensuite : Lot 4 — le lab ENTIER est peint
+
+`_material()` du lab EST la peinture (toute surface mate →
+SH_CharacterPainterly ou feuillage venté) ; trois émissifs justifiés et
+testés (`_emissive_material` : rivière-guide, flamme, couronne cyan).
+Rouge prouvé avec l'inventaire exact des surfaces nues, puis
+`test_painterly_lab` 1/1, peinture 4/4, héros 17/17, dolly 2/2. Capture
+v8 officielle (`76835be`) : bandes §1.5 intactes (héros 24,7 %,
+citadelle 51,5 %), herbe du premier plan = grand gagnant. Défauts
+dominants NOMMÉS pour la suite : éclair minuscule, rivière-guide
+timide, citadelle boîtes grises.
