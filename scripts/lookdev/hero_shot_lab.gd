@@ -286,7 +286,7 @@ func _build_cliff_formation() -> void:
 					# forme et son relief, il rejoint notre monde.
 					material.set_shader_parameter("albedo_color",
 						COL_ROCK.lerp(Color(0.34, 0.24, 0.17), 0.35))
-					_with_surface(material, "T_Rock_Strata", 3.5, 0.45, 1.0)
+					_with_surface(material, "T_Rock_Strata", 3.5, 0.70, 1.0)
 
 
 func _build_dressing() -> void:
@@ -355,7 +355,7 @@ func _build_dressing() -> void:
 					rock_material.set_shader_parameter("albedo_color",
 						Color(1.85, 1.52, 1.16))
 					_with_surface(rock_material, "T_Rock_Mossy", 2.2,
-						0.45, 1.0)
+						0.70, 1.0)
 
 
 ## Passe TOUTES les surfaces d'un modèle au painterly, en extrayant la
@@ -550,7 +550,7 @@ func _build_terrain() -> void:
 	# à l'ancre), le sol partait trop vert. La base monte donc vers
 	# l'herbe au soleil ; la peinture garde le creux dans l'ombre.
 	slope.material_override = _with_surface(
-		_material(COL_GRASS_ALBEDO), "T_Grass_Field", 6.0, 0.42, 0.85)
+		_material(COL_GRASS_ALBEDO), "T_Grass_Field", 6.0, 0.65, 0.85)
 	slope.position = Vector3(4, _slope_height(-68.0) - 1.0, -68)
 	slope.rotation_degrees = Vector3(-8.0, 0, 0)
 	add_child(slope)
@@ -570,7 +570,7 @@ func _build_terrain() -> void:
 	path_box.size = Vector3(1.6, 0.06, 34)
 	path.mesh = path_box
 	path.material_override = _with_surface(
-		_material(COL_EARTH), "T_Ground_Earth", 5.0, 0.5, 1.0)
+		_material(COL_EARTH), "T_Ground_Earth", 5.0, 0.78, 1.0)
 	path.position = Vector3(2.2, _slope_height(-9.0) + 0.05, -9)
 	path.rotation_degrees = Vector3(-8.0, 0, 0)
 	add_child(path)
@@ -584,7 +584,7 @@ func _build_terrain() -> void:
 	(get_node("CliffLeftNear") as MeshInstance3D).material_override = \
 		_with_surface(_painterly_material(
 			COL_ROCK.lerp(Color(0.30, 0.19, 0.12), 0.45), 0.88),
-			"T_Rock_Strata", 4.0, 0.5, 1.0)
+			"T_Rock_Strata", 4.0, 0.78, 1.0)
 	_slab("CliffLeftLip", Vector3(-22.5, _slope_height(-34.0) + 10.6, -34),
 		Vector3(9, 3.2, 34), COL_ROCK.lerp(COL_GRASS, 0.3))
 	# Lot 8 (revue) : la falaise gauche BOUCHAIT sans guider — deux
@@ -596,14 +596,14 @@ func _build_terrain() -> void:
 	var step_a: MeshInstance3D = get_node("CliffStepA") as MeshInstance3D
 	step_a.rotation_degrees.y = 12.0
 	_with_surface(step_a.material_override as ShaderMaterial,
-		"T_Rock_Mossy", 4.5, 0.45, 1.0)
+		"T_Rock_Mossy", 4.5, 0.70, 1.0)
 	_build_cliff_formation()
 	_slab("CliffStepB", Vector3(-33, _slope_height(-72.0) + 6.5, -72),
 		Vector3(18, 14, 30), COL_ROCK.lerp(COL_STONE_COLD, 0.25))
 	var step_b: MeshInstance3D = get_node("CliffStepB") as MeshInstance3D
 	step_b.rotation_degrees.y = 7.0
 	_with_surface(step_b.material_override as ShaderMaterial,
-		"T_Rock_Mossy", 5.0, 0.4, 0.9)
+		"T_Rock_Mossy", 5.0, 0.62, 0.9)
 	_slab("CliffLeftFar", Vector3(-36, _slope_height(-95.0) + 6.0, -95),
 		Vector3(20, 16, 70), COL_ROCK.lerp(COL_STONE_COLD, 0.35))
 	# Décalée à droite (leçon v0 : à x 46 elle avalait le pylône).
@@ -809,7 +809,7 @@ func _build_camp() -> void:
 		prism.size = Vector3(4.8, 3.6, 3.6)
 		tent.mesh = prism
 		tent.material_override = _with_surface(
-			_material(COL_CANVAS), "T_Fabric_Canvas", 1.2, 0.4, 0.7)
+			_material(COL_CANVAS), "T_Fabric_Canvas", 1.2, 0.62, 0.7)
 		tent.position = centre + Vector3(6.5 * float(side), 1.8,
 			-2.0 * float(side))
 		tent.rotation_degrees = Vector3(0, 24.0 * float(side), 0)

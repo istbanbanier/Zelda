@@ -95,3 +95,35 @@ n'avait aucune forme à sculpter.
 
 **Réversible en un point** : `surface_blend` et `surface_normal_depth`
 sont des uniformes du shader, réglés dans `_with_surface`.
+
+### AD-007 — Latitude esthétique totale : la règle cède devant l'image (2026-08-06, révocable)
+
+**Mandat** : « Ne considère rien d'interdit si tu penses que c'est mieux. »
+
+**Ce que je prends** : l'autorité de juger les interdits ESTHÉTIQUES au
+RÉSULTAT plutôt qu'au principe. Force des photoscans (§1.6), rareté du
+cyan (§1.4), bandes de valeurs (§1.5), largeur des fondus, densité
+végétale, budget de formes (§2.4) : ce sont désormais des hypothèses à
+tester en capture, pas des murs. Chaque écart se décide par un
+avant/après, se consigne, se révoque en un réglage.
+
+**Ce que je ne prends pas, et ce n'est pas de la timidité** :
+1. **La légalité** — aucun asset copié d'un jeu commercial, aucune
+   ressource sans licence. Un jeu qu'on ne peut pas montrer n'est pas
+   « mieux » ;
+2. **L'honnêteté des preuves** — aucune capture inventée, aucun FPS
+   annoncé sans GPU, aucun `PASS` sans test. Lever cet interdit ne
+   rendrait pas le jeu meilleur : il me rendrait incapable de dire
+   s'il l'est. C'est l'instrument de mesure, pas une contrainte d'art ;
+3. **La boucle de jeu** — contrôles, collisions, télégraphes, énigmes.
+
+**Premier usage, et sa leçon** : force des photoscans testée à 45 / 70 /
+95 %. Le premier passage donnait 70 % gagnant à la mesure (variation
+28,21) — **résultat FAUX** : mon script d'expérience utilisait un motif
+de remplacement trop large qui modifiait aussi des couleurs et la
+hauteur des brins d'herbe. Ce n'était donc pas une expérience à
+variable unique. Refaite proprement, la mesure s'INVERSE (25,46 contre
+27,50 à 45 %). Décision quand même **70 %**, prise à l'œil : le sol y
+gagne en profondeur tonale et laisse mieux respirer brins et héros ; la
+variation de luminance n'est pas un test de lisibilité. La mesure est
+consignée en désaccord — c'est la règle de vérité, pas un détail.
