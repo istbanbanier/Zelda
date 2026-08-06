@@ -1283,6 +1283,14 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	crown.position = Vector3(0, 97.8, -212)
 	crown.rotation_degrees = Vector3(12.0, 0.0, 4.0)
 	citadel.add_child(crown)
+	# SILHOUETTE (§2.4 : « lisible à 300-420 m »). Le monument était lu comme
+	# un empilement de cubes pour trois raisons mesurables : toutes les masses
+	# alignées sur les axes du monde, tous les sommets PLATS, aucune découpe.
+	# On ne change pas les masses — leurs cotes sont testées — on casse leur
+	# lecture : créneaux sur les couronnements, toitures en pyramide sur les
+	# tours, et un léger lacet d'ensemble qui supprime la frontalité.
+	_crown_citadel(citadel, tower_heights)
+	citadel.rotation.y = deg_to_rad(-5.0)
 	# TROIS lignes d'énergie descendent de la couronne (§2.4) : la centrale
 	# (SpireConduit) existait — deux flancs la rejoignent sur la face avant.
 	for side_index: int in range(2):
@@ -1949,6 +1957,55 @@ func _slab(slab_name: String, center_xz: Vector2, size_xz: Vector2, top: float,
 
 
 ## Boîte avec collision optionnelle et émission optionnelle.
+## Couronnement du monument : créneaux et toitures. Décor pur — aucune de ces
+## pièces ne porte de collision, elles sont hors de portée du joueur et ne
+## doivent modifier aucun passage.
+func _crown_citadel(citadel: Node3D, tower_heights: Array[float]) -> void:
+	var crenel: Color = COL_STONE.darkened(0.12)
+	# Couronnements des terrasses et du donjon central : une dent tous les
+	# 4 m, une sur cinq manquante — une rangée parfaite lit « usine ».
+	var walls: Array[Array] = [
+		[0.0, 48.0, -193.0, 78.0], [-4.0, 58.0, -196.0, 56.0],
+		[6.0, 66.0, -198.0, 42.0], [0.0, 80.0, -198.0, 34.0],
+	]
+	for w: int in range(walls.size()):
+		var spec: Array = walls[w]
+		var span: float = spec[3] as float
+		var teeth: int = int(span / 4.0)
+		for i: int in range(teeth):
+			if (i + w) % 5 == 3:
+				continue  # dent manquante : la ruine, pas la fortification neuve
+			var x: float = (spec[0] as float) - span * 0.5 + 2.0 + 4.0 * float(i)
+			_box_in("Crenel%d_%d" % [w, i], citadel,
+				Vector3(x, (spec[1] as float) + 1.1, spec[2] as float),
+				Vector3(2.2, 2.2, 2.0), crenel, false)
+	# Toitures des quatre tours : pyramides à quatre pans. Un sommet plat de
+	# 8 m de côté à 90 m de haut est ce qui lit « cube » de plus loin.
+	for i: int in range(4):
+		var dx: float = -21.0 if i % 2 == 0 else 21.0
+		var dz: float = -16.0 if i < 2 else 14.0
+		var top: float = 34.0 + tower_heights[i]
+		var roof: MeshInstance3D = MeshInstance3D.new()
+		roof.name = "TowerRoof%d" % i
+		var pyramid: CylinderMesh = CylinderMesh.new()
+		pyramid.radial_segments = 4
+		pyramid.top_radius = 0.0
+		pyramid.bottom_radius = 6.6
+		pyramid.height = 7.5 + 1.6 * float(i % 3)
+		roof.mesh = pyramid
+		roof.material_override = _material(COL_STONE.darkened(0.2), false)
+		roof.position = Vector3(dx, top + pyramid.height * 0.5, -210.0 + dz)
+		roof.rotation.y = deg_to_rad(45.0 + 11.0 * float(i))
+		citadel.add_child(roof)
+		# Créneaux de tour, juste sous la toiture.
+		for c: int in range(4):
+			var angle: float = TAU * float(c) / 4.0 + deg_to_rad(45.0)
+			_box_in("TowerCrenel%d_%d" % [i, c], citadel,
+				Vector3(dx + cos(angle) * 4.2, top + 1.0,
+					-210.0 + dz + sin(angle) * 4.2),
+				Vector3(2.4, 2.4, 2.4), crenel, false)
+
+
 func _box_in(box_name: String, parent: Node3D, center: Vector3, size: Vector3,
 		color: Color, with_collision: bool, emissive: bool = false) -> void:
 	var mesh: MeshInstance3D = MeshInstance3D.new()
