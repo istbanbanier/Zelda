@@ -378,6 +378,14 @@ func _build_open_world() -> void:
 	add_child(territories)
 	for poi: Node in find_children("*", "PointOfInterest", true, false):
 		(poi as PointOfInterest).bind(discoveries)
+	# Le monde porte 33 lieux nommés — village, ferme, arbre foudroyé,
+	# belvédère… — et le journal émettait fidèlement `discovered` à chaque
+	# première arrivée. Ce signal n'avait AUCUN abonné : le joueur traversait
+	# la vallée et découvrait tout dans un silence total, sans jamais savoir
+	# qu'il venait d'arriver quelque part. §6.3 veut une exploration guidée par
+	# la curiosité : encore faut-il que le monde accuse réception.
+	if not discoveries.discovered.is_connected(_on_place_discovered):
+		discoveries.discovered.connect(_on_place_discovered)
 	# §3 : un lieu sans récompense n'est pas une découverte. Les familles
 	# posent des ancrages vides ; c'est ici qu'ils reçoivent un vrai coffre,
 	# dont l'identifiant dérive de celui du lieu — donc unique et stable.
@@ -390,6 +398,16 @@ func _build_open_world() -> void:
 ## Journal des découvertes de la partie — public, pour que la sauvegarde de
 ## la vallée le collecte et que l'interface puisse s'y abonner.
 var discoveries: DiscoveryLog = DiscoveryLog.new()
+
+
+## Une découverte se dit une fois, brièvement, et sans marqueur permanent :
+## c'est une récompense d'attention, pas une case à cocher.
+func _on_place_discovered(_poi_id: StringName, display_name: String) -> void:
+	if display_name.is_empty():
+		return
+	var bus: Node = get_node_or_null("/root/EventBus")
+	if bus != null:
+		bus.call("notify", "Découvert : %s" % display_name)
 
 ## Coffres posés sur les ancrages des lieux — public pour les tests.
 var rewards: DiscoveryRewards = null
@@ -542,12 +560,48 @@ func _spawn_bestiary() -> void:
 	var coordinator: CombatCoordinator = CombatCoordinator.new()
 	coordinator.name = "CombatCoordinator"
 	holder.add_child(coordinator)
+	# Chaque ligne : scène, position, lacet initial, ronde (décalages locaux).
+	#
+	# RÉÉQUILIBRAGE V5 — un audit de la carte entière a mesuré que la route
+	# naturelle du spawn jusqu'à la citadelle ne croisait AUCUN adversaire :
+	# écart latéral minimal de 30 m pour 22 à 35 m de portée de vision, et deux
+	# segments (0→183 m puis 192→349 m) où la détection était géométriquement
+	# impossible. On pouvait donc atteindre le boss sans avoir porté un coup —
+	# et tout ce que le jeu a construit (armes, garde, cuisine, Bracelet)
+	# restait facultatif, donc invisible.
+	#
+	# On ne rend rien obligatoire : on POSE des présences sur le chemin, avec
+	# leurs territoires bornés. Le joueur peut toujours contourner, il ne peut
+	# plus ignorer.
+	#
+	# Et surtout, ils BOUGENT. `patrol_offsets` n'était renseigné nulle part :
+	# l'état restait `IDLE`, `_face()` n'était jamais appelé, et les huit
+	# ennemis étaient des cônes de vision gravés dans la carte. Une ronde même
+	# courte fait balayer le regard et rend le monde habité de loin.
 	var placements: Array[Array] = [
-		["res://scenes/enemies/RaiderBlue.tscn", Vector3(92, 2.1, 16), 3.0],
-		["res://scenes/enemies/RaiderBlue.tscn", Vector3(58, 2.1, 30), 1.4],
-		["res://scenes/enemies/RaiderBlack.tscn", Vector3(-104, 14.1, 62), 1.6],
-		["res://scenes/enemies/RavineTroll.tscn", Vector3(-16, 2.1, -48), 0.4],
-		["res://scenes/enemies/CentaurHunter.tscn", Vector3(150, 2.1, 52), 4.2],
+		["res://scenes/enemies/RaiderBlue.tscn", Vector3(92, 2.1, 16), 3.0,
+			[Vector3(6, 0, 0), Vector3(-6, 0, 4)]],
+		["res://scenes/enemies/RaiderBlue.tscn", Vector3(58, 2.1, 30), 1.4,
+			[Vector3(0, 0, 7), Vector3(5, 0, -3)]],
+		["res://scenes/enemies/RaiderBlack.tscn", Vector3(-104, 14.1, 62), 1.6,
+			[Vector3(5, 0, 3), Vector3(-4, 0, -5)]],
+		# Le colosse quitte son coin pour le SEUIL de la plaine nord, sur l'axe
+		# de la rampe du donjon : on ne peut plus monter sans l'avoir vu.
+		["res://scenes/enemies/RavineTroll.tscn", Vector3(2, 2.1, -60), 0.4,
+			[Vector3(9, 0, 0), Vector3(-9, 0, 3)]],
+		["res://scenes/enemies/CentaurHunter.tscn", Vector3(150, 2.1, 52), 4.2,
+			[Vector3(12, 0, 8), Vector3(-10, 0, -6)]],
+		# Les 150 m morts entre le colosse et la porte de la citadelle.
+		["res://scenes/enemies/RaiderBlue.tscn", Vector3(12, 2.1, -120), 2.4,
+			[Vector3(0, 0, 8), Vector3(-7, 0, 0)]],
+		["res://scenes/enemies/RaiderRed.tscn", Vector3(-6, 2.1, -150), 0.2,
+			[Vector3(6, 0, 4), Vector3(-5, 0, -4)]],
+		# Le poste de garde et l'avant-poste étaient meublés et VIDES : râtelier
+		# d'armes, bancs, ordres écrits, et personne depuis dix ans.
+		["res://scenes/enemies/RaiderBlue.tscn", Vector3(15, 2.1, -99), -1.6,
+			[Vector3(4, 0, 0), Vector3(-4, 0, 5)]],
+		["res://scenes/enemies/RaiderRed.tscn", Vector3(20, 2.1, -49), -1.6,
+			[Vector3(5, 0, 0), Vector3(0, 0, 5)]],
 	]
 	for placement: Array in placements:
 		var packed: PackedScene = load(String(placement[0])) as PackedScene
@@ -560,6 +614,11 @@ func _spawn_bestiary() -> void:
 		# Le regard initial fixe le TERRITOIRE, pas le joueur : chacun
 		# garde son poste jusqu'à ce qu'il perçoive quelque chose.
 		(enemy.get_node("Pivot") as Node3D).rotation.y = float(placement[2])
+		if placement.size() > 3:
+			var route: Array[Vector3] = []
+			for offset: Variant in placement[3] as Array:
+				route.append(offset as Vector3)
+			(enemy as EnemyBase).patrol_offsets = route
 
 
 ## §12.9 (D-EN.6) : une seconde carte de navigation, cuite pour un agent
@@ -678,10 +737,14 @@ func _autosave() -> void:
 		# §19.1 : position/rotation du joueur — en PRIMITIFS (§19.2 : jamais
 		# un Variant Godot sérialisé). Le corps ne tourne jamais (voir
 		# PlayerController._ready) : le lacet vit sur VisualRoot.
+		# Le DERNIER SOL FOULÉ, jamais la position courante : sauvegarder au
+		# milieu d'une paroi, d'une chute ou d'un coin de décor produisait une
+		# reprise dans le décor, dont on ne sortait plus (voir
+		# `PlayerController.last_grounded_position`).
 		"player_position": {
-			"x": _player.global_position.x,
-			"y": _player.global_position.y,
-			"z": _player.global_position.z,
+			"x": _player.last_grounded_position().x,
+			"y": _player.last_grounded_position().y,
+			"z": _player.last_grounded_position().z,
 		},
 		"player_yaw": _player_visual_yaw(),
 		# §19.1 : « santé/endurance ». Sans elles, recharger soignait

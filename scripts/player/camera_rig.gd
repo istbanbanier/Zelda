@@ -67,6 +67,28 @@ var _framing_fov_target: float = 0.0
 var _framing_distance: float = 0.0
 var _framing_fov: float = 0.0
 
+## Secousse de contact (§10.7). Il n'en existait AUCUNE dans le projet : ni
+## impulsion, ni réglage — un `grep` sur tout le dépôt ne trouvait que le
+## commentaire d'un panneau d'options constatant l'absence. Un coup reçu ne
+## produisait donc rien à l'écran, et le joueur perdait sa vie sans le sentir.
+##
+## Elle est ANGULAIRE, appliquée aux pivots, et jamais à la position de la
+## caméra : `SpringArm3D` réécrit intégralement la position de ses enfants à
+## chaque image — le projet a déjà payé ce piège une fois avec le décalage
+## d'épaule. Elle est aussi purement ADDITIVE (§10.7) : `_yaw` et `_pitch`, qui
+## sont la vérité du regard, ne sont jamais touchés, donc aucune secousse ne
+## peut faire dériver le cadrage.
+const SHAKE_DECAY: float = 9.0
+## ~2,9° de débattement maximal : au-delà, l'écran devient illisible pendant
+## l'instant précis où le joueur a besoin de lire ce qui l'a frappé.
+const SHAKE_MAX_RAD: float = 0.05
+const SHAKE_FREQUENCY: float = 32.0
+var _shake_amplitude: float = 0.0
+var _shake_time: float = 0.0
+## Intensité voulue par le joueur, de 0 (aucune secousse) à 1. §17.5 exige que
+## la secousse soit désactivable ; ce champ est le point unique où le régler.
+var shake_scale: float = 1.0
+
 
 func _ready() -> void:
 	if tuning == null:
@@ -79,6 +101,12 @@ func _ready() -> void:
 	# depuis l'axe du personnage, qu'il faut tester l'obstacle.
 	_spring_arm.position.x = tuning.camera_shoulder_offset
 	_camera.position = Vector3.ZERO
+	# Le mode est POSÉ ici, jamais laissé au défaut : c'est lui qui décide si
+	# `fov` se lit en hauteur ou en largeur, et le projet a déjà payé cette
+	# ambiguïté une fois (voir `LocomotionTuning.camera_fov`). `KEEP_HEIGHT`
+	# est le choix du paysage : un écran plus large montre PLUS sur les côtés
+	# au lieu de rogner le haut et le bas.
+	_camera.keep_aspect = Camera3D.KEEP_HEIGHT
 	_camera.fov = tuning.camera_fov
 	# Sonde volumique plutôt que rayon : voir `camera_probe_radius`. La forme est
 	# créée ici, pas partagée dans la scène — deux joueurs ne doivent jamais
@@ -172,9 +200,48 @@ func boss_framing_fov() -> float:
 	return _framing_fov
 
 
+## Demande une secousse, en radians de débattement : 0,012 pour un coup léger,
+## 0,025 pour un coup lourd, 0,04 pour un événement de boss. Les demandes ne
+## s'additionnent pas — on garde la plus forte, sinon trois impacts dans la
+## même seconde rendraient le combat illisible au moment où il compte.
+func add_shake(strength: float) -> void:
+	if shake_scale <= 0.0 or strength <= 0.0:
+		return
+	_shake_amplitude = minf(
+		maxf(_shake_amplitude, strength * shake_scale), SHAKE_MAX_RAD)
+
+
+func shake_amplitude() -> float:
+	return _shake_amplitude
+
+
+## Avance la secousse au rythme physique, comme le reste du rig (§20.9).
+func update_shake(delta: float) -> void:
+	if _shake_amplitude <= 0.00001:
+		if _shake_amplitude != 0.0:
+			_shake_amplitude = 0.0
+			_apply_rotation()
+		return
+	_shake_time += delta
+	_shake_amplitude = maxf(0.0,
+		_shake_amplitude - SHAKE_DECAY * _shake_amplitude * delta)
+	_apply_rotation()
+
+
+## Décalage angulaire courant. Deux sinus de fréquences premières entre elles :
+## un mouvement franc mais non périodique, qui ne ressemble pas à une vibration.
+func _shake_offset() -> Vector2:
+	if _shake_amplitude <= 0.0:
+		return Vector2.ZERO
+	return Vector2(
+		sin(_shake_time * SHAKE_FREQUENCY) * _shake_amplitude,
+		sin(_shake_time * SHAKE_FREQUENCY * 1.37 + 1.1) * _shake_amplitude * 0.6)
+
+
 func _apply_rotation() -> void:
-	_yaw_pivot.rotation.y = _yaw
-	_pitch_pivot.rotation.x = _pitch
+	var shake: Vector2 = _shake_offset()
+	_yaw_pivot.rotation.y = _yaw + shake.x
+	_pitch_pivot.rotation.x = _pitch + shake.y
 
 
 func get_pitch() -> float:

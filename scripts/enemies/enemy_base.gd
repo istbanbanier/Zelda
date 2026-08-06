@@ -182,6 +182,24 @@ func _collect_model_materials() -> void:
 		for surface: int in range(surfaces):
 			var material: BaseMaterial3D = \
 				mesh.get_surface_override_material(surface) as BaseMaterial3D
+			if material == null:
+				# REPLI — sans lui, le Colosse et le Chasseur n'avaient AUCUN
+				# retour visuel : ni télégraphe d'attaque, ni flash de dégât,
+				# ni assombrissement du cadavre. Leurs scènes visuelles ne
+				# posent pas de matériau d'override (contrairement aux trois
+				# pillards, qui passent par `character_model_sockets.gd`), et
+				# tout le retour de combat sortait tôt sur
+				# `if _feedback_materials.is_empty(): return`. Un rocher de
+				# quatre mètres partait donc sans le moindre avertissement.
+				#
+				# On duplique le matériau ACTIF du modèle et on l'installe en
+				# override : la copie est propre à cet exemplaire, donc frapper
+				# un colosse n'allume pas son voisin.
+				var active: BaseMaterial3D = \
+					mesh.get_active_material(surface) as BaseMaterial3D
+				if active != null:
+					material = active.duplicate() as BaseMaterial3D
+					mesh.set_surface_override_material(surface, material)
 			if material != null and not _feedback_materials.has(material):
 				_feedback_materials.append(material)
 				_feedback_bases.append(material.albedo_color)
