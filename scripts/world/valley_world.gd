@@ -203,7 +203,17 @@ func _ready() -> void:
 ##     noyaux, runes : ce sont des télégraphes de jeu, pas du décor ;
 ##   - l'orage, qui porte son propre langage d'éclair déjà réglé.
 func _paint_the_world() -> void:
-	var skip: Array[String] = ["Storm", "StormCell"]
+	# Le nuage de la vallée s'appelle `CitadelStorm` : la première passe
+	# l'a blanchi parce que la liste ne connaissait que « Storm ».
+	# Le TERRAIN est exclu pour l'instant, décision assumée : il porte
+	# ses propres teintes et masques, et la recette (réglée sur un
+	# laboratoire sans terrain) le rendait délavé — lointain de 65 % à
+	# 74 %, sol gris au lieu de vert. Livrer une carte délavée serait
+	# une régression ; les props, roches, bâtiments et végétaux, eux,
+	# gagnent la peinture dès maintenant. Le terrain suivra quand la
+	# recette saura le lire (chantier nommé, pas oublié).
+	var skip: Array[String] = ["CitadelStorm", "Storm", "StormCell",
+		"Terrain"]
 	var painted: int = PainterlyRecipe.paint_world(self, skip)
 	if painted > 0:
 		print("[art] vallée peinte : %d surfaces" % painted)

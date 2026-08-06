@@ -538,6 +538,7 @@ static func grain_texture() -> NoiseTexture2D:
 	_grain.height = 512
 	# Sans raccord, la projection monde montrerait la couture du tuilage.
 	_grain.seamless = true
+	_grain.generate_mipmaps = true
 	return _grain
 
 

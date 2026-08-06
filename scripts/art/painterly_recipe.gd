@@ -63,6 +63,7 @@ static func grain() -> NoiseTexture2D:
 	_grain.width = 512
 	_grain.height = 512
 	_grain.seamless = true
+	_grain.generate_mipmaps = true
 	return _grain
 
 
@@ -133,11 +134,23 @@ static func from_standard(source: StandardMaterial3D) -> ShaderMaterial:
 		# Les kits sans texture sont souvent très sombres : posés tels
 		# quels sous le soleil ils rendent noir. On remonte la VALEUR
 		# en gardant la teinte.
+		# Seuls les matériaux ABSURDEMENT sombres sont remontés — les
+		# .mtl de certains kits sont à 0,07 et rendent noirs. Le seuil
+		# était à 0,45 : appliqué à la vallée entière, il délavait tout
+		# (lointain de 65 % à 77 %, nuage d'orage blanchi). Une teinte
+		# sombre VOULUE par le level design doit le rester.
 		var peak: float = maxf(tint.r, maxf(tint.g, tint.b))
-		if peak > 0.001 and peak < 0.45:
-			tint = tint * (0.55 / peak)
+		if peak > 0.001 and peak < 0.14:
+			tint = tint * (0.40 / peak)
 		tint.a = 1.0
-	return paint(tint, source.roughness, texture, cutout)
+	var material: ShaderMaterial = paint(tint, source.roughness, texture,
+		cutout)
+	# On ne reprend les couleurs de sommets que si la source les
+	# utilisait vraiment : le terrain en porte que son matériau
+	# ignorait, et les appliquer rendait le sol gris-bleu.
+	material.set_shader_parameter("use_vertex_color",
+		source.vertex_color_use_as_albedo)
+	return material
 
 
 ## Choisit la famille de surface d'après le nom du nœud et sa teinte —
@@ -161,10 +174,11 @@ static func family_for(node_name: String, tint: Color) -> String:
 	if lowered.contains("grass") or lowered.contains("meadow") \
 			or lowered.contains("terrain") or lowered.contains("chunk"):
 		return "T_Grass_Field"
-	# Sans indice de nom : la teinte décide entre végétal et minéral.
-	if tint.g > tint.r and tint.g > tint.b:
-		return "T_Grass_Field"
-	return "T_Rock_Mossy"
+	# Sans indice de NOM, on n'habille pas au hasard : le sol de la
+	# vallée porte un albédo neutre (ses couleurs viennent des vertex),
+	# et la déduction par teinte lui posait de la roche. Une surface
+	# fausse est pire que pas de surface — la peinture suffit.
+	return ""
 
 
 ## Taille de tuile par famille, en mètres.

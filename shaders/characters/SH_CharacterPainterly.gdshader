@@ -15,6 +15,10 @@ render_mode specular_disabled;
 uniform vec4 albedo_color : source_color = vec4(1.0);
 uniform sampler2D albedo_texture : source_color, hint_default_white;
 uniform float roughness_value : hint_range(0.0, 1.0) = 0.85;
+// Le mesh porte-t-il des couleurs de sommets QUI COMPTENT ? Le
+// terrain de la vallée en a que son matériau d'origine ignorait :
+// les multiplier sans condition rendait le sol gris-bleu.
+uniform bool use_vertex_color = false;
 
 // Ombres froides / lumières chaudes (§1.4 : ombre #4C5B75, soleil miel).
 uniform vec4 shadow_tint : source_color = vec4(0.42, 0.48, 0.60, 1.0);
@@ -27,7 +31,7 @@ uniform float ramp_soft : hint_range(0.01, 0.5) = 0.16;
 // Half-Lambert : combien la lumière enveloppe (0 = Lambert brut).
 uniform float wrap : hint_range(0.0, 1.0) = 0.3;
 // Plancher d'ombre : jamais de noir bouché (§1.5 : ombres 18-38 %).
-uniform float shadow_floor : hint_range(0.0, 1.0) = 0.26;
+uniform float shadow_floor : hint_range(0.0, 1.0) = 0.14;
 
 uniform float rim_strength : hint_range(0.0, 1.0) = 0.1;
 uniform float rim_power : hint_range(1.0, 8.0) = 3.5;
@@ -63,6 +67,12 @@ uniform float surface_blend : hint_range(0.0, 1.0) = 0.0;
 uniform float surface_desaturate : hint_range(0.0, 1.0) = 0.7;
 uniform float surface_normal_depth : hint_range(0.0, 2.0) = 0.7;
 uniform float surface_roughness_blend : hint_range(0.0, 1.0) = 0.5;
+// Distance à laquelle le détail de surface s'éteint. Une tuile de 3 m
+// vue à 400 m ne porte plus d'information : elle ne produit que du
+// grésillement (défaut vu sur la première capture de la vallée
+// entière — le laboratoire de 80 m ne pouvait pas le révéler).
+uniform float surface_fade_near : hint_range(5.0, 200.0) = 45.0;
+uniform float surface_fade_far : hint_range(10.0, 600.0) = 130.0;
 
 // Variation macro très lente (§21.1) : de grandes respirations de teinte
 // en espace monde — contre l'aplat uniforme, sans microbruit.
@@ -101,7 +111,10 @@ void fragment() {
 	// physique de la tuile. `surface_blend` à 0 = aucune surface,
 	// donc les matériaux qui n'en veulent pas ne paient rien.
 	float surface_rough_value = 0.0;
-	if (surface_blend > 0.001) {
+	float view_distance = length(VERTEX);
+	float surface_reach = surface_blend * (1.0 - smoothstep(
+		surface_fade_near, surface_fade_far, view_distance));
+	if (surface_reach > 0.001) {
 		vec3 tile_uv = world_position / max(surface_tile_m, 0.05);
 		vec2 uv_flat = tile_uv.xz;
 		vec2 uv_wall = tile_uv.xy;
@@ -114,21 +127,24 @@ void fragment() {
 		float surface_luma = dot(surface, vec3(0.2126, 0.7152, 0.0722));
 		surface = mix(surface, vec3(surface_luma), surface_desaturate);
 		// Centré sur le gris moyen : la surface éclaircit ET assombrit.
-		base *= mix(vec3(1.0), surface / 0.5, surface_blend);
+		base *= mix(vec3(1.0), surface / 0.5, surface_reach);
 		vec3 packed_normal = mix(
 			texture(surface_normal, uv_flat).rgb,
 			texture(surface_normal, uv_wall).rgb, wall);
 		NORMAL_MAP = packed_normal;
-		NORMAL_MAP_DEPTH = surface_normal_depth * surface_blend;
+		NORMAL_MAP_DEPTH = surface_normal_depth * surface_reach;
 		surface_rough_value = mix(
 			texture(surface_rough, uv_flat).r,
 			texture(surface_rough, uv_wall).r, wall);
 	}
+	if (use_vertex_color) {
+		base *= COLOR.rgb;
+	}
 	ALBEDO = base;
 	float rough = roughness_value + signed_grain * grain_roughness;
-	if (surface_blend > 0.001) {
+	if (surface_reach > 0.001) {
 		rough = mix(rough, surface_rough_value,
-			surface_roughness_blend * surface_blend);
+			surface_roughness_blend * surface_reach);
 	}
 	ROUGHNESS = clamp(rough, 0.0, 1.0);
 	// Rim : discret, côté lumière implicite par la vue — pas un halo.
