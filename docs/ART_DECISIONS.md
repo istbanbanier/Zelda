@@ -54,3 +54,17 @@ revue contradictoire. Alternatives rejetées : propager tout de suite
 attendre le verdict humain sans rien faire (le handoff autorise la
 bifurcation autonome consignée). Le score officiel reste à l'humain
 sur GPU ; le Gate H n'est PAS déclaré.
+
+### AD-005 — Le contrat d'image §1.1 prime sur la distance caméra §3.1 (2026-08-06, révocable)
+**Décision appliquée** : la revue contradictoire a mesuré le héros à
+~51 % de hauteur visible (fenêtre §1.1 : 38-45 %). Au FOV verrouillé
+(71,4° horizontal), les fenêtres §1.1 (tête 44-48 %, pieds 89-92 %,
+hauteur 38-45 %) sont mathématiquement incompatibles avec la distance
+caméra §3.1 (4,0-4,5 m). Choix : le contrat d'IMAGE prime (c'est lui
+que la grille §30.2 et la revue jugent) — objectif 1,75 m (borne
+§3.1), recul 5,0 m ; calcul et mesure : tête 44,7 %, pieds 89,3 %,
+hauteur 44,6 %, trois fenêtres tenues. Alternative rejetée : réduire
+le FOV sous 65° horizontal (violerait §3.1 aussi et écraserait la
+vallée). Au même lot : soleil replacé DEVANT-GAUCHE (azimut 40°,
+hauteur 23°) — l'ancien yaw le mettait derrière-droite, contraire à
+§22.1, ciel symétrique mesuré 73,6/73,6 par la revue.

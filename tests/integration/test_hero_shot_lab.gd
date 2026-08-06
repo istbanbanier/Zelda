@@ -101,8 +101,13 @@ func test_the_camera_honours_the_north_star_contract() -> void:
 	var flat: Vector3 = camera.global_position - feet.global_position
 	var height: float = flat.y
 	flat.y = 0.0
-	check(flat.length() >= 3.6 and flat.length() <= 4.7,
-		"caméra à %.2f m derrière le héros (cible 4,0-4,5)" % flat.length())
+	# AD-005 (Lot 7) : à ce FOV, la distance §3.1 (4,0-4,5 m) est
+	# INCOMPATIBLE avec la hauteur visible du héros §1.1 (38-45 % —
+	# mesurée à ~51 % par la revue contradictoire). Le contrat d'IMAGE
+	# prime : recul à 5,0 m, écart de distance consigné.
+	check(flat.length() >= 4.8 and flat.length() <= 5.2,
+		"caméra à %.2f m derrière le héros (AD-005 : 5,0 m — le contrat "
+		% flat.length() + "d'image §1.1 prime sur la distance §3.1)")
 	check(height >= 1.45 and height <= 1.85,
 		"objectif à %.2f m au-dessus des pieds (cible 1,55-1,75)" % height)
 	await _teardown()

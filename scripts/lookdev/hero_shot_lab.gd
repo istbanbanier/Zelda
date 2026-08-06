@@ -20,9 +20,15 @@ extends Node3D
 ## en 16:9 (KEEP_HEIGHT — entrer 68 en vertical est LE piège nommé §3.1).
 const CAM_FOV: float = 44.0
 const CAM_PITCH_DEG: float = -2.0
-## Position relative aux pieds du héros (origine du lab) : 4,5 m
-## derrière, objectif à 1,70 m, décalé pour poser le héros à ~41 % X.
-const CAM_POSITION: Vector3 = Vector3(0.55, 1.70, 4.5)
+## Position relative aux pieds du héros (origine du lab), décalée pour
+## poser le héros à ~41 % X. Lot 7 (AD-005) : la revue a mesuré le
+## héros à ~51 % de hauteur visible contre 38-45 % (§1.1) — ce contrat
+## d'IMAGE est incompatible avec la distance §3.1 (4,0-4,5 m) à ce FOV.
+## Le contrat d'écran prime (c'est lui que la revue juge) : objectif à
+## 1,75 m (borne §3.1) et recul à 5,0 m — calcul ET mesure donnent
+## tête ~44,7 %, pieds ~89,3 %, hauteur visible ~44,6 % : les trois
+## fenêtres §1.1 tenues. Seule la distance dévie, décision consignée.
+const CAM_POSITION: Vector3 = Vector3(0.55, 1.75, 5.0)
 const HERO_HEIGHT: float = 1.78
 
 const COL_GRASS: Color = Color(0.365, 0.561, 0.239)      # #5D8F3D
@@ -667,7 +673,18 @@ func _build_light() -> void:
 	sun.name = "Sun"
 	sun.light_color = Color(1.0, 0.839, 0.541)
 	sun.light_energy = 1.45
-	sun.rotation_degrees = Vector3(-23.0, 52.0, 0.0)
+	# Lot 7 (revue) : l'ancien yaw +52° plaçait le soleil DERRIÈRE-DROITE
+	# de la caméra — contraire à §22.1 (« ouest/haut-gauche ») et au ciel
+	# symétrique mesuré (73,6 % des deux côtés). Le soleil passe DEVANT-
+	# GAUCHE, 40° d'azimut (juste hors du demi-champ de 35,7°) et 23° de
+	# hauteur (§22.1 : 18-28°) : sa lueur entre par le coin haut-gauche
+	# (§1.1 : plus forte luminance X 8-34 %) et le héros devient
+	# contre-jour, comme la référence.
+	var to_sun: Vector3 = Vector3(
+		-sin(deg_to_rad(40.0)) * cos(deg_to_rad(23.0)),
+		sin(deg_to_rad(23.0)),
+		-cos(deg_to_rad(40.0)) * cos(deg_to_rad(23.0)))
+	sun.basis = Basis.looking_at(-to_sun)
 	add_child(sun)
 	var environment: Environment = Environment.new()
 	environment.background_mode = Environment.BG_SKY
@@ -677,6 +694,10 @@ func _build_light() -> void:
 	sky_material.sky_horizon_color = Color(0.843, 0.867, 0.902)
 	sky_material.ground_bottom_color = Color(0.361, 0.443, 0.322)
 	sky_material.ground_horizon_color = Color(0.749, 0.780, 0.702)
+	# Lot 7 : halo solaire élargi — le disque reste hors champ, sa lueur
+	# miel doit entrer par le coin haut-gauche (§1.1).
+	sky_material.sun_angle_max = 28.0
+	sky_material.sun_curve = 0.12
 	sky.sky_material = sky_material
 	environment.sky = sky
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
