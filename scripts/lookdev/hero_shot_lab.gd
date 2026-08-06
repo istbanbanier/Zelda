@@ -327,6 +327,33 @@ func _lower_arm(skeleton: Skeleton3D, bone: String, degrees: float) -> void:
 ## Matériau painterly : fondu ADOUCI explicite (le contrat du test le
 ## vérifie — toon dur interdit) ; texture optionnelle (le héros garde
 ## la sienne, un blanc 1×1 sinon — équivalent du hint_default_white).
+## Lot 10 — grain PROCÉDURAL partagé : généré par le moteur
+## (`FastNoiseLite`, AD-001 : aucune image téléchargée), donc
+## reproductible depuis le dépôt sans poids binaire ni licence. Une
+## seule ressource pour tout le lab : le grain doit UNIFIER la matière,
+## pas donner un motif différent à chaque objet.
+static var _grain: NoiseTexture2D = null
+
+
+static func grain_texture() -> NoiseTexture2D:
+	if _grain != null:
+		return _grain
+	var noise: FastNoiseLite = FastNoiseLite.new()
+	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	# §21.1 : GRANDES formes, jamais du microbruit qui scintille.
+	noise.frequency = 0.012
+	noise.fractal_octaves = 3
+	noise.fractal_gain = 0.42
+	noise.seed = 20260806
+	_grain = NoiseTexture2D.new()
+	_grain.noise = noise
+	_grain.width = 512
+	_grain.height = 512
+	# Sans raccord, la projection monde montrerait la couture du tuilage.
+	_grain.seamless = true
+	return _grain
+
+
 func _painterly_material(colour: Color, rough: float,
 		texture: Texture2D = null) -> ShaderMaterial:
 	var material: ShaderMaterial = ShaderMaterial.new()
@@ -334,6 +361,10 @@ func _painterly_material(colour: Color, rough: float,
 	material.set_shader_parameter("albedo_color", colour)
 	material.set_shader_parameter("roughness_value", rough)
 	material.set_shader_parameter("ramp_soft", 0.16)
+	material.set_shader_parameter("grain_texture", grain_texture())
+	material.set_shader_parameter("grain_strength", 0.12)
+	material.set_shader_parameter("grain_scale", 0.35)
+	material.set_shader_parameter("grain_roughness", 0.18)
 	if texture == null:
 		var image: Image = Image.create(1, 1, false, Image.FORMAT_RGB8)
 		image.fill(Color.WHITE)

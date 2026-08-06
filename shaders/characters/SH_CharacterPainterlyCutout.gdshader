@@ -34,6 +34,18 @@ uniform float rim_strength : hint_range(0.0, 1.0) = 0.1;
 uniform float rim_power : hint_range(1.0, 8.0) = 3.5;
 uniform vec4 rim_color : source_color = vec4(1.0, 0.92, 0.75, 1.0);
 
+// Lot 10 — GRAIN procédural (§21.1) : une texture de bruit généré par
+// le moteur casse l'aplat uni. Projeté en espace MONDE (triplanaire
+// simplifié sur XZ + Y) pour ne dépendre d'aucune UV : les modèles du
+// kit n'ont pas tous des UV utilisables pour du détail.
+uniform sampler2D grain_texture : hint_default_white, filter_linear_mipmap,
+	repeat_enable;
+uniform float grain_strength : hint_range(0.0, 0.4) = 0.12;
+uniform float grain_scale : hint_range(0.02, 2.0) = 0.35;
+// Le grain creuse aussi la rugosité : une pierre grainée accroche la
+// lumière différemment d'une pierre lisse — c'est ça qui « fait matière ».
+uniform float grain_roughness : hint_range(0.0, 0.5) = 0.18;
+
 // Variation macro très lente (§21.1) : de grandes respirations de teinte
 // en espace monde — contre l'aplat uniforme, sans microbruit.
 uniform float macro_variation : hint_range(0.0, 0.3) = 0.06;
@@ -58,8 +70,22 @@ void fragment() {
 	float breath = sin(world_position.x * macro_scale * 6.28318)
 		* sin(world_position.z * macro_scale * 4.71238);
 	base *= 1.0 + breath * macro_variation;
+	// Grain : deux projections monde mélangées par la normale — pas de
+	// couture visible, aucune UV requise.
+	vec3 grain_uv = world_position * grain_scale;
+	vec3 world_normal = normalize(
+		(vec4(NORMAL, 0.0) * VIEW_MATRIX).xyz);
+	float up = abs(world_normal.y);
+	float grain = mix(
+		texture(grain_texture, grain_uv.xz).r,
+		texture(grain_texture, grain_uv.xy).r,
+		clamp(1.0 - up, 0.0, 1.0));
+	// Centré sur 0 : le grain assombrit ET éclaircit, il ne salit pas.
+	float signed_grain = grain - 0.5;
+	base *= 1.0 + signed_grain * grain_strength * 2.0;
 	ALBEDO = base;
-	ROUGHNESS = roughness_value;
+	ROUGHNESS = clamp(roughness_value
+		+ signed_grain * grain_roughness, 0.0, 1.0);
 	// Rim : discret, côté lumière implicite par la vue — pas un halo.
 	float rim = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), rim_power);
 	EMISSION = rim_color.rgb * rim * rim_strength;
