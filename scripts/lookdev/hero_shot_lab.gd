@@ -344,6 +344,16 @@ func _build_terrain() -> void:
 			0.88)
 	_slab("CliffLeftLip", Vector3(-22.5, _slope_height(-34.0) + 10.6, -34),
 		Vector3(9, 3.2, 34), COL_ROCK.lerp(COL_GRASS, 0.3))
+	# Lot 8 (revue) : la falaise gauche BOUCHAIT sans guider — deux
+	# strates intermédiaires descendent en escalier vers la vallée,
+	# tournées vers le chemin (§6.1 : la descente CADRE le camp puis le
+	# pylône ; leurs arêtes éclairées font la ligne du regard).
+	_slab("CliffStepA", Vector3(-29, _slope_height(-52.0) + 7.5, -52),
+		Vector3(16, 12, 26), COL_ROCK.lerp(COL_STONE_COLD, 0.15))
+	(get_node("CliffStepA") as MeshInstance3D).rotation_degrees.y = 12.0
+	_slab("CliffStepB", Vector3(-33, _slope_height(-72.0) + 6.5, -72),
+		Vector3(18, 14, 30), COL_ROCK.lerp(COL_STONE_COLD, 0.25))
+	(get_node("CliffStepB") as MeshInstance3D).rotation_degrees.y = 7.0
 	_slab("CliffLeftFar", Vector3(-36, _slope_height(-95.0) + 6.0, -95),
 		Vector3(20, 16, 70), COL_ROCK.lerp(COL_STONE_COLD, 0.35))
 	# Décalée à droite (leçon v0 : à x 46 elle avalait le pylône).
@@ -623,13 +633,27 @@ func _build_citadel_proxy() -> void:
 	citadel.name = "CitadelProxy"
 	citadel.position = centre
 	add_child(citadel)
+	# Lot 8 (§2.4) : la revue jugeait la silhouette « boîtes grises ».
+	# 19 grandes formes < 20 : socle très large, terrasses successives à
+	# ressauts, 4 contreforts, tours coupées de hauteurs DIFFÉRENTES
+	# (dont une ruinée), épaulements asymétriques et 3 conduits de
+	# cuivre patiné descendant de la couronne vers les flancs.
 	var masses: Array[Array] = [
 		["Socle", Vector3(0, -18, 0), Vector3(190, 26, 90)],
 		["TerraceA", Vector3(-12, -2, 4), Vector3(130, 18, 66)],
+		["TerraceA2", Vector3(26, 3, 8), Vector3(58, 10, 44)],
 		["TerraceB", Vector3(8, 12, 0), Vector3(90, 16, 50)],
+		["TerraceB2", Vector3(-22, 19, -2), Vector3(52, 9, 40)],
 		["ShoulderW", Vector3(-46, 16, -4), Vector3(34, 30, 38)],
 		["ShoulderE", Vector3(38, 10, 2), Vector3(30, 24, 34)],
 		["Keep", Vector3(0, 28, -2), Vector3(48, 26, 36)],
+		["ContrefortSW", Vector3(-72, -14, 24), Vector3(22, 34, 20)],
+		["ContrefortSE", Vector3(68, -16, 26), Vector3(20, 30, 18)],
+		["ContrefortNW", Vector3(-66, -12, -28), Vector3(18, 38, 16)],
+		["ContrefortNE", Vector3(62, -14, -24), Vector3(16, 34, 14)],
+		["TourW", Vector3(-34, 34, -10), Vector3(14, 34, 14)],
+		["TourE", Vector3(28, 30, -8), Vector3(12, 26, 12)],
+		["TourRuinee", Vector3(52, 14, -14), Vector3(11, 14, 11)],
 	]
 	for mass: Array in masses:
 		var mesh: MeshInstance3D = MeshInstance3D.new()
@@ -639,6 +663,22 @@ func _build_citadel_proxy() -> void:
 		mesh.mesh = box
 		mesh.material_override = _material(COL_CITADEL, 0.85)
 		mesh.position = mass[1] as Vector3
+		citadel.add_child(mesh)
+	# Les trois lignes de Résonance §2.4 : cuivre PATINÉ non émissif —
+	# plus de 95 % de la masse reste sans énergie visible.
+	var conduits: Array[Array] = [
+		["ConduitC", Vector3(2, 30, 18), Vector3(4, 60, 3)],
+		["ConduitW", Vector3(-26, 18, 16), Vector3(3, 44, 3)],
+		["ConduitE", Vector3(22, 14, 17), Vector3(3, 36, 3)],
+	]
+	for conduit: Array in conduits:
+		var mesh: MeshInstance3D = MeshInstance3D.new()
+		mesh.name = conduit[0] as String
+		var box: BoxMesh = BoxMesh.new()
+		box.size = conduit[2] as Vector3
+		mesh.mesh = box
+		mesh.material_override = _material(COL_COPPER, 0.6)
+		mesh.position = conduit[1] as Vector3
 		citadel.add_child(mesh)
 	# La spire : elle capte l'orage (ancre au sommet).
 	var spire: MeshInstance3D = MeshInstance3D.new()
@@ -685,6 +725,10 @@ func _build_light() -> void:
 		sin(deg_to_rad(23.0)),
 		-cos(deg_to_rad(40.0)) * cos(deg_to_rad(23.0)))
 	sun.basis = Basis.looking_at(-to_sun)
+	# Lot 8 : ombres portées — l'éval v9 notait « pas d'ombre de contact
+	# sous le héros » ; §22.1 veut des ombres longues lisibles.
+	sun.shadow_enabled = true
+	sun.directional_shadow_max_distance = 60.0
 	add_child(sun)
 	var environment: Environment = Environment.new()
 	environment.background_mode = Environment.BG_SKY
