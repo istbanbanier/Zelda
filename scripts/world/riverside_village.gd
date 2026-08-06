@@ -87,6 +87,10 @@ func _piece(asset: String, at: Vector3, yaw_deg: float = 0.0,
 	if not is_equal_approx(corrected, 1.0):
 		node.scale = Vector3.ONE * corrected
 	node.rotation_degrees = Vector3(0, yaw_deg, 0)
+	# « Rien ne flotte » : une partie du kit a son origine SOUS sa
+	# géométrie (Prop_Support commence à +1,21 m). Sans cette
+	# correction, l'objet est suspendu en l'air. Voir KitPlacement.
+	KitPlacement.seat(node, node.scene_file_path)
 	(parent if parent != null else self).add_child(node)
 	_built += 1
 	return node
@@ -176,7 +180,7 @@ func _build_inn() -> void:
 			"Wall_Plaster_Straight" if iz != 0
 			else "Wall_Plaster_Window_Wide_Round")
 
-	_piece("Roof_RoundTiles_6x6", Vector3(0, WALL_H, 0), 0.0, inn)
+	_gabled_roof(inn, 6, Vector3(0, WALL_H, 0))
 	_piece("Prop_Chimney2", Vector3(1.6, WALL_H + 0.6, -1.4), 0.0, inn)
 
 	# Mobilier : l'auberge est MEUBLÉE, sinon c'est une pièce vide avec un toit.
@@ -225,6 +229,30 @@ func _build_mill() -> void:
 	_piece("Roof_Tower_RoundTiles", Vector3(0, WALL_H * 2.0, 0), 0.0, mill)
 
 
+## Toit à deux pans FERMÉ. Un toit sans pignons laisse un triangle ouvert à
+## chaque bout : le joueur voit sous les tuiles, et la maison n'est plus une
+## maison. Le kit fournit `Roof_Front_Brick4/6/8` pour cela ; ils n'étaient
+## posés nulle part. On les pose donc AVEC le toit, jamais séparément — un
+## seul appel, impossible à oublier.
+##
+## `span` est le côté couvert en mètres (4, 6 ou 8). L'axe des pignons est
+## celui de la faîtière : `gable_on_z` place les fermetures en avant/arrière.
+func _gabled_roof(parent: Node3D, span: int, at: Vector3,
+		gable_on_z: bool = false) -> void:
+	_piece("Roof_RoundTiles_%dx%d" % [span, span], at, 0.0, parent)
+	var front: String = "Roof_Front_Brick%d" % span
+	var half: float = float(span) * 0.5
+	for side: int in [-1, 1]:
+		var offset: Vector3 = Vector3(0, 0, half * float(side)) if gable_on_z \
+			else Vector3(half * float(side), 0, 0)
+		var yaw: float = 0.0
+		if gable_on_z:
+			yaw = 0.0 if side > 0 else 180.0
+		else:
+			yaw = 270.0 if side > 0 else 90.0
+		_piece(front, at + offset, yaw, parent)
+
+
 ## SANCTUAIRE : petit, ouvert, sur la hauteur du village.
 func _build_shrine() -> void:
 	var shrine: Node3D = Node3D.new()
@@ -234,7 +262,7 @@ func _build_shrine() -> void:
 	for ix: int in [-1, 1]:
 		_wall(shrine, Vector3(ix * MODULE * 0.5, 0, -MODULE * 0.5), 180.0,
 			"Wall_Plaster_Straight")
-	_piece("Roof_RoundTiles_4x4", Vector3(0, WALL_H, 0), 0.0, shrine)
+	_gabled_roof(shrine, 4, Vector3(0, WALL_H, 0))
 	_piece("CandleStick", Vector3(0, 0.05, -0.6), 0.0, shrine, PROPS)
 	_piece("Banner_1", Vector3(-1.4, 0.05, -0.8), 0.0, shrine, PROPS)
 
@@ -256,9 +284,13 @@ func _build_dwellings() -> void:
 				"Wall_Plaster_Window_Wide_Round")
 			_wall(house, Vector3(ix * MODULE * 0.5, 0, -MODULE), 180.0,
 				"Wall_Plaster_Straight")
-			_wall(house, Vector3(ix * MODULE, 0, 0.0),
-				90.0 if ix < 0 else 270.0, "Wall_Plaster_Straight")
-		_piece("Roof_RoundTiles_4x4", Vector3(0, WALL_H, 0), 0.0, house)
+			# DÉFAUT CORRIGÉ : une seule pièce de 2 m ne fermait que le
+			# milieu d'un côté de 4 m — la maison restait ouverte d'un mètre
+			# à chaque bout, et on voyait au travers.
+			for iz: int in [-1, 1]:
+				_wall(house, Vector3(ix * MODULE, 0, iz * MODULE * 0.5),
+					90.0 if ix < 0 else 270.0, "Wall_Plaster_Straight")
+		_gabled_roof(house, 4, Vector3(0, WALL_H, 0))
 		_piece("Prop_Chimney2", Vector3(0.8, WALL_H + 0.5, -0.8), 0.0, house)
 
 

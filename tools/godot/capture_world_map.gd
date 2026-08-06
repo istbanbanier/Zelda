@@ -37,6 +37,12 @@ var _keep_fog: bool = false
 ## Énergie de la lumière ambiante. Basse (0,12) : les ombres portées révèlent
 ## le relief — c'est la carte qui dit si le terrain a du modelé ou s'il est plat.
 var _ambient: float = 0.55
+## Caméra libre : `--from` et `--look` basculent en perspective et permettent
+## de photographier n'importe quel point du monde bâti (un hameau, une rive,
+## l'entrée du donjon) sans créer une scène de capture par sujet.
+var _from: Vector3 = Vector3.INF
+var _look: Vector3 = Vector3.ZERO
+var _fov: float = 55.0
 
 
 func _initialize() -> void:
@@ -67,6 +73,16 @@ func _parse_args() -> void:
 			_label = arg.trim_prefix("--label=")
 		elif arg == "--keep-fog":
 			_keep_fog = true
+		elif arg.begins_with("--from="):
+			var fp: PackedStringArray = arg.trim_prefix("--from=").split(",")
+			if fp.size() == 3:
+				_from = Vector3(fp[0].to_float(), fp[1].to_float(), fp[2].to_float())
+		elif arg.begins_with("--look="):
+			var lp: PackedStringArray = arg.trim_prefix("--look=").split(",")
+			if lp.size() == 3:
+				_look = Vector3(lp[0].to_float(), lp[1].to_float(), lp[2].to_float())
+		elif arg.begins_with("--fov="):
+			_fov = arg.trim_prefix("--fov=").to_float()
 		elif arg.begins_with("--ambient="):
 			_ambient = maxf(0.0, arg.trim_prefix("--ambient=").to_float())
 		elif arg.begins_with("--center="):
@@ -148,13 +164,21 @@ func _capture() -> void:
 
 	var camera: Camera3D = Camera3D.new()
 	camera.name = "AtlasCamera"
-	camera.projection = Camera3D.PROJECTION_ORTHOGONAL
-	camera.size = _span
-	camera.near = 1.0
-	camera.far = _altitude + 800.0
-	camera.position = Vector3(_center.x, _altitude, _center.z)
-	camera.rotation_degrees = Vector3(-90.0, 0.0, 0.0)
+	camera.near = 0.2
+	camera.far = _altitude + 1400.0
+	if _from == Vector3.INF:
+		camera.projection = Camera3D.PROJECTION_ORTHOGONAL
+		camera.size = _span
+		camera.near = 1.0
+		camera.position = Vector3(_center.x, _altitude, _center.z)
+		camera.rotation_degrees = Vector3(-90.0, 0.0, 0.0)
+	else:
+		camera.fov = _fov
+		camera.position = _from
 	instance.add_child(camera)
+	if _from != Vector3.INF:
+		# `look_at` exige d'être dans l'arbre : la caméra vient d'y entrer.
+		camera.look_at(_look, Vector3.UP)
 	camera.make_current()
 
 	for i: int in range(12):

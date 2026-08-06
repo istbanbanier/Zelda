@@ -33,6 +33,26 @@ var _hints_tracker: PuzzleHintTracker = null
 
 ## Enregistre un objet d'énigme essentiel (§14.3) : le reset et la
 ## sauvegarde le connaissent désormais.
+## Point d'insertion UNIQUE de l'habillage (bible §12.2). Chaque salle définit
+## son propre `_ready()`, qui masque celui de la classe de base ; `_notification`
+## n'est pas masqué, lui, et l'appel différé garantit que la coque de la salle
+## est entièrement bâtie avant qu'on pose la moindre brique dessus.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_READY:
+		_dress_shell.call_deferred()
+
+
+func _dress_shell() -> void:
+	if not is_inside_tree():
+		return
+	var report: Dictionary = RoomDressing.dress(self)
+	dressing_report = report
+
+
+## Compte-rendu chiffré de l'habillage : les tests s'appuient dessus.
+var dressing_report: Dictionary = {}
+
+
 func register_block(block: PushableBlock) -> void:
 	if not _blocks.has(block):
 		_blocks.append(block)

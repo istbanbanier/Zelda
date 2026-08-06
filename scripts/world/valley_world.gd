@@ -210,15 +210,31 @@ func _ready() -> void:
 func _paint_the_world() -> void:
 	# Le nuage de la vallée s'appelle `CitadelStorm` : la première passe
 	# l'a blanchi parce que la liste ne connaissait que « Storm ».
-	# Le TERRAIN est exclu pour l'instant, décision assumée : il porte
-	# ses propres teintes et masques, et la recette (réglée sur un
-	# laboratoire sans terrain) le rendait délavé — lointain de 65 % à
-	# 74 %, sol gris au lieu de vert. Livrer une carte délavée serait
-	# une régression ; les props, roches, bâtiments et végétaux, eux,
-	# gagnent la peinture dès maintenant. Le terrain suivra quand la
-	# recette saura le lire (chantier nommé, pas oublié).
+	# DÉFAUT CORRIGÉ (audit du 2026-08-06). L'exclusion portait sur le nœud
+	# `Terrain` tout entier, et `_is_skipped()` remonte les ANCÊTRES : tout
+	# son sous-arbre était donc ignoré. Or l'habillage du monde y est monté —
+	# camp, forêt, zones, phrases végétales, structures secondaires, citadelle,
+	# pylône, eau, chemins. Le commentaire précédent affirmait que « les props,
+	# roches, bâtiments et végétaux gagnent la peinture dès maintenant » : c'était
+	# faux, ils étaient tous exclus avec le sol.
+	#
+	# On nomme donc les PORTEURS DE SOL un par un. Eux seuls gardent leurs
+	# teintes macro (la recette, réglée sur un laboratoire sans terrain, les
+	# délavait : lointain de 65 % à 74 %, sol gris). Tout le reste du monde
+	# reçoit enfin le style.
 	var skip: Array[String] = ["CitadelStorm", "Storm", "StormCell",
-		"Terrain"]
+		"PlainSouth", "PlainNorth", "Riverbed", "SpawnRidge", "CampTerrace",
+		"LearningCliff", "PylonTerrace", "DungeonPlateau", "FordEast",
+		"FordWest", "CliffLedgeLow", "CliffLedgeHigh",
+		"GateStepLow", "GateStepMid", "GateStepHigh",
+		"GroundVariation", "Paths",
+		# L'ANNEAU LOINTAIN reste hors peinture : la recette est réglée pour
+		# le premier plan, et elle éclaircissait l'horizon de 65 % à 74 % —
+		# les montagnes viraient au blanc et l'étagement des trois plans
+		# (§1.3) disparaissait. Noms relevés dans `valley_terrain.gd`.
+		"WallSkirts", "BorderCrests", "FarSkyline", "MountainDressing",
+		"PlateauSkirts", "BorderNorth", "BorderSouth", "BorderEast",
+		"BorderWest"]
 	var painted: int = PainterlyRecipe.paint_world(self, skip)
 	if painted > 0:
 		print("[art] vallée peinte : %d surfaces" % painted)
@@ -398,6 +414,56 @@ func _build_open_world() -> void:
 	rewards.name = "DiscoveryRewards"
 	add_child(rewards)
 	rewards.furnish(self)
+	# LE SOL DES LIEUX HABITÉS, en dernier : il a besoin que tout soit bâti
+	# pour mesurer l'emprise réelle. Un village n'est pas une collection de
+	# maisons, c'est une terre battue, une place et des chemins qui s'y
+	# rendent — sans quoi le regard lit « modèles alignés sur un pré ».
+	# Différé d'une frame : les emprises se mesurent en coordonnées MONDE,
+	# et les sous-arbres viennent tout juste d'entrer dans l'arbre.
+	_lay_settlement_ground.call_deferred()
+
+
+## Pose la terre battue, la place et les chemins de chaque lieu habité.
+##
+## Les implantations sont retrouvées par le NOM de leur nœud, tel que leur
+## bâtisseur l'a écrit. Un lieu absent est simplement sauté : cette passe ne
+## doit jamais empêcher le monde de se charger.
+func _lay_settlement_ground() -> void:
+	if not is_inside_tree():
+		return
+	# nom du groupe -> [chemin du bâtisseur, noms des bâtiments, altitude du sol]
+	var plans: Array = [
+		["Hamlets", ["CabaneDesBucherons", "Scierie", "PileDeTroncs",
+			"Charretterie"], 2.0, 20260806],
+		["Hamlets", ["CorpsDeGarde", "GalerieDeMine", "Sechoir",
+			"CourDeMinerai"], 2.0, 20260807],
+	]
+	var total_paths: int = 0
+	var total_props: int = 0
+	for plan: Array in plans:
+		var host: Node3D = get_node_or_null(NodePath(plan[0] as String)) as Node3D
+		if host == null:
+			continue
+		var buildings: Array[Node3D] = []
+		for building_name: String in (plan[1] as Array):
+			var found: Array[Node] = host.find_children(building_name, "Node3D",
+				true, false)
+			if not found.is_empty():
+				buildings.append(found[0] as Node3D)
+		if buildings.size() < 2:
+			continue
+		var group: String = "Sol_%s" % (plan[1] as Array)[0]
+		var report: Dictionary = SettlementGround.lay(host, group, buildings,
+			plan[2] as float)
+		total_paths += report["paths"] as int
+		var centre: Vector3 = SettlementGround.footprint(
+			host.get_node(NodePath(group)) as Node3D).get_center()
+		centre.y = plan[2] as float
+		total_props += SettlementGround.populate(host, "Vie_%s"
+			% (plan[1] as Array)[0], centre, 9.0, 7, plan[3] as int)
+	if total_paths > 0:
+		print("[monde] lieux habités : %d chemins, %d objets de vie"
+			% [total_paths, total_props])
 
 
 ## Journal des découvertes de la partie — public, pour que la sauvegarde de
