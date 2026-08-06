@@ -14,6 +14,11 @@ const RUBY: Color = Color(0.78, 0.20, 0.26)
 const RUBY_DARK: Color = Color(0.24, 0.09, 0.11, 0.85)
 const TURQUOISE: Color = Color(0.086, 0.561, 0.608)   # #168F9B
 const TURQUOISE_DARK: Color = Color(0.05, 0.15, 0.17, 0.8)
+## Cyan électrique (#22D9EC) et son cœur clair — RÉSERVÉS à la Résonance
+## active (P3 §1.4 : « moins de 5 % de cyan saturé simultanément à l'écran »).
+## Aucun autre élément de HUD ne doit les employer.
+const CYAN: Color = Color(0.133, 0.851, 0.925)
+const CYAN_CORE: Color = Color(0.925, 1.0, 1.0)
 
 
 ## Plaque d'ardoise au filet d'or — le fond de tout élément de HUD.

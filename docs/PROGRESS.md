@@ -3319,3 +3319,47 @@ reste inchangé au dixième). Note : `2026-08-06_herolab_v6.md`.
 2. Lot 3 : vidéo de stabilité 10-20 s (§30.1, jamais produite).
 3. Étendre le painterly aux autres surfaces du lab, puis re-évaluation
    sévère + revue contradictoire ; V4 seulement si ≥ 75 tenu.
+
+---
+
+## Playtest PT-BRACELET — lisibilité du Bracelet et terrain d'entraînement
+
+**Constats du playtest** : (1) l'Arc Link « ne fait rien » au bassin ;
+(2) on ne comprend ni à quoi servent les pouvoirs ni comment les utiliser ;
+(3) les utiliser n'affiche rien ; (4) décor incohérent — « maisons sans murs,
+bois qui flotte ». Combat et cuisine jugés bons, non touchés.
+
+**Ce qui a été mesuré, pas supposé**
+
+- L'Arc Link du bassin **fonctionne à la visée** : nouveau test
+  `test_the_link_is_reachable_by_aiming_not_only_by_api` (6 assertions, vert).
+  Les deux tests d'origine appelaient `try_link` DIRECTEMENT — le chemin
+  joueur (focus + deux confirmations) n'était couvert nulle part. L'échec
+  venait donc de l'absence de retour, pas d'un défaut de logique.
+- **Le kit `village/` ne contient AUCUNE pièce de mur** (53 pièces : sols,
+  toits, débords, escaliers). Tous les `Wall_*` sont dans `dungeon/`. Un
+  bâtiment monté du seul kit village ne peut pas avoir de murs → cause
+  directe du défaut observé. Consigné en PT-BRACELET-02.
+
+**Livré**
+
+- Viseur de Résonance dans `GameplayShell` : anneau qui se referme sur une
+  cible, losange doublé sur le port retenu, viseur barré au refus, raison du
+  refus écrite en français, action nommée avant le clic. Aucune information
+  par la seule couleur (P3 §1.6).
+- `PlayerController.resonance_verdict` (signal typé) + branchement de
+  `pulse_fired` / `link_dissolved` / `ground_completed` / `ground_cancelled`,
+  qui n'étaient écoutés nulle part hors du laboratoire.
+- `scenes/world/TrainingGrounds.tscn` — les CINQ épreuves du Bracelet côte à
+  côte, alignées sur une grille de 2 m, chacune avec panneau (touche, pourquoi,
+  comment) et lampe de réussite branchée sur le signal réel. Rangée de
+  référence avec une maison assemblée COMPLÈTE, murs et collisions compris.
+
+**Preuves** : `godot --headless --path . --script tools/godot/test_runner.gd`
+→ **736 réussis, 0 échoué**. `validate_fast.sh` sort ROUGE pour une seule
+raison : Blender absent du conteneur (étape 3b, gate d'environnement).
+
+**Prochaine action exacte** : audit des assemblages de bâtiments de la vallée
+(`valley_world`, hameaux, ferme) avec le patron de `_reference_house` — murs
+`dungeon/` + collision par mur + pose à y = 0. Ensuite seulement : mode vol
+dev et monture, dans cet ordre, comme demandé.

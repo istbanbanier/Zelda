@@ -504,3 +504,50 @@ quatre salles sont testés end-to-end (7/7) ; le test du relais mis à la
 terre est blindé (`before < capacité`). Le « Rappeler l'ascenseur »
 légitime compté comme échec (remarque de la revue) reste assumé : c'est
 un signal faible parmi trois, pas un déclencheur seul.
+
+---
+
+## PT-BRACELET-01 — Le Bracelet n'avait aucune présentation en jeu (S2)
+
+**Constaté en playtest**, pas en test : « je maintiens G et je clique gauche sur
+la source puis sur le bassin et rien ne se passe ».
+
+**Cause** : le Bracelet n'émettait aucun retour hors de `ResonanceLab`.
+`ResonanceTargetComponent` déclare lui-même « ce composant ne dessine rien » ;
+seul le lab branchait `revealed`/`reveal_ended`. La cible retenue par le focus,
+l'étape « premier port retenu » d'un Arc Link en deux temps et la raison d'un
+refus n'existaient que dans la sonde de latence — un instrument de MESURE que
+seul `LabOverlay` affiche. Le joueur ne pouvait pas distinguer « rien n'est
+parti » de « c'est parti et je n'ai pas vu la conséquence ».
+
+Aggravant : `focus_end()` oublie le port A dès que `G` est relâché (P2 §3.8,
+comportement voulu) — exigence INVISIBLE sans affichage.
+
+**Résolu** : viseur de Résonance dans `GameplayShell` (anneau qui se referme sur
+une cible, losange doublé sur le port retenu, viseur barré au refus, raison
+écrite en français), signal typé `PlayerController.resonance_verdict`, et
+branchement des signaux `pulse_fired` / `link_dissolved` / `ground_completed` /
+`ground_cancelled` qui n'étaient écoutés nulle part.
+
+**Non résolu** : la couverture du chemin JOUEUR manquait aussi côté tests —
+`test_conductive_basin` appelait `try_link` directement, jamais
+`focus_update` + `focus_confirm`. Un test de visée a été ajouté.
+
+## PT-BRACELET-02 — Le kit `village/` ne contient aucune pièce de mur (S2)
+
+**Constaté en playtest** : « beaucoup de modèles sont étranges, maisons sans
+murs, bois qui flotte ».
+
+**Cause mesurée** : `assets/environment/village/` contient 53 pièces — sols,
+toits, débords, balcons, portes, escaliers, cheminées — et **zéro** `Wall_*`.
+Toutes les pièces de mur (`Wall_UnevenBrick_Straight`, `Wall_Plaster_*`,
+`Wall_Arch`…) vivent dans `assets/environment/dungeon/`. Un bâtiment assemblé
+depuis le seul kit village ne PEUT donc pas avoir de murs. Le « bois qui
+flotte » relève de la même famille : le kit est purement visuel, les collisions
+et les cotes de pose sont à la charge des scripts d'assemblage.
+
+**Statut** : cause identifiée, **assemblages de la vallée non corrigés**. La
+maison de référence du terrain d'entraînement montre l'assemblage correct
+(murs `dungeon/` + toit `village/`, collision par mur, tout à y = 0) et sert de
+patron. L'audit des bâtiments de la vallée (village, hameaux, ferme) reste à
+faire — c'est le prochain chantier de lisibilité du décor.

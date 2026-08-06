@@ -35,6 +35,13 @@ signal mantle_refused(reason: StringName)
 signal guard_blocked(event: DamageEvent)
 signal parried(event: DamageEvent)
 signal guard_broken()
+## Verdict d'une opération du Bracelet (P2 §3.8 : « raison courte en cas de
+## refus »). `action` vaut `resonance_pulse`, `resonance_ground` ou
+## `resonance_confirm` ; `verdict` est le mot rendu par `ResonanceController` ;
+## `executed` distingue l'opération partie du refus. La sonde de latence reste
+## l'instrument de MESURE ; ce signal est le canal de PRÉSENTATION, seul moyen
+## pour le HUD d'expliquer un échec sans que le contrôleur connaisse l'UI.
+signal resonance_verdict(action: StringName, verdict: StringName, executed: bool)
 
 ## Modes de locomotion effectivement implémentés.
 ##
@@ -305,11 +312,14 @@ func _physics_process(delta: float) -> void:
 
 	if _resonance != null and intent.pulse_pressed \
 			and (_mode == Mode.LOCOMOTION or _mode == Mode.CLIMBING):
-		match _resonance.try_pulse(self):
+		var pulse_verdict: StringName = _resonance.try_pulse(self)
+		match pulse_verdict:
 			&"fired":
 				_mark_consumed(&"resonance_pulse")
 			&"cooldown":
 				_mark_refused(&"resonance_pulse", &"cooldown")
+		resonance_verdict.emit(&"resonance_pulse", pulse_verdict,
+			pulse_verdict == &"fired")
 
 	# Ground direct (P2 §3.6, touche dédiée) : cible auto = l'objet chargé le
 	# plus proche — la lecture préalable au Pulse a montré quoi viser.
@@ -317,10 +327,13 @@ func _physics_process(delta: float) -> void:
 		var ground_target: Node = _resonance.pick_ground_target(self)
 		if ground_target == null:
 			_mark_refused(&"resonance_ground", &"aucune_cible")
+			resonance_verdict.emit(&"resonance_ground", &"aucune_cible", false)
 		else:
 			var ground_verdict: StringName = _resonance.try_ground(self, ground_target)
 			if ground_verdict != &"grounding":
 				_mark_refused(&"resonance_ground", ground_verdict)
+			resonance_verdict.emit(&"resonance_ground", ground_verdict,
+				ground_verdict == &"grounding")
 
 	# Focus de Résonance (P2 §3.8) : tenu, il capture la molette (cycle) et le
 	# clic (confirmation contextuelle) — l'épée et le lock-on sont suspendus le
@@ -337,10 +350,13 @@ func _physics_process(delta: float) -> void:
 				_resonance.focus_cycle(-1)
 			if intent.attack_pressed:
 				var verdict: StringName = _resonance.focus_confirm(self, intent.sprint_held)
-				if verdict in [&"step", &"linked", &"engaged", &"port_a", &"grounding"]:
+				var executed: bool = verdict in [&"step", &"linked", &"engaged",
+					&"port_a", &"grounding"]
+				if executed:
 					_mark_consumed(&"resonance_confirm")
 				else:
 					_mark_refused(&"resonance_confirm", verdict)
+				resonance_verdict.emit(&"resonance_confirm", verdict, executed)
 		elif _resonance.focus_active():
 			_resonance.focus_end()
 
@@ -1818,6 +1834,12 @@ func is_aiming() -> bool:
 
 func lock_component() -> LockOnComponent:
 	return _lock_on
+
+
+## Consommé par le viseur de Résonance du HUD (P2 §3.8). Lecture seule : le
+## HUD interroge la cible retenue et le port en attente, il ne décide rien.
+func resonance() -> ResonanceController:
+	return _resonance
 
 
 ## §16.6 : l'arène a besoin du rig pour élargir le cadrage face au boss.

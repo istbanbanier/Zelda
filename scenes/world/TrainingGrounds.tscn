@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+; TERRAIN D'ENTRAÎNEMENT (playtest PT-BRACELET-02) — les cinq épreuves du
+; Bracelet côte à côte, chacune avec son panneau et sa lampe de réussite.
+; Tout est construit par le script : géométrie alignée sur une grille de 2 m.
+;   godot --path . scenes/world/TrainingGrounds.tscn
+
+[ext_resource type="Script" path="res://scripts/world/training_grounds.gd" id="1_training"]
+
+[node name="TrainingGrounds" type="Node3D"]
+script = ExtResource("1_training")
