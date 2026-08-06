@@ -3278,3 +3278,44 @@ et l'unification STRUCTURELLE : même classe des deux côtés).
 Non-régression : lois 6/6, bassin 3/3, salles 44/44, réactions 7/7,
 donjon 2/2. Changement délibéré documenté : les tests qui lisaient
 `MaterialState` sur la racine du hazard lisent le nœud.
+
+## 2026-08-06 — Passe art « wahou » (Prompt de lancement) : Lots 1-2
+
+Nouveau mandat : passe art visuelle en continuation du Cycle 3, sur
+branche dédiée `claude/eclats-art-visual-pass-tyfhgc` (tout le tip le
+plus avancé fusionné dedans, `fa7243d`). Rappels contraignants tenus :
+gameplay INTOUCHABLE, score /100 à l'humain sur GPU, jamais « 60 FPS »,
+push après chaque lot.
+
+### Lot 1 — auto-évaluation sévère v5 + bifurcation AD-004
+
+Grille §30.2 appliquée durement au v5 committé : **58/100 `UNVERIFIED`**
+(`evidence/cycle3/2026-08-06_eval_v5_severe.md`). Sous le seuil 75 du
+gate intermédiaire → décision consignée AD-004 (révocable) : **itérer
+le lab avant toute propagation V4**, dans l'ordre des domaines faibles
+(lumière 8/15, matériaux 5/10, mouvement 2/10).
+
+### Lot 2 — `SH_CharacterPainterly` existe, trois pilotes 3/3
+
+LE chantier nommé depuis la Phase H : half-Lambert, deux paliers FONDUS
+(`ramp_soft` ≥ 0,08 contractuel — toon dur interdit), Gooch chaud/froid
+réservé au soleil (`LIGHT_IS_DIRECTIONAL` vérifié dans la source 4.7.1),
+plancher d'ombre §1.5, rim discret, macro lente, spéculaire coupé.
+Fail-first 0/6 → `test_painterly_pilot` 3/3 (28 assertions, garde
+ISS-027 « 0 erreur journal »). Trois pilotes SEULEMENT (bible §29 V1) :
+rocher `CliffLeftNear`, touffe `Grass_0_0`, héros entier (9 meshes, la
+texture d'albedo du modèle extraite puis rebranchée). Non-régression
+héros 17/17. Evidence v6 : capture officielle depuis `504f01d`,
+vignette + gris — les bandes de valeurs §1.5 SURVIVENT au grade
+(deltas localisés aux pilotes : falaise 47,6→44,0 %, héros 28,6→25,8 %,
+reste inchangé au dixième). Note : `2026-08-06_herolab_v6.md`.
+
+### Prochaine action exacte
+
+1. Relancer la suite intégrale sur la branche art pour classer les deux
+   échecs intermittents observés (boss_arena checkpoint,
+   antisoftlock retour) : déterministe → tranche de débogage ;
+   intermittent → blinder les fenêtres + occurrence ISS-024.
+2. Lot 3 : vidéo de stabilité 10-20 s (§30.1, jamais produite).
+3. Étendre le painterly aux autres surfaces du lab, puis re-évaluation
+   sévère + revue contradictoire ; V4 seulement si ≥ 75 tenu.
