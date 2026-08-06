@@ -111,6 +111,7 @@ func _ready() -> void:
 	_build_citadel_proxy()
 	_build_storm()
 	_build_dressing()
+	_build_riverside()
 	_build_light()
 
 
@@ -287,6 +288,70 @@ func _build_cliff_formation() -> void:
 					material.set_shader_parameter("albedo_color",
 						COL_ROCK.lerp(Color(0.34, 0.24, 0.17), 0.35))
 					_with_surface(material, "T_Rock_Strata", 3.5, 0.70, 1.0)
+
+
+## Lot 13 — la RIVE vit : saules penchés vers l'eau, souche et tronc
+## moussus, rochers de berge, buisson à baies (Quaternius CC0, ART-Q9).
+## Le kit arrive en OBJ, qui s'importe en **Mesh** et non en scène :
+## le chargeur monte donc lui-même le `MeshInstance3D`. Les positions
+## suivent le tracé RÉEL de la rivière — une rive plantée au hasard
+## n'est qu'une rangée d'arbres.
+func _build_riverside() -> void:
+	var riverside: Node3D = Node3D.new()
+	riverside.name = "Riverside"
+	add_child(riverside)
+	if _river_local.is_empty():
+		return
+	# [modèle, index du point de rivière, décalage latéral, recul, yaw°]
+	var plantings: Array[Array] = [
+		["Willow_1", 1, -7.5, 2.0, 25.0],
+		["Willow_3", 2, 8.0, -1.0, 200.0],
+		["Willow_5", 4, -9.5, 3.0, 110.0],
+		["TreeStump_Moss", 1, 5.0, 3.5, 60.0],
+		["WoodLog_Moss", 2, -4.5, -2.5, 145.0],
+		["Rock_Moss_2", 0, -3.5, 1.5, 20.0],   # gardé hors du couloir du camp
+		["Rock_Moss_5", 3, -5.5, 0.0, 250.0],
+		["BushBerries_1", 0, -6.0, 2.5, 300.0],
+	]
+	for planting: Array in plantings:
+		var asset: String = planting[0] as String
+		var mesh_resource: Mesh = load(
+			"res://assets/environment/riverside/%s.obj" % asset) as Mesh
+		if mesh_resource == null:
+			push_warning("[rive] modèle introuvable : %s" % asset)
+			continue
+		var holder: Node3D = Node3D.new()
+		holder.name = asset
+		var instance: MeshInstance3D = MeshInstance3D.new()
+		instance.name = "%sMesh" % asset
+		instance.mesh = mesh_resource
+		holder.add_child(instance)
+		var anchor_point: Vector3 = _river_local[
+			mini(planting[1] as int, _river_local.size() - 1)]
+		var x: float = anchor_point.x + (planting[2] as float)
+		var z: float = anchor_point.z + (planting[3] as float)
+		holder.position = Vector3(x, minf(_slope_height(z), 0.0), z)
+		holder.rotation_degrees.y = planting[4] as float
+		holder.scale = Vector3.ONE * KitScale.factor(asset)
+		riverside.add_child(holder)
+		_apply_painterly_to_model(holder)
+		# Écorce et pierre reçoivent leur matière ; le feuillage garde
+		# la peinture seule (une écorce projetée sur des feuilles ne
+		# veut rien dire).
+		var family: String = "T_Bark_Tree" if asset.contains("Willow") \
+			or asset.contains("Wood") or asset.contains("Stump") \
+			else "T_Rock_Mossy"
+		for node: Node in holder.find_children("*", "MeshInstance3D",
+				true, false):
+			var mesh_node: MeshInstance3D = node as MeshInstance3D
+			if mesh_node.mesh == null:
+				continue
+			for s: int in range(mesh_node.mesh.get_surface_count()):
+				var material: ShaderMaterial = \
+					mesh_node.get_surface_override_material(s) \
+					as ShaderMaterial
+				if material != null:
+					_with_surface(material, family, 2.4, 0.55, 0.9)
 
 
 func _build_dressing() -> void:

@@ -66,6 +66,13 @@ const MEASURED: Dictionary = {
 	&"rock_largeA":              [0.260, 1.10],
 	&"rock_largeC":              [0.321, 1.55],
 	&"rock_smallB":              [0.177, 0.55],
+	# Lot 13 — kit de RIVE Quaternius Ultimate Nature (CC0, ART-Q9),
+	# format OBJ. Les saules sont autorés à ~2,4-2,9 m : à cette
+	# taille, un « arbre » arrive à l'épaule du héros. Cible bible §3 :
+	# arbre 5-12 m. Rochers, souche et tronc tombent déjà juste.
+	&"Willow_1":                 [2.850, 8.20],
+	&"Willow_3":                 [2.350, 6.60],
+	&"Willow_5":                 [2.420, 7.40],
 }
 
 ## Hauteur maximale tolérée par famille, utilisée par le test de régression.

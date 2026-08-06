@@ -60,7 +60,10 @@ plats »).
 | Auteur / source | **Quaternius** — <https://quaternius.com> (même auteur que ART-Q0/Q8) |
 | Licence | **CC0 1.0 Universal** |
 | Contenu | 150 modèles OBJ + FBX : saules, rochers moussus, troncs, blé, variantes enneigées et automnales |
-| État | **déposé, non encore importé** — l'OBJ s'importe nativement dans Godot 4.7 ; sélection au lot suivant |
+| Cible | `assets/environment/riverside/` |
+| Sélection importée | 8 modèles OBJ + leurs `.mtl` : `Willow_1/3/5`, `Rock_Moss_2/5`, `TreeStump_Moss`, `WoodLog_Moss`, `BushBerries_1` (348 Ko) |
+| Modifications | **aucune** sur les fichiers. L'OBJ s'importe en ressource **Mesh** (et non en scène) — contrat vérifié dans le `.import` généré puis rendu exécutable par test. Échelle corrigée **à l'usage** par `KitScale` |
+| État | **importé** (2026-08-06) — le reste du pack demeure dans la release `assets-1` |
 
 ## Promotion « monde ouvert » — CC0 Quaternius (ART-Q8)
 
