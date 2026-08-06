@@ -18,7 +18,16 @@
 
 name: Ménage des archives publiées
 
+# Deux déclencheurs, et le second n'est pas un caprice : `workflow_dispatch`
+# n'est proposé par GitHub que si le fichier existe sur la branche PAR DÉFAUT.
+# Celle de ce dépôt est `claude/phase-0-gate-0-setup-t72ibt`, sur laquelle je
+# n'ai pas d'autorisation d'écriture. Le fichier-marqueur contourne cela
+# proprement : le modifier EST la demande de ménage, elle est visible dans
+# l'historique, et elle part de la branche de travail.
 on:
+  push:
+    paths:
+      - '.github/cleanup-request.txt'
   workflow_dispatch:
     inputs:
       keep_last:
@@ -46,9 +55,12 @@ jobs:
       - name: Lister, décider, supprimer
         env:
           GH_TOKEN: ${{ github.token }}
-          KEEP_LAST: ${{ inputs.keep_last }}
-          DRY_RUN: ${{ inputs.dry_run }}
-          INCLUDE_INBOXES: ${{ inputs.include_asset_inboxes }}
+          # Déclenché par le marqueur, `inputs` est vide : on retombe sur
+          # les valeurs les plus prudentes (garder la dernière archive,
+          # ne pas toucher aux boîtes de ressources).
+          KEEP_LAST: ${{ inputs.keep_last || '1' }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          INCLUDE_INBOXES: ${{ inputs.include_asset_inboxes || 'false' }}
         run: |
           set -euo pipefail
           REPO="${{ github.repository }}"
