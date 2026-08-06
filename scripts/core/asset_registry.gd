@@ -59,6 +59,10 @@ const MODEL_DIRS: Array[String] = [
 static var _model_index: Dictionary = {}
 ## Rétention des `PackedScene` déjà résolus — voir `model()`.
 static var _model_cache: Dictionary = {}
+## Plafond de rétention. Assez large pour couvrir la répétition d'une famille
+## d'objets pendant une construction, assez bas pour que la mémoire reste
+## bornée quoi qu'il arrive.
+const MODEL_CACHE_MAX: int = 48
 
 
 ## Résolution DIRECTE par nom canonique de modèle promu (V4 lot 3) : les
@@ -91,8 +95,15 @@ static func model(model_name: StringName) -> PackedScene:
 		# modèles distincts : le même fichier était rouvert des dizaines de
 		# fois pendant la construction du monde, à l'intérieur d'une frame où
 		# rien ne peut être dessiné — c'est le gel de l'écran de chargement.
-		# Le coût est borné et connu : au plus un `PackedScene` par modèle du
-		# dépôt, chargé une seule fois.
+		# BORNE — sans elle, la rétention est illimitée : le dépôt porte plus de
+		# cent modèles dont certains pèsent des dizaines de mégaoctets, et une
+		# suite qui monte des centaines de mondes finit par manquer de mémoire,
+		# ce qui se manifeste par des erreurs incompréhensibles (« identifiant
+		# non déclaré ») très loin de la vraie cause. Le cache sert à éviter de
+		# RELIRE LE DISQUE pendant une même construction de monde ; passé le
+		# plafond, on repart de zéro plutôt que de grossir sans fin.
+		if _model_cache.size() >= MODEL_CACHE_MAX:
+			_model_cache.clear()
 		_model_cache[model_name] = scene
 	return scene
 
