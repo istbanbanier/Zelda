@@ -43,3 +43,35 @@ Statuts : `KEEP` (conforme, conservé) · `REWORK` (base conservée, à retravai
 - **Les gros MISSING** : eau, 11 shaders maîtres, VFX, cinématiques, icônes.
 - **Chemin critique du Gate H** (zéro placeholder §23.2) : héros (5 signes),
   famille pilote finalisée, citadelle/pylône états, eau, SH_CharacterPainterly.
+
+---
+
+# TOUR DU MONDE EN IMAGES — 2026-08-06 (Phase A, passe art v4)
+
+Captures depuis l'arbre committé `c6a6994` (`repo_dirty: false`), 1920×1080,
+30 frames, llvmpipe. Dossier : `evidence/tour_du_monde/`. Ce sont les
+premières captures JAMAIS prises du donjon salle par salle et de l'arène.
+
+| # | Zone | Capture | Verdict | Ce qui manque / action |
+|---|---|---|---|---|
+| 01 | Vallée, vue d'ouverture | `01_vallee_ouverture` | **REWORK** | peinte (3768 surfaces) mais COMPOSITION non propagée : citadelle sans terrasses, montagnes non étagées |
+| 06 | Vestibule de la citadelle | `06_vestibule` | **KEEP** | le meilleur intérieur : colonnes, bannières, porte éclairée. Non peint → passe recette |
+| 07 | Salle 1 — Initiation | `07_salle1` | **REWORK** | boîtes brunes plates, aucune architecture, lumière non motivée. Non peinte |
+| 08 | Salle 2 — Circuit vertical | `08_salle2` | **REWORK** | idem ; le circuit blanc/cyan lit bien (télégraphes OK) |
+| 09 | Salle 3 — Relais | `09_salle3` | **REWORK** | la plus vide : murs nus, relais peu lisibles |
+| 10 | Salle 4 — Batterie | `10_salle4` | **REWORK** | bassin cyan lisible, reste en boîtes |
+| 11 | Salle centrale | `11_salle_centrale` | **REWORK** | la porte du boss a de la présence ; murs et sol nus |
+| 12 | Antichambre | `12_antichambre` | **REWORK** | coffre et station lisibles ; architecture absente |
+| 13 | Arène du boss | `13_arene_boss` | **REPLACE** | disque gris nu + lignes blanches. Le Gardien s'y perd. Déficit visuel le plus fort du jeu |
+| 14 | HeroShotLab v23 | `14_herolab` | **KEEP** | la recette de référence, réglée à la mesure |
+| 15 | Bestiaire (5 familles) | `15_bestiaire` | **REWORK** | silhouettes distinctes MAIS assemblages de primitives (chantier lourd, hors gain rapide) |
+
+**Familles d'assets** — peintures : `KEEP` (recette déployée) · textures
+ambientCG : `KEEP` (6 surfaces) · kits falaise/rive : `KEEP` (16 modèles) ·
+**KayKit Dungeon : `MISSING` d'intégration** (déposé, attribué, jamais
+importé — c'est LA réponse aux six lignes `REWORK` ci-dessus) · armes :
+`MISSING` de textures (ISS-020) · VFX Bracelet : `MISSING`.
+
+**Conclusion opérationnelle** : le donjon et l'arène ne portent même pas la
+recette painterly — elle n'est appelée que par `ValleyWorld`. C'est le
+gain le plus large pour l'effort le plus court.

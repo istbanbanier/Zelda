@@ -1,0 +1,18 @@
+{
+  "commit": "c6a6994f33dc24a324c3694b4eb60bfb256c793b",
+  "display_server": "X11",
+  "distinct_colors_sampled": 1333,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 30,
+  "height": 1080,
+  "label": "tour_11_salle_centrale",
+  "luma_mean": 0.1268,
+  "luma_stddev": 0.066,
+  "png": "evidence/tour_du_monde/11_salle_centrale.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/dungeon/rooms/CentralHall.tscn",
+  "timestamp_utc": "2026-08-06 13:29:56",
+  "width": 1920
+}
