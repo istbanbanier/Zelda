@@ -466,11 +466,13 @@ func _build_terrain() -> void:
 	add_child(slope)
 	# Fond de vallée PLAT (~−21 m) : la pente s'y adoucit, la queue de la
 	# rivière et le socle de la citadelle s'y posent.
-	# Même albédo que la pente : sans cela, une coupure nette séparait
-	# le premier plan kaki du lointain vert vif (défaut vu en capture).
-	# La brume et la distance font le reste de l'étagement (§1.3).
+	# Le sol LOINTAIN part du même kaki que la pente (sinon une coupure
+	# nette séparait premier plan et fond), mais REFROIDI et assombri :
+	# §1.3 exige que le lointain recule en contraste et en saturation.
+	# Mesuré : à albédo identique, il rendait une bande jaune vif qui
+	# tirait l'œil hors de la citadelle.
 	_slab("ValleyFloor", Vector3(4, -22.0, -245), Vector3(240, 2, 210),
-		COL_GRASS_ALBEDO)
+		COL_GRASS_ALBEDO.lerp(COL_STONE_COLD, 0.42))
 	# Chemin de terre : il ÉPOUSE la pente (leçon v1).
 	var path: MeshInstance3D = MeshInstance3D.new()
 	path.name = "PathCrest"
