@@ -3237,5 +3237,195 @@ passent par la machine utilisateur.**
    `ValleyWorld`, mêmes contrats de composition en tests).
 3. Sinon : itérer le lab sur les défauts nommés par le score.
 Chantiers conteneur encore ouverts si besoin : ISS-027 (tranche
-outillage du runner), ISS-030 (bassin de la vallée aux lois matière),
-ISS-031 (sources d'échec des hints salles 2-3).
+outillage du runner), ISS-031 (sources d'échec des hints salles 2-3).
+
+### Fait ensuite : ISS-027 RÉSOLU — le runner ne ment plus
+
+Le faux « ok » (erreur de script après une assertion passée = méthode
+avortée, comptée réussie) est mort : le runner lit le journal de SON
+processus (`user://logs/godot.log`) et la moindre `SCRIPT ERROR` rend
+la suite ROUGE, ligne de vérité imprimée à chaque passage. Sonde
+rouge/vert : « ok, code 0 » avant, « ÉCHEC ISS-027, code 1 » après ;
+zéro faux positif (hints 7/7, directeur 5/5 — 0 erreur). Les preuves
+fail-first futures n'ont plus besoin du contournement manuel.
+
+### Fait ensuite : ISS-031 RÉSOLU — chaque salle observe ses vrais échecs
+
+Salle 3 : une rotation qui ne fait pas PROGRESSER le courant est un
+échec observé (§9.8) — `turned` arme, le recalcul du graphe compare
+(relais alimentés + récepteur qui VAUT la solution). Salle 2 : chute
+AÉRIENNE rapide (> 4,5 m à > 5 m/s — l'ascenseur au sol et la descente
+d'escalade lente ne comptent pas). Fail-first 5/8 → 7/7 (19 assertions)
+avec DEUX bugs de staging de test corrigés en route, prouvés par sonde :
+`turn_one_step` incrémente l'index immédiatement (attendre l'ANIMATION
+qui émet `turned`), et `is_on_floor()` reste vrai un tick après un
+téléport (laisser la chute commencer). Blindage revue P2-5 posé
+(`before < capacité` au test de terre). Non-régression : salles 44/44,
+lois 6/6, donjon 2/2.
+
+### Fait ensuite : suite 713/713 + ISS-030 RÉSOLU (l'eau unifiée)
+
+Suite intégrale de fin de session : **713/713, zéro échec** (arbre
+`39bb653`, relancée après un redémarrage conteneur). Puis ISS-030 :
+`WaterMatterComponent` PARTAGÉ (scripts/reaction) — matière `eau` sur
+le NŒUD électrique des deux côtés, mouillage à l'entrée (tension ou
+pas), relais borné sous tension (cadence héritée du danger côté
+donjon), terre = suspension. Le bassin de la vallée gagne sa zone de
+baignade et reste une école SÛRE (zéro dégât — P2 §9.6) ; le hazard ne
+garde que le chemin de dégâts §13.5. Fail-first 0/6 →
+`test_water_unification` 3/3 (le relais prouvé par un VRAI Arc Link,
+et l'unification STRUCTURELLE : même classe des deux côtés).
+Non-régression : lois 6/6, bassin 3/3, salles 44/44, réactions 7/7,
+donjon 2/2. Changement délibéré documenté : les tests qui lisaient
+`MaterialState` sur la racine du hazard lisent le nœud.
+
+## 2026-08-06 — Passe art « wahou » (Prompt de lancement) : Lots 1-2
+
+Nouveau mandat : passe art visuelle en continuation du Cycle 3, sur
+branche dédiée `claude/eclats-art-visual-pass-tyfhgc` (tout le tip le
+plus avancé fusionné dedans, `fa7243d`). Rappels contraignants tenus :
+gameplay INTOUCHABLE, score /100 à l'humain sur GPU, jamais « 60 FPS »,
+push après chaque lot.
+
+### Lot 1 — auto-évaluation sévère v5 + bifurcation AD-004
+
+Grille §30.2 appliquée durement au v5 committé : **58/100 `UNVERIFIED`**
+(`evidence/cycle3/2026-08-06_eval_v5_severe.md`). Sous le seuil 75 du
+gate intermédiaire → décision consignée AD-004 (révocable) : **itérer
+le lab avant toute propagation V4**, dans l'ordre des domaines faibles
+(lumière 8/15, matériaux 5/10, mouvement 2/10).
+
+### Lot 2 — `SH_CharacterPainterly` existe, trois pilotes 3/3
+
+LE chantier nommé depuis la Phase H : half-Lambert, deux paliers FONDUS
+(`ramp_soft` ≥ 0,08 contractuel — toon dur interdit), Gooch chaud/froid
+réservé au soleil (`LIGHT_IS_DIRECTIONAL` vérifié dans la source 4.7.1),
+plancher d'ombre §1.5, rim discret, macro lente, spéculaire coupé.
+Fail-first 0/6 → `test_painterly_pilot` 3/3 (28 assertions, garde
+ISS-027 « 0 erreur journal »). Trois pilotes SEULEMENT (bible §29 V1) :
+rocher `CliffLeftNear`, touffe `Grass_0_0`, héros entier (9 meshes, la
+texture d'albedo du modèle extraite puis rebranchée). Non-régression
+héros 17/17. Evidence v6 : capture officielle depuis `504f01d`,
+vignette + gris — les bandes de valeurs §1.5 SURVIVENT au grade
+(deltas localisés aux pilotes : falaise 47,6→44,0 %, héros 28,6→25,8 %,
+reste inchangé au dixième). Note : `2026-08-06_herolab_v6.md`.
+
+### Prochaine action exacte
+
+1. Relancer la suite intégrale sur la branche art pour classer les deux
+   échecs intermittents observés (boss_arena checkpoint,
+   antisoftlock retour) : déterministe → tranche de débogage ;
+   intermittent → blinder les fenêtres + occurrence ISS-024.
+2. Lot 3 : vidéo de stabilité 10-20 s (§30.1, jamais produite).
+3. Étendre le painterly aux autres surfaces du lab, puis re-évaluation
+   sévère + revue contradictoire ; V4 seulement si ≥ 75 tenu.
+
+### Fait ensuite : Lot 3 — la vidéo de stabilité EXISTE (et elle a mordu)
+
+Première séquence §30.1 du projet : dolly 18,1 s (arrêt 3 s → marche
+3,5 → sprint 9 → rotation ±35°), Movie Maker `--fixed-fps 12` (vérifié
+source 4.7.1 — le pas fixe échantillonne le vent au bon rythme malgré
+llvmpipe), 217 frames assemblées en WebP animé (pas de ffmpeg ici).
+Fail-first 0/4 → 2/2 ; attente bornée par condition (ISS-024). La vidéo
+a fait son travail de révélateur : (1) l'herbe du lab était FIGÉE
+(sondes phase immobile : diffs 0,00 — contre §11.1) → corrigé,
+`SH_FoliageWindPainterly` sur toute l'herbe (rouge 0/8 → pilotes 3/3,
+héros 17/17, sondes 1,62-2,03) ; (2) le lab est un décor à UNE caméra
+(sol nu en contrebas, rivière-planche) — consigné comme GARDE-FOU pour
+la propagation V4 ; (3) zéro shimmer/pop — en partie parce qu'il n'y a
+encore ni LOD ni transparence. Capture officielle v7 recapturée (herbe
+entière painterly) : bandes §1.5 identiques au dixième. Note :
+`evidence/cycle3/2026-08-06_stabilite_lot3.md`.
+
+### Prochaine action exacte
+
+1. Étendre le painterly aux surfaces restantes du lab (falaises,
+   terrain, camp, citadelle, montagnes, rivière) — mêmes contrats.
+2. Re-évaluation sévère §30.2 + revue contradictoire (gate-review).
+3. V4 seulement si ≥ 75 tenu, avec le garde-fou « survivre au
+   mouvement » du dolly.
+
+### Fait ensuite : Lot 4 — le lab ENTIER est peint
+
+`_material()` du lab EST la peinture (toute surface mate →
+SH_CharacterPainterly ou feuillage venté) ; trois émissifs justifiés et
+testés (`_emissive_material` : rivière-guide, flamme, couronne cyan).
+Rouge prouvé avec l'inventaire exact des surfaces nues, puis
+`test_painterly_lab` 1/1, peinture 4/4, héros 17/17, dolly 2/2. Capture
+v8 officielle (`76835be`) : bandes §1.5 intactes (héros 24,7 %,
+citadelle 51,5 %), herbe du premier plan = grand gagnant. Défauts
+dominants NOMMÉS pour la suite : éclair minuscule, rivière-guide
+timide, citadelle boîtes grises.
+
+### Fait ensuite : Lots 5-8 — revue contradictoire, vérité, lumière, sculpture
+
+Lot 5 : éclair allongé (nuage +8 m, frappe au flanc) + rivière-guide
+rapprochée/élargie (S testé). **Revue contradictoire à contexte frais :
+FAIL** — éval v9 (72) surestimée (re-notation ≈ 63) : halo d'éclair
+OPAQUE cachant le cœur, peau des bras en PBR (surface 1), flamme
+clippée blanche, rivière quasi mate dans l'exception émissive, deux
+tests infalsifiables, ciel symétrique, héros ~51 % vs 38-45. Erratum
+consigné SANS maquiller la preuve. Lot 6 : chaque contre-exemple
+corrigé fail-first (tests par SURFACE, fallback 1×1 rejeté, seuil réel
+d'émission, halo translucide additif dans StormCell — correctif §9.3
+partagé —, flamme orange, fleurs ventées, tools/video committé).
+Lot 7 (AD-005) : le contrat d'IMAGE §1.1 prime sur la distance §3.1
+(incompatibilité mathématique au FOV verrouillé) — objectif 1,75 m,
+recul 5,0 m : tête 44,7 %, pieds 89,3 %, hauteur 44,6 % ; soleil
+replacé DEVANT-GAUCHE (l'ancien yaw le mettait derrière-droite) ; halo
+62°/0,28 : zone solaire MESURÉE 83,7 vs 73,5. Lot 8 : ombres portées
+(héros ancré), citadelle 19 formes §2.4, falaise-escalier qui guide.
+Éval fin de journée ≈ 71,5 UNVERIFIED (< 75 : pas de V4, AD-004).
+
+### Prochaine action exacte
+
+1. Re-rendre la vidéo de stabilité sur l'état v13 (elle date de v6).
+2. Textures procédurales maison (AD-001) roche/terre/tissu — le manque
+   dominant (matériaux 6,5/10).
+3. Puis re-évaluation + revue contradictoire ; V4 seulement si ≥ 75.
+
+### Fait ensuite : Lot 9 — habillage aux vrais modèles (mandat utilisateur)
+
+13 modèles Quaternius CC0 du dépôt (5 arbres/3 espèces, 4 rochers, 4
+props de camp), peints par SURFACE avec vraies textures, poses variées,
+garde-fou de composition TESTÉ (3 props attrapés dans le couloir du
+pylône avant de rester). v14 a révélé les contours sombres des cartes
+de feuilles (transparence ignorée — §1.6) → `SH_CharacterPainterlyCutout`
+(alpha scissor + double face, auto-choisi). Carte blanche
+téléchargements : sites d'assets bloqués par le proxy (403), seul
+GitHub passe ; kit Kenney cloné/inspecté/REJETÉ (hors style) ; liste
+remise à l'utilisateur pour sa machine. Habillage 3/3, peinture 4/4,
+contrats 5/5.
+
+### Prochaine action exacte
+
+1. Si l'utilisateur dépose des packs (dossier `incoming_assets/` ou
+   commit direct) : licence → ATTRIBUTIONS → manifeste → peinture →
+   habillage, dans cet ordre.
+2. Sinon : textures procédurales maison (AD-001) roche/terre/tissu.
+3. Re-évaluation sévère + revue contradictoire ; V4 si ≥ 75.
+
+### Fait ensuite : Lots 10-11 — la matière (grain procédural + vraies textures)
+
+Lot 10 : grain `FastNoiseLite` généré par le moteur (AD-001, aucune
+image), projection monde deux axes, grandes formes (0,012) et discret
+(0,12) : +8,9 % de variation du sol. Lot 11 : le propriétaire a déposé
+quatre packs CC0 sur la release `assets-1` (les sites d'assets sont
+bloqués par le proxy, seul GitHub passe) — licences vérifiées et
+inscrites AVANT l'entrée dans le build, règle §2 désormais EXÉCUTABLE
+par test. Six matériaux ambientCG réduits 2K→1K, trois cartes chacun
+(7,3 Mo au lieu de 111) ; la photo MODULE la peinture au lieu de la
+remplacer (§1.6), projection monde à l'échelle PHYSIQUE (tuile en
+mètres, contrat 0,3-12 m). Deux corrections de palette MESURÉES : sol
+#5BAC3A → #BBBE5C (saturation 66 → 52 %, ancre 55) ; lointain jaune vif
+#EADA9E → #C5BFA3 refroidi (§1.3). Variation du sol 20,97 → 27,30.
+Kenney Nature Kit, KayKit Dungeon et Quaternius Ultimate Nature (150
+OBJ) déposés et attribués, sélection au lot suivant.
+
+### Prochaine action exacte
+
+1. Sélection et import des modèles Kenney/Quaternius déposés (falaises,
+   saules, rochers moussus, troncs) — même chaîne : licence → manifeste
+   → peinture → habillage → capture.
+2. Re-évaluation sévère §30.2 + revue contradictoire.
+3. V4 (propagation vallée) seulement si ≥ 75 tenu.

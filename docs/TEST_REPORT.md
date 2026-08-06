@@ -5,6 +5,36 @@ Un résultat sans commande reproductible ne vaut pas comme preuve (§0.7).
 
 ---
 
+## Campagne du 2026-08-06 — Passe art « wahou », Lots 1-8 (branche dédiée)
+
+Branche `claude/eclats-art-visual-pass-tyfhgc`, arbres `85972bf`→
+`72ac53e`. Deux suites INTÉGRALES vertes dans la journée : **721/721**
+(arbre `295fa06`, matin — a classé les deux rouges de la veille en
+intermittence environnementale ISS-024, voie de restauration prouvée
+synchrone) puis **724/724, zéro échec** (arbre `72ac53e`, soir — 721 +
+`test_stability_dolly` 2 + `test_painterly_lab` 1), puis **727/727,
+zéro échec** (arbre `ae9d537`, nuit — + `test_lab_dressing` 3, après
+le Lot 9 d'habillage aux modèles Quaternius CC0 du dépôt). Nouveaux contrats :
+painterly par SURFACE avec texture réelle exigée (fallback 1×1 rejeté),
+« aucune surface mate sans peinture » avec seuil réel d'émission,
+dolly §30.1 (timeline arrêt/marche/sprint/rotation). Revue
+contradictoire à contexte frais exécutée (verdict FAIL sur l'éval v9,
+consigné en erratum ; sept correctifs prouvés fail-first en réponse).
+Garde ISS-027 « 0 erreur journal » sur chaque passage. Score /100 :
+machine utilisateur (évals internes UNVERIFIED : 58→~63 revue→~71,5).
+
+## Campagne du 2026-08-05 (nuit) — Cycle 3 : HeroShotLab v0→v5 + signes
+
+Arbres `ce76b24`→`39bb653`. HeroShotLab construit et itéré (contrat de
+composition 5/5, 41 assertions, MAINTENU sur v0→v5) ; cinq signes du
+héros fail-first 0/8→4/4 ; planche de silhouettes signée 8/8 ; suites
+héros 17/17. Suite intégrale de FIN DE SESSION sur arbre propre
+`39bb653` : **713/713, zéro échec** (relancée après un redémarrage du
+conteneur qui avait tué la première — seul le passage COMPLET compte).
+Captures officielles v0→v5 + planche depuis arbres committés, manifestes
+et dérivés §30.1 dans `evidence/cycle3/`. Score /100 : machine
+utilisateur.
+
 ## Campagne du 2026-08-05 (soir) — P2-5 tranches 1-2 : directeur + posture du boss
 
 Arbre `bde635d`+posture. **BossDirector** (P2 §10.5) : fail-first 5/5

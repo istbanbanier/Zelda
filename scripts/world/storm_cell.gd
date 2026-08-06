@@ -206,6 +206,15 @@ func _add_bolt_segment(from: Vector3, to: Vector3, thickness: float,
 	material.emission_energy_multiplier = energy
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.disable_fog = true   # le cyan reste saturé à travers la brume
+	# Revue contradictoire (passe art) : un halo OPAQUE cachait le cœur
+	# blanc logé dedans — l'éclair se lisait comme un aplat cyan, contre
+	# §9.3 (« cœur blanc fin + halo moins opaque ») et §1.6 (ruban opaque
+	# interdit). Le halo devient translucide et additif ; le cœur, plus
+	# fin, reste opaque et transparaît.
+	if color == BOLT_HALO:
+		material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		material.albedo_color.a = 0.42
+		material.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
 	segment.material_override = material
 	segment.position = (from + to) * 0.5
 	# Oriente l'axe Y du segment le long du tronçon.

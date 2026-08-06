@@ -20,13 +20,26 @@ extends Node3D
 ## en 16:9 (KEEP_HEIGHT — entrer 68 en vertical est LE piège nommé §3.1).
 const CAM_FOV: float = 44.0
 const CAM_PITCH_DEG: float = -2.0
-## Position relative aux pieds du héros (origine du lab) : 4,5 m
-## derrière, objectif à 1,70 m, décalé pour poser le héros à ~41 % X.
-const CAM_POSITION: Vector3 = Vector3(0.55, 1.70, 4.5)
+## Position relative aux pieds du héros (origine du lab), décalée pour
+## poser le héros à ~41 % X. Lot 7 (AD-005) : la revue a mesuré le
+## héros à ~51 % de hauteur visible contre 38-45 % (§1.1) — ce contrat
+## d'IMAGE est incompatible avec la distance §3.1 (4,0-4,5 m) à ce FOV.
+## Le contrat d'écran prime (c'est lui que la revue juge) : objectif à
+## 1,75 m (borne §3.1) et recul à 5,0 m — calcul ET mesure donnent
+## tête ~44,7 %, pieds ~89,3 %, hauteur visible ~44,6 % : les trois
+## fenêtres §1.1 tenues. Seule la distance dévie, décision consignée.
+const CAM_POSITION: Vector3 = Vector3(0.55, 1.75, 5.0)
 const HERO_HEIGHT: float = 1.78
 
 const COL_GRASS: Color = Color(0.365, 0.561, 0.239)      # #5D8F3D
 const COL_GRASS_LIT: Color = Color(0.698, 0.784, 0.353)  # #B2C85A
+## Lot 11 : l'albédo qui REND à l'ancre, mesuré et non deviné. Le sol
+## partait de `COL_GRASS` et rendait #5BAC3A (saturation 66 % contre
+## 55 % à l'ancre #B2C85A) : la lumière du soleil miel multiplie
+## l'albédo et SATURE le vert. On remonte donc la chaîne — albédo ≈
+## cible ÷ transfert mesuré — vers un kaki qui, éclairé, tombe sur
+## l'herbe au soleil de la bible.
+const COL_GRASS_ALBEDO: Color = Color(0.60, 0.60, 0.39)
 const COL_EARTH: Color = Color(0.541, 0.353, 0.212)      # terre #8A5A36
 const COL_ROCK: Color = Color(0.608, 0.408, 0.259)       # ocre #9B6842
 ## Passe de VALEURS v3 (§1.5, verdict du test en gris v2) : la rivière
@@ -54,7 +67,11 @@ const COL_CYAN: Color = Color(0.133, 0.851, 0.925)
 ## L'amorce entre par le BAS-GAUCHE, devant le héros (leçon v1 : à 40 %
 ## X elle passait derrière lui), puis le S remonte vers le centre.
 const RIVER_SCREEN: Array[Vector3] = [
-	Vector3(34.0, 69.5, 20.0),
+	# Lot 5 : l'entrée du ruban est PLUS PROCHE et plus basse dans le
+	# cadre (§1.1 : « du bas-gauche/milieu vers le centre ») — le guide
+	# était timide (défaut nommé aux évals v5 ET v8). Le S survit :
+	# l'inflexion 36→31 reste.
+	Vector3(36.0, 74.0, 13.0),
 	Vector3(31.0, 67.0, 30.0),
 	Vector3(34.0, 65.3, 44.0),
 	Vector3(40.0, 64.3, 66.0),
@@ -64,6 +81,20 @@ const RIVER_SCREEN: Array[Vector3] = [
 ]
 ## Pente continue du premier plan : 8° (tan ≈ 0,1405).
 const SLOPE_TAN: float = 0.1405
+## Lot 2 : LE shader du style (décision verrouillée n°2) — validé sur
+## trois PILOTES (rocher, touffe, héros) avant toute propagation.
+const PAINTERLY: Shader = \
+	preload("res://shaders/characters/SH_CharacterPainterly.gdshader")
+## Déclinaison feuillage : mêmes ramps peintes + VENT au vertex — le
+## dolly de stabilité a prouvé (diffs 0,00 en phase immobile) que
+## l'herbe du lab était figée, contre §11.1.
+const FOLIAGE_PAINTERLY: Shader = \
+	preload("res://shaders/foliage/SH_FoliageWindPainterly.gdshader")
+## Variante DÉCOUPE : cartes de feuilles — transparence respectée par
+## seuil, faces des deux côtés (la peinture opaque dessinait des
+## contours sombres sur les bords transparents, interdits §1.6).
+const PAINTERLY_CUTOUT: Shader = \
+	preload("res://shaders/characters/SH_CharacterPainterlyCutout.gdshader")
 
 var _anchors: Dictionary[StringName, Node3D] = {}
 var _river_local: Array[Vector3] = []
@@ -79,6 +110,8 @@ func _ready() -> void:
 	_build_pylon()
 	_build_citadel_proxy()
 	_build_storm()
+	_build_dressing()
+	_build_riverside()
 	_build_light()
 
 
@@ -176,6 +209,9 @@ func _build_hero() -> void:
 			# Passe V3 : les cinq signes de dos (§13.1) — mantelet,
 			# épaulière, Bracelet, arc, carquois.
 			HeroSigns.attach(skeleton, hero)
+			# Lot 2 : le héros ENTIER porte le painterly — en gardant sa
+			# texture (le shader grade la lumière, il n'efface pas la peau).
+			_apply_painterly_to_hero(hero)
 	else:
 		var proxy: MeshInstance3D = MeshInstance3D.new()
 		proxy.name = "Hero"
@@ -185,6 +221,284 @@ func _build_hero() -> void:
 		proxy.mesh = capsule
 		proxy.position = Vector3(0.0, HERO_HEIGHT * 0.5, 0.0)
 		add_child(proxy)
+
+
+## Lot 9 — habillage avec les VRAIS modèles du dépôt (Quaternius CC0,
+## déjà attribués ; AD-001 : aucun téléchargement). Placement
+## composition-conscient : les arbres encadrent (bandes gauche < 36 % X
+## et bord droit > 81 %), les rochers ponctuent le premier plan hors
+## focales, les props vivent AU camp. Chaque modèle passe à la peinture
+## en gardant sa vraie texture, et varie pose/échelle (§7.3).
+## Lot 12 — la falaise gauche GUIDE au lieu de boucher (défaut nommé
+## depuis l'éval v5). Vrais modules Kenney CC0 (ART-K1) montés en
+## ESCALIER descendant vers la vallée : chaque palier est plus bas et
+## plus loin que le précédent, ses arêtes éclairées menant l'œil du
+## premier plan vers le camp. Échelle « tuile » corrigée par le point
+## unique du projet (`KitScale`), jamais recopiée ici.
+func _build_cliff_formation() -> void:
+	var formation: Node3D = Node3D.new()
+	formation.name = "CliffFormation"
+	add_child(formation)
+	# [modèle, x, z, yaw°, variation d'échelle]
+	# Les modules vivent DEVANT la dalle-masse (x > -24) : posés
+	# derrière, ils étaient purement et simplement occultés (capture
+	# v19). Ils descendent vers la vallée en s'éloignant.
+	var steps: Array[Array] = [
+		["cliff_cornerLarge_rock", -19.5, -22.0, 18.0, 1.15],
+		["cliff_large_rock", -21.0, -35.0, 8.0, 1.0],
+		["cliff_blockSlope_rock", -22.5, -47.0, -6.0, 0.95],
+		["cliff_half_rock", -24.0, -59.0, 22.0, 1.1],
+		["cliff_corner_rock", -26.0, -75.0, 40.0, 0.85],
+		["rock_largeC", -24.0, -24.0, 130.0, 1.2],
+		["rock_largeA", -21.0, -17.0, 300.0, 1.0],
+		["rock_smallB", -18.5, -13.0, 70.0, 1.0],
+	]
+	for step: Array in steps:
+		var asset: String = step[0] as String
+		var scene: PackedScene = load(
+			"res://assets/environment/cliffs/%s.glb" % asset) as PackedScene
+		if scene == null:
+			push_warning("[falaise] modèle introuvable : %s" % asset)
+			continue
+		var model: Node3D = scene.instantiate() as Node3D
+		model.name = asset.to_pascal_case()
+		var z: float = step[2] as float
+		model.position = Vector3(step[1] as float, _slope_height(z) - 0.6, z)
+		model.rotation_degrees.y = step[3] as float
+		model.scale = Vector3.ONE * KitScale.factor(asset) \
+			* (step[4] as float)
+		formation.add_child(model)
+		_apply_painterly_to_model(model)
+		# La roche du kit reçoit la surface stratifiée (AD-006 : la
+		# couleur reste subordonnée, le relief monte).
+		for node: Node in model.find_children("*", "MeshInstance3D",
+				true, false):
+			var mesh: MeshInstance3D = node as MeshInstance3D
+			if mesh.mesh == null:
+				continue
+			for s: int in range(mesh.mesh.get_surface_count()):
+				var material: ShaderMaterial = \
+					mesh.get_surface_override_material(s) as ShaderMaterial
+				if material != null:
+					# La palette du kit est un gris pâle et FROID : posé
+					# tel quel, le module ne parlait pas la même géologie
+					# que la falaise ocre voisine (capture v19). On le
+					# teinte à l'ancre roche §1.4 — le modèle garde sa
+					# forme et son relief, il rejoint notre monde.
+					material.set_shader_parameter("albedo_color",
+						COL_ROCK.lerp(Color(0.34, 0.24, 0.17), 0.35))
+					_with_surface(material, "T_Rock_Strata", 3.5, 0.70, 1.0)
+
+
+## Lot 13 — la RIVE vit : saules penchés vers l'eau, souche et tronc
+## moussus, rochers de berge, buisson à baies (Quaternius CC0, ART-Q9).
+## Le kit arrive en OBJ, qui s'importe en **Mesh** et non en scène :
+## le chargeur monte donc lui-même le `MeshInstance3D`. Les positions
+## suivent le tracé RÉEL de la rivière — une rive plantée au hasard
+## n'est qu'une rangée d'arbres.
+func _build_riverside() -> void:
+	var riverside: Node3D = Node3D.new()
+	riverside.name = "Riverside"
+	add_child(riverside)
+	if _river_local.is_empty():
+		return
+	# [modèle, index du point de rivière, décalage latéral, recul, yaw°]
+	var plantings: Array[Array] = [
+		["Willow_1", 1, -7.5, 2.0, 25.0],
+		["Willow_3", 2, 8.0, -1.0, 200.0],
+		["Willow_5", 4, -9.5, 3.0, 110.0],
+		["TreeStump_Moss", 1, 5.0, 3.5, 60.0],
+		["WoodLog_Moss", 2, -4.5, -2.5, 145.0],
+		["Rock_Moss_2", 0, -3.5, 1.5, 20.0],   # gardé hors du couloir du camp
+		["Rock_Moss_5", 3, -5.5, 0.0, 250.0],
+		["BushBerries_1", 0, -6.0, 2.5, 300.0],
+	]
+	for planting: Array in plantings:
+		var asset: String = planting[0] as String
+		var mesh_resource: Mesh = load(
+			"res://assets/environment/riverside/%s.obj" % asset) as Mesh
+		if mesh_resource == null:
+			push_warning("[rive] modèle introuvable : %s" % asset)
+			continue
+		var holder: Node3D = Node3D.new()
+		holder.name = asset
+		var instance: MeshInstance3D = MeshInstance3D.new()
+		instance.name = "%sMesh" % asset
+		instance.mesh = mesh_resource
+		holder.add_child(instance)
+		var anchor_point: Vector3 = _river_local[
+			mini(planting[1] as int, _river_local.size() - 1)]
+		var x: float = anchor_point.x + (planting[2] as float)
+		var z: float = anchor_point.z + (planting[3] as float)
+		holder.position = Vector3(x, minf(_slope_height(z), 0.0), z)
+		holder.rotation_degrees.y = planting[4] as float
+		holder.scale = Vector3.ONE * KitScale.factor(asset)
+		riverside.add_child(holder)
+		_apply_painterly_to_model(holder)
+		# Écorce et pierre reçoivent leur matière ; le feuillage garde
+		# la peinture seule (une écorce projetée sur des feuilles ne
+		# veut rien dire).
+		var family: String = "T_Bark_Tree" if asset.contains("Willow") \
+			or asset.contains("Wood") or asset.contains("Stump") \
+			else "T_Rock_Mossy"
+		for node: Node in holder.find_children("*", "MeshInstance3D",
+				true, false):
+			var mesh_node: MeshInstance3D = node as MeshInstance3D
+			if mesh_node.mesh == null:
+				continue
+			for s: int in range(mesh_node.mesh.get_surface_count()):
+				var material: ShaderMaterial = \
+					mesh_node.get_surface_override_material(s) \
+					as ShaderMaterial
+				if material == null:
+					continue
+				# Le feuillage garde la peinture SEULE : projeter une
+				# écorce sur des feuilles ne veut rien dire.
+				var is_foliage: bool = mesh_node.mesh \
+					.surface_get_material(s) != null \
+					and String(mesh_node.mesh.surface_get_material(s)
+						.resource_name).to_lower().contains("green")
+				if not is_foliage:
+					_with_surface(material, family, 2.4, 0.55, 0.9)
+
+
+func _build_dressing() -> void:
+	var dressing: Node3D = Node3D.new()
+	dressing.name = "Dressing"
+	add_child(dressing)
+	var camp: Vector3 = _anchors[&"camp_center"].position
+	var f: String = "res://assets/environment/foliage/"
+	var r: String = "res://assets/environment/rocks/"
+	var p: String = "res://assets/environment/props/"
+	# [chemin, nom, x, z, yaw°, échelle] — y suit la pente continue.
+	var items: Array[Array] = [
+		[f + "CommonTree_1.gltf", "TreeCommon1", -14.0, -48.0, 25.0, 1.0],
+		[f + "CommonTree_3.gltf", "TreeCommon3", -19.0, -62.0, 130.0, 1.15],
+		[f + "Pine_2.gltf", "TreePine2", -24.0, -78.0, 75.0, 1.05],
+		[f + "TwistedTree_2.gltf", "TreeTwisted2", 26.0, -35.0, 210.0, 0.95],
+		[f + "Pine_4.gltf", "TreePine4", 31.0, -58.0, 300.0, 1.2],
+		[r + "Rock_Medium_1.gltf", "RockNearL", -8.0, -14.0, 40.0, 1.3],
+		[r + "Rock_Medium_2.gltf", "RockNearL2", -4.0, -10.0, 155.0, 0.85],
+		[r + "Rock_Medium_3.gltf", "RockPathR", 15.0, -28.0, 250.0, 1.0],
+		[r + "Rock_Medium_1.gltf", "RockCliffBase", -27.0, -44.0, 310.0, 1.6],
+		[p + "Banner_1.gltf", "CampBanner", camp.x - 2.0, camp.z + 2.0,
+			160.0, 1.0],
+		[p + "Crate_Wooden.gltf", "CampCrate", camp.x - 4.5, camp.z - 1.5,
+			35.0, 1.0],
+		[p + "Barrel.gltf", "CampBarrel", camp.x - 3.0, camp.z + 1.0,
+			80.0, 1.0],
+		[p + "Cauldron.gltf", "CampCauldron", camp.x - 4.0, camp.z + 3.0,
+			10.0, 1.0],
+	]
+	for item: Array in items:
+		var scene: PackedScene = load(item[0] as String) as PackedScene
+		if scene == null:
+			push_warning("[dressing] modèle introuvable : %s" % item[0])
+			continue
+		var model: Node3D = scene.instantiate() as Node3D
+		model.name = item[1] as String
+		var x: float = item[2] as float
+		var z: float = item[3] as float
+		var asset: String = (item[0] as String).get_file().get_basename()
+		var factor: float = (item[5] as float) * KitScale.factor(asset)
+		model.position = Vector3(x, minf(_slope_height(z), 0.0), z)
+		model.rotation_degrees.y = item[4] as float
+		model.scale = Vector3.ONE * factor
+		dressing.add_child(model)
+		_apply_painterly_to_model(model)
+		# Cohérence de géologie : les rochers du kit sont gris-BLEU
+		# froids, la falaise voisine est ocre — côte à côte, ils
+		# racontaient deux mondes. On les ramène à l'ancre roche §1.4
+		# (leur forme et leur relief ne changent pas).
+		if (item[1] as String).contains("Rock"):
+			for node: Node in model.find_children("*", "MeshInstance3D",
+					true, false):
+				var rock_mesh: MeshInstance3D = node as MeshInstance3D
+				if rock_mesh.mesh == null:
+					continue
+				for s: int in range(rock_mesh.mesh.get_surface_count()):
+					var rock_material: ShaderMaterial = \
+						rock_mesh.get_surface_override_material(s) \
+						as ShaderMaterial
+					if rock_material == null:
+						continue
+					# Teinte CLAIRE : la texture du kit porte déjà sa
+					# valeur sombre — une teinte foncée la doublait et
+					# les rochers devenaient des trous noirs (v20).
+					rock_material.set_shader_parameter("albedo_color",
+						Color(1.85, 1.52, 1.16))
+					_with_surface(rock_material, "T_Rock_Mossy", 2.2,
+						0.70, 1.0)
+
+
+## Passe TOUTES les surfaces d'un modèle au painterly, en extrayant la
+## vraie texture d'albedo de chaque surface (même règle que le héros —
+## la revue a prouvé qu'oublier une surface laisse deux langages de
+## lumière cohabiter).
+func _apply_painterly_to_model(model: Node3D) -> void:
+	for node: Node in model.find_children("*", "MeshInstance3D", true, false):
+		var mesh: MeshInstance3D = node as MeshInstance3D
+		if mesh.mesh == null:
+			continue
+		for s: int in range(mesh.mesh.get_surface_count()):
+			var texture: Texture2D = null
+			var cutout: bool = false
+			# Sans texture, la COULEUR du matériau source est la seule
+			# information de teinte qui existe : la jeter peignait les
+			# saules OBJ en BLANC (capture v22 — des sculptures de
+			# glace au bord de l'eau). On la reprend, et on la
+			# REMONTE : la peinture module ensuite, elle n'éclaire pas.
+			var tint: Color = Color.WHITE
+			var active: StandardMaterial3D = \
+				mesh.get_active_material(s) as StandardMaterial3D
+			if active != null:
+				texture = active.albedo_texture
+				cutout = active.transparency \
+					!= BaseMaterial3D.TRANSPARENCY_DISABLED \
+					or active.cull_mode == BaseMaterial3D.CULL_DISABLED
+				if texture == null:
+					var source: Color = active.albedo_color
+					# Les .mtl de ce kit sont très sombres (feuillage à
+					# 0,07 de vert) : posés tels quels sous le soleil,
+					# ils rendaient noir. On remonte la valeur en
+					# gardant la TEINTE.
+					var peak: float = maxf(source.r,
+						maxf(source.g, source.b))
+					if peak > 0.001:
+						tint = source * (0.62 / peak)
+						tint.a = 1.0
+						# …puis un pas vers la palette : le vert franc
+						# du kit ne parlait pas la même langue que
+						# l'olive de la vallée (§1.4).
+						if tint.g > tint.r and tint.g > tint.b:
+							tint = tint.lerp(COL_GRASS_LIT * 0.7, 0.35)
+							tint.a = 1.0
+			var material: ShaderMaterial = \
+				_painterly_material(tint, 0.85, texture)
+			if cutout:
+				material.shader = PAINTERLY_CUTOUT
+			mesh.set_surface_override_material(s, material)
+
+
+func _apply_painterly_to_hero(hero: Node3D) -> void:
+	for node: Node in hero.find_children("*", "MeshInstance3D", true, false):
+		var mesh: MeshInstance3D = node as MeshInstance3D
+		# Les signes graybox gardent leur matière simple pour l'instant.
+		if mesh.get_parent() is BoneAttachment3D \
+				or mesh.get_parent().get_parent() is BoneAttachment3D:
+			continue
+		if mesh.mesh == null:
+			continue
+		# Revue contradictoire : TOUTES les surfaces — la peau des bras
+		# (surface 1 de Male_Ranger_Arms) restait en PBR standard.
+		for s: int in range(mesh.mesh.get_surface_count()):
+			var texture: Texture2D = null
+			var active: StandardMaterial3D = \
+				mesh.get_active_material(s) as StandardMaterial3D
+			if active != null:
+				texture = active.albedo_texture
+			mesh.set_surface_override_material(s,
+				_painterly_material(Color.WHITE, 0.82, texture))
 
 
 func _lower_arm(skeleton: Skeleton3D, bone: String, degrees: float) -> void:
@@ -197,10 +511,107 @@ func _lower_arm(skeleton: Skeleton3D, bone: String, degrees: float) -> void:
 		rest * Quaternion(Vector3(0, 0, 1), deg_to_rad(degrees)))
 
 
-func _material(colour: Color, rough: float = 0.9) -> StandardMaterial3D:
+## Matériau painterly : fondu ADOUCI explicite (le contrat du test le
+## vérifie — toon dur interdit) ; texture optionnelle (le héros garde
+## la sienne, un blanc 1×1 sinon — équivalent du hint_default_white).
+## Lot 10 — grain PROCÉDURAL partagé : généré par le moteur
+## (`FastNoiseLite`, AD-001 : aucune image téléchargée), donc
+## reproductible depuis le dépôt sans poids binaire ni licence. Une
+## seule ressource pour tout le lab : le grain doit UNIFIER la matière,
+## pas donner un motif différent à chaque objet.
+static var _grain: NoiseTexture2D = null
+
+
+static func grain_texture() -> NoiseTexture2D:
+	if _grain != null:
+		return _grain
+	var noise: FastNoiseLite = FastNoiseLite.new()
+	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	# §21.1 : GRANDES formes, jamais du microbruit qui scintille.
+	noise.frequency = 0.012
+	noise.fractal_octaves = 3
+	noise.fractal_gain = 0.42
+	noise.seed = 20260806
+	_grain = NoiseTexture2D.new()
+	_grain.noise = noise
+	_grain.width = 512
+	_grain.height = 512
+	# Sans raccord, la projection monde montrerait la couture du tuilage.
+	_grain.seamless = true
+	_grain.generate_mipmaps = true
+	return _grain
+
+
+func _painterly_material(colour: Color, rough: float,
+		texture: Texture2D = null) -> ShaderMaterial:
+	var material: ShaderMaterial = ShaderMaterial.new()
+	material.shader = PAINTERLY
+	material.set_shader_parameter("albedo_color", colour)
+	material.set_shader_parameter("roughness_value", rough)
+	material.set_shader_parameter("ramp_soft", 0.16)
+	material.set_shader_parameter("grain_texture", grain_texture())
+	material.set_shader_parameter("grain_strength", 0.12)
+	material.set_shader_parameter("grain_scale", 0.35)
+	material.set_shader_parameter("grain_roughness", 0.18)
+	if texture == null:
+		var image: Image = Image.create(1, 1, false, Image.FORMAT_RGB8)
+		image.fill(Color.WHITE)
+		texture = ImageTexture.create_from_image(image)
+	material.set_shader_parameter("albedo_texture", texture)
+	return material
+
+
+## Lot 11 — applique une SURFACE réelle (ambientCG CC0, ART-T1) à un
+## matériau painterly. `tile_m` est la taille d'une tuile en MÈTRES :
+## une roche se lit à 3-4 m, un sol à 5-6 m, une toile à 1 m. La force
+## reste modérée — la bible interdit la texture photographique brute
+## (§1.6) : on prend le relief et le modelé, pas la couleur.
+func _with_surface(material: ShaderMaterial, family: String,
+		tile_m: float, blend: float = 0.45,
+		relief: float = 1.0) -> ShaderMaterial:
+	var base: String = "res://assets/textures/surfaces/%s_" % family
+	material.set_shader_parameter("surface_texture",
+		load(base + "Albedo.jpg"))
+	material.set_shader_parameter("surface_normal",
+		load(base + "Normal.jpg"))
+	material.set_shader_parameter("surface_rough",
+		load(base + "Rough.jpg"))
+	material.set_shader_parameter("surface_tile_m", tile_m)
+	material.set_shader_parameter("surface_blend", blend)
+	# AD-006 : la COULEUR photo reste subordonnée à la palette peinte,
+	# le RELIEF monte franchement — une normal map est de la forme, pas
+	# une couleur photographique, et c'est la forme qui nourrit la
+	# lumière peinte (décision verrouillée n°2).
+	material.set_shader_parameter("surface_normal_depth", relief)
+	return material
+
+
+func _foliage_material(colour: Color, blade_height: float = 0.55,
+		sway_amplitude: float = 0.07) -> ShaderMaterial:
+	var material: ShaderMaterial = ShaderMaterial.new()
+	material.shader = FOLIAGE_PAINTERLY
+	material.set_shader_parameter("albedo_color", colour)
+	material.set_shader_parameter("ramp_soft", 0.16)
+	material.set_shader_parameter("blade_height", blade_height)
+	material.set_shader_parameter("sway_amplitude", sway_amplitude)
+	return material
+
+
+## Lot 4 : la matière PAR DÉFAUT du lab est la peinture — toute surface
+## mate passe par ici. Les émissifs justifiés (rivière-guide, flamme,
+## couronne cyan) passent par `_emissive_material`.
+func _material(colour: Color, rough: float = 0.9) -> ShaderMaterial:
+	return _painterly_material(colour, rough)
+
+
+func _emissive_material(colour: Color, rough: float,
+		emission_colour: Color, energy: float) -> StandardMaterial3D:
 	var material: StandardMaterial3D = StandardMaterial3D.new()
 	material.albedo_color = colour
 	material.roughness = rough
+	material.emission_enabled = true
+	material.emission = emission_colour
+	material.emission_energy_multiplier = energy
 	return material
 
 
@@ -231,21 +642,32 @@ func _build_terrain() -> void:
 	var slope_box: BoxMesh = BoxMesh.new()
 	slope_box.size = Vector3(130, 2, 168)
 	slope.mesh = slope_box
-	slope.material_override = _material(COL_GRASS)
+	# La prairie ÉCLAIRÉE doit tendre vers l'ancre #B2C85A (§1.4), pas
+	# vers un vert pur : mesuré à #5BAC3A (saturation 66 % contre 55 %
+	# à l'ancre), le sol partait trop vert. La base monte donc vers
+	# l'herbe au soleil ; la peinture garde le creux dans l'ombre.
+	slope.material_override = _with_surface(
+		_material(COL_GRASS_ALBEDO), "T_Grass_Field", 6.0, 0.65, 0.85)
 	slope.position = Vector3(4, _slope_height(-68.0) - 1.0, -68)
 	slope.rotation_degrees = Vector3(-8.0, 0, 0)
 	add_child(slope)
 	# Fond de vallée PLAT (~−21 m) : la pente s'y adoucit, la queue de la
 	# rivière et le socle de la citadelle s'y posent.
+	# Le sol LOINTAIN part du même kaki que la pente (sinon une coupure
+	# nette séparait premier plan et fond), mais REFROIDI et assombri :
+	# §1.3 exige que le lointain recule en contraste et en saturation.
+	# Mesuré : à albédo identique, il rendait une bande jaune vif qui
+	# tirait l'œil hors de la citadelle.
 	_slab("ValleyFloor", Vector3(4, -22.0, -245), Vector3(240, 2, 210),
-		COL_GRASS)
+		COL_GRASS_ALBEDO.lerp(COL_STONE_COLD, 0.42))
 	# Chemin de terre : il ÉPOUSE la pente (leçon v1).
 	var path: MeshInstance3D = MeshInstance3D.new()
 	path.name = "PathCrest"
 	var path_box: BoxMesh = BoxMesh.new()
 	path_box.size = Vector3(1.6, 0.06, 34)
 	path.mesh = path_box
-	path.material_override = _material(COL_EARTH)
+	path.material_override = _with_surface(
+		_material(COL_EARTH), "T_Ground_Earth", 5.0, 0.78, 1.0)
 	path.position = Vector3(2.2, _slope_height(-9.0) + 0.05, -9)
 	path.rotation_degrees = Vector3(-8.0, 0, 0)
 	add_child(path)
@@ -255,8 +677,30 @@ func _build_terrain() -> void:
 	# l'étagement §1.3 en VALEURS (le gris v2 montrait tout fusionné).
 	_slab("CliffLeftNear", Vector3(-26, _slope_height(-30.0) + 5.0, -30),
 		Vector3(14, 10, 40), COL_ROCK.lerp(Color(0.30, 0.19, 0.12), 0.45))
+	# Lot 2 : le ROCHER pilote passe au painterly.
+	(get_node("CliffLeftNear") as MeshInstance3D).material_override = \
+		_with_surface(_painterly_material(
+			COL_ROCK.lerp(Color(0.30, 0.19, 0.12), 0.45), 0.88),
+			"T_Rock_Strata", 4.0, 0.78, 1.0)
 	_slab("CliffLeftLip", Vector3(-22.5, _slope_height(-34.0) + 10.6, -34),
 		Vector3(9, 3.2, 34), COL_ROCK.lerp(COL_GRASS, 0.3))
+	# Lot 8 (revue) : la falaise gauche BOUCHAIT sans guider — deux
+	# strates intermédiaires descendent en escalier vers la vallée,
+	# tournées vers le chemin (§6.1 : la descente CADRE le camp puis le
+	# pylône ; leurs arêtes éclairées font la ligne du regard).
+	_slab("CliffStepA", Vector3(-29, _slope_height(-52.0) + 7.5, -52),
+		Vector3(16, 12, 26), COL_ROCK.lerp(COL_STONE_COLD, 0.15))
+	var step_a: MeshInstance3D = get_node("CliffStepA") as MeshInstance3D
+	step_a.rotation_degrees.y = 12.0
+	_with_surface(step_a.material_override as ShaderMaterial,
+		"T_Rock_Mossy", 4.5, 0.70, 1.0)
+	_build_cliff_formation()
+	_slab("CliffStepB", Vector3(-33, _slope_height(-72.0) + 6.5, -72),
+		Vector3(18, 14, 30), COL_ROCK.lerp(COL_STONE_COLD, 0.25))
+	var step_b: MeshInstance3D = get_node("CliffStepB") as MeshInstance3D
+	step_b.rotation_degrees.y = 7.0
+	_with_surface(step_b.material_override as ShaderMaterial,
+		"T_Rock_Mossy", 5.0, 0.62, 0.9)
 	_slab("CliffLeftFar", Vector3(-36, _slope_height(-95.0) + 6.0, -95),
 		Vector3(20, 16, 70), COL_ROCK.lerp(COL_STONE_COLD, 0.35))
 	# Décalée à droite (leçon v0 : à x 46 elle avalait le pylône).
@@ -326,9 +770,11 @@ func _grass_foreground() -> void:
 				multimesh.set_instance_transform(i,
 					Transform3D(basis, spot))
 			cell.multimesh = multimesh
-			var material: StandardMaterial3D = _material(
-				COL_GRASS.lerp(COL_GRASS_LIT, rng.randf_range(0.2, 0.6)))
-			cell.material_override = material
+			var tint: Color = COL_GRASS.lerp(COL_GRASS_LIT,
+				rng.randf_range(0.2, 0.6))
+			# Lot 3 : TOUTES les cellules au feuillage painterly VENTÉ
+			# (le dolly a prouvé l'herbe figée — §11.1 exige le vent).
+			cell.material_override = _foliage_material(tint)
 			add_child(cell)
 			_grass_cells += 1
 			_flower_patch(rng, cell_x, cell_z, clumps)
@@ -360,8 +806,11 @@ func _flower_patch(rng: RandomNumberGenerator, cell_x: int, cell_z: int,
 		multimesh.set_instance_transform(i,
 			Transform3D(Basis.IDENTITY, spot))
 	flowers.multimesh = multimesh
-	flowers.material_override = _material(
-		palette[weights[rng.randi_range(0, weights.size() - 1)]], 0.7)
+	# Revue : les fleurs restaient FIGÉES — même vent que l'herbe, en
+	# flottement léger (têtes de 9 cm, demi-amplitude).
+	flowers.material_override = _foliage_material(
+		palette[weights[rng.randi_range(0, weights.size() - 1)]],
+		0.09, 0.04)
 	add_child(flowers)
 
 
@@ -392,12 +841,13 @@ func _build_river() -> void:
 		var length: float = from_point.distance_to(to_point)
 		# Large et légèrement SURÉLEVÉ (leçon v1 : un ruban affleurant
 		# disparaît sous les brins d'herbe et le bord de pente).
-		box.size = Vector3(4.2 + float(i) * 1.9, 0.3, length + 3.0)
+		# Lot 5 : base élargie — le ruban-guide doit se lire (§1.1).
+		box.size = Vector3(5.5 + float(i) * 1.9, 0.3, length + 3.0)
 		segment.mesh = box
-		var material: StandardMaterial3D = _material(COL_WATER, 0.25)
-		material.emission_enabled = true
-		material.emission = COL_WATER * 0.35
-		segment.material_override = material
+		# Revue : une émission à 0,35 « se cachait » dans l'exception sans
+		# émettre vraiment — le ruban-guide assume désormais sa lumière.
+		segment.material_override = _emissive_material(COL_WATER, 0.25,
+			COL_WATER, 1.2)
 		segment.position = (from_point + to_point) * 0.5 \
 			+ Vector3(0.0, 0.3, 0.0)
 		var flat: Vector3 = to_point - from_point
@@ -432,12 +882,10 @@ func _build_camp() -> void:
 	var flame_box: BoxMesh = BoxMesh.new()
 	flame_box.size = Vector3(0.8, 1.2, 0.8)
 	flame.mesh = flame_box
-	var flame_material: StandardMaterial3D = _material(
-		Color(1.0, 0.604, 0.239))
-	flame_material.emission_enabled = true
-	flame_material.emission = Color(1.0, 0.604, 0.239)
-	flame_material.emission_energy_multiplier = 4.0
-	flame.material_override = flame_material
+	# Revue : à énergie 4,0 la flamme CLIPPAIT en blanc — le feu-ancre
+	# §1.2 doit se lire ORANGE à 90 m, pas comme un point blanc.
+	flame.material_override = _emissive_material(Color(1.0, 0.604, 0.239),
+		0.9, Color(1.0, 0.55, 0.20), 1.6)
 	flame.position = centre + Vector3(0, 1.0, 0)
 	add_child(flame)
 	# Bible §10.1 : le camp se lit à 70-110 m par flamme, FUMÉE fine et
@@ -457,7 +905,8 @@ func _build_camp() -> void:
 		var prism: PrismMesh = PrismMesh.new()
 		prism.size = Vector3(4.8, 3.6, 3.6)
 		tent.mesh = prism
-		tent.material_override = _material(COL_CANVAS)
+		tent.material_override = _with_surface(
+			_material(COL_CANVAS), "T_Fabric_Canvas", 1.2, 0.62, 0.7)
 		tent.position = centre + Vector3(6.5 * float(side), 1.8,
 			-2.0 * float(side))
 		tent.rotation_degrees = Vector3(0, 24.0 * float(side), 0)
@@ -517,11 +966,8 @@ func _build_pylon() -> void:
 	var crown_box: BoxMesh = BoxMesh.new()
 	crown_box.size = Vector3(4.6, 3.6, 1.2)
 	crown.mesh = crown_box
-	var crown_material: StandardMaterial3D = _material(COL_COPPER, 0.5)
-	crown_material.emission_enabled = true
-	crown_material.emission = COL_CYAN
-	crown_material.emission_energy_multiplier = 0.6
-	crown.material_override = crown_material
+	crown.material_override = _emissive_material(COL_COPPER, 0.5,
+		COL_CYAN, 0.6)
 	crown.position = Vector3(0, y + 1.6, 0)
 	pylon.add_child(crown)
 
@@ -535,13 +981,27 @@ func _build_citadel_proxy() -> void:
 	citadel.name = "CitadelProxy"
 	citadel.position = centre
 	add_child(citadel)
+	# Lot 8 (§2.4) : la revue jugeait la silhouette « boîtes grises ».
+	# 19 grandes formes < 20 : socle très large, terrasses successives à
+	# ressauts, 4 contreforts, tours coupées de hauteurs DIFFÉRENTES
+	# (dont une ruinée), épaulements asymétriques et 3 conduits de
+	# cuivre patiné descendant de la couronne vers les flancs.
 	var masses: Array[Array] = [
 		["Socle", Vector3(0, -18, 0), Vector3(190, 26, 90)],
 		["TerraceA", Vector3(-12, -2, 4), Vector3(130, 18, 66)],
+		["TerraceA2", Vector3(26, 3, 8), Vector3(58, 10, 44)],
 		["TerraceB", Vector3(8, 12, 0), Vector3(90, 16, 50)],
+		["TerraceB2", Vector3(-22, 19, -2), Vector3(52, 9, 40)],
 		["ShoulderW", Vector3(-46, 16, -4), Vector3(34, 30, 38)],
 		["ShoulderE", Vector3(38, 10, 2), Vector3(30, 24, 34)],
 		["Keep", Vector3(0, 28, -2), Vector3(48, 26, 36)],
+		["ContrefortSW", Vector3(-72, -14, 24), Vector3(22, 34, 20)],
+		["ContrefortSE", Vector3(68, -16, 26), Vector3(20, 30, 18)],
+		["ContrefortNW", Vector3(-66, -12, -28), Vector3(18, 38, 16)],
+		["ContrefortNE", Vector3(62, -14, -24), Vector3(16, 34, 14)],
+		["TourW", Vector3(-34, 34, -10), Vector3(14, 34, 14)],
+		["TourE", Vector3(28, 30, -8), Vector3(12, 26, 12)],
+		["TourRuinee", Vector3(52, 14, -14), Vector3(11, 14, 11)],
 	]
 	for mass: Array in masses:
 		var mesh: MeshInstance3D = MeshInstance3D.new()
@@ -551,6 +1011,22 @@ func _build_citadel_proxy() -> void:
 		mesh.mesh = box
 		mesh.material_override = _material(COL_CITADEL, 0.85)
 		mesh.position = mass[1] as Vector3
+		citadel.add_child(mesh)
+	# Les trois lignes de Résonance §2.4 : cuivre PATINÉ non émissif —
+	# plus de 95 % de la masse reste sans énergie visible.
+	var conduits: Array[Array] = [
+		["ConduitC", Vector3(2, 30, 18), Vector3(4, 60, 3)],
+		["ConduitW", Vector3(-26, 18, 16), Vector3(3, 44, 3)],
+		["ConduitE", Vector3(22, 14, 17), Vector3(3, 36, 3)],
+	]
+	for conduit: Array in conduits:
+		var mesh: MeshInstance3D = MeshInstance3D.new()
+		mesh.name = conduit[0] as String
+		var box: BoxMesh = BoxMesh.new()
+		box.size = conduit[2] as Vector3
+		mesh.mesh = box
+		mesh.material_override = _material(COL_COPPER, 0.6)
+		mesh.position = conduit[1] as Vector3
 		citadel.add_child(mesh)
 	# La spire : elle capte l'orage (ancre au sommet).
 	var spire: MeshInstance3D = MeshInstance3D.new()
@@ -571,7 +1047,11 @@ func _build_storm() -> void:
 	storm.name = "Storm"
 	var spire: Node3D = _anchors.get(&"citadel_spire", null)
 	if spire != null:
-		storm.position = spire.position + Vector3(0, 26, 0)
+		# Lot 5 : nuage plus HAUT et frappe jusqu'au flanc de la flèche
+		# (§1.1 : « trajets entre nuage, spire et flancs ») — à 316 m,
+		# l'éclair court de 26 m se lisait comme un glyphe (éval v8).
+		storm.position = spire.position + Vector3(0, 34, 0)
+		storm.strike_offset = Vector3(2.5, -32.0, 1.0)
 	add_child(storm)
 
 
@@ -581,7 +1061,22 @@ func _build_light() -> void:
 	sun.name = "Sun"
 	sun.light_color = Color(1.0, 0.839, 0.541)
 	sun.light_energy = 1.45
-	sun.rotation_degrees = Vector3(-23.0, 52.0, 0.0)
+	# Lot 7 (revue) : l'ancien yaw +52° plaçait le soleil DERRIÈRE-DROITE
+	# de la caméra — contraire à §22.1 (« ouest/haut-gauche ») et au ciel
+	# symétrique mesuré (73,6 % des deux côtés). Le soleil passe DEVANT-
+	# GAUCHE, 40° d'azimut (juste hors du demi-champ de 35,7°) et 23° de
+	# hauteur (§22.1 : 18-28°) : sa lueur entre par le coin haut-gauche
+	# (§1.1 : plus forte luminance X 8-34 %) et le héros devient
+	# contre-jour, comme la référence.
+	var to_sun: Vector3 = Vector3(
+		-sin(deg_to_rad(40.0)) * cos(deg_to_rad(23.0)),
+		sin(deg_to_rad(23.0)),
+		-cos(deg_to_rad(40.0)) * cos(deg_to_rad(23.0)))
+	sun.basis = Basis.looking_at(-to_sun)
+	# Lot 8 : ombres portées — l'éval v9 notait « pas d'ombre de contact
+	# sous le héros » ; §22.1 veut des ombres longues lisibles.
+	sun.shadow_enabled = true
+	sun.directional_shadow_max_distance = 60.0
 	add_child(sun)
 	var environment: Environment = Environment.new()
 	environment.background_mode = Environment.BG_SKY
@@ -591,6 +1086,10 @@ func _build_light() -> void:
 	sky_material.sky_horizon_color = Color(0.843, 0.867, 0.902)
 	sky_material.ground_bottom_color = Color(0.361, 0.443, 0.322)
 	sky_material.ground_horizon_color = Color(0.749, 0.780, 0.702)
+	# Lot 7 : halo solaire élargi — le disque reste hors champ, sa lueur
+	# miel doit entrer par le coin haut-gauche (§1.1).
+	sky_material.sun_angle_max = 62.0
+	sky_material.sun_curve = 0.28
 	sky.sky_material = sky_material
 	environment.sky = sky
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_SKY

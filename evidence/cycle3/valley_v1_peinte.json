@@ -1,0 +1,18 @@
+{
+  "commit": "1840bb0c3746ee4ffe503caadec309cb69a1dc38",
+  "display_server": "X11",
+  "distinct_colors_sampled": 4461,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 45,
+  "height": 1080,
+  "label": "valley_v1_peinte",
+  "luma_mean": 0.6074,
+  "luma_stddev": 0.2643,
+  "png": "evidence/cycle3/valley_v1_peinte.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "timestamp_utc": "2026-08-06 12:36:28",
+  "width": 1920
+}

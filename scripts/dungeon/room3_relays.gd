@@ -28,6 +28,8 @@ var _door: ElectricDoor = null
 var _receiver: ElectricNode = null
 var _source: ElectricNode = null
 var _relays: Array[ElectricRelay] = []
+var _rotation_pending: bool = false
+var _powered_before_turn: int = 0
 var _reset_button: ResetButton = null
 var _solved: bool = false
 
@@ -69,6 +71,13 @@ func _ready() -> void:
 		"Un relais transmet par ses ports : leur orientation décide du chemin.",
 		"Un segment ne s'allume que si deux ports se font face — cherche celui qui tourne le dos.",
 		"Tourne les colonnes pour aligner leurs ports deux à deux, de la source jusqu'au récepteur.")
+	# ISS-031 : la salle n'avait que le reset comme source d'échec — une
+	# rotation qui ne fait pas PROGRESSER le courant est un échec observé
+	# (§9.8), et c'est le geste même de l'énigme.
+	for relay: ElectricRelay in _relays:
+		relay.turned.connect(_on_relay_turned)
+	if graph() != null:
+		graph().graph_recomputed.connect(_on_recompute_after_turn)
 
 
 func _build_shell() -> void:
@@ -281,6 +290,33 @@ func capture_state_solved() -> void:
 	if graph() != null:
 		graph().mark_dirty()
 		graph().recompute()
+
+
+## ISS-031 — le « progrès » du courant : relais alimentés, et le
+## récepteur VAUT la solution (jamais « vain » quand il s'allume).
+func _powered_progress() -> int:
+	var count: int = 0
+	for relay: ElectricRelay in _relays:
+		if relay.node().is_powered():
+			count += 1
+	if _receiver != null and _receiver.is_powered():
+		count += 10
+	return count
+
+
+func _on_relay_turned(_step: int) -> void:
+	_rotation_pending = true
+
+
+func _on_recompute_after_turn(_powered_receivers: int) -> void:
+	if not _rotation_pending:
+		_powered_before_turn = _powered_progress()
+		return
+	_rotation_pending = false
+	var after: int = _powered_progress()
+	if after <= _powered_before_turn and not _solved and hints() != null:
+		hints().record_failure(&"rotation_vaine")
+	_powered_before_turn = after
 
 
 func relays() -> Array[ElectricRelay]:

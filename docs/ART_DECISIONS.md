@@ -41,3 +41,89 @@ d'images générées tant que tu ne les demandes pas).
 **Recommandation** : rester sur la police par défaut de Godot (MIT, embarquée)
 tant que le réseau restreint empêche de vérifier une paire SIL-OFL ; statut
 PARTIAL au Gate H.
+
+### AD-004 — Bifurcation du handoff Cycle 3 (2026-08-06, révocable)
+**Décision appliquée** : auto-évaluation sévère du HeroShotLab v5 =
+**58/100 `UNVERIFIED`** (grille §30.2, rendu logiciel —
+`evidence/cycle3/2026-08-06_eval_v5_severe.md`) → en dessous de 75 :
+**itération du lab avant toute propagation V4**, dans l'ordre dicté par
+les domaines faibles : `SH_CharacterPainterly` (lumière 8/15, matériaux
+5/10), puis vidéo de stabilité (mouvement 2/10), puis re-évaluation +
+revue contradictoire. Alternatives rejetées : propager tout de suite
+(la recette n'est pas finie — on propagerait des albedos plats) ;
+attendre le verdict humain sans rien faire (le handoff autorise la
+bifurcation autonome consignée). Le score officiel reste à l'humain
+sur GPU ; le Gate H n'est PAS déclaré.
+
+### AD-005 — Le contrat d'image §1.1 prime sur la distance caméra §3.1 (2026-08-06, révocable)
+**Décision appliquée** : la revue contradictoire a mesuré le héros à
+~51 % de hauteur visible (fenêtre §1.1 : 38-45 %). Au FOV verrouillé
+(71,4° horizontal), les fenêtres §1.1 (tête 44-48 %, pieds 89-92 %,
+hauteur 38-45 %) sont mathématiquement incompatibles avec la distance
+caméra §3.1 (4,0-4,5 m). Choix : le contrat d'IMAGE prime (c'est lui
+que la grille §30.2 et la revue jugent) — objectif 1,75 m (borne
+§3.1), recul 5,0 m ; calcul et mesure : tête 44,7 %, pieds 89,3 %,
+hauteur 44,6 %, trois fenêtres tenues. Alternative rejetée : réduire
+le FOV sous 65° horizontal (violerait §3.1 aussi et écraserait la
+vallée). Au même lot : soleil replacé DEVANT-GAUCHE (azimut 40°,
+hauteur 23°) — l'ancien yaw le mettait derrière-droite, contraire à
+§22.1, ciel symétrique mesuré 73,6/73,6 par la revue.
+
+### AD-006 — Dosage des textures photoscannées (2026-08-06, révocable, arbitrage délégué)
+**Contexte** : le propriétaire a déposé six matériaux ambientCG et m'a
+délégué l'arbitrage (« c'est toi l'expert donc tu décides »).
+
+**Décision appliquée — le partage COULEUR / RELIEF** :
+- la **couleur** photo reste SUBORDONNÉE à la palette peinte : blend
+  0,40-0,50, désaturée à 70 % vers sa luminance, centrée sur le gris
+  moyen (elle éclaircit et assombrit, elle ne teinte pas). C'est ce qui
+  fait respecter §1.6/§7.1 (« textures photographiques brutes »
+  interdites) et §1.4 (palette ancre) ;
+- le **relief** photo, lui, monte FRANCHEMENT (normal 0,7 → 1,0 sur
+  roche, sol et écorce). Justification : une normal map n'est pas une
+  couleur photographique, c'est de la FORME. L'interdit vise le rendu
+  photo-réaliste et l'incohérence de palette, pas la géométrie de
+  surface — et c'est précisément la forme qui nourrit le modèle de
+  lumière peint (décision verrouillée n°2). Un relief fort sous une
+  couleur peinte reste painterly ; l'inverse ne l'est pas.
+
+**Alternatives rejetées** : (a) texture photo en albédo plein — violerait
+l'interdit et casserait la palette mesurée aux ancres §1.4 ; (b) refuser
+les photoscans et rester au grain procédural seul — le sol y gagnait
++8,9 % de variation contre +30 % avec les textures, et la lumière peinte
+n'avait aucune forme à sculpter.
+
+**Réversible en un point** : `surface_blend` et `surface_normal_depth`
+sont des uniformes du shader, réglés dans `_with_surface`.
+
+### AD-007 — Latitude esthétique totale : la règle cède devant l'image (2026-08-06, révocable)
+
+**Mandat** : « Ne considère rien d'interdit si tu penses que c'est mieux. »
+
+**Ce que je prends** : l'autorité de juger les interdits ESTHÉTIQUES au
+RÉSULTAT plutôt qu'au principe. Force des photoscans (§1.6), rareté du
+cyan (§1.4), bandes de valeurs (§1.5), largeur des fondus, densité
+végétale, budget de formes (§2.4) : ce sont désormais des hypothèses à
+tester en capture, pas des murs. Chaque écart se décide par un
+avant/après, se consigne, se révoque en un réglage.
+
+**Ce que je ne prends pas, et ce n'est pas de la timidité** :
+1. **La légalité** — aucun asset copié d'un jeu commercial, aucune
+   ressource sans licence. Un jeu qu'on ne peut pas montrer n'est pas
+   « mieux » ;
+2. **L'honnêteté des preuves** — aucune capture inventée, aucun FPS
+   annoncé sans GPU, aucun `PASS` sans test. Lever cet interdit ne
+   rendrait pas le jeu meilleur : il me rendrait incapable de dire
+   s'il l'est. C'est l'instrument de mesure, pas une contrainte d'art ;
+3. **La boucle de jeu** — contrôles, collisions, télégraphes, énigmes.
+
+**Premier usage, et sa leçon** : force des photoscans testée à 45 / 70 /
+95 %. Le premier passage donnait 70 % gagnant à la mesure (variation
+28,21) — **résultat FAUX** : mon script d'expérience utilisait un motif
+de remplacement trop large qui modifiait aussi des couleurs et la
+hauteur des brins d'herbe. Ce n'était donc pas une expérience à
+variable unique. Refaite proprement, la mesure s'INVERSE (25,46 contre
+27,50 à 45 %). Décision quand même **70 %**, prise à l'œil : le sol y
+gagne en profondeur tonale et laisse mieux respirer brins et héros ; la
+variation de luminance n'est pas un test de lisibilité. La mesure est
+consignée en désaccord — c'est la règle de vérité, pas un détail.

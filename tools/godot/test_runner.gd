@@ -81,6 +81,17 @@ func _initialize() -> void:
 		_fail("aucun test n'a été exécuté alors que %d fichier(s) ont été collecté(s)"
 			% scripts.size())
 
+	# ISS-027 : une erreur de script qui avorte une méthode APRÈS une
+	# assertion passée laissait un faux « ok » (les assertions restantes ne
+	# courent jamais). Le journal de CE processus fait foi — la moindre
+	# SCRIPT ERROR rend la suite ROUGE, quelle que soit sa provenance : une
+	# suite qui erre n'est pas une preuve.
+	var script_errors: int = _script_error_count()
+	print("erreurs de script dans le journal : %d" % script_errors)
+	if script_errors > 0:
+		_fail("ISS-027 : %d SCRIPT ERROR dans le journal — un test a pu être avorté en silence"
+			% script_errors)
+
 	print("")
 	print("=== RÉSULTAT: %d réussi(s), %d échoué(s) ===" % [_passed, _failed])
 	for f: String in _failures:
@@ -316,6 +327,21 @@ func _leaked_roots(before: Array[String]) -> Array[String]:
 		if not before.has(name) and not leaked.has(name):
 			leaked.append(name)
 	return leaked
+
+
+## ISS-027 : compte les `SCRIPT ERROR` du journal de CE processus
+## (`user://logs/godot.log` — la journalisation fichier est active par
+## défaut sur desktop, et Godot fait tourner les journaux par exécution).
+func _script_error_count() -> int:
+	var file: FileAccess = FileAccess.open("user://logs/godot.log",
+		FileAccess.READ)
+	if file == null:
+		return 0
+	var count: int = 0
+	while not file.eof_reached():
+		if file.get_line().contains("SCRIPT ERROR"):
+			count += 1
+	return count
 
 
 func _fail(message: String) -> void:
