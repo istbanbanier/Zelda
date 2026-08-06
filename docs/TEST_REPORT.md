@@ -12,7 +12,9 @@ Branche `claude/eclats-art-visual-pass-tyfhgc`, arbres `85972bf`→
 (arbre `295fa06`, matin — a classé les deux rouges de la veille en
 intermittence environnementale ISS-024, voie de restauration prouvée
 synchrone) puis **724/724, zéro échec** (arbre `72ac53e`, soir — 721 +
-`test_stability_dolly` 2 + `test_painterly_lab` 1). Nouveaux contrats :
+`test_stability_dolly` 2 + `test_painterly_lab` 1), puis **727/727,
+zéro échec** (arbre `ae9d537`, nuit — + `test_lab_dressing` 3, après
+le Lot 9 d'habillage aux modèles Quaternius CC0 du dépôt). Nouveaux contrats :
 painterly par SURFACE avec texture réelle exigée (fallback 1×1 rejeté),
 « aucune surface mate sans peinture » avec seuil réel d'émission,
 dolly §30.1 (timeline arrêt/marche/sprint/rotation). Revue
