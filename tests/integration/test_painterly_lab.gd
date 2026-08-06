@@ -66,26 +66,49 @@ func test_every_matte_surface_of_the_lab_is_painted() -> void:
 	for node: Node in lab.find_children("*", "VisualInstance3D", true, false):
 		if _out_of_scope(node, lab):
 			continue
-		var material: Material = null
+		# Revue contradictoire : examiner CHAQUE surface (un matériau
+		# logé dans la ressource Mesh ou sur la surface 1 passait
+		# invisible — c'était le cas réel de la peau des bras du héros).
+		var materials: Array[Material] = []
 		if node is MeshInstance3D:
 			var mesh: MeshInstance3D = node as MeshInstance3D
-			material = mesh.material_override
-			if material == null:
-				material = mesh.get_surface_override_material(0)
+			if mesh.material_override != null:
+				materials.append(mesh.material_override)
+			elif mesh.mesh != null:
+				for s: int in range(mesh.mesh.get_surface_count()):
+					var override: Material = \
+						mesh.get_surface_override_material(s)
+					if override != null:
+						materials.append(override)
+					else:
+						materials.append(mesh.mesh.surface_get_material(s))
 		elif node is MultiMeshInstance3D:
-			material = (node as MultiMeshInstance3D).material_override
+			var multi: MultiMeshInstance3D = node as MultiMeshInstance3D
+			if multi.material_override != null:
+				materials.append(multi.material_override)
+			elif multi.multimesh != null and multi.multimesh.mesh != null:
+				for s: int in range(multi.multimesh.mesh.get_surface_count()):
+					materials.append(
+						multi.multimesh.mesh.surface_get_material(s))
 		else:
 			continue   # lumières, particules : pas des surfaces à peindre
-		if material == null:
-			continue   # mesh sans matière propre (sondes, débug)
-		if _is_painted(material):
-			painted += 1
-			continue
-		var standard: StandardMaterial3D = material as StandardMaterial3D
-		if standard != null and standard.emission_enabled:
-			emissive += 1   # exception JUSTIFIÉE : elle émet vraiment
-			continue
-		naked.append(String(node.name))
+		for material: Material in materials:
+			if material == null:
+				continue   # surface sans matière assignée (sondes, débug)
+			if _is_painted(material):
+				painted += 1
+				continue
+			var standard: StandardMaterial3D = material as StandardMaterial3D
+			# Revue : le seul FLAG ne suffit pas — une surface quasi mate
+			# se cachait dans l'exception. Elle doit émettre VRAIMENT.
+			if standard != null and standard.emission_enabled \
+					and standard.emission_energy_multiplier \
+					* maxf(standard.emission.r,
+						maxf(standard.emission.g, standard.emission.b)) \
+					>= 0.5:
+				emissive += 1
+				continue
+			naked.append(String(node.name))
 	check(naked.is_empty(),
 		"aucune surface mate sans peinture — restent : %s"
 		% ", ".join(naked.slice(0, 12)))

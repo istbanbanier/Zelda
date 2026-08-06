@@ -210,13 +210,18 @@ func _apply_painterly_to_hero(hero: Node3D) -> void:
 		if mesh.get_parent() is BoneAttachment3D \
 				or mesh.get_parent().get_parent() is BoneAttachment3D:
 			continue
-		var texture: Texture2D = null
-		var active: StandardMaterial3D = \
-			mesh.get_active_material(0) as StandardMaterial3D
-		if active != null:
-			texture = active.albedo_texture
-		mesh.set_surface_override_material(0,
-			_painterly_material(Color.WHITE, 0.82, texture))
+		if mesh.mesh == null:
+			continue
+		# Revue contradictoire : TOUTES les surfaces — la peau des bras
+		# (surface 1 de Male_Ranger_Arms) restait en PBR standard.
+		for s: int in range(mesh.mesh.get_surface_count()):
+			var texture: Texture2D = null
+			var active: StandardMaterial3D = \
+				mesh.get_active_material(s) as StandardMaterial3D
+			if active != null:
+				texture = active.albedo_texture
+			mesh.set_surface_override_material(s,
+				_painterly_material(Color.WHITE, 0.82, texture))
 
 
 func _lower_arm(skeleton: Skeleton3D, bone: String, degrees: float) -> void:
@@ -247,11 +252,14 @@ func _painterly_material(colour: Color, rough: float,
 	return material
 
 
-func _foliage_material(colour: Color) -> ShaderMaterial:
+func _foliage_material(colour: Color, blade_height: float = 0.55,
+		sway_amplitude: float = 0.07) -> ShaderMaterial:
 	var material: ShaderMaterial = ShaderMaterial.new()
 	material.shader = FOLIAGE_PAINTERLY
 	material.set_shader_parameter("albedo_color", colour)
 	material.set_shader_parameter("ramp_soft", 0.16)
+	material.set_shader_parameter("blade_height", blade_height)
+	material.set_shader_parameter("sway_amplitude", sway_amplitude)
 	return material
 
 
@@ -435,8 +443,11 @@ func _flower_patch(rng: RandomNumberGenerator, cell_x: int, cell_z: int,
 		multimesh.set_instance_transform(i,
 			Transform3D(Basis.IDENTITY, spot))
 	flowers.multimesh = multimesh
-	flowers.material_override = _material(
-		palette[weights[rng.randi_range(0, weights.size() - 1)]], 0.7)
+	# Revue : les fleurs restaient FIGÉES — même vent que l'herbe, en
+	# flottement léger (têtes de 9 cm, demi-amplitude).
+	flowers.material_override = _foliage_material(
+		palette[weights[rng.randi_range(0, weights.size() - 1)]],
+		0.09, 0.04)
 	add_child(flowers)
 
 
@@ -470,8 +481,10 @@ func _build_river() -> void:
 		# Lot 5 : base élargie — le ruban-guide doit se lire (§1.1).
 		box.size = Vector3(5.5 + float(i) * 1.9, 0.3, length + 3.0)
 		segment.mesh = box
+		# Revue : une émission à 0,35 « se cachait » dans l'exception sans
+		# émettre vraiment — le ruban-guide assume désormais sa lumière.
 		segment.material_override = _emissive_material(COL_WATER, 0.25,
-			COL_WATER * 0.35, 1.0)
+			COL_WATER, 1.2)
 		segment.position = (from_point + to_point) * 0.5 \
 			+ Vector3(0.0, 0.3, 0.0)
 		var flat: Vector3 = to_point - from_point
@@ -506,8 +519,10 @@ func _build_camp() -> void:
 	var flame_box: BoxMesh = BoxMesh.new()
 	flame_box.size = Vector3(0.8, 1.2, 0.8)
 	flame.mesh = flame_box
+	# Revue : à énergie 4,0 la flamme CLIPPAIT en blanc — le feu-ancre
+	# §1.2 doit se lire ORANGE à 90 m, pas comme un point blanc.
 	flame.material_override = _emissive_material(Color(1.0, 0.604, 0.239),
-		0.9, Color(1.0, 0.604, 0.239), 4.0)
+		0.9, Color(1.0, 0.55, 0.20), 1.6)
 	flame.position = centre + Vector3(0, 1.0, 0)
 	add_child(flame)
 	# Bible §10.1 : le camp se lit à 70-110 m par flamme, FUMÉE fine et

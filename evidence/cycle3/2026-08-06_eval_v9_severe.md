@@ -35,3 +35,26 @@ manquants les moins chers, dans l'ordre de rendement :
 
 La revue contradictoire à contexte frais est lancée sur CE dossier —
 si elle invalide des points, son verdict prime.
+
+---
+
+## ERRATUM — verdict de la revue contradictoire (même jour)
+
+La revue à contexte frais a **invalidé ce score : FAIL, re-notation
+≈ 63/100 `UNVERIFIED`**. Ses contre-exemples, tous vérifiés :
+
+- « éclair ramifié, cœur clair, halo » : FAUX — l'aplat est cyan
+  OPAQUE ; le halo (boîte opaque) CACHE le cœur blanc qui est dedans ;
+- « un seul langage de matière » : FAUX — la peau des bras du héros
+  (surface 1 de `Male_Ranger_Arms`) reste en PBR standard, le test
+  comptait des meshes, pas des surfaces ;
+- la flamme du camp clippe en BLANC (énergie 4,0) — le feu-ancre §1.2
+  est invisible à 90 m ;
+- zone solaire §1.1 absente (ciel 73,6 % symétrique gauche/droite) ;
+- héros trop grand dans le cadre (~51 % vs 38-45 %) ;
+- deux tests infalsifiables (texture fallback 1×1 ; exception émissive
+  au seul flag).
+
+La décision opérationnelle est INCHANGÉE (< 75 ⇒ pas de propagation
+V4) ; ce document reste au dossier comme preuve de l'écart — on ne
+maquille pas une preuve. Corrections : Lot 6.

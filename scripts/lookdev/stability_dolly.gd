@@ -3,8 +3,9 @@
 ## par l'éval sévère v5, domaine mouvement 2/10).
 ##
 ## Cette scène monte le HeroShotLab et déplace SA caméra le long d'une
-## timeline fixe de 15 s : marche (0-6 s, 3,5 m/s), sprint (6-10 s,
-## 9 m/s), puis balayage de rotation (10-15 s, ±35°). Elle est faite
+## timeline fixe de 18 s : ARRÊT (0-3 s — vent/orage sans parallaxe),
+## marche (3-9 s, 3,5 m/s), sprint (9-13 s, 9 m/s), puis balayage de
+## rotation (13-18 s, ±35°). Elle est faite
 ## pour le mode Movie Maker (`--write-movie frames.png --fixed-fps 12`),
 ## vérifié dans la source 4.7.1 (main.cpp, movie_writer_pngwav.cpp) :
 ## le pas de temps FIXE échantillonne le vent/TIME correctement quel
