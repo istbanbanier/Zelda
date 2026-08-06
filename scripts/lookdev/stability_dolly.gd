@@ -16,9 +16,14 @@
 extends Node3D
 
 const LAB_SCENE: String = "res://scenes/lookdev/HeroShotLab.tscn"
-const WALK_END: float = 6.0
-const SPRINT_END: float = 10.0
-const TOTAL: float = 15.0
+## Temps d'arrêt initial : SANS parallaxe, pour juger le vent dans
+## l'herbe et la cadence de l'orage (« herbe au vent », §30.1) — la
+## première séquence rendue a prouvé qu'une caméra toujours en mouvement
+## noie ces deux signaux.
+const HOLD_END: float = 3.0
+const WALK_END: float = 9.0
+const SPRINT_END: float = 13.0
+const TOTAL: float = 18.0
 const WALK_SPEED: float = 3.5
 const SPRINT_SPEED: float = 9.0
 const YAW_MAX_DEG: float = 35.0
@@ -56,11 +61,13 @@ func _process(delta: float) -> void:
 		get_tree().quit(0)
 		return
 	var position: Vector3 = _camera.position
+	if _elapsed < HOLD_END:
+		return   # immobile : vent et orage se jugent ici
 	if _elapsed < WALK_END:
 		position.z -= WALK_SPEED * delta
 		# Glissement latéral vers le chemin pendant les 3 premières
-		# secondes (pour contourner le héros).
-		var drift: float = clampf(_elapsed / 3.0, 0.0, 1.0)
+		# secondes de marche (pour contourner le héros).
+		var drift: float = clampf((_elapsed - HOLD_END) / 3.0, 0.0, 1.0)
 		position.x = lerpf(_start_x, PATH_X, drift)
 	elif _elapsed < SPRINT_END:
 		position.z -= SPRINT_SPEED * delta

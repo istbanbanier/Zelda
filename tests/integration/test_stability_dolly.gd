@@ -37,6 +37,7 @@ func test_the_dolly_respects_the_protocol_timeline() -> void:
 		await _settle(1)
 		return
 	var total: float = float(script.get_script_constant_map()["TOTAL"])
+	var hold_end: float = float(script.get_script_constant_map()["HOLD_END"])
 	var walk_end: float = float(script.get_script_constant_map()["WALK_END"])
 	var sprint_end: float = \
 		float(script.get_script_constant_map()["SPRINT_END"])
@@ -45,8 +46,10 @@ func test_the_dolly_respects_the_protocol_timeline() -> void:
 		float(script.get_script_constant_map()["SPRINT_SPEED"])
 	check(total >= 10.0 and total <= 20.0,
 		"durée 10-20 s (§30.1) : %.1f s" % total)
-	check(walk_end < sprint_end and sprint_end < total,
-		"marche PUIS sprint PUIS rotation — trois phases ordonnées")
+	check(hold_end >= 2.0 and hold_end < walk_end,
+		"un temps d'arrêt INITIAL ≥ 2 s — vent et orage sans parallaxe")
+	check(hold_end < walk_end and walk_end < sprint_end and sprint_end < total,
+		"arrêt PUIS marche PUIS sprint PUIS rotation — phases ordonnées")
 	check(absf(walk - 3.5) < 0.01 and absf(sprint - 9.0) < 0.01,
 		"vitesses du CONTRAT de locomotion §8.2 (3,5 et 9 m/s)")
 	await _settle(1)
@@ -69,9 +72,16 @@ func test_the_dolly_really_moves_the_lab_camera() -> void:
 		return
 	var z_before: float = camera.position.z
 	var yaw_before: float = camera.rotation_degrees.y
-	await _settle(8)
+	# Le dolly commence par un ARRÊT de 3 s réelles (vent/orage) : attente
+	# BORNÉE par condition, pas fenêtre fixe — sous contention le budget
+	# absorbe la lenteur, et un dolly cassé reste rouge (ISS-024).
+	var budget_ms: int = 15000
+	var started_ms: int = Time.get_ticks_msec()
+	while camera.position.z >= z_before - 0.01 \
+			and Time.get_ticks_msec() - started_ms < budget_ms:
+		await _settle(6)
 	check(camera.position.z < z_before - 0.01,
-		"la caméra AVANCE réellement (marche vers −Z : %.3f → %.3f)"
+		"la caméra AVANCE réellement après l'arrêt initial (%.3f → %.3f)"
 		% [z_before, camera.position.z])
 	check(absf(camera.rotation_degrees.y - yaw_before) < 0.001,
 		"pas de rotation pendant la phase de marche (elle vient en 3e)")
