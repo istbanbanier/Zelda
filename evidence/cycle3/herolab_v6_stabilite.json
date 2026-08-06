@@ -1,0 +1,36 @@
+{
+  "label": "cycle3_stabilite_v1",
+  "commit": "ae95f053e73ff60a9290c3a196bb3856b1d30dc9",
+  "repo_dirty": false,
+  "scene": "res://scenes/lookdev/StabilityDolly.tscn",
+  "webp": "evidence/cycle3/herolab_v6_stabilite.webp",
+  "keyframes": "evidence/cycle3/herolab_v6_stabilite_cles.png",
+  "frames": 217,
+  "fps_fixed": 12,
+  "duration_s": 18.1,
+  "resolution_rendered": "1152x648",
+  "resolution_webp": "640x360",
+  "phases": {
+    "arret": "0-3 s",
+    "marche_3_5ms": "3-9 s",
+    "sprint_9ms": "9-13 s",
+    "rotation_pm35deg": "13-18 s"
+  },
+  "capture_mode": "Movie Maker --write-movie --fixed-fps 12 (source 4.7.1)",
+  "renderer": "Forward+ / llvmpipe (rendu logiciel — jamais une mesure)",
+  "probe_vent_phase_immobile": [
+    1.79,
+    1.91,
+    1.79,
+    1.62,
+    2.03
+  ],
+  "probe_vent_avant_correctif": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "timestamp_utc": "2026-08-06T02:38:58.617413Z"
+}

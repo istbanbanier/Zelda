@@ -3319,3 +3319,28 @@ reste inchangé au dixième). Note : `2026-08-06_herolab_v6.md`.
 2. Lot 3 : vidéo de stabilité 10-20 s (§30.1, jamais produite).
 3. Étendre le painterly aux autres surfaces du lab, puis re-évaluation
    sévère + revue contradictoire ; V4 seulement si ≥ 75 tenu.
+
+### Fait ensuite : Lot 3 — la vidéo de stabilité EXISTE (et elle a mordu)
+
+Première séquence §30.1 du projet : dolly 18,1 s (arrêt 3 s → marche
+3,5 → sprint 9 → rotation ±35°), Movie Maker `--fixed-fps 12` (vérifié
+source 4.7.1 — le pas fixe échantillonne le vent au bon rythme malgré
+llvmpipe), 217 frames assemblées en WebP animé (pas de ffmpeg ici).
+Fail-first 0/4 → 2/2 ; attente bornée par condition (ISS-024). La vidéo
+a fait son travail de révélateur : (1) l'herbe du lab était FIGÉE
+(sondes phase immobile : diffs 0,00 — contre §11.1) → corrigé,
+`SH_FoliageWindPainterly` sur toute l'herbe (rouge 0/8 → pilotes 3/3,
+héros 17/17, sondes 1,62-2,03) ; (2) le lab est un décor à UNE caméra
+(sol nu en contrebas, rivière-planche) — consigné comme GARDE-FOU pour
+la propagation V4 ; (3) zéro shimmer/pop — en partie parce qu'il n'y a
+encore ni LOD ni transparence. Capture officielle v7 recapturée (herbe
+entière painterly) : bandes §1.5 identiques au dixième. Note :
+`evidence/cycle3/2026-08-06_stabilite_lot3.md`.
+
+### Prochaine action exacte
+
+1. Étendre le painterly aux surfaces restantes du lab (falaises,
+   terrain, camp, citadelle, montagnes, rivière) — mêmes contrats.
+2. Re-évaluation sévère §30.2 + revue contradictoire (gate-review).
+3. V4 seulement si ≥ 75 tenu, avec le garde-fou « survivre au
+   mouvement » du dolly.
