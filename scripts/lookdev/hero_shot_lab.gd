@@ -54,7 +54,11 @@ const COL_CYAN: Color = Color(0.133, 0.851, 0.925)
 ## L'amorce entre par le BAS-GAUCHE, devant le héros (leçon v1 : à 40 %
 ## X elle passait derrière lui), puis le S remonte vers le centre.
 const RIVER_SCREEN: Array[Vector3] = [
-	Vector3(34.0, 69.5, 20.0),
+	# Lot 5 : l'entrée du ruban est PLUS PROCHE et plus basse dans le
+	# cadre (§1.1 : « du bas-gauche/milieu vers le centre ») — le guide
+	# était timide (défaut nommé aux évals v5 ET v8). Le S survit :
+	# l'inflexion 36→31 reste.
+	Vector3(36.0, 74.0, 13.0),
 	Vector3(31.0, 67.0, 30.0),
 	Vector3(34.0, 65.3, 44.0),
 	Vector3(40.0, 64.3, 66.0),
@@ -463,7 +467,8 @@ func _build_river() -> void:
 		var length: float = from_point.distance_to(to_point)
 		# Large et légèrement SURÉLEVÉ (leçon v1 : un ruban affleurant
 		# disparaît sous les brins d'herbe et le bord de pente).
-		box.size = Vector3(4.2 + float(i) * 1.9, 0.3, length + 3.0)
+		# Lot 5 : base élargie — le ruban-guide doit se lire (§1.1).
+		box.size = Vector3(5.5 + float(i) * 1.9, 0.3, length + 3.0)
 		segment.mesh = box
 		segment.material_override = _emissive_material(COL_WATER, 0.25,
 			COL_WATER * 0.35, 1.0)
@@ -633,7 +638,11 @@ func _build_storm() -> void:
 	storm.name = "Storm"
 	var spire: Node3D = _anchors.get(&"citadel_spire", null)
 	if spire != null:
-		storm.position = spire.position + Vector3(0, 26, 0)
+		# Lot 5 : nuage plus HAUT et frappe jusqu'au flanc de la flèche
+		# (§1.1 : « trajets entre nuage, spire et flancs ») — à 316 m,
+		# l'éclair court de 26 m se lisait comme un glyphe (éval v8).
+		storm.position = spire.position + Vector3(0, 34, 0)
+		storm.strike_offset = Vector3(2.5, -32.0, 1.0)
 	add_child(storm)
 
 
