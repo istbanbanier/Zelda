@@ -410,7 +410,7 @@ ni arène, ni pylônes, ni Gardien. Relevé par la revue contradictoire du Gate 
 (défaut équivalent à ISS-025, non consigné à l'époque — corrigé ici). Correctif :
 cadrage spécifique à l'arène (surplomb du bord, rayon 19 m) au commit suivant.
 
-## ISS-027 — Faux « ok » du runner : erreur de script après une assertion passée (S2 outillage, ouvert)
+## ISS-027 — Faux « ok » du runner : erreur de script après une assertion passée (S2 outillage, RÉSOLU 2026-08-05)
 
 **Observé** le 2026-08-05 (P2-3, `test_weapon_identities`) : un test dont le
 script lève une erreur d'exécution (propriété absente sur un objet typé)
@@ -428,6 +428,16 @@ systématiquement dans les sessions récentes).
 s'est terminée par erreur (comparer un drapeau « fin atteinte » posé par le
 test ? intercepter les erreurs de script ?) et la compter ÉCHEC. À traiter
 comme tranche outillage dédiée — pas en passant.
+
+**Résolu** : le runner lit le journal de SON processus
+(`user://logs/godot.log`, journalisation fichier active par défaut sur
+desktop, tournée par exécution) et compte les `SCRIPT ERROR` — la
+moindre rend la suite ROUGE (« une suite qui erre n'est pas une
+preuve »), avec la ligne de vérité `erreurs de script dans le journal :
+N` imprimée à chaque passage. Prouvé par sonde rouge/vert : un test qui
+erre après une assertion passée sortait « ok, code 0 » ; il sort
+désormais « ÉCHEC ISS-027, code 1 ». Zéro faux positif vérifié sur des
+suites saines (hints 7/7, directeur 5/5 — 0 erreur).
 
 ## ISS-028 — Bibliothèque du directeur partiellement taguée (S4, ouvert)
 
@@ -454,7 +464,7 @@ aussi au playtest G-2 : le boss est ré-écroulable en boucle par cycles
 de 3 lourdes de hache (design « alternative plus lente », coût
 d'endurance réel, mais non plafonné en fréquence).
 
-## ISS-030 — Lois de matière : asymétrie vallée/donjon sur l'eau (S3, ouvert)
+## ISS-030 — Lois de matière : asymétrie vallée/donjon sur l'eau (S3, RÉSOLU 2026-08-05)
 
 Le bassin conducteur de la VALLÉE (`conductive_basin.gd`) est un
 `ElectricNode` nu : il ne mouille pas et ne relaie pas à la matière
@@ -464,7 +474,16 @@ commentaire « même loi que le bassin de la vallée » n'est vrai que pour
 métallique de salle 1 et batterie de salle 4 restent graphe-seulement.
 Unifier lors du prochain passage sur la vallée (Cycle 3, chantier eau).
 
-## ISS-031 — Hints : sources d'échec inégales selon la salle (S3, ouvert)
+**Résolu** : `WaterMatterComponent` partagé (matière `eau` sur le NŒUD,
+mouillage à l'entrée, relais borné sous tension, terre = suspension) —
+utilisé par `ElectricHazard` WATER_ZONE ET `ConductiveBasin` (zone de
+baignade ajoutée au bassin, école toujours SÛRE : zéro dégât). Prouvé
+fail-first 0/6 → `test_water_unification` 3/3 (dont un VRAI Arc Link) ;
+non-régression : lois 6/6, bassin 3/3, salles 44/44, réactions 7/7,
+donjon 2/2. Reste graphe-seulement (assumé) : bloc salle 1, batterie
+salle 4 (mécanique de charge propre).
+
+## ISS-031 — Hints : sources d'échec inégales selon la salle (S3, RÉSOLU 2026-08-05)
 
 Revue P2-5 : la salle 3 n'a qu'UNE source d'échec (bouton reset) — un
 joueur bloqué qui ne presse jamais reset ne verra jamais de hint ; le
@@ -475,3 +494,13 @@ testés end-to-end (1 et 4 le sont). Enrichir les sources par salle
 compléter les tests. Blindage mineur relevé au passage :
 `test_grounded_water_pauses_the_relay` devrait affirmer
 `before < capacité` pour rester discriminant si le plafond montait.
+
+**Résolu** : salle 3 compte les ROTATIONS SANS PROGRÈS (le geste même de
+l'énigme — `turned` + comparaison du courant après recalcul, le
+récepteur allumé ne compte jamais « vain ») ; salle 2 compte les CHUTES
+aériennes RAPIDES (> 4,5 m à > 5 m/s de moyenne — ni l'ascenseur au
+sol, ni la descente d'escalade lente ne comptent) ; les branchements des
+quatre salles sont testés end-to-end (7/7) ; le test du relais mis à la
+terre est blindé (`before < capacité`). Le « Rappeler l'ascenseur »
+légitime compté comme échec (remarque de la revue) reste assumé : c'est
+un signal faible parmi trois, pas un déclencheur seul.

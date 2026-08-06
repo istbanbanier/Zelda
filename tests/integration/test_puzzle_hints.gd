@@ -154,3 +154,65 @@ func test_room4_counts_water_shocks_as_failures() -> void:
 		"chocs + reset franchissent le palier 1 (%d échecs)"
 		% tracker.failures())
 	await _teardown()
+
+func test_room3_counts_fruitless_rotations() -> void:
+	## ISS-031 : la salle 3 n'avait qu'UNE source d'échec (reset). Une
+	## rotation qui ne fait pas PROGRESSER le courant est un échec observé
+	## (§9.8) — huit pas de rotation d'une même colonne (deux tours
+	## complets) en produisent au moins trois.
+	_root = Node3D.new()
+	_tree().root.add_child(_root)
+	var room: Room3Relays = (load("res://scenes/dungeon/rooms/Room3Relays.tscn")
+		as PackedScene).instantiate() as Room3Relays
+	_root.add_child(room)
+	await _settle(8)
+	var tracker: PuzzleHintTracker = room.hints()
+	check(tracker != null, "la salle 3 porte le traqueur")
+	if tracker == null or room.relays().is_empty():
+		await _teardown()
+		return
+	var relay: ElectricRelay = room.relays()[0]
+	# `turn_one_step` incrémente l'index IMMÉDIATEMENT ; c'est la fin de
+	# l'ANIMATION (0,35 s) qui émet `turned` et marque le graphe — on
+	# attend donc la rotation entière plus le recalcul.
+	for i: int in range(8):
+		relay.turn_one_step()
+		await _settle(30)
+	check(tracker.count(&"rotation_vaine") >= 3,
+		"les rotations SANS progrès sont comptées (%d)"
+		% tracker.count(&"rotation_vaine"))
+	check(tracker.level() >= 1, "…et le palier 1 s'ouvre")
+	await _teardown()
+
+
+func test_room2_counts_real_falls() -> void:
+	## ISS-031 : « chute dans le puits » — un vrai plongeon compte, une
+	## descente d'ascenseur ou d'escalade NON (le compteur exige une chute
+	## AÉRIENNE et rapide).
+	_root = Node3D.new()
+	_tree().root.add_child(_root)
+	var room: Room2Vertical = (load("res://scenes/dungeon/rooms/Room2Vertical.tscn")
+		as PackedScene).instantiate() as Room2Vertical
+	_root.add_child(room)
+	await _settle(8)
+	var tracker: PuzzleHintTracker = room.hints()
+	check(tracker != null, "la salle 2 porte le traqueur")
+	if tracker == null or room.player() == null:
+		await _teardown()
+		return
+	var before: int = tracker.count(&"chute")
+	room.player().global_position = Vector3(1.5, 8.3, 7.0)
+	# `is_on_floor()` reste vrai un tick ou deux après un téléport (état du
+	# dernier move_and_slide) : laisser la chute COMMENCER avant d'attendre
+	# l'atterrissage — sinon la boucle sort immédiatement.
+	await _settle(3)
+	var ticks: int = 0
+	while not room.player().is_on_floor() and ticks < 360:
+		await _tree().physics_frame
+		ticks += 1
+	await _settle(6)
+	check(tracker.count(&"chute") > before,
+		"le plongeon dans le puits est un échec observé (%d)"
+		% tracker.count(&"chute"))
+	await _teardown()
+

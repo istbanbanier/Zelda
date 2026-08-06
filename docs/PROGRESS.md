@@ -3237,5 +3237,44 @@ passent par la machine utilisateur.**
    `ValleyWorld`, mêmes contrats de composition en tests).
 3. Sinon : itérer le lab sur les défauts nommés par le score.
 Chantiers conteneur encore ouverts si besoin : ISS-027 (tranche
-outillage du runner), ISS-030 (bassin de la vallée aux lois matière),
-ISS-031 (sources d'échec des hints salles 2-3).
+outillage du runner), ISS-031 (sources d'échec des hints salles 2-3).
+
+### Fait ensuite : ISS-027 RÉSOLU — le runner ne ment plus
+
+Le faux « ok » (erreur de script après une assertion passée = méthode
+avortée, comptée réussie) est mort : le runner lit le journal de SON
+processus (`user://logs/godot.log`) et la moindre `SCRIPT ERROR` rend
+la suite ROUGE, ligne de vérité imprimée à chaque passage. Sonde
+rouge/vert : « ok, code 0 » avant, « ÉCHEC ISS-027, code 1 » après ;
+zéro faux positif (hints 7/7, directeur 5/5 — 0 erreur). Les preuves
+fail-first futures n'ont plus besoin du contournement manuel.
+
+### Fait ensuite : ISS-031 RÉSOLU — chaque salle observe ses vrais échecs
+
+Salle 3 : une rotation qui ne fait pas PROGRESSER le courant est un
+échec observé (§9.8) — `turned` arme, le recalcul du graphe compare
+(relais alimentés + récepteur qui VAUT la solution). Salle 2 : chute
+AÉRIENNE rapide (> 4,5 m à > 5 m/s — l'ascenseur au sol et la descente
+d'escalade lente ne comptent pas). Fail-first 5/8 → 7/7 (19 assertions)
+avec DEUX bugs de staging de test corrigés en route, prouvés par sonde :
+`turn_one_step` incrémente l'index immédiatement (attendre l'ANIMATION
+qui émet `turned`), et `is_on_floor()` reste vrai un tick après un
+téléport (laisser la chute commencer). Blindage revue P2-5 posé
+(`before < capacité` au test de terre). Non-régression : salles 44/44,
+lois 6/6, donjon 2/2.
+
+### Fait ensuite : suite 713/713 + ISS-030 RÉSOLU (l'eau unifiée)
+
+Suite intégrale de fin de session : **713/713, zéro échec** (arbre
+`39bb653`, relancée après un redémarrage conteneur). Puis ISS-030 :
+`WaterMatterComponent` PARTAGÉ (scripts/reaction) — matière `eau` sur
+le NŒUD électrique des deux côtés, mouillage à l'entrée (tension ou
+pas), relais borné sous tension (cadence héritée du danger côté
+donjon), terre = suspension. Le bassin de la vallée gagne sa zone de
+baignade et reste une école SÛRE (zéro dégât — P2 §9.6) ; le hazard ne
+garde que le chemin de dégâts §13.5. Fail-first 0/6 →
+`test_water_unification` 3/3 (le relais prouvé par un VRAI Arc Link,
+et l'unification STRUCTURELLE : même classe des deux côtés).
+Non-régression : lois 6/6, bassin 3/3, salles 44/44, réactions 7/7,
+donjon 2/2. Changement délibéré documenté : les tests qui lisaient
+`MaterialState` sur la racine du hazard lisent le nœud.

@@ -35,6 +35,11 @@ var _receiver: ElectricNode = null
 var _source: ElectricNode = null
 var _hazards: Array[ElectricHazard] = []
 var _reset_button: ResetButton = null
+## ISS-031 : chute AÉRIENNE observée (§9.8) — le pic n'est suivi qu'en
+## l'air : ni l'ascenseur (au sol) ni la descente en escalade (lente) ne
+## comptent — il faut > 4,5 m de chute à > 5 m/s de moyenne.
+var _fall_peak: float = 0.0
+var _airborne_ticks: int = 0
 var _rerouted: bool = false
 
 @onready var _player: PlayerController = get_node_or_null("Player") \
@@ -74,6 +79,7 @@ func _ready() -> void:
 		&"room2_from_shortcut": Vector3(2, 16.8, -11.0),
 	})
 	# P2 §9.8 : hints gradués sur échecs OBSERVÉS — loi, cause, relation.
+	set_physics_process(true)
 	install_hints(
 		"Les électrodes battent un rythme : la fenêtre calme suffit à passer.",
 		"Observe le battement depuis le palier — compte, puis grimpe pendant le repos.",
@@ -475,3 +481,19 @@ func is_rerouted() -> bool:
 
 func player() -> PlayerController:
 	return _player
+
+func _physics_process(_delta: float) -> void:
+	if _player == null or not is_instance_valid(_player):
+		return
+	var y: float = _player.global_position.y
+	if not _player.is_on_floor():
+		_fall_peak = maxf(_fall_peak, y)
+		_airborne_ticks += 1
+		return
+	var drop: float = _fall_peak - y
+	if drop > 4.5 and _airborne_ticks > 0 \
+			and drop / (float(_airborne_ticks) / 60.0) > 5.0 \
+			and hints() != null:
+		hints().record_failure(&"chute")
+	_fall_peak = y
+	_airborne_ticks = 0

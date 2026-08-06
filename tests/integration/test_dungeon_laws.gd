@@ -131,7 +131,8 @@ func test_grounded_water_pauses_the_relay() -> void:
 	await _settle(40)
 	check(metal.charge() > 0.0, "le relais nourrit d'abord (%.2f)"
 		% metal.charge())
-	var water_state: MaterialStateComponent = water.get_node_or_null(
+	# ISS-030 : l'état de matière vit sur le NŒUD (unifié vallée/donjon).
+	var water_state: MaterialStateComponent = water.node().get_node_or_null(
 		"MaterialState") as MaterialStateComponent
 	check(water_state != null, "la nappe PORTE la matière eau")
 	if water_state == null:
@@ -139,6 +140,9 @@ func test_grounded_water_pauses_the_relay() -> void:
 		return
 	water_state.ground()
 	var before: float = metal.charge()
+	# Blindage (revue P2-5) : si `before` atteignait le plafond (10), le
+	# test ne discriminerait plus rien — le rouge le dirait ici.
+	check(before < 10.0, "la jauge n'est pas saturée (%.2f < 10)" % before)
 	# 0,5 s dans la fenêtre de terre (1,2 s) : aucune impulsion ne passe —
 	# la décroissance naturelle du métal peut seulement faire BAISSER.
 	await _settle(30)
@@ -183,8 +187,9 @@ func test_room4_water_carries_the_matter_of_the_laws() -> void:
 		as Room4Battery
 	_root.add_child(room)
 	await _settle(8)
-	var water_state: MaterialStateComponent = room.water().get_node_or_null(
-		"MaterialState") as MaterialStateComponent
+	# ISS-030 : l'état de matière vit sur le NŒUD (unifié vallée/donjon).
+	var water_state: MaterialStateComponent = room.water().node() \
+		.get_node_or_null("MaterialState") as MaterialStateComponent
 	check(water_state != null and water_state.profile != null \
 		and water_state.profile.id == &"eau",
 		"la nappe de la SALLE 4 porte la matière eau — pas seulement un banc")
