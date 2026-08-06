@@ -98,6 +98,7 @@ func _ready() -> void:
 	_build_pylon()
 	_build_citadel_proxy()
 	_build_storm()
+	_build_dressing()
 	_build_light()
 
 
@@ -207,6 +208,77 @@ func _build_hero() -> void:
 		proxy.mesh = capsule
 		proxy.position = Vector3(0.0, HERO_HEIGHT * 0.5, 0.0)
 		add_child(proxy)
+
+
+## Lot 9 — habillage avec les VRAIS modèles du dépôt (Quaternius CC0,
+## déjà attribués ; AD-001 : aucun téléchargement). Placement
+## composition-conscient : les arbres encadrent (bandes gauche < 36 % X
+## et bord droit > 81 %), les rochers ponctuent le premier plan hors
+## focales, les props vivent AU camp. Chaque modèle passe à la peinture
+## en gardant sa vraie texture, et varie pose/échelle (§7.3).
+func _build_dressing() -> void:
+	var dressing: Node3D = Node3D.new()
+	dressing.name = "Dressing"
+	add_child(dressing)
+	var camp: Vector3 = _anchors[&"camp_center"].position
+	var f: String = "res://assets/environment/foliage/"
+	var r: String = "res://assets/environment/rocks/"
+	var p: String = "res://assets/environment/props/"
+	# [chemin, nom, x, z, yaw°, échelle] — y suit la pente continue.
+	var items: Array[Array] = [
+		[f + "CommonTree_1.gltf", "TreeCommon1", -14.0, -48.0, 25.0, 1.0],
+		[f + "CommonTree_3.gltf", "TreeCommon3", -19.0, -62.0, 130.0, 1.15],
+		[f + "Pine_2.gltf", "TreePine2", -24.0, -78.0, 75.0, 1.05],
+		[f + "TwistedTree_2.gltf", "TreeTwisted2", 26.0, -35.0, 210.0, 0.95],
+		[f + "Pine_4.gltf", "TreePine4", 31.0, -58.0, 300.0, 1.2],
+		[r + "Rock_Medium_1.gltf", "RockNearL", -8.0, -14.0, 40.0, 1.3],
+		[r + "Rock_Medium_2.gltf", "RockNearL2", -4.0, -10.0, 155.0, 0.85],
+		[r + "Rock_Medium_3.gltf", "RockPathR", 15.0, -28.0, 250.0, 1.0],
+		[r + "Rock_Medium_1.gltf", "RockCliffBase", -27.0, -44.0, 310.0, 1.6],
+		[p + "Banner_1.gltf", "CampBanner", camp.x - 2.0, camp.z + 2.0,
+			160.0, 1.0],
+		[p + "Crate_Wooden.gltf", "CampCrate", camp.x - 4.5, camp.z - 1.5,
+			35.0, 1.0],
+		[p + "Barrel.gltf", "CampBarrel", camp.x - 3.0, camp.z + 1.0,
+			80.0, 1.0],
+		[p + "Cauldron.gltf", "CampCauldron", camp.x - 4.0, camp.z + 3.0,
+			10.0, 1.0],
+	]
+	for item: Array in items:
+		var scene: PackedScene = load(item[0] as String) as PackedScene
+		if scene == null:
+			push_warning("[dressing] modèle introuvable : %s" % item[0])
+			continue
+		var model: Node3D = scene.instantiate() as Node3D
+		model.name = item[1] as String
+		var x: float = item[2] as float
+		var z: float = item[3] as float
+		var asset: String = (item[0] as String).get_file().get_basename()
+		var factor: float = (item[5] as float) * KitScale.factor(asset)
+		model.position = Vector3(x, minf(_slope_height(z), 0.0), z)
+		model.rotation_degrees.y = item[4] as float
+		model.scale = Vector3.ONE * factor
+		dressing.add_child(model)
+		_apply_painterly_to_model(model)
+
+
+## Passe TOUTES les surfaces d'un modèle au painterly, en extrayant la
+## vraie texture d'albedo de chaque surface (même règle que le héros —
+## la revue a prouvé qu'oublier une surface laisse deux langages de
+## lumière cohabiter).
+func _apply_painterly_to_model(model: Node3D) -> void:
+	for node: Node in model.find_children("*", "MeshInstance3D", true, false):
+		var mesh: MeshInstance3D = node as MeshInstance3D
+		if mesh.mesh == null:
+			continue
+		for s: int in range(mesh.mesh.get_surface_count()):
+			var texture: Texture2D = null
+			var active: StandardMaterial3D = \
+				mesh.get_active_material(s) as StandardMaterial3D
+			if active != null:
+				texture = active.albedo_texture
+			mesh.set_surface_override_material(s,
+				_painterly_material(Color.WHITE, 0.85, texture))
 
 
 func _apply_painterly_to_hero(hero: Node3D) -> void:
