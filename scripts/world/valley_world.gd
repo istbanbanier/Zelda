@@ -205,15 +205,31 @@ func _ready() -> void:
 func _paint_the_world() -> void:
 	# Le nuage de la vallée s'appelle `CitadelStorm` : la première passe
 	# l'a blanchi parce que la liste ne connaissait que « Storm ».
-	# Le TERRAIN est exclu pour l'instant, décision assumée : il porte
-	# ses propres teintes et masques, et la recette (réglée sur un
-	# laboratoire sans terrain) le rendait délavé — lointain de 65 % à
-	# 74 %, sol gris au lieu de vert. Livrer une carte délavée serait
-	# une régression ; les props, roches, bâtiments et végétaux, eux,
-	# gagnent la peinture dès maintenant. Le terrain suivra quand la
-	# recette saura le lire (chantier nommé, pas oublié).
+	# DÉFAUT CORRIGÉ (audit du 2026-08-06). L'exclusion portait sur le nœud
+	# `Terrain` tout entier, et `_is_skipped()` remonte les ANCÊTRES : tout
+	# son sous-arbre était donc ignoré. Or l'habillage du monde y est monté —
+	# camp, forêt, zones, phrases végétales, structures secondaires, citadelle,
+	# pylône, eau, chemins. Le commentaire précédent affirmait que « les props,
+	# roches, bâtiments et végétaux gagnent la peinture dès maintenant » : c'était
+	# faux, ils étaient tous exclus avec le sol.
+	#
+	# On nomme donc les PORTEURS DE SOL un par un. Eux seuls gardent leurs
+	# teintes macro (la recette, réglée sur un laboratoire sans terrain, les
+	# délavait : lointain de 65 % à 74 %, sol gris). Tout le reste du monde
+	# reçoit enfin le style.
 	var skip: Array[String] = ["CitadelStorm", "Storm", "StormCell",
-		"Terrain"]
+		"PlainSouth", "PlainNorth", "Riverbed", "SpawnRidge", "CampTerrace",
+		"LearningCliff", "PylonTerrace", "DungeonPlateau", "FordEast",
+		"FordWest", "CliffLedgeLow", "CliffLedgeHigh",
+		"GateStepLow", "GateStepMid", "GateStepHigh",
+		"GroundVariation", "Paths",
+		# L'ANNEAU LOINTAIN reste hors peinture : la recette est réglée pour
+		# le premier plan, et elle éclaircissait l'horizon de 65 % à 74 % —
+		# les montagnes viraient au blanc et l'étagement des trois plans
+		# (§1.3) disparaissait. Noms relevés dans `valley_terrain.gd`.
+		"WallSkirts", "BorderCrests", "FarSkyline", "MountainDressing",
+		"PlateauSkirts", "BorderNorth", "BorderSouth", "BorderEast",
+		"BorderWest"]
 	var painted: int = PainterlyRecipe.paint_world(self, skip)
 	if painted > 0:
 		print("[art] vallée peinte : %d surfaces" % painted)

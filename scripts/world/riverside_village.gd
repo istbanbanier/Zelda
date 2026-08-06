@@ -87,6 +87,10 @@ func _piece(asset: String, at: Vector3, yaw_deg: float = 0.0,
 	if not is_equal_approx(corrected, 1.0):
 		node.scale = Vector3.ONE * corrected
 	node.rotation_degrees = Vector3(0, yaw_deg, 0)
+	# « Rien ne flotte » : une partie du kit a son origine SOUS sa
+	# géométrie (Prop_Support commence à +1,21 m). Sans cette
+	# correction, l'objet est suspendu en l'air. Voir KitPlacement.
+	KitPlacement.seat(node, node.scene_file_path)
 	(parent if parent != null else self).add_child(node)
 	_built += 1
 	return node

@@ -242,6 +242,10 @@ func _piece(asset: String, at: Vector3, yaw: float, parent: Node3D,
 	var corrected: float = factor * KitScale.factor(asset)
 	if not is_equal_approx(corrected, 1.0):
 		node.scale = Vector3.ONE * corrected
+	# « Rien ne flotte » : une partie du kit a son origine SOUS sa
+	# géométrie (Prop_Support commence à +1,21 m). Sans cette
+	# correction, l'objet est suspendu en l'air. Voir KitPlacement.
+	KitPlacement.seat(node, node.scene_file_path)
 	parent.add_child(node)
 	_built += 1
 	return node
