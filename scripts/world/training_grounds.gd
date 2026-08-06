@@ -99,6 +99,8 @@ const TRIALS: Array[Dictionary] = [
 
 var _player: PlayerController = null
 var _resonance: ResonanceController = null
+var _mount: Mount = null
+var _fly: DevFlyMode = null
 ## Lampes de réussite, par identifiant d'épreuve.
 var _lamps: Dictionary[StringName, StandardMaterial3D] = {}
 ## Épreuves déjà réussies — une lampe ne s'éteint jamais, la progression se voit.
@@ -116,6 +118,8 @@ func _ready() -> void:
 	_build_trials()
 	_spawn_player()
 	_spawn_shell()
+	_spawn_mount()
+	_spawn_dev_fly()
 
 
 ## --- Décor minimal, lisible, sans effet coûteux -----------------------------
@@ -450,6 +454,42 @@ func _spawn_shell() -> void:
 
 func player() -> PlayerController:
 	return _player
+
+
+## Monture d'essai, posée à droite du seuil avec son panneau. GRAYBOX assumé :
+## aucun quadrupède n'existe dans les kits, la silhouette est en primitives.
+func _spawn_mount() -> void:
+	_mount = Mount.new()
+	_mount.name = "Monture"
+	add_child(_mount)
+	_mount.global_position = Vector3(10.0, 0.6, 30.0)
+	_sign(self, Vector3(10.0, 0.0, 34.0), "MONTURE", "Touche  E",
+		"Se déplacer plus vite qu'à pied : le galop dépasse nettement le sprint.",
+		"E pour monter, E pour descendre. Direction = tourner, avant = avancer,\n"
+			+ "Maj = galop. On ne descend que si la place à côté est libre.")
+
+
+## Vol libre de développement. Refusé dans un build exporté (voir
+## `DevFlyMode.is_allowed`) : ce n'est pas une mécanique de jeu.
+func _spawn_dev_fly() -> void:
+	if _player == null:
+		return
+	_fly = DevFlyMode.new()
+	_fly.name = "VolLibre"
+	add_child(_fly)
+	_fly.bind(_player)
+	_sign(self, Vector3(-10.0, 0.0, 34.0), "VOL LIBRE (DEV)", "Touche  F2",
+		"Outil de développement : survoler la carte pour l'inspecter.",
+		"F2 pour entrer et sortir. Espace monte, Ctrl descend, Maj accélère.\n"
+			+ "En sortant, le héros est reposé au sol si la place est libre.")
+
+
+func mount() -> Mount:
+	return _mount
+
+
+func dev_fly() -> DevFlyMode:
+	return _fly
 
 
 ## --- Briques ----------------------------------------------------------------

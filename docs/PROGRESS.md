@@ -3363,3 +3363,45 @@ raison : Blender absent du conteneur (étape 3b, gate d'environnement).
 (`valley_world`, hameaux, ferme) avec le patron de `_reference_house` — murs
 `dungeon/` + collision par mur + pose à y = 0. Ensuite seulement : mode vol
 dev et monture, dans cet ordre, comme demandé.
+
+---
+
+## Vol libre de développement et monture
+
+Les deux demandes de fin de playtest, dans l'ordre annoncé. Elles reposent sur
+une MÊME brique nouvelle : `PlayerController.set_frozen()`. Le héros cède la
+conduite — il ne consomme plus d'entrée et ne se déplace plus de lui-même —
+mais sa caméra reste son enfant, donc le joueur garde le regard.
+
+**Vol libre** (`scripts/tools/dev_fly_mode.gd`, touche F2). Caméra libre,
+Espace/Ctrl pour monter et descendre, Maj pour accélérer. En sortant, le héros
+est reposé au sol sous la caméra **si** un sol est atteignable ET si sa capsule
+y tient ; sinon il reste exactement où il était. Refusé dans un build exporté
+(`DevFlyMode.is_allowed`), sauf `--allow-dev-fly` : ce n'est pas une mécanique
+de jeu.
+
+**Monture** (`scripts/world/mount.gd`, touche E). Convention `interactable`
+existante — aucune action nouvelle à apprendre. Galop à 14 m/s contre 9 m/s au
+sprint. On ne descend que sur une place libre, sondée à la capsule réelle du
+héros ; sinon la descente est REFUSÉE et annoncée. **GRAYBOX assumé** : aucun
+quadrupède n'existe dans les kits, la silhouette est en primitives — ce n'est
+pas un modèle final.
+
+**Trois défauts trouvés en écrivant les tests, tous corrigés**
+
+1. Gelé, le héros ne vidait plus les fronts d'entrée : ils s'accumulaient et
+   seraient tous partis au dégel. C'est désormais au GELEUR de les consommer.
+2. `fly_toggle_pressed` était vidé par `consume_edges()` : l'activation
+   dépendait alors de l'ordre des nœuds dans l'arbre et se perdait une fois
+   sur deux. `DevFlyMode` en est maintenant le seul lecteur.
+3. Monture et vol lisaient le lecteur d'entrée BRUT, que `set_intent_source`
+   désactive — la monture était sourde sous intention injectée (mesuré :
+   0,5 m en 40 ticks). Les deux passent par `current_intent()`.
+
+**Point d'attention non résolu** : `tools/godot/setup_project.gd` est PÉRIMÉ —
+il ne déclare pas les actions `resonance_*`, et il supprime toute action qu'il
+ne déclare pas. **Le lancer amputerait l'InputMap.** Les actions `dev_fly_*`
+ont donc été ajoutées via `ProjectSettings`, sans passe de suppression. Ce
+générateur doit être remis à jour ou retiré avant d'être réutilisé.
+
+**Preuve** : `test_mount_and_dev_fly.gd` 11/11, `test_training_grounds.gd` 7/7.
