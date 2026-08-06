@@ -350,7 +350,15 @@ func _build_riverside() -> void:
 				var material: ShaderMaterial = \
 					mesh_node.get_surface_override_material(s) \
 					as ShaderMaterial
-				if material != null:
+				if material == null:
+					continue
+				# Le feuillage garde la peinture SEULE : projeter une
+				# écorce sur des feuilles ne veut rien dire.
+				var is_foliage: bool = mesh_node.mesh \
+					.surface_get_material(s) != null \
+					and String(mesh_node.mesh.surface_get_material(s)
+						.resource_name).to_lower().contains("green")
+				if not is_foliage:
 					_with_surface(material, family, 2.4, 0.55, 0.9)
 
 
@@ -435,6 +443,12 @@ func _apply_painterly_to_model(model: Node3D) -> void:
 		for s: int in range(mesh.mesh.get_surface_count()):
 			var texture: Texture2D = null
 			var cutout: bool = false
+			# Sans texture, la COULEUR du matériau source est la seule
+			# information de teinte qui existe : la jeter peignait les
+			# saules OBJ en BLANC (capture v22 — des sculptures de
+			# glace au bord de l'eau). On la reprend, et on la
+			# REMONTE : la peinture module ensuite, elle n'éclaire pas.
+			var tint: Color = Color.WHITE
 			var active: StandardMaterial3D = \
 				mesh.get_active_material(s) as StandardMaterial3D
 			if active != null:
@@ -442,8 +456,25 @@ func _apply_painterly_to_model(model: Node3D) -> void:
 				cutout = active.transparency \
 					!= BaseMaterial3D.TRANSPARENCY_DISABLED \
 					or active.cull_mode == BaseMaterial3D.CULL_DISABLED
+				if texture == null:
+					var source: Color = active.albedo_color
+					# Les .mtl de ce kit sont très sombres (feuillage à
+					# 0,07 de vert) : posés tels quels sous le soleil,
+					# ils rendaient noir. On remonte la valeur en
+					# gardant la TEINTE.
+					var peak: float = maxf(source.r,
+						maxf(source.g, source.b))
+					if peak > 0.001:
+						tint = source * (0.62 / peak)
+						tint.a = 1.0
+						# …puis un pas vers la palette : le vert franc
+						# du kit ne parlait pas la même langue que
+						# l'olive de la vallée (§1.4).
+						if tint.g > tint.r and tint.g > tint.b:
+							tint = tint.lerp(COL_GRASS_LIT * 0.7, 0.35)
+							tint.a = 1.0
 			var material: ShaderMaterial = \
-				_painterly_material(Color.WHITE, 0.85, texture)
+				_painterly_material(tint, 0.85, texture)
 			if cutout:
 				material.shader = PAINTERLY_CUTOUT
 			mesh.set_surface_override_material(s, material)
