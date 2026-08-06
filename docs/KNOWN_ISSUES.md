@@ -517,3 +517,21 @@ quatre salles sont testés end-to-end (7/7) ; le test du relais mis à la
 terre est blindé (`before < capacité`). Le « Rappeler l'ascenseur »
 légitime compté comme échec (remarque de la revue) reste assumé : c'est
 un signal faible parmi trois, pas un déclencheur seul.
+
+## ISS-032 — Route crête → plaine nord incomplète (S3, ouvert)
+
+`test_valley_world.gd::test_the_route_from_ridge_to_north_plain_is_walkable`
+échoue : 9 jalons atteints sur 11 en 1907 ticks, et le marcheur descend à
+y = −0,50. **Antérieur à la passe d'habillage** : vérifié par exécution sur
+le commit `c9f17fb` (worktree séparé), les chiffres sont IDENTIQUES au tick
+près. Introduit par les travaux de jouabilité V5 (`371fd81`) ou antérieurs.
+
+## ISS-033 — `dev_mode.gd` lit le clavier directement (S3, ouvert)
+
+`test_input_layer_isolation.gd::test_no_gameplay_script_reads_the_keyboard`
+échoue : `scripts/tools/dev_mode.gd` contient `InputEventKey` et `KEY_`,
+ce que D-013 interdit au gameplay. Le fichier a été introduit par le commit
+`c9f17fb` (« Mode développement »), d'une autre session travaillant sur la
+même branche. Correctif attendu : passer par `InputIntent`, ou exclure
+explicitement les outils de développement du contrôle si la règle ne les
+vise pas — trancher, ne pas laisser rouge.

@@ -1289,8 +1289,16 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	# On ne change pas les masses — leurs cotes sont testées — on casse leur
 	# lecture : créneaux sur les couronnements, toitures en pyramide sur les
 	# tours, et un léger lacet d'ensemble qui supprime la frontalité.
+	# Le lacet d'ensemble a ete RETIRE, et c'est une lecon mesuree : faire
+	# pivoter le noeud faisait pivoter les masses PORTEUSES DE COLLISION
+	# (donjon central, tours, epaules). La sonde de bordure de PT-D1-09 tire
+	# un rayon vers -Z depuis z = -200 ; la facade du donjon central etant a
+	# z = -198, le rayon partait A L'INTERIEUR du volume et le traversait.
+	# Rotation faite, il en sortait, frappait la citadelle — non marquee
+	# « unclimbable » — et l'anneau montagneux etait declare franchissable.
+	# La rupture de frontalite est donc portee par les TOITURES et les
+	# creneaux, qui sont du decor sans collision et qu'on peut tourner.
 	_crown_citadel(citadel, tower_heights)
-	citadel.rotation.y = deg_to_rad(-5.0)
 	# TROIS lignes d'énergie descendent de la couronne (§2.4) : la centrale
 	# (SpireConduit) existait — deux flancs la rejoignent sur la face avant.
 	for side_index: int in range(2):
