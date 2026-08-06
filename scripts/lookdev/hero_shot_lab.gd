@@ -349,8 +349,11 @@ func _build_dressing() -> void:
 						as ShaderMaterial
 					if rock_material == null:
 						continue
+					# Teinte CLAIRE : la texture du kit porte déjà sa
+					# valeur sombre — une teinte foncée la doublait et
+					# les rochers devenaient des trous noirs (v20).
 					rock_material.set_shader_parameter("albedo_color",
-						COL_ROCK.lerp(Color(0.36, 0.27, 0.20), 0.4))
+						Color(1.85, 1.52, 1.16))
 					_with_surface(rock_material, "T_Rock_Mossy", 2.2,
 						0.45, 1.0)
 
