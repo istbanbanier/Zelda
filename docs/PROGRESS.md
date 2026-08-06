@@ -3404,3 +3404,28 @@ contrats 5/5.
    habillage, dans cet ordre.
 2. Sinon : textures procédurales maison (AD-001) roche/terre/tissu.
 3. Re-évaluation sévère + revue contradictoire ; V4 si ≥ 75.
+
+### Fait ensuite : Lots 10-11 — la matière (grain procédural + vraies textures)
+
+Lot 10 : grain `FastNoiseLite` généré par le moteur (AD-001, aucune
+image), projection monde deux axes, grandes formes (0,012) et discret
+(0,12) : +8,9 % de variation du sol. Lot 11 : le propriétaire a déposé
+quatre packs CC0 sur la release `assets-1` (les sites d'assets sont
+bloqués par le proxy, seul GitHub passe) — licences vérifiées et
+inscrites AVANT l'entrée dans le build, règle §2 désormais EXÉCUTABLE
+par test. Six matériaux ambientCG réduits 2K→1K, trois cartes chacun
+(7,3 Mo au lieu de 111) ; la photo MODULE la peinture au lieu de la
+remplacer (§1.6), projection monde à l'échelle PHYSIQUE (tuile en
+mètres, contrat 0,3-12 m). Deux corrections de palette MESURÉES : sol
+#5BAC3A → #BBBE5C (saturation 66 → 52 %, ancre 55) ; lointain jaune vif
+#EADA9E → #C5BFA3 refroidi (§1.3). Variation du sol 20,97 → 27,30.
+Kenney Nature Kit, KayKit Dungeon et Quaternius Ultimate Nature (150
+OBJ) déposés et attribués, sélection au lot suivant.
+
+### Prochaine action exacte
+
+1. Sélection et import des modèles Kenney/Quaternius déposés (falaises,
+   saules, rochers moussus, troncs) — même chaîne : licence → manifeste
+   → peinture → habillage → capture.
+2. Re-évaluation sévère §30.2 + revue contradictoire.
+3. V4 (propagation vallée) seulement si ≥ 75 tenu.
