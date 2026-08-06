@@ -64,6 +64,10 @@ const RIVER_SCREEN: Array[Vector3] = [
 ]
 ## Pente continue du premier plan : 8° (tan ≈ 0,1405).
 const SLOPE_TAN: float = 0.1405
+## Lot 2 : LE shader du style (décision verrouillée n°2) — validé sur
+## trois PILOTES (rocher, touffe, héros) avant toute propagation.
+const PAINTERLY: Shader = \
+	preload("res://shaders/characters/SH_CharacterPainterly.gdshader")
 
 var _anchors: Dictionary[StringName, Node3D] = {}
 var _river_local: Array[Vector3] = []
@@ -176,6 +180,9 @@ func _build_hero() -> void:
 			# Passe V3 : les cinq signes de dos (§13.1) — mantelet,
 			# épaulière, Bracelet, arc, carquois.
 			HeroSigns.attach(skeleton, hero)
+			# Lot 2 : le héros ENTIER porte le painterly — en gardant sa
+			# texture (le shader grade la lumière, il n'efface pas la peau).
+			_apply_painterly_to_hero(hero)
 	else:
 		var proxy: MeshInstance3D = MeshInstance3D.new()
 		proxy.name = "Hero"
@@ -187,6 +194,22 @@ func _build_hero() -> void:
 		add_child(proxy)
 
 
+func _apply_painterly_to_hero(hero: Node3D) -> void:
+	for node: Node in hero.find_children("*", "MeshInstance3D", true, false):
+		var mesh: MeshInstance3D = node as MeshInstance3D
+		# Les signes graybox gardent leur matière simple pour l'instant.
+		if mesh.get_parent() is BoneAttachment3D \
+				or mesh.get_parent().get_parent() is BoneAttachment3D:
+			continue
+		var texture: Texture2D = null
+		var active: StandardMaterial3D = \
+			mesh.get_active_material(0) as StandardMaterial3D
+		if active != null:
+			texture = active.albedo_texture
+		mesh.set_surface_override_material(0,
+			_painterly_material(Color.WHITE, 0.82, texture))
+
+
 func _lower_arm(skeleton: Skeleton3D, bone: String, degrees: float) -> void:
 	var index: int = skeleton.find_bone(bone)
 	if index < 0:
@@ -195,6 +218,24 @@ func _lower_arm(skeleton: Skeleton3D, bone: String, degrees: float) -> void:
 		.get_rotation_quaternion()
 	skeleton.set_bone_pose_rotation(index,
 		rest * Quaternion(Vector3(0, 0, 1), deg_to_rad(degrees)))
+
+
+## Matériau painterly : fondu ADOUCI explicite (le contrat du test le
+## vérifie — toon dur interdit) ; texture optionnelle (le héros garde
+## la sienne, un blanc 1×1 sinon — équivalent du hint_default_white).
+func _painterly_material(colour: Color, rough: float,
+		texture: Texture2D = null) -> ShaderMaterial:
+	var material: ShaderMaterial = ShaderMaterial.new()
+	material.shader = PAINTERLY
+	material.set_shader_parameter("albedo_color", colour)
+	material.set_shader_parameter("roughness_value", rough)
+	material.set_shader_parameter("ramp_soft", 0.16)
+	if texture == null:
+		var image: Image = Image.create(1, 1, false, Image.FORMAT_RGB8)
+		image.fill(Color.WHITE)
+		texture = ImageTexture.create_from_image(image)
+	material.set_shader_parameter("albedo_texture", texture)
+	return material
 
 
 func _material(colour: Color, rough: float = 0.9) -> StandardMaterial3D:
@@ -255,6 +296,10 @@ func _build_terrain() -> void:
 	# l'étagement §1.3 en VALEURS (le gris v2 montrait tout fusionné).
 	_slab("CliffLeftNear", Vector3(-26, _slope_height(-30.0) + 5.0, -30),
 		Vector3(14, 10, 40), COL_ROCK.lerp(Color(0.30, 0.19, 0.12), 0.45))
+	# Lot 2 : le ROCHER pilote passe au painterly.
+	(get_node("CliffLeftNear") as MeshInstance3D).material_override = \
+		_painterly_material(COL_ROCK.lerp(Color(0.30, 0.19, 0.12), 0.45),
+			0.88)
 	_slab("CliffLeftLip", Vector3(-22.5, _slope_height(-34.0) + 10.6, -34),
 		Vector3(9, 3.2, 34), COL_ROCK.lerp(COL_GRASS, 0.3))
 	_slab("CliffLeftFar", Vector3(-36, _slope_height(-95.0) + 6.0, -95),
@@ -326,9 +371,13 @@ func _grass_foreground() -> void:
 				multimesh.set_instance_transform(i,
 					Transform3D(basis, spot))
 			cell.multimesh = multimesh
-			var material: StandardMaterial3D = _material(
-				COL_GRASS.lerp(COL_GRASS_LIT, rng.randf_range(0.2, 0.6)))
-			cell.material_override = material
+			var tint: Color = COL_GRASS.lerp(COL_GRASS_LIT,
+				rng.randf_range(0.2, 0.6))
+			# Lot 2 : la TOUFFE pilote (première cellule) au painterly.
+			if cell.name == "Grass_0_0":
+				cell.material_override = _painterly_material(tint, 0.9)
+			else:
+				cell.material_override = _material(tint)
 			add_child(cell)
 			_grass_cells += 1
 			_flower_patch(rng, cell_x, cell_z, clumps)

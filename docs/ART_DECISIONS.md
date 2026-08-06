@@ -41,3 +41,16 @@ d'images générées tant que tu ne les demandes pas).
 **Recommandation** : rester sur la police par défaut de Godot (MIT, embarquée)
 tant que le réseau restreint empêche de vérifier une paire SIL-OFL ; statut
 PARTIAL au Gate H.
+
+### AD-004 — Bifurcation du handoff Cycle 3 (2026-08-06, révocable)
+**Décision appliquée** : auto-évaluation sévère du HeroShotLab v5 =
+**58/100 `UNVERIFIED`** (grille §30.2, rendu logiciel —
+`evidence/cycle3/2026-08-06_eval_v5_severe.md`) → en dessous de 75 :
+**itération du lab avant toute propagation V4**, dans l'ordre dicté par
+les domaines faibles : `SH_CharacterPainterly` (lumière 8/15, matériaux
+5/10), puis vidéo de stabilité (mouvement 2/10), puis re-évaluation +
+revue contradictoire. Alternatives rejetées : propager tout de suite
+(la recette n'est pas finie — on propagerait des albedos plats) ;
+attendre le verdict humain sans rien faire (le handoff autorise la
+bifurcation autonome consignée). Le score officiel reste à l'humain
+sur GPU ; le Gate H n'est PAS déclaré.
