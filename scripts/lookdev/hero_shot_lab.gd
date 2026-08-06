@@ -239,12 +239,15 @@ func _build_cliff_formation() -> void:
 	formation.name = "CliffFormation"
 	add_child(formation)
 	# [modèle, x, z, yaw°, variation d'échelle]
+	# Les modules vivent DEVANT la dalle-masse (x > -24) : posés
+	# derrière, ils étaient purement et simplement occultés (capture
+	# v19). Ils descendent vers la vallée en s'éloignant.
 	var steps: Array[Array] = [
-		["cliff_cornerLarge_rock", -30.0, -20.0, 18.0, 1.15],
-		["cliff_large_rock", -31.5, -34.0, 8.0, 1.0],
-		["cliff_blockSlope_rock", -33.0, -46.0, -6.0, 0.95],
-		["cliff_half_rock", -34.5, -58.0, 22.0, 1.1],
-		["cliff_corner_rock", -37.0, -74.0, 40.0, 0.85],
+		["cliff_cornerLarge_rock", -19.5, -22.0, 18.0, 1.15],
+		["cliff_large_rock", -21.0, -35.0, 8.0, 1.0],
+		["cliff_blockSlope_rock", -22.5, -47.0, -6.0, 0.95],
+		["cliff_half_rock", -24.0, -59.0, 22.0, 1.1],
+		["cliff_corner_rock", -26.0, -75.0, 40.0, 0.85],
 		["rock_largeC", -24.0, -24.0, 130.0, 1.2],
 		["rock_largeA", -21.0, -17.0, 300.0, 1.0],
 		["rock_smallB", -18.5, -13.0, 70.0, 1.0],
@@ -276,6 +279,13 @@ func _build_cliff_formation() -> void:
 				var material: ShaderMaterial = \
 					mesh.get_surface_override_material(s) as ShaderMaterial
 				if material != null:
+					# La palette du kit est un gris pâle et FROID : posé
+					# tel quel, le module ne parlait pas la même géologie
+					# que la falaise ocre voisine (capture v19). On le
+					# teinte à l'ancre roche §1.4 — le modèle garde sa
+					# forme et son relief, il rejoint notre monde.
+					material.set_shader_parameter("albedo_color",
+						COL_ROCK.lerp(Color(0.34, 0.24, 0.17), 0.35))
 					_with_surface(material, "T_Rock_Strata", 3.5, 0.45, 1.0)
 
 
@@ -323,6 +333,26 @@ func _build_dressing() -> void:
 		model.scale = Vector3.ONE * factor
 		dressing.add_child(model)
 		_apply_painterly_to_model(model)
+		# Cohérence de géologie : les rochers du kit sont gris-BLEU
+		# froids, la falaise voisine est ocre — côte à côte, ils
+		# racontaient deux mondes. On les ramène à l'ancre roche §1.4
+		# (leur forme et leur relief ne changent pas).
+		if (item[1] as String).contains("Rock"):
+			for node: Node in model.find_children("*", "MeshInstance3D",
+					true, false):
+				var rock_mesh: MeshInstance3D = node as MeshInstance3D
+				if rock_mesh.mesh == null:
+					continue
+				for s: int in range(rock_mesh.mesh.get_surface_count()):
+					var rock_material: ShaderMaterial = \
+						rock_mesh.get_surface_override_material(s) \
+						as ShaderMaterial
+					if rock_material == null:
+						continue
+					rock_material.set_shader_parameter("albedo_color",
+						COL_ROCK.lerp(Color(0.36, 0.27, 0.20), 0.4))
+					_with_surface(rock_material, "T_Rock_Mossy", 2.2,
+						0.45, 1.0)
 
 
 ## Passe TOUTES les surfaces d'un modèle au painterly, en extrayant la
