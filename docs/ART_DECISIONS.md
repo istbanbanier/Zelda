@@ -68,3 +68,30 @@ le FOV sous 65° horizontal (violerait §3.1 aussi et écraserait la
 vallée). Au même lot : soleil replacé DEVANT-GAUCHE (azimut 40°,
 hauteur 23°) — l'ancien yaw le mettait derrière-droite, contraire à
 §22.1, ciel symétrique mesuré 73,6/73,6 par la revue.
+
+### AD-006 — Dosage des textures photoscannées (2026-08-06, révocable, arbitrage délégué)
+**Contexte** : le propriétaire a déposé six matériaux ambientCG et m'a
+délégué l'arbitrage (« c'est toi l'expert donc tu décides »).
+
+**Décision appliquée — le partage COULEUR / RELIEF** :
+- la **couleur** photo reste SUBORDONNÉE à la palette peinte : blend
+  0,40-0,50, désaturée à 70 % vers sa luminance, centrée sur le gris
+  moyen (elle éclaircit et assombrit, elle ne teinte pas). C'est ce qui
+  fait respecter §1.6/§7.1 (« textures photographiques brutes »
+  interdites) et §1.4 (palette ancre) ;
+- le **relief** photo, lui, monte FRANCHEMENT (normal 0,7 → 1,0 sur
+  roche, sol et écorce). Justification : une normal map n'est pas une
+  couleur photographique, c'est de la FORME. L'interdit vise le rendu
+  photo-réaliste et l'incohérence de palette, pas la géométrie de
+  surface — et c'est précisément la forme qui nourrit le modèle de
+  lumière peint (décision verrouillée n°2). Un relief fort sous une
+  couleur peinte reste painterly ; l'inverse ne l'est pas.
+
+**Alternatives rejetées** : (a) texture photo en albédo plein — violerait
+l'interdit et casserait la palette mesurée aux ancres §1.4 ; (b) refuser
+les photoscans et rester au grain procédural seul — le sol y gagnait
++8,9 % de variation contre +30 % avec les textures, et la lumière peinte
+n'avait aucune forme à sculpter.
+
+**Réversible en un point** : `surface_blend` et `surface_normal_depth`
+sont des uniformes du shader, réglés dans `_with_surface`.

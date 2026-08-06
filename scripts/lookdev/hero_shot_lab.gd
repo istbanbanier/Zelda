@@ -228,6 +228,57 @@ func _build_hero() -> void:
 ## et bord droit > 81 %), les rochers ponctuent le premier plan hors
 ## focales, les props vivent AU camp. Chaque modèle passe à la peinture
 ## en gardant sa vraie texture, et varie pose/échelle (§7.3).
+## Lot 12 — la falaise gauche GUIDE au lieu de boucher (défaut nommé
+## depuis l'éval v5). Vrais modules Kenney CC0 (ART-K1) montés en
+## ESCALIER descendant vers la vallée : chaque palier est plus bas et
+## plus loin que le précédent, ses arêtes éclairées menant l'œil du
+## premier plan vers le camp. Échelle « tuile » corrigée par le point
+## unique du projet (`KitScale`), jamais recopiée ici.
+func _build_cliff_formation() -> void:
+	var formation: Node3D = Node3D.new()
+	formation.name = "CliffFormation"
+	add_child(formation)
+	# [modèle, x, z, yaw°, variation d'échelle]
+	var steps: Array[Array] = [
+		["cliff_cornerLarge_rock", -30.0, -20.0, 18.0, 1.15],
+		["cliff_large_rock", -31.5, -34.0, 8.0, 1.0],
+		["cliff_blockSlope_rock", -33.0, -46.0, -6.0, 0.95],
+		["cliff_half_rock", -34.5, -58.0, 22.0, 1.1],
+		["cliff_corner_rock", -37.0, -74.0, 40.0, 0.85],
+		["rock_largeC", -24.0, -24.0, 130.0, 1.2],
+		["rock_largeA", -21.0, -17.0, 300.0, 1.0],
+		["rock_smallB", -18.5, -13.0, 70.0, 1.0],
+	]
+	for step: Array in steps:
+		var asset: String = step[0] as String
+		var scene: PackedScene = load(
+			"res://assets/environment/cliffs/%s.glb" % asset) as PackedScene
+		if scene == null:
+			push_warning("[falaise] modèle introuvable : %s" % asset)
+			continue
+		var model: Node3D = scene.instantiate() as Node3D
+		model.name = asset.to_pascal_case()
+		var z: float = step[2] as float
+		model.position = Vector3(step[1] as float, _slope_height(z) - 0.6, z)
+		model.rotation_degrees.y = step[3] as float
+		model.scale = Vector3.ONE * KitScale.factor(asset) \
+			* (step[4] as float)
+		formation.add_child(model)
+		_apply_painterly_to_model(model)
+		# La roche du kit reçoit la surface stratifiée (AD-006 : la
+		# couleur reste subordonnée, le relief monte).
+		for node: Node in model.find_children("*", "MeshInstance3D",
+				true, false):
+			var mesh: MeshInstance3D = node as MeshInstance3D
+			if mesh.mesh == null:
+				continue
+			for s: int in range(mesh.mesh.get_surface_count()):
+				var material: ShaderMaterial = \
+					mesh.get_surface_override_material(s) as ShaderMaterial
+				if material != null:
+					_with_surface(material, "T_Rock_Strata", 3.5, 0.45, 1.0)
+
+
 func _build_dressing() -> void:
 	var dressing: Node3D = Node3D.new()
 	dressing.name = "Dressing"
@@ -386,7 +437,8 @@ func _painterly_material(colour: Color, rough: float,
 ## reste modérée — la bible interdit la texture photographique brute
 ## (§1.6) : on prend le relief et le modelé, pas la couleur.
 func _with_surface(material: ShaderMaterial, family: String,
-		tile_m: float, blend: float = 0.45) -> ShaderMaterial:
+		tile_m: float, blend: float = 0.45,
+		relief: float = 1.0) -> ShaderMaterial:
 	var base: String = "res://assets/textures/surfaces/%s_" % family
 	material.set_shader_parameter("surface_texture",
 		load(base + "Albedo.jpg"))
@@ -396,6 +448,11 @@ func _with_surface(material: ShaderMaterial, family: String,
 		load(base + "Rough.jpg"))
 	material.set_shader_parameter("surface_tile_m", tile_m)
 	material.set_shader_parameter("surface_blend", blend)
+	# AD-006 : la COULEUR photo reste subordonnée à la palette peinte,
+	# le RELIEF monte franchement — une normal map est de la forme, pas
+	# une couleur photographique, et c'est la forme qui nourrit la
+	# lumière peinte (décision verrouillée n°2).
+	material.set_shader_parameter("surface_normal_depth", relief)
 	return material
 
 
@@ -460,7 +517,7 @@ func _build_terrain() -> void:
 	# à l'ancre), le sol partait trop vert. La base monte donc vers
 	# l'herbe au soleil ; la peinture garde le creux dans l'ombre.
 	slope.material_override = _with_surface(
-		_material(COL_GRASS_ALBEDO), "T_Grass_Field", 6.0, 0.42)
+		_material(COL_GRASS_ALBEDO), "T_Grass_Field", 6.0, 0.42, 0.85)
 	slope.position = Vector3(4, _slope_height(-68.0) - 1.0, -68)
 	slope.rotation_degrees = Vector3(-8.0, 0, 0)
 	add_child(slope)
@@ -480,7 +537,7 @@ func _build_terrain() -> void:
 	path_box.size = Vector3(1.6, 0.06, 34)
 	path.mesh = path_box
 	path.material_override = _with_surface(
-		_material(COL_EARTH), "T_Ground_Earth", 5.0, 0.5)
+		_material(COL_EARTH), "T_Ground_Earth", 5.0, 0.5, 1.0)
 	path.position = Vector3(2.2, _slope_height(-9.0) + 0.05, -9)
 	path.rotation_degrees = Vector3(-8.0, 0, 0)
 	add_child(path)
@@ -494,7 +551,7 @@ func _build_terrain() -> void:
 	(get_node("CliffLeftNear") as MeshInstance3D).material_override = \
 		_with_surface(_painterly_material(
 			COL_ROCK.lerp(Color(0.30, 0.19, 0.12), 0.45), 0.88),
-			"T_Rock_Strata", 4.0, 0.5)
+			"T_Rock_Strata", 4.0, 0.5, 1.0)
 	_slab("CliffLeftLip", Vector3(-22.5, _slope_height(-34.0) + 10.6, -34),
 		Vector3(9, 3.2, 34), COL_ROCK.lerp(COL_GRASS, 0.3))
 	# Lot 8 (revue) : la falaise gauche BOUCHAIT sans guider — deux
@@ -506,13 +563,14 @@ func _build_terrain() -> void:
 	var step_a: MeshInstance3D = get_node("CliffStepA") as MeshInstance3D
 	step_a.rotation_degrees.y = 12.0
 	_with_surface(step_a.material_override as ShaderMaterial,
-		"T_Rock_Mossy", 4.5, 0.45)
+		"T_Rock_Mossy", 4.5, 0.45, 1.0)
+	_build_cliff_formation()
 	_slab("CliffStepB", Vector3(-33, _slope_height(-72.0) + 6.5, -72),
 		Vector3(18, 14, 30), COL_ROCK.lerp(COL_STONE_COLD, 0.25))
 	var step_b: MeshInstance3D = get_node("CliffStepB") as MeshInstance3D
 	step_b.rotation_degrees.y = 7.0
 	_with_surface(step_b.material_override as ShaderMaterial,
-		"T_Rock_Mossy", 5.0, 0.4)
+		"T_Rock_Mossy", 5.0, 0.4, 0.9)
 	_slab("CliffLeftFar", Vector3(-36, _slope_height(-95.0) + 6.0, -95),
 		Vector3(20, 16, 70), COL_ROCK.lerp(COL_STONE_COLD, 0.35))
 	# Décalée à droite (leçon v0 : à x 46 elle avalait le pylône).
@@ -718,7 +776,7 @@ func _build_camp() -> void:
 		prism.size = Vector3(4.8, 3.6, 3.6)
 		tent.mesh = prism
 		tent.material_override = _with_surface(
-			_material(COL_CANVAS), "T_Fabric_Canvas", 1.2, 0.4)
+			_material(COL_CANVAS), "T_Fabric_Canvas", 1.2, 0.4, 0.7)
 		tent.position = centre + Vector3(6.5 * float(side), 1.8,
 			-2.0 * float(side))
 		tent.rotation_degrees = Vector3(0, 24.0 * float(side), 0)

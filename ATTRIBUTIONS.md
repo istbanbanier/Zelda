@@ -39,7 +39,10 @@ plats »).
 | Auteur / source | **Kenney** — <https://kenney.nl/assets/nature-kit> |
 | Licence | **CC0 1.0 Universal** (fichier `License.txt` du pack, version 2.1) |
 | Formats retenus | glTF binaire (`Models/GLTF format/*.glb`) |
-| État | **déposé, non encore importé** — sélection au lot suivant, aucun fichier dans le build tant que la sélection n'est pas faite |
+| Cible | `assets/environment/cliffs/` |
+| Sélection importée | 8 modèles : `cliff_large_rock`, `cliff_blockSlope_rock`, `cliff_half_rock`, `cliff_corner_rock`, `cliff_cornerLarge_rock`, `rock_largeA`, `rock_largeC`, `rock_smallB` |
+| Modifications | **aucune** sur les fichiers : copie à l'octet près. L'échelle « tuile » du kit (1 m natif) est corrigée **à l'usage** par `KitScale`, jamais en réécrivant l'asset |
+| État | **importé** (2026-08-06) — le reste du pack demeure disponible dans la release `assets-1` |
 
 ## Dungeon Pack 1.1 FREE — KayKit / Kay Lousberg, CC0 1.0 (ART-KK1, 2026-08-06)
 
