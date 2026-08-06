@@ -235,10 +235,16 @@ func _build_mill() -> void:
 ## posés nulle part. On les pose donc AVEC le toit, jamais séparément — un
 ## seul appel, impossible à oublier.
 ##
-## `span` est le côté couvert en mètres (4, 6 ou 8). L'axe des pignons est
-## celui de la faîtière : `gable_on_z` place les fermetures en avant/arrière.
+## `span` est le côté couvert en mètres (4, 6 ou 8).
+##
+## AXE MESURÉ, PAS SUPPOSÉ : tous les `Roof_RoundTiles_*` du kit ont leur
+## faîtière parallèle à Z — hauteur constante le long de z, profil triangulaire
+## le long de x. Les triangles ouverts sont donc en z = ±span/2, et le pignon
+## s'y pose à yaw 0 et 180. Une première version les avait mis sur l'axe X :
+## les vrais triangles restaient ouverts ET deux panneaux de brique
+## transperçaient les versants. Vérifié au relevé de sommets du .gltf.
 func _gabled_roof(parent: Node3D, span: int, at: Vector3,
-		gable_on_z: bool = false) -> void:
+		gable_on_z: bool = true) -> void:
 	_piece("Roof_RoundTiles_%dx%d" % [span, span], at, 0.0, parent)
 	var front: String = "Roof_Front_Brick%d" % span
 	var half: float = float(span) * 0.5

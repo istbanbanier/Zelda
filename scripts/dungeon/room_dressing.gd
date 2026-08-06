@@ -178,7 +178,8 @@ static func dress(room: Node3D) -> Dictionary:
 static func _plan_horizontal(batch: Dictionary, ids: Array[StringName],
 		body_name: String, centre: Vector3, size: Vector3,
 		report: Dictionary) -> void:
-	var is_ceiling: bool = body_name.begins_with("Ceiling")
+	var is_ceiling: bool = body_name.begins_with("Ceiling") \
+		or body_name.ends_with("Ceiling")
 	var y: float = centre.y - size.y * 0.5 - 0.012 if is_ceiling \
 		else centre.y + size.y * 0.5 + 0.012
 	var cols: int = int(floor(size.x / TILE))
@@ -194,8 +195,9 @@ static func _plan_horizontal(batch: Dictionary, ids: Array[StringName],
 			# identiques alignées produisent une grille qui saute aux yeux.
 			var id: StringName = ids[(i + j) % ids.size()]
 			var yaw: float = PI * 0.5 * float((i * 3 + j) % 4)
-			# Le plafond se pose retourné, sinon sa face décorée regarde le vide.
-			var tilt: Vector3 = Vector3(1.0, -1.0, 1.0) if is_ceiling else Vector3.ONE
+			# La dalle est symétrique en Y : la retourner ne déplaçait rien et
+			# ne faisait qu'inverser le sens des triangles — plafonds noirs.
+			var tilt: Vector3 = Vector3.ONE
 			_push(batch, id, Vector3(x0 + float(i) * TILE, y,
 				z0 + float(j) * TILE), yaw, tilt)
 			placed += 1
@@ -224,30 +226,33 @@ static func _plan_wall(batch: Dictionary, with_pilaster: bool, centre: Vector3,
 	var foot: float = centre.y - size.y * 0.5
 	var yaw: float = atan2(normal.x, normal.z)
 
-	var count: int = int(floor(span / WALL_W))
-	if count <= 0:
-		return
-	var start: float = -float(count) * WALL_W * 0.5 + WALL_W * 0.5
+	# La portée est carrelée EN ENTIER : `floor()` laissait un bout de mur nu
+	# quand la longueur n'était pas un multiple de 2 m. On répartit et on
+	# étire très légèrement chaque panneau au lieu de tronquer.
+	var count: int = maxi(1, int(round(span / WALL_W)))
+	var step: float = span / float(count)
+	var start: float = -span * 0.5 + step * 0.5
 	var placed: int = 0
 	for row: int in range(WALL_ROWS):
 		var y: float = foot + float(row) * WALL_H
 		if y + WALL_H > centre.y + size.y * 0.5 + 0.6:
 			break
 		for i: int in range(count):
-			var at: Vector3 = face + along * (start + float(i) * WALL_W)
+			var at: Vector3 = face + along * (start + float(i) * step)
 			at.y = y
-			_push(batch, WALL_MODULE, at, yaw, Vector3.ONE)
+			_push(batch, WALL_MODULE, at, yaw,
+				Vector3(step / WALL_W, 1.0, 1.0))
 			placed += 1
 	report["walls"] = (report["walls"] as int) + placed
 
 	if not with_pilaster:
 		return
-	var every: int = maxi(1, int(round(PILASTER_EVERY / WALL_W)))
+	var every: int = maxi(1, int(round(PILASTER_EVERY / step)))
 	var pilasters: int = 0
 	for i: int in range(count):
 		if i % every != 0:
 			continue
-		var at: Vector3 = face + along * (start + float(i) * WALL_W) \
+		var at: Vector3 = face + along * (start + float(i) * step) \
 			+ normal * 0.16
 		at.y = foot
 		_push(batch, PILASTER_MODULE, at, yaw, Vector3(1.5, 2.0, 1.5))
