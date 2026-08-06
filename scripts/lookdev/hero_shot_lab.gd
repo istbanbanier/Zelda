@@ -251,10 +251,21 @@ func _foliage_material(colour: Color) -> ShaderMaterial:
 	return material
 
 
-func _material(colour: Color, rough: float = 0.9) -> StandardMaterial3D:
+## Lot 4 : la matière PAR DÉFAUT du lab est la peinture — toute surface
+## mate passe par ici. Les émissifs justifiés (rivière-guide, flamme,
+## couronne cyan) passent par `_emissive_material`.
+func _material(colour: Color, rough: float = 0.9) -> ShaderMaterial:
+	return _painterly_material(colour, rough)
+
+
+func _emissive_material(colour: Color, rough: float,
+		emission_colour: Color, energy: float) -> StandardMaterial3D:
 	var material: StandardMaterial3D = StandardMaterial3D.new()
 	material.albedo_color = colour
 	material.roughness = rough
+	material.emission_enabled = true
+	material.emission = emission_colour
+	material.emission_energy_multiplier = energy
 	return material
 
 
@@ -454,10 +465,8 @@ func _build_river() -> void:
 		# disparaît sous les brins d'herbe et le bord de pente).
 		box.size = Vector3(4.2 + float(i) * 1.9, 0.3, length + 3.0)
 		segment.mesh = box
-		var material: StandardMaterial3D = _material(COL_WATER, 0.25)
-		material.emission_enabled = true
-		material.emission = COL_WATER * 0.35
-		segment.material_override = material
+		segment.material_override = _emissive_material(COL_WATER, 0.25,
+			COL_WATER * 0.35, 1.0)
 		segment.position = (from_point + to_point) * 0.5 \
 			+ Vector3(0.0, 0.3, 0.0)
 		var flat: Vector3 = to_point - from_point
@@ -492,12 +501,8 @@ func _build_camp() -> void:
 	var flame_box: BoxMesh = BoxMesh.new()
 	flame_box.size = Vector3(0.8, 1.2, 0.8)
 	flame.mesh = flame_box
-	var flame_material: StandardMaterial3D = _material(
-		Color(1.0, 0.604, 0.239))
-	flame_material.emission_enabled = true
-	flame_material.emission = Color(1.0, 0.604, 0.239)
-	flame_material.emission_energy_multiplier = 4.0
-	flame.material_override = flame_material
+	flame.material_override = _emissive_material(Color(1.0, 0.604, 0.239),
+		0.9, Color(1.0, 0.604, 0.239), 4.0)
 	flame.position = centre + Vector3(0, 1.0, 0)
 	add_child(flame)
 	# Bible §10.1 : le camp se lit à 70-110 m par flamme, FUMÉE fine et
@@ -577,11 +582,8 @@ func _build_pylon() -> void:
 	var crown_box: BoxMesh = BoxMesh.new()
 	crown_box.size = Vector3(4.6, 3.6, 1.2)
 	crown.mesh = crown_box
-	var crown_material: StandardMaterial3D = _material(COL_COPPER, 0.5)
-	crown_material.emission_enabled = true
-	crown_material.emission = COL_CYAN
-	crown_material.emission_energy_multiplier = 0.6
-	crown.material_override = crown_material
+	crown.material_override = _emissive_material(COL_COPPER, 0.5,
+		COL_CYAN, 0.6)
 	crown.position = Vector3(0, y + 1.6, 0)
 	pylon.add_child(crown)
 
