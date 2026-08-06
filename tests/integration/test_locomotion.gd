@@ -470,6 +470,15 @@ func test_locomotion_tuning_matches_the_spec() -> void:
 	check_approx(t.ground_deceleration, 30.0, 0.001, "décélération (§8.2)")
 	check_approx(t.air_acceleration, 8.4, 0.001, "accélération air (§8.2)")
 	check_approx(t.air_control, 0.35, 0.001, "contrôle aérien (§8.2)")
+	# §8.2 donne DEUX façons de dire la même chose : « accélération air
+	# 8,4 m/s² » et « contrôle aérien 35 % ». 8,4 EST 35 % de l'accélération au
+	# sol (24). Le contrôleur multipliait les deux, tombant à 2,94 m/s² — 12 %
+	# du sol, et une trajectoire de saut verrouillée au décollage. Les deux
+	# réglages doivent donc rester d'accord : si quelqu'un change l'un sans
+	# l'autre, ce test le dit avant qu'un joueur ne le sente.
+	check_approx(t.air_acceleration, t.ground_acceleration * t.air_control, 0.01,
+		"accélération air et contrôle aérien désaccordés : %.2f ≠ %.2f × %.2f"
+			% [t.air_acceleration, t.ground_acceleration, t.air_control])
 	check_approx(t.gravity, 24.0, 0.001, "gravité (§8.2)")
 	check_approx(t.jump_velocity, 8.2, 0.001, "vitesse de saut (§8.2)")
 	check_approx(t.coyote_time, 0.12, 0.001, "coyote time (§8.2)")

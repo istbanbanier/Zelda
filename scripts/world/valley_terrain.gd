@@ -141,8 +141,10 @@ func _build_wall_skirts() -> void:
 				1: centre = Vector3(along, BASE_Y + height * 0.5, face)
 				2: centre = Vector3(-face, BASE_Y + height * 0.5, along)
 				_: centre = Vector3(face, BASE_Y + height * 0.5, along)
+			# `size` = (largeur vue de face, hauteur, profondeur) — voir
+			# `_visual_prism`. La face large regarde la vallée.
 			_visual_prism("Skirt%d_%d" % [axis, i], skirts, centre,
-				Vector3(depth, height, width),
+				Vector3(width, height, depth),
 				COL_MOUNTAIN_WARM if i % 4 == 2 else COL_MOUNTAIN_SHADE,
 				axis < 2, 0.5 + 0.26 * sin(t * 9.7 + float(axis) * 2.1))
 
@@ -200,7 +202,7 @@ func _build_border_crests() -> void:
 			# hauteur. Taille en repère LOCAL du prisme (x = emprise
 			# perpendiculaire à l'arête, z = longueur le long du mur) ;
 			# `ridge_along_x` remet l'arête dans l'axe du mur.
-			var size: Vector3 = Vector3(depth * 0.8, height, width)
+			var size: Vector3 = Vector3(width, height, depth * 0.8)
 			_visual_prism("Crest%d_%d" % [axis, i], crests, centre, size,
 				COL_MOUNTAIN_WARM if i % 3 == 0 else COL_MOUNTAIN,
 				axis < 2, 0.5 + 0.28 * sin(t * 13.7 + float(axis) * 3.1))
@@ -239,7 +241,7 @@ func _build_far_skyline() -> void:
 					_: centre = Vector3(distance, height * 0.5 - 8.0, along)
 				# Même règle que les crêtes : silhouette triangulaire, taille
 				# en repère local du prisme, sommet décentré déterministe.
-				var size: Vector3 = Vector3(spread * 0.6, height, width)
+				var size: Vector3 = Vector3(width, height, spread * 0.6)
 				_visual_prism("Far%d_%d_%d" % [row_index, axis, i], far,
 					centre, size, tint, axis < 2,
 					0.5 + 0.24 * sin(t * 11.3 + float(axis) * 2.3
@@ -1443,8 +1445,8 @@ func _dress_border_mountains() -> void:
 			# Tente (PrismMesh, arête le long de Z) : une boîte lisait
 			# « gratte-ciel », pas « montagne » (capture V4.2 n° 1).
 			_visual_prism("Peak%02d" % peak_index, dressing, center,
-				Vector3(rng.randf_range(22.0, 34.0), height,
-					rng.randf_range(38.0, 60.0)),
+				Vector3(rng.randf_range(38.0, 60.0), height,
+					rng.randf_range(22.0, 34.0)),
 				COL_MOUNTAIN_WARM if warm else COL_MOUNTAIN, axis == 0)
 			peak_index += 1
 		# Rangée lointaine bleuie : plus haute, au bord extérieur — la
@@ -1460,7 +1462,7 @@ func _dress_border_mountains() -> void:
 				else Vector3((BORDER_OUTER - 3.0) * sign_value, 20.0 + height_far * 0.5,
 					along_far)
 			_visual_prism("FarPeak%02d" % peak_index, dressing, center_far,
-				Vector3(10.0, height_far, 88.0), COL_MOUNTAIN_FAR, axis == 0)
+				Vector3(88.0, height_far, 10.0), COL_MOUNTAIN_FAR, axis == 0)
 			peak_index += 1
 	# Contreforts : avancées PHYSIQUES du massif dans la plaine (2 par côté).
 	var buttresses: Array[Array] = [
@@ -1896,11 +1898,23 @@ func _visual_box(box_name: String, parent: Node3D, center: Vector3, size: Vector
 	parent.add_child(mesh)
 
 
-## Tente purement visuelle (pics). L'arête du PrismMesh court le long de Z
-## (vérifié dans la source 4.7.1) : `ridge_along_x` pivote de 90° pour les
-## murs nord/sud, longs en X.
+## Tente purement visuelle (pics du fond). L'arête du `PrismMesh` court le long
+## de Z, et sa face TRIANGULAIRE regarde ±Z (vérifié dans la source 4.7.1).
+##
+## Correction V5 — c'est le défaut n°1 de l'horizon, et il tenait dans une
+## condition. L'ancienne version alignait l'arête « dans l'axe du mur », ce qui
+## paraît juste : une chaîne de montagnes court bien le long de sa bordure.
+## Mais l'arête d'un `PrismMesh` est HORIZONTALE. Alignée sur le mur, elle
+## présente au joueur, de face, un segment plat — et 242 prismes plats
+## côte à côte, à des hauteurs différentes, dessinent exactement la silhouette
+## de blocs rectangulaires qu'on voulait éviter. C'est ce que montrent les
+## captures du playtest : un mur de rectangles clairs tout autour du monde.
+##
+## La face triangulaire doit donc regarder LA VALLÉE, pas le ciel. `size` se
+## lit désormais `(largeur vue de face, hauteur, profondeur dans le massif)`,
+## et la rotation s'applique aux murs est/ouest — l'inverse d'avant.
 func _visual_prism(prism_name: String, parent: Node3D, center: Vector3,
-		size: Vector3, color: Color, ridge_along_x: bool,
+		size: Vector3, color: Color, wall_runs_along_x: bool,
 		apex: float = 0.5) -> void:
 	var mesh: MeshInstance3D = MeshInstance3D.new()
 	mesh.name = prism_name
@@ -1913,7 +1927,10 @@ func _visual_prism(prism_name: String, parent: Node3D, center: Vector3,
 	mesh.mesh = prism
 	mesh.material_override = _material(color, false)
 	mesh.position = center
-	if ridge_along_x:
+	# Mur nord/sud : le joueur regarde selon ±Z, la face triangulaire lui fait
+	# déjà face — aucune rotation. Mur est/ouest : on pivote pour qu'elle lui
+	# fasse face de nouveau.
+	if not wall_runs_along_x:
 		mesh.rotation.y = PI * 0.5
 	parent.add_child(mesh)
 

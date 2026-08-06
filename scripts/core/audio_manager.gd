@@ -41,6 +41,19 @@ var _sfx_next: int = 0
 func _ready() -> void:
 	_ensure_buses()
 	_build_sfx_pool()
+	_restore_saved_volumes()
+
+
+## Les volumes étaient ÉCRITS dans `settings.cfg` et relus uniquement pour
+## peindre la position des curseurs — jamais pour régler les bus. Un joueur qui
+## coupait la musique la retrouvait à fond au lancement suivant, avec un
+## curseur affichant zéro : le réglage semblait cassé, et il l'était. La
+## sensibilité souris et l'inversion, elles, étaient bien rechargées ; le son
+## avait simplement été oublié.
+func _restore_saved_volumes() -> void:
+	for bus_name: String in ["Master", "Music", "SFX"]:
+		if has_bus(bus_name):
+			set_volume(bus_name, UserSettings.load_volume(bus_name))
 
 
 ## Joue un son court par nom (`hit_land`, `refuse`, `ui_move`, …).

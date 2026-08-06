@@ -181,6 +181,14 @@ func _build_supplies() -> void:
 	_chest.arrows_loot = 12
 	_chest.position = Vector3(5.0, 0, 3.0)   # AVANT add_child (règle D.0)
 	add_child(_chest)
+	# Le checkpoint était écrit une seule fois, depuis `_ready()` — donc AVANT
+	# que le joueur ait pu ouvrir ce coffre. L'arène restaurait ensuite cet
+	# instantané en effaçant l'inventaire : la lame conductrice et les flèches
+	# garanties juste ici disparaissaient au seuil du boss, et l'on affrontait
+	# 560 points de vie avec l'épée de départ. On réécrit donc le checkpoint à
+	# l'ouverture — ce que le test de parcours faisait à la main, sans qu'aucun
+	# joueur ne puisse le faire.
+	_chest.opened.connect(func(_id: StringName) -> void: _write_checkpoint())
 
 	_campfire = Campfire.new()
 	_campfire.name = "AntechamberCampfire"

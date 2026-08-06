@@ -10,9 +10,16 @@ extends RefCounted
 const PATH: String = "user://settings.cfg"
 const SECTION: String = "input"
 
-## Sensibilité souris en radians par pixel. Défaut : ~0,086°/px — un tour
-## complet en ≈ 25 cm de tapis à 400 dpi. Bornes du curseur de réglage.
-const DEFAULT_MOUSE_SENSITIVITY: float = 0.0015
+## Sensibilité souris en radians par pixel. Défaut : ~0,046°/px — un tour
+## complet en ≈ 25 cm de tapis sur une souris à 800 dpi.
+##
+## Le défaut précédent (0,0015) visait les mêmes 25 cm, mais à **400 dpi** :
+## une souris de bureau d'il y a vingt ans. Sur le matériel courant
+## d'aujourd'hui (800 à 1600 dpi), il donnait un demi-tour au moindre geste
+## du poignet — la première chose qu'un débutant ressent comme « injouable »,
+## et il ne sait pas qu'un curseur existe pour la corriger.
+## Bornes du curseur de réglage inchangées.
+const DEFAULT_MOUSE_SENSITIVITY: float = 0.0008
 const MIN_MOUSE_SENSITIVITY: float = 0.0004
 const MAX_MOUSE_SENSITIVITY: float = 0.005
 

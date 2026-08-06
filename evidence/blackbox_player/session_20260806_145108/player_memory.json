@@ -22,5 +22,33 @@
   {
     "pas": 27,
     "note": "FRICTION 4 — ORIENTATION. Je suis perdu à ~3min de jeu.\n- Aucune boussole, aucune minimap, aucun marqueur d'objectif, aucune flèche.\n- Le seul indice (\"fumée / campement\") ne dit pas de quel côté.\n- Combiné au lissage caméra qui me fait faire des demi-tours involontaires, je perds mes repères en permanence.\n- J'ai sprinté ~6s vers une falaise = mauvaise direction, sans jamais savoir que c'était mauvais.\n\nBON POINT: Q = gauche fonctionne (AZERTY correct). Sprint (shift) fonctionne, jauge d'endurance bleue contextuelle apparaît près du perso pendant l'effort et disparaît sinon. Animation de course lisible.\nDrain endurance lent: après ~6s de sprint la barre n'est qu'aux ~3/4."
+  },
+  {
+    "pas": 32,
+    "note": "CONFIRMATION FRICTION CAMÉRA (la pire du jeu): les ordres souris s'appliquent avec PLUSIEURS SECONDES de retard. J'ai envoyé -800 puis -1200 sans effet visible; la rotation s'est produite 2 actions plus tard, pendant que j'appuyais sur \"d\". La caméra rattrape ses ordres en différé.\n=> Impossible de viser, impossible de se repérer, on tourne \"au hasard\".\n\nFRICTION 5 — ATTAQUE: clic gauche x3 = AUCUNE animation, aucun son visible, aucun changement. L'épée reste dans le dos. Le jeu tourne pourtant (les touches de déplacement répondent). Soit l'arme doit être dégainée par une action inconnue, soit le clic gauche n'attaque pas. Rien à l'écran ne me dit quoi faire."
+  },
+  {
+    "pas": 33,
+    "note": "CAUSE PROBABLE DE TOUT: latence d'entrée massive. Les clics gauche envoyés il y a 3 actions se sont appliqués MAINTENANT (perso soudain épée en main, pose de combat). Idem pour la caméra. Hypothèse joueur: framerate très bas / traitement d'input en différé de plusieurs secondes.\n=> Ce n'est pas \"la caméra est mal réglée\", c'est \"le jeu répond avec 2-5s de retard sur TOUT\".\n\nAperçu au loin à droite: structures coniques (tentes?) + arbres = probablement le campement annoncé par le message."
+  },
+  {
+    "pas": 53,
+    "note": "FRICTION MAJEURE — CAMÉRA DANS LE DÉCOR. En m'accrochant à une paroi d'herbe (escalade auto au bord d'une falaise), la caméra est entrée DANS le terrain. Écran 100% vert opaque, plus aucune information sur le monde. Aucun fade dither, aucun repositionnement, aucune correction de collision caméra. Je suis aveugle pendant l'escalade, c'est-à-dire exactement au moment où j'ai le plus besoin de voir.\nEndurance drainée par l'escalade (barre bleue: pleine -> 1/4 en ~4s).\nLOIN DU DÉPART: oui, sur la falaise qui descend vers la plaine du village."
+  },
+  {
+    "pas": 58,
+    "note": "SOFTLOCK VISUEL. Après avoir escaladé/longé la falaise d'herbe: la caméra est entrée dans le terrain, puis le personnage lui-même a DISPARU du cadre. Écran = aplat vert uni + HUD. Ni monde, ni héros, ni repère. 7 actions consécutives sans aucune information visuelle.\nLe jeu ne fait RIEN pour corriger: pas de fade de la géométrie, pas de repositionnement de caméra, pas de zoom, pas de téléport de secours.\nLOIN DU DÉPART (falaise entre le plateau de spawn et la plaine du village)."
+  },
+  {
+    "pas": 62,
+    "note": "MENU PAUSE (escape) = 3 éléments seulement: Reprendre / slider \"Sensibilité souris\" / Menu principal.\nDÉCOUVERTE CLÉ: le slider de sensibilité est réglé AU MAXIMUM PAR DÉFAUT (curseur à fond à droite), valeur 0.0050 rad/px = ~0.29 degré par pixel => 800px de souris = ~229 degrés. C'est LA cause des demi-tours involontaires.\n=> Défaut de conception: réglage par défaut inutilisable, et il faut trouver le menu pause par soi-même pour le corriger.\nLe menu pause ne contient AUCUNE aide: pas de liste de touches, pas d'objectif, pas de carte, pas de sauvegarde, pas d'options graphiques."
+  },
+  {
+    "pas": 70,
+    "note": "SOFTLOCK CONFIRMÉ (le plus grave constat de la session).\nLieu: falaise d'herbe entre le plateau de spawn et la plaine du village. LOIN du départ.\nÉtat: personnage collé à la paroi en état d'escalade, endurance descendue à ZÉRO, caméra à l'intérieur du terrain.\nCe qui NE se passe PAS alors que je m'y attendais:\n- à endurance 0 le perso ne lâche PAS la paroi (aucune chute)\n- l'endurance ne REGÉNÈRE PAS (barre reste vide plusieurs secondes)\n- la caméra ne se corrige jamais (ni fade, ni repositionnement)\nTesté pour sortir, sans succès: z, q, s, d, space, ctrl-non, saut+direction, rotation caméra verticale. ~14 actions.\nSeule issue: escape -> Menu principal -> recharger (avec 40s de chargement à repayer)."
+  },
+  {
+    "pas": 77,
+    "note": "SOFTLOCK PERMANENT — LE PIRE CONSTAT DE LA SESSION.\n1. Je me coince dans la falaise (caméra dans le décor, endurance 0, aucune sortie).\n2. Je retourne au Menu principal.\n3. \"Continuer\" est actif => une sauvegarde auto a été écrite.\n4. Je clique Continuer, j'attends ~30s de chargement.\n5. Je suis RECHARGÉ EXACTEMENT DANS LA MÊME POSITION BLOQUÉE. Écran quasi noir/vert, endurance vide.\n=> La sauvegarde automatique a enregistré une position invalide et il n'existe aucun moyen de s'en sortir depuis \"Continuer\". Le seul recours est \"Nouvelle partie\" = perdre toute la progression.\nIl n'y a ni bouton \"revenir au dernier checkpoint\", ni détection de position invalide, ni respawn de secours."
   }
 ]
