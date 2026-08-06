@@ -1,18 +1,18 @@
 {
-  "commit": "0fd3febeac140b3cf6e5841af44db0e9a6b068c1",
+  "commit": "7e01d88c44f69b201b6527ac7167a143a6dabeac",
   "display_server": "X11",
-  "distinct_colors_sampled": 946,
+  "distinct_colors_sampled": 877,
   "engine_version": "4.7.1-stable (custom_build)",
-  "frames_waited": 40,
-  "height": 1080,
-  "label": "village",
-  "luma_mean": 0.5539,
-  "luma_stddev": 0.1468,
+  "frames_waited": 35,
+  "height": 900,
+  "label": "village_ferme",
+  "luma_mean": 0.5569,
+  "luma_stddev": 0.1447,
   "png": "evidence/atlas/village.png",
   "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
   "rendering_method": "forward_plus",
-  "repo_dirty": false,
+  "repo_dirty": true,
   "scene": "res://scenes/tests/VillageShot.tscn",
-  "timestamp_utc": "2026-08-06 16:27:37",
-  "width": 1920
+  "timestamp_utc": "2026-08-06 17:18:07",
+  "width": 1600
 }
