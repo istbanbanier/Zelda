@@ -454,26 +454,64 @@ func _build_observatory() -> void:
 		for z: float in slots:
 			_piece("Floor_Brick", Vector3(x, top + 0.02, z), 0.0, deck)
 	_wall_collider(deck, Vector3(0, top - 0.2, 0), Vector3(6.4, 0.4, 6.4))
-	# Parapet survivant : ouest et angle sud-ouest seulement. Bas (0,6 m) : il
-	# borde la vue sans la couper.
+	# Parapet survivant : ouest et angle sud-ouest seulement. Il borde la vue
+	# sans la couper — la plateforme reste ouverte au nord et à l'est (§1).
+	#
+	# DÉFAUT CORRIGÉ — le collider ne correspondait pas à ce qu'on voit. Le
+	# commentaire d'origine annonçait « bas (0,6 m) » et les colliders
+	# faisaient bien 0,60 m de haut, mais la SEULE pièce posée,
+	# `Prop_ExteriorBorder_Straight1`, mesure 2,00 × 0,134 × 0,70 m
+	# (gltf_inspect) : 13 cm, 4,5 fois moins. Pire, le collider ouest occupait
+	# x ∈ [-3,10 ; -2,70] alors que la bordure visible occupe
+	# x ∈ [-2,90 ; -2,20] : on se cognait À CÔTÉ d'elle, dans le vide.
+	# Le collider suit désormais la pièce au millimètre. C'est bien une
+	# margelle basse, pas un muret : on l'enjambe, comme on le voit.
 	for z: float in slots:
 		_piece("Prop_ExteriorBorder_Straight1", Vector3(-2.9, top + 0.02, z),
 			90.0, deck)
-	_wall_collider(deck, Vector3(-2.9, top + 0.3, 0.0), Vector3(0.4, 0.6, 6.2))
-	_piece("Prop_ExteriorBorder_Straight1", Vector3(-2.0, top + 0.02, 2.9),
+	_wall_collider(deck, Vector3(-2.55, top + 0.087, 0.0),
+		Vector3(0.7, 0.134, 6.0))
+	# DÉFAUT CORRIGÉ — la bordure sud était en porte-à-faux au-dessus de
+	# 6,24 m de vide. La pièce n'est PAS centrée sur son origine : sa
+	# profondeur mesurée court de z = 0,00 à z = +0,70, sans rien de négatif.
+	# Posée en z = 2,9 elle occupait donc z ∈ [2,90 ; 3,60], alors que le
+	# dallage s'arrête à z = 3,00 : 0,60 m sur 0,70, soit 86 % de la pièce,
+	# dans le vide. Ramenée à z = 2,3 elle occupe z ∈ [2,30 ; 3,00], à fleur
+	# du bord, comme les bordures ouest — et son collider la suit.
+	_piece("Prop_ExteriorBorder_Straight1", Vector3(-2.0, top + 0.02, 2.3),
 		0.0, deck)
-	_wall_collider(deck, Vector3(-2.2, top + 0.3, 2.9), Vector3(2.0, 0.6, 0.4))
+	_wall_collider(deck, Vector3(-2.0, top + 0.087, 2.65),
+		Vector3(2.0, 0.134, 0.7))
 
 	# L'ESCALIER EXTÉRIEUR, adossé au flanc est : dix-huit marches de 0,347 m,
 	# sous le plafond de §8.2. Une courte passerelle le raccorde à la
 	# plateforme, au nord-est, par-dessus le chemin de ronde du tambour.
 	var stair: Node3D = _part(obs, "Escalier", Vector3.ZERO)
 	_flight(stair, Vector3(4.4, 0.0, 9.0), Vector3(0, 0, -1), 18, 1.9)
-	_wall_collider(stair, Vector3(3.6, top - 0.2, -1.6), Vector3(1.8, 0.4, 2.0))
-	_piece("Floor_Brick", Vector3(3.6, top + 0.02, -1.6), 0.0, stair)
+	# DÉFAUT CORRIGÉ — la dalle de raccord RECOUVRAIT la plateforme. Posée en
+	# x = 3,6 elle couvrait x ∈ [2,60 ; 4,60] ; la dalle de plateforme de
+	# (2 ; top+0,02 ; -2) couvre x ∈ [1 ; 3]. Recouvrement 0,40 × 1,60 m à la
+	# MÊME cote y et à la même épaisseur : une bande scintillante en plein
+	# belvédère. Ramenée à x = 4,0 elle couvre x ∈ [3,00 ; 5,00] — jointive à
+	# la plateforme, sans recouvrement, et elle mord toujours la dernière
+	# marche (collider x ∈ [3,45 ; 5,35], z ∈ [-0,90 ; 0,20]) : le raccord
+	# escalier → passerelle → plateforme reste continu.
+	_wall_collider(stair, Vector3(4.0, top - 0.2, -1.6), Vector3(2.0, 0.4, 2.0))
+	_piece("Floor_Brick", Vector3(4.0, top + 0.02, -1.6), 0.0, stair)
+	# DÉFAUT CORRIGÉ — la passerelle ne portait sur RIEN. La volée s'arrête en
+	# z = -0,35 ; la dalle va de z = -2,60 à -0,60, donc 1,7 m dans le vide à
+	# 6,24 m de haut. Le seul appui déclaré était un `Prop_Support`, dont la
+	# géométrie mesurée ne fait que 1,71 m de haut (bbox 0,199 × 1,709 × 2,036,
+	# origine à +1,21 rabattue par KitPlacement), alors que sa collision
+	# annonçait une boîte de 6,24 m : 4,53 m de poteau invisible dans la cour.
+	# Un vrai pilier porte la dalle ; la console redevient ce qu'elle est, une
+	# contrefiche en butée SOUS la dalle (géométrie 4,54 → 6,25 m mesurée,
+	# sous-face de la dalle à 6,25 m).
+	_block(stair, "PilierPasserelle", Vector3(4.75, top * 0.5, -1.6),
+		Vector3(0.45, top, 0.45), Vector3.ZERO, COL_STONE_DARK, true)
 	var props: Array[Array] = [
-		["Prop_Support", Vector3(4.9, 0.0, -1.6), Vector3(0, 0, 0), 1.0,
-			Vector3(0.4, top, 0.4)],
+		["Prop_Support", Vector3(4.75, top - 1.70, -1.6), Vector3(0, 0, 0),
+			1.0, Vector3.ZERO],
 		["Prop_Support", Vector3(5.2, 0.0, 3.2), Vector3(0, 0, 6.0), 1.0,
 			Vector3.ZERO],
 		["Prop_Vine1", Vector3(3.05, 0.0, 2.0), Vector3(0, 270, 0), 1.0,
@@ -532,9 +570,18 @@ func _build_observatory() -> void:
 			Vector3(1.1, 0.8, 0.8)],
 		["Bookcase_2", Vector3(-2.2, 0.05, -1.6), Vector3(0, 0, 0), 1.0,
 			Vector3(1.2, 1.8, 0.5)],
-		["Shelf_Simple", Vector3(2.1, 0.05, 1.4), Vector3(0, 270, 0), 1.0,
+		# DÉFAUT CORRIGÉ — l'étagère murale était à moitié dans le sol et les
+		# livres flottaient 0,85 m au-dessus. `Shelf_Simple` a son origine au
+		# NIVEAU DU PLATEAU, pas à sa base : bbox y mesurée de -0,201 à
+		# +0,108, donc posée à y = 0,05 elle s'enfonçait de 0,151 m. Elle
+		# était en outre à 0,85 m du mur est, sans rien pour la tenir.
+		# Le dossier de la pièce est sa face z minimale (0,0435 mesuré) : avec
+		# le lacet de 270°, il regarde +X, donc le mur est. Posée en
+		# x = 2,95 elle vient à fleur du parement intérieur (x = 2,9076), et à
+		# y = 0,90 son plateau arrive à 1,008 m — juste sous les livres.
+		["Shelf_Simple", Vector3(2.95, 0.9, 1.4), Vector3(0, 270, 0), 1.0,
 			Vector3.ZERO],
-		["Book_Stack_1", Vector3(2.1, 1.0, 1.4), Vector3(0, 18, 0), 1.0,
+		["Book_Stack_1", Vector3(2.76, 1.0, 1.4), Vector3(0, 18, 0), 1.0,
 			Vector3.ZERO],
 		["Scroll_1", Vector3(1.2, 0.05, -0.4), Vector3(0, 40, 0), 1.0,
 			Vector3.ZERO],
@@ -562,7 +609,11 @@ func _build_observatory() -> void:
 			Vector3.ZERO],
 		["CandleStick", Vector3(-2.6, top + 0.95, 1.2), Vector3(0, 0, 0), 1.0,
 			Vector3.ZERO],
-		["Bottle_1", Vector3(-1.3, top + 0.06, 2.4), Vector3(0, 0, 88.0), 1.0,
+		# La bouteille roulée recule de 0,35 m : la bordure sud, ramenée en
+		# z = 2,3 pour ne plus surplomber le vide, occupe maintenant
+		# z ∈ [2,30 ; 3,00] et la traversait (bouteille mesurée
+		# z ∈ [2,344 ; 2,456]). Elle reste sur la table de vue, devant elle.
+		["Bottle_1", Vector3(-1.3, top + 0.06, 2.05), Vector3(0, 0, 88.0), 1.0,
 			Vector3.ZERO],
 		["Lantern_Wall", Vector3(-2.85, top + 1.5, -0.4), Vector3(0, 90, 0),
 			1.0, Vector3.ZERO],
@@ -644,13 +695,40 @@ func _build_cemetery() -> void:
 	# Façade sud : l'arche et ses deux jambages, deux mètres de passage libre.
 	_piece("Wall_Arch", Vector3(0.0, 0.0, half), 0.0, tomb)
 	_piece("DoorFrame_Round_Brick", Vector3(0.0, 0.0, half - 0.05), 0.0, tomb)
+	# DÉFAUT CORRIGÉ — la façade sud n'était bâtie que sur 2 m des 4. L'arche
+	# (2,00 × 3,00 × 0,064 m mesurés) couvrait x ∈ [-1 ; 1] ; les deux mètres
+	# restants ne recevaient QUE des colliders, sans une seule pierre. Le
+	# joueur voyait l'intérieur du tombeau — le coffre, la dalle descellée —
+	# par deux trous de 1,00 × 3,12 m, et se cognait dans du vide.
+	# Les boîtes sont reprises À L'IDENTIQUE : `_block(..., solid = true)` pose
+	# la même BoxShape3D que `_wall_collider`, la collision ne bouge donc pas.
 	for side: float in [-1.0, 1.0]:
-		_wall_collider(tomb, Vector3(side * 1.5, WALL_H * 0.5, half),
-			Vector3(1.0, WALL_H, 0.4))
-	_wall_collider(tomb, Vector3(0.0, WALL_H - 0.35, half),
-		Vector3(4.0, 0.7, 0.4))
+		_block(tomb, "Jambage%d" % int(side + 2.0),
+			Vector3(side * 1.5, WALL_H * 0.5, half),
+			Vector3(1.0, WALL_H, 0.4), Vector3.ZERO, COL_STONE, true)
+	# Seule exception, et c'est le cas prévu « collider qui ne correspond pas
+	# au visible » : la clé de l'arche culmine à 2,744 m (mesure des sommets de
+	# Wall_Arch, bande |x| < 0,15). Le linteau d'origine — centre 2,77,
+	# hauteur 0,70 — descendait donc à 2,42, soit 32 cm DANS l'ouverture. Il
+	# est remonté à 2,74 → 3,12 : il pose sur la clé, sans la traverser.
+	_block(tomb, "Linteau", Vector3(0.0, WALL_H - 0.19, half),
+		Vector3(4.0, 0.38, 0.4), Vector3.ZERO, COL_STONE_DARK, true)
 	_spawn("Roof_RoundTiles_4x4", Vector3(0.1, WALL_H, -0.1),
 		Vector3(0.0, 0.0, -5.0), tomb)
+	# DÉFAUT CORRIGÉ — le tombeau n'avait pas de comble. Mesure des sommets de
+	# Roof_RoundTiles_4x4 : le faîtage court en x ∈ [-0,12 ; 0,12] et
+	# z ∈ [-2,65 ; 1,56] — la FAÎTIÈRE EST PARALLÈLE À Z, donc les deux
+	# triangles ouverts sont aux bouts, en z = ±2, et non sur les côtés.
+	# `Roof_Front_Brick4` est le pignon de ce toit (demi-largeur de base
+	# 2,200 m contre 2,201 m pour le toit à cette hauteur). Il se pose à
+	# l'aplomb de l'origine du toit, décalé de ±2,00 m le long de Z.
+	# Le roulis s'INVERSE sur la pièce tournée de 180° : le lacet de 180°
+	# retourne le sens du roulis en repère monde. Vérifié par la mesure — les
+	# deux pignons occupent la même tranche y, 2,80 → 6,05 m.
+	_spawn("Roof_Front_Brick4", Vector3(0.1, WALL_H, 1.9),
+		Vector3(0.0, 0.0, -5.0), tomb)
+	_spawn("Roof_Front_Brick4", Vector3(0.1, WALL_H, -2.1),
+		Vector3(0.0, 180.0, 5.0), tomb)
 
 	# LA DALLE DESCELLÉE : sa feuillure est vide et noire, elle-même repose de
 	# biais à moitié dehors. La traînée de gravats sort par la porte.
@@ -753,7 +831,14 @@ func _build_cemetery() -> void:
 	var gate: Array[Array] = [
 		["Bench", Vector3(4.4, 0.05, 9.2), Vector3(0, 8, 0), 1.0,
 			Vector3(1.6, 0.5, 0.6)],
-		["Banner_1", Vector3(-4.6, 0.0, 9.4), Vector3(0.0, 20.0, 22.0), 1.0,
+		# DÉFAUT CORRIGÉ — la bannière était enterrée. `Banner_1` a son origine
+		# à son ATTACHE, en haut : bbox y mesurée de -1,549 à +0,844, et la
+		# toile pend sous l'origine. Posée à y = 0, avec le lacet de 20° et le
+		# roulis de 22°, son point bas tombait à -1,204 m : la moitié de la
+		# toile était sous l'herbe. Relevée à 1,22 m, elle affleure le sol
+		# (point bas mesuré +0,016 m) et se lit comme une bannière restée
+		# plantée de travers à l'entrée de l'enclos.
+		["Banner_1", Vector3(-4.6, 1.22, 9.4), Vector3(0.0, 20.0, 22.0), 1.0,
 			Vector3.ZERO],
 		["Pot_1_Lid", Vector3(2.6, 0.05, 8.6), Vector3(0, 40, 0), 1.0,
 			Vector3.ZERO],
@@ -838,9 +923,20 @@ func _build_rampart() -> void:
 		_wall(curtain, Vector3(1.0, 0.0, z), 270.0,
 			"Wall_UnevenBrick_Straight")
 	# Refends : le noyau du rempart est plein, on n'entre pas DANS le mur.
+	#
+	# DÉFAUT CORRIGÉ — le commentaire ci-dessus était un vœu, pas un fait. Les
+	# deux parements sont distants : avec l'épaisseur mesurée du module
+	# (z local ∈ [-0,314 ; 0,092]), le parement ouest occupe
+	# x ∈ [-1,314 ; -0,908] et l'est x ∈ [0,908 ; 1,314] — il reste un VIDE de
+	# 1,82 m de large sur 3,12 m de haut entre les deux, sur toute la longueur.
+	# Les quatre bouts coupés ne recevaient qu'un collider : depuis la brèche,
+	# qui est le passage principal du site, on voyait deux fentes noires
+	# ouvertes sur le ventre creux du mur, et on se cognait 20 cm devant.
+	# Même boîte, donc collision inchangée — seule la pierre est ajoutée.
 	for cap: float in [-12.2, -2.2, 2.2, 12.2]:
-		_wall_collider(curtain, Vector3(0.0, WALL_H * 0.5, cap),
-			Vector3(2.4, WALL_H, 0.4))
+		_block(curtain, "Refend%d" % int(cap * 10.0),
+			Vector3(0.0, WALL_H * 0.5, cap), Vector3(2.4, WALL_H, 0.4),
+			Vector3.ZERO, COL_STONE_DARK, true)
 	# PARAPET : seul le tronçon nord l'a gardé, et ses meurtrières regardent
 	# toutes le couchant.
 	for z: float in [3.0, 5.0, 7.0, 9.0, 11.0]:
@@ -850,6 +946,18 @@ func _build_rampart() -> void:
 	# Au sud, un seul merlon debout : le reste est en bas, dans la cour.
 	_wall(curtain, Vector3(-1.0, WALL_H, -11.0), 90.0,
 		"Wall_UnevenBrick_Straight")
+	# DÉFAUT CORRIGÉ — le tronçon sud était une tranchée à ciel ouvert. Le
+	# dallage du chemin de ronde n'est posé qu'en z = 3 → 11 (tronçon nord) ;
+	# au sud, les deux parements montent bien sur 3,12 m de z = -12 à z = -2,
+	# mais RIEN ne comblait le noyau entre eux : depuis le chemin de ronde
+	# nord, on voyait par-dessus la brèche une fente vide de 10 m de long
+	# jusqu'à l'herbe, et qui y tombait ne pouvait plus ressortir.
+	# L'éboulis comble le noyau à 2,82 m, soit 0,30 m sous la crête des
+	# parements — sous le pas maximum de §8.2 (0,38 m) : on se hisse hors de
+	# la tranchée. Le rempart sud se lit alors comme un chemin de ronde
+	# écroulé et comblé, ce que raconte déjà la traînée de dalles de la cour.
+	_block(curtain, "NoyauSud", Vector3(0.0, 1.41, -7.2),
+		Vector3(1.9, 2.82, 10.0), Vector3.ZERO, COL_STONE_DARK, true)
 
 	# LE CHEMIN DE RONDE : dallé et praticable sur tout le tronçon nord, coupé
 	# net au bord de la brèche — on peut s'y avancer et regarder en dessous.
@@ -877,11 +985,21 @@ func _build_rampart() -> void:
 	# jusqu'au dallage du chemin de ronde.
 	var stair: Node3D = _part(fort, "Escalier", Vector3.ZERO)
 	_flight(stair, Vector3(6.4, 0.0, 9.0), Vector3(-1, 0, 0), 9, 1.9)
+	# DÉFAUT CORRIGÉ — les deux margelles étaient posées À PLAT sur un escalier
+	# en pente. La volée part de x = 6,4 vers -X, 9 marches de STEP_RUN = 0,55
+	# et STEP_RISE = 0,3467 : la pente vaut atan(0,3467 / 0,55) = 32,2°. Les
+	# pièces font 2,00 m de long en X : horizontales, elles flottaient de 1 m
+	# à leur extrémité basse et s'enfonçaient d'un demi-mètre en haut — deux
+	# barres qui traversaient l'escalier en diagonale.
+	# Elles sont inclinées à la pente réelle (roulis NÉGATIF : l'escalier
+	# descend vers +X) et recentrées sur la marche correspondante :
+	# marche i = 2 en x = 5,3, dessus y = 3 × 0,3467 = 1,04 ;
+	# marche i = 6 en x = 3,1, dessus y = 7 × 0,3467 = 2,43.
 	var rail: Array[Array] = [
-		["Prop_ExteriorBorder_Straight1", Vector3(5.2, 1.4, 8.0),
-			Vector3(0, 0, 0), 1.0, Vector3.ZERO],
-		["Prop_ExteriorBorder_Straight1", Vector3(3.2, 2.5, 8.0),
-			Vector3(0, 0, 0), 1.0, Vector3.ZERO],
+		["Prop_ExteriorBorder_Straight1", Vector3(5.3, 1.04, 8.0),
+			Vector3(0.0, 0.0, -32.2), 1.0, Vector3.ZERO],
+		["Prop_ExteriorBorder_Straight1", Vector3(3.1, 2.43, 8.0),
+			Vector3(0.0, 0.0, -32.2), 1.0, Vector3.ZERO],
 	]
 	_dressing(stair, rail)
 
@@ -926,7 +1044,14 @@ func _build_rampart() -> void:
 			Vector3.ZERO],
 		["Floor_Brick", Vector3(2.4, 0.12, -10.4), Vector3(7.0, 8.0, 0.0), 1.0,
 			Vector3.ZERO],
-		["Prop_Support", Vector3(3.4, 0.1, -6.8), Vector3(82.0, 30.0, 0.0),
+		# DÉFAUT CORRIGÉ — la console était plantée dans la cour. Basculée de
+		# 82°, sa profondeur (z local jusqu'à 1,918) passe à la verticale et
+		# descend sous le sol ; KitPlacement ne corrige que le décalage
+		# d'origine du modèle, pas l'enfoncement dû à la rotation. Mesuré à
+		# y = 0,1 : bbox monde y ∈ [-1,562 ; +0,296] — 1,56 m sous terre, 16 %
+		# visible. Reposée à 1,68 m, elle affleure la cour (y ∈ [0,018 ; 1,88])
+		# et se lit comme la poutre du chemin de ronde tombée avec les dalles.
+		["Prop_Support", Vector3(3.4, 1.68, -6.8), Vector3(82.0, 30.0, 0.0),
 			1.0, Vector3.ZERO],
 		["Prop_Brick1", Vector3(2.2, 0.0, -7.6), Vector3(0, 62, 0), 1.0,
 			Vector3.ZERO],
@@ -994,7 +1119,13 @@ func _build_rampart() -> void:
 			1.0, Vector3.ZERO],
 		["DoorFrame_Flat_Brick", Vector3(-2.6, 0.0, -15.2),
 			Vector3(0.0, 10.0, 26.0), 1.0, Vector3.ZERO],
-		["Banner_2", Vector3(-3.4, 0.0, -12.6), Vector3(0.0, 20.0, 30.0), 1.0,
+		# DÉFAUT CORRIGÉ — même famille que Banner_1 : l'origine de `Banner_2`
+		# est à son attache, en haut (bbox y de -1,234 à +0,844). Posée à
+		# y = 0, avec lacet 20° et roulis 30°, son point bas tombait à
+		# -0,695 m. Relevée à 0,72 m, elle affleure le sol (mesure : +0,025) —
+		# une bannière retombée près de la porte disparue, pas un drapeau
+		# à moitié enterré.
+		["Banner_2", Vector3(-3.4, 0.72, -12.6), Vector3(0.0, 20.0, 30.0), 1.0,
 			Vector3.ZERO],
 		["Chain_Coil", Vector3(1.0, 0.05, -13.0), Vector3(0, 40, 0), 1.0,
 			Vector3.ZERO],
@@ -1012,7 +1143,12 @@ func _build_rampart() -> void:
 			Vector3(0.0, 40.0, 28.0), 1.0, Vector3.ZERO],
 		["Prop_WoodenFence_Single", Vector3(-5.4, 0.0, 8.0),
 			Vector3(0.0, 5.0, 18.0), 1.0, Vector3.ZERO],
-		["Shield_Wooden", Vector3(-4.2, 0.06, 3.6), Vector3(84.0, 30.0, 0.0),
+		# DÉFAUT CORRIGÉ — le bouclier abandonné était aux deux tiers sous
+		# l'herbe. `Shield_Wooden` est centré sur son origine (bbox y de -0,310
+		# à +0,310) ; couché à 84° il ne dépasse plus que de 0,19 m, et posé à
+		# y = 0,06 son point bas tombait à -0,117 — 61 % sous terre. Relevé à
+		# 0,19 m il pose sur le glacis (mesure : y ∈ [0,013 ; 0,204]).
+		["Shield_Wooden", Vector3(-4.2, 0.19, 3.6), Vector3(84.0, 30.0, 0.0),
 			1.0, Vector3.ZERO],
 		["Grass_Wispy_Short", Vector3(-7.6, 0.0, -3.0), Vector3(0, 40, 0), 1.0,
 			Vector3.ZERO],
@@ -1086,8 +1222,30 @@ func _build_shrine() -> void:
 	# dehors, sur le parvis.
 	_spawn("Roof_RoundTiles_4x4", Vector3(-0.3, WALL_H, 0.15),
 		Vector3(0.0, 0.0, 8.0), chapel)
-	_spawn("Roof_Wooden_2x1", Vector3(3.8, 0.25, 2.6),
-		Vector3(78.0, 34.0, 0.0), chapel)
+	# DÉFAUT CORRIGÉ — le sanctuaire est le seul édifice où l'on entre de
+	# plain-pied, et une fois dedans on voyait le ciel par les deux bouts.
+	# Même modèle de toit qu'au tombeau, même mesure : faîtière parallèle à Z,
+	# triangles ouverts en z = ±2. Les deux pignons les ferment, à l'aplomb de
+	# l'origine du toit et avec son roulis, inversé sur la pièce tournée de
+	# 180°. Le toit est volontairement décalé de -0,30 m en x (« toit
+	# affaissé ») : le pignon hérite du décalage et laisse 8,7 cm non couverts
+	# à l'angle est, sous l'égout. NE PAS recentrer le toit pour cela.
+	_spawn("Roof_Front_Brick4", Vector3(-0.3, WALL_H, 2.15),
+		Vector3(0.0, 0.0, 8.0), chapel)
+	_spawn("Roof_Front_Brick4", Vector3(-0.3, WALL_H, -1.85),
+		Vector3(0.0, 180.0, -8.0), chapel)
+	# DÉFAUT CORRIGÉ — le pan de toit tombé sur le parvis, l'élément le plus
+	# lisible du récit du lieu, était aux trois quarts sous terre. Basculé de
+	# 78°, sa profondeur (z local jusqu'à 1,519) passe à la verticale et
+	# plonge ; KitPlacement ne rattrape pas l'enfoncement dû à la rotation, et
+	# le modèle n'est même pas rabattu (bbox_min.y = -0,161, sous la
+	# tolérance). Mesuré à y = 0,25 : bbox monde y ∈ [-1,251 ; +0,516], soit
+	# 29 % visible. À 35° le point bas ne descend plus qu'à -1,004 : posé à
+	# y = 1,03 le pan repose sur le parvis (mesure : y ∈ [0,053 ; 1,944]), et
+	# le lacet de 90° le fait glisser le long de la façade est,
+	# x ∈ [2,82 ; 4,13] — dehors, contre le mur, comme un pan qui a glissé.
+	_spawn("Roof_Wooden_2x1", Vector3(2.9, 1.03, 2.6),
+		Vector3(35.0, 90.0, 0.0), chapel)
 
 	# L'AUTEL et ses offrandes : la raison de venir. Rien n'a été repris.
 	var altar: Node3D = _part(shrine, "Autel", Vector3(0.0, 0.0, -1.15))

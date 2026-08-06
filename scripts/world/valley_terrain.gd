@@ -335,16 +335,21 @@ func _build_camp_terrace() -> void:
 		body.name = "Tent%d" % i
 		body.collision_layer = 1
 		body.collision_mask = 0
-		var shape: CollisionShape3D = CollisionShape3D.new()
-		var box: BoxShape3D = BoxShape3D.new()
-		box.size = Vector3(3.6, 2.4, 3.2)
-		shape.shape = box
-		shape.position = Vector3(0, 1.2, 0)
-		body.add_child(shape)
+		# REVUE V4 : la collision était une BOÎTE 3,6 × 2,4 × 3,2 sur un volume
+		# en COIN. La demi-largeur de la toile vaut 1,9 · (1 − y/2,6) : à 2,0 m
+		# de haut elle mesure 0,44 m alors que la boîte imposait 1,80 m, soit
+		# 1,36 m de mur invisible de chaque côté à hauteur de tête (et, à la
+		# base, 10 cm de toile hors boîte). On donne donc au collider la forme
+		# EXACTE du visuel : l'enveloppe convexe du prisme, aux mêmes cotes et
+		# à la même origine locale (0 ; 1,3 ; 0) que le maillage.
 		var mesh: MeshInstance3D = MeshInstance3D.new()
 		mesh.name = "Tent%dMesh" % i
 		var prism: PrismMesh = PrismMesh.new()
 		prism.size = Vector3(3.8, 2.6, 3.4)
+		var shape: CollisionShape3D = CollisionShape3D.new()
+		shape.shape = prism.create_convex_shape(true, false)
+		shape.position = Vector3(0, 1.3, 0)
+		body.add_child(shape)
 		mesh.mesh = prism
 		mesh.material_override = _material(tent[2] as Color, false)
 		mesh.position = Vector3(0, 1.3, 0)
@@ -415,45 +420,87 @@ func _dress_camp_life(camp: Node3D) -> void:
 	camp.add_child(life)
 	var placements: Array[Array] = [
 		# Cuisine : chaudron SUR le foyer, table dressée, banc, seau.
-		[&"Cauldron", Vector3(45, 6.18, 64), 0.0, 1.0],
+		# REVUE V4 : à y = 6,18 le chaudron (bbox Y −0,0028) plongeait de 22 cm
+		# dans l'anneau de pierre (6,00..6,40) et les braises (6,35..6,65,
+		# rayon 0,70 > panse 0,4946) lui traversaient les flancs. Reposé sur le
+		# dessus des braises : 6,65 + 0,0028 = 6,653.
+		[&"Cauldron", Vector3(45, 6.653, 64), 0.0, 1.0],
 		[&"Table_Large", Vector3(47.8, 6, 60.3), 0.45, 1.0,
 			Vector3(1.9, 0.9, 1.0), false],
 		[&"Bench", Vector3(47.2, 6, 59.0), 0.45, 1.0],
 		[&"Stool", Vector3(49.4, 6, 61.3), 1.2, 1.0],
-		[&"Pot_1", Vector3(47.5, 6.78, 60.2), 0.8, 1.0],
-		[&"Mug", Vector3(48.1, 6.78, 60.6), 2.1, 1.0],
-		[&"Bottle_1", Vector3(47.9, 6.78, 59.9), 0.0, 1.0],
-		[&"Carrot", Vector3(47.2, 6.78, 60.5), 1.5, 1.0],
+		# REVUE V4 : la vaisselle était posée à plat à y = 6,78 alors que le
+		# plateau de `Table_Large` est à 6 + 0,8147 = 6,8147. Chaque pièce
+		# s'enfonçait donc dans le bois (la carotte de 27 cm, il ne restait que
+		# le fane). Règle appliquée : y = 6,8147 − bbox_min Y du modèle.
+		[&"Pot_1", Vector3(47.5, 6.837, 60.2), 0.8, 1.0],      # bbox_min Y −0,0226
+		[&"Mug", Vector3(48.1, 6.819, 60.6), 2.1, 1.0],        # bbox_min Y −0,0046
+		[&"Bottle_1", Vector3(47.9, 6.813, 59.9), 0.0, 1.0],   # bbox_min Y +0,0016
+		[&"Carrot", Vector3(47.2, 7.053, 60.5), 1.5, 1.0],     # bbox_min Y −0,2378
 		[&"Bucket_Wooden_1", Vector3(46.6, 6, 61.2), 2.8, 1.0],
 		# Réserve : tonneau de pommes, cageots, sacs à l'entrée de tente.
 		[&"Barrel_Apples", Vector3(50.4, 6, 58.4), 0.6, 1.0],
-		[&"FarmCrate_Apple", Vector3(52.9, 6, 58.1), 1.9, 1.0],
-		[&"FarmCrate_Empty", Vector3(52.2, 6, 57.0), 0.3, 1.0],
-		[&"Bag", Vector3(53.4, 6, 56.2), 2.4, 1.0],
-		[&"Pouch_Large", Vector3(54.3, 6, 56.8), 4.0, 1.0],
+		# REVUE V4 : la « réserve » était RANGÉE DANS la tente 0 (pied 54/58,
+		# lacet 0,4, toile fermée 3,8 × 3,4 sans ouverture). Coordonnées locales
+		# mesurées : cageot de pommes (−1,05 ; −0,34) et bourse (+0,74 ; −0,99)
+		# entièrement à l'intérieur, cageot vide (−1,27 ; −1,62) aux trois
+		# quarts — invisibles. Le groupe est sorti devant le pignon, translaté
+		# de 2,06 m sur le −Z local, soit un vecteur monde (−0,80 ; 0 ; −1,90).
+		# Nouvelles cotes locales z : −2,40 / −3,68 / −3,95 / −3,05, toutes
+		# au-delà de la demi-profondeur de toile (1,70), et le groupe reste sur
+		# `CampTerrace` (x 23..67, z 45..85), à plus d'un mètre des caisses.
+		[&"FarmCrate_Apple", Vector3(52.10, 6, 56.20), 1.9, 1.0],
+		[&"FarmCrate_Empty", Vector3(51.40, 6, 55.10), 0.3, 1.0],
+		[&"Bag", Vector3(52.60, 6, 54.30), 2.4, 1.0],
+		[&"Pouch_Large", Vector3(53.50, 6, 54.90), 4.0, 1.0],
 		# Coin de travail : enclume, billot avec hache, pierre à affûter.
 		[&"Anvil", Vector3(41.0, 6, 58.0), 1.1, 1.0,
 			Vector3(0.9, 0.8, 0.6), false],
 		[&"Anvil_Log", Vector3(40.0, 6, 59.3), 0.2, 1.0],
-		[&"Axe_Bronze", Vector3(40.0, 6.55, 59.3), 2.6, 1.0],
+		# REVUE V4 : à y = 6,55 la hache était entièrement enfermée dans le
+		# billot, aux mêmes x/z que lui, sous son plateau (6 + 1,0748 = 7,0748).
+		# ATTENTION à la cote : le nœud du glTF porte une rotation de 90° et une
+		# échelle 0,847, si bien que la boîte ANNONCÉE par le fichier
+		# (Y −0,2313..0,1164) n'est pas celle du modèle importé. Mesure dans
+		# Godot : Y −0,3806..+0,4463, hache debout, tête en haut. Base posée sur
+		# le plateau : 7,0748 + 0,3806 = 7,455.
+		[&"Axe_Bronze", Vector3(40.0, 7.455, 59.3), 2.6, 1.0],
 		[&"Whetstone", Vector3(41.9, 6, 57.1), 3.3, 1.0],
 		[&"Rope_1", Vector3(42.6, 6, 58.8), 0.9, 1.0],
-		# Râtelier d'armes près des tentes nord, bouclier appuyé.
+		# Râtelier d'armes près des tentes nord, bouclier POSÉ contre le pied.
 		[&"WeaponStand", Vector3(43.5, 6, 70.2), 2.1, 1.0,
 			Vector3(1.4, 1.6, 0.5), false],
 		[&"Sword_Bronze", Vector3(43.5, 6.62, 70.1), 2.1, 1.0],
-		[&"Shield_Wooden", Vector3(42.6, 6.25, 70.9), 2.6, 1.0],
+		# REVUE V4 : l'origine de `Shield_Wooden` est au CENTRE du disque
+		# (bbox Y −0,3104..+0,3104), pas à sa base : posé à 6,25 il s'enfonçait
+		# de 6 cm dans la dalle (6,00). Tranche posée sur la dalle :
+		# 6,00 + 0,3104 = 6,311, et recentré à 0,6 m du montant du râtelier.
+		[&"Shield_Wooden", Vector3(43.05, 6.311, 70.62), 2.6, 1.0],
 		# Charrette à l'entrée sud du camp, bannière de faction.
 		[&"Stall_Cart_Empty", Vector3(40.0, 6, 50.5), 1.35, 1.0,
 			Vector3(2.4, 1.4, 1.6), false],
-		[&"Banner_2", Vector3(41.2, 6, 48.3), 0.1, 1.2],
+		# REVUE V4 : `Banner_2` est une APPLIQUE — son origine est le point
+		# d'accroche haut, l'étoffe pend en dessous (bbox Y −1,2336..+0,8435).
+		# Posée à y = 6,0, c'est-à-dire au niveau de la dalle, 59 % du tissu
+		# était enterré : 1,48 m sous l'herbe. Remontée au niveau d'accroche :
+		# à 7,78 le bas de l'étoffe est à 7,78 − 1,2336 × 1,2 = 6,30, soit
+		# 0,30 m au-dessus du sol, et la hampe culmine à 8,79 m.
+		[&"Banner_2", Vector3(41.2, 7.78, 48.3), 0.1, 1.2],
 		# Clôture PARTIELLE au nord (indice de limite, pas une cage).
 		[&"Prop_WoodenFence_Single", Vector3(38.5, 6, 79.0), 0.15, 1.1],
 		[&"Prop_WoodenFence_Extension1", Vector3(42.6, 6, 79.4), 0.15, 1.1],
 		[&"Prop_WoodenFence_Single", Vector3(47.0, 6, 79.6), 0.4, 1.1],
-		# Abri ASSEMBLÉ (§11.D « abris assemblés ») : panneau de toit incliné
-		# sur la caisse, couche en dessous — un pillard dort là.
-		[&"Roof_Wooden_2x1", Vector3(30.0, 7.4, 72.5), 0.0, 1.6],
+		# Abri ASSEMBLÉ (§11.D « abris assemblés ») : appentis à deux versants
+		# posé au sol, couche en dessous — un pillard dort là. Les pignons
+		# restent ouverts, c'est un abri, pas une maison.
+		# REVUE V4 : le module était posé à y = 7,4 PUIS basculé de 0,42 rad au
+		# nom d'un « appui caisse » inexistant (les caisses du camp sont à 22 m
+		# de là) : son point bas flottait 0,43 m au-dessus de la dalle et son
+		# dessous traversait le matelas. Reposé à plat sur ses deux sablières :
+		# bbox_min Y −0,1612 × 1,6 = 0,258, donc y = 6 + 0,258 = 6,258 ; les
+		# sablières touchent la dalle en x = 28,19 et 31,81, faîtage à 8,00 m.
+		# z ramené à 72,06 pour couvrir le lit, qui va de 71,99 à 74,41.
+		[&"Roof_Wooden_2x1", Vector3(30.0, 6.258, 72.06), 0.0, 1.6],
 		[&"Bed_Twin1", Vector3(30.0, 6, 73.2), 3.14, 1.0],
 		[&"CandleStick", Vector3(31.3, 6, 71.8), 0.7, 1.0],
 	]
@@ -461,14 +508,9 @@ func _dress_camp_life(camp: Node3D) -> void:
 		var collision: Vector3 = entry[4] if entry.size() > 4 else Vector3.ZERO
 		_place_model(life, entry[0] as StringName, entry[1] as Vector3,
 			float(entry[2]), float(entry[3]), collision, false)
-	# Le panneau de toit de l'abri s'incline APRÈS le placement.
-	var roof: Node3D = life.get_node_or_null("Roof_Wooden_2x1_27") as Node3D
-	if roof == null:
-		for child: Node in life.get_children():
-			if String(child.name).begins_with("Roof_Wooden"):
-				roof = child as Node3D
-	if roof != null:
-		roof.rotation.z = 0.42   # appui caisse → sol
+	# REVUE V4 : le basculement d'après-coup du toit (`rotation.z = 0.42`) a été
+	# supprimé — il n'appuyait sur rien et l'index en dur « _27 » de la
+	# recherche était fragile. Le module est autoporteur et posé à plat.
 
 
 ## Monte un prop du registre (ou sa boîte graybox de repli) avec une
@@ -925,8 +967,14 @@ func _dress_zone_pylon() -> void:
 		[&"Corner_Exterior_Brick", Vector3(120.5, 18, -29.5), 0.3, 1.2,
 			Vector3(0.8, 3.2, 0.8), false],
 		# Bannières de seuil — le lieu est ENTRETENU, pas abandonné.
-		[&"Banner_2", Vector3(119.6, 18, -21.2), 4.71, 1.25],
-		[&"Banner_2", Vector3(119.6, 18, -28.8), 4.71, 1.25],
+		# REVUE V4 : même défaut que la bannière du camp, non relevé mais
+		# mesuré ici — `Banner_2` s'accroche par le HAUT (bbox Y −1,2336) ;
+		# posées à y = 18, c'est-à-dire au niveau de la dalle du pylône, les
+		# deux étoffes s'enfonçaient de 1,2336 × 1,25 = 1,54 m sous le sol.
+		# Montées à 19,842 : bas de l'étoffe à 18,30 (0,30 m de garde), sommet
+		# de hampe à 20,90 — sous la tête des piliers de brique voisins (21,61).
+		[&"Banner_2", Vector3(119.6, 19.842, -21.2), 4.71, 1.25],
+		[&"Banner_2", Vector3(119.6, 19.842, -28.8), 4.71, 1.25],
 		# Pierres votives éparses, végétation quasi absente (§7.5 : rare
 		# près des dangers électriques).
 		[&"Pebble_Round_4", Vector3(110.5, 18.02, -28.5), 0.6, 1.5],

@@ -526,7 +526,11 @@ y = −0,50. **Antérieur à la passe d'habillage** : vérifié par exécution s
 le commit `c9f17fb` (worktree séparé), les chiffres sont IDENTIQUES au tick
 près. Introduit par les travaux de jouabilité V5 (`371fd81`) ou antérieurs.
 
-## ISS-033 — `dev_mode.gd` lit le clavier directement (S3, ouvert)
+## ISS-033 — `dev_mode.gd` lit le clavier directement (S3, CLOS le 2026-08-06)
+
+**Clos** : `test_input_layer_isolation::test_no_gameplay_script_reads_the_keyboard`
+passe desormais avec 696 assertions, verifie par le controleur du chantier
+d'assemblage. Corrige entre-temps par la session qui avait introduit le fichier.
 
 `test_input_layer_isolation.gd::test_no_gameplay_script_reads_the_keyboard`
 échoue : `scripts/tools/dev_mode.gd` contient `InputEventKey` et `KEY_`,
@@ -535,3 +539,16 @@ ce que D-013 interdit au gameplay. Le fichier a été introduit par le commit
 même branche. Correctif attendu : passer par `InputIntent`, ou exclure
 explicitement les outils de développement du contrôle si la règle ne les
 vise pas — trancher, ne pas laisser rouge.
+
+
+## ISS-034 — Le kit ne contient aucun pignon de la famille bardeaux (S3, ouvert)
+
+Verifie exhaustivement dans `assets/environment/village` et
+`assets/environment/dungeon` : les seules pieces de fermeture de rampant sont
+`Roof_Front_Brick4/6/8`, taillees pour la pente des tuiles rondes.
+`Roof_Front_Brick6` monte de 4,38 m sur 6,69 m de base ; la pente de bardeaux
+de la cabane des bucherons monte de 2,26 m sur 6,00 m — presque le double.
+Les deux abouts du toit de la cabane restent donc des triangles ouverts.
+**Aucun faux pignon n'a ete bricole** : la limite est ecrite dans le code
+au-dessus de la toiture. Correctif possible : modeliser un pignon a la bonne
+pente (script Blender), ou passer la cabane aux tuiles rondes.

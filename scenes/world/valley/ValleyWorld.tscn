@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=18 format=3]
 
 ; Vallée de Néris — D.1 : relief macro blockout (voir scripts/world/valley_terrain.gd
 ; pour toutes les cotes). Spawn sur la crête (§3.3 : (0, 24, 170)), camp sur sa
@@ -19,13 +19,13 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/GameplayShell.tscn" id="10_shell"]
 [ext_resource type="Script" path="res://scripts/world/camp_smoke.gd" id="12_smoke"]
 
-[sub_resource type="CylinderMesh" id="CampfireMesh"]
-top_radius = 0.5
-bottom_radius = 0.7
-height = 0.5
-
-[sub_resource type="StandardMaterial3D" id="CampfireMat"]
-albedo_color = Color(0.35, 0.22, 0.14, 1)
+; DOUBLON SUPPRIMÉ (revue « monde bâti », défaut nº9) : cette scène posait un
+; SECOND foyer complet (CylinderMesh « CampfireMesh » + « CampfireMat ») en
+; (45, 6.25, 65), à 1,00 m du foyer bâti par le code — valley_terrain.gd:357
+; monte déjà « FirePit » (anneau de pierre r 1,1, y 6,00..6,40) en (45, 6, 64),
+; ses braises, son anneau de galets et le chaudron. Les deux galettes se
+; recoupaient sur 0,80 m en Z. On garde UN seul foyer : celui du code, parce
+; que c'est lui qui porte l'interactable de cuisine (44,6 ; 6,1 ; 63,2).
 
 ; Colonne de fumée graybox : §24 veut le « feu du camp visible à distance » —
 ; sans elle, la terrasse du camp ne se lisait pas depuis la crête (1re capture).
@@ -34,10 +34,21 @@ top_radius = 2.2
 bottom_radius = 0.35
 height = 40.0
 
+; Défaut nº10 : l'albédo était à alpha 0,92, soit un pilier de béton opaque de
+; 40 m masquant citadelle et falaise, et occupant un quart de l'écran au camp.
+; Mesuré et corrigé : alpha 0,22 (un voile, plus une masse), `proximity_fade`
+; de 8 m pour que la colonne s'efface là où elle croise le décor et le joueur
+; qui l'approche, `cull_mode = 2` (disabled) pour que le volume garde son
+; épaisseur en semi-transparence au lieu de montrer une seule paroi.
+; `shading_mode = 0` est CONSERVÉ : non éclairée, la fumée reste claire donc
+; découpée sur les falaises grises, ce qui est la raison d'être de la colonne.
 [sub_resource type="StandardMaterial3D" id="SmokeMat"]
-albedo_color = Color(0.42, 0.44, 0.5, 0.92)
+albedo_color = Color(0.58, 0.6, 0.65, 0.22)
 transparency = 1
 shading_mode = 0
+cull_mode = 2
+proximity_fade_enabled = true
+proximity_fade_distance = 8.0
 
 [sub_resource type="StandardMaterial3D" id="CampFlameMat"]
 albedo_color = Color(1, 0.6, 0.24, 1)
@@ -84,28 +95,43 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 [node name="Camp" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 6, 65)
 
-[node name="Campfire" type="MeshInstance3D" parent="Camp"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
-mesh = SubResource("CampfireMesh")
-surface_material_override/0 = SubResource("CampfireMat")
+; Le nœud « Campfire » (second foyer) a été retiré ici — voir le commentaire des
+; sous-ressources plus haut. Tout ce qui suit est recalé de 1,00 m vers le nord
+; (z local −1 = monde z 64) pour se poser sur le foyer survivant.
 
+; Pied à monde y = 6 + 20,25 − 20 = 6,25, donc DANS l'anneau de pierre
+; (6,00..6,40) : la colonne naît des braises au lieu de s'enfoncer de 1,50 m
+; sous la dalle de la terrasse, ce qu'elle faisait à y local 18,5.
+; Sommet à 46,25 m, toujours au-dessus de l'œil de crête (~34,9 m).
 [node name="SmokeColumn" type="MeshInstance3D" parent="Camp"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 18.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20.25, -1)
 mesh = SubResource("SmokeMesh")
 surface_material_override/0 = SubResource("SmokeMat")
 script = ExtResource("12_smoke")
 
 ; §24/§10.1 (bible) : « flamme orange » et « reflet chaud » — la flamme emissive
 ; et sa lumiere font exister le feu a 100 m, la ou le foyer brun disparaissait.
+; Recalée sur le foyer survivant : monde (45, 6.85, 64), sphère r 0,45 donc
+; y 6,40..7,30 — la base est plantée dans les braises (6,35..6,65) au lieu de
+; flotter au-dessus du disque supprimé.
 [node name="CampFlame" type="MeshInstance3D" parent="Camp"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, -1)
 mesh = SubResource("CampFlameMesh")
 surface_material_override/0 = SubResource("CampFlameMat")
 
+; Deux lampes nommées toutes deux « CampFireLight » brûlaient à 1,02 m l'une de
+; l'autre (celle-ci 2,2 + celle de valley_terrain.gd:369-375 1,8 = 4,0 répartis
+; sur deux centres) : le halo était un ovale de 15 m et les ombres des tentes
+; étaient doublées. Corrigé sans toucher au fichier voisin (hors lot) :
+; celle-ci est ramenée EXACTEMENT sur l'autre — monde (45, 7.4, 64), même
+; couleur, même portée 14 — et son énergie tombe à 0,4. Deux omnis coïncidentes
+; de même portée s'additionnent : 1,8 + 0,4 = 2,2, un seul halo centré, qui est
+; la valeur voulue. Le nœud est CONSERVÉ parce que
+; tests/integration/test_valley_world.gd:257 exige le chemin « Camp/CampFireLight ».
 [node name="CampFireLight" type="OmniLight3D" parent="Camp"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -1)
 light_color = Color(1, 0.62, 0.3, 1)
-light_energy = 2.2
+light_energy = 0.4
 omni_range = 14.0
 
 [node name="Raider1" parent="Camp" instance=ExtResource("4_raider")]

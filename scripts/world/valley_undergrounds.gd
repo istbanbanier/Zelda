@@ -619,6 +619,32 @@ func _build_hidden_passage() -> void:
 	var chamber_doors: Array[Vector3] = [Vector3.BACK, Vector3.FORWARD]
 	_shell(root, "ChambreHaute", Vector3(0, RISE, chamber_z), chamber,
 		thickness, chamber_doors, 2.4, 2.4, COL_ROCK)
+	# Revue V4 — PIGNON MANQUANT : le biseau d'about de la galerie.
+	# `_incline_tunnel` ne pose aucun bouchon d'about : la coupe du tube est
+	# PERPENDICULAIRE à la pente (θ = 22,249°), alors que la face avant de la
+	# chambre haute est VERTICALE, à z = tunnel_end_z = −26,2. Une face inclinée
+	# ne peut pas fermer une face verticale. Mesuré sur le plan d'about, en
+	# repère racine : à y = 9,000 l'écart est nul, à y = 10,000 il vaut 0,409 m,
+	# à y = 11,288 (dessous du dernier palier de crête) il vaut 0,936 m. Dans ce
+	# coin en biseau il n'existait AUCUN volume — ni tube, ni parois, ni
+	# chambre, ni crête, ni flanc — et il communiquait latéralement avec la
+	# tranchée des flancs : on voyait le ciel depuis l'intérieur, juste
+	# au-dessus du seuil de la chambre haute.
+	# Les deux joues montent du sol de la chambre (RISE) au dessous du linteau
+	# (RISE + 2,4, le seuil faisant 2,4 m de haut) et s'alignent EXACTEMENT sur
+	# les jambages : x ∈ [1,2 ; 4,5] et [−4,5 ; −1,2]. L'ouverture reste donc de
+	# 2,4 m de large sur 2,4 m de haut, franchissable. Le bandeau supérieur
+	# double le palier 3 de crête (dessous 11,288 m) : redondant tant que
+	# `steps` vaut 4, mais c'est lui qui garantit la fermeture si le nombre de
+	# paliers change. Les trois boîtes couvrent z ∈ [−26,2 ; −24,8], tout le
+	# biseau.
+	_solid(root, "AboutGalerie",
+		Vector3(0.0, RISE + 3.2, tunnel_end_z + 0.7),
+		Vector3(9.0, 1.6, 1.4), COL_ROCK)
+	for jamb_side: float in [-1.0, 1.0]:
+		_solid(root, "AboutJoue",
+			Vector3(jamb_side * 2.85, RISE + 1.2, tunnel_end_z + 0.7),
+			Vector3(3.3, 2.4, 1.4), COL_ROCK)
 
 	# Tablier bas devant la bouche discrète.
 	_apron(root, Vector3(0, -thickness * 0.5, mouth_z + 3.2),
@@ -650,6 +676,25 @@ func _build_hidden_passage() -> void:
 		_solid(root, "Crete",
 			Vector3(0, (bottom + top) * 0.5, -mouth_z - (near + far) * 0.5),
 			Vector3(9.0, top - bottom, seg), COL_ROCK)
+		# Revue V4 — MUR TROP COURT, et le trou donnait sur le CIEL.
+		# Le sommet des flancs est PLAT à y = RISE = 9, alors que le dessous de
+		# la crête monte avec la galerie (bottom = near·slope + lift, avec
+		# slope = 9/22 et lift = 4,2/cos θ = 4,5379). Mesuré palier par palier :
+		# 0 → 4,538 ; 1 → 6,788 ; 2 → 9,038 ; 3 → 11,288. À partir du palier 2
+		# la crête DÉCOLLE du massif : entre y = 9 et y = bottom, au-delà de
+		# x = ±4,5 (demi-largeur de la crête), plus aucun volume. Il restait de
+		# chaque côté une tranchée de 2,0 m de large (du tube, à ±2,5, au bord
+		# de la crête, à ±4,5) et jusqu'à 2,288 m de haut, ouverte sur le ciel :
+		# on voyait le dessous du boyau depuis la plaine.
+		# Chaque boîte couvre x ∈ [2,5 ; 11,5] : elle vient toucher la paroi
+		# extérieure du tube sans jamais y entrer, recouvre le flanc (4,5 à
+		# 11,5) et monte du sommet du flanc au dessous exact de la crête.
+		if bottom > RISE:
+			for side: float in [-1.0, 1.0]:
+				_solid(root, "FlancHaut",
+					Vector3(side * 7.0, (RISE + bottom) * 0.5,
+						-mouth_z - (near + far) * 0.5),
+					Vector3(9.0, bottom - RISE, seg), COL_ROCK_DARK)
 	# Sommet du vestibule : la roche au-dessus de la bouche basse.
 	_solid(root, "Coiffe", Vector3(0, 6.2, 0), Vector3(9.0, 4.0, 8.4),
 		COL_ROCK)
@@ -682,7 +727,16 @@ func _build_hidden_passage() -> void:
 		["Crate_Wooden", Vector3(2.1, 0.05, 1.4), 15.0, 1.0],
 		["Rope_1", Vector3(1.4, 0.05, -1.6), 80.0, 1.0],
 		["Bucket_Wooden_1", Vector3(-2.3, 0.05, -1.2), 0.0, 1.0],
-		["Lantern_Wall", Vector3(-2.9, 1.9, -0.4), 90.0, 1.0],
+		# Revue V4 — INTERPÉNÉTRATION du plafond. `Lantern_Wall` a une bbox
+		# y ∈ [0,0818 ; 1,4188], soit 1,337 m de haut ; comme 0,0818 dépasse la
+		# tolérance de `KitPlacement` (0,05), la pièce est RASSISE de 0,0818 et
+		# sa géométrie occupe finalement [pos.y ; pos.y + 1,337]. À y = 1,9 elle
+		# montait donc à 3,237 m dans un vestibule dont le plafond est à 3,00 m
+		# (inner.y) : 0,237 m de potence tranchés par la dalle. À 1,55 elle
+		# s'arrête à 2,887 m, 0,113 m sous le plafond, et reste bien au-dessus
+		# de la tête du joueur (capsule 1,7 m). X et lacet inchangés : la platine
+		# est déjà à 0,049 m du nu de la paroi (x = −3,0), bras vers l'intérieur.
+		["Lantern_Wall", Vector3(-2.9, 1.55, -0.4), 90.0, 1.0],
 		["Mushroom_Common", Vector3(2.6, 0.02, -2.2), 0.0, 1.2],
 		["Mushroom_Common", Vector3(2.2, 0.02, -2.7), 140.0, 1.0],
 		["Pebble_Round_4", Vector3(-1.0, 0.02, -2.4), 60.0, 1.1],
@@ -692,11 +746,21 @@ func _build_hidden_passage() -> void:
 	var mark: Node3D = Node3D.new()
 	mark.name = "MarqueDeChemin"
 	root.add_child(mark)
+	# Revue V4 — PIÈCE FLOTTANTE : les chevrons étaient gravés dans le VIDE.
+	# La face FORWARD du vestibule n'est pas une paroi mais un SEUIL : les
+	# jambages n'occupent que x ∈ [1,2 ; 3,0] et [−3,0 ; −1,2], et x ∈ [−1,2 ;
+	# 1,2] est le trou de la porte. Aux anciennes abscisses ±0,22 il n'y avait
+	# donc aucune matière derrière. En z non plus : le mur va de −4,2 à −3,0 et
+	# les plaques, à z = −2,94 pour 0,05 d'épaisseur, occupaient [−2,965 ;
+	# −2,915], entièrement dans le vide du vestibule ; le plan d'about de la
+	# galerie est encore 0,73 m plus loin. Reportés à x = ±1,45, les chevrons
+	# tombent au milieu des jambages, et z = −2,975 fait affleurer la plaque sur
+	# le nu du mur (−3,0 à −2,95). Ils ENCADRENT l'ouverture au lieu d'y flotter.
 	for index: int in range(3):
 		var y: float = 1.3 + float(index) * 0.4
 		for side: float in [-1.0, 1.0]:
 			_decor_box(mark, "Chevron",
-				Vector3(side * 0.22, y, -2.94), Vector3(0.06, 0.44, 0.05),
+				Vector3(side * 1.45, y, -2.975), Vector3(0.06, 0.44, 0.05),
 				COL_MARK, 0.9)
 
 	# Boisage de la galerie : les étais suivent la pente, dans le repère du
@@ -717,7 +781,15 @@ func _build_hidden_passage() -> void:
 		["Chest_Wood", Vector3(1.9, RISE + 0.05, chamber_z - 2.2), 200.0, 1.0],
 		["Crate_Metal", Vector3(-2.3, RISE + 0.05, chamber_z - 1.6), 40.0, 1.0],
 		["Barrel", Vector3(-2.6, RISE + 0.05, chamber_z + 1.0), 0.0, 1.0],
-		["Torch_Metal", Vector3(2.9, RISE + 1.7, chamber_z + 0.4), 270.0, 1.0],
+		# Revue V4 — PIÈCE FLOTTANTE. La platine de `Torch_Metal` est son plan
+		# local z ≈ 0 (bbox z ∈ [0,0001 ; 0,3885]) : au lacet 270° la profondeur
+		# part vers −X et la platine RESTE à l'abscisse écrite. La chambre a
+		# chamber.x = 7, donc sa paroi est à x = 3,5 et il n'y a ici aucun
+		# parement de brique pour avancer le nu : à 2,9 la torche pendait à
+		# 0,60 m du mur, à hauteur d'œil. À 3,44 il reste 0,06 m d'écart, la
+		# valeur mesurée dans la crypte de `ValleyCaves` (torches à ±4,2 pour un
+		# parement dont la face visible est à ±4,2576).
+		["Torch_Metal", Vector3(3.44, RISE + 1.7, chamber_z + 0.4), 270.0, 1.0],
 		["Rope_1", Vector3(0.6, RISE + 0.05, chamber_z + 2.0), 120.0, 1.0],
 		["Prop_Support", Vector3(-2.4, RISE, chamber_z - 2.8), 0.0, 1.0],
 		["Prop_Support", Vector3(2.4, RISE, chamber_z - 2.8), 0.0, 1.0],
@@ -807,6 +879,22 @@ func _build_crystal_hollow() -> void:
 			Vector3(3.0, 5.6, 19.0), COL_EARTH)
 	_solid(root, "TalusFond", Vector3(0, 2.8, hall_back_z - 1.5),
 		Vector3(19.0, 5.6, 3.0), COL_EARTH)
+	# Revue V4 — MUR TROP COURT : la façade de la salle restait à l'air libre.
+	# Emprises mesurées : la Butte couvre z ∈ [−20,4 ; −3,4] mais seulement
+	# y ∈ [5,6 ; 7,6] ; les Talus latéraux couvrent y ∈ [0 ; 5,6] mais seulement
+	# |x| ≥ 7,5 ; la galerie d'entrée n'a que 5,8 m de large (|x| ≤ 2,9). Il
+	# restait donc, DEVANT le mur de façade de la salle (face extérieure à
+	# z = −4,2), deux bandes de 4,6 m de large sur 5,6 m de haut sans aucune
+	# terre — deux grands pans gris parfaitement plats, surmontés de la tranche
+	# de la dalle de plafond et d'un porte-à-faux de terre de 0,8 m.
+	# Chaque merlon couvre x ∈ [2,9 ; 7,5] (ou son symétrique), y ∈ [0 ; 5,6],
+	# z ∈ [−4,2 ; −2,4] : il rejoint exactement la joue extérieure de la galerie
+	# d'un côté et le talus latéral de l'autre, monte jusqu'au dessous de la
+	# butte et affleure le nu avant des talus. Il ne touche pas l'ouverture, qui
+	# est à x ∈ [−1,3 ; 1,3].
+	for side: float in [-1.0, 1.0]:
+		_solid(root, "TalusAvant", Vector3(side * 5.2, 2.8, -3.3),
+			Vector3(4.6, 5.6, 1.8), COL_EARTH)
 	# Épaulements de roche encadrant la bouche : la butte se lit comme un
 	# affleurement, pas comme un tas de terre percé d'un tuyau.
 	for side: float in [-1.0, 1.0]:
@@ -834,7 +922,14 @@ func _build_crystal_hollow() -> void:
 		["Prop_Support", Vector3(1.35, 0.0, -1.8), 0.0, 1.0],
 		["Floor_UnevenBrick", Vector3(0.0, 0.02, 0.0), 0.0, 1.0],
 		["Floor_UnevenBrick", Vector3(0.0, 0.02, -2.4), 0.0, 1.0],
-		["Lantern_Wall", Vector3(-1.6, 1.9, 0.2), 90.0, 1.0],
+		# Revue V4 — INTERPÉNÉTRATION du plafond, même cas qu'au vestibule du
+		# Passage : `Lantern_Wall` est rassise de 0,0818 m par `KitPlacement` et
+		# sa géométrie occupe [pos.y ; pos.y + 1,337]. À 1,9 elle montait à
+		# 3,237 m alors que la galerie d'entrée plafonne à 3,00 m (entry.y) :
+		# le crochet était tranché par la roche, dès la première lumière du
+		# lieu. À 1,55 elle s'arrête à 2,887 m. X et lacet inchangés — la
+		# platine est déjà à 0,049 m du nu de la paroi (x = −1,7).
+		["Lantern_Wall", Vector3(-1.6, 1.55, 0.2), 90.0, 1.0],
 		["Bag", Vector3(1.1, 0.05, 2.2), 45.0, 1.0],
 	])
 
@@ -877,13 +972,22 @@ func _build_crystal_hollow() -> void:
 			145.0, COL_CRYSTAL_AMBER, 0.6],
 		[Vector3(2.6, 0.9, hall_z - 5.4), Vector3(0.24, 1.8, 0.24), -9.0,
 			230.0, COL_CRYSTAL_PALE, 0.55],
-		[Vector3(-4.6, 3.4, hall_z + 1.4), Vector3(0.22, 1.7, 0.22), 168.0,
+		# Revue V4 — PIÈCES FLOTTANTES : les quatre éclats RETOURNÉS (inclinaison
+		# 168° à 194°) sont censés pendre du plafond, à 4,40 m (hall.y). Ils
+		# s'arrêtaient tous à ~4,255 m, soit 14,5 cm sous la voûte, sans rien
+		# pour les retenir — alors que les éclats montants du même tableau sont
+		# calés au millimètre sur le sol. Une boîte tournée en Euler YXZ a pour
+		# demi-hauteur d'AABB 0,5·(taille.y·|cos t| + taille.z·|sin t|) ; on pose
+		# donc y = 4,46 − cette demi-hauteur, ce qui encastre la base de 6 cm
+		# dans la dalle. Demi-hauteurs mesurées : 0,8543 / 0,6525 / 0,7551 /
+		# 0,5553. Position X/Z, inclinaison, lacet, teinte et émission inchangés.
+		[Vector3(-4.6, 3.61, hall_z + 1.4), Vector3(0.22, 1.7, 0.22), 168.0,
 			40.0, COL_CRYSTAL_IVORY, 0.8],
-		[Vector3(3.8, 3.6, hall_z + 3.2), Vector3(0.18, 1.3, 0.18), 194.0,
+		[Vector3(3.8, 3.81, hall_z + 3.2), Vector3(0.18, 1.3, 0.18), 194.0,
 			120.0, COL_CRYSTAL_PALE, 0.6],
-		[Vector3(1.6, 3.5, hall_z - 3.6), Vector3(0.20, 1.5, 0.20), 176.0,
+		[Vector3(1.6, 3.71, hall_z - 3.6), Vector3(0.20, 1.5, 0.20), 176.0,
 			280.0, COL_CRYSTAL_AMBER, 0.7],
-		[Vector3(-2.8, 3.7, hall_z - 1.8), Vector3(0.16, 1.1, 0.16), 186.0,
+		[Vector3(-2.8, 3.91, hall_z - 1.8), Vector3(0.16, 1.1, 0.16), 186.0,
 			330.0, COL_CRYSTAL_IVORY, 0.55],
 		[Vector3(-4.4, 3.1, hall_z + 2.6), Vector3(0.9, 0.5, 0.9), 0.0,
 			30.0, COL_CRYSTAL_PALE, 0.45],
@@ -930,8 +1034,15 @@ func _build_crystal_hollow() -> void:
 		["Mushroom_Common", Vector3(-4.4, 0.02, hall_z - 5.6), 130.0, 1.1],
 		["Mushroom_Laetiporus", Vector3(4.6, 0.02, hall_z - 5.2), 45.0, 1.0],
 		["Fern_1", Vector3(3.6, 0.02, hall_z - 5.8), 190.0, 0.9],
-		["Torch_Metal", Vector3(-6.2, 1.7, hall_z + 0.6), 90.0, 1.0],
-		["Torch_Metal", Vector3(6.2, 1.7, hall_z + 0.6), 270.0, 1.0],
+		# Revue V4 — PIÈCES FLOTTANTES. La platine de `Torch_Metal` est son plan
+		# local z ≈ 0 : aux lacets 90° et 270° la profondeur part vers ±X et la
+		# platine RESTE à l'abscisse écrite. La salle ayant hall.x = 13, ses
+		# parois sont à x = ±6,5 : à ±6,2 les torches pendaient à 0,30 m du mur.
+		# Contre-preuve dans la même salle : les veines décoratives sont, elles,
+		# posées à ±6,45 pour 0,10 m d'épaisseur, donc affleurantes. On garde
+		# 0,06 m d'écart, la valeur mesurée dans la crypte de `ValleyCaves`.
+		["Torch_Metal", Vector3(-6.44, 1.7, hall_z + 0.6), 90.0, 1.0],
+		["Torch_Metal", Vector3(6.44, 1.7, hall_z + 0.6), 270.0, 1.0],
 		["Bench", Vector3(-4.0, 0.05, hall_z - 1.4), 90.0, 1.0],
 		["Book_Stack_1", Vector3(-4.0, 0.55, hall_z - 1.4), 30.0, 1.0],
 	])
