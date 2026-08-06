@@ -186,6 +186,27 @@ func _ready() -> void:
 	safe_timer.autostart = true
 	safe_timer.timeout.connect(_record_safe_point)
 	add_child(safe_timer)
+	_paint_the_world()
+
+
+## Passe de PEINTURE de toute la carte (mandat « de toute la map »).
+##
+## Elle vient EN DERNIER, quand tout est construit : relief, lieux,
+## bestiaire, ingrédients, feu de cuisine. Une passe posée plus tôt
+## aurait laissé nus tous les objets créés après elle — c'est
+## précisément le genre d'oubli qu'une recette recopiée à six endroits
+## produit, et la raison pour laquelle elle vit désormais en un seul
+## (`PainterlyRecipe`).
+##
+## Ce qu'elle ne touche pas, par CONTRAT :
+##   - tout matériau qui émet vraiment — câbles, récepteurs, dangers,
+##     noyaux, runes : ce sont des télégraphes de jeu, pas du décor ;
+##   - l'orage, qui porte son propre langage d'éclair déjà réglé.
+func _paint_the_world() -> void:
+	var skip: Array[String] = ["Storm", "StormCell"]
+	var painted: int = PainterlyRecipe.paint_world(self, skip)
+	if painted > 0:
+		print("[art] vallée peinte : %d surfaces" % painted)
 
 
 ## Lumière et atmosphère V4.1 (réf. 01 du pack V4) : soleil doré de fin
