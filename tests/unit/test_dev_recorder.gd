@@ -86,11 +86,14 @@ func test_the_journal_stops_growing_instead_of_filling_the_disk() -> void:
 	## incomplet serait pire que pas de journal.
 	var recorder: DevRecorder = _fresh()
 	check(recorder.start("plafond"), "session ouverte")
-	for i: int in range(DevRecorder.MAX_EVENTS + 50):
+	# On abaisse le plafond au lieu d'écrire quarante mille lignes : c'est la
+	# GARDE qu'on teste, pas la patience du disque.
+	recorder.max_events = 40
+	for i: int in range(recorder.max_events + 25):
 		recorder.record(&"marqueur", {"numero": i})
-	check(recorder.event_count() <= DevRecorder.MAX_EVENTS,
+	check(recorder.event_count() <= recorder.max_events,
 		"le plafond doit tenir (%d écrits pour un maximum de %d)"
-			% [recorder.event_count(), DevRecorder.MAX_EVENTS])
+			% [recorder.event_count(), recorder.max_events])
 	var folder: String = recorder.stop()
 	var text: String = FileAccess.get_file_as_string(folder + "/journal.jsonl")
 	check(text.contains("journal_tronque"),

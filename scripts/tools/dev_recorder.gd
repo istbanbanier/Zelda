@@ -25,6 +25,10 @@ const ROOT: String = "user://dev_sessions"
 ## Au-delà, le journal est tronqué et le dit. Une session de trois heures ne
 ## doit pas remplir le disque de quelqu'un.
 const MAX_EVENTS: int = 40000
+## Plafond EFFECTIF de cet enregistreur. Réglable pour que le test du plafond
+## n'ait pas à écrire quarante mille lignes sur le disque — une suite ne doit
+## pas payer le prix d'une session de trois heures pour vérifier une garde.
+var max_events: int = MAX_EVENTS
 
 ## Événements dont la répétition n'apprend rien : on les regroupe au lieu de
 ## les écrire mille fois (un pas, une frame, une position).
@@ -87,12 +91,12 @@ func start(label: String = "") -> bool:
 func record(kind: StringName, data: Dictionary = {}) -> void:
 	if _file == null:
 		return
-	if _count >= MAX_EVENTS:
+	if _count >= max_events:
 		if not _truncated:
 			_truncated = true
 			_file.store_line(JSON.stringify({
 				"t": _elapsed(), "type": "journal_tronque",
-				"limite": MAX_EVENTS}))
+				"limite": max_events}))
 			_file.flush()
 		return
 	if COALESCED.has(kind):

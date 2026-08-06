@@ -131,6 +131,11 @@ func _ready() -> void:
 			var bus: Node = get_node_or_null("/root/EventBus")
 			if bus != null:
 				bus.call("notify", "De la fumée s'élève au loin — un campement ?"))
+	# La vallée a un fond sonore. Sans lui, le jeu est littéralement muet
+	# entre deux actions — le défaut le plus cité du playtest en aveugle.
+	var audio: Node = get_node_or_null("/root/AudioManager")
+	if audio != null and audio.has_method("play_ambience"):
+		audio.call("play_ambience", &"amb_valley")
 	# E.2b : le feu de cuisine — un interactable posé SUR le foyer réel du
 	# camp (§13.3). L'atelier vit dans la coquille ; le feu n'est que la
 	# porte, comme la collision reste celle du foyer existant.
@@ -653,7 +658,7 @@ func _spawn_bestiary() -> void:
 			[Vector3(5, 0, 3), Vector3(-4, 0, -5)]],
 		# Le colosse quitte son coin pour le SEUIL de la plaine nord, sur l'axe
 		# de la rampe du donjon : on ne peut plus monter sans l'avoir vu.
-		["res://scenes/enemies/RavineTroll.tscn", Vector3(2, 2.1, -60), 0.4,
+		["res://scenes/enemies/RavineTroll.tscn", Vector3(12, 2.1, -62), 0.4,
 			[Vector3(9, 0, 0), Vector3(-9, 0, 3)]],
 		["res://scenes/enemies/CentaurHunter.tscn", Vector3(150, 2.1, 52), 4.2,
 			[Vector3(12, 0, 8), Vector3(-10, 0, -6)]],

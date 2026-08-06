@@ -1,0 +1,110 @@
+# Ménage des archives jouables publiées.
+#
+# Pourquoi un workflow et pas un appel direct : le conteneur de développement
+# n'a PAS le droit de supprimer une publication (« Creating, editing, or
+# deleting releases is not permitted for this session type »). C'est déjà la
+# raison d'être de `publish-playtest.yml` — la création passe par une action,
+# la suppression aussi.
+#
+# Ce qu'il fait : supprime les archives `playtest-*` OBSOLÈTES, c'est-à-dire
+# toutes sauf les `keep_last` plus récentes, avec leurs étiquettes Git.
+#
+# Ce qu'il ne touche JAMAIS, sauf demande explicite : `assets-1` et
+# `asset-inbox-*`. Ce ne sont pas des builds mais les boîtes de transport des
+# ressources sous licence, et `ATTRIBUTIONS.md` les cite nommément comme canal
+# de reproductibilité. Les effacer sans réécrire ce fichier laisserait le
+# registre des licences pointer vers du vide — exactement ce que la règle
+# « aucune ressource sans licence claire » interdit.
+
+name: Ménage des archives publiées
+
+# Deux déclencheurs, et le second n'est pas un caprice : `workflow_dispatch`
+# n'est proposé par GitHub que si le fichier existe sur la branche PAR DÉFAUT.
+# Celle de ce dépôt est `claude/phase-0-gate-0-setup-t72ibt`, sur laquelle je
+# n'ai pas d'autorisation d'écriture. Le fichier-marqueur contourne cela
+# proprement : le modifier EST la demande de ménage, elle est visible dans
+# l'historique, et elle part de la branche de travail.
+on:
+  push:
+    paths:
+      - '.github/cleanup-request.txt'
+  workflow_dispatch:
+    inputs:
+      keep_last:
+        description: "Nombre d'archives jouables à conserver (les plus récentes)."
+        type: string
+        default: "1"
+      dry_run:
+        description: "Ne rien supprimer, seulement lister ce qui le serait."
+        type: boolean
+        default: false
+      include_asset_inboxes:
+        description: >-
+          Supprimer AUSSI `assets-1` et `asset-inbox-*`. À ne cocher que si
+          ATTRIBUTIONS.md a été mis à jour pour ne plus les citer.
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  menage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lister, décider, supprimer
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # Déclenché par le marqueur, `inputs` est vide : on retombe sur
+          # les valeurs les plus prudentes (garder la dernière archive,
+          # ne pas toucher aux boîtes de ressources).
+          KEEP_LAST: ${{ inputs.keep_last || '1' }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          INCLUDE_INBOXES: ${{ inputs.include_asset_inboxes || 'false' }}
+        run: |
+          set -euo pipefail
+          REPO="${{ github.repository }}"
+
+          # Les publications, de la plus récente à la plus ancienne.
+          gh api "repos/$REPO/releases?per_page=100" \
+            --jq '.[] | [.tag_name, .created_at, ([.assets[].size] | add // 0)] | @tsv' \
+            > toutes.tsv
+
+          echo "=== Publications présentes ==="
+          cat toutes.tsv
+
+          KEEP="${KEEP_LAST:-1}"
+          : > a_supprimer.txt
+
+          # Archives jouables : on garde les KEEP plus récentes.
+          grep -E '^playtest-' toutes.tsv | tail -n +$((KEEP + 1)) \
+            | cut -f1 >> a_supprimer.txt || true
+
+          if [ "${INCLUDE_INBOXES}" = "true" ]; then
+            grep -E '^(assets-|asset-inbox-)' toutes.tsv | cut -f1 \
+              >> a_supprimer.txt || true
+          fi
+
+          if [ ! -s a_supprimer.txt ]; then
+            echo "Rien à supprimer."
+            exit 0
+          fi
+
+          echo "=== À supprimer ==="
+          cat a_supprimer.txt
+
+          if [ "${DRY_RUN}" = "true" ]; then
+            echo "Essai à blanc : rien n'a été supprimé."
+            exit 0
+          fi
+
+          while read -r tag; do
+            [ -z "$tag" ] && continue
+            echo "-- suppression de $tag"
+            gh release delete "$tag" --repo "$REPO" --yes --cleanup-tag \
+              || echo "   (échec sur $tag, on continue)"
+          done < a_supprimer.txt
+
+          echo "=== Restant ==="
+          gh api "repos/$REPO/releases?per_page=100" \
+            --jq '.[] | [.tag_name, ([.assets[].size] | add // 0)] | @tsv'
