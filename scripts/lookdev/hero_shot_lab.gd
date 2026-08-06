@@ -696,8 +696,8 @@ func _build_light() -> void:
 	sky_material.ground_horizon_color = Color(0.749, 0.780, 0.702)
 	# Lot 7 : halo solaire élargi — le disque reste hors champ, sa lueur
 	# miel doit entrer par le coin haut-gauche (§1.1).
-	sky_material.sun_angle_max = 28.0
-	sky_material.sun_curve = 0.12
+	sky_material.sun_angle_max = 62.0
+	sky_material.sun_curve = 0.28
 	sky.sky_material = sky_material
 	environment.sky = sky
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
