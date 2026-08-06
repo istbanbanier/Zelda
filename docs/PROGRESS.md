@@ -3383,3 +3383,24 @@ replacé DEVANT-GAUCHE (l'ancien yaw le mettait derrière-droite) ; halo
 2. Textures procédurales maison (AD-001) roche/terre/tissu — le manque
    dominant (matériaux 6,5/10).
 3. Puis re-évaluation + revue contradictoire ; V4 seulement si ≥ 75.
+
+### Fait ensuite : Lot 9 — habillage aux vrais modèles (mandat utilisateur)
+
+13 modèles Quaternius CC0 du dépôt (5 arbres/3 espèces, 4 rochers, 4
+props de camp), peints par SURFACE avec vraies textures, poses variées,
+garde-fou de composition TESTÉ (3 props attrapés dans le couloir du
+pylône avant de rester). v14 a révélé les contours sombres des cartes
+de feuilles (transparence ignorée — §1.6) → `SH_CharacterPainterlyCutout`
+(alpha scissor + double face, auto-choisi). Carte blanche
+téléchargements : sites d'assets bloqués par le proxy (403), seul
+GitHub passe ; kit Kenney cloné/inspecté/REJETÉ (hors style) ; liste
+remise à l'utilisateur pour sa machine. Habillage 3/3, peinture 4/4,
+contrats 5/5.
+
+### Prochaine action exacte
+
+1. Si l'utilisateur dépose des packs (dossier `incoming_assets/` ou
+   commit direct) : licence → ATTRIBUTIONS → manifeste → peinture →
+   habillage, dans cet ordre.
+2. Sinon : textures procédurales maison (AD-001) roche/terre/tissu.
+3. Re-évaluation sévère + revue contradictoire ; V4 si ≥ 75.
