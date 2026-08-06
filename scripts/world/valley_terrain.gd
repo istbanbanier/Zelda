@@ -1199,6 +1199,39 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	# large la citadelle lisait « cabane devant la montagne » sur la capture
 	# `vista_horizon_etage` — la face avant reste au plan z = −198, la masse
 	# s'étend vers l'arrière.
+	# SOCLE EN TERRASSES (§2.4 : « 55 % socle/terrasses de pierre ») —
+	# propagé depuis le HeroShotLab, où la silhouette étagée a été
+	# réglée puis mesurée. Sans lui, la citadelle posait ses tours
+	# directement sur le sol et lisait « bâtiment », pas « monument
+	# creusé dans la montagne ». AUCUNE COLLISION : ce sont des masses
+	# de composition, elles ne doivent modifier aucun passage.
+	_box_in("TerraceBase", citadel, Vector3(0, 34 + 7, -216),
+		Vector3(78, 14, 46), COL_STONE, false)
+	_box_in("TerraceMid", citadel, Vector3(-4, 34 + 18, -214),
+		Vector3(56, 12, 36), COL_STONE, false)
+	_box_in("TerraceHigh", citadel, Vector3(6, 34 + 27, -213),
+		Vector3(42, 10, 30), COL_STONE, false)
+	# CONTREFORTS (§2.4) : quatre appuis qui accrochent le socle au
+	# relief et cassent la frontalité.
+	var buttresses: Array[Array] = [
+		[-34.0, -200.0, 10.0, 26.0], [34.0, -202.0, 9.0, 22.0],
+		[-30.0, -226.0, 8.0, 30.0], [30.0, -228.0, 8.0, 24.0],
+	]
+	for b: int in range(buttresses.size()):
+		var spec: Array = buttresses[b]
+		var bh: float = spec[3] as float
+		_box_in("Buttress%d" % b, citadel,
+			Vector3(spec[0] as float, 34 + bh * 0.5, spec[1] as float),
+			Vector3(spec[2] as float, bh, spec[2] as float),
+			COL_STONE, false)
+	# TROIS lignes de Résonance en cuivre patiné (§2.4) — la masse reste
+	# à plus de 95 % sans énergie visible.
+	for c: int in range(3):
+		var cx: float = [-14.0, 2.0, 16.0][c]
+		var ch: float = [46.0, 62.0, 38.0][c]
+		_box_in("Conduit%d" % c, citadel,
+			Vector3(cx, 34 + ch * 0.5, -197.0), Vector3(2.6, ch, 2.6),
+			Color(0.43, 0.46, 0.37), false)
 	_box_in("Keep", citadel, Vector3(0, 34 + 23, -212), Vector3(34, 46, 28), COL_STONE, true)
 	# Épaules latérales plus basses (§2.4) : la silhouette s'étage au lieu de
 	# tomber d'un seul front.
