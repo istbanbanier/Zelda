@@ -392,6 +392,19 @@ réfuté trois fois sur machine au repos (R-017). Cause : timings par temps rée
 dans des tests par ticks. Contournement : sérialiser (règle R-017).
 Correction de fond : budgets en TICKS logiques dans les tests concernés.
 
+**Occurrence 2026-08-06** (passe art, branche dédiée) : deux tests
+save-roundtrip rouges UNE fois dans une suite lancée pendant la fenêtre
+de turbulence des redémarrages conteneur
+(`test_boss_arena::test_the_arena_restores_the_antechamber_checkpoint`,
+`test_dungeon_antisoftlock::test_leaving_and_coming_back_keeps_what_was_solved`).
+Classement : intermittence environnementale, PAS un bug — verts ×2 en
+isolation ET dans la suite intégrale suivante (**721/721**, arbre
+`295fa06`). Analyse : la voie testée est entièrement synchrone
+(écriture atomique + relecture, restauration dans `_ready`, deferreds
+déterministes par frame) — aucune fenêtre d'attente à blinder n'existe.
+Conduite tenue : ne PAS ajouter d'attentes cosmétiques ; relancer sur
+machine calme avant de croire un rouge de cette classe.
+
 ## ISS-025 — Salle électrique quasi noire en capture statique (S3, ouvert — Phase H/V7)
 
 `gate_salle_electrique.png` (caméra intérieure, 60 frames) : la salle 1 rend
