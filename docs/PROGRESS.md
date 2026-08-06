@@ -3356,3 +3356,30 @@ v8 officielle (`76835be`) : bandes §1.5 intactes (héros 24,7 %,
 citadelle 51,5 %), herbe du premier plan = grand gagnant. Défauts
 dominants NOMMÉS pour la suite : éclair minuscule, rivière-guide
 timide, citadelle boîtes grises.
+
+### Fait ensuite : Lots 5-8 — revue contradictoire, vérité, lumière, sculpture
+
+Lot 5 : éclair allongé (nuage +8 m, frappe au flanc) + rivière-guide
+rapprochée/élargie (S testé). **Revue contradictoire à contexte frais :
+FAIL** — éval v9 (72) surestimée (re-notation ≈ 63) : halo d'éclair
+OPAQUE cachant le cœur, peau des bras en PBR (surface 1), flamme
+clippée blanche, rivière quasi mate dans l'exception émissive, deux
+tests infalsifiables, ciel symétrique, héros ~51 % vs 38-45. Erratum
+consigné SANS maquiller la preuve. Lot 6 : chaque contre-exemple
+corrigé fail-first (tests par SURFACE, fallback 1×1 rejeté, seuil réel
+d'émission, halo translucide additif dans StormCell — correctif §9.3
+partagé —, flamme orange, fleurs ventées, tools/video committé).
+Lot 7 (AD-005) : le contrat d'IMAGE §1.1 prime sur la distance §3.1
+(incompatibilité mathématique au FOV verrouillé) — objectif 1,75 m,
+recul 5,0 m : tête 44,7 %, pieds 89,3 %, hauteur 44,6 % ; soleil
+replacé DEVANT-GAUCHE (l'ancien yaw le mettait derrière-droite) ; halo
+62°/0,28 : zone solaire MESURÉE 83,7 vs 73,5. Lot 8 : ombres portées
+(héros ancré), citadelle 19 formes §2.4, falaise-escalier qui guide.
+Éval fin de journée ≈ 71,5 UNVERIFIED (< 75 : pas de V4, AD-004).
+
+### Prochaine action exacte
+
+1. Re-rendre la vidéo de stabilité sur l'état v13 (elle date de v6).
+2. Textures procédurales maison (AD-001) roche/terre/tissu — le manque
+   dominant (matériaux 6,5/10).
+3. Puis re-évaluation + revue contradictoire ; V4 seulement si ≥ 75.
