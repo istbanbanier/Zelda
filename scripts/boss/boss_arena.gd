@@ -56,8 +56,17 @@ const CORE_ZONE: float = 6.0
 const RING_ZONE: float = 14.0
 ## §16.6 : supplément de cadrage pendant le combat. Mesuré sur la
 ## silhouette : 6,4 m de long à 4,3 m de recul sortent du cadre.
-const BOSS_FRAMING_DISTANCE: float = 2.2
-const BOSS_FRAMING_FOV: float = 6.0
+## RÉÉTALONNÉ avec la correction du champ de vision (D-050). Ces suppléments
+## avaient été réglés à l'époque où la caméra jouait à 102° horizontaux : un
+## champ pareil contenait le Gardien sans effort. À 71°, la suite a mesuré le
+## boss « dans le cadre 0 % du temps » — §16.6 en exige 80 %.
+##
+## On compense d'abord par la DISTANCE et très peu par le champ : reculer
+## garde la lisibilité, élargir la reprendrait le fisheye qu'on vient de
+## retirer. Rapport des tangentes entre l'ancien et le nouveau champ ≈ 1,73,
+## d'où un recul d'environ 7 m au lieu de 2,2.
+const BOSS_FRAMING_DISTANCE: float = 7.0
+const BOSS_FRAMING_FOV: float = 8.0
 const BOSS_SPAWN: Vector3 = Vector3(0, 0.2, -7.0)
 
 ## Vrai en jeu. Coupé par les tests, et pour une raison précise :

@@ -468,7 +468,36 @@ func begin_ground_lock(duration: float) -> bool:
 	return true
 
 
+## Cadence des pas, mesurée en DISTANCE parcourue et non en temps : marcher,
+## courir et sprinter produisent alors naturellement des rythmes différents,
+## et s'arrêter arrête les pas — ce qu'un minuteur ne saurait pas faire.
+##
+## Il n'existait aucun crochet de pas dans le projet : ni cadence, ni notion
+## de surface. C'est le manque n°1 du playtest — sans pas, le personnage
+## flotte, le sol n'a pas de matière et la vitesse n'a pas de rythme.
+const STEP_STRIDE_M: float = 2.1
+var _step_distance: float = 0.0
+var _step_variant: int = 0
+
+
+func _tick_footsteps(delta: float) -> void:
+	if not is_on_floor():
+		return
+	var speed: float = Vector2(velocity.x, velocity.z).length()
+	if speed < 0.6:
+		return
+	_step_distance += speed * delta
+	if _step_distance < STEP_STRIDE_M:
+		return
+	_step_distance = 0.0
+	# Trois échantillons en rotation : deux pas par seconde sur un seul son
+	# produisent l'effet mitraillette que §18.2 interdit.
+	_step_variant = (_step_variant + 1) % 3
+	_sfx(StringName("step_grass_%s" % "abc"[_step_variant]))
+
+
 func _process_locomotion(delta: float, intent: InputIntent) -> void:
+	_tick_footsteps(delta)
 	# Arc Step en cours : le dash a l'autorité, l'entrée est suspendue le
 	# temps du trajet (< 0,8 s garanti par le budget de secours).
 	if _arc_step_active:
@@ -663,6 +692,7 @@ func _try_jump() -> void:
 	if _jump_buffer_timer <= 0.0 or _coyote_timer <= 0.0:
 		return
 	velocity.y = tuning.jump_velocity
+	_sfx(&"jump")
 	_jump_buffer_timer = 0.0
 	# Consommer le coyote empêche un second saut pendant la fenêtre restante.
 	_coyote_timer = 0.0
@@ -672,6 +702,11 @@ func _try_jump() -> void:
 func _detect_ground_transitions(was_on_floor: bool, vertical_before: float) -> void:
 	var now_on_floor: bool = is_on_floor()
 	if now_on_floor and not was_on_floor:
+		# `landed` était émis et n'avait AUCUN écouteur : tomber de trente
+		# mètres ne produisait pas un bruit. Deux masses, deux sons — c'est
+		# aussi la seule information qui dit au joueur qu'une chute comptait.
+		_sfx(&"land_hard" if vertical_before < -12.0 else &"land_soft")
+		_step_distance = 0.0
 		landed.emit(vertical_before)
 	elif not now_on_floor and was_on_floor:
 		left_ground.emit()
@@ -914,6 +949,7 @@ func _gate_damage(event: DamageEvent) -> StringName:
 	if _guard_held_time <= window:
 		_clarity_timer = guard.clarity_duration
 		_jolt_attacker_poise(event)
+		_sfx(&"parry")
 		parried.emit(event)
 		return &"annule"
 	# Blocage ordinaire : l'endurance paie ; jauge insuffisante = GuardBreak.
@@ -925,6 +961,7 @@ func _gate_damage(event: DamageEvent) -> StringName:
 	event.amount *= guard.block_damage_factor
 	event.knockback *= guard.block_knockback_factor
 	_hit_was_blocked = true
+	_sfx(&"guard")
 	guard_blocked.emit(event)
 	return &"bloquee"
 

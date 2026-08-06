@@ -79,8 +79,20 @@ func test_the_valley_loads_with_player_camp_and_flow() -> void:
 			await _tree().physics_frame
 		check(grounded, "le joueur atterrit sur le sol de la vallée")
 
+	# La mesure portait sur TOUS les pillards braise du monde et se disait
+	# « au camp ». Tant que le camp était le seul endroit peuplé, la
+	# confusion ne se voyait pas ; le jour où l'on a posté des gardes ailleurs,
+	# le test a accusé un renfort légitime. On mesure désormais ce que la
+	# phrase annonce : ceux qui tiennent le camp.
+	var camp: Vector3 = Vector3(45.0, 6.0, 65.0)
 	var raiders: Array[Node] = valley.find_children("*", "RaiderRed", true, false)
-	check_equal(raiders.size(), 3, "trois pillards au camp")
+	var at_camp: int = 0
+	for raider: Node in raiders:
+		var body: Node3D = raider as Node3D
+		if body != null and body.global_position.distance_to(camp) < 30.0:
+			at_camp += 1
+	check_equal(at_camp, 3, "trois pillards au camp (sur %d dans la vallée)"
+		% raiders.size())
 	var chest: Chest = valley.get_node("Camp/CampChest") as Chest
 	check_not_null(chest, "le coffre du camp existe")
 	if chest != null:

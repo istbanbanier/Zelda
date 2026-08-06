@@ -36,12 +36,57 @@ const PITCH_JITTER: float = 0.07
 var _sfx_streams: Dictionary = {}
 var _sfx_pool: Array[AudioStreamPlayer] = []
 var _sfx_next: int = 0
+## Lecteur unique de la boucle d'ambiance — voir `play_ambience()`.
+var _ambience: AudioStreamPlayer = null
+## Dernier instant de lecture par identifiant. Le tour de rôle du pool est
+## DESTRUCTIF : sans cette garde, un balayage qui touche trois cibles rejoue
+## le même son trois fois dans la même frame, et huit pas coupent la mort.
+var _last_played: Dictionary = {}
+const SFX_MIN_INTERVAL: float = 0.045
 
 
 func _ready() -> void:
 	_ensure_buses()
 	_build_sfx_pool()
 	_restore_saved_volumes()
+
+
+## Boucle d'AMBIANCE. Le gestionnaire ne savait jouer que des sons courts :
+## rien, dans tout le projet, ne pouvait faire tourner un flux continu. Les
+## dossiers `ambience/`, `music/` et `combat/` étaient vides et inatteignables.
+## Le silence total entre deux actions est ce qui fait « projet non fini »
+## plus sûrement que n'importe quel placeholder visuel.
+##
+## Un seul lecteur, réutilisé : deux ambiances ne se superposent jamais.
+func play_ambience(sound: StringName) -> void:
+	var stream: AudioStream = _sfx_stream(sound)
+	if stream == null:
+		return
+	# Les WAV générés ne portent pas de boucle : on la pose ici, sur la
+	# ressource chargée. `loop_end` DOIT être renseigné — laissé à 0, le
+	# moteur arrête la lecture immédiatement (audio_stream_wav.cpp:249).
+	var wav: AudioStreamWAV = stream as AudioStreamWAV
+	if wav != null and wav.loop_mode == AudioStreamWAV.LOOP_DISABLED:
+		wav.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		wav.loop_begin = 0
+		# 16 bits mono : deux octets par échantillon.
+		wav.loop_end = wav.data.size() / 2
+	if _ambience == null or not is_instance_valid(_ambience):
+		_ambience = AudioStreamPlayer.new()
+		_ambience.name = "Ambience"
+		_ambience.bus = "Ambience"
+		add_child(_ambience)
+	_ambience.stream = stream
+	_ambience.play()
+
+
+func stop_ambience() -> void:
+	if _ambience != null and is_instance_valid(_ambience):
+		_ambience.stop()
+
+
+func is_ambience_playing() -> bool:
+	return _ambience != null and is_instance_valid(_ambience) and _ambience.playing
 
 
 ## Les volumes étaient ÉCRITS dans `settings.cfg` et relus uniquement pour
@@ -60,6 +105,11 @@ func _restore_saved_volumes() -> void:
 ## Silencieusement sans effet si le fichier n'existe pas : un son manquant ne
 ## doit jamais casser une action de gameplay — il se voit dans les tests.
 func play_sfx(sound: StringName, bus: String = "SFX") -> void:
+	var now: float = float(Time.get_ticks_msec()) / 1000.0
+	var previous: float = float(_last_played.get(sound, -1.0))
+	if previous >= 0.0 and now - previous < SFX_MIN_INTERVAL:
+		return
+	_last_played[sound] = now
 	var stream: AudioStream = _sfx_stream(sound)
 	if stream == null:
 		return

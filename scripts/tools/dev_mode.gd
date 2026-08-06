@@ -17,7 +17,9 @@
 ##
 ## Il survit à la pause (`PROCESS_MODE_ALWAYS`) : un défaut se voit souvent
 ## justement quand le jeu est figé.
-class_name DevMode
+## Pas de `class_name` ici : le nom de l'autoload (`DevMode`) EST déjà un
+## identifiant global, et Godot refuse qu'une classe le masque. On l'atteint
+## donc par le singleton, comme les autres autoloads du projet.
 extends CanvasLayer
 
 ## Au-dessus du HUD (couche 1 par défaut), sous rien.
