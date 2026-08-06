@@ -409,6 +409,56 @@ func _build_open_world() -> void:
 	rewards.name = "DiscoveryRewards"
 	add_child(rewards)
 	rewards.furnish(self)
+	# LE SOL DES LIEUX HABITÉS, en dernier : il a besoin que tout soit bâti
+	# pour mesurer l'emprise réelle. Un village n'est pas une collection de
+	# maisons, c'est une terre battue, une place et des chemins qui s'y
+	# rendent — sans quoi le regard lit « modèles alignés sur un pré ».
+	# Différé d'une frame : les emprises se mesurent en coordonnées MONDE,
+	# et les sous-arbres viennent tout juste d'entrer dans l'arbre.
+	_lay_settlement_ground.call_deferred()
+
+
+## Pose la terre battue, la place et les chemins de chaque lieu habité.
+##
+## Les implantations sont retrouvées par le NOM de leur nœud, tel que leur
+## bâtisseur l'a écrit. Un lieu absent est simplement sauté : cette passe ne
+## doit jamais empêcher le monde de se charger.
+func _lay_settlement_ground() -> void:
+	if not is_inside_tree():
+		return
+	# nom du groupe -> [chemin du bâtisseur, noms des bâtiments, altitude du sol]
+	var plans: Array = [
+		["Hamlets", ["CabaneDesBucherons", "Scierie", "PileDeTroncs",
+			"Charretterie"], 2.0, 20260806],
+		["Hamlets", ["CorpsDeGarde", "GalerieDeMine", "Sechoir",
+			"CourDeMinerai"], 2.0, 20260807],
+	]
+	var total_paths: int = 0
+	var total_props: int = 0
+	for plan: Array in plans:
+		var host: Node3D = get_node_or_null(NodePath(plan[0] as String)) as Node3D
+		if host == null:
+			continue
+		var buildings: Array[Node3D] = []
+		for building_name: String in (plan[1] as Array):
+			var found: Array[Node] = host.find_children(building_name, "Node3D",
+				true, false)
+			if not found.is_empty():
+				buildings.append(found[0] as Node3D)
+		if buildings.size() < 2:
+			continue
+		var group: String = "Sol_%s" % (plan[1] as Array)[0]
+		var report: Dictionary = SettlementGround.lay(host, group, buildings,
+			plan[2] as float)
+		total_paths += report["paths"] as int
+		var centre: Vector3 = SettlementGround.footprint(
+			host.get_node(NodePath(group)) as Node3D).get_center()
+		centre.y = plan[2] as float
+		total_props += SettlementGround.populate(host, "Vie_%s"
+			% (plan[1] as Array)[0], centre, 9.0, 7, plan[3] as int)
+	if total_paths > 0:
+		print("[monde] lieux habités : %d chemins, %d objets de vie"
+			% [total_paths, total_props])
 
 
 ## Journal des découvertes de la partie — public, pour que la sauvegarde de
