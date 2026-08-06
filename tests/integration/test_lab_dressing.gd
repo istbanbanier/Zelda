@@ -14,6 +14,8 @@ extends GateTestCase
 const LAB: String = "res://scenes/lookdev/HeroShotLab.tscn"
 const PAINTERLY: String = \
 	"res://shaders/characters/SH_CharacterPainterly.gdshader"
+const PAINTERLY_CUTOUT: String = \
+	"res://shaders/characters/SH_CharacterPainterlyCutout.gdshader"
 
 var _root: Node3D = null
 
@@ -93,7 +95,8 @@ func test_the_dressing_is_painted_and_varied() -> void:
 			var material: ShaderMaterial = \
 				mesh.get_surface_override_material(s) as ShaderMaterial
 			if material == null or material.shader == null \
-					or material.shader.resource_path != PAINTERLY:
+					or material.shader.resource_path not in \
+						[PAINTERLY, PAINTERLY_CUTOUT]:
 				bare.append("%s/s%d" % [mesh.name, s])
 				continue
 			painted += 1

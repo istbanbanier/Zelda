@@ -11,6 +11,8 @@ extends GateTestCase
 
 const PAINTERLY: String = \
 	"res://shaders/characters/SH_CharacterPainterly.gdshader"
+const PAINTERLY_CUTOUT: String = \
+	"res://shaders/characters/SH_CharacterPainterlyCutout.gdshader"
 const FOLIAGE: String = \
 	"res://shaders/foliage/SH_FoliageWindPainterly.gdshader"
 const LAB: String = "res://scenes/lookdev/HeroShotLab.tscn"
@@ -40,7 +42,8 @@ func _is_painted(material: Material) -> bool:
 	if shader_material == null or shader_material.shader == null:
 		return false
 	var path: String = shader_material.shader.resource_path
-	return path == PAINTERLY or path == FOLIAGE
+	return path == PAINTERLY or path == FOLIAGE \
+		or path == PAINTERLY_CUTOUT
 
 
 func _out_of_scope(node: Node, lab: Node) -> bool:

@@ -83,6 +83,11 @@ const PAINTERLY: Shader = \
 ## l'herbe du lab était figée, contre §11.1.
 const FOLIAGE_PAINTERLY: Shader = \
 	preload("res://shaders/foliage/SH_FoliageWindPainterly.gdshader")
+## Variante DÉCOUPE : cartes de feuilles — transparence respectée par
+## seuil, faces des deux côtés (la peinture opaque dessinait des
+## contours sombres sur les bords transparents, interdits §1.6).
+const PAINTERLY_CUTOUT: Shader = \
+	preload("res://shaders/characters/SH_CharacterPainterlyCutout.gdshader")
 
 var _anchors: Dictionary[StringName, Node3D] = {}
 var _river_local: Array[Vector3] = []
@@ -273,12 +278,19 @@ func _apply_painterly_to_model(model: Node3D) -> void:
 			continue
 		for s: int in range(mesh.mesh.get_surface_count()):
 			var texture: Texture2D = null
+			var cutout: bool = false
 			var active: StandardMaterial3D = \
 				mesh.get_active_material(s) as StandardMaterial3D
 			if active != null:
 				texture = active.albedo_texture
-			mesh.set_surface_override_material(s,
-				_painterly_material(Color.WHITE, 0.85, texture))
+				cutout = active.transparency \
+					!= BaseMaterial3D.TRANSPARENCY_DISABLED \
+					or active.cull_mode == BaseMaterial3D.CULL_DISABLED
+			var material: ShaderMaterial = \
+				_painterly_material(Color.WHITE, 0.85, texture)
+			if cutout:
+				material.shader = PAINTERLY_CUTOUT
+			mesh.set_surface_override_material(s, material)
 
 
 func _apply_painterly_to_hero(hero: Node3D) -> void:
