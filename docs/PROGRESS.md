@@ -3429,3 +3429,55 @@ OBJ) déposés et attribués, sélection au lot suivant.
    → peinture → habillage → capture.
 2. Re-évaluation sévère §30.2 + revue contradictoire.
 3. V4 (propagation vallée) seulement si ≥ 75 tenu.
+
+## 2026-08-06 (soir) — Phase A « tour du monde » + propagation carte entière
+
+### Phase A — le tour du monde en images (fait, committé)
+
+11 zones capturées depuis l'arbre committé `c6a6994`
+(`evidence/tour_du_monde/`), dont les **premières captures jamais
+prises** du donjon salle par salle, du vestibule et de l'arène. Table
+`KEEP / REWORK / REPLACE / MISSING` en fin de
+`docs/assets/AUDIT_V0_PHASE_H.md`. Verdicts : vestibule `KEEP` (le
+meilleur intérieur), six salles `REWORK` (boîtes brunes plates), arène
+`REPLACE` (disque nu — déficit visuel n°1), bestiaire `REWORK`
+(primitives), KayKit `MISSING` d'intégration.
+
+### Lot 14 — TOUTE la carte peinte (3768 surfaces)
+
+`PainterlyRecipe` (scripts/art) devient le point UNIQUE de la direction
+artistique ; `ValleyWorld` l'appelle en dernier dans son `_ready`.
+Matériaux mutualisés par signature. Contrat NÉGATIF vert : aucun
+matériau qui émet vraiment n'est repeint (télégraphes). **Quatre
+régressions attrapées à l'image** que le laboratoire de 80 m ne pouvait
+pas révéler : grésillement (textures importées sans mipmaps + fondu de
+distance ajouté), carte délavée (seuil d'éclaircissement 0,45 → 0,14 ;
+plancher d'ombre 0,26 → 0,14), nuage blanchi (`CitadelStorm` absent de
+la liste d'exclusion), sol gris (couleurs de sommets — d'abord
+ignorées, puis appliquées à tort ; désormais conditionnées au drapeau
+de la source). **Terrain exclu, décision assumée** : la recette le
+délavait (lointain 65 → 74 %) ; mesuré après exclusion, il est
+identique à l'avant (#335F1E contre #335F1F).
+
+### Lot 15 — donjon : tenté, MESURÉ, RETIRÉ (AD-008)
+
+Peinture branchée sur six salles + arène + vestibule, puis retirée sur
+preuve : gain de matière réel (contraste des murs 16,9 → 26,5 en salle
+3) mais luminance 17 % → 9-11 % sur un donjon DÉJÀ trop sombre
+(ISS-025), et contraste des marques de sol de l'arène 45,5 → 16,3.
+`paint_room()` reste écrit et documenté, NON appelé.
+
+### Lot 16 — citadelle en terrasses
+
+Socle étagé, quatre contreforts, trois conduits cuivre (§2.4), sans
+collision. Gain honnête : largement masqué depuis la vue d'ouverture
+par les falaises du plan moyen.
+
+### Prochaine action exacte
+
+1. **Éclairage du donjon d'abord** (ambre de circulation §12.8, sources
+   motivées) — c'est le préalable nommé par AD-008 ; la peinture
+   intérieure suivra et paiera enfin.
+2. Arène du boss : sol à zones lisibles + présence des pylônes
+   (déficit visuel n°1 selon le tour du monde).
+3. Habillage KayKit du donjon une fois l'éclairage repris.
