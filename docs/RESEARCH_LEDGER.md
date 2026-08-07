@@ -370,6 +370,105 @@ ou une mesure locale) · `OUVERT`.
 
 ---
 
+## R-015 — Comment ce même dépôt résout-il « image de référence → asset 3D » ?
+
+- **Date** : 2026-08-07 · **Statut** : RÉSOLU (constat), décisions d'adoption `OUVERT`
+- **Pourquoi cette question** : c'est le problème central non résolu d'Éclats d'Orage.
+  `VISUAL_ASSET_BIBLE` en décrit l'intention sur 33 sections, mais **en prose** : rien
+  n'y est mesurable par une machine. `world-of-claudecraft` a reconstruit une ville
+  entière depuis des images de référence, avec des portes vérifiables à chaque étape
+  (`docs/design/eastbrook-vale-rebuild/`, compétence `image-to-glb`,
+  `docs/image-to-glb-asset-workflow.md`).
+
+### Ce qui est réellement transposable
+
+1. **Les budgets sont verrouillés AVANT de modéliser**, pas constatés après : cible et
+   plafond dur de triangles, plafond d'octets, nombre de primitives et de matériaux,
+   dimensions. Avec des exemplaires nommés qui servent d'étalon (coffre de banquier
+   2 048 tri / 4 mat / 44 Ko ; boîte aux lettres 1 640 tri / 2 mat / 33 Ko ; unique
+   grand point de repère 8 226 tri / 6 mat / 137 Ko). Notre `ART_BIBLE` §5 donne des
+   fourchettes ; personne ne les vérifie à l'export.
+
+2. **L'inventaire de détails (`detail-inventory.json`)** transforme « ressembler à
+   l'image » en liste vérifiable. L'image est balayée en grille 3×3 plus des vues
+   croisées, et chaque détail retenu porte : identifiant, nature (couture, chanfrein,
+   salissure…), région **normalisée** dans l'image, échelle (macro/méso/micro), ce
+   qu'il affecte (silhouette, couleur de sommet, rugosité), le composant auquel il
+   se rattache, la vue qui en fait foi, et un **indice de confiance**. Minimum 12.
+
+3. **La recevabilité de la référence est notée AVANT de commencer**
+   (`object-sculpt-spec.json`) sur sept axes : isolation de l'objet, lisibilité de la
+   silhouette, déduction de profondeur, décomposition en primitives, procéduralité des
+   matériaux, risque d'occlusion, aptitude à l'interaction. Puis un palier de
+   complexité, un comptage estimé des composants, et une décision de profondeur de
+   spécification **motivée**. Une référence peut être jugée inexploitable — et l'est.
+
+4. **Le seuil est PAR TRAIT D'IDENTITÉ (0,70), et « une moyenne globale n'excuse
+   jamais un trait d'identité raté ».** C'est une critique directe de notre WOW Gate :
+   une note sur 100 avec pour seule garde « aucun domaine à zéro » laisse passer une
+   citadelle à 3/10 si le reste compense. Chez eux, un trait critique raté est un
+   échec, quel que soit le total.
+
+5. **« Refuser le carton » : la silhouette doit tenir de face, de profil, de
+   trois-quarts et en vue rasante.** Une seule belle image ne prouve rien.
+
+6. **Le contrat de l'asset est épinglé dans un test** : octets, sha256, triangles,
+   primitives, matériaux, absence de texture/animation/squelette, compression
+   présente, boîte englobante posée au sol et centrée, et **égalité d'empreinte de la
+   source**. Un asset ne peut donc pas se dégrader en silence — exactement le mode de
+   panne d'ISS-018 chez nous (créatures en pièces détachées, tous les tests verts).
+
+7. **L'implantation est une DONNÉE, et les tests épinglent chaque littéral.** Le plan
+   directeur est un tableau : position, rotation en radians, dimensions, et une échelle
+   exprimée **relativement au joueur** (« 3,00 rigs » = hauteur / 2,6 yards). Les tests
+   prouvent que chaque coin de bâtiment reste à l'intérieur de l'enceinte.
+
+8. **La provenance des images générées par IA est un registre** : outil, date, chemins
+   exacts des entrées, hachages, itérations **rejetées** listées, et le texte de prompt
+   figé dans un fichier distinct qui fait autorité. Notre §0.2 interdit de présenter une
+   image générée comme une capture ; cela dit en plus comment tracer celles qu'on garde.
+
+9. **Animation : ne pas inventer d'outillage.** La technique par défaut échantillonne
+   des poses déjà présentes dans la bibliothèque de clips du rig et les mélange ; passer
+   par Blender headless est le chemin d'**escalade**, réservé au cas où aucun clip
+   donneur ne peut fournir la pose. Ils ont commencé par **vérifier** que l'outillage
+   Blender proposé n'était en fait pas branché, avant de construire dessus.
+
+10. **Le piège qui échoue en silence** : « toujours compresser en meshopt, jamais en
+    draco — le chargeur runtime n'a pas de `DRACOLoader`, donc un GLB draco échoue
+    silencieusement et retombe sur l'ancienne géométrie procédurale, sans erreur
+    visible ». Chaque répertoire d'assets porte son propre `CLAUDE.md` avec sa moyenne
+    de taille **mesurée** et ses pièges.
+
+### Deux règles de documentation qui répondent à notre problème des trois cahiers
+
+- **Documents vivants vs archives historiques** : seuls les vivants font autorité, et
+  la distinction est écrite dans `docs/CLAUDE.md`. Nous avons trois cahiers cumulatifs
+  sans cette distinction.
+- **« Quand le code et un document divergent, revérifier contre le code et consigner
+  l'écart. Les points d'accroche `fichier:ligne` d'un document dérivent : faire
+  confiance à l'intention, pas au numéro de ligne. »**
+
+### Décisions proposées, non prises
+
+Aucune de ces adoptions n'est engagée ici : elles touchent la barre visuelle, qui est
+une décision du propriétaire, pas un choix d'implémentation. Par ordre de rapport :
+
+| # | Adoption | Coût | Ce que ça règle |
+|---|---|---|---|
+| 1 | Seuil **par trait d'identité** en plus de la note /100 du WOW Gate | faible | une citadelle ratée ne peut plus passer par compensation |
+| 2 | `detail-inventory.json` + budgets verrouillés avant modélisation | moyen | « ressemble à l'image » devient vérifiable |
+| 3 | Contrat d'asset épinglé dans un test (triangles, boîte, empreinte) | moyen | rejoue ISS-018 avant le joueur |
+| 4 | `CLAUDE.md` local par répertoire d'assets, avec pièges mesurés | faible | les échecs silencieux se transmettent |
+| 5 | Marquer chaque doc `vivant` ou `historique` | faible | lève l'ambiguïté des trois cahiers |
+
+- **Limite** : constat de lecture. Rien de tout cela n'a été essayé sur notre pipeline
+  Blender → glTF, et leur pile (Three.js, GLB procéduraux sans texture) n'est pas la
+  nôtre (Godot, `.blend` → `.glb`). Les points 1, 4 et 5 sont transposables tels quels ;
+  les points 2 et 3 demandent une adaptation à `tools/gltf_inspect.py`.
+
+---
+
 ## Questions ouvertes pour les phases suivantes
 
 | ID | Question | Phase | Décidera |
