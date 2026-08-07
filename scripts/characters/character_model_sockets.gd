@@ -137,13 +137,13 @@ func _graft_part(part_scene: PackedScene) -> void:
 func _mount_head() -> void:
 	if head_part == null:
 		return
-	var socket: BoneAttachment3D = self.socket("SOCKET_HEAD")
-	if socket == null:
+	var mount: BoneAttachment3D = socket("SOCKET_HEAD")
+	if mount == null:
 		push_warning("[model] pas de socket de tête : os `Head` absent.")
 		return
 	var head: Node3D = head_part.instantiate() as Node3D
 	head.name = "Head"
-	socket.add_child(head)
+	mount.add_child(head)
 	# Mise à l'échelle DÉDUITE de la stature du porteur (voir la constante) :
 	# 0,82 pour le pillard braise, 1,10 pour le briseur, 1,00 pour le héros.
 	var bone: int = _skeleton.find_bone("Head")
@@ -176,10 +176,10 @@ func _mount_head() -> void:
 ## mesure qui distingue « une tête existe » de « une tête est au bon endroit ».
 ## Retourne un vecteur nul si aucune tête n'est montée.
 func head_top() -> Vector3:
-	var socket: BoneAttachment3D = self.socket("SOCKET_HEAD")
-	if socket == null:
+	var mount: BoneAttachment3D = socket("SOCKET_HEAD")
+	if mount == null:
 		return Vector3.ZERO
-	var head: Node = socket.get_node_or_null("Head")
+	var head: Node = mount.get_node_or_null("Head")
 	if head == null:
 		return Vector3.ZERO
 	var top: float = -INF
