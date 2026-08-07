@@ -53,12 +53,12 @@ func test_every_character_carries_a_head_on_the_head_bone() -> void:
 		_tree().root.add_child(model)
 		await _settle(3)
 
-		var socket: BoneAttachment3D = model.socket("SOCKET_HEAD")
-		check(socket != null, "%s : socket de tête monté" % path.get_file())
-		if socket == null:
+		var mount: BoneAttachment3D = model.socket("SOCKET_HEAD")
+		check(mount != null, "%s : socket de tête monté" % path.get_file())
+		if mount == null:
 			model.queue_free()
 			continue
-		var head: Node = socket.get_node_or_null("Head")
+		var head: Node = mount.get_node_or_null("Head")
 		check(head != null, "%s : une tête est réellement montée"
 			% path.get_file())
 		if head == null:
@@ -77,15 +77,25 @@ func test_every_character_carries_a_head_on_the_head_bone() -> void:
 			"%s : la tête a une vraie géométrie (%d triangles)"
 				% [path.get_file(), triangles])
 
-		# 2. Elle est à la HAUTEUR de l'os, pas à l'origine du modèle.
+		# 2. Le squelette porte bien l'os attendu, à la hauteur attendue.
+		# C'est le REPOS qu'on compare ici : la pose animée, elle, bouge.
+		var skeletons: Array[Node] = model.find_children(
+			"*", "Skeleton3D", true, false)
+		var skeleton: Skeleton3D = skeletons[0] as Skeleton3D
+		var rest: float = skeleton.get_bone_global_rest(
+			skeleton.find_bone("Head")).origin.y
 		var expected: float = SUBJECTS[path]
-		var top: Vector3 = model.head_top()
-		check(top.y > expected - BONE_TOLERANCE,
-			"%s : le crâne est au-dessus de l'os `Head` (%.3f m > %.3f m)"
-				% [path.get_file(), top.y, expected - BONE_TOLERANCE])
+		check(absf(rest - expected) < BONE_TOLERANCE,
+			"%s : os `Head` au repos à %.3f m (attendu %.3f)"
+				% [path.get_file(), rest, expected])
 
-		# 3. Elle a la taille d'une tête — mise à l'échelle par la stature.
-		var height: float = top.y - expected
+		# 3. Le crâne s'élève AU-DESSUS DE SON POINT D'ACCROCHE, d'une hauteur
+		# de tête. On mesure depuis le socket et non depuis le repos : c'est
+		# `BoneAttachment3D` qui porte la tête, et il suit la pose ANIMÉE —
+		# l'idle du briseur baisse la nuque de 16 cm, ce qui faisait conclure à
+		# tort à un crâne de 6 cm quand ce cas comparait au repos.
+		var socket_y: float = mount.global_position.y
+		var height: float = model.head_top().y - socket_y
 		check(height > MIN_HEAD_HEIGHT and height < MAX_HEAD_HEIGHT,
 			"%s : hauteur de crâne plausible (%.3f m)"
 				% [path.get_file(), height])

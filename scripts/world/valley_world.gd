@@ -39,6 +39,15 @@ const SAVED_POSITION_LIMIT_Y: float = 120.0
 ## §7.7 : soleil à l'ouest (rayons vers +X), plongée 22°.
 const SUN_ROTATION_DEG: Vector3 = Vector3(-22.0, -90.0, 0.0)
 
+## Repose des ramassables sur le sol (voir `_drop_pickups_to_ground`).
+## La sonde part TRÈS haut : un objet enterré de 8 m — le cas réellement
+## rencontré sur la crête — ne serait pas rattrapé par un rayon court.
+const GROUND_SNAP_UP: float = 40.0
+const GROUND_SNAP_DOWN: float = 60.0
+## Un ingrédient posé pile sur la surface s'y encastre à l'œil : on le pose
+## légèrement dessus, comme un objet réellement déposé.
+const GROUND_SNAP_CLEARANCE: float = 0.12
+
 ## §3.2, ajusté SUR CAPTURE (les valeurs de la spec sont des points de départ) :
 ## à 4,2 m, une capsule de 1,8 m occupait 57 % du cadre — mesuré sur la première
 ## capture. Reculée à ~7,2 m et montée à 2,6 m au-dessus des pieds : héros à
@@ -760,6 +769,41 @@ func _spawn_ingredients() -> void:
 		pickup.pickup_id = StringName(String(placement[2]))
 		pickup.position = placement[1] as Vector3
 		holder.add_child(pickup)
+	# LES INGRÉDIENTS SE POSENT SUR LE SOL RÉEL, pas sur une cote écrite à la
+	# main. Les deux fruits de la crête étaient à y = 24 — la cote du spawn
+	# dans MASTER_SPEC §3.3 — alors que le relief a depuis été bâti à y = 32 :
+	# ils étaient donc ENTERRÉS de 8,00 m, mesurés à la sonde. Ce sont les deux
+	# premiers ramassables de la partie, à l'endroit exact où le joueur prend
+	# la main ; le playtest du 2026-08-07 finit avec « 0 ingrédient ramassé ».
+	# C'est la même classe de défaut qu'ISS-035 (les pas japonais suspendus
+	# au-dessus du lit) : une cote recopiée d'un document au lieu d'être
+	# déduite du terrain. On la déduit.
+	_drop_pickups_to_ground.call_deferred(holder)
+
+
+## Repose chaque ramassable sur le décor sous lui. Appelé en différé : les
+## corps statiques du relief doivent être enregistrés auprès du serveur
+## physique avant qu'un rayon puisse les rencontrer.
+func _drop_pickups_to_ground(holder: Node) -> void:
+	if not is_instance_valid(holder):
+		return
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	if space == null:
+		return
+	for node: Node in holder.get_children():
+		var pickup: Node3D = node as Node3D
+		if pickup == null:
+			continue
+		var from: Vector3 = pickup.global_position + Vector3.UP * GROUND_SNAP_UP
+		var to: Vector3 = pickup.global_position - Vector3.UP * GROUND_SNAP_DOWN
+		# Couche 1 (World Static) seule : un ingrédient se pose sur le relief,
+		# jamais sur un ennemi qui passait par là.
+		var hit: Dictionary = space.intersect_ray(
+			PhysicsRayQueryParameters3D.create(from, to, 1))
+		if hit.is_empty():
+			continue
+		pickup.global_position = (hit["position"] as Vector3) \
+			+ Vector3.UP * GROUND_SNAP_CLEARANCE
 
 
 ## Les pickups d'ingrédients naissent APRÈS `_apply_save()` : leur part de
