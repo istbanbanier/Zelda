@@ -42,8 +42,12 @@ fi
 # 1) Invariants durs sur le diff poussé (mêmes règles que le hook Stop).
 if [ -n "$range" ] && command -v perl >/dev/null 2>&1; then
   nintendo='\b(bokoblin|lynel|hyrule|sheikah|ganon|korok|triforce|deku|zonai|moblin|hylian)\b'
+  # `.githooks` et `.claude/hooks` s'excluent eux-mêmes : ces scripts PORTENT les
+  # motifs interdits pour les interdire. Omission constatée au premier vrai push,
+  # que ce plancher a refusé — en attrapant sa propre ligne de motifs.
   hits=$(git diff -U0 --no-color "$range" -- . \
-      ':(exclude)docs' ':(exclude).claude/hooks' ':(exclude).claude/rules' 2>/dev/null \
+      ':(exclude)docs' ':(exclude).claude/hooks' ':(exclude).claude/rules' \
+      ':(exclude).githooks' 2>/dev/null \
     | grep -E '^\+' | grep -v '^+++' \
     | grep -EiC0 "$nintendo" | head -5 || true)
   if [ -n "$hits" ]; then

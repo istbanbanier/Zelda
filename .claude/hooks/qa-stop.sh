@@ -43,11 +43,15 @@ git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 0
 
 # Les trois cahiers des charges CITENT les termes interdits pour les interdire ;
 # `docs/` et les règles sont donc hors périmètre du scan de noms.
+# `.claude/hooks` et `.githooks` s'excluent eux-mêmes : ces scripts PORTENT les
+# motifs interdits pour les interdire. `tests/unit/test_invariants.gd` échappe au
+# problème autrement, en assemblant ses motifs par morceaux — il reste donc scanné.
 pathspec=(
   .
   ':(exclude)docs'
   ':(exclude).claude/hooks'
   ':(exclude).claude/rules'
+  ':(exclude).githooks'
   ':(exclude)ATTRIBUTIONS.md'
 )
 
