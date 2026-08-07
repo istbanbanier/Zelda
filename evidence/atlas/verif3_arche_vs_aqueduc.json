@@ -1,0 +1,17 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "altitude_m": 600.0,
+  "center": "0.0,0.0",
+  "commit": "d24a36ab5d86764b8ff9388283e0a983cc15c661",
+  "engine": "4.7.1-stable (custom_build)",
+  "fog": "conservé",
+  "geometry_instances": 3861,
+  "image": "evidence/atlas/verif3_arche_vs_aqueduc.png",
+  "label": "verif3_arche_vs_aqueduc",
+  "metres_per_pixel": 0.40625,
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "size": "1280x720",
+  "span_m": 520.0
+}

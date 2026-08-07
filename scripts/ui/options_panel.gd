@@ -44,6 +44,18 @@ const CONTROLS: Array[Array] = [
 	["Verrouiller une cible", "C ou clic molette"],
 	["Inventaire", "Tab"],
 	["Plat rapide", "F"],
+	# Le Bracelet de Résonance est la mécanique SIGNATURE du jeu, et ses
+	# touches n'étaient listées nulle part : ni ici, ni dans une notification,
+	# ni dans un tutoriel. Les actions sont câblées et fonctionnelles depuis
+	# longtemps (`player_controller.gd`) — un joueur ne pouvait simplement pas
+	# apprendre qu'elles existent, donc arrivait au donjon sans savoir qu'il
+	# possède la moitié de son propre jeu.
+	["Bracelet — onde de détection", "A"],
+	["Bracelet — viser une cible", "G (maintenu)"],
+	["Bracelet — agir sur la cible visée", "G + clic gauche"],
+	["Bracelet — repousser au lieu d'attirer", "G + Maj + clic gauche"],
+	["Bracelet — mise à la terre", "T"],
+	["Cible précédente / suivante", "X / V"],
 	["Pause", "Échap"],
 ]
 

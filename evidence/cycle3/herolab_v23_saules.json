@@ -1,0 +1,18 @@
+{
+  "commit": "060314a7a9aa6fba9692e35f7260fa0d5f219759",
+  "display_server": "X11",
+  "distinct_colors_sampled": 4809,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 40,
+  "height": 1080,
+  "label": "cycle3_v23_saules",
+  "luma_mean": 0.5944,
+  "luma_stddev": 0.1922,
+  "png": "evidence/cycle3/herolab_v23_saules.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/lookdev/HeroShotLab.tscn",
+  "timestamp_utc": "2026-08-06 12:19:51",
+  "width": 1920
+}

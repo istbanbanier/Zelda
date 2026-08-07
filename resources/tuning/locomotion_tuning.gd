@@ -61,8 +61,26 @@ extends Resource
 @export var camera_target_height: float = 1.45
 ## Décalage d'épaule : sort la caméra de l'axe pour dégager la vue.
 @export var camera_shoulder_offset: float = 0.32
-@export var camera_fov: float = 70.0
-@export var camera_fov_sprint: float = 76.0
+## ATTENTION — ces deux valeurs sont des angles VERTICAUX.
+##
+## `Camera3D.keep_aspect` vaut `KEEP_HEIGHT` par défaut dans Godot 4.7.1
+## (`scene/3d/camera_3d.h:76`, et `camera_3d.cpp:287` ne passe `true` à
+## `set_perspective` que si le mode vaut `KEEP_WIDTH`). La propriété `fov`
+## décrit donc la hauteur du champ, pas sa largeur.
+##
+## §8.3 et VISUAL_ASSET_BIBLE §3.1 expriment le cadrage en HORIZONTAL :
+## 68–72° au repos, 74–77° en sprint. La conversion en 16:9 est
+## `h = 2·atan(tan(v/2) · 16/9)`, d'où 44° vertical ≈ 71,4° horizontal et
+## 47° vertical ≈ 75,4° horizontal.
+##
+## Le projet a longtemps porté 70 et 76 ici, en croyant écrire des degrés
+## horizontaux : la caméra de jeu tournait donc à 102,5° de champ — un
+## fisheye qui écrasait le sol, éloignait le héros et faisait paraître la
+## prairie démesurée. La caméra de composition, elle, avait la bonne valeur
+## (`scripts/lookdev/hero_shot_lab.gd`) : les captures de référence n'ont
+## jamais montré la caméra avec laquelle on joue.
+@export var camera_fov: float = 44.0
+@export var camera_fov_sprint: float = 47.0
 ## Vitesse d'interpolation du FOV, en unités par seconde : §8.3 interdit tout snap.
 @export var camera_fov_speed: float = 4.0
 @export var camera_pitch_min_deg: float = -65.0

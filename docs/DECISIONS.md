@@ -1276,3 +1276,55 @@ un objet dont la durée de vie naturelle est la seconde.
 un lien restauré dans une géométrie qui a bougé (conducteur déplacé) serait
 soit faux, soit silencieusement dissous au premier tick — autant assumer
 l'éphémère et l'enseigner par la constance.
+
+## D-050 — Le `fov` de la caméra de jeu est un angle VERTICAL, et il est déclaré comme tel
+
+Date : 2026-08-06 (passe jouabilité V5).
+
+`Camera3D.keep_aspect` vaut `KEEP_HEIGHT` par défaut dans Godot 4.7.1
+(`scene/3d/camera_3d.h:76` ; `camera_3d.cpp:287` ne passe `true` à
+`set_perspective` que pour `KEEP_WIDTH`). La propriété `fov` décrit donc la
+hauteur du champ. Les spécifications du projet (§8.3, VISUAL_ASSET_BIBLE §3.1)
+expriment le cadrage en HORIZONTAL. Le réglage portait 70 et 76 en croyant
+écrire des degrés horizontaux : la caméra de jeu tournait à **102,5°**.
+
+Décision : garder `KEEP_HEIGHT` — c'est le choix du paysage, un écran plus
+large montre plus sur les côtés au lieu de rogner en haut — mais le POSER
+explicitement dans `CameraRig._ready()`, et convertir dans le test au lieu de
+comparer deux unités différentes. Valeurs : 44° vertical (71,4° horizontal) au
+repos, 47° (75,4°) en sprint.
+
+**Alternative rejetée** : passer en `KEEP_WIDTH` pour que `fov` signifie
+directement l'horizontal de la spec. Rejetée : cela rogne le champ vertical sur
+les écrans moins larges, et rend le comportement du projet différent du défaut
+du moteur — une surprise de plus pour la prochaine personne qui lira la valeur.
+
+**Ce que cette décision coûte** : les captures de référence antérieures ont été
+prises avec une caméra de composition à 42-44°, jamais avec la caméra de jeu.
+Elles ne sont donc pas comparables à ce que voyait le joueur. Les captures V5
+sont les premières où les deux coïncident.
+
+## D-051 — La sauvegarde écrit le dernier SOL foulé, jamais la position courante
+
+Date : 2026-08-06 (passe jouabilité V5).
+
+Un playtest en boîte noire a produit une perte de partie définitive : le héros
+s'est accroché seul à une pente d'herbe, la caméra est entrée dans le terrain,
+l'endurance est tombée à zéro — et la sauvegarde automatique a écrit cette
+position. « Continuer » rechargeait dans le trou ; la seule issue était de
+perdre la partie. La garde existante (`_is_saved_position_safe`) ne teste que
+les nombres valides et les bornes du monde : un trou à l'intérieur de la carte
+les franchit sans problème.
+
+Décision : `PlayerController` retient la dernière position où il se tenait
+réellement au sol, et c'est CELLE-LÀ que la sauvegarde écrit. On ne peut pas
+recharger dans un endroit où l'on n'a jamais pu se tenir debout.
+
+**Alternative rejetée** : un détecteur de blocage qui téléporte le joueur au
+bout de N secondes. Rejetée : il traite le symptôme, il est visible en jeu, et
+il laisse la sauvegarde corrompue derrière lui. Retenir le sol coupe la classe
+entière du défaut, en amont, sans rien montrer au joueur.
+
+**Corollaire appliqué** : on ne s'accroche plus à une paroi au-dessus de la
+vitesse de marche, et le seuil d'intention passe de 0,22 s à 0,40 s — 0,22 s de
+contact EST le comportement normal de quelqu'un qui court dans un obstacle.

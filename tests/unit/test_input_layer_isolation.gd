@@ -20,6 +20,13 @@ const INPUT_LAYER: Array[String] = [
 const TOOLING: Array[String] = [
 	"res://scripts/tools/input_audit.gd",
 	"res://tools/godot/setup_project.gd",
+	# Le mode développement lit F3/F4/F5 en touches BRUTES, et c'est
+	# délibéré : passer par l'InputMap ajouterait trois actions au jeu livré
+	# et entrerait en conflit avec le remappage du joueur. Il ne pilote AUCUN
+	# gameplay — il enregistre. La règle D-013 protège le gameplay des
+	# périphériques ; elle n'a pas à interdire à un outil de debug d'avoir
+	# des touches. Voir docs/MODE_DEV.md.
+	"res://scripts/tools/dev_mode.gd",
 ]
 
 ## Motifs qui trahissent une dépendance au clavier hors de la couche d'entrée.

@@ -40,7 +40,11 @@ extends Resource
 ## escalade voulue paraîtrait poussive. Ne s'applique QU'AU SOL — en l'air,
 ## attendre ferait manquer le rebord qu'on visait, et personne ne saute vers un
 ## mur par accident.
-@export var grab_intent_delay_s: float = 0.22
+## 0,22 s de contact contre un obstacle EST le comportement normal de
+## quelqu'un qui marche dedans, pas une intention d'escalade. Le seuil monte,
+## et le contrôleur refuse en plus l'accroche au-dessus de la vitesse de
+## marche : il faut désormais s'approcher ET insister.
+@export var grab_intent_delay_s: float = 0.40
 
 @export_group("Sondes (§9.2)")
 ## Hauteurs des trois sondes, mesurées depuis les pieds. §9.2 : « sondes tête /

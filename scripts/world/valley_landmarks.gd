@@ -61,7 +61,33 @@ const SITE_SPRING: Vector3 = Vector3(-72.0, 2.0, 78.0)
 ## Plaine sud-ouest, sous la crête de départ : le champ se lit d'en haut.
 const SITE_FLOWER_FIELD: Vector3 = Vector3(-34.0, 2.0, 112.0)
 ## Travée de rivière libre : les gués sont à x = 20 et x = 95.
-const SITE_STONE_BRIDGE: Vector3 = Vector3(-14.0, 0.0, 10.0)
+##
+## INTERPÉNÉTRATION MESURÉE, puis corrigée (revue « l'Arche traverse
+## l'aqueduc »). À x = −14, l'arche et l'AQUEDUC de `valley_ruins.gd`
+## (site x = −12) occupaient le même volume. Boîtes monde relevées avec
+## `tools/godot/probe_world_boxes.gd` :
+##   - piles intérieures de l'aqueduc : x −13,31..−10,69, y 2,00..8,24,
+##     z 0,69..3,31 et 16,69..19,31 ;
+##   - CuleeNord de l'arche : x −17,80..−10,20, y 0,00..3,90, z 0,00..4,00 ;
+##   - Tablier : x −17,25..−10,75, y 3,90..5,20, z 1,70..18,30.
+## Recouvrement effectif : 2,62 × 1,90 × 2,62 m par culée — les culées
+## avalaient les 1,90 premiers mètres des piles — et le tablier recoupait les
+## DEUX piles intérieures sur toute sa portée. Les rampes nord et sud
+## mordaient de surcroît sur les mêmes piles.
+##
+## Les deux ouvrages franchissent la rivière au même endroit parce qu'ils
+## partagent la seule fenêtre de berge non pentue (x −24..−4,
+## `valley_terrain.gd`) ; seul l'axe X pouvait les séparer. L'aqueduc est déjà
+## calé à l'est de cette fenêtre — sa travée tombée, qui sert de pont, atteint
+## x −4,4. C'est donc l'arche qui recule à l'ouest, de 7 m.
+##
+## Emprise vérifiée après déplacement : l'arche occupe x −24,80..−14,00, soit
+## 1,31 m de dégagement avec la pile la plus proche (−13,31), et 2,89 m avec
+## la pièce la plus à l'est de l'Abri de la rivière (−27,69). La travée reste
+## dans la fenêtre de berge, et les mesures verticales de l'ouvrage (tablier,
+## rampes, descente de rive) sont inchangées : la translation est purement
+## horizontale.
+const SITE_STONE_BRIDGE: Vector3 = Vector3(-21.0, 0.0, 10.0)
 ## Plaine est, seul relief de ce quadrant — la raison d'aller à l'est.
 const SITE_OVERLOOK: Vector3 = Vector3(168.0, 0.0, 40.0)
 
@@ -210,6 +236,10 @@ func _piece(asset: String, at: Vector3, yaw: float, parent: Node3D,
 	var corrected: float = factor * KitScale.factor(asset)
 	if not is_equal_approx(corrected, 1.0):
 		node.scale = Vector3.ONE * corrected
+	# « Rien ne flotte » : une partie du kit a son origine SOUS sa
+	# géométrie (Prop_Support commence à +1,21 m). Sans cette
+	# correction, l'objet est suspendu en l'air. Voir KitPlacement.
+	KitPlacement.seat(node, node.scene_file_path)
 	parent.add_child(node)
 	_built += 1
 	return node
@@ -398,16 +428,32 @@ func _build_ancient_tree() -> void:
 		var at: Vector3 = entry[1] as Vector3
 		_piece(entry[0] as String, at, at.x * 0.21, place, float(entry[2]))
 
-	# Racines affleurantes : quatre blocs à collision, assez bas pour qu'on
-	# monte dessus — un petit belvédère de 2 m au pied du géant.
+	# Racines affleurantes : quatre blocs à collision au pied du géant. On y
+	# monte au MANTLE (§9.3), pas au pas — voir la mesure ci-dessous.
 	var roots: Array[Vector3] = [
 		Vector3(5.6, 0, 3.4), Vector3(-4.8, 0, 5.2),
 		Vector3(-5.4, 0, -4.6), Vector3(4.2, 0, -5.8),
 	]
+	# La collision était une boîte unique de 3,40 × 1,10 × 2,80 pour TOUS les
+	# blocs, alors que les rochers posés dessus montent bien plus haut. Cotes
+	# gltf_inspect × échelle (1,15 / 1,35 / 1,15 / 1,35) : sommets réels à
+	# 2,29 / 2,49 / 2,30 / 2,68 m, soit 1,19 à 1,58 m de pierre AU-DESSUS du
+	# dessus de la collision — le joueur s'arrêtait à 1,10 m, torse et tête
+	# dans le bloc. Les emprises au sol débordaient aussi (jusqu'à 4,35 m pour
+	# une boîte de 3,40). Boîtes remesurées une par une, hauteur calée sur le
+	# sommet réel et emprise horizontale à ~0,85 × la boîte englobante : la
+	# collision ne dépasse jamais la pierre visible. (Les rochers étant tournés
+	# et leur maillage n'étant pas centré sur son origine, une lèvre de pierre
+	# peut dépasser la boîte d'environ 0,3 m d'un côté ; c'est le sens sûr.)
+	var root_box: Array[Vector3] = [
+		Vector3(3.2, 2.29, 2.9), Vector3(3.5, 2.49, 2.9),
+		Vector3(3.3, 2.30, 3.4), Vector3(3.7, 2.68, 3.4),
+	]
 	for i: int in range(roots.size()):
 		var at: Vector3 = roots[i]
-		_solid(place, "Racine%d" % i, at + Vector3(0, 0.55, 0),
-			Vector3(3.4, 1.1, 2.8), COL_ROCK_SHADE)
+		var box: Vector3 = root_box[i]
+		_solid(place, "Racine%d" % i, at + Vector3(0, box.y * 0.5, 0), box,
+			COL_ROCK_SHADE)
 		_piece("Rock_Medium_%d" % (1 + i % 3), at, float(i) * 1.31, place,
 			1.15 + 0.2 * float(i % 2))
 
@@ -489,8 +535,19 @@ func _build_spring() -> void:
 	water.position = Vector3(0, 0.34, 0)
 	place.add_child(water)
 
-	# Margelle : dix roches en anneau, chacune à collision — on s'assoit
-	# dessus, on en fait le tour, on ne traverse pas le bassin par erreur.
+	# Margelle : dix roches en anneau, chacune à collision — on s'assoit dessus
+	# et on en fait le tour. L'anneau est un POINTILLÉ, pas une clôture : les
+	# boîtes de `_solid` ne sont pas tournées, et l'écart AABB mesuré entre
+	# voisines vaut 0,66 / 1,15 / 1,15 / 0,64 / 1,32 m (× 2 par symétrie) —
+	# on peut donc entrer dans le bassin à pied. C'est ASSUMÉ : la revue
+	# proposait 14 blocs de 2,8 m, qui referment tout (écart 0,00 partout),
+	# mais le calcul montre que cet anneau plein enterrerait l'ancrage de
+	# récompense du lieu — ANCHORS[POI_SPRING] = (−2,49 ; 0 ; 6,01) tombe dans
+	# la boîte centrée (−2,90 ; 4,91) de demi-côté 1,4, ce qui ferait échouer
+	# `RewardAnchorAudit` — plus deux fougères sur quatre, un trèfle et deux
+	# des quatre champignons d'ombre. Le bassin ne fait que 0,44 m d'eau
+	# décorative : y entrer n'est ni un piège ni une chute. On garde donc
+	# l'anneau ouvert et on décrit la géométrie telle qu'elle est.
 	for i: int in range(10):
 		var angle: float = TAU * float(i) / 10.0 + 0.31
 		var at: Vector3 = Vector3(cos(angle) * 5.7, 0.0, sin(angle) * 5.7)
@@ -501,13 +558,26 @@ func _build_spring() -> void:
 
 	# La venue d'eau : trois dalles qui montent vers la paroi ouest. Elles ne
 	# mènent pas AU sommet — elles le DÉSIGNENT (§2 : indice environnemental).
+	# Deux fautes mesurées et corrigées ensemble :
+	#  - l'escalier s'enfonçait dans la falaise. La face est de `LearningCliff`
+	#    (valley_terrain.gd:549, dalle pleine x −140..−80, z 40..90) tombe à
+	#    x local = −8. Les centres étaient étagés en X (−7,0 / −8,9 / −10,8) :
+	#    17 %, 80 % puis 100 % de la pierre disparaissait dans le mur, et il ne
+	#    restait qu'une dalle et demie de l'indice environnemental.
+	#  - la première marche flottait : centre y 0,85 pour 0,50 m d'épaisseur,
+	#    donc 0,60 m d'air sous une dalle de 3,00 × 2,60 m.
+	# On étage donc en Z, tous les blocs restant à x = −7,0 : chacun mord
+	# 0,50 m dans la paroi — adossé, jamais avalé. Épaisseur portée de 0,50 à
+	# 0,75 m pour que les marches s'empilent VRAIMENT (0,00..0,75 / 0,75..1,50 /
+	# 1,50..2,25) : à 0,50 m il restait 0,25 m de vide entre chaque marche.
+	# La première repose sur la plaine (dessous à y local 0 = monde 2,0).
 	for i: int in range(3):
 		var step: float = float(i)
 		_solid(place, "Vasque%d" % i,
-			Vector3(-7.0 - step * 1.9, 0.85 + step * 0.75, 0.6 - step * 0.4),
-			Vector3(3.0, 0.5, 2.6), COL_ROCK)
+			Vector3(-7.0, 0.375 + step * 0.75, 2.4 - step * 1.8),
+			Vector3(3.0, 0.75, 2.6), COL_ROCK)
 		_piece("RockPath_Round_Wide",
-			Vector3(-7.0 - step * 1.9, 1.12 + step * 0.75, 0.6 - step * 0.4),
+			Vector3(-7.0, 0.77 + step * 0.75, 2.4 - step * 1.8),
 			step * 0.8, place, 1.2)
 
 	# L'exutoire : neuf galets et trois plantes d'eau qui filent vers le nord,
@@ -532,7 +602,15 @@ func _build_spring() -> void:
 	var clovers: Array[String] = ["Clover_1", "Clover_2"]
 	_scatter(place, clovers, Vector3(0.0, 0, 0.0), 6.8, 9.5, 5, 0.9, 3.1)
 	var caps: Array[String] = ["Mushroom_Common"]
-	_scatter(place, caps, Vector3(-8.5, 0, 4.0), 1.2, 3.6, 4, 1.0, 1.7)
+	# Le semis était centré à x local −8,5, soit 0,5 m DERRIÈRE la face de la
+	# falaise (x = −8) : deux champignons sur quatre étaient dans la roche,
+	# sous 12 m de pierre, et la récolte annoncée n'en montrait que deux.
+	# Centre ramené à −5,4 ; mêmes rayons et même `seed_offset`, donc mêmes
+	# positions relatives. Vérifié : x monde −77,55 / −76,03 / −79,80 / −75,27,
+	# les quatre à l'est de la paroi, le plus profond à 0,20 m de la face —
+	# toujours « côté ombre », et aucun ne tombe dans une margelle ni sur une
+	# vasque (le plus proche passe à 0,20 m du bord de Vasque0).
+	_scatter(place, caps, Vector3(-5.4, 0, 4.0), 1.2, 3.6, 4, 1.0, 1.7)
 	# Deux arbres penchés au-dessus de l'eau : ils cadrent le bassin et le
 	# rendent visible d'en haut, depuis la falaise.
 	_piece("TwistedTree_2", Vector3(-6.5, 0, 7.5), 2.2, place, 0.45)
@@ -785,11 +863,52 @@ func _build_stone_bridge() -> void:
 		var tag: String = "Nord" if side < 0.0 else "Sud"
 		_solid(place, "Culee%s" % tag, Vector3(0, 1.95, side * 8.0),
 			Vector3(7.6, 3.9, 4.0), COL_ROCK_SHADE)
-		# Blocs erratiques sur la culée : ils cassent la silhouette de boîte.
-		for i: int in range(3):
-			_piece("Rock_Medium_%d" % (1 + i),
-				Vector3(-2.6 + float(i) * 2.6, 3.4, side * (7.2 + 0.6 * float(i))),
-				float(i) * 1.4 + side, place, 1.5 + 0.35 * float(i))
+		# Blocs erratiques AU PIED de la culée : ils cassent la silhouette de
+		# boîte sans monter sur la chaussée.
+		#
+		# Ils étaient posés SUR la culée (y = 3,4) et aux échelles 1,50 / 1,85 /
+		# 2,20. Boîtes englobantes monde relevées dans la vallée montée : le
+		# troisième bloc de la culée sud occupait x −17,66..−7,03, y 2,71..7,80,
+		# z 11,44..22,10, soit 10,63 m d'emprise pour une culée qui n'en fait que
+		# 7,60 (x −17,80..−10,20) sur 4,00 de profondeur. Deux conséquences
+		# mesurées, pas supposées :
+		#  - 3,17 m de roche pendaient dans le vide à l'est de la culée, entre
+		#    2,71 et 7,80 m d'altitude, au-dessus d'une plaine à y = 2 — la
+		#    masse sombre flottante vue à hauteur de joueur ;
+		#  - le bloc recouvrait le tablier (x −17,25..−10,75, y 3,90..5,20) de
+		#    z 11,44 à 18,30 : la chaussée du pont était enterrée sous un rocher
+		#    que l'on traverse, `_piece` ne posant aucune collision. Le bloc
+		#    symétrique de la culée nord faisait de même (x −14,11..−4,95).
+		# Correction : échelle ramenée dans la bande de la bible §3 (rochers
+		# proches 0,15–4 m) et ancrage au sol.
+		# Vérifié bloc par bloc : Rock_Medium_1/2/3 culminent à 1,989 / 1,848 /
+		# 2,001 m nus, donc leurs sommets restent SOUS le dessous du tablier
+		# (3,90) tant que l'échelle ne dépasse pas 0,95.
+		#
+		# SECONDE CORRECTION, avec le recul de l'arche à x = −21 (voir
+		# `SITE_STONE_BRIDGE`). Les blocs étaient ancrés sur le FLANC OUEST, à
+		# x local −4,1 / −3,7 / −4,6 ; comme `Rock_Medium_3` mesure 4,83 m de
+		# large, le troisième s'étendait en réalité jusqu'à x local −7,16 —
+		# c'était la pièce la plus à l'ouest de tout l'ouvrage. Après le recul,
+		# sa boîte monde serait tombée sur x −27,96..−23,61 / z 16,95..21,31,
+		# c'est-à-dire DANS le mur est de l'Abri de la rivière
+		# (x −28,09..−27,69, y 2,00..5,12, z 19,00..21,00) : on aurait échangé
+		# une interpénétration contre une autre.
+		# Les blocs passent donc aux EXTRÉMITÉS des culées — z local ±10,8 à
+		# ±11,9, au-delà de l'emprise de la culée (±6..±10) et sur la plaine —
+		# où ils n'allongent plus du tout l'emprise en X de l'ouvrage : au plus
+		# large ils atteignent x local ±4,0, contre ±3,80 pour la culée et
+		# +7,00 pour `RampeDeRive`. C'est aussi leur place naturelle : un bloc
+		# erratique s'accumule au PIED d'une culée, pas contre son flanc.
+		var blocks: Array[Array] = [
+			[Vector3(-2.6, 2.0, side * 11.0), 0.55],
+			[Vector3(0.4, 2.0, side * 11.9), 0.62],
+			[Vector3(2.8, 2.0, side * 10.8), 0.50],
+		]
+		for i: int in range(blocks.size()):
+			var block: Array = blocks[i]
+			_piece("Rock_Medium_%d" % (1 + i), block[0] as Vector3,
+				float(i) * 1.4 + side, place, float(block[1]))
 		# Rampe d'accès : 3,2 m de dénivelé sur 10 m, soit 17,7° — très en
 		# dessous des 46° franchissables, on la monte en courant.
 		_ramp_solid(place, "Rampe%s" % tag,
@@ -814,10 +933,22 @@ func _build_stone_bridge() -> void:
 			BRIDGE_DECK_Y - BRIDGE_DECK_THICKNESS,
 			-4.5 + float(i) * 3.0), float(i), place, 1.2)
 
-	# Descente de rive SUD : on marche jusqu'au lit (y = −1,5). 3,4 m sur 6 m
-	# de course, soit 29,5° — on descend en marchant, on remonte de même.
-	_ramp_solid(place, "RampeDeRive", Vector3(5.5, 2.0, 8.5),
-		Vector3(5.5, -1.4, 2.5), 3.0, 0.8, COL_ROCK_SHADE)
+	# Descente de rive SUD : on marche jusqu'au lit (y = −1,5). 3,71 m sur 6 m
+	# de course, soit 31,7° — on descend en marchant, on remonte de même.
+	# Elle partait de z local 8,5, c'est-à-dire monde 18,5, alors que PlainSouth
+	# (valley_terrain.gd:254, dalle pleine z 16..256, dessus y = 2) commence à
+	# z = 16 : les 2,5 premiers mètres de la rampe étaient ENTERRÉS, et sa
+	# surface au bord de la plaine tombait à y = 0,583. Il y avait donc une
+	# marche sèche de 1,42 m — ni montable ni descendable au pas (step_height
+	# 0,30-0,38 m, §8.2), et la récompense sous le tablier pouvait devenir un
+	# cul-de-sac. Le départ est ramené à z local 6,5 et relevé à y 2,31 : la
+	# surface passe par y = 2,00 exactement à z local 6,0, soit le bord de la
+	# plaine — zéro marche. Le demi-mètre en amont forme une lèvre de 0,31 m,
+	# sous le step_height, donc franchissable au pas. Le pied descend à z local
+	# 0,5 dans le lit, à y −1,4 pour un fond à −1,5. La rampe occupe x 4,0..7,0
+	# et la Culée Sud s'arrête à x 3,8 : aucun recouvrement.
+	_ramp_solid(place, "RampeDeRive", Vector3(5.5, 2.31, 6.5),
+		Vector3(5.5, -1.4, 0.5), 3.0, 0.8, COL_ROCK_SHADE)
 
 	# La récompense du détour, à l'ombre du tablier, sur la berge SÈCHE du sud
 	# (le ruban d'eau ne dépasse pas z local +2,6 à cette abscisse).
@@ -866,6 +997,54 @@ func _build_overlook() -> void:
 	_ramp_solid(place, "Echine", Vector3(0, 2.0, 30.0),
 		Vector3(0, OVERLOOK_SUMMIT_Y, -6.0), 9.0, 1.8, COL_ROCK)
 
+	# --- L'assise de l'échine ----------------------------------------------
+	#
+	# L'ÉCHINE N'ÉTAIT ACCROCHÉE À RIEN, et c'est elle, la « planche orange
+	# couchée en diagonale au travers du paysage ».
+	#
+	# Boîte englobante monde relevée dans la vallée montée : `EchineMesh`
+	# occupe x 163,50..172,50, y 0,43..22,00, z 33,13..70,00 — une dalle ocre
+	# (COL_ROCK) de 9 × 1,8 × 41,2 m inclinée à 29°, longue de 36,9 m au sol.
+	# Les masses censées faire la montagne la BORDENT sans jamais passer
+	# dessous : le commentaire des contreforts le dit lui-même, « hors de son
+	# emprise en x ». Mesuré, sous l'emprise x −4,50..4,50 :
+	#   Contrefort0 x −17..−5 · Contrefort1 x −18..−6 · Contrefort2 x −16..−6
+	#   Contrefort3 x 7..17   · EpauleEst   x 5..17   · MasseSommet z −20..−6
+	# Aucune ne recouvre l'abscisse de la rampe entre z = −6 et z = 30. À
+	# mi-course (z = 12) la surface est à y = 12,0 pour une plaine à y = 2 : dix
+	# mètres d'air sous une dalle de 9 m de large, sur 30 m de long.
+	#
+	# On ne touche NI la surface franchissable NI sa pente de 29° — l'audit des
+	# ancrages (`RewardAnchorAudit`) fait réellement monter un corps par ici. On
+	# lui donne son massif. Les cotes sont DÉRIVÉES de la rampe, jamais saisies
+	# à la main : la surface vaut `y(z) = 2 + (30 − z) × 20/36` ; l'épaisseur de
+	# 1,8 m est mesurée perpendiculairement, donc verticalement
+	# `1,8 × 41,23/36 = 2,0591` ; le dessous vaut `y(z) − 2,0591` et rejoint la
+	# plaine à z = 26,29. Le dessus de chaque gradin est le dessous de la dalle
+	# mesuré à l'extrémité BASSE de son segment : aucun gradin ne peut percer la
+	# rampe. Résultat RE-MESURÉ dans le moteur, en sondant le dessous de la
+	# dalle tous les 0,9 m : le vide sous la rampe ne dépasse plus 1,97 m, là
+	# où il montait à 10 m. Douze gradins, soit un ressaut de 1,49 m.
+	const SPINE_SLOPE: float = 20.0 / 36.0
+	const SPINE_VERTICAL_THICKNESS: float = 2.0591
+	const SPINE_Z_TOP: float = -6.0
+	const SPINE_Z_GROUND: float = 26.29
+	const SPINE_STEPS: int = 12
+	for i: int in range(SPINE_STEPS):
+		var z_low: float = lerpf(SPINE_Z_TOP, SPINE_Z_GROUND,
+			float(i + 1) / float(SPINE_STEPS))
+		var z_high: float = lerpf(SPINE_Z_TOP, SPINE_Z_GROUND,
+			float(i) / float(SPINE_STEPS))
+		var top: float = 2.0 + (30.0 - z_low) * SPINE_SLOPE - SPINE_VERTICAL_THICKNESS
+		if top <= 0.0:
+			continue
+		# Largeur 9,0 : exactement celle de la rampe, donc aucune corniche
+		# marchable nouvelle le long du chemin. Base à y = 0, soit 2 m enterrés
+		# dans la plaine.
+		_solid(place, "AssiseDEchine%d" % i,
+			Vector3(0.0, top * 0.5, (z_low + z_high) * 0.5),
+			Vector3(9.0, top, z_low - z_high), COL_ROCK_SHADE)
+
 	# Épaule est : palier à mi-hauteur, au niveau EXACT de la rampe en z = 12
 	# (y = 12). On y sort de la montée pour souffler et regarder le camp. Son
 	# bord ouest (x = 5) laisse 50 cm de vide avec le bord de la rampe
@@ -888,19 +1067,68 @@ func _build_overlook() -> void:
 			entry[1] as Vector3, COL_ROCK_SHADE)
 
 	# Habillage rocheux : les blocs cassent les arêtes des gradins.
-	for i: int in range(8):
+	# Ils étaient posés sur un CERCLE de rayon 8 autour de (0, ·, −13), alors
+	# que la masse qu'ils habillent est un CARRÉ de 14 m : demi-emprise 7,0 aux
+	# cardinales, 9,90 aux diagonales. Un rayon constant tombait donc DEDANS
+	# aux diagonales et DANS LE VIDE aux cardinales — cinq blocs sur huit
+	# avaient leur centre dans un solide, et le seul vraiment visible flottait
+	# à 6,3 m au-dessus de la plaine.
+	# On les pose maintenant sur les FACES EXPOSÉES, mesurées une par une.
+	# Attention : la face ouest (x = −7) n'est pas exposée entre z = −15 et
+	# z = −1, où Contrefort2 (x −16..−6, y 0..16, z −15..−1) la recouvre — un
+	# bloc « projeté sur le carré » y serait encore enterré. Il ne reste donc
+	# qu'un seul ancrage ouest, au nord du contrefort.
+	# Vérifié pour les huit : aucun centre dans un solide, et chacun mord de
+	# 2,1 à 7,9 m dans la masse — à moitié dedans, à moitié dehors.
+	#
+	# RESTE À CORRIGER, ET C'EST LA HAUTEUR. Les huit blocs étaient étagés par
+	# `2,0 + (i % 3) × 3,4`, c'est-à-dire par une CONSTANTE DE CONSTRUCTION et
+	# non par le sol. Boîtes englobantes monde relevées dans la vallée montée :
+	#   bloc 1 : y 5,30..8,91, x 172,50..178,77 — la face est du sommet est à
+	#            x = 175, il en sort donc 3,77 m, à 3,30 m au-dessus du vide ;
+	#   bloc 2 : y 8,29..12,00, x 172,70..180,39 — 5,39 m dans le vide ;
+	#   blocs 4, 5, 7 : même faute sur les faces nord, ouest et sud.
+	# Cinq blocs sur huit avaient donc leur base entre 5,3 et 8,3 m d'altitude
+	# avec la plaine à y = 2 et rien dessous : des masses de roche suspendues le
+	# long d'une paroi. Ils sont ramenés au SOL (y = 2, la plaine ; ce site
+	# travaille en Y monde), là où un éboulis s'accumule réellement, et
+	# l'échelle passe de 1,60/1,90 à 0,95/1,15 pour rentrer dans la bande de la
+	# bible §3 (rochers proches 0,15–4 m) : au sol, un bloc de 7,70 m devant une
+	# masse de 14 m n'habille plus rien, il la remplace.
+	# Un seul ancrage bouge : (0,0 ; −5,4) tombait au milieu de la nouvelle
+	# assise de l'échine (x −4,50..4,50, z −6..0) et y aurait été entièrement
+	# enterré. Il passe à l'angle sud-est du sommet, hors de cette emprise.
+	var dressing: Array[Vector2] = [
+		Vector2(7.6, -8.0), Vector2(7.6, -13.0), Vector2(7.6, -18.0),  # face est
+		Vector2(3.5, -20.6), Vector2(-3.5, -20.6),                     # face nord
+		Vector2(-7.6, -17.5),                                          # face ouest
+		Vector2(6.2, -5.4), Vector2(4.5, -5.4),                        # angle sud-est
+	]
+	for i: int in range(dressing.size()):
+		var anchor: Vector2 = dressing[i]
 		var angle: float = TAU * float(i) / 8.0
-		var at: Vector3 = Vector3(cos(angle) * 8.0, 2.0 + float(i % 3) * 3.4,
-			-13.0 + sin(angle) * 8.0)
+		var at: Vector3 = Vector3(anchor.x, 2.0, anchor.y)
 		_piece("Rock_Medium_%d" % (1 + i % 3), at, angle * 1.6, place,
-			1.6 + 0.3 * float(i % 2))
+			0.95 + 0.2 * float(i % 2))
 	# Bordure de la rampe : on voit le vide sans qu'un mur cache la vallée.
-	for i: int in range(6):
+	# Les blocs étaient à x = ±4,6 sur une rampe large de 9 m (bord ±4,50) et
+	# posés à `height − 0,4` alors que `height` EST déjà la surface : ils
+	# débordaient dans le vide, base à 1,63 m d'air pour le plus bas et à
+	# 15,85 m pour le plus haut. Deux mesures :
+	#  - le bord est calculé PAR BLOC. Un simple ±3,2 ne suffit pas : chaque
+	#    rocher est tourné de i × 1,2 rad et son maillage n'est pas centré sur
+	#    son origine, si bien que sa demi-emprise en x varie de 0,89 à 2,16 m
+	#    selon le modèle et l'angle. Les six valeurs ci-dessous placent la face
+	#    extérieure de chaque bloc exactement à x = ±4,45, soit 5 cm en deçà du
+	#    bord de la rampe : plus aucun porte-à-faux ;
+	#  - l'origine descend à `height − 0,25`, ce qui met la base 0,44 m sous la
+	#    surface, donc DANS la dalle (2,06 m d'épaisseur à la verticale).
+	var border_x: Array[float] = [3.40, -3.26, 2.29, -2.94, 3.56, -2.72]
+	for i: int in range(border_x.size()):
 		var along: float = 26.0 - float(i) * 6.4
 		var height: float = 2.0 + (30.0 - along) * (20.0 / 36.0)
-		var edge: float = 4.6 if i % 2 == 0 else -4.6
 		_piece("Rock_Medium_%d" % (1 + i % 3),
-			Vector3(edge, height - 0.4, along), float(i) * 1.2, place, 0.7)
+			Vector3(border_x[i], height - 0.25, along), float(i) * 1.2, place, 0.7)
 
 	# Le poste de guet, au sommet.
 	var watch: Node3D = Node3D.new()

@@ -15,8 +15,15 @@
 class_name StormCell
 extends Node3D
 
-const CLOUD_SLATE: Color = Color(0.24, 0.26, 0.31)
-const CLOUD_DARK: Color = Color(0.16, 0.17, 0.21)
+## Valeurs REMONTÉES avec le passage du nuage en rendu éclairé (voir
+## `_cloud_material`). En aplat non éclairé, l'albédo était la couleur finale et
+## `CLOUD_DARK` tombait à 17 % de luminance — sous le plancher de 18 % que la
+## bible §1.5 fixe aux ombres (« jamais bouchées »). Éclairées, ces mêmes
+## couleurs perdraient encore de la valeur sur les faces à l'ombre : on les
+## remonte pour que le ventre du nuage reste lisible au lieu de devenir un trou
+## noir. Le juge final est la capture, pas ce commentaire.
+const CLOUD_SLATE: Color = Color(0.34, 0.36, 0.42)
+const CLOUD_DARK: Color = Color(0.25, 0.26, 0.31)
 const BOLT_CORE: Color = Color(0.925, 1.0, 1.0)      # #ECFFFF
 const BOLT_HALO: Color = Color(0.133, 0.851, 0.925)  # #22D9EC
 
@@ -128,8 +135,19 @@ func _cloud_material(color: Color) -> StandardMaterial3D:
 	var material: StandardMaterial3D = StandardMaterial3D.new()
 	material.albedo_color = color
 	material.roughness = 1.0
-	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	material.disable_fog = true
+	# Correction V5 — le nuage était ÉCLAIRÉ DE NULLE PART.
+	#
+	# `UNSHADED` + `disable_fog` signifie : la couleur affichée est exactement
+	# l'albédo, sur toutes les faces, quelle que soit la distance. Deux teintes
+	# seulement, donc deux aplats — une tache noire découpée dans un ciel clair,
+	# à 380 m, sans ventre sombre, sans bord chaud, sans profondeur. Aucun
+	# réglage de shader ne pouvait produire le « bord plus clair et chaud côté
+	# soleil » que demande la bible §9.2 tant que la lumière était coupée.
+	#
+	# En rendant les couches au soleil, les 14 sphères se dégradent d'elles-
+	# mêmes : le dessous reste sombre, le dessus prend le miel du couchant, et
+	# la brume atmosphérique recolle enfin le nuage au reste du lointain.
+	material.disable_fog = false
 	return material
 
 
@@ -206,6 +224,15 @@ func _add_bolt_segment(from: Vector3, to: Vector3, thickness: float,
 	material.emission_energy_multiplier = energy
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.disable_fog = true   # le cyan reste saturé à travers la brume
+	# Revue contradictoire (passe art) : un halo OPAQUE cachait le cœur
+	# blanc logé dedans — l'éclair se lisait comme un aplat cyan, contre
+	# §9.3 (« cœur blanc fin + halo moins opaque ») et §1.6 (ruban opaque
+	# interdit). Le halo devient translucide et additif ; le cœur, plus
+	# fin, reste opaque et transparaît.
+	if color == BOLT_HALO:
+		material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		material.albedo_color.a = 0.42
+		material.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
 	segment.material_override = material
 	segment.position = (from + to) * 0.5
 	# Oriente l'axe Y du segment le long du tronçon.

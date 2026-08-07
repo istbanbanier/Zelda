@@ -65,6 +65,9 @@ var _lock_plaque: PanelContainer = null
 var _lock_target_bar: ProgressBar = null
 var _lock_health: HealthComponent = null
 var _prompt_panel: PanelContainer = null
+var _controls_button: Button = null
+var _controls_panel: OptionsPanel = null
+var _meals_label: Label = null
 ## Inventaire V4.5 (réf. 04) — grille de cartes + détail aux données réelles.
 var _inventory_grid: GridContainer = null
 var _detail_name: Label = null
@@ -105,6 +108,8 @@ func _ready() -> void:
 	_build_cooking_panel()
 	_build_buff_label()
 	_build_boss_bar()
+	_build_controls_button()
+	_build_resonance_hud()
 	_set_mouse_captured(true)
 	# Le joueur peut entrer dans l'arbre après la coquille : liaison différée.
 	_bind_player.call_deferred()
@@ -213,6 +218,14 @@ func _apply_v4_style() -> void:
 		_durability_segments.append(segment)
 	gear.add_child(durability_row)
 	gear.move_child(durability_row, 1)
+	# Réserve de plats, sous les flèches : même colonne, même hiérarchie de
+	# lecture. Masquée tant qu'on n'a rien cuisiné — §17.2 : le HUD cache ce
+	# qui n'est pas utile.
+	_meals_label = Label.new()
+	_meals_label.name = "MealsLabel"
+	_meals_label.add_theme_color_override(&"font_color", HudStyle.IVORY)
+	_meals_label.visible = false
+	gear.add_child(_meals_label)
 	# 5. Invite en cartouche (réf. 03 : chip de touche + verbe).
 	_prompt_panel = PanelContainer.new()
 	_prompt_panel.name = "PromptPanel"
@@ -361,6 +374,8 @@ func _bind_player() -> void:
 	if inventory != null:
 		inventory.arrows_changed.connect(_on_arrows_changed)
 		_on_arrows_changed(inventory.arrows())
+		inventory.meals_changed.connect(_on_meals_changed)
+		_on_meals_changed(inventory.meal_count())
 		inventory.weapon_equipped.connect(_on_weapon_changed)
 	_player.interact_focus_changed.connect(_on_interact_focus_changed)
 	if health != null:
@@ -369,6 +384,7 @@ func _bind_player() -> void:
 	if lock != null:
 		lock.target_acquired.connect(_on_lock_acquired)
 		lock.target_released.connect(_on_lock_released)
+	_bind_resonance()
 	_refresh_weapon_text()
 
 
@@ -421,7 +437,17 @@ func _input(event: InputEvent) -> void:
 	if _death_panel.visible:
 		return
 	if event.is_action_pressed("pause", false, true):
-		if _inventory_panel.visible:
+		# Ordre du plus imbriqué au moins imbriqué : Échap ferme d'abord ce qui
+		# est OUVERT PAR-DESSUS. Sans ces deux premières branches, la cuisine et
+		# la table des commandes étaient des culs-de-sac au clavier — l'arbre
+		# est en pause mais le panneau de pause est caché, donc `toggle_pause()`
+		# ne trouvait aucune branche vraie et ne faisait rien. Seul un clic à la
+		# souris sortait de là ; un joueur pouvait croire le jeu planté.
+		if is_controls_open():
+			_on_controls_closed()
+		elif is_cooking_open():
+			close_cooking()
+		elif _inventory_panel.visible:
 			toggle_inventory()
 		else:
 			toggle_pause()
@@ -444,6 +470,9 @@ func _process(delta: float) -> void:
 	if _player == null or not is_instance_valid(_player):
 		return
 	_reticle.visible = _player.is_aiming()
+	# Le viseur de Résonance suit la visée : rafraîchi CHAQUE frame, contrairement
+	# aux textes du HUD. Le tracé, lui, n'est refait qu'au changement d'état.
+	_refresh_resonance_hud(delta)
 	_hud_refresh_accumulator += delta
 	if _hud_refresh_accumulator >= HUD_TEXT_REFRESH:
 		_hud_refresh_accumulator = 0.0
@@ -470,6 +499,59 @@ func toggle_pause() -> void:
 		if game_state != null:
 			game_state.call("set_paused", true)
 		pause_toggled.emit(true)
+
+
+## ---------------------------------------------------------------------------
+## Commandes accessibles EN PARTIE (friction de playtest : « j'ai oublié la
+## touche de l'inventaire »).
+##
+## La table des commandes existait déjà — dans `OptionsPanel`, que seul le menu
+## principal instanciait. Un joueur qui lançait directement une partie n'avait
+## donc aucun moyen d'apprendre qu'il existe un saut, une esquive, un
+## inventaire ou un plat rapide : l'information qui débloque était derrière la
+## porte que le blocage empêche d'atteindre. On rouvre cette porte sans
+## dupliquer une seule ligne de contenu.
+## ---------------------------------------------------------------------------
+
+func _build_controls_button() -> void:
+	var column: Node = _resume_button.get_parent()
+	if column == null:
+		return
+	_controls_button = Button.new()
+	_controls_button.name = "ControlsButton"
+	_controls_button.text = "Commandes"
+	_controls_button.custom_minimum_size = Vector2(320, 44)
+	_controls_button.pressed.connect(open_controls)
+	column.add_child(_controls_button)
+	# Juste sous « Reprendre » : c'est la deuxième chose qu'on cherche quand on
+	# ouvre la pause, avant les réglages.
+	column.move_child(_controls_button, _resume_button.get_index() + 1)
+
+
+func open_controls() -> void:
+	if _controls_panel != null and is_instance_valid(_controls_panel):
+		return
+	_controls_panel = OptionsPanel.new()
+	_controls_panel.name = "ControlsPanel"
+	_controls_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_controls_panel.closed.connect(_on_controls_closed)
+	# Ajouté en dernier enfant de la coquille : il passe au-dessus du panneau de
+	# pause sans introduire un second CanvasLayer à ordonner.
+	add_child(_controls_panel)
+
+
+func is_controls_open() -> bool:
+	return _controls_panel != null and is_instance_valid(_controls_panel)
+
+
+func _on_controls_closed() -> void:
+	if _controls_panel != null and is_instance_valid(_controls_panel):
+		_controls_panel.queue_free()
+	_controls_panel = null
+	# Le joueur revient sur la pause : lui rendre le focus, sinon le clavier et
+	# la manette n'ont plus de propriétaire et ne répondent plus.
+	if _pause_panel.visible and _resume_button != null:
+		_resume_button.grab_focus()
 
 
 func is_paused() -> bool:
@@ -560,6 +642,14 @@ func _rebuild_inventory_panel() -> void:
 			button.disabled = true
 		_inventory_grid.add_child(button)
 	_refresh_slot_selection()
+	# Sans propriétaire de focus, Godot n'a rien à déplacer : les flèches du
+	# clavier et la manette restent MORTES tant qu'on n'a pas cliqué à la
+	# souris. Le panneau de pause, lui, posait bien son focus — l'inventaire
+	# l'avait simplement oublié.
+	var first: Node = _inventory_grid.get_child(0) if _inventory_grid.get_child_count() > 0 else null
+	var focusable: Button = first as Button
+	if focusable != null and not focusable.disabled:
+		focusable.grab_focus()
 
 
 func _refresh_slot_selection() -> void:
@@ -642,6 +732,18 @@ func _on_stamina_changed(current: float, maximum: float) -> void:
 
 func _on_arrows_changed(count: int) -> void:
 	_arrows_label.text = "Flèches : %d" % count
+
+
+## Réserve de plats. Elle n'était affichée NULLE PART : on pouvait cuisiner,
+## lire « Cuisiné : Confit paratonnerre », puis ne plus jamais retrouver le
+## plat ni deviner qu'une touche le mange. La touche est rappelée dans la
+## ligne elle-même — c'est la seule place du HUD où elle peut être vue au
+## moment où elle sert.
+func _on_meals_changed(count: int) -> void:
+	if _meals_label == null or not is_instance_valid(_meals_label):
+		return
+	_meals_label.text = "Plats : %d  (F)" % count
+	_meals_label.visible = count > 0
 
 
 func _on_weapon_changed(_weapon: WeaponInstance) -> void:
@@ -1015,6 +1117,33 @@ func _cooking_definitions() -> Array[IngredientDefinition]:
 	return definitions
 
 
+## Nom lisible d'un ingrédient. Retombe sur l'identifiant si la ressource
+## manque : mieux vaut un mot technique qu'une ligne vide.
+func _ingredient_display_name(id: StringName) -> String:
+	var definition: IngredientDefinition = load(
+		"res://resources/ingredients/%s.tres" % String(id)) as IngredientDefinition
+	if definition == null or definition.display_name.is_empty():
+		return String(id)
+	return definition.display_name
+
+
+## Nom lisible d'une famille d'effet. Les clés viennent de `RecipeRules`, qui
+## nomme les PLATS ; ici on nomme ce que le plat FAIT, ce qui est l'information
+## dont le joueur a besoin pour décider.
+func _effect_display_name(effect: String) -> String:
+	match effect:
+		"attack":
+			return "Attaque renforcée"
+		"defense":
+			return "Défense renforcée"
+		"stamina":
+			return "Endurance renforcée"
+		"elec_resist":
+			return "Résistance à la foudre"
+		_:
+			return effect
+
+
 func _rebuild_cooking_panel() -> void:
 	for child: Node in _cooking_stock.get_children():
 		child.queue_free()
@@ -1036,13 +1165,30 @@ func _rebuild_cooking_panel() -> void:
 	else:
 		var names: Array[String] = []
 		for id: StringName in _cooking_selection:
-			names.append(String(id))
+			# Le nom AFFICHÉ, pas l'identifiant interne : la liste du stock,
+			# juste au-dessus, dit « Baie de résistance » — la ligne de
+			# sélection disait `storm_berry`. Deux vocabulaires pour un même
+			# objet, dans le même panneau.
+			names.append(_ingredient_display_name(id))
 		_cooking_selection_label.text = "Choisis (%d/5) : %s" % [
 			_cooking_selection.size(), ", ".join(names)]
 	var result: Dictionary = RecipeRules.cook(_cooking_definitions())
 	if bool(result.get("valid", false)):
-		_cooking_preview.text = "%s — soigne %d PV" % [
+		# `cook()` calcule déjà l'effet, sa puissance et sa durée ; l'aperçu les
+		# jetait et n'affichait que le soin. Le joueur lisait « soigne 5 PV »,
+		# concluait que cuisiner ne sert à rien, et n'apprenait jamais que ce
+		# plat est ce qui le protège de la foudre du boss. §13.3 demande la
+		# CATÉGORIE de résultat avant confirmation : la voici.
+		var line: String = "%s — soigne %d PV" % [
 			String(result.get("name", "")), int(result.get("heal", 0.0))]
+		var effect: String = String(result.get("effect", ""))
+		var duration: float = float(result.get("duration", 0.0))
+		if not effect.is_empty() and duration > 0.0:
+			line += "\n%s pendant %d s" % [
+				_effect_display_name(effect), int(round(duration))]
+		if bool(result.get("unstable", false)):
+			line += "\n(mélange instable : le soin est fortement réduit)"
+		_cooking_preview.text = line
 	else:
 		_cooking_preview.text = "—"
 	_cooking_confirm.disabled = _cooking_selection.is_empty()
@@ -1189,3 +1335,255 @@ func boss_bar_value() -> float:
 
 func boss_phase_text() -> String:
 	return _boss_phase_label.text if _boss_phase_label != null else ""
+
+
+## ---------------------------------------------------------------------------
+## Bracelet de Résonance — viseur, cible retenue et raison du refus (P2 §3.8)
+##
+## PT-BRACELET-01 (playtest) : le Bracelet n'avait AUCUNE présentation. Rien
+## n'écoutait `revealed` hors de `ResonanceLab`, la cible retenue par le focus
+## était invisible, l'état « premier port retenu » d'un Arc Link en deux temps
+## ne se voyait pas, et un refus partait muet dans la sonde de latence — un
+## instrument de MESURE que seul un overlay de laboratoire affiche. Résultat :
+## un joueur ne pouvait ni viser, ni comprendre un échec, ni distinguer « rien
+## n'est parti » de « c'est parti et je n'ai pas vu la conséquence ».
+##
+## Ce bloc fournit le minimum exigé par P2 §3.8 : « source, port sélectionné et
+## destination visuellement distincts », « ligne prévue avant confirmation »,
+## « raison courte en cas de refus ». Il ne change AUCUNE règle du Bracelet :
+## il lit un état déjà calculé et le montre.
+## ---------------------------------------------------------------------------
+
+## Ce que le clic gauche déclenchera, par nature de cible — la seule chose que
+## le joueur ne peut pas deviner puisque la même touche sert les quatre.
+const RESONANCE_ACTIONS: Dictionary[StringName, String] = {
+	&"port": "Arc Link",
+	&"polarity": "Polarité (Maj : repousser)",
+	&"material": "Mise à la terre",
+	&"arc_anchor": "Arc Step",
+}
+
+## Verdicts de `ResonanceController` traduits en une phrase courte. Un verdict
+## absent de cette table s'affiche tel quel : mieux vaut un mot brut qu'un
+## silence — c'est le silence qui a coûté le playtest.
+const RESONANCE_REFUSALS: Dictionary[StringName, String] = {
+	&"cooldown": "Bracelet en recharge",
+	&"aucune_cible": "Aucune cible",
+	&"invalide": "Cible invalide",
+	&"hors_portee": "Trop loin",
+	&"trop_loin": "Les deux ports sont trop écartés",
+	&"pas_de_vue": "Un obstacle coupe le trajet",
+	&"pas_metal": "Ce n'est pas du métal",
+	&"pas_charge": "Cet objet n'est pas chargé",
+	&"trop_lourd": "Trop lourd pour la Polarité",
+	&"pas_de_charge": "Rien à mettre à la terre",
+	&"pas_au_sol": "Il faut les pieds au sol",
+	&"occupe": "Mise à la terre déjà en cours",
+	&"obstacle": "Le trajet est barré",
+	&"pas_de_sol": "Pas de sol à l'arrivée",
+	&"endurance": "Endurance insuffisante",
+	&"cible_perdue": "Cible perdue",
+	&"interrompu": "Interrompu",
+}
+
+## Durée d'affichage d'un message de verdict. Assez long pour être lu en
+## jouant, assez court pour ne pas rester en travers de l'écran.
+const RESONANCE_MESSAGE_LIFETIME: float = 2.5
+
+var _resonance_overlay: ResonanceOverlay = null
+var _resonance_plaque: PanelContainer = null
+var _resonance_action_label: Label = null
+var _resonance_state_label: Label = null
+var _resonance: ResonanceController = null
+var _resonance_message: String = ""
+var _resonance_message_timer: float = 0.0
+var _resonance_message_refused: bool = false
+
+
+func _build_resonance_hud() -> void:
+	_resonance_overlay = ResonanceOverlay.new()
+	_resonance_overlay.name = "ResonanceOverlay"
+	add_child(_resonance_overlay)
+
+	_resonance_plaque = PanelContainer.new()
+	_resonance_plaque.name = "ResonancePlaque"
+	_resonance_plaque.add_theme_stylebox_override(&"panel", HudStyle.plaque())
+	_resonance_plaque.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var column: VBoxContainer = VBoxContainer.new()
+	_resonance_action_label = Label.new()
+	_resonance_action_label.name = "ResonanceAction"
+	_resonance_action_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_resonance_action_label.add_theme_color_override(&"font_color", HudStyle.GOLD)
+	_resonance_action_label.add_theme_font_size_override(&"font_size", 16)
+	column.add_child(_resonance_action_label)
+	_resonance_state_label = Label.new()
+	_resonance_state_label.name = "ResonanceState"
+	_resonance_state_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_resonance_state_label.add_theme_color_override(&"font_color", HudStyle.IVORY)
+	_resonance_state_label.add_theme_font_size_override(&"font_size", 14)
+	column.add_child(_resonance_state_label)
+	_resonance_plaque.add_child(column)
+	add_child(_resonance_plaque)
+	# Sous le viseur, jamais dessus : la plaque explique, elle ne masque pas.
+	_resonance_plaque.set_anchors_preset(Control.PRESET_CENTER)
+	_resonance_plaque.offset_left = -280.0
+	_resonance_plaque.offset_right = 280.0
+	_resonance_plaque.offset_top = 44.0
+	_resonance_plaque.offset_bottom = 104.0
+	_resonance_plaque.visible = false
+
+
+## Branche les signaux que PERSONNE n'écoutait. Ils existaient déjà, typés, dans
+## `ResonanceController` : ce sont eux la présentation promise par ses commentaires.
+func _bind_resonance() -> void:
+	if _player == null:
+		return
+	_player.resonance_verdict.connect(_on_resonance_verdict)
+	_resonance = _player.resonance()
+	if _resonance == null:
+		return
+	_resonance.pulse_fired.connect(_on_resonance_pulse)
+	_resonance.link_dissolved.connect(_on_resonance_link_dissolved)
+	_resonance.ground_completed.connect(_on_resonance_grounded)
+	_resonance.ground_cancelled.connect(_on_resonance_ground_cancelled)
+
+
+func _announce_resonance(message: String, refused: bool) -> void:
+	_resonance_message = message
+	_resonance_message_refused = refused
+	_resonance_message_timer = RESONANCE_MESSAGE_LIFETIME
+
+
+func _on_resonance_verdict(_action: StringName, verdict: StringName,
+		executed: bool) -> void:
+	if not executed:
+		var reason: String = String(verdict)
+		if RESONANCE_REFUSALS.has(verdict):
+			reason = RESONANCE_REFUSALS[verdict]
+		_announce_resonance(reason, true)
+		return
+	# `port_a` est une ÉTAPE, pas une fin : l'état permanent est porté par la
+	# plaque (`link_pending`), pas par un message qui s'efface.
+	match verdict:
+		&"linked":
+			_announce_resonance("Lien établi", false)
+		&"engaged":
+			_announce_resonance("Polarité engagée", false)
+		&"step":
+			_announce_resonance("Arc Step", false)
+
+
+## Le Pulse ne montrait rien du tout hors du laboratoire : au moins dire
+## combien de cibles il a réellement révélées.
+func _on_resonance_pulse(revealed_count: int) -> void:
+	if revealed_count <= 0:
+		_announce_resonance("Impulsion — aucune cible à portée", false)
+		return
+	_announce_resonance("Impulsion — %d cible%s révélée%s" % [revealed_count,
+		"s" if revealed_count > 1 else "", "s" if revealed_count > 1 else ""],
+		false)
+
+
+func _on_resonance_link_dissolved() -> void:
+	_announce_resonance("Lien rompu", false)
+
+
+func _on_resonance_grounded(_target: Node) -> void:
+	_announce_resonance("Mise à la terre effectuée", false)
+
+
+func _on_resonance_ground_cancelled(reason: StringName) -> void:
+	var text: String = String(reason)
+	if RESONANCE_REFUSALS.has(reason):
+		text = RESONANCE_REFUSALS[reason]
+	_announce_resonance("Mise à la terre annulée — %s" % text, true)
+
+
+## Caméra du joueur de CETTE coquille (même règle que `_find_boss`) : deux
+## scènes chargées côte à côte ne doivent pas se voler leur projection.
+func _resonance_camera() -> Camera3D:
+	if _player == null or not is_instance_valid(_player):
+		return null
+	var rig: CameraRig = _player.camera_rig()
+	return rig.get_camera() if rig != null else null
+
+
+func _refresh_resonance_hud(delta: float) -> void:
+	if _resonance_overlay == null:
+		return
+	_resonance_message_timer = maxf(0.0, _resonance_message_timer - delta)
+	var showing_message: bool = _resonance_message_timer > 0.0
+	var focus: bool = _resonance != null and _resonance.focus_active()
+	var target: ResonanceTargetComponent = null
+	var pending: bool = false
+	if focus:
+		target = _resonance.focus_selected()
+		pending = _resonance.link_pending() != null
+	var on_screen: bool = false
+	var at: Vector2 = Vector2.ZERO
+	if target != null:
+		var anchor: Node3D = target.anchor()
+		var camera: Camera3D = _resonance_camera()
+		if anchor != null and camera != null \
+				and not camera.is_position_behind(anchor.global_position):
+			at = camera.unproject_position(anchor.global_position)
+			on_screen = true
+	_resonance_overlay.apply_state(focus, target != null, on_screen, at, pending,
+		showing_message and _resonance_message_refused)
+	_resonance_plaque.visible = focus or showing_message
+	if not _resonance_plaque.visible:
+		return
+	_set_label(_resonance_action_label, _resonance_action_line(focus, target, pending))
+	_set_label(_resonance_state_label,
+		_resonance_state_line(focus, target, pending, showing_message))
+
+
+## Écrire un `Label` seulement quand le texte change : le HUD se rafraîchit à
+## chaque frame, pas la mise en page.
+func _set_label(label: Label, text: String) -> void:
+	if label != null and label.text != text:
+		label.text = text
+
+
+func _resonance_action_line(focus: bool, target: ResonanceTargetComponent,
+		pending: bool) -> String:
+	if not focus or target == null:
+		return "Bracelet de Résonance"
+	var action: String = String(target.kind)
+	if RESONANCE_ACTIONS.has(target.kind):
+		action = RESONANCE_ACTIONS[target.kind]
+	if target.kind == &"port" and pending:
+		action = "Arc Link — relier"
+	return "Clic gauche : %s" % action
+
+
+func _resonance_state_line(focus: bool, target: ResonanceTargetComponent,
+		pending: bool, showing_message: bool) -> String:
+	# Le message de verdict prime : c'est la réponse à la dernière action.
+	if showing_message:
+		return _resonance_message
+	if pending:
+		return "Port retenu — vise le second port SANS lâcher G"
+	if not focus:
+		return ""
+	if target == null:
+		return "Aucune cible dans l'axe — approche (18 m) et dégage la vue"
+	return ""
+
+
+## --- Seams de test : ce que le viseur montre RÉELLEMENT ---
+
+func is_resonance_plaque_visible() -> bool:
+	return _resonance_plaque != null and _resonance_plaque.visible
+
+
+func resonance_action_text() -> String:
+	return _resonance_action_label.text if _resonance_action_label != null else ""
+
+
+func resonance_state_text() -> String:
+	return _resonance_state_label.text if _resonance_state_label != null else ""
+
+
+func resonance_overlay() -> ResonanceOverlay:
+	return _resonance_overlay

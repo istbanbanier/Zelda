@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://stabdolly0lot3"]
+
+[ext_resource type="Script" path="res://scripts/lookdev/stability_dolly.gd" id="1_dolly"]
+
+[node name="StabilityDolly" type="Node3D"]
+script = ExtResource("1_dolly")

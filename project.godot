@@ -23,6 +23,7 @@ EventBus="*res://scripts/core/event_bus.gd"
 SaveSystem="*res://scripts/save/save_system.gd"
 AudioManager="*res://scripts/core/audio_manager.gd"
 SceneFlow="*res://scripts/core/scene_flow.gd"
+DevMode="*res://scripts/tools/dev_mode.gd"
 
 [debug]
 
@@ -30,6 +31,25 @@ gdscript/warnings/untyped_declaration=1
 gdscript/warnings/unsafe_property_access=1
 gdscript/warnings/unsafe_method_access=1
 gdscript/warnings/unsafe_cast=1
+
+[display]
+
+; Fenêtre de référence. La MISE À L'ÉCHELLE de l'interface (`stretch/mode`) a
+; été essayée puis RETIRÉE : la suite a montré qu'elle met aussi à l'échelle
+; les déplacements de souris — 200 px à 0,002 rad/px tournaient de 0,566 rad
+; au lieu de 0,4 — et qu'elle décentrait les panneaux hors de la résolution de
+; référence. Une interface qui grandit avec l'écran reste souhaitable, mais
+; elle demande une passe dédiée, pas une ligne de configuration.
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+
+[gui]
+
+; §17.4 : « texte minimum 24 px équivalent à 1080p pour les informations
+; importantes ». Le projet n'avait AUCUN thème par défaut : tout le jeu —
+; titre, boutons, HUD, invites, notifications — héritait des 16 px du thème
+; intégré de Godot. Une seule ligne remet l'ensemble au seuil.
+theme/default_font_size=24
 
 [input]
 
@@ -138,21 +158,18 @@ quick_meal={
 , Object(InputEventJoypadButton,"resource_local_to_scene":false,"resource_name":"","device":0,"button_index":12,"pressure":0.0,"pressed":false,"script":null)
 ])
 }
-
 resonance_pulse={
 "deadzone": 0.2,
 "events": Array[InputEvent]([Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":81,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 , Object(InputEventJoypadButton,"resource_local_to_scene":false,"resource_name":"","device":0,"button_index":11,"pressure":0.0,"pressed":false,"script":null)
 ])
 }
-
 resonance_focus={
 "deadzone": 0.2,
 "events": Array[InputEvent]([Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":71,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 , Object(InputEventJoypadButton,"resource_local_to_scene":false,"resource_name":"","device":0,"button_index":9,"pressure":0.0,"pressed":false,"script":null)
 ])
 }
-
 resonance_ground={
 "deadzone": 0.2,
 "events": Array[InputEvent]([Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":84,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
@@ -183,6 +200,24 @@ look_up={
 look_down={
 "deadzone": 0.2,
 "events": Array[InputEvent]([Object(InputEventJoypadMotion,"resource_local_to_scene":false,"resource_name":"","device":0,"axis":3,"axis_value":1.0,"script":null)
+])
+}
+dev_fly_toggle={
+"deadzone": 0.2,
+"events": Array[InputEvent]([Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194333,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+, Object(InputEventJoypadButton,"resource_local_to_scene":false,"resource_name":"","device":0,"button_index":4,"pressure":0.0,"pressed":false,"script":null)
+])
+}
+dev_fly_up={
+"deadzone": 0.2,
+"events": Array[InputEvent]([Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":32,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+, Object(InputEventJoypadButton,"resource_local_to_scene":false,"resource_name":"","device":0,"button_index":5,"pressure":0.0,"pressed":false,"script":null)
+])
+}
+dev_fly_down={
+"deadzone": 0.2,
+"events": Array[InputEvent]([Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194326,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+, Object(InputEventJoypadButton,"resource_local_to_scene":false,"resource_name":"","device":0,"button_index":14,"pressure":0.0,"pressed":false,"script":null)
 ])
 }
 

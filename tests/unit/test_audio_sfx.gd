@@ -10,6 +10,18 @@ extends GateTestCase
 const EXPECTED: Array[StringName] = [
 	&"hit_land", &"hit_taken", &"swing", &"refuse", &"chest_open",
 	&"pickup", &"death", &"ui_move", &"ui_accept",
+	# V5 — le corps du héros et la défense. Le jeu ne jouait aucun pas, aucun
+	# atterrissage, aucun saut, et la déviation parfaite — le geste le plus
+	# difficile — ne produisait rien. Trois variantes de pas plutôt qu'une :
+	# deux pas par seconde sur un seul échantillon donnent l'effet mitraillette
+	# que §18.2 interdit.
+	&"step_grass_a", &"step_grass_b", &"step_grass_c",
+	&"step_stone_a", &"step_stone_b",
+	&"jump", &"land_soft", &"land_hard",
+	&"parry", &"guard", &"weapon_break",
+	# Boucle d'ambiance de la vallée : le silence entre deux actions est ce qui
+	# fait « projet non fini » plus sûrement qu'un placeholder visuel.
+	&"amb_valley",
 ]
 
 

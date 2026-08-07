@@ -133,7 +133,12 @@ func _build_shell() -> void:
 		COL_STONE)
 	box("WallNorthEast", Vector3(9.5, 7, -15.25), Vector3(11, 14, 0.5),
 		COL_STONE)
-	box("WallNorthMid", Vector3(0, 3, -15.25), Vector3(8, 6, 0.5), COL_STONE)
+	# BLOCAGE DE PROGRESSION corrige : cette dalle pleine murait la
+	# porte de la salle 3 — le donjon ne pouvait pas etre traverse.
+	# Trois pieces laissent 4,4 m de passage sous un linteau.
+	box("WallNorthMidWest", Vector3(-3.1, 3, -15.25), Vector3(1.8, 6, 0.5), COL_STONE)
+	box("WallNorthMidEast", Vector3(3.1, 3, -15.25), Vector3(1.8, 6, 0.5), COL_STONE)
+	box("WallNorthMidLintel", Vector3(0, 5.5, -15.25), Vector3(4.4, 1, 0.5), COL_STONE)
 	box("WallNorthTop", Vector3(0, 12.75, -15.25), Vector3(8, 3.5, 0.5),
 		COL_BRONZE)
 

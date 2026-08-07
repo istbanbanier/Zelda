@@ -1,0 +1,18 @@
+{
+  "commit": "6344246adb1a1e6be3aa89a6de0ca60b89adc73a",
+  "display_server": "X11",
+  "distinct_colors_sampled": 2036,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 40,
+  "height": 1080,
+  "label": "cycle3_v13_sculpte",
+  "luma_mean": 0.625,
+  "luma_stddev": 0.1924,
+  "png": "evidence/cycle3/herolab_v13_sculpte.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/lookdev/HeroShotLab.tscn",
+  "timestamp_utc": "2026-08-06 03:22:31",
+  "width": 1920
+}

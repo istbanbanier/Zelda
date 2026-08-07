@@ -335,6 +335,18 @@ func focus_selected() -> ResonanceTargetComponent:
 	return _focus_selected
 
 
+## Extrémité A d'un Arc Link en attente de son second port, ou `null`.
+##
+## Lecture seule, pour la PRÉSENTATION (P2 §3.8 : « source, port sélectionné
+## et destination visuellement distincts »). Ce contrôleur ne connaît toujours
+## pas l'UI — c'est l'UI qui vient lire. Sans cet état affiché, le lien en deux
+## temps est invisible et indébogable en jeu (PT-BRACELET-01).
+func link_pending() -> ElectricNode:
+	if _link_first != null and not is_instance_valid(_link_first):
+		_link_first = null
+	return _link_first
+
+
 ## Confirme la cible visée — le DISPATCH par nature (P2 §2.3 : une entrée,
 ## plusieurs contextes). `alt` inverse la Polarité (repousser).
 func focus_confirm(player: PlayerController, alt: bool) -> StringName:

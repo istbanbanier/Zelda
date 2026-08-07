@@ -392,6 +392,19 @@ réfuté trois fois sur machine au repos (R-017). Cause : timings par temps rée
 dans des tests par ticks. Contournement : sérialiser (règle R-017).
 Correction de fond : budgets en TICKS logiques dans les tests concernés.
 
+**Occurrence 2026-08-06** (passe art, branche dédiée) : deux tests
+save-roundtrip rouges UNE fois dans une suite lancée pendant la fenêtre
+de turbulence des redémarrages conteneur
+(`test_boss_arena::test_the_arena_restores_the_antechamber_checkpoint`,
+`test_dungeon_antisoftlock::test_leaving_and_coming_back_keeps_what_was_solved`).
+Classement : intermittence environnementale, PAS un bug — verts ×2 en
+isolation ET dans la suite intégrale suivante (**721/721**, arbre
+`295fa06`). Analyse : la voie testée est entièrement synchrone
+(écriture atomique + relecture, restauration dans `_ready`, deferreds
+déterministes par frame) — aucune fenêtre d'attente à blinder n'existe.
+Conduite tenue : ne PAS ajouter d'attentes cosmétiques ; relancer sur
+machine calme avant de croire un rouge de cette classe.
+
 ## ISS-025 — Salle électrique quasi noire en capture statique (S3, ouvert — Phase H/V7)
 
 `gate_salle_electrique.png` (caméra intérieure, 60 frames) : la salle 1 rend
@@ -504,3 +517,133 @@ quatre salles sont testés end-to-end (7/7) ; le test du relais mis à la
 terre est blindé (`before < capacité`). Le « Rappeler l'ascenseur »
 légitime compté comme échec (remarque de la revue) reste assumé : c'est
 un signal faible parmi trois, pas un déclencheur seul.
+
+## ISS-032 — Route crête → plaine nord incomplète (S3, ouvert)
+
+`test_valley_world.gd::test_the_route_from_ridge_to_north_plain_is_walkable`
+échoue : 9 jalons atteints sur 11 en 1907 ticks, et le marcheur descend à
+y = −0,50. **Antérieur à la passe d'habillage** : vérifié par exécution sur
+le commit `c9f17fb` (worktree séparé), les chiffres sont IDENTIQUES au tick
+près. Introduit par les travaux de jouabilité V5 (`371fd81`) ou antérieurs.
+
+## ISS-033 — `dev_mode.gd` lit le clavier directement (S3, CLOS le 2026-08-06)
+
+**Clos** : `test_input_layer_isolation::test_no_gameplay_script_reads_the_keyboard`
+passe desormais avec 696 assertions, verifie par le controleur du chantier
+d'assemblage. Corrige entre-temps par la session qui avait introduit le fichier.
+
+`test_input_layer_isolation.gd::test_no_gameplay_script_reads_the_keyboard`
+échoue : `scripts/tools/dev_mode.gd` contient `InputEventKey` et `KEY_`,
+ce que D-013 interdit au gameplay. Le fichier a été introduit par le commit
+`c9f17fb` (« Mode développement »), d'une autre session travaillant sur la
+même branche. Correctif attendu : passer par `InputIntent`, ou exclure
+explicitement les outils de développement du contrôle si la règle ne les
+vise pas — trancher, ne pas laisser rouge.
+
+
+## ISS-034 — Le kit ne contient aucun pignon de la famille bardeaux (S3, ouvert)
+
+Verifie exhaustivement dans `assets/environment/village` et
+`assets/environment/dungeon` : les seules pieces de fermeture de rampant sont
+`Roof_Front_Brick4/6/8`, taillees pour la pente des tuiles rondes.
+`Roof_Front_Brick6` monte de 4,38 m sur 6,69 m de base ; la pente de bardeaux
+de la cabane des bucherons monte de 2,26 m sur 6,00 m — presque le double.
+Les deux abouts du toit de la cabane restent donc des triangles ouverts.
+**Aucun faux pignon n'a ete bricole** : la limite est ecrite dans le code
+au-dessus de la toiture. Correctif possible : modeliser un pignon a la bonne
+pente (script Blender), ou passer la cabane aux tuiles rondes.
+
+## ISS-035 — Pas japonais de la rivière suspendus au-dessus du lit (S3, ouvert)
+
+Mesure faite pendant la passe « arcade / caisse claire / arche » avec
+`tools/godot/probe_world_boxes.gd`, sur la vallée réellement montée :
+
+    DressZoneRiver/RockPath_Round_Wide_4    y 0,54..0,70  sol -1,50  → +2,04 m
+    DressZoneRiver/RockPath_Round_Thin_5    y 0,49..0,62  sol -1,50  → +1,99 m
+    DressZoneRiver/RockPath_Round_Small_1_7 y 0,49..0,66  sol -1,50  → +1,99 m
+
+Le fond du lit (dalle `Riverbed` de `valley_terrain.gd`) est à y = −1,50 ; ces
+pierres sont posées à y ≈ 0,5, soit deux mètres au-dessus de lui. Elles ne sont
+donc pas des pas japonais : ce sont des galets qui flottent dans le vide, juste
+sous la nappe d'eau (y −0,85..−0,55) qui les cache par le dessus mais pas de
+biais. Leur cote vient vraisemblablement d'une constante de plaine (y = 2)
+diminuée d'une lame d'eau, et non du lit.
+
+Défaut CONSTATÉ et MESURÉ, non corrigé : le fichier fautif
+(`valley_terrain.gd`, dressage de zone F) n'était pas dans le périmètre des
+trois corrections demandées, et le déplacer touche le tracé du gué. Correctif
+attendu : dériver la cote de ces pierres du lit (−1,50) et non de la plaine,
+comme l'a fait la travée tombée de l'aqueduc.
+---
+
+## PT-BRACELET-01 — Le Bracelet n'avait aucune présentation en jeu (S2)
+
+**Constaté en playtest**, pas en test : « je maintiens G et je clique gauche sur
+la source puis sur le bassin et rien ne se passe ».
+
+**Cause** : le Bracelet n'émettait aucun retour hors de `ResonanceLab`.
+`ResonanceTargetComponent` déclare lui-même « ce composant ne dessine rien » ;
+seul le lab branchait `revealed`/`reveal_ended`. La cible retenue par le focus,
+l'étape « premier port retenu » d'un Arc Link en deux temps et la raison d'un
+refus n'existaient que dans la sonde de latence — un instrument de MESURE que
+seul `LabOverlay` affiche. Le joueur ne pouvait pas distinguer « rien n'est
+parti » de « c'est parti et je n'ai pas vu la conséquence ».
+
+Aggravant : `focus_end()` oublie le port A dès que `G` est relâché (P2 §3.8,
+comportement voulu) — exigence INVISIBLE sans affichage.
+
+**Résolu** : viseur de Résonance dans `GameplayShell` (anneau qui se referme sur
+une cible, losange doublé sur le port retenu, viseur barré au refus, raison
+écrite en français), signal typé `PlayerController.resonance_verdict`, et
+branchement des signaux `pulse_fired` / `link_dissolved` / `ground_completed` /
+`ground_cancelled` qui n'étaient écoutés nulle part.
+
+**Non résolu** : la couverture du chemin JOUEUR manquait aussi côté tests —
+`test_conductive_basin` appelait `try_link` directement, jamais
+`focus_update` + `focus_confirm`. Un test de visée a été ajouté.
+
+## PT-BRACELET-02 — Le kit `village/` ne contient aucune pièce de mur (S2)
+
+**Constaté en playtest** : « beaucoup de modèles sont étranges, maisons sans
+murs, bois qui flotte ».
+
+**Cause mesurée** : `assets/environment/village/` contient 53 pièces — sols,
+toits, débords, balcons, portes, escaliers, cheminées — et **zéro** `Wall_*`.
+Toutes les pièces de mur (`Wall_UnevenBrick_Straight`, `Wall_Plaster_*`,
+`Wall_Arch`…) vivent dans `assets/environment/dungeon/`. Un bâtiment assemblé
+depuis le seul kit village ne PEUT donc pas avoir de murs. Le « bois qui
+flotte » relève de la même famille : le kit est purement visuel, les collisions
+et les cotes de pose sont à la charge des scripts d'assemblage.
+
+**Résolu, et la cause réelle était plus profonde que prévu.** L'audit des
+bâtiments a mesuré chaque pièce du kit au lieu de se fier à son nom, et
+trouvé trois choses :
+
+1. **Les murs ne manquaient pas.** Tous les scripts de bâtiment posent bien
+   des `Wall_*` (résolus depuis `dungeon/`, où ils vivent tous). Les modules
+   sont conformes : 2,00 m de large, 3,12 m de haut, mesurés au glTF.
+2. **« Le bois qui flotte » était réel et localisé.**
+   `Roof_Wooden_2x1_Center` mesure 2,00 × 1,21 × 1,50 m : c'est une TUILE DE
+   RANGÉE, à poser en série avec ses embouts `_L`/`_R`. La forge du village
+   (`riverside_village`) et la grange de la ferme (`valley_ruins`) en
+   posaient UNE SEULE, à 3,12 m au-dessus d'une emprise de 4 × 6 m : 12 % de
+   couverture, aucun contact avec un mur. Les deux posent désormais une
+   rangée complète, au pas de 1,5 m — la profondeur réelle de la tuile.
+3. **Cause racine du silence des tests.** `riverside_village`, `hamlets` et
+   `valley_territories` n'attribuaient aucun nom unique aux pièces
+   instanciées. Godot rebaptise alors les homonymes `@Node3D@366` : sur les
+   cinq murs de la forge, un seul gardait un nom lisible. **Aucun test ne
+   pouvait désigner cette géométrie**, ce qui explique qu'un toit flottant
+   ait survécu à toute la suite. `ValleyRelics._spawn` se protégeait déjà de
+   ce piège ; les trois autres l'ignoraient. Corrigé partout.
+
+**Garde-fou** : `test_roofs_are_supported.gd` vérifie la RÈGLE, pas les deux
+corrections — toute toiture EN L'AIR doit couvrir au moins 60 % de l'emprise
+des murs qu'elle abrite. Les toitures tombées au sol en sont exemptées : la
+`TourDeGuet` est une ruine dont « le cône de toiture gît dans l'herbe », et
+c'est intentionnel.
+
+**Non corrigé, assumé** : la forge est un appentis volontairement ouvert sur
+deux côtés, et la grange annonce « trois murs » alors que son code n'en pose
+que deux. Quelle face doit s'ouvrir est une décision de level design, pas une
+correction technique — laissée au jugement de l'auteur.

@@ -182,7 +182,7 @@ func test_the_relics_stand_clear_of_the_places_already_settled() -> void:
 		"arbre ancien": Vector3(-96, 2, -62),
 		"source turquoise": Vector3(-72, 2, 78),
 		"champ de fleurs": Vector3(-34, 2, 112),
-		"pont de pierre": Vector3(-14, 0, 10),
+		"pont de pierre": Vector3(-21, 0, 10),   # reculé de 7 m : voir SITE_STONE_BRIDGE
 		"belvédère": Vector3(168, 0, 40),
 		"grotte de la cascade": Vector3(-118, 2, 26),
 		"mine abandonnée": Vector3(160, 2, -70),

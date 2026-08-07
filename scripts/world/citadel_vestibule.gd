@@ -54,23 +54,58 @@ func _build_room() -> void:
 	for i: int in range(4):
 		var x: float = -6.0 if i % 2 == 0 else 6.0
 		var z: float = -6.0 if i < 2 else 6.0
-		_box("Brazier%d" % i, Vector3(x, 0.55, z), Vector3(0.9, 1.1, 0.9),
-			Color(0.30, 0.22, 0.16))
-		_box("BrazierCoal%d" % i, Vector3(x, 1.2, z), Vector3(0.6, 0.25, 0.6),
+		# REVUE V4 : le brasero était DEUX boîtes — une caisse brune de
+		# 0,9 × 1,1 × 0,9 surmontée d'un couvercle orange émissif : ni vasque,
+		# ni pied, aucune silhouette de feu. On monte le socle du kit et une
+		# vraie vasque (`Cauldron`, 0,989 × 0,8155 × 0,944, origine à la base
+		# et centrée en XZ : posable telle quelle).
+		_box("Brazier%d" % i, Vector3(x, 0.275, z), Vector3(0.5, 0.55, 0.5),
+			Color(0.24, 0.18, 0.14))
+		var bowl: PackedScene = AssetRegistry.model(&"Cauldron")
+		if bowl != null:
+			var pot: Node3D = bowl.instantiate() as Node3D
+			pot.name = "BrazierBowl%d" % i
+			pot.position = Vector3(x, 0.55, z)   # base sur le socle, bord à 1,363
+			pot.rotation.y = PI * 0.5 * float(i)   # casse la répétition des quatre
+			# La collision suit le VISIBLE : sans ce cylindre, on traverserait
+			# la vasque, que l'ancienne boîte de 0,9 m bloquait.
+			var pot_body: StaticBody3D = StaticBody3D.new()
+			pot_body.name = "BrazierBowlBody%d" % i
+			pot_body.collision_layer = 1
+			pot_body.collision_mask = 0
+			var pot_shape: CollisionShape3D = CollisionShape3D.new()
+			var pot_cylinder: CylinderShape3D = CylinderShape3D.new()
+			pot_cylinder.radius = 0.4946   # rayon mesuré de la panse
+			pot_cylinder.height = 0.8155   # hauteur mesurée
+			pot_shape.shape = pot_cylinder
+			pot_shape.position = Vector3(0, 0.4078, 0)
+			pot_body.add_child(pot_shape)
+			pot.add_child(pot_body)
+			add_child(pot)
+		# Braises DANS la vasque (bord à 1,363) au lieu d'un couvercle posé.
+		_box("BrazierCoal%d" % i, Vector3(x, 1.2, z), Vector3(0.62, 0.14, 0.62),
 			Color(0.98, 0.55, 0.18), true)
 		var flame: OmniLight3D = OmniLight3D.new()
 		flame.name = "BrazierLight%d" % i
 		flame.light_color = Color(1.0, 0.62, 0.28)
 		flame.light_energy = 1.6
 		flame.omni_range = 9.0
-		flame.position = Vector3(x, 2.0, z)
+		# REVUE V4 : la lampe était à y = 2,00, soit 0,675 m AU-DESSUS des
+		# braises qui la motivent — le halo flottait au-dessus du feu (§7.8 :
+		# « sources motivées »). Ramenée à 0,35 m au-dessus des braises.
+		flame.position = Vector3(x, 1.55, z)
 		add_child(flame)
 	# La porte SCELLÉE du fond : masse sombre + veine cyan sous un linteau de
 	# bronze — « visiblement et honnêtement scellée », le donjon quatre-salles
 	# est Phase F. C'est le « second seuil » de la référence 02.
 	# F.6 : le seuil du fond n'est plus scellé — il OUVRE sur la salle 1 du
 	# donjon électrique. La promesse de D.1R.4 est tenue.
-	_box("SealedSeam", Vector3(0, 3, -12.65), Vector3(0.3, 5.4, 0.1), COL_CYAN, true)
+	# REVUE V4 : la veine cyan suit la FACE du vantail. Celui-ci ayant été
+	# reculé au nu du cadre (voir plus bas), sa face regarde maintenant
+	# z = −12,55 ; à −12,65 la veine se serait retrouvée NOYÉE dans la masse
+	# sombre. Recalée à −12,50, elle affleure la porte (−12,55..−12,45) et
+	# reste en arrière du nu avant du cadre (−12,37).
+	_box("SealedSeam", Vector3(0, 3, -12.50), Vector3(0.3, 5.4, 0.1), COL_CYAN, true)
 	var dungeon_door: SceneDoor = SceneDoor.new()
 	dungeon_door.name = "DungeonDoor"
 	dungeon_door.verb = "Entrer dans le donjon"
@@ -80,18 +115,29 @@ func _build_room() -> void:
 	dungeon_door.collision_mask = 0
 	var dungeon_shape: CollisionShape3D = CollisionShape3D.new()
 	var dungeon_box: BoxShape3D = BoxShape3D.new()
-	dungeon_box.size = Vector3(5, 6, 0.4)
+	# REVUE V4 : le vantail mesurait 5,0 × 6,0 alors que le portail de pierre
+	# qui l'encadre ne fait que 3,687 m de large et 5,948 m de haut une fois
+	# à l'échelle (DoorFrame_Round_Brick 1,6031 × 2,5862 × 0,4772 × 2,3/2,3/1,4).
+	# La masse noire débordait donc de 0,66 m de chaque jambage et par le haut :
+	# l'arche se lisait comme un décor collé devant une dalle. Le vantail est
+	# ramené à 3,4 × 5,6, entièrement CONTENU dans le cadre (x ±1,70 contre
+	# ±1,84 ; sommet 5,60 contre 5,948). La collision suit exactement le
+	# visible : les deux boîtes gardent la même cote.
+	dungeon_box.size = Vector3(3.4, 5.6, 0.4)
 	dungeon_shape.shape = dungeon_box
 	dungeon_door.add_child(dungeon_shape)
 	var dungeon_mesh: MeshInstance3D = MeshInstance3D.new()
 	var dungeon_mesh_box: BoxMesh = BoxMesh.new()
-	dungeon_mesh_box.size = Vector3(5, 6, 0.4)
+	dungeon_mesh_box.size = Vector3(3.4, 5.6, 0.4)
 	dungeon_mesh.mesh = dungeon_mesh_box
 	var dungeon_material: StandardMaterial3D = StandardMaterial3D.new()
 	dungeon_material.albedo_color = Color(0.12, 0.13, 0.17)
 	dungeon_mesh.material_override = dungeon_material
 	dungeon_door.add_child(dungeon_mesh)
-	dungeon_door.position = Vector3(0, 3, -12.9)   # AVANT add_child
+	# y = 2,8 : le vantail de 5,6 m repose sur le dallage (0,00..5,60), comme le
+	# cadre. z = −12,75 : son plan passe au nu ARRIÈRE du cadre (−13,03..−12,37)
+	# au lieu de se tenir 0,25 m derrière lui.
+	dungeon_door.position = Vector3(0, 2.8, -12.75)   # AVANT add_child
 	add_child(dungeon_door)
 	_box("SealedLintel", Vector3(0, 6.6, -12.8), Vector3(6.4, 0.8, 0.7),
 		Color(0.42, 0.30, 0.18))
@@ -102,7 +148,10 @@ func _build_room() -> void:
 	if seal_frame != null:
 		var frame: Node3D = seal_frame.instantiate() as Node3D
 		frame.name = "SealedDoorFrame"
-		frame.position = Vector3(0, 0, -12.45)
+		# Cadre recalé sur le vantail : à −12,62 son épaisseur (−13,03..−12,37)
+		# enveloppe la porte (−12,95..−12,55). Le `SealedLintel` (6,2..7,0)
+		# reste au-dessus du sommet du cadre (5,948).
+		frame.position = Vector3(0, 0, -12.62)
 		frame.scale = Vector3(2.3, 2.3, 1.4)
 		add_child(frame)
 
@@ -193,10 +242,12 @@ func _dress_interior() -> void:
 func _dress_column(index: int, foot: Vector3) -> void:
 	# V4 lot 11 : CASSER la répétition (§11.J) — piliers larges et étroits
 	# alternés, le même module ne se répète jamais côte à côte.
+	var wide: bool = index % 2 == 0
 	var packed: PackedScene = AssetRegistry.resolve(&"arch.column.module") \
-		if index % 2 == 0 else AssetRegistry.model(&"Corner_Exterior_Brick")
+		if wide else AssetRegistry.model(&"Corner_Exterior_Brick")
 	if packed == null:
 		packed = AssetRegistry.resolve(&"arch.column.module")
+		wide = true   # repli : c'est bien le module LARGE qui est monté
 	if packed == null:
 		return
 	var column_body: Node = get_node_or_null("Column%d" % index)
@@ -209,13 +260,36 @@ func _dress_column(index: int, foot: Vector3) -> void:
 	stack.position = foot
 	# Alternance de lacet par segment : les briques ne se répètent pas en
 	# pile parfaite (§7.3 : variation contre la répétition).
+	#
+	# REVUE V4 — deux défauts mesurés, corrigés ici :
+	# 1. Les deux modules ont leur pivot DANS UN COIN, pas au centre : le
+	#    centre de masse est à 0,329 m de l'axe (module large) et 0,262 m
+	#    (module étroit). Chaque quart de tour le promenait autour du fût, d'où
+	#    des tronçons décalés jusqu'à 0,658 m les uns des autres — les colonnes
+	#    zigzaguaient. On remet donc la section sur l'axe AVANT de la tourner,
+	#    en retranchant le vecteur pivot lui-même tourné et mis à l'échelle.
+	# 2. Le pas d'empilement vaut 3,04 m alors que les modules mesurent
+	#    3,0428 m (large, bbox Y −0,0185..3,0243) et 3,0156 m (étroit, bbox Y
+	#    −0,0071..3,0085) : les colonnes étroites ouvraient 2,4 cm de fente
+	#    traversante à chaque joint, soit six traits de lumière dans la salle.
+	#    Plutôt que de changer le pas — la cote 3,04 m est celle du gabarit de
+	#    la salle et le test d'intégration la vérifie — on étire la hauteur du
+	#    module pour qu'elle TOMBE JUSTE sur le pas : 3,04 / 3,0156 = 1,00809
+	#    (étroit, +0,8 %) et 3,04 / 3,0428 = 0,99908 (large, −0,1 %). Les
+	#    joints deviennent jointifs sans déformation perceptible.
+	const STEP: float = 3.04
+	var pivot: Vector3 = Vector3(-0.1337, 0.0, 0.1560) if wide \
+		else Vector3(-0.0876, 0.0, 0.0888)
+	var flat: Vector3 = Vector3(1.6, STEP / 3.0428, 1.6) if wide \
+		else Vector3(2.1, STEP / 3.0156, 2.1)
 	for level: int in range(3):
 		var segment: Node3D = packed.instantiate() as Node3D
 		segment.name = "Segment%d" % level
-		segment.position = Vector3(0, 3.04 * float(level), 0)
-		segment.rotation.y = PI * 0.5 * float((index + level) % 4)
-		segment.scale = Vector3(1.6, 1.0, 1.6) if index % 2 == 0 \
-			else Vector3(2.1, 1.0, 2.1)
+		var yaw: float = PI * 0.5 * float((index + level) % 4)
+		segment.rotation.y = yaw
+		segment.scale = flat
+		segment.position = Vector3(0, STEP * float(level), 0) \
+			- Basis(Vector3.UP, yaw) * (pivot * flat)
 		stack.add_child(segment)
 	add_child(stack)
 

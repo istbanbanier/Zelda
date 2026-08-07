@@ -32,6 +32,13 @@ const WALL_H: float = 3.12
 ## Largeur laissée libre dans une baie de porte : le joueur passe.
 const DOOR_GAP: float = 1.30
 
+## Assise de la vitre `Window_Wide_Round1`, MESURÉE sur le .gltf :
+## sa géométrie commence à y = +1,016 (bbox y 1,016 → 2,742). `KitPlacement.seat()`
+## rabaisse tout modèle dont le bas est au-dessus de son ancrage : demander
+## exactement 1,016 annule donc la correction et laisse la vitre pile dans la
+## baie percée du mur (trou mesuré : x ±0,60, y 1,04 → 2,61).
+const GLASS_SILL_Y: float = 1.016
+
 ## Rive SUD de la rivière (lit à z = 10, plaine sud à y = 2).
 const SITE: Vector3 = Vector3(-70.0, 2.0, 36.0)
 
@@ -80,6 +87,12 @@ func _piece(asset: String, at: Vector3, yaw_deg: float = 0.0,
 		push_warning("[village] pièce absente du kit : %s" % asset)
 		return null
 	var node: Node3D = packed.instantiate() as Node3D
+	# Nom unique, comme `ValleyRelics._spawn` : deux pièces homonymes sous le
+	# même parent sont rebaptisées `@Node3D@366` par le moteur, et plus aucun
+	# test ne peut les désigner. Mesuré : sur les cinq murs de la forge, un
+	# seul gardait un nom lisible — la géométrie du village était donc
+	# invisible aux tests, et c'est ce qui a laissé passer un toit flottant.
+	node.name = "%s_%03d" % [asset, _built]
 	node.position = at
 	# §3 : le kit végétal est importé sans normalisation d'échelle ; la
 	# correction mesurée vit dans `KitScale`, en un seul point.
@@ -87,6 +100,10 @@ func _piece(asset: String, at: Vector3, yaw_deg: float = 0.0,
 	if not is_equal_approx(corrected, 1.0):
 		node.scale = Vector3.ONE * corrected
 	node.rotation_degrees = Vector3(0, yaw_deg, 0)
+	# « Rien ne flotte » : une partie du kit a son origine SOUS sa
+	# géométrie (Prop_Support commence à +1,21 m). Sans cette
+	# correction, l'objet est suspendu en l'air. Voir KitPlacement.
+	KitPlacement.seat(node, node.scene_file_path)
 	(parent if parent != null else self).add_child(node)
 	_built += 1
 	return node
@@ -116,6 +133,17 @@ func _wall(parent: Node3D, at: Vector3, yaw: float, kind: String) -> void:
 	var span: Vector3 = along.abs() * MODULE
 	_wall_collider(parent, at + Vector3(0, WALL_H * 0.5, 0),
 		Vector3(maxf(span.x, thick.x), WALL_H, maxf(span.z, thick.z)))
+
+
+## VITRE d'une baie de fenêtre. Purement visuelle : aucune collision n'est
+## ajoutée, le mur porteur pose déjà la sienne — une fenêtre ne se traverse pas
+## pour autant, le collider du mur est plein sur toute sa largeur.
+##
+## `at` est la position du MUR : la vitre reprend son plan, son yaw et son
+## niveau ; seule l'assise dans le mur s'y ajoute (GLASS_SILL_Y).
+func _glass(parent: Node3D, at: Vector3, yaw: float) -> void:
+	_piece("Window_Wide_Round1",
+		Vector3(at.x, at.y + GLASS_SILL_Y, at.z), yaw, parent)
 
 
 ## Mur À BAIE : deux jambages et un linteau, le passage reste libre. C'est
@@ -165,6 +193,10 @@ func _build_inn() -> void:
 		else:
 			_wall(inn, Vector3(x, 0, half + MODULE * 0.5), 0.0,
 				"Wall_Plaster_Window_Wide_Round")
+			# DÉFAUT CORRIGÉ : la baie du mur est un TROU réel (1,20 × 1,57 m
+			# mesurés dans le maillage) et la vitre du kit n'était posée nulle
+			# part — on voyait à travers la maison. Voir GLASS_SILL_Y.
+			_glass(inn, Vector3(x, 0, half + MODULE * 0.5), 0.0)
 		_wall(inn, Vector3(x, 0, -half - MODULE * 0.5), 180.0,
 			"Wall_Plaster_Straight")
 	for iz: int in range(-1, 2):
@@ -175,8 +207,19 @@ func _build_inn() -> void:
 		_wall(inn, Vector3(half + MODULE * 0.5, 0, z), 270.0,
 			"Wall_Plaster_Straight" if iz != 0
 			else "Wall_Plaster_Window_Wide_Round")
+		if iz == 0:
+			_glass(inn, Vector3(-half - MODULE * 0.5, 0, z), 90.0)
+			_glass(inn, Vector3(half + MODULE * 0.5, 0, z), 270.0)
 
-	_piece("Roof_RoundTiles_6x6", Vector3(0, WALL_H, 0), 0.0, inn)
+	# DÉFAUT CORRIGÉ : aucun poteau d'angle. L'épaisseur du mur n'est pas
+	# centrée sur son plan (bbox z −0,314 → +0,092) : à chaque angle, les deux
+	# murs se croisaient en laissant une fente ouverte sur toute la hauteur
+	# (3,12 m). Même geste qu'à hamlets.gd:296 pour la cabane, même trame 6 × 6.
+	for corner: Vector3 in [Vector3(-3, 0, -3), Vector3(3, 0, -3),
+			Vector3(-3, 0, 3), Vector3(3, 0, 3)]:
+		_piece("Corner_Exterior_Wood", corner, 0.0, inn)
+
+	_gabled_roof(inn, 6, Vector3(0, WALL_H, 0))
 	_piece("Prop_Chimney2", Vector3(1.6, WALL_H + 0.6, -1.4), 0.0, inn)
 
 	# Mobilier : l'auberge est MEUBLÉE, sinon c'est une pièce vide avec un toit.
@@ -200,11 +243,42 @@ func _build_forge() -> void:
 	for ix: int in range(-1, 1):
 		_wall(forge, Vector3(ix * MODULE + 1.0, 0, -MODULE * 1.5), 180.0,
 			"Wall_UnevenBrick_Straight")
-	_piece("Roof_Wooden_2x1_Center", Vector3(0, WALL_H, 0), 0.0, forge)
+
+	# DÉFAUT CORRIGÉ : l'atelier n'avait pas de sol, l'enclume était posée dans
+	# l'herbe. Six dalles de 2 × 2 m couvrent exactement l'emprise des deux
+	# murs : x −2 → +2 et z −3 → +3.
+	for fx: int in [-1, 1]:
+		for fz: int in [-1, 0, 1]:
+			_piece("Floor_UnevenBrick",
+				Vector3(fx * MODULE * 0.5, 0.02, fz * MODULE), 0.0, forge)
+
+	# La couverture était UNE planche suspendue au-dessus d'un abri de 4 × 6 m
+	# sans toucher aucun mur. `_shed_roof()` pose les huit pièces de bardeaux
+	# qui couvrent réellement l'emprise — version factorisée de l'audit des
+	# bâtiments, préférée ici à ma tuile unique : le même défaut, corrigé au
+	# même endroit pour tous les appentis du village.
+	_shed_roof(forge)
 	_piece("Anvil", Vector3(0.6, 0.05, 0.4), 20.0, forge, PROPS)
 	_piece("Workbench", Vector3(-1.2, 0.05, 1.6), 0.0, forge, PROPS)
 	_piece("Whetstone", Vector3(1.4, 0.05, 1.4), 0.0, forge, PROPS)
 	_piece("WeaponStand", Vector3(-1.4, 0.05, -1.6), 0.0, forge, PROPS)
+
+
+## Couverture d'appentis sur l'emprise 4 × 6 m (x −2..+2, z −3..+3).
+##
+## Défaut mesuré en playtest (« du bois qui flotte ») : la forge posait UNE
+## seule `Roof_Wooden_2x1_Center` au milieu du vide. Cette pièce mesure
+## 2,00 × 1,21 × 1,50 m — c'est une TUILE DE RANGÉE, pas une toiture : elle
+## se pose en série avec ses embouts `_L` et `_R`, comme le fait déjà la
+## cabane des hameaux. Seule, à 3,12 m au-dessus d'un appentis de 24 m², elle
+## n'en couvrait que 12 % et ne touchait aucun mur.
+##
+## Pas de rangée : 1,5 m, la profondeur réelle de la tuile — poser tous les
+## 2 m laisserait 0,5 m de ciel entre chaque rang.
+func _shed_roof(parent: Node3D) -> void:
+	for z: float in [-2.25, -0.75, 0.75, 2.25]:
+		_piece("Roof_Wooden_2x1_L", Vector3(-1.0, WALL_H, z), 0.0, parent)
+		_piece("Roof_Wooden_2x1_R", Vector3(1.0, WALL_H, z), 0.0, parent)
 
 
 ## MOULIN : la verticale qui identifie le village de loin (§4 de l'ordre).
@@ -213,16 +287,62 @@ func _build_mill() -> void:
 	mill.name = "Moulin"
 	add_child(mill)
 	mill.position = Vector3(-4.0, 0, -16.0)   # côté rivière
+	# DÉFAUT CORRIGÉ : la tour était bâtie 4 m × 2 m — faces avant/arrière au
+	# plan z = ±1 et UNE seule pièce de 2 m par face latérale, pour un côté de
+	# 4 m. Le chapeau `Roof_Tower_RoundTiles` (bbox x ±2,825, z ±2,714) est
+	# taillé pour une tour de 4 × 4 : il débordait de 1,71 m dans le vide au
+	# nord et au sud, et on voyait l'intérieur creux par-dessus l'arase.
+	# Reprise de la trame des habitations : plans à ±MODULE, deux pièces par
+	# face, 8 modules par niveau — emprise 4 × 4 m.
 	for level: int in range(2):
 		var y: float = float(level) * WALL_H
 		for ix: int in [-1, 1]:
-			_wall(mill, Vector3(ix * MODULE * 0.5, y, MODULE * 0.5), 0.0,
+			_wall(mill, Vector3(ix * MODULE * 0.5, y, MODULE), 0.0,
 				"Wall_UnevenBrick_Straight")
-			_wall(mill, Vector3(ix * MODULE * 0.5, y, -MODULE * 0.5), 180.0,
+			_wall(mill, Vector3(ix * MODULE * 0.5, y, -MODULE), 180.0,
 				"Wall_UnevenBrick_Straight")
-			_wall(mill, Vector3(ix * MODULE, y, 0.0), 90.0 if ix < 0 else 270.0,
-				"Wall_UnevenBrick_Straight")
+			for iz: int in [-1, 1]:
+				_wall(mill, Vector3(ix * MODULE, y, iz * MODULE * 0.5),
+					90.0 if ix < 0 else 270.0, "Wall_UnevenBrick_Straight")
+		# Poteaux d'angle : même fente de 9 cm qu'à l'auberge, sur deux niveaux.
+		for cx: int in [-1, 1]:
+			for cz: int in [-1, 1]:
+				_piece("Corner_Exterior_Wood",
+					Vector3(cx * MODULE, y, cz * MODULE), 0.0, mill)
+	# Le chapeau ne bouge pas : sa jupe (bbox min y −0,572) descend à 5,668 et
+	# recouvre de 0,57 m l'arase du 2e niveau (6,243) sur les QUATRE faces,
+	# avec 0,80 m d'égout régulier.
 	_piece("Roof_Tower_RoundTiles", Vector3(0, WALL_H * 2.0, 0), 0.0, mill)
+
+
+## Toit à deux pans FERMÉ. Un toit sans pignons laisse un triangle ouvert à
+## chaque bout : le joueur voit sous les tuiles, et la maison n'est plus une
+## maison. Le kit fournit `Roof_Front_Brick4/6/8` pour cela ; ils n'étaient
+## posés nulle part. On les pose donc AVEC le toit, jamais séparément — un
+## seul appel, impossible à oublier.
+##
+## `span` est le côté couvert en mètres (4, 6 ou 8).
+##
+## AXE MESURÉ, PAS SUPPOSÉ : tous les `Roof_RoundTiles_*` du kit ont leur
+## faîtière parallèle à Z — hauteur constante le long de z, profil triangulaire
+## le long de x. Les triangles ouverts sont donc en z = ±span/2, et le pignon
+## s'y pose à yaw 0 et 180. Une première version les avait mis sur l'axe X :
+## les vrais triangles restaient ouverts ET deux panneaux de brique
+## transperçaient les versants. Vérifié au relevé de sommets du .gltf.
+func _gabled_roof(parent: Node3D, span: int, at: Vector3,
+		gable_on_z: bool = true) -> void:
+	_piece("Roof_RoundTiles_%dx%d" % [span, span], at, 0.0, parent)
+	var front: String = "Roof_Front_Brick%d" % span
+	var half: float = float(span) * 0.5
+	for side: int in [-1, 1]:
+		var offset: Vector3 = Vector3(0, 0, half * float(side)) if gable_on_z \
+			else Vector3(half * float(side), 0, 0)
+		var yaw: float = 0.0
+		if gable_on_z:
+			yaw = 0.0 if side > 0 else 180.0
+		else:
+			yaw = 270.0 if side > 0 else 90.0
+		_piece(front, at + offset, yaw, parent)
 
 
 ## SANCTUAIRE : petit, ouvert, sur la hauteur du village.
@@ -231,12 +351,36 @@ func _build_shrine() -> void:
 	shrine.name = "Sanctuaire"
 	add_child(shrine)
 	shrine.position = Vector3(-14.0, 0, 8.0)
+	# DÉFAUT CORRIGÉ : l'unique mur était au plan z = −1, hors trame. Le toit
+	# 4x4 posé au centre couvre z −2,740 → +2,822 : le mur était donc 1,74 m en
+	# retrait de son propre égout, et le pignon arrière (z = −2) flottait un
+	# mètre derrière lui. Au plan z = −MODULE, le mur (z −2,092 → −1,686) passe
+	# exactement SOUS le pignon (z −2,794 → −1,665), comme partout ailleurs.
 	for ix: int in [-1, 1]:
-		_wall(shrine, Vector3(ix * MODULE * 0.5, 0, -MODULE * 0.5), 180.0,
+		_wall(shrine, Vector3(ix * MODULE * 0.5, 0, -MODULE), 180.0,
 			"Wall_Plaster_Straight")
-	_piece("Roof_RoundTiles_4x4", Vector3(0, WALL_H, 0), 0.0, shrine)
-	_piece("CandleStick", Vector3(0, 0.05, -0.6), 0.0, shrine, PROPS)
-	_piece("Banner_1", Vector3(-1.4, 0.05, -0.8), 0.0, shrine, PROPS)
+	_gabled_roof(shrine, 4, Vector3(0, WALL_H, 0))
+	# L'édicule est OUVERT sur trois côtés par design — mais un toit ouvert
+	# repose sur des appuis visibles. Poutre de rive de 5,49 m sous l'égout de
+	# la façade libre (z = +2), même emploi qu'à hamlets.gd:306.
+	_piece("Roof_FrontSupports", Vector3(0, WALL_H - 0.2, MODULE), 0.0, shrine)
+	# Les deux props suivent le mur d'un mètre : ils étaient posés contre lui.
+	_piece("CandleStick", Vector3(0, 0.05, -1.6), 0.0, shrine, PROPS)
+	# DÉFAUT D'ACCROCHE CORRIGÉ, deux fautes sur la même bannière. `Banner_1`
+	# n'est PAS un objet de sol : mesuré au relevé de sommets, bbox
+	# y [−1,5487 ; +0,8435] et x [−0,0008 ; +1,6123] — son origine est le POINT
+	# D'ACCROCHE au mur, la hampe monte de 0,84, la toile PEND de 1,55 et le
+	# bras part vers +x. `KitPlacement` ne remonte jamais un modèle qui descend
+	# sous son ancrage (règle explicite), donc :
+	#  (a) posée à y = 0,05, elle s'enfonçait de 1,549 m dans le sol : sur
+	#      2,392 m de bannière, 0,89 m restait visible ;
+	#  (b) à z = −1,80 sa toile (épaisseur ±0,093 -> z −1,893 → −1,707) tenait
+	#      ENTIÈRE dans l'épaisseur du mur (mesuré z −2,092 → −1,686) : elle
+	#      n'était visible NI du dedans, NI du dehors.
+	# Accrochée à y = 2,25 elle occupe y 0,701 → 3,094, sous l'arase du mur
+	# (3,1227) ; à z = −1,55 sa toile (−1,643 → −1,452) passe devant la face
+	# intérieure (−1,686) et pend dans l'édicule ouvert.
+	_piece("Banner_1", Vector3(-1.4, 2.25, -1.55), 0.0, shrine, PROPS)
 
 
 ## HABITATIONS : deux maisons fermées, portes VISIBLEMENT condamnées par des
@@ -254,11 +398,32 @@ func _build_dwellings() -> void:
 		for ix: int in [-1, 1]:
 			_wall(house, Vector3(ix * MODULE * 0.5, 0, MODULE), 0.0,
 				"Wall_Plaster_Window_Wide_Round")
+			# DÉFAUT CORRIGÉ : baies jamais vitrées — deux trous de 1,20 ×
+			# 1,57 m par maison, par lesquels on voyait l'herbe du terrain à
+			# l'intérieur et l'envers des tuiles au-dessus.
+			_glass(house, Vector3(ix * MODULE * 0.5, 0, MODULE), 0.0)
 			_wall(house, Vector3(ix * MODULE * 0.5, 0, -MODULE), 180.0,
 				"Wall_Plaster_Straight")
-			_wall(house, Vector3(ix * MODULE, 0, 0.0),
-				90.0 if ix < 0 else 270.0, "Wall_Plaster_Straight")
-		_piece("Roof_RoundTiles_4x4", Vector3(0, WALL_H, 0), 0.0, house)
+			# DÉFAUT CORRIGÉ : une seule pièce de 2 m ne fermait que le
+			# milieu d'un côté de 4 m — la maison restait ouverte d'un mètre
+			# à chaque bout, et on voyait au travers.
+			for iz: int in [-1, 1]:
+				_wall(house, Vector3(ix * MODULE, 0, iz * MODULE * 0.5),
+					90.0 if ix < 0 else 270.0, "Wall_Plaster_Straight")
+			# Poteaux d'angle : sans eux, une fente ouverte de haut en bas
+			# aux quatre angles — l'épaisseur du mur n'est pas centrée sur
+			# son plan (bbox z −0,314 → +0,092).
+			for cz: int in [-1, 1]:
+				_piece("Corner_Exterior_Wood",
+					Vector3(ix * MODULE, 0, cz * MODULE), 0.0, house)
+			# DÉFAUT CORRIGÉ : la maison n'avait aucun sol — par la baie on
+			# voyait l'herbe du terrain à l'intérieur. Quatre dalles de
+			# 2 × 2 m couvrent exactement x −2 → +2 et z −2 → +2.
+			for fz: int in [-1, 1]:
+				_piece("Floor_WoodDark",
+					Vector3(ix * MODULE * 0.5, 0.02, fz * MODULE * 0.5),
+					0.0, house)
+		_gabled_roof(house, 4, Vector3(0, WALL_H, 0))
 		_piece("Prop_Chimney2", Vector3(0.8, WALL_H + 0.5, -0.8), 0.0, house)
 
 
@@ -276,9 +441,32 @@ func _build_square_and_quay() -> void:
 			Vector3(-16.0 + float(i) * 2.0, 0, 14.0), 0.0, square)
 	# Quai : descente vers la rive, face au lit de rivière (z = 10 en repère
 	# monde, donc z négatif ici puisque le village est posé à z = 36).
+	# DÉFAUT CORRIGÉ, deux fautes dans la même ligne. (1) Le module descend vers
+	# son +z LOCAL : relevé des sommets, la marche haute est en z = −1 (y =
+	# 1,000) et la basse en z = +1 (y = 0,000). Posé à yaw 0 il grimpait donc
+	# vers la rivière alors que l'ensemble descendait — trois volées retournées.
+	# (2) Il rachète 1,00 m par volée, pas 1,2 : au joint, 1,00 contre −1,20
+	# laissait 2,20 m de vide sec, deux fois de suite. Chaînage vérifié à
+	# yaw 180 : (z −20 ; y +1,00) → (z −22 ; y 0,00) → (z −24 ; y −1,00) →
+	# (z −26 ; y −2,00), continu, et z = −26 tombe sur le lit de rivière.
+	#
+	# (3) DÉFAUT DE RATTACHEMENT CORRIGÉ : le chaînage ci-dessus est juste, mais
+	# la volée n'était accrochée à RIEN en haut. Relevé de sommets de la volée
+	# haute : marche supérieure en monde (z = 16 ; y = 3,000). Or à z ≥ 16 le
+	# sol est la dalle `PlainSouth` de `valley_terrain.gd`, à y = 2,000 : on
+	# arrivait devant une marche de 1,00 m — infranchissable (`step_height`
+	# 0,30-0,38 §8.2) — puis l'escalier descendait 1,5 m au-dessus du lit.
+	# Toute la descente est abaissée d'un module : la marche haute tombe pile
+	# sur la plaine (y = 2,000 à z = 16) et la dernière arrive à y = −1,00,
+	# 0,50 m au-dessus du lit (−1,50) au lieu de 1,50 m.
+	# LIMITE ASSUMÉE : la berge sud est une rampe de 41° (2,00 à z 16 → −1,50 à
+	# z 12) alors qu'une volée descend à 26,6° (1 m sur 2). Aucun chaînage de ce
+	# module ne peut épouser cette pente ; il reste un vide sous les volées
+	# médianes. La berge appartient à `valley_terrain.gd`, hors de ce fichier.
 	for i: int in range(3):
 		_piece("Stairs_Exterior_Straight_L",
-			Vector3(-2.0, -float(i) * 1.2, -21.0 - float(i) * 2.0), 0.0, square)
+			Vector3(-2.0, -1.0 - float(i) * 1.0, -21.0 - float(i) * 2.0), 180.0,
+			square)
 
 
 ## Le village se DÉCLARE : identifiant stable, nom affiché, région.

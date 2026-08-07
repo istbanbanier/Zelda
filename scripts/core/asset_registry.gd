@@ -57,6 +57,12 @@ const MODEL_DIRS: Array[String] = [
 	"res://assets/characters/hero", "res://assets/characters/enemies",
 ]
 static var _model_index: Dictionary = {}
+## Rétention des `PackedScene` déjà résolus — voir `model()`.
+static var _model_cache: Dictionary = {}
+## Plafond de rétention. Assez large pour couvrir la répétition d'une famille
+## d'objets pendant une construction, assez bas pour que la mémoire reste
+## bornée quoi qu'il arrive.
+const MODEL_CACHE_MAX: int = 48
 
 
 ## Résolution DIRECTE par nom canonique de modèle promu (V4 lot 3) : les
@@ -74,10 +80,32 @@ static func model(model_name: StringName) -> PackedScene:
 				if lower.ends_with(".gltf") or lower.ends_with(".glb"):
 					_model_index[StringName(file.get_basename())] = \
 						dir_path + "/" + file
+	var cached: Variant = _model_cache.get(model_name)
+	if cached != null:
+		return cached as PackedScene
 	var path: String = String(_model_index.get(model_name, ""))
 	if path.is_empty() or not ResourceLoader.exists(path, "PackedScene"):
 		return null
-	return load(path) as PackedScene
+	var scene: PackedScene = load(path) as PackedScene
+	if scene != null:
+		# On GARDE la référence. Sans elle, l'appelant instancie puis jette le
+		# `PackedScene` ; son compteur tombe à zéro, la ressource se retire du
+		# cache du moteur, et le placement suivant du MÊME modèle RELIT LE
+		# DISQUE. La vallée place plusieurs centaines d'objets pour ~104
+		# modèles distincts : le même fichier était rouvert des dizaines de
+		# fois pendant la construction du monde, à l'intérieur d'une frame où
+		# rien ne peut être dessiné — c'est le gel de l'écran de chargement.
+		# BORNE — sans elle, la rétention est illimitée : le dépôt porte plus de
+		# cent modèles dont certains pèsent des dizaines de mégaoctets, et une
+		# suite qui monte des centaines de mondes finit par manquer de mémoire,
+		# ce qui se manifeste par des erreurs incompréhensibles (« identifiant
+		# non déclaré ») très loin de la vraie cause. Le cache sert à éviter de
+		# RELIRE LE DISQUE pendant une même construction de monde ; passé le
+		# plafond, on repart de zéro plutôt que de grossir sans fin.
+		if _model_cache.size() >= MODEL_CACHE_MAX:
+			_model_cache.clear()
+		_model_cache[model_name] = scene
+	return scene
 
 
 static func known_models() -> Array[StringName]:

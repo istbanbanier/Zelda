@@ -11,6 +11,11 @@
 extends GateTestCase
 
 const SHADER_PATH: String = "res://shaders/characters/SH_CharacterPainterly.gdshader"
+## Déclinaison feuillage : le MÊME modèle de lumière peinte, plus le
+## vent au sommet (vertex) — la vidéo de stabilité a PROUVÉ (diffs 0,00
+## sur la phase immobile) que l'herbe du lab était figée, contre §11.1.
+const FOLIAGE_SHADER_PATH: String = \
+	"res://shaders/foliage/SH_FoliageWindPainterly.gdshader"
 const LAB: String = "res://scenes/lookdev/HeroShotLab.tscn"
 
 var _root: Node3D = null
@@ -73,28 +78,54 @@ func test_the_three_lab_pilots_wear_it() -> void:
 		as MeshInstance3D
 	check(cliff != null and _is_painterly(cliff.material_override),
 		"le rocher pilote porte le painterly")
-	# 2. Une TOUFFE pilote (première cellule d'herbe).
-	var grass: MultiMeshInstance3D = lab.get_node_or_null("Grass_0_0") \
-		as MultiMeshInstance3D
-	check(grass != null and _is_painterly(grass.material_override),
-		"la touffe pilote porte le painterly")
-	# 3. Le HÉROS : chaque mesh de son modèle.
+	# Revue : le fondu adouci n'était contractuel que sur le héros.
+	if cliff != null and cliff.material_override is ShaderMaterial:
+		var rock_soft: Variant = (cliff.material_override as ShaderMaterial) \
+			.get_shader_parameter("ramp_soft")
+		check(rock_soft is float and float(rock_soft) >= 0.08,
+			"le rocher aussi a son fondu ADOUCI (%s ≥ 0,08)" % str(rock_soft))
+	# 2. L'HERBE : toutes les cellules portent la déclinaison feuillage
+	# (lumière peinte + VENT — une herbe figée a échoué au dolly).
+	var grass_cells: int = 0
+	var windy_cells: int = 0
+	for node: Node in lab.get_children():
+		if node.name.begins_with("Grass_"):
+			grass_cells += 1
+			var cell: MultiMeshInstance3D = node as MultiMeshInstance3D
+			var material: ShaderMaterial = \
+				cell.material_override as ShaderMaterial
+			if material != null and material.shader != null \
+					and material.shader.resource_path == FOLIAGE_SHADER_PATH:
+				windy_cells += 1
+	check(grass_cells > 0 and windy_cells == grass_cells,
+		"TOUTES les cellules d'herbe portent le feuillage painterly venté "
+		+ "(%d/%d)" % [windy_cells, grass_cells])
+	var foliage: Shader = load(FOLIAGE_SHADER_PATH) as Shader
+	check(foliage != null and "TIME" in foliage.code
+		and "smoothstep" in foliage.code,
+		"la déclinaison feuillage a le VENT (TIME) et les ramps adoucies")
+	# 3. Le HÉROS : chaque SURFACE de chaque mesh — la revue
+	# contradictoire a prouvé que compter les meshes laissait la peau
+	# des bras (surface 1 de Male_Ranger_Arms) en PBR standard.
 	var hero: Node3D = lab.get_node_or_null("Hero") as Node3D
 	check(hero != null, "héros présent")
-	var painterly_meshes: int = 0
-	var total_meshes: int = 0
+	var painterly_surfaces: int = 0
+	var total_surfaces: int = 0
 	if hero != null:
 		for node: Node in hero.find_children("*", "MeshInstance3D", true, false):
 			var mesh: MeshInstance3D = node as MeshInstance3D
 			if mesh.get_parent() is BoneAttachment3D \
 					or mesh.get_parent().get_parent() is BoneAttachment3D:
 				continue   # les signes graybox gardent leur matière simple
-			total_meshes += 1
-			if _is_painterly(mesh.get_surface_override_material(0)):
-				painterly_meshes += 1
-	check(total_meshes > 0 and painterly_meshes == total_meshes,
-		"le héros ENTIER porte le painterly (%d/%d meshes)"
-		% [painterly_meshes, total_meshes])
+			if mesh.mesh == null:
+				continue
+			for s: int in range(mesh.mesh.get_surface_count()):
+				total_surfaces += 1
+				if _is_painterly(mesh.get_surface_override_material(s)):
+					painterly_surfaces += 1
+	check(total_surfaces > 0 and painterly_surfaces == total_surfaces,
+		"le héros ENTIER porte le painterly — par SURFACE (%d/%d)"
+		% [painterly_surfaces, total_surfaces])
 	await _teardown()
 
 
@@ -106,20 +137,32 @@ func test_the_hero_keeps_his_albedo_texture_and_soft_ramps() -> void:
 		await _teardown()
 		return
 	var checked: int = 0
+	var real_textures: int = 0
 	for node: Node in hero.find_children("*", "MeshInstance3D", true, false):
 		var mesh: MeshInstance3D = node as MeshInstance3D
-		var material: ShaderMaterial = \
-			mesh.get_surface_override_material(0) as ShaderMaterial
-		if material == null:
+		if mesh.mesh == null:
 			continue
-		checked += 1
-		var texture: Variant = material.get_shader_parameter("albedo_texture")
-		check(texture is Texture2D,
-			"%s garde sa texture d'albedo (le shader grade, il n'efface pas)"
-			% mesh.name)
-		var softness: Variant = material.get_shader_parameter("ramp_soft")
-		check(softness is float and float(softness) >= 0.08,
-			"%s : fondu ADOUCI explicite (%s ≥ 0,08 — toon dur interdit)"
-			% [mesh.name, str(softness)])
-	check(checked > 0, "au moins un mesh du héros vérifié (%d)" % checked)
+		for s: int in range(mesh.mesh.get_surface_count()):
+			var material: ShaderMaterial = \
+				mesh.get_surface_override_material(s) as ShaderMaterial
+			if material == null:
+				continue
+			checked += 1
+			var texture: Variant = \
+				material.get_shader_parameter("albedo_texture")
+			check(texture is Texture2D,
+				"%s/s%d garde une texture d'albedo" % [mesh.name, s])
+			# Revue : le fallback blanc 1×1 rendait ce test infalsifiable.
+			# La VRAIE peau/tenue du modèle est plus grande qu'un pixel.
+			if texture is Texture2D \
+					and (texture as Texture2D).get_size().x > 1.0:
+				real_textures += 1
+			var softness: Variant = material.get_shader_parameter("ramp_soft")
+			check(softness is float and float(softness) >= 0.08,
+				"%s/s%d : fondu ADOUCI explicite (%s ≥ 0,08)"
+				% [mesh.name, s, str(softness)])
+	check(checked > 0, "au moins une surface du héros vérifiée (%d)" % checked)
+	check(real_textures >= 6,
+		"la MAJORITÉ des surfaces portent la vraie texture du modèle, "
+		+ "pas le fallback 1×1 (%d ≥ 6)" % real_textures)
 	await _teardown()

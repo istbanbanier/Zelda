@@ -33,6 +33,26 @@ var _hints_tracker: PuzzleHintTracker = null
 
 ## Enregistre un objet d'énigme essentiel (§14.3) : le reset et la
 ## sauvegarde le connaissent désormais.
+## Point d'insertion UNIQUE de l'habillage (bible §12.2). Chaque salle définit
+## son propre `_ready()`, qui masque celui de la classe de base ; `_notification`
+## n'est pas masqué, lui, et l'appel différé garantit que la coque de la salle
+## est entièrement bâtie avant qu'on pose la moindre brique dessus.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_READY:
+		_dress_shell.call_deferred()
+
+
+func _dress_shell() -> void:
+	if not is_inside_tree():
+		return
+	var report: Dictionary = RoomDressing.dress(self)
+	dressing_report = report
+
+
+## Compte-rendu chiffré de l'habillage : les tests s'appuient dessus.
+var dressing_report: Dictionary = {}
+
+
 func register_block(block: PushableBlock) -> void:
 	if not _blocks.has(block):
 		_blocks.append(block)
@@ -354,3 +374,31 @@ func capture_reference_view() -> void:
 	camera.look_at(centre + Vector3(0, -merged.size.y * 0.15, 0), Vector3.UP)
 	camera.fov = 68.0
 	camera.current = true
+
+
+## Passe de PEINTURE de la salle — ÉCRITE, MESURÉE, PAS ENCORE BRANCHÉE.
+##
+## Essayée sur les six salles, l'arène et le vestibule le 2026-08-06,
+## puis RETIRÉE sur preuve : mesurée en capture, elle assombrissait des
+## salles déjà trop sombres (luminance 17 % -> 9 %, ISS-025 « aucun
+## couloir noir »), et l'arène perdait le contraste de ses marques de
+## sol (45,5 -> 16,3). Le gain de matière était réel (contraste des
+## murs 16,9 -> 26,5 en salle 3) mais il ne payait pas la perte de
+## lisibilité.
+##
+## Cause identifiée : la recette est calibrée pour un SOLEIL
+## directionnel. Un intérieur éclairé par de petites lampes rasantes
+## demande son propre modèle (`PainterlyRecipe.interior_mode` existe et
+## relève déjà le plancher d'ombre — il ne suffit pas). Le chantier est
+## nommé, pas oublié : c'est l'ÉCLAIRAGE du donjon qu'il faut refaire
+## d'abord, la peinture ensuite.
+##
+## À appeler en différé depuis le `_ready` d'une salle, le jour où
+## l'éclairage intérieur aura été repris.
+func paint_room() -> void:
+	if not is_inside_tree():
+		return
+	PainterlyRecipe.interior_mode = true
+	PainterlyRecipe.paint_world(self,
+		["ElectricDebug", "Graph", "ZoneOuter", "ZoneRing", "ZoneCore"])
+	PainterlyRecipe.interior_mode = false

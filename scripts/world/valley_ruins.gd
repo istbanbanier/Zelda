@@ -202,6 +202,10 @@ func _spawn(asset: String, at: Vector3, rot_deg: Vector3, parent: Node3D,
 	var corrected: float = factor * KitScale.factor(asset)
 	if not is_equal_approx(corrected, 1.0):
 		node.scale = Vector3.ONE * corrected
+	# « Rien ne flotte » : une partie du kit a son origine SOUS sa
+	# géométrie (Prop_Support commence à +1,21 m). Sans cette
+	# correction, l'objet est suspendu en l'air. Voir KitPlacement.
+	KitPlacement.seat(node, node.scene_file_path)
 	(parent if parent != null else self).add_child(node)
 	_built += 1
 	return node
@@ -210,6 +214,44 @@ func _spawn(asset: String, at: Vector3, rot_deg: Vector3, parent: Node3D,
 ## Pose droite : le cas courant.
 func _piece(asset: String, at: Vector3, yaw_deg: float, parent: Node3D) -> Node3D:
 	return _spawn(asset, at, Vector3(0.0, yaw_deg, 0.0), parent)
+
+
+## PAREMENT D'ARCHE ÉPAISSI — le seul moyen d'obtenir un arc de maçonnerie
+## avec ce kit.
+##
+## DÉFAUT MESURÉ (revue « ça se lit encore par la tranche »). `Wall_Arch` n'est
+## pas un claveau, c'est un PANNEAU. Relevé sur les sommets du glTF
+## (`python3 tools/gltf_inspect.py assets/environment/dungeon/Wall_Arch.gltf`) :
+## bbox min (−1, 0, 0) → max (1, 3, 0,064). Son épaisseur tient donc sur son
+## axe Z LOCAL, à sens unique — la géométrie part du plan z = 0 et va vers +Z.
+##
+## Une passe précédente avait déjà doublé le parement (un par face) pour que
+## l'arcade ne soit plus une lame unique au milieu du vide. Ça n'a pas suffi :
+## boîtes monde relevées dans la vallée montée, les deux parements occupaient
+## x −13,00..−12,94 et −11,06..−11,00 — 6 cm de pierre chacun, 1,88 m de VIDE
+## entre eux, sous un tablier de 2,00 m. De trois quarts, depuis la rivière,
+## l'arcade restait une découpe de papier posée sur des piles pleines.
+##
+## Comme l'épaisseur est portée par un axe LOCAL et que Godot applique
+## l'échelle AVANT la rotation, mettre `scale.z` à l'échelle voulue EXTRUDE le
+## profil de l'arc dans sa propre profondeur — exactement ce qu'est un arc de
+## maçonnerie — sans déformer ni sa portée (X) ni sa montée (Y), et quel que
+## soit le lacet, le tangage ou le roulis de la pose. `KitPlacement.seat()`
+## n'est pas affecté : il ne regarde que l'étendue en Y.
+##
+## 0,45 m par parement laisse 1,10 m de jour au milieu : on voit toujours à
+## travers les arches — c'est un aqueduc — mais l'intrados montre enfin de la
+## pierre au lieu d'une tranche.
+const ARCH_PANEL_DEPTH: float = 0.064
+const ARCH_RING_DEPTH: float = 0.45
+
+
+func _arch_ring(at: Vector3, rot_deg: Vector3, parent: Node3D,
+		factor: float = 1.0) -> Node3D:
+	var node: Node3D = _spawn("Wall_Arch", at, rot_deg, parent, "", factor)
+	if node != null:
+		node.scale.z = ARCH_RING_DEPTH / ARCH_PANEL_DEPTH
+	return node
 
 
 ## Collision explicite : le kit est purement visuel. Une boîte statique est
@@ -397,16 +439,32 @@ func _build_watchtower() -> void:
 
 	# BELVÉDÈRE : le plancher du premier étage a tenu là où ses murs ont tenu.
 	# 6 × 2 m au-dessus des façades sud et ouest — la raison de monter.
+	#
+	# CORRECTIF (revue 117) — le plancher était centré en z = 2,0, donc il
+	# s'arrêtait à z = 3,0 ; le mur sud du premier étage (z = 4,0, épaisseur de
+	# collision 0,4) commence à z = 3,8. Il restait une FENTE de 0,80 m sur les
+	# 6 m du belvédère, à 3,12 m de haut : la capsule du joueur (r = 0,35 m,
+	# donc 0,70 m de diamètre, scenes/player/Player.tscn) y tombait en allant
+	# regarder la vallée. Décalé à z = 2,6 : le plancher couvre z 1,6..3,6, il
+	# ne reste que 0,20 m contre le mur (infranchissable) et 0,05 m côté
+	# éboulis, dont le dernier bloc va jusqu'à z = 1,55. Le bord EST (x = 2)
+	# n'est PAS touché : il est ouvert par intention, comme le nord.
 	for x: float in [-3.0, -1.0, 1.0]:
-		_piece("Floor_Brick", Vector3(x, WALL_H + 0.02, 2.0), 0.0, tower)
-	_wall_collider(tower, Vector3(-1.0, WALL_H - 0.2, 2.0),
+		_piece("Floor_Brick", Vector3(x, WALL_H + 0.02, 2.6), 0.0, tower)
+	_wall_collider(tower, Vector3(-1.0, WALL_H - 0.2, 2.6),
 		Vector3(6.0, 0.4, 2.0))
 	watchtower_lookout_y = SITE_WATCHTOWER.y + WALL_H
 	_marker(tower, "Belvedere", Vector3(-1.0, WALL_H + 0.1, 2.0))
 	_marker(tower, "AncrageRecompense", Vector3(-2.6, WALL_H + 0.1, 2.4))
 
 	# LA CHUTE : le cône de toiture gît au bout de la traînée, au nord-est.
-	_spawn("Roof_Tower_RoundTiles", Vector3(11.5, 0.5, -11.0),
+	#
+	# CORRECTIF (revue 117) — posé à y = 0,5, le cône (5,65 × 7,36 × 5,43 m
+	# mesurés) basculé à 76° descendait jusqu'à y = −2,27 : plus de deux mètres
+	# avalés par le terrain, alors que le récit dit qu'il « gît dans l'herbe ».
+	# Remonté de 1,9 m : le point bas passe à −0,37 m, soit à peine enfoncé,
+	# ce qui est bien l'effet voulu.
+	_spawn("Roof_Tower_RoundTiles", Vector3(11.5, 2.4, -11.0),
 		Vector3(76.0, 34.0, 0.0), tower)
 	# Trois pans de mur couchés, de plus en plus loin et de plus en plus enfouis.
 	var fallen: Array[Array] = [
@@ -416,7 +474,13 @@ func _build_watchtower() -> void:
 			Vector3(92.0, -12.0, 0.0), 1.0, Vector3.ZERO],
 		["Wall_UnevenBrick_Window_Wide_Round", Vector3(7.0, 0.08, -12.0),
 			Vector3(94.0, 51.0, 0.0), 1.0, Vector3.ZERO],
-		["Prop_Support", Vector3(4.2, 0.1, -7.6), Vector3(84.0, 8.0, 0.0),
+		# CORRECTIF (revue 117) — à 84° de tangage, l'axe réel de la poutre
+		# (diagonale locale (0 ; 1,709 ; 2,036) de `Prop_Support`) plongeait :
+		# ses deux bouts tombaient à y = +0,22 et y = −1,63, la poutre était
+		# plantée dans le sol aux deux tiers. 40° est l'angle qui met cet axe à
+		# l'horizontale — 1,7086·cos40 − 2,0363·sin40 ≈ 0 — et, l'assise de
+		# `KitPlacement` retirant 0,928 m, la poutre repose à plat à y ≈ 0,18.
+		["Prop_Support", Vector3(4.2, 0.1, -7.6), Vector3(40.0, 8.0, 0.0),
 			1.0, Vector3.ZERO],
 	]
 	_dressing(tower, fallen)
@@ -437,12 +501,28 @@ func _build_watchtower() -> void:
 			1.25 - 0.04 * float(i % 6))
 
 	# LA MOITIÉ DEBOUT REVERDIT : le lierre ne monte que là où il y a un mur.
+	#
+	# CORRECTIF (revue 117) — `Prop_Vine1` et `Prop_Vine2` ont leur origine au
+	# POINT D'ACCROCHE : la plante pend SOUS elle (bbox y = −2,1205..+0,4820,
+	# mesurée). C'est le piège symétrique de `Prop_Support`, et `KitPlacement`
+	# ne le corrige pas — sa règle (l. 20-26) est de ne JAMAIS remonter un
+	# modèle qui descend sous son ancrage, faute de connaître l'intention.
+	# Posés à y = 0, ces lierres étaient donc enterrés à 82 % : il n'en
+	# dépassait que 0,48 m. Accrochés à y = WALL_H, ils occupent y 1,00..3,60,
+	# c'est-à-dire du lierre sur le mur. La seule pose déjà correcte du bloc
+	# est la quatrième, laissée telle quelle.
+	#
+	# Le décalage horizontal ne vaut que pour les poses à yaw 90 : le modèle
+	# est plaqué le long de son axe X local, donc à yaw 90 son épaisseur part
+	# vers +X et il faut reculer de 0,21 m pour affleurer le parement OUEST
+	# (x = −4,314). À yaw 0 ou 180 (murs sud et nord) la pose actuelle laisse
+	# déjà 0,013 m de jeu contre le parement : on n'y touche pas.
 	var life: Array[Array] = [
-		["Prop_Vine1", Vector3(-4.15, 0.0, 1.0), Vector3(0, 90, 0), 1.0,
+		["Prop_Vine1", Vector3(-4.36, WALL_H, 1.0), Vector3(0, 90, 0), 1.0,
 			Vector3.ZERO],
-		["Prop_Vine2", Vector3(-4.15, 0.0, -2.4), Vector3(0, 90, 0), 1.0,
+		["Prop_Vine2", Vector3(-4.36, WALL_H, -2.4), Vector3(0, 90, 0), 1.0,
 			Vector3.ZERO],
-		["Prop_Vine1", Vector3(1.2, 0.0, 4.15), Vector3(0, 0, 0), 1.0,
+		["Prop_Vine1", Vector3(1.2, WALL_H, 4.15), Vector3(0, 0, 0), 1.0,
 			Vector3.ZERO],
 		["Prop_Vine2", Vector3(-2.8, WALL_H, 4.15), Vector3(0, 0, 0), 1.0,
 			Vector3.ZERO],
@@ -488,7 +568,9 @@ func _build_watchtower() -> void:
 			Vector3.ZERO],
 		["Banner_1_Cloth", Vector3(-2.4, WALL_H + 0.06, 2.6),
 			Vector3(88.0, 12.0, 0.0), 1.0, Vector3.ZERO],
-		["Book_Stack_1", Vector3(-3.0, WALL_H + 0.06, 1.4), Vector3(0, 30, 0),
+		# Suit le plancher du belvédère décalé à z = 2,6 : à z = 1,4 la pile de
+		# livres se serait retrouvée dans le vide, hors dalle (z 1,6..3,6).
+		["Book_Stack_1", Vector3(-3.0, WALL_H + 0.06, 1.8), Vector3(0, 30, 0),
 			1.0, Vector3.ZERO],
 		["Bottle_1", Vector3(0.6, WALL_H + 0.06, 2.2), Vector3(0, 0, 82.0), 1.0,
 			Vector3.ZERO],
@@ -512,7 +594,15 @@ func _build_aqueduct() -> void:
 	# rivière est 3,5 m plus bas.
 	var bed_y: float = -3.5
 	var arcade_y: float = WALL_H * 2.0          # naissance des arches : 6,24 m
-	var channel_y: float = WALL_H * 3.0         # canal : 9,36 m
+	# CORRECTIF (revue 117) — le canal était calé sur TROIS assises de mur
+	# (9,36 m), mais ce n'est pas un mur qui le porte : c'est `Wall_Arch`, qui
+	# mesure 3,000 m de haut exactement (bbox y 0..3,0, sommet plat sur toute
+	# la largeur). Le sommet réel des arches est donc à 6,24 + 3,00 = 9,24 m,
+	# et le tablier posé à 9,36 laissait 0,11 m de JOUR continu sur les 14
+	# travées, soit 28 m de fente de ciel à 9 m de haut. On dérive maintenant
+	# la cote du support mesuré. Bordures, lierre, briques et végétation du
+	# canal en dépendent tous : un seul point à corriger.
+	var channel_y: float = arcade_y + 3.0       # canal : 9,24 m
 	aqueduct_crossing_y = SITE_AQUEDUCT.y
 
 	# QUATRE PILES, deux par rive. Aucune au milieu : c'est justement celle qui
@@ -536,10 +626,19 @@ func _build_aqueduct() -> void:
 
 	# ARCADE ET CANAL : sept travées par rive, interrompues net au-dessus de
 	# l'eau. Le canal est à sec depuis si longtemps que l'herbe y a poussé.
+	#
+	# CORRECTIF (revue 117, puis revue « par la tranche ») — il n'y avait
+	# qu'UNE pièce d'arche par travée, à x = 0 ; on est passé à UN PAREMENT PAR
+	# FACE, aux rives du tablier, puis il a fallu leur donner une ÉPAISSEUR :
+	# à 6 cm de pierre pour 2 m de tablier, l'arcade restait du papier. Voir
+	# `_arch_ring` pour le relevé et la méthode. Les deux anneaux occupent
+	# maintenant x −1,00..−0,55 et +0,55..+1,00, dans l'emprise des piles
+	# (±1,314). Rien n'est ajouté en collision : on passe toujours dessous, §1.
 	for side: float in [-1.0, 1.0]:
 		for k: int in range(7):
 			var z: float = side * (9.0 + float(k) * 2.0)
-			_piece("Wall_Arch", Vector3(0, arcade_y, z), 90.0, aqueduct)
+			_arch_ring(Vector3(-1.0, arcade_y, z), Vector3(0, 90, 0), aqueduct)
+			_arch_ring(Vector3(1.0, arcade_y, z), Vector3(0, 270, 0), aqueduct)
 			_piece("Floor_Brick", Vector3(0, channel_y, z), 0.0, aqueduct)
 			_piece("Prop_ExteriorBorder_Straight1",
 				Vector3(-0.9, channel_y, z), 90.0, aqueduct)
@@ -547,11 +646,17 @@ func _build_aqueduct() -> void:
 				Vector3(0.9, channel_y, z), 270.0, aqueduct)
 	# Les deux lèvres de la cassure : une travée à demi arrachée de chaque côté,
 	# du lierre qui pend dans le vide, des briques prêtes à tomber.
+	# Mêmes deux anneaux que les travées entières (voir `_arch_ring`) : la
+	# lèvre arrachée serait sinon la seule arche « en papier » restante.
+	# Le roulis est INVERSÉ sur la pièce à yaw 270, sinon le miroir
+	# inclinerait les deux parements dans des sens opposés : mesuré, yaw
+	# 270 / roulis −16 donne exactement la même emprise en z (−8,561..
+	# −5,812) que yaw 90 / roulis +16.
+	_arch_ring(Vector3(-1.0, arcade_y, -7.6), Vector3(0, 90, 16.0), aqueduct)
+	_arch_ring(Vector3(1.0, arcade_y, -7.6), Vector3(0, 270, -16.0), aqueduct)
+	_arch_ring(Vector3(-1.0, arcade_y, 7.6), Vector3(0, 90, -13.0), aqueduct)
+	_arch_ring(Vector3(1.0, arcade_y, 7.6), Vector3(0, 270, 13.0), aqueduct)
 	var brink: Array[Array] = [
-		["Wall_Arch", Vector3(0, arcade_y, -7.6), Vector3(0, 90, 16.0), 1.0,
-			Vector3.ZERO],
-		["Wall_Arch", Vector3(0, arcade_y, 7.6), Vector3(0, 90, -13.0), 1.0,
-			Vector3.ZERO],
 		["Prop_Vine1", Vector3(0.0, channel_y - 1.2, -8.6), Vector3(0, 90, 0),
 			1.0, Vector3.ZERO],
 		["Prop_Vine2", Vector3(0.0, channel_y - 1.4, 8.6), Vector3(0, 90, 0),
@@ -563,14 +668,33 @@ func _build_aqueduct() -> void:
 	]
 	_dressing(aqueduct, brink)
 	# La végétation du canal : la preuve visible que l'eau ne passe plus.
+	#
+	# DÉFAUT D'ATTACHE MESURÉ (revue orientation) — la cote `channel_y` est une
+	# CONSTANTE DE BÂTIMENT (9,24 m), pas une hauteur de terrain : une plante
+	# qui la porte n'est juste que si un module de canal se trouve VRAIMENT
+	# sous elle. Or le z était une suite arithmétique ouverte,
+	# `sign_z * (9,5 + 1,7·i)`, qui allait jusqu'à ±24,8, alors que les sept
+	# travées bâties ne posent de `Floor_Brick` qu'en z ±9, ±11 … ±21 (module
+	# de 2 m, donc dallage continu de ±8 à ±22). Boîtes monde relevées sur les
+	# sommets : la fougère du rang i = 8 occupait z −14,26..−12,01 et l'herbe
+	# du rang i = 9 z +34,73..+34,90 — toutes deux HORS dallage, en l'air à
+	# y = 11,24, c'est-à-dire 9,24 m au-dessus de la plaine et 2 m au-delà du
+	# bout de l'arcade. Rien ne les portait.
+	#
+	# Le z ne se calcule donc plus : il se DÉRIVE de la travée, comme le canal
+	# lui-même. Cinq travées par rive (0, 3, 6, 2, 5 — parcours déterministe,
+	# jamais un aléa), plus un décalage borné à ±0,6 m qui reste sur la dalle
+	# (demi-module 1,0 m). Aucune pose ne peut plus sortir du dallage.
 	var dry: Array[String] = [
 		"Grass_Wispy_Short", "Plant_1", "Fern_1", "Grass_Common_Short",
 		"Clover_2", "Mushroom_Laetiporus",
 	]
 	for i: int in range(10):
 		var sign_z: float = -1.0 if i % 2 == 0 else 1.0
+		var bay: int = ((i / 2) * 3) % 7
+		var along: float = 9.0 + float(bay) * 2.0 + sin(float(i) * 2.399) * 0.6
 		_spawn(dry[i % dry.size()],
-			Vector3(0.0, channel_y + 0.05, sign_z * (9.5 + float(i) * 1.7)),
+			Vector3(0.0, channel_y + 0.05, sign_z * along),
 			Vector3(0, float(i) * 63.0, 0), aqueduct, "", 0.8)
 
 	# LA TRAVÉE TOMBÉE, devenue pont. Le tablier affleure les deux rives : on
@@ -582,18 +706,79 @@ func _build_aqueduct() -> void:
 		_spawn("RockPath_Square_Wide" if k % 2 == 0 else "RockPath_Round_Wide",
 			Vector3(6.0, -0.06, z), Vector3(0, float(k) * 29.0, 0), aqueduct,
 			"", 1.15)
+
+	# LE CORPS DE LA TRAVÉE : il manquait ENTIÈREMENT.
+	#
+	# DÉFAUT MESURÉ (revue orientation) — le « pont » n'était que les sept
+	# dalles ci-dessus, boîtes monde y 1,928..2,131 relevées sur les sommets,
+	# et son unique appui était le `_wall_collider` de la ligne précédente,
+	# c'est-à-dire un corps de collision : INVISIBLE. Sous les dalles il y
+	# avait 3,43 m de vide franc jusqu'au fond du lit (dalle `Riverbed` de
+	# valley_terrain.gd, dessus y = −1,5) — et à cette abscisse les berges en
+	# pente sont justement épargnées (fenêtre x −24..−4 réservée au site de
+	# pont). Vu depuis le lit, ce tablier se lisait exactement comme ce que le
+	# propriétaire décrit : des masses de pierre sombre suspendues en l'air le
+	# long de l'aqueduc.
+	#
+	# CORRECTIF. On bâtit ce que la fiction affirme déjà : la travée tombée est
+	# un morceau d'ARCADE. On reprend donc le parement `Wall_Arch` du tablier
+	# debout, pied au fond du lit et sommet sous les dalles. Mesures hors
+	# moteur : `Wall_Arch` fait 2,000 × 3,000 × 0,064 m ; il faut 3,4285 m
+	# entre le fond (y local −3,5) et le dessous des dalles (y local −0,0715,
+	# soit −0,010 × 1,15 − 0,06) ; d'où le facteur 1,143 → hauteur 3,429,
+	# longueur 2,286. Vérifié après pose : y monde −1,500..1,929, c'est-à-dire
+	# pied POSÉ sur le lit et sommet AU CONTACT du tablier, zéro jour.
+	# Cinq travées couvrent z monde 4,285..15,715, soit 11,43 m des 12 m de
+	# lit ; les 0,285 m restants de chaque bout portent sur la berge.
+	#
+	# Le sens des lacets suit celui de l'arcade debout : à yaw 90 l'anneau
+	# occupe x +0,00..+0,45 de sa pose, à yaw 270 −0,45..0 — les deux faces
+	# extérieures affleurent donc les rives de la dalle (x local 5 et 7), la
+	# dalle mesurée débordant de 4,79 à 7,22, et l'épaisseur reste tournée vers
+	# l'INTÉRIEUR de la travée. Aucune collision n'est ajoutée :
+	# comme sous l'arcade debout, on passe DESSOUS (§1), et le lit reste
+	# parcourable dans le sens du courant par les arches.
+	const FALLEN_ARCH_FACTOR: float = 1.143
+	const FALLEN_ARCH_BAY: float = 2.0 * FALLEN_ARCH_FACTOR
+	for k: int in range(5):
+		var z: float = (float(k) - 2.0) * FALLEN_ARCH_BAY
+		_arch_ring(Vector3(5.0, bed_y, z), Vector3(0, 90, 0), aqueduct,
+			FALLEN_ARCH_FACTOR)
+		_arch_ring(Vector3(7.0, bed_y, z), Vector3(0, 270, 0), aqueduct,
+			FALLEN_ARCH_FACTOR)
 	_marker(aqueduct, "PassageDeLArche", Vector3(6.0, 0.1, 0.0))
+	# Les deux extrémités de la travée, encore reconnaissables.
+	#
+	# DÉFAUT MESURÉ — il n'y avait qu'UN panneau par extrémité, épais de
+	# 0,064 m : basculé au bord du passage, là où le joueur le longe, il se
+	# voyait par la tranche. Même remède que pour l'arcade debout et que pour
+	# les lèvres de la cassure : un ANNEAU par face (`_arch_ring`), aux rives
+	# du tablier (x local 5 et 7).
+	# Le tangage est INVERSÉ sur la pièce à yaw 270 : en ordre YXZ,
+	# Ry(90) envoie l'axe X local sur −Z monde et Ry(270) sur +Z, donc un
+	# même tangage donnerait deux inclinaisons opposées. Vérifié sur les
+	# sommets — yaw 270 / tangage −22 rend la même emprise en z
+	# (0,600..2,600) et la même en y (2,20..5,01 contre 2,18..4,98) que
+	# yaw 90 / tangage +22 : les deux parements sont bien parallèles.
+	_arch_ring(Vector3(5.0, 0.2, -8.4), Vector3(22.0, 90.0, 0.0), aqueduct)
+	_arch_ring(Vector3(7.0, 0.2, -8.4), Vector3(-22.0, 270.0, 0.0), aqueduct)
+	# Extrémité SUD remontée de 0,6 m : posée à y = −0,7, sa boîte monde
+	# commençait à y = 1,300 pour une plaine à 2,00, soit 0,70 m de
+	# l'arche avalés par le sol. À −0,1 elle part de 1,900 — juste assise
+	# dans l'herbe, ce que dit le récit.
+	_arch_ring(Vector3(5.0, -0.1, 8.0), Vector3(-26.0, 90.0, 0.0), aqueduct)
+	_arch_ring(Vector3(7.0, -0.1, 8.0), Vector3(26.0, 270.0, 0.0), aqueduct)
 	var span: Array[Array] = [
-		# Les deux extrémités de la travée, encore reconnaissables.
-		["Wall_Arch", Vector3(6.0, 0.2, -8.4), Vector3(22.0, 90.0, 0.0), 1.0,
-			Vector3.ZERO],
-		["Wall_Arch", Vector3(6.0, -0.7, 8.0), Vector3(-26.0, 90.0, 0.0), 1.0,
-			Vector3.ZERO],
 		# La pile emportée, plantée de travers dans le lit.
 		["Wall_UnevenBrick_Straight", Vector3(2.4, bed_y + 0.6, 0.8),
 			Vector3(34.0, 78.0, 0.0), 1.0, Vector3.ZERO],
+		# CORRECTIF (revue 117) — même piège que la poutre de la tour : à 70°
+		# de tangage, l'axe de `Prop_Support` descendait de +0,11 à −1,22 par
+		# rapport à sa pose, soit un bout enfoncé de 1,02 m SOUS le fond du lit
+		# (bed_y = −3,5). À 40°, l'axe est horizontal et la poutre repose à
+		# y = −3,22, donc 0,28 m au-dessus du fond, couchée dans les galets.
 		["Prop_Support", Vector3(3.4, bed_y + 0.2, -2.6),
-			Vector3(70.0, 30.0, 0.0), 1.0, Vector3.ZERO],
+			Vector3(40.0, 30.0, 0.0), 1.0, Vector3.ZERO],
 		["Rock_Medium_1", Vector3(4.6, bed_y, 3.4), Vector3(0, 40, 0), 1.2,
 			Vector3.ZERO],
 		["Rock_Medium_2", Vector3(8.4, bed_y, -1.2), Vector3(0, 210, 0), 1.0,
@@ -604,7 +789,11 @@ func _build_aqueduct() -> void:
 			Vector3.ZERO],
 		["Prop_Brick1", Vector3(11.0, bed_y, 0.6), Vector3(0, 130, 0), 1.0,
 			Vector3.ZERO],
-		["Prop_Vine2", Vector3(6.9, -0.2, -4.0), Vector3(0, 0, 0), 1.0,
+		# CORRECTIF (revue 117) — lierre à origine haute (voir le bloc de la
+		# tour) : posé à y = −0,2 il occupait y −2,32..+0,28, donc enterré. Il
+		# pend maintenant de l'arche couchée voisine, dont le sommet mesuré
+		# monte à y = 2,98 : la plante occupe y 0,08..2,68.
+		["Prop_Vine2", Vector3(6.6, 2.2, -7.9), Vector3(0, 0, 0), 1.0,
 			Vector3.ZERO],
 		["Grass_Common_Short", Vector3(5.2, 0.0, -6.6), Vector3(0, 70, 0), 1.0,
 			Vector3.ZERO],
@@ -618,7 +807,17 @@ func _build_aqueduct() -> void:
 	var repair: Array[Array] = [
 		["Prop_Support", Vector3(-2.0, 0.0, -9.6), Vector3(0, 0, 14.0), 1.0,
 			Vector3.ZERO],
-		["Prop_Support", Vector3(-2.4, 0.0, -6.8), Vector3(0, 0, -9.0), 1.0,
+		# DÉFAUT MESURÉ — cet étai était le seul des trois à ENJAMBER la lèvre
+		# du lit. `Prop_Support` s'étend de z 0 à z +1,918 depuis son ancrage :
+		# posé en z local −6,8 (z monde 3,2), sa boîte relevée sur les sommets
+		# allait de 3,082 à 5,118, alors que la plaine nord s'arrête à z = 16
+		# côté sud et à z = 4 ici (dalles de valley_terrain.gd). 1,12 m de
+		# poutre pendaient donc au-dessus de 3,5 m de vide, sans appui — une
+		# planche flottante. Un demi-tour de LACET, sans toucher à la pose ni
+		# à l'inclinaison, retourne la poutre vers l'intérieur : boîte mesurée
+		# z 1,282..3,318, entièrement sur la plaine, 0,68 m avant la lèvre, et
+		# l'étai s'appuie désormais VERS la pile qu'il était censé étayer.
+		["Prop_Support", Vector3(-2.4, 0.0, -6.8), Vector3(0, 180, -9.0), 1.0,
 			Vector3.ZERO],
 		["Prop_Support", Vector3(2.2, 0.0, -8.2), Vector3(0, 0, 11.0), 1.0,
 			Vector3.ZERO],
@@ -644,7 +843,24 @@ func _build_aqueduct() -> void:
 			1.0, Vector3.ZERO],
 		["Fern_1", Vector3(1.6, 0.0, -12.4), Vector3(0, 210, 0), 1.0,
 			Vector3.ZERO],
-		["TwistedTree_3", Vector3(-8.0, 0.0, -17.5), Vector3(0, 60, 0), 1.0,
+		# DÉFAUT MESURÉ — c'est de là que venaient « les arbres qui poussent sur
+		# le tablier ». `TwistedTree_3` est un spécimen héros : boîte relevée
+		# sur les sommets 11,36 × 16,07 × 11,51 m, et sa couronne (primitive
+		# x −4,49..+6,87) est FRANCHEMENT dissymétrique — à yaw 60 elle
+		# déborde de +7,75 m en x depuis le tronc. Posé en x local −8, elle
+		# atteignait donc x monde −12,25, c'est-à-dire ENTRE les deux parements
+		# de l'arcade (x −13,00..−12,94 et −11,06..−11,00), sur z monde
+		# −12..−1,12, et montait à y = 17,87 quand le canal est à 11,24 : les
+		# branches sortaient à la naissance des arches (y monde 8,24, soit
+		# 6,24 m au-dessus de la plaine — les « 6 m du sol » observés) puis
+		# ressortaient 6,6 m au-dessus du tablier.
+		# Le lacet ne peut rien y faire : la couronne fait 15,6 m de large quel
+		# que soit l'angle (mesuré à 60°, 210° et 240°). Il faut donc éloigner
+		# le tronc. À x local −11, z −19, la couronne s'arrête à x monde
+		# −15,25, soit 2,25 m à l'ouest du parement — dégagée pour de bon,
+		# encore dans l'emprise du point d'intérêt, et à l'écart de
+		# l'échafaudage (z monde −18,21..−2,62 contre 0,3..3,9 pour les étais).
+		["TwistedTree_3", Vector3(-11.0, 0.0, -19.0), Vector3(0, 60, 0), 1.0,
 			Vector3.ZERO],
 		["CommonTree_4", Vector3(9.5, 0.0, 15.0), Vector3(0, 150, 0), 1.0,
 			Vector3.ZERO],
@@ -653,9 +869,13 @@ func _build_aqueduct() -> void:
 	_marker(aqueduct, "AncrageRecompense", Vector3(-4.0, 0.1, -8.4))
 	# Lierre le long des piles : la ruine est ancienne, contrairement à la
 	# caravane foudroyée.
+	# CORRECTIF (revue 117) — `WALL_H * (i % 2)` donnait y = 0 pour i = 0 et
+	# i = 2 : deux lierres sur quatre étaient enterrés à 82 % (origine haute,
+	# cf. le bloc de la tour). Les piles font DEUX assises, soit 6,24 m : les
+	# deux hauteurs 3,12 et 6,24 restent donc toutes deux sur la maçonnerie.
 	for i: int in range(4):
 		_spawn("Prop_Vine1" if i % 2 == 0 else "Prop_Vine2",
-			Vector3(-1.05, WALL_H * float(i % 2), piers[i]),
+			Vector3(-1.05, WALL_H * float(1 + i % 2), piers[i]),
 			Vector3(0, 90, 0), aqueduct)
 
 	_place_poi(aqueduct, POI_AQUEDUCT, "Aqueduc ancien", &"riviere",
@@ -705,6 +925,25 @@ func _build_farm() -> void:
 	# Toiture qui s'affaisse : décalée et inclinée, plus un pan tombé au sol.
 	_spawn("Roof_RoundTiles_6x6", Vector3(0.35, WALL_H, 0.0),
 		Vector3(0.0, 0.0, 6.0), house)
+	# CORRECTIF (revue 117) — le toit était posé SANS pignons. Mesuré :
+	# `Roof_RoundTiles_6x6` a sa faîtière selon Z (les sommets à y ≈ 4,89
+	# courent de z = −3,94 à z = +4,09 à x ≈ 0) ; c'est donc un toit à deux
+	# pans, et ses deux triangles d'about, en z = ±span/2, étaient OUVERTS.
+	# Contrôle du maillage : à chaque bout il n'y a que 2,12 m² de bois de
+	# rive sur une ouverture de 6,7 × 4,4 m — rien qui la bouche. Dans le SEUL
+	# intérieur habitable du jeu, on voyait le ciel par les deux bouts.
+	# `Roof_Front_Brick6` est le bouchon prévu par le kit (6,694 × 4,516 m).
+	# Vérifié hors moteur : base à 2,64, soit 0,48 m SOUS l'arase des murs
+	# (3,12) donc aucun jour au raccord ; faîte à 7,83, soit 0,58 m sous la
+	# faîtière (8,41) donc rien ne perce les tuiles ; emprise x −3,44..3,69,
+	# à l'intérieur de celle du toit (−4,26..4,53).
+	# Le roulis −6 sur la pièce à yaw 180 compense le miroir : en ordre YXZ,
+	# Ry(180)·Rz(θ) produit un roulis monde −θ, donc les deux pignons suivent
+	# le même affaissement que le toit.
+	_spawn("Roof_Front_Brick6", Vector3(0.35, WALL_H, 3.0),
+		Vector3(0.0, 0.0, 6.0), house)
+	_spawn("Roof_Front_Brick6", Vector3(0.35, WALL_H, -3.0),
+		Vector3(0.0, 180.0, -6.0), house)
 	_spawn("Prop_Chimney", Vector3(-1.6, WALL_H + 0.4, -1.4),
 		Vector3(0.0, 0.0, -8.0), house)
 	_marker(house, "AncrageRecompense", Vector3(-2.0, 0.1, -2.0))
@@ -732,9 +971,19 @@ func _build_farm() -> void:
 			Vector3.ZERO],
 		["Bed_Twin1", Vector3(-1.7, 0.05, 1.8), Vector3(0, 90, 0), 1.0,
 			Vector3(1.0, 0.6, 2.0)],
-		["Shelf_Simple", Vector3(1.9, 0.05, -2.6), Vector3(0, 0, 0), 1.0,
+		# CORRECTIF (revue 117) — `Shelf_Simple` est une étagère MURALE : son
+		# origine est la tablette et ses équerres descendent (bbox y
+		# −0,2011..+0,1077). Posée à y = 0,05 elle était donc À PLAT SUR LE
+		# PLANCHER, tandis que la pile de livres, posée à y = 1,00, flottait
+		# 0,84 m au-dessus d'elle. En profondeur elle s'arrêtait à z = −2,556
+		# alors que le parement intérieur du mur nord est à −2,686 : elle ne
+		# touchait pas le mur non plus. Accrochée à 1,15 m, elle occupe
+		# y 0,949..1,258 et z −2,686..−2,394, dos exactement sur le mur ; les
+		# livres à 1,26 reposent sur la tablette (y 1,261..1,475) et restent
+		# dans son emprise.
+		["Shelf_Simple", Vector3(1.9, 1.15, -2.73), Vector3(0, 0, 0), 1.0,
 			Vector3.ZERO],
-		["Book_Stack_1", Vector3(1.9, 1.0, -2.6), Vector3(0, 12, 0), 1.0,
+		["Book_Stack_1", Vector3(1.9, 1.26, -2.54), Vector3(0, 12, 0), 1.0,
 			Vector3.ZERO],
 		["Bucket_Wooden_1", Vector3(2.0, 0.2, 1.9), Vector3(0, 0, 100.0), 1.0,
 			Vector3.ZERO],
@@ -752,9 +1001,14 @@ func _build_farm() -> void:
 			Vector3.ZERO],
 		["Grass_Common_Short", Vector3(2.9, 0.05, -0.1), Vector3(0, 90, 0), 0.9,
 			Vector3.ZERO],
-		["Prop_Vine1", Vector3(-3.15, 0.0, 1.0), Vector3(0, 90, 0), 1.0,
+		# CORRECTIF (revue 117) — lierres à origine haute, enterrés à 82 %
+		# (même mesure que pour la tour). Accrochés à WALL_H, ils occupent
+		# y 1,00..3,60. Seule la pose à yaw 90 est aussi reculée de 0,21 m
+		# pour affleurer le parement ouest (x = −3,314) ; celle à yaw 180
+		# laisse déjà 0,013 m de jeu contre le parement nord, on n'y touche pas.
+		["Prop_Vine1", Vector3(-3.36, WALL_H, 1.0), Vector3(0, 90, 0), 1.0,
 			Vector3.ZERO],
-		["Prop_Vine2", Vector3(-1.0, 0.0, -3.15), Vector3(0, 180, 0), 1.0,
+		["Prop_Vine2", Vector3(-1.0, WALL_H, -3.15), Vector3(0, 180, 0), 1.0,
 			Vector3.ZERO],
 	]
 	_dressing(house, indoors)
@@ -776,10 +1030,28 @@ func _build_farm() -> void:
 	for x: float in [-1.0, 1.0]:
 		_wall(barn, Vector3(x, 0, -MODULE * 1.5), 180.0,
 			"Wall_Plaster_Straight")
-	_spawn("Roof_Wooden_2x1_Center", Vector3(0.0, WALL_H, 0.0),
-		Vector3(0.0, 0.0, -4.0), barn)
+	# CORRECTIF — le commentaire annonce « trois murs » ; il n'y en avait que
+	# DEUX (ouest et nord), soit un simple L : la face est manquait et le coin
+	# sud-est n'était fermé par rien. On ferme la face EST, celle qui donne sur
+	# le champ, et la grange devient un appentis ouvert au SUD.
+	for z: float in slots:
+		_wall(barn, Vector3(MODULE, 0, z), 270.0, "Wall_Plaster_Straight")
+	# Couverture en RANGÉE, pas une tuile isolée. `Roof_Wooden_2x1_Center`
+	# mesure 2,00 × 1,21 × 1,50 m : c'est un module de rangée, à poser en
+	# série avec ses embouts. Seul, au milieu d'une grange de 4 × 6 m, il
+	# flottait à 3,12 m sans toucher un mur (défaut mesuré en playtest).
+	# Pas de 1,5 m = profondeur réelle de la tuile ; la légère pente d'origine
+	# est conservée sur chaque module.
+	for z: float in [-2.25, -0.75, 0.75, 2.25]:
+		_spawn("Roof_Wooden_2x1_L", Vector3(-1.0, WALL_H, z),
+			Vector3(0.0, 0.0, -4.0), barn)
+		_spawn("Roof_Wooden_2x1_R", Vector3(1.0, WALL_H, z),
+			Vector3(0.0, 0.0, -4.0), barn)
+	# Trois props reculés de la face EST, désormais bâtie (voir plus haut) :
+	# le chariot dépassait de 0,52 m dans le nouveau mur, l'enclume de 0,99 m
+	# et le sac de 0,42 m. Aucun n'est déplacé de plus qu'il ne fallait.
 	var barn_yard: Array[Array] = [
-		["Stall_Cart_Empty", Vector3(1.4, 0.05, 1.6), Vector3(0.0, 22.0, 12.0),
+		["Stall_Cart_Empty", Vector3(0.85, 0.05, 1.6), Vector3(0.0, 22.0, 12.0),
 			1.0, Vector3(2.4, 1.2, 1.6)],
 		["FarmCrate_Empty", Vector3(-0.8, 0.3, 1.0), Vector3(0, 30, 104.0), 1.0,
 			Vector3.ZERO],
@@ -787,18 +1059,28 @@ func _build_farm() -> void:
 			Vector3(0.9, 0.6, 0.9)],
 		["Barrel", Vector3(0.6, 0.35, -2.2), Vector3(96.0, 0.0, 0.0), 1.0,
 			Vector3.ZERO],
-		["Anvil_Log", Vector3(2.6, 0.05, -1.0), Vector3(0, 40, 0), 1.0,
+		["Anvil_Log", Vector3(1.15, 0.05, -0.6), Vector3(0, 40, 0), 1.0,
 			Vector3(0.7, 0.7, 0.7)],
-		["Axe_Bronze", Vector3(2.6, 0.62, -1.0), Vector3(28.0, 40.0, 0.0), 1.0,
-			Vector3.ZERO],
+		# CORRECTIF (revue 117) — la hache était NOYÉE dans le billot : posée à
+		# y = 0,62 elle occupait y 0,27..1,03 et son empreinte au sol tenait
+		# tout entière dans celle de l'enclume (y 0,05..1,125), on n'en voyait
+		# que ce qui dépassait du flanc. Remontée à 1,29, sa tête vient sur la
+		# table de l'enclume (1,125) et le manche retombe à côté du billot.
+		# Elle suit l'enclume en x et en z : la hache posée dessus n'a de sens
+		# que sur la même verticale.
+		["Axe_Bronze", Vector3(1.15, 1.29, -0.6), Vector3(28.0, 40.0, 0.0),
+			1.0, Vector3.ZERO],
 		["Workbench", Vector3(-1.0, 0.05, 2.6), Vector3(0, 0, 0), 1.0,
 			Vector3(1.6, 1.0, 0.9)],
 		["Whetstone", Vector3(-1.6, 0.05, 3.4), Vector3(0, 70, 0), 1.0,
 			Vector3.ZERO],
-		["Bag", Vector3(1.9, 0.05, 2.8), Vector3(0, 120, 0), 1.0, Vector3.ZERO],
+		["Bag", Vector3(1.4, 0.05, 2.8), Vector3(0, 120, 0), 1.0, Vector3.ZERO],
 		["Rope_1", Vector3(0.2, 0.05, 3.2), Vector3(0, 10, 0), 1.0,
 			Vector3.ZERO],
-		["Prop_Vine1", Vector3(-2.1, 0.0, 1.0), Vector3(0, 90, 0), 1.0,
+		# CORRECTIF (revue 117) — lierre à origine haute, enterré à 82 % ;
+		# accroché à WALL_H il occupe y 1,00..3,60, et reculé de 0,21 m il
+		# affleure le parement ouest de la grange (x = −2,314).
+		["Prop_Vine1", Vector3(-2.31, WALL_H, 1.0), Vector3(0, 90, 0), 1.0,
 			Vector3.ZERO],
 	]
 	_dressing(barn, barn_yard)
@@ -952,14 +1234,29 @@ func _build_caravan() -> void:
 	# LES CHARIOTS : le premier couché sur le flanc, le deuxième planté du nez
 	# dans l'ornière, le troisième intact mais abandonné plus loin sur la route.
 	var wagons: Array[Array] = [
+		# CORRECTIF (revue 117) — collision confiée à `_wall_collider` juste
+		# après, d'où le `Vector3.ZERO` ici : voir l'explication sous
+		# `_dressing`.
 		["Prop_Wagon", Vector3(-6.5, 1.0, 1.5), Vector3(0.0, -20.0, 98.0), 1.0,
-			Vector3(3.0, 1.6, 4.2)],
+			Vector3.ZERO],
 		["Prop_Wagon", Vector3(5.8, 0.0, 5.2), Vector3(-17.0, 8.0, 0.0), 1.0,
 			Vector3(2.4, 1.8, 4.4)],
 		["Prop_Wagon", Vector3(-1.2, 0.0, -9.8), Vector3(0.0, 6.0, 0.0), 1.0,
 			Vector3(2.4, 1.8, 4.4)],
 	]
 	_dressing(wreck, wagons)
+	# CORRECTIF (revue 117) — le chariot COUCHÉ ne pouvait pas utiliser la
+	# boîte automatique de `_dressing`, qui pose le collider en
+	# `at + (0, taille.y * 0,5, 0)` et suppose donc que `at.y` est le sol. Ici
+	# `at.y` vaut 1,0 pour redresser un modèle roulé à 98°, si bien que la
+	# boîte allait de y = 1,0 à 2,6 alors que la géométrie occupe y −0,18..1,96
+	# : le joueur traversait le mètre inférieur du chariot — roues, ridelles,
+	# essieu — puis se cognait dans le vide au-dessus de la caisse. Même
+	# décalage en plan, l'origine de `Prop_Wagon` n'étant pas son centre
+	# (z local −3,15..0,87). Les valeurs ci-dessous sont la boîte englobante
+	# MONDE mesurée de cette pose exacte (x −8,35..−5,30, y −0,18..1,96,
+	# z −2,03..2,37), ramenée au sol.
+	_wall_collider(wreck, Vector3(-6.83, 0.98, 0.17), Vector3(3.06, 1.96, 4.40))
 
 	# LA CARGAISON EN ÉVENTAIL : tout part du point d'impact vers l'est-sud-est,
 	# de plus en plus loin et de plus en plus dispersé. C'est cette direction
