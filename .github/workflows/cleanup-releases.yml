@@ -25,9 +25,6 @@ name: Ménage des archives publiées
 # proprement : le modifier EST la demande de ménage, elle est visible dans
 # l'historique, et elle part de la branche de travail.
 on:
-  push:
-    paths:
-      - '.github/cleanup-request.txt'
   workflow_dispatch:
     inputs:
       keep_last:
@@ -59,7 +56,7 @@ jobs:
           # les valeurs les plus prudentes (garder la dernière archive,
           # ne pas toucher aux boîtes de ressources).
           KEEP_LAST: ${{ inputs.keep_last || '1' }}
-          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          DRY_RUN: ${{ inputs.dry_run || 'true' }}
           INCLUDE_INBOXES: ${{ inputs.include_asset_inboxes || 'false' }}
         run: |
           set -euo pipefail

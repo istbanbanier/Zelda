@@ -1,8 +1,0 @@
-Demande de ménage des archives publiées.
-
-Modifier ce fichier déclenche `.github/workflows/cleanup-releases.yml`,
-qui garde la dernière archive jouable et supprime les précédentes.
-Il ne touche pas aux boîtes de ressources (`assets-1`, `asset-inbox-*`).
-
-Demandes :
-- 2026-08-06 : ménage des huit archives obsolètes (5,3 Go publiés).

@@ -21,6 +21,9 @@ définition de « terminé ».
 
 ## Démarrage de session (5 min max)
 
+0. @docs/COMMENT_TRAVAILLER_ENSEMBLE.md — **sept règles nées de dégâts réels**,
+   dont « une seule session à la fois » et « vérifier dans TOUT le dépôt, pas
+   dans son arbre de travail ». Chacune a déjà coûté une session entière.
 1. `docs/STATUS.md` — état par fonctionnalité + preuve.
 2. `docs/PROGRESS.md` — dernière entrée = handoff, dit exactement la prochaine action.
 3. `docs/KNOWN_ISSUES.md` — ne pas re-découvrir un bug déjà consigné.
