@@ -3610,3 +3610,47 @@ ouvert sur deux côtés, et la grange annonce « trois murs » là où son code 
 pose que deux. Quelle face doit s'ouvrir est une décision de level design.
 
 **Preuve** : 748 tests réussis, 0 échoué.
+
+## 2026-08-07 — Trois défauts nommés par le propriétaire, mesurés puis corrigés
+
+Commit du code : `1ede044` · outil de preuve : `d24a36a` · captures :
+`evidence/atlas/verif3_aqueduc.png`, `verif3_arche_vs_aqueduc.png`
+(manifestes `repo_dirty: false`).
+
+Méthode imposée, la même pour les trois : **ne pas juger à l'œil, mesurer**.
+Nouvel outil `tools/godot/probe_world_boxes.gd` — il monte la vallée réelle et
+rend la boîte englobante MONDE de toute pièce, plus l'écart au sol trouvé par
+rayon. Sa première version signalait de faux flottants (le rayon partait DANS
+la dalle porteuse) ; corrigé et documenté dans le code.
+
+| Défaut | Avant (mesuré) | Après (mesuré) |
+|---|---|---|
+| Arcade « par la tranche » | 2 parements de 0,064 m, 1,88 m de vide sous un tablier de 2,00 m | 2 anneaux de 0,450 m, 1,10 m de jour |
+| « Caisse claire » | `BoxMesh` nue 0,55×1,10×0,55, émission ambre sur 6 faces ; récepteur 0,40 m enterré | socle + fût + noyau, base à y 2,00 = le sol, émission réduite au noyau de 0,28 m |
+| Arche ∩ aqueduc | culées avalant 1,90 m des piles, tablier recoupant les deux piles intérieures | arche x −25,58..−14,00 contre pile −13,31 → 0,69 m de dégagement, zéro recouvrement |
+
+Ce qui a tranché n'était jamais l'image : la « caisse » n'était pas une caisse
+mais le fanal du bassin conducteur, et l'arcade restait mince parce que
+l'épaisseur de `Wall_Arch` tient sur son axe **Z local** — invisible sur une
+capture, lisible dans le glTF.
+
+Validation : `748 réussis, 4 échoués`, et les quatre sont les cas connus et
+antérieurs (caméra du boss, langage de résonance de la citadelle, route
+crête→plaine nord ISS-032 ×2) + Blender absent. **Zéro régression.** Après
+fusion avec la session parallèle, `dungeon 31/31` et `topology 5/5` — les deux
+échecs apparus à la fusion venaient d'un `class_name` (`ResonanceOverlay`) non
+encore enregistré, effacés par un réimport.
+
+Consigné et NON corrigé — **ISS-035** : les pas japonais de la rivière flottent
+2,04 m au-dessus du lit (y ≈ 0,5 pour un fond à −1,50). Fichier hors du
+périmètre demandé, et les bouger touche le tracé du gué.
+
+### Prochaine action exacte
+
+1. **ISS-035** : dériver la cote des pas japonais du lit (−1,50) et non de la
+   plaine, dans le dressage de zone F de `valley_terrain.gd`, puis re-mesurer
+   à la sonde.
+2. Passer la sonde de boîtes sur la vallée ENTIÈRE avec un seuil de flottement
+   à 0,3 m : les trois défauts corrigés ici ont tous été trouvés à la main,
+   secteur par secteur — la sonde peut désormais les trouver toute seule.
+3. Éclairage du donjon (préalable nommé par AD-008), inchangé.
