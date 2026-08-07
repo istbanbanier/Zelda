@@ -216,6 +216,44 @@ func _piece(asset: String, at: Vector3, yaw_deg: float, parent: Node3D) -> Node3
 	return _spawn(asset, at, Vector3(0.0, yaw_deg, 0.0), parent)
 
 
+## PAREMENT D'ARCHE ÉPAISSI — le seul moyen d'obtenir un arc de maçonnerie
+## avec ce kit.
+##
+## DÉFAUT MESURÉ (revue « ça se lit encore par la tranche »). `Wall_Arch` n'est
+## pas un claveau, c'est un PANNEAU. Relevé sur les sommets du glTF
+## (`python3 tools/gltf_inspect.py assets/environment/dungeon/Wall_Arch.gltf`) :
+## bbox min (−1, 0, 0) → max (1, 3, 0,064). Son épaisseur tient donc sur son
+## axe Z LOCAL, à sens unique — la géométrie part du plan z = 0 et va vers +Z.
+##
+## Une passe précédente avait déjà doublé le parement (un par face) pour que
+## l'arcade ne soit plus une lame unique au milieu du vide. Ça n'a pas suffi :
+## boîtes monde relevées dans la vallée montée, les deux parements occupaient
+## x −13,00..−12,94 et −11,06..−11,00 — 6 cm de pierre chacun, 1,88 m de VIDE
+## entre eux, sous un tablier de 2,00 m. De trois quarts, depuis la rivière,
+## l'arcade restait une découpe de papier posée sur des piles pleines.
+##
+## Comme l'épaisseur est portée par un axe LOCAL et que Godot applique
+## l'échelle AVANT la rotation, mettre `scale.z` à l'échelle voulue EXTRUDE le
+## profil de l'arc dans sa propre profondeur — exactement ce qu'est un arc de
+## maçonnerie — sans déformer ni sa portée (X) ni sa montée (Y), et quel que
+## soit le lacet, le tangage ou le roulis de la pose. `KitPlacement.seat()`
+## n'est pas affecté : il ne regarde que l'étendue en Y.
+##
+## 0,45 m par parement laisse 1,10 m de jour au milieu : on voit toujours à
+## travers les arches — c'est un aqueduc — mais l'intrados montre enfin de la
+## pierre au lieu d'une tranche.
+const ARCH_PANEL_DEPTH: float = 0.064
+const ARCH_RING_DEPTH: float = 0.45
+
+
+func _arch_ring(at: Vector3, rot_deg: Vector3, parent: Node3D,
+		factor: float = 1.0) -> Node3D:
+	var node: Node3D = _spawn("Wall_Arch", at, rot_deg, parent, "", factor)
+	if node != null:
+		node.scale.z = ARCH_RING_DEPTH / ARCH_PANEL_DEPTH
+	return node
+
+
 ## Collision explicite : le kit est purement visuel. Une boîte statique est
 ## posée à la main, ce qui permet de LAISSER un trou là où la ruine paraît
 ## ouverte — un collider unique par façade murerait la brèche.
@@ -589,20 +627,18 @@ func _build_aqueduct() -> void:
 	# ARCADE ET CANAL : sept travées par rive, interrompues net au-dessus de
 	# l'eau. Le canal est à sec depuis si longtemps que l'herbe y a poussé.
 	#
-	# CORRECTIF (revue 117) — il n'y avait qu'UNE pièce d'arche par travée, à
-	# x = 0. Or `Wall_Arch` est un PANNEAU : 2,000 × 3,000 × 0,064 m mesurés.
-	# Posée à x = 0 en yaw 90 elle n'occupait que x 0,000..0,064, sous un
-	# tablier de 2 m (x ±1) et entre des piles de 2,6 m d'emprise : l'arcade
-	# était 31 fois plus mince que ce qu'elle portait, et de trois quarts —
-	# l'angle d'approche depuis la rivière — on voyait le sol de part et
-	# d'autre. On pose donc UN PAREMENT PAR FACE, aligné sur les rives du
-	# tablier : x −1,000..−0,936 et x +0,936..+1,000, dans l'emprise des piles
+	# CORRECTIF (revue 117, puis revue « par la tranche ») — il n'y avait
+	# qu'UNE pièce d'arche par travée, à x = 0 ; on est passé à UN PAREMENT PAR
+	# FACE, aux rives du tablier, puis il a fallu leur donner une ÉPAISSEUR :
+	# à 6 cm de pierre pour 2 m de tablier, l'arcade restait du papier. Voir
+	# `_arch_ring` pour le relevé et la méthode. Les deux anneaux occupent
+	# maintenant x −1,00..−0,55 et +0,55..+1,00, dans l'emprise des piles
 	# (±1,314). Rien n'est ajouté en collision : on passe toujours dessous, §1.
 	for side: float in [-1.0, 1.0]:
 		for k: int in range(7):
 			var z: float = side * (9.0 + float(k) * 2.0)
-			_piece("Wall_Arch", Vector3(-1.0, arcade_y, z), 90.0, aqueduct)
-			_piece("Wall_Arch", Vector3(1.0, arcade_y, z), 270.0, aqueduct)
+			_arch_ring(Vector3(-1.0, arcade_y, z), Vector3(0, 90, 0), aqueduct)
+			_arch_ring(Vector3(1.0, arcade_y, z), Vector3(0, 270, 0), aqueduct)
 			_piece("Floor_Brick", Vector3(0, channel_y, z), 0.0, aqueduct)
 			_piece("Prop_ExteriorBorder_Straight1",
 				Vector3(-0.9, channel_y, z), 90.0, aqueduct)
@@ -610,21 +646,17 @@ func _build_aqueduct() -> void:
 				Vector3(0.9, channel_y, z), 270.0, aqueduct)
 	# Les deux lèvres de la cassure : une travée à demi arrachée de chaque côté,
 	# du lierre qui pend dans le vide, des briques prêtes à tomber.
+	# Mêmes deux anneaux que les travées entières (voir `_arch_ring`) : la
+	# lèvre arrachée serait sinon la seule arche « en papier » restante.
+	# Le roulis est INVERSÉ sur la pièce à yaw 270, sinon le miroir
+	# inclinerait les deux parements dans des sens opposés : mesuré, yaw
+	# 270 / roulis −16 donne exactement la même emprise en z (−8,561..
+	# −5,812) que yaw 90 / roulis +16.
+	_arch_ring(Vector3(-1.0, arcade_y, -7.6), Vector3(0, 90, 16.0), aqueduct)
+	_arch_ring(Vector3(1.0, arcade_y, -7.6), Vector3(0, 270, -16.0), aqueduct)
+	_arch_ring(Vector3(-1.0, arcade_y, 7.6), Vector3(0, 90, -13.0), aqueduct)
+	_arch_ring(Vector3(1.0, arcade_y, 7.6), Vector3(0, 270, 13.0), aqueduct)
 	var brink: Array[Array] = [
-		# Mêmes deux parements que les travées entières (voir plus haut) : la
-		# lèvre arrachée serait sinon la seule arche « en papier » restante.
-		# Le roulis est INVERSÉ sur la pièce à yaw 270, sinon le miroir
-		# inclinerait les deux parements dans des sens opposés : mesuré, yaw
-		# 270 / roulis −16 donne exactement la même emprise en z (−8,561..
-		# −5,812) que yaw 90 / roulis +16.
-		["Wall_Arch", Vector3(-1.0, arcade_y, -7.6), Vector3(0, 90, 16.0), 1.0,
-			Vector3.ZERO],
-		["Wall_Arch", Vector3(1.0, arcade_y, -7.6), Vector3(0, 270, -16.0),
-			1.0, Vector3.ZERO],
-		["Wall_Arch", Vector3(-1.0, arcade_y, 7.6), Vector3(0, 90, -13.0), 1.0,
-			Vector3.ZERO],
-		["Wall_Arch", Vector3(1.0, arcade_y, 7.6), Vector3(0, 270, 13.0), 1.0,
-			Vector3.ZERO],
 		["Prop_Vine1", Vector3(0.0, channel_y - 1.2, -8.6), Vector3(0, 90, 0),
 			1.0, Vector3.ZERO],
 		["Prop_Vine2", Vector3(0.0, channel_y - 1.4, 8.6), Vector3(0, 90, 0),
@@ -699,47 +731,44 @@ func _build_aqueduct() -> void:
 	# Cinq travées couvrent z monde 4,285..15,715, soit 11,43 m des 12 m de
 	# lit ; les 0,285 m restants de chaque bout portent sur la berge.
 	#
-	# Le sens des lacets suit celui de l'arcade debout : à yaw 90 le parement
-	# occupe x +0,000..+0,073 de sa pose, à yaw 270 −0,073..0 — les deux faces
+	# Le sens des lacets suit celui de l'arcade debout : à yaw 90 l'anneau
+	# occupe x +0,00..+0,45 de sa pose, à yaw 270 −0,45..0 — les deux faces
 	# extérieures affleurent donc les rives de la dalle (x local 5 et 7), la
-	# dalle mesurée débordant de 4,79 à 7,22. Aucune collision n'est ajoutée :
+	# dalle mesurée débordant de 4,79 à 7,22, et l'épaisseur reste tournée vers
+	# l'INTÉRIEUR de la travée. Aucune collision n'est ajoutée :
 	# comme sous l'arcade debout, on passe DESSOUS (§1), et le lit reste
 	# parcourable dans le sens du courant par les arches.
 	const FALLEN_ARCH_FACTOR: float = 1.143
 	const FALLEN_ARCH_BAY: float = 2.0 * FALLEN_ARCH_FACTOR
 	for k: int in range(5):
 		var z: float = (float(k) - 2.0) * FALLEN_ARCH_BAY
-		_spawn("Wall_Arch", Vector3(5.0, bed_y, z), Vector3(0, 90, 0),
-			aqueduct, "", FALLEN_ARCH_FACTOR)
-		_spawn("Wall_Arch", Vector3(7.0, bed_y, z), Vector3(0, 270, 0),
-			aqueduct, "", FALLEN_ARCH_FACTOR)
+		_arch_ring(Vector3(5.0, bed_y, z), Vector3(0, 90, 0), aqueduct,
+			FALLEN_ARCH_FACTOR)
+		_arch_ring(Vector3(7.0, bed_y, z), Vector3(0, 270, 0), aqueduct,
+			FALLEN_ARCH_FACTOR)
 	_marker(aqueduct, "PassageDeLArche", Vector3(6.0, 0.1, 0.0))
+	# Les deux extrémités de la travée, encore reconnaissables.
+	#
+	# DÉFAUT MESURÉ — il n'y avait qu'UN panneau par extrémité, épais de
+	# 0,064 m : basculé au bord du passage, là où le joueur le longe, il se
+	# voyait par la tranche. Même remède que pour l'arcade debout et que pour
+	# les lèvres de la cassure : un ANNEAU par face (`_arch_ring`), aux rives
+	# du tablier (x local 5 et 7).
+	# Le tangage est INVERSÉ sur la pièce à yaw 270 : en ordre YXZ,
+	# Ry(90) envoie l'axe X local sur −Z monde et Ry(270) sur +Z, donc un
+	# même tangage donnerait deux inclinaisons opposées. Vérifié sur les
+	# sommets — yaw 270 / tangage −22 rend la même emprise en z
+	# (0,600..2,600) et la même en y (2,20..5,01 contre 2,18..4,98) que
+	# yaw 90 / tangage +22 : les deux parements sont bien parallèles.
+	_arch_ring(Vector3(5.0, 0.2, -8.4), Vector3(22.0, 90.0, 0.0), aqueduct)
+	_arch_ring(Vector3(7.0, 0.2, -8.4), Vector3(-22.0, 270.0, 0.0), aqueduct)
+	# Extrémité SUD remontée de 0,6 m : posée à y = −0,7, sa boîte monde
+	# commençait à y = 1,300 pour une plaine à 2,00, soit 0,70 m de
+	# l'arche avalés par le sol. À −0,1 elle part de 1,900 — juste assise
+	# dans l'herbe, ce que dit le récit.
+	_arch_ring(Vector3(5.0, -0.1, 8.0), Vector3(-26.0, 90.0, 0.0), aqueduct)
+	_arch_ring(Vector3(7.0, -0.1, 8.0), Vector3(26.0, 270.0, 0.0), aqueduct)
 	var span: Array[Array] = [
-		# Les deux extrémités de la travée, encore reconnaissables.
-		#
-		# DÉFAUT MESURÉ — il n'y avait qu'UN panneau par extrémité. `Wall_Arch`
-		# est épais de 0,064 m : basculé au bord du passage, là où le joueur le
-		# longe, il se voyait par la tranche. Même remède que pour l'arcade
-		# debout et que pour les lèvres de la cassure : un parement par face,
-		# aux rives du tablier (x local 5 et 7).
-		# Le tangage est INVERSÉ sur la pièce à yaw 270 : en ordre YXZ,
-		# Ry(90) envoie l'axe X local sur −Z monde et Ry(270) sur +Z, donc un
-		# même tangage donnerait deux inclinaisons opposées. Vérifié sur les
-		# sommets — yaw 270 / tangage −22 rend la même emprise en z
-		# (0,600..2,600) et la même en y (2,20..5,01 contre 2,18..4,98) que
-		# yaw 90 / tangage +22 : les deux parements sont bien parallèles.
-		["Wall_Arch", Vector3(5.0, 0.2, -8.4), Vector3(22.0, 90.0, 0.0), 1.0,
-			Vector3.ZERO],
-		["Wall_Arch", Vector3(7.0, 0.2, -8.4), Vector3(-22.0, 270.0, 0.0), 1.0,
-			Vector3.ZERO],
-		# Extrémité SUD remontée de 0,6 m : posée à y = −0,7, sa boîte monde
-		# commençait à y = 1,300 pour une plaine à 2,00, soit 0,70 m de
-		# l'arche avalés par le sol. À −0,1 elle part de 1,900 — juste assise
-		# dans l'herbe, ce que dit le récit.
-		["Wall_Arch", Vector3(5.0, -0.1, 8.0), Vector3(-26.0, 90.0, 0.0), 1.0,
-			Vector3.ZERO],
-		["Wall_Arch", Vector3(7.0, -0.1, 8.0), Vector3(26.0, 270.0, 0.0), 1.0,
-			Vector3.ZERO],
 		# La pile emportée, plantée de travers dans le lit.
 		["Wall_UnevenBrick_Straight", Vector3(2.4, bed_y + 0.6, 0.8),
 			Vector3(34.0, 78.0, 0.0), 1.0, Vector3.ZERO],

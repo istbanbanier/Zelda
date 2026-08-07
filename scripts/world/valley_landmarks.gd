@@ -61,7 +61,33 @@ const SITE_SPRING: Vector3 = Vector3(-72.0, 2.0, 78.0)
 ## Plaine sud-ouest, sous la crête de départ : le champ se lit d'en haut.
 const SITE_FLOWER_FIELD: Vector3 = Vector3(-34.0, 2.0, 112.0)
 ## Travée de rivière libre : les gués sont à x = 20 et x = 95.
-const SITE_STONE_BRIDGE: Vector3 = Vector3(-14.0, 0.0, 10.0)
+##
+## INTERPÉNÉTRATION MESURÉE, puis corrigée (revue « l'Arche traverse
+## l'aqueduc »). À x = −14, l'arche et l'AQUEDUC de `valley_ruins.gd`
+## (site x = −12) occupaient le même volume. Boîtes monde relevées avec
+## `tools/godot/probe_world_boxes.gd` :
+##   - piles intérieures de l'aqueduc : x −13,31..−10,69, y 2,00..8,24,
+##     z 0,69..3,31 et 16,69..19,31 ;
+##   - CuleeNord de l'arche : x −17,80..−10,20, y 0,00..3,90, z 0,00..4,00 ;
+##   - Tablier : x −17,25..−10,75, y 3,90..5,20, z 1,70..18,30.
+## Recouvrement effectif : 2,62 × 1,90 × 2,62 m par culée — les culées
+## avalaient les 1,90 premiers mètres des piles — et le tablier recoupait les
+## DEUX piles intérieures sur toute sa portée. Les rampes nord et sud
+## mordaient de surcroît sur les mêmes piles.
+##
+## Les deux ouvrages franchissent la rivière au même endroit parce qu'ils
+## partagent la seule fenêtre de berge non pentue (x −24..−4,
+## `valley_terrain.gd`) ; seul l'axe X pouvait les séparer. L'aqueduc est déjà
+## calé à l'est de cette fenêtre — sa travée tombée, qui sert de pont, atteint
+## x −4,4. C'est donc l'arche qui recule à l'ouest, de 7 m.
+##
+## Emprise vérifiée après déplacement : l'arche occupe x −24,80..−14,00, soit
+## 1,31 m de dégagement avec la pile la plus proche (−13,31), et 2,89 m avec
+## la pièce la plus à l'est de l'Abri de la rivière (−27,69). La travée reste
+## dans la fenêtre de berge, et les mesures verticales de l'ouvrage (tablier,
+## rampes, descente de rive) sont inchangées : la translation est purement
+## horizontale.
+const SITE_STONE_BRIDGE: Vector3 = Vector3(-21.0, 0.0, 10.0)
 ## Plaine est, seul relief de ce quadrant — la raison d'aller à l'est.
 const SITE_OVERLOOK: Vector3 = Vector3(168.0, 0.0, 40.0)
 
@@ -854,17 +880,30 @@ func _build_stone_bridge() -> void:
 		#    que l'on traverse, `_piece` ne posant aucune collision. Le bloc
 		#    symétrique de la culée nord faisait de même (x −14,11..−4,95).
 		# Correction : échelle ramenée dans la bande de la bible §3 (rochers
-		# proches 0,15–4 m) et ancrage sur le FLANC OUEST, au sol. Le flanc est
-		# reste libre — `RampeDeRive` y descend, x 4,0..7,0.
+		# proches 0,15–4 m) et ancrage au sol.
 		# Vérifié bloc par bloc : Rock_Medium_1/2/3 culminent à 1,989 / 1,848 /
-		# 2,001 m nus, donc à 0,70 / 0,85 / 0,90 leurs sommets tombent à
-		# y 3,39 / 3,57 / 3,80 — tous SOUS le dessous du tablier (3,90). Et
-		# à z local ≥ 7,80 − 2,15 = 5,65 ils restent sur la plaine, dont le bord
-		# est à z local ±6,00 (le lit occupe z monde 4..16).
+		# 2,001 m nus, donc leurs sommets restent SOUS le dessous du tablier
+		# (3,90) tant que l'échelle ne dépasse pas 0,95.
+		#
+		# SECONDE CORRECTION, avec le recul de l'arche à x = −21 (voir
+		# `SITE_STONE_BRIDGE`). Les blocs étaient ancrés sur le FLANC OUEST, à
+		# x local −4,1 / −3,7 / −4,6 ; comme `Rock_Medium_3` mesure 4,83 m de
+		# large, le troisième s'étendait en réalité jusqu'à x local −7,16 —
+		# c'était la pièce la plus à l'ouest de tout l'ouvrage. Après le recul,
+		# sa boîte monde serait tombée sur x −27,96..−23,61 / z 16,95..21,31,
+		# c'est-à-dire DANS le mur est de l'Abri de la rivière
+		# (x −28,09..−27,69, y 2,00..5,12, z 19,00..21,00) : on aurait échangé
+		# une interpénétration contre une autre.
+		# Les blocs passent donc aux EXTRÉMITÉS des culées — z local ±10,8 à
+		# ±11,9, au-delà de l'emprise de la culée (±6..±10) et sur la plaine —
+		# où ils n'allongent plus du tout l'emprise en X de l'ouvrage : au plus
+		# large ils atteignent x local ±4,0, contre ±3,80 pour la culée et
+		# +7,00 pour `RampeDeRive`. C'est aussi leur place naturelle : un bloc
+		# erratique s'accumule au PIED d'une culée, pas contre son flanc.
 		var blocks: Array[Array] = [
-			[Vector3(-4.1, 2.0, side * 7.8), 0.70],
-			[Vector3(-3.7, 2.0, side * 8.7), 0.85],
-			[Vector3(-4.6, 2.0, side * 9.8), 0.90],
+			[Vector3(-2.6, 2.0, side * 11.0), 0.55],
+			[Vector3(0.4, 2.0, side * 11.9), 0.62],
+			[Vector3(2.8, 2.0, side * 10.8), 0.50],
 		]
 		for i: int in range(blocks.size()):
 			var block: Array = blocks[i]

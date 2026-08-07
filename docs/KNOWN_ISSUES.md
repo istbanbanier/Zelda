@@ -552,3 +552,25 @@ Les deux abouts du toit de la cabane restent donc des triangles ouverts.
 **Aucun faux pignon n'a ete bricole** : la limite est ecrite dans le code
 au-dessus de la toiture. Correctif possible : modeliser un pignon a la bonne
 pente (script Blender), ou passer la cabane aux tuiles rondes.
+
+## ISS-035 — Pas japonais de la rivière suspendus au-dessus du lit (S3, ouvert)
+
+Mesure faite pendant la passe « arcade / caisse claire / arche » avec
+`tools/godot/probe_world_boxes.gd`, sur la vallée réellement montée :
+
+    DressZoneRiver/RockPath_Round_Wide_4    y 0,54..0,70  sol -1,50  → +2,04 m
+    DressZoneRiver/RockPath_Round_Thin_5    y 0,49..0,62  sol -1,50  → +1,99 m
+    DressZoneRiver/RockPath_Round_Small_1_7 y 0,49..0,66  sol -1,50  → +1,99 m
+
+Le fond du lit (dalle `Riverbed` de `valley_terrain.gd`) est à y = −1,50 ; ces
+pierres sont posées à y ≈ 0,5, soit deux mètres au-dessus de lui. Elles ne sont
+donc pas des pas japonais : ce sont des galets qui flottent dans le vide, juste
+sous la nappe d'eau (y −0,85..−0,55) qui les cache par le dessus mais pas de
+biais. Leur cote vient vraisemblablement d'une constante de plaine (y = 2)
+diminuée d'une lame d'eau, et non du lit.
+
+Défaut CONSTATÉ et MESURÉ, non corrigé : le fichier fautif
+(`valley_terrain.gd`, dressage de zone F) n'était pas dans le périmètre des
+trois corrections demandées, et le déplacer touche le tracé du gué. Correctif
+attendu : dériver la cote de ces pierres du lit (−1,50) et non de la plaine,
+comme l'a fait la travée tombée de l'aqueduc.
