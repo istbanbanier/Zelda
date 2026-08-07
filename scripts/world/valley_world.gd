@@ -658,14 +658,14 @@ func _spawn_bestiary() -> void:
 			[Vector3(5, 0, 3), Vector3(-4, 0, -5)]],
 		# Le colosse quitte son coin pour le SEUIL de la plaine nord, sur l'axe
 		# de la rampe du donjon : on ne peut plus monter sans l'avoir vu.
-		["res://scenes/enemies/RavineTroll.tscn", Vector3(12, 2.1, -62), 0.4,
+		["res://scenes/enemies/RavineTroll.tscn", Vector3(22, 2.1, -64), 0.4,
 			[Vector3(9, 0, 0), Vector3(-9, 0, 3)]],
 		["res://scenes/enemies/CentaurHunter.tscn", Vector3(150, 2.1, 52), 4.2,
 			[Vector3(12, 0, 8), Vector3(-10, 0, -6)]],
 		# Les 150 m morts entre le colosse et la porte de la citadelle.
-		["res://scenes/enemies/RaiderBlue.tscn", Vector3(12, 2.1, -120), 2.4,
+		["res://scenes/enemies/RaiderBlue.tscn", Vector3(26, 2.1, -118), 2.4,
 			[Vector3(0, 0, 8), Vector3(-7, 0, 0)]],
-		["res://scenes/enemies/RaiderRed.tscn", Vector3(-6, 2.1, -150), 0.2,
+		["res://scenes/enemies/RaiderRed.tscn", Vector3(-24, 2.1, -148), 0.2,
 			[Vector3(6, 0, 4), Vector3(-5, 0, -4)]],
 		# Le poste de garde et l'avant-poste étaient meublés et VIDES : râtelier
 		# d'armes, bancs, ordres écrits, et personne depuis dix ans.
