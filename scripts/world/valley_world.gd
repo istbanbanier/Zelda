@@ -79,6 +79,10 @@ var _pending_spawn_applied: bool = false
 ## ligne dit QUOI. Une fois, jamais de marqueur (§2.2 P2 : curiosité, pas
 ## checklist).
 var _fresh_run: bool = false
+## Aides au déplacement, posées dans la vallée même (playtest : elles
+## n'existaient que dans la scène d'entraînement, donc pas dans le jeu).
+var _mount: Mount = null
+var _dev_fly: DevFlyMode = null
 ## §12.9 (D-EN.6) : carte de navigation des grandes carrures. Créée à la
 ## main, donc LIBÉRÉE à la main — sans quoi elle fuit à la sortie de
 ## scène (fuite de RID mesurée au test).
@@ -138,6 +142,12 @@ func _ready() -> void:
 	campfire.name = "CampCookingFire"
 	campfire.position = Vector3(44.6, 6.1, 63.2)
 	add_child(campfire)
+	# Monture et vol libre DANS LA VALLÉE, pas seulement au terrain
+	# d'entraînement. Défaut de livraison signalé au playtest : les deux
+	# n'existaient que dans `TrainingGrounds.tscn`, une scène qu'il faut
+	# lancer à la main — donc absents du jeu tel qu'on y joue, alors que la
+	# demande était précisément d'explorer CETTE carte plus vite.
+	_spawn_travel_aids()
 	# E.1 : les ingrédients de la vallée (§13.1) — posés en code comme le
 	# relief, AVANT l'application de la sauvegarde qui retire les récoltés.
 	_spawn_ingredients()
@@ -838,6 +848,34 @@ func _is_saved_position_safe(position: Vector3) -> bool:
 func _player_visual_yaw() -> float:
 	var visual: Node3D = _player.get_node_or_null("VisualRoot") as Node3D
 	return visual.rotation.y if visual != null else 0.0
+
+
+## Monture et vol libre de développement, posés dans la vallée elle-même.
+##
+## La monture attend au camp de départ, à portée de vue du spawn : sans cela
+## il faudrait savoir qu'elle existe pour la trouver. Le vol libre, lui, n'a
+## pas de position — c'est un outil, activé par sa touche.
+func _spawn_travel_aids() -> void:
+	_mount = Mount.new()
+	_mount.name = "MontureDeVallee"
+	add_child(_mount)
+	# Sur la crête de départ, en contrebas du spawn (0, 32.3, 146) et dans
+	# l'axe du regard : visible dès la prise de contrôle.
+	_mount.global_position = Vector3(6.0, 32.3, 141.0)
+	if _player == null:
+		return
+	_dev_fly = DevFlyMode.new()
+	_dev_fly.name = "VolLibreDev"
+	add_child(_dev_fly)
+	_dev_fly.bind(_player)
+
+
+func mount() -> Mount:
+	return _mount
+
+
+func dev_fly() -> DevFlyMode:
+	return _dev_fly
 
 
 func player() -> PlayerController:

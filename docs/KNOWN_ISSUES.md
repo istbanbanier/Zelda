@@ -578,3 +578,26 @@ c'est intentionnel.
 deux côtés, et la grange annonce « trois murs » alors que son code n'en pose
 que deux. Quelle face doit s'ouvrir est une décision de level design, pas une
 correction technique — laissée au jugement de l'auteur.
+
+## PT-LIVRAISON-01 — Monture et vol libre livrés hors du jeu (S2)
+
+**Constaté en playtest** : « pas de monture, pas de F2, rien de tout ce que je
+t'avais demandé ». Exact, et le défaut était de livraison, pas de code.
+
+**Cause** : `Mount` et `DevFlyMode` n'étaient instanciés que par
+`TrainingGrounds.tscn` — une scène qu'il faut lancer à la main en ligne de
+commande. Un joueur qui démarre le jeu normalement (Boot → menu → vallée) ne
+les rencontrait jamais. Les onze tests passaient parce qu'ils montaient les
+deux à la main : ils prouvaient que les composants FONCTIONNENT, jamais qu'ils
+sont ATTEIGNABLES. Un test vert peut coexister avec une fonctionnalité
+inaccessible.
+
+**Résolu** : `ValleyWorld` pose la monture sur la crête de départ (à portée de
+vue du spawn) et branche le vol libre sur son joueur. Le menu principal gagne
+une entrée « Terrain d'entraînement ». Le test
+`test_the_valley_itself_carries_the_mount_and_the_fly_mode` vérifie désormais
+la PRÉSENCE dans la carte réellement parcourue, pas seulement le comportement.
+
+**Leçon à retenir pour la suite** : tout ce qui est ajouté doit avoir un test
+d'ATTEIGNABILITÉ depuis le flux de jeu normal, pas seulement un test de
+comportement en scène isolée.
