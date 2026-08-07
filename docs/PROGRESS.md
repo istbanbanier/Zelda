@@ -3654,3 +3654,64 @@ périmètre demandé, et les bouger touche le tracé du gué.
    à 0,3 m : les trois défauts corrigés ici ont tous été trouvés à la main,
    secteur par secteur — la sonde peut désormais les trouver toute seule.
 3. Éclairage du donjon (préalable nommé par AD-008), inchangé.
+
+## 2026-08-07 — Outillage volé à World of ClaudeCraft : neuf relecteurs et la comparaison avant/après
+
+Session ouverte par le propriétaire sur un autre front (écrire à l'auteur de
+`levy-street/world-of-claudecraft` pour lui demander conseil). **Le front
+précédent n'est pas perdu : ISS-035 et la sonde de boîtes restent la prochaine
+action exacte, telle qu'écrite dans l'entrée du 2026-08-07 ci-dessus.**
+
+### Ce qui a été fait
+
+1. **Lettre** — `docs/outreach/2026-08-07_reuben_horne_conseils.md`, prête,
+   **non envoyée** : aucune session ici n'a d'outil d'envoi d'e-mail.
+2. **Neuf relecteurs** sous `.claude/agents/`, transposés des neuf siens. Trois
+   des siens visent Postgres, un serveur et des PR d'inconnus : leur fonction a
+   été conservée, leur domaine remplacé par un risque réellement porté ici
+   (autorité temporelle, budget de frame, sauvegarde, parité preset/entrée,
+   couture présentation, hygiène de livraison, licence d'asset). Origine nommée
+   en tête de chaque fichier.
+3. **`gate-review` devient le répartiteur** (son rôle de `qa-checklist`) : table
+   de convocation par nature de diff, passe adverse finale « qu'est-ce qui
+   manque », relevé où un spécialiste non convoqué se voit.
+4. **`adversarial-qa`** gagne un portail de périmètre et une couverture
+   auditable : les critères non touchés se déclarent `hérité de <commit>`, et un
+   verdict hérité dont la preuve précède le dernier changement du fichier
+   redevient `NON VÉRIFIÉ`.
+5. **`tools/capture_ab.sh`** — la moitié qui manquait aux captures. L'AVANT est
+   rendu depuis un **worktree détaché sur le commit de base**, à réglages
+   identiques ; l'arbre courant n'est jamais touché (ni stash, ni checkout —
+   règle 1 de `COMMENT_TRAVAILLER_ENSEMBLE.md`). Refuse un arbre sale, retire le
+   worktree par `trap` même en cas d'échec, écrit `comparison.json`.
+
+### Ce qui n'est PAS prouvé
+
+- **Aucun des neuf agents n'a tourné sur un vrai diff.** Ils sont écrits, pas
+  éprouvés. Leur première exécution est aussi leur premier test.
+- **`capture_ab.sh` n'a pas fait une seule capture.** `godot` est ABSENT de ce
+  conteneur (`command -v` → rien) ; seuls sont vérifiés : les quatre refus
+  d'arguments, le refus d'arbre sale, le cycle worktree ajout/retrait/prune avec
+  arbre principal intact, et le générateur de `comparison.json` sur fixtures.
+  **Le chemin de capture lui-même est `NON VÉRIFIÉ`.**
+- La suite GDScript n'a pas été rejouée : aucun code de jeu n'a été touché.
+
+### Ce qu'on a appris de son dépôt, et qui vaut d'être retenu
+
+Sa compétence `pr-screenshots` automatise entièrement la **production** des
+images (Puppeteer, worktree séparé pour l'avant) et **pas du tout leur
+jugement** — sa propre documentation dit : « There is no automated visual
+validation; human judgment determines acceptability ». Le projet le plus outillé
+des deux n'a pas d'œil automatique non plus. L'outillage sert à poser devant
+l'humain une comparaison honnête, pas à se passer de lui.
+
+### Prochaine action exacte
+
+1. Lancer `tools/capture_ab.sh` **sur une machine avec Godot** pour lever le
+   `NON VÉRIFIÉ` du chemin de capture — cible naturelle : `HeroShotLab`, où les
+   itérations v0→v3 se comparaient jusqu'ici de mémoire.
+2. Faire tourner **un** des neuf agents sur un vrai diff et corriger ce qui
+   s'avérera faux dans sa consigne. Le plus rentable : `test-coverage-auditor`
+   sur les 748 tests existants.
+3. Reprendre le front précédent : ISS-035 (pas japonais) puis la sonde de boîtes
+   sur la vallée entière.
