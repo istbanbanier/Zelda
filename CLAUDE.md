@@ -71,6 +71,20 @@ godot --path .                                     # lancer (nécessite un affic
 - Aucune boucle sur le monde entier par frame ; aucune allocation massive par frame.
 - Ne jamais éditer `.godot/imported/` à la main.
 
+### Quatre de ces invariants sont désormais APPLIQUÉS, pas seulement écrits
+
+Un invariant qui ne vit que dans ce fichier se dégrade en silence. Le hook `Stop`
+(`.claude/hooks/qa-stop.sh`) scanne les lignes **ajoutées** à chaque tour, en
+millisecondes, et bloque sur : contenu Nintendo · image de référence employée comme
+asset · édition à la main de `.godot/imported/` · déclaration GDScript non typée.
+`.githooks/pre-push` rejoue ces règles sur le diff poussé et parse les `.gd` modifiés.
+`tests/unit/test_invariants.gd` vérifie ce qu'un diff ne montre jamais : `Q` = gauche
+via `physical_keycode`, `lock_on` jamais sur `Q`, version 4.7.1 exacte, avertissements
+de typage actifs. Détail et raison de chaque couche : `.claude/hooks/README.md`.
+
+Ces couches attrapent la régression mécanique. Elles ne remplacent **aucune** revue
+contradictoire : un `PASS` de gate passe toujours par `adversarial-qa`.
+
 ## Règles de vérité (interdiction de validation prématurée)
 
 | Mot | Signifie |

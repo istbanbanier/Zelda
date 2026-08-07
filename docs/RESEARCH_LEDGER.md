@@ -311,6 +311,65 @@ ou une mesure locale) · `OUVERT`.
 
 ---
 
+## R-014 — Comment un dépôt piloté par agents tient-il sa barre de qualité à grande échelle ?
+
+- **Date** : 2026-08-07 · **Statut** : RÉSOLU (mécanisme adopté), test d'invariants `À VÉRIFIER`
+- **Ce qui change selon la réponse** : la façon dont ce projet fait respecter ses
+  invariants. Ils sont aujourd'hui entièrement en **prose** dans `CLAUDE.md` : rien
+  n'empêche une session de les enfreindre sans s'en apercevoir, et la suite complète
+  met une vingtaine de minutes — trop pour tourner en boucle d'édition.
+- **Source étudiée** : `levy-street/world-of-claudecraft`, cloné en local et inspecté
+  intégralement (branches, tags, historique, refs de PR). Mesures réelles :
+  9 873 commits en deux mois (10 juin → 7 août 2026), 570 branches, 46 tags,
+  2 623 refs de PR, 836 PR fusionnées sur `main`, ~150 à 344 commits/jour, une
+  cinquantaine de contributeurs.
+- **Constat mesuré, ce qui rend l'échelle tenable** :
+  1. **Une barre en couches, chacune au point le moins cher où elle sert encore.**
+     Hook `Stop` (millisecondes, chaque tour) → `pre-push` (secondes) → gate sélectif
+     (pré-fusion) → CI → file de fusion → gate nocturne. Chaque couche est explicitement
+     documentée avec son coût et si elle bloque (`docs/qa-gate.md`).
+  2. **Les invariants sont EXÉCUTABLES, pas seulement écrits.**
+     `tests/architecture.test.ts` fait 1 891 lignes et balaye chaque fichier du cœur
+     pour interdire `Math.random`, `Date.now`, les imports DOM/Three. La prose dit la
+     règle ; le test la fait rougir.
+  3. **`CLAUDE.md` hiérarchique** : 51 fichiers, un par répertoire, chargés à la
+     demande. La racine tient en ~200 lignes et interdit explicitement d'y dupliquer
+     le contenu local.
+  4. **Le hook instantané ne contrôle QUE l'indiscutable** (tiret cadratin, emoji,
+     `.only(`, `debugger`) et ne lance ni typecheck, ni tests, ni agent — parce
+     qu'il se déclenche à chaque tour.
+  5. **`fix` (2 573) dépasse `feat` (1 850)**, et `test` est un type de commit de
+     premier rang (1 043). La réparation et la vérification ne sont pas un reliquat.
+- **Décision adoptée ici** : transposer le **mécanisme**, pas les règles — les
+  invariants de ClaudeCraft (tirets, emojis) ne sont pas les nôtres. Créés :
+  `.claude/hooks/qa-stop.sh` (quatre invariants durs du `CLAUDE.md` sur les lignes
+  ajoutées), `.githooks/pre-push` (mêmes règles sur le diff poussé + `--check-only`
+  des `.gd` modifiés), `.claude/hooks/ensure-hooks.sh`, `.claude/settings.json`,
+  `tests/unit/test_invariants.gd`. Voir D-0xx et `.claude/hooks/README.md`.
+- **Mesure locale, avant construction** : les invariants tiennent aujourd'hui —
+  `move_left` est bien lié au `physical_keycode` 65 (`KEY_A`, donc le `Q` d'un
+  AZERTY) et non à `keycode` ; `lock_on` est sur `C` ; **zéro** déclaration GDScript
+  non typée dans `scripts/`, `tests/`, `tools/` ; aucun terme Nintendo hors `docs/`.
+  Le garde-fou est donc une protection **anti-régression**, pas un rattrapage de dette.
+- **Preuve du hook** : exécuté sur quatre scénarios — arbre propre (muet), garde
+  anti-boucle (muet), trois violations injectées (les trois attrapées avec fichier et
+  extrait), huit formes GDScript typées légitimes (`:=`, `: Type =`, `@export`,
+  `@export_range`, `static var`, `Array[String]`, `const`, inférence) → **zéro faux
+  positif**. Arbre restauré propre après chaque essai.
+- **Limite, et elle est nette** : `tests/unit/test_invariants.gd` est **écrit mais
+  jamais exécuté** — Godot est absent de ce conteneur (`tools/setup_godot.sh` demande
+  ~90 min). Ses chemins de réglages ont été vérifiés statiquement contre
+  `project.godot` (section `[debug]` → `debug/gdscript/warnings/...`), rien de plus.
+  Statut `À VÉRIFIER` jusqu'au premier `tools/validate_fast.sh` sur une machine avec
+  moteur. Le `pre-push` ne peut pas non plus parser les scripts ici, et il le dit
+  au lieu de laisser croire le contraire.
+- **À réévaluer** : quand Godot sera disponible, exécuter la suite et faire passer
+  R-014 en `RÉSOLU` complet. Piste non retenue pour l'instant, faute de CI de test :
+  la file de fusion et le gate nocturne de ClaudeCraft, qui supposent une CI qui
+  exécute réellement les tests — les trois workflows actuels ne le font pas.
+
+---
+
 ## Questions ouvertes pour les phases suivantes
 
 | ID | Question | Phase | Décidera |

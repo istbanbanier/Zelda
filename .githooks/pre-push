@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+# Plancher QA d'Éclats d'Orage, au moment du push.
+#
+# Le push est la frontière où le code quitte la machine, et il arrive bien moins
+# souvent qu'un tour ou qu'un commit : c'est donc là que se placent les contrôles
+# déterministes un peu plus lourds. Il attrape une vraie casse avant qu'elle
+# n'atteigne une branche distante, sans taxer la boucle d'édition.
+#
+# CE QU'IL LANCE :
+#   - le scan d'invariants du hook Stop, appliqué au diff POUSSÉ (et non plus à
+#     l'arbre de travail) ;
+#   - `--check-only` sur chaque script .gd modifié, si Godot est disponible.
+#
+# CE QU'IL NE LANCE PAS : `tools/validate_fast.sh` en entier. Cette suite met une
+# vingtaine de minutes (COMMENT_TRAVAILLER §3) ; l'imposer à chaque push ferait
+# systématiquement chercher `--no-verify`, c'est-à-dire supprimerait le garde-fou.
+# Elle reste la barre à franchir AVANT de déclarer un jalon terminé.
+#
+# Contournement en cas d'urgence réelle : `git push --no-verify`. Ce n'est pas un
+# substitut au fait de signaler et de réparer un gate rouge.
+set -uo pipefail
+
+root=$(git rev-parse --show-toplevel 2>/dev/null || echo .)
+cd "$root" || exit 0
+
+fails=()
+echo "plancher QA pre-push : invariants, parse des scripts modifiés..."
+
+# Base de comparaison : l'amont de la branche, sinon origin/main. Si elle flagge des
+# lignes que vous n'avez pas écrites, réglez l'amont sur la base de la PR
+# (`git branch --set-upstream-to origin/<base>`) plutôt que d'attraper --no-verify.
+base=$(git rev-parse --abbrev-ref '@{upstream}' 2>/dev/null || echo origin/main)
+git rev-parse --verify --quiet "$base" >/dev/null 2>&1 || base=""
+
+if [ -n "$base" ]; then
+  range="$base..HEAD"
+else
+  range="HEAD~1..HEAD"
+  git rev-parse --verify --quiet HEAD~1 >/dev/null 2>&1 || range=""
+fi
+
+# 1) Invariants durs sur le diff poussé (mêmes règles que le hook Stop).
+if [ -n "$range" ] && command -v perl >/dev/null 2>&1; then
+  nintendo='\b(bokoblin|lynel|hyrule|sheikah|ganon|korok|triforce|deku|zonai|moblin|hylian)\b'
+  hits=$(git diff -U0 --no-color "$range" -- . \
+      ':(exclude)docs' ':(exclude).claude/hooks' ':(exclude).claude/rules' 2>/dev/null \
+    | grep -E '^\+' | grep -v '^+++' \
+    | grep -EiC0 "$nintendo" | head -5 || true)
+  if [ -n "$hits" ]; then
+    fails+=("contenu Nintendo dans le diff poussé : $(printf '%s' "$hits" | head -2 | tr '\n' ' ')")
+  fi
+
+  untyped=$(git diff -U0 --no-color "$range" -- '*.gd' 2>/dev/null \
+    | grep -E '^\+' | grep -v '^+++' \
+    | grep -EC0 '^\+\s*(@export[a-z_]*(\([^)]*\))?\s+)?(static\s+)?var\s+[A-Za-z_][A-Za-z0-9_]*\s*=\s*\S' | head -5 || true)
+  if [ -n "$untyped" ]; then
+    fails+=("déclaration GDScript non typée : $(printf '%s' "$untyped" | head -2 | tr '\n' ' ')")
+  fi
+fi
+
+# 2) Parse des scripts .gd modifiés, si Godot est là. Absent (conteneur sans
+# moteur construit), on le DIT au lieu de laisser croire que le contrôle a tourné.
+GODOT="${GODOT_BIN:-/usr/local/bin/godot}"
+if [ -x "$GODOT" ] || command -v "$GODOT" >/dev/null 2>&1; then
+  if [ -n "$range" ]; then
+    changed=$(git diff --name-only --diff-filter=ACMR "$range" -- '*.gd' 2>/dev/null || true)
+    for f in $changed; do
+      [ -f "$f" ] || continue
+      if ! "$GODOT" --headless --path . --check-only --script "$f" >/dev/null 2>&1; then
+        fails+=("parse en échec : $f")
+      fi
+    done
+  fi
+else
+  echo "  note : Godot introuvable ($GODOT) — parse des scripts NON exécuté (voir tools/setup_godot.sh)"
+fi
+
+if [ ${#fails[@]} -gt 0 ]; then
+  echo
+  echo "PUSH REFUSÉ — ${#fails[@]} problème(s) :"
+  for f in "${fails[@]}"; do echo "  - $f"; done
+  echo
+  echo "Urgence réelle uniquement : git push --no-verify"
+  exit 1
+fi
+
+echo "  plancher QA : vert."
+exit 0
