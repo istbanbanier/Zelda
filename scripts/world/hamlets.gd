@@ -373,8 +373,24 @@ func _build_logging_cabin(parent: Node3D) -> void:
 	_piece("Chair_1", Vector3(-0.4, 0.05, -1.7), 200.0, cabin, PROPS)
 	_piece("Bed_Twin1", Vector3(1.8, 0.05, -1.6), 90.0, cabin, PROPS)
 	_piece("Chest_Wood", Vector3(2.1, 0.05, 1.7), 0.0, cabin, PROPS)
-	_piece("Shelf_Simple", Vector3(-2.5, 0.05, 1.4), 90.0, cabin, PROPS)
-	_piece("Pot_1", Vector3(-2.4, 0.95, 1.4), 0.0, cabin, PROPS)
+	# DÉFAUT D'ACCROCHE CORRIGÉ : l'étagère et son pot.
+	# `Shelf_Simple` est une TABLETTE MURALE, mesurée bbox x ±0,5925,
+	# y [−0,2011 ; +0,1077], z [+0,0435 ; +0,3358] : son origine est le plan
+	# d'appui contre le mur, la planche part vers +z et pend de 0,20 sous
+	# l'ancrage. Posée à y = 0,05, elle avait 0,20 m de planche sous un
+	# plancher qui s'arrête à 0,03 — les quatre cinquièmes de la tablette
+	# étaient DANS le sol — et son plan d'appui à x = −2,50 la laissait à
+	# 0,41 m de la face intérieure du mur (mesurée x = −2,908), accrochée au
+	# vide. Le pot, lui, était juste : posé à 0,95, sa sous-face tombe à
+	# 0,9274 — la hauteur qu'une tablette d'appui doit atteindre. C'est donc
+	# l'étagère qui remonte à 0,82 (dessus = 0,82 + 0,1077 = 0,9277, le pot s'y
+	# pose) et se plaque au mur à x = −2,95 (planche x −2,9065 → −2,6142,
+	# arrière au ras du mur). Le pot se recentre sur la planche (x = −2,76) :
+	# large de 0,54 pour une tablette profonde de 0,29, il déborde de 0,12 de
+	# chaque côté — l'arrière disparaît dans l'épaisseur du mur (0,406), pas
+	# dans la pièce.
+	_piece("Shelf_Simple", Vector3(-2.95, 0.82, 1.4), 90.0, cabin, PROPS)
+	_piece("Pot_1", Vector3(-2.76, 0.955, 1.4), 0.0, cabin, PROPS)
 	_piece("Candle_1", Vector3(-1.1, 0.82, -1.2), 0.0, cabin, PROPS)
 	_piece("Bucket_Wooden_1", Vector3(0.9, 0.05, 2.1), 25.0, cabin, PROPS)
 	_piece("Lantern_Wall", Vector3(-2.85, 1.9, -1.0), 90.0, cabin, PROPS)
@@ -451,9 +467,15 @@ func _build_sawmill(parent: Node3D) -> void:
 	# traversaient et la seconde débordait de 1,52 m hors du plancher. Elles
 	# sont désormais EMPILÉES (l'épaisseur réelle est de 0,199 m), au même
 	# endroit, entièrement sur le plancher (z ∈ [0,88 ; 2,92]).
-	_piece("Prop_Support", Vector3(2.265, 0.30, 1.00), 0.0, mill, "",
+	# DÉFAUT D'APPUI CORRIGÉ : le pas de 0,20 m entre billes est le bon (c'est
+	# l'épaisseur mesurée), mais la BASE ne l'était pas. Couchée par Rz(90), la
+	# pièce s'étend en y de ∓0,0993 autour de son origine ; posée à y = 0,30 sa
+	# sous-face tombait à 0,2007 alors que le plancher s'arrête à 0,03 : les
+	# deux billes flottaient à 0,17 m au-dessus des planches. Base ramenée à
+	# 0,03 + 0,0993 = 0,13, la bille du bas touche le plancher.
+	_piece("Prop_Support", Vector3(2.265, 0.13, 1.00), 0.0, mill, "",
 		Vector3(0, 0, 90))
-	_piece("Prop_Support", Vector3(2.265, 0.50, 1.00), 0.0, mill, "",
+	_piece("Prop_Support", Vector3(2.265, 0.33, 1.00), 0.0, mill, "",
 		Vector3(0, 0, 90))
 
 
@@ -483,21 +505,29 @@ func _build_log_stacks(parent: Node3D) -> void:
 	# ce qui rouvre 1,02 m d'interpénétration (le défaut (c) qu'il corrige par
 	# ailleurs). Les deux lits bas sont donc au même pas bout à bout, et c'est
 	# le lit du haut, seul et centré, qui donne la silhouette pyramidale.
+	#  (e) DÉFAUT D'APPUI, mesuré après coup : le pas de 0,20 m entre lits est
+	#      juste, mais la BASE ne l'était pas. Couchée par Rz(90) la pièce
+	#      s'étend de ∓0,0993 en y autour de son origine ; le lit du bas, posé
+	#      à y = 0,30, avait donc sa sous-face à 0,2007 — la pile ENTIÈRE
+	#      flottait à 20 cm au-dessus de l'herbe, ombre comprise. Base ramenée
+	#      à 0,0993 (arrondi 0,10) : le bois touche le sol, les lits suivants
+	#      suivent au même pas (0,30 puis 0,50).
 	for base: Vector3 in bases:
+		for z: float in [-1.02, 1.02]:
+			_piece("Prop_Support", base + Vector3(2.065, 0.10, z - 0.90), 0.0,
+				stacks, "", Vector3(0, 0, 90))
 		for z: float in [-1.02, 1.02]:
 			_piece("Prop_Support", base + Vector3(2.065, 0.30, z - 0.90), 0.0,
 				stacks, "", Vector3(0, 0, 90))
-		for z: float in [-1.02, 1.02]:
-			_piece("Prop_Support", base + Vector3(2.065, 0.50, z - 0.90), 0.0,
-				stacks, "", Vector3(0, 0, 90))
-		_piece("Prop_Support", base + Vector3(2.065, 0.70, -0.90), 0.0, stacks,
+		_piece("Prop_Support", base + Vector3(2.065, 0.50, -0.90), 0.0, stacks,
 			"", Vector3(0, 0, 90))
 		# Collision recalée sur le bois réellement présent : x ∈ [−0,86 ; 0,85],
-		# y ∈ [0,20 ; 0,80], z ∈ [−2,04 ; 2,04]. L'ancienne boîte 4,2 × 2,0 × 2,8
+		# y ∈ [0,00 ; 0,60], z ∈ [−2,04 ; 2,04]. L'ancienne boîte 4,2 × 2,0 × 2,8
 		# avait sa moitié +X dans le vide et laissait 0,82 m de bois hors
-		# collision en −X.
-		_wall_collider(stacks, base + Vector3(0, 0.40, 0),
-			Vector3(1.80, 0.80, 4.20))
+		# collision en −X ; la boîte y 0,00-0,80 suivait la pile flottante et
+		# gardait 0,20 m de vide au-dessus du bois une fois celui-ci reposé.
+		_wall_collider(stacks, base + Vector3(0, 0.30, 0),
+			Vector3(1.80, 0.60, 4.20))
 	# Le bois débité, mis à part, et de quoi le lier.
 	_piece("Crate_Wooden", Vector3(2.6, 0.05, 2.2), 30.0, stacks, PROPS)
 	_piece("Rope_1", Vector3(2.0, 0.05, 3.4), 0.0, stacks, PROPS)
@@ -516,7 +546,17 @@ func _build_cart_yard(parent: Node3D) -> void:
 	_piece("Barrel", Vector3(-2.4, 0.05, 1.0), 0.0, yard, PROPS)
 	_piece("Barrel_Holder", Vector3(-2.4, 0.05, 2.2), 0.0, yard, PROPS)
 	_piece("Bag", Vector3(1.4, 0.05, 1.9), 60.0, yard, PROPS)
-	_piece("Torch_Metal", Vector3(3.4, 0, -2.6), 0.0, yard, PROPS)
+	# Troisième applique orpheline (voir corps de garde et galerie) : plantée
+	# en plein pré, elle s'enfonçait de 0,278 m et n'offrait plus que 0,371 m
+	# de ferraille — et rien, ici, ne pouvait la porter. On lui donne son
+	# support : `Corner_Exterior_Wood` est le seul montant pleine hauteur du
+	# kit à origine correcte (mesuré 0,2102 × 3,000 × 0,2396, bbox y min = 0).
+	# L'applique se plaque sur sa face ouest à yaw 270 (le +z local part vers
+	# −x, donc vers la cour) : potence x 2,902 → 3,290, contre le poteau qui
+	# commence à 3,295.
+	_piece("Corner_Exterior_Wood", Vector3(3.4, 0, -2.6), 0.0, yard)
+	_wall_collider(yard, Vector3(3.4, 1.5, -2.6), Vector3(0.22, 3.0, 0.25))
+	_piece("Torch_Metal", Vector3(3.29, 2.0, -2.6), 270.0, yard, PROPS)
 	# Enclos bas : deux côtés seulement, le hameau reste traversable.
 	var no_gap: Array[int] = []
 	_fence_row(yard, "Prop_WoodenFence_Extension2", Vector3(-4.0, 0, 3.4),
@@ -659,7 +699,20 @@ func _build_guardhouse(parent: Node3D) -> void:
 	_piece("Pickaxe_Bronze", Vector3(-2.6, 0.05, 0.2), 10.0, house, PROPS)
 	_piece("Bucket_Metal", Vector3(0.2, 0.05, 2.3), 0.0, house, PROPS)
 	_piece("Lantern_Wall", Vector3(2.85, 1.9, 1.2), 270.0, house, PROPS)
-	_piece("Torch_Metal", Vector3(3.6, 0, 0.9), 0.0, house, PROPS)
+	# Même défaut d'accroche qu'à la galerie : `Torch_Metal` est une APPLIQUE
+	# (bbox x ±0,1116, y [−0,2776 ; +0,3705], z [+0,0001 ; +0,3885] — platine au
+	# plan z = 0, potence vers +z, queue sous l'origine). Posée à y = 0 devant
+	# la porte, elle s'enterrait de 0,278 m et pendait dans le vide devant la
+	# façade. Plaquée sur cette façade à yaw 90 — le +z local part alors vers
+	# +x, donc vers la cour — et à hauteur d'homme (y 1,722 → 2,370), à côté de
+	# la baie (passage libre z ±0,65) et non devant.
+	# L'ABSCISSE VIENT DU RELEVÉ, PAS DU RAISONNEMENT : posé à yaw 270,
+	# `Wall_UnevenBrick_Straight` porte son épaisseur du côté +x — le mur est
+	# occupe x 2,908 → 3,314, sa face EXTÉRIEURE est donc 3,314 et non 3,092.
+	# Un premier essai à x = 3,10 (l'épaisseur supposée du mauvais côté)
+	# enfonçait la platine dans la maçonnerie ; mesuré, x = 3,32 la pose au ras
+	# du parement, potence 3,320 → 3,709.
+	_piece("Torch_Metal", Vector3(3.32, 2.0, 0.9), 90.0, house, PROPS)
 
 
 ## GALERIE : la bouche de mine, plaquée contre la falaise. §1 interdit une
@@ -688,8 +741,28 @@ func _build_mine_gallery(parent: Node3D) -> void:
 		# Bandeau de couronnement, posé sur la tête des piédroits (3,1227 m).
 		_piece("Prop_ExteriorBorder_Straight1", Vector3(0.0, 3.12, side * 2.0),
 			90.0, gallery)
-	for side: float in [-1.0, 1.0]:
-		_piece("Prop_Support", Vector3(0.35, 0, side * 1.25), 0.0, gallery)
+	# DÉFAUT D'AXE CORRIGÉ — les deux étais de la bouche de mine.
+	#
+	# `Prop_Support` n'est pas centré sur son origine : relevé de sommets,
+	# bbox x ±0,0993, y [1,2114 ; 2,9200], z [−0,1181 ; +1,9182]. Toute sa
+	# géométrie est donc décalée de +0,90 m en z. Le reste de ce fichier
+	# compense ce décalage partout où la pièce est couchée (scierie, piles de
+	# troncs) ; ici, posée droite, il ne l'était PAS. Conséquence mesurée : les
+	# deux étais demandés à z = ±1,25 occupaient en réalité z −1,368 → +0,668
+	# et z +1,132 → +3,168. Ils n'étaient donc ni symétriques, ni de part et
+	# d'autre de la baie : le premier barrait les deux tiers de la grille
+	# (mesurée z −0,979 → +0,970, dans le MÊME plan x que l'étai), le second
+	# était entièrement sur le piédroit sud et débordait de 0,17 m dans le vide.
+	#
+	# Deux corrections, pas une : le décalage de 0,90 m ET le miroir. À yaw 0
+	# la pièce s'étend vers +z, à yaw 180 vers −z ; sans miroir les deux étais
+	# pencheraient du même côté au lieu d'encadrer la baie. Posés à ∓1,118 ils
+	# couvrent exactement z [1,000 ; 3,036] et [−3,036 ; −1,000] — bord à bord
+	# avec la baie, chacun sur son piédroit (mesurés z ±1 → ±3). Le tilt
+	# restant nul, l'assise `KitPlacement` s'applique : ils partent du sol.
+	for prop: Array in [[-1.118, 180.0], [1.118, 0.0]]:
+		_piece("Prop_Support", Vector3(0.35, 0, prop[0] as float),
+			prop[1] as float, gallery)
 	# La GRILLE, et sa collision : la galerie est fermée pour de bon.
 	_piece("Prop_MetalFence_Simple", Vector3(0.35, 0, 0), 90.0, gallery)
 	_wall_collider(gallery, Vector3(0.2, WALL_H * 0.5, 0),
@@ -709,7 +782,17 @@ func _build_mine_gallery(parent: Node3D) -> void:
 	_piece("Rock_Medium_1", Vector3(2.6, 0, -3.2), 40.0, gallery, ROCKS)
 	_piece("Pebble_Square_1", Vector3(1.2, 0.02, 1.4), 0.0, gallery, ROCKS)
 	_piece("Pebble_Square_2", Vector3(4.6, 0.02, -1.2), 0.0, gallery, ROCKS)
-	_piece("Torch_Metal", Vector3(0.9, 0, -2.2), 0.0, gallery, PROPS)
+	# DÉFAUT D'ACCROCHE CORRIGÉ : `Torch_Metal` est une APPLIQUE murale, pas une
+	# torche plantée. Relevé de sommets : bbox x ±0,1116, y [−0,2776 ; +0,3705],
+	# z [+0,0001 ; +0,3885] — la platine est le plan z = 0, la potence part vers
+	# +z et la queue descend de 0,278 SOUS l'origine. Posée à y = 0 au milieu du
+	# passage, elle s'enterrait de 0,278 m et ne montrait que 0,371 m, à 0,81 m
+	# devant le piédroit (face mesurée x = +0,092) : une applique accrochée au
+	# vide. Plaquée sur la face est du piédroit sud (x = 0,10 -> potence
+	# 0,100 → 0,489) à yaw 90 (le +z local part vers +x, donc vers la cour) et à
+	# hauteur d'homme (y 1,722 → 2,370), elle éclaire la bouche de mine sans
+	# toucher l'étai, dont le sommet mesuré est à 1,709.
+	_piece("Torch_Metal", Vector3(0.10, 2.0, -2.2), 90.0, gallery, PROPS)
 
 
 ## SÉCHOIR : abri ouvert où sèchent sacs et toiles avant descente à la vallée.
@@ -750,10 +833,23 @@ func _build_drying_shed(parent: Node3D) -> void:
 	_piece("Overhang_UnevenBrick_Long", Vector3(0, 0.0, -2.6), 0.0, shed)
 	_wall_collider(shed, Vector3(0, 1.5, -2.7), Vector3(2.0, 3.0, 0.4))
 	# Les claies : cordes tendues, toiles et sacs suspendus.
-	_piece("Rope_1", Vector3(0, 2.2, -0.9), 0.0, shed, PROPS)
-	_piece("Rope_1", Vector3(0, 2.2, 0.9), 0.0, shed, PROPS)
-	_piece("Banner_1_Cloth", Vector3(-1.2, 2.1, -0.9), 0.0, shed, PROPS)
-	_piece("Banner_2_Cloth", Vector3(1.1, 2.1, 0.9), 0.0, shed, PROPS)
+	# DÉFAUT D'ACCROCHE CORRIGÉ, deux fautes. Les deux toiles PENDENT sous leur
+	# origine (mesuré `Banner_1_Cloth` bbox y [−2,2464 ; 0], `Banner_2_Cloth`
+	# [−1,9313 ; 0]) :
+	#  (a) accrochées à y = 2,10, la plus longue descendait à −0,146 — elle
+	#      traversait le sol de 15 cm ;
+	#  (b) les cordes étaient toutes deux à x = 0 alors que les toiles étaient
+	#      à x = −1,2 et +1,1. `Rope_1` ne mesure que 0,557 m de long (bbox
+	#      x [−0,2856 ; +0,2718]) : ce n'est pas une ligne tendue d'un bout à
+	#      l'autre de l'abri, mais un point d'accroche. Chaque toile pendait
+	#      donc à 0,5 m à CÔTÉ de sa corde, accrochée à rien.
+	# Chaque corde rejoint sa toile en x, et les deux montent à 2,60 : la corde
+	# occupe y 2,573 → 2,671, la toile part de son sommet 2,60 et s'arrête à
+	# 0,354 du sol, bien sous la couverture (dessous mesuré à 2,996).
+	_piece("Rope_1", Vector3(-1.2, 2.60, -0.9), 0.0, shed, PROPS)
+	_piece("Rope_1", Vector3(1.1, 2.60, 0.9), 0.0, shed, PROPS)
+	_piece("Banner_1_Cloth", Vector3(-1.2, 2.60, -0.9), 0.0, shed, PROPS)
+	_piece("Banner_2_Cloth", Vector3(1.1, 2.60, 0.9), 0.0, shed, PROPS)
 	_piece("Bag", Vector3(-1.6, 0.05, 0.6), 30.0, shed, PROPS)
 	_piece("Pouch_Large", Vector3(1.5, 0.05, -0.8), 200.0, shed, PROPS)
 	_piece("FarmCrate_Empty", Vector3(0.2, 0.05, 1.3), 15.0, shed, PROPS)
@@ -818,7 +914,23 @@ func _build_palisade(parent: Node3D) -> void:
 			Vector3(9.0 + side * 2.0, 0, -10.0), 0.0, fence)
 		_wall_collider(fence, Vector3(9.0 + side * 2.0, 0.85, -10.0),
 			Vector3(0.6, 1.7, 0.5))
-	_piece("Banner_2", Vector3(11.6, 0, -10.4), 0.0, fence, PROPS)
+	# DÉFAUT D'ACCROCHE CORRIGÉ : la bannière du portail. `Banner_2` est un
+	# modèle SUSPENDU — relevé de sommets, bbox x [−0,0008 ; +1,6123],
+	# y [−1,2336 ; +0,8435] : son origine est le point d'accroche, la hampe
+	# monte de 0,84, la toile pend de 1,23 et le bras part vers +x. Posée à
+	# y = 0 elle enfouissait 1,234 m des 2,077 m de bannière : il en restait
+	# 0,84 m, à ras de la palissade, alors que sa raison d'être est de « se
+	# voir de loin ». `KitPlacement` ne remonte jamais un modèle qui descend
+	# sous son ancrage, et rien ici ne montait plus haut que les 0,838 m d'un
+	# module de clôture : il fallait d'abord lui donner un support. Le mât est
+	# un `Corner_Exterior_Wood` (mesuré 0,2102 × 3,000 × 0,2396, origine à sa
+	# base), planté à 0,40 m derrière la ligne de clôture. La bannière s'y
+	# accroche à 2,15 (sommet 2,994, sous la tête du mât) et passe à yaw 180
+	# pour que son bras se déploie vers −x, AU-DESSUS du passage (x 9,988 →
+	# 11,601) au lieu de partir vers l'extérieur de l'enceinte.
+	_piece("Corner_Exterior_Wood", Vector3(11.6, 0, -10.4), 0.0, fence)
+	_wall_collider(fence, Vector3(11.6, 1.5, -10.4), Vector3(0.22, 3.0, 0.25))
+	_piece("Banner_2", Vector3(11.6, 2.15, -10.4), 180.0, fence, PROPS)
 
 
 # --- Déclaration au journal des découvertes ---------------------------------

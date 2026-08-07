@@ -636,14 +636,33 @@ func _build_aqueduct() -> void:
 	]
 	_dressing(aqueduct, brink)
 	# La végétation du canal : la preuve visible que l'eau ne passe plus.
+	#
+	# DÉFAUT D'ATTACHE MESURÉ (revue orientation) — la cote `channel_y` est une
+	# CONSTANTE DE BÂTIMENT (9,24 m), pas une hauteur de terrain : une plante
+	# qui la porte n'est juste que si un module de canal se trouve VRAIMENT
+	# sous elle. Or le z était une suite arithmétique ouverte,
+	# `sign_z * (9,5 + 1,7·i)`, qui allait jusqu'à ±24,8, alors que les sept
+	# travées bâties ne posent de `Floor_Brick` qu'en z ±9, ±11 … ±21 (module
+	# de 2 m, donc dallage continu de ±8 à ±22). Boîtes monde relevées sur les
+	# sommets : la fougère du rang i = 8 occupait z −14,26..−12,01 et l'herbe
+	# du rang i = 9 z +34,73..+34,90 — toutes deux HORS dallage, en l'air à
+	# y = 11,24, c'est-à-dire 9,24 m au-dessus de la plaine et 2 m au-delà du
+	# bout de l'arcade. Rien ne les portait.
+	#
+	# Le z ne se calcule donc plus : il se DÉRIVE de la travée, comme le canal
+	# lui-même. Cinq travées par rive (0, 3, 6, 2, 5 — parcours déterministe,
+	# jamais un aléa), plus un décalage borné à ±0,6 m qui reste sur la dalle
+	# (demi-module 1,0 m). Aucune pose ne peut plus sortir du dallage.
 	var dry: Array[String] = [
 		"Grass_Wispy_Short", "Plant_1", "Fern_1", "Grass_Common_Short",
 		"Clover_2", "Mushroom_Laetiporus",
 	]
 	for i: int in range(10):
 		var sign_z: float = -1.0 if i % 2 == 0 else 1.0
+		var bay: int = ((i / 2) * 3) % 7
+		var along: float = 9.0 + float(bay) * 2.0 + sin(float(i) * 2.399) * 0.6
 		_spawn(dry[i % dry.size()],
-			Vector3(0.0, channel_y + 0.05, sign_z * (9.5 + float(i) * 1.7)),
+			Vector3(0.0, channel_y + 0.05, sign_z * along),
 			Vector3(0, float(i) * 63.0, 0), aqueduct, "", 0.8)
 
 	# LA TRAVÉE TOMBÉE, devenue pont. Le tablier affleure les deux rives : on
@@ -655,12 +674,71 @@ func _build_aqueduct() -> void:
 		_spawn("RockPath_Square_Wide" if k % 2 == 0 else "RockPath_Round_Wide",
 			Vector3(6.0, -0.06, z), Vector3(0, float(k) * 29.0, 0), aqueduct,
 			"", 1.15)
+
+	# LE CORPS DE LA TRAVÉE : il manquait ENTIÈREMENT.
+	#
+	# DÉFAUT MESURÉ (revue orientation) — le « pont » n'était que les sept
+	# dalles ci-dessus, boîtes monde y 1,928..2,131 relevées sur les sommets,
+	# et son unique appui était le `_wall_collider` de la ligne précédente,
+	# c'est-à-dire un corps de collision : INVISIBLE. Sous les dalles il y
+	# avait 3,43 m de vide franc jusqu'au fond du lit (dalle `Riverbed` de
+	# valley_terrain.gd, dessus y = −1,5) — et à cette abscisse les berges en
+	# pente sont justement épargnées (fenêtre x −24..−4 réservée au site de
+	# pont). Vu depuis le lit, ce tablier se lisait exactement comme ce que le
+	# propriétaire décrit : des masses de pierre sombre suspendues en l'air le
+	# long de l'aqueduc.
+	#
+	# CORRECTIF. On bâtit ce que la fiction affirme déjà : la travée tombée est
+	# un morceau d'ARCADE. On reprend donc le parement `Wall_Arch` du tablier
+	# debout, pied au fond du lit et sommet sous les dalles. Mesures hors
+	# moteur : `Wall_Arch` fait 2,000 × 3,000 × 0,064 m ; il faut 3,4285 m
+	# entre le fond (y local −3,5) et le dessous des dalles (y local −0,0715,
+	# soit −0,010 × 1,15 − 0,06) ; d'où le facteur 1,143 → hauteur 3,429,
+	# longueur 2,286. Vérifié après pose : y monde −1,500..1,929, c'est-à-dire
+	# pied POSÉ sur le lit et sommet AU CONTACT du tablier, zéro jour.
+	# Cinq travées couvrent z monde 4,285..15,715, soit 11,43 m des 12 m de
+	# lit ; les 0,285 m restants de chaque bout portent sur la berge.
+	#
+	# Le sens des lacets suit celui de l'arcade debout : à yaw 90 le parement
+	# occupe x +0,000..+0,073 de sa pose, à yaw 270 −0,073..0 — les deux faces
+	# extérieures affleurent donc les rives de la dalle (x local 5 et 7), la
+	# dalle mesurée débordant de 4,79 à 7,22. Aucune collision n'est ajoutée :
+	# comme sous l'arcade debout, on passe DESSOUS (§1), et le lit reste
+	# parcourable dans le sens du courant par les arches.
+	const FALLEN_ARCH_FACTOR: float = 1.143
+	const FALLEN_ARCH_BAY: float = 2.0 * FALLEN_ARCH_FACTOR
+	for k: int in range(5):
+		var z: float = (float(k) - 2.0) * FALLEN_ARCH_BAY
+		_spawn("Wall_Arch", Vector3(5.0, bed_y, z), Vector3(0, 90, 0),
+			aqueduct, "", FALLEN_ARCH_FACTOR)
+		_spawn("Wall_Arch", Vector3(7.0, bed_y, z), Vector3(0, 270, 0),
+			aqueduct, "", FALLEN_ARCH_FACTOR)
 	_marker(aqueduct, "PassageDeLArche", Vector3(6.0, 0.1, 0.0))
 	var span: Array[Array] = [
 		# Les deux extrémités de la travée, encore reconnaissables.
-		["Wall_Arch", Vector3(6.0, 0.2, -8.4), Vector3(22.0, 90.0, 0.0), 1.0,
+		#
+		# DÉFAUT MESURÉ — il n'y avait qu'UN panneau par extrémité. `Wall_Arch`
+		# est épais de 0,064 m : basculé au bord du passage, là où le joueur le
+		# longe, il se voyait par la tranche. Même remède que pour l'arcade
+		# debout et que pour les lèvres de la cassure : un parement par face,
+		# aux rives du tablier (x local 5 et 7).
+		# Le tangage est INVERSÉ sur la pièce à yaw 270 : en ordre YXZ,
+		# Ry(90) envoie l'axe X local sur −Z monde et Ry(270) sur +Z, donc un
+		# même tangage donnerait deux inclinaisons opposées. Vérifié sur les
+		# sommets — yaw 270 / tangage −22 rend la même emprise en z
+		# (0,600..2,600) et la même en y (2,20..5,01 contre 2,18..4,98) que
+		# yaw 90 / tangage +22 : les deux parements sont bien parallèles.
+		["Wall_Arch", Vector3(5.0, 0.2, -8.4), Vector3(22.0, 90.0, 0.0), 1.0,
 			Vector3.ZERO],
-		["Wall_Arch", Vector3(6.0, -0.7, 8.0), Vector3(-26.0, 90.0, 0.0), 1.0,
+		["Wall_Arch", Vector3(7.0, 0.2, -8.4), Vector3(-22.0, 270.0, 0.0), 1.0,
+			Vector3.ZERO],
+		# Extrémité SUD remontée de 0,6 m : posée à y = −0,7, sa boîte monde
+		# commençait à y = 1,300 pour une plaine à 2,00, soit 0,70 m de
+		# l'arche avalés par le sol. À −0,1 elle part de 1,900 — juste assise
+		# dans l'herbe, ce que dit le récit.
+		["Wall_Arch", Vector3(5.0, -0.1, 8.0), Vector3(-26.0, 90.0, 0.0), 1.0,
+			Vector3.ZERO],
+		["Wall_Arch", Vector3(7.0, -0.1, 8.0), Vector3(26.0, 270.0, 0.0), 1.0,
 			Vector3.ZERO],
 		# La pile emportée, plantée de travers dans le lit.
 		["Wall_UnevenBrick_Straight", Vector3(2.4, bed_y + 0.6, 0.8),
@@ -700,7 +778,17 @@ func _build_aqueduct() -> void:
 	var repair: Array[Array] = [
 		["Prop_Support", Vector3(-2.0, 0.0, -9.6), Vector3(0, 0, 14.0), 1.0,
 			Vector3.ZERO],
-		["Prop_Support", Vector3(-2.4, 0.0, -6.8), Vector3(0, 0, -9.0), 1.0,
+		# DÉFAUT MESURÉ — cet étai était le seul des trois à ENJAMBER la lèvre
+		# du lit. `Prop_Support` s'étend de z 0 à z +1,918 depuis son ancrage :
+		# posé en z local −6,8 (z monde 3,2), sa boîte relevée sur les sommets
+		# allait de 3,082 à 5,118, alors que la plaine nord s'arrête à z = 16
+		# côté sud et à z = 4 ici (dalles de valley_terrain.gd). 1,12 m de
+		# poutre pendaient donc au-dessus de 3,5 m de vide, sans appui — une
+		# planche flottante. Un demi-tour de LACET, sans toucher à la pose ni
+		# à l'inclinaison, retourne la poutre vers l'intérieur : boîte mesurée
+		# z 1,282..3,318, entièrement sur la plaine, 0,68 m avant la lèvre, et
+		# l'étai s'appuie désormais VERS la pile qu'il était censé étayer.
+		["Prop_Support", Vector3(-2.4, 0.0, -6.8), Vector3(0, 180, -9.0), 1.0,
 			Vector3.ZERO],
 		["Prop_Support", Vector3(2.2, 0.0, -8.2), Vector3(0, 0, 11.0), 1.0,
 			Vector3.ZERO],
@@ -726,7 +814,24 @@ func _build_aqueduct() -> void:
 			1.0, Vector3.ZERO],
 		["Fern_1", Vector3(1.6, 0.0, -12.4), Vector3(0, 210, 0), 1.0,
 			Vector3.ZERO],
-		["TwistedTree_3", Vector3(-8.0, 0.0, -17.5), Vector3(0, 60, 0), 1.0,
+		# DÉFAUT MESURÉ — c'est de là que venaient « les arbres qui poussent sur
+		# le tablier ». `TwistedTree_3` est un spécimen héros : boîte relevée
+		# sur les sommets 11,36 × 16,07 × 11,51 m, et sa couronne (primitive
+		# x −4,49..+6,87) est FRANCHEMENT dissymétrique — à yaw 60 elle
+		# déborde de +7,75 m en x depuis le tronc. Posé en x local −8, elle
+		# atteignait donc x monde −12,25, c'est-à-dire ENTRE les deux parements
+		# de l'arcade (x −13,00..−12,94 et −11,06..−11,00), sur z monde
+		# −12..−1,12, et montait à y = 17,87 quand le canal est à 11,24 : les
+		# branches sortaient à la naissance des arches (y monde 8,24, soit
+		# 6,24 m au-dessus de la plaine — les « 6 m du sol » observés) puis
+		# ressortaient 6,6 m au-dessus du tablier.
+		# Le lacet ne peut rien y faire : la couronne fait 15,6 m de large quel
+		# que soit l'angle (mesuré à 60°, 210° et 240°). Il faut donc éloigner
+		# le tronc. À x local −11, z −19, la couronne s'arrête à x monde
+		# −15,25, soit 2,25 m à l'ouest du parement — dégagée pour de bon,
+		# encore dans l'emprise du point d'intérêt, et à l'écart de
+		# l'échafaudage (z monde −18,21..−2,62 contre 0,3..3,9 pour les étais).
+		["TwistedTree_3", Vector3(-11.0, 0.0, -19.0), Vector3(0, 60, 0), 1.0,
 			Vector3.ZERO],
 		["CommonTree_4", Vector3(9.5, 0.0, 15.0), Vector3(0, 150, 0), 1.0,
 			Vector3.ZERO],

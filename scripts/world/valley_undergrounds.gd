@@ -711,12 +711,39 @@ func _build_hidden_passage() -> void:
 		["Pebble_Round_3", Vector3(1.6, 0.02, 8.4), 210.0, 1.2],
 		["Pebble_Square_2", Vector3(0.4, 0.02, 6.2), 60.0, 1.3],
 		["RockPath_Round_Thin", Vector3(0.0, 0.03, 10.2), 0.0, 1.0],
-		["Bush_Common", Vector3(-4.8, 0.0, 7.0), 40.0, 1.2],
+		# Lot 17 — VÉGÉTATION DANS UN MUR. Le flanc ouest de l'éperon est un
+		# solide qui occupe x ∈ [−11,5 ; −4,5], y ∈ [0 ; 9], z ∈ [−37 ; 7]. Le
+		# buisson était posé à (−4,8 ; 7,0), c'est-à-dire 0,3 m DEDANS en x et
+		# pile sur l'arête en z : à l'échelle 1,2 son emprise mesurée est
+		# x ∈ [−6,40 ; −3,12] et z ∈ [5,34 ; 8,62], donc tout le quart
+		# x < −4,5 / z < 7 était noyé dans la roche et le reste sortait de la
+		# paroi, tranché net par un plan de boîte. Le lacet de 40° gonfle la
+		# boîte englobante : relevée dans la scène montée, elle vaut 3,28 m de
+		# côté, soit ±1,66 m autour de la pose — et non ±1,19 m comme le
+		# donnerait la bbox brute du modèle. Il faut donc z ≥ 8,66 pour sortir
+		# du flanc ; à z = 8,8 le buisson tient dans z ∈ [7,14 ; 10,42] et ne
+		# touche plus la roche. x et lacet inchangés — il reste au bord du
+		# sentier qui descend vers la bouche.
+		["Bush_Common", Vector3(-4.8, 0.0, 8.8), 40.0, 1.2],
 		["Bush_Common_Flowers", Vector3(4.6, 0.0, 8.2), 130.0, 1.0],
 		["Fern_1", Vector3(-2.0, 0.0, 4.6), 200.0, 1.1],
 		["Fern_1", Vector3(2.2, 0.0, 4.4), 20.0, 1.0],
 		["Grass_Wispy_Tall", Vector3(-1.0, 0.0, 9.6), 0.0, 1.0],
-		["TwistedTree_1", Vector3(-6.2, 0.0, 10.6), 25.0, 1.0],
+		# Lot 17 — ORIENTATION : l'arbre poussait DANS l'éperon.
+		# `TwistedTree_1` est un spécimen tordu de 16,72 m dont la couronne part
+		# très loin d'un seul côté : bbox x ∈ [−2,174 ; +11,342], z ∈ [−6,727 ;
+		# +4,823]. Le tronc, lui, est bien sur l'origine (sommets sous y = 0,1 :
+		# x ∈ [−1,50 ; +1,50], z ∈ [−1,57 ; +1,33]) — ce n'est donc pas la
+		# position qui était fausse, mais le LACET, qui décidait vers où
+		# bascule la masse. Au lacet 25° la couronne visait +X/−Z, c'est-à-dire
+		# le flanc ouest et la coiffe. Comptage des 14 064 sommets du modèle
+		# transformés puis testés contre les trois solides (les deux flancs et
+		# la coiffe) : 897 sommets dedans, soit 6,4 % de l'arbre, avec un
+		# enfoncement maximal de 4,46 m — des branches qui sortaient de la
+		# falaise. Le même comptage donne ZÉRO sommet dans la roche pour tout
+		# lacet de 205° à 310° ; 250° est au milieu de cette plage et fait
+		# pencher la couronne vers +Z, au-dessus de la plaine et non du massif.
+		["TwistedTree_1", Vector3(-6.2, 0.0, 10.6), 250.0, 1.0],
 		["Prop_Vine1", Vector3(-1.6, 2.4, mouth_z + 0.05), 0.0, 1.0],
 		["Prop_Vine2", Vector3(1.6, 2.4, mouth_z + 0.05), 0.0, 1.0],
 	])
@@ -1023,7 +1050,23 @@ func _build_crystal_hollow() -> void:
 	# interrompu, et des champignons d'ombre humide (ingrédients de §13.1).
 	_dress(root, [
 		["Chest_Wood", Vector3(0.4, 0.05, hall_back_z + 1.8), 180.0, 1.0],
-		["Pickaxe_Bronze", Vector3(-2.6, 0.05, hall_z + 3.4), 100.0, 1.0],
+		# Lot 17 — PIÈCE ENTERRÉE, jumelle de celle déjà corrigée dans la mine
+		# de `ValleyCaves` mais oubliée ici. `Pickaxe_Bronze` a son origine au
+		# milieu du manche : bbox y ∈ [−0,4939 ; +0,7038], et `KitPlacement`
+		# ne REMONTE jamais un min.y négatif (kit_placement.gd:20-22). Posé à
+		# y = 0,05 l'outil occupait donc y ∈ [−0,444 ; +0,754] : le fer et la
+		# moitié basse du manche étaient sous le sol de la salle. À y = 0,50 la
+		# pointe basse est à 0,006 m du dallage.
+		# Le lacet passe de 100° à 90° et la position se cale sur l'amas : la
+		# pioche est une pièce PLATE (bbox z ∈ [−0,068 ; +0,068] pour 0,81 m de
+		# long en x), donc au lacet 90° son plan devient le plan YZ et son
+		# épaisseur part en X. À x = −3,33 son dos est à −3,398, soit 2 mm de
+		# la face est de l'amas de cristal (solide x ∈ [−5,4 ; −3,4],
+		# z ∈ [hall_z+1,6 ; hall_z+3,6], y ∈ [0 ; 3]) : elle y est APPUYÉE au
+		# lieu de tenir debout toute seule au milieu de la salle. Son emprise
+		# en z, [hall_z+2,20 ; hall_z+3,01], reste dans celle de l'amas, et sa
+		# hauteur de 1,20 m sous les 3,00 m de l'amas.
+		["Pickaxe_Bronze", Vector3(-3.33, 0.50, hall_z + 2.6), 90.0, 1.0],
 		["Crate_Wooden", Vector3(-1.8, 0.05, hall_z + 4.6), 25.0, 1.0],
 		["Crate_Metal", Vector3(2.8, 0.05, hall_z + 4.2), 55.0, 1.0],
 		["Bucket_Metal", Vector3(3.4, 0.05, hall_z + 2.8), 0.0, 1.0],

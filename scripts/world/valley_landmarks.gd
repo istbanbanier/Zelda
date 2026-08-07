@@ -837,11 +837,39 @@ func _build_stone_bridge() -> void:
 		var tag: String = "Nord" if side < 0.0 else "Sud"
 		_solid(place, "Culee%s" % tag, Vector3(0, 1.95, side * 8.0),
 			Vector3(7.6, 3.9, 4.0), COL_ROCK_SHADE)
-		# Blocs erratiques sur la culée : ils cassent la silhouette de boîte.
-		for i: int in range(3):
-			_piece("Rock_Medium_%d" % (1 + i),
-				Vector3(-2.6 + float(i) * 2.6, 3.4, side * (7.2 + 0.6 * float(i))),
-				float(i) * 1.4 + side, place, 1.5 + 0.35 * float(i))
+		# Blocs erratiques AU PIED de la culée : ils cassent la silhouette de
+		# boîte sans monter sur la chaussée.
+		#
+		# Ils étaient posés SUR la culée (y = 3,4) et aux échelles 1,50 / 1,85 /
+		# 2,20. Boîtes englobantes monde relevées dans la vallée montée : le
+		# troisième bloc de la culée sud occupait x −17,66..−7,03, y 2,71..7,80,
+		# z 11,44..22,10, soit 10,63 m d'emprise pour une culée qui n'en fait que
+		# 7,60 (x −17,80..−10,20) sur 4,00 de profondeur. Deux conséquences
+		# mesurées, pas supposées :
+		#  - 3,17 m de roche pendaient dans le vide à l'est de la culée, entre
+		#    2,71 et 7,80 m d'altitude, au-dessus d'une plaine à y = 2 — la
+		#    masse sombre flottante vue à hauteur de joueur ;
+		#  - le bloc recouvrait le tablier (x −17,25..−10,75, y 3,90..5,20) de
+		#    z 11,44 à 18,30 : la chaussée du pont était enterrée sous un rocher
+		#    que l'on traverse, `_piece` ne posant aucune collision. Le bloc
+		#    symétrique de la culée nord faisait de même (x −14,11..−4,95).
+		# Correction : échelle ramenée dans la bande de la bible §3 (rochers
+		# proches 0,15–4 m) et ancrage sur le FLANC OUEST, au sol. Le flanc est
+		# reste libre — `RampeDeRive` y descend, x 4,0..7,0.
+		# Vérifié bloc par bloc : Rock_Medium_1/2/3 culminent à 1,989 / 1,848 /
+		# 2,001 m nus, donc à 0,70 / 0,85 / 0,90 leurs sommets tombent à
+		# y 3,39 / 3,57 / 3,80 — tous SOUS le dessous du tablier (3,90). Et
+		# à z local ≥ 7,80 − 2,15 = 5,65 ils restent sur la plaine, dont le bord
+		# est à z local ±6,00 (le lit occupe z monde 4..16).
+		var blocks: Array[Array] = [
+			[Vector3(-4.1, 2.0, side * 7.8), 0.70],
+			[Vector3(-3.7, 2.0, side * 8.7), 0.85],
+			[Vector3(-4.6, 2.0, side * 9.8), 0.90],
+		]
+		for i: int in range(blocks.size()):
+			var block: Array = blocks[i]
+			_piece("Rock_Medium_%d" % (1 + i), block[0] as Vector3,
+				float(i) * 1.4 + side, place, float(block[1]))
 		# Rampe d'accès : 3,2 m de dénivelé sur 10 m, soit 17,7° — très en
 		# dessous des 46° franchissables, on la monte en courant.
 		_ramp_solid(place, "Rampe%s" % tag,
@@ -930,6 +958,54 @@ func _build_overlook() -> void:
 	_ramp_solid(place, "Echine", Vector3(0, 2.0, 30.0),
 		Vector3(0, OVERLOOK_SUMMIT_Y, -6.0), 9.0, 1.8, COL_ROCK)
 
+	# --- L'assise de l'échine ----------------------------------------------
+	#
+	# L'ÉCHINE N'ÉTAIT ACCROCHÉE À RIEN, et c'est elle, la « planche orange
+	# couchée en diagonale au travers du paysage ».
+	#
+	# Boîte englobante monde relevée dans la vallée montée : `EchineMesh`
+	# occupe x 163,50..172,50, y 0,43..22,00, z 33,13..70,00 — une dalle ocre
+	# (COL_ROCK) de 9 × 1,8 × 41,2 m inclinée à 29°, longue de 36,9 m au sol.
+	# Les masses censées faire la montagne la BORDENT sans jamais passer
+	# dessous : le commentaire des contreforts le dit lui-même, « hors de son
+	# emprise en x ». Mesuré, sous l'emprise x −4,50..4,50 :
+	#   Contrefort0 x −17..−5 · Contrefort1 x −18..−6 · Contrefort2 x −16..−6
+	#   Contrefort3 x 7..17   · EpauleEst   x 5..17   · MasseSommet z −20..−6
+	# Aucune ne recouvre l'abscisse de la rampe entre z = −6 et z = 30. À
+	# mi-course (z = 12) la surface est à y = 12,0 pour une plaine à y = 2 : dix
+	# mètres d'air sous une dalle de 9 m de large, sur 30 m de long.
+	#
+	# On ne touche NI la surface franchissable NI sa pente de 29° — l'audit des
+	# ancrages (`RewardAnchorAudit`) fait réellement monter un corps par ici. On
+	# lui donne son massif. Les cotes sont DÉRIVÉES de la rampe, jamais saisies
+	# à la main : la surface vaut `y(z) = 2 + (30 − z) × 20/36` ; l'épaisseur de
+	# 1,8 m est mesurée perpendiculairement, donc verticalement
+	# `1,8 × 41,23/36 = 2,0591` ; le dessous vaut `y(z) − 2,0591` et rejoint la
+	# plaine à z = 26,29. Le dessus de chaque gradin est le dessous de la dalle
+	# mesuré à l'extrémité BASSE de son segment : aucun gradin ne peut percer la
+	# rampe. Résultat RE-MESURÉ dans le moteur, en sondant le dessous de la
+	# dalle tous les 0,9 m : le vide sous la rampe ne dépasse plus 1,97 m, là
+	# où il montait à 10 m. Douze gradins, soit un ressaut de 1,49 m.
+	const SPINE_SLOPE: float = 20.0 / 36.0
+	const SPINE_VERTICAL_THICKNESS: float = 2.0591
+	const SPINE_Z_TOP: float = -6.0
+	const SPINE_Z_GROUND: float = 26.29
+	const SPINE_STEPS: int = 12
+	for i: int in range(SPINE_STEPS):
+		var z_low: float = lerpf(SPINE_Z_TOP, SPINE_Z_GROUND,
+			float(i + 1) / float(SPINE_STEPS))
+		var z_high: float = lerpf(SPINE_Z_TOP, SPINE_Z_GROUND,
+			float(i) / float(SPINE_STEPS))
+		var top: float = 2.0 + (30.0 - z_low) * SPINE_SLOPE - SPINE_VERTICAL_THICKNESS
+		if top <= 0.0:
+			continue
+		# Largeur 9,0 : exactement celle de la rampe, donc aucune corniche
+		# marchable nouvelle le long du chemin. Base à y = 0, soit 2 m enterrés
+		# dans la plaine.
+		_solid(place, "AssiseDEchine%d" % i,
+			Vector3(0.0, top * 0.5, (z_low + z_high) * 0.5),
+			Vector3(9.0, top, z_low - z_high), COL_ROCK_SHADE)
+
 	# Épaule est : palier à mi-hauteur, au niveau EXACT de la rampe en z = 12
 	# (y = 12). On y sort de la montée pour souffler et regarder le camp. Son
 	# bord ouest (x = 5) laisse 50 cm de vide avec le bord de la rampe
@@ -965,18 +1041,36 @@ func _build_overlook() -> void:
 	# qu'un seul ancrage ouest, au nord du contrefort.
 	# Vérifié pour les huit : aucun centre dans un solide, et chacun mord de
 	# 2,1 à 7,9 m dans la masse — à moitié dedans, à moitié dehors.
+	#
+	# RESTE À CORRIGER, ET C'EST LA HAUTEUR. Les huit blocs étaient étagés par
+	# `2,0 + (i % 3) × 3,4`, c'est-à-dire par une CONSTANTE DE CONSTRUCTION et
+	# non par le sol. Boîtes englobantes monde relevées dans la vallée montée :
+	#   bloc 1 : y 5,30..8,91, x 172,50..178,77 — la face est du sommet est à
+	#            x = 175, il en sort donc 3,77 m, à 3,30 m au-dessus du vide ;
+	#   bloc 2 : y 8,29..12,00, x 172,70..180,39 — 5,39 m dans le vide ;
+	#   blocs 4, 5, 7 : même faute sur les faces nord, ouest et sud.
+	# Cinq blocs sur huit avaient donc leur base entre 5,3 et 8,3 m d'altitude
+	# avec la plaine à y = 2 et rien dessous : des masses de roche suspendues le
+	# long d'une paroi. Ils sont ramenés au SOL (y = 2, la plaine ; ce site
+	# travaille en Y monde), là où un éboulis s'accumule réellement, et
+	# l'échelle passe de 1,60/1,90 à 0,95/1,15 pour rentrer dans la bande de la
+	# bible §3 (rochers proches 0,15–4 m) : au sol, un bloc de 7,70 m devant une
+	# masse de 14 m n'habille plus rien, il la remplace.
+	# Un seul ancrage bouge : (0,0 ; −5,4) tombait au milieu de la nouvelle
+	# assise de l'échine (x −4,50..4,50, z −6..0) et y aurait été entièrement
+	# enterré. Il passe à l'angle sud-est du sommet, hors de cette emprise.
 	var dressing: Array[Vector2] = [
 		Vector2(7.6, -8.0), Vector2(7.6, -13.0), Vector2(7.6, -18.0),  # face est
 		Vector2(3.5, -20.6), Vector2(-3.5, -20.6),                     # face nord
 		Vector2(-7.6, -17.5),                                          # face ouest
-		Vector2(0.0, -5.4), Vector2(4.5, -5.4),                        # face sud
+		Vector2(6.2, -5.4), Vector2(4.5, -5.4),                        # angle sud-est
 	]
 	for i: int in range(dressing.size()):
 		var anchor: Vector2 = dressing[i]
 		var angle: float = TAU * float(i) / 8.0
-		var at: Vector3 = Vector3(anchor.x, 2.0 + float(i % 3) * 3.4, anchor.y)
+		var at: Vector3 = Vector3(anchor.x, 2.0, anchor.y)
 		_piece("Rock_Medium_%d" % (1 + i % 3), at, angle * 1.6, place,
-			1.6 + 0.3 * float(i % 2))
+			0.95 + 0.2 * float(i % 2))
 	# Bordure de la rampe : on voit le vide sans qu'un mur cache la vallée.
 	# Les blocs étaient à x = ±4,6 sur une rampe large de 9 m (bord ±4,50) et
 	# posés à `height − 0,4` alors que `height` EST déjà la surface : ils

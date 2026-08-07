@@ -251,6 +251,41 @@ func _piece(asset: String, at: Vector3, yaw: float, parent: Node3D,
 	return node
 
 
+## Couple (tangage, roulis) qui couche un modèle vers le SUD DU MONDE (+Z),
+## quel que soit son lacet.
+##
+## LE DÉFAUT QU'IL CORRIGE. `_piece` écrit `rotation = Vector3(tilt.x, yaw,
+## tilt.y)` et Godot compose en YXZ : `R = Ry(lacet)·Rx(tangage)·Rz(roulis)`.
+## Le tangage est donc appliqué AVANT le lacet, dans le repère du modèle : la
+## verticale du modèle devient `(sin t · sin lacet, cos t, sin t · cos lacet)`,
+## autrement dit **l'azimut de la chute vaut exactement le lacet**. Un tilt
+## constant ne donne pas une inclinaison constante — il donne une inclinaison
+## qui tourne avec le lacet. C'est la même relation que celle déjà utilisée
+## pour les troncs abattus, où la boîte de collision est décalée par
+## `Basis(Vector3.UP, yaw) * Vector3(0, 0, longueur)`.
+##
+## Mesuré dans le moteur sur les seize arbres du Bois Courbé, dont le lacet
+## était dérivé de la position (`x × 0,19` pour les vivants, `z × 0,23` pour
+## le bois mort) : **3 arbres vivants sur 11 penchaient vers le sud**, et
+## **1 bois mort sur 5**. Les autres se couchaient au nord, à l'est ou à
+## l'ouest. L'indice environnemental du lieu — « tous penchent dans le même
+## sens, donc le vent descend de la citadelle » — ne se lisait pas.
+##
+## Inversion exacte (et non une approximation au petit angle) :
+##     sin(roulis)             = sin L · sin lacet
+##     sin(tangage)·cos(roulis) = sin L · cos lacet
+## Vérifiée dans le moteur : les seize modèles tombent vers `(0, +sin L)` à
+## 1e-3 près, avec l'angle demandé.
+func _wind_tilt(lean: float, yaw: float) -> Vector2:
+	var fall: float = sin(lean)
+	var roll: float = asin(clampf(fall * sin(yaw), -1.0, 1.0))
+	var cos_roll: float = cos(roll)
+	if is_zero_approx(cos_roll):
+		return Vector2(0.0, roll)
+	var pitch: float = asin(clampf(fall * cos(yaw) / cos_roll, -1.0, 1.0))
+	return Vector2(pitch, roll)
+
+
 ## Matériau mis en cache : les lieux réutilisent une poignée de teintes, et
 ## dupliquer un `StandardMaterial3D` par bloc coûterait autant de pipelines.
 func _material(colour: Color, rough: float = 0.92,
@@ -642,6 +677,59 @@ func _build_veil_falls() -> void:
 	_solid(cliff, "PalierDeLevre", Vector3(23.0, FALLS_TOP_Y - 0.5, -14.0),
 		Vector3(8, 1, 10), COL_ROCK)
 
+	# --- L'assise de la rampe et du palier ----------------------------------
+	#
+	# LA RAMPE N'ÉTAIT ACCROCHÉE À RIEN. Boîte englobante monde relevée dans la
+	# vallée montée : `RampeDeLaLevre` occupe x 170,00..177,00, y 0,86..22,00,
+	# z 105,19..134,00 — une dalle ocre de 7 × 1,4 × 34,4 m inclinée à 35,5°.
+	# Or les deux seules masses de ce couloir sont `ParoiDroite` (x 155..170) et
+	# `EpauleDroite` (x 177..191) : elles la BORDENT, elles ne la portent pas, et
+	# aucune des deux ne descend au sud de z = 110. Sous la rampe, de z = 110 à
+	# z = 134, il n'y avait que de l'air — jusqu'à 12 m entre la plaine (y = 2)
+	# et le dessous de la dalle. Vue de la plaine, la Chute du Voile montrait
+	# donc une immense planche ocre couchée en diagonale au travers du paysage.
+	#
+	# Second vide, dans le même couloir : sous `PalierDeLevre` (x 19..27,
+	# y 19..20, z −19..−9) s'ouvrait un puits de 19 m, et au nord du palier —
+	# entre z = −20, où s'arrête ParoiDroite, et z = −19 — un trou de 8 × 1 m
+	# par lequel on tombait de 20 m.
+	#
+	# On ne touche NI la surface franchissable NI sa pente : on lui donne son
+	# massif. Les cotes sont DÉRIVÉES de la rampe, jamais saisies à la main —
+	# une correction posée « parce que ça semblait mieux » se retrouve un jour
+	# sur le mauvais axe. La surface passe par `y(z) = (16 − z) × 20/28` ;
+	# l'épaisseur de 1,4 m est mesurée perpendiculairement, donc verticalement
+	# `1,4 × 34,41/28 = 1,7205` ; le dessous vaut `y(z) − 1,7205` et rejoint la
+	# plaine (y local 0) à z = 13,59. Le dessus de chaque gradin est le dessous
+	# de la dalle mesuré à l'extrémité BASSE de son segment : un gradin ne peut
+	# donc jamais percer la rampe. Résultat RE-MESURÉ dans le moteur, en sondant
+	# le dessous de la dalle tous les 0,7 m : le vide sous la rampe ne dépasse
+	# plus 1,51 m, là où il montait à 12 m. Douze gradins, ressaut de 1,52 m.
+	const RAMP_SLOPE: float = 20.0 / 28.0
+	const RAMP_VERTICAL_THICKNESS: float = 1.7205
+	const RAMP_Z_TOP: float = -12.0
+	const RAMP_Z_GROUND: float = 13.59
+	const RAMP_STEPS: int = 12
+	# Bloc de tête : il comble le puits de 19 m sous le palier ET le trou de
+	# 8 × 1 m qui s'ouvrait au nord de celui-ci. Il s'arrête à z = −12,9, juste
+	# avant la boîte de la rampe (qui commence à z = −12,81).
+	_solid(cliff, "AssiseDePalier", Vector3(23.0, 8.5, -17.95),
+		Vector3(8.0, 21.0, 10.10), COL_ROCK_SHADE)
+	for i: int in range(RAMP_STEPS):
+		var z_low: float = lerpf(RAMP_Z_TOP, RAMP_Z_GROUND,
+			float(i + 1) / float(RAMP_STEPS))
+		var z_high: float = lerpf(RAMP_Z_TOP, RAMP_Z_GROUND,
+			float(i) / float(RAMP_STEPS))
+		var top: float = (16.0 - z_low) * RAMP_SLOPE - RAMP_VERTICAL_THICKNESS
+		if top <= 0.0:
+			continue   # le dessous est déjà sous la plaine : plus rien à porter
+		# Largeur 8 m centrée en x = 23 : le massif occupe tout le couloir et
+		# mord 1 m dans ParoiDroite (x ≤ 20), donc aucune couture verticale.
+		# Base à y = −2, soit 2 m enterrés dans la plaine.
+		_solid(cliff, "AssiseDeRampe%d" % i,
+			Vector3(23.0, (top - 2.0) * 0.5, (z_low + z_high) * 0.5),
+			Vector3(8.0, top + 2.0, z_low - z_high), COL_ROCK_SHADE)
+
 	# --- Le rideau ----------------------------------------------------------
 	var fall: Node3D = Node3D.new()
 	fall.name = "Chute"
@@ -974,11 +1062,32 @@ func _build_wind_gorge() -> void:
 		Vector3(4.8, 4.2, 4.2), COL_ROCK)
 
 	# Couronne des parois : la ligne de crête, vue d'en bas.
+	#
+	# Elle était en PORTE-À-FAUX AU-DESSUS DU COULOIR. Relevé des boîtes
+	# englobantes monde dans la vallée montée : les blocs, posés à
+	# `wall_offset − 4,0 = 3,70` du fil de la gorge et à l'échelle 1,7/2,0,
+	# mesuraient jusqu'à 9,62 m d'emprise ; le plus large occupait donc
+	# x −1,10..8,50 alors que la FACE INTERNE de la paroi est à x = 2,20.
+	# Trois mètres et demi de roche pendaient dans le vide, entre 19,4 et 24 m
+	# au-dessus du sol — les « masses de roche noire flottant en l'air » vues à
+	# hauteur de joueur. Deux mesures, aucune sur la paroi elle-même :
+	#  1. échelle ramenée dans la bande de la bible §3 (rochers proches
+	#     0,15–4 m ; `KitScale.FAMILY_CEILING[&"rock"] = 4,00`) : Rock_Medium_3
+	#     mesure 3,42 × 2,32 × 3,48 nu, donc 1,15 le porte à 3,93 × 2,66 × 4,00,
+	#     emprise tournée ≤ 4,31 m — contre 6,4 à 9,6 m auparavant ;
+	#  2. centre déplacé vers l'EXTÉRIEUR, à `wall_offset − 1,9 = 5,80`. La
+	#     valeur vient d'une seconde mesure, pas d'une estimation : à
+	#     `wall_offset − 3,0` la seule réduction d'échelle laissait encore
+	#     1,39 m de surplomb sur le bloc le plus large. Les rochers sont
+	#     tournés et la gorge lacée de 0,24 rad, si bien que leur atteinte
+	#     latérale réelle monte à 3,40 m ; à 5,80 la face interne tombe à
+	#     x = 2,40, soit 0,20 m EN DEÇÀ du bord du vide, et la face externe à
+	#     9,20 m — bien à l'intérieur de la paroi, qui va jusqu'à 13,20.
 	for i: int in range(10):
 		var along: float = -half_length + 2.0 + float(i) * 4.4
-		var edge: float = wall_offset - 4.0 if i % 2 == 0 else -wall_offset + 4.0
+		var edge: float = wall_offset - 1.9 if i % 2 == 0 else -wall_offset + 1.9
 		_piece("Rock_Medium_%d" % (1 + i % 3), Vector3(edge, 18.0, along),
-			float(i) * 1.4, walls, 1.7 + 0.3 * float(i % 2))
+			float(i) * 1.4, walls, 0.95 + 0.2 * float(i % 2))
 	# Vignes suspendues : elles marquent l'humidité du fond et cassent la
 	# verticale des boîtes.
 	for i: int in range(5):
@@ -1094,8 +1203,23 @@ func _build_storm_grove() -> void:
 		var entry: Array = live[i]
 		var at: Vector3 = entry[1] as Vector3
 		var lean: float = GROVE_LEAN - 0.06 + 0.035 * float(i % 4)
-		_piece(entry[0] as String, at, at.x * 0.19, leaning, float(entry[2]),
-			Vector2(lean, 0.0))
+		# Le tangage était passé BRUT (`Vector2(lean, 0)`) alors que chaque arbre
+		# reçoit aussi un lacet dérivé de son abscisse : l'ordre YXZ fait tourner
+		# la chute AVEC le lacet, et les onze arbres partaient dans onze
+		# directions (mesuré : 3 sur 11 vers le sud). `_wind_tilt` compense le
+		# lacet et rend l'unanimité annoncée par le commentaire ci-dessus.
+		#
+		# Le lacet est en outre REPLIÉ dans ±0,6 rad. Il n'oriente qu'une chose
+		# — quelle face du modèle regarde la caméra — et le repliement ne lui
+		# retire aucune variété (valeurs obtenues : −0,60 à +0,56). En revanche
+		# il garde `rotation.x` positif et proche de l'inclinaison voulue, ce
+		# qui est l'approximation sur laquelle repose
+		# `test_the_storm_grove_leans_away_from_the_citadel`. ATTENTION : cette
+		# approximation n'est valable QUE tant que le lacet reste petit ; c'est
+		# `_wind_tilt` qui garantit la direction réelle, pas le tangage brut.
+		var yaw: float = wrapf(at.x * 0.19, -0.6, 0.6)
+		_piece(entry[0] as String, at, yaw, leaning, float(entry[2]),
+			_wind_tilt(lean, yaw))
 		_solid_trunk(leaning, "Tronc%d" % i, at, 0.55, 3.6)
 
 	# --- Le bois mort, sur la lisière exposée ------------------------------
@@ -1114,8 +1238,13 @@ func _build_storm_grove() -> void:
 		var at: Vector3 = entry[1] as Vector3
 		# Le bois mort penche PLUS fort : il n'a plus rien pour se redresser.
 		var lean: float = GROVE_LEAN + 0.12 + 0.05 * float(i % 3)
-		_piece(entry[0] as String, at, at.z * 0.23, deadwood, float(entry[2]),
-			Vector2(lean, 0.0))
+		# Même faute d'axe que les arbres vivants, et plus visible encore parce
+		# que l'inclinaison est plus forte : mesuré, 1 des 5 bois morts seulement
+		# tombait vers le sud, les quatre autres vers le nord ou l'ouest.
+		# Lacet replié dans ±0,6 rad pour la même raison que ci-dessus.
+		var yaw: float = wrapf(at.z * 0.23, -0.6, 0.6)
+		_piece(entry[0] as String, at, yaw, deadwood, float(entry[2]),
+			_wind_tilt(lean, yaw))
 		_solid_trunk(deadwood, "Souche%d" % i, at, 0.45, 2.8)
 
 	# --- Les troncs abattus -------------------------------------------------

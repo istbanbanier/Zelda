@@ -586,14 +586,32 @@ func _build_abandoned_mine() -> void:
 		["Wall_UnevenBrick_Straight", Vector3(2.2, 0.0, mouth_z + 0.4), 0.0],
 		["Prop_Support", Vector3(-1.5, 0.0, mouth_z - 0.2), 0.0],
 		["Prop_Support", Vector3(1.5, 0.0, mouth_z - 0.2), 0.0],
-		["Prop_Wagon", Vector3(2.6, 0.05, mouth_z + 3.2), 78.0],
+		# Lot 17 — RATTACHEMENT : le wagon était à demi avalé par la halde est.
+		# Relevé du .gltf : `Prop_Wagon` a son origine près de l'essieu avant,
+		# bbox x ∈ [−0,979 ; +0,972] et z ∈ [−3,150 ; +0,874] — 4,02 m de long.
+		# Au lacet 78° cette emprise devient x ∈ [pos−3,29 ; pos+1,06]. Posé à
+		# x = 2,6 le wagon occupait donc x ∈ [−0,69 ; 3,66], alors que la halde
+		# est un solide qui part de x = 2,9 et monte à y = 1,0 : 0,76 m de caisse
+		# étaient enfoncés dans le talus de déblais, et l'about dépassait aussi
+		# le tablier (x ≤ 3,0). À x = 1,7 le wagon tient dans [−1,59 ; 2,76] :
+		# 0,14 m de dégagement avec la halde, entièrement sur le tablier, et
+		# 0,46 m de marge avec la caisse en bois posée à −2,6.
+		["Prop_Wagon", Vector3(1.7, 0.05, mouth_z + 3.2), 78.0],
 		["Rock_Medium_2", Vector3(-5.2, 0.0, mouth_z + 5.4), 40.0, 1.3],
 		["Rock_Medium_3", Vector3(5.6, 0.0, mouth_z + 5.0), -60.0, 1.2],
 		["Pebble_Square_2", Vector3(-2.4, 0.02, mouth_z + 4.6), 15.0, 1.4],
 		["Pebble_Round_1", Vector3(1.2, 0.02, mouth_z + 5.6), 190.0, 1.2],
 		["DeadTree_1", Vector3(-6.6, 0.0, mouth_z + 8.0), 25.0, 1.0],
 		["Crate_Wooden", Vector3(-2.6, 0.05, mouth_z + 2.0), 20.0],
-		["Barrel", Vector3(-3.2, 0.05, mouth_z + 3.4), 0.0],
+		# Lot 17 — RATTACHEMENT : le tonneau était DANS la halde ouest.
+		# `Barrel` mesure 0,698 m de diamètre (bbox x ∈ [−0,349 ; +0,349]) ; à
+		# x = −3,2 il occupait [−3,549 ; −2,851] quand la halde ouest commence à
+		# x = −2,9 et culmine à y = 1,0 — soit 0,65 m des 0,70 m noyés dans la
+		# terre, un tonneau visible par un croissant. À x = −2,3 il tient dans
+		# [−2,649 ; −1,951], 0,25 m devant le talus ; le z ne bouge pas, la
+		# caisse voisine étant en z ∈ [8,63 ; 9,77] et le tonneau en [10,25 ;
+		# 10,95].
+		["Barrel", Vector3(-2.3, 0.05, mouth_z + 3.4), 0.0],
 	])
 	# Chambre d'abattage : outillage laissé sur place, et le FILON — la raison
 	# de descendre jusqu'ici.
@@ -771,7 +789,22 @@ func _build_forgotten_crypt() -> void:
 		["CandleStick", Vector3(1.6, 0.05, -1.2), 0.0],
 		["Candle_1", Vector3(0.0, 1.08, -1.2), 0.0],
 		["Book_Stack_1", Vector3(-3.4, 0.05, -2.6), 40.0],
-		["Bookcase_2", Vector3(-3.6, 0.05, 1.2), 90.0],
+		# Lot 17 — MEUBLE DÉCOLLÉ DU MUR, exactement le défaut corrigé plus bas
+		# pour `Shelf_Arch` mais laissé ici. `Bookcase_2` a une profondeur
+		# CENTRÉE sur son origine : bbox z ∈ [−0,2145 ; +0,2145]. Au lacet 90° ce
+		# z devient l'axe X, donc le dos du meuble se trouve à `pos.x − 0,2145`.
+		# À x = −3,6 le dos était à −3,8145, alors que la face visible du
+		# parement de brique du mur ouest est à −4,2576 (panneaux posés à
+		# x = −4,35, bbox z ∈ [−0,314 ; +0,0924] retournée par le lacet 90°) :
+		# 0,443 m de vide derrière une bibliothèque de 2,55 m de haut, plantée
+		# au milieu de rien. À x = −4,03 le dos vient à −4,2445, soit 13 mm du
+		# parement — la même assise que `Shelf_Arch` sur le mur d'en face.
+		# Le z passe de 1,2 à 0,5 : au dos du mur, la bannière ouest occupe
+		# z ∈ [1,588 ; 3,201] et x ∈ [−4,293 ; −4,102], donc l'étoffe aurait
+		# traversé le meuble une fois celui-ci ramené contre la brique. Depuis
+		# 0,5 la bibliothèque tient dans z ∈ [−0,231 ; 1,231] : 0,36 m sous la
+		# bannière, 0,26 m au-dessus de la torche (z ∈ [−0,712 ; −0,488]).
+		["Bookcase_2", Vector3(-4.03, 0.05, 0.5), 90.0],
 		# Revue V4 — PIÈCE FLOTTANTE, à demi enterrée ET décollée du mur.
 		# `Shelf_Arch` a son origine au CENTRE de l'arc : bbox y ∈ [−0,6145 ;
 		# +0,9747], z ∈ [−0,0048 ; +0,3068]. À y = 0,05 elle descendait à

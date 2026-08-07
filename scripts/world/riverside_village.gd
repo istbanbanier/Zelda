@@ -354,7 +354,21 @@ func _build_shrine() -> void:
 	_piece("Roof_FrontSupports", Vector3(0, WALL_H - 0.2, MODULE), 0.0, shrine)
 	# Les deux props suivent le mur d'un mètre : ils étaient posés contre lui.
 	_piece("CandleStick", Vector3(0, 0.05, -1.6), 0.0, shrine, PROPS)
-	_piece("Banner_1", Vector3(-1.4, 0.05, -1.8), 0.0, shrine, PROPS)
+	# DÉFAUT D'ACCROCHE CORRIGÉ, deux fautes sur la même bannière. `Banner_1`
+	# n'est PAS un objet de sol : mesuré au relevé de sommets, bbox
+	# y [−1,5487 ; +0,8435] et x [−0,0008 ; +1,6123] — son origine est le POINT
+	# D'ACCROCHE au mur, la hampe monte de 0,84, la toile PEND de 1,55 et le
+	# bras part vers +x. `KitPlacement` ne remonte jamais un modèle qui descend
+	# sous son ancrage (règle explicite), donc :
+	#  (a) posée à y = 0,05, elle s'enfonçait de 1,549 m dans le sol : sur
+	#      2,392 m de bannière, 0,89 m restait visible ;
+	#  (b) à z = −1,80 sa toile (épaisseur ±0,093 -> z −1,893 → −1,707) tenait
+	#      ENTIÈRE dans l'épaisseur du mur (mesuré z −2,092 → −1,686) : elle
+	#      n'était visible NI du dedans, NI du dehors.
+	# Accrochée à y = 2,25 elle occupe y 0,701 → 3,094, sous l'arase du mur
+	# (3,1227) ; à z = −1,55 sa toile (−1,643 → −1,452) passe devant la face
+	# intérieure (−1,686) et pend dans l'édicule ouvert.
+	_piece("Banner_1", Vector3(-1.4, 2.25, -1.55), 0.0, shrine, PROPS)
 
 
 ## HABITATIONS : deux maisons fermées, portes VISIBLEMENT condamnées par des
@@ -423,9 +437,23 @@ func _build_square_and_quay() -> void:
 	# laissait 2,20 m de vide sec, deux fois de suite. Chaînage vérifié à
 	# yaw 180 : (z −20 ; y +1,00) → (z −22 ; y 0,00) → (z −24 ; y −1,00) →
 	# (z −26 ; y −2,00), continu, et z = −26 tombe sur le lit de rivière.
+	#
+	# (3) DÉFAUT DE RATTACHEMENT CORRIGÉ : le chaînage ci-dessus est juste, mais
+	# la volée n'était accrochée à RIEN en haut. Relevé de sommets de la volée
+	# haute : marche supérieure en monde (z = 16 ; y = 3,000). Or à z ≥ 16 le
+	# sol est la dalle `PlainSouth` de `valley_terrain.gd`, à y = 2,000 : on
+	# arrivait devant une marche de 1,00 m — infranchissable (`step_height`
+	# 0,30-0,38 §8.2) — puis l'escalier descendait 1,5 m au-dessus du lit.
+	# Toute la descente est abaissée d'un module : la marche haute tombe pile
+	# sur la plaine (y = 2,000 à z = 16) et la dernière arrive à y = −1,00,
+	# 0,50 m au-dessus du lit (−1,50) au lieu de 1,50 m.
+	# LIMITE ASSUMÉE : la berge sud est une rampe de 41° (2,00 à z 16 → −1,50 à
+	# z 12) alors qu'une volée descend à 26,6° (1 m sur 2). Aucun chaînage de ce
+	# module ne peut épouser cette pente ; il reste un vide sous les volées
+	# médianes. La berge appartient à `valley_terrain.gd`, hors de ce fichier.
 	for i: int in range(3):
 		_piece("Stairs_Exterior_Straight_L",
-			Vector3(-2.0, -float(i) * 1.0, -21.0 - float(i) * 2.0), 180.0,
+			Vector3(-2.0, -1.0 - float(i) * 1.0, -21.0 - float(i) * 2.0), 180.0,
 			square)
 
 
