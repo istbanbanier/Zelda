@@ -1,0 +1,28 @@
+{
+  "label": "heroshot_controle",
+  "jetable": false,
+  "commit_avant": "342e78ecfd40196d2ea03b17c766d0014efe249e",
+  "commit_apres": "fb067c54b5f0efc5ed68d40a1f3a8de38223ffe6",
+  "reglages_identiques": {
+    "scene": "res://scenes/lookdev/HeroShotLab.tscn",
+    "size": "1280x720",
+    "frames": "20",
+    "call": "capture_north_star",
+    "engine_version": "4.7.1-stable (custom_build)",
+    "rendering_method": "forward_plus",
+    "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)"
+  },
+  "ecarts_indicatifs": {
+    "luma_mean": -0.0001,
+    "luma_stddev": 0.0002,
+    "distinct_colors_sampled": 10
+  },
+  "bruit_de_fond_mesure": {
+    "protocole": "2 captures du meme commit, HeroShotLab 1280x720, 20 frames, llvmpipe",
+    "luma_mean": 0.0001,
+    "luma_stddev": 0.0002,
+    "distinct_colors_sampled": 3,
+    "date": "2026-08-07"
+  },
+  "avertissement": "Ces ecarts sont des indicateurs, pas un verdict. Un ecart inferieur au bruit de fond ci-dessus ne prouve RIEN, ni changement ni absence de changement. Le rendu est logiciel (llvmpipe, ISS-002) : ni les couleurs ni le filtrage ne sont ceux d'un GPU. Aucune note visuelle ne se derive d'ici."
+}

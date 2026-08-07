@@ -168,10 +168,22 @@ manifest = {
         "luma_stddev": delta("luma_stddev"),
         "distinct_colors_sampled": delta("distinct_colors_sampled"),
     },
+    # Mesure du 2026-08-07 : DEUX captures du MEME commit, memes reglages,
+    # HeroShotLab 1280x720/20 frames. Le rendu n'est pas reproductible au bit
+    # pres. Sans ce plancher, on lit du bruit comme un changement.
+    "bruit_de_fond_mesure": {
+        "protocole": "2 captures du meme commit, HeroShotLab 1280x720, 20 frames, llvmpipe",
+        "luma_mean": 0.0001,
+        "luma_stddev": 0.0002,
+        "distinct_colors_sampled": 3,
+        "date": "2026-08-07",
+    },
     "avertissement": (
-        "Ces ecarts sont des indicateurs, pas un verdict. Le rendu est "
-        "logiciel (llvmpipe, ISS-002) : ni les couleurs ni le filtrage ne "
-        "sont ceux d'un GPU. Aucune note visuelle ne se derive d'ici."
+        "Ces ecarts sont des indicateurs, pas un verdict. Un ecart inferieur "
+        "au bruit de fond ci-dessus ne prouve RIEN, ni changement ni absence "
+        "de changement. Le rendu est logiciel (llvmpipe, ISS-002) : ni les "
+        "couleurs ni le filtrage ne sont ceux d'un GPU. Aucune note visuelle "
+        "ne se derive d'ici."
     ),
 }
 (d / "comparison.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False))
