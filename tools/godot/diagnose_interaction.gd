@@ -6,21 +6,74 @@
 ## par étape, LAQUELLE des conditions de `_select_interactable()` rejette.
 ##
 ##   godot --headless --path . --script tools/godot/diagnose_interaction.gd
+##
+## La vallée n'est PAS le seul lieu à sonder : le donjon porte des coffres, des
+## interrupteurs, des relais, des batteries et des boutons de reset, et un seul
+## d'entre eux hors d'atteinte bloque la progression sans recours. On les passe
+## donc tous.
 extends SceneTree
 
-const VALLEY: String = "res://scenes/world/valley/ValleyWorld.tscn"
 const APPROACH: float = 1.5
+
+## Lieux sondés, dans l'ordre où le joueur les traverse.
+const PLACES: Array[String] = [
+	"res://scenes/world/valley/ValleyWorld.tscn",
+	"res://scenes/dungeon/rooms/Room1Initiation.tscn",
+	"res://scenes/dungeon/rooms/Room2Vertical.tscn",
+	"res://scenes/dungeon/rooms/Room3Relays.tscn",
+	"res://scenes/dungeon/rooms/Room4Battery.tscn",
+	"res://scenes/dungeon/rooms/CentralHall.tscn",
+	"res://scenes/dungeon/rooms/Antechamber.tscn",
+	"res://scenes/world/citadel/CitadelVestibule.tscn",
+]
 
 
 func _initialize() -> void:
 	await process_frame
-	var valley: Node3D = (load(VALLEY) as PackedScene).instantiate() as Node3D
-	root.add_child(valley)
+	var grand_total: int = 0
+	var grand_ok: int = 0
+	for place: String in PLACES:
+		var result: Array = await _survey(place)
+		grand_ok += result[0] as int
+		grand_total += result[1] as int
+	print("")
+	print("=== TOTAL TOUS LIEUX : %d / %d atteignables ===" % [grand_ok, grand_total])
+	quit(0 if grand_ok == grand_total else 1)
+
+
+## Sonde un lieu et retourne [atteignables, total].
+func _survey(path: String) -> Array:
+	var scene: PackedScene = load(path) as PackedScene
+	print("")
+	print("################ %s ################" % path.get_file())
+	if scene == null:
+		print("  scène introuvable")
+		return [0, 0]
+	var world: Node = scene.instantiate()
+	root.add_child(world)
 	for i: int in range(10):
 		await physics_frame
+	var players: Array[Node] = world.find_children(
+		"*", "PlayerController", true, false)
+	if players.is_empty():
+		# Une salle de donjon ne porte pas toujours son joueur : on en pose un.
+		var spawned: PlayerController = (load("res://scenes/player/Player.tscn")
+			as PackedScene).instantiate() as PlayerController
+		world.add_child(spawned)
+		for i: int in range(6):
+			await physics_frame
+		players = [spawned]
+	var player: PlayerController = players[0] as PlayerController
+	var found: Array = await _report(player, world)
+	world.get_parent().remove_child(world)
+	world.queue_free()
+	for i: int in range(3):
+		await physics_frame
+	return found
 
-	var player: PlayerController = valley.call("player") as PlayerController
-	var shell: Node = valley.get_node_or_null("GameplayShell")
+
+func _report(player: PlayerController, world: Node) -> Array:
+	var shell: Node = world.get_node_or_null("GameplayShell")
 	print("=== ÉTAT DE LA CHAÎNE ===")
 	print("  joueur .................. %s" % ("OK" if player != null else "ABSENT"))
 	print("  coquille ................ %s" % ("OK" if shell != null else "ABSENTE"))
@@ -31,8 +84,13 @@ func _initialize() -> void:
 			"interact_focus_changed").size()
 		print("  abonnés à interact_focus_changed : %d" % listeners)
 
-	var group: Array[Node] = get_nodes_in_group("interactable")
-	print("  membres du groupe `interactable` : %d" % group.size())
+	# Les interactables DE CE LIEU seulement : le groupe est global à l'arbre,
+	# et une scène restée montée ailleurs fausserait le compte.
+	var group: Array[Node] = []
+	for node: Node in get_nodes_in_group("interactable"):
+		if world.is_ancestor_of(node):
+			group.append(node)
+	print("  membres du groupe `interactable` ici : %d" % group.size())
 	print("")
 
 	var range_m: float = PlayerController.INTERACT_RANGE
@@ -50,7 +108,7 @@ func _initialize() -> void:
 		print("  %-34s %s" % [target.name, verdict])
 	print("")
 	print("=== BILAN : %d / %d atteignables ===" % [reachable, group.size()])
-	quit(0)
+	return [reachable, group.size()]
 
 
 ## Pose le héros devant la cible, puis rejoue les filtres un par un.
