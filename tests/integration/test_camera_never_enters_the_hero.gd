@@ -67,15 +67,33 @@ func _camera() -> Camera3D:
 	return _rig().get_camera()
 
 
+## Réduit la longueur VOULUE du bras à zéro, sur une copie du réglage.
+func _collapse_the_arm(rig: CameraRig) -> void:
+	var own: LocomotionTuning = rig.tuning.duplicate() as LocomotionTuning
+	own.camera_distance = 0.0
+	rig.tuning = own
+
+
+func _restore_the_arm(rig: CameraRig) -> void:
+	var own: LocomotionTuning = rig.tuning.duplicate() as LocomotionTuning
+	own.camera_distance = 4.3
+	rig.tuning = own
+
+
 ## Le héros dos au mur : c'est le geste exact du joueur qui reculait.
 func test_backing_into_a_wall_never_puts_the_camera_inside_the_hero() -> void:
 	await _load()
 	var rig: CameraRig = _rig()
 	var minimum: float = _player.tuning.camera_min_distance
-	# On force le bras à la butée : c'est ce que produit un mur collé au dos.
-	var arm: SpringArm3D = rig.get_spring_arm()
-	arm.spring_length = 0.0
-	await _settle(4)
+	# On force le bras à la butée — ce que produit un mur collé au dos.
+	#
+	# Écrire `spring_length = 0` ne suffit PAS : `update_fov()` le réécrit à
+	# `camera_distance` à CHAQUE tick physique, donc la consigne disparaissait
+	# avant d'être lue. On agit donc sur la source, `camera_distance`, et sur
+	# une COPIE du réglage : la ressource est partagée, la modifier en place
+	# contaminerait tous les cas suivants (§5.4).
+	_collapse_the_arm(rig)
+	await _settle(6)
 	var distance: float = _player.global_position.distance_to(
 		_camera().global_position)
 	check(distance >= minimum - 0.05,
@@ -97,11 +115,13 @@ func test_backing_into_a_wall_never_puts_the_camera_inside_the_hero() -> void:
 ## serait un second bug, pas une correction.
 func test_the_hero_becomes_solid_again_when_the_camera_backs_off() -> void:
 	await _load()
-	var arm: SpringArm3D = _rig().get_spring_arm()
-	arm.spring_length = 0.0
-	await _settle(4)
-	arm.spring_length = _player.tuning.camera_distance
+	var rig: CameraRig = _rig()
+	_collapse_the_arm(rig)
 	await _settle(6)
+	_restore_the_arm(rig)
+	# `camera_fov_speed` lisse la longueur : il faut laisser le bras se
+	# rouvrir réellement, pas seulement demander qu'il se rouvre.
+	await _settle(30)
 	var visual: Node3D = _player.get_node("VisualRoot") as Node3D
 	check(visual.visible, "le héros est de nouveau affiché")
 	var faded: bool = false
