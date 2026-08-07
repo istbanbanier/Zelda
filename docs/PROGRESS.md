@@ -3481,3 +3481,132 @@ par les falaises du plan moyen.
 2. Arène du boss : sol à zones lisibles + présence des pylônes
    (déficit visuel n°1 selon le tour du monde).
 3. Habillage KayKit du donjon une fois l'éclairage repris.
+---
+
+## Playtest PT-BRACELET — lisibilité du Bracelet et terrain d'entraînement
+
+**Constats du playtest** : (1) l'Arc Link « ne fait rien » au bassin ;
+(2) on ne comprend ni à quoi servent les pouvoirs ni comment les utiliser ;
+(3) les utiliser n'affiche rien ; (4) décor incohérent — « maisons sans murs,
+bois qui flotte ». Combat et cuisine jugés bons, non touchés.
+
+**Ce qui a été mesuré, pas supposé**
+
+- L'Arc Link du bassin **fonctionne à la visée** : nouveau test
+  `test_the_link_is_reachable_by_aiming_not_only_by_api` (6 assertions, vert).
+  Les deux tests d'origine appelaient `try_link` DIRECTEMENT — le chemin
+  joueur (focus + deux confirmations) n'était couvert nulle part. L'échec
+  venait donc de l'absence de retour, pas d'un défaut de logique.
+- **Le kit `village/` ne contient AUCUNE pièce de mur** (53 pièces : sols,
+  toits, débords, escaliers). Tous les `Wall_*` sont dans `dungeon/`. Un
+  bâtiment monté du seul kit village ne peut pas avoir de murs → cause
+  directe du défaut observé. Consigné en PT-BRACELET-02.
+
+**Livré**
+
+- Viseur de Résonance dans `GameplayShell` : anneau qui se referme sur une
+  cible, losange doublé sur le port retenu, viseur barré au refus, raison du
+  refus écrite en français, action nommée avant le clic. Aucune information
+  par la seule couleur (P3 §1.6).
+- `PlayerController.resonance_verdict` (signal typé) + branchement de
+  `pulse_fired` / `link_dissolved` / `ground_completed` / `ground_cancelled`,
+  qui n'étaient écoutés nulle part hors du laboratoire.
+- `scenes/world/TrainingGrounds.tscn` — les CINQ épreuves du Bracelet côte à
+  côte, alignées sur une grille de 2 m, chacune avec panneau (touche, pourquoi,
+  comment) et lampe de réussite branchée sur le signal réel. Rangée de
+  référence avec une maison assemblée COMPLÈTE, murs et collisions compris.
+
+**Preuves** : `godot --headless --path . --script tools/godot/test_runner.gd`
+→ **736 réussis, 0 échoué**. `validate_fast.sh` sort ROUGE pour une seule
+raison : Blender absent du conteneur (étape 3b, gate d'environnement).
+
+**Prochaine action exacte** : audit des assemblages de bâtiments de la vallée
+(`valley_world`, hameaux, ferme) avec le patron de `_reference_house` — murs
+`dungeon/` + collision par mur + pose à y = 0. Ensuite seulement : mode vol
+dev et monture, dans cet ordre, comme demandé.
+
+---
+
+## Vol libre de développement et monture
+
+Les deux demandes de fin de playtest, dans l'ordre annoncé. Elles reposent sur
+une MÊME brique nouvelle : `PlayerController.set_frozen()`. Le héros cède la
+conduite — il ne consomme plus d'entrée et ne se déplace plus de lui-même —
+mais sa caméra reste son enfant, donc le joueur garde le regard.
+
+**Vol libre** (`scripts/tools/dev_fly_mode.gd`, touche F2). Caméra libre,
+Espace/Ctrl pour monter et descendre, Maj pour accélérer. En sortant, le héros
+est reposé au sol sous la caméra **si** un sol est atteignable ET si sa capsule
+y tient ; sinon il reste exactement où il était. Refusé dans un build exporté
+(`DevFlyMode.is_allowed`), sauf `--allow-dev-fly` : ce n'est pas une mécanique
+de jeu.
+
+**Monture** (`scripts/world/mount.gd`, touche E). Convention `interactable`
+existante — aucune action nouvelle à apprendre. Galop à 14 m/s contre 9 m/s au
+sprint. On ne descend que sur une place libre, sondée à la capsule réelle du
+héros ; sinon la descente est REFUSÉE et annoncée. **GRAYBOX assumé** : aucun
+quadrupède n'existe dans les kits, la silhouette est en primitives — ce n'est
+pas un modèle final.
+
+**Trois défauts trouvés en écrivant les tests, tous corrigés**
+
+1. Gelé, le héros ne vidait plus les fronts d'entrée : ils s'accumulaient et
+   seraient tous partis au dégel. C'est désormais au GELEUR de les consommer.
+2. `fly_toggle_pressed` était vidé par `consume_edges()` : l'activation
+   dépendait alors de l'ordre des nœuds dans l'arbre et se perdait une fois
+   sur deux. `DevFlyMode` en est maintenant le seul lecteur.
+3. Monture et vol lisaient le lecteur d'entrée BRUT, que `set_intent_source`
+   désactive — la monture était sourde sous intention injectée (mesuré :
+   0,5 m en 40 ticks). Les deux passent par `current_intent()`.
+
+**Point d'attention non résolu** : `tools/godot/setup_project.gd` est PÉRIMÉ —
+il ne déclare pas les actions `resonance_*`, et il supprime toute action qu'il
+ne déclare pas. **Le lancer amputerait l'InputMap.** Les actions `dev_fly_*`
+ont donc été ajoutées via `ProjectSettings`, sans passe de suppression. Ce
+générateur doit être remis à jour ou retiré avant d'être réutilisé.
+
+**Preuve** : `test_mount_and_dev_fly.gd` 11/11, `test_training_grounds.gd` 7/7.
+
+---
+
+## Audit des bâtiments de la vallée — « maisons sans murs, bois qui flotte »
+
+Audit fait par la MESURE (`tools/gltf_inspect.py` sur chaque pièce), pas par
+lecture de noms de fichiers — le nom ment : `Roof_RoundTiles_4x4` fait
+en réalité 5,51 m.
+
+**Trois résultats**
+
+1. **Les murs ne manquaient pas.** Tous les scripts de bâtiment posent des
+   `Wall_*`, résolus depuis `dungeon/` où ils vivent tous. Les modules sont
+   conformes : 2,00 m de large, 3,12 m de haut.
+2. **Le bois flottant était réel et localisé.** `Roof_Wooden_2x1_Center`
+   mesure 2,00 × 1,21 × 1,50 m : une TUILE DE RANGÉE. La forge du village et
+   la grange de la ferme en posaient UNE SEULE au-dessus d'une emprise de
+   4 × 6 m — 12 % de couverture, aucun contact avec un mur. Corrigé : rangée
+   complète au pas de 1,5 m. Vérifié au passage que l'auvent des camps (deux
+   perches), l'abri du terrain (appuyé sur une caisse) et le moulin des
+   hameaux (quatre poteaux porteurs) reposent bien sur des appuis réels.
+3. **Cause racine du silence des tests.** `riverside_village`, `hamlets` et
+   `valley_territories` ne nommaient pas les pièces instanciées. Godot
+   rebaptise les homonymes `@Node3D@366` : sur les cinq murs de la forge, un
+   seul gardait un nom lisible. **Aucun test ne pouvait désigner cette
+   géométrie.** `ValleyRelics._spawn` s'en protégeait déjà ; les trois autres
+   l'ignoraient. Corrigé partout.
+
+**Garde-fou** : `test_roofs_are_supported.gd` vérifie la règle, pas les deux
+correctifs — toute toiture EN L'AIR doit couvrir ≥ 60 % de l'emprise des murs
+qu'elle abrite ; les toitures tombées au sol en sont exemptées (la
+`TourDeGuet` est une ruine dont le cône gît volontairement dans l'herbe).
+15 bâtiments inspectés.
+
+**Deux défauts trouvés en écrivant ce test, corrigés dans le test lui-même** :
+il mesurait les emprises en repère LOCAL (un mur pivoté à 90° comptait donc
+2,0 m de large au lieu de 0,4), et il ne distinguait pas un toit tombé d'un
+toit suspendu.
+
+**Laissé au jugement de l'auteur** : la forge est un appentis volontairement
+ouvert sur deux côtés, et la grange annonce « trois murs » là où son code n'en
+pose que deux. Quelle face doit s'ouvrir est une décision de level design.
+
+**Preuve** : 748 tests réussis, 0 échoué.

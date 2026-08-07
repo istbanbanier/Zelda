@@ -35,6 +35,13 @@ signal mantle_refused(reason: StringName)
 signal guard_blocked(event: DamageEvent)
 signal parried(event: DamageEvent)
 signal guard_broken()
+## Verdict d'une opération du Bracelet (P2 §3.8 : « raison courte en cas de
+## refus »). `action` vaut `resonance_pulse`, `resonance_ground` ou
+## `resonance_confirm` ; `verdict` est le mot rendu par `ResonanceController` ;
+## `executed` distingue l'opération partie du refus. La sonde de latence reste
+## l'instrument de MESURE ; ce signal est le canal de PRÉSENTATION, seul moyen
+## pour le HUD d'expliquer un échec sans que le contrôleur connaisse l'UI.
+signal resonance_verdict(action: StringName, verdict: StringName, executed: bool)
 
 ## Modes de locomotion effectivement implémentés.
 ##
@@ -111,6 +118,8 @@ const PUSH_MIN_SPEED: float = 0.15
 ## Intention courante. Remplacée par un test via `set_intent_source()`.
 var _intent: InputIntent = null
 var _use_reader: bool = true
+## Vrai quand un porteur (monture) ou un outil (vol libre) conduit le héros.
+var _frozen: bool = false
 
 var _coyote_timer: float = 0.0
 var _jump_buffer_timer: float = 0.0
@@ -291,6 +300,20 @@ func _physics_process(delta: float) -> void:
 	if _hitstop_timer > 0.0:
 		_hitstop_timer = maxf(0.0, _hitstop_timer - delta)
 		return
+	# Gel : le héros a cédé la conduite à un porteur (monture) ou à un outil de
+	# développement (vol libre). Il ne consomme plus rien et ne se déplace plus
+	# de lui-même ; celui qui l'a gelé est responsable de sa position et de son
+	# dégel. La caméra continue de suivre, puisqu'elle reste son enfant.
+	#
+	# Le gel passe AVANT le relevé du dernier sol : porté ou en vol, on n'est
+	# pas « au sol » au sens où l'entend la sauvegarde, et écrire ces positions
+	# ferait reparaître exactement le blocage que ce relevé existe pour éviter.
+	if _frozen:
+		velocity = Vector3.ZERO
+		_camera_rig.apply_look(current_intent().look_analog,
+			current_intent().look_mouse, delta)
+		_camera_rig.update_shake(delta)
+		return
 	# Dernier sol foulé — voir `last_grounded_position()`. Mesuré AVANT la
 	# machine à états : c'est la position d'où le joueur est parti ce tick.
 	if is_on_floor() and _mode == Mode.LOCOMOTION:
@@ -324,11 +347,14 @@ func _physics_process(delta: float) -> void:
 
 	if _resonance != null and intent.pulse_pressed \
 			and (_mode == Mode.LOCOMOTION or _mode == Mode.CLIMBING):
-		match _resonance.try_pulse(self):
+		var pulse_verdict: StringName = _resonance.try_pulse(self)
+		match pulse_verdict:
 			&"fired":
 				_mark_consumed(&"resonance_pulse")
 			&"cooldown":
 				_mark_refused(&"resonance_pulse", &"cooldown")
+		resonance_verdict.emit(&"resonance_pulse", pulse_verdict,
+			pulse_verdict == &"fired")
 
 	# Ground direct (P2 §3.6, touche dédiée) : cible auto = l'objet chargé le
 	# plus proche — la lecture préalable au Pulse a montré quoi viser.
@@ -336,10 +362,13 @@ func _physics_process(delta: float) -> void:
 		var ground_target: Node = _resonance.pick_ground_target(self)
 		if ground_target == null:
 			_mark_refused(&"resonance_ground", &"aucune_cible")
+			resonance_verdict.emit(&"resonance_ground", &"aucune_cible", false)
 		else:
 			var ground_verdict: StringName = _resonance.try_ground(self, ground_target)
 			if ground_verdict != &"grounding":
 				_mark_refused(&"resonance_ground", ground_verdict)
+			resonance_verdict.emit(&"resonance_ground", ground_verdict,
+				ground_verdict == &"grounding")
 
 	# Focus de Résonance (P2 §3.8) : tenu, il capture la molette (cycle) et le
 	# clic (confirmation contextuelle) — l'épée et le lock-on sont suspendus le
@@ -356,10 +385,13 @@ func _physics_process(delta: float) -> void:
 				_resonance.focus_cycle(-1)
 			if intent.attack_pressed:
 				var verdict: StringName = _resonance.focus_confirm(self, intent.sprint_held)
-				if verdict in [&"step", &"linked", &"engaged", &"port_a", &"grounding"]:
+				var executed: bool = verdict in [&"step", &"linked", &"engaged",
+					&"port_a", &"grounding"]
+				if executed:
 					_mark_consumed(&"resonance_confirm")
 				else:
 					_mark_refused(&"resonance_confirm", verdict)
+				resonance_verdict.emit(&"resonance_confirm", verdict, executed)
 		elif _resonance.focus_active():
 			_resonance.focus_end()
 
@@ -1094,6 +1126,9 @@ func _on_died(_event: DamageEvent) -> void:
 		_visual_root.rotation.x = -1.3
 	_sfx(&"death")
 	_mode = Mode.DEAD
+	# Mourir rend TOUJOURS la conduite : un héros mort et gelé par une monture
+	# ou par le vol libre ne se relèverait jamais au checkpoint (anti-softlock).
+	_frozen = false
 
 
 ## ---------------------------------------------------------------------------
@@ -1990,6 +2025,39 @@ func is_aiming() -> bool:
 
 func lock_component() -> LockOnComponent:
 	return _lock_on
+
+
+## Consommé par le viseur de Résonance du HUD (P2 §3.8). Lecture seule : le
+## HUD interroge la cible retenue et le port en attente, il ne décide rien.
+func resonance() -> ResonanceController:
+	return _resonance
+
+
+## Cède ou reprend la conduite du héros.
+##
+## Gelé, il ne consomme plus aucune entrée et ne bouge plus de lui-même : c'est
+## le porteur (monture) ou l'outil (vol libre) qui décide de sa position. Sa
+## caméra continue de le suivre, donc le joueur garde le regard.
+##
+## Contrat de sûreté : celui qui gèle DOIT dégeler. Un héros gelé sans porteur
+## serait un softlock — d'où `is_frozen()`, que les tests et les outils
+## interrogent, et le dégel systématique à la mort.
+func set_frozen(frozen: bool) -> void:
+	if _frozen == frozen:
+		return
+	_frozen = frozen
+	if frozen:
+		velocity = Vector3.ZERO
+
+
+func is_frozen() -> bool:
+	return _frozen
+
+
+## Lecteur d'entrée réel — consommé par le vol libre, qui a besoin des ordres
+## bruts pendant que le héros, lui, est gelé.
+func input_reader() -> PlayerInputReader:
+	return _input_reader
 
 
 ## §16.6 : l'arène a besoin du rig pour élargir le cadrage face au boss.

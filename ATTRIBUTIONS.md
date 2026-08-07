@@ -30,7 +30,7 @@ plats »).
 | Noms projet | `T_Rock_Strata`, `T_Rock_Mossy`, `T_Ground_Earth`, `T_Grass_Field`, `T_Bark_Tree`, `T_Fabric_Canvas` — suffixes `_Albedo`, `_Normal`, `_Rough` |
 | Modifications | **oui** : seules 3 cartes retenues par pack (Color, NormalGL, Roughness), redimensionnées 2048 → **1024 px** (Lanczos), rugosité convertie en niveaux de gris, JPEG qualité 88. Occlusion, displacement, sources `.blend`/`.usdc`/`.mtlx` écartées |
 | Poids | **7,3 Mo** pour 18 cartes (contre 111 Mo pour les archives complètes) |
-| Reproductible | archives d'origine sur la release `assets-1` du dépôt ; recette dans `docs/assets/IMPORT_RULES.md` |
+| Reproductible | fichiers importés présents dans `assets/` ; recette et empreintes dans `docs/assets/IMPORT_RULES.md` (la boîte de transport `assets-1` a été retirée du dépôt après import) |
 
 ## Nature Kit — Kenney, CC0 1.0 (ART-K1, 2026-08-06)
 
@@ -42,7 +42,7 @@ plats »).
 | Cible | `assets/environment/cliffs/` |
 | Sélection importée | 8 modèles : `cliff_large_rock`, `cliff_blockSlope_rock`, `cliff_half_rock`, `cliff_corner_rock`, `cliff_cornerLarge_rock`, `rock_largeA`, `rock_largeC`, `rock_smallB` |
 | Modifications | **aucune** sur les fichiers : copie à l'octet près. L'échelle « tuile » du kit (1 m natif) est corrigée **à l'usage** par `KitScale`, jamais en réécrivant l'asset |
-| État | **importé** (2026-08-06) — le reste du pack demeure disponible dans la release `assets-1` |
+| État | **importé** (2026-08-06) — le reste du pack est retéléchargeable chez l'auteur, à l'URL de source ci-dessus |
 
 ## Dungeon Pack 1.1 FREE — KayKit / Kay Lousberg, CC0 1.0 (ART-KK1, 2026-08-06)
 
@@ -63,7 +63,7 @@ plats »).
 | Cible | `assets/environment/riverside/` |
 | Sélection importée | 8 modèles OBJ + leurs `.mtl` : `Willow_1/3/5`, `Rock_Moss_2/5`, `TreeStump_Moss`, `WoodLog_Moss`, `BushBerries_1` (348 Ko) |
 | Modifications | **aucune** sur les fichiers. L'OBJ s'importe en ressource **Mesh** (et non en scène) — contrat vérifié dans le `.import` généré puis rendu exécutable par test. Échelle corrigée **à l'usage** par `KitScale` |
-| État | **importé** (2026-08-06) — le reste du pack demeure dans la release `assets-1` |
+| État | **importé** (2026-08-06) — le reste du pack est retéléchargeable chez l'auteur, à l'URL de source ci-dessus |
 
 ## Promotion « monde ouvert » — CC0 Quaternius (ART-Q8)
 
@@ -89,7 +89,7 @@ rochers et dalles de chemin.
 |---|---|
 | Auteur | **Quaternius** (https://quaternius.com) |
 | Licence | **CC0 1.0 Universal (Public Domain Dedication)** — confirmée sur le fichier `License*.txt` PRÉSENT DANS CHACUNE des sept archives, https://creativecommons.org/publicdomain/zero/1.0/ |
-| Canal d'acquisition | GitHub Release `asset-inbox-quaternius-free-v1` du dépôt du projet (boîte de transport déposée par le propriétaire) ; empreintes SHA-256 vérifiées identiques aux digests GitHub — détail dans `docs/assets/QUATERNIUS_INBOX.md` |
+| Canal d'acquisition | boîte de transport déposée par le propriétaire sur une Release du dépôt, retirée après import ; empreintes SHA-256 relevées à l'import et conservées dans `docs/assets/QUATERNIUS_INBOX.md` — c'est ce fichier qui fait foi désormais |
 | Archives sources | Stylized Nature MegaKit, Fantasy Props MegaKit, Medieval Village MegaKit, Universal Base Characters, Modular Character Outfits – Fantasy, Universal Animation Library 1 et 2 (éditions Standard, gratuites) |
 | Modifications | copies à l'octet près depuis les archives, SAUF les trois dérivations listées ci-dessous ; la sélection (~130 modèles promus sur 2162 entrées) est documentée dans `docs/assets/PROMOTIONS.csv` et `docs/assets/ASSET_MANIFEST.csv` |
 | Fichiers dans le build | `assets/environment/{foliage,rocks,props,dungeon}/` et `assets/characters/{hero,enemies,parts}/` — voir manifeste |

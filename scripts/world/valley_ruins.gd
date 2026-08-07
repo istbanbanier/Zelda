@@ -1030,40 +1030,26 @@ func _build_farm() -> void:
 	for x: float in [-1.0, 1.0]:
 		_wall(barn, Vector3(x, 0, -MODULE * 1.5), 180.0,
 			"Wall_Plaster_Straight")
-	# CORRECTIF (revue 117) — le commentaire annonce « trois murs » ; il n'y en
-	# avait que DEUX (ouest sur z −3..3, nord sur x −2..2), soit un simple L :
-	# la face est et la face sud manquaient toutes les deux et le coin sud-est
-	# n'était fermé par rien. On ne peut pas ouvrir sur la cour, qui est à
-	# l'OUEST (maison en x local 0, grange en x local 11) et dont le mur est
-	# justement le seul long mur bâti ; on ferme donc la face EST, celle qui
-	# donne sur le champ, et la grange devient un appentis ouvert au SUD.
-	# Mesuré : trois modules de 2 m couvrent z −3..3 comme la face ouest, le
-	# mur occupe x 1,908..2,314 et recouvre le mur nord (qui va jusqu'à x = 2)
-	# au coin nord-est.
+	# CORRECTIF — le commentaire annonce « trois murs » ; il n'y en avait que
+	# DEUX (ouest et nord), soit un simple L : la face est manquait et le coin
+	# sud-est n'était fermé par rien. On ferme la face EST, celle qui donne sur
+	# le champ, et la grange devient un appentis ouvert au SUD.
 	for z: float in slots:
 		_wall(barn, Vector3(MODULE, 0, z), 270.0, "Wall_Plaster_Straight")
-	# CORRECTIF (revue 117) — la couverture était UNE pièce
-	# `Roof_Wooden_2x1_Center` de 2 × 1,5 m posée sur une emprise de 4 × 6 m :
-	# 3 m² pour 24 m², soit 12,5 %. L'établi, la meule, l'enclume et le chariot
-	# étaient sous la pluie et la grange se lisait comme un mur d'angle avec
-	# une planche dessus. `Roof_RoundTiles_4x6` (mesuré x ±2,757, z ±3,786)
-	# couvre exactement l'emprise avec 0,76 m de débord ; ses égouts tombent à
-	# y = 2,41, sous l'arase des murs (3,12), donc pas de jour au raccord.
-	# Le pignon ferme le bout NORD (base 2,84, sous l'arase ; faîte 6,20, sous
-	# la faîtière du toit à 7,02), roulis inversé pour compenser le miroir de
-	# yaw 180 ; `Roof_FrontSupports` pose la poutre de rive au bout SUD, resté
-	# ouvert, comme le fait déjà la cabane des bûcherons (hamlets.gd).
-	_spawn("Roof_RoundTiles_4x6", Vector3(0.0, WALL_H, 0.0),
-		Vector3(0.0, 0.0, -4.0), barn)
-	_spawn("Roof_Front_Brick4", Vector3(0.0, WALL_H, -3.0),
-		Vector3(0.0, 180.0, 4.0), barn)
-	_spawn("Roof_FrontSupports", Vector3(0.0, WALL_H - 0.2, 3.0),
-		Vector3(0.0, 0.0, -4.0), barn)
+	# Couverture en RANGÉE, pas une tuile isolée. `Roof_Wooden_2x1_Center`
+	# mesure 2,00 × 1,21 × 1,50 m : c'est un module de rangée, à poser en
+	# série avec ses embouts. Seul, au milieu d'une grange de 4 × 6 m, il
+	# flottait à 3,12 m sans toucher un mur (défaut mesuré en playtest).
+	# Pas de 1,5 m = profondeur réelle de la tuile ; la légère pente d'origine
+	# est conservée sur chaque module.
+	for z: float in [-2.25, -0.75, 0.75, 2.25]:
+		_spawn("Roof_Wooden_2x1_L", Vector3(-1.0, WALL_H, z),
+			Vector3(0.0, 0.0, -4.0), barn)
+		_spawn("Roof_Wooden_2x1_R", Vector3(1.0, WALL_H, z),
+			Vector3(0.0, 0.0, -4.0), barn)
 	# Trois props reculés de la face EST, désormais bâtie (voir plus haut) :
-	# mesurés à leur pose d'origine, le chariot dépassait de 0,52 m dans le
-	# nouveau mur (x jusqu'à 2,428 contre un parement intérieur à 1,908),
-	# l'enclume de 0,99 m et le sac de 0,42 m. Aucun n'est déplacé de plus de
-	# ce qu'il fallait pour rentrer.
+	# le chariot dépassait de 0,52 m dans le nouveau mur, l'enclume de 0,99 m
+	# et le sac de 0,42 m. Aucun n'est déplacé de plus qu'il ne fallait.
 	var barn_yard: Array[Array] = [
 		["Stall_Cart_Empty", Vector3(0.85, 0.05, 1.6), Vector3(0.0, 22.0, 12.0),
 			1.0, Vector3(2.4, 1.2, 1.6)],
