@@ -40,6 +40,14 @@ var pulse_pressed: bool = false
 ## P2 §3.6 : mise à la terre (action `resonance_ground`).
 var ground_pressed: bool = false
 
+## Outillage de développement — vol libre (`dev_fly_*`). L'intention les porte
+## comme n'importe quel ordre : le mode vol ne doit pas plus consulter un
+## périphérique que le reste du jeu (D-013). Ils restent inertes tant que le
+## mode n'est pas explicitement activé, et le mode se désactive en build final.
+var fly_toggle_pressed: bool = false
+var fly_up_held: bool = false
+var fly_down_held: bool = false
+
 ## Regard voulu (souris ou stick droit), en unités déjà normalisées par le lecteur.
 ## Regard au stick : axe sans unité (-1..1), converti en vitesse angulaire par
 ## la caméra (× vitesse × delta).
@@ -69,6 +77,10 @@ func consume_edges() -> void:
 	meal_pressed = false
 	pulse_pressed = false
 	ground_pressed = false
+	# `fly_toggle_pressed` n'est PAS consommé ici : `DevFlyMode` en est le seul
+	# lecteur, et il traite l'ordre depuis son propre tick. Le vider avec les
+	# autres rendrait l'activation dépendante de l'ordre des nœuds dans l'arbre
+	# — la bascule serait perdue une fois sur deux, sans rien pour le dire.
 
 
 func clear() -> void:
@@ -77,6 +89,8 @@ func clear() -> void:
 	look_mouse = Vector2.ZERO
 	sprint_held = false
 	aim_held = false
+	fly_up_held = false
+	fly_down_held = false
 	consume_edges()
 
 
@@ -100,4 +114,7 @@ func duplicate_intent() -> InputIntent:
 	copy.pulse_pressed = pulse_pressed
 	copy.ground_pressed = ground_pressed
 	copy.focus_held = focus_held
+	copy.fly_toggle_pressed = fly_toggle_pressed
+	copy.fly_up_held = fly_up_held
+	copy.fly_down_held = fly_down_held
 	return copy

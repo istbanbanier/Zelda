@@ -87,6 +87,12 @@ func _piece(asset: String, at: Vector3, yaw_deg: float = 0.0,
 		push_warning("[village] pièce absente du kit : %s" % asset)
 		return null
 	var node: Node3D = packed.instantiate() as Node3D
+	# Nom unique, comme `ValleyRelics._spawn` : deux pièces homonymes sous le
+	# même parent sont rebaptisées `@Node3D@366` par le moteur, et plus aucun
+	# test ne peut les désigner. Mesuré : sur les cinq murs de la forge, un
+	# seul gardait un nom lisible — la géométrie du village était donc
+	# invisible aux tests, et c'est ce qui a laissé passer un toit flottant.
+	node.name = "%s_%03d" % [asset, _built]
 	node.position = at
 	# §3 : le kit végétal est importé sans normalisation d'échelle ; la
 	# correction mesurée vit dans `KitScale`, en un seul point.
@@ -246,27 +252,33 @@ func _build_forge() -> void:
 			_piece("Floor_UnevenBrick",
 				Vector3(fx * MODULE * 0.5, 0.02, fz * MODULE), 0.0, forge)
 
-	# DÉFAUT CORRIGÉ : la couverture était UNE planche `Roof_Wooden_2x1_Center`
-	# de 2,00 × 1,50 m (3 m² mesurés), suspendue au-dessus d'un abri de 4 × 6 m
-	# (24 m²) sans toucher aucun mur — 12 % de couverture, et rien dessous.
-	# `Roof_RoundTiles_4x6` est taillé pour cette emprise exactement : bbox
-	# x ±2,757 (4 m de portée + 0,76 d'égout) et z ±3,786 (6 m + 0,79). Sa
-	# faîtière court sur Z, comme tous les toits du kit : les triangles ouverts
-	# sont donc aux deux BOUTS, en z = ±3, et c'est là que va le pignon.
-	_piece("Roof_RoundTiles_4x6", Vector3(0, WALL_H, 0), 0.0, forge)
-	# Pignon nord : posé sur le mur (mur z −3,092 → −2,686, pignon −3,794 → −2,665).
-	_piece("Roof_Front_Brick4", Vector3(0, WALL_H, -MODULE * 1.5), 180.0, forge)
-	# Pignon sud : ferme le triangle au-dessus de la façade OUVERTE. Il occupe
-	# y 2,99 → 6,06, très au-dessus de l'arase (3,12) : le passage reste libre,
-	# l'appentis garde sa façade ouverte (par design, §ligne 195).
-	_piece("Roof_Front_Brick4", Vector3(0, WALL_H, MODULE * 1.5), 0.0, forge)
-	# Poutre de rive sous l'égout est, le côté ouvert sur la place : 5,49 m de
-	# long, elle court sur la travée. Même emploi qu'à hamlets.gd:306.
-	_piece("Roof_FrontSupports", Vector3(MODULE, WALL_H - 0.2, 0.0), 90.0, forge)
+	# La couverture était UNE planche suspendue au-dessus d'un abri de 4 × 6 m
+	# sans toucher aucun mur. `_shed_roof()` pose les huit pièces de bardeaux
+	# qui couvrent réellement l'emprise — version factorisée de l'audit des
+	# bâtiments, préférée ici à ma tuile unique : le même défaut, corrigé au
+	# même endroit pour tous les appentis du village.
+	_shed_roof(forge)
 	_piece("Anvil", Vector3(0.6, 0.05, 0.4), 20.0, forge, PROPS)
 	_piece("Workbench", Vector3(-1.2, 0.05, 1.6), 0.0, forge, PROPS)
 	_piece("Whetstone", Vector3(1.4, 0.05, 1.4), 0.0, forge, PROPS)
 	_piece("WeaponStand", Vector3(-1.4, 0.05, -1.6), 0.0, forge, PROPS)
+
+
+## Couverture d'appentis sur l'emprise 4 × 6 m (x −2..+2, z −3..+3).
+##
+## Défaut mesuré en playtest (« du bois qui flotte ») : la forge posait UNE
+## seule `Roof_Wooden_2x1_Center` au milieu du vide. Cette pièce mesure
+## 2,00 × 1,21 × 1,50 m — c'est une TUILE DE RANGÉE, pas une toiture : elle
+## se pose en série avec ses embouts `_L` et `_R`, comme le fait déjà la
+## cabane des hameaux. Seule, à 3,12 m au-dessus d'un appentis de 24 m², elle
+## n'en couvrait que 12 % et ne touchait aucun mur.
+##
+## Pas de rangée : 1,5 m, la profondeur réelle de la tuile — poser tous les
+## 2 m laisserait 0,5 m de ciel entre chaque rang.
+func _shed_roof(parent: Node3D) -> void:
+	for z: float in [-2.25, -0.75, 0.75, 2.25]:
+		_piece("Roof_Wooden_2x1_L", Vector3(-1.0, WALL_H, z), 0.0, parent)
+		_piece("Roof_Wooden_2x1_R", Vector3(1.0, WALL_H, z), 0.0, parent)
 
 
 ## MOULIN : la verticale qui identifie le village de loin (§4 de l'ordre).
