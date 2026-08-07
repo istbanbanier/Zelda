@@ -34,3 +34,11 @@
 {"pas": 32, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0032_act.png", "touches": ["r"], "souris": [0, 0], "duree_ms": 250, "refusees": [], "t_reel": 531.38}
 {"pas": 33, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0033_act.png", "touches": ["Control_L"], "souris": [0, 0], "duree_ms": 250, "refusees": [], "t_reel": 548.29}
 {"pas": 34, "outil": "click", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0034_click.png", "bouton": 3, "x": null, "y": null, "t_reel": 559.87}
+{"pas": 35, "outil": "wait", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0035_wait.png", "duree_ms": 800, "t_reel": 572.44}
+{"pas": 36, "outil": "wait", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0036_wait.png", "duree_ms": 1500, "t_reel": 587.56}
+{"pas": 37, "outil": "click", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0037_click.png", "bouton": 3, "x": null, "y": null, "t_reel": 612.66}
+{"pas": 38, "outil": "click", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0038_click.png", "bouton": 1, "x": null, "y": null, "t_reel": 626.67}
+{"pas": 39, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0039_act.png", "touches": ["c"], "souris": [0, 0], "duree_ms": 250, "refusees": [], "t_reel": 640.59}
+{"pas": 40, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0040_act.png", "touches": ["Tab"], "souris": [0, 0], "duree_ms": 250, "refusees": [], "t_reel": 655.22}
+{"pas": 41, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0041_act.png", "touches": ["Tab"], "souris": [0, 0], "duree_ms": 250, "refusees": [], "t_reel": 673.08}
+{"pas": 42, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0042_act.png", "touches": ["Escape"], "souris": [0, 0], "duree_ms": 250, "refusees": [], "t_reel": 682.75}
