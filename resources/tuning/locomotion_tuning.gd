@@ -91,6 +91,26 @@ extends Resource
 ## sonde volumique conserve un dégagement réel, égal à ce rayon. `SpringArm3D.margin`
 ## ne remplace pas ce réglage : mesuré sans effet sur le moteur installé.
 @export var camera_probe_radius: float = 0.35
+## DISTANCE MINIMALE entre le pivot et la caméra, en mètres.
+##
+## `SpringArm3D` n'en a aucune : `spring_arm_3d.cpp:196` pose l'enfant à
+## `origine + direction * (spring_length * motion_delta)`, et `motion_delta`
+## tombe à ZÉRO quand un obstacle touche le pivot. La caméra se retrouve alors
+## exactement sur le pivot, c'est-à-dire à `camera_target_height` = 1,45 m dans
+## le torse du héros. Défaut mesuré au playtest du 2026-08-07 : « "S" (reculer)
+## colle la caméra dans le modèle du héros, plusieurs fois -> écran illisible ».
+## Sous ce seuil, le héros s'efface (voir `camera_fade_distance`) : on préfère
+## un héros transparent à un écran bouché.
+@export var camera_min_distance: float = 0.85
+## Distance sous laquelle le héros commence à s'effacer. Au-dessus il est
+## pleinement opaque ; à `camera_min_distance` il a totalement disparu.
+@export var camera_fade_distance: float = 1.6
+## Garde-sol : hauteur libre exigée sous la caméra. Le bras ne sonde que la
+## ligne pivot→caméra ; il ne voit donc RIEN quand la caméra arrive au-dessus
+## d'un vide puis se retrouve sous une pente — d'où « la caméra passe sous le
+## terrain près de la rivière » (playtest du 2026-08-07 ; le lit de la rivière
+## est une tranchée de 3,5 m). On relève la caméra au-dessus du sol trouvé.
+@export var camera_ground_clearance: float = 0.30
 ## Sensibilité du stick droit, en radians par seconde à pleine inclinaison.
 @export var camera_stick_speed: float = 3.0
 
