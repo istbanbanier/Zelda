@@ -99,6 +99,15 @@ func _initialize() -> void:
 			continue
 		if not _matches(spatial.name, patterns):
 			continue
+		# ISS-018, la leçon la plus chère du projet : la boîte englobante d'un
+		# maillage SKINNÉ décrit sa pose de LIAISON, pas ce que le moteur
+		# dessine. Les créatures s'affichaient en pièces détachées alors que
+		# tous les tests étaient verts, parce qu'ils mesuraient ces boîtes-là.
+		# Ici, le premier balayage remontait des dizaines de « flottantes » du
+		# type `Skeleton3D/RaiderRed_Hard` — du bruit pur, mesuré sur une pose
+		# qui n'est pas affichée. La sonde ne peut rien en dire : elle passe.
+		if _is_skinned_part(spatial):
+			continue
 		var box: AABB = _world_box(spatial)
 		if box.size == Vector3.ZERO:
 			continue
@@ -124,7 +133,13 @@ func _initialize() -> void:
 			ground = (hit["position"] as Vector3).y
 		var gap: float = (box.position.y - ground) if not is_nan(ground) else NAN
 		var is_floater: bool = not is_nan(gap) and gap > float_threshold
-		var is_exempt: bool = is_floater and _matches(spatial.name, exempt)
+		# `_matches` retourne VRAI sur une liste vide : c'est la bonne sémantique
+		# pour `--match` (pas de filtre = tout passe), et exactement l'inverse de
+		# celle qu'il faut ici. Réutilisé tel quel au premier jet, il a exempté
+		# les 704 pièces du premier balayage — soit un rapport parfaitement vide
+		# et parfaitement faux. Une liste d'exemption vide n'exempte RIEN.
+		var is_exempt: bool = is_floater and not exempt.is_empty() \
+			and _matches(spatial.name, exempt)
 		if is_floater and not is_exempt:
 			floaters += 1
 		elif is_exempt:
@@ -171,12 +186,25 @@ func _initialize() -> void:
 		for zone: String in zones:
 			print("  %-28s %d" % [zone, int(by_zone[zone])])
 		print("--- %d exemptée(s) par --exempt ---" % exempted)
-		print("RAPPEL : ce sont des CANDIDATES. Un écart au sol n'est un défaut que",
-			"si la pièce est CENSÉE reposer dessus.")
+		print("RAPPEL : ce sont des CANDIDATES. Un écart au sol n'est un défaut "
+			+ "que si la pièce est CENSÉE reposer dessus.")
 	else:
 		print("--- %d pièce(s) listée(s), %d flottante(s), %d exemptée(s) ---"
 			% [shown, floaters, exempted])
 	quit(0)
+
+
+## Vrai si la pièce appartient à un squelette : sa boîte est celle de la pose
+## de liaison, donc sans rapport avec ce qui est dessiné (ISS-018). On remonte
+## la chaîne plutôt que de tester `skin`, parce que le maillage peut être un
+## petit-enfant du `Skeleton3D` et non son enfant direct.
+func _is_skinned_part(node: Node3D) -> bool:
+	var current: Node = node
+	while current != null and current != root:
+		if current is Skeleton3D:
+			return true
+		current = current.get_parent()
+	return false
 
 
 ## Zone de dressage porteuse, pour le décompte du balayage. À défaut, le
