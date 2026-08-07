@@ -8,6 +8,7 @@ extends GateTestCase
 
 const EXPECTED_AUTOLOADS: Array[String] = [
 	"GameState", "EventBus", "SaveSystem", "AudioManager", "SceneFlow",
+	"DevMode",
 ]
 
 

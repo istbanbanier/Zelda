@@ -12,6 +12,7 @@
 script = ExtResource("1_room")
 
 [node name="GameplayShell" parent="." instance=ExtResource("3_shell")]
+world_scene_path = "res://scenes/dungeon/rooms/CentralHall.tscn"
 
 ; Le joueur entre par le sud : les trois piliers devant lui, la porte du boss
 ; six mètres plus haut au fond.

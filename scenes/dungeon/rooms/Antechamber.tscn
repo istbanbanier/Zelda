@@ -12,6 +12,7 @@
 script = ExtResource("1_room")
 
 [node name="GameplayShell" parent="." instance=ExtResource("3_shell")]
+world_scene_path = "res://scenes/dungeon/rooms/Antechamber.tscn"
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 8)

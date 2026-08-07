@@ -129,7 +129,7 @@ func _existing_places() -> Array[Array]:
 		["arbre ancien", Vector2(-96.0, -62.0)],
 		["champ de fleurs", Vector2(-34.0, 112.0)],
 		["belvédère du sommet", Vector2(168.0, 40.0)],
-		["pont de pierre", Vector2(-14.0, 10.0)],
+		["pont de pierre", Vector2(-21.0, 10.0)],   # reculé de 7 m : voir SITE_STONE_BRIDGE
 		["source turquoise", Vector2(-72.0, 78.0)],
 		["camp ennemi existant", Vector2(45.0, 65.0)],
 		["pylône", Vector2(115.0, -25.0)],

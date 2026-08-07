@@ -94,7 +94,7 @@ func _occupied() -> Array[Array]:
 		["arbre doyen", Vector3(-96.0, 2.0, -62.0)],
 		["source aux reflets", Vector3(-72.0, 2.0, 78.0)],
 		["champ de fleurs", Vector3(-34.0, 2.0, 112.0)],
-		["arche de pierre", Vector3(-14.0, 0.0, 10.0)],
+		["arche de pierre", Vector3(-21.0, 0.0, 10.0)],   # reculé de 7 m : voir SITE_STONE_BRIDGE
 		["belvédère du guetteur", Vector3(168.0, 0.0, 40.0)],
 		["village de la rivière", Vector3(-70.0, 2.0, 36.0)],
 		["hameau des bûcherons", Vector3(110.0, 2.0, 40.0)],

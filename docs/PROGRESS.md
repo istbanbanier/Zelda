@@ -3320,6 +3320,167 @@ reste inchangé au dixième). Note : `2026-08-06_herolab_v6.md`.
 3. Étendre le painterly aux autres surfaces du lab, puis re-évaluation
    sévère + revue contradictoire ; V4 seulement si ≥ 75 tenu.
 
+### Fait ensuite : Lot 3 — la vidéo de stabilité EXISTE (et elle a mordu)
+
+Première séquence §30.1 du projet : dolly 18,1 s (arrêt 3 s → marche
+3,5 → sprint 9 → rotation ±35°), Movie Maker `--fixed-fps 12` (vérifié
+source 4.7.1 — le pas fixe échantillonne le vent au bon rythme malgré
+llvmpipe), 217 frames assemblées en WebP animé (pas de ffmpeg ici).
+Fail-first 0/4 → 2/2 ; attente bornée par condition (ISS-024). La vidéo
+a fait son travail de révélateur : (1) l'herbe du lab était FIGÉE
+(sondes phase immobile : diffs 0,00 — contre §11.1) → corrigé,
+`SH_FoliageWindPainterly` sur toute l'herbe (rouge 0/8 → pilotes 3/3,
+héros 17/17, sondes 1,62-2,03) ; (2) le lab est un décor à UNE caméra
+(sol nu en contrebas, rivière-planche) — consigné comme GARDE-FOU pour
+la propagation V4 ; (3) zéro shimmer/pop — en partie parce qu'il n'y a
+encore ni LOD ni transparence. Capture officielle v7 recapturée (herbe
+entière painterly) : bandes §1.5 identiques au dixième. Note :
+`evidence/cycle3/2026-08-06_stabilite_lot3.md`.
+
+### Prochaine action exacte
+
+1. Étendre le painterly aux surfaces restantes du lab (falaises,
+   terrain, camp, citadelle, montagnes, rivière) — mêmes contrats.
+2. Re-évaluation sévère §30.2 + revue contradictoire (gate-review).
+3. V4 seulement si ≥ 75 tenu, avec le garde-fou « survivre au
+   mouvement » du dolly.
+
+### Fait ensuite : Lot 4 — le lab ENTIER est peint
+
+`_material()` du lab EST la peinture (toute surface mate →
+SH_CharacterPainterly ou feuillage venté) ; trois émissifs justifiés et
+testés (`_emissive_material` : rivière-guide, flamme, couronne cyan).
+Rouge prouvé avec l'inventaire exact des surfaces nues, puis
+`test_painterly_lab` 1/1, peinture 4/4, héros 17/17, dolly 2/2. Capture
+v8 officielle (`76835be`) : bandes §1.5 intactes (héros 24,7 %,
+citadelle 51,5 %), herbe du premier plan = grand gagnant. Défauts
+dominants NOMMÉS pour la suite : éclair minuscule, rivière-guide
+timide, citadelle boîtes grises.
+
+### Fait ensuite : Lots 5-8 — revue contradictoire, vérité, lumière, sculpture
+
+Lot 5 : éclair allongé (nuage +8 m, frappe au flanc) + rivière-guide
+rapprochée/élargie (S testé). **Revue contradictoire à contexte frais :
+FAIL** — éval v9 (72) surestimée (re-notation ≈ 63) : halo d'éclair
+OPAQUE cachant le cœur, peau des bras en PBR (surface 1), flamme
+clippée blanche, rivière quasi mate dans l'exception émissive, deux
+tests infalsifiables, ciel symétrique, héros ~51 % vs 38-45. Erratum
+consigné SANS maquiller la preuve. Lot 6 : chaque contre-exemple
+corrigé fail-first (tests par SURFACE, fallback 1×1 rejeté, seuil réel
+d'émission, halo translucide additif dans StormCell — correctif §9.3
+partagé —, flamme orange, fleurs ventées, tools/video committé).
+Lot 7 (AD-005) : le contrat d'IMAGE §1.1 prime sur la distance §3.1
+(incompatibilité mathématique au FOV verrouillé) — objectif 1,75 m,
+recul 5,0 m : tête 44,7 %, pieds 89,3 %, hauteur 44,6 % ; soleil
+replacé DEVANT-GAUCHE (l'ancien yaw le mettait derrière-droite) ; halo
+62°/0,28 : zone solaire MESURÉE 83,7 vs 73,5. Lot 8 : ombres portées
+(héros ancré), citadelle 19 formes §2.4, falaise-escalier qui guide.
+Éval fin de journée ≈ 71,5 UNVERIFIED (< 75 : pas de V4, AD-004).
+
+### Prochaine action exacte
+
+1. Re-rendre la vidéo de stabilité sur l'état v13 (elle date de v6).
+2. Textures procédurales maison (AD-001) roche/terre/tissu — le manque
+   dominant (matériaux 6,5/10).
+3. Puis re-évaluation + revue contradictoire ; V4 seulement si ≥ 75.
+
+### Fait ensuite : Lot 9 — habillage aux vrais modèles (mandat utilisateur)
+
+13 modèles Quaternius CC0 du dépôt (5 arbres/3 espèces, 4 rochers, 4
+props de camp), peints par SURFACE avec vraies textures, poses variées,
+garde-fou de composition TESTÉ (3 props attrapés dans le couloir du
+pylône avant de rester). v14 a révélé les contours sombres des cartes
+de feuilles (transparence ignorée — §1.6) → `SH_CharacterPainterlyCutout`
+(alpha scissor + double face, auto-choisi). Carte blanche
+téléchargements : sites d'assets bloqués par le proxy (403), seul
+GitHub passe ; kit Kenney cloné/inspecté/REJETÉ (hors style) ; liste
+remise à l'utilisateur pour sa machine. Habillage 3/3, peinture 4/4,
+contrats 5/5.
+
+### Prochaine action exacte
+
+1. Si l'utilisateur dépose des packs (dossier `incoming_assets/` ou
+   commit direct) : licence → ATTRIBUTIONS → manifeste → peinture →
+   habillage, dans cet ordre.
+2. Sinon : textures procédurales maison (AD-001) roche/terre/tissu.
+3. Re-évaluation sévère + revue contradictoire ; V4 si ≥ 75.
+
+### Fait ensuite : Lots 10-11 — la matière (grain procédural + vraies textures)
+
+Lot 10 : grain `FastNoiseLite` généré par le moteur (AD-001, aucune
+image), projection monde deux axes, grandes formes (0,012) et discret
+(0,12) : +8,9 % de variation du sol. Lot 11 : le propriétaire a déposé
+quatre packs CC0 sur la release `assets-1` (les sites d'assets sont
+bloqués par le proxy, seul GitHub passe) — licences vérifiées et
+inscrites AVANT l'entrée dans le build, règle §2 désormais EXÉCUTABLE
+par test. Six matériaux ambientCG réduits 2K→1K, trois cartes chacun
+(7,3 Mo au lieu de 111) ; la photo MODULE la peinture au lieu de la
+remplacer (§1.6), projection monde à l'échelle PHYSIQUE (tuile en
+mètres, contrat 0,3-12 m). Deux corrections de palette MESURÉES : sol
+#5BAC3A → #BBBE5C (saturation 66 → 52 %, ancre 55) ; lointain jaune vif
+#EADA9E → #C5BFA3 refroidi (§1.3). Variation du sol 20,97 → 27,30.
+Kenney Nature Kit, KayKit Dungeon et Quaternius Ultimate Nature (150
+OBJ) déposés et attribués, sélection au lot suivant.
+
+### Prochaine action exacte
+
+1. Sélection et import des modèles Kenney/Quaternius déposés (falaises,
+   saules, rochers moussus, troncs) — même chaîne : licence → manifeste
+   → peinture → habillage → capture.
+2. Re-évaluation sévère §30.2 + revue contradictoire.
+3. V4 (propagation vallée) seulement si ≥ 75 tenu.
+
+## 2026-08-06 (soir) — Phase A « tour du monde » + propagation carte entière
+
+### Phase A — le tour du monde en images (fait, committé)
+
+11 zones capturées depuis l'arbre committé `c6a6994`
+(`evidence/tour_du_monde/`), dont les **premières captures jamais
+prises** du donjon salle par salle, du vestibule et de l'arène. Table
+`KEEP / REWORK / REPLACE / MISSING` en fin de
+`docs/assets/AUDIT_V0_PHASE_H.md`. Verdicts : vestibule `KEEP` (le
+meilleur intérieur), six salles `REWORK` (boîtes brunes plates), arène
+`REPLACE` (disque nu — déficit visuel n°1), bestiaire `REWORK`
+(primitives), KayKit `MISSING` d'intégration.
+
+### Lot 14 — TOUTE la carte peinte (3768 surfaces)
+
+`PainterlyRecipe` (scripts/art) devient le point UNIQUE de la direction
+artistique ; `ValleyWorld` l'appelle en dernier dans son `_ready`.
+Matériaux mutualisés par signature. Contrat NÉGATIF vert : aucun
+matériau qui émet vraiment n'est repeint (télégraphes). **Quatre
+régressions attrapées à l'image** que le laboratoire de 80 m ne pouvait
+pas révéler : grésillement (textures importées sans mipmaps + fondu de
+distance ajouté), carte délavée (seuil d'éclaircissement 0,45 → 0,14 ;
+plancher d'ombre 0,26 → 0,14), nuage blanchi (`CitadelStorm` absent de
+la liste d'exclusion), sol gris (couleurs de sommets — d'abord
+ignorées, puis appliquées à tort ; désormais conditionnées au drapeau
+de la source). **Terrain exclu, décision assumée** : la recette le
+délavait (lointain 65 → 74 %) ; mesuré après exclusion, il est
+identique à l'avant (#335F1E contre #335F1F).
+
+### Lot 15 — donjon : tenté, MESURÉ, RETIRÉ (AD-008)
+
+Peinture branchée sur six salles + arène + vestibule, puis retirée sur
+preuve : gain de matière réel (contraste des murs 16,9 → 26,5 en salle
+3) mais luminance 17 % → 9-11 % sur un donjon DÉJÀ trop sombre
+(ISS-025), et contraste des marques de sol de l'arène 45,5 → 16,3.
+`paint_room()` reste écrit et documenté, NON appelé.
+
+### Lot 16 — citadelle en terrasses
+
+Socle étagé, quatre contreforts, trois conduits cuivre (§2.4), sans
+collision. Gain honnête : largement masqué depuis la vue d'ouverture
+par les falaises du plan moyen.
+
+### Prochaine action exacte
+
+1. **Éclairage du donjon d'abord** (ambre de circulation §12.8, sources
+   motivées) — c'est le préalable nommé par AD-008 ; la peinture
+   intérieure suivra et paiera enfin.
+2. Arène du boss : sol à zones lisibles + présence des pylônes
+   (déficit visuel n°1 selon le tour du monde).
+3. Habillage KayKit du donjon une fois l'éclairage repris.
 ---
 
 ## Playtest PT-BRACELET — lisibilité du Bracelet et terrain d'entraînement
@@ -3449,3 +3610,47 @@ ouvert sur deux côtés, et la grange annonce « trois murs » là où son code 
 pose que deux. Quelle face doit s'ouvrir est une décision de level design.
 
 **Preuve** : 748 tests réussis, 0 échoué.
+
+## 2026-08-07 — Trois défauts nommés par le propriétaire, mesurés puis corrigés
+
+Commit du code : `1ede044` · outil de preuve : `d24a36a` · captures :
+`evidence/atlas/verif3_aqueduc.png`, `verif3_arche_vs_aqueduc.png`
+(manifestes `repo_dirty: false`).
+
+Méthode imposée, la même pour les trois : **ne pas juger à l'œil, mesurer**.
+Nouvel outil `tools/godot/probe_world_boxes.gd` — il monte la vallée réelle et
+rend la boîte englobante MONDE de toute pièce, plus l'écart au sol trouvé par
+rayon. Sa première version signalait de faux flottants (le rayon partait DANS
+la dalle porteuse) ; corrigé et documenté dans le code.
+
+| Défaut | Avant (mesuré) | Après (mesuré) |
+|---|---|---|
+| Arcade « par la tranche » | 2 parements de 0,064 m, 1,88 m de vide sous un tablier de 2,00 m | 2 anneaux de 0,450 m, 1,10 m de jour |
+| « Caisse claire » | `BoxMesh` nue 0,55×1,10×0,55, émission ambre sur 6 faces ; récepteur 0,40 m enterré | socle + fût + noyau, base à y 2,00 = le sol, émission réduite au noyau de 0,28 m |
+| Arche ∩ aqueduc | culées avalant 1,90 m des piles, tablier recoupant les deux piles intérieures | arche x −25,58..−14,00 contre pile −13,31 → 0,69 m de dégagement, zéro recouvrement |
+
+Ce qui a tranché n'était jamais l'image : la « caisse » n'était pas une caisse
+mais le fanal du bassin conducteur, et l'arcade restait mince parce que
+l'épaisseur de `Wall_Arch` tient sur son axe **Z local** — invisible sur une
+capture, lisible dans le glTF.
+
+Validation : `748 réussis, 4 échoués`, et les quatre sont les cas connus et
+antérieurs (caméra du boss, langage de résonance de la citadelle, route
+crête→plaine nord ISS-032 ×2) + Blender absent. **Zéro régression.** Après
+fusion avec la session parallèle, `dungeon 31/31` et `topology 5/5` — les deux
+échecs apparus à la fusion venaient d'un `class_name` (`ResonanceOverlay`) non
+encore enregistré, effacés par un réimport.
+
+Consigné et NON corrigé — **ISS-035** : les pas japonais de la rivière flottent
+2,04 m au-dessus du lit (y ≈ 0,5 pour un fond à −1,50). Fichier hors du
+périmètre demandé, et les bouger touche le tracé du gué.
+
+### Prochaine action exacte
+
+1. **ISS-035** : dériver la cote des pas japonais du lit (−1,50) et non de la
+   plaine, dans le dressage de zone F de `valley_terrain.gd`, puis re-mesurer
+   à la sonde.
+2. Passer la sonde de boîtes sur la vallée ENTIÈRE avec un seuil de flottement
+   à 0,3 m : les trois défauts corrigés ici ont tous été trouvés à la main,
+   secteur par secteur — la sonde peut désormais les trouver toute seule.
+3. Éclairage du donjon (préalable nommé par AD-008), inchangé.

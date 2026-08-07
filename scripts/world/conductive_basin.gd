@@ -123,17 +123,63 @@ func _port_marker(node: ElectricNode) -> void:
 	node.add_child(marker)
 
 
+## Le fanal d'un nœud : un POTEAU DE RÉSONANCE, socle posé au sol.
+##
+## DÉFAUT MESURÉ (revue « une caisse claire flotte près de la rivière »).
+## C'était une `BoxMesh` NUE de 0,55 × 1,10 × 0,55 m, centrée sur le nœud, en
+## émission ambre 1,8 sur toute sa surface. Boîtes monde relevées dans la
+## vallée montée (`tools/godot/probe_world_boxes.gd`) :
+##   - source   : x 6,72..7,28 · y 2,05..3,15 · z 27,73..28,27 ;
+##   - récepteur : y 1,60..2,70, soit 0,40 m ENTERRÉ sous une plaine à 2,00.
+## Depuis la rive, la source se lisait exactement comme le dit le propriétaire :
+## une caisse claire posée en l'air. Trois causes, toutes vérifiables — aucun
+## socle, donc aucun contact au sol ; une valeur unique sur les six faces, donc
+## aucun volume ; et une hauteur calée sur le NŒUD (perché à 0,60 m pour la
+## source, enfoncé pour le récepteur) au lieu du SOL.
+##
+## Correction : socle large, fût, noyau (langage électrique — « socle large +
+## noyau profond »), l'émission réservée au seul noyau, et l'empilement calé
+## sur le sol du site (y local 0) quelle que soit la cote du nœud. La position
+## du NŒUD n'est pas touchée : elle porte les portées de port (0,60 m) et le
+## lien (14 m) — la déplacer casserait la leçon.
+const LAMP_BASE_H: float = 0.22
+const LAMP_SHAFT_H: float = 0.78
+const LAMP_CORE_H: float = 0.44
+const COL_LAMP_STONE: Color = Color(0.34, 0.32, 0.29)
+
+
 func _lamp(node: ElectricNode, tint: Color, idle_energy: float) -> void:
-	var mesh: MeshInstance3D = MeshInstance3D.new()
-	var box: BoxMesh = BoxMesh.new()
-	box.size = Vector3(0.55, 1.1, 0.55)
-	mesh.mesh = box
+	# Le sol du site est à y = 0 en local ; le nœud, lui, peut être perché.
+	var ground: float = -node.position.y
+	var stone: StandardMaterial3D = StandardMaterial3D.new()
+	stone.albedo_color = COL_LAMP_STONE
+	stone.roughness = 0.92
+	_lamp_block(node, "Socle", ground + LAMP_BASE_H * 0.5,
+		Vector3(0.86, LAMP_BASE_H, 0.86), stone)
+	_lamp_block(node, "Fut", ground + LAMP_BASE_H + LAMP_SHAFT_H * 0.5,
+		Vector3(0.46, LAMP_SHAFT_H, 0.46), stone)
 	var material: StandardMaterial3D = StandardMaterial3D.new()
-	material.albedo_color = Color(0.35, 0.37, 0.4)
+	material.albedo_color = Color(0.18, 0.20, 0.22)
+	material.roughness = 0.45
 	material.emission_enabled = true
 	material.emission = tint
 	material.emission_energy_multiplier = idle_energy
-	mesh.material_override = material
-	node.add_child(mesh)
+	# Le noyau chevauche le haut du fût et le dépasse : c'est lui, et lui seul,
+	# qui brille — une lueur de 0,28 m au lieu d'un pavé de 0,55.
+	_lamp_block(node, "Noyau",
+		ground + LAMP_BASE_H + LAMP_SHAFT_H + LAMP_CORE_H * 0.5 - 0.08,
+		Vector3(0.28, LAMP_CORE_H, 0.28), material)
 	node.power_changed.connect(func(powered: bool, _power: float) -> void:
 		material.emission_energy_multiplier = 1.8 if powered else idle_energy)
+
+
+func _lamp_block(node: ElectricNode, block_name: String, centre_y: float,
+		size: Vector3, material: StandardMaterial3D) -> void:
+	var mesh: MeshInstance3D = MeshInstance3D.new()
+	mesh.name = block_name
+	var box: BoxMesh = BoxMesh.new()
+	box.size = size
+	mesh.mesh = box
+	mesh.material_override = material
+	node.add_child(mesh)
+	mesh.position = Vector3(0.0, centre_y, 0.0)

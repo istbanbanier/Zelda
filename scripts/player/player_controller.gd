@@ -155,6 +155,12 @@ var _grab_cooldown: float = 0.0
 ## dès que l'une des conditions d'accroche cesse d'être vraie : le seuil mesure
 ## une INTENTION tenue, pas un cumul de frôlements successifs (D-017).
 var _wall_push_time: float = 0.0
+## `INF` tant qu'aucun sol n'a été foulé — voir `last_grounded_position()`.
+var _last_grounded_position: Vector3 = Vector3.INF
+## Arme dont l'avertissement d'usure est branché — voir
+## `_bind_durability_warning()`. Une seule à la fois : deux armes ne doivent
+## pas prévenir en même temps.
+var _warned_weapon: WeaponInstance = null
 ## Gel d'impact (§10.2, §10.6 « hit-stop attaquant/cible ») : le héros se fige
 ## au contact, qu'il donne le coup ou le reçoive — même durée des deux côtés,
 ## lue dans `event.hit_stop`, jamais inventée ici.
@@ -189,6 +195,13 @@ var _weapon_material: StandardMaterial3D = null
 var _weapon_model: Node3D = null
 var _weapon_model_for: WeaponInstance = null
 var _body_material: StandardMaterial3D = null
+## Matériaux réellement AFFICHÉS sur lesquels peindre le flash de dégât.
+##
+## `_body_material` ne couvrait que la capsule graybox — que le pilote visuel
+## rend invisible dès que le modèle riggé est monté (`player_visual_driver.gd`).
+## Le clignotement d'invulnérabilité était donc peint sur un maillage que
+## personne ne voit : le joueur perdait sa vie sans aucun signal à l'écran.
+var _flash_materials: Array[StandardMaterial3D] = []
 var _flash_timer: float = 0.0
 
 const WEAPON_COLORS: Dictionary = {
@@ -248,6 +261,7 @@ func _ready() -> void:
 		if base != null:
 			_body_material = base.duplicate() as StandardMaterial3D
 			body_mesh.set_surface_override_material(0, _body_material)
+	_collect_flash_materials.call_deferred()
 	if _inventory != null:
 		_inventory.weapon_equipped.connect(_on_weapon_equipped)
 		_on_weapon_equipped(_inventory.equipped())
@@ -290,16 +304,26 @@ func _physics_process(delta: float) -> void:
 	# développement (vol libre). Il ne consomme plus rien et ne se déplace plus
 	# de lui-même ; celui qui l'a gelé est responsable de sa position et de son
 	# dégel. La caméra continue de suivre, puisqu'elle reste son enfant.
+	#
+	# Le gel passe AVANT le relevé du dernier sol : porté ou en vol, on n'est
+	# pas « au sol » au sens où l'entend la sauvegarde, et écrire ces positions
+	# ferait reparaître exactement le blocage que ce relevé existe pour éviter.
 	if _frozen:
 		velocity = Vector3.ZERO
 		_camera_rig.apply_look(current_intent().look_analog,
 			current_intent().look_mouse, delta)
+		_camera_rig.update_shake(delta)
 		return
+	# Dernier sol foulé — voir `last_grounded_position()`. Mesuré AVANT la
+	# machine à états : c'est la position d'où le joueur est parti ce tick.
+	if is_on_floor() and _mode == Mode.LOCOMOTION:
+		_last_grounded_position = global_position
 	var intent: InputIntent = current_intent()
 
 	# La caméra est mise à jour avant tout le reste : le repère utilisé pour
 	# « avant » est celui que le joueur voit à cet instant.
 	_camera_rig.apply_look(intent.look_analog, intent.look_mouse, delta)
+	_camera_rig.update_shake(delta)
 
 	# Bracelet de Résonance (P2 §3) : le composant s'auto-pilote (cooldowns,
 	# engagement Polarité) ; ici, seulement la DÉCISION — le Pulse ne part que
@@ -476,7 +500,36 @@ func begin_ground_lock(duration: float) -> bool:
 	return true
 
 
+## Cadence des pas, mesurée en DISTANCE parcourue et non en temps : marcher,
+## courir et sprinter produisent alors naturellement des rythmes différents,
+## et s'arrêter arrête les pas — ce qu'un minuteur ne saurait pas faire.
+##
+## Il n'existait aucun crochet de pas dans le projet : ni cadence, ni notion
+## de surface. C'est le manque n°1 du playtest — sans pas, le personnage
+## flotte, le sol n'a pas de matière et la vitesse n'a pas de rythme.
+const STEP_STRIDE_M: float = 2.1
+var _step_distance: float = 0.0
+var _step_variant: int = 0
+
+
+func _tick_footsteps(delta: float) -> void:
+	if not is_on_floor():
+		return
+	var speed: float = Vector2(velocity.x, velocity.z).length()
+	if speed < 0.6:
+		return
+	_step_distance += speed * delta
+	if _step_distance < STEP_STRIDE_M:
+		return
+	_step_distance = 0.0
+	# Trois échantillons en rotation : deux pas par seconde sur un seul son
+	# produisent l'effet mitraillette que §18.2 interdit.
+	_step_variant = (_step_variant + 1) % 3
+	_sfx(StringName("step_grass_%s" % "abc"[_step_variant]))
+
+
 func _process_locomotion(delta: float, intent: InputIntent) -> void:
+	_tick_footsteps(delta)
 	# Arc Step en cours : le dash a l'autorité, l'entrée est suspendue le
 	# temps du trajet (< 0,8 s garanti par le budget de secours).
 	if _arc_step_active:
@@ -651,7 +704,16 @@ func _apply_horizontal_motion(delta: float, intent: InputIntent, sprinting: bool
 	else:
 		# §8.2 : contrôle aérien réduit à 35 %. On ne peut pas changer de direction
 		# en l'air aussi librement qu'au sol.
-		rate = tuning.air_acceleration * tuning.air_control
+		#
+		# Le facteur EST DÉJÀ dans `air_acceleration` : 8,4 = 0,35 × 24, c'est
+		# la valeur que §8.2 donne pour l'air. Le multiplier une seconde fois
+		# par `air_control` donnait 2,94 m/s², soit 12 % du sol — et un saut ne
+		# dure que 0,68 s, donc on ne pouvait corriger sa trajectoire que de
+		# 2 m/s alors qu'on court à 6. La direction était verrouillée au
+		# décollage, et rater une plateforme devenait irrattrapable.
+		# `air_control` reste le RAPPORT de référence ; un test vérifie que les
+		# deux réglages ne se désaccordent pas (`test_locomotion.gd`).
+		rate = tuning.air_acceleration
 
 	horizontal = horizontal.move_toward(desired, rate * delta)
 	velocity.x = horizontal.x
@@ -662,6 +724,7 @@ func _try_jump() -> void:
 	if _jump_buffer_timer <= 0.0 or _coyote_timer <= 0.0:
 		return
 	velocity.y = tuning.jump_velocity
+	_sfx(&"jump")
 	_jump_buffer_timer = 0.0
 	# Consommer le coyote empêche un second saut pendant la fenêtre restante.
 	_coyote_timer = 0.0
@@ -671,6 +734,11 @@ func _try_jump() -> void:
 func _detect_ground_transitions(was_on_floor: bool, vertical_before: float) -> void:
 	var now_on_floor: bool = is_on_floor()
 	if now_on_floor and not was_on_floor:
+		# `landed` était émis et n'avait AUCUN écouteur : tomber de trente
+		# mètres ne produisait pas un bruit. Deux masses, deux sons — c'est
+		# aussi la seule information qui dit au joueur qu'une chute comptait.
+		_sfx(&"land_hard" if vertical_before < -12.0 else &"land_soft")
+		_step_distance = 0.0
 		landed.emit(vertical_before)
 	elif not now_on_floor and was_on_floor:
 		left_ground.emit()
@@ -913,6 +981,7 @@ func _gate_damage(event: DamageEvent) -> StringName:
 	if _guard_held_time <= window:
 		_clarity_timer = guard.clarity_duration
 		_jolt_attacker_poise(event)
+		_sfx(&"parry")
 		parried.emit(event)
 		return &"annule"
 	# Blocage ordinaire : l'endurance paie ; jauge insuffisante = GuardBreak.
@@ -924,6 +993,7 @@ func _gate_damage(event: DamageEvent) -> StringName:
 	event.amount *= guard.block_damage_factor
 	event.knockback *= guard.block_knockback_factor
 	_hit_was_blocked = true
+	_sfx(&"guard")
 	guard_blocked.emit(event)
 	return &"bloquee"
 
@@ -960,6 +1030,12 @@ func _on_hit_received(event: DamageEvent) -> void:
 	if _health == null or _health.is_invulnerable() or _health.is_dead():
 		return
 	if _stunlock_grace > 0.0:
+		# La grâce anti-stunlock protège de la RÉACTION, pas des dégâts : le
+		# coup passait donc à pleine puissance, sans son, sans flash, sans
+		# recul — 0,25 s d'agression totalement muette entre la fin de la
+		# mercy et la fin de la grâce. Le joueur voyait sa vie tomber sans
+		# comprendre d'où. On garde l'immunité au stagger, on rend le signal.
+		_feel_hit(event, 0.010)
 		return
 	if _mode == Mode.CLIMBING or _mode == Mode.MANTLING or _mode == Mode.DODGING:
 		return
@@ -970,7 +1046,10 @@ func _on_hit_received(event: DamageEvent) -> void:
 		_hit_was_blocked = false
 		velocity.x = event.direction.x * event.knockback
 		velocity.z = event.direction.z * event.knockback
-		_sfx(&"hit_taken")
+		# Une garde qui tient est un SUCCÈS : elle secoue moins qu'une
+		# blessure, sinon parer et encaisser se ressentiraient pareil (§10.7 :
+		# trois intensités cohérentes, jamais l'inverse).
+		_feel_hit(event, 0.014)
 		return
 	if _mode == Mode.ATTACKING and _attack != null:
 		_attack.cancel()
@@ -983,12 +1062,21 @@ func _on_hit_received(event: DamageEvent) -> void:
 	_health.grant_invulnerability.call_deferred(hurt.mercy_invulnerability)
 	_flash_timer = maxf(0.12, hurt.mercy_invulnerability)
 	_hitstop_timer = maxf(_hitstop_timer, event.hit_stop)
-	_sfx(&"hit_taken")
+	_feel_hit(event, 0.030)
 	_stunlock_grace = hurt.stunlock_grace
 	_hurt_elapsed = 0.0
 	velocity.x = event.direction.x * event.knockback
 	velocity.z = event.direction.z * event.knockback
 	_mode = Mode.HURT
+
+
+## Le retour SENSIBLE d'un coup reçu, en un seul endroit : son et secousse.
+## Les trois chemins d'entrée (garde tenue, grâce anti-stunlock, blessure) y
+## passent — c'est ce qui garantit qu'aucun ne redevienne muet.
+func _feel_hit(_event: DamageEvent, shake: float) -> void:
+	_sfx(&"hit_taken")
+	if _camera_rig != null:
+		_camera_rig.add_shake(shake)
 
 
 func _process_hurt(delta: float) -> void:
@@ -1059,7 +1147,33 @@ func _on_weapon_equipped(weapon: WeaponInstance) -> void:
 		reach = weapon.definition.reach_m
 	if _weapon_hitbox != null:
 		_weapon_hitbox.position.z = reach - _hitbox_half_depth
+	_bind_durability_warning(weapon)
 	_refresh_weapon_visual(weapon)
+
+
+## §11.2 exige un avertissement à 25 % d'usure. L'exemplaire l'émettait
+## fidèlement — et PERSONNE ne l'écoutait : `durability_warned` n'avait, dans
+## tout le dépôt, qu'une seule connexion, dans un test unitaire. Le joueur
+## voyait donc son arme casser en plein combat sans avoir jamais été prévenu.
+## On branche l'avertissement sur l'arme RÉELLEMENT équipée, et on débranche la
+## précédente : deux armes ne doivent pas parler en même temps.
+func _bind_durability_warning(weapon: WeaponInstance) -> void:
+	if _warned_weapon != null \
+			and _warned_weapon.durability_warned.is_connected(_on_durability_warned):
+		_warned_weapon.durability_warned.disconnect(_on_durability_warned)
+	_warned_weapon = weapon
+	if weapon != null and not weapon.durability_warned.is_connected(_on_durability_warned):
+		weapon.durability_warned.connect(_on_durability_warned)
+
+
+func _on_durability_warned() -> void:
+	var name_text: String = "L'arme"
+	if _warned_weapon != null and _warned_weapon.definition != null:
+		name_text = _warned_weapon.definition.display_name
+	var bus: Node = get_node_or_null("/root/EventBus")
+	if bus != null:
+		bus.call("notify", "%s est sur le point de casser" % name_text)
+	_sfx(&"refuse")
 
 
 ## ---------------------------------------------------------------------------
@@ -1209,8 +1323,34 @@ func _update_weapon_pose() -> void:
 
 
 ## Flash d'impact (§10.7 « contact ») : émission blanche brève sur le corps.
+## Recense les surfaces visibles du héros. Différé : le modèle riggé est monté
+## par `CharacterVisual` pendant le même `_ready()`, et l'on veut l'état final.
+func _collect_flash_materials() -> void:
+	if not is_instance_valid(self):
+		return
+	_flash_materials.clear()
+	for node: Node in _visual_root.find_children("*", "MeshInstance3D", true, false):
+		var mesh: MeshInstance3D = node as MeshInstance3D
+		if mesh == null or not mesh.visible or mesh.mesh == null:
+			continue
+		for surface: int in range(mesh.mesh.get_surface_count()):
+			var material: StandardMaterial3D = \
+				mesh.get_surface_override_material(surface) as StandardMaterial3D
+			if material == null:
+				var active: StandardMaterial3D = \
+					mesh.get_active_material(surface) as StandardMaterial3D
+				if active == null:
+					continue
+				material = active.duplicate() as StandardMaterial3D
+				mesh.set_surface_override_material(surface, material)
+			if not _flash_materials.has(material):
+				_flash_materials.append(material)
+
+
 func _update_flash(delta: float) -> void:
-	if _body_material == null:
+	if _flash_materials.is_empty() and _body_material != null:
+		_flash_materials.append(_body_material)
+	if _flash_materials.is_empty():
 		return
 	if _flash_timer > 0.0:
 		_flash_timer = maxf(0.0, _flash_timer - delta)
@@ -1218,12 +1358,15 @@ func _update_flash(delta: float) -> void:
 		# universel de l'invulnérabilité post-coup (plan de test 2.6), et il
 		# se voit même sur un modèle sombre.
 		var lit: bool = fmod(_flash_timer, 0.11) > 0.055
-		if _body_material.emission_enabled != lit:
-			_body_material.emission_enabled = lit
-			_body_material.emission = Color(1, 1, 1)
-			_body_material.emission_energy_multiplier = 1.6
-	elif _body_material.emission_enabled:
-		_body_material.emission_enabled = false
+		for material: StandardMaterial3D in _flash_materials:
+			if material.emission_enabled != lit:
+				material.emission_enabled = lit
+				material.emission = Color(1, 1, 1)
+				material.emission_energy_multiplier = 1.6
+	else:
+		for material: StandardMaterial3D in _flash_materials:
+			if material.emission_enabled:
+				material.emission_enabled = false
 
 
 ## Interaction contextuelle (§14.2) : portée ordinaire 2,2 m (bande 1,8–2,4),
@@ -1475,10 +1618,44 @@ func _space() -> PhysicsDirectSpaceState3D:
 ## saisissable suffit, au sol comme en l'air (D-017). Une action dédiée obligerait
 ## à l'ajouter partout — clavier, manette, remapping — pour un geste que le joueur
 ## fait déjà naturellement.
+## Position du dernier sol praticable sur lequel le héros s'est réellement
+## tenu. La sauvegarde écrit CELLE-CI et jamais la position courante.
+##
+## Un playtest en aveugle a produit le pire défaut possible : le héros s'est
+## accroché seul à une pente d'herbe, la caméra est entrée dans le terrain,
+## l'endurance est tombée à zéro — et la sauvegarde automatique a écrit cette
+## position. « Continuer » rechargeait donc DANS le trou, indéfiniment ; la
+## seule issue était de perdre la partie. La garde existante
+## (`_is_saved_position_safe`) ne teste que les bornes du monde et les nombres
+## valides : un trou à l'intérieur de la carte les passe sans problème.
+##
+## Retenir le dernier sol coupe la classe entière de ce défaut : on ne peut
+## pas recharger dans un endroit où l'on n'a jamais pu se tenir debout.
+func last_grounded_position() -> Vector3:
+	# Debout maintenant : la position courante EST un sol valide, et c'est la
+	# plus juste — inutile de renvoyer un point plus ancien.
+	if is_on_floor():
+		return global_position
+	if _last_grounded_position == Vector3.INF:
+		return global_position
+	return _last_grounded_position
+
+
 func _try_grab(delta: float, intent: InputIntent) -> void:
 	if _grab_cooldown > 0.0 or _climbing == null or not intent.has_move():
 		_wall_push_time = 0.0
 		return
+	# On ne s'accroche pas EN COURANT. Courir contre un arbre, une maison ou
+	# une pente est le comportement normal de quelqu'un qui se déplace, pas
+	# une demande d'escalade — et l'accroche accidentelle est ce qui a fini
+	# par bloquer définitivement un joueur (voir `last_grounded_position`).
+	# Au-dessus de la vitesse de marche, on refuse ; en l'air, la garde ne
+	# s'applique pas, car sauter vers un rebord est toujours volontaire.
+	if is_on_floor():
+		var planar_speed: float = Vector2(velocity.x, velocity.z).length()
+		if planar_speed > tuning.walk_speed:
+			_wall_push_time = 0.0
+			return
 	if _stamina != null and not _stamina.can_sustain():
 		_wall_push_time = 0.0
 		return  # épuisé : §9.1 fait lâcher le mur, s'y raccrocher serait absurde

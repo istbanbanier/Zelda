@@ -310,9 +310,51 @@ func test_tuning_stays_within_the_spec_envelopes() -> void:
 	check(tuning.camera_distance >= 4.0 and tuning.camera_distance <= 4.6,
 		"distance caméra hors §8.3 (4,0–4,6 m) : %.2f" % tuning.camera_distance)
 	check_approx(tuning.camera_target_height, 1.45, 0.05, "hauteur du point visé (§8.3)")
-	check(tuning.camera_fov >= 68.0 and tuning.camera_fov <= 72.0,
-		"FOV hors §8.3 (68–72°) : %.1f" % tuning.camera_fov)
-	check(tuning.camera_fov_sprint >= 74.0 and tuning.camera_fov_sprint <= 77.0,
-		"FOV de sprint hors §8.3 (74–77°) : %.1f" % tuning.camera_fov_sprint)
+	# §8.3 donne le champ en HORIZONTAL ; `Camera3D.fov` est un angle VERTICAL
+	# tant que `keep_aspect` vaut `KEEP_HEIGHT` (défaut du moteur, posé
+	# explicitement par `CameraRig`). La version précédente de ce test
+	# comparait la valeur verticale du réglage à la fourchette horizontale de
+	# la spec : elle EXIGEAIT donc le fisheye à 102,5° qu'elle croyait
+	# interdire. On convertit désormais avant de juger — c'est l'angle vu par
+	# le joueur qui doit tenir dans l'enveloppe, pas le nombre stocké.
+	var rest_h: float = _horizontal_fov_deg(tuning.camera_fov)
+	check(rest_h >= 68.0 and rest_h <= 72.0,
+		"FOV horizontal hors §8.3 (68–72°) : %.1f° (vertical %.1f°)"
+			% [rest_h, tuning.camera_fov])
+	var sprint_h: float = _horizontal_fov_deg(tuning.camera_fov_sprint)
+	check(sprint_h >= 74.0 and sprint_h <= 77.0,
+		"FOV de sprint horizontal hors §8.3 (74–77°) : %.1f° (vertical %.1f°)"
+			% [sprint_h, tuning.camera_fov_sprint])
 	check_approx(tuning.camera_pitch_min_deg, -65.0, 0.01, "butée basse (§8.3)")
 	check_approx(tuning.camera_pitch_max_deg, 45.0, 0.01, "butée haute (§8.3)")
+
+
+## Conversion 16:9 d'un champ vertical vers son équivalent horizontal.
+## Le rapport 16/9 est celui de la fenêtre de référence du projet ; c'est
+## aussi celui sous lequel §1.1 de la bible visuelle exprime tout le cadrage.
+func _horizontal_fov_deg(vertical_deg: float) -> float:
+	var half: float = tan(deg_to_rad(vertical_deg) * 0.5) * (16.0 / 9.0)
+	return rad_to_deg(atan(half)) * 2.0
+
+
+func test_camera_declares_how_its_fov_must_be_read() -> void:
+	## Le test précédent CONVERTIT le réglage ; cette conversion n'est valide
+	## que si la caméra est bien en `KEEP_HEIGHT`. Sans ce contrôle, il
+	## suffirait qu'un jour quelqu'un passe la caméra en `KEEP_WIDTH` pour que
+	## l'enveloppe soit vérifiée sur le mauvais axe, en silence. On refuse
+	## aussi le défaut implicite : le mode doit être POSÉ par le rig.
+	if not await _setup(Vector3(0, 1, 0)):
+		_teardown()
+		return
+	var camera: Camera3D = _rig.get_camera()
+	check_not_null(camera, "caméra du rig")
+	if camera == null:
+		_teardown()
+		return
+	check(camera.keep_aspect == Camera3D.KEEP_HEIGHT,
+		"la caméra doit lire son FOV en hauteur (KEEP_HEIGHT), sinon la"
+		+ " conversion vers l'horizontal de §8.3 est fausse")
+	var horizontal: float = _horizontal_fov_deg(camera.fov)
+	check(horizontal >= 68.0 and horizontal <= 72.0,
+		"champ réellement appliqué à la caméra : %.1f° horizontal" % horizontal)
+	_teardown()

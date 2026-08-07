@@ -135,6 +135,11 @@ func _ready() -> void:
 			var bus: Node = get_node_or_null("/root/EventBus")
 			if bus != null:
 				bus.call("notify", "De la fumée s'élève au loin — un campement ?"))
+	# La vallée a un fond sonore. Sans lui, le jeu est littéralement muet
+	# entre deux actions — le défaut le plus cité du playtest en aveugle.
+	var audio: Node = get_node_or_null("/root/AudioManager")
+	if audio != null and audio.has_method("play_ambience"):
+		audio.call("play_ambience", &"amb_valley")
 	# E.2b : le feu de cuisine — un interactable posé SUR le foyer réel du
 	# camp (§13.3). L'atelier vit dans la coquille ; le feu n'est que la
 	# porte, comme la collision reste celle du foyer existant.
@@ -196,6 +201,53 @@ func _ready() -> void:
 	safe_timer.autostart = true
 	safe_timer.timeout.connect(_record_safe_point)
 	add_child(safe_timer)
+	_paint_the_world()
+
+
+## Passe de PEINTURE de toute la carte (mandat « de toute la map »).
+##
+## Elle vient EN DERNIER, quand tout est construit : relief, lieux,
+## bestiaire, ingrédients, feu de cuisine. Une passe posée plus tôt
+## aurait laissé nus tous les objets créés après elle — c'est
+## précisément le genre d'oubli qu'une recette recopiée à six endroits
+## produit, et la raison pour laquelle elle vit désormais en un seul
+## (`PainterlyRecipe`).
+##
+## Ce qu'elle ne touche pas, par CONTRAT :
+##   - tout matériau qui émet vraiment — câbles, récepteurs, dangers,
+##     noyaux, runes : ce sont des télégraphes de jeu, pas du décor ;
+##   - l'orage, qui porte son propre langage d'éclair déjà réglé.
+func _paint_the_world() -> void:
+	# Le nuage de la vallée s'appelle `CitadelStorm` : la première passe
+	# l'a blanchi parce que la liste ne connaissait que « Storm ».
+	# DÉFAUT CORRIGÉ (audit du 2026-08-06). L'exclusion portait sur le nœud
+	# `Terrain` tout entier, et `_is_skipped()` remonte les ANCÊTRES : tout
+	# son sous-arbre était donc ignoré. Or l'habillage du monde y est monté —
+	# camp, forêt, zones, phrases végétales, structures secondaires, citadelle,
+	# pylône, eau, chemins. Le commentaire précédent affirmait que « les props,
+	# roches, bâtiments et végétaux gagnent la peinture dès maintenant » : c'était
+	# faux, ils étaient tous exclus avec le sol.
+	#
+	# On nomme donc les PORTEURS DE SOL un par un. Eux seuls gardent leurs
+	# teintes macro (la recette, réglée sur un laboratoire sans terrain, les
+	# délavait : lointain de 65 % à 74 %, sol gris). Tout le reste du monde
+	# reçoit enfin le style.
+	var skip: Array[String] = ["CitadelStorm", "Storm", "StormCell",
+		"PlainSouth", "PlainNorth", "Riverbed", "SpawnRidge", "CampTerrace",
+		"LearningCliff", "PylonTerrace", "DungeonPlateau", "FordEast",
+		"FordWest", "CliffLedgeLow", "CliffLedgeHigh",
+		"GateStepLow", "GateStepMid", "GateStepHigh",
+		"GroundVariation", "Paths",
+		# L'ANNEAU LOINTAIN reste hors peinture : la recette est réglée pour
+		# le premier plan, et elle éclaircissait l'horizon de 65 % à 74 % —
+		# les montagnes viraient au blanc et l'étagement des trois plans
+		# (§1.3) disparaissait. Noms relevés dans `valley_terrain.gd`.
+		"WallSkirts", "BorderCrests", "FarSkyline", "MountainDressing",
+		"PlateauSkirts", "BorderNorth", "BorderSouth", "BorderEast",
+		"BorderWest"]
+	var painted: int = PainterlyRecipe.paint_world(self, skip)
+	if painted > 0:
+		print("[art] vallée peinte : %d surfaces" % painted)
 
 
 ## Lumière et atmosphère V4.1 (réf. 01 du pack V4) : soleil doré de fin
@@ -357,6 +409,14 @@ func _build_open_world() -> void:
 	add_child(territories)
 	for poi: Node in find_children("*", "PointOfInterest", true, false):
 		(poi as PointOfInterest).bind(discoveries)
+	# Le monde porte 33 lieux nommés — village, ferme, arbre foudroyé,
+	# belvédère… — et le journal émettait fidèlement `discovered` à chaque
+	# première arrivée. Ce signal n'avait AUCUN abonné : le joueur traversait
+	# la vallée et découvrait tout dans un silence total, sans jamais savoir
+	# qu'il venait d'arriver quelque part. §6.3 veut une exploration guidée par
+	# la curiosité : encore faut-il que le monde accuse réception.
+	if not discoveries.discovered.is_connected(_on_place_discovered):
+		discoveries.discovered.connect(_on_place_discovered)
 	# §3 : un lieu sans récompense n'est pas une découverte. Les familles
 	# posent des ancrages vides ; c'est ici qu'ils reçoivent un vrai coffre,
 	# dont l'identifiant dérive de celui du lieu — donc unique et stable.
@@ -364,11 +424,71 @@ func _build_open_world() -> void:
 	rewards.name = "DiscoveryRewards"
 	add_child(rewards)
 	rewards.furnish(self)
+	# LE SOL DES LIEUX HABITÉS, en dernier : il a besoin que tout soit bâti
+	# pour mesurer l'emprise réelle. Un village n'est pas une collection de
+	# maisons, c'est une terre battue, une place et des chemins qui s'y
+	# rendent — sans quoi le regard lit « modèles alignés sur un pré ».
+	# Différé d'une frame : les emprises se mesurent en coordonnées MONDE,
+	# et les sous-arbres viennent tout juste d'entrer dans l'arbre.
+	_lay_settlement_ground.call_deferred()
+
+
+## Pose la terre battue, la place et les chemins de chaque lieu habité.
+##
+## Les implantations sont retrouvées par le NOM de leur nœud, tel que leur
+## bâtisseur l'a écrit. Un lieu absent est simplement sauté : cette passe ne
+## doit jamais empêcher le monde de se charger.
+func _lay_settlement_ground() -> void:
+	if not is_inside_tree():
+		return
+	# nom du groupe -> [chemin du bâtisseur, noms des bâtiments, altitude du sol]
+	var plans: Array = [
+		["Hamlets", ["CabaneDesBucherons", "Scierie", "PileDeTroncs",
+			"Charretterie"], 2.0, 20260806],
+		["Hamlets", ["CorpsDeGarde", "GalerieDeMine", "Sechoir",
+			"CourDeMinerai"], 2.0, 20260807],
+	]
+	var total_paths: int = 0
+	var total_props: int = 0
+	for plan: Array in plans:
+		var host: Node3D = get_node_or_null(NodePath(plan[0] as String)) as Node3D
+		if host == null:
+			continue
+		var buildings: Array[Node3D] = []
+		for building_name: String in (plan[1] as Array):
+			var found: Array[Node] = host.find_children(building_name, "Node3D",
+				true, false)
+			if not found.is_empty():
+				buildings.append(found[0] as Node3D)
+		if buildings.size() < 2:
+			continue
+		var group: String = "Sol_%s" % (plan[1] as Array)[0]
+		var report: Dictionary = SettlementGround.lay(host, group, buildings,
+			plan[2] as float)
+		total_paths += report["paths"] as int
+		var centre: Vector3 = SettlementGround.footprint(
+			host.get_node(NodePath(group)) as Node3D).get_center()
+		centre.y = plan[2] as float
+		total_props += SettlementGround.populate(host, "Vie_%s"
+			% (plan[1] as Array)[0], centre, 9.0, 7, plan[3] as int)
+	if total_paths > 0:
+		print("[monde] lieux habités : %d chemins, %d objets de vie"
+			% [total_paths, total_props])
 
 
 ## Journal des découvertes de la partie — public, pour que la sauvegarde de
 ## la vallée le collecte et que l'interface puisse s'y abonner.
 var discoveries: DiscoveryLog = DiscoveryLog.new()
+
+
+## Une découverte se dit une fois, brièvement, et sans marqueur permanent :
+## c'est une récompense d'attention, pas une case à cocher.
+func _on_place_discovered(_poi_id: StringName, display_name: String) -> void:
+	if display_name.is_empty():
+		return
+	var bus: Node = get_node_or_null("/root/EventBus")
+	if bus != null:
+		bus.call("notify", "Découvert : %s" % display_name)
 
 ## Coffres posés sur les ancrages des lieux — public pour les tests.
 var rewards: DiscoveryRewards = null
@@ -521,12 +641,48 @@ func _spawn_bestiary() -> void:
 	var coordinator: CombatCoordinator = CombatCoordinator.new()
 	coordinator.name = "CombatCoordinator"
 	holder.add_child(coordinator)
+	# Chaque ligne : scène, position, lacet initial, ronde (décalages locaux).
+	#
+	# RÉÉQUILIBRAGE V5 — un audit de la carte entière a mesuré que la route
+	# naturelle du spawn jusqu'à la citadelle ne croisait AUCUN adversaire :
+	# écart latéral minimal de 30 m pour 22 à 35 m de portée de vision, et deux
+	# segments (0→183 m puis 192→349 m) où la détection était géométriquement
+	# impossible. On pouvait donc atteindre le boss sans avoir porté un coup —
+	# et tout ce que le jeu a construit (armes, garde, cuisine, Bracelet)
+	# restait facultatif, donc invisible.
+	#
+	# On ne rend rien obligatoire : on POSE des présences sur le chemin, avec
+	# leurs territoires bornés. Le joueur peut toujours contourner, il ne peut
+	# plus ignorer.
+	#
+	# Et surtout, ils BOUGENT. `patrol_offsets` n'était renseigné nulle part :
+	# l'état restait `IDLE`, `_face()` n'était jamais appelé, et les huit
+	# ennemis étaient des cônes de vision gravés dans la carte. Une ronde même
+	# courte fait balayer le regard et rend le monde habité de loin.
 	var placements: Array[Array] = [
-		["res://scenes/enemies/RaiderBlue.tscn", Vector3(92, 2.1, 16), 3.0],
-		["res://scenes/enemies/RaiderBlue.tscn", Vector3(58, 2.1, 30), 1.4],
-		["res://scenes/enemies/RaiderBlack.tscn", Vector3(-104, 14.1, 62), 1.6],
-		["res://scenes/enemies/RavineTroll.tscn", Vector3(-16, 2.1, -48), 0.4],
-		["res://scenes/enemies/CentaurHunter.tscn", Vector3(150, 2.1, 52), 4.2],
+		["res://scenes/enemies/RaiderBlue.tscn", Vector3(92, 2.1, 16), 3.0,
+			[Vector3(6, 0, 0), Vector3(-6, 0, 4)]],
+		["res://scenes/enemies/RaiderBlue.tscn", Vector3(58, 2.1, 30), 1.4,
+			[Vector3(0, 0, 7), Vector3(5, 0, -3)]],
+		["res://scenes/enemies/RaiderBlack.tscn", Vector3(-104, 14.1, 62), 1.6,
+			[Vector3(5, 0, 3), Vector3(-4, 0, -5)]],
+		# Le colosse quitte son coin pour le SEUIL de la plaine nord, sur l'axe
+		# de la rampe du donjon : on ne peut plus monter sans l'avoir vu.
+		["res://scenes/enemies/RavineTroll.tscn", Vector3(22, 2.1, -64), 0.4,
+			[Vector3(9, 0, 0), Vector3(-9, 0, 3)]],
+		["res://scenes/enemies/CentaurHunter.tscn", Vector3(150, 2.1, 52), 4.2,
+			[Vector3(12, 0, 8), Vector3(-10, 0, -6)]],
+		# Les 150 m morts entre le colosse et la porte de la citadelle.
+		["res://scenes/enemies/RaiderBlue.tscn", Vector3(26, 2.1, -118), 2.4,
+			[Vector3(0, 0, 8), Vector3(-7, 0, 0)]],
+		["res://scenes/enemies/RaiderRed.tscn", Vector3(-24, 2.1, -148), 0.2,
+			[Vector3(6, 0, 4), Vector3(-5, 0, -4)]],
+		# Le poste de garde et l'avant-poste étaient meublés et VIDES : râtelier
+		# d'armes, bancs, ordres écrits, et personne depuis dix ans.
+		["res://scenes/enemies/RaiderBlue.tscn", Vector3(15, 2.1, -99), -1.6,
+			[Vector3(4, 0, 0), Vector3(-4, 0, 5)]],
+		["res://scenes/enemies/RaiderRed.tscn", Vector3(20, 2.1, -49), -1.6,
+			[Vector3(5, 0, 0), Vector3(0, 0, 5)]],
 	]
 	for placement: Array in placements:
 		var packed: PackedScene = load(String(placement[0])) as PackedScene
@@ -539,6 +695,11 @@ func _spawn_bestiary() -> void:
 		# Le regard initial fixe le TERRITOIRE, pas le joueur : chacun
 		# garde son poste jusqu'à ce qu'il perçoive quelque chose.
 		(enemy.get_node("Pivot") as Node3D).rotation.y = float(placement[2])
+		if placement.size() > 3:
+			var route: Array[Vector3] = []
+			for offset: Variant in placement[3] as Array:
+				route.append(offset as Vector3)
+			(enemy as EnemyBase).patrol_offsets = route
 
 
 ## §12.9 (D-EN.6) : une seconde carte de navigation, cuite pour un agent
@@ -657,10 +818,14 @@ func _autosave() -> void:
 		# §19.1 : position/rotation du joueur — en PRIMITIFS (§19.2 : jamais
 		# un Variant Godot sérialisé). Le corps ne tourne jamais (voir
 		# PlayerController._ready) : le lacet vit sur VisualRoot.
+		# Le DERNIER SOL FOULÉ, jamais la position courante : sauvegarder au
+		# milieu d'une paroi, d'une chute ou d'un coin de décor produisait une
+		# reprise dans le décor, dont on ne sortait plus (voir
+		# `PlayerController.last_grounded_position`).
 		"player_position": {
-			"x": _player.global_position.x,
-			"y": _player.global_position.y,
-			"z": _player.global_position.z,
+			"x": _player.last_grounded_position().x,
+			"y": _player.last_grounded_position().y,
+			"z": _player.last_grounded_position().z,
 		},
 		"player_yaw": _player_visual_yaw(),
 		# §19.1 : « santé/endurance ». Sans elles, recharger soignait

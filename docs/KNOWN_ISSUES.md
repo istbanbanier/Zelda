@@ -392,6 +392,19 @@ réfuté trois fois sur machine au repos (R-017). Cause : timings par temps rée
 dans des tests par ticks. Contournement : sérialiser (règle R-017).
 Correction de fond : budgets en TICKS logiques dans les tests concernés.
 
+**Occurrence 2026-08-06** (passe art, branche dédiée) : deux tests
+save-roundtrip rouges UNE fois dans une suite lancée pendant la fenêtre
+de turbulence des redémarrages conteneur
+(`test_boss_arena::test_the_arena_restores_the_antechamber_checkpoint`,
+`test_dungeon_antisoftlock::test_leaving_and_coming_back_keeps_what_was_solved`).
+Classement : intermittence environnementale, PAS un bug — verts ×2 en
+isolation ET dans la suite intégrale suivante (**721/721**, arbre
+`295fa06`). Analyse : la voie testée est entièrement synchrone
+(écriture atomique + relecture, restauration dans `_ready`, deferreds
+déterministes par frame) — aucune fenêtre d'attente à blinder n'existe.
+Conduite tenue : ne PAS ajouter d'attentes cosmétiques ; relancer sur
+machine calme avant de croire un rouge de cette classe.
+
 ## ISS-025 — Salle électrique quasi noire en capture statique (S3, ouvert — Phase H/V7)
 
 `gate_salle_electrique.png` (caméra intérieure, 60 frames) : la salle 1 rend
@@ -505,6 +518,62 @@ terre est blindé (`before < capacité`). Le « Rappeler l'ascenseur »
 légitime compté comme échec (remarque de la revue) reste assumé : c'est
 un signal faible parmi trois, pas un déclencheur seul.
 
+## ISS-032 — Route crête → plaine nord incomplète (S3, ouvert)
+
+`test_valley_world.gd::test_the_route_from_ridge_to_north_plain_is_walkable`
+échoue : 9 jalons atteints sur 11 en 1907 ticks, et le marcheur descend à
+y = −0,50. **Antérieur à la passe d'habillage** : vérifié par exécution sur
+le commit `c9f17fb` (worktree séparé), les chiffres sont IDENTIQUES au tick
+près. Introduit par les travaux de jouabilité V5 (`371fd81`) ou antérieurs.
+
+## ISS-033 — `dev_mode.gd` lit le clavier directement (S3, CLOS le 2026-08-06)
+
+**Clos** : `test_input_layer_isolation::test_no_gameplay_script_reads_the_keyboard`
+passe desormais avec 696 assertions, verifie par le controleur du chantier
+d'assemblage. Corrige entre-temps par la session qui avait introduit le fichier.
+
+`test_input_layer_isolation.gd::test_no_gameplay_script_reads_the_keyboard`
+échoue : `scripts/tools/dev_mode.gd` contient `InputEventKey` et `KEY_`,
+ce que D-013 interdit au gameplay. Le fichier a été introduit par le commit
+`c9f17fb` (« Mode développement »), d'une autre session travaillant sur la
+même branche. Correctif attendu : passer par `InputIntent`, ou exclure
+explicitement les outils de développement du contrôle si la règle ne les
+vise pas — trancher, ne pas laisser rouge.
+
+
+## ISS-034 — Le kit ne contient aucun pignon de la famille bardeaux (S3, ouvert)
+
+Verifie exhaustivement dans `assets/environment/village` et
+`assets/environment/dungeon` : les seules pieces de fermeture de rampant sont
+`Roof_Front_Brick4/6/8`, taillees pour la pente des tuiles rondes.
+`Roof_Front_Brick6` monte de 4,38 m sur 6,69 m de base ; la pente de bardeaux
+de la cabane des bucherons monte de 2,26 m sur 6,00 m — presque le double.
+Les deux abouts du toit de la cabane restent donc des triangles ouverts.
+**Aucun faux pignon n'a ete bricole** : la limite est ecrite dans le code
+au-dessus de la toiture. Correctif possible : modeliser un pignon a la bonne
+pente (script Blender), ou passer la cabane aux tuiles rondes.
+
+## ISS-035 — Pas japonais de la rivière suspendus au-dessus du lit (S3, ouvert)
+
+Mesure faite pendant la passe « arcade / caisse claire / arche » avec
+`tools/godot/probe_world_boxes.gd`, sur la vallée réellement montée :
+
+    DressZoneRiver/RockPath_Round_Wide_4    y 0,54..0,70  sol -1,50  → +2,04 m
+    DressZoneRiver/RockPath_Round_Thin_5    y 0,49..0,62  sol -1,50  → +1,99 m
+    DressZoneRiver/RockPath_Round_Small_1_7 y 0,49..0,66  sol -1,50  → +1,99 m
+
+Le fond du lit (dalle `Riverbed` de `valley_terrain.gd`) est à y = −1,50 ; ces
+pierres sont posées à y ≈ 0,5, soit deux mètres au-dessus de lui. Elles ne sont
+donc pas des pas japonais : ce sont des galets qui flottent dans le vide, juste
+sous la nappe d'eau (y −0,85..−0,55) qui les cache par le dessus mais pas de
+biais. Leur cote vient vraisemblablement d'une constante de plaine (y = 2)
+diminuée d'une lame d'eau, et non du lit.
+
+Défaut CONSTATÉ et MESURÉ, non corrigé : le fichier fautif
+(`valley_terrain.gd`, dressage de zone F) n'était pas dans le périmètre des
+trois corrections demandées, et le déplacer touche le tracé du gué. Correctif
+attendu : dériver la cote de ces pierres du lit (−1,50) et non de la plaine,
+comme l'a fait la travée tombée de l'aqueduc.
 ---
 
 ## PT-BRACELET-01 — Le Bracelet n'avait aucune présentation en jeu (S2)

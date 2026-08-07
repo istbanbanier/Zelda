@@ -141,8 +141,10 @@ func _build_wall_skirts() -> void:
 				1: centre = Vector3(along, BASE_Y + height * 0.5, face)
 				2: centre = Vector3(-face, BASE_Y + height * 0.5, along)
 				_: centre = Vector3(face, BASE_Y + height * 0.5, along)
+			# `size` = (largeur vue de face, hauteur, profondeur) — voir
+			# `_visual_prism`. La face large regarde la vallée.
 			_visual_prism("Skirt%d_%d" % [axis, i], skirts, centre,
-				Vector3(depth, height, width),
+				Vector3(width, height, depth),
 				COL_MOUNTAIN_WARM if i % 4 == 2 else COL_MOUNTAIN_SHADE,
 				axis < 2, 0.5 + 0.26 * sin(t * 9.7 + float(axis) * 2.1))
 
@@ -200,7 +202,7 @@ func _build_border_crests() -> void:
 			# hauteur. Taille en repère LOCAL du prisme (x = emprise
 			# perpendiculaire à l'arête, z = longueur le long du mur) ;
 			# `ridge_along_x` remet l'arête dans l'axe du mur.
-			var size: Vector3 = Vector3(depth * 0.8, height, width)
+			var size: Vector3 = Vector3(width, height, depth * 0.8)
 			_visual_prism("Crest%d_%d" % [axis, i], crests, centre, size,
 				COL_MOUNTAIN_WARM if i % 3 == 0 else COL_MOUNTAIN,
 				axis < 2, 0.5 + 0.28 * sin(t * 13.7 + float(axis) * 3.1))
@@ -239,7 +241,7 @@ func _build_far_skyline() -> void:
 					_: centre = Vector3(distance, height * 0.5 - 8.0, along)
 				# Même règle que les crêtes : silhouette triangulaire, taille
 				# en repère local du prisme, sommet décentré déterministe.
-				var size: Vector3 = Vector3(spread * 0.6, height, width)
+				var size: Vector3 = Vector3(width, height, spread * 0.6)
 				_visual_prism("Far%d_%d_%d" % [row_index, axis, i], far,
 					centre, size, tint, axis < 2,
 					0.5 + 0.24 * sin(t * 11.3 + float(axis) * 2.3
@@ -333,16 +335,21 @@ func _build_camp_terrace() -> void:
 		body.name = "Tent%d" % i
 		body.collision_layer = 1
 		body.collision_mask = 0
-		var shape: CollisionShape3D = CollisionShape3D.new()
-		var box: BoxShape3D = BoxShape3D.new()
-		box.size = Vector3(3.6, 2.4, 3.2)
-		shape.shape = box
-		shape.position = Vector3(0, 1.2, 0)
-		body.add_child(shape)
+		# REVUE V4 : la collision était une BOÎTE 3,6 × 2,4 × 3,2 sur un volume
+		# en COIN. La demi-largeur de la toile vaut 1,9 · (1 − y/2,6) : à 2,0 m
+		# de haut elle mesure 0,44 m alors que la boîte imposait 1,80 m, soit
+		# 1,36 m de mur invisible de chaque côté à hauteur de tête (et, à la
+		# base, 10 cm de toile hors boîte). On donne donc au collider la forme
+		# EXACTE du visuel : l'enveloppe convexe du prisme, aux mêmes cotes et
+		# à la même origine locale (0 ; 1,3 ; 0) que le maillage.
 		var mesh: MeshInstance3D = MeshInstance3D.new()
 		mesh.name = "Tent%dMesh" % i
 		var prism: PrismMesh = PrismMesh.new()
 		prism.size = Vector3(3.8, 2.6, 3.4)
+		var shape: CollisionShape3D = CollisionShape3D.new()
+		shape.shape = prism.create_convex_shape(true, false)
+		shape.position = Vector3(0, 1.3, 0)
+		body.add_child(shape)
 		mesh.mesh = prism
 		mesh.material_override = _material(tent[2] as Color, false)
 		mesh.position = Vector3(0, 1.3, 0)
@@ -413,45 +420,87 @@ func _dress_camp_life(camp: Node3D) -> void:
 	camp.add_child(life)
 	var placements: Array[Array] = [
 		# Cuisine : chaudron SUR le foyer, table dressée, banc, seau.
-		[&"Cauldron", Vector3(45, 6.18, 64), 0.0, 1.0],
+		# REVUE V4 : à y = 6,18 le chaudron (bbox Y −0,0028) plongeait de 22 cm
+		# dans l'anneau de pierre (6,00..6,40) et les braises (6,35..6,65,
+		# rayon 0,70 > panse 0,4946) lui traversaient les flancs. Reposé sur le
+		# dessus des braises : 6,65 + 0,0028 = 6,653.
+		[&"Cauldron", Vector3(45, 6.653, 64), 0.0, 1.0],
 		[&"Table_Large", Vector3(47.8, 6, 60.3), 0.45, 1.0,
 			Vector3(1.9, 0.9, 1.0), false],
 		[&"Bench", Vector3(47.2, 6, 59.0), 0.45, 1.0],
 		[&"Stool", Vector3(49.4, 6, 61.3), 1.2, 1.0],
-		[&"Pot_1", Vector3(47.5, 6.78, 60.2), 0.8, 1.0],
-		[&"Mug", Vector3(48.1, 6.78, 60.6), 2.1, 1.0],
-		[&"Bottle_1", Vector3(47.9, 6.78, 59.9), 0.0, 1.0],
-		[&"Carrot", Vector3(47.2, 6.78, 60.5), 1.5, 1.0],
+		# REVUE V4 : la vaisselle était posée à plat à y = 6,78 alors que le
+		# plateau de `Table_Large` est à 6 + 0,8147 = 6,8147. Chaque pièce
+		# s'enfonçait donc dans le bois (la carotte de 27 cm, il ne restait que
+		# le fane). Règle appliquée : y = 6,8147 − bbox_min Y du modèle.
+		[&"Pot_1", Vector3(47.5, 6.837, 60.2), 0.8, 1.0],      # bbox_min Y −0,0226
+		[&"Mug", Vector3(48.1, 6.819, 60.6), 2.1, 1.0],        # bbox_min Y −0,0046
+		[&"Bottle_1", Vector3(47.9, 6.813, 59.9), 0.0, 1.0],   # bbox_min Y +0,0016
+		[&"Carrot", Vector3(47.2, 7.053, 60.5), 1.5, 1.0],     # bbox_min Y −0,2378
 		[&"Bucket_Wooden_1", Vector3(46.6, 6, 61.2), 2.8, 1.0],
 		# Réserve : tonneau de pommes, cageots, sacs à l'entrée de tente.
 		[&"Barrel_Apples", Vector3(50.4, 6, 58.4), 0.6, 1.0],
-		[&"FarmCrate_Apple", Vector3(52.9, 6, 58.1), 1.9, 1.0],
-		[&"FarmCrate_Empty", Vector3(52.2, 6, 57.0), 0.3, 1.0],
-		[&"Bag", Vector3(53.4, 6, 56.2), 2.4, 1.0],
-		[&"Pouch_Large", Vector3(54.3, 6, 56.8), 4.0, 1.0],
+		# REVUE V4 : la « réserve » était RANGÉE DANS la tente 0 (pied 54/58,
+		# lacet 0,4, toile fermée 3,8 × 3,4 sans ouverture). Coordonnées locales
+		# mesurées : cageot de pommes (−1,05 ; −0,34) et bourse (+0,74 ; −0,99)
+		# entièrement à l'intérieur, cageot vide (−1,27 ; −1,62) aux trois
+		# quarts — invisibles. Le groupe est sorti devant le pignon, translaté
+		# de 2,06 m sur le −Z local, soit un vecteur monde (−0,80 ; 0 ; −1,90).
+		# Nouvelles cotes locales z : −2,40 / −3,68 / −3,95 / −3,05, toutes
+		# au-delà de la demi-profondeur de toile (1,70), et le groupe reste sur
+		# `CampTerrace` (x 23..67, z 45..85), à plus d'un mètre des caisses.
+		[&"FarmCrate_Apple", Vector3(52.10, 6, 56.20), 1.9, 1.0],
+		[&"FarmCrate_Empty", Vector3(51.40, 6, 55.10), 0.3, 1.0],
+		[&"Bag", Vector3(52.60, 6, 54.30), 2.4, 1.0],
+		[&"Pouch_Large", Vector3(53.50, 6, 54.90), 4.0, 1.0],
 		# Coin de travail : enclume, billot avec hache, pierre à affûter.
 		[&"Anvil", Vector3(41.0, 6, 58.0), 1.1, 1.0,
 			Vector3(0.9, 0.8, 0.6), false],
 		[&"Anvil_Log", Vector3(40.0, 6, 59.3), 0.2, 1.0],
-		[&"Axe_Bronze", Vector3(40.0, 6.55, 59.3), 2.6, 1.0],
+		# REVUE V4 : à y = 6,55 la hache était entièrement enfermée dans le
+		# billot, aux mêmes x/z que lui, sous son plateau (6 + 1,0748 = 7,0748).
+		# ATTENTION à la cote : le nœud du glTF porte une rotation de 90° et une
+		# échelle 0,847, si bien que la boîte ANNONCÉE par le fichier
+		# (Y −0,2313..0,1164) n'est pas celle du modèle importé. Mesure dans
+		# Godot : Y −0,3806..+0,4463, hache debout, tête en haut. Base posée sur
+		# le plateau : 7,0748 + 0,3806 = 7,455.
+		[&"Axe_Bronze", Vector3(40.0, 7.455, 59.3), 2.6, 1.0],
 		[&"Whetstone", Vector3(41.9, 6, 57.1), 3.3, 1.0],
 		[&"Rope_1", Vector3(42.6, 6, 58.8), 0.9, 1.0],
-		# Râtelier d'armes près des tentes nord, bouclier appuyé.
+		# Râtelier d'armes près des tentes nord, bouclier POSÉ contre le pied.
 		[&"WeaponStand", Vector3(43.5, 6, 70.2), 2.1, 1.0,
 			Vector3(1.4, 1.6, 0.5), false],
 		[&"Sword_Bronze", Vector3(43.5, 6.62, 70.1), 2.1, 1.0],
-		[&"Shield_Wooden", Vector3(42.6, 6.25, 70.9), 2.6, 1.0],
+		# REVUE V4 : l'origine de `Shield_Wooden` est au CENTRE du disque
+		# (bbox Y −0,3104..+0,3104), pas à sa base : posé à 6,25 il s'enfonçait
+		# de 6 cm dans la dalle (6,00). Tranche posée sur la dalle :
+		# 6,00 + 0,3104 = 6,311, et recentré à 0,6 m du montant du râtelier.
+		[&"Shield_Wooden", Vector3(43.05, 6.311, 70.62), 2.6, 1.0],
 		# Charrette à l'entrée sud du camp, bannière de faction.
 		[&"Stall_Cart_Empty", Vector3(40.0, 6, 50.5), 1.35, 1.0,
 			Vector3(2.4, 1.4, 1.6), false],
-		[&"Banner_2", Vector3(41.2, 6, 48.3), 0.1, 1.2],
+		# REVUE V4 : `Banner_2` est une APPLIQUE — son origine est le point
+		# d'accroche haut, l'étoffe pend en dessous (bbox Y −1,2336..+0,8435).
+		# Posée à y = 6,0, c'est-à-dire au niveau de la dalle, 59 % du tissu
+		# était enterré : 1,48 m sous l'herbe. Remontée au niveau d'accroche :
+		# à 7,78 le bas de l'étoffe est à 7,78 − 1,2336 × 1,2 = 6,30, soit
+		# 0,30 m au-dessus du sol, et la hampe culmine à 8,79 m.
+		[&"Banner_2", Vector3(41.2, 7.78, 48.3), 0.1, 1.2],
 		# Clôture PARTIELLE au nord (indice de limite, pas une cage).
 		[&"Prop_WoodenFence_Single", Vector3(38.5, 6, 79.0), 0.15, 1.1],
 		[&"Prop_WoodenFence_Extension1", Vector3(42.6, 6, 79.4), 0.15, 1.1],
 		[&"Prop_WoodenFence_Single", Vector3(47.0, 6, 79.6), 0.4, 1.1],
-		# Abri ASSEMBLÉ (§11.D « abris assemblés ») : panneau de toit incliné
-		# sur la caisse, couche en dessous — un pillard dort là.
-		[&"Roof_Wooden_2x1", Vector3(30.0, 7.4, 72.5), 0.0, 1.6],
+		# Abri ASSEMBLÉ (§11.D « abris assemblés ») : appentis à deux versants
+		# posé au sol, couche en dessous — un pillard dort là. Les pignons
+		# restent ouverts, c'est un abri, pas une maison.
+		# REVUE V4 : le module était posé à y = 7,4 PUIS basculé de 0,42 rad au
+		# nom d'un « appui caisse » inexistant (les caisses du camp sont à 22 m
+		# de là) : son point bas flottait 0,43 m au-dessus de la dalle et son
+		# dessous traversait le matelas. Reposé à plat sur ses deux sablières :
+		# bbox_min Y −0,1612 × 1,6 = 0,258, donc y = 6 + 0,258 = 6,258 ; les
+		# sablières touchent la dalle en x = 28,19 et 31,81, faîtage à 8,00 m.
+		# z ramené à 72,06 pour couvrir le lit, qui va de 71,99 à 74,41.
+		[&"Roof_Wooden_2x1", Vector3(30.0, 6.258, 72.06), 0.0, 1.6],
 		[&"Bed_Twin1", Vector3(30.0, 6, 73.2), 3.14, 1.0],
 		[&"CandleStick", Vector3(31.3, 6, 71.8), 0.7, 1.0],
 	]
@@ -459,14 +508,9 @@ func _dress_camp_life(camp: Node3D) -> void:
 		var collision: Vector3 = entry[4] if entry.size() > 4 else Vector3.ZERO
 		_place_model(life, entry[0] as StringName, entry[1] as Vector3,
 			float(entry[2]), float(entry[3]), collision, false)
-	# Le panneau de toit de l'abri s'incline APRÈS le placement.
-	var roof: Node3D = life.get_node_or_null("Roof_Wooden_2x1_27") as Node3D
-	if roof == null:
-		for child: Node in life.get_children():
-			if String(child.name).begins_with("Roof_Wooden"):
-				roof = child as Node3D
-	if roof != null:
-		roof.rotation.z = 0.42   # appui caisse → sol
+	# REVUE V4 : le basculement d'après-coup du toit (`rotation.z = 0.42`) a été
+	# supprimé — il n'appuyait sur rien et l'index en dur « _27 » de la
+	# recherche était fragile. Le module est autoporteur et posé à plat.
 
 
 ## Monte un prop du registre (ou sa boîte graybox de repli) avec une
@@ -923,8 +967,14 @@ func _dress_zone_pylon() -> void:
 		[&"Corner_Exterior_Brick", Vector3(120.5, 18, -29.5), 0.3, 1.2,
 			Vector3(0.8, 3.2, 0.8), false],
 		# Bannières de seuil — le lieu est ENTRETENU, pas abandonné.
-		[&"Banner_2", Vector3(119.6, 18, -21.2), 4.71, 1.25],
-		[&"Banner_2", Vector3(119.6, 18, -28.8), 4.71, 1.25],
+		# REVUE V4 : même défaut que la bannière du camp, non relevé mais
+		# mesuré ici — `Banner_2` s'accroche par le HAUT (bbox Y −1,2336) ;
+		# posées à y = 18, c'est-à-dire au niveau de la dalle du pylône, les
+		# deux étoffes s'enfonçaient de 1,2336 × 1,25 = 1,54 m sous le sol.
+		# Montées à 19,842 : bas de l'étoffe à 18,30 (0,30 m de garde), sommet
+		# de hampe à 20,90 — sous la tête des piliers de brique voisins (21,61).
+		[&"Banner_2", Vector3(119.6, 19.842, -21.2), 4.71, 1.25],
+		[&"Banner_2", Vector3(119.6, 19.842, -28.8), 4.71, 1.25],
 		# Pierres votives éparses, végétation quasi absente (§7.5 : rare
 		# près des dangers électriques).
 		[&"Pebble_Round_4", Vector3(110.5, 18.02, -28.5), 0.6, 1.5],
@@ -1199,6 +1249,39 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	# large la citadelle lisait « cabane devant la montagne » sur la capture
 	# `vista_horizon_etage` — la face avant reste au plan z = −198, la masse
 	# s'étend vers l'arrière.
+	# SOCLE EN TERRASSES (§2.4 : « 55 % socle/terrasses de pierre ») —
+	# propagé depuis le HeroShotLab, où la silhouette étagée a été
+	# réglée puis mesurée. Sans lui, la citadelle posait ses tours
+	# directement sur le sol et lisait « bâtiment », pas « monument
+	# creusé dans la montagne ». AUCUNE COLLISION : ce sont des masses
+	# de composition, elles ne doivent modifier aucun passage.
+	_box_in("TerraceBase", citadel, Vector3(0, 34 + 7, -216),
+		Vector3(78, 14, 46), COL_STONE, false)
+	_box_in("TerraceMid", citadel, Vector3(-4, 34 + 18, -214),
+		Vector3(56, 12, 36), COL_STONE, false)
+	_box_in("TerraceHigh", citadel, Vector3(6, 34 + 27, -213),
+		Vector3(42, 10, 30), COL_STONE, false)
+	# CONTREFORTS (§2.4) : quatre appuis qui accrochent le socle au
+	# relief et cassent la frontalité.
+	var buttresses: Array[Array] = [
+		[-34.0, -200.0, 10.0, 26.0], [34.0, -202.0, 9.0, 22.0],
+		[-30.0, -226.0, 8.0, 30.0], [30.0, -228.0, 8.0, 24.0],
+	]
+	for b: int in range(buttresses.size()):
+		var spec: Array = buttresses[b]
+		var bh: float = spec[3] as float
+		_box_in("Buttress%d" % b, citadel,
+			Vector3(spec[0] as float, 34 + bh * 0.5, spec[1] as float),
+			Vector3(spec[2] as float, bh, spec[2] as float),
+			COL_STONE, false)
+	# TROIS lignes de Résonance en cuivre patiné (§2.4) — la masse reste
+	# à plus de 95 % sans énergie visible.
+	for c: int in range(3):
+		var cx: float = [-14.0, 2.0, 16.0][c]
+		var ch: float = [46.0, 62.0, 38.0][c]
+		_box_in("Conduit%d" % c, citadel,
+			Vector3(cx, 34 + ch * 0.5, -197.0), Vector3(2.6, ch, 2.6),
+			Color(0.43, 0.46, 0.37), false)
 	_box_in("Keep", citadel, Vector3(0, 34 + 23, -212), Vector3(34, 46, 28), COL_STONE, true)
 	# Épaules latérales plus basses (§2.4) : la silhouette s'étage au lieu de
 	# tomber d'un seul front.
@@ -1248,6 +1331,22 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	crown.position = Vector3(0, 97.8, -212)
 	crown.rotation_degrees = Vector3(12.0, 0.0, 4.0)
 	citadel.add_child(crown)
+	# SILHOUETTE (§2.4 : « lisible à 300-420 m »). Le monument était lu comme
+	# un empilement de cubes pour trois raisons mesurables : toutes les masses
+	# alignées sur les axes du monde, tous les sommets PLATS, aucune découpe.
+	# On ne change pas les masses — leurs cotes sont testées — on casse leur
+	# lecture : créneaux sur les couronnements, toitures en pyramide sur les
+	# tours, et un léger lacet d'ensemble qui supprime la frontalité.
+	# Le lacet d'ensemble a ete RETIRE, et c'est une lecon mesuree : faire
+	# pivoter le noeud faisait pivoter les masses PORTEUSES DE COLLISION
+	# (donjon central, tours, epaules). La sonde de bordure de PT-D1-09 tire
+	# un rayon vers -Z depuis z = -200 ; la facade du donjon central etant a
+	# z = -198, le rayon partait A L'INTERIEUR du volume et le traversait.
+	# Rotation faite, il en sortait, frappait la citadelle — non marquee
+	# « unclimbable » — et l'anneau montagneux etait declare franchissable.
+	# La rupture de frontalite est donc portee par les TOITURES et les
+	# creneaux, qui sont du decor sans collision et qu'on peut tourner.
+	_crown_citadel(citadel, tower_heights)
 	# TROIS lignes d'énergie descendent de la couronne (§2.4) : la centrale
 	# (SpireConduit) existait — deux flancs la rejoignent sur la face avant.
 	for side_index: int in range(2):
@@ -1410,8 +1509,8 @@ func _dress_border_mountains() -> void:
 			# Tente (PrismMesh, arête le long de Z) : une boîte lisait
 			# « gratte-ciel », pas « montagne » (capture V4.2 n° 1).
 			_visual_prism("Peak%02d" % peak_index, dressing, center,
-				Vector3(rng.randf_range(22.0, 34.0), height,
-					rng.randf_range(38.0, 60.0)),
+				Vector3(rng.randf_range(38.0, 60.0), height,
+					rng.randf_range(22.0, 34.0)),
 				COL_MOUNTAIN_WARM if warm else COL_MOUNTAIN, axis == 0)
 			peak_index += 1
 		# Rangée lointaine bleuie : plus haute, au bord extérieur — la
@@ -1427,7 +1526,7 @@ func _dress_border_mountains() -> void:
 				else Vector3((BORDER_OUTER - 3.0) * sign_value, 20.0 + height_far * 0.5,
 					along_far)
 			_visual_prism("FarPeak%02d" % peak_index, dressing, center_far,
-				Vector3(10.0, height_far, 88.0), COL_MOUNTAIN_FAR, axis == 0)
+				Vector3(88.0, height_far, 10.0), COL_MOUNTAIN_FAR, axis == 0)
 			peak_index += 1
 	# Contreforts : avancées PHYSIQUES du massif dans la plaine (2 par côté).
 	var buttresses: Array[Array] = [
@@ -1863,11 +1962,23 @@ func _visual_box(box_name: String, parent: Node3D, center: Vector3, size: Vector
 	parent.add_child(mesh)
 
 
-## Tente purement visuelle (pics). L'arête du PrismMesh court le long de Z
-## (vérifié dans la source 4.7.1) : `ridge_along_x` pivote de 90° pour les
-## murs nord/sud, longs en X.
+## Tente purement visuelle (pics du fond). L'arête du `PrismMesh` court le long
+## de Z, et sa face TRIANGULAIRE regarde ±Z (vérifié dans la source 4.7.1).
+##
+## Correction V5 — c'est le défaut n°1 de l'horizon, et il tenait dans une
+## condition. L'ancienne version alignait l'arête « dans l'axe du mur », ce qui
+## paraît juste : une chaîne de montagnes court bien le long de sa bordure.
+## Mais l'arête d'un `PrismMesh` est HORIZONTALE. Alignée sur le mur, elle
+## présente au joueur, de face, un segment plat — et 242 prismes plats
+## côte à côte, à des hauteurs différentes, dessinent exactement la silhouette
+## de blocs rectangulaires qu'on voulait éviter. C'est ce que montrent les
+## captures du playtest : un mur de rectangles clairs tout autour du monde.
+##
+## La face triangulaire doit donc regarder LA VALLÉE, pas le ciel. `size` se
+## lit désormais `(largeur vue de face, hauteur, profondeur dans le massif)`,
+## et la rotation s'applique aux murs est/ouest — l'inverse d'avant.
 func _visual_prism(prism_name: String, parent: Node3D, center: Vector3,
-		size: Vector3, color: Color, ridge_along_x: bool,
+		size: Vector3, color: Color, wall_runs_along_x: bool,
 		apex: float = 0.5) -> void:
 	var mesh: MeshInstance3D = MeshInstance3D.new()
 	mesh.name = prism_name
@@ -1880,7 +1991,10 @@ func _visual_prism(prism_name: String, parent: Node3D, center: Vector3,
 	mesh.mesh = prism
 	mesh.material_override = _material(color, false)
 	mesh.position = center
-	if ridge_along_x:
+	# Mur nord/sud : le joueur regarde selon ±Z, la face triangulaire lui fait
+	# déjà face — aucune rotation. Mur est/ouest : on pivote pour qu'elle lui
+	# fasse face de nouveau.
+	if not wall_runs_along_x:
 		mesh.rotation.y = PI * 0.5
 	parent.add_child(mesh)
 
@@ -1899,6 +2013,55 @@ func _slab(slab_name: String, center_xz: Vector2, size_xz: Vector2, top: float,
 
 
 ## Boîte avec collision optionnelle et émission optionnelle.
+## Couronnement du monument : créneaux et toitures. Décor pur — aucune de ces
+## pièces ne porte de collision, elles sont hors de portée du joueur et ne
+## doivent modifier aucun passage.
+func _crown_citadel(citadel: Node3D, tower_heights: Array[float]) -> void:
+	var crenel: Color = COL_STONE.darkened(0.12)
+	# Couronnements des terrasses et du donjon central : une dent tous les
+	# 4 m, une sur cinq manquante — une rangée parfaite lit « usine ».
+	var walls: Array[Array] = [
+		[0.0, 48.0, -193.0, 78.0], [-4.0, 58.0, -196.0, 56.0],
+		[6.0, 66.0, -198.0, 42.0], [0.0, 80.0, -198.0, 34.0],
+	]
+	for w: int in range(walls.size()):
+		var spec: Array = walls[w]
+		var span: float = spec[3] as float
+		var teeth: int = int(span / 4.0)
+		for i: int in range(teeth):
+			if (i + w) % 5 == 3:
+				continue  # dent manquante : la ruine, pas la fortification neuve
+			var x: float = (spec[0] as float) - span * 0.5 + 2.0 + 4.0 * float(i)
+			_box_in("Crenel%d_%d" % [w, i], citadel,
+				Vector3(x, (spec[1] as float) + 1.1, spec[2] as float),
+				Vector3(2.2, 2.2, 2.0), crenel, false)
+	# Toitures des quatre tours : pyramides à quatre pans. Un sommet plat de
+	# 8 m de côté à 90 m de haut est ce qui lit « cube » de plus loin.
+	for i: int in range(4):
+		var dx: float = -21.0 if i % 2 == 0 else 21.0
+		var dz: float = -16.0 if i < 2 else 14.0
+		var top: float = 34.0 + tower_heights[i]
+		var roof: MeshInstance3D = MeshInstance3D.new()
+		roof.name = "TowerRoof%d" % i
+		var pyramid: CylinderMesh = CylinderMesh.new()
+		pyramid.radial_segments = 4
+		pyramid.top_radius = 0.0
+		pyramid.bottom_radius = 6.6
+		pyramid.height = 7.5 + 1.6 * float(i % 3)
+		roof.mesh = pyramid
+		roof.material_override = _material(COL_STONE.darkened(0.2), false)
+		roof.position = Vector3(dx, top + pyramid.height * 0.5, -210.0 + dz)
+		roof.rotation.y = deg_to_rad(45.0 + 11.0 * float(i))
+		citadel.add_child(roof)
+		# Créneaux de tour, juste sous la toiture.
+		for c: int in range(4):
+			var angle: float = TAU * float(c) / 4.0 + deg_to_rad(45.0)
+			_box_in("TowerCrenel%d_%d" % [i, c], citadel,
+				Vector3(dx + cos(angle) * 4.2, top + 1.0,
+					-210.0 + dz + sin(angle) * 4.2),
+				Vector3(2.4, 2.4, 2.4), crenel, false)
+
+
 func _box_in(box_name: String, parent: Node3D, center: Vector3, size: Vector3,
 		color: Color, with_collision: bool, emissive: bool = false) -> void:
 	var mesh: MeshInstance3D = MeshInstance3D.new()

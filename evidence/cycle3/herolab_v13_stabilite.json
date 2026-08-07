@@ -1,0 +1,37 @@
+{
+  "label": "cycle3_stabilite_v13",
+  "commit": "01daa8ccba7fea09c5c7820c83d21c858d5f4868",
+  "repo_dirty": false,
+  "scene": "res://scenes/lookdev/StabilityDolly.tscn",
+  "webp": "evidence/cycle3/herolab_v13_stabilite.webp",
+  "keyframes": "evidence/cycle3/herolab_v13_stabilite_cles.png",
+  "frames": 217,
+  "fps_fixed": 12,
+  "duration_s": 18.1,
+  "resolution_rendered": "1152x648",
+  "resolution_webp": "640x360",
+  "phases": {
+    "arret": "0-3 s",
+    "marche_3_5ms": "3-9 s",
+    "sprint_9ms": "9-13 s",
+    "rotation_pm35deg": "13-18 s"
+  },
+  "capture_mode": "Movie Maker --write-movie --fixed-fps 12 (source 4.7.1)",
+  "renderer": "Forward+ / llvmpipe (rendu logiciel — jamais une mesure)",
+  "probe_vent_phase_immobile": [
+    4.24,
+    4.32,
+    3.85,
+    3.05,
+    4.15
+  ],
+  "probe_vent_reference_v6": [
+    1.79,
+    1.91,
+    1.79,
+    1.62,
+    2.03
+  ],
+  "outil_sondes": "tools/video/probe_hold.py (méthode/unités : README)",
+  "timestamp_utc": "2026-08-06T04:11:38.710755Z"
+}

@@ -7,9 +7,63 @@ personnel du joueur ni un service payant.
 
 ## État à ce jour
 
-Le projet contient des ressources externes d'une seule provenance : les packs
-**Quaternius Standard (CC0 1.0)**, inscrits ci-dessous AVANT leur entrée dans
-le build (2026-08-02). Tout le reste a été généré par les scripts du dépôt.
+Le projet contient des ressources externes de **quatre** provenances, toutes
+sous **CC0 1.0** (domaine public — usage commercial autorisé, crédit non
+obligatoire mais donné ici) : Quaternius Standard (ART-Q0/Q8, 2026-08-02),
+puis, déposées par le propriétaire du projet le **2026-08-06** :
+**ambientCG** (textures de surface), **Kenney** (Nature Kit) et
+**KayKit / Kay Lousberg** (Dungeon Pack). Tout le reste a été généré par les
+scripts du dépôt.
+
+## Textures de surface — ambientCG, CC0 1.0 (ART-T1, 2026-08-06)
+
+Six matériaux photoscannés, entrés dans le build pour combler le manque
+dominant nommé par trois évaluations successives (« zéro texture, albedos
+plats »).
+
+| | |
+|---|---|
+| Auteur / source | **ambientCG** (Lennart Demes) — <https://ambientcg.com> |
+| Licence | **CC0 1.0 Universal** — <https://creativecommons.org/publicdomain/zero/1.0/> |
+| Packs | `Rock030`, `Rock064`, `Ground037`, `Grass001`, `Bark006`, `Fabric030` (variantes 2K-JPG) |
+| Cible | `assets/textures/surfaces/` |
+| Noms projet | `T_Rock_Strata`, `T_Rock_Mossy`, `T_Ground_Earth`, `T_Grass_Field`, `T_Bark_Tree`, `T_Fabric_Canvas` — suffixes `_Albedo`, `_Normal`, `_Rough` |
+| Modifications | **oui** : seules 3 cartes retenues par pack (Color, NormalGL, Roughness), redimensionnées 2048 → **1024 px** (Lanczos), rugosité convertie en niveaux de gris, JPEG qualité 88. Occlusion, displacement, sources `.blend`/`.usdc`/`.mtlx` écartées |
+| Poids | **7,3 Mo** pour 18 cartes (contre 111 Mo pour les archives complètes) |
+| Reproductible | fichiers importés présents dans `assets/` ; recette et empreintes dans `docs/assets/IMPORT_RULES.md` (la boîte de transport `assets-1` a été retirée du dépôt après import) |
+
+## Nature Kit — Kenney, CC0 1.0 (ART-K1, 2026-08-06)
+
+| | |
+|---|---|
+| Auteur / source | **Kenney** — <https://kenney.nl/assets/nature-kit> |
+| Licence | **CC0 1.0 Universal** (fichier `License.txt` du pack, version 2.1) |
+| Formats retenus | glTF binaire (`Models/GLTF format/*.glb`) |
+| Cible | `assets/environment/cliffs/` |
+| Sélection importée | 8 modèles : `cliff_large_rock`, `cliff_blockSlope_rock`, `cliff_half_rock`, `cliff_corner_rock`, `cliff_cornerLarge_rock`, `rock_largeA`, `rock_largeC`, `rock_smallB` |
+| Modifications | **aucune** sur les fichiers : copie à l'octet près. L'échelle « tuile » du kit (1 m natif) est corrigée **à l'usage** par `KitScale`, jamais en réécrivant l'asset |
+| État | **importé** (2026-08-06) — le reste du pack est retéléchargeable chez l'auteur, à l'URL de source ci-dessus |
+
+## Dungeon Pack 1.1 FREE — KayKit / Kay Lousberg, CC0 1.0 (ART-KK1, 2026-08-06)
+
+| | |
+|---|---|
+| Auteur / source | **Kay Lousberg** — <https://www.kaylousberg.com> |
+| Licence | **CC0 1.0 Universal** (fichier `License.txt` du pack) — crédit non obligatoire, donné volontairement |
+| Formats retenus | glTF (`Assets/gltf/`) |
+| État | **déposé, non encore importé** — destiné à la Citadelle de l'Œil-Tempête (phase donjon) |
+
+## Ultimate Nature (FBX/OBJ) — Quaternius, CC0 1.0 (ART-Q9, 2026-08-06)
+
+| | |
+|---|---|
+| Auteur / source | **Quaternius** — <https://quaternius.com> (même auteur que ART-Q0/Q8) |
+| Licence | **CC0 1.0 Universal** |
+| Contenu | 150 modèles OBJ + FBX : saules, rochers moussus, troncs, blé, variantes enneigées et automnales |
+| Cible | `assets/environment/riverside/` |
+| Sélection importée | 8 modèles OBJ + leurs `.mtl` : `Willow_1/3/5`, `Rock_Moss_2/5`, `TreeStump_Moss`, `WoodLog_Moss`, `BushBerries_1` (348 Ko) |
+| Modifications | **aucune** sur les fichiers. L'OBJ s'importe en ressource **Mesh** (et non en scène) — contrat vérifié dans le `.import` généré puis rendu exécutable par test. Échelle corrigée **à l'usage** par `KitScale` |
+| État | **importé** (2026-08-06) — le reste du pack est retéléchargeable chez l'auteur, à l'URL de source ci-dessus |
 
 ## Promotion « monde ouvert » — CC0 Quaternius (ART-Q8)
 
@@ -35,7 +89,7 @@ rochers et dalles de chemin.
 |---|---|
 | Auteur | **Quaternius** (https://quaternius.com) |
 | Licence | **CC0 1.0 Universal (Public Domain Dedication)** — confirmée sur le fichier `License*.txt` PRÉSENT DANS CHACUNE des sept archives, https://creativecommons.org/publicdomain/zero/1.0/ |
-| Canal d'acquisition | GitHub Release `asset-inbox-quaternius-free-v1` du dépôt du projet (boîte de transport déposée par le propriétaire) ; empreintes SHA-256 vérifiées identiques aux digests GitHub — détail dans `docs/assets/QUATERNIUS_INBOX.md` |
+| Canal d'acquisition | boîte de transport déposée par le propriétaire sur une Release du dépôt, retirée après import ; empreintes SHA-256 relevées à l'import et conservées dans `docs/assets/QUATERNIUS_INBOX.md` — c'est ce fichier qui fait foi désormais |
 | Archives sources | Stylized Nature MegaKit, Fantasy Props MegaKit, Medieval Village MegaKit, Universal Base Characters, Modular Character Outfits – Fantasy, Universal Animation Library 1 et 2 (éditions Standard, gratuites) |
 | Modifications | copies à l'octet près depuis les archives, SAUF les trois dérivations listées ci-dessous ; la sélection (~130 modèles promus sur 2162 entrées) est documentée dans `docs/assets/PROMOTIONS.csv` et `docs/assets/ASSET_MANIFEST.csv` |
 | Fichiers dans le build | `assets/environment/{foliage,rocks,props,dungeon}/` et `assets/characters/{hero,enemies,parts}/` — voir manifeste |

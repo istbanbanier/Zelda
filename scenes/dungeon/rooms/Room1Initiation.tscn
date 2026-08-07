@@ -12,6 +12,7 @@
 script = ExtResource("1_room")
 
 [node name="GameplayShell" parent="." instance=ExtResource("3_shell")]
+world_scene_path = "res://scenes/dungeon/rooms/Room1Initiation.tscn"
 
 ; Le joueur entre par le seuil sud, face au fond (regard -Z) : le couloir de
 ; poussée, le bloc, le vide entre les plaques et la porte sont dans l'axe.

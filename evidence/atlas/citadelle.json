@@ -1,0 +1,15 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "altitude_m": 600.0,
+  "center": "0.0,0.0",
+  "engine": "4.7.1-stable (custom_build)",
+  "fog": "conservé",
+  "geometry_instances": 3654,
+  "image": "evidence/atlas/citadelle.png",
+  "label": "citadelle",
+  "metres_per_pixel": 0.325,
+  "renderer": "forward_plus",
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "size": "1600x900",
+  "span_m": 520.0
+}

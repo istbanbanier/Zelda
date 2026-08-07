@@ -1,0 +1,18 @@
+{
+  "commit": "9e5877c70e2c958bc1089e1b5ba344468320440c",
+  "display_server": "X11",
+  "distinct_colors_sampled": 1253,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 40,
+  "height": 1080,
+  "label": "cycle3_v11_soleil",
+  "luma_mean": 0.5465,
+  "luma_stddev": 0.163,
+  "png": "evidence/cycle3/herolab_v11_soleil.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/lookdev/HeroShotLab.tscn",
+  "timestamp_utc": "2026-08-06 03:16:25",
+  "width": 1920
+}
