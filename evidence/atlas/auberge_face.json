@@ -1,0 +1,15 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "altitude_m": 600.0,
+  "center": "0.0,0.0",
+  "engine": "4.7.1-stable (custom_build)",
+  "fog": "conservé",
+  "geometry_instances": 97,
+  "image": "evidence/atlas/auberge_face.png",
+  "label": "auberge_pignon",
+  "metres_per_pixel": 0.371428571428571,
+  "renderer": "forward_plus",
+  "scene": "res://scenes/tests/VillageShot.tscn",
+  "size": "1400x800",
+  "span_m": 520.0
+}

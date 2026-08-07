@@ -90,9 +90,11 @@ func _build_shell() -> void:
 	box("WallSouthLintel", Vector3(-6.0, 7, 9.25), Vector3(4.4, 4, 0.5),
 		COL_STONE)
 	# Est : percement de 4 m pour la porte du puzzle.
-	box("WallEastNorth", Vector3(13.25, 4.5, -5.5), Vector3(0.5, 9, 7),
+	# BLOCAGE corrige : ouverture retablie de z = -4 a z = 0, exactement
+	# sous le linteau ; ferme au passage la fente de 1 m a cote de la porte.
+	box("WallEastNorth", Vector3(13.25, 4.5, -6.5), Vector3(0.5, 9, 5),
 		COL_STONE)
-	box("WallEastSouth", Vector3(13.25, 4.5, 5.0), Vector3(0.5, 9, 8),
+	box("WallEastSouth", Vector3(13.25, 4.5, 4.5), Vector3(0.5, 9, 9),
 		COL_STONE)
 	box("WallEastLintel", Vector3(13.25, 7, -2), Vector3(0.5, 4, 4), COL_BRONZE)
 	# Couloir de sortie, scellé au fond (F.6 raccordera les salles).

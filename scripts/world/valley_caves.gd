@@ -505,7 +505,14 @@ func _build_waterfall_cave() -> void:
 		["Pebble_Round_5", Vector3(-1.6, 0.02, 2.4), 260.0, 1.0],
 		["Bucket_Wooden_1", Vector3(-3.6, 0.05, -0.4), 25.0, 1.0],
 		["Bag", Vector3(-2.0, 0.05, -3.0), 60.0, 1.0],
-		["Torch_Metal", Vector3(3.9, 1.6, -3.0), 270.0, 1.0],
+		# Revue V4 — PIÈCE FLOTTANTE. La platine de `Torch_Metal` est son plan
+		# local z = 0 (bbox mesurée : z ∈ [0,0001 ; 0,3885]) ; tout le corps part
+		# en +z. Au lacet 270° ce +z va vers −X, donc la platine RESTE à la
+		# coordonnée écrite. Elle était à x = 3,9 alors que la paroi de la salle
+		# est à x = 4,5 (inner.x = 9) : la torche pendait à 60 cm du mur. Cette
+		# grotte est naturelle, elle n'a AUCUN parement de brique pour avancer le
+		# nu — contrairement à la crypte, où les torches sont justement à ±4,2.
+		["Torch_Metal", Vector3(4.5, 1.6, -3.0), 270.0, 1.0],
 	])
 	# Filet de lumière filtrant par le rideau : la salle n'est jamais un trou noir.
 	var glow: OmniLight3D = OmniLight3D.new()
@@ -561,10 +568,17 @@ func _build_abandoned_mine() -> void:
 		for side: float in [-1.0, 1.0]:
 			_piece("Prop_Support", Vector3(side * 1.45, 0.0, z), 0.0, root)
 	# Sol de galerie : dalles usées sur la grille de 2 m du kit.
+	# Revue V4 — INTERPÉNÉTRATION. `Floor_UnevenBrick` mesure 2,00 m de large
+	# (bbox x ∈ [−1 ; +1]). Aux anciennes abscisses ±0,9 les deux rangées
+	# occupaient [−1,9 ; +0,1] et [−0,1 ; +1,9] : 20 cm de recouvrement STRICT,
+	# à la même cote y = 0,02, sur les 12 m de galerie — deux faces coplanaires
+	# coïncidentes, donc du z-fighting dans l'axe de marche. À ±1,0 les rangées
+	# se touchent bord à bord en x = 0 et couvrent [−2 ; +2], soit toute la
+	# largeur intérieure (parois à ±1,6), l'excédent restant dans la roche.
 	for step: int in range(6):
 		var z: float = -5.0 + float(step) * 2.0
 		for side: float in [-1.0, 1.0]:
-			_piece("Floor_UnevenBrick", Vector3(side * 0.9, 0.02, z), 0.0, root)
+			_piece("Floor_UnevenBrick", Vector3(side * 1.0, 0.02, z), 0.0, root)
 
 	# Carreau de mine : le seuil est MAÇONNÉ, on le repère de loin.
 	_dress(root, [
@@ -572,26 +586,59 @@ func _build_abandoned_mine() -> void:
 		["Wall_UnevenBrick_Straight", Vector3(2.2, 0.0, mouth_z + 0.4), 0.0],
 		["Prop_Support", Vector3(-1.5, 0.0, mouth_z - 0.2), 0.0],
 		["Prop_Support", Vector3(1.5, 0.0, mouth_z - 0.2), 0.0],
-		["Prop_Wagon", Vector3(2.6, 0.05, mouth_z + 3.2), 78.0],
+		# Lot 17 — RATTACHEMENT : le wagon était à demi avalé par la halde est.
+		# Relevé du .gltf : `Prop_Wagon` a son origine près de l'essieu avant,
+		# bbox x ∈ [−0,979 ; +0,972] et z ∈ [−3,150 ; +0,874] — 4,02 m de long.
+		# Au lacet 78° cette emprise devient x ∈ [pos−3,29 ; pos+1,06]. Posé à
+		# x = 2,6 le wagon occupait donc x ∈ [−0,69 ; 3,66], alors que la halde
+		# est un solide qui part de x = 2,9 et monte à y = 1,0 : 0,76 m de caisse
+		# étaient enfoncés dans le talus de déblais, et l'about dépassait aussi
+		# le tablier (x ≤ 3,0). À x = 1,7 le wagon tient dans [−1,59 ; 2,76] :
+		# 0,14 m de dégagement avec la halde, entièrement sur le tablier, et
+		# 0,46 m de marge avec la caisse en bois posée à −2,6.
+		["Prop_Wagon", Vector3(1.7, 0.05, mouth_z + 3.2), 78.0],
 		["Rock_Medium_2", Vector3(-5.2, 0.0, mouth_z + 5.4), 40.0, 1.3],
 		["Rock_Medium_3", Vector3(5.6, 0.0, mouth_z + 5.0), -60.0, 1.2],
 		["Pebble_Square_2", Vector3(-2.4, 0.02, mouth_z + 4.6), 15.0, 1.4],
 		["Pebble_Round_1", Vector3(1.2, 0.02, mouth_z + 5.6), 190.0, 1.2],
 		["DeadTree_1", Vector3(-6.6, 0.0, mouth_z + 8.0), 25.0, 1.0],
 		["Crate_Wooden", Vector3(-2.6, 0.05, mouth_z + 2.0), 20.0],
-		["Barrel", Vector3(-3.2, 0.05, mouth_z + 3.4), 0.0],
+		# Lot 17 — RATTACHEMENT : le tonneau était DANS la halde ouest.
+		# `Barrel` mesure 0,698 m de diamètre (bbox x ∈ [−0,349 ; +0,349]) ; à
+		# x = −3,2 il occupait [−3,549 ; −2,851] quand la halde ouest commence à
+		# x = −2,9 et culmine à y = 1,0 — soit 0,65 m des 0,70 m noyés dans la
+		# terre, un tonneau visible par un croissant. À x = −2,3 il tient dans
+		# [−2,649 ; −1,951], 0,25 m devant le talus ; le z ne bouge pas, la
+		# caisse voisine étant en z ∈ [8,63 ; 9,77] et le tonneau en [10,25 ;
+		# 10,95].
+		["Barrel", Vector3(-2.3, 0.05, mouth_z + 3.4), 0.0],
 	])
 	# Chambre d'abattage : outillage laissé sur place, et le FILON — la raison
 	# de descendre jusqu'ici.
 	_dress(root, [
-		["Pickaxe_Bronze", Vector3(-1.8, 0.05, chamber_z + 2.0), 110.0],
+		# Revue V4 — PIÈCE FLOTTANTE (enterrée). `Pickaxe_Bronze` a son origine
+		# au milieu du manche : bbox y ∈ [−0,4939 ; +0,7038]. `KitPlacement.seat`
+		# ne REMONTE jamais un min.y négatif (kit_placement.gd:20-22), donc à
+		# y = 0,05 l'outil s'enfonçait de 0,44 m dans le sol, fer compris. Posé à
+		# y = 0,50 sa pointe basse est à 0,006 m du dallage ; à x = −3,85 avec un
+		# lacet de 90° (le +z local, épais de 0,068 m, part alors vers +X) il
+		# s'adosse au front de taille ouest, dont la face intérieure est à −4,0.
+		["Pickaxe_Bronze", Vector3(-3.85, 0.50, chamber_z + 2.0), 90.0],
 		["Crate_Metal", Vector3(2.6, 0.05, chamber_z + 1.4), 35.0],
 		["Crate_Wooden", Vector3(3.1, 0.05, chamber_z + 2.6), 12.0],
 		["Bucket_Metal", Vector3(-2.9, 0.05, chamber_z - 0.6), 0.0],
 		["Chain_Coil", Vector3(1.4, 0.05, chamber_z - 2.4), 60.0],
 		["Rope_1", Vector3(-1.2, 0.05, chamber_z - 2.8), 200.0],
 		["Chest_Wood", Vector3(0.2, 0.05, chamber_z - 3.0), 180.0],
-		["Lantern_Wall", Vector3(0.0, 1.9, chamber_z - 3.7), 180.0],
+		# Revue V4 — INTERPÉNÉTRATION. `Lantern_Wall` a sa platine en z ≈ 0 et sa
+		# potence qui s'avance de 1,25 m en +z (bbox z ∈ [−0,051 ; +1,2513]). Au
+		# lacet 180° ce +z partait vers −Z, c'est-à-dire DANS la paroi du fond,
+		# dont la face intérieure est à chamber_z − 4,0 = −16,4 : 95 cm sur 130
+		# étaient noyés dans 1,20 m de roche. Lacet 0 = potence vers la salle, et
+		# z = chamber_z − 4,0 met la platine exactement au nu de la paroi. La
+		# hauteur ne bouge pas : `seat` descend la pièce de 0,082 m et la
+		# géométrie occupe y ∈ [1,90 ; 3,24] sous un plafond à 3,40 m.
+		["Lantern_Wall", Vector3(0.0, 1.9, chamber_z - 4.0), 0.0],
 		["Prop_Support", Vector3(-3.3, 0.0, chamber_z - 1.0), 0.0],
 		["Prop_Support", Vector3(3.3, 0.0, chamber_z - 1.0), 0.0],
 	])
@@ -671,19 +718,38 @@ func _build_forgotten_crypt() -> void:
 		["Bush_Common", Vector3(6.8, 0.0, face_z + 6.0), 80.0, 1.0],
 		["Clover_1", Vector3(3.0, 0.0, face_z + 4.8), 0.0, 1.0],
 	])
-	# Dallage : la grille de 2 m du kit couvre les 9 m de la salle.
-	for ix: int in range(-2, 2):
-		for iz: int in range(-2, 2):
+	# Dallage. Revue V4 — SANS SOL sur une bande de 0,50 m. L'ancien
+	# `range(-2, 2)` ne donnait que quatre indices par axe ({−2,−1,0,1}) et,
+	# avec le décalage de +1,0, quatre dalles centrées sur {−3,−1,1,3}.
+	# `Floor_Brick` mesurant exactement 2,00 × 2,00 m (bbox ±1), la couverture
+	# s'arrêtait à ±4,0 pour une salle de 9,00 m dont les faces intérieures sont
+	# à ±4,5 : un liseré de 0,50 m de boîte grise brute courait au pied des
+	# quatre murs. Cinq dalles par axe, centrées sur la grille {−4,−2,0,2,4},
+	# couvrent [−5 ; +5] : les 9 m sont pris et l'excédent de 0,50 m disparaît
+	# dans l'épaisseur des murs (intérieur ±4,5, extérieur ±5,5). Bord à bord :
+	# aucun recouvrement de dalle sur dalle, donc aucun z-fighting.
+	for ix: int in range(-2, 3):
+		for iz: int in range(-2, 3):
 			_piece("Floor_Brick",
-				Vector3(float(ix) * MODULE + 1.0, 0.02,
-					float(iz) * MODULE + 1.0), 0.0, root)
+				Vector3(float(ix) * MODULE, 0.02, float(iz) * MODULE),
+				0.0, root)
 	# Parement intérieur : brique sur les trois parois pleines. Les pièces font
 	# 3,12 m de haut, la salle 3,3 m — rien ne traverse le plafond.
-	for ix: int in range(-2, 2):
-		var x: float = float(ix) * MODULE + 1.0
+	# Revue V4 — MUR TROP COURT, même arithmétique que le dallage :
+	# `Wall_UnevenBrick_Straight` fait 2,000 m de large (bbox x ∈ [−1 ; +1]) et
+	# quatre panneaux ne couvraient que 8,00 m des 9,00 m du mur. Il restait
+	# 0,50 m de pierre nue à CHAQUE extrémité des trois murs habillés, donc une
+	# fente verticale de 0,5 × 3,12 m dans les quatre angles rentrants.
+	# Cinq panneaux sur la MÊME grille que les dalles ({−4,−2,0,2,4}, sans le
+	# décalage de +1,0) couvrent [−5 ; +5] bord à bord : les extrémités entrent
+	# de 0,50 m dans le mur perpendiculaire, qui va de ±4,5 à ±5,5 — donc rien
+	# ne ressort à l'extérieur de la coque, et les angles sont fermés par le
+	# croisement des deux parements.
+	for ix: int in range(-2, 3):
+		var x: float = float(ix) * MODULE
 		_piece("Wall_UnevenBrick_Straight", Vector3(x, 0.0, -4.35), 180.0, root)
-	for iz: int in range(-2, 2):
-		var z: float = float(iz) * MODULE + 1.0
+	for iz: int in range(-2, 3):
+		var z: float = float(iz) * MODULE
 		_piece("Wall_UnevenBrick_Straight", Vector3(-4.35, 0.0, z), 90.0, root)
 		_piece("Wall_UnevenBrick_Straight", Vector3(4.35, 0.0, z), 270.0, root)
 
@@ -698,14 +764,24 @@ func _build_forgotten_crypt() -> void:
 	var fresco: Node3D = Node3D.new()
 	fresco.name = "Fresque"
 	root.add_child(fresco)
-	_decor_box(fresco, "Panneau", Vector3(0, 1.9, -4.3), Vector3(2.8, 2.0, 0.1),
+	# Revue V4 — INTERPÉNÉTRATION : la fresque était NOYÉE dans son propre mur.
+	# Le parement du fond est posé à z = −4,35 avec un lacet de 180°, et
+	# `Wall_UnevenBrick_Straight` a une bbox z ∈ [−0,314 ; +0,0924] : retourné,
+	# le panneau de brique occupe z ∈ [−4,442 ; −4,036], sa face visible étant
+	# à −4,036. L'ancien panneau de fresque (z = −4,30, épaisseur 0,10, donc
+	# [−4,35 ; −4,25]) et ses quatre traits (z = −4,24, donc [−4,27 ; −4,21])
+	# étaient strictement à l'INTÉRIEUR de cet intervalle : le mur du fond
+	# n'était que de la brique nue, et le seul indice de la salle invisible.
+	# Le panneau passe devant la brique (z ∈ [−4,03 ; −3,93], 6 mm de dégagement,
+	# pas de z-fighting) et les traits devant le panneau (z ∈ [−3,95 ; −3,89]).
+	_decor_box(fresco, "Panneau", Vector3(0, 1.9, -3.98), Vector3(2.8, 2.0, 0.1),
 		Color(0.38, 0.35, 0.31))
-	_decor_box(fresco, "Trait", Vector3(0, 2.7, -4.24), Vector3(0.12, 0.8, 0.06),
+	_decor_box(fresco, "Trait", Vector3(0, 2.7, -3.92), Vector3(0.12, 0.8, 0.06),
 		COL_ORE, 1.4)
-	_decor_box(fresco, "Trait", Vector3(0, 1.1, -4.24), Vector3(0.12, 0.8, 0.06),
+	_decor_box(fresco, "Trait", Vector3(0, 1.1, -3.92), Vector3(0.12, 0.8, 0.06),
 		COL_ORE, 1.4)
 	for side: float in [-1.0, 1.0]:
-		_decor_box(fresco, "Branche", Vector3(side * 0.35, 1.9, -4.24),
+		_decor_box(fresco, "Branche", Vector3(side * 0.35, 1.9, -3.92),
 			Vector3(0.1, 0.9, 0.06), COL_ORE, 1.4)
 
 	_dress(root, [
@@ -713,13 +789,48 @@ func _build_forgotten_crypt() -> void:
 		["CandleStick", Vector3(1.6, 0.05, -1.2), 0.0],
 		["Candle_1", Vector3(0.0, 1.08, -1.2), 0.0],
 		["Book_Stack_1", Vector3(-3.4, 0.05, -2.6), 40.0],
-		["Bookcase_2", Vector3(-3.6, 0.05, 1.2), 90.0],
-		["Shelf_Arch", Vector3(3.6, 0.05, 0.6), 270.0],
+		# Lot 17 — MEUBLE DÉCOLLÉ DU MUR, exactement le défaut corrigé plus bas
+		# pour `Shelf_Arch` mais laissé ici. `Bookcase_2` a une profondeur
+		# CENTRÉE sur son origine : bbox z ∈ [−0,2145 ; +0,2145]. Au lacet 90° ce
+		# z devient l'axe X, donc le dos du meuble se trouve à `pos.x − 0,2145`.
+		# À x = −3,6 le dos était à −3,8145, alors que la face visible du
+		# parement de brique du mur ouest est à −4,2576 (panneaux posés à
+		# x = −4,35, bbox z ∈ [−0,314 ; +0,0924] retournée par le lacet 90°) :
+		# 0,443 m de vide derrière une bibliothèque de 2,55 m de haut, plantée
+		# au milieu de rien. À x = −4,03 le dos vient à −4,2445, soit 13 mm du
+		# parement — la même assise que `Shelf_Arch` sur le mur d'en face.
+		# Le z passe de 1,2 à 0,5 : au dos du mur, la bannière ouest occupe
+		# z ∈ [1,588 ; 3,201] et x ∈ [−4,293 ; −4,102], donc l'étoffe aurait
+		# traversé le meuble une fois celui-ci ramené contre la brique. Depuis
+		# 0,5 la bibliothèque tient dans z ∈ [−0,231 ; 1,231] : 0,36 m sous la
+		# bannière, 0,26 m au-dessus de la torche (z ∈ [−0,712 ; −0,488]).
+		["Bookcase_2", Vector3(-4.03, 0.05, 0.5), 90.0],
+		# Revue V4 — PIÈCE FLOTTANTE, à demi enterrée ET décollée du mur.
+		# `Shelf_Arch` a son origine au CENTRE de l'arc : bbox y ∈ [−0,6145 ;
+		# +0,9747], z ∈ [−0,0048 ; +0,3068]. À y = 0,05 elle descendait à
+		# −0,564 m — 56 cm sous le dallage, que `seat` ne remonte pas. Et au
+		# lacet 270° le +z local part vers −X : le dos du meuble restait à
+		# x = 3,605 alors que la face visible du parement de brique du mur est
+		# est à x = 4,258, soit 65 cm de vide. À x = 4,26 le dos affleure la
+		# brique ; à y = 1,30 l'arc va de 0,686 m à 2,275 m, sous les 3,30 m.
+		["Shelf_Arch", Vector3(4.26, 1.30, 0.6), 270.0],
 		["Scroll_1", Vector3(3.3, 0.05, -1.8), 120.0],
 		["Pot_1", Vector3(3.2, 0.05, 2.6), 0.0],
 		["Chest_Wood", Vector3(-3.2, 0.05, -3.4), 20.0],
-		["Banner_1", Vector3(-4.2, 0.05, 3.2), 90.0],
-		["Banner_1", Vector3(4.2, 0.05, 3.2), 270.0],
+		# Revue V4 — PIÈCE FLOTTANTE (enterrée). L'origine de `Banner_1` est son
+		# POINT D'ACCROCHE mural, pas sa base : bbox y ∈ [−1,5487 ; +0,8435],
+		# l'étoffe pend donc 1,55 m SOUS l'ancrage, et `seat` ne remonte pas un
+		# min.y négatif. Posées à y = 0,05, les deux bannières avaient 1,50 m
+		# d'étoffe sous le dallage. Le reste du dépôt accroche bien plus haut
+		# (valley_terrain.gd:791 à 2,5 m ; citadel_vestibule.gd à 5,2 m). À
+		# y = 2,4 la hampe monte à 3,24 m — sous le plafond de 3,30 m — et le bas
+		# de l'étoffe reste à 0,85 m du sol.
+		# Le z de la bannière de droite passe de 3,2 à 2,4 : au lacet 270° la
+		# hampe part vers +Z sur 1,61 m, elle atteignait donc z = 4,81 et entrait
+		# de 0,31 m dans le jambage du seuil (face intérieure à z = 4,5) ;
+		# depuis 2,4 elle s'arrête à 4,01, dans la salle.
+		["Banner_1", Vector3(-4.2, 2.4, 3.2), 90.0],
+		["Banner_1", Vector3(4.2, 2.4, 2.4), 270.0],
 		["Torch_Metal", Vector3(-4.2, 1.7, -0.6), 90.0],
 		["Torch_Metal", Vector3(4.2, 1.7, -0.6), 270.0],
 		["Bottle_1", Vector3(-3.3, 0.05, 3.4), 60.0],

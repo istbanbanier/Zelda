@@ -366,10 +366,154 @@ func _fence_row(parent: Node3D, kind: String, start: Vector3, step: Vector3,
 ## Un pieu planté de travers, avec sa collision. C'est le mot commun aux camps
 ## braise (plantés au jugé) et à la ronde azur (plantés au cordeau) : même
 ## objet, deux grammaires de placement.
+##
+## REVUE V5 — la collision ne décrivait pas la pièce posée. Mesuré :
+##     python3 tools/gltf_inspect.py \
+##         assets/environment/dungeon/Prop_WoodenFence_Single.gltf
+##     dimensions_m : [2.0641, 0.8381, 0.1198]
+## Ce n'est pas un pieu, c'est un PANNEAU de barrière de 2,06 m de large et
+## 0,84 m de haut. L'ancienne boîte (0,4 × 1,8 × 0,4) était deux fois trop
+## HAUTE et cinq fois trop ÉTROITE : sur les dix-huit appels, on traversait
+## les 80 cm de panneau visible et on se cognait dans un poteau invisible.
+## La boîte suit maintenant le yaw comme le fait `_wall`.
 func _stake(parent: Node3D, at: Vector3, yaw: float, tilt: float) -> void:
 	_piece("Prop_WoodenFence_Single", at, yaw, parent, "",
 		Vector3(tilt, 0.0, tilt * 0.45))
-	_collider(parent, at + Vector3(0, 0.9, 0), Vector3(0.4, 1.8, 0.4))
+	# Image de l'axe long du panneau (son +X local) par la rotation yaw.
+	var along: Vector3 = Vector3(cos(deg_to_rad(yaw)), 0, -sin(deg_to_rad(yaw)))
+	var span: Vector3 = along.abs() * 2.06
+	var thick: Vector3 = Vector3(absf(along.z), 0, absf(along.x)) * 0.35
+	_collider(parent, at + Vector3(0, 0.42, 0),
+		Vector3(maxf(span.x, thick.x), 0.84, maxf(span.z, thick.z)))
+
+
+## Pose une pièce du kit puis l'ÉTIRE verticalement, en la rasseyant au sol.
+##
+## REVUE V5 — l'ordre comptait et personne ne l'avait vu. `_piece` appelle
+## `KitPlacement.seat` à l'échelle 1 ; changer `scale` ensuite décolle la
+## géométrie. Mesuré sur `Prop_Support` (bbox_min.y = +1,2114 m) étiré de
+## 1,7 : la base remonte à −1,2114 + 1,2114 × 1,7 = **+0,85 m**. On remet
+## donc la position à zéro APRÈS l'échelle, puis on redemande l'assise :
+## `seat` recalcule alors le point bas dans la base mise à l'échelle.
+func _piece_scaled(asset: String, at: Vector3, yaw_deg: float,
+		parent: Node3D, scale_y: float) -> Node3D:
+	var node: Node3D = _piece(asset, at, yaw_deg, parent)
+	if node == null:
+		return null
+	node.scale = Vector3(node.scale.x, node.scale.y * scale_y, node.scale.z)
+	node.position = at
+	# Clé de cache vide À DESSEIN : `KitPlacement` mémorise le point bas par
+	# chemin de scène. La valeur stockée est locale au modèle donc juste ici
+	# aussi, mais on préfère remesurer l'instance réellement étirée — quelques
+	# dizaines d'appels, et aucune interaction avec un cache partagé.
+	KitPlacement.seat(node, "")
+	return node
+
+
+# --- L'ÉTAI DU KIT : une oblique, jamais un poteau -------------------------
+#
+# REVUE V6 (chasse aux défauts d'ORIENTATION). `Prop_Support` était employé
+# neuf fois dans ce fichier comme s'il s'agissait d'un poteau vertical :
+# « perches » de l'auvent, pieds du mirador, montants du poste de contrôle,
+# contreforts du bastion, perches du balisage, mât du tell. La boîte
+# englobante seule (0,199 × 1,709 × 2,036 m) laissait croire à un poteau muni
+# d'un accessoire. Le relevé des 32 SOMMETS du .gltf dit autre chose :
+#
+#     python3 tools/gltf_inspect.py assets/environment/dungeon/Prop_Support.gltf
+#     bbox : x ±0,0993 · y 1,2114 → 2,9200 · z −0,1181 → +1,9182
+#     sommets : talon en (y 1,211…1,507 ; z −0,118) — about en (y 2,920 ;
+#               z +1,566…+1,918). Aucun sommet entre les deux à z constant.
+#
+# C'est un ÉTAI OBLIQUE. Assis au sol par `KitPlacement` (qui le descend de
+# 1,2114 m), son axe va de (y 0 ; z −0,118) à (y 1,7086 ; z +1,918) : sa tête
+# est à 2,04 m HORIZONTALEMENT de son pied. Conséquences mesurées, toutes
+# vérifiées avant correction :
+#
+#   - la torche du camp braise, posée « au-dessus » du pied à 1,50 m, pendait
+#     à 1,67 m du bois ;
+#   - la banderole d'une balise, à 2,60 m, à 1,71 m du bois ;
+#   - la bannière du tell, à 1,60 m au-dessus du pied, à 1,79 m du bois ;
+#   - les quatre contreforts du bastion tendaient leur oblique VERS LE VIDE,
+#     en diagonale hors de l'enceinte ;
+#   - et les colliders posés au pied décrivaient un poteau vertical qui
+#     n'existe nulle part : on se cognait dans l'air et on traversait le bois.
+#
+# Ces trois constantes sont la seule description vraie de la pièce. Tout ce
+# qui s'accroche à un étai passe désormais par `_strut_point`.
+const STRUT_H: float = 1.7086
+const STRUT_FOOT_Z: float = -0.1181
+const STRUT_HEAD_Z: float = 1.9182
+
+
+## Point de l'AXE de l'étai à la hauteur `height` (m au-dessus du pied), pour
+## un étai posé en `foot`, tourné de `yaw` et étiré de `stretch`.
+##
+## L'étirement de `_piece_scaled` ne touche QUE Y : la portée horizontale reste
+## 2,036 m quelle que soit la hauteur. C'est pourquoi la formule divise par
+## `STRUT_H * stretch` mais n'échelonne pas `z`.
+func _strut_point(foot: Vector3, yaw: float, height: float,
+		stretch: float = 1.0) -> Vector3:
+	var top: float = STRUT_H * stretch
+	var ratio: float = 0.0
+	if top > 0.001:
+		ratio = clampf(height / top, 0.0, 1.0)
+	var z: float = STRUT_FOOT_Z + (STRUT_HEAD_Z - STRUT_FOOT_Z) * ratio
+	var rad: float = deg_to_rad(yaw)
+	return foot + Vector3(z * sin(rad), height, z * cos(rad))
+
+
+## Tête de l'étai — le seul endroit où il peut PORTER quelque chose.
+func _strut_head(foot: Vector3, yaw: float, stretch: float = 1.0) -> Vector3:
+	return _strut_point(foot, yaw, STRUT_H * stretch, stretch)
+
+
+## Pose un étai et, si `solid`, sa collision RÉELLE : trois boîtes empilées le
+## long de l'oblique au lieu d'une boîte verticale plantée au pied. On ne crée
+## pas de collision là où il n'y en avait pas (`solid = false`) — on remplace
+## celle qui décrivait mal la pièce.
+func _strut(parent: Node3D, foot: Vector3, yaw: float,
+		stretch: float = 1.0, solid: bool = true) -> Node3D:
+	var node: Node3D = null
+	if is_equal_approx(stretch, 1.0):
+		node = _piece("Prop_Support", foot, yaw, parent)
+	else:
+		node = _piece_scaled("Prop_Support", foot, yaw, parent, stretch)
+	if not solid:
+		return node
+	var top: float = STRUT_H * stretch
+	var run: float = (STRUT_HEAD_Z - STRUT_FOOT_Z) / 3.0
+	var along: Vector3 = Vector3(sin(deg_to_rad(yaw)), 0.0, cos(deg_to_rad(yaw)))
+	for s: int in range(3):
+		var centre: Vector3 = _strut_point(foot, yaw,
+			top * (float(s) + 0.5) / 3.0, stretch)
+		# Boîte alignée sur les axes : l'oblique se projette sur x et z selon
+		# le yaw, comme le fait déjà `_wall` pour l'épaisseur d'un mur.
+		var span_x: float = absf(along.x) * run + absf(along.z) * 0.24
+		var span_z: float = absf(along.z) * run + absf(along.x) * 0.24
+		_collider(parent, centre, Vector3(maxf(span_x, 0.24), top / 3.0,
+			maxf(span_z, 0.24)))
+	return node
+
+
+## Collision d'un escalier. Le kit est purement visuel : sans ces boîtes on
+## traverse la volée (revue V5 : les trois escaliers du fichier n'en avaient
+## AUCUNE). Une boîte unique ferait un mur ; on empile donc `steps`
+## contremarches depuis `foot` (pied de la volée, au sol) le long de `run`
+## (déplacement horizontal du pied vers le haut). Une contremarche de 0,25 à
+## 0,31 m reste dans le step height de §8.2 (0,30–0,38 m).
+func _stair_collision(parent: Node3D, foot: Vector3, run: Vector3,
+		rise: float, width: float, steps: int) -> void:
+	if steps <= 0:
+		return
+	var seg: Vector3 = run / float(steps)
+	var side: Vector3 = Vector3(absf(run.normalized().z), 0.0,
+		absf(run.normalized().x)) * width
+	for s: int in range(steps):
+		var top: float = rise * float(s + 1) / float(steps)
+		var centre: Vector3 = foot + seg * (float(s) + 0.5) \
+			+ Vector3(0.0, top * 0.5, 0.0)
+		_collider(parent, centre, Vector3(maxf(absf(seg.x), side.x), top,
+			maxf(absf(seg.z), side.z)))
 
 
 func _material(tint: Color, glowing: bool) -> StandardMaterial3D:
@@ -478,22 +622,57 @@ func _build_one_braise_camp(camp: Node3D, index: int) -> void:
 	_fire_ring(camp, Vector3.ZERO, 1.15)
 	_metal_crate(camp, Vector3(1.9, 0.45, -1.3))
 
-	# Auvent de fortune : une toiture posée DE TRAVERS sur deux perches. Elle
-	# n'est ni horizontale ni centrée — un abri, pas un toit.
-	for side: float in [-1.0, 1.0]:
-		var foot: Vector3 = Vector3(side * 1.1, 0.0, -2.7)
-		_piece("Prop_Support", foot, 0.0, camp)
-		_collider(camp, foot + Vector3(0, 1.2, 0), Vector3(0.3, 2.4, 0.3))
-	_piece("Roof_Wooden_2x1", Vector3(0.0, 2.35, -2.7),
-		9.0 * float(index + 1), camp, "", Vector3(-19.0, 0.0, 5.0))
+	# Auvent de fortune : une toiture posée DE TRAVERS sur deux étais. Elle
+	# n'est ni horizontale ni centrée — un abri, pas un toit. L'ouverture sur
+	# trois côtés est VOULUE ; c'est un abri de pillard, pas une maison.
+	#
+	# REVUE V6 — LA CORRECTION V5 ÉTAIT SUR LE MAUVAIS AXE. Elle avait descendu
+	# la toiture de 0,383 m pour que son bord bas (2,092 m) rejoigne le sommet
+	# des perches (1,7086 m) : la HAUTEUR devenait juste, et personne n'avait
+	# regardé le plan horizontal. Les deux étais sont plantés en z = −2,7 et
+	# leur tête est à z = −2,7 + 1,918 = −0,782 (cf. bloc « L'ÉTAI DU KIT »),
+	# tandis que la toiture, sous-face relevée sur ses chevrons, n'occupe que
+	# z ∈ [−3,09 ; −1,25]. Les têtes sortaient donc à 1,9 m de l'abri : dans
+	# les trois camps, l'auvent ne reposait sur RIEN et les deux bois se
+	# dressaient à côté, dans le vide.
+	#
+	# Reconstruit par la mesure. Sous-face des chevrons (y local −0,142,
+	# z local ∈ [0 ; 1,161], x ±1,129), ordre d'Euler YXZ, tilt (−19°, ·, +5°) :
+	#     x = +0,9 → tête visée (0,909 ; 2,2330 ; 0,9660) → étirement 1,3069
+	#     x = −0,9 → tête visée (−0,884 ; 2,0846 ; 1,0171) → étirement 1,2201
+	# (les deux hauteurs diffèrent parce que le roulis de +5° fait pencher la
+	# toiture : l'abri reste bancal, comme voulu.) Le pied se déduit en
+	# retirant la portée horizontale de l'étai : z = z_tête − 1,9182.
+	#
+	# Toiture et étais entrent dans un nœud `Auvent` qui porte le yaw du camp :
+	# la relation « la tête est sous le chevron » vaut alors pour les trois
+	# campements, alors qu'un yaw appliqué à la seule toiture la ferait pivoter
+	# sous des bois restés fixes.
+	var canopy: Node3D = Node3D.new()
+	canopy.name = "Auvent"
+	canopy.position = Vector3(0.0, 0.0, -2.7)
+	canopy.rotation_degrees = Vector3(0.0, 9.0 * float(index + 1), 0.0)
+	camp.add_child(canopy)
+	_piece("Roof_Wooden_2x1", Vector3(0.0, 1.967, 0.0), 0.0, canopy, "",
+		Vector3(-19.0, 0.0, 5.0))
+	_strut(canopy, Vector3(0.908, 0.0, -0.952), 0.0, 1.3069)
+	_strut(canopy, Vector3(-0.884, 0.0, -0.901), 0.0, 1.2201)
 
 	# Toile tendue au sol côté vent : deux modèles alternés pour que les trois
 	# camps ne soient pas la même image.
+	#
+	# REVUE V5 — la toile PEND sous son origine (Banner_1_Cloth : bbox y
+	# −2,2464 → 0 ; Banner_2_Cloth : −1,9313 → 0). Posée à y = 0 et basculée
+	# de 74° seulement, son coin bas descendait à −1,011 m (modèle 1) et
+	# −0,924 m (modèle 2) : la moitié de la toile était sous le terrain. À 90°
+	# la longueur de la toile devient franchement horizontale, et seule sa
+	# largeur (0,8102 m, bbox x −0,4079 → +0,4023) reste verticale : il suffit
+	# alors de remonter l'origine de 0,41 m pour que le bord affleure le sol.
 	var cloth: String = "Banner_2_Cloth"
 	if index % 2 == 0:
 		cloth = "Banner_1_Cloth"
-	_piece(cloth, Vector3(2.6, 0.0, -1.5), 63.0 * float(index) - 24.0, camp,
-		PROPS, Vector3(0.0, 0.0, 74.0))
+	_piece(cloth, Vector3(2.6, 0.41, -1.5), 63.0 * float(index) - 24.0, camp,
+		PROPS, Vector3(0.0, 0.0, 90.0))
 
 	# Pieux plantés AU JUGÉ : trois angles, trois inclinaisons, aucun rythme.
 	var pikes: Array[Vector3] = [
@@ -515,7 +694,19 @@ func _build_one_braise_camp(camp: Node3D, index: int) -> void:
 		_piece(kind, at, rad_to_deg(angle), camp, PROPS)
 		if kind == "Barrel" or kind == "Crate_Wooden":
 			_collider(camp, at + Vector3(0, 0.45, 0), Vector3(0.9, 0.9, 0.9))
-	_piece("Torch_Metal", Vector3(-1.9, 0.0, -1.6), 0.0, camp, PROPS)
+	# REVUE V5 — `Torch_Metal` est une APPLIQUE murale : sa platine est dans le
+	# plan z = 0, elle fait saillie vers +z, et sa bbox y va de −0,2776 à
+	# +0,3705. Posée à y = 0 elle était enfoncée de 28 cm dans l'herbe, et
+	# accrochée à rien. On lui donne le montant qui lui manquait, et on la
+	# monte à hauteur de bras.
+	#
+	# REVUE V6 — le montant donné en V5 est un ÉTAI, pas un poteau. La torche
+	# était copiée à l'aplomb du pied (x et z du pied, y = 1,50) alors que
+	# l'étai, à cette hauteur, est déjà passé à z = pied + 1,670. Elle pendait
+	# donc à 1,67 m du seul bois de la scène. On la pose sur l'axe mesuré.
+	var torch_foot: Vector3 = Vector3(-1.9, 0.0, -1.6)
+	_strut(camp, torch_foot, 0.0, 1.0, false)
+	_piece("Torch_Metal", _strut_point(torch_foot, 0.0, 1.45), 0.0, camp, PROPS)
 
 
 ## Autour des camps : herbe sèche piétinée, un arbre mort, quelques pierres.
@@ -597,22 +788,68 @@ func _build_watch_post(parent: Node3D, post_name: String, at: Vector3,
 	post.position = at
 	post.rotation_degrees = Vector3(0, yaw, 0)
 	parent.add_child(post)
-	var deck_y: float = 2.6
+	# REVUE V5 — le plancher était à 2,60 m et les quatre équerres s'arrêtent à
+	# 1,7086 m (`Prop_Support`, hauteur mesurée) : 88 cm de vide sous une
+	# plate-forme de 4 × 4 m, tenue en l'air par des colliders invisibles. Le
+	# plancher descend à 2,00 m — la hauteur exacte que deux volées du kit
+	# savent gravir (chaque `Stairs_Exterior_Straight` monte de 1,00 m) — et
+	# les équerres sont ÉTIRÉES pour l'atteindre pour de bon.
+	var deck_y: float = 2.0
+	var foot_stretch: float = deck_y / 1.7086
 	for sx: float in [-1.0, 1.0]:
 		for sz: float in [-1.0, 1.0]:
 			var foot: Vector3 = Vector3(sx * 1.7, 0.0, sz * 1.7)
-			_piece("Prop_Support", foot, 0.0, post)
-			_collider(post, foot + Vector3(0, deck_y * 0.5, 0),
-				Vector3(0.35, deck_y, 0.35))
+			# L'équerre est une console qui porte vers son +Z local (bbox z
+			# −0,1181 → +1,9182). Laissée à yaw 0, les deux pieds arrière
+			# tendaient leur bras jusqu'à z = 3,62 et TRANSPERÇAIENT
+			# l'escalier. On les retourne : les quatre bras portent désormais
+			# vers l'intérieur, sous le plancher.
+			var brace_yaw: float = 0.0
+			if sz > 0.0:
+				brace_yaw = 180.0
+			# REVUE V6 — l'ORIENTATION posée en V5 est juste, vérifiée : la
+			# tête retombe à z = ∓0,218, donc bien sous un plancher qui
+			# couvre ±2 m. C'est le COLLIDER qui mentait. Une boîte verticale
+			# de 2 m plantée au pied décrivait un poteau, alors que la pièce
+			# est une oblique qui a déjà fui de 1,9 m à son sommet : on se
+			# cognait dans l'air sous le mirador et on traversait le bois.
+			# La collision suit maintenant l'oblique (§ « L'ÉTAI DU KIT »).
+			_strut(post, foot, brace_yaw, foot_stretch)
 	for ix: int in [-1, 0]:
 		for iz: int in [-1, 0]:
 			_piece("Floor_WoodDark",
 				Vector3(float(ix) * MODULE + 1.0, deck_y,
 					float(iz) * MODULE + 1.0), 0.0, post)
 	_collider(post, Vector3(0, deck_y - 0.15, 0), Vector3(4.4, 0.3, 4.4))
-	_piece("Stairs_Exterior_Straight", Vector3(0.0, 0.0, 3.3), 180.0, post)
+	# ESCALIER — deux corrections. 1) Il montait à 1,00 m sous un plancher à
+	# 2,60 m : personne ne pouvait accéder au mirador. 2) Il était RETOURNÉ.
+	# Mesure des sommets du .gltf (et non jugement à l'œil, cf. la leçon du
+	# pignon) : les points hauts de `Stairs_Exterior_Straight` sont en
+	# z = −1,000 et les points bas en z ∈ [+0,536 ; +1,001]. La volée monte
+	# donc vers son −Z local ; à yaw 180 elle grimpait DOS à la plate-forme.
+	# À yaw 0, deux volées empilées mènent du sol (z ≈ 6) au plancher (z = 2).
+	for flight: int in range(2):
+		var base_y: float = float(flight)
+		var base_z: float = 5.0 - 2.0 * float(flight)
+		_piece("Stairs_Exterior_Straight", Vector3(0.0, base_y, base_z), 0.0,
+			post)
+		# Le kit n'a aucune collision : sans ces marches on traverse la volée.
+		_stair_collision(post, Vector3(0.0, base_y, base_z + 1.0),
+			Vector3(0.0, 0.0, -2.0), 1.0, 2.0, 4)
+	# Garde-corps : le plancher n'en avait qu'un, sur un seul de ses quatre
+	# bords. On ferme le nord et les deux flancs ; le bord sud reste ouvert,
+	# c'est par là qu'arrive l'escalier.
 	_piece("Prop_MetalFence_Simple", Vector3(0.0, deck_y, -2.0), 0.0, post)
-	_piece("Banner_2", Vector3(1.5, deck_y, -1.5), 0.0, post, PROPS)
+	for sx: float in [-1.0, 1.0]:
+		for sz: float in [-1.0, 1.0]:
+			_piece("Prop_MetalFence_Simple",
+				Vector3(sx * 2.0, deck_y, sz * 1.0), 90.0, post)
+	# Même défaut que les bannières du bastion, non relevé mais identique et
+	# dans le même fichier : `Banner_2` pend 1,2336 m SOUS son origine. Posée
+	# au ras du plancher, elle ne se voyait que par en dessous. Accrochée à
+	# 1,40 m au-dessus du plancher, sur le garde-corps nord, son bord bas
+	# tombe à 2,166 m — franchement au-dessus de la plate-forme.
+	_piece("Banner_2", Vector3(1.5, deck_y + 1.4, -1.9), 0.0, post, PROPS)
 
 
 ## Relais de garde : là où l'on repose les armes entre deux tours. Un râtelier,
@@ -623,7 +860,11 @@ func _build_guard_relay(parent: Node3D) -> void:
 	relay.position = Vector3(1.5, 0.0, 13.5)
 	parent.add_child(relay)
 	_piece("WeaponStand", Vector3(0.0, 0.0, 0.0), 0.0, relay, PROPS)
-	_piece("Shield_Wooden", Vector3(1.3, 0.0, 0.4), 25.0, relay, PROPS)
+	# REVUE V5 — `Shield_Wooden` a son origine au CENTRE (bbox y −0,3104 →
+	# +0,3104) et `KitPlacement` ne remonte jamais une géométrie négative :
+	# posé à y = 0, le bouclier était coupé en deux par le sol. On le pose sur
+	# son propre demi-diamètre.
+	_piece("Shield_Wooden", Vector3(1.3, 0.31, 0.4), 25.0, relay, PROPS)
 	_piece("Crate_Metal", Vector3(-1.6, 0.0, 0.6), 12.0, relay, PROPS)
 	_collider(relay, Vector3(-1.6, 0.45, 0.6), Vector3(1.0, 0.9, 1.0))
 	_piece("Barrel_Holder", Vector3(-2.8, 0.0, -1.0), 0.0, relay, PROPS)
@@ -640,14 +881,28 @@ func _build_patrol_checkpoint(parent: Node3D) -> void:
 	post.name = "PosteDeControle"
 	parent.add_child(post)
 	var no_gap: Array[int] = []
+	# REVUE V5 — le collider annonçait 1,50 m pour une barrière qui en mesure
+	# 2,8684 (`Prop_MetalFence_Simple`, hauteur mesurée) : on passait par-dessus
+	# le haut d'une clôture bien visible. Le passage franc du milieu, lui, est
+	# VOULU (§15.11 : on entre et on ressort par là) et n'est pas touché.
 	_fence_row(post, "Prop_MetalFence_Simple", Vector3(-9.0, 0, 15.5),
-		Vector3(MODULE, 0, 0), 3, 0.0, 1.5, no_gap)
+		Vector3(MODULE, 0, 0), 3, 0.0, 2.87, no_gap)
 	_fence_row(post, "Prop_MetalFence_Simple", Vector3(5.0, 0, 15.5),
-		Vector3(MODULE, 0, 0), 3, 0.0, 1.5, no_gap)
+		Vector3(MODULE, 0, 0), 3, 0.0, 2.87, no_gap)
+	# REVUE V6 — collision reprise : ces deux montants sont des ÉTAIS obliques,
+	# pas des poteaux ; leur boîte verticale au pied ne décrivait rien de réel.
 	for side: float in [-1.0, 1.0]:
-		_piece("Prop_Support", Vector3(side * 2.6, 0, 15.5), 0.0, post)
-		_collider(post, Vector3(side * 2.6, 1.2, 15.5), Vector3(0.35, 2.4, 0.35))
-	_piece("Torch_Metal", Vector3(3.2, 0, 15.0), 0.0, post, PROPS)
+		_strut(post, Vector3(side * 2.6, 0.0, 15.5), 0.0)
+	# REVUE V5 — applique murale posée à plat sur l'herbe et enfoncée de 28 cm,
+	# sans rien derrière elle. On l'adosse au montant déjà planté en x = +2,6.
+	#
+	# REVUE V6 — le raisonnement V5 supposait un montant droit dont la face
+	# avant serait à z = 15,382 à toutes les hauteurs. Mesuré, l'étai est à
+	# z = 15,382 au SOL seulement ; à 1,50 m il est passé à z = 17,17. La
+	# torche restait donc suspendue à 1,67 m derrière le bois. On la pose sur
+	# l'axe, et elle éclaire vers +z, c'est-à-dire vers qui arrive du sud.
+	_piece("Torch_Metal", _strut_point(Vector3(2.6, 0.0, 15.5), 0.0, 1.45),
+		0.0, post, PROPS)
 
 
 func _dress_azure_fringe(parent: Node3D) -> void:
@@ -711,8 +966,18 @@ func _build_bastion_court(parent: Node3D) -> void:
 	_collider(court, Vector3(0, -0.3, 0), Vector3(15.4, 0.6, 15.4))
 
 
-## ENCEINTE : sept modules au nord et au sud, six à l'ouest, six à l'est dont
-## deux retirés — le portail. Les angles sont épaulés de contreforts.
+## ENCEINTE : sept modules par face, dont un retiré à l'est — le portail. Les
+## angles sont épaulés de contreforts.
+##
+## REVUE V5 — les faces latérales étaient TROP COURTES. Les faces nord et sud
+## posent 7 modules de 2,00 m centrés en x = −6…+6 : elles couvrent donc
+## x ∈ [−7 ; +7] et FIXENT une emprise de 14 m. Les faces est et ouest n'en
+## posaient que 6, sur des centres impairs (z = −5…+5) : couverture
+## z ∈ [−6 ; +6], soit 12 m. Il manquait 1,00 m à chaque bout de chaque face,
+## et le trim d'angle (0,53 × 0,58 m d'emprise) n'en bouchait qu'une partie :
+## une fente verticale de 60 à 80 cm sur 3,12 m de haut, aux QUATRE coins. Le
+## lieu censé n'avoir qu'une entrée en avait cinq. Les faces latérales passent
+## donc à 7 modules sur centres PAIRS, comme le nord et le sud.
 func _build_bastion_wall(parent: Node3D) -> void:
 	var wall: Node3D = Node3D.new()
 	wall.name = "Enceinte"
@@ -721,21 +986,57 @@ func _build_bastion_wall(parent: Node3D) -> void:
 		var x: float = float(ix) * MODULE
 		_wall(wall, Vector3(x, 0, -7.0), 180.0, "Wall_UnevenBrick_Straight")
 		_wall(wall, Vector3(x, 0, 7.0), 0.0, "Wall_UnevenBrick_Straight")
-	for iz: int in range(-3, 3):
-		var z: float = float(iz) * MODULE + 1.0
+	for iz: int in range(-3, 4):
+		var z: float = float(iz) * MODULE
 		_wall(wall, Vector3(-7.0, 0, z), 90.0, "Wall_UnevenBrick_Straight")
-		# Face EST : deux modules retirés, soit 4 m de passage franc.
-		if absf(z) < 2.0:
+		# Face EST : le module central est retiré — 2,00 m de passage franc.
+		# La baie reste une VRAIE entrée (le bastion ne doit pas être fermé),
+		# mais elle est désormais bordée par du mur au lieu de s'ouvrir sur
+		# les fentes d'angle.
+		if absf(z) < 1.0:
 			continue
 		_wall(wall, Vector3(7.0, 0, z), 270.0, "Wall_UnevenBrick_Straight")
 	for sx: float in [-1.0, 1.0]:
 		for sz: float in [-1.0, 1.0]:
 			var corner: Vector3 = Vector3(sx * 7.0, 0.0, sz * 7.0)
-			_piece("Corner_Exterior_Brick", corner, 0.0, wall)
+			# REVUE V5 — le trim d'angle et le contrefort étaient posés à
+			# yaw 0 aux QUATRE coins alors que leurs emprises sont
+			# dissymétriques (Corner_Exterior_Brick : x −0,353…+0,178,
+			# z −0,199…+0,377 ; Prop_Support : z −0,118…+1,918). Ils n'étaient
+			# donc justes qu'au coin (−7 ; +7) ; ailleurs le trim pointait
+			# dans le mur et deux contreforts sur quatre tendaient leur bras
+			# de 1,92 m à travers l'enceinte, jusque dans la cour.
+			# La direction locale (−1 ; +1) est envoyée sur (−7 ; +7) à 0°,
+			# (+7 ; +7) à 90°, (+7 ; −7) à 180°, (−7 ; −7) à 270°.
+			var corner_yaw: float = 0.0
+			if sx > 0.0 and sz > 0.0:
+				corner_yaw = 90.0
+			elif sx > 0.0 and sz < 0.0:
+				corner_yaw = 180.0
+			elif sx < 0.0 and sz < 0.0:
+				corner_yaw = 270.0
+			_piece("Corner_Exterior_Brick", corner, corner_yaw, wall)
 			_collider(wall, corner + Vector3(0, WALL_H * 0.5, 0),
 				Vector3(0.9, WALL_H, 0.9))
-			_piece("Prop_Support", corner + Vector3(sx * 0.9, 0, sz * 0.9),
-				0.0, wall)
+			# REVUE V6 — LE CONTREFORT NE TOUCHAIT AUCUN MUR. Posé à 0,9 m en
+			# diagonale du coin et tourné comme le trim, l'étai tendait son
+			# oblique VERS L'EXTÉRIEUR : sa tête finissait à 2,5 m au large de
+			# la maçonnerie, à 1,71 m de haut, portée par rien. Quatre
+			# planches suspendues en l'air autour du bastion — le défaut que
+			# la revue V5 croyait avoir corrigé en réglant le seul yaw, alors
+			# qu'elle n'avait fait que choisir dans quelle direction du vide
+			# chaque étai pointerait.
+			#
+			# Un contrefort s'APPUIE. On le retourne donc vers le coin. Portée
+			# mesurée de l'oblique : 1,9182 m, soit 1,356 m sur chaque axe à
+			# 45°. Le sommet extérieur de la maçonnerie d'angle (trim posé au
+			# coin ±7, x −0,353…+0,178 et z −0,199…+0,377) est à ±7,36. Le
+			# pied part donc de ±(7,36 + 1,356) ≈ ±8,72 — 1,72 m en diagonale
+			# du coin — et la tête retombe à ±7,364, sur la pierre. Le yaw
+			# vaut celui du trim + 135° : c'est la diagonale rentrante, et
+			# elle a été vérifiée sur les quatre coins un par un.
+			_strut(wall, corner + Vector3(sx * 1.72, 0.0, sz * 1.72),
+				corner_yaw + 135.0, 1.0, false)
 
 
 ## PORTAIL : jambages, torches, bannières, et un chemin de ronde AU-DESSUS —
@@ -745,18 +1046,70 @@ func _build_bastion_gate(parent: Node3D) -> void:
 	gate.name = "Portail"
 	parent.add_child(gate)
 	for side: float in [-1.0, 1.0]:
-		_piece("Prop_Brick1", Vector3(7.0, 0.0, side * 2.6), 270.0, gate)
-		_collider(gate, Vector3(7.0, WALL_H * 0.5, side * 2.6),
+		# REVUE V5 — le jambage posé était `Prop_Brick1`, mesuré
+		# 0,3456 × 0,2080 × 0,2502 m : une BRIQUE isolée, un gravat. On voyait
+		# donc 21 cm de haut là où le collider en annonçait 3,12 — deux murs
+		# invisibles rétrécissaient la baie sans raison lisible. Le kit fournit
+		# la pièce prévue, `Corner_ExteriorWide_Brick` (0,7123 × 3,0428 ×
+		# 0,7564 m), posée au bord exact de la baie de 2 m issue de la
+		# reprise de l'enceinte. Son emprise est dissymétrique : le yaw suit
+		# le côté pour que les deux jambages encadrent la baie au lieu de la
+		# boucher.
+		var jamb_yaw: float = 90.0
+		if side > 0.0:
+			jamb_yaw = 270.0
+		_piece("Corner_ExteriorWide_Brick", Vector3(7.0, 0.0, side * 1.0),
+			jamb_yaw, gate)
+		_collider(gate, Vector3(7.0, WALL_H * 0.5, side * 1.0),
 			Vector3(0.6, WALL_H, 0.8))
-		_piece("Torch_Metal", Vector3(6.3, 0.0, side * 2.3), 270.0, gate, PROPS)
-		_piece("Banner_2", Vector3(7.5, 0.0, side * 3.4), 270.0, gate, PROPS)
-	for iz: int in [-1, 0]:
-		_piece("Floor_WoodDark",
-			Vector3(7.0, WALL_H, float(iz) * MODULE + 1.0), 0.0, gate)
-	# Le tablier passe au-dessus de la baie : on marche dessus, on passe dessous.
-	_collider(gate, Vector3(7.0, WALL_H - 0.15, 0.0), Vector3(2.4, 0.3, 4.4))
-	_piece("Stairs_Exterior_Straight", Vector3(4.6, 0.0, 0.0), 270.0, gate)
-	_piece("Prop_MetalFence_Simple", Vector3(7.0, WALL_H, 1.7), 0.0, gate)
+		# La torche est une APPLIQUE : sa platine est dans le plan z = 0 local,
+		# elle fait saillie vers +z, et sa bbox y va de −0,2776 à +0,3705.
+		# Posée à y = 0 et à 0,7 m devant le mur, elle était enfoncée de 28 cm
+		# dans le sol et accrochée à rien. On la plaque contre la face
+		# EXTÉRIEURE du module d'enceinte qui borde la baie (face mesurée à
+		# x = 7,314) — c'est de là qu'on approche, par la chicane — et on la
+		# monte à hauteur de bras.
+		_piece("Torch_Metal", Vector3(7.32, 2.2, side * 1.6), 90.0, gate, PROPS)
+		# La bannière PEND sous son origine (Banner_2 : bbox y −1,2336 → 0,8435)
+		# et `KitPlacement` ne remonte pas une géométrie négative : posée à
+		# y = 0 elle avait 1,23 m de tissu sous le terrain. Accrochée à 2,40 m
+		# sur la face extérieure du mur, son bord bas tombe à 1,17 m. Le yaw
+		# suit le côté pour qu'elle se déploie à l'écart de la baie.
+		# REVUE V6 — la hauteur était juste, l'ADOSSEMENT non : la bannière est
+		# un panneau d'épaisseur z ∈ [−0,093 ; +0,098] autour de son mât.
+		# Posée à x = 7,50 devant une face de mur mesurée à x = 7,314, elle
+		# flottait à 9 cm de la pierre — visible par la tranche dès qu'on
+		# longeait le rempart. On la plaque : 7,314 + 0,098 = 7,412.
+		_piece("Banner_2", Vector3(7.41, 2.4, side * 1.8), jamb_yaw, gate, PROPS)
+	# Le tablier passe au-dessus de la baie : on marche dessus, on passe
+	# dessous. Une dalle sur la baie (z ∈ [−1 ; +1]) et une seconde au nord
+	# pour former le palier d'arrivée de l'escalier.
+	for iz: int in [0, 1]:
+		_piece("Floor_WoodDark", Vector3(7.0, WALL_H, float(iz) * MODULE),
+			0.0, gate)
+	_collider(gate, Vector3(7.0, WALL_H - 0.15, 1.0), Vector3(2.4, 0.3, 4.0))
+	# REVUE V5 — l'accès au chemin de ronde était `Stairs_Exterior_Straight`,
+	# qui monte de 1,00 m EXACTEMENT (bbox y −0,2037 → +1,0000) sous un tablier
+	# à 3,12 m : 2,12 m d'écart, très au-dessus des 1,4 m de saut (§8.2). Et
+	# la volée n'avait aucune collision : même le premier mètre se traversait.
+	# On pose la grande volée du kit village, `Stair_Interior_Simple`
+	# (1,676 × 3,035 × 4,620 m). Mesure des sommets du .gltf : ses points hauts
+	# sont en z ∈ [−4,585 ; −3,967] et son pied en z ≈ 0 — elle monte vers son
+	# −Z local. À yaw 0 et posée en z = 6,2, elle grimpe de z = 6,24 (pied,
+	# devant le mur nord dont la face intérieure est à z = 6,686) jusqu'à
+	# z ≈ 1,62 au ras du palier. Elle longe le mur est (x ∈ [5,17 ; 6,84]
+	# contre une face intérieure à 6,908) et surtout elle NE BARRE PAS la baie,
+	# qui reste franche sur z ∈ [−1 ; +1].
+	_piece("Stair_Interior_Simple", Vector3(6.0, 0.0, 6.2), 0.0, gate)
+	_stair_collision(gate, Vector3(6.0, 0.0, 6.235), Vector3(0.0, 0.0, -4.62),
+		3.02, 1.68, 10)
+	# Garde-corps : il n'existait que sur un bord, l'autre s'ouvrait sur 2 m de
+	# vide. On ferme les deux bouts du tablier et son flanc côté cour au-dessus
+	# de la baie ; le flanc du palier reste ouvert, c'est l'arrivée de
+	# l'escalier.
+	_piece("Prop_MetalFence_Simple", Vector3(7.0, WALL_H, -1.0), 0.0, gate)
+	_piece("Prop_MetalFence_Simple", Vector3(7.0, WALL_H, 3.0), 0.0, gate)
+	_piece("Prop_MetalFence_Simple", Vector3(6.0, WALL_H, 0.0), 90.0, gate)
 
 
 ## BARRICADES : deux rangs décalés devant le portail. On y entre toujours, mais
@@ -769,10 +1122,14 @@ func _build_bastion_barricades(parent: Node3D) -> void:
 	# Premier rang au sud de l'axe du portail, second rang décalé de 3,5 m au
 	# nord : la sortie reste FRANCHE juste devant la baie, puis oblique. On
 	# ralentit l'assaillant ; on n'enferme pas l'occupant.
+	# REVUE V5 — le collider annonçait 1,70 m pour un module qui mesure
+	# 0,8381 m de haut (`Prop_WoodenFence_Extension1`) : 86 cm de mur invisible
+	# au-dessus d'une barricade à hauteur de genou. L'approche « ralentie mais
+	# franchissable » décrite ci-dessus était en fait un couloir fermé.
 	_fence_row(chicane, "Prop_WoodenFence_Extension1", Vector3(10.0, 0, -8.0),
-		Vector3(0, 0, MODULE), 4, 90.0, 1.7, no_gap)
+		Vector3(0, 0, MODULE), 4, 90.0, 0.84, no_gap)
 	_fence_row(chicane, "Prop_WoodenFence_Extension1", Vector3(13.5, 0, 0.0),
-		Vector3(0, 0, MODULE), 4, 90.0, 1.7, no_gap)
+		Vector3(0, 0, MODULE), 4, 90.0, 0.84, no_gap)
 	for i: int in range(3):
 		_stake(chicane, Vector3(11.5 + float(i) * 1.4, 0, 6.5 - float(i) * 0.8),
 			float(i) * 37.0, 14.0)
@@ -790,9 +1147,15 @@ func _build_bastion_yard(parent: Node3D) -> void:
 		var x: float = -4.0 + float(i) * 4.0
 		_piece("WeaponStand", Vector3(x, 0, 5.6), 180.0, yard, PROPS)
 		_collider(yard, Vector3(x, 0.6, 5.6), Vector3(1.2, 1.2, 0.6))
+	# REVUE V5 — origines au centre ou sous la géométrie, et `KitPlacement` ne
+	# remonte jamais une géométrie négative : la hache s'enfonçait de 0,2313 m
+	# (bbox y −0,2313 → +0,1164) et le bouclier de 0,3104 m, soit exactement la
+	# moitié de son diamètre. Chacun est posé sur son propre dessous. L'épée
+	# reste à y = 0 : inclinée de 12°, sa pointe s'enfonce de 0,20 m, ce qui
+	# est cohérent avec une lame fichée près du râtelier.
 	_piece("Sword_Bronze", Vector3(-2.6, 0, 5.0), 12.0, yard, PROPS)
-	_piece("Axe_Bronze", Vector3(1.4, 0, 5.0), -20.0, yard, PROPS)
-	_piece("Shield_Wooden", Vector3(4.9, 0, 4.6), 40.0, yard, PROPS)
+	_piece("Axe_Bronze", Vector3(1.4, 0.24, 5.0), -20.0, yard, PROPS)
+	_piece("Shield_Wooden", Vector3(4.9, 0.31, 4.6), 40.0, yard, PROPS)
 
 	_piece("Anvil_Log", Vector3(-4.8, 0, -4.6), 15.0, yard, PROPS)
 	_piece("Anvil", Vector3(-4.8, 0.62, -4.6), 15.0, yard, PROPS)
@@ -807,8 +1170,19 @@ func _build_bastion_yard(parent: Node3D) -> void:
 	_collider(yard, Vector3(5.4, 0.45, -3.2), Vector3(0.9, 0.9, 0.9))
 	_piece("Chain_Coil", Vector3(2.8, 0, -5.6), 0.0, yard, PROPS)
 	for side: float in [-1.0, 1.0]:
-		_piece("Torch_Metal", Vector3(-6.4, 0, side * 3.0), 90.0, yard, PROPS)
-		_piece("Banner_1", Vector3(side * 3.0, 0, 6.4), 180.0, yard, PROPS)
+		# REVUE V5 — torche à demi enterrée et à 0,4 m du mur (face intérieure
+		# du mur ouest mesurée à x = −6,908) ; bannière posée à y = 0 alors
+		# qu'elle pend 1,5487 m sous son origine, donc entièrement sous terre.
+		# Torche plaquée contre le mur et montée à hauteur de bras ; bannière
+		# accrochée à 2,60 m, bord bas à 1,05 m, contre le mur nord.
+		# REVUE V6 — la torche est bien plaquée (platine x = −6,90 contre une
+		# face intérieure mesurée à −6,908, saillie vers +x, donc dans la
+		# cour). La BANNIÈRE, elle, était laissée à z = 6,40 : son dos, à
+		# yaw 180, culminait à 6,493 pour une face intérieure de mur nord
+		# mesurée à z = 6,686. Elle pendait à 19 cm du mur, sans attache
+		# possible. On la plaque : 6,686 − 0,093 = 6,593.
+		_piece("Torch_Metal", Vector3(-6.9, 2.2, side * 3.0), 90.0, yard, PROPS)
+		_piece("Banner_1", Vector3(side * 3.0, 2.6, 6.593), 180.0, yard, PROPS)
 
 
 # --- 4. Tanière du colosse des ravins ---------------------------------------
@@ -929,9 +1303,24 @@ func _build_lair_wreck(parent: Node3D) -> void:
 	wreck.name = "CharretteBrisee"
 	wreck.position = Vector3(7.5, 0.0, 12.5)
 	parent.add_child(wreck)
-	_piece("Prop_Wagon", Vector3.ZERO, 34.0, wreck, "", Vector3(0.0, 0.0, 38.0))
+	# REVUE V6 — une pièce BASCULÉE n'est plus assise. `KitPlacement` mesure la
+	# boîte du modèle DEBOUT (Prop_Wagon : bbox y 0,0031 → 1,5323) et ne voit
+	# donc rien à corriger ; c'est le roulis qui enfonce la charrette. Ordre
+	# YXZ, roulis de 38° : y' = x·sin38 + y·cos38, minimal au coin
+	# (x = −0,9794 ; y = 0,0031), soit −0,6006 m. La charrette écrasée avait
+	# donc 60 cm de caisse SOUS le terrain — le yaw de 34° n'y change rien,
+	# une rotation autour de Y ne déplace aucun point en hauteur. On la
+	# remonte d'exactement ce qui manquait : elle repose désormais sur son
+	# arête, écrasée mais posée.
+	_piece("Prop_Wagon", Vector3(0.0, 0.6006, 0.0), 34.0, wreck, "",
+		Vector3(0.0, 0.0, 38.0))
 	_collider(wreck, Vector3(0, 0.7, 0), Vector3(2.6, 1.4, 1.8))
-	_piece("Crate_Wooden", Vector3(2.2, 0, 1.1), 63.0, wreck, PROPS,
+	# Même défaut pour la caisse, basculée de (24° ; · ; 12°). Le calcul sur
+	# les coins de la boîte englobante donnait −0,4006 m, mais ce coin n'est
+	# pas un sommet réel du maillage : la boîte relevée dans Godot après pose
+	# dit −0,3125 m. On retient la mesure, pas le calcul — c'est la même leçon
+	# que le pignon. Un quart de la caisse était sous le terrain.
+	_piece("Crate_Wooden", Vector3(2.2, 0.3125, 1.1), 63.0, wreck, PROPS,
 		Vector3(24.0, 0.0, 12.0))
 	_piece("Barrel", Vector3(-1.9, 0.35, 1.6), 0.0, wreck, PROPS,
 		Vector3(0.0, 0.0, 90.0))
@@ -982,11 +1371,29 @@ func _build_hunter_frontier(parent: Node3D) -> void:
 		frontier.add_child(mark)
 		# Perche haute : elle se voit de loin, et elle est PHYSIQUE — un
 		# avertissement qu'on traverse n'avertit personne.
-		var post: Node3D = _piece("Prop_Support", Vector3.ZERO, 0.0, mark)
-		if post != null:
-			post.scale = Vector3(1.0, 1.7, 1.0)
-		_collider(mark, Vector3(0, 2.0, 0), Vector3(0.4, 4.0, 0.4))
-		_piece("Banner_2_Cloth", Vector3(0.35, 2.6, 0.0), 90.0, mark, PROPS)
+		#
+		# REVUE V5 — les douze perches FLOTTAIENT à 85 cm du sol. L'échelle
+		# était appliquée APRÈS `_piece`, donc après l'assise : `KitPlacement`
+		# descendait la pièce de 1,2114 m (son bbox_min.y), puis l'étirement
+		# de 1,7 remontait la base à −1,2114 + 1,2114 × 1,7 = +0,848 m. Le
+		# collider, lui, partait de y = 0 : même pas d'indice pour expliquer
+		# le vide. `_piece_scaled` remet la position à zéro et redemande
+		# l'assise une fois l'échelle en place ; la perche va alors de 0,00 à
+		# 2,905 m, et la banderole de 2,60 m descend jusqu'à 0,67 m.
+		#
+		# REVUE V6 — deux défauts restaient, tous deux d'orientation.
+		# 1) Le collider était une boîte VERTICALE de 2,9 m plantée au pied,
+		#    alors que la pièce est une oblique : au-dessus de 30 cm on se
+		#    cognait dans l'air, et le bois réel se traversait. La collision
+		#    suit désormais l'oblique.
+		# 2) La banderole était accrochée à (0,35 ; 2,60 ; 0,00), donc à
+		#    l'aplomb du pied. À 2,60 m l'étai est déjà passé à z = 1,705 :
+		#    le tissu pendait à 1,71 m du mât, en plein ciel. On l'accroche
+		#    sur l'axe mesuré ; son bord bas retombe à 0,67 m — au-dessus du
+		#    sol, et toujours visible depuis l'extérieur du cercle.
+		_strut(mark, Vector3.ZERO, 0.0, 1.7)
+		_piece("Banner_2_Cloth", _strut_point(Vector3.ZERO, 0.0, 2.60, 1.7),
+			90.0, mark, PROPS)
 		_piece("Pebble_Square_1", Vector3(-0.9, 0.0, 0.5), float(i) * 31.0,
 			mark, ROCKS)
 
@@ -1005,7 +1412,26 @@ func _build_hunter_mound(parent: Node3D) -> void:
 		COL_STONE, true)
 	hunter_mound_y = SITE_HUNTER.y + 2.4
 	_piece("WeaponStand", Vector3(1.2, 2.4, -0.8), 24.0, mound, PROPS)
-	_piece("Banner_1", Vector3(-1.4, 2.4, 0.9), 0.0, mound, PROPS)
+	# REVUE V5 — `Banner_1` pend 1,5487 m sous son origine. Posée à 2,40 m sur
+	# le Sommet, elle descendait à 0,85 m et traversait donc le Sommet
+	# (y 1,6→2,4) ET le Gradin (y 0,8→1,6) : le tissu plongeait dans la pierre.
+	# On plante d'abord un mât — `Prop_Support` monte de 2,40 à 4,11 m — puis
+	# on accroche la bannière à 4,00 m, bord bas à 2,45 m, juste au-dessus de
+	# la pierre. Le mât est retourné (yaw 180) parce que sa console porte vers
+	# son +Z local jusqu'à 1,918 m : laissée à yaw 0 elle débordait de 0,52 m
+	# hors du Sommet, dont le demi-côté ne fait que 2,30 m.
+	#
+	# REVUE V6 — le mât est un ÉTAI, et le yaw 180 choisi en V5 est bien le
+	# bon (sa tête retombe à z = −1,018, dans les ±2,30 m du Sommet). Mais la
+	# bannière avait été laissée à l'aplomb du pied, en (−1,4 ; 4,0 ; +0,9),
+	# alors qu'à 1,60 m au-dessus du pied l'étai est passé à z = −0,829 : le
+	# tissu pendait à 1,79 m du bois. Accrochée sur l'axe mesuré, elle part de
+	# 3,95 m et son bord bas (−1,5487 m de géométrie sous l'origine) affleure
+	# exactement le dessus du Sommet, à 2,40 m. Le drapeau se déploie ensuite
+	# vers +x jusqu'à x = +0,21, donc sans déborder de la pierre.
+	var mast_foot: Vector3 = Vector3(-1.4, 2.4, 0.9)
+	_strut(mound, mast_foot, 180.0, 1.0, false)
+	_piece("Banner_1", _strut_point(mast_foot, 180.0, 1.55), 0.0, mound, PROPS)
 	_piece("Chain_Coil", Vector3(0.5, 2.4, 1.5), 0.0, mound, PROPS)
 
 
@@ -1023,7 +1449,15 @@ func _build_hunter_trophies(parent: Node3D) -> void:
 		var angle: float = TAU * float(i) / float(arms.size()) + 0.4
 		var radius: float = 9.0 + float(i % 3) * 2.4
 		var at: Vector3 = Vector3(cos(angle) * radius, 0.0, sin(angle) * radius)
-		_piece(arms[i], at + Vector3(0, 0.55, 0), rad_to_deg(angle), trophies,
+		# REVUE V5 — les sept armes étaient remontées de 0,55 m et FLOTTAIENT
+		# donc de 3 à 32 cm, avec leur pierre de calage posée dessous dans le
+		# vide. Aucune de ces pièces n'a de géométrie profonde sous son
+		# origine (Sword_Bronze : bbox y −0,2081 ; Axe_Bronze : −0,2313 ;
+		# Shield_Wooden : −0,3104) et l'inclinaison en Z réduit encore leur
+		# descente. Sans le décalage, la pointe s'enfonce de 12 à 23 cm :
+		# c'est exactement « fichée en terre ». Le collider ci-dessous reste
+		# centré à 0,55 m sur 1,1 m de haut, donc base au sol.
+		_piece(arms[i], at, rad_to_deg(angle), trophies,
 			PROPS, Vector3(0.0, 0.0, 12.0 + float(i) * 7.0))
 		_piece("Pebble_Round_%d" % (1 + i % 5), at + Vector3(0.45, 0.0, 0.3),
 			float(i) * 47.0, trophies, ROCKS)
