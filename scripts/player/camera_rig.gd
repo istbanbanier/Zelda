@@ -41,6 +41,16 @@ const LOCK_CONVERGENCE_SPEED: float = 6.0
 const WORLD_STATIC_LAYER: int = 1
 const ENEMY_LAYER: int = 4
 
+## Amplitude du sondage vertical du garde-sol (voir `_keep_camera_above_ground`).
+## Le rayon part au-dessus de la caméra pour attraper aussi le cas où elle est
+## DÉJÀ enfoncée sous une pente : partir de la caméra elle-même ne trouverait
+## alors que le sol d'en dessous, et confirmerait l'erreur au lieu de la voir.
+const GROUND_PROBE_UP: float = 2.0
+const GROUND_PROBE_DOWN: float = 6.0
+
+## Opacité courante du héros, pour n'écrire dans les instances qu'au changement.
+var _hero_opacity: float = 1.0
+
 @export var tuning: LocomotionTuning
 
 @onready var _yaw_pivot: Node3D = $YawPivot
@@ -119,6 +129,95 @@ func _ready() -> void:
 	# `ENEMY_LAYER` ci-dessus pour la preuve et la référence au bug.
 	_spring_arm.collision_mask = WORLD_STATIC_LAYER | ENEMY_LAYER
 	_apply_rotation()
+
+
+## Deux garde-fous que `SpringArm3D` n'offre pas, appliqués APRÈS lui.
+##
+## Le bras résout dans `NOTIFICATION_INTERNAL_PHYSICS_PROCESS` ; ce correctif
+## vit dans `_process` — donc toujours après, quel que soit l'ordre des nœuds
+## dans l'arbre, et c'est bien cette valeur-là que le rendu lit. Dépendre de
+## l'ordre de traitement aurait donné un défaut qui n'apparaît qu'une fois
+## sur deux, c'est-à-dire le pire des deux mondes.
+func _process(_delta: float) -> void:
+	if tuning == null:
+		return
+	_enforce_minimum_distance()
+	_keep_camera_above_ground()
+	_fade_hero_when_camera_is_close()
+
+
+## 1. LA CAMÉRA NE RENTRE PLUS DANS LE HÉROS.
+##
+## `get_hit_length()` peut valoir 0 (obstacle collé au pivot). On repose donc
+## la caméra nous-mêmes, jamais plus près que `camera_min_distance`. L'axe est
+## +Z local : c'est la direction de cast du bras (`spring_arm_3d.cpp:142`).
+func _enforce_minimum_distance() -> void:
+	var resolved: float = maxf(_spring_arm.get_hit_length(),
+		tuning.camera_min_distance)
+	_camera.position = Vector3(0.0, 0.0, resolved)
+
+
+## 2. LA CAMÉRA NE PASSE PLUS SOUS LE SOL.
+##
+## Le bras ne sonde QUE le segment pivot→caméra. Au bord d'une tranchée — le
+## lit de la rivière en est une, 3,5 m de creux sur 512 m — ce segment peut
+## passer au-dessus du vide sans rien toucher, et la caméra atterrit sous la
+## berge d'en face. On sonde donc verticalement le sol réellement sous elle.
+func _keep_camera_above_ground() -> void:
+	var here: Vector3 = _camera.global_position
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	if space == null:
+		return
+	var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(
+		here + Vector3.UP * GROUND_PROBE_UP, here - Vector3.UP * GROUND_PROBE_DOWN,
+		WORLD_STATIC_LAYER)
+	var hit: Dictionary = space.intersect_ray(query)
+	if hit.is_empty():
+		return
+	var floor_y: float = (hit["position"] as Vector3).y
+	var lowest: float = floor_y + tuning.camera_ground_clearance
+	if here.y < lowest:
+		_camera.global_position = Vector3(here.x, lowest, here.z)
+
+
+## 3. SOUS LE SEUIL, LE HÉROS S'EFFACE.
+##
+## Quand un mur force vraiment la caméra à bout touchant, la remonter à
+## `camera_min_distance` ne suffit pas : à 0,85 m le dos du héros occupe encore
+## tout l'écran. On le rend progressivement transparent — §17.4 « aucune
+## information cachée » vaut d'abord pour ce que le joueur doit voir devant lui.
+## L'opacité revient dès que la caméra recule : rien n'est définitif.
+func _fade_hero_when_camera_is_close() -> void:
+	var visual: Node3D = get_parent().get_node_or_null("VisualRoot") as Node3D
+	if visual == null:
+		return
+	var span: float = maxf(0.01,
+		tuning.camera_fade_distance - tuning.camera_min_distance)
+	# Distance RÉELLE pivot→caméra, pas `_camera.position.z` : le garde-sol
+	# ci-dessus a pu réécrire la position globale, et le Z local ne mesure
+	# alors plus rien. Lire la mauvaise valeur ici ferait clignoter le héros
+	# au bord de la rivière — un second défaut né de la correction du premier.
+	var distance: float = _spring_arm.global_position.distance_to(
+		_camera.global_position)
+	var opacity: float = clampf(
+		(distance - tuning.camera_min_distance) / span, 0.0, 1.0)
+	# `visible` plutôt qu'une transparence quand l'opacité tombe à zéro : un
+	# matériau transparent coûte un tri et un overdraw pour un objet qu'on ne
+	# voit pas. En dessous d'un pouième, on coupe.
+	visual.visible = opacity > 0.02
+	_apply_opacity(visual, opacity)
+
+
+func _apply_opacity(visual: Node3D, opacity: float) -> void:
+	if is_equal_approx(opacity, _hero_opacity):
+		return
+	_hero_opacity = opacity
+	for node: Node in visual.find_children("*", "GeometryInstance3D", true, false):
+		var geometry: GeometryInstance3D = node as GeometryInstance3D
+		# `transparency` est la voie d'instance : elle n'oblige à dupliquer
+		# aucun matériau, donc deux héros ne se repeignent pas l'un l'autre
+		# et le télégraphe de combat garde sa surface d'écriture.
+		geometry.transparency = clampf(1.0 - opacity, 0.0, 1.0)
 
 
 ## Le regard est appliqué au rythme physique, comme le reste du mouvement (§20.9).

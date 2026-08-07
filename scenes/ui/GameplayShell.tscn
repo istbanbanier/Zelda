@@ -244,10 +244,23 @@ text = "Reprendre"
 layout_mode = 2
 text = "Sensibilité souris"
 
+; Bornes DÉCLARÉES ici, et pas seulement posées par `_ready()`.
+; Sans elles le curseur naît avec les défauts de `Range` — 0 à 100, pas de 1 —
+; et n'est recadré qu'au moment où la coquille s'initialise. Tout ce qui le lit
+; avant, ou toute réorganisation de `_ready()`, retombe sur une échelle de 0 à
+; 100 où la sensibilité réelle (0,0008) se lit tout à gauche ou tout à droite
+; selon l'ordre des affectations. Le playtest du 2026-08-07 rapporte les deux
+; symptômes de cette fragilité : « ne réagit pas au 1er clic, puis se
+; réinitialise tout seul à fond ». L'état au repos est désormais correct avant
+; que la moindre ligne de code ne s'exécute.
 [node name="SensitivitySlider" type="HSlider" parent="PausePanel/Column"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(320, 24)
 layout_mode = 2
+min_value = 0.0004
+max_value = 0.005
+step = 0.0001
+value = 0.0008
 
 [node name="SensitivityValue" type="Label" parent="PausePanel/Column"]
 unique_name_in_owner = true
