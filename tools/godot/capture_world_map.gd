@@ -214,6 +214,12 @@ func _capture() -> void:
 		"metres_per_pixel": _span / float(_width),
 		"geometry_instances": geometry,
 		"fog": "désactivé" if not _keep_fog else "conservé",
+		# Le docstring de cet outil promettait le commit depuis le début ; le
+		# manifeste ne l'écrivait pas. Une image sans rattachement au dépôt ne
+		# prouve rien (règle `evidence.md`) : on reprend les deux sondes de
+		# `capture_reference.gd`, à l'identique.
+		"commit": _current_commit(),
+		"repo_dirty": _repo_is_dirty(),
 	}
 	var json_path: String = _out_path.get_basename() + ".json"
 	var file: FileAccess = FileAccess.open(json_path, FileAccess.WRITE)
@@ -223,3 +229,34 @@ func _capture() -> void:
 
 	print("[carte] OK : %s (%.2f m/pixel)" % [_out_path, _span / float(_width)])
 	quit(0)
+
+
+## Commit auquel la capture correspond : sans lui une preuve visuelle n'est
+## rattachable à aucun état du dépôt. Repris de `capture_reference.gd`.
+func _current_commit() -> String:
+	var out: Array = []
+	var rc: int = OS.execute("git", ["-C", ProjectSettings.globalize_path("res://"),
+		"rev-parse", "HEAD"], out, true)
+	if rc != 0 or out.is_empty():
+		return "inconnu"
+	return String(out[0]).strip_edges()
+
+
+## « Sale » = des fichiers SUIVIS diffèrent du commit. `evidence/` est la SORTIE
+## de cet outil, jamais son entrée : une capture qui réécrit sa preuve
+## précédente salirait l'arbre et se déclarerait elle-même non reproductible.
+func _repo_is_dirty() -> bool:
+	var out: Array = []
+	var rc: int = OS.execute("git", ["-C", ProjectSettings.globalize_path("res://"),
+		"status", "--porcelain", "--untracked-files=no"], out, true)
+	if rc != 0 or out.is_empty():
+		return true
+	for line: String in String(out[0]).split("\n", false):
+		var entry: String = line.strip_edges()
+		if entry == "":
+			continue
+		var path: String = entry.substr(2).strip_edges()
+		if path.begins_with("evidence/"):
+			continue
+		return true
+	return false
