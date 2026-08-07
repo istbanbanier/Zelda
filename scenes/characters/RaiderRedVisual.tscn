@@ -28,6 +28,7 @@
 [node name="RaiderRedVisual" type="Node3D"]
 script = ExtResource("1_sockets")
 head_part = ExtResource("4_head")
+head_offset = -0.11
 head_texture = ExtResource("5_head_tex")
 head_tint = Color(0.86, 0.62, 0.5, 1)
 
