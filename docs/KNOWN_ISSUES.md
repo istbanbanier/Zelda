@@ -546,8 +546,35 @@ depuis le seul kit village ne PEUT donc pas avoir de murs. Le « bois qui
 flotte » relève de la même famille : le kit est purement visuel, les collisions
 et les cotes de pose sont à la charge des scripts d'assemblage.
 
-**Statut** : cause identifiée, **assemblages de la vallée non corrigés**. La
-maison de référence du terrain d'entraînement montre l'assemblage correct
-(murs `dungeon/` + toit `village/`, collision par mur, tout à y = 0) et sert de
-patron. L'audit des bâtiments de la vallée (village, hameaux, ferme) reste à
-faire — c'est le prochain chantier de lisibilité du décor.
+**Résolu, et la cause réelle était plus profonde que prévu.** L'audit des
+bâtiments a mesuré chaque pièce du kit au lieu de se fier à son nom, et
+trouvé trois choses :
+
+1. **Les murs ne manquaient pas.** Tous les scripts de bâtiment posent bien
+   des `Wall_*` (résolus depuis `dungeon/`, où ils vivent tous). Les modules
+   sont conformes : 2,00 m de large, 3,12 m de haut, mesurés au glTF.
+2. **« Le bois qui flotte » était réel et localisé.**
+   `Roof_Wooden_2x1_Center` mesure 2,00 × 1,21 × 1,50 m : c'est une TUILE DE
+   RANGÉE, à poser en série avec ses embouts `_L`/`_R`. La forge du village
+   (`riverside_village`) et la grange de la ferme (`valley_ruins`) en
+   posaient UNE SEULE, à 3,12 m au-dessus d'une emprise de 4 × 6 m : 12 % de
+   couverture, aucun contact avec un mur. Les deux posent désormais une
+   rangée complète, au pas de 1,5 m — la profondeur réelle de la tuile.
+3. **Cause racine du silence des tests.** `riverside_village`, `hamlets` et
+   `valley_territories` n'attribuaient aucun nom unique aux pièces
+   instanciées. Godot rebaptise alors les homonymes `@Node3D@366` : sur les
+   cinq murs de la forge, un seul gardait un nom lisible. **Aucun test ne
+   pouvait désigner cette géométrie**, ce qui explique qu'un toit flottant
+   ait survécu à toute la suite. `ValleyRelics._spawn` se protégeait déjà de
+   ce piège ; les trois autres l'ignoraient. Corrigé partout.
+
+**Garde-fou** : `test_roofs_are_supported.gd` vérifie la RÈGLE, pas les deux
+corrections — toute toiture EN L'AIR doit couvrir au moins 60 % de l'emprise
+des murs qu'elle abrite. Les toitures tombées au sol en sont exemptées : la
+`TourDeGuet` est une ruine dont « le cône de toiture gît dans l'herbe », et
+c'est intentionnel.
+
+**Non corrigé, assumé** : la forge est un appentis volontairement ouvert sur
+deux côtés, et la grange annonce « trois murs » alors que son code n'en pose
+que deux. Quelle face doit s'ouvrir est une décision de level design, pas une
+correction technique — laissée au jugement de l'auteur.

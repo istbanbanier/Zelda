@@ -776,8 +776,17 @@ func _build_farm() -> void:
 	for x: float in [-1.0, 1.0]:
 		_wall(barn, Vector3(x, 0, -MODULE * 1.5), 180.0,
 			"Wall_Plaster_Straight")
-	_spawn("Roof_Wooden_2x1_Center", Vector3(0.0, WALL_H, 0.0),
-		Vector3(0.0, 0.0, -4.0), barn)
+	# Couverture en RANGÉE, pas une tuile isolée. `Roof_Wooden_2x1_Center`
+	# mesure 2,00 × 1,21 × 1,50 m : c'est un module de rangée, à poser en
+	# série avec ses embouts. Seul, au milieu d'une grange de 4 × 6 m, il
+	# flottait à 3,12 m sans toucher un mur (défaut mesuré en playtest).
+	# Pas de 1,5 m = profondeur réelle de la tuile ; la légère pente d'origine
+	# est conservée sur chaque module.
+	for z: float in [-2.25, -0.75, 0.75, 2.25]:
+		_spawn("Roof_Wooden_2x1_L", Vector3(-1.0, WALL_H, z),
+			Vector3(0.0, 0.0, -4.0), barn)
+		_spawn("Roof_Wooden_2x1_R", Vector3(1.0, WALL_H, z),
+			Vector3(0.0, 0.0, -4.0), barn)
 	var barn_yard: Array[Array] = [
 		["Stall_Cart_Empty", Vector3(1.4, 0.05, 1.6), Vector3(0.0, 22.0, 12.0),
 			1.0, Vector3(2.4, 1.2, 1.6)],

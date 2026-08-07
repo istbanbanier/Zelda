@@ -3405,3 +3405,47 @@ ont donc été ajoutées via `ProjectSettings`, sans passe de suppression. Ce
 générateur doit être remis à jour ou retiré avant d'être réutilisé.
 
 **Preuve** : `test_mount_and_dev_fly.gd` 11/11, `test_training_grounds.gd` 7/7.
+
+---
+
+## Audit des bâtiments de la vallée — « maisons sans murs, bois qui flotte »
+
+Audit fait par la MESURE (`tools/gltf_inspect.py` sur chaque pièce), pas par
+lecture de noms de fichiers — le nom ment : `Roof_RoundTiles_4x4` fait
+en réalité 5,51 m.
+
+**Trois résultats**
+
+1. **Les murs ne manquaient pas.** Tous les scripts de bâtiment posent des
+   `Wall_*`, résolus depuis `dungeon/` où ils vivent tous. Les modules sont
+   conformes : 2,00 m de large, 3,12 m de haut.
+2. **Le bois flottant était réel et localisé.** `Roof_Wooden_2x1_Center`
+   mesure 2,00 × 1,21 × 1,50 m : une TUILE DE RANGÉE. La forge du village et
+   la grange de la ferme en posaient UNE SEULE au-dessus d'une emprise de
+   4 × 6 m — 12 % de couverture, aucun contact avec un mur. Corrigé : rangée
+   complète au pas de 1,5 m. Vérifié au passage que l'auvent des camps (deux
+   perches), l'abri du terrain (appuyé sur une caisse) et le moulin des
+   hameaux (quatre poteaux porteurs) reposent bien sur des appuis réels.
+3. **Cause racine du silence des tests.** `riverside_village`, `hamlets` et
+   `valley_territories` ne nommaient pas les pièces instanciées. Godot
+   rebaptise les homonymes `@Node3D@366` : sur les cinq murs de la forge, un
+   seul gardait un nom lisible. **Aucun test ne pouvait désigner cette
+   géométrie.** `ValleyRelics._spawn` s'en protégeait déjà ; les trois autres
+   l'ignoraient. Corrigé partout.
+
+**Garde-fou** : `test_roofs_are_supported.gd` vérifie la règle, pas les deux
+correctifs — toute toiture EN L'AIR doit couvrir ≥ 60 % de l'emprise des murs
+qu'elle abrite ; les toitures tombées au sol en sont exemptées (la
+`TourDeGuet` est une ruine dont le cône gît volontairement dans l'herbe).
+15 bâtiments inspectés.
+
+**Deux défauts trouvés en écrivant ce test, corrigés dans le test lui-même** :
+il mesurait les emprises en repère LOCAL (un mur pivoté à 90° comptait donc
+2,0 m de large au lieu de 0,4), et il ne distinguait pas un toit tombé d'un
+toit suspendu.
+
+**Laissé au jugement de l'auteur** : la forge est un appentis volontairement
+ouvert sur deux côtés, et la grange annonce « trois murs » là où son code n'en
+pose que deux. Quelle face doit s'ouvrir est une décision de level design.
+
+**Preuve** : 748 tests réussis, 0 échoué.

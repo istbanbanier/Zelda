@@ -149,6 +149,11 @@ func _piece(asset: String, at: Vector3, yaw_deg: float = 0.0,
 		push_warning("[hameaux] pièce absente du kit : %s" % asset)
 		return null
 	var node: Node3D = packed.instantiate() as Node3D
+	# Nom unique, comme `ValleyRelics._spawn` : deux pièces homonymes sous le
+	# même parent sont rebaptisées `@Node3D@366` par le moteur, et plus aucun
+	# test ne peut alors les désigner — la géométrie devient invisible aux
+	# tests, ce qui a laissé passer un toit flottant dans le village.
+	node.name = "%s_%03d" % [asset, _built]
 	node.position = at
 	# §3 : le kit végétal est importé sans normalisation d'échelle ; la
 	# correction mesurée vit dans `KitScale`, en un seul point.

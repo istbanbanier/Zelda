@@ -80,6 +80,12 @@ func _piece(asset: String, at: Vector3, yaw_deg: float = 0.0,
 		push_warning("[village] pièce absente du kit : %s" % asset)
 		return null
 	var node: Node3D = packed.instantiate() as Node3D
+	# Nom unique, comme `ValleyRelics._spawn` : deux pièces homonymes sous le
+	# même parent sont rebaptisées `@Node3D@366` par le moteur, et plus aucun
+	# test ne peut les désigner. Mesuré : sur les cinq murs de la forge, un
+	# seul gardait un nom lisible — la géométrie du village était donc
+	# invisible aux tests, et c'est ce qui a laissé passer un toit flottant.
+	node.name = "%s_%03d" % [asset, _built]
 	node.position = at
 	# §3 : le kit végétal est importé sans normalisation d'échelle ; la
 	# correction mesurée vit dans `KitScale`, en un seul point.
@@ -200,11 +206,28 @@ func _build_forge() -> void:
 	for ix: int in range(-1, 1):
 		_wall(forge, Vector3(ix * MODULE + 1.0, 0, -MODULE * 1.5), 180.0,
 			"Wall_UnevenBrick_Straight")
-	_piece("Roof_Wooden_2x1_Center", Vector3(0, WALL_H, 0), 0.0, forge)
+	_shed_roof(forge)
 	_piece("Anvil", Vector3(0.6, 0.05, 0.4), 20.0, forge, PROPS)
 	_piece("Workbench", Vector3(-1.2, 0.05, 1.6), 0.0, forge, PROPS)
 	_piece("Whetstone", Vector3(1.4, 0.05, 1.4), 0.0, forge, PROPS)
 	_piece("WeaponStand", Vector3(-1.4, 0.05, -1.6), 0.0, forge, PROPS)
+
+
+## Couverture d'appentis sur l'emprise 4 × 6 m (x −2..+2, z −3..+3).
+##
+## Défaut mesuré en playtest (« du bois qui flotte ») : la forge posait UNE
+## seule `Roof_Wooden_2x1_Center` au milieu du vide. Cette pièce mesure
+## 2,00 × 1,21 × 1,50 m — c'est une TUILE DE RANGÉE, pas une toiture : elle
+## se pose en série avec ses embouts `_L` et `_R`, comme le fait déjà la
+## cabane des hameaux. Seule, à 3,12 m au-dessus d'un appentis de 24 m², elle
+## n'en couvrait que 12 % et ne touchait aucun mur.
+##
+## Pas de rangée : 1,5 m, la profondeur réelle de la tuile — poser tous les
+## 2 m laisserait 0,5 m de ciel entre chaque rang.
+func _shed_roof(parent: Node3D) -> void:
+	for z: float in [-2.25, -0.75, 0.75, 2.25]:
+		_piece("Roof_Wooden_2x1_L", Vector3(-1.0, WALL_H, z), 0.0, parent)
+		_piece("Roof_Wooden_2x1_R", Vector3(1.0, WALL_H, z), 0.0, parent)
 
 
 ## MOULIN : la verticale qui identifie le village de loin (§4 de l'ordre).
