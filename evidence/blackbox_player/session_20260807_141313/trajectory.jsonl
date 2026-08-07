@@ -1,3 +1,36 @@
 {"evenement": "demarrage", "display": ":77", "resolution": [1024, 768], "session": "session_20260807_141313", "fenetre": "2097155", "image_dessinee": true, "t_reel": 21.05}
 {"pas": 1, "outil": "observe", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0001_observe.png", "t_reel": 21.26}
 {"pas": 2, "outil": "click", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0002_click.png", "bouton": 1, "x": 511, "y": 387, "t_reel": 29.94}
+{"pas": 3, "outil": "wait", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0003_wait.png", "duree_ms": 3000, "t_reel": 40.52}
+{"pas": 4, "outil": "wait", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0004_wait.png", "duree_ms": 5000, "t_reel": 56.32}
+{"pas": 5, "outil": "wait", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0005_wait.png", "duree_ms": 8000, "t_reel": 80.7}
+{"pas": 6, "outil": "wait", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0006_wait.png", "duree_ms": 8000, "t_reel": 97.53}
+{"pas": 7, "outil": "wait", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0007_wait.png", "duree_ms": 8000, "t_reel": 116.09}
+{"pas": 8, "outil": "wait", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0008_wait.png", "duree_ms": 8000, "t_reel": 134.47}
+{"pas": 8, "outil": "game_note", "note": "DÉMARRAGE. Menu \"Éclats d'Orage / Vallée de Néris\". \"Continuer\" grisé. Clic \"Nouvelle partie\" -> écran de chargement.\nProgression : 0% -> 46% en ~3s, puis FIGÉ à 46% pendant 37 secondes (5 attentes consécutives, image identique).\nHypothèse A : chargement très lent (rendu logiciel). Hypothèse B : chargement bloqué.\nProchaine action : continuer d'attendre jusqu'à ~60s, puis tenter une touche.", "t_reel": 144.89}
+{"pas": 9, "outil": "wait", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0009_wait.png", "duree_ms": 8000, "t_reel": 160.32}
+{"pas": 10, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0010_act.png", "touches": ["Return"], "souris": [0, 0], "duree_ms": 400, "refusees": [], "t_reel": 173.0}
+{"pas": 11, "outil": "wait", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0011_wait.png", "duree_ms": 8000, "t_reel": 190.1}
+{"pas": 12, "outil": "wait", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0012_wait.png", "duree_ms": 1500, "t_reel": 212.72}
+{"pas": 13, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0013_act.png", "touches": ["w"], "souris": [0, 0], "duree_ms": 1000, "refusees": [], "t_reel": 231.71}
+{"pas": 14, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0014_act.png", "touches": ["w", "Shift_L"], "souris": [0, 0], "duree_ms": 1500, "refusees": [], "t_reel": 245.49}
+{"pas": 15, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0015_act.png", "touches": ["w", "Shift_L"], "souris": [0, 0], "duree_ms": 2000, "refusees": [], "t_reel": 264.42}
+{"pas": 16, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0016_act.png", "touches": ["w", "Shift_L"], "souris": [0, 0], "duree_ms": 2500, "refusees": [], "t_reel": 282.75}
+{"pas": 17, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0017_act.png", "touches": ["space"], "souris": [0, 0], "duree_ms": 300, "refusees": [], "t_reel": 293.64}
+{"pas": 18, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0018_act.png", "touches": [], "souris": [250.0, 0.0], "duree_ms": 400, "refusees": [], "t_reel": 305.15}
+{"pas": 19, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0019_act.png", "touches": [], "souris": [250.0, 0.0], "duree_ms": 400, "refusees": [], "t_reel": 333.32}
+{"pas": 20, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0020_act.png", "touches": [], "souris": [250.0, 0.0], "duree_ms": 400, "refusees": [], "t_reel": 354.75}
+{"pas": 21, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0021_act.png", "touches": [], "souris": [0.0, -200.0], "duree_ms": 400, "refusees": [], "t_reel": 369.24}
+{"pas": 22, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0022_act.png", "touches": [], "souris": [0.0, 130.0], "duree_ms": 400, "refusees": [], "t_reel": 384.8}
+{"pas": 23, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0023_act.png", "touches": [], "souris": [250.0, 0.0], "duree_ms": 400, "refusees": [], "t_reel": 400.92}
+{"pas": 24, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0024_act.png", "touches": [], "souris": [-250.0, 0.0], "duree_ms": 400, "refusees": [], "t_reel": 417.11}
+{"pas": 25, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0025_act.png", "touches": [], "souris": [-250.0, 0.0], "duree_ms": 400, "refusees": [], "t_reel": 436.27}
+{"pas": 26, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0026_act.png", "touches": ["w"], "souris": [0, 0], "duree_ms": 1200, "refusees": [], "t_reel": 452.31}
+{"pas": 27, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0027_act.png", "touches": [], "souris": [0.0, 80.0], "duree_ms": 400, "refusees": [], "t_reel": 464.29}
+{"pas": 28, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0028_act.png", "touches": ["w", "Shift_L"], "souris": [0, 0], "duree_ms": 2000, "refusees": [], "t_reel": 480.06}
+{"pas": 29, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0029_act.png", "touches": ["w", "Shift_L"], "souris": [0, 0], "duree_ms": 2500, "refusees": [], "t_reel": 495.85}
+{"pas": 30, "outil": "click", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0030_click.png", "bouton": 1, "x": null, "y": null, "t_reel": 506.12}
+{"pas": 31, "outil": "click", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0031_click.png", "bouton": 1, "x": null, "y": null, "t_reel": 519.7}
+{"pas": 32, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0032_act.png", "touches": ["r"], "souris": [0, 0], "duree_ms": 250, "refusees": [], "t_reel": 531.38}
+{"pas": 33, "outil": "act", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0033_act.png", "touches": ["Control_L"], "souris": [0, 0], "duree_ms": 250, "refusees": [], "t_reel": 548.29}
+{"pas": 34, "outil": "click", "capture": "evidence/blackbox_player/session_20260807_141313/captures/pas_0034_click.png", "bouton": 3, "x": null, "y": null, "t_reel": 559.87}

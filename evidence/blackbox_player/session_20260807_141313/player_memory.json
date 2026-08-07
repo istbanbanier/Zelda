@@ -1,0 +1,6 @@
+[
+  {
+    "pas": 8,
+    "note": "DÉMARRAGE. Menu \"Éclats d'Orage / Vallée de Néris\". \"Continuer\" grisé. Clic \"Nouvelle partie\" -> écran de chargement.\nProgression : 0% -> 46% en ~3s, puis FIGÉ à 46% pendant 37 secondes (5 attentes consécutives, image identique).\nHypothèse A : chargement très lent (rendu logiciel). Hypothèse B : chargement bloqué.\nProchaine action : continuer d'attendre jusqu'à ~60s, puis tenter une touche."
+  }
+]
