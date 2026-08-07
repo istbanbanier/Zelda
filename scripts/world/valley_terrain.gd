@@ -895,6 +895,13 @@ func _dress_zone_forest() -> void:
 ## EST — l'axe de profondeur turquoise vers la citadelle reste dégagé.
 func _dress_zone_river() -> void:
 	const TRUNK: Vector3 = Vector3(0.5, 5.0, 0.0)
+	# Boîtes de collision des rochers du lit (ISS-035), en unités LOCALES : le
+	# corps est enfant du modèle et hérite donc de `prop.scale`. ~70 % de
+	# l'emprise native mesurée au glTF, hauteur = `bbox_max.y` (la boîte est
+	# décalée à +h/2, elle monte donc depuis l'origine du modèle).
+	const COL_ROCK_MED_1: Vector3 = Vector3(2.26, 1.99, 2.09)   # natif 3,23 × 2,99
+	const COL_ROCK_MED_2: Vector3 = Vector3(2.13, 1.85, 1.74)   # natif 3,05 × 2,48
+	const COL_ROCK_MED_3: Vector3 = Vector3(2.39, 2.00, 2.43)   # natif 3,42 × 3,48
 	_dress_zone("DressZoneRiver", [
 		# Coude ouest : arbre tordu penché + roseaux, la corniche au coffre.
 		[&"TwistedTree_3", Vector3(-42, 2, 16.5), 1.2, 1.1, TRUNK, true],
@@ -902,10 +909,42 @@ func _dress_zone_river() -> void:
 		[&"Grass_Wispy_Tall", Vector3(-36, 2.02, 16.2), 2.2, 1.1],
 		[&"Plant_7", Vector3(-44.5, 2.02, 17.8), 3.6, 1.45],
 		# Pierres émergentes du lit (hors des deux gués praticables).
-		[&"RockPath_Round_Wide", Vector3(-15, 0.55, 10), 0.7, 1.4],
-		[&"RockPath_Round_Thin", Vector3(4, 0.5, 9), 2.3, 1.2],
-		[&"RockPath_Square_Wide", Vector3(48, 0.55, 11), 4.0, 1.3],
-		[&"RockPath_Round_Small_1", Vector3(-28, 0.5, 10.5), 1.1, 1.5],
+		#
+		# ISS-035 — c'étaient des DALLES plates (`RockPath_*`, 0,11 à 0,18 m
+		# d'épaisseur) posées à y 0,50-0,55 : ni sur le lit (-1,50), ni sur
+		# l'eau (surface -0,55, ruban de 0,30 m centré à -0,70). Elles
+		# flottaient donc 2,04 m au-dessus du fond, mesuré à la sonde.
+		#
+		# La correction prescrite — « dériver la cote du lit » — les aurait
+		# ENTERRÉES : une dalle de 0,16 m posée à -1,50 a son sommet à -1,34,
+		# soit 0,79 m sous l'eau. Mesure hors moteur (`tools/gltf_inspect.py`)
+		# : AUCUNE dalle du kit n'atteint les 0,95 m qu'il faut pour aller du
+		# lit à la surface. Ce ne pouvait donc pas être des dalles.
+		#
+		# Ce sont de vrais rochers (`Rock_Medium_*`, 1,90 à 2,32 m natifs),
+		# posés au fond et enfoncés de 5 cm — ils ne « reposent » pas sur le
+		# lit, ils y sont pris, ce qui est la lecture juste d'un bloc en
+		# rivière. Émergences échelonnées de 0,14 à 0,42 m pour éviter la
+		# rangée régulière (§7.4, phrases irrégulières).
+		#
+		#   base_monde = base_voulue - bbox_min.y × échelle       (bbox_min.y < 0)
+		#   sommet     = base_monde  + bbox_max.y × échelle
+		#
+		# | x   | modèle        | éch. | base   | sommet | émerge |
+		# |-----|---------------|------|--------|--------|--------|
+		# | -15 | Rock_Medium_2 | 0,75 | -1,512 | -0,126 | 0,42 m |
+		# |   4 | Rock_Medium_1 | 0,62 | -1,382 | -0,149 | 0,40 m |
+		# |  48 | Rock_Medium_3 | 0,55 | -1,376 | -0,276 | 0,27 m |
+		# | -28 | Rock_Medium_2 | 0,60 | -1,520 | -0,411 | 0,14 m |
+		#
+		# Collision AJOUTÉE, absente des dalles : on traversait sans dommage
+		# une pierre de 16 cm, on ne traverse pas un bloc de 1,4 m. La boîte
+		# est en unités LOCALES (le nœud hérite de `prop.scale`) et vaut ~70 %
+		# de l'emprise native, les rochers étant arrondis.
+		[&"Rock_Medium_2", Vector3(-15, -1.512, 10), 0.7, 0.75, COL_ROCK_MED_2],
+		[&"Rock_Medium_1", Vector3(4, -1.382, 9), 2.3, 0.62, COL_ROCK_MED_1],
+		[&"Rock_Medium_3", Vector3(48, -1.376, 11), 4.0, 0.55, COL_ROCK_MED_3],
+		[&"Rock_Medium_2", Vector3(-28, -1.520, 10.5), 1.1, 0.60, COL_ROCK_MED_2],
 		# Berge nord (côté donjon) : herbes éparses, plante humide.
 		[&"Grass_Wispy_Short", Vector3(-8, 2.02, 3.5), 0.8, 1.2],
 		[&"Grass_Wispy_Short", Vector3(12, 2.02, 4.2), 2.5, 1.0],
