@@ -4050,3 +4050,70 @@ deux verdicts, aucun vert ne prouve rien** — y compris le 804/0.
    des cinq versions divergentes.
 3. Faire tourner **un** des neuf agents sur un vrai diff (`test-coverage-auditor`
    d'abord) : ils sont écrits, aucun n'est éprouvé.
+
+## 2026-08-08 — Phase S0 franchie : la suite est déterministe, prouvée deux fois
+
+Session bornée à S0 du prompt d'activation. Aucune fonctionnalité touchée,
+aucune passe artistique.
+
+### S0.1 — la vérité du dépôt rétablie
+
+**La PR #5 n'avait pas tout emporté.** `git merge-base --is-ancestor` — pas la
+lecture du fil — montre que le commit `e5625b6` manquait à la branche par
+défaut. Réintégré par fusion. Le fil d'une PR n'est pas une preuve de contenu.
+
+Checklist d'adoption de `PROMPT4_METHOD` §13 reclassée sur le disque : le test
+d'invariants passe de `NON VÉRIFIÉ` à **EXÉCUTÉ** (7 tests verts, dont `Q` à
+gauche via `physical_keycode`) ; les règles par répertoire et le portail
+sélectif passent `[EN PLACE]` ; les neuf relecteurs restent **`EN PLACE` et
+`NON VÉRIFIÉ`** — la nuance compte, un mécanisme jamais exécuté est disponible,
+pas adopté.
+
+### S0.2 — ISS-038 fermé, deux causes distinctes
+
+Un seul symptôme recouvrait **deux défauts sans rapport**, ce qui explique
+pourquoi chaque explication unique a échoué.
+
+| | Cause réelle |
+|---|---|
+| `test_cooking_ui` | course de PHASE contre le throttle du HUD (`HUD_TEXT_REFRESH = 0,1 s`), pas course de vitesse |
+| `test_heads...` | pose lue pendant `Jump_Land` — le héros mesurait en plein atterrissage |
+
+Preuve, `tools/validate_fast.sh`, code retour capturé sans tube :
+
+| Condition | Résultat |
+|---|---|
+| Machine au repos | **804 / 0 — VERT** (code 0) |
+| 4 processus sur 4 cœurs | **804 / 0 — VERT** (code 0) |
+
+### Ce que cette phase a démoli, et qui vaut d'être retenu
+
+Quatre certitudes successives sont tombées : la PR complète, la cause d'ISS-038,
+le mécanisme écrit dans les commentaires, et trois de mes propres correctifs —
+qui contenaient **trois assertions incapables d'échouer**, trouvées par
+`test-coverage-auditor` à contexte frais.
+
+Le geste le plus rentable de toute l'enquête n'a coûté qu'une ligne : **faire
+imprimer au test le nom de l'animation qu'il voyait**. Il a livré la cause en
+une exécution, après des heures d'hypothèses brillantes et fausses.
+
+### Dette laissée, nommée
+
+Tout test qui lit une POSE (position, hauteur, orientation) juste après le
+chargement d'une scène jouable porte le même défaut latent que le crâne : il
+mesure avant que le monde soit prêt. Et tout `for i in range(N): await frame`
+suivi d'une affirmation porte celui du HUD. Aucun balayage systématique n'a été
+fait.
+
+### Prochaine action exacte
+
+**Phase S1 — construire le gate BOOT-TO-FUN.** Dans cet ordre :
+
+1. `docs/BOOT_TO_FUN_CONTRACT.md` : parcours attendu, critères automatiques,
+   critères exigeant un humain, mapping critère → test, commandes, états
+   autorisés, interdiction de moyenner.
+2. Le **Boot Smoke** : depuis le vrai `Boot`, à travers le menu normal, jusqu'à
+   la vallée — joueur vivant sur un sol valide, HUD présent, première
+   interaction et premier combat atteignables, mort et reprise, arrêt propre.
+3. **Ne pas commencer S2** tant que le gate ne sait pas rougir sur au moins un
+   contrôle négatif : un gate qui n'a jamais échoué ne prouve rien.

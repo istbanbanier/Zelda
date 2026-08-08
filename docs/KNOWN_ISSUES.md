@@ -814,20 +814,47 @@ traiter par `asset-license-auditor` / le manifeste, indépendamment de ce ticket
 
 ### FERMÉ — 2026-08-08, preuve au repos ET sous contention
 
-**Cause unique, et elle n'était pas celle annoncée au premier correctif.** Deux
-tests attendaient un NOMBRE FIXE DE FRAMES avant d'affirmer, ce qui revient à
-exiger que la machine soit rapide. Sous charge, les frames n'arrivaient plus
-assez vite et l'assertion tombait — sans qu'aucun code de jeu soit en cause.
+**DEUX causes distinctes, et aucune n'était celle annoncée au premier
+correctif.** Un seul symptôme — « la suite rend deux verdicts » — recouvrait
+deux défauts sans rapport. C'est pourquoi chaque explication unique a échoué.
+
+**Cause A — une course de PHASE contre un throttle** (`test_cooking_ui`). Le
+test attendait dix frames de rendu puis affirmait. Mesuré : les frames tournent
+à ~145 im/s en headless (139 sous contention), donc dix frames font 0,069 s —
+et le texte du HUD est étranglé à `HUD_TEXT_REFRESH = 0,1 s`
+(`gameplay_shell.gd:477`). Dix frames tenaient STRUCTURELLEMENT dans une seule
+période de rafraîchissement : selon l'endroit du cycle où le test tombait, le
+label avait été rafraîchi ou non. Ce n'était pas une course de vitesse, et la
+première explication (« 33 ms de marge à 60 im/s ») était fausse.
+
+**Cause B — une pose mesurée pendant l'ATTERRISSAGE** (`test_heads...`). Le
+héros apparaît au-dessus du sol, tombe, et joue `Jump_Land`. Le test lisait la
+hauteur du crâne pendant l'accroupissement de réception : 1,07 m au lieu de
+1,74. Ni pollution d'état, ni contention — les deux pistes poursuivies, et les
+quatre hypothèses éliminées à grands frais, portaient toutes à côté.
+
+**Ce qui a livré la cause B n'est aucun raisonnement** : c'est d'avoir fait
+imprimer au test le nom de l'animation qu'il voyait. Une ligne, une exécution.
 
 Le premier correctif s'était trompé de mécanisme : il avait allongé la DURÉE du
 buff (0,2 s → 5 s) en gardant le compte de frames. Le passage sous contention a
 fait échouer la MÊME assertion. Ce n'était donc pas le buff qui expirait, mais
 le **label du HUD qui n'avait pas eu le temps de se rafraîchir**.
 
-**Correctif final** : `_label_reaches(needle, max_frames)` attend la CONDITION,
-bornée, au lieu d'un compte. Un plafond haut rend le test insensible à la
-vitesse ; il reste sensible à un vrai blocage, qui épuise la borne et échoue au
-lieu de pendre.
+**Correctifs finaux**, tous bornés en TEMPS DE JEU et non en frames — un compte
+de frames n'est ni une durée ni une garantie de rafraîchissement :
+
+- `_label_reaches(needle, budget_s)` attend l'état du label, 1 s = dix périodes
+  de rafraîchissement ;
+- `_reaches_rest(anim, budget_s)` attend la posture de repos du héros, 4 s ;
+- une borne épuisée fait ÉCHOUER le test, elle ne le fait pas pendre.
+
+**Trois assertions incapables d'échouer, trouvées par `test-coverage-auditor` à
+contexte frais et corrigées** : une borne de 600 frames (4,13 s) plus courte que
+le buff de 5 s qu'elle était censée observer ; un garde-fou de stabilisation
+satisfait par une pose figée ET par une tête en mouvement (pas de 0,80 mm sous
+une tolérance de 1 mm) ; un seuil `> 1,2` pour une valeur réelle de 1,74. Les
+deux seuils concernés ont été RESSERRÉS, jamais assouplis.
 
 **Preuve, commandes exactes** (`tools/validate_fast.sh`, code retour capturé
 sans tube) :
