@@ -40,6 +40,9 @@ func _settle(ticks: int) -> void:
 
 
 func _load() -> void:
+	# Un monde jouable AUTOSAUVEGARDE : on garde l'état d'avant pour le
+	# rendre intact au cas suivant (voir `remember_saves`).
+	remember_saves()
 	_valley = (load(VALLEY) as PackedScene).instantiate() as Node3D
 	_tree().root.add_child(_valley)
 	await _settle(5)
@@ -57,6 +60,7 @@ func _unload() -> void:
 		game_state.call("set_flow", 0)
 		game_state.call("consume_pending_spawn")
 	await _settle(2)
+	restore_saves()
 
 
 func _rig() -> CameraRig:

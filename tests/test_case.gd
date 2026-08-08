@@ -52,3 +52,62 @@ func check_approx(actual: float, expected: float, tolerance: float, context: Str
 
 func check_not_null(value: Variant, context: String) -> void:
 	check(value != null, "%s : valeur nulle" % context)
+
+
+## ---------------------------------------------------------------------------
+## SAUVEGARDE : un cas de test ne doit rien laisser derrière lui
+## ---------------------------------------------------------------------------
+##
+## Défaut mesuré le 2026-08-07. Charger `ValleyWorld` et y déplacer le héros
+## suffit à déclencher un AUTOSAVE (`valley_world.gd` en pose un sur transition,
+## ramassage, coffre, plat et buff). La position bidon d'un test se retrouvait
+## donc dans `slot0`, et les cas de sauvegarde exécutés APRÈS échouaient sur des
+## valeurs qu'ils n'avaient jamais écrites — douze échecs d'un coup, dont
+## « « Continuer » replace le joueur où il était (écart 53,26 m) ».
+##
+## Mesuré des deux côtés : la même suite privée de ces tests-là sort
+## 775 réussis / 4 échoués, et les quatre sont les échecs connus et antérieurs.
+## Le couplage venait bien des tests, pas du système de sauvegarde — qui passe
+## 3/3 en isolation.
+##
+## Tout cas qui monte un monde jouable encadre donc son travail par
+## `remember_saves()` / `restore_saves()`.
+
+const _GUARDED_SLOTS: Array[String] = ["slot0"]
+
+var _save_snapshot: Dictionary = {}
+
+
+## Mémorise l'état des sauvegardes AVANT que le test ne touche au monde.
+func remember_saves() -> void:
+	_save_snapshot.clear()
+	var system: Node = _save_system()
+	if system == null:
+		return
+	for slot: String in _GUARDED_SLOTS:
+		# `null` = il n'y avait AUCUNE sauvegarde : à la fin il ne doit pas y
+		# en avoir non plus, sinon le test suivant hérite d'une partie fantôme.
+		_save_snapshot[slot] = system.call("load_slot", slot) \
+			if bool(system.call("has_save", slot)) else null
+
+
+## Remet les sauvegardes telles qu'elles étaient. À appeler même quand le test
+## échoue : c'est le cas SUIVANT qu'on protège, pas celui-ci.
+func restore_saves() -> void:
+	var system: Node = _save_system()
+	if system == null:
+		return
+	for slot: String in _GUARDED_SLOTS:
+		var before: Variant = _save_snapshot.get(slot)
+		if before == null:
+			var path: String = String(system.call("slot_path", slot))
+			if FileAccess.file_exists(path):
+				DirAccess.remove_absolute(path)
+		else:
+			system.call("save_slot", slot, before as Dictionary)
+	_save_snapshot.clear()
+
+
+func _save_system() -> Node:
+	var loop: SceneTree = Engine.get_main_loop() as SceneTree
+	return null if loop == null else loop.root.get_node_or_null("/root/SaveSystem")

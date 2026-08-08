@@ -29,8 +29,15 @@ const SUBJECTS: Dictionary = {
 ## Tolérance sur la position de l'os : le squelette est au repos, pas animé.
 const BONE_TOLERANCE: float = 0.06
 ## Une tête humaine fait 20 à 26 cm de haut. En deçà, c'est un bouchon.
+##
+## La borne HAUTE est plus généreuse que l'anatomie, et pour une raison
+## mesurée : `head_bounds()` retourne une boîte ALIGNÉE SUR LES AXES du monde,
+## qui grandit dès que la tête penche. Le briseur, plus grand que le héros
+## (1,88 m, crâne à l'échelle 1,10) et le cou incliné dans son idle, mesure
+## ainsi 0,305 m pour un crâne réel de ~0,25 m. Serrer la borne à 0,30
+## reviendrait à refuser une tête correcte à cause de l'outil de mesure.
 const MIN_HEAD_HEIGHT: float = 0.12
-const MAX_HEAD_HEIGHT: float = 0.30
+const MAX_HEAD_HEIGHT: float = 0.34
 
 
 func _tree() -> SceneTree:
@@ -89,16 +96,22 @@ func test_every_character_carries_a_head_on_the_head_bone() -> void:
 			"%s : os `Head` au repos à %.3f m (attendu %.3f)"
 				% [path.get_file(), rest, expected])
 
-		# 3. Le crâne s'élève AU-DESSUS DE SON POINT D'ACCROCHE, d'une hauteur
-		# de tête. On mesure depuis le socket et non depuis le repos : c'est
-		# `BoneAttachment3D` qui porte la tête, et il suit la pose ANIMÉE —
-		# l'idle du briseur baisse la nuque de 16 cm, ce qui faisait conclure à
-		# tort à un crâne de 6 cm quand ce cas comparait au repos.
-		var socket_y: float = mount.global_position.y
-		var height: float = model.head_top().y - socket_y
-		check(height > MIN_HEAD_HEIGHT and height < MAX_HEAD_HEIGHT,
-			"%s : hauteur de crâne plausible (%.3f m)"
-				% [path.get_file(), height])
+		# 3. Le crâne a la TAILLE d'un crâne. On mesure son encombrement propre,
+		# pas sa hauteur au-dessus du socket : le héros porte le sien
+		# entièrement au-dessus de l'os, les pillards à cheval dessus
+		# (`head_offset`). Deux mesures de cette session ont conclu à tort
+		# avant d'arriver à celle-ci — d'abord comparée au repos du squelette
+		# alors que l'attache suit la pose animée, puis au socket alors que le
+		# crâne peut déborder en dessous.
+		var box: AABB = model.head_bounds()
+		check(box.size.y > MIN_HEAD_HEIGHT and box.size.y < MAX_HEAD_HEIGHT,
+			"%s : crâne de taille plausible (%.3f m de haut)"
+				% [path.get_file(), box.size.y])
+		# …et il est bien porté par le cou, pas égaré ailleurs sur le corps.
+		check(absf(box.get_center().y - mount.global_position.y) < 0.20,
+			"%s : le crâne est centré sur l'os du cou (écart %.3f m)"
+				% [path.get_file(), absf(box.get_center().y
+					- mount.global_position.y)])
 
 		model.queue_free()
 		await _settle(2)

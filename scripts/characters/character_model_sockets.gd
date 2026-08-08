@@ -70,6 +70,21 @@ const SOCKETS: Dictionary = {
 ## squelette, ce qui est le cas voulu ; ce curseur n'existe que pour un
 ## ajustement de goût, jamais pour rattraper une erreur de montage.
 @export var head_scale: float = 1.0
+## Décalage de la tête le long de l'os, en unités LOCALES.
+##
+## Zéro pour le héros, ≈ −0,11 pour les pillards, et ce n'est pas un réglage
+## de goût : les deux familles ne posent pas leur os `Head` au même endroit.
+## Le rig du héros (Quaternius) place l'os à la BASE du crâne, qui s'élève donc
+## entièrement au-dessus. Le générateur des pillards
+## (`tools/blender/make_raiders.py`) centre au contraire son moignon SUR l'os,
+## qui déborde autant en dessous qu'au-dessus.
+##
+## Sans ce décalage, le crâne monte d'une demi-tête trop haut : le pillard
+## braise passait de 1,42 m à 1,61 m et sortait de la fourchette 1,40-1,52 de
+## la bible §14.1 — mesuré par `test_raider_visual`, qui a eu raison de le
+## refuser. Avec, le crâne occupe EXACTEMENT le volume du moignon qu'il
+## remplace, et la silhouette des trois familles est celle d'avant.
+@export var head_offset: float = 0.0
 
 ## Hauteur de l'os `Head` du HÉROS, au repos, dans le modèle de référence
 ## (`Male_Ranger.gltf`) — c'est la stature pour laquelle la tête extraite a été
@@ -152,6 +167,7 @@ func _mount_head() -> void:
 		if rest_height > 0.01:
 			head.scale = Vector3.ONE \
 				* (rest_height / HEAD_REFERENCE_HEIGHT) * head_scale
+	head.position = Vector3(0.0, head_offset, 0.0)
 	if head_texture == null and head_tint == Color.WHITE:
 		return
 	for node: Node in head.find_children("*", "MeshInstance3D", true, false):
@@ -170,6 +186,32 @@ func _mount_head() -> void:
 				own.albedo_texture = head_texture
 			own.albedo_color = material.albedo_color * head_tint
 			mesh.set_surface_override_material(surface, own)
+
+
+## Encombrement MONDIAL de la tête montée — boîte vide si aucune.
+##
+## C'est la mesure qui dit « un crâne de la taille d'un crâne », et elle vaut
+## quelle que soit la façon dont il est posé sur l'os. La hauteur au-dessus du
+## socket, elle, ne vaut rien : le héros porte son crâne entièrement au-dessus
+## de l'os, les pillards à cheval dessus (voir `head_offset`) — deux tests de
+## cette session ont conclu à tort avec cette mesure-là.
+func head_bounds() -> AABB:
+	var mount: BoneAttachment3D = socket("SOCKET_HEAD")
+	if mount == null:
+		return AABB()
+	var head: Node = mount.get_node_or_null("Head")
+	if head == null:
+		return AABB()
+	var bounds: AABB = AABB()
+	var started: bool = false
+	for node: Node in head.find_children("*", "MeshInstance3D", true, false):
+		var mesh: MeshInstance3D = node as MeshInstance3D
+		if mesh.mesh == null:
+			continue
+		var world: AABB = mesh.global_transform * mesh.get_aabb()
+		bounds = world if not started else bounds.merge(world)
+		started = true
+	return bounds
 
 
 ## Position mondiale du sommet du crâne — lue par les tests : c'est la seule
