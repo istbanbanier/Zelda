@@ -111,8 +111,19 @@ func test_river_stones_rest_on_the_bed_and_emerge() -> void:
 
 	for child: Node in river.get_children():
 		var name_text: String = String(child.name)
-		if not name_text.begins_with("Rock_"):
-			continue   # roseaux, herbes et bivouac sont sur la BERGE, pas dans l'eau
+		# « Rock » SANS underscore : couvre `Rock_Medium_*` (les blocs actuels)
+		# ET `RockPath_*` (les dalles d'avant). Le premier jet filtrait sur
+		# `Rock_`, qui ne reconnaissait pas `RockPath` — le test rougissait
+		# alors sur « 0 rocher trouvé » au lieu de « flotte », et surtout une
+		# dalle suspendue REMISE À CÔTÉ de quatre bons blocs serait passée
+		# inaperçue. Défaut trouvé en vérifiant que le test rougit bien sans le
+		# correctif ; un test vert ne prouve rien tant qu'on n'a pas vu sa
+		# couleur rouge, ni POUR QUELLE RAISON il rougit.
+		#
+		# Les autres pièces de la zone (roseaux, herbes, saule, bivouac) sont
+		# sur la BERGE à y ≈ 2,02, pas dans l'eau : aucune ne porte « Rock ».
+		if not name_text.contains("Rock"):
+			continue
 		var node: Node3D = child as Node3D
 		if node == null:
 			continue

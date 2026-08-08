@@ -553,7 +553,38 @@ Les deux abouts du toit de la cabane restent donc des triangles ouverts.
 au-dessus de la toiture. Correctif possible : modeliser un pignon a la bonne
 pente (script Blender), ou passer la cabane aux tuiles rondes.
 
-## ISS-035 — Pas japonais de la rivière suspendus au-dessus du lit (S3, ouvert)
+## ISS-035 — Pas japonais de la rivière suspendus au-dessus du lit (S3, **CORRIGÉ 2026-08-07**)
+
+**Correction, et pourquoi le correctif attendu ci-dessous était faux.** Le
+correctif proposé — « dériver la cote de ces pierres du lit » — les aurait
+ENTERRÉES. La géométrie, relue dans le code et non estimée : lit à −1,50,
+surface de l'eau à −0,55 (ruban de 0,30 m centré à −0,70). Une dalle de 0,16 m
+posée sur le lit a son sommet à −1,34, soit **0,79 m sous l'eau** : invisible.
+
+Mesure hors moteur (`tools/gltf_inspect.py`) : les `RockPath_*` sont des dalles
+de 0,11 à 0,18 m d'épaisseur. Aucune n'atteint les **0,95 m** qu'il faut pour
+aller du lit à la surface. Ce ne pouvait donc pas être des dalles — le défaut
+n'était pas une cote, c'était le choix du modèle.
+
+Décision du propriétaire : de vrais rochers posés au fond. Les quatre
+placements sont désormais des `Rock_Medium_*` (1,90 à 2,32 m natifs), base à
+−1,550 (5 cm dans le lit : un bloc en rivière y est pris, il n'y est pas posé
+en équilibre), sommets émergeant de 0,14 / 0,27 / 0,40 / 0,42 m — échelonnés à
+dessein, une rangée régulière se voit (§7.4). **Collision ajoutée**, absente
+des dalles : on traverse sans dommage une pierre de 16 cm, pas un bloc de 1,4 m.
+
+Garde-fou : `tests/integration/test_river_stones_reach_the_bed.gd`, deux bras.
+Dans le monde, chaque rocher doit satisfaire DEUX exigences conjointes — la
+base atteint le lit ET le sommet émerge ; un test qui ne vérifierait que la
+première validerait une rivière vide. À la source, aucune dalle du kit ne peut
+satisfaire les deux, ce qui verrouille le raisonnement plutôt que le résultat.
+
+Décisivité prouvée : sans le correctif, le test rougit sur **2,04 / 1,99 /
+2,04 / 1,99 m** — exactement les valeurs mesurées ci-dessous. Avec, il est vert.
+
+---
+
+### Relevé d'origine (conservé)
 
 Mesure faite pendant la passe « arcade / caisse claire / arche » avec
 `tools/godot/probe_world_boxes.gd`, sur la vallée réellement montée :
@@ -574,6 +605,34 @@ Défaut CONSTATÉ et MESURÉ, non corrigé : le fichier fautif
 trois corrections demandées, et le déplacer touche le tracé du gué. Correctif
 attendu : dériver la cote de ces pierres du lit (−1,50) et non de la plaine,
 comme l'a fait la travée tombée de l'aqueduc.
+
+## ISS-036 — Deux fruits de la crête sans sol sous eux (S3, ouvert, CANDIDAT)
+
+Trouvé par le **premier balayage complet** de la vallée
+(`probe_world_boxes.gd --sweep --float=0.3`), 2026-08-07 :
+
+    Ingredients/valley_ingredient_crest_fruit_01   y 24,00..24,36  sol 2,00  → +22,00 m
+    Ingredients/valley_ingredient_crest_fruit_02   y 24,00..24,36  sol 2,00  → +22,00 m
+
+Les deux fruits sont posés à y = 24, ce qui est la bonne cote pour la crête de
+départ (spawn à `(0, 24, 170)`, MASTER_SPEC §3.3). Le problème n'est pas leur
+hauteur : c'est que le rayon vertical **traverse la crête** et ne trouve de sol
+qu'à y = 2, la plaine. Il n'y a donc **aucune collision sous eux**.
+
+Deux lectures possibles, non départagées :
+
+1. les fruits sont posés au-delà du bord collidable de la crête — le joueur
+   pourrait les voir sans pouvoir les atteindre, ce qui serait un vrai défaut
+   de jeu (un ingrédient est fait pour être ramassé) ;
+2. la crête porte à cet endroit une géométrie décorative sans collision, et les
+   fruits reposent visuellement dessus — auquel cas c'est la collision du
+   terrain qui manque, pas le placement du fruit.
+
+`CANDIDAT`, pas `défaut` : la sonde mesure un écart au sol, elle ne sait pas si
+la pièce est censée reposer dessus. Prochaine mesure : relancer la sonde en
+région resserrée autour de `(0, 170)` et vérifier si la dalle de crête possède
+une collision à ces coordonnées.
+
 ---
 
 ## PT-BRACELET-01 — Le Bracelet n'avait aucune présentation en jeu (S2)

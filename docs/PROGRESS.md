@@ -3771,6 +3771,87 @@ périmètre demandé, et les bouger touche le tracé du gué.
    secteur par secteur — la sonde peut désormais les trouver toute seule.
 3. Éclairage du donjon (préalable nommé par AD-008), inchangé.
 
+## 2026-08-07 — Inspection de world-of-claudecraft, barre en couches, ISS-035
+
+Commits : `e7eca0a` (hooks) · `18b0565` (correctif du plancher) · `b9d763c`
+(R-015) · `222a44f` (PROMPT 4) · `a736ec6` (ISS-035) · `d82ed14` + `44b3a9f`
+(sonde) · `b11a893` (KNOWN_ISSUES) · `ba7407b` (.uid).
+
+**Origine** : demande d'inspecter `levy-street/world-of-claudecraft` et d'en
+tirer des leçons. Dépôt cloné intégralement — 9 873 commits en deux mois, 570
+branches, 2 623 refs de PR, une livraison tous les 1 à 3 jours. Constats
+mesurés en **R-014** (barre de qualité) et **R-015** (fabrique d'assets depuis
+une image de référence, qui est notre problème central non résolu).
+
+**Ce qui a été construit**, en transposant le mécanisme et jamais les règles :
+
+- `.claude/hooks/qa-stop.sh` — hook `Stop`, scanne les lignes AJOUTÉES à chaque
+  tour, bloque sur quatre invariants durs. Zéro faux positif vérifié sur huit
+  formes GDScript typées légitimes ;
+- `.githooks/pre-push` — mêmes règles sur le diff poussé, plus `--check-only`
+  des `.gd` modifiés. **Les deux chemins sont prouvés** : il a refusé du contenu
+  interdit, puis une vraie erreur de syntaxe ;
+- `tests/unit/test_invariants.gd` — **7 réussis, 0 échoué**. Plus `NON VÉRIFIÉ` ;
+- `docs/PROMPT4_METHOD.md` — quatrième cahier cumulatif, enregistré dans
+  `CLAUDE.md`. Onze de ses treize éléments sont `[À DÉCIDER]` : ils touchent la
+  barre de qualité, qui appartient au propriétaire.
+
+**Le garde-fou a refusé mon propre premier push** : les scripts de garde-fou
+PORTENT les motifs interdits, et `.githooks` manquait à leur liste d'exclusion.
+Vrai défaut, trouvé par l'outil sur lui-même.
+
+**ISS-035 — le correctif prescrit était faux.** La consigne disait « dériver la
+cote du lit ». Mesuré : lit −1,50, surface de l'eau −0,55, dalles de 0,11 à
+0,18 m. Poser une dalle sur le lit met son sommet **0,79 m sous l'eau**. Aucune
+dalle du kit n'atteint les 0,95 m nécessaires : le défaut n'était pas une cote,
+c'était le choix du modèle. Décision du propriétaire : de vrais rochers posés au
+fond. Quatre `Rock_Medium_*`, base −1,550, émergences 0,14 à 0,42 m, collision
+ajoutée.
+
+**Décisivité prouvée** : sans le correctif, le test rougit sur 2,04 / 1,99 /
+2,04 / 1,99 m — exactement les valeurs de `KNOWN_ISSUES`. En le vérifiant, un
+défaut du test lui-même est apparu : son filtre ne reconnaissait pas `RockPath_`,
+donc une dalle suspendue remise à côté de bons blocs serait passée inaperçue.
+
+**Premier balayage complet de la vallée** (point 2 de la consigne précédente).
+Trois défauts en sont sortis, deux dans mes outils :
+
+1. `--exempt` vide exemptait TOUT (`_matches()` retourne vrai sur liste vide) :
+   « 0 candidate, 704 exemptées », rapport parfaitement vide et faux ;
+2. les maillages SKINNÉS polluaient le relevé — leur boîte est la pose de
+   liaison, pas ce qui est dessiné. **ISS-018 qui se rejouait dans la sonde.**
+   704 → 605 candidates ; Bestiary 57 → 2 ; le camp disparaît entièrement ;
+3. le filtre du test des pierres, ci-dessus.
+
+**ISS-036 ouvert (CANDIDAT)** : deux fruits de la crête n'ont aucune collision
+sous eux (rayon à 22 m). Deux lectures possibles, non départagées, écrites
+toutes les deux — la sonde mesure un écart, elle ne sait pas si la pièce est
+censée reposer dessus.
+
+**Validation** : `784 réussis, 4 échoués`, 314 scripts parsés, Boot → menu
+atteint. Les quatre échecs sont les connus antérieurs (caméra du boss, langage
+de résonance de la citadelle, ISS-032 ×2). **Zéro régression, et pas seulement
+« encore rouge »** : ISS-032 rend `9/11 jalons en 1907 ticks, min y = −0,50`,
+identique AU TICK près aux chiffres consignés. La collision ajoutée en rivière
+n'a donc rien perturbé. Niveau 3b non exécuté : Blender absent.
+
+### Prochaine action exacte
+
+1. **Trier les 605 candidates du balayage.** Elles sont dans
+   `probe_world_boxes.gd --sweep --float=0.3 --limit=800`. Commencer par les
+   zones de gameplay (`Ingredients` 6, `DressZoneRiver` 1, `Camp`) plutôt que
+   par les plus hautes, qui sont légitimes (nuages, éclairs, créneaux).
+   Construire `--exempt` **sur cette sortie réelle**, une entrée à la fois, avec
+   sa raison — jamais sur une supposition.
+2. **ISS-036** : relancer la sonde en région resserrée autour de `(0, 170)` et
+   vérifier si la dalle de crête possède une collision à ces coordonnées.
+3. **Limite connue de la sonde, à traiter** : une pièce posée sur une géométrie
+   DÉCORATIVE sans collision est toujours signalée flottante (le rayon ne teste
+   que la couche 1). C'est la cause probable d'une bonne part des 120 candidates
+   de `ValleyRuins` et des 104 de `Terrain`. À documenter dans l'outil, ou à
+   traiter par une seconde passe.
+4. Éclairage du donjon (préalable nommé par AD-008), inchangé.
+
 ## 2026-08-07 — Outillage volé à World of ClaudeCraft : neuf relecteurs et la comparaison avant/après
 
 Session ouverte par le propriétaire sur un autre front (écrire à l'auteur de
