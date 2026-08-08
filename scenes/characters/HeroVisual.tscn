@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
 
 ; V4 lot 13 — la capuche/mantille est re-teinte turquoise DANS la texture
 ; dérivée T_Ranger_Hero_BaseColor (tools/godot/recolor_hero_hood.gd) : la
@@ -14,12 +14,22 @@
 [ext_resource type="PackedScene" path="res://assets/characters/hero/Male_Ranger.gltf" id="2_ranger"]
 [ext_resource type="AnimationLibrary" path="res://assets/animations/AL_HeroStates.res" id="3_states"]
 [ext_resource type="Texture2D" path="res://assets/characters/hero/T_Ranger_Hero_BaseColor.png" id="4_hero_tex"]
+[ext_resource type="PackedScene" path="res://assets/characters/parts/SM_UniversalHead.glb" id="5_head"]
+[ext_resource type="Texture2D" path="res://assets/characters/parts/T_Superhero_Male_Dark.png" id="6_head_tex"]
 
+; V5 — LA TÊTE. `Male_Ranger.gltf` ne livre que la CAPUCHE
+; (`Male_Ranger_Head_Hood`) : aucun crâne dedans. Au playtest humain du
+; 2026-08-07 le joueur voyait l'INTÉRIEUR du capuchon, vide, dès que la caméra
+; s'approchait de profil — donc en permanence. `SM_UniversalHead.glb` est
+; découpé par tools/extract_head.py dans le corps de base Quaternius (CC0),
+; qui partage exactement le même os `Head` : la tête se pose sans réglage.
 [node name="HeroVisual" type="Node3D"]
 script = ExtResource("1_model_script")
 albedo_substitutions = Dictionary[String, Texture2D]({
 "MI_Ranger": ExtResource("4_hero_tex")
 })
+head_part = ExtResource("5_head")
+head_texture = ExtResource("6_head_tex")
 
 [node name="Model" parent="." instance=ExtResource("2_ranger")]
 

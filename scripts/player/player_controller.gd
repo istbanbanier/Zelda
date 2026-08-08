@@ -415,6 +415,7 @@ func _physics_process(delta: float) -> void:
 			_inventory.equip_previous()
 
 	# Invite d'interaction (§14.2) : sélection par cadence, pas par frame.
+	_interact_refusal_cooldown = maxf(0.0, _interact_refusal_cooldown - delta)
 	_interact_focus_tick += 1
 	if _interact_focus_tick % INTERACT_FOCUS_INTERVAL == 0:
 		_refresh_interact_focus()
@@ -1383,6 +1384,9 @@ const INTERACT_FOCUS_INTERVAL: int = 6
 ## Meilleur interactable courant — consommé par le HUD via le signal.
 var _interact_focus: Node3D = null
 var _interact_focus_tick: int = 0
+## Délai entre deux refus annoncés (voir `_refuse_interaction`), en secondes.
+const INTERACT_REFUSAL_COOLDOWN: float = 1.2
+var _interact_refusal_cooldown: float = 0.0
 
 signal interact_focus_changed(target: Node3D)
 ## V4 lot 14 : interaction ACCEPTÉE par la cible — le pilote visuel y
@@ -1392,11 +1396,38 @@ signal interacted(target: Node3D)
 
 func _try_interact() -> void:
 	var best: Node3D = _select_interactable()
-	if best != null:
-		var accepted: Variant = best.call("interact", self)
-		if accepted is bool and bool(accepted):
-			interacted.emit(best)
-		_refresh_interact_focus()   # l'objet a pu disparaître ou changer d'état
+	if best == null:
+		_refuse_interaction()
+		return
+	var accepted: Variant = best.call("interact", self)
+	if accepted is bool and bool(accepted):
+		interacted.emit(best)
+	_refresh_interact_focus()   # l'objet a pu disparaître ou changer d'état
+
+
+## `E` DANS LE VIDE NE DOIT PAS ÊTRE SILENCIEUX.
+##
+## Le défaut nº1 du playtest du 2026-08-07 n'était pas une chaîne cassée : la
+## chaîne fonctionne, mesurée sur 53 des 55 interactables de la vallée. C'était
+## le SILENCE. Le joueur a appuyé sur `E` devant une enclume, un cadavre, un
+## objet orange et un foyer décoratif — tous du décor — et n'a rien obtenu :
+## ni son, ni message, ni refus. Il en a conclu que la touche ne marchait pas,
+## a cessé d'essayer, et n'a ouvert aucun coffre de toute la partie.
+##
+## Le projet applique déjà cette règle à l'attaque lourde refusée (« jamais de
+## silence sur une action impossible », point 6.10 du plan de test) ; elle
+## manquait ici, précisément là où un débutant apprend ce que fait une touche.
+##
+## Cadencé : marteler la touche ne doit pas remplir l'écran de notifications.
+func _refuse_interaction() -> void:
+	_mark_refused(&"interact", &"rien_a_portee")
+	if _interact_refusal_cooldown > 0.0:
+		return
+	_interact_refusal_cooldown = INTERACT_REFUSAL_COOLDOWN
+	_sfx(&"refuse")
+	var bus: Node = get_node_or_null("/root/EventBus")
+	if bus != null:
+		bus.call("notify", "Rien à portée — approchez-vous et faites face.")
 
 
 func _select_interactable() -> Node3D:

@@ -5,6 +5,122 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-07 — Les quatre réparations du playtest, dans l'ordre du joueur
+
+Session ouverte sur `evidence/blackbox_player/session_20260807_141313` : 74
+minutes de jeu, **0 coffre ouvert, 0 ingrédient ramassé, donjon jamais
+atteint**. Les quatre défauts ont été repris dans l'ordre où le joueur les
+rencontre, chacun avec son test.
+
+### 1. L'interaction — la chaîne n'était pas cassée, elle était MUETTE
+
+Les deux hypothèses de départ sont tombées, et la première est tombée grâce au
+rapport du joueur lui-même :
+
+| Hypothèse | Verdict | Ce qui l'a tranchée |
+|---|---|---|
+| `_bind_player()` différé qui rate | **ÉCARTÉE** | vie, endurance, flèches et verrouillage s'affichaient pendant sa partie — les quatre sont branchés dans le MÊME appel que `interact_focus_changed` |
+| objets hors du groupe, ou ligne de vue qui rejette | **ÉCARTÉE** | `tools/godot/diagnose_interaction.gd` : **53/55 atteignables** dès le premier passage, feu de cuisine compris, invite du HUD comprise |
+
+Ce qui a réellement échoué : `E` appuyé sur du décor ne produisait **rien** —
+ni son, ni message, ni refus. Le joueur a essayé sur une enclume, un cadavre,
+un objet orange et un foyer décoratif, en a conclu que la touche était morte,
+et a cessé d'essayer. 55 objets répondaient pourtant.
+
+Le projet applique déjà « jamais de silence sur une action impossible » à
+l'attaque lourde refusée (point 6.10 du plan de test) ; la règle manquait
+exactement là où un débutant apprend ce que fait une touche.
+
+Deux corrections :
+
+- `_refuse_interaction()` : son + « Rien à portée — approchez-vous et faites
+  face. », cadencé à 1,2 s pour qu'un martèlement ne noie pas l'écran ;
+- les ramassables se posent sur le **sol réel** au lieu d'une cote écrite à la
+  main. Les deux fruits de la crête étaient **enterrés de 8,00 m** (sondé : sol
+  à y = 32,00, pose à y = 24,00 — la cote du spawn de MASTER_SPEC §3.3, jamais
+  mise à jour quand le relief a été bâti). Ce sont les deux PREMIERS
+  ramassables de la partie. Même classe de défaut qu'ISS-035.
+
+Après correction : **55/55 atteignables**.
+
+### 2. L'arc — une cascade `elif` dans le mauvais ordre
+
+`attack_light` et `shoot` sont tous deux sur le clic gauche (`button_index 1`,
+vérifié dans `project.godot`) et `player_input_reader.gd` les teste dans une
+suite de `elif`, l'attaque en premier : le clic était toujours avalé. La visée
+tenue passe désormais devant ; hors visée rien ne change.
+
+Le test reproduit le symptôme exact du joueur — compteur **« 8 → 8 »** — sans
+le correctif, et passe avec. Aucun test existant ne pouvait le voir : ils
+envoient des `InputEventAction`, qui ne portent qu'UNE action et ne peuvent pas
+reproduire la collision. Il fallait de vrais `InputEventMouseButton`.
+
+### 3. Les têtes — le modèle n'en contenait aucune
+
+Vérifié dans les sources, pas déduit : `Male_Ranger.gltf` ne livre que
+`Male_Ranger_Head_Hood`, la **capuche seule** ; `Male_Peasant.gltf` (les trois
+pillards) livre Arms/Body/Feet/Legs et **rien au-dessus du cou**. La « pointe
+métallique argentée » vue par le testeur est le maillage `_Hard`, 4,8 cm de
+haut, posé sur un pavé de peau de 10,6 cm de large.
+
+`tools/extract_head.py` découpe un crâne réel dans le corps de base Quaternius
+(CC0, déjà dans le dépôt). Trois faits mesurés l'autorisent, et l'outil REFUSE
+d'écrire si l'un manque : mêmes 65 os dans le même ordre, `Head` au même index,
+et **matrice de liaison inverse identique au flottant près** (écart 0,00e+00).
+La tête se pose donc sans un seul décalage réglé à la main.
+
+Portée par un `BoneAttachment3D`, échelle **déduite du squelette** (0,821
+braise · 0,921 azur · 1,001 héros · 1,101 briseur) : rien à ressaisir si un
+modèle change. Hauteurs de crâne mesurées en jeu : 0,167 à 0,223 m.
+
+### 4. Caméra et sensibilité
+
+Cause lue dans le moteur installé, pas supposée : `SpringArm3D` n'a **aucune
+distance minimale**. `spring_arm_3d.cpp:196` pose son enfant à
+`origine + direction * (spring_length * motion_delta)`, et `motion_delta` tombe
+à **zéro** dès qu'un obstacle touche le pivot — la caméra atterrit alors
+exactement sur le pivot, à `camera_target_height` = 1,45 m, dans le torse.
+
+Trois garde-fous, dans `_process` donc TOUJOURS après le bras, sans dépendre de
+l'ordre des nœuds : plancher de distance (0,85 m), effacement progressif du
+héros sous le seuil, et sonde verticale qui relève la caméra au-dessus du sol
+(le lit de la rivière est une tranchée de 3,5 m que le bras ne voit pas, car il
+ne sonde que le segment pivot→caméra).
+
+Le curseur de sensibilité déclare enfin ses bornes **dans la scène** au lieu de
+naître avec les défauts de `Range` (0 à 100) et d'être recadré après coup ; et
+le curseur système est reposé au centre quand la souris est rendue — le premier
+clic partait jusqu'ici à l'endroit où le curseur avait été capturé, souvent
+contre un bord d'écran.
+
+### Deux erreurs de mes propres tests, corrigées
+
+Consignées parce qu'elles auraient donné de faux verts :
+
+- « enterré » mesuré par un rayon venu du ciel déclarait enfouies les
+  récompenses posées **dans** les cabanes, qui ont légitimement un toit. Le
+  critère est devenu l'**atteignabilité**, seule chose qui compte pour le
+  joueur ;
+- la hauteur de crâne comparée au **repos** du squelette alors que
+  `BoneAttachment3D` suit la pose **animée** : l'idle du briseur baisse la
+  nuque de 16 cm, ce qui faisait conclure à un crâne de 6,5 cm.
+
+### Prochaine action exacte
+
+1. **Faire jouer le propriétaire** : les quatre corrections sont prouvées en
+   headless, aucune ne l'est à l'écran. La sensibilité « au maximum » vient
+   d'un testeur à souris SYNTHÉTIQUE — le curseur bute au bord de l'écran chez
+   lui, ce qui n'arrive pas avec une souris capturée sur une vraie machine.
+   Cette observation-là demande ses mains, pas un test.
+2. **Le donjon reste inatteignable** : le joueur a vu la citadelle plusieurs
+   fois sans jamais trouver d'entrée praticable. C'est le prochain blocage de
+   progression, et il est intact.
+3. Défauts consignés et NON traités, hors périmètre demandé : ennemis sans arme
+   en main, ennemis qui flottent ou traversent le héros, cube vert et dalle de
+   terrain flottante au village nord, herse jamais ouverte.
+
+---
+
 ## 2026-08-01 — A.2 gelé, protocole de validation humaine préparé
 
 **A.2 validé et gelé sur `9414fd0`** par décision du propriétaire.

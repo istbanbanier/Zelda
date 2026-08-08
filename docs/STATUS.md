@@ -6,6 +6,20 @@ Vocabulaire imposé (§0.2) : `Non commencé` · `Implémenté` (raccordé) ·
 
 **Dernière mise à jour** : 2026-08-06 · **Phase** : Passe art « wahou » sur branche `claude/eclats-art-visual-pass-tyfhgc` — Lots 1-16 FAITS (tour du monde en images : 11 zones capturées + table de verdicts ; TOUTE la carte peinte 3768 surfaces ; citadelle en terrasses ; peinture du donjon tentée puis RETIRÉE sur mesure — AD-008) (v18 : grain procédural + SIX textures ambientCG CC0 déposées par le propriétaire, licences inscrites avant build et test qui le vérifie ; deux corrections de palette mesurées) (v15 : habillage aux 13 modèles Quaternius CC0 du dépôt + variante découpe du painterly pour les feuilles) (v13, éval fin de journée ≈ 71,5 UNVERIFIED < 75 — pas de V4 ; revue contradictoire consignée, corrections prouvées) : éval sévère v5 = 58/100 → AD-004 ; `SH_CharacterPainterly` trois pilotes 3/3 ; PREMIÈRE vidéo de stabilité §30.1 (18,1 s, Movie Maker fixed-fps, `herolab_v6_stabilite.webp`) — elle a révélé l'herbe FIGÉE, corrigée par `SH_FoliageWindPainterly` (sondes 0,00 → 1,6-2,0) ; Lot 4 : le lab ENTIER peint (`test_painterly_lab` — zéro surface mate nue, 3 émissifs justifiés), capture v8, bandes §1.5 intactes · **Gate A gelé** : `9414fd0` · **Commit courant** : voir `git log`
 
+## Playtest du 2026-08-07 — les quatre réparations
+
+Défauts pris dans l'ordre où le joueur les rencontre
+(`evidence/blackbox_player/session_20260807_141313` : 74 min, 0 coffre,
+0 ingrédient, donjon jamais atteint).
+
+| Défaut | État | Preuve |
+|---|---|---|
+| 1. `E` ne produit jamais rien | **Validé** | La chaîne n'était PAS cassée : `tools/godot/diagnose_interaction.gd` → **55/55 atteignables** (53/55 avant correction). Le défaut était le SILENCE sur du décor. `test_interact_is_never_silent` 4/4 : refus annoncé, martèlement cadencé (≤ 3 messages pour 8 appuis), tous les ingrédients atteignables. Les deux fruits de la crête étaient enterrés de **8,00 m** (sondé) — les ramassables se posent désormais sur le sol réel |
+| 2. L'arc ne tire jamais | **Validé** | `test_bow_fires_on_left_click` 2/2. Fail-first VÉRIFIÉ : sans le correctif le test reproduit le symptôme exact du joueur, compteur **« 8 → 8 »**. Hors visée le clic reste l'épée (cas de non-régression) |
+| 3. Ni héros ni ennemis n'ont de tête | **Validé** | Les sources n'en contenaient AUCUNE (capuche seule ; rien au-dessus du cou pour les pillards). `test_characters_have_heads` 2/2 – 26 assertions : géométrie réelle (2 516 tris), os `Head` à la cote attendue, crâne de 0,167 à 0,223 m, échelle déduite du squelette |
+| 4. Caméra dans le héros / sous le terrain | **Validé** | Cause lue dans `spring_arm_3d.cpp:196` (aucune distance minimale, `motion_delta` → 0). `test_camera_never_enters_the_hero` 3/3 : plancher tenu, héros redevenu opaque en reculant, zéro azimut sous le sol sur 12 au bord de la rivière |
+| Sensibilité souris | **NON VÉRIFIÉ** | Bornes déclarées dans la scène et curseur système recentré quand la souris est rendue. Mais « au maximum par défaut » vient d'un testeur à souris SYNTHÉTIQUE (curseur qui bute au bord de l'écran — impossible avec une souris capturée sur une vraie machine). **Demande les mains du propriétaire**, pas un test |
+
 ## Prompt 2 — état (cadence, `ROADMAP.md`)
 
 | Jalon | État | Preuve |

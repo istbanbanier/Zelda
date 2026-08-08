@@ -86,7 +86,20 @@ func _input(event: InputEvent) -> void:
 	# Fronts montants : détectés à l'événement pour ne jamais être perdus entre
 	# deux ticks physiques (§10.6 — une action demandée dans une fenêtre valide
 	# ne doit pas être avalée).
-	if event.is_action_pressed("jump", false, true):
+	#
+	# LA VISÉE PASSE AVANT L'ATTAQUE. `attack_light` et `shoot` partagent le
+	# clic GAUCHE (project.godot : button_index 1 pour les deux) et la cascade
+	# ci-dessous est un `elif` : `attack_light` étant testé le premier, il
+	# avalait le clic et `shoot` n'était JAMAIS atteint. Mesuré au playtest
+	# humain du 2026-08-07 — le joueur a visé, cliqué, et son compteur est
+	# resté bloqué sur « Flèches : 8 » pendant toute la partie ; sans arc, les
+	# cristaux du boss (y = 3,90 m, hors de portée du corps à corps) rendaient
+	# le boss invincible. Hors visée, rien ne change : le clic reste l'attaque.
+	if Input.is_action_pressed("aim") \
+			and event.is_action_pressed("shoot", false, true):
+		_intent.shoot_pressed = true
+		probe.mark_received(&"shoot")
+	elif event.is_action_pressed("jump", false, true):
 		_intent.jump_pressed = true
 		probe.mark_received(&"jump")
 	elif event.is_action_pressed("dodge", false, true):

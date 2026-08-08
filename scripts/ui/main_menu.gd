@@ -13,11 +13,17 @@ extends Control
 const DEFAULT_SLOT: String = "slot0"
 const INPUT_AUDIT_SCENE: String = "res://scenes/tests/InputAudit.tscn"
 const VALLEY_SCENE: String = "res://scenes/world/valley/ValleyWorld.tscn"
+## Terrain d'entraînement (playtest) : les cinq épreuves du Bracelet côte à
+## côte, avec leurs panneaux. Atteignable depuis le MENU — livré d'abord comme
+## une scène à lancer en ligne de commande, donc invisible pour qui joue
+## normalement.
+const TRAINING_SCENE: String = "res://scenes/world/TrainingGrounds.tscn"
 
 @onready var _continue_button: Button = %ContinueButton
 @onready var _new_game_button: Button = %NewGameButton
 @onready var _options_button: Button = %OptionsButton
 @onready var _quit_button: Button = %QuitButton
+@onready var _training_button: Button = %TrainingButton
 @onready var _debug_audit_button: Button = %DebugAuditButton
 
 var _options_panel: OptionsPanel = null
@@ -39,6 +45,7 @@ func _ready() -> void:
 	_new_game_button.pressed.connect(_on_new_game)
 	_options_button.pressed.connect(_on_options)
 	_quit_button.pressed.connect(_on_quit)
+	_training_button.pressed.connect(_on_training)
 	_debug_audit_button.pressed.connect(_on_debug_audit)
 
 	# §18.2 : la navigation s'entend — un tic au déplacement du focus, un toc
@@ -92,7 +99,7 @@ func _refresh() -> void:
 func _wire_focus_cycle() -> void:
 	var order: Array[Button] = [
 		_continue_button, _new_game_button, _options_button,
-		_debug_audit_button, _quit_button,
+		_training_button, _debug_audit_button, _quit_button,
 	]
 	var usable: Array[Button] = []
 	for button: Button in order:
@@ -112,6 +119,7 @@ func _wire_focus_cycle() -> void:
 
 func _focus_first_available() -> void:
 	for button: Button in [_continue_button, _new_game_button, _options_button,
+			_training_button,
 			_debug_audit_button, _quit_button]:
 		if not button.disabled and button.visible:
 			button.grab_focus()
@@ -175,6 +183,10 @@ func _new_game_payload() -> Dictionary:
 		"playtime_seconds": 0.0,
 		"boss_defeated": false,
 	}
+
+
+func _on_training() -> void:
+	get_tree().change_scene_to_file(TRAINING_SCENE)
 
 
 func _on_options() -> void:

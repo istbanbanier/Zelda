@@ -934,10 +934,24 @@ func _set_mouse_captured(captured: bool) -> void:
 
 
 func _apply_mouse_mode() -> void:
-	if _mouse_captured_wanted and not get_tree().paused:
+	var capture: bool = _mouse_captured_wanted and not get_tree().paused
+	var was_captured: bool = Input.mouse_mode == Input.MOUSE_MODE_CAPTURED
+	if capture:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	else:
-		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		return
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	# LE PREMIER CLIC N'EST PLUS PERDU.
+	#
+	# Pendant la capture, le curseur système reste figé là où il se trouvait —
+	# souvent contre un bord d'écran. En rendant la main, Godot le rend visible
+	# À CET ENDROIT : le premier clic du joueur part donc dans le vide, loin du
+	# panneau qui vient de s'ouvrir. Symptôme rapporté au playtest du
+	# 2026-08-07 : « Slider sensibilité : ne réagit pas au 1er clic ». On repose
+	# le curseur au centre de la fenêtre, où le panneau est effectivement.
+	if was_captured:
+		var window: Window = get_window()
+		if window != null:
+			window.warp_mouse(Vector2(window.size) * 0.5)
 
 
 func _on_sensitivity_changed(value: float) -> void:
