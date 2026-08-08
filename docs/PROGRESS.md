@@ -3993,3 +3993,60 @@ verdict final (`BLOCKERS` est consommé trop tôt dans le script pour servir ici
    Défaut de jouabilité, donc avant toute nouvelle passe d'art.
 3. Faire tourner `test-coverage-auditor` sur les 801 tests — le premier des
    neuf agents à éprouver, et le plus rentable.
+
+## 2026-08-08 (suite) — Les quatre échecs connus, corrigés ; et un cinquième découvert
+
+Prolongement direct de l'entrée précédente, même session.
+
+### Les quatre échecs, chacun pour une raison différente
+
+Aucune n'était celle qu'on aurait devinée. Deux sur quatre n'étaient **pas** des
+défauts du jeu, mais des tests restés en arrière.
+
+| Échec | Ce qu'on croyait | Ce que la mesure a dit |
+|---|---|---|
+| Route crête→plaine nord | terrain manquant | sol à 2,00 partout ; **falaise de 2,6 m au bord du gué** |
+| Caméra du boss | la caméra saute | elle interpole ; **le test téléportait** puis jugeait le transitoire |
+| Citadelle « pierre froide » | défaut d'art | pierre à **r − b = 0,080** ; **le test lisait la mauvaise classe de matériau** |
+| Cuisine | régression | **intermittent** (voir ISS-038) |
+
+**ISS-032** — les deux gués faisaient 12 m et s'arrêtaient net : 12 m était la
+largeur du tablier, il manquait l'épaulement. Un joueur venant de la plaine sud
+en diagonale arrivait à x = 26,4, quarante centimètres au-delà du bord, et
+tombait à côté du passage. Élargis à 20 m. **C'est le seul des quatre qui était
+un vrai gain de jouabilité, et il ne se voyait sur aucune capture.**
+
+**Caméra du boss** — `update_fov()` lisse par `lerpf` à poids exponentiel ; le
+premier pas d'une exponentielle vers une cible qui vient de sauter est toujours
+le plus grand (0,431 m). §20.9 dit qu'après une téléportation on réinitialise
+l'interpolation, on ne la juge pas. Scénario rendu physique, **seuils
+inchangés**.
+
+**H-6** — la passe art a repeint la carte en `ShaderMaterial` ; le test
+n'interrogeait que `StandardMaterial3D`, lisait null, affichait `0.000` et
+accusait la pierre d'être froide. Helper `_albedo_of()` posé dans le fichier :
+le piège guette **tous** les tests d'art, pas seulement celui-là.
+
+### Blender installé, ISS-019 levée
+
+Blender 4.0.2 depuis le dépôt Ubuntu (contournement D-002). La continuité des
+personnages a tourné **pour la première fois** : « 6 personnages, un seul corps
+solidaire, aucune pièce détachée ». Comme Godot, Blender vit hors du dépôt et
+ne survivra pas au conteneur.
+
+### ISS-038 — et c'est le plus important
+
+Deux exécutions complètes du même code : **804/0 puis 802/2**. Les deux tests
+fautifs passent en isolation. Classé `S2` parce que **tant que la suite rend
+deux verdicts, aucun vert ne prouve rien** — y compris le 804/0.
+
+### Prochaine action exacte
+
+1. **ISS-038** : relancer la suite en ordre inversé pour confirmer la pollution
+   d'ordre, puis isoler le pollueur par paires. C'est le préalable à toute
+   déclaration de gate, puisque c'est lui qui décide si un vert vaut quelque
+   chose.
+2. Déclarer une **branche par défaut** — décision du propriétaire, cause racine
+   des cinq versions divergentes.
+3. Faire tourner **un** des neuf agents sur un vrai diff (`test-coverage-auditor`
+   d'abord) : ils sont écrits, aucun n'est éprouvé.
