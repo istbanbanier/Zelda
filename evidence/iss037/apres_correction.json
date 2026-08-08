@@ -1,0 +1,18 @@
+{
+  "commit": "5290c1120b81e360e0a4b75deb4e3e913dbc7e72",
+  "display_server": "X11",
+  "distinct_colors_sampled": 4328,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 20,
+  "height": 720,
+  "label": "iss037_corrige",
+  "luma_mean": 0.5777,
+  "luma_stddev": 0.1926,
+  "png": "evidence/iss037/apres_correction.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/lookdev/HeroShotLab.tscn",
+  "timestamp_utc": "2026-08-08 01:13:04",
+  "width": 1280
+}

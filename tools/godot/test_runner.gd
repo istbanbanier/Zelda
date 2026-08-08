@@ -66,7 +66,7 @@ func _initialize() -> void:
 		return
 
 	for path: String in scripts:
-		if filter != "" and not path.contains(filter):
+		if not _matches(path, filter):
 			continue
 		# `_run_script()` attend les tests asynchrones : elle est donc elle-même une
 		# coroutine. L'appeler sans `await` la ferait rendre la main au premier
@@ -135,6 +135,21 @@ func _install_autoloads() -> void:
 		installed.append(autoload_name)
 	if not installed.is_empty():
 		print("autoloads installés: %s" % ", ".join(installed))
+
+
+## Un filtre peut porter PLUSIEURS sous-chaînes séparées par des virgules ;
+## le script est retenu s'il en satisfait UNE. C'est ce qui permet à
+## `tools/gate_select.sh` de ne rejouer que les tests liés au diff, au lieu des
+## 800 : le cycle passe de vingt minutes à quelques dizaines de secondes.
+## Un filtre sans virgule se comporte exactement comme avant.
+func _matches(path: String, filter: String) -> bool:
+	if filter == "":
+		return true
+	for part: String in filter.split(",", false):
+		var needle: String = part.strip_edges()
+		if needle != "" and path.contains(needle):
+			return true
+	return false
 
 
 func _read_filter() -> String:

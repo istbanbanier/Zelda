@@ -282,8 +282,16 @@ func _build_plains_and_river() -> void:
 		_ramp("RiverBankNorth%s" % seg_name, Vector3(seg_x, 2.0, 4),
 			Vector3(seg_x, -1.5, 8), seg_width, COL_RIVERBED)
 	# Deux gués : la route du donjon (ouest) et la route du pylône (est).
-	_slab("FordWest", Vector2(20, 10), Vector2(12, 12), 2.0, COL_GRASS_DARK)
-	_slab("FordEast", Vector2(95, 10), Vector2(12, 12), 2.0, COL_GRASS_DARK)
+	# ISS-032 : ils faisaient 12 m et s'arrêtaient NET — sondé, le sol passait
+	# de 2,00 à −0,63 en 50 cm de large, soit une falaise de 2,6 m au ras du
+	# passage. Un joueur venant de la plaine sud en diagonale arrivait à
+	# x = 26,4, quarante centimètres au-delà du bord, et tombait à côté du gué.
+	# 12 m était la largeur du TABLIER ; il manquait l'épaulement. 20 m donne
+	# au passage la marge d'une vraie route (§4.1 « les deux routes ») et
+	# accueille l'approche naturelle sans exiger du joueur qu'il vise au mètre.
+	const FORD_WIDTH: float = 20.0
+	_slab("FordWest", Vector2(20, 10), Vector2(FORD_WIDTH, 12), 2.0, COL_GRASS_DARK)
+	_slab("FordEast", Vector2(95, 10), Vector2(FORD_WIDTH, 12), 2.0, COL_GRASS_DARK)
 
 
 func _build_spawn_ridge_and_descent() -> void:

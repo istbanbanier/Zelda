@@ -5,6 +5,122 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-07 — Les quatre réparations du playtest, dans l'ordre du joueur
+
+Session ouverte sur `evidence/blackbox_player/session_20260807_141313` : 74
+minutes de jeu, **0 coffre ouvert, 0 ingrédient ramassé, donjon jamais
+atteint**. Les quatre défauts ont été repris dans l'ordre où le joueur les
+rencontre, chacun avec son test.
+
+### 1. L'interaction — la chaîne n'était pas cassée, elle était MUETTE
+
+Les deux hypothèses de départ sont tombées, et la première est tombée grâce au
+rapport du joueur lui-même :
+
+| Hypothèse | Verdict | Ce qui l'a tranchée |
+|---|---|---|
+| `_bind_player()` différé qui rate | **ÉCARTÉE** | vie, endurance, flèches et verrouillage s'affichaient pendant sa partie — les quatre sont branchés dans le MÊME appel que `interact_focus_changed` |
+| objets hors du groupe, ou ligne de vue qui rejette | **ÉCARTÉE** | `tools/godot/diagnose_interaction.gd` : **53/55 atteignables** dès le premier passage, feu de cuisine compris, invite du HUD comprise |
+
+Ce qui a réellement échoué : `E` appuyé sur du décor ne produisait **rien** —
+ni son, ni message, ni refus. Le joueur a essayé sur une enclume, un cadavre,
+un objet orange et un foyer décoratif, en a conclu que la touche était morte,
+et a cessé d'essayer. 55 objets répondaient pourtant.
+
+Le projet applique déjà « jamais de silence sur une action impossible » à
+l'attaque lourde refusée (point 6.10 du plan de test) ; la règle manquait
+exactement là où un débutant apprend ce que fait une touche.
+
+Deux corrections :
+
+- `_refuse_interaction()` : son + « Rien à portée — approchez-vous et faites
+  face. », cadencé à 1,2 s pour qu'un martèlement ne noie pas l'écran ;
+- les ramassables se posent sur le **sol réel** au lieu d'une cote écrite à la
+  main. Les deux fruits de la crête étaient **enterrés de 8,00 m** (sondé : sol
+  à y = 32,00, pose à y = 24,00 — la cote du spawn de MASTER_SPEC §3.3, jamais
+  mise à jour quand le relief a été bâti). Ce sont les deux PREMIERS
+  ramassables de la partie. Même classe de défaut qu'ISS-035.
+
+Après correction : **55/55 atteignables**.
+
+### 2. L'arc — une cascade `elif` dans le mauvais ordre
+
+`attack_light` et `shoot` sont tous deux sur le clic gauche (`button_index 1`,
+vérifié dans `project.godot`) et `player_input_reader.gd` les teste dans une
+suite de `elif`, l'attaque en premier : le clic était toujours avalé. La visée
+tenue passe désormais devant ; hors visée rien ne change.
+
+Le test reproduit le symptôme exact du joueur — compteur **« 8 → 8 »** — sans
+le correctif, et passe avec. Aucun test existant ne pouvait le voir : ils
+envoient des `InputEventAction`, qui ne portent qu'UNE action et ne peuvent pas
+reproduire la collision. Il fallait de vrais `InputEventMouseButton`.
+
+### 3. Les têtes — le modèle n'en contenait aucune
+
+Vérifié dans les sources, pas déduit : `Male_Ranger.gltf` ne livre que
+`Male_Ranger_Head_Hood`, la **capuche seule** ; `Male_Peasant.gltf` (les trois
+pillards) livre Arms/Body/Feet/Legs et **rien au-dessus du cou**. La « pointe
+métallique argentée » vue par le testeur est le maillage `_Hard`, 4,8 cm de
+haut, posé sur un pavé de peau de 10,6 cm de large.
+
+`tools/extract_head.py` découpe un crâne réel dans le corps de base Quaternius
+(CC0, déjà dans le dépôt). Trois faits mesurés l'autorisent, et l'outil REFUSE
+d'écrire si l'un manque : mêmes 65 os dans le même ordre, `Head` au même index,
+et **matrice de liaison inverse identique au flottant près** (écart 0,00e+00).
+La tête se pose donc sans un seul décalage réglé à la main.
+
+Portée par un `BoneAttachment3D`, échelle **déduite du squelette** (0,821
+braise · 0,921 azur · 1,001 héros · 1,101 briseur) : rien à ressaisir si un
+modèle change. Hauteurs de crâne mesurées en jeu : 0,167 à 0,223 m.
+
+### 4. Caméra et sensibilité
+
+Cause lue dans le moteur installé, pas supposée : `SpringArm3D` n'a **aucune
+distance minimale**. `spring_arm_3d.cpp:196` pose son enfant à
+`origine + direction * (spring_length * motion_delta)`, et `motion_delta` tombe
+à **zéro** dès qu'un obstacle touche le pivot — la caméra atterrit alors
+exactement sur le pivot, à `camera_target_height` = 1,45 m, dans le torse.
+
+Trois garde-fous, dans `_process` donc TOUJOURS après le bras, sans dépendre de
+l'ordre des nœuds : plancher de distance (0,85 m), effacement progressif du
+héros sous le seuil, et sonde verticale qui relève la caméra au-dessus du sol
+(le lit de la rivière est une tranchée de 3,5 m que le bras ne voit pas, car il
+ne sonde que le segment pivot→caméra).
+
+Le curseur de sensibilité déclare enfin ses bornes **dans la scène** au lieu de
+naître avec les défauts de `Range` (0 à 100) et d'être recadré après coup ; et
+le curseur système est reposé au centre quand la souris est rendue — le premier
+clic partait jusqu'ici à l'endroit où le curseur avait été capturé, souvent
+contre un bord d'écran.
+
+### Deux erreurs de mes propres tests, corrigées
+
+Consignées parce qu'elles auraient donné de faux verts :
+
+- « enterré » mesuré par un rayon venu du ciel déclarait enfouies les
+  récompenses posées **dans** les cabanes, qui ont légitimement un toit. Le
+  critère est devenu l'**atteignabilité**, seule chose qui compte pour le
+  joueur ;
+- la hauteur de crâne comparée au **repos** du squelette alors que
+  `BoneAttachment3D` suit la pose **animée** : l'idle du briseur baisse la
+  nuque de 16 cm, ce qui faisait conclure à un crâne de 6,5 cm.
+
+### Prochaine action exacte
+
+1. **Faire jouer le propriétaire** : les quatre corrections sont prouvées en
+   headless, aucune ne l'est à l'écran. La sensibilité « au maximum » vient
+   d'un testeur à souris SYNTHÉTIQUE — le curseur bute au bord de l'écran chez
+   lui, ce qui n'arrive pas avec une souris capturée sur une vraie machine.
+   Cette observation-là demande ses mains, pas un test.
+2. **Le donjon reste inatteignable** : le joueur a vu la citadelle plusieurs
+   fois sans jamais trouver d'entrée praticable. C'est le prochain blocage de
+   progression, et il est intact.
+3. Défauts consignés et NON traités, hors périmètre demandé : ennemis sans arme
+   en main, ennemis qui flottent ou traversent le héros, cube vert et dalle de
+   terrain flottante au village nord, herse jamais ouverte.
+
+---
+
 ## 2026-08-01 — A.2 gelé, protocole de validation humaine préparé
 
 **A.2 validé et gelé sur `9414fd0`** par décision du propriétaire.
@@ -3654,3 +3770,283 @@ périmètre demandé, et les bouger touche le tracé du gué.
    à 0,3 m : les trois défauts corrigés ici ont tous été trouvés à la main,
    secteur par secteur — la sonde peut désormais les trouver toute seule.
 3. Éclairage du donjon (préalable nommé par AD-008), inchangé.
+
+## 2026-08-07 — Inspection de world-of-claudecraft, barre en couches, ISS-035
+
+Commits : `e7eca0a` (hooks) · `18b0565` (correctif du plancher) · `b9d763c`
+(R-015) · `222a44f` (PROMPT 4) · `a736ec6` (ISS-035) · `d82ed14` + `44b3a9f`
+(sonde) · `b11a893` (KNOWN_ISSUES) · `ba7407b` (.uid).
+
+**Origine** : demande d'inspecter `levy-street/world-of-claudecraft` et d'en
+tirer des leçons. Dépôt cloné intégralement — 9 873 commits en deux mois, 570
+branches, 2 623 refs de PR, une livraison tous les 1 à 3 jours. Constats
+mesurés en **R-014** (barre de qualité) et **R-015** (fabrique d'assets depuis
+une image de référence, qui est notre problème central non résolu).
+
+**Ce qui a été construit**, en transposant le mécanisme et jamais les règles :
+
+- `.claude/hooks/qa-stop.sh` — hook `Stop`, scanne les lignes AJOUTÉES à chaque
+  tour, bloque sur quatre invariants durs. Zéro faux positif vérifié sur huit
+  formes GDScript typées légitimes ;
+- `.githooks/pre-push` — mêmes règles sur le diff poussé, plus `--check-only`
+  des `.gd` modifiés. **Les deux chemins sont prouvés** : il a refusé du contenu
+  interdit, puis une vraie erreur de syntaxe ;
+- `tests/unit/test_invariants.gd` — **7 réussis, 0 échoué**. Plus `NON VÉRIFIÉ` ;
+- `docs/PROMPT4_METHOD.md` — quatrième cahier cumulatif, enregistré dans
+  `CLAUDE.md`. Onze de ses treize éléments sont `[À DÉCIDER]` : ils touchent la
+  barre de qualité, qui appartient au propriétaire.
+
+**Le garde-fou a refusé mon propre premier push** : les scripts de garde-fou
+PORTENT les motifs interdits, et `.githooks` manquait à leur liste d'exclusion.
+Vrai défaut, trouvé par l'outil sur lui-même.
+
+**ISS-035 — le correctif prescrit était faux.** La consigne disait « dériver la
+cote du lit ». Mesuré : lit −1,50, surface de l'eau −0,55, dalles de 0,11 à
+0,18 m. Poser une dalle sur le lit met son sommet **0,79 m sous l'eau**. Aucune
+dalle du kit n'atteint les 0,95 m nécessaires : le défaut n'était pas une cote,
+c'était le choix du modèle. Décision du propriétaire : de vrais rochers posés au
+fond. Quatre `Rock_Medium_*`, base −1,550, émergences 0,14 à 0,42 m, collision
+ajoutée.
+
+**Décisivité prouvée** : sans le correctif, le test rougit sur 2,04 / 1,99 /
+2,04 / 1,99 m — exactement les valeurs de `KNOWN_ISSUES`. En le vérifiant, un
+défaut du test lui-même est apparu : son filtre ne reconnaissait pas `RockPath_`,
+donc une dalle suspendue remise à côté de bons blocs serait passée inaperçue.
+
+**Premier balayage complet de la vallée** (point 2 de la consigne précédente).
+Trois défauts en sont sortis, deux dans mes outils :
+
+1. `--exempt` vide exemptait TOUT (`_matches()` retourne vrai sur liste vide) :
+   « 0 candidate, 704 exemptées », rapport parfaitement vide et faux ;
+2. les maillages SKINNÉS polluaient le relevé — leur boîte est la pose de
+   liaison, pas ce qui est dessiné. **ISS-018 qui se rejouait dans la sonde.**
+   704 → 605 candidates ; Bestiary 57 → 2 ; le camp disparaît entièrement ;
+3. le filtre du test des pierres, ci-dessus.
+
+**ISS-036 ouvert (CANDIDAT)** : deux fruits de la crête n'ont aucune collision
+sous eux (rayon à 22 m). Deux lectures possibles, non départagées, écrites
+toutes les deux — la sonde mesure un écart, elle ne sait pas si la pièce est
+censée reposer dessus.
+
+**Validation** : `784 réussis, 4 échoués`, 314 scripts parsés, Boot → menu
+atteint. Les quatre échecs sont les connus antérieurs (caméra du boss, langage
+de résonance de la citadelle, ISS-032 ×2). **Zéro régression, et pas seulement
+« encore rouge »** : ISS-032 rend `9/11 jalons en 1907 ticks, min y = −0,50`,
+identique AU TICK près aux chiffres consignés. La collision ajoutée en rivière
+n'a donc rien perturbé. Niveau 3b non exécuté : Blender absent.
+
+### Prochaine action exacte
+
+1. **Trier les 605 candidates du balayage.** Elles sont dans
+   `probe_world_boxes.gd --sweep --float=0.3 --limit=800`. Commencer par les
+   zones de gameplay (`Ingredients` 6, `DressZoneRiver` 1, `Camp`) plutôt que
+   par les plus hautes, qui sont légitimes (nuages, éclairs, créneaux).
+   Construire `--exempt` **sur cette sortie réelle**, une entrée à la fois, avec
+   sa raison — jamais sur une supposition.
+2. **ISS-036** : relancer la sonde en région resserrée autour de `(0, 170)` et
+   vérifier si la dalle de crête possède une collision à ces coordonnées.
+3. **Limite connue de la sonde, à traiter** : une pièce posée sur une géométrie
+   DÉCORATIVE sans collision est toujours signalée flottante (le rayon ne teste
+   que la couche 1). C'est la cause probable d'une bonne part des 120 candidates
+   de `ValleyRuins` et des 104 de `Terrain`. À documenter dans l'outil, ou à
+   traiter par une seconde passe.
+4. Éclairage du donjon (préalable nommé par AD-008), inchangé.
+
+## 2026-08-07 — Outillage volé à World of ClaudeCraft : neuf relecteurs et la comparaison avant/après
+
+Session ouverte par le propriétaire sur un autre front (écrire à l'auteur de
+`levy-street/world-of-claudecraft` pour lui demander conseil). **Le front
+précédent n'est pas perdu : ISS-035 et la sonde de boîtes restent la prochaine
+action exacte, telle qu'écrite dans l'entrée du 2026-08-07 ci-dessus.**
+
+### Ce qui a été fait
+
+1. **Lettre** — `docs/outreach/2026-08-07_reuben_horne_conseils.md`, prête,
+   **non envoyée** : aucune session ici n'a d'outil d'envoi d'e-mail.
+2. **Neuf relecteurs** sous `.claude/agents/`, transposés des neuf siens. Trois
+   des siens visent Postgres, un serveur et des PR d'inconnus : leur fonction a
+   été conservée, leur domaine remplacé par un risque réellement porté ici
+   (autorité temporelle, budget de frame, sauvegarde, parité preset/entrée,
+   couture présentation, hygiène de livraison, licence d'asset). Origine nommée
+   en tête de chaque fichier.
+3. **`gate-review` devient le répartiteur** (son rôle de `qa-checklist`) : table
+   de convocation par nature de diff, passe adverse finale « qu'est-ce qui
+   manque », relevé où un spécialiste non convoqué se voit.
+4. **`adversarial-qa`** gagne un portail de périmètre et une couverture
+   auditable : les critères non touchés se déclarent `hérité de <commit>`, et un
+   verdict hérité dont la preuve précède le dernier changement du fichier
+   redevient `NON VÉRIFIÉ`.
+5. **`tools/capture_ab.sh`** — la moitié qui manquait aux captures. L'AVANT est
+   rendu depuis un **worktree détaché sur le commit de base**, à réglages
+   identiques ; l'arbre courant n'est jamais touché (ni stash, ni checkout —
+   règle 1 de `COMMENT_TRAVAILLER_ENSEMBLE.md`). Refuse un arbre sale, retire le
+   worktree par `trap` même en cas d'échec, écrit `comparison.json`.
+
+### Ce qui n'est PAS prouvé
+
+- **Aucun des neuf agents n'a tourné sur un vrai diff.** Ils sont écrits, pas
+  éprouvés. Leur première exécution est aussi leur premier test.
+- **`capture_ab.sh` n'a pas fait une seule capture.** `godot` est ABSENT de ce
+  conteneur (`command -v` → rien) ; seuls sont vérifiés : les quatre refus
+  d'arguments, le refus d'arbre sale, le cycle worktree ajout/retrait/prune avec
+  arbre principal intact, et le générateur de `comparison.json` sur fixtures.
+  **Le chemin de capture lui-même est `NON VÉRIFIÉ`.**
+- La suite GDScript n'a pas été rejouée : aucun code de jeu n'a été touché.
+
+### Ce qu'on a appris de son dépôt, et qui vaut d'être retenu
+
+Sa compétence `pr-screenshots` automatise entièrement la **production** des
+images (Puppeteer, worktree séparé pour l'avant) et **pas du tout leur
+jugement** — sa propre documentation dit : « There is no automated visual
+validation; human judgment determines acceptability ». Le projet le plus outillé
+des deux n'a pas d'œil automatique non plus. L'outillage sert à poser devant
+l'humain une comparaison honnête, pas à se passer de lui.
+
+### Prochaine action exacte
+
+1. Lancer `tools/capture_ab.sh` **sur une machine avec Godot** pour lever le
+   `NON VÉRIFIÉ` du chemin de capture — cible naturelle : `HeroShotLab`, où les
+   itérations v0→v3 se comparaient jusqu'ici de mémoire.
+2. Faire tourner **un** des neuf agents sur un vrai diff et corriger ce qui
+   s'avérera faux dans sa consigne. Le plus rentable : `test-coverage-auditor`
+   sur les 748 tests existants.
+3. Reprendre le front précédent : ISS-035 (pas japonais) puis la sonde de boîtes
+   sur la vallée entière.
+
+## 2026-08-08 — Consolidation des cinq branches, ISS-037, et le test qui manquait
+
+Godot 4.7.1-stable **compilé ici** (22 min, commit épinglé `a13da4feb`) —
+ISS-001 re-vérifiée et toujours vraie. Le binaire vit dans `/opt`, hors du
+dépôt : chaque nouvelle session devra recompiler.
+
+### 1. Cinq versions du jeu, ramenées à une
+
+Le dépôt n'avait **aucune branche par défaut** et cinq branches divergentes
+d'un ancêtre commun du 07-08 18h13. Matrice de contenance mesurée
+commit par commit (`git merge-base --is-ancestor`, pas lecture de titres) :
+aucune branche ne portait plus de **deux** des six morceaux de travail.
+
+Fusionnées dans `claude/world-of-claudecraft-advice-snt1qa`, dans un worktree
+isolé. Deux conflits, aucun de code : `PROGRESS.md` (deux journaux — les deux
+entrées conservées) et un `.uid` (deux identifiants Godot pour le même test,
+aucune collision, un gardé). Les cinq branches d'origine sont **intactes**.
+
+Portail avant/après la fusion : **775 → 801 réussis, 4 échoués dans les deux
+cas, les mêmes** (caméra du boss, résonance de la citadelle, route
+crête→plaine nord ×2). **Zéro régression.**
+
+Découvert au passage : une autre session avait porté les **hooks** de
+world-of-claudecraft (`qa-stop.sh`, `ensure-hooks.sh`) pendant que celle-ci
+portait ses **neuf agents**. Les deux moitiés de sa méthode, arrivées par deux
+chemins qui s'ignoraient. Coup de chance, pas méthode.
+
+### 2. ISS-037 — corrigé, cause établie par test décisif
+
+Le chemin de la vue North Star rendait à **97 % de valeur / 0,71 de
+saturation** là où §1.5 veut 35-65 % pour un sol. Il était l'objet le plus
+clair de l'image et captait le regard avant la citadelle (§1.2).
+
+**Deux hypothèses fausses avant la bonne**, conservées dans le ticket : la
+texture nommée « terre » est verte, et la sonde de projection écrite pour
+l'occasion désignait le mauvais nœud (son axe Y est faux — documenté en tête
+du fichier). Ce qui a tranché : repeindre `PathCrest` en bleu pur, recapturer,
+mesurer → `#2830FF`.
+
+Le test bleu a livré la cause en prime : un albédo bleu PUR ressort à B=255,
+donc le labo a un gain lumineux de ≈ 1,8. `#8A5A36` est une couleur **peinte
+cible**, pas un albédo. Correction : albédo × 0,57 → **44 % de valeur**,
+toujours distinct de l'herbe (29 %).
+
+### 3. Le test qui manquait, et qui explique tout le reste
+
+Ce défaut a survécu à **quatre itérations v0→v3** et à une évaluation sévère à
+58/100 parce qu'**aucun des 801 tests ne vérifiait les bandes de valeurs**.
+
+`tools/check_value_bands.py` + étape **5b** de `validate_release.sh`. Il ne
+teste pas « aucun pixel de sol au-dessus de 65 % » — les reflets et les fleurs
+blanches montent toujours à 100 %, et l'herbe éclairée a le droit d'être
+claire. Il teste la **hiérarchie** que §1.5 énonce vraiment : *le sol ne peut
+pas être plus clair que le ciel* (sol p95 < ciel p50).
+
+Fail-first prouvé : **code 1** sur la capture d'avant correction (sol p95 =
+100 % ≥ ciel p50 = 83 %), **code 0** sur celle d'après (74 % < 83 %). Chaîne
+complète exécutée, étape 5b verte.
+
+Pillow absent ⇒ code **3 BLOQUÉ**, jamais vert, et le blocage remonte au
+verdict final (`BLOCKERS` est consommé trop tôt dans le script pour servir ici).
+
+### Ce qui n'est PAS fait
+
+- **Aucun des neuf agents n'a tourné sur un vrai diff.** Écrits, pas éprouvés.
+- Les **4 tests rouges** connus restent rouges, dont la route crête→plaine nord
+  qui n'est pas franchissable — défaut de jouabilité, prioritaire sur l'art.
+- **Toujours aucune branche par défaut** : c'est la cause racine de la
+  divergence. Tant qu'elle manque, le problème reviendra.
+- Vus sur la capture agrandie, **non traités** : le chemin est une dalle POSÉE
+  sur l'herbe (tranche visible) au lieu d'être creusée ; des cubes bleus et
+  blancs non habillés traînent dans la prairie.
+
+### Prochaine action exacte
+
+1. Déclarer une branche par défaut sur le dépôt — décision du propriétaire.
+2. Route crête→plaine nord (ISS-032) : 9 jalons atteints sur 11, `min y = -0.50`.
+   Défaut de jouabilité, donc avant toute nouvelle passe d'art.
+3. Faire tourner `test-coverage-auditor` sur les 801 tests — le premier des
+   neuf agents à éprouver, et le plus rentable.
+
+## 2026-08-08 (suite) — Les quatre échecs connus, corrigés ; et un cinquième découvert
+
+Prolongement direct de l'entrée précédente, même session.
+
+### Les quatre échecs, chacun pour une raison différente
+
+Aucune n'était celle qu'on aurait devinée. Deux sur quatre n'étaient **pas** des
+défauts du jeu, mais des tests restés en arrière.
+
+| Échec | Ce qu'on croyait | Ce que la mesure a dit |
+|---|---|---|
+| Route crête→plaine nord | terrain manquant | sol à 2,00 partout ; **falaise de 2,6 m au bord du gué** |
+| Caméra du boss | la caméra saute | elle interpole ; **le test téléportait** puis jugeait le transitoire |
+| Citadelle « pierre froide » | défaut d'art | pierre à **r − b = 0,080** ; **le test lisait la mauvaise classe de matériau** |
+| Cuisine | régression | **intermittent** (voir ISS-038) |
+
+**ISS-032** — les deux gués faisaient 12 m et s'arrêtaient net : 12 m était la
+largeur du tablier, il manquait l'épaulement. Un joueur venant de la plaine sud
+en diagonale arrivait à x = 26,4, quarante centimètres au-delà du bord, et
+tombait à côté du passage. Élargis à 20 m. **C'est le seul des quatre qui était
+un vrai gain de jouabilité, et il ne se voyait sur aucune capture.**
+
+**Caméra du boss** — `update_fov()` lisse par `lerpf` à poids exponentiel ; le
+premier pas d'une exponentielle vers une cible qui vient de sauter est toujours
+le plus grand (0,431 m). §20.9 dit qu'après une téléportation on réinitialise
+l'interpolation, on ne la juge pas. Scénario rendu physique, **seuils
+inchangés**.
+
+**H-6** — la passe art a repeint la carte en `ShaderMaterial` ; le test
+n'interrogeait que `StandardMaterial3D`, lisait null, affichait `0.000` et
+accusait la pierre d'être froide. Helper `_albedo_of()` posé dans le fichier :
+le piège guette **tous** les tests d'art, pas seulement celui-là.
+
+### Blender installé, ISS-019 levée
+
+Blender 4.0.2 depuis le dépôt Ubuntu (contournement D-002). La continuité des
+personnages a tourné **pour la première fois** : « 6 personnages, un seul corps
+solidaire, aucune pièce détachée ». Comme Godot, Blender vit hors du dépôt et
+ne survivra pas au conteneur.
+
+### ISS-038 — et c'est le plus important
+
+Deux exécutions complètes du même code : **804/0 puis 802/2**. Les deux tests
+fautifs passent en isolation. Classé `S2` parce que **tant que la suite rend
+deux verdicts, aucun vert ne prouve rien** — y compris le 804/0.
+
+### Prochaine action exacte
+
+1. **ISS-038** : relancer la suite en ordre inversé pour confirmer la pollution
+   d'ordre, puis isoler le pollueur par paires. C'est le préalable à toute
+   déclaration de gate, puisque c'est lui qui décide si un vert vaut quelque
+   chose.
+2. Déclarer une **branche par défaut** — décision du propriétaire, cause racine
+   des cinq versions divergentes.
+3. Faire tourner **un** des neuf agents sur un vrai diff (`test-coverage-auditor`
+   d'abord) : ils sont écrits, aucun n'est éprouvé.

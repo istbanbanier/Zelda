@@ -310,3 +310,45 @@ func test_leaving_flight_over_the_void_leaves_the_hero_where_he_was() -> void:
 		"le héros est resté où il était")
 	check(not _player.is_frozen(), "et il a repris la conduite malgré le refus")
 	_teardown()
+
+
+## --- Présence DANS LE JEU, pas seulement au terrain d'entraînement ---------
+
+func test_the_valley_itself_carries_the_mount_and_the_fly_mode() -> void:
+	## Défaut de livraison signalé au playtest : « pas de monture, pas de F2,
+	## rien ». Et c'était exact — les deux n'existaient que dans
+	## `TrainingGrounds.tscn`, une scène à lancer à la main. Un joueur qui
+	## démarre le jeu normalement ne les rencontrait jamais.
+	##
+	## Ce test vérifie la seule chose qui compte : ils sont dans LA CARTE
+	## qu'on parcourt réellement.
+	var tree: SceneTree = _tree()
+	var scene: PackedScene = load("res://scenes/world/valley/ValleyWorld.tscn") \
+		as PackedScene
+	if scene == null:
+		check(false, "la vallée ne se charge pas")
+		return
+	var valley: Node3D = scene.instantiate() as Node3D
+	tree.root.add_child(valley)
+	for i: int in range(12):
+		await tree.physics_frame
+	var beast: Mount = valley.call("mount") as Mount
+	check(beast != null, "une monture est posée DANS la vallée")
+	if beast != null:
+		check(beast.is_in_group("interactable"),
+			"…et elle est interactive comme tout le reste")
+		var spawn: Node3D = valley.get_node_or_null("SpawnPoint") as Node3D
+		if spawn != null:
+			var gap: float = Vector2(beast.global_position.x - spawn.position.x,
+				beast.global_position.z - spawn.position.z).length()
+			check(gap < 30.0,
+				"…à portée de vue du départ (%.1f m) : sinon il faudrait "
+					% gap + "savoir qu'elle existe pour la trouver")
+	var fly: DevFlyMode = valley.call("dev_fly") as DevFlyMode
+	check(fly != null, "le vol libre est branché DANS la vallée")
+	if fly != null:
+		check(fly.camera() != null, "…avec sa caméra prête")
+	valley.get_parent().remove_child(valley)
+	valley.queue_free()
+	for i: int in range(3):
+		await tree.physics_frame

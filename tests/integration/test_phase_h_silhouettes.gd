@@ -465,12 +465,18 @@ func test_h6_la_citadelle_parle_le_langage_de_resonance() -> void:
 		as MeshInstance3D
 	check_not_null(keep, "la masse centrale existe")
 	if keep != null:
-		var stone: StandardMaterial3D = keep.material_override as StandardMaterial3D
-		check(stone != null
-			and stone.albedo_color.r - stone.albedo_color.b >= 0.04,
+		# Ce bloc lisait `material_override as StandardMaterial3D`. Depuis que
+		# la passe art a repeint la carte, la citadelle porte un
+		# `ShaderMaterial` : le cast rendait null, le test affichait
+		# « r − b = 0.000 » et accusait la pierre d'être froide. Mesuré, le
+		# shader porte (0.285, 0.245, 0.205) — soit r − b = 0,080, DEUX FOIS le
+		# seuil. La pierre était chaude ; c'est le test qui regardait au mauvais
+		# endroit. Le seuil de §12.1 est inchangé.
+		var stone: Color = _albedo_of(keep)
+		check(stone.r >= 0.0, "la masse centrale porte un matériau lisible")
+		check(stone.r - stone.b >= 0.04,
 			"la pierre est chaude — ocre/bronze sombre §12.1 (r − b = %.3f ≥ 0,04)"
-				% (stone.albedo_color.r - stone.albedo_color.b
-					if stone != null else 0.0))
+				% (stone.r - stone.b))
 
 	_tree().root.remove_child(valley)
 	valley.queue_free()
@@ -562,3 +568,32 @@ func test_les_feuilles_torsadees_sont_olive() -> void:
 		check(green_sum > red_sum * 1.2,
 			"le vert domine le rouge (G %.2f vs R %.2f) — avant : 13 contre 95"
 				% [green_sum, red_sum])
+
+
+## Albédo d'un mesh, quelle que soit la CLASSE de son matériau.
+##
+## Un test d'art qui n'interroge que `StandardMaterial3D` devient aveugle dès
+## qu'une passe de peinture pose un `ShaderMaterial` — il lit alors 0 et accuse
+## l'art d'un défaut qui n'existe pas. C'est arrivé sur H-6 : la pierre de la
+## citadelle était conforme (r − b = 0,080), le test la déclarait froide.
+##
+## Rend `Color(-1, -1, -1)` quand aucun albédo n'est lisible, pour que l'appelant
+## échoue explicitement au lieu de comparer des zéros.
+func _albedo_of(mesh: MeshInstance3D) -> Color:
+	var unreadable: Color = Color(-1.0, -1.0, -1.0)
+	if mesh == null:
+		return unreadable
+	var material: Material = mesh.material_override
+	if material == null:
+		material = mesh.get_active_material(0)
+	if material == null:
+		return unreadable
+	var standard: StandardMaterial3D = material as StandardMaterial3D
+	if standard != null:
+		return standard.albedo_color
+	var shaded: ShaderMaterial = material as ShaderMaterial
+	if shaded != null:
+		var value: Variant = shaded.get_shader_parameter("albedo_color")
+		if value is Color:
+			return value as Color
+	return unreadable

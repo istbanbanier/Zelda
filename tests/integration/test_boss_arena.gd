@@ -220,10 +220,27 @@ func test_the_camera_widens_progressively_near_the_boss() -> void:
 		"loin du Gardien, la caméra garde sa distance d'exploration (+%.2f m)"
 		% far_distance)
 	# On s'approche : le cadrage s'ouvre, sans jamais sauter.
-	arena.player().global_position = boss.global_position + Vector3(0, 0.3, 6.0)
+	#
+	# ISS-032 (2ᵉ échec) : ce bloc TÉLÉPORTAIT le joueur de 16,5 m à 6 m, puis
+	# reprochait à la caméra son premier pas. Or ce pas n'était pas un snap :
+	# `update_fov()` lisse par `lerpf` à poids exponentiel, et le premier pas
+	# d'une exponentielle vers une cible qui vient de sauter est toujours le
+	# plus grand — 0,431 m mesuré. §20.9 dit d'ailleurs qu'après une
+	# téléportation on RÉINITIALISE l'interpolation ; on ne la juge pas.
+	#
+	# Un joueur, lui, s'approche. On le rapproche donc pas à pas, ce qui teste
+	# ce que §16.6 promet réellement : le cadrage s'ouvre PENDANT qu'on avance.
+	# Les trois seuils sont inchangés — c'est le scénario qui devient physique,
+	# pas le critère qui s'assouplit.
+	const APPROACH_TICKS: int = 90
+	const APPROACH_FROM: float = 16.5
+	const APPROACH_TO: float = 6.0
 	var previous: float = rig.boss_framing_distance()
 	var biggest_step: float = 0.0
-	for i: int in range(90):
+	for i: int in range(APPROACH_TICKS):
+		var t: float = float(i + 1) / float(APPROACH_TICKS)
+		arena.player().global_position = boss.global_position + Vector3(
+			0, 0.3, lerpf(APPROACH_FROM, APPROACH_TO, t))
 		await _tree().physics_frame
 		var current: float = rig.boss_framing_distance()
 		biggest_step = maxf(biggest_step, absf(current - previous))

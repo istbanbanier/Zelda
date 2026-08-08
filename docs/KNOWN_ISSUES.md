@@ -553,7 +553,38 @@ Les deux abouts du toit de la cabane restent donc des triangles ouverts.
 au-dessus de la toiture. Correctif possible : modeliser un pignon a la bonne
 pente (script Blender), ou passer la cabane aux tuiles rondes.
 
-## ISS-035 — Pas japonais de la rivière suspendus au-dessus du lit (S3, ouvert)
+## ISS-035 — Pas japonais de la rivière suspendus au-dessus du lit (S3, **CORRIGÉ 2026-08-07**)
+
+**Correction, et pourquoi le correctif attendu ci-dessous était faux.** Le
+correctif proposé — « dériver la cote de ces pierres du lit » — les aurait
+ENTERRÉES. La géométrie, relue dans le code et non estimée : lit à −1,50,
+surface de l'eau à −0,55 (ruban de 0,30 m centré à −0,70). Une dalle de 0,16 m
+posée sur le lit a son sommet à −1,34, soit **0,79 m sous l'eau** : invisible.
+
+Mesure hors moteur (`tools/gltf_inspect.py`) : les `RockPath_*` sont des dalles
+de 0,11 à 0,18 m d'épaisseur. Aucune n'atteint les **0,95 m** qu'il faut pour
+aller du lit à la surface. Ce ne pouvait donc pas être des dalles — le défaut
+n'était pas une cote, c'était le choix du modèle.
+
+Décision du propriétaire : de vrais rochers posés au fond. Les quatre
+placements sont désormais des `Rock_Medium_*` (1,90 à 2,32 m natifs), base à
+−1,550 (5 cm dans le lit : un bloc en rivière y est pris, il n'y est pas posé
+en équilibre), sommets émergeant de 0,14 / 0,27 / 0,40 / 0,42 m — échelonnés à
+dessein, une rangée régulière se voit (§7.4). **Collision ajoutée**, absente
+des dalles : on traverse sans dommage une pierre de 16 cm, pas un bloc de 1,4 m.
+
+Garde-fou : `tests/integration/test_river_stones_reach_the_bed.gd`, deux bras.
+Dans le monde, chaque rocher doit satisfaire DEUX exigences conjointes — la
+base atteint le lit ET le sommet émerge ; un test qui ne vérifierait que la
+première validerait une rivière vide. À la source, aucune dalle du kit ne peut
+satisfaire les deux, ce qui verrouille le raisonnement plutôt que le résultat.
+
+Décisivité prouvée : sans le correctif, le test rougit sur **2,04 / 1,99 /
+2,04 / 1,99 m** — exactement les valeurs mesurées ci-dessous. Avec, il est vert.
+
+---
+
+### Relevé d'origine (conservé)
 
 Mesure faite pendant la passe « arcade / caisse claire / arche » avec
 `tools/godot/probe_world_boxes.gd`, sur la vallée réellement montée :
@@ -574,6 +605,34 @@ Défaut CONSTATÉ et MESURÉ, non corrigé : le fichier fautif
 trois corrections demandées, et le déplacer touche le tracé du gué. Correctif
 attendu : dériver la cote de ces pierres du lit (−1,50) et non de la plaine,
 comme l'a fait la travée tombée de l'aqueduc.
+
+## ISS-036 — Deux fruits de la crête sans sol sous eux (S3, ouvert, CANDIDAT)
+
+Trouvé par le **premier balayage complet** de la vallée
+(`probe_world_boxes.gd --sweep --float=0.3`), 2026-08-07 :
+
+    Ingredients/valley_ingredient_crest_fruit_01   y 24,00..24,36  sol 2,00  → +22,00 m
+    Ingredients/valley_ingredient_crest_fruit_02   y 24,00..24,36  sol 2,00  → +22,00 m
+
+Les deux fruits sont posés à y = 24, ce qui est la bonne cote pour la crête de
+départ (spawn à `(0, 24, 170)`, MASTER_SPEC §3.3). Le problème n'est pas leur
+hauteur : c'est que le rayon vertical **traverse la crête** et ne trouve de sol
+qu'à y = 2, la plaine. Il n'y a donc **aucune collision sous eux**.
+
+Deux lectures possibles, non départagées :
+
+1. les fruits sont posés au-delà du bord collidable de la crête — le joueur
+   pourrait les voir sans pouvoir les atteindre, ce qui serait un vrai défaut
+   de jeu (un ingrédient est fait pour être ramassé) ;
+2. la crête porte à cet endroit une géométrie décorative sans collision, et les
+   fruits reposent visuellement dessus — auquel cas c'est la collision du
+   terrain qui manque, pas le placement du fruit.
+
+`CANDIDAT`, pas `défaut` : la sonde mesure un écart au sol, elle ne sait pas si
+la pièce est censée reposer dessus. Prochaine mesure : relancer la sonde en
+région resserrée autour de `(0, 170)` et vérifier si la dalle de crête possède
+une collision à ces coordonnées.
+
 ---
 
 ## PT-BRACELET-01 — Le Bracelet n'avait aucune présentation en jeu (S2)
@@ -647,3 +706,181 @@ c'est intentionnel.
 deux côtés, et la grange annonce « trois murs » alors que son code n'en pose
 que deux. Quelle face doit s'ouvrir est une décision de level design, pas une
 correction technique — laissée au jugement de l'auteur.
+
+## PT-LIVRAISON-01 — Monture et vol libre livrés hors du jeu (S2)
+
+**Constaté en playtest** : « pas de monture, pas de F2, rien de tout ce que je
+t'avais demandé ». Exact, et le défaut était de livraison, pas de code.
+
+**Cause** : `Mount` et `DevFlyMode` n'étaient instanciés que par
+`TrainingGrounds.tscn` — une scène qu'il faut lancer à la main en ligne de
+commande. Un joueur qui démarre le jeu normalement (Boot → menu → vallée) ne
+les rencontrait jamais. Les onze tests passaient parce qu'ils montaient les
+deux à la main : ils prouvaient que les composants FONCTIONNENT, jamais qu'ils
+sont ATTEIGNABLES. Un test vert peut coexister avec une fonctionnalité
+inaccessible.
+
+**Résolu** : `ValleyWorld` pose la monture sur la crête de départ (à portée de
+vue du spawn) et branche le vol libre sur son joueur. Le menu principal gagne
+une entrée « Terrain d'entraînement ». Le test
+`test_the_valley_itself_carries_the_mount_and_the_fly_mode` vérifie désormais
+la PRÉSENCE dans la carte réellement parcourue, pas seulement le comportement.
+
+**Leçon à retenir pour la suite** : tout ce qui est ajouté doit avoir un test
+d'ATTEIGNABILITÉ depuis le flux de jeu normal, pas seulement un test de
+comportement en scène isolée.
+
+## ISS-037 — Le chemin de la vue North Star capte l'œil avant la citadelle · `S3` · **CORRIGÉ** (2026-08-08, `5290c11`)
+
+- **Build** : `d8dc3bf` (tronc consolidé), `HeroShotLab`, caméra `VistaCamera_Hero01`,
+  1280×720, 20 frames, rendu logiciel llvmpipe.
+- **Preuve** : `evidence/ab/heroshot_controle/apres.png`, manifeste
+  `apres.json` (`repo_dirty: false`).
+- **Mesuré, pas jugé à l'œil** — moyenne sur 12×12 px :
+
+  | Zone | Rendu | Saturation |
+  |---|---|---:|
+  | bande du chemin | `#F78847` (R=248) | **0,71** |
+  | herbe adjacente | `#404937` | 0,24 |
+  | herbe au loin | `#5B6C4B` | 0,31 |
+  | rocher d'encadrement | `#61624E` | 0,20 |
+
+- **Attendu** : §1.5 place « sol et roche moyens » entre **35 et 65 % de valeur**.
+  La bande est à ~97 %. Elle est l'objet le plus lumineux ET le plus saturé de
+  l'image.
+- **Conséquence** : §1.2 exige que le regard aille héros → herbe → camp → pylône
+  → rivière → citadelle. La bande capte le regard en premier et le tire vers le
+  bas à droite, hors de la citadelle. C'est un défaut de composition, pas de goût.
+- **Cause NON ÉTABLIE.** Trois pistes écartées par la mesure :
+  - la couleur déclarée est correcte (`COL_EARTH` = `#8A5A36`, conforme §1.4) ;
+  - la texture `T_Ground_Earth_Albedo.jpg` est **verte** (sol forestier moussu) —
+    elle ne peut pas produire de l'orange, et son nom est trompeur ;
+  - la seule couleur HDR du labo (`Color(1.85, 1.52, 1.16)`) porte sur les
+    **rochers**, pas sur le chemin.
+  Le test décisif reste à faire : masquer `PathCrest`, recapturer, comparer —
+  pour confirmer que la bande EST bien ce nœud avant de corriger quoi que ce soit.
+- **CAUSE ÉTABLIE** par test décisif : `PathCrest` repeint en bleu pur → la bande
+  devient `#2830FF`. C'est bien lui, et un albédo bleu PUR ressortant à B=255
+  révèle un **gain lumineux de ≈ 1,8** dans le labo. `COL_EARTH` a un rouge de
+  0,541 ; 0,541 × 1,8 = 0,97, soit les 97 % mesurés. `#8A5A36` est une couleur
+  **peinte cible**, pas un albédo. Les rochers portaient déjà la correction
+  symétrique (teinte HDR, « sinon ils devenaient des trous noirs ») ; le chemin
+  ne l'avait jamais reçue.
+- **Correction** : albédo × 0,57. Mesuré après, même caméra :
+  chemin `#70483C` valeur **44 %**, saturation 0,47 — dans la bande §1.5, et
+  toujours distinct de l'herbe (29 %). Preuve : `evidence/iss037/`
+  (`repo_dirty: false`, commit `5290c11`).
+- **Mes deux premières hypothèses étaient fausses** et sont conservées ici comme
+  garde-fou : la texture « terre » est verte, et la sonde de projection que
+  j'avais écrite désignait le mauvais nœud (son axe Y est faux).
+- **Test de régression à écrire** : une sonde de valeur/saturation sur la capture
+  North Star, qui échoue si une surface de sol dépasse la bande 35–65 % de §1.5.
+  Ce test manquait — c'est pourquoi le défaut a survécu à quatre itérations
+  (v0→v3) et à une évaluation à 58/100.
+
+### Note de méthode
+
+`T_Ground_Earth_Albedo.jpg` montre de la mousse verte. Qu'une texture nommée
+« terre » soit un sol forestier est un défaut d'inventaire à part entière, à
+traiter par `asset-license-auditor` / le manifeste, indépendamment de ce ticket.
+
+## ISS-038 — La suite n'est pas déterministe : deux passages, deux verdicts · `S2` · OUVERT
+
+- **Build** : `86ef23c` (aucun changement de code entre les deux passages).
+- **Observé**, deux exécutions complètes de `tools/validate_fast.sh` à quelques
+  minutes d'intervalle :
+
+  | Passage | Résultat |
+  |---|---|
+  | A (`/tmp/valfast_final.log`) | **804 réussis, 0 échoué** |
+  | B (`/tmp/valfast_blender.log`) | **802 réussis, 2 échoués** |
+
+- **Les deux tests fautifs passent en isolation**, systématiquement :
+  - `test_cooking_ui.gd::test_the_hud_shows_the_active_buff_and_clears_on_expiry`
+    — 5 passes isolées, 5 fois vert ;
+  - `test_heads_reach_the_real_valley.gd::test_the_hero_in_the_valley_has_a_head`
+    — 2 passes isolées, 2 fois vert.
+- **Hypothèse écartée par la mesure** : l'installation de Blender entre A et B
+  n'a rien importé de nouveau — `source_assets/.gdignore` existe et aucun
+  `.blend.import` n'a été créé. Le projet se protégeait déjà.
+- **Cause probable, NON ÉTABLIE** : pollution d'état entre tests (autoload,
+  sauvegarde, `GameState`, nœud non libéré). Même famille qu'ISS-024, classée
+  « environnementale » à l'époque — cette observation suggère que le classement
+  était optimiste.
+- **Pourquoi c'est `S2` et pas `S3`** : tant que la suite rend deux verdicts
+  différents pour le même code, **aucun « vert » ne prouve rien**. Le 804/0
+  obtenu au passage A n'est pas une preuve que la suite est saine ; c'est
+  peut-être un tirage favorable. Cela affecte tous les gates.
+
+### Piste EXTERNE, arrivée le 2026-08-08 — la plus prometteuse
+
+Le `CLAUDE.md` racine de `levy-street/world-of-claudecraft`, projet comparable
+(≈ 9 900 commits, suite lourde), documente le phénomène en une ligne :
+
+> « piping `npm test` through `tail` masks its exit code, **and an unbounded run
+> flakes heavy suites under core contention** »
+
+Leur portail complet lance donc les tests **avec un nombre de workers borné**.
+Autrement dit : chez eux, une suite lourde qui tourne sans bride sur des cœurs
+disputés produit des échecs qui n'ont rien à voir avec le code. C'est exactement
+notre signature — des tests verts en isolation, rouges dans la suite, et deux
+verdicts pour le même code.
+
+Ce conteneur a **4 cœurs**. Godot y monte des scènes complètes, avec physique et
+autoloads, test après test. Les deux passages divergents ont eu lieu dans des
+conditions de charge différentes (le second suivait immédiatement une
+installation `apt` de Blender, donc un cache disque et une charge différents).
+
+**À éprouver en premier**, avant l'hypothèse de pollution d'état :
+
+1. Rejouer la suite complète trois fois **machine au repos**, sans rien d'autre.
+   Si les trois sont identiques, la piste « contention » se renforce.
+2. Rejouer la suite complète pendant une charge CPU artificielle. Si les échecs
+   reviennent ET se déplacent, c'est la contention, pas l'ordre.
+3. Chercher les tests sensibles au TEMPS (`await _settle(n)`, budgets en ticks) :
+   sous contention, un nombre fixe de frames physiques ne représente plus la
+   même durée réelle. `test_cooking_ui` porte une **expiration de buff** et
+   `test_heads_reach_the_real_valley` un **placement après stabilisation** — les
+   deux sont exactement de cette famille.
+
+Le point 3 est le plus parlant : les deux tests fautifs dépendent d'un délai.
+
+### Piste d'investigation interne, si la précédente ne donne rien
+
+1. Faire tourner la suite avec un ORDRE inversé ou aléatoire semé, et voir si le
+   couple de tests fautifs change. Si oui, c'est bien de la pollution d'ordre.
+2. Isoler par paires : lancer chaque test fautif juste après chacun de ses
+   prédécesseurs probables, pour trouver le pollueur.
+3. Vérifier que chaque test qui monte une scène la retire ET remet `GameState`
+   à zéro — plusieurs le font déjà via `_close()`, tous ne le font pas.
+
+## ISS-039 — Le chemin est une dalle POSÉE sur l'herbe, pas creusée dedans · `S3` · OUVERT
+
+- **Vu** : `evidence/iss037/apres_correction.png`, recadrage du premier plan.
+- **Observé** : `PathCrest` est un `BoxMesh` de 0,06 m d'épaisseur posé à
+  `_slope_height(-9.0) + 0.05`. Sa **tranche** est visible au bord proche : le
+  chemin flotte de cinq centimètres au-dessus de l'herbe au lieu d'être creusé
+  dedans. À hauteur de héros c'est net, et ça trahit la géométrie.
+- **Attendu** (§6.2) : « les chemins sont dessinés par compression de l'herbe,
+  terre visible, alignement de pierres, interruption des fleurs » — pas par un
+  ruban posé sur le sol.
+- **Ne pas confondre avec ISS-037**, qui portait sur la COULEUR et est corrigé.
+  Celui-ci est de la géométrie.
+- **Piste** : soit creuser le sol sous le chemin, soit supprimer l'épaisseur et
+  laisser le masque d'herbe faire le travail (§7.4 : les fleurs se raréfient au
+  bord du chemin). La seconde évite un trou de collision.
+
+## ISS-040 — Des cubes non habillés traînent dans la prairie · `S3` · OUVERT
+
+- **Vu** : `evidence/iss037/apres_correction.png`, moitié droite du cadre.
+- **Observé** : des cubes bleus et blancs d'environ 20 cm, posés sur l'herbe,
+  sans matière ni silhouette. À la distance du premier plan ils lisent
+  « placeholder », pas « fleur ».
+- **Attendu** (§7.1) : les fleurs sont des ombelles, disques ou grappes, en
+  groupes de 5 à 12 — jamais des cubes. Le verdict H-4 nommait déjà le défaut :
+  « les fleurs-cubes lisaient Minecraft en gros plan ».
+- **À vérifier avant correction** : `test_h7_...les_fleurs_sont_rondes` existe et
+  passe. Donc soit il ne couvre PAS le labo `HeroShotLab` (seulement la vallée),
+  soit ces cubes ne sont pas des fleurs. **Identifier le nœud d'abord** — la
+  méthode qui a tranché sur ISS-037 est la bonne : repeindre d'une couleur
+  impossible, recapturer, mesurer.

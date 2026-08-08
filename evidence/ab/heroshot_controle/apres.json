@@ -1,0 +1,18 @@
+{
+  "commit": "fb067c54b5f0efc5ed68d40a1f3a8de38223ffe6",
+  "display_server": "X11",
+  "distinct_colors_sampled": 4274,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 20,
+  "height": 720,
+  "label": "heroshot_controle",
+  "luma_mean": 0.5957,
+  "luma_stddev": 0.1804,
+  "png": "evidence/ab/heroshot_controle/apres.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/lookdev/HeroShotLab.tscn",
+  "timestamp_utc": "2026-08-07 23:40:53",
+  "width": 1280
+}

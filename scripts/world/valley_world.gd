@@ -39,6 +39,15 @@ const SAVED_POSITION_LIMIT_Y: float = 120.0
 ## §7.7 : soleil à l'ouest (rayons vers +X), plongée 22°.
 const SUN_ROTATION_DEG: Vector3 = Vector3(-22.0, -90.0, 0.0)
 
+## Repose des ramassables sur le sol (voir `_drop_pickups_to_ground`).
+## La sonde part TRÈS haut : un objet enterré de 8 m — le cas réellement
+## rencontré sur la crête — ne serait pas rattrapé par un rayon court.
+const GROUND_SNAP_UP: float = 40.0
+const GROUND_SNAP_DOWN: float = 60.0
+## Un ingrédient posé pile sur la surface s'y encastre à l'œil : on le pose
+## légèrement dessus, comme un objet réellement déposé.
+const GROUND_SNAP_CLEARANCE: float = 0.12
+
 ## §3.2, ajusté SUR CAPTURE (les valeurs de la spec sont des points de départ) :
 ## à 4,2 m, une capsule de 1,8 m occupait 57 % du cadre — mesuré sur la première
 ## capture. Reculée à ~7,2 m et montée à 2,6 m au-dessus des pieds : héros à
@@ -79,6 +88,10 @@ var _pending_spawn_applied: bool = false
 ## ligne dit QUOI. Une fois, jamais de marqueur (§2.2 P2 : curiosité, pas
 ## checklist).
 var _fresh_run: bool = false
+## Aides au déplacement, posées dans la vallée même (playtest : elles
+## n'existaient que dans la scène d'entraînement, donc pas dans le jeu).
+var _mount: Mount = null
+var _dev_fly: DevFlyMode = null
 ## §12.9 (D-EN.6) : carte de navigation des grandes carrures. Créée à la
 ## main, donc LIBÉRÉE à la main — sans quoi elle fuit à la sortie de
 ## scène (fuite de RID mesurée au test).
@@ -143,6 +156,12 @@ func _ready() -> void:
 	campfire.name = "CampCookingFire"
 	campfire.position = Vector3(44.6, 6.1, 63.2)
 	add_child(campfire)
+	# Monture et vol libre DANS LA VALLÉE, pas seulement au terrain
+	# d'entraînement. Défaut de livraison signalé au playtest : les deux
+	# n'existaient que dans `TrainingGrounds.tscn`, une scène qu'il faut
+	# lancer à la main — donc absents du jeu tel qu'on y joue, alors que la
+	# demande était précisément d'explorer CETTE carte plus vite.
+	_spawn_travel_aids()
 	# E.1 : les ingrédients de la vallée (§13.1) — posés en code comme le
 	# relief, AVANT l'application de la sauvegarde qui retire les récoltés.
 	_spawn_ingredients()
@@ -750,6 +769,41 @@ func _spawn_ingredients() -> void:
 		pickup.pickup_id = StringName(String(placement[2]))
 		pickup.position = placement[1] as Vector3
 		holder.add_child(pickup)
+	# LES INGRÉDIENTS SE POSENT SUR LE SOL RÉEL, pas sur une cote écrite à la
+	# main. Les deux fruits de la crête étaient à y = 24 — la cote du spawn
+	# dans MASTER_SPEC §3.3 — alors que le relief a depuis été bâti à y = 32 :
+	# ils étaient donc ENTERRÉS de 8,00 m, mesurés à la sonde. Ce sont les deux
+	# premiers ramassables de la partie, à l'endroit exact où le joueur prend
+	# la main ; le playtest du 2026-08-07 finit avec « 0 ingrédient ramassé ».
+	# C'est la même classe de défaut qu'ISS-035 (les pas japonais suspendus
+	# au-dessus du lit) : une cote recopiée d'un document au lieu d'être
+	# déduite du terrain. On la déduit.
+	_drop_pickups_to_ground.call_deferred(holder)
+
+
+## Repose chaque ramassable sur le décor sous lui. Appelé en différé : les
+## corps statiques du relief doivent être enregistrés auprès du serveur
+## physique avant qu'un rayon puisse les rencontrer.
+func _drop_pickups_to_ground(holder: Node) -> void:
+	if not is_instance_valid(holder):
+		return
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	if space == null:
+		return
+	for node: Node in holder.get_children():
+		var pickup: Node3D = node as Node3D
+		if pickup == null:
+			continue
+		var from: Vector3 = pickup.global_position + Vector3.UP * GROUND_SNAP_UP
+		var to: Vector3 = pickup.global_position - Vector3.UP * GROUND_SNAP_DOWN
+		# Couche 1 (World Static) seule : un ingrédient se pose sur le relief,
+		# jamais sur un ennemi qui passait par là.
+		var hit: Dictionary = space.intersect_ray(
+			PhysicsRayQueryParameters3D.create(from, to, 1))
+		if hit.is_empty():
+			continue
+		pickup.global_position = (hit["position"] as Vector3) \
+			+ Vector3.UP * GROUND_SNAP_CLEARANCE
 
 
 ## Les pickups d'ingrédients naissent APRÈS `_apply_save()` : leur part de
@@ -1003,6 +1057,34 @@ func _is_saved_position_safe(position: Vector3) -> bool:
 func _player_visual_yaw() -> float:
 	var visual: Node3D = _player.get_node_or_null("VisualRoot") as Node3D
 	return visual.rotation.y if visual != null else 0.0
+
+
+## Monture et vol libre de développement, posés dans la vallée elle-même.
+##
+## La monture attend au camp de départ, à portée de vue du spawn : sans cela
+## il faudrait savoir qu'elle existe pour la trouver. Le vol libre, lui, n'a
+## pas de position — c'est un outil, activé par sa touche.
+func _spawn_travel_aids() -> void:
+	_mount = Mount.new()
+	_mount.name = "MontureDeVallee"
+	add_child(_mount)
+	# Sur la crête de départ, en contrebas du spawn (0, 32.3, 146) et dans
+	# l'axe du regard : visible dès la prise de contrôle.
+	_mount.global_position = Vector3(6.0, 32.3, 141.0)
+	if _player == null:
+		return
+	_dev_fly = DevFlyMode.new()
+	_dev_fly.name = "VolLibreDev"
+	add_child(_dev_fly)
+	_dev_fly.bind(_player)
+
+
+func mount() -> Mount:
+	return _mount
+
+
+func dev_fly() -> DevFlyMode:
+	return _dev_fly
 
 
 func player() -> PlayerController:

@@ -60,6 +60,39 @@ if [ $CAP_RC -ne 0 ]; then
 fi
 echo "  [OK] voir $CAP_LOG et evidence/captures/"
 
+BANDS_BLOCKED=0
+echo "=== 5b. Bandes de valeurs de la vue North Star (§1.5) ==="
+# ISS-037 : un chemin rendait à 97 % de valeur là où §1.5 veut 35-65 % pour un
+# sol, et captait le regard avant la citadelle. Le défaut a survécu à quatre
+# itérations et à une évaluation à 58/100 parce qu'AUCUN test ne le cherchait.
+NS_LOG="$LOG_DIR/05b_north_star.log"
+RUN "$GODOT_BIN" --path . --rendering-driver opengl3 --audio-driver Dummy \
+    --script tools/godot/capture_reference.gd -- \
+    --scene=res://scenes/lookdev/HeroShotLab.tscn \
+    --call=capture_north_star \
+    --out=evidence/captures/north_star.png --size=1280x720 --frames=20 \
+    --label=north_star_bands > "$NS_LOG" 2>&1
+NS_RC=$?
+if [ $NS_RC -ne 0 ]; then
+  echo "  [ÉCHEC] capture North Star impossible (code $NS_RC) — voir $NS_LOG"
+  tail -20 "$NS_LOG"
+  exit 1
+fi
+python3 tools/check_value_bands.py evidence/captures/north_star.png --verbose \
+    2>&1 | tee -a "$NS_LOG"
+BANDS_RC=${PIPESTATUS[0]}
+case $BANDS_RC in
+  0) echo "  [OK]   hiérarchie ciel/sol conforme" ;;
+  # Pillow absent : le contrôle n'a pas tourné. Il ne doit pas passer pour vert
+  # (.claude/rules/evidence.md). `BLOCKERS` est déjà consommé ligne 31, bien
+  # avant ici — y ajouter une entrée ne l'afficherait nulle part. On porte donc
+  # le blocage jusqu'au verdict final par une variable dédiée.
+  3) echo "  [BLOQUÉ] contrôle non exécuté — voir $NS_LOG"
+     BANDS_BLOCKED=1 ;;
+  *) echo "  [ÉCHEC] bandes de valeurs hors §1.5 — voir $NS_LOG"
+     exit 1 ;;
+esac
+
 echo
 echo "=== 4/6/7. Golden path, performance, soak ==="
 echo "  NON EXÉCUTÉS : ces niveaux exigent respectivement la boucle complète"
@@ -71,4 +104,8 @@ echo "=== VALIDATE_RELEASE : BLOQUÉ (niveau 5 vert, niveaux 4/6/7 non exécuté
 echo "  Le niveau 5 (capture) a réussi, mais un script qui saute des étapes ne"
 echo "  retourne pas vert (.claude/rules/evidence.md). Code 3 = BLOQUÉ, à ne jamais"
 echo "  interpréter comme un PASS de gate visuel ou de performance."
+if [ "$BANDS_BLOCKED" -eq 1 ]; then
+  echo "  Blocage supplémentaire : les bandes de valeurs §1.5 n'ont PAS été"
+  echo "  contrôlées (Pillow absent). Le niveau 5 n'est donc pas entièrement vert."
+fi
 exit 3

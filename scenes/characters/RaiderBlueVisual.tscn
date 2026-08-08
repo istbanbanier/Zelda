@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=6 format=3]
 
 ; Phase H lot H.2 — pillard azur, CORPS PROPRE.
 ; Jusqu'ici les trois pillards étaient le même modèle acheté, teinté trois
@@ -14,9 +14,23 @@
 [ext_resource type="Script" path="res://scripts/characters/character_model_sockets.gd" id="1_sockets"]
 [ext_resource type="PackedScene" path="res://assets/characters/enemies/SK_RaiderBlue.glb" id="2_model"]
 [ext_resource type="AnimationLibrary" path="res://assets/animations/AL_RaiderStates.res" id="3_states"]
+[ext_resource type="PackedScene" path="res://assets/characters/parts/SM_UniversalHead.glb" id="4_head"]
+[ext_resource type="Texture2D" path="res://assets/characters/parts/T_Superhero_Male_Dark.png" id="5_head_tex"]
 
+
+; V5 — LA TÊTE. Le générateur ne posait qu'un pavé de 10,6 cm de large
+; surmonté de sa plaque métallique : le testeur du 2026-08-07 y a vu « une
+; simple pointe métallique argentée sur le cou », sans crâne. Le crâne réel
+; (SM_UniversalHead, CC0 Quaternius) se pose sur le MÊME os `Head` ; son
+; échelle est déduite de la stature par character_model_sockets.gd, et le
+; pavé d'origine se retrouve entièrement à l'intérieur. La plaque osseuse
+; de faction reste au-dessus : c'est elle qui distingue les trois familles.
 [node name="RaiderBlueVisual" type="Node3D"]
 script = ExtResource("1_sockets")
+head_part = ExtResource("4_head")
+head_offset = -0.11
+head_texture = ExtResource("5_head_tex")
+head_tint = Color(0.72, 0.76, 0.8, 1)
 
 [node name="Model" parent="." instance=ExtResource("2_model")]
 
