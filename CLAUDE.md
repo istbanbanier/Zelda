@@ -78,6 +78,13 @@ godot --path .                                     # lancer (nécessite un affic
 - Aucune boucle sur le monde entier par frame ; aucune allocation massive par frame.
 - Ne jamais éditer `.godot/imported/` à la main.
 
+### Règles locales par répertoire
+
+`tools/CLAUDE.md` · `tests/CLAUDE.md` · `scripts/CLAUDE.md` portent les pièges
+qui échouent **en silence**, écrits là où on les rencontre. Chacun est mesuré et
+daté. **Ne pas recopier leur contenu ici** : ce fichier reste court, et un piège
+dupliqué diverge.
+
 ### Quatre de ces invariants sont désormais APPLIQUÉS, pas seulement écrits
 
 Un invariant qui ne vit que dans ce fichier se dégrade en silence. Le hook `Stop`
