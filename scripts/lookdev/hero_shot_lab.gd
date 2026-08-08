@@ -666,8 +666,16 @@ func _build_terrain() -> void:
 	var path_box: BoxMesh = BoxMesh.new()
 	path_box.size = Vector3(1.6, 0.06, 34)
 	path.mesh = path_box
+	# ISS-037 : `COL_EARTH` (#8A5A36) est une couleur PEINTE CIBLE, pas un
+	# albédo. Le gain lumineux du labo vaut ≈ 1,8 (mesuré : un albédo bleu pur
+	# ressort à B=255), donc un rouge d'albédo de 0,541 rendait 0,97 — le
+	# chemin devenait l'objet le plus clair ET le plus saturé de l'image, et
+	# tirait le regard hors de la citadelle, contre §1.2.
+	# §1.5 veut « sol et roche moyens » entre 35 et 65 % de valeur : on vise
+	# le milieu de bande, soit 0,55 / 1,8 ≈ 0,31 de rouge d'albédo.
+	# Même leçon qu'aux rochers ligne ~425, dans l'autre sens.
 	path.material_override = _with_surface(
-		_material(COL_EARTH), "T_Ground_Earth", 5.0, 0.78, 1.0)
+		_material(COL_EARTH * 0.57), "T_Ground_Earth", 5.0, 0.78, 1.0)
 	path.position = Vector3(2.2, _slope_height(-9.0) + 0.05, -9)
 	path.rotation_degrees = Vector3(-8.0, 0, 0)
 	add_child(path)
