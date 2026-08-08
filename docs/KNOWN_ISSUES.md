@@ -812,7 +812,45 @@ traiter par `asset-license-auditor` / le manifeste, indépendamment de ce ticket
   obtenu au passage A n'est pas une preuve que la suite est saine ; c'est
   peut-être un tirage favorable. Cela affecte tous les gates.
 
-### Piste EXTERNE, arrivée le 2026-08-08 — la plus prometteuse
+### RÉSOLU À MOITIÉ — 2026-08-08
+
+**Cause 1 : un test exigeait que la machine soit RAPIDE. Corrigé et prouvé.**
+
+`test_cooking_ui` appliquait un buff de **0,2 s** puis attendait **dix frames de
+rendu** avant d'affirmer qu'il remplaçait l'ancien. À 60 im/s, dix frames font
+0,167 s : le test tenait à **33 millisecondes** près. Corrigé (durée portée à 5 s
+pour l'assertion de remplacement, qui est instantanée ; l'expiration se prouve
+séparément avec une attente généreuse). **Il survit désormais au passage complet
+le plus lent de la journée** — la preuve est faite sur la machine.
+
+Règle qui en découle, inscrite dans les deux fichiers de test :
+*un test ne peut jamais exiger que la machine soit RAPIDE ; seulement qu'assez
+de temps ait passé.*
+
+**Cause 2 : `test_heads_reach_the_real_valley` — TOUJOURS OUVERTE.**
+
+Le crâne mesure 1,15 m au lieu de 1,20 dans la suite complète. Quatre
+hypothèses ont été **éliminées par l'expérience**, pas par raisonnement :
+
+| Hypothèse | Expérience | Verdict |
+|---|---|---|
+| Pose non stabilisée (temps) | garde-fou de stabilisation ajouté | **éliminée** — le garde-fou PASSE et la valeur reste 1,15 |
+| Pollution par un test précédent | les 39 prédécesseurs réels rejoués comme préfixe | **éliminée** — vert |
+| Pollution par une moitié d'entre eux | bissection en deux moitiés | **éliminée** — les deux vertes |
+| Contention CPU | test rejoué sous charge des 4 cœurs | **éliminée** — vert |
+
+Ce qui reste, et n'a pas été testé : une **accumulation** sur un passage très
+long (le passage fautif a duré près d'une heure, contre quelques minutes pour le
+préfixe) — mémoire, ressources non libérées, état moteur après plusieurs
+centaines de scènes montées puis démontées.
+
+**Défaut connu du garde-fou que j'ai ajouté** : il attend que la hauteur du
+crâne *cesse de bouger*. Or une pose FIGÉE — animation non démarrée, modèle en
+position de liaison — est parfaitement stable. Le garde-fou prouve donc
+l'immobilité, pas que l'animation a joué. Si la piste « pose de liaison » est
+reprise, c'est ce qu'il faut mesurer à la place.
+
+### Piste EXTERNE, arrivée le 2026-08-08
 
 Le `CLAUDE.md` racine de `levy-street/world-of-claudecraft`, projet comparable
 (≈ 9 900 commits, suite lourde), documente le phénomène en une ligne :
