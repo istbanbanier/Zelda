@@ -730,7 +730,7 @@ la PRÉSENCE dans la carte réellement parcourue, pas seulement le comportement.
 d'ATTEIGNABILITÉ depuis le flux de jeu normal, pas seulement un test de
 comportement en scène isolée.
 
-## ISS-037 — Le chemin de la vue North Star capte l'œil avant la citadelle · `S3` · OUVERT
+## ISS-037 — Le chemin de la vue North Star capte l'œil avant la citadelle · `S3` · **CORRIGÉ** (2026-08-08, `5290c11`)
 
 - **Build** : `d8dc3bf` (tronc consolidé), `HeroShotLab`, caméra `VistaCamera_Hero01`,
   1280×720, 20 frames, rendu logiciel llvmpipe.
@@ -759,8 +759,20 @@ comportement en scène isolée.
     **rochers**, pas sur le chemin.
   Le test décisif reste à faire : masquer `PathCrest`, recapturer, comparer —
   pour confirmer que la bande EST bien ce nœud avant de corriger quoi que ce soit.
-- **Ne pas corriger à l'aveugle** : baisser la saturation sans connaître la cause
-  est la « deuxième tentative similaire » que `CLAUDE.md` interdit.
+- **CAUSE ÉTABLIE** par test décisif : `PathCrest` repeint en bleu pur → la bande
+  devient `#2830FF`. C'est bien lui, et un albédo bleu PUR ressortant à B=255
+  révèle un **gain lumineux de ≈ 1,8** dans le labo. `COL_EARTH` a un rouge de
+  0,541 ; 0,541 × 1,8 = 0,97, soit les 97 % mesurés. `#8A5A36` est une couleur
+  **peinte cible**, pas un albédo. Les rochers portaient déjà la correction
+  symétrique (teinte HDR, « sinon ils devenaient des trous noirs ») ; le chemin
+  ne l'avait jamais reçue.
+- **Correction** : albédo × 0,57. Mesuré après, même caméra :
+  chemin `#70483C` valeur **44 %**, saturation 0,47 — dans la bande §1.5, et
+  toujours distinct de l'herbe (29 %). Preuve : `evidence/iss037/`
+  (`repo_dirty: false`, commit `5290c11`).
+- **Mes deux premières hypothèses étaient fausses** et sont conservées ici comme
+  garde-fou : la texture « terre » est verte, et la sonde de projection que
+  j'avais écrite désignait le mauvais nœud (son axe Y est faux).
 - **Test de régression à écrire** : une sonde de valeur/saturation sur la capture
   North Star, qui échoue si une surface de sol dépasse la bande 35–65 % de §1.5.
   Ce test manquait — c'est pourquoi le défaut a survécu à quatre itérations
