@@ -37,7 +37,13 @@ trap cleanup EXIT INT TERM
 # regarderait qu'un bout soit démasqué.
 SABOTAGES=(
   "le bouton « Nouvelle partie » ne mène plus à la vallée|scripts/ui/main_menu.gd|s|^const VALLEY_SCENE.*|const VALLEY_SCENE: String = \"res://scenes/ui/MainMenu.tscn\"|"
-  "le héros ne se pose plus (gravité annulée)|resources/tuning/locomotion_tuning.gd|s|gravity: float = [0-9.]*|gravity: float = 0.0|"
+  # ATTENTION — viser la RESSOURCE, pas la valeur par défaut du script.
+  # `locomotion_tuning.gd` déclare `@export var gravity: float = 24.0`, mais
+  # `locomotion_default.tres` porte la valeur réellement chargée et l'écrase.
+  # Saboter le script ne changeait donc RIEN, et le vert du gate était correct
+  # pendant que ce fichier criait « faille ». Troisième faux témoin de la
+  # journée : l'équilibrage de ce dépôt vit dans des Resource (§5.4).
+  "le héros ne se pose plus (gravité annulée)|resources/tuning/locomotion_default.tres|s|^gravity = .*|gravity = 0.0|"
 )
 
 FAILURES=0
@@ -65,8 +71,14 @@ for entry in "${SABOTAGES[@]}"; do
   # contrôle, un test non commité donne « aucun test exécuté », que le script
   # comptait comme un échec — donc comme un succès du gate. Faux témoin exact
   # que ce fichier prétend refuser. Constaté au premier passage.
-  if ! "$GODOT_BIN" --headless --path "$WT" --script tools/godot/test_runner.gd -- \
-       "--filter=$FILTER" 2>&1 | grep -q 'RÉSULTAT: [1-9]'; then
+  # NE PAS piper vers grep : `set -o pipefail` prend alors le code retour de
+  # GODOT, qui sort non nul sur une simple fuite de ressources en fin de
+  # process. Le garde-fou concluait « aucun test » alors que la sortie disait
+  # « 1 réussi ». Même famille que le piège `cmd | tail` de tools/CLAUDE.md :
+  # un tube change ce que `$?` raconte. On capture, puis on inspecte.
+  PROBE="$("$GODOT_BIN" --headless --path "$WT" --script tools/godot/test_runner.gd -- \
+          "--filter=$FILTER" 2>&1 || true)"
+  if ! printf '%s' "$PROBE" | grep -q 'RÉSULTAT: [1-9]'; then
     echo "  [ÉCHEC] le filtre « $FILTER » ne sélectionne AUCUN test dans le worktree."
     echo "          Commiter le test avant d'éprouver le gate avec."
     FAILURES=$((FAILURES + 1)); cleanup; WT=""; continue
@@ -81,8 +93,9 @@ for entry in "${SABOTAGES[@]}"; do
     FAILURES=$((FAILURES + 1)); cleanup; WT=""; continue
   fi
 
-  OUT="$("$GODOT_BIN" --headless --path "$WT" --script tools/godot/test_runner.gd -- \
-        "--filter=$FILTER" 2>&1 | grep -E 'RÉSULTAT|ÉCHEC' | head -4)"
+  RAW="$("$GODOT_BIN" --headless --path "$WT" --script tools/godot/test_runner.gd -- \
+        "--filter=$FILTER" 2>&1 || true)"
+  OUT="$(printf '%s' "$RAW" | grep -E 'RÉSULTAT|ÉCHEC' | head -4)"
   echo "$OUT" | sed 's/^/    /'
   if echo "$OUT" | grep -q 'ÉCHEC'; then
     echo "  [OK]   le gate a VU le sabotage."
