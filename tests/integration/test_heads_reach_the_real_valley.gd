@@ -99,8 +99,10 @@ func test_the_hero_in_the_valley_has_a_head() -> void:
 	# passaient l'une et l'autre. La respiration de l'idle vaut ±1,1 cm ; 8 cm
 	# de tolérance la couvre largement sans rien absoudre.
 	check_approx(top - player.global_position.y, 1.74, 0.08,
-		"le crâne est à hauteur de tête (%.3f m au-dessus des pieds, attendu 1,74 ± 0,08)"
-			% (top - player.global_position.y))
+		"le crâne est à hauteur de tête (%.3f m au-dessus des pieds, attendu 1,74 ± 0,08 ; animation « %s », état joueur « %s »)"
+			% [top - player.global_position.y,
+			anim.current_animation if anim != null else "?",
+			player.call("state_name") if player.has_method("state_name") else "?"])
 	await _unload()
 
 
