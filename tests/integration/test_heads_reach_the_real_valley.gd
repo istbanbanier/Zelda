@@ -91,18 +91,26 @@ func test_the_hero_in_the_valley_has_a_head() -> void:
 	check(anim != null and anim.is_playing(),
 		"le rig du héros est animé, pas en pose de liaison (%s)"
 			% (anim.current_animation if anim != null else "aucun AnimationPlayer"))
-	# Quelques frames pour que l'animation ait produit une pose, puis mesure.
-	await _settle(12)
+	# « Animé » ne suffisait pas : mesuré, le héros jouait `Jump_Land`. Il
+	# apparaît légèrement au-dessus du sol, tombe et ATTERRIT — et le test
+	# mesurait pendant l'accroupissement de réception. 1,07 m accroupi contre
+	# 1,74 m debout : les 65 cm d'écart venaient de là, pas d'une pollution.
+	#
+	# On attend donc la POSTURE DE REPOS, bornée en temps de jeu. Une borne en
+	# secondes et non en frames : c'est la leçon d'ISS-038, et la réception dure
+	# une durée, pas un nombre d'images.
+	var settled: bool = await _reaches_rest(anim)
+	check(settled, "le héros a fini d'atterrir avant la mesure (animation « %s »)"
+		% (anim.current_animation if anim != null else "?"))
 	var top: float = model.head_top().y
 	# BANDE, et non seuil unilatéral. `> 1.2` absolvait tout : la valeur réelle
 	# est 1,74 m, donc une tête enfoncée à 1,25 m comme une tête flottant à 3 m
 	# passaient l'une et l'autre. La respiration de l'idle vaut ±1,1 cm ; 8 cm
 	# de tolérance la couvre largement sans rien absoudre.
 	check_approx(top - player.global_position.y, 1.74, 0.08,
-		"le crâne est à hauteur de tête (%.3f m au-dessus des pieds, attendu 1,74 ± 0,08 ; animation « %s », état joueur « %s »)"
+		"le crâne est à hauteur de tête (%.3f m au-dessus des pieds, attendu 1,74 ± 0,08 ; animation « %s »)"
 			% [top - player.global_position.y,
-			anim.current_animation if anim != null else "?",
-			player.call("state_name") if player.has_method("state_name") else "?"])
+			anim.current_animation if anim != null else "?"])
 	await _unload()
 
 
@@ -135,3 +143,24 @@ func test_every_raider_in_the_valley_has_a_head() -> void:
 		"tous portent un crâne ; sans tête : %s"
 			% ("aucun" if without.is_empty() else ", ".join(without)))
 	await _unload()
+
+
+## Attend que le héros ait fini d'atterrir, borné en TEMPS DE JEU.
+##
+## Le héros apparaît au-dessus du sol et joue `Jump_Land` en touchant terre.
+## Toute mesure de POSE prise avant la fin de cette réception lit un
+## accroupissement : 1,07 m au lieu de 1,74. Attendre un nombre de frames ne
+## suffit pas — une réception dure une durée (leçon d'ISS-038).
+##
+## Rend `false` si la borne est épuisée : un héros qui n'atteindrait jamais sa
+## posture de repos est un vrai défaut, et le test doit le dire.
+func _reaches_rest(anim: AnimationPlayer, budget_s: float = 4.0) -> bool:
+	if anim == null:
+		return false
+	var elapsed: float = 0.0
+	while elapsed <= budget_s:
+		if not anim.current_animation.begins_with("Jump"):
+			return true
+		await _tree().physics_frame
+		elapsed += _tree().root.get_physics_process_delta_time()
+	return false
