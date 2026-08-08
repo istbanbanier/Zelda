@@ -77,23 +77,29 @@ func test_the_hero_in_the_valley_has_a_head() -> void:
 	# `BoneAttachment3D` n'étaient pas encore stabilisés. Quatre centimètres, et
 	# la suite entière basculait au rouge.
 	#
-	# On n'attend plus un COMPTE, on attend la CONDITION : la hauteur du crâne
-	# cesse de bouger. Bornée, pour qu'un vrai blocage échoue au lieu de pendre.
+	# GARDE-FOU PRÉCÉDENT RETIRÉ, car il ne pouvait pas rougir. Il attendait que
+	# la hauteur « cesse de bouger », puis l'affirmait. Deux mesures l'ont
+	# démonté : la boucle sortait à la frame 5, en pleine fenêtre où la valeur
+	# est FIGÉE parce que l'animation n'a pas encore démarré ; et une fois
+	# l'animation lancée, son pas maximal (0,80 mm) reste SOUS la tolérance
+	# (1 mm) — « stable » était donc vrai pendant que la tête bougeait.
+	# Une pose de liaison, immobile, l'aurait satisfait parfaitement.
+	#
+	# Ce qu'il faut prouver n'est pas l'immobilité, c'est que le rig est VIVANT.
+	var players: Array[Node] = model.find_children("*", "AnimationPlayer", true, false)
+	var anim: AnimationPlayer = players[0] as AnimationPlayer if not players.is_empty() else null
+	check(anim != null and anim.is_playing(),
+		"le rig du héros est animé, pas en pose de liaison (%s)"
+			% (anim.current_animation if anim != null else "aucun AnimationPlayer"))
+	# Quelques frames pour que l'animation ait produit une pose, puis mesure.
+	await _settle(12)
 	var top: float = model.head_top().y
-	var previous: float = -INF
-	var stable: int = 0
-	for i: int in range(240):
-		top = model.head_top().y
-		stable = stable + 1 if absf(top - previous) < 0.001 else 0
-		previous = top
-		if stable >= 5:
-			break
-		await _tree().physics_frame
-	check(stable >= 5,
-		"la pose du héros s'est stabilisée avant la mesure (%d frames stables)"
-			% stable)
-	check(top > player.global_position.y + 1.2,
-		"le crâne est à hauteur de tête (%.2f m au-dessus des pieds)"
+	# BANDE, et non seuil unilatéral. `> 1.2` absolvait tout : la valeur réelle
+	# est 1,74 m, donc une tête enfoncée à 1,25 m comme une tête flottant à 3 m
+	# passaient l'une et l'autre. La respiration de l'idle vaut ±1,1 cm ; 8 cm
+	# de tolérance la couvre largement sans rien absoudre.
+	check_approx(top - player.global_position.y, 1.74, 0.08,
+		"le crâne est à hauteur de tête (%.3f m au-dessus des pieds, attendu 1,74 ± 0,08)"
 			% (top - player.global_position.y))
 	await _unload()
 
