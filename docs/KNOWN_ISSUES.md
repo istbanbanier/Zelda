@@ -729,3 +729,45 @@ la PRÉSENCE dans la carte réellement parcourue, pas seulement le comportement.
 **Leçon à retenir pour la suite** : tout ce qui est ajouté doit avoir un test
 d'ATTEIGNABILITÉ depuis le flux de jeu normal, pas seulement un test de
 comportement en scène isolée.
+
+## ISS-037 — Le chemin de la vue North Star capte l'œil avant la citadelle · `S3` · OUVERT
+
+- **Build** : `d8dc3bf` (tronc consolidé), `HeroShotLab`, caméra `VistaCamera_Hero01`,
+  1280×720, 20 frames, rendu logiciel llvmpipe.
+- **Preuve** : `evidence/ab/heroshot_controle/apres.png`, manifeste
+  `apres.json` (`repo_dirty: false`).
+- **Mesuré, pas jugé à l'œil** — moyenne sur 12×12 px :
+
+  | Zone | Rendu | Saturation |
+  |---|---|---:|
+  | bande du chemin | `#F78847` (R=248) | **0,71** |
+  | herbe adjacente | `#404937` | 0,24 |
+  | herbe au loin | `#5B6C4B` | 0,31 |
+  | rocher d'encadrement | `#61624E` | 0,20 |
+
+- **Attendu** : §1.5 place « sol et roche moyens » entre **35 et 65 % de valeur**.
+  La bande est à ~97 %. Elle est l'objet le plus lumineux ET le plus saturé de
+  l'image.
+- **Conséquence** : §1.2 exige que le regard aille héros → herbe → camp → pylône
+  → rivière → citadelle. La bande capte le regard en premier et le tire vers le
+  bas à droite, hors de la citadelle. C'est un défaut de composition, pas de goût.
+- **Cause NON ÉTABLIE.** Trois pistes écartées par la mesure :
+  - la couleur déclarée est correcte (`COL_EARTH` = `#8A5A36`, conforme §1.4) ;
+  - la texture `T_Ground_Earth_Albedo.jpg` est **verte** (sol forestier moussu) —
+    elle ne peut pas produire de l'orange, et son nom est trompeur ;
+  - la seule couleur HDR du labo (`Color(1.85, 1.52, 1.16)`) porte sur les
+    **rochers**, pas sur le chemin.
+  Le test décisif reste à faire : masquer `PathCrest`, recapturer, comparer —
+  pour confirmer que la bande EST bien ce nœud avant de corriger quoi que ce soit.
+- **Ne pas corriger à l'aveugle** : baisser la saturation sans connaître la cause
+  est la « deuxième tentative similaire » que `CLAUDE.md` interdit.
+- **Test de régression à écrire** : une sonde de valeur/saturation sur la capture
+  North Star, qui échoue si une surface de sol dépasse la bande 35–65 % de §1.5.
+  Ce test manquait — c'est pourquoi le défaut a survécu à quatre itérations
+  (v0→v3) et à une évaluation à 58/100.
+
+### Note de méthode
+
+`T_Ground_Earth_Albedo.jpg` montre de la mousse verte. Qu'une texture nommée
+« terre » soit un sol forestier est un défaut d'inventaire à part entière, à
+traiter par `asset-license-auditor` / le manifeste, indépendamment de ce ticket.
