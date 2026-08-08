@@ -108,9 +108,7 @@ func test_the_hud_shows_the_active_buff_and_clears_on_expiry() -> void:
 	await _load_valley()
 	check_equal(_shell.buff_label_text(), "", "aucun buff : label vide")
 	_player.status().apply_buff(&"stamina", 1.0, 30.0)
-	for i: int in range(10):
-		await _tree().process_frame
-	check(_shell.buff_label_text().contains("Endurance"),
+	check(await _label_reaches("Endurance"),
 		"le label nomme la famille : %s" % _shell.buff_label_text())
 	check(_shell.buff_label_text().contains("s"), "…et le temps restant")
 	# ISS-038 — ce bloc appliquait un buff de 0,2 s puis attendait DIX frames de
@@ -124,18 +122,38 @@ func test_the_hud_shows_the_active_buff_and_clears_on_expiry() -> void:
 	#   il ne peut exiger que le passage d'ASSEZ de temps.
 	# Attendre trop est sans danger ; attendre trop peu ne l'est pas.
 	#
-	# Le remplacement au label est instantané : sa durée n'a aucune raison
-	# d'être courte. On lui en donne une qui survit largement à l'attente.
+	# CORRECTIF INCOMPLET, repris — le premier passage n'avait allongé que la
+	# DURÉE du buff en gardant un compte de frames FIXE. La suite complète sous
+	# contention (4 processus sur 4 cœurs) l'a fait échouer à nouveau, sur la
+	# même assertion : ce n'est pas le buff qui expirait, c'est le LABEL du HUD
+	# qui n'avait pas eu le temps de se rafraîchir en dix frames.
+	#
+	# La règle s'applique donc jusqu'au bout : on n'attend plus un COMPTE, on
+	# attend la CONDITION, bornée. Un plafond haut rend le test insensible à la
+	# vitesse ; il reste sensible à un vrai blocage, qui épuise la borne.
 	_player.status().apply_buff(&"attack", 0.25, 5.0)
-	for i: int in range(10):
-		await _tree().process_frame
-	check(_shell.buff_label_text().contains("Attaque"),
+	check(await _label_reaches("Attaque"),
 		"un nouveau buff REMPLACE l'ancien au label")
-	# L'expiration, elle, se prouve avec une durée très courte ET une attente
-	# généreuse : le seul besoin est que 40 frames dépassent 0,05 s, ce qui est
-	# vrai quelle que soit la charge.
+	# L'expiration se prouve avec une durée très courte, puis l'attente que le
+	# label se VIDE — même principe, dans l'autre sens.
 	_player.status().apply_buff(&"attack", 0.25, 0.05)
-	for i: int in range(40):
-		await _tree().process_frame
-	check_equal(_shell.buff_label_text(), "", "expiré : label effacé")
+	check(await _label_reaches(""), "expiré : label effacé")
 	await _unload_valley()
+
+
+## Attend que le label du HUD atteigne l'état voulu, BORNÉ.
+##
+## ISS-038 : `attendre N frames puis affirmer` exige que la machine soit rapide.
+## Sous contention, dix frames de rendu ne suffisaient plus à rafraîchir le
+## label, et la suite entière basculait au rouge sans qu'aucun code de jeu soit
+## en cause. `needle` vide signifie « label vidé ».
+##
+## Rend `true` dès que la condition est vraie, `false` si la borne est épuisée —
+## un vrai blocage échoue donc encore, il ne pend pas.
+func _label_reaches(needle: String, max_frames: int = 600) -> bool:
+	for i: int in range(max_frames):
+		var text: String = _shell.buff_label_text()
+		if (needle == "" and text == "") or (needle != "" and text.contains(needle)):
+			return true
+		await _tree().process_frame
+	return false
