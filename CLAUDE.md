@@ -40,7 +40,9 @@ Une session = **un jalon borné ou un seul bug complexe**. Jamais « tout le jeu
 
 ```bash
 tools/env_report.sh                  # versions exactes -> docs/BUILD_ENVIRONMENT.md
-tools/setup_godot.sh                 # (re)construit Godot 4.7.1 si absent — ~90 min
+tools/setup_godot.sh                 # (re)construit Godot 4.7.1 si absent — ~25 min
+tools/setup_blender.sh               # installe Blender si absent — ~2 min ; sans lui
+                                     # le niveau 3b (continuité personnages) reste ROUGE
 tools/validate_fast.sh               # niveaux 1-3 : import, parse, tests unitaires
 tools/validate_release.sh            # niveaux 4-7 ; sort en 3 (BLOQUÉ) tant que 4/6/7
                                      # ne sont pas exécutés ; 1 si la capture échoue

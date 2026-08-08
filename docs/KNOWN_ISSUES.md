@@ -820,3 +820,34 @@ traiter par `asset-license-auditor` / le manifeste, indépendamment de ce ticket
    prédécesseurs probables, pour trouver le pollueur.
 3. Vérifier que chaque test qui monte une scène la retire ET remet `GameState`
    à zéro — plusieurs le font déjà via `_close()`, tous ne le font pas.
+
+## ISS-039 — Le chemin est une dalle POSÉE sur l'herbe, pas creusée dedans · `S3` · OUVERT
+
+- **Vu** : `evidence/iss037/apres_correction.png`, recadrage du premier plan.
+- **Observé** : `PathCrest` est un `BoxMesh` de 0,06 m d'épaisseur posé à
+  `_slope_height(-9.0) + 0.05`. Sa **tranche** est visible au bord proche : le
+  chemin flotte de cinq centimètres au-dessus de l'herbe au lieu d'être creusé
+  dedans. À hauteur de héros c'est net, et ça trahit la géométrie.
+- **Attendu** (§6.2) : « les chemins sont dessinés par compression de l'herbe,
+  terre visible, alignement de pierres, interruption des fleurs » — pas par un
+  ruban posé sur le sol.
+- **Ne pas confondre avec ISS-037**, qui portait sur la COULEUR et est corrigé.
+  Celui-ci est de la géométrie.
+- **Piste** : soit creuser le sol sous le chemin, soit supprimer l'épaisseur et
+  laisser le masque d'herbe faire le travail (§7.4 : les fleurs se raréfient au
+  bord du chemin). La seconde évite un trou de collision.
+
+## ISS-040 — Des cubes non habillés traînent dans la prairie · `S3` · OUVERT
+
+- **Vu** : `evidence/iss037/apres_correction.png`, moitié droite du cadre.
+- **Observé** : des cubes bleus et blancs d'environ 20 cm, posés sur l'herbe,
+  sans matière ni silhouette. À la distance du premier plan ils lisent
+  « placeholder », pas « fleur ».
+- **Attendu** (§7.1) : les fleurs sont des ombelles, disques ou grappes, en
+  groupes de 5 à 12 — jamais des cubes. Le verdict H-4 nommait déjà le défaut :
+  « les fleurs-cubes lisaient Minecraft en gros plan ».
+- **À vérifier avant correction** : `test_h7_...les_fleurs_sont_rondes` existe et
+  passe. Donc soit il ne couvre PAS le labo `HeroShotLab` (seulement la vallée),
+  soit ces cubes ne sont pas des fleurs. **Identifier le nœud d'abord** — la
+  méthode qui a tranché sur ISS-037 est la bonne : repeindre d'une couleur
+  impossible, recapturer, mesurer.
