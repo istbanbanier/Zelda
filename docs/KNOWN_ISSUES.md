@@ -784,7 +784,7 @@ comportement en scène isolée.
 « terre » soit un sol forestier est un défaut d'inventaire à part entière, à
 traiter par `asset-license-auditor` / le manifeste, indépendamment de ce ticket.
 
-## ISS-038 — La suite n'est pas déterministe : deux passages, deux verdicts · `S2` · OUVERT
+## ISS-038 — La suite n'est pas déterministe : deux passages, deux verdicts · `S2` · **FERMÉ** (2026-08-08)
 
 - **Build** : `86ef23c` (aucun changement de code entre les deux passages).
 - **Observé**, deux exécutions complètes de `tools/validate_fast.sh` à quelques
@@ -812,7 +812,52 @@ traiter par `asset-license-auditor` / le manifeste, indépendamment de ce ticket
   obtenu au passage A n'est pas une preuve que la suite est saine ; c'est
   peut-être un tirage favorable. Cela affecte tous les gates.
 
-### RÉSOLU À MOITIÉ — 2026-08-08
+### FERMÉ — 2026-08-08, preuve au repos ET sous contention
+
+**Cause unique, et elle n'était pas celle annoncée au premier correctif.** Deux
+tests attendaient un NOMBRE FIXE DE FRAMES avant d'affirmer, ce qui revient à
+exiger que la machine soit rapide. Sous charge, les frames n'arrivaient plus
+assez vite et l'assertion tombait — sans qu'aucun code de jeu soit en cause.
+
+Le premier correctif s'était trompé de mécanisme : il avait allongé la DURÉE du
+buff (0,2 s → 5 s) en gardant le compte de frames. Le passage sous contention a
+fait échouer la MÊME assertion. Ce n'était donc pas le buff qui expirait, mais
+le **label du HUD qui n'avait pas eu le temps de se rafraîchir**.
+
+**Correctif final** : `_label_reaches(needle, max_frames)` attend la CONDITION,
+bornée, au lieu d'un compte. Un plafond haut rend le test insensible à la
+vitesse ; il reste sensible à un vrai blocage, qui épuise la borne et échoue au
+lieu de pendre.
+
+**Preuve, commandes exactes** (`tools/validate_fast.sh`, code retour capturé
+sans tube) :
+
+| Condition | Résultat | Code |
+|---|---|---:|
+| Machine au repos | `804 réussis, 0 échoué` — `VERT` | 0 |
+| **4 processus saturant les 4 cœurs** | `804 réussis, 0 échoué` — `VERT` | 0 |
+
+Plus, sur les tests ciblés : 3 passages au repos et 3 sous contention, verts ;
+puis 1 + 2 après le correctif final.
+
+**Limites de ce qui est prouvé, à ne pas dépasser** :
+
+- prouvé sur CE conteneur, 4 cœurs, rendu logiciel, et sur DEUX passages
+  complets — pas sur une population de passages ni sur une autre machine ;
+- la contention simulée est du CPU pur ; ni pression mémoire, ni disque lent,
+  ni conteneur bridé n'ont été éprouvés ;
+- rien ne prouve qu'aucun AUTRE test du dépôt ne compte des frames au lieu
+  d'attendre une condition. C'est la prochaine dette à traiter, et elle est
+  nommée en fin de ticket.
+
+### Dette laissée par ce ticket
+
+Chercher les autres tests qui attendent `for i in range(N): await ... frame`
+puis affirment. Le motif est le même ; seule la marge diffère. Un test qui
+attend une CONDITION bornée est correct, un test qui attend un COMPTE est une
+panne en sursis.
+
+### Historique de l'enquête — RÉSOLU À MOITIÉ, état intermédiaire du 2026-08-08
 
 **Cause 1 : un test exigeait que la machine soit RAPIDE. Corrigé et prouvé.**
 
