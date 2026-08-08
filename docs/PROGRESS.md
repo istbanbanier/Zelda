@@ -3912,3 +3912,84 @@ l'humain une comparaison honnête, pas à se passer de lui.
    sur les 748 tests existants.
 3. Reprendre le front précédent : ISS-035 (pas japonais) puis la sonde de boîtes
    sur la vallée entière.
+
+## 2026-08-08 — Consolidation des cinq branches, ISS-037, et le test qui manquait
+
+Godot 4.7.1-stable **compilé ici** (22 min, commit épinglé `a13da4feb`) —
+ISS-001 re-vérifiée et toujours vraie. Le binaire vit dans `/opt`, hors du
+dépôt : chaque nouvelle session devra recompiler.
+
+### 1. Cinq versions du jeu, ramenées à une
+
+Le dépôt n'avait **aucune branche par défaut** et cinq branches divergentes
+d'un ancêtre commun du 07-08 18h13. Matrice de contenance mesurée
+commit par commit (`git merge-base --is-ancestor`, pas lecture de titres) :
+aucune branche ne portait plus de **deux** des six morceaux de travail.
+
+Fusionnées dans `claude/world-of-claudecraft-advice-snt1qa`, dans un worktree
+isolé. Deux conflits, aucun de code : `PROGRESS.md` (deux journaux — les deux
+entrées conservées) et un `.uid` (deux identifiants Godot pour le même test,
+aucune collision, un gardé). Les cinq branches d'origine sont **intactes**.
+
+Portail avant/après la fusion : **775 → 801 réussis, 4 échoués dans les deux
+cas, les mêmes** (caméra du boss, résonance de la citadelle, route
+crête→plaine nord ×2). **Zéro régression.**
+
+Découvert au passage : une autre session avait porté les **hooks** de
+world-of-claudecraft (`qa-stop.sh`, `ensure-hooks.sh`) pendant que celle-ci
+portait ses **neuf agents**. Les deux moitiés de sa méthode, arrivées par deux
+chemins qui s'ignoraient. Coup de chance, pas méthode.
+
+### 2. ISS-037 — corrigé, cause établie par test décisif
+
+Le chemin de la vue North Star rendait à **97 % de valeur / 0,71 de
+saturation** là où §1.5 veut 35-65 % pour un sol. Il était l'objet le plus
+clair de l'image et captait le regard avant la citadelle (§1.2).
+
+**Deux hypothèses fausses avant la bonne**, conservées dans le ticket : la
+texture nommée « terre » est verte, et la sonde de projection écrite pour
+l'occasion désignait le mauvais nœud (son axe Y est faux — documenté en tête
+du fichier). Ce qui a tranché : repeindre `PathCrest` en bleu pur, recapturer,
+mesurer → `#2830FF`.
+
+Le test bleu a livré la cause en prime : un albédo bleu PUR ressort à B=255,
+donc le labo a un gain lumineux de ≈ 1,8. `#8A5A36` est une couleur **peinte
+cible**, pas un albédo. Correction : albédo × 0,57 → **44 % de valeur**,
+toujours distinct de l'herbe (29 %).
+
+### 3. Le test qui manquait, et qui explique tout le reste
+
+Ce défaut a survécu à **quatre itérations v0→v3** et à une évaluation sévère à
+58/100 parce qu'**aucun des 801 tests ne vérifiait les bandes de valeurs**.
+
+`tools/check_value_bands.py` + étape **5b** de `validate_release.sh`. Il ne
+teste pas « aucun pixel de sol au-dessus de 65 % » — les reflets et les fleurs
+blanches montent toujours à 100 %, et l'herbe éclairée a le droit d'être
+claire. Il teste la **hiérarchie** que §1.5 énonce vraiment : *le sol ne peut
+pas être plus clair que le ciel* (sol p95 < ciel p50).
+
+Fail-first prouvé : **code 1** sur la capture d'avant correction (sol p95 =
+100 % ≥ ciel p50 = 83 %), **code 0** sur celle d'après (74 % < 83 %). Chaîne
+complète exécutée, étape 5b verte.
+
+Pillow absent ⇒ code **3 BLOQUÉ**, jamais vert, et le blocage remonte au
+verdict final (`BLOCKERS` est consommé trop tôt dans le script pour servir ici).
+
+### Ce qui n'est PAS fait
+
+- **Aucun des neuf agents n'a tourné sur un vrai diff.** Écrits, pas éprouvés.
+- Les **4 tests rouges** connus restent rouges, dont la route crête→plaine nord
+  qui n'est pas franchissable — défaut de jouabilité, prioritaire sur l'art.
+- **Toujours aucune branche par défaut** : c'est la cause racine de la
+  divergence. Tant qu'elle manque, le problème reviendra.
+- Vus sur la capture agrandie, **non traités** : le chemin est une dalle POSÉE
+  sur l'herbe (tranche visible) au lieu d'être creusée ; des cubes bleus et
+  blancs non habillés traînent dans la prairie.
+
+### Prochaine action exacte
+
+1. Déclarer une branche par défaut sur le dépôt — décision du propriétaire.
+2. Route crête→plaine nord (ISS-032) : 9 jalons atteints sur 11, `min y = -0.50`.
+   Défaut de jouabilité, donc avant toute nouvelle passe d'art.
+3. Faire tourner `test-coverage-auditor` sur les 801 tests — le premier des
+   neuf agents à éprouver, et le plus rentable.
