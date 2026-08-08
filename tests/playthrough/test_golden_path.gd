@@ -53,13 +53,11 @@ func _find(wanted: String) -> Node:
 
 
 func _teardown() -> void:
-	for wanted: String in ["ValleyWorld", "CitadelVestibule", "Room1Initiation",
-			"MainMenu", "Boot"]:
-		var node: Node = _find(wanted)
-		while node != null:
-			node.get_parent().remove_child(node)
-			node.queue_free()
-			node = _find(wanted)
+	# Retirer par DELTA, pas par liste de noms : la dernière action du parcours
+	# demande la salle 1, et la scène chargée se posait APRÈS ce nettoyage sous
+	# un nom anonyme (`@Node@…`) qu'aucune liste ne pouvait prévoir.
+	# Voir `GateTestCase.restore_root()`.
+	await restore_root()
 	var game_state: Node = _tree().root.get_node_or_null("/root/GameState")
 	if game_state != null:
 		game_state.call("set_flow", 0)
@@ -70,6 +68,7 @@ func _teardown() -> void:
 
 func test_golden_path_from_boot_to_the_dungeon_entrance() -> void:
 	remember_saves()
+	remember_root()
 
 	# --- G1-G4. Jusqu'à la vallée, par le vrai flux -------------------------
 	var boot: Node = (load(BOOT) as PackedScene).instantiate()
@@ -88,11 +87,17 @@ func test_golden_path_from_boot_to_the_dungeon_entrance() -> void:
 		return
 	new_game.emit_signal("pressed")
 	await _settle(2)
-	if new_game.text != "Nouvelle partie":
+	# Sans sauvegarde, ce premier appui part droit vers la vallée et libère le
+	# menu : lire `.text` ensuite lève une erreur qui avorte la méthode EN
+	# SILENCE. Voir le commentaire long de `test_boot_smoke.gd`.
+	var asked_confirmation: bool = is_instance_valid(new_game) \
+		and new_game.text != "Nouvelle partie"
+	if asked_confirmation:
 		new_game.emit_signal("pressed")   # confirmation d'écrasement (§17.3)
 	var in_valley: bool = await _wait_until(
 		func() -> bool: return _find("ValleyWorld") != null, 25.0)
-	check(in_valley, "G3 — la vallée s'ouvre")
+	check(in_valley, "G3 — la vallée s'ouvre (%s)"
+		% ("après confirmation" if asked_confirmation else "sans sauvegarde"))
 	var valley: Node = _find("ValleyWorld")
 	if valley == null:
 		await _teardown()

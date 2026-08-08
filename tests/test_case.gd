@@ -111,3 +111,75 @@ func restore_saves() -> void:
 func _save_system() -> Node:
 	var loop: SceneTree = Engine.get_main_loop() as SceneTree
 	return null if loop == null else loop.root.get_node_or_null("/root/SaveSystem")
+
+
+## ---------------------------------------------------------------------------
+## ARBRE : un cas de test ne doit pas non plus laisser une SCÈNE derrière lui
+## ---------------------------------------------------------------------------
+##
+## Le runner refuse déjà tout enfant de la racine apparu pendant un test
+## (`_leaked_roots`), parce qu'une scène oubliée poisonne la géométrie de tous
+## les suivants. Nettoyer par une LISTE DE NOMS ne suffit pas, et le
+## 2026-08-08 l'a montré : `test_boot_smoke` et `test_golden_path` passaient
+## seuls, et dans la suite complète laissaient `Boot, ValleyWorld` et un
+## `@Node@…` anonyme — dix-sept assertions du donjon tombaient trente fichiers
+## plus loin.
+##
+## La cause est une COURSE DE PHASE, la même famille qu'ISS-038 : la dernière
+## action du test demande une transition, `SceneFlow.go_to()` est asynchrone, et
+## en headless elle finit par `change_scene_to_file()`, différée en fin de
+## frame. Le test retirait donc une scène pendant qu'une autre était en vol, et
+## celle-ci se posait APRÈS le nettoyage. En isolation la transition avait le
+## temps de finir ; dans la suite chargée, non.
+##
+## D'où les deux corrections : attendre la fin réelle de la transition, puis
+## retirer le DELTA par rapport à la photo d'entrée plutôt qu'une liste de noms.
+## Un nom qu'on n'a pas prévu reste invisible ; un delta, jamais.
+
+var _root_snapshot: Array[String] = []
+
+
+## Photo des enfants de la racine AVANT que le test ne charge quoi que ce soit.
+func remember_root() -> void:
+	_root_snapshot = _root_names()
+
+
+## Rend la racine telle qu'elle était. À appeler même quand le test échoue.
+##
+## `budget_s` est un temps de JEU, jamais un nombre de frames : un test ne doit
+## jamais exiger que la machine soit RAPIDE, seulement qu'assez de temps de jeu
+## se soit écoulé (ISS-038).
+func restore_root(budget_s: float = 20.0) -> void:
+	var loop: SceneTree = Engine.get_main_loop() as SceneTree
+	if loop == null:
+		return
+	var flow: Node = loop.root.get_node_or_null("/root/SceneFlow")
+	# 1. Laisser la transition en vol se poser. La retirer maintenant reviendrait
+	#    à nettoyer devant un camion qui décharge encore.
+	var elapsed: float = 0.0
+	while flow != null and bool(flow.call("is_busy")) and elapsed <= budget_s:
+		await loop.process_frame
+		elapsed += loop.root.get_process_delta_time()
+	# 2. Retirer le delta, plusieurs fois : `change_scene_to_file()` est différée
+	#    et peut poser sa scène juste après un premier balayage.
+	for pass_index: int in range(3):
+		for child: Node in loop.root.get_children():
+			if _root_snapshot.has(child.name):
+				continue
+			if child == loop.current_scene:
+				loop.current_scene = null
+			loop.root.remove_child(child)
+			child.queue_free()
+		await loop.process_frame
+		await loop.physics_frame
+	_root_snapshot.clear()
+
+
+func _root_names() -> Array[String]:
+	var names: Array[String] = []
+	var loop: SceneTree = Engine.get_main_loop() as SceneTree
+	if loop == null:
+		return names
+	for child: Node in loop.root.get_children():
+		names.append(child.name)
+	return names

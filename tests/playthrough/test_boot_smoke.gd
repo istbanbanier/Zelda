@@ -57,12 +57,10 @@ func _find(wanted: String) -> Node:
 ## y compris les sorties anticipées : le runner refuse les nœuds résiduels, et
 ## il a raison — un test qui pollue l'arbre fait échouer le suivant.
 func _teardown() -> void:
-	for wanted: String in ["ValleyWorld", "MainMenu", "Boot"]:
-		var node: Node = _find(wanted)
-		while node != null:
-			node.get_parent().remove_child(node)
-			node.queue_free()
-			node = _find(wanted)
+	# Retirer par DELTA, pas par liste de noms, et seulement une fois la
+	# transition en vol posée : « Réessayer » recharge la scène, et la recharge
+	# se posait APRÈS ce nettoyage. Voir `GateTestCase.restore_root()`.
+	await restore_root()
 	var game_state: Node = _tree().root.get_node_or_null("/root/GameState")
 	if game_state != null:
 		game_state.call("set_flow", 0)
@@ -73,6 +71,7 @@ func _teardown() -> void:
 
 func test_boot_smoke_from_boot_to_a_playable_valley() -> void:
 	remember_saves()
+	remember_root()
 
 	# --- B1. Le vrai Boot démarre ------------------------------------------
 	var boot: Node = (load(BOOT) as PackedScene).instantiate()
@@ -108,15 +107,27 @@ func test_boot_smoke_from_boot_to_a_playable_valley() -> void:
 	# une sauvegarde — un piège de déterminisme dans le test lui-même.
 	new_game.emit_signal("pressed")
 	await _settle(2)
-	var asked_confirmation: bool = new_game.text != "Nouvelle partie"
+	# `is_instance_valid` n'est pas de la prudence décorative. Sans sauvegarde,
+	# le premier appui part DIRECTEMENT vers la vallée et `change_scene_to_file()`
+	# libère le menu : lire `.text` sur l'objet libéré lève une erreur qui AVORTE
+	# la méthode en silence. Le nettoyage ne s'exécutait alors plus, la vallée
+	# restait dans l'arbre, et dix-sept assertions du donjon tombaient trente
+	# fichiers plus loin. Le seul témoin était le garde-fou ISS-027 du journal.
+	#
+	# Le test se comportait donc différemment SELON qu'un passage précédent avait
+	# laissé une sauvegarde. Les deux branches doivent marcher, et surtout
+	# produire le MÊME nombre d'assertions — un compte qui varie d'un passage à
+	# l'autre est un test qu'on ne peut pas comparer à lui-même.
+	var asked_confirmation: bool = is_instance_valid(new_game) \
+		and new_game.text != "Nouvelle partie"
 	if asked_confirmation:
-		check(true, "B4a — une sauvegarde existe : le menu DEMANDE confirmation (« %s »)"
-			% new_game.text)
 		new_game.emit_signal("pressed")
 	var reached_valley: bool = await _wait_until(
 		func() -> bool: return _find("ValleyWorld") != null, 25.0)
 	check(reached_valley,
-		"B4 — presser « Nouvelle partie » ouvre RÉELLEMENT la vallée")
+		"B4 — presser « Nouvelle partie » ouvre RÉELLEMENT la vallée (%s)"
+			% ("après confirmation d'écrasement (§17.3)" if asked_confirmation
+				else "aucune sauvegarde : départ direct"))
 	var valley: Node = _find("ValleyWorld")
 	if valley == null:
 		await _teardown()
