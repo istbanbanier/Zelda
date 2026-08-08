@@ -71,7 +71,27 @@ func test_the_hero_in_the_valley_has_a_head() -> void:
 	check(mount != null and mount.get_node_or_null("Head") != null,
 		"…et une tête est réellement dessus")
 	# Le crâne se tient AU-DESSUS des épaules du héros, dans le monde.
+	#
+	# ISS-038 — ce bloc mesurait après `_settle(10)`, un nombre FIXE de frames,
+	# et lisait parfois 1,16 m au lieu de 1,20 : la pose du squelette et le
+	# `BoneAttachment3D` n'étaient pas encore stabilisés. Quatre centimètres, et
+	# la suite entière basculait au rouge.
+	#
+	# On n'attend plus un COMPTE, on attend la CONDITION : la hauteur du crâne
+	# cesse de bouger. Bornée, pour qu'un vrai blocage échoue au lieu de pendre.
 	var top: float = model.head_top().y
+	var previous: float = -INF
+	var stable: int = 0
+	for i: int in range(240):
+		top = model.head_top().y
+		stable = stable + 1 if absf(top - previous) < 0.001 else 0
+		previous = top
+		if stable >= 5:
+			break
+		await _tree().physics_frame
+	check(stable >= 5,
+		"la pose du héros s'est stabilisée avant la mesure (%d frames stables)"
+			% stable)
 	check(top > player.global_position.y + 1.2,
 		"le crâne est à hauteur de tête (%.2f m au-dessus des pieds)"
 			% (top - player.global_position.y))

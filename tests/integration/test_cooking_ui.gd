@@ -113,11 +113,28 @@ func test_the_hud_shows_the_active_buff_and_clears_on_expiry() -> void:
 	check(_shell.buff_label_text().contains("Endurance"),
 		"le label nomme la famille : %s" % _shell.buff_label_text())
 	check(_shell.buff_label_text().contains("s"), "…et le temps restant")
-	_player.status().apply_buff(&"attack", 0.25, 0.2)
+	# ISS-038 — ce bloc appliquait un buff de 0,2 s puis attendait DIX frames de
+	# rendu avant d'affirmer qu'il remplace l'ancien. À 60 im/s dix frames font
+	# 0,167 s : le test tenait à 33 millisecondes près, et la moindre charge
+	# machine le faisait échouer. C'est ce que le dépôt world-of-claudecraft
+	# résume par « an unbounded run flakes heavy suites under core contention ».
+	#
+	# Règle qui en découle, et qui vaut pour TOUS les tests d'ici :
+	#   un test ne doit jamais exiger que la machine soit RAPIDE ;
+	#   il ne peut exiger que le passage d'ASSEZ de temps.
+	# Attendre trop est sans danger ; attendre trop peu ne l'est pas.
+	#
+	# Le remplacement au label est instantané : sa durée n'a aucune raison
+	# d'être courte. On lui en donne une qui survit largement à l'attente.
+	_player.status().apply_buff(&"attack", 0.25, 5.0)
 	for i: int in range(10):
 		await _tree().process_frame
 	check(_shell.buff_label_text().contains("Attaque"),
 		"un nouveau buff REMPLACE l'ancien au label")
+	# L'expiration, elle, se prouve avec une durée très courte ET une attente
+	# généreuse : le seul besoin est que 40 frames dépassent 0,05 s, ce qui est
+	# vrai quelle que soit la charge.
+	_player.status().apply_buff(&"attack", 0.25, 0.05)
 	for i: int in range(40):
 		await _tree().process_frame
 	check_equal(_shell.buff_label_text(), "", "expiré : label effacé")
