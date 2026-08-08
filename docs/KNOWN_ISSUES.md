@@ -783,3 +783,40 @@ comportement en scène isolée.
 `T_Ground_Earth_Albedo.jpg` montre de la mousse verte. Qu'une texture nommée
 « terre » soit un sol forestier est un défaut d'inventaire à part entière, à
 traiter par `asset-license-auditor` / le manifeste, indépendamment de ce ticket.
+
+## ISS-038 — La suite n'est pas déterministe : deux passages, deux verdicts · `S2` · OUVERT
+
+- **Build** : `86ef23c` (aucun changement de code entre les deux passages).
+- **Observé**, deux exécutions complètes de `tools/validate_fast.sh` à quelques
+  minutes d'intervalle :
+
+  | Passage | Résultat |
+  |---|---|
+  | A (`/tmp/valfast_final.log`) | **804 réussis, 0 échoué** |
+  | B (`/tmp/valfast_blender.log`) | **802 réussis, 2 échoués** |
+
+- **Les deux tests fautifs passent en isolation**, systématiquement :
+  - `test_cooking_ui.gd::test_the_hud_shows_the_active_buff_and_clears_on_expiry`
+    — 5 passes isolées, 5 fois vert ;
+  - `test_heads_reach_the_real_valley.gd::test_the_hero_in_the_valley_has_a_head`
+    — 2 passes isolées, 2 fois vert.
+- **Hypothèse écartée par la mesure** : l'installation de Blender entre A et B
+  n'a rien importé de nouveau — `source_assets/.gdignore` existe et aucun
+  `.blend.import` n'a été créé. Le projet se protégeait déjà.
+- **Cause probable, NON ÉTABLIE** : pollution d'état entre tests (autoload,
+  sauvegarde, `GameState`, nœud non libéré). Même famille qu'ISS-024, classée
+  « environnementale » à l'époque — cette observation suggère que le classement
+  était optimiste.
+- **Pourquoi c'est `S2` et pas `S3`** : tant que la suite rend deux verdicts
+  différents pour le même code, **aucun « vert » ne prouve rien**. Le 804/0
+  obtenu au passage A n'est pas une preuve que la suite est saine ; c'est
+  peut-être un tirage favorable. Cela affecte tous les gates.
+
+### Piste d'investigation, pour la prochaine session
+
+1. Faire tourner la suite avec un ORDRE inversé ou aléatoire semé, et voir si le
+   couple de tests fautifs change. Si oui, c'est bien de la pollution d'ordre.
+2. Isoler par paires : lancer chaque test fautif juste après chacun de ses
+   prédécesseurs probables, pour trouver le pollueur.
+3. Vérifier que chaque test qui monte une scène la retire ET remet `GameState`
+   à zéro — plusieurs le font déjà via `_close()`, tous ne le font pas.
