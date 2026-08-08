@@ -133,10 +133,18 @@ func test_golden_path_from_boot_to_the_dungeon_entrance() -> void:
 		check(opened, "…et il s'ouvre par l'interaction du joueur (%.0f m du spawn)"
 			% nearest)
 		await _settle(20)
+		# ÉCHOUER FERMÉ : si l'inventaire n'expose pas de quoi compter, on ne
+		# saute pas la vérification en silence — on la déclare non prouvée.
+		# Le premier passage exécutait 19 assertions sur 20 : une étape
+		# disparaissait sans que rien ne rougisse.
 		if before >= 0 and inventory != null:
 			var after: int = int(inventory.call("weapon_count"))
 			check(after > before,
 				"…et il donne un objet RÉEL à l'inventaire (%d → %d)" % [before, after])
+		else:
+			check(false,
+				"…mais l'effet du coffre est NON VÉRIFIÉ : l'inventaire n'expose "
+				+ "pas `weapon_count` (obtenu : %s)" % str(inventory))
 
 	# --- G6. Un ennemi encaisse des dégâts par le chemin réel ---------------
 	var enemy: Node = null
@@ -166,9 +174,24 @@ func test_golden_path_from_boot_to_the_dungeon_entrance() -> void:
 		"*", "ResonanceController", true, false)
 	resonance = res_found[0] if not res_found.is_empty() else null
 	check(resonance != null, "G7 — le héros porte son Bracelet de Résonance")
-	if resonance != null and resonance.has_method("pulse"):
-		var pulsed: bool = bool(resonance.call("pulse"))
-		check(pulsed, "…et Pulse s'exécute depuis le monde chargé")
+	# `try_pulse(body)` rend `&"fired"` ou `&"cooldown"`
+	# (`resonance_controller.gd:114-117`), PAS un motif d'échec.
+	#
+	# Deux erreurs d'API successives sur cette seule ligne : j'ai d'abord appelé
+	# `pulse()`, qui n'existe pas — l'assertion était alors SAUTÉE en silence et
+	# le parcours passait à 19 assertions sur 20 ; puis j'ai supposé qu'une
+	# chaîne vide signalait le succès, et « fired » a été lu comme un refus.
+	# Lire la fonction coûte trente secondes ; la supposer en a coûté deux
+	# exécutions complètes.
+	if resonance != null and resonance.has_method("try_pulse"):
+		var verdict: StringName = resonance.call("try_pulse", player)
+		check(verdict == &"fired",
+			"…et Pulse s'exécute depuis le monde chargé (verdict : « %s »)"
+				% String(verdict))
+	else:
+		check(false,
+			"…mais Pulse est NON VÉRIFIÉ : pas de méthode `try_pulse` sur le "
+			+ "contrôleur (obtenu : %s)" % str(resonance))
 
 	# --- G8. L'entrée de la citadelle est FRANCHISSABLE ---------------------
 	var door: Node = _find("CitadelDoor")
