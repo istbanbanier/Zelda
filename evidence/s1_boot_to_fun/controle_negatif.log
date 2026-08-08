@@ -1,0 +1,14 @@
+=== Sabotage 1 : le bouton « Nouvelle partie » ne mène plus à la vallée ===
+      ÉCHEC test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley — B4 — presser « Nouvelle partie » ouvre RÉELLEMENT la vallée
+    === RÉSULTAT: 0 réussi(s), 1 échoué(s) ===
+      ÉCHEC: test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley — B4 — presser « Nouvelle partie » ouvre RÉELLEMENT la vallée
+  [OK]   le gate a VU le sabotage.
+=== Sabotage 2 : le héros ne se pose plus (gravité annulée) ===
+      ÉCHEC test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley — …qui se pose sur un sol valide
+      ÉCHEC test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley — B7b — soulevé de 3 m, le héros RETOMBE et se repose (y 35.30 → 35.30)
+    === RÉSULTAT: 0 réussi(s), 2 échoué(s) ===
+      ÉCHEC: test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley — …qui se pose sur un sol valide
+  [OK]   le gate a VU le sabotage.
+
+=== CONTRÔLE NÉGATIF : le gate sait rougir sur 2 sabotage(s) ===
+CONTROLE_NEGATIF_RC=0
