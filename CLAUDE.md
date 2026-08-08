@@ -36,6 +36,29 @@ définition de « terminé ».
 
 Une session = **un jalon borné ou un seul bug complexe**. Jamais « tout le jeu ».
 
+### Un arbre de travail git SÉPARÉ par tâche
+
+`git worktree add --detach <dir> <base>`. Le travail en cours d'une tâche ne
+contamine jamais la branche d'une autre, et l'arbre principal ne bouge pas sous
+les pieds d'une session voisine. C'est la réponse structurelle au dégât du
+2026-08-07 — **cinq branches divergentes, aucune contenant plus de deux des six
+morceaux de travail**. La règle « une seule session à la fois » reste vraie ;
+le worktree la rend survivable quand elle est enfreinte.
+
+Retirer par `git worktree remove --force`, et prévoir un `trap` si un script le
+crée : un worktree oublié pourrit le dépôt en silence.
+
+### La règle d'ancrage : citer ce qui ne pourrit pas
+
+Un document cite des **chemins stables, des symboles exportés, des tests
+épinglés**. Jamais un nombre ni un numéro de ligne : ils divergent du réel sans
+que personne le remarque, et on finit par croire un document au lieu du code.
+
+`docs/STATUS.md` l'avait déjà constaté sur le nombre de tests ; la règle vaut
+pour **tous** les compteurs — surfaces peintes, assets, lignes, pourcentages.
+Le chiffre vit dans la preuve datée (`evidence/`, `TEST_REPORT.md`), pas dans la
+prose qui le recopie.
+
 ## Commandes réelles
 
 ```bash

@@ -812,7 +812,40 @@ traiter par `asset-license-auditor` / le manifeste, indépendamment de ce ticket
   obtenu au passage A n'est pas une preuve que la suite est saine ; c'est
   peut-être un tirage favorable. Cela affecte tous les gates.
 
-### Piste d'investigation, pour la prochaine session
+### Piste EXTERNE, arrivée le 2026-08-08 — la plus prometteuse
+
+Le `CLAUDE.md` racine de `levy-street/world-of-claudecraft`, projet comparable
+(≈ 9 900 commits, suite lourde), documente le phénomène en une ligne :
+
+> « piping `npm test` through `tail` masks its exit code, **and an unbounded run
+> flakes heavy suites under core contention** »
+
+Leur portail complet lance donc les tests **avec un nombre de workers borné**.
+Autrement dit : chez eux, une suite lourde qui tourne sans bride sur des cœurs
+disputés produit des échecs qui n'ont rien à voir avec le code. C'est exactement
+notre signature — des tests verts en isolation, rouges dans la suite, et deux
+verdicts pour le même code.
+
+Ce conteneur a **4 cœurs**. Godot y monte des scènes complètes, avec physique et
+autoloads, test après test. Les deux passages divergents ont eu lieu dans des
+conditions de charge différentes (le second suivait immédiatement une
+installation `apt` de Blender, donc un cache disque et une charge différents).
+
+**À éprouver en premier**, avant l'hypothèse de pollution d'état :
+
+1. Rejouer la suite complète trois fois **machine au repos**, sans rien d'autre.
+   Si les trois sont identiques, la piste « contention » se renforce.
+2. Rejouer la suite complète pendant une charge CPU artificielle. Si les échecs
+   reviennent ET se déplacent, c'est la contention, pas l'ordre.
+3. Chercher les tests sensibles au TEMPS (`await _settle(n)`, budgets en ticks) :
+   sous contention, un nombre fixe de frames physiques ne représente plus la
+   même durée réelle. `test_cooking_ui` porte une **expiration de buff** et
+   `test_heads_reach_the_real_valley` un **placement après stabilisation** — les
+   deux sont exactement de cette famille.
+
+Le point 3 est le plus parlant : les deux tests fautifs dépendent d'un délai.
+
+### Piste d'investigation interne, si la précédente ne donne rien
 
 1. Faire tourner la suite avec un ORDRE inversé ou aléatoire semé, et voir si le
    couple de tests fautifs change. Si oui, c'est bien de la pollution d'ordre.
