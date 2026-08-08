@@ -61,6 +61,16 @@ for entry in "${SABOTAGES[@]}"; do
   # plutôt que de le régénérer, le sabotage ne touche que du GDScript.
   cp -r "$REPO/.godot" "$WT/.godot" 2>/dev/null || true
 
+  # Le worktree doit CONTENIR le test qu'on prétend éprouver. Sans ce
+  # contrôle, un test non commité donne « aucun test exécuté », que le script
+  # comptait comme un échec — donc comme un succès du gate. Faux témoin exact
+  # que ce fichier prétend refuser. Constaté au premier passage.
+  if ! "$GODOT_BIN" --headless --path "$WT" --script tools/godot/test_runner.gd -- \
+       "--filter=$FILTER" 2>&1 | grep -q 'RÉSULTAT: [1-9]'; then
+    echo "  [ÉCHEC] le filtre « $FILTER » ne sélectionne AUCUN test dans le worktree."
+    echo "          Commiter le test avant d'éprouver le gate avec."
+    FAILURES=$((FAILURES + 1)); cleanup; WT=""; continue
+  fi
   if ! sed -i "$SED" "$WT/$FILE" 2>/dev/null; then
     echo "  [ÉCHEC] le sabotage n'a pas pu être appliqué"
     FAILURES=$((FAILURES + 1)); cleanup; WT=""; continue

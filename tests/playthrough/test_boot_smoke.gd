@@ -159,6 +159,27 @@ func test_boot_smoke_from_boot_to_a_playable_valley() -> void:
 		"B7 — le héros ne passe pas sous le monde en trois secondes (min y = %.2f)"
 			% lowest)
 
+	# --- B7b. Le héros RÉPOND au monde --------------------------------------
+	#
+	# Trouvé par le contrôle négatif : avec `gravity = 0`, tout le reste de ce
+	# parcours restait VERT. « Vivant, posé, HUD présent » ne prouve rien du
+	# contrôle — un héros figé satisfait ces trois critères. Le gate ne voyait
+	# donc pas un jeu injouable.
+	#
+	# On le soulève et on exige qu'il retombe et se repose. C'est le plus petit
+	# geste qui éprouve gravité ET collision d'un coup.
+	var ground_y: float = player.global_position.y
+	player.global_position += Vector3(0.0, 3.0, 0.0)
+	player.velocity = Vector3.ZERO
+	var fell_back: bool = await _wait_until(
+		func() -> bool:
+			return player.is_on_floor() \
+				and absf(player.global_position.y - ground_y) < 0.5,
+		8.0)
+	check(fell_back,
+		"B7b — soulevé de 3 m, le héros RETOMBE et se repose (y %.2f → %.2f)"
+			% [ground_y + 3.0, player.global_position.y])
+
 	# --- B8. Une interaction et un ennemi sont ATTEIGNABLES depuis le spawn --
 	# « Atteignable » veut dire : présent dans le monde chargé ET à portée de
 	# marche depuis le spawn. La présence seule ne prouverait rien.
