@@ -36,14 +36,14 @@ différentes, et se lisent ensemble.
 
 | Question | Verdict | Pourquoi |
 |---|---|---|
-| **Gate automatique actuel** — ce que la machine exécute aujourd'hui rend-il vert ? | **`FAIL`** | `P9c` échoue : l'invite est muette au centre de la porte du donjon |
+| **Gate automatique actuel** — ce que la machine exécute aujourd'hui rend-il vert ? | **`PASS`** | suite complète verte depuis la correction de `P9c` (S2.0) |
 | **Couverture BOOT-TO-FUN complète** — l'ensemble du parcours est-il éprouvé ? | **`NON VÉRIFIÉ`** | salles 2-4, salle centrale, antichambre, boss et victoire ne sont jamais atteints depuis le flux normal |
 | **Critères humains** — écran, mains, oreilles | **`BLOQUÉ`** | ni écran, ni clavier, ni manette, ni son, ni GPU dans ce conteneur |
 
-**Verdict global : `FAIL`**, par la règle ci-dessus — un `FAIL` l'impose, quels
-que soient les autres. Il ne deviendra `NON VÉRIFIÉ` que le jour où `P9c` sera
-corrigé, et `PASS` seulement après la couverture complète **et** le protocole
-humain.
+**Verdict global : `NON VÉRIFIÉ`**, par la règle du plus faible critère. Un gate
+vert ne dit pas que le jeu est jouable : il dit que rien de ce qu'on sait
+mesurer n'est cassé. Il ne deviendra `PASS` qu'après la couverture complète
+**et** le protocole humain.
 
 ## Commandes
 
@@ -119,33 +119,40 @@ appeler la méthode finale d'une cible, retirer un ennemi de la route.
 | P6 | `pulse_pressed` révèle **au moins une cible** (`revealed_count > 0`) | P6 |
 | P7 | La route du donjon se **marche** en entier, héros vivant | 5/5 jalons |
 | P8 | La porte de la citadelle est atteinte à pied et ouverte à la touche | P8, P8b |
-| P9b | La salle 1 est atteinte **à pied** depuis le menu | **PASS**, après un pas de côté |
-| P9c | L'invite répond **au centre du battant** du donjon | **FAIL** — voir ci-dessous |
+| P9b | La salle 1 est atteinte **à pied** depuis le menu | PASS |
+| P9c | L'invite répond **au centre du battant** du donjon | PASS depuis S2.0 — voir ci-dessous |
+| P9d | **Aucun** repositionnement latéral n'est nécessaire | PASS — le filet ne sert jamais |
 
-### Ce que ce parcours a trouvé, et que le câblage ne pouvait pas voir
+### Ce que ce parcours a trouvé — et qui est corrigé depuis
 
-`P9c` **échoue**, et sa cause est mesurée : debout à 0,75 m de la porte du
-donjon, parfaitement en face (`cos = 1,00`), au sol, en locomotion, porte bien
-dans le groupe `interactable` — `_select_interactable()` ne rend **rien**. Le
-rayon de `_has_interact_los()` est coupé par `SealedSeam`, une veine cyan
-décorative construite en `StaticBody3D` sur la **couche 1** à `z = −12,50`,
-juste devant le battant à `z = −12,75` (`citadel_vestibule.gd`, helper `_box`).
+`P9c` a échoué pendant deux passes d'audit, sur une cause mesurée : debout à
+0,75 m de la porte du donjon, parfaitement en face (`cos = 1,00`), au sol, en
+locomotion, porte bien dans le groupe `interactable` — `_select_interactable()`
+ne rendait **rien**. Le rayon de `_has_interact_los()` était coupé par
+`SealedSeam`, une veine cyan **décorative** construite en `StaticBody3D` sur la
+**couche 1** à `z = −12,50` (`citadel_vestibule.gd`), devant le battant à
+`z = −12,75`.
 
-Le décor coupe donc l'interaction **à l'endroit exact où un joueur se place**.
-`P9b` passe quand même : le pilote fait ce qu'une personne ferait — un pas de
-côté, puis un nouvel appui — et la salle 1 s'ouvre. La porte n'est donc pas
-condamnée ; elle est **muette au centre**.
+Le décor coupait l'interaction **à l'endroit exact où un joueur se place**, et
+nulle part ailleurs : un pas de côté rendait la porte sélectionnable. C'est la
+signature du défaut nº 1 du playtest humain du 2026-08-07 — le joueur appuie sur
+`E`, n'obtient rien, conclut que la touche ne marche pas et cesse d'essayer.
 
-C'est la signature du défaut nº 1 du playtest humain du 2026-08-07 : le joueur
-appuie sur `E`, n'obtient rien, en conclut que la touche ne marche pas, et cesse
-d'essayer. `_refuse_interaction()` existe précisément pour ça, et il se déclenche
-ici — sur une porte qui est pourtant juste devant lui.
+**Corrigé en S2.0** par `_decor_box()` : un ornement produit un `MeshInstance3D`
+seul, sans corps ni forme de collision. La veine garde géométrie, position et
+émission ; elle perd son statut d'obstacle. Aucune constante d'interaction n'a
+bougé, aucune exception n'a été ajoutée au contrôleur.
 
-Aucun test d'appel direct ne pouvait le voir : `test_flow_wiring_path` franchit
-la même porte en vert, parce qu'il appelle `SceneDoor.interact()` sans passer
-par la sélection du joueur.
+La régression est épinglée par
+`tests/integration/test_dungeon_door_is_reachable_at_centre.gd` — treize
+assertions, dont `current_interact_target() == DungeonDoor` **par identité** —
+et par `P9d`, qui exige **zéro repositionnement latéral** : sans lui, un retour
+du défaut serait absorbé par le filet du pas de côté et `P9b` resterait vert.
 
-**Non corrigé ici** : c'est un défaut de jeu, donc S2. S1 s'arrête à le prouver.
+Aucun test d'appel direct ne pouvait voir ce défaut : `test_flow_wiring_path`
+franchit la même porte en vert, parce qu'il appelle `SceneDoor.interact()` sans
+passer par la sélection du joueur. C'est exactement ce que le parcours physique
+a été construit pour attraper.
 
 | Portée restante | État |
 |---|---|
