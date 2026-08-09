@@ -17,4 +17,4 @@ filtre: flow_wiring
 erreurs de script dans le journal : 0
 
 === RÉSULTAT: 1 réussi(s), 0 échoué(s) ===
-FLOW_WIRING_RC=0
+RC=0

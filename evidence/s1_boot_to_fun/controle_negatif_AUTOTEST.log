@@ -15,4 +15,4 @@
 
 === CONTRÔLE NÉGATIF — sabotages : 2 déclaré(s), 1 exécuté(s), 1 ignoré(s), 0 validé(s) ===
 Un sabotage ignoré n'est pas un sabotage réussi : zéro ignoré est exigé.
-AUTOTEST_RC=1 (attendu : le contrôle doit REFUSER)
+RC=1 (1 attendu)

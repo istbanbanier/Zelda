@@ -1,0 +1,36 @@
+    OK    sonde de contrat
+    OK    sonde de contrat : attendu 1, obtenu 1
+    OK    sonde de contrat : attendu 0.0000 ± 0.0001, obtenu 0.0000
+    OK    sonde de contrat : valeur nulle
+    OK    P1 — Boot mène au menu
+    OK    P1b — la vallée s'ouvre par le bouton
+    OK    P2 — le héros se pose avant de partir
+    OK    P3 — la descente de crête se MARCHE en entier (11/11 jalons)
+    OK    …soit 153 m réellement parcourus depuis le spawn
+    OK    …et le plus bas relevé sur 1815 ticks reste au-dessus du monde (min y = 2.00)
+    OK    P4 — un COFFRE existe près de la route
+    OK    …et le héros s'en approche à pied (25 m)
+    OK    …et `interact_pressed` OUVRE réellement le coffre « RiverChest » (StaticBody3D) — à l'appui : mode=0, sol=true [d=0.79 m (max 2,20) · cos=0.98 (min 0,25) · groupe=true · vue=libre · choisi=RiverChest]
+    OK    …et l'inventaire du joueur en porte la trace (1 → 2 armes)
+    OK    P5 — un ennemi est présent dans le monde parcouru
+    OK    …et le héros va au contact à pied (1.5 m)
+    OK    …et `attack_pressed` fait ENCAISSER l'ennemi (4 touche(s), 4 essai(s) engagé(s) par le contrôleur, ennemi à 0.7 m, arme=inconnue)
+    OK    …et l'instigateur du dégât est le JOUEUR, pas un appel de test
+    OK    P6 — une cible de Résonance existe dans le monde
+    OK    …et le héros s'en approche à pied
+    OK    …et `pulse_pressed` déclenche RÉELLEMENT le Bracelet
+    OK    …avec un effet observable : 1 cible(s) révélée(s), pas seulement « fired »
+    OK    P7 — la route du donjon se MARCHE en entier (5/5 jalons)
+    OK    …et le héros y arrive VIVANT (73 PV)
+    OK    P8 — la porte de la citadelle est là
+    OK    …et le héros arrive à SON SEUIL à pied (1.8 m du battant)
+    OK    P8b — `interact_pressed` DEVANT la porte ouvre le vestibule
+    OK    P9 — le vestibule porte un joueur pilotable
+    OK    …et une porte de donjon
+    OK    …que le héros rejoint à pied dans le vestibule
+    OK    P9b — la SALLE 1 est atteinte À PIED depuis le menu principal (1 repositionnement(s) ; décalage +1.5 m → mode=0, sol=true [d=2.07 m (max 2,20) · cos=0.53 (min 0,25) · groupe=true · vue=libre · choisi=DungeonDoor])
+    ÉCHEC  P9c — l'invite répond DEVANT la porte, au centre du battant — à l'appui : mode=0, sol=true [d=0.75 m (max 2,20) · cos=1.00 (min 0,25) · groupe=true · vue=SealedSeam · choisi=aucun]
+    OK    P11 — sur 5621 ticks physiques de marche, le héros n'est JAMAIS passé sous le monde (min y = 0.00, seuil -5.0)
+    OK    …et aucune discontinuité de position : plus grand saut 0.52 m en un tick (seuil 3.0), vers (0, 34.3, -193)
+    OK    P10 — la racine est rendue telle qu'elle était (SceneFlow au repos, aucune scène tardive)
+=== RÉSULTAT: 0 réussi(s), 1 échoué(s) ===

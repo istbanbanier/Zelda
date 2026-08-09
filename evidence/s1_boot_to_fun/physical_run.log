@@ -18,4 +18,4 @@ erreurs de script dans le journal : 0
 
 === RÉSULTAT: 0 réussi(s), 1 échoué(s) ===
   ÉCHEC: test_physical_run.gd::test_a_player_walks_from_the_menu_to_the_first_dungeon_room — P9c — l'invite répond DEVANT la porte, au centre du battant — à l'appui : mode=0, sol=true [d=0.75 m (max 2,20) · cos=1.00 (min 0,25) · groupe=true · vue=SealedSeam · choisi=aucun]
-PHYSICAL_RUN_RC=1
+RC=1

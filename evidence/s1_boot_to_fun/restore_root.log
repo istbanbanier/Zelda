@@ -3,9 +3,12 @@ Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - ht
 === TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
 filtre: restore_root
   ok   test_restore_root.gd::test_an_ordinary_stray_is_removed_and_the_verdict_is_clean (2 assertions)
-  ok   test_restore_root.gd::test_a_same_name_replacement_does_not_survive_the_sweep (3 assertions)
+  ok   test_restore_root.gd::test_a_same_name_replacement_is_swept_and_the_missing_original_is_named (4 assertions)
+  ok   test_restore_root.gd::test_a_vanished_original_alone_is_enough_to_refuse (2 assertions)
+  ok   test_restore_root.gd::test_a_photographed_current_scene_is_given_back (3 assertions)
+  ok   test_restore_root.gd::test_a_destroyed_current_scene_refuses (2 assertions)
   ok   test_restore_root.gd::test_a_late_arrival_is_swept_and_refused (3 assertions)
 erreurs de script dans le journal : 0
 
-=== RÉSULTAT: 3 réussi(s), 0 échoué(s) ===
-RESTORE_ROOT_RC=0
+=== RÉSULTAT: 6 réussi(s), 0 échoué(s) ===
+RC=0
