@@ -135,51 +135,119 @@ func _save_system() -> Node:
 ## D'où les deux corrections : attendre la fin réelle de la transition, puis
 ## retirer le DELTA par rapport à la photo d'entrée plutôt qu'une liste de noms.
 ## Un nom qu'on n'a pas prévu reste invisible ; un delta, jamais.
+##
+## L'audit du 2026-08-09 a exigé un troisième durcissement, et il portait :
+## comparer des NOMS laisse passer le remplacement à nom identique. Un test qui
+## libère `ValleyWorld` et en instancie un autre du même nom voyait sa photo
+## d'entrée l'absoudre. On compare donc des IDENTITÉS (`get_instance_id()`), et
+## `current_scene` est mémorisée puis rendue au lieu d'être mise à zéro à
+## l'aveugle. Enfin, `restore_root()` REND UN VERDICT : un `SceneFlow` encore
+## occupé après son budget, ou une scène qui se pose malgré le nettoyage, ne
+## doivent plus être avalés en silence.
 
-var _root_snapshot: Array[String] = []
+## `instance_id` -> nom, pour que le message de refus soit lisible.
+var _root_snapshot: Dictionary = {}
+var _scene_snapshot: int = 0
+var _restore_reason: String = ""
+
+## Grâce accordée APRÈS le premier balayage propre, en temps de jeu. Une
+## transition différée qui se pose dans cet intervalle est encore attrapée ici ;
+## au-delà, c'est le garde-fou du runner qui la verra, et le test suivant qui
+## en souffrira.
+const _LATE_ARRIVAL_GRACE_S: float = 0.75
 
 
 ## Photo des enfants de la racine AVANT que le test ne charge quoi que ce soit.
 func remember_root() -> void:
-	_root_snapshot = _root_names()
+	_root_snapshot.clear()
+	_restore_reason = ""
+	var loop: SceneTree = Engine.get_main_loop() as SceneTree
+	if loop == null:
+		return
+	for child: Node in loop.root.get_children():
+		_root_snapshot[child.get_instance_id()] = child.name
+	_scene_snapshot = loop.current_scene.get_instance_id() \
+		if loop.current_scene != null else 0
 
 
-## Rend la racine telle qu'elle était. À appeler même quand le test échoue.
+## Pourquoi le dernier `restore_root()` a refusé. Vide s'il a réussi.
+func restore_root_reason() -> String:
+	return _restore_reason
+
+
+## Rend la racine telle qu'elle était, et DIT si elle l'est vraiment.
 ##
 ## `budget_s` est un temps de JEU, jamais un nombre de frames : un test ne doit
 ## jamais exiger que la machine soit RAPIDE, seulement qu'assez de temps de jeu
 ## se soit écoulé (ISS-038).
-func restore_root(budget_s: float = 20.0) -> void:
+func restore_root(budget_s: float = 20.0) -> bool:
+	_restore_reason = ""
 	var loop: SceneTree = Engine.get_main_loop() as SceneTree
 	if loop == null:
-		return
+		_restore_reason = "aucune SceneTree"
+		return false
+
+	# 1. Laisser la transition en vol se poser. Nettoyer maintenant reviendrait à
+	#    balayer devant un camion qui décharge encore.
 	var flow: Node = loop.root.get_node_or_null("/root/SceneFlow")
-	# 1. Laisser la transition en vol se poser. La retirer maintenant reviendrait
-	#    à nettoyer devant un camion qui décharge encore.
 	var elapsed: float = 0.0
 	while flow != null and bool(flow.call("is_busy")) and elapsed <= budget_s:
 		await loop.process_frame
 		elapsed += loop.root.get_process_delta_time()
-	# 2. Retirer le delta, plusieurs fois : `change_scene_to_file()` est différée
-	#    et peut poser sa scène juste après un premier balayage.
-	for pass_index: int in range(3):
-		for child: Node in loop.root.get_children():
-			if _root_snapshot.has(child.name):
-				continue
-			if child == loop.current_scene:
-				loop.current_scene = null
-			loop.root.remove_child(child)
-			child.queue_free()
-		await loop.process_frame
-		await loop.physics_frame
+	if flow != null and bool(flow.call("is_busy")):
+		# Échec EXPLICITE. Avant, on balayait quand même et la scène en vol se
+		# posait juste après : le test passait, le suivant héritait du décor.
+		_restore_reason = "SceneFlow toujours occupé après %.1f s de temps de jeu" \
+			% budget_s
+		await _sweep(loop)
+		return false
+
+	# 2. Balayer jusqu'à stabilité, par IDENTITÉ.
+	var swept: Array[String] = await _sweep(loop)
+	var late: Array[String] = []
+	var grace: float = 0.0
+	while grace <= _LATE_ARRIVAL_GRACE_S:
+		var again: Array[String] = await _sweep(loop)
+		for name: String in again:
+			if not late.has(name):
+				late.append(name)
+		grace += loop.root.get_process_delta_time()
+
+	# 3. Rendre `current_scene` telle qu'elle était, si elle vit encore.
+	var remembered: Object = instance_from_id(_scene_snapshot) \
+		if _scene_snapshot != 0 else null
+	var remembered_node: Node = remembered as Node
+	if remembered_node != null and is_instance_valid(remembered_node):
+		loop.current_scene = remembered_node
+	elif loop.current_scene != null \
+			and not _root_snapshot.has(loop.current_scene.get_instance_id()):
+		loop.current_scene = null
+
 	_root_snapshot.clear()
+	_scene_snapshot = 0
+	if not late.is_empty():
+		# Le nettoyage a bien retiré l'intruse, mais une scène qui se pose APRÈS
+		# le premier balayage propre signale un enchaînement non maîtrisé : la
+		# prochaine arrivera peut-être après le garde-fou du runner.
+		_restore_reason = "scène(s) déposée(s) APRÈS le nettoyage : %s" \
+			% ", ".join(late)
+		return false
+	swept.clear()
+	return true
 
 
-func _root_names() -> Array[String]:
-	var names: Array[String] = []
-	var loop: SceneTree = Engine.get_main_loop() as SceneTree
-	if loop == null:
-		return names
+## Un balayage : retire tout enfant de la racine absent de la photo d'entrée.
+## Rend les noms retirés.
+func _sweep(loop: SceneTree) -> Array[String]:
+	var removed: Array[String] = []
 	for child: Node in loop.root.get_children():
-		names.append(child.name)
-	return names
+		if _root_snapshot.has(child.get_instance_id()):
+			continue
+		removed.append(child.name)
+		if child == loop.current_scene:
+			loop.current_scene = null
+		loop.root.remove_child(child)
+		child.queue_free()
+	await loop.process_frame
+	await loop.physics_frame
+	return removed

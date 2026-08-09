@@ -60,7 +60,10 @@ func _teardown() -> void:
 	# Retirer par DELTA, pas par liste de noms, et seulement une fois la
 	# transition en vol posée : « Réessayer » recharge la scène, et la recharge
 	# se posait APRÈS ce nettoyage. Voir `GateTestCase.restore_root()`.
-	await restore_root()
+	var clean: bool = await restore_root()
+	check(clean, "B10a — la racine est rendue telle qu'elle était (%s)"
+		% ("SceneFlow au repos, aucune scène tardive" if clean
+			else restore_root_reason()))
 	var game_state: Node = _tree().root.get_node_or_null("/root/GameState")
 	if game_state != null:
 		game_state.call("set_flow", 0)

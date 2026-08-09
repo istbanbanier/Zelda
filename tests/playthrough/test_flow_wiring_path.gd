@@ -1,28 +1,36 @@
-## GOLDEN PATH — le parcours long du gate BOOT-TO-FUN (phase S1).
+## PARCOURS DE CÂBLAGE — ce que le flux RELIE, jamais ce qu'un joueur ATTEINT.
 ##
-## `Boot → menu → vallée → coffre → combat → Résonance → entrée du donjon`,
-## par les VRAIES transitions du jeu. Chaque porte est franchie en appelant son
-## `interact()`, c'est-à-dire le geste exact du joueur ; aucune scène n'est
-## chargée à la main et aucun état n'est écrit pour sauter une condition.
+## Ce fichier s'appelait `test_golden_path.gd`. L'audit indépendant du
+## 2026-08-09 a exigé son renommage, et il avait raison : appeler « golden path »
+## une suite d'appels directs à `interact()` revenait à annoncer une couverture
+## qui n'existait pas.
 ##
-## Pourquoi ce test n'est pas redondant avec les playthrough existants :
-## `test_dungeon_run.gd` et `test_boss_run.gd` chargent les salles DIRECTEMENT
-## (`const HALL = "res://scenes/dungeon/rooms/CentralHall.tscn"`). Ils prouvent
-## qu'une salle est solvable ; ils ne prouvent pas qu'un joueur parti du menu
-## puisse y arriver. Le prompt d'activation le dit : « un test de composant
-## isolé ne prouve jamais l'atteignabilité ».
+## CE QU'IL PROUVE — le câblage, et rien d'autre :
+##   - `Boot` → menu → `SceneFlow` → vallée ;
+##   - `Chest.interact()` → inventaire du joueur ;
+##   - `HealthComponent.take_damage()` → mort de l'ennemi ;
+##   - `SceneDoor.interact()` → `SceneFlow` → vestibule, puis salle 1.
 ##
-## Ce que ce test s'interdit, et qui rendrait sa preuve fausse : téléporter le
-## joueur au-delà d'un obstacle, appeler une fonction de récompense, instancier
-## le boss hors du flux, ou court-circuiter une condition que le joueur doit
-## satisfaire. Il a le droit d'accélérer une attente — jamais de sauter une
-## étape.
+## CE QU'IL NE PROUVE PAS, et qu'aucun de ses verdicts ne doit laisser croire :
+##   - qu'un joueur puisse ATTEINDRE ces objets. Ici, rien ne marche : la cible
+##     est saisie dans le groupe `interactable` et sa méthode est appelée là où
+##     elle est, fût-elle à 344 m. `SceneDoor.interact()` ne vérifie aucune
+##     distance — la portée vit dans `PlayerController._select_interactable()`,
+##     qui n'est jamais sollicité ici ;
+##   - que le COMBAT fonctionne. Écrire dans `HealthComponent` prouve la
+##     comptabilité des points de vie, pas une hitbox, pas une portée, pas une
+##     animation ;
+##   - que la RÉSONANCE agisse. `try_pulse()` appelé à la main rend `fired` même
+##     si aucune touche ne peut l'atteindre.
+##
+## Le parcours qui joue réellement ces gestes est `test_physical_run.gd`. Les
+## deux sont nécessaires : celui-ci tombe vite et désigne le fil coupé, l'autre
+## est lent et dit si un joueur y arrive.
 ##
 ## Toutes les attentes sont bornées en TEMPS DE JEU (ISS-038).
 extends GateTestCase
 
 const BOOT: String = "res://scenes/boot/Boot.tscn"
-const BELOW_WORLD: float = -5.0
 
 
 func _tree() -> SceneTree:
@@ -57,7 +65,9 @@ func _teardown() -> void:
 	# demande la salle 1, et la scène chargée se posait APRÈS ce nettoyage sous
 	# un nom anonyme (`@Node@…`) qu'aucune liste ne pouvait prévoir.
 	# Voir `GateTestCase.restore_root()`.
-	await restore_root()
+	var clean: bool = await restore_root()
+	check(clean, "W10 — la racine est rendue telle qu'elle était (SceneFlow au repos, "
+		+ "aucune scène tardive)")
 	var game_state: Node = _tree().root.get_node_or_null("/root/GameState")
 	if game_state != null:
 		game_state.call("set_flow", 0)
@@ -66,22 +76,22 @@ func _teardown() -> void:
 	restore_saves()
 
 
-func test_golden_path_from_boot_to_the_dungeon_entrance() -> void:
+func test_the_flow_wires_boot_to_the_first_dungeon_room() -> void:
 	remember_saves()
 	remember_root()
 
-	# --- G1-G4. Jusqu'à la vallée, par le vrai flux -------------------------
+	# --- W1-W4. Le flux mène jusqu'à la vallée ------------------------------
 	var boot: Node = (load(BOOT) as PackedScene).instantiate()
 	_tree().root.add_child(boot)
 	var reached_menu: bool = await _wait_until(
 		func() -> bool: return _find("MainMenu") != null, 12.0)
-	check(reached_menu, "G1 — Boot atteint le menu principal")
+	check(reached_menu, "W1 — Boot mène au menu principal")
 	var menu: Node = _find("MainMenu")
 	if menu == null:
 		await _teardown()
 		return
 	var new_game: Button = menu.get_node_or_null("%NewGameButton") as Button
-	check(new_game != null, "G2 — le bouton « Nouvelle partie » existe")
+	check(new_game != null, "W2 — le menu expose un bouton « Nouvelle partie »")
 	if new_game == null:
 		await _teardown()
 		return
@@ -96,7 +106,7 @@ func test_golden_path_from_boot_to_the_dungeon_entrance() -> void:
 		new_game.emit_signal("pressed")   # confirmation d'écrasement (§17.3)
 	var in_valley: bool = await _wait_until(
 		func() -> bool: return _find("ValleyWorld") != null, 25.0)
-	check(in_valley, "G3 — la vallée s'ouvre (%s)"
+	check(in_valley, "W3 — le signal du bouton mène à la vallée (%s)"
 		% ("après confirmation" if asked_confirmation else "sans sauvegarde"))
 	var valley: Node = _find("ValleyWorld")
 	if valley == null:
@@ -104,15 +114,15 @@ func test_golden_path_from_boot_to_the_dungeon_entrance() -> void:
 		return
 	await _settle(12)
 	var player: PlayerController = valley.call("player") as PlayerController
-	check(player != null, "G4 — le héros est là")
+	check(player != null, "W4 — la vallée instancie un joueur")
 	if player == null:
 		await _teardown()
 		return
 
-	# --- G5. Un coffre atteignable donne un objet RÉEL ----------------------
-	# On ouvre par `interact()`, le geste du joueur, jamais par la table de
-	# butin : appeler la récompense directement prouverait la table, pas le
-	# coffre.
+	# --- W5. Coffre → inventaire -------------------------------------------
+	# APPEL DIRECT ASSUMÉ : `Chest.interact()` est invoquée là où le coffre se
+	# trouve. Cela prouve le fil coffre→inventaire ; cela ne prouve ni portée,
+	# ni orientation, ni ligne de vue, ni qu'on puisse s'y rendre.
 	var chest: Node = null
 	var nearest: float = INF
 	for node: Node in _tree().get_nodes_in_group("interactable"):
@@ -129,40 +139,43 @@ func test_golden_path_from_boot_to_the_dungeon_entrance() -> void:
 		if d < nearest:
 			nearest = d
 			chest = node
-	check(chest != null, "G5 — un coffre existe dans la vallée chargée")
+	check(chest != null, "W5 — la vallée chargée contient un coffre")
 	if chest != null:
 		var inventory: Node = player.call("inventory") if player.has_method("inventory") else null
 		var before: int = int(inventory.call("weapon_count")) \
 			if inventory != null and inventory.has_method("weapon_count") else -1
 		var opened: bool = bool(chest.call("interact", player))
-		check(opened, "…et il s'ouvre par l'interaction du joueur (%.0f m du spawn)"
-			% nearest)
+		check(opened,
+			"…et `Chest.interact()` appelée DIRECTEMENT rend vrai (coffre à %.0f m, "
+			% nearest + "distance non éprouvée)")
 		await _settle(20)
 		# ÉCHOUER FERMÉ : si l'inventaire n'expose pas de quoi compter, on ne
 		# saute pas la vérification en silence — on la déclare non prouvée.
-		# Le premier passage exécutait 19 assertions sur 20 : une étape
-		# disparaissait sans que rien ne rougisse.
 		if before >= 0 and inventory != null:
 			var after: int = int(inventory.call("weapon_count"))
 			check(after > before,
-				"…et il donne un objet RÉEL à l'inventaire (%d → %d)" % [before, after])
+				"…et le fil coffre→inventaire porte l'objet (%d → %d armes)"
+					% [before, after])
 		else:
 			check(false,
-				"…mais l'effet du coffre est NON VÉRIFIÉ : l'inventaire n'expose "
-				+ "pas `weapon_count` (obtenu : %s)" % str(inventory))
+				"…mais le fil coffre→inventaire est NON VÉRIFIÉ : l'inventaire "
+				+ "n'expose pas `weapon_count` (obtenu : %s)" % str(inventory))
 
-	# --- G6. Un ennemi encaisse des dégâts par le chemin réel ---------------
+	# --- W6. Santé → mort ---------------------------------------------------
+	# APPEL DIRECT ASSUMÉ : on écrit dans `HealthComponent`. Cela prouve la
+	# comptabilité des PV et la sortie `died` ; cela ne prouve AUCUN combat —
+	# ni hitbox, ni portée, ni fenêtre active, ni animation.
 	var enemy: Node = null
 	for node: Node in _tree().get_nodes_in_group("enemies"):
 		if node is Node3D:
 			enemy = node
 			break
-	check(enemy != null, "G6 — un ennemi peuple la vallée")
+	check(enemy != null, "W6 — la vallée chargée peuple un ennemi")
 	if enemy != null:
 		var enemy_health: Node = null
 		var found: Array[Node] = enemy.find_children("*", "HealthComponent", true, false)
 		enemy_health = found[0] if not found.is_empty() else null
-		check(enemy_health != null, "…et il a des points de vie")
+		check(enemy_health != null, "…et il porte un HealthComponent")
 		if enemy_health != null:
 			var before_hp: float = enemy_health.call("current")
 			var hit: DamageEvent = DamageEvent.new()
@@ -170,63 +183,63 @@ func test_golden_path_from_boot_to_the_dungeon_entrance() -> void:
 			enemy_health.call("take_damage", hit)
 			await _settle(4)
 			check(enemy_health.call("current") < before_hp,
-				"…et il ENCAISSE (%0.1f → %0.1f PV)"
-					% [before_hp, enemy_health.call("current")])
+				"…et `take_damage()` appelée DIRECTEMENT décompte (%0.1f → %0.1f PV, "
+					% [before_hp, enemy_health.call("current")]
+				+ "aucune hitbox éprouvée)")
 
-	# --- G7. Une capacité de Résonance agit sur une cible prévue ------------
+	# --- W7. Le Bracelet est monté et répond à un appel direct --------------
+	# APPEL DIRECT ASSUMÉ : `try_pulse()` rend `fired` même si aucune touche ne
+	# peut l'atteindre. C'est un test de montage, pas d'action.
 	var resonance: Node = null
 	var res_found: Array[Node] = player.find_children(
 		"*", "ResonanceController", true, false)
 	resonance = res_found[0] if not res_found.is_empty() else null
-	check(resonance != null, "G7 — le héros porte son Bracelet de Résonance")
+	check(resonance != null, "W7 — le joueur instancié porte un ResonanceController")
 	# `try_pulse(body)` rend `&"fired"` ou `&"cooldown"`
-	# (`resonance_controller.gd:114-117`), PAS un motif d'échec.
-	#
-	# Deux erreurs d'API successives sur cette seule ligne : j'ai d'abord appelé
-	# `pulse()`, qui n'existe pas — l'assertion était alors SAUTÉE en silence et
-	# le parcours passait à 19 assertions sur 20 ; puis j'ai supposé qu'une
-	# chaîne vide signalait le succès, et « fired » a été lu comme un refus.
-	# Lire la fonction coûte trente secondes ; la supposer en a coûté deux
-	# exécutions complètes.
+	# (`resonance_controller.gd:117`), PAS un motif d'échec.
 	if resonance != null and resonance.has_method("try_pulse"):
 		var verdict: StringName = resonance.call("try_pulse", player)
 		check(verdict == &"fired",
-			"…et Pulse s'exécute depuis le monde chargé (verdict : « %s »)"
-				% String(verdict))
+			"…et `try_pulse()` appelée DIRECTEMENT rend « %s » (effet observable "
+				% String(verdict) + "non éprouvé ici)")
 	else:
 		check(false,
-			"…mais Pulse est NON VÉRIFIÉ : pas de méthode `try_pulse` sur le "
+			"…mais le montage est NON VÉRIFIÉ : pas de méthode `try_pulse` sur le "
 			+ "contrôleur (obtenu : %s)" % str(resonance))
 
-	# --- G8. L'entrée de la citadelle est FRANCHISSABLE ---------------------
+	# --- W8. SceneDoor → SceneFlow → vestibule ------------------------------
+	# APPEL DIRECT ASSUMÉ, et c'est ici que le mot « franchissable » serait un
+	# mensonge : `SceneDoor.interact()` ne consulte aucune distance. Le joueur
+	# est à des centaines de mètres et la transition part quand même.
 	var door: Node = _find("CitadelDoor")
-	check(door != null, "G8 — la porte de la citadelle existe dans la vallée")
+	check(door != null, "W8 — la vallée construit une CitadelDoor")
 	if door != null:
 		var as_3d: Node3D = door as Node3D
-		check(as_3d != null and player.global_position.distance_to(
-			as_3d.global_position) < 500.0,
-			"…et elle est dans le monde jouable (%.0f m du spawn)"
-				% player.global_position.distance_to(as_3d.global_position))
+		var span: float = player.global_position.distance_to(as_3d.global_position) \
+			if as_3d != null else -1.0
 		var entered: bool = bool(door.call("interact", player))
-		check(entered, "…et son interaction demande RÉELLEMENT la transition")
+		check(entered,
+			"…et `SceneDoor.interact()` appelée DIRECTEMENT demande la transition "
+			+ "(joueur à %.0f m ; AUCUNE distance n'est vérifiée par cette méthode)"
+				% span)
 		var in_vestibule: bool = await _wait_until(
 			func() -> bool: return _find("CitadelVestibule") != null, 25.0)
-		check(in_vestibule, "G8b — le vestibule de la citadelle s'ouvre")
+		check(in_vestibule, "W8b — SceneFlow ouvre le vestibule de la citadelle")
 
-	# --- G9. Et la porte du donjon derrière lui -----------------------------
+	# --- W9. Et la porte du donjon derrière lui -----------------------------
 	var vestibule: Node = _find("CitadelVestibule")
 	if vestibule != null:
 		await _settle(12)
 		var hero: PlayerController = vestibule.call("player") as PlayerController \
 			if vestibule.has_method("player") else null
-		check(hero != null, "G9 — le vestibule porte un joueur")
+		check(hero != null, "W9 — le vestibule instancie un joueur")
 		var dungeon_door: Node = _find("DungeonDoor")
-		check(dungeon_door != null, "…et la porte du donjon y est présente")
+		check(dungeon_door != null, "…et construit une DungeonDoor")
 		if dungeon_door != null and hero != null:
 			var went: bool = bool(dungeon_door.call("interact", hero))
-			check(went, "…et son interaction demande la transition vers la salle 1")
+			check(went, "…dont l'appel direct demande la transition vers la salle 1")
 			var in_room1: bool = await _wait_until(
 				func() -> bool: return _find("Room1Initiation") != null, 25.0)
-			check(in_room1, "G9b — la SALLE 1 du donjon s'ouvre depuis le vestibule")
+			check(in_room1, "W9b — SceneFlow ouvre la SALLE 1 depuis le vestibule")
 
 	await _teardown()
