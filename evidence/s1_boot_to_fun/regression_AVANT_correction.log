@@ -1,0 +1,10 @@
+# Le MÊME test de régression, rejoué sur le code AVANT correction.
+# Worktree détaché sur bec93f1 (base de la passe S2.0).
+# Attendu : ROUGE. Un test qui n'a jamais rougi ne prouve rien.
+
+  ÉCHEC test_dungeon_door_is_reachable_at_centre.gd::test_the_cyan_seam_is_decor_and_never_an_interaction_obstacle — …mais ce n'est PLUS un corps de collision (classe : StaticBody3D)
+  ÉCHEC test_dungeon_door_is_reachable_at_centre.gd::test_the_cyan_seam_is_decor_and_never_an_interaction_obstacle — …et elle ne porte aucune forme de collision (trouvées : 1)
+  ok   test_dungeon_door_is_reachable_at_centre.gd::test_the_door_keeps_its_body_and_its_look (4 assertions)
+  ÉCHEC test_dungeon_door_is_reachable_at_centre.gd::test_the_player_selects_the_door_from_dead_centre — ligne de vue LIBRE au centre du battant (obstacle : SealedSeam)
+  ÉCHEC test_dungeon_door_is_reachable_at_centre.gd::test_the_player_selects_the_door_from_dead_centre — le contrôleur DÉSIGNE `DungeonDoor` par identité (obtenu : aucune cible)
+=== RÉSULTAT: 1 réussi(s), 4 échoué(s) ===

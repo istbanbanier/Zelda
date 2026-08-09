@@ -2,6 +2,24 @@
     OK    sonde de contrat : attendu 1, obtenu 1
     OK    sonde de contrat : attendu 0.0000 ± 0.0001, obtenu 0.0000
     OK    sonde de contrat : valeur nulle
+    OK    la veine cyan EXISTE toujours dans le vestibule
+    OK    …avec une géométrie visible (MeshInstance3D)
+    OK    …et son émission cyan (émissive=true)
+    OK    …mais ce n'est PLUS un corps de collision (classe : MeshInstance3D)
+    OK    …et elle ne porte aucune forme de collision (trouvées : 0)
+    OK    la porte du donjon est là
+    OK    …et conserve son corps sur la couche 1 (couche = 1)
+    OK    …et sa forme de collision (trouvées : 1)
+    OK    …et son apparence (maillages : 1)
+    OK    préalable : un joueur et une porte dans le vestibule
+    OK    distance ≤ 2.20 m (mesurée : 0.75)
+    OK    cône valide : cos 1.00 ≥ 0.25
+    OK    ligne de vue LIBRE au centre du battant (obstacle : libre)
+    OK    le contrôleur DÉSIGNE `DungeonDoor` par identité (obtenu : DungeonDoor)
+    OK    sonde de contrat
+    OK    sonde de contrat : attendu 1, obtenu 1
+    OK    sonde de contrat : attendu 0.0000 ± 0.0001, obtenu 0.0000
+    OK    sonde de contrat : valeur nulle
     OK    P1 — Boot mène au menu
     OK    P1b — la vallée s'ouvre par le bouton
     OK    P2 — le héros se pose avant de partir
@@ -28,9 +46,10 @@
     OK    P9 — le vestibule porte un joueur pilotable
     OK    …et une porte de donjon
     OK    …que le héros rejoint à pied dans le vestibule
-    OK    P9b — la SALLE 1 est atteinte À PIED depuis le menu principal (1 repositionnement(s) ; décalage +1.5 m → mode=0, sol=true [d=2.07 m (max 2,20) · cos=0.53 (min 0,25) · groupe=true · vue=libre · choisi=DungeonDoor])
-    ÉCHEC  P9c — l'invite répond DEVANT la porte, au centre du battant — à l'appui : mode=0, sol=true [d=0.75 m (max 2,20) · cos=1.00 (min 0,25) · groupe=true · vue=SealedSeam · choisi=aucun]
-    OK    P11 — sur 5621 ticks physiques de marche, le héros n'est JAMAIS passé sous le monde (min y = 0.00, seuil -5.0)
+    OK    P9b — la SALLE 1 est atteinte À PIED depuis le menu principal
+    OK    P9c — l'invite répond DEVANT la porte, au centre du battant — à l'appui : mode=0, sol=true [d=0.75 m (max 2,20) · cos=1.00 (min 0,25) · groupe=true · vue=libre · choisi=DungeonDoor]
+    OK    P9d — aucun repositionnement latéral nécessaire (0 essai(s))
+    OK    P11 — sur 4864 ticks physiques de marche, le héros n'est JAMAIS passé sous le monde (min y = 0.00, seuil -5.0)
     OK    …et aucune discontinuité de position : plus grand saut 0.52 m en un tick (seuil 3.0), vers (0, 34.3, -193)
     OK    P10 — la racine est rendue telle qu'elle était (SceneFlow au repos, aucune scène tardive)
-=== RÉSULTAT: 0 réussi(s), 1 échoué(s) ===
+=== RÉSULTAT: 4 réussi(s), 0 échoué(s) ===

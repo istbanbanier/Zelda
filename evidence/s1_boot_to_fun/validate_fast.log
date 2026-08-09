@@ -7,7 +7,7 @@
   [OK]   import sans parse error (code retour 0)
 
 === 1b. Parse de TOUS les scripts GDScript ===
-  [OK]   329 script(s) GDScript parsés sans erreur
+  [OK]   330 script(s) GDScript parsés sans erreur
 
 === 2. Tests unitaires ===
     ok   test_asset_pipeline.gd::test_the_registry_resolves_delivered_assets_and_declines_missing_ones (53 assertions)
@@ -164,6 +164,9 @@
     ok   test_dungeon_antisoftlock.gd::test_the_graph_never_loops_forever_and_keeps_no_dead_reference (12 assertions)
     ok   test_dungeon_antisoftlock.gd::test_every_room_carries_a_visual_hint_and_a_way_back (12 assertions)
     ok   test_dungeon_antisoftlock.gd::test_the_debug_tool_lists_ids_ports_neighbours_and_states (12 assertions)
+    ok   test_dungeon_door_is_reachable_at_centre.gd::test_the_cyan_seam_is_decor_and_never_an_interaction_obstacle (5 assertions)
+    ok   test_dungeon_door_is_reachable_at_centre.gd::test_the_door_keeps_its_body_and_its_look (4 assertions)
+    ok   test_dungeon_door_is_reachable_at_centre.gd::test_the_player_selects_the_door_from_dead_centre (5 assertions)
     ok   test_dungeon_hub.gd::test_the_hall_starts_with_three_dead_circuits (7 assertions)
     ok   test_dungeon_hub.gd::test_one_circuit_lights_only_its_own_ring (6 assertions)
     ok   test_dungeon_hub.gd::test_each_circuit_comes_from_its_documented_room (6 assertions)
@@ -687,7 +690,7 @@
     ok   test_dungeon_run.gd::test_the_four_rooms_are_solvable_from_a_virgin_save (29 assertions)
     ok   test_dungeon_run.gd::test_the_dungeon_resumes_from_an_intermediate_save (32 assertions)
     ok   test_flow_wiring_path.gd::test_the_flow_wires_boot_to_the_first_dungeon_room (20 assertions)
-    ÉCHEC test_physical_run.gd::test_a_player_walks_from_the_menu_to_the_first_dungeon_room — P9c — l'invite répond DEVANT la porte, au centre du battant — à l'appui : mode=0, sol=true [d=0.75 m (max 2,20) · cos=1.00 (min 0,25) · groupe=true · vue=SealedSeam · choisi=aucun]
+    ok   test_physical_run.gd::test_a_player_walks_from_the_menu_to_the_first_dungeon_room (32 assertions)
     ok   test_traversal_course.gd::test_the_full_traversal_course_is_completed_without_a_softlock (13 assertions)
     ok   test_action_alignment.gd::test_begin_refuses_a_correction_beyond_the_cap (2 assertions)
     ok   test_action_alignment.gd::test_begin_accepts_a_correction_within_the_cap (2 assertions)
@@ -823,9 +826,8 @@
     ok   test_weapon_data.gd::test_inventory_refuses_overflow_and_duplicates (13 assertions)
     ok   test_weapon_data.gd::test_removal_equips_the_next_weapon_then_bare_hands (5 assertions)
     ok   test_weapon_data.gd::test_arrows_are_counted_and_never_negative (7 assertions)
-  === RÉSULTAT: 812 réussi(s), 1 échoué(s) ===
-    ÉCHEC: test_physical_run.gd::test_a_player_walks_from_the_menu_to_the_first_dungeon_room — P9c — l'invite répond DEVANT la porte, au centre du battant — à l'appui : mode=0, sol=true [d=0.75 m (max 2,20) · cos=1.00 (min 0,25) · groupe=true · vue=SealedSeam · choisi=aucun]
-  [ÉCHEC] suite unitaire rouge (code 1, voir evidence/validate_fast/02_unit.log)
+  === RÉSULTAT: 816 réussi(s), 0 échoué(s) ===
+  [OK]   suite unitaire verte
   [OK]   aucune erreur signalée dans le journal des tests
 
 === 3. Scène d'intégration (lancement réel : Boot -> MainMenu) ===
@@ -845,8 +847,8 @@
   [OK]   6 personnage(s) : un seul corps solidaire, aucune pièce détachée
 
 === 4. Plancher de couverture ===
-  [OK]   812 test(s) exécuté(s), plancher 586 respecté
+  [OK]   816 test(s) exécuté(s), plancher 586 respecté
 
-=== VALIDATE_FAST : ROUGE ===
+=== VALIDATE_FAST : VERT ===
 logs: evidence/validate_fast
-VALIDATE_FAST_RC=1
+VALIDATE_FAST_RC=0
