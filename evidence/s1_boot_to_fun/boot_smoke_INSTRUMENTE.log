@@ -1,28 +1,12 @@
-Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
-
-=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
-filtre: boot_smoke
     OK    sonde de contrat
     OK    sonde de contrat : attendu 1, obtenu 1
     OK    sonde de contrat : attendu 0.0000 ± 0.0001, obtenu 0.0000
     OK    sonde de contrat : valeur nulle
-[boot] Godot            : 4.7.1-stable (custom_build)
-[boot] renderer         : forward_plus
-[boot] physique 3D      : Jolt Physics
-[boot] tick physique    : 60 Hz
-[boot] pilote de rendu  : headless
-[boot] autoloads        : GameState, EventBus, SaveSystem, AudioManager, SceneFlow
-[boot] flux             : BOOT
-[boot] fondation vérifiée — Phase A.
-[boot] transition vers le menu principal.
     OK    B1 — Boot.tscn s'instancie et survit à _ready()
     OK    B2 — Boot atteint le MENU PRINCIPAL sans intervention
     OK    B3 — le menu porte un bouton « Nouvelle partie »
     OK    …et il est actionnable, pas grisé
-    OK    B4a — une sauvegarde existe : le menu DEMANDE confirmation (« Écraser la sauvegarde ? »)
-[art] vallée peinte : 4827 surfaces
-[monde] lieux habités : 8 chemins, 14 objets de vie
-    OK    B4 — presser « Nouvelle partie » ouvre RÉELLEMENT la vallée
+    OK    B4 — presser « Nouvelle partie » ouvre RÉELLEMENT la vallée (aucune sauvegarde : départ direct)
     OK    B5 — la vallée porte un joueur
     OK    …qui se pose sur un sol valide
     OK    …et il est VIVANT (100.0 PV)
@@ -35,21 +19,6 @@ filtre: boot_smoke
     OK    B9 — le héros peut mourir par le chemin de dégâts réel
     OK    B9a — la mort ouvre le panneau de reprise
     OK    B9b — le panneau porte un bouton « Réessayer »
-WARNING: [save] santé sauvegardée invalide (0.0) — pleine vie
-     at: push_warning (core/variant/variant_utility.cpp:1033)
-     GDScript backtrace (most recent call first):
-         [0] _restore_player_vitals (res://scripts/world/valley_world.gd:991)
-         [1] _apply_save (res://scripts/world/valley_world.gd:974)
-         [2] _ready (res://scripts/world/valley_world.gd:125)
-[art] vallée peinte : 4828 surfaces
-[monde] lieux habités : 8 chemins, 14 objets de vie
     OK    B9c — « Réessayer » rend un héros VIVANT dans le monde
     OK    B10 — l'arrêt ne laisse ni vallée ni menu résiduels sous la racine
-  ok   test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley (20 assertions)
-erreurs de script dans le journal : 0
-
 === RÉSULTAT: 1 réussi(s), 0 échoué(s) ===
-WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).
-   at: cleanup (core/object/object.cpp:2536)
-ERROR: 1 resources still in use at exit (run with --verbose for details).
-   at: clear (core/io/resource.cpp:822)

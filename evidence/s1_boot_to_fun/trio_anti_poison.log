@@ -1,7 +1,7 @@
 Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
 
 === TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
-filtre: boot_smoke
+filtre: boot_smoke,dungeon_run,golden_path
 [boot] Godot            : 4.7.1-stable (custom_build)
 [boot] renderer         : forward_plus
 [boot] physique 3D      : Jolt Physics
@@ -22,11 +22,24 @@ WARNING: [save] santé sauvegardée invalide (0.0) — pleine vie
 [art] vallée peinte : 4828 surfaces
 [monde] lieux habités : 8 chemins, 14 objets de vie
   ok   test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley (19 assertions)
+  ok   test_dungeon_run.gd::test_the_four_rooms_are_solvable_from_a_virgin_save (29 assertions)
+  ok   test_dungeon_run.gd::test_the_dungeon_resumes_from_an_intermediate_save (32 assertions)
+[boot] Godot            : 4.7.1-stable (custom_build)
+[boot] renderer         : forward_plus
+[boot] physique 3D      : Jolt Physics
+[boot] tick physique    : 60 Hz
+[boot] pilote de rendu  : headless
+[boot] autoloads        : GameState, EventBus, SaveSystem, AudioManager, SceneFlow
+[boot] flux             : BOOT
+[boot] fondation vérifiée — Phase A.
+[boot] transition vers le menu principal.
+[art] vallée peinte : 4827 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_golden_path.gd::test_golden_path_from_boot_to_the_dungeon_entrance (20 assertions)
 erreurs de script dans le journal : 0
 
-=== RÉSULTAT: 1 réussi(s), 0 échoué(s) ===
+=== RÉSULTAT: 4 réussi(s), 0 échoué(s) ===
 WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).
    at: cleanup (core/object/object.cpp:2536)
 ERROR: 1 resources still in use at exit (run with --verbose for details).
    at: clear (core/io/resource.cpp:822)
-BOOT_SMOKE_RC=0

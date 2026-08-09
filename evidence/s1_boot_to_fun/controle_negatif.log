@@ -1,7 +1,7 @@
 === Sabotage 1 : le bouton « Nouvelle partie » ne mène plus à la vallée ===
-      ÉCHEC test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley — B4 — presser « Nouvelle partie » ouvre RÉELLEMENT la vallée
+      ÉCHEC test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley — B4 — presser « Nouvelle partie » ouvre RÉELLEMENT la vallée (aucune sauvegarde : départ direct)
     === RÉSULTAT: 0 réussi(s), 1 échoué(s) ===
-      ÉCHEC: test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley — B4 — presser « Nouvelle partie » ouvre RÉELLEMENT la vallée
+      ÉCHEC: test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley — B4 — presser « Nouvelle partie » ouvre RÉELLEMENT la vallée (aucune sauvegarde : départ direct)
   [OK]   le gate a VU le sabotage.
 === Sabotage 2 : le héros ne se pose plus (gravité annulée) ===
       ÉCHEC test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley — …qui se pose sur un sol valide
