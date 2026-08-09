@@ -297,6 +297,36 @@ const _LOAD_ANTIHANG_S: float = 600.0
 const _APPEAR_BUDGET_S: float = 15.0
 
 
+## Attend que `SceneFlow` soit RÉELLEMENT au repos avant d'agir sur un menu.
+##
+## Voici le mécanisme qui a fait rougir `B4` deux fois dans la suite complète,
+## alors que le parcours passait seul : `SceneFlow.can_go_to()` rend FAUX tant
+## que `_busy` est vrai, et `MainMenu._enter_valley()` se contente alors
+## d'écrire « Vallée indisponible » dans un libellé — sans `push_warning`, sans
+## `push_error`, sans transition. L'appui est avalé en silence.
+##
+## Or `_busy` ne retombe qu'à la toute fin de `go_to()`, après le fondu de
+## sortie. Attendre que `MainMenu` EXISTE ne suffit donc pas : il existe pendant
+## que le flux est encore occupé. Sous charge, l'appui du pilote tombait dans
+## cette fenêtre.
+##
+## Un joueur ne vit pas ce problème — le voile noir couvre l'écran pendant ce
+## laps. Le pilote doit donc l'imiter : attendre que le menu soit vraiment
+## rendu, puis presser.
+func await_flow_idle(budget_s: float = 30.0) -> bool:
+	var loop: SceneTree = Engine.get_main_loop() as SceneTree
+	if loop == null:
+		return false
+	var flow: Node = loop.root.get_node_or_null("/root/SceneFlow")
+	if flow == null:
+		return true
+	var waited: float = 0.0
+	while bool(flow.call("is_busy")) and waited <= budget_s:
+		await loop.process_frame
+		waited += loop.root.get_process_delta_time()
+	return not bool(flow.call("is_busy"))
+
+
 ## Attend qu'un nœud nommé `wanted` apparaisse sous la racine à la faveur d'une
 ## transition `SceneFlow`. Rend vrai s'il est là.
 func await_scene(wanted: String) -> bool:

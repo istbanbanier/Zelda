@@ -118,6 +118,11 @@ func test_boot_smoke_from_boot_to_a_playable_valley() -> void:
 	# (`main_menu.gd:_on_new_game`). Un test qui ne pressait qu'une fois voyait
 	# donc la vallée s'ouvrir ou non SELON qu'un passage précédent avait laissé
 	# une sauvegarde — un piège de déterminisme dans le test lui-même.
+	# Le menu n'est utilisable qu'une fois le fondu terminé : presser plus tôt
+	# fait refuser la transition EN SILENCE (`SceneFlow.can_go_to()` rend faux
+	# tant que `_busy`). Voir `GateTestCase.await_flow_idle()`.
+	var menu_ready: bool = await await_flow_idle()
+	check(menu_ready, "B3b — le menu devient RÉELLEMENT utilisable (flux au repos)")
 	new_game.emit_signal("pressed")
 	await _settle(2)
 	# `is_instance_valid` n'est pas de la prudence décorative. Sans sauvegarde,
@@ -139,10 +144,25 @@ func test_boot_smoke_from_boot_to_a_playable_valley() -> void:
 	# Une borne fixe exigeait que la machine soit rapide, et B4 a fini par
 	# rougir dans la suite complète après être passé seul.
 	var reached_valley: bool = await await_scene("ValleyWorld")
+	# DIRE POURQUOI. `_on_new_game()` a trois sorties muettes : pas de
+	# SaveSystem, confirmation demandée, et — la plus discrète — échec de
+	# `save_slot()`, qui n'écrit qu'une phrase dans le libellé d'état et ne
+	# déclenche aucune transition. Sans ces trois champs, l'échec ne dit pas
+	# laquelle des trois s'est produite.
+	# `menu` est LIBÉRÉ dès que la transition aboutit : interroger le libellé
+	# d'état sans garde relève la même erreur silencieuse que `new_game.text`,
+	# et avorte la méthode avant le nettoyage. Je viens de la commettre.
+	var status: Label = menu.get_node_or_null("%StatusLabel") as Label \
+		if is_instance_valid(menu) else null
+	var flow: Node = _tree().root.get_node_or_null("/root/SceneFlow")
 	check(reached_valley,
-		"B4 — presser « Nouvelle partie » ouvre RÉELLEMENT la vallée (%s)"
+		"B4 — presser « Nouvelle partie » ouvre RÉELLEMENT la vallée (%s"
 			% ("après confirmation d'écrasement (§17.3)" if asked_confirmation
-				else "aucune sauvegarde : départ direct"))
+				else "aucune sauvegarde : départ direct")
+		+ " · bouton « %s » · état « %s » · flux occupé=%s)"
+			% [new_game.text if is_instance_valid(new_game) else "libéré",
+				status.text if status != null else "(pas de StatusLabel)",
+				str(flow.call("is_busy")) if flow != null else "?"])
 	var valley: Node = _find("ValleyWorld")
 	if valley == null:
 		await _teardown()

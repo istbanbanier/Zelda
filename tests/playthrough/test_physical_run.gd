@@ -362,6 +362,7 @@ func test_a_player_walks_from_the_menu_to_the_first_dungeon_room() -> void:
 		check(false, "P1b — pas de bouton « Nouvelle partie » : parcours NON VÉRIFIÉ")
 		await _teardown()
 		return
+	await await_flow_idle()   # presser pendant le fondu est avalé en silence
 	new_game.emit_signal("pressed")
 	await _settle(2)
 	if is_instance_valid(new_game) and new_game.text != "Nouvelle partie":

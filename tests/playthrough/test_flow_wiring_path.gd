@@ -105,6 +105,7 @@ func test_the_flow_wires_boot_to_the_first_dungeon_room() -> void:
 	if new_game == null:
 		await _teardown()
 		return
+	await await_flow_idle()   # presser pendant le fondu est avalé en silence
 	new_game.emit_signal("pressed")
 	await _settle(2)
 	# Sans sauvegarde, ce premier appui part droit vers la vallée et libère le
