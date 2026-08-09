@@ -29,6 +29,22 @@ prouve qu'elle est solvable, jamais qu'un joueur puisse y arriver.
   Neuf `PASS` et un `FAIL` font un `FAIL`.
 - `BLOQUÉ` désigne un obstacle d'environnement nommé, pas une difficulté.
 
+## Le verdict, en trois lignes qui ne se remplacent pas
+
+Les confondre serait la sur-promesse suivante. Elles répondent à trois questions
+différentes, et se lisent ensemble.
+
+| Question | Verdict | Pourquoi |
+|---|---|---|
+| **Gate automatique actuel** — ce que la machine exécute aujourd'hui rend-il vert ? | **`FAIL`** | `P9c` échoue : l'invite est muette au centre de la porte du donjon |
+| **Couverture BOOT-TO-FUN complète** — l'ensemble du parcours est-il éprouvé ? | **`NON VÉRIFIÉ`** | salles 2-4, salle centrale, antichambre, boss et victoire ne sont jamais atteints depuis le flux normal |
+| **Critères humains** — écran, mains, oreilles | **`BLOQUÉ`** | ni écran, ni clavier, ni manette, ni son, ni GPU dans ce conteneur |
+
+**Verdict global : `FAIL`**, par la règle ci-dessus — un `FAIL` l'impose, quels
+que soient les autres. Il ne deviendra `NON VÉRIFIÉ` que le jour où `P9c` sera
+corrigé, et `PASS` seulement après la couverture complète **et** le protocole
+humain.
+
 ## Commandes
 
 ```bash
@@ -56,8 +72,8 @@ Fichier : `tests/playthrough/test_boot_smoke.gd`
 | B6 | Caméra et HUD montés | assertion B6 |
 | B7 | Le héros ne passe pas sous le monde | assertion B7 |
 | B7b | Le héros **répond au monde** : soulevé, il retombe et se repose | assertion B7b |
-| B8 | Une interaction ET un ennemi à portée de marche du spawn | assertion B8 |
-| B9 | Mort par le chemin de dégâts réel, panneau, « Réessayer », héros vivant | B9, B9a, B9b, B9c |
+| B8 | Une interaction ET un ennemi **présents dans un rayon euclidien** du spawn | assertion B8 — la ROUTE n'est pas éprouvée ici ; `P3`/`P4` s'en chargent |
+| B9 | **Câblage** `HealthComponent` → mort → panneau → « Réessayer » → héros vivant | B9, B9a, B9b, B9c — **aucun combat** ; le combat réel est `P5` |
 | B10 | Arrêt sans nœud résiduel | assertion B10 |
 
 **B7b existe à cause du contrôle négatif** : sans lui, tout le parcours restait
@@ -96,8 +112,9 @@ appeler la méthode finale d'une cible, retirer un ennemi de la route.
 | # | Critère | Preuve |
 |---|---|---|
 | P1–P2 | Menu → vallée → héros posé, piloté par `InputIntent` | P1, P1b, P2 |
-| P3 | La descente de crête se **marche** en entier | 11/11 jalons, > 100 m, jamais sous le monde |
-| P4 | Un interactable est **rejoint à pied** et ouvert par `interact_pressed` | P4 |
+| P3 | La descente de crête se **marche** en entier | 11/11 jalons, > 100 m |
+| P11 | Sur **chaque tick physique** du parcours : jamais sous le monde, aucune discontinuité de position | min y et plus grand saut mesurés, pas affirmés |
+| P4 | Un **coffre** est rejoint à pied, ouvert par `interact_pressed`, et l'inventaire en porte la trace | P4 |
 | P5 | Un ennemi est **poursuivi** et frappé par `attack_pressed` | touches réelles, instigateur = joueur |
 | P6 | `pulse_pressed` révèle **au moins une cible** (`revealed_count > 0`) | P6 |
 | P7 | La route du donjon se **marche** en entier, héros vivant | 5/5 jalons |
@@ -156,24 +173,17 @@ Protocole prêt à exécuter : `docs/BOOT_TO_FUN_HUMAIN.md`.
 Le gate doit **échouer fermé**. Une étape non exécutée n'est jamais verte :
 
 - une borne d'attente épuisée fait `FAIL`, elle ne fait pas pendre le test ;
+- `restore_root()` et le runner vérifient la racine **dans les deux sens** :
+  rien en trop, **rien en moins**. Un test qui libère un nœud photographié ou le
+  remplace par un homonyme laissait une racine « propre » et un verdict vrai ;
+  `current_scene` est traitée à part, parce qu'un `current_scene` perdu ne se
+  voit dans aucune liste d'enfants ;
 - `tools/gate_negative_control.sh` refuse de conclure si un sabotage ne casse
   rien, ou si le filtre ne sélectionne aucun test ;
 - une erreur de script pendant un test est attrapée par le garde-fou ISS-027 du
   journal, même si aucune assertion ne rougit.
 
-### Le verdict global reste NON VÉRIFIÉ
-
-Deux parcours verts ne font pas un jeu jouable. Restent hors de portée de la
-machine, et donc du verdict :
-
-- salles 2 à 4, salle centrale, antichambre, boss, victoire — jamais atteints
-  depuis le flux normal ;
-- caméra, compréhension de l'objectif, lisibilité, son, manette, FPS ;
-- `P9c` échoue : l'invite est muette au centre de la porte du donjon.
-
-`BOOT-TO-FUN` ne pourra être déclaré `PASS` qu'après le protocole humain.
-
-### Cinq faux témoins déjà rencontrés, gardés ici pour qu'ils ne reviennent pas
+### Six faux témoins déjà rencontrés, gardés ici pour qu'ils ne reviennent pas
 
 1. **Un test absent du worktree** comptait comme « le gate a vu le sabotage ».
 2. **`set -o pipefail` + un tube** : le code retour lu était celui de Godot, qui
@@ -196,4 +206,12 @@ machine, et donc du verdict :
    accuse le jeu à tort — même famille que le cast raté qui déclarait « aucune
    cible de Résonance dans le monde ».
 
-Chacun de ces cinq aurait produit un verdict inversé.
+6. **Une affirmation « jamais » échantillonnée onze fois.** Le parcours physique
+   relevait la hauteur une fois par jalon — onze photos pour plus de cent
+   mètres — et écrivait « jamais sous le monde ». Un héros qui traverse le sol
+   et qu'un filet remonte entre deux jalons passait inaperçu. La mesure est
+   maintenant prise à chaque tick physique, et le plus grand saut de position
+   d'un tick à l'autre est surveillé : un secours ou un respawn déplace de
+   plusieurs mètres là où le sprint fait 0,15 m.
+
+Chacun de ces six aurait produit un verdict inversé.

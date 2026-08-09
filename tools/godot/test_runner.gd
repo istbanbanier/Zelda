@@ -278,7 +278,7 @@ func _run_script(path: String) -> void:
 	for method_name: String in methods:
 		_current = "%s::%s" % [path.get_file(), method_name]
 		# Photo de la racine AVANT le test : ce qui reste APRÈS est une fuite.
-		var roots_before: Array[String] = _root_children()
+		var roots_before: Dictionary = _root_snapshot()
 
 		# Enregistreur neuf par méthode, détenu par le runner. Le résultat est lu
 		# ici et nulle part ailleurs : le cas de test ne participe pas au verdict.
@@ -300,7 +300,9 @@ func _run_script(path: String) -> void:
 		# parcours de traversal — trente fichiers plus loin — démarrait à
 		# l'intérieur de ses colonnes. Le vrai défaut était invisible et le
 		# faux coupable était ailleurs. On le nomme donc ICI, tout de suite.
-		var leaked: Array[String] = await _leaked_roots(roots_before)
+		var delta: Dictionary = await _root_delta(roots_before)
+		var leaked: Array[String] = delta["added"]
+		var missing: Array[String] = delta["missing"]
 		var failures: Array[String] = recorder.failures()
 		if not failures.is_empty():
 			for message: String in failures:
@@ -308,6 +310,9 @@ func _run_script(path: String) -> void:
 			if not leaked.is_empty():
 				_fail("%s — et laisse %s dans l'arbre" % [_current,
 					", ".join(leaked)])
+			if not missing.is_empty():
+				_fail("%s — et fait DISPARAÎTRE %s de la racine" % [_current,
+					", ".join(missing)])
 			continue
 		if recorder.checks() == 0:
 			_fail("%s — aucune assertion exécutée (couverture illusoire)" % _current)
@@ -316,32 +321,69 @@ func _run_script(path: String) -> void:
 			_fail("%s — laisse %s dans l'arbre : les tests suivants hériteraient de sa géométrie"
 				% [_current, ", ".join(leaked)])
 			continue
+		# La seconde direction. Un test qui EFFACE une racine — autoload libéré,
+		# nœud remplacé par un homonyme — laisse un arbre « propre » au sens du
+		# balayage, et le suivant travaille sans ce qu'il croit avoir. Message
+		# distinct : « laisse dans l'arbre » et « fait disparaître » n'envoient
+		# pas chercher au même endroit.
+		if not missing.is_empty():
+			_fail("%s — fait DISPARAÎTRE %s de la racine : les tests suivants "
+				% [_current, ", ".join(missing)]
+				+ "travailleraient sans")
+			continue
 		_passed += 1
 		print("  ok   %s (%d assertions)" % [_current, recorder.checks()])
 
 
-## Noms des enfants de la racine, autoloads compris.
-func _root_children() -> Array[String]:
-	var names: Array[String] = []
+## Photo des enfants de la racine — autoloads compris — par IDENTITÉ.
+##
+## Comparer des noms laissait passer le remplacement à nom identique : un test
+## qui libère `ValleyWorld` et en instancie un autre du même nom rendait une
+## racine « intacte ». Et une photo de noms ne voit pas non plus une DISPARITION
+## lorsqu'un homonyme prend la place. On mémorise donc `instance_id -> nom`
+## (audit du 2026-08-09, deuxième passe).
+func _root_snapshot() -> Dictionary:
+	var snapshot: Dictionary = {}
 	var tree_root: Window = root
 	if tree_root == null:
-		return names
+		return snapshot
 	for child: Node in tree_root.get_children():
-		names.append(child.name)
-	return names
+		snapshot[child.get_instance_id()] = child.name
+	return snapshot
 
 
-## Ce que le test a laissé derrière lui. Deux frames de grâce : `queue_free()`
-## ne libère qu'en fin de frame, et un test propre a le droit de finir sur un
-## `queue_free()` sans attendre lui-même.
-func _leaked_roots(before: Array[String]) -> Array[String]:
+## Ce que le test a changé sous la racine, DANS LES DEUX SENS.
+##
+## Rend `{"added": [...], "missing": [...]}`. Deux frames de grâce :
+## `queue_free()` ne libère qu'en fin de frame, et un test propre a le droit de
+## finir sur un `queue_free()` sans attendre lui-même.
+##
+## Les deux listes sont distinctes à dessein : « laisse X dans l'arbre » et
+## « a fait disparaître X » n'envoient pas chercher la panne au même endroit.
+func _root_delta(before: Dictionary) -> Dictionary:
 	await process_frame
 	await physics_frame
-	var leaked: Array[String] = []
-	for name: String in _root_children():
-		if not before.has(name) and not leaked.has(name):
-			leaked.append(name)
-	return leaked
+	var after: Dictionary = _root_snapshot()
+	var added: Array[String] = []
+	for id: int in after.keys():
+		if not before.has(id):
+			var name: String = String(after[id])
+			if not added.has(name):
+				added.append(name)
+	var missing: Array[String] = []
+	for id: int in before.keys():
+		if after.has(id):
+			continue
+		var was: String = String(before[id])
+		# Un homonyme a-t-il pris la place ? Le dire change le diagnostic :
+		# « remplacé » n'est pas « supprimé ».
+		var replaced: bool = false
+		for other: int in after.keys():
+			if String(after[other]) == was:
+				replaced = true
+		missing.append("%s (%s)" % [was, "remplacé par un homonyme" if replaced
+			else "supprimé"])
+	return {"added": added, "missing": missing}
 
 
 ## ISS-027 : compte les `SCRIPT ERROR` du journal de CE processus

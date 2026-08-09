@@ -35,12 +35,17 @@ func test_an_ordinary_stray_is_removed_and_the_verdict_is_clean() -> void:
 		"…et le nœud est bien détaché de la racine")
 
 
-## LE CAS QUE LA COMPARAISON PAR NOM NE VOIT PAS.
+## LE CAS QUE LA COMPARAISON PAR NOM NE VOIT PAS — DANS LES DEUX SENS.
 ##
 ## Un nœud nommé `Doublon` existe au moment de la photo. Le test le libère et en
 ## instancie un AUTRE, du même nom. Une photo de noms l'absout — « Doublon était
 ## là avant » — et l'intrus survit au nettoyage. Une photo d'identités le voit.
-func test_a_same_name_replacement_does_not_survive_the_sweep() -> void:
+##
+## Mais retirer l'imposteur ne suffit pas à rendre la racine intacte :
+## l'ORIGINAL a disparu. Le nettoyage doit donc à la fois retirer l'intrus ET
+## REFUSER de conclure, en nommant le disparu. C'est la seconde direction exigée
+## par la deuxième passe d'audit : rien en trop, ET rien en moins.
+func test_a_same_name_replacement_is_swept_and_the_missing_original_is_named() -> void:
 	var original: Node = _spawn("Doublon")
 	var original_id: int = original.get_instance_id()
 	remember_root()
@@ -53,13 +58,84 @@ func test_a_same_name_replacement_does_not_survive_the_sweep() -> void:
 		"l'imposteur porte le MÊME nom et une identité différente")
 
 	var verdict: bool = await restore_root(4.0)
-	check(verdict, "le nettoyage conclut sans réserve (motif : « %s »)"
-		% restore_root_reason())
 	var survivors: Array[Node] = _tree().root.find_children(
 		"Doublon", "", false, false)
 	check(survivors.is_empty(),
-		"…et AUCUN « Doublon » ne survit : la photo compare des identités, "
-		+ "pas des noms (survivants : %d)" % survivors.size())
+		"l'imposteur est retiré : la photo compare des identités, pas des noms "
+		+ "(survivants : %d)" % survivors.size())
+	check(not verdict,
+		"…et le verdict REFUSE quand même, parce que l'original a disparu")
+	check(restore_root_reason().contains("Doublon"),
+		"…en nommant le disparu (obtenu : « %s »)" % restore_root_reason())
+
+
+## UN NŒUD PHOTOGRAPHIÉ QUI DISPARAÎT, SANS AUCUN INTRUS.
+##
+## Le cas le plus discret : la racine est « propre » au sens du balayage — aucun
+## enfant en trop — et pourtant le processus n'est plus celui d'avant. Un
+## nettoyage qui ne regarde que les intrus rend vrai.
+func test_a_vanished_original_alone_is_enough_to_refuse() -> void:
+	var doomed: Node = _spawn("NoeudQuiDisparait")
+	remember_root()
+	_tree().root.remove_child(doomed)
+	doomed.queue_free()
+	await _tree().process_frame
+
+	var verdict: bool = await restore_root(4.0)
+	check(not verdict,
+		"un nœud photographié disparu suffit à refuser, sans aucun intrus")
+	check(restore_root_reason().contains("NoeudQuiDisparait"),
+		"…et le motif le nomme (obtenu : « %s »)" % restore_root_reason())
+
+
+## `current_scene` NON NULLE EST RENDUE.
+##
+## Elle ne se voit dans aucune liste d'enfants : la remettre à zéro à l'aveugle
+## laissait le processus dans un état que rien ne signalait.
+func test_a_photographed_current_scene_is_given_back() -> void:
+	var loop: SceneTree = _tree()
+	var previous: Node = loop.current_scene
+	var stage: Node = _spawn("SceneSousTest")
+	loop.current_scene = stage
+	remember_root()
+	var stray: Node = _spawn("IntrusDeScene")
+
+	var verdict: bool = await restore_root(4.0)
+	check(verdict, "l'intrus part et le verdict conclut (motif : « %s »)"
+		% restore_root_reason())
+	check(loop.current_scene == stage,
+		"…et `current_scene` est RENDUE, pas mise à zéro (obtenu : %s)"
+			% (loop.current_scene.name if loop.current_scene != null else "null"))
+	check(not is_instance_valid(stray) or stray.get_parent() == null,
+		"…tandis que l'intrus est bien détaché")
+
+	# Ce cas a créé sa propre scène : il la reprend, sinon c'est LUI qui laisse
+	# la racine différente de ce que le runner avait photographié.
+	loop.current_scene = previous
+	loop.root.remove_child(stage)
+	stage.queue_free()
+	await loop.process_frame
+
+
+## `current_scene` PHOTOGRAPHIÉE PUIS DÉTRUITE.
+func test_a_destroyed_current_scene_refuses() -> void:
+	var loop: SceneTree = _tree()
+	var previous: Node = loop.current_scene
+	var stage: Node = _spawn("SceneCondamnee")
+	loop.current_scene = stage
+	remember_root()
+
+	loop.current_scene = null
+	loop.root.remove_child(stage)
+	stage.queue_free()
+	await loop.process_frame
+
+	var verdict: bool = await restore_root(4.0)
+	check(not verdict, "une `current_scene` photographiée puis détruite REFUSE")
+	check(restore_root_reason().contains("current_scene"),
+		"…et le motif dit que c'est `current_scene` (obtenu : « %s »)"
+			% restore_root_reason())
+	loop.current_scene = previous
 
 
 ## LA TRANSITION TARDIVE.

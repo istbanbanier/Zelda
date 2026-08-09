@@ -50,6 +50,9 @@ const ROUTE_CITADEL: Array[Vector2] = [
 const INTERACT_STOP: float = 1.8
 const ATTACK_STOP: float = 1.5
 const PULSE_STOP: float = 6.0
+## Au-delà, un déplacement en un seul tick physique n'est plus de la locomotion :
+## c'est un secours, un respawn ou une téléportation. Marge large et assumée.
+const DISCONTINUITY_M: float = 3.0
 
 
 func _tree() -> SceneTree:
@@ -104,6 +107,37 @@ func _camera_relative(player: PlayerController, world_dir: Vector3) -> Vector2:
 ## envoie chercher la panne au mauvais endroit.
 var _walk_report: String = ""
 
+## ---------------------------------------------------------------------------
+## « JAMAIS SOUS LE MONDE » DOIT ÊTRE MESURÉ, PAS AFFIRMÉ
+## ---------------------------------------------------------------------------
+##
+## La première version relevait `player.global_position.y` UNE FOIS par jalon —
+## donc onze échantillons pour plus de cent mètres. Un héros qui traverse le sol
+## et qu'un filet de sécurité remonte entre deux jalons passait inaperçu, et le
+## test affirmait « jamais » sur la foi de onze photos. Une affirmation « jamais »
+## qui n'est pas échantillonnée à chaque frame n'a pas le droit d'être écrite
+## (audit du 2026-08-09, deuxième passe).
+##
+## On relève donc à CHAQUE tick physique, sur toute la durée du parcours, et on
+## garde aussi le plus grand saut de position d'une frame à l'autre : un secours
+## ou un respawn déplace le héros de plusieurs mètres en un tick, ce qu'aucune
+## locomotion légitime ne fait (sprint 9 m/s → 0,15 m ; Arc Step 18 m/s → 0,30 m).
+var _lowest_y: float = INF
+var _frames_sampled: int = 0
+var _max_jump: float = 0.0
+var _jump_at: Vector3 = Vector3.ZERO
+
+
+## Un échantillon de sécurité, appelé à chaque tick de marche.
+func _sample_safety(player: PlayerController, previous: Vector3) -> void:
+	var here: Vector3 = player.global_position
+	_lowest_y = minf(_lowest_y, here.y)
+	_frames_sampled += 1
+	var jump: float = previous.distance_to(here)
+	if jump > _max_jump:
+		_max_jump = jump
+		_jump_at = here
+
 
 ## Marche jusqu'à `goal` (XZ) et rend vrai si le héros y arrive dans le budget.
 ## Aucune écriture de position : on ne fait que pousser une direction.
@@ -151,7 +185,9 @@ func _walk_to(player: PlayerController, intent: InputIntent, goal: Vector2,
 		intent.move = _camera_relative(player,
 			Vector3(wish.x, 0.0, wish.y))
 		intent.sprint_held = sprint
+		var was: Vector3 = player.global_position
 		await _tree().physics_frame
+		_sample_safety(player, was)
 		elapsed += step
 	var stop: Vector3 = player.global_position
 	_walk_report = "arrêté en (%.0f, %.1f, %.0f) à %.1f m du but, %s, sol=%s, %.1f s sans progrès" \
@@ -179,7 +215,9 @@ func _close_on(player: PlayerController, intent: InputIntent, target: Node3D,
 		if to_target.length() <= arrive:
 			return true
 		intent.move = _camera_relative(player, to_target)
+		var was: Vector3 = player.global_position
 		await _tree().physics_frame
+		_sample_safety(player, was)
 		elapsed += _tree().root.get_physics_process_delta_time()
 	return false
 
@@ -350,12 +388,11 @@ func test_a_player_walks_from_the_menu_to_the_first_dungeon_room() -> void:
 	var start: Vector3 = player.global_position
 
 	# --- P3. Il MARCHE, et le monde le porte -------------------------------
-	var lowest: float = player.global_position.y
+	_lowest_y = player.global_position.y
 	var ridge_reached: int = 0
 	for goal: Vector2 in ROUTE_RIDGE:
 		if not await _walk_to(player, intent, goal, 2.5, 30.0):
 			break
-		lowest = minf(lowest, player.global_position.y)
 		ridge_reached += 1
 	intent.move = Vector2.ZERO
 	intent.sprint_held = false
@@ -368,17 +405,26 @@ func test_a_player_walks_from_the_menu_to_the_first_dungeon_room() -> void:
 		Vector2(player.global_position.x, player.global_position.z))
 	check(travelled > 100.0,
 		"…soit %.0f m réellement parcourus depuis le spawn" % travelled)
-	check(player.global_position.y > BELOW_WORLD,
-		"…sans jamais passer sous le monde (min y = %.2f)" % lowest)
+	# Mesure, pas affirmation : ce minimum vient de CHAQUE tick physique de la
+	# descente, pas d'une photo par jalon.
+	check(_lowest_y > BELOW_WORLD,
+		"…et le plus bas relevé sur %d ticks reste au-dessus du monde (min y = %.2f)"
+			% [_frames_sampled, _lowest_y])
 
-	# --- P4. Il rejoint un interactable et l'ouvre AVEC LA TOUCHE ----------
-	# La cible n'est pas choisie d'avance : on prend le plus proche du chemin.
-	# S'il n'y en a aucun à portée de marche, le critère échoue — il ne se tait
-	# pas.
+	# --- P4. Il rejoint un COFFRE et l'ouvre AVEC LA TOUCHE ----------------
+	# Un VRAI coffre, choisi comme tel, et dont on exige l'effet d'inventaire.
+	# La version précédente prenait « l'interactable le plus proche » et parlait
+	# quand même d'ouverture : selon ce que le hasard du terrain plaçait là, elle
+	# aurait pu prouver un ramassage d'ingrédient en le nommant coffre. L'audit
+	# a demandé de trancher ; on tranche du côté fort.
 	var target: Node3D = _nearest_in_group(player, "interactable",
 		func(node: Node) -> bool:
-			return node.has_method("interact") and not (node is SceneDoor))
-	check(target != null, "P4 — un interactable existe près de la route")
+			if not node.has_method("interact") or node is SceneDoor:
+				return false
+			return String(node.get_class()).contains("Chest") \
+				or node.name.to_lower().contains("chest") \
+				or node.name.to_lower().contains("coffre"))
+	check(target != null, "P4 — un COFFRE existe près de la route")
 	# PIÈGE GDSCRIPT : une lambda capture les locales PAR VALEUR. Écrire
 	# `opened = true` depuis le rappel modifiait la copie de la lambda, et le
 	# test lisait toujours `false` — il a accusé le coffre de ne pas s'ouvrir
@@ -396,16 +442,30 @@ func test_a_player_walks_from_the_menu_to_the_first_dungeon_room() -> void:
 		# tourne QUE si le corps bouge (`_orient_visual` exige v² ≥ 0,04). Un
 		# héros arrêté ne fait donc face à rien, et l'interaction serait refusée
 		# pour une raison qui n'a rien à voir avec la portée.
+		var inv_before: Node = player.inventory()
+		var weapons_before: int = int(inv_before.call("weapon_count")) \
+			if inv_before != null and inv_before.has_method("weapon_count") else -1
 		player.interacted.connect(func(who: Node3D) -> void: openings.append(who),
 			CONNECT_ONE_SHOT)
 		await _press_interact_facing(player, intent, target)
 		await _settle(20)
 		check(not openings.is_empty(),
-			"…et `interact_pressed` OUVRE réellement « %s » (%s, déjà ouvert=%s) "
-				% [target.name, target.get_class(),
-					str(target.get("_opened")) if target.get("_opened") != null
-					else "sans état"]
+			"…et `interact_pressed` OUVRE réellement le coffre « %s » (%s) "
+				% [target.name, target.get_class()]
 			+ "— à l'appui : %s" % _press_report)
+		# L'ouverture ne suffit pas : un coffre qui s'anime sans rien donner
+		# n'est pas un coffre. On exige l'effet, mesuré sur l'inventaire du
+		# joueur, et on ÉCHOUE FERMÉ si l'inventaire ne sait pas compter.
+		var inventory: Node = player.inventory()
+		if inventory != null and inventory.has_method("weapon_count"):
+			var after_open: int = int(inventory.call("weapon_count"))
+			check(after_open > weapons_before,
+				"…et l'inventaire du joueur en porte la trace (%d → %d armes)"
+					% [weapons_before, after_open])
+		else:
+			check(false,
+				"…mais l'effet est NON VÉRIFIÉ : l'inventaire n'expose pas "
+				+ "`weapon_count` (obtenu : %s)" % str(inventory))
 
 	# --- P5. Il frappe un ennemi PAR LE CONTRÔLEUR -------------------------
 	var enemy: Node3D = _nearest_in_group(player, "enemies")
@@ -597,5 +657,21 @@ func test_a_player_walks_from_the_menu_to_the_first_dungeon_room() -> void:
 		check(centre_selected,
 			"P9c — l'invite répond DEVANT la porte, au centre du battant — "
 			+ "à l'appui : %s" % centre_report)
+
+	# --- P11. Ce que la marche entière a mesuré ----------------------------
+	# Ces deux critères ne portent pas sur un jalon : ils portent sur CHAQUE tick
+	# physique du parcours, du spawn à la salle 1.
+	check(_lowest_y > BELOW_WORLD,
+		"P11 — sur %d ticks physiques de marche, le héros n'est JAMAIS passé "
+			% _frames_sampled
+		+ "sous le monde (min y = %.2f, seuil %.1f)" % [_lowest_y, BELOW_WORLD])
+	# Un secours, un respawn ou une remontée de filet déplacent le héros de
+	# plusieurs mètres en un tick. Aucune locomotion légitime ne le fait :
+	# sprint 9 m/s → 0,15 m ; Arc Step 18 m/s → 0,30 m.
+	check(_max_jump < DISCONTINUITY_M,
+		"…et aucune discontinuité de position : plus grand saut %.2f m en un "
+			% _max_jump
+		+ "tick (seuil %.1f), vers (%.0f, %.1f, %.0f)"
+			% [DISCONTINUITY_M, _jump_at.x, _jump_at.y, _jump_at.z])
 
 	await _teardown()

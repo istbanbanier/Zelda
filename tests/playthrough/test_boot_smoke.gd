@@ -204,9 +204,14 @@ func test_boot_smoke_from_boot_to_a_playable_valley() -> void:
 		"B7b — soulevé de 3 m, le héros RETOMBE et se repose (y %.2f → %.2f)"
 			% [ground_y + 3.0, player.global_position.y])
 
-	# --- B8. Une interaction et un ennemi sont ATTEIGNABLES depuis le spawn --
-	# « Atteignable » veut dire : présent dans le monde chargé ET à portée de
-	# marche depuis le spawn. La présence seule ne prouverait rien.
+	# --- B8. Une interaction et un ennemi sont PRÉSENTS près du spawn -------
+	#
+	# Le mot « atteignable » a été retiré, et l'audit avait raison de l'exiger :
+	# ce critère mesure une DISTANCE EUCLIDIENNE, à vol d'oiseau. Il ne dit rien
+	# de la route — un ravin, une falaise ou un mur entre les deux le laisserait
+	# vert. L'atteignabilité réelle est prouvée par `test_physical_run.gd`, qui
+	# y va à pied ; ici on constate seulement que le contenu n'est pas à l'autre
+	# bout de la carte.
 	var spawn: Vector3 = player.global_position
 	var nearest_interactable: float = INF
 	for node: Node in _tree().get_nodes_in_group("interactable"):
@@ -215,26 +220,31 @@ func test_boot_smoke_from_boot_to_a_playable_valley() -> void:
 			nearest_interactable = minf(nearest_interactable,
 				spawn.distance_to(as_3d.global_position))
 	check(nearest_interactable < 220.0,
-		"B8 — une interaction est à portée de marche du spawn (%.0f m)"
-			% nearest_interactable)
+		"B8 — une interaction est présente à %.0f m du spawn (rayon euclidien ; "
+			% nearest_interactable + "la route n'est PAS éprouvée ici)")
 	var nearest_enemy: float = INF
 	for node: Node in _tree().get_nodes_in_group("enemies"):
 		var as_3d: Node3D = node as Node3D
 		if as_3d != null:
 			nearest_enemy = minf(nearest_enemy, spawn.distance_to(as_3d.global_position))
 	check(nearest_enemy < 220.0,
-		"…et un ennemi aussi (%.0f m)" % nearest_enemy)
+		"…et un ennemi à %.0f m, même mesure et même réserve" % nearest_enemy)
 
-	# --- B9. Mourir, puis reprendre -----------------------------------------
-	# On tue par le VRAI chemin de dégâts (`take_damage` + `DamageEvent`), pas
-	# en écrivant la vie à zéro : écrire l'état contournerait précisément ce
-	# qu'on veut prouver — que mourir et reprendre FONCTIONNENT.
+	# --- B9. Le CÂBLAGE santé → mort → panneau → reprise --------------------
+	#
+	# On appelle `take_damage()` avec un `DamageEvent` : cela prouve le FIL
+	# `HealthComponent` → mort → `%DeathPanel` → « Réessayer » → héros vivant.
+	# Cela ne prouve AUCUN combat — ni hitbox, ni portée, ni fenêtre active, ni
+	# animation. Le combat réel est prouvé par `P5` de `test_physical_run.gd`,
+	# qui frappe avec `attack_pressed` et vérifie que l'instigateur du dégât est
+	# le joueur. L'audit a demandé que les mots le disent ; ils le disent.
 	var lethal: DamageEvent = DamageEvent.new()
 	lethal.amount = 9999.0
 	health.call("take_damage", lethal)
 	var died: bool = await _wait_until(
 		func() -> bool: return health.call("current") <= 0.0, 4.0)
-	check(died, "B9 — le héros peut mourir par le chemin de dégâts réel")
+	check(died, "B9 — le câblage `HealthComponent.take_damage()` → mort répond "
+		+ "(aucun combat éprouvé ici)")
 	# Le jeu ne ressuscite pas tout seul, et c'est VOULU : mourir ouvre un
 	# panneau (`%DeathPanel`) dont « Réessayer » recharge la scène au
 	# checkpoint (`gameplay_shell.gd:20`). Un test qui attendait une reprise

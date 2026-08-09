@@ -136,8 +136,9 @@ func _save_system() -> Node:
 ## retirer le DELTA par rapport à la photo d'entrée plutôt qu'une liste de noms.
 ## Un nom qu'on n'a pas prévu reste invisible ; un delta, jamais.
 ##
-## L'audit du 2026-08-09 a exigé un troisième durcissement, et il portait :
-## comparer des NOMS laisse passer le remplacement à nom identique. Un test qui
+## L'audit du 2026-08-09 a exigé deux durcissements successifs. Le premier
+## portait sur l'identité : comparer des NOMS laisse passer le remplacement à
+## nom identique. Un test qui
 ## libère `ValleyWorld` et en instancie un autre du même nom voyait sa photo
 ## d'entrée l'absoudre. On compare donc des IDENTITÉS (`get_instance_id()`), et
 ## `current_scene` est mémorisée puis rendue au lieu d'être mise à zéro à
@@ -213,27 +214,59 @@ func restore_root(budget_s: float = 20.0) -> bool:
 				late.append(name)
 		grace += loop.root.get_process_delta_time()
 
-	# 3. Rendre `current_scene` telle qu'elle était, si elle vit encore.
-	var remembered: Object = instance_from_id(_scene_snapshot) \
-		if _scene_snapshot != 0 else null
-	var remembered_node: Node = remembered as Node
-	if remembered_node != null and is_instance_valid(remembered_node):
-		loop.current_scene = remembered_node
+	# 3. LA SECONDE DIRECTION. Balayer les intrus ne dit rien de ce qui a
+	#    DISPARU. Un test qui libère un autoload, ou qui remplace un nœud par un
+	#    autre du même nom, laissait la racine « propre » et le verdict vrai —
+	#    alors que le processus n'est plus celui d'avant. Exigé par la deuxième
+	#    passe d'audit du 2026-08-09.
+	var missing: Array[String] = []
+	for id: int in _root_snapshot.keys():
+		var was: String = String(_root_snapshot[id])
+		if not is_instance_id_valid(id):
+			missing.append("%s (libéré)" % was)
+			continue
+		var node: Node = instance_from_id(id) as Node
+		if node == null:
+			missing.append("%s (n'est plus un nœud)" % was)
+		elif node.get_parent() != loop.root:
+			missing.append("%s (détaché de la racine)" % was)
+
+	# 4. Rendre `current_scene` telle qu'elle était, si elle vit encore.
+	var scene_lost: String = ""
+	if _scene_snapshot != 0:
+		if is_instance_id_valid(_scene_snapshot):
+			var remembered: Node = instance_from_id(_scene_snapshot) as Node
+			if remembered != null and is_instance_valid(remembered):
+				loop.current_scene = remembered
+			else:
+				scene_lost = "current_scene photographiée n'est plus un nœud"
+		else:
+			scene_lost = "current_scene photographiée a été LIBÉRÉE"
 	elif loop.current_scene != null \
 			and not _root_snapshot.has(loop.current_scene.get_instance_id()):
+		# Il n'y en avait pas au départ : ne pas en laisser une.
 		loop.current_scene = null
 
 	_root_snapshot.clear()
 	_scene_snapshot = 0
+	# Motifs CUMULÉS : trois causes distinctes ne doivent pas s'effacer l'une
+	# l'autre. Un verdict faux qui ne nomme qu'un tiers du problème envoie
+	# chercher la panne au mauvais endroit.
+	var reasons: Array[String] = []
 	if not late.is_empty():
 		# Le nettoyage a bien retiré l'intruse, mais une scène qui se pose APRÈS
 		# le premier balayage propre signale un enchaînement non maîtrisé : la
 		# prochaine arrivera peut-être après le garde-fou du runner.
-		_restore_reason = "scène(s) déposée(s) APRÈS le nettoyage : %s" \
-			% ", ".join(late)
-		return false
+		reasons.append("scène(s) déposée(s) APRÈS le nettoyage : %s" % ", ".join(late))
+	if not missing.is_empty():
+		reasons.append("nœud(s) de la photo DISPARU(S) : %s" % ", ".join(missing))
+	if scene_lost != "":
+		reasons.append(scene_lost)
 	swept.clear()
-	return true
+	if reasons.is_empty():
+		return true
+	_restore_reason = " ; ".join(reasons)
+	return false
 
 
 ## Un balayage : retire tout enfant de la racine absent de la photo d'entrée.
