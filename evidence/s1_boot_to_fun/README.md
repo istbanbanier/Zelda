@@ -26,7 +26,7 @@ mesurer n'est cassé.
 | Fichier | Commande | Résultat |
 |---|---|---|
 | `validate_fast.log` | `tools/validate_fast.sh` | **816 / 0 — VERT, code 0** |
-| `dungeon_door_is_reachable.log` | `--filter=dungeon_door_is_reachable` | 3/0, 13 assertions |
+| `dungeon_door_is_reachable.log` | `--filter=dungeon_door_is_reachable` | 3/0, 14 assertions |
 | `regression_AVANT_correction.log` | le MÊME test sur `bec93f1` | **1/4 — ROUGE**, comme il se doit |
 | `physical_run.log` | `--filter=physical_run` | 1/0, **32 assertions** |
 | `flow_wiring.log` | `--filter=flow_wiring` | 1/0, 20 assertions |
