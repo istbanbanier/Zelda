@@ -1,0 +1,63 @@
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: boot_smoke,dungeon_run,flow_wiring,physical_run,boss_run,restore_root
+[boot] Godot            : 4.7.1-stable (custom_build)
+[boot] renderer         : forward_plus
+[boot] physique 3D      : Jolt Physics
+[boot] tick physique    : 60 Hz
+[boot] pilote de rendu  : headless
+[boot] autoloads        : GameState, EventBus, SaveSystem, AudioManager, SceneFlow
+[boot] flux             : BOOT
+[boot] fondation vérifiée — Phase A.
+[boot] transition vers le menu principal.
+[art] vallée peinte : 4827 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+WARNING: [save] santé sauvegardée invalide (0.0) — pleine vie
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] _restore_player_vitals (res://scripts/world/valley_world.gd:991)
+         [1] _apply_save (res://scripts/world/valley_world.gd:974)
+         [2] _ready (res://scripts/world/valley_world.gd:125)
+[art] vallée peinte : 4828 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley (21 assertions)
+[run boss] 1 mise(s) à la terre · 37 coups (15 noyau, 10 cristal) · 1 arme(s) brisée(s) · phases : phase1, grounded_stun, transition12, phase2, transition23, phase3 · vie restante 0/560
+  ok   test_boss_run.gd::test_the_guardian_falls_to_the_loot_the_game_guarantees (17 assertions)
+  ok   test_dungeon_run.gd::test_the_four_rooms_are_solvable_from_a_virgin_save (29 assertions)
+  ok   test_dungeon_run.gd::test_the_dungeon_resumes_from_an_intermediate_save (32 assertions)
+[boot] Godot            : 4.7.1-stable (custom_build)
+[boot] renderer         : forward_plus
+[boot] physique 3D      : Jolt Physics
+[boot] tick physique    : 60 Hz
+[boot] pilote de rendu  : headless
+[boot] autoloads        : GameState, EventBus, SaveSystem, AudioManager, SceneFlow
+[boot] flux             : BOOT
+[boot] fondation vérifiée — Phase A.
+[boot] transition vers le menu principal.
+[art] vallée peinte : 4827 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_flow_wiring_path.gd::test_the_flow_wires_boot_to_the_first_dungeon_room (20 assertions)
+[boot] Godot            : 4.7.1-stable (custom_build)
+[boot] renderer         : forward_plus
+[boot] physique 3D      : Jolt Physics
+[boot] tick physique    : 60 Hz
+[boot] pilote de rendu  : headless
+[boot] autoloads        : GameState, EventBus, SaveSystem, AudioManager, SceneFlow
+[boot] flux             : BOOT
+[boot] fondation vérifiée — Phase A.
+[boot] transition vers le menu principal.
+[art] vallée peinte : 4827 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ÉCHEC test_physical_run.gd::test_a_player_walks_from_the_menu_to_the_first_dungeon_room — P9c — l'invite répond DEVANT la porte, au centre du battant — à l'appui : mode=0, sol=true [d=0.75 m (max 2,20) · cos=1.00 (min 0,25) · groupe=true · vue=SealedSeam · choisi=aucun]
+  ok   test_restore_root.gd::test_an_ordinary_stray_is_removed_and_the_verdict_is_clean (2 assertions)
+  ok   test_restore_root.gd::test_a_same_name_replacement_is_swept_and_the_missing_original_is_named (4 assertions)
+  ok   test_restore_root.gd::test_a_vanished_original_alone_is_enough_to_refuse (2 assertions)
+  ok   test_restore_root.gd::test_a_photographed_current_scene_is_given_back (3 assertions)
+  ok   test_restore_root.gd::test_a_destroyed_current_scene_refuses (2 assertions)
+  ok   test_restore_root.gd::test_a_late_arrival_is_swept_and_refused (3 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 11 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_physical_run.gd::test_a_player_walks_from_the_menu_to_the_first_dungeon_room — P9c — l'invite répond DEVANT la porte, au centre du battant — à l'appui : mode=0, sol=true [d=0.75 m (max 2,20) · cos=1.00 (min 0,25) · groupe=true · vue=SealedSeam · choisi=aucun]
+RC=1

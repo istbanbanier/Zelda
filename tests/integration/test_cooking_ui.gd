@@ -108,34 +108,65 @@ func test_the_hud_shows_the_active_buff_and_clears_on_expiry() -> void:
 	await _load_valley()
 	check_equal(_shell.buff_label_text(), "", "aucun buff : label vide")
 	_player.status().apply_buff(&"stamina", 1.0, 30.0)
-	for i: int in range(10):
-		await _tree().process_frame
-	check(_shell.buff_label_text().contains("Endurance"),
+	check(await _label_reaches("Endurance"),
 		"le label nomme la famille : %s" % _shell.buff_label_text())
-	check(_shell.buff_label_text().contains("s"), "…et le temps restant")
+	# `contains("s")` passait sur « Endurance — 0 s » : ça ne prouvait rien du
+	# temps restant. On épingle une valeur plausible pour un buff de 30 s.
+	var remaining: String = _shell.buff_label_text()
+	check(remaining.contains("30") or remaining.contains("29"),
+		"…et le temps restant, proche de 30 s : %s" % remaining)
 	# ISS-038 — ce bloc appliquait un buff de 0,2 s puis attendait DIX frames de
-	# rendu avant d'affirmer qu'il remplace l'ancien. À 60 im/s dix frames font
-	# 0,167 s : le test tenait à 33 millisecondes près, et la moindre charge
-	# machine le faisait échouer. C'est ce que le dépôt world-of-claudecraft
-	# résume par « an unbounded run flakes heavy suites under core contention ».
+	# rendu avant d'affirmer qu'il remplace l'ancien.
+	#
+	# MÉCANISME RÉEL, mesuré — ma première explication était fausse et elle est
+	# corrigée ici parce qu'une raison fausse égare le prochain lecteur. Les
+	# frames de rendu tournent à ~145 im/s en headless, pas 60 : dix frames font
+	# 0,069 s, pas 0,167. Et la contention n'y change presque rien (139 contre
+	# 145). Ce n'était donc PAS une course de vitesse.
+	#
+	# Le vrai coupable est `gameplay_shell.gd:477` : le texte du HUD est étranglé
+	# à `HUD_TEXT_REFRESH = 0,1 s`. Dix frames tenaient STRUCTURELLEMENT dans une
+	# seule période de rafraîchissement — une course de PHASE contre un throttle.
+	# Selon l'endroit du cycle où le test tombait, le label avait été rafraîchi
+	# ou non.
 	#
 	# Règle qui en découle, et qui vaut pour TOUS les tests d'ici :
-	#   un test ne doit jamais exiger que la machine soit RAPIDE ;
-	#   il ne peut exiger que le passage d'ASSEZ de temps.
-	# Attendre trop est sans danger ; attendre trop peu ne l'est pas.
+	#   attendre la CONDITION, bornée en TEMPS DE JEU ; jamais un compte de
+	#   frames, qui n'est ni une durée ni une garantie de rafraîchissement.
 	#
-	# Le remplacement au label est instantané : sa durée n'a aucune raison
-	# d'être courte. On lui en donne une qui survit largement à l'attente.
+	# La durée reste LARGE devant la borne d'attente (5 s contre 1 s) : ainsi ce
+	# buff ne peut pas expirer de lui-même pendant l'attente d'expiration
+	# ci-dessous, qui doit prouver l'effet du buff COURT et de lui seul.
 	_player.status().apply_buff(&"attack", 0.25, 5.0)
-	for i: int in range(10):
-		await _tree().process_frame
-	check(_shell.buff_label_text().contains("Attaque"),
+	check(await _label_reaches("Attaque"),
 		"un nouveau buff REMPLACE l'ancien au label")
-	# L'expiration, elle, se prouve avec une durée très courte ET une attente
-	# généreuse : le seul besoin est que 40 frames dépassent 0,05 s, ce qui est
-	# vrai quelle que soit la charge.
+	# L'expiration se prouve avec une durée très courte, puis l'attente que le
+	# label se VIDE — même principe, dans l'autre sens.
 	_player.status().apply_buff(&"attack", 0.25, 0.05)
-	for i: int in range(40):
-		await _tree().process_frame
-	check_equal(_shell.buff_label_text(), "", "expiré : label effacé")
+	check(await _label_reaches(""), "expiré : label effacé")
 	await _unload_valley()
+
+
+## Attend que le label du HUD atteigne l'état voulu, borné en TEMPS DE JEU.
+##
+## ISS-038, et la borne compte autant que l'attente. Une borne exprimée en
+## FRAMES n'est pas une durée : à 145 im/s en headless, 600 frames valaient
+## 4,13 s, soit soixante périodes de rafraîchissement du HUD
+## (`HUD_TEXT_REFRESH = 0,1 s`). Un HUD qui aurait mis trois secondes serait
+## passé, et le buff de 5 s de l'appelant expirait presque dans la fenêtre —
+## l'assertion d'expiration pouvait alors se valider toute seule.
+##
+## Une seconde couvre dix rafraîchissements : large pour la latence légitime,
+## strict pour un vrai défaut. `needle` vide signifie « label vidé ».
+##
+## Rend `true` dès que la condition est vraie, `false` si la borne est épuisée —
+## un blocage échoue donc encore, il ne pend pas.
+func _label_reaches(needle: String, budget_s: float = 1.0) -> bool:
+	var elapsed: float = 0.0
+	while elapsed <= budget_s:
+		var text: String = _shell.buff_label_text()
+		if (needle == "" and text == "") or (needle != "" and text.contains(needle)):
+			return true
+		await _tree().process_frame
+		elapsed += _tree().root.get_process_delta_time()
+	return false

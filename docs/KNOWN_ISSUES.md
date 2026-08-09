@@ -784,7 +784,7 @@ comportement en scène isolée.
 « terre » soit un sol forestier est un défaut d'inventaire à part entière, à
 traiter par `asset-license-auditor` / le manifeste, indépendamment de ce ticket.
 
-## ISS-038 — La suite n'est pas déterministe : deux passages, deux verdicts · `S2` · OUVERT
+## ISS-038 — La suite n'est pas déterministe : deux passages, deux verdicts · `S2` · **FERMÉ** (2026-08-08)
 
 - **Build** : `86ef23c` (aucun changement de code entre les deux passages).
 - **Observé**, deux exécutions complètes de `tools/validate_fast.sh` à quelques
@@ -812,7 +812,117 @@ traiter par `asset-license-auditor` / le manifeste, indépendamment de ce ticket
   obtenu au passage A n'est pas une preuve que la suite est saine ; c'est
   peut-être un tirage favorable. Cela affecte tous les gates.
 
-### Piste EXTERNE, arrivée le 2026-08-08 — la plus prometteuse
+### FERMÉ — 2026-08-08, preuve au repos ET sous contention
+
+**DEUX causes distinctes, et aucune n'était celle annoncée au premier
+correctif.** Un seul symptôme — « la suite rend deux verdicts » — recouvrait
+deux défauts sans rapport. C'est pourquoi chaque explication unique a échoué.
+
+**Cause A — une course de PHASE contre un throttle** (`test_cooking_ui`). Le
+test attendait dix frames de rendu puis affirmait. Mesuré : les frames tournent
+à ~145 im/s en headless (139 sous contention), donc dix frames font 0,069 s —
+et le texte du HUD est étranglé à `HUD_TEXT_REFRESH = 0,1 s`
+(`gameplay_shell.gd:477`). Dix frames tenaient STRUCTURELLEMENT dans une seule
+période de rafraîchissement : selon l'endroit du cycle où le test tombait, le
+label avait été rafraîchi ou non. Ce n'était pas une course de vitesse, et la
+première explication (« 33 ms de marge à 60 im/s ») était fausse.
+
+**Cause B — une pose mesurée pendant l'ATTERRISSAGE** (`test_heads...`). Le
+héros apparaît au-dessus du sol, tombe, et joue `Jump_Land`. Le test lisait la
+hauteur du crâne pendant l'accroupissement de réception : 1,07 m au lieu de
+1,74. Ni pollution d'état, ni contention — les deux pistes poursuivies, et les
+quatre hypothèses éliminées à grands frais, portaient toutes à côté.
+
+**Ce qui a livré la cause B n'est aucun raisonnement** : c'est d'avoir fait
+imprimer au test le nom de l'animation qu'il voyait. Une ligne, une exécution.
+
+Le premier correctif s'était trompé de mécanisme : il avait allongé la DURÉE du
+buff (0,2 s → 5 s) en gardant le compte de frames. Le passage sous contention a
+fait échouer la MÊME assertion. Ce n'était donc pas le buff qui expirait, mais
+le **label du HUD qui n'avait pas eu le temps de se rafraîchir**.
+
+**Correctifs finaux**, tous bornés en TEMPS DE JEU et non en frames — un compte
+de frames n'est ni une durée ni une garantie de rafraîchissement :
+
+- `_label_reaches(needle, budget_s)` attend l'état du label, 1 s = dix périodes
+  de rafraîchissement ;
+- `_reaches_rest(anim, budget_s)` attend la posture de repos du héros, 4 s ;
+- une borne épuisée fait ÉCHOUER le test, elle ne le fait pas pendre.
+
+**Trois assertions incapables d'échouer, trouvées par `test-coverage-auditor` à
+contexte frais et corrigées** : une borne de 600 frames (4,13 s) plus courte que
+le buff de 5 s qu'elle était censée observer ; un garde-fou de stabilisation
+satisfait par une pose figée ET par une tête en mouvement (pas de 0,80 mm sous
+une tolérance de 1 mm) ; un seuil `> 1,2` pour une valeur réelle de 1,74. Les
+deux seuils concernés ont été RESSERRÉS, jamais assouplis.
+
+**Preuve, commandes exactes** (`tools/validate_fast.sh`, code retour capturé
+sans tube) :
+
+| Condition | Résultat | Code |
+|---|---|---:|
+| Machine au repos | `804 réussis, 0 échoué` — `VERT` | 0 |
+| **4 processus saturant les 4 cœurs** | `804 réussis, 0 échoué` — `VERT` | 0 |
+
+Plus, sur les tests ciblés : 3 passages au repos et 3 sous contention, verts ;
+puis 1 + 2 après le correctif final.
+
+**Limites de ce qui est prouvé, à ne pas dépasser** :
+
+- prouvé sur CE conteneur, 4 cœurs, rendu logiciel, et sur DEUX passages
+  complets — pas sur une population de passages ni sur une autre machine ;
+- la contention simulée est du CPU pur ; ni pression mémoire, ni disque lent,
+  ni conteneur bridé n'ont été éprouvés ;
+- rien ne prouve qu'aucun AUTRE test du dépôt ne compte des frames au lieu
+  d'attendre une condition. C'est la prochaine dette à traiter, et elle est
+  nommée en fin de ticket.
+
+### Dette laissée par ce ticket
+
+Chercher les autres tests qui attendent `for i in range(N): await ... frame`
+puis affirment. Le motif est le même ; seule la marge diffère. Un test qui
+attend une CONDITION bornée est correct, un test qui attend un COMPTE est une
+panne en sursis.
+
+### Historique de l'enquête — RÉSOLU À MOITIÉ, état intermédiaire du 2026-08-08
+
+**Cause 1 : un test exigeait que la machine soit RAPIDE. Corrigé et prouvé.**
+
+`test_cooking_ui` appliquait un buff de **0,2 s** puis attendait **dix frames de
+rendu** avant d'affirmer qu'il remplaçait l'ancien. À 60 im/s, dix frames font
+0,167 s : le test tenait à **33 millisecondes** près. Corrigé (durée portée à 5 s
+pour l'assertion de remplacement, qui est instantanée ; l'expiration se prouve
+séparément avec une attente généreuse). **Il survit désormais au passage complet
+le plus lent de la journée** — la preuve est faite sur la machine.
+
+Règle qui en découle, inscrite dans les deux fichiers de test :
+*un test ne peut jamais exiger que la machine soit RAPIDE ; seulement qu'assez
+de temps ait passé.*
+
+**Cause 2 : `test_heads_reach_the_real_valley` — TOUJOURS OUVERTE.**
+
+Le crâne mesure 1,15 m au lieu de 1,20 dans la suite complète. Quatre
+hypothèses ont été **éliminées par l'expérience**, pas par raisonnement :
+
+| Hypothèse | Expérience | Verdict |
+|---|---|---|
+| Pose non stabilisée (temps) | garde-fou de stabilisation ajouté | **éliminée** — le garde-fou PASSE et la valeur reste 1,15 |
+| Pollution par un test précédent | les 39 prédécesseurs réels rejoués comme préfixe | **éliminée** — vert |
+| Pollution par une moitié d'entre eux | bissection en deux moitiés | **éliminée** — les deux vertes |
+| Contention CPU | test rejoué sous charge des 4 cœurs | **éliminée** — vert |
+
+Ce qui reste, et n'a pas été testé : une **accumulation** sur un passage très
+long (le passage fautif a duré près d'une heure, contre quelques minutes pour le
+préfixe) — mémoire, ressources non libérées, état moteur après plusieurs
+centaines de scènes montées puis démontées.
+
+**Défaut connu du garde-fou que j'ai ajouté** : il attend que la hauteur du
+crâne *cesse de bouger*. Or une pose FIGÉE — animation non démarrée, modèle en
+position de liaison — est parfaitement stable. Le garde-fou prouve donc
+l'immobilité, pas que l'animation a joué. Si la piste « pose de liaison » est
+reprise, c'est ce qu'il faut mesurer à la place.
+
+### Piste EXTERNE, arrivée le 2026-08-08
 
 Le `CLAUDE.md` racine de `levy-street/world-of-claudecraft`, projet comparable
 (≈ 9 900 commits, suite lourde), documente le phénomène en une ligne :

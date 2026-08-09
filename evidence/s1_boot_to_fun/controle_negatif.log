@@ -1,0 +1,18 @@
+=== Sabotage 1 : le bouton « Nouvelle partie » ne mène plus à la vallée ===
+    signature attendue : B4 — presser « Nouvelle partie » ouvre RÉELLEMENT la vallée
+      ÉCHEC test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley — B4 — presser « Nouvelle partie » ouvre RÉELLEMENT la vallée (aucune sauvegarde : départ direct · bouton « libéré » · état « (pas de StatusLabel) » · flux occupé=false)
+    === RÉSULTAT: 0 réussi(s), 1 échoué(s) ===
+      ÉCHEC: test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley — B4 — presser « Nouvelle partie » ouvre RÉELLEMENT la vallée (aucune sauvegarde : départ direct · bouton « libéré » · état « (pas de StatusLabel) » · flux occupé=false)
+  [OK]   le gate a VU le sabotage, sur SON critère.
+=== Sabotage 2 : le héros ne se pose plus (gravité annulée) ===
+    signature attendue : (qui se pose sur un sol valide|B7b — soulevé de 3 m)
+      ÉCHEC test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley — …qui se pose sur un sol valide
+      ÉCHEC test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley — B7b — soulevé de 3 m, le héros RETOMBE et se repose (y 35.30 → 35.30)
+    === RÉSULTAT: 0 réussi(s), 2 échoué(s) ===
+      ÉCHEC: test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley — …qui se pose sur un sol valide
+      ÉCHEC: test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley — B7b — soulevé de 3 m, le héros RETOMBE et se repose (y 35.30 → 35.30)
+  [OK]   le gate a VU le sabotage, sur SON critère.
+
+=== CONTRÔLE NÉGATIF — sabotages : 2 déclaré(s), 2 exécuté(s), 0 ignoré(s), 2 validé(s) ===
+Le gate sait rougir, et sur le bon critère, pour chacun des 2 sabotages.
+RC=0

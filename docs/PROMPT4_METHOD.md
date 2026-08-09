@@ -469,16 +469,17 @@ Ce qui est fait, ce qui reste, dans l'ordre du rapport coût/bénéfice.
 | # | Élément | Coût | État |
 |---|---|---|---|
 | 1 | Barre en couches (hooks Stop + pre-push) | fait | `[EN PLACE]`, testé |
-| 2 | Test d'invariants d'état | fait | `[EN PLACE]`, **`NON VÉRIFIÉ`** — exécuter |
+| 2 | Test d'invariants d'état | fait | **`[EN PLACE]`, EXÉCUTÉ** — 7 tests verts dans la suite (`tests/unit/test_invariants.gd`) |
 | 3 | Seuil par trait d'identité au WOW Gate | faible | `[À DÉCIDER]` |
-| 4 | Fichier de règles par répertoire, avec pièges mesurés | faible | `[À DÉCIDER]` |
+| 4 | Fichier de règles par répertoire, avec pièges mesurés | faible | **`[EN PLACE]`** — `tools/`, `tests/`, `scripts/` ; pièges mesurés et datés |
 | 5 | Marquer chaque doc `VIVANT` / `HISTORIQUE` | faible | `[À DÉCIDER]` |
 | 6 | Vue rasante ajoutée aux tests de silhouette | faible | `[À DÉCIDER]` |
 | 7 | Budgets d'assets verrouillés avant modélisation | moyen | `[À DÉCIDER]` |
 | 8 | Inventaire de détails pour les assets North Star | moyen | `[À DÉCIDER]` |
 | 9 | Contrat d'asset épinglé dans un test | moyen | `[À DÉCIDER]` |
 | 10 | Littéraux d'implantation épinglés | moyen | `[À DÉCIDER]` |
-| 11 | Relecteurs spécialisés au-delà d'`adversarial-qa` | moyen | `[À DÉCIDER]` |
+| 11 | Relecteurs spécialisés au-delà d'`adversarial-qa` | moyen | **`[EN PLACE]` mais `NON VÉRIFIÉ`** — 9 agents écrits, aucun n'a tourné sur un vrai diff |
+| 11b | Portail sélectif (`gate_select`) | faible | **`[EN PLACE]`** — `tools/gate_select.sh`, 2 min contre ~15 |
 | 12 | CI qui exécute réellement les tests | élevé | `[À DÉCIDER]`, débloque 13 |
 | 13 | Portes CI à deux étages + voie tests longs | élevé | dépend de 12 |
 

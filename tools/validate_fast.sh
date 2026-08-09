@@ -88,7 +88,14 @@ if [ $UNIT_RC -eq 0 ]; then ok "suite unitaire verte"; else bad "suite unitaire 
 # passer tout `ERROR:` générique — ressource manquante, échec de chargement,
 # `push_error` d'un invariant violé. Un asset supprimé laissait la suite verte.
 # Le filtre couvre donc maintenant `ERROR:` comme le niveau 3.
-UNIT_ERR_PATTERN='SCRIPT ERROR|^ERROR:|ASSERTION ÉCHOUÉE SANS REPORTER|Cannot call method|Invalid access|String formatting error|Out of bounds|Method not found|Cannot open file|Failed loading resource|Resource file not found'
+# AUDIT 2026-08-09 : les fuites de FIN DE PROCESSUS étaient ignorées. Godot les
+# imprime APRÈS le verdict interne du runner, et « ObjectDB instances were
+# leaked » est un WARNING, pas une ERROR — le filtre passait donc à côté. Mesuré
+# sur `--filter=boot_smoke` : 2 instances audio et `amb_valley.wav` encore
+# référencées, parce que `AudioManager` est un autoload et que le test ne rendait
+# pas le processus tel qu'il l'avait trouvé. La suite complète, elle, était
+# propre — ajouter ces motifs ne masque donc aucune dette existante.
+UNIT_ERR_PATTERN='SCRIPT ERROR|^ERROR:|ASSERTION ÉCHOUÉE SANS REPORTER|Cannot call method|Invalid access|String formatting error|Out of bounds|Method not found|Cannot open file|Failed loading resource|Resource file not found|ObjectDB instances were leaked|resources still in use'
 if grep -qE "$UNIT_ERR_PATTERN" "$UNIT_LOG"; then
   bad "erreurs signalées pendant la suite de tests (voir $UNIT_LOG)"
   grep -E "$UNIT_ERR_PATTERN" "$UNIT_LOG" | head -10 | sed 's/^/    /'

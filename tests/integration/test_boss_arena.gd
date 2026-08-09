@@ -212,8 +212,13 @@ func test_the_camera_widens_progressively_near_the_boss() -> void:
 	# donc c'est bien la DISTANCE qu'on mesure ici, pas sa poursuite.
 	check_equal(String(boss.state_name()), "intro",
 		"le Gardien s'éveille encore : il ne charge pas pendant la mesure")
-	# Loin : cadrage d'exploration.
-	arena.player().global_position = Vector3(0, 0.3, 16.5)
+	# Loin : cadrage d'exploration. La position est RELATIVE au Gardien, comme
+	# l'approche ci-dessous. Elle était absolue, et le Gardien se tient à
+	# z = -7 : la boucle rouvrait donc sur une téléportation de 7 m que le
+	# commentaire prétendait avoir supprimée. Le même littéral avait deux sens.
+	# 25 m tient dans l'arène (WALL_RADIUS = 19,6 depuis le centre, soit 18 m
+	# ici) tout en restant hors de la portée d'élargissement du cadrage.
+	arena.player().global_position = boss.global_position + Vector3(0, 0.3, 25.0)
 	await _settle(60)
 	var far_distance: float = rig.boss_framing_distance()
 	check(far_distance < 0.6,
@@ -233,7 +238,7 @@ func test_the_camera_widens_progressively_near_the_boss() -> void:
 	# Les trois seuils sont inchangés — c'est le scénario qui devient physique,
 	# pas le critère qui s'assouplit.
 	const APPROACH_TICKS: int = 90
-	const APPROACH_FROM: float = 16.5
+	const APPROACH_FROM: float = 25.0
 	const APPROACH_TO: float = 6.0
 	var previous: float = rig.boss_framing_distance()
 	var biggest_step: float = 0.0
@@ -245,9 +250,16 @@ func test_the_camera_widens_progressively_near_the_boss() -> void:
 		var current: float = rig.boss_framing_distance()
 		biggest_step = maxf(biggest_step, absf(current - previous))
 		previous = current
-	check(previous > far_distance + 1.0,
+	# Littéral, et non `far_distance + 1.0` : relire l'attendu depuis le sujet
+	# testé fait suivre au test toute dérive de la mesure « loin ». Le voisin
+	# borne far_distance sous 0,6 ; 1,6 est donc au moins aussi strict, et
+	# strictement plus fort puisqu'il ne bouge pas. Mesuré : 6,76 m.
+	check(previous > 1.6,
 		"au contact, la caméra a reculé de %.2f m" % previous)
-	check(biggest_step < 0.25,
+	# Seuil RESSERRÉ, pas assoupli. Sans la téléportation résiduelle, le pas
+	# maximal mesuré tombe à 0,051 m : un plafond à 0,25 absolvait tout, y
+	# compris un vrai snap. 0,10 laisse le double de marge et reste strict.
+	check(biggest_step < 0.10,
 		"le plus grand pas d'un tick vaut %.3f m — c'est une interpolation, pas un snap"
 		% biggest_step)
 	check(rig.boss_framing_fov() > 2.0,
