@@ -45,7 +45,7 @@ Prenez dix minutes, pas plus. Vous n'avez rien à finir.
 2. **Regardez trois secondes sans rien toucher.** Sauriez-vous dire où aller ?
 3. Avancez, tournez la caméra, courez, sautez.
 4. Approchez-vous d'un objet et appuyez sur **E**.
-5. Trouvez un ennemi et frappez-le.
+5. Trouvez un ennemi et frappez-le (**clic gauche**).
 6. Laissez-vous tuer, puis appuyez sur **Réessayer**.
 7. Marchez vers la grande construction au fond et essayez d'y entrer.
 
