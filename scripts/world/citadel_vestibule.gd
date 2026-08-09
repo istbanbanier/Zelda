@@ -105,7 +105,14 @@ func _build_room() -> void:
 	# z = −12,55 ; à −12,65 la veine se serait retrouvée NOYÉE dans la masse
 	# sombre. Recalée à −12,50, elle affleure la porte (−12,55..−12,45) et
 	# reste en arrière du nu avant du cadre (−12,37).
-	_box("SealedSeam", Vector3(0, 3, -12.50), Vector3(0.3, 5.4, 0.1), COL_CYAN, true)
+	# S2.0 — ORNEMENT, DONC SANS COLLISION. Cette veine était un `StaticBody3D`
+	# sur la couche 1, c'est-à-dire un obstacle pour le rayon de ligne de vue des
+	# interactions, planté juste devant `DungeonDoor` (−12,50 contre −12,75).
+	# Résultat mesuré : au centre du battant, portée et cône parfaits, la porte
+	# n'était PAS sélectionnable ; il fallait un pas de côté. Elle garde sa
+	# géométrie, sa position et son émission — elle perd son corps.
+	_decor_box("SealedSeam", Vector3(0, 3, -12.50), Vector3(0.3, 5.4, 0.1),
+		COL_CYAN, true)
 	var dungeon_door: SceneDoor = SceneDoor.new()
 	dungeon_door.name = "DungeonDoor"
 	dungeon_door.verb = "Entrer dans le donjon"
@@ -320,6 +327,41 @@ func _box(box_name: String, center: Vector3, size: Vector3, color: Color,
 	body.add_child(mesh)
 	body.position = center   # AVANT add_child (règle D.0)
 	add_child(body)
+
+
+## Une masse PUREMENT VISUELLE : même boîte, même matériau, aucune collision.
+##
+## `_box()` produit un `StaticBody3D` sur la couche 1, et c'est juste pour un
+## mur ou un pilier. Pour un ORNEMENT posé devant un interactable, c'est un
+## défaut : la couche 1 est celle que `PlayerController._has_interact_los()`
+## interroge pour savoir si la vue est dégagée. Un décor y devient un obstacle.
+##
+## Mesuré le 2026-08-09 (`P9c` de `test_physical_run.gd`) : debout à 0,75 m de
+## `DungeonDoor`, parfaitement en face, cône et portée valides, la sélection ne
+## rendait RIEN — le rayon partait dans la veine cyan. Un pas de côté rendait la
+## porte sélectionnable. Le joueur, lui, appuie sur `E` au centre du battant,
+## n'obtient rien et en conclut que la touche ne marche pas : c'est le défaut
+## nº 1 du playtest humain du 2026-08-07, reproduit par du décor.
+##
+## Un ornement ne doit donc porter ni corps, ni forme de collision. Il reste
+## visible, il cesse d'être un mur.
+func _decor_box(box_name: String, center: Vector3, size: Vector3, color: Color,
+		emissive: bool = false) -> void:
+	var mesh: MeshInstance3D = MeshInstance3D.new()
+	mesh.name = box_name
+	var mesh_box: BoxMesh = BoxMesh.new()
+	mesh_box.size = size
+	mesh.mesh = mesh_box
+	var material: StandardMaterial3D = StandardMaterial3D.new()
+	material.albedo_color = color
+	material.roughness = 0.85
+	if emissive:
+		material.emission_enabled = true
+		material.emission = color
+		material.emission_energy_multiplier = 2.0
+	mesh.material_override = material
+	mesh.position = center   # AVANT add_child (règle D.0)
+	add_child(mesh)
 
 
 func _setup_lighting() -> void:
