@@ -269,6 +269,74 @@ func restore_root(budget_s: float = 20.0) -> bool:
 	return false
 
 
+## ---------------------------------------------------------------------------
+## ATTENDRE UNE TRANSITION SANS EXIGER QUE LA MACHINE SOIT RAPIDE
+## ---------------------------------------------------------------------------
+##
+## `B4` a échoué dans la suite complète après être passé seul quelques minutes
+## plus tôt : la vallée n'était pas apparue en 25 s. Le défaut n'est pas dans le
+## jeu, il est dans la borne. En headless, `SceneFlow._load_and_swap()` prend le
+## chemin SYNCHRONE (`change_scene_to_file`) : la frame de chargement dure
+## plusieurs secondes, et `get_process_delta_time()` les compte. Une borne fixe
+## devient donc une exigence de VITESSE — exactement ce que `tests/CLAUDE.md`
+## interdit : « un test ne doit jamais exiger que la machine soit rapide,
+## seulement qu'assez de temps de jeu se soit écoulé ».
+##
+## On borne donc ce qui doit l'être et rien de plus :
+##   - l'ORDRE doit partir : `SceneFlow` devient occupé, sinon rien n'a été
+##     demandé et c'est un vrai défaut de câblage ;
+##   - le CHARGEMENT lui-même n'est pas chronométré — il finit quand la machine
+##     finit. Un garde d'anti-blocage très large reste, pour ne jamais pendre ;
+##   - l'APPARITION après la transition est bornée court : une fois `SceneFlow`
+##     au repos, la scène est là ou elle ne viendra pas.
+##
+## Un sabotage reste vu : avec une cible de transition fausse, `SceneFlow` finit
+## et le nœud attendu n'apparaît jamais.
+const _ORDER_BUDGET_S: float = 6.0
+const _LOAD_ANTIHANG_S: float = 600.0
+const _APPEAR_BUDGET_S: float = 15.0
+
+
+## Attend qu'un nœud nommé `wanted` apparaisse sous la racine à la faveur d'une
+## transition `SceneFlow`. Rend vrai s'il est là.
+func await_scene(wanted: String) -> bool:
+	var loop: SceneTree = Engine.get_main_loop() as SceneTree
+	if loop == null:
+		return false
+	var flow: Node = loop.root.get_node_or_null("/root/SceneFlow")
+	# 1. L'ordre part-il ? Si la scène est déjà là, rien à attendre.
+	var waited: float = 0.0
+	while waited <= _ORDER_BUDGET_S:
+		if _first_named(loop, wanted) != null:
+			return true
+		if flow != null and bool(flow.call("is_busy")):
+			break
+		await loop.process_frame
+		waited += loop.root.get_process_delta_time()
+	# 2. Le chargement va à son rythme. Le garde n'est pas un budget de vitesse :
+	#    c'est un filet contre un blocage définitif.
+	var guard: float = 0.0
+	while flow != null and bool(flow.call("is_busy")) and guard <= _LOAD_ANTIHANG_S:
+		await loop.process_frame
+		guard += loop.root.get_process_delta_time()
+	# 3. Une fois au repos, la scène est là ou elle ne viendra pas.
+	var appear: float = 0.0
+	while appear <= _APPEAR_BUDGET_S:
+		if _first_named(loop, wanted) != null:
+			return true
+		await loop.process_frame
+		appear += loop.root.get_process_delta_time()
+	return false
+
+
+func _first_named(loop: SceneTree, wanted: String) -> Node:
+	var by_class: Array[Node] = loop.root.find_children("*", wanted, true, false)
+	if not by_class.is_empty():
+		return by_class[0]
+	var by_name: Array[Node] = loop.root.find_children(wanted, "", true, false)
+	return by_name[0] if not by_name.is_empty() else null
+
+
 ## Un balayage : retire tout enfant de la racine absent de la photo d'entrée.
 ## Rend les noms retirés.
 func _sweep(loop: SceneTree) -> Array[String]:

@@ -114,8 +114,7 @@ func test_the_flow_wires_boot_to_the_first_dungeon_room() -> void:
 		and new_game.text != "Nouvelle partie"
 	if asked_confirmation:
 		new_game.emit_signal("pressed")   # confirmation d'écrasement (§17.3)
-	var in_valley: bool = await _wait_until(
-		func() -> bool: return _find("ValleyWorld") != null, 25.0)
+	var in_valley: bool = await await_scene("ValleyWorld")
 	check(in_valley, "W3 — le signal du bouton mène à la vallée (%s)"
 		% ("après confirmation" if asked_confirmation else "sans sauvegarde"))
 	var valley: Node = _find("ValleyWorld")
@@ -232,8 +231,7 @@ func test_the_flow_wires_boot_to_the_first_dungeon_room() -> void:
 			"…et `SceneDoor.interact()` appelée DIRECTEMENT demande la transition "
 			+ "(joueur à %.0f m ; AUCUNE distance n'est vérifiée par cette méthode)"
 				% span)
-		var in_vestibule: bool = await _wait_until(
-			func() -> bool: return _find("CitadelVestibule") != null, 25.0)
+		var in_vestibule: bool = await await_scene("CitadelVestibule")
 		check(in_vestibule, "W8b — SceneFlow ouvre le vestibule de la citadelle")
 
 	# --- W9. Et la porte du donjon derrière lui -----------------------------
@@ -248,8 +246,7 @@ func test_the_flow_wires_boot_to_the_first_dungeon_room() -> void:
 		if dungeon_door != null and hero != null:
 			var went: bool = bool(dungeon_door.call("interact", hero))
 			check(went, "…dont l'appel direct demande la transition vers la salle 1")
-			var in_room1: bool = await _wait_until(
-				func() -> bool: return _find("Room1Initiation") != null, 25.0)
+			var in_room1: bool = await await_scene("Room1Initiation")
 			check(in_room1, "W9b — SceneFlow ouvre la SALLE 1 depuis le vestibule")
 
 	await _teardown()

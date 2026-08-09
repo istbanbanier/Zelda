@@ -135,8 +135,10 @@ func test_boot_smoke_from_boot_to_a_playable_valley() -> void:
 		and new_game.text != "Nouvelle partie"
 	if asked_confirmation:
 		new_game.emit_signal("pressed")
-	var reached_valley: bool = await _wait_until(
-		func() -> bool: return _find("ValleyWorld") != null, 25.0)
+	# Pas de borne fixe sur un CHARGEMENT : voir `GateTestCase.await_scene()`.
+	# Une borne fixe exigeait que la machine soit rapide, et B4 a fini par
+	# rougir dans la suite complète après être passé seul.
+	var reached_valley: bool = await await_scene("ValleyWorld")
 	check(reached_valley,
 		"B4 — presser « Nouvelle partie » ouvre RÉELLEMENT la vallée (%s)"
 			% ("après confirmation d'écrasement (§17.3)" if asked_confirmation
@@ -266,6 +268,10 @@ func test_boot_smoke_from_boot_to_a_playable_valley() -> void:
 	check(retry != null, "B9b — le panneau porte un bouton « Réessayer »")
 	if retry != null:
 		retry.emit_signal("pressed")
+	# La reprise RECHARGE la scène : on laisse d'abord la transition finir à son
+	# rythme, puis on borne seulement la VÉRIFICATION de vitalité. Chronométrer
+	# le chargement reviendrait à exiger une machine rapide.
+	await await_scene("ValleyWorld")
 	var recovered: bool = await _wait_until(
 		func() -> bool:
 			# La scène est RECHARGÉE : l'ancien joueur est détruit, il faut

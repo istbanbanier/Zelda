@@ -366,8 +366,7 @@ func test_a_player_walks_from_the_menu_to_the_first_dungeon_room() -> void:
 	await _settle(2)
 	if is_instance_valid(new_game) and new_game.text != "Nouvelle partie":
 		new_game.emit_signal("pressed")
-	var in_valley: bool = await _wait_until(
-		func() -> bool: return _find("ValleyWorld") != null, 25.0)
+	var in_valley: bool = await await_scene("ValleyWorld")
 	check(in_valley, "P1b — la vallée s'ouvre par le bouton")
 	var valley: Node = _find("ValleyWorld")
 	if valley == null:
@@ -582,8 +581,7 @@ func test_a_player_walks_from_the_menu_to_the_first_dungeon_room() -> void:
 		check(at_door,
 			"…et le héros arrive à SON SEUIL à pied (%.1f m du battant)" % span)
 		await _press_interact_facing(player, intent, door)
-		var in_vestibule: bool = await _wait_until(
-			func() -> bool: return _find("CitadelVestibule") != null, 30.0)
+		var in_vestibule: bool = await await_scene("CitadelVestibule")
 		check(in_vestibule,
 			"P8b — `interact_pressed` DEVANT la porte ouvre le vestibule")
 
@@ -616,8 +614,7 @@ func test_a_player_walks_from_the_menu_to_the_first_dungeon_room() -> void:
 		await _press_interact_facing(hero, hero_intent, dungeon_door)
 		var centre_report: String = _press_report
 		var centre_selected: bool = centre_report.contains("choisi=DungeonDoor")
-		var in_room1: bool = await _wait_until(
-			func() -> bool: return _find("Room1Initiation") != null, 8.0)
+		var in_room1: bool = await await_scene("Room1Initiation")
 
 		# Un joueur qui n'obtient rien FAIT UN PAS DE CÔTÉ et réessaie. Le pilote
 		# l'imite : deux décalages latéraux, toujours par la même touche.
@@ -640,8 +637,7 @@ func test_a_player_walks_from_the_menu_to_the_first_dungeon_room() -> void:
 				goal + side * offsets[index], 0.5, 12.0, false)
 			await _press_interact_facing(hero, hero_intent, dungeon_door)
 			attempts.append("décalage %+.1f m → %s" % [offsets[index], _press_report])
-			in_room1 = await _wait_until(
-				func() -> bool: return _find("Room1Initiation") != null, 8.0)
+			in_room1 = await await_scene("Room1Initiation")
 			index += 1
 
 		check(in_room1,
