@@ -34,7 +34,8 @@ prouve qu'elle est solvable, jamais qu'un joueur puisse y arriver.
 ```bash
 tools/gate_negative_control.sh            # le gate sait-il rougir ?
 godot --headless --path . --script tools/godot/test_runner.gd -- --filter=boot_smoke
-godot --headless --path . --script tools/godot/test_runner.gd -- --filter=golden_path
+godot --headless --path . --script tools/godot/test_runner.gd -- --filter=flow_wiring
+godot --headless --path . --script tools/godot/test_runner.gd -- --filter=physical_run
 tools/validate_fast.sh                    # la suite entière, verdict de référence
 ```
 
@@ -63,43 +64,75 @@ Fichier : `tests/playthrough/test_boot_smoke.gd`
 vert avec un héros figé. « Vivant, posé, HUD présent » ne prouve rien du
 contrôle.
 
-## B — Golden Path, le parcours long
+## B — Parcours de CÂBLAGE (`flow_wiring_path`)
 
-Fichier : `tests/playthrough/test_golden_path.gd`
+Fichier : `tests/playthrough/test_flow_wiring_path.gd`
+Ce fichier s'appelait `test_golden_path.gd`. L'audit du 2026-08-09 a refusé ce
+nom : appeler « golden path » une suite d'appels directs à `interact()`
+annonçait une couverture inexistante.
+
+**Ce parcours prouve des FILS, pas un trajet.** Chaque cible est saisie dans le
+groupe `interactable` et sa méthode est appelée là où elle est, fût-elle à
+344 m. Rien ne marche, rien ne vise, rien n'appuie sur une touche.
+
+| # | Critère | Ce qui est prouvé | Ce qui ne l'est PAS |
+|---|---|---|---|
+| W1–W4 | Boot → menu → `SceneFlow` → vallée avec joueur | la chaîne de scènes | — |
+| W5 | `Chest.interact()` → inventaire (+1 arme) | le fil coffre→inventaire | portée, cône, ligne de vue, accès |
+| W6 | `HealthComponent.take_damage()` → PV décomptés | la comptabilité des PV | **aucune hitbox, aucun combat** |
+| W7 | `try_pulse()` rend `fired` | le contrôleur est monté | **aucun effet observable** |
+| W8 | `SceneDoor.interact()` → vestibule | le fil porte→`SceneFlow` | **aucune distance n'est vérifiée** |
+| W9 | idem → salle 1 | idem | idem |
+| W10 | la racine est rendue intacte | `restore_root()` conclut sans réserve | — |
+
+## B2 — Parcours PHYSIQUE (`physical_run`)
+
+Fichier : `tests/playthrough/test_physical_run.gd`
+
+Tout passe par `InputIntent` et le `PlayerController` — la même porte d'entrée
+qu'un clavier ou une manette (D-013). Interdits : écrire `global_position`,
+appeler la méthode finale d'une cible, retirer un ennemi de la route.
 
 | # | Critère | Preuve |
 |---|---|---|
-| G1–G4 | Boot → menu → vallée → héros présent | assertions G1 à G4 |
-| G5 | Un coffre s'ouvre **par l'interaction** et donne un objet réel | assertion G5 |
-| G6 | Un ennemi encaisse par le chemin de dégâts réel | assertion G6 |
-| G7 | Une capacité de Résonance s'exécute depuis le monde chargé | assertion G7 |
-| G8 | La porte de la citadelle est franchissable, le vestibule s'ouvre | G8, G8b |
-| G9 | La porte du donjon mène à la salle 1 | G9, G9b |
-| G10+ | Salles 2-4, salle centrale, antichambre, boss, victoire | **NON VÉRIFIÉ** — non couvert par ce parcours |
+| P1–P2 | Menu → vallée → héros posé, piloté par `InputIntent` | P1, P1b, P2 |
+| P3 | La descente de crête se **marche** en entier | 11/11 jalons, > 100 m, jamais sous le monde |
+| P4 | Un interactable est **rejoint à pied** et ouvert par `interact_pressed` | P4 |
+| P5 | Un ennemi est **poursuivi** et frappé par `attack_pressed` | touches réelles, instigateur = joueur |
+| P6 | `pulse_pressed` révèle **au moins une cible** (`revealed_count > 0`) | P6 |
+| P7 | La route du donjon se **marche** en entier, héros vivant | 5/5 jalons |
+| P8 | La porte de la citadelle est atteinte à pied et ouverte à la touche | P8, P8b |
+| P9b | La salle 1 est atteinte **à pied** depuis le menu | **PASS**, après un pas de côté |
+| P9c | L'invite répond **au centre du battant** du donjon | **FAIL** — voir ci-dessous |
 
-Ce que le pilote s'interdit, et qui rendrait sa preuve fausse : téléporter au
-delà d'un obstacle, appeler une fonction de récompense, instancier le boss hors
-du flux, court-circuiter une condition. Il peut accélérer une attente ; jamais
-sauter une étape.
+### Ce que ce parcours a trouvé, et que le câblage ne pouvait pas voir
 
-### Ce que ce parcours ne prouve PAS, et qu'il serait malhonnête de laisser croire
+`P9c` **échoue**, et sa cause est mesurée : debout à 0,75 m de la porte du
+donjon, parfaitement en face (`cos = 1,00`), au sol, en locomotion, porte bien
+dans le groupe `interactable` — `_select_interactable()` ne rend **rien**. Le
+rayon de `_has_interact_los()` est coupé par `SealedSeam`, une veine cyan
+décorative construite en `StaticBody3D` sur la **couche 1** à `z = −12,50`,
+juste devant le battant à `z = −12,75` (`citadel_vestibule.gd`, helper `_box`).
 
-**Le voyage.** Le pilote appelle `interact()` sur un coffre à 86 m et sur une
-porte à 344 m, et `SceneDoor.interact()` ne vérifie aucune distance — la portée
-est appliquée par l'`InteractionComponent` du joueur, pas par la porte. Le
-parcours prouve donc que le **graphe de transitions** est câblé ; il ne prouve
-jamais que le héros puisse parcourir les 344 mètres. Un ravin, un trou de
-collision ou une falaise infranchissable au milieu du chemin le laisserait vert.
+Le décor coupe donc l'interaction **à l'endroit exact où un joueur se place**.
+`P9b` passe quand même : le pilote fait ce qu'une personne ferait — un pas de
+côté, puis un nouvel appui — et la salle 1 s'ouvre. La porte n'est donc pas
+condamnée ; elle est **muette au centre**.
 
-Aucun test du dépôt ne fait **marcher** le héros dans la vallée : tous le
-posent. `test_interaction_reachable.gd` couvre bien « le joueur debout devant
-l'objet voit l'invite » — en le plaçant, pas en l'y amenant. Le trajet entre
-deux points de la vallée est le seul maillon du contrat que rien ne surveille,
-et c'est exactement là que les défauts rapportés par le propriétaire se sont
-logés (« je tombe à travers le sol ici »).
+C'est la signature du défaut nº 1 du playtest humain du 2026-08-07 : le joueur
+appuie sur `E`, n'obtient rien, en conclut que la touche ne marche pas, et cesse
+d'essayer. `_refuse_interaction()` existe précisément pour ça, et il se déclenche
+ici — sur une porte qui est pourtant juste devant lui.
 
-C'est la même faute que celle dénoncée en tête de ce document, d'un cran plus
-haut : un test de câblage n'est pas une preuve d'atteignabilité.
+Aucun test d'appel direct ne pouvait le voir : `test_flow_wiring_path` franchit
+la même porte en vert, parce qu'il appelle `SceneDoor.interact()` sans passer
+par la sélection du joueur.
+
+**Non corrigé ici** : c'est un défaut de jeu, donc S2. S1 s'arrête à le prouver.
+
+| Portée restante | État |
+|---|---|
+| Salles 2-4, salle centrale, antichambre, boss, victoire | **NON VÉRIFIÉ** — hors des deux parcours |
 
 ## C — Ce qu'aucun test headless ne peut prouver
 
