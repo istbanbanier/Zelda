@@ -99,12 +99,20 @@ jobs:
               "selftest_${STAMP}" )
           rm -rf "builds/selftest_${STAMP}"
 
-      # Binaire Linux autonome (Phase I, §25.1 « build natif disponible »).
-      # MEILLEUR EFFORT : le runner télécharge le Godot officiel et ses
-      # templates — impossible depuis le conteneur de développement, dont le
-      # proxy refuse godotengine.org (403). Un échec ici n'empêche JAMAIS la
-      # publication de l'archive source : c'est le sens du continue-on-error.
-      - name: Exporter le binaire Linux (meilleur effort)
+      # Binaires autonomes (Phase I, §25.1 « build natif disponible »).
+      #
+      # S2.1 : TROIS cibles au lieu d'une. Le propriétaire ne sait pas quel
+      # système il utilise ; on publie donc Windows, macOS et Linux, et il
+      # prend celle qui démarre. Un runner Linux exporte les trois : les
+      # templates sont fournis pour toutes les plateformes dans le même .tpz.
+      #
+      # MEILLEUR EFFORT, cible par cible : le runner télécharge le Godot
+      # officiel et ses templates — impossible depuis le conteneur de
+      # développement, dont le proxy refuse godotengine.org (403). L'échec
+      # d'UNE cible ne doit ni empêcher les deux autres, ni empêcher la
+      # publication de l'archive source. D'où le `continue-on-error` sur
+      # l'étape et le `|| true` sur chaque export.
+      - name: Exporter les binaires autonomes (meilleur effort)
         if: steps.cible.outputs.selftest == 'false'
         continue-on-error: true
         run: |
@@ -120,16 +128,46 @@ jobs:
           mv /tmp/tpl/templates/* "$HOME/.local/share/godot/export_templates/${VER}.stable/"
           G="/tmp/Godot_v${VER}-stable_linux.x86_64"
           "$G" --headless --path . --import || true
-          mkdir -p builds/linux
-          "$G" --headless --path . --export-release "Linux x86_64" \
-            builds/linux/EclatsDOrage.x86_64
           STAMP="${{ steps.cible.outputs.short }}"
-          ( cd builds/linux && zip -q \
-              "../EclatsDOrage_Linux_x86_64_${STAMP}.zip" EclatsDOrage.x86_64 )
-          # Seulement le binaire : `rm -rf builds/linux` emportait le
-          # `.gitkeep` SUIVI, et le garde-fou de propreté voyait « D ».
-          rm -f builds/linux/EclatsDOrage.x86_64
-          echo "binaire exporté et empaqueté"
+          mkdir -p builds/linux builds/windows builds/macos
+
+          # Linux — exécutable nu.
+          if "$G" --headless --path . --export-release "Linux x86_64" \
+                builds/linux/EclatsDOrage.x86_64; then
+            ( cd builds/linux && zip -q \
+                "../EclatsDOrage_Linux_x86_64_${STAMP}.zip" EclatsDOrage.x86_64 )
+            echo "Linux : exporté"
+          else
+            echo "Linux : ÉCHEC (les autres cibles continuent)"
+          fi
+
+          # Windows — .exe autonome, PCK embarqué.
+          if "$G" --headless --path . --export-release "Windows Desktop" \
+                builds/windows/EclatsDOrage.exe; then
+            ( cd builds/windows && zip -q \
+                "../EclatsDOrage_Windows_x86_64_${STAMP}.zip" EclatsDOrage.exe )
+            echo "Windows : exporté"
+          else
+            echo "Windows : ÉCHEC (les autres cibles continuent)"
+          fi
+
+          # macOS — .app empaquetée par Godot, NON SIGNÉE (voir notes).
+          if "$G" --headless --path . --export-release "macOS" \
+                builds/macos/EclatsDOrage.zip; then
+            mv builds/macos/EclatsDOrage.zip \
+               "builds/EclatsDOrage_macOS_${STAMP}.zip"
+            echo "macOS : exporté"
+          else
+            echo "macOS : ÉCHEC (les autres cibles continuent)"
+          fi
+
+          # Ne laisser que les ZIP dans builds/ : `rm -rf builds/<os>`
+          # emporterait les `.gitkeep` SUIVIS, et le garde-fou de propreté
+          # verrait « D ».
+          rm -f builds/linux/EclatsDOrage.x86_64 \
+                builds/windows/EclatsDOrage.exe \
+                builds/macos/EclatsDOrage.zip
+          ls -1 builds/*.zip 2>/dev/null || echo "aucun binaire produit"
 
       # Une archive qui ne se décompresse pas est pire qu'une absence
       # d'archive : elle se découvre chez celui qui la télécharge.
@@ -204,16 +242,47 @@ jobs:
           # `--target` crée le tag s'il n'existe pas encore, sur CE commit.
           ASSETS=( "${{ steps.paquet.outputs.zip }}" \
                    "${{ steps.paquet.outputs.zip }}.sha256" )
-          BIN_ZIP="$(ls builds/EclatsDOrage_Linux_x86_64_*.zip 2>/dev/null | head -1 || true)"
-          if [ -n "$BIN_ZIP" ]; then
+          # Les trois binaires autonomes, chacun avec son empreinte. Chaque
+          # cible est indépendante : celle qui manque ne prive pas les autres.
+          FOUND_BIN=false
+          for BIN_ZIP in builds/EclatsDOrage_Windows_x86_64_*.zip \
+                         builds/EclatsDOrage_macOS_*.zip \
+                         builds/EclatsDOrage_Linux_x86_64_*.zip; do
+            [ -f "$BIN_ZIP" ] || continue
             sha256sum "$BIN_ZIP" | awk '{print $1}' > "$BIN_ZIP.sha256"
             ASSETS+=( "$BIN_ZIP" "$BIN_ZIP.sha256" )
+            if [ "$FOUND_BIN" = false ]; then
+              FOUND_BIN=true
+              {
+                echo
+                echo "### Jeu autonome — prenez celui de VOTRE système"
+                echo
+                echo "Aucune installation, aucun Godot à télécharger : le jeu est"
+                echo "dans le fichier."
+                echo
+                echo "| Système | Fichier | SHA-256 |"
+                echo "|---|---|---|"
+              } >> "$NOTES"
+            fi
+            case "$(basename "$BIN_ZIP")" in
+              *Windows*) OS_LABEL="Windows 64 bits" ;;
+              *macOS*)   OS_LABEL="macOS" ;;
+              *Linux*)   OS_LABEL="Linux x86_64" ;;
+              *)         OS_LABEL="?" ;;
+            esac
+            echo "| $OS_LABEL | \`$(basename "$BIN_ZIP")\` | \`$(cat "$BIN_ZIP.sha256")\` |" >> "$NOTES"
+          done
+          if [ "$FOUND_BIN" = true ]; then
             {
               echo
-              echo "### Binaire Linux autonome"
+              echo "**Windows** — décompresser, double-cliquer sur \`EclatsDOrage.exe\`."
               echo
-              echo "\`$(basename "$BIN_ZIP")\` : exécutable x86_64, jeu embarqué —"
-              echo "décompresser, \`chmod +x\`, lancer. Aucune installation requise."
+              echo "**macOS** — décompresser, puis **clic droit sur l'application →"
+              echo "Ouvrir**, et confirmer. Un double-clic ordinaire sera refusé :"
+              echo "l'application n'est pas signée par Apple, faute de compte"
+              echo "développeur. Ce n'est pas un défaut du jeu."
+              echo
+              echo "**Linux** — décompresser, \`chmod +x EclatsDOrage.x86_64\`, lancer."
             } >> "$NOTES"
           fi
           gh release create "$TAG" \
