@@ -291,6 +291,16 @@ func _teardown() -> void:
 	if game_state != null:
 		game_state.call("set_flow", 0)
 		game_state.call("consume_pending_spawn")
+	# L'AMBIANCE SURVIT AU MONDE. `ValleyWorld._ready()` demande
+	# `AudioManager.play_ambience(&"amb_valley")`, et `AudioManager` est un
+	# autoload : son lecteur et le WAV restent référencés après la disparition
+	# de la vallée. En fin de processus, Godot le signale — « 2 ObjectDB
+	# instances were leaked », « Resource still in use: amb_valley.wav ». Ce
+	# n'est pas une fuite de gameplay ; c'est un test qui ne rend pas le
+	# processus tel qu'il l'a trouvé. On le rend.
+	var audio: Node = _tree().root.get_node_or_null("/root/AudioManager")
+	if audio != null and audio.has_method("stop_ambience"):
+		audio.call("stop_ambience")
 	await _settle(4)
 	restore_saves()
 
