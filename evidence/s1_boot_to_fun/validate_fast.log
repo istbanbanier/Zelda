@@ -7,7 +7,7 @@
   [OK]   import sans parse error (code retour 0)
 
 === 1b. Parse de TOUS les scripts GDScript ===
-  [OK]   327 script(s) GDScript parsés sans erreur
+  [OK]   329 script(s) GDScript parsés sans erreur
 
 === 2. Tests unitaires ===
     ok   test_asset_pipeline.gd::test_the_registry_resolves_delivered_assets_and_declines_missing_ones (53 assertions)
@@ -682,11 +682,12 @@
     ok   test_worn_sword_asset.gd::test_the_ground_pickup_presents_the_model_and_still_hands_it_over (4 assertions)
     ok   test_worn_sword_asset.gd::test_the_icon_is_a_real_transparent_render_and_no_test_asset_ships (4 assertions)
     ok   test_worn_sword_asset.gd::test_every_weapon_carries_its_own_production_model (26 assertions)
-    ok   test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley (19 assertions)
+    ok   test_boot_smoke.gd::test_boot_smoke_from_boot_to_a_playable_valley (20 assertions)
     ok   test_boss_run.gd::test_the_guardian_falls_to_the_loot_the_game_guarantees (17 assertions)
     ok   test_dungeon_run.gd::test_the_four_rooms_are_solvable_from_a_virgin_save (29 assertions)
     ok   test_dungeon_run.gd::test_the_dungeon_resumes_from_an_intermediate_save (32 assertions)
-    ok   test_golden_path.gd::test_golden_path_from_boot_to_the_dungeon_entrance (20 assertions)
+    ok   test_flow_wiring_path.gd::test_the_flow_wires_boot_to_the_first_dungeon_room (20 assertions)
+    ÉCHEC test_physical_run.gd::test_a_player_walks_from_the_menu_to_the_first_dungeon_room — P9c — l'invite répond DEVANT la porte, au centre du battant — à l'appui : mode=0, sol=true [d=0.75 m (max 2,20) · cos=1.00 (min 0,25) · groupe=true · vue=SealedSeam · choisi=aucun]
     ok   test_traversal_course.gd::test_the_full_traversal_course_is_completed_without_a_softlock (13 assertions)
     ok   test_action_alignment.gd::test_begin_refuses_a_correction_beyond_the_cap (2 assertions)
     ok   test_action_alignment.gd::test_begin_accepts_a_correction_within_the_cap (2 assertions)
@@ -783,6 +784,9 @@
     ok   test_invariants.gd::test_reference_image_is_never_a_game_asset (1 assertions)
     ok   test_material_profiles.gd::test_the_eight_canonical_profiles_load_with_unique_ids_and_lawful_values (56 assertions)
     ok   test_material_profiles.gd::test_profiles_respect_the_material_laws_of_the_world (8 assertions)
+    ok   test_restore_root.gd::test_an_ordinary_stray_is_removed_and_the_verdict_is_clean (2 assertions)
+    ok   test_restore_root.gd::test_a_same_name_replacement_does_not_survive_the_sweep (3 assertions)
+    ok   test_restore_root.gd::test_a_late_arrival_is_swept_and_refused (3 assertions)
     ok   test_save_system.gd::test_roundtrip_preserves_payload (7 assertions)
     ok   test_save_system.gd::test_previous_save_is_kept_as_backup (4 assertions)
     ok   test_save_system.gd::test_no_temporary_file_survives_a_successful_save (2 assertions)
@@ -816,8 +820,9 @@
     ok   test_weapon_data.gd::test_inventory_refuses_overflow_and_duplicates (13 assertions)
     ok   test_weapon_data.gd::test_removal_equips_the_next_weapon_then_bare_hands (5 assertions)
     ok   test_weapon_data.gd::test_arrows_are_counted_and_never_negative (7 assertions)
-  === RÉSULTAT: 806 réussi(s), 0 échoué(s) ===
-  [OK]   suite unitaire verte
+  === RÉSULTAT: 809 réussi(s), 1 échoué(s) ===
+    ÉCHEC: test_physical_run.gd::test_a_player_walks_from_the_menu_to_the_first_dungeon_room — P9c — l'invite répond DEVANT la porte, au centre du battant — à l'appui : mode=0, sol=true [d=0.75 m (max 2,20) · cos=1.00 (min 0,25) · groupe=true · vue=SealedSeam · choisi=aucun]
+  [ÉCHEC] suite unitaire rouge (code 1, voir evidence/validate_fast/02_unit.log)
   [OK]   aucune erreur signalée dans le journal des tests
 
 === 3. Scène d'intégration (lancement réel : Boot -> MainMenu) ===
@@ -837,8 +842,8 @@
   [OK]   6 personnage(s) : un seul corps solidaire, aucune pièce détachée
 
 === 4. Plancher de couverture ===
-  [OK]   806 test(s) exécuté(s), plancher 586 respecté
+  [OK]   809 test(s) exécuté(s), plancher 586 respecté
 
-=== VALIDATE_FAST : VERT ===
+=== VALIDATE_FAST : ROUGE ===
 logs: evidence/validate_fast
-VALIDATE_FAST_RC=0
+VALIDATE_FAST_RC=1
