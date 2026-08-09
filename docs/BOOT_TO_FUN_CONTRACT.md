@@ -50,7 +50,7 @@ Fichier : `tests/playthrough/test_boot_smoke.gd`
 | B1 | `Boot.tscn` s'instancie et survit à `_ready()` | assertion B1 |
 | B2 | Boot atteint le menu principal **seul** | assertion B2 |
 | B3 | Le menu porte un bouton « Nouvelle partie » actionnable | assertion B3 |
-| B4 | Le presser ouvre **réellement** la vallée | assertions B4, B4a |
+| B4 | Le presser ouvre **réellement** la vallée | assertion B4, dans ses **deux** branches : avec et sans sauvegarde préalable |
 | B5 | Un joueur vivant, posé sur un sol valide | assertion B5 |
 | B6 | Caméra et HUD montés | assertion B6 |
 | B7 | Le héros ne passe pas sous le monde | assertion B7 |
@@ -82,6 +82,25 @@ delà d'un obstacle, appeler une fonction de récompense, instancier le boss hor
 du flux, court-circuiter une condition. Il peut accélérer une attente ; jamais
 sauter une étape.
 
+### Ce que ce parcours ne prouve PAS, et qu'il serait malhonnête de laisser croire
+
+**Le voyage.** Le pilote appelle `interact()` sur un coffre à 86 m et sur une
+porte à 344 m, et `SceneDoor.interact()` ne vérifie aucune distance — la portée
+est appliquée par l'`InteractionComponent` du joueur, pas par la porte. Le
+parcours prouve donc que le **graphe de transitions** est câblé ; il ne prouve
+jamais que le héros puisse parcourir les 344 mètres. Un ravin, un trou de
+collision ou une falaise infranchissable au milieu du chemin le laisserait vert.
+
+Aucun test du dépôt ne fait **marcher** le héros dans la vallée : tous le
+posent. `test_interaction_reachable.gd` couvre bien « le joueur debout devant
+l'objet voit l'invite » — en le plaçant, pas en l'y amenant. Le trajet entre
+deux points de la vallée est le seul maillon du contrat que rien ne surveille,
+et c'est exactement là que les défauts rapportés par le propriétaire se sont
+logés (« je tombe à travers le sol ici »).
+
+C'est la même faute que celle dénoncée en tête de ce document, d'un cran plus
+haut : un test de câblage n'est pas une preuve d'atteignabilité.
+
 ## C — Ce qu'aucun test headless ne peut prouver
 
 Ces critères restent **`BLOQUÉ`** tant qu'une personne ne les a pas essayés.
@@ -109,7 +128,7 @@ Le gate doit **échouer fermé**. Une étape non exécutée n'est jamais verte :
 - une erreur de script pendant un test est attrapée par le garde-fou ISS-027 du
   journal, même si aucune assertion ne rougit.
 
-### Trois faux témoins déjà rencontrés, gardés ici pour qu'ils ne reviennent pas
+### Quatre faux témoins déjà rencontrés, gardés ici pour qu'ils ne reviennent pas
 
 1. **Un test absent du worktree** comptait comme « le gate a vu le sabotage ».
 2. **`set -o pipefail` + un tube** : le code retour lu était celui de Godot, qui
@@ -118,5 +137,11 @@ Le gate doit **échouer fermé**. Une étape non exécutée n'est jamais verte :
    l'écrase : le sabotage ne cassait rien, et le vert du gate était correct
    pendant que le contrôle criait « faille ». L'équilibrage de ce dépôt vit
    dans des `Resource` (§5.4).
+4. **Deux verts en isolation valant pour un vert de suite.** Les deux parcours
+   passaient seuls et faisaient sortir `validate_fast.sh` en ROUGE : le court
+   laissait la vallée dans l'arbre, et `test_dungeon_run` démarrait dedans
+   trente fichiers plus loin — dix-sept assertions tombaient pour une faute qui
+   n'était pas la leur. Un parcours ne se juge que **dans la suite complète**
+   (`tests/CLAUDE.md`).
 
-Chacun de ces trois aurait produit un verdict inversé.
+Chacun de ces quatre aurait produit un verdict inversé.
