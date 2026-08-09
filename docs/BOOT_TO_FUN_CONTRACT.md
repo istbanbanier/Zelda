@@ -161,7 +161,19 @@ Le gate doit **échouer fermé**. Une étape non exécutée n'est jamais verte :
 - une erreur de script pendant un test est attrapée par le garde-fou ISS-027 du
   journal, même si aucune assertion ne rougit.
 
-### Quatre faux témoins déjà rencontrés, gardés ici pour qu'ils ne reviennent pas
+### Le verdict global reste NON VÉRIFIÉ
+
+Deux parcours verts ne font pas un jeu jouable. Restent hors de portée de la
+machine, et donc du verdict :
+
+- salles 2 à 4, salle centrale, antichambre, boss, victoire — jamais atteints
+  depuis le flux normal ;
+- caméra, compréhension de l'objectif, lisibilité, son, manette, FPS ;
+- `P9c` échoue : l'invite est muette au centre de la porte du donjon.
+
+`BOOT-TO-FUN` ne pourra être déclaré `PASS` qu'après le protocole humain.
+
+### Cinq faux témoins déjà rencontrés, gardés ici pour qu'ils ne reviennent pas
 
 1. **Un test absent du worktree** comptait comme « le gate a vu le sabotage ».
 2. **`set -o pipefail` + un tube** : le code retour lu était celui de Godot, qui
@@ -177,4 +189,11 @@ Le gate doit **échouer fermé**. Une étape non exécutée n'est jamais verte :
    n'était pas la leur. Un parcours ne se juge que **dans la suite complète**
    (`tests/CLAUDE.md`).
 
-Chacun de ces quatre aurait produit un verdict inversé.
+5. **Un pilote plus mauvais qu'un joueur.** Le parcours physique poussait tout
+   droit et s'arrêtait contre le décor : 4 jalons sur 11, et l'accusation aurait
+   porté sur le terrain. Un joueur oblique, saute, s'écarte puis revient. Une
+   fois le pilote doté de ces trois gestes, 11/11 puis 5/5. Un test qui joue mal
+   accuse le jeu à tort — même famille que le cast raté qui déclarait « aucune
+   cible de Résonance dans le monde ».
+
+Chacun de ces cinq aurait produit un verdict inversé.

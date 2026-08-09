@@ -65,6 +65,16 @@ Prenez dix minutes, pas plus. Vous n'avez rien à finir.
 Si vous pouvez, notez **l'endroit** : « près de la rivière », « en descendant de
 la colline ». Ça suffit à retrouver le lieu exact.
 
+## 4 bis. Un point précis, si vous atteignez le donjon
+
+Devant la grande porte du fond de la citadelle, **placez-vous bien en face, au
+milieu**, et appuyez sur **E**.
+
+Un test a trouvé qu'à cet endroit exact l'invite ne répond pas : une veine
+lumineuse décorative posée devant le battant coupe la ligne de vue. Un pas de
+côté et la porte s'ouvre. Dites-moi simplement si vous constatez la même chose —
+c'est le genre de détail qui fait croire qu'une touche ne marche pas.
+
 ## 5. Le mode développement, si vous voulez
 
 Il existe et il est fait pour ça — voir `docs/MODE_DEV.md` :
