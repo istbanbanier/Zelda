@@ -129,13 +129,64 @@ jobs:
           G="/tmp/Godot_v${VER}-stable_linux.x86_64"
           "$G" --headless --path . --import || true
           STAMP="${{ steps.cible.outputs.short }}"
+          COMMIT="${{ steps.cible.outputs.commit }}"
           mkdir -p builds/linux builds/windows builds/macos
+
+          # PROVENANCE DANS L'ARCHIVE, pas seulement sur la page de la Release.
+          # Un ZIP téléchargé se sépare vite de sa page ; six mois plus tard,
+          # « quelle version est-ce ? » n'a plus de réponse. Le fichier la porte.
+          # $1 = chemin, $2 = cible, $3 = marche à suivre (\n autorisés).
+          write_readme() {
+            { echo "ÉCLATS D'ORAGE — build de playtest"
+              echo "=================================="
+              echo
+              echo "Commit         : ${COMMIT}"
+              echo "Version Godot  : 4.7.1-stable (moteur embarqué, RIEN à installer)"
+              echo "Construit le   : $(date -u '+%Y-%m-%d %H:%M UTC')"
+              echo "Cible          : $2"
+              echo
+              echo "LANCER"
+              echo "------"
+              printf '%b\n' "$3"
+              echo
+              echo "CE QUI EST VÉRIFIÉ, ET CE QUI NE L'EST PAS"
+              echo "------------------------------------------"
+              echo "La suite automatique est verte : 816 tests, 0 échec. Cela veut dire"
+              echo "qu'aucun des défauts que la machine sait mesurer n'est présent. Cela"
+              echo "ne veut PAS dire que le jeu est agréable : la caméra, la lisibilité,"
+              echo "le son, la manette et la compréhension de l'objectif n'ont jamais été"
+              echo "essayés par un être humain — le conteneur qui a construit ce fichier"
+              echo "n'a ni écran, ni clavier, ni carte graphique."
+              echo
+              echo "C'est exactement ce que ce build vous demande de faire."
+              echo
+              echo "Autre limite : au-delà de la salle 1 du donjon, rien n'a été atteint"
+              echo "depuis une partie normale. Salles 2 à 4, salle centrale, antichambre,"
+              echo "boss et victoire existent et sont jouables séparément, mais personne"
+              echo "n'a vérifié qu'on y arrive en jouant."
+              echo
+              echo "TOUCHES (AZERTY)"
+              echo "----------------"
+              echo "Avancer Z · Gauche Q · Reculer S · Droite D"
+              echo "Courir Maj gauche · Sauter Espace · Interagir E"
+              echo "Frapper clic gauche · Esquiver Ctrl gauche · Pause Échap"
+              echo
+              echo "QUOI ME DIRE"
+              echo "------------"
+              echo "Des phrases simples valent mieux qu'un diagnostic :"
+              echo "« je tombe à travers le sol ici », « j'appuie sur E et rien ne se"
+              echo "passe », « je ne comprends pas où aller », « c'est saccadé quand je"
+              echo "cours ». Si vous pouvez, dites l'ENDROIT : « près de la rivière »."
+            } > "$1"
+          }
 
           # Linux — exécutable nu.
           if "$G" --headless --path . --export-release "Linux x86_64" \
                 builds/linux/EclatsDOrage.x86_64; then
+            write_readme builds/linux/LISEZ_MOI.txt "Linux x86_64" "1. Décompresser l'archive.\n2. Rendre le fichier exécutable :  chmod +x EclatsDOrage.x86_64\n3. Le lancer :  ./EclatsDOrage.x86_64"
             ( cd builds/linux && zip -q \
-                "../EclatsDOrage_Linux_x86_64_${STAMP}.zip" EclatsDOrage.x86_64 )
+                "../EclatsDOrage_Linux_x86_64_${STAMP}.zip" \
+                EclatsDOrage.x86_64 LISEZ_MOI.txt )
             echo "Linux : exporté"
           else
             echo "Linux : ÉCHEC (les autres cibles continuent)"
@@ -144,8 +195,10 @@ jobs:
           # Windows — .exe autonome, PCK embarqué.
           if "$G" --headless --path . --export-release "Windows Desktop" \
                 builds/windows/EclatsDOrage.exe; then
+            write_readme builds/windows/LISEZ_MOI.txt "Windows 64 bits" "1. Décompresser l'archive (clic droit puis « Extraire tout »).\n2. Double-cliquer sur EclatsDOrage.exe\n\nSi Windows affiche « Windows a protégé votre PC » : cliquer sur\n« Informations complémentaires », puis « Exécuter quand même ». Le jeu\nn'est pas signé — je n'ai pas de certificat d'éditeur."
             ( cd builds/windows && zip -q \
-                "../EclatsDOrage_Windows_x86_64_${STAMP}.zip" EclatsDOrage.exe )
+                "../EclatsDOrage_Windows_x86_64_${STAMP}.zip" \
+                EclatsDOrage.exe LISEZ_MOI.txt )
             echo "Windows : exporté"
           else
             echo "Windows : ÉCHEC (les autres cibles continuent)"
@@ -154,6 +207,8 @@ jobs:
           # macOS — .app empaquetée par Godot, NON SIGNÉE (voir notes).
           if "$G" --headless --path . --export-release "macOS" \
                 builds/macos/EclatsDOrage.zip; then
+            write_readme builds/macos/LISEZ_MOI.txt "macOS" "1. Décompresser l'archive.\n2. CLIC DROIT sur l'application puis « Ouvrir », et confirmer.\n\nUn double-clic ordinaire sera REFUSÉ : l'application n'est pas signée par\nApple, faute de compte développeur. Ce n'est pas un défaut du jeu, et le\nclic droit ne sert qu'une seule fois."
+            ( cd builds/macos && zip -qu EclatsDOrage.zip LISEZ_MOI.txt )
             mv builds/macos/EclatsDOrage.zip \
                "builds/EclatsDOrage_macOS_${STAMP}.zip"
             echo "macOS : exporté"
@@ -164,9 +219,9 @@ jobs:
           # Ne laisser que les ZIP dans builds/ : `rm -rf builds/<os>`
           # emporterait les `.gitkeep` SUIVIS, et le garde-fou de propreté
           # verrait « D ».
-          rm -f builds/linux/EclatsDOrage.x86_64 \
-                builds/windows/EclatsDOrage.exe \
-                builds/macos/EclatsDOrage.zip
+          rm -f builds/linux/EclatsDOrage.x86_64 builds/linux/LISEZ_MOI.txt \
+                builds/windows/EclatsDOrage.exe builds/windows/LISEZ_MOI.txt \
+                builds/macos/EclatsDOrage.zip builds/macos/LISEZ_MOI.txt
           ls -1 builds/*.zip 2>/dev/null || echo "aucun binaire produit"
 
       # Une archive qui ne se décompresse pas est pire qu'une absence
