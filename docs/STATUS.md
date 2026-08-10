@@ -6,6 +6,25 @@ Vocabulaire imposé (§0.2) : `Non commencé` · `Implémenté` (raccordé) ·
 
 **Dernière mise à jour** : 2026-08-06 · **Phase** : Passe art « wahou » sur branche `claude/eclats-art-visual-pass-tyfhgc` — Lots 1-16 FAITS (tour du monde en images : 11 zones capturées + table de verdicts ; TOUTE la carte peinte 3768 surfaces ; citadelle en terrasses ; peinture du donjon tentée puis RETIRÉE sur mesure — AD-008) (v18 : grain procédural + SIX textures ambientCG CC0 déposées par le propriétaire, licences inscrites avant build et test qui le vérifie ; deux corrections de palette mesurées) (v15 : habillage aux 13 modèles Quaternius CC0 du dépôt + variante découpe du painterly pour les feuilles) (v13, éval fin de journée ≈ 71,5 UNVERIFIED < 75 — pas de V4 ; revue contradictoire consignée, corrections prouvées) : éval sévère v5 = 58/100 → AD-004 ; `SH_CharacterPainterly` trois pilotes 3/3 ; PREMIÈRE vidéo de stabilité §30.1 (18,1 s, Movie Maker fixed-fps, `herolab_v6_stabilite.webp`) — elle a révélé l'herbe FIGÉE, corrigée par `SH_FoliageWindPainterly` (sondes 0,00 → 1,6-2,0) ; Lot 4 : le lab ENTIER peint (`test_painterly_lab` — zéro surface mate nue, 3 émissifs justifiés), capture v8, bandes §1.5 intactes · **Gate A gelé** : `9414fd0` · **Commit courant** : voir `git log`
 
+## Tranche verticale d'ouverture — lot 1 (2026-08-10, `claude/vertical-slice-opening-polish`)
+
+Base : `02d5212` (le build du playtest en cours), retenue après constat d'une
+divergence — voir `PROGRESS.md`. Godot et Blender ont dû être installés dans le
+conteneur avant toute mesure.
+
+| Élément | État | Preuve |
+|---|---|---|
+| Plancher de référence, arbre propre | **Validé** | `validate_fast.sh` VERT RC=0, niveau 3b compris (Blender installé) |
+| Capture de référence de la vue d'ouverture | **Fonctionnel** | `evidence/vslice/baseline/01_vista.png` + manifeste, arbre committé |
+| Décor de la crête et de la descente posé au sol | **Validé** | `test_opening_dressing_rests_on_ground.gd` — ROUGE d'abord (28 pièces fautives sur 33, écarts nommés), VERT après |
+| Effet visuel du correctif sur `VistaCamera_Hero01` | **NON VÉRIFIÉ** | la capture change très peu : le décor de la crête est majoritairement hors de ce cadrage. Le gain est ailleurs, et personne ne l'a encore vu à l'écran |
+| Trois joueurs blackbox de l'Étape 1 | **Non commencé** | ≈ 100 min, séquentiels obligatoires |
+| Composition, lisibilité, cadrage, guidage | **Non commencé** | aucun jugement de rendu n'est porté par cette session |
+
+Ce lot corrige une **géométrie fausse**, pas une direction artistique. Il ne doit
+pas être présenté comme une amélioration visuelle : c'est une condition
+préalable pour que le décor déjà écrit existe à l'écran.
+
 ## Playtest du 2026-08-07 — les quatre réparations
 
 Défauts pris dans l'ordre où le joueur les rencontre

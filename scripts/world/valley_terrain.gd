@@ -640,6 +640,73 @@ func _build_forest() -> void:
 	_dress_zone_cliff()
 	_dress_zone_pylon()
 	_dress_zone_citadel_approach()
+	# Les cotes des tables ci-dessus sont écrites à la main ; le relief, lui, a
+	# bougé (passe H-5 : la crête est montée à 32 m). Repose donc le semis de
+	# terrain sur le sol RÉEL — même correctif que les ramassables du 2026-08-07,
+	# même timing différé, pour la même raison : l'espace physique ne connaît
+	# les colliders du terrain qu'après la frame qui les a créés.
+	_snap_dressing_to_ground.call_deferred()
+
+
+## ---------------------------------------------------------------------------
+## Repose du semis de terrain sur le sol réel.
+##
+## LE DÉFAUT CORRIGÉ, mesuré et non supposé : les 21 pièces de `DressZoneCrest`
+## étaient posées à y = 24 — la cote de spawn de MASTER_SPEC §3.3 — alors que la
+## crête culmine à **y = 32,00** depuis la passe H-5. Fleurs, trèfle, fougères,
+## touffes et galets du TOUT PREMIER plan du jeu étaient donc **enterrés de
+## 8,00 m**, invisibles. Sur la descente, quatre pièces étaient au contraire
+## suspendues jusqu'à 13,99 m au-dessus de la plaine — « un rocher et des
+## poteaux flottent dans le ciel », mot pour mot le rapport de jeu du
+## 2026-08-07. C'est la MÊME classe de défaut que les deux fruits enterrés
+## corrigés ce jour-là ; seuls les ramassables avaient alors été traités.
+##
+## Seules les zones de SEMIS DE TERRAIN sont reposées. `DressZoneCitadel` en est
+## exclue à dessein : ses bannières et ses torches sont accrochées à des murs,
+## et les reposer au sol les ferait tomber. Le X et le Z ne bougent JAMAIS — la
+## composition (cadre latéral, couloir central vide de §11.A) est le travail
+## d'un autre, et ce correctif ne touche qu'une cote fausse.
+## ---------------------------------------------------------------------------
+
+## Zones dont chaque pièce doit toucher le terrain. Étendre cette liste est un
+## geste délibéré : y ajouter une zone qui porte du décor accroché le casserait.
+const GROUNDED_DRESS_ZONES: Array[String] = [
+	"DressZoneCrest", "DressZoneDescent",
+]
+## Sonde volontairement longue : le défaut réel atteignait 14 m d'écart, un
+## rayon court ne l'aurait pas rattrapé.
+const DRESS_SNAP_UP: float = 60.0
+const DRESS_SNAP_DOWN: float = 80.0
+
+
+func _snap_dressing_to_ground() -> void:
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	if space == null:
+		return
+	for zone_name: String in GROUNDED_DRESS_ZONES:
+		var zone: Node3D = get_node_or_null(NodePath(zone_name)) as Node3D
+		if zone == null:
+			continue
+		# Les troncs du décor portent une collision : sans les exclure, le rayon
+		# heurterait l'arbre qu'il mesure et le déclarerait posé sur lui-même.
+		var excluded: Array[RID] = []
+		for node: Node in zone.find_children("*", "PhysicsBody3D", true, false):
+			excluded.append((node as PhysicsBody3D).get_rid())
+		for child: Node in zone.get_children():
+			var piece: Node3D = child as Node3D
+			if piece == null:
+				continue
+			var from: Vector3 = piece.global_position + Vector3.UP * DRESS_SNAP_UP
+			var to: Vector3 = piece.global_position - Vector3.UP * DRESS_SNAP_DOWN
+			# Couche 1 (World Static) seule : le décor se pose sur le relief.
+			var query: PhysicsRayQueryParameters3D = \
+				PhysicsRayQueryParameters3D.create(from, to, 1)
+			query.exclude = excluded
+			var hit: Dictionary = space.intersect_ray(query)
+			if hit.is_empty():
+				continue   # aucun sol sous la pièce : la laisser où elle est
+			piece.global_position = Vector3(piece.global_position.x,
+				(hit["position"] as Vector3).y, piece.global_position.z)
 
 
 ## ---------------------------------------------------------------------------
