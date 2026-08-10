@@ -69,6 +69,17 @@ très haut, seule façon de trouver la surface plutôt qu'une face intérieure.
   `DressZoneCitadel` est exclue à dessein — ses bannières et torches sont
   accrochées à des murs.
 
+### Verdict de non-régression
+
+**`validate_fast.sh` VERT, RC=0, 817 tests** après correctif (816 avant + le
+nouveau) — `evidence/vslice/validate_fast_APRES_e70a2a7.log`, à comparer au
+plancher de référence `evidence/vslice/validate_fast_AVANT_base_02d5212.log`.
+
+Nuance imposée par ISS-038 : la suite n'est pas déterministe, donc **un passage
+vert ne prouve pas qu'un test est sain**. Ce qui est dit ici est plus modeste :
+trois passages complets (deux sur la base, un après correctif) n'ont montré
+aucune régression.
+
 ### Ce que ce lot ne prouve PAS
 
 La capture `VistaCamera_Hero01` change **très peu** : la caméra est à z = 153,4
