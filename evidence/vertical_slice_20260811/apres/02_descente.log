@@ -22,6 +22,6 @@ WARNING: All audio drivers failed, falling back to the dummy driver.
 [art] vallée peinte : 4179 surfaces
 [monde] lieux habités : 8 chemins, 14 objets de vie
 [capture] géométrie : 3983 géométrie(s) visible(s) dans la scène
-[capture] contenu   : 318 couleurs distinctes (échantillon), écart-type luma 0.07
-[capture] contribution : 99.919 % des pixels échantillonnés changent quand la géométrie est masquée
+[capture] contenu   : 2821 couleurs distinctes (échantillon), écart-type luma 0.23
+[capture] contribution : 94.343 % des pixels échantillonnés changent quand la géométrie est masquée
 [capture] OK -> /home/user/Zelda/evidence/vertical_slice_20260811/apres/02_descente.png (1920x1080)
