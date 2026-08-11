@@ -86,10 +86,15 @@ tronçons chevauchants plaqués au sol, épaulements, pierres), camp réévalué
 (étape 6), talus des deux dernières mesas SANS toucher la paroi d'escalade
 (étape 7). Chaque geste : test rouge d'abord quand vérifiable machine.
 
-**Jeu final : `final/`** — les six caméras, mêmes réglages, arbre committé.
-Mesures : §1.5 conforme sur **5 caméras sur 6** (la 6 n'a pas de ciel dans
-son bandeau mesuré — verdict non pertinent, reporté tel quel) ; écarts
-haut/milieu : 5,4 / 32,0 / 20,3 / 26,9 / 13,0 / 52,8.
+**Jeu final : `final/`** (v2, après corrections 6-7 du propriétaire) — les
+six caméras, mêmes réglages, arbre committé. Mesures : §1.5 conforme sur
+**5 caméras sur 6** (la 6 n'a pas de ciel dans son bandeau mesuré — verdict
+non pertinent, reporté tel quel) ; écarts haut/milieu : 5,4 / **36,4** /
+20,6 / 26,9 / 13,0 / 52,8. Corrections appliquées : verrou `flock` atomique
+(contrôles négatif ET positif exécutés), vides placés là où les caméras
+regardent (porche profond, baies du Keep, mur percé détaché, arche rompue),
+chemin en ensemble (terre 78 % → 62 % de valeur, langues d'herbe, grappes
+de pierres), matrice scindée visible/backlog.
 
 Traçabilité : `AUDIT_TRACEABILITY.csv` (87 constats : 3 PROUVÉ, 2 CORRIGÉ,
 20 À TRAITER, 3 BLOQUÉ, 59 REPORTÉ AU BACKLOG) et `AUDIT_FILES_USED.md`.
