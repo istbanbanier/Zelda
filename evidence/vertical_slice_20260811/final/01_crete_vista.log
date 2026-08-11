@@ -19,9 +19,13 @@ WARNING: All audio drivers failed, falling back to the dummy driver.
 [capture] sortie   : evidence/vertical_slice_20260811/final/01_crete_vista.png
 [capture] taille   : 1920x1080, frames=40
 [capture] renderer : forward_plus / llvmpipe (LLVM 20.1.2, 256 bits)
-[art] vallée peinte : 4294 surfaces
+[art] vallée peinte : 4380 surfaces
 [monde] lieux habités : 8 chemins, 14 objets de vie
-[capture] géométrie : 4143 géométrie(s) visible(s) dans la scène
-[capture] contenu   : 3019 couleurs distinctes (échantillon), écart-type luma 0.23
-[capture] contribution : 88.889 % des pixels échantillonnés changent quand la géométrie est masquée
+[capture] géométrie : 4229 géométrie(s) visible(s) dans la scène
+[capture] contenu   : 2993 couleurs distinctes (échantillon), écart-type luma 0.24
+[capture] contribution : 88.895 % des pixels échantillonnés changent quand la géométrie est masquée
 [capture] OK -> /home/user/Zelda/evidence/vertical_slice_20260811/final/01_crete_vista.png (1920x1080)
+WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 1 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

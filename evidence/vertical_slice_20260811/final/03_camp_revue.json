@@ -3,9 +3,9 @@
   "ground_p95_value_pct": 67.8,
   "height": 1080,
   "hierarchy_ok": true,
-  "saturation_mean": 35.9,
-  "separation_haut_milieu": 20.3,
-  "separation_milieu_bas": 15.9,
+  "saturation_mean": 35.8,
+  "separation_haut_milieu": 20.6,
+  "separation_milieu_bas": 16.2,
   "sky_p50_value_pct": 78.0,
   "source": "evidence/vertical_slice_20260811/final/03_camp.png",
   "thirds_luma_pct": {
@@ -21,8 +21,8 @@
     },
     "milieu": {
       "p05": 25.5,
-      "p50": 45.1,
-      "p95": 75.2
+      "p50": 44.8,
+      "p95": 75.0
     }
   },
   "vignette": "/home/user/Zelda/evidence/vertical_slice_20260811/final/03_camp_vignette.png",
