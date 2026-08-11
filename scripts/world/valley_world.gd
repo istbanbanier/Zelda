@@ -538,9 +538,19 @@ func _setup_vista_camera() -> void:
 	# regard le long des rampes vers le camp.
 	var descent_camera: Camera3D = Camera3D.new()
 	descent_camera.name = "DescentCamera_01"
-	descent_camera.position = Vector3(14.0, 27.0, 152.0)
-	descent_camera.rotation_degrees = Vector3(-16.0, 12.0, 0.0)
-	descent_camera.fov = 58.0
+	# CAMÉRA ENTERRÉE, corrigée le 2026-08-11. Elle était posée à
+	# (14 ; 27 ; 152) : `SpawnRidge` est une dalle qui couvre x −50..50 et
+	# z 144..208 avec son sommet à **y = 32**. La caméra se trouvait donc
+	# CINQ MÈTRES SOUS le sol de la crête, à l'intérieur du volume. Sa capture
+	# de gate est un aplat vert du bord au bord, et l'était déjà au commit
+	# audité — personne ne l'avait regardée.
+	#
+	# Reposée 3 m au-dessus du rebord et orientée vers le camp (45 ; 6 ; 65) :
+	# lacet −21,5° et plongée −17° sont l'angle exact de ce vecteur, pas un
+	# réglage à l'œil.
+	descent_camera.position = Vector3(10.0, 35.0, 154.0)
+	descent_camera.rotation_degrees = Vector3(-17.0, -21.5, 0.0)
+	descent_camera.fov = 60.0
 	descent_camera.current = false
 	add_child(descent_camera)
 	if OS.get_environment("VALLEY_DESCENT") == "1":
