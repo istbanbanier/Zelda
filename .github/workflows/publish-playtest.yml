@@ -18,6 +18,8 @@ name: Publier l'archive jouable
 
 on:
   push:
+    branches:
+      - 'codex/publish-20260811'
     tags:
       - 'playtest-*'
   workflow_dispatch:
@@ -151,9 +153,10 @@ jobs:
               echo
               echo "CE QUI EST VÉRIFIÉ, ET CE QUI NE L'EST PAS"
               echo "------------------------------------------"
-              echo "La suite automatique est verte : 816 tests, 0 échec. Cela veut dire"
-              echo "qu'aucun des défauts que la machine sait mesurer n'est présent. Cela"
-              echo "ne veut PAS dire que le jeu est agréable : la caméra, la lisibilité,"
+              echo "Gate ciblé Codex : 20 réussites, 0 échec. Suite complète :"
+              echo "818 réussites, 5 échecs connus — dont un présent sur la base et"
+              echo "quatre sensibles à l'ordre d'exécution. Le jeu peut donc encore"
+              echo "contenir des défauts. La caméra, la lisibilité,"
               echo "le son, la manette et la compréhension de l'objectif n'ont jamais été"
               echo "essayés par un être humain — le conteneur qui a construit ce fichier"
               echo "n'a ni écran, ni clavier, ni carte graphique."
