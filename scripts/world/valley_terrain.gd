@@ -816,6 +816,9 @@ const GROUNDED_DRESS_ZONES: Array[String] = [
 const GROUNDED_DECAL_NODES: Array[String] = ["Paths", "PathEdges"]
 const PATH_CLEARANCE: float = 0.02
 const EDGE_CLEARANCE: float = 0.008
+## Les langues d'herbe mordent PAR-DESSUS la terre : au-dessus des tronçons
+## (0,02), sous rien d'autre.
+const TONGUE_LIFT: float = 0.032
 ## Sonde volontairement longue : le défaut réel atteignait 14 m d'écart, un
 ## rayon court ne l'aurait pas rattrapé.
 const DRESS_SNAP_UP: float = 60.0
@@ -830,11 +833,11 @@ func _snap_dressing_to_ground() -> void:
 		var zone: Node3D = get_node_or_null(NodePath(zone_name)) as Node3D
 		if zone == null:
 			continue
-		var clearance: float = 0.0
+		var zone_clearance: float = 0.0
 		if zone_name == "Paths":
-			clearance = PATH_CLEARANCE
+			zone_clearance = PATH_CLEARANCE
 		elif zone_name == "PathEdges":
-			clearance = EDGE_CLEARANCE
+			zone_clearance = EDGE_CLEARANCE
 		# Les troncs du décor portent une collision : sans les exclure, le rayon
 		# heurterait l'arbre qu'il mesure et le déclarerait posé sur lui-même.
 		var excluded: Array[RID] = []
@@ -853,6 +856,10 @@ func _snap_dressing_to_ground() -> void:
 			var hit: Dictionary = space.intersect_ray(query)
 			if hit.is_empty():
 				continue   # aucun sol sous la pièce : la laisser où elle est
+			# Les langues d'herbe mordent PAR-DESSUS les tronçons de terre :
+			# leur clairance dépasse celle de « Paths ».
+			var clearance: float = TONGUE_LIFT \
+				if String(piece.name).begins_with("PathGrass") else zone_clearance
 			piece.global_position = Vector3(piece.global_position.x,
 				(hit["position"] as Vector3).y + clearance, piece.global_position.z)
 
@@ -2150,9 +2157,17 @@ func _build_paths() -> void:
 	add_child(edges)
 	# Trois teintes de terre partagées (le cache de matériaux fusionnerait des
 	# duplicatas de toute façon — autant être explicite).
+	# Correction 7 du propriétaire : « remplacer une grande bande par
+	# plusieurs petits quads reste insuffisant si l'image montre encore une
+	# bande posée ». Ce qui trahissait encore la bande, mesuré sur la capture
+	# de la caméra 2 : la TERRE rendait ~78 % de valeur en plein soleil (gain
+	# 1,4-1,8 sur l'albédo, scripts/CLAUDE.md) — plus claire que tout ce qui
+	# l'entoure — et la transition terre → prairie était un BORD, pas un
+	# dégradé. Terre assombrie et désaturée vers le sol ; l'écart de teinte
+	# entre tronçons s'élargit (l'usure n'est pas uniforme).
 	var earth_tints: Array[StandardMaterial3D] = []
-	for tint: Color in [COL_PATH.darkened(0.10), COL_PATH,
-			COL_PATH.lightened(0.08)]:
+	for tint: Color in [Color(0.238, 0.196, 0.138), Color(0.300, 0.244, 0.166),
+			Color(0.352, 0.292, 0.204)]:
 		var earth: StandardMaterial3D = StandardMaterial3D.new()
 		earth.albedo_color = tint
 		earth.roughness = 0.95
@@ -2160,6 +2175,11 @@ func _build_paths() -> void:
 	var shoulder_material: StandardMaterial3D = StandardMaterial3D.new()
 	shoulder_material.albedo_color = Color(0.148, 0.222, 0.118)   # herbe foulée
 	shoulder_material.roughness = 0.96
+	# Langues d'herbe : la prairie REPREND le chemin par endroits — c'est le
+	# contour du chemin qui se casse, pas seulement sa surface.
+	var tongue_material: StandardMaterial3D = StandardMaterial3D.new()
+	tongue_material.albedo_color = Color(0.196, 0.300, 0.146)
+	tongue_material.roughness = 0.96
 	var stone_material: StandardMaterial3D = StandardMaterial3D.new()
 	stone_material.albedo_color = COL_STONE
 	stone_material.roughness = 0.9
@@ -2212,23 +2232,51 @@ func _build_paths() -> void:
 			shoulder.position = Vector3(centre.x, ground, centre.y)
 			shoulder.rotation.y = quad.rotation.y
 			edges.add_child(shoulder)
-			# Une pierre de bord un tronçon sur deux, côté alterné.
+			# LANGUE D'HERBE en travers du bord (correction 7) : un tronçon
+			# sur deux, la prairie mord sur la terre — le contour du chemin
+			# se casse au lieu de courir d'un seul trait.
+			if j % 2 == 0:
+				var tongue: MeshInstance3D = MeshInstance3D.new()
+				tongue.name = "PathGrass%02d_%02d" % [i, j]
+				var blob: PlaneMesh = PlaneMesh.new()
+				blob.size = Vector2(rng.randf_range(1.2, 2.4),
+					rng.randf_range(1.0, 1.8))
+				tongue.mesh = blob
+				tongue.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+				tongue.material_override = tongue_material
+				var bite: float = (1.0 if (i + j) % 4 < 2 else -1.0) \
+					* width * rng.randf_range(0.30, 0.55)
+				var at_tongue: Vector2 = centre + side * bite \
+					+ delta.normalized() * rng.randf_range(-1.2, 1.2)
+				# Dans la couche des ÉPAULEMENTS mais au-dessus d'eux : la
+				# passe de repose la plaque à mi-hauteur entre épaulement et
+				# terre (voir TONGUE_LIFT dans _snap_dressing_to_ground).
+				tongue.position = Vector3(at_tongue.x, ground, at_tongue.y)
+				tongue.rotation.y = quad.rotation.y + rng.randf_range(-0.6, 0.6)
+				edges.add_child(tongue)
+			# Une pierre de bord un tronçon sur deux, côté alterné — et par
+			# petites GRAPPES de 2-3, jamais une perle isolée tous les X m.
 			if j % 2 == 1:
-				var stone: MeshInstance3D = MeshInstance3D.new()
-				stone.name = "PathStone%02d_%02d" % [i, j]
-				var pebble: SphereMesh = SphereMesh.new()
-				pebble.radius = rng.randf_range(0.14, 0.30)
-				pebble.height = pebble.radius * 1.5
-				pebble.radial_segments = 7
-				pebble.rings = 4
-				stone.mesh = pebble
-				stone.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-				stone.material_override = stone_material
+				var cluster: int = rng.randi_range(2, 3)
 				var flank: float = (1.0 if j % 4 == 1 else -1.0) \
 					* (width * 0.5 + rng.randf_range(0.3, 0.8))
-				var at_stone: Vector2 = centre + side * flank
-				stone.position = Vector3(at_stone.x, ground, at_stone.y)
-				edges.add_child(stone)
+				var at_cluster: Vector2 = centre + side * flank
+				for k: int in range(cluster):
+					var stone: MeshInstance3D = MeshInstance3D.new()
+					stone.name = "PathStone%02d_%02d_%d" % [i, j, k]
+					var pebble: SphereMesh = SphereMesh.new()
+					pebble.radius = rng.randf_range(0.10, 0.26)
+					pebble.height = pebble.radius * 1.5
+					pebble.radial_segments = 7
+					pebble.rings = 4
+					stone.mesh = pebble
+					stone.cast_shadow = \
+						GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+					stone.material_override = stone_material
+					var at_stone: Vector2 = at_cluster + Vector2(
+						rng.randf_range(-0.5, 0.5), rng.randf_range(-0.5, 0.5))
+					stone.position = Vector3(at_stone.x, ground, at_stone.y)
+					edges.add_child(stone)
 
 
 ## Variation des sols (réf. 01 : « matériaux de sol mieux différenciés ») :

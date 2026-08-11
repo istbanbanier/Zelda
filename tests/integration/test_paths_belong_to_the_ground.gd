@@ -125,10 +125,16 @@ func test_the_path_has_shoulders_and_stones_of_its_own() -> void:
 			"MeshInstance3D", false, false)
 		var stones: Array[Node] = edges_zone.find_children("PathStone*",
 			"MeshInstance3D", false, false)
+		var tongues: Array[Node] = edges_zone.find_children("PathGrass*",
+			"MeshInstance3D", false, false)
 		check(shoulders.size() >= 20,
 			"l'herbe compressée borde le chemin (%d épaulements)" % shoulders.size())
 		check(stones.size() >= 12,
 			"des pierres jalonnent les bords (%d)" % stones.size())
+		# Correction 7 : le CONTOUR du chemin doit se casser — la prairie mord
+		# sur la terre par endroits, pas seulement à côté d'elle.
+		check(tongues.size() >= 15,
+			"la prairie reprend le chemin par endroits (%d langues)" % tongues.size())
 		for node: Node in shoulders + stones:
 			check_equal((node as MeshInstance3D).cast_shadow,
 				GeometryInstance3D.SHADOW_CASTING_SETTING_OFF,
