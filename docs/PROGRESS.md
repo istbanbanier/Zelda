@@ -5,6 +5,46 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-11 (suite) — étapes 1 à 8 : suite verte, citadelle, chemins, talus
+
+**Branche** : `claude/new-session-840w2o`. **Preuves** : `evidence/vertical_slice_20260811/`
+(`final/` = jeu de référence).
+
+- **Les 8 échecs de sauvegarde n'existaient pas.** Le journal portait DEUX
+  résumés « === RÉSULTAT » et une ligne coupée en plein mot : deux runners
+  concurrents (un survivant de pkill) partageaient `user://saves` et se
+  corrompaient mutuellement. Verrou dans `validate_fast.sh` (sortie 3 BLOQUÉ),
+  piège documenté dans `tools/CLAUDE.md`. Contre-épreuve : suite SEULE →
+  **823/0, RC=0**.
+- **Caméra de descente désenterrée** (5 m sous la crête depuis sa création) ;
+  `test_gate_cameras_are_not_buried` sonde les six caméras, contrôle négatif
+  rouge. Paire 02 recapturée honnêtement.
+- **Étape 4 / citadelle** : terrasses en troncs de pyramide (`_frustum_in`),
+  arcade percée (3 vides plus sombres que la moitié de la pierre — attention
+  au LIFT painterly : pic < 0,14 remonté ×5, le canal bleu du vide est posé à
+  0,14 pile), brèche penchée, deux courtines déviées. Décor sans collision
+  (PT-D1-09). Test rouge d'abord.
+- **Étape 5 / chemins** : chaînes de tronçons ≤ 7 m plaqués individuellement
+  au sol, épaulements `PathEdges` (clairance 8 mm sous les quads), pierres de
+  bord. Le test rouge a mesuré 59 m d'un seul tenant avant.
+- **Étape 7 / mesas** : talus sur pylône (S+E) et falaise d'apprentissage (S)
+  — la face EST de LearningCliff est LA paroi d'escalade : l'exclusion est
+  TESTÉE.
+- Matrice : 3 PROUVÉ / 2 CORRIGÉ / 5 À TRAITER / 3 BLOQUÉ / 74 REPORTÉ.
+
+### PROCHAINE ACTION EXACTE
+
+1. Faire NOTER les captures `final/` par Codex (North Star, gate d'image) —
+   rien ne s'auto-attribue ici.
+2. Si le verdict d'image est favorable : lot F (Options 720p — layout 775 px
+   dans 720, ScrollContainer + test de bornes ; reformuler « Manette prise en
+   charge »).
+3. Les restes rouges nommés au README §4 : Keep/tours en boîtes à collision
+   (remodelage = toucher les colliders, faire précéder d'un filet), terrain
+   plat (ISS-045, filet d'abord), couture bordure/crêtes, monture graybox.
+
+---
+
 ## 2026-08-11 — Tranche verticale d'ouverture, lots A à D : la valeur avant la forme
 
 **Branche** : `claude/new-session-840w2o`. **Base** : `6a996a5`.
