@@ -8,6 +8,54 @@ Aucun `S0`/`S1` ouvert n'est admis pour un build candidat.
 
 ---
 
+## ISS-045 — Le terrain jouable est plat : deux dalles portent 80 % du monde · `S3` · OUVERT
+
+- **Build** : `6a996a5` et suivants (défaut ANTÉRIEUR, relevé par l'audit du 2026-08-11).
+- **Étapes** : sondage physique 32×32, un rayon vertical tous les 16 m
+  (`outils_audit/probe_valley_grid.gd` du pack d'audit).
+- **Observé** : **991 des 1 024 points ont une pente < 5°** et **815 tombent sur
+  `PlainNorth` ou `PlainSouth`** — deux dalles de 512 × 240 et 512 × 260 posées
+  à y = 2. Reliefs et landmarks sont POSÉS dessus.
+- **Impact** : la vallée n'a ni creux, ni bosse, ni chemin naturel ; les trois
+  plans de §1.3 doivent être portés par la couleur seule, faute de volumes.
+- **Pourquoi ce n'est pas corrigé** : déplacer le sol déplacerait ~4 000 objets
+  posés à des cotes absolues par une dizaine de scripts. C'est le changement le
+  plus risqué du dépôt et il n'a pas de filet.
+- **Filet à construire AVANT d'y toucher** : généraliser
+  `test_opening_dressing_rests_on_ground.gd` à toutes les zones, pour qu'un
+  objet enterré ou suspendu rougisse au lieu de se découvrir en capture.
+- **Test de régression** : à écrire avec le correctif.
+
+## ISS-046 — Les chemins sont des bandes posées, pas des chemins · `S3` · OUVERT
+
+- **Build** : `6a996a5` et suivants.
+- **Étapes** : `godot --headless --path . --script tools/godot/probe_frame_masses.gd
+  -- --camera=VistaCamera_Hero01`
+- **Observé** : `PathStrip00` occupe **22,2 %** du cadre d'ouverture. Les dix
+  segments de `_build_paths()` sont des `PlaneMesh` **sans épaisseur** flottant
+  de `PATH_CLEARANCE` au-dessus du sol.
+- **Impact** : critère explicite du gate de la tranche verticale — « chemin lu
+  comme une bande posée sur l'herbe ».
+- **Atténué le 2026-08-11** : `COL_PATH` descendu de 0,62/0,51/0,34 à
+  0,43/0,35/0,23 — le sentier n'est plus l'objet le PLUS clair du cadre. La
+  forme, elle, n'a pas changé.
+- **Correction attendue** : faire appartenir le chemin au sol (compression
+  d'herbe, terre, interruption des fleurs, ruptures de niveau).
+
+## ISS-047 — La citadelle reste un empilement de boîtes alignées sur les axes · `S3` · OUVERT
+
+- **Build** : `6a996a5` et suivants.
+- **Observé** : `CitadelProxy` est fait de `_box_in` axés sur le monde ;
+  §2.4 demande « 10 % vides, arches et ruptures » et moins de vingt grandes
+  formes lisibles à 300–420 m. Créneaux et toitures cassent la frontalité, la
+  MASSE ne la casse pas.
+- **Atténué le 2026-08-11** : le lot A l'a détachée en valeur des montagnes,
+  qui la mangeaient (« focales fusionnées », §30.2).
+- **Contrainte à respecter** : la rotation d'ensemble a déjà été tentée et
+  RETIRÉE — elle faisait pivoter les masses porteuses de collision et rendait
+  l'anneau montagneux franchissable pour la sonde PT-D1-09. Le décor sans
+  collision peut tourner ; le porteur, non.
+
 ## ISS-001 — Binaires officiels Godot et Blender injoignables · `S2` · OUVERT (contourné)
 
 - **Build** : Phase 0, environnement d'exécution conteneurisé.

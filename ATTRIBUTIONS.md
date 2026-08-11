@@ -117,6 +117,15 @@ redistribution. Les archives elles-mêmes ne sont **pas** versionnées.
 | `assets/environment/props/SM_TestCube.glb` | export de la source ci-dessus | projet | licence du projet | export glTF 2.0 |
 | `assets/characters/hero/SK_TestRigAnim.glb` | export de la source ci-dessus | projet | licence du projet | export glTF 2.0 |
 
+| `scenes/environment/Tent.tscn` + `scripts/world/props/awning_tent.gd` | construit par script dans le moteur | projet | licence du projet | — (création 2026-08-11, lot D) |
+| `scenes/environment/Campfire.tscn` + `scripts/world/props/campfire_prop.gd` | construit par script dans le moteur | projet | licence du projet | — (création 2026-08-11, lot D) |
+
+L'auvent et le foyer de camp sont des créations **originales du projet**, sans
+aucune ressource externe : géométrie primitive assemblée par code, matériaux
+tirés de la palette §3.4. Rien à télécharger, rien à attribuer à un tiers. Ils
+livrent `prop.tent` et `prop.campfire`, deux identifiants qu'`AssetRegistry`
+réservait depuis ART-Q0 vers des fichiers absents.
+
 Ces quatre fichiers sont des **assets de test du pipeline**, pas du contenu de jeu.
 Ils prouvent que la chaîne Blender → glTF transporte échelle, pivot, matériaux,
 armature et animation. Ils ne doivent apparaître dans aucune scène jouable.

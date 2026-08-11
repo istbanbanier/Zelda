@@ -5,6 +5,88 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-11 — Tranche verticale d'ouverture, lots A à D : la valeur avant la forme
+
+**Branche** : `claude/new-session-840w2o`. **Base** : `6a996a5`.
+**Preuves** : `evidence/vertical_slice_20260811/`.
+
+### D'abord, un écart de dépôt qu'il faut connaître
+
+Le prompt de reprise annonce `claude/vertical-slice-opening-polish` au commit
+`c8fc1ab048a48fe8eeb214195a09ec1e012d4ac9`. **Ce SHA n'existe dans aucune
+référence du dépôt** — les quatre commits locaux de l'audit ont été réécrits
+avant d'être poussés, et la branche distante porte le même travail jusqu'à
+`b0fe61c`. La branche de cette session en était **13 commits en arrière** :
+travailler dessus telle quelle, c'était refaire le dégât du 2026-08-07
+(`COMMENT_TRAVAILLER_ENSEMBLE` §1). Fusion **locale** de la branche auditée
+avant tout travail, diff purement additif, aucun push.
+
+Godot n'était pas dans le conteneur. Le binaire OFFICIEL 4.7.1-stable se
+télécharge depuis les *releases GitHub* (sha512 vérifié contre `SHA512-SUMS.txt`,
+build `a13da4feb` = le commit épinglé par `setup_godot.sh`) — une à deux heures
+de compilation économisées. `tools/setup_godot.sh` mérite cette note : sa
+politique réseau bloque `downloads.godotengine.org`, pas `github.com`.
+Blender installé aussi : le niveau 3b de `validate_fast.sh` s'exécute enfin.
+
+### Ce que la mesure a dit avant que je touche à quoi que ce soit
+
+Le dépôt possédait déjà `tools/check_value_bands.py`, appelé par
+`validate_release.sh` étape 5b. Personne ne l'avait exécuté sur la capture de
+référence. Il sort en **code 1** :
+
+    sol p95 = 73 %  >=  ciel p50 = 70 %
+
+Le sol de la vallée rendait plus clair que son ciel, sur **cinq des six**
+caméras de gate. Et le niveau de gris montrait pourquoi aucune passe de
+modélisation n'y pouvait rien : tiers haut 65,6 %, tiers milieu 67,5 %, soit
+**1,9 point** d'écart et dans le mauvais sens. C'est pour ça que le lot A n'est
+pas de la géométrie.
+
+Deux sondes ajoutées, parce que le gate parle de choses que rien ne mesurait :
+`probe_frame_masses.gd` (emprise À L'ÉCRAN, pas boîte englobante monde) et
+`make_review_pack.py` (vignette, niveau de gris, écarts de valeur).
+
+### Les lots
+
+- **A — valeurs.** Palettes descendues en moyenne, ÉLARGIES en écart ; le
+  « vert acide » et le chemin le plus clair du cadre corrigés (rechute
+  d'ISS-037) ; récession peinte dans la couleur. §1.5 : 1 caméra conforme
+  sur 6 → **4 sur 6**.
+- **B.0 — la rampe de la citadelle était un tapis vert** sur 55,5 % du cadre
+  d'approche. Trouvé par repeinture magenta puis recapture, pas par lecture.
+  La passe de peinture exemptait les sols par une LISTE DE NOMS qui citait
+  douze dalles et **aucune rampe**. Exemption passée dans un GROUPE que
+  `_slab()` et `_ramp()` posent eux-mêmes.
+- **B — trois boîtes faisaient 71 % du cadre** de la route du nord. Falaise à
+  trois rangs recouvrants sur la face sud du plateau (ses 14 contreforts
+  passaient largeur et profondeur **inversées**) ; jupes de bordure et crêtes
+  élargies et recouvrantes.
+- **D — le camp.** `prop.tent` et `prop.campfire` pointaient vers des scènes
+  absentes ET n'étaient consommés par personne. Livrés (`AwningTent`,
+  `CampfireProp`, originaux, construits par script) et montés par la terrasse.
+  La colonne de fumée était repeinte en CUTOUT opaque malgré son alpha 0,22 :
+  la recette refusait les émissifs, pas les translucides.
+- **D bis** — et le voile ainsi rendu translucide devenait **invisible** depuis
+  la crête (contraste +22,6 → +1,6). Remonté en valeur : **+39,7**, mieux
+  qu'avant, et on voit les montagnes au travers.
+
+### PROCHAINE ACTION EXACTE
+
+**Lot C, et rien d'autre : intégrer les chemins au relief.**
+`probe_frame_masses.gd --camera=VistaCamera_Hero01` classe `PathStrip00`
+**deuxième masse du cadre d'ouverture à 22,2 %**, pour un `PlaneMesh` de
+20 × 6 m **sans épaisseur** posé au-dessus du sol (`_build_paths`, dix
+segments). C'est le « chemin lu comme une bande posée sur l'herbe » du gate.
+La correction n'est pas de le teinter : c'est de le faire APPARTENIR au sol —
+compression d'herbe, terre, interruption des fleurs, ruptures de niveau — et
+de rejouer le parcours physique après.
+
+Ne pas toucher au relief des deux grandes plaines avant d'avoir un test qui
+prouve qu'aucun objet placé ne s'y retrouve enterré ou suspendu :
+`test_opening_dressing_rests_on_ground.gd` donne le patron.
+
+---
+
 ## 2026-08-10 — Tranche verticale d'ouverture, lot 1 : le décor de la crête était ENTERRÉ
 
 Session ouverte sur la branche `claude/vertical-slice-opening-polish`, mandat
