@@ -24,6 +24,25 @@ if [ ! -x "$GODOT_BIN" ]; then
   exit 2
 fi
 
+# --- UNE SEULE SUITE À LA FOIS -------------------------------------------
+# Le 2026-08-11, deux runners ont tourné EN MÊME TEMPS : une première suite
+# tuée par pkill avait laissé un godot survivant (mesuré : 3 processus encore
+# vivants 1 s après le kill), qui a continué pendant que la suivante
+# démarrait. Les deux partageaient user://saves et 02_unit.log — résultat :
+# 8 échecs de sauvegarde FABRIQUÉS (durabilité 24, flèches 8, joueur au
+# spawn : la sauvegarde neuve de l'autre processus), une ligne de log coupée
+# en plein mot, et deux lignes « === RÉSULTAT » que l'étape 4 a flaguées.
+# C'est l'équivalent machine de la règle n°1 de COMMENT_TRAVAILLER_ENSEMBLE.
+#
+# Sortie en 3 (BLOQUÉ), jamais en silence : .claude/rules/evidence.md.
+if pgrep -f "test_runner\.gd" >/dev/null 2>&1; then
+  echo "BLOQUÉ: un test runner Godot tourne déjà (pgrep -f test_runner.gd)." >&2
+  echo "        Deux suites concurrentes partagent user://saves et fabriquent" >&2
+  echo "        des échecs de sauvegarde. Attendre sa fin ou le tuer, PUIS" >&2
+  echo "        vérifier qu'il est mort : pkill laisse des survivants (mesuré)." >&2
+  exit 3
+fi
+
 step "0. Version du moteur"
 VERSION="$("$GODOT_BIN" --version 2>&1 | tail -1)"
 echo "  $VERSION"
