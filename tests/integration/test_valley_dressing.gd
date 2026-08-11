@@ -261,6 +261,44 @@ func test_the_citadel_gate_is_monumental_and_still_enterable() -> void:
 	await _cleanup(valley)
 
 
+func test_the_citadel_mass_has_its_own_darker_stone() -> void:
+	## §1.5 : la masse de la citadelle doit se détacher des montagnes. Ce test ne
+	## prétend pas mesurer le rendu final — seule une capture le peut — mais il
+	## verrouille le levier structurel : la grande masse ne partage plus la
+	## pierre générique des petits accessoires de vallée.
+	var valley: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(valley)
+	await _settle(5)
+	var keep: MeshInstance3D = valley.get_node_or_null(
+		"Terrain/CitadelProxy/Keep/KeepMesh") as MeshInstance3D
+	var plinth: MeshInstance3D = valley.get_node_or_null(
+		"Terrain/PylonPlinth/PylonPlinthMesh") as MeshInstance3D
+	check_not_null(keep, "la masse centrale de la citadelle existe")
+	check_not_null(plinth, "la pierre générique du pylône existe comme témoin")
+	if keep != null and plinth != null:
+		# `PainterlyRecipe` convertit les matériaux standards au démarrage : ce
+		# sont les paramètres du ShaderMaterial réellement rendu qui font foi.
+		var keep_material: ShaderMaterial = keep.get_active_material(0) \
+			as ShaderMaterial
+		var generic_material: ShaderMaterial = plinth.get_active_material(0) \
+			as ShaderMaterial
+		check_not_null(keep_material, "la citadelle porte un matériau lisible")
+		check_not_null(generic_material, "le témoin porte un matériau lisible")
+		if keep_material != null and generic_material != null:
+			var keep_color: Color = keep_material.get_shader_parameter("albedo_color") \
+				as Color
+			var generic_color: Color = generic_material.get_shader_parameter(
+				"albedo_color") as Color
+			var keep_luma: float = keep_color.get_luminance()
+			var generic_luma: float = generic_color.get_luminance()
+			check(keep_color != generic_color,
+				"la citadelle possède une pierre dédiée")
+			check(keep_luma <= generic_luma * 0.80,
+				"sa pierre est nettement plus sombre (%.3f vs %.3f)" \
+				% [keep_luma, generic_luma])
+	await _cleanup(valley)
+
+
 func test_the_vestibule_is_deep_and_warmly_lit() -> void:
 	## V4.3, réf. 02 : profondeur jouable ≥ 24 m, braseros chauds contre veine
 	## cyan, second seuil scellé au fond sous son linteau.

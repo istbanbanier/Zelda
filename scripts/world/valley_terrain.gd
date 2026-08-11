@@ -23,13 +23,13 @@ const BASE_Y: float = -8.0
 const COL_GRASS: Color = Color(0.365, 0.561, 0.239)
 const COL_GRASS_DARK: Color = Color(0.30, 0.46, 0.21)
 const COL_ROCK: Color = Color(0.608, 0.408, 0.259)
-## Pierre de la citadelle : ASSOMBRIE et légèrement chaude. Mesure sur la
-## capture de référence : la bande d'horizon tenait entre 55 % et 80 % de
-## valeur, monument compris — le but du jeu ne se détachait de rien. Un sujet
-## se lit par sa valeur avant sa forme.
-# H-6 : ocre/bronze SOMBRE (§12.1 « base ocre/bronze sombre ») — l'ancien
-# gris quasi neutre (0.255/0.238/0.243, r − b = 0,012) lisait « béton ».
+## Pierre générique ocre/bronze sombre (§12.1), utilisée pour les accessoires.
 const COL_STONE: Color = Color(0.285, 0.245, 0.205)
+## Pierre dédiée aux grandes masses de la citadelle : son réglage ne doit plus
+## assombrir le foyer, le pylône et les autres petites pierres de la vallée.
+## La séparation de matériau et l'écart d'albédo sont testés ; l'écart de valeur
+## à l'écran reste à confirmer sur une recapture avec le renderer de référence.
+const COL_CITADEL_STONE: Color = Color(0.205, 0.176, 0.148)
 const COL_WOOD: Color = Color(0.408, 0.251, 0.157)
 const COL_COPPER: Color = Color(0.55, 0.36, 0.22)
 const COL_CYAN: Color = Color(0.133, 0.851, 0.925)
@@ -1377,11 +1377,11 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	# creusé dans la montagne ». AUCUNE COLLISION : ce sont des masses
 	# de composition, elles ne doivent modifier aucun passage.
 	_box_in("TerraceBase", citadel, Vector3(0, 34 + 7, -216),
-		Vector3(78, 14, 46), COL_STONE, false)
+		Vector3(78, 14, 46), COL_CITADEL_STONE, false)
 	_box_in("TerraceMid", citadel, Vector3(-4, 34 + 18, -214),
-		Vector3(56, 12, 36), COL_STONE, false)
+		Vector3(56, 12, 36), COL_CITADEL_STONE, false)
 	_box_in("TerraceHigh", citadel, Vector3(6, 34 + 27, -213),
-		Vector3(42, 10, 30), COL_STONE, false)
+		Vector3(42, 10, 30), COL_CITADEL_STONE, false)
 	# CONTREFORTS (§2.4) : quatre appuis qui accrochent le socle au
 	# relief et cassent la frontalité.
 	var buttresses: Array[Array] = [
@@ -1394,7 +1394,7 @@ func _build_dungeon_plateau_and_citadel() -> void:
 		_box_in("Buttress%d" % b, citadel,
 			Vector3(spec[0] as float, 34 + bh * 0.5, spec[1] as float),
 			Vector3(spec[2] as float, bh, spec[2] as float),
-			COL_STONE, false)
+			COL_CITADEL_STONE, false)
 	# TROIS lignes de Résonance en cuivre patiné (§2.4) — la masse reste
 	# à plus de 95 % sans énergie visible.
 	for c: int in range(3):
@@ -1403,14 +1403,15 @@ func _build_dungeon_plateau_and_citadel() -> void:
 		_box_in("Conduit%d" % c, citadel,
 			Vector3(cx, 34 + ch * 0.5, -197.0), Vector3(2.6, ch, 2.6),
 			Color(0.43, 0.46, 0.37), false)
-	_box_in("Keep", citadel, Vector3(0, 34 + 23, -212), Vector3(34, 46, 28), COL_STONE, true)
+	_box_in("Keep", citadel, Vector3(0, 34 + 23, -212), Vector3(34, 46, 28),
+		COL_CITADEL_STONE, true)
 	# Épaules latérales plus basses (§2.4) : la silhouette s'étage au lieu de
 	# tomber d'un seul front.
 	for side_index: int in range(2):
 		var x_shoulder: float = -26.0 if side_index == 0 else 26.0
 		_box_in("Shoulder%d" % side_index, citadel,
 			Vector3(x_shoulder, 34 + 15, -214), Vector3(14, 30, 18),
-			COL_STONE, true)
+			COL_CITADEL_STONE, true)
 	# Tours COUPÉES à des hauteurs différentes (§2.4) : quatre tops égaux
 	# à 90 m lisaient « créneaux d'usine », pas « ruine monumentale ».
 	var tower_heights: Array[float] = [50.0, 44.0, 58.0, 40.0]
@@ -1420,15 +1421,15 @@ func _build_dungeon_plateau_and_citadel() -> void:
 		var tower_height: float = tower_heights[i]
 		_box_in("Tower%d" % i, citadel,
 			Vector3(dx, 34 + tower_height * 0.5, -210 + dz),
-			Vector3(8, tower_height, 8), COL_STONE, true)
+			Vector3(8, tower_height, 8), COL_CITADEL_STONE, true)
 	# SPIRE centrale (§2.4 : « spire centrale verticale ») : trois segments
 	# effilés au-dessus du Keep (sommet y = 100) — c'est ELLE que l'éclair
 	# frappe, et elle que l'œil accroche à 360 m. Sans collision : le sommet
 	# est hors de portée du joueur, le Keep en dessous porte la sienne.
 	_box_in("SpireBase", citadel, Vector3(0, 84, -212), Vector3(9, 8, 9),
-		COL_STONE, false)
+		COL_CITADEL_STONE, false)
 	_box_in("SpireMid", citadel, Vector3(0, 91.5, -212), Vector3(6.5, 7, 6.5),
-		COL_STONE, false)
+		COL_CITADEL_STONE, false)
 	var spire_tip: MeshInstance3D = MeshInstance3D.new()
 	spire_tip.name = "SpireTip"
 	var cone: CylinderMesh = CylinderMesh.new()
@@ -1436,7 +1437,7 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	cone.bottom_radius = 2.4
 	cone.height = 5.0
 	spire_tip.mesh = cone
-	spire_tip.material_override = _material(COL_STONE, false)
+	spire_tip.material_override = _material(COL_CITADEL_STONE, false)
 	spire_tip.position = Vector3(0, 97.5, -212)
 	citadel.add_child(spire_tip)
 	# COURONNE DE CAPTURE (§2.4 : « la spire capte l'orage ») : l'anneau que
@@ -1482,7 +1483,7 @@ func _build_dungeon_plateau_and_citadel() -> void:
 		var front: bool = buttress_index < 2
 		_visual_prism("CitadelButtress%d" % buttress_index, citadel,
 			Vector3(x_buttress, 34 + 7, -196.8 if front else -227.2),
-			Vector3(4.5, 14, 5.0), COL_STONE, true,
+			Vector3(4.5, 14, 5.0), COL_CITADEL_STONE, true,
 			0.42 if buttress_index % 2 == 0 else 0.58)
 	# Conduit cyan sur la face avant du segment bas : la ligne d'énergie qui
 	# relie visuellement l'impact de foudre au cœur de la façade (§2.4 :
@@ -1496,9 +1497,9 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	# Gradins DERRIÈRE le plan de la porte (z ≤ −200 : une première pose à
 	# z −194 aurait muré la façade, cotes vérifiées avant capture).
 	_box_in("TierLow", citadel, Vector3(0, 34 + 4, -215), Vector3(40, 8, 30),
-		COL_STONE, true)
+		COL_CITADEL_STONE, true)
 	_box_in("TierHigh", citadel, Vector3(0, 34 + 9, -217), Vector3(32, 10, 24),
-		COL_STONE, true)
+		COL_CITADEL_STONE, true)
 	# Façade monumentale (réf. 02) : piliers de bronze gravés de CONDUITS cyan
 	# verticaux, linteau massif, large ouverture sombre en retrait — le
 	# personnage est dominé par le bâtiment.
@@ -1534,9 +1535,12 @@ func _build_dungeon_plateau_and_citadel() -> void:
 		brazier_light.position = Vector3(x_side, 34 + 2.2, -194.5)
 		citadel.add_child(brazier_light)
 	# Marches processionnelles : trois emmarchements bas (≤ step height 0,30).
-	_slab("GateStepLow", Vector2(0, -192.0), Vector2(14, 2.4), 34.15, COL_STONE)
-	_slab("GateStepMid", Vector2(0, -194.2), Vector2(12, 2.2), 34.3, COL_STONE)
-	_slab("GateStepHigh", Vector2(0, -196.2), Vector2(10, 1.8), 34.45, COL_STONE)
+	_slab("GateStepLow", Vector2(0, -192.0), Vector2(14, 2.4), 34.15,
+		COL_CITADEL_STONE)
+	_slab("GateStepMid", Vector2(0, -194.2), Vector2(12, 2.2), 34.3,
+		COL_CITADEL_STONE)
+	_slab("GateStepHigh", Vector2(0, -196.2), Vector2(10, 1.8), 34.45,
+		COL_CITADEL_STONE)
 	# Ouverture encadrée de cyan (D.1R.4) : le seuil intérieur, dans le retrait.
 	_box_in("DoorFrameLeft", citadel, Vector3(-2.2, 34 + 3, -197.8),
 		Vector3(0.8, 6.0, 0.6), COL_CYAN, false, true)
