@@ -755,9 +755,12 @@ const GROUNDED_DRESS_ZONES: Array[String] = [
 ]
 ## Décalques visuels qui doivent suivre le même sol réel sans y ajouter de
 ## volume. Contrairement au semis, ils restent légèrement au-dessus afin
-## d'éviter le z-fighting.
-const GROUNDED_DECAL_NODES: Array[String] = ["Paths"]
+## d'éviter le z-fighting — et chaque ZONE a la SIENNE : les épaulements
+## d'herbe compressée (`PathEdges`, lot C) se glissent SOUS les tronçons de
+## terre (`Paths`), sinon les deux couches se battraient au même millimètre.
+const GROUNDED_DECAL_NODES: Array[String] = ["Paths", "PathEdges"]
 const PATH_CLEARANCE: float = 0.02
+const EDGE_CLEARANCE: float = 0.008
 ## Sonde volontairement longue : le défaut réel atteignait 14 m d'écart, un
 ## rayon court ne l'aurait pas rattrapé.
 const DRESS_SNAP_UP: float = 60.0
@@ -772,8 +775,11 @@ func _snap_dressing_to_ground() -> void:
 		var zone: Node3D = get_node_or_null(NodePath(zone_name)) as Node3D
 		if zone == null:
 			continue
-		var clearance: float = PATH_CLEARANCE \
-			if GROUNDED_DECAL_NODES.has(zone_name) else 0.0
+		var clearance: float = 0.0
+		if zone_name == "Paths":
+			clearance = PATH_CLEARANCE
+		elif zone_name == "PathEdges":
+			clearance = EDGE_CLEARANCE
 		# Les troncs du décor portent une collision : sans les exclure, le rayon
 		# heurterait l'arbre qu'il mesure et le déclarerait posé sur lui-même.
 		var excluded: Array[RID] = []
@@ -1979,26 +1985,101 @@ func _build_paths() -> void:
 		[Vector2(60, 10), Vector2(93, 11), 2.0],         # …devant la forêt
 		[Vector2(94, 8), Vector2(66, 3), 2.0],           # gué est → rampe du pylône
 	]
+	# LOT C (2026-08-11, V-005) : chaque segment était UN PlaneMesh rectiligne
+	# de largeur constante — jusqu'à 59 m d'un seul tenant (mesuré par le test
+	# rouge). Un rectangle n'est pas un sentier : c'est la « bande posée sur
+	# l'herbe » que le gate interdit nommément.
+	#
+	# Un segment devient une CHAÎNE de tronçons courts qui se chevauchent :
+	# largeur qui respire, orientation qui dévie, teinte qui varie — et chaque
+	# tronçon est plaqué INDIVIDUELLEMENT sur le sol par la passe de repose,
+	# donc le chemin suit les paliers de la descente au lieu de les traverser
+	# en l'air. Les épaulements d'herbe compressée et les pierres de bord
+	# vivent dans `PathEdges`, plaqués plus bas (aucun z-fight possible).
+	var edges: Node3D = Node3D.new()
+	edges.name = "PathEdges"
+	add_child(edges)
+	# Trois teintes de terre partagées (le cache de matériaux fusionnerait des
+	# duplicatas de toute façon — autant être explicite).
+	var earth_tints: Array[StandardMaterial3D] = []
+	for tint: Color in [COL_PATH.darkened(0.10), COL_PATH,
+			COL_PATH.lightened(0.08)]:
+		var earth: StandardMaterial3D = StandardMaterial3D.new()
+		earth.albedo_color = tint
+		earth.roughness = 0.95
+		earth_tints.append(earth)
+	var shoulder_material: StandardMaterial3D = StandardMaterial3D.new()
+	shoulder_material.albedo_color = Color(0.148, 0.222, 0.118)   # herbe foulée
+	shoulder_material.roughness = 0.96
+	var stone_material: StandardMaterial3D = StandardMaterial3D.new()
+	stone_material.albedo_color = COL_STONE
+	stone_material.roughness = 0.9
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	for i: int in range(segments.size()):
 		var segment: Array = segments[i]
 		var from: Vector2 = segment[0]
 		var to: Vector2 = segment[1]
 		var ground: float = segment[2]
 		var delta: Vector2 = to - from
-		var mesh: MeshInstance3D = MeshInstance3D.new()
-		mesh.name = "PathStrip%02d" % i
-		var plane: PlaneMesh = PlaneMesh.new()
-		plane.size = Vector2(delta.length() + 2.0, 2.4)
-		mesh.mesh = plane
-		mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		var material: StandardMaterial3D = StandardMaterial3D.new()
-		material.albedo_color = COL_PATH
-		material.roughness = 0.95
-		mesh.material_override = material
-		var center: Vector2 = (from + to) * 0.5
-		mesh.position = Vector3(center.x, ground + PATH_CLEARANCE, center.y)
-		mesh.rotation.y = -atan2(delta.y, delta.x)
-		paths.add_child(mesh)
+		var length: float = delta.length()
+		var heading: float = -atan2(delta.y, delta.x)
+		var side: Vector2 = Vector2(-delta.y, delta.x).normalized()
+		# Déterministe par segment : une capture de référence se rejoue (§21.8).
+		rng.seed = 20260811 + i * 97
+		var pieces: int = maxi(2, ceili(length / 5.5))
+		for j: int in range(pieces):
+			var t: float = (float(j) + 0.5) / float(pieces)
+			var centre: Vector2 = from + delta * t \
+				+ side * rng.randf_range(-0.55, 0.55)
+			var piece_length: float = (length / float(pieces)) * 1.28
+			var width: float = 2.4 + 0.55 * sin(float(j) * 2.1 + float(i)) \
+				+ rng.randf_range(-0.15, 0.15)
+			var quad: MeshInstance3D = MeshInstance3D.new()
+			# Le premier tronçon du segment garde le nom historique nu :
+			# le test d'ISS-039 le désigne par « PathStrip00 ».
+			quad.name = "PathStrip%02d" % i if j == 0 \
+				else "PathStrip%02d_%02d" % [i, j]
+			var plane: PlaneMesh = PlaneMesh.new()
+			plane.size = Vector2(piece_length, width)
+			quad.mesh = plane
+			quad.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			quad.material_override = earth_tints[(i + j) % 3]
+			quad.position = Vector3(centre.x, ground + PATH_CLEARANCE, centre.y)
+			# Déviation : jamais deux tronçons alignés — l'alternance porte la
+			# variation minimale, le bruit la rend irrégulière.
+			quad.rotation.y = heading \
+				+ (0.055 if j % 2 == 0 else -0.045) \
+				+ rng.randf_range(-0.04, 0.04)
+			paths.add_child(quad)
+			# ÉPAULEMENT : l'herbe compressée déborde du tronçon — c'est la
+			# transition terre → prairie, pas un bord net de dalle.
+			var shoulder: MeshInstance3D = MeshInstance3D.new()
+			shoulder.name = "PathEdge%02d_%02d" % [i, j]
+			var apron: PlaneMesh = PlaneMesh.new()
+			apron.size = Vector2(piece_length * 1.30, width * 1.85)
+			shoulder.mesh = apron
+			shoulder.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			shoulder.material_override = shoulder_material
+			shoulder.position = Vector3(centre.x, ground, centre.y)
+			shoulder.rotation.y = quad.rotation.y
+			edges.add_child(shoulder)
+			# Une pierre de bord un tronçon sur deux, côté alterné.
+			if j % 2 == 1:
+				var stone: MeshInstance3D = MeshInstance3D.new()
+				stone.name = "PathStone%02d_%02d" % [i, j]
+				var pebble: SphereMesh = SphereMesh.new()
+				pebble.radius = rng.randf_range(0.14, 0.30)
+				pebble.height = pebble.radius * 1.5
+				pebble.radial_segments = 7
+				pebble.rings = 4
+				stone.mesh = pebble
+				stone.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+				stone.material_override = stone_material
+				var flank: float = (1.0 if j % 4 == 1 else -1.0) \
+					* (width * 0.5 + rng.randf_range(0.3, 0.8))
+				var at_stone: Vector2 = centre + side * flank
+				stone.position = Vector3(at_stone.x, ground, at_stone.y)
+				edges.add_child(stone)
 
 
 ## Variation des sols (réf. 01 : « matériaux de sol mieux différenciés ») :
