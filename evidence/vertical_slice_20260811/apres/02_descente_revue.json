@@ -1,0 +1,30 @@
+{
+  "greyscale": "/home/user/Zelda/evidence/vertical_slice_20260811/apres/02_descente_gris.png",
+  "ground_p95_value_pct": 67.8,
+  "height": 1080,
+  "hierarchy_ok": false,
+  "saturation_mean": 34.6,
+  "separation_haut_milieu": 0.3,
+  "separation_milieu_bas": 2.5,
+  "sky_p50_value_pct": 24.3,
+  "source": "evidence/vertical_slice_20260811/apres/02_descente.png",
+  "thirds_luma_pct": {
+    "bas": {
+      "p05": 22.6,
+      "p50": 25.5,
+      "p95": 61.5
+    },
+    "haut": {
+      "p05": 19.5,
+      "p50": 22.7,
+      "p95": 27.0
+    },
+    "milieu": {
+      "p05": 19.4,
+      "p50": 23.0,
+      "p95": 27.0
+    }
+  },
+  "vignette": "/home/user/Zelda/evidence/vertical_slice_20260811/apres/02_descente_vignette.png",
+  "width": 1920
+}
