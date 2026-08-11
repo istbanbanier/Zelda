@@ -1501,6 +1501,99 @@ func _build_plateau_cliff(parent: Node3D) -> void:
 					true, 0.5 + 0.30 * sin(t * 11.9 + side_sign * 2.9))
 
 
+## ---------------------------------------------------------------------------
+## ÉTAPE 4 (V-002) — VIDES, BRÈCHE ET COURTINES : ce qui manquait à la façade
+##
+## §2.4 exige « 10 % vides, arches et ruptures » ; la façade n'en avait AUCUN.
+## Trois familles de décor, toutes SANS collision (leçon PT-D1-09 : le décor
+## tourne, le porteur jamais) :
+##
+##   - une ARCADE PERCÉE à l'ouest de la porte : trois vides d'arche dont
+##     l'obscurité se lit comme de la profondeur — la recette du GateRecess ;
+##   - une BRÈCHE à l'est : un pan de muraille effondré, DÉVIÉ du quadrillage,
+##     avec ses éboulis au pied ;
+##   - deux COURTINES diagonales qui accrochent le monument à sa falaise —
+##     les premières masses d'échelle muraille hors des axes du monde.
+## ---------------------------------------------------------------------------
+func _build_citadel_ruptures(citadel: Node3D) -> void:
+	# Le vide, pas un noir pur — et un PIC de canal à 0,14 exactement : la
+	# recette painterly REMONTE toute teinte dont le pic est sous 0,14
+	# (`from_standard`, mesuré : 0,045 devenait 0,27 de luma, plus clair que
+	# la pierre). Le bleu froid domine, comme une ombre portée.
+	var stone_dark: Color = Color(0.06, 0.07, 0.14)
+	var pier_stone: Color = Color(0.24, 0.206, 0.172)
+	# --- Arcade ouest : trois vides entre quatre piliers ------------------
+	# Sur le front du socle (z −193), entre x −34 et −12 : le couloir de la
+	# rampe (|x| < 10) reste libre, la porte reste l'unique entrée logique.
+	for i: int in range(3):
+		var x_arch: float = -30.0 + 7.4 * float(i)
+		# Le VIDE : panneau sombre en retrait, hauteurs inégales (ruine).
+		var recess: MeshInstance3D = MeshInstance3D.new()
+		recess.name = "CitadelArch%d" % i
+		var panel: BoxMesh = BoxMesh.new()
+		panel.size = Vector3(4.6, 6.8 - 0.7 * float(i % 2), 0.4)
+		recess.mesh = panel
+		recess.material_override = _material(stone_dark, false)
+		recess.position = Vector3(x_arch, 34.0 + panel.size.y * 0.5 - 0.2, -192.6)
+		citadel.add_child(recess)
+		# Le LINTEAU au-dessus du vide, légèrement débordant.
+		_box_in("CitadelArchCap%d" % i, citadel,
+			Vector3(x_arch, 34.0 + panel.size.y + 0.6, -192.2),
+			Vector3(5.6, 1.4, 1.2), pier_stone, false)
+	for i: int in range(4):
+		var x_pier: float = -33.7 + 7.4 * float(i)
+		_box_in("CitadelArcadePier%d" % i, citadel,
+			Vector3(x_pier, 34.0 + 4.1, -192.3),
+			Vector3(2.2, 8.2, 1.8), pier_stone, false)
+	# --- Brèche est : le pan effondré et ses éboulis ----------------------
+	var breach: MeshInstance3D = MeshInstance3D.new()
+	breach.name = "CitadelBreachWall"
+	var slab: BoxMesh = BoxMesh.new()
+	slab.size = Vector3(15.0, 13.0, 2.8)
+	breach.mesh = slab
+	breach.material_override = _material(COL_CITADEL_STONE, false)
+	breach.position = Vector3(29.0, 34.0 + 5.6, -191.5)
+	# Déviée ET renversée : elle penche comme un pan qui s'est arraché.
+	breach.rotation = Vector3(-0.10, 0.34, 0.12)
+	citadel.add_child(breach)
+	var rubble_rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rubble_rng.seed = 20260811
+	for i: int in range(4):
+		var rubble: MeshInstance3D = MeshInstance3D.new()
+		rubble.name = "BreachRubble%d" % i
+		var block: BoxMesh = BoxMesh.new()
+		block.size = Vector3(2.2, 1.4, 1.8) \
+			* (0.7 + 0.6 * rubble_rng.randf())
+		rubble.mesh = block
+		rubble.material_override = _material(
+			pier_stone if i % 2 == 0 else COL_CITADEL_STONE, false)
+		rubble.position = Vector3(24.0 + 3.4 * float(i)
+			+ rubble_rng.randf_range(-0.8, 0.8),
+			34.0 + block.size.y * 0.4, -188.5 + rubble_rng.randf_range(-1.2, 1.2))
+		rubble.rotation = Vector3(rubble_rng.randf_range(-0.15, 0.15),
+			rubble_rng.randf_range(0.0, TAU), rubble_rng.randf_range(-0.2, 0.2))
+		citadel.add_child(rubble)
+	# --- Courtines diagonales : la masse accrochée à la falaise -----------
+	var curtains: Array[Array] = [
+		# [nom, centre, longueur, hauteur, lacet]
+		["CitadelCurtainW", Vector3(-46.0, 34.0 + 6.5, -203.0), 27.0, 13.0, 0.24],
+		["CitadelCurtainE", Vector3(45.0, 34.0 + 6.0, -206.0), 24.0, 12.5, -0.31],
+	]
+	for spec: Array in curtains:
+		var curtain: MeshInstance3D = MeshInstance3D.new()
+		curtain.name = String(spec[0])
+		var prism: PrismMesh = PrismMesh.new()
+		# La face triangulaire regarde la vallée (leçon V5 de _visual_prism) :
+		# (largeur de front, hauteur, fuite) — et l'arête est décentrée.
+		prism.size = Vector3(float(spec[2]), float(spec[3]), 5.0)
+		prism.left_to_right = 0.34 if float(spec[4]) > 0.0 else 0.68
+		curtain.mesh = prism
+		curtain.material_override = _material(COL_CITADEL_STONE, false)
+		curtain.position = spec[1] as Vector3
+		curtain.rotation.y = float(spec[4])
+		citadel.add_child(curtain)
+
+
 func _build_dungeon_plateau_and_citadel() -> void:
 	# Plateau monumental (§3.3 : donjon (0, 34, −210)) et sa rampe processionnelle.
 	_slab("DungeonPlateau", Vector2(0, -210), Vector2(130, 90), 34.0, COL_ROCK)
@@ -1530,12 +1623,24 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	# directement sur le sol et lisait « bâtiment », pas « monument
 	# creusé dans la montagne ». AUCUNE COLLISION : ce sont des masses
 	# de composition, elles ne doivent modifier aucun passage.
-	_box_in("TerraceBase", citadel, Vector3(0, 34 + 7, -216),
-		Vector3(78, 14, 46), COL_CITADEL_STONE, false)
-	_box_in("TerraceMid", citadel, Vector3(-4, 34 + 18, -214),
-		Vector3(56, 12, 36), COL_CITADEL_STONE, false)
-	_box_in("TerraceHigh", citadel, Vector3(6, 34 + 27, -213),
-		Vector3(42, 10, 30), COL_CITADEL_STONE, false)
+	#
+	# ÉTAPE 4 (2026-08-11, V-002) : les trois terrasses étaient des BOÎTES —
+	# trois rectangles extrudés aux coins droits, la plus grande lecture
+	# « empilement » de tout le monument. Elles deviennent des TRONCS DE
+	# PYRAMIDE : faces talutées, sommet décalé différemment à chaque étage
+	# (aucune arête de silhouette parallèle à la précédente). Emprise au sol
+	# et sommets INCHANGÉS : les jupes écrêtées « sous les gradins » et le
+	# plan de la porte gardent leurs repères.
+	_frustum_in("TerraceBase", citadel, Vector3(0, 34, -216),
+		Vector2(78, 46), Vector2(64, 34), 14.0, Vector2(-3.0, -3.0),
+		COL_CITADEL_STONE)
+	_frustum_in("TerraceMid", citadel, Vector3(-4, 46, -214),
+		Vector2(56, 36), Vector2(46, 27), 12.0, Vector2(3.5, -2.0),
+		COL_CITADEL_STONE)
+	_frustum_in("TerraceHigh", citadel, Vector3(6, 56, -213),
+		Vector2(42, 30), Vector2(34, 23), 10.0, Vector2(-2.5, 1.5),
+		COL_CITADEL_STONE)
+	_build_citadel_ruptures(citadel)
 	# CONTREFORTS (§2.4) : quatre appuis qui accrochent le socle au
 	# relief et cassent la frontalité.
 	var buttresses: Array[Array] = [
@@ -2284,6 +2389,53 @@ func _visual_prism(prism_name: String, parent: Node3D, center: Vector3,
 ## ---------------------------------------------------------------------------
 ## Briques de construction
 ## ---------------------------------------------------------------------------
+
+## Tronc de pyramide PLEIN, décor sans collision : base posée à `base_center`,
+## sommet rétréci à `top_size` et décalé de `top_shift` (l'asymétrie de §2.2 —
+## deux pentes égales sont le premier indice « procédural »).
+##
+## Étape 4 (V-002) : c'est la réponse aux terrasses-boîtes de la citadelle.
+## Un `BoxMesh` ne PEUT pas taluter ; ce n'est pas une subdivision d'un cube
+## en petits cubes, c'est un autre solide.
+func _frustum_in(frustum_name: String, parent: Node3D, base_center: Vector3,
+		base_size: Vector2, top_size: Vector2, height: float,
+		top_shift: Vector2, color: Color) -> void:
+	var half_base: Vector2 = base_size * 0.5
+	var half_top: Vector2 = top_size * 0.5
+	var points: PackedVector3Array = PackedVector3Array([
+		# base (y = 0 local)
+		Vector3(-half_base.x, 0, -half_base.y),
+		Vector3(half_base.x, 0, -half_base.y),
+		Vector3(half_base.x, 0, half_base.y),
+		Vector3(-half_base.x, 0, half_base.y),
+		# sommet (y = height local), décalé
+		Vector3(top_shift.x - half_top.x, height, top_shift.y - half_top.y),
+		Vector3(top_shift.x + half_top.x, height, top_shift.y - half_top.y),
+		Vector3(top_shift.x + half_top.x, height, top_shift.y + half_top.y),
+		Vector3(top_shift.x - half_top.x, height, top_shift.y + half_top.y),
+	])
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var quads: Array[Array] = [
+		[3, 2, 1, 0],   # dessous
+		[4, 5, 6, 7],   # dessus
+		[0, 1, 5, 4],   # face nord (-z local)
+		[2, 3, 7, 6],   # face sud (+z local)
+		[1, 2, 6, 5],   # flanc est
+		[3, 0, 4, 7],   # flanc ouest
+	]
+	for quad: Array in quads:
+		for index: int in [0, 1, 2, 0, 2, 3]:
+			st.add_vertex(points[quad[index]])
+	st.generate_normals()
+	st.index()
+	var mesh: MeshInstance3D = MeshInstance3D.new()
+	mesh.name = frustum_name
+	mesh.mesh = st.commit()
+	mesh.material_override = _material(color, false)
+	mesh.position = base_center
+	parent.add_child(mesh)
+
 
 ## Dalle pleine : sommet à `top`, fond commun à BASE_Y.
 ##
