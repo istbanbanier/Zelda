@@ -156,20 +156,28 @@ func _build_wall_skirts() -> void:
 	skirts.name = "WallSkirts"
 	add_child(skirts)
 	var face: float = BORDER_INNER - 2.0
+	# LOT B : 13 jupes de 52 m sur 584 m de face, c'est un espacement de 45 m
+	# pour une largeur de 34 à 70 — donc, une fois sur deux, un intervalle où
+	# la dalle de 78 m reparaît entière. La sonde d'emprise met
+	# `BorderNorthMesh` en TÊTE du cadre de la route du nord, à 36,8 %. Dix-sept
+	# masses plus larges se recouvrent au lieu de se succéder.
 	for axis: int in range(4):
-		for i: int in range(13):
-			var t: float = (float(i) + 0.5) / 13.0
+		for i: int in range(17):
+			var t: float = (float(i) + 0.5) / 17.0
 			var along: float = lerpf(-BORDER_OUTER, BORDER_OUTER, t) \
 				+ 9.0 * sin(t * 21.3 + float(axis))
 			# H-2b : 38±21 m et −6 % de valeur etaient SOUS le seuil de
 			# perception a 250 m sous brume (capture H-2) — 52±16 m couvrent
 			# l'essentiel de la face de 70 m, et l'ecart de valeur est double.
-			var height: float = 52.0 + 10.0 * sin(t * 8.1 + float(axis) * 1.7) \
-				+ 6.0 * sin(t * 15.7 + float(axis) * 2.9)
+			# H-2b montait à 52±16 ; il restait 10 m de dalle nue entre le
+			# sommet des jupes (60) et celui du mur (70), et cette bande
+			# horizontale se lisait comme un barrage. 64±14 ferme la face.
+			var height: float = 64.0 + 9.0 * sin(t * 8.1 + float(axis) * 1.7) \
+				+ 5.0 * sin(t * 15.7 + float(axis) * 2.9)
 			if axis == 0 and absf(along) < 110.0:
 				height = minf(height, 40.0)   # sommet ≤ 32 : sous les gradins (42)
 			var depth: float = 13.0 + 5.0 * sin(t * 6.7 + float(axis))
-			var width: float = 52.0 + 18.0 * sin(t * 4.9 + float(axis) * 1.3)
+			var width: float = 62.0 + 20.0 * sin(t * 4.9 + float(axis) * 1.3)
 			var centre: Vector3
 			match axis:
 				0: centre = Vector3(along, BASE_Y + height * 0.5, -face)
@@ -209,10 +217,14 @@ func _build_border_crests() -> void:
 	var mid: float = (BORDER_INNER + BORDER_OUTER) * 0.5
 	# Déterministe : une capture de référence doit être rejouable (§21.8).
 	var seed_value: int = 0
+	# LOT B : quatorze sommets espacés de 45 m pour 34 à 50 m de large, c'est
+	# un PEIGNE — du ciel entre chaque dent, et l'œil compte les dents. Une
+	# ligne de crête est continue : vingt masses plus larges se recouvrent, et
+	# la silhouette devient un massif au lieu d'une rangée.
 	for axis: int in range(4):
-		for i: int in range(14):
+		for i: int in range(20):
 			seed_value += 1
-			var t: float = float(i) / 13.0
+			var t: float = float(i) / 19.0
 			var along: float = lerpf(-BORDER_OUTER, BORDER_OUTER, t)
 			# Hauteurs irrégulières : deux sinus de périodes premières entre
 			# elles évitent la répétition visible à laquelle un seul mènerait.
@@ -224,7 +236,7 @@ func _build_border_crests() -> void:
 			# Plafond testé : sommet ≤ 96 (mur 70 + crête ≤ 26).
 			if axis == 0:
 				height = minf(height, 26.0)
-			var width: float = 34.0 + 16.0 * sin(t * 5.7 + float(axis) * 1.3)
+			var width: float = 46.0 + 18.0 * sin(t * 5.7 + float(axis) * 1.3)
 			var depth: float = BORDER_OUTER - BORDER_INNER
 			var centre: Vector3
 			match axis:
@@ -1369,6 +1381,93 @@ func _build_central_ruins() -> void:
 			Vector3(size.x, height, size.y), COL_STONE, true)
 
 
+## ---------------------------------------------------------------------------
+## LOT B — LA FACE SUD DU PLATEAU ÉTAIT UN MUR DE 130 x 42 m
+##
+## La sonde d'emprise écran classe `DungeonPlateauMesh` **deuxième masse du
+## cadre** sur les deux caméras qui regardent le nord : 22,7 % depuis la route,
+## 50,5 % depuis l'approche. C'est une dalle, donc un rectangle plein, et
+## c'était la définition même de « mur-proxy dominant » que le gate interdit.
+##
+## Quatorze prismes l'habillaient déjà. Ils échouaient pour deux raisons
+## MESURABLES, pas d'opinion :
+##
+##   1. leurs arguments étaient inversés. `_visual_prism` lit
+##      `(largeur vue de face, hauteur, profondeur)` ; l'appel passait
+##      `(9-13, hauteur, 15-21)`. Les masses faisaient donc 9 à 13 m de large
+##      pour 15 à 21 m de profond : des lames plantées de chant, pas des
+##      contreforts. Une falaise vue de face a besoin de FRONT, pas de fuite.
+##   2. elles ne couvraient que |x| 12 à 66, soit la moitié d'une face qui
+##      court de −65 à +65, et sans se recouvrir : entre deux lames, le mur
+##      reparaissait entier.
+##
+## Ce qui suit garde exactement la même dalle porteuse — collision, navigation
+## et cotes de gameplay ne bougent pas d'un centimètre — et lui donne une
+## falaise : trois rangs qui se chevauchent, du pied au rebord, à fronts
+## larges et irréguliers. Le couloir de la rampe (|x| < 10) reste libre.
+##
+## AUCUNE COLLISION : la dalle derrière porte la sienne. Rien d'accessible ne
+## devient traversable, rien d'infranchissable ne devient escaladable.
+## ---------------------------------------------------------------------------
+
+## Sommet maximal d'un contrefort : le rebord du plateau est à 34 ; au-dessus,
+## une masse ferait saillie sur la surface où l'on marche.
+const PLATEAU_CLIFF_TOP: float = 32.5
+## Demi-largeur du couloir laissé libre pour la rampe processionnelle (16 m de
+## large, centrée sur x = 0) plus une marge d'épaulement.
+const PLATEAU_RAMP_CLEARANCE: float = 10.0
+
+
+func _build_plateau_cliff(parent: Node3D) -> void:
+	var shade: Color = Color(0.352, 0.232, 0.148)   # creux, à l'ombre
+	var mid: Color = COL_ROCK                        # matériau macro de roche
+	var lit: Color = Color(0.560, 0.392, 0.246)      # arêtes prises par le soleil
+	# Trois rangs. Le rang PROFOND est le plus haut et le plus sombre ; il
+	# ferme la face. Le rang AVANT est plus bas, plus clair et décalé : c'est
+	# lui qui casse la ligne de sommet. Le TALUS ferme le pied, sans quoi la
+	# falaise garde une arête horizontale nette à y = −8 qui la trahit.
+	var rows: Array[Array] = [
+		# [nom, z, nombre par côté, hauteur de base, amplitude, largeur de base,
+		#  amplitude de largeur, profondeur, teinte principale, teinte d'appoint]
+		["Deep", -163.6, 7, 38.0, 5.5, 26.0, 8.0, 14.0, shade, mid],
+		["Front", -160.4, 6, 30.0, 6.5, 21.0, 7.0, 11.0, mid, lit],
+		["Talus", -156.8, 5, 14.0, 5.0, 27.0, 9.0, 13.0, shade, mid],
+	]
+	for row: Array in rows:
+		var row_name: String = row[0]
+		var z: float = row[1]
+		var count: int = row[2]
+		for side_sign: float in [-1.0, 1.0]:
+			for i: int in range(count):
+				var t: float = (float(i) + 0.5) / float(count)
+				# Deux sinus de périodes premières entre elles : la même règle
+				# que les crêtes de bordure, pour la même raison — un seul
+				# sinus produit un motif qu'on voit après trois masses.
+				var jitter: float = 4.0 * sin(t * 13.7 + side_sign * 2.3
+					+ float(row_name.length()))
+				var x: float = side_sign * (PLATEAU_RAMP_CLEARANCE + 2.0
+					+ 54.0 * t) + jitter
+				# La falaise est HAUTE près de la rampe et descend vers les
+				# bords : c'est ce qui encadre la voie processionnelle au lieu
+				# de la laisser au milieu d'un front égal. Le facteur reste
+				# faible (−22 % au bord) pour que le mur ne réapparaisse pas.
+				var height: float = float(row[3]) * (1.0 - 0.22 * t) \
+					+ float(row[4]) * sin(t * 9.1 + side_sign * 1.7) \
+					+ float(row[4]) * 0.45 * sin(t * 21.3 + side_sign)
+				height = minf(height, PLATEAU_CLIFF_TOP - BASE_Y)
+				var width: float = float(row[5]) \
+					+ float(row[6]) * sin(t * 5.3 + side_sign * 1.1)
+				var depth: float = float(row[7]) \
+					+ 3.0 * sin(t * 7.9 + side_sign)
+				_visual_prism("PlateauCliff%s%s%d"
+						% [row_name, "W" if side_sign < 0.0 else "E", i],
+					parent,
+					Vector3(x, BASE_Y + height * 0.5, z),
+					Vector3(width, height, depth),
+					(row[8] as Color) if i % 3 != 1 else (row[9] as Color),
+					true, 0.5 + 0.30 * sin(t * 11.9 + side_sign * 2.9))
+
+
 func _build_dungeon_plateau_and_citadel() -> void:
 	# Plateau monumental (§3.3 : donjon (0, 34, −210)) et sa rampe processionnelle.
 	_slab("DungeonPlateau", Vector2(0, -210), Vector2(130, 90), 34.0, COL_ROCK)
@@ -1382,20 +1481,7 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	var plateau_skirts: Node3D = Node3D.new()
 	plateau_skirts.name = "PlateauSkirts"
 	add_child(plateau_skirts)
-	var rock_shade: Color = Color(0.352, 0.232, 0.148)
-	for side_sign: float in [-1.0, 1.0]:
-		for i: int in range(7):
-			var t_skirt: float = (float(i) + 0.5) / 7.0
-			var x_skirt: float = side_sign * (12.0 + 51.0 * t_skirt) 				+ 3.0 * sin(t_skirt * 17.3 + side_sign)
-			var h_skirt: float = 26.0 + 9.0 * sin(t_skirt * 9.1 + side_sign * 2.3) 				+ 5.0 * sin(t_skirt * 19.7)
-			var d_skirt: float = 9.0 + 4.0 * sin(t_skirt * 7.9 + side_sign)
-			var w_skirt: float = 15.0 + 6.0 * sin(t_skirt * 5.3 + side_sign * 1.7)
-			_visual_prism("PlateauSkirt%s%d" % ["W" if side_sign < 0.0 else "E", i],
-				plateau_skirts,
-				Vector3(x_skirt, BASE_Y + h_skirt * 0.5, -164.0),
-				Vector3(d_skirt, h_skirt, w_skirt),
-				rock_shade if i % 3 != 1 else COL_ROCK,
-				true, 0.5 + 0.24 * sin(t_skirt * 11.9 + side_sign * 2.9))
+	_build_plateau_cliff(plateau_skirts)
 	# Proxy de citadelle : masse centrale, quatre tours, cœur cyan — la
 	# silhouette du fond de la vue d'ouverture (§3.2 : 300–420 m du spawn).
 	var citadel: Node3D = Node3D.new()
