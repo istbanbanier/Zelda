@@ -59,6 +59,7 @@ jobs:
             esac
           else
             SELFTEST="${{ inputs.selftest }}"
+            [ -n "$SELFTEST" ] || SELFTEST=false
             if [ "$SELFTEST" = "true" ]; then
               TAG="playtest-selftest-${SHORT}"
             else
