@@ -20,8 +20,34 @@ extends Node3D
 const BASE_Y: float = -8.0
 
 ## Palette §3.4, en aplats graybox.
+##
+## ---------------------------------------------------------------------------
+## LOT A (2026-08-11) — LE SOL RENDAIT PLUS CLAIR QUE LE CIEL, ET ÇA SE MESURE
+##
+## `tools/check_value_bands.py` sur la capture de référence du commit audité
+## (`evidence/vslice/baseline/01_vista.png`) sort en **code 1** :
+##
+##     sol p95 = 73 %  ≥  ciel p50 = 70 %      -> VIOLATION §1.5
+##
+## Et le paquet de revue mesure ce que le niveau de gris montre à l'œil :
+## tiers HAUT p50 = 65,6 %, tiers MILIEU p50 = 67,5 % — **1,9 point d'écart**.
+## Trois plans distincts (§1.3) n'existent pas : ciel, montagnes, citadelle et
+## plaine tiennent tous dans la même bande claire. Aucune remodélisation ne
+## répare ça — une masse mieux découpée à la même valeur reste invisible.
+##
+## Les constantes ci-dessous descendent donc d'environ un cinquième EN MOYENNE,
+## mais leur ÉCART interne augmente : le défaut n'était pas seulement « trop
+## clair », il était « trop uniforme ». `test_phase_h_silhouettes` mesure
+## l'écart-type de la texture de sol générée (≥ 0,06) — l'élargissement le
+## sert au lieu de le menacer.
+##
+## Rappel de `scripts/CLAUDE.md` : ces nombres sont des ALBÉDOS, pas des
+## valeurs peintes ; le gain lumineux vaut 1,4 à 1,8 et n'est pas linéaire.
+## Aucun test ne prédit le rendu depuis l'albédo — la preuve est la capture
+## remesurée, dans `evidence/vertical_slice_20260811/`.
+## ---------------------------------------------------------------------------
 const COL_GRASS: Color = Color(0.365, 0.561, 0.239)
-const COL_GRASS_DARK: Color = Color(0.30, 0.46, 0.21)
+const COL_GRASS_DARK: Color = Color(0.232, 0.354, 0.162)
 const COL_ROCK: Color = Color(0.608, 0.408, 0.259)
 ## Pierre générique ocre/bronze sombre (§12.1), utilisée pour les accessoires.
 const COL_STONE: Color = Color(0.285, 0.245, 0.205)
@@ -38,15 +64,24 @@ const COL_RIVERBED: Color = Color(0.35, 0.42, 0.45)
 ## Habillage V4.2 (réf. 01 du pack V4) — différenciation des sols, eau, chemins,
 ## reliefs superposés. Le cyan de l'eau appartient à la bande « ciel/brume/eau »
 ## de §3.4, pas aux accents.
-const COL_GRASS_LIT: Color = Color(0.698, 0.784, 0.353)  # #B2C85A, ancre §3.4
-const COL_GRASS_WET: Color = Color(0.28, 0.47, 0.26)     # berges humides
-const COL_WATER: Color = Color(0.09, 0.55, 0.60, 0.82)   # ruban turquoise
-const COL_PATH: Color = Color(0.62, 0.51, 0.34)          # terre battue
-const COL_MOUNTAIN_WARM: Color = Color(0.47, 0.39, 0.33) # grès chaud
-const COL_MOUNTAIN_FAR: Color = Color(0.52, 0.56, 0.65)  # lointain bleui
+## Lot A : #B2C85A est l'ancre PEINTE de §3.4 ; posée telle quelle comme albédo
+## elle ressortait à ~90 % de valeur — c'est elle, le « vert acide » que le
+## rapport d'audit range en P2, et elle habille les pointes de brins du TOUT
+## premier plan. Ramenée d'un tiers, la bande claire redevient une nuance de
+## l'herbe au lieu d'en être la couleur dominante.
+const COL_GRASS_LIT: Color = Color(0.472, 0.530, 0.239)
+const COL_GRASS_WET: Color = Color(0.216, 0.362, 0.200) # berges humides
+const COL_WATER: Color = Color(0.09, 0.55, 0.60, 0.82)  # ruban turquoise
+## Lot A : le chemin était l'objet le PLUS clair du cadre — exactement la
+## rechute d'ISS-037, où #8A5A36 posé en albédo rendait 97 % et tirait le
+## regard hors de la citadelle (§1.2). Le sentier doit se lire par sa forme
+## et par le vide qu'il ouvre dans l'herbe, pas par sa luminosité.
+const COL_PATH: Color = Color(0.430, 0.348, 0.228)      # terre battue
+const COL_MOUNTAIN_WARM: Color = Color(0.395, 0.328, 0.278) # grès chaud
+const COL_MOUNTAIN_FAR: Color = Color(0.52, 0.56, 0.65) # lointain bleui
 ## Jupes de mur : un cran plus sombres que la face qu'elles habillent — c'est
 ## l'écart de valeur qui fait lire le relief, pas la forme seule.
-const COL_MOUNTAIN_SHADE: Color = Color(0.44, 0.465, 0.535)
+const COL_MOUNTAIN_SHADE: Color = Color(0.352, 0.372, 0.428)
 
 
 func _ready() -> void:
@@ -1347,7 +1382,7 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	var plateau_skirts: Node3D = Node3D.new()
 	plateau_skirts.name = "PlateauSkirts"
 	add_child(plateau_skirts)
-	var rock_shade: Color = Color(0.50, 0.33, 0.21)
+	var rock_shade: Color = Color(0.352, 0.232, 0.148)
 	for side_sign: float in [-1.0, 1.0]:
 		for i: int in range(7):
 			var t_skirt: float = (float(i) + 0.5) / 7.0
@@ -2348,10 +2383,14 @@ var _macro_material_cache: Dictionary = {}
 
 
 func _ground_material() -> StandardMaterial3D:
+	# Lot A : moyenne descendue d'environ un cinquième, ÉCART ÉLARGI de 0,24 à
+	# 0,35 de luma. Le sol dominait le ciel (§1.5) et le faisait dans une bande
+	# étroite — l'image n'avait ni hiérarchie ni modelé. Élargir l'écart sert
+	# aussi l'invariant d'écart-type de `test_phase_h_silhouettes`.
 	return _macro_material(&"grass", 20260804, [
-		Color(0.267, 0.408, 0.169),   # olive profond #446B2B
-		Color(0.365, 0.561, 0.239),   # ancre #5D8F3D
-		Color(0.498, 0.663, 0.306),   # olive éclairé #7FA94E
+		Color(0.094, 0.153, 0.065),   # creux d'ombre, olive profond
+		Color(0.176, 0.280, 0.117),   # ancre
+		Color(0.273, 0.403, 0.176),   # olive éclairé
 	])
 
 
@@ -2359,18 +2398,23 @@ func _ground_material() -> StandardMaterial3D:
 ## falaises étaient les derniers grands aplats du cadre (§5.1).
 func _rock_material() -> StandardMaterial3D:
 	return _macro_material(&"rock", 20260806, [
-		Color(0.50, 0.32, 0.19),      # ocre profond
-		Color(0.608, 0.408, 0.259),   # ancre COL_ROCK
-		Color(0.70, 0.50, 0.33),      # arête chauffée
+		Color(0.360, 0.215, 0.125),   # ocre profond
+		Color(0.500, 0.325, 0.200),   # ancre
+		Color(0.680, 0.475, 0.310),   # arête chauffée
 	])
 
 
 ## …et pour la MONTAGNE (murs, crêtes, jupes) : gris-bleu froid varié.
 func _mountain_material() -> StandardMaterial3D:
+	# Lot A : la montagne tenait dans 0,15 de luma d'un bout à l'autre — un
+	# aplat. La bande s'ouvre à 0,25 et descend : le mur de bordure cesse
+	# d'être aussi clair que le ciel, et l'anneau lointain (COL_MOUNTAIN_FAR,
+	# volontairement laissé clair) passe devant lui en valeur. C'est ainsi que
+	# la profondeur se PEINT, comme le disait déjà `_build_border_crests`.
 	return _macro_material(&"mountain", 20260807, [
-		Color(0.44, 0.465, 0.53),
-		Color(0.515, 0.545, 0.608),   # ancre COL_MOUNTAIN
-		Color(0.585, 0.615, 0.675),
+		Color(0.400, 0.432, 0.505),
+		Color(0.520, 0.556, 0.632),   # ancre
+		Color(0.640, 0.672, 0.745),
 	])
 
 

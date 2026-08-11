@@ -104,13 +104,20 @@ for entry in "${LABELS[@]}"; do
 done
 
 if [ "$RENDERED" -gt 0 ]; then
-  echo
-  echo "=== paquet de revue (vignette 320x180, niveaux de gris, mesures) ==="
-  python3 tools/make_review_pack.py "$OUT_DIR"/0*.png || FAILED=1
-  echo
-  echo "=== hiérarchie des valeurs §1.5 (le sol ne peut pas être plus clair que le ciel) ==="
+  # Les dérivées vivent à côté des captures : sans ce filtre, une deuxième
+  # passe fabrique le niveau de gris DU niveau de gris et mesure des images
+  # qui n'ont jamais été rendues par le moteur.
+  CAPTURES=()
   for png in "$OUT_DIR"/0*.png; do
     case "$png" in *_gris.png|*_vignette.png) continue ;; esac
+    CAPTURES+=("$png")
+  done
+  echo
+  echo "=== paquet de revue (vignette 320x180, niveaux de gris, mesures) ==="
+  python3 tools/make_review_pack.py "${CAPTURES[@]}" || FAILED=1
+  echo
+  echo "=== hiérarchie des valeurs §1.5 (le sol ne peut pas être plus clair que le ciel) ==="
+  for png in "${CAPTURES[@]}"; do
     python3 tools/check_value_bands.py "$png" > "${png%.png}_bandes.log" 2>&1
     rc=$?
     printf '  %-28s %s\n' "$(basename "$png")" \

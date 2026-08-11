@@ -270,7 +270,7 @@ func _setup_environment() -> void:
 	# Revue Gate H (correction n°1) : l'image lisait « zénithal plat » —
 	# l'ambiance à 0,85 remplissait les ombres à ras bord, le modelé
 	# disparaissait. Direct RENFORCÉ (1,45), ambiance à voir plus bas.
-	_sun.light_energy = 1.45
+	_sun.light_energy = 1.30
 	_sun.shadow_enabled = true
 	_sun.directional_shadow_max_distance = 180.0
 
@@ -320,9 +320,9 @@ func _setup_environment() -> void:
 	# pâle unique, défaisant le relief des passes H. Redescendu à 0,48 et
 	# brume refroidie/assombrie ; cible mesurée : ≥ 15 points d'écart entre
 	# tiers haut et milieu (script make_review_pack).
-	environment.fog_light_color = Color(0.67, 0.72, 0.77)
-	environment.fog_density = 0.0011
-	environment.fog_aerial_perspective = 0.48
+	environment.fog_light_color = Color(0.72, 0.77, 0.83)
+	environment.fog_density = 0.00075
+	environment.fog_aerial_perspective = 0.42
 	environment.fog_sky_affect = 0.08
 	# Brume basse dans les creux (lit de rivière y≈0-6) : densité douce sous
 	# y = 6 — la crête (y 24) et le plateau (y 34) restent clairs.
