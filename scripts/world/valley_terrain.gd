@@ -1583,29 +1583,106 @@ func _build_citadel_ruptures(citadel: Node3D) -> void:
 	# la pierre). Le bleu froid domine, comme une ombre portée.
 	var stone_dark: Color = Color(0.06, 0.07, 0.14)
 	var pier_stone: Color = Color(0.24, 0.206, 0.172)
-	# --- Arcade ouest : trois vides entre quatre piliers ------------------
-	# Sur le front du socle (z −193), entre x −34 et −12 : le couloir de la
-	# rampe (|x| < 10) reste libre, la porte reste l'unique entrée logique.
+	# --- Arcade ouest : un MUR PERCÉ, détaché du socle --------------------
+	# Revue du propriétaire (correction 6) : la première version posait des
+	# panneaux sombres PRESQUE COPLANAIRES aux piliers (36 cm d'écart) — un
+	# vide peint, pas un vide. La profondeur ne se lit que si elle EXISTE :
+	#
+	#   mur percé (piliers + tympan) au plan z = −189,4 ;
+	#   fond d'ombre CONTRE le socle, à z = −192,9 ;
+	#   soit 3,5 m d'air entre les deux — depuis la caméra d'approche (x = 1,
+	#   donc en oblique sur l'arcade en x −34..−12), les jambages intérieurs
+	#   des ouvertures ET le décrochement du fond se voient par parallaxe.
+	#
+	# Le couloir de la rampe (|x| < 10) reste libre ; la porte reste l'unique
+	# entrée logique ; tout est décor sans collision.
+	const ARCADE_Z: float = -189.4
+	const ARCADE_BACK_Z: float = -192.9
 	for i: int in range(3):
-		var x_arch: float = -30.0 + 7.4 * float(i)
-		# Le VIDE : panneau sombre en retrait, hauteurs inégales (ruine).
+		var x_arch: float = -29.6 + 7.6 * float(i)
+		# Le FOND du vide : contre le socle, 3,5 m derrière le mur percé.
 		var recess: MeshInstance3D = MeshInstance3D.new()
 		recess.name = "CitadelArch%d" % i
 		var panel: BoxMesh = BoxMesh.new()
-		panel.size = Vector3(4.6, 6.8 - 0.7 * float(i % 2), 0.4)
+		panel.size = Vector3(5.4, 8.0 - 0.6 * float(i % 2), 0.4)
 		recess.mesh = panel
 		recess.material_override = _material(stone_dark, false)
-		recess.position = Vector3(x_arch, 34.0 + panel.size.y * 0.5 - 0.2, -192.6)
+		recess.position = Vector3(x_arch, 34.0 + panel.size.y * 0.5 - 0.2,
+			ARCADE_BACK_Z)
 		citadel.add_child(recess)
-		# Le LINTEAU au-dessus du vide, légèrement débordant.
+		# Le LINTEAU dans le plan du mur, au-dessus de l'ouverture.
 		_box_in("CitadelArchCap%d" % i, citadel,
-			Vector3(x_arch, 34.0 + panel.size.y + 0.6, -192.2),
-			Vector3(5.6, 1.4, 1.2), pier_stone, false)
+			Vector3(x_arch, 34.0 + 7.3 - 0.6 * float(i % 2), ARCADE_Z),
+			Vector3(6.2, 1.2, 2.0), pier_stone, false)
 	for i: int in range(4):
-		var x_pier: float = -33.7 + 7.4 * float(i)
+		var x_pier: float = -33.4 + 7.6 * float(i)
 		_box_in("CitadelArcadePier%d" % i, citadel,
-			Vector3(x_pier, 34.0 + 4.1, -192.3),
-			Vector3(2.2, 8.2, 1.8), pier_stone, false)
+			Vector3(x_pier, 34.0 + 3.9, ARCADE_Z),
+			Vector3(2.4, 7.8, 2.0), pier_stone, false)
+	# Le TYMPAN : la bande pleine au-dessus des trois ouvertures — c'est lui
+	# qui fait lire un MUR percé, pas une rangée de poteaux. Sommet
+	# irrégulier : deux merlons ruinés par-dessus.
+	_box_in("CitadelArcadeBand", citadel,
+		Vector3(-22.0, 34.0 + 9.6, ARCADE_Z), Vector3(25.2, 3.2, 2.0),
+		pier_stone, false)
+	_box_in("CitadelArcadeMerlonW", citadel,
+		Vector3(-30.5, 34.0 + 11.9, ARCADE_Z), Vector3(4.4, 1.6, 1.8),
+		COL_CITADEL_STONE, false)
+	_box_in("CitadelArcadeMerlonE", citadel,
+		Vector3(-15.0, 34.0 + 12.3, ARCADE_Z), Vector3(3.2, 2.4, 1.8),
+		COL_CITADEL_STONE, false)
+	# Les RETOURS latéraux ferment la galerie aux deux bouts : sans eux, un
+	# regard rasant voyait le ciel entre le mur et le socle — un décor de
+	# théâtre, pas une galerie.
+	for side_data: Array in [["CitadelArcadeReturnW", -34.2],
+			["CitadelArcadeReturnE", -10.6]]:
+		_box_in(side_data[0] as String, citadel,
+			Vector3(side_data[1] as float, 34.0 + 5.4,
+				(ARCADE_Z + ARCADE_BACK_Z) * 0.5),
+			Vector3(0.9, 10.8, absf(ARCADE_BACK_Z - ARCADE_Z) + 1.2),
+			pier_stone, false)
+	# --- L'ARCHE DU CIEL : le vide que TOUTES les caméras voient ----------
+	# Revue du propriétaire (correction 6, seconde passe) : l'arcade du socle
+	# est masquée par la falaise du plateau depuis les caméras 5 et 6 — un
+	# vide que personne ne voit n'est pas un vide. Le plus fort des vides est
+	# une ouverture DÉCOUPÉE SUR LE CIEL : une arche ruinée dressée sur
+	# l'épaule ouest, au-dessus de la ligne de falaise. La lumière passe AU
+	# TRAVERS — aucun panneau, aucun artifice de valeur : du ciel.
+	var sky_arch: Array[Array] = [
+		# [nom, centre, taille]
+		["CitadelSkyArchPierN", Vector3(-27.5, 64.0 + 4.2, -206.0),
+			Vector3(2.6, 8.4, 3.0)],
+		["CitadelSkyArchPierS", Vector3(-27.5, 64.0 + 3.4, -213.5),
+			Vector3(2.6, 6.8, 3.0)],
+		# Le linteau ne touche QUE le pilier nord : l'arche est ROMPUE — le
+		# moignon sud reste plus bas, et la déchirure se lit sur le ciel.
+		["CitadelSkyArchLintel", Vector3(-27.5, 64.0 + 9.1, -207.9),
+			Vector3(2.2, 1.8, 4.6)],
+	]
+	for spec: Array in sky_arch:
+		_box_in(spec[0] as String, citadel, spec[1] as Vector3,
+			spec[2] as Vector3, COL_CITADEL_STONE, false)
+	# --- Deux baies éventrées dans la face du donjon ----------------------
+	# La bande haute du Keep est ce que les caméras 5 et 6 voient au-dessus
+	# de la falaise. Deux ouvertures sombres ENFONCÉES dans la façade
+	# (le fond recule de 1,2 m derrière le plan du mur), tailles inégales.
+	for window: Array in [["CitadelKeepVoidW", -8.0, 53.5, 3.2, 4.8],
+			["CitadelKeepVoidE", 7.0, 55.0, 2.6, 3.8]]:
+		var void_panel: MeshInstance3D = MeshInstance3D.new()
+		void_panel.name = window[0] as String
+		var opening: BoxMesh = BoxMesh.new()
+		opening.size = Vector3(window[3] as float, window[4] as float, 0.4)
+		void_panel.mesh = opening
+		void_panel.material_override = _material(stone_dark, false)
+		void_panel.position = Vector3(window[1] as float, window[2] as float,
+			-196.8)
+		citadel.add_child(void_panel)
+		# Jambages débordants : l'épaisseur du mur autour du vide.
+		_box_in((window[0] as String) + "Sill", citadel,
+			Vector3(window[1] as float,
+				(window[2] as float) - (window[4] as float) * 0.5 - 0.4,
+				-197.4),
+			Vector3((window[3] as float) + 1.2, 0.8, 1.2), pier_stone, false)
 	# --- Brèche est : le pan effondré et ses éboulis ----------------------
 	var breach: MeshInstance3D = MeshInstance3D.new()
 	breach.name = "CitadelBreachWall"
@@ -1833,11 +1910,28 @@ func _build_dungeon_plateau_and_citadel() -> void:
 			COL_CYAN, false, true)
 	_box_in("GateLintel", citadel, Vector3(0, 34 + 16.6, -197.2),
 		Vector3(16.0, 3.2, 3.4), Color(0.40, 0.30, 0.20), true)
-	# Retrait sombre AFFLEURANT la face du donjon (z −198) : la porte
-	# interactive garde 0,2 m d'avance — l'ouverture paraît large, l'entrée
-	# reste la vraie porte.
-	_box_in("GateRecess", citadel, Vector3(0, 34 + 6.5, -198.35),
-		Vector3(10.0, 13.0, 1.0), Color(0.05, 0.06, 0.09), false)
+	# PORCHE PROFOND (correction 6 du propriétaire, seconde passe) : l'entrée
+	# est LE vide que les caméras 5 et 6 regardent en face — c'est là que la
+	# profondeur doit exister, pas seulement sur une arcade que la falaise
+	# masque. Un second rang de piliers s'avance de 3,4 m ; entre les deux
+	# rangs, un plafond ; au fond, le retrait sombre agrandi. Du chemin de
+	# démonstration, l'œil traverse : pilier avant → ombre du porche →
+	# pilier arrière → fond. Quatre plans étagés sur 5 m.
+	#
+	# Les piliers avancés PORTENT leur collision (on peut buter dessus) mais
+	# restent hors du couloir central : x ±8,3, demi-largeur 1,3 — le centre
+	# x −7..7 reste libre, les marches et la porte inchangées.
+	for side_index: int in range(2):
+		var x_porch: float = -8.3 if side_index == 0 else 8.3
+		_box_in("GatePillar%d" % (2 + side_index), citadel,
+			Vector3(x_porch, 34 + 7.2, -193.8), Vector3(2.6, 14.4, 2.6),
+			Color(0.36, 0.27, 0.18), true)
+	_box_in("GatePorchRoof", citadel, Vector3(0, 34 + 15.1, -195.5),
+		Vector3(19.2, 1.6, 5.8), Color(0.33, 0.25, 0.17), false)
+	# Retrait sombre du fond, AGRANDI et reculé : la porte interactive garde
+	# son avance — l'ouverture paraît vaste, l'entrée reste la vraie porte.
+	_box_in("GateRecess", citadel, Vector3(0, 34 + 6.8, -198.6),
+		Vector3(12.6, 13.6, 1.0), Color(0.05, 0.06, 0.09), false)
 	# Braseros de seuil : le chaud motive l'approche, le cyan reste la menace.
 	for side_index: int in range(2):
 		var x_side: float = -5.0 if side_index == 0 else 5.0
