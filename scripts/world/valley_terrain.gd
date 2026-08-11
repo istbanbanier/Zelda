@@ -673,6 +673,11 @@ func _build_forest() -> void:
 const GROUNDED_DRESS_ZONES: Array[String] = [
 	"DressZoneCrest", "DressZoneDescent",
 ]
+## Décalques visuels qui doivent suivre le même sol réel sans y ajouter de
+## volume. Contrairement au semis, ils restent légèrement au-dessus afin
+## d'éviter le z-fighting.
+const GROUNDED_DECAL_NODES: Array[String] = ["Paths"]
+const PATH_CLEARANCE: float = 0.02
 ## Sonde volontairement longue : le défaut réel atteignait 14 m d'écart, un
 ## rayon court ne l'aurait pas rattrapé.
 const DRESS_SNAP_UP: float = 60.0
@@ -683,10 +688,12 @@ func _snap_dressing_to_ground() -> void:
 	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
 	if space == null:
 		return
-	for zone_name: String in GROUNDED_DRESS_ZONES:
+	for zone_name: String in GROUNDED_DRESS_ZONES + GROUNDED_DECAL_NODES:
 		var zone: Node3D = get_node_or_null(NodePath(zone_name)) as Node3D
 		if zone == null:
 			continue
+		var clearance: float = PATH_CLEARANCE \
+			if GROUNDED_DECAL_NODES.has(zone_name) else 0.0
 		# Les troncs du décor portent une collision : sans les exclure, le rayon
 		# heurterait l'arbre qu'il mesure et le déclarerait posé sur lui-même.
 		var excluded: Array[RID] = []
@@ -706,7 +713,7 @@ func _snap_dressing_to_ground() -> void:
 			if hit.is_empty():
 				continue   # aucun sol sous la pièce : la laisser où elle est
 			piece.global_position = Vector3(piece.global_position.x,
-				(hit["position"] as Vector3).y, piece.global_position.z)
+				(hit["position"] as Vector3).y + clearance, piece.global_position.z)
 
 
 ## ---------------------------------------------------------------------------
@@ -1688,8 +1695,10 @@ func _build_river_water() -> void:
 
 
 ## Chemins de terre battue (réf. 01 : « routes guidant naturellement la
-## descente »). Bandes VISUELLES posées 4 cm au-dessus des zones planes — les
-## rampes gardent leur teinte sombre qui fait déjà office de route.
+## descente »). Bandes VISUELLES sans épaisseur, reposées par rayon sur le sol
+## réel : une dalle de 8 cm montrait sa tranche (ISS-039), et la cote historique
+## de la crête les enterrait de 8 m. Les rampes gardent leur teinte sombre qui
+## fait déjà office de route.
 func _build_paths() -> void:
 	var paths: Node3D = Node3D.new()
 	paths.name = "Paths"
@@ -1715,15 +1724,16 @@ func _build_paths() -> void:
 		var delta: Vector2 = to - from
 		var mesh: MeshInstance3D = MeshInstance3D.new()
 		mesh.name = "PathStrip%02d" % i
-		var box: BoxMesh = BoxMesh.new()
-		box.size = Vector3(delta.length() + 2.0, 0.08, 2.4)
-		mesh.mesh = box
+		var plane: PlaneMesh = PlaneMesh.new()
+		plane.size = Vector2(delta.length() + 2.0, 2.4)
+		mesh.mesh = plane
+		mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		var material: StandardMaterial3D = StandardMaterial3D.new()
 		material.albedo_color = COL_PATH
 		material.roughness = 0.95
 		mesh.material_override = material
 		var center: Vector2 = (from + to) * 0.5
-		mesh.position = Vector3(center.x, ground + 0.04, center.y)
+		mesh.position = Vector3(center.x, ground + PATH_CLEARANCE, center.y)
 		mesh.rotation.y = -atan2(delta.y, delta.x)
 		paths.add_child(mesh)
 

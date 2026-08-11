@@ -22,6 +22,9 @@ func _settle(ticks: int) -> void:
 func _cleanup(world: Node) -> void:
 	_tree().root.remove_child(world)
 	world.queue_free()
+	var audio: Node = _tree().root.get_node_or_null("/root/AudioManager")
+	if audio != null and audio.has_method("stop_ambience"):
+		audio.call("stop_ambience")
 	var game_state: Node = _tree().root.get_node_or_null("/root/GameState")
 	if game_state != null:
 		game_state.call("set_flow", 0)
@@ -133,7 +136,9 @@ func test_the_meadow_reaches_the_density_the_bible_asks_for() -> void:
 
 func test_paths_guide_both_routes_as_pure_visuals() -> void:
 	## Réf. 01 : les routes guident la descente et les DEUX itinéraires (§4.1).
-	## Bandes visuelles seulement : rien à percuter sur le chemin.
+	## Bandes visuelles seulement : rien à percuter, aucune tranche de dalle à
+	## montrer, et le premier segment repose sur la crête réelle plutôt que sur
+	## l'ancienne cote écrite à la main (ISS-039).
 	var valley: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
 	_tree().root.add_child(valley)
 	await _settle(5)
@@ -143,13 +148,35 @@ func test_paths_guide_both_routes_as_pure_visuals() -> void:
 	var west_route: bool = false
 	var east_route: bool = false
 	for strip: Node in strips:
-		var at: Vector3 = (strip as MeshInstance3D).global_position
+		var path_strip: MeshInstance3D = strip as MeshInstance3D
+		var at: Vector3 = path_strip.global_position
 		if at.z < -40.0:
 			west_route = true   # ruines → donjon
 		if at.x > 55.0:
 			east_route = true   # route est → pylône
-		check((strip as MeshInstance3D).find_children("*", "StaticBody3D",
+		check(path_strip.mesh is PlaneMesh,
+			"%s est un plan sans tranche visible" % path_strip.name)
+		check(path_strip.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF,
+			"%s ne projette pas l'ombre d'une dalle" % path_strip.name)
+		check(path_strip.find_children("*", "StaticBody3D",
 			true, false).is_empty(), "bande de chemin sans collision")
+	# Le segment d'ouverture révélait la seconde moitié du défaut : sa cote
+	# historique était 24,04 m alors que la crête actuelle culmine à 32,00 m.
+	var crest_strip: MeshInstance3D = valley.find_child(
+		"PathStrip00", true, false) as MeshInstance3D
+	check_not_null(crest_strip, "le segment d'ouverture PathStrip00 existe")
+	if crest_strip == null:
+		await _cleanup(valley)
+		return
+	var ray: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(
+		Vector3(crest_strip.global_position.x, 200.0, crest_strip.global_position.z),
+		Vector3(crest_strip.global_position.x, -50.0, crest_strip.global_position.z), 1)
+	var hit: Dictionary = valley.get_world_3d().direct_space_state.intersect_ray(ray)
+	check(not hit.is_empty(), "le sol réel existe sous le chemin de la crête")
+	if not hit.is_empty():
+		var ground_y: float = (hit["position"] as Vector3).y
+		check_approx(crest_strip.global_position.y, ground_y + 0.02, 0.05,
+			"le chemin d'ouverture épouse le sol réel")
 	check(west_route, "la route du donjon est tracée")
 	check(east_route, "la route du pylône est tracée")
 	await _cleanup(valley)
