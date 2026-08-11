@@ -92,7 +92,15 @@ son bandeau mesuré — verdict non pertinent, reporté tel quel) ; écarts
 haut/milieu : 5,4 / 32,0 / 20,3 / 26,9 / 13,0 / 52,8.
 
 Traçabilité : `AUDIT_TRACEABILITY.csv` (87 constats : 3 PROUVÉ, 2 CORRIGÉ,
-5 À TRAITER, 3 BLOQUÉ, 74 REPORTÉ AU BACKLOG) et `AUDIT_FILES_USED.md`.
+20 À TRAITER, 3 BLOQUÉ, 59 REPORTÉ AU BACKLOG) et `AUDIT_FILES_USED.md`.
+Révision demandée par le propriétaire : un constat dont la MANIFESTATION est
+visible depuis le parcours des dix minutes ne peut pas être reporté d'office —
+V-004 (relief du parcours → lots C/E), V-007 (coques dans les cadres → E),
+V-012 (vie du camp → D) et les douze lieux du parcours sont SCINDÉS : part
+visible « À TRAITER » dans son lot, refonte du lieu entier au backlog.
+
+Nom canonique du projet : **Zelda / Éclats d'Orage** — « Zelada » est une
+faute historique de l'audit source, non propagée ici.
 
 ## 4. Ce qui reste ROUGE, et que je ne prétends pas avoir traité
 
