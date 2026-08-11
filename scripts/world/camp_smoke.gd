@@ -65,4 +65,4 @@ func _process(delta: float) -> void:
 	# `breathe` est obligatoire dans la composante X : `Basis.scaled` multiplie
 	# la RANGÉE X, donc la part de cisaillement portée par X est mise à l'échelle.
 	position.x = _base_x + _half_height * sin(lean) * breathe
-	position.y = _base_height + _half_height * (1.0 - cos(lean))
+	position.y = _base_height - _half_height * (1.0 - cos(lean))
