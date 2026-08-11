@@ -75,20 +75,39 @@ niveau de gris et de son relevé `_revue.json`.
 
 ---
 
+## 3 bis. Deuxième passe (étapes 1 à 8 du prompt de continuation)
+
+Après le gel du §3, la session a continué : suite ramenée au VERT (823/0 —
+les 8 échecs étaient l'entrelacement de DEUX runners concurrents, verrou
+ajouté), caméra de descente désenterrée (elle vivait 5 m SOUS la crête,
+test-sonde sur les six caméras), citadelle (étape 4 : terrasses en troncs de
+pyramide, arcade percée, brèche, courtines déviées), chemins (étape 5 :
+tronçons chevauchants plaqués au sol, épaulements, pierres), camp réévalué
+(étape 6), talus des deux dernières mesas SANS toucher la paroi d'escalade
+(étape 7). Chaque geste : test rouge d'abord quand vérifiable machine.
+
+**Jeu final : `final/`** — les six caméras, mêmes réglages, arbre committé.
+Mesures : §1.5 conforme sur **5 caméras sur 6** (la 6 n'a pas de ciel dans
+son bandeau mesuré — verdict non pertinent, reporté tel quel) ; écarts
+haut/milieu : 5,4 / 32,0 / 20,3 / 26,9 / 13,0 / 52,8.
+
+Traçabilité : `AUDIT_TRACEABILITY.csv` (87 constats : 3 PROUVÉ, 2 CORRIGÉ,
+5 À TRAITER, 3 BLOQUÉ, 74 REPORTÉ AU BACKLOG) et `AUDIT_FILES_USED.md`.
+
 ## 4. Ce qui reste ROUGE, et que je ne prétends pas avoir traité
 
 Le gate de sortie de la tranche verticale **ÉCHOUE**. Points du prompt §9 qui
 sont encore vrais sur le chemin de démonstration :
 
-1. **La citadelle reste un empilement de boîtes.** Mieux détachée en valeur
-   depuis le lot A, mais aucune arche, aucun vide, aucune épaule asymétrique
-   n'a été ajoutée. C'est le lot B non terminé.
+1. **La citadelle** a désormais terrasses talutées, arcade, brèche et
+   courtines (étape 4) — mais le Keep et les tours restent des boîtes à
+   collision axées monde, et le verdict d'image appartient à Codex.
 2. **Le terrain reste plat** : 96,8 % des 1 024 sondages de l'audit sont sous
    5° de pente et 79,6 % tombent sur deux dalles. Rien dans cette session n'a
    touché le relief — c'était le risque le plus élevé et le moins réversible.
-3. **Les chemins restent des bandes posées** : `PathStrip00` occupe 22,2 % du
-   cadre d'ouverture et reste un plan sans épaisseur au-dessus du sol. Le lot C
-   n'a pas été fait ; seule sa cause la plus grave (la rampe repeinte) l'a été.
+3. **Les chemins** sont désormais des chaînes de tronçons plaqués au sol
+   (étape 5) — il reste leur clarté en plein soleil et la transition
+   terre/herbe encore géométrique.
 4. **Les mesas orange du plan moyen** et la monture en primitives restent des
    volumes cubiques visibles depuis la crête.
 5. **Le camp n'est pas composé** en triangle repos/cuisine/garde ; il a des

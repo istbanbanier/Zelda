@@ -32,7 +32,13 @@ vignettes, niveaux de gris, manifestes et relevés.
 | Débordement Options/Commandes à 720p | **Non commencé** | lot F non fait |
 | Score North Star | **NON VÉRIFIÉ** | aucun évaluateur indépendant n'a noté ces captures |
 | Trois joueurs boîte noire | **NON VÉRIFIÉ** | `tools/blackbox_player/` non lancé dans cette session |
-| Gate « tranche verticale professionnelle » | **ÉCHEC** | voir `evidence/vertical_slice_20260811/README.md` §4 |
+| Suite complète après verrou anti-concurrence | **Validé** | 823/0, RC=0, un seul résumé — les 8 échecs étaient DEUX runners entrelacés (`validate_fast_VERT_823_apres_verrou.log`) |
+| Caméra de descente désenterrée + sonde des six caméras | **Validé** | `test_gate_cameras_are_not_buried.gd`, contrôle négatif rouge |
+| Citadelle : vides, brèche, courtines, terrasses talutées | **Fonctionnel** | `test_citadel_carries_voids_and_asymmetry.gd` rouge d'abord ; image finale à juger par Codex |
+| Chemins en tronçons plaqués au sol | **Fonctionnel** | `test_paths_belong_to_the_ground.gd` (10 échecs mesurés avant) ; `final/02+05` |
+| Talus des mesas, paroi d'escalade intacte | **Fonctionnel** | `test_mesas_wear_talus.gd` — l'exclusion de la paroi est testée |
+| Matrice de traçabilité des 87 constats d'audit | **Validé** | `AUDIT_TRACEABILITY.csv` + `AUDIT_FILES_USED.md` |
+| Gate « tranche verticale professionnelle » | **ÉCHEC** | voir `evidence/vertical_slice_20260811/README.md` §4 — verdict d'image et North Star : Codex |
 
 ## Tranche verticale d'ouverture — lot 1 (2026-08-10, `claude/vertical-slice-opening-polish`)
 
