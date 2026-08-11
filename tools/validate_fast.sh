@@ -34,11 +34,31 @@ fi
 # en plein mot, et deux lignes « === RÉSULTAT » que l'étape 4 a flaguées.
 # C'est l'équivalent machine de la règle n°1 de COMMENT_TRAVAILLER_ENSEMBLE.
 #
+# DEUX couches, parce qu'elles n'attrapent pas la même chose :
+#
+#  1. le VERROU (flock) est atomique : deux validate_fast lancés dans la même
+#     milliseconde ne peuvent pas tous deux le prendre — le pgrep seul avait
+#     cette fenêtre. Pris sur un descripteur tenu par TOUT le script, libéré
+#     par le noyau à la sortie quelle qu'elle soit (crash et kill compris :
+#     c'est le descripteur qui meurt, pas un fichier à nettoyer). Par projet :
+#     le fichier vit dans .git/, deux clones ne se gênent pas.
+#  2. le pgrep attrape ce que le verrou ne voit pas : un runner SURVIVANT
+#     lancé hors de ce script (gate_select, run à la main, orphelin d'un
+#     kill) qui partagerait quand même user://saves.
+#
 # Sortie en 3 (BLOQUÉ), jamais en silence : .claude/rules/evidence.md.
+LOCK_FILE="$PROJECT_DIR/.git/validate_fast.lock"
+exec 9>"$LOCK_FILE"
+if ! flock -n 9; then
+  echo "BLOQUÉ: une autre suite validate_fast détient le verrou ($LOCK_FILE)." >&2
+  echo "        Attendre sa fin — deux suites concurrentes partagent" >&2
+  echo "        user://saves et fabriquent des échecs de sauvegarde." >&2
+  exit 3
+fi
 if pgrep -f "test_runner\.gd" >/dev/null 2>&1; then
   echo "BLOQUÉ: un test runner Godot tourne déjà (pgrep -f test_runner.gd)." >&2
-  echo "        Deux suites concurrentes partagent user://saves et fabriquent" >&2
-  echo "        des échecs de sauvegarde. Attendre sa fin ou le tuer, PUIS" >&2
+  echo "        Il ne tient pas le verrou (lancé hors validate_fast), mais il" >&2
+  echo "        partage user://saves. Attendre sa fin ou le tuer, PUIS" >&2
   echo "        vérifier qu'il est mort : pkill laisse des survivants (mesuré)." >&2
   exit 3
 fi
