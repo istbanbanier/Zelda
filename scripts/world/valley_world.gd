@@ -241,11 +241,20 @@ func _paint_the_world() -> void:
 	# teintes macro (la recette, réglée sur un laboratoire sans terrain, les
 	# délavait : lointain de 65 % à 74 %, sol gris). Tout le reste du monde
 	# reçoit enfin le style.
+	#
+	# … ET C'EST PRÉCISÉMENT CE « UN PAR UN » QUI A DÉRIVÉ. La liste citait
+	# douze dalles et pas UNE rampe. `DungeonRamp` — la rampe processionnelle
+	# de la citadelle, 55 % du cadre depuis la route du nord — était donc
+	# repeinte : de la pierre rendue en VERT VIF (140, 218, 82), un tapis
+	# agrafé sur une falaise brune. Idem pour la pente de la crête, les trois
+	# rampes de la descente, la sortie du camp, la rampe du pylône et les
+	# quatre berges de la rivière.
+	#
+	# L'exemption vit désormais dans `PainterlyRecipe.GROUND_CARRIER_GROUP`,
+	# posé par `_slab()` et `_ramp()` eux-mêmes : un porteur de sol créé
+	# demain sera exempté sans que personne y pense. Ne restent ici que les
+	# nœuds qui ne sont NI dalle NI rampe.
 	var skip: Array[String] = ["CitadelStorm", "Storm", "StormCell",
-		"PlainSouth", "PlainNorth", "Riverbed", "SpawnRidge", "CampTerrace",
-		"LearningCliff", "PylonTerrace", "DungeonPlateau", "FordEast",
-		"FordWest", "CliffLedgeLow", "CliffLedgeHigh",
-		"GateStepLow", "GateStepMid", "GateStepHigh",
 		"GroundVariation", "Paths",
 		# L'ANNEAU LOINTAIN reste hors peinture : la recette est réglée pour
 		# le premier plan, et elle éclaircissait l'horizon de 65 % à 74 % —

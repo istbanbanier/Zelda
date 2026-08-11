@@ -2167,12 +2167,19 @@ func _visual_prism(prism_name: String, parent: Node3D, center: Vector3,
 ## ---------------------------------------------------------------------------
 
 ## Dalle pleine : sommet à `top`, fond commun à BASE_Y.
+##
+## Toute dalle rejoint le groupe des PORTEURS DE SOL : la passe de peinture les
+## exempte par ce groupe, plus par une liste de noms qui oubliait toutes les
+## rampes (voir `PainterlyRecipe.GROUND_CARRIER_GROUP`).
 func _slab(slab_name: String, center_xz: Vector2, size_xz: Vector2, top: float,
 		color: Color) -> void:
 	var height: float = top - BASE_Y
 	_box_in(slab_name, self,
 		Vector3(center_xz.x, BASE_Y + height * 0.5, center_xz.y),
 		Vector3(size_xz.x, height, size_xz.y), color, true)
+	var body: Node = get_node_or_null(NodePath(slab_name))
+	if body != null:
+		body.add_to_group(PainterlyRecipe.GROUND_CARRIER_GROUP)
 
 
 ## Boîte avec collision optionnelle et émission optionnelle.
@@ -2289,6 +2296,9 @@ func _ramp(ramp_name: String, from: Vector3, to: Vector3, width: float,
 	mesh.material_override = _material(color, false)
 	body.add_child(mesh)
 	add_child(body)
+	# Une rampe EST un porteur de sol : c'est l'oubli exact qui peignait la
+	# rampe processionnelle en vert vif sur 55 % du cadre d'approche.
+	body.add_to_group(PainterlyRecipe.GROUND_CARRIER_GROUP)
 
 
 ## Maillage du prisme : les six faces du coin, en quads triangulés.

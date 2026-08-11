@@ -269,13 +269,34 @@ static func _shared(cache: Dictionary[String, ShaderMaterial],
 	return material
 
 
+## Exemption PAR CONSTRUCTION des porteurs de sol.
+##
+## LE DÉFAUT CORRIGÉ, mesuré et non supposé : l'exemption des sols était une
+## LISTE DE NOMS tenue à la main dans `valley_world.gd`. Elle citait douze
+## dalles et oubliait TOUTES les rampes — `SpawnSlope`, `DescentA/B/C`,
+## `CampExit`, `PylonRamp`, les quatre berges de rivière et surtout
+## `DungeonRamp`, la rampe processionnelle de la citadelle.
+##
+## Conséquence à l'écran, prouvée par repeinture en couleur impossible
+## (la méthode de `tools/CLAUDE.md`) puis recapture : la rampe de pierre
+## rendait en VERT VIF — 140, 218, 82 — et occupait **55 % du cadre** de la
+## caméra d'approche de la citadelle. Un tapis vert agrafé sur une falaise
+## brune. Avec l'exemption, le même pixel rend 221, 176, 126 : de la pierre.
+##
+## Une liste de noms ne peut pas ne pas dériver : elle est écrite ailleurs que
+## le code qui crée les nœuds, et rien ne relie les deux. Le groupe, lui, est
+## posé par `_slab()` et `_ramp()` eux-mêmes — un porteur de sol qui n'existe
+## pas encore le sera aussi.
+const GROUND_CARRIER_GROUP: StringName = &"terrain_ground"
+
+
 static func _is_skipped(node: Node, root: Node,
 		skip: Array[String]) -> bool:
-	if skip.is_empty():
-		return false
 	var walker: Node = node
 	while walker != null and walker != root:
-		if String(walker.name) in skip:
+		if walker.is_in_group(GROUND_CARRIER_GROUP):
+			return true
+		if not skip.is_empty() and String(walker.name) in skip:
 			return true
 		walker = walker.get_parent()
 	return false
