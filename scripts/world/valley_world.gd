@@ -557,6 +557,83 @@ func _setup_vista_camera() -> void:
 	add_child(interior_camera)
 	if OS.get_environment("VALLEY_STRUCTURES") == "2":
 		interior_camera.make_current.call_deferred()
+	_setup_gate_cameras()
+
+
+## ---------------------------------------------------------------------------
+## LES SIX CAMÉRAS DE GATE DE LA TRANCHE D'OUVERTURE
+##
+## Le prompt de reprise du 2026-08-11 exige « six paires avant/après » et « la
+## même caméra » de part et d'autre. Le dépôt avait bien des caméras de
+## contrôle, mais dispersées derrière cinq variables d'environnement
+## différentes, sans jeu nommé ni ordre : impossible de dire « les six caméras
+## de gate » sans les énumérer à la main à chaque fois, donc impossible de
+## garantir qu'une comparaison porte sur les mêmes.
+##
+## `VALLEY_GATE=1..6` les rassemble sous un seul nom, dans l'ordre du parcours
+## joué : crête → descente → camp → gué → route du nord → approche de la
+## citadelle. Les trois premières RÉUTILISENT les nœuds existants — dupliquer
+## leurs cotes les aurait fait diverger le jour où l'une bouge.
+##
+## Ce ne sont PAS des caméras de jeu. Aucune ne s'active sans sa variable, et
+## une capture aérienne de debug ne remplace pas une vue joueur : les six sont
+## posées à hauteur d'œil (1,6-1,8 m au-dessus du sol) sauf la crête, qui est
+## la North Star de §3.2 et garde son recul d'épaule.
+## ---------------------------------------------------------------------------
+
+## Nom du nœud caméra pour chaque numéro de gate. Étendre cette liste est un
+## geste délibéré : le nombre « six » est cité dans les preuves.
+const GATE_CAMERA_NAMES: Array[String] = [
+	"VistaCamera_Hero01",     # 1 — la crête, cadrage North Star §3.2
+	"DescentCamera_01",       # 2 — la descente en S vers le camp
+	"CampCamera_01",          # 3 — le camp comme lieu habité
+	"GateCamera_Ford",        # 4 — le gué ouest, la rivière et le plan moyen
+	"GateCamera_NorthRoad",   # 5 — la plaine nord sur la route du donjon
+	"GateCamera_Citadel",     # 6 — l'approche du plateau et de la citadelle
+]
+
+
+func _setup_gate_cameras() -> void:
+	# Gué ouest (x 20, z 10) : le joueur arrive de la plaine sud et découvre
+	# la rivière, le plan moyen et le monument au-dessus. Hauteur d'œil sur la
+	# berge sud, à 30 m du passage.
+	_add_gate_camera("GateCamera_Ford", Vector3(20.0, 3.7, 42.0),
+		Vector3(-3.0, 4.0, 0.0), 60.0)
+	# Plaine nord, à mi-chemin du plateau : c'est le plan qui montrait 815
+	# impacts de sonde sur deux dalles plates, et la face sud du plateau en
+	# grand mur. Regard droit vers le nord.
+	_add_gate_camera("GateCamera_NorthRoad", Vector3(-2.0, 3.7, -60.0),
+		Vector3(1.5, 0.0, 0.0), 58.0)
+	# Approche : sur la route, AVANT la rampe processionnelle. Cadrage réglé
+	# sur capture — posée à z −118, la caméra se trouvait à 47 m d'une face de
+	# plateau haute de 42 m : le cadre entier était le mur, la citadelle
+	# n'apparaissait pas, et une comparaison avant/après n'aurait rien montré
+	# d'autre qu'un aplat brun. À z −92, la face monte à 22° et la spire (y 100)
+	# à 39° : le monument, sa falaise porteuse et le sol tiennent ensemble.
+	_add_gate_camera("GateCamera_Citadel", Vector3(1.0, 3.7, -92.0),
+		Vector3(14.0, 0.0, 0.0), 58.0)
+	var selected: String = OS.get_environment("VALLEY_GATE")
+	if selected.is_empty():
+		return
+	var index: int = selected.to_int() - 1
+	if index < 0 or index >= GATE_CAMERA_NAMES.size():
+		push_warning("VALLEY_GATE=%s hors des six caméras de gate" % selected)
+		return
+	var camera: Camera3D = get_node_or_null(
+		NodePath(GATE_CAMERA_NAMES[index])) as Camera3D
+	if camera != null:
+		camera.make_current.call_deferred()
+
+
+func _add_gate_camera(camera_name: String, at: Vector3, rotation_deg: Vector3,
+		fov: float) -> void:
+	var camera: Camera3D = Camera3D.new()
+	camera.name = camera_name
+	camera.position = at
+	camera.rotation_degrees = rotation_deg
+	camera.fov = fov
+	camera.current = false
+	add_child(camera)
 
 
 func _record_safe_point() -> void:
