@@ -994,3 +994,41 @@ Le point 3 est le plus parlant : les deux tests fautifs dépendent d'un délai.
   soit ces cubes ne sont pas des fleurs. **Identifier le nœud d'abord** — la
   méthode qui a tranché sur ISS-037 est la bonne : repeindre d'une couleur
   impossible, recapturer, mesurer.
+
+## ISS-041 — Le pied de la colonne de fumée se soulève de 22 cm à chaque balancement · `S4` · OUVERT
+
+- **Vu** : lecture de `scripts/world/camp_smoke.gd`, confirmé par le calcul.
+- **Observé** : la compensation de pivot du cisaillement est **juste en X et
+  fausse en Y**. Pour ancrer le pied il faut `_base_height - h(1 - cos(lean))` ;
+  le code écrit `+`. Mesuré à `SWAY_DEG = 6` et `h = 20` : le pied dérive de
+  **+0,219 m**, alors qu'avec le signe corrigé il tient à **0,000 m**. En X la
+  dérive est déjà nulle — ce bras-là est bon, ne pas y toucher.
+- **Attendu** : le commentaire du fichier l'énonce lui-même — « le PIED reste
+  ancré au feu, la tête dérive comme poussée par le vent ». Un pied qui monte et
+  descend deux fois par cycle trahit le proxy, exactement ce que l'auteur
+  voulait éviter.
+- **Ce n'est PAS la flamme détachée** du rapport de jeu du 2026-08-07 (« un cône
+  blanc/bleu à ~3 m à droite du foyer, avec sa propre ombre, qui disparaît quand
+  on s'approche »). Vérifié : la compensation horizontale est exacte, donc la
+  fumée ne dérive pas latéralement. Cette flamme-là reste **non identifiée** et
+  demande une capture au camp, pas une lecture de code.
+- **Piste** : corriger le signe, avec un test qui échoue d'abord — sonder la
+  position mondiale du sommet de base sur un cycle complet.
+
+## ISS-042 — `probe_world_boxes.gd` inverse le signe sur une pièce ENTERRÉE · `S3` · OUVERT
+
+- **Vu** : balayage du 2026-08-10 sur la vallée entière.
+- **Observé** : la sonde tire son rayon depuis 40 cm sous la pièce — départ
+  documenté et justifié pour les pièces posées. Mais pour une pièce **enterrée**
+  ce départ est à l'intérieur du terrain : le rayon en sort sans le voir et
+  rapporte le sol d'en dessous. Elle a donc annoncé « `DressZoneCrest` flotte à
+  22 m » là où la vérité mesurée était « enterrée de 8 m », et a signalé **le
+  joueur lui-même** comme flottant de 22 m alors qu'il se tient debout sur la
+  crête.
+- **Conséquence** : ses 507 candidates ne se lisent pas comme une liste de
+  défauts. Le joueur flottant est le signal qui doit faire douter du relevé.
+- **Contourné, pas corrigé** :
+  `tests/integration/test_opening_dressing_rests_on_ground.gd` tire de +200 m et
+  exclut les corps du décor lui-même ; c'est lui qui a donné les vraies cotes.
+- **Piste** : ajouter à la sonde un second tir venu du ciel et rapporter
+  l'écart SIGNÉ (enterré / posé / flottant) au lieu d'un seul mot « flotte ».

@@ -851,4 +851,4 @@
 
 === VALIDATE_FAST : VERT ===
 logs: evidence/validate_fast
-VALIDATE_FAST_RC=0
+RC=0

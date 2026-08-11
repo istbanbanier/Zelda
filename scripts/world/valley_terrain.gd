@@ -23,13 +23,13 @@ const BASE_Y: float = -8.0
 const COL_GRASS: Color = Color(0.365, 0.561, 0.239)
 const COL_GRASS_DARK: Color = Color(0.30, 0.46, 0.21)
 const COL_ROCK: Color = Color(0.608, 0.408, 0.259)
-## Pierre de la citadelle : ASSOMBRIE et légèrement chaude. Mesure sur la
-## capture de référence : la bande d'horizon tenait entre 55 % et 80 % de
-## valeur, monument compris — le but du jeu ne se détachait de rien. Un sujet
-## se lit par sa valeur avant sa forme.
-# H-6 : ocre/bronze SOMBRE (§12.1 « base ocre/bronze sombre ») — l'ancien
-# gris quasi neutre (0.255/0.238/0.243, r − b = 0,012) lisait « béton ».
+## Pierre générique ocre/bronze sombre (§12.1), utilisée pour les accessoires.
 const COL_STONE: Color = Color(0.285, 0.245, 0.205)
+## Pierre dédiée aux grandes masses de la citadelle : son réglage ne doit plus
+## assombrir le foyer, le pylône et les autres petites pierres de la vallée.
+## La séparation de matériau et l'écart d'albédo sont testés ; l'écart de valeur
+## à l'écran reste à confirmer sur une recapture avec le renderer de référence.
+const COL_CITADEL_STONE: Color = Color(0.205, 0.176, 0.148)
 const COL_WOOD: Color = Color(0.408, 0.251, 0.157)
 const COL_COPPER: Color = Color(0.55, 0.36, 0.22)
 const COL_CYAN: Color = Color(0.133, 0.851, 0.925)
@@ -640,6 +640,80 @@ func _build_forest() -> void:
 	_dress_zone_cliff()
 	_dress_zone_pylon()
 	_dress_zone_citadel_approach()
+	# Les cotes des tables ci-dessus sont écrites à la main ; le relief, lui, a
+	# bougé (passe H-5 : la crête est montée à 32 m). Repose donc le semis de
+	# terrain sur le sol RÉEL — même correctif que les ramassables du 2026-08-07,
+	# même timing différé, pour la même raison : l'espace physique ne connaît
+	# les colliders du terrain qu'après la frame qui les a créés.
+	_snap_dressing_to_ground.call_deferred()
+
+
+## ---------------------------------------------------------------------------
+## Repose du semis de terrain sur le sol réel.
+##
+## LE DÉFAUT CORRIGÉ, mesuré et non supposé : les 21 pièces de `DressZoneCrest`
+## étaient posées à y = 24 — la cote de spawn de MASTER_SPEC §3.3 — alors que la
+## crête culmine à **y = 32,00** depuis la passe H-5. Fleurs, trèfle, fougères,
+## touffes et galets du TOUT PREMIER plan du jeu étaient donc **enterrés de
+## 8,00 m**, invisibles. Sur la descente, quatre pièces étaient au contraire
+## suspendues jusqu'à 13,99 m au-dessus de la plaine — « un rocher et des
+## poteaux flottent dans le ciel », mot pour mot le rapport de jeu du
+## 2026-08-07. C'est la MÊME classe de défaut que les deux fruits enterrés
+## corrigés ce jour-là ; seuls les ramassables avaient alors été traités.
+##
+## Seules les zones de SEMIS DE TERRAIN sont reposées. `DressZoneCitadel` en est
+## exclue à dessein : ses bannières et ses torches sont accrochées à des murs,
+## et les reposer au sol les ferait tomber. Le X et le Z ne bougent JAMAIS — la
+## composition (cadre latéral, couloir central vide de §11.A) est le travail
+## d'un autre, et ce correctif ne touche qu'une cote fausse.
+## ---------------------------------------------------------------------------
+
+## Zones dont chaque pièce doit toucher le terrain. Étendre cette liste est un
+## geste délibéré : y ajouter une zone qui porte du décor accroché le casserait.
+const GROUNDED_DRESS_ZONES: Array[String] = [
+	"DressZoneCrest", "DressZoneDescent",
+]
+## Décalques visuels qui doivent suivre le même sol réel sans y ajouter de
+## volume. Contrairement au semis, ils restent légèrement au-dessus afin
+## d'éviter le z-fighting.
+const GROUNDED_DECAL_NODES: Array[String] = ["Paths"]
+const PATH_CLEARANCE: float = 0.02
+## Sonde volontairement longue : le défaut réel atteignait 14 m d'écart, un
+## rayon court ne l'aurait pas rattrapé.
+const DRESS_SNAP_UP: float = 60.0
+const DRESS_SNAP_DOWN: float = 80.0
+
+
+func _snap_dressing_to_ground() -> void:
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	if space == null:
+		return
+	for zone_name: String in GROUNDED_DRESS_ZONES + GROUNDED_DECAL_NODES:
+		var zone: Node3D = get_node_or_null(NodePath(zone_name)) as Node3D
+		if zone == null:
+			continue
+		var clearance: float = PATH_CLEARANCE \
+			if GROUNDED_DECAL_NODES.has(zone_name) else 0.0
+		# Les troncs du décor portent une collision : sans les exclure, le rayon
+		# heurterait l'arbre qu'il mesure et le déclarerait posé sur lui-même.
+		var excluded: Array[RID] = []
+		for node: Node in zone.find_children("*", "PhysicsBody3D", true, false):
+			excluded.append((node as PhysicsBody3D).get_rid())
+		for child: Node in zone.get_children():
+			var piece: Node3D = child as Node3D
+			if piece == null:
+				continue
+			var from: Vector3 = piece.global_position + Vector3.UP * DRESS_SNAP_UP
+			var to: Vector3 = piece.global_position - Vector3.UP * DRESS_SNAP_DOWN
+			# Couche 1 (World Static) seule : le décor se pose sur le relief.
+			var query: PhysicsRayQueryParameters3D = \
+				PhysicsRayQueryParameters3D.create(from, to, 1)
+			query.exclude = excluded
+			var hit: Dictionary = space.intersect_ray(query)
+			if hit.is_empty():
+				continue   # aucun sol sous la pièce : la laisser où elle est
+			piece.global_position = Vector3(piece.global_position.x,
+				(hit["position"] as Vector3).y + clearance, piece.global_position.z)
 
 
 ## ---------------------------------------------------------------------------
@@ -1303,11 +1377,11 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	# creusé dans la montagne ». AUCUNE COLLISION : ce sont des masses
 	# de composition, elles ne doivent modifier aucun passage.
 	_box_in("TerraceBase", citadel, Vector3(0, 34 + 7, -216),
-		Vector3(78, 14, 46), COL_STONE, false)
+		Vector3(78, 14, 46), COL_CITADEL_STONE, false)
 	_box_in("TerraceMid", citadel, Vector3(-4, 34 + 18, -214),
-		Vector3(56, 12, 36), COL_STONE, false)
+		Vector3(56, 12, 36), COL_CITADEL_STONE, false)
 	_box_in("TerraceHigh", citadel, Vector3(6, 34 + 27, -213),
-		Vector3(42, 10, 30), COL_STONE, false)
+		Vector3(42, 10, 30), COL_CITADEL_STONE, false)
 	# CONTREFORTS (§2.4) : quatre appuis qui accrochent le socle au
 	# relief et cassent la frontalité.
 	var buttresses: Array[Array] = [
@@ -1320,7 +1394,7 @@ func _build_dungeon_plateau_and_citadel() -> void:
 		_box_in("Buttress%d" % b, citadel,
 			Vector3(spec[0] as float, 34 + bh * 0.5, spec[1] as float),
 			Vector3(spec[2] as float, bh, spec[2] as float),
-			COL_STONE, false)
+			COL_CITADEL_STONE, false)
 	# TROIS lignes de Résonance en cuivre patiné (§2.4) — la masse reste
 	# à plus de 95 % sans énergie visible.
 	for c: int in range(3):
@@ -1329,14 +1403,15 @@ func _build_dungeon_plateau_and_citadel() -> void:
 		_box_in("Conduit%d" % c, citadel,
 			Vector3(cx, 34 + ch * 0.5, -197.0), Vector3(2.6, ch, 2.6),
 			Color(0.43, 0.46, 0.37), false)
-	_box_in("Keep", citadel, Vector3(0, 34 + 23, -212), Vector3(34, 46, 28), COL_STONE, true)
+	_box_in("Keep", citadel, Vector3(0, 34 + 23, -212), Vector3(34, 46, 28),
+		COL_CITADEL_STONE, true)
 	# Épaules latérales plus basses (§2.4) : la silhouette s'étage au lieu de
 	# tomber d'un seul front.
 	for side_index: int in range(2):
 		var x_shoulder: float = -26.0 if side_index == 0 else 26.0
 		_box_in("Shoulder%d" % side_index, citadel,
 			Vector3(x_shoulder, 34 + 15, -214), Vector3(14, 30, 18),
-			COL_STONE, true)
+			COL_CITADEL_STONE, true)
 	# Tours COUPÉES à des hauteurs différentes (§2.4) : quatre tops égaux
 	# à 90 m lisaient « créneaux d'usine », pas « ruine monumentale ».
 	var tower_heights: Array[float] = [50.0, 44.0, 58.0, 40.0]
@@ -1346,15 +1421,15 @@ func _build_dungeon_plateau_and_citadel() -> void:
 		var tower_height: float = tower_heights[i]
 		_box_in("Tower%d" % i, citadel,
 			Vector3(dx, 34 + tower_height * 0.5, -210 + dz),
-			Vector3(8, tower_height, 8), COL_STONE, true)
+			Vector3(8, tower_height, 8), COL_CITADEL_STONE, true)
 	# SPIRE centrale (§2.4 : « spire centrale verticale ») : trois segments
 	# effilés au-dessus du Keep (sommet y = 100) — c'est ELLE que l'éclair
 	# frappe, et elle que l'œil accroche à 360 m. Sans collision : le sommet
 	# est hors de portée du joueur, le Keep en dessous porte la sienne.
 	_box_in("SpireBase", citadel, Vector3(0, 84, -212), Vector3(9, 8, 9),
-		COL_STONE, false)
+		COL_CITADEL_STONE, false)
 	_box_in("SpireMid", citadel, Vector3(0, 91.5, -212), Vector3(6.5, 7, 6.5),
-		COL_STONE, false)
+		COL_CITADEL_STONE, false)
 	var spire_tip: MeshInstance3D = MeshInstance3D.new()
 	spire_tip.name = "SpireTip"
 	var cone: CylinderMesh = CylinderMesh.new()
@@ -1362,7 +1437,7 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	cone.bottom_radius = 2.4
 	cone.height = 5.0
 	spire_tip.mesh = cone
-	spire_tip.material_override = _material(COL_STONE, false)
+	spire_tip.material_override = _material(COL_CITADEL_STONE, false)
 	spire_tip.position = Vector3(0, 97.5, -212)
 	citadel.add_child(spire_tip)
 	# COURONNE DE CAPTURE (§2.4 : « la spire capte l'orage ») : l'anneau que
@@ -1408,7 +1483,7 @@ func _build_dungeon_plateau_and_citadel() -> void:
 		var front: bool = buttress_index < 2
 		_visual_prism("CitadelButtress%d" % buttress_index, citadel,
 			Vector3(x_buttress, 34 + 7, -196.8 if front else -227.2),
-			Vector3(4.5, 14, 5.0), COL_STONE, true,
+			Vector3(4.5, 14, 5.0), COL_CITADEL_STONE, true,
 			0.42 if buttress_index % 2 == 0 else 0.58)
 	# Conduit cyan sur la face avant du segment bas : la ligne d'énergie qui
 	# relie visuellement l'impact de foudre au cœur de la façade (§2.4 :
@@ -1422,9 +1497,9 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	# Gradins DERRIÈRE le plan de la porte (z ≤ −200 : une première pose à
 	# z −194 aurait muré la façade, cotes vérifiées avant capture).
 	_box_in("TierLow", citadel, Vector3(0, 34 + 4, -215), Vector3(40, 8, 30),
-		COL_STONE, true)
+		COL_CITADEL_STONE, true)
 	_box_in("TierHigh", citadel, Vector3(0, 34 + 9, -217), Vector3(32, 10, 24),
-		COL_STONE, true)
+		COL_CITADEL_STONE, true)
 	# Façade monumentale (réf. 02) : piliers de bronze gravés de CONDUITS cyan
 	# verticaux, linteau massif, large ouverture sombre en retrait — le
 	# personnage est dominé par le bâtiment.
@@ -1460,9 +1535,12 @@ func _build_dungeon_plateau_and_citadel() -> void:
 		brazier_light.position = Vector3(x_side, 34 + 2.2, -194.5)
 		citadel.add_child(brazier_light)
 	# Marches processionnelles : trois emmarchements bas (≤ step height 0,30).
-	_slab("GateStepLow", Vector2(0, -192.0), Vector2(14, 2.4), 34.15, COL_STONE)
-	_slab("GateStepMid", Vector2(0, -194.2), Vector2(12, 2.2), 34.3, COL_STONE)
-	_slab("GateStepHigh", Vector2(0, -196.2), Vector2(10, 1.8), 34.45, COL_STONE)
+	_slab("GateStepLow", Vector2(0, -192.0), Vector2(14, 2.4), 34.15,
+		COL_CITADEL_STONE)
+	_slab("GateStepMid", Vector2(0, -194.2), Vector2(12, 2.2), 34.3,
+		COL_CITADEL_STONE)
+	_slab("GateStepHigh", Vector2(0, -196.2), Vector2(10, 1.8), 34.45,
+		COL_CITADEL_STONE)
 	# Ouverture encadrée de cyan (D.1R.4) : le seuil intérieur, dans le retrait.
 	_box_in("DoorFrameLeft", citadel, Vector3(-2.2, 34 + 3, -197.8),
 		Vector3(0.8, 6.0, 0.6), COL_CYAN, false, true)
@@ -1621,8 +1699,10 @@ func _build_river_water() -> void:
 
 
 ## Chemins de terre battue (réf. 01 : « routes guidant naturellement la
-## descente »). Bandes VISUELLES posées 4 cm au-dessus des zones planes — les
-## rampes gardent leur teinte sombre qui fait déjà office de route.
+## descente »). Bandes VISUELLES sans épaisseur, reposées par rayon sur le sol
+## réel : une dalle de 8 cm montrait sa tranche (ISS-039), et la cote historique
+## de la crête les enterrait de 8 m. Les rampes gardent leur teinte sombre qui
+## fait déjà office de route.
 func _build_paths() -> void:
 	var paths: Node3D = Node3D.new()
 	paths.name = "Paths"
@@ -1648,15 +1728,16 @@ func _build_paths() -> void:
 		var delta: Vector2 = to - from
 		var mesh: MeshInstance3D = MeshInstance3D.new()
 		mesh.name = "PathStrip%02d" % i
-		var box: BoxMesh = BoxMesh.new()
-		box.size = Vector3(delta.length() + 2.0, 0.08, 2.4)
-		mesh.mesh = box
+		var plane: PlaneMesh = PlaneMesh.new()
+		plane.size = Vector2(delta.length() + 2.0, 2.4)
+		mesh.mesh = plane
+		mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		var material: StandardMaterial3D = StandardMaterial3D.new()
 		material.albedo_color = COL_PATH
 		material.roughness = 0.95
 		mesh.material_override = material
 		var center: Vector2 = (from + to) * 0.5
-		mesh.position = Vector3(center.x, ground + 0.04, center.y)
+		mesh.position = Vector3(center.x, ground + PATH_CLEARANCE, center.y)
 		mesh.rotation.y = -atan2(delta.y, delta.x)
 		paths.add_child(mesh)
 

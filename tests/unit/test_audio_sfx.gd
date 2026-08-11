@@ -51,6 +51,23 @@ func test_playing_a_sound_is_safe_even_headless() -> void:
 		audio.call("play_sfx", sound)
 	audio.call("play_sfx", &"inexistant_volontaire")
 	check(true, "aucune de ces lectures ne doit lever d'erreur")
+	# RENDRE LE POOL COMME ON L'A TROUVÉ.
+	#
+	# `play_sfx()` assigne le flux à un lecteur du pool, et `AudioManager` est un
+	# autoload : chaque lecteur garde SON `AudioStreamWAV` jusqu'à la fin du
+	# processus. Ce cas jouant TOUS les sons déclarés, il laissait autant de
+	# ressources vivantes — dont `amb_valley.wav`, ce qui faisait sortir Godot
+	# sur « N ObjectDB instances were leaked » et « resources still in use ».
+	#
+	# Le gate voit ces deux lignes depuis la passe S1 ; il refusait donc la suite
+	# entière pour un test qui ne rangeait pas derrière lui. Ce n'est ni un
+	# défaut de gameplay ni une fuite du jeu : en jeu, le pool est censé rester
+	# chargé. Le nettoyage n'appartient qu'au test.
+	for child: Node in audio.get_children():
+		var speaker: AudioStreamPlayer = child as AudioStreamPlayer
+		if speaker != null:
+			speaker.stop()
+			speaker.stream = null
 
 
 func test_the_wired_actions_reference_known_sounds() -> void:

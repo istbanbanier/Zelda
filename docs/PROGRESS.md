@@ -5,6 +5,112 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-10 — Tranche verticale d'ouverture, lot 1 : le décor de la crête était ENTERRÉ
+
+Session ouverte sur la branche `claude/vertical-slice-opening-polish`, mandat
+borné : rendre les dix premières minutes visuellement professionnelles, sans
+nouvelle mécanique ni nouveau contenu.
+
+### La base a demandé une décision avant toute chose
+
+`02d5212` — le build que teste le propriétaire — **n'était pas un ancêtre du
+HEAD**. La PR nº6 avait fusionné la branche à l'état `bec93f1`, puis 7 commits
+ont continué dessus. Vérifié : `02d5212` contient 100 % du contenu du HEAD, dont
+le correctif de la porte du donjon et son test de régression ; le HEAD n'a rien
+d'unique (son seul commit propre est le merge, et le diff vers `02d5212` ne
+contient que des restaurations). Base retenue : `02d5212`. Rien supprimé, rien
+réinitialisé, tag et release intacts.
+
+### Environnement
+
+Godot était ABSENT du conteneur : compilé depuis la source épinglée
+(`a13da4feb`, tag 4.7.1-stable) en 29 min via `tools/setup_godot.sh`. Blender
+était absent aussi, ce qui laissait le niveau 3b ROUGE — installé par
+`tools/setup_blender.sh` (4.0.2). Plancher de référence sur l'arbre propre :
+**`validate_fast.sh` VERT, RC=0**, 3b compris (6 personnages, un seul corps
+solidaire).
+
+### Le défaut, mesuré et non supposé
+
+`ValleyTerrain._dress_zone()` posait chaque pièce à la cote littérale de sa
+table, **sans jamais sonder le terrain**. Les 21 pièces de `DressZoneCrest`
+étaient écrites à `y = 24` — la cote de spawn de MASTER_SPEC §3.3 — alors que la
+crête culmine à **y = 32,00** depuis la passe H-5.
+
+| Zone | Constat mesuré |
+|---|---|
+| `DressZoneCrest` | 21 pièces **enterrées de 8,00 à 8,36 m** — fleurs, trèfle, fougères, touffes, galets du tout premier plan du jeu, invisibles |
+| `DressZoneDescent` | 4 pièces enterrées (0,80 à 4,61 m) et 4 **suspendues** jusqu'à 13,99 m au-dessus de la plaine |
+
+C'est **la même classe de défaut** que les deux fruits de la crête corrigés le
+2026-08-07 (« sol à 32,00, pose à 24,00, la cote du spawn jamais mise à jour
+quand le relief a été bâti ») : le correctif d'alors n'avait touché que les
+ramassables. Et les quatre pièces suspendues sont, mot pour mot, « un rocher et
+des poteaux qui flottent dans le ciel » du rapport de jeu du même jour.
+
+### Pourquoi la sonde existante ne l'avait pas dit
+
+`probe_world_boxes.gd` tire son rayon depuis 40 cm sous la pièce. Pour une pièce
+enterrée, ce départ est **à l'intérieur** du terrain : le rayon en sort sans le
+voir et rapporte la plaine du dessous. Elle annonçait donc « flotte à 22 m » là
+où la vérité est « enterrée de 8 m » — signe inversé — et signalait **le joueur
+lui-même** comme flottant, ce qui a mis sur la piste. Le nouveau test tire de
+très haut, seule façon de trouver la surface plutôt qu'une face intérieure.
+
+### Livré
+
+- `tests/integration/test_opening_dressing_rests_on_ground.gd` — **écrit avant
+  le correctif et vérifié ROUGE** : 28 pièces fautives sur 33 mesurées, chacune
+  nommée avec son écart. Vert après.
+- `ValleyTerrain._snap_dressing_to_ground()` — repose le semis sur le sol réel,
+  au `call_deferred` (même timing que `_drop_pickups_to_ground`, pour la même
+  raison : l'espace physique ignore les colliders créés dans la frame courante).
+  **X et Z ne bougent pas** : la composition de §11.A n'est pas mon travail.
+  `DressZoneCitadel` est exclue à dessein — ses bannières et torches sont
+  accrochées à des murs.
+
+### Verdict de non-régression
+
+**`validate_fast.sh` VERT, RC=0, 817 tests** après correctif (816 avant + le
+nouveau) — `evidence/vslice/validate_fast_APRES_e70a2a7.log`, à comparer au
+plancher de référence `evidence/vslice/validate_fast_AVANT_base_02d5212.log`.
+
+Nuance imposée par ISS-038 : la suite n'est pas déterministe, donc **un passage
+vert ne prouve pas qu'un test est sain**. Ce qui est dit ici est plus modeste :
+trois passages complets (deux sur la base, un après correctif) n'ont montré
+aucune régression.
+
+### Ce que ce lot ne prouve PAS
+
+La capture `VistaCamera_Hero01` change **très peu** : la caméra est à z = 153,4
+et le décor de la crête s'étend de z = 151 à 169, donc l'essentiel est à côté ou
+derrière elle. Le gain se verra en marchant sur la crête et en descendant, pas
+sur cette image. Ne pas présenter ce correctif comme une transformation
+visuelle : c'est une géométrie fausse redevenue juste.
+
+Aucun jugement de rendu, de composition, de lisibilité ou de plaisir n'est porté
+ici — ni par moi, ni par un test.
+
+### Prochaine action exacte
+
+1. Les trois joueurs blackbox de l'Étape 1 **n'ont pas été lancés** (≈ 100 min,
+   séquentiels obligatoires — `play.sh` tue toute autre instance de Godot) :
+   `tools/blackbox_player/play.sh occasionnel A 80`, puis `explorateur E 120`,
+   puis `experimente C 120`. Le parcours `C` est le plus informatif : il vise
+   l'entrée de la citadelle, c'est-à-dire le correctif qui a atterri dans cette
+   base et qui n'a jamais été joué.
+2. Défauts **observés et non traités** : ISS-039 (chemin posé sur l'herbe) et
+   ISS-040 (cubes nus) étaient **déjà consignés** et sont confirmés par le
+   rapport de jeu — ne pas les redécouvrir. Deux constats nouveaux ajoutés :
+   **ISS-041** (le pied de la colonne de fumée se soulève de 0,219 m — signe
+   inversé, calculé) et **ISS-042** (la sonde `probe_world_boxes.gd` inverse le
+   signe sur une pièce enterrée, d'où son « joueur flottant »).
+3. La **flamme détachée du foyer** signalée le 2026-08-07 reste **non
+   identifiée** : ce n'est pas la fumée (compensation horizontale exacte,
+   vérifiée). Elle demande une capture au camp, pas une lecture de code.
+
+---
+
 ## 2026-08-07 — Les quatre réparations du playtest, dans l'ordre du joueur
 
 Session ouverte sur `evidence/blackbox_player/session_20260807_141313` : 74

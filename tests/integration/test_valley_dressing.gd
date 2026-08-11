@@ -22,6 +22,9 @@ func _settle(ticks: int) -> void:
 func _cleanup(world: Node) -> void:
 	_tree().root.remove_child(world)
 	world.queue_free()
+	var audio: Node = _tree().root.get_node_or_null("/root/AudioManager")
+	if audio != null and audio.has_method("stop_ambience"):
+		audio.call("stop_ambience")
 	var game_state: Node = _tree().root.get_node_or_null("/root/GameState")
 	if game_state != null:
 		game_state.call("set_flow", 0)
@@ -133,7 +136,9 @@ func test_the_meadow_reaches_the_density_the_bible_asks_for() -> void:
 
 func test_paths_guide_both_routes_as_pure_visuals() -> void:
 	## Réf. 01 : les routes guident la descente et les DEUX itinéraires (§4.1).
-	## Bandes visuelles seulement : rien à percuter sur le chemin.
+	## Bandes visuelles seulement : rien à percuter, aucune tranche de dalle à
+	## montrer, et le premier segment repose sur la crête réelle plutôt que sur
+	## l'ancienne cote écrite à la main (ISS-039).
 	var valley: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
 	_tree().root.add_child(valley)
 	await _settle(5)
@@ -143,13 +148,35 @@ func test_paths_guide_both_routes_as_pure_visuals() -> void:
 	var west_route: bool = false
 	var east_route: bool = false
 	for strip: Node in strips:
-		var at: Vector3 = (strip as MeshInstance3D).global_position
+		var path_strip: MeshInstance3D = strip as MeshInstance3D
+		var at: Vector3 = path_strip.global_position
 		if at.z < -40.0:
 			west_route = true   # ruines → donjon
 		if at.x > 55.0:
 			east_route = true   # route est → pylône
-		check((strip as MeshInstance3D).find_children("*", "StaticBody3D",
+		check(path_strip.mesh is PlaneMesh,
+			"%s est un plan sans tranche visible" % path_strip.name)
+		check(path_strip.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF,
+			"%s ne projette pas l'ombre d'une dalle" % path_strip.name)
+		check(path_strip.find_children("*", "StaticBody3D",
 			true, false).is_empty(), "bande de chemin sans collision")
+	# Le segment d'ouverture révélait la seconde moitié du défaut : sa cote
+	# historique était 24,04 m alors que la crête actuelle culmine à 32,00 m.
+	var crest_strip: MeshInstance3D = valley.find_child(
+		"PathStrip00", true, false) as MeshInstance3D
+	check_not_null(crest_strip, "le segment d'ouverture PathStrip00 existe")
+	if crest_strip == null:
+		await _cleanup(valley)
+		return
+	var ray: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(
+		Vector3(crest_strip.global_position.x, 200.0, crest_strip.global_position.z),
+		Vector3(crest_strip.global_position.x, -50.0, crest_strip.global_position.z), 1)
+	var hit: Dictionary = valley.get_world_3d().direct_space_state.intersect_ray(ray)
+	check(not hit.is_empty(), "le sol réel existe sous le chemin de la crête")
+	if not hit.is_empty():
+		var ground_y: float = (hit["position"] as Vector3).y
+		check_approx(crest_strip.global_position.y, ground_y + 0.02, 0.05,
+			"le chemin d'ouverture épouse le sol réel")
 	check(west_route, "la route du donjon est tracée")
 	check(east_route, "la route du pylône est tracée")
 	await _cleanup(valley)
@@ -231,6 +258,44 @@ func test_the_citadel_gate_is_monumental_and_still_enterable() -> void:
 	var door: SceneDoor = valley.find_children("CitadelDoor", "SceneDoor", true, false)[0] \
 		as SceneDoor
 	check_equal(door.prompt_verb(), "Entrer", "la porte reste la vraie entrée")
+	await _cleanup(valley)
+
+
+func test_the_citadel_mass_has_its_own_darker_stone() -> void:
+	## §1.5 : la masse de la citadelle doit se détacher des montagnes. Ce test ne
+	## prétend pas mesurer le rendu final — seule une capture le peut — mais il
+	## verrouille le levier structurel : la grande masse ne partage plus la
+	## pierre générique des petits accessoires de vallée.
+	var valley: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(valley)
+	await _settle(5)
+	var keep: MeshInstance3D = valley.get_node_or_null(
+		"Terrain/CitadelProxy/Keep/KeepMesh") as MeshInstance3D
+	var plinth: MeshInstance3D = valley.get_node_or_null(
+		"Terrain/PylonPlinth/PylonPlinthMesh") as MeshInstance3D
+	check_not_null(keep, "la masse centrale de la citadelle existe")
+	check_not_null(plinth, "la pierre générique du pylône existe comme témoin")
+	if keep != null and plinth != null:
+		# `PainterlyRecipe` convertit les matériaux standards au démarrage : ce
+		# sont les paramètres du ShaderMaterial réellement rendu qui font foi.
+		var keep_material: ShaderMaterial = keep.get_active_material(0) \
+			as ShaderMaterial
+		var generic_material: ShaderMaterial = plinth.get_active_material(0) \
+			as ShaderMaterial
+		check_not_null(keep_material, "la citadelle porte un matériau lisible")
+		check_not_null(generic_material, "le témoin porte un matériau lisible")
+		if keep_material != null and generic_material != null:
+			var keep_color: Color = keep_material.get_shader_parameter("albedo_color") \
+				as Color
+			var generic_color: Color = generic_material.get_shader_parameter(
+				"albedo_color") as Color
+			var keep_luma: float = keep_color.get_luminance()
+			var generic_luma: float = generic_color.get_luminance()
+			check(keep_color != generic_color,
+				"la citadelle possède une pierre dédiée")
+			check(keep_luma <= generic_luma * 0.80,
+				"sa pierre est nettement plus sombre (%.3f vs %.3f)" \
+				% [keep_luma, generic_luma])
 	await _cleanup(valley)
 
 

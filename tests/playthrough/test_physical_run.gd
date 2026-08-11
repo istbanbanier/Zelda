@@ -617,8 +617,13 @@ func test_a_player_walks_from_the_menu_to_the_first_dungeon_room() -> void:
 		var centre_selected: bool = centre_report.contains("choisi=DungeonDoor")
 		var in_room1: bool = await await_scene("Room1Initiation")
 
-		# Un joueur qui n'obtient rien FAIT UN PAS DE CÔTÉ et réessaie. Le pilote
-		# l'imite : deux décalages latéraux, toujours par la même touche.
+		# FILET, PLUS SOLUTION. Tant que `SealedSeam` était un corps de couche 1,
+		# ce pas de côté était la SEULE façon d'entrer, et P9b l'annonçait — une
+		# manière polie de normaliser un défaut. Depuis S2.0 la veine est un
+		# ornement sans collision : l'appui au centre suffit, et `P9d` exige
+		# ci-dessous que ce filet ne serve JAMAIS. On le garde comme contrôle
+		# secondaire, pour que sa réapparition se voie.
+		#
 		# Le rayon d'arrivée doit être PLUS PETIT que le décalage, sinon le
 		# pilote est déjà « arrivé » sans avoir bougé et le repositionnement est
 		# une illusion : mesuré, deux essais et zéro pas de côté.
@@ -642,18 +647,22 @@ func test_a_player_walks_from_the_menu_to_the_first_dungeon_room() -> void:
 			index += 1
 
 		check(in_room1,
-			"P9b — la SALLE 1 est atteinte À PIED depuis le menu principal "
-			+ "(%d repositionnement(s)%s)"
-				% [index, "" if attempts.is_empty() else " ; " + " | ".join(attempts)])
-		# CRITÈRE DISTINCT, et c'est lui qui a trouvé quelque chose : au centre
-		# du battant, portée et cône parfaits, l'invite ne répond pas. Le rayon
-		# de ligne de vue de `_has_interact_los()` traverse `SealedSeam`, une
-		# veine cyan décorative posée en `StaticBody3D` sur la COUCHE 1 à
-		# z = −12,50, juste devant la porte à z = −12,75. Le décor coupe donc
-		# l'interaction. Aucun test d'appel direct ne pouvait le voir.
+			"P9b — la SALLE 1 est atteinte À PIED depuis le menu principal")
+		# CRITÈRE DISTINCT, et c'est lui qui a trouvé le défaut : au centre du
+		# battant, portée et cône parfaits, l'invite ne répondait pas. Le rayon
+		# de `_has_interact_los()` traversait `SealedSeam`, veine cyan décorative
+		# posée en `StaticBody3D` sur la COUCHE 1 à z = −12,50, devant la porte à
+		# z = −12,75. Aucun test d'appel direct ne pouvait le voir. Corrigé en
+		# S2.0 : la veine est un ornement sans corps (`_decor_box`).
 		check(centre_selected,
 			"P9c — l'invite répond DEVANT la porte, au centre du battant — "
 			+ "à l'appui : %s" % centre_report)
+		# Et le pas de côté ne doit plus JAMAIS être nécessaire. Sans ce
+		# critère, un retour du défaut serait absorbé par le filet et P9b
+		# resterait vert : le gate cesserait de voir ce qu'il vient de trouver.
+		check(index == 0,
+			"P9d — aucun repositionnement latéral nécessaire (%d essai(s)%s)"
+				% [index, "" if attempts.is_empty() else " ; " + " | ".join(attempts)])
 
 	# --- P11. Ce que la marche entière a mesuré ----------------------------
 	# Ces deux critères ne portent pas sur un jalon : ils portent sur CHAQUE tick

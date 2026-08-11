@@ -107,6 +107,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 6, 65)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20.25, -1)
 mesh = SubResource("SmokeMesh")
 surface_material_override/0 = SubResource("SmokeMat")
+cast_shadow = 0
 script = ExtResource("12_smoke")
 
 ; §24/§10.1 (bible) : « flamme orange » et « reflet chaud » — la flamme emissive

@@ -1,7 +1,10 @@
 Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
 
 === TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
-filtre: boot_smoke,dungeon_run,flow_wiring,physical_run,boss_run,restore_root
+filtre: boot_smoke,dungeon_run,dungeon_door_is_reachable,flow_wiring,physical_run,boss_run,restore_root
+  ok   test_dungeon_door_is_reachable_at_centre.gd::test_the_cyan_seam_is_decor_and_never_an_interaction_obstacle (5 assertions)
+  ok   test_dungeon_door_is_reachable_at_centre.gd::test_the_door_keeps_its_body_and_its_look (4 assertions)
+  ok   test_dungeon_door_is_reachable_at_centre.gd::test_the_player_selects_the_door_from_dead_centre (5 assertions)
 [boot] Godot            : 4.7.1-stable (custom_build)
 [boot] renderer         : forward_plus
 [boot] physique 3D      : Jolt Physics
@@ -49,7 +52,7 @@ WARNING: [save] santé sauvegardée invalide (0.0) — pleine vie
 [boot] transition vers le menu principal.
 [art] vallée peinte : 4827 surfaces
 [monde] lieux habités : 8 chemins, 14 objets de vie
-  ÉCHEC test_physical_run.gd::test_a_player_walks_from_the_menu_to_the_first_dungeon_room — P9c — l'invite répond DEVANT la porte, au centre du battant — à l'appui : mode=0, sol=true [d=0.75 m (max 2,20) · cos=1.00 (min 0,25) · groupe=true · vue=SealedSeam · choisi=aucun]
+  ok   test_physical_run.gd::test_a_player_walks_from_the_menu_to_the_first_dungeon_room (32 assertions)
   ok   test_restore_root.gd::test_an_ordinary_stray_is_removed_and_the_verdict_is_clean (2 assertions)
   ok   test_restore_root.gd::test_a_same_name_replacement_is_swept_and_the_missing_original_is_named (4 assertions)
   ok   test_restore_root.gd::test_a_vanished_original_alone_is_enough_to_refuse (2 assertions)
@@ -58,6 +61,5 @@ WARNING: [save] santé sauvegardée invalide (0.0) — pleine vie
   ok   test_restore_root.gd::test_a_late_arrival_is_swept_and_refused (3 assertions)
 erreurs de script dans le journal : 0
 
-=== RÉSULTAT: 11 réussi(s), 1 échoué(s) ===
-  ÉCHEC: test_physical_run.gd::test_a_player_walks_from_the_menu_to_the_first_dungeon_room — P9c — l'invite répond DEVANT la porte, au centre du battant — à l'appui : mode=0, sol=true [d=0.75 m (max 2,20) · cos=1.00 (min 0,25) · groupe=true · vue=SealedSeam · choisi=aucun]
-RC=1
+=== RÉSULTAT: 15 réussi(s), 0 échoué(s) ===
+RC=0
