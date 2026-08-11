@@ -370,18 +370,28 @@ func _build_camp_terrace() -> void:
 	# Terrasse du camp (§3.3 : (45, 6, 65)) et sa sortie vers la plaine sud.
 	_slab("CampTerrace", Vector2(45, 65), Vector2(44, 40), 6.0, COL_GRASS)
 	_ramp("CampExit", Vector3(40, 6, 47), Vector3(40, 2, 30), 10.0, COL_GRASS_DARK)
-	# V4.3 (réf. 01 : tentes + feux) — le camp se LIT depuis la crête. Tentes
-	# en tente (PrismMesh) avec collision boîte, à l'écart du chemin ; foyer de
-	# pierre, braise émissive et lumière chaude. La colonne de fumée vit déjà
-	# dans ValleyWorld.tscn.
+	# V4.3 (réf. 01 : tentes + feux) — le camp se LIT depuis la crête.
+	#
+	# LOT D (2026-08-11) : les tentes étaient des `PrismMesh`, c'est-à-dire des
+	# CÔNES — exactement la forme que `VISUAL_ASSET_BIBLE` §10.2 interdit
+	# (« aucun tipi ou camp fantasy générique »), et le foyer deux cylindres.
+	# `AssetRegistry` réservait `prop.tent` et `prop.campfire` depuis ART-Q0
+	# vers deux scènes ABSENTES : l'audit du 2026-08-11 en fait un défaut P0,
+	# « le camp ne peut pas franchir son gate lieu habité ». Les deux scènes
+	# sont désormais livrées (`AwningTent`, `CampfireProp`), originales et
+	# construites par script — aucun pack externe, rien à attribuer.
+	#
+	# La position, le lacet et la hauteur de chaque tente ne bougent PAS : le
+	# triangle fonctionnel du camp et ses trois approches sont le travail d'un
+	# autre lot. Seule la forme change, et la collision avec elle.
 	var camp: Node3D = Node3D.new()
 	camp.name = "CampDressing"
 	add_child(camp)
 	var tents: Array[Array] = [
-		# [pied xz, yaw, teinte]
-		[Vector2(54, 58), 0.4, Color(0.55, 0.25, 0.18)],
-		[Vector2(57, 70), -0.7, Color(0.50, 0.30, 0.16)],
-		[Vector2(34, 76), 1.2, Color(0.45, 0.24, 0.20)],
+		# [pied xz, yaw]
+		[Vector2(54, 58), 0.4],
+		[Vector2(57, 70), -0.7],
+		[Vector2(34, 76), 1.2],
 	]
 	for i: int in range(tents.size()):
 		var tent: Array = tents[i]
@@ -390,32 +400,37 @@ func _build_camp_terrace() -> void:
 		body.name = "Tent%d" % i
 		body.collision_layer = 1
 		body.collision_mask = 0
-		# REVUE V4 : la collision était une BOÎTE 3,6 × 2,4 × 3,2 sur un volume
-		# en COIN. La demi-largeur de la toile vaut 1,9 · (1 − y/2,6) : à 2,0 m
-		# de haut elle mesure 0,44 m alors que la boîte imposait 1,80 m, soit
-		# 1,36 m de mur invisible de chaque côté à hauteur de tête (et, à la
-		# base, 10 cm de toile hors boîte). On donne donc au collider la forme
-		# EXACTE du visuel : l'enveloppe convexe du prisme, aux mêmes cotes et
-		# à la même origine locale (0 ; 1,3 ; 0) que le maillage.
-		var mesh: MeshInstance3D = MeshInstance3D.new()
-		mesh.name = "Tent%dMesh" % i
-		var prism: PrismMesh = PrismMesh.new()
-		prism.size = Vector3(3.8, 2.6, 3.4)
+		# REVUE V4, règle CONSERVÉE : le collider prend la forme EXACTE du
+		# visuel, jamais une boîte. L'auvent expose son enveloppe convexe ;
+		# une boîte de 3,6 × 2,4 × 3,2 sur un volume ouvert imposerait de
+		# nouveau plus d'un mètre de mur invisible à hauteur de tête.
+		var visual: Node3D = _instantiate_prop(&"prop.tent", "Tent%dVisual" % i)
 		var shape: CollisionShape3D = CollisionShape3D.new()
-		shape.shape = prism.create_convex_shape(true, false)
-		shape.position = Vector3(0, 1.3, 0)
+		var hull: ConvexPolygonShape3D = ConvexPolygonShape3D.new()
+		var awning: AwningTent = visual as AwningTent
+		if awning != null:
+			hull.points = awning.collision_points()
+		else:
+			# Repli : l'ancien coin, aux mêmes cotes. Il ne doit plus servir,
+			# mais un camp sans collision serait pire qu'un camp graybox.
+			var prism: PrismMesh = PrismMesh.new()
+			prism.size = Vector3(3.8, 2.6, 3.4)
+			hull = prism.create_convex_shape(true, false)
+			shape.position = Vector3(0, 1.3, 0)
+		shape.shape = hull
 		body.add_child(shape)
-		mesh.mesh = prism
-		mesh.material_override = _material(tent[2] as Color, false)
-		mesh.position = Vector3(0, 1.3, 0)
-		body.add_child(mesh)
+		body.add_child(visual)
 		body.rotation.y = float(tent[1])
 		body.position = Vector3(foot.x, 6.0, foot.y)   # AVANT add_child (règle D.0)
 		camp.add_child(body)
-	# Foyer : anneau de pierre, braise émissive, lumière chaude motivée (§7.7 :
-	# « aucun visage de combat noir » — le camp reste lisible au crépuscule).
-	_cylinder_in("FirePit", camp, Vector3(45, 6.0, 64), 1.1, 0.4, COL_STONE, false)
-	_cylinder_in("FireCoals", camp, Vector3(45, 6.35, 64), 0.7, 0.3,
+	# Foyer : pierres, bûches, flamme (asset `prop.campfire`), plus la braise
+	# NOMMÉE et la lumière chaude motivée (§7.7 : « aucun visage de combat
+	# noir »). La braise et la lumière restent créées ICI : ce sont elles que
+	# le contrat de V4.3 nomme et teste, et un décor ne porte jamais un état.
+	var hearth: Node3D = _instantiate_prop(&"prop.campfire", "CampfireVisual")
+	hearth.position = Vector3(45, 6.0, 64)
+	camp.add_child(hearth)
+	_cylinder_in("FireCoals", camp, Vector3(45, 6.20, 64), 0.62, 0.22,
 		Color(0.98, 0.55, 0.18), false)
 	var coals: MeshInstance3D = camp.get_node("FireCoals") as MeshInstance3D
 	# DUPLIQUER avant de personnaliser : le matériau vient du cache partagé
@@ -571,6 +586,24 @@ func _dress_camp_life(camp: Node3D) -> void:
 ## Monte un prop du registre (ou sa boîte graybox de repli) avec une
 ## collision fixe : les IDs, le loot et les interactions du camp ne passent
 ## JAMAIS par ces décors — ce sont des obstacles muets (§14.1).
+## Instancie un asset du registre sous un nom STABLE, ou rend un `Node3D` vide.
+##
+## Godot rebaptise les homonymes `@Node3D@366` (`scripts/CLAUDE.md`) : sans nom
+## explicite, aucun test ne peut désigner cette géométrie. Rendre un nœud vide
+## plutôt que `null` évite au consommateur d'avoir à distinguer les deux cas —
+## il vérifie le type quand la forme l'intéresse, comme pour l'auvent.
+func _instantiate_prop(id: StringName, node_name: String) -> Node3D:
+	var packed: PackedScene = AssetRegistry.resolve(id)
+	if packed == null:
+		push_warning("[terrain] asset absent : %s" % id)
+		var empty: Node3D = Node3D.new()
+		empty.name = node_name
+		return empty
+	var instance: Node3D = packed.instantiate() as Node3D
+	instance.name = node_name
+	return instance
+
+
 func _mount_camp_prop(parent: Node3D, id: StringName, at: Vector3,
 		yaw: float, collision_size: Vector3) -> void:
 	var body: StaticBody3D = StaticBody3D.new()

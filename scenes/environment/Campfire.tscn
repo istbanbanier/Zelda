@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3]
+
+; Foyer de camp — asset ORIGINAL du projet, construit par script (aucun pack
+; externe, rien à attribuer). Livre `prop.campfire`, réservé dans
+; AssetRegistry depuis ART-Q0 et signalé absent par l'audit du 2026-08-11.
+; La LUMIÈRE et la BRAISE nommée restent créées par la terrasse du camp :
+; un décor ne porte jamais l'état de jeu.
+
+[ext_resource type="Script" path="res://scripts/world/props/campfire_prop.gd" id="1_script"]
+
+[node name="Campfire" type="Node3D"]
+script = ExtResource("1_script")
