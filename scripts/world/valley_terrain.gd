@@ -640,6 +640,61 @@ func _build_learning_cliff() -> void:
 	_slab("LearningCliff", Vector2(-110, 65), Vector2(60, 50), 14.0, COL_ROCK)
 	_slab("CliffLedgeLow", Vector2(-79.5, 58), Vector2(1.0, 6), 6.0, COL_ROCK)
 	_slab("CliffLedgeHigh", Vector2(-79.5, 72), Vector2(1.0, 6), 10.5, COL_ROCK)
+	_build_mesa_skirts()
+
+
+## LOT E (étape 7, 2026-08-11) — les deux mesas restantes portaient des faces
+## de DALLE : murs verticaux lisses de 12 et 16 m, à bords nets, en plein
+## cadre des caméras 1, 2 et 5. Même recette que la face sud du plateau du
+## donjon (lot B) : un rang de prismes qui se chevauchent, décor SANS
+## collision, sommets SOUS le rebord — la mesa domine son talus.
+##
+## LA FACE QUI NE REÇOIT RIEN : l'est de LearningCliff (x = −80) est LA paroi
+## d'escalade de §9.3, corniches de repos comprises. Un talus là serait un
+## éboulis décoratif en travers de la leçon d'escalade — l'exclusion est
+## testée (`test_the_climbing_wall_stays_bare_of_talus`).
+func _build_mesa_skirts() -> void:
+	var skirts: Node3D = Node3D.new()
+	skirts.name = "MesaSkirts"
+	add_child(skirts)
+	var shade: Color = Color(0.352, 0.232, 0.148)
+	# [préfixe, face le long de X ?, ancrage, longueur, hauteur de base,
+	#  amplitude, rebord]
+	var faces: Array[Array] = [
+		# Terrasse du pylône, face SUD (z = 0) : le mur des caméras 1 et 2.
+		["PylonMesaS", true, Vector3(115.0, 0.0, 1.2), 52.0, 12.0, 4.0, 18.0],
+		# Terrasse du pylône, face EST (x = 143) : vue du territoire du chasseur.
+		["PylonMesaE", false, Vector3(141.8, 0.0, -25.0), 46.0, 11.0, 3.5, 18.0],
+		# Falaise d'apprentissage, face SUD (z = 90) : le mur du cadre ouest.
+		["LearnMesaS", true, Vector3(-110.0, 0.0, 88.8), 56.0, 9.0, 3.0, 14.0],
+	]
+	for face: Array in faces:
+		var prefix: String = face[0]
+		var along_x: bool = face[1]
+		var anchor: Vector3 = face[2] as Vector3
+		var span: float = face[3]
+		var base_height: float = face[4]
+		var amplitude: float = face[5]
+		var rim: float = face[6]
+		var count: int = 6
+		for i: int in range(count):
+			var t: float = (float(i) + 0.5) / float(count)
+			var along: float = (t - 0.5) * span \
+				+ 2.2 * sin(t * 15.7 + float(prefix.length()))
+			var height: float = minf(base_height
+				+ amplitude * sin(t * 8.3 + float(i)),
+				rim - 1.0)
+			var width: float = span / float(count) * 1.7 \
+				+ 3.0 * sin(t * 5.9 + float(prefix.length()) * 1.3)
+			var centre: Vector3
+			if along_x:
+				centre = Vector3(anchor.x + along, BASE_Y + height * 0.5, anchor.z)
+			else:
+				centre = Vector3(anchor.x, BASE_Y + height * 0.5, anchor.z + along)
+			_visual_prism("%s%d" % [prefix, i], skirts, centre,
+				Vector3(width, height, 4.5 + 1.5 * sin(t * 7.1)),
+				shade if i % 3 != 1 else COL_ROCK, along_x,
+				0.5 + 0.27 * sin(t * 11.3 + float(i) * 1.9))
 
 
 func _build_pylon_terrace_and_proxy() -> void:
