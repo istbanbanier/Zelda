@@ -98,19 +98,38 @@ func _ready() -> void:
 func _build_clouds() -> void:
 	cloud_radius = minf(cloud_radius, MAX_CLOUD_RADIUS)
 	# Jupe-enclume : le ventre plat et sombre d'un cumulonimbus, d'où sort
-	# l'éclair. ÉLARGIE (0,70 × rayon) et remontée : son bas plane à 8 m
-	# au-dessus du plancher des grumeaux — c'est elle, la « base aplatie ».
-	var skirt: MeshInstance3D = MeshInstance3D.new()
-	skirt.name = "CloudBase"
-	var skirt_sphere: SphereMesh = SphereMesh.new()
-	skirt_sphere.radius = cloud_radius * 0.70
-	skirt_sphere.height = 8.0
-	skirt_sphere.radial_segments = 24
-	skirt_sphere.rings = 8
-	skirt.mesh = skirt_sphere
-	skirt.material_override = _cloud_material(CLOUD_DARK)
-	skirt.position = Vector3(0, -8.0, 0)
-	add_child(skirt)
+	# l'éclair. PAS une seule sphère : une enclume de 63 m de rayon relisait
+	# « soucoupe lisse » depuis la crête — recapture du 2026-08-12, la forme
+	# exacte que l'invariant anti-galette combattait. La base est un ANNEAU
+	# de galettes chevauchées plus une galette centrale : le bord scalopé
+	# remplace l'ellipse propre, et chaque pièce reste sous le plafond de
+	# rayon que le test impose désormais à TOUTES les sphères du nuage.
+	var skirt_center: MeshInstance3D = MeshInstance3D.new()
+	skirt_center.name = "CloudBase"
+	var center_sphere: SphereMesh = SphereMesh.new()
+	center_sphere.radius = 22.0
+	center_sphere.height = 7.5
+	center_sphere.radial_segments = 24
+	center_sphere.rings = 8
+	skirt_center.mesh = center_sphere
+	skirt_center.material_override = _cloud_material(CLOUD_DARK)
+	skirt_center.position = Vector3(0, -8.0, 0)
+	add_child(skirt_center)
+	for i: int in range(9):
+		var pancake: MeshInstance3D = MeshInstance3D.new()
+		pancake.name = "CloudSkirt%d" % i
+		var disc: SphereMesh = SphereMesh.new()
+		disc.radius = _rng.randf_range(15.0, 23.0)
+		disc.height = _rng.randf_range(5.5, 8.0)
+		disc.radial_segments = 24
+		disc.rings = 8
+		pancake.mesh = disc
+		pancake.material_override = _cloud_material(CLOUD_DARK)
+		var ring_angle: float = TAU * float(i) / 9.0 + _rng.randf_range(-0.2, 0.2)
+		var ring_span: float = cloud_radius * _rng.randf_range(0.42, 0.70)
+		pancake.position = Vector3(cos(ring_angle) * ring_span,
+			-8.5 + _rng.randf_range(-0.8, 0.8), sin(ring_angle) * ring_span)
+		add_child(pancake)
 	# Plancher LOCAL du ventre : cellule à y 122 monde, spire à 100 — un
 	# grumeau ne descend jamais sous −14 local (108 monde, 8 m d'air).
 	const BELLY_FLOOR: float = -14.0

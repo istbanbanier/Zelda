@@ -28,7 +28,10 @@ const VALLEY: String = "res://scenes/world/valley/ValleyWorld.tscn"
 ## Sommet de spire (y = 100) + 6 m d'air : l'écart qui rend l'éclair lisible
 ## comme une COLONNE entre nuage et monument (§9.3 : trait, pas contact).
 const BELLY_FLOOR_WORLD_Y: float = 106.0
-const MAX_LUMP_RADIUS_M: float = 22.0
+## 24 m couvre aussi les galettes de la jupe : une sphère plus large que ça
+## redevient l'arche (grumeau) ou la soucoupe (enclume) que les captures ont
+## montrées — les deux formes du même défaut.
+const MAX_LUMP_RADIUS_M: float = 24.0
 const MIN_LUMPS: int = 18
 const MIN_WARM_RIM_LUMPS: int = 3
 
@@ -50,10 +53,14 @@ func _cleanup(world: Node) -> void:
 	await _tree().physics_frame
 
 
+## TOUTES les sphères du nuage, pas seulement les grumeaux : la première
+## version ne comptait que « CloudLayer* » et a laissé passer une enclume
+## `CloudBase` de 63 m de rayon — la capture de la crête montrait de nouveau
+## une soucoupe lisse. Le trou du filet ÉTAIT le défaut.
 func _lumps_of(storm: Node3D) -> Array[MeshInstance3D]:
 	var lumps: Array[MeshInstance3D] = []
 	for child: Node in storm.get_children():
-		if child.name.begins_with("CloudLayer") and child is MeshInstance3D \
+		if child.name.begins_with("Cloud") and child is MeshInstance3D \
 				and (child as MeshInstance3D).mesh is SphereMesh:
 			lumps.append(child as MeshInstance3D)
 	return lumps
