@@ -222,14 +222,27 @@ jobs:
             echo "Windows : ÉCHEC (les autres cibles continuent)"
           fi
 
-          # macOS — .app empaquetée par Godot, NON SIGNÉE (voir notes).
+          # macOS — .app empaquetée par Godot, signature AD HOC intégrée
+          # (codesign=1 du preset : sans elle, Apple Silicon refuse net le
+          # binaire ; le clic droit → Ouvrir ne lève que Gatekeeper).
           if "$G" --headless --path . --export-release "macOS" \
                 builds/macos/EclatsDOrage.zip; then
-            write_readme builds/macos/LISEZ_MOI.txt "macOS" "1. Décompresser l'archive.\n2. CLIC DROIT sur l'application puis « Ouvrir », et confirmer.\n\nUn double-clic ordinaire sera REFUSÉ : l'application n'est pas signée par\nApple, faute de compte développeur. Ce n'est pas un défaut du jeu, et le\nclic droit ne sert qu'une seule fois."
-            ( cd builds/macos && zip -qu EclatsDOrage.zip LISEZ_MOI.txt )
-            mv builds/macos/EclatsDOrage.zip \
-               "builds/EclatsDOrage_macOS_${STAMP}.zip"
-            echo "macOS : exporté"
+            write_readme builds/macos/LISEZ_MOI.txt "macOS" "1. Décompresser l'archive.\n2. CLIC DROIT sur EclatsDOrage.app puis « Ouvrir », et confirmer.\n\nUn double-clic ordinaire sera REFUSÉ la première fois : l'application\nn'est pas signée par Apple, faute de compte développeur. Ce n'est pas un\ndéfaut du jeu, et le clic droit ne sert qu'une seule fois."
+            # Le bundle exporté porte le nom du projet (« Eclats d'Orage.app »,
+            # espace et apostrophe compris) ; la livraison exige
+            # EclatsDOrage.app. Renommer le DOSSIER du bundle ne touche pas la
+            # signature ad hoc : le sceau couvre le contenu, pas le nom.
+            R="$(mktemp -d)"
+            unzip -q builds/macos/EclatsDOrage.zip -d "$R"
+            APP_SRC="$(find "$R" -maxdepth 1 -name "*.app" | head -1)"
+            [ -n "$APP_SRC" ] || { echo "macOS : aucun .app dans le zip"; exit 1; }
+            mv "$APP_SRC" "$R/EclatsDOrage.app"
+            cp builds/macos/LISEZ_MOI.txt "$R/"
+            ( cd "$R" && zip -qry \
+                "$GITHUB_WORKSPACE/builds/EclatsDOrage_macOS_${STAMP}.zip" \
+                EclatsDOrage.app LISEZ_MOI.txt )
+            rm -rf "$R" builds/macos/EclatsDOrage.zip
+            echo "macOS : exporté (bundle renommé EclatsDOrage.app)"
           else
             echo "macOS : ÉCHEC (les autres cibles continuent)"
           fi
