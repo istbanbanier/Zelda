@@ -6,5 +6,14 @@
   "pixels_recolored": 1425769,
   "source": "res://assets/characters/hero/T_Ranger_BaseColor.png",
   "target_hue": 0.518,
-  "triangles": 2136
+  "triangles": 2136,
+  "tunique_ivoire": {
+    "outil": "tools/recolor_hero_tunic.py",
+    "masque": "teinte 72-162 deg, saturation >= 0.22",
+    "cible": "ivoire #D8C8A1 (teinte 33 deg, sat 0.24), luminance conservee",
+    "pixels_modifies": 6109117,
+    "sha256_apres": "7adf4ee226e33700501c21bf7b0955ac32ed95894baa3e0abb85729defb998ea",
+    "commit_de_derivation": "58d4996839abfe95dcbed89dd896f755d1977238",
+    "raison": "deux playtests independants lisent la tunique verte comme la silhouette d'une licence existante (invariant Nintendo)"
+  }
 }

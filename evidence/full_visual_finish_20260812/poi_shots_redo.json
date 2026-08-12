@@ -1,0 +1,12 @@
+[
+{"name":"02_logging_hamlet","from":[124,7,26],"look":[110,3.5,40],"fov":60},
+{"name":"11_forest_shrine","from":[32,6,92],"look":[18,3,102],"fov":60},
+{"name":"15_hidden_passage","from":[-120,6,110],"look":[-134,3,122],"fov":62},
+{"name":"20_stone_bridge","from":[-30,4,22],"look":[-10,-0.5,9],"fov":65},
+{"name":"21_overlook_summit","from":[148,14,62],"look":[168,8,40],"fov":60},
+{"name":"24_wind_gorge","from":[68,14,-76],"look":[68,4,-98],"fov":62},
+{"name":"25_storm_grove","from":[18,10,-130],"look":[-8,4,-152],"fov":62},
+{"name":"31_hunter_range","from":[108,9,168],"look":[128,3,150],"fov":60},
+{"name":"a2_monture","from":[13,34.6,148],"look":[5,32.6,140],"fov":60},
+{"name":"a3_heros_dos","from":[0,34.6,154],"look":[0,32.3,140],"fov":55}
+]

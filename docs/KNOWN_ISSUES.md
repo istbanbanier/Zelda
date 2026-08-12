@@ -1085,3 +1085,62 @@ Le point 3 est le plus parlant : les deux tests fautifs dépendent d'un délai.
   exclut les corps du décor lui-même ; c'est lui qui a donné les vraies cotes.
 - **Piste** : ajouter à la sonde un second tir venu du ciel et rapporter
   l'écart SIGNÉ (enterré / posé / flottant) au lieu d'un seul mot « flotte ».
+
+
+## ISS-048 — Le héros lisait « archer vert à capuche » : silhouette d'une licence existante · `S2` · CORRIGÉ (palette) / OUVERT (silhouette)
+
+- **Vu** : playtests boîte noire du 2026-08-12 (explorateur E, et lecture
+  intégrateur dans les salles du donjon) — « visuellement très proche d'un
+  personnage connu d'une autre licence ».
+- **Cause** : le modèle CC0 `Male_Ranger` livre une tunique VERTE ; seule la
+  capuche avait été dérivée (turquoise, V4 lot 13). Vert + capuche + arc au
+  dos = le motif exact que l'invariant Nintendo interdit.
+- **Corrigé** : tissu vert → ivoire/charbon à luminance conservée
+  (`tools/recolor_hero_tunic.py`, manifeste + ATTRIBUTIONS). La palette
+  rejoint §13.2 (sous-tunique ivoire, pantalon charbon, mantelet turquoise).
+- **Reste OUVERT** : la SILHOUETTE (capuche pointue + arc) n'a pas changé ;
+  §13.1 demande cheveux sculptés + mantelet court, pas une capuche. À
+  arbitrer avec le propriétaire à la prochaine passe personnages.
+
+## ISS-049 — Chargement muet ~20 s bloqué à « 46 % » au premier lancement · `S3` · OUVERT
+
+- **Vu** : les deux playtests boîte noire du 2026-08-12, au premier
+  chargement de la vallée.
+- **Observé** : la barre s'arrête ~20 s à 46 % puis saute à 100 % — lu comme
+  un gel par les deux joueurs. Probable compilation de shaders/import ;
+  aucune indication à l'écran.
+- **Piste** : message « préparation des matériaux… » ou progression réelle.
+
+## ISS-050 — En selle, le héros reste DEBOUT sur le dos de la monture · `S3` · OUVERT
+
+- **Vu** : playtest explorateur E du 2026-08-12.
+- **Observé** : pas d'animation de monte ni de pose assise ; le héros garde
+  son idle debout, posé sur la selle. Le contrôle en selle répond, la pose
+  ment.
+- **Piste** : pose assise minimale (rotation hanches/genoux) + offset selle.
+
+## ISS-051 — Petite silhouette humanoïde cyan flottant au-dessus de la citadelle · `S4` · OUVERT
+
+- **Vu** : playtest explorateur E + capture g5 du jeu de preuves.
+- **Observé** : l'éclair du nuage d'orage, figé entre deux impulsions, se lit
+  comme un petit personnage bleu clair en lévitation au-dessus de la spire.
+- **Piste** : profil du mesh d'éclair (branches trop symétriques) ou durée
+  d'extinction.
+
+## ISS-052 — Faces internes de terrain visibles en bord d'écran en hauteur/pente · `S3` · OUVERT
+
+- **Vu** : playtest explorateur E du 2026-08-12, caméra en hauteur sur pentes.
+- **Observé** : grands plans unis vert foncé/gris (faces intérieures de dalles
+  de terrain) apparaissent en bordure de cadre sous certains angles.
+- **Piste** : jupes de bord sur les dalles concernées, ou near-plane caméra.
+
+
+## ISS-053 — Masse plate vert clair sans relief près du bassin devant le camp · `S3` · OUVERT
+
+- **Vu** : playtest expérimenté D du 2026-08-12 (« clairement un élément non
+  fini ou un proxy géométrique oublié »).
+- **Hypothèse** : un lobe de teinte de sol (GroundVariation, hauteur nulle)
+  ou la plaque du bassin conducteur, lu de biais à hauteur d'homme.
+- **Piste** : identifier le nœud par repeinture magenta
+  (tools/godot/debug_paint_suspects.gd) depuis l'angle du joueur, puis soit
+  relief réel, soit teinte rapprochée du fond.
