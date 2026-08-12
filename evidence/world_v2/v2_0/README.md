@@ -7,10 +7,13 @@
 - **Base V1** : `58d4996839abfe95dcbed89dd896f755d1977238` — tête de
   `claude/full-world-visual-finish` (= `base_sha.txt`), un commit au-dessus du
   tag `playtest-full-visual-0b28106`.
-- **Branche de la campagne** : `claude/world-v2-reconstruction-khgmlu`
-  (repositionnée sur la base ci-dessus au démarrage de la session — la branche
-  de session créée par l'outillage pointait sur le merge de la PR #8, qui ne
-  contient PAS le commit d'evidence des 31 POI).
+- **Branche livrée** : `claude/world-v2-reconstruction`, créée depuis la base
+  ci-dessus et poussée par push NORMAL — aucun force-push n'a été exécuté.
+  `claude/world-v2-reconstruction-khgmlu` n'est qu'un pointeur résiduel de
+  l'outillage de session, resté à son état initial (le merge de la PR #8,
+  sans le commit d'evidence des 31 POI) ; il ne porte aucun travail V2.
+  Historique V2.0 : exactement 6 commits avant la correction documentaire
+  de clôture.
 - **Environnement** : Godot 4.7.1-stable recompilé (`a13da4feb`),
   Blender 4.0.2, rendu logiciel llvmpipe (aucune mesure de performance ici).
 

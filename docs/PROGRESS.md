@@ -7,10 +7,15 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ## 2026-08-12 (soir) — World V2, phase V2.0 : architecture, contrats, carte directrice, squelette
 
-**Branche** : `claude/world-v2-reconstruction-khgmlu`, repositionnée sur
-`58d4996` (tête de `claude/full-world-visual-finish` — la branche de session
-créée par l'outillage pointait sur le merge PR #8, qui n'a PAS le commit
-d'evidence des 31 POI). **Preuves** : `evidence/world_v2/v2_0/`.
+**Branche livrée** : `claude/world-v2-reconstruction`, créée depuis la base
+`58d4996839abfe95dcbed89dd896f755d1977238` (tête de
+`claude/full-world-visual-finish`, un commit au-dessus du tag
+`playtest-full-visual-0b28106`) et poussée par push NORMAL — **aucun
+force-push n'a été exécuté**. `claude/world-v2-reconstruction-khgmlu` n'est
+qu'un pointeur résiduel de l'outillage de session, resté à son état initial
+(le merge de la PR #8, sans le commit d'evidence des 31 POI) ; il ne porte
+aucun travail V2. **Historique V2.0 : exactement 6 commits** avant la
+présente correction documentaire. **Preuves** : `evidence/world_v2/v2_0/`.
 
 La V1 est INTACTE (aucun fichier V1 modifié hors une racine de découverte
 ajoutée au runner) et reste le flux normal — prouvé par Boot Smoke (21
