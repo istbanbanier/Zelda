@@ -1,0 +1,17 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "altitude_m": 600.0,
+  "center": "0.0,0.0",
+  "commit": "7bc9adf8193b704437b454702f697810427da759",
+  "engine": "4.7.1-stable (official)",
+  "fog": "désactivé",
+  "geometry_instances": 83,
+  "image": "evidence/full_visual_finish_20260812/donjon/salle_Antechamber.png",
+  "label": "carte_vallee",
+  "metres_per_pixel": 0.40625,
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/dungeon/rooms/Antechamber.tscn",
+  "size": "1280x720",
+  "span_m": 520.0
+}

@@ -99,6 +99,17 @@ manifeste propre) ; le lieu lui-même n'est pas en cause sauf mention.
 | a1 | Camp vivant (acteurs) | ✓ | deux pillards au feu |
 | a2-a3 | Monture, héros de dos | ✓ (poi_redo) | monture cadrée ; héros ivoire/charbon/turquoise APRÈS ISS-048 — plus de lecture « archer vert » |
 
+## Captures complémentaires
+
+- `donjon/` : les six salles + l'arène du boss (intérieurs, ambiance
+  aplatie par l'outil de carte — l'éclairage de JEU, ambre/cyan motivé,
+  se juge dans les parties enregistrées des joueurs boîte noire).
+- `ui/` : victoire 720p/1080p isolée ; `ui/parcours/` menu principal,
+  HUD vallée, pause, inventaire, HUD en mouvement (VRAI jeu via le
+  harnais d'entrées) ; `ui/options/` l'écran Options/Commandes réel à
+  1280×720 — les 19 commandes, la note manette et « Retour » tiennent
+  avec marge (contenu mesuré 642 px, seam `content_height`).
+
 ## Défauts réels restants (pour la prochaine passe — AUCUN n'est masqué)
 
 1. Collines-couvertures des trois grottes = boîtes brutes (12, 13, 16) —

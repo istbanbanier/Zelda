@@ -1,0 +1,13 @@
+{"do":"shot","png":"shot_001_depart.png","t":2.0}
+{"do":"wait","t":5.0}
+{"action":"ui_accept","do":"press","t":5.4}
+{"do":"wait","t":15.4}
+{"do":"shot","png":"shot_002_auto.png","t":15.4}
+{"action":"pause","do":"press","t":15.8}
+{"do":"wait","t":16.3}
+{"action":"ui_down","do":"press","t":16.7}
+{"do":"wait","t":17.1}
+{"action":"ui_accept","do":"press","t":17.5}
+{"do":"wait","t":18.3}
+{"do":"shot","png":"shot_003_ui_options_en_jeu_720p.png","t":18.3}
+{"do":"shot","png":"shot_004_fin.png","t":18.3}
