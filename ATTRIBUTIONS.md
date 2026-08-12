@@ -213,3 +213,55 @@ seuls leurs fichiers de licence subsistent ; aucune police externe n'est donc
 embarquée à ce jour. MIT exige de conserver la notice de copyright : les
 `LICENSE.md` sont versionnés à côté des fichiers et devront accompagner toute
 promotion vers `assets/`.
+
+## Bibliothèque mondiale complémentaire — Kenney CC0 (quarantaine, 2026-08-12)
+
+La branche dédiée `codex/world-asset-library-20260812` contient, sous
+`asset_library/inbox/`, une sélection **hors build** destinée à la future passe de
+toute la carte. `.gdignore` empêche son import automatique. Aucun de ces fichiers
+n'est un asset de production tant qu'une promotion ciblée n'a pas reçu sa propre
+ligne dans ce document et dans `docs/assets/ASSET_MANIFEST.csv`.
+
+| Famille | Packs | Autorité de licence |
+|---|---|---|
+| 3D | Castle Kit, Modular Cave Kit, Fantasy Town Kit, Graveyard Kit, Survival Kit, Watercraft Kit | pages officielles Kenney, **CC0 1.0** |
+| audio | RPG Audio, Interface Sounds | pages officielles Kenney, **CC0 1.0** |
+| VFX | Particle Pack, Light Masks, Smoke Particle Assets | pages officielles Kenney, **CC0 1.0** |
+
+Le transport automatisé passe par les archives publiées par Kenney sur
+OpenGameArt ; l'auteur, la source officielle, l'URL de transport et la licence sont
+verrouillés dans `asset_library/SOURCES.lock.csv`. Chaque dossier contient
+`PROVENANCE.md`; les empreintes des archives et fichiers vivent dans
+`SOURCE_ARCHIVE_SHA256.csv` et `SHA256SUMS.txt`. Les archives, formats redondants et
+sources Unity ne sont pas versionnés.
+
+## Sons d'interface promus (2026-08-12, finition monde)
+
+Six fichiers `.ogg` copiés depuis la quarantaine
+`asset_library/inbox/kenney_interface_sounds_1_0/Audio/` vers
+`assets/audio/ui/` et renommés par usage : `ui_click`, `ui_confirm`,
+`ui_back`, `ui_hover`, `ui_error`, `ui_open`.
+
+| Champ | Valeur |
+|---|---|
+| Pack | Interface Sounds 1.0 |
+| Auteur | Kenney (kenney.nl) |
+| Licence | **CC0 1.0 Universal** (License.txt du pack, PROVENANCE.md) |
+| Modifications | renommage seulement — contenu audio intact |
+| Détail source→cible + SHA-256 | `evidence/full_visual_finish_20260812/promotions_ui.md` §b |
+
+## Kit d'habillage du donjon promu (2026-08-12, finition monde)
+
+Dix modèles `.glb` + deux textures `colormap` copiés depuis la quarantaine vers
+`assets/environment/dungeon/` et renommés `SM_Dungeon_*`. Les URI de texture des
+GLB ont été réécrites (`Textures/colormap.png` → `colormap_cave.png` /
+`colormap_castle.png`) car les deux packs livrent des colormaps DIFFÉRENTS sous
+le même nom ; contenu binaire des maillages intact.
+
+| Champ | Valeur |
+|---|---|
+| Packs | Modular Cave Kit 1.0 (5 modèles + 1 texture) · Castle Kit 2.0 (5 modèles + 1 texture) |
+| Auteur | Kenney (kenney.nl) |
+| Licence | **CC0 1.0 Universal** (PROVENANCE.md de chaque pack) |
+| Modifications | renommage + réécriture d'URI de texture ; bannières re-teintées par material_override en jeu |
+| Détail source→cible + usage | `evidence/full_visual_finish_20260812/promotions_donjon.md` |

@@ -1,10 +1,26 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=4 format=3]
 
 ; Écran de victoire (§16.8, §17.3) — trois issues réelles : continuer
 ; l'exploration, recommencer (avec confirmation), revenir au menu.
 ; Mise en page par conteneurs, jamais par positions absolues (§17.1).
+;
+; LOT 9 : composition APAISÉE (P3 §15.3 — le noyau vaincu pulse turquoise
+; calme) : dégradé sombre qui s'éclaircit d'or vers l'horizon bas, emblème du
+; noyau au-dessus du titre, colonne centrée. Le chemin Layout/Column/TimeLabel
+; est épinglé par test_boss_victory — il ne bouge pas.
 
 [ext_resource type="Script" path="res://scripts/ui/victory_screen.gd" id="1_victory"]
+
+[sub_resource type="Gradient" id="Gradient_calm"]
+offsets = PackedFloat32Array(0.0, 0.62, 1.0)
+colors = PackedColorArray(0.05, 0.06, 0.09, 1, 0.09, 0.09, 0.08, 1, 0.16, 0.13, 0.08, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_calm"]
+gradient = SubResource("Gradient_calm")
+width = 64
+height = 512
+fill_from = Vector2(0.5, 0)
+fill_to = Vector2(0.5, 1)
 
 [node name="VictoryScreen" type="Control"]
 layout_mode = 3
@@ -22,7 +38,18 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.11, 0.106, 0.094, 1)
+color = Color(0.05, 0.06, 0.09, 1)
+
+[node name="SkyGradient" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_calm")
+expand_mode = 1
 
 [node name="Layout" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -38,22 +65,41 @@ theme_override_constants/margin_bottom = 64
 
 [node name="Column" type="VBoxContainer" parent="Layout"]
 layout_mode = 2
-theme_override_constants/separation = 18
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 14
+
+; Le noyau, calmé — turquoise doux, jamais le cyan de la Résonance active.
+[node name="CoreEmblem" type="Label" parent="Layout/Column"]
+layout_mode = 2
+text = "❖"
+theme_override_font_sizes/font_size = 72
+theme_override_colors/font_color = Color(0.086, 0.561, 0.608, 0.85)
+horizontal_alignment = 1
 
 [node name="Title" type="Label" parent="Layout/Column"]
 layout_mode = 2
 text = "LE GARDIEN EST TOMBÉ"
 theme_override_font_sizes/font_size = 44
+horizontal_alignment = 1
+
+[node name="TitleRule" type="ColorRect" parent="Layout/Column"]
+custom_minimum_size = Vector2(360, 1)
+layout_mode = 2
+size_flags_horizontal = 4
+color = Color(0.847, 0.702, 0.416, 0.55)
 
 [node name="StatusLabel" type="Label" parent="Layout/Column"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "La tempête s'est ouverte au-dessus de la Citadelle."
+horizontal_alignment = 1
 
 [node name="TimeLabel" type="Label" parent="Layout/Column"]
 unique_name_in_owner = true
 layout_mode = 2
 text = ""
+horizontal_alignment = 1
 
 [node name="Spacer" type="Control" parent="Layout/Column"]
 layout_mode = 2
@@ -61,15 +107,18 @@ custom_minimum_size = Vector2(0, 24)
 
 [node name="ExploreButton" type="Button" parent="Layout/Column"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(380, 44)
 layout_mode = 2
 text = "Continuer l'exploration"
 
 [node name="RestartButton" type="Button" parent="Layout/Column"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(380, 44)
 layout_mode = 2
 text = "Recommencer"
 
 [node name="MenuButton" type="Button" parent="Layout/Column"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(380, 44)
 layout_mode = 2
 text = "Menu principal"

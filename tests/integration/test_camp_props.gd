@@ -132,15 +132,17 @@ func test_the_valley_camp_carries_real_props_with_collisions() -> void:
 	check_equal(pebbles, 8, "l'anneau de foyer compte huit galets")
 	# V4 lot 5 : le camp VIT — cuisine, réserve, travail, râtelier,
 	# charrette, clôture, abri. Chaque placement a un maillage réel.
+	# Passe 3 : 30 → 31 — la SECONDE bannière du seuil sud (§10.1 : « deux
+	# bannières étroites »), exigée par le test du triangle du camp.
 	var life: Node3D = camp.get_node("CampLife") as Node3D
-	check_equal(life.get_child_count(), 30, "les 30 éléments de vie montés")
+	check_equal(life.get_child_count(), 31, "les 31 éléments de vie montés")
 	var real_props: int = 0
 	for prop: Node in life.get_children():
 		for mesh: Node in prop.find_children("*", "MeshInstance3D", true, false):
 			if (mesh as MeshInstance3D).mesh != null:
 				real_props += 1
 				break
-	check_equal(real_props, 30, "…tous avec un maillage réel")
+	check_equal(real_props, 31, "…tous avec un maillage réel")
 	check(not life.get_node("Cauldron_0").find_children("*", "MeshInstance3D",
 		true, false).is_empty(), "le chaudron est SUR le foyer (§11.D)")
 	valley.get_parent().remove_child(valley)

@@ -1,0 +1,18 @@
+{
+  "commit": "b2d07a52b74d5e9604077a19080c0392252f0568",
+  "display_server": "X11",
+  "distinct_colors_sampled": 3114,
+  "engine_version": "4.7.1-stable (official)",
+  "frames_waited": 40,
+  "height": 1080,
+  "label": "vslice_01_crete_vista",
+  "luma_mean": 0.535,
+  "luma_stddev": 0.2323,
+  "png": "evidence/vslice_pass3_20260812/sprint_final/01_crete_vista.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "timestamp_utc": "2026-08-12 13:09:28",
+  "width": 1920
+}

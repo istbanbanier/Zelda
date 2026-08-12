@@ -59,6 +59,7 @@ func _ready() -> void:
 	_build_switch()
 	_build_reset_button()
 	_setup_lighting()
+	_build_dressing()
 	var graph_node: ElectricGraph = ElectricGraph.new()
 	graph_node.name = "Graph"
 	add_child(graph_node)
@@ -181,6 +182,85 @@ func _build_climb() -> void:
 			decor("Grip%d_%d" % [i, step],
 				Vector3(CLIMB_X, top - 4.2 + 1.4 * float(step), z + 0.05),
 				Vector3(0.8, 0.12, 0.1), COL_COPPER)
+
+
+## Habillage d'identité (bible §12.2) — SALLE 2 = PUITS TAILLÉ DANS LA
+## ROCHE : panneaux de paroi du kit « Modular Cave » (CC0, promus
+## `SM_Dungeon_Cave*`) plaqués sur les murs est/sud/nord. Le mur OUEST
+## reste nu : c'est la voie d'escalade et ses électrodes — rien ne doit
+## brouiller les prises ni les télégraphes. Décor PUR, aucune collision ;
+## les panneaux affleurent la coque (relief ~0,45 m) et le clip éventuel
+## est purement visuel.
+func _build_dressing() -> void:
+	const ROCK_OFFSET: float = 0.45
+	# Mur EST (face x = 7,0 ; normale −X → yaw −PI/2). On évite z −5..−1
+	# (colonne montante du câble à x = 6,7) et z 1..5,5 (source, carrefour,
+	# aiguillages, reset au sol).
+	var east_x: float = 7.0 - ROCK_OFFSET
+	var east_row0: Array[float] = [8.5, 12.3]
+	for i: int in range(east_row0.size()):
+		dress_prop(&"SM_Dungeon_CaveWall", "RockEastA%d" % i,
+			Vector3(east_x, 0.0, east_row0[i]), -PI * 0.5)
+	dress_prop(&"SM_Dungeon_CaveWallHalf", "RockEastHalf",
+		Vector3(east_x, 0.0, 6.3), -PI * 0.5)
+	var east_row1: Array[float] = [7.0, 11.0]
+	for i: int in range(east_row1.size()):
+		dress_prop(&"SM_Dungeon_CaveWall", "RockEastB%d" % i,
+			Vector3(east_x, 4.05, east_row1[i]), -PI * 0.5)
+	var east_crown: Array[float] = [7.5, 11.5]
+	for i: int in range(east_crown.size()):
+		dress_prop(&"SM_Dungeon_CaveWallTop", "RockEastCrown%d" % i,
+			Vector3(east_x, 8.1, east_crown[i]), -PI * 0.5)
+	# Mur SUD (face z = 13,0 ; normale −Z → yaw PI). L'entrée (x ±2,6)
+	# reste dégagée ; un panneau à y = 5,0 coiffe le linteau — la roche
+	# enjambe la porte au lieu de pendre dedans.
+	var south_z: float = 13.0 - ROCK_OFFSET
+	for i: int in range(2):
+		var x: float = -5.2 if i == 0 else 5.2
+		dress_prop(&"SM_Dungeon_CaveWall", "RockSouthA%d" % i,
+			Vector3(x, 0.0, south_z), PI)
+		dress_prop(&"SM_Dungeon_CaveWall", "RockSouthB%d" % i,
+			Vector3(x, 4.05, south_z), PI)
+		dress_prop(&"SM_Dungeon_CaveWallTop", "RockSouthCrown%d" % i,
+			Vector3(x, 8.1, south_z), PI)
+	dress_prop(&"SM_Dungeon_CaveWall", "RockSouthOverDoor",
+		Vector3(0.0, 5.0, south_z), PI)
+	# Mur NORD sous la mezzanine (face z = −7,0 ; normale +Z → yaw 0).
+	# À ≥ 4 m du bloc d'escalade C (x −7..−5,4).
+	var north_z: float = -7.0 + ROCK_OFFSET
+	var north_row0: Array[float] = [1.0, 5.0]
+	for i: int in range(north_row0.size()):
+		dress_prop(&"SM_Dungeon_CaveWall", "RockNorthA%d" % i,
+			Vector3(north_row0[i], 0.0, north_z), 0.0)
+	dress_prop(&"SM_Dungeon_CaveWallHalf", "RockNorthHalf",
+		Vector3(-2.0, 0.0, north_z), 0.0)
+	var north_row1: Array[float] = [-0.5, 3.5]
+	for i: int in range(north_row1.size()):
+		dress_prop(&"SM_Dungeon_CaveWall", "RockNorthB%d" % i,
+			Vector3(north_row1[i], 4.05, north_z), 0.0)
+	var north_crown: Array[float] = [1.5, 5.5]
+	for i: int in range(north_crown.size()):
+		dress_prop(&"SM_Dungeon_CaveWallTop", "RockNorthCrown%d" % i,
+			Vector3(north_crown[i], 8.1, north_z), 0.0)
+	# Portail de roche AVEUGLE sous la porte de la mezzanine : il fait écho,
+	# d'en bas, au seuil qu'on atteindra. À 3 m du trajet de l'ascenseur.
+	dress_prop(&"SM_Dungeon_CaveArch", "RockNicheNorth",
+		Vector3(2.0, 0.0, -7.25), 0.0)
+	# Formations rocheuses aux coins morts du fond, gravats à l'entrée.
+	dress_prop(&"SM_Dungeon_CaveRock", "RockPileSE",
+		Vector3(6.0, 0.0, 12.3), 0.7)
+	dress_prop(&"SM_Dungeon_CaveRock", "RockPileSW",
+		Vector3(-6.0, 0.0, 12.2), 2.4, Vector3(0.8, 0.7, 0.8))
+	dress_prop(&"SM_Dungeon_RubbleLarge", "RubbleEntryE",
+		Vector3(4.6, 0.0, 12.7), 1.1, Vector3.ONE * 1.6)
+	dress_prop(&"SM_Dungeon_RubbleSmall", "RubbleEntryW",
+		Vector3(-4.6, 0.0, 12.6), 2.8, Vector3.ONE * 1.5)
+	# Corbeaux de bronze sous la lèvre de la mezzanine : la dalle repose sur
+	# quelque chose. Posés HORS du couloir de l'ascenseur (x −0,8..2,8).
+	var corbels: Array[float] = [-4.9, -3.1, 4.0, 5.5]
+	for i: int in range(corbels.size()):
+		decor("MezzCorbel%d" % i, Vector3(corbels[i], 15.6, -1.3),
+			Vector3(0.5, 0.8, 0.5), COL_BRONZE)
 
 
 ## Le circuit de §15.6 : une source, un aiguillage, deux branches. Au

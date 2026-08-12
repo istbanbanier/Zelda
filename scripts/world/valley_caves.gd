@@ -697,8 +697,36 @@ func _build_forgotten_crypt() -> void:
 	_apron(root, Vector3(0, -thickness * 0.5, face_z + 3.0),
 		Vector3(inner.x + thickness * 2.0, thickness, 6.0), COL_STONE)
 	# Tertre : la crypte est ENTERRÉE, la butte de terre la signale de loin.
-	_solid(root, "Tertre", Vector3(0, inner.y + thickness + 0.6, 0),
-		Vector3(13.0, 1.2, 13.0), COL_EARTH)
+	_solid(root, "Tertre", Vector3(0, inner.y + thickness + 0.45, 0),
+		Vector3(11.6, 0.9, 11.6), COL_EARTH)
+	# FINITION MONDE (lot 4) : la dalle seule laissait la coque grise nue sur
+	# TROIS faces — vue du sud, la crypte était une boîte posée sur l'herbe
+	# (capture AVANT, evidence). Trois BERGES de terre enterrées jusqu'à leur
+	# équateur (sphères écrasées, affleurement au sol garanti) adossent les
+	# faces aveugles ouest, est et sud ; la face nord du porche reste dégagée.
+	# Décor pur, aucune collision — la coque porteuse ne bouge pas.
+	var half_shell: float = inner.x * 0.5 + thickness   # 5,5 m
+	# [nom, centre xz, échelle xz du talus]
+	# Centres posés 1,7 m EN DEHORS du mur : la panse de la sphère ne doit
+	# pas ressortir à l'INTÉRIEUR de la salle (demi-axe 2,8 < 1,7 + 1,0 + 0,45).
+	var banks: Array[Array] = [
+		["BergeOuest", Vector2(-half_shell - 1.7, -0.5), Vector2(0.35, 1.15)],
+		["BergeEst", Vector2(half_shell + 1.7, -0.5), Vector2(0.35, 1.15)],
+		["BergeSud", Vector2(0.0, -half_shell - 1.7), Vector2(1.15, 0.35)],
+	]
+	for bank: Array in banks:
+		var berm: MeshInstance3D = MeshInstance3D.new()
+		berm.name = String(bank[0])
+		var berm_mesh: SphereMesh = SphereMesh.new()
+		berm_mesh.radius = 8.0
+		berm_mesh.height = 7.0   # équateur à y = 0 : le bord touche le sol
+		berm.mesh = berm_mesh
+		berm.material_override = _material(COL_EARTH)
+		var at: Vector2 = bank[1]
+		berm.position = Vector3(at.x, 0.0, at.y)
+		var stretch: Vector2 = bank[2]
+		berm.scale = Vector3(stretch.x, 1.25, stretch.y)
+		root.add_child(berm)
 
 	# Porche : deux jouées de brique de part et d'autre du seuil. Elles laissent
 	# les 2,2 m d'ouverture libres — la collision reste celle des jambages.

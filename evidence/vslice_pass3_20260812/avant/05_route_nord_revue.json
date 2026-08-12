@@ -1,0 +1,30 @@
+{
+  "greyscale": "/home/user/Zelda/evidence/vslice_pass3_20260812/avant/05_route_nord_gris.png",
+  "ground_p95_value_pct": 47.8,
+  "height": 1080,
+  "hierarchy_ok": true,
+  "saturation_mean": 14.4,
+  "separation_haut_milieu": 13.0,
+  "separation_milieu_bas": 5.2,
+  "sky_p50_value_pct": 57.3,
+  "source": "evidence/vslice_pass3_20260812/avant/05_route_nord.png",
+  "thirds_luma_pct": {
+    "bas": {
+      "p05": 36.9,
+      "p50": 42.6,
+      "p95": 63.1
+    },
+    "haut": {
+      "p05": 31.1,
+      "p50": 50.4,
+      "p95": 89.2
+    },
+    "milieu": {
+      "p05": 33.0,
+      "p50": 37.4,
+      "p95": 77.3
+    }
+  },
+  "vignette": "/home/user/Zelda/evidence/vslice_pass3_20260812/avant/05_route_nord_vignette.png",
+  "width": 1920
+}

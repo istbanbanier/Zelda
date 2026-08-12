@@ -165,9 +165,28 @@ func _piece(asset: String, at: Vector3, yaw_deg: float = 0.0,
 	# géométrie (Prop_Support commence à +1,21 m). Sans cette
 	# correction, l'objet est suspendu en l'air. Voir KitPlacement.
 	KitPlacement.seat(node, node.scene_file_path)
+	_tint_roof_piece(node, asset)
 	(parent if parent != null else self).add_child(node)
 	_built += 1
 	return node
+
+
+## FINITION MONDE (lot 4) : même correction de palette que le village —
+## tuiles rondes et frontons de brique rabattus vers le bois/bronze du
+## monde (§1.4). Voir `RiversideVillage._tint_roof_piece`.
+const ROOF_TINT: Color = Color(0.42, 0.29, 0.20)
+
+
+func _tint_roof_piece(node: Node3D, asset: String) -> void:
+	if not (asset.contains("RoundTiles") or asset.contains("Front_Brick")):
+		return
+	var flat: StandardMaterial3D = StandardMaterial3D.new()
+	flat.albedo_color = ROOF_TINT
+	flat.roughness = 0.92
+	if node is MeshInstance3D:
+		(node as MeshInstance3D).material_override = flat
+	for child: Node in node.find_children("*", "MeshInstance3D", true, false):
+		(child as MeshInstance3D).material_override = flat
 
 
 ## Collision explicite : le kit est purement visuel. Une boîte statique est

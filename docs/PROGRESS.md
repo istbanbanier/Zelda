@@ -5,6 +5,68 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-12 (suite) — sprint artistique : cinq transformations, trois commits
+
+**Mode** : sprint (directive du propriétaire) — boucle rapide 720p, tests
+sélectifs, validation complète UNIQUE en fin, ≤ 5 commits. **Branche** :
+`claude/vslice-pass3-silhouettes`. **Preuves finales** :
+`evidence/vslice_pass3_20260812/sprint_final/`.
+
+1. **Prairie du corridor** : cellules MultiMesh de touffes en grappes sur la
+   terrasse du camp, la plaine sud, la berge du gué et la plaine nord —
+   les grands aplats verts des caméras 3-5 sont habités.
+2. **Cols d'horizon** : 76 selles entre les pics de crête — l'arête
+   horizontale du mur de bordure (la « couture ») ne se découpe plus sur
+   le ciel.
+3. **Berges du gué** : roseaux, herbes hautes et pierres du kit CC0 le long
+   des deux rives, tablier dégagé.
+4. **Toits harmonisés** : les tuiles rouges méditerranéennes des quatre
+   abris repeintes bois/bronze (leçon : `from_standard` ignore
+   `albedo_color` dès qu'une texture existe — repeinte plate obligatoire).
+5. **Le coureur des steppes** : monture originale Blender→glb (3 412 tris,
+   agent isolé, script déterministe versionné) remplace la boîte-animal ;
+   collision/selle/gameplay inchangés, graybox en repli.
+
+### Prochaine action exacte
+
+État poussé sur la branche (autorisation du propriétaire, sprint §3) —
+prêt pour la revue visuelle. Prochain sprint candidat : ruines centrales
+et POI du parcours (kits modulaires), donjon hors périmètre tant que non
+autorisé.
+
+## 2026-08-12 — passe 3 : les six défauts de la revue Codex
+
+**Branche** : `claude/vslice-pass3-silhouettes`, créée sur `2c4fbf9` (merge
+PR #7) après verdict **ÉCHEC** du gate visuel indépendant (tests 832/0 et
+preuves acceptés, objectif visuel non atteint). Lots B à E uniquement — ni
+lot F, ni donjon, ni UI. **Preuves** : `evidence/vslice_pass3_20260812/`
+(baseline `avant/`, un dossier `apres_*` par défaut, jeu `final/`).
+
+Les six défauts traités, chacun : AVANT → cause réelle mesurée → test rouge
+exécuté → plus petit correctif → APRÈS même caméra → commit thématique.
+Détail dans le README du dossier de preuves. Trois choses que les tests
+verts n'avaient PAS vues et que les recaptures ont attrapées : l'enclume du
+nuage redevenue soucoupe (test élargi à toute sphère `Cloud*`),
+l'enroulement anti-horaire qui rendait le chemin invisible (leçon ISS-018),
+et `_hull_mesh` à 8 sommets qui dégénérait les buttes. Le filet
+anti-enterrement du relief a attrapé trois vraies fautes de placement.
+
+Jeu `final/` : **5 caméras sur 6 conformes §1.5** — la caméra 6 pour la
+première fois (désaturation de la roche) ; la 5 en verdict non pertinent
+(bandeau haut sans ciel : nuage/citadelle/montagnes), reporté tel quel.
+
+ISS-046 et ISS-047 passés CORRIGÉ (verdict d'image en attente) ; ISS-045
+atténué (buttes de flanc), remodelage des dalles TOUJOURS au backlog.
+
+### Prochaine action exacte
+
+1. Lancer `tools/validate_fast.sh` (suite complète, ~25 min) et joindre le
+   verdict au dossier de preuves — fait en fin de session si le journal en
+   contient le log ; sinon C'EST LA PREMIÈRE CHOSE À FAIRE.
+2. Livrer l'état à la **seconde revue indépendante de Codex** — ne rien
+   pousser sans l'autorisation explicite du propriétaire.
+3. Ne PAS déclarer le gate vert : le verdict appartient à Codex.
+
 ## 2026-08-11 (suite) — étapes 1 à 8 : suite verte, citadelle, chemins, talus
 
 **Branche** : `claude/new-session-840w2o`. **Preuves** : `evidence/vertical_slice_20260811/`
@@ -4345,3 +4407,20 @@ fait.
    interaction et premier combat atteignables, mort et reprise, arrêt propre.
 3. **Ne pas commencer S2** tant que le gate ne sait pas rougir sur au moins un
    contrôle négatif : un gate qui n'a jamais échoué ne prouve rien.
+
+
+## 2026-08-12 — Finition visuelle monde entier (branche `claude/full-world-visual-finish`)
+
+Bibliothèque Codex fusionnée (11 packs CC0 en quarantaine), puis huit lots :
+terrain entier (teintes organiques, 22 buttes), trois masses boisées
+(navmesh re-cuite), rivière pleine longueur, POI harmonisés (toits, crypte,
+falaise), donjon habillé par agent (10 GLB promus), UI finie par agent
+(débordement 720p corrigé et mesuré). Chaque promotion d'asset est entrée
+dans ATTRIBUTIONS + manifeste AVANT commit. Preuves :
+`evidence/full_visual_finish_20260812/`.
+
+**Prochaine action exacte** : batterie finale — parcours physiques
+(vallée/donjon/boss), `validate_fast.sh` unique, trois joueurs boîte noire
+(occasionnel/explorateur/expérimenté), jeu de captures complet (31 POI +
+vues générales + salles + acteurs + UI), pousser la branche, livrer à la
+revue Codex. Le gate visuel n'est JAMAIS auto-déclaré.

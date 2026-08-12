@@ -157,8 +157,12 @@ const STRUCK_SPLIT: float = 0.42
 
 # --- Palette (VISUAL_ASSET_BIBLE §1.4) --------------------------------------
 
-const COL_ROCK: Color = Color(0.61, 0.41, 0.26)          # roche ocre
-const COL_ROCK_SHADE: Color = Color(0.44, 0.34, 0.26)    # creux, sous-face
+## PASSE 3 (défaut n°6 : « mesas orange ») : #9B6842 posé tel quel en albédo
+## rendait ~90 % — la paroi ouest de la Gorge du Vent était la boîte la plus
+## saturée du cadre de la route nord (picking du 2026-08-12). La gamme suit
+## `_rock_material` du terrain : ancre ÷ ~1,8 de gain, désaturée.
+const COL_ROCK: Color = Color(0.385, 0.285, 0.205)       # roche ocre
+const COL_ROCK_SHADE: Color = Color(0.315, 0.250, 0.198) # creux, sous-face
 const COL_STONE: Color = Color(0.47, 0.45, 0.43)         # granite du monument
 const COL_STONE_SHADE: Color = Color(0.34, 0.33, 0.32)
 const COL_WATER: Color = Color(0.09, 0.55, 0.60, 0.82)   # même eau que la rivière

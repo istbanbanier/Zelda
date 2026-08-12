@@ -55,6 +55,8 @@ var _mouse_captured_wanted: bool = true
 var _player: PlayerController = null
 var _hud_refresh_accumulator: float = 0.0
 var _selected_slot: int = 0
+## Lecteur des sons d'interface (LOT 9 — Kenney CC0, voir HudStyle.UI_SOUND_PATHS).
+var _ui_audio: AudioStreamPlayer = null
 
 ## Habillage V4.4 (réf. 03) — construits en code par `_apply_v4_style()`.
 const RUBY_SHARDS: int = 5
@@ -102,6 +104,8 @@ func _ready() -> void:
 	var bus: Node = get_node_or_null("/root/EventBus")
 	if bus != null:
 		bus.connect("gameplay_notification", _on_notification)
+	# AVANT _apply_v4_style() : les boutons y câblent leurs retours sonores.
+	_ui_audio = HudStyle.attach_ui_audio(self)
 	_apply_v4_style()
 	# E.2b : les interactables (feu de camp) trouvent la coquille par groupe.
 	add_to_group("gameplay_shell")
@@ -212,7 +216,7 @@ func _apply_v4_style() -> void:
 		segment.show_percentage = false
 		segment.max_value = 1.0
 		segment.add_theme_stylebox_override(&"background",
-			HudStyle.gauge_background(Color(0.16, 0.14, 0.10, 0.9)))
+			HudStyle.gauge_background(HudStyle.GOLD_DARK))
 		segment.add_theme_stylebox_override(&"fill", HudStyle.gauge_fill(HudStyle.GOLD))
 		durability_row.add_child(segment)
 		_durability_segments.append(segment)
@@ -307,10 +311,12 @@ func _apply_v4_style() -> void:
 	_detail_conductivity.custom_minimum_size = Vector2(0, 10)
 	_detail_conductivity.max_value = 1.0
 	_detail_conductivity.show_percentage = false
+	# Cyan : la conductivité EST une donnée de Résonance — seule exception
+	# HUD à la règle « cyan réservé » (§17.1), déjà actée par la réf. 04.
 	_detail_conductivity.add_theme_stylebox_override(&"background",
-		HudStyle.gauge_background(Color(0.05, 0.15, 0.17, 0.9)))
+		HudStyle.gauge_background(HudStyle.TURQUOISE_DARK))
 	_detail_conductivity.add_theme_stylebox_override(&"fill",
-		HudStyle.gauge_fill(Color(0.133, 0.851, 0.925)))
+		HudStyle.gauge_fill(HudStyle.CYAN))
 	detail_column.add_child(_detail_conductivity)
 	detail_plate.add_child(detail_column)
 	body.add_child(detail_plate)
@@ -326,6 +332,7 @@ func _apply_v4_style() -> void:
 			_death_quit_button, _equip_button, _move_up_button, _move_down_button,
 			_close_inventory_button]:
 		HudStyle.style_button(button_node)
+		HudStyle.wire_button_feedback(button_node, _ui_audio)
 
 
 ## Racine de la scène du shell, puis recherche descendante. `owner` est
@@ -493,6 +500,7 @@ func toggle_pause() -> void:
 	elif not is_paused():
 		get_tree().paused = true
 		_pause_panel.visible = true
+		HudStyle.play_ui(_ui_audio, &"open")
 		_set_mouse_captured(false)
 		_resume_button.grab_focus()
 		var game_state: Node = get_node_or_null("/root/GameState")
@@ -521,6 +529,9 @@ func _build_controls_button() -> void:
 	_controls_button.name = "ControlsButton"
 	_controls_button.text = "Commandes"
 	_controls_button.custom_minimum_size = Vector2(320, 44)
+	# Même livrée que ses voisins de colonne — il était le seul bouton gris.
+	HudStyle.style_button(_controls_button)
+	HudStyle.wire_button_feedback(_controls_button, _ui_audio)
 	_controls_button.pressed.connect(open_controls)
 	column.add_child(_controls_button)
 	# Juste sous « Reprendre » : c'est la deuxième chose qu'on cherche quand on
@@ -561,6 +572,7 @@ func is_paused() -> bool:
 func _on_resume() -> void:
 	get_tree().paused = false
 	_pause_panel.visible = false
+	HudStyle.play_ui(_ui_audio, &"back")
 	_set_mouse_captured(true)
 	var game_state: Node = get_node_or_null("/root/GameState")
 	if game_state != null:
@@ -575,12 +587,14 @@ func toggle_inventory() -> void:
 		return  # modal (QA-D1R-03)
 	if _inventory_panel.visible:
 		_inventory_panel.visible = false
+		HudStyle.play_ui(_ui_audio, &"back")
 		get_tree().paused = false
 		_set_mouse_captured(true)
 	elif not is_paused():
 		_selected_slot = 0
 		_rebuild_inventory_panel()
 		_inventory_panel.visible = true
+		HudStyle.play_ui(_ui_audio, &"open")
 		get_tree().paused = true
 		_set_mouse_captured(false)
 
@@ -616,12 +630,15 @@ func _rebuild_inventory_panel() -> void:
 		var button: Button = Button.new()
 		button.custom_minimum_size = Vector2(168, 64)
 		button.toggle_mode = true
+		# Livrée générique D'ABORD, spécificités de carte ENSUITE — dans l'autre
+		# ordre, style_button écraserait l'état « sélectionné » de la grille.
+		HudStyle.style_button(button)
+		HudStyle.wire_button_feedback(button, _ui_audio)
 		button.add_theme_stylebox_override(&"normal", HudStyle.plaque(0.3))
 		var selected_style: StyleBoxFlat = HudStyle.plaque(1.0)
 		selected_style.border_color = HudStyle.GOLD
 		selected_style.set_border_width_all(2)
 		button.add_theme_stylebox_override(&"pressed", selected_style)
-		HudStyle.style_button(button)
 		if i < weapons.size():
 			var weapon: WeaponInstance = weapons[i]
 			var definition: WeaponDefinition = weapon.definition
@@ -1029,16 +1046,20 @@ func _build_cooking_panel() -> void:
 	row.add_theme_constant_override(&"separation", 12)
 	column.add_child(row)
 	_cooking_confirm = Button.new()
+	_cooking_confirm.name = "CookingConfirm"
 	_cooking_confirm.text = "Cuisiner"
 	HudStyle.style_button(_cooking_confirm)
 	_cooking_confirm.pressed.connect(cooking_confirm)
 	row.add_child(_cooking_confirm)
 	var remove_button: Button = Button.new()
+	remove_button.name = "CookingRemoveLast"
 	remove_button.text = "Retirer le dernier"
 	HudStyle.style_button(remove_button)
+	HudStyle.wire_button_feedback(remove_button, _ui_audio)
 	remove_button.pressed.connect(cooking_remove_last)
 	row.add_child(remove_button)
 	var cancel: Button = Button.new()
+	cancel.name = "CookingCancel"
 	cancel.text = "Reprendre"
 	HudStyle.style_button(cancel)
 	cancel.pressed.connect(close_cooking)
@@ -1056,6 +1077,7 @@ func open_cooking(_who: Node) -> bool:
 	_cooking_selection.clear()
 	_rebuild_cooking_panel()
 	_cooking_panel.visible = true
+	HudStyle.play_ui(_ui_audio, &"open")
 	get_tree().paused = true
 	_set_mouse_captured(false)
 	return true
@@ -1063,8 +1085,15 @@ func open_cooking(_who: Node) -> bool:
 
 ## Annuler rend toujours les ingrédients (§13.3) : rien n'a été retiré.
 func close_cooking() -> void:
+	_close_cooking(&"back")
+
+
+## Fermeture partagée — le son dit l'ISSUE : retour (annulé) ou confirmation.
+## Un seul lecteur d'UI : deux `play_ui` successifs se couperaient l'un l'autre.
+func _close_cooking(sound: StringName) -> void:
 	_cooking_selection.clear()
 	_cooking_panel.visible = false
+	HudStyle.play_ui(_ui_audio, sound)
 	get_tree().paused = false
 	_set_mouse_captured(true)
 
@@ -1105,6 +1134,7 @@ func cooking_confirm() -> void:
 	var inventory: InventoryComponent = _player.inventory()
 	if inventory.meal_count() >= InventoryComponent.MAX_MEALS:
 		_on_notification("Réserve de plats pleine")
+		HudStyle.play_ui(_ui_audio, &"error")
 		return
 	var needed: Dictionary = {}
 	for id: StringName in _cooking_selection:
@@ -1120,7 +1150,7 @@ func cooking_confirm() -> void:
 		inventory.consume_ingredients(id, int(needed[id]))
 	inventory.add_meal(result)
 	_on_notification("Cuisiné : %s" % String(result.get("name", "Plat")))
-	close_cooking()
+	_close_cooking(&"confirm")
 
 
 func _cooking_definitions() -> Array[IngredientDefinition]:
@@ -1172,6 +1202,7 @@ func _rebuild_cooking_panel() -> void:
 		stock_row.text = "%s  ×%d" % [definition.display_name,
 			inventory.ingredient_count(id)]
 		HudStyle.style_button(stock_row)
+		HudStyle.wire_button_feedback(stock_row, _ui_audio)
 		stock_row.pressed.connect(cooking_add.bind(id))
 		_cooking_stock.add_child(stock_row)
 	if _cooking_selection.is_empty():
@@ -1466,6 +1497,10 @@ func _announce_resonance(message: String, refused: bool) -> void:
 	_resonance_message = message
 	_resonance_message_refused = refused
 	_resonance_message_timer = RESONANCE_MESSAGE_LIFETIME
+	# P2 §3.8 : « son unique par succès, incompatibilité… » — le refus
+	# s'entend en plus de la barre du viseur ; jamais la couleur seule.
+	if refused:
+		HudStyle.play_ui(_ui_audio, &"error")
 
 
 func _on_resonance_verdict(_action: StringName, verdict: StringName,

@@ -1,0 +1,30 @@
+{
+  "greyscale": "/home/user/Zelda/evidence/vslice_pass3_20260812/sprint_final/06_approche_citadelle_gris.png",
+  "ground_p95_value_pct": 87.5,
+  "height": 1080,
+  "hierarchy_ok": true,
+  "saturation_mean": 18.0,
+  "separation_haut_milieu": 55.6,
+  "separation_milieu_bas": 27.6,
+  "sky_p50_value_pct": 94.5,
+  "source": "evidence/vslice_pass3_20260812/sprint_final/06_approche_citadelle.png",
+  "thirds_luma_pct": {
+    "bas": {
+      "p05": 29.4,
+      "p50": 61.0,
+      "p95": 90.4
+    },
+    "haut": {
+      "p05": 34.7,
+      "p50": 89.0,
+      "p95": 89.2
+    },
+    "milieu": {
+      "p05": 22.7,
+      "p50": 33.4,
+      "p95": 67.0
+    }
+  },
+  "vignette": "/home/user/Zelda/evidence/vslice_pass3_20260812/sprint_final/06_approche_citadelle_vignette.png",
+  "width": 1920
+}

@@ -1,0 +1,18 @@
+{
+  "commit": "2c4fbf935b4898e2b0a63a7151f6ce264d9a111f",
+  "display_server": "X11",
+  "distinct_colors_sampled": 1481,
+  "engine_version": "4.7.1-stable (official)",
+  "frames_waited": 40,
+  "height": 1080,
+  "label": "vslice_05_route_nord",
+  "luma_mean": 0.4921,
+  "luma_stddev": 0.1818,
+  "png": "evidence/vslice_pass3_20260812/avant/05_route_nord.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "timestamp_utc": "2026-08-12 00:57:16",
+  "width": 1920
+}

@@ -35,6 +35,7 @@ var _hidden_behind: Array[CanvasItem] = []
 var _save_system: Node = null
 var _game_state: Node = null
 var _confirming_overwrite: bool = false
+var _ui_audio: AudioStreamPlayer = null
 
 
 func _ready() -> void:
@@ -48,20 +49,39 @@ func _ready() -> void:
 	_training_button.pressed.connect(_on_training)
 	_debug_audit_button.pressed.connect(_on_debug_audit)
 
-	# §18.2 : la navigation s'entend — un tic au déplacement du focus, un toc
-	# à la validation. Bus UI, jamais SFX : les curseurs de volume restent vrais.
-	var audio: Node = get_node_or_null("/root/AudioManager")
-	if audio != null:
-		for button: Button in [_continue_button, _new_game_button,
-				_options_button, _quit_button, _debug_audit_button]:
-			button.focus_entered.connect(
-				func() -> void: audio.call("play_sfx", &"ui_move", "UI"))
-			button.pressed.connect(
-				func() -> void: audio.call("play_sfx", &"ui_accept", "UI"))
+	# §18.2 : la navigation s'entend — un tic au déplacement du focus, un clic
+	# à la validation. Sons d'interface promus (Kenney, CC0) sur le bus UI,
+	# jamais SFX : les curseurs de volume restent vrais. Le survol souris DONNE
+	# le focus : un seul état « courant », identique au clavier et à la souris.
+	_ui_audio = HudStyle.attach_ui_audio(self)
+	for button: Button in [_continue_button, _new_game_button, _options_button,
+			_training_button, _debug_audit_button, _quit_button]:
+		HudStyle.style_button(button)
+		HudStyle.wire_button_feedback(button, _ui_audio)
 
+	_apply_style()
 	_refresh()
 	_wire_focus_cycle()
 	_focus_first_available()
+
+
+## Hiérarchie typographique du LOT 9 : le titre domine (or pâle), le sous-titre
+## seconde (ivoire estompé), l'état parle en ivoire. Les tailles vivent dans la
+## scène ; les couleurs viennent TOUTES de HudStyle — aucune valeur dupliquée.
+func _apply_style() -> void:
+	var title: Label = get_node_or_null("Layout/Column/Title") as Label
+	if title != null:
+		title.add_theme_color_override(&"font_color", HudStyle.GOLD)
+	var subtitle: Label = get_node_or_null("Layout/Column/Subtitle") as Label
+	if subtitle != null:
+		subtitle.add_theme_color_override(&"font_color", HudStyle.IVORY_MUTED)
+	_status_label.add_theme_color_override(&"font_color", HudStyle.IVORY)
+
+
+## Un échec dit son nom ET se fait entendre — jamais la couleur seule (§17.4).
+func _show_error(text: String) -> void:
+	_status_label.text = text
+	HudStyle.play_ui(_ui_audio, &"error")
 
 
 ## Recalcule ce qui est réellement disponible. Appelé aussi après une sauvegarde
@@ -131,7 +151,7 @@ func _on_continue() -> void:
 		return
 	var data: Dictionary = _save_system.call("load_slot", DEFAULT_SLOT)
 	if data.is_empty():
-		_status_label.text = "Sauvegarde illisible — voir le journal."
+		_show_error("Sauvegarde illisible — voir le journal.")
 		return
 	# D.1R.5 : la vallée applique elle-même la sauvegarde à son chargement —
 	# inventaire, durabilités, arme équipée, flèches, coffres ouverts. Point de
@@ -142,7 +162,8 @@ func _on_continue() -> void:
 func _enter_valley() -> void:
 	var flow: Node = get_node_or_null("/root/SceneFlow")
 	if flow == null or not bool(flow.call("can_go_to", VALLEY_SCENE)):
-		_status_label.text = "Vallée indisponible — voir le journal."
+		# Texte épinglé par test_main_menu — le son s'ajoute, le libellé ne bouge pas.
+		_show_error("Vallée indisponible — voir le journal.")
 		return
 	flow.call("go_to", VALLEY_SCENE)
 
@@ -163,7 +184,7 @@ func _on_new_game() -> void:
 	_new_game_button.text = "Nouvelle partie"
 	var created: bool = bool(_save_system.call("save_slot", DEFAULT_SLOT, _new_game_payload()))
 	if not created:
-		_status_label.text = "Échec de création de la sauvegarde — voir le journal."
+		_show_error("Échec de création de la sauvegarde — voir le journal.")
 		return
 	if _game_state != null:
 		_game_state.call("set_difficulty", 1)  # Difficulty.STANDARD
@@ -234,7 +255,7 @@ func _on_debug_audit() -> void:
 		return
 	var flow: Node = get_node_or_null("/root/SceneFlow")
 	if flow == null or not bool(flow.call("can_go_to", INPUT_AUDIT_SCENE)):
-		_status_label.text = "Scène d'audit indisponible."
+		_show_error("Scène d'audit indisponible.")
 		return
 	flow.call("go_to", INPUT_AUDIT_SCENE)
 

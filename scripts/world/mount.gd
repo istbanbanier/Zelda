@@ -206,10 +206,17 @@ func _seat_rider() -> void:
 	_rider.rotation.y = rotation.y
 
 
-## --- Silhouette graybox -----------------------------------------------------
+## --- Silhouette --------------------------------------------------------------
 
-## Volumes simples : corps, encolure, tête, quatre membres, une selle. Assez
-## pour lire « monture » à 30 m ; ce n'est pas un modèle final.
+## SPRINT T5 (2026-08-12) : le « coureur des steppes » remplace la boîte-
+## animal — modèle ORIGINAL construit par script Blender
+## (source_assets/blender/creatures/mount_steppe_build.py), 3 412 triangles,
+## cinq matériaux plats de la palette, validé par gltf_inspect (min Y = 0,
+## regarde −Z). La collision et la selle restent CELLES du gameplay — le
+## visuel ne décide de rien. Si le .glb manque, le graybox d'avant revient :
+## une monture invisible serait pire qu'une monture cubique.
+const BODY_SCENE: String = "res://assets/characters/mount/SM_Mount_Steppe.glb"
+
 func _build_body() -> void:
 	var shape: CollisionShape3D = CollisionShape3D.new()
 	var hull: BoxShape3D = BoxShape3D.new()
@@ -217,17 +224,31 @@ func _build_body() -> void:
 	shape.shape = hull
 	shape.position = Vector3(0.0, 0.75, 0.0)
 	add_child(shape)
-	_box("Corps", Vector3(0.0, 1.15, 0.0), Vector3(0.86, 0.86, 2.1), HIDE_TONE)
-	_box("Encolure", Vector3(0.0, 1.55, -1.05), Vector3(0.5, 0.5, 0.9), HIDE_TONE)
-	_box("Tete", Vector3(0.0, 1.72, -1.62), Vector3(0.42, 0.46, 0.72), HIDE_TONE)
-	_box("Criniere", Vector3(0.0, 1.86, -1.05), Vector3(0.2, 0.3, 1.0), MANE_TONE)
-	_box("Queue", Vector3(0.0, 1.42, 1.12), Vector3(0.18, 0.5, 0.28), MANE_TONE)
-	for side: float in [-1.0, 1.0]:
-		for front: float in [-1.0, 1.0]:
-			_box("Membre", Vector3(side * 0.32, 0.36, front * 0.78),
-				Vector3(0.22, 0.72, 0.24), MANE_TONE)
-	_box("Selle", Vector3(0.0, 1.62, 0.1), Vector3(0.7, 0.16, 0.8),
-		Color(0.36, 0.24, 0.18))
+	var packed: PackedScene = load(BODY_SCENE) as PackedScene \
+		if ResourceLoader.exists(BODY_SCENE, "PackedScene") else null
+	if packed != null:
+		var body: Node3D = packed.instantiate() as Node3D
+		body.name = "Coureur"
+		add_child(body)
+	else:
+		push_warning("[monture] %s absent — silhouette graybox de repli"
+			% BODY_SCENE)
+		_box("Corps", Vector3(0.0, 1.15, 0.0), Vector3(0.86, 0.86, 2.1),
+			HIDE_TONE)
+		_box("Encolure", Vector3(0.0, 1.55, -1.05), Vector3(0.5, 0.5, 0.9),
+			HIDE_TONE)
+		_box("Tete", Vector3(0.0, 1.72, -1.62), Vector3(0.42, 0.46, 0.72),
+			HIDE_TONE)
+		_box("Criniere", Vector3(0.0, 1.86, -1.05), Vector3(0.2, 0.3, 1.0),
+			MANE_TONE)
+		_box("Queue", Vector3(0.0, 1.42, 1.12), Vector3(0.18, 0.5, 0.28),
+			MANE_TONE)
+		for side: float in [-1.0, 1.0]:
+			for front: float in [-1.0, 1.0]:
+				_box("Membre", Vector3(side * 0.32, 0.36, front * 0.78),
+					Vector3(0.22, 0.72, 0.24), MANE_TONE)
+		_box("Selle", Vector3(0.0, 1.62, 0.1), Vector3(0.7, 0.16, 0.8),
+			Color(0.36, 0.24, 0.18))
 	_saddle = Marker3D.new()
 	_saddle.name = "Selle"
 	_saddle.position = Vector3(0.0, SADDLE_HEIGHT, 0.1)
