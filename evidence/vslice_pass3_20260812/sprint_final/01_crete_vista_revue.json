@@ -1,0 +1,30 @@
+{
+  "greyscale": "/home/user/Zelda/evidence/vslice_pass3_20260812/sprint_final/01_crete_vista_gris.png",
+  "ground_p95_value_pct": 57.3,
+  "height": 1080,
+  "hierarchy_ok": true,
+  "saturation_mean": 29.0,
+  "separation_haut_milieu": 5.3,
+  "separation_milieu_bas": 39.7,
+  "sky_p50_value_pct": 69.0,
+  "source": "evidence/vslice_pass3_20260812/sprint_final/01_crete_vista.png",
+  "thirds_luma_pct": {
+    "bas": {
+      "p05": 17.2,
+      "p50": 19.2,
+      "p95": 60.6
+    },
+    "haut": {
+      "p05": 52.1,
+      "p50": 64.2,
+      "p95": 88.9
+    },
+    "milieu": {
+      "p05": 40.5,
+      "p50": 58.9,
+      "p95": 85.2
+    }
+  },
+  "vignette": "/home/user/Zelda/evidence/vslice_pass3_20260812/sprint_final/01_crete_vista_vignette.png",
+  "width": 1920
+}
