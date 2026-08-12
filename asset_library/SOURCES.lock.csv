@@ -1,0 +1,12 @@
+id,type,title,author,official_page,transport_url,license,keep_policy,expected_min_payload
+kenney_castle_2_0,model,Castle Kit 2.0,Kenney,https://kenney.nl/assets/castle-kit,https://opengameart.org/sites/default/files/kenney_castle-kit.zip,CC0-1.0,model,50
+kenney_modular_cave_1_0,model,Modular Cave Kit 1.0,Kenney,https://kenney.nl/assets/modular-cave-kit,https://opengameart.org/sites/default/files/kenney_modular-cave-kit_1.0.zip,CC0-1.0,model,30
+kenney_fantasy_town_2_0,model,Fantasy Town Kit 2.0,Kenney,https://kenney.nl/assets/fantasy-town-kit,https://opengameart.org/sites/default/files/kenney_fantasy-town-kit_2.0.zip,CC0-1.0,model,120
+kenney_graveyard_5_0,model,Graveyard Kit 5.0,Kenney,https://kenney.nl/assets/graveyard-kit,https://opengameart.org/sites/default/files/kenney_graveyard-kit_5.0.zip,CC0-1.0,model,65
+kenney_survival_2_0,model,Survival Kit 2.0,Kenney,https://kenney.nl/assets/survival-kit,https://opengameart.org/sites/default/files/kenney_survival-kit.zip,CC0-1.0,model,55
+kenney_watercraft_2_1,model,Watercraft Kit 2.1,Kenney,https://kenney.nl/assets/watercraft-kit,https://opengameart.org/sites/default/files/kenney_watercraft_kit_0.zip,CC0-1.0,model,30
+kenney_rpg_audio_1_0,audio,RPG Audio,Kenney,https://kenney.nl/assets/rpg-audio,https://opengameart.org/sites/default/files/RPGsounds_Kenney.zip,CC0-1.0,audio,35
+kenney_interface_sounds_1_0,audio,Interface Sounds,Kenney,https://kenney.nl/assets/interface-sounds,https://opengameart.org/sites/default/files/kenney_interfaceSounds.zip,CC0-1.0,audio,70
+kenney_particle_pack_1_0,vfx,Particle Pack,Kenney,https://kenney.nl/assets/particle-pack,https://opengameart.org/sites/default/files/kenney_particlePack.zip,CC0-1.0,image,60
+kenney_light_masks_1_0,vfx,Light Masks 1.0,Kenney,https://kenney.nl/assets/light-masks,https://opengameart.org/sites/default/files/kenney_light-masks-1.0.zip,CC0-1.0,image,100
+kenney_smoke_particles_1_0,vfx,Smoke Particle Assets,Kenney,https://kenney.nl/assets/smoke-particles,https://opengameart.org/sites/default/files/smokeParticleAssets.zip,CC0-1.0,image,50

@@ -44,6 +44,10 @@ evidence/blackbox_player/smoke_*/
 *.blend1
 *.blend2
 
+# Python — caches régénérables des outils de production
+__pycache__/
+*.py[cod]
+
 # Système
 .DS_Store
 Thumbs.db
