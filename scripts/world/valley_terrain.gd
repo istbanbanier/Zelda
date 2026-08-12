@@ -797,6 +797,65 @@ func _build_learning_cliff() -> void:
 	_slab("CliffLedgeLow", Vector2(-79.5, 58), Vector2(1.0, 6), 6.0, COL_ROCK)
 	_slab("CliffLedgeHigh", Vector2(-79.5, 72), Vector2(1.0, 6), 10.5, COL_ROCK)
 	_build_mesa_skirts()
+	_build_learning_cliff_talus()
+
+
+## FINITION MONDE (lot 4) : vue du poste minier (−68, 86), la falaise
+## d'apprentissage lisait comme un VIDE NOIR — deux faces de dalle de 12 m
+## sans un seul relief pour accrocher la lumière (capture AVANT, evidence).
+## Même recette que les mesas et la terrasse du pylône : talus au pied et
+## strates horizontales. Le COULOIR D'ESCALADE de la face est (z 52..78,
+## corniches à z 55-61 et 69-75) reste STRICTEMENT nu — un talus au pied
+## d'un mur d'escalade en bloquerait le départ. Décor sans collision.
+func _build_learning_cliff_talus() -> void:
+	var talus: Node3D = Node3D.new()
+	talus.name = "LearningCliffTalus"
+	add_child(talus)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 20260818
+	var lit: Color = Color(0.455, 0.335, 0.225)
+	var shade: Color = Color(0.330, 0.245, 0.175)
+	# [axe, coordonnée fixe, min, max, direction extérieure, dents]
+	var faces: Array[Array] = [
+		[0, -80.0, 40.0, 50.0, 1.0, 2],    # face est, épaule sud du couloir
+		[0, -80.0, 79.0, 90.0, 1.0, 2],    # face est, épaule nord du couloir
+		[1, 90.0, -136.0, -84.0, 1.0, 6],  # face nord (vue du poste minier)
+	]
+	for face: Array in faces:
+		var axis: int = face[0] as int
+		var fixed: float = face[1] as float
+		var lo: float = face[2] as float
+		var hi: float = face[3] as float
+		var outward: float = face[4] as float
+		var teeth: int = face[5] as int
+		for t: int in range(teeth):
+			var along: float = lerpf(lo, hi, (float(t) + 0.5) / float(teeth)) \
+				+ rng.randf_range(-1.2, 1.2)
+			var height: float = rng.randf_range(4.5, 8.0)
+			var half: float = rng.randf_range(3.0, 5.0)
+			var center: Vector3 = Vector3(fixed + outward * half * 0.55, 2.0,
+				along) if axis == 0 else Vector3(along, 2.0,
+				fixed + outward * half * 0.55)
+			_frustum_in("CliffTalus%d_%d_%d" % [axis, int(lo), t], talus,
+				center, Vector2(half * 2.0, half * 2.0),
+				Vector2(half * 0.7, half * 0.7), height, Vector2.ZERO,
+				lit if t % 2 == 0 else shade)
+		# Une strate horizontale par segment de face, au tiers haut.
+		var band_y: float = 2.0 + 12.0 * rng.randf_range(0.55, 0.7)
+		var length: float = (hi - lo) * rng.randf_range(0.6, 0.85)
+		var mid: float = lerpf(lo, hi, 0.5)
+		var base_c: Vector3
+		var base_size: Vector2
+		if axis == 0:
+			base_c = Vector3(fixed + outward * 0.6, band_y, mid)
+			base_size = Vector2(1.6, length)
+		else:
+			base_c = Vector3(mid, band_y, fixed + outward * 0.6)
+			base_size = Vector2(length, 1.6)
+		_frustum_in("CliffStrata%d" % axis if axis == 1
+			else "CliffStrata%d_%d" % [axis, int(lo)], talus, base_c,
+			base_size, base_size * 0.78, rng.randf_range(0.8, 1.3),
+			Vector2(0.3, -0.2), shade)
 
 
 ## LOT E (étape 7, 2026-08-11) — les deux mesas restantes portaient des faces

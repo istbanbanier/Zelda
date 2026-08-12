@@ -104,9 +104,33 @@ func _piece(asset: String, at: Vector3, yaw_deg: float = 0.0,
 	# géométrie (Prop_Support commence à +1,21 m). Sans cette
 	# correction, l'objet est suspendu en l'air. Voir KitPlacement.
 	KitPlacement.seat(node, node.scene_file_path)
+	_tint_roof_piece(node, asset)
 	(parent if parent != null else self).add_child(node)
 	_built += 1
 	return node
+
+
+## FINITION MONDE (lot 4) : les tuiles rouges méditerranéennes du kit jurent
+## avec la palette §1.4 — la même faute que les toits d'abris corrigée au
+## sprint T4, ici sur TOUT le village. Toute pièce de toit en tuiles rondes
+## ou fronton de brique est rabattue à plat vers le bois/bronze du monde
+## (recette `_tint_last_model` : matériau plat, la teinte foncée n'est pas
+## doublée par une texture).
+const ROOF_TINT: Color = Color(0.42, 0.29, 0.20)
+const TOWER_ROOF_TINT: Color = Color(0.36, 0.25, 0.18)
+
+
+func _tint_roof_piece(node: Node3D, asset: String) -> void:
+	if not (asset.contains("RoundTiles") or asset.contains("Front_Brick")):
+		return
+	var flat: StandardMaterial3D = StandardMaterial3D.new()
+	flat.albedo_color = TOWER_ROOF_TINT if asset.contains("Tower") \
+		else ROOF_TINT
+	flat.roughness = 0.92
+	if node is MeshInstance3D:
+		(node as MeshInstance3D).material_override = flat
+	for child: Node in node.find_children("*", "MeshInstance3D", true, false):
+		(child as MeshInstance3D).material_override = flat
 
 
 ## Collision explicite : le kit est purement visuel. Une boîte statique est
