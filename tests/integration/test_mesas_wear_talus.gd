@@ -67,6 +67,69 @@ func test_the_two_mesas_wear_overlapping_talus_below_their_rims() -> void:
 	await _cleanup(valley)
 
 
+func test_the_talus_faces_carry_strata_and_uneven_rows() -> void:
+	## PASSE 3 (2026-08-12, défaut n°6 de la revue : « répétitions
+	## triangulaires visibles du parcours »). Les talus du lot E étaient
+	## six prismes par face, au même rythme sinusoïdal — trois rangées de
+	## triangles quasi identiques dans les cadres 1, 2 et 5. §6.3 : la roche
+	## se lit par « strates horizontales larges cassées par fractures
+	## diagonales » — pas par une rangée de dents.
+	##
+	## Deux propriétés machine, mesurées AVANT : zéro strate (les bandes
+	## horizontales n'existaient pas) ; trois faces à SIX pièces chacune
+	## (le rythme identique est le motif « procédural » que §7.17 interdit).
+	var valley: ValleyWorld = (load(VALLEY) as PackedScene).instantiate() as ValleyWorld
+	_tree().root.add_child(valley)
+	await _tree().physics_frame
+	var skirts: Node3D = valley.find_child("MesaSkirts", true, false) as Node3D
+	check_not_null(skirts, "la zone des talus existe")
+	if skirts == null:
+		await _cleanup(valley)
+		return
+	var counts: Dictionary = {}
+	for face: Array in [["PylonMesaS", true], ["PylonMesaE", false],
+			["LearnMesaS", true]]:
+		var prefix: String = face[0]
+		var along_x: bool = face[1]
+		var strata: Array[Node] = []
+		var prisms: int = 0
+		for piece: Node in skirts.find_children("%s*" % prefix,
+				"MeshInstance3D", false, false):
+			if String(piece.name).contains("Strata"):
+				strata.append(piece)
+			else:
+				prisms += 1
+		counts[prefix] = prisms
+		check(strata.size() >= 2,
+			"la face %s porte des strates horizontales (%d ≥ 2)"
+				% [prefix, strata.size()])
+		for band: Node in strata:
+			var mesh: MeshInstance3D = band as MeshInstance3D
+			var aabb: AABB = mesh.get_aabb()
+			var long_side: float = aabb.size.x if along_x else aabb.size.z
+			check(long_side >= aabb.size.y * 2.5,
+				"%s est une STRATE : longue de %.1f m pour %.1f m de haut"
+					% [mesh.name, long_side, aabb.size.y])
+	# Le rythme se casse : les trois faces n'alignent pas le même nombre de
+	# dents (avant : 6/6/6).
+	var values: Array = counts.values()
+	check(values.min() != values.max(),
+		"les rangs de talus varient d'une face à l'autre (%s)" % str(counts))
+	# Le plateau du donjon porte lui aussi ses strates — c'est SA falaise
+	# que les caméras 5 et 6 regardent en face.
+	var plateau: Node3D = valley.find_child("PlateauSkirts", true, false) as Node3D
+	check_not_null(plateau, "les jupes du plateau existent")
+	if plateau != null:
+		var plateau_strata: Array[Node] = plateau.find_children(
+			"PlateauStrata*", "MeshInstance3D", false, false)
+		check(plateau_strata.size() >= 4,
+			"la falaise du plateau porte des strates (%d ≥ 4)"
+				% plateau_strata.size())
+		check(plateau.find_children("*", "PhysicsBody3D", true, false).is_empty(),
+			"les jupes du plateau restent un décor sans collision")
+	await _cleanup(valley)
+
+
 func test_the_climbing_wall_stays_bare_of_talus() -> void:
 	## La paroi d'escalade : face est de LearningCliff, plan x = −80,
 	## z 40..90. AUCUNE pièce de talus à moins de 4 m devant elle — sinon la

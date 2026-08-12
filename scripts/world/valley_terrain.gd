@@ -654,15 +654,25 @@ func _build_mesa_skirts() -> void:
 	skirts.name = "MesaSkirts"
 	add_child(skirts)
 	var shade: Color = Color(0.352, 0.232, 0.148)
+	# Passe 3 : les strates suivent la gamme assombrie de `_rock_material`.
+	var lit: Color = Color(0.455, 0.335, 0.225)
 	# [préfixe, face le long de X ?, ancrage, longueur, hauteur de base,
-	#  amplitude, rebord]
+	#  amplitude, rebord, nombre de dents, dent sautée]
+	#
+	# PASSE 3 (défaut n°6) : trois faces à SIX dents chacune, même rythme —
+	# la « répétition triangulaire » que la revue voit depuis le parcours.
+	# Le NOMBRE varie par face (5/8/7), une dent saute (le vide est une
+	# fracture, §6.3), et deux STRATES horizontales croisent chaque rang.
 	var faces: Array[Array] = [
 		# Terrasse du pylône, face SUD (z = 0) : le mur des caméras 1 et 2.
-		["PylonMesaS", true, Vector3(115.0, 0.0, 1.2), 52.0, 12.0, 4.0, 18.0],
+		["PylonMesaS", true, Vector3(115.0, 0.0, 1.2), 52.0, 12.0, 4.0, 18.0,
+			5, 3],
 		# Terrasse du pylône, face EST (x = 143) : vue du territoire du chasseur.
-		["PylonMesaE", false, Vector3(141.8, 0.0, -25.0), 46.0, 11.0, 3.5, 18.0],
+		["PylonMesaE", false, Vector3(141.8, 0.0, -25.0), 46.0, 11.0, 3.5, 18.0,
+			8, 5],
 		# Falaise d'apprentissage, face SUD (z = 90) : le mur du cadre ouest.
-		["LearnMesaS", true, Vector3(-110.0, 0.0, 88.8), 56.0, 9.0, 3.0, 14.0],
+		["LearnMesaS", true, Vector3(-110.0, 0.0, 88.8), 56.0, 9.0, 3.0, 14.0,
+			7, 2],
 	]
 	for face: Array in faces:
 		var prefix: String = face[0]
@@ -672,8 +682,11 @@ func _build_mesa_skirts() -> void:
 		var base_height: float = face[4]
 		var amplitude: float = face[5]
 		var rim: float = face[6]
-		var count: int = 6
+		var count: int = face[7]
+		var skipped: int = face[8]
 		for i: int in range(count):
+			if i == skipped:
+				continue   # la fracture : le rang respire au lieu de marteler
 			var t: float = (float(i) + 0.5) / float(count)
 			var along: float = (t - 0.5) * span \
 				+ 2.2 * sin(t * 15.7 + float(prefix.length()))
@@ -691,6 +704,32 @@ func _build_mesa_skirts() -> void:
 				Vector3(width, height, 4.5 + 1.5 * sin(t * 7.1)),
 				shade if i % 3 != 1 else COL_ROCK, along_x,
 				0.5 + 0.27 * sin(t * 11.3 + float(i) * 1.9))
+		# Deux strates horizontales par face, DEVANT le rang de dents —
+		# lits à ~1/3 et ~2/3 de la hauteur visible (plaine y=2 → rebord).
+		for s: int in range(2):
+			var bed: float = 2.0 + (rim - 3.0) * (0.32 + 0.33 * float(s))
+			var length: float = span * (0.62 - 0.12 * float(s))
+			var thickness: float = 3.8 - 1.0 * float(s)
+			var slide: float = span * (0.10 if s == 0 else -0.14)
+			var base_c: Vector3
+			var base_size: Vector2
+			var top_size: Vector2
+			var shift: Vector2
+			if along_x:
+				base_c = Vector3(anchor.x + slide, bed - thickness * 0.5,
+					anchor.z + 1.6)
+				base_size = Vector2(length, 6.4)
+				top_size = Vector2(length * 0.84, 4.2)
+				shift = Vector2(2.6 if s == 0 else -3.2, -0.9)
+			else:
+				base_c = Vector3(anchor.x + 1.6, bed - thickness * 0.5,
+					anchor.z + slide)
+				base_size = Vector2(6.4, length)
+				top_size = Vector2(4.2, length * 0.84)
+				shift = Vector2(-0.9, 2.6 if s == 0 else -3.2)
+			_frustum_in("%sStrata%d" % [prefix, s], skirts, base_c,
+				base_size, top_size, thickness, shift,
+				lit if s == 0 else shade)
 
 
 func _build_pylon_terrace_and_proxy() -> void:
@@ -1528,7 +1567,9 @@ const PLATEAU_RAMP_CLEARANCE: float = 10.0
 func _build_plateau_cliff(parent: Node3D) -> void:
 	var shade: Color = Color(0.352, 0.232, 0.148)   # creux, à l'ombre
 	var mid: Color = COL_ROCK                        # matériau macro de roche
-	var lit: Color = Color(0.560, 0.392, 0.246)      # arêtes prises par le soleil
+	# Passe 3 : l'arête « prise par le soleil » suit la gamme assombrie de
+	# `_rock_material` — à 0,56 elle restait un accent orange criard.
+	var lit: Color = Color(0.455, 0.335, 0.225)
 	# Trois rangs. Le rang PROFOND est le plus haut et le plus sombre ; il
 	# ferme la face. Le rang AVANT est plus bas, plus clair et décalé : c'est
 	# lui qui casse la ligne de sommet. Le TALUS ferme le pied, sans quoi la
@@ -1573,6 +1614,28 @@ func _build_plateau_cliff(parent: Node3D) -> void:
 					Vector3(width, height, depth),
 					(row[8] as Color) if i % 3 != 1 else (row[9] as Color),
 					true, 0.5 + 0.30 * sin(t * 11.9 + side_sign * 2.9))
+	# PASSE 3 (défaut n°6 : « répétitions triangulaires »). Trois rangs de
+	# dents au même rythme sinusoïdal, c'est le motif procédural que §7.17
+	# interdit. §6.3 : la roche se lit par « strates horizontales larges
+	# cassées par fractures diagonales » — deux STRATES par flanc croisent
+	# les rangs de prismes en horizontales : la lecture bascule de « rangée
+	# de triangles » à « falaise stratifiée ». Décor sans collision, testé
+	# (`test_the_talus_faces_carry_strata_and_uneven_rows`).
+	var strata_specs: Array[Array] = [
+		# [nom, signe, centre x, y du lit, longueur, hauteur, z, décalage]
+		["PlateauStrataW0", -1.0, -38.0, 4.5, 46.0, 4.2, -157.6, -3.0],
+		["PlateauStrataW1", -1.0, -30.0, 15.0, 38.0, 3.4, -159.2, 2.4],
+		["PlateauStrataE0", 1.0, 36.0, 7.0, 48.0, 4.6, -157.9, 3.2],
+		["PlateauStrataE1", 1.0, 42.0, 17.5, 34.0, 3.0, -159.6, -2.6],
+	]
+	for spec: Array in strata_specs:
+		_frustum_in(spec[0] as String, parent,
+			Vector3(spec[2] as float, float(spec[3]) - float(spec[5]) * 0.5,
+				float(spec[6])),
+			Vector2(spec[4] as float, 7.0),
+			Vector2(float(spec[4]) * 0.82, 4.6), spec[5] as float,
+			Vector2(spec[7] as float, -1.2),
+			mid if (spec[0] as String).ends_with("0") else lit)
 
 
 ## ---------------------------------------------------------------------------
@@ -3032,11 +3095,20 @@ func _ground_material() -> StandardMaterial3D:
 
 ## H-7 : la même loi pour la ROCHE — les faces ocre du plateau et des
 ## falaises étaient les derniers grands aplats du cadre (§5.1).
+##
+## PASSE 3 (défaut n°6 : « mesas orange »). L'arête chauffée à 0,68 de
+## rouge rendait ~90 % de valeur au soleil (gain 1,4-1,8) : la terrasse du
+## pylône, la falaise d'apprentissage et la rampe étaient les masses les
+## plus SATURÉES du cadre — devant la citadelle, contre §1.2. La rampe se
+## lisait en triangle beige criard sur les caméras 5 et 6 (sol_p95 à 100 %).
+## La gamme descend d'un tiers et se désature : l'ancre vise le rendu
+## « roche ocre » de §3.4 (#9B6842 peint ÷ gain ≈ 0,34) — pas l'orange.
+## Le juge reste la capture (§1.5), jamais une prédiction depuis l'albédo.
 func _rock_material() -> StandardMaterial3D:
 	return _macro_material(&"rock", 20260806, [
-		Color(0.360, 0.215, 0.125),   # ocre profond
-		Color(0.500, 0.325, 0.200),   # ancre
-		Color(0.680, 0.475, 0.310),   # arête chauffée
+		Color(0.225, 0.160, 0.115),   # ocre profond
+		Color(0.330, 0.245, 0.175),   # ancre
+		Color(0.445, 0.345, 0.250),   # arête chauffée
 	])
 
 
