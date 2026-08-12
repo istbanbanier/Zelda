@@ -1328,3 +1328,16 @@ entière du défaut, en amont, sans rien montrer au joueur.
 **Corollaire appliqué** : on ne s'accroche plus à une paroi au-dessus de la
 vitesse de marche, et le seuil d'intention passe de 0,22 s à 0,40 s — 0,22 s de
 contact EST le comportement normal de quelqu'un qui court dans un obstacle.
+
+
+## D-052 — La citadelle ne reçoit PAS le kit Castle : l'échelle ne pardonne pas
+
+Le lot 5 de la finition monde prévoyait de réutiliser `kenney_castle_2_0` sur
+la citadelle. Mesuré : les pièces du kit sont au pas de ~1 m (wall-pillar
+1,0 × 1,31 m) ; les masses de la citadelle font 10 à 50 m. Les employer
+exigerait un facteur ×8-15 qui détruirait la densité de texel et donnerait
+un château de jouet gonflé — pire que l'habillage taluté de la passe 3, qui
+travaille aux bonnes proportions. Le kit sert donc là où son échelle est
+JUSTE : modules du donjon (lot 6), et candidats fortification/tour de guet.
+Alternative rejetée : re-modéliser la citadelle en modules — hors budget de
+la passe, la silhouette actuelle ayant déjà passé la revue des masses.

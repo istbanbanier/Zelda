@@ -4407,3 +4407,20 @@ fait.
    interaction et premier combat atteignables, mort et reprise, arrêt propre.
 3. **Ne pas commencer S2** tant que le gate ne sait pas rougir sur au moins un
    contrôle négatif : un gate qui n'a jamais échoué ne prouve rien.
+
+
+## 2026-08-12 — Finition visuelle monde entier (branche `claude/full-world-visual-finish`)
+
+Bibliothèque Codex fusionnée (11 packs CC0 en quarantaine), puis huit lots :
+terrain entier (teintes organiques, 22 buttes), trois masses boisées
+(navmesh re-cuite), rivière pleine longueur, POI harmonisés (toits, crypte,
+falaise), donjon habillé par agent (10 GLB promus), UI finie par agent
+(débordement 720p corrigé et mesuré). Chaque promotion d'asset est entrée
+dans ATTRIBUTIONS + manifeste AVANT commit. Preuves :
+`evidence/full_visual_finish_20260812/`.
+
+**Prochaine action exacte** : batterie finale — parcours physiques
+(vallée/donjon/boss), `validate_fast.sh` unique, trois joueurs boîte noire
+(occasionnel/explorateur/expérimenté), jeu de captures complet (31 POI +
+vues générales + salles + acteurs + UI), pousser la branche, livrer à la
+revue Codex. Le gate visuel n'est JAMAIS auto-déclaré.

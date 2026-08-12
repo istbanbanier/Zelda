@@ -1,0 +1,548 @@
+[
+ {
+  "name": "01_riverside_village",
+  "from": [
+   -52,
+   7,
+   52
+  ],
+  "look": [
+   -72,
+   3,
+   34
+  ],
+  "fov": 60
+ },
+ {
+  "name": "02_logging_hamlet",
+  "from": [
+   94,
+   7,
+   56
+  ],
+  "look": [
+   110,
+   3,
+   40
+  ],
+  "fov": 60
+ },
+ {
+  "name": "03_mining_post",
+  "from": [
+   -50,
+   8,
+   102
+  ],
+  "look": [
+   -70,
+   3,
+   84
+  ],
+  "fov": 60
+ },
+ {
+  "name": "04_watchtower_ruin",
+  "from": [
+   -108,
+   22,
+   96
+  ],
+  "look": [
+   -130,
+   16,
+   80
+  ],
+  "fov": 60
+ },
+ {
+  "name": "05_ancient_aqueduct",
+  "from": [
+   -4,
+   6,
+   26
+  ],
+  "look": [
+   -14,
+   1,
+   8
+  ],
+  "fov": 62
+ },
+ {
+  "name": "06_abandoned_farm",
+  "from": [
+   -2,
+   6,
+   92
+  ],
+  "look": [
+   -16,
+   3,
+   76
+  ],
+  "fov": 60
+ },
+ {
+  "name": "07_storm_caravan",
+  "from": [
+   -24,
+   7,
+   -104
+  ],
+  "look": [
+   -38,
+   2,
+   -122
+  ],
+  "fov": 60
+ },
+ {
+  "name": "08_ruined_observatory",
+  "from": [
+   62,
+   7,
+   142
+  ],
+  "look": [
+   76,
+   3,
+   128
+  ],
+  "fov": 60
+ },
+ {
+  "name": "09_barrow_cemetery",
+  "from": [
+   44,
+   8,
+   -62
+  ],
+  "look": [
+   58,
+   2,
+   -80
+  ],
+  "fov": 60
+ },
+ {
+  "name": "10_old_rampart",
+  "from": [
+   -88,
+   9,
+   -122
+  ],
+  "look": [
+   -106,
+   3,
+   -140
+  ],
+  "fov": 60
+ },
+ {
+  "name": "11_forest_shrine",
+  "from": [
+   32,
+   7,
+   116
+  ],
+  "look": [
+   18,
+   3,
+   102
+  ],
+  "fov": 60
+ },
+ {
+  "name": "12_waterfall_cave",
+  "from": [
+   -102,
+   7,
+   40
+  ],
+  "look": [
+   -118,
+   3,
+   26
+  ],
+  "fov": 60
+ },
+ {
+  "name": "13_abandoned_mine",
+  "from": [
+   146,
+   8,
+   -54
+  ],
+  "look": [
+   160,
+   3,
+   -70
+  ],
+  "fov": 60
+ },
+ {
+  "name": "14_hollow_crypt",
+  "from": [
+   -46,
+   7,
+   -74
+  ],
+  "look": [
+   -61,
+   2,
+   -91
+  ],
+  "fov": 60
+ },
+ {
+  "name": "15_hidden_passage",
+  "from": [
+   -118,
+   8,
+   136
+  ],
+  "look": [
+   -134,
+   3,
+   122
+  ],
+  "fov": 60
+ },
+ {
+  "name": "16_crystal_hollow",
+  "from": [
+   -124,
+   8,
+   -136
+  ],
+  "look": [
+   -140,
+   3,
+   -150
+  ],
+  "fov": 60
+ },
+ {
+  "name": "17_ancient_tree",
+  "from": [
+   -80,
+   8,
+   -48
+  ],
+  "look": [
+   -96,
+   5,
+   -62
+  ],
+  "fov": 60
+ },
+ {
+  "name": "18_turquoise_spring",
+  "from": [
+   -58,
+   7,
+   92
+  ],
+  "look": [
+   -72,
+   3,
+   78
+  ],
+  "fov": 60
+ },
+ {
+  "name": "19_flower_field",
+  "from": [
+   -20,
+   7,
+   126
+  ],
+  "look": [
+   -34,
+   2,
+   112
+  ],
+  "fov": 60
+ },
+ {
+  "name": "20_stone_bridge",
+  "from": [
+   -30,
+   6,
+   26
+  ],
+  "look": [
+   -14,
+   0,
+   10
+  ],
+  "fov": 62
+ },
+ {
+  "name": "21_overlook_summit",
+  "from": [
+   150,
+   8,
+   54
+  ],
+  "look": [
+   168,
+   6,
+   40
+  ],
+  "fov": 60
+ },
+ {
+  "name": "22_veil_falls",
+  "from": [
+   134,
+   8,
+   132
+  ],
+  "look": [
+   150,
+   4,
+   118
+  ],
+  "fov": 60
+ },
+ {
+  "name": "23_watchers_circle",
+  "from": [
+   -114,
+   8,
+   -14
+  ],
+  "look": [
+   -132,
+   2,
+   -28
+  ],
+  "fov": 60
+ },
+ {
+  "name": "24_wind_gorge",
+  "from": [
+   52,
+   9,
+   -80
+  ],
+  "look": [
+   68,
+   3,
+   -96
+  ],
+  "fov": 60
+ },
+ {
+  "name": "25_storm_grove",
+  "from": [
+   8,
+   8,
+   -136
+  ],
+  "look": [
+   -8,
+   3,
+   -152
+  ],
+  "fov": 60
+ },
+ {
+  "name": "26_thunderstruck_tree",
+  "from": [
+   -76,
+   8,
+   132
+  ],
+  "look": [
+   -92,
+   4,
+   148
+  ],
+  "fov": 60
+ },
+ {
+  "name": "27_ember_camps",
+  "from": [
+   56,
+   8,
+   126
+  ],
+  "look": [
+   72,
+   3,
+   112
+  ],
+  "fov": 60
+ },
+ {
+  "name": "28_azure_patrol",
+  "from": [
+   62,
+   8,
+   -62
+  ],
+  "look": [
+   78,
+   3,
+   -78
+  ],
+  "fov": 60
+ },
+ {
+  "name": "29_obsidian_bastion",
+  "from": [
+   -122,
+   9,
+   -44
+  ],
+  "look": [
+   -140,
+   3,
+   -60
+  ],
+  "fov": 60
+ },
+ {
+  "name": "30_colossus_lair",
+  "from": [
+   132,
+   9,
+   -124
+  ],
+  "look": [
+   150,
+   3,
+   -140
+  ],
+  "fov": 60
+ },
+ {
+  "name": "31_hunter_range",
+  "from": [
+   112,
+   8,
+   134
+  ],
+  "look": [
+   128,
+   3,
+   150
+  ],
+  "fov": 60
+ },
+ {
+  "name": "g1_coin_sud_ouest",
+  "from": [
+   -200,
+   42,
+   200
+  ],
+  "look": [
+   -60,
+   2,
+   60
+  ],
+  "fov": 66
+ },
+ {
+  "name": "g2_coin_sud_est",
+  "from": [
+   200,
+   42,
+   200
+  ],
+  "look": [
+   60,
+   2,
+   60
+  ],
+  "fov": 66
+ },
+ {
+  "name": "g3_coin_nord_ouest",
+  "from": [
+   -200,
+   42,
+   -200
+  ],
+  "look": [
+   -60,
+   2,
+   -60
+  ],
+  "fov": 66
+ },
+ {
+  "name": "g4_coin_nord_est",
+  "from": [
+   200,
+   42,
+   -200
+  ],
+  "look": [
+   60,
+   2,
+   -60
+  ],
+  "fov": 66
+ },
+ {
+  "name": "g5_centre_vers_citadelle",
+  "from": [
+   0,
+   30,
+   120
+  ],
+  "look": [
+   0,
+   34,
+   -210
+  ],
+  "fov": 62
+ },
+ {
+  "name": "a1_camp_acteurs",
+  "from": [
+   38,
+   8.5,
+   74
+  ],
+  "look": [
+   46,
+   6.5,
+   62
+  ],
+  "fov": 58
+ },
+ {
+  "name": "a2_monture",
+  "from": [
+   12,
+   34.5,
+   147
+  ],
+  "look": [
+   6,
+   32.8,
+   141
+  ],
+  "fov": 55
+ },
+ {
+  "name": "a3_heros_dos",
+  "from": [
+   0,
+   34.6,
+   178
+  ],
+  "look": [
+   0,
+   32.2,
+   160
+  ],
+  "fov": 55
+ }
+]

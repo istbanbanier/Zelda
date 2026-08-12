@@ -1,5 +1,22 @@
 # STATUS — état par fonctionnalité
 
+## Finition visuelle monde entier (2026-08-12, `claude/full-world-visual-finish`)
+
+| Lot | État | Preuve |
+|---|---|---|
+| 1 — relief/teintes tout le terrain | Fonctionnel | 22 buttes marchables, teintes en lobes organiques, tests relief 3/3, carte `evidence/full_visual_finish_20260812/` |
+| 2 — masses boisées | Fonctionnel | 39 arbres à tronc-collision + sous-bois MultiMesh, navmesh re-cuite, dressing 10/10 |
+| 3 — rivière pleine longueur + terrasse pylône | Fonctionnel | roseaux MultiMesh + talus, dressing 10/10 |
+| 4 — POI harmonisés | Fonctionnel | toits village/hameaux en palette, crypte enterrée, falaise talutée ; captures avant/après |
+| 5 — citadelle | Inchangée à dessein | D-052 : le kit Castle est au pas de 1 m, les masses de la citadelle font 10-50 m — l'habillage taluté de la passe 3 reste la bonne échelle |
+| 6 — donjon (agent) | Fonctionnel | 8 espaces habillés, 10 GLB promus, 92 tests verts, captures intérieures |
+| 7 — acteurs | Vérifié en capture | a1-a3 du jeu final de preuves |
+| 8 — VFX | Réduit à l'existant | fumée du camp, orage, foudre déjà en place ; packs particules restés en quarantaine (aucun défaut ciblé à corriger) |
+| 9 — UI (agent) | Fonctionnel | débordement 720p corrigé (775→642 px MESURÉS), 45 tests UI verts, 6 sons CC0 promus |
+
+Verdict d'image : appartient à la revue indépendante de Codex, jamais auto-déclaré.
+
+
 Vocabulaire imposé (§0.2) : `Non commencé` · `Implémenté` (raccordé) ·
 `Fonctionnel` (testé en scène exécutable) · `Validé` (conforme, sans régression) ·
 `Bloqué`. Tout critère non testé est `NON VÉRIFIÉ`, jamais implicitement réussi.
