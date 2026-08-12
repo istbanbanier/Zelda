@@ -2736,11 +2736,15 @@ func _ground_patch_mesh(rng: RandomNumberGenerator, half_length: float,
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for i: int in range(points):
-		# Ordre (centre, suivant, courant) : normale vers +Y, vérifié sur le
-		# produit vectoriel — un éventail retourné serait invisible du ciel.
+		# Ordre (centre, courant, suivant) : la face avant de Godot est
+		# enroulée en HORAIRE vue de face — le premier essai (anti-horaire,
+		# la convention OpenGL) rendait chaque pièce invisible du ciel, et
+		# les tests restaient verts : ils mesurent la géométrie, pas le
+		# rendu. C'est la recapture de la caméra 5 qui l'a montré (ISS-018 :
+		# un test vert n'est pas une image).
 		st.add_vertex(Vector3.ZERO)
-		st.add_vertex(boundary[(i + 1) % points])
 		st.add_vertex(boundary[i])
+		st.add_vertex(boundary[(i + 1) % points])
 	st.generate_normals()
 	st.index()
 	return st.commit()
