@@ -1,0 +1,6 @@
+[
+  {
+    "pas": 3,
+    "note": "Environnement cassé : tous les appels (game_observe, game_wait, game_act) échouent avec des erreurs système 'No such file or directory' pour 'xdotool' et 'import' (ImageMagick). Impossible de voir l'écran ou d'envoyer une entrée. Tentatives multiples, même échec."
+  }
+]

@@ -1,0 +1,22 @@
+[
+  {
+    "pas": 6,
+    "note": "Softlock potentiel : après avoir cliqué \"Nouvelle partie\" dans le menu principal, l'écran de chargement progresse normalement de 0% à 45% en quelques secondes, puis se fige exactement à 45% et reste bloqué pendant au moins 18 secondes sans bouger. Aucun changement visuel. Test en cours pour voir si une entrée clavier débloque la situation."
+  },
+  {
+    "pas": 8,
+    "note": "Le chargement bloqué à 45% s'est finalement débloqué après environ 26 secondes (probablement compilation de shaders au premier lancement, pas un vrai softlock). Vue d'ouverture : héros de dos aux cheveux turquoise, vallée verdoyante, village à gauche, camp/bâtiments marron à droite, citadelle massive au loin avec nuage d'orage et éclair visible au sommet. HUD : 5 cœurs rouges de vie, icône diamant (monnaie ?), en bas à droite \"Épée usée 24/24\" et \"Flèches : 8\". Objectif de session : atteindre le bâtiment (citadelle) et affronter ce qui l'occupe."
+  },
+  {
+    "pas": 44,
+    "note": "Rencontré un objet en chemin vers la citadelle : un socle en pierre surmonté d'un cube jaune pâle lumineux, posé sur une petite plateforme de pierre au milieu de l'herbe haute près d'un étang. La forme est un simple cube sans détail — ressemble à un placeholder visuel (lanterne ? point de sauvegarde ?). Pas encore interagi avec."
+  },
+  {
+    "pas": 50,
+    "note": "Défaut visuel observé près de l'étang devant la citadelle : une grande masse plate vert clair, sans texture ni relief visible, occupant tout le côté droit de l'écran — ressemble à un terrain non fini ou un proxy géométrique laissé en l'état (couleur uniforme, aucun détail, bord net)."
+  },
+  {
+    "pas": 86,
+    "note": "Défaut de combat observé : en attaquant un PNJ hostile au clic gauche à plusieurs reprises, aucun retour visuel clair de dégâts n'apparaît (pas de barre de vie ennemie visible, pas d'étincelle/flash d'impact net, pas de recul évident). L'animation d'attaque du héros se joue mais l'ennemi reste dans une posture accroupie/recul quasi identique d'un coup à l'autre. Ma propre vie a baissé une fois (5->4 cœurs) en tout début d'échange, mais rien depuis. Difficile de savoir si je touche réellement l'ennemi ou si le combat progresse."
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "pas": 5,
+    "note": "Chargement bloqué à 46% pendant au moins 12 secondes après clic sur 'Nouvelle partie'. Barre cyan, texte 'Chargement... 46 %', fond noir. Possible compilation de shaders lente ou blocage."
+  },
+  {
+    "pas": 8,
+    "note": "Jeu chargé après ~28s (bloqué à 46% puis fini d'un coup). Vue de dos du héros, cheveux turquoise, tunique verte/orange. Vallée verdoyante, citadelle au loin avec nuage d'orage et éclair, village/camp à droite avec bâtiments bruns. HUD: 6 coeurs rouges vides en haut à gauche + diamant jaune, en bas à droite 'Épée usée 24/24' et 'Flèches: 8'. Herbe au premier plan très grande par rapport au perso (possible souci d'échelle)."
+  },
+  {
+    "pas": 102,
+    "note": "Fin de session : n'ai pas réussi à engager/gagner un combat dans le budget imparti. Ai trouvé un camp visible (feu, auvent orange, cercle de pierres) mais l'approche finale se fait dans une zone marécageuse (teinte grise à l'écran) où le perso semble ralenti/bloqué à répétition. Plusieurs indices d'ennemi proche (icône épée HUD, barres colorées type vie ennemie) sans jamais de cible réellement engageable au corps à corps ni de lock-on disponible (touche C sans effet visible). Caméra à la souris très inconsistante : parfois tourne, parfois semble totalement figée sur les mêmes montagnes en arrière-plan pendant plusieurs actions consécutives malgré mouse_delta important."
+  }
+]

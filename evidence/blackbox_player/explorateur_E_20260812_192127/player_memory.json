@@ -1,0 +1,50 @@
+[
+  {
+    "pas": 7,
+    "note": "Départ vallée : héros vu de dos en tunique verte + capuche + arc dos, très proche visuellement d'un personnage Zelda connu. Citadelle au centre avec nuage noir étrange au-dessus (forme peu lisible, presque un blob). Camp à droite (bâtiments bruns), maison isolée à gauche, rivière serpentant au centre, montagnes enneigées en fond. Chargement initial bloqué ~13s à 45% avant d'afficher la scène."
+  },
+  {
+    "pas": 8,
+    "note": "Anomalie visuelle : une petite silhouette humanoïde bleu clair/blanche flotte au-dessus de la citadelle, entre le nuage noir et le sommet de la tour (position en \"T\" ou en vol). Ressemble à un éclair mal formé ou un placeholder non fini. À vérifier de plus près."
+  },
+  {
+    "pas": 17,
+    "note": "DÉFAUT VISUEL : je me tiens debout sur la selle turquoise du cheval (bug de collision, perso monté malgré aucune interaction confirmée). À droite, grand triangle plat vert foncé uni, sans texture ni détail — ressemble à une face interne de mesh de terrain non finie / un bord de chunk qui montre l'intérieur du volume. Visible nettement à ce point de vue."
+  },
+  {
+    "pas": 20,
+    "note": "Confirmé : le héros reste debout SUR LE DOS du cheval en marchant (déplacement de plusieurs mètres avec la forme turquoise/crème toujours sous les pieds) — bug de collision/scale, pas une vraie mécanique de monte animée. Pose du perso identique à la marche au sol. Message contextuel persistant \"De la fumée s'élève au loin — un campement ?\". Un petit objet rouge (baie/fruit ?) visible au sol à gauche, chemin de terre visible en contrebas."
+  },
+  {
+    "pas": 28,
+    "note": "Résolu : E fait descendre du cheval (toggle monter/descendre confirmé). Mais aucune animation de montée/descente, aucun galop, pas de contrôle spécifique en selle observé — juste une téléportation de la pose du perso sur le dos."
+  },
+  {
+    "pas": 30,
+    "note": "Caméra libre à 360° autour du perso, y compris vue rapprochée du visage. Détails observés : capuche vert foncé, visage simple/cartoonesque peu détaillé, épaulettes pointues grises (armure), tunique verte avec lanières croisées rouge/brun, gants avec plaques métalliques. Style cohérent avec la description \"painterly stylisé\" mais le visage manque clairement de finition (traits plats, pas d'expression)."
+  },
+  {
+    "pas": 63,
+    "note": "Défaut récurrent : grand triangle/plan vert foncé plat sans texture apparaissant en bord d'écran à plusieurs reprises pendant les déplacements en hauteur — semble être une face de collision ou de terrain visible depuis l'intérieur, pas un rendu fini. Camp repéré avec feu de cuisine et 2 PNJ/ennemis immobiles debout à proximité."
+  },
+  {
+    "pas": 73,
+    "note": "Nouveau lieu découvert : un village avec maisons à toits pointus, une tourelle à toit conique rouge, un portail en pierre à colonnes, une mare turquoise brillante. Beaucoup plus détaillé visuellement que la zone de camp précédente (formes de toit variées, architecture distincte). Situé à l'opposé/à côté du camp initial vu, accessible en tournant la caméra vers la droite depuis la remise à bois."
+  },
+  {
+    "pas": 75,
+    "note": "Bug de clipping : le feuillage d'un arbre proche se superpose visuellement sur la tête/dos du héros pendant qu'il marche à côté, comme si l'arbre \"poussait\" sur son dos. Clipping net entre personnage et végétation."
+  },
+  {
+    "pas": 103,
+    "note": "Nouveau défaut visuel : grand mur/face gris uni sans texture ni détail à droite de l'écran après un déplacement de caméra brusque, semble être une face de collision du terrain vue depuis l'intérieur (comme les triangles verts vus plus tôt, mais ici en gris). Montagnes en arrière-plan avec ciel bleu clair visibles au loin — jolie silhouette de montagnes mais uniformément grises/plates (style géométrique)."
+  },
+  {
+    "pas": 104,
+    "note": "Recoin caché sous le pont : petite mare turquoise avec décor sous l'eau — un objet orange type corail/champignon lumineux, pierres violettes, un petit coffre cubique gris posé au fond, lianes suspendues au-dessus. Détail soigné, semble être un point d'intérêt caché intentionnel plutôt qu'un vide."
+  },
+  {
+    "pas": 107,
+    "note": "Fin de session d'exploration. Zones visitées : vallée d'ouverture (citadelle + nuage), plateau/hameau perché avec cheval, pylône cyan, camp avec feu et 2 PNJ/ennemis statiques, village séparé (maisons à toits pointus + tourelle + grand portail à colonnes de pierre), recoin caché sous un pont avec mare turquoise et créature blob à yeux orange. Défauts récurrents notés : faces de terrain/collision plates sans texture (vert foncé ou gris) visibles en bordure d'écran lors de déplacements en hauteur ; clipping feuillage/personnage ; bug de monture (perso debout sur le dos du cheval, sans animation dédiée, E = toggle monter/descendre)."
+  }
+]
