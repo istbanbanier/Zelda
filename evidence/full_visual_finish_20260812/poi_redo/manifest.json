@@ -1,0 +1,161 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "9e1a8fe1c33a8183c9bfb0c46c7db2b898b07206",
+  "engine": "4.7.1-stable (official)",
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "shots": [
+    {
+      "fov": 60.0,
+      "from": [
+        124.0,
+        7.0,
+        26.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi_redo/02_logging_hamlet.png",
+      "look": [
+        110.0,
+        3.5,
+        40.0
+      ],
+      "name": "02_logging_hamlet"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        32.0,
+        6.0,
+        92.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi_redo/11_forest_shrine.png",
+      "look": [
+        18.0,
+        3.0,
+        102.0
+      ],
+      "name": "11_forest_shrine"
+    },
+    {
+      "fov": 62.0,
+      "from": [
+        -120.0,
+        6.0,
+        110.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi_redo/15_hidden_passage.png",
+      "look": [
+        -134.0,
+        3.0,
+        122.0
+      ],
+      "name": "15_hidden_passage"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        -30.0,
+        4.0,
+        22.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi_redo/20_stone_bridge.png",
+      "look": [
+        -10.0,
+        -0.5,
+        9.0
+      ],
+      "name": "20_stone_bridge"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        148.0,
+        14.0,
+        62.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi_redo/21_overlook_summit.png",
+      "look": [
+        168.0,
+        8.0,
+        40.0
+      ],
+      "name": "21_overlook_summit"
+    },
+    {
+      "fov": 62.0,
+      "from": [
+        68.0,
+        14.0,
+        -76.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi_redo/24_wind_gorge.png",
+      "look": [
+        68.0,
+        4.0,
+        -98.0
+      ],
+      "name": "24_wind_gorge"
+    },
+    {
+      "fov": 62.0,
+      "from": [
+        18.0,
+        10.0,
+        -130.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi_redo/25_storm_grove.png",
+      "look": [
+        -8.0,
+        4.0,
+        -152.0
+      ],
+      "name": "25_storm_grove"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        108.0,
+        9.0,
+        168.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi_redo/31_hunter_range.png",
+      "look": [
+        128.0,
+        3.0,
+        150.0
+      ],
+      "name": "31_hunter_range"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        13.0,
+        34.6,
+        148.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi_redo/a2_monture.png",
+      "look": [
+        5.0,
+        32.6,
+        140.0
+      ],
+      "name": "a2_monture"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        0.0,
+        34.6,
+        154.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi_redo/a3_heros_dos.png",
+      "look": [
+        0.0,
+        32.3,
+        140.0
+      ],
+      "name": "a3_heros_dos"
+    }
+  ],
+  "size": "1280x720"
+}

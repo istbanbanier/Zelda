@@ -59,8 +59,8 @@ de gris (§30.1).
 ## Tableau final par lieu (revue des 39 captures de `poi/`)
 
 Statuts : ✓ = identité lisible en capture · ≈ = lisible avec réserve
-nommée · ✗ = cadrage raté repris dans `poi_shots_redo.json` (le lieu
-lui-même n'est pas en cause sauf mention).
+nommée · ✗ = cadrage raté au premier jet — REPRIS dans `poi_redo/` (10 plans,
+manifeste propre) ; le lieu lui-même n'est pas en cause sauf mention.
 
 | # | Lieu | État | Réserve honnête |
 |---|---|---|---|
@@ -97,7 +97,7 @@ lui-même n'est pas en cause sauf mention).
 | 31 | Territoire du chasseur | ✗→repris | buisson devant l'objectif |
 | g1-g5 | Vues générales 4 coins + centre | ✓ | g1 : face ouest du plateau encore une dalle sombre |
 | a1 | Camp vivant (acteurs) | ✓ | deux pillards au feu |
-| a2-a3 | Monture, héros de dos | ✗→repris | sujets hors cadre au premier jet |
+| a2-a3 | Monture, héros de dos | ✓ (poi_redo) | monture cadrée ; héros ivoire/charbon/turquoise APRÈS ISS-048 — plus de lecture « archer vert » |
 
 ## Défauts réels restants (pour la prochaine passe — AUCUN n'est masqué)
 
