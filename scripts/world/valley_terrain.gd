@@ -860,6 +860,16 @@ func _snap_dressing_to_ground() -> void:
 			# leur clairance dépasse celle de « Paths ».
 			var clearance: float = TONGUE_LIFT \
 				if String(piece.name).begins_with("PathGrass") else zone_clearance
+			# ANTI-COUTURE (passe 3) : deux pièces consécutives se chevauchent
+			# (×1,28) et se posaient au même millimètre — coplanaires, elles
+			# scintillent là où leurs teintes diffèrent. Le rang de la pièce
+			# (suffixe _NN du nom) alterne un étagement de 4 mm : deux
+			# voisines ne partagent plus jamais leur plan. Bornes intactes :
+			# terre 20-24 mm (le test admet 5-80), épaulements 8-12 < terre,
+			# langues 32-36 > terre.
+			var rank: int = String(piece.name).get_slice("_", 1).to_int() \
+				if String(piece.name).contains("_") else 0
+			clearance += 0.004 * float(rank % 2)
 			piece.global_position = Vector3(piece.global_position.x,
 				(hit["position"] as Vector3).y + clearance, piece.global_position.z)
 
@@ -2247,9 +2257,11 @@ func _build_paths() -> void:
 			# le test d'ISS-039 le désigne par « PathStrip00 ».
 			quad.name = "PathStrip%02d" % i if j == 0 \
 				else "PathStrip%02d_%02d" % [i, j]
-			var plane: PlaneMesh = PlaneMesh.new()
-			plane.size = Vector2(piece_length, width)
-			quad.mesh = plane
+			# PASSE 3 (défaut n°2) : un PlaneMesh est un RECTANGLE — quatre
+			# coins droits que la capture montre tels quels. La pièce devient
+			# un polygone irrégulier : plus aucun bord rectiligne.
+			quad.mesh = _ground_patch_mesh(rng, piece_length * 0.5,
+				width * 0.5, 9)
 			quad.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			quad.material_override = earth_tints[(i + j) % 3]
 			quad.position = Vector3(centre.x, ground + PATH_CLEARANCE, centre.y)
@@ -2260,12 +2272,12 @@ func _build_paths() -> void:
 				+ rng.randf_range(-0.04, 0.04)
 			paths.add_child(quad)
 			# ÉPAULEMENT : l'herbe compressée déborde du tronçon — c'est la
-			# transition terre → prairie, pas un bord net de dalle.
+			# transition terre → prairie, pas un bord net de dalle. Même
+			# éventail irrégulier, plus ample et plus mou (8 sommets).
 			var shoulder: MeshInstance3D = MeshInstance3D.new()
 			shoulder.name = "PathEdge%02d_%02d" % [i, j]
-			var apron: PlaneMesh = PlaneMesh.new()
-			apron.size = Vector2(piece_length * 1.30, width * 1.85)
-			shoulder.mesh = apron
+			shoulder.mesh = _ground_patch_mesh(rng, piece_length * 0.65,
+				width * 0.925, 8)
 			shoulder.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			shoulder.material_override = shoulder_material
 			shoulder.position = Vector3(centre.x, ground, centre.y)
@@ -2277,10 +2289,8 @@ func _build_paths() -> void:
 			if j % 2 == 0:
 				var tongue: MeshInstance3D = MeshInstance3D.new()
 				tongue.name = "PathGrass%02d_%02d" % [i, j]
-				var blob: PlaneMesh = PlaneMesh.new()
-				blob.size = Vector2(rng.randf_range(1.2, 2.4),
-					rng.randf_range(1.0, 1.8))
-				tongue.mesh = blob
+				tongue.mesh = _ground_patch_mesh(rng,
+					rng.randf_range(0.6, 1.2), rng.randf_range(0.5, 0.9), 7)
 				tongue.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 				tongue.material_override = tongue_material
 				var bite: float = (1.0 if (i + j) % 4 < 2 else -1.0) \
@@ -2706,6 +2716,34 @@ func _visual_prism(prism_name: String, parent: Node3D, center: Vector3,
 ## ---------------------------------------------------------------------------
 ## Briques de construction
 ## ---------------------------------------------------------------------------
+
+## Pièce de sol IRRÉGULIÈRE (passe 3, V-005/défaut n°2) : éventail horizontal
+## de `points` sommets de bord dont les rayons bruitent autour d'une ellipse
+## (demi-longueur × demi-largeur). Aucun bord rectiligne, aucun coin — la
+## forme qu'un PlaneMesh ne peut pas avoir, et celle que le test des chemins
+## épingle (≥ 8 sommets de bord). Le mesh vit dans le plan y = 0 local ; la
+## passe de repose le plaque au sol comme n'importe quel décalque. Le RNG
+## reçu est celui du segment : même seed, même contour (§21.8).
+func _ground_patch_mesh(rng: RandomNumberGenerator, half_length: float,
+		half_width: float, points: int = 9) -> ArrayMesh:
+	var boundary: PackedVector3Array = PackedVector3Array()
+	for i: int in range(points):
+		var angle: float = TAU * float(i) / float(points) \
+			+ rng.randf_range(-0.14, 0.14)
+		var reach: float = rng.randf_range(0.72, 1.24)
+		boundary.append(Vector3(cos(angle) * half_length * reach, 0.0,
+			sin(angle) * half_width * reach))
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for i: int in range(points):
+		# Ordre (centre, suivant, courant) : normale vers +Y, vérifié sur le
+		# produit vectoriel — un éventail retourné serait invisible du ciel.
+		st.add_vertex(Vector3.ZERO)
+		st.add_vertex(boundary[(i + 1) % points])
+		st.add_vertex(boundary[i])
+	st.generate_normals()
+	st.index()
+	return st.commit()
 
 ## Tronc de pyramide PLEIN, décor sans collision : base posée à `base_center`,
 ## sommet rétréci à `top_size` et décalé de `top_shift` (l'asymétrie de §2.2 —

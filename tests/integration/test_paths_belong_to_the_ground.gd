@@ -22,10 +22,22 @@
 ## Les ÉPAULEMENTS (herbe compressée sous les bords) et les pierres de bord
 ## vivent dans leur propre zone `PathEdges`, plaquée plus bas que les quads
 ## de terre pour que les deux couches ne se battent jamais.
+##
+## PASSE 3 (2026-08-12, défaut n°2 de la revue : « aucune plaque
+## rectangulaire, couture ou bande posée »). Les tronçons étaient des
+## `PlaneMesh` — des RECTANGLES : quatre coins droits, quatre bords
+## rectilignes, et la capture les montre tels quels. Un chemin de terre n'a
+## pas de coins. Chaque pièce devient un POLYGONE IRRÉGULIER (éventail de
+## ≥ 8 sommets de bord, rayons bruités autour d'une ellipse) : plus aucun
+## bord rectiligne, plus aucun coin. Le test épingle désormais la FORME —
+## l'intention d'origine (tronçons courts, largeur qui respire, orientations
+## multiples, chaque pièce au sol) est inchangée et re-vérifiée sur l'AABB.
 extends GateTestCase
 
 const VALLEY: String = "res://scenes/world/valley/ValleyWorld.tscn"
 const MAX_PIECE_LENGTH_M: float = 12.0
+## Un rectangle a 4 sommets de bord ; l'éventail irrégulier en a au moins 8.
+const MIN_BOUNDARY_POINTS: int = 8
 
 
 func _tree() -> SceneTree:
@@ -62,17 +74,28 @@ func test_no_path_piece_is_a_long_uniform_band() -> void:
 	var yaws: Dictionary[int, Dictionary] = {}
 	for piece: Node in pieces:
 		var quad: MeshInstance3D = piece as MeshInstance3D
-		var plane: PlaneMesh = quad.mesh as PlaneMesh
-		check_not_null(plane, "%s reste un plan sans tranche" % quad.name)
-		if plane == null:
-			continue
-		check(plane.size.x <= MAX_PIECE_LENGTH_M,
+		# LA FORME (passe 3) : plus jamais un rectangle. Un PlaneMesh/QuadMesh
+		# est une plaque par construction ; l'éventail irrégulier est un
+		# ArrayMesh d'au moins MIN_BOUNDARY_POINTS sommets de bord.
+		check(not (quad.mesh is PlaneMesh) and not (quad.mesh is QuadMesh)
+			and not (quad.mesh is BoxMesh),
+			"%s n'est pas une plaque rectangulaire (%s)"
+				% [quad.name, quad.mesh.get_class()])
+		var boundary: int = _boundary_point_count(quad.mesh)
+		check(boundary >= MIN_BOUNDARY_POINTS,
+			"%s a un contour irrégulier (%d sommets de bord ≥ %d, rectangle : 4)"
+				% [quad.name, boundary, MIN_BOUNDARY_POINTS])
+		# L'INTENTION d'origine, re-mesurée sur l'AABB locale : tronçon court,
+		# largeur qui respire, orientation qui dévie.
+		var aabb: AABB = quad.get_aabb()
+		var length: float = maxf(aabb.size.x, aabb.size.z)
+		var width: float = minf(aabb.size.x, aabb.size.z)
+		check(length <= MAX_PIECE_LENGTH_M,
 			"%s fait %.1f m ≤ 12 (la bande d'un seul tenant faisait 43 m)"
-				% [quad.name, plane.size.x])
+				% [quad.name, length])
 		var segment: int = _segment_of(String(quad.name))
 		var seen: Vector2 = widths.get(segment, Vector2(INF, -INF))
-		widths[segment] = Vector2(minf(seen.x, plane.size.y),
-			maxf(seen.y, plane.size.y))
+		widths[segment] = Vector2(minf(seen.x, width), maxf(seen.y, width))
 		var segment_yaws: Dictionary = yaws.get(segment, {})
 		segment_yaws[snappedf(quad.rotation.y, 0.017)] = true   # classes de ~1°
 		yaws[segment] = segment_yaws
@@ -85,6 +108,22 @@ func test_no_path_piece_is_a_long_uniform_band() -> void:
 			"segment %02d : au moins deux orientations (%d)"
 				% [segment, (yaws[segment] as Dictionary).size()])
 	await _cleanup(valley)
+
+
+## Sommets de BORD d'une pièce de sol : les positions uniques du mesh, moins
+## le centre de l'éventail (le sommet le plus proche du centroïde XZ). Un
+## PlaneMesh rendrait 4 ; l'éventail irrégulier en rend ≥ 8.
+func _boundary_point_count(mesh: Mesh) -> int:
+	if mesh == null or mesh.get_surface_count() == 0:
+		return 0
+	var arrays: Array = mesh.surface_get_arrays(0)
+	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var unique: Dictionary = {}
+	for vertex: Vector3 in vertices:
+		unique[Vector3(snappedf(vertex.x, 0.001), snappedf(vertex.y, 0.001),
+			snappedf(vertex.z, 0.001))] = true
+	# L'éventail porte un sommet central : on le retire du compte de bord.
+	return maxi(unique.size() - 1, 0)
 
 
 func test_every_path_piece_hugs_the_real_ground_under_it() -> void:
