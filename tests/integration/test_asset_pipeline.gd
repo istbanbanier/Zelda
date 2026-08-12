@@ -36,8 +36,15 @@ func test_the_registry_resolves_delivered_assets_and_declines_missing_ones() -> 
 		"le héros LIVRÉ (ART-Q1) résout")
 	check(AssetRegistry.resolve(&"char.raider_red") != null,
 		"le pillard LIVRÉ (ART-Q2) résout")
-	check(AssetRegistry.resolve(&"prop.tent") == null,
-		"l'asset EN ATTENTE (tente, absente des packs) replie sur null")
+	# LOT D (2026-08-11) : `prop.tent` était l'exemple d'asset EN ATTENTE. Il
+	# est LIVRÉ — `AwningTent`, création originale du projet — parce que
+	# l'audit en faisait un défaut P0 : le camp ne pouvait pas franchir son
+	# gate « lieu habité » avec un repli visible. L'assertion inverse serait
+	# devenue un test qui protège l'absence d'un asset.
+	check(AssetRegistry.resolve(&"prop.tent") != null,
+		"la tente LIVRÉE (lot D) résout")
+	check(AssetRegistry.resolve(&"prop.campfire") != null,
+		"le foyer LIVRÉ (lot D) résout")
 	check(AssetRegistry.resolve(&"id.inconnu.xyz") == null,
 		"un id inconnu rend null sans crash")
 
@@ -128,7 +135,12 @@ func test_the_character_visual_falls_back_cleanly_when_the_model_is_missing() ->
 	## ne casse, rien ne s'affiche, le socket est nul (le pivot procédural du
 	## contrôleur reste l'attache), et validate() DIT l'absence.
 	var visual: CharacterVisual = CharacterVisual.new()
-	visual.model_id = &"prop.tent"   # id connu, fichier absent (aucune tente)
+	# LOT D : ce test se servait de `prop.tent` comme « id connu, fichier
+	# absent ». Tous les ids du catalogue ont désormais leur fichier — il n'y a
+	# plus d'asset en attente pour jouer ce rôle. Le contrat éprouvé ici ne
+	# change pas d'un iota : il porte sur ce que fait `CharacterVisual` quand
+	# `AssetRegistry.resolve()` rend `null`, quelle qu'en soit la raison.
+	visual.model_id = &"char.pas_encore_modelise"
 	visual.anim_set = CharacterAnimSet.new()
 	_tree().root.add_child(visual)
 	await _settle(1)

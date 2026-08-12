@@ -8,6 +8,54 @@ Aucun `S0`/`S1` ouvert n'est admis pour un build candidat.
 
 ---
 
+## ISS-045 — Le terrain jouable est plat : deux dalles portent 80 % du monde · `S3` · OUVERT
+
+- **Build** : `6a996a5` et suivants (défaut ANTÉRIEUR, relevé par l'audit du 2026-08-11).
+- **Étapes** : sondage physique 32×32, un rayon vertical tous les 16 m
+  (`outils_audit/probe_valley_grid.gd` du pack d'audit).
+- **Observé** : **991 des 1 024 points ont une pente < 5°** et **815 tombent sur
+  `PlainNorth` ou `PlainSouth`** — deux dalles de 512 × 240 et 512 × 260 posées
+  à y = 2. Reliefs et landmarks sont POSÉS dessus.
+- **Impact** : la vallée n'a ni creux, ni bosse, ni chemin naturel ; les trois
+  plans de §1.3 doivent être portés par la couleur seule, faute de volumes.
+- **Pourquoi ce n'est pas corrigé** : déplacer le sol déplacerait ~4 000 objets
+  posés à des cotes absolues par une dizaine de scripts. C'est le changement le
+  plus risqué du dépôt et il n'a pas de filet.
+- **Filet à construire AVANT d'y toucher** : généraliser
+  `test_opening_dressing_rests_on_ground.gd` à toutes les zones, pour qu'un
+  objet enterré ou suspendu rougisse au lieu de se découvrir en capture.
+- **Test de régression** : à écrire avec le correctif.
+
+## ISS-046 — Les chemins sont des bandes posées, pas des chemins · `S3` · OUVERT
+
+- **Build** : `6a996a5` et suivants.
+- **Étapes** : `godot --headless --path . --script tools/godot/probe_frame_masses.gd
+  -- --camera=VistaCamera_Hero01`
+- **Observé** : `PathStrip00` occupe **22,2 %** du cadre d'ouverture. Les dix
+  segments de `_build_paths()` sont des `PlaneMesh` **sans épaisseur** flottant
+  de `PATH_CLEARANCE` au-dessus du sol.
+- **Impact** : critère explicite du gate de la tranche verticale — « chemin lu
+  comme une bande posée sur l'herbe ».
+- **Atténué le 2026-08-11** : `COL_PATH` descendu de 0,62/0,51/0,34 à
+  0,43/0,35/0,23 — le sentier n'est plus l'objet le PLUS clair du cadre. La
+  forme, elle, n'a pas changé.
+- **Correction attendue** : faire appartenir le chemin au sol (compression
+  d'herbe, terre, interruption des fleurs, ruptures de niveau).
+
+## ISS-047 — La citadelle reste un empilement de boîtes alignées sur les axes · `S3` · OUVERT
+
+- **Build** : `6a996a5` et suivants.
+- **Observé** : `CitadelProxy` est fait de `_box_in` axés sur le monde ;
+  §2.4 demande « 10 % vides, arches et ruptures » et moins de vingt grandes
+  formes lisibles à 300–420 m. Créneaux et toitures cassent la frontalité, la
+  MASSE ne la casse pas.
+- **Atténué le 2026-08-11** : le lot A l'a détachée en valeur des montagnes,
+  qui la mangeaient (« focales fusionnées », §30.2).
+- **Contrainte à respecter** : la rotation d'ensemble a déjà été tentée et
+  RETIRÉE — elle faisait pivoter les masses porteuses de collision et rendait
+  l'anneau montagneux franchissable pour la sonde PT-D1-09. Le décor sans
+  collision peut tourner ; le porteur, non.
+
 ## ISS-001 — Binaires officiels Godot et Blender injoignables · `S2` · OUVERT (contourné)
 
 - **Build** : Phase 0, environnement d'exécution conteneurisé.
@@ -994,3 +1042,41 @@ Le point 3 est le plus parlant : les deux tests fautifs dépendent d'un délai.
   soit ces cubes ne sont pas des fleurs. **Identifier le nœud d'abord** — la
   méthode qui a tranché sur ISS-037 est la bonne : repeindre d'une couleur
   impossible, recapturer, mesurer.
+
+## ISS-041 — Le pied de la colonne de fumée se soulève de 22 cm à chaque balancement · `S4` · OUVERT
+
+- **Vu** : lecture de `scripts/world/camp_smoke.gd`, confirmé par le calcul.
+- **Observé** : la compensation de pivot du cisaillement est **juste en X et
+  fausse en Y**. Pour ancrer le pied il faut `_base_height - h(1 - cos(lean))` ;
+  le code écrit `+`. Mesuré à `SWAY_DEG = 6` et `h = 20` : le pied dérive de
+  **+0,219 m**, alors qu'avec le signe corrigé il tient à **0,000 m**. En X la
+  dérive est déjà nulle — ce bras-là est bon, ne pas y toucher.
+- **Attendu** : le commentaire du fichier l'énonce lui-même — « le PIED reste
+  ancré au feu, la tête dérive comme poussée par le vent ». Un pied qui monte et
+  descend deux fois par cycle trahit le proxy, exactement ce que l'auteur
+  voulait éviter.
+- **Ce n'est PAS la flamme détachée** du rapport de jeu du 2026-08-07 (« un cône
+  blanc/bleu à ~3 m à droite du foyer, avec sa propre ombre, qui disparaît quand
+  on s'approche »). Vérifié : la compensation horizontale est exacte, donc la
+  fumée ne dérive pas latéralement. Cette flamme-là reste **non identifiée** et
+  demande une capture au camp, pas une lecture de code.
+- **Piste** : corriger le signe, avec un test qui échoue d'abord — sonder la
+  position mondiale du sommet de base sur un cycle complet.
+
+## ISS-042 — `probe_world_boxes.gd` inverse le signe sur une pièce ENTERRÉE · `S3` · OUVERT
+
+- **Vu** : balayage du 2026-08-10 sur la vallée entière.
+- **Observé** : la sonde tire son rayon depuis 40 cm sous la pièce — départ
+  documenté et justifié pour les pièces posées. Mais pour une pièce **enterrée**
+  ce départ est à l'intérieur du terrain : le rayon en sort sans le voir et
+  rapporte le sol d'en dessous. Elle a donc annoncé « `DressZoneCrest` flotte à
+  22 m » là où la vérité mesurée était « enterrée de 8 m », et a signalé **le
+  joueur lui-même** comme flottant de 22 m alors qu'il se tient debout sur la
+  crête.
+- **Conséquence** : ses 507 candidates ne se lisent pas comme une liste de
+  défauts. Le joueur flottant est le signal qui doit faire douter du relevé.
+- **Contourné, pas corrigé** :
+  `tests/integration/test_opening_dressing_rests_on_ground.gd` tire de +200 m et
+  exclut les corps du décor lui-même ; c'est lui qui a donné les vraies cotes.
+- **Piste** : ajouter à la sonde un second tir venu du ciel et rapporter
+  l'écart SIGNÉ (enterré / posé / flottant) au lieu d'un seul mot « flotte ».

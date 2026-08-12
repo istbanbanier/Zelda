@@ -1,0 +1,18 @@
+{
+  "commit": "939ae30ef8c3839ff5eee6e33dfbce03bfcaea26",
+  "display_server": "X11",
+  "distinct_colors_sampled": 2798,
+  "engine_version": "4.7.1-stable (official)",
+  "frames_waited": 40,
+  "height": 1080,
+  "label": "vslice_06_approche_citadelle",
+  "luma_mean": 0.6513,
+  "luma_stddev": 0.2278,
+  "png": "evidence/vertical_slice_20260811/avant/06_approche_citadelle.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "timestamp_utc": "2026-08-11 08:23:41",
+  "width": 1920
+}

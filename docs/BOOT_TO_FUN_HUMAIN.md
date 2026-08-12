@@ -70,10 +70,10 @@ la colline ». Ça suffit à retrouver le lieu exact.
 Devant la grande porte du fond de la citadelle, **placez-vous bien en face, au
 milieu**, et appuyez sur **E**.
 
-Un test a trouvé qu'à cet endroit exact l'invite ne répond pas : une veine
-lumineuse décorative posée devant le battant coupe la ligne de vue. Un pas de
-côté et la porte s'ouvre. Dites-moi simplement si vous constatez la même chose —
-c'est le genre de détail qui fait croire qu'une touche ne marche pas.
+Un test avait trouvé qu'à cet endroit exact l'invite ne répondait pas : une
+veine lumineuse décorative posée devant le battant coupait la ligne de vue, et
+il fallait un pas de côté. C'est corrigé — la veine est toujours là, elle n'est
+plus un obstacle. Dites-moi si la porte s'ouvre bien du premier coup, au milieu.
 
 ## 5. Le mode développement, si vous voulez
 

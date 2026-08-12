@@ -67,6 +67,29 @@ static func grain() -> NoiseTexture2D:
 	return _grain
 
 
+## Un VOILE n'est pas une surface à peindre.
+##
+## LE DÉFAUT CORRIGÉ, mesuré le 2026-08-11. La colonne de fumée du camp porte
+## depuis le « défaut n°10 » un albédo à alpha 0,22 — « un voile, plus une
+## masse » — précisément parce qu'à 0,92 elle était « un pilier de béton opaque
+## de 40 m masquant citadelle et falaise, et occupant un quart de l'écran au
+## camp ». La capture du camp la montrait de nouveau blanche et pleine.
+##
+## Cause : la recette la repeignait. Elle refusait déjà les matériaux
+## ÉMISSIFS, parce que ce sont des télégraphes de jeu ; elle ignorait la
+## transparence, qui est exactement le même genre de décision — rendre opaque
+## ce que l'auteur a voulu translucide change ce que le joueur peut VOIR, pas
+## seulement la teinte. Ce que le réglage d'alpha protégeait, la peinture le
+## défaisait, et le réglage était intact dans le fichier de scène : c'est le
+## pire cas, celui où la lecture du code donne raison à un défaut visible.
+static func is_translucent(material: BaseMaterial3D) -> bool:
+	if material == null:
+		return false
+	if material.transparency != BaseMaterial3D.TRANSPARENCY_DISABLED:
+		return true
+	return material.albedo_color.a < 0.99
+
+
 ## Un matériau émet-il VRAIMENT ? (énergie × canal le plus fort)
 static func is_emissive(material: BaseMaterial3D) -> bool:
 	if material == null or not material.emission_enabled:
@@ -230,7 +253,8 @@ static func paint_world(root: Node, skip: Array[String] = [],
 		if mesh.material_override != null:
 			var override: StandardMaterial3D = \
 				mesh.material_override as StandardMaterial3D
-			if override != null and not is_emissive(override):
+			if override != null and not is_emissive(override) \
+					and not is_translucent(override):
 				mesh.material_override = _shared(cache, override,
 					String(mesh.name), with_surfaces)
 				painted += 1
@@ -240,7 +264,7 @@ static func paint_world(root: Node, skip: Array[String] = [],
 				continue
 			var source: StandardMaterial3D = \
 				mesh.get_active_material(s) as StandardMaterial3D
-			if source == null or is_emissive(source):
+			if source == null or is_emissive(source) or is_translucent(source):
 				continue
 			mesh.set_surface_override_material(s,
 				_shared(cache, source, String(mesh.name), with_surfaces))
@@ -269,13 +293,34 @@ static func _shared(cache: Dictionary[String, ShaderMaterial],
 	return material
 
 
+## Exemption PAR CONSTRUCTION des porteurs de sol.
+##
+## LE DÉFAUT CORRIGÉ, mesuré et non supposé : l'exemption des sols était une
+## LISTE DE NOMS tenue à la main dans `valley_world.gd`. Elle citait douze
+## dalles et oubliait TOUTES les rampes — `SpawnSlope`, `DescentA/B/C`,
+## `CampExit`, `PylonRamp`, les quatre berges de rivière et surtout
+## `DungeonRamp`, la rampe processionnelle de la citadelle.
+##
+## Conséquence à l'écran, prouvée par repeinture en couleur impossible
+## (la méthode de `tools/CLAUDE.md`) puis recapture : la rampe de pierre
+## rendait en VERT VIF — 140, 218, 82 — et occupait **55 % du cadre** de la
+## caméra d'approche de la citadelle. Un tapis vert agrafé sur une falaise
+## brune. Avec l'exemption, le même pixel rend 221, 176, 126 : de la pierre.
+##
+## Une liste de noms ne peut pas ne pas dériver : elle est écrite ailleurs que
+## le code qui crée les nœuds, et rien ne relie les deux. Le groupe, lui, est
+## posé par `_slab()` et `_ramp()` eux-mêmes — un porteur de sol qui n'existe
+## pas encore le sera aussi.
+const GROUND_CARRIER_GROUP: StringName = &"terrain_ground"
+
+
 static func _is_skipped(node: Node, root: Node,
 		skip: Array[String]) -> bool:
-	if skip.is_empty():
-		return false
 	var walker: Node = node
 	while walker != null and walker != root:
-		if String(walker.name) in skip:
+		if walker.is_in_group(GROUND_CARRIER_GROUP):
+			return true
+		if not skip.is_empty() and String(walker.name) in skip:
 			return true
 		walker = walker.get_parent()
 	return false

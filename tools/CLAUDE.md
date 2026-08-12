@@ -26,6 +26,18 @@ Corollaire mesuré : `BLOCKERS` est consommé **au début** de `validate_release
 Y ajouter une entrée plus bas ne l'affiche nulle part — porter le blocage jusqu'au
 verdict par une variable dédiée (voir `BANDS_BLOCKED`).
 
+## Deux suites concurrentes fabriquent des échecs de sauvegarde
+
+Le 2026-08-11 : une suite tuée par `pkill` a laissé un godot survivant
+(3 processus vivants 1 s après le kill — `pkill` n'attend pas), qui a continué
+pendant que la suite suivante démarrait. Les deux partageaient `user://saves`
+et le même log : 8 échecs de sauvegarde FABRIQUÉS, une ligne coupée en plein
+mot, deux lignes `=== RÉSULTAT`. Les mêmes tests passaient 6/6 isolément.
+
+`validate_fast.sh` sort désormais en 3 (BLOQUÉ) si `pgrep -f test_runner.gd`
+trouve un runner. Après un kill, toujours VÉRIFIER la mort réelle avant de
+relancer — et se méfier d'un verdict rouge dont le journal porte deux résumés.
+
 ## Une capture vient d'un arbre COMMITTÉ
 
 Le manifeste doit porter `repo_dirty: false` et le hash du commit prouvé. Ordre :

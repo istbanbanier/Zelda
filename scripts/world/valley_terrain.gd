@@ -20,16 +20,42 @@ extends Node3D
 const BASE_Y: float = -8.0
 
 ## Palette §3.4, en aplats graybox.
+##
+## ---------------------------------------------------------------------------
+## LOT A (2026-08-11) — LE SOL RENDAIT PLUS CLAIR QUE LE CIEL, ET ÇA SE MESURE
+##
+## `tools/check_value_bands.py` sur la capture de référence du commit audité
+## (`evidence/vslice/baseline/01_vista.png`) sort en **code 1** :
+##
+##     sol p95 = 73 %  ≥  ciel p50 = 70 %      -> VIOLATION §1.5
+##
+## Et le paquet de revue mesure ce que le niveau de gris montre à l'œil :
+## tiers HAUT p50 = 65,6 %, tiers MILIEU p50 = 67,5 % — **1,9 point d'écart**.
+## Trois plans distincts (§1.3) n'existent pas : ciel, montagnes, citadelle et
+## plaine tiennent tous dans la même bande claire. Aucune remodélisation ne
+## répare ça — une masse mieux découpée à la même valeur reste invisible.
+##
+## Les constantes ci-dessous descendent donc d'environ un cinquième EN MOYENNE,
+## mais leur ÉCART interne augmente : le défaut n'était pas seulement « trop
+## clair », il était « trop uniforme ». `test_phase_h_silhouettes` mesure
+## l'écart-type de la texture de sol générée (≥ 0,06) — l'élargissement le
+## sert au lieu de le menacer.
+##
+## Rappel de `scripts/CLAUDE.md` : ces nombres sont des ALBÉDOS, pas des
+## valeurs peintes ; le gain lumineux vaut 1,4 à 1,8 et n'est pas linéaire.
+## Aucun test ne prédit le rendu depuis l'albédo — la preuve est la capture
+## remesurée, dans `evidence/vertical_slice_20260811/`.
+## ---------------------------------------------------------------------------
 const COL_GRASS: Color = Color(0.365, 0.561, 0.239)
-const COL_GRASS_DARK: Color = Color(0.30, 0.46, 0.21)
+const COL_GRASS_DARK: Color = Color(0.232, 0.354, 0.162)
 const COL_ROCK: Color = Color(0.608, 0.408, 0.259)
-## Pierre de la citadelle : ASSOMBRIE et légèrement chaude. Mesure sur la
-## capture de référence : la bande d'horizon tenait entre 55 % et 80 % de
-## valeur, monument compris — le but du jeu ne se détachait de rien. Un sujet
-## se lit par sa valeur avant sa forme.
-# H-6 : ocre/bronze SOMBRE (§12.1 « base ocre/bronze sombre ») — l'ancien
-# gris quasi neutre (0.255/0.238/0.243, r − b = 0,012) lisait « béton ».
+## Pierre générique ocre/bronze sombre (§12.1), utilisée pour les accessoires.
 const COL_STONE: Color = Color(0.285, 0.245, 0.205)
+## Pierre dédiée aux grandes masses de la citadelle : son réglage ne doit plus
+## assombrir le foyer, le pylône et les autres petites pierres de la vallée.
+## La séparation de matériau et l'écart d'albédo sont testés ; l'écart de valeur
+## à l'écran reste à confirmer sur une recapture avec le renderer de référence.
+const COL_CITADEL_STONE: Color = Color(0.205, 0.176, 0.148)
 const COL_WOOD: Color = Color(0.408, 0.251, 0.157)
 const COL_COPPER: Color = Color(0.55, 0.36, 0.22)
 const COL_CYAN: Color = Color(0.133, 0.851, 0.925)
@@ -38,15 +64,24 @@ const COL_RIVERBED: Color = Color(0.35, 0.42, 0.45)
 ## Habillage V4.2 (réf. 01 du pack V4) — différenciation des sols, eau, chemins,
 ## reliefs superposés. Le cyan de l'eau appartient à la bande « ciel/brume/eau »
 ## de §3.4, pas aux accents.
-const COL_GRASS_LIT: Color = Color(0.698, 0.784, 0.353)  # #B2C85A, ancre §3.4
-const COL_GRASS_WET: Color = Color(0.28, 0.47, 0.26)     # berges humides
-const COL_WATER: Color = Color(0.09, 0.55, 0.60, 0.82)   # ruban turquoise
-const COL_PATH: Color = Color(0.62, 0.51, 0.34)          # terre battue
-const COL_MOUNTAIN_WARM: Color = Color(0.47, 0.39, 0.33) # grès chaud
-const COL_MOUNTAIN_FAR: Color = Color(0.52, 0.56, 0.65)  # lointain bleui
+## Lot A : #B2C85A est l'ancre PEINTE de §3.4 ; posée telle quelle comme albédo
+## elle ressortait à ~90 % de valeur — c'est elle, le « vert acide » que le
+## rapport d'audit range en P2, et elle habille les pointes de brins du TOUT
+## premier plan. Ramenée d'un tiers, la bande claire redevient une nuance de
+## l'herbe au lieu d'en être la couleur dominante.
+const COL_GRASS_LIT: Color = Color(0.472, 0.530, 0.239)
+const COL_GRASS_WET: Color = Color(0.216, 0.362, 0.200) # berges humides
+const COL_WATER: Color = Color(0.09, 0.55, 0.60, 0.82)  # ruban turquoise
+## Lot A : le chemin était l'objet le PLUS clair du cadre — exactement la
+## rechute d'ISS-037, où #8A5A36 posé en albédo rendait 97 % et tirait le
+## regard hors de la citadelle (§1.2). Le sentier doit se lire par sa forme
+## et par le vide qu'il ouvre dans l'herbe, pas par sa luminosité.
+const COL_PATH: Color = Color(0.430, 0.348, 0.228)      # terre battue
+const COL_MOUNTAIN_WARM: Color = Color(0.395, 0.328, 0.278) # grès chaud
+const COL_MOUNTAIN_FAR: Color = Color(0.52, 0.56, 0.65) # lointain bleui
 ## Jupes de mur : un cran plus sombres que la face qu'elles habillent — c'est
 ## l'écart de valeur qui fait lire le relief, pas la forme seule.
-const COL_MOUNTAIN_SHADE: Color = Color(0.44, 0.465, 0.535)
+const COL_MOUNTAIN_SHADE: Color = Color(0.352, 0.372, 0.428)
 
 
 func _ready() -> void:
@@ -121,20 +156,28 @@ func _build_wall_skirts() -> void:
 	skirts.name = "WallSkirts"
 	add_child(skirts)
 	var face: float = BORDER_INNER - 2.0
+	# LOT B : 13 jupes de 52 m sur 584 m de face, c'est un espacement de 45 m
+	# pour une largeur de 34 à 70 — donc, une fois sur deux, un intervalle où
+	# la dalle de 78 m reparaît entière. La sonde d'emprise met
+	# `BorderNorthMesh` en TÊTE du cadre de la route du nord, à 36,8 %. Dix-sept
+	# masses plus larges se recouvrent au lieu de se succéder.
 	for axis: int in range(4):
-		for i: int in range(13):
-			var t: float = (float(i) + 0.5) / 13.0
+		for i: int in range(17):
+			var t: float = (float(i) + 0.5) / 17.0
 			var along: float = lerpf(-BORDER_OUTER, BORDER_OUTER, t) \
 				+ 9.0 * sin(t * 21.3 + float(axis))
 			# H-2b : 38±21 m et −6 % de valeur etaient SOUS le seuil de
 			# perception a 250 m sous brume (capture H-2) — 52±16 m couvrent
 			# l'essentiel de la face de 70 m, et l'ecart de valeur est double.
-			var height: float = 52.0 + 10.0 * sin(t * 8.1 + float(axis) * 1.7) \
-				+ 6.0 * sin(t * 15.7 + float(axis) * 2.9)
+			# H-2b montait à 52±16 ; il restait 10 m de dalle nue entre le
+			# sommet des jupes (60) et celui du mur (70), et cette bande
+			# horizontale se lisait comme un barrage. 64±14 ferme la face.
+			var height: float = 64.0 + 9.0 * sin(t * 8.1 + float(axis) * 1.7) \
+				+ 5.0 * sin(t * 15.7 + float(axis) * 2.9)
 			if axis == 0 and absf(along) < 110.0:
 				height = minf(height, 40.0)   # sommet ≤ 32 : sous les gradins (42)
 			var depth: float = 13.0 + 5.0 * sin(t * 6.7 + float(axis))
-			var width: float = 52.0 + 18.0 * sin(t * 4.9 + float(axis) * 1.3)
+			var width: float = 62.0 + 20.0 * sin(t * 4.9 + float(axis) * 1.3)
 			var centre: Vector3
 			match axis:
 				0: centre = Vector3(along, BASE_Y + height * 0.5, -face)
@@ -174,10 +217,14 @@ func _build_border_crests() -> void:
 	var mid: float = (BORDER_INNER + BORDER_OUTER) * 0.5
 	# Déterministe : une capture de référence doit être rejouable (§21.8).
 	var seed_value: int = 0
+	# LOT B : quatorze sommets espacés de 45 m pour 34 à 50 m de large, c'est
+	# un PEIGNE — du ciel entre chaque dent, et l'œil compte les dents. Une
+	# ligne de crête est continue : vingt masses plus larges se recouvrent, et
+	# la silhouette devient un massif au lieu d'une rangée.
 	for axis: int in range(4):
-		for i: int in range(14):
+		for i: int in range(20):
 			seed_value += 1
-			var t: float = float(i) / 13.0
+			var t: float = float(i) / 19.0
 			var along: float = lerpf(-BORDER_OUTER, BORDER_OUTER, t)
 			# Hauteurs irrégulières : deux sinus de périodes premières entre
 			# elles évitent la répétition visible à laquelle un seul mènerait.
@@ -189,7 +236,7 @@ func _build_border_crests() -> void:
 			# Plafond testé : sommet ≤ 96 (mur 70 + crête ≤ 26).
 			if axis == 0:
 				height = minf(height, 26.0)
-			var width: float = 34.0 + 16.0 * sin(t * 5.7 + float(axis) * 1.3)
+			var width: float = 46.0 + 18.0 * sin(t * 5.7 + float(axis) * 1.3)
 			var depth: float = BORDER_OUTER - BORDER_INNER
 			var centre: Vector3
 			match axis:
@@ -323,18 +370,28 @@ func _build_camp_terrace() -> void:
 	# Terrasse du camp (§3.3 : (45, 6, 65)) et sa sortie vers la plaine sud.
 	_slab("CampTerrace", Vector2(45, 65), Vector2(44, 40), 6.0, COL_GRASS)
 	_ramp("CampExit", Vector3(40, 6, 47), Vector3(40, 2, 30), 10.0, COL_GRASS_DARK)
-	# V4.3 (réf. 01 : tentes + feux) — le camp se LIT depuis la crête. Tentes
-	# en tente (PrismMesh) avec collision boîte, à l'écart du chemin ; foyer de
-	# pierre, braise émissive et lumière chaude. La colonne de fumée vit déjà
-	# dans ValleyWorld.tscn.
+	# V4.3 (réf. 01 : tentes + feux) — le camp se LIT depuis la crête.
+	#
+	# LOT D (2026-08-11) : les tentes étaient des `PrismMesh`, c'est-à-dire des
+	# CÔNES — exactement la forme que `VISUAL_ASSET_BIBLE` §10.2 interdit
+	# (« aucun tipi ou camp fantasy générique »), et le foyer deux cylindres.
+	# `AssetRegistry` réservait `prop.tent` et `prop.campfire` depuis ART-Q0
+	# vers deux scènes ABSENTES : l'audit du 2026-08-11 en fait un défaut P0,
+	# « le camp ne peut pas franchir son gate lieu habité ». Les deux scènes
+	# sont désormais livrées (`AwningTent`, `CampfireProp`), originales et
+	# construites par script — aucun pack externe, rien à attribuer.
+	#
+	# La position, le lacet et la hauteur de chaque tente ne bougent PAS : le
+	# triangle fonctionnel du camp et ses trois approches sont le travail d'un
+	# autre lot. Seule la forme change, et la collision avec elle.
 	var camp: Node3D = Node3D.new()
 	camp.name = "CampDressing"
 	add_child(camp)
 	var tents: Array[Array] = [
-		# [pied xz, yaw, teinte]
-		[Vector2(54, 58), 0.4, Color(0.55, 0.25, 0.18)],
-		[Vector2(57, 70), -0.7, Color(0.50, 0.30, 0.16)],
-		[Vector2(34, 76), 1.2, Color(0.45, 0.24, 0.20)],
+		# [pied xz, yaw]
+		[Vector2(54, 58), 0.4],
+		[Vector2(57, 70), -0.7],
+		[Vector2(34, 76), 1.2],
 	]
 	for i: int in range(tents.size()):
 		var tent: Array = tents[i]
@@ -343,32 +400,37 @@ func _build_camp_terrace() -> void:
 		body.name = "Tent%d" % i
 		body.collision_layer = 1
 		body.collision_mask = 0
-		# REVUE V4 : la collision était une BOÎTE 3,6 × 2,4 × 3,2 sur un volume
-		# en COIN. La demi-largeur de la toile vaut 1,9 · (1 − y/2,6) : à 2,0 m
-		# de haut elle mesure 0,44 m alors que la boîte imposait 1,80 m, soit
-		# 1,36 m de mur invisible de chaque côté à hauteur de tête (et, à la
-		# base, 10 cm de toile hors boîte). On donne donc au collider la forme
-		# EXACTE du visuel : l'enveloppe convexe du prisme, aux mêmes cotes et
-		# à la même origine locale (0 ; 1,3 ; 0) que le maillage.
-		var mesh: MeshInstance3D = MeshInstance3D.new()
-		mesh.name = "Tent%dMesh" % i
-		var prism: PrismMesh = PrismMesh.new()
-		prism.size = Vector3(3.8, 2.6, 3.4)
+		# REVUE V4, règle CONSERVÉE : le collider prend la forme EXACTE du
+		# visuel, jamais une boîte. L'auvent expose son enveloppe convexe ;
+		# une boîte de 3,6 × 2,4 × 3,2 sur un volume ouvert imposerait de
+		# nouveau plus d'un mètre de mur invisible à hauteur de tête.
+		var visual: Node3D = _instantiate_prop(&"prop.tent", "Tent%dVisual" % i)
 		var shape: CollisionShape3D = CollisionShape3D.new()
-		shape.shape = prism.create_convex_shape(true, false)
-		shape.position = Vector3(0, 1.3, 0)
+		var hull: ConvexPolygonShape3D = ConvexPolygonShape3D.new()
+		var awning: AwningTent = visual as AwningTent
+		if awning != null:
+			hull.points = awning.collision_points()
+		else:
+			# Repli : l'ancien coin, aux mêmes cotes. Il ne doit plus servir,
+			# mais un camp sans collision serait pire qu'un camp graybox.
+			var prism: PrismMesh = PrismMesh.new()
+			prism.size = Vector3(3.8, 2.6, 3.4)
+			hull = prism.create_convex_shape(true, false)
+			shape.position = Vector3(0, 1.3, 0)
+		shape.shape = hull
 		body.add_child(shape)
-		mesh.mesh = prism
-		mesh.material_override = _material(tent[2] as Color, false)
-		mesh.position = Vector3(0, 1.3, 0)
-		body.add_child(mesh)
+		body.add_child(visual)
 		body.rotation.y = float(tent[1])
 		body.position = Vector3(foot.x, 6.0, foot.y)   # AVANT add_child (règle D.0)
 		camp.add_child(body)
-	# Foyer : anneau de pierre, braise émissive, lumière chaude motivée (§7.7 :
-	# « aucun visage de combat noir » — le camp reste lisible au crépuscule).
-	_cylinder_in("FirePit", camp, Vector3(45, 6.0, 64), 1.1, 0.4, COL_STONE, false)
-	_cylinder_in("FireCoals", camp, Vector3(45, 6.35, 64), 0.7, 0.3,
+	# Foyer : pierres, bûches, flamme (asset `prop.campfire`), plus la braise
+	# NOMMÉE et la lumière chaude motivée (§7.7 : « aucun visage de combat
+	# noir »). La braise et la lumière restent créées ICI : ce sont elles que
+	# le contrat de V4.3 nomme et teste, et un décor ne porte jamais un état.
+	var hearth: Node3D = _instantiate_prop(&"prop.campfire", "CampfireVisual")
+	hearth.position = Vector3(45, 6.0, 64)
+	camp.add_child(hearth)
+	_cylinder_in("FireCoals", camp, Vector3(45, 6.20, 64), 0.62, 0.22,
 		Color(0.98, 0.55, 0.18), false)
 	var coals: MeshInstance3D = camp.get_node("FireCoals") as MeshInstance3D
 	# DUPLIQUER avant de personnaliser : le matériau vient du cache partagé
@@ -524,6 +586,24 @@ func _dress_camp_life(camp: Node3D) -> void:
 ## Monte un prop du registre (ou sa boîte graybox de repli) avec une
 ## collision fixe : les IDs, le loot et les interactions du camp ne passent
 ## JAMAIS par ces décors — ce sont des obstacles muets (§14.1).
+## Instancie un asset du registre sous un nom STABLE, ou rend un `Node3D` vide.
+##
+## Godot rebaptise les homonymes `@Node3D@366` (`scripts/CLAUDE.md`) : sans nom
+## explicite, aucun test ne peut désigner cette géométrie. Rendre un nœud vide
+## plutôt que `null` évite au consommateur d'avoir à distinguer les deux cas —
+## il vérifie le type quand la forme l'intéresse, comme pour l'auvent.
+func _instantiate_prop(id: StringName, node_name: String) -> Node3D:
+	var packed: PackedScene = AssetRegistry.resolve(id)
+	if packed == null:
+		push_warning("[terrain] asset absent : %s" % id)
+		var empty: Node3D = Node3D.new()
+		empty.name = node_name
+		return empty
+	var instance: Node3D = packed.instantiate() as Node3D
+	instance.name = node_name
+	return instance
+
+
 func _mount_camp_prop(parent: Node3D, id: StringName, at: Vector3,
 		yaw: float, collision_size: Vector3) -> void:
 	var body: StaticBody3D = StaticBody3D.new()
@@ -560,6 +640,61 @@ func _build_learning_cliff() -> void:
 	_slab("LearningCliff", Vector2(-110, 65), Vector2(60, 50), 14.0, COL_ROCK)
 	_slab("CliffLedgeLow", Vector2(-79.5, 58), Vector2(1.0, 6), 6.0, COL_ROCK)
 	_slab("CliffLedgeHigh", Vector2(-79.5, 72), Vector2(1.0, 6), 10.5, COL_ROCK)
+	_build_mesa_skirts()
+
+
+## LOT E (étape 7, 2026-08-11) — les deux mesas restantes portaient des faces
+## de DALLE : murs verticaux lisses de 12 et 16 m, à bords nets, en plein
+## cadre des caméras 1, 2 et 5. Même recette que la face sud du plateau du
+## donjon (lot B) : un rang de prismes qui se chevauchent, décor SANS
+## collision, sommets SOUS le rebord — la mesa domine son talus.
+##
+## LA FACE QUI NE REÇOIT RIEN : l'est de LearningCliff (x = −80) est LA paroi
+## d'escalade de §9.3, corniches de repos comprises. Un talus là serait un
+## éboulis décoratif en travers de la leçon d'escalade — l'exclusion est
+## testée (`test_the_climbing_wall_stays_bare_of_talus`).
+func _build_mesa_skirts() -> void:
+	var skirts: Node3D = Node3D.new()
+	skirts.name = "MesaSkirts"
+	add_child(skirts)
+	var shade: Color = Color(0.352, 0.232, 0.148)
+	# [préfixe, face le long de X ?, ancrage, longueur, hauteur de base,
+	#  amplitude, rebord]
+	var faces: Array[Array] = [
+		# Terrasse du pylône, face SUD (z = 0) : le mur des caméras 1 et 2.
+		["PylonMesaS", true, Vector3(115.0, 0.0, 1.2), 52.0, 12.0, 4.0, 18.0],
+		# Terrasse du pylône, face EST (x = 143) : vue du territoire du chasseur.
+		["PylonMesaE", false, Vector3(141.8, 0.0, -25.0), 46.0, 11.0, 3.5, 18.0],
+		# Falaise d'apprentissage, face SUD (z = 90) : le mur du cadre ouest.
+		["LearnMesaS", true, Vector3(-110.0, 0.0, 88.8), 56.0, 9.0, 3.0, 14.0],
+	]
+	for face: Array in faces:
+		var prefix: String = face[0]
+		var along_x: bool = face[1]
+		var anchor: Vector3 = face[2] as Vector3
+		var span: float = face[3]
+		var base_height: float = face[4]
+		var amplitude: float = face[5]
+		var rim: float = face[6]
+		var count: int = 6
+		for i: int in range(count):
+			var t: float = (float(i) + 0.5) / float(count)
+			var along: float = (t - 0.5) * span \
+				+ 2.2 * sin(t * 15.7 + float(prefix.length()))
+			var height: float = minf(base_height
+				+ amplitude * sin(t * 8.3 + float(i)),
+				rim - 1.0)
+			var width: float = span / float(count) * 1.7 \
+				+ 3.0 * sin(t * 5.9 + float(prefix.length()) * 1.3)
+			var centre: Vector3
+			if along_x:
+				centre = Vector3(anchor.x + along, BASE_Y + height * 0.5, anchor.z)
+			else:
+				centre = Vector3(anchor.x, BASE_Y + height * 0.5, anchor.z + along)
+			_visual_prism("%s%d" % [prefix, i], skirts, centre,
+				Vector3(width, height, 4.5 + 1.5 * sin(t * 7.1)),
+				shade if i % 3 != 1 else COL_ROCK, along_x,
+				0.5 + 0.27 * sin(t * 11.3 + float(i) * 1.9))
 
 
 func _build_pylon_terrace_and_proxy() -> void:
@@ -640,6 +775,93 @@ func _build_forest() -> void:
 	_dress_zone_cliff()
 	_dress_zone_pylon()
 	_dress_zone_citadel_approach()
+	# Les cotes des tables ci-dessus sont écrites à la main ; le relief, lui, a
+	# bougé (passe H-5 : la crête est montée à 32 m). Repose donc le semis de
+	# terrain sur le sol RÉEL — même correctif que les ramassables du 2026-08-07,
+	# même timing différé, pour la même raison : l'espace physique ne connaît
+	# les colliders du terrain qu'après la frame qui les a créés.
+	_snap_dressing_to_ground.call_deferred()
+
+
+## ---------------------------------------------------------------------------
+## Repose du semis de terrain sur le sol réel.
+##
+## LE DÉFAUT CORRIGÉ, mesuré et non supposé : les 21 pièces de `DressZoneCrest`
+## étaient posées à y = 24 — la cote de spawn de MASTER_SPEC §3.3 — alors que la
+## crête culmine à **y = 32,00** depuis la passe H-5. Fleurs, trèfle, fougères,
+## touffes et galets du TOUT PREMIER plan du jeu étaient donc **enterrés de
+## 8,00 m**, invisibles. Sur la descente, quatre pièces étaient au contraire
+## suspendues jusqu'à 13,99 m au-dessus de la plaine — « un rocher et des
+## poteaux flottent dans le ciel », mot pour mot le rapport de jeu du
+## 2026-08-07. C'est la MÊME classe de défaut que les deux fruits enterrés
+## corrigés ce jour-là ; seuls les ramassables avaient alors été traités.
+##
+## Seules les zones de SEMIS DE TERRAIN sont reposées. `DressZoneCitadel` en est
+## exclue à dessein : ses bannières et ses torches sont accrochées à des murs,
+## et les reposer au sol les ferait tomber. Le X et le Z ne bougent JAMAIS — la
+## composition (cadre latéral, couloir central vide de §11.A) est le travail
+## d'un autre, et ce correctif ne touche qu'une cote fausse.
+## ---------------------------------------------------------------------------
+
+## Zones dont chaque pièce doit toucher le terrain. Étendre cette liste est un
+## geste délibéré : y ajouter une zone qui porte du décor accroché le casserait.
+const GROUNDED_DRESS_ZONES: Array[String] = [
+	"DressZoneCrest", "DressZoneDescent",
+]
+## Décalques visuels qui doivent suivre le même sol réel sans y ajouter de
+## volume. Contrairement au semis, ils restent légèrement au-dessus afin
+## d'éviter le z-fighting — et chaque ZONE a la SIENNE : les épaulements
+## d'herbe compressée (`PathEdges`, lot C) se glissent SOUS les tronçons de
+## terre (`Paths`), sinon les deux couches se battraient au même millimètre.
+const GROUNDED_DECAL_NODES: Array[String] = ["Paths", "PathEdges"]
+const PATH_CLEARANCE: float = 0.02
+const EDGE_CLEARANCE: float = 0.008
+## Les langues d'herbe mordent PAR-DESSUS la terre : au-dessus des tronçons
+## (0,02), sous rien d'autre.
+const TONGUE_LIFT: float = 0.032
+## Sonde volontairement longue : le défaut réel atteignait 14 m d'écart, un
+## rayon court ne l'aurait pas rattrapé.
+const DRESS_SNAP_UP: float = 60.0
+const DRESS_SNAP_DOWN: float = 80.0
+
+
+func _snap_dressing_to_ground() -> void:
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	if space == null:
+		return
+	for zone_name: String in GROUNDED_DRESS_ZONES + GROUNDED_DECAL_NODES:
+		var zone: Node3D = get_node_or_null(NodePath(zone_name)) as Node3D
+		if zone == null:
+			continue
+		var zone_clearance: float = 0.0
+		if zone_name == "Paths":
+			zone_clearance = PATH_CLEARANCE
+		elif zone_name == "PathEdges":
+			zone_clearance = EDGE_CLEARANCE
+		# Les troncs du décor portent une collision : sans les exclure, le rayon
+		# heurterait l'arbre qu'il mesure et le déclarerait posé sur lui-même.
+		var excluded: Array[RID] = []
+		for node: Node in zone.find_children("*", "PhysicsBody3D", true, false):
+			excluded.append((node as PhysicsBody3D).get_rid())
+		for child: Node in zone.get_children():
+			var piece: Node3D = child as Node3D
+			if piece == null:
+				continue
+			var from: Vector3 = piece.global_position + Vector3.UP * DRESS_SNAP_UP
+			var to: Vector3 = piece.global_position - Vector3.UP * DRESS_SNAP_DOWN
+			# Couche 1 (World Static) seule : le décor se pose sur le relief.
+			var query: PhysicsRayQueryParameters3D = \
+				PhysicsRayQueryParameters3D.create(from, to, 1)
+			query.exclude = excluded
+			var hit: Dictionary = space.intersect_ray(query)
+			if hit.is_empty():
+				continue   # aucun sol sous la pièce : la laisser où elle est
+			# Les langues d'herbe mordent PAR-DESSUS les tronçons de terre :
+			# leur clairance dépasse celle de « Paths ».
+			var clearance: float = TONGUE_LIFT \
+				if String(piece.name).begins_with("PathGrass") else zone_clearance
+			piece.global_position = Vector3(piece.global_position.x,
+				(hit["position"] as Vector3).y + clearance, piece.global_position.z)
 
 
 ## ---------------------------------------------------------------------------
@@ -1260,6 +1482,263 @@ func _build_central_ruins() -> void:
 			Vector3(size.x, height, size.y), COL_STONE, true)
 
 
+## ---------------------------------------------------------------------------
+## LOT B — LA FACE SUD DU PLATEAU ÉTAIT UN MUR DE 130 x 42 m
+##
+## La sonde d'emprise écran classe `DungeonPlateauMesh` **deuxième masse du
+## cadre** sur les deux caméras qui regardent le nord : 22,7 % depuis la route,
+## 50,5 % depuis l'approche. C'est une dalle, donc un rectangle plein, et
+## c'était la définition même de « mur-proxy dominant » que le gate interdit.
+##
+## Quatorze prismes l'habillaient déjà. Ils échouaient pour deux raisons
+## MESURABLES, pas d'opinion :
+##
+##   1. leurs arguments étaient inversés. `_visual_prism` lit
+##      `(largeur vue de face, hauteur, profondeur)` ; l'appel passait
+##      `(9-13, hauteur, 15-21)`. Les masses faisaient donc 9 à 13 m de large
+##      pour 15 à 21 m de profond : des lames plantées de chant, pas des
+##      contreforts. Une falaise vue de face a besoin de FRONT, pas de fuite.
+##   2. elles ne couvraient que |x| 12 à 66, soit la moitié d'une face qui
+##      court de −65 à +65, et sans se recouvrir : entre deux lames, le mur
+##      reparaissait entier.
+##
+## Ce qui suit garde exactement la même dalle porteuse — collision, navigation
+## et cotes de gameplay ne bougent pas d'un centimètre — et lui donne une
+## falaise : trois rangs qui se chevauchent, du pied au rebord, à fronts
+## larges et irréguliers. Le couloir de la rampe (|x| < 10) reste libre.
+##
+## AUCUNE COLLISION : la dalle derrière porte la sienne. Rien d'accessible ne
+## devient traversable, rien d'infranchissable ne devient escaladable.
+## ---------------------------------------------------------------------------
+
+## Sommet maximal d'un contrefort : le rebord du plateau est à 34 ; au-dessus,
+## une masse ferait saillie sur la surface où l'on marche.
+const PLATEAU_CLIFF_TOP: float = 32.5
+## Demi-largeur du couloir laissé libre pour la rampe processionnelle (16 m de
+## large, centrée sur x = 0) plus une marge d'épaulement.
+const PLATEAU_RAMP_CLEARANCE: float = 10.0
+
+
+func _build_plateau_cliff(parent: Node3D) -> void:
+	var shade: Color = Color(0.352, 0.232, 0.148)   # creux, à l'ombre
+	var mid: Color = COL_ROCK                        # matériau macro de roche
+	var lit: Color = Color(0.560, 0.392, 0.246)      # arêtes prises par le soleil
+	# Trois rangs. Le rang PROFOND est le plus haut et le plus sombre ; il
+	# ferme la face. Le rang AVANT est plus bas, plus clair et décalé : c'est
+	# lui qui casse la ligne de sommet. Le TALUS ferme le pied, sans quoi la
+	# falaise garde une arête horizontale nette à y = −8 qui la trahit.
+	var rows: Array[Array] = [
+		# [nom, z, nombre par côté, hauteur de base, amplitude, largeur de base,
+		#  amplitude de largeur, profondeur, teinte principale, teinte d'appoint]
+		["Deep", -163.6, 7, 38.0, 5.5, 26.0, 8.0, 14.0, shade, mid],
+		["Front", -160.4, 6, 30.0, 6.5, 21.0, 7.0, 11.0, mid, lit],
+		["Talus", -156.8, 5, 14.0, 5.0, 27.0, 9.0, 13.0, shade, mid],
+	]
+	for row: Array in rows:
+		var row_name: String = row[0]
+		var z: float = row[1]
+		var count: int = row[2]
+		for side_sign: float in [-1.0, 1.0]:
+			for i: int in range(count):
+				var t: float = (float(i) + 0.5) / float(count)
+				# Deux sinus de périodes premières entre elles : la même règle
+				# que les crêtes de bordure, pour la même raison — un seul
+				# sinus produit un motif qu'on voit après trois masses.
+				var jitter: float = 4.0 * sin(t * 13.7 + side_sign * 2.3
+					+ float(row_name.length()))
+				var x: float = side_sign * (PLATEAU_RAMP_CLEARANCE + 2.0
+					+ 54.0 * t) + jitter
+				# La falaise est HAUTE près de la rampe et descend vers les
+				# bords : c'est ce qui encadre la voie processionnelle au lieu
+				# de la laisser au milieu d'un front égal. Le facteur reste
+				# faible (−22 % au bord) pour que le mur ne réapparaisse pas.
+				var height: float = float(row[3]) * (1.0 - 0.22 * t) \
+					+ float(row[4]) * sin(t * 9.1 + side_sign * 1.7) \
+					+ float(row[4]) * 0.45 * sin(t * 21.3 + side_sign)
+				height = minf(height, PLATEAU_CLIFF_TOP - BASE_Y)
+				var width: float = float(row[5]) \
+					+ float(row[6]) * sin(t * 5.3 + side_sign * 1.1)
+				var depth: float = float(row[7]) \
+					+ 3.0 * sin(t * 7.9 + side_sign)
+				_visual_prism("PlateauCliff%s%s%d"
+						% [row_name, "W" if side_sign < 0.0 else "E", i],
+					parent,
+					Vector3(x, BASE_Y + height * 0.5, z),
+					Vector3(width, height, depth),
+					(row[8] as Color) if i % 3 != 1 else (row[9] as Color),
+					true, 0.5 + 0.30 * sin(t * 11.9 + side_sign * 2.9))
+
+
+## ---------------------------------------------------------------------------
+## ÉTAPE 4 (V-002) — VIDES, BRÈCHE ET COURTINES : ce qui manquait à la façade
+##
+## §2.4 exige « 10 % vides, arches et ruptures » ; la façade n'en avait AUCUN.
+## Trois familles de décor, toutes SANS collision (leçon PT-D1-09 : le décor
+## tourne, le porteur jamais) :
+##
+##   - une ARCADE PERCÉE à l'ouest de la porte : trois vides d'arche dont
+##     l'obscurité se lit comme de la profondeur — la recette du GateRecess ;
+##   - une BRÈCHE à l'est : un pan de muraille effondré, DÉVIÉ du quadrillage,
+##     avec ses éboulis au pied ;
+##   - deux COURTINES diagonales qui accrochent le monument à sa falaise —
+##     les premières masses d'échelle muraille hors des axes du monde.
+## ---------------------------------------------------------------------------
+func _build_citadel_ruptures(citadel: Node3D) -> void:
+	# Le vide, pas un noir pur — et un PIC de canal à 0,14 exactement : la
+	# recette painterly REMONTE toute teinte dont le pic est sous 0,14
+	# (`from_standard`, mesuré : 0,045 devenait 0,27 de luma, plus clair que
+	# la pierre). Le bleu froid domine, comme une ombre portée.
+	var stone_dark: Color = Color(0.06, 0.07, 0.14)
+	var pier_stone: Color = Color(0.24, 0.206, 0.172)
+	# --- Arcade ouest : un MUR PERCÉ, détaché du socle --------------------
+	# Revue du propriétaire (correction 6) : la première version posait des
+	# panneaux sombres PRESQUE COPLANAIRES aux piliers (36 cm d'écart) — un
+	# vide peint, pas un vide. La profondeur ne se lit que si elle EXISTE :
+	#
+	#   mur percé (piliers + tympan) au plan z = −189,4 ;
+	#   fond d'ombre CONTRE le socle, à z = −192,9 ;
+	#   soit 3,5 m d'air entre les deux — depuis la caméra d'approche (x = 1,
+	#   donc en oblique sur l'arcade en x −34..−12), les jambages intérieurs
+	#   des ouvertures ET le décrochement du fond se voient par parallaxe.
+	#
+	# Le couloir de la rampe (|x| < 10) reste libre ; la porte reste l'unique
+	# entrée logique ; tout est décor sans collision.
+	const ARCADE_Z: float = -189.4
+	const ARCADE_BACK_Z: float = -192.9
+	for i: int in range(3):
+		var x_arch: float = -29.6 + 7.6 * float(i)
+		# Le FOND du vide : contre le socle, 3,5 m derrière le mur percé.
+		var recess: MeshInstance3D = MeshInstance3D.new()
+		recess.name = "CitadelArch%d" % i
+		var panel: BoxMesh = BoxMesh.new()
+		panel.size = Vector3(5.4, 8.0 - 0.6 * float(i % 2), 0.4)
+		recess.mesh = panel
+		recess.material_override = _material(stone_dark, false)
+		recess.position = Vector3(x_arch, 34.0 + panel.size.y * 0.5 - 0.2,
+			ARCADE_BACK_Z)
+		citadel.add_child(recess)
+		# Le LINTEAU dans le plan du mur, au-dessus de l'ouverture.
+		_box_in("CitadelArchCap%d" % i, citadel,
+			Vector3(x_arch, 34.0 + 7.3 - 0.6 * float(i % 2), ARCADE_Z),
+			Vector3(6.2, 1.2, 2.0), pier_stone, false)
+	for i: int in range(4):
+		var x_pier: float = -33.4 + 7.6 * float(i)
+		_box_in("CitadelArcadePier%d" % i, citadel,
+			Vector3(x_pier, 34.0 + 3.9, ARCADE_Z),
+			Vector3(2.4, 7.8, 2.0), pier_stone, false)
+	# Le TYMPAN : la bande pleine au-dessus des trois ouvertures — c'est lui
+	# qui fait lire un MUR percé, pas une rangée de poteaux. Sommet
+	# irrégulier : deux merlons ruinés par-dessus.
+	_box_in("CitadelArcadeBand", citadel,
+		Vector3(-22.0, 34.0 + 9.6, ARCADE_Z), Vector3(25.2, 3.2, 2.0),
+		pier_stone, false)
+	_box_in("CitadelArcadeMerlonW", citadel,
+		Vector3(-30.5, 34.0 + 11.9, ARCADE_Z), Vector3(4.4, 1.6, 1.8),
+		COL_CITADEL_STONE, false)
+	_box_in("CitadelArcadeMerlonE", citadel,
+		Vector3(-15.0, 34.0 + 12.3, ARCADE_Z), Vector3(3.2, 2.4, 1.8),
+		COL_CITADEL_STONE, false)
+	# Les RETOURS latéraux ferment la galerie aux deux bouts : sans eux, un
+	# regard rasant voyait le ciel entre le mur et le socle — un décor de
+	# théâtre, pas une galerie.
+	for side_data: Array in [["CitadelArcadeReturnW", -34.2],
+			["CitadelArcadeReturnE", -10.6]]:
+		_box_in(side_data[0] as String, citadel,
+			Vector3(side_data[1] as float, 34.0 + 5.4,
+				(ARCADE_Z + ARCADE_BACK_Z) * 0.5),
+			Vector3(0.9, 10.8, absf(ARCADE_BACK_Z - ARCADE_Z) + 1.2),
+			pier_stone, false)
+	# --- L'ARCHE DU CIEL : le vide que TOUTES les caméras voient ----------
+	# Revue du propriétaire (correction 6, seconde passe) : l'arcade du socle
+	# est masquée par la falaise du plateau depuis les caméras 5 et 6 — un
+	# vide que personne ne voit n'est pas un vide. Le plus fort des vides est
+	# une ouverture DÉCOUPÉE SUR LE CIEL : une arche ruinée dressée sur
+	# l'épaule ouest, au-dessus de la ligne de falaise. La lumière passe AU
+	# TRAVERS — aucun panneau, aucun artifice de valeur : du ciel.
+	var sky_arch: Array[Array] = [
+		# [nom, centre, taille]
+		["CitadelSkyArchPierN", Vector3(-27.5, 64.0 + 4.2, -206.0),
+			Vector3(2.6, 8.4, 3.0)],
+		["CitadelSkyArchPierS", Vector3(-27.5, 64.0 + 3.4, -213.5),
+			Vector3(2.6, 6.8, 3.0)],
+		# Le linteau ne touche QUE le pilier nord : l'arche est ROMPUE — le
+		# moignon sud reste plus bas, et la déchirure se lit sur le ciel.
+		["CitadelSkyArchLintel", Vector3(-27.5, 64.0 + 9.1, -207.9),
+			Vector3(2.2, 1.8, 4.6)],
+	]
+	for spec: Array in sky_arch:
+		_box_in(spec[0] as String, citadel, spec[1] as Vector3,
+			spec[2] as Vector3, COL_CITADEL_STONE, false)
+	# --- Deux baies éventrées dans la face du donjon ----------------------
+	# La bande haute du Keep est ce que les caméras 5 et 6 voient au-dessus
+	# de la falaise. Deux ouvertures sombres ENFONCÉES dans la façade
+	# (le fond recule de 1,2 m derrière le plan du mur), tailles inégales.
+	for window: Array in [["CitadelKeepVoidW", -8.0, 53.5, 3.2, 4.8],
+			["CitadelKeepVoidE", 7.0, 55.0, 2.6, 3.8]]:
+		var void_panel: MeshInstance3D = MeshInstance3D.new()
+		void_panel.name = window[0] as String
+		var opening: BoxMesh = BoxMesh.new()
+		opening.size = Vector3(window[3] as float, window[4] as float, 0.4)
+		void_panel.mesh = opening
+		void_panel.material_override = _material(stone_dark, false)
+		void_panel.position = Vector3(window[1] as float, window[2] as float,
+			-196.8)
+		citadel.add_child(void_panel)
+		# Jambages débordants : l'épaisseur du mur autour du vide.
+		_box_in((window[0] as String) + "Sill", citadel,
+			Vector3(window[1] as float,
+				(window[2] as float) - (window[4] as float) * 0.5 - 0.4,
+				-197.4),
+			Vector3((window[3] as float) + 1.2, 0.8, 1.2), pier_stone, false)
+	# --- Brèche est : le pan effondré et ses éboulis ----------------------
+	var breach: MeshInstance3D = MeshInstance3D.new()
+	breach.name = "CitadelBreachWall"
+	var slab: BoxMesh = BoxMesh.new()
+	slab.size = Vector3(15.0, 13.0, 2.8)
+	breach.mesh = slab
+	breach.material_override = _material(COL_CITADEL_STONE, false)
+	breach.position = Vector3(29.0, 34.0 + 5.6, -191.5)
+	# Déviée ET renversée : elle penche comme un pan qui s'est arraché.
+	breach.rotation = Vector3(-0.10, 0.34, 0.12)
+	citadel.add_child(breach)
+	var rubble_rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rubble_rng.seed = 20260811
+	for i: int in range(4):
+		var rubble: MeshInstance3D = MeshInstance3D.new()
+		rubble.name = "BreachRubble%d" % i
+		var block: BoxMesh = BoxMesh.new()
+		block.size = Vector3(2.2, 1.4, 1.8) \
+			* (0.7 + 0.6 * rubble_rng.randf())
+		rubble.mesh = block
+		rubble.material_override = _material(
+			pier_stone if i % 2 == 0 else COL_CITADEL_STONE, false)
+		rubble.position = Vector3(24.0 + 3.4 * float(i)
+			+ rubble_rng.randf_range(-0.8, 0.8),
+			34.0 + block.size.y * 0.4, -188.5 + rubble_rng.randf_range(-1.2, 1.2))
+		rubble.rotation = Vector3(rubble_rng.randf_range(-0.15, 0.15),
+			rubble_rng.randf_range(0.0, TAU), rubble_rng.randf_range(-0.2, 0.2))
+		citadel.add_child(rubble)
+	# --- Courtines diagonales : la masse accrochée à la falaise -----------
+	var curtains: Array[Array] = [
+		# [nom, centre, longueur, hauteur, lacet]
+		["CitadelCurtainW", Vector3(-46.0, 34.0 + 6.5, -203.0), 27.0, 13.0, 0.24],
+		["CitadelCurtainE", Vector3(45.0, 34.0 + 6.0, -206.0), 24.0, 12.5, -0.31],
+	]
+	for spec: Array in curtains:
+		var curtain: MeshInstance3D = MeshInstance3D.new()
+		curtain.name = String(spec[0])
+		var prism: PrismMesh = PrismMesh.new()
+		# La face triangulaire regarde la vallée (leçon V5 de _visual_prism) :
+		# (largeur de front, hauteur, fuite) — et l'arête est décentrée.
+		prism.size = Vector3(float(spec[2]), float(spec[3]), 5.0)
+		prism.left_to_right = 0.34 if float(spec[4]) > 0.0 else 0.68
+		curtain.mesh = prism
+		curtain.material_override = _material(COL_CITADEL_STONE, false)
+		curtain.position = spec[1] as Vector3
+		curtain.rotation.y = float(spec[4])
+		citadel.add_child(curtain)
+
+
 func _build_dungeon_plateau_and_citadel() -> void:
 	# Plateau monumental (§3.3 : donjon (0, 34, −210)) et sa rampe processionnelle.
 	_slab("DungeonPlateau", Vector2(0, -210), Vector2(130, 90), 34.0, COL_ROCK)
@@ -1273,20 +1752,7 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	var plateau_skirts: Node3D = Node3D.new()
 	plateau_skirts.name = "PlateauSkirts"
 	add_child(plateau_skirts)
-	var rock_shade: Color = Color(0.50, 0.33, 0.21)
-	for side_sign: float in [-1.0, 1.0]:
-		for i: int in range(7):
-			var t_skirt: float = (float(i) + 0.5) / 7.0
-			var x_skirt: float = side_sign * (12.0 + 51.0 * t_skirt) 				+ 3.0 * sin(t_skirt * 17.3 + side_sign)
-			var h_skirt: float = 26.0 + 9.0 * sin(t_skirt * 9.1 + side_sign * 2.3) 				+ 5.0 * sin(t_skirt * 19.7)
-			var d_skirt: float = 9.0 + 4.0 * sin(t_skirt * 7.9 + side_sign)
-			var w_skirt: float = 15.0 + 6.0 * sin(t_skirt * 5.3 + side_sign * 1.7)
-			_visual_prism("PlateauSkirt%s%d" % ["W" if side_sign < 0.0 else "E", i],
-				plateau_skirts,
-				Vector3(x_skirt, BASE_Y + h_skirt * 0.5, -164.0),
-				Vector3(d_skirt, h_skirt, w_skirt),
-				rock_shade if i % 3 != 1 else COL_ROCK,
-				true, 0.5 + 0.24 * sin(t_skirt * 11.9 + side_sign * 2.9))
+	_build_plateau_cliff(plateau_skirts)
 	# Proxy de citadelle : masse centrale, quatre tours, cœur cyan — la
 	# silhouette du fond de la vue d'ouverture (§3.2 : 300–420 m du spawn).
 	var citadel: Node3D = Node3D.new()
@@ -1302,12 +1768,24 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	# directement sur le sol et lisait « bâtiment », pas « monument
 	# creusé dans la montagne ». AUCUNE COLLISION : ce sont des masses
 	# de composition, elles ne doivent modifier aucun passage.
-	_box_in("TerraceBase", citadel, Vector3(0, 34 + 7, -216),
-		Vector3(78, 14, 46), COL_STONE, false)
-	_box_in("TerraceMid", citadel, Vector3(-4, 34 + 18, -214),
-		Vector3(56, 12, 36), COL_STONE, false)
-	_box_in("TerraceHigh", citadel, Vector3(6, 34 + 27, -213),
-		Vector3(42, 10, 30), COL_STONE, false)
+	#
+	# ÉTAPE 4 (2026-08-11, V-002) : les trois terrasses étaient des BOÎTES —
+	# trois rectangles extrudés aux coins droits, la plus grande lecture
+	# « empilement » de tout le monument. Elles deviennent des TRONCS DE
+	# PYRAMIDE : faces talutées, sommet décalé différemment à chaque étage
+	# (aucune arête de silhouette parallèle à la précédente). Emprise au sol
+	# et sommets INCHANGÉS : les jupes écrêtées « sous les gradins » et le
+	# plan de la porte gardent leurs repères.
+	_frustum_in("TerraceBase", citadel, Vector3(0, 34, -216),
+		Vector2(78, 46), Vector2(64, 34), 14.0, Vector2(-3.0, -3.0),
+		COL_CITADEL_STONE)
+	_frustum_in("TerraceMid", citadel, Vector3(-4, 46, -214),
+		Vector2(56, 36), Vector2(46, 27), 12.0, Vector2(3.5, -2.0),
+		COL_CITADEL_STONE)
+	_frustum_in("TerraceHigh", citadel, Vector3(6, 56, -213),
+		Vector2(42, 30), Vector2(34, 23), 10.0, Vector2(-2.5, 1.5),
+		COL_CITADEL_STONE)
+	_build_citadel_ruptures(citadel)
 	# CONTREFORTS (§2.4) : quatre appuis qui accrochent le socle au
 	# relief et cassent la frontalité.
 	var buttresses: Array[Array] = [
@@ -1320,7 +1798,7 @@ func _build_dungeon_plateau_and_citadel() -> void:
 		_box_in("Buttress%d" % b, citadel,
 			Vector3(spec[0] as float, 34 + bh * 0.5, spec[1] as float),
 			Vector3(spec[2] as float, bh, spec[2] as float),
-			COL_STONE, false)
+			COL_CITADEL_STONE, false)
 	# TROIS lignes de Résonance en cuivre patiné (§2.4) — la masse reste
 	# à plus de 95 % sans énergie visible.
 	for c: int in range(3):
@@ -1329,14 +1807,15 @@ func _build_dungeon_plateau_and_citadel() -> void:
 		_box_in("Conduit%d" % c, citadel,
 			Vector3(cx, 34 + ch * 0.5, -197.0), Vector3(2.6, ch, 2.6),
 			Color(0.43, 0.46, 0.37), false)
-	_box_in("Keep", citadel, Vector3(0, 34 + 23, -212), Vector3(34, 46, 28), COL_STONE, true)
+	_box_in("Keep", citadel, Vector3(0, 34 + 23, -212), Vector3(34, 46, 28),
+		COL_CITADEL_STONE, true)
 	# Épaules latérales plus basses (§2.4) : la silhouette s'étage au lieu de
 	# tomber d'un seul front.
 	for side_index: int in range(2):
 		var x_shoulder: float = -26.0 if side_index == 0 else 26.0
 		_box_in("Shoulder%d" % side_index, citadel,
 			Vector3(x_shoulder, 34 + 15, -214), Vector3(14, 30, 18),
-			COL_STONE, true)
+			COL_CITADEL_STONE, true)
 	# Tours COUPÉES à des hauteurs différentes (§2.4) : quatre tops égaux
 	# à 90 m lisaient « créneaux d'usine », pas « ruine monumentale ».
 	var tower_heights: Array[float] = [50.0, 44.0, 58.0, 40.0]
@@ -1346,15 +1825,15 @@ func _build_dungeon_plateau_and_citadel() -> void:
 		var tower_height: float = tower_heights[i]
 		_box_in("Tower%d" % i, citadel,
 			Vector3(dx, 34 + tower_height * 0.5, -210 + dz),
-			Vector3(8, tower_height, 8), COL_STONE, true)
+			Vector3(8, tower_height, 8), COL_CITADEL_STONE, true)
 	# SPIRE centrale (§2.4 : « spire centrale verticale ») : trois segments
 	# effilés au-dessus du Keep (sommet y = 100) — c'est ELLE que l'éclair
 	# frappe, et elle que l'œil accroche à 360 m. Sans collision : le sommet
 	# est hors de portée du joueur, le Keep en dessous porte la sienne.
 	_box_in("SpireBase", citadel, Vector3(0, 84, -212), Vector3(9, 8, 9),
-		COL_STONE, false)
+		COL_CITADEL_STONE, false)
 	_box_in("SpireMid", citadel, Vector3(0, 91.5, -212), Vector3(6.5, 7, 6.5),
-		COL_STONE, false)
+		COL_CITADEL_STONE, false)
 	var spire_tip: MeshInstance3D = MeshInstance3D.new()
 	spire_tip.name = "SpireTip"
 	var cone: CylinderMesh = CylinderMesh.new()
@@ -1362,7 +1841,7 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	cone.bottom_radius = 2.4
 	cone.height = 5.0
 	spire_tip.mesh = cone
-	spire_tip.material_override = _material(COL_STONE, false)
+	spire_tip.material_override = _material(COL_CITADEL_STONE, false)
 	spire_tip.position = Vector3(0, 97.5, -212)
 	citadel.add_child(spire_tip)
 	# COURONNE DE CAPTURE (§2.4 : « la spire capte l'orage ») : l'anneau que
@@ -1408,7 +1887,7 @@ func _build_dungeon_plateau_and_citadel() -> void:
 		var front: bool = buttress_index < 2
 		_visual_prism("CitadelButtress%d" % buttress_index, citadel,
 			Vector3(x_buttress, 34 + 7, -196.8 if front else -227.2),
-			Vector3(4.5, 14, 5.0), COL_STONE, true,
+			Vector3(4.5, 14, 5.0), COL_CITADEL_STONE, true,
 			0.42 if buttress_index % 2 == 0 else 0.58)
 	# Conduit cyan sur la face avant du segment bas : la ligne d'énergie qui
 	# relie visuellement l'impact de foudre au cœur de la façade (§2.4 :
@@ -1422,9 +1901,9 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	# Gradins DERRIÈRE le plan de la porte (z ≤ −200 : une première pose à
 	# z −194 aurait muré la façade, cotes vérifiées avant capture).
 	_box_in("TierLow", citadel, Vector3(0, 34 + 4, -215), Vector3(40, 8, 30),
-		COL_STONE, true)
+		COL_CITADEL_STONE, true)
 	_box_in("TierHigh", citadel, Vector3(0, 34 + 9, -217), Vector3(32, 10, 24),
-		COL_STONE, true)
+		COL_CITADEL_STONE, true)
 	# Façade monumentale (réf. 02) : piliers de bronze gravés de CONDUITS cyan
 	# verticaux, linteau massif, large ouverture sombre en retrait — le
 	# personnage est dominé par le bâtiment.
@@ -1438,11 +1917,28 @@ func _build_dungeon_plateau_and_citadel() -> void:
 			COL_CYAN, false, true)
 	_box_in("GateLintel", citadel, Vector3(0, 34 + 16.6, -197.2),
 		Vector3(16.0, 3.2, 3.4), Color(0.40, 0.30, 0.20), true)
-	# Retrait sombre AFFLEURANT la face du donjon (z −198) : la porte
-	# interactive garde 0,2 m d'avance — l'ouverture paraît large, l'entrée
-	# reste la vraie porte.
-	_box_in("GateRecess", citadel, Vector3(0, 34 + 6.5, -198.35),
-		Vector3(10.0, 13.0, 1.0), Color(0.05, 0.06, 0.09), false)
+	# PORCHE PROFOND (correction 6 du propriétaire, seconde passe) : l'entrée
+	# est LE vide que les caméras 5 et 6 regardent en face — c'est là que la
+	# profondeur doit exister, pas seulement sur une arcade que la falaise
+	# masque. Un second rang de piliers s'avance de 3,4 m ; entre les deux
+	# rangs, un plafond ; au fond, le retrait sombre agrandi. Du chemin de
+	# démonstration, l'œil traverse : pilier avant → ombre du porche →
+	# pilier arrière → fond. Quatre plans étagés sur 5 m.
+	#
+	# Les piliers avancés PORTENT leur collision (on peut buter dessus) mais
+	# restent hors du couloir central : x ±8,3, demi-largeur 1,3 — le centre
+	# x −7..7 reste libre, les marches et la porte inchangées.
+	for side_index: int in range(2):
+		var x_porch: float = -8.3 if side_index == 0 else 8.3
+		_box_in("GatePillar%d" % (2 + side_index), citadel,
+			Vector3(x_porch, 34 + 7.2, -193.8), Vector3(2.6, 14.4, 2.6),
+			Color(0.36, 0.27, 0.18), true)
+	_box_in("GatePorchRoof", citadel, Vector3(0, 34 + 15.1, -195.5),
+		Vector3(19.2, 1.6, 5.8), Color(0.33, 0.25, 0.17), false)
+	# Retrait sombre du fond, AGRANDI et reculé : la porte interactive garde
+	# son avance — l'ouverture paraît vaste, l'entrée reste la vraie porte.
+	_box_in("GateRecess", citadel, Vector3(0, 34 + 6.8, -198.6),
+		Vector3(12.6, 13.6, 1.0), Color(0.05, 0.06, 0.09), false)
 	# Braseros de seuil : le chaud motive l'approche, le cyan reste la menace.
 	for side_index: int in range(2):
 		var x_side: float = -5.0 if side_index == 0 else 5.0
@@ -1460,9 +1956,12 @@ func _build_dungeon_plateau_and_citadel() -> void:
 		brazier_light.position = Vector3(x_side, 34 + 2.2, -194.5)
 		citadel.add_child(brazier_light)
 	# Marches processionnelles : trois emmarchements bas (≤ step height 0,30).
-	_slab("GateStepLow", Vector2(0, -192.0), Vector2(14, 2.4), 34.15, COL_STONE)
-	_slab("GateStepMid", Vector2(0, -194.2), Vector2(12, 2.2), 34.3, COL_STONE)
-	_slab("GateStepHigh", Vector2(0, -196.2), Vector2(10, 1.8), 34.45, COL_STONE)
+	_slab("GateStepLow", Vector2(0, -192.0), Vector2(14, 2.4), 34.15,
+		COL_CITADEL_STONE)
+	_slab("GateStepMid", Vector2(0, -194.2), Vector2(12, 2.2), 34.3,
+		COL_CITADEL_STONE)
+	_slab("GateStepHigh", Vector2(0, -196.2), Vector2(10, 1.8), 34.45,
+		COL_CITADEL_STONE)
 	# Ouverture encadrée de cyan (D.1R.4) : le seuil intérieur, dans le retrait.
 	_box_in("DoorFrameLeft", citadel, Vector3(-2.2, 34 + 3, -197.8),
 		Vector3(0.8, 6.0, 0.6), COL_CYAN, false, true)
@@ -1621,8 +2120,10 @@ func _build_river_water() -> void:
 
 
 ## Chemins de terre battue (réf. 01 : « routes guidant naturellement la
-## descente »). Bandes VISUELLES posées 4 cm au-dessus des zones planes — les
-## rampes gardent leur teinte sombre qui fait déjà office de route.
+## descente »). Bandes VISUELLES sans épaisseur, reposées par rayon sur le sol
+## réel : une dalle de 8 cm montrait sa tranche (ISS-039), et la cote historique
+## de la crête les enterrait de 8 m. Les rampes gardent leur teinte sombre qui
+## fait déjà office de route.
 func _build_paths() -> void:
 	var paths: Node3D = Node3D.new()
 	paths.name = "Paths"
@@ -1640,25 +2141,142 @@ func _build_paths() -> void:
 		[Vector2(60, 10), Vector2(93, 11), 2.0],         # …devant la forêt
 		[Vector2(94, 8), Vector2(66, 3), 2.0],           # gué est → rampe du pylône
 	]
+	# LOT C (2026-08-11, V-005) : chaque segment était UN PlaneMesh rectiligne
+	# de largeur constante — jusqu'à 59 m d'un seul tenant (mesuré par le test
+	# rouge). Un rectangle n'est pas un sentier : c'est la « bande posée sur
+	# l'herbe » que le gate interdit nommément.
+	#
+	# Un segment devient une CHAÎNE de tronçons courts qui se chevauchent :
+	# largeur qui respire, orientation qui dévie, teinte qui varie — et chaque
+	# tronçon est plaqué INDIVIDUELLEMENT sur le sol par la passe de repose,
+	# donc le chemin suit les paliers de la descente au lieu de les traverser
+	# en l'air. Les épaulements d'herbe compressée et les pierres de bord
+	# vivent dans `PathEdges`, plaqués plus bas (aucun z-fight possible).
+	var edges: Node3D = Node3D.new()
+	edges.name = "PathEdges"
+	add_child(edges)
+	# Trois teintes de terre partagées (le cache de matériaux fusionnerait des
+	# duplicatas de toute façon — autant être explicite).
+	# Correction 7 du propriétaire : « remplacer une grande bande par
+	# plusieurs petits quads reste insuffisant si l'image montre encore une
+	# bande posée ». Ce qui trahissait encore la bande, mesuré sur la capture
+	# de la caméra 2 : la TERRE rendait ~78 % de valeur en plein soleil (gain
+	# 1,4-1,8 sur l'albédo, scripts/CLAUDE.md) — plus claire que tout ce qui
+	# l'entoure — et la transition terre → prairie était un BORD, pas un
+	# dégradé. Terre assombrie et désaturée vers le sol ; l'écart de teinte
+	# entre tronçons s'élargit (l'usure n'est pas uniforme).
+	var earth_tints: Array[StandardMaterial3D] = []
+	for tint: Color in [Color(0.238, 0.196, 0.138), Color(0.300, 0.244, 0.166),
+			Color(0.352, 0.292, 0.204)]:
+		var earth: StandardMaterial3D = StandardMaterial3D.new()
+		earth.albedo_color = tint
+		earth.roughness = 0.95
+		earth_tints.append(earth)
+	var shoulder_material: StandardMaterial3D = StandardMaterial3D.new()
+	shoulder_material.albedo_color = Color(0.148, 0.222, 0.118)   # herbe foulée
+	shoulder_material.roughness = 0.96
+	# Langues d'herbe : la prairie REPREND le chemin par endroits — c'est le
+	# contour du chemin qui se casse, pas seulement sa surface.
+	var tongue_material: StandardMaterial3D = StandardMaterial3D.new()
+	tongue_material.albedo_color = Color(0.196, 0.300, 0.146)
+	tongue_material.roughness = 0.96
+	var stone_material: StandardMaterial3D = StandardMaterial3D.new()
+	stone_material.albedo_color = COL_STONE
+	stone_material.roughness = 0.9
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	for i: int in range(segments.size()):
 		var segment: Array = segments[i]
 		var from: Vector2 = segment[0]
 		var to: Vector2 = segment[1]
 		var ground: float = segment[2]
 		var delta: Vector2 = to - from
-		var mesh: MeshInstance3D = MeshInstance3D.new()
-		mesh.name = "PathStrip%02d" % i
-		var box: BoxMesh = BoxMesh.new()
-		box.size = Vector3(delta.length() + 2.0, 0.08, 2.4)
-		mesh.mesh = box
-		var material: StandardMaterial3D = StandardMaterial3D.new()
-		material.albedo_color = COL_PATH
-		material.roughness = 0.95
-		mesh.material_override = material
-		var center: Vector2 = (from + to) * 0.5
-		mesh.position = Vector3(center.x, ground + 0.04, center.y)
-		mesh.rotation.y = -atan2(delta.y, delta.x)
-		paths.add_child(mesh)
+		var length: float = delta.length()
+		var heading: float = -atan2(delta.y, delta.x)
+		var side: Vector2 = Vector2(-delta.y, delta.x).normalized()
+		# Déterministe par segment : une capture de référence se rejoue (§21.8).
+		rng.seed = 20260811 + i * 97
+		var pieces: int = maxi(2, ceili(length / 5.5))
+		for j: int in range(pieces):
+			var t: float = (float(j) + 0.5) / float(pieces)
+			var centre: Vector2 = from + delta * t \
+				+ side * rng.randf_range(-0.55, 0.55)
+			var piece_length: float = (length / float(pieces)) * 1.28
+			var width: float = 2.4 + 0.55 * sin(float(j) * 2.1 + float(i)) \
+				+ rng.randf_range(-0.15, 0.15)
+			var quad: MeshInstance3D = MeshInstance3D.new()
+			# Le premier tronçon du segment garde le nom historique nu :
+			# le test d'ISS-039 le désigne par « PathStrip00 ».
+			quad.name = "PathStrip%02d" % i if j == 0 \
+				else "PathStrip%02d_%02d" % [i, j]
+			var plane: PlaneMesh = PlaneMesh.new()
+			plane.size = Vector2(piece_length, width)
+			quad.mesh = plane
+			quad.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			quad.material_override = earth_tints[(i + j) % 3]
+			quad.position = Vector3(centre.x, ground + PATH_CLEARANCE, centre.y)
+			# Déviation : jamais deux tronçons alignés — l'alternance porte la
+			# variation minimale, le bruit la rend irrégulière.
+			quad.rotation.y = heading \
+				+ (0.055 if j % 2 == 0 else -0.045) \
+				+ rng.randf_range(-0.04, 0.04)
+			paths.add_child(quad)
+			# ÉPAULEMENT : l'herbe compressée déborde du tronçon — c'est la
+			# transition terre → prairie, pas un bord net de dalle.
+			var shoulder: MeshInstance3D = MeshInstance3D.new()
+			shoulder.name = "PathEdge%02d_%02d" % [i, j]
+			var apron: PlaneMesh = PlaneMesh.new()
+			apron.size = Vector2(piece_length * 1.30, width * 1.85)
+			shoulder.mesh = apron
+			shoulder.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			shoulder.material_override = shoulder_material
+			shoulder.position = Vector3(centre.x, ground, centre.y)
+			shoulder.rotation.y = quad.rotation.y
+			edges.add_child(shoulder)
+			# LANGUE D'HERBE en travers du bord (correction 7) : un tronçon
+			# sur deux, la prairie mord sur la terre — le contour du chemin
+			# se casse au lieu de courir d'un seul trait.
+			if j % 2 == 0:
+				var tongue: MeshInstance3D = MeshInstance3D.new()
+				tongue.name = "PathGrass%02d_%02d" % [i, j]
+				var blob: PlaneMesh = PlaneMesh.new()
+				blob.size = Vector2(rng.randf_range(1.2, 2.4),
+					rng.randf_range(1.0, 1.8))
+				tongue.mesh = blob
+				tongue.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+				tongue.material_override = tongue_material
+				var bite: float = (1.0 if (i + j) % 4 < 2 else -1.0) \
+					* width * rng.randf_range(0.30, 0.55)
+				var at_tongue: Vector2 = centre + side * bite \
+					+ delta.normalized() * rng.randf_range(-1.2, 1.2)
+				# Dans la couche des ÉPAULEMENTS mais au-dessus d'eux : la
+				# passe de repose la plaque à mi-hauteur entre épaulement et
+				# terre (voir TONGUE_LIFT dans _snap_dressing_to_ground).
+				tongue.position = Vector3(at_tongue.x, ground, at_tongue.y)
+				tongue.rotation.y = quad.rotation.y + rng.randf_range(-0.6, 0.6)
+				edges.add_child(tongue)
+			# Une pierre de bord un tronçon sur deux, côté alterné — et par
+			# petites GRAPPES de 2-3, jamais une perle isolée tous les X m.
+			if j % 2 == 1:
+				var cluster: int = rng.randi_range(2, 3)
+				var flank: float = (1.0 if j % 4 == 1 else -1.0) \
+					* (width * 0.5 + rng.randf_range(0.3, 0.8))
+				var at_cluster: Vector2 = centre + side * flank
+				for k: int in range(cluster):
+					var stone: MeshInstance3D = MeshInstance3D.new()
+					stone.name = "PathStone%02d_%02d_%d" % [i, j, k]
+					var pebble: SphereMesh = SphereMesh.new()
+					pebble.radius = rng.randf_range(0.10, 0.26)
+					pebble.height = pebble.radius * 1.5
+					pebble.radial_segments = 7
+					pebble.rings = 4
+					stone.mesh = pebble
+					stone.cast_shadow = \
+						GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+					stone.material_override = stone_material
+					var at_stone: Vector2 = at_cluster + Vector2(
+						rng.randf_range(-0.5, 0.5), rng.randf_range(-0.5, 0.5))
+					stone.position = Vector3(at_stone.x, ground, at_stone.y)
+					edges.add_child(stone)
 
 
 ## Variation des sols (réf. 01 : « matériaux de sol mieux différenciés ») :
@@ -2050,13 +2668,67 @@ func _visual_prism(prism_name: String, parent: Node3D, center: Vector3,
 ## Briques de construction
 ## ---------------------------------------------------------------------------
 
+## Tronc de pyramide PLEIN, décor sans collision : base posée à `base_center`,
+## sommet rétréci à `top_size` et décalé de `top_shift` (l'asymétrie de §2.2 —
+## deux pentes égales sont le premier indice « procédural »).
+##
+## Étape 4 (V-002) : c'est la réponse aux terrasses-boîtes de la citadelle.
+## Un `BoxMesh` ne PEUT pas taluter ; ce n'est pas une subdivision d'un cube
+## en petits cubes, c'est un autre solide.
+func _frustum_in(frustum_name: String, parent: Node3D, base_center: Vector3,
+		base_size: Vector2, top_size: Vector2, height: float,
+		top_shift: Vector2, color: Color) -> void:
+	var half_base: Vector2 = base_size * 0.5
+	var half_top: Vector2 = top_size * 0.5
+	var points: PackedVector3Array = PackedVector3Array([
+		# base (y = 0 local)
+		Vector3(-half_base.x, 0, -half_base.y),
+		Vector3(half_base.x, 0, -half_base.y),
+		Vector3(half_base.x, 0, half_base.y),
+		Vector3(-half_base.x, 0, half_base.y),
+		# sommet (y = height local), décalé
+		Vector3(top_shift.x - half_top.x, height, top_shift.y - half_top.y),
+		Vector3(top_shift.x + half_top.x, height, top_shift.y - half_top.y),
+		Vector3(top_shift.x + half_top.x, height, top_shift.y + half_top.y),
+		Vector3(top_shift.x - half_top.x, height, top_shift.y + half_top.y),
+	])
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var quads: Array[Array] = [
+		[3, 2, 1, 0],   # dessous
+		[4, 5, 6, 7],   # dessus
+		[0, 1, 5, 4],   # face nord (-z local)
+		[2, 3, 7, 6],   # face sud (+z local)
+		[1, 2, 6, 5],   # flanc est
+		[3, 0, 4, 7],   # flanc ouest
+	]
+	for quad: Array in quads:
+		for index: int in [0, 1, 2, 0, 2, 3]:
+			st.add_vertex(points[quad[index]])
+	st.generate_normals()
+	st.index()
+	var mesh: MeshInstance3D = MeshInstance3D.new()
+	mesh.name = frustum_name
+	mesh.mesh = st.commit()
+	mesh.material_override = _material(color, false)
+	mesh.position = base_center
+	parent.add_child(mesh)
+
+
 ## Dalle pleine : sommet à `top`, fond commun à BASE_Y.
+##
+## Toute dalle rejoint le groupe des PORTEURS DE SOL : la passe de peinture les
+## exempte par ce groupe, plus par une liste de noms qui oubliait toutes les
+## rampes (voir `PainterlyRecipe.GROUND_CARRIER_GROUP`).
 func _slab(slab_name: String, center_xz: Vector2, size_xz: Vector2, top: float,
 		color: Color) -> void:
 	var height: float = top - BASE_Y
 	_box_in(slab_name, self,
 		Vector3(center_xz.x, BASE_Y + height * 0.5, center_xz.y),
 		Vector3(size_xz.x, height, size_xz.y), color, true)
+	var body: Node = get_node_or_null(NodePath(slab_name))
+	if body != null:
+		body.add_to_group(PainterlyRecipe.GROUND_CARRIER_GROUP)
 
 
 ## Boîte avec collision optionnelle et émission optionnelle.
@@ -2173,6 +2845,9 @@ func _ramp(ramp_name: String, from: Vector3, to: Vector3, width: float,
 	mesh.material_override = _material(color, false)
 	body.add_child(mesh)
 	add_child(body)
+	# Une rampe EST un porteur de sol : c'est l'oubli exact qui peignait la
+	# rampe processionnelle en vert vif sur 55 % du cadre d'approche.
+	body.add_to_group(PainterlyRecipe.GROUND_CARRIER_GROUP)
 
 
 ## Maillage du prisme : les six faces du coin, en quads triangulés.
@@ -2267,10 +2942,14 @@ var _macro_material_cache: Dictionary = {}
 
 
 func _ground_material() -> StandardMaterial3D:
+	# Lot A : moyenne descendue d'environ un cinquième, ÉCART ÉLARGI de 0,24 à
+	# 0,35 de luma. Le sol dominait le ciel (§1.5) et le faisait dans une bande
+	# étroite — l'image n'avait ni hiérarchie ni modelé. Élargir l'écart sert
+	# aussi l'invariant d'écart-type de `test_phase_h_silhouettes`.
 	return _macro_material(&"grass", 20260804, [
-		Color(0.267, 0.408, 0.169),   # olive profond #446B2B
-		Color(0.365, 0.561, 0.239),   # ancre #5D8F3D
-		Color(0.498, 0.663, 0.306),   # olive éclairé #7FA94E
+		Color(0.094, 0.153, 0.065),   # creux d'ombre, olive profond
+		Color(0.176, 0.280, 0.117),   # ancre
+		Color(0.273, 0.403, 0.176),   # olive éclairé
 	])
 
 
@@ -2278,18 +2957,23 @@ func _ground_material() -> StandardMaterial3D:
 ## falaises étaient les derniers grands aplats du cadre (§5.1).
 func _rock_material() -> StandardMaterial3D:
 	return _macro_material(&"rock", 20260806, [
-		Color(0.50, 0.32, 0.19),      # ocre profond
-		Color(0.608, 0.408, 0.259),   # ancre COL_ROCK
-		Color(0.70, 0.50, 0.33),      # arête chauffée
+		Color(0.360, 0.215, 0.125),   # ocre profond
+		Color(0.500, 0.325, 0.200),   # ancre
+		Color(0.680, 0.475, 0.310),   # arête chauffée
 	])
 
 
 ## …et pour la MONTAGNE (murs, crêtes, jupes) : gris-bleu froid varié.
 func _mountain_material() -> StandardMaterial3D:
+	# Lot A : la montagne tenait dans 0,15 de luma d'un bout à l'autre — un
+	# aplat. La bande s'ouvre à 0,25 et descend : le mur de bordure cesse
+	# d'être aussi clair que le ciel, et l'anneau lointain (COL_MOUNTAIN_FAR,
+	# volontairement laissé clair) passe devant lui en valeur. C'est ainsi que
+	# la profondeur se PEINT, comme le disait déjà `_build_border_crests`.
 	return _macro_material(&"mountain", 20260807, [
-		Color(0.44, 0.465, 0.53),
-		Color(0.515, 0.545, 0.608),   # ancre COL_MOUNTAIN
-		Color(0.585, 0.615, 0.675),
+		Color(0.400, 0.432, 0.505),
+		Color(0.520, 0.556, 0.632),   # ancre
+		Color(0.640, 0.672, 0.745),
 	])
 
 

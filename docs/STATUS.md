@@ -6,6 +6,59 @@ Vocabulaire imposé (§0.2) : `Non commencé` · `Implémenté` (raccordé) ·
 
 **Dernière mise à jour** : 2026-08-06 · **Phase** : Passe art « wahou » sur branche `claude/eclats-art-visual-pass-tyfhgc` — Lots 1-16 FAITS (tour du monde en images : 11 zones capturées + table de verdicts ; TOUTE la carte peinte 3768 surfaces ; citadelle en terrasses ; peinture du donjon tentée puis RETIRÉE sur mesure — AD-008) (v18 : grain procédural + SIX textures ambientCG CC0 déposées par le propriétaire, licences inscrites avant build et test qui le vérifie ; deux corrections de palette mesurées) (v15 : habillage aux 13 modèles Quaternius CC0 du dépôt + variante découpe du painterly pour les feuilles) (v13, éval fin de journée ≈ 71,5 UNVERIFIED < 75 — pas de V4 ; revue contradictoire consignée, corrections prouvées) : éval sévère v5 = 58/100 → AD-004 ; `SH_CharacterPainterly` trois pilotes 3/3 ; PREMIÈRE vidéo de stabilité §30.1 (18,1 s, Movie Maker fixed-fps, `herolab_v6_stabilite.webp`) — elle a révélé l'herbe FIGÉE, corrigée par `SH_FoliageWindPainterly` (sondes 0,00 → 1,6-2,0) ; Lot 4 : le lab ENTIER peint (`test_painterly_lab` — zéro surface mate nue, 3 émissifs justifiés), capture v8, bandes §1.5 intactes · **Gate A gelé** : `9414fd0` · **Commit courant** : voir `git log`
 
+## Tranche verticale d'ouverture — lots A à D (2026-08-11, `claude/new-session-840w2o`)
+
+Base : `6a996a5`, obtenue en fusionnant LOCALEMENT
+`origin/claude/vertical-slice-opening-polish` dans la branche de session, qui
+en était **13 commits en arrière**. Le SHA `c8fc1ab` annoncé par le prompt de
+reprise n'existe dans aucune référence du dépôt. Détail : `PROGRESS.md`.
+
+Preuves : `evidence/vertical_slice_20260811/` — six paires avant/après,
+vignettes, niveaux de gris, manifestes et relevés.
+
+| Élément | État | Preuve |
+|---|---|---|
+| Six caméras de gate NOMMÉES et rejouables | **Validé** | `ValleyWorld.GATE_CAMERA_NAMES`, `tools/capture_vslice_gate.sh` |
+| Hiérarchie des valeurs §1.5 sur le chemin d'ouverture | **Fonctionnel** | `check_value_bands.py` : 1 caméra conforme sur 6 → **4 sur 6** |
+| Trois plans distincts sur la vue d'ouverture | **Implémenté** | écart haut/milieu 1,9 → 5,3 points. Mieux orienté, pas encore franc |
+| Rampe processionnelle repeinte en vert (55,5 % du cadre) | **Validé** | `test_ground_carriers_keep_their_material.gd`, contrôle négatif à 16 assertions rouges |
+| Face sud du plateau lue comme un mur | **Fonctionnel** | falaise à trois rangs ; plus de plan plein sur les caméras 5 et 6 |
+| Anneau montagneux en peigne | **Fonctionnel** | crêtes et jupes recouvrantes ; reste à juger par un œil externe |
+| `prop.tent` / `prop.campfire` livrés et consommés | **Validé** | `AwningTent`, `CampfireProp`, `test_asset_pipeline.gd` |
+| Colonne de fumée : voile et non pilier, ET visible de la crête | **Validé** | contraste mesuré +22,6 → +1,6 → **+39,7** |
+| Terrain plat (96,8 % sous 5°) | **Non commencé** | intact depuis l'audit — aucun relief touché |
+| Chemins « bandes posées » (22,2 % du cadre d'ouverture) | **Non commencé** | lot C non fait |
+| Citadelle en empilement de boîtes | **Non commencé** | lot B non terminé |
+| Débordement Options/Commandes à 720p | **Non commencé** | lot F non fait |
+| Score North Star | **NON VÉRIFIÉ** | aucun évaluateur indépendant n'a noté ces captures |
+| Trois joueurs boîte noire | **NON VÉRIFIÉ** | `tools/blackbox_player/` non lancé dans cette session |
+| Suite complète après verrou anti-concurrence | **Validé** | 823/0, RC=0, un seul résumé — les 8 échecs étaient DEUX runners entrelacés (`validate_fast_VERT_823_apres_verrou.log`) |
+| Caméra de descente désenterrée + sonde des six caméras | **Validé** | `test_gate_cameras_are_not_buried.gd`, contrôle négatif rouge |
+| Citadelle : vides, brèche, courtines, terrasses talutées | **Fonctionnel** | `test_citadel_carries_voids_and_asymmetry.gd` rouge d'abord ; image finale à juger par Codex |
+| Chemins en tronçons plaqués au sol | **Fonctionnel** | `test_paths_belong_to_the_ground.gd` (10 échecs mesurés avant) ; `final/02+05` |
+| Talus des mesas, paroi d'escalade intacte | **Fonctionnel** | `test_mesas_wear_talus.gd` — l'exclusion de la paroi est testée |
+| Matrice de traçabilité des 87 constats d'audit | **Validé** | `AUDIT_TRACEABILITY.csv` + `AUDIT_FILES_USED.md` |
+| Gate « tranche verticale professionnelle » | **ÉCHEC** | voir `evidence/vertical_slice_20260811/README.md` §4 — verdict d'image et North Star : Codex |
+
+## Tranche verticale d'ouverture — lot 1 (2026-08-10, `claude/vertical-slice-opening-polish`)
+
+Base : `02d5212` (le build du playtest en cours), retenue après constat d'une
+divergence — voir `PROGRESS.md`. Godot et Blender ont dû être installés dans le
+conteneur avant toute mesure.
+
+| Élément | État | Preuve |
+|---|---|---|
+| Plancher de référence, arbre propre | **Validé** | `validate_fast.sh` VERT RC=0, niveau 3b compris (Blender installé) |
+| Capture de référence de la vue d'ouverture | **Fonctionnel** | `evidence/vslice/baseline/01_vista.png` + manifeste, arbre committé |
+| Décor de la crête et de la descente posé au sol | **Validé** | `test_opening_dressing_rests_on_ground.gd` — ROUGE d'abord (28 pièces fautives sur 33, écarts nommés), VERT après |
+| Effet visuel du correctif sur `VistaCamera_Hero01` | **NON VÉRIFIÉ** | la capture change très peu : le décor de la crête est majoritairement hors de ce cadrage. Le gain est ailleurs, et personne ne l'a encore vu à l'écran |
+| Trois joueurs blackbox de l'Étape 1 | **Non commencé** | ≈ 100 min, séquentiels obligatoires |
+| Composition, lisibilité, cadrage, guidage | **Non commencé** | aucun jugement de rendu n'est porté par cette session |
+
+Ce lot corrige une **géométrie fausse**, pas une direction artistique. Il ne doit
+pas être présenté comme une amélioration visuelle : c'est une condition
+préalable pour que le décor déjà écrit existe à l'écran.
+
 ## Playtest du 2026-08-07 — les quatre réparations
 
 Défauts pris dans l'ordre où le joueur les rencontre

@@ -42,8 +42,18 @@ height = 40.0
 ; épaisseur en semi-transparence au lieu de montrer une seule paroi.
 ; `shading_mode = 0` est CONSERVÉ : non éclairée, la fumée reste claire donc
 ; découpée sur les falaises grises, ce qui est la raison d'être de la colonne.
+;
+; LOT D (2026-08-11) : la teinte remonte de 0,58 à 0,87 et l'alpha de 0,22 à
+; 0,34. Ce n'est pas un retour en arrière vers le pilier de béton — c'est la
+; conséquence d'un AUTRE correctif. Tant que la passe de peinture repeignait
+; ce voile en CUTOUT opaque, son alpha ne servait à rien ; une fois la
+; transparence respectée (`PainterlyRecipe.is_translucent`), 0,22 d'un gris
+; à 0,58 sur des falaises grises redevenait INVISIBLE depuis la crête. La
+; capture de gate 01 le montrait : plus de colonne du tout. Or c'est ce
+; signal qui a manqué à quatre playtests pour trouver le camp. Le voile doit
+; rester un voile ET se découper : clair, peu opaque.
 [sub_resource type="StandardMaterial3D" id="SmokeMat"]
-albedo_color = Color(0.58, 0.6, 0.65, 0.22)
+albedo_color = Color(0.87, 0.89, 0.93, 0.34)
 transparency = 1
 shading_mode = 0
 cull_mode = 2
@@ -107,6 +117,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45, 6, 65)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20.25, -1)
 mesh = SubResource("SmokeMesh")
 surface_material_override/0 = SubResource("SmokeMat")
+cast_shadow = 0
 script = ExtResource("12_smoke")
 
 ; §24/§10.1 (bible) : « flamme orange » et « reflet chaud » — la flamme emissive

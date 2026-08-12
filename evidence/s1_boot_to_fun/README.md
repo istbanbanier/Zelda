@@ -1,10 +1,10 @@
-# Preuves S1 — gate BOOT-TO-FUN, après la DEUXIÈME passe d'audit
+# Preuves — S1 (infrastructure) et S2.0 (correction de `P9c`)
 
 | | |
 |---|---|
-| Code éprouvé | `137034f5d89fae1c63e6fbdb8690cacc5ecec1f1` |
+| Code éprouvé | `b0850e5b19716f2f4d251ac28e08d4582eab36e3` |
 | Branche | `claude/world-of-claudecraft-advice-snt1qa`, **poussée** |
-| Base de cette passe | `f2cdc0b80f8e401cb585d99f057fd6c7cda45cbc` |
+| Base de la passe S2.0 | `bec93f1ac9bb0bb311156055e718bb7d86f96ba7` |
 | Arbre pendant les exécutions | propre — `git status --porcelain` vide, `git diff --check` muet |
 | Godot | `4.7.1.stable.custom_build.a13da4feb` · `forward_plus` · headless · Jolt 60 Hz |
 | Date | 2026-08-09 |
@@ -13,100 +13,94 @@
 
 | Question | Verdict | Pourquoi |
 |---|---|---|
-| **Gate automatique actuel** | **`FAIL`** | `P9c` échoue : l'invite est muette au centre de la porte du donjon |
+| **Gate automatique actuel** | **`PASS`** | `validate_fast` **VERT**, 816 réussis / 0 échoué, code 0 |
 | **Couverture BOOT-TO-FUN complète** | **`NON VÉRIFIÉ`** | salles 2-4, salle centrale, antichambre, boss, victoire jamais atteints depuis le flux normal |
 | **Critères humains** | **`BLOQUÉ`** | ni écran, ni clavier, ni manette, ni son, ni GPU |
 
-**Verdict global : `FAIL`** — un `FAIL` l'impose, quels que soient les autres.
-Il ne deviendra `NON VÉRIFIÉ` qu'une fois `P9c` corrigé, et `PASS` seulement
-après la couverture complète **et** le protocole humain.
+**Verdict global : `NON VÉRIFIÉ`**, par la règle du plus faible critère. Un gate
+vert ne dit pas que le jeu est jouable ; il dit que rien de ce qu'on sait
+mesurer n'est cassé.
 
 ## Résultats
 
 | Fichier | Commande | Résultat |
 |---|---|---|
-| `validate_fast.log` | `tools/validate_fast.sh` | **812 réussis / 1 échoué — ROUGE, code 1** |
-| `boot_smoke.log` | `--filter=boot_smoke` | 1/0, 21 assertions |
+| `validate_fast.log` | `tools/validate_fast.sh` | **816 / 0 — VERT, code 0** |
+| `dungeon_door_is_reachable.log` | `--filter=dungeon_door_is_reachable` | 3/0, 14 assertions |
+| `regression_AVANT_correction.log` | le MÊME test sur `bec93f1` | **1/4 — ROUGE**, comme il se doit |
+| `physical_run.log` | `--filter=physical_run` | 1/0, **32 assertions** |
 | `flow_wiring.log` | `--filter=flow_wiring` | 1/0, 20 assertions |
-| `physical_run.log` | `--filter=physical_run` | **0/1** — `P9c` seul |
+| `boot_smoke.log` | `--filter=boot_smoke` | 1/0, 21 assertions |
 | `restore_root.log` | `--filter=restore_root` | 6/0, six cas adverses |
-| `anti_poison_sequentiel.log` | 6 fichiers chargeant un monde, à la suite | 11/1 — aucune contamination |
-| `controle_negatif.log` | `tools/gate_negative_control.sh` | 2 déclarés, 2 exécutés, **0 ignorés**, 2 validés, code 0 |
+| `anti_poison_sequentiel.log` | 7 fichiers chargeant un monde, à la suite | **15/0** |
+| `controle_negatif.log` | `tools/gate_negative_control.sh` | 2 déclarés, 2 exécutés, **0 ignorés**, 2 validés |
 | `controle_negatif_AUTOTEST.log` | signature fausse + fichier absent | **code 1** — les garde-fous mordent |
 | `physical_run_INSTRUMENTE.log` | recorder rallongé d'un `print` | **lecture, pas preuve** — arbre sale |
 
-L'unique échec de toute la suite est `P9c`. Aucune fuite de ressources, aucun
-`SCRIPT ERROR`.
+Aucune fuite de ressources, aucun `SCRIPT ERROR`.
 
-## Ce que le parcours physique a mesuré
+## S2.0 — `P9c` corrigé
 
-- **11/11** jalons de crête, **5/5** de la route du donjon ;
-- coffre **`RiverChest`** ouvert par `interact_pressed` à 0,79 m, cos 0,98 —
-  inventaire **1 → 2 armes** ;
-- **4 touches** portées par `attack_pressed`, ennemi à 0,7 m, instigateur du
-  dégât = le joueur ;
-- `pulse_pressed` → **1 cible révélée**, pas seulement le verdict « fired » ;
-- **`P11` : 5 621 ticks physiques échantillonnés**, min y = 0,00 (seuil −5,0),
-  plus grand saut de position **0,52 m** en un tick (seuil 3,0). « Jamais sous
-  le monde » est désormais une mesure, pas une affirmation ;
-- salle 1 atteinte à pied après **un** repositionnement.
+Le défaut, mesuré pendant deux passes d'audit : à 0,75 m de la porte du donjon,
+parfaitement en face, au sol, porte dans le groupe `interactable`,
+`_select_interactable()` ne rendait **rien**. Le rayon de `_has_interact_los()`
+— couche 1 — était coupé par `SealedSeam`, une veine cyan **décorative**
+construite par `_box()` en `StaticBody3D` à `z = −12,50`, devant le battant à
+`z = −12,75`.
 
-## Le défaut : la porte du donjon est MUETTE au centre
+La correction est locale et structurelle : `_decor_box()` produit un
+`MeshInstance3D` seul — même boîte, même matériau, même émission, **aucun corps,
+aucune forme de collision**. Rien d'autre n'a bougé : ni `INTERACT_RANGE`, ni le
+cône, ni la ligne de vue, ni la position de la porte ou du joueur, et aucune
+exception n'a été ajoutée au contrôleur.
+
+Le contraste, extrait des deux lectures :
 
 ```
-P9c   mode=0, sol=true
-      [d=0.75 m (max 2,20) · cos=1.00 (min 0,25)
-       · groupe=true · vue=SealedSeam · choisi=aucun]
+AVANT   vue=SealedSeam · choisi=aucun      → il fallait un pas de côté
+APRÈS   vue=libre      · choisi=DungeonDoor → P9d : 0 repositionnement
 ```
 
-À 75 cm, parfaitement en face, au sol, la porte dans le groupe `interactable` :
-`_select_interactable()` ne rend rien. Le rayon de `_has_interact_los()` est
-coupé par `SealedSeam`, une veine cyan décorative en `StaticBody3D` sur la
-**couche 1** à `z = −12,50` (`citadel_vestibule.gd`, helper `_box`), devant le
-battant à `z = −12,75`.
+### Le test de régression a bien rougi avant
 
-La contre-épreuve est dans le même journal : après un pas de côté de 1,5 m,
-`vue=libre · choisi=DungeonDoor` et la salle 1 s'ouvre. Le décor coupe donc
-l'interaction **à l'endroit exact où un joueur se place**, et nulle part
-ailleurs.
+`regression_AVANT_correction.log` : le même fichier, rejoué en worktree détaché
+sur `bec93f1`, sort **1 réussi / 4 échoués** —
 
-C'est la signature du défaut nº 1 du playtest humain du 2026-08-07 : le joueur
-appuie sur `E`, n'obtient rien, conclut que la touche ne marche pas.
+```
+ÉCHEC  ligne de vue LIBRE au centre du battant (obstacle : SealedSeam)
+ÉCHEC  le contrôleur DÉSIGNE `DungeonDoor` par identité (obtenu : aucune cible)
+ÉCHEC  …mais ce n'est PLUS un corps de collision (classe : StaticBody3D)
+ok     la porte garde son corps et son apparence
+```
 
-**Non corrigé, sur consigne.** C'est du jeu, donc S2.
+Le cas « la porte garde son corps » reste vert : ce n'est pas un test qui échoue
+toujours.
 
-## Deux intermittents corrigés dans cette passe — aucun dans le jeu
+### Ce que `physical_run` mesure maintenant
 
-**1. Une borne qui exigeait une machine RAPIDE.** `B4` a rougi dans la suite
-complète après être passé seul. En headless, `SceneFlow._load_and_swap()` prend
-le chemin synchrone : la frame de chargement dure plusieurs secondes et
-`get_process_delta_time()` les compte. `GateTestCase.await_scene()` borne
-désormais l'ORDRE (6 s) et l'APPARITION (15 s), jamais le chargement — dont le
-garde de 600 s est un filet anti-blocage, pas un budget.
+- 11/11 jalons de crête, 5/5 de la route du donjon ;
+- coffre `RiverChest` ouvert à la touche, inventaire 1 → 2 armes ;
+- 4 touches par `attack_pressed`, instigateur = le joueur ;
+- `pulse_pressed` → 1 cible révélée ;
+- **`P11` : 4 864 ticks physiques échantillonnés**, min y = 0,00 (seuil −5,0),
+  aucune discontinuité de position ;
+- **`P9c` PASS au centre**, **`P9d` : zéro repositionnement latéral**. Le
+  parcours latéral survit comme filet, jamais comme solution — sans `P9d`, un
+  retour du défaut serait absorbé par le filet et `P9b` resterait vert.
 
-**2. Un appui avalé en silence.** `B4` a rougi une seconde fois, et le journal
-ne montrait rien : ni avertissement, ni vallée. Cause lue dans le code —
-`SceneFlow.can_go_to()` rend faux tant que `_busy`, et
-`MainMenu._enter_valley()` se contente alors d'écrire « Vallée indisponible »
-dans un libellé. Ni `push_warning`, ni `push_error`, ni transition. Or `_busy`
-ne retombe qu'après le fondu de sortie : `MainMenu` existe pendant que le flux
-est encore occupé. Le pilote pressait dans cette fenêtre.
+## Une fuite trouvée en chemin, et qui n'était pas `P9c`
 
-Un joueur ne rencontre pas ce cas — le voile noir couvre l'écran pendant ce
-laps. Le pilote l'imite : `await_flow_idle()` avant chaque appui de menu, et un
-critère `B3b` le rend visible.
+Une fois `P9c` corrigé, tous les tests passaient mais le gate restait ROUGE sur
+« 2 ObjectDB instances were leaked » et « resources still in use » — les deux
+motifs ajoutés au filtre pendant S1, qui faisaient leur travail.
 
-## Ce que la deuxième passe a durci
+Source **nommée** par `--verbose` plutôt que devinée :
+`res://assets/audio/sfx/amb_valley.wav`. Isolés un par un : `boot_smoke` propre,
+`physical_run` propre, le nouveau test d'intégration propre, `test_audio_sfx`
+fuit. Son cas `test_playing_a_sound_is_safe_even_headless` joue **tous** les sons
+déclarés, `amb_valley` compris, et il vit dans `unit/` — donc il s'exécute
+**après** les trois parcours, qui eux arrêtent l'ambiance. Le lecteur du pool
+gardait le flux et sa lecture jusqu'à la fin du processus.
 
-- **`restore_root()` vérifie les deux directions** : rien en trop, **rien en
-  moins**. Nœud photographié disparu ou remplacé par un homonyme → verdict faux
-  et disparu nommé. `current_scene` traitée à part — un `current_scene` perdu ne
-  se voit dans aucune liste d'enfants. Motifs cumulés.
-- **`test_runner.gd`** : photo par `instance_id`, détection des racines ajoutées
-  **et** supprimées ou remplacées, message distinct pour chacun. Éprouvé en
-  worktree jetable : retirer `AudioManager` produit « fait DISPARAÎTRE
-  AudioManager (supprimé) de la racine ».
-- **Sur-promesses retirées.** `P4` sélectionne un **vrai coffre** et exige
-  l'effet d'inventaire. `B8` dit « présent dans un rayon euclidien » et que la
-  route n'est pas éprouvée. `B9` dit « câblage `HealthComponent` → mort →
-  panneau → reprise » ; le combat réel n'est prouvé que par `P5`.
+Il rend maintenant le pool comme il l'a trouvé. Ni le filtre ni le verdict n'ont
+été arrangés pour obtenir ce vert.
