@@ -32,6 +32,10 @@ const TEST_ROOTS: Array[String] = [
 	"res://tests/unit",
 	"res://tests/integration",
 	"res://tests/playthrough",
+	# World V2 (phase V2.0) : les contrats de la reconstruction parallèle.
+	# Racine séparée pour que `--filter=world_v2` les rejoue seuls, et pour
+	# qu'un test V2 ne se déguise jamais en test V1.
+	"res://tests/world_v2",
 ]
 
 var _passed: int = 0
