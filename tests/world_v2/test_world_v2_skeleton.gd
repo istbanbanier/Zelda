@@ -17,7 +17,11 @@ const WORLD_V2_SCENE: String = "res://scenes/world_v2/WorldV2.tscn"
 const BOOTSTRAP_SCENE: String = "res://scenes/world_v2/WorldV2Bootstrap.tscn"
 ## Cible de « Réessayer » attendue sur la coquille embarquée dans V2.
 const EXPECTED_SHELL_TARGET: String = "res://scenes/world_v2/WorldV2.tscn"
-## Le sol temporaire du squelette : dessus de la dalle (centre 23 + demi-hauteur 1).
+## Altitude du sol au spawn : l'ancre §3.3 (0, 24, 170) — le pad de spawn de
+## la fonction de hauteur V2.1 garantit exactement 24, comme le faisait le
+## dessus de la dalle temporaire V2.0. Le contrat (le sol PORTE le joueur à
+## cette altitude) est inchangé ; seul le porteur a changé — c'est le
+## remplacement annoncé par l'étiquette du sol temporaire.
 const TEMP_GROUND_TOP_Y: float = 24.0
 ## Assez de frames physiques pour qu'une chute de ~0,4 m se pose et se stabilise.
 const SETTLE_PHYSICS_FRAMES: int = 40
@@ -142,8 +146,14 @@ func test_le_squelette_porte_le_vrai_joueur_sans_toucher_la_sauvegarde() -> void
 	var hit: Dictionary = world.call("probe_ground_below_spawn") as Dictionary
 	check(not hit.is_empty(), "un sol existe sous le spawn (couche World Static)")
 	if not hit.is_empty():
-		check_equal((hit["collider"] as Node).name, &"V2_0_TemporaryGround",
-			"le sol touché est bien le sol TEMPORAIRE marqué V2.0")
+		var ground: Node = hit["collider"] as Node
+		# V2.0 exigeait ici le sol TEMPORAIRE nommé ; V2.1 l'a remplacé par la
+		# vallée whitebox — l'assertion suit le contrat, renforcée : le sol
+		# est un CHUNK de terrain V2 (groupe + nom de grille), plus une dalle.
+		check(ground.is_in_group(&"world_v2_terrain"),
+			"le sol touché est un chunk du terrain V2 (obtenu : %s)" % ground.name)
+		check(String(ground.name).begins_with("c"),
+			"le chunk porte son nom de grille (obtenu : %s)" % ground.name)
 
 	# --- Le joueur SE POSE : la collision porte, la position se stabilise.
 	var frames: int = 0

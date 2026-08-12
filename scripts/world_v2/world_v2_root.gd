@@ -1,40 +1,33 @@
-## Racine du monde World V2 — SQUELETTE de la phase V2.0.
+## Racine du monde World V2 — VALLÉE WHITEBOX (phase V2.1).
 ##
-## Ce que cette scène EST : la preuve d'architecture. Les conteneurs de la
-## reconstruction existent, le vrai joueur (`scenes/player/Player.tscn`) et la
-## vraie coquille de jeu (`scenes/ui/GameplayShell.tscn`) s'y raccordent par
-## leurs interfaces existantes, le sol temporaire porte une collision réelle,
-## et la carte directrice (`WorldV2Layout`) est chargée et validée.
+## V2.0 avait prouvé l'architecture avec un sol temporaire ; V2.1 le remplace
+## par la vallée réelle en whitebox : 64 chunks de relief continu issus de LA
+## fonction de hauteur (`WorldV2Heightmap`), hydrologie creusée, marqueurs des
+## lieux, limites fermées, navigation versionnée, six fenêtres de composition.
+## Tout est construit UNE fois au chargement, depuis la carte directrice
+## validée — une carte invalide arrête le monde bruyamment.
 ##
-## Ce que cette scène N'EST PAS : un monde. Aucun habillage, aucun POI posé,
-## aucun éclairage final — le sol est marqué « TEMPORAIRE V2.0 » en toutes
-## lettres. La vallée whitebox arrive en V2.1, sur le masterplan approuvé.
+## Ce que cette scène N'EST toujours PAS : un monde habillé. Matériaux de
+## diagnostic, aucun asset artistique, aucun ennemi, aucune récompense —
+## la structure spatiale est vraie, et c'est tout ce qu'elle affirme.
 ##
-## Isolation : ce script ne référence RIEN du monde V1 (ni sa scène, ni ses
-## bâtisseurs) et n'écrit JAMAIS dans la sauvegarde — deux contrats tenus par
-## `tests/world_v2/`. Les seules dépendances sont les interfaces protégées :
-## Player, GameplayShell, autoloads.
+## Isolation : aucun contenu spatial V1 référencé, aucune écriture de
+## sauvegarde — contrats tenus par `tests/world_v2/`.
 class_name WorldV2Root
 extends Node3D
 
-## Identité de monde — publiée pour la future migration de sauvegarde
-## (`docs/WORLD_V2_SAVE_MIGRATION.md`). Jamais réutilisée pour autre chose.
 const WORLD_ID: StringName = WorldIds.V2_WORLD_ID
 
-## Les conteneurs de l'architecture V2 (prompt V2.0 §6). Leur ABSENCE est une
-## erreur de fondation : la construction V2.1+ posera terrain, eau, biomes,
-## routes, repères, POI, rencontres, navigation, lumière et caméras de capture
-## dans ces nœuds-là, jamais ailleurs.
 const REQUIRED_CONTAINERS: Array[String] = [
 	"TerrainChunks", "Water", "Biomes", "Routes", "Landmarks", "POIs",
 	"Encounters", "Navigation", "Lighting", "CaptureCameras", "WorldBindings",
 ]
 
-## Sonde de sol : départ au-dessus du spawn, portée vers le bas, couche 1
-## (« World Static ») uniquement — la même règle que le joueur.
 const GROUND_PROBE_UP_M: float = 2.0
 const GROUND_PROBE_DOWN_M: float = 12.0
 const WORLD_STATIC_LAYER_MASK: int = 1
+const NAV_RESOURCE_PATTERN: String = "res://resources/world_v2/nav/world_v2_navmesh_q%d.tres"
+const NAV_QUADRANTS: int = 4
 
 @onready var _spawn: Node3D = $SpawnPoint
 @onready var _player: Node3D = $Player
@@ -42,6 +35,8 @@ const WORLD_STATIC_LAYER_MASK: int = 1
 @onready var _diag_camera: Camera3D = $CaptureCameras/DiagnosticCamera
 
 var _layout: Dictionary = {}
+var _heightmap: WorldV2Heightmap = null
+var _terrain_builder: WorldV2TerrainBuilder = null
 
 
 func _ready() -> void:
@@ -58,38 +53,71 @@ func _ready() -> void:
 			% [problems.size(), problems[0]])
 		return
 
-	# Le joueur apparaît TOUJOURS au point d'apparition du squelette — aucune
-	# position de sauvegarde n'est lue ici (contrat de migration : une position
-	# V1 ne se réapplique jamais aveuglément dans V2).
+	var build_start: int = Time.get_ticks_msec()
+	_heightmap = WorldV2Heightmap.new(_layout)
+	_terrain_builder = WorldV2TerrainBuilder.new(_heightmap, _layout)
+	_terrain_builder.build($TerrainChunks as Node3D)
+	var hydrology: WorldV2HydrologyBuilder = WorldV2HydrologyBuilder.new(_heightmap, _layout)
+	hydrology.build($Water as Node3D, $Landmarks as Node3D)
+	var markers: WorldV2MarkersBuilder = WorldV2MarkersBuilder.new(_heightmap, _layout)
+	markers.build($POIs as Node3D, $Landmarks as Node3D, $Biomes as Node3D,
+		$Routes as Node3D)
+	var borders: WorldV2BordersBuilder = WorldV2BordersBuilder.new(_heightmap)
+	borders.build($TerrainChunks as Node3D)
+	var cameras: WorldV2CamerasBuilder = WorldV2CamerasBuilder.new(_heightmap)
+	cameras.build($CaptureCameras as Node3D)
+	var nav_regions: int = _load_navigation()
+
+	# Le joueur apparaît TOUJOURS au point d'apparition — aucune position de
+	# sauvegarde n'est lue ici (contrat de migration).
 	_player.global_position = _spawn.global_position
 
-	# La caméra de diagnostic cadre le spawn ; elle n'est PAS active par défaut
-	# — le jeu reste sur la caméra du joueur, l'outil de capture l'active par
-	# `--call=activate_diagnostic_camera`.
 	_diag_camera.look_at_from_position(
 		_diag_camera.global_position, _spawn.global_position, Vector3.UP)
 
-	print("[world_v2] monde        : %s (squelette V2.0)" % WORLD_ID)
+	print("[world_v2] monde        : %s (vallée whitebox V2.1)" % WORLD_ID)
 	print("[world_v2] carte        : %d lieux + %d sites systémiques, valide"
 		% [(_layout.get("pois", []) as Array).size(),
 			(_layout.get("systemic_sites", []) as Array).size()])
+	print("[world_v2] terrain      : %d chunks, montage %d ms"
+		% [get_tree().get_nodes_in_group(&"world_v2_terrain").size(),
+			Time.get_ticks_msec() - build_start])
+	print("[world_v2] navigation   : %d région(s) chargée(s)" % nav_regions)
 	print("[world_v2] spawn        : %s" % _spawn.global_position)
 
-	# La sonde de sol exige un état physique à jour : première frame physique.
 	await get_tree().physics_frame
 	if not is_instance_valid(self) or not is_inside_tree():
 		return
 	var hit: Dictionary = probe_ground_below_spawn()
 	if hit.is_empty():
-		push_error("[world_v2] AUCUN SOL sous le spawn — le squelette ne porte pas le joueur")
+		push_error("[world_v2] AUCUN SOL sous le spawn — le monde ne porte pas le joueur")
 		return
 	print("[world_v2] sol          : %s à y=%.2f" % [
 		(hit["collider"] as Node).name, (hit["position"] as Vector3).y])
-	print("[world_v2] fondation V2 vérifiée — squelette prêt.")
+	print("[world_v2] fondation V2 vérifiée — vallée whitebox prête.")
 
 
-## Conteneurs manquants — vide si l'architecture est complète. Public : les
-## tests le lisent au lieu de dupliquer la liste.
+## Navigation versionnée : quatre quadrants cuits hors-ligne
+## (`tools/godot/bake_world_v2_navmesh.gd`). Zéro région n'est pas une
+## erreur au montage (le bake peut ne pas encore exister) — les tests, eux,
+## l'exigent.
+func _load_navigation() -> int:
+	var loaded: int = 0
+	for quadrant: int in range(NAV_QUADRANTS):
+		var path: String = NAV_RESOURCE_PATTERN % quadrant
+		if not ResourceLoader.exists(path):
+			continue
+		var mesh: NavigationMesh = load(path) as NavigationMesh
+		if mesh == null:
+			continue
+		var region: NavigationRegion3D = NavigationRegion3D.new()
+		region.name = "NavQuadrant%d" % quadrant
+		region.navigation_mesh = mesh
+		($Navigation as Node3D).add_child(region)
+		loaded += 1
+	return loaded
+
+
 func containers_missing() -> Array[String]:
 	var missing: Array[String] = []
 	for wanted: String in REQUIRED_CONTAINERS:
@@ -106,9 +134,14 @@ func layout() -> Dictionary:
 	return _layout
 
 
-## Sonde le sol sous le spawn, sur la couche « World Static » seulement — si
-## elle ne touche rien, le joueur traverserait. Appeler après une frame
-## physique.
+func heightmap() -> WorldV2Heightmap:
+	return _heightmap
+
+
+func terrain_builder() -> WorldV2TerrainBuilder:
+	return _terrain_builder
+
+
 func probe_ground_below_spawn() -> Dictionary:
 	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
 	var from: Vector3 = _spawn.global_position + Vector3.UP * GROUND_PROBE_UP_M
@@ -118,15 +151,48 @@ func probe_ground_below_spawn() -> Dictionary:
 	return space.intersect_ray(query)
 
 
-## Active la caméra de diagnostic — chemin de l'outil de capture
-## (`--call=activate_diagnostic_camera`), jamais celui du jeu.
+## -- caméras de capture -------------------------------------------------------
+## L'outil de capture appelle une méthode SANS argument (`--call=`) : une
+## méthode par fenêtre, mêmes noms que les tests.
+
 func activate_diagnostic_camera() -> void:
 	_diag_camera.current = true
 
 
-## Retour au flux normal : la seule sortie du squelette est le menu principal,
-## par la même porte que tout le monde (SceneFlow). Aucune écriture de
-## sauvegarde au passage — le squelette n'a rien à sauver.
+func activate_capture_camera(camera_name: String) -> bool:
+	var camera: Camera3D = ($CaptureCameras as Node3D).get_node_or_null(
+		camera_name) as Camera3D
+	if camera == null:
+		push_warning("[world_v2] caméra de capture inconnue : %s" % camera_name)
+		return false
+	camera.current = true
+	return true
+
+
+func activate_cam01() -> void:
+	activate_capture_camera("cam01_spawn_vista")
+
+
+func activate_cam02() -> void:
+	activate_capture_camera("cam02_camp_pylone")
+
+
+func activate_cam03() -> void:
+	activate_capture_camera("cam03_pylone_marche")
+
+
+func activate_cam04() -> void:
+	activate_capture_camera("cam04_falaise_cuvette")
+
+
+func activate_cam05() -> void:
+	activate_capture_camera("cam05_belvedere_crete")
+
+
+func activate_cam06() -> void:
+	activate_capture_camera("cam06_plateau_vallee")
+
+
 func request_exit_to_menu() -> bool:
 	var flow: Node = get_node_or_null("/root/SceneFlow")
 	if flow == null:
