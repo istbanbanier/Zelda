@@ -1,0 +1,79 @@
+name: Bibliothèque mondiale CC0
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - codex/world-asset-library-20260812
+    paths:
+      - asset_library/SOURCES.lock.csv
+      - asset_library/scripts/fetch_locked_assets.py
+      - .github/workflows/world-asset-library.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: world-asset-library-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  fetch-and-audit:
+    if: github.actor != 'asset-library-courier[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout de la branche isolée
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 1
+
+      - name: Télécharger, élaguer et inventorier
+        run: python3 asset_library/scripts/fetch_locked_assets.py
+
+      - name: Vérifier les licences et le budget
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s asset_library/INVENTORY.csv
+          test -s asset_library/SHA256SUMS.txt
+          test -s asset_library/SOURCE_ARCHIVE_SHA256.csv
+          packs=$(find asset_library/inbox -mindepth 1 -maxdepth 1 -type d | wc -l)
+          test "$packs" -eq 11
+          missing=0
+          while IFS= read -r pack; do
+            if ! find "$pack" -type f \( -iname '*license*' -o -name PROVENANCE.md \) | grep -q .; then
+              echo "licence/provenance absente : $pack"
+              missing=1
+            fi
+          done < <(find asset_library/inbox -mindepth 1 -maxdepth 1 -type d | sort)
+          test "$missing" -eq 0
+          bytes=$(du -sb asset_library/inbox | cut -f1)
+          test "$bytes" -le $((120 * 1024 * 1024))
+          if find asset_library/inbox -type f -size +50M | grep -q .; then
+            echo "fichier individuel supérieur à 50 Mio"
+            exit 1
+          fi
+          echo "11 packs présents ; poids hors build : $bytes octets"
+
+      - name: Vérifier les empreintes produites
+        run: sha256sum --check asset_library/SHA256SUMS.txt
+
+      - name: Committer uniquement la bibliothèque générée
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "asset-library-courier[bot]"
+          git config user.email "noreply@github.com"
+          git add asset_library/inbox asset_library/INVENTORY.csv \
+            asset_library/SHA256SUMS.txt asset_library/SOURCE_ARCHIVE_SHA256.csv
+          if git diff --cached --quiet; then
+            echo "La bibliothèque est déjà identique."
+            exit 0
+          fi
+          files=$(git diff --cached --numstat | wc -l)
+          bytes=$(du -sb asset_library/inbox | cut -f1)
+          git commit -m "Assets: déposer la bibliothèque mondiale CC0" \
+            -m "11 packs sélectionnés, $files fichiers suivis, $bytes octets hors build. Archives élaguées, provenance et SHA-256 conservés."
+          git push origin "${{ github.ref_name }}"

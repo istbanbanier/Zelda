@@ -213,3 +213,24 @@ seuls leurs fichiers de licence subsistent ; aucune police externe n'est donc
 embarquée à ce jour. MIT exige de conserver la notice de copyright : les
 `LICENSE.md` sont versionnés à côté des fichiers et devront accompagner toute
 promotion vers `assets/`.
+
+## Bibliothèque mondiale complémentaire — Kenney CC0 (quarantaine, 2026-08-12)
+
+La branche dédiée `codex/world-asset-library-20260812` contient, sous
+`asset_library/inbox/`, une sélection **hors build** destinée à la future passe de
+toute la carte. `.gdignore` empêche son import automatique. Aucun de ces fichiers
+n'est un asset de production tant qu'une promotion ciblée n'a pas reçu sa propre
+ligne dans ce document et dans `docs/assets/ASSET_MANIFEST.csv`.
+
+| Famille | Packs | Autorité de licence |
+|---|---|---|
+| 3D | Castle Kit, Modular Cave Kit, Fantasy Town Kit, Graveyard Kit, Survival Kit, Watercraft Kit | pages officielles Kenney, **CC0 1.0** |
+| audio | RPG Audio, Interface Sounds | pages officielles Kenney, **CC0 1.0** |
+| VFX | Particle Pack, Light Masks, Smoke Particle Assets | pages officielles Kenney, **CC0 1.0** |
+
+Le transport automatisé passe par les archives publiées par Kenney sur
+OpenGameArt ; l'auteur, la source officielle, l'URL de transport et la licence sont
+verrouillés dans `asset_library/SOURCES.lock.csv`. Chaque dossier contient
+`PROVENANCE.md`; les empreintes des archives et fichiers vivent dans
+`SOURCE_ARCHIVE_SHA256.csv` et `SHA256SUMS.txt`. Les archives, formats redondants et
+sources Unity ne sont pas versionnés.
