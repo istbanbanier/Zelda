@@ -87,6 +87,7 @@ const COL_MOUNTAIN_SHADE: Color = Color(0.352, 0.372, 0.428)
 func _ready() -> void:
 	_build_border_mountains()
 	_build_plains_and_river()
+	_build_plain_relief()
 	_build_spawn_ridge_and_descent()
 	_build_camp_terrace()
 	_build_learning_cliff()
@@ -339,6 +340,114 @@ func _build_plains_and_river() -> void:
 	const FORD_WIDTH: float = 20.0
 	_slab("FordWest", Vector2(20, 10), Vector2(FORD_WIDTH, 12), 2.0, COL_GRASS_DARK)
 	_slab("FordEast", Vector2(95, 10), Vector2(FORD_WIDTH, 12), 2.0, COL_GRASS_DARK)
+
+
+## PASSE 3 (défaut n°3 de la revue : « donne du relief au corridor des dix
+## minutes, casse les grandes surfaces uniformes »).
+##
+## ISS-045 reste OUVERT : remodeler les deux dalles déplacerait ~4 000
+## objets posés en cotes absolues, et le filet généralisé n'existe pas
+## encore. Le geste SÛR de cette passe : des buttes convexes AJOUTÉES sur
+## les dalles, en FLANC de route — jamais sous la ligne parcourue, jamais
+## sous un nœud de gameplay (les trois contrats sont testés :
+## `test_plains_carry_flanking_relief.gd`). Chaque butte porte une vraie
+## collision convexe identique à son visuel : un relief traversable serait
+## un mensonge découvert au premier pas. Pentes ≤ ~20° (marchables, §8.2).
+##
+## Les emplacements évitent : le couloir de la pente de spawn (x −8..23),
+## les tronçons de chemin (≥ 7 m), la terrasse du camp, les ruines,
+## l'avant-poste, les rondes d'ennemis, les rampes. La navmesh est
+## RE-CUITE avec ce changement (tools/godot/bake_valley_navmesh.gd).
+func _build_plain_relief() -> void:
+	var relief: Node3D = Node3D.new()
+	relief.name = "PlainRelief"
+	add_child(relief)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 20260812
+	# [x, z, demi-axe x, demi-axe z, hauteur]
+	var mounds: Array[Array] = [
+		# Plaine sud — flancs de la route du gué et du panorama ouest.
+		[-14.0, 38.0, 11.0, 9.0, 1.9],
+		[-38.0, 52.0, 13.0, 10.0, 2.3],
+		[-4.0, 45.0, 8.0, 7.0, 1.4],
+		# (52 ; 24) enterrait la ronde du pillard azur (58 ; 30) et
+		# (−30 ; 105) une récompense d'ingrédient — attrapés par le filet
+		# anti-enterrement au premier passage, replacés à l'écart.
+		[66.0, 20.0, 6.0, 5.0, 1.2],
+		[-50.0, 108.0, 12.0, 9.0, 2.0],
+		# Plaine nord — flancs de la route du donjon.
+		[-22.0, -85.0, 12.0, 10.0, 2.1],
+		[16.0, -78.0, 9.0, 7.0, 1.6],
+		# (−36 ; −120) enterrait un coffre — attrapé par le filet une fois le
+		# dôme réparé (la vraie emprise a grandi), reculé vers le nord-ouest.
+		[-56.0, -138.0, 12.0, 9.0, 2.2],
+		[34.0, -100.0, 10.0, 8.0, 1.8],
+		[-52.0, -60.0, 12.0, 9.0, 2.0],
+	]
+	for m: int in range(mounds.size()):
+		var spec: Array = mounds[m]
+		var rx: float = spec[2]
+		var rz: float = spec[3]
+		var height: float = spec[4]
+		# Dôme convexe à DEUX anneaux + sommet. La couronne de sol est
+		# jitterée (même famille de contour que les pièces de chemin) ; elle
+		# finit ENTERRÉE de 15 cm, donc ses concavités éventuelles aussi.
+		# L'anneau haut reste une ellipse régulière : le hull convexe de la
+		# collision épouse alors le visuel — PAS `_hull_mesh`, qui est écrit
+		# pour les HUIT sommets d'une rampe (indices figés) et rendait un
+		# dôme dégénéré pendant que la collision prenait la vraie forme.
+		var rim_count: int = 12
+		var rim: PackedVector3Array = PackedVector3Array()
+		var crown: PackedVector3Array = PackedVector3Array()
+		for i: int in range(rim_count):
+			var angle: float = TAU * float(i) / float(rim_count)
+			var reach: float = rng.randf_range(0.78, 1.18)
+			rim.append(Vector3(cos(angle + rng.randf_range(-0.10, 0.10))
+				* rx * reach, 0.0,
+				sin(angle + rng.randf_range(-0.10, 0.10)) * rz * reach))
+			crown.append(Vector3(cos(angle) * rx * 0.52, height * 0.75,
+				sin(angle) * rz * 0.52))
+		var apex: Vector3 = Vector3(0.0, height, 0.0)
+		var body: StaticBody3D = StaticBody3D.new()
+		body.name = "Mound%02d" % m
+		body.collision_layer = 1
+		body.collision_mask = 0
+		var mesh: MeshInstance3D = MeshInstance3D.new()
+		mesh.name = "Mound%02dMesh" % m
+		mesh.mesh = _dome_mesh(rim, crown, apex)
+		mesh.material_override = _material(COL_GRASS, false)
+		body.add_child(mesh)
+		var shape: CollisionShape3D = CollisionShape3D.new()
+		var hull: ConvexPolygonShape3D = ConvexPolygonShape3D.new()
+		var points: PackedVector3Array = rim.duplicate()
+		points.append_array(crown)
+		points.append(apex)
+		hull.points = points
+		shape.shape = hull
+		body.add_child(shape)
+		# Base enterrée de 15 cm : aucune arête de couronne ne flotte si la
+		# dalle varie de quelques centimètres.
+		body.position = Vector3(spec[0] as float, 2.0 - 0.15, spec[1] as float)
+		relief.add_child(body)
+		body.add_to_group(PainterlyRecipe.GROUND_CARRIER_GROUP)
+
+
+## Maille du dôme d'une butte : quads latéraux anneau bas → anneau haut,
+## éventail anneau haut → sommet. Même sens d'enroulement que
+## `_ground_patch_mesh` (HORAIRE vu de face — la leçon du chemin invisible).
+func _dome_mesh(rim: PackedVector3Array, crown: PackedVector3Array,
+		apex: Vector3) -> ArrayMesh:
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var count: int = rim.size()
+	for i: int in range(count):
+		var next: int = (i + 1) % count
+		st.add_vertex(rim[i]); st.add_vertex(rim[next]); st.add_vertex(crown[next])
+		st.add_vertex(rim[i]); st.add_vertex(crown[next]); st.add_vertex(crown[i])
+		st.add_vertex(apex); st.add_vertex(crown[i]); st.add_vertex(crown[next])
+	st.generate_normals()
+	st.index()
+	return st.commit()
 
 
 func _build_spawn_ridge_and_descent() -> void:
