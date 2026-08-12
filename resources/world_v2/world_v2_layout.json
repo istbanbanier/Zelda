@@ -108,7 +108,7 @@
       "name": "Hauteurs de l'Orient",
       "function": "route verticale, écoles Arc Step, panorama, raccourcis",
       "bounds": [{ "x": [88, 235], "z": [-100, 56] }],
-      "altitude_m": [14, 30],
+      "altitude_m": [12, 30],
       "landmark": "le pylône sur son éperon dégagé",
       "encounters": "archers azur aux terrasses",
       "density": "minérale, herbes sèches, ancrages Arc Step visibles",
@@ -300,6 +300,6 @@
     { "id": "room3_relays", "gameplay_locked": "4 colonnes rotatives à ports orientés — solveur 256 configurations reste vert", "useful_dims_m": [22, 22], "min_height_m": 8, "camera_mode": "Explore", "focal": "les 4 colonnes", "objective_preview": "segments qui s'allument progressivement", "visual_transform": "colonnes = machines lourdes" },
     { "id": "room4_battery", "gameplay_locked": "batterie (-9.5, 0.6, 2), planche bois, bassin conducteur, sockets, récupération hors-limites", "useful_dims_m": [24, 16], "min_height_m": 6, "camera_mode": "Explore", "focal": "le bassin et sa passerelle", "objective_preview": "second mécanisme visible derrière l'eau", "visual_transform": "l'eau parle les lois (états visibles)" },
     { "id": "antechamber", "gameplay_locked": "checkpoint, coffre garanti, cuisine, baies, retour possible", "useful_dims_m": [16, 12], "min_height_m": 6, "camera_mode": "Interaction", "focal": "le feu et la fresque bois/métal", "objective_preview": "fenêtre sur l'arène", "visual_transform": "seuil calme avant l'examen" },
-    { "id": "boss_arena", "gameplay_locked": "rayon jouable 19, mur r=19.6 h=13, rail r=14, 4 pylônes à 90°, zones sol distinctes, pas de colonne centrale", "useful_dims_m": [38, 38], "min_height_m": 13, "camera_mode": "Boss", "focal": "le Gardien et son noyau", "objective_preview": "la porte d'entrée reste le seul accès logique", "visual_transform": "sol à trois matières, gradins en ruine, ciel d'orage visible" }
+    { "id": "boss_arena", "gameplay_locked": "rayon jouable 19, mur r=19.6 h=13, rail r=14, 4 pylônes espacés de 90° (aux diagonales de l'arène), zones sol distinctes, pas de colonne centrale", "useful_dims_m": [38, 38], "min_height_m": 13, "camera_mode": "Boss", "focal": "le Gardien et son noyau", "objective_preview": "la porte d'entrée reste le seul accès logique", "visual_transform": "sol à trois matières, gradins en ruine, ciel d'orage visible" }
   ]
 }

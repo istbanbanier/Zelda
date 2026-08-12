@@ -9,21 +9,21 @@ d'abord.
 ## 0. État réel constaté (audit V2.0, base `58d4996`)
 
 - Enveloppe : `{schema_version: 4, slot, saved_at_utc, data}` ; écriture
-  atomique + `.bak` ; migrations par étape sur COPIE (`save_system.gd:131-171`).
+  atomique + `.bak` ; migrations par étape sur COPIE (`SaveSystem.migrate()`).
 - **Aucun identifiant de monde n'existe.** Le seul indice de lieu est le tag
   `checkpoint` (valeurs réelles : `valley.camp.start`, `dungeon.antechamber`)
   et AUCUN code ne le lit pour router : « Continuer » charge la vallée V1
-  inconditionnellement (`main_menu.gd:149-168`).
+  inconditionnellement (`main_menu.gd (_on_continue → _enter_valley)`).
 - `player_position` = dernier sol foulé, primitives x/y/z, traité en entrée
   NON FIABLE : bornes V1 |x|,|z| ≤ 260, −6 < y ≤ 120 ; toute position
-  absente/malformée/hors bornes → spawn (`valley_world.gd:1139-1158`).
+  absente/malformée/hors bornes → spawn (`valley_world.gd (_read_saved_position / _is_saved_position_safe)`).
   Doctrine du projet : **l'absence d'un champ est un état valide**.
 - Le payload porte un champ interne `schema` incohérent entre scènes (4 côté
   vallée, 2 côté menu/victoire/donjon) ; seul `schema_version` d'enveloppe
   fait autorité. La migration ne s'y fiera JAMAIS.
 - IDs persistants §19.3 `zone.category.name.index` ; les coffres/ramassables
   de lieux DÉRIVENT de l'ID du POI (`valley.poi.x.01` → `valley.chest.x.01`,
-  `discovery_rewards.gd:153-155`).
+  `DiscoveryRewards.persistent_id()`).
 
 ## 1. Identifiants de monde
 
@@ -49,7 +49,7 @@ autre chose. Test protecteur (déjà actif) :
   doctrine 2→3) : toute sauvegarde antérieure au schéma 5 provient
   factuellement du monde V1 — l'écrire est la seule lecture honnête.
 - Une sauvegarde de schéma 5 rechargée par un build plus ancien est déjà
-  refusée fichier intact (`save_system.gd:117-121`, testé) — pas de nouveau
+  refusée fichier intact (`SaveSystem.load_slot() — refus d'un schéma futur, fichier intact`, testé) — pas de nouveau
   risque.
 - Les autres champs ne changent NI de nom NI de type. Toute écriture reste
   une FUSION par clé (jamais d'écrasement du payload), comme aujourd'hui.
@@ -73,7 +73,7 @@ Conservés parce que leurs identités ne sont pas spatiales :
 | Options | `user://settings.cfg` | hors sauvegarde (§19.1), aucun impact |
 
 Un identifiant inconnu au chargement reste journalisé-et-ignoré sans crash
-(comportement existant, `discovery_log.gd:139-145`) — c'est le filet si un ID
+(comportement existant, `DiscoveryLog.apply_state()`) — c'est le filet si un ID
 V2 rencontre un vieux build.
 
 ## 4. La position — JAMAIS réappliquée aveuglément
@@ -111,7 +111,7 @@ changé »), jamais un silence.
 
 1. sauvegarde schéma 4 (fixture réelle) chargée après migration → `world_version = "neris_v1"`, TOUS les autres champs inchangés octet pour octet hors champ ajouté ;
 2. sauvegarde 4 avec `player_position` V1 valide, chargée en V2 → position IGNORÉE, placement au checkpoint compatible, aucune écriture avant reprise réussie ;
-3. sauvegarde avec `checkpoint = dungeon.antechamber` → antichambre, équipement du checkpoint conservé (comportement `boss_arena.gd:374-407` inchangé) ;
+3. sauvegarde avec `checkpoint = dungeon.antechamber` → antichambre, équipement du checkpoint conservé (comportement `boss_arena.gd (relecture du checkpoint antichambre au « Réessayer »)` inchangé) ;
 4. sauvegarde avec donjon entamé sans antichambre → `dungeon_gate` ;
 5. sauvegarde vierge de tout marqueur → spawn V2 ;
 6. `boss_defeated` → position de victoire V2 + victoire toujours vraie ;

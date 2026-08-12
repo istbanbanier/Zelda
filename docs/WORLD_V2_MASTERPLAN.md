@@ -109,7 +109,10 @@ roseaux, aucune section rectiligne de plus de ~40 m, profondeur lisible aux gué
 
 ## 4. Les régions
 
-Onze régions. Pour chacune : identité, fonction, altitude, silhouette, repère,
+Onze régions. Un lieu de FRONTIÈRE peut être mentionné dans chaque région
+qu'il touche, mais il n'appartient qu'à UNE région dans
+`world_v2_layout.json` — le JSON fait foi, la mention croisée n'est pas une
+contradiction. Pour chacune : identité, fonction, altitude, silhouette, repère,
 transitions, densité, ennemis, POI, récompenses, caméra, risques. Les bornes,
 positions et ancres de sauvegarde exactes vivent dans `world_v2_layout.json`
 (`regions[]`).
@@ -162,10 +165,11 @@ positions et ancres de sauvegarde exactes vivent dans `world_v2_layout.json`
   (ruines → lac de l'Orage).
 - **Densité** : forte aux berges (roseaux, galets), calme sur l'eau.
 - **Ennemis** : aucun dans le lit ; embuscades azur possibles aux gués nord.
-- **POI** : `riverside_village`, `ancient_aqueduct` (au coude nord — séparé du
-  pont de pierre, qui reste au gué central : en V1 les deux étaient à 2 m l'un
-  de l'autre), `stone_bridge`, `waterfall_cave` (derrière la cascade de
-  l'affluent ouest).
+- **POI** : `riverside_village`, `stone_bridge` ; en frontière : `ancient_aqueduct`
+  (au coude nord — séparé du pont de pierre, qui reste au gué central : en V1
+  les deux étaient à 2 m l'un de l'autre ; région JSON : r09) et
+  `waterfall_cave` (derrière la cascade de l'affluent ouest ; région JSON :
+  r04).
 - **Sites systémiques** : `conductive_basin` (bassin conducteur, école Arc Link),
   `magnetic_bridge` (pont magnétique, sur le bras nord).
 - **Récompenses** : épée usée, fragments d'histoire, champignon.
@@ -232,7 +236,7 @@ positions et ancres de sauvegarde exactes vivent dans `world_v2_layout.json`
   (`hunter_range`, angle SE, facultatif et clairement borné).
 - **POI** : `logging_hamlet`, `forest_shrine`, `ruined_observatory`,
   `ember_raider_camps`, `hunter_range`, `veil_falls` (bord est, la cascade
-  source — à cheval avec R07).
+  source — à cheval avec R07 ; région JSON : r07).
 - **Récompenses** : gourdin, épice rare, fragment, coffres de territoire.
 - **Caméra** : troncs à collision (V1 : 39 arbres-collision) mais élagage des
   branches sous 2,6 m sur les sentes ; fade dither si occlusion.
@@ -243,7 +247,8 @@ positions et ancres de sauvegarde exactes vivent dans `world_v2_layout.json`
 
 - **Identité** : terrasses rocheuses sèches, vent fort, la verticale technologique.
 - **Fonction** : route 2 (hauteurs), écoles Arc Step, panorama, raccourcis.
-- **Altitude** : 14–30 ; éperon du pylône à 18 ; belvédère perché à ~22.
+- **Altitude** : 12–30 — la gorge du Vent entaille le plancher à 12 ;
+  éperon du pylône à 18 ; belvédère perché à ~22.
 - **Silhouette** : mesas taluées (leçon passe 3) portant le pylône — la seule
   grande verticale entre camp et citadelle.
 - **Repère** : le pylône (`(115, 18, −25)`), anticipé depuis le camp.
@@ -299,7 +304,7 @@ positions et ancres de sauvegarde exactes vivent dans `world_v2_layout.json`
 - **Densité** : modules de ruine + gravats, végétation d'interstice.
 - **Ennemis** : poste braise retranché dans les murs (couvertures réelles).
 - **POI** : `hollow_crypt` (déplacée au cœur des ruines), `ancient_aqueduct`
-  (frontière R03/R09), `storm_caravan` (bord nord, sur la route du donjon).
+  (frontière R03/R09), `storm_caravan` (bord nord, sur la route du donjon ; région JSON : r10).
 - **Récompenses** : lame conductrice (crypte), lance (caravane), fragment.
 - **Caméra** : ruelles ≥ 4 m entre murs porteurs ; pas de plafond bas hors
   crypte.
@@ -470,7 +475,7 @@ branche vers le hub ; aucun verrou de retour avant l'arène.
 | Salle 3 — Relais | 4 colonnes rotatives, ports orientés, 256 configurations validées par solveur | ~22 × 22 m, h ≥ 8 | Explore | les 4 colonnes | segments qui s'allument progressivement | colonnes = vraies machines lourdes (§19.5 bible) |
 | Salle 4 — Batterie | batterie `(−9,5; 0,6; 2)`, planche bois, bassin d'eau conductrice, sockets, récupération hors-limites | ~24 × 16 m, h ≥ 6 | Explore | le bassin et sa passerelle | le second mécanisme visible derrière l'eau | l'eau parle les lois (états §8.2 bible) |
 | Antichambre | checkpoint, coffre garanti, cuisine, baies, retour possible, aperçu de l'arène | ~16 × 12 m, h ≥ 6 | Interaction | le feu et la fresque bois/métal | fenêtre sur l'arène | seuil calme avant l'examen |
-| Arène | rayon jouable 19 m, mur r 19,6 × h 13, rail r 14, 4 pylônes de terre à 90°, zones sol distinctes, pas de colonne centrale | disque Ø 38 m | Boss | le Gardien et son noyau | la porte d'entrée reste le seul accès logique | sol à trois matières, gradins en ruine, ciel d'orage visible |
+| Arène | rayon jouable 19 m, mur r 19,6 × h 13, rail r 14, 4 pylônes de terre espacés de 90° (aux diagonales de l'arène), zones sol distinctes, pas de colonne centrale | disque Ø 38 m | Boss | le Gardien et son noyau | la porte d'entrée reste le seul accès logique | sol à trois matières, gradins en ruine, ciel d'orage visible |
 
 Pour chaque espace, la V2.1+ devra prouver : contraintes de gameplay rejouées
 (suites donjon/boss vertes inchangées), dégagement caméra mesuré (SpringArm

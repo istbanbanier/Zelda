@@ -29,9 +29,9 @@ contraignant** ; les sous-lignes précisent.
 |---|---|---|---|---|
 | Déplacement / locomotion | `scripts/player/player_controller.gd`, `scripts/components/input_intent.gd`, `player_input_reader.gd`, `action_alignment_component.gd`, `resources/tuning/locomotion_*.tres` | instancier `scenes/player/Player.tscn` (groupes `player`/`damageable`) et le poser sur un `SpawnPoint` ; signaux `landed`/`stepped_up`/`mantle_*` | aucune — la position vient de la scène hôte | `test_locomotion`, `test_traversal_course`, `test_latency`, `test_p2_latency` |
 | Sprint / endurance | `scripts/components/stamina_component.gd`, `resources/tuning/stamina_*.tres` | embarqué dans `Player.tscn` ; `try_sustain()`/`try_spend()` | aucune | `test_stamina` |
-| Escalade / mantle | `scripts/components/climbing_component.gd`, `ledge_detector_component.gd`, `resources/tuning/climb_*.tres` | embarqué ; **contrat par groupe : V2 pose `unclimbable` sur ses surfaces interdites** (comme `valley_terrain.gd:145`, `room2_vertical.gd:103`, `boss_arena.gd:186`) | aucune coordonnée | `test_climbing` |
+| Escalade / mantle | `scripts/components/climbing_component.gd`, `ledge_detector_component.gd`, `resources/tuning/climb_*.tres` | embarqué ; **contrat par groupe : V2 pose `unclimbable` sur ses surfaces interdites** (comme le relief de `valley_terrain.gd`, le puits de `room2_vertical.gd` et le mur d'arène de `boss_arena.gd`, tous marqués `unclimbable`) | aucune coordonnée | `test_climbing` |
 | Caméra | `scripts/player/camera_rig.gd` | embarquée dans `Player.tscn` ; `set_boss_framing()` pour les arènes | aucune | `test_camera_rig`, `test_camera_never_enters_the_hero`, `test_mouse_camera` |
-| Combat (santé/hitbox/combo/esquive/lock-on/poise/posture/garde) | `scripts/combat/attack_controller.gd`, `damage_event.gd`, `damage_formula.gd`, `scripts/components/{hitbox,hurtbox,health,poise,posture}_component.gd`, `lock_on_component.gd` | groupes `damageable`/`lock_on_targets`/`enemies` ; couches nommées `project.godot:224-239` ; Resources `AttackDefinition`/`DodgeDefinition`/`GuardTuning` | aucune | `test_hit_detection`, `test_combat_exchange`, `test_dodge`, `test_guard_deflect`, `test_posture`, `test_lock_on` |
+| Combat (santé/hitbox/combo/esquive/lock-on/poise/posture/garde) | `scripts/combat/attack_controller.gd`, `damage_event.gd`, `damage_formula.gd`, `scripts/components/{hitbox,hurtbox,health,poise,posture}_component.gd`, `lock_on_component.gd` | groupes `damageable`/`lock_on_targets`/`enemies` ; couches nommées `project.godot (layer_names/3d_physics)` ; Resources `AttackDefinition`/`DodgeDefinition`/`GuardTuning` | aucune | `test_hit_detection`, `test_combat_exchange`, `test_dodge`, `test_guard_deflect`, `test_posture`, `test_lock_on` |
 | Arc / projectiles | `scripts/combat/bow_component.gd`, `arrow_projectile.gd` | embarqué ; flèches en pool interne | aucune | `test_bow`, `test_bow_fires_on_left_click` |
 | Bracelet de Résonance | `scripts/reaction/resonance_controller.gd`, `resonance_target_component.gd`, `resonance_link_node.gd` | embarqué (`Components/ResonanceController`) ; une cible V2 devient détectable en portant un `ResonanceTargetComponent` (groupe `resonance_targets`) | aucune | `test_resonance_{pulse,link,polarity,arc_step,ground,focus}` |
 | InputMap / couche d'entrée | `project.godot`, `player_input_reader.gd`, `input_intent.gd`, `user_settings.gd` | V2 ne touche JAMAIS l'InputMap — il instancie le joueur | aucune | `test_input_map`, `test_input_layer_isolation`, `test_invariants` (Q=gauche) |
@@ -40,31 +40,31 @@ contraignant** ; les sous-lignes précisent.
 
 | Famille | Statut | Interface consommée par V2 | Dépendance spatiale V1 → action V2 |
 |---|---|---|---|
-| IA (perception/utility/tokens, 5 familles) | `PROTECTED_UNCHANGED` (systèmes) + `V1_SPATIAL_REPLACE` (implantations) | PackedScenes `scenes/enemies/*.tscn` ; territoire = origine AU SPAWN ; `CombatCoordinator` découvert par groupe ; bruit par `noise_events.gd` | les positions V1 vivent dans `valley_world.gd:779-800` (table de spawn) — V2 fournit SES implantations depuis `world_v2_layout.json` (`regions[].encounters`, territoires) |
+| IA (perception/utility/tokens, 5 familles) | `PROTECTED_UNCHANGED` (systèmes) + `V1_SPATIAL_REPLACE` (implantations) | PackedScenes `scenes/enemies/*.tscn` ; territoire = origine AU SPAWN ; `CombatCoordinator` découvert par groupe ; bruit par `noise_events.gd` | les positions V1 vivent dans `valley_world.gd (_spawn_bestiary — table de spawn)` — V2 fournit SES implantations depuis `world_v2_layout.json` (`regions[].encounters`, territoires) |
 | Coffres / ramassables / récompenses | `DUAL_WORLD` | `Chest.tscn` (exports `chest_id`/loot), `WeaponPickup.tscn`, `PointOfInterest` (Area3D, `bind(DiscoveryLog)` **par injection** — conçu pour deux mondes), `RewardAnchor` audité par `reward_anchor_audit.gd` | la table `DiscoveryRewards.PLAN` et la mémoire `_taken_pickups`/`_taken_ingredients` de la vallée sont V1 ; V2 crée sa table d'ancrages depuis le layout ; **les IDs §19.3 des lieux/coffres sont CONSERVÉS** (dérivés du POI : `valley.poi.x.01` → `valley.chest.x.01`) — la progression des récompenses survit mécaniquement |
-| Cuisine / buffs / ingrédients | `PROTECTED_UNCHANGED` | `RecipeRules.cook()` pur ; `Campfire` groupe `interactable` avec **export `campfire_id`** ; `StatusEffectComponent` | `campfire.gd:11` code un ID par défaut `valley.campfire.camp.01` — les instances V2 exportent leurs IDs propres |
+| Cuisine / buffs / ingrédients | `PROTECTED_UNCHANGED` | `RecipeRules.cook()` pur ; `Campfire` groupe `interactable` avec **export `campfire_id`** ; `StatusEffectComponent` | `campfire.gd` code un défaut d'export `campfire_id = valley.campfire.camp.01` — les instances V2 exportent leurs IDs propres |
 | Lois de matière / ReactionSystem | `DUAL_WORLD` **par conception** (D-047 : jamais un autoload) | chaque monde instancie SON `ReactionSystem` (groupe `reaction_system`, `locate(tree)`, `submit()`) ; profils `.tres` partagés | aucune |
 | Graphe électrique | `PROTECTED_UNCHANGED` | `ElectricGraph` par scène (groupe `electric_graphs`) ; les `ElectricNode` sont des Node3D dont la position mondiale EST la donnée — V2 pose ses nœuds où il veut | spatial par conception, local à la scène hôte ; aucune coordonnée V1 globale |
-| Interactions / portes de scène | `DUAL_WORLD` | groupe `interactable` + `interact(player)` ; `SceneDoor.target_scene` export par instance ; `GameState.set_pending_spawn()` | les `target_scene` V1 sont codés en dur (`valley_terrain.gd:2610` → vestibule ; `citadel_vestibule.gd:119/170`) — les portes V2 règlent leurs cibles |
-| Sauvegarde | `MIGRATION_REQUIRED` (contrat additif) | autoload `SaveSystem` (atomique, schéma 4, migrations par étape) ; fusion par clé dans `slot0` | AUCUN identifiant de monde dans le schéma 4 ; `player_position` bornée aux dimensions V1 (`valley_world.gd:36-37`) ; contrat complet : `docs/WORLD_V2_SAVE_MIGRATION.md` |
+| Interactions / portes de scène | `DUAL_WORLD` | groupe `interactable` + `interact(player)` ; `SceneDoor.target_scene` export par instance ; `GameState.set_pending_spawn()` | les `target_scene` V1 sont codés en dur (`valley_terrain.gd (porte SceneDoor de la citadelle)` → vestibule ; `citadel_vestibule.gd (portes vers la salle 1 et la vallée)`) — les portes V2 règlent leurs cibles |
+| Sauvegarde | `MIGRATION_REQUIRED` (contrat additif) | autoload `SaveSystem` (atomique, schéma 4, migrations par étape) ; fusion par clé dans `slot0` | AUCUN identifiant de monde dans le schéma 4 ; `player_position` bornée aux dimensions V1 (`ValleyWorld.SAVED_POSITION_LIMIT_XZ/_Y`) ; contrat complet : `docs/WORLD_V2_SAVE_MIGRATION.md` |
 | Autoloads / flux | `PROTECTED_UNCHANGED` | `/root/{GameState,EventBus,SaveSystem,AudioManager,SceneFlow,DevMode}` ; `SceneFlow.go_to()` est LA porte de toute transition, V2 compris | aucune — les cibles appartiennent aux appelants |
 | Resources de définition / tuning | `PROTECTED_UNCHANGED` | chargement des `.tres` ; V2 crée ses propres `.tres` si besoin, ne modifie jamais une définition | aucune |
-| HUD / menus / UI | `DUAL_WORLD` (shell) + `MIGRATION_REQUIRED` (routage « Continuer ») | instancier `GameplayShell.tscn` par scène jouable et régler l'export `world_scene_path` (fait dans le squelette : il cible la scène V2) ; le shell trouve le joueur par groupe | `gameplay_shell.gd:22`, `main_menu.gd:15`, `victory_screen.gd:18` codent la vallée V1 en dur ; « Continuer » charge la V1 **inconditionnellement** (`main_menu.gd:149-168`) — le routage par `world_version` arrive avec la migration (V2.5+), jamais avant |
-| Monture / mode dev / vol libre | `DUAL_WORLD` | `Mount.new()` / `DevFlyMode.new()` construits par le monde hôte (modèle `valley_world.gd:1175-1196`) ; `DevMode` autoload lit le groupe `player` | instanciation V1 dans la vallée uniquement — V2 instanciera les siens |
+| HUD / menus / UI | `DUAL_WORLD` (shell) + `MIGRATION_REQUIRED` (routage « Continuer ») | instancier `GameplayShell.tscn` par scène jouable et régler l'export `world_scene_path` (fait dans le squelette : il cible la scène V2) ; le shell trouve le joueur par groupe | `gameplay_shell.gd (export world_scene_path)`, `main_menu.gd (const VALLEY_SCENE)`, `victory_screen.gd (const VALLEY_SCENE)` codent la vallée V1 en dur ; « Continuer » charge la V1 **inconditionnellement** (`main_menu.gd (_on_continue → _enter_valley)`) — le routage par `world_version` arrive avec la migration (V2.5+), jamais avant |
+| Monture / mode dev / vol libre | `DUAL_WORLD` | `Mount.new()` / `DevFlyMode.new()` construits par le monde hôte (modèle `valley_world.gd (mount() / dev_fly())`) ; `DevMode` autoload lit le groupe `player` | instanciation V1 dans la vallée uniquement — V2 instanciera les siens |
 
 ### 1.3 Logique protégée du donjon et du boss
 
 | Famille | Statut | Ce qui est verrouillé | Ce que V2 remplace |
 |---|---|---|---|
-| Énigmes des 4 salles | logique `PROTECTED_UNCHANGED` ; enveloppe `V1_SPATIAL_REPLACE` | `DungeonRoom` (reset, respawn des essentiels, fusion `slot0`), `Room1..4`, `CentralHall`, `Antechamber` : solutions, solveur (256 configurations salle 3), anti-softlock, hints (`PuzzleHintTracker`), briques (`PushableBlock`, `PortableBattery`, `ObjectSocket`, `ElevatorPlatform`, `ResetButton`) | l'enveloppe architecturale (volumes/matière/lumière) — plan par espace dans `WORLD_V2_MASTERPLAN.md` §10 ; les constantes de chaînage (`room1_initiation.gd:25-26`, `central_hall.gd:31-35`, `antechamber.gd:16-17`) seront rebranchées en V2.6+, pas en V2.0 |
-| Boss | logique `PROTECTED_UNCHANGED` ; arène `V1_SPATIAL_REPLACE` | `StormGuardian` (machine 10 états idempotente), `BossDirector` (seed reproductible), `GroundingPylon` (vrais nœuds du graphe), posture partagée, solvabilité | l'habillage de l'arène (rayon jouable 19 m, mur 19,6/13, rail 14, pylônes à 90° : contraintes IMMUABLES du masterplan §10) ; `boss_arena.gd:27-28` (chemins retour/gardien) rebranché en V2.7+ |
+| Énigmes des 4 salles | logique `PROTECTED_UNCHANGED` ; enveloppe `V1_SPATIAL_REPLACE` | `DungeonRoom` (reset, respawn des essentiels, fusion `slot0`), `Room1..4`, `CentralHall`, `Antechamber` : solutions, solveur (256 configurations salle 3), anti-softlock, hints (`PuzzleHintTracker`), briques (`PushableBlock`, `PortableBattery`, `ObjectSocket`, `ElevatorPlatform`, `ResetButton`) | l'enveloppe architecturale (volumes/matière/lumière) — plan par espace dans `WORLD_V2_MASTERPLAN.md` §10 ; les constantes de chaînage (`room1_initiation.gd (const VESTIBULE/HALL)`, `central_hall.gd (constantes des scènes desservies)`, `antechamber.gd (const ARENA et retour)`) seront rebranchées en V2.6+, pas en V2.0 |
+| Boss | logique `PROTECTED_UNCHANGED` ; arène `V1_SPATIAL_REPLACE` | `StormGuardian` (machine 10 états idempotente), `BossDirector` (seed reproductible), `GroundingPylon` (vrais nœuds du graphe), posture partagée, solvabilité | l'habillage de l'arène (rayon jouable 19 m, mur 19,6/13, rail 14, pylônes à 90° : contraintes IMMUABLES du masterplan §10) ; `boss_arena.gd (const ANTECHAMBER/GUARDIAN)` (chemins retour/gardien) rebranché en V2.7+ |
 
 ### 1.4 Contenu spatial V1 — la cible du remplacement
 
 | Élément | Statut | Note |
 |---|---|---|
 | `scenes/world/valley/ValleyWorld.tscn` + `valley_world.gd` + `valley_terrain.gd` + 9 bâtisseurs de lieux + navmesh versionnés | `V1_SPATIAL_REPLACE` | reste INTACT et servi par le flux normal jusqu'au gate V2.9 ; AUCUN script V2 ne le modifie (vérifié par balayage : `test_world_v2_skeleton.gd`) |
-| `scenes/world/citadel/CitadelVestibule.tscn` | `V1_SPATIAL_REPLACE` | seul intérieur réussi de V1 (WORLD_ATLAS §3) — l'enveloppe V2 le CONSERVE comme acquis et s'y raccorde |
+| `scenes/world/citadel/CitadelVestibule.tscn` | `V1_SPATIAL_REPLACE` | seul intérieur réussi de V1 (WORLD_ATLAS §3) — l'enveloppe V2 le CONSERVE comme acquis et s'y raccorde ; épinglé par `tests/integration/test_dungeon_topology.gd` (catégorie B de fait : cet épinglage protège l'acquis conservé) |
 | `TrainingGrounds.tscn` | `DUAL_WORLD` | écoles du Bracelet hors monde ; inchangé |
 
 ## 2. Classement des tests (question 2 de la phase)
@@ -92,18 +92,18 @@ section `tests`.
 Relevé pendant l'audit — chacune est une tâche nommée de la campagne, pas une
 surprise future :
 
-1. `gameplay_shell.gd:22` — `world_scene_path` par défaut = vallée V1 (le
+1. `gameplay_shell.gd (export world_scene_path)` — `world_scene_path` par défaut = vallée V1 (le
    squelette V2 le repointe déjà par export d'instance).
-2. `main_menu.gd:149-168` — « Continuer » charge la V1 sans lire le
+2. `main_menu.gd (_on_continue → _enter_valley)` — « Continuer » charge la V1 sans lire le
    checkpoint : le routage par monde est LE morceau central de la migration.
-3. `victory_screen.gd:18` — les issues de victoire ciblent la vallée V1.
-4. `campfire.gd:11` — ID de feu par défaut `valley.campfire.camp.01`.
-5. `valley_world.gd:36-37` — bornes de position sauvegardée calées sur les
+3. `victory_screen.gd (const VALLEY_SCENE)` — les issues de victoire ciblent la vallée V1.
+4. `campfire.gd (export campfire_id, défaut « valley.campfire.camp.01 »)` — ID de feu par défaut `valley.campfire.camp.01`.
+5. `ValleyWorld.SAVED_POSITION_LIMIT_XZ/_Y` — bornes de position sauvegardée calées sur les
    dimensions V1 (±260 / y ≤ 120) ; V2 définira les siennes dans SA scène.
 6. `discovery_rewards.gd` — la table `PLAN` mappe les lieux V1 ; la table V2
    dérive de `world_v2_layout.json`.
 7. Chaînage du donjon (`room*.gd`, `central_hall.gd`, `antechamber.gd`,
-   `boss_arena.gd:27-28`, `citadel_vestibule.gd:119/170`) — constantes de
+   `boss_arena.gd (const ANTECHAMBER/GUARDIAN)`, `citadel_vestibule.gd (portes vers la salle 1 et la vallée)`) — constantes de
    scènes V1, rebranchées quand l'enveloppe V2 existera.
 8. Le payload de sauvegarde porte un champ interne `schema` INCOHÉRENT entre
    scènes (4 côté vallée, 2 côté menu/victoire/donjon — seul `schema_version`

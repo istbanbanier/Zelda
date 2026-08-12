@@ -22,7 +22,7 @@
 | Contrats V2.0 (carte, isolation, squelette, sauvegarde) | `godot --headless --path . --script tools/godot/test_runner.gd -- --filter=world_v2` | **8/8, RC=0** | `tests_world_v2_VERT_8_0.log` |
 | Boot Smoke V1 — le flux normal mène toujours à la vallée V1 jouable | idem `--filter=boot_smoke` | 1/1 (21 assertions), RC=0 | `boot_smoke_v1_VERT_1_0.log` |
 | Sauvegarde V1 intacte (mécanisme + continuité + position + fusion) | idem `--filter=test_save` | 15/15, RC=0 | `save_tests_VERT_15_0.log` |
-| Suite complète | `tools/validate_fast.sh` | voir `validate_fast_*.log` | `validate_fast_*.log` |
+| Suite complète | `tools/validate_fast.sh` | **EN ATTENTE** — la suite tourne ; son log et son code retour seront joints au commit de preuve final de la phase, et la phase ne se déclare pas terminée sans son verdict | — |
 
 ## Contrôle négatif — DÉMONTRÉ, pas déclaré
 
@@ -47,14 +47,12 @@ fois sur un vrai cas prouve qu'il sait rougir.
 
 ## Captures (renderer réel, arbre committé)
 
-| Fichier | Ce qu'il montre |
-|---|---|
-| `capture_v2_squelette.png` (+ `.json`) | le squelette V2 par sa caméra de diagnostic : sol temporaire marqué « SOL TEMPORAIRE — SQUELETTE V2.0 », vrai héros posé dessus, HUD réel raccordé |
-| `capture_v1_flux_normal.png` (+ `.json`) | le menu principal V1, première image du flux normal inchangé (le Boot Smoke ci-dessus prouve la chaîne Boot → menu → vallée jouable) |
-
-Manifestes : `commit` + `repo_dirty: false` exigés (règle
-`.claude/rules/evidence.md`) — les captures sont prises APRÈS le commit du
-code qu'elles prouvent.
+**EN ATTENTE** — prises depuis un arbre COMMITTÉ puis commitées (ordre de
+`.claude/rules/evidence.md`), au commit de preuve final de la phase :
+une capture diagnostique du squelette V2 et une capture du flux normal V1,
+chacune avec son manifeste (`commit`, `repo_dirty: false`). La revue
+contradictoire (`REVUE_CONTRADICTOIRE.md`) a rejeté à raison la version
+précédente de ce README, qui annonçait ces fichiers avant leur existence.
 
 ## Fichiers de synthèse
 
