@@ -1,0 +1,18 @@
+{
+  "commit": "75543c151c75bc4f444cc0acbb51081170f89b40",
+  "display_server": "X11",
+  "distinct_colors_sampled": 3222,
+  "engine_version": "4.7.1-stable (official)",
+  "frames_waited": 40,
+  "height": 1080,
+  "label": "vslice_02_descente",
+  "luma_mean": 0.5137,
+  "luma_stddev": 0.2352,
+  "png": "evidence/vslice_pass3_20260812/apres_mesas/02_descente.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "timestamp_utc": "2026-08-12 02:03:32",
+  "width": 1920
+}
