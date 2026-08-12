@@ -127,7 +127,7 @@ positions et ancres de sauvegarde exactes vivent dans `world_v2_layout.json`
   au vent en premier plan.
 - **Repère principal** : la citadelle plein nord ; fumée du camp à mi-droite.
 - **Transitions** : entrée = début de partie (aucune) ; sorties = descente en S
-  vers le gué est (route de la rivière) et sente est vers le camp.
+  vers le Val (route de la rivière) et sente est vers le camp.
 - **Densité** : végétale forte (phrases d'herbe §7.4), zéro combat, 1 coffre
   d'apprentissage à l'écart du cadre d'ouverture.
 - **Ennemis** : aucun.
@@ -170,7 +170,7 @@ positions et ancres de sauvegarde exactes vivent dans `world_v2_layout.json`
   les deux étaient à 2 m l'un de l'autre ; région JSON : r09) et
   `waterfall_cave` (derrière la cascade de l'affluent ouest ; région JSON :
   r04).
-- **Sites systémiques** : `conductive_basin` (bassin conducteur, école Arc Link),
+- **Sites systémiques** : `conductive_basin` (bassin conducteur, école Arc Link — berge sud du Val),
   `magnetic_bridge` (pont magnétique, sur le bras nord).
 - **Récompenses** : épée usée, fragments d'histoire, champignon.
 - **Caméra** : berges dégagées à hauteur d'épaule ; jamais de paroi à < 1 m du
@@ -350,9 +350,11 @@ positions et ancres de sauvegarde exactes vivent dans `world_v2_layout.json`
 ## 5. Les trois routes et le trajet principal
 
 **Trajet principal** (première partie, 25–40 min) : crête → descente en S →
-gué est → camp (checkpoint, cuisine, 3 approches) → sente du pylône → école
-Arc Link au pylône → gorge du Vent → steppe → rampe processionnelle → plateau
-(checkpoint) → donjon → boss → victoire. C'est le chemin le plus enseigné, pas
+camp (checkpoint, cuisine, 3 approches) → gué est → école Arc Link au pylône →
+gorge du Vent → steppe → rampe processionnelle → plateau (checkpoint) →
+donjon → boss → victoire. (Correction V2.1 mesurée : le gué est se trouve sur
+la traversée camp → pylône — la seule où le trajet principal coupe la
+rivière ; la V2.0 l'avait posé sur la descente de crête, qui ne coupe rien.) C'est le chemin le plus enseigné, pas
 le seul.
 
 **Route de la Rivière** (sûre, systémique — eau/conductivité) : gué est →
@@ -360,8 +362,9 @@ village → remontée du bras nord → pont magnétique → lac de l'Orage → r
 Récolte abondante, zéro combat imposé, plus longue.
 
 **Route des Hauteurs** (verticale, endurance) : camp → Bois du Levant →
-belvédère (à gravir) → mine → éperon du pylône → raccourci Arc Step de la
-gorge → contreforts → plateau. Exigeante, panoramas, la plus courte une fois
+belvédère (à gravir) → contournement EST de la source (correction V2.1 : le
+tracé V2.0 coupait la rivière hors gué) → mine → éperon du pylône →
+raccourci Arc Step de la gorge → contreforts → plateau. Exigeante, panoramas, la plus courte une fois
 maîtrisée (≥ 20 % de gain pour un expert, contrat §5.3 P2).
 
 **Route des Ruines** (combat/infiltration) : camp → steppe est → Ruines du
