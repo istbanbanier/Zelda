@@ -217,6 +217,15 @@ func _dress_interior() -> void:
 		[&"Banner_1", Vector3(10.9, 5.2, -4), -1.57, 1.4],
 		[&"Lantern_Wall", Vector3(-5.2, 2.6, 0), 1.57, 1.1],
 		[&"Lantern_Wall", Vector3(5.2, 2.6, 0), -1.57, 1.1],
+		# Chantier visuel 2026-08-12 — l'ÂGE du lieu : lierre retombant des
+		# murs (origine du modèle en HAUT : bbox y −2,12..0,48, on donne la
+		# hauteur d'accroche) et gravats aux angles morts. Décor pur, aucune
+		# collision, loin des portes (seuils à x ±2,1) et des colonnes.
+		[&"Prop_Vine1", Vector3(-3.2, 5.2, -12.9), 0.0, 1.2],
+		[&"Prop_Vine2", Vector3(7.9, 5.0, -12.85), 0.0, 1.3],
+		[&"Prop_Vine1", Vector3(-10.95, 4.6, 6.5), 1.57, 1.1],
+		[&"SM_Dungeon_RubbleSmall", Vector3(-10.2, 0, 11.8), 0.9, 1.4],
+		[&"SM_Dungeon_RubbleSmall", Vector3(10.3, 0, -10.9), 2.2, 1.3],
 	]
 	for entry: Array in placements:
 		var packed: PackedScene = AssetRegistry.model(entry[0] as StringName)

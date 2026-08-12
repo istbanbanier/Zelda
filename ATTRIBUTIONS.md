@@ -249,3 +249,19 @@ Six fichiers `.ogg` copiés depuis la quarantaine
 | Licence | **CC0 1.0 Universal** (License.txt du pack, PROVENANCE.md) |
 | Modifications | renommage seulement — contenu audio intact |
 | Détail source→cible + SHA-256 | `evidence/full_visual_finish_20260812/promotions_ui.md` §b |
+
+## Kit d'habillage du donjon promu (2026-08-12, finition monde)
+
+Dix modèles `.glb` + deux textures `colormap` copiés depuis la quarantaine vers
+`assets/environment/dungeon/` et renommés `SM_Dungeon_*`. Les URI de texture des
+GLB ont été réécrites (`Textures/colormap.png` → `colormap_cave.png` /
+`colormap_castle.png`) car les deux packs livrent des colormaps DIFFÉRENTS sous
+le même nom ; contenu binaire des maillages intact.
+
+| Champ | Valeur |
+|---|---|
+| Packs | Modular Cave Kit 1.0 (5 modèles + 1 texture) · Castle Kit 2.0 (5 modèles + 1 texture) |
+| Auteur | Kenney (kenney.nl) |
+| Licence | **CC0 1.0 Universal** (PROVENANCE.md de chaque pack) |
+| Modifications | renommage + réécriture d'URI de texture ; bannières re-teintées par material_override en jeu |
+| Détail source→cible + usage | `evidence/full_visual_finish_20260812/promotions_donjon.md` |

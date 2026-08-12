@@ -56,6 +56,7 @@ func _ready() -> void:
 	_build_block()
 	_build_reset_button()
 	_setup_lighting()
+	_build_dressing()
 	var graph_node: ElectricGraph = ElectricGraph.new()
 	graph_node.name = "Graph"
 	add_child(graph_node)
@@ -261,6 +262,59 @@ func _build_reset_button() -> void:
 	_reset_button.position = Vector3(-3.6, 0.55, 6.0)
 	add_child(_reset_button)
 	decor("ResetMarker", Vector3(-3.6, 0.03, 6.0), Vector3(1.6, 0.04, 1.6),
+		COL_IVORY)
+
+
+## Habillage d'identité (bible §12.2) — SALLE 1 = ATELIER/ENTREPÔT sobre,
+## bois et pierre : la première salle raconte les ouvriers qui ont posé le
+## circuit. Décor PUR : aucune collision, aucun élément à moins de 2 m d'un
+## mécanisme (canal x ±1,65/z −5..4, plaques, source, récepteur, reset).
+## Chaque modèle passe par `dress_prop` : absent, la salle reste graybox.
+func _build_dressing() -> void:
+	const WOOD: Color = Color(0.30, 0.21, 0.13)
+	# Poutres de bois sous le plafond : l'entrepôt se lit dès l'entrée, et
+	# elles cassent la dalle nue de 20 × 26 m (plafond à y = 8,0).
+	for i: int in range(3):
+		decor("CeilingBeam%d" % i, Vector3(0, 7.8, -8.0 + 8.5 * float(i)),
+			Vector3(20, 0.35, 0.5), WOOD)
+	# Mur ouest : l'établi des poseurs de câbles, près de la source.
+	dress_prop(&"Workbench", "DressWorkbench", Vector3(-9.0, 0, 8.5), PI * 0.5)
+	dress_prop(&"Anvil", "DressAnvil", Vector3(-8.8, 0, 6.6), 0.4)
+	dress_prop(&"Shelf_Simple", "DressShelf", Vector3(-9.8, 1.5, 2.0), PI * 0.5)
+	dress_prop(&"Bucket_Metal", "DressBucket", Vector3(-8.7, 0, 9.7), 1.1)
+	dress_prop(&"Lantern_Wall", "DressLantern", Vector3(-9.8, 2.3, 8.5), PI * 0.5)
+	# Lumière MOTIVÉE par la lanterne de l'établi (bornes du chantier :
+	# énergie ≤ 2, portée ≤ 12).
+	var lamp: OmniLight3D = OmniLight3D.new()
+	lamp.name = "WorkbenchLampGlow"
+	lamp.light_color = Color(1.0, 0.72, 0.38)
+	lamp.light_energy = 1.2
+	lamp.omni_range = 7.0
+	lamp.position = Vector3(-9.4, 2.6, 8.5)
+	add_child(lamp)
+	# Mur est : l'entrepôt — caisses, tonneau, chaîne, à ≥ 2 m du câble nord
+	# (x = 6,9, z −4,9..−11,9).
+	dress_prop(&"Crate_Wooden", "DressCrateA", Vector3(8.6, 0, 10.8), 0.3)
+	dress_prop(&"Crate_Wooden", "DressCrateB", Vector3(7.9, 0, 11.5), 1.2)
+	dress_prop(&"Barrel", "DressBarrel", Vector3(9.0, 0, 9.4), 0.7)
+	dress_prop(&"Crate_Metal", "DressCrateMetal", Vector3(8.9, 0, 6.0), 0.9)
+	dress_prop(&"Chain_Coil", "DressChain", Vector3(7.9, 0, 5.2), 2.1)
+	# Usure : gravats aux coins morts, fissures hautes sur la coque nue
+	# (les deux rangs de briques de `RoomDressing` s'arrêtent à 6,25 m).
+	dress_prop(&"SM_Dungeon_RubbleSmall", "DressRubbleNE",
+		Vector3(9.0, 0, -8.0), 0.8, Vector3.ONE * 1.5)
+	dress_prop(&"SM_Dungeon_RubbleLarge", "DressRubbleSW",
+		Vector3(-9.2, 0, 12.3), 2.3, Vector3.ONE * 1.4)
+	decor("CrackNorthA", Vector3(-4.5, 7.2, -12.94), Vector3(0.10, 1.6, 0.05),
+		Color(0.10, 0.10, 0.12))
+	decor("CrackNorthB", Vector3(5.5, 7.3, -12.94), Vector3(0.08, 1.4, 0.05),
+		Color(0.10, 0.10, 0.12))
+	decor("CrackEast", Vector3(9.94, 7.1, 4.0), Vector3(0.05, 1.8, 0.10),
+		Color(0.10, 0.10, 0.12))
+	# Bandeau de céramique ivoire au-dessus de la porte du puzzle : le seuil
+	# important reçoit le matériau noble (§12.1), sans toucher au vantail
+	# (panneau à z −13,5..−13,0 ; le bandeau vit à z −12,9, dégagé).
+	decor("DoorPediment", Vector3(0, 5.35, -12.9), Vector3(4.6, 0.35, 0.15),
 		COL_IVORY)
 
 

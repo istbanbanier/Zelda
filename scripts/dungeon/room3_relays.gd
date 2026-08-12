@@ -47,6 +47,7 @@ func _ready() -> void:
 	_build_circuit()
 	_build_reset_button()
 	_setup_lighting()
+	_build_dressing()
 	var graph_node: ElectricGraph = ElectricGraph.new()
 	graph_node.name = "Graph"
 	add_child(graph_node)
@@ -129,6 +130,88 @@ func _build_shell() -> void:
 	entry.add_child(mesh)
 	entry.position = Vector3(0, 2.5, 11.4)   # AVANT add_child (règle D.0)
 	add_child(entry)
+
+
+## Habillage d'identité (bible §12.2) — SALLE 3 = GALERIE CÉRÉMONIELLE :
+## colonnade, céramique ivoire, bannières et torchères. C'est la salle la
+## plus « civilisée » du donjon : les relais y sont exposés comme des
+## instruments, pas entassés comme des machines. Décor PUR, aucune
+## collision, ≥ 2 m du champ des relais (x −4,4..2,2 · z −4..1,6), de la
+## source, du récepteur et du reset.
+func _build_dressing() -> void:
+	const IVORY_CLOTH: Color = Color(0.80, 0.76, 0.65)
+	const CRACK: Color = Color(0.10, 0.10, 0.12)
+	# Colonnade : rangée nord derrière le circuit, paire sud encadrant
+	# l'approche. Module réel du kit (0,53 m × 3,02 m) étiré à ~8,7 m.
+	var north_cols: Array[float] = [-7.5, -2.5, 2.5, 7.5]
+	for i: int in range(north_cols.size()):
+		dress_prop(&"Corner_Exterior_Brick", "GalleryColumnN%d" % i,
+			Vector3(north_cols[i], 0.0, -8.5), PI * 0.5 * float(i % 4),
+			Vector3(1.6, 2.9, 1.6))
+	for i: int in range(2):
+		var x: float = -5.5 if i == 0 else 5.5
+		dress_prop(&"Corner_Exterior_Brick", "GalleryColumnS%d" % i,
+			Vector3(x, 0.0, 8.5), PI * 0.5 * float(i),
+			Vector3(1.6, 2.9, 1.6))
+	# Arcade AVEUGLE sur le mur nord, entre les colonnes : le langage des
+	# seuils, gravé dans la pierre pleine — zéro risque de passage.
+	for i: int in range(3):
+		dress_prop(&"SM_Dungeon_ArchBlock", "BlindArchN%d" % i,
+			Vector3(-5.0 + 5.0 * float(i), 0.0, -10.7), 0.0,
+			Vector3(3.4, 3.4, 0.9))
+	# Céramique ivoire : plinthes au pied des murs, bandeau à mi-hauteur.
+	decor("CeramicPlinthNorth", Vector3(0, 0.3, -10.8), Vector3(19.0, 0.6, 0.3),
+		COL_IVORY)
+	decor("CeramicPlinthWest", Vector3(-9.8, 0.3, 0), Vector3(0.3, 0.6, 20.0),
+		COL_IVORY)
+	decor("CeramicPlinthEastS", Vector3(9.8, 0.3, 5.0), Vector3(0.3, 0.6, 11.0),
+		COL_IVORY)
+	decor("CeramicPlinthEastN", Vector3(9.8, 0.3, -8.75),
+		Vector3(0.3, 0.6, 4.5), COL_IVORY)
+	decor("CeramicBandNorth", Vector3(0, 5.8, -10.85), Vector3(19.0, 0.35, 0.2),
+		COL_IVORY)
+	# Bordures de sol : deux lignes ivoire cadrent le champ des relais
+	## (à 2,2 m et 2,4 m des colonnes les plus proches du circuit).
+	decor("FloorBorderSouth", Vector3(-1.0, 0.02, 4.0), Vector3(10.0, 0.04, 0.5),
+		COL_IVORY)
+	decor("FloorBorderNorth", Vector3(-0.5, 0.02, -6.2), Vector3(14.0, 0.04, 0.5),
+		COL_IVORY)
+	# Deux bandes de plafond : la galerie a une charpente de pierre, pas une
+	# dalle nue (plafond à y = 9,0).
+	decor("CeilingRibNorth", Vector3(0, 8.85, -4.0), Vector3(19.5, 0.25, 0.6),
+		COL_IVORY)
+	decor("CeilingRibSouth", Vector3(0, 8.85, 4.0), Vector3(19.5, 0.25, 0.6),
+		COL_IVORY)
+	# Bannières hautes, teinte ivoire imposée : les couleurs vives du kit
+	# château sortiraient de la palette du donjon (§12.1).
+	dress_prop(&"SM_Dungeon_Banner", "BannerWestN",
+		Vector3(-9.55, 3.2, -7.5), 0.0, Vector3.ONE * 1.6, IVORY_CLOTH)
+	dress_prop(&"SM_Dungeon_Banner", "BannerWestS",
+		Vector3(-9.55, 3.2, 6.0), 0.0, Vector3.ONE * 1.6, IVORY_CLOTH)
+	dress_prop(&"SM_Dungeon_Banner", "BannerEastS",
+		Vector3(9.55, 3.2, 3.0), PI, Vector3.ONE * 1.6, IVORY_CLOTH)
+	dress_prop(&"SM_Dungeon_Banner", "BannerEastN",
+		Vector3(9.55, 3.2, -9.0), PI, Vector3.ONE * 1.6, IVORY_CLOTH)
+	# Torchères sur les colonnes sud, et leurs lumières MOTIVÉES
+	# (bornes du chantier : énergie ≤ 2, portée ≤ 12).
+	for i: int in range(2):
+		var x: float = -5.5 if i == 0 else 5.5
+		dress_prop(&"Torch_Metal", "ColumnTorch%d" % i,
+			Vector3(x, 2.2, 7.95), PI)
+		var glow: OmniLight3D = OmniLight3D.new()
+		glow.name = "ColumnTorchGlow%d" % i
+		glow.light_color = Color(1.0, 0.72, 0.38)
+		glow.light_energy = 0.9
+		glow.omni_range = 6.0
+		glow.position = Vector3(x, 2.6, 7.5)
+		add_child(glow)
+	# Usure : gravats au coin nord-ouest, fissure haute sur la coque nue.
+	dress_prop(&"SM_Dungeon_RubbleSmall", "RubbleNW",
+		Vector3(-9.2, 0.0, -10.0), 1.9, Vector3.ONE * 1.4)
+	decor("CrackNorth", Vector3(3.2, 7.6, -10.94), Vector3(0.10, 1.7, 0.05),
+		CRACK)
+	decor("CrackWest", Vector3(-9.94, 7.4, 6.5), Vector3(0.05, 1.5, 0.10),
+		CRACK)
 
 
 ## Chemin en créneau : source → C1 → sud → C2 → est → C3 → nord → C4 →

@@ -62,6 +62,7 @@ func _ready() -> void:
 	_build_circuits()
 	_build_map()
 	_setup_lighting()
+	_build_dressing()
 	var graph_node: ElectricGraph = ElectricGraph.new()
 	graph_node.name = "Graph"
 	add_child(graph_node)
@@ -172,6 +173,77 @@ func _build_shell() -> void:
 	scene_door("DoorAntechamber", "Franchir le seuil", ANTECHAMBER,
 		&"antechamber_from_hall", Vector3(0, GALLERY_Y + 2.5, -14.9),
 		Vector3(4.2, 5.0, 0.4))
+
+
+## Habillage d'identité (bible §12.2) — SALLE CENTRALE = CARREFOUR
+## MONUMENTAL : colonnes d'angle, arches aveugles, bannières, frontons
+## ivoire au-dessus des quatre seuils, encadrement de la porte du boss.
+## Décor PUR, aucune collision : rampes, feeds, piliers-récepteurs, carte
+## murale et déclencheurs de porte gardent leurs marges (≥ 2 m).
+func _build_dressing() -> void:
+	const BRONZE_CLOTH: Color = Color(0.48, 0.34, 0.18)
+	# Colonnes monumentales aux angles sud (les angles nord portent la
+	# galerie : colonnes de soutien plus courtes, sous la dalle à y = 5,75).
+	for i: int in range(2):
+		var x: float = -13.5 if i == 0 else 13.5
+		dress_prop(&"Corner_Exterior_Brick", "HallColumnS%d" % i,
+			Vector3(x, 0.0, 13.5), PI * 0.5 * float(i),
+			Vector3(2.2, 3.6, 2.2))
+	var supports: Array[float] = [-13.6, -4.9, 4.9, 13.6]
+	for i: int in range(supports.size()):
+		dress_prop(&"Corner_Exterior_Brick", "GallerySupport%d" % i,
+			Vector3(supports[i], 0.0, -12.55), PI * 0.5 * float(i % 4),
+			Vector3(1.7, 1.85, 1.7))
+	# Arches AVEUGLES au mur nord, sous la galerie, de part et d'autre du
+	# seuil de la salle 3 (déclencheur x ±2,1 : marge 3,4 m).
+	for i: int in range(2):
+		var x: float = -7.5 if i == 0 else 7.5
+		dress_prop(&"SM_Dungeon_ArchBlock", "BlindArchN%d" % i,
+			Vector3(x, 0.0, -14.6), 0.0, Vector3(4.2, 4.2, 1.0))
+	# Bannières hautes : flanc sud du seuil de la salle 1, mur est. Teinte
+	# bronze imposée — les couleurs vives du kit sortiraient de la palette.
+	dress_prop(&"SM_Dungeon_Banner", "BannerSouthW",
+		Vector3(-4.6, 6.0, 14.65), PI, Vector3.ONE * 2.2, BRONZE_CLOTH)
+	dress_prop(&"SM_Dungeon_Banner", "BannerSouthE",
+		Vector3(4.6, 6.0, 14.65), PI, Vector3.ONE * 2.2, BRONZE_CLOTH)
+	dress_prop(&"SM_Dungeon_Banner", "BannerEast",
+		Vector3(14.65, 6.0, 4.5), -PI * 0.5, Vector3.ONE * 2.2, BRONZE_CLOTH)
+	dress_prop(&"SM_Dungeon_Banner", "BannerWest",
+		Vector3(-14.65, 6.0, -5.5), PI * 0.5, Vector3.ONE * 2.2, BRONZE_CLOTH)
+	# Incrustation de sol au carrefour des axes (4 cm d'épaisseur, à 2,4 m
+	# du pilier-récepteur le plus proche).
+	decor("FloorInlayNS", Vector3(0, 0.02, -4.0), Vector3(0.7, 0.04, 6.0),
+		COL_IVORY)
+	decor("FloorInlayEW", Vector3(0, 0.02, -4.0), Vector3(6.0, 0.04, 0.7),
+		COL_IVORY)
+	var inlay_core: MeshInstance3D = decor("FloorInlayCore",
+		Vector3(0, 0.025, -4.0), Vector3(1.2, 0.05, 1.2), COL_IVORY)
+	inlay_core.rotation.y = PI * 0.25
+	# Frontons ivoire au-dessus des quatre seuils : le même mot répété aux
+	# quatre portes — on est au carrefour.
+	decor("PedimentSouth", Vector3(0, 5.35, 14.9), Vector3(4.6, 0.3, 0.15),
+		COL_IVORY)
+	decor("PedimentNorth", Vector3(0, 5.4, -14.9), Vector3(4.6, 0.3, 0.15),
+		COL_IVORY)
+	decor("PedimentWest", Vector3(-14.9, 5.35, -2), Vector3(0.15, 0.3, 4.6),
+		COL_IVORY)
+	decor("PedimentEast", Vector3(14.9, 5.35, -2), Vector3(0.15, 0.3, 4.6),
+		COL_IVORY)
+	# Couvre-main ivoire sur le garde-corps de la galerie, encadrement de la
+	# porte du boss (dégagé du vantail : il coulisse à z −15,55..−14,95).
+	decor("GalleryRailCap", Vector3(0, 7.05, -9.2), Vector3(30.0, 0.12, 0.5),
+		COL_IVORY)
+	decor("BossDoorJambW", Vector3(-4.6, GALLERY_Y + 3.0, -14.78),
+		Vector3(0.6, 6.0, 0.2), COL_IVORY)
+	decor("BossDoorJambE", Vector3(4.6, GALLERY_Y + 3.0, -14.78),
+		Vector3(0.6, 6.0, 0.2), COL_IVORY)
+	decor("BossDoorBand", Vector3(0, GALLERY_Y + 6.4, -14.78),
+		Vector3(9.8, 0.5, 0.2), COL_IVORY)
+	# Usure : gravats au pied des colonnes d'angle sud.
+	dress_prop(&"SM_Dungeon_RubbleLarge", "RubbleSW",
+		Vector3(-12.6, 0.0, 13.7), 1.2, Vector3.ONE * 1.7)
+	dress_prop(&"SM_Dungeon_RubbleSmall", "RubbleSE",
+		Vector3(12.7, 0.0, 13.6), 2.9, Vector3.ONE * 1.6)
 
 
 ## Trois branches SÉPARÉES. Aucune ne touche les autres : sans cela, le

@@ -49,6 +49,7 @@ func _ready() -> void:
 	_build_objects()
 	_build_reset_button()
 	_setup_lighting()
+	_build_dressing()
 	var graph_node: ElectricGraph = ElectricGraph.new()
 	graph_node.name = "Graph"
 	add_child(graph_node)
@@ -173,6 +174,65 @@ func _build_channel() -> void:
 		socket.detect_size = Vector3(2.8, 2.0, 2.0)
 		socket.position = Vector3(3.0 * float(side), -0.5, 0)
 		add_child(socket)
+
+
+## Habillage d'identité (bible §12.2) — SALLE 4 = CITERNE HUMIDE : quais de
+## pierre, margelles, mousse et algues, traces de ruissellement. L'eau a
+## marqué chaque surface — le danger de §15.8 se raconte avant de frapper.
+## Décor PUR, aucune collision, ≥ 2 m des berceaux à planche (x ±3 · z ±1),
+## des sockets, de la batterie, du levier et des câbles.
+func _build_dressing() -> void:
+	const WET_STONE: Color = Color(0.33, 0.34, 0.36)
+	const MOSS: Color = Color(0.16, 0.24, 0.14)
+	const ALGAE: Color = Color(0.20, 0.30, 0.17)
+	const DAMP: Color = Color(0.15, 0.16, 0.18)
+	# Bornes de quai aux quatre coins du canal — le kit château fournit la
+	# pierre taillée (aucune collision : le canal reste l'autorité).
+	for i: int in range(4):
+		var x: float = -3.9 if i % 2 == 0 else 3.9
+		var z: float = 7.4 if i < 2 else -7.4
+		dress_prop(&"SM_Dungeon_PillarStub", "QuayPost%d" % i,
+			Vector3(x, 0.0, z), 0.6 * float(i), Vector3.ONE * 1.5)
+	# Margelles le long des lèvres du canal, dégagées des berceaux (z ±1).
+	for i: int in range(4):
+		var x: float = -3.35 if i % 2 == 0 else 3.35
+		var z: float = 5.3 if i < 2 else -5.3
+		decor("QuayCurb%d" % i, Vector3(x, 0.06, z), Vector3(0.7, 0.12, 6.0),
+			WET_STONE)
+	# Mousse sur les berges, algues flottant sur la nappe (surface à −0,2).
+	decor("MossBankA", Vector3(-3.6, 0.03, 4.6), Vector3(1.2, 0.04, 2.2), MOSS)
+	decor("MossBankB", Vector3(3.7, 0.03, -5.6), Vector3(1.4, 0.04, 2.6), MOSS)
+	decor("MossBankC", Vector3(-3.5, 0.03, -6.8), Vector3(1.0, 0.04, 1.8), MOSS)
+	decor("MossBankD", Vector3(3.6, 0.03, 6.2), Vector3(1.1, 0.04, 2.0), MOSS)
+	decor("MossWallA", Vector3(-1.6, 0.5, -8.92), Vector3(2.2, 1.0, 0.06), MOSS)
+	decor("MossWallB", Vector3(2.1, 0.4, -8.92), Vector3(1.6, 0.8, 0.06), MOSS)
+	decor("AlgaeRaftA", Vector3(-1.3, -0.18, 5.2), Vector3(1.3, 0.02, 2.0),
+		ALGAE)
+	decor("AlgaeRaftB", Vector3(1.5, -0.18, -4.4), Vector3(1.0, 0.02, 1.6),
+		ALGAE)
+	decor("AlgaeRaftC", Vector3(-0.9, -0.18, -7.0), Vector3(1.6, 0.02, 2.4),
+		ALGAE)
+	# Ruissellement : traînées sombres au-dessus du canal, plafond taché.
+	decor("DampStreakNorth", Vector3(0, 4.5, -8.95), Vector3(3.0, 8.0, 0.05),
+		DAMP)
+	decor("DampStreakSouth", Vector3(0, 5.0, 8.95), Vector3(2.6, 7.0, 0.05),
+		DAMP)
+	decor("DampCeiling", Vector3(0, 8.95, 0), Vector3(5.5, 0.05, 16.0), DAMP)
+	# Arches AVEUGLES taillées dans le mur nord : la citerne a été creusée
+	# dans la roche, comme le puits de la salle 2.
+	dress_prop(&"SM_Dungeon_CaveArch", "RockNicheWest",
+		Vector3(-8.0, 0.0, -9.25), 0.0)
+	dress_prop(&"SM_Dungeon_CaveArch", "RockNicheEast",
+		Vector3(8.0, 0.0, -9.25), 0.0)
+	# Formations rocheuses aux coins morts, gravats, outillage des berges.
+	dress_prop(&"SM_Dungeon_CaveRock", "RockPileSW",
+		Vector3(-12.2, 0.0, 7.9), 1.3, Vector3.ONE * 0.9)
+	dress_prop(&"SM_Dungeon_CaveRock", "RockPileNE",
+		Vector3(12.3, 0.0, -7.8), 4.1, Vector3.ONE * 0.8)
+	dress_prop(&"SM_Dungeon_RubbleSmall", "RubbleSE",
+		Vector3(12.4, 0.0, 7.6), 0.9, Vector3.ONE * 1.5)
+	dress_prop(&"Chain_Coil", "QuayChain", Vector3(-5.4, 0.0, -6.6), 1.7)
+	dress_prop(&"Bucket_Wooden_1", "QuayBucket", Vector3(-4.9, 0.0, 6.7), 2.6)
 
 
 func _build_circuit() -> void:

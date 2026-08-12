@@ -36,6 +36,7 @@ func _ready() -> void:
 	_build_fresco()
 	_build_supplies()
 	_setup_lighting()
+	_build_dressing()
 	var graph_node: ElectricGraph = ElectricGraph.new()
 	graph_node.name = "Graph"
 	add_child(graph_node)
@@ -220,6 +221,50 @@ func _build_supplies() -> void:
 		_berries.append(pickup)
 	box("BerryLedge", Vector3(2.55, 0.45, 6.2), Vector3(4.6, 0.9, 1.2),
 		COL_STONE)
+
+
+## Habillage d'identité (bible §12.2) — ANTICHAMBRE = SALLE DE REPOS : le
+## dernier feu avant le Gardien. Râtelier, banc, table de préparation,
+## réserves — le lieu dit « prépare-toi » sans un mot. Décor PUR, aucune
+## collision, ≥ 2 m du coffre, du feu, des baies, de la fresque et des
+## déclencheurs de porte.
+func _build_dressing() -> void:
+	const WOOD: Color = Color(0.30, 0.21, 0.13)
+	const BRONZE_CLOTH: Color = Color(0.48, 0.34, 0.18)
+	# Charpente : deux poutres de bois sous le plafond (y = 8,0).
+	decor("CeilingBeamA", Vector3(0, 7.8, 2.0), Vector3(17.5, 0.3, 0.45), WOOD)
+	decor("CeilingBeamB", Vector3(0, 7.8, 7.0), Vector3(17.5, 0.3, 0.45), WOOD)
+	# Coin armurerie, contre le mur est, à 4 m du coffre garanti.
+	dress_prop(&"WeaponStand", "RestWeaponStand", Vector3(8.3, 0, 5.5),
+		-PI * 0.5)
+	dress_prop(&"Shield_Wooden", "RestShield", Vector3(8.6, 0.3, 4.1), -1.9)
+	# Table de préparation le long du mur est (plateau mesuré à 0,81 m).
+	dress_prop(&"Table_Large", "RestTable", Vector3(7.4, 0, -0.8), PI * 0.5)
+	dress_prop(&"Bottle_1", "RestBottle", Vector3(7.4, 0.82, -0.5), 0.7)
+	dress_prop(&"Book_Stack_1", "RestBooks", Vector3(7.5, 0.82, -1.3), 2.2)
+	# Banc près du feu — à 3,7 m de l'anneau, on s'assoit face aux braises.
+	dress_prop(&"Bench", "RestBench", Vector3(-6.5, 0, 7.9), PI * 0.9)
+	dress_prop(&"Bag", "RestBag", Vector3(-7.7, 0, 8.6), 1.2)
+	# Réserves au coin nord-ouest, sous la fenêtre, loin de la fresque.
+	dress_prop(&"Crate_Wooden", "RestCrate", Vector3(-7.9, 0, -5.6), 0.4)
+	dress_prop(&"Barrel", "RestBarrel", Vector3(-7.6, 0, -7.0), 0.0)
+	dress_prop(&"Pot_1", "RestPot", Vector3(-6.6, 0, -5.9), 1.5)
+	# Deux bannières bronze flanquent la baie et le seuil de l'arène : le
+	# prochain pas est solennel. Teinte imposée (palette §12.1).
+	dress_prop(&"SM_Dungeon_Banner", "BannerArenaE",
+		Vector3(8.5, 3.0, -9.75), 0.0, Vector3.ONE * 1.4, BRONZE_CLOTH)
+	dress_prop(&"SM_Dungeon_Banner", "BannerArenaW",
+		Vector3(-6.6, 3.0, -9.75), 0.0, Vector3.ONE * 1.4, BRONZE_CLOTH)
+	# Cadre ivoire de la fresque : l'enseignement de §14.4 mérite un cadre.
+	# Les strips vivent à x = −8,65, DERRIÈRE les nœuds de démonstration
+	# (x = −8,5) : rien ne recouvre la leçon.
+	decor("FrescoFrameTop", Vector3(-8.65, 4.55, 2.0), Vector3(0.15, 0.25, 7.2),
+		COL_IVORY)
+	decor("FrescoFrameBottom", Vector3(-8.65, 0.65, 2.0),
+		Vector3(0.15, 0.25, 7.2), COL_IVORY)
+	# Usure : gravats au coin sud-ouest.
+	dress_prop(&"SM_Dungeon_RubbleSmall", "RubbleSW",
+		Vector3(-8.3, 0, 9.2), 2.4, Vector3.ONE * 1.3)
 
 
 ## §19.5 : checkpoint « antichambre du boss ». On écrit ce que le joueur

@@ -349,6 +349,38 @@ func decor(decor_name: String, center: Vector3, size: Vector3, color: Color,
 	return mesh
 
 
+## Prop d'habillage PUR — AUCUNE collision, aucun rôle de jeu. Instancie un
+## modèle de la bibliothèque (`assets/environment/dungeon/`, promotions
+## `SM_Dungeon_*` comprises) via `AssetRegistry.model()`. Même contrat que
+## `RoomDressing` : si le modèle n'est pas encore importé, la salle reste
+## EXACTEMENT ce qu'elle était — l'habillage est un bonus, jamais une
+## dépendance. `tint` remplace les matériaux par un aplat (bannières du kit
+## château : leurs couleurs vives d'origine sortiraient de la palette §12.1).
+func dress_prop(model: StringName, prop_name: String, at: Vector3,
+		yaw: float = 0.0, scale_xyz: Vector3 = Vector3.ONE,
+		tint: Color = Color.TRANSPARENT) -> Node3D:
+	var packed: PackedScene = AssetRegistry.model(model)
+	if packed == null:
+		return null
+	var prop: Node3D = packed.instantiate() as Node3D
+	if prop == null:
+		return null
+	# Nommage EXPLICITE : Godot rebaptise les homonymes `@Node3D@366` et
+	# aucun test ne peut plus désigner la géométrie (scripts/CLAUDE.md).
+	prop.name = prop_name
+	prop.rotation.y = yaw
+	prop.scale = scale_xyz
+	if tint.a > 0.0:
+		var flat: StandardMaterial3D = StandardMaterial3D.new()
+		flat.albedo_color = tint
+		flat.roughness = 0.9
+		for node: Node in prop.find_children("*", "MeshInstance3D", true, false):
+			(node as MeshInstance3D).material_override = flat
+	prop.position = at   # AVANT add_child (règle D.0)
+	add_child(prop)
+	return prop
+
+
 ## Caméra de référence §21.5 (outil de capture uniquement, via `--call=`) :
 ## cadre la salle entière depuis un angle haut — l'AABB fusionnée des
 ## visuels donne le centre et l'empreinte, quel que soit le layout.

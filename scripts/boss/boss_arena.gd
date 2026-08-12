@@ -104,6 +104,7 @@ func _ready() -> void:
 	_build_ground_rail()
 	_build_pylons()
 	_setup_lighting()
+	_build_dressing()
 	var graph_node: ElectricGraph = ElectricGraph.new()
 	graph_node.name = "Graph"
 	add_child(graph_node)
@@ -263,6 +264,88 @@ func _build_pylons() -> void:
 
 func _ring_angle(index: int) -> float:
 	return TAU * float(index) / float(RAIL_SEGMENTS)
+
+
+## Habillage d'identité (bible §12.2, §15.5) — ARÈNE = AMPHITHÉÂTRE
+## D'ORAGE : gradins en ruine contre le mur, impacts de foudre anciens au
+## sol, bannières fatiguées. Décor PUR, aucune collision : le disque, le
+## rail de terre (r = 14), les pylônes (45/135/225/315°), les braseros
+## (0/90/180/270°) et le seuil sud gardent leurs marges. Les gradins
+## restent bas (≤ 1,3 m) : de la ruine, jamais une plateforme praticable.
+func _build_dressing() -> void:
+	const SEAT_STONE: Color = Color(0.26, 0.25, 0.28)
+	const STORM_CLOTH: Color = Color(0.38, 0.28, 0.16)
+	# Six arcs de gradins brisés, à mi-chemin entre pylônes et braseros
+	# (marge angulaire ≥ 15° de chacun, soit ≥ 4,5 m à ce rayon).
+	var arc_centers: Array[float] = [67.5, 112.5, 157.5, 202.5, 247.5, 292.5]
+	var seat_heights: Array[float] = [0.5, 0.9, 0.65]
+	for i: int in range(arc_centers.size()):
+		var centre_angle: float = deg_to_rad(arc_centers[i])
+		for k: int in range(3):
+			var angle: float = centre_angle + 0.122 * float(k - 1)
+			var seat_h: float = seat_heights[(i + k) % 3]
+			var seat: MeshInstance3D = decor("Gradin%d_%d" % [i, k],
+				Vector3(sin(angle) * 17.5, seat_h * 0.5, cos(angle) * 17.5),
+				Vector3(2.2, seat_h, 0.9), SEAT_STONE)
+			seat.rotation.y = angle
+			var back_h: float = 1.3 - 0.15 * float((i + k) % 3)
+			var back: MeshInstance3D = decor("GradinBack%d_%d" % [i, k],
+				Vector3(sin(angle) * 18.55, back_h * 0.5, cos(angle) * 18.55),
+				Vector3(2.3, back_h, 0.85), SEAT_STONE)
+			back.rotation.y = angle
+	# Trois impacts de foudre ANCIENS : l'orage frappe ici depuis toujours.
+	# Tous à ≥ 2 m du spawn du Gardien, des rainures et du rail.
+	_lightning_scar("ScarEast", Vector3(9.36, 0, -1.65), 0.4)
+	_lightning_scar("ScarSouthWest", Vector3(-3.38, 0, -7.25), 2.1)
+	_lightning_scar("ScarNorthWest", Vector3(-3.59, 0, 9.87), 4.8)
+	# Roche mère affleurant au pied du mur, gravats d'anciens gradins.
+	dress_prop(&"SM_Dungeon_CaveRock", "ArenaRockE",
+		Vector3(8.6, 0, 14.9), 0.9, Vector3.ONE * 1.1)
+	dress_prop(&"SM_Dungeon_CaveRock", "ArenaRockW",
+		Vector3(-8.6, 0, -14.9), 3.6, Vector3.ONE * 0.9)
+	dress_prop(&"SM_Dungeon_RubbleLarge", "ArenaRubbleNE",
+		Vector3(14.72, 0, 8.5), 1.3, Vector3.ONE * 1.8)
+	dress_prop(&"SM_Dungeon_RubbleLarge", "ArenaRubbleSW",
+		Vector3(-14.72, 0, -8.5), 4.2, Vector3.ONE * 1.7)
+	dress_prop(&"SM_Dungeon_RubbleSmall", "ArenaRubbleSE",
+		Vector3(12.87, 0, -10.8), 2.6, Vector3.ONE * 1.6)
+	dress_prop(&"SM_Dungeon_RubbleSmall", "ArenaRubbleNW",
+		Vector3(-14.55, 0, 8.4), 0.7, Vector3.ONE * 1.5)
+	# Deux bannières fatiguées au-dessus des gradins, teinte bronze sombre
+	# imposée (palette §12.1 : le cyan reste à l'énergie).
+	var banner_angles: Array[float] = [112.5, 247.5]
+	for i: int in range(banner_angles.size()):
+		var angle: float = deg_to_rad(banner_angles[i])
+		dress_prop(&"SM_Dungeon_Banner", "ArenaBanner%d" % i,
+			Vector3(sin(angle) * 18.6, 5.5, cos(angle) * 18.6),
+			angle + PI * 0.5, Vector3.ONE * 2.0, STORM_CLOTH)
+
+
+## Impact de foudre ANCIEN : disque carbonisé + éclats rayonnants. Posé
+## au-dessus des trois zones de sol (leurs disques culminent à y = 0,04),
+## en gris charbon — jamais cyan : le cyan est réservé au danger ACTIF.
+func _lightning_scar(scar_name: String, at: Vector3, seed_yaw: float) -> void:
+	var disc: MeshInstance3D = MeshInstance3D.new()
+	disc.name = scar_name
+	var cylinder: CylinderMesh = CylinderMesh.new()
+	cylinder.top_radius = 1.05
+	cylinder.bottom_radius = 1.05
+	cylinder.height = 0.03
+	disc.mesh = cylinder
+	var charcoal: StandardMaterial3D = StandardMaterial3D.new()
+	charcoal.albedo_color = Color(0.09, 0.09, 0.10)
+	charcoal.roughness = 0.95
+	disc.material_override = charcoal
+	disc.position = at + Vector3(0, 0.055, 0)
+	add_child(disc)
+	for k: int in range(5):
+		var yaw: float = seed_yaw + TAU * float(k) / 5.0 + 0.23 * float(k % 2)
+		var reach: float = 1.4 + 0.4 * float(k % 3)
+		var direction: Vector3 = Vector3(cos(yaw), 0, -sin(yaw))
+		var streak: MeshInstance3D = decor("%s_Streak%d" % [scar_name, k],
+			at + direction * (0.9 + reach * 0.5) + Vector3(0, 0.06, 0),
+			Vector3(reach, 0.015, 0.22), Color(0.11, 0.11, 0.12))
+		streak.rotation.y = yaw
 
 
 ## Le Gardien naît au nord de l'arène, face au seuil : le joueur le voit
