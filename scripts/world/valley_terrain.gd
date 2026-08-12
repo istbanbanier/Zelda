@@ -381,16 +381,18 @@ func _build_camp_terrace() -> void:
 	# sont désormais livrées (`AwningTent`, `CampfireProp`), originales et
 	# construites par script — aucun pack externe, rien à attribuer.
 	#
-	# La position, le lacet et la hauteur de chaque tente ne bougent PAS : le
-	# triangle fonctionnel du camp et ses trois approches sont le travail d'un
-	# autre lot. Seule la forme change, et la collision avec elle.
+	# PASSE 3 (défaut n°4 de la revue : « triangle repos/cuisine/garde ») —
+	# le lot du triangle fonctionnel, annoncé au lot D, c'est ICI. Les trois
+	# tentes se REGROUPENT au pôle repos (nord-ouest, avec l'abri et le lit) ;
+	# l'ancien coin de la tente 0 (54 ; 58) revient à la réserve de cuisine.
+	# Le triangle est testé : test_camp_composes_three_activity_poles.gd.
 	var camp: Node3D = Node3D.new()
 	camp.name = "CampDressing"
 	add_child(camp)
 	var tents: Array[Array] = [
-		# [pied xz, yaw]
-		[Vector2(54, 58), 0.4],
-		[Vector2(57, 70), -0.7],
+		# [pied xz, yaw] — pôle REPOS, autour de l'abri (30 ; 72).
+		[Vector2(35.5, 70.5), 0.9],
+		[Vector2(28.5, 76.5), -0.5],
 		[Vector2(34, 76), 1.2],
 	]
 	for i: int in range(tents.size()):
@@ -453,10 +455,13 @@ func _build_camp_terrace() -> void:
 	# COLLISION à hauteur du modèle — le décor bloque, comme les boîtes.
 	var camp_props: Array[Array] = [
 		# [id, position, lacet, taille de collision]
+		# Passe 3 : les tonneaux quittent le CENTRE du triangle (40 ; 62) —
+		# c'est le vide intentionnel — et rejoignent le bord du foyer,
+		# côté cuisine.
 		[&"prop.crate", Vector3(51.5, 6.0, 59.5), 0.35, Vector3(1.1, 1.2, 1.17)],
 		[&"prop.crate", Vector3(52.7, 6.0, 60.8), 1.15, Vector3(1.1, 1.2, 1.17)],
-		[&"prop.barrel", Vector3(41.2, 6.0, 61.0), 0.0, Vector3(0.72, 0.9, 0.72)],
-		[&"prop.barrel", Vector3(40.4, 6.0, 62.2), 0.9, Vector3(0.72, 0.9, 0.72)],
+		[&"prop.barrel", Vector3(47.8, 6.0, 66.2), 0.0, Vector3(0.72, 0.9, 0.72)],
+		[&"prop.barrel", Vector3(48.9, 6.0, 65.3), 0.9, Vector3(0.72, 0.9, 0.72)],
 	]
 	for entry: Array in camp_props:
 		_mount_camp_prop(camp, entry[0] as StringName, entry[1] as Vector3,
@@ -488,74 +493,65 @@ func _dress_camp_life(camp: Node3D) -> void:
 	var life: Node3D = Node3D.new()
 	life.name = "CampLife"
 	camp.add_child(life)
+	# PASSE 3 : les placements se rangent en TROIS PÔLES (§10.1 — repos,
+	# cuisine/stockage, garde/armes), testés par centroïdes. Le chaudron
+	# reste le PREMIER enfant : `test_camp_props` le désigne « Cauldron_0 »
+	# et le suffixe est l'ordre d'insertion.
 	var placements: Array[Array] = [
-		# Cuisine : chaudron SUR le foyer, table dressée, banc, seau.
+		# --- CUISINE/STOCKAGE, autour du foyer (45 ; 64) ------------------
 		# REVUE V4 : à y = 6,18 le chaudron (bbox Y −0,0028) plongeait de 22 cm
 		# dans l'anneau de pierre (6,00..6,40) et les braises (6,35..6,65,
 		# rayon 0,70 > panse 0,4946) lui traversaient les flancs. Reposé sur le
 		# dessus des braises : 6,65 + 0,0028 = 6,653.
 		[&"Cauldron", Vector3(45, 6.653, 64), 0.0, 1.0],
-		[&"Table_Large", Vector3(47.8, 6, 60.3), 0.45, 1.0,
+		# Table AVANCÉE vers le foyer (passe 3) : elle appartient au pôle
+		# cuisine, pas au milieu du camp — et laisse le coffre (49 ; 63) libre.
+		[&"Table_Large", Vector3(47.6, 6, 61.5), 0.45, 1.0,
 			Vector3(1.9, 0.9, 1.0), false],
-		[&"Bench", Vector3(47.2, 6, 59.0), 0.45, 1.0],
-		[&"Stool", Vector3(49.4, 6, 61.3), 1.2, 1.0],
-		# REVUE V4 : la vaisselle était posée à plat à y = 6,78 alors que le
-		# plateau de `Table_Large` est à 6 + 0,8147 = 6,8147. Chaque pièce
-		# s'enfonçait donc dans le bois (la carotte de 27 cm, il ne restait que
-		# le fane). Règle appliquée : y = 6,8147 − bbox_min Y du modèle.
-		[&"Pot_1", Vector3(47.5, 6.837, 60.2), 0.8, 1.0],      # bbox_min Y −0,0226
-		[&"Mug", Vector3(48.1, 6.819, 60.6), 2.1, 1.0],        # bbox_min Y −0,0046
-		[&"Bottle_1", Vector3(47.9, 6.813, 59.9), 0.0, 1.0],   # bbox_min Y +0,0016
-		[&"Carrot", Vector3(47.2, 7.053, 60.5), 1.5, 1.0],     # bbox_min Y −0,2378
-		[&"Bucket_Wooden_1", Vector3(46.6, 6, 61.2), 2.8, 1.0],
-		# Réserve : tonneau de pommes, cageots, sacs à l'entrée de tente.
+		[&"Bench", Vector3(47.0, 6, 60.2), 0.45, 1.0],
+		[&"Stool", Vector3(49.8, 6, 61.9), 1.2, 1.0],
+		# REVUE V4 : la vaisselle suit le plateau de `Table_Large`
+		# (6 + 0,8147 = 6,8147) : y = 6,8147 − bbox_min Y du modèle.
+		[&"Pot_1", Vector3(47.3, 6.837, 61.4), 0.8, 1.0],      # bbox_min Y −0,0226
+		[&"Mug", Vector3(47.9, 6.819, 61.8), 2.1, 1.0],        # bbox_min Y −0,0046
+		[&"Bottle_1", Vector3(47.7, 6.813, 61.1), 0.0, 1.0],   # bbox_min Y +0,0016
+		[&"Carrot", Vector3(47.0, 7.053, 61.7), 1.5, 1.0],     # bbox_min Y −0,2378
+		[&"Bucket_Wooden_1", Vector3(46.4, 6, 62.2), 2.8, 1.0],
 		[&"Barrel_Apples", Vector3(50.4, 6, 58.4), 0.6, 1.0],
-		# REVUE V4 : la « réserve » était RANGÉE DANS la tente 0 (pied 54/58,
-		# lacet 0,4, toile fermée 3,8 × 3,4 sans ouverture). Coordonnées locales
-		# mesurées : cageot de pommes (−1,05 ; −0,34) et bourse (+0,74 ; −0,99)
-		# entièrement à l'intérieur, cageot vide (−1,27 ; −1,62) aux trois
-		# quarts — invisibles. Le groupe est sorti devant le pignon, translaté
-		# de 2,06 m sur le −Z local, soit un vecteur monde (−0,80 ; 0 ; −1,90).
-		# Nouvelles cotes locales z : −2,40 / −3,68 / −3,95 / −3,05, toutes
-		# au-delà de la demi-profondeur de toile (1,70), et le groupe reste sur
-		# `CampTerrace` (x 23..67, z 45..85), à plus d'un mètre des caisses.
-		[&"FarmCrate_Apple", Vector3(52.10, 6, 56.20), 1.9, 1.0],
-		[&"FarmCrate_Empty", Vector3(51.40, 6, 55.10), 0.3, 1.0],
-		[&"Bag", Vector3(52.60, 6, 54.30), 2.4, 1.0],
-		[&"Pouch_Large", Vector3(53.50, 6, 54.90), 4.0, 1.0],
-		# Coin de travail : enclume, billot avec hache, pierre à affûter.
-		[&"Anvil", Vector3(41.0, 6, 58.0), 1.1, 1.0,
+		# Réserve (passe 3) : elle occupe l'ANCIEN coin de la tente 0
+		# (54 ; 58) — le stockage colle à la cuisine, pas au dortoir, et le
+		# centroïde du pôle s'écarte de la garde (côté de triangle testé).
+		[&"FarmCrate_Apple", Vector3(54.6, 6, 59.3), 1.9, 1.0],
+		[&"FarmCrate_Empty", Vector3(54.0, 6, 58.2), 0.3, 1.0],
+		[&"Bag", Vector3(55.3, 6, 57.7), 2.4, 1.0],
+		[&"Pouch_Large", Vector3(55.9, 6, 58.6), 4.0, 1.0],
+		# --- GARDE/ARMES, à l'entrée sud (rampe CampExit) -----------------
+		# Passe 3 : enclume, billot, râtelier et bouclier REJOIGNENT la
+		# charrette et la bannière au seuil sud — le poste qui regarde
+		# l'approche frontale. Les cotes verticales mesurées en V4 (hache
+		# 7,455, bouclier 6,311) restent des offsets au sol.
+		[&"Anvil", Vector3(38.9, 6, 51.9), 1.1, 1.0,
 			Vector3(0.9, 0.8, 0.6), false],
-		[&"Anvil_Log", Vector3(40.0, 6, 59.3), 0.2, 1.0],
-		# REVUE V4 : à y = 6,55 la hache était entièrement enfermée dans le
-		# billot, aux mêmes x/z que lui, sous son plateau (6 + 1,0748 = 7,0748).
-		# ATTENTION à la cote : le nœud du glTF porte une rotation de 90° et une
-		# échelle 0,847, si bien que la boîte ANNONCÉE par le fichier
-		# (Y −0,2313..0,1164) n'est pas celle du modèle importé. Mesure dans
-		# Godot : Y −0,3806..+0,4463, hache debout, tête en haut. Base posée sur
-		# le plateau : 7,0748 + 0,3806 = 7,455.
-		[&"Axe_Bronze", Vector3(40.0, 7.455, 59.3), 2.6, 1.0],
-		[&"Whetstone", Vector3(41.9, 6, 57.1), 3.3, 1.0],
-		[&"Rope_1", Vector3(42.6, 6, 58.8), 0.9, 1.0],
-		# Râtelier d'armes près des tentes nord, bouclier POSÉ contre le pied.
-		[&"WeaponStand", Vector3(43.5, 6, 70.2), 2.1, 1.0,
+		[&"Anvil_Log", Vector3(37.95, 6, 53.1), 0.2, 1.0],
+		# REVUE V4 : hache debout SUR le billot — 7,0748 + 0,3806 = 7,455.
+		[&"Axe_Bronze", Vector3(37.95, 7.455, 53.1), 2.6, 1.0],
+		[&"Whetstone", Vector3(39.7, 6, 50.3), 3.3, 1.0],
+		[&"Rope_1", Vector3(40.4, 6, 52.0), 0.9, 1.0],
+		[&"WeaponStand", Vector3(42.6, 6, 51.8), 0.6, 1.0,
 			Vector3(1.4, 1.6, 0.5), false],
-		[&"Sword_Bronze", Vector3(43.5, 6.62, 70.1), 2.1, 1.0],
-		# REVUE V4 : l'origine de `Shield_Wooden` est au CENTRE du disque
-		# (bbox Y −0,3104..+0,3104), pas à sa base : posé à 6,25 il s'enfonçait
-		# de 6 cm dans la dalle (6,00). Tranche posée sur la dalle :
-		# 6,00 + 0,3104 = 6,311, et recentré à 0,6 m du montant du râtelier.
-		[&"Shield_Wooden", Vector3(43.05, 6.311, 70.62), 2.6, 1.0],
-		# Charrette à l'entrée sud du camp, bannière de faction.
-		[&"Stall_Cart_Empty", Vector3(40.0, 6, 50.5), 1.35, 1.0,
+		[&"Sword_Bronze", Vector3(42.6, 6.62, 51.7), 0.6, 1.0],
+		# REVUE V4 : l'origine de `Shield_Wooden` est au CENTRE du disque —
+		# tranche posée sur la dalle : 6,00 + 0,3104 = 6,311.
+		[&"Shield_Wooden", Vector3(42.15, 6.311, 52.25), 1.0, 1.0],
+		[&"Stall_Cart_Empty", Vector3(40.0, 6, 49.9), 1.35, 1.0,
 			Vector3(2.4, 1.4, 1.6), false],
-		# REVUE V4 : `Banner_2` est une APPLIQUE — son origine est le point
-		# d'accroche haut, l'étoffe pend en dessous (bbox Y −1,2336..+0,8435).
-		# Posée à y = 6,0, c'est-à-dire au niveau de la dalle, 59 % du tissu
-		# était enterré : 1,48 m sous l'herbe. Remontée au niveau d'accroche :
-		# à 7,78 le bas de l'étoffe est à 7,78 − 1,2336 × 1,2 = 6,30, soit
-		# 0,30 m au-dessus du sol, et la hampe culmine à 8,79 m.
-		[&"Banner_2", Vector3(41.2, 7.78, 48.3), 0.1, 1.2],
+		# REVUE V4 : `Banner_2` est une APPLIQUE à hampe — origine au point
+		# d'accroche (bbox Y −1,2336..+0,8435) : à 7,78 le bas de l'étoffe
+		# flotte à 0,30 m du sol, la hampe culmine à 8,79 m.
+		[&"Banner_2", Vector3(41.2, 7.78, 47.9), 0.1, 1.2],
+		# Passe 3, §10.1 : « DEUX bannières étroites » — la seconde ferme
+		# l'autre côté du seuil sud. Même modèle, même accroche mesurée.
+		[&"Banner_2", Vector3(44.1, 7.78, 48.8), 0.15, 1.2],
 		# Clôture PARTIELLE au nord (indice de limite, pas une cage).
 		[&"Prop_WoodenFence_Single", Vector3(38.5, 6, 79.0), 0.15, 1.1],
 		[&"Prop_WoodenFence_Extension1", Vector3(42.6, 6, 79.4), 0.15, 1.1],
