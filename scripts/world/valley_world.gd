@@ -621,7 +621,18 @@ func _setup_gate_cameras() -> void:
 	# Plaine nord, à mi-chemin du plateau : c'est le plan qui montrait 815
 	# impacts de sonde sur deux dalles plates, et la face sud du plateau en
 	# grand mur. Regard droit vers le nord.
-	_add_gate_camera("GateCamera_NorthRoad", Vector3(-2.0, 3.7, -60.0),
+	#
+	# CAMÉRA CONTRE UN MUR, corrigée le 2026-08-12 (passe 3). Posée à
+	# (−2 ; 3,7 ; −60), l'œil vivait à 2,6 m à l'EST de `RuinWall03`
+	# (x = −4, z −56..−68, sommet y 4,6 : 0,9 m AU-DESSUS de l'œil) — la
+	# moitié gauche du cadre était un coin gris sans matière, et l'était
+	# depuis la création de la caméra. Même famille que la caméra de descente
+	# enterrée : le picking par rayon a tranché (la sonde d'emprise ne voyait
+	# pas l'AABB fine du mur). Décalée à x = +4 : la route reste au tiers
+	# gauche, les ruines se lisent à distance de lecture, le mur le plus
+	# proche est à plus de 7 m. Invariant testé :
+	# `test_no_gate_camera_has_a_static_wall_against_its_lens`.
+	_add_gate_camera("GateCamera_NorthRoad", Vector3(4.0, 3.7, -60.0),
 		Vector3(1.5, 0.0, 0.0), 58.0)
 	# Approche : sur la route, AVANT la rampe processionnelle. Cadrage réglé
 	# sur capture — posée à z −118, la caméra se trouvait à 47 m d'une face de
