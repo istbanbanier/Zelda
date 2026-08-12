@@ -104,6 +104,8 @@ func _ready() -> void:
 	_build_ground_variation()
 	_build_crest_meadow()
 	_build_slope_flora()
+	_build_corridor_flora()
+	_build_ford_banks()
 
 
 ## ---------------------------------------------------------------------------
@@ -254,6 +256,33 @@ func _build_border_crests() -> void:
 			_visual_prism("Crest%d_%d" % [axis, i], crests, centre, size,
 				COL_MOUNTAIN_WARM if i % 3 == 0 else COL_MOUNTAIN,
 				axis < 2, 0.5 + 0.28 * sin(t * 13.7 + float(axis) * 3.1))
+	# SPRINT T2 (2026-08-12) — la COUTURE du sommet de mur. Entre deux pics,
+	# le profil triangulaire laisse une encoche en V où l'arête HORIZONTALE
+	# du mur (y = 70) se découpe droit sur le ciel — la « couture
+	# crête/bordure » visible sur les caméras 1, 5 et 6. Des COLS plus bas,
+	# posés aux points MILIEUX entre les pics, chevauchent l'arête : la
+	# ligne droite disparaît sous une selle de montagne. Même plafond nord
+	# que les pics (sommet ≤ 96, H-4). Sans collision.
+	for axis: int in range(4):
+		for i: int in range(19):
+			var t: float = (float(i) + 0.5) / 19.0
+			var along: float = lerpf(-BORDER_OUTER, BORDER_OUTER, t) \
+				+ 6.0 * sin(t * 11.9 + float(axis) * 1.7)
+			var height: float = 13.0 + 6.0 * sin(t * 9.7 + float(axis) * 2.3)
+			if axis == 0:
+				height = minf(height, 14.0)
+			var width: float = 40.0 + 12.0 * sin(t * 6.1 + float(axis))
+			var centre: Vector3
+			var lift: float = BORDER_TOP - height * 0.42
+			match axis:
+				0: centre = Vector3(along, lift + height * 0.5, -mid)
+				1: centre = Vector3(along, lift + height * 0.5, mid)
+				2: centre = Vector3(-mid, lift + height * 0.5, along)
+				_: centre = Vector3(mid, lift + height * 0.5, along)
+			_visual_prism("CrestSaddle%d_%d" % [axis, i], crests, centre,
+				Vector3(width, height, (BORDER_OUTER - BORDER_INNER) * 0.9),
+				COL_MOUNTAIN if i % 4 != 1 else COL_MOUNTAIN_SHADE,
+				axis < 2, 0.5 + 0.3 * sin(t * 8.3 + float(axis)))
 
 
 func _build_far_skyline() -> void:
@@ -358,32 +387,37 @@ func _build_plains_and_river() -> void:
 ## les tronçons de chemin (≥ 7 m), la terrasse du camp, les ruines,
 ## l'avant-poste, les rondes d'ennemis, les rampes. La navmesh est
 ## RE-CUITE avec ce changement (tools/godot/bake_valley_navmesh.gd).
+## Buttes des plaines [x, z, demi-axe x, demi-axe z, hauteur] — partagées
+## entre le constructeur du relief et la flore du corridor (les touffes
+## posées à y = 2 finiraient DANS une butte).
+const RELIEF_MOUNDS: Array[Array] = [
+	# Plaine sud — flancs de la route du gué et du panorama ouest.
+	[-14.0, 38.0, 11.0, 9.0, 1.9],
+	[-38.0, 52.0, 13.0, 10.0, 2.3],
+	[-4.0, 45.0, 8.0, 7.0, 1.4],
+	# (52 ; 24) enterrait la ronde du pillard azur (58 ; 30) et
+	# (−30 ; 105) une récompense d'ingrédient — attrapés par le filet
+	# anti-enterrement au premier passage, replacés à l'écart.
+	[66.0, 20.0, 6.0, 5.0, 1.2],
+	[-50.0, 108.0, 12.0, 9.0, 2.0],
+	# Plaine nord — flancs de la route du donjon.
+	[-22.0, -85.0, 12.0, 10.0, 2.1],
+	[16.0, -78.0, 9.0, 7.0, 1.6],
+	# (−36 ; −120) enterrait un coffre — attrapé par le filet une fois le
+	# dôme réparé (la vraie emprise a grandi), reculé vers le nord-ouest.
+	[-56.0, -138.0, 12.0, 9.0, 2.2],
+	[34.0, -100.0, 10.0, 8.0, 1.8],
+	[-52.0, -60.0, 12.0, 9.0, 2.0],
+]
+
+
 func _build_plain_relief() -> void:
 	var relief: Node3D = Node3D.new()
 	relief.name = "PlainRelief"
 	add_child(relief)
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = 20260812
-	# [x, z, demi-axe x, demi-axe z, hauteur]
-	var mounds: Array[Array] = [
-		# Plaine sud — flancs de la route du gué et du panorama ouest.
-		[-14.0, 38.0, 11.0, 9.0, 1.9],
-		[-38.0, 52.0, 13.0, 10.0, 2.3],
-		[-4.0, 45.0, 8.0, 7.0, 1.4],
-		# (52 ; 24) enterrait la ronde du pillard azur (58 ; 30) et
-		# (−30 ; 105) une récompense d'ingrédient — attrapés par le filet
-		# anti-enterrement au premier passage, replacés à l'écart.
-		[66.0, 20.0, 6.0, 5.0, 1.2],
-		[-50.0, 108.0, 12.0, 9.0, 2.0],
-		# Plaine nord — flancs de la route du donjon.
-		[-22.0, -85.0, 12.0, 10.0, 2.1],
-		[16.0, -78.0, 9.0, 7.0, 1.6],
-		# (−36 ; −120) enterrait un coffre — attrapé par le filet une fois le
-		# dôme réparé (la vraie emprise a grandi), reculé vers le nord-ouest.
-		[-56.0, -138.0, 12.0, 9.0, 2.2],
-		[34.0, -100.0, 10.0, 8.0, 1.8],
-		[-52.0, -60.0, 12.0, 9.0, 2.0],
-	]
+	var mounds: Array[Array] = RELIEF_MOUNDS
 	for m: int in range(mounds.size()):
 		var spec: Array = mounds[m]
 		var rx: float = spec[2]
@@ -1153,6 +1187,12 @@ func _build_shelter(holder: Node3D, shelter_name: String, origin: Vector3,
 		_place_model(shelter, &"Corner_Exterior_Brick",
 			Vector3(float(corner[0]), 0, float(corner[1])), float(corner[2]), 1.0)
 	_place_model(shelter, &"Roof_RoundTiles_4x6", Vector3(0, 3.05, 0), 0.0, 1.0)
+	# SPRINT T4 (2026-08-12) — les tuiles rondes du kit sont ROUGE
+	# MÉDITERRANÉEN : dans l'approche de la citadelle et sur la route nord,
+	# les abris juraient avec tout le monde (le seul rouge saturé du cadre
+	# hors vitalité UI). Repeintes en bois/bronze sombre de la palette §3.4 —
+	# le toit SEUL, jamais les murs (le modèle du toit est séparé).
+	_tint_last_model(shelter, Color(0.40, 0.27, 0.19))
 	_place_model(shelter, &"Lantern_Wall", Vector3(0, 2.1, -2.8), 0.0, 1.0)
 	var light: OmniLight3D = OmniLight3D.new()
 	light.name = "ShelterLight"
@@ -1162,6 +1202,27 @@ func _build_shelter(holder: Node3D, shelter_name: String, origin: Vector3,
 	light.position = Vector3(0, 2.3, -2.0)
 	shelter.add_child(light)
 	return shelter
+
+
+## Repeint le dernier modèle posé sous `parent` avec un matériau PLAT (sans
+## texture) de la teinte donnée, surface par surface. Une teinte
+## multiplicative sur `albedo_color` ne marche PAS pour les modèles texturés
+## du kit : `PainterlyRecipe.from_standard` ignore l'albédo dès qu'une
+## texture existe (tint = WHITE) — mesuré sur les tuiles restées rouges à la
+## première capture. Le relief des tuiles vient de la géométrie ; la teinte
+## plate suffit et la passe painterly la conserve (pic > 0,14).
+func _tint_last_model(parent: Node3D, flat: Color) -> void:
+	if parent.get_child_count() == 0:
+		return
+	var model: Node = parent.get_child(parent.get_child_count() - 1)
+	var paint: StandardMaterial3D = StandardMaterial3D.new()
+	paint.albedo_color = flat
+	paint.roughness = 0.92
+	for found: Node in ([model] if model is MeshInstance3D else []) \
+			+ model.find_children("*", "MeshInstance3D", true, false):
+		var mesh: MeshInstance3D = found as MeshInstance3D
+		for surface: int in range(mesh.get_surface_override_material_count()):
+			mesh.set_surface_override_material(surface, paint)
 
 
 func _build_secondary_structures() -> void:
@@ -2341,23 +2402,28 @@ func _build_river_water() -> void:
 ## réel : une dalle de 8 cm montrait sa tranche (ISS-039), et la cote historique
 ## de la crête les enterrait de 8 m. Les rampes gardent leur teinte sombre qui
 ## fait déjà office de route.
+## Segments du réseau de chemins [de (x,z), à (x,z), hauteur du sol] —
+## partagés entre le constructeur des chemins et la flore du corridor
+## (qui s'en ÉCARTE : l'herbe ne pousse pas sur la terre battue).
+const PATH_SEGMENTS: Array[Array] = [
+	[Vector2(0, 154), Vector2(17, 147), 24.0],       # crête → rampe A
+	[Vector2(33, 112), Vector2(37, 106), 16.0],      # palier 1
+	[Vector2(16, 80), Vector2(20, 76), 8.0],         # palier 2
+	[Vector2(34, 64), Vector2(41, 52), 6.0],         # terrasse du camp
+	[Vector2(40, 29), Vector2(21, 13), 2.0],         # sortie camp → gué ouest
+	[Vector2(20, 8), Vector2(2, -28), 2.0],          # gué → ruines
+	[Vector2(0, -50), Vector2(-1, -107), 2.0],       # ruines → rampe du donjon
+	[Vector2(24, 10), Vector2(60, 10), 2.0],         # gué ouest → route est
+	[Vector2(60, 10), Vector2(93, 11), 2.0],         # …devant la forêt
+	[Vector2(94, 8), Vector2(66, 3), 2.0],           # gué est → rampe du pylône
+]
+
+
 func _build_paths() -> void:
 	var paths: Node3D = Node3D.new()
 	paths.name = "Paths"
 	add_child(paths)
-	# [de (x,z), à (x,z), hauteur du sol]
-	var segments: Array[Array] = [
-		[Vector2(0, 154), Vector2(17, 147), 24.0],       # crête → rampe A
-		[Vector2(33, 112), Vector2(37, 106), 16.0],      # palier 1
-		[Vector2(16, 80), Vector2(20, 76), 8.0],         # palier 2
-		[Vector2(34, 64), Vector2(41, 52), 6.0],         # terrasse du camp
-		[Vector2(40, 29), Vector2(21, 13), 2.0],         # sortie camp → gué ouest
-		[Vector2(20, 8), Vector2(2, -28), 2.0],          # gué → ruines
-		[Vector2(0, -50), Vector2(-1, -107), 2.0],       # ruines → rampe du donjon
-		[Vector2(24, 10), Vector2(60, 10), 2.0],         # gué ouest → route est
-		[Vector2(60, 10), Vector2(93, 11), 2.0],         # …devant la forêt
-		[Vector2(94, 8), Vector2(66, 3), 2.0],           # gué est → rampe du pylône
-	]
+	var segments: Array[Array] = PATH_SEGMENTS
 	# LOT C (2026-08-11, V-005) : chaque segment était UN PlaneMesh rectiligne
 	# de largeur constante — jusqu'à 59 m d'un seul tenant (mesuré par le test
 	# rouge). Un rectangle n'est pas un sentier : c'est la « bande posée sur
@@ -2752,6 +2818,142 @@ func _build_crest_meadow() -> void:
 		flower_multimesh.set_instance_color(i, petal_colors[i % petal_colors.size()])
 	flowers.multimesh = flower_multimesh
 	meadow.add_child(flowers)
+
+
+## ---------------------------------------------------------------------------
+## SPRINT ARTISTIQUE (2026-08-12) — T1 : la prairie descend de la crête.
+##
+## Les deux plaines n'avaient AUCUNE herbe géométrique : la texture macro
+## seule, d'où les grands aplats verts des caméras 3, 4 et 5. La recette de
+## la crête (touffes MultiMesh en grappes, shader de vent) se propage aux
+## zones plates du corridor : terrasse du camp (pourtour), plaine sud du
+## gué, berges sud, plaine nord de la route du donjon. Cellules ≤ 48 m
+## (§7.5), densité décroissante avec l'éloignement du parcours, exclusions :
+## tronçons de chemin (PATH_SEGMENTS), buttes (RELIEF_MOUNDS — les touffes
+## remonteraient dedans), intérieur du camp, rampe de sortie, lit de
+## rivière. Décor pur : aucune collision, aucun coût par frame hors GPU.
+## ---------------------------------------------------------------------------
+func _build_corridor_flora() -> void:
+	var flora: Node3D = Node3D.new()
+	flora.name = "CorridorFlora"
+	add_child(flora)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 20260812
+	var shader: Shader = load("res://shaders/foliage/foliage_wind.gdshader") as Shader
+	var tuft: ArrayMesh = _tuft_mesh()
+	var tuft_material: ShaderMaterial = ShaderMaterial.new()
+	tuft_material.shader = shader
+	tuft_material.set_shader_parameter(&"blade_height", 0.42)
+	# [nom, x min/max, z min/max, y du sol, touffes par m²]
+	var cells: Array[Array] = [
+		# Pourtour de la terrasse du camp (l'intérieur reste net).
+		["CampWest", Vector2(24, 33), Vector2(46, 84), 6.0, 1.6],
+		["CampEast", Vector2(58, 66), Vector2(46, 84), 6.0, 1.6],
+		["CampNorth", Vector2(33, 58), Vector2(78, 84), 6.0, 1.4],
+		# Plaine sud : l'approche du gué et le panorama ouest.
+		["SouthWest", Vector2(-44, -4), Vector2(20, 56), 2.0, 1.3],
+		["SouthEast", Vector2(0, 44), Vector2(18, 42), 2.0, 1.3],
+		# Berge sud du gué (bande vivante le long de l'eau).
+		["FordBank", Vector2(4, 40), Vector2(16, 22), 2.0, 3.0],
+		# Plaine nord : les flancs de la route du donjon.
+		["NorthEast", Vector2(4, 40), Vector2(-88, -40), 2.0, 1.1],
+		["NorthWest", Vector2(-40, -4), Vector2(-96, -44), 2.0, 1.1],
+	]
+	for cell: Array in cells:
+		var x_bounds: Vector2 = cell[1]
+		var z_bounds: Vector2 = cell[2]
+		var ground: float = cell[3]
+		var area: float = (x_bounds.y - x_bounds.x) * (z_bounds.y - z_bounds.x)
+		var blades: MultiMeshInstance3D = MultiMeshInstance3D.new()
+		blades.name = "Corridor%s" % String(cell[0])
+		blades.material_override = tuft_material
+		var multimesh: MultiMesh = MultiMesh.new()
+		multimesh.transform_format = MultiMesh.TRANSFORM_3D
+		multimesh.use_colors = true
+		multimesh.mesh = tuft
+		multimesh.instance_count = int(area * float(cell[4]))
+		var placed: int = 0
+		var attempts: int = 0
+		while placed < multimesh.instance_count \
+				and attempts < multimesh.instance_count * 8:
+			attempts += 1
+			var cluster: Vector2 = Vector2(
+				rng.randf_range(x_bounds.x, x_bounds.y),
+				rng.randf_range(z_bounds.x, z_bounds.y))
+			if not _flora_spot_is_free(cluster):
+				continue
+			var cluster_size: int = rng.randi_range(6, 11)
+			for j: int in range(cluster_size):
+				if placed >= multimesh.instance_count:
+					break
+				var at: Vector2 = cluster + Vector2(
+					rng.randf_range(-1.7, 1.7), rng.randf_range(-1.7, 1.7))
+				var basis: Basis = Basis(Vector3.UP, rng.randf_range(0.0, TAU)) \
+					.scaled(Vector3.ONE * rng.randf_range(0.8, 1.45))
+				multimesh.set_instance_transform(placed, Transform3D(basis,
+					Vector3(at.x, ground, at.y)))
+				multimesh.set_instance_color(placed,
+					COL_GRASS.lerp(COL_GRASS_LIT, rng.randf()))
+				placed += 1
+		# Les tentatives refusées laissent des instances à l'identité (origine
+		# monde) : on tronque le tampon au compte réellement posé.
+		multimesh.visible_instance_count = placed
+		blades.multimesh = multimesh
+		flora.add_child(blades)
+
+
+## Un point de flore est libre s'il n'est ni sur un tronçon de chemin (2,6 m
+## de marge), ni dans l'emprise d'une butte (les touffes plates y seraient
+## enterrées), ni dans le couloir de la rampe de sortie du camp.
+func _flora_spot_is_free(at: Vector2) -> bool:
+	for segment: Array in PATH_SEGMENTS:
+		if _distance_to_segment(at, segment[0] as Vector2,
+				segment[1] as Vector2) < 2.6:
+			return false
+	for mound: Array in RELIEF_MOUNDS:
+		var d: Vector2 = at - Vector2(mound[0] as float, mound[1] as float)
+		if absf(d.x) < (mound[2] as float) * 1.25 \
+				and absf(d.y) < (mound[3] as float) * 1.25:
+			return false
+	# Rampe CampExit : x 35..45, z 30..47.
+	if at.x > 34.0 and at.x < 46.0 and at.y > 29.0 and at.y < 48.0:
+		return false
+	return true
+
+
+## SPRINT T3 — le gué habité : roseaux (herbes hautes du kit), galets et
+## pierres de berge le long de l'eau, côté sud ET nord du passage ouest.
+## Décor pur, modèles du kit CC0 déjà attribués — aucune collision.
+func _build_ford_banks() -> void:
+	var banks: Node3D = Node3D.new()
+	banks.name = "FordBanks"
+	add_child(banks)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 20260813
+	var reeds: Array[StringName] = [&"Grass_Wispy_Tall", &"Grass_Common_Tall",
+		&"Plant_1"]
+	var stones: Array[StringName] = [&"Pebble_Round_2", &"Pebble_Round_4",
+		&"Pebble_Square_1", &"Rock_Medium_2"]
+	# [z de la ligne, y du sol] : berge sud (bord du talus) et berge nord.
+	for line: Array in [[17.2, 2.0], [2.8, 2.0]]:
+		var z_line: float = line[0]
+		for i: int in range(16):
+			var x: float = rng.randf_range(2.0, 44.0)
+			# Le tablier du gué reste dégagé (x 10..30).
+			if x > 9.0 and x < 31.0:
+				continue
+			var kind: StringName = reeds[rng.randi_range(0, reeds.size() - 1)] \
+				if i % 3 != 0 else stones[rng.randi_range(0, stones.size() - 1)]
+			_place_model(banks, kind,
+				Vector3(x, float(line[1]), z_line + rng.randf_range(-1.2, 1.2)),
+				rng.randf_range(0.0, TAU), rng.randf_range(0.9, 1.5))
+	# Deux groupes de pierres plus francs aux angles d'approche du gué.
+	for corner: Vector2 in [Vector2(8.0, 19.5), Vector2(31.5, 1.0)]:
+		for i: int in range(3):
+			_place_model(banks, stones[i % stones.size()],
+				Vector3(corner.x + rng.randf_range(-1.4, 1.4), 2.0,
+					corner.y + rng.randf_range(-1.4, 1.4)),
+				rng.randf_range(0.0, TAU), rng.randf_range(1.2, 2.2))
 
 
 ## Touffe d'herbe : trois quads croisés à 60°, effilés vers le haut, origine au

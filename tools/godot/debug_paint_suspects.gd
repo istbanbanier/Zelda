@@ -30,9 +30,14 @@ func _init() -> void:
 	var out_path: String = "/tmp/suspects.png"
 	var paints: Array[Array] = []
 	var picks: Array[Vector2] = []
+	var size: Vector2i = Vector2i(1920, 1080)
 	for arg: String in OS.get_cmdline_user_args():
 		if arg.begins_with("--camera="):
 			camera_name = arg.trim_prefix("--camera=")
+		elif arg.begins_with("--size="):
+			var wh: PackedStringArray = arg.trim_prefix("--size=").split("x")
+			if wh.size() == 2:
+				size = Vector2i(wh[0].to_int(), wh[1].to_int())
 		elif arg.begins_with("--out="):
 			out_path = arg.trim_prefix("--out=")
 		elif arg.begins_with("--pick="):
@@ -67,8 +72,8 @@ func _init() -> void:
 		flat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		mesh.material_override = flat
 		print("[paint] %s -> %s" % [paint[0], (paint[1] as Color).to_html(false)])
-	root.get_window().size = Vector2i(1920, 1080)
-	for i: int in range(30):
+	root.get_window().size = size
+	for i: int in range(16):
 		await process_frame
 	# --pick=px,py : énumère les géométries dont l'AABB MONDE coupe le rayon
 	# de ce pixel, triées par distance d'entrée. Ne dépend d'aucune collision —
