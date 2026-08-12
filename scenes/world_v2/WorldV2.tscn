@@ -1,0 +1,93 @@
+[gd_scene load_steps=8 format=3]
+
+; World V2 — SQUELETTE de la phase V2.0. Rien ici n'est un monde : les
+; conteneurs prouvent l'architecture, le sol est TEMPORAIRE et marqué comme
+; tel, le vrai Player et la vraie GameplayShell se raccordent par leurs
+; interfaces existantes. La vallée whitebox remplace le sol en V2.1, à partir
+; de resources/world_v2/world_v2_layout.json (masterplan approuvé).
+;
+; Le spawn du squelette est l'ancre §3.3 de la crête (0, 24, 170) : la donnée
+; du masterplan traverse déjà la scène — le sol temporaire est posé sous elle.
+
+[ext_resource type="Script" path="res://scripts/world_v2/world_v2_root.gd" id="1_root"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/ui/GameplayShell.tscn" id="3_shell"]
+
+[sub_resource type="StandardMaterial3D" id="TempGroundMat"]
+albedo_color = Color(0.82, 0.46, 0.12, 1)
+
+[sub_resource type="BoxMesh" id="TempGroundMesh"]
+material = SubResource("TempGroundMat")
+size = Vector3(96, 2, 96)
+
+[sub_resource type="BoxShape3D" id="TempGroundShape"]
+size = Vector3(96, 2, 96)
+
+[sub_resource type="Environment" id="DiagnosticEnvironment"]
+background_mode = 1
+background_color = Color(0.22, 0.26, 0.33, 1)
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.6
+
+[node name="WorldV2" type="Node3D"]
+script = ExtResource("1_root")
+
+[node name="TerrainChunks" type="Node3D" parent="."]
+
+[node name="V2_0_TemporaryGround" type="StaticBody3D" parent="TerrainChunks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 23, 170)
+
+[node name="GroundMesh" type="MeshInstance3D" parent="TerrainChunks/V2_0_TemporaryGround"]
+mesh = SubResource("TempGroundMesh")
+
+[node name="GroundCollision" type="CollisionShape3D" parent="TerrainChunks/V2_0_TemporaryGround"]
+shape = SubResource("TempGroundShape")
+
+[node name="TemporaryGroundLabel" type="Label3D" parent="TerrainChunks/V2_0_TemporaryGround"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -6)
+pixel_size = 0.02
+billboard = 1
+modulate = Color(0.16, 0.09, 0.04, 1)
+text = "SOL TEMPORAIRE — SQUELETTE V2.0
+(remplacé en V2.1 par la vallée whitebox)"
+font_size = 64
+
+[node name="Water" type="Node3D" parent="."]
+
+[node name="Biomes" type="Node3D" parent="."]
+
+[node name="Routes" type="Node3D" parent="."]
+
+[node name="Landmarks" type="Node3D" parent="."]
+
+[node name="POIs" type="Node3D" parent="."]
+
+[node name="Encounters" type="Node3D" parent="."]
+
+[node name="Navigation" type="Node3D" parent="."]
+
+[node name="Lighting" type="Node3D" parent="."]
+
+[node name="DiagnosticLight" type="DirectionalLight3D" parent="Lighting"]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 60, 200)
+
+[node name="DiagnosticWorldEnvironment" type="WorldEnvironment" parent="Lighting"]
+environment = SubResource("DiagnosticEnvironment")
+
+[node name="CaptureCameras" type="Node3D" parent="."]
+
+[node name="DiagnosticCamera" type="Camera3D" parent="CaptureCameras"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 30, 186)
+fov = 55.0
+
+[node name="WorldBindings" type="Node" parent="."]
+
+[node name="SpawnPoint" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 24.4, 170)
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 24.4, 170)
+
+[node name="GameplayShell" parent="." instance=ExtResource("3_shell")]
+world_scene_path = "res://scenes/world_v2/WorldV2.tscn"
