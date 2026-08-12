@@ -234,3 +234,18 @@ verrouillés dans `asset_library/SOURCES.lock.csv`. Chaque dossier contient
 `PROVENANCE.md`; les empreintes des archives et fichiers vivent dans
 `SOURCE_ARCHIVE_SHA256.csv` et `SHA256SUMS.txt`. Les archives, formats redondants et
 sources Unity ne sont pas versionnés.
+
+## Sons d'interface promus (2026-08-12, finition monde)
+
+Six fichiers `.ogg` copiés depuis la quarantaine
+`asset_library/inbox/kenney_interface_sounds_1_0/Audio/` vers
+`assets/audio/ui/` et renommés par usage : `ui_click`, `ui_confirm`,
+`ui_back`, `ui_hover`, `ui_error`, `ui_open`.
+
+| Champ | Valeur |
+|---|---|
+| Pack | Interface Sounds 1.0 |
+| Auteur | Kenney (kenney.nl) |
+| Licence | **CC0 1.0 Universal** (License.txt du pack, PROVENANCE.md) |
+| Modifications | renommage seulement — contenu audio intact |
+| Détail source→cible + SHA-256 | `evidence/full_visual_finish_20260812/promotions_ui.md` §b |

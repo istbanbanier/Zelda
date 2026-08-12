@@ -35,6 +35,7 @@ var _save_system: Node = null
 var _game_state: Node = null
 var _confirming_restart: bool = false
 var _last_target: String = ""
+var _ui_audio: AudioStreamPlayer = null
 
 
 func _ready() -> void:
@@ -45,6 +46,7 @@ func _ready() -> void:
 	_explore_button.pressed.connect(_on_explore)
 	_restart_button.pressed.connect(_on_restart)
 	_menu_button.pressed.connect(_on_menu)
+	_ui_audio = HudStyle.attach_ui_audio(self)
 	_apply_style()
 	_refresh()
 	_wire_focus_cycle()
@@ -84,6 +86,10 @@ func _wire_focus_cycle() -> void:
 func _apply_style() -> void:
 	for button: Button in [_explore_button, _restart_button, _menu_button]:
 		HudStyle.style_button(button)
+		HudStyle.wire_button_feedback(button, _ui_audio)
+	var title: Label = get_node_or_null("Layout/Column/Title") as Label
+	if title != null:
+		title.add_theme_color_override(&"font_color", HudStyle.GOLD)
 	_status_label.add_theme_color_override(&"font_color", HudStyle.IVORY)
 	_time_label.add_theme_color_override(&"font_color", HudStyle.GOLD)
 
@@ -115,6 +121,7 @@ func _on_restart() -> void:
 		}))
 		if not created:
 			_status_label.text = "Échec d'écriture de la sauvegarde — voir le journal."
+			HudStyle.play_ui(_ui_audio, &"error")
 			return
 	_go_to(VALLEY_SCENE)
 
@@ -130,6 +137,7 @@ func _go_to(target: String) -> void:
 	var flow: Node = get_node_or_null("/root/SceneFlow")
 	if flow == null or not bool(flow.call("can_go_to", target)):
 		_status_label.text = "Scène introuvable : %s" % target
+		HudStyle.play_ui(_ui_audio, &"error")
 		return
 	flow.call("go_to", target)
 
