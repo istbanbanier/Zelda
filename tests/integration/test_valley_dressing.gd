@@ -154,8 +154,13 @@ func test_paths_guide_both_routes_as_pure_visuals() -> void:
 			west_route = true   # ruines → donjon
 		if at.x > 55.0:
 			east_route = true   # route est → pylône
-		check(path_strip.mesh is PlaneMesh,
-			"%s est un plan sans tranche visible" % path_strip.name)
+		# Passe 3 : la pièce n'est plus un PlaneMesh (rectangle interdit par
+		# `test_paths_belong_to_the_ground`) mais un éventail irrégulier —
+		# l'INTENTION d'ici reste la même et se mesure directement : aucune
+		# tranche, donc une épaisseur nulle.
+		check(path_strip.get_aabb().size.y < 0.01,
+			"%s est un décalque sans tranche visible (épaisseur %.3f)"
+				% [path_strip.name, path_strip.get_aabb().size.y])
 		check(path_strip.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF,
 			"%s ne projette pas l'ombre d'une dalle" % path_strip.name)
 		check(path_strip.find_children("*", "StaticBody3D",
