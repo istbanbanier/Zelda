@@ -28,6 +28,14 @@ on:
           permissions de Release sans transporter 400 Mo.
         type: boolean
         default: false
+      full_visual:
+        description: >-
+          Livraison « Full World Visual Finish » : l'export macOS devient
+          OBLIGATOIRE et l'app est inspectée avant publication ; tag
+          playtest-full-visual-<sha>, GUIDE_JOUEUR.md et SHA256SUMS.txt
+          joints à la Release.
+        type: boolean
+        default: false
 
 # Le minimum pour créer une Release et y téléverser des assets.
 permissions:
@@ -55,10 +63,18 @@ jobs:
               playtest-selftest*) SELFTEST=true ;;
               *)                  SELFTEST=false ;;
             esac
+            case "$TAG" in
+              playtest-full-visual-*) FULLVIS=true ;;
+              *)                      FULLVIS=false ;;
+            esac
           else
             SELFTEST="${{ inputs.selftest }}"
+            FULLVIS="${{ inputs.full_visual }}"
+            [ "$FULLVIS" = "true" ] || FULLVIS=false
             if [ "$SELFTEST" = "true" ]; then
               TAG="playtest-selftest-${SHORT}"
+            elif [ "$FULLVIS" = "true" ]; then
+              TAG="playtest-full-visual-${SHORT}"
             else
               TAG="playtest-${SHORT}"
             fi
@@ -68,10 +84,12 @@ jobs:
             echo "short=$SHORT"
             echo "tag=$TAG"
             echo "selftest=$SELFTEST"
+            echo "full_visual=$FULLVIS"
           } >> "$GITHUB_OUTPUT"
-          echo "commit   : $COMMIT"
-          echo "tag      : $TAG"
-          echo "selftest : $SELFTEST"
+          echo "commit      : $COMMIT"
+          echo "tag         : $TAG"
+          echo "selftest    : $SELFTEST"
+          echo "full_visual : $FULLVIS"
 
       - name: Construire l'archive jouable
         if: steps.cible.outputs.selftest == 'false'
@@ -224,6 +242,41 @@ jobs:
                 builds/macos/EclatsDOrage.zip builds/macos/LISEZ_MOI.txt
           ls -1 builds/*.zip 2>/dev/null || echo "aucun binaire produit"
 
+      # macOS n'est PLUS un meilleur effort quand la livraison EST la version
+      # macOS : l'app est décompressée et inspectée AVANT toute publication —
+      # intégrité du ZIP, structure .app, exécutable Mach-O non vide, pack de
+      # ressources présent, aucun pointeur Git LFS. Échec = pas de Release.
+      - name: Vérifier l'application macOS (obligatoire en full_visual)
+        if: steps.cible.outputs.selftest == 'false'
+        run: |
+          set -euo pipefail
+          FULLVIS="${{ steps.cible.outputs.full_visual }}"
+          ZIP="$(ls -1 builds/EclatsDOrage_macOS_*.zip 2>/dev/null | head -1 || true)"
+          if [ -z "$ZIP" ]; then
+            if [ "$FULLVIS" = "true" ]; then
+              echo "ÉCHEC : livraison macOS demandée, aucun ZIP macOS produit"
+              exit 1
+            fi
+            echo "macOS absent (meilleur effort) — on continue"
+            exit 0
+          fi
+          unzip -t "$ZIP" >/dev/null
+          TMP="$(mktemp -d)"
+          unzip -q "$ZIP" -d "$TMP"
+          APP="$TMP/EclatsDOrage.app"
+          [ -d "$APP/Contents/MacOS" ] || { echo "ÉCHEC : Contents/MacOS absent"; exit 1; }
+          EXE="$(find "$APP/Contents/MacOS" -type f | head -1)"
+          { [ -n "$EXE" ] && [ -s "$EXE" ]; } || { echo "ÉCHEC : exécutable vide"; exit 1; }
+          file "$EXE" | grep -qi "Mach-O" || { echo "ÉCHEC : pas un Mach-O : $(file "$EXE")"; exit 1; }
+          PCK="$(find "$APP/Contents/Resources" -name "*.pck" -size +1M 2>/dev/null | head -1 || true)"
+          [ -n "$PCK" ] || { echo "ÉCHEC : aucun .pck de ressources dans l'app"; exit 1; }
+          if grep -rIl "git-lfs.github.com" "$APP" >/dev/null 2>&1; then
+            echo "ÉCHEC : pointeur Git LFS embarqué dans l'app"
+            exit 1
+          fi
+          echo "app vérifiée : zip $(du -h "$ZIP" | cut -f1), exécutable $(du -h "$EXE" | cut -f1) ($(file -b "$EXE")), pck $(du -h "$PCK" | cut -f1)"
+          rm -rf "$TMP"
+
       # Une archive qui ne se décompresse pas est pire qu'une absence
       # d'archive : elle se découvre chez celui qui la télécharge.
       - name: Vérifier l'archive et calculer son empreinte
@@ -340,8 +393,29 @@ jobs:
               echo "**Linux** — décompresser, \`chmod +x EclatsDOrage.x86_64\`, lancer."
             } >> "$NOTES"
           fi
+          # Livraison « Full World Visual Finish » : titre du propriétaire,
+          # guide joueur et sommes de contrôle regroupées. Les fichiers
+          # générés vivent dans $RUNNER_TEMP — jamais dans l'arbre Git.
+          TITLE="Éclats d'Orage — archive jouable ($TAG)"
+          if [ "${{ steps.cible.outputs.full_visual }}" = "true" ]; then
+            TITLE="Éclats d'Orage — Full World Visual Finish ${{ steps.cible.outputs.short }}"
+            if [ -f docs/GUIDE_JOUEUR.md ]; then
+              cp docs/GUIDE_JOUEUR.md "$RUNNER_TEMP/GUIDE_JOUEUR.md"
+              ASSETS+=( "$RUNNER_TEMP/GUIDE_JOUEUR.md" )
+            fi
+          fi
+          : > "$RUNNER_TEMP/SHA256SUMS.txt"
+          for A in "${ASSETS[@]}"; do
+            case "$A" in
+              *.zip)
+                ( cd "$(dirname "$A")" && sha256sum "$(basename "$A")" ) \
+                  >> "$RUNNER_TEMP/SHA256SUMS.txt" ;;
+            esac
+          done
+          ASSETS+=( "$RUNNER_TEMP/SHA256SUMS.txt" )
+          cat "$RUNNER_TEMP/SHA256SUMS.txt"
           gh release create "$TAG" \
-            --title "Éclats d'Orage — archive jouable ($TAG)" \
+            --title "$TITLE" \
             --notes-file "$NOTES" \
             --target "$COMMIT" \
             "${ASSETS[@]}"
@@ -368,3 +442,8 @@ jobs:
           echo
           echo "Lien direct :"
           echo "https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/${{ steps.paquet.outputs.name }}"
+          MAC="$(gh release view "$TAG" --json assets --jq '.assets[].name' \
+            | grep '^EclatsDOrage_macOS_' | head -1 || true)"
+          if [ -n "$MAC" ]; then
+            echo "https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/${MAC}"
+          fi

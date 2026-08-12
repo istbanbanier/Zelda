@@ -1,0 +1,19 @@
+[
+{"do": "wait", "seconds": 3.0},
+{"do": "shot", "name": "ui_menu_principal"},
+{"do": "press", "action": "ui_accept"},
+{"do": "wait", "seconds": 10.0},
+{"do": "shot", "name": "ui_hud_vallee"},
+{"do": "press", "action": "pause"},
+{"do": "wait", "seconds": 0.6},
+{"do": "shot", "name": "ui_menu_pause"},
+{"do": "press", "action": "pause"},
+{"do": "wait", "seconds": 0.4},
+{"do": "press", "action": "inventory"},
+{"do": "wait", "seconds": 0.6},
+{"do": "shot", "name": "ui_inventaire"},
+{"do": "press", "action": "inventory"},
+{"do": "wait", "seconds": 0.4},
+{"do": "hold", "action": "move_forward", "seconds": 2.0},
+{"do": "shot", "name": "ui_hud_en_mouvement"}
+]
