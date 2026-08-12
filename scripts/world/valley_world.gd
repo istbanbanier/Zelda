@@ -1176,8 +1176,11 @@ func _spawn_travel_aids() -> void:
 	_mount.name = "MontureDeVallee"
 	add_child(_mount)
 	# Sur la crête de départ, en contrebas du spawn (0, 32.3, 146) et dans
-	# l'axe du regard : visible dès la prise de contrôle.
+	# l'axe du regard : visible dès la prise de contrôle. De TROIS QUARTS
+	# face à la vista (sprint T5) : le coureur des steppes se lit par sa
+	# silhouette — de dos, la vue d'ouverture ne montrait qu'une croupe.
 	_mount.global_position = Vector3(6.0, 32.3, 141.0)
+	_mount.rotation.y = 2.3
 	if _player == null:
 		return
 	_dev_fly = DevFlyMode.new()
