@@ -1,0 +1,30 @@
+{
+  "greyscale": "/home/user/Zelda/evidence/vslice_pass3_20260812/final/04_gue_gris.png",
+  "ground_p95_value_pct": 78.0,
+  "height": 1080,
+  "hierarchy_ok": true,
+  "saturation_mean": 16.8,
+  "separation_haut_milieu": 27.3,
+  "separation_milieu_bas": 1.9,
+  "sky_p50_value_pct": 92.2,
+  "source": "evidence/vslice_pass3_20260812/final/04_gue.png",
+  "thirds_luma_pct": {
+    "bas": {
+      "p05": 55.9,
+      "p50": 58.9,
+      "p95": 74.6
+    },
+    "haut": {
+      "p05": 44.9,
+      "p50": 88.1,
+      "p95": 89.2
+    },
+    "milieu": {
+      "p05": 38.2,
+      "p50": 60.8,
+      "p95": 81.2
+    }
+  },
+  "vignette": "/home/user/Zelda/evidence/vslice_pass3_20260812/final/04_gue_vignette.png",
+  "width": 1920
+}

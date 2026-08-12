@@ -25,36 +25,41 @@ Aucun `S0`/`S1` ouvert n'est admis pour un build candidat.
   `test_opening_dressing_rests_on_ground.gd` à toutes les zones, pour qu'un
   objet enterré ou suspendu rougisse au lieu de se découvrir en capture.
 - **Test de régression** : à écrire avec le correctif.
+- **Atténué (passe 3, 2026-08-12)** : dix buttes convexes MARCHABLES ajoutées
+  en flanc de route (`_build_plain_relief`), navmesh re-cuites, trois
+  contrats testés (`test_plains_carry_flanking_relief.gd`) — dont un filet
+  anti-enterrement qui a attrapé trois vraies fautes de placement avant
+  livraison. Le remodelage des dalles elles-mêmes reste OUVERT.
 
-## ISS-046 — Les chemins sont des bandes posées, pas des chemins · `S3` · OUVERT
+## ISS-046 — Les chemins sont des bandes posées, pas des chemins · `S3` · CORRIGÉ (2026-08-12)
 
-- **Build** : `6a996a5` et suivants.
-- **Étapes** : `godot --headless --path . --script tools/godot/probe_frame_masses.gd
-  -- --camera=VistaCamera_Hero01`
-- **Observé** : `PathStrip00` occupe **22,2 %** du cadre d'ouverture. Les dix
-  segments de `_build_paths()` sont des `PlaneMesh` **sans épaisseur** flottant
-  de `PATH_CLEARANCE` au-dessus du sol.
-- **Impact** : critère explicite du gate de la tranche verticale — « chemin lu
-  comme une bande posée sur l'herbe ».
-- **Atténué le 2026-08-11** : `COL_PATH` descendu de 0,62/0,51/0,34 à
-  0,43/0,35/0,23 — le sentier n'est plus l'objet le PLUS clair du cadre. La
-  forme, elle, n'a pas changé.
-- **Correction attendue** : faire appartenir le chemin au sol (compression
-  d'herbe, terre, interruption des fleurs, ruptures de niveau).
+- **Build** : `6a996a5` et suivants ; corrigé sur la branche de la passe 3.
+- **Observé (historique)** : `PathStrip00` occupait **22,2 %** du cadre
+  d'ouverture ; les dix segments de `_build_paths()` étaient des `PlaneMesh`
+  sans épaisseur flottant à `PATH_CLEARANCE` au-dessus du sol.
+- **Corrigé (passe 3)** : chaque pièce, épaulement et langue d'herbe est un
+  POLYGONE IRRÉGULIER (`_ground_patch_mesh`, 7-9 sommets de bord) ; étagement
+  déterministe anti-couture de 4 mm entre pièces voisines. Test durci :
+  `test_paths_belong_to_the_ground.gd` (rouge d'abord : 110 échecs de forme).
+- **Piège rencontré et consigné** : la face avant Godot est enroulée en
+  HORAIRE — le premier éventail (anti-horaire) rendait le chemin INVISIBLE
+  pendant que les tests restaient verts (la leçon ISS-018). C'est la
+  recapture de la caméra 5 qui l'a montré.
+- **Reste ouvert** : la clarté en plein soleil dépend de la mesure §1.5 par
+  caméra ; le verdict d'image appartient à la revue indépendante.
 
-## ISS-047 — La citadelle reste un empilement de boîtes alignées sur les axes · `S3` · OUVERT
+## ISS-047 — La citadelle reste un empilement de boîtes alignées sur les axes · `S3` · CORRIGÉ (2026-08-12, verdict d'image en attente)
 
-- **Build** : `6a996a5` et suivants.
-- **Observé** : `CitadelProxy` est fait de `_box_in` axés sur le monde ;
-  §2.4 demande « 10 % vides, arches et ruptures » et moins de vingt grandes
-  formes lisibles à 300–420 m. Créneaux et toitures cassent la frontalité, la
-  MASSE ne la casse pas.
-- **Atténué le 2026-08-11** : le lot A l'a détachée en valeur des montagnes,
-  qui la mangeaient (« focales fusionnées », §30.2).
-- **Contrainte à respecter** : la rotation d'ensemble a déjà été tentée et
-  RETIRÉE — elle faisait pivoter les masses porteuses de collision et rendait
-  l'anneau montagneux franchissable pour la sonde PT-D1-09. Le décor sans
-  collision peut tourner ; le porteur, non.
+- **Build** : `6a996a5` et suivants ; corrigé sur la branche de la passe 3.
+- **Observé (historique)** : `CitadelProxy` était fait de `_box_in` axés sur
+  le monde — Keep, épaules, tours, spire et contreforts en boîtes nues.
+- **Corrigé (passe 3)** : habillage taluté SANS collision — piliers d'angle
+  battus sur le Keep, coques d'épaules, manchons de tours, spire et
+  contreforts en troncs de pyramide. Les porteurs de collision gardent leurs
+  cotes testées et ne pivotent jamais (PT-D1-09). Test rouge d'abord :
+  `test_citadel_masses_wear_battered_cladding.gd`.
+- **Reste ouvert** : le verdict d'image appartient à la revue indépendante ;
+  le Keep et les tours restent des boîtes de collision SOUS l'habillage.
 
 ## ISS-001 — Binaires officiels Godot et Blender injoignables · `S2` · OUVERT (contourné)
 

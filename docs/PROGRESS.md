@@ -5,6 +5,39 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-12 — passe 3 : les six défauts de la revue Codex
+
+**Branche** : `claude/vslice-pass3-silhouettes`, créée sur `2c4fbf9` (merge
+PR #7) après verdict **ÉCHEC** du gate visuel indépendant (tests 832/0 et
+preuves acceptés, objectif visuel non atteint). Lots B à E uniquement — ni
+lot F, ni donjon, ni UI. **Preuves** : `evidence/vslice_pass3_20260812/`
+(baseline `avant/`, un dossier `apres_*` par défaut, jeu `final/`).
+
+Les six défauts traités, chacun : AVANT → cause réelle mesurée → test rouge
+exécuté → plus petit correctif → APRÈS même caméra → commit thématique.
+Détail dans le README du dossier de preuves. Trois choses que les tests
+verts n'avaient PAS vues et que les recaptures ont attrapées : l'enclume du
+nuage redevenue soucoupe (test élargi à toute sphère `Cloud*`),
+l'enroulement anti-horaire qui rendait le chemin invisible (leçon ISS-018),
+et `_hull_mesh` à 8 sommets qui dégénérait les buttes. Le filet
+anti-enterrement du relief a attrapé trois vraies fautes de placement.
+
+Jeu `final/` : **5 caméras sur 6 conformes §1.5** — la caméra 6 pour la
+première fois (désaturation de la roche) ; la 5 en verdict non pertinent
+(bandeau haut sans ciel : nuage/citadelle/montagnes), reporté tel quel.
+
+ISS-046 et ISS-047 passés CORRIGÉ (verdict d'image en attente) ; ISS-045
+atténué (buttes de flanc), remodelage des dalles TOUJOURS au backlog.
+
+### Prochaine action exacte
+
+1. Lancer `tools/validate_fast.sh` (suite complète, ~25 min) et joindre le
+   verdict au dossier de preuves — fait en fin de session si le journal en
+   contient le log ; sinon C'EST LA PREMIÈRE CHOSE À FAIRE.
+2. Livrer l'état à la **seconde revue indépendante de Codex** — ne rien
+   pousser sans l'autorisation explicite du propriétaire.
+3. Ne PAS déclarer le gate vert : le verdict appartient à Codex.
+
 ## 2026-08-11 (suite) — étapes 1 à 8 : suite verte, citadelle, chemins, talus
 
 **Branche** : `claude/new-session-840w2o`. **Preuves** : `evidence/vertical_slice_20260811/`

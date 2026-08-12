@@ -4,6 +4,25 @@ Vocabulaire imposé (§0.2) : `Non commencé` · `Implémenté` (raccordé) ·
 `Fonctionnel` (testé en scène exécutable) · `Validé` (conforme, sans régression) ·
 `Bloqué`. Tout critère non testé est `NON VÉRIFIÉ`, jamais implicitement réussi.
 
+## Passe 3 — les six défauts de la revue Codex (2026-08-12, `claude/vslice-pass3-silhouettes`)
+
+Base : `2c4fbf9` (merge PR #7), après verdict **ÉCHEC** du gate visuel
+indépendant. Preuves : `evidence/vslice_pass3_20260812/` (README, tableau
+défaut → cause → test rouge → correctif → APRÈS, baseline `avant/` et jeu
+`final/` des six caméras).
+
+| Défaut Codex | État | Preuve |
+|---|---|---|
+| Caméra 5 bouchée (RuinWall03 à 2,6 m de l'œil) | **Validé** | `test_no_gate_camera_has_a_static_wall_against_its_lens` rouge d'abord ; picking par rayon |
+| Nuage-proxy (arche lisse, spire transperçante) | **Fonctionnel** | 22 grumeaux ≤ 22 m, plancher y ≥ 108, bord chaud ; la régression « enclume-soucoupe » attrapée à la recapture et le test élargi |
+| Citadelle en masses rectangulaires | **Fonctionnel** | habillage taluté (piliers, coques, manchons) — `test_citadel_masses_wear_battered_cladding.gd` ; image à juger par Codex |
+| Chemin en plaques/coutures | **Fonctionnel** | polygones irréguliers + anti-couture 4 mm ; 110 échecs de forme avant ; l'enroulement horaire attrapé à la recapture (leçon ISS-018) |
+| Camp sans triangle | **Fonctionnel** | trois pôles testés par centroïdes (`test_camp_composes_three_activity_poles.gd`), 2 bannières, vide central |
+| Mesas orange / répétitions triangulaires | **Fonctionnel** | gamme roche −⅓ désaturée, strates, rangs 4/7/6 ; **caméra 6 conforme §1.5 pour la première fois** (sol_p95 100 → 87,5) |
+| Relief du corridor | **Fonctionnel** | 10 buttes marchables de flanc, navmesh re-cuites, parcours physiques rejoués ; le filet anti-enterrement a attrapé 3 fautes réelles ; ISS-045 (dalles) reste OUVERT |
+| §1.5 sur les six caméras | **Fonctionnel** | jeu `final/` : 5/6 conformes ; caméra 5 en verdict non pertinent (bandeau haut sans ciel), reporté tel quel |
+| Gate visuel de la tranche | **NON VÉRIFIÉ** | le verdict appartient à la seconde revue indépendante de Codex |
+
 **Dernière mise à jour** : 2026-08-06 · **Phase** : Passe art « wahou » sur branche `claude/eclats-art-visual-pass-tyfhgc` — Lots 1-16 FAITS (tour du monde en images : 11 zones capturées + table de verdicts ; TOUTE la carte peinte 3768 surfaces ; citadelle en terrasses ; peinture du donjon tentée puis RETIRÉE sur mesure — AD-008) (v18 : grain procédural + SIX textures ambientCG CC0 déposées par le propriétaire, licences inscrites avant build et test qui le vérifie ; deux corrections de palette mesurées) (v15 : habillage aux 13 modèles Quaternius CC0 du dépôt + variante découpe du painterly pour les feuilles) (v13, éval fin de journée ≈ 71,5 UNVERIFIED < 75 — pas de V4 ; revue contradictoire consignée, corrections prouvées) : éval sévère v5 = 58/100 → AD-004 ; `SH_CharacterPainterly` trois pilotes 3/3 ; PREMIÈRE vidéo de stabilité §30.1 (18,1 s, Movie Maker fixed-fps, `herolab_v6_stabilite.webp`) — elle a révélé l'herbe FIGÉE, corrigée par `SH_FoliageWindPainterly` (sondes 0,00 → 1,6-2,0) ; Lot 4 : le lab ENTIER peint (`test_painterly_lab` — zéro surface mate nue, 3 émissifs justifiés), capture v8, bandes §1.5 intactes · **Gate A gelé** : `9414fd0` · **Commit courant** : voir `git log`
 
 ## Tranche verticale d'ouverture — lots A à D (2026-08-11, `claude/new-session-840w2o`)
