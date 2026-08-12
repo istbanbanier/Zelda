@@ -1786,8 +1786,9 @@ func _build_dungeon_plateau_and_citadel() -> void:
 		Vector2(42, 30), Vector2(34, 23), 10.0, Vector2(-2.5, 1.5),
 		COL_CITADEL_STONE)
 	_build_citadel_ruptures(citadel)
-	# CONTREFORTS (§2.4) : quatre appuis qui accrochent le socle au
-	# relief et cassent la frontalité.
+	# CONTREFORTS (§2.4) : quatre appuis qui accrochent le socle au relief et
+	# cassent la frontalité. PASSE 3 : des troncs de pyramide, plus des boîtes
+	# — un contrefort réel s'évase au pied (test « battered_cladding »).
 	var buttresses: Array[Array] = [
 		[-34.0, -200.0, 10.0, 26.0], [34.0, -202.0, 9.0, 22.0],
 		[-30.0, -226.0, 8.0, 30.0], [30.0, -228.0, 8.0, 24.0],
@@ -1795,29 +1796,56 @@ func _build_dungeon_plateau_and_citadel() -> void:
 	for b: int in range(buttresses.size()):
 		var spec: Array = buttresses[b]
 		var bh: float = spec[3] as float
-		_box_in("Buttress%d" % b, citadel,
-			Vector3(spec[0] as float, 34 + bh * 0.5, spec[1] as float),
-			Vector3(spec[2] as float, bh, spec[2] as float),
-			COL_CITADEL_STONE, false)
+		var bw: float = spec[2] as float
+		_frustum_in("Buttress%d" % b, citadel,
+			Vector3(spec[0] as float, 34.0, spec[1] as float),
+			Vector2(bw + 3.0, bw + 3.0),
+			Vector2(maxf(bw - 3.0, 3.5), maxf(bw - 3.0, 3.5)), bh,
+			Vector2(0.9 if b % 2 == 0 else -1.1, 0.7 if b < 2 else -0.6),
+			COL_CITADEL_STONE)
 	# TROIS lignes de Résonance en cuivre patiné (§2.4) — la masse reste
-	# à plus de 95 % sans énergie visible.
+	# à plus de 95 % sans énergie visible. Passe 3 : les lignes latérales
+	# rentrent vers l'axe (x ±14/16 → −11,2/+11) — les piliers d'angle du
+	# Keep occupent désormais les coins et les avalaient.
 	for c: int in range(3):
-		var cx: float = [-14.0, 2.0, 16.0][c]
+		var cx: float = [-11.2, 2.0, 11.0][c]
 		var ch: float = [46.0, 62.0, 38.0][c]
 		_box_in("Conduit%d" % c, citadel,
 			Vector3(cx, 34 + ch * 0.5, -197.0), Vector3(2.6, ch, 2.6),
 			Color(0.43, 0.46, 0.37), false)
 	_box_in("Keep", citadel, Vector3(0, 34 + 23, -212), Vector3(34, 46, 28),
 		COL_CITADEL_STONE, true)
+	# PASSE 3 (défaut n°1 de la revue : « masses rectangulaires dominantes »).
+	# Le Keep reste le porteur de collision aux cotes testées (H : ≥ 30 m de
+	# large) — mais ses ARÊTES VERTICALES avant, parfaites, sont ce que la
+	# silhouette montre. Deux piliers d'angle battus (troncs de pyramide,
+	# décor sans collision) prennent la silhouette en charge : l'arête de
+	# boîte devient une arête talutée qui s'évase au pied.
+	_frustum_in("KeepPier0", citadel, Vector3(-17.0, 34.0, -198.0),
+		Vector2(7.0, 7.0), Vector2(4.0, 4.0), 47.0, Vector2(0.6, -0.4),
+		COL_CITADEL_STONE.lightened(0.06))
+	_frustum_in("KeepPier1", citadel, Vector3(17.0, 34.0, -198.0),
+		Vector2(7.0, 7.0), Vector2(4.0, 4.0), 47.0, Vector2(-0.5, 0.5),
+		COL_CITADEL_STONE.darkened(0.08))
 	# Épaules latérales plus basses (§2.4) : la silhouette s'étage au lieu de
-	# tomber d'un seul front.
+	# tomber d'un seul front. Passe 3 : chaque épaule-boîte porte une COQUE
+	# talutée qui monte aux trois quarts — le haut de la boîte émerge en
+	# attique en retrait, les arêtes basses appartiennent à la coque.
 	for side_index: int in range(2):
 		var x_shoulder: float = -26.0 if side_index == 0 else 26.0
 		_box_in("Shoulder%d" % side_index, citadel,
 			Vector3(x_shoulder, 34 + 15, -214), Vector3(14, 30, 18),
 			COL_CITADEL_STONE, true)
+		_frustum_in("ShoulderShell%d" % side_index, citadel,
+			Vector3(x_shoulder, 34.0, -214.0), Vector2(20.0, 24.0),
+			Vector2(14.5, 18.5), 23.0,
+			Vector2(-1.5 if side_index == 0 else 1.5, 1.0),
+			COL_CITADEL_STONE.darkened(0.05) if side_index == 0
+				else COL_CITADEL_STONE.lightened(0.04))
 	# Tours COUPÉES à des hauteurs différentes (§2.4) : quatre tops égaux
 	# à 90 m lisaient « créneaux d'usine », pas « ruine monumentale ».
+	# Passe 3 : chaque fût-boîte reçoit un MANCHON effilé qui couvre la tour
+	# jusque sous ses créneaux — le fruit (batter) remplace la verticale.
 	var tower_heights: Array[float] = [50.0, 44.0, 58.0, 40.0]
 	for i: int in range(4):
 		var dx: float = -21.0 if i % 2 == 0 else 21.0
@@ -1826,14 +1854,25 @@ func _build_dungeon_plateau_and_citadel() -> void:
 		_box_in("Tower%d" % i, citadel,
 			Vector3(dx, 34 + tower_height * 0.5, -210 + dz),
 			Vector3(8, tower_height, 8), COL_CITADEL_STONE, true)
+		_frustum_in("TowerSleeve%d" % i, citadel,
+			Vector3(dx, 34.0, -210 + dz), Vector2(11.0, 11.0),
+			Vector2(8.8, 8.8), tower_height - 1.2,
+			Vector2(0.5 if i % 2 == 0 else -0.5, -0.4 if i < 2 else 0.4),
+			COL_CITADEL_STONE.lightened(0.05) if i % 3 == 1
+				else COL_CITADEL_STONE.darkened(0.04))
 	# SPIRE centrale (§2.4 : « spire centrale verticale ») : trois segments
 	# effilés au-dessus du Keep (sommet y = 100) — c'est ELLE que l'éclair
 	# frappe, et elle que l'œil accroche à 360 m. Sans collision : le sommet
 	# est hors de portée du joueur, le Keep en dessous porte la sienne.
-	_box_in("SpireBase", citadel, Vector3(0, 84, -212), Vector3(9, 8, 9),
-		COL_CITADEL_STONE, false)
-	_box_in("SpireMid", citadel, Vector3(0, 91.5, -212), Vector3(6.5, 7, 6.5),
-		COL_CITADEL_STONE, false)
+	# Passe 3 : « effilés » devient vrai — deux troncs de pyramide empilés
+	# remplacent les boîtes (mêmes emprises verticales, testé par H : le
+	# sommet de spire reste ≥ 94 via SpireTip).
+	_frustum_in("SpireBase", citadel, Vector3(0, 80.0, -212),
+		Vector2(10.0, 10.0), Vector2(7.0, 7.0), 8.2, Vector2(0.4, -0.3),
+		COL_CITADEL_STONE)
+	_frustum_in("SpireMid", citadel, Vector3(0, 87.8, -212),
+		Vector2(7.0, 7.0), Vector2(4.8, 4.8), 7.4, Vector2(-0.3, 0.2),
+		COL_CITADEL_STONE)
 	var spire_tip: MeshInstance3D = MeshInstance3D.new()
 	spire_tip.name = "SpireTip"
 	var cone: CylinderMesh = CylinderMesh.new()
