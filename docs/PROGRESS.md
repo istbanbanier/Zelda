@@ -5,6 +5,55 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-12 (soir) — World V2, phase V2.0 : architecture, contrats, carte directrice, squelette
+
+**Branche** : `claude/world-v2-reconstruction-khgmlu`, repositionnée sur
+`58d4996` (tête de `claude/full-world-visual-finish` — la branche de session
+créée par l'outillage pointait sur le merge PR #8, qui n'a PAS le commit
+d'evidence des 31 POI). **Preuves** : `evidence/world_v2/v2_0/`.
+
+La V1 est INTACTE (aucun fichier V1 modifié hors une racine de découverte
+ajoutée au runner) et reste le flux normal — prouvé par Boot Smoke (21
+assertions) et par balayage d'isolation dans les deux directions.
+
+Livré :
+
+1. **Matrice des contrats** — `docs/WORLD_V2_SYSTEM_CONTRACTS.md` : 23
+   familles classées (PROTECTED_UNCHANGED / DUAL_WORLD / V1_SPATIAL_REPLACE /
+   MIGRATION_REQUIRED), interfaces exactes que V2 consomme, et classement
+   A/B/C/D/E des tests existants avec évidence par fichier (48 tests spatiaux
+   V1 identifiés, aucun supprimé ni assoupli).
+2. **Carte directrice** — `docs/WORLD_V2_MASTERPLAN.md` +
+   `resources/world_v2/world_v2_layout.json` : 11 régions, bassin versant
+   complet, 3 routes qui se croisent, les 31 POI repositionnés (centre et
+   angles habités) + 3 sites systémiques du Bracelet, 5 grottes, lignes de
+   vue contractuelles, plan de l'enveloppe du donjon (8 espaces, contraintes
+   de gameplay immuables consignées).
+3. **Contrat de migration** — `docs/WORLD_V2_SAVE_MIGRATION.md` : schéma 5
+   additif (`world_version`, absence = V1), position JAMAIS réappliquée entre
+   mondes (checkpoint compatible → ancrage de région → spawn), 10 tests
+   exigés avant activation. RIEN d'implémenté en V2.0, c'est le contrat.
+4. **Squelette exécutable** — `scenes/world_v2/WorldV2Bootstrap.tscn` +
+   `WorldV2.tscn` (conteneurs de l'architecture, sol temporaire MARQUÉ,
+   vrai Player + vraie GameplayShell raccordés par interfaces, entrée
+   développeur explicite : `godot --path . res://scenes/world_v2/WorldV2Bootstrap.tscn`).
+5. **Tests V2.0** — `tests/world_v2/` : 8/8 verts (isolation deux directions,
+   V1 par défaut, joueur réel posé sur collision réelle, slot0 identique à
+   l'octet près, manifeste des 31 lieux complet). **Contrôle négatif
+   DÉMONTRÉ** : retrait réel d'un POI → suite rouge en 4 points, amorce qui
+   refuse de charger ; restauration → 8/8.
+
+### Prochaine action exacte
+
+**V2.1 — construire la vallée whitebox complète et physiquement traversable
+à partir du masterplan approuvé.**
+
+(Relief continu conforme aux régions du layout, rivière creusée avec gués,
+routes praticables, limites fermées, navigation cuite, spawn/checkpoints
+posés — zéro habillage ; preuves : parcours physiques + captures des six
+fenêtres de composition. Ne pas commencer sans l'approbation du masterplan
+par le propriétaire.)
+
 ## 2026-08-12 (suite) — sprint artistique : cinq transformations, trois commits
 
 **Mode** : sprint (directive du propriétaire) — boucle rapide 720p, tests

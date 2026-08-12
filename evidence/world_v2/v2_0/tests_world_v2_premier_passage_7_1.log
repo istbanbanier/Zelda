@@ -1,0 +1,30 @@
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: world_v2
+  ok   test_world_v2_layout.gd::test_la_carte_directrice_est_valide (3 assertions)
+  ok   test_world_v2_layout.gd::test_le_validateur_sait_dire_non (8 assertions)
+  ÉCHEC test_world_v2_layout.gd::test_aucun_lieu_declare_en_v1_nest_oublie — chaque lieu V1 est couvert par la carte V2 — oubliés : valley.poi.x.01
+  ok   test_world_v2_layout.gd::test_les_identifiants_de_monde_sont_distincts (4 assertions)
+  ok   test_world_v2_skeleton.gd::test_la_v1_reste_le_flux_normal (6 assertions)
+  ok   test_world_v2_skeleton.gd::test_aucune_reference_croisee_interdite (3 assertions)
+[world_v2] monde        : neris_v2 (squelette V2.0)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : V2_0_TemporaryGround à y=24.00
+[world_v2] fondation V2 vérifiée — squelette prêt.
+  ok   test_world_v2_skeleton.gd::test_le_squelette_porte_le_vrai_joueur_sans_toucher_la_sauvegarde (23 assertions)
+[world_v2] bootstrap    : squelette V2.0 — entrée développeur explicite
+[world_v2] Godot        : 4.7.1-stable (custom_build)
+[world_v2] carte        : valide (neris_v2)
+[world_v2] transition vers le monde V2.
+[world_v2] monde        : neris_v2 (squelette V2.0)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : V2_0_TemporaryGround à y=24.00
+[world_v2] fondation V2 vérifiée — squelette prêt.
+  ok   test_world_v2_skeleton.gd::test_l_entree_developpeur_charge_v2_separement (5 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 7 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_layout.gd::test_aucun_lieu_declare_en_v1_nest_oublie — chaque lieu V1 est couvert par la carte V2 — oubliés : valley.poi.x.01
