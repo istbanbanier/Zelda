@@ -79,56 +79,95 @@ func _ready() -> void:
 	_flash_timer.start()
 
 
-## Masse cumuliforme : sept grumeaux aplatis, irréguliers, qui se chevauchent —
-## ventre sombre, sommets ardoise (1re capture V4.1 : trois galettes propres
-## lisaient « pièce montée », pas « orage »). `disable_fog` garde le nuage
-## SOMBRE à 360 m : c'est son contraste avec le ciel doré qui porte la menace,
-## la brume le fondait dans l'horizon.
+## Masse cumuliforme granulaire — ventre sombre, sommets ardoise, bord chaud
+## côté soleil. `disable_fog` garde le nuage SOMBRE à 360 m : c'est son
+## contraste avec le ciel doré qui porte la menace, la brume le fondait dans
+## l'horizon.
+##
+## PASSE 3 (2026-08-12, proxys des caméras 5-6) : les huit grumeaux du ventre
+## faisaient jusqu'à 41 m de rayon pour 62 m de haut — depuis l'approche
+## (caméra 6), le haut du cadre était le dessous LISSE d'une seule sphère, et
+## leur ventre descendait à y ≈ 92 : la couronne de la spire (y ≈ 98)
+## transperçait le nuage. §9.2 : « base sombre APLATIE au-dessus de la
+## spire », bords « plus clairs et chauds côté soleil ». La masse devient
+## GRANULAIRE (22 grumeaux ≤ 22 m de rayon, chevauchés), son plancher reste
+## au-dessus de la spire, et quatre grumeaux chauds prennent le soleil à
+## l'ouest. Les grumeaux restent DODUS (ratio testé ≥ 0,8) : c'est la
+## soucoupe qu'on interdit à 360 m, pas la masse.
+## Invariants passe 3 : `test_storm_cloud_hangs_above_the_spire.gd`.
 func _build_clouds() -> void:
 	cloud_radius = minf(cloud_radius, MAX_CLOUD_RADIUS)
-	# Grumeaux DODUS en deux étages, sur une jupe basse sombre. La capture
-	# `vista_horizon_etage` a tranché : des lobes de 8-13 m de haut pour ~26 m
-	# de rayon lisaient « soucoupe » à 360 m — la hauteur d'un grumeau doit
-	# suivre son rayon, et la masse doit s'EMPILER, pas s'étaler.
-	#
-	# Jupe : le ventre plat et sombre d'un cumulonimbus, d'où sort l'éclair.
+	# Jupe-enclume : le ventre plat et sombre d'un cumulonimbus, d'où sort
+	# l'éclair. ÉLARGIE (0,70 × rayon) et remontée : son bas plane à 8 m
+	# au-dessus du plancher des grumeaux — c'est elle, la « base aplatie ».
 	var skirt: MeshInstance3D = MeshInstance3D.new()
 	skirt.name = "CloudBase"
 	var skirt_sphere: SphereMesh = SphereMesh.new()
-	skirt_sphere.radius = cloud_radius * 0.62
-	skirt_sphere.height = 9.0
+	skirt_sphere.radius = cloud_radius * 0.70
+	skirt_sphere.height = 8.0
 	skirt_sphere.radial_segments = 24
 	skirt_sphere.rings = 8
 	skirt.mesh = skirt_sphere
 	skirt.material_override = _cloud_material(CLOUD_DARK)
-	skirt.position = Vector3(0, -2.0, 0)
+	skirt.position = Vector3(0, -8.0, 0)
 	add_child(skirt)
-	for i: int in range(14):
-		# Étage bas (i < 8) : gros grumeaux du ventre. Étage haut : plus
-		# petits, plus clairs, plus serrés vers l'axe — la tour du nuage.
-		var lower: bool = i < 8
-		var radius: float = (_rng.randf_range(0.30, 0.46) if lower
-			else _rng.randf_range(0.18, 0.32)) * cloud_radius
-		var reach: float = (cloud_radius - radius) * (1.0 if lower else 0.55)
+	# Plancher LOCAL du ventre : cellule à y 122 monde, spire à 100 — un
+	# grumeau ne descend jamais sous −14 local (108 monde, 8 m d'air).
+	const BELLY_FLOOR: float = -14.0
+	var lump_index: int = 0
+	# Ventre : douze grumeaux serrés — le dessous se lit comme un chou-fleur
+	# renversé, pas comme trois arches.
+	for i: int in range(12):
+		var radius: float = _rng.randf_range(0.13, 0.24) * cloud_radius
+		var reach: float = cloud_radius * 0.82 - radius
 		var angle: float = _rng.randf_range(0.0, TAU)
-		var span: float = _rng.randf_range(0.25, 1.0) * reach
-		var height: float = _rng.randf_range(1.0, 7.0) if lower \
-			else _rng.randf_range(8.0, 19.0)
-		var mesh: MeshInstance3D = MeshInstance3D.new()
-		mesh.name = "CloudLayer%d" % i
-		var sphere: SphereMesh = SphereMesh.new()
-		sphere.radius = radius
-		# Hauteur PROPORTIONNELLE au rayon (ratio 0,9-1,5) : un grumeau est
-		# une masse, pas une assiette. L'invariant est testé (ratio moyen ≥ 0,8).
-		sphere.height = radius * _rng.randf_range(0.9, 1.5)
-		sphere.radial_segments = 24
-		sphere.rings = 8
-		mesh.mesh = sphere
-		# Ventre sombre, sommets ardoise — la menace vient du dessous.
-		mesh.material_override = _cloud_material(
-			CLOUD_DARK if height < 5.0 else CLOUD_SLATE)
-		mesh.position = Vector3(cos(angle) * span, height, sin(angle) * span)
-		add_child(mesh)
+		var span: float = _rng.randf_range(0.30, 1.0) * reach
+		var height: float = radius * _rng.randf_range(0.9, 1.3)
+		var lift: float = maxf(_rng.randf_range(-6.0, -1.0),
+			BELLY_FLOOR + height * 0.5)
+		_add_cloud_lump(lump_index, radius, height,
+			Vector3(cos(angle) * span, lift, sin(angle) * span), CLOUD_DARK)
+		lump_index += 1
+	# Tour : six grumeaux plus hauts, plus clairs, serrés vers l'axe.
+	for i: int in range(6):
+		var radius: float = _rng.randf_range(0.14, 0.22) * cloud_radius
+		var reach: float = (cloud_radius - radius) * 0.5
+		var angle: float = _rng.randf_range(0.0, TAU)
+		var span: float = _rng.randf_range(0.2, 1.0) * reach
+		var height: float = radius * _rng.randf_range(1.0, 1.4)
+		_add_cloud_lump(lump_index, radius, height,
+			Vector3(cos(angle) * span, _rng.randf_range(6.0, 16.0),
+				sin(angle) * span), CLOUD_SLATE)
+		lump_index += 1
+	# Bord chaud côté soleil (§9.2) : quatre grumeaux à l'OUEST (x < 0),
+	# albédo penché vers le miel — le soleil vient de l'ouest/haut-gauche.
+	var warm: Color = Color(0.545, 0.50, 0.455)
+	for i: int in range(4):
+		var radius: float = _rng.randf_range(0.10, 0.16) * cloud_radius
+		var angle: float = PI + _rng.randf_range(-0.85, 0.85)
+		var span: float = (cloud_radius - radius) * _rng.randf_range(0.80, 0.98)
+		var height: float = radius * _rng.randf_range(0.9, 1.3)
+		_add_cloud_lump(lump_index, radius, height,
+			Vector3(minf(cos(angle) * span, -radius * 0.5),
+				_rng.randf_range(0.0, 9.0), sin(angle) * span), warm)
+		lump_index += 1
+
+
+func _add_cloud_lump(index: int, radius: float, height: float, at: Vector3,
+		color: Color) -> void:
+	var mesh: MeshInstance3D = MeshInstance3D.new()
+	mesh.name = "CloudLayer%d" % index
+	var sphere: SphereMesh = SphereMesh.new()
+	sphere.radius = radius
+	# Hauteur PROPORTIONNELLE au rayon (ratio 0,9-1,4) : un grumeau est une
+	# masse, pas une assiette. L'invariant est testé (ratio moyen ≥ 0,8).
+	sphere.height = height
+	sphere.radial_segments = 24
+	sphere.rings = 8
+	mesh.mesh = sphere
+	mesh.material_override = _cloud_material(color)
+	mesh.position = at
+	add_child(mesh)
 
 
 func _cloud_material(color: Color) -> StandardMaterial3D:
