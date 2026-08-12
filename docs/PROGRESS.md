@@ -5,6 +5,35 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-12 (suite) — sprint artistique : cinq transformations, trois commits
+
+**Mode** : sprint (directive du propriétaire) — boucle rapide 720p, tests
+sélectifs, validation complète UNIQUE en fin, ≤ 5 commits. **Branche** :
+`claude/vslice-pass3-silhouettes`. **Preuves finales** :
+`evidence/vslice_pass3_20260812/sprint_final/`.
+
+1. **Prairie du corridor** : cellules MultiMesh de touffes en grappes sur la
+   terrasse du camp, la plaine sud, la berge du gué et la plaine nord —
+   les grands aplats verts des caméras 3-5 sont habités.
+2. **Cols d'horizon** : 76 selles entre les pics de crête — l'arête
+   horizontale du mur de bordure (la « couture ») ne se découpe plus sur
+   le ciel.
+3. **Berges du gué** : roseaux, herbes hautes et pierres du kit CC0 le long
+   des deux rives, tablier dégagé.
+4. **Toits harmonisés** : les tuiles rouges méditerranéennes des quatre
+   abris repeintes bois/bronze (leçon : `from_standard` ignore
+   `albedo_color` dès qu'une texture existe — repeinte plate obligatoire).
+5. **Le coureur des steppes** : monture originale Blender→glb (3 412 tris,
+   agent isolé, script déterministe versionné) remplace la boîte-animal ;
+   collision/selle/gameplay inchangés, graybox en repli.
+
+### Prochaine action exacte
+
+État poussé sur la branche (autorisation du propriétaire, sprint §3) —
+prêt pour la revue visuelle. Prochain sprint candidat : ruines centrales
+et POI du parcours (kits modulaires), donjon hors périmètre tant que non
+autorisé.
+
 ## 2026-08-12 — passe 3 : les six défauts de la revue Codex
 
 **Branche** : `claude/vslice-pass3-silhouettes`, créée sur `2c4fbf9` (merge

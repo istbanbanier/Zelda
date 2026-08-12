@@ -51,6 +51,18 @@ est reporté tel quel, jamais retiré. La caméra 6, elle, est passée
 4. Caméra, son, manette, fluidité : non vérifiables dans ce conteneur
    (headless, sans GPU ni périphérique).
 
+## Sprint artistique (même journée, après la passe 3)
+
+Mode sprint demandé par le propriétaire : boucle rapide, validation
+complète unique. Cinq transformations, jeu final : `sprint_final/`.
+
+1. prairie MultiMesh du corridor (camp, plaine sud, gué, plaine nord) ;
+2. cols d'horizon — la couture crête/bordure ne se découpe plus sur le ciel ;
+3. berges du gué habitées (roseaux, pierres du kit CC0) ;
+4. toits des abris bois/bronze (le rouge méditerranéen juré avec le monde) ;
+5. monture « coureur des steppes » : Blender→glb original (3 412 tris,
+   script déterministe versionné), collision et gameplay inchangés.
+
 ## Comment rejouer
 
 ```bash
