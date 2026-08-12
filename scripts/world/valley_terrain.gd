@@ -408,6 +408,22 @@ const RELIEF_MOUNDS: Array[Array] = [
 	[-56.0, -138.0, 12.0, 9.0, 2.2],
 	[34.0, -100.0, 10.0, 8.0, 1.8],
 	[-52.0, -60.0, 12.0, 9.0, 2.0],
+	# FINITION MONDE (lot 1) : le relief ne s'arrêtait pas au corridor — il
+	# n'EXISTAIT que là. Douze buttes de plus sur les plaines extérieures,
+	# à ≥ 15 m de chaque site de POI (docs/POI_MAP.md) et hors des trois
+	# masses boisées du lot 2. Même filet anti-enterrement, même contrat.
+	[-118.0, 134.0, 12.0, 8.0, 2.1],   # lande SO, entre passage dérobé et arbre foudroyé
+	[-56.0, 132.0, 10.0, 8.0, 1.8],    # sud du champ de fleurs
+	[88.0, 88.0, 11.0, 8.0, 1.9],      # entre camp et camps braise
+	[124.0, 96.0, 12.0, 9.0, 2.1],     # prairie est, vers la chute
+	[152.0, 62.0, 9.0, 7.0, 1.6],      # pied du belvédère
+	[-34.0, -180.0, 12.0, 9.0, 2.0],   # nord, à l'ouest du Bois Courbé
+	[62.0, -136.0, 10.0, 8.0, 1.8],    # nord-est, sous la gorge
+	[112.0, -124.0, 13.0, 9.0, 2.2],   # garrigue nord-est
+	[-92.0, -172.0, 11.0, 8.0, 1.9],   # nord-ouest profond
+	[-128.0, -104.0, 10.0, 8.0, 1.7],  # entre bastion et fortification
+	[-76.0, -34.0, 9.0, 7.0, 1.5],     # plaine nord, sud du bois du Doyen
+	[146.0, -52.0, 9.0, 7.0, 1.6],     # entre pylône et mine
 ]
 
 
@@ -944,6 +960,8 @@ func _build_forest() -> void:
 				0.5, 7.0, COL_WOOD, true)
 			_orb_in("Canopy%02d" % i, forest, Vector3(at.x, 9.5, at.y), 2.6,
 				canopy_tones[i % canopy_tones.size()])
+	_build_woodlands()
+	_build_forest_undergrowth()
 	_build_nature_phrases()
 	_dress_zone_crest()
 	_dress_zone_descent()
@@ -959,6 +977,9 @@ func _build_forest() -> void:
 	# même timing différé, pour la même raison : l'espace physique ne connaît
 	# les colliders du terrain qu'après la frame qui les a créés.
 	_snap_dressing_to_ground.call_deferred()
+	# Le sous-bois (MultiMesh) se pose APRÈS, instance par instance : ses
+	# fougères suivent le même sol réel que les troncs qu'elles accompagnent.
+	_snap_undergrowth.call_deferred()
 
 
 ## ---------------------------------------------------------------------------
@@ -985,6 +1006,10 @@ func _build_forest() -> void:
 ## geste délibéré : y ajouter une zone qui porte du décor accroché le casserait.
 const GROUNDED_DRESS_ZONES: Array[String] = [
 	"DressZoneCrest", "DressZoneDescent",
+	# Lot 2 (finition monde) : les trois bois se posent sur le sol réel —
+	# buttes du lot 1 comprises. Leurs troncs (PhysicsBody3D) sont exclus du
+	# rayon par la boucle ci-dessous, comme tous les autres.
+	"Woodlands",
 ]
 ## Décalques visuels qui doivent suivre le même sol réel sans y ajouter de
 ## volume. Contrairement au semis, ils restent légèrement au-dessus afin
@@ -1050,6 +1075,192 @@ func _snap_dressing_to_ground() -> void:
 			clearance += 0.004 * float(rank % 2)
 			piece.global_position = Vector3(piece.global_position.x,
 				(hit["position"] as Vector3).y + clearance, piece.global_position.z)
+
+
+## ---------------------------------------------------------------------------
+## FINITION MONDE, lot 2 — de vraies masses boisées.
+##
+## La « forêt » de la vallée n'était que 18 arbres épars dans un carré de
+## 40 m : aucune lisière, aucun sous-bois, aucune masse lisible sur la carte
+## AVANT (evidence). Trois bois délibérés, composés à la main comme le reste
+## du fichier :
+##   - la forêt claire du SUD-EST, densifiée bord par bord (lisières nord,
+##     est, sud, ouest) sans toucher le couloir intérieur existant ;
+##   - le bois du SANCTUAIRE (plaine sud), clairière au sanctuaire (18,102),
+##     à ≥ 8 m des segments de la descente et ≥ 14 m du Champ des fleurs ;
+##   - le bois du DOYEN (plaine nord), clairière de 12 m autour de l'Arbre
+##     doyen (−96,−62) qui doit rester seul en majesté ;
+##   - quatre saules tordus le long de la rivière, hors gués et hors pont.
+## Chaque arbre porte un tronc à collision (un arbre traversable est un
+## mensonge découvert au premier pas) ; la zone est dans GROUNDED_DRESS_ZONES,
+## chaque pièce se pose donc sur le sol RÉEL — buttes du lot 1 comprises.
+## La navmesh est re-cuite avec ce changement.
+## ---------------------------------------------------------------------------
+
+## [modèle, x, z] — le lacet et l'échelle dérivent de l'index (angle d'or,
+## jamais deux voisins alignés). Marges tenues : ≥ 4 m entre troncs, ≥ 8 m
+## des segments de descente (largeur comprise), ≥ 15 m des sites de POI.
+const WOODLAND_TREES: Array[Array] = [
+	# Forêt claire du sud-est — lisière sud (le long de la route est).
+	[&"CommonTree_2", 63.0, 19.0], [&"Pine_4", 72.0, 18.0],
+	[&"CommonTree_5", 88.0, 18.0],
+	# Lisière ouest (derrière les buissons existants).
+	[&"CommonTree_1", 54.0, 22.0], [&"Pine_3", 53.0, 38.0],
+	[&"CommonTree_1", 55.0, 55.0],
+	# Lisière nord.
+	[&"Pine_2", 60.0, 58.0], [&"CommonTree_4", 74.0, 60.0],
+	[&"Pine_5", 84.0, 59.0], [&"CommonTree_1", 94.0, 56.0],
+	# Lisière est (vers le hameau des bûcherons).
+	[&"CommonTree_3", 97.0, 32.0], [&"Pine_1", 98.0, 42.0],
+	# Deux remplissages intérieurs, hors du couloir diagonal.
+	[&"CommonTree_4", 79.0, 26.0], [&"CommonTree_2", 87.0, 43.0],
+	# Bois du Sanctuaire (clairière au sanctuaire, descente épargnée).
+	[&"CommonTree_2", 10.0, 94.0], [&"CommonTree_5", 6.0, 104.0],
+	[&"Pine_2", 12.0, 112.0], [&"CommonTree_3", 22.0, 114.0],
+	[&"Pine_4", 4.0, 120.0], [&"CommonTree_1", -6.0, 110.0],
+	[&"CommonTree_4", -8.0, 96.0], [&"Pine_1", 2.0, 88.0],
+	[&"CommonTree_5", -16.0, 120.0], [&"Pine_3", -20.0, 100.0],
+	[&"CommonTree_1", -2.0, 128.0], [&"CommonTree_2", 20.0, 124.0],
+	# Bois du Doyen (clairière de 12 m : l'Arbre doyen reste seul).
+	[&"Pine_5", -112.0, -52.0], [&"CommonTree_3", -116.0, -66.0],
+	[&"CommonTree_1", -108.0, -78.0], [&"Pine_2", -94.0, -80.0],
+	[&"CommonTree_4", -80.0, -74.0], [&"CommonTree_2", -78.0, -58.0],
+	[&"Pine_1", -86.0, -46.0], [&"CommonTree_5", -100.0, -44.0],
+	[&"DeadTree_1", -110.0, -58.0],
+	# Saules de rivière (hors gués x 10..30 et 85..105, hors pont x −24..−4).
+	[&"TwistedTree_2", -60.0, 17.5], [&"TwistedTree_3", 62.0, 17.0],
+	[&"TwistedTree_1", 118.0, 3.2], [&"TwistedTree_2", 142.0, 16.8],
+]
+
+## Lisières basses : buissons et grandes plantes, décor pur sans collision.
+const WOODLAND_BUSHES: Array[Array] = [
+	[&"Bush_Common", 66.0, 59.5], [&"Bush_Common_Flowers", 90.0, 58.5],
+	[&"Bush_Common", 14.0, 90.0], [&"Bush_Common_Flowers", -12.0, 116.0],
+	[&"Bush_Common", 8.0, 124.0], [&"Bush_Common", -104.0, -42.0],
+	[&"Bush_Common_Flowers", -76.0, -66.0], [&"Plant_7_Big", -58.0, 16.0],
+	[&"Plant_7", 64.0, 16.0], [&"Plant_7_Big", 140.0, 15.5],
+]
+
+
+func _build_woodlands() -> void:
+	const TRUNK: Vector3 = Vector3(0.45, 6.0, 0.0)
+	var wood: Node3D = Node3D.new()
+	wood.name = "Woodlands"
+	add_child(wood)
+	for i: int in range(WOODLAND_TREES.size()):
+		var entry: Array = WOODLAND_TREES[i]
+		_place_model(wood, entry[0] as StringName,
+			Vector3(entry[1] as float, 2.0, entry[2] as float),
+			float(i) * 2.399, 0.9 + 0.02 * float((i * 5) % 13), TRUNK, true)
+	for j: int in range(WOODLAND_BUSHES.size()):
+		var bush: Array = WOODLAND_BUSHES[j]
+		_place_model(wood, bush[0] as StringName,
+			Vector3(bush[1] as float, 2.0, bush[2] as float),
+			float(j) * 2.399 + 0.7, 0.95 + 0.03 * float((j * 3) % 7))
+
+
+## Extrait le maillage d'un modèle promu pour l'instancier en MultiMesh.
+## Les matériaux d'un import glTF vivent sur la ressource de maillage : ils
+## suivent. Le modèle absent rend null — le vide reste un vide.
+func _kit_mesh(model_name: StringName) -> Mesh:
+	var packed: PackedScene = AssetRegistry.model(model_name)
+	if packed == null:
+		return null
+	var scene: Node = packed.instantiate()
+	var found: Mesh = null
+	var stack: Array[Node] = [scene]
+	while not stack.is_empty():
+		var node: Node = stack.pop_back()
+		if node is MeshInstance3D:
+			found = (node as MeshInstance3D).mesh
+			break
+		for child: Node in node.get_children():
+			stack.append(child)
+	scene.free()
+	return found
+
+
+## Sous-bois : fougères et trèfles en ANNEAUX au pied de chaque tronc des
+## trois bois — la lecture « sous-bois aux pieds des troncs » de la zone
+## forêt, généralisée. MultiMesh (§7.5) : deux maillages, ~200 instances,
+## aucune collision. Chaque instance est ensuite posée sur le sol réel par
+## `_snap_undergrowth` (différé, comme le semis).
+func _build_forest_undergrowth() -> void:
+	var under: Node3D = Node3D.new()
+	under.name = "ForestUndergrowth"
+	add_child(under)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 20260815
+	# [modèle, brins par tronc, rayon min/max, échelle min/max]
+	var kinds: Array[Array] = [
+		[&"Fern_1", 3, 1.0, 2.3, 0.9, 1.35],
+		[&"Clover_1", 2, 0.8, 1.8, 1.0, 1.6],
+	]
+	for kind: Array in kinds:
+		var mesh: Mesh = _kit_mesh(kind[0] as StringName)
+		if mesh == null:
+			continue
+		var per_trunk: int = kind[1] as int
+		var kit_factor: float = KitScale.factor(String(kind[0] as StringName))
+		var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
+		mmi.name = "Undergrowth%s" % String(kind[0] as StringName)
+		var multimesh: MultiMesh = MultiMesh.new()
+		multimesh.transform_format = MultiMesh.TRANSFORM_3D
+		multimesh.mesh = mesh
+		multimesh.instance_count = WOODLAND_TREES.size() * per_trunk
+		var placed: int = 0
+		for tree: Array in WOODLAND_TREES:
+			var foot: Vector2 = Vector2(tree[1] as float, tree[2] as float)
+			for k: int in range(per_trunk):
+				var angle: float = rng.randf_range(0.0, TAU)
+				var radius: float = rng.randf_range(kind[2] as float,
+					kind[3] as float)
+				var at: Vector2 = foot + Vector2(cos(angle), sin(angle)) * radius
+				var basis: Basis = Basis(Vector3.UP, rng.randf_range(0.0, TAU)) \
+					.scaled(Vector3.ONE * kit_factor
+						* rng.randf_range(kind[4] as float, kind[5] as float))
+				multimesh.set_instance_transform(placed,
+					Transform3D(basis, Vector3(at.x, 2.0, at.y)))
+				placed += 1
+		multimesh.visible_instance_count = placed
+		mmi.multimesh = multimesh
+		under.add_child(mmi)
+
+
+## Pose chaque instance du sous-bois sur le sol réel (couche 1 seule). Les
+## troncs des bois sont exclus du rayon — une fougère à 1 m d'un tronc ne
+## doit pas se percher dessus. Coût : ~200 rayons, une fois, au chargement.
+func _snap_undergrowth() -> void:
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	if space == null:
+		return
+	var under: Node3D = get_node_or_null("ForestUndergrowth") as Node3D
+	if under == null:
+		return
+	var excluded: Array[RID] = []
+	var wood: Node3D = get_node_or_null("Woodlands") as Node3D
+	if wood != null:
+		for node: Node in wood.find_children("*", "PhysicsBody3D", true, false):
+			excluded.append((node as PhysicsBody3D).get_rid())
+	for child: Node in under.get_children():
+		var mmi: MultiMeshInstance3D = child as MultiMeshInstance3D
+		if mmi == null:
+			continue
+		var multimesh: MultiMesh = mmi.multimesh
+		var count: int = multimesh.visible_instance_count \
+			if multimesh.visible_instance_count >= 0 else multimesh.instance_count
+		for idx: int in range(count):
+			var transform: Transform3D = multimesh.get_instance_transform(idx)
+			var query: PhysicsRayQueryParameters3D = \
+				PhysicsRayQueryParameters3D.create(
+					transform.origin + Vector3.UP * DRESS_SNAP_UP,
+					transform.origin - Vector3.UP * DRESS_SNAP_DOWN, 1)
+			query.exclude = excluded
+			var hit: Dictionary = space.intersect_ray(query)
+			if hit.is_empty():
+				continue
+			transform.origin.y = (hit["position"] as Vector3).y
+			multimesh.set_instance_transform(idx, transform)
 
 
 ## ---------------------------------------------------------------------------
@@ -2569,29 +2780,71 @@ func _build_ground_variation() -> void:
 	var variation: Node3D = Node3D.new()
 	variation.name = "GroundVariation"
 	add_child(variation)
-	var patches: Array[Array] = [
-		# [nom, centre xz, taille xz, sommet, couleur]
-		["CrestLit", Vector2(-8, 172), Vector2(64, 36), 32.02, COL_GRASS_LIT],
-		["BankSouth", Vector2(0, 18.6), Vector2(512, 5.0), 2.02, COL_GRASS_WET],
-		["BankNorth", Vector2(0, 1.4), Vector2(512, 5.0), 2.02, COL_GRASS_WET],
-		["MeadowEast", Vector2(150, 60), Vector2(90, 70), 2.02, COL_GRASS_LIT],
-		["MeadowWest", Vector2(-160, -60), Vector2(100, 80), 2.02, COL_GRASS_DARK],
-		["ScrubNorth", Vector2(120, -150), Vector2(110, 70), 2.02, COL_GRASS_DARK],
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 20260814
+	# FINITION MONDE (lot 1) : vus du ciel — et depuis toute hauteur du jeu —
+	# les six BoxMesh d'origine se lisaient comme des RECTANGLES de couleur aux
+	# arêtes parfaites (carte AVANT, evidence). Une teinte de prairie n'a pas de
+	# bord droit : chaque zone devient 2-4 LOBES irréguliers (`_ground_patch_mesh`,
+	# le même polygone 16 sommets que les chemins) qui se chevauchent. Les lobes
+	# d'une même zone s'étagent de 4 mm pour ne jamais être coplanaires.
+	# [nom, centre xz, demi-axes xz, sommet, couleur, lobes]
+	var zones: Array[Array] = [
+		["CrestLit", Vector2(-8, 172), Vector2(30, 17), 32.046, COL_GRASS_LIT, 2],
+		["MeadowEast", Vector2(150, 60), Vector2(42, 33), 2.046, COL_GRASS_LIT, 3],
+		["MeadowWest", Vector2(-160, -60), Vector2(47, 38), 2.046, COL_GRASS_DARK, 3],
+		["ScrubNorth", Vector2(120, -150), Vector2(52, 33), 2.046, COL_GRASS_DARK, 3],
+		# Régions qui restaient des aplats uniformes sur toute la moitié
+		# extérieure de la carte : lande du sud-ouest, prairie du sanctuaire,
+		# garrigue du nord-ouest.
+		["HeathSouthWest", Vector2(-118, 122), Vector2(38, 28), 2.046, COL_GRASS_DARK, 3],
+		["MeadowShrine", Vector2(2, 108), Vector2(30, 22), 2.046, COL_GRASS_LIT, 3],
+		["ScrubNorthWest", Vector2(-100, -172), Vector2(42, 28), 2.046, COL_GRASS_DARK, 2],
+		# Sols de forêt : les trois masses boisées (lot 2) posent leur ombre au
+		# sol — la forêt se lit comme une MASSE même entre les troncs.
+		["ForestFloor", Vector2(76, 38), Vector2(26, 22), 2.046, COL_GRASS_DARK, 3],
+		["ShrineWood", Vector2(6, 106), Vector2(22, 26), 2.05, COL_GRASS_DARK, 2],
+		["ElderWood", Vector2(-96, -62), Vector2(26, 22), 2.046, COL_GRASS_DARK, 2],
 	]
-	for patch: Array in patches:
-		var mesh: MeshInstance3D = MeshInstance3D.new()
-		mesh.name = String(patch[0])
-		var box: BoxMesh = BoxMesh.new()
-		var size_xz: Vector2 = patch[2]
-		box.size = Vector3(size_xz.x, 0.05, size_xz.y)
-		mesh.mesh = box
-		var material: StandardMaterial3D = StandardMaterial3D.new()
-		material.albedo_color = patch[4] as Color
-		material.roughness = 0.95
-		mesh.material_override = material
-		var center_xz: Vector2 = patch[1]
-		mesh.position = Vector3(center_xz.x, float(patch[3]), center_xz.y)
-		variation.add_child(mesh)
+	for zone: Array in zones:
+		var center: Vector2 = zone[1]
+		var half: Vector2 = zone[2]
+		var lobes: int = zone[5] as int
+		for lobe: int in range(lobes):
+			var mesh: MeshInstance3D = MeshInstance3D.new()
+			mesh.name = "%s_%02d" % [String(zone[0]), lobe]
+			var frac: float = 1.0 if lobe == 0 else rng.randf_range(0.45, 0.7)
+			mesh.mesh = _ground_patch_mesh(rng, half.x * frac, half.y * frac, 16)
+			var material: StandardMaterial3D = StandardMaterial3D.new()
+			material.albedo_color = zone[4] as Color
+			material.roughness = 0.95
+			mesh.material_override = material
+			var offset: Vector2 = Vector2.ZERO if lobe == 0 else Vector2(
+				rng.randf_range(-half.x * 0.55, half.x * 0.55),
+				rng.randf_range(-half.y * 0.55, half.y * 0.55))
+			mesh.position = Vector3(center.x + offset.x,
+				float(zone[3]) + 0.004 * float(lobe), center.y + offset.y)
+			mesh.rotation.y = rng.randf_range(0.0, TAU)
+			variation.add_child(mesh)
+	# Berges humides : les deux bandes de 512 m (des règles posées sur la
+	# carte) deviennent une chaîne de lobes qui respirent le long de l'eau.
+	for side: Array in [["BankSouth", 18.2], ["BankNorth", 1.8]]:
+		var z_line: float = side[1] as float
+		for i: int in range(13):
+			var mesh: MeshInstance3D = MeshInstance3D.new()
+			mesh.name = "%s_%02d" % [String(side[0]), i]
+			var half_l: float = rng.randf_range(11.0, 21.0)
+			var half_w: float = rng.randf_range(2.0, 3.6)
+			mesh.mesh = _ground_patch_mesh(rng, half_l, half_w, 12)
+			var material: StandardMaterial3D = StandardMaterial3D.new()
+			material.albedo_color = COL_GRASS_WET
+			material.roughness = 0.95
+			mesh.material_override = material
+			mesh.position = Vector3(-240.0 + 40.0 * float(i)
+				+ rng.randf_range(-6.0, 6.0),
+				2.046 + 0.004 * float(i % 2),
+				z_line + rng.randf_range(-0.8, 0.8))
+			variation.add_child(mesh)
 
 
 ## Prairie de la crête (réf. 01 : herbe et fleurs au premier plan). §7.5 :
