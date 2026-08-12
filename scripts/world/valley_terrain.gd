@@ -106,6 +106,7 @@ func _ready() -> void:
 	_build_slope_flora()
 	_build_corridor_flora()
 	_build_ford_banks()
+	_build_river_banks_full()
 
 
 ## ---------------------------------------------------------------------------
@@ -917,6 +918,70 @@ func _build_pylon_terrace_and_proxy() -> void:
 	rune_material.emission_energy_multiplier = 1.6
 	runes.material_override = rune_material
 	_orb("PylonHead", Vector3(115, 41.5, -25), 3.0, COL_CYAN)
+	_build_pylon_terrace_skirts()
+
+
+## FINITION MONDE (lot 1, dernier rectangle de la carte) : la terrasse du
+## pylône était une dalle de 56 × 50 m aux parois verticales parfaites —
+## le même défaut que les mesas de la passe 3, traité par la même recette :
+## troncs de pyramide talutés au pied des quatre faces, deux strates
+## horizontales par face, rythmes différents (5/7/6/4, jamais la même
+## cadence). Décor SANS collision — la dalle porteuse ne change pas d'un
+## millimètre. Le couloir de la rampe ouest (x 84..90, z −20..−8) reste nu.
+func _build_pylon_terrace_skirts() -> void:
+	var skirts: Node3D = Node3D.new()
+	skirts.name = "PylonTerraceSkirts"
+	add_child(skirts)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 20260816
+	var lit: Color = Color(0.455, 0.335, 0.225)
+	var shade: Color = Color(0.330, 0.245, 0.175)
+	# [axe (0 = face E/O, 1 = face N/S), coordonnée fixe, min/max le long,
+	#  direction extérieure, dents]
+	var faces: Array[Array] = [
+		[0, 143.0, -50.0, 0.0, 1.0, 5],    # face est
+		[0, 87.0, -50.0, -20.0, -1.0, 4],  # face ouest, moitié sud (rampe épargnée)
+		[1, 0.0, 87.0, 143.0, 1.0, 7],     # face nord
+		[1, -50.0, 87.0, 143.0, -1.0, 6],  # face sud
+	]
+	for face: Array in faces:
+		var axis: int = face[0] as int
+		var fixed: float = face[1] as float
+		var lo: float = face[2] as float
+		var hi: float = face[3] as float
+		var outward: float = face[4] as float
+		var teeth: int = face[5] as int
+		for t: int in range(teeth):
+			var along: float = lerpf(lo, hi, (float(t) + 0.5) / float(teeth)) \
+				+ rng.randf_range(-1.6, 1.6)
+			var height: float = rng.randf_range(5.0, 9.5)
+			var half: float = rng.randf_range(3.4, 5.6)
+			var center: Vector3 = Vector3(fixed + outward * half * 0.55, 2.0,
+				along) if axis == 0 else Vector3(along, 2.0,
+				fixed + outward * half * 0.55)
+			_frustum_in("PylonTalus%d_%d" % [axis * 4 + (1 if outward > 0.0
+				else 0), t], skirts,
+				center, Vector2(half * 2.0, half * 2.0),
+				Vector2(half * 0.7, half * 0.7), height, Vector2.ZERO,
+				lit if t % 2 == 0 else shade)
+		# Deux strates horizontales par face, aux tiers de la paroi.
+		for s: int in range(2):
+			var band_y: float = 2.0 + 16.0 * (0.33 + 0.30 * float(s))
+			var length: float = (hi - lo) * rng.randf_range(0.55, 0.8)
+			var mid: float = lerpf(lo, hi, rng.randf_range(0.3, 0.7))
+			var thickness: float = rng.randf_range(0.9, 1.5)
+			var base_c: Vector3
+			var base_size: Vector2
+			if axis == 0:
+				base_c = Vector3(fixed + outward * 0.7, band_y, mid)
+				base_size = Vector2(1.8, length)
+			else:
+				base_c = Vector3(mid, band_y, fixed + outward * 0.7)
+				base_size = Vector2(length, 1.8)
+			_frustum_in("PylonStrata%d_%d" % [axis * 4 + (1 if outward > 0.0
+				else 0), s], skirts, base_c, base_size,
+				base_size * 0.78, thickness, Vector2(0.4, -0.3),
+				lit if s == 0 else shade)
 
 
 func _build_forest() -> void:
@@ -3207,6 +3272,80 @@ func _build_ford_banks() -> void:
 				Vector3(corner.x + rng.randf_range(-1.4, 1.4), 2.0,
 					corner.y + rng.randf_range(-1.4, 1.4)),
 				rng.randf_range(0.0, TAU), rng.randf_range(1.2, 2.2))
+
+
+## FINITION MONDE (lot 3) — la rivière habitée sur toute sa longueur.
+## Le sprint T3 n'avait habillé que le gué ouest : ailleurs, 480 m d'eau
+## bordés de rien. Roseaux en MULTIMESH (trois espèces, un draw call
+## chacune — ~360 instances posées en grappes irrégulières §7.4), pierres
+## de berge individuelles clairsemées. Fenêtres épargnées : les deux gués
+## (x 9..31 et 84..106), le site de l'Arche de pierre et de l'aqueduc
+## (x −28..0). Décor pur, aucune collision, lignes de berge plates y = 2.
+func _build_river_banks_full() -> void:
+	var banks: Node3D = Node3D.new()
+	banks.name = "RiverBanksFull"
+	add_child(banks)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 20260817
+	var reed_kinds: Array[StringName] = [&"Grass_Wispy_Tall",
+		&"Grass_Common_Tall", &"Plant_1"]
+	# Grappes candidates le long des deux lignes de berge.
+	var clusters: Array[Vector3] = []   # x, z, taille de grappe
+	for line: float in [17.2, 2.8]:
+		var x: float = -238.0
+		while x < 248.0:
+			x += rng.randf_range(7.0, 15.0)
+			if (x > 9.0 and x < 31.0) or (x > 84.0 and x < 106.0) \
+					or (x > -28.0 and x < 0.0):
+				continue
+			clusters.append(Vector3(x, line, float(rng.randi_range(3, 6))))
+	# Une MultiMesh par espèce : chaque grappe tire son espèce du hasard
+	# semé, les instances s'écartent de ±1,4 m autour du cœur de grappe.
+	var by_kind: Dictionary = {}
+	for kind: StringName in reed_kinds:
+		by_kind[kind] = []
+	for cluster: Vector3 in clusters:
+		var kind: StringName = reed_kinds[rng.randi_range(0,
+			reed_kinds.size() - 1)]
+		for i: int in range(int(cluster.z)):
+			(by_kind[kind] as Array).append(Vector3(
+				cluster.x + rng.randf_range(-1.4, 1.4), 2.0,
+				cluster.y + rng.randf_range(-1.1, 1.1)))
+	for kind: StringName in reed_kinds:
+		var spots: Array = by_kind[kind] as Array
+		if spots.is_empty():
+			continue
+		var mesh: Mesh = _kit_mesh(kind)
+		if mesh == null:
+			continue
+		var kit_factor: float = KitScale.factor(String(kind))
+		var mmi: MultiMeshInstance3D = MultiMeshInstance3D.new()
+		mmi.name = "Reeds%s" % String(kind)
+		var multimesh: MultiMesh = MultiMesh.new()
+		multimesh.transform_format = MultiMesh.TRANSFORM_3D
+		multimesh.mesh = mesh
+		multimesh.instance_count = spots.size()
+		for i: int in range(spots.size()):
+			var basis: Basis = Basis(Vector3.UP, rng.randf_range(0.0, TAU)) \
+				.scaled(Vector3.ONE * kit_factor * rng.randf_range(0.9, 1.6))
+			multimesh.set_instance_transform(i,
+				Transform3D(basis, spots[i] as Vector3))
+		mmi.multimesh = multimesh
+		banks.add_child(mmi)
+	# Pierres de berge individuelles, clairsemées (~1 tous les 25 m).
+	var stone_kinds: Array[StringName] = [&"Pebble_Round_2", &"Pebble_Round_4",
+		&"Pebble_Square_1", &"Rock_Medium_2"]
+	for line: float in [17.6, 2.4]:
+		var x: float = -235.0
+		while x < 245.0:
+			x += rng.randf_range(18.0, 34.0)
+			if (x > 9.0 and x < 31.0) or (x > 84.0 and x < 106.0) \
+					or (x > -28.0 and x < 0.0):
+				continue
+			_place_model(banks, stone_kinds[rng.randi_range(0,
+				stone_kinds.size() - 1)],
+				Vector3(x, 2.0, line + rng.randf_range(-0.9, 0.9)),
+				rng.randf_range(0.0, TAU), rng.randf_range(0.9, 1.8))
 
 
 ## Touffe d'herbe : trois quads croisés à 60°, effilés vers le haut, origine au
