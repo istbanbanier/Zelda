@@ -16,9 +16,13 @@ extends SceneTree
 
 const CLIP_LUMA: float = 0.86
 const CLIP_BLOCK_SHARE: float = 0.008
-## Sous cette saturation moyenne, un bloc clair est de la brume/du ciel du
-## côté chaud (mesuré 0.02-0.06), jamais une dalle rejetée (0.085-0.205).
-const HAZE_SATURATION_MAX: float = 0.07
+## Séparateur brume/dalle MESURÉ sur les deux classes : la brume d'horizon
+## est quasi neutre en chaleur (r−g ≤ 0.010, ex. (0.898,0.888,0.816)) quand
+## les dalles rejetées par le lead sont franchement chaudes (r−g ≥ 0.024,
+## ex. (0.925,0.901,0.840) à (0.965,0.873,0.759)). La saturation seule ne
+## sépare PAS (brume jusqu'à 0.082, dalle dès 0.085 — trop proche).
+const HAZE_WARMTH_MAX: float = 0.015
+const HAZE_SATURATION_MAX: float = 0.10
 const FLUO_GAP: float = 0.32
 const FLUO_SHARE: float = 0.015
 const BLOCK: int = 32
@@ -64,12 +68,11 @@ func _initialize() -> void:
 					count += 1
 			ground_pixels += count
 			# Un bloc majoritairement ciel ne compte ni au total ni en écrêtage.
-			# La BRUME du côté chaud du ciel échappe au test bleu-dominant
-			# (mesuré : brume (0.89, 0.89, 0.83), saturation 0.06 — les dalles
-			# rejetées par le lead font (0.93-0.98, r>g>b), saturation
-			# 0.085-0.205). Un bloc clair mais quasi neutre est du ciel/brume,
-			# pas une face écrêtée — vérifié : les cinq captures AVANT restent
-			# rouges avec cette exclusion.
+			# La BRUME du côté chaud du ciel échappe au test bleu-dominant par
+			# quelques millièmes : un bloc clair QUASI NEUTRE EN CHALEUR est du
+			# ciel/brume, pas une face écrêtée — vérifié : les cinq captures
+			# AVANT rouges le restent avec cette exclusion (le plafond de part
+			# de blocs n'a jamais bougé).
 			var avg: Color = sum_color
 			if count > 0:
 				avg = sum_color / float(count)
@@ -77,8 +80,9 @@ func _initialize() -> void:
 				total_blocks += 1
 				var saturation: float = maxf(avg.r, maxf(avg.g, avg.b)) \
 					- minf(avg.r, minf(avg.g, avg.b))
-				if sum_luma / float(count) > CLIP_LUMA \
-						and saturation > HAZE_SATURATION_MAX:
+				var haze: bool = avg.r - avg.g < HAZE_WARMTH_MAX \
+					and saturation < HAZE_SATURATION_MAX
+				if sum_luma / float(count) > CLIP_LUMA and not haze:
 					clipped_blocks += 1
 			bx += BLOCK
 		by += BLOCK
