@@ -32,6 +32,13 @@ const ROUTE_CLEAR_M: float = 2.3
 const FORD_CLEAR_M: float = 5.5
 const CHECKPOINT_CLEAR_M: float = 4.5
 const CAMERA_BLOCKER_CLEAR_M: float = 6.0
+## Un CORPS DE COLLISION près d'un gué casse la sonde physique à 8 directions
+## (mesuré : rocher à 7 m du gué est → marche de 1,98 m/m — ISS-032 : la
+## largeur utile n'est pas la largeur du tablier). Ce qui bloque s'écarte
+## BEAUCOUP plus loin des passages que ce qui se traverse.
+const FORD_BLOCKER_CLEAR_M: float = 12.0
+## Rayon conservateur du pire collider pour les marges de couloir.
+const BLOCKER_MAX_RADIUS_M: float = 1.5
 
 const GRASS_MAX_SLOPE_DEG: float = 38.0
 const TREE_MAX_SLOPE_DEG: float = 26.0
@@ -192,7 +199,7 @@ func _build_cell(parent: Node3D, cx: int, cz: int,
 		var density: float = float(profile.get("grass", 0.0))
 		if density <= 0.0 or rng.randf() > density * 2.0:
 			continue
-		if not _spot_allows(p, GRASS_MAX_SLOPE_DEG, false, ctx):
+		if not _spot_allows(p, GRASS_MAX_SLOPE_DEG, -1.0, ctx):
 			continue
 		var t: Transform3D = _ground_transform(p, rng, 0.85, 1.30, -0.05)
 		var tint: Color = _grass_tint(p, rng)
@@ -213,7 +220,7 @@ func _build_cell(parent: Node3D, cx: int, cz: int,
 			var d: float = _water_distance(p, ctx)
 			if d < 1.5 or d > 4.5:
 				continue
-			if not _spot_allows(p, GRASS_MAX_SLOPE_DEG, false, ctx):
+			if not _spot_allows(p, GRASS_MAX_SLOPE_DEG, -1.0, ctx):
 				continue
 			reeds.append(_ground_transform(p, rng, 0.9, 1.25, -0.06))
 
@@ -227,12 +234,12 @@ func _build_cell(parent: Node3D, cx: int, cz: int,
 			origin_z + rng.randf() * CELL_M)
 		if float(_profile_at(center).get("flowers", 0.0)) <= 0.0:
 			continue
-		if not _spot_allows(center, GRASS_MAX_SLOPE_DEG, false, ctx):
+		if not _spot_allows(center, GRASS_MAX_SLOPE_DEG, -1.0, ctx):
 			continue
 		for f: int in range(rng.randi_range(5, 12)):
 			var p: Vector2 = center + Vector2(rng.randf_range(-1.6, 1.6),
 				rng.randf_range(-1.6, 1.6))
-			if _spot_allows(p, GRASS_MAX_SLOPE_DEG, false, ctx):
+			if _spot_allows(p, GRASS_MAX_SLOPE_DEG, -1.0, ctx):
 				flowers.append(_ground_transform(p, rng, 0.8, 1.15, -0.03))
 
 	# 4. Arbres : bosquets dans le Bois, isolés ailleurs, morts dans la Marche.
@@ -264,9 +271,10 @@ func _build_cell(parent: Node3D, cx: int, cz: int,
 		var profile: Dictionary = _profile_at(p)
 		if float(profile.get("boulders", 0.0)) <= 0.0:
 			continue
-		if not _spot_allows(p, BOULDER_MAX_SLOPE_DEG, true, ctx):
-			continue
 		var big: bool = rng.randf() < 0.35
+		if not _spot_allows(p, BOULDER_MAX_SLOPE_DEG,
+				BLOCKER_MAX_RADIUS_M if big else -1.0, ctx):
+			continue
 		var model: StringName = (BOULDER_MODELS if big else PEBBLE_MODELS)[
 			rng.randi_range(0, 2)]
 		var scale: float = rng.randf_range(0.9, 1.7) if big else rng.randf_range(0.8, 1.4)
@@ -323,7 +331,7 @@ func _profile_at(p: Vector2) -> Dictionary:
 func _cell_context(origin_x: float, origin_z: float) -> Dictionary:
 	var rect: Rect2 = Rect2(origin_x, origin_z, float(CELL_M), float(CELL_M))
 	var routes: Array[Array] = []
-	var route_rect: Rect2 = rect.grow(ROUTE_CLEAR_M + 1.0)
+	var route_rect: Rect2 = rect.grow(ROUTE_CLEAR_M + BLOCKER_MAX_RADIUS_M + 1.0)
 	for segment: Array in _route_segments:
 		var a: Vector2 = segment[0] as Vector2
 		var b: Vector2 = segment[1] as Vector2
@@ -340,11 +348,11 @@ func _cell_context(origin_x: float, origin_z: float) -> Dictionary:
 			water.append(segment)
 	var fords: Array[Vector2] = []
 	for ford: Vector2 in _fords:
-		if rect.grow(FORD_CLEAR_M + 1.0).has_point(ford):
+		if rect.grow(FORD_BLOCKER_CLEAR_M + 1.0).has_point(ford):
 			fords.append(ford)
 	var checkpoints: Array[Vector2] = []
 	for checkpoint: Vector2 in _checkpoints:
-		if rect.grow(CHECKPOINT_CLEAR_M + 1.0).has_point(checkpoint):
+		if rect.grow(CHECKPOINT_CLEAR_M + BLOCKER_MAX_RADIUS_M + 1.0).has_point(checkpoint):
 			checkpoints.append(checkpoint)
 	var eyes: Array[Vector2] = []
 	for eye: Vector2 in _camera_eyes:
@@ -355,7 +363,10 @@ func _cell_context(origin_x: float, origin_z: float) -> Dictionary:
 
 
 ## Le point respecte les couloirs du contrat et le terrain.
-func _spot_allows(p: Vector2, max_slope_deg: float, is_blocker: bool,
+## `blocker_radius` < 0 : l'élément se traverse (herbe, fleur, caillou) ;
+## ≥ 0 : il PORTE UNE COLLISION de ce rayon — les couloirs s'élargissent
+## d'autant, et les gués s'écartent à FORD_BLOCKER_CLEAR_M.
+func _spot_allows(p: Vector2, max_slope_deg: float, blocker_radius: float,
 		ctx: Dictionary) -> bool:
 	if p.length() > PLAYABLE_LIMIT_M:
 		return false
@@ -363,18 +374,20 @@ func _spot_allows(p: Vector2, max_slope_deg: float, is_blocker: bool,
 		return false
 	if _heightmap.slope_deg_at(p.x, p.y) > max_slope_deg:
 		return false
+	var radius: float = maxf(blocker_radius, 0.0)
 	for segment: Array in ctx["routes"] as Array[Array]:
 		var closest: Vector2 = Geometry2D.get_closest_point_to_segment(
 			p, segment[0] as Vector2, segment[1] as Vector2)
-		if p.distance_to(closest) < ROUTE_CLEAR_M:
+		if p.distance_to(closest) < ROUTE_CLEAR_M + radius:
 			return false
+	var ford_clear: float = FORD_BLOCKER_CLEAR_M if blocker_radius >= 0.0 		else FORD_CLEAR_M
 	for ford: Vector2 in ctx["fords"] as Array[Vector2]:
-		if p.distance_to(ford) < FORD_CLEAR_M:
+		if p.distance_to(ford) < ford_clear:
 			return false
 	for checkpoint: Vector2 in ctx["checkpoints"] as Array[Vector2]:
-		if p.distance_to(checkpoint) < CHECKPOINT_CLEAR_M:
+		if p.distance_to(checkpoint) < CHECKPOINT_CLEAR_M + radius:
 			return false
-	if is_blocker:
+	if blocker_radius >= 0.0:
 		for eye: Vector2 in ctx["eyes"] as Array[Vector2]:
 			if p.distance_to(eye) < CAMERA_BLOCKER_CLEAR_M:
 				return false
@@ -390,7 +403,7 @@ func _try_tree(p: Vector2, rng: RandomNumberGenerator, trees: Dictionary,
 	var profile: Dictionary = _profile_at(p)
 	if float(profile.get("trees", 0.0)) <= 0.0:
 		return
-	if not _spot_allows(p, TREE_MAX_SLOPE_DEG, true, ctx):
+	if not _spot_allows(p, TREE_MAX_SLOPE_DEG, TRUNK_RADIUS_M * 1.4, ctx):
 		return
 	# L'espèce suit l'identité : morts dans la Marche, rivière au Val,
 	# bosquets mêlés au Bois, tordus sur les Hauteurs, isolés en prairie.
