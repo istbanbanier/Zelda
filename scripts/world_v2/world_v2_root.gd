@@ -68,6 +68,8 @@ func _ready() -> void:
 	var vegetation: WorldV2VegetationBuilder = WorldV2VegetationBuilder.new(
 		_heightmap, _terrain_builder, _layout)
 	vegetation.build($Vegetation as Node3D)
+	var atmosphere: WorldV2AtmosphereBuilder = WorldV2AtmosphereBuilder.new(_heightmap)
+	atmosphere.build($Lighting as Node3D)
 	var cameras: WorldV2CamerasBuilder = WorldV2CamerasBuilder.new(_heightmap)
 	cameras.build($CaptureCameras as Node3D)
 	var nav_regions: int = _load_navigation()
@@ -214,6 +216,14 @@ func activate_cam05() -> void:
 
 func activate_cam06() -> void:
 	activate_capture_camera("cam06_plateau_vallee")
+
+
+## Rend l'éclair visible pour une capture déterministe (l'événement cadencé
+## par timer ne tombe jamais au bon moment d'une capture headless).
+func storm_flash_on() -> void:
+	var bolt: MeshInstance3D = get_node_or_null("Lighting/StormBolt") as MeshInstance3D
+	if bolt != null:
+		bolt.visible = true
 
 
 func request_exit_to_menu() -> bool:

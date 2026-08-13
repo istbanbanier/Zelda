@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=7 format=3]
 
 ; World V2 — VALLÉE WHITEBOX (phase V2.1). Le sol temporaire de V2.0 a été
 ; remplacé par le monde réel : 64 chunks de relief continu, hydrologie,
@@ -13,14 +13,26 @@
 [ext_resource type="Script" path="res://scripts/world_v2/world_v2_root.gd" id="1_root"]
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2_player"]
 [ext_resource type="PackedScene" path="res://scenes/ui/GameplayShell.tscn" id="3_shell"]
+[ext_resource type="Shader" path="res://shaders/world_v2/SH_WorldV2Sky.gdshader" id="4_sky"]
+
+[sub_resource type="ShaderMaterial" id="SkyMaterial"]
+shader = ExtResource("4_sky")
+
+[sub_resource type="Sky" id="ValleySky"]
+sky_material = SubResource("SkyMaterial")
 
 [sub_resource type="Environment" id="ValleyEnvironment"]
-background_mode = 1
-background_color = Color(0.663, 0.831, 0.918, 1)
+background_mode = 2
+sky = SubResource("ValleySky")
 ambient_light_source = 2
 ambient_light_color = Color(0.76, 0.84, 0.92, 1)
 ambient_light_energy = 0.6
 tonemap_mode = 2
+fog_enabled = true
+fog_light_color = Color(0.62, 0.72, 0.78, 1)
+fog_density = 0.0012
+fog_sky_affect = 0.05
+fog_aerial_perspective = 0.25
 
 [node name="WorldV2" type="Node3D"]
 script = ExtResource("1_root")
