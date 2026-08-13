@@ -1,0 +1,17 @@
+# CONTRÔLES NÉGATIFS rejoués à a37ec16 (V2.2R.1) — A, B, C, D + E (nouveau filet des raccords d'eau)
+# Date : 2026-08-13T22:45:45Z ; injections temporaires jamais commitées, arbre restauré après chacune
+=== contrôle A (base a37ec16) ===
+=== RÉSULTAT: 5 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_landscape_contract.gd::test_chaque_chunk_porte_le_materiau_de_paysage — chaque chunk porte le matériau de paysage (1 écart(s)) — c3r3 : matériau de diagnostic, pas de paysage
+=== contrôle B (base a37ec16) ===
+=== RÉSULTAT: 5 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_landscape_contract.gd::test_la_vegetation_est_ancree_au_sol_et_hors_des_couloirs — ancrage et couloirs tenus (6004 écart(s) sur 8366 vérifiées) — veg_c7r0_grass[0] : 0.90 m du sol (fenêtre -1.5 à 0.6) ; veg_c7r0_grass[1] : 0.90 m du sol (fenêtre -1.5 à 0.6) ; veg_c8r0_grass[0] : 0.90 m du sol (fenêtre -1.5 à 0.6) ; veg_c8r0_grass[1] : 0.90 m du sol (fenêtre -1.5 à 0.6) ; veg_c6r1_grass[0] : 0.90 m du sol (fenêtre -1.5 à 0.6) ; veg_c6r1_grass[1] : 0.90 m du sol (fenêtre -1.5 à 0.6) ; … et 5998 autres
+=== contrôle C (base a37ec16) ===
+=== RÉSULTAT: 5 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_landscape_contract.gd::test_la_vegetation_est_cellulaire_et_presente_ou_le_masterplan_l_exige — cellules bornées et pleines (129 écart(s)) — veg_c4r0_grass : emprise 59 × 33 m (plafond 48) ; veg_c4r0_rock_Rock_Medium_1 : emprise 55 × 9 m (plafond 48) ; veg_c1r1_grass : emprise 51 × 28 m (plafond 48) ; veg_c2r1_grass : emprise 62 × 23 m (plafond 48) ; veg_c2r1_rock_Pebble_Round_4 : emprise 51 × 15 m (plafond 48) ; veg_c3r1_grass : emprise 59 × 54 m (plafond 48) ; … et 123 autres
+=== contrôle D (base a37ec16) ===
+=== RÉSULTAT: 5 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_landscape_contract.gd::test_les_six_cameras_v2_1_sont_gelees_par_litteraux — les six transforms V2.1 sont intactes — cam03_pylone_marche déplacée : (117.00, -14.00) au lieu de (112.00, -14.00)
+=== contrôle E (base a37ec16) ===
+=== RÉSULTAT: 0 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_water_junctions.gd::test_chaque_extremite_de_ruban_est_raccordee — chaque extrémité d'eau est raccordée, aucune marche (3 écart(s)) — MainCourseWater/départ : cap nu : 1.50 m au-dessus du sol, à 219.31 m du fil voisin ; TributaryWater/départ : cap nu : 1.50 m au-dessus du sol, à 118.75 m du fil voisin ; MainCourseWater : marche de surface de 3.28 m au quad 0

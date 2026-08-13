@@ -5,6 +5,41 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-13 (suite 9) — V2.2R.1 : familles A, B, F corrigées, prête pour revue — GO_V2_3=FALSE
+
+**Aucun verdict artistique auto-déclaré.** État technique prouvé :
+
+- **Code des captures : a37ec16** (bd90d7c = correctifs A/B/F,
+  a37ec16 = libellés de montage). Toutes les captures de
+  `evidence/world_v2/v2_2/captures_v22r1/` portent ce SHA,
+  `repo_dirty:false`.
+- **A frontières** : jupe d'enfouissement (base des crêtes/contreforts
+  plongée sous le terrain — chaque creux ouvrait une fente), pics
+  lointains en pierre chaude au bruit proportionné. Boîte de collision
+  V2.1 intacte.
+- **B orage** : une seule masse OPAQUE fusionnée colorée par sommet (plus
+  aucune transparence imbriquée), éclair élargi en quads croisés + halo
+  unique, nettement visible dans cam01 à exposition normale.
+- **F eau** : caps de source enfouis, confluence prolongée sous le cours
+  principal avec opacité de sommet qui s'efface, coudes arrondis (Chaikin),
+  pas 4 m + lissage ; et la CAUSE CACHÉE établie au diagnostic (magenta +
+  eau masquée) : la peinture d'HUMIDITÉ imitait l'eau — bandes resserrées,
+  atténuation en hauteur, teinte terre, spéculaire coupé. Filet NOUVEAU
+  rouge d'abord (4 écarts nommés sur 274f539) :
+  `test_world_v2_water_junctions.gd`.
+- **Validation** : suite world_v2 44/44 ; contrôles négatifs A-D + E
+  (nouveau filet, cap déterré → rouge) tous décisifs à a37ec16
+  (`controles/controles_v22r1_decisifs.log`) ; exposition cam01 0,0 % ;
+  `validate_fast` VERT RC=0 (889/0,
+  `validate_fast_v22r1_final.log`) ; les huit captures exigées inspectées
+  une à une à taille réelle + gros plan de jonction ; 5 montages A/B
+  274f539↔V2.2R.1.
+
+**Prochaine action exacte.** Attendre la revue visuelle Codex/Istvan sur
+`captures_v22r1/`. Ni donjon ni V2.3 (`GO_V2_3=FALSE`).
+
+---
+
 ## 2026-08-13 (suite 8) — V2.2R.1 EN COURS — NON VALIDÉE — GO_V2_3=FALSE
 
 **Verdict du lead sur 274f539** : PASS technique, **REJET au gate visuel
