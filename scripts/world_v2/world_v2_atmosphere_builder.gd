@@ -55,42 +55,66 @@ func _storm_cloud() -> Node3D:
 	cloud.position = CLOUD_CENTER
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = SEED
-	# PREMIÈRE PASSE MESURÉE À LA CAPTURE : six couches presque concentriques
-	# fusionnaient en SOUCOUPE lisse — exactement l'interdit. La masse se
-	# construit désormais en MEUTE de blobs dispersés : une base sombre
-	# large, des masses moyennes décalées, des têtes plus claires côté
-	# soleil — le contour se casse à chaque échelle.
-	# TROISIÈME PASSE : même dispersés, des sphères lisses restent des
-	# ellipses — famille soucoupe. Le contour se casse au niveau du MAILLAGE
-	# (déplacement radial bruité), et une frange basse enfonce le ventre
-	# vers l'horizon.
-	var blob_count: int = 15
+	# HISTORIQUE MESURÉ : passes 1-2 = soucoupes (couches concentriques puis
+	# sphères lisses) ; passe 3 = galette noire suspendue (verdict de la
+	# revue du lead — base horizontale, quasi-noir, aucune épaisseur).
+	# V2.2R : un CUMULONIMBUS — vraie ÉPAISSEUR VERTICALE (trois étages),
+	# dessous en LOBES irréguliers, têtes bourgeonnantes plus claires,
+	# jamais près-noir, et des COQUES translucides qui diffusent les bords
+	# dans l'atmosphère. Aucune longue base horizontale : les lobes bas
+	# descendent à des hauteurs différentes.
+	var blob_count: int = 22
 	for i: int in range(blob_count):
 		var tier: float = float(i) / float(blob_count - 1)
 		var blob: MeshInstance3D = MeshInstance3D.new()
 		blob.name = "CloudMass%d" % i
-		var radius: float = lerpf(42.0, 14.0, tier) * rng.randf_range(0.75, 1.2)
+		# Étages : lobes bas plus PETITS et sombres, corps moyen massif,
+		# têtes hautes bourgeonnantes.
+		var radius: float = (lerpf(14.0, 22.0, sin(tier * PI))
+			+ rng.randf_range(-3.0, 5.0))
 		var material: StandardMaterial3D = StandardMaterial3D.new()
-		# Bas sombre bleu-violet, têtes plus claires légèrement chaudes
-		# (bord solaire §9.2) — jamais de noir bouché.
-		var base_dark: Color = Color(0.175, 0.175, 0.225)
-		var top_light: Color = Color(0.42, 0.38, 0.42)
+		# Du gris-bleu orageux au gris chaud des crêtes — jamais de noir.
+		# La lumière vient de l'OUEST : seules les têtes CÔTÉ soleil
+		# s'éclairent — un clair uniforme lisait « boule pâle » (mesuré).
+		var base_dark: Color = Color(0.255, 0.265, 0.335)
+		var top_light: Color = Color(0.46, 0.43, 0.47)
+		var west_x: float = rng.randf_range(-30.0, 30.0) * (1.0 - tier * 0.4)
+		var sun_side: float = clampf(0.5 - west_x / 60.0, 0.0, 1.0)
 		material.albedo_color = base_dark.lerp(top_light,
-			tier * rng.randf_range(0.75, 1.0))
+			tier * (0.25 + 0.75 * sun_side) * rng.randf_range(0.8, 1.0))
 		material.roughness = 1.0
 		material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		# La brume délavait la couronne en crêpe rose pâle (mesuré) : l'orage
-		# est l'accent SOMBRE de sa zone — il perce le voile atmosphérique.
 		material.set_flag(BaseMaterial3D.FLAG_DISABLE_FOG, true)
-		blob.mesh = _blob_mesh(radius, rng.randf_range(0.18, 0.32),
-			rng.randi(), material)
-		blob.position = Vector3(rng.randf_range(-40.0, 40.0),
-			lerpf(-14.0, 14.0, tier) + rng.randf_range(-3.0, 3.0),
-			rng.randf_range(-26.0, 26.0))
-		blob.scale = Vector3(rng.randf_range(0.7, 1.35), 1.0,
-			rng.randf_range(0.6, 1.2))
+		var flatten: float = lerpf(0.55, 0.8, rng.randf())
+		blob.mesh = _blob_mesh(radius, flatten, rng.randi(), material)
+		# Volume VERTICAL : -20 (lobes pendants) à +26 (têtes), resserré en
+		# plan — une tour d'orage, pas une assiette.
+		blob.position = Vector3(west_x,
+			lerpf(-20.0, 26.0, tier) + rng.randf_range(-4.0, 4.0),
+			rng.randf_range(-22.0, 22.0) * (1.0 - tier * 0.4))
+		blob.scale = Vector3(rng.randf_range(0.85, 1.15), 1.0,
+			rng.randf_range(0.8, 1.1))
 		blob.rotation.y = rng.randf() * TAU
 		cloud.add_child(blob)
+		# Coque diffuse : seulement sur les lobes BAS (le ventre fond dans
+		# l'atmosphère) — sur les têtes, elle délavait tout en boule pâle.
+		if tier > 0.55:
+			continue
+		var shell: MeshInstance3D = MeshInstance3D.new()
+		shell.name = "CloudShell%d" % i
+		var shell_material: StandardMaterial3D = StandardMaterial3D.new()
+		# Coque au TON de sa masse (à peine plus claire) : une coque blanche
+		# délavait la cellule en chou-fleur lilas (mesuré cam01).
+		shell_material.albedo_color = Color(material.albedo_color.r * 1.02,
+			material.albedo_color.g * 1.02, material.albedo_color.b * 1.05, 0.16)
+		shell_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		shell_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		shell_material.cull_mode = BaseMaterial3D.CULL_BACK
+		shell.mesh = _blob_mesh(radius * 1.3, flatten, rng.randi(), shell_material)
+		shell.position = blob.position
+		shell.scale = blob.scale
+		shell.rotation.y = blob.rotation.y
+		cloud.add_child(shell)
 	return cloud
 
 
@@ -144,7 +168,7 @@ func _lightning_bolt() -> MeshInstance3D:
 		if i < segments:
 			point += Vector3(rng.randf_range(-3.5, 3.5), 0.0,
 				rng.randf_range(-3.5, 3.5))
-		var side: Vector3 = Vector3(0.35, 0.0, 0.35)
+		var side: Vector3 = Vector3(0.55, 0.0, 0.55)
 		st.add_vertex(previous - side)
 		st.add_vertex(previous + side)
 		st.add_vertex(point + side)
@@ -158,7 +182,7 @@ func _lightning_bolt() -> MeshInstance3D:
 	material.albedo_color = Color(0.95, 1.0, 1.0)
 	material.emission_enabled = true
 	material.emission = Color(0.55, 0.9, 0.95)
-	material.emission_energy_multiplier = 2.0
+	material.emission_energy_multiplier = 3.5
 	material.cull_mode = BaseMaterial3D.CULL_DISABLED
 	material.set_flag(BaseMaterial3D.FLAG_DISABLE_FOG, true)
 	mesh.surface_set_material(0, material)

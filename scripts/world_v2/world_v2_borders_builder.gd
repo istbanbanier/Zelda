@@ -50,8 +50,18 @@ func build(parent: Node3D) -> void:
 		# collision, jamais le maillage).
 		var visual: MeshInstance3D = MeshInstance3D.new()
 		visual.name = "GuardMesh"
-		visual.mesh = _ridge_mesh(crest, i)
+		visual.mesh = _ridge_mesh(crest, i, 1.0, Color(0.355, 0.31, 0.29))
 		guard.add_child(visual)
+		# Contrefort SUPERPOSÉ : une seconde masse décalée, plus basse et
+		# plus sombre — « masses rocheuses superposées, variations de
+		# profondeur » (V2.2R famille A). Visuel pur, aucune collision.
+		var buttress: MeshInstance3D = MeshInstance3D.new()
+		buttress.name = "GuardButtress"
+		buttress.mesh = _ridge_mesh(crest * 0.72, i + 100, 0.8,
+			Color(0.30, 0.265, 0.255))
+		buttress.position = Vector3(-4.5 if (i % 2 == 0) else 4.5,
+			-crest * 0.16, 11.0 if (i % 3 == 0) else -9.0)
+		guard.add_child(buttress)
 		var shape: BoxShape3D = BoxShape3D.new()
 		# La boîte V2.1 EXACTE — la fermeture physique ne bouge pas d'un mètre.
 		shape.size = Vector3(GUARD_THICKNESS, crest, GUARD_LENGTH)
@@ -69,7 +79,7 @@ func build(parent: Node3D) -> void:
 	# Bleu-gris clair : les pics lointains s'enfoncent dans la brume (§9.4 :
 	# montagnes éclaircies, refroidies, simplifiées).
 	var far_material: StandardMaterial3D = StandardMaterial3D.new()
-	far_material.albedo_color = Color(0.40, 0.45, 0.53)
+	far_material.albedo_color = Color(0.35, 0.39, 0.46)
 	far_material.roughness = 1.0
 	far_material.metallic_specular = 0.05
 	for i: int in range(FAR_SILHOUETTES):
@@ -78,50 +88,100 @@ func build(parent: Node3D) -> void:
 		var z: float = sin(azimuth) * FAR_RADIUS
 		var peak: MeshInstance3D = MeshInstance3D.new()
 		peak.name = "FarPeak%02d" % i
-		var cone: CylinderMesh = CylinderMesh.new()
-		cone.top_radius = 2.0
-		cone.bottom_radius = 34.0 + 10.0 * sin(azimuth * 5.0 + 0.7)
-		cone.height = 62.0 + 16.0 * sin(azimuth * 3.0 + 2.1)
-		cone.material = far_material
-		peak.mesh = cone
-		peak.position = Vector3(x, cone.height * 0.5 + 18.0, z)
+		var bottom_r: float = 34.0 + 10.0 * sin(azimuth * 5.0 + 0.7)
+		var height: float = 62.0 + 16.0 * sin(azimuth * 3.0 + 2.1)
+		peak.mesh = _peak_mesh(bottom_r, height, i, far_material)
+		peak.position = Vector3(x, height * 0.5 + 18.0, z)
 		far.add_child(peak)
+
+
+## Pic lointain déchiqueté : un cône déplacé au bruit — une silhouette de
+## montagne, pas un cône de céramique (V2.2R famille A).
+func _peak_mesh(bottom_r: float, height: float, peak_seed: int,
+		material: Material) -> ArrayMesh:
+	var cone: CylinderMesh = CylinderMesh.new()
+	cone.top_radius = 1.5
+	cone.bottom_radius = bottom_r
+	cone.height = height
+	cone.radial_segments = 14
+	cone.rings = 5
+	var arrays: Array = cone.get_mesh_arrays()
+	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var noise: FastNoiseLite = FastNoiseLite.new()
+	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	noise.frequency = 0.06
+	noise.seed = 20260813 + peak_seed * 31
+	for i: int in range(vertices.size()):
+		var v: Vector3 = vertices[i]
+		var radial: Vector2 = Vector2(v.x, v.z)
+		if radial.length() > 0.5:
+			var bump: float = noise.get_noise_2d(atan2(v.z, v.x) * 20.0, v.y)
+			radial *= 1.0 + bump * 0.5
+			v = Vector3(radial.x, v.y + bump * height * 0.06, radial.y)
+		vertices[i] = v
+	arrays[Mesh.ARRAY_VERTEX] = vertices
+	var mesh: ArrayMesh = ArrayMesh.new()
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	mesh.surface_set_material(0, material)
+	return mesh
 
 
 ## Crête de montagne : une boîte subdivisée PINCÉE vers le sommet et
 ## déchiquetée au bruit à graine fixe — l'enroulement vient de BoxMesh, il
 ## n'est jamais réécrit à la main (leçon V2.1 : l'enroulement se prouve à
-## la capture). Base élargie en talus, sommet mince et irrégulier.
-func _ridge_mesh(crest: float, ridge_seed: int) -> ArrayMesh:
+## la capture).
+##
+## V2.2R famille A (revue du lead : « grandes faces rectangulaires unies,
+## lamelles de ciel ») : le bruit touche désormais TOUTES les faces (les
+## flancs restaient des plans), les bouts s'effilent et plongent (aucun
+## chant rectangulaire ne coupe le voisin), le recouvrement s'élargit
+## au-delà de la boîte de collision (visuel pur), et la matière porte des
+## STRATES + un mottling en couleurs de sommet — plus aucune face unie.
+func _ridge_mesh(crest: float, ridge_seed: int, width_scale: float,
+		base_tone: Color) -> ArrayMesh:
 	var box: BoxMesh = BoxMesh.new()
-	box.size = Vector3(GUARD_THICKNESS, crest, GUARD_LENGTH)
-	box.subdivide_width = 2
-	box.subdivide_height = 4
-	box.subdivide_depth = 12
+	# +16 %% de longueur VISUELLE : les crêtes voisines s'interpénètrent.
+	box.size = Vector3(GUARD_THICKNESS, crest, GUARD_LENGTH * 1.16)
+	box.subdivide_width = 3
+	box.subdivide_height = 5
+	box.subdivide_depth = 16
 	var arrays: Array = box.get_mesh_arrays()
 	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var colors: PackedColorArray = PackedColorArray()
+	colors.resize(vertices.size())
 	var noise: FastNoiseLite = FastNoiseLite.new()
 	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
 	noise.frequency = 0.055
 	noise.seed = 20260813 + ridge_seed
 	var half_h: float = crest * 0.5
+	var half_l: float = box.size.z * 0.5
 	for i: int in range(vertices.size()):
 		var v: Vector3 = vertices[i]
 		var t: float = clampf((v.y + half_h) / crest, 0.0, 1.0)
-		# Talus large à la base, arête mince au sommet.
-		v.x *= lerpf(2.6, 0.18, t)
-		# Crête déchiquetée : pics et cols le long du segment.
-		v.y += noise.get_noise_2d(v.z, 13.7) * crest * 0.30 * t
-		v.x += noise.get_noise_2d(v.z * 0.7, 41.2) * 3.0 * t
+		# Bouts effilés et plongeants : le chant ne coupe jamais le voisin.
+		var end: float = smoothstep(0.62, 1.0, absf(v.z) / half_l)
+		v.x *= lerpf(2.6, 0.22, t) * width_scale * (1.0 - 0.55 * end)
+		v.y -= end * crest * 0.30
+		# Le bruit vit sur TOUTES les faces, pas seulement la crête.
+		v.y += noise.get_noise_2d(v.z, 13.7) * crest * 0.30 * (0.25 + 0.75 * t)
+		v.x += noise.get_noise_2d(v.z * 0.7, 41.2) * 3.0 * (0.45 + 0.55 * t)
+		v.z += noise.get_noise_2d(v.x * 1.3, 77.9) * 2.2
 		vertices[i] = v
+		# Matière : strates horizontales larges + mottling — arête un peu
+		# plus chaude, creux plus froids (§6.3), jamais un aplat.
+		var strata: float = sin((v.y + half_h) * 0.55
+			+ noise.get_noise_2d(v.z * 0.4, 5.0) * 2.0) * 0.5 + 0.5
+		var mottle: float = noise.get_noise_2d(v.z * 1.8, v.y * 1.8) * 0.5 + 0.5
+		var shade: float = 0.82 + strata * 0.22 + (mottle - 0.5) * 0.18
+		colors[i] = Color(base_tone.r * shade * (1.0 + t * 0.10),
+			base_tone.g * shade, base_tone.b * shade * (1.0 - t * 0.06))
 	arrays[Mesh.ARRAY_VERTEX] = vertices
+	arrays[Mesh.ARRAY_COLOR] = colors
 	var mesh: ArrayMesh = ArrayMesh.new()
 	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
 	var material: StandardMaterial3D = StandardMaterial3D.new()
-	# Roche d'anneau : ocre éteint tirant froid — l'identité r11, pas un
-	# gris neutre (§1.6 : les matériaux gris génériques sont interdits).
-	# V2.2R : reflet solaire coupé — les faces au soleil ÉCRÊTAIENT (mesuré).
-	material.albedo_color = Color(0.355, 0.31, 0.29)
+	material.vertex_color_use_as_albedo = true
+	material.albedo_color = Color.WHITE
 	material.roughness = 1.0
 	material.metallic_specular = 0.05
 	mesh.surface_set_material(0, material)
