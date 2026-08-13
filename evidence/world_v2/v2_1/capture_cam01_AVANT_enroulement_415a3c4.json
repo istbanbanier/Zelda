@@ -1,0 +1,18 @@
+{
+  "commit": "415a3c4f1e6e0afb449c412a2bf4e64d4610bd18",
+  "display_server": "X11",
+  "distinct_colors_sampled": 151,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 30,
+  "height": 720,
+  "label": "v2_1_cam01_spawn_vista",
+  "luma_mean": 0.2683,
+  "luma_stddev": 0.0513,
+  "png": "evidence/world_v2/v2_1/capture_cam01_spawn_vista.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "timestamp_utc": "2026-08-13 02:21:51",
+  "width": 1280
+}

@@ -1,0 +1,18 @@
+{
+  "commit": "487f9d68880b723b6f52ef923173e1923a2d05e1",
+  "display_server": "X11",
+  "distinct_colors_sampled": 995,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 30,
+  "height": 720,
+  "label": "v2_1_cam03_pylone_marche",
+  "luma_mean": 0.4457,
+  "luma_stddev": 0.159,
+  "png": "evidence/world_v2/v2_1/capture_cam03_pylone_marche.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "timestamp_utc": "2026-08-13 02:27:32",
+  "width": 1280
+}

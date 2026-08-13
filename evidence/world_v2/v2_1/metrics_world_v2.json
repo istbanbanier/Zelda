@@ -1,0 +1,407 @@
+{
+ "commit": "487f9d68880b723b6f52ef923173e1923a2d05e1",
+ "date_utc": "2026-08-13T02:36:03Z",
+ "ancres": {
+  "camp": {
+   "collider": "c4r5",
+   "contractuel": [
+    45.0,
+    6.0,
+    65.0
+   ],
+   "hauteur_fonction": 6.0,
+   "pente_deg": 0.0,
+   "sol_physique_y": 6.0
+  },
+  "porte_du_donjon": {
+   "collider": "c3r0",
+   "contractuel": [
+    0.0,
+    34.0,
+    -210.0
+   ],
+   "hauteur_fonction": 34.0,
+   "pente_deg": 0.0,
+   "sol_physique_y": 34.0
+  },
+  "pylone": {
+   "collider": "c5r3",
+   "contractuel": [
+    115.0,
+    18.0,
+    -25.0
+   ],
+   "hauteur_fonction": 18.0,
+   "pente_deg": 0.0,
+   "sol_physique_y": 18.0
+  },
+  "spawn": {
+   "collider": "c3r6",
+   "contractuel": [
+    0.0,
+    24.0,
+    170.0
+   ],
+   "hauteur_fonction": 24.0,
+   "pente_deg": 0.0,
+   "sol_physique_y": 24.0
+  }
+ },
+ "carte_valide": true,
+ "gues": [
+  {
+   "profondeur_m": 0.35,
+   "xz": [
+    96.0,
+    16.0
+   ]
+  },
+  {
+   "profondeur_m": 0.35,
+   "xz": [
+    -4.0,
+    12.0
+   ]
+  },
+  {
+   "profondeur_m": 0.3,
+   "xz": [
+    -96.0,
+    22.0
+   ]
+  }
+ ],
+ "lieux": {
+  "cameras": 6,
+  "checkpoints": 2,
+  "gardes_frontiere": 36,
+  "grottes": 5,
+  "manifeste_pois": [
+   {
+    "id": "valley.poi.riverside_village.01",
+    "xyz": [
+     -96.0,
+     1.69,
+     30.0
+    ]
+   },
+   {
+    "id": "valley.poi.logging_hamlet.01",
+    "xyz": [
+     118.0,
+     8.0,
+     96.0
+    ]
+   },
+   {
+    "id": "valley.poi.mining_post.01",
+    "xyz": [
+     -112.0,
+     5.0,
+     58.0
+    ]
+   },
+   {
+    "id": "valley.poi.watchtower_ruin.01",
+    "xyz": [
+     -160.0,
+     26.0,
+     40.0
+    ]
+   },
+   {
+    "id": "valley.poi.ancient_aqueduct.01",
+    "xyz": [
+     -14.0,
+     4.0,
+     -32.0
+    ]
+   },
+   {
+    "id": "valley.poi.abandoned_farm.01",
+    "xyz": [
+     -52.0,
+     5.0,
+     92.0
+    ]
+   },
+   {
+    "id": "valley.poi.storm_caravan.01",
+    "xyz": [
+     -6.0,
+     6.0,
+     -108.0
+    ]
+   },
+   {
+    "id": "valley.poi.ruined_observatory.01",
+    "xyz": [
+     128.0,
+     12.0,
+     132.0
+    ]
+   },
+   {
+    "id": "valley.poi.barrow_cemetery.01",
+    "xyz": [
+     56.0,
+     4.0,
+     -64.0
+    ]
+   },
+   {
+    "id": "valley.poi.old_rampart.01",
+    "xyz": [
+     -120.0,
+     12.0,
+     -128.0
+    ]
+   },
+   {
+    "id": "valley.poi.forest_shrine.01",
+    "xyz": [
+     86.0,
+     7.0,
+     74.0
+    ]
+   },
+   {
+    "id": "valley.poi.waterfall_cave.01",
+    "xyz": [
+     -110.0,
+     3.0,
+     6.0
+    ]
+   },
+   {
+    "id": "valley.poi.abandoned_mine.01",
+    "xyz": [
+     150.0,
+     20.0,
+     -44.0
+    ]
+   },
+   {
+    "id": "valley.poi.hollow_crypt.01",
+    "xyz": [
+     -6.0,
+     6.0,
+     -66.0
+    ]
+   },
+   {
+    "id": "valley.poi.hidden_passage.01",
+    "xyz": [
+     -158.0,
+     6.0,
+     148.0
+    ]
+   },
+   {
+    "id": "valley.poi.crystal_hollow.01",
+    "xyz": [
+     -158.0,
+     8.0,
+     -152.0
+    ]
+   },
+   {
+    "id": "valley.poi.ancient_tree.01",
+    "xyz": [
+     -72.0,
+     5.0,
+     -84.0
+    ]
+   },
+   {
+    "id": "valley.poi.turquoise_spring.01",
+    "xyz": [
+     -136.0,
+     12.0,
+     40.0
+    ]
+   },
+   {
+    "id": "valley.poi.flower_field.01",
+    "xyz": [
+     -56.0,
+     5.0,
+     124.0
+    ]
+   },
+   {
+    "id": "valley.poi.stone_bridge.01",
+    "xyz": [
+     -10.0,
+     0.72,
+     22.0
+    ]
+   },
+   {
+    "id": "valley.poi.overlook_summit.01",
+    "xyz": [
+     168.0,
+     22.0,
+     52.0
+    ]
+   },
+   {
+    "id": "valley.poi.veil_falls.01",
+    "xyz": [
+     196.0,
+     15.0,
+     20.0
+    ]
+   },
+   {
+    "id": "valley.poi.watchers_circle.01",
+    "xyz": [
+     -118.0,
+     6.0,
+     -44.0
+    ]
+   },
+   {
+    "id": "valley.poi.wind_gorge.01",
+    "xyz": [
+     96.0,
+     12.0,
+     -88.0
+    ]
+   },
+   {
+    "id": "valley.poi.storm_grove.01",
+    "xyz": [
+     -34.0,
+     2.44,
+     -146.0
+    ]
+   },
+   {
+    "id": "valley.poi.thunderstruck_tree.01",
+    "xyz": [
+     -92.0,
+     8.0,
+     132.0
+    ]
+   },
+   {
+    "id": "valley.poi.ember_raider_camps.01",
+    "xyz": [
+     96.0,
+     6.0,
+     120.0
+    ]
+   },
+   {
+    "id": "valley.poi.azure_patrol_run.01",
+    "xyz": [
+     64.0,
+     4.0,
+     -110.0
+    ]
+   },
+   {
+    "id": "valley.poi.obsidian_bastion.01",
+    "xyz": [
+     -150.0,
+     10.0,
+     -96.0
+    ]
+   },
+   {
+    "id": "valley.poi.colossus_lair.01",
+    "xyz": [
+     150.0,
+     8.0,
+     -152.0
+    ]
+   },
+   {
+    "id": "valley.poi.hunter_range.01",
+    "xyz": [
+     156.0,
+     8.0,
+     152.0
+    ]
+   }
+  ],
+  "pois": 31,
+  "sites_systemiques": 3
+ },
+ "monde": "neris_v2",
+ "montage_ms": 5534,
+ "navigation": {
+  "chemins_ancres": {
+   "camp_pylone": {
+    "ecart_arrivee_m": 0.01,
+    "longueur_m": 137.3,
+    "points": 40
+   },
+   "pylone_porte": {
+    "ecart_arrivee_m": 0.75,
+    "longueur_m": 255.9,
+    "points": 45
+   },
+   "spawn_camp": {
+    "ecart_arrivee_m": 0.0,
+    "longueur_m": 120.8,
+    "points": 26
+   },
+   "spawn_porte": {
+    "ecart_arrivee_m": 0.75,
+    "longueur_m": 397.9,
+    "points": 63
+   }
+  },
+  "quadrants": {
+   "q0": 2758,
+   "q1": 2416,
+   "q2": 2953,
+   "q3": 3192
+  }
+ },
+ "routes": {
+  "heights_route": {
+   "jalons": 18,
+   "longueur_m": 563.2,
+   "pire_marche_en": [
+    150.842102050781,
+    58.1052627563477
+   ],
+   "pire_marche_m_par_m": 0.82
+  },
+  "main_path": {
+   "jalons": 17,
+   "longueur_m": 497.6,
+   "pire_marche_en": [
+    102.23999786377,
+    4.5600004196167
+   ],
+   "pire_marche_m_par_m": 1.04
+  },
+  "river_route": {
+   "jalons": 18,
+   "longueur_m": 473.5,
+   "pire_marche_en": [
+    -22.0,
+    -58.0
+   ],
+   "pire_marche_m_par_m": 1.4
+  },
+  "ruins_route": {
+   "jalons": 10,
+   "longueur_m": 263.2,
+   "pire_marche_en": [
+    5.33333206176758,
+    20.0
+   ],
+   "pire_marche_m_par_m": 0.89
+  }
+ },
+ "terrain": {
+  "chunks": 64,
+  "echantillons": 4796,
+  "plat_sous_1_deg_pct": 13.0
+ }
+}

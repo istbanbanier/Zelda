@@ -5,6 +5,50 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-13 — World V2, phase V2.1 : la vallée whitebox se MARCHE
+
+**Branche** : `claude/world-v2-reconstruction` (base de phase `0da6c8d`).
+**Statut du jalon : Validé pour la vérité spatiale** — 33/33 tests V2.1
+verts sur l'état final, revue contradictoire à contexte frais **PASS**
+(réserves non bloquantes toutes traitées, détail :
+`evidence/world_v2/v2_1/revue_contradictoire.md`). SCHEMA_VERSION toujours 4,
+V1 intacte byte-pour-byte, V2.2 NON commencée.
+
+Livré : 64 chunks issus d'UNE fonction de hauteur déterministe (coutures
+identiques échantillon par échantillon), hydrologie creusée (source, S,
+affluent, lac, 3 gués praticables ISS-032, tablier de pont whitebox), 31 POI
++ 3 sites + 5 grottes + checkpoints + accès donjon en marqueurs à
+identifiants exacts, limites fermées sur 72 azimuts (gardes `unclimbable`
+visibles), navigation cuite en 4 quadrants versionnés
+(`resources/world_v2/nav/`), six fenêtres de composition capturées et
+INSPECTÉES. Le VRAI joueur (InputIntent, zéro téléportation après le spawn)
+marche les quatre routes jusqu'au seuil de la porte du donjon — garanties
+mesurées à chaque tick physique. Trois contrôles négatifs archivés (rouge
+NOMMÉ puis vert).
+
+**L'inspection des captures a mordu** : l'enroulement du maillage de terrain
+rendait le DESSOUS du monde (note ISS-018 d'origine fausse, affirmée sans
+capture) — corrigé en `487f9d6`, pièce avant/après conservée dans
+`evidence/world_v2/v2_1/`.
+
+**Trouvailles d'ingénierie à retenir** (mesurées, détail dans le README des
+preuves) : `NavigationMesh.agent_max_slope` est en DEGRÉS — **le bake V1
+(`tools/godot/bake_valley_navmesh.gd`) porte le même défaut latent** : son
+navmesh ne pave que le quasi-plat et les ennemis V1 retombent en pilotage
+direct sans le dire ; les itérations asynchrones de carte de navigation ne se
+terminent JAMAIS en headless `--script` (V1 affectée pareillement) ; les
+coutures de quadrants de bake divergent de ~1,3 m (marge de connexion 2 m).
+
+**Prochaine action exacte.** Deux candidates, dans l'ordre de valeur :
+1. consigner le défaut latent du bake V1 dans `docs/KNOWN_ISSUES.md` et
+   décider s'il faut re-cuire le navmesh V1 (session V1 dédiée — hors
+   périmètre V2.1, NON exécuté) ;
+2. V2.2 — donjon V2 : nouvelle enveloppe spatiale de la Citadelle sur la
+   logique V1 conservée, selon `docs/WORLD_V2_MASTERPLAN.md` (NON commencée —
+   décision du propriétaire).
+
+---
+
 ## 2026-08-12 (soir) — World V2, phase V2.0 : architecture, contrats, carte directrice, squelette
 
 **Branche livrée** : `claude/world-v2-reconstruction`, créée depuis la base
