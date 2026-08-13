@@ -5,6 +5,40 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-13 (suite 8) — V2.2R.1 EN COURS — NON VALIDÉE — GO_V2_3=FALSE
+
+**Verdict du lead sur 274f539** : PASS technique, **REJET au gate visuel
+Codex**. Les familles C (lumière), D (végétation) et E (routes) sont
+ACCEPTÉES et GELÉES. Périmètre exclusif de V2.2R.1 : A (frontières),
+B (orage), F (eau). Historique additif seulement.
+
+**Contradictions visuelles nommées** :
+- A (region_r06/r07/r11) : plaques rocheuses suspendues ou superposées,
+  dessous sombres et fentes entre couches, masses flottant devant la paroi,
+  pics blancs encore assimilables à des cônes. Exigé : chaque volume ancré
+  dans la paroi ou sous le terrain, aucun dessous/backface/trou/plaque
+  flottante visible depuis la zone jouable, masse cohérente à contreforts —
+  sans brume, sans recadrage, sans toucher physique/hauteurs/navigation.
+- B (region_r10) : boule polyédrique translucide, intersections des coques
+  lisibles. Exigé : masse cohérente sans transparences imbriquées (surface
+  combinée ou opaque/dithered), silhouette verticale (base sombre
+  irrégulière, corps dense, tours), éclair nettement visible dans cam01 à
+  exposition normale.
+- F (region_r03) : rubans terminés brutalement, raccords incomplets,
+  morceau isolé au premier plan. Exigé : chaque extrémité raccordée
+  (segment, source contractuelle, lac ou sortie légitime), zéro cap plat /
+  trou / chevauchement / T-junction visible / morceau isolé, mitres
+  propres, continuité largeur/hauteur/normales/UV — hydrologie physique,
+  gués, profondeurs, collisions et parcours V2.1 EXACTEMENT préservés.
+  Contrôle fail-first NOUVEAU exigé, capable d'échouer sur la géométrie
+  de 274f539 (les raccordements réels, pas les quads dégénérés).
+
+**Prochaine action exacte.** Inspecter les cinq captures rejetées à taille
+réelle, puis famille F d'abord : filet de raccordement ROUGE sur 274f539,
+correction du ruban, recapture même cadrage.
+
+---
+
 ## 2026-08-13 (suite 7) — V2.2R : passe corrective TERMINÉE, preuves complètes — prête pour revue visuelle
 
 **Aucun verdict artistique n'est déclaré ici** : le gate visuel appartient à
