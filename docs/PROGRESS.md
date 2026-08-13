@@ -5,6 +5,27 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-13 (suite 10) — V2.2R.2 EN COURS — NON VALIDÉE — CORRECTION UNIQUE DE LA CONFLUENCE
+
+**Verdict du lead sur 985d7ea** : PASS technique ; PASS visuel DÉFINITIF
+pour A (frontières) et B (orage) ; **F encore bloquante sur UNE jonction**
+— la confluence affluent→cours principal du `gros_plan_jonction_eau.png` :
+deux nappes superposées, pli sombre, rupture de hauteur/normale, deux
+pointes triangulaires, transition non continue. A, B, C, D, E GELÉES.
+
+**Exigence** : une VRAIE jonction topologique (surface commune triangulée,
+sommets réellement soudés, zéro bord intérieur/chevauchement/trou/
+T-junction/z-fighting, hauteur continue ≤ 5 cm, normales/tangentes
+recalculées, UV/courant continus, pointes arrondies) — lit, berges,
+profondeur, gués, collisions, hydrologie et navigation contractuels
+EXACTEMENT préservés ; jamais de masquage par décor ni de recadrage.
+Filet F2 NOUVEAU, ROUGE sur a37ec16, sans toucher au contrôle E.
+
+**Prochaine action exacte.** Sonder la géométrie actuelle de la jonction
+(normales, bords libres, recouvrement), écrire F2 rouge, puis souder.
+
+---
+
 ## 2026-08-13 (suite 9) — V2.2R.1 : familles A, B, F corrigées, prête pour revue — GO_V2_3=FALSE
 
 **Aucun verdict artistique auto-déclaré.** État technique prouvé :
