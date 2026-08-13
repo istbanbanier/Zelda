@@ -20,7 +20,8 @@ const WORLD_ID: StringName = WorldIds.V2_WORLD_ID
 
 const REQUIRED_CONTAINERS: Array[String] = [
 	"TerrainChunks", "Water", "Biomes", "Routes", "Landmarks", "POIs",
-	"Encounters", "Navigation", "Lighting", "CaptureCameras", "WorldBindings",
+	"Encounters", "Navigation", "Vegetation", "Lighting", "CaptureCameras",
+	"WorldBindings",
 ]
 
 const GROUND_PROBE_UP_M: float = 2.0
@@ -64,6 +65,9 @@ func _ready() -> void:
 		$Routes as Node3D)
 	var borders: WorldV2BordersBuilder = WorldV2BordersBuilder.new(_heightmap)
 	borders.build($TerrainChunks as Node3D)
+	var vegetation: WorldV2VegetationBuilder = WorldV2VegetationBuilder.new(
+		_heightmap, _terrain_builder, _layout)
+	vegetation.build($Vegetation as Node3D)
 	var cameras: WorldV2CamerasBuilder = WorldV2CamerasBuilder.new(_heightmap)
 	cameras.build($CaptureCameras as Node3D)
 	var nav_regions: int = _load_navigation()

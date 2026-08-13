@@ -11,6 +11,14 @@
 ## 38c87b1), JAMAIS des scripts surveillés (PROMPT4 §4 : un test qui lit la
 ## constante qu'il surveille suit l'erreur au lieu de la dénoncer).
 ##
+## LIMITE MESURÉE DU HEADLESS (source 4.7.1) : le renderer dummy de
+## `--script` jette les données d'instance MultiMesh (set = no-op, get =
+## identité, aabb = vide — dummy/storage/mesh_storage.h:191,200,202). Les
+## vérifications d'instances lisent donc le PLAN DE PLANTATION que le
+## bâtisseur écrit en méta (`instance_origins`/`instance_scales`) depuis les
+## mêmes valeurs et la même boucle que l'écriture moteur ; le RENDU réel est
+## prouvé par les captures llvmpipe (vrai renderer), jamais d'ici.
+##
 ## CONTRAT DE GROUPES que l'habillage doit remplir :
 ## - `world_v2_vegetation` : chaque cellule végétale est un MultiMeshInstance3D
 ##   d'emprise X/Z ≤ 48 m (directive §12 : cellules 24-48 m, jamais un
@@ -194,18 +202,29 @@ func test_la_vegetation_est_cellulaire_et_presente_ou_le_masterplan_l_exige() ->
 		if mm_instance == null or mm_instance.multimesh == null:
 			faults.append("%s : membre du groupe sans MultiMesh" % cell.name)
 			continue
-		var count: int = mm_instance.multimesh.instance_count
-		if count < 1:
-			faults.append("%s : cellule vide" % cell.name)
+		var origins: PackedVector3Array = mm_instance.get_meta(
+			&"instance_origins", PackedVector3Array()) as PackedVector3Array
+		if origins.is_empty():
+			faults.append("%s : aucun plan de plantation en méta" % cell.name)
 			continue
-		total_instances += count
-		# L'emprise mesurée dans le MONDE — le contrôle négatif C élargit une
-		# cellule au-delà de 48 m et doit rougir ICI.
-		var aabb: AABB = mm_instance.global_transform * mm_instance.get_aabb()
-		if aabb.size.x > CELL_MAX_EXTENT_M or aabb.size.z > CELL_MAX_EXTENT_M:
+		# Le plan et l'objet moteur doivent porter le MÊME compte — c'est le
+		# lien qui empêche la méta de mentir sur ce qui est réellement semé.
+		if origins.size() != mm_instance.multimesh.instance_count:
+			faults.append("%s : méta %d ≠ multimesh %d" % [cell.name,
+				origins.size(), mm_instance.multimesh.instance_count])
+			continue
+		total_instances += origins.size()
+		# L'emprise mesurée sur le PLAN (l'AABB moteur est vide en headless) —
+		# le contrôle négatif C élargit une cellule > 48 m et doit rougir ICI.
+		var lo: Vector3 = origins[0]
+		var hi: Vector3 = origins[0]
+		for origin: Vector3 in origins:
+			lo = lo.min(origin)
+			hi = hi.max(origin)
+		if hi.x - lo.x > CELL_MAX_EXTENT_M or hi.z - lo.z > CELL_MAX_EXTENT_M:
 			faults.append("%s : emprise %.0f × %.0f m (plafond %.0f)"
-				% [cell.name, aabb.size.x, aabb.size.z, CELL_MAX_EXTENT_M])
-		var center: Vector3 = aabb.get_center()
+				% [cell.name, hi.x - lo.x, hi.z - lo.z, CELL_MAX_EXTENT_M])
+		var center: Vector3 = (lo + hi) * 0.5
 		regions_seen[builder.region_id_at(center.x, center.z)] = true
 	check(cells.size() >= MIN_CELLS,
 		"au moins %d cellules végétales (obtenu %d)" % [MIN_CELLS, cells.size()])
@@ -237,16 +256,18 @@ func test_la_vegetation_est_ancree_au_sol_et_hors_des_couloirs() -> void:
 	var checked: int = 0
 	for cell: Node in loop.get_nodes_in_group(VEGETATION_GROUP):
 		var mm_instance: MultiMeshInstance3D = cell as MultiMeshInstance3D
-		if mm_instance == null or mm_instance.multimesh == null:
+		if mm_instance == null:
 			continue
-		var count: int = mm_instance.multimesh.instance_count
+		var origins: PackedVector3Array = mm_instance.get_meta(
+			&"instance_origins", PackedVector3Array()) as PackedVector3Array
+		var count: int = origins.size()
 		var stride: int = maxi(1, int(ceilf(float(count) / float(MAX_SAMPLES_PER_CELL))))
+		# L'échantillon part TOUJOURS de l'indice 0 : le contrôle négatif B
+		# soulève une instance et doit être vu.
 		var index: int = 0
 		while index < count:
-			var origin: Vector3 = mm_instance.global_transform \
-				* mm_instance.multimesh.get_instance_transform(index).origin
 			checked += 1
-			_check_anchor_and_corridors(origin, String(cell.name), index,
+			_check_anchor_and_corridors(origins[index], String(cell.name), index,
 				heightmap, route_segments, fords, checkpoints, faults)
 			index += stride
 
@@ -377,17 +398,21 @@ func _vegetation_signature(loop: SceneTree) -> String:
 	var parts: Array[String] = []
 	for cell_name: String in names:
 		var mm_instance: MultiMeshInstance3D = by_name[cell_name] as MultiMeshInstance3D
-		if mm_instance == null or mm_instance.multimesh == null:
+		if mm_instance == null:
 			parts.append("%s:invalide" % cell_name)
 			continue
-		var count: int = mm_instance.multimesh.instance_count
+		var origins: PackedVector3Array = mm_instance.get_meta(
+			&"instance_origins", PackedVector3Array()) as PackedVector3Array
+		var scales: PackedFloat32Array = mm_instance.get_meta(
+			&"instance_scales", PackedFloat32Array()) as PackedFloat32Array
+		var count: int = origins.size()
 		var stride: int = maxi(1, count / 8)
 		var index: int = 0
 		var samples: Array[String] = []
 		while index < count and samples.size() < 8:
-			var t: Transform3D = mm_instance.multimesh.get_instance_transform(index)
-			samples.append("%.3f,%.3f,%.3f,%.3f" % [t.origin.x, t.origin.y,
-				t.origin.z, t.basis.get_scale().x])
+			var scale: float = scales[index] if index < scales.size() else -1.0
+			samples.append("%.3f,%.3f,%.3f,%.3f" % [origins[index].x,
+				origins[index].y, origins[index].z, scale])
 			index += stride
 		parts.append("%s:%d:%s" % [cell_name, count, "|".join(samples)])
 	return ";".join(parts)
