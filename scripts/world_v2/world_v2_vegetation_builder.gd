@@ -55,11 +55,11 @@ const BOULDER_COLLIDER_MIN_RADIUS_M: float = 0.55
 const PROFILES: Dictionary = {
 	&"r01_crete_de_l_aube": {
 		"grass": 0.42, "tall": true, "flowers": 0.010, "trees": 0.0,
-		"boulders": 0.0030,
+		"boulders": 0.0030, "phrases": true,
 	},
 	&"r02_prairie_mille_fleurs": {
 		"grass": 0.30, "tall": false, "flowers": 0.008, "trees": 0.0016,
-		"boulders": 0.0030,
+		"boulders": 0.0030, "phrases": true,
 	},
 	&"r03_val_de_neris": {
 		"grass": 0.24, "tall": false, "flowers": 0.002, "trees": 0.0035,
@@ -71,7 +71,7 @@ const PROFILES: Dictionary = {
 	},
 	&"r05_terrasse_du_camp": {
 		"grass": 0.20, "tall": false, "flowers": 0.002, "trees": 0.0010,
-		"boulders": 0.0030,
+		"boulders": 0.0030, "phrases": true,
 	},
 	&"r06_bois_du_levant": {
 		"grass": 0.16, "tall": false, "flowers": 0.001, "trees": 0.0100,
@@ -81,17 +81,19 @@ const PROFILES: Dictionary = {
 		"grass": 0.05, "tall": false, "flowers": 0.0, "trees": 0.0014,
 		"boulders": 0.0100,
 	},
+	# Steppe : le VIDE est l'identité (masterplan §4 ; revue du lead V2.2R —
+	# « la Steppe du Nord délibérément presque vide »).
 	&"r08_steppe_du_nord": {
-		"grass": 0.045, "tall": false, "flowers": 0.0, "trees": 0.0008,
-		"boulders": 0.0080,
+		"grass": 0.018, "tall": false, "flowers": 0.0, "trees": 0.0004,
+		"boulders": 0.0050,
 	},
 	&"r09_ruines_du_coeur": {
 		"grass": 0.09, "tall": false, "flowers": 0.0, "trees": 0.0010,
 		"boulders": 0.0080,
 	},
 	&"r10_marche_de_l_orage": {
-		"grass": 0.010, "tall": false, "flowers": 0.0, "trees": 0.0010,
-		"boulders": 0.0060, "dead": true,
+		"grass": 0.006, "tall": false, "flowers": 0.0, "trees": 0.0010,
+		"boulders": 0.0050, "dead": true,
 	},
 }
 
@@ -185,7 +187,7 @@ func _build_cell(parent: Node3D, cx: int, cz: int,
 	var tall: Array[Transform3D] = []
 	var tall_tints: Array[Color] = []
 	var reeds: Array[Transform3D] = []
-	var flowers: Array[Transform3D] = []
+	var flowers: Dictionary = {}
 	var trees: Dictionary = {}
 	var boulders: Dictionary = {}
 	var blockers: Array[Array] = []
@@ -198,25 +200,35 @@ func _build_cell(parent: Node3D, cx: int, cz: int,
 	# rien — même leçon que `_segments_near_chunk` du bâtisseur de terrain.
 	var ctx: Dictionary = _cell_context(origin_x, origin_z)
 
-	# 1. Herbe : tolérante, dense — l'identité de teinte suit la peinture du sol.
-	var attempts: int = int(area * 0.5)
-	for i: int in range(attempts):
-		var p: Vector2 = Vector2(origin_x + rng.randf() * CELL_M,
-			origin_z + rng.randf() * CELL_M)
-		var profile: Dictionary = _profile_at(p)
-		var density: float = float(profile.get("grass", 0.0))
-		if density <= 0.0 or rng.randf() > density * 2.0:
-			continue
-		if not _spot_allows(p, GRASS_MAX_SLOPE_DEG, -1.0, ctx):
-			continue
-		var t: Transform3D = _ground_transform(p, rng, 0.85, 1.30, -0.05)
-		var tint: Color = _grass_tint(p, rng)
-		if bool(profile.get("tall", false)) and rng.randf() < 0.6:
-			tall.append(t)
-			tall_tints.append(tint)
-		else:
-			grass.append(t)
-			grass_tints.append(tint)
+	# 1. Herbe — V2.2R famille D (« composer, pas saupoudrer », revue du
+	# lead) : les prairies (`phrases`) poussent en PHRASES — une grappe dense
+	# puis une respiration — sur un fond clairsemé (¼ de la densité). Les
+	# autres régions gardent le semis uniforme ; leur identité est ailleurs.
+	var cell_profile: Dictionary = _profile_at(Vector2(origin_x + CELL_M * 0.5,
+		origin_z + CELL_M * 0.5))
+	if bool(cell_profile.get("phrases", false)):
+		var phrase_count: int = _stochastic_count(
+			float(cell_profile.get("grass", 0.0)) * area / 14.0, rng)
+		for c: int in range(phrase_count):
+			var center: Vector2 = Vector2(origin_x + rng.randf() * CELL_M,
+				origin_z + rng.randf() * CELL_M)
+			for k: int in range(rng.randi_range(8, 18)):
+				var p: Vector2 = center + Vector2(rng.randf_range(-3.4, 3.4),
+					rng.randf_range(-3.4, 3.4))
+				_try_grass_tuft(p, rng, grass, grass_tints, tall, tall_tints, ctx)
+		for i: int in range(int(area * 0.5)):
+			var p: Vector2 = Vector2(origin_x + rng.randf() * CELL_M,
+				origin_z + rng.randf() * CELL_M)
+			if rng.randf() > float(_profile_at(p).get("grass", 0.0)) * 0.5:
+				continue
+			_try_grass_tuft(p, rng, grass, grass_tints, tall, tall_tints, ctx)
+	else:
+		for i: int in range(int(area * 0.5)):
+			var p: Vector2 = Vector2(origin_x + rng.randf() * CELL_M,
+				origin_z + rng.randf() * CELL_M)
+			if rng.randf() > float(_profile_at(p).get("grass", 0.0)) * 2.0:
+				continue
+			_try_grass_tuft(p, rng, grass, grass_tints, tall, tall_tints, ctx)
 
 	# 2. Roseaux : uniquement la bande humide des berges (1,5-4,5 m du fil).
 	if _cell_touches_water(origin_x, origin_z):
@@ -232,7 +244,9 @@ func _build_cell(parent: Node3D, cx: int, cz: int,
 				continue
 			reeds.append(_ground_transform(p, rng, 0.9, 1.25, -0.06))
 
-	# 3. Fleurs : en PHRASES de 5-12 autour d'un centre (bible §7.4).
+	# 3. Fleurs : en PHRASES de 5-12 autour d'un centre (bible §7.4). V2.2R :
+	# l'espèce se choisit PAR GRAPPE, et la rose (hors palette §1.4, revue du
+	# lead) devient un accent rare — jamais la moitié du tapis.
 	var flower_profile: Dictionary = _profile_at(Vector2(origin_x + CELL_M * 0.5,
 		origin_z + CELL_M * 0.5))
 	var cluster_count: int = _stochastic_count(
@@ -244,11 +258,26 @@ func _build_cell(parent: Node3D, cx: int, cz: int,
 			continue
 		if not _spot_allows(center, GRASS_MAX_SLOPE_DEG, -1.0, ctx):
 			continue
+		# Jamais de pétales SUR l'objectif : une grappe née à ~1 m de l'œil
+		# de cam01 remplissait le coin du cadre (mesuré, V2.2R famille D).
+		# L'herbe de premier plan reste voulue — seules les grappes s'écartent.
+		var on_lens: bool = false
+		for eye: Vector2 in ctx["eyes"] as Array[Vector2]:
+			if center.distance_to(eye) < 4.5:
+				on_lens = true
+				break
+		if on_lens:
+			continue
+		# Mesuré sur capture (cam01) : Flower_3_Group est la ROSE hors
+		# palette ; la jaune (Flower_4_Group) porte §1.4, la rose reste rare.
+		var flower_model: StringName = FLOWER_MODELS[1] if rng.randf() < 0.85 \
+			else FLOWER_MODELS[0]
 		for f: int in range(rng.randi_range(5, 12)):
 			var p: Vector2 = center + Vector2(rng.randf_range(-1.6, 1.6),
 				rng.randf_range(-1.6, 1.6))
 			if _spot_allows(p, GRASS_MAX_SLOPE_DEG, -1.0, ctx):
-				flowers.append(_ground_transform(p, rng, 0.8, 1.15, -0.03))
+				_append_model(flowers, flower_model,
+					_ground_transform(p, rng, 0.8, 1.15, -0.03))
 
 	# 4. Arbres : bosquets dans le Bois, isolés ailleurs, morts dans la Marche.
 	var tree_profile: Dictionary = _profile_at(Vector2(origin_x + CELL_M * 0.5,
@@ -293,6 +322,23 @@ func _build_cell(parent: Node3D, cx: int, cz: int,
 			if radius >= BOULDER_COLLIDER_MIN_RADIUS_M:
 				blockers.append([t.origin, radius, "boulder"])
 
+	# 5b. Pierres de bord de route (V2.2R famille E) : cailloux SANS collision
+	# dans la bande 2,6-4,5 m de l'axe — un bord irrégulier et interrompu
+	# (porte aléatoire), jamais un rail répétitif de pierres alignées.
+	if not (ctx["routes"] as Array[Array]).is_empty():
+		for i: int in range(int(area * 0.02)):
+			if rng.randf() > 0.5:
+				continue
+			var p: Vector2 = Vector2(origin_x + rng.randf() * CELL_M,
+				origin_z + rng.randf() * CELL_M)
+			var route_d: float = _route_distance(p, ctx)
+			if route_d < 2.6 or route_d > 4.5:
+				continue
+			if not _spot_allows(p, BOULDER_MAX_SLOPE_DEG, -1.0, ctx):
+				continue
+			_append_model(boulders, PEBBLE_MODELS[rng.randi_range(0, 2)],
+				_ground_transform(p, rng, 0.7, 1.2, -0.10))
+
 	# 6. Matérialiser la cellule.
 	var cell_root: Node3D = Node3D.new()
 	cell_root.name = "veg_c%dr%d" % [cx, cz]
@@ -304,9 +350,9 @@ func _build_cell(parent: Node3D, cx: int, cz: int,
 		_grass_material(0.72)) or made
 	made = _emit_cells(cell_root, "reeds", _reed_mesh, reeds, [],
 		_reed_material()) or made
-	if not flowers.is_empty():
-		var model: StringName = FLOWER_MODELS[absi(hash([cx, cz])) % FLOWER_MODELS.size()]
-		made = _emit_model_cells(cell_root, "flowers", model, flowers) or made
+	for model: StringName in flowers.keys():
+		made = _emit_model_cells(cell_root, "flowers_" + String(model), model,
+			flowers[model] as Array[Transform3D]) or made
 	for model: StringName in trees.keys():
 		made = _emit_model_cells(cell_root, "tree_" + String(model), model,
 			trees[model] as Array[Transform3D]) or made
@@ -408,11 +454,18 @@ func _spot_allows(p: Vector2, max_slope_deg: float, blocker_radius: float,
 			var clear_end: Vector3 = sight[1] as Vector3
 			var closest: Vector2 = Geometry2D.get_closest_point_to_segment(p,
 				Vector2(eye3.x, eye3.z), Vector2(clear_end.x, clear_end.z))
-			if p.distance_to(closest) >= 3.0 + radius:
+			if p.distance_to(closest) >= 11.0 + radius:
 				continue
 			var span: float = Vector2(eye3.x, eye3.z).distance_to(
 				Vector2(clear_end.x, clear_end.z))
 			var t: float = 0.0 if span < 0.001 else 				Vector2(eye3.x, eye3.z).distance_to(closest) / span
+			# Couloir EFFILÉ (V2.2R famille D — « le grand sapin qui occupe
+			# une part majeure de la caméra 3 », revue du lead) : large près
+			# de l'œil, où un tronc mange le cadre entier, resserré au loin,
+			# où il ne couvre plus que quelques degrés.
+			if p.distance_to(closest) >= lerpf(11.0, 3.0,
+					clampf(t * 2.2, 0.0, 1.0)) + radius:
+				continue
 			var ray_y: float = lerpf(eye3.y, clear_end.y, t)
 			var top_y: float = _heightmap.height_at(p.x, p.y) + 5.0
 			if top_y > ray_y - 1.0:
@@ -466,6 +519,36 @@ func _grass_tint(p: Vector2, rng: RandomNumberGenerator) -> Color:
 	var luma: float = rng.randf_range(0.9, 1.35)
 	return Color(paint.r * luma * 1.35, paint.g * luma * 1.35,
 		paint.b * luma * 1.20)
+
+
+## Une touffe d'herbe au point demandé, si le profil et les couloirs
+## l'acceptent — le chemin commun des semis en phrases ET uniformes.
+func _try_grass_tuft(p: Vector2, rng: RandomNumberGenerator,
+		grass: Array[Transform3D], grass_tints: Array[Color],
+		tall: Array[Transform3D], tall_tints: Array[Color],
+		ctx: Dictionary) -> void:
+	var profile: Dictionary = _profile_at(p)
+	if float(profile.get("grass", 0.0)) <= 0.0:
+		return
+	if not _spot_allows(p, GRASS_MAX_SLOPE_DEG, -1.0, ctx):
+		return
+	var t: Transform3D = _ground_transform(p, rng, 0.85, 1.30, -0.05)
+	var tint: Color = _grass_tint(p, rng)
+	if bool(profile.get("tall", false)) and rng.randf() < 0.6:
+		tall.append(t)
+		tall_tints.append(tint)
+	else:
+		grass.append(t)
+		grass_tints.append(tint)
+
+
+func _route_distance(p: Vector2, ctx: Dictionary) -> float:
+	var best: float = 1e9
+	for segment: Array in ctx["routes"] as Array[Array]:
+		var closest: Vector2 = Geometry2D.get_closest_point_to_segment(
+			p, segment[0] as Vector2, segment[1] as Vector2)
+		best = minf(best, p.distance_to(closest))
+	return best
 
 
 func _water_distance(p: Vector2, ctx: Dictionary) -> float:

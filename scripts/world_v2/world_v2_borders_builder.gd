@@ -76,54 +76,22 @@ func build(parent: Node3D) -> void:
 	var far: Node3D = Node3D.new()
 	far.name = "FarSilhouettes"
 	parent.add_child(far)
-	# Bleu-gris clair : les pics lointains s'enfoncent dans la brume (§9.4 :
-	# montagnes éclaircies, refroidies, simplifiées).
-	var far_material: StandardMaterial3D = StandardMaterial3D.new()
-	far_material.albedo_color = Color(0.35, 0.39, 0.46)
-	far_material.roughness = 1.0
-	far_material.metallic_specular = 0.05
+	# Bleu-gris : les pics lointains s'enfoncent dans la brume (§9.4 :
+	# montagnes éclaircies, refroidies, simplifiées). V2.2R famille A,
+	# 2e passe (mesuré cam04) : le cône déplacé restait un « chapeau de
+	# papier » — apex net, matière unie. On réutilise la crête déchiquetée
+	# à strates qui a fait ses preuves sur l'anneau gardien, en plus large.
 	for i: int in range(FAR_SILHOUETTES):
 		var azimuth: float = TAU * (float(i) + 0.5) / float(FAR_SILHOUETTES)
 		var x: float = cos(azimuth) * FAR_RADIUS
 		var z: float = sin(azimuth) * FAR_RADIUS
 		var peak: MeshInstance3D = MeshInstance3D.new()
 		peak.name = "FarPeak%02d" % i
-		var bottom_r: float = 34.0 + 10.0 * sin(azimuth * 5.0 + 0.7)
 		var height: float = 62.0 + 16.0 * sin(azimuth * 3.0 + 2.1)
-		peak.mesh = _peak_mesh(bottom_r, height, i, far_material)
+		peak.mesh = _ridge_mesh(height, 400 + i * 7, 2.6, Color(0.35, 0.39, 0.46))
 		peak.position = Vector3(x, height * 0.5 + 18.0, z)
+		peak.rotation = Vector3(0.0, -azimuth, 0.0)
 		far.add_child(peak)
-
-
-## Pic lointain déchiqueté : un cône déplacé au bruit — une silhouette de
-## montagne, pas un cône de céramique (V2.2R famille A).
-func _peak_mesh(bottom_r: float, height: float, peak_seed: int,
-		material: Material) -> ArrayMesh:
-	var cone: CylinderMesh = CylinderMesh.new()
-	cone.top_radius = 1.5
-	cone.bottom_radius = bottom_r
-	cone.height = height
-	cone.radial_segments = 14
-	cone.rings = 5
-	var arrays: Array = cone.get_mesh_arrays()
-	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
-	var noise: FastNoiseLite = FastNoiseLite.new()
-	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
-	noise.frequency = 0.06
-	noise.seed = 20260813 + peak_seed * 31
-	for i: int in range(vertices.size()):
-		var v: Vector3 = vertices[i]
-		var radial: Vector2 = Vector2(v.x, v.z)
-		if radial.length() > 0.5:
-			var bump: float = noise.get_noise_2d(atan2(v.z, v.x) * 20.0, v.y)
-			radial *= 1.0 + bump * 0.5
-			v = Vector3(radial.x, v.y + bump * height * 0.06, radial.y)
-		vertices[i] = v
-	arrays[Mesh.ARRAY_VERTEX] = vertices
-	var mesh: ArrayMesh = ArrayMesh.new()
-	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
-	mesh.surface_set_material(0, material)
-	return mesh
 
 
 ## Crête de montagne : une boîte subdivisée PINCÉE vers le sommet et
