@@ -18,8 +18,10 @@ func _initialize() -> void:
 	for arg: String in OS.get_cmdline_user_args():
 		if arg.begins_with("--pair="):
 			var fields: PackedStringArray = arg.trim_prefix("--pair=").split("|")
-			if fields.size() != 4:
-				printerr("[montage] paire invalide (4 champs attendus) : %s" % arg)
+			# 4 champs : libellés par défaut (V2.1 / V2.2R) ; 6 champs :
+			# libellés de côtés explicites (ex. V2.2R.1 contre 274f539).
+			if fields.size() != 4 and fields.size() != 6:
+				printerr("[montage] paire invalide (4 ou 6 champs) : %s" % arg)
 				quit(1)
 				return
 			_pairs.append(fields)
@@ -32,7 +34,12 @@ func _initialize() -> void:
 
 func _run() -> void:
 	for fields: PackedStringArray in _pairs:
-		var ok: bool = await _compose(fields[0], fields[1], fields[2], fields[3])
+		var left_tag: String = fields[4] if fields.size() == 6 \
+			else "AVANT — V2.1 whitebox"
+		var right_tag: String = fields[5] if fields.size() == 6 \
+			else "APRÈS — V2.2R"
+		var ok: bool = await _compose(fields[0], fields[1], fields[2],
+			fields[3], left_tag, right_tag)
 		if not ok:
 			quit(2)
 			return
@@ -41,7 +48,7 @@ func _run() -> void:
 
 
 func _compose(left_path: String, right_path: String, out_path: String,
-		title: String) -> bool:
+		title: String, left_tag: String, right_tag: String) -> bool:
 	var left: Image = Image.load_from_file(_absolute(left_path))
 	var right: Image = Image.load_from_file(_absolute(right_path))
 	if left == null or right == null:
@@ -75,12 +82,12 @@ func _compose(left_path: String, right_path: String, out_path: String,
 	right_rect.position = Vector2(w + gap, header)
 	layer.add_child(right_rect)
 	var left_label: Label = Label.new()
-	left_label.text = "AVANT — V2.1 whitebox · %s" % title
+	left_label.text = "%s · %s" % [left_tag, title]
 	left_label.position = Vector2(16, 16)
 	left_label.add_theme_font_size_override(&"font_size", 24)
 	layer.add_child(left_label)
 	var right_label: Label = Label.new()
-	right_label.text = "APRÈS — V2.2R · %s" % title
+	right_label.text = "%s · %s" % [right_tag, title]
 	right_label.position = Vector2(w + gap + 16, 16)
 	right_label.add_theme_font_size_override(&"font_size", 24)
 	layer.add_child(right_label)
