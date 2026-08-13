@@ -1,0 +1,7 @@
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+  ÉCHEC test_world_v2_borders.gd::test_le_monde_est_ferme_sur_tous_les_azimuts — la ceinture est fermée sur 72 azimuts — azimut 70° : brèche — premier corps c5r7
+  ÉCHEC test_world_v2_borders.gd::test_les_gardes_sont_visibles_et_hors_de_la_zone_jouable — trente-six segments de garde : attendu 36, obtenu 35
+erreurs de script dans le journal : 0
+=== RÉSULTAT: 0 réussi(s), 2 échoué(s) ===
+  ÉCHEC: test_world_v2_borders.gd::test_le_monde_est_ferme_sur_tous_les_azimuts — la ceinture est fermée sur 72 azimuts — azimut 70° : brèche — premier corps c5r7
+  ÉCHEC: test_world_v2_borders.gd::test_les_gardes_sont_visibles_et_hors_de_la_zone_jouable — trente-six segments de garde : attendu 36, obtenu 35

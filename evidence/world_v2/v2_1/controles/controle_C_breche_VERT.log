@@ -1,0 +1,5 @@
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+  ok   test_world_v2_borders.gd::test_le_monde_est_ferme_sur_tous_les_azimuts (2 assertions)
+  ok   test_world_v2_borders.gd::test_les_gardes_sont_visibles_et_hors_de_la_zone_jouable (3 assertions)
+erreurs de script dans le journal : 0
+=== RÉSULTAT: 2 réussi(s), 0 échoué(s) ===

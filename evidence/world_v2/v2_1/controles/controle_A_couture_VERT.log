@@ -1,0 +1,5 @@
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+  ok   test_world_v2_terrain.gd::test_le_monde_porte_exactement_64_chunks_raccordes (72 assertions)
+  ok   test_world_v2_terrain.gd::test_le_relief_n_est_pas_un_assemblage_de_dalles (5 assertions)
+erreurs de script dans le journal : 0
+=== RÉSULTAT: 2 réussi(s), 0 échoué(s) ===

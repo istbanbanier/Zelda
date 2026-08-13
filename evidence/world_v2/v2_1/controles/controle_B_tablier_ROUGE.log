@@ -1,0 +1,5 @@
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+  ÉCHEC test_world_v2_routes.gd::test_chaque_route_a_un_sol_physique_continu — chaque route est un sol continu praticable — river_route : marche de 1.40 m/m en (-22, -58)
+erreurs de script dans le journal : 0
+=== RÉSULTAT: 0 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_routes.gd::test_chaque_route_a_un_sol_physique_continu — chaque route est un sol continu praticable — river_route : marche de 1.40 m/m en (-22, -58)
