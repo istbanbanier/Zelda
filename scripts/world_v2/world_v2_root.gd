@@ -80,6 +80,7 @@ func _ready() -> void:
 
 	_diag_camera.look_at_from_position(
 		_diag_camera.global_position, _spawn.global_position, Vector3.UP)
+	_apply_capture_environment()
 
 	print("[world_v2] monde        : %s (vallée whitebox V2.1)" % WORLD_ID)
 	print("[world_v2] carte        : %d lieux + %d sites systémiques, valide"
@@ -224,6 +225,50 @@ func storm_flash_on() -> void:
 	var bolt: MeshInstance3D = get_node_or_null("Lighting/StormBolt") as MeshInstance3D
 	if bolt != null:
 		bolt.visible = true
+
+
+## -- instrumentation de capture (cachée par défaut, directive §11) ------------
+## Les outils de capture ne passent qu'UN --call sans argument : les modes de
+## preuve se déclenchent par variable d'environnement — jamais actifs en jeu
+## ni dans les tests (l'environnement n'y est pas posé).
+##   WORLD_V2_DIAGNOSTIC=1   : teintes de diagnostic V2.1 sur le terrain
+##   WORLD_V2_STORM_FLASH=1  : éclair visible dès le montage
+##   WORLD_V2_FRAME_REGION=r03_val_de_neris | seam : caméra de diagnostic
+##     posée sur l'ancre de la région (ou sur un coin de 4 chunks).
+func _apply_capture_environment() -> void:
+	if OS.get_environment("WORLD_V2_DIAGNOSTIC") == "1":
+		WorldV2GroundMaterial.create().set_shader_parameter(
+			&"diagnostic_amount", 1.0)
+	if OS.get_environment("WORLD_V2_STORM_FLASH") == "1":
+		storm_flash_on()
+	var frame: String = OS.get_environment("WORLD_V2_FRAME_REGION")
+	if frame.is_empty():
+		return
+	if frame == "seam":
+		# Vue rasante d'un coin de QUATRE chunks : toute couture de matière
+		# ou de relief y serait nue.
+		var h: float = _heightmap.height_at(0.0, 0.0)
+		_diag_camera.look_at_from_position(Vector3(-8.0, h + 3.0, 20.0),
+			Vector3(0.0, h, -6.0), Vector3.UP)
+		return
+	for node: Node in get_tree().get_nodes_in_group(&"world_v2_regions"):
+		if String(node.name) != frame:
+			continue
+		var anchor: Vector3 = (node as Node3D).position
+		var bounds: Array = node.get_meta(&"bounds", []) as Array
+		var look: Vector3 = anchor + Vector3(0, -6, -30)
+		if not bounds.is_empty():
+			var b: Dictionary = bounds[0] as Dictionary
+			var bx: Array = b.get("x", []) as Array
+			var bz: Array = b.get("z", []) as Array
+			if bx.size() == 2 and bz.size() == 2:
+				var cx: float = (float(bx[0]) + float(bx[1])) * 0.5
+				var cz: float = (float(bz[0]) + float(bz[1])) * 0.5
+				look = Vector3(cx, _heightmap.height_at(cx, cz), cz)
+		var eye: Vector3 = anchor + Vector3(0.0, 14.0, 0.0)
+		eye += (eye - look).normalized() * 18.0
+		_diag_camera.look_at_from_position(eye, look, Vector3.UP)
+		return
 
 
 func request_exit_to_menu() -> bool:
