@@ -5,6 +5,38 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-13 (suite 7) — V2.2R : passe corrective TERMINÉE, preuves complètes — prête pour revue visuelle
+
+**Aucun verdict artistique n'est déclaré ici** : le gate visuel appartient à
+Codex et Istvan. Ce qui suit est l'état technique prouvé.
+
+- Revue contradictoire fraîche sur df965c5..50e9718 : **PASS technique**
+  (points 1-9 vérifiés dont suite rejouée 43/43 ×2, filet d'eau re-rougi
+  contre l'hydrologie d'avant, contrôles B et D re-rejoués, navmesh
+  re-cuite byte-identique, périmètre et layout intacts). Seul détail : les
+  `.uid` des cinq outils — committés (d088f28).
+- Filet d'exposition : il a BLOQUÉ la chaîne finale deux fois — la brume
+  d'horizon du côté chaud échappait au test ciel. Séparateur mesuré sur les
+  deux classes (brume r−g ≤ 0.010 ; dalles rejetées r−g ≥ 0.024), coupure à
+  0.015 ; les cinq captures AVANT restent rouges, plafond inchangé
+  (aa5148a, 398e3a0 ; `controles/filet_exposition_brume_ROUGE_conserve.log`).
+- Chaîne finale complète depuis l'arbre committé propre à **398e3a0** :
+  11 captures régionales (r11 comprise, cadrage dédié), 6 caméras gelées
+  (exposition 0,0-0,3 %), éclair, couture, carte régionale à onze zones
+  avec légende rendue, carte de densité végétale, 6 montages A/B
+  (V2.1 gauche / V2.2R droite), métriques (16 651 instances), matrice
+  région→identité et manifestes générés depuis les constantes réelles,
+  inventaire de fichiers — tout sous `evidence/world_v2/v2_2/captures_v22r/`
+  et `evidence/world_v2/v2_2/`.
+- `tools/validate_fast.sh` : **VERT, RC=0, 888/0**
+  (`evidence/world_v2/v2_2/validate_fast_v22r_final.log`).
+
+**Prochaine action exacte.** Attendre la revue visuelle Codex/Istvan sur
+les captures de `captures_v22r/` et les montages A/B. Ni donjon ni V2.3
+sans leur verdict (`GO_DUNGEON = FALSE`, `GO_V2_3 = FALSE`).
+
+---
+
 ## 2026-08-13 (suite 6) — V2.2R : six familles corrigées, preuves en cours — V2.2R EN COURS — NON VALIDÉE
 
 Toutes les corrections mesurées sur capture, même caméra avant/après (§4) :

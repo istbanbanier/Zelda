@@ -1,0 +1,14 @@
+{
+ "label": "v22r",
+ "png": "evidence/world_v2/v2_2/captures_v22r/carte_regions_legende.png",
+ "commit": "398e3a07615bc7cd391aa651cb8c1148abfd33d3",
+ "repo_dirty": false,
+ "engine_version": "4.7.1-stable (custom_build)-stable (custom_build)",
+ "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+ "scene": "res://scenes/world_v2/WorldV2.tscn",
+ "timestamp_utc": "2026-08-13 18:21:20",
+ "kind": "carte_regions",
+ "span_m": 600,
+ "metres_par_pixel": 1.0,
+ "regions": 11
+}
