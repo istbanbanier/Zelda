@@ -50,7 +50,7 @@ light_energy = 1.55
 shadow_enabled = true
 directional_shadow_max_distance = 260.0
 
-[node name="ValleyWorldEnvironment" type="WorldEnvironment" parent="Lighting"]
+[node name="AtmosphereEnvironment" type="WorldEnvironment" parent="Lighting"]
 environment = SubResource("ValleyEnvironment")
 
 [node name="CaptureCameras" type="Node3D" parent="."]
