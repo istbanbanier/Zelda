@@ -25,12 +25,16 @@ render_mode specular_disabled;
 
 // -- peinture (mêmes réglages de base que le shader personnage) --------------
 uniform vec4 shadow_tint : source_color = vec4(0.42, 0.48, 0.60, 1.0);
-uniform vec4 warm_tint : source_color = vec4(1.06, 0.98, 0.88, 1.0);
+uniform vec4 warm_tint : source_color = vec4(1.22, 1.0, 0.84, 1.0);
 uniform float ramp_low : hint_range(0.0, 1.0) = 0.22;
-uniform float ramp_high : hint_range(0.0, 1.0) = 0.58;
-uniform float ramp_soft : hint_range(0.01, 0.5) = 0.16;
-uniform float wrap : hint_range(0.0, 1.0) = 0.3;
+uniform float ramp_high : hint_range(0.0, 1.0) = 0.52;
+uniform float ramp_soft : hint_range(0.01, 0.5) = 0.21;
+uniform float wrap : hint_range(0.0, 1.0) = 0.4;
 uniform float shadow_floor : hint_range(0.0, 1.0) = 0.14;
+// Plafond peint : une pente face au soleil ne BRÛLE pas (mesuré cam05 :
+// mare à 68 %% de luma contre 33 %% à côté — au-dessus de la bande §1.5).
+// Le peintre mute la masse la plus éclairée ; le plafond fait pareil.
+uniform float lit_ceiling : hint_range(0.5, 1.0) = 0.82;
 
 // -- familles de matière -----------------------------------------------------
 // Roche ocre des pentes fortes (albédo — la surface module autour du gris).
@@ -215,6 +219,7 @@ void light() {
 		wrapped);
 	float lit = shadow_floor + (1.0 - shadow_floor)
 		* (0.45 * band_low + 0.55 * band_high);
+	lit = min(lit, lit_ceiling);
 	// Gooch réservé au SOLEIL : un feu, une lampe gardent leur couleur.
 	vec3 grade = LIGHT_IS_DIRECTIONAL
 		? mix(shadow_tint.rgb, warm_tint.rgb, lit)

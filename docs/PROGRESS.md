@@ -5,6 +5,47 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-13 (suite 2) — V2.2-A/B : contrat paysager fail-first + matériau de terrain calibré
+
+**V2.2-A fait** : sources d'art relues (ART_BIBLE, ART_DECISIONS,
+ART_DIRECTION_MODE, WORLD_ATLAS, régions du masterplan, ATTRIBUTIONS) ;
+`tests/world_v2/test_world_v2_landscape_contract.gd` écrit AVANT l'habillage —
+journal rouge archivé (`evidence/world_v2/v2_2/contrat_paysager_ROUGE_avant_habillage.log`).
+Contrats : six caméras V2.1 gelées par littéraux (fil de détente du contrôle
+négatif D), matériau de paysage par chunk, cellules végétales ≤ 48 m avec
+présence dans r01/r02/r03/r06, ancrage au sol + couloirs
+routes/gués/checkpoints/objectifs, reconstruction déterministe, diagnostics
+cachés. Groupes contractuels pour la végétation : `world_v2_vegetation`
+(cellules MultiMesh) et `world_v2_vegetation_colliders` (troncs/rochers).
+
+**V2.2-B fait** : `SH_WorldV2Ground` (modèle painterly du shader personnage
+transposé au sol : half-Lambert, paliers fondus, Gooch solaire, plancher
+d'ombre, PLAFOND peint `lit_ceiling`) ; bâtisseur : grille de peinture par
+région FLOUTÉE (transitions ~10-16 m), humidité des berges, cendres de la
+Marche, masque de route adouci mordu au bruit, diagnostic V2.1 en CUSTOM1
+caché ; matériau UNIQUE partagé (aucune couture possible) ; soleil
+contractuel OUEST/haut-gauche 23°, miel. **Calibrage MESURÉ en six passes de
+capture** (jamais prédit — le gain de ce monde diffère du lab V1) : bandes
+§1.5 tenues — herbe 47-60 %, falaises à l'ombre 27 %, ciel 80 %, hiérarchie
+sol < ciel partout. Suite complète world_v2 : 38 verts + 8 rouges ATTENDUS
+(végétation, cible de C) ; régression d'isolation (« ValleyWorld » dans un
+nom de nœud) attrapée par la suite squelette et corrigée (`c95ecf4`).
+
+**Résidus consignés pour C** (mesurés, non cachés) : la descente de la crête
+r01 (pente 29-30° face au soleil du soir) rend ~67 % de luma — 2 points au-
+dessus de la bande sol, hiérarchie sol<ciel TENUE ; la végétation et la brume
+de C doivent la casser — re-mesurer après. Eau whitebox bleue, gardes de
+bordure en boîtes, proxys pylône/citadelle/tablier : périmètre de C
+(silhouettes) et des phases suivantes ; rien de tout cela n'est déclaré beau.
+
+**Prochaine action exacte.** V2.2-C : bâtisseur de végétation cellulaire
+(MultiMesh 24-48 m, graine fixe, exclusions du contrat, ancrage sol, troncs/
+rochers en `world_v2_vegetation_colliders` + re-bake nav si collisions) pour
+faire passer les 8 rouges du contrat ; puis eau/berges visuelles, ciel/brume/
+nuage d'orage multicouche, silhouettes de bordure.
+
+---
+
 ## 2026-08-13 (suite) — V2.2 OUVERTE : donjon V2, orientation + fil de détente
 
 **Gate V2.1 : PASS** (revue contradictoire indépendante aboutie, validate_fast
