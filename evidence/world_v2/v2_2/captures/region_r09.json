@@ -1,0 +1,18 @@
+{
+  "commit": "ac548599b78926fb8a81a60534de3b3893c8b4c2",
+  "display_server": "X11",
+  "distinct_colors_sampled": 4367,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 40,
+  "height": 720,
+  "label": "v2_2_r09_ruines_du_coeur",
+  "luma_mean": 0.4985,
+  "luma_stddev": 0.0973,
+  "png": "evidence/world_v2/v2_2/captures/region_r09.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "timestamp_utc": "2026-08-13 12:49:56",
+  "width": 1280
+}
