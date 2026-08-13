@@ -1,0 +1,5 @@
+# CONTRÔLE F2 (confluence) — ROUGE AVANT correction, géométrie de a37ec16/846e752
+# Date : 2026-08-13T23:23:28Z ; 5 écarts : normales absentes ×2, recouvrement XZ,
+# bords libres dans l'emprise, 12 sommets de raccord > 5 cm
+=== RÉSULTAT: 0 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_water_confluence.gd::test_la_confluence_est_une_jonction_topologique — la confluence est une jonction topologique (5 écart(s)) — MainCourseWater : normales ABSENTES ; TributaryWater : normales ABSENTES ; 3 point(s) couverts par les DEUX nappes (recouvrement) ; 2 arête(s) de bord libre DANS l'emprise du cours principal ; 12 sommet(s) de raccord à plus de 0.05 m de la nappe principale — (-25.0, 5.6) : 1.404 m ; (-24.5, 5.3) : 0.855 m ; (-25.0, 5.6) : 1.404 m

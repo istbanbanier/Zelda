@@ -103,6 +103,22 @@ func _end_verdict(cap: Vector3, other_line: PackedVector2Array,
 	# a. Enfouie sous le terrain.
 	if cap.y <= ground - BURIED_MARGIN_M:
 		return ""
+	# a2. SOUDÉE à la pièce de confluence (V2.2R.2) : l'arête terminale de
+	# l'affluent est reprise sommet pour sommet par `ConfluenceWater`. Le cap
+	# est le MILIEU de cette arête — jamais un sommet de la pièce — donc on
+	# vérifie qu'il repose SUR une corde entre deux sommets de la pièce
+	# (l'arête de bouche), à 5 cm près.
+	var patch: MeshInstance3D = _world.get_node_or_null(
+		"Water/ConfluenceWater") as MeshInstance3D
+	if patch != null and patch.mesh != null and patch.mesh.get_surface_count() > 0:
+		var arrays: Array = patch.mesh.surface_get_arrays(0)
+		var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+		for i: int in range(vertices.size()):
+			for j: int in range(i + 1, vertices.size()):
+				var on_segment: Vector3 = Geometry3D.get_closest_point_to_segment(
+					cap, vertices[i], vertices[j])
+				if on_segment.distance_to(cap) <= 0.05:
+					return ""
 	# b. Dans le lac, sous son plan (-0,5).
 	var lake_center: Vector2 = _heightmap.call("lake_center")
 	var lake_radius: float = _heightmap.call("lake_radius")

@@ -154,13 +154,17 @@ func test_le_lac_est_un_bol_sous_sa_surface() -> void:
 	var shore: Vector2 = center + Vector2(-27.0, 0.0)
 	check(not heightmap.is_in_water(shore.x, shore.y), "la rive ouest est sèche")
 
+	# V2.2R.2 : la pièce de confluence soudée s'ajoute aux trois surfaces —
+	# l'ensemble EXACT des noms est épinglé, pas seulement le compte.
 	var water: Array[Node] = loop.get_nodes_in_group(&"world_v2_water")
-	check_equal(water.size(), 3, "trois surfaces d'eau (cours, affluent, lac)")
-	var lake_found: bool = false
+	var expected_names: Array[String] = ["ConfluenceWater", "MainCourseWater",
+		"StormLakeWater", "TributaryWater"]
+	var actual_names: Array[String] = []
 	for node: Node in water:
-		if node.name == "StormLakeWater":
-			lake_found = true
-	check(lake_found, "le disque du lac existe")
+		actual_names.append(String(node.name))
+	actual_names.sort()
+	check_equal(",".join(actual_names), ",".join(expected_names),
+		"quatre surfaces d'eau (cours, affluent, confluence, lac)")
 
 	var clean: bool = await restore_root()
 	check(clean, "démontage propre — %s" % restore_root_reason())
