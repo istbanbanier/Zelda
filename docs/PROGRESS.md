@@ -5,6 +5,31 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-13 (suite) — V2.2 OUVERTE : donjon V2, orientation + fil de détente
+
+**Gate V2.1 : PASS** (revue contradictoire indépendante aboutie, validate_fast
+878/0, reproductibilité du bake prouvée bit-à-bit) — SHA final `38c87b1`,
+distant vérifié. GO_V2_2 = TRUE prononcé par le lead.
+
+**V2.2-0 (orientation) fait** : contrats §5 relus, 16 suites donjon/boss
+protégées identifiées (elles doivent rester vertes INCHANGÉES), 42 modules
+CC0 de `assets/environment/dungeon/` confirmés jamais consommés par le
+donjon, littéraux du masterplan §10 vérifiés conformes aux scripts V1.
+
+**V2.2-1 fait** : `tests/world_v2/test_world_v2_dungeon_pins.gd` — les
+contraintes IMMUABLES de l'enveloppe épinglées en littéraux du masterplan
+(positions de gameplay des salles 1/2/4, géométrie de l'arène avec pylônes
+aux diagonales, topologie des scènes) ; 22 assertions vertes contre la V1
+intacte. Tout travail d'enveloppe qui déplace une constante rougira en la
+NOMMANT.
+
+**Prochaine action exacte.** V2.2-2 : enveloppe du VESTIBULE puis de la
+SALLE 1 avec les modules CC0 (ordre du masterplan §10), en rejouant après
+chaque salle : suites donjon/boss + dungeon_pins + dégagement caméra mesuré
++ élément focal en silhouette. Une salle = une tranche committable.
+
+---
+
 ## 2026-08-13 — World V2, phase V2.1 : la vallée whitebox se MARCHE
 
 **Branche** : `claude/world-v2-reconstruction` (base de phase `0da6c8d`).
