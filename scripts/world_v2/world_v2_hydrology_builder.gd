@@ -40,6 +40,7 @@ func build(water_parent: Node3D, landmarks_parent: Node3D) -> void:
 	water_parent.add_child(_ribbon("TributaryWater",
 		_heightmap.river_trib_polyline(), TRIB_HALF_W, TRIB_DRAFT))
 	water_parent.add_child(_lake())
+	water_parent.add_child(_deep_water_obstruction())
 	_build_ford_markers(landmarks_parent)
 	landmarks_parent.add_child(_whitebox_bridge_deck())
 
@@ -104,6 +105,32 @@ func _lake() -> MeshInstance3D:
 	return instance
 
 
+## L'EAU PROFONDE du lac n'est pas marchable : obstruction de navigation
+## DÉCLARÉE, creusée dans le bake (`affect/carve_navigation_mesh`). Ce n'est
+## pas un artifice : c'est la règle « on ne patrouille pas sous 5 m d'eau »
+## exprimée là où le bake la lit — sans elle, le lit du bras nord (28°)
+## descendait tranquillement dans le bol et « l'île » était un mensonge
+## (mesuré : un chemin atteignait le centre du lac à 1,8 m près).
+func _deep_water_obstruction() -> NavigationObstacle3D:
+	var obstruction: NavigationObstacle3D = NavigationObstacle3D.new()
+	obstruction.name = "DeepWaterObstruction"
+	obstruction.affect_navigation_mesh = true
+	obstruction.carve_navigation_mesh = true
+	# Emprise : le disque immergé (h < surface -0,5) a le rayon du lac —
+	# marge de 1 m pour couvrir la ligne d'eau. Le contour est en Vector3
+	# (plan XZ) — source 4.7.1 : `Vector<Vector3> vertices`.
+	var radius: float = _heightmap.lake_radius() + 1.0
+	var outline: PackedVector3Array = PackedVector3Array()
+	for i: int in range(16):
+		var azimuth: float = TAU * float(i) / 16.0
+		outline.append(Vector3(cos(azimuth) * radius, 0.0, sin(azimuth) * radius))
+	obstruction.vertices = outline
+	obstruction.height = 7.5
+	var center: Vector2 = _heightmap.lake_center()
+	obstruction.position = Vector3(center.x, -8.0, center.y)
+	return obstruction
+
+
 func _build_ford_markers(parent: Node3D) -> void:
 	for entry: Variant in (_layout.get("river", {}) as Dictionary).get("fords", []) as Array:
 		var ford: Dictionary = entry as Dictionary
@@ -130,17 +157,19 @@ func _whitebox_bridge_deck() -> StaticBody3D:
 	deck.collision_mask = 0
 	deck.add_to_group(&"world_v2_whitebox")
 	# Du côté ouest (l'abutment du layout) vers la berge est : le tablier
-	# enjambe le bras nord (centre ≈ 13 m à l'est de l'abutment).
+	# enjambe le bras nord (centre ≈ 13 m à l'est de l'abutment). LARGE de
+	# 7 m : à 4 m, le parcours réel tombait du bord sud dans la gorge de
+	# berge (56°, escaladable mais infranchissable à la marche) — mesuré par
+	# le pilote de la route de la rivière, arrêté en (-26, 0.1, -61).
 	deck.position = abutment + Vector3(13.0, 0.35, 0.0)
 	var mesh: BoxMesh = BoxMesh.new()
-	mesh.size = Vector3(28.0, 0.5, 4.0)
+	mesh.size = Vector3(28.0, 0.5, 7.0)
 	var material: StandardMaterial3D = StandardMaterial3D.new()
 	material.albedo_color = Color(0.55, 0.42, 0.28)
 	mesh.material = material
 	var visual: MeshInstance3D = MeshInstance3D.new()
 	visual.name = "DeckMesh"
 	visual.mesh = mesh
-	visual.add_to_group(&"world_v2_navsource")
 	deck.add_child(visual)
 	var shape: BoxShape3D = BoxShape3D.new()
 	shape.size = mesh.size

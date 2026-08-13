@@ -101,7 +101,25 @@ func _ready() -> void:
 ## (`tools/godot/bake_world_v2_navmesh.gd`). Zéro région n'est pas une
 ## erreur au montage (le bake peut ne pas encore exister) — les tests, eux,
 ## l'exigent.
+##
+## Itérations SYNCHRONES obligatoires : la construction asynchrone (défaut du
+## moteur) poste une tâche de WorkerThreadPool qui ne se termine JAMAIS dans
+## l'environnement headless `--script` — mesuré : `map_get_iteration_id`
+## bloqué à 1, toutes les requêtes rendent (0,0,0). La carte V1 souffre du
+## même mal (ses ennemis retombent en pilotage direct sans le dire). Pour une
+## carte statique cuite, la construction synchrone au chargement est de toute
+## façon le comportement voulu — et elle rend la navigation PROUVABLE.
 func _load_navigation() -> int:
+	NavigationServer3D.map_set_use_async_iterations(
+		get_world_3d().navigation_map, false)
+	# Marge de connexion d'arêtes 2 m : les contours de deux quadrants cuits
+	# INDÉPENDAMMENT divergent à leur couture jusqu'à ~1,3 m par côté
+	# (edge_max_error de Recast) — à 0,25/0,5/1,0 les quatre jambes
+	# d'ancres restaient coupées à la couture, à 2,0 elles se raccordent
+	# (balayage mesuré). Aucune fausse connexion possible : les bandes
+	# élaguées (berges 56°, rive du lac) font toutes plus de 2 m de large.
+	NavigationServer3D.map_set_edge_connection_margin(
+		get_world_3d().navigation_map, 2.0)
 	var loaded: int = 0
 	for quadrant: int in range(NAV_QUADRANTS):
 		var path: String = NAV_RESOURCE_PATTERN % quadrant
@@ -112,6 +130,7 @@ func _load_navigation() -> int:
 			continue
 		var region: NavigationRegion3D = NavigationRegion3D.new()
 		region.name = "NavQuadrant%d" % quadrant
+		NavigationServer3D.region_set_use_async_iterations(region.get_rid(), false)
 		region.navigation_mesh = mesh
 		($Navigation as Node3D).add_child(region)
 		loaded += 1
