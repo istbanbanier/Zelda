@@ -1,0 +1,55 @@
+# validate_fast.sh — état final V2.2 (fondation paysagère complète)
+# Date : 2026-08-13T13:56:30Z ; commit : eecd927 ; RC en pied de journal
+# Le journal intégral compte 925 lignes — tête et verdict ci-dessous.
+
+
+=== 0. Version du moteur ===
+  4.7.1.stable.custom_build.a13da4feb
+  [OK]   Godot 4.7.1-stable confirmé
+
+=== 1. Import des ressources (parse/import smoke) ===
+  [OK]   import sans parse error (code retour 0)
+
+=== 1b. Parse de TOUS les scripts GDScript ===
+  [OK]   376 script(s) GDScript parsés sans erreur
+
+=== 2. Tests unitaires ===
+    ok   test_asset_pipeline.gd::test_the_registry_resolves_delivered_assets_and_declines_missing_ones (54 assertions)
+    ok   test_asset_pipeline.gd::test_the_q0_delivered_assets_resolve_with_real_meshes (36 assertions)
+    ok   test_asset_pipeline.gd::test_the_hero_candidate_keeps_its_rig_through_the_godot_import (4 assertions)
+    ok   test_asset_pipeline.gd::test_the_anim_set_validator_measures_real_gaps_in_both_directions (5 assertions)
+    ok   test_asset_pipeline.gd::test_the_character_visual_falls_back_cleanly_when_the_model_is_missing (4 assertions)
+    ok   test_asset_pipeline.gd::test_the_calibration_scene_labels_every_missing_asset_and_keeps_scale (5 assertions)
+    ok   test_asset_pipeline.gd::test_the_model_index_serves_the_promoted_library (12 assertions)
+    ok   test_asset_pipeline.gd::test_the_character_variants_have_distinct_silhouettes (28 assertions)
+    ok   test_asset_pipeline.gd::test_the_silhouette_lineup_mounts_every_character_of_the_game (9 assertions)
+    ok   test_asset_pipeline.gd::test_the_gallery_mounts_a_full_page_without_losses (3 assertions)
+    ok   test_basin_placement.gd::test_the_basin_stands_on_the_river_route_as_a_declared_place (6 assertions)
+    ok   test_bestiary_gate.gd::test_the_five_families_have_distinct_stats_weapons_and_silhouettes (42 assertions)
+    ok   test_bestiary_gate.gd::test_no_family_keeps_an_active_hitbox_after_death (26 assertions)
+    ok   test_bestiary_gate.gd::test_no_family_sees_through_a_wall (5 assertions)
+    ok   test_bestiary_gate.gd::test_the_valley_carries_the_five_families_in_their_roles (23 assertions)
+    ok   test_bestiary_gate.gd::test_the_bestiary_lineup_mounts_the_five_families (16 assertions)
+    ok   test_bestiary_gate.gd::test_the_north_road_to_the_citadel_stays_walkable_with_the_bestiary (4 assertions)
+    ok   test_body_separation.gd::test_a_raider_can_never_share_the_player_volume (2 assertions)
+…
+    [boot] Godot            : 4.7.1-stable (custom_build)
+    [boot] renderer         : forward_plus
+    [boot] physique 3D      : Jolt Physics
+    [boot] tick physique    : 60 Hz
+    [boot] pilote de rendu  : headless
+    [boot] autoloads        : GameState, EventBus, SaveSystem, AudioManager, SceneFlow
+    [boot] flux             : BOOT
+    [boot] fondation vérifiée — Phase A.
+    [boot] transition vers le menu principal.
+  [OK]   Boot atteint le menu principal
+
+=== 3b. Continuité des personnages livrés (ISS-019) ===
+  [OK]   6 personnage(s) : un seul corps solidaire, aucune pièce détachée
+
+=== 4. Plancher de couverture ===
+  [OK]   887 test(s) exécuté(s), plancher 586 respecté
+
+=== VALIDATE_FAST : VERT ===
+logs: evidence/validate_fast
+VALIDATE_FAST_RC=0
