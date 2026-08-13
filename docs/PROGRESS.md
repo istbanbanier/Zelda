@@ -23,10 +23,17 @@ aux diagonales, topologie des scènes) ; 22 assertions vertes contre la V1
 intacte. Tout travail d'enveloppe qui déplace une constante rougira en la
 NOMMANT.
 
-**Prochaine action exacte.** V2.2-2 : enveloppe du VESTIBULE puis de la
-SALLE 1 avec les modules CC0 (ordre du masterplan §10), en rejouant après
-chaque salle : suites donjon/boss + dungeon_pins + dégagement caméra mesuré
-+ élément focal en silhouette. Une salle = une tranche committable.
+**REDÉFINITION PAR DIRECTIVE DU LEAD (2026-08-13)** : V2.2 est la
+**fondation artistique du paysage extérieur** (matériaux de terrain, identité
+des onze biomes, végétation cellulaire, eau/berges et routes visuelles,
+lumière/ciel/atmosphère d'orage, six A/B de caméras GELÉES) — l'enveloppe du
+donjon est DIFFÉRÉE à une phase ultérieure. La suite `dungeon_pins` reste en
+place comme fil de détente des contrats protégés. Frontière d'audit :
+`evidence/world_v2/v2_2/base_sha.txt` = V2_1_FINAL_SHA (38c87b1).
+
+**Prochaine action exacte.** V2.2 : tests fail-first du contrat paysager
+(caméras gelées, matériaux non-diagnostic, architecture végétale cellulaire),
+puis matériaux du terrain par région/altitude/pente/eau/routes.
 
 ---
 
