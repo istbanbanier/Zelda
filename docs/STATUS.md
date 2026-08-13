@@ -1,5 +1,18 @@
 # STATUS — état par fonctionnalité
 
+## World V2 — reconstruction du monde (2026-08-13, `claude/world-v2-reconstruction`)
+
+| Phase | État | Preuve |
+|---|---|---|
+| V2.0 — squelette dual-monde, carte directrice, contrats | Validé | `evidence/world_v2/v2_0/` ; suites `tests/world_v2/test_world_v2_skeleton.gd`, `test_world_v2_layout.gd` |
+| V2.1 — vallée whitebox physique (relief, hydrologie, routes, limites, navigation, traversée réelle) | **Validé — Gate PASS** | `evidence/world_v2/v2_1/README.md` (verdicts par critère), revue contradictoire archivée, `validate_fast_final.log` ; SHA final dans `docs/PROGRESS.md` |
+| V2.2 — fondation artistique du paysage (matériau painterly, végétation cellulaire, eau, ciel/orage, silhouettes) | **Fonctionnel — gate technique PASS en revue contradictoire** | `evidence/world_v2/v2_2/README.md`, `revue_contradictoire.md`, `validate_fast_final.log`, contrôles négatifs A-D + angle mort E |
+| V2.2 — enveloppe du donjon | Différée par directive du lead | fil de détente `tests/world_v2/test_world_v2_dungeon_pins.gd` en place |
+
+Le verdict ARTISTIQUE de V2.2 appartient à Codex, Istvan et son frère
+(directive §17) — seuls les défauts techniques mesurables sont jugés ici ;
+résidus consignés dans le README d'evidence.
+
 ## Finition visuelle monde entier (2026-08-12, `claude/full-world-visual-finish`)
 
 | Lot | État | Preuve |

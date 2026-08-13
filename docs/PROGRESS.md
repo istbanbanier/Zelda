@@ -5,6 +5,35 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-13 (suite 4) — V2.2-D : CLÔTURE DE PHASE — gate technique PASS
+
+**Le tour de preuve complet est fait** : A/B des six fenêtres gelées depuis
+l'arbre committé (l'avant = série V2.1), niveaux de gris, cartes du monde
+entier (matériaux + diagnostic), vue de couture 4 chunks, une capture par
+région, éclair (corrigé après capture-preuve de son invisibilité — il
+visait une flèche inexistante). Contrôles négatifs A/B/C/D rouges NOMMÉS
+puis retour vert. `validate_fast` final : 887/0, RC=0, archivé.
+
+**Revue contradictoire (contexte frais, arbre gelé) : PASS, réserves non
+bloquantes, toutes traitées** — l'agent a rejoué la suite world_v2 à HEAD,
+re-cuit la navigation (bit-à-bit identique), rejoué le contrôle D,
+re-capturé cam01 (identique), et DÉMONTRÉ l'angle mort méta/moteur par
+injection → archivé comme `controle_E_meta_moteur_ANGLE_MORT.log` (la
+suite reste verte quand le moteur diverge du plan : le headless ne voit
+pas le moteur ; captures + sondes physiques couvrent). `docs/STATUS.md`
+recevait sa première entrée World V2 (réserve 2 de la revue).
+
+**RAPPORT B** : `evidence/world_v2/v2_2/rapport_final_v2_2.md`. Verdict
+artistique NON auto-déclaré (§17) — il appartient à Codex, Istvan et son
+frère ; les A/B sont prêts pour ce jugement.
+
+**Prochaine action exacte.** Au choix du lead (rapport §6) : passe
+artistique 2 sur les résidus consignés + filet plan/capture ; OU enveloppe
+du donjon V2 (fil de détente `test_world_v2_dungeon_pins.gd` en place) ;
+OU verdict artistique externe d'abord. Jamais V2.3 sans directive.
+
+---
+
 ## 2026-08-13 (suite 3) — V2.2-C : végétation, eau, ciel/orage, silhouettes — FONDATION POSÉE
 
 **Végétation cellulaire** : bâtisseur à cellules MultiMesh de 32 m, graine

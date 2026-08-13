@@ -17,7 +17,7 @@ défauts techniques mesurables sont jugés, et les résidus sont consignés.
 
 | Critère | Statut | Preuve |
 |---|---|---|
-| Contrats V2.1 intacts sous la peau (42 suites world_v2) | PASS | `suite_complete_c3_verte.log` (42/42, RC=0) |
+| Contrats V2.1 intacts sous la peau (suites world_v2) | PASS | `suite_complete_c3_verte.log` (42/42 en MILIEU de phase — avant eau/ciel/bordures) ; **rejouée verte à HEAD par la revue contradictoire** et couverte par `validate_fast_final.log` sur l'état final |
 | Caméras V2.1 gelées par littéraux | PASS | suite contrat ; contrôle D |
 | Matériau de paysage sur les 64 chunks, aucun diagnostic visible | PASS | suite contrat ; contrôle A ; `captures/` |
 | Bandes de valeurs §1.5 (sol 35-65, ciel 75-95, hiérarchie sol<ciel) | PASS mesuré | six passes de calibrage consignées (PROGRESS suite 2) ; herbe 47-60 %, falaises ombre 27 %, ciel 80 % |
@@ -27,8 +27,8 @@ défauts techniques mesurables sont jugés, et les résidus sont consignés.
 | Fenêtres gelées dégagées (couloir de visée) | PASS | régression cam03 attrapée PUIS corrigée — même journal |
 | Continuité visuelle inter-chunks | PASS visuel | `captures/vue_couture_chunks.png` (coin de 4 chunks, vue rasante : aucune couture de matière ni de relief) ; `carte_materiaux.png` (monde entier, aucun quadrillage) |
 | Orage LOCAL, pas une soucoupe ; éclair cœur blanc | PASS mesuré | trois passes consignées (2 soucoupes mesurées puis cassées au maillage) ; `capture_cam01_eclair.png` |
-| validate_fast.sh sur l'état final | voir `validate_fast_final.log` | RC archivé en tête |
-| Revue contradictoire à contexte frais (depuis 38c87b1) | voir `revue_contradictoire.md` | — |
+| validate_fast.sh sur l'état final | PASS | `validate_fast_final.log` (887/0, RC=0) |
+| Revue contradictoire à contexte frais (depuis 38c87b1) | **PASS, réserves non bloquantes traitées** | `revue_contradictoire.md` (l'agent a rejoué suites, bake bit-à-bit, contrôle D, capture) |
 
 ## Captures (arbre COMMITTÉ, manifestes `repo_dirty: false`)
 
@@ -71,6 +71,11 @@ mortes en headless).
 - `controles/controle_D_camera_ROUGE.log` — cam03 déplacée de 5 m :
   « (117,00) au lieu de (112,00) ».
 - `controles/controle_retour_VERT.log` — arbre restauré, contrat 6/6.
+- `controles/controle_E_meta_moteur_ANGLE_MORT.log` — **pas un rouge/vert :
+  un ANGLE MORT documenté**. Transforms moteur décalés de +2 m, méta
+  intacte → la suite reste verte (le headless ne voit pas le moteur).
+  Couvert par l'inspection des captures et les sondes physiques ;
+  démontré d'abord par la revue contradictoire, rejoué et archivé ici.
 
 ## Résidus consignés (mesurés, non cachés — pour la passe artistique suivante)
 
