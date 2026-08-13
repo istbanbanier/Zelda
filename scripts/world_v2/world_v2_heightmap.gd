@@ -33,12 +33,16 @@ const PLAYABLE_RADIUS_M: float = 235.0
 const RIVER_BED_HALF_W: float = 3.0
 const RIVER_BANK_W: float = 6.5
 const FORD_BED_HALF_W: float = 4.0
-const FORD_BANK_W: float = 16.0
+## 20 m : à 16, la sortie diagonale du gué est cumulée à l'éperon du pylône
+## gardait une bande à 1,0 m/m (46°) — la coupe de berge doit s'étaler.
+const FORD_BANK_W: float = 20.0
 const FORD_INFLUENCE_M: float = 24.0
 const TRIB_BED_HALF_W: float = 1.8
 const TRIB_BANK_W: float = 4.5
-## Lac de l'Orage : bol profond — le fond est une île de navigation isolée
-## VOULUE (eau profonde exclue des chemins par la pente, pas par un artifice).
+## Lac de l'Orage : bol profond. Le fond est une île de navigation VOULUE —
+## exclue par l'obstruction d'eau profonde du bâtisseur d'hydrologie (le lit
+## du bras nord, à 28°, descend naturellement dans le bol : la pente seule ne
+## suffisait pas, c'était mesuré).
 const LAKE_DEPTH: float = 6.0
 const LAKE_SHORE_W: float = 10.0
 
@@ -85,10 +89,13 @@ var _trib_seg_t1: PackedFloat32Array = PackedFloat32Array()
 ## proviennent des POI, sites systémiques, checkpoints et ancres de région :
 ## la donnée du layout TRAVERSE le relief, elle n'est pas recopiée à la main.
 func _init(layout: Dictionary) -> void:
+	# Fondu de 12 m : à 8, un site perché (overlook_summit, +5 m sur son
+	# anneau) faisait un mur de 48° à 15 m du sommet — le vrai joueur y
+	# restait cloué, vitesse nulle, sol=true (mesuré au parcours réel).
 	for entry: Variant in layout.get("pois", []) as Array:
-		_add_site(entry as Dictionary, "v2_site", 9.0, 8.0)
+		_add_site(entry as Dictionary, "v2_site", 9.0, 12.0)
 	for entry: Variant in layout.get("systemic_sites", []) as Array:
-		_add_site(entry as Dictionary, "v2_site", 8.0, 8.0)
+		_add_site(entry as Dictionary, "v2_site", 8.0, 12.0)
 	for entry: Variant in layout.get("checkpoints", []) as Array:
 		var checkpoint: Dictionary = entry as Dictionary
 		if checkpoint.get("pos") != null:
@@ -289,15 +296,20 @@ func _fields(x: float, z: float) -> float:
 	# Hauteurs de l'Orient : bande z [-100, 56]. Montée ÉTALÉE sur 64 m, et
 	# son PIED décollé du tablier du gué est — à 88 la montée démarrait sur la
 	# coupe de berge (2,57 m/m mesurés d'abord, puis encore 1,19 m/m sur la
-	# sortie diagonale du gué avec le pied à 88).
-	var east_z: float = smoothstep(-108.0, -80.0, z) * (1.0 - smoothstep(52.0, 84.0, z))
+	# sortie diagonale du gué avec le pied à 88). Le fondu NORD est large
+	# (44→96) : resserré (52→84), il tombait à 48° en travers de l'approche
+	# du belvédère — le parcours réel y restait cloué en (165, 69).
+	var east_z: float = smoothstep(-108.0, -80.0, z) * (1.0 - smoothstep(44.0, 96.0, z))
 	h += 15.0 * smoothstep(94.0, 158.0, x) * east_z
 	# Éperon du pylône : butte LARGE qui porte presque toute l'altitude de
 	# l'ancre (18 m) — un pad qui devait combler 8 m en 10 m de fondu créait
-	# une bande à 1,8 m/m sur l'approche (109,-10).
-	h += 9.0 * _bump(x, z, 115.0, -25.0, 44.0)
-	# Butte du belvédère (à gravir).
-	h += 5.0 * _bump(x, z, 168.0, 52.0, 22.0)
+	# une bande à 1,8 m/m sur l'approche (109,-10). Rayon 52 : à 44, le
+	# flanc ouest cumulé au pad restait ≥ 46° et le parcours réel s'y est
+	# cloué en (94, -17) — un promeneur dévié doit toujours pouvoir REVENIR.
+	h += 9.0 * _bump(x, z, 115.0, -25.0, 48.0)
+	# Butte du belvédère (à gravir) — LARGE : à r=22 son anneau tombait de
+	# 5 m en quelques mètres et s'empilait sur le pad du sommet (48°).
+	h += 5.0 * _bump(x, z, 168.0, 52.0, 30.0)
 	# Col de la Gorge du vent (96,12,-88) : la crête qui le porte — sans elle,
 	# le pad du POI devait hisser 8 m au-dessus des plaines en 8 m de fondu
 	# (1,4 m/m mesurés en 84,-93 sur le trajet principal).

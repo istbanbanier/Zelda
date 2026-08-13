@@ -131,7 +131,6 @@ func _build_chunk(col: int, row: int) -> StaticBody3D:
 	var mesh_instance: MeshInstance3D = MeshInstance3D.new()
 	mesh_instance.name = "GroundMesh"
 	mesh_instance.mesh = _build_mesh(heights, colors)
-	mesh_instance.add_to_group(&"world_v2_navsource")
 	body.add_child(mesh_instance)
 	return body
 
