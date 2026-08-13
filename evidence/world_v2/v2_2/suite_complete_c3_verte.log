@@ -1,0 +1,16 @@
+# Suite complète world_v2 — VERTE avec végétation, colliders et nav re-cuite
+# Date : 2026-08-13T12:01:14Z ; commit : 454f0ef ; commande : test_runner.gd -- --filter=world_v2
+# Chemin : deux morsures corrigées en séquence (gué est/ouest : colliders à 12 m ;
+# couloir de visée cam03), chaque correction re-cuite et re-testée.
+
+  ok   test_world_v2_traversal.gd::test_la_route_de_la_riviere_traverse_gues_et_pont (6 assertions)
+  ok   test_world_v2_traversal.gd::test_la_route_des_hauteurs_grimpe_et_redescend_a_la_rampe (6 assertions)
+  ok   test_world_v2_traversal.gd::test_la_route_des_ruines_rejoint_la_rampe_par_le_coeur (6 assertions)
+  ok   test_world_v2_waterways_contract.gd::test_chaque_traversee_de_riviere_passe_par_un_gue_ou_le_pont (7 assertions)
+  ok   test_world_v2_waterways_contract.gd::test_chaque_gue_est_pose_sur_son_cours (1 assertions)
+  ok   test_world_v2_waterways_contract.gd::test_aucun_lieu_dans_l_eau (2 assertions)
+  ok   test_world_v2_waterways_contract.gd::test_les_checkpoints_et_ancres_sont_hors_d_eau (2 assertions)
+  ok   test_world_v2_waterways_contract.gd::test_le_cours_n_a_pas_de_longue_ligne_droite (2 assertions)
+erreurs de script dans le journal : 0
+=== RÉSULTAT: 42 réussi(s), 0 échoué(s) ===
+SUITE_RC=0

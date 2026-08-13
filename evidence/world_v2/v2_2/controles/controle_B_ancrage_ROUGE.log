@@ -1,0 +1,4 @@
+# CONTRÔLE NÉGATIF B — toutes les instances soulevées de +2 m dans _ground_transform
+# Date : 2026-08-13T12:25:40Z ; base : ec2e135 + injection temporaire (jamais commitée)
+=== RÉSULTAT: 5 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_landscape_contract.gd::test_la_vegetation_est_ancree_au_sol_et_hors_des_couloirs — ancrage et couloirs tenus (8678 écart(s) sur 8678 vérifiées) — veg_c6r0_grass[0] : 1.95 m du sol (fenêtre -1.5 à 0.6) ; veg_c6r0_grass[1] : 1.95 m du sol (fenêtre -1.5 à 0.6) ; veg_c7r0_grass[0] : 1.95 m du sol (fenêtre -1.5 à 0.6) ; veg_c8r0_grass[0] : 1.95 m du sol (fenêtre -1
