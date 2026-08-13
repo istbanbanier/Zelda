@@ -168,20 +168,24 @@ func _build_mesh(heights: PackedFloat32Array, colors: PackedColorArray) -> Array
 			var p10: Vector3 = Vector3(float(sx + 1) - half, heights[i10], float(sz) - half)
 			var p01: Vector3 = Vector3(float(sx) - half, heights[i01], float(sz + 1) - half)
 			var p11: Vector3 = Vector3(float(sx + 1) - half, heights[i11], float(sz + 1) - half)
-			# Enroulement vu de DESSUS — l'inverse rend le sol invisible
-			# (leçon ISS-018, attrapée deux fois sur la V1).
+			# Enroulement MESURÉ À LA CAPTURE (inspection réelle, phase V2.1) :
+			# l'ordre p00→p11→p10 ne rendait que le DESSOUS du terrain — le
+			# monde disparaissait de presque tous les angles de jeu. La note
+			# ISS-018 d'origine affirmait l'inverse sans capture : c'est
+			# précisément le mensonge silencieux qu'une inspection d'image
+			# attrape et qu'aucun test de collision ne peut voir.
 			st.set_color(colors[i00])
 			st.add_vertex(p00)
-			st.set_color(colors[i11])
-			st.add_vertex(p11)
 			st.set_color(colors[i10])
 			st.add_vertex(p10)
-			st.set_color(colors[i00])
-			st.add_vertex(p00)
-			st.set_color(colors[i01])
-			st.add_vertex(p01)
 			st.set_color(colors[i11])
 			st.add_vertex(p11)
+			st.set_color(colors[i00])
+			st.add_vertex(p00)
+			st.set_color(colors[i11])
+			st.add_vertex(p11)
+			st.set_color(colors[i01])
+			st.add_vertex(p01)
 	st.generate_normals()
 	var mesh: ArrayMesh = st.commit()
 	mesh.surface_set_material(0, _material)
