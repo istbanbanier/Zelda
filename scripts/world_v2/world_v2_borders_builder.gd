@@ -110,9 +110,9 @@ func _ridge_mesh(crest: float, ridge_seed: int, width_scale: float,
 	var box: BoxMesh = BoxMesh.new()
 	# +16 %% de longueur VISUELLE : les crêtes voisines s'interpénètrent.
 	box.size = Vector3(GUARD_THICKNESS, crest, GUARD_LENGTH * 1.16)
-	box.subdivide_width = 3
-	box.subdivide_height = 5
-	box.subdivide_depth = 16
+	box.subdivide_width = 4
+	box.subdivide_height = 8
+	box.subdivide_depth = 20
 	var arrays: Array = box.get_mesh_arrays()
 	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
 	var colors: PackedColorArray = PackedColorArray()
@@ -130,9 +130,13 @@ func _ridge_mesh(crest: float, ridge_seed: int, width_scale: float,
 		var end: float = smoothstep(0.62, 1.0, absf(v.z) / half_l)
 		v.x *= lerpf(2.6, 0.22, t) * width_scale * (1.0 - 0.55 * end)
 		v.y -= end * crest * 0.30
-		# Le bruit vit sur TOUTES les faces, pas seulement la crête.
+		# Le bruit vit sur TOUTES les faces, pas seulement la crête. La
+		# 2e octave varie EN HAUTEUR : sans elle, le flanc ne bougeait que
+		# le long de la crête et restait un plan de 20 m lisible de près
+		# (mesuré sur la capture dédiée r11, V2.2R famille A).
 		v.y += noise.get_noise_2d(v.z, 13.7) * crest * 0.30 * (0.25 + 0.75 * t)
 		v.x += noise.get_noise_2d(v.z * 0.7, 41.2) * 3.0 * (0.45 + 0.55 * t)
+		v.x += noise.get_noise_2d(v.y * 0.9, v.z * 0.35 + 57.3) * 2.4
 		v.z += noise.get_noise_2d(v.x * 1.3, 77.9) * 2.2
 		vertices[i] = v
 		# Matière : strates horizontales larges + mottling — arête un peu
@@ -145,8 +149,16 @@ func _ridge_mesh(crest: float, ridge_seed: int, width_scale: float,
 			base_tone.g * shade, base_tone.b * shade * (1.0 - t * 0.06))
 	arrays[Mesh.ARRAY_VERTEX] = vertices
 	arrays[Mesh.ARRAY_COLOR] = colors
-	var mesh: ArrayMesh = ArrayMesh.new()
-	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	var displaced: ArrayMesh = ArrayMesh.new()
+	displaced.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	# RECALCULER les normales : après déplacement, celles de la boîte sont
+	# PÉRIMÉES — la lumière ignorait tout le relief et chaque flanc restait
+	# un aplat éclairé uniformément, quel que soit le bruit (cause réelle
+	# des « grandes faces unies » vues de près — mesuré, capture r11).
+	var st: SurfaceTool = SurfaceTool.new()
+	st.create_from(displaced, 0)
+	st.generate_normals()
+	var mesh: ArrayMesh = st.commit()
 	var material: StandardMaterial3D = StandardMaterial3D.new()
 	material.vertex_color_use_as_albedo = true
 	material.albedo_color = Color.WHITE

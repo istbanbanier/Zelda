@@ -256,6 +256,19 @@ func _apply_capture_environment() -> void:
 			continue
 		var anchor: Vector3 = (node as Node3D).position
 		var bounds: Array = node.get_meta(&"bounds", []) as Array
+		# L'Anneau frontalier (r11) n'a ni ancre ni bornes x/z : c'est un
+		# ANNEAU. On le cadre depuis la zone jouable vers une section de
+		# crêtes — la onzième région contractuelle a droit à sa capture
+		# dédiée (directive V2.2R §2).
+		if not bounds.is_empty() \
+				and (bounds[0] as Dictionary).has("ring_radius_m"):
+			var ring: Array = (bounds[0] as Dictionary)["ring_radius_m"] as Array
+			var mid_r: float = (float(ring[0]) + float(ring[1])) * 0.5
+			var ring_eye: Vector3 = Vector3(150.0,
+				_heightmap.height_at(150.0, 0.0) + 9.0, 0.0)
+			_diag_camera.look_at_from_position(ring_eye,
+				Vector3(mid_r, 42.0, 0.0), Vector3.UP)
+			return
 		var look: Vector3 = anchor + Vector3(0, -6, -30)
 		if not bounds.is_empty():
 			var b: Dictionary = bounds[0] as Dictionary
