@@ -44,7 +44,10 @@ uniform vec4 earth_color : source_color = vec4(0.315, 0.25, 0.20, 1.0);
 // Cendres de la Marche (désaturées, froides — l'orage n'est PAS du cyan).
 uniform vec4 ash_color : source_color = vec4(0.34, 0.33, 0.36, 1.0);
 // Fond humide : le lit tire vers le froid, jamais vers le noir.
-uniform vec4 wet_bed_color : source_color = vec4(0.20, 0.27, 0.28, 1.0);
+// V2.2R.1 : terre HUMIDE, pas eau — l'ancien sarcelle (0.20,0.27,0.28)
+// rendait la bande humide comme une nappe d'eau pâle à distance (rejet du
+// lead, region_r03 — « rubans terminés brutalement »).
+uniform vec4 wet_bed_color : source_color = vec4(0.24, 0.26, 0.23, 1.0);
 
 // La pente où l'herbe cède à la roche (composantes Y de la normale monde).
 // 46° est la limite de marche : l'herbe tient un peu au-delà, la roche
@@ -203,15 +206,19 @@ void fragment() {
 		rough = mix(rough, surface_rough, 0.5 * surface_reach);
 	}
 
-	// L'eau abaisse la rugosité (§5.2 : pierre humide 0,35-0,65) ; le grain
-	// la fait respirer.
-	rough = mix(rough, 0.5, wetness);
+	// L'eau abaisse la rugosité — À PEINE (V2.2R.1, famille F) : mesuré au
+	// pixel (diagnostic r03, maillages d'eau cachés), la bande humide
+	// restait un RUBAN CYAN identique sous toutes les teintes — un reflet
+	// SPÉCULAIRE du ciel au soleil rasant, pas une couleur. Terre humide :
+	// rugosité quasi pleine ET spéculaire coupé sous l'humidité.
+	rough = mix(rough, 0.80, wetness * 0.5);
 	rough += signed_grain * grain_roughness;
 
 	// Diagnostic V2.1 : la vérité whitebox reste disponible, JAMAIS visible
 	// par défaut (fil de détente dans la suite de contrat).
 	ALBEDO = mix(base, v_diag.rgb, diagnostic_amount);
 	ROUGHNESS = clamp(rough, 0.0, 1.0);
+	SPECULAR = mix(0.5, 0.12, wetness);
 }
 
 

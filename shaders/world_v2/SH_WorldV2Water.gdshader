@@ -29,12 +29,16 @@ uniform float foam_depth : hint_range(0.01, 0.5) = 0.16;
 varying vec3 world_position;
 varying float depth_factor;
 varying vec2 flow_dir;
+varying float vertex_opacity;
 
 
 void vertex() {
 	world_position = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	depth_factor = COLOR.r;
 	flow_dir = COLOR.gb * 2.0 - 1.0;
+	// V2.2R.1 : opacité PAR SOMMET — le prolongement de confluence s'efface
+	// sous le cours principal au lieu d'empiler deux alphas à bord lisible.
+	vertex_opacity = COLOR.a;
 }
 
 
@@ -58,7 +62,7 @@ void fragment() {
 	water.rgb = mix(water.rgb, foam_color.rgb, foam * foam_color.a);
 
 	ALBEDO = water.rgb;
-	ALPHA = clamp(water.a + foam * 0.25, 0.0, 1.0);
+	ALPHA = clamp(water.a + foam * 0.25, 0.0, 1.0) * vertex_opacity;
 	ROUGHNESS = 0.18;
 	SPECULAR = 0.4;
 }

@@ -88,7 +88,9 @@ func build(parent: Node3D) -> void:
 		var peak: MeshInstance3D = MeshInstance3D.new()
 		peak.name = "FarPeak%02d" % i
 		var height: float = 62.0 + 16.0 * sin(azimuth * 3.0 + 2.1)
-		peak.mesh = _ridge_mesh(height, 400 + i * 7, 2.6, Color(0.35, 0.39, 0.46))
+		# Ton PIERRE en brume — le bleu-blanc (0.35,0.39,0.46) lisait
+		# « papier » (rejet V2.2R.1) ; gris chaud, la brume refroidit déjà.
+		peak.mesh = _ridge_mesh(height, 400 + i * 7, 2.6, Color(0.36, 0.34, 0.34))
 		peak.position = Vector3(x, height * 0.5 + 18.0, z)
 		peak.rotation = Vector3(0.0, -azimuth, 0.0)
 		far.add_child(peak)
@@ -123,6 +125,10 @@ func _ridge_mesh(crest: float, ridge_seed: int, width_scale: float,
 	noise.seed = 20260813 + ridge_seed
 	var half_h: float = crest * 0.5
 	var half_l: float = box.size.z * 0.5
+	# Amplitude latérale du bruit : les masses LARGES (pics lointains,
+	# width_scale 2,6) gardaient un bruit absolu devenu relativement lisse —
+	# des « chapeaux de papier » (rejet V2.2R.1). Elle suit l'échelle.
+	var crag: float = 1.0 + (width_scale - 1.0) * 0.7
 	for i: int in range(vertices.size()):
 		var v: Vector3 = vertices[i]
 		var t: float = clampf((v.y + half_h) / crest, 0.0, 1.0)
@@ -135,9 +141,18 @@ func _ridge_mesh(crest: float, ridge_seed: int, width_scale: float,
 		# le long de la crête et restait un plan de 20 m lisible de près
 		# (mesuré sur la capture dédiée r11, V2.2R famille A).
 		v.y += noise.get_noise_2d(v.z, 13.7) * crest * 0.30 * (0.25 + 0.75 * t)
-		v.x += noise.get_noise_2d(v.z * 0.7, 41.2) * 3.0 * (0.45 + 0.55 * t)
-		v.x += noise.get_noise_2d(v.y * 0.9, v.z * 0.35 + 57.3) * 2.4
-		v.z += noise.get_noise_2d(v.x * 1.3, 77.9) * 2.2
+		v.x += noise.get_noise_2d(v.z * 0.7, 41.2) * 3.0 * crag * (0.45 + 0.55 * t)
+		v.x += noise.get_noise_2d(v.y * 0.9, v.z * 0.35 + 57.3) * 2.4 * crag
+		v.z += noise.get_noise_2d(v.x * 1.3, 77.9) * 2.2 * crag
+		# JUPE D'ENFOUISSEMENT (V2.2R.1 famille A — « plaques suspendues,
+		# dessous sombres, fentes entre les couches, masses qui flottent »,
+		# region_r06/r07/r11) : la base plonge PROFONDÉMENT sous le terrain
+		# qui la supporte — le terrain sous les 58 m d'un segment varie de
+		# plus que les 6 m d'enfoncement V2.1, et chaque creux ouvrait une
+		# fente sous la plaque. Visuel pur : la boîte de collision ne bouge pas.
+		var burial: float = smoothstep(0.18, 0.0, t)
+		v.y -= burial * (crest * 0.35 + 12.0)
+		v.x *= 1.0 + burial * 0.25
 		vertices[i] = v
 		# Matière : strates horizontales larges + mottling — arête un peu
 		# plus chaude, creux plus froids (§6.3), jamais un aplat.

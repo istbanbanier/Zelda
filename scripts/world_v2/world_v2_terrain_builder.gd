@@ -69,11 +69,15 @@ const REGION_ASH: Dictionary = {
 }
 
 ## Bandes d'humidité des berges (au-delà de la demi-largeur du lit).
-const WET_MAIN_NEAR: float = 3.0
-const WET_MAIN_FAR: float = 7.0
-const WET_TRIB_NEAR: float = 1.8
-const WET_TRIB_FAR: float = 5.0
-const WET_LAKE_BAND: float = 4.0
+## V2.2R.1 (famille F, diagnostic magenta) : les bandes larges lisaient
+## comme des RUBANS D'EAU — leurs fins et occlusions passaient pour des
+## rubans cassés (rejet du lead, region_r03). Resserrées : la peinture
+## humide borde l'eau, elle ne la remplace pas.
+const WET_MAIN_NEAR: float = 2.2
+const WET_MAIN_FAR: float = 4.6
+const WET_TRIB_NEAR: float = 1.2
+const WET_TRIB_FAR: float = 3.2
+const WET_LAKE_BAND: float = 3.0
 const WATER_SEGMENT_MARGIN: float = 8.0
 
 ## Teintes de diagnostic par région (V2.1) — conservées en CUSTOM1, cachées
@@ -305,20 +309,40 @@ func _route_mask(x: float, z: float, local_routes: Array[Array]) -> float:
 
 
 ## Humidité (0-1) : pleine dans le lit, dégradée sur la berge, autour du lac.
+##
+## V2.2R.1 (famille F — DIAGNOSTIC MAGENTA sur le cadrage r03) : les
+## « rubans terminés brutalement, raccords incomplets, morceau séparé »
+## rejetés par le lead n'étaient PAS les maillages d'eau — c'était CETTE
+## peinture, purement horizontale, qui grimpait les berges et les terrasses
+## des gorges en nappes anguleuses et s'arrêtait en ligne dure à la limite
+## de sa bande. L'humidité s'ATTÉNUE désormais avec la HAUTEUR au-dessus de
+## la ligne d'eau locale : elle épouse la rive, jamais les parois.
 func _wetness(x: float, z: float, local_water: Array[Array]) -> float:
 	var p: Vector2 = Vector2(x, z)
 	var wet: float = 0.0
+	# Niveau d'eau de RÉFÉRENCE de la contribution gagnante : le lit au
+	# point le plus proche du fil + tirant moyen (`water_surface_at` rend
+	# -INF hors du couloir étroit du lit — inutilisable pour la berge).
+	var level: float = -1e9
 	for segment: Array in local_water:
 		var closest: Vector2 = Geometry2D.get_closest_point_to_segment(
 			p, segment[0] as Vector2, segment[1] as Vector2)
 		var d: float = p.distance_to(closest)
-		wet = maxf(wet, 1.0 - smoothstep(float(segment[2]), float(segment[3]), d))
-		if wet >= 0.999:
-			return 1.0
+		var contribution: float = 1.0 - smoothstep(float(segment[2]),
+			float(segment[3]), d)
+		if contribution > wet:
+			wet = contribution
+			level = _heightmap.height_at(closest.x, closest.y) + 0.75
 	var lake_d: float = p.distance_to(_heightmap.lake_center())
-	wet = maxf(wet, 1.0 - smoothstep(_heightmap.lake_radius(),
-		_heightmap.lake_radius() + WET_LAKE_BAND, lake_d))
-	return wet
+	var lake_contribution: float = 1.0 - smoothstep(_heightmap.lake_radius(),
+		_heightmap.lake_radius() + WET_LAKE_BAND, lake_d)
+	if lake_contribution > wet:
+		wet = lake_contribution
+		level = -0.5
+	if wet <= 0.001:
+		return 0.0
+	var above: float = _heightmap.height_at(x, z) - level
+	return wet * (1.0 - smoothstep(0.8, 2.4, above))
 
 
 ## Segments de route qui touchent l'emprise du chunk (marge de peinture) —

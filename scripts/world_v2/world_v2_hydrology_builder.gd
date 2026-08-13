@@ -13,7 +13,10 @@
 class_name WorldV2HydrologyBuilder
 extends RefCounted
 
-const WATER_STEP_M: float = 8.0
+## 4 m (V2.2R.1) : à 8 m, une descente raide produisait une MARCHE de
+## surface de 2,71 m entre deux arêtes — un mur d'eau (mesuré par le filet
+## des raccords).
+const WATER_STEP_M: float = 4.0
 const MAIN_HALF_W: float = 4.2
 const TRIB_HALF_W: float = 2.6
 const MAIN_DRAFT: float = 0.9
@@ -39,10 +42,16 @@ func _init(heightmap: WorldV2Heightmap, layout: Dictionary) -> void:
 
 
 func build(water_parent: Node3D, landmarks_parent: Node3D) -> void:
+	# V2.2R.1 (famille F) : chaque extrémité de ruban est TRAITÉE — source
+	# ENFOUIE sous le terrain (l'eau émerge du sol), confluence RENTRÉE sous
+	# le cours principal, embouchure déjà sous le plan du lac. Le filet
+	# `test_world_v2_water_junctions.gd` mesure les quatre caps (rouge avant).
 	water_parent.add_child(_ribbon("MainCourseWater",
-		_heightmap.river_main_polyline(), MAIN_HALF_W, MAIN_DRAFT))
+		_heightmap.river_main_polyline(), MAIN_HALF_W, MAIN_DRAFT,
+		"buried", "free", PackedVector2Array()))
 	water_parent.add_child(_ribbon("TributaryWater",
-		_heightmap.river_trib_polyline(), TRIB_HALF_W, TRIB_DRAFT))
+		_heightmap.river_trib_polyline(), TRIB_HALF_W, TRIB_DRAFT,
+		"buried", "join", _heightmap.river_main_polyline()))
 	water_parent.add_child(_lake())
 	water_parent.add_child(_deep_water_obstruction())
 	_build_ford_markers(landmarks_parent)
@@ -52,15 +61,31 @@ func build(water_parent: Node3D, landmarks_parent: Node3D) -> void:
 ## Ruban d'eau : surface au-dessus du LIT réel (jamais une bande plane —
 ## le profil descend avec la rivière), en bande CONTINUE à joints MITRÉS.
 ##
-## V2.2R : l'ancienne version émettait, à chaque waypoint intérieur, un
-## quad de TORSION (longueur nulle, deux orientations) qui chevauchait ses
-## voisins et doublait l'alpha — la « jonction anguleuse » vue par la revue
-## du lead. Le fil est désormais échantillonné d'un bloc et chaque point
-## porte UNE arête, orientée par la direction MOYENNÉE de ses deux
-## segments (mitre). Filet : `test_world_v2_water_mesh.gd` (rouge avant).
+## V2.2R : le fil est échantillonné d'un bloc et chaque point porte UNE
+## arête, orientée par la direction MOYENNÉE de ses deux segments (mitre).
+## Filet : `test_world_v2_water_mesh.gd` (rouge avant).
+##
+## V2.2R.1 (rejet visuel du lead, region_r03 — « rubans terminés
+## brutalement, raccords incomplets ») : chaque extrémité reçoit un
+## TRAITEMENT explicite :
+##   - `buried`  : le ruban se prolonge en amont et PLONGE sous le terrain
+##                 (la source émerge du sol, aucun cap plat en l'air) ;
+##   - `join`    : le ruban se prolonge jusqu'au fil de `join_line` et se
+##                 RENTRE sous sa surface locale (confluence sans trou) ;
+##   - `free`    : rien (l'embouchure passe déjà sous le plan du lac).
+## La surface NATURELLE est lissée longitudinalement (une passe) : à 8 m
+## d'échantillonnage une descente raide faisait une marche de 2,71 m.
+## Filet : `test_world_v2_water_junctions.gd` (rouge avant, 4 écarts).
 func _ribbon(ribbon_name: String, line: PackedVector2Array, half_w: float,
-		draft: float) -> MeshInstance3D:
-	# 1. Échantillonner LE FIL ENTIER : points + direction mitrée par point.
+		draft: float, start_mode: String, end_mode: String,
+		join_line: PackedVector2Array) -> MeshInstance3D:
+	# 1. Échantillonner LE FIL ENTIER, puis prolonger les extrémités.
+	# ARRONDIR d'abord les coudes (Chaikin ×2, extrémités conservées) : au
+	# coude vif, l'arête mitrée pivotait d'un coup et le ruban se PINÇAIT en
+	# pointe — lisible comme un « ruban terminé brutalement » (mesuré au
+	# zoom r03, V2.2R.1). Le fil PHYSIQUE (carve, gués, hydrologie) reste
+	# le fil gelé — seul le maillage visuel épouse la courbe.
+	line = _chaikin(line, 2)
 	var points: PackedVector2Array = PackedVector2Array()
 	for i: int in range(line.size() - 1):
 		var a: Vector2 = line[i]
@@ -69,6 +94,64 @@ func _ribbon(ribbon_name: String, line: PackedVector2Array, half_w: float,
 		for s: int in range(steps):
 			points.append(a.lerp(b, float(s) / float(steps)))
 	points.append(line[line.size() - 1])
+	# `override[k]` >= -1e8 : surface IMPOSÉE ; `alphas[k]` : opacité de
+	# sommet (le prolongement de confluence s'efface, jamais un empilement
+	# d'alphas à bord lisible — rejet V2.2R.1, zoom de jonction).
+	var overrides: PackedFloat32Array = PackedFloat32Array()
+	overrides.resize(points.size())
+	overrides.fill(-1e9)
+	var alphas: PackedFloat32Array = PackedFloat32Array()
+	alphas.resize(points.size())
+	alphas.fill(1.0)
+	if start_mode == "buried":
+		var head: Array = _buried_extension(points[0],
+			(points[0] - points[1]).normalized(), draft)
+		var new_points: PackedVector2Array = PackedVector2Array()
+		var new_overrides: PackedFloat32Array = PackedFloat32Array()
+		var new_alphas: PackedFloat32Array = PackedFloat32Array()
+		for entry: Array in head:
+			new_points.append(entry[0] as Vector2)
+			new_overrides.append(float(entry[1]))
+			new_alphas.append(1.0)
+		new_points.append_array(points)
+		new_overrides.append_array(overrides)
+		new_alphas.append_array(alphas)
+		points = new_points
+		overrides = new_overrides
+		alphas = new_alphas
+	if end_mode == "buried":
+		var tail: Array = _buried_extension(points[points.size() - 1],
+			(points[points.size() - 1] - points[points.size() - 2]).normalized(),
+			draft)
+		for i: int in range(tail.size() - 1, -1, -1):
+			points.append((tail[i] as Array)[0] as Vector2)
+			overrides.append(float((tail[i] as Array)[1]))
+			alphas.append(1.0)
+	elif end_mode == "join":
+		for entry: Array in _join_extension(points[points.size() - 1], join_line):
+			points.append(entry[0] as Vector2)
+			overrides.append(float(entry[1]))
+			alphas.append(float(entry[2]))
+
+	# 2. Surfaces : naturelles puis LISSÉES (les imposées ne bougent pas).
+	var surfaces: PackedFloat32Array = PackedFloat32Array()
+	surfaces.resize(points.size())
+	for k: int in range(points.size()):
+		if overrides[k] > -1e8:
+			surfaces[k] = overrides[k]
+			continue
+		var bed: float = _heightmap.height_at(points[k].x, points[k].y)
+		surfaces[k] = minf(bed + draft,
+			maxf(_heightmap.water_surface_at(points[k].x, points[k].y), bed + 0.15))
+	for k: int in range(1, points.size() - 1):
+		if overrides[k] > -1e8:
+			continue
+		var smoothed: float = (surfaces[k - 1] + surfaces[k] * 2.0
+			+ surfaces[k + 1]) * 0.25
+		var bed: float = _heightmap.height_at(points[k].x, points[k].y)
+		surfaces[k] = maxf(smoothed, bed + 0.10)
+
+	# 3. Émettre la bande continue.
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var previous_left: Vector3 = Vector3.ZERO
@@ -80,16 +163,14 @@ func _ribbon(ribbon_name: String, line: PackedVector2Array, half_w: float,
 		var out_of: Vector2 = (points[k + 1] - p).normalized() 			if k < points.size() - 1 else Vector2.ZERO
 		var direction: Vector2 = (into + out_of).normalized() 			if (into + out_of).length() > 0.001 else (into if into != Vector2.ZERO else out_of)
 		var side: Vector2 = Vector2(-direction.y, direction.x) * half_w
-		# Le lit LOCAL fixe la surface : profil + tirant d'eau.
 		var bed: float = _heightmap.height_at(p.x, p.y)
-		var surface: float = minf(bed + draft,
-			maxf(_heightmap.water_surface_at(p.x, p.y), bed + 0.15))
+		var surface: float = surfaces[k]
 		var left: Vector3 = Vector3(p.x + side.x, surface, p.y + side.y)
 		var right: Vector3 = Vector3(p.x - side.x, surface, p.y - side.y)
-		# r = profondeur (bornée), gb = courant local — lus par le shader.
+		# r = profondeur (bornée), gb = courant, a = opacité — lus par le shader.
 		var vertex_data: Color = Color(
 			clampf((surface - bed) / DEPTH_FULL_M, 0.0, 1.0),
-			direction.x * 0.5 + 0.5, direction.y * 0.5 + 0.5)
+			direction.x * 0.5 + 0.5, direction.y * 0.5 + 0.5, alphas[k])
 		if k > 0:
 			st.set_color(previous_data)
 			st.add_vertex(previous_left)
@@ -114,6 +195,84 @@ func _ribbon(ribbon_name: String, line: PackedVector2Array, half_w: float,
 	instance.mesh = mesh
 	instance.add_to_group(&"world_v2_water")
 	return instance
+
+
+## Coupe de coins de Chaikin : chaque segment est remplacé par ses points
+## à 25 % et 75 % — les coudes s'arrondissent, les EXTRÉMITÉS ne bougent
+## pas (les traitements d'extrémité s'y accrochent).
+func _chaikin(line: PackedVector2Array, passes: int) -> PackedVector2Array:
+	var current: PackedVector2Array = line
+	for p: int in range(passes):
+		var smoothed: PackedVector2Array = PackedVector2Array()
+		smoothed.append(current[0])
+		for i: int in range(current.size() - 1):
+			smoothed.append(current[i].lerp(current[i + 1], 0.25))
+			smoothed.append(current[i].lerp(current[i + 1], 0.75))
+		smoothed.append(current[current.size() - 1])
+		current = smoothed
+	return current
+
+
+## Prolongement ENFOUI d'une source : trois points continuant le fil vers
+## l'amont, surface imposée qui plonge sous le terrain — le ruban émerge du
+## sol au lieu de flotter en l'air (cap mesuré à 0,90 m au-dessus du sol).
+## Retourne [[point, surface_imposée], …] du plus LOINTAIN au plus proche.
+func _buried_extension(origin: Vector2, away: Vector2, draft: float) -> Array:
+	var entries: Array = []
+	var origin_bed: float = _heightmap.height_at(origin.x, origin.y)
+	var natural: float = minf(origin_bed + draft,
+		maxf(_heightmap.water_surface_at(origin.x, origin.y), origin_bed + 0.15))
+	for distance_and_sink: Array in [[8.0, 1.2], [4.5, 0.8], [2.0, 0.35]]:
+		var p: Vector2 = origin + away * float(distance_and_sink[0])
+		var ground: float = _heightmap.height_at(p.x, p.y)
+		# Sous le sol LOCAL et jamais plus haut que la surface naturelle du
+		# départ : le prolongement descend, il ne fait pas un dôme.
+		entries.append([p, minf(ground - float(distance_and_sink[1]),
+			natural - 0.10)])
+	return entries
+
+
+## Prolongement de CONFLUENCE : le fil continue jusqu'à 2 m À L'INTÉRIEUR
+## du bord du ruban récepteur, surface glissée juste sous la sienne, et
+## OPACITÉ qui s'efface dès le franchissement du bord — mesuré au zoom de
+## jonction : un simple recouvrement empilait deux alphas et le bord de la
+## nappe rentrée restait LISIBLE à travers le cours principal.
+## Retourne [[point, surface_imposée, opacité], …] dans l'ordre d'ajout.
+func _join_extension(origin: Vector2, receiver_line: PackedVector2Array) -> Array:
+	var best: float = 1e9
+	var closest: Vector2 = origin
+	for i: int in range(receiver_line.size() - 1):
+		var candidate: Vector2 = Geometry2D.get_closest_point_to_segment(
+			origin, receiver_line[i], receiver_line[i + 1])
+		var d: float = origin.distance_to(candidate)
+		if d < best:
+			best = d
+			closest = candidate
+	var receiver_bed: float = _heightmap.height_at(closest.x, closest.y)
+	var receiver_surface: float = minf(receiver_bed + MAIN_DRAFT,
+		maxf(_heightmap.water_surface_at(closest.x, closest.y),
+			receiver_bed + 0.15))
+	var toward: Vector2 = (closest - origin)
+	if toward.length() < 0.001:
+		return []
+	var direction: Vector2 = toward.normalized()
+	# S'arrêter 2 m PASSÉ le bord du récepteur (jamais jusqu'à son fil : le
+	# filet exige < demi-largeur − 0,5 ; 2,2 m du fil le satisfait).
+	var total: float = maxf(toward.length() - MAIN_HALF_W + 2.0, 2.0)
+	var edge_at: float = maxf(toward.length() - MAIN_HALF_W, 0.5)
+	var entries: Array = []
+	var steps: int = maxi(3, int(ceilf(total / 1.5)))
+	for s: int in range(1, steps + 1):
+		var t: float = float(s) / float(steps)
+		var traveled: float = total * t
+		var p: Vector2 = origin + direction * traveled
+		# Sous la surface du récepteur, opacité pleine jusqu'à son bord puis
+		# effacement progressif — la confluence fond, elle ne se découpe pas.
+		var past_edge: float = clampf((traveled - edge_at)
+			/ maxf(total - edge_at, 0.001), 0.0, 1.0)
+		entries.append([p, receiver_surface - 0.03 - 0.06 * t,
+			1.0 - past_edge])
+	return entries
 
 
 ## Disque du lac en ÉVENTAIL avec profondeur par sommet : pétrole au

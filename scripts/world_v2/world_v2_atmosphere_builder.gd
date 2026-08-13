@@ -46,83 +46,70 @@ func build(parent: Node3D) -> void:
 	parent.add_child(timer)
 
 
-## Nuage en couches : base large et sombre, masse centrale, nappes décalées,
-## bords supérieurs plus clairs CÔTÉ soleil (ouest). Chaque couche est une
-## sphère aplatie déformée par graine fixe — jamais un disque régulier.
+## Nuage d'orage V2.2R.1 : UNE SEULE MASSE OPAQUE fusionnée, colorée par
+## SOMMET — plus aucune transparence imbriquée.
+##
+## HISTORIQUE MESURÉ : passes 1-2 = soucoupes ; passe 3 = galette noire
+## (verdict du lead) ; passe 4 (V2.2R) = coques translucides superposées
+## dont les intersections restaient lisibles à travers les volumes — une
+## « énorme boule polyédrique translucide » (rejet V2.2R.1, region_r10).
+## La cause : chaque lobe portait son propre mesh, et les coques alpha se
+## voyaient l'une à travers l'autre. Ici tous les lobes fusionnent dans un
+## SEUL ArrayMesh opaque (le z-buffer avale les recouvrements), la matière
+## vit dans les couleurs de sommet : ventre sombre irrégulier, corps dense,
+## têtes bourgeonnantes éclaircies côté soleil, bords secondaires.
 func _storm_cloud() -> Node3D:
 	var cloud: Node3D = Node3D.new()
 	cloud.name = "StormCloud"
 	cloud.position = CLOUD_CENTER
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = SEED
-	# HISTORIQUE MESURÉ : passes 1-2 = soucoupes (couches concentriques puis
-	# sphères lisses) ; passe 3 = galette noire suspendue (verdict de la
-	# revue du lead — base horizontale, quasi-noir, aucune épaisseur).
-	# V2.2R : un CUMULONIMBUS — vraie ÉPAISSEUR VERTICALE (trois étages),
-	# dessous en LOBES irréguliers, têtes bourgeonnantes plus claires,
-	# jamais près-noir, et des COQUES translucides qui diffusent les bords
-	# dans l'atmosphère. Aucune longue base horizontale : les lobes bas
-	# descendent à des hauteurs différentes.
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var blob_count: int = 22
 	for i: int in range(blob_count):
 		var tier: float = float(i) / float(blob_count - 1)
-		var blob: MeshInstance3D = MeshInstance3D.new()
-		blob.name = "CloudMass%d" % i
 		# Étages : lobes bas plus PETITS et sombres, corps moyen massif,
-		# têtes hautes bourgeonnantes.
+		# têtes hautes bourgeonnantes — volume vertical -20 à +26.
 		var radius: float = (lerpf(14.0, 22.0, sin(tier * PI))
 			+ rng.randf_range(-3.0, 5.0))
-		var material: StandardMaterial3D = StandardMaterial3D.new()
-		# Du gris-bleu orageux au gris chaud des crêtes — jamais de noir.
-		# La lumière vient de l'OUEST : seules les têtes CÔTÉ soleil
-		# s'éclairent — un clair uniforme lisait « boule pâle » (mesuré).
-		var base_dark: Color = Color(0.255, 0.265, 0.335)
-		var top_light: Color = Color(0.46, 0.43, 0.47)
 		var west_x: float = rng.randf_range(-30.0, 30.0) * (1.0 - tier * 0.4)
 		var sun_side: float = clampf(0.5 - west_x / 60.0, 0.0, 1.0)
-		material.albedo_color = base_dark.lerp(top_light,
-			tier * (0.25 + 0.75 * sun_side) * rng.randf_range(0.8, 1.0))
-		material.roughness = 1.0
-		material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		material.set_flag(BaseMaterial3D.FLAG_DISABLE_FOG, true)
-		var flatten: float = lerpf(0.55, 0.8, rng.randf())
-		blob.mesh = _blob_mesh(radius, flatten, rng.randi(), material)
-		# Volume VERTICAL : -20 (lobes pendants) à +26 (têtes), resserré en
-		# plan — une tour d'orage, pas une assiette.
-		blob.position = Vector3(west_x,
+		var origin: Vector3 = Vector3(west_x,
 			lerpf(-20.0, 26.0, tier) + rng.randf_range(-4.0, 4.0),
 			rng.randf_range(-22.0, 22.0) * (1.0 - tier * 0.4))
-		blob.scale = Vector3(rng.randf_range(0.85, 1.15), 1.0,
-			rng.randf_range(0.8, 1.1))
-		blob.rotation.y = rng.randf() * TAU
-		cloud.add_child(blob)
-		# Coque diffuse : seulement sur les lobes BAS (le ventre fond dans
-		# l'atmosphère) — sur les têtes, elle délavait tout en boule pâle.
-		if tier > 0.55:
-			continue
-		var shell: MeshInstance3D = MeshInstance3D.new()
-		shell.name = "CloudShell%d" % i
-		var shell_material: StandardMaterial3D = StandardMaterial3D.new()
-		# Coque au TON de sa masse (à peine plus claire) : une coque blanche
-		# délavait la cellule en chou-fleur lilas (mesuré cam01).
-		shell_material.albedo_color = Color(material.albedo_color.r * 1.02,
-			material.albedo_color.g * 1.02, material.albedo_color.b * 1.05, 0.16)
-		shell_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-		shell_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		shell_material.cull_mode = BaseMaterial3D.CULL_BACK
-		shell.mesh = _blob_mesh(radius * 1.3, flatten, rng.randi(), shell_material)
-		shell.position = blob.position
-		shell.scale = blob.scale
-		shell.rotation.y = blob.rotation.y
-		cloud.add_child(shell)
+		var stretch: Vector3 = Vector3(rng.randf_range(0.85, 1.15),
+			lerpf(0.55, 0.8, rng.randf()), rng.randf_range(0.8, 1.1))
+		_append_blob(st, origin, radius, stretch, rng.randi(), tier, sun_side)
+	# Bords SECONDAIRES : trois petits lobes écartés à mi-hauteur — la
+	# silhouette gagne des épaules, pas une boule.
+	for k: int in range(3):
+		var azimuth: float = TAU * (float(k) + 0.3) / 3.0
+		var origin: Vector3 = Vector3(cos(azimuth) * 34.0,
+			rng.randf_range(-2.0, 10.0), sin(azimuth) * 26.0)
+		var sun_side: float = clampf(0.5 - origin.x / 60.0, 0.0, 1.0)
+		_append_blob(st, origin, rng.randf_range(7.0, 10.5),
+			Vector3(1.0, rng.randf_range(0.5, 0.7), 1.0), rng.randi(),
+			0.45, sun_side)
+	var mesh: ArrayMesh = st.commit()
+	var material: StandardMaterial3D = StandardMaterial3D.new()
+	material.vertex_color_use_as_albedo = true
+	material.albedo_color = Color.WHITE
+	material.roughness = 1.0
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.set_flag(BaseMaterial3D.FLAG_DISABLE_FOG, true)
+	mesh.surface_set_material(0, material)
+	var mass: MeshInstance3D = MeshInstance3D.new()
+	mass.name = "CloudMass"
+	mass.mesh = mesh
+	cloud.add_child(mass)
 	return cloud
 
 
-## Masse nuageuse GRUMELEUSE : sphère basse résolution déplacée radialement
-## par un bruit à graine fixe, puis aplatie — le contour n'est jamais une
-## ellipse propre.
-func _blob_mesh(radius: float, flatten: float, noise_seed: int,
-		material: Material) -> ArrayMesh:
+## Ajoute un lobe GRUMELEUX à la masse fusionnée : sphère déplacée au bruit,
+## couleur PAR SOMMET — ventre sombre, tête claire côté soleil, mottle.
+func _append_blob(st: SurfaceTool, origin: Vector3, radius: float,
+		stretch: Vector3, noise_seed: int, tier: float, sun_side: float) -> void:
 	var sphere: SphereMesh = SphereMesh.new()
 	sphere.radius = 1.0
 	sphere.height = 2.0
@@ -130,64 +117,111 @@ func _blob_mesh(radius: float, flatten: float, noise_seed: int,
 	sphere.rings = 7
 	var arrays: Array = sphere.get_mesh_arrays()
 	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
 	var noise: FastNoiseLite = FastNoiseLite.new()
 	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
 	noise.frequency = 0.9
 	noise.seed = noise_seed
+	var base_dark: Color = Color(0.255, 0.265, 0.335)
+	var top_light: Color = Color(0.47, 0.44, 0.48)
+	var world: PackedVector3Array = PackedVector3Array()
+	var tints: PackedColorArray = PackedColorArray()
+	world.resize(vertices.size())
+	tints.resize(vertices.size())
 	for i: int in range(vertices.size()):
-		var v: Vector3 = vertices[i]
-		var bump: float = noise.get_noise_3dv(v.normalized() * 2.2)
+		var unit: Vector3 = vertices[i].normalized()
+		var bump: float = noise.get_noise_3dv(unit * 2.2)
 		var r: float = radius * (1.0 + bump * 0.38)
-		vertices[i] = Vector3(v.x * r, v.y * r * flatten, v.z * r)
-	arrays[Mesh.ARRAY_VERTEX] = vertices
-	var mesh: ArrayMesh = ArrayMesh.new()
-	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
-	mesh.surface_set_material(0, material)
-	return mesh
+		world[i] = origin + Vector3(unit.x * r * stretch.x,
+			unit.y * r * stretch.y, unit.z * r * stretch.z)
+		# Ton : étage + hauteur DANS le lobe + soleil + mottle — le ventre
+		# de chaque lobe reste sombre, seules les têtes ouest s'éclairent.
+		var lift: float = clampf(tier * 0.8 + unit.y * 0.3, 0.0, 1.0)
+		var tint: Color = base_dark.lerp(top_light,
+			lift * (0.3 + 0.7 * sun_side))
+		var belly: float = lerpf(0.84, 1.0, clampf(unit.y * 0.5 + 0.5, 0.0, 1.0))
+		tints[i] = Color(tint.r * belly * (1.0 + bump * 0.08),
+			tint.g * belly * (1.0 + bump * 0.08),
+			tint.b * belly * (1.0 + bump * 0.06))
+	for j: int in range(indices.size()):
+		st.set_color(tints[indices[j]])
+		st.add_vertex(world[indices[j]])
 
 
-## Éclair : trajet IRRÉGULIER du ventre du nuage vers la flèche de la
-## citadelle, cœur blanc, invisible par défaut (§9.3 bible — 2-4 branches
-## viendront avec le VFX complet d'une phase ultérieure).
+## Éclair : trajet IRRÉGULIER du ventre du nuage vers le plateau de la
+## porte, invisible par défaut. V2.2R.1 (« nettement visible dans cam01 à
+## l'exposition normale ») : à ~370 m, le ruban de 1,1 m de large faisait
+## moins de 2 px — cœur ÉLARGI en quads CROISÉS (lisible sous tout azimut),
+## émission renforcée, et UN halo translucide discret (une seule couche —
+## jamais des transparences imbriquées).
 func _lightning_bolt() -> MeshInstance3D:
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = SEED + 7
-	var st: SurfaceTool = SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	# MESURÉ À LA CAPTURE : le premier trajet visait une flèche de 90 m qui
 	# n'existe pas dans le whitebox — l'éclair vivait ENTIÈREMENT DANS le
-	# nuage, invisible. Il frappe désormais du ventre du nuage vers le
-	# plateau de la porte (y = 34, ancre §3.3).
+	# nuage, invisible. Il frappe du ventre du nuage vers le plateau (y=34).
 	var from: Vector3 = CLOUD_CENTER + Vector3(4.0, -10.0, 2.0)
 	var to: Vector3 = Vector3(0.0, 36.0, -206.0)
+	var path: PackedVector3Array = PackedVector3Array()
+	path.append(from)
 	var segments: int = 7
-	var previous: Vector3 = from
 	for i: int in range(1, segments + 1):
 		var t: float = float(i) / float(segments)
 		var point: Vector3 = from.lerp(to, t)
 		if i < segments:
 			point += Vector3(rng.randf_range(-3.5, 3.5), 0.0,
 				rng.randf_range(-3.5, 3.5))
-		var side: Vector3 = Vector3(0.55, 0.0, 0.55)
-		st.add_vertex(previous - side)
-		st.add_vertex(previous + side)
-		st.add_vertex(point + side)
-		st.add_vertex(previous - side)
-		st.add_vertex(point + side)
-		st.add_vertex(point - side)
-		previous = point
-	var mesh: ArrayMesh = st.commit()
-	var material: StandardMaterial3D = StandardMaterial3D.new()
-	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	material.albedo_color = Color(0.95, 1.0, 1.0)
-	material.emission_enabled = true
-	material.emission = Color(0.55, 0.9, 0.95)
-	material.emission_energy_multiplier = 3.5
-	material.cull_mode = BaseMaterial3D.CULL_DISABLED
-	material.set_flag(BaseMaterial3D.FLAG_DISABLE_FOG, true)
-	mesh.surface_set_material(0, material)
+		path.append(point)
+
+	var core_material: StandardMaterial3D = StandardMaterial3D.new()
+	core_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	core_material.albedo_color = Color(0.97, 1.0, 1.0)
+	core_material.emission_enabled = true
+	core_material.emission = Color(0.9, 0.98, 1.0)
+	core_material.emission_energy_multiplier = 7.0
+	core_material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	core_material.set_flag(BaseMaterial3D.FLAG_DISABLE_FOG, true)
 	var bolt: MeshInstance3D = MeshInstance3D.new()
 	bolt.name = "StormBolt"
-	bolt.mesh = mesh
+	bolt.mesh = _bolt_strip(path, 0.8, core_material)
 	bolt.visible = false
+
+	var halo_material: StandardMaterial3D = StandardMaterial3D.new()
+	halo_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	halo_material.albedo_color = Color(0.55, 0.9, 0.95, 0.30)
+	halo_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	halo_material.emission_enabled = true
+	halo_material.emission = Color(0.35, 0.8, 0.9)
+	halo_material.emission_energy_multiplier = 2.0
+	halo_material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	halo_material.set_flag(BaseMaterial3D.FLAG_DISABLE_FOG, true)
+	var halo: MeshInstance3D = MeshInstance3D.new()
+	halo.name = "StormBoltHalo"
+	halo.mesh = _bolt_strip(path, 2.6, halo_material)
+	bolt.add_child(halo)
 	return bolt
+
+
+## Ruban d'éclair en quads CROISÉS (deux plans en X par segment) : lisible
+## sous n'importe quel azimut de caméra, jamais une lame vue par la tranche.
+func _bolt_strip(path: PackedVector3Array, half_w: float,
+		material: Material) -> ArrayMesh:
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var sides: Array[Vector3] = [
+		Vector3(half_w, 0.0, half_w) * 0.7071,
+		Vector3(half_w, 0.0, -half_w) * 0.7071,
+	]
+	for i: int in range(path.size() - 1):
+		var previous: Vector3 = path[i]
+		var point: Vector3 = path[i + 1]
+		for side: Vector3 in sides:
+			st.add_vertex(previous - side)
+			st.add_vertex(previous + side)
+			st.add_vertex(point + side)
+			st.add_vertex(previous - side)
+			st.add_vertex(point + side)
+			st.add_vertex(point - side)
+	var mesh: ArrayMesh = st.commit()
+	mesh.surface_set_material(0, material)
+	return mesh
