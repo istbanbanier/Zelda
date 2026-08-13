@@ -5,6 +5,47 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-13 (suite 6) — V2.2R : six familles corrigées, preuves en cours — V2.2R EN COURS — NON VALIDÉE
+
+Toutes les corrections mesurées sur capture, même caméra avant/après (§4) :
+
+- **F eau** (48c70ce) : filet de quads dégénérés écrit ROUGE d'abord
+  (20 quads de torsion nommés), ruban MITRÉ continu — vert.
+- **C lumière + E routes** (3d5330b) : filet d'exposition recalibré ROUGE
+  d'abord sur les cinq captures rejetées (sa première version les passait —
+  un filet qui ne rougit jamais ne prouve rien) ; routes à largeur bruitée,
+  bords mordus, interruptions, terre assombrie.
+- **A frontières + B orage** (e334f4e) : crêtes déchiquetées à strates,
+  contreforts superposés, bouts plongeants ; cumulonimbus sombre à trois
+  étages, coques ventrales, éclair vers le plateau.
+- **D végétation** (72b9208) : prairies en PHRASES (grappe + respiration sur
+  fond au quart), steppe r08 quasi vide (le vide est l'identité), marche r10
+  raréfiée, fleur rose = accent rare 15 % PAR GRAPPE (mesuré : Flower_3 est
+  la rose), plus de grappe à <4,5 m d'un œil gelé (pétales sur l'objectif de
+  cam01, mesuré), couloir de visée EFFILÉ 11→3 m (le sapin de cam03 ne peut
+  plus y naître), pierres de bord de route, navmesh re-cuite.
+- **A 3e passe** (50e9718) : cause réelle des faces plates de près — les
+  NORMALES de la boîte restaient périmées après déplacement, la lumière
+  ignorait le relief. Diagnostic magenta sur capture r11 (les faces n'étaient
+  pas les pics), normales recalculées, 2e octave en hauteur ; les pics
+  lointains réutilisent la crête éprouvée (le cône restait un chapeau).
+- **Outillage documentaire** (50e9718) : carte régionale SCHÉMATIQUE à onze
+  zones + légende rendue, carte de densité végétale depuis les plans montés,
+  montages A/B (refus si résolutions ≠), sonde de métriques (16 651 instances),
+  matrice région→identité imprimée depuis les constantes réelles ; cadrage
+  dédié r11 (anneau sans ancre → caméra depuis la zone jouable).
+- **Contrôles négatifs A-D rejoués décisifs à 50e9718** (logs frais avec
+  date+SHA) ; suite world_v2 43/43 à chaque jalon.
+
+**Prochaine action exacte.** Attendre le verdict de la revue contradictoire
+fraîche sur df965c5..50e9718 ; corriger ce qu'elle bloque ; puis chaîne
+finale §5 : captures depuis l'arbre committé propre (11 régions + 6 caméras
++ éclair + couture + cartes + montages A/B + métriques), filet d'exposition
+conforme, validate_fast RC fiable, evidence, push, SHA distant vérifié —
+et fermer par la phrase imposée, sans verdict artistique auto-déclaré.
+
+---
+
 ## 2026-08-13 (suite 5) — V2.2R OUVERTE : la revue visuelle du lead REJETTE le gate
 
 **Statut autoritaire du lead** (après inspection indépendante réelle des
