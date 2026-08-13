@@ -115,6 +115,8 @@ var _water_segments: Array[Array] = []
 var _fords: Array[Vector2] = []
 var _checkpoints: Array[Vector2] = []
 var _camera_eyes: Array[Vector2] = []
+## [œil 3D, point clair (60 %% du trajet vers la cible)] par fenêtre gelée.
+var _camera_sights: Array[Array] = []
 var _mesh_cache: Dictionary = {}
 var _grass_short: ArrayMesh = null
 var _grass_tall: ArrayMesh = null
@@ -147,7 +149,13 @@ func _init(heightmap: WorldV2Heightmap, terrain: WorldV2TerrainBuilder,
 			_checkpoints.append(Vector2(float((pos as Array)[0]),
 				float((pos as Array)[2])))
 	for window: Array in WorldV2CamerasBuilder.WINDOWS:
-		_camera_eyes.append(Vector2(float(window[1]), float(window[2])))
+		var eye_xz: Vector2 = Vector2(float(window[1]), float(window[2]))
+		_camera_eyes.append(eye_xz)
+		var eye: Vector3 = Vector3(eye_xz.x,
+			heightmap.height_at(eye_xz.x, eye_xz.y) + 2.4, eye_xz.y)
+		# La fenêtre exige une visée LIBRE sur 60 %% du trajet (test caméras
+		# V2.1) : c'est ce segment-là que les blocs doivent éviter.
+		_camera_sights.append([eye, eye.lerp(window[3] as Vector3, 0.6)])
 	_grass_short = _make_tuft_mesh(0.32, 6)
 	_grass_tall = _make_tuft_mesh(0.72, 7)
 	_reed_mesh = _make_tuft_mesh(1.05, 5)
@@ -390,6 +398,24 @@ func _spot_allows(p: Vector2, max_slope_deg: float, blocker_radius: float,
 	if blocker_radius >= 0.0:
 		for eye: Vector2 in ctx["eyes"] as Array[Vector2]:
 			if p.distance_to(eye) < CAMERA_BLOCKER_CLEAR_M:
+				return false
+		# Le COULOIR DE VISÉE : un rocher à 8 m DANS L'AXE de cam03 a bouché
+		# la fenêtre gelée (mesuré par la suite caméras). Un bloc est refusé
+		# s'il est proche du segment de visée en plan ET assez haut pour
+		# croiser le rayon.
+		for sight: Array in _camera_sights:
+			var eye3: Vector3 = sight[0] as Vector3
+			var clear_end: Vector3 = sight[1] as Vector3
+			var closest: Vector2 = Geometry2D.get_closest_point_to_segment(p,
+				Vector2(eye3.x, eye3.z), Vector2(clear_end.x, clear_end.z))
+			if p.distance_to(closest) >= 3.0 + radius:
+				continue
+			var span: float = Vector2(eye3.x, eye3.z).distance_to(
+				Vector2(clear_end.x, clear_end.z))
+			var t: float = 0.0 if span < 0.001 else 				Vector2(eye3.x, eye3.z).distance_to(closest) / span
+			var ray_y: float = lerpf(eye3.y, clear_end.y, t)
+			var top_y: float = _heightmap.height_at(p.x, p.y) + 5.0
+			if top_y > ray_y - 1.0:
 				return false
 	return true
 
