@@ -48,11 +48,11 @@ const PAINT_BLUR_RADIUS_CELLS: int = 2
 ## la palette cible et le soleil miel aggravait le glissement jaune. Le bleu
 ## remonte, la dominante verte se calme : l'olive de §1.4, pas le néon.
 const REGION_PAINT: Dictionary = {
-	&"r01_crete_de_l_aube": Color(0.37, 0.50, 0.26),
-	&"r02_prairie_mille_fleurs": Color(0.36, 0.47, 0.26),
-	&"r03_val_de_neris": Color(0.31, 0.46, 0.28),
+	&"r01_crete_de_l_aube": Color(0.36, 0.47, 0.27),
+	&"r02_prairie_mille_fleurs": Color(0.35, 0.44, 0.27),
+	&"r03_val_de_neris": Color(0.31, 0.43, 0.29),
 	&"r04_falaises_du_couchant": Color(0.40, 0.37, 0.26),
-	&"r05_terrasse_du_camp": Color(0.40, 0.43, 0.26),
+	&"r05_terrasse_du_camp": Color(0.38, 0.41, 0.27),
 	&"r06_bois_du_levant": Color(0.23, 0.36, 0.22),
 	&"r07_hauteurs_de_l_orient": Color(0.39, 0.35, 0.23),
 	&"r08_steppe_du_nord": Color(0.39, 0.40, 0.27),

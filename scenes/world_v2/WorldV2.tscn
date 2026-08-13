@@ -29,10 +29,10 @@ ambient_light_color = Color(0.76, 0.84, 0.92, 1)
 ambient_light_energy = 0.6
 tonemap_mode = 2
 fog_enabled = true
-fog_light_color = Color(0.62, 0.72, 0.78, 1)
+fog_light_color = Color(0.54, 0.62, 0.69, 1)
 fog_density = 0.0012
 fog_sky_affect = 0.05
-fog_aerial_perspective = 0.25
+fog_aerial_perspective = 0.15
 
 [node name="WorldV2" type="Node3D"]
 script = ExtResource("1_root")
@@ -60,7 +60,7 @@ script = ExtResource("1_root")
 [node name="Sun" type="DirectionalLight3D" parent="Lighting"]
 transform = Transform3D(-0.333807, 0.368318, -0.867707, 0, 0.920505, 0.390731, 0.942641, 0.13043, -0.307271, 0, 120, 0)
 light_color = Color(1, 0.87, 0.65, 1)
-light_energy = 1.42
+light_energy = 1.3
 shadow_enabled = true
 directional_shadow_max_distance = 260.0
 

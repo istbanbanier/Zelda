@@ -658,7 +658,7 @@ func _reed_material() -> ShaderMaterial:
 ## fleurs restent des accents vifs ; les rochers glissent vers l'ocre.
 func _category_tone(layer: String) -> Color:
 	if layer.begins_with("tree_"):
-		return Color(0.72, 0.74, 0.58)
+		return Color(0.60, 0.63, 0.50)
 	if layer.begins_with("rock_"):
 		return Color(0.95, 0.88, 0.78)
 	return Color(1.0, 1.0, 1.0)

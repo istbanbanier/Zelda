@@ -69,8 +69,9 @@ func build(parent: Node3D) -> void:
 	# Bleu-gris clair : les pics lointains s'enfoncent dans la brume (§9.4 :
 	# montagnes éclaircies, refroidies, simplifiées).
 	var far_material: StandardMaterial3D = StandardMaterial3D.new()
-	far_material.albedo_color = Color(0.46, 0.51, 0.58)
+	far_material.albedo_color = Color(0.40, 0.45, 0.53)
 	far_material.roughness = 1.0
+	far_material.metallic_specular = 0.05
 	for i: int in range(FAR_SILHOUETTES):
 		var azimuth: float = TAU * (float(i) + 0.5) / float(FAR_SILHOUETTES)
 		var x: float = cos(azimuth) * FAR_RADIUS
@@ -119,7 +120,9 @@ func _ridge_mesh(crest: float, ridge_seed: int) -> ArrayMesh:
 	var material: StandardMaterial3D = StandardMaterial3D.new()
 	# Roche d'anneau : ocre éteint tirant froid — l'identité r11, pas un
 	# gris neutre (§1.6 : les matériaux gris génériques sont interdits).
-	material.albedo_color = Color(0.40, 0.345, 0.315)
+	# V2.2R : reflet solaire coupé — les faces au soleil ÉCRÊTAIENT (mesuré).
+	material.albedo_color = Color(0.355, 0.31, 0.29)
 	material.roughness = 1.0
+	material.metallic_specular = 0.05
 	mesh.surface_set_material(0, material)
 	return mesh

@@ -25,7 +25,7 @@ render_mode specular_disabled;
 
 // -- peinture (mêmes réglages de base que le shader personnage) --------------
 uniform vec4 shadow_tint : source_color = vec4(0.42, 0.48, 0.60, 1.0);
-uniform vec4 warm_tint : source_color = vec4(1.22, 1.0, 0.84, 1.0);
+uniform vec4 warm_tint : source_color = vec4(1.16, 1.0, 0.86, 1.0);
 uniform float ramp_low : hint_range(0.0, 1.0) = 0.22;
 uniform float ramp_high : hint_range(0.0, 1.0) = 0.52;
 uniform float ramp_soft : hint_range(0.01, 0.5) = 0.21;
@@ -34,13 +34,13 @@ uniform float shadow_floor : hint_range(0.0, 1.0) = 0.14;
 // Plafond peint : une pente face au soleil ne BRÛLE pas (mesuré cam05 :
 // mare à 68 %% de luma contre 33 %% à côté — au-dessus de la bande §1.5).
 // Le peintre mute la masse la plus éclairée ; le plafond fait pareil.
-uniform float lit_ceiling : hint_range(0.5, 1.0) = 0.82;
+uniform float lit_ceiling : hint_range(0.5, 1.0) = 0.78;
 
 // -- familles de matière -----------------------------------------------------
 // Roche ocre des pentes fortes (albédo — la surface module autour du gris).
 uniform vec4 rock_color : source_color = vec4(0.46, 0.36, 0.28, 1.0);
 // Terre des routes (albédo ; ISS-037 : la terre pleine rendait 0,97).
-uniform vec4 earth_color : source_color = vec4(0.39, 0.31, 0.24, 1.0);
+uniform vec4 earth_color : source_color = vec4(0.315, 0.25, 0.20, 1.0);
 // Cendres de la Marche (désaturées, froides — l'orage n'est PAS du cyan).
 uniform vec4 ash_color : source_color = vec4(0.34, 0.33, 0.36, 1.0);
 // Fond humide : le lit tire vers le froid, jamais vers le noir.
@@ -125,9 +125,15 @@ void fragment() {
 	// monde — jamais une bande nette de largeur constante (§6.2 bible).
 	float edge_noise = texture(grain_texture,
 		world_position.xz * route_edge_scale * 0.1).r - 0.5;
-	float route_w = smoothstep(0.25, 0.75,
-		route_mask + edge_noise * route_edge_bite);
-	base = mix(base, earth_color.rgb, route_w * 0.62);
+	// V2.2R famille E : la route n'est plus un ruban de largeur constante —
+	// un bruit LENT le long du monde fait varier sa largeur, l'interrompt
+	// par endroits (l'herbe regagne le passage) et module sa force.
+	float width_noise = texture(grain_texture,
+		world_position.xz * 0.014).r;
+	float route_w = smoothstep(0.28 + 0.30 * width_noise, 0.85,
+		route_mask + edge_noise * route_edge_bite)
+		* (0.45 + 0.85 * width_noise);
+	base = mix(base, earth_color.rgb, route_w * 0.72);
 
 	float rock_w = 1.0 - smoothstep(rock_up_full, rock_up_none, up);
 	// Strates : bandes d'altitude larges, arête chaude, creux froid (§6.3).
