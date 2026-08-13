@@ -30,8 +30,6 @@ func build(parent: Node3D) -> void:
 	var ring: Node3D = Node3D.new()
 	ring.name = "BorderGuards"
 	parent.add_child(ring)
-	var guard_material: StandardMaterial3D = StandardMaterial3D.new()
-	guard_material.albedo_color = Color(0.30, 0.28, 0.30)
 	for i: int in range(GUARD_SEGMENTS):
 		var azimuth: float = TAU * float(i) / float(GUARD_SEGMENTS)
 		var x: float = cos(azimuth) * GUARD_RADIUS
@@ -47,15 +45,16 @@ func build(parent: Node3D) -> void:
 		var crest: float = GUARD_HEIGHT + 8.0 * sin(azimuth * 8.0 + 1.3)
 		guard.position = Vector3(x, ground + crest * 0.5 - 6.0, z)
 		guard.rotation = Vector3(0.0, -azimuth, 0.0)
-		var mesh: BoxMesh = BoxMesh.new()
-		mesh.size = Vector3(GUARD_THICKNESS, crest, GUARD_LENGTH)
-		mesh.material = guard_material
+		# V2.2-C : le VISUEL devient une crête déchiquetée — la COLLISION
+		# reste la boîte V2.1 exacte (le test des 72 azimuts lit la
+		# collision, jamais le maillage).
 		var visual: MeshInstance3D = MeshInstance3D.new()
 		visual.name = "GuardMesh"
-		visual.mesh = mesh
+		visual.mesh = _ridge_mesh(crest, i)
 		guard.add_child(visual)
 		var shape: BoxShape3D = BoxShape3D.new()
-		shape.size = mesh.size
+		# La boîte V2.1 EXACTE — la fermeture physique ne bouge pas d'un mètre.
+		shape.size = Vector3(GUARD_THICKNESS, crest, GUARD_LENGTH)
 		var collision: CollisionShape3D = CollisionShape3D.new()
 		collision.name = "GuardCollision"
 		collision.shape = shape
@@ -67,8 +66,11 @@ func build(parent: Node3D) -> void:
 	var far: Node3D = Node3D.new()
 	far.name = "FarSilhouettes"
 	parent.add_child(far)
+	# Bleu-gris clair : les pics lointains s'enfoncent dans la brume (§9.4 :
+	# montagnes éclaircies, refroidies, simplifiées).
 	var far_material: StandardMaterial3D = StandardMaterial3D.new()
-	far_material.albedo_color = Color(0.38, 0.37, 0.42)
+	far_material.albedo_color = Color(0.46, 0.51, 0.58)
+	far_material.roughness = 1.0
 	for i: int in range(FAR_SILHOUETTES):
 		var azimuth: float = TAU * (float(i) + 0.5) / float(FAR_SILHOUETTES)
 		var x: float = cos(azimuth) * FAR_RADIUS
@@ -83,3 +85,41 @@ func build(parent: Node3D) -> void:
 		peak.mesh = cone
 		peak.position = Vector3(x, cone.height * 0.5 + 18.0, z)
 		far.add_child(peak)
+
+
+## Crête de montagne : une boîte subdivisée PINCÉE vers le sommet et
+## déchiquetée au bruit à graine fixe — l'enroulement vient de BoxMesh, il
+## n'est jamais réécrit à la main (leçon V2.1 : l'enroulement se prouve à
+## la capture). Base élargie en talus, sommet mince et irrégulier.
+func _ridge_mesh(crest: float, ridge_seed: int) -> ArrayMesh:
+	var box: BoxMesh = BoxMesh.new()
+	box.size = Vector3(GUARD_THICKNESS, crest, GUARD_LENGTH)
+	box.subdivide_width = 2
+	box.subdivide_height = 4
+	box.subdivide_depth = 12
+	var arrays: Array = box.get_mesh_arrays()
+	var vertices: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var noise: FastNoiseLite = FastNoiseLite.new()
+	noise.noise_type = FastNoiseLite.TYPE_SIMPLEX_SMOOTH
+	noise.frequency = 0.055
+	noise.seed = 20260813 + ridge_seed
+	var half_h: float = crest * 0.5
+	for i: int in range(vertices.size()):
+		var v: Vector3 = vertices[i]
+		var t: float = clampf((v.y + half_h) / crest, 0.0, 1.0)
+		# Talus large à la base, arête mince au sommet.
+		v.x *= lerpf(2.6, 0.18, t)
+		# Crête déchiquetée : pics et cols le long du segment.
+		v.y += noise.get_noise_2d(v.z, 13.7) * crest * 0.30 * t
+		v.x += noise.get_noise_2d(v.z * 0.7, 41.2) * 3.0 * t
+		vertices[i] = v
+	arrays[Mesh.ARRAY_VERTEX] = vertices
+	var mesh: ArrayMesh = ArrayMesh.new()
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	var material: StandardMaterial3D = StandardMaterial3D.new()
+	# Roche d'anneau : ocre éteint tirant froid — l'identité r11, pas un
+	# gris neutre (§1.6 : les matériaux gris génériques sont interdits).
+	material.albedo_color = Color(0.40, 0.345, 0.315)
+	material.roughness = 1.0
+	mesh.surface_set_material(0, material)
+	return mesh

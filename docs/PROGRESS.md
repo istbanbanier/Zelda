@@ -5,6 +5,53 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-13 (suite 3) — V2.2-C : végétation, eau, ciel/orage, silhouettes — FONDATION POSÉE
+
+**Végétation cellulaire** : bâtisseur à cellules MultiMesh de 32 m, graine
+fixe, identités §4 (bosquets au Bois, phrases de fleurs, morts dans la
+Marche, crête sans arbres, vide de steppe assumé) ; troncs/gros rochers en
+collisions simples + nav re-cuite. **Trois morsures de suite corrigées en
+séquence** (prouvant que les contrats mordent) : ancrage sur données
+factices → TROUVAILLE : le renderer dummy headless jette les instances
+MultiMesh (set no-op/get identité, source 4.7.1) — le bâtisseur écrit son
+plan de plantation en méta, le headless prouve le plan, la capture prouve
+le rendu ; rocher à 7 m du gué est → marges de couloir par RAYON de
+collider, gués à 12 m ; rocher dans l'AXE de cam03 → exclusion du couloir
+de visée (plan + hauteur). **Suite complète world_v2 : 42/42 VERTE**
+(archivée `evidence/world_v2/v2_2/suite_complete_c3_verte.log`).
+
+**Eau** : SH_WorldV2Water — profondeur par sommet (turquoise→pétrole),
+courant local, mousse de rive cassée, lac en éventail ; tablier en bois
+sombre (toujours un PROXY) ; géométrie/gués/niveaux GELÉS ; hydro 4/4.
+
+**Ciel/brume/orage** : SH_WorldV2Sky (miel côté soleil, pastel opposé) ;
+brume calibrée en trois passes mesurées (la première EFFAÇAIT le monde) —
+trois plans séparés ; cellule d'orage LOCALE : quinze masses grumeleuses
+déplacées au bruit (deux passes soucoupe mesurées puis cassées au
+maillage), perce la brume ; éclair-événement au Timer + `storm_flash_on()`.
+
+**Silhouettes de bordure** : les boîtes sombres du whitebox remplacées par
+des crêtes déchiquetées (BoxMesh subdivisée pincée + bruit — enroulement
+jamais réécrit à la main) ; COLLISION V2.1 exacte conservée, 72 azimuts
+verts ; pics lointains re-tonés dans la brume.
+
+**Résidus consignés** (mesurés, non cachés) : fines lamelles de ciel à
+certaines jonctions de crêtes ; dalles pâles côté est (cônes lointains vus
+par un col) ; mare claire de la descente r01 (voir suite 2) atténuée par la
+brume — re-mesurer en D ; fleurs roses hors palette stricte (asset CC0 tel
+quel) ; nuage détaché du proxy de citadelle (se résout quand la silhouette
+de citadelle arrivera — TEMPORAIRE V2.2 assumé).
+
+**Prochaine action exacte.** V2.2-D : A/B des six caméras gelées (avant =
+whitebox V2.1, après = fondation) + niveaux de gris + bandes de valeurs +
+cartes (régions/densité/matériaux/couture) + une capture par région ;
+contrôles négatifs A (matériau de chunk retiré), B (instance soulevée), C
+(cellule > 48 m), D (transform de caméra modifiée) — ROUGE nommé puis VERT ;
+validate_fast complet ; revue contradictoire depuis V2_1_FINAL_SHA
+(38c87b1) ; ordre de validation §24 ; RAPPORT B. Jamais V2.3.
+
+---
+
 ## 2026-08-13 (suite 2) — V2.2-A/B : contrat paysager fail-first + matériau de terrain calibré
 
 **V2.2-A fait** : sources d'art relues (ART_BIBLE, ART_DECISIONS,
