@@ -130,8 +130,12 @@ func _lightning_bolt() -> MeshInstance3D:
 	rng.seed = SEED + 7
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var from: Vector3 = CLOUD_CENTER + Vector3(4.0, -8.0, 2.0)
-	var to: Vector3 = Vector3(0.0, 34.0 + 56.0, -210.0)
+	# MESURÉ À LA CAPTURE : le premier trajet visait une flèche de 90 m qui
+	# n'existe pas dans le whitebox — l'éclair vivait ENTIÈREMENT DANS le
+	# nuage, invisible. Il frappe désormais du ventre du nuage vers le
+	# plateau de la porte (y = 34, ancre §3.3).
+	var from: Vector3 = CLOUD_CENTER + Vector3(4.0, -10.0, 2.0)
+	var to: Vector3 = Vector3(0.0, 36.0, -206.0)
 	var segments: int = 7
 	var previous: Vector3 = from
 	for i: int in range(1, segments + 1):
