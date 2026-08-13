@@ -21,17 +21,21 @@ const TRIB_DRAFT: float = 0.6
 
 var _heightmap: WorldV2Heightmap = null
 var _layout: Dictionary = {}
-var _material: StandardMaterial3D = null
+var _material: ShaderMaterial = null
+
+## Facteur de profondeur plein à partir de cette hauteur d'eau (m).
+const DEPTH_FULL_M: float = 2.5
 
 
 func _init(heightmap: WorldV2Heightmap, layout: Dictionary) -> void:
 	_heightmap = heightmap
 	_layout = layout
-	_material = StandardMaterial3D.new()
-	_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	_material.albedo_color = Color(0.25, 0.5, 0.75, 0.62)
-	_material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	# Eau V2.2 : couleur par profondeur, courant, mousse de rive — les
+	# données vivent dans les COULEURS DE SOMMET (r profondeur, gb courant).
+	_material = ShaderMaterial.new()
+	_material.shader = load("res://shaders/world_v2/SH_WorldV2Water.gdshader") as Shader
+	_material.set_shader_parameter(&"wave_noise",
+		WorldV2GroundMaterial.grain_texture())
 
 
 func build(water_parent: Node3D, landmarks_parent: Node3D) -> void:
@@ -70,12 +74,22 @@ func _ribbon(ribbon_name: String, line: PackedVector2Array, half_w: float,
 				maxf(_heightmap.water_surface_at(p.x, p.y), bed + 0.15))
 			var left: Vector3 = Vector3(p.x + side.x, surface, p.y + side.y)
 			var right: Vector3 = Vector3(p.x - side.x, surface, p.y - side.y)
+			# r = profondeur (bornée), gb = courant local — lus par le shader.
+			var vertex_data: Color = Color(
+				clampf((surface - bed) / DEPTH_FULL_M, 0.0, 1.0),
+				direction.x * 0.5 + 0.5, direction.y * 0.5 + 0.5)
 			if has_previous:
+				st.set_color(vertex_data)
 				st.add_vertex(previous_left)
+				st.set_color(vertex_data)
 				st.add_vertex(right)
+				st.set_color(vertex_data)
 				st.add_vertex(previous_right)
+				st.set_color(vertex_data)
 				st.add_vertex(previous_left)
+				st.set_color(vertex_data)
 				st.add_vertex(left)
+				st.set_color(vertex_data)
 				st.add_vertex(right)
 			previous_left = left
 			previous_right = right
@@ -90,19 +104,45 @@ func _ribbon(ribbon_name: String, line: PackedVector2Array, half_w: float,
 	return instance
 
 
+## Disque du lac en ÉVENTAIL avec profondeur par sommet : pétrole au
+## centre du bol, turquoise à la rive — le miroir sombre du masterplan R10,
+## sans re-toucher ni le niveau ni le bol (gelés V2.1).
 func _lake() -> MeshInstance3D:
-	var disc: CylinderMesh = CylinderMesh.new()
-	disc.top_radius = _heightmap.lake_radius() + WorldV2Heightmap.LAKE_SHORE_W * 0.5
-	disc.bottom_radius = disc.top_radius
-	disc.height = 0.1
-	disc.material = _material
+	var center: Vector2 = _heightmap.lake_center()
+	var radius: float = _heightmap.lake_radius() + WorldV2Heightmap.LAKE_SHORE_W * 0.5
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var segments: int = 40
+	var center_depth: Color = Color(1.0, 0.5, 0.5)
+	for i: int in range(segments):
+		var a0: float = TAU * float(i) / float(segments)
+		var a1: float = TAU * float(i + 1) / float(segments)
+		var p0: Vector2 = Vector2(cos(a0), sin(a0)) * radius
+		var p1: Vector2 = Vector2(cos(a1), sin(a1)) * radius
+		var d0: Color = _lake_rim_data(center + p0)
+		var d1: Color = _lake_rim_data(center + p1)
+		st.set_color(center_depth)
+		st.add_vertex(Vector3.ZERO)
+		st.set_color(d1)
+		st.add_vertex(Vector3(p1.x, 0.0, p1.y))
+		st.set_color(d0)
+		st.add_vertex(Vector3(p0.x, 0.0, p0.y))
+	var mesh: ArrayMesh = st.commit()
+	if mesh.get_surface_count() > 0:
+		mesh.surface_set_material(0, _material)
 	var instance: MeshInstance3D = MeshInstance3D.new()
 	instance.name = "StormLakeWater"
-	instance.mesh = disc
+	instance.mesh = mesh
 	instance.add_to_group(&"world_v2_water")
-	var center: Vector2 = _heightmap.lake_center()
 	instance.position = Vector3(center.x, -0.5, center.y)
 	return instance
+
+
+func _lake_rim_data(world_xz: Vector2) -> Color:
+	var depth: float = clampf(
+		(-0.5 - _heightmap.height_at(world_xz.x, world_xz.y)) / DEPTH_FULL_M,
+		0.0, 1.0)
+	return Color(depth, 0.5, 0.5)
 
 
 ## L'EAU PROFONDE du lac n'est pas marchable : obstruction de navigation
@@ -165,7 +205,10 @@ func _whitebox_bridge_deck() -> StaticBody3D:
 	var mesh: BoxMesh = BoxMesh.new()
 	mesh.size = Vector3(28.0, 0.5, 7.0)
 	var material: StandardMaterial3D = StandardMaterial3D.new()
-	material.albedo_color = Color(0.55, 0.42, 0.28)
+	# Bois sombre : le tablier reste un PROXY (le vrai pont appartient à une
+	# phase ultérieure) mais il ne crie plus orange dans les captures.
+	material.albedo_color = Color(0.30, 0.22, 0.14)
+	material.roughness = 0.95
 	mesh.material = material
 	var visual: MeshInstance3D = MeshInstance3D.new()
 	visual.name = "DeckMesh"
