@@ -17,7 +17,12 @@ extends GateTestCase
 ## Une traversée de cours d'eau est LÉGALE si elle passe par un gué (rayon
 ## d'influence du profil doux) ou par le tablier du pont magnétique.
 const FORD_CROSSING_RADIUS_M: float = 24.0
-const BRIDGE_CROSSING_RADIUS_M: float = 12.0
+## Demi-longueur du tablier (28 m) + 2 m de tolérance, mesurée depuis le
+## CENTRE du tablier (site + 13 m à l'est — géométrie déclarée du bâtisseur
+## d'hydrologie). Revue contradictoire D2 : l'ancien maxf(24, 12) rendait la
+## branche du pont morte et « légalisait » une traversée à 24 m du site.
+const BRIDGE_CROSSING_RADIUS_M: float = 16.0
+const BRIDGE_DECK_CENTER_EAST_M: float = 13.0
 ## Un gué doit être posé SUR son cours (sinon le profil doux adoucit un champ).
 const FORD_ON_COURSE_MAX_M: float = 3.0
 ## Bande creusée par le cours principal (lit + berge) : aucun site n'y vit.
@@ -204,16 +209,18 @@ func _legal_crossings(layout: Dictionary) -> Array[Vector2]:
 		if StringName(String(site_entry.get("id", ""))) == &"valley.poi.magnetic_bridge.01":
 			var site: Array = site_entry.get("v2_site", []) as Array
 			if site.size() == 3:
-				points.append(Vector2(float(site[0]), float(site[2])))
+				# Le point légal est le CENTRE du tablier, pas la culée.
+				points.append(Vector2(float(site[0]) + BRIDGE_DECK_CENTER_EAST_M,
+					float(site[2])))
 	return points
 
 
 func _is_legal_crossing(crossing: Vector2, legal_points: Array[Vector2]) -> bool:
 	for i: int in range(legal_points.size()):
-		var radius: float = FORD_CROSSING_RADIUS_M
-		# Le dernier point est le pont magnétique (rayon du tablier).
-		if i == legal_points.size() - 1:
-			radius = maxf(FORD_CROSSING_RADIUS_M, BRIDGE_CROSSING_RADIUS_M)
+		# Le dernier point est le pont magnétique : SON rayon, celui du
+		# tablier — jamais élargi au rayon de gué (revue D2).
+		var radius: float = BRIDGE_CROSSING_RADIUS_M \
+			if i == legal_points.size() - 1 else FORD_CROSSING_RADIUS_M
 		if crossing.distance_to(legal_points[i]) <= radius:
 			return true
 	return false

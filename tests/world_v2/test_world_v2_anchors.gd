@@ -109,6 +109,16 @@ func test_chaque_lieu_a_son_marqueur_au_sol() -> void:
 	check(site_faults.is_empty(), "les sites systémiques sont au sol — %s"
 		% " ; ".join(site_faults))
 
+	# Grottes : IDs épinglés UN PAR UN (revue D4 — un compte seul laisserait
+	# passer une substitution silencieuse).
+	var cave_ids: Dictionary = {}
+	for marker: Node in loop.get_nodes_in_group(&"world_v2_cave_markers"):
+		cave_ids[String(marker.name)] = true
+	for wanted_cave: String in ["cave.valley.poi.waterfall_cave.01",
+			"cave.valley.poi.abandoned_mine.01", "cave.valley.poi.hollow_crypt.01",
+			"cave.valley.poi.hidden_passage.01", "cave.valley.poi.crystal_hollow.01"]:
+		check(cave_ids.has(wanted_cave.replace(".", "_")),
+			"l'entrée de grotte %s est marquée" % wanted_cave)
 	check_equal(loop.get_nodes_in_group(&"world_v2_cave_markers").size(), 5,
 		"cinq entrées de grottes marquées")
 	check(loop.get_nodes_in_group(&"world_v2_dungeon_access").size() >= 1,
