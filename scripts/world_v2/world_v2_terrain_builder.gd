@@ -1,14 +1,20 @@
-## Bâtisseur des 64 CHUNKS de terrain V2.1 — whitebox de diagnostic.
+## Bâtisseur des 64 CHUNKS de terrain V2 — collision V2.1, peau V2.2.
 ##
 ## Chaque chunk échantillonne la fonction commune (`WorldV2Heightmap`) aux
 ## coordonnées ENTIÈRES du monde : deux chunks voisins partagent leurs 65
 ## échantillons de frontière — la continuité est un fait de construction.
 ## Collision : UNE `HeightMapShape3D` 65×65 au pas de 1 m par chunk (le pas
 ## natif de la forme — jamais de `scale` sur une CollisionShape3D), soit 64
-## formes pour tout le monde. Visuel : un `ArrayMesh` par chunk, teinté par
-## SOMMET : une famille de teinte par région, lit d'eau sombre, bande de
-## route ocre APPARTENANT au terrain, anneau frontalier assombri. Aucun
-## matériau artistique — c'est un whitebox et il le dit.
+## formes pour tout le monde. GELÉE depuis V2.1 : la phase paysagère ne
+## touche que la PEAU.
+##
+## Visuel V2.2 : un `ArrayMesh` par chunk portant, par SOMMET, les données
+## que le matériau de paysage interprète — teinte peinte de région à
+## transitions LARGES (grille floutée §10-11 de la directive), masque de
+## route adouci, humidité des berges, cendres de la Marche — plus la teinte
+## de diagnostic V2.1 conservée en CUSTOM1, cachée par défaut. Toutes les
+## données sont échantillonnées en espace MONDE : aucune couture de chunk
+## possible, par construction.
 ##
 ## Tout se construit UNE fois au chargement — jamais par frame.
 class_name WorldV2TerrainBuilder
@@ -16,8 +22,62 @@ extends RefCounted
 
 const SAMPLES: int = WorldV2Heightmap.CHUNK_SIZE_M + 1
 const ROUTE_PAINT_HALF_W: float = 2.0
+## Masque de route ADOUCI : plein jusqu'à 1,4 m, éteint à 2,6 m — le shader
+## mord ensuite ce bord au bruit (§14 : intégrée, jamais plaquée).
+const ROUTE_SOFT_NEAR: float = 1.4
+const ROUTE_SOFT_FAR: float = 2.6
 
-## Teintes de diagnostic par région (mates, distinctes — prompt V2.1 §4).
+## Grille de peinture pré-calculée puis FLOUTÉE : les transitions de région
+## font ~10-16 m au lieu d'un pas de 1 m — « jamais la couleur seule », et
+## jamais une frontière de rectangle visible au sol.
+const PAINT_GRID_STEP_M: float = 4.0
+const PAINT_BLUR_RADIUS_CELLS: int = 2
+
+## Teintes PEINTES par région, en espace ALBÉDO (leçon scripts/CLAUDE.md :
+## la lumière a un gain ≈ 1,4-1,8 non linéaire — viser la valeur RENDUE de
+## §1.5, mesurée en capture, jamais la couleur cible en albédo).
+## Identités §4 du masterplan : crête luxuriante, prairie ouverte, val
+## frais, falaises sèches, camp usé, bois profond, hauteurs ocres, steppe
+## pâle, ruines poussiéreuses, marche éteinte, anneau minéral.
+## Calibrées à la CAPTURE (llvmpipe, cam01) : la première passe à ~/1,65 de
+## la palette rendait l'herbe à 19-25 %% de luma (bande §1.5 : 35-65) — le
+## gain de CE monde (filmic + soleil 23°) est bien plus faible que celui du
+## lab V1. Relevées de ×1,45, puis re-mesurées.
+## Troisième passe mesurée : ×1,45 remettait les VALEURS dans la bande §1.5
+## mais rendait l'image ACIDE — le canal bleu des albédos valait la moitié de
+## la palette cible et le soleil miel aggravait le glissement jaune. Le bleu
+## remonte, la dominante verte se calme : l'olive de §1.4, pas le néon.
+const REGION_PAINT: Dictionary = {
+	&"r01_crete_de_l_aube": Color(0.37, 0.50, 0.26),
+	&"r02_prairie_mille_fleurs": Color(0.36, 0.47, 0.26),
+	&"r03_val_de_neris": Color(0.31, 0.46, 0.28),
+	&"r04_falaises_du_couchant": Color(0.40, 0.37, 0.26),
+	&"r05_terrasse_du_camp": Color(0.40, 0.43, 0.26),
+	&"r06_bois_du_levant": Color(0.23, 0.36, 0.22),
+	&"r07_hauteurs_de_l_orient": Color(0.43, 0.38, 0.24),
+	&"r08_steppe_du_nord": Color(0.42, 0.43, 0.28),
+	&"r09_ruines_du_coeur": Color(0.38, 0.40, 0.30),
+	&"r10_marche_de_l_orage": Color(0.32, 0.33, 0.31),
+	&"r11_anneau_frontalier": Color(0.33, 0.30, 0.27),
+}
+const PAINT_FALLBACK: Color = Color(0.35, 0.43, 0.27)
+## Cendres : identité de la Marche de l'Orage (herbe qui cède aux cendres),
+## poussière minérale légère sur l'anneau. Floutées par la même grille.
+const REGION_ASH: Dictionary = {
+	&"r10_marche_de_l_orage": 0.75,
+	&"r11_anneau_frontalier": 0.30,
+}
+
+## Bandes d'humidité des berges (au-delà de la demi-largeur du lit).
+const WET_MAIN_NEAR: float = 3.0
+const WET_MAIN_FAR: float = 7.0
+const WET_TRIB_NEAR: float = 1.8
+const WET_TRIB_FAR: float = 5.0
+const WET_LAKE_BAND: float = 4.0
+const WATER_SEGMENT_MARGIN: float = 8.0
+
+## Teintes de diagnostic par région (V2.1) — conservées en CUSTOM1, cachées
+## par défaut (directive V2.2 §11).
 const REGION_TINTS: Dictionary = {
 	&"r01_crete_de_l_aube": Color(0.55, 0.62, 0.38),
 	&"r02_prairie_mille_fleurs": Color(0.45, 0.60, 0.35),
@@ -40,7 +100,11 @@ const FORBIDDEN_RADIUS: float = 238.0
 var _heightmap: WorldV2Heightmap = null
 var _regions: Array[Dictionary] = []
 var _route_segments: Array[Array] = []
-var _material: StandardMaterial3D = null
+var _material: ShaderMaterial = null
+## [a: Vector2, b: Vector2, wet_near: float, wet_far: float]
+var _water_segments: Array[Array] = []
+var _paint_grid: PackedColorArray = PackedColorArray()
+var _paint_cols: int = 0
 
 
 func _init(heightmap: WorldV2Heightmap, layout: Dictionary) -> void:
@@ -80,9 +144,75 @@ func _init(heightmap: WorldV2Heightmap, layout: Dictionary) -> void:
 			_route_segments.append([
 				Vector2(float(a[0]), float(a[1])), Vector2(float(b[0]), float(b[1]))])
 
-	_material = StandardMaterial3D.new()
-	_material.vertex_color_use_as_albedo = true
-	_material.roughness = 1.0
+	_material = WorldV2GroundMaterial.create()
+	_collect_water_segments()
+	_build_paint_grid()
+
+
+## Segments d'eau (cours principal + affluent) avec leur bande d'humidité —
+## même filtrage par chunk que les routes.
+func _collect_water_segments() -> void:
+	var main_line: PackedVector2Array = _heightmap.river_main_polyline()
+	for i: int in range(main_line.size() - 1):
+		_water_segments.append([main_line[i], main_line[i + 1],
+			WET_MAIN_NEAR, WET_MAIN_FAR])
+	var trib_line: PackedVector2Array = _heightmap.river_trib_polyline()
+	for i: int in range(trib_line.size() - 1):
+		_water_segments.append([trib_line[i], trib_line[i + 1],
+			WET_TRIB_NEAR, WET_TRIB_FAR])
+
+
+## Grille de peinture : teinte de région (rgb) + cendres (a) au pas de 4 m,
+## puis flou séparable — les transitions de région deviennent des dégradés
+## de ~10-16 m qu'aucun échantillonnage par sommet ne pourrait offrir seul.
+func _build_paint_grid() -> void:
+	_paint_cols = int(float(WorldV2Heightmap.CHUNK_SIZE_M * WorldV2Heightmap.GRID_COLS)
+		/ PAINT_GRID_STEP_M) + 1
+	_paint_grid.resize(_paint_cols * _paint_cols)
+	for gz: int in range(_paint_cols):
+		for gx: int in range(_paint_cols):
+			var x: float = WorldV2Heightmap.ORIGIN_XZ + float(gx) * PAINT_GRID_STEP_M
+			var z: float = WorldV2Heightmap.ORIGIN_XZ + float(gz) * PAINT_GRID_STEP_M
+			var region: StringName = region_id_at(x, z)
+			var paint: Color = REGION_PAINT.get(region, PAINT_FALLBACK) as Color
+			paint.a = float(REGION_ASH.get(region, 0.0))
+			_paint_grid[gz * _paint_cols + gx] = paint
+	for axis: int in range(2):
+		var blurred: PackedColorArray = PackedColorArray()
+		blurred.resize(_paint_grid.size())
+		for gz: int in range(_paint_cols):
+			for gx: int in range(_paint_cols):
+				var sum: Color = Color(0, 0, 0, 0)
+				var taps: int = 0
+				for offset: int in range(-PAINT_BLUR_RADIUS_CELLS,
+						PAINT_BLUR_RADIUS_CELLS + 1):
+					var sx: int = gx + (offset if axis == 0 else 0)
+					var sz: int = gz + (offset if axis == 1 else 0)
+					if sx < 0 or sx >= _paint_cols or sz < 0 or sz >= _paint_cols:
+						continue
+					sum += _paint_grid[sz * _paint_cols + sx]
+					taps += 1
+				blurred[gz * _paint_cols + gx] = sum / float(maxi(taps, 1))
+		_paint_grid = blurred
+
+
+## Teinte peinte + cendres au point (x, z) — bilinéaire sur la grille floutée.
+func _paint_at(x: float, z: float) -> Color:
+	var fx: float = clampf((x - WorldV2Heightmap.ORIGIN_XZ) / PAINT_GRID_STEP_M,
+		0.0, float(_paint_cols - 1))
+	var fz: float = clampf((z - WorldV2Heightmap.ORIGIN_XZ) / PAINT_GRID_STEP_M,
+		0.0, float(_paint_cols - 1))
+	var x0: int = int(fx)
+	var z0: int = int(fz)
+	var x1: int = mini(x0 + 1, _paint_cols - 1)
+	var z1: int = mini(z0 + 1, _paint_cols - 1)
+	var tx: float = fx - float(x0)
+	var tz: float = fz - float(z0)
+	var top: Color = _paint_grid[z0 * _paint_cols + x0].lerp(
+		_paint_grid[z0 * _paint_cols + x1], tx)
+	var bottom: Color = _paint_grid[z1 * _paint_cols + x0].lerp(
+		_paint_grid[z1 * _paint_cols + x1], tx)
+	return top.lerp(bottom, tz)
 
 
 func build(parent: Node3D) -> void:
@@ -97,12 +227,17 @@ func _build_chunk(col: int, row: int) -> StaticBody3D:
 	var center_x: float = origin_x + float(WorldV2Heightmap.CHUNK_SIZE_M) * 0.5
 	var center_z: float = origin_z + float(WorldV2Heightmap.CHUNK_SIZE_M) * 0.5
 
-	# Une seule passe d'échantillonnage : hauteurs ET couleurs par sommet.
+	# Une seule passe d'échantillonnage : hauteurs ET données de peinture.
 	var heights: PackedFloat32Array = PackedFloat32Array()
 	heights.resize(SAMPLES * SAMPLES)
-	var colors: PackedColorArray = PackedColorArray()
-	colors.resize(SAMPLES * SAMPLES)
+	var paints: PackedColorArray = PackedColorArray()
+	paints.resize(SAMPLES * SAMPLES)
+	var masks: PackedColorArray = PackedColorArray()
+	masks.resize(SAMPLES * SAMPLES)
+	var diags: PackedColorArray = PackedColorArray()
+	diags.resize(SAMPLES * SAMPLES)
 	var local_routes: Array[Array] = _segments_near_chunk(origin_x, origin_z)
+	var local_water: Array[Array] = _water_near_chunk(origin_x, origin_z)
 	for sz: int in range(SAMPLES):
 		for sx: int in range(SAMPLES):
 			var wx: float = origin_x + float(sx)
@@ -110,7 +245,11 @@ func _build_chunk(col: int, row: int) -> StaticBody3D:
 			var index: int = sz * SAMPLES + sx
 			var h: float = _heightmap.height_at(wx, wz)
 			heights[index] = h
-			colors[index] = _tint(wx, wz, h, local_routes)
+			var paint: Color = _paint_at(wx, wz)
+			var route_mask: float = _route_mask(wx, wz, local_routes)
+			paints[index] = Color(paint.r, paint.g, paint.b, route_mask)
+			masks[index] = Color(_wetness(wx, wz, local_water), paint.a, 0.0, 0.0)
+			diags[index] = _tint(wx, wz, h, local_routes)
 
 	var body: StaticBody3D = StaticBody3D.new()
 	body.name = "c%dr%d" % [col, row]
@@ -130,9 +269,56 @@ func _build_chunk(col: int, row: int) -> StaticBody3D:
 
 	var mesh_instance: MeshInstance3D = MeshInstance3D.new()
 	mesh_instance.name = "GroundMesh"
-	mesh_instance.mesh = _build_mesh(heights, colors)
+	mesh_instance.mesh = _build_mesh(heights, paints, masks, diags)
 	body.add_child(mesh_instance)
 	return body
+
+
+## Segments d'eau qui touchent l'emprise du chunk (bande humide comprise).
+func _water_near_chunk(origin_x: float, origin_z: float) -> Array[Array]:
+	var near: Array[Array] = []
+	var chunk_rect: Rect2 = Rect2(
+		origin_x - WATER_SEGMENT_MARGIN, origin_z - WATER_SEGMENT_MARGIN,
+		float(WorldV2Heightmap.CHUNK_SIZE_M) + 2.0 * WATER_SEGMENT_MARGIN,
+		float(WorldV2Heightmap.CHUNK_SIZE_M) + 2.0 * WATER_SEGMENT_MARGIN)
+	for segment: Array in _water_segments:
+		var a: Vector2 = segment[0] as Vector2
+		var b: Vector2 = segment[1] as Vector2
+		var seg_rect: Rect2 = Rect2(minf(a.x, b.x), minf(a.y, b.y),
+			absf(b.x - a.x), absf(b.y - a.y))
+		if chunk_rect.intersects(seg_rect.grow(0.1)):
+			near.append(segment)
+	return near
+
+
+## Masque de route ADOUCI (0-1) — le shader mord ce bord au bruit.
+func _route_mask(x: float, z: float, local_routes: Array[Array]) -> float:
+	if local_routes.is_empty():
+		return 0.0
+	var p: Vector2 = Vector2(x, z)
+	var best: float = INF
+	for segment: Array in local_routes:
+		var closest: Vector2 = Geometry2D.get_closest_point_to_segment(
+			p, segment[0] as Vector2, segment[1] as Vector2)
+		best = minf(best, p.distance_to(closest))
+	return 1.0 - smoothstep(ROUTE_SOFT_NEAR, ROUTE_SOFT_FAR, best)
+
+
+## Humidité (0-1) : pleine dans le lit, dégradée sur la berge, autour du lac.
+func _wetness(x: float, z: float, local_water: Array[Array]) -> float:
+	var p: Vector2 = Vector2(x, z)
+	var wet: float = 0.0
+	for segment: Array in local_water:
+		var closest: Vector2 = Geometry2D.get_closest_point_to_segment(
+			p, segment[0] as Vector2, segment[1] as Vector2)
+		var d: float = p.distance_to(closest)
+		wet = maxf(wet, 1.0 - smoothstep(float(segment[2]), float(segment[3]), d))
+		if wet >= 0.999:
+			return 1.0
+	var lake_d: float = p.distance_to(_heightmap.lake_center())
+	wet = maxf(wet, 1.0 - smoothstep(_heightmap.lake_radius(),
+		_heightmap.lake_radius() + WET_LAKE_BAND, lake_d))
+	return wet
 
 
 ## Segments de route qui touchent l'emprise du chunk (marge de peinture) —
@@ -154,9 +340,15 @@ func _segments_near_chunk(origin_x: float, origin_z: float) -> Array[Array]:
 	return near
 
 
-func _build_mesh(heights: PackedFloat32Array, colors: PackedColorArray) -> ArrayMesh:
+func _build_mesh(heights: PackedFloat32Array, paints: PackedColorArray,
+		masks: PackedColorArray, diags: PackedColorArray) -> ArrayMesh:
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	# CUSTOM0 = humidité/cendres ; CUSTOM1 = teinte de diagnostic V2.1
+	# (cachée par défaut — directive §11). Les canaux custom vivent dans le
+	# Vertex de SurfaceTool : ils survivent à generate_normals (source 4.7.1).
+	st.set_custom_format(0, SurfaceTool.CUSTOM_RGBA8_UNORM)
+	st.set_custom_format(1, SurfaceTool.CUSTOM_RGBA8_UNORM)
 	var half: float = float(WorldV2Heightmap.CHUNK_SIZE_M) * 0.5
 	for sz: int in range(SAMPLES - 1):
 		for sx: int in range(SAMPLES - 1):
@@ -164,28 +356,20 @@ func _build_mesh(heights: PackedFloat32Array, colors: PackedColorArray) -> Array
 			var i10: int = i00 + 1
 			var i01: int = i00 + SAMPLES
 			var i11: int = i01 + 1
-			var p00: Vector3 = Vector3(float(sx) - half, heights[i00], float(sz) - half)
-			var p10: Vector3 = Vector3(float(sx + 1) - half, heights[i10], float(sz) - half)
-			var p01: Vector3 = Vector3(float(sx) - half, heights[i01], float(sz + 1) - half)
-			var p11: Vector3 = Vector3(float(sx + 1) - half, heights[i11], float(sz + 1) - half)
 			# Enroulement MESURÉ À LA CAPTURE (inspection réelle, phase V2.1) :
 			# l'ordre p00→p11→p10 ne rendait que le DESSOUS du terrain — le
 			# monde disparaissait de presque tous les angles de jeu. La note
 			# ISS-018 d'origine affirmait l'inverse sans capture : c'est
 			# précisément le mensonge silencieux qu'une inspection d'image
 			# attrape et qu'aucun test de collision ne peut voir.
-			st.set_color(colors[i00])
-			st.add_vertex(p00)
-			st.set_color(colors[i10])
-			st.add_vertex(p10)
-			st.set_color(colors[i11])
-			st.add_vertex(p11)
-			st.set_color(colors[i00])
-			st.add_vertex(p00)
-			st.set_color(colors[i11])
-			st.add_vertex(p11)
-			st.set_color(colors[i01])
-			st.add_vertex(p01)
+			for index: int in [i00, i10, i11, i00, i11, i01]:
+				st.set_color(paints[index])
+				st.set_custom(0, masks[index])
+				st.set_custom(1, diags[index])
+				var col: int = index % SAMPLES
+				var row: int = index / SAMPLES
+				st.add_vertex(Vector3(float(col) - half, heights[index],
+					float(row) - half))
 	st.generate_normals()
 	var mesh: ArrayMesh = st.commit()
 	mesh.surface_set_material(0, _material)
