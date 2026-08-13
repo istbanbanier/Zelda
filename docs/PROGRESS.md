@@ -5,6 +5,36 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-13 (suite 5) — V2.2R OUVERTE : la revue visuelle du lead REJETTE le gate
+
+**Statut autoritaire du lead** (après inspection indépendante réelle des
+captures par Codex) : `V2.2 IMPLEMENTATION COMPLETE — LEAD GATE REJECTED` ·
+`V2.2R REQUIRED` · `GO_DUNGEON = FALSE` · `GO_V2_3 = FALSE`. V2.1 reste
+définitivement acceptée (38c87b1) ; la réalisation technique V2.2 existe à
+`df965c5` — aucun commit n'est réécrit, la reprise est ADDITIVE.
+
+**Défauts visuels bloquants nommés par le lead** : frontières encore
+graybox (grandes faces rectangulaires pâles, lamelles de ciel) ; orage en
+galette noire suspendue ; surexposition et verts fluorescents ; végétation
+saupoudrée au lieu de composée (+ sapin obstruant cam03, fleurs roses) ;
+routes en rubans beiges uniformes ; couture d'eau anguleuse aux coudes.
+**Non-conformités documentaires** : r11 absente du tour des régions (onze
+régions contractuelles, pas dix), A/B non montés côte à côte, carte de
+densité végétale manquante, légende de carte régionale manquante,
+inventaire/matrices/manifestes/métriques manquants.
+
+**Méthode imposée** : par famille — AVANT conservé, cause réelle, filet
+durci quand mesurable, correctif minimal systémique, recapture MÊME caméra,
+inspection à taille réelle ; les captures sont l'autorité. Checkpoints
+marqués « V2.2R EN COURS — NON VALIDÉE ». Aucun verdict artistique
+auto-déclaré à la fin.
+
+**Prochaine action exacte.** V2.2R-0 : filet de continuité du ruban d'eau
+écrit ROUGE d'abord (jonctions dupliquées actuelles), puis ruban mitré
+continu — niveaux, gués et hydrologie physique strictement gelés.
+
+---
+
 ## 2026-08-13 (suite 4) — V2.2-D : CLÔTURE DE PHASE — gate technique PASS
 
 **Le tour de preuve complet est fait** : A/B des six fenêtres gelées depuis

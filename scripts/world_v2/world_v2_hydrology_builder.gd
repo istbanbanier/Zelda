@@ -50,50 +50,62 @@ func build(water_parent: Node3D, landmarks_parent: Node3D) -> void:
 
 
 ## Ruban d'eau : surface au-dessus du LIT réel (jamais une bande plane —
-## le profil descend avec la rivière).
+## le profil descend avec la rivière), en bande CONTINUE à joints MITRÉS.
+##
+## V2.2R : l'ancienne version émettait, à chaque waypoint intérieur, un
+## quad de TORSION (longueur nulle, deux orientations) qui chevauchait ses
+## voisins et doublait l'alpha — la « jonction anguleuse » vue par la revue
+## du lead. Le fil est désormais échantillonné d'un bloc et chaque point
+## porte UNE arête, orientée par la direction MOYENNÉE de ses deux
+## segments (mitre). Filet : `test_world_v2_water_mesh.gd` (rouge avant).
 func _ribbon(ribbon_name: String, line: PackedVector2Array, half_w: float,
 		draft: float) -> MeshInstance3D:
+	# 1. Échantillonner LE FIL ENTIER : points + direction mitrée par point.
+	var points: PackedVector2Array = PackedVector2Array()
+	for i: int in range(line.size() - 1):
+		var a: Vector2 = line[i]
+		var b: Vector2 = line[i + 1]
+		var steps: int = maxi(1, int(ceilf(a.distance_to(b) / WATER_STEP_M)))
+		for s: int in range(steps):
+			points.append(a.lerp(b, float(s) / float(steps)))
+	points.append(line[line.size() - 1])
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var previous_left: Vector3 = Vector3.ZERO
 	var previous_right: Vector3 = Vector3.ZERO
-	var has_previous: bool = false
-	for i: int in range(line.size() - 1):
-		var a: Vector2 = line[i]
-		var b: Vector2 = line[i + 1]
-		var seg_len: float = a.distance_to(b)
-		var steps: int = maxi(1, int(ceilf(seg_len / WATER_STEP_M)))
-		for s: int in range(steps + 1):
-			var t: float = float(s) / float(steps)
-			var p: Vector2 = a.lerp(b, t)
-			var direction: Vector2 = (b - a).normalized()
-			var side: Vector2 = Vector2(-direction.y, direction.x) * half_w
-			# Le lit LOCAL fixe la surface : profil + tirant d'eau.
-			var bed: float = _heightmap.height_at(p.x, p.y)
-			var surface: float = minf(bed + draft,
-				maxf(_heightmap.water_surface_at(p.x, p.y), bed + 0.15))
-			var left: Vector3 = Vector3(p.x + side.x, surface, p.y + side.y)
-			var right: Vector3 = Vector3(p.x - side.x, surface, p.y - side.y)
-			# r = profondeur (bornée), gb = courant local — lus par le shader.
-			var vertex_data: Color = Color(
-				clampf((surface - bed) / DEPTH_FULL_M, 0.0, 1.0),
-				direction.x * 0.5 + 0.5, direction.y * 0.5 + 0.5)
-			if has_previous:
-				st.set_color(vertex_data)
-				st.add_vertex(previous_left)
-				st.set_color(vertex_data)
-				st.add_vertex(right)
-				st.set_color(vertex_data)
-				st.add_vertex(previous_right)
-				st.set_color(vertex_data)
-				st.add_vertex(previous_left)
-				st.set_color(vertex_data)
-				st.add_vertex(left)
-				st.set_color(vertex_data)
-				st.add_vertex(right)
-			previous_left = left
-			previous_right = right
-			has_previous = true
+	var previous_data: Color = Color.WHITE
+	for k: int in range(points.size()):
+		var p: Vector2 = points[k]
+		var into: Vector2 = (p - points[k - 1]).normalized() if k > 0 else Vector2.ZERO
+		var out_of: Vector2 = (points[k + 1] - p).normalized() 			if k < points.size() - 1 else Vector2.ZERO
+		var direction: Vector2 = (into + out_of).normalized() 			if (into + out_of).length() > 0.001 else (into if into != Vector2.ZERO else out_of)
+		var side: Vector2 = Vector2(-direction.y, direction.x) * half_w
+		# Le lit LOCAL fixe la surface : profil + tirant d'eau.
+		var bed: float = _heightmap.height_at(p.x, p.y)
+		var surface: float = minf(bed + draft,
+			maxf(_heightmap.water_surface_at(p.x, p.y), bed + 0.15))
+		var left: Vector3 = Vector3(p.x + side.x, surface, p.y + side.y)
+		var right: Vector3 = Vector3(p.x - side.x, surface, p.y - side.y)
+		# r = profondeur (bornée), gb = courant local — lus par le shader.
+		var vertex_data: Color = Color(
+			clampf((surface - bed) / DEPTH_FULL_M, 0.0, 1.0),
+			direction.x * 0.5 + 0.5, direction.y * 0.5 + 0.5)
+		if k > 0:
+			st.set_color(previous_data)
+			st.add_vertex(previous_left)
+			st.set_color(vertex_data)
+			st.add_vertex(right)
+			st.set_color(previous_data)
+			st.add_vertex(previous_right)
+			st.set_color(previous_data)
+			st.add_vertex(previous_left)
+			st.set_color(vertex_data)
+			st.add_vertex(left)
+			st.set_color(vertex_data)
+			st.add_vertex(right)
+		previous_left = left
+		previous_right = right
+		previous_data = vertex_data
 	var mesh: ArrayMesh = st.commit()
 	if mesh.get_surface_count() > 0:
 		mesh.surface_set_material(0, _material)
