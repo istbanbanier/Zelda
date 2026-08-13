@@ -21,7 +21,10 @@ const CASCADE_SURFACE_SLOPE: float = 0.08
 ## Gué praticable (ISS-032) : profondeur de marche et épaulement borné.
 const FORD_MAX_WADE_DEPTH_M: float = 0.65
 const FORD_PROBE_RADIUS_M: int = 12
-const FORD_MAX_STEP_PER_M: float = 1.0
+## La pente de MARCHE contractuelle (§8.2 : ~46°) — le critère est celui du
+## jeu, pas un nombre rond : ISS-032 était une falaise à 5,2 m/m, et le
+## parcours réel du trajet principal traverse ce gué à pied (suite verte).
+const FORD_MAX_STEP_PER_M: float = 1.0355
 
 var _world: Node3D = null
 
