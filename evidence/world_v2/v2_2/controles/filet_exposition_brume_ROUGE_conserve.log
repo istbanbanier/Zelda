@@ -1,0 +1,16 @@
+# FILET D'EXPOSITION, exclusion de BRUME ajoutée (saturation moyenne < 0.07) — V2.2R
+# Cause : la brume du côté chaud du ciel (mesurée (0.89,0.89,0.83), sat 0.02-0.06)
+# échappait au test bleu-dominant et comptait comme sol écrêté ; les dalles rejetées
+# par le lead font r>g>b, sat 0.085-0.205 — les deux classes sont séparables.
+# Preuve de décision conservée : les CINQ captures AVANT rouges le restent.
+# Date : 2026-08-13T17:54:11Z ; captures AVANT à evidence/world_v2/v2_2/captures/
+[exposition] capture_cam01.png : blocs écrêtés 1.5 % (plafond 0.8) ; vert fluo 0.16 % (plafond 1.50)
+[exposition] VIOLATION
+[exposition] capture_cam02.png : blocs écrêtés 6.8 % (plafond 0.8) ; vert fluo 0.04 % (plafond 1.50)
+[exposition] VIOLATION
+[exposition] capture_cam04.png : blocs écrêtés 7.2 % (plafond 0.8) ; vert fluo 0.44 % (plafond 1.50)
+[exposition] VIOLATION
+[exposition] capture_cam05.png : blocs écrêtés 4.8 % (plafond 0.8) ; vert fluo 0.03 % (plafond 1.50)
+[exposition] VIOLATION
+[exposition] capture_cam06.png : blocs écrêtés 6.7 % (plafond 0.8) ; vert fluo 0.01 % (plafond 1.50)
+[exposition] VIOLATION
