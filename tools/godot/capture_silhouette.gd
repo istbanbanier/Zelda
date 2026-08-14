@@ -22,11 +22,21 @@
 ## donc cadrés par la même règle, et un même sujet recapturé après
 ## modification est comparable au pixel près.
 ##
-## Usage :
-##   xvfb-run -a --server-args="-screen 0 900x1200x24" godot --path . \
-##     --rendering-driver opengl3 --script tools/godot/capture_silhouette.gd -- \
-##     --scene=res://assets/architecture/pylon/SM_Pylon_Resonance.glb \
+## Deux modes.
+##
+## **Asset isolé** — la scène EST le sujet. C'est le cas d'un hero asset
+## mono-GLB comme le pylône :
+##   … --scene=res://assets/architecture/pylon/SM_Pylon_Resonance.glb \
 ##     --out-dir=evidence/... --name=pylone --angles=0,90 --size=900x1200
+##
+## **Lieu dans le monde** — le sujet est un `WorldV2Place` bâti sur le
+## terrain gelé. On monte le monde et on isole le lieu :
+##   … --scene=res://scenes/world_v2/WorldV2.tscn \
+##     --place=valley.poi.riverside_village.01 --name=hameau --angles=0,90
+##
+## Le second mode n'est pas un confort : un lieu composé de modules posés
+## par `ground_local_y()` s'aplatit hors du monde, et sa silhouette
+## montrerait alors une composition qui n'existe pas.
 extends SceneTree
 
 ## Valeur du sujet et du fond. L'écart est volontairement énorme : le test
@@ -40,10 +50,12 @@ const MARGE: float = 0.10
 var _scene_path: String = ""
 var _out_dir: String = "evidence/silhouettes"
 var _nom: String = "sujet"
+var _place_id: String = ""
 var _angles: PackedFloat32Array = PackedFloat32Array([0.0, 90.0])
 var _width: int = 900
 var _height: int = 1200
 var _settle_frames: int = 8
+var _build_frames: int = 45
 
 
 func _initialize() -> void:
@@ -54,6 +66,10 @@ func _initialize() -> void:
 			_out_dir = argument.trim_prefix("--out-dir=")
 		elif argument.begins_with("--name="):
 			_nom = argument.trim_prefix("--name=")
+		elif argument.begins_with("--place="):
+			_place_id = argument.trim_prefix("--place=")
+		elif argument.begins_with("--build-frames="):
+			_build_frames = maxi(1, argument.trim_prefix("--build-frames=").to_int())
 		elif argument.begins_with("--angles="):
 			_angles = PackedFloat32Array()
 			for part: String in argument.trim_prefix("--angles=").split(",", false):
@@ -79,8 +95,8 @@ func _run() -> void:
 		printerr("[silhouette] BLOQUÉ : scène introuvable — %s" % _scene_path)
 		quit(3)
 		return
-	var sujet: Node3D = packed.instantiate() as Node3D
-	if sujet == null:
+	var montee: Node3D = packed.instantiate() as Node3D
+	if montee == null:
 		printerr("[silhouette] BLOQUÉ : la scène n'est pas un Node3D")
 		quit(3)
 		return
@@ -88,11 +104,43 @@ func _run() -> void:
 	var scene_root: Node3D = Node3D.new()
 	scene_root.name = "SilhouetteRoot"
 	root.add_child(scene_root)
-	scene_root.add_child(sujet)
-	await process_frame
+	scene_root.add_child(montee)
+	if not montee.is_node_ready():
+		await montee.ready
+	# Un lieu se bâtit dans `_ready()` et son terrain arrive par
+	# `bind_terrain()` : il faut laisser le monde se monter avant de
+	# chercher quoi que ce soit.
+	for i: int in range(_build_frames if not _place_id.is_empty() else 1):
+		await process_frame
+
+	# — MODE LIEU : le sujet est UN lieu à l'intérieur du monde monté.
+	#
+	# POURQUOI CE MODE EXISTE. Instancier un `WorldV2Place` hors du monde
+	# semble plus simple, et c'est un piège : `ground_local_y()` rend 0 en
+	# dehors du monde (l'autonomie est voulue), donc un hameau bâti sur
+	# trois niveaux de terrain s'y poserait à plat. La silhouette
+	# montrerait une composition qui n'existe pas — elle MENTIRAIT, et
+	# c'est le contraire de ce qu'on lui demande. Un asset mono-GLB comme
+	# le pylône n'a pas ce problème ; un lieu composé de modules posés au
+	# sol, si.
+	var sujet: Node3D = montee
+	if not _place_id.is_empty():
+		sujet = _trouver_lieu(montee, _place_id)
+		if sujet == null:
+			printerr("[silhouette] BLOQUÉ : lieu introuvable — %s" % _place_id)
+			quit(3)
+			return
+		var caches: int = _masquer_hors_sujet(montee, sujet)
+		print("[silhouette] mode lieu : %s isolé, %d instance(s) masquée(s)"
+			% [_place_id, caches])
 
 	# Fond plat, aucune lumière, aucun brouillard : rien qui puisse
-	# introduire une troisième valeur dans l'image.
+	# introduire une troisième valeur dans l'image. En mode lieu, le monde
+	# porte DÉJÀ un `WorldEnvironment` (ciel, brouillard, orage) : on le
+	# neutralise, car deux environnements dans la même viewport ne se
+	# cumulent pas proprement et le ciel repasserait devant le fond plat.
+	for noeud: Node in montee.find_children("*", "WorldEnvironment", true, false):
+		(noeud as WorldEnvironment).environment = null
 	var monde: WorldEnvironment = WorldEnvironment.new()
 	var env: Environment = Environment.new()
 	env.background_mode = Environment.BG_COLOR
@@ -173,6 +221,8 @@ func _run() -> void:
 	var meta: Dictionary = {
 		"sujet": _nom,
 		"scene": _scene_path,
+		"mode": "lieu dans le monde monté" if not _place_id.is_empty() else "asset isolé",
+		"place_id": _place_id,
 		"engine": Engine.get_version_info()["string"],
 		"renderer": ProjectSettings.get_setting(
 			"rendering/renderer/rendering_method", "?"),
@@ -191,6 +241,38 @@ func _run() -> void:
 		out.close()
 	print("[silhouette] OK : %d vue(s)" % manifeste.size())
 	quit(0)
+
+
+## Retrouve un lieu par son `place_id`. Le registre pose la méta sur la
+## racine du lieu et l'inscrit dans le groupe `world_v2_places` : on
+## interroge les deux, jamais le nom de nœud, que Godot renomme.
+func _trouver_lieu(montee: Node, place_id: String) -> Node3D:
+	for noeud: Node in montee.get_tree().get_nodes_in_group(&"world_v2_places"):
+		if String(noeud.get_meta("place_id", "")) == place_id:
+			return noeud as Node3D
+	for noeud: Node in montee.find_children("*", "Node3D", true, false):
+		if noeud.has_meta("place_id") \
+				and String(noeud.get_meta("place_id")) == place_id:
+			return noeud as Node3D
+	return null
+
+
+## Masque toute géométrie qui n'appartient pas au sujet — terrain, eau,
+## végétation, autres lieux, décor de bordure.
+##
+## `VisualInstance3D` et non `MeshInstance3D` : la végétation est en
+## `MultiMeshInstance3D`, et une passe qui ne collecte que les seconds la
+## laisserait dans l'image en la déclarant absente (`tools/CLAUDE.md`).
+func _masquer_hors_sujet(montee: Node, sujet: Node3D) -> int:
+	var masques: int = 0
+	for noeud: Node in montee.find_children("*", "VisualInstance3D", true, false):
+		if noeud == sujet or sujet.is_ancestor_of(noeud):
+			continue
+		(noeud as VisualInstance3D).visible = false
+		masques += 1
+	for noeud: Node in montee.find_children("*", "CanvasLayer", true, false):
+		(noeud as CanvasLayer).visible = false
+	return masques
 
 
 ## Remplace TOUT matériau par l'aplat. `material_override` gagne sur les
