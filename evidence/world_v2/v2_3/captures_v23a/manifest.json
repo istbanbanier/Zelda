@@ -1,6 +1,6 @@
 {
   "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
-  "commit": "38af34611c6bdeb78b27cd9bd4118e54c554af79",
+  "commit": "73a0c08d95ad051cd73613d569d6a2c1aa053afb",
   "engine": "4.7.1-stable (custom_build)",
   "renderer": "forward_plus",
   "repo_dirty": false,
@@ -114,15 +114,15 @@
     {
       "fov": 55.0,
       "from": [
-        -95.0,
-        4.0,
-        33.0
+        -98.0,
+        4.6,
+        40.5
       ],
       "image": "evidence/world_v2/v2_3/captures_v23a/village_interieur.png",
       "look": [
-        -98.0,
-        3.0,
-        27.0
+        -101.2,
+        3.6,
+        35.5
       ],
       "name": "village_interieur"
     },
@@ -204,30 +204,30 @@
     {
       "fov": 55.0,
       "from": [
-        -6.0,
-        2.8,
-        26.0
+        -10.0,
+        3.5,
+        24.0
       ],
       "image": "evidence/world_v2/v2_3/captures_v23a/pont_proche.png",
       "look": [
-        -12.0,
+        -16.0,
         1.5,
-        20.0
+        12.0
       ],
       "name": "pont_proche"
     },
     {
       "fov": 60.0,
       "from": [
-        -14.0,
-        1.8,
-        28.0
+        -20.0,
+        4.2,
+        18.0
       ],
       "image": "evidence/world_v2/v2_3/captures_v23a/pont_sous_arche.png",
       "look": [
-        -8.0,
-        1.5,
-        16.0
+        -13.0,
+        1.2,
+        8.0
       ],
       "name": "pont_sous_arche"
     },
@@ -264,14 +264,14 @@
     {
       "fov": 55.0,
       "from": [
-        -106.0,
-        4.0,
-        9.0
+        -104.0,
+        5.0,
+        12.0
       ],
       "image": "evidence/world_v2/v2_3/captures_v23a/grotte_proche.png",
       "look": [
-        -112.0,
-        3.0,
+        -111.0,
+        3.5,
         4.0
       ],
       "name": "grotte_proche"
@@ -279,15 +279,15 @@
     {
       "fov": 60.0,
       "from": [
-        -109.0,
-        4.0,
-        7.0
+        -109.5,
+        4.3,
+        6.5
       ],
       "image": "evidence/world_v2/v2_3/captures_v23a/grotte_interieur.png",
       "look": [
-        -114.0,
-        3.0,
-        3.0
+        -113.5,
+        3.3,
+        4.2
       ],
       "name": "grotte_interieur"
     },
@@ -354,15 +354,15 @@
     {
       "fov": 60.0,
       "from": [
-        76.0,
-        12.0,
-        104.0
+        80.0,
+        11.0,
+        122.0
       ],
       "image": "evidence/world_v2/v2_3/captures_v23a/camp_braise_composition.png",
       "look": [
-        96.0,
-        6.0,
-        120.0
+        97.0,
+        6.5,
+        119.5
       ],
       "name": "camp_braise_composition"
     },
