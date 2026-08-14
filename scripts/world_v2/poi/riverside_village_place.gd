@@ -109,10 +109,24 @@ const RACINE_MONDE_Y: float = 1.695
 # CES NOMBRES SERONT RECALÉS SUR LA CAPTURE : un albédo n'est pas une
 # valeur rendue.
 # ---------------------------------------------------------------------------
+# RECALAGE FINAL, MESURÉ SUR `vue01`. Les cibles ci-dessus supposaient le
+# gain de ×1,6 du monde ouvert. Le hameau n'est pas au soleil : la crête
+# ouest culmine à 9,85 (x local −20) et le soleil est à 23° d'élévation,
+# donc l'ombre monte jusqu'à y ≈ 4,0 à l'aplomb de l'auberge. Le gain réel
+# mesuré ici est de ×0,55 — trois fois moins.
+#
+# Premier réglage (enduit 0,62) : enduit rendu 0,337, brique 0,244, pavage
+# 0,397, herbe 0,360. Les blancs avaient disparu (0,32 % de pixels ≥ 0,90
+# contre 3,1 % avant), mais le village passait SOUS l'herbe et sous son
+# propre pavage — le même défaut de relation que celui rejeté, retourné.
+# Corrigé par le rapport mesuré rendu/teinte, pas par l'intention :
+#   enduit  0,62 → 0,92  pour viser ~0,50
+#   brique  0,62 → 0,97  pour viser ~0,38
+#   pavage  ×0,83         pour repasser SOUS l'enduit
 const TEINTES: Dictionary = {
-	"MI_Plaster": Color(0.62, 0.57, 0.50),
-	"MI_UnevenBrick": Color(0.62, 0.58, 0.52),
-	"MI_Brick": Color(0.57, 0.53, 0.48),
+	"MI_Plaster": Color(0.92, 0.85, 0.74),
+	"MI_UnevenBrick": Color(0.97, 0.90, 0.81),
+	"MI_Brick": Color(0.88, 0.82, 0.74),
 	"MI_RedBrick": Color(0.50, 0.47, 0.44),
 	"MI_RoundTiles": Color(0.52, 0.62, 0.72),
 	"MI_WoodTrim": Color(0.40, 0.42, 0.44),
@@ -124,8 +138,9 @@ const TEINTES: Dictionary = {
 	"MI_MetalOrnaments": Color(0.40, 0.40, 0.42),
 	# Le pavage rendait BLEU-ARDOISE et froid, en contradiction avec le
 	# village : la texture `PathRocks` moyenne (0,301 ; 0,348 ; 0,228) tire
-	# déjà au vert, et une teinte neutre l'y enfonçait. Teinte chaude.
-	"PathRocks": Color(0.72, 0.60, 0.46),
+	# déjà au vert, et une teinte neutre l'y enfonçait. Teinte chaude, et
+	# abaissée : un sol plus clair que ses murs inverse la hiérarchie.
+	"PathRocks": Color(0.60, 0.50, 0.38),
 }
 const TEINTE_DEFAUT: Color = Color(0.52, 0.50, 0.47)
 ## Plafond dur : aucune surface du hameau au-dessus de cet albédo. Le
