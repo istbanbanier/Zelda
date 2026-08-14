@@ -111,6 +111,13 @@ COL_MARGE_CLE = 0.35
 # une salle éclairée (la source motivée vit après le coude, invisible du
 # dehors).
 #
+# OUVERTURE ÉLARGIE APRÈS CAPTURE. La bouche mesurait 3,10 x 2,60 m : sur
+# la vue d'approche à hauteur de joueur, un massif de fleurs gelées haut
+# d'environ 1,5 m en masquait la moitié basse. Portée à 3,40 x 2,85 m, la
+# part d'ouverture qui reste au-dessus des fleurs passe d'environ 42 % à
+# 53 %. Ce n'est pas une solution complète — voir la note d'honnêteté du
+# rapport — mais c'est la seule qui ne déplace pas de la végétation GELÉE.
+#
 # CONTRAINTE DURE du filet `test_la_grotte_a_un_seuil_et_un_interieur` :
 # il marche en LIGNE DROITE du seuil à l'intérieur et exige 1,75 m de
 # hauteur libre à chaque pas de 0,40 m. La corde d'un arc de 31° sur
@@ -118,9 +125,9 @@ COL_MARGE_CLE = 0.35
 # (1,55 m) l'absorbe largement, et la clé y reste au-dessus de 2,4 m.
 CAVITE = [
     # ax     ay     hw     cle
-    (0.00, -1.15, 1.75, 2.55),   # porche évasé, sol 6 cm SOUS le terrain
-    (0.00,  0.00, 1.55, 2.60),   # seuil
-    (0.06,  1.60, 1.70, 2.70),
+    (0.00, -1.15, 1.90, 2.80),   # porche évasé, sol sous le terrain
+    (0.00,  0.00, 1.70, 2.85),   # seuil
+    (0.06,  1.60, 1.85, 2.95),
     (0.24,  3.20, 2.15, 2.80),
     (0.58,  4.75, 2.70, 2.90),
     (1.05,  6.25, 3.05, 2.92),   # SALLE
@@ -162,9 +169,9 @@ PORCHE_DENIVELE = -0.14
 # creux de bruit extérieur et une bosse de bruit intérieur se cumulent.
 MASSIF = [
     # ax     ay    hw_ref cle_ref  jeu_lat jeu_cle
-    (0.00, -1.15, 1.75, 2.55, 1.70, 1.55),   # visière saillante
-    (0.00,  0.00, 1.55, 2.60, 1.60, 1.35),   # retrait derrière la visière
-    (0.06,  1.60, 1.70, 2.70, 1.85, 1.45),
+    (0.00, -1.15, 1.90, 2.80, 1.70, 1.55),   # visière saillante
+    (0.00,  0.00, 1.70, 2.85, 1.60, 1.45),   # retrait derrière la visière
+    (0.06,  1.60, 1.85, 2.95, 1.85, 1.55),
     (0.24,  3.20, 2.15, 2.80, 2.10, 2.15),   # SOMMET 1
     (0.58,  4.75, 2.70, 2.90, 2.00, 1.68),   # col
     (1.05,  6.25, 3.05, 2.92, 2.10, 2.22),   # SOMMET 2, au-dessus de la salle
@@ -252,8 +259,8 @@ ASSISE_JUPE_MIN_M = 2.00
 
 MATIERES = {
     "MAT_CaveRock_Face":   ((0.455, 0.405, 0.335), 0.93),
-    "MAT_CaveRock_Base":   ((0.300, 0.278, 0.258), 0.95),
-    "MAT_CaveRock_Collar": ((0.495, 0.435, 0.352), 0.91),
+    "MAT_CaveRock_Base":   ((0.272, 0.252, 0.236), 0.95),
+    "MAT_CaveRock_Collar": ((0.545, 0.478, 0.385), 0.91),
     "MAT_CaveIn_Wall":     ((0.205, 0.192, 0.180), 0.96),
     "MAT_CaveIn_Deep":     ((0.132, 0.130, 0.140), 0.97),
     "MAT_CaveIn_Floor":    ((0.262, 0.240, 0.208), 0.95),
@@ -449,8 +456,20 @@ def construire(segments, sag, jupe, retrait_lat, retrait_cle, graine=7.0):
             faces.append((a + k, a + k2, b + k2, b + k))
             z = 0.25 * (sommets[a + k].z + sommets[a + k2].z
                         + sommets[b + k].z + sommets[b + k2].z)
-            familles.append("MAT_CaveRock_Base" if z < -0.10
-                            else "MAT_CaveRock_Face")
+            # TROIS BANDES DE VALEUR, et ce n'est pas décoratif. La bouche
+            # regardant l'est et le soleil étant à l'ouest, TOUT le flanc
+            # visible depuis l'approche est en ombre propre : mesuré en
+            # capture, la masse sortait d'un gris uniforme, sans pied ni
+            # crête. L'éclairement ne peut donc pas fournir la hiérarchie —
+            # c'est la MATIÈRE qui doit la porter (briefing §3.3). Le seuil
+            # bas était à -0,10, c'est-à-dire SOUS le terrain : la bande
+            # sombre n'était jamais visible.
+            if z < 0.55:
+                familles.append("MAT_CaveRock_Base")
+            elif z > 3.10:
+                familles.append("MAT_CaveRock_Collar")
+            else:
+                familles.append("MAT_CaveRock_Face")
     dernier = mas_bases[-1]
     for k in range(segments):
         k2 = (k + 1) % segments

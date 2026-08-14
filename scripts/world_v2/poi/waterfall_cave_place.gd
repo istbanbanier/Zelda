@@ -73,7 +73,7 @@ const OUVRAGE: String = "res://assets/environment/caves/SM_WaterfallCave.glb"
 ## creuse pas ; c'est la cavité qui recule. Décalée de 3,5 m vers l'est,
 ## toute la cavité tient sur le plat à 3,00 (x ∈ [-115 ; -104]) et seul le
 ## MASSIF, lui, va se faire enterrer par le ressaut.
-const SEUIL_LOCAL: Vector2 = Vector2(2.5, 0.4)
+const SEUIL_LOCAL: Vector2 = Vector2(4.0, -2.5)
 ## Le modèle sort de la bouche vers son +Z local ; ce lacet l'oriente vers
 ## le sud-est monde (0,707 ; 0,707).
 const LACET_DEG: float = 45.0
