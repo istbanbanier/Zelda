@@ -1,0 +1,86 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "f978932c4e2efac2d2f7ed6c7754a39b6529df4d",
+  "engine": "4.7.1-stable (custom_build)",
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 50.0,
+      "from": [
+        -68.0,
+        15.0,
+        6.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/hameau/vue01_composition.png",
+      "look": [
+        -97.0,
+        4.5,
+        31.0
+      ],
+      "name": "vue01_composition"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        -76.0,
+        3.38,
+        28.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/hameau/vue02_approche_joueur.png",
+      "look": [
+        -100.0,
+        5.7,
+        36.0
+      ],
+      "name": "vue02_approche_joueur"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        -95.5,
+        3.5,
+        29.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/hameau/vue03_gros_plan_structurel.png",
+      "look": [
+        -100.0,
+        4.6,
+        33.5
+      ],
+      "name": "vue03_gros_plan_structurel"
+    },
+    {
+      "fov": 64.0,
+      "from": [
+        -100.9,
+        4.95,
+        34.6
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/hameau/vue04_interieur_auberge.png",
+      "look": [
+        -104.6,
+        4.2,
+        38.7
+      ],
+      "name": "vue04_interieur_auberge"
+    },
+    {
+      "fov": 45.0,
+      "from": [
+        -66.0,
+        1.55,
+        19.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/hameau/vue07_quai_ligne_d_eau.png",
+      "look": [
+        -79.0,
+        1.1,
+        22.0
+      ],
+      "name": "vue07_quai_ligne_d_eau"
+    }
+  ],
+  "size": "1280x720"
+}
