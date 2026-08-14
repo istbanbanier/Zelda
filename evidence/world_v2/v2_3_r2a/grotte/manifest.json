@@ -1,0 +1,221 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "1d8492383d152bd05bf43ece269e8e5a49b776d9",
+  "engine": "4.7.1-stable (custom_build)",
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 50.0,
+      "from": [
+        -92.0,
+        6.5,
+        16.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/01_composition.png",
+      "look": [
+        -109.0,
+        5.0,
+        1.0
+      ],
+      "name": "01_composition"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        -98.0,
+        4.3,
+        8.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/02_approche_joueur.png",
+      "look": [
+        -105.8,
+        4.6,
+        3.7
+      ],
+      "name": "02_approche_joueur"
+    },
+    {
+      "fov": 48.0,
+      "from": [
+        -102.0,
+        3.95,
+        8.2
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/03_gros_plan_seuil.png",
+      "look": [
+        -105.9,
+        4.4,
+        3.8
+      ],
+      "name": "03_gros_plan_seuil"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -109.677,
+        5.12,
+        -1.662
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/04_interieur_salle.png",
+      "look": [
+        -107.5,
+        4.7,
+        2.1
+      ],
+      "name": "04_interieur_salle"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -110.777,
+        4.92,
+        -0.0619999999999998
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/05_interieur_niche.png",
+      "look": [
+        -109.182,
+        3.48,
+        -3.218
+      ],
+      "name": "05_interieur_niche"
+    },
+    {
+      "fov": 52.0,
+      "from": [
+        -116.0,
+        7.4,
+        -8.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/06_flanc_ouest.png",
+      "look": [
+        -108.8,
+        4.8,
+        -0.5
+      ],
+      "name": "06_flanc_ouest"
+    },
+    {
+      "fov": 62.0,
+      "from": [
+        -109.677,
+        5.12,
+        -1.662
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/tournette_000.png",
+      "look": [
+        -105.677,
+        4.57,
+        -1.662
+      ],
+      "name": "tournette_000"
+    },
+    {
+      "fov": 62.0,
+      "from": [
+        -109.677,
+        5.12,
+        -1.662
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/tournette_045.png",
+      "look": [
+        -106.848572875254,
+        4.57,
+        1.16642712474619
+      ],
+      "name": "tournette_045"
+    },
+    {
+      "fov": 62.0,
+      "from": [
+        -109.677,
+        5.12,
+        -1.662
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/tournette_090.png",
+      "look": [
+        -109.677,
+        4.57,
+        2.338
+      ],
+      "name": "tournette_090"
+    },
+    {
+      "fov": 62.0,
+      "from": [
+        -109.677,
+        5.12,
+        -1.662
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/tournette_135.png",
+      "look": [
+        -112.505427124746,
+        4.57,
+        1.16642712474619
+      ],
+      "name": "tournette_135"
+    },
+    {
+      "fov": 62.0,
+      "from": [
+        -109.677,
+        5.12,
+        -1.662
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/tournette_180.png",
+      "look": [
+        -113.677,
+        4.57,
+        -1.662
+      ],
+      "name": "tournette_180"
+    },
+    {
+      "fov": 62.0,
+      "from": [
+        -109.677,
+        5.12,
+        -1.662
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/tournette_225.png",
+      "look": [
+        -112.505427124746,
+        4.57,
+        -4.49042712474619
+      ],
+      "name": "tournette_225"
+    },
+    {
+      "fov": 62.0,
+      "from": [
+        -109.677,
+        5.12,
+        -1.662
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/tournette_270.png",
+      "look": [
+        -109.677,
+        4.57,
+        -5.662
+      ],
+      "name": "tournette_270"
+    },
+    {
+      "fov": 62.0,
+      "from": [
+        -109.677,
+        5.12,
+        -1.662
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/tournette_315.png",
+      "look": [
+        -106.848572875254,
+        4.57,
+        -4.49042712474619
+      ],
+      "name": "tournette_315"
+    }
+  ],
+  "size": "1280x720"
+}
