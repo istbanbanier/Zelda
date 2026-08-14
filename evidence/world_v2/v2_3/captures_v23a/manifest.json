@@ -1,0 +1,506 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "38af34611c6bdeb78b27cd9bd4118e54c554af79",
+  "engine": "4.7.1-stable (custom_build)",
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 60.0,
+      "from": [
+        32.0,
+        9.0,
+        76.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/camp_approche.png",
+      "look": [
+        45.0,
+        7.5,
+        65.0
+      ],
+      "name": "camp_approche"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        25.0,
+        14.0,
+        85.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/camp_composition.png",
+      "look": [
+        45.0,
+        8.0,
+        65.0
+      ],
+      "name": "camp_composition"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        41.0,
+        7.6,
+        69.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/camp_proche.png",
+      "look": [
+        45.0,
+        7.0,
+        65.0
+      ],
+      "name": "camp_proche"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        43.0,
+        7.3,
+        67.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/camp_feu.png",
+      "look": [
+        45.5,
+        6.8,
+        64.0
+      ],
+      "name": "camp_feu"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -86.0,
+        5.0,
+        29.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/village_approche.png",
+      "look": [
+        -96.0,
+        3.5,
+        30.0
+      ],
+      "name": "village_approche"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -78.0,
+        9.0,
+        42.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/village_composition.png",
+      "look": [
+        -96.0,
+        3.0,
+        30.0
+      ],
+      "name": "village_composition"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -92.0,
+        4.2,
+        32.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/village_proche.png",
+      "look": [
+        -97.0,
+        3.0,
+        29.0
+      ],
+      "name": "village_proche"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        -95.0,
+        4.0,
+        33.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/village_interieur.png",
+      "look": [
+        -98.0,
+        3.0,
+        27.0
+      ],
+      "name": "village_interieur"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -40.0,
+        7.0,
+        84.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/ferme_approche.png",
+      "look": [
+        -52.0,
+        5.5,
+        92.0
+      ],
+      "name": "ferme_approche"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -34.0,
+        10.0,
+        78.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/ferme_composition.png",
+      "look": [
+        -52.0,
+        5.0,
+        92.0
+      ],
+      "name": "ferme_composition"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        -48.0,
+        6.2,
+        89.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/ferme_proche.png",
+      "look": [
+        -54.0,
+        5.0,
+        94.0
+      ],
+      "name": "ferme_proche"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        0.0,
+        4.0,
+        34.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/pont_approche.png",
+      "look": [
+        -10.0,
+        1.5,
+        22.0
+      ],
+      "name": "pont_approche"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        8.0,
+        8.0,
+        40.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/pont_composition.png",
+      "look": [
+        -12.0,
+        2.0,
+        20.0
+      ],
+      "name": "pont_composition"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        -6.0,
+        2.8,
+        26.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/pont_proche.png",
+      "look": [
+        -12.0,
+        1.5,
+        20.0
+      ],
+      "name": "pont_proche"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -14.0,
+        1.8,
+        28.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/pont_sous_arche.png",
+      "look": [
+        -8.0,
+        1.5,
+        16.0
+      ],
+      "name": "pont_sous_arche"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -100.0,
+        5.0,
+        14.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/grotte_approche.png",
+      "look": [
+        -110.0,
+        3.5,
+        6.0
+      ],
+      "name": "grotte_approche"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -94.0,
+        9.0,
+        20.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/grotte_composition.png",
+      "look": [
+        -111.0,
+        3.0,
+        5.0
+      ],
+      "name": "grotte_composition"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        -106.0,
+        4.0,
+        9.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/grotte_proche.png",
+      "look": [
+        -112.0,
+        3.0,
+        4.0
+      ],
+      "name": "grotte_proche"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -109.0,
+        4.0,
+        7.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/grotte_interieur.png",
+      "look": [
+        -114.0,
+        3.0,
+        3.0
+      ],
+      "name": "grotte_interieur"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -80.0,
+        10.0,
+        126.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/arbre_approche.png",
+      "look": [
+        -92.0,
+        9.0,
+        132.0
+      ],
+      "name": "arbre_approche"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -72.0,
+        13.0,
+        118.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/arbre_composition.png",
+      "look": [
+        -92.0,
+        9.0,
+        132.0
+      ],
+      "name": "arbre_composition"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        -88.0,
+        9.4,
+        129.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/arbre_proche.png",
+      "look": [
+        -94.0,
+        8.5,
+        134.0
+      ],
+      "name": "arbre_proche"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        84.0,
+        8.0,
+        110.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/camp_braise_approche.png",
+      "look": [
+        96.0,
+        7.0,
+        120.0
+      ],
+      "name": "camp_braise_approche"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        76.0,
+        12.0,
+        104.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/camp_braise_composition.png",
+      "look": [
+        96.0,
+        6.0,
+        120.0
+      ],
+      "name": "camp_braise_composition"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        92.0,
+        7.2,
+        116.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/camp_braise_proche.png",
+      "look": [
+        98.0,
+        6.5,
+        122.0
+      ],
+      "name": "camp_braise_proche"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        24.0,
+        3.0,
+        34.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/bassin_approche.png",
+      "look": [
+        26.0,
+        1.5,
+        24.0
+      ],
+      "name": "bassin_approche"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        14.0,
+        6.0,
+        38.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/bassin_composition.png",
+      "look": [
+        26.0,
+        1.0,
+        24.0
+      ],
+      "name": "bassin_composition"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        23.0,
+        2.2,
+        28.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/bassin_proche.png",
+      "look": [
+        27.0,
+        1.0,
+        23.0
+      ],
+      "name": "bassin_proche"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        20.0,
+        2.5,
+        20.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/bassin_fonctionnel.png",
+      "look": [
+        28.0,
+        1.0,
+        26.0
+      ],
+      "name": "bassin_fonctionnel"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        107.0,
+        20.0,
+        -4.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/pylone_approche.png",
+      "look": [
+        115.0,
+        25.0,
+        -25.0
+      ],
+      "name": "pylone_approche"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        92.0,
+        24.0,
+        4.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/pylone_composition.png",
+      "look": [
+        115.0,
+        30.0,
+        -25.0
+      ],
+      "name": "pylone_composition"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        110.0,
+        19.5,
+        -18.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/pylone_proche.png",
+      "look": [
+        116.0,
+        22.0,
+        -27.0
+      ],
+      "name": "pylone_proche"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        112.0,
+        19.0,
+        -21.0
+      ],
+      "image": "evidence/world_v2/v2_3/captures_v23a/pylone_base.png",
+      "look": [
+        116.0,
+        20.0,
+        -28.0
+      ],
+      "name": "pylone_base"
+    }
+  ],
+  "size": "1280x720"
+}
