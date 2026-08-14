@@ -6,6 +6,14 @@
 ## canaux creux, anneau INCOMPLET, couronne bifide asymétrique — cuivre
 ## patiné + céramique ivoire, émission cyan RARE (une bande runique).
 ##
+## REJET V2.3-A : « un obélisque blanc très simple ; couronne, anneau
+## et canaux trop faibles à distance ». Refait : base TRIPODE étagée en
+## appareil, fût en DOUZE dosserets verticaux dont trois manquent —
+## les canaux sont des vides RÉELS, pas des bandes peintes —, bandes de
+## joint tous les quatre mètres, anneau incomplet épaissi, couronne
+## bifide massive à coiffes de céramique. Les primitives ne servent que
+## de noyau invisible.
+##
 ## Implantation MESURÉE : l'ancre `(115, 18, −25)` est un jalon des
 ## routes principale ET des hauteurs — la structure est donc décalée en
 ## local (9.0, 4.5) (l'AABB du socle laisse > 1,2 m aux couloirs), sa terrasse d'arrivée reste le point de route ; le
@@ -21,6 +29,9 @@ const K: GDScript = preload("res://scripts/world_v2/poi/world_v2_place_kit.gd")
 const CENTER: Vector3 = Vector3(9.0, 0.0, 4.5)
 const COL_STONE: Color = Color(0.55, 0.48, 0.42)
 const COL_COPPER: Color = Color(0.46, 0.50, 0.43)
+## Fond de canal : plus sombre que les piliers, sinon le creux se comble
+## visuellement et le canal disparaît (défaut mesuré le 2026-08-14).
+const COL_CORE_STONE: Color = Color(0.24, 0.24, 0.23)
 const COL_IVORY: Color = Color(0.88, 0.84, 0.74)
 const COL_CYAN_CORE: Color = Color(0.13, 0.85, 0.93)
 
@@ -37,172 +48,215 @@ func _build() -> void:
 	add_child(root)
 	declare_support(Vector3(CENTER.x, base_y, CENTER.z))
 
-	# — Base ÉTAGÉE : trois tambours de pierre décroissants, joints de
-	# céramique ivoire entre les lits.
+	# — BASE TRIPODE : trois massifs d'appareil à 120°, reliés par deux
+	# lits étagés. Chaque massif a son propre appui sur le terrain gelé.
+	# Six assises par pied, pas quatre : à 40 m la base de quatre assises
+	# se lisait comme un simple socle. Elle doit porter le fût, donc se voir.
 	var tier_y: float = 0.0
-	for tier: Array in [[4.0, 1.3], [3.2, 1.15], [2.5, 1.0]]:
-		var radius: float = float(tier[0])
-		var height: float = float(tier[1])
-		_drum(root, "Tambour_%d" % root.get_child_count(),
-			Vector3(0, tier_y + height * 0.5, 0), radius, radius * 0.94,
-			height, COL_STONE)
-		_drum(root, "Joint_%d" % root.get_child_count(),
-			Vector3(0, tier_y + height + 0.06, 0), radius * 0.9,
-			radius * 0.9, 0.12, COL_IVORY)
-		tier_y += height + 0.12
-	var body: StaticBody3D = StaticBody3D.new()
-	body.name = "Base_col"
-	body.collision_layer = 1
-	body.collision_mask = 0
+	for leg: int in range(3):
+		var angle: float = TAU * float(leg) / 3.0 + 0.4
+		var direction: Vector3 = Vector3(cos(angle), 0.0, sin(angle))
+		var foot_local: Vector3 = CENTER + direction * 4.3
+		var foot_y: float = ground_local_y(foot_local.x, foot_local.z)
+		# Quatre assises TRAPUES plutôt que six minces : à six, le retrait
+		# régulier dessinait un escalier et les pieds paraissaient grêles.
+		for course: int in range(4):
+			var y: float = foot_y - base_y + 0.52 + 1.02 * float(course)
+			var reach: float = 4.05 - 0.52 * float(course)
+			K.stone_block(root, "Pied_%d_%d" % [leg, course],
+				direction * reach + Vector3(0.0, y, 0.0),
+				Vector3(3.5 - 0.22 * float(course), 1.04,
+					3.0 - 0.30 * float(course)),
+				rad_to_deg(-angle), COL_STONE, 9100 + leg * 9 + course, 0.05)
+		declare_support(Vector3(foot_local.x, foot_y, foot_local.z))
+	for lit: int in range(2):
+		tier_y = 4.3 + 0.88 * float(lit)
+		var radius: float = 3.25 - 0.42 * float(lit)
+		for i: int in range(10):
+			var angle: float = TAU * float(i) / 10.0
+			K.stone_block(root, "Lit_%d_%d" % [lit, i],
+				Vector3(cos(angle) * radius, tier_y, sin(angle) * radius),
+				Vector3(1.15, 0.82, TAU * radius / 10.0 * 1.35),
+				rad_to_deg(-angle), COL_STONE if lit == 0 else COL_IVORY,
+				9200 + lit * 13 + i, 0.045)
+	tier_y += 0.58
+	var body_col: StaticBody3D = StaticBody3D.new()
+	body_col.name = "Base_col"
+	body_col.collision_layer = 1
+	body_col.collision_mask = 0
 	var body_shape: CollisionShape3D = CollisionShape3D.new()
 	var cylinder_shape: CylinderShape3D = CylinderShape3D.new()
-	cylinder_shape.radius = 4.0
-	cylinder_shape.height = 3.8
+	cylinder_shape.radius = 4.2
+	cylinder_shape.height = 3.6
 	body_shape.shape = cylinder_shape
-	body.add_child(body_shape)
-	body.position = Vector3(0, 1.9, 0)
-	root.add_child(body)
+	body_col.add_child(body_shape)
+	body_col.position = Vector3(0, 1.8, 0)
+	root.add_child(body_col)
 
-	# — Trois CONTREFORTS inclinés à 120°, chacun avec son propre appui.
-	for i: int in range(3):
-		var angle: float = TAU * float(i) / 3.0 + 0.5
-		var direction: Vector3 = Vector3(cos(angle), 0.0, sin(angle))
-		var foot_local: Vector3 = CENTER + direction * 4.8
-		var foot_y: float = ground_local_y(foot_local.x, foot_local.z)
-		var buttress: MeshInstance3D = MeshInstance3D.new()
-		buttress.name = "Contrefort_%d" % i
-		var box: BoxMesh = BoxMesh.new()
-		box.size = Vector3(1.1, 5.6, 1.4)
-		buttress.mesh = box
-		buttress.material_override = K.flat_material(COL_STONE)
-		buttress.position = Vector3(direction.x * 3.4,
-			foot_y - base_y + 2.4, direction.z * 3.4)
-		buttress.look_at_from_position(buttress.position,
-			buttress.position + direction.cross(Vector3.UP), Vector3.UP)
-		buttress.rotate_object_local(Vector3(1, 0, 0), deg_to_rad(-16.0))
-		root.add_child(buttress)
-		declare_support(Vector3(foot_local.x, foot_y, foot_local.z))
-
-	# — FÛT effilé : six tambours de cuivre patiné, r 2,2 → 1,1, avec
-	# trois CANAUX creux (bandes sombres) sur toute la montée.
+	# — FÛT : DOUZE dosserets verticaux sur un anneau, TROIS manquants à
+	# 120° — les canaux sont donc des vides réels, visibles en contre-jour
+	# à distance. Cinq registres, séparés par des bandes de joint.
+	# UN CANAL N'EST PAS UNE BANDE PEINTE — mesuré sur la capture du
+	# 2026-08-14. Douze dosserets jointifs (tangentielle = 1,05 × l'arc)
+	# formaient un cylindre presque plein : les trois manquants ne
+	# laissaient qu'une rainure de quelques pixels à 37 m, et le lead a
+	# raison de dire que les canaux sont « trop faibles à distance ».
+	#
+	# Correction structurelle : un NOYAU plein et sombre à l'intérieur,
+	# puis des PILIERS détachés à l'extérieur. Le canal devient alors ce
+	# qu'il est dans une architecture réelle — le fond d'ombre entre deux
+	# piliers — et il se lit d'autant mieux que le soleil est rasant.
 	var shaft_base: float = tier_y
-	var shaft_top: float = 24.0
-	var segments: int = 6
-	for s: int in range(segments):
-		var t0: float = float(s) / float(segments)
-		var t1: float = float(s + 1) / float(segments)
+	var shaft_top: float = 25.2
+	var registers: int = 5
+	var slots: int = 12
+	for r: int in range(registers):
+		var t0: float = float(r) / float(registers)
+		var t1: float = float(r + 1) / float(registers)
 		var y0: float = lerpf(shaft_base, shaft_top, t0)
 		var y1: float = lerpf(shaft_base, shaft_top, t1)
-		_drum(root, "Fut_%d" % s, Vector3(0, (y0 + y1) * 0.5, 0),
-			lerpf(2.2, 1.1, t0), lerpf(2.2, 1.1, t1), y1 - y0, COL_COPPER)
-	for i: int in range(3):
-		var angle: float = TAU * float(i) / 3.0 + 1.1
-		var channel: MeshInstance3D = MeshInstance3D.new()
-		channel.name = "Canal_%d" % i
-		var channel_box: BoxMesh = BoxMesh.new()
-		channel_box.size = Vector3(0.34, shaft_top - shaft_base - 0.6, 0.5)
-		channel.mesh = channel_box
-		channel.material_override = K.flat_material(Color(0.20, 0.19, 0.18))
-		var mid_r: float = 1.55
-		channel.position = Vector3(cos(angle) * mid_r,
-			(shaft_base + shaft_top) * 0.5, sin(angle) * mid_r)
-		channel.rotation.y = -angle + PI * 0.5
-		channel.rotation.z = deg_to_rad(2.1)
-		root.add_child(channel)
-	# La bande RUNIQUE : l'unique émission cyan, étroite, face nord.
-	var runes: MeshInstance3D = MeshInstance3D.new()
-	runes.name = "BandeRunique"
-	var rune_box: BoxMesh = BoxMesh.new()
-	rune_box.size = Vector3(0.22, 9.0, 0.1)
-	runes.mesh = rune_box
-	runes.material_override = K.flat_material(Color(0.30, 0.44, 0.46),
-		COL_CYAN_CORE, 1.15)
-	runes.position = Vector3(0.0, shaft_base + 6.0, -1.72)
-	root.add_child(runes)
+		var radius: float = lerpf(2.45, 1.45, (t0 + t1) * 0.5)
+		var core_radius: float = radius - 0.62
+		# Le noyau : douze pans jointifs, pierre sombre — c'est le FOND
+		# des canaux, et il ne doit jamais briller.
+		for i: int in range(slots):
+			var core_angle: float = TAU * float(i) / float(slots) + 0.18
+			K.stone_block(root, "Noyau_%d_%d" % [r, i],
+				Vector3(cos(core_angle) * core_radius, (y0 + y1) * 0.5,
+					sin(core_angle) * core_radius),
+				Vector3(0.36, y1 - y0 + 0.10,
+					TAU * core_radius / float(slots) * 1.30),
+				rad_to_deg(-core_angle), COL_CORE_STONE,
+				9250 + r * 19 + i, 0.03)
+		for i: int in range(slots):
+			if i % 4 == 1:
+				continue
+			var angle: float = TAU * float(i) / float(slots) + 0.18
+			# Tangentielle 0,74 × l'arc : les piliers NE se touchent plus.
+			K.stone_block(root, "Dosseret_%d_%d" % [r, i],
+				Vector3(cos(angle) * radius, (y0 + y1) * 0.5,
+					sin(angle) * radius),
+				Vector3(0.92, y1 - y0 - 0.30,
+					TAU * radius / float(slots) * 0.74),
+				rad_to_deg(-angle), COL_COPPER, 9300 + r * 17 + i, 0.035)
+		# Bande de joint : une couronne de céramique ivoire fissurée, qui
+		# ceinture piliers ET canaux — elle donne l'étage et le rythme.
+		for i: int in range(slots):
+			var angle: float = TAU * float(i) / float(slots) + 0.18
+			K.stone_block(root, "Joint_%d_%d" % [r, i],
+				Vector3(cos(angle) * (radius + 0.10), y1 - 0.14,
+					sin(angle) * (radius + 0.10)),
+				Vector3(0.62, 0.40, TAU * radius / float(slots) * 1.18),
+				rad_to_deg(-angle), COL_IVORY, 9400 + r * 17 + i, 0.05)
 	var shaft_body: StaticBody3D = StaticBody3D.new()
 	shaft_body.name = "Fut_col"
 	shaft_body.collision_layer = 1
 	shaft_body.collision_mask = 0
 	var shaft_shape: CollisionShape3D = CollisionShape3D.new()
 	var shaft_cylinder: CylinderShape3D = CylinderShape3D.new()
-	shaft_cylinder.radius = 2.1
+	shaft_cylinder.radius = 2.3
 	shaft_cylinder.height = shaft_top - shaft_base
 	shaft_shape.shape = shaft_cylinder
 	shaft_body.add_child(shaft_shape)
 	shaft_body.position = Vector3(0, (shaft_base + shaft_top) * 0.5, 0)
 	root.add_child(shaft_body)
 
-	# — ANNEAU INCOMPLET : douze segments prévus, trois manquent — le
-	# cercle ouvert de l'Œil-Tempête, incliné de 8°.
+	# — LE COURANT : une seule veine cyan, logée AU FOND d'un canal creux
+	# (là où le vide laisse voir le cœur du fût).
+	# Elle était logée à r = 1,25 quand le fût en fait 2,45 : invisible sur
+	# TOUTES les captures. Elle vit maintenant sur la face du noyau, au
+	# fond du canal ouvert — visible dans la fente, cachée ailleurs.
+	# Un seul canal sur trois brille : le cyan reste rare (§1.4).
+	var vein_angle: float = TAU * 5.0 / 12.0 + 0.18
+	for r: int in range(registers):
+		var t0: float = float(r) / float(registers)
+		var t1: float = float(r + 1) / float(registers)
+		var y0: float = lerpf(shaft_base, shaft_top, t0)
+		var y1: float = lerpf(shaft_base, shaft_top, t1)
+		var radius: float = lerpf(2.45, 1.45, (t0 + t1) * 0.5) - 0.34
+		var vein: MeshInstance3D = MeshInstance3D.new()
+		vein.name = "VeineDeResonance_%d" % r
+		vein.mesh = K.irregular_box_mesh(
+			Vector3(0.12, y1 - y0 - 0.55, 0.52), 0.02, 9500 + r)
+		vein.material_override = K.flat_material(Color(0.26, 0.40, 0.43),
+			COL_CYAN_CORE, 1.5)
+		vein.position = Vector3(cos(vein_angle) * radius,
+			(y0 + y1) * 0.5, sin(vein_angle) * radius)
+		vein.rotation.y = -vein_angle
+		root.add_child(vein)
+
+	# — ANNEAU INCOMPLET, ÉPAISSI : dix claveaux de bronze sur douze, le
+	# cercle ouvert de l'Œil-Tempête, incliné.
 	var ring: Node3D = Node3D.new()
 	ring.name = "Anneau"
-	ring.position = Vector3(0, 26.2, 0)
-	ring.rotation.z = deg_to_rad(8.0)
+	# 26,4 m plaçait l'anneau DANS la fourche : les deux se traversaient et
+	# le sommet devenait une grappe illisible (capture du 2026-08-14).
+	# Descendu sous la couronne, l'anneau redevient un cercle distinct.
+	ring.position = Vector3(0, 22.3, 0)
+	ring.rotation.z = deg_to_rad(9.0)
 	root.add_child(ring)
-	for i: int in range(12):
-		if i in [4, 5, 9]:
+	# Épaissi : 1,05 × 0,95 se lisait comme un fil de fer à 37 m. Deux
+	# rangs décalés donnent au cercle une VRAIE section, donc une ombre.
+	for i: int in range(14):
+		if i in [5, 6, 10]:
 			continue
-		var angle: float = TAU * float(i) / 12.0
-		var segment: MeshInstance3D = MeshInstance3D.new()
-		segment.name = "Anneau_seg_%d" % i
-		var segment_box: BoxMesh = BoxMesh.new()
-		segment_box.size = Vector3(1.9, 0.45, 0.4)
-		segment.mesh = segment_box
-		segment.material_override = K.flat_material(COL_COPPER)
-		segment.position = Vector3(cos(angle) * 3.3, 0.0, sin(angle) * 3.3)
-		segment.rotation.y = -angle + PI * 0.5
-		ring.add_child(segment)
+		var angle: float = TAU * float(i) / 14.0
+		K.stone_block(ring, "Claveau_%d" % i,
+			Vector3(cos(angle) * 4.35, 0.0, sin(angle) * 4.35),
+			Vector3(1.55, 1.45, TAU * 4.35 / 14.0 * 1.14),
+			rad_to_deg(-angle), COL_COPPER, 9600 + i, 0.05)
+		K.stone_block(ring, "ClaveauDoublure_%d" % i,
+			Vector3(cos(angle) * 3.85, -0.28, sin(angle) * 3.85),
+			Vector3(0.95, 0.85, TAU * 3.85 / 14.0 * 1.10),
+			rad_to_deg(-angle), COL_IVORY, 9640 + i, 0.06)
+	# Deux consoles qui rattachent l'anneau au fût : sans elles, il flotte.
+	for bracket: int in range(2):
+		var bracket_angle: float = PI * 0.5 + PI * float(bracket)
+		K.stone_block(ring, "Console_%d" % bracket,
+			Vector3(cos(bracket_angle) * 2.6, -0.15,
+				sin(bracket_angle) * 2.6),
+			Vector3(2.6, 0.62, 0.72), rad_to_deg(-bracket_angle),
+			COL_COPPER, 9660 + bracket, 0.05)
 
-	# — COURONNE BIFIDE asymétrique : deux dents de hauteurs différentes,
-	# coiffées de céramique — la fourche qui appelle la foudre.
-	for prong: Array in [[0.75, 6.6, 0.36, "DentHaute"],
-			[-0.65, 4.8, 0.30, "DentBasse"]]:
+	# — COURONNE BIFIDE : deux dents massives de hauteurs inégales,
+	# coiffées d'ivoire — la fourche qui appelle la foudre.
+	# Élargies et allongées : à 0,95 m de section, la fourche disparaissait
+	# dans le ciel. C'est elle qui doit rester lisible en vignette.
+	for prong: Array in [[1.45, 8.6, 1.45, "DentHaute"],
+			[-1.25, 6.0, 1.20, "DentBasse"]]:
 		var prong_x: float = float(prong[0])
 		var prong_h: float = float(prong[1])
 		var prong_w: float = float(prong[2])
-		var tooth: MeshInstance3D = MeshInstance3D.new()
-		tooth.name = prong[3] as String
-		var tooth_box: BoxMesh = BoxMesh.new()
-		tooth_box.size = Vector3(prong_w, prong_h, prong_w * 1.4)
-		tooth.mesh = tooth_box
-		tooth.material_override = K.flat_material(COL_COPPER)
-		tooth.position = Vector3(prong_x, 24.0 + prong_h * 0.5, 0.15 * prong_x)
-		tooth.rotation.z = deg_to_rad(-4.0 * signf(prong_x))
-		root.add_child(tooth)
-		var tip: MeshInstance3D = MeshInstance3D.new()
-		tip.name = (prong[3] as String) + "_pointe"
-		var tip_box: BoxMesh = BoxMesh.new()
-		tip_box.size = Vector3(prong_w * 1.6, 0.5, prong_w * 2.0)
-		tip.mesh = tip_box
-		tip.material_override = K.flat_material(COL_IVORY)
-		tip.position = tooth.position + Vector3(0, prong_h * 0.5 + 0.2, 0)
-		tip.rotation.z = tooth.rotation.z
-		root.add_child(tip)
+		# DEUX segments par dent, presque droits : à trois segments écartés
+		# de 0,7 et vrillés de 6°, la fourche devenait une griffe confuse
+		# qui se mêlait à l'anneau (capture du 2026-08-14). Une fourche se
+		# lit par son ÉCART entre deux dents, pas par le nombre de pièces.
+		for segment: int in range(2):
+			var t: float = (float(segment) + 0.5) / 2.0
+			var block: MeshInstance3D = K.stone_block(root,
+				"%s_%d" % [prong[3], segment],
+				Vector3(prong_x * (0.85 + t * 0.30),
+					shaft_top - 0.6 + prong_h * t,
+					0.10 * prong_x * t),
+				Vector3(prong_w * (1.10 - t * 0.22), prong_h / 2.0 + 0.12,
+					prong_w * (1.20 - t * 0.24)),
+				float(segment) * 2.0, COL_COPPER,
+				9700 + int(prong_x * 10.0) + segment, 0.05)
+			block.rotation.z = deg_to_rad(-3.0 * signf(prong_x))
+		K.stone_block(root, String(prong[3]) + "_coiffe",
+			Vector3(prong_x * 1.15, shaft_top - 0.6 + prong_h + 0.34,
+				0.10 * prong_x),
+			Vector3(prong_w * 1.05, 0.85, prong_w * 1.15),
+			-4.0 * signf(prong_x), COL_IVORY,
+			9800 + int(prong_x * 10.0), 0.07)
 
-	# — La TERRASSE d'arrivée : l'ancre de route reste le parvis — dalles
-	# et deux jarres, aucun collider (le jalon se marche).
+	# — LA TERRASSE d'arrivée : l'ancre de route reste le parvis.
 	for slab: Array in [[0.0, 0.0], [2.2, 1.0], [4.4, 1.9], [1.2, -1.6]]:
 		K.module(self, &"RockPath_Square_Wide",
 			_seated(float(slab[0]), float(slab[1])),
 			float(slab[0]) * 31.0, 1.1, K.TONE_STONE)
 	K.module(self, &"Pot_1", _seated(3.0, 6.8), 0.0, 1.0, K.TONE_STONE)
 	K.module(self, &"Rope_1", _seated(4.2, 6.2), 70.0, 1.0, K.TONE_WOOD)
-
-
-## Un tambour conique plein, painterly.
-func _drum(parent: Node3D, drum_name: String, at: Vector3, bottom_r: float,
-		top_r: float, height: float, color: Color) -> void:
-	var drum: MeshInstance3D = MeshInstance3D.new()
-	drum.name = drum_name
-	var mesh: CylinderMesh = CylinderMesh.new()
-	mesh.bottom_radius = bottom_r
-	mesh.top_radius = top_r
-	mesh.height = height
-	mesh.radial_segments = 14
-	drum.mesh = mesh
-	drum.material_override = K.flat_material(color)
-	drum.position = at
-	parent.add_child(drum)
 
 
 func _seated(local_x: float, local_z: float) -> Vector3:

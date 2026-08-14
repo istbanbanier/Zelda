@@ -33,6 +33,56 @@ func _build() -> void:
 	# appartient — seuls l'ouest (auberge) et le nord sont constructibles.
 	_house("MaisonBrique", Vector3(3.5, 0.0, 11.0), 160.0, "brick", 6)
 
+	# — GRENIER SUR PILOTIS : un troisième volume, plus petit et plus
+	# haut, qui casse l'alignement et donne au bourg une silhouette
+	# collective (le lead : « deux bâtiments ne composent pas un
+	# village »).
+	var granary: Node3D = Node3D.new()
+	granary.name = "Grenier"
+	add_child(granary)
+	var granary_at: Vector2 = Vector2(-2.5, 3.0)
+	var granary_ground: float = ground_local_y(granary_at.x, granary_at.y)
+	granary.position = Vector3(granary_at.x, granary_ground, granary_at.y)
+	for post: Array in [[-1.5, -1.5], [1.5, -1.5], [-1.5, 1.5], [1.5, 1.5]]:
+		K.stone_block(granary, "Pilotis_%d" % granary.get_child_count(),
+			Vector3(float(post[0]), 0.85, float(post[1])),
+			Vector3(0.26, 1.7, 0.26), 0.0, Color(0.36, 0.26, 0.17),
+			6500 + granary.get_child_count(), 0.03)
+	K.stone_block(granary, "PlancherGrenier", Vector3(0.0, 1.78, 0.0),
+		Vector3(3.6, 0.22, 3.6), 6.0, Color(0.44, 0.32, 0.21), 6520, 0.02)
+	for wall_side: int in range(4):
+		var angle: float = 90.0 * float(wall_side)
+		var direction: Vector2 = Vector2(cos(deg_to_rad(angle)),
+			sin(deg_to_rad(angle)))
+		K.stone_block(granary, "MurGrenier_%d" % wall_side,
+			Vector3(direction.x * 1.6, 2.85, direction.y * 1.6),
+			Vector3(0.22 if wall_side % 2 == 0 else 3.4, 1.9,
+				3.4 if wall_side % 2 == 0 else 0.22), 6.0,
+			Color(0.72, 0.63, 0.48), 6530 + wall_side, 0.03)
+	K.module(granary, &"Roof_RoundTiles_4x4", Vector3(0.0, 3.8, 0.0), 6.0,
+		0.95, K.TONE_CLOTH)
+	K.collider_box(self, "Grenier_col",
+		Vector3(granary_at.x, granary_ground + 1.6, granary_at.y),
+		Vector3(3.8, 3.2, 3.8), 6.0)
+	declare_support(Vector3(granary_at.x, granary_ground, granary_at.y))
+
+	# — LA PLACE : un puits de pierre, deux bancs, l'étal — le lieu où le
+	# bourg se rassemble, et ce qui relie les trois volumes.
+	var well_at: Vector3 = _seated(1.0, 1.0)
+	for i: int in range(8):
+		var angle: float = TAU * float(i) / 8.0
+		K.stone_block(self, "Margelle_%d" % i,
+			well_at + Vector3(cos(angle) * 0.95, 0.36, sin(angle) * 0.95),
+			Vector3(0.62, 0.72, 0.42), rad_to_deg(-angle), K.TONE_STONE,
+			6600 + i, 0.06)
+	K.stone_block(self, "PuitsMontant", well_at + Vector3(0.0, 1.5, -0.9),
+		Vector3(0.16, 2.2, 0.16), 0.0, Color(0.38, 0.27, 0.18), 6620, 0.03)
+	K.stone_block(self, "PuitsTraverse", well_at + Vector3(0.0, 2.5, 0.0),
+		Vector3(0.14, 0.14, 2.0), 0.0, Color(0.38, 0.27, 0.18), 6621, 0.03)
+	K.collider_box(self, "Puits_col", well_at + Vector3(0, 0.5, 0),
+		Vector3(2.2, 1.0, 2.2))
+	declare_support(well_at)
+
 	# — Échoppe ouverte côté place : charrette d'étal sous un surplomb.
 	K.module(self, &"Stall_Cart_Empty", _seated(1.5, 6.0), 155.0, 1.0,
 		K.TONE_WOOD)
@@ -120,16 +170,11 @@ func _house(house_name: String, at: Vector3, yaw_deg: float,
 		declare_support(Vector3(at.x + rotated.x, ground, at.z + rotated.z))
 	house.position = Vector3(at.x, top + 0.06, at.z)
 	house.rotation.y = deg_to_rad(yaw_deg)
-	# Jupe de fondation : la pierre descend jusque SOUS le sol le plus bas.
+	# SOCLE D'APPAREIL : le lead a vu « le gros rectangle de fondation »
+	# du premier jet — une BoxMesh pleine, visible sous chaque maison. Le
+	# socle est désormais une assise de blocs qui suit le pourtour.
 	var skirt_h: float = top - low + 0.8
-	var skirt: MeshInstance3D = MeshInstance3D.new()
-	skirt.name = "Jupe"
-	var skirt_box: BoxMesh = BoxMesh.new()
-	skirt_box.size = Vector3(float(span) + 0.6, skirt_h, float(span) + 0.6)
-	skirt.mesh = skirt_box
-	skirt.material_override = K.flat_material(Color(0.52, 0.44, 0.37))
-	skirt.position = Vector3(0, -skirt_h * 0.5 + 0.02, 0)
-	house.add_child(skirt)
+	_footing(house, half, skirt_h, Color(0.52, 0.44, 0.37), 6300 + span)
 	K.collider_box(house, house_name + "_plinthe", Vector3(0, -0.2, 0),
 		Vector3(float(span) + 0.4, 0.6, float(span) + 0.4))
 
@@ -173,6 +218,18 @@ func _house(house_name: String, at: Vector3, yaw_deg: float,
 		K.module(house, StringName("Roof_Front_Brick%d" % span),
 			Vector3(0, WALL_H, half * float(side)),
 			0.0 if side > 0 else 180.0, 1.0, K.TONE_STONE)
+	# PROFONDEUR DE FAÇADE : un auvent sur poteaux devant la porte, une
+	# cheminée et un débord de toit. Une façade plate se lit comme une
+	# boîte, quelle que soit la texture.
+	K.module(house, &"Overhang_Plaster_Short", Vector3(0.0, WALL_H - 0.15,
+		offset + 0.55), 0.0, 1.0, K.TONE_WOOD)
+	for post_x: float in [-1.15, 1.15]:
+		K.stone_block(house, "PoteauAuvent_%d" % int(post_x * 10.0),
+			Vector3(post_x, WALL_H * 0.5 - 0.1, offset + 1.05),
+			Vector3(0.16, WALL_H - 0.2, 0.16), 3.0, Color(0.38, 0.27, 0.18),
+			6410 + int(post_x * 10.0), 0.02)
+	K.module(house, &"Prop_Chimney", Vector3(-1.7, WALL_H + 0.35, -1.3),
+		0.0, 1.0, K.TONE_STONE)
 	# Meublé : une maison vide est une boîte avec un toit.
 	K.module(house, &"Table_Large", Vector3(-1.1, 0.08, -0.7), 15.0, 0.9,
 		K.TONE_WOOD)
@@ -226,3 +283,31 @@ func _poi_area() -> void:
 
 func _seated(local_x: float, local_z: float) -> Vector3:
 	return Vector3(local_x, ground_local_y(local_x, local_z), local_z)
+
+
+## Assise de blocs sur le pourtour — un socle, jamais une boîte pleine.
+func _footing(parent: Node3D, half: float, height: float, tone: Color,
+		seed_base: int) -> void:
+	var footing: Node3D = Node3D.new()
+	footing.name = "Socle"
+	parent.add_child(footing)
+	var blocks: int = 5
+	for side: int in range(4):
+		for b: int in range(blocks):
+			var t: float = (float(b) + 0.5) / float(blocks)
+			var along: float = lerpf(-half - 0.2, half + 0.2, t)
+			var at: Vector3 = Vector3(along, -height * 0.5 + 0.14,
+				half + 0.2)
+			var size: Vector3 = Vector3((half * 2.4) / float(blocks), height,
+				0.8)
+			if side == 1:
+				at = Vector3(along, -height * 0.5 + 0.14, -half - 0.2)
+			elif side == 2:
+				at = Vector3(half + 0.2, -height * 0.5 + 0.14, along)
+				size = Vector3(0.8, height, (half * 2.4) / float(blocks))
+			elif side == 3:
+				at = Vector3(-half - 0.2, -height * 0.5 + 0.14, along)
+				size = Vector3(0.8, height, (half * 2.4) / float(blocks))
+			K.stone_block(footing, "socle_%d_%d" % [side, b], at, size,
+				float((side * 3 + b) % 4) * 1.6 - 2.2, tone,
+				seed_base + side * 7 + b, 0.05)

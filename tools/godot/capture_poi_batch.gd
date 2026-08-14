@@ -18,9 +18,22 @@
 ## `repo_dirty` — une capture d'arbre sale ne prouve rien (evidence.md).
 extends SceneTree
 
-const DEFAULT_SCENE: String = "res://scenes/world/valley/ValleyWorld.tscn"
-
-var _scene_path: String = DEFAULT_SCENE
+## `--scene=` EST OBLIGATOIRE — et voici pourquoi, mesuré le 2026-08-14.
+##
+## Cet outil avait `res://scenes/world/valley/ValleyWorld.tscn` (la vallée
+## V1) pour défaut. Une passe de captures V2.3-A.R a été lancée SANS
+## `--scene` : les 21 plans sont sortis, le code retour a été 0, le
+## manifeste s'est écrit, et pendant vingt minutes j'ai cherché pourquoi
+## le pylône refait « ne rendait pas ». Il rendait très bien — dans un
+## monde qui n'était pas le sien. La vallée V1 partage les ancres §3.3,
+## donc les caméras visaient des objets PLAUSIBLES : rien dans l'image ne
+## criait l'erreur.
+##
+## Un défaut qui produit une image crédible et un code retour 0 ne se
+## rattrape pas à l'œil. Le défaut par défaut est donc supprimé : sans
+## `--scene`, l'outil s'arrête en BLOQUÉ (3). Le manifeste porte déjà le
+## chemin de scène ; c'est lui qu'il faut lire avant de croire un plan.
+var _scene_path: String = ""
 var _shots_path: String = ""
 var _out_dir: String = "evidence/poi_batch"
 var _width: int = 1280
@@ -46,6 +59,11 @@ func _initialize() -> void:
 				_height = parts[1].to_int()
 	if _shots_path.is_empty():
 		printerr("[poi] BLOQUÉ : --shots=<json> requis")
+		quit(3)
+		return
+	if _scene_path.is_empty():
+		printerr("[poi] BLOQUÉ : --scene=<res://…> requis — aucun défaut, "
+			+ "une capture du mauvais monde ressemble à une bonne capture")
 		quit(3)
 		return
 	_run()

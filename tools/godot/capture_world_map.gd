@@ -22,9 +22,12 @@
 ## une image n'est pas une preuve (règle `.claude/rules/evidence.md`).
 extends SceneTree
 
-const DEFAULT_SCENE: String = "res://scenes/world/valley/ValleyWorld.tscn"
-
-var _scene_path: String = DEFAULT_SCENE
+## `--scene=` OBLIGATOIRE — même défaut silencieux que `capture_poi_batch.gd`,
+## corrigé le 2026-08-14 : un défaut sur la vallée V1 rend une image
+## plausible et un code retour 0 quand on visait World V2. La ligne
+## « [carte] scène : … » ne suffit pas — personne ne relit un journal
+## quand l'image sort belle.
+var _scene_path: String = ""
 var _out_path: String = "evidence/atlas/valley_map.png"
 var _width: int = 2048
 var _height: int = 2048
@@ -47,6 +50,11 @@ var _fov: float = 55.0
 
 func _initialize() -> void:
 	_parse_args()
+	if _scene_path.is_empty():
+		printerr("[carte] BLOQUÉ : --scene=<res://…> requis — aucun défaut, "
+			+ "une carte du mauvais monde ressemble à une bonne carte")
+		quit(3)
+		return
 	print("[carte] scène    : %s" % _scene_path)
 	print("[carte] sortie   : %s" % _out_path)
 	print("[carte] emprise  : %.0f m de côté, caméra à %.0f m" % [_span, _altitude])
