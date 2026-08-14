@@ -5,6 +5,53 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-14 (suite 14) — V2.3-A.R : passe corrective sur rejet du lead — GO_V2_3_B=FALSE
+
+**Aucun verdict artistique auto-déclaré.** Passe additive ouverte depuis
+`aa45a74`, sur le verdict `V2.3-A GATE ARTISTIQUE : REJETÉE`.
+
+### Les trois défauts de PREUVE
+
+1. **Planches monochromes** — cause mesurée : `Image.blit_rect()` exige des
+   formats identiques ; PNG en RGBA8 contre planche en RGB8, chaque collage
+   échouait **en silence**. Outil corrigé, filet fail-first écrit
+   (`tests/world_v2/test_world_v2_proof_boards.gd`), ROUGE archivé puis VERT.
+2. **Ligne de base malhonnête** — reprise depuis `775aa32` EXACTEMENT, en
+   arbre détaché, manifeste `repo_dirty: false` à l'appui.
+3. **Et un défaut plus grave, découvert en la reprenant** :
+   `capture_poi_batch.gd` avait pour scène par défaut la vallée **V1**. Une
+   passe de 21 plans lancée sans `--scene` est sortie avec code retour 0,
+   manifeste complet et images crédibles — d'un autre monde. `--scene` est
+   désormais **obligatoire** dans les deux outils de capture.
+
+### Les neuf sujets
+
+Pont (anneau de voussoirs, tablier franchissable, culées, parapets rompus) ·
+grotte (enveloppe creuse continue, bouche sombre, seuil à sept paliers ;
+poche déplacée deux fois sur mesure) · ferme (charpente rompue, pans tombés) ·
+village (grenier sur pilotis, place, soubassement ; caméra reculée) · camp
+(halle dominante, mât, fumée ; halle déplacée, elle mordait `main_path`) ·
+camp braise (enceinte construite, deux brèches, flanc éboulé MESURÉ, trois
+zones, aucun acteur) · bassin (nappe non rectangulaire — maillage visuel
+SEUL —, caniveau rompu, `ConductiveBasin` intact) · arbre (cœur pâle dans la
+fente, cicatrice descendante, sol brûlé) · pylône (noyau sombre + piliers
+détachés : le canal devient un creux d'ombre).
+
+### Faiblesses NON corrigées, nommées
+
+Voûte de grotte ouverte vue d'en haut · silhouette collective du village
+encore mince · tronc gelé devant la cuvette du bassin · disque brûlé caché
+par la crête · sommet du pylône grumeleux. Toutes `NON VÉRIFIÉ`.
+
+### Prochaine action exacte
+
+**Attendre le verdict visuel du lead sur `evidence/world_v2/v2_3/MANIFESTE_V23AR.md`.**
+Ne PAS étendre aux 31 POI : `GO_V2_3_B=FALSE` tant que le lead n'a pas statué.
+Si le verdict est `PASS`, la première tranche de V2.3-B est la famille des
+POI de rive (contrats §2), en réutilisant les kits mesurés de cette passe.
+
+---
+
 ## 2026-08-14 (suite 13) — V2.3-A : lot pilote livré, prête pour revue — GO_V2_3_B=FALSE
 
 **Aucun verdict artistique auto-déclaré.** État technique prouvé :

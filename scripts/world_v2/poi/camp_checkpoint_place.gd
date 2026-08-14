@@ -107,7 +107,12 @@ func _build() -> void:
 
 	# — Pôle repos : deux auvents asymétriques, hors de la bande de visée
 	# (|perp| ≥ 6,8 m), ouverts vers le feu.
-	for tent_data: Array in [[6.6, 5.4, -200.0, "AuventNord"],
+	# MESURÉ : à (6,6 ; 5,4), l'auvent nord était à 39° — la route des
+	# hauteurs part du camp à 23°, et l'AABB de son collider tourné
+	# mordait le couloir en (51, 67), (51, 68) et (52, 68). Le camp est un
+	# CARREFOUR à quatre couloirs ; l'auvent revient dans le secteur nord
+	# libre (111°), à 6,2 m du fil de `main_path`.
+	for tent_data: Array in [[-3.6, 9.4, -200.0, "AuventNord"],
 			[-8.6, -1.8, 75.0, "AuventOuest"]]:
 		var tent: AwningTent = AwningTent.new()
 		tent.name = tent_data[3] as String
@@ -118,7 +123,7 @@ func _build() -> void:
 		K.collider_box(self, (tent_data[3] as String) + "_col",
 			tent.position + Vector3(0, 1.1, 0), Vector3(3.2, 2.2, 2.8),
 			float(tent_data[2]))
-	K.module(self, &"Bed_Twin1", _seated(7.8, 4.2), -200.0, 0.85, K.TONE_CLOTH)
+	K.module(self, &"Bed_Twin1", _seated(-2.4, 10.6), -200.0, 0.85, K.TONE_CLOTH)
 
 	# — Pôle garde / réserve : râtelier, caisses, tonneaux, table.
 	K.module(self, &"WeaponStand", _seated(-3.8, 3.6), 100.0, 1.0, K.TONE_WOOD)
@@ -141,15 +146,15 @@ func _build() -> void:
 		Vector3(1.8, 1.2, 2.2))
 
 	# — Bannières hautes LOIN de la bande de visée (perp ≥ 10 m).
-	K.module(self, &"Banner_1", _seated(9.8, 3.2), -30.0, 1.0, K.TONE_CLOTH)
+	K.module(self, &"Banner_1", _seated(9.0, -3.0), -30.0, 1.0, K.TONE_CLOTH)
 	K.module(self, &"Banner_2", _seated(-8.0, -6.5), 140.0, 1.0, K.TONE_CLOTH)
-	declare_support(_seated(9.8, 3.2))
+	declare_support(_seated(9.0, -3.0))
 	declare_support(_seated(-8.0, -6.5))
 
 	# — Paravent tressé : coupe-vent derrière l'auvent est.
-	K.module(self, &"Prop_WoodenFence_Single", _seated(9.4, 8.2), -25.0, 1.0,
+	K.module(self, &"Prop_WoodenFence_Single", _seated(-6.2, 9.0), -25.0, 1.0,
 		K.TONE_WOOD)
-	K.module(self, &"Prop_WoodenFence_Extension1", _seated(10.6, 6.9), -25.0,
+	K.module(self, &"Prop_WoodenFence_Extension1", _seated(-7.6, 8.0), -25.0,
 		1.0, K.TONE_WOOD)
 
 	# — Sol vécu : dalles de pas entre l'entrée ouest et le feu.

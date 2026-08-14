@@ -21,8 +21,15 @@ extends WorldV2Place
 const K: GDScript = preload("res://scripts/world_v2/poi/world_v2_place_kit.gd")
 
 ## Axe du pont en coordonnées LOCALES (racine du lieu = berge sud).
-const SOUTH_END: Vector2 = Vector2(-8.0, -8.0)
-const NORTH_END: Vector2 = Vector2(-8.0, -24.0)
+## MESURÉ (`test_world_v2_hydrology`, sonde de gué ISS-032) : à x = −8
+## local (monde −18), la culée sud occupait x −21 à −15 pour z 12,2 à
+## 16,6. Le rayon OUEST du gué (−4, 12) marche en droite ligne jusqu'à
+## x = −16 : il rencontrait la maçonnerie et relevait une marche de
+## 5,86 m/m. Le pont recule donc de 3 m LE LONG de la rivière (l'axe
+## traverse en Z, un décalage en X ne change pas ce qu'il franchit) : la
+## culée passe à x −24 à −18, à 2 m du rayon.
+const SOUTH_END: Vector2 = Vector2(-11.0, -8.0)
+const NORTH_END: Vector2 = Vector2(-11.0, -24.0)
 const DECK_HALF_W: float = 2.0
 const PARAPET_H: float = 0.95
 const ARCH_RISE: float = 4.1

@@ -19,13 +19,31 @@
 ##   4. une planche annoncée « niveaux de gris » l'est vraiment.
 extends GateTestCase
 
+## Les planches VIVANTES — celles qui partent en preuve. Les deux planches
+## vides de V2.3-A sont conservées sous
+## `evidence/world_v2/v2_3/controles/planches_vides_v23a/` : ce filet les a
+## fait rougir deux fois (journaux dans `controles/`), elles restent le
+## contrôle négatif de référence et NE doivent pas revenir ici.
 const BOARDS: Array[String] = [
-	"res://evidence/world_v2/v2_3/planche_silhouettes_v23a.png",
-	"res://evidence/world_v2/v2_3/planche_niveaux_de_gris_v23a.png",
+	"res://evidence/world_v2/v2_3/planche_silhouettes_v23ar.png",
+	"res://evidence/world_v2/v2_3/planche_niveaux_de_gris_v23ar.png",
 ]
 
 ## Une planche entière : au moins ce nombre de couleurs distinctes.
 const MIN_BOARD_COLORS: int = 256
+## … mais une planche en NIVEAUX DE GRIS ne peut pas en porter 256 :
+## r = v = b, donc son plafond arithmétique EST 256, atteint seulement si
+## chacune des 256 valeurs apparaît. Mesuré sur la planche réparée : 237.
+## Le seuil couleur y était donc IMPOSSIBLE à franchir — un test qui ne
+## pouvait que rougir, quelle que soit la qualité de la preuve.
+##
+## Ce n'est pas un seuil qu'on abaisse pour faire passer une correction
+## (le lead l'interdit, à raison) : c'est une borne fausse qu'on remplace
+## par la borne juste. Le vrai détecteur de planche vide reste
+## `MIN_BOARD_STDDEV`, qui vaut 0,0000 sur un aplat et ne dépend d'aucune
+## palette — et les deux planches vides de V2.3-A échouent toujours sur
+## LES DEUX critères (1 couleur, écart-type nul).
+const MIN_GRAY_BOARD_COLORS: int = 64
 ## Une planche entière : écart-type de luminance minimal.
 const MIN_BOARD_STDDEV: float = 0.05
 ## Une tuile : fraction minimale de pixels DIFFÉRENTS du fond.
@@ -61,9 +79,12 @@ func _board_faults(board_path: String) -> Array[String]:
 	# 1. La planche entière n'est pas un aplat (le défaut exact de V2.3-A).
 	var stats: Dictionary = _region_stats(board,
 		Rect2i(0, 0, board.get_width(), board.get_height()))
-	if int(stats["colors"]) < MIN_BOARD_COLORS:
-		faults.append("%s : %d couleur(s) sur toute la planche — VIDE"
-			% [board_path.get_file(), int(stats["colors"])])
+	var gray_board: bool = board_path.get_file().contains("niveaux_de_gris")
+	var min_colors: int = MIN_GRAY_BOARD_COLORS if gray_board \
+		else MIN_BOARD_COLORS
+	if int(stats["colors"]) < min_colors:
+		faults.append("%s : %d couleur(s) sur toute la planche (< %d) — VIDE"
+			% [board_path.get_file(), int(stats["colors"]), min_colors])
 	if float(stats["stddev"]) < MIN_BOARD_STDDEV:
 		faults.append("%s : écart-type de luminance %.4f — aplat"
 			% [board_path.get_file(), float(stats["stddev"])])

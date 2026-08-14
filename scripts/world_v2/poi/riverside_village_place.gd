@@ -40,7 +40,14 @@ func _build() -> void:
 	var granary: Node3D = Node3D.new()
 	granary.name = "Grenier"
 	add_child(granary)
-	var granary_at: Vector2 = Vector2(-2.5, 3.0)
+	# MESURÉ (`test_world_v2_hydrology`, sonde de gué ISS-032) : à
+	# (−2,5 ; 3,0), le grenier occupait le monde x −101,4 à −95,6 pour
+	# z 30,1 à 35,9. Le rayon nord du gué (−96, 22) monte en droite ligne
+	# de z = 23 à z = 34 à x = −96 : il butait sur le plancher à 4,67 m,
+	# soit une marche de 1,98 m/m. Un gué doit rester praticable dans les
+	# HUIT directions — le grenier recule donc à 15,9 m du gué, hors des
+	# 12 m de la sonde, et le hameau garde son troisième volume.
+	var granary_at: Vector2 = Vector2(-8.5, 5.5)
 	var granary_ground: float = ground_local_y(granary_at.x, granary_at.y)
 	granary.position = Vector3(granary_at.x, granary_ground, granary_at.y)
 	for post: Array in [[-1.5, -1.5], [1.5, -1.5], [-1.5, 1.5], [1.5, 1.5]]:
@@ -68,7 +75,14 @@ func _build() -> void:
 
 	# — LA PLACE : un puits de pierre, deux bancs, l'étal — le lieu où le
 	# bourg se rassemble, et ce qui relie les trois volumes.
-	var well_at: Vector3 = _seated(1.0, 1.0)
+	# MESURÉ, deuxième passe : le grenier n'était pas le seul sur le rayon
+	# nord du gué (−96, 22). `Puits_col` (2,2 × 1,0 × 2,2 à l'origine
+	# locale (1 ; 1)) couvrait le monde x −96,1 à −93,9 pour z 29,9 à
+	# 32,1 — sa margelle culmine à 2,9 m au-dessus d'un terrain à 1,35 :
+	# marche de 1,98 m/m. Le terrain gelé, lui, est irréprochable là-bas
+	# (0,8 m/m au pire, sondé au pas de 2 m). La place du puits glisse à
+	# l'est : le hameau garde son espace commun, le gué son approche.
+	var well_at: Vector3 = _seated(4.5, 1.5)
 	for i: int in range(8):
 		var angle: float = TAU * float(i) / 8.0
 		K.stone_block(self, "Margelle_%d" % i,

@@ -1,0 +1,7 @@
+# FILET DES PLANCHES DE PREUVE — ROUGE AVANT correction (planches livrées en V2.3-A, code aa45a74)
+# Date : 2026-08-14T10:51:41Z
+# Mesuré : les deux planches ne contiennent qu'UNE couleur (#141416, le fond).
+# Cause : Image.blit_rect() exige des formats identiques ; captures RGBA8 vs planche RGB8,
+# chaque collage échouait SANS ERREUR. Deux preuves vides livrées au lead.
+=== RÉSULTAT: 0 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_proof_boards.gd::test_les_planches_de_preuve_portent_vraiment_leurs_sujets — les planches de preuve portent leurs sujets (6 écart(s)) — planche_silhouettes_v23a.png : 1 couleur(s) sur toute la planche — VIDE ; planche_silhouettes_v23a.png : écart-type de luminance 0.0000 — aplat ; planche_silhouettes_v23a.png : manifeste de tuiles ABSENT (planche_silhouettes_v23a.json) ; planche_niveaux_de_gris_v23a.png : 1 couleur(s) sur toute la planche — VIDE ; planche_niveaux_de_gris_v23a.png : écart-type de luminance 0.0000 — aplat ; planche_niveaux_de_gris_v23a.png : manifeste de tuiles ABSENT (planche_niveaux_de_gris_v23a.json)

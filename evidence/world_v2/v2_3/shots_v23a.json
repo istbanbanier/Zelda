@@ -1,464 +1,464 @@
 [
-	{
-		"name": "camp_approche",
-		"from": [
-			32,
-			9,
-			76
-		],
-		"look": [
-			45,
-			7.5,
-			65
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "camp_composition",
-		"from": [
-			25,
-			14,
-			85
-		],
-		"look": [
-			45,
-			8,
-			65
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "camp_proche",
-		"from": [
-			41,
-			7.6,
-			69
-		],
-		"look": [
-			45,
-			7,
-			65
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "camp_feu",
-		"from": [
-			43,
-			7.3,
-			67
-		],
-		"look": [
-			45.5,
-			6.8,
-			64
-		],
-		"fov": 55.0
-	},
-	{
-		"name": "village_approche",
-		"from": [
-			-86,
-			5,
-			29
-		],
-		"look": [
-			-96,
-			3.5,
-			30
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "village_composition",
-		"from": [
-			-78,
-			9,
-			42
-		],
-		"look": [
-			-96,
-			3,
-			30
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "village_proche",
-		"from": [
-			-92,
-			4.2,
-			32
-		],
-		"look": [
-			-97,
-			3,
-			29
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "village_interieur",
-		"from": [
-			-98.0,
-			4.6,
-			40.5
-		],
-		"look": [
-			-101.2,
-			3.6,
-			35.5
-		],
-		"fov": 55.0
-	},
-	{
-		"name": "ferme_approche",
-		"from": [
-			-40,
-			7,
-			84
-		],
-		"look": [
-			-52,
-			5.5,
-			92
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "ferme_composition",
-		"from": [
-			-34,
-			10,
-			78
-		],
-		"look": [
-			-52,
-			5,
-			92
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "ferme_proche",
-		"from": [
-			-48,
-			6.2,
-			89
-		],
-		"look": [
-			-54,
-			5,
-			94
-		],
-		"fov": 55.0
-	},
-	{
-		"name": "pont_approche",
-		"from": [
-			0,
-			4,
-			34
-		],
-		"look": [
-			-10,
-			1.5,
-			22
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "pont_composition",
-		"from": [
-			8,
-			8,
-			40
-		],
-		"look": [
-			-12,
-			2,
-			20
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "pont_proche",
-		"from": [
-			-10.0,
-			3.5,
-			24.0
-		],
-		"look": [
-			-16.0,
-			1.5,
-			12.0
-		],
-		"fov": 55.0
-	},
-	{
-		"name": "pont_sous_arche",
-		"from": [
-			-20.0,
-			4.2,
-			18.0
-		],
-		"look": [
-			-13.0,
-			1.2,
-			8.0
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "grotte_approche",
-		"from": [
-			-100,
-			5,
-			14
-		],
-		"look": [
-			-110,
-			3.5,
-			6
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "grotte_composition",
-		"from": [
-			-94,
-			9,
-			20
-		],
-		"look": [
-			-111,
-			3,
-			5
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "grotte_proche",
-		"from": [
-			-104.0,
-			5.0,
-			12.0
-		],
-		"look": [
-			-111.0,
-			3.5,
-			4.0
-		],
-		"fov": 55.0
-	},
-	{
-		"name": "grotte_interieur",
-		"from": [
-			-109.5,
-			4.3,
-			6.5
-		],
-		"look": [
-			-113.5,
-			3.3,
-			4.2
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "arbre_approche",
-		"from": [
-			-80,
-			10,
-			126
-		],
-		"look": [
-			-92,
-			9,
-			132
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "arbre_composition",
-		"from": [
-			-72,
-			13,
-			118
-		],
-		"look": [
-			-92,
-			9,
-			132
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "arbre_proche",
-		"from": [
-			-88,
-			9.4,
-			129
-		],
-		"look": [
-			-94,
-			8.5,
-			134
-		],
-		"fov": 55.0
-	},
-	{
-		"name": "camp_braise_approche",
-		"from": [
-			84,
-			8,
-			110
-		],
-		"look": [
-			96,
-			7,
-			120
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "camp_braise_composition",
-		"from": [
-			80.0,
-			11.0,
-			122.0
-		],
-		"look": [
-			97.0,
-			6.5,
-			119.5
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "camp_braise_proche",
-		"from": [
-			92,
-			7.2,
-			116
-		],
-		"look": [
-			98,
-			6.5,
-			122
-		],
-		"fov": 55.0
-	},
-	{
-		"name": "bassin_approche",
-		"from": [
-			24,
-			3,
-			34
-		],
-		"look": [
-			26,
-			1.5,
-			24
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "bassin_composition",
-		"from": [
-			14,
-			6,
-			38
-		],
-		"look": [
-			26,
-			1,
-			24
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "bassin_proche",
-		"from": [
-			23,
-			2.2,
-			28
-		],
-		"look": [
-			27,
-			1,
-			23
-		],
-		"fov": 55.0
-	},
-	{
-		"name": "bassin_fonctionnel",
-		"from": [
-			20,
-			2.5,
-			20
-		],
-		"look": [
-			28,
-			1,
-			26
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "pylone_approche",
-		"from": [
-			107,
-			20,
-			-4
-		],
-		"look": [
-			115,
-			25,
-			-25
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "pylone_composition",
-		"from": [
-			92,
-			24,
-			4
-		],
-		"look": [
-			115,
-			30,
-			-25
-		],
-		"fov": 65.0
-	},
-	{
-		"name": "pylone_proche",
-		"from": [
-			110,
-			19.5,
-			-18
-		],
-		"look": [
-			116,
-			22,
-			-27
-		],
-		"fov": 60.0
-	},
-	{
-		"name": "pylone_base",
-		"from": [
-			112,
-			19,
-			-21
-		],
-		"look": [
-			116,
-			20,
-			-28
-		],
-		"fov": 55.0
-	}
+ {
+  "name": "camp_approche",
+  "from": [
+   32,
+   9,
+   76
+  ],
+  "look": [
+   45,
+   7.5,
+   65
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "camp_composition",
+  "from": [
+   25,
+   14,
+   85
+  ],
+  "look": [
+   45,
+   8,
+   65
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "camp_proche",
+  "from": [
+   41,
+   7.6,
+   69
+  ],
+  "look": [
+   45,
+   7,
+   65
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "camp_feu",
+  "from": [
+   43,
+   7.3,
+   67
+  ],
+  "look": [
+   45.5,
+   6.8,
+   64
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "village_approche",
+  "from": [
+   -86,
+   5,
+   29
+  ],
+  "look": [
+   -96,
+   3.5,
+   30
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "village_composition",
+  "from": [
+   -72,
+   14,
+   52
+  ],
+  "look": [
+   -96,
+   4,
+   29
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "village_proche",
+  "from": [
+   -92,
+   4.2,
+   32
+  ],
+  "look": [
+   -97,
+   3,
+   29
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "village_interieur",
+  "from": [
+   -98.0,
+   4.6,
+   40.5
+  ],
+  "look": [
+   -101.2,
+   3.6,
+   35.5
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "ferme_approche",
+  "from": [
+   -40,
+   7,
+   84
+  ],
+  "look": [
+   -52,
+   5.5,
+   92
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "ferme_composition",
+  "from": [
+   -39,
+   9.5,
+   80
+  ],
+  "look": [
+   -52,
+   6,
+   91
+  ],
+  "fov": 52.0
+ },
+ {
+  "name": "ferme_proche",
+  "from": [
+   -48,
+   6.2,
+   89
+  ],
+  "look": [
+   -54,
+   5,
+   94
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "pont_approche",
+  "from": [
+   0,
+   4,
+   34
+  ],
+  "look": [
+   -10,
+   1.5,
+   22
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "pont_composition",
+  "from": [
+   8,
+   8,
+   40
+  ],
+  "look": [
+   -12,
+   2,
+   20
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "pont_proche",
+  "from": [
+   -10.0,
+   3.5,
+   24.0
+  ],
+  "look": [
+   -16.0,
+   1.5,
+   12.0
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "pont_sous_arche",
+  "from": [
+   -20.0,
+   4.2,
+   18.0
+  ],
+  "look": [
+   -13.0,
+   1.2,
+   8.0
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "grotte_approche",
+  "from": [
+   -100,
+   5,
+   14
+  ],
+  "look": [
+   -110,
+   3.5,
+   6
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "grotte_composition",
+  "from": [
+   -94,
+   9,
+   20
+  ],
+  "look": [
+   -111,
+   3,
+   5
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "grotte_proche",
+  "from": [
+   -104.0,
+   5.0,
+   12.0
+  ],
+  "look": [
+   -111.0,
+   3.5,
+   4.0
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "grotte_interieur",
+  "from": [
+   -109.5,
+   4.3,
+   6.5
+  ],
+  "look": [
+   -113.5,
+   3.3,
+   4.2
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "arbre_approche",
+  "from": [
+   -80,
+   10,
+   126
+  ],
+  "look": [
+   -92,
+   9,
+   132
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "arbre_composition",
+  "from": [
+   -72,
+   13,
+   118
+  ],
+  "look": [
+   -92,
+   9,
+   132
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "arbre_proche",
+  "from": [
+   -88,
+   9.4,
+   129
+  ],
+  "look": [
+   -94,
+   8.5,
+   134
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "camp_braise_approche",
+  "from": [
+   84,
+   8,
+   110
+  ],
+  "look": [
+   96,
+   7,
+   120
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "camp_braise_composition",
+  "from": [
+   79.0,
+   12.5,
+   127.0
+  ],
+  "look": [
+   97.5,
+   6.5,
+   118.5
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "camp_braise_proche",
+  "from": [
+   92,
+   7.2,
+   116
+  ],
+  "look": [
+   98,
+   6.5,
+   122
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "bassin_approche",
+  "from": [
+   24,
+   3,
+   34
+  ],
+  "look": [
+   26,
+   1.5,
+   24
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "bassin_composition",
+  "from": [
+   17,
+   4.6,
+   33
+  ],
+  "look": [
+   26,
+   1.4,
+   24
+  ],
+  "fov": 52.0
+ },
+ {
+  "name": "bassin_proche",
+  "from": [
+   23,
+   2.2,
+   28
+  ],
+  "look": [
+   27,
+   1,
+   23
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "bassin_fonctionnel",
+  "from": [
+   20,
+   2.5,
+   20
+  ],
+  "look": [
+   28,
+   1,
+   26
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "pylone_approche",
+  "from": [
+   112,
+   20,
+   4
+  ],
+  "look": [
+   124,
+   28,
+   -20.5
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "pylone_composition",
+  "from": [
+   100,
+   26,
+   10
+  ],
+  "look": [
+   124,
+   30,
+   -20.5
+  ],
+  "fov": 62.0
+ },
+ {
+  "name": "pylone_proche",
+  "from": [
+   118,
+   21,
+   -6
+  ],
+  "look": [
+   124,
+   26,
+   -20.5
+  ],
+  "fov": 58.0
+ },
+ {
+  "name": "pylone_base",
+  "from": [
+   131,
+   20,
+   -12
+  ],
+  "look": [
+   124,
+   21,
+   -20.5
+  ],
+  "fov": 55.0
+ }
 ]

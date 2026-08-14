@@ -8,6 +8,13 @@
 | V2.1 — vallée whitebox physique (relief, hydrologie, routes, limites, navigation, traversée réelle) | **Validé — Gate PASS** | `evidence/world_v2/v2_1/README.md` (verdicts par critère), revue contradictoire archivée, `validate_fast_final.log` ; SHA final dans `docs/PROGRESS.md` |
 | V2.2 — fondation artistique du paysage (matériau painterly, végétation cellulaire, eau, ciel/orage, silhouettes) | **Fonctionnel — gate technique PASS en revue contradictoire** | `evidence/world_v2/v2_2/README.md`, `revue_contradictoire.md`, `validate_fast_final.log`, contrôles négatifs A-D + angle mort E |
 | V2.2 — enveloppe du donjon | Différée par directive du lead | fil de détente `tests/world_v2/test_world_v2_dungeon_pins.gd` en place |
+| V2.3-0 — socle technique des lieux (registre, placement par layout, filets, contrôles négatifs) | **PASS prononcé par le lead** | `evidence/world_v2/v2_3/`, suites `test_world_v2_places_contract.gd`, `test_world_v2_places_behavior.gd` |
+| V2.3-A — lot pilote, 9 sujets : gate ARTISTIQUE | **REJETÉE par le lead** | verdict du lead ; planches de preuve vides et ligne de base mal étiquetée |
+| V2.3-A.R — passe corrective : preuves réparées, 9 sujets repris | **Fonctionnel — EN ATTENTE de revue visuelle** | `evidence/world_v2/v2_3/MANIFESTE_V23AR.md` ; filet `test_world_v2_proof_boards.gd` ROUGE archivé puis VERT ; ligne de base depuis `775aa32` exactement |
+
+`GO_V2_3_B=FALSE` : l'extension aux 31 POI reste interdite tant que le lead
+n'a pas statué sur V2.3-A.R. Les cinq faiblesses non corrigées sont nommées au
+§6 du manifeste et restent `NON VÉRIFIÉ` — aucune n'est déclarée acceptable.
 
 Le verdict ARTISTIQUE de V2.2 appartient à Codex, Istvan et son frère
 (directive §17) — seuls les défauts techniques mesurables sont jugés ici ;

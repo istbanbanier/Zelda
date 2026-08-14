@@ -1,0 +1,22 @@
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 12949 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+lieu                                     mesh  colls appuis            emprise (m)
+camp                                       74      5      8       22.0 x  9.9 x  17.6
+valley.poi.riverside_village.01           158     35     14       30.3 x 11.0 x  25.5
+valley.poi.abandoned_farm.01               78     16      5       19.2 x 12.3 x  18.3
+valley.poi.stone_bridge.01                235      3      3       11.4 x  8.9 x  26.8
+valley.poi.waterfall_cave.01               24     19      1       19.1 x  4.4 x  15.7
+valley.poi.thunderstruck_tree.01           55      1      1       15.1 x 10.6 x  10.3
+valley.poi.ember_raider_camps.01          189     11     10       22.3 x  4.7 x  19.6
+valley.poi.conductive_basin.01             87      4      5       18.7 x  3.0 x  10.0
+pylon                                     238      2      4       16.2 x 34.1 x  13.0
+TOTAL                                    1138     96
+ERROR: 1 resources still in use at exit (run with --verbose for details).

@@ -1,0 +1,80 @@
+{
+	"background": "141417",
+	"columns": 3,
+	"grayscale": true,
+	"png": "evidence/world_v2/v2_3/planche_niveaux_de_gris_v23ar.png",
+	"tiles": [
+		{
+			"height": 240,
+			"source": "evidence/world_v2/v2_3/captures_v23ar/camp_composition.png",
+			"source_luma_mean": 0.527174281642259,
+			"width": 426,
+			"x": 0,
+			"y": 0
+		},
+		{
+			"height": 240,
+			"source": "evidence/world_v2/v2_3/captures_v23ar/village_composition.png",
+			"source_luma_mean": 0.39250932299413,
+			"width": 426,
+			"x": 426,
+			"y": 0
+		},
+		{
+			"height": 240,
+			"source": "evidence/world_v2/v2_3/captures_v23ar/ferme_composition.png",
+			"source_luma_mean": 0.415112097245696,
+			"width": 426,
+			"x": 852,
+			"y": 0
+		},
+		{
+			"height": 240,
+			"source": "evidence/world_v2/v2_3/captures_v23ar/pont_composition.png",
+			"source_luma_mean": 0.453499486972795,
+			"width": 426,
+			"x": 0,
+			"y": 240
+		},
+		{
+			"height": 240,
+			"source": "evidence/world_v2/v2_3/captures_v23ar/grotte_composition.png",
+			"source_luma_mean": 0.355302679239311,
+			"width": 426,
+			"x": 426,
+			"y": 240
+		},
+		{
+			"height": 240,
+			"source": "evidence/world_v2/v2_3/captures_v23ar/arbre_composition.png",
+			"source_luma_mean": 0.40068170150446,
+			"width": 426,
+			"x": 852,
+			"y": 240
+		},
+		{
+			"height": 240,
+			"source": "evidence/world_v2/v2_3/captures_v23ar/camp_braise_composition.png",
+			"source_luma_mean": 0.411780598441667,
+			"width": 426,
+			"x": 0,
+			"y": 480
+		},
+		{
+			"height": 240,
+			"source": "evidence/world_v2/v2_3/captures_v23ar/bassin_composition.png",
+			"source_luma_mean": 0.453664415784621,
+			"width": 426,
+			"x": 426,
+			"y": 480
+		},
+		{
+			"height": 240,
+			"source": "evidence/world_v2/v2_3/captures_v23ar/pylone_composition.png",
+			"source_luma_mean": 0.566194502559035,
+			"width": 426,
+			"x": 852,
+			"y": 480
+		}
+	]
+}

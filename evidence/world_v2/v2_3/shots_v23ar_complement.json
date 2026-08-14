@@ -1,0 +1,72 @@
+[
+ {
+  "name": "mini_camp_90m",
+  "from": [
+   110,
+   30,
+   128
+  ],
+  "look": [
+   45,
+   9,
+   65
+  ],
+  "fov": 40.0
+ },
+ {
+  "name": "mini_camp_braise_94m",
+  "from": [
+   26,
+   24,
+   62
+  ],
+  "look": [
+   96,
+   8,
+   120
+  ],
+  "fov": 38.0
+ },
+ {
+  "name": "mini_pylone_96m",
+  "from": [
+   62,
+   36,
+   52
+  ],
+  "look": [
+   124,
+   32,
+   -20.5
+  ],
+  "fov": 36.0
+ },
+ {
+  "name": "structure_ferme_charpente",
+  "from": [
+   -24,
+   9,
+   -58
+  ],
+  "look": [
+   -31,
+   7,
+   -64
+  ],
+  "fov": 50.0
+ },
+ {
+  "name": "structure_pylone_canal",
+  "from": [
+   130,
+   24,
+   -14
+  ],
+  "look": [
+   124,
+   24,
+   -20.5
+  ],
+  "fov": 42.0
+ }
+]
