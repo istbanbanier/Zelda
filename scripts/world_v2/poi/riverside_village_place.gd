@@ -1006,6 +1006,16 @@ func _verifier_implantation() -> void:
 			fautes.append("appui (%.1f, %.1f) à %.2f m du sol"
 				% [point.x, point.z, point.y - sol])
 
+	# e. AUCUNE PIÈCE FLOTTANTE — l'interdit du briefing, rendu exécutable.
+	#
+	# Chercher une planche suspendue à l'œil sur une capture ne marche pas :
+	# il en restait une après deux passes d'inspection. Le test est
+	# géométrique — toute pièce dont le dessous est à plus de 0,45 m du sol
+	# gelé doit trouver, sous elle et en recouvrement horizontal, une autre
+	# pièce dont le dessus arrive à moins de 0,45 m. Sinon elle flotte.
+	for flottant: String in _pieces_flottantes():
+		fautes.append(flottant)
+
 	if fautes.is_empty():
 		print("[hameau] implantation vérifiée : %d toiture(s), %d collider(s), %d appui(s) — aucune faute."
 			% [_empreintes_toit.size(), _empreintes_col.size(), appuis.size()])
@@ -1022,6 +1032,46 @@ func _appuis() -> PackedVector3Array:
 	if has_meta(&"support_points"):
 		return get_meta(&"support_points") as PackedVector3Array
 	return get("_support_points") as PackedVector3Array
+
+
+## Pièces sans appui : ni le sol gelé, ni une autre pièce sous elles.
+##
+## LA RÈGLE A DÛ ÊTRE CORRIGÉE, et c'est instructif. Le premier jet exigeait
+## un appui DIRECTEMENT SOUS la pièce. Il a aussitôt accusé six pièces
+## parfaitement légitimes : les planchers d'étage (portés par les murs du
+## pourtour, qui ne sont pas dessous mais à côté), les deux balcons et les
+## deux étagères murales (des encorbellements, par définition sans rien
+## dessous). Un garde-fou à faux positifs finit désactivé — celui-ci
+## demande donc seulement que la pièce TOUCHE quelque chose : le sol gelé,
+## ou une autre pièce à moins de 0,45 m dans les trois axes. Une planche
+## suspendue au-dessus de l'herbe, elle, ne touche rien.
+func _pieces_flottantes() -> Array[String]:
+	var boites: Array[AABB] = []
+	var noms: Array[String] = []
+	for node: Node in find_children("*", "MeshInstance3D", true, false):
+		var mi: MeshInstance3D = node as MeshInstance3D
+		if mi.mesh == null or not mi.is_inside_tree():
+			continue
+		var xf: Transform3D = global_transform.affine_inverse() \
+			* mi.global_transform
+		boites.append(xf * mi.mesh.get_aabb())
+		noms.append(mi.name)
+	var fautes: Array[String] = []
+	for i: int in range(boites.size()):
+		var b: AABB = boites[i]
+		var centre: Vector3 = b.get_center()
+		if b.position.y - ground_local_y(centre.x, centre.z) <= 0.45:
+			continue
+		var voisine: AABB = b.grow(0.45)
+		var porte: bool = false
+		for j: int in range(boites.size()):
+			if j != i and voisine.intersects(boites[j]):
+				porte = true
+				break
+		if not porte:
+			fautes.append("%s FLOTTE : dessous à %.2f m du sol, rien dessous"
+				% [noms[i], b.position.y - ground_local_y(centre.x, centre.z)])
+	return fautes
 
 
 ## Séparation de deux boîtes orientées par l'axe des séparations (SAT).
