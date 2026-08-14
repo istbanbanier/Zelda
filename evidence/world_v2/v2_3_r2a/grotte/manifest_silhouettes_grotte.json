@@ -1,0 +1,30 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "e74377757fdf42c0a71fffb5cac1c43eb4583198",
+  "emprise_m": [
+    10.2064390182495,
+    8.23272609710693,
+    12.9462127685547
+  ],
+  "engine": "4.7.1-stable (custom_build)",
+  "projection": "orthogonale",
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://assets/environment/caves/SM_WaterfallCave.glb",
+  "size": "1100x800",
+  "sujet": "grotte",
+  "vues": [
+    {
+      "angle_deg": 0.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_r2a/grotte/silhouette_grotte_000.png",
+      "sujet_pct": 49.8327272727273
+    },
+    {
+      "angle_deg": 90.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_r2a/grotte/silhouette_grotte_090.png",
+      "sujet_pct": 37.1495454545455
+    }
+  ]
+}
