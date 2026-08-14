@@ -5,6 +5,48 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-14 (suite 13) — V2.3-A : lot pilote livré, prête pour revue — GO_V2_3_B=FALSE
+
+**Aucun verdict artistique auto-déclaré.** État technique prouvé :
+
+- **Code des lieux : 73a0c08** (dernier commit de géométrie). Les 33
+  captures finales de `evidence/world_v2/v2_3/captures_v23a/` portent ce
+  SHA. Baseline V2.2 gelée : 33 vues au SHA 131b74d (couche Places vide).
+- **V2.3-0** : contrats (`docs/WORLD_V2_POI_CONTRACTS.md`), couche
+  `Places` séparée des marqueurs épinglés, `WorldV2PlacesBuilder`
+  (placement par le layout SEUL), base `WorldV2Place`, kit painterly
+  partagé ; filets écrits ROUGES d'abord (7 échecs nommés archivés).
+- **V2.3-A** : les NEUF sujets construits — camp/checkpoint (secteurs
+  entre les quatre couloirs de route), village (auberge creuse meublée,
+  maison, quai posé sur l'eau MESURÉE), ferme ruinée, arche de pierre
+  (bandeau continu), grotte à VRAIE poche intérieure (massif calibré
+  par gltf_inspect), arbre foudroyé, camp braise sans acteurs (trois
+  approches), bassin conducteur (classe canonique INTACTE, graphe
+  enfant), pylône hero asset 31,6 m. Récompenses par
+  DiscoveryRewards.furnish + RewardAnchor + PointOfInterest liés.
+- **Trois rounds d'inspection à taille réelle** (les tests verts ne
+  valident rien visuellement) : quai sur l'herbe → à l'eau ; panneaux
+  de grotte → massif avec poche ; voussoirs flottants → arche continue ;
+  échelles rocheuses ×2-5 → calibrées depuis la mesure native ;
+  z-fighting plancher/jupe ; six caméras de preuve amendées (chaque
+  sujet garde ≥ 1 caméra inchangée pour son A/B).
+- **Gués ISS-032** : auberge et culées sorties de l'éventail des huit
+  rayons des gués (-96,22) et (-4,12), mesuré par sonde.
+- **Contrôles négatifs décisifs** : trois sabotages simultanés nommés
+  par les filets (registre amputé, dérive +3 m, lieu soulevé +2 m),
+  rouge archivé puis vert restauré.
+- **Validation** : suite world_v2 53/0 ; filets places 8/0 au code
+  final ; `validate_fast` VERT RC=0, 898/0
+  (`validate_fast_v23a_final.log`) ; preuves §7 complètes (33 captures,
+  9 A/B, planches miniatures + niveaux de gris, carte du lot, manifeste,
+  métriques dans les budgets).
+
+**Prochaine action exacte.** Attendre la revue visuelle Codex/Istvan sur
+`evidence/world_v2/v2_3/`. Ni V2.3-B, ni citadelle, ni extension aux 31
+POI (`GO_V2_3_B=FALSE`).
+
+---
+
 ## 2026-08-14 (suite 12) — V2.3 EN COURS — LIEUX MODULAIRES (V2.3-0 puis V2.3-A seulement)
 
 **Verdict du lead sur 775aa32** : V2.2 GATE PASS —
