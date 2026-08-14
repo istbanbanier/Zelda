@@ -1,0 +1,32 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "f978932c4e2efac2d2f7ed6c7754a39b6529df4d",
+  "emprise_m": [
+    34.4950408935547,
+    14.2803440093994,
+    25.6871719360352
+  ],
+  "engine": "4.7.1-stable (custom_build)",
+  "mode": "lieu dans le monde monté",
+  "place_id": "valley.poi.riverside_village.01",
+  "projection": "orthogonale",
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "size": "900x1200",
+  "sujet": "hameau",
+  "vues": [
+    {
+      "angle_deg": 0.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_r2a/hameau/silhouette_hameau_000.png",
+      "sujet_pct": 6.34148148148148
+    },
+    {
+      "angle_deg": 90.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_r2a/hameau/silhouette_hameau_090.png",
+      "sujet_pct": 6.01074074074074
+    }
+  ]
+}
