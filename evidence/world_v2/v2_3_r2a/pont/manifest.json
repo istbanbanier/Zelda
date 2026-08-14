@@ -1,0 +1,86 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "62335dacb2ad9ac330f8ceff9b3e0e9bf57fd947",
+  "engine": "4.7.1-stable (custom_build)",
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 60.0,
+      "from": [
+        -33.49,
+        7.0,
+        -31.79
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/pont/pont_1_composition.png",
+      "look": [
+        -23.5,
+        1.2,
+        -3.5
+      ],
+      "name": "pont_1_composition"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -11.71,
+        5.0,
+        -7.66
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/pont/pont_2_approche_est_joueur.png",
+      "look": [
+        -34.34,
+        3.1,
+        0.33
+      ],
+      "name": "pont_2_approche_est_joueur"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -28.16,
+        -0.2,
+        -16.7
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/pont/pont_3_approche_eclairee_joueur.png",
+      "look": [
+        -23.5,
+        1.6,
+        -3.5
+      ],
+      "name": "pont_3_approche_eclairee_joueur"
+    },
+    {
+      "fov": 45.0,
+      "from": [
+        -25.5,
+        1.4,
+        -12.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/pont/pont_4_gros_plan_naissance.png",
+      "look": [
+        -20.2,
+        0.2,
+        -7.4
+      ],
+      "name": "pont_4_gros_plan_naissance"
+    },
+    {
+      "fov": 70.0,
+      "from": [
+        -24.67,
+        -0.2,
+        -6.8
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/pont/pont_5_sous_arche_joueur.png",
+      "look": [
+        -19.5,
+        0.8,
+        7.82
+      ],
+      "name": "pont_5_sous_arche_joueur"
+    }
+  ],
+  "size": "1600x900"
+}

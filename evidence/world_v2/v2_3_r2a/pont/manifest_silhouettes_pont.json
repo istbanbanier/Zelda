@@ -1,0 +1,30 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "62335dacb2ad9ac330f8ceff9b3e0e9bf57fd947",
+  "emprise_m": [
+    24.1000003814697,
+    7.42999982833862,
+    8.44974994659424
+  ],
+  "engine": "4.7.1-stable (custom_build)",
+  "projection": "orthogonale",
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://assets/architecture/stone_bridge/SM_StoneBridge_Arch.glb",
+  "size": "1400x760",
+  "sujet": "pont",
+  "vues": [
+    {
+      "angle_deg": 0.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_r2a/pont/silhouette_pont_000.png",
+      "sujet_pct": 8.08157894736842
+    },
+    {
+      "angle_deg": 90.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_r2a/pont/silhouette_pont_090.png",
+      "sujet_pct": 21.2627819548872
+    }
+  ]
+}
