@@ -16,12 +16,29 @@
 class_name WorldV2PlacesBuilder
 extends RefCounted
 
-## place_id → chemin de PackedScene. REMPLI par V2.3-A (lot pilote), une
-## entrée par scène réellement livrée — jamais de chemin d'avance : un
-## chemin mort produirait une erreur à chaque montage du monde.
+## place_id → chemin de PackedScene. Une entrée par scène réellement
+## livrée — jamais de chemin d'avance : un chemin mort produirait une
+## erreur à chaque montage du monde.
 ## Clés admises : IDs canoniques de POI, IDs de sites systémiques,
 ## "camp" (checkpoint du layout) et "pylon" (ancre §3.3).
-const REGISTRY: Dictionary = {}
+const REGISTRY: Dictionary = {
+	&"camp": "res://scenes/world_v2/poi/CampCheckpointPlace.tscn",
+	&"valley.poi.riverside_village.01":
+		"res://scenes/world_v2/poi/RiversideVillagePlace.tscn",
+	&"valley.poi.abandoned_farm.01":
+		"res://scenes/world_v2/poi/AbandonedFarmPlace.tscn",
+	&"valley.poi.stone_bridge.01":
+		"res://scenes/world_v2/poi/StoneBridgePlace.tscn",
+	&"valley.poi.waterfall_cave.01":
+		"res://scenes/world_v2/poi/WaterfallCavePlace.tscn",
+	&"valley.poi.thunderstruck_tree.01":
+		"res://scenes/world_v2/poi/ThunderstruckTreePlace.tscn",
+	&"valley.poi.ember_raider_camps.01":
+		"res://scenes/world_v2/poi/EmberRaiderCampPlace.tscn",
+	&"valley.poi.conductive_basin.01":
+		"res://scenes/world_v2/poi/ConductiveBasinPlace.tscn",
+	&"pylon": "res://scenes/world_v2/landmarks/ResonancePylon.tscn",
+}
 
 var _heightmap: WorldV2Heightmap = null
 var _layout: Dictionary = {}
@@ -52,6 +69,8 @@ func build(places_root: Node3D) -> int:
 		place.add_to_group(&"world_v2_places", true)
 		place.position = Vector3(site.x,
 			_heightmap.height_at(site.x, site.z), site.z)
+		if place.has_method("bind_terrain"):
+			place.call("bind_terrain", Callable(_heightmap, "height_at"))
 		places_root.add_child(place)
 		placed += 1
 	if placed > 0:
