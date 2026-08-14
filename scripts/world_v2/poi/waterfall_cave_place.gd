@@ -1,24 +1,38 @@
 ## GROTTE DE LA CASCADE (`valley.poi.waterfall_cave.01`, r04) — une VRAIE
-## poche intérieure, jamais un trou dans le terrain (directive V2.3 §2).
+## poche de roche, jamais un trou dans le terrain (directive V2.3 §2).
 ##
-## Le terrain est GELÉ : la poche est BÂTIE contre la montée ouest — une
-## coque de blocs de falaise en C, un toit porté, un seuil lisible ouvert
-## vers la chute de l'affluent à l'est. Entrée et sortie par le même
-## seuil sûr : sol continu (dalles), hauteur libre ≥ 1,9 m, aucune porte,
-## aucun à-pic — le filet de comportement marche le trajet dans les deux
-## sens et exige un PLAFOND réel au-dessus de l'intérieur.
+## REJET V2.3-A : « un tas de rochers surdimensionnés ; l'entrée est
+## masquée ; la poche ne lit pas comme un volume rocheux ». Des blocs
+## posés côte à côte ne font pas un volume. Refait ici en UNE enveloppe
+## continue : parois, plafond et joues de bouche appartiennent au même
+## maillage (`WorldV2PlaceKit.hollow_rock_mesh`), avec une bouche SOMBRE
+## ouverte vers la route.
 ##
-## Metas contractuelles : `cave_threshold` (devant le seuil, dehors) et
-## `cave_interior` (au fond de la poche), locales.
+## IMPLANTATION MESURÉE (`probe_site_section`, coupe centrée (-110, 6)) :
+## plateau plat à y = 3,0 de x = -118 à -100 ; le RESSAUT monte à l'ouest
+## (x = -120 → 3,1 ; -122 → 4,1 ; -124 → 5,8). La masse est donc adossée
+## au ressaut, sa bouche regarde l'EST vers le plateau et la route, et
+## son sol intérieur reste au niveau du plateau — aucune marche.
 class_name WaterfallCavePlace
 extends WorldV2Place
 
 const K: GDScript = preload("res://scripts/world_v2/poi/world_v2_place_kit.gd")
 
-## La poche : centre local, demi-largeur intérieure, hauteur sous plafond.
-const POCKET_CENTER: Vector3 = Vector3(-3.0, 0.0, -1.0)
-const INNER_HALF_W: float = 2.6
-const INNER_H: float = 2.6
+## Centre de la poche, en LOCAL (la racine est sur le plateau).
+const POCKET_CENTER: Vector2 = Vector2(-7.0, -1.0)
+const INNER_R: float = 3.2
+const WALL_T: float = 4.4
+const WALL_H: float = 3.1
+## La bouche regarde l'EST-NORD-EST : les massifs de fleurs de la
+## végétation GELÉE occupent x ∈ [-109, -106], z ∈ [5, 8,5] (origines
+## sondées) et masquaient l'entrée. L'axe -14° passe dans le couloir
+## libre — on s'adapte au paysage gelé, on ne le modifie pas.
+const MOUTH_DEG: float = -14.0
+const MOUTH_HALF_DEG: float = 24.0
+
+const COL_ROCK: Color = Color(0.52, 0.45, 0.36)
+const COL_ROCK_DARK: Color = Color(0.31, 0.27, 0.23)
+const COL_FLOOR: Color = Color(0.44, 0.40, 0.35)
 
 
 func default_place_id() -> StringName:
@@ -26,116 +40,166 @@ func default_place_id() -> StringName:
 
 
 func _build() -> void:
-	var floor_y: float = ground_local_y(POCKET_CENTER.x, POCKET_CENTER.z)
-	var threshold: Vector3 = Vector3(4.0, ground_local_y(4.0, 2.2), 2.2)
-	set_meta(&"cave_threshold", threshold)
-	set_meta(&"cave_interior", Vector3(POCKET_CENTER.x - 0.6, floor_y,
-		POCKET_CENTER.z - 0.6))
+	var floor_y: float = ground_local_y(POCKET_CENTER.x, POCKET_CENTER.y)
+	var mouth_out: Vector2 = POCKET_CENTER + Vector2(INNER_R + WALL_T + 1.4, 0.0)
+	set_meta(&"cave_threshold", Vector3(mouth_out.x,
+		ground_local_y(mouth_out.x, mouth_out.y), mouth_out.y))
+	set_meta(&"cave_interior", Vector3(POCKET_CENTER.x - 1.2, floor_y,
+		POCKET_CENTER.y - 0.8))
 
-	# — Sol intérieur : dalles de pierre en pente TRÈS douce depuis le
-	# seuil (le filet refuse toute marche > 0,55 m), avec collider plein.
-	var slab_root: Node3D = Node3D.new()
-	slab_root.name = "SolInterieur"
-	add_child(slab_root)
-	var entry_y: float = ground_local_y(1.6, 0.6)
-	for step: Array in [[2.8, 1.6, 0.0], [1.6, 0.6, 0.25], [0.2, -0.2, 0.5],
-			[-1.4, -0.6, 0.75], [-3.0, -1.0, 1.0]]:
-		var t: float = float(step[2])
-		var slab_y: float = lerpf(ground_local_y(float(step[0]), float(step[1])),
-			floor_y, t)
-		K.collider_box(slab_root, "dalle_%d" % slab_root.get_child_count(),
-			Vector3(float(step[0]), slab_y - 0.15, float(step[1])),
-			Vector3(2.6, 0.3, 2.6))
-		var slab: MeshInstance3D = MeshInstance3D.new()
-		slab.name = "dalle_visuelle_%d" % slab_root.get_child_count()
-		var box: BoxMesh = BoxMesh.new()
-		box.size = Vector3(2.5, 0.24, 2.5)
-		slab.mesh = box
-		slab.material_override = K.flat_material(Color(0.42, 0.38, 0.35))
-		slab.position = Vector3(float(step[0]), slab_y - 0.12, float(step[1]))
-		slab.rotation.y = t * 0.5
-		slab_root.add_child(slab)
-	declare_support(Vector3(2.8, entry_y, 1.6))
-	declare_support(Vector3(POCKET_CENTER.x, floor_y, POCKET_CENTER.z))
-
-	# — La coque : un MASSIF de gros rochers ocres (Rock_Medium — le même
-	# langage que les rochers V2.2), en C autour de la poche, ouverts vers
-	# le seuil (est). À l'inspection, les panneaux CaveWall lisaient comme
-	# des rectangles marron posés dans l'herbe — remplacés par des masses.
-	var shell: Node3D = Node3D.new()
-	shell.name = "Coque"
+	# — L'ENVELOPPE : un seul maillage creux, parois + plafond + joues.
+	var shell: MeshInstance3D = MeshInstance3D.new()
+	shell.name = "Enveloppe"
+	shell.mesh = K.hollow_rock_mesh(INNER_R, WALL_T, WALL_H, MOUTH_DEG,
+		MOUTH_HALF_DEG, 20260814, 44)
+	var rock_material: StandardMaterial3D = K.flat_material(COL_ROCK)
+	rock_material.vertex_color_use_as_albedo = true
+	shell.material_override = rock_material
+	shell.position = Vector3(POCKET_CENTER.x, floor_y, POCKET_CENTER.y)
 	add_child(shell)
-	for block: Array in [
-		[-6.6, -1.0, 0.0, 2.0, "Rock_Medium_1"],
-		[-5.4, -4.6, 40.0, 1.8, "Rock_Medium_2"],
-		[-1.6, -6.0, 80.0, 1.9, "Rock_Medium_3"],
-		[2.4, -4.6, 120.0, 1.6, "Rock_Medium_1"],
-		[-5.8, 2.8, -45.0, 1.9, "Rock_Medium_2"],
-		[-2.2, 4.4, -85.0, 1.7, "Rock_Medium_3"],
-		[2.0, 5.0, -120.0, 1.5, "Rock_Medium_2"]]:
-		var piece: Node3D = K.module(shell, StringName(block[4] as String),
-			_seated(float(block[0]), float(block[1])), float(block[2]),
-			float(block[3]), K.TONE_STONE)
-		if piece == null:
+	declare_support(shell.position)
+
+	# UNE SEULE coque : au premier jet une seconde enveloppe « massif »
+	# l'enrobait — les deux parois se croisaient et se lisaient comme deux
+	# grands panneaux beiges détachés. La masse vient de l'épaisseur
+	# (WALL_T) et du profil, pas d'un empilement d'enveloppes.
+
+	# — Les parois portantes : un anneau de colliders qui suit l'enveloppe,
+	# ouvert au secteur de la bouche (le joueur entre et ressort).
+	var walls: Node3D = Node3D.new()
+	walls.name = "Parois"
+	add_child(walls)
+	var segments: int = 12
+	for i: int in range(segments):
+		var angle: float = TAU * float(i) / float(segments)
+		var degrees: float = rad_to_deg(angle)
+		if absf(wrapf(degrees - MOUTH_DEG, -180.0, 180.0)) < MOUTH_HALF_DEG + 6.0:
 			continue
-	# Colliders muraux du C (l'ouverture est reste libre, largeur 2,4 m).
-	for wall: Array in [
-		[-5.6, -1.0, 0.0, 2.2, 6.4], [-3.4, -4.0, 55.0, 2.2, 5.6],
-		[0.6, -4.6, 100.0, 2.2, 5.0], [-3.6, 2.4, -55.0, 2.2, 5.6],
-		[0.8, 3.6, -105.0, 2.2, 4.6]]:
-		K.collider_box(shell, "paroi_%d" % shell.get_child_count(),
-			Vector3(float(wall[0]),
-				ground_local_y(float(wall[0]), float(wall[1])) + INNER_H * 0.5,
-				float(wall[1])),
-			Vector3(float(wall[4]), INNER_H + 2.4, 1.6), float(wall[2]))
+		var radius: float = INNER_R + WALL_T * 0.5
+		var at: Vector3 = Vector3(
+			POCKET_CENTER.x + cos(angle) * radius, floor_y + WALL_H * 0.6,
+			POCKET_CENTER.y + sin(angle) * radius)
+		K.collider_box(walls, "paroi_%d" % i, at,
+			Vector3(WALL_T + 1.0, WALL_H * 2.4, 2.6 * INNER_R / 3.0),
+			rad_to_deg(-angle))
+	K.collider_box(walls, "plafond",
+		Vector3(POCKET_CENTER.x, floor_y + WALL_H * 1.32, POCKET_CENTER.y),
+		Vector3(INNER_R * 2.2, 0.8, INNER_R * 2.2))
 
-	# — Le TOIT : gros rochers posés sur la coque + collider plafond réel
-	# (le filet tire un rayon vertical depuis l'intérieur).
-	var roof_y: float = floor_y + INNER_H
-	# Échelles et hauteurs MESURÉES (gltf_inspect : RM2 base à −0,05,
-	# RM3 à −0,32) : le fond des blocs affleure le plafond, la poche
-	# reste un VIDE — au premier passage un bloc ×5,2 la remplissait.
-	var cap: Node3D = K.module(shell, &"Rock_Medium_2",
-		Vector3(POCKET_CENTER.x - 0.6, roof_y + 0.2, POCKET_CENTER.z + 0.4),
-		65.0, 2.6, K.TONE_STONE)
-	if cap != null:
-		cap.position.y = roof_y - 0.15
-	var cap_east: Node3D = K.module(shell, &"Rock_Medium_3",
-		Vector3(0.8, roof_y + 0.1, 0.6), -30.0, 1.8, K.TONE_STONE)
-	if cap_east != null:
-		cap_east.position.y = roof_y + 0.5
-	K.collider_box(shell, "plafond", Vector3(POCKET_CENTER.x, roof_y + 0.5,
-		POCKET_CENTER.z), Vector3(7.0, 1.0, 7.0))
-	# Auvent du seuil : le plafond déborde au-dessus de l'entrée, le seuil
-	# se lit comme une BOUCHE et pas comme un interstice.
-	K.collider_box(shell, "auvent_seuil", Vector3(1.8, roof_y + 0.7, 1.0),
-		Vector3(3.4, 0.9, 3.2), 35.0)
-	# Le SOURCIL du seuil : deux montants de roche + un linteau — la bouche
-	# se lit comme une bouche.
-	K.module(shell, &"Rock_Medium_2", _seated(3.6, -1.2), 15.0, 1.1,
-		K.TONE_STONE)
-	K.module(shell, &"Rock_Medium_1", _seated(3.2, 3.8), -20.0, 1.0,
-		K.TONE_STONE)
-	var brow: Node3D = K.module(shell, &"Rock_Medium_2",
-		Vector3(2.9, roof_y + 0.1, 1.3), 125.0, 1.4, K.TONE_STONE)
-	if brow != null:
-		brow.position.y = roof_y + 0.05
-		declare_support(_seated(2.9, 1.3))
+	# — Le SEUIL et le SOL. Mesuré : le terrain MONTE dans le ressaut — le
+	# plateau est à y = 3,00 devant la bouche, le fond de la poche à 3,54.
+	# Un sol plat posé au niveau du fond faisait donc une marche de 0,58 m
+	# pile sur le pas de la porte. Le seuil est donc une VOLÉE de dalles
+	# qui rattrape la différence par paliers de moins de 10 cm.
+	var floor_root: Node3D = Node3D.new()
+	floor_root.name = "SolInterieur"
+	add_child(floor_root)
+	var mouth_x: float = POCKET_CENTER.x + INNER_R + WALL_T * 0.55
+	var mouth_ground: float = ground_local_y(mouth_x, POCKET_CENTER.y)
+	var landings: int = 7
+	for i: int in range(landings):
+		var t: float = float(i) / float(landings - 1)
+		var x: float = lerpf(mouth_x + 0.9, POCKET_CENTER.x + 0.6, t)
+		var y: float = lerpf(mouth_ground, floor_y, t)
+		var at: Vector3 = Vector3(x, y + 0.06, POCKET_CENTER.y
+			+ sin(t * 2.1) * 0.35)
+		K.stone_block(floor_root, "dalle_seuil_%d" % i, at,
+			Vector3(2.4, 0.24, 3.0), 12.0 * t - 6.0, COL_FLOOR,
+			3100 + i, 0.05)
+		K.collider_box(floor_root, "seuil_col_%d" % i,
+			Vector3(x, y - 0.10, POCKET_CENTER.y),
+			Vector3(2.6, 0.34, 3.4))
+	# Le fond de la poche : UN sol de roche continu — des dalles séparées
+	# laissaient voir l'herbe du terrain entre elles (mesuré en capture).
+	var cave_floor: MeshInstance3D = MeshInstance3D.new()
+	cave_floor.name = "SolDeRoche"
+	cave_floor.mesh = K.rock_floor_mesh(INNER_R + 0.9, 5150)
+	var floor_material: StandardMaterial3D = K.flat_material(COL_FLOOR)
+	floor_material.vertex_color_use_as_albedo = true
+	cave_floor.material_override = floor_material
+	cave_floor.position = Vector3(POCKET_CENTER.x, floor_y + 0.12,
+		POCKET_CENTER.y)
+	floor_root.add_child(cave_floor)
+	K.collider_box(floor_root, "sol_col",
+		Vector3(POCKET_CENTER.x - 1.1, floor_y - 0.10, POCKET_CENTER.y),
+		Vector3(INNER_R * 1.7, 0.32, INNER_R * 2.0))
 
-	# — Dehors : éboulis du seuil, fougères d'ombre, dalles d'approche.
-	K.module(self, &"Rock_Medium_2", _seated(5.6, -1.6), 200.0, 0.9,
-		K.TONE_STONE)
-	K.module(self, &"Fern_1", _seated(4.6, 3.6), 20.0, 1.0, K.TONE_PLANT)
-	K.module(self, &"Fern_1", _seated(3.0, -2.2), 160.0, 0.9, K.TONE_PLANT)
-	K.module(self, &"Mushroom_Common", _seated(5.2, 3.0), 0.0, 1.0,
-		K.TONE_PLANT)
-	for slab: Array in [[5.4, 2.8], [4.2, 2.0]]:
-		K.module(self, &"RockPath_Round_Small_1",
-			_seated(float(slab[0]), float(slab[1])), float(slab[0]) * 29.0,
-			1.0, K.TONE_STONE)
+	# — La BOUCHE : les JOUES de l'enveloppe encadrent déjà l'ouverture.
+	# Au premier jet, deux piédroits et un linteau y étaient ajoutés : ils
+	# débordaient de la masse et se lisaient comme des blocs détachés. Il
+	# ne reste qu'un SOURCIL — une saillie de roche au-dessus du vide, qui
+	# porte l'ombre et fait la lèvre supérieure.
+	var mouth: Node3D = Node3D.new()
+	mouth.name = "Bouche"
+	add_child(mouth)
+	var mouth_dir: Vector2 = Vector2(cos(deg_to_rad(MOUTH_DEG)),
+		sin(deg_to_rad(MOUTH_DEG)))
+	var brow_at: Vector2 = POCKET_CENTER + mouth_dir * (INNER_R + WALL_T * 0.32)
+	K.stone_block(mouth, "Sourcil",
+		Vector3(brow_at.x, floor_y + WALL_H + 0.15, brow_at.y),
+		Vector3(2.9, 1.05, 4.6), MOUTH_DEG - 4.0, COL_ROCK, 4402, 0.11)
+	# Deux petits blocs d'éboulis au pied des joues — au premier jet, deux
+	# « épaules » de 2,2 m débordaient de la masse et se lisaient comme
+	# des panneaux détachés posés sur l'herbe.
+	for side: int in [-1, 1]:
+		var cheek: Vector2 = POCKET_CENTER \
+			+ mouth_dir.rotated(deg_to_rad(float(side) * 34.0)) \
+				* (INNER_R + WALL_T * 0.92)
+		K.stone_block(mouth, "PiedDeJoue_%d" % side,
+			Vector3(cheek.x, ground_local_y(cheek.x, cheek.y) + 0.34, cheek.y),
+			Vector3(1.5, 0.9, 1.3), MOUTH_DEG + float(side) * 22.0,
+			COL_ROCK, 4400 + side, 0.14)
+	# La PROFONDEUR se lit par la poche elle-même : au premier jet, un
+	# bloc sombre « gorge » avait été posé DANS le volume — il bouchait
+	# l'intérieur au lieu de le creuser. Ce qui donne la lecture, c'est
+	# une lampe motivée par la bouche : le jour entre, s'arrête vite, et
+	# la récompense au fond reste visible sans éclairer la roche comme
+	# un décor de studio.
+	var daylight: OmniLight3D = OmniLight3D.new()
+	daylight.name = "JourDeLaBouche"
+	daylight.light_color = Color(1.0, 0.94, 0.82)
+	daylight.light_energy = 1.15
+	daylight.omni_range = 9.0
+	daylight.shadow_enabled = false
+	daylight.position = Vector3(POCKET_CENTER.x + INNER_R * 0.55,
+		floor_y + 1.9, POCKET_CENTER.y - 0.4)
+	add_child(daylight)
+	var deep: OmniLight3D = OmniLight3D.new()
+	deep.name = "FondDeLaPoche"
+	deep.light_color = Color(0.82, 0.86, 0.92)
+	deep.light_energy = 0.45
+	deep.omni_range = 6.0
+	deep.shadow_enabled = false
+	deep.position = Vector3(POCKET_CENTER.x - 2.2, floor_y + 1.6,
+		POCKET_CENTER.y - 0.8)
+	add_child(deep)
 
-	# — Découverte + récompense canonique (champignon de soin, AU FOND —
-	# la poche récompense d'être entrée).
+	# — Les ABORDS : éboulis du seuil et végétation d'ombre, posés HORS de
+	# l'axe d'entrée (le lead a vu l'entrée masquée par des fleurs : la
+	# bande |z local − 0,5| < 2,4 devant la bouche reste NUE).
+	for scree: Array in [[6.4, 3.4, 1.15], [5.2, -3.6, 0.9], [7.6, -4.4, 0.75],
+			[7.0, 4.6, 0.8]]:
+		var at: Vector3 = Vector3(POCKET_CENTER.x + float(scree[0]), 0.0,
+			POCKET_CENTER.y + float(scree[1]))
+		at.y = ground_local_y(at.x, at.z) + float(scree[2]) * 0.35
+		K.stone_block(self, "Eboulis_%d" % get_child_count(), at,
+			Vector3(float(scree[2]) * 1.7, float(scree[2]) * 1.1,
+				float(scree[2]) * 1.4), float(scree[0]) * 31.0, COL_ROCK,
+			4500 + get_child_count(), 0.13)
+	K.module(self, &"Fern_1", _seated(POCKET_CENTER.x + 5.6,
+		POCKET_CENTER.y + 3.2), 20.0, 1.0, K.TONE_PLANT)
+	K.module(self, &"Fern_1", _seated(POCKET_CENTER.x + 5.0,
+		POCKET_CENTER.y - 3.1), 160.0, 0.9, K.TONE_PLANT)
+	K.module(self, &"Mushroom_Common", _seated(POCKET_CENTER.x + 6.8,
+		POCKET_CENTER.y + 2.9), 0.0, 1.0, K.TONE_PLANT)
+	# Le chemin d'approche : dalles qui montent du plateau vers la bouche,
+	# dans l'axe — elles GUIDENT le regard vers la bouche sombre.
+	for step: Array in [[9.2, 0.9], [7.6, 0.4], [6.0, 0.1]]:
+		K.module(self, &"RockPath_Round_Wide",
+			_seated(POCKET_CENTER.x + float(step[0]),
+				POCKET_CENTER.y + float(step[1])),
+			float(step[0]) * 27.0, 1.1, K.TONE_STONE)
+
 	var poi: PointOfInterest = PointOfInterest.new()
 	poi.name = "Decouverte"
 	poi.poi_id = default_place_id()
@@ -143,13 +207,14 @@ func _build() -> void:
 	poi.region = "r04_falaises_du_couchant"
 	var shape: CollisionShape3D = CollisionShape3D.new()
 	var sphere: SphereShape3D = SphereShape3D.new()
-	sphere.radius = 10.0
+	sphere.radius = 12.0
 	shape.shape = sphere
 	poi.add_child(shape)
 	add_child(poi)
+	# La récompense est AU FOND : la poche paie d'être entrée.
 	RewardAnchor.attach(self, default_place_id(), RewardAnchor.Kind.INGREDIENT,
-		Vector3(POCKET_CENTER.x - 0.8, floor_y + 0.1, POCKET_CENTER.z - 1.2),
-		Vector3(1.4, 0.0, 1.4))
+		Vector3(POCKET_CENTER.x - 2.4, floor_y + 0.18, POCKET_CENTER.y - 1.1),
+		Vector3(2.0, 0.0, 1.0))
 
 
 func _seated(local_x: float, local_z: float) -> Vector3:

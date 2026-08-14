@@ -122,6 +122,219 @@ static func flat_material(albedo: Color, emission: Color = Color.BLACK,
 	return material
 
 
+## BLOC DE PIERRE TAILLÉ — maillage irrégulier, pas une `BoxMesh`.
+##
+## Le lead a rejeté « des primitives » : une boîte parfaite se lit comme
+## une primitive à toute distance. Ce bloc porte huit sommets déplacés par
+## une graine, des faces PLATES (arêtes franches de taille) et une teinte
+## variée par bloc — un appareil de pierre s'assemble alors avec des
+## joints visibles, de l'usure et aucune répétition mécanique.
+static func stone_block(parent: Node3D, block_name: String, at: Vector3,
+		size: Vector3, yaw_deg: float, tone: Color, seed_value: int,
+		jitter: float = 0.05) -> MeshInstance3D:
+	var block: MeshInstance3D = MeshInstance3D.new()
+	block.name = block_name
+	block.mesh = irregular_box_mesh(size, jitter, seed_value)
+	var shade: float = 1.0 + (float((seed_value * 37) % 100) / 100.0 - 0.5) * 0.16
+	block.material_override = flat_material(
+		Color(tone.r * shade, tone.g * shade, tone.b * shade))
+	block.position = at
+	block.rotation.y = deg_to_rad(yaw_deg)
+	parent.add_child(block)
+	return block
+
+
+## Boîte à sommets déplacés, faces plates — la brique de tout appareil.
+static func irregular_box_mesh(size: Vector3, jitter: float,
+		seed_value: int) -> ArrayMesh:
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = seed_value
+	var half: Vector3 = size * 0.5
+	var corners: Array[Vector3] = []
+	for i: int in range(8):
+		var corner: Vector3 = Vector3(
+			half.x * (1.0 if (i & 1) != 0 else -1.0),
+			half.y * (1.0 if (i & 2) != 0 else -1.0),
+			half.z * (1.0 if (i & 4) != 0 else -1.0))
+		corners.append(corner + Vector3(
+			rng.randf_range(-jitter, jitter) * size.x,
+			rng.randf_range(-jitter, jitter) * size.y,
+			rng.randf_range(-jitter, jitter) * size.z))
+	# Six faces, chacune en deux triangles à normale plate.
+	var faces: Array[Array] = [
+		[0, 2, 3, 1], [4, 5, 7, 6], [0, 1, 5, 4],
+		[2, 6, 7, 3], [0, 4, 6, 2], [1, 3, 7, 5],
+	]
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for face: Array in faces:
+		var a: Vector3 = corners[int(face[0])]
+		var b: Vector3 = corners[int(face[1])]
+		var c: Vector3 = corners[int(face[2])]
+		var d: Vector3 = corners[int(face[3])]
+		var normal: Vector3 = (b - a).cross(c - a).normalized()
+		for triangle: Array in [[a, b, c], [a, c, d]]:
+			for point: Variant in triangle:
+				st.set_normal(normal)
+				st.add_vertex(point as Vector3)
+	return st.commit()
+
+
+## MASSE ROCHEUSE CREUSE — une enveloppe continue : parois irrégulières,
+## plafond porté, et UNE ouverture (la bouche).
+##
+## Le lead a rejeté « un tas de rochers surdimensionnés » : des blocs
+## posés côte à côte ne font jamais un volume. Ici la paroi est UN
+## maillage fermé, généré par colonnes angulaires — rayon, hauteur et
+## relief varient par une graine, la bouche est un secteur laissé ouvert,
+## et le plafond est une voûte surbaissée cousue à la paroi intérieure.
+##
+## `mouth_center_deg` / `mouth_half_deg` définissent le secteur ouvert.
+static func hollow_rock_mesh(inner_radius: float, wall_thickness: float,
+		height: float, mouth_center_deg: float, mouth_half_deg: float,
+		seed_value: int, segments: int = 40) -> ArrayMesh:
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = seed_value
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var inner: PackedVector3Array = PackedVector3Array()
+	var outer: PackedVector3Array = PackedVector3Array()
+	var tops: PackedFloat32Array = PackedFloat32Array()
+	var open: Array[bool] = []
+	for i: int in range(segments + 1):
+		var t: float = float(i) / float(segments)
+		var angle: float = TAU * t
+		var degrees: float = rad_to_deg(angle)
+		var delta: float = absf(wrapf(degrees - mouth_center_deg, -180.0, 180.0))
+		open.append(delta < mouth_half_deg)
+		# Relief : deux harmoniques + bruit de graine — jamais un cercle.
+		var wobble: float = sin(angle * 3.0 + float(seed_value % 7)) * 0.16 \
+			+ sin(angle * 5.0 + 1.7) * 0.09 + rng.randf_range(-0.05, 0.05)
+		var r_in: float = inner_radius * (1.0 + wobble)
+		var r_out: float = r_in + wall_thickness * (1.0 + wobble * 0.8)
+		var top: float = height * (1.0 + sin(angle * 2.0 + 0.6) * 0.13
+			+ rng.randf_range(-0.05, 0.05))
+		inner.append(Vector3(cos(angle) * r_in, 0.0, sin(angle) * r_in))
+		outer.append(Vector3(cos(angle) * r_out, 0.0, sin(angle) * r_out))
+		tops.append(top)
+	# Parois et couronne, sauf au secteur bouche.
+	#
+	# LA FACE EXTÉRIEURE SUIT UN PROFIL, elle n'est pas extrudée. Mesuré à
+	# l'inspection du premier jet : une extrusion verticale + couronne
+	# plate donne une BOÎTE beige, quelle que soit l'irrégularité du plan.
+	# Le relief d'un rocher est d'abord dans son PROFIL — fruit vers le
+	# haut, ressauts intermédiaires, crête irrégulière.
+	var profile: Array[Vector2] = [
+		Vector2(0.0, 1.0), Vector2(0.34, 0.90), Vector2(0.68, 0.74),
+		Vector2(1.0, 0.52),
+	]
+	for i: int in range(segments):
+		if open[i] and open[i + 1]:
+			continue
+		var i0: Vector3 = inner[i]
+		var i1: Vector3 = inner[i + 1]
+		var h0: float = tops[i]
+		var h1: float = tops[i + 1]
+		# Paroi intérieure : quasi verticale, et NETTEMENT plus sombre —
+		# c'est ce qui creuse la poche à l'œil.
+		_quad(st, i0 + Vector3(0, h0, 0), i1 + Vector3(0, h1, 0), i1, i0,
+			0.42 + float(i % 3) * 0.03)
+		# Paroi extérieure : une bande par palier de profil, chaque palier
+		# décalé par le bruit — le rocher a des épaules, pas une façade.
+		for p: int in range(profile.size() - 1):
+			var lower: Vector2 = profile[p]
+			var upper: Vector2 = profile[p + 1]
+			var bump0: float = 1.0 + sin(float(i) * 0.7 + float(p) * 2.3) * 0.07
+			var bump1: float = 1.0 + sin(float(i + 1) * 0.7 + float(p) * 2.3) * 0.07
+			var a0: Vector3 = _shrink(inner[i], outer[i], lower.y * bump0) \
+				+ Vector3(0, h0 * lower.x, 0)
+			var a1: Vector3 = _shrink(inner[i + 1], outer[i + 1], lower.y * bump1) \
+				+ Vector3(0, h1 * lower.x, 0)
+			var b0: Vector3 = _shrink(inner[i], outer[i], upper.y * bump0) \
+				+ Vector3(0, h0 * upper.x, 0)
+			var b1: Vector3 = _shrink(inner[i + 1], outer[i + 1], upper.y * bump1) \
+				+ Vector3(0, h1 * upper.x, 0)
+			var band_shade: float = 1.06 - 0.14 * float(p) \
+				+ float((i * 7 + p * 3) % 5) * 0.035
+			_quad(st, a0, a1, b1, b0, band_shade)
+		# Couronne : de la crête intérieure au sommet rétréci de la face.
+		var top_out0: Vector3 = _shrink(inner[i], outer[i], profile[3].y) \
+			+ Vector3(0, h0, 0)
+		var top_out1: Vector3 = _shrink(inner[i + 1], outer[i + 1], profile[3].y) \
+			+ Vector3(0, h1, 0)
+		_quad(st, i0 + Vector3(0, h0, 0), top_out0, top_out1,
+			i1 + Vector3(0, h1, 0), 0.88 + float(i % 4) * 0.04)
+	# Les deux JOUES de la bouche : la paroi se referme sur son épaisseur.
+	for i: int in range(segments):
+		if open[i] == open[i + 1]:
+			continue
+		var edge: int = i + 1 if open[i + 1] else i
+		_quad(st, inner[edge], outer[edge],
+			outer[edge] + Vector3(0, tops[edge], 0),
+			inner[edge] + Vector3(0, tops[edge], 0), 0.62)
+	# PLAFOND : voûte surbaissée cousue à la crête intérieure.
+	var apex: float = height * 1.28
+	for i: int in range(segments):
+		var a: Vector3 = inner[i] + Vector3(0, tops[i], 0)
+		var b: Vector3 = inner[i + 1] + Vector3(0, tops[i + 1], 0)
+		var mid_a: Vector3 = a * 0.45 + Vector3(0, apex - a.y, 0) * 0.0
+		mid_a = Vector3(a.x * 0.45, apex * 0.92, a.z * 0.45)
+		var mid_b: Vector3 = Vector3(b.x * 0.45, apex * 0.92, b.z * 0.45)
+		# ENROULEMENT : la voûte se regarde par en DESSOUS. Au premier jet
+		# elle était enroulée comme les parois — culée depuis l'extérieur,
+		# elle laissait un TROU NOIR au sommet du rocher (vu en capture).
+		_quad(st, mid_a, mid_b, b, a, 0.34 + float(i % 3) * 0.02)
+		_triangle(st, Vector3(0.0, apex, 0.0), mid_b, mid_a, 0.30)
+	return st.commit()
+
+
+## SOL DE ROCHE CONTINU — un disque irrégulier, jamais des dalles
+## disjointes : mesuré à l'inspection, l'herbe du terrain gelé passait
+## entre les dalles et une grotte au gazon ne lit pas comme une grotte.
+static func rock_floor_mesh(radius: float, seed_value: int,
+		segments: int = 26) -> ArrayMesh:
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = seed_value
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var rim: PackedVector3Array = PackedVector3Array()
+	for i: int in range(segments + 1):
+		var angle: float = TAU * float(i) / float(segments)
+		var r: float = radius * (1.0 + sin(angle * 3.0) * 0.09
+			+ rng.randf_range(-0.05, 0.05))
+		rim.append(Vector3(cos(angle) * r, rng.randf_range(-0.05, 0.05),
+			sin(angle) * r))
+	for i: int in range(segments):
+		_triangle(st, Vector3.ZERO, rim[i], rim[i + 1],
+			0.86 + float(i % 4) * 0.05)
+	return st.commit()
+
+
+## Point entre la paroi intérieure et la paroi extérieure : `t = 1`
+## donne l'extérieur plein, `t = 0` la paroi intérieure.
+static func _shrink(inner_point: Vector3, outer_point: Vector3,
+		t: float) -> Vector3:
+	return inner_point.lerp(outer_point, t)
+
+
+static func _quad(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3,
+		d: Vector3, shade: float = 1.0) -> void:
+	_triangle(st, a, b, c, shade)
+	_triangle(st, a, c, d, shade)
+
+
+## Un triangle à normale plate et à VALEUR propre. La valeur de sommet est
+## ce qui distingue une roche d'un plastique : sans elle, une enveloppe
+## irrégulière reste une masse beige uniforme (mesuré à l'inspection).
+static func _triangle(st: SurfaceTool, a: Vector3, b: Vector3,
+		c: Vector3, shade: float = 1.0) -> void:
+	var normal: Vector3 = (b - a).cross(c - a).normalized()
+	for point: Vector3 in [a, b, c]:
+		st.set_color(Color(shade, shade, shade, 1.0))
+		st.set_normal(normal)
+		st.add_vertex(point)
+
+
 ## Collider boîte simple (layer 1, mask 0 — même contrat que la
 ## végétation : le monde le porte, il ne sonde rien).
 static func collider_box(parent: Node3D, box_name: String, local_pos: Vector3,
