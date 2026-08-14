@@ -197,6 +197,7 @@ func _auberge() -> void:
 		"pignon": &"Roof_Front_Brick6",
 		"toit_emprise": Vector2(8.25, 9.68),
 		"cheminee": Vector2(-1.9, -2.4),
+		"balcon": true,
 	})
 	_interieur_auberge(maison)
 
@@ -258,20 +259,27 @@ func _halle_forge() -> void:
 	_collider(halle, "HalleFond_col", Vector3(0.0, 1.56, -2.0),
 		Vector3(6.2, 3.12, 0.42))
 	# Toiture d'appentis : panneaux de tuiles plates posés sur la pente.
+	#
+	# PAS DE 1,90 m POUR DES PANNEAUX DE 2,00 × 2,02 : au pas de 2 m ils se
+	# touchaient bord à bord et laissaient passer le jour entre chaque
+	# tuile (vu sur `vue02`). Ils se recouvrent maintenant de 10 cm en X et
+	# de 60 cm en Z, comme des tuiles posées.
 	for i3: int in range(3):
-		var x3: float = -2.0 + float(i3) * 2.0
-		for j: int in range(2):
-			var z3: float = -1.0 + float(j) * 2.0
+		var x3: float = -1.9 + float(i3) * 1.9
+		for j: int in range(3):
+			var z3: float = -1.4 + float(j) * 1.4
 			var y3: float = lerpf(haut, bas, (z3 + 2.0) / 4.0) + 0.12
 			var panneau: Node3D = _module(halle, &"Overhang_Roof_UnevenBricks",
-				Vector3(x3, y3, z3), 0.0)
+				Vector3(x3, y3, z3), 0.0, 1.06)
 			if panneau != null:
 				panneau.rotation.x = deg_to_rad(-10.5)
-	# Poutre faîtière et sablière : la charpente se voit sous l'appentis.
+	# Sablières : 4,60 m et non 6,40 — au premier jet elles dépassaient de
+	# 1,20 m de part et d'autre des poteaux et se lisaient, à hauteur de
+	# joueur, comme un rail flottant au-dessus de l'herbe.
 	_poutre(halle, "Sabliere_fond", Vector3(0.0, haut + 0.06, -1.9),
-		Vector3(6.4, 0.16, 0.18), Color(0.30, 0.24, 0.18), 7020)
+		Vector3(4.6, 0.16, 0.18), Color(0.30, 0.24, 0.18), 7020)
 	_poutre(halle, "Sabliere_avant", Vector3(0.0, bas + 0.06, 1.9),
-		Vector3(6.4, 0.16, 0.18), Color(0.30, 0.24, 0.18), 7021)
+		Vector3(4.6, 0.16, 0.18), Color(0.30, 0.24, 0.18), 7021)
 
 	# L'atelier, meublé PAR FONCTION : feu, frappe, affûtage, stock.
 	_module(halle, &"Anvil_Log", Vector3(-1.4, 0.13, 0.2), 24.0)
@@ -372,17 +380,29 @@ func _batiment(spec: Dictionary) -> Node3D:
 			0.0 if cote > 0 else 180.0)
 	# Profondeur de façade : un auvent sur la porte, une cheminée. Une
 	# façade plate se lit comme une boîte, quelle que soit la texture.
-	_module(maison, &"Overhang_Plaster_Long", Vector3(0.0, 0.0, -demi_z - 1.05),
-		180.0)
+	# L'auvent est ASSORTI au style : mélanger enduit et brique sur la même
+	# façade se voit immédiatement.
+	_module(maison, &"Overhang_Plaster_Long" if style == "plaster"
+		else &"Overhang_UnevenBrick_Long",
+		Vector3(0.0, 0.0, -demi_z - 1.05), 180.0)
 	var chem: Vector2 = spec["cheminee"] as Vector2
 	_module(maison, &"Prop_Chimney", Vector3(chem.x, faite + 0.55, chem.y), 0.0)
-	# Huisserie de la porte : assise MESURÉE à 0,000, donc posable telle
-	# quelle. Les modules à assise fautive (`Window_Wide_Round1` −1,016,
+	# Balcon d'étage : sur la silhouette 0°, vue dans l'axe de la rue, le
+	# volume à deux niveaux se lisait comme un bloc plein. Une saillie de
+	# 1,23 m casse le contour et donne une ligne d'ombre horizontale.
+	# `Balcony_Simple_Straight` a son pivot en min-Y : posé à `WALL_H`, il
+	# s'assied exactement au plancher de l'étage.
+	if bool(spec.get("balcon", false)) and niveaux >= 2:
+		for cote2: float in [-1.0, 1.0]:
+			_module(maison, &"Balcony_Simple_Straight",
+				Vector3(cote2 * MODULE, WALL_H, -demi_z - 0.04), 180.0)
+	# Pas de `DoorFrame_Round_WoodDark` rapporté : `Wall_*_Door_Round` porte
+	# déjà son huisserie, et le cadre ajouté venait mordre le jour de
+	# 1,30 m — la caméra intérieure butait dessus à 0,21 m.
+	# Les modules à assise fautive (`Window_Wide_Round1` −1,016,
 	# `WindowShutters_Wide_Round_Open` −1,093, `Prop_Support` −1,211) sont
 	# bannis de ce fichier : `K.module()` les plaquerait au sol, ce qui est
 	# très exactement le défaut « fenêtre posée au sol ».
-	_module(maison, &"DoorFrame_Round_WoodDark",
-		Vector3(0.0, 0.06, -demi_z + 0.02), 0.0)
 
 	_collider(maison, maison.name + "_sol", Vector3(0.0, -0.15, 0.0),
 		Vector3(span_x + 0.2, 0.5, span_z + 0.2))
@@ -426,9 +446,12 @@ func _interieur_auberge(maison: Node3D) -> void:
 	_module(maison, &"FarmCrate_Apple", Vector3(0.55, 0.12, 3.30), -12.0)
 	_module(maison, &"Chest_Wood", Vector3(-2.05, 0.12, 2.95), 12.0)
 
-	# Montée à l'étage : `Stair_Interior_Simple` mesure 3,03 m de haut,
-	# soit la hauteur d'un niveau au centimètre.
-	_module(maison, &"Stair_Interior_Simple", Vector3(-1.75, 0.12, 0.90), 180.0)
+	# Montée à l'étage : `Stair_Interior_Simple` mesure 1,68 × 3,03 × 4,62,
+	# pivot centre / min / MAX. Son corps s'étend donc de pivot − 4,62 à
+	# pivot en Z. Posée à z = 0,90 avec yaw 180, elle courait de 0,90 à
+	# 5,48 et traversait le mur nord de 1,89 m (relevé d'AABB). À yaw 0 et
+	# z = 3,40 elle occupe −1,22 à 3,40, entièrement dans les 3,59 m utiles.
+	_module(maison, &"Stair_Interior_Simple", Vector3(-1.85, 0.12, 3.40), 0.0)
 
 	# Étage : dortoir, visible depuis la cage d'escalier.
 	_module(maison, &"Bed_Twin1", Vector3(-1.55, WALL_H + 0.12, -2.20), 90.0)
@@ -524,15 +547,28 @@ func _parapet() -> void:
 	]
 	for i: int in range(runs.size()):
 		var depart: Vector2 = runs[i]
-		var sol: float = minf(ground_local_y(depart.x + 0.4, depart.y),
-			ground_local_y(depart.x + ASSISE_L - 0.4, depart.y))
+		# ASSISE SUR LE POINT LE PLUS BAS DU TRONÇON, moins 0,35 m. Le
+		# premier jet n'échantillonnait que deux points et posait la base
+		# à ce minimum : partout où le sol redescendait sous le tronçon, le
+		# mur décollait et se lisait comme un rail flottant (`vue02`). Cinq
+		# points et un enfouissement franc suppriment le cas.
+		var sol: float = 1e9
+		for e: int in range(5):
+			sol = minf(sol, ground_local_y(
+				depart.x + ASSISE_L * float(e) / 4.0, depart.y))
+		sol -= 0.35
 		var yaw: float = sin(float(i) * 1.7) * 2.5
-		_assise_mur(parapet, "Parapet_%d" % i,
-			Vector3(depart.x, sol, depart.y), yaw, true)
-		declare_support(Vector3(depart.x + ASSISE_L * 0.5, sol, depart.y))
+		# DEUX assises : à 0,61 m de haut le parapet se lisait comme une
+		# planche ; à 1,06 m il se lit comme un mur bas.
+		_assise_mur(parapet, "Parapet_%d_bas" % i,
+			Vector3(depart.x, sol, depart.y), yaw, false)
+		_assise_mur(parapet, "Parapet_%d_haut" % i,
+			Vector3(depart.x, sol + ASSISE_H, depart.y), yaw, true)
+		declare_support(Vector3(depart.x + ASSISE_L * 0.5, sol + 0.35,
+			depart.y))
 		_collider(parapet, "Parapet_col_%d" % i,
-			Vector3(depart.x + ASSISE_L * 0.5, sol + 0.30, depart.y),
-			Vector3(ASSISE_L, 0.61, 0.94), yaw)
+			Vector3(depart.x + ASSISE_L * 0.5, sol + 0.53, depart.y),
+			Vector3(ASSISE_L, 1.06, 0.94), yaw)
 		_noter_col(Vector2(depart.x + ASSISE_L * 0.5, depart.y),
 			Vector2(ASSISE_L, 0.94), yaw, "Parapet_%d" % i)
 
@@ -753,11 +789,17 @@ func _plinthe(maison: Node3D, span_x: float, span_z: float) -> void:
 	maison.add_child(socle)
 	var demi_x: float = span_x * 0.5
 	var demi_z: float = span_z * 0.5
+	# SENS DE PARCOURS — mesuré, pas déduit. Le premier jet donnait −90° au
+	# retour ouest et +90° au retour est : les deux assises partaient DANS
+	# LE MAUVAIS SENS et couraient 8,6 m hors du bâti (relevé d'AABB :
+	# x −3,70..−2,90 pour z 4,30..12,90, contre z ±4,30 attendu). Une
+	# rotation dont on n'a pas vérifié le signe est un bug silencieux : la
+	# pièce existe, elle est simplement ailleurs.
 	var runs: Array[Array] = [
 		[Vector3(-demi_x - 0.30, 0.0, -demi_z - 0.30), 0.0, span_x + 0.6],
 		[Vector3(demi_x + 0.30, 0.0, demi_z + 0.30), 180.0, span_x + 0.6],
-		[Vector3(-demi_x - 0.30, 0.0, demi_z + 0.30), -90.0, span_z + 0.6],
-		[Vector3(demi_x + 0.30, 0.0, -demi_z - 0.30), 90.0, span_z + 0.6],
+		[Vector3(-demi_x - 0.30, 0.0, demi_z + 0.30), 90.0, span_z + 0.6],
+		[Vector3(demi_x + 0.30, 0.0, -demi_z - 0.30), -90.0, span_z + 0.6],
 	]
 	for i: int in range(runs.size()):
 		var depart: Vector3 = runs[i][0] as Vector3
