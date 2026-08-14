@@ -72,3 +72,91 @@ rail de cuivre. Le pylône est un **hero asset original** (`VISUAL_ASSET_BIBLE`
 §11.2) : il ne peut pas être rhabillé en modules de château médiéval sans
 mentir sur la direction artistique. Blender était donc la seule voie — et
 c'est pour cela que le débloquer était le premier pas.
+
+---
+
+## R2a-4 — pylône : le premier golden master, et la preuve du pipeline
+
+Le pylône passe en premier parce qu'il n'avait **aucune** issue en modules
+CC0 : c'est un hero asset original. Le construire prouvait donc la chaîne
+entière — source reproductible → GLB → inspection hors moteur → import →
+capture en monde réel.
+
+### Ce que le script de scène fait désormais, et ce qu'il ne fait plus
+
+`scripts/world_v2/poi/resonance_pylon_landmark.gd` est passé de **238
+maillages fabriqués en GDScript** à **zéro**. Il instancie un GLB,
+l'implante sur l'ancre décalée, pose deux cylindres de collision et le
+parvis. Les seules primitives restantes sont les deux corps de collision —
+invisibles, exactement la place que le lead leur assigne.
+
+### La source
+
+`source_assets/blender/architecture/make_pylon_resonance.py` — génération
+reproductible, versionnée, plus le `.blend` qu'elle enregistre.
+
+**Aucun booléen.** Toutes les pièces sont des volumes **loftés** : on
+empile des profils fermés et on les coud. Un booléen sur une pile de
+primitives reproduit exactement les artefacts rejetés (faces ouvertes,
+arêtes en escalier, pièces désolidarisées) ; un loft donne par
+construction un volume continu et fermé.
+
+**Les trois canaux sont dans le PROFIL du fût**, pas creusés après coup :
+le rayon chute de 0,62 m sur trois secteurs de 26°. Le canal a donc de
+vraies joues verticales et un vrai fond — et un noyau plus sombre au fond,
+sans quoi le creux se comble visuellement.
+
+Mesuré à la génération : **17 objets, 2 386 faces, 34,56 m, base à z = 0**.
+Le générateur refuse de s'enregistrer si la hauteur sort de [26 ; 40] m,
+si la base n'est pas à zéro, ou s'il y a moins de 8 objets — les trois
+contraintes du filet `test_le_pylone_est_un_repere_majeur`.
+
+### Deux défauts d'outillage trouvés en chemin
+
+**1. `gltf_inspect.py` ne mesurait qu'UN maillage.** L'appel était câblé
+sur `accessor_bounds(gltf, 0)`. Sur le pylône, il annonçait
+`dimensions_m [10.6, 1.7, 10.6]` — les cotes de la plinthe — pour un
+ouvrage de 34,56 m. Et son contrôle « min Y ≈ 0 » ne regardait que cette
+plinthe : une pièce flottant vingt mètres plus haut n'aurait rien
+déclenché. Corrigé : accumulation sur tous les maillages. Après
+correction, `dimensions_m [10.6, 34.56, 10.6]`.
+
+**2. Le pylône rendait ENTIÈREMENT BLANC** — ce que le lead interdit.
+Ce n'était ni un goût ni un matériau manquant, et l'œil ne pouvait pas
+trancher entre « blanc » et « beige très clair ».
+`tools/godot/probe_asset_materials.gd` (créé pour ça) a mesuré les
+albédos réellement portés par l'asset importé :
+
+| écrit dans la source | reçu dans Godot |
+|---|---|
+| pierre 0,40 | **0,67** |
+| ivoire 0,62 | **0,81** |
+| cuivre 0,30 | **0,58** |
+| fond de canal 0,14 | **0,41** |
+
+C'est la conversion **sRGB ↔ linéaire** : glTF stocke `baseColorFactor` en
+linéaire, Godot le réencode en sRGB pour `albedo_color`. Tout remontait
+dans une bande 0,41–0,81 — contraste écrasé, fond de canal plus sombre du
+tout, masse uniformément pâle. La source convertit désormais
+explicitement ; vérifié après correction : les albédos arrivent au
+centième près (`materiaux_importes.log`).
+
+### Preuves
+
+`pylone/` — composition, approche, vue lointaine à 96 m, gros plan
+structurel montrant un canal **de la base au sommet** avec sa veine au
+fond, et la vue de base. Plus l'inspection glTF, les albédos importés et
+les filets `world_v2_places` **8/8 verts**.
+
+### Ce qui reste faible sur ce sujet
+
+- la veine cyan lit comme un tube lumineux continu dans le gros plan ;
+  elle est bien CONTENUE dans le canal, mais son intensité mériterait
+  d'être rompue ;
+- les trois pieds sont des volumes propres, mais leur section reste
+  rectangulaire — un chanfrein les rendrait plus taillés ;
+- l'anneau incomplet se lit à 96 m ; sa liaison au fût par deux consoles
+  reste discrète.
+
+Aucun de ces trois points n'est déclaré acceptable : ils sont `NON VÉRIFIÉ`
+et soumis au jugement du lead.

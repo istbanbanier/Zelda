@@ -1,0 +1,20 @@
+[materiaux] res://assets/architecture/pylon/SM_Pylon_Resonance.glb
+maillage                       srf  matériau               classe             albédo
+SM_Pylon_Plinth                  0  MAT_Pylon_Stone        StandardMaterial3D · maillage (0.34, 0.31, 0.27) rug 0.92
+SM_Pylon_Collar                  0  MAT_Pylon_Ivory        StandardMaterial3D · maillage (0.52, 0.49, 0.42) rug 0.55
+SM_Pylon_ShaftCore               0  MAT_Pylon_CoreStone    StandardMaterial3D · maillage (0.11, 0.11, 0.10) rug 0.96
+SM_Pylon_Shaft                   0  MAT_Pylon_Copper       StandardMaterial3D · maillage (0.26, 0.30, 0.25) rug 0.62
+SM_Pylon_Ring                    0  MAT_Pylon_Copper       StandardMaterial3D · maillage (0.26, 0.30, 0.25) rug 0.62
+SM_Pylon_Vein                    0  MAT_Pylon_Cyan         StandardMaterial3D · maillage (0.08, 0.24, 0.27) rug 0.35
+SM_Pylon_Leg_A                   0  MAT_Pylon_Stone        StandardMaterial3D · maillage (0.34, 0.31, 0.27) rug 0.92
+SM_Pylon_Leg_B                   0  MAT_Pylon_Stone        StandardMaterial3D · maillage (0.34, 0.31, 0.27) rug 0.92
+SM_Pylon_Leg_C                   0  MAT_Pylon_Stone        StandardMaterial3D · maillage (0.34, 0.31, 0.27) rug 0.92
+SM_Pylon_Belt_0                  0  MAT_Pylon_Ivory        StandardMaterial3D · maillage (0.52, 0.49, 0.42) rug 0.55
+SM_Pylon_Belt_1                  0  MAT_Pylon_Ivory        StandardMaterial3D · maillage (0.52, 0.49, 0.42) rug 0.55
+SM_Pylon_RingBracket_0           0  MAT_Pylon_Copper       StandardMaterial3D · maillage (0.26, 0.30, 0.25) rug 0.62
+SM_Pylon_RingBracket_1           0  MAT_Pylon_Copper       StandardMaterial3D · maillage (0.26, 0.30, 0.25) rug 0.62
+SM_Pylon_Crown_Tall              0  MAT_Pylon_Copper       StandardMaterial3D · maillage (0.26, 0.30, 0.25) rug 0.62
+SM_Pylon_Crown_Short             0  MAT_Pylon_Copper       StandardMaterial3D · maillage (0.26, 0.30, 0.25) rug 0.62
+SM_Pylon_CrownCap_Tall           0  MAT_Pylon_Ivory        StandardMaterial3D · maillage (0.52, 0.49, 0.42) rug 0.55
+SM_Pylon_CrownCap_Short          0  MAT_Pylon_Ivory        StandardMaterial3D · maillage (0.52, 0.49, 0.42) rug 0.55
+[materiaux] toutes les surfaces portent un matériau.
