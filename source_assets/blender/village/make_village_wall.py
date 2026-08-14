@@ -77,9 +77,14 @@ CHANFREIN = 0.022
 # Recalage obligatoire sur la capture : un albédo n'est pas une valeur
 # rendue.
 # ---------------------------------------------------------------------------
+# RECALÉ SUR LA CAPTURE, pas sur l'intention — c'est la règle du briefing.
+# À 0,335 / 0,392 le parapet rendait, en plein soleil sur `vue03`, plus
+# CLAIR que l'enduit de l'auberge (luma mesurée ~0,66 contre 0,50) : le mur
+# bas du premier plan volait la vedette au bâtiment, et sa surface lisse se
+# lisait comme du béton. Descendu d'un tiers pour tenir la bande MOYENNE.
 MATERIAUX = {
-    "MAT_Village_WallStone": (0.335, 0.298, 0.248, 0.96),
-    "MAT_Village_Coping":    (0.392, 0.352, 0.296, 0.94),
+    "MAT_Village_WallStone": (0.232, 0.206, 0.172, 0.96),
+    "MAT_Village_Coping":    (0.272, 0.244, 0.205, 0.94),
 }
 
 

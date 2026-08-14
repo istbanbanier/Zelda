@@ -378,7 +378,10 @@ func _batiment(spec: Dictionary) -> Node3D:
 		for coin: Vector3 in [Vector3(-demi_x, base, -demi_z),
 				Vector3(demi_x, base, -demi_z), Vector3(-demi_x, base, demi_z),
 				Vector3(demi_x, base, demi_z)]:
-			_module(maison, &"Corner_Exterior_Wood", coin, 0.0)
+			# 1,05 d'échelle : le poteau d'angle mesure 3,00 m pour une
+			# hauteur d'étage de 3,12 — il laissait un jour triangulaire de
+			# 12 cm au sommet de chaque angle, visible sur `vue03`.
+			_module(maison, &"Corner_Exterior_Wood", coin, 0.0, 1.05)
 
 	var faite: float = float(niveaux) * WALL_H
 	_module(maison, spec["toit"] as StringName, Vector3(0.0, faite, 0.0), 0.0)
