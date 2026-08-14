@@ -1,0 +1,21 @@
+=== INSPECTION glTF : assets/architecture/village/SM_Village_Quay.glb ===
+  format                 : GLB v2, 118728 octets
+  chunk_binaire          : 114576 octets
+  generateur             : Khronos glTF Blender I/O v4.0.44
+  version_gltf           : 2.0
+  meshes                 : 5
+  materiaux              : 3 (MAT_Quay_Deck, MAT_Quay_Frame, MAT_Quay_Bollard)
+  textures               : 0 image(s), 0 texture(s)
+  noeuds                 : 5 (SM_VillageQuay_Deck, SM_VillageQuay_Frame, SM_VillageQuay_Piles, SM_VillageQuay_Bollards, SM_VillageQuay_Ramp)
+  skins                  : 0
+  animations             : 0 (aucune)
+  triangles              : 2264
+  bbox_min               : [-3.05, 0, -2.55]
+  bbox_max               : [3.05, 1.78, 4.1]
+  dimensions_m           : [6.1, 1.78, 6.65]
+  [AVERT] mesh 'SM_VillageQuay_Deck': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_VillageQuay_Frame': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_VillageQuay_Piles': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_VillageQuay_Bollards': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_VillageQuay_Ramp': pas d'UV0 — lightmap et matériaux limités
+=== VALIDE ===
