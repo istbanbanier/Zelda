@@ -122,7 +122,10 @@ const TEINTES: Dictionary = {
 	"MI_Trim_Cloth": Color(0.56, 0.46, 0.38),
 	"MI_Trim_Metal": Color(0.40, 0.40, 0.42),
 	"MI_MetalOrnaments": Color(0.40, 0.40, 0.42),
-	"PathRocks": Color(0.62, 0.60, 0.58),
+	# Le pavage rendait BLEU-ARDOISE et froid, en contradiction avec le
+	# village : la texture `PathRocks` moyenne (0,301 ; 0,348 ; 0,228) tire
+	# déjà au vert, et une teinte neutre l'y enfonçait. Teinte chaude.
+	"PathRocks": Color(0.72, 0.60, 0.46),
 }
 const TEINTE_DEFAUT: Color = Color(0.52, 0.50, 0.47)
 ## Plafond dur : aucune surface du hameau au-dessus de cet albédo. Le
@@ -331,8 +334,8 @@ func _batiment(spec: Dictionary) -> Node3D:
 	_plinthe(maison, span_x, span_z)
 	# Sol porteur CONTINU sous le plancher : sans lui l'herbe gelée
 	# traverse les lames de 2 cm des modules `Floor_*`.
-	_sol_plein(maison, Vector3(0.0, 0.02, 0.0),
-		Vector3(span_x + 0.10, 0.20, span_z + 0.10),
+	_sol_plein(maison, Vector3(0.0, -0.20, 0.0),
+		Vector3(span_x + 0.10, 0.64, span_z + 0.10),
 		Color(0.34, 0.29, 0.24), 7100 + tx * 7 + tz)
 
 	var mur_plein: StringName = &"Wall_Plaster_Straight" if style == "plaster" \
@@ -361,12 +364,17 @@ func _batiment(spec: Dictionary) -> Node3D:
 				(mur_fenetre if niveau == 1 else mur_plein))
 			_mur(maison, Vector3(x, base, demi_z), 0.0,
 				mur_fenetre if i != tx / 2 or niveau == 1 else mur_plein)
+		# Longues faces : une baie sur DEUX, en quinconce d'une face à
+		# l'autre. Le premier jet n'en posait qu'une au milieu, et le gros
+		# plan structurel n'a montré qu'un panneau d'enduit nu de 6 m — une
+		# façade sans percement se lit comme une boîte, quelle que soit la
+		# matière.
 		for j2: int in range(tz):
 			var z: float = (float(j2) - float(tz - 1) * 0.5) * MODULE
 			_mur(maison, Vector3(-demi_x, base, z), 90.0,
-				mur_fenetre if j2 == tz / 2 else mur_plein)
+				mur_fenetre if j2 % 2 == 1 else mur_plein)
 			_mur(maison, Vector3(demi_x, base, z), 270.0,
-				mur_fenetre if j2 == tz / 2 and niveau == 0 else mur_plein)
+				mur_fenetre if j2 % 2 == 0 else mur_plein)
 		for coin: Vector3 in [Vector3(-demi_x, base, -demi_z),
 				Vector3(demi_x, base, -demi_z), Vector3(-demi_x, base, demi_z),
 				Vector3(demi_x, base, demi_z)]:
@@ -463,8 +471,10 @@ func _interieur_auberge(maison: Node3D) -> void:
 	feu.name = "LumiereAtre"
 	feu.position = Vector3(-1.85, 0.75, -2.35)
 	feu.light_color = Color(1.0, 0.72, 0.44)
-	feu.light_energy = 2.4
-	feu.omni_range = 6.5
+	# 1,2 et non 2,4 : à 2,4 la jouée de l'âtre rendait au-dessus de 0,85
+	# et se lisait comme une plaque blanche (mesuré sur `vue04`).
+	feu.light_energy = 1.2
+	feu.omni_range = 4.5
 	feu.shadow_enabled = false
 	maison.add_child(feu)
 
@@ -489,8 +499,8 @@ func _place_commune() -> void:
 	# de 1,95 — elles se RECOUVRENT, donc l'herbe ne passe pas entre elles.
 	for ix: int in range(5):
 		for iz: int in range(4):
-			var x: float = -2.9 + float(ix) * 1.95
-			var z: float = 3.3 + float(iz) * 1.95
+			var x: float = -2.9 + float(ix) * 1.75
+			var z: float = 3.3 + float(iz) * 1.75
 			_module(place, &"RockPath_Square_Wide", _au_sol(x, z),
 				float((ix * 3 + iz) % 4) * 90.0)
 	for bord: Array in [[-4.4, 4.2], [-4.2, 7.4], [5.6, 4.0], [5.4, 7.8],
@@ -653,13 +663,17 @@ func _quai() -> void:
 		for z: float in [-1.3, 1.3]:
 			_poteau(sechoir, "PoteauSechoir_%d_%d" % [int(x * 10.0),
 				int(z * 10.0)], Vector3(x, 0.0, z), 2.05, 0.09)
-	for i: int in range(2):
-		for j: int in range(2):
-			var panneau: Node3D = _module(sechoir, &"Roof_Wooden_2x1",
-				Vector3(-0.6 + float(i) * 1.2, 2.05, -0.75 + float(j) * 1.5),
-				0.0 if j == 0 else 180.0)
-			if panneau != null:
-				panneau.scale = Vector3(0.62, 0.72, 0.82)
+	# TOIT DU SÉCHOIR — panneaux plats, et surtout AUCUNE mise à l'échelle
+	# après coup. Le premier jet posait `Roof_Wooden_2x1` puis écrasait
+	# `panneau.scale` : cela annulait le facteur de `KitScale` ET déplaçait
+	# le min-Y que `seat()` venait de caler. Résultat vu sur `vue07` : deux
+	# pans de toit suspendus en l'air, détachés des poteaux — la « pièce
+	# flottante » explicitement interdite.
+	for j: int in range(2):
+		var panneau: Node3D = _module(sechoir, &"Overhang_Roof_UnevenBricks",
+			Vector3(0.0, 2.05, -0.35 + float(j) * 0.70), 0.0)
+		if panneau != null:
+			panneau.rotation.x = deg_to_rad(-7.0 + 14.0 * float(j))
 	_poutre(sechoir, "SechoirFaitiere", Vector3(0.0, 2.10, 0.0),
 		Vector3(2.4, 0.12, 0.14), Color(0.28, 0.22, 0.17), 7300)
 	_module(sechoir, &"Crate_Metal", Vector3(-0.6, 0.02, 0.9), 18.0)
@@ -893,7 +907,12 @@ func _assiette(centre: Vector2, taille: Vector2, yaw: float,
 		var sol: float = ground_local_y(p.x, p.y)
 		haut = maxf(haut, sol)
 		declare_support(Vector3(p.x, sol, p.y))
-	return haut + 0.06
+	# +0,20 et non +0,06. Mesuré sur `vue04` : des brins d'herbe GELÉE
+	# traversaient le plancher de l'auberge. La végétation V2.2 est posée
+	# sur le terrain et monte jusqu'à ~0,5 m ; un plancher à 0,16 m
+	# au-dessus du coin le plus HAUT laisse donc passer l'herbe des coins
+	# bas. La plinthe (0,45 m d'assise posée à −0,35) couvre le retrait.
+	return haut + 0.20
 
 
 func _au_sol(x: float, z: float) -> Vector3:
