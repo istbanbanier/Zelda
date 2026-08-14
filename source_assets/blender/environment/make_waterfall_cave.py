@@ -140,9 +140,17 @@ CAVITE_APEX = (3.25, 9.55, 0.70)     # pointe de la calotte du fond
 # exhaussement de 0,02 : la CUVETTE du sol (SAG) descendait alors 8 cm sous
 # le plan, donc 6 cm sous le terrain — mesuré en capture, l'herbe du
 # terrain gelé traversait le sol de la salle sur toute sa longueur. Le sol
-# construit est désormais remonté de 0,11 (place script) et la lèvre
-# creusée d'autant, pour rester enterrée sans faire de marche.
-PORCHE_DENIVELE = -0.14
+# construit est désormais remonté (place script) et la lèvre creusée
+# d'autant, pour rester enterrée.
+#
+# DEUXIÈME MESURE, deuxième correction : à +0,11 le sol passait bien
+# au-dessus du terrain, mais les TOUFFES d'herbe gelées, hautes d'environ
+# 0,30 m, le traversaient encore et poussaient dans la salle. Le sol monte
+# donc à +0,50 et la lèvre du porche descend à -0,58 : elle reste enterrée,
+# et le mètre de porche devient un vrai SEUIL DE ROCHE que l'on monte.
+# La pente y est de 0,50 m sur 1,15 m, soit 0,20 m par échantillon de
+# 0,40 m — sous la marche maximale de 0,55 m du filet de comportement.
+PORCHE_DENIVELE = -0.58
 
 # Stations du MASSIF : mêmes axes, prolongés au-delà de la cavité, plus le
 # jeu latéral et le jeu de clé. Au-delà de la cavité les demi-largeurs de

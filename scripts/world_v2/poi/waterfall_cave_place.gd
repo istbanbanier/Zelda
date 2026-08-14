@@ -81,10 +81,11 @@ const LACET_DEG: float = 45.0
 ## premier jet : la CUVETTE du profil (0,08 m) passait alors 6 cm SOUS le
 ## terrain et, mesuré en capture, l'herbe gelée traversait le sol de la
 ## salle sur toute sa longueur. 0,11 met le point le plus bas du sol à
-## 3,03 pour un terrain à 3,00 ; la lèvre du porche, creusée de 0,14 dans
-## le modèle, reste à 2,97 donc enterrée. Aucune marche, aucun
-## z-fighting.
-const EXHAUSSEMENT: float = 0.11
+## 3,50 pour un terrain à 3,00 — les touffes d’herbe gelées (0,30 m) ne le
+## traversent plus. La lèvre du porche, creusée de 0,58 dans le modèle,
+## reste enterrée : le mètre de porche devient un seuil de roche que l’on
+## monte, à 0,20 m par échantillon — sous la marche maximale du filet.
+const EXHAUSSEMENT: float = 0.50
 
 ## Points du contour extérieur au niveau du sol, en repère MODÈLE (le
 ## modèle a son plan de sol à y = 0 et sa galerie vers -Z). Ils servent
