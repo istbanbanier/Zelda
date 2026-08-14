@@ -184,15 +184,77 @@ azimut modèle θ → direction monde `(cos θ ; −sin θ)`, soleil à 199,5°,
 hauteur de joueur = sol sondé + 1,7 m, et l'assise `seat()` qui plaque les
 fenêtres par terre.
 
+### Les trois candidats sont INTÉGRÉS
+
+Ordre imposé par le lead, tenu : pont → grotte → hameau. Après chaque
+fusion : import propre, filets, capture ciblée depuis MON arbre, inspection
+à taille réelle. Les trois agents ont respecté la propriété exclusive des
+fichiers ; aucun fichier réservé n'a été touché.
+
+| sujet | branche | tris | filets après fusion |
+|---|---|---:|---|
+| pont | `claude/r2a-pont` | 15 784 | places 8/8 · hydro 4/4 · ancres 2/2 |
+| grotte | `claude/r2a-grotte` | 3 192 | places 8/8 |
+| hameau | `claude/r2a-hameau` | 2 264 + 488 | places 8/8 · hydro 4/4 |
+
+### Deux outils à moi étaient cassés, et ce sont les agents qui l'ont vu
+
+**`capture_silhouette.gd` aurait menti sur le hameau.** Il instanciait la
+scène hors du monde, où `ground_local_y()` rend 0 : quatre bâtiments posés
+sur trois niveaux de terrain s'y seraient aplatis, et la silhouette en
+gradins — le cœur du sujet — aurait montré une composition inexistante.
+Mode `--place=` ajouté, vérifié par contrôle : le pylône y rend la même
+silhouette qu'en mode asset.
+
+**`probe_vegetation_near.gd` rendait des comptes faux avec aplomb**, et
+trois passes s'en étaient servies pour décider d'implantations. Le test qui
+tranche est un balayage de rayon sur un même point : avant, 0 · 0 · **180**
+à 3, 6 et 12 m — une marche d'escalier, la cellule entière basculant quand
+l'origine de son nœud passe sous le rayon. Après correction : 0 · 0 · **2**.
+Facteur d'erreur 90.
+
+La cause était **déjà écrite dans le dépôt** : `world_v2_vegetation_builder.gd`
+documente que le renderer DUMMY du mode headless jette les données
+d'instance de MultiMesh et rend l'identité, et que le bâtisseur écrit pour
+cette raison son plan de plantation en méta `instance_origins`. La sonde
+interrogeait le renderer factice.
+
+Ma première tentative de correctif était elle-même fausse — une attente de
+stabilisation qui comptait 166 « positions distinctes », c'est-à-dire les
+166 cellules. Un détecteur qui se stabilise n'est pas un détecteur qui
+mesure.
+
+### Deux points d'arbitrage remontés au lead, non tranchés ici
+
+1. **Le pont est à 28,8 m de son `v2_site`**, contre 19,4 m avant. Mesuré
+   et vérifié par moi : à `x = −22`, le sol est en eau de `z = −12` à
+   `z = +12` — l'ouvrage précédent était parallèle au chenal et posé dans
+   l'eau sur toute sa longueur, ce qui explique rétrospectivement le défaut
+   « géométrie qui déborde des culées ». Il n'y avait pas de berge où
+   ancrer. La note du layout dit toujours « berge sud du gué central » ;
+   personne n'y a touché.
+2. **Il n'y a aucune chute d'eau à la « Grotte de la cascade ».** L'affluent
+   gelé descend de 3,0 à 0,5 sur ~14 m, pente maximale 0,25 m/m. L'agent
+   n'a pas inventé d'eau — l'hydrologie est gelée. C'est une question de
+   nommage.
+
+### La faiblesse principale, dite sans l'adoucir
+
+La **richesse de surface de la grotte est en deçà du pylône** : parois
+intérieures lisses (amplitude 0,085), masse extérieure en miche. Le lead
+avait écrit que le pylône « ne constitue pas un plafond » ; sur ce sujet on
+est sous le plancher. Le pont et le hameau, eux, le dépassent.
+
 ### Prochaine action exacte
 
-Les trois agents rendent d'abord un **plan court** — exigence du lead. Le
-lead les relit, corrige, puis donne le feu vert. Ensuite intégration **un
-par un**, dans l'ordre pont → grotte → hameau, et après chacune : import
-propre, filets places 8/8, capture ciblée, inspection à taille réelle.
+**Attendre le verdict du lead sur les trois candidats.** Aucun verdict
+artistique n'est auto-déclaré.
 
-Ne PAS relancer les 38 preuves ni `validate_fast` avant que les trois
-sujets soient visuellement stables — consigne explicite du lead.
+Si les trois passent : R2a-5, la passe silhouette complète sur les quatre
+sujets — l'outil existe et a servi ici, il reste à l'étendre aux angles
+rasants et à lui écrire son contrôle négatif contre l'ancienne planche —
+puis R2a-6, les preuves finales, puis `validate_fast` et les 38 plans, que
+le lead a interdit de relancer avant stabilité visuelle.
 
 
 ## 2026-08-12 — Finition visuelle monde entier (branche `claude/full-world-visual-finish`)

@@ -15,7 +15,9 @@
 | R2a-0 — enquête pipeline (Blender, pivots CC0, `gltf_inspect`) | **PASS prononcé par le lead** | `evidence/world_v2/v2_3_r2a/README.md` |
 | R2a-4 — pylône, 1er golden master | « progrès majeur, pas encore golden master » (lead) | trois faiblesses nommées + preuve invalide (`repo_dirty: true`) |
 | R2a-4.1 — pylône, golden master 1/4 | **PASS artistique ET technique prononcé par le lead — GELÉ au code `4165801`** | `evidence/world_v2/v2_3_r2a/README.md` §R2a-4.1 ; 7 vues + 2 manifestes `commit 4165801` / `repo_dirty: false` ; `world_v2_places` 8/8 ; `gltf_inspect` VALIDE |
-| R2a-2 pont · R2a-3 grotte · R2a-1 hameau | **En cours — production parallèle contrôlée** | trois worktrees et trois branches depuis `d327e5e` : `claude/r2a-pont`, `claude/r2a-grotte`, `claude/r2a-hameau` ; un agent par sujet, propriété exclusive des fichiers, intégration par le lead seul |
+| R2a-2 pont — golden master 2/4 | **NON VÉRIFIÉ — intégré, en attente du lead** | `evidence/.../pont/INTEGRATION_LEAD.md` ; 34 pièces loftées, 15 784 tris ; places 8/8, hydro 4/4, ancres 2/2 ; chaîne rejouable prouvée |
+| R2a-3 grotte — golden master 3/4 | **NON VÉRIFIÉ — intégré, en attente du lead** | `evidence/.../grotte/INTEGRATION_LEAD.md` ; loft fermé de genre 0, 3 192 tris, collision du même loft ; places 8/8 |
+| R2a-1 hameau — golden master 4/4 | **NON VÉRIFIÉ — intégré, en attente du lead** | `evidence/.../hameau/INTEGRATION_LEAD.md` ; 4 volumes, 4 orientations, 4 hauteurs ; quai sur pilotis ; places 8/8, hydro 4/4 |
 
 `GO_V2_3_B=FALSE` **et** `GO_V2_3_R2B=FALSE` : aucune propagation, ni aux cinq
 lieux restants, ni aux 31 POI, avant validation des quatre références.
