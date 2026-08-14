@@ -123,7 +123,12 @@ func _terrasse() -> void:
 		K.module(self, &"RockPath_Square_Wide",
 			_seated(float(dalle[0]), float(dalle[1])),
 			float(dalle[0]) * 31.0, 1.1, K.TONE_STONE)
-	K.module(self, &"Pot_1", _seated(3.0, 6.8), 0.0, 1.0, K.TONE_STONE)
+	# Le pot était en (3,0 ; 6,8), c'est-à-dire seul au pied de la plinthe
+	# dans l'axe de la vue de base : un petit objet clair isolé au centre du
+	# cadre tire l'œil autant que le sujet. Il rejoint la corde — deux
+	# objets groupés se lisent comme une halte, un objet seul comme une
+	# erreur de placement.
+	K.module(self, &"Pot_1", _seated(5.4, 6.2), 0.0, 1.0, K.TONE_STONE)
 	K.module(self, &"Rope_1", _seated(4.2, 6.2), 70.0, 1.0, K.TONE_WOOD)
 
 
