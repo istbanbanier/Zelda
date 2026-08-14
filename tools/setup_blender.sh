@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# `command -v blender` NE SUFFIT PAS, et ça a coûté une passe entière.
+# Mesuré le 2026-08-14 : Blender 4.0.2 était installé et ce script sortait
+# « déjà présent » en code 0, alors que l'exporteur glTF ne pouvait PAS
+# fonctionner — `io_scene_gltf2` importe numpy, absent du conteneur. Un
+# outil présent n'est pas un outil capable : on vérifie la CAPACITÉ.
 # Fournit Blender à une session neuve.
 #
 # POURQUOI CE SCRIPT EXISTE : le niveau 3b de `validate_fast.sh` (continuité des
