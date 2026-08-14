@@ -56,7 +56,58 @@ distance, mais base en amas de blocs · **Planche de silhouettes : non
 vide, mais c'est une mosaïque couleur — ce n'est pas un test de
 silhouette.**
 
+### R2a-0 — FAIT : l'enquête, et ses trois trouvailles
+
+**Blender était présent et INCAPABLE d'exporter, en silence.** numpy
+manquait ; l'exporteur glTF en dépend ; l'échec rendait **code 0** et
+`run_export.sh` revalidait alors les `.glb` déjà versionnés en annonçant
+« VERT ». Corrigé (numpy, `--python-exit-code 1`, jeton de fraîcheur) et
+**prouvé en le faisant rougir** : numpy masqué → RC 1, ROUGE.
+
+**Les pivots des modules CC0 sont enfin mesurés**
+(`tools/godot/probe_kit_seating.gd`, 48 modules). `KitScale.factor()` rend
+1,000 partout où l'on comptait bâtir : aucun redimensionnement silencieux.
+Tous les murs font 2,00 × 3,12 × 0,41 m, pivot centre/min/**0,77**. Et
+`seat()` plaque au sol tout module dont l'origine n'est pas à sa base —
+une fenêtre passée par `K.module()` finit **par terre** (1,016 m mesurés).
+
+**Aucun module CC0 ne peut couvrir le pylône** : ni fût à dosserets, ni
+anneau incomplet, ni couronne bifide, ni canal creux. Blender était la
+seule voie honnête — d'où l'ordre des travaux.
+
+### R2a-4 — FAIT : pylône, premier golden master
+
+Script de scène : **238 maillages GDScript → zéro**. Il instancie un GLB
+produit par `source_assets/blender/architecture/make_pylon_resonance.py`
+(source reproductible versionnée). Aucun booléen — que des volumes
+**loftés**. Les trois canaux sont dans le **profil** du fût. 17 objets,
+34,56 m, base à z = 0. Filets `world_v2_places` 8/8 verts.
+
+Deux défauts d'outillage trouvés en chemin, tous deux silencieux :
+`gltf_inspect.py` ne mesurait **qu'un maillage** (1,7 m annoncés pour
+34,56) ; et le pylône rendait **blanc** à cause de la conversion
+sRGB/linéaire de `baseColorFactor` (0,40 écrit → 0,67 reçu, 0,14 → 0,41 :
+contraste écrasé). Les deux corrigés et mesurés.
+
 ### Prochaine action exacte
+
+**R2a-2, le pont de pierre, par la même voie que le pylône** — c'est le
+sujet où Blender apporte le plus (courbe + array : une arche continue à
+voussoirs réguliers est exactement ce qu'un loft sait faire et qu'un
+empilement de blocs ne saura jamais). Puis R2a-3 la grotte (coque
+`solidify`), puis R2a-1 le hameau — le seul des quatre où les modules CC0
+suffisent réellement, maintenant que leurs pivots sont mesurés.
+
+Restent aussi : **R2a-5, la vraie passe silhouette** (sujet masqué, forme
+sombre unie sur fond clair, quatre angles dont la rasante, verdict
+automatique de bimodalité et de taux d'encre, écrit ROUGE d'abord contre
+la planche actuelle), et R2a-6, les preuves finales des quatre sujets.
+
+Ne PAS relancer les 38 preuves ni `validate_fast` pendant les
+itérations — consigne explicite du lead. Captures ciblées jusqu'à
+stabilisation.
+
+### Ancienne prochaine action (R2a-0), tenue
 
 Enquête R2a-0 avant toute construction : inventaire réel des modules CC0
 utilisables, état de la chaîne Blender **dans ce conteneur**, audit de ce
