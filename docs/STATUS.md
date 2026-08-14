@@ -10,11 +10,18 @@
 | V2.2 — enveloppe du donjon | Différée par directive du lead | fil de détente `tests/world_v2/test_world_v2_dungeon_pins.gd` en place |
 | V2.3-0 — socle technique des lieux (registre, placement par layout, filets, contrôles négatifs) | **PASS prononcé par le lead** | `evidence/world_v2/v2_3/`, suites `test_world_v2_places_contract.gd`, `test_world_v2_places_behavior.gd` |
 | V2.3-A — lot pilote, 9 sujets : gate ARTISTIQUE | **REJETÉE par le lead** | verdict du lead ; planches de preuve vides et ligne de base mal étiquetée |
-| V2.3-A.R — passe corrective : preuves réparées, 9 sujets repris | **Fonctionnel — EN ATTENTE de revue visuelle** | `evidence/world_v2/v2_3/MANIFESTE_V23AR.md` ; filet `test_world_v2_proof_boards.gd` ROUGE archivé puis VERT ; ligne de base depuis `775aa32` exactement |
+| V2.3-A.R — passe corrective : preuves réparées, 9 sujets repris | chaîne technique et preuves SHA **PASS** ; gate artistique **ÉCHEC** | verdict du lead ; `evidence/world_v2/v2_3/MANIFESTE_V23AR.md` ; `validate_fast` 899/0 |
+| V2.3-A.R2a — changement de pipeline, 4 golden masters | **En cours** | base `c946b0e` ; hameau · pont · grotte · pylône seulement |
 
-`GO_V2_3_B=FALSE` : l'extension aux 31 POI reste interdite tant que le lead
-n'a pas statué sur V2.3-A.R. Les cinq faiblesses non corrigées sont nommées au
-§6 du manifeste et restent `NON VÉRIFIÉ` — aucune n'est déclarée acceptable.
+`GO_V2_3_B=FALSE` **et** `GO_V2_3_R2B=FALSE` : aucune propagation, ni aux cinq
+lieux restants, ni aux 31 POI, avant validation des quatre références.
+
+**Règle de production changée (verdict R2a)** : un script de scène ne fabrique
+plus la surface artistique finale sous forme d'assemblages de `BoxMesh`, de
+plaques ou de fragments visibles. Il garde l'instanciation, l'implantation, les
+interfaces fonctionnelles, les collisions simples et les variations contrôlées.
+La peau vient de modules CC0 assemblés ou de meshes Blender à source conservée ;
+les primitives sont réservées aux collisions, sondes et supports **invisibles**.
 
 Le verdict ARTISTIQUE de V2.2 appartient à Codex, Istvan et son frère
 (directive §17) — seuls les défauts techniques mesurables sont jugés ici ;

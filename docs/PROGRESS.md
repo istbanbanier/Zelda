@@ -5,6 +5,69 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-14 (suite 15) — V2.3-A.R2a OUVERTE : changement de PIPELINE artistique
+
+**Verdict du lead sur V2.3-A.R** : chaîne technique et preuves SHA `PASS` ;
+**gate artistique ÉCHEC** ; `GO_V2_3_B=FALSE` ; aucune propagation aux cinq
+lieux restants ni aux 31 POI. Base de la passe : `c946b0e`, additif strict.
+
+### Ce que le lead accepte
+
+La correction de la chaîne de capture : vraie ligne de base `775aa32`,
+`--scene` obligatoire, planches non vides, manifestes propres,
+`validate_fast` 899/0.
+
+### Ce qu'il refuse, et c'est une décision de MÉTHODE
+
+> « Les lieux sont encore principalement construits comme des assemblages
+> procéduraux visibles, puis corrigés localement. Cela produit des
+> intersections, des blocs disjoints et des silhouettes de prototype. »
+
+Corriger localement un assemblage de `BoxMesh` ne le sauvera pas. La règle
+change : **les scripts de scène cessent de fabriquer seuls la surface
+artistique finale**. Ils gardent l'instanciation, l'implantation, les
+interfaces fonctionnelles, les collisions simples et les variations
+contrôlées. La peau vient de modules CC0 correctement assemblés ou de
+vrais meshes Blender à source conservée. Les primitives ne servent plus
+qu'aux collisions, sondes et supports **invisibles**.
+
+### Périmètre de R2a — QUATRE golden masters, pas neuf lieux
+
+1. hameau de la rivière · 2. pont de pierre · 3. grotte de la cascade ·
+4. pylône de Résonance.
+
+Ferme, arbre foudroyé, camp braise et bassin **restent en attente** : ils
+ne seront repris qu'après validation des quatre références. Le camp /
+checkpoint est le seul sujet jugé en progrès ; il reste **gelé** pendant
+ce sous-gate.
+
+### Défauts bloquants relevés, sujet par sujet
+
+Village : une maison domine seule, éléments blancs non finis, silhouette
+collective absente · Ferme : charpente en dents verticales, mur
+rectangulaire intact, et la capture `structure_ferme_charpente` **manque le
+sujet** · Pont : blocs désolidarisés, grandes faces blanches, géométrie
+qui dépasse des culées, la vue sous arche **entre dans le maillage** ·
+Grotte : enveloppe ouverte, plaques fines, la caméra intérieure est
+**dans les polygones** · Arbre : blocs bruns, noirs et blancs disjoints ·
+Camp braise : accumulation sans hiérarchie, illisible à 94 m · Bassin :
+fragments blancs anguleux, arbre masquant le centre · Pylône : progrès à
+distance, mais base en amas de blocs · **Planche de silhouettes : non
+vide, mais c'est une mosaïque couleur — ce n'est pas un test de
+silhouette.**
+
+### Prochaine action exacte
+
+Enquête R2a-0 avant toute construction : inventaire réel des modules CC0
+utilisables, état de la chaîne Blender **dans ce conteneur**, audit de ce
+qui doit survivre dans les quatre scripts, voie technique pour une vraie
+passe silhouette, et relevé des contraintes gelées avec leurs nombres.
+Ensuite seulement, construire — un sujet à la fois, captures ciblées,
+inspection à taille réelle. **Ne pas relancer les 38 preuves ni
+`validate_fast` pendant les itérations** (consigne explicite du lead).
+
+---
+
 ## 2026-08-14 (suite 14) — V2.3-A.R : passe corrective sur rejet du lead — GO_V2_3_B=FALSE
 
 **Aucun verdict artistique auto-déclaré.** Passe additive ouverte depuis
