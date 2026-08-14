@@ -5,6 +5,27 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-14 (suite 12) — V2.3 EN COURS — LIEUX MODULAIRES (V2.3-0 puis V2.3-A seulement)
+
+**Verdict du lead sur 775aa32** : V2.2 GATE PASS —
+`V2_2_FINAL_SHA=775aa323c1fe80401d4cd146e326297f4fc6c268`, V2.2
+entièrement GELÉE (terrain, eau, frontières, orage, lumière, végétation,
+routes, navmesh, caméras). `GO_V2_3=TRUE`.
+
+**Périmètre autorisé** : V2.3-0 (inventaire des 31 POI + 3 sites,
+contrats, kits, budgets, filets rouges d'abord) puis V2.3-A (lot pilote :
+camp/checkpoint, riverside_village.01, abandoned_farm.01,
+stone_bridge.01, waterfall_cave.01 avec poche intérieure,
+thunderstruck_tree.01, ember_raider_camps.01 sans acteurs,
+conductive_basin.01 comportement intact, pylône hero asset).
+**PAS** de V2.3-B, pas de citadelle, pas de propagation aux 31 lieux.
+Aucun ennemi/PNJ/IA. Les lieux s'adaptent au terrain gelé par leurs
+fondations — jamais l'inverse. Scènes autonomes placées par le layout.
+
+**Prochaine action exacte.** V2.3-0 : inventaire + contrats + filets.
+
+---
+
 ## 2026-08-14 (suite 11) — V2.2R.2 : confluence soudée, prête pour revue — GO_V2_3=FALSE
 
 **Aucun verdict artistique auto-déclaré.** Périmètre tenu : SEULE la
