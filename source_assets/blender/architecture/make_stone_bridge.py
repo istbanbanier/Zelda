@@ -189,11 +189,45 @@ DECAISSEMENT = 0.25          # la rampe s'enfonce de 25 cm dans le sol : elle
 # 0,95 sauf le ciel. VALEURS À RE-MESURER AU PIXEL sur la capture finale ;
 # celles-ci sont un point de départ calibré, pas une prédiction.
 # ---------------------------------------------------------------------------
+#
+# RECALIBRÉ SUR LA CAPTURE, PAS SUR L'INTENTION — et c'est la deuxième fois
+# que ce projet paie la même leçon. Le premier jet posait 0,145 / 0,300 /
+# 0,375 en pensant tenir 0,15 de séparation. Mesuré au pixel sur
+# `pont_1_composition.png` (décodeur PNG maison, luminance Rec.709) :
+#
+#   tympan (appareil 0,300) éclairé     0,545      culée 0,566
+#   archivolte (taille 0,375) éclairée  0,564      intrados 0,619
+#   herbe éclairée 0,523 · herbe à l'ombre 0,381 · ciel 0,830
+#
+# Trois matières, une seule valeur : tout l'ouvrage tenait dans 0,545–0,62.
+# +25 % d'albédo ne rendait que +0,03 de valeur. La réponse du moteur est
+# très compressée dans cette bande, donc pour obtenir 0,15 il faut des
+# RAPPORTS D'ALBÉDO bien plus grands que l'intuition ne le suggère : depuis
+# sRGB 0,55 (linéaire 0,26), viser 0,34 demande ×0,45 et viser 0,66
+# demande ×1,9.
+#
+# DEUXIÈME MESURE, ET ELLE CORRIGE LA PREMIÈRE. Balayage vertical d'une
+# colonne de 17 points sur la façade éclairée de
+# `pont_3_approche_eclairee_joueur.png`, hors ombre portée :
+#
+#   appareil (albédo 0,225)      -> 0,451–0,454 sur 9 points consécutifs
+#   pierre de taille (0,460)     -> 0,850 à l'assise, 0,805–0,849 à l'archivolte
+#   assise mouillée (0,115)      -> 0,212–0,301
+#
+# La pierre de taille rendait donc PLUS CLAIR QUE LE CIEL (0,714) : hors
+# de la bande d'accent 55–75 % de §1.5, et exactement le défaut « grande
+# face blanche » réintroduit par excès de correction.
+#
+# Deux points mesurés dans la MÊME image donnent la pente réelle :
+# (0,850 − 0,452)/(0,460 − 0,225) = 1,694 de valeur rendue par unité
+# d'albédo — bien plus raide que ne le laissait croire une conversion sRGB
+# théorique. Les albédos ci-dessous visent par cette pente les trois
+# valeurs du briefing : sombre 0,33 · moyen 0,52 · clair 0,68.
 MATERIAUX = {
     # nom                        r      v      b     rugosité
-    "MAT_Bridge_Wet":         (0.145, 0.150, 0.135, 0.55),  # assise mouillée,
-    "MAT_Bridge_Ashlar":      (0.300, 0.272, 0.216, 0.90),  # appareil courant
-    "MAT_Bridge_Dressed":     (0.375, 0.352, 0.298, 0.82),  # pierre de taille
+    "MAT_Bridge_Wet":         (0.155, 0.163, 0.145, 0.55),  # assise mouillée
+    "MAT_Bridge_Ashlar":      (0.265, 0.240, 0.191, 0.90),  # appareil courant
+    "MAT_Bridge_Dressed":     (0.360, 0.338, 0.286, 0.82),  # pierre de taille
 }
 
 
@@ -471,8 +505,14 @@ def culee_haute(cote):
         if a <= X_SKEWBACK:
             z_haut = Z_NAISSANCE + (Z_SKEWBACK - Z_NAISSANCE) * \
                 (a - DEMI_PORTEE) / max(X_SKEWBACK - DEMI_PORTEE, 1e-6)
+        # 0,04 DE RETRAIT SUR L'ASSISE MOUILLÉE, et ce n'est pas du style :
+        # posées au même nu (2,16), les deux faces latérales étaient
+        # COPLANAIRES sur les 30 cm de recouvrement, et la capture de gros
+        # plan montrait une zone tramée de z-fighting à la ligne d'eau. Le
+        # ressaut supprime le conflit ET donne la ligne d'ombre du niveau
+        # d'eau, qui est exactement ce qu'on veut voir là.
         anneaux.append(section_trapeze(
-            x, DEMI_L_MUR - r, DEMI_L_MUR - 0.18 - r,
+            x, DEMI_L_MUR - 0.04 - r, DEMI_L_MUR - 0.18 - r,
             Z_LIGNE_MOUILLEE - 0.30, max(z_haut, Z_LIGNE_MOUILLEE + 0.10)))
     if cote < 0:
         anneaux.reverse()
@@ -518,17 +558,67 @@ def tympan(face):
     # Le mur de front NE S'ARRÊTE PAS au sommier : il continue au-dessus de
     # la culée et meurt sur le bandeau d'imposte. C'est à ça que sert une
     # imposte, et c'est ce qui ferme les deux triangles vus en silhouette.
-    abscisses = sorted({-X_SKEWBACK, X_SKEWBACK} | {
-        -X_CULEE + (2.0 * X_CULEE) * (i / 72.0) for i in range(73)})
+    #
+    # JOINTS VERTICAUX tous les 0,90 m. Le premier jet laissait ce mur nu,
+    # au motif qu'il est petit et triangulaire ; la capture a tranché le
+    # contraire — près du sommier il fait 3,3 m de haut et il occupait 60 %
+    # de la maçonnerie visible en un seul aplat beige. C'était ça, la
+    # « grande face blanche », et aucune couleur ne l'aurait sauvée.
+    plan: list = []
+    x = -X_CULEE
+    while x <= X_CULEE + 1e-6:
+        plan.append((x, 0.0))
+        x += (2.0 * X_CULEE) / 72.0
+    plan += [(-X_SKEWBACK, 0.0), (X_SKEWBACK, 0.0)]
+    nb_joints = int((2.0 * X_CULEE) / 0.90)
+    for j in range(1, nb_joints):
+        xj = -X_CULEE + (2.0 * X_CULEE) * (j / float(nb_joints))
+        plan += [(xj - 0.030, 0.0), (xj - 0.012, 0.045),
+                 (xj + 0.012, 0.045), (xj + 0.030, 0.0)]
+    plan.sort(key=lambda p: p[0])
+
     anneaux = []
-    for x in abscisses:
+    for x, retrait in plan:
         z_bas = extrados_z(x) if abs(x) <= X_SKEWBACK else Z_SKEWBACK
         z_haut = tablier_dessous(x)
-        anneaux.append(section_bande(x, y0, y1, z_bas, max(z_haut, z_bas + 0.12)))
+        anneaux.append(section_bande(x, y0, y1 - face * retrait, z_bas,
+                                     max(z_haut, z_bas + 0.12)))
     if face < 0:
         anneaux.reverse()
     return objet("SM_Bridge_Spandrel_%s" % ("N" if face > 0 else "S"),
                  anneaux, "MAT_Bridge_Ashlar")
+
+
+def assise_tympan(face, cote, z_centre):
+    """ASSISE HORIZONTALE du tympan — une pierre de taille en saillie.
+
+    Elle n'existe que là où le mur est descendu sous elle : elle MEURT
+    contre l'archivolte, comme une assise réelle qui bute sur l'arc. Ses
+    bornes sont donc calculées, pas dessinées à la main.
+    """
+    demi_h = 0.08
+    seuil = z_centre - demi_h
+    if RAYON_EXT ** 2 - (seuil - Z_CENTRE_ARC) ** 2 <= 0.0:
+        x_debut = 0.0
+    else:
+        x_debut = math.sqrt(RAYON_EXT ** 2 - (seuil - Z_CENTRE_ARC) ** 2)
+    x_debut = max(x_debut, 0.25)
+    if x_debut >= X_CULEE - 0.60:
+        return None
+    x0, x1 = cote * x_debut, cote * (X_CULEE - 0.05)
+    y0 = face * (DEMI_L_MUR - 0.14)
+    y1 = face * (DEMI_L_MUR + 0.06)
+    anneaux = []
+    pas = 5
+    for i in range(pas + 1):
+        x = x0 + (x1 - x0) * (i / pas)
+        anneaux.append(section_bande(x, y0, y1, z_centre - demi_h,
+                                     z_centre + demi_h, 0.03))
+    if cote * face < 0:
+        anneaux.reverse()
+    return objet("SM_Bridge_Course_%s%s_%d"
+                 % ("W" if cote < 0 else "E", "N" if face > 0 else "S",
+                    int(z_centre * 10)), anneaux, "MAT_Bridge_Dressed")
 
 
 def imposte(cote, face):
@@ -937,6 +1027,12 @@ def main():
     pieces += [chaperon(f) for f in (1, -1)]
     pieces += [imposte(c, f) for c in (-1, 1) for f in (1, -1)]
     pieces += [mur_aile(c, f) for c in (-1, 1) for f in (1, -1)]
+    for z_assise in (3.35, 4.40):
+        for cote in (-1, 1):
+            for f in (1, -1):
+                piece = assise_tympan(f, cote, z_assise)
+                if piece is not None:
+                    pieces.append(piece)
 
     for obj in pieces:
         obj.location = (0.0, 0.0, 0.0)
