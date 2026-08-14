@@ -49,6 +49,8 @@ script = ExtResource("1_root")
 
 [node name="POIs" type="Node3D" parent="."]
 
+[node name="Places" type="Node3D" parent="."]
+
 [node name="Encounters" type="Node3D" parent="."]
 
 [node name="Navigation" type="Node3D" parent="."]

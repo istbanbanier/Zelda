@@ -20,8 +20,8 @@ const WORLD_ID: StringName = WorldIds.V2_WORLD_ID
 
 const REQUIRED_CONTAINERS: Array[String] = [
 	"TerrainChunks", "Water", "Biomes", "Routes", "Landmarks", "POIs",
-	"Encounters", "Navigation", "Vegetation", "Lighting", "CaptureCameras",
-	"WorldBindings",
+	"Places", "Encounters", "Navigation", "Vegetation", "Lighting",
+	"CaptureCameras", "WorldBindings",
 ]
 
 const GROUND_PROBE_UP_M: float = 2.0
@@ -63,6 +63,8 @@ func _ready() -> void:
 	var markers: WorldV2MarkersBuilder = WorldV2MarkersBuilder.new(_heightmap, _layout)
 	markers.build($POIs as Node3D, $Landmarks as Node3D, $Biomes as Node3D,
 		$Routes as Node3D)
+	var places: WorldV2PlacesBuilder = WorldV2PlacesBuilder.new(_heightmap, _layout)
+	var places_count: int = places.build($Places as Node3D)
 	var borders: WorldV2BordersBuilder = WorldV2BordersBuilder.new(_heightmap)
 	borders.build($TerrainChunks as Node3D)
 	var vegetation: WorldV2VegetationBuilder = WorldV2VegetationBuilder.new(
@@ -90,6 +92,7 @@ func _ready() -> void:
 		% [get_tree().get_nodes_in_group(&"world_v2_terrain").size(),
 			Time.get_ticks_msec() - build_start])
 	print("[world_v2] navigation   : %d région(s) chargée(s)" % nav_regions)
+	print("[world_v2] lieux        : %d scène(s) posée(s) par le layout" % places_count)
 	print("[world_v2] spawn        : %s" % _spawn.global_position)
 
 	await get_tree().physics_frame
