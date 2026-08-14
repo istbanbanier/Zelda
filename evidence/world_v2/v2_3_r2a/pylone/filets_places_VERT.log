@@ -4,7 +4,7 @@ Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - ht
 filtre: world_v2_places
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 15974 ms
+[world_v2] terrain      : 64 chunks, montage 14068 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -27,7 +27,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
   ok   test_world_v2_places_behavior.gd::test_la_grotte_a_un_seuil_et_un_interieur_praticables (2 assertions)
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 8541 ms
+[world_v2] terrain      : 64 chunks, montage 8579 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -50,7 +50,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
   ok   test_world_v2_places_behavior.gd::test_le_bassin_conducteur_garde_son_comportement (2 assertions)
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 8685 ms
+[world_v2] terrain      : 64 chunks, montage 8624 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -73,7 +73,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
   ok   test_world_v2_places_behavior.gd::test_les_recompenses_canoniques_sont_raccordees (2 assertions)
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 8419 ms
+[world_v2] terrain      : 64 chunks, montage 8525 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -96,7 +96,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
   ok   test_world_v2_places_behavior.gd::test_le_pylone_est_un_repere_majeur (2 assertions)
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 8690 ms
+[world_v2] terrain      : 64 chunks, montage 8641 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -120,7 +120,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
   ok   test_world_v2_places_contract.gd::test_chaque_scene_du_registre_est_autonome (3 assertions)
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 8660 ms
+[world_v2] terrain      : 64 chunks, montage 8561 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -143,7 +143,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
   ok   test_world_v2_places_contract.gd::test_les_fondations_epousent_le_terrain_gele (2 assertions)
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 8776 ms
+[world_v2] terrain      : 64 chunks, montage 8551 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)

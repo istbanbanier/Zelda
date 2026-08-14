@@ -160,3 +160,168 @@ les filets `world_v2_places` **8/8 verts**.
 
 Aucun de ces trois points n'est déclaré acceptable : ils sont `NON VÉRIFIÉ`
 et soumis au jugement du lead.
+
+---
+
+## R2a-4.1 — recalibrage du pylône sur verdict du lead
+
+Le lead a jugé R2a-4 « progrès majeur, mais pas encore golden master » : le
+pylône est bien une structure cohérente et non un amas de primitives, mais
+les trois faiblesses ci-dessus restent bloquantes, et **un défaut de preuve
+s'y ajoutait** — `manifest_composition.json` portait `commit: 6ddac267` et
+`repo_dirty: true`. Les images avaient donc été produites avant le commit
+du code final, depuis un arbre modifié : elles ne prouvaient rien.
+
+Cette passe traite les quatre points demandés, plus deux défauts trouvés en
+les traitant. **Toutes les images ci-dessous viennent d'un arbre committé
+propre** : `commit 4165801`, `repo_dirty: false`, portés par
+`manifest_r2a41_vues.json` et `manifest_silhouettes_pylone.json`.
+
+### 1. Pieds et ancrage
+
+Section passée de quatre coins à un **octogone chanfreiné** ; sabot noyé
+dans la plinthe à z = 0,85, sous son dessus à 1,70 ; chapiteau évasé sous
+le collier. Le montant se raccorde à ses deux bouts au lieu de s'y arrêter.
+
+Demi-largeur ramenée de 1,80 à **1,32 m après mesure sur silhouette
+isolée** : à 1,80 les trois pieds se rejoignaient en une jupe trapézoïdale
+percée de deux fentes. Trois volumes séparés dans le maillage ne font pas
+trois pieds séparés à l'œil — c'est la projection qui décide, et seule une
+silhouette le montre.
+
+### 2. Canaux — et le fond qui n'était pas là
+
+Deux **nervures** encadrent chaque canal. Le tube lumineux continu est
+supprimé : neuf inserts séparés par canal, coupures calées sur les deux
+bandeaux qui traversent le canal, longueurs décroissantes vers le haut.
+Émission ramenée de 1,4 à 0,85.
+
+Puis le balayage horizontal a montré que ça ne suffisait pas. Le noyau
+sombre était posé **6 cm derrière** le fond du canal ; or le profil du fût
+porte son propre fond, donc c'était lui qu'on voyait, dans le même bronze
+que les joues. Le noyau ne rendait **nulle part**.
+
+| position (bande sans insert cyan) | avant | après |
+|---|---:|---:|
+| flanc du fût | 0,203 | 0,203 |
+| nervure gauche | 0,262 | 0,260 |
+| **fond du canal** | **0,203** | **0,133** |
+| nervure droite | 0,254 | 0,258 |
+| flanc du fût | 0,203 | 0,208 |
+
+Le creux avait exactement la valeur de la surface qui l'entoure : seule la
+veine cyan le signalait. Il a maintenant, **cyan coupé**, un rapport de 1 à
+2 avec ses joues. La géométrie porte le canal ; la lumière ne fait que
+l'habiter.
+
+### 3. Anneau — le défaut était un pivot, pas un dessin
+
+Le basculement passait par `obj.rotation_euler`, qui tourne autour de
+l'origine de l'**objet**, au sol. Appliqué à un anneau situé à z = 22,30, un
+basculement de 9° déplaçait son centre de 22,30 × sin 9° = **3,49 m**.
+Rayon intérieur 4,04 contre décentrement 3,49 : la bande passait
+littéralement à travers le fût d'un côté et pendait dans le vide de
+l'autre — « une portion semble flotter ou seulement traverser le fût ».
+
+Le basculement est désormais appliqué autour du **centre de l'anneau**,
+dans les coordonnées des sommets ; les deux consoles empruntent le même
+repère et ne peuvent plus se décoller. Le générateur **refuse d'enregistrer**
+si l'étalement des distances à l'axe dépasse 1,10 m : 0,85 pour un anneau
+centré, plus de 7 pour celui d'hier. Mesuré à la génération :
+`distance à l'axe 3,83–4,68 m (étalement 0,85), fût 1,81 m au plus près`.
+
+L'ouverture est élargie à 84° et surtout **présentée de profil**. Pointée
+vers l'objectif — ce qu'elle était au premier jet de cette passe — elle
+donne deux cornes et aucun anneau : à 96 m on lisait une barre. À 90° de
+l'axe de vue, l'anneau se lit ET sa morsure aussi.
+
+### 4. Couronne et matières
+
+Dents et coiffes en sections octogonales, effilement porté à 3,3× ; la
+coiffe est un volume unique qui se termine en pointe, non trois carrés
+empilés. La fourche reçoit un **décalage Y opposé** : deux dents décalées
+sur le seul axe X s'alignaient exactement vue selon X, et à 0° la couronne
+bifide se lisait comme une simple flèche — un repère majeur ne peut pas
+perdre sa signature sur un demi-tour.
+
+Les matières sont **calibrées sur la capture, pas sur l'intention**. Mesuré
+au pixel avant : cuivre éclairé 0,486, pierre ombrée 0,447, ivoire ombré
+0,403. L'écart d'éclairement (×1,63) égalait l'écart de matière (×1,62), et
+les trois matériaux rendaient la même valeur. Après :
+
+| zone | valeur rendue |
+|---|---:|
+| anneau — bronze oxydé à l'ombre | 0,261 |
+| fût — bronze oxydé | 0,398 |
+| pied — pierre à l'ombre | 0,447 |
+| plinthe — pierre éclairée | 0,553 |
+| collier — ivoire | 0,678 |
+
+### Deux outils, parce qu'une preuve doit être rejouable
+
+`tools/blender/export_architecture.sh` — le pylône de R2a-4 avait été
+exporté à la main, invocation par invocation : ça marchait et ça ne prouvait
+rien. La chaîne source → `.blend` → `.glb` → inspection se rejoue
+maintenant d'une commande, avec les deux garde-fous de `run_export.sh`
+(`--python-exit-code 1`, jeton de fraîcheur).
+
+`tools/godot/capture_silhouette.gd` — la silhouette **isolée** exigée par
+le lead : sujet seul dans une scène vide, matériaux remplacés par un aplat
+unshaded, fond de couleur plate, cadrage orthographique déduit de l'AABB.
+L'outil **refuse d'écrire** une image qui n'est pas bimodale — c'est le
+contrôle qui manquait à la « mosaïque de couleurs ». Mesuré sur les deux
+vues livrées : **0,000 %** de pixels hors des deux valeurs.
+
+### Preuves de cette passe
+
+| fichier | contenu |
+|---|---|
+| `pylone/pylone_composition.png` | composition complète |
+| `pylone/pylone_approche.png` | approche à hauteur de joueur (sol mesuré 8,5 m, œil +1,7) |
+| `pylone/pylone_base.png` | base à hauteur de joueur, **côté éclairé** |
+| `pylone/pylone_structure_canal.png` | gros plan du canal, sur son rayon exact |
+| `pylone/pylone_lointain_96m.png` | vue à 95,4 m |
+| `pylone/silhouette_pylone_000.png` | silhouette isolée 0° |
+| `pylone/silhouette_pylone_090.png` | silhouette isolée 90° |
+| `pylone/plans_r2a41.json` | les cinq caméras, avec la raison de chacune |
+| `pylone/manifest_r2a41_vues.json` | `commit 4165801`, `repo_dirty: false` |
+| `pylone/manifest_silhouettes_pylone.json` | idem, plus les mesures de bimodalité |
+| `pylone/gltf_inspect_pylone.log` | VALIDE — 17 maillages, 34,94 m, base z = 0, 8 052 tris, 5 matériaux, 0 texture |
+| `pylone/materiaux_importes.log` | les cinq albédos arrivent au centième |
+| `pylone/filets_places_VERT.log` | `world_v2_places` 8/8 |
+
+### Trois cadrages ont dû être corrigés, et c'est une leçon
+
+- **`pylone_structure_canal`** de R2a-4 visait l'azimut 39° ; les trois
+  canaux sont aux azimuts monde 330°, 210° et 90°. La caméra était donc à
+  **51° du canal le plus proche** et montrait le flanc du fût. C'est
+  pourquoi le lead n'a « pas vu clairement un canal » : il n'y en avait
+  pas dans le cadre. La conversion Blender Z-up → glTF Y-up donne, pour un
+  azimut modèle θ, la direction monde `(cos θ ; −sin θ)` ; le canal se vise
+  par le calcul, pas à l'œil.
+- **`pylone_approche`** et **`pylone_base`** de R2a-4 étaient à y = 20,
+  soit 11,5 m au-dessus du sol pour l'une : ce n'était pas une hauteur de
+  joueur. Les sols ont été sondés (`probe_site_section`) et l'œil placé à
+  +1,7 m.
+- **`pylone_base`** a en outre changé de côté : la direction du `Sun` de
+  `WorldV2.tscn` (colonne −Z de sa base) porte vers l'azimut 19,5°, donc le
+  soleil est à 199,5°. Le premier cadrage prenait la base à contre-jour et
+  aucun chanfrein ne s'y lisait.
+
+### Ce qui reste faible, et n'est pas déclaré acceptable
+
+- le flanc éclairé du fût monte à **0,56** au bord du gros plan, en
+  incidence rasante ; ce n'est pas un matériau blanc, mais c'est clair ;
+- à 0°, deux des trois pieds se recouvrent — géométrie normale d'un
+  tripode vu dans l'axe d'un montant, mais la base y paraît plus pleine ;
+- les deux consoles de l'anneau sont désormais solidaires et visibles de
+  près ; à 96 m elles restent fines ;
+- **l'orientation de l'anneau est un arbitrage, pas un optimum.** Présenté
+  de profil, il se lit comme un anneau depuis les caméras de composition,
+  d'approche et de 96 m — mais sur la silhouette isolée à 0°, qui regarde
+  perpendiculairement, il redevient une barre horizontale. Un anneau ouvert
+  ne peut pas lire comme un anneau sous tous les azimuts ; le choix
+  privilégie les vues de jeu, et c'est un choix, pas une propriété.
+
+`NON VÉRIFIÉ` — soumis au jugement du lead. **Aucun verdict artistique
+n'est auto-déclaré.**

@@ -1,23 +1,23 @@
 === INSPECTION glTF : assets/architecture/pylon/SM_Pylon_Resonance.glb ===
-  format                 : GLB v2, 208688 octets
-  chunk_binaire          : 196176 octets
+  format                 : GLB v2, 328176 octets
+  chunk_binaire          : 315624 octets
   generateur             : Khronos glTF Blender I/O v4.0.44
   version_gltf           : 2.0
   meshes                 : 17
-  materiaux              : 5 (MAT_Pylon_Stone, MAT_Pylon_Ivory, MAT_Pylon_CoreStone, MAT_Pylon_Copper, MAT_Pylon_Cyan)
+  materiaux              : 5 (MAT_Pylon_Copper, MAT_Pylon_Stone, MAT_Pylon_Ivory, MAT_Pylon_CoreStone, MAT_Pylon_Cyan)
   textures               : 0 image(s), 0 texture(s)
-  noeuds                 : 17 (SM_Pylon_Plinth, SM_Pylon_Collar, SM_Pylon_ShaftCore, SM_Pylon_Shaft, SM_Pylon_Ring, SM_Pylon_Vein, SM_Pylon_Leg_A, SM_Pylon_Leg_B)
+  noeuds                 : 17 (SM_Pylon_Ring, SM_Pylon_Plinth, SM_Pylon_Collar, SM_Pylon_ShaftCore, SM_Pylon_Shaft, SM_Pylon_Vein, SM_Pylon_Leg_A, SM_Pylon_Leg_B)
   skins                  : 0
   animations             : 0 (aucune)
-  triangles              : 5252
+  triangles              : 8052
   bbox_min               : [-5.3, 0, -5.3]
-  bbox_max               : [5.3, 34.56, 5.3]
-  dimensions_m           : [10.6, 34.56, 10.6]
+  bbox_max               : [5.3, 34.94, 5.3]
+  dimensions_m           : [10.6, 34.94, 10.6]
+  [AVERT] mesh 'SM_Pylon_Ring': pas d'UV0 — lightmap et matériaux limités
   [AVERT] mesh 'SM_Pylon_Plinth': pas d'UV0 — lightmap et matériaux limités
   [AVERT] mesh 'SM_Pylon_Collar': pas d'UV0 — lightmap et matériaux limités
   [AVERT] mesh 'SM_Pylon_ShaftCore': pas d'UV0 — lightmap et matériaux limités
   [AVERT] mesh 'SM_Pylon_Shaft': pas d'UV0 — lightmap et matériaux limités
-  [AVERT] mesh 'SM_Pylon_Ring': pas d'UV0 — lightmap et matériaux limités
   [AVERT] mesh 'SM_Pylon_Vein': pas d'UV0 — lightmap et matériaux limités
   [AVERT] mesh 'SM_Pylon_Leg_A': pas d'UV0 — lightmap et matériaux limités
   [AVERT] mesh 'SM_Pylon_Leg_B': pas d'UV0 — lightmap et matériaux limités

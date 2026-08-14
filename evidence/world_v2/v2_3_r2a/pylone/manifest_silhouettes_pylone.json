@@ -1,0 +1,30 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "416580172732c4336ece2c06af5d07f0157f8600",
+  "emprise_m": [
+    10.6000003814697,
+    34.939998626709,
+    10.6000003814697
+  ],
+  "engine": "4.7.1-stable (custom_build)",
+  "projection": "orthogonale",
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://assets/architecture/pylon/SM_Pylon_Resonance.glb",
+  "size": "900x1200",
+  "sujet": "pylone",
+  "vues": [
+    {
+      "angle_deg": 0.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_r2a/pylone/silhouette_pylone_000.png",
+      "sujet_pct": 10.6933333333333
+    },
+    {
+      "angle_deg": 90.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_r2a/pylone/silhouette_pylone_090.png",
+      "sujet_pct": 11.3344444444444
+    }
+  ]
+}

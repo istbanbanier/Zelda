@@ -89,19 +89,67 @@ Deux défauts d'outillage trouvés en chemin, tous deux silencieux :
 sRGB/linéaire de `baseColorFactor` (0,40 écrit → 0,67 reçu, 0,14 → 0,41 :
 contraste écrasé). Les deux corrigés et mesurés.
 
+### R2a-4.1 — FAIT : recalibrage du pylône sur verdict du lead
+
+Verdict reçu : R2a-0 `PASS`, R2a-4 « progrès majeur, pas encore golden
+master », plus **un défaut de preuve** — le manifeste portait
+`commit: 6ddac267` et `repo_dirty: true`, donc des images produites avant
+le commit du code, depuis un arbre modifié. Corrigé à la racine : toutes
+les preuves de cette passe portent `commit 4165801` et `repo_dirty: false`.
+
+Les quatre points demandés, et ce que chacun a réellement révélé :
+
+1. **Pieds** — section octogonale chanfreinée, sabot noyé dans la plinthe,
+   chapiteau sous le collier. Demi-largeur 1,80 → 1,32 m *après mesure sur
+   silhouette isolée* : trois volumes séparés dans le maillage ne font pas
+   trois pieds séparés à l'œil, c'est la projection qui décide.
+2. **Canaux** — nervures de part et d'autre, cyan découpé en neuf inserts
+   calés sur les bandeaux, émission 1,4 → 0,85. Puis le balayage a montré
+   le vrai défaut : le noyau sombre était **6 cm derrière** le fond du
+   canal, donc invisible, et le fond rendait 0,203 — la valeur exacte du
+   flanc. Noyau ressorti de 4 cm : fond 0,133 contre nervures 0,260,
+   **cyan coupé**.
+3. **Anneau** — le défaut était un PIVOT. `rotation_euler` tourne autour de
+   l'origine de l'objet, au sol : 9° appliqués à z = 22,30 décentraient
+   l'anneau de **3,49 m**, et la bande traversait le fût. Basculement
+   refait autour du centre de l'anneau ; consoles dans le même repère ; le
+   générateur refuse d'enregistrer si l'étalement dépasse 1,10 m.
+   Ouverture élargie à 84° et **présentée de profil** — pointée vers
+   l'objectif elle donnait deux cornes et aucun anneau.
+4. **Couronne et matières** — effilement 3,3×, coiffe en volume unique
+   terminé en pointe, fourche décalée en Y (deux dents alignées sur le seul
+   axe X disparaissaient l'une derrière l'autre à 0°). Matières recalibrées
+   **sur la capture** : l'écart d'éclairement (×1,63) égalait l'écart de
+   matière (×1,62), donc les trois matériaux rendaient la même valeur.
+   Mesuré après : bronze 0,398 · pierre 0,553 · ivoire 0,678.
+
+Deux outils créés, parce qu'une preuve doit être rejouable :
+`tools/blender/export_architecture.sh` (le pylône de R2a-4 avait été
+exporté à la main) et `tools/godot/capture_silhouette.gd`, qui produit la
+silhouette isolée et **refuse d'écrire** une image non bimodale — le
+contrôle qui manquait à la « mosaïque de couleurs ».
+
+Trois cadrages de R2a-4 étaient faux et ont été refaits par le calcul : le
+gros plan visait 51° à côté du canal le plus proche, et deux vues « à
+hauteur de joueur » étaient à 11,5 m du sol. Détail et nombres :
+`evidence/world_v2/v2_3_r2a/README.md`.
+
 ### Prochaine action exacte
 
-**R2a-2, le pont de pierre, par la même voie que le pylône** — c'est le
-sujet où Blender apporte le plus (courbe + array : une arche continue à
-voussoirs réguliers est exactement ce qu'un loft sait faire et qu'un
-empilement de blocs ne saura jamais). Puis R2a-3 la grotte (coque
-`solidify`), puis R2a-1 le hameau — le seul des quatre où les modules CC0
-suffisent réellement, maintenant que leurs pivots sont mesurés.
+**Attendre le verdict du lead sur R2a-4.1.** Le pylône n'est pas
+auto-déclaré golden master.
 
-Restent aussi : **R2a-5, la vraie passe silhouette** (sujet masqué, forme
-sombre unie sur fond clair, quatre angles dont la rasante, verdict
-automatique de bimodalité et de taux d'encre, écrit ROUGE d'abord contre
-la planche actuelle), et R2a-6, les preuves finales des quatre sujets.
+Si le verdict passe : **R2a-2, le pont de pierre, par la même voie** —
+c'est le sujet où Blender apporte le plus (une arche continue à voussoirs
+réguliers est exactement ce qu'un loft sait faire et qu'un empilement de
+blocs ne saura jamais). Puis R2a-3 la grotte (coque `solidify`), puis
+R2a-1 le hameau — le seul des quatre où les modules CC0 suffisent
+réellement, maintenant que leurs pivots sont mesurés.
+
+Restent aussi **R2a-5** — la passe silhouette sur les quatre sujets ;
+l'outil existe désormais et a servi ici, il reste à l'étendre aux angles
+rasants et à écrire son contrôle négatif contre l'ancienne planche — et
+**R2a-6**, les preuves finales des quatre sujets.
 
 Ne PAS relancer les 38 preuves ni `validate_fast` pendant les
 itérations — consigne explicite du lead. Captures ciblées jusqu'à

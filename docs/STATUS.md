@@ -12,6 +12,10 @@
 | V2.3-A — lot pilote, 9 sujets : gate ARTISTIQUE | **REJETÉE par le lead** | verdict du lead ; planches de preuve vides et ligne de base mal étiquetée |
 | V2.3-A.R — passe corrective : preuves réparées, 9 sujets repris | chaîne technique et preuves SHA **PASS** ; gate artistique **ÉCHEC** | verdict du lead ; `evidence/world_v2/v2_3/MANIFESTE_V23AR.md` ; `validate_fast` 899/0 |
 | V2.3-A.R2a — changement de pipeline, 4 golden masters | **En cours** | base `c946b0e` ; hameau · pont · grotte · pylône seulement |
+| R2a-0 — enquête pipeline (Blender, pivots CC0, `gltf_inspect`) | **PASS prononcé par le lead** | `evidence/world_v2/v2_3_r2a/README.md` |
+| R2a-4 — pylône, 1er golden master | « progrès majeur, pas encore golden master » (lead) | trois faiblesses nommées + preuve invalide (`repo_dirty: true`) |
+| R2a-4.1 — recalibrage du pylône (pieds · canaux · anneau · couronne/matières) | **NON VÉRIFIÉ — en attente du lead** | `evidence/world_v2/v2_3_r2a/README.md` §R2a-4.1 ; 7 vues + 2 manifestes `commit 4165801` / `repo_dirty: false` ; `world_v2_places` 8/8 ; `gltf_inspect` VALIDE |
+| R2a-1 hameau · R2a-2 pont · R2a-3 grotte | Non commencées | le pont est le prochain sujet si R2a-4.1 passe |
 
 `GO_V2_3_B=FALSE` **et** `GO_V2_3_R2B=FALSE` : aucune propagation, ni aux cinq
 lieux restants, ni aux 31 POI, avant validation des quatre références.
