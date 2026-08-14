@@ -32,6 +32,7 @@ command -v "$BLENDER" >/dev/null 2>&1 || { echo "ÉCHEC: Blender absent" >&2; ex
 # id | source de génération | .blend | .glb
 SUJETS=(
   "pylon|source_assets/blender/architecture/make_pylon_resonance.py|source_assets/blender/architecture/SM_Pylon_Resonance.blend|assets/architecture/pylon/SM_Pylon_Resonance.glb"
+  "stone_bridge|source_assets/blender/architecture/make_stone_bridge.py|source_assets/blender/architecture/SM_StoneBridge_Arch.blend|assets/architecture/stone_bridge/SM_StoneBridge_Arch.glb"
 )
 
 DEMANDE="${1:-}"
