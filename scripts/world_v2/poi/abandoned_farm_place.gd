@@ -111,7 +111,7 @@ func _ruined_house(at: Vector3, yaw_deg: float) -> void:
 		var x: float = (float(i) - 1.0) * MODULE
 		if i == 1:
 			K.module(house, &"Wall_UnevenBrick_Door_Round",
-				Vector3(x, 0, half), 0.0, 1.0, K.TONE_STONE)
+				Vector3(x, 0, half), 0.0, 1.0, Color(1.05, 0.90, 0.78))
 			_jambs(house, Vector3(x, 0, half), 0.0)
 		else:
 			_wall(house, Vector3(x, 0, half), 0.0,
@@ -126,11 +126,19 @@ func _ruined_house(at: Vector3, yaw_deg: float) -> void:
 			Vector3(-half, 0, half), Vector3(half, 0, half)]:
 		K.module(house, &"Corner_Exterior_Brick", corner, 0.0, 1.0,
 			K.TONE_STONE)
-	# Le pan de toit AFFAISSÉ : glissé et incliné, appuyé sur le mur ouest.
-	var roof: Node3D = K.module(house, &"Roof_Wooden_2x1_L",
-		Vector3(-1.4, WALL_H - 0.7, 0.0), 0.0, 2.6, K.TONE_WOOD)
-	if roof != null:
-		roof.rotation.z = deg_to_rad(-16.0)
+	# Le pan de toit AFFAISSÉ : DEUX panneaux larges glissés vers l'ouest —
+	# à l'inspection, un seul panneau ×2,6 lisait comme une planche.
+	for pan: Array in [[-1.2, -1.6, 3.4, -21.0], [-1.5, 1.7, 3.1, -25.0]]:
+		var roof: Node3D = K.module(house, &"Roof_Wooden_2x1_L",
+			Vector3(float(pan[0]), WALL_H - 0.9, float(pan[1])), 0.0,
+			float(pan[2]), K.TONE_WOOD)
+		if roof != null:
+			roof.rotation.z = deg_to_rad(float(pan[3]))
+	# Un troisième pan TOMBÉ à l'intérieur, en appui sur le sol.
+	var fallen_roof: Node3D = K.module(house, &"Roof_Wooden_2x1_R",
+		Vector3(1.5, 0.6, -0.6), 12.0, 2.8, K.TONE_WOOD)
+	if fallen_roof != null:
+		fallen_roof.rotation.z = deg_to_rad(38.0)
 	# Une panne de charpente nue là où l'autre pan manque.
 	var beam: MeshInstance3D = MeshInstance3D.new()
 	beam.name = "Panne"
@@ -154,7 +162,7 @@ func _ruined_house(at: Vector3, yaw_deg: float) -> void:
 
 
 func _wall(parent: Node3D, at: Vector3, yaw: float, kind: StringName) -> void:
-	K.module(parent, kind, at, yaw, 1.0, K.TONE_STONE)
+	K.module(parent, kind, at, yaw, 1.0, Color(1.05, 0.90, 0.78))
 	var along: Vector3 = Vector3(cos(deg_to_rad(yaw)), 0, -sin(deg_to_rad(yaw)))
 	var thick: Vector3 = Vector3(absf(along.z), 0, absf(along.x)) * 0.4
 	var span: Vector3 = along.abs() * MODULE

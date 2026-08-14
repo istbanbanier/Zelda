@@ -39,20 +39,22 @@ func _build() -> void:
 	K.module(self, &"Crate_Wooden", _seated(3.0, 6.8), 40.0, 1.0, K.TONE_WOOD)
 	K.module(self, &"Barrel_Apples", _seated(0.2, 7.0), 0.0, 1.0, K.TONE_WOOD)
 
-	# — Quai vers l'eau : plancher bois sur pilotis, SANS collider sur le
-	# couloir de la route (la traversée passe au nord du quai).
+	# — Quai vers l'eau : l'eau MESURÉE passe au SUD du bourg (bande
+	# globale z 18–24 — sondée, jamais devinée) ; le ponton descend au
+	# sud-est, HORS du rayon Est du gué (pointe x=12, collider ≥ 13,5) et
+	# hors du couloir de route.
 	var deck: Node3D = Node3D.new()
 	deck.name = "Quai"
 	add_child(deck)
-	var deck_y: float = ground_local_y(9.0, 5.0) + 0.45
-	for ix: int in range(0, 3):
+	var deck_y: float = ground_local_y(13.8, -5.0) + 0.35
+	for ix: int in range(0, 2):
 		for iz: int in range(0, 2):
 			var piece: Node3D = K.module(deck, &"Floor_WoodDark",
-				Vector3(9.0 + float(ix) * MODULE, deck_y,
-					4.0 + float(iz) * MODULE), 0.0, 1.0, K.TONE_WOOD)
+				Vector3(14.8 + float(ix) * MODULE, deck_y,
+					-6.4 - float(iz) * MODULE), 0.0, 1.0, K.TONE_WOOD)
 			if piece != null:
 				piece.position.y = deck_y
-	for post: Array in [[8.2, 3.2], [12.6, 3.2], [8.2, 6.9], [12.6, 6.9]]:
+	for post: Array in [[13.9, -5.5], [17.6, -5.5], [13.9, -9.2], [17.6, -9.2]]:
 		var post_x: float = float(post[0])
 		var post_z: float = float(post[1])
 		var foot: float = ground_local_y(post_x, post_z)
@@ -61,14 +63,19 @@ func _build() -> void:
 		var cylinder: CylinderMesh = CylinderMesh.new()
 		cylinder.top_radius = 0.14
 		cylinder.bottom_radius = 0.17
-		cylinder.height = deck_y - foot + 0.6
+		cylinder.height = maxf(deck_y - foot + 0.6, 0.8)
 		pillar.mesh = cylinder
 		pillar.material_override = K.flat_material(Color(0.30, 0.20, 0.13))
 		pillar.position = Vector3(post_x, foot + cylinder.height * 0.5, post_z)
 		deck.add_child(pillar)
 		declare_support(Vector3(post_x, foot, post_z))
-	K.collider_box(self, "Quai_col", Vector3(11.0, deck_y - 0.1, 5.9),
-		Vector3(6.2, 0.3, 4.4))
+	K.collider_box(self, "Quai_col", Vector3(15.8, deck_y - 0.1, -7.4),
+		Vector3(4.6, 0.3, 4.4))
+	# Le sentier du ponton : dalles qui descendent de la place vers l'eau.
+	for slab: Array in [[6.0, -2.0], [9.0, -3.5], [12.0, -4.6]]:
+		K.module(self, &"RockPath_Round_Wide",
+			_seated(float(slab[0]), float(slab[1])),
+			float(slab[0]) * 29.0, 1.0, K.TONE_STONE)
 
 	# — La place : dalles, puits d'eau non, tonneaux, bannière du bourg.
 	for slab: Array in [[-1.5, 1.5], [0.8, 2.6], [-3.2, 3.4], [1.9, 0.2],

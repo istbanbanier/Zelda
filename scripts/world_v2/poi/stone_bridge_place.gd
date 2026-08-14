@@ -31,21 +31,49 @@ func _build() -> void:
 	_abutment("CuleeNord", north_foot, axis, 1.0)
 	_abutment("CuleeSud", south_foot, -axis, -1.0)
 
-	# — Le bandeau de l'arche : neuf voussoirs en plein cintre, du gros
-	# bloc de rive au sommet plus fin. Aucun collider : c'est un repère.
+	# — Le bandeau de l'arche : SEGMENTS CONTINUS en plein cintre (boîtes
+	# procédurales tangentes — à l'inspection, neuf voussoirs de kit
+	# espacés flottaient au lieu de former une arche), et trois blocs de
+	# kit aux sommiers pour la matière.
 	var mid: Vector3 = (north_foot + south_foot) * 0.5
 	var span: float = north_foot.distance_to(south_foot)
-	var crown_y: float = maxf(north_foot.y, south_foot.y) + 4.6
-	for i: int in range(9):
-		var t: float = float(i) / 8.0
+	var crown_y: float = maxf(north_foot.y, south_foot.y) + 4.4
+	var band: Node3D = Node3D.new()
+	band.name = "Bandeau"
+	add_child(band)
+	var band_material: StandardMaterial3D = K.flat_material(
+		Color(0.62, 0.55, 0.47))
+	var segments: int = 12
+	var normal: Vector3 = axis.cross(Vector3.UP).normalized()
+	var previous_point: Vector3 = north_foot + Vector3(0, 0.6, 0)
+	for i: int in range(1, segments + 1):
+		var t: float = float(i) / float(segments)
 		var along: Vector3 = north_foot.lerp(south_foot, t)
 		var rise: float = sin(t * PI)
-		var stone: Node3D = K.module(self, &"SM_Dungeon_ArchBlock",
-			Vector3(along.x, lerpf(along.y + 1.0, crown_y, rise), along.z),
-			rad_to_deg(atan2(axis.x, axis.z)) + 90.0,
-			1.25 - 0.35 * rise, K.TONE_STONE)
-		if stone != null:
-			stone.rotation.x = deg_to_rad(lerpf(-38.0, 38.0, t))
+		var point: Vector3 = Vector3(along.x,
+			lerpf(along.y + 0.6, crown_y, rise), along.z)
+		var stone: MeshInstance3D = MeshInstance3D.new()
+		stone.name = "Voussoir_%d" % i
+		var box: BoxMesh = BoxMesh.new()
+		var length: float = previous_point.distance_to(point)
+		box.size = Vector3(1.7 - 0.5 * rise, length + 0.35, 0.9)
+		stone.mesh = box
+		stone.material_override = band_material
+		stone.position = (previous_point + point) * 0.5
+		var up: Vector3 = (point - previous_point).normalized()
+		# Base orthonormée : Y = tangente de l'arc, Z = normale du plan
+		# vertical de l'arche (constante), X = leur produit — jamais de
+		# matrice biaisée.
+		stone.basis = Basis(up.cross(normal).normalized(), up, normal)
+		band.add_child(stone)
+		previous_point = point
+	for springing: Array in [[0.08, 1.5], [0.92, 1.4]]:
+		var t2: float = float(springing[0])
+		var along2: Vector3 = north_foot.lerp(south_foot, t2)
+		K.module(self, &"SM_Dungeon_ArchBlock",
+			Vector3(along2.x, along2.y + 0.8, along2.z),
+			rad_to_deg(atan2(axis.x, axis.z)) + 90.0, float(springing[1]),
+			Color(1.05, 0.95, 0.85))
 	# Deux voussoirs TOMBÉS dans le lit, là où le bandeau s'est ouvert.
 	var fallen_a: Node3D = K.module(self, &"SM_Dungeon_RubbleLarge",
 		mid + Vector3(1.6, -0.2, 0.8) - Vector3(0, mid.y, 0)
@@ -94,13 +122,15 @@ func _abutment(part_name: String, foot: Vector3, toward: Vector3,
 	pile.name = part_name
 	pile.position = foot
 	add_child(pile)
-	K.module(pile, &"cliff_blockSlope_rock", Vector3.ZERO,
-		rad_to_deg(atan2(toward.x, toward.z)), 0.5, K.TONE_STONE)
-	K.module(pile, &"rock_largeA", Vector3(-toward.x * 1.4, 0.0, -toward.z * 1.4),
-		rad_to_deg(atan2(toward.x, toward.z)) + 35.0 * lean, 0.42,
+	# Rock_Medium et non cliff_* : le colormap Kenney donne un dessus
+	# d'herbe menthe, mesuré à l'inspection des captures.
+	K.module(pile, &"Rock_Medium_1", Vector3.ZERO,
+		rad_to_deg(atan2(toward.x, toward.z)), 3.0, K.TONE_STONE)
+	K.module(pile, &"Rock_Medium_2", Vector3(-toward.x * 1.5, 0.0, -toward.z * 1.5),
+		rad_to_deg(atan2(toward.x, toward.z)) + 35.0 * lean, 2.2,
 		K.TONE_STONE)
-	K.module(pile, &"rock_smallB", Vector3(toward.z * 1.6 * lean, 0.0,
-		-toward.x * 1.6 * lean), 80.0 * lean, 0.5, K.TONE_STONE)
+	K.module(pile, &"Rock_Medium_3", Vector3(toward.z * 1.7 * lean, 0.0,
+		-toward.x * 1.7 * lean), 80.0 * lean, 1.8, K.TONE_STONE)
 	K.collider_box(self, part_name + "_col", foot + Vector3(0, 1.1, 0),
 		Vector3(2.6, 2.4, 2.6), rad_to_deg(atan2(toward.x, toward.z)))
 

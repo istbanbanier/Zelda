@@ -58,19 +58,24 @@ func _build() -> void:
 	declare_support(Vector3(2.8, entry_y, 1.6))
 	declare_support(Vector3(POCKET_CENTER.x, floor_y, POCKET_CENTER.z))
 
-	# — La coque : blocs de falaise en C autour de la poche, ouverts vers
-	# le seuil (est). Visuel = kit falaise ; structure = colliders muraux.
+	# — La coque : un MASSIF de gros rochers ocres (Rock_Medium — le même
+	# langage que les rochers V2.2), en C autour de la poche, ouverts vers
+	# le seuil (est). À l'inspection, les panneaux CaveWall lisaient comme
+	# des rectangles marron posés dans l'herbe — remplacés par des masses.
 	var shell: Node3D = Node3D.new()
 	shell.name = "Coque"
 	add_child(shell)
 	for block: Array in [
-		[-6.4, -1.0, 0.0, 0.62], [-5.2, -4.4, 40.0, 0.55],
-		[-1.6, -5.6, 80.0, 0.58], [2.2, -4.2, 120.0, 0.5],
-		[-5.6, 2.6, -45.0, 0.58], [-2.2, 4.0, -85.0, 0.52],
-		[1.8, 4.6, -120.0, 0.46]]:
-		var piece: Node3D = K.module(shell, &"SM_Dungeon_CaveWall",
+		[-6.6, -1.0, 0.0, 4.6, "Rock_Medium_1"],
+		[-5.4, -4.6, 40.0, 4.2, "Rock_Medium_2"],
+		[-1.6, -6.0, 80.0, 4.4, "Rock_Medium_3"],
+		[2.4, -4.6, 120.0, 3.6, "Rock_Medium_1"],
+		[-5.8, 2.8, -45.0, 4.3, "Rock_Medium_2"],
+		[-2.2, 4.4, -85.0, 4.0, "Rock_Medium_3"],
+		[2.0, 5.0, -120.0, 3.2, "Rock_Medium_2"]]:
+		var piece: Node3D = K.module(shell, StringName(block[4] as String),
 			_seated(float(block[0]), float(block[1])), float(block[2]),
-			float(block[3]), K.TONE_DARK_STONE)
+			float(block[3]), K.TONE_STONE)
 		if piece == null:
 			continue
 	# Colliders muraux du C (l'ouverture est reste libre, largeur 2,4 m).
@@ -84,35 +89,39 @@ func _build() -> void:
 				float(wall[1])),
 			Vector3(float(wall[4]), INNER_H + 2.4, 1.6), float(wall[2]))
 
-	# — Le TOIT : gros blocs posés sur la coque + collider plafond réel
+	# — Le TOIT : gros rochers posés sur la coque + collider plafond réel
 	# (le filet tire un rayon vertical depuis l'intérieur).
 	var roof_y: float = floor_y + INNER_H
-	K.module(shell, &"SM_Dungeon_CaveWallTop",
-		Vector3(POCKET_CENTER.x, roof_y - 0.2, POCKET_CENTER.z), 20.0, 0.75,
-		K.TONE_DARK_STONE).position.y = roof_y - 0.2
-	var cap: Node3D = K.module(shell, &"rock_largeC",
-		Vector3(POCKET_CENTER.x - 1.0, roof_y + 0.4, POCKET_CENTER.z + 1.0),
-		65.0, 0.62, K.TONE_DARK_STONE)
+	var cap: Node3D = K.module(shell, &"Rock_Medium_1",
+		Vector3(POCKET_CENTER.x - 0.6, roof_y + 0.2, POCKET_CENTER.z + 0.4),
+		65.0, 5.2, K.TONE_STONE)
 	if cap != null:
-		cap.position.y = roof_y + 0.4
-	var cap_east: Node3D = K.module(shell, &"rock_largeA",
-		Vector3(0.6, roof_y + 0.1, 0.4), -30.0, 0.5, K.TONE_DARK_STONE)
+		cap.position.y = roof_y - 0.6
+	var cap_east: Node3D = K.module(shell, &"Rock_Medium_3",
+		Vector3(0.8, roof_y + 0.1, 0.6), -30.0, 4.0, K.TONE_STONE)
 	if cap_east != null:
-		cap_east.position.y = roof_y + 0.1
+		cap_east.position.y = roof_y - 0.4
 	K.collider_box(shell, "plafond", Vector3(POCKET_CENTER.x, roof_y + 0.5,
 		POCKET_CENTER.z), Vector3(7.0, 1.0, 7.0))
 	# Auvent du seuil : le plafond déborde au-dessus de l'entrée, le seuil
 	# se lit comme une BOUCHE et pas comme un interstice.
 	K.collider_box(shell, "auvent_seuil", Vector3(1.8, roof_y + 0.7, 1.0),
 		Vector3(3.4, 0.9, 3.2), 35.0)
-	var brow: Node3D = K.module(shell, &"SM_Dungeon_CaveArch",
-		Vector3(2.2, 0.0, 1.2), 125.0, 0.62, K.TONE_DARK_STONE)
+	# Le SOURCIL du seuil : deux montants de roche + un linteau — la bouche
+	# se lit comme une bouche.
+	K.module(shell, &"Rock_Medium_2", _seated(3.6, -1.2), 15.0, 2.6,
+		K.TONE_STONE)
+	K.module(shell, &"Rock_Medium_1", _seated(3.2, 3.8), -20.0, 2.4,
+		K.TONE_STONE)
+	var brow: Node3D = K.module(shell, &"Rock_Medium_3",
+		Vector3(2.8, roof_y + 0.3, 1.3), 125.0, 3.2, K.TONE_STONE)
 	if brow != null:
-		declare_support(_seated(2.2, 1.2))
+		brow.position.y = roof_y - 0.3
+		declare_support(_seated(2.8, 1.3))
 
 	# — Dehors : éboulis du seuil, fougères d'ombre, dalles d'approche.
-	K.module(self, &"SM_Dungeon_CaveRock", _seated(5.4, -0.8), 200.0, 0.5,
-		K.TONE_DARK_STONE)
+	K.module(self, &"Rock_Medium_2", _seated(5.6, -1.6), 200.0, 1.6,
+		K.TONE_STONE)
 	K.module(self, &"Fern_1", _seated(4.6, 3.6), 20.0, 1.0, K.TONE_PLANT)
 	K.module(self, &"Fern_1", _seated(3.0, -2.2), 160.0, 0.9, K.TONE_PLANT)
 	K.module(self, &"Mushroom_Common", _seated(5.2, 3.0), 0.0, 1.0,
