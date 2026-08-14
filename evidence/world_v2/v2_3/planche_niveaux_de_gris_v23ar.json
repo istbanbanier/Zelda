@@ -7,7 +7,7 @@
 		{
 			"height": 240,
 			"source": "evidence/world_v2/v2_3/captures_v23ar/camp_composition.png",
-			"source_luma_mean": 0.527174281642259,
+			"source_luma_mean": 0.527418616293375,
 			"width": 426,
 			"x": 0,
 			"y": 0
@@ -15,7 +15,7 @@
 		{
 			"height": 240,
 			"source": "evidence/world_v2/v2_3/captures_v23ar/village_composition.png",
-			"source_luma_mean": 0.39250932299413,
+			"source_luma_mean": 0.396190221921027,
 			"width": 426,
 			"x": 426,
 			"y": 0
@@ -23,7 +23,7 @@
 		{
 			"height": 240,
 			"source": "evidence/world_v2/v2_3/captures_v23ar/ferme_composition.png",
-			"source_luma_mean": 0.415112097245696,
+			"source_luma_mean": 0.414747428053822,
 			"width": 426,
 			"x": 852,
 			"y": 0
@@ -31,7 +31,7 @@
 		{
 			"height": 240,
 			"source": "evidence/world_v2/v2_3/captures_v23ar/pont_composition.png",
-			"source_luma_mean": 0.453499486972795,
+			"source_luma_mean": 0.453363270528406,
 			"width": 426,
 			"x": 0,
 			"y": 240
@@ -39,7 +39,7 @@
 		{
 			"height": 240,
 			"source": "evidence/world_v2/v2_3/captures_v23ar/grotte_composition.png",
-			"source_luma_mean": 0.355302679239311,
+			"source_luma_mean": 0.355296570888932,
 			"width": 426,
 			"x": 426,
 			"y": 240
@@ -47,7 +47,7 @@
 		{
 			"height": 240,
 			"source": "evidence/world_v2/v2_3/captures_v23ar/arbre_composition.png",
-			"source_luma_mean": 0.40068170150446,
+			"source_luma_mean": 0.400823415504809,
 			"width": 426,
 			"x": 852,
 			"y": 240
@@ -55,7 +55,7 @@
 		{
 			"height": 240,
 			"source": "evidence/world_v2/v2_3/captures_v23ar/camp_braise_composition.png",
-			"source_luma_mean": 0.411780598441667,
+			"source_luma_mean": 0.411861839674622,
 			"width": 426,
 			"x": 0,
 			"y": 480
@@ -63,7 +63,7 @@
 		{
 			"height": 240,
 			"source": "evidence/world_v2/v2_3/captures_v23ar/bassin_composition.png",
-			"source_luma_mean": 0.453664415784621,
+			"source_luma_mean": 0.453858661707317,
 			"width": 426,
 			"x": 426,
 			"y": 480
@@ -71,7 +71,7 @@
 		{
 			"height": 240,
 			"source": "evidence/world_v2/v2_3/captures_v23ar/pylone_composition.png",
-			"source_luma_mean": 0.566194502559035,
+			"source_luma_mean": 0.566212827649629,
 			"width": 426,
 			"x": 852,
 			"y": 480

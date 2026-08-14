@@ -12,7 +12,7 @@ appartient au lead.
 
 | | |
 |---|---|
-| **SHA du code de capture** | `63821a7` — `fix(world_v2): V2.3-A.R groupes 3 et 4` |
+| **SHA du code de capture** | `4100f66` — `fix(world_v2): trois régressions de couloir et de gué` |
 | **SHA des preuves finales** | le commit qui porte ce fichier (voir `git log`) |
 | SHA de la ligne de base | `775aa323c1fe80401d4cd146e326297f4fc6c268` (V2.2 gelée) |
 | Base de la passe | `aa45a74d36c63d7d7aa6c9f03ff113e92bfad9ab` |
@@ -105,7 +105,7 @@ lui qu'il faut lire avant de croire un plan.
 | `captures_v23ar/` | 33 plans + manifeste (scène World V2, `repo_dirty: false`) |
 | `complement_v23ar/` | 5 plans : 3 vues lointaines 90–96 m (camp, camp braise, pylône) et 2 gros plans structurels (charpente de la ferme, canal du pylône) |
 | `captures_baseline_v22final/` | 33 plans depuis **775aa32** exactement |
-| `ab_v23ar/` | 9 montages A/B, libellés « V2.2 gelée — 775aa32 (aucun lieu) » / « V2.3-A.R — 63821a7 » |
+| `ab_v23ar/` | 9 montages A/B, libellés « V2.2 gelée — 775aa32 (aucun lieu) » / « V2.3-A.R — 4100f66 » |
 | `planche_silhouettes_v23ar.png` + `.json` | planche couleur, 9 tuiles, contrôlée par le filet |
 | `planche_niveaux_de_gris_v23ar.png` + `.json` | même planche en valeurs |
 | `metriques_lieux_v23ar.log` | maillages, colliders, appuis et emprise par lieu |
@@ -157,3 +157,20 @@ Conteneur Linux headless sans GPU : les captures viennent de Xvfb + Mesa
 llvmpipe, en rendu **logiciel**. Utilisable pour la régression visuelle,
 **jamais** pour une mesure de performance. Aucun budget de frame n'est
 annoncé dans cette passe.
+
+## 8. Validation exécutée
+
+| Commande | Résultat |
+|---|---|
+| `tools/validate_fast.sh` | **VERT — 899 réussis, 0 échoué** (`validate_fast_v23ar_final.log`) |
+| `--filter=world_v2_hydrology` | 4/0 après correction des gués |
+| `--filter=world_v2_places` | 8/0 après correction des couloirs |
+| `--filter=proof_boards` | vert sur les planches réparées, rouge sur les planches vides archivées |
+
+Le premier passage avait rendu **897/2**, et les deux échecs venaient de
+cette passe — pas du monde gelé. Ils sont documentés dans le commit
+`fix(world_v2): trois régressions de couloir et de gué` : culée du pont
+sur le rayon ouest du gué (−4, 12) ; grenier PUIS margelle du puits sur
+le rayon nord du gué (−96, 22) ; auvent du camp sur le couloir des
+hauteurs. Le terrain gelé a été sondé pour l'innocenter : 0,8 m/m au
+pire là où le filet exigeait moins de 1,0355.
