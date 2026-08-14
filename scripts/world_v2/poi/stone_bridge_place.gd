@@ -18,11 +18,13 @@ func default_place_id() -> StringName:
 
 
 func _build() -> void:
-	# L'arche enjambe le bras d'eau au SUD du marqueur : culée nord vers
-	# (−2, −4), culée sud vers (2, −16) — l'axe suit la descente naturelle.
-	var axis: Vector3 = Vector3(4.0, 0.0, -12.0).normalized()
-	var north_foot: Vector3 = _seated(-2.0, -4.0)
-	var south_foot: Vector3 = _seated(2.0, -16.0)
+	# L'arche enjambe le bras d'eau en AVAL du gué central : le gué (local
+	# (6,−10)) est sondé par huit rayons sur 12 m (ISS-032) — les culées
+	# sont posées HORS de l'éventail (l'ancienne implantation coupait les
+	# rayons 135° et 225°, mesuré par la sonde des gués).
+	var axis: Vector3 = Vector3(4.3, 0.0, -10.1).normalized()
+	var north_foot: Vector3 = _seated(-8.0, -6.0)
+	var south_foot: Vector3 = _seated(-3.7, -16.1)
 	declare_support(north_foot)
 	declare_support(south_foot)
 
@@ -57,16 +59,16 @@ func _build() -> void:
 
 	# — Le pied de lecture : trois dalles et la stèle du fragment
 	# d'histoire, sur la berge nord, hors du couloir de route.
-	for slab: Array in [[-3.6, -2.0], [-4.8, -0.8], [-3.0, -0.4]]:
+	for slab: Array in [[-6.2, -3.2], [-7.6, -1.8], [-5.4, -1.6]]:
 		K.module(self, &"RockPath_Square_Wide",
 			_seated(float(slab[0]), float(slab[1])),
 			float(slab[0]) * 41.0, 1.0, K.TONE_STONE)
 	var stele: Node3D = K.module(self, &"SM_Dungeon_PillarStub",
-		_seated(-5.2, -2.6), 15.0, 0.8, K.TONE_DARK_STONE)
+		_seated(-8.4, -3.2), 15.0, 0.8, K.TONE_DARK_STONE)
 	if stele != null:
 		stele.rotation.z = deg_to_rad(6.0)
-		declare_support(_seated(-5.2, -2.6))
-	K.module(self, &"Prop_Vine1", _seated(-5.0, -2.2), 60.0, 0.9, K.TONE_PLANT)
+		declare_support(_seated(-8.4, -3.2))
+	K.module(self, &"Prop_Vine1", _seated(-8.0, -2.6), 60.0, 0.9, K.TONE_PLANT)
 
 	# — Découverte + récompense canonique (fragment d'histoire) à la stèle.
 	var poi: PointOfInterest = PointOfInterest.new()
@@ -81,7 +83,7 @@ func _build() -> void:
 	poi.add_child(shape)
 	add_child(poi)
 	RewardAnchor.attach(self, default_place_id(), RewardAnchor.Kind.STORY,
-		_seated(-4.4, -1.8) + Vector3(0, 0.15, 0), Vector3(1.3, 0.0, 0.8))
+		_seated(-7.4, -2.4) + Vector3(0, 0.15, 0), Vector3(1.3, 0.0, 0.8))
 
 
 ## Une culée : gros blocs de falaise empilés qui ÉPOUSENT la berge, avec
@@ -100,7 +102,7 @@ func _abutment(part_name: String, foot: Vector3, toward: Vector3,
 	K.module(pile, &"rock_smallB", Vector3(toward.z * 1.6 * lean, 0.0,
 		-toward.x * 1.6 * lean), 80.0 * lean, 0.5, K.TONE_STONE)
 	K.collider_box(self, part_name + "_col", foot + Vector3(0, 1.1, 0),
-		Vector3(3.0, 2.4, 3.0), rad_to_deg(atan2(toward.x, toward.z)))
+		Vector3(2.6, 2.4, 2.6), rad_to_deg(atan2(toward.x, toward.z)))
 
 
 func _seated(local_x: float, local_z: float) -> Vector3:

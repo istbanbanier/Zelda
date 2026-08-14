@@ -22,8 +22,11 @@ func default_place_id() -> StringName:
 
 
 func _build() -> void:
-	# — Auberge 6×6 creuse, porte à l'est vers la place.
-	_house("Auberge", Vector3(-7.0, 0.0, -4.0), 35.0, "plaster", 6)
+	# — Auberge 6×6 creuse, porte vers la place. Le gué du bourg (local
+	# (0,−8)) est sondé par HUIT rayons sur 12 m (ISS-032) : l'auberge vit
+	# dans le coin nord-ouest ENTRE les rayons 90° et 135°, mesurée à
+	# > 3,4 m de chacun — les rayons O et NO restent nus.
+	_house("Auberge", Vector3(-4.5, 0.0, 6.0), 35.0, "plaster", 6)
 	# — Maison basse 6×6 en brique, AU NORD de la place, porte au sud. La
 	# route de la rivière traverse le bourg par TROIS segments locaux
 	# ((24,−3)→(4,−1)→(0,−8)→(36,−20)) : tout le centre-sud lui
@@ -73,7 +76,7 @@ func _build() -> void:
 		K.module(self, &"RockPath_Square_Wide",
 			_seated(float(slab[0]), float(slab[1])),
 			float(slab[0]) * 53.0, 1.0, K.TONE_STONE)
-	K.module(self, &"Banner_1", _seated(-3.5, 7.5), 60.0, 1.0, K.TONE_CLOTH)
+	K.module(self, &"Banner_1", _seated(-8.5, 8.5), 60.0, 1.0, K.TONE_CLOTH)
 	K.module(self, &"Bench", _seated(-2.6, 0.2), 125.0, 1.0, K.TONE_WOOD)
 
 	# — Clôtures basses qui tiennent la pente ouest, en retrait de la route.
