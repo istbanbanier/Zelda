@@ -19,7 +19,7 @@ extends WorldV2Place
 const K: GDScript = preload("res://scripts/world_v2/poi/world_v2_place_kit.gd")
 
 ## Centre de la poche, en LOCAL (la racine est sur le plateau).
-const POCKET_CENTER: Vector2 = Vector2(-7.0, -1.0)
+const POCKET_CENTER: Vector2 = Vector2(-6.5, 2.6)
 const INNER_R: float = 3.2
 const WALL_T: float = 4.4
 const WALL_H: float = 3.1
@@ -27,7 +27,7 @@ const WALL_H: float = 3.1
 ## végétation GELÉE occupent x ∈ [-109, -106], z ∈ [5, 8,5] (origines
 ## sondées) et masquaient l'entrée. L'axe -14° passe dans le couloir
 ## libre — on s'adapte au paysage gelé, on ne le modifie pas.
-const MOUTH_DEG: float = -14.0
+const MOUTH_DEG: float = 12.0
 const MOUTH_HALF_DEG: float = 24.0
 
 const COL_ROCK: Color = Color(0.52, 0.45, 0.36)
@@ -75,12 +75,17 @@ func _build() -> void:
 		var degrees: float = rad_to_deg(angle)
 		if absf(wrapf(degrees - MOUTH_DEG, -180.0, 180.0)) < MOUTH_HALF_DEG + 6.0:
 			continue
-		var radius: float = INNER_R + WALL_T * 0.5
+		# La boîte est tournée de -angle : son X devient RADIAL. Mesuré à
+		# l'inspection : une épaisseur radiale de 5,4 m mordait 2,7 m DANS
+		# la chambre — le filet de marche y voyait un mur et un plafond
+		# bas au milieu de la poche. La face intérieure du collider est
+		# désormais exactement sur INNER_R.
+		var radius: float = INNER_R + 1.0
 		var at: Vector3 = Vector3(
 			POCKET_CENTER.x + cos(angle) * radius, floor_y + WALL_H * 0.6,
 			POCKET_CENTER.y + sin(angle) * radius)
 		K.collider_box(walls, "paroi_%d" % i, at,
-			Vector3(WALL_T + 1.0, WALL_H * 2.4, 2.6 * INNER_R / 3.0),
+			Vector3(2.0, WALL_H * 2.4, TAU * radius / float(segments) * 1.35),
 			rad_to_deg(-angle))
 	K.collider_box(walls, "plafond",
 		Vector3(POCKET_CENTER.x, floor_y + WALL_H * 1.32, POCKET_CENTER.y),
