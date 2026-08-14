@@ -124,13 +124,15 @@ func _abutment(part_name: String, foot: Vector3, toward: Vector3,
 	add_child(pile)
 	# Rock_Medium et non cliff_* : le colormap Kenney donne un dessus
 	# d'herbe menthe, mesuré à l'inspection des captures.
+	# Échelles mesurées (RM1 natif 3,2 m) : une culée est un empilement
+	# d'épaule, pas une montagne — ×3,0 avalait l'arche et la caméra.
 	K.module(pile, &"Rock_Medium_1", Vector3.ZERO,
-		rad_to_deg(atan2(toward.x, toward.z)), 3.0, K.TONE_STONE)
+		rad_to_deg(atan2(toward.x, toward.z)), 1.05, K.TONE_STONE)
 	K.module(pile, &"Rock_Medium_2", Vector3(-toward.x * 1.5, 0.0, -toward.z * 1.5),
-		rad_to_deg(atan2(toward.x, toward.z)) + 35.0 * lean, 2.2,
+		rad_to_deg(atan2(toward.x, toward.z)) + 35.0 * lean, 0.8,
 		K.TONE_STONE)
 	K.module(pile, &"Rock_Medium_3", Vector3(toward.z * 1.7 * lean, 0.0,
-		-toward.x * 1.7 * lean), 80.0 * lean, 1.8, K.TONE_STONE)
+		-toward.x * 1.7 * lean), 80.0 * lean, 0.65, K.TONE_STONE)
 	K.collider_box(self, part_name + "_col", foot + Vector3(0, 1.1, 0),
 		Vector3(2.6, 2.4, 2.6), rad_to_deg(atan2(toward.x, toward.z)))
 

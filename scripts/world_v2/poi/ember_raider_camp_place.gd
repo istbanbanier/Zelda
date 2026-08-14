@@ -93,8 +93,8 @@ func _build() -> void:
 	# troisième approche.
 	# Rock_Medium et non rock_largeA : le colormap Kenney donne un dessus
 	# d'herbe menthe, mesuré à l'inspection des captures.
-	for rock: Array in [[-2.4, -12.6, 2.6], [1.2, -13.2, 2.2],
-			[4.6, -12.2, 2.9]]:
+	for rock: Array in [[-2.4, -12.6, 0.72], [1.2, -13.2, 0.62],
+			[4.6, -12.2, 0.8]]:
 		K.module(self, &"Rock_Medium_1",
 			_seated(float(rock[0]), float(rock[1])), float(rock[0]) * 31.0,
 			float(rock[2]), K.TONE_STONE)

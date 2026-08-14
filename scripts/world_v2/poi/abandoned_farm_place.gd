@@ -94,7 +94,7 @@ func _ruined_house(at: Vector3, yaw_deg: float) -> void:
 	skirt_box.size = Vector3(6.6, top - low + 0.8, 6.6)
 	skirt.mesh = skirt_box
 	skirt.material_override = K.flat_material(Color(0.50, 0.42, 0.35))
-	skirt.position = Vector3(0, -(top - low + 0.8) * 0.5 + 0.04, 0)
+	skirt.position = Vector3(0, -(top - low + 0.8) * 0.5 + 0.01, 0)
 	house.add_child(skirt)
 	K.collider_box(house, "Fermette_plinthe", Vector3(0, -0.2, 0),
 		Vector3(6.4, 0.6, 6.4))

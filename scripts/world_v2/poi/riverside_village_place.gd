@@ -128,7 +128,7 @@ func _house(house_name: String, at: Vector3, yaw_deg: float,
 	skirt_box.size = Vector3(float(span) + 0.6, skirt_h, float(span) + 0.6)
 	skirt.mesh = skirt_box
 	skirt.material_override = K.flat_material(Color(0.52, 0.44, 0.37))
-	skirt.position = Vector3(0, -skirt_h * 0.5 + 0.05, 0)
+	skirt.position = Vector3(0, -skirt_h * 0.5 + 0.02, 0)
 	house.add_child(skirt)
 	K.collider_box(house, house_name + "_plinthe", Vector3(0, -0.2, 0),
 		Vector3(float(span) + 0.4, 0.6, float(span) + 0.4))
@@ -146,7 +146,7 @@ func _house(house_name: String, at: Vector3, yaw_deg: float,
 		for iz: int in range(tiles):
 			K.module(house, &"Floor_WoodLight" if style == "plaster"
 				else &"Floor_Brick",
-				Vector3((float(ix) - float(tiles - 1) * 0.5) * MODULE, 0.04,
+				Vector3((float(ix) - float(tiles - 1) * 0.5) * MODULE, 0.10,
 					(float(iz) - float(tiles - 1) * 0.5) * MODULE),
 				0.0, 1.0, K.TONE_WOOD)
 	K.collider_box(house, house_name + "_sol", Vector3(0, -0.12, 0),
@@ -178,7 +178,7 @@ func _house(house_name: String, at: Vector3, yaw_deg: float,
 		K.TONE_WOOD)
 	K.module(house, &"Stool", Vector3(-1.9, 0.08, -0.2), 0.0, 1.0, K.TONE_WOOD)
 	K.module(house, &"Barrel", Vector3(1.9, 0.08, -1.7), 0.0, 1.0, K.TONE_WOOD)
-	K.module(house, &"Bed_Twin1", Vector3(1.6, 0.08, 1.6), -90.0, 0.85,
+	K.module(house, &"Bed_Twin1", Vector3(1.6, 0.42, 1.6), -90.0, 0.85,
 		K.TONE_CLOTH)
 
 

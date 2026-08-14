@@ -66,13 +66,13 @@ func _build() -> void:
 	shell.name = "Coque"
 	add_child(shell)
 	for block: Array in [
-		[-6.6, -1.0, 0.0, 4.6, "Rock_Medium_1"],
-		[-5.4, -4.6, 40.0, 4.2, "Rock_Medium_2"],
-		[-1.6, -6.0, 80.0, 4.4, "Rock_Medium_3"],
-		[2.4, -4.6, 120.0, 3.6, "Rock_Medium_1"],
-		[-5.8, 2.8, -45.0, 4.3, "Rock_Medium_2"],
-		[-2.2, 4.4, -85.0, 4.0, "Rock_Medium_3"],
-		[2.0, 5.0, -120.0, 3.2, "Rock_Medium_2"]]:
+		[-6.6, -1.0, 0.0, 2.0, "Rock_Medium_1"],
+		[-5.4, -4.6, 40.0, 1.8, "Rock_Medium_2"],
+		[-1.6, -6.0, 80.0, 1.9, "Rock_Medium_3"],
+		[2.4, -4.6, 120.0, 1.6, "Rock_Medium_1"],
+		[-5.8, 2.8, -45.0, 1.9, "Rock_Medium_2"],
+		[-2.2, 4.4, -85.0, 1.7, "Rock_Medium_3"],
+		[2.0, 5.0, -120.0, 1.5, "Rock_Medium_2"]]:
 		var piece: Node3D = K.module(shell, StringName(block[4] as String),
 			_seated(float(block[0]), float(block[1])), float(block[2]),
 			float(block[3]), K.TONE_STONE)
@@ -92,15 +92,18 @@ func _build() -> void:
 	# — Le TOIT : gros rochers posés sur la coque + collider plafond réel
 	# (le filet tire un rayon vertical depuis l'intérieur).
 	var roof_y: float = floor_y + INNER_H
-	var cap: Node3D = K.module(shell, &"Rock_Medium_1",
+	# Échelles et hauteurs MESURÉES (gltf_inspect : RM2 base à −0,05,
+	# RM3 à −0,32) : le fond des blocs affleure le plafond, la poche
+	# reste un VIDE — au premier passage un bloc ×5,2 la remplissait.
+	var cap: Node3D = K.module(shell, &"Rock_Medium_2",
 		Vector3(POCKET_CENTER.x - 0.6, roof_y + 0.2, POCKET_CENTER.z + 0.4),
-		65.0, 5.2, K.TONE_STONE)
+		65.0, 2.6, K.TONE_STONE)
 	if cap != null:
-		cap.position.y = roof_y - 0.6
+		cap.position.y = roof_y - 0.15
 	var cap_east: Node3D = K.module(shell, &"Rock_Medium_3",
-		Vector3(0.8, roof_y + 0.1, 0.6), -30.0, 4.0, K.TONE_STONE)
+		Vector3(0.8, roof_y + 0.1, 0.6), -30.0, 1.8, K.TONE_STONE)
 	if cap_east != null:
-		cap_east.position.y = roof_y - 0.4
+		cap_east.position.y = roof_y + 0.5
 	K.collider_box(shell, "plafond", Vector3(POCKET_CENTER.x, roof_y + 0.5,
 		POCKET_CENTER.z), Vector3(7.0, 1.0, 7.0))
 	# Auvent du seuil : le plafond déborde au-dessus de l'entrée, le seuil
@@ -109,18 +112,18 @@ func _build() -> void:
 		Vector3(3.4, 0.9, 3.2), 35.0)
 	# Le SOURCIL du seuil : deux montants de roche + un linteau — la bouche
 	# se lit comme une bouche.
-	K.module(shell, &"Rock_Medium_2", _seated(3.6, -1.2), 15.0, 2.6,
+	K.module(shell, &"Rock_Medium_2", _seated(3.6, -1.2), 15.0, 1.1,
 		K.TONE_STONE)
-	K.module(shell, &"Rock_Medium_1", _seated(3.2, 3.8), -20.0, 2.4,
+	K.module(shell, &"Rock_Medium_1", _seated(3.2, 3.8), -20.0, 1.0,
 		K.TONE_STONE)
-	var brow: Node3D = K.module(shell, &"Rock_Medium_3",
-		Vector3(2.8, roof_y + 0.3, 1.3), 125.0, 3.2, K.TONE_STONE)
+	var brow: Node3D = K.module(shell, &"Rock_Medium_2",
+		Vector3(2.9, roof_y + 0.1, 1.3), 125.0, 1.4, K.TONE_STONE)
 	if brow != null:
-		brow.position.y = roof_y - 0.3
-		declare_support(_seated(2.8, 1.3))
+		brow.position.y = roof_y + 0.05
+		declare_support(_seated(2.9, 1.3))
 
 	# — Dehors : éboulis du seuil, fougères d'ombre, dalles d'approche.
-	K.module(self, &"Rock_Medium_2", _seated(5.6, -1.6), 200.0, 1.6,
+	K.module(self, &"Rock_Medium_2", _seated(5.6, -1.6), 200.0, 0.9,
 		K.TONE_STONE)
 	K.module(self, &"Fern_1", _seated(4.6, 3.6), 20.0, 1.0, K.TONE_PLANT)
 	K.module(self, &"Fern_1", _seated(3.0, -2.2), 160.0, 0.9, K.TONE_PLANT)
