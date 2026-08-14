@@ -384,19 +384,27 @@ def fut():
 
 
 def noyau():
-    """Le fond d'ombre des canaux : un cylindre plein, plus sombre.
+    """Le fond d'ombre des canaux : un cylindre plein, nettement plus sombre.
 
-    Sans lui, le canal laisse voir le ciel au travers et cesse d'être un
-    creux. Mesuré à la passe précédente : c'est la valeur sombre au fond
-    qui fait lire le canal, pas sa largeur.
+    IL RESSORT MAINTENANT DE 4 cm DANS LE CANAL, et c'est tout le sujet.
+    Auparavant il était 6 cm DERRIÈRE le fond du canal — donc invisible :
+    le profil du fût porte son propre fond, et c'était lui qu'on voyait, en
+    bronze. Balayage horizontal d'une bande sans insert cyan, avant
+    correction : flanc 0,203 · nervure 0,262 · FOND DU CANAL 0,203. Le
+    creux avait exactement la valeur de la surface qui l'entoure ; seule la
+    veine cyan le signalait, ce que le lead refuse expressément.
+
+    À +0,04, la pierre sombre devient la surface vue au fond du canal, et
+    le fût reste intact partout ailleurs — hors des trois secteurs, son
+    rayon est supérieur de 0,58 m.
     """
     anneaux = []
     etages = 8
     for i in range(etages + 1):
         t = i / etages
         z = FUT_Z0 - 0.10 + (FUT_Z1 - FUT_Z0 + 0.20) * t
-        rayon = (FUT_R0 + (FUT_R1 - FUT_R0) * t) - CANAL_PROFONDEUR - 0.06
-        anneaux.append(cercle(rayon, z, 36))
+        rayon = (FUT_R0 + (FUT_R1 - FUT_R0) * t) - CANAL_PROFONDEUR + 0.04
+        anneaux.append(cercle(rayon, z, 48))
     return objet("SM_Pylon_ShaftCore", anneaux, "MAT_Pylon_CoreStone")
 
 
@@ -586,13 +594,17 @@ def veines():
             anneaux = []
             for z in (z0, z0 + (z1 - z0) * 0.5, z1):
                 part = (z - FUT_Z0) / (FUT_Z1 - FUT_Z0)
-                r = (FUT_R0 + (FUT_R1 - FUT_R0) * part) - CANAL_PROFONDEUR + 0.05
+                # +0,14 et non +0,05 : le noyau sombre affleure désormais à
+                # +0,04 dans le canal, et une veine à +0,05 s'y serait
+                # enterrée à moitié. Elle reste 0,10 devant lui, et 0,48
+                # sous le nu du fût — le cyan ne peut pas déborder.
+                r = (FUT_R0 + (FUT_R1 - FUT_R0) * part) - CANAL_PROFONDEUR + 0.14
                 cx, cy = ux * r, uy * r
                 anneaux.append([
                     (cx + tx * demi, cy + ty * demi, z),
                     (cx - tx * demi, cy - ty * demi, z),
-                    (cx - tx * demi - ux * 0.09, cy - ty * demi - uy * 0.09, z),
-                    (cx + tx * demi - ux * 0.09, cy + ty * demi - uy * 0.09, z),
+                    (cx - tx * demi - ux * 0.05, cy - ty * demi - uy * 0.05, z),
+                    (cx + tx * demi - ux * 0.05, cy + ty * demi - uy * 0.05, z),
                 ])
             loft(bm, anneaux)
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
