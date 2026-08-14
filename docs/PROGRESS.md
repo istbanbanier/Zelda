@@ -5,6 +5,40 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-14 (suite 11) — V2.2R.2 : confluence soudée, prête pour revue — GO_V2_3=FALSE
+
+**Aucun verdict artistique auto-déclaré.** Périmètre tenu : SEULE la
+confluence affluent→cours principal a changé ; A, B, C, D, E gelées,
+caméra de diagnostic inchangée (`--from=-10,8,20 --look=-23,-0.5,4`).
+
+- **Code des captures : 0ea9163** (bâtisseur + filets). Preuves §5 dans
+  `evidence/world_v2/v2_2/captures_v22r2/` : `region_r03.png`,
+  `vue_couture_chunks.png`, `gros_plan_jonction_eau.png` + UN montage
+  A/B `ab_gros_plan_jonction_eau.png` (gauche V2.2R.1 a37ec16, droite
+  V2.2R.2), manifestes `repo_dirty:false`.
+- **Correction** : refonte du bâtisseur sur PROFILS partagés — ruban et
+  pièce lisent les mêmes sommets ; affluent TAILLÉ avant l'emprise ;
+  pièce `ConfluenceWater` bouche (2 sommets exacts) → rangée évasée
+  (pointes arrondies) → CINQ sommets de bord consécutifs du principal
+  (mesuré : trois laissaient un coin en biseau ~0,1 m) ; indexée,
+  enroulement corrigé, normales UP partout (elles étaient ABSENTES de
+  tous les rubans — cause du ton d'eau changé dans l'A/B).
+- **Filet F2** (`test_world_v2_water_junctions` conservé, F2 nouveau
+  `test_world_v2_water_confluence`) : ROUGE d'abord sur a37ec16
+  (5 écarts, `controles/controle_F2_confluence_ROUGE_avant_v22r2.log`),
+  VERT après (`controle_F2_confluence_VERT_v22r2.log`). Contrôle E
+  intact. Épinglage hydrologie : ensemble EXACT des 4 noms d'eau.
+- **Validation** : suite world_v2 45/0 (marches V2.1 + nav incluses) ;
+  `validate_fast` VERT RC=0, 890/0, UN seul résumé
+  (`validate_fast_v22r2_final.log`) ; gros plan inspecté à taille
+  réelle (1x + 2x) : plus de pli sombre, de nappes superposées, de
+  pointes triangulaires ni de rupture.
+
+**Prochaine action exacte.** Attendre la revue finale Codex/Istvan sur
+`captures_v22r2/`. Ni donjon ni V2.3 (`GO_V2_3=FALSE`).
+
+---
+
 ## 2026-08-13 (suite 10) — V2.2R.2 EN COURS — NON VALIDÉE — CORRECTION UNIQUE DE LA CONFLUENCE
 
 **Verdict du lead sur 985d7ea** : PASS technique ; PASS visuel DÉFINITIF
