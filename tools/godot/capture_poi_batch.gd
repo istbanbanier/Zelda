@@ -66,7 +66,79 @@ func _initialize() -> void:
 			+ "une capture du mauvais monde ressemble à une bonne capture")
 		quit(3)
 		return
+	var perimes: PackedStringArray = _assets_non_reimportes()
+	if not perimes.is_empty():
+		printerr("[poi] BLOQUÉ : %d asset(s) modifié(s) depuis leur import. "
+			% perimes.size()
+			+ "La capture rendrait la GÉOMÉTRIE PRÉCÉDENTE, et l'image "
+			+ "serait parfaitement crédible. Lancer d'abord :\n"
+			+ "    godot --headless --path . --import")
+		for chemin: String in perimes:
+			printerr("[poi]   %s" % chemin)
+		quit(3)
+		return
 	_run()
+
+
+## LE CACHE D'IMPORT EST PÉRIMÉ, ET L'IMAGE NE LE DIT PAS.
+##
+## Mesuré le 2026-08-15. `SM_WaterfallCave.glb` réexporté à 16:11, cache
+## d'import daté de 10:52 : la passe de captures a rendu l'ANCIENNE grotte,
+## pixel pour pixel identique à celle de la tranche précédente. Le code
+## retour était 0, le manifeste s'est écrit avec le bon commit et
+## `repo_dirty: false`, et rien dans l'image ne criait l'erreur — j'ai failli
+## livrer comme preuve d'un travail la photographie de son état antérieur.
+##
+## C'est la même famille que le défaut `--scene=` documenté plus haut : une
+## capture plausible et fausse ne se rattrape pas à l'œil. On compare donc
+## la date de chaque source importable à celle de l'artefact qu'elle a
+## produit, et on refuse de capturer si l'une est plus récente.
+func _assets_non_reimportes() -> PackedStringArray:
+	var perimes: PackedStringArray = PackedStringArray()
+	_parcourir_imports("res://assets", perimes)
+	return perimes
+
+
+func _parcourir_imports(dossier: String, perimes: PackedStringArray) -> void:
+	var acces: DirAccess = DirAccess.open(dossier)
+	if acces == null:
+		return
+	acces.list_dir_begin()
+	var nom: String = acces.get_next()
+	while nom != "":
+		var chemin: String = dossier.path_join(nom)
+		if acces.current_is_dir():
+			if not nom.begins_with("."):
+				_parcourir_imports(chemin, perimes)
+		elif nom.ends_with(".import"):
+			var source: String = chemin.trim_suffix(".import")
+			var produit: String = _artefact_importe(chemin)
+			if produit.is_empty():
+				perimes.append(source + " (aucun artefact importé)")
+			else:
+				var t_source: int = FileAccess.get_modified_time(
+					ProjectSettings.globalize_path(source))
+				var t_produit: int = FileAccess.get_modified_time(
+					ProjectSettings.globalize_path(produit))
+				if t_produit == 0:
+					perimes.append(source + " (artefact absent)")
+				elif t_source > t_produit:
+					perimes.append(source)
+		nom = acces.get_next()
+	acces.list_dir_end()
+
+
+func _artefact_importe(chemin_import: String) -> String:
+	var fichier: FileAccess = FileAccess.open(chemin_import, FileAccess.READ)
+	if fichier == null:
+		return ""
+	while not fichier.eof_reached():
+		var ligne: String = fichier.get_line().strip_edges()
+		if ligne.begins_with("path="):
+			fichier.close()
+			return ligne.trim_prefix("path=").replace("\"", "")
+	fichier.close()
+	return ""
 
 
 func _run() -> void:
