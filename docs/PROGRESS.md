@@ -5,6 +5,77 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-15 (suite) — R2a-3.3 : extérieur de la grotte rebâti en roches CC0
+
+Point de contrôle livré, **aucun verdict artistique auto-déclaré**. Preuves :
+`evidence/world_v2/v2_3_r2a/grotte/tranche3/TRANCHE3.md`.
+
+### Le pivot
+
+`anneau_exterieur()` ne rend plus aucune surface : il ne sert plus qu'à la
+coque de collision, jamais rendue. L'extérieur est fait de **98 roches du kit
+CC0** `kenney_modular_cave_1_0`, échelle 0,55 à 1,55, fondues par remaillage
+volumétrique 0,12 m puis décimées, la cavité étant soustraite comme un solide.
+Six des sept modules du kit ont été **écartés sur mesure** : leur dos est plat
+par construction (plage plane 7,2 à 18,0 m² contre 2,59 pour `template-detail`),
+ou ils résistent à la réparation, ou ils font échouer l'union sans jamais
+échouer un contrôle — ce dernier cas n'a été trouvé que par bissection.
+
+### Trois exécutions, trois causes, aucune trouvée à l'œil
+
+Un relevé « faite par rang » a été ajouté au générateur : la gaine culminait à
+8,26 m contre 9,16 m pour les masses majeures, donc trente-cinq dents
+régulières décidaient de la crête. La correction évidente — ancrer le sommet —
+a **ouvert un jour** (station 6, azimuts 51 à 71°, 0 croisement), parce que le
+placement radial était ce qui garantissait la couverture. La crête se plafonne
+donc par la taille : échelle 1,45 → 1,15, marge 1,60 → 0,55, sept puis neuf
+azimuts après une épaisseur tombée à 0,16 m dans la salle.
+
+Chaîne verte, RC = 0. Crête gaine 6,01 m. `gltf_inspect` VALIDE, 21 324 tris.
+
+### Deux caméras de preuve étaient fausses, et ce n'était pas le maillage
+
+Le « gros plan du seuil » visait à travers la bouche : la **capture R2a-3.1 à
+la même caméra** montre la même masse grise au même endroit, sur un maillage
+entièrement différent. Et la vue « trois masses » était prise du côté opposé à
+l'approche du joueur. Les deux caméras fausses sont **conservées** pour que les
+A/B restent à caméra identique ; deux caméras justes ont été ajoutées à côté.
+
+### Ce que la mesure dit de la composition
+
+`tools/measure_silhouette_masses.py` (nouveau) compte les sommets d'une
+silhouette par **proéminence topographique**. Sur l'azimut réel d'approche
+(55°, dérivé de la caméra, pas choisi) : **4 sommets de largeur 1,07 à 1,26 m,
+coefficient de variation 0,06**. La consigne demandait « trois masses larges et
+**asymétriques** » ; l'asymétrie de largeur n'y est pas. Cause nommée : un seul
+module, à rapport hauteur/largeur 1,6, répété. Le levier — grouper les majeures
+en trois amas d'emprises inégales — n'a **pas** été actionné : c'est une
+décision de composition.
+
+Une première version de cet outil comptait les marches d'escalier comme des
+masses et rendait des « masses » de 6 cm. Corrigée, et la raison est écrite
+dans le fichier.
+
+### Aussi
+
+`ISS-043` : neuf lignes de `ASSET_MANIFEST.csv` ne sont pas du CSV valide
+(champ à virgules non quoté). Seule celle de la grotte est corrigée ; les huit
+autres appartiennent à des lots gelés et sont nommées, pas touchées.
+
+### Prochaine action exacte
+
+**Attendre le verdict du lead sur les captures de la tranche 3.** Rien d'autre
+ne doit partir : pylône, pont et hameau restent gelés, `GO_V2_3_R2B` et
+`GO_V2_3_B` restent FAUX, `validate_fast` et les 38 plans restent interdits
+tant que la stabilité visuelle n'est pas prononcée.
+
+Si le lead demande la composition en trois amas : le levier est
+`ROCHERS`/`rang` dans `make_waterfall_cave.py`, et la mesure de contrôle est
+`tools/measure_silhouette_masses.py --entaille=1.50` sur la vue 55°, qui rend
+aujourd'hui 3 masses à cv 0,39.
+
+---
+
 ## 2026-08-15 — R2a-3.1 : la grotte refaite, et un défaut dans mon propre code
 
 Verdict de la revue au HEAD `9f25e78` : pont et hameau **PASS visuel**,
