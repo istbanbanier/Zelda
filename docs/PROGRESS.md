@@ -5,6 +5,73 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-15 — R2a-3.1 : la grotte refaite, et un défaut dans mon propre code
+
+Verdict de la revue au HEAD `9f25e78` : pont et hameau **PASS visuel**,
+golden masters 2/4 et 3/4 ; **grotte FAIL visuel**, corrective R2a-3.1
+exigée. Travail redevenu séquentiel, agents non relancés, pont/hameau/pylône
+non touchés, ni les 38 captures ni `validate_fast` relancés.
+
+### Hameau : gelable, mesuré
+
+Sonde de végétation rejouée sur toute l'emprise (107 pièces, 16 651
+instances de semis gelé, 78 dans l'emprise) : **aucune intersection**. Le cas
+le plus serré est à 0,35 m — à côté, pas dedans. Aucune reconstruction, la
+végétation V2.2 reste intacte. `evidence/…/hameau/VEGETATION_VERDICT.md`.
+
+### Grotte : la première corrective ne changeait rien, et j'ai su pourquoi
+
+La première R2a-3.1 (commit `d8404bb`) passait tous les contrôles et a été
+capturée : bouche encore en demi-cercle, façade lisse, galerie en tube.
+Mesuré, σ = 13,3 sur la façade et **5,8** sur la paroi intérieure.
+
+La cause était dans mon code, pas dans les réglages. `facette()` quantifiait
+le **rayon** mais plaçait le sommet au **vrai azimut** — or un rayon constant
+sur un secteur trace un **arc de cercle**. La « section polygonale » que
+j'avais annoncée n'existait pas dans le maillage. `coins()` et `polygonal()`
+construisent maintenant de vrais polygones, arêtes droites entre sommets.
+
+Le reste a suivi, chaque fois vérifié par une mesure et non par une
+intention : polygone du massif **circonscrit** pour ne pas perdre 0,47 m
+d'épaisseur ; **visière** et **éperon** ajoutés du côté de l'approche parce
+que contrefort et couronne étaient tous deux au nord et que la vue du joueur
+ne montrait qu'un dôme ; **collerette** biseautée par une rangée intercalée.
+
+**Deux mécanismes ont été retirés plutôt que gardés** : une banquette et une
+tablette d'alcôve, mesurées là où elles devaient culminer, ne relevaient
+rien — une fenêtre d'azimut de 52° est plus étroite que l'écart entre deux
+sommets (40° à 9 facettes), et l'arête qui joint les voisins l'efface.
+
+### Trois contrôles rendus honnêtes en cours de route
+
+`hauteur_du_sol` rendait 1,544 m à un endroit et −2,078 m à 60 cm de là : le
+rayon partait dans la roche. Corrigée (premier impact dont la normale
+regarde vers le haut), **elle a montré que la récompense flottait de 0,7 m**.
+`controle_annexe_hors_cavite` imprimait `1000000000.00 m` quand il n'avait
+rien comparé. Le gabarit ne soustrayait pas le palier de la hauteur libre —
+il a d'ailleurs refusé le premier réglage, à 2,04 m pour 2,05 exigés.
+
+### État livré
+
+Commit prouvé `71d1817`, `repo_dirty: false` : 7 vues monde, tournette 8
+vues, 2 silhouettes isolées. Filets de lieux **8/8**. Sonde de végétation
+rejouée sur l'emprise agrandie : **aucune intersection**. Détail et aveux :
+`evidence/world_v2/v2_3_r2a/grotte/CORRECTIVE_R2a_3_1.md`.
+
+**Sept exigences sur huit sont PASS. L'exigence 5 — récompense mise en scène
+par la géométrie — est PARTIAL**, et c'est écrit ainsi : le creux de
+l'alcôve, la lampe et le palier tiennent la scène, pas une tablette.
+
+### Prochaine action exacte
+
+**Attendre le verdict visuel du lead sur la grotte.** Aucun verdict
+artistique n'est auto-déclaré. Ne pas relancer les trois agents, ne pas
+toucher au pont, au hameau ni au pylône, ne pas lancer les 38 captures ni
+`validate_fast` tant que ce verdict n'est pas rendu.
+
+Si la grotte passe : R2a-5, passe silhouette complète sur les quatre sujets
+(angles rasants + contrôle négatif contre l'ancienne planche), puis R2a-6.
+
 ## 2026-08-14 (suite 15) — V2.3-A.R2a OUVERTE : changement de PIPELINE artistique
 
 **Verdict du lead sur V2.3-A.R** : chaîne technique et preuves SHA `PASS` ;

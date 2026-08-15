@@ -15,9 +15,10 @@
 | R2a-0 — enquête pipeline (Blender, pivots CC0, `gltf_inspect`) | **PASS prononcé par le lead** | `evidence/world_v2/v2_3_r2a/README.md` |
 | R2a-4 — pylône, 1er golden master | « progrès majeur, pas encore golden master » (lead) | trois faiblesses nommées + preuve invalide (`repo_dirty: true`) |
 | R2a-4.1 — pylône, golden master 1/4 | **PASS artistique ET technique prononcé par le lead — GELÉ au code `4165801`** | `evidence/world_v2/v2_3_r2a/README.md` §R2a-4.1 ; 7 vues + 2 manifestes `commit 4165801` / `repo_dirty: false` ; `world_v2_places` 8/8 ; `gltf_inspect` VALIDE |
-| R2a-2 pont — golden master 2/4 | **NON VÉRIFIÉ — intégré, en attente du lead** | `evidence/.../pont/INTEGRATION_LEAD.md` ; 34 pièces loftées, 15 784 tris ; places 8/8, hydro 4/4, ancres 2/2 ; chaîne rejouable prouvée |
-| R2a-3 grotte — golden master 3/4 | **NON VÉRIFIÉ — intégré, en attente du lead** | `evidence/.../grotte/INTEGRATION_LEAD.md` ; loft fermé de genre 0, 3 192 tris, collision du même loft ; places 8/8 |
-| R2a-1 hameau — golden master 4/4 | **NON VÉRIFIÉ — intégré, en attente du lead** | `evidence/.../hameau/INTEGRATION_LEAD.md` ; 4 volumes, 4 orientations, 4 hauteurs ; quai sur pilotis ; places 8/8, hydro 4/4 |
+| R2a-2 pont — golden master 2/4 | **PASS visuel prononcé par le lead — GELÉ à partir de `9f25e78`** | verdict du lead ; réserves non bloquantes (intrados plat, tympans sobres) ; note du layout corrigée en `9583e25` (traversée en aval du gué, offset 28,8 m mesuré) |
+| R2a-3 grotte — golden master | **FAIL visuel prononcé par le lead** | sept défauts nommés : miche lisse, bouche en demi-cercle, tunnel cylindrique, silhouettes génériques, niche sans composition, flanc surexposé |
+| R2a-3.1 grotte — corrective | **NON VÉRIFIÉ — livré, en attente du verdict visuel du lead** | `evidence/.../grotte/CORRECTIVE_R2a_3_1.md` ; commit `71d1817`, `repo_dirty: false` ; 7 vues + tournette 8 + 2 silhouettes isolées ; sections POLYGONALES (le premier jet quantifiait le rayon et traçait des arcs) ; visière et éperon côté approche ; épaisseur 1,12 m / collerette 0,75 m ; places 8/8 ; végétation gelée sans intersection. **7 exigences PASS, exigence 5 (mise en scène de la récompense) PARTIAL, déclarée telle.** |
+| R2a-1 hameau — golden master 3/4 | **PASS visuel conditionnel prononcé par le lead — condition LEVÉE, gelable** | `evidence/.../hameau/VEGETATION_VERDICT.md` : emprise complète sondée, 78 instances gelées dedans, **aucune intersection** ; cas le plus serré 0,35 m, à côté et non dedans ; aucune reconstruction, végétation V2.2 intacte |
 
 `GO_V2_3_B=FALSE` **et** `GO_V2_3_R2B=FALSE` : aucune propagation, ni aux cinq
 lieux restants, ni aux 31 POI, avant validation des quatre références.

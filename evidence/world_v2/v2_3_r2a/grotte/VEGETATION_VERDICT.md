@@ -13,12 +13,17 @@ jette les transforms d'instance et rendait des comptes faux d'un facteur 90.
 
 ```
 lieu valley.poi.waterfall_cave.01
-  emprise monde : x [-117.9 ; -100.0]  z [-10.1 ; 7.8]  y [0.3 ; 10.8]
+  emprise monde : x [-118.2 ; -99.3]  z [-10.4 ; 9.6]  y [0.1 ; 10.8]
+  pièces bâties retenues : 4
   instances de semis gelé dans le monde : 16651
   instances dans l'emprise du lieu (marge 0.35 m) : 0
 
   AUCUNE INTERSECTION
 ```
+
+Mesure **rejouée au commit `71d1817`**, après que la corrective a agrandi
+l'emprise de 17,9 à 18,9 × 19,9 m par l'ajout de la visière et de l'éperon.
+Le verdict est inchangé : zéro instance dans l'emprise.
 
 Code retour **0**.
 
