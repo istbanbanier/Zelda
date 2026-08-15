@@ -40,6 +40,26 @@ SUJETS=(
 
 DEMANDE="${1:-}"
 FAIL=0
+
+# UN SUJET INCONNU EST UN BLOCAGE, PAS UN SUCCÈS.
+#
+# Mesuré le 2026-08-14 : la corrective de la grotte a été lancée depuis un
+# worktree dont la liste `SUJETS` ne contenait pas encore `waterfall_cave`.
+# La boucle n'a rien trouvé à faire, `FAIL` est resté à 0, et le script a
+# imprimé « EXPORT ARCHITECTURE : VERT » sans avoir généré ni exporté quoi
+# que ce soit. Un vert obtenu en ne faisant rien est le pire des verts.
+if [ -n "$DEMANDE" ]; then
+  CONNU=0
+  for ligne in "${SUJETS[@]}"; do
+    [ "${ligne%%|*}" = "$DEMANDE" ] && CONNU=1
+  done
+  if [ $CONNU -eq 0 ]; then
+    echo "BLOQUÉ: sujet inconnu « $DEMANDE ». Sujets connus :" >&2
+    for ligne in "${SUJETS[@]}"; do echo "  ${ligne%%|*}" >&2; done
+    exit 3
+  fi
+fi
+
 echo "=== Blender: $("$BLENDER" --version 2>/dev/null | head -1) ==="
 
 JETON="$LOG_DIR/.jeton_architecture"

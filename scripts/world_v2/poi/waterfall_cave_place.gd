@@ -101,7 +101,13 @@ const APPUIS_MODELE: Array[Vector2] = [
 ## Repères de gameplay, en repère MODÈLE.
 const MODELE_SEUIL_DEHORS: Vector3 = Vector3(0.0, 0.10, 1.60)
 const MODELE_SALLE: Vector3 = Vector3(1.05, 0.05, -6.25)
-const MODELE_NICHE: Vector3 = Vector3(2.50, 0.06, -7.00)
+## LA NICHE A CHANGÉ DE CÔTÉ EN R2a-3.1, et ce n'est pas un déplacement
+## décoratif. La revue exigeait une récompense « mise en scène par la
+## géométrie et la lumière, pas simplement posée au milieu d'un sol vide » :
+## le générateur creuse désormais une ALCÔVE latérale (azimut modèle 180°,
+## stations 5 à 7) dont le sol se relève de 0,34 m en TABLETTE de roche.
+## L'ancienne niche (2,50 ; −7,00) était du côté OPPOSÉ, en plein sol.
+const MODELE_NICHE: Vector3 = Vector3(-0.55, 0.14, -8.55)
 
 
 func default_place_id() -> StringName:
@@ -219,7 +225,10 @@ func _eclairer(ouvrage: Node3D) -> void:
 	salle.omni_range = 6.5
 	salle.omni_attenuation = 1.4
 	salle.shadow_enabled = true
-	salle.position = Vector3(1.20, 1.90, -6.40)
+	# Décalée vers l'alcôve : c'est elle qui doit être éclairée, pas le
+	# centre du sol. Une récompense en scène est une récompense QUE LA
+	# LUMIÈRE DÉSIGNE.
+	salle.position = Vector3(0.35, 1.85, -7.30)
 	ouvrage.add_child(salle)
 
 
@@ -230,7 +239,7 @@ func _eclairer(ouvrage: Node3D) -> void:
 func _habiller(transformation: Transform3D) -> void:
 	var niche: Vector3 = transformation * MODELE_NICHE
 	K.module(self, &"Mushroom_Common", niche, 24.0, 1.15, K.TONE_PLANT)
-	var voisin: Vector3 = transformation * Vector3(1.90, 0.06, -7.60)
+	var voisin: Vector3 = transformation * Vector3(0.15, 0.12, -8.10)
 	K.module(self, &"Mushroom_Common", voisin, 200.0, 0.9, K.TONE_PLANT)
 	for cote: Array in [[3.35, 1.20, 15.0], [-3.20, 1.60, 165.0]]:
 		var pied: Vector3 = transformation * Vector3(

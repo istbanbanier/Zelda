@@ -51,6 +51,14 @@ var _scene_path: String = ""
 var _out_dir: String = "evidence/silhouettes"
 var _nom: String = "sujet"
 var _place_id: String = ""
+## Hauteur monde sous laquelle la géométrie n'est PAS cadrée.
+##
+## Une masse plantée porte une jupe enterrée — 3,15 m sous le sol pour
+## la grotte. Elle ne se voit jamais en jeu, et pourtant elle occupait
+## le tiers inférieur de la silhouette et en écrasait la lecture : on
+## jugeait un bloc rectangulaire qui n'existe pas pour le joueur.
+var _clip_below: float = 0.0
+var _clip_actif: bool = false
 var _angles: PackedFloat32Array = PackedFloat32Array([0.0, 90.0])
 var _width: int = 900
 var _height: int = 1200
@@ -68,6 +76,9 @@ func _initialize() -> void:
 			_nom = argument.trim_prefix("--name=")
 		elif argument.begins_with("--place="):
 			_place_id = argument.trim_prefix("--place=")
+		elif argument.begins_with("--clip-below="):
+			_clip_below = argument.trim_prefix("--clip-below=").to_float()
+			_clip_actif = true
 		elif argument.begins_with("--build-frames="):
 			_build_frames = maxi(1, argument.trim_prefix("--build-frames=").to_int())
 		elif argument.begins_with("--angles="):
@@ -169,6 +180,13 @@ func _run() -> void:
 		return
 
 	var boite: AABB = _emprise(sujet)
+	if _clip_actif and boite.position.y < _clip_below:
+		var coupe: float = _clip_below - boite.position.y
+		if coupe < boite.size.y:
+			boite.position.y = _clip_below
+			boite.size.y -= coupe
+			print("[silhouette] cadrage coupé sous y = %.2f (%.2f m de masse "
+				% [_clip_below, coupe] + "enterrée écartée du cadre)")
 	if boite.size.length() <= 0.0:
 		printerr("[silhouette] ÉCHEC : emprise vide")
 		quit(1)
@@ -229,6 +247,7 @@ func _run() -> void:
 		"adapter": RenderingServer.get_video_adapter_name(),
 		"size": "%dx%d" % [_width, _height],
 		"projection": "orthogonale",
+		"clip_below": _clip_below if _clip_actif else null,
 		"emprise_m": [boite.size.x, boite.size.y, boite.size.z],
 		"commit": _current_commit(),
 		"repo_dirty": _repo_is_dirty(),
