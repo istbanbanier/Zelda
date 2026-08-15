@@ -1,6 +1,6 @@
 {
   "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
-  "commit": "44e92008db6715e6e30cf32779dc43675949356c",
+  "commit": "1fb57d34b1ac7e03bca278a9068d6a4fee57b77b",
   "engine": "4.7.1-stable (custom_build)",
   "renderer": "forward_plus",
   "repo_dirty": false,
