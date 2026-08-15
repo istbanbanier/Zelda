@@ -18,10 +18,23 @@ func _initialize() -> void:
 	for arg: String in OS.get_cmdline_user_args():
 		if arg.begins_with("--pair="):
 			var fields: PackedStringArray = arg.trim_prefix("--pair=").split("|")
-			# 4 champs : libellés par défaut (V2.1 / V2.2R) ; 6 champs :
-			# libellés de côtés explicites (ex. V2.2R.1 contre 274f539).
-			if fields.size() != 4 and fields.size() != 6:
-				printerr("[montage] paire invalide (4 ou 6 champs) : %s" % arg)
+			## SIX CHAMPS, PLUS DE DÉFAUT — et voici ce que le défaut a coûté.
+			##
+			## L'outil acceptait quatre champs et stampait alors « AVANT —
+			## V2.1 whitebox » et « APRÈS — V2.2R » quelles que soient les
+			## images. Les A/B de la grotte R2a-3.2 comparaient R2a-3.1 à la
+			## tranche 2 : les deux bandeaux étaient donc FAUX, et le lead
+			## l'a relevé. L'image, elle, était juste — c'est précisément ce
+			## qui rend ce défaut coûteux : rien dans le montage ne crie
+			## l'erreur, et il finit dans un dossier de preuves.
+			##
+			## Même leçon que `--scene=` dans capture_poi_batch : un défaut
+			## qui produit un artefact plausible ne se rattrape pas à l'œil.
+			## On exige donc les deux libellés, toujours.
+			if fields.size() != 6:
+				printerr("[montage] paire invalide : SIX champs exigés — "
+					+ "gauche|droite|sortie|titre|libelle_gauche|"
+					+ "libelle_droite. Reçu %d : %s" % [fields.size(), arg])
 				quit(1)
 				return
 			_pairs.append(fields)
@@ -34,10 +47,8 @@ func _initialize() -> void:
 
 func _run() -> void:
 	for fields: PackedStringArray in _pairs:
-		var left_tag: String = fields[4] if fields.size() == 6 \
-			else "AVANT — V2.1 whitebox"
-		var right_tag: String = fields[5] if fields.size() == 6 \
-			else "APRÈS — V2.2R"
+		var left_tag: String = fields[4]
+		var right_tag: String = fields[5]
 		var ok: bool = await _compose(fields[0], fields[1], fields[2],
 			fields[3], left_tag, right_tag)
 		if not ok:
@@ -100,9 +111,15 @@ func _compose(left_path: String, right_path: String, out_path: String,
 	if shot.save_png(global_out) != OK:
 		printerr("[montage] ÉCHEC d'écriture : %s" % out_path)
 		return false
+	## Les clés s'appelaient `gauche_v2_1` et `droite_v2_2r` : un nom de
+	## jalon figé dans un format de données. Tout A/B ultérieur héritait donc
+	## d'une étiquette fausse jusque dans son manifeste. La clé dit le CÔTÉ ;
+	## le jalon est une valeur, et il vit à côté du chemin qu'il décrit.
 	var manifest: Dictionary = {
-		"gauche_v2_1": left_path,
-		"droite_v2_2r": right_path,
+		"gauche": left_path,
+		"gauche_libelle": left_tag,
+		"droite": right_path,
+		"droite_libelle": right_tag,
 		"png": out_path,
 		"titre": title,
 		"resolution_par_moitie": "%dx%d" % [w, h],
