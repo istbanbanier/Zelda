@@ -182,7 +182,7 @@ CAVITE = [
     (0.24,  3.20, 2.15, 2.80),
     (0.58,  4.75, 2.70, 2.90),
     (1.05,  6.25, 3.05, 2.92),   # SALLE
-    (1.62,  7.60, 2.80, 2.80),
+    (1.62,  7.60, 2.80, 2.92),   # cle relevee : le palier du fond mange la hauteur
     (2.25,  8.65, 2.00, 2.40),
     (2.85,  9.25, 1.15, 1.80),
 ]
@@ -326,14 +326,23 @@ FACETTES = 9
 FACETTE_ROTATION = 0.23      # rad ajoutés par station : les arêtes vrillent
 FACETTES_MASSIF = 7
 FACETTE_ROTATION_MASSIF = 0.31
+## Voir `anneau_exterieur` : rend le polygone du massif CIRCONSCRIT à la
+## courbe au lieu d'y être inscrit, donc sans perte d'épaisseur de roche.
+CIRCONSCRIT_MASSIF = 1.0 / math.cos(math.pi / FACETTES_MASSIF)
 
 # Asymétrie de la cavité, par station : (facteur gauche, facteur droit,
 # inclinaison du linteau en rad). Une bouche dissymétrique est demandée
 # explicitement ; elle commence ici, pas dans le bruit.
 CAVITE_ASYM = [
-    (1.18, 0.86, -0.30),   # porche : la joue gauche déborde, linteau penché
-    (1.14, 0.88, -0.26),   # seuil
-    (1.02, 0.97, -0.14),
+    # Les trois premières stations DÉCIDENT de la forme de la bouche, et
+    # c'est la seule chose que le joueur voit en approchant. Valeurs
+    # renforcées après capture : à (1,18 / 0,86 / −0,30) l'ouverture sortait
+    # encore en demi-cercle sur la vue d'approche. À (1,34 / 0,79 / −0,44)
+    # le linteau monte de 44 % à gauche et descend de 44 % à droite : le
+    # contour de l'ouverture est une ligne brisée penchée, plus un arc.
+    (1.34, 0.79, -0.44),   # porche : la joue gauche déborde, linteau penché
+    (1.30, 0.81, -0.40),   # seuil
+    (1.12, 0.90, -0.24),
     (0.92, 1.10, 0.10),    # la galerie se décale de l'autre côté
     (0.95, 1.14, 0.16),
     (1.06, 1.16, 0.08),    # SALLE, large des deux côtés
@@ -348,13 +357,40 @@ CAVITE_ASYM = [
 # dessus au lieu d'être posée au milieu d'un sol vide (exigence 5).
 ALCOVE = dict(i0=5, i1=7, theta=math.radians(180.0),
               dtheta=math.radians(52.0), v0=0.05, dv=0.50, ampl=1.20)
-ALCOVE_SEUIL = 0.34
+## LA TABLETTE D'ALCÔVE EST MORTE, ET C'EST LE MÊME DÉFAUT QUE LA BANQUETTE.
+## Relevé de 0,34 puis 0,52 m sur la fenêtre d'azimut de l'alcôve (52°), le
+## sol de l'alcôve mesure en réalité 0,21 à 0,30 m — c'est-à-dire le palier
+## seul. Une fenêtre angulaire plus étroite que l'écart entre deux sommets
+## du polygone (40° à 9 facettes) n'a aucun sommet sur lequel s'appliquer :
+## l'arête droite qui joint ses voisins l'efface. On garde donc 0 ici, et
+## c'est le PALIER — uniforme sur tous les azimuts, donc porté par tous les
+## sommets — qui fait la plate-forme du fond. L'élargissement de l'alcôve,
+## lui, survit : il agit sur le rayon à tous les azimuts de sa fenêtre.
+ALCOVE_SEUIL = 0.0
 
 # NERVURES DE PLAFOND — de la matière rentrée sous la voûte, à azimut fixe,
 # donc courant sur toute la longueur. Placées au-dessus de v = 0,62, soit
 # environ 2,0 m : au-dessus de la capsule joueur (1,85 m), jamais dans le
 # gabarit. Elles ne peuvent qu'ÉPAISSIR la roche, donc jamais faire tomber
 # le contrôle d'épaisseur.
+# PALIER — le sol restait PLAT, et ça se mesure : σ = 4,6 sur 500 × 180 px
+# de sol dans la vue vers la sortie, contre σ = 16 sur la façade. Un plan
+# uniforme ne devient pas une roche parce qu'il est en pierre. Le sol monte
+# donc par marches vers le fond : on entre en descendant sous la visière, on
+# remonte vers l'alcôve. Mesuré sur le maillage produit, du seuil au fond :
+# −0,035 → 0,145 → 0,942 → 1,148 m.
+#
+# UNE BANQUETTE A ÉTÉ ESSAYÉE ICI, ET RETIRÉE — la trace vaut mieux que le
+# code mort. Une tablette de 0,34 m sur une fenêtre de 62° d'azimut a été
+# ajoutée le long de la paroi, puis MESURÉE au point où elle devait culminer :
+# 0,164 m, soit exactement le palier seul. Cause : la section n'a que 9
+# sommets, dont 4 ou 5 sous l'horizon ; une fenêtre angulaire qui ne tombe
+# pas sur un sommet est effacée par l'arête droite qui joint ses voisins.
+# Un relief plus fin que la résolution du polygone n'existe pas — c'est la
+# contrepartie du choix de facettes larges, et il vaut mieux l'écrire que
+# de laisser un mécanisme qui ne produit rien.
+PALIER = (0.00, 0.00, 0.04, 0.10, 0.16, 0.26, 0.50, 0.78, 0.92)
+
 NERVURES_THETA = (math.radians(56.0), math.radians(124.0))
 NERVURE_DEMI = math.radians(10.0)
 NERVURE_RENTREE = 0.26
@@ -427,6 +463,22 @@ MASSES_ANNEXES = (
          demi0=1.95, demi1=0.70, prof0=2.20, prof1=0.85,
          facettes=5, rotation=1.1, biseau=1.30, etages=6,
          matiere_bas="MAT_CaveRock_Face", matiere_haut="MAT_CaveRock_Collar"),
+    # LES DEUX MASSES SUIVANTES SONT DU CÔTÉ DE L'APPROCHE, et elles sont
+    # nées d'une capture, pas d'une intention. Contrefort et couronne sont
+    # tous deux au NORD ; la vue d'approche du joueur vient du sud-est et
+    # ne montrait donc qu'un dôme nu. Une silhouette « à trois masses »
+    # qui n'existe que vu de dos ne remplit pas l'exigence : c'est la face
+    # que le joueur regarde qui doit la porter.
+    dict(nom="SM_WaterfallCave_Visiere",
+         base=(1.30, -1.90), sommet=(0.30, -2.85), z0=3.10, z1=5.55,
+         demi0=2.05, demi1=1.05, prof0=1.45, prof1=0.80,
+         facettes=6, rotation=0.75, biseau=1.05, etages=5,
+         matiere_bas="MAT_CaveRock_Collar", matiere_haut="MAT_CaveRock_Face"),
+    dict(nom="SM_WaterfallCave_Eperon",
+         base=(-4.55, -0.60), sommet=(-3.60, -1.40), z0=-1.60, z1=3.05,
+         demi0=1.55, demi1=0.85, prof0=1.85, prof1=1.00,
+         facettes=5, rotation=2.35, biseau=0.75, etages=5,
+         matiere_bas="MAT_CaveRock_Base", matiere_haut="MAT_CaveRock_Face"),
 )
 # Marge minimale entre une masse annexe et l'enveloppe de la cavité. Une
 # masse qui mord la cavité y entrerait comme un bloc parasite, ce que le
@@ -542,14 +594,52 @@ def bruit(theta, phase, amplitude):
 def facette(theta, nombre, rotation):
     """Snappe l'azimut au centre de sa facette.
 
-    C'est LE changement de nature de R2a-3.1. Évaluer le rayon à un azimut
-    quantifié rend la section polygonale : rayon constant sur chaque
-    facette, arête franche entre deux. Une section lisse en `hw·cos θ` par
-    `cle·sin^p θ` est une demi-ellipse — donc une bouche en demi-cercle et
-    une galerie en tube, quel que soit le bruit qu'on lui ajoute.
+    ATTENTION — CE N'EST PAS CE QUI REND UNE SECTION POLYGONALE, et j'ai
+    payé une passe complète de captures pour l'apprendre. Le premier jet de
+    R2a-3.1 quantifiait le RAYON avec cette fonction tout en plaçant le
+    sommet au VRAI azimut. Or un rayon constant sur un secteur angulaire
+    trace un ARC DE CERCLE : la section restait ronde, à un saut de rayon
+    près entre secteurs. Mesuré sur la capture d'approche : σ = 13,3 sur
+    300 × 120 px de roche de façade, σ = 5,8 sur la paroi intérieure. Une
+    surface plate, pas une roche.
+    La quantification ne sert donc plus qu'à ÉCHANTILLONNER les termes de
+    relief à un azimut stable par facette ; ce sont `coins()` et
+    `polygonal()` qui font les pans plats.
     """
     pas = TAU / nombre
     return math.floor((theta - rotation) / pas) * pas + pas * 0.5 + rotation
+
+
+def coins(nombre, rotation):
+    """Azimuts des SOMMETS du polygone de section."""
+    pas = TAU / nombre
+    return [rotation + pas * (m + 0.5) for m in range(nombre)]
+
+
+def polygonal(sommets, rotation, nombre, segments):
+    """Rééchantillonne un polygone fermé de `nombre` sommets en `segments`
+    points, par interpolation LINÉAIRE le long de chaque arête.
+
+    C'est ici que la section cesse d'être une courbe. Entre deux sommets on
+    avance en ligne droite : l'arête est plate, l'angle est franc, et la
+    lumière rasante y accroche deux valeurs distinctes de part et d'autre.
+    L'échantillonnage reste uniforme en azimut, ce qui est nécessaire :
+    peau intérieure et peau extérieure n'ont pas le même nombre de facettes
+    (9 et 7) et la rondelle de rive les coud indice par indice.
+    """
+    pas = TAU / nombre
+    points = []
+    for k in range(segments):
+        theta = TAU * k / segments
+        # Position continue dans la suite des sommets, sommet 0 à
+        # l'azimut `rotation + pas/2`.
+        u = (theta - rotation - pas * 0.5) / pas
+        m = math.floor(u)
+        t = u - m
+        a = sommets[m % nombre]
+        b = sommets[(m + 1) % nombre]
+        points.append(a.lerp(b, t))
+    return points
 
 
 def fenetre(valeur, centre, demi):
@@ -585,14 +675,10 @@ def anneau_interieur(indice, station, tangente, segments, phase, retrait_lat,
     gauche, droite, inclinaison = CAVITE_ASYM[indice]
     rotation = FACETTE_ROTATION * indice
     normale = Vector((tangente.y, -tangente.x))
-    points = []
-    for k in range(segments):
-        theta = TAU * k / segments
-        # Le rayon s'évalue à l'azimut FACETTÉ ; la position du sommet, elle,
-        # reste au vrai azimut. C'est ce décalage qui crée les pans plats.
-        tf = facette(theta, FACETTES, rotation)
+
+    def sommet(tf):
+        """Un SOMMET du polygone de section, à l'azimut `tf`."""
         u, v = math.cos(tf), math.sin(tf)
-        uv, vv = math.cos(theta), math.sin(theta)
         w = bruit(tf, phase, AMP_INTERIEUR)
 
         demi = hw * (gauche if u < 0.0 else droite)
@@ -609,34 +695,33 @@ def anneau_interieur(indice, station, tangente, segments, phase, retrait_lat,
             for nt in NERVURES_THETA:
                 rentree += NERVURE_RENTREE * fenetre(tf, nt, NERVURE_DEMI)
 
-        n = (demi * w + pousse - rentree) * uv
+        n = (demi * w + pousse - rentree) * u
         if v >= 0.0:
             # Linteau incliné : le sommet de la voûte se décale, la clé
             # n'est plus au-dessus de l'axe. Une voûte dont la clé est
             # toujours centrée se lit comme un tube.
-            biais = 1.0 + inclinaison * uv
-            z = cle * (vv ** 0.75 if vv > 0.0 else 0.0) * w * biais - rentree * 0.5
+            biais = 1.0 + inclinaison * u
+            z = cle * (v ** 0.75) * w * biais - rentree * 0.5
         else:
-            z = sag * vv
+            z = sag * v + PALIER[indice]
             # TABLETTE de l'alcôve : le sol s'y relève, et la récompense s'y
             # pose. C'est la « mise en scène par la géométrie » exigée.
             z += ALCOVE_SEUIL * le_long(indice, ALCOVE["i0"], ALCOVE["i1"]) \
                 * fenetre(tf, ALCOVE["theta"], ALCOVE["dtheta"])
-        points.append(Vector((ax + n * normale.x, ay + n * normale.y,
-                              z + denivele)))
-    return points
+        return Vector((ax + n * normale.x, ay + n * normale.y, z + denivele))
+
+    return polygonal([sommet(c) for c in coins(FACETTES, rotation)],
+                     rotation, FACETTES, segments)
 
 
 def anneau_exterieur(indice, station, tangente, segments, phase, jupe, denivele):
     ax, ay, hw, cle, jeu_lat, jeu_cle = station
     rotation = FACETTE_ROTATION_MASSIF * indice
     normale = Vector((tangente.y, -tangente.x))
-    points = []
-    for k in range(segments):
-        theta = TAU * k / segments
-        tf = facette(theta, FACETTES_MASSIF, rotation)
+
+    def sommet(tf):
+        """Un SOMMET du polygone de section du massif."""
         u, v = math.cos(tf), math.sin(tf)
-        uv, vv = math.cos(theta), math.sin(theta)
         w = bruit(tf, phase, AMP_MASSIF)
 
         # Diaclase : creux en cosinus surélevé, centré sur son azimut.
@@ -669,9 +754,17 @@ def anneau_exterieur(indice, station, tangente, segments, phase, jupe, denivele)
             gain_z += L["z"] * axe * bande \
                 * fenetre(tf, L["theta"] + L["biais"], L["dtheta"] * 0.8)
 
-        n = ((hw + lat) * w + gain_lat) * uv
+        # CIRCONSCRIRE le polygone du massif. Un polygone dont les sommets
+        # sont sur la courbe est INSCRIT : ses arêtes coupent à l'intérieur,
+        # jusqu'à 1 − cos(π/7) = 9,9 % du rayon, soit 0,47 m sur un corps de
+        # 4,7 m. Toute cette épaisseur serait prise sur la roche, et le
+        # contrôle d'épaisseur (marge actuelle 0,09 m) refuserait. On
+        # multiplie donc le rayon par 1/cos(π/N) : les ARÊTES retombent sur
+        # la courbe d'origine et les sommets débordent — ce qui rend la
+        # silhouette plus anguleuse, exactement ce qu'on cherche.
+        n = ((hw + lat) * w + gain_lat) * u * CIRCONSCRIT_MASSIF
         if v >= 0.0:
-            z = (cle + cle_jeu) * (vv ** 0.85 if vv > 0.0 else 0.0) * w + gain_z
+            z = ((cle + cle_jeu) * (v ** 0.85) * w + gain_z) * CIRCONSCRIT_MASSIF
             niveau = round(z / PAS_STRATE) * PAS_STRATE
             z += (niveau - z) * FORCE_STRATE
             # Corniche : saillie latérale dans une bande de hauteur, du
@@ -680,12 +773,13 @@ def anneau_exterieur(indice, station, tangente, segments, phase, jupe, denivele)
             portee = max(0.0, math.cos(tf - CORNICHE_THETA)) ** 3.0
             bande_c = math.exp(-(((v ** 0.85) - CORNICHE_HAUT)
                                  / CORNICHE_ETAL) ** 2.0)
-            n += CORNICHE_AMPL * portee * bande_c * (1.0 if uv >= 0.0 else -1.0)
+            n += CORNICHE_AMPL * portee * bande_c * (1.0 if u >= 0.0 else -1.0)
         else:
-            z = jupe * vv * (0.85 + 0.3 * w)
-        points.append(Vector((ax + n * normale.x, ay + n * normale.y,
-                              z + denivele)))
-    return points
+            z = jupe * v * (0.85 + 0.3 * w) * CIRCONSCRIT_MASSIF
+        return Vector((ax + n * normale.x, ay + n * normale.y, z + denivele))
+
+    return polygonal([sommet(c) for c in coins(FACETTES_MASSIF, rotation)],
+                     rotation, FACETTES_MASSIF, segments)
 
 
 def phases(nombre, graine):
@@ -862,10 +956,39 @@ def construire(segments, sag, jupe, retrait_lat, retrait_cle, graine=7.0):
     # qui fait la collerette de la bouche — piédroits, linteau et seuil d'un
     # seul tenant. C'est aussi elle qui rend le maillage connexe, donc de
     # genre 0, donc orientable d'un bloc.
+    #
+    # ELLE ÉTAIT PLATE, ET ÇA SE VOYAIT EN GROS PLAN. Un seul quad par
+    # segment entre les deux peaux fait un ANNEAU PLAN : sur la vue de
+    # seuil, la moitié droite de l'image était une unique face grise sans
+    # un accident. On intercale donc une TROISIÈME rangée, avancée vers
+    # l'extérieur d'une quantité qui dépend de l'azimut : la collerette
+    # devient un chanfrein brisé — auvent en haut, tableaux sur les côtés,
+    # seuil épais en bas — au lieu d'une découpe à l'emporte-pièce.
     a, b = cav_bases[0], mas_bases[0]
+    rive = len(sommets)
+    for k in range(segments):
+        theta = TAU * k / segments
+        v = math.sin(theta)
+        milieu = (sommets[a + k] + sommets[b + k]) * 0.5
+        # Plus d'avancée en haut (auvent) qu'en bas (seuil), et une
+        # modulation à trois lobes pour que le chanfrein soit brisé et non
+        # régulier.
+        #
+        # PREMIER RÉGLAGE REFUSÉ, et par le bon contrôle : à 0,30 + 0,42·v
+        # la collerette tombait à 0,52 m pour un minimum de 0,60. Une lèvre
+        # qui avance au-dessus de la bouche amincit la roche qui la porte —
+        # c'est un auvent en porte-à-faux. On rentre l'avancée, et on
+        # POUSSE le milieu vers l'extérieur du massif, ce qui ne peut
+        # qu'épaissir.
+        avance = 0.20 + 0.24 * max(0.0, v) + 0.09 * math.cos(3.0 * theta + 1.1)
+        pousse = 0.14
+        sommets.append(Vector((milieu.x * (1.0 + pousse), milieu.y - avance,
+                               milieu.z * (1.0 + pousse * 0.5))))
     for k in range(segments):
         k2 = (k + 1) % segments
-        faces.append((a + k, a + k2, b + k2, b + k))
+        faces.append((a + k, a + k2, rive + k2, rive + k))
+        familles.append("MAT_CaveRock_Collar")
+        faces.append((rive + k, rive + k2, b + k2, b + k))
         familles.append("MAT_CaveRock_Collar")
 
     return sommets, faces, familles
@@ -966,7 +1089,10 @@ def controle_gabarit():
         if i >= len(CAVITE) - 2:
             continue          # les deux dernières stations FERMENT la calotte
         marge_hw = hw * (1.0 - AMP_INTERIEUR)
-        marge_cle = cle * (1.0 - AMP_INTERIEUR)
+        # LE PALIER MONTE LE SOL, donc il MANGE la hauteur libre. Sans ce
+        # terme, le contrôle mesurerait la clé au-dessus d'un sol qui n'est
+        # plus là : un gabarit vert au-dessus d'un couloir devenu trop bas.
+        marge_cle = cle * (1.0 - AMP_INTERIEUR) - PALIER[i]
         if marge_hw < GABARIT_DEMI_LARGEUR_M or marge_cle < GABARIT_CLE_M:
             faibles.append((i, ay, marge_hw, marge_cle))
     return faibles
@@ -985,7 +1111,10 @@ def controle_aucun_jour(obj, segments):
     for i in range(2, len(CAVITE) - 2):
         ax, ay, hw, _ = CAVITE[i]
         for lat in (-0.55, -0.25, 0.0, 0.25, 0.55):
-            origine = Vector((ax + lat * hw, ay, 0.35))
+            # L'origine SUIT le palier : partie d'une hauteur fixe, elle
+            # serait sous le sol au fond de la galerie et compterait des
+            # croisements qui ne veulent plus rien dire.
+            origine = Vector((ax + lat * hw, ay, 0.35 + PALIER[i]))
             croisements, position, garde = 0, origine.copy(), 0
             while garde < 16:
                 garde += 1
@@ -997,6 +1126,35 @@ def controle_aucun_jour(obj, segments):
             if croisements < 2 or croisements % 2 != 0:
                 fautes.append((ax + lat * hw, ay, croisements))
     return fautes
+
+
+def hauteur_du_sol(obj, x, y):
+    """Hauteur du sol de la cavité à (x, y), en repère MODÈLE.
+
+    POURQUOI CE CONTRÔLE EXISTE. La récompense est posée par le script de
+    lieu à une altitude écrite EN DUR, et le générateur vient de relever le
+    sol de deux façons (palier le long de l'axe, tablette d'alcôve). Deux
+    fichiers, une seule vérité géométrique : sans mesure, la récompense
+    flotte ou s'enterre, et personne ne le voit avant la capture.
+    On tire donc un rayon vers le BAS depuis l'intérieur de la cavité.
+    """
+    # UN RAYON QUI PART D'UN POINT QUELCONQUE MENT. Première version : départ
+    # fixe à z = 1,60, on garde le premier impact. Mesuré, elle a rendu
+    # 1,544 m à un endroit et −2,078 m à 60 cm de là — le départ tombait
+    # dans la roche et le « sol » était en réalité une face de dessous.
+    # On descend donc en comptant les impacts et on ne retient que le
+    # premier dont la NORMALE regarde vers le haut : c'est la définition
+    # d'un sol, et rien d'autre ne peut la satisfaire.
+    bvh = bvh_depuis(obj)
+    position = Vector((x, y, 3.60))
+    for _ in range(12):
+        r = bvh.ray_cast(position, Vector((0.0, 0.0, -1.0)), 8.0)
+        if r is None or r[0] is None:
+            return None
+        if r[1] is not None and r[1].z > 0.30:
+            return r[0].z
+        position = r[0] - Vector((0.0, 0.0, 0.002))
+    return None
 
 
 def controle_assise(obj):
@@ -1027,8 +1185,18 @@ def main():
     annexes = []
     for config in MASSES_ANNEXES:
         marge = controle_annexe_hors_cavite(config)
-        print("[grotte] %s : %.2f m de la cavite au plus pres"
-              % (config["nom"], marge))
+        # NE PAS IMPRIMER UN FAUX CHIFFRE. Quand aucun sommet de la masse ne
+        # tombe dans la bande de hauteur de la cavité, le contrôle n'a rien
+        # comparé : il rendait « 1000000000.00 m », qui se lit comme une
+        # marge énorme alors que c'est une NON-MESURE. La visière et la
+        # couronne sont dans ce cas — entièrement au-dessus de la voûte —
+        # et c'est un dégagement légitime, mais il doit se dire ainsi.
+        if marge > 1e8:
+            print("[grotte] %s : entierement hors de la bande de la cavite "
+                  "(aucun sommet a comparer)" % config["nom"])
+        else:
+            print("[grotte] %s : %.2f m de la cavite au plus pres"
+                  % (config["nom"], marge))
         if marge < MARGE_ANNEXE_CAVITE_M:
             print("[grotte] ERREUR: %s mord la cavite (%.2f m < %.2f m) — "
                   "elle y entrerait comme un bloc parasite"
@@ -1091,6 +1259,17 @@ def main():
                   "%d croisement(s)" % (x, y, n))
         return 2
     print("[grotte] aucun jour : 25 rayons verticaux, croisements pairs et >= 2")
+
+    # Hauteur du sol là où le script de lieu pose la récompense et la salle.
+    # Ces deux chiffres sont la SEULE source correcte pour les constantes
+    # `MODELE_NICHE.y` et `MODELE_SALLE.y` de `waterfall_cave_place.gd` :
+    # elles vivent dans un autre fichier, et le sol vient de bouger deux
+    # fois (palier, tablette d'alcôve).
+    for nom, x, y in (("axe_seuil", 0.05, 1.60), ("salle", 1.05, 6.25),
+                      ("niche", -1.20, 8.20), ("voisin", -1.60, 8.20)):
+        h = hauteur_du_sol(grotte, x, y)
+        print("[grotte] sol sous %s (%.2f, %.2f) : %s"
+              % (nom, x, y, "AUCUN — hors cavite" if h is None else "%.3f m" % h))
 
     if -mini_z < ASSISE_JUPE_MIN_M:
         print("[grotte] ERREUR: jupe de %.2f m < %.2f m — masse posee, non "

@@ -1,6 +1,21 @@
-## GROTTE DE LA CASCADE (`valley.poi.waterfall_cave.01`, r04) — une VRAIE
+## GROTTE DU COUCHANT (`valley.poi.waterfall_cave.01`, r04) — une VRAIE
 ## cavité : coque extérieure et intérieure fermées, plafond continu, bouche
 ## sombre, seuil sans marche.
+##
+## LE NOM AFFICHÉ A CHANGÉ EN R2a-3.1, l'identifiant NON. Le monde ne porte
+## aucune cascade compatible avec l'hydrologie V2.2 gelée : « Grotte de la
+## cascade » promettait ce qui n'existe pas. Seul `name` bascule dans le
+## layout ; l'ID technique, les chemins et les noms de maillages restent —
+## une migration de sauvegarde pour un libellé serait un coût sans
+## contrepartie.
+##
+## LES TROIS CONSTANTES D'ALTITUDE CI-DESSOUS SONT MESURÉES, PAS CHOISIES.
+## Le sol de la cavité monte par palier vers le fond et se relève encore en
+## tablette dans l'alcôve ; deux fichiers décrivent alors la même
+## géométrie. `make_waterfall_cave.py` imprime donc la hauteur du sol sous
+## chaque point de pose (`[grotte] sol sous …`), et ce sont ces chiffres
+## qui sont recopiés ici. Toute modification du profil se relit dans ce
+## journal avant de toucher à ces valeurs.
 ##
 ## REJET R2a : « enveloppe ouverte, plaques minces, face intérieure
 ## rectiligne noire, caméra intérieure dans les polygones ». Les quatre
@@ -100,14 +115,22 @@ const APPUIS_MODELE: Array[Vector2] = [
 
 ## Repères de gameplay, en repère MODÈLE.
 const MODELE_SEUIL_DEHORS: Vector3 = Vector3(0.0, 0.10, 1.60)
-const MODELE_SALLE: Vector3 = Vector3(1.05, 0.05, -6.25)
+const MODELE_SALLE: Vector3 = Vector3(1.05, 0.22, -6.25)
 ## LA NICHE A CHANGÉ DE CÔTÉ EN R2a-3.1, et ce n'est pas un déplacement
 ## décoratif. La revue exigeait une récompense « mise en scène par la
 ## géométrie et la lumière, pas simplement posée au milieu d'un sol vide » :
 ## le générateur creuse désormais une ALCÔVE latérale (azimut modèle 180°,
-## stations 5 à 7) dont le sol se relève de 0,34 m en TABLETTE de roche.
-## L'ancienne niche (2,50 ; −7,00) était du côté OPPOSÉ, en plein sol.
-const MODELE_NICHE: Vector3 = Vector3(-0.55, 0.14, -8.55)
+## stations 5 à 7), et le sol de la galerie MONTE vers elle. L'ancienne
+## niche (2,50 ; −7,00) était du côté OPPOSÉ, en plein sol.
+##
+## Une TABLETTE relevée y a été tentée deux fois, à 0,34 puis 0,52 m, et
+## retirée : mesurée sur le maillage produit, elle ne relevait rien. Une
+## fenêtre d'azimut de 52° est plus étroite que l'écart entre deux sommets
+## de la section (40° à 9 facettes) : l'arête droite qui joint ses voisins
+## l'efface. La mise en scène tient donc au creux de l'alcôve, à la lampe
+## qui la prend de face, et au sol qui s'élève de −0,04 m au seuil à
+## +0,33 m au fond. Ce sont les seules valeurs mesurées.
+const MODELE_NICHE: Vector3 = Vector3(-1.20, 0.34, -8.20)
 
 
 func default_place_id() -> StringName:
@@ -225,10 +248,12 @@ func _eclairer(ouvrage: Node3D) -> void:
 	salle.omni_range = 6.5
 	salle.omni_attenuation = 1.4
 	salle.shadow_enabled = true
-	# Décalée vers l'alcôve : c'est elle qui doit être éclairée, pas le
-	# centre du sol. Une récompense en scène est une récompense QUE LA
-	# LUMIÈRE DÉSIGNE.
-	salle.position = Vector3(0.35, 1.85, -7.30)
+	# Placée ENTRE la salle et l'alcôve, pas dans l'alcôve. Mesuré en
+	# capture : au-dessus de la tablette, la lampe prenait la récompense à
+	# contre-jour et la noyait dans l'ombre de sa propre niche. Une
+	# récompense en scène est une récompense que la lumière désigne DE
+	# FACE.
+	salle.position = Vector3(0.20, 1.90, -7.20)
 	ouvrage.add_child(salle)
 
 
@@ -239,7 +264,7 @@ func _eclairer(ouvrage: Node3D) -> void:
 func _habiller(transformation: Transform3D) -> void:
 	var niche: Vector3 = transformation * MODELE_NICHE
 	K.module(self, &"Mushroom_Common", niche, 24.0, 1.15, K.TONE_PLANT)
-	var voisin: Vector3 = transformation * Vector3(0.15, 0.12, -8.10)
+	var voisin: Vector3 = transformation * Vector3(-1.60, 0.37, -8.20)
 	K.module(self, &"Mushroom_Common", voisin, 200.0, 0.9, K.TONE_PLANT)
 	for cote: Array in [[3.35, 1.20, 15.0], [-3.20, 1.60, 165.0]]:
 		var pied: Vector3 = transformation * Vector3(
