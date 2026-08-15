@@ -280,7 +280,12 @@ func _habiller(transformation: Transform3D) -> void:
 	# ligne de vue depuis le sud-est est libre, et elles habillent le pied
 	# de la formation au lieu de la cacher. Aucune végétation gelée n'a été
 	# touchée — il n'y en avait pas.
-	for cote: Array in [[5.10, -2.60, 15.0], [-4.80, -3.40, 165.0]]:
+	# CORRIGÉ APRÈS CAPTURE : mes premières valeurs les mettaient DANS la
+	# galerie. Dans ce repère la galerie va vers −Z ; reculer une plante
+	# « derrière le plan de la bouche » demande donc un z POSITIF, pas
+	# négatif. Elles flanquent maintenant l'entrée à plus de 3,8 m de la
+	# ligne de visée, qui passe par (−0,4 ; 2,4) en repère modèle.
+	for cote: Array in [[4.60, 2.40, 15.0], [-4.20, 2.20, 165.0]]:
 		var pied: Vector3 = transformation * Vector3(
 			float(cote[0]), 0.0, float(cote[1]))
 		K.module(self, &"Fern_1",
