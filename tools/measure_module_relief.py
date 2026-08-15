@@ -31,7 +31,16 @@ Trois mesures, toutes calculées sur les triangles réellement présents :
                        englobante, en metres. Dit de combien la surface
                        s'ecarte d'un pave.
 
-Usage : python3 tools/measure_module_relief.py <fichier.glb> [autres…]
+ATTENTION, CE QUE CET OUTIL MESURE ET CE QU'IL NE MESURE PAS. Il lit tous
+les triangles du fichier : coque de collision, socle enterre, faces
+interieures d'une cavite compris. Sur `SM_WaterfallCave.glb` il rend
+157,56 m2 de plage plane, et c'est le DESSOUS DU SOCLE ENTERRE, une dalle
+de 13 x 12 m que personne ne verra jamais. Le controle equivalent cote
+Blender (`controle_plage_plane`) ecarte ce qui est sous le terrain et ce qui
+appartient a la cavite, et rend 2,73 m2. Les deux chiffres sont justes ; un
+seul repond a la question « voit-on un grand aplat ».
+
+Usage : python3 tools/measure_module_relief.py [--maillage=NOM] <fichier.glb>…
 """
 
 from __future__ import annotations
@@ -89,10 +98,12 @@ def _accesseur(gltf: dict, binaire: bytes, index: int) -> list:
     return sortie
 
 
-def _triangles(chemin: Path) -> list[tuple[tuple, tuple, tuple]]:
+def _triangles(chemin: Path, filtre: str | None = None) -> list:
     gltf, binaire = _lire_glb(chemin)
     faces = []
     for maillage in gltf.get("meshes", []):
+        if filtre is not None and filtre not in maillage.get("name", ""):
+            continue
         for prim in maillage.get("primitives", []):
             if prim.get("mode", 4) != 4 or "POSITION" not in prim.get("attributes", {}):
                 continue
@@ -165,8 +176,8 @@ def _plage_plane_max(faces: list, normales: list, aires: list) -> float:
     return max(cumul.values(), default=0.0)
 
 
-def mesurer(chemin: Path) -> dict:
-    faces = _triangles(chemin)
+def mesurer(chemin: Path, filtre: str | None = None) -> dict:
+    faces = _triangles(chemin, filtre)
     if not faces:
         return {"fichier": chemin.name, "erreur": "aucun triangle"}
 
@@ -210,7 +221,7 @@ def mesurer(chemin: Path) -> dict:
 
     plus_grande = max((f[1] for f in familles), default=0.0)
     return {
-        "fichier": chemin.name,
+        "fichier": chemin.name + ("" if filtre is None else "#" + filtre),
         "triangles": len(faces),
         "dimensions_m": [round(v, 3) for v in taille],
         "facettes_distinctes": len(familles),
@@ -222,7 +233,20 @@ def mesurer(chemin: Path) -> dict:
 
 
 def main() -> int:
-    chemins = [Path(a) for a in sys.argv[1:]]
+    # `--maillage=NOM` restreint la mesure aux maillages dont le nom contient
+    # NOM. Sans lui, un fichier qui embarque sa COQUE DE COLLISION rend le
+    # chiffre de la collision : mesuré sur SM_WaterfallCave.glb, 157,56 m2
+    # de plage plane pour le collider (un loft, jamais rendu) contre 2,73
+    # pour le maillage visible. Le nombre était juste et la conclusion
+    # fausse.
+    filtre = None
+    args = []
+    for a in sys.argv[1:]:
+        if a.startswith("--maillage="):
+            filtre = a.split("=", 1)[1]
+        else:
+            args.append(a)
+    chemins = [Path(a) for a in args]
     if not chemins:
         print(__doc__)
         return 2
@@ -230,7 +254,7 @@ def main() -> int:
         "fichier", "tri", "dimensions_m", "facet", "plusgd%", "plage_m2",
         "relief_m"))
     for c in chemins:
-        m = mesurer(c)
+        m = mesurer(c, filtre)
         if "erreur" in m:
             print("%-34s  %s" % (m["fichier"], m["erreur"]))
             continue
