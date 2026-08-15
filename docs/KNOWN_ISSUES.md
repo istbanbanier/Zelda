@@ -1085,3 +1085,24 @@ Le point 3 est le plus parlant : les deux tests fautifs dépendent d'un délai.
   exclut les corps du décor lui-même ; c'est lui qui a donné les vraies cotes.
 - **Piste** : ajouter à la sonde un second tir venu du ciel et rapporter
   l'écart SIGNÉ (enterré / posé / flottant) au lieu d'un seul mot « flotte ».
+
+## ISS-043 — Neuf lignes de `ASSET_MANIFEST.csv` ne sont pas du CSV valide · `S3` · PARTIEL
+
+- **Vu** : 2026-08-15, en mettant à jour la ligne `SM_WaterfallCave` pour
+  R2a-3.3.
+- **Observé** : un champ contenant des virgules a été écrit **sans guillemets**,
+  si bien que `csv.reader` le découpe en plusieurs colonnes et décale tout le
+  reste de la ligne. Sur `SM_WaterfallCave`, la colonne `licence` contenait
+  ` gate-rock` et la colonne `budget_tris` contenait un nom de matériau. Le
+  fichier s'ouvre sans erreur et se lit très bien à l'œil : **rien ne crie le
+  défaut**, et une lecture programmatique en tire des valeurs fausses.
+- **Mesuré** : 19 colonnes attendues ; neuf lignes en avaient un autre nombre —
+  `Male_Peasant`, `AL_RaiderStates`, `Superhero_Male_FullBody`,
+  `SK_StormGuardian`, `AwningTent`, `ui_back`, `ui_error`, `ui_open`,
+  `SM_WaterfallCave`.
+- **Corrigé** : `SM_WaterfallCave` seule, parce qu'elle relevait du jalon en
+  cours. **Les huit autres sont laissées telles quelles** : elles appartiennent
+  à des lots gelés, et les toucher serait une propagation hors périmètre.
+- **Piste** : un contrôle de forme dans `validate_fast.sh` — compter les
+  colonnes de chaque ligne et échouer sur l'écart. Il rougirait aujourd'hui sur
+  huit lignes, ce qui est le comportement correct : la dette est réelle.
