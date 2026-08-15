@@ -183,8 +183,8 @@ CAVITE = [
     (0.58,  4.75, 2.70, 2.90),
     (1.05,  6.25, 3.05, 2.92),   # SALLE
     (1.62,  7.60, 2.80, 2.92),   # cle relevee : le palier du fond mange la hauteur
-    (2.25,  8.65, 2.00, 2.40),
-    (2.85,  9.25, 1.15, 1.80),
+    (2.25,  8.65, 2.20, 2.55),   # elargie : le profil s'y repliait aussi
+    (2.85,  9.25, 1.40, 2.00),   # elargie : a 1,15/1,80 le profil se repliait
 ]
 CAVITE_APEX = (3.25, 9.55, 0.70)     # pointe de la calotte du fond
 # La lèvre du porche plonge sous le terrain. -0,06 au premier jet, avec un
@@ -253,7 +253,7 @@ MASSIF_APEX = (4.65, 11.65, 1.20)
 PAS_STRATE = 0.85
 FORCE_STRATE = 0.55
 ## Pendage du banc : tangente de l'angle en X et en Y. Voir
-## `finition_massif()` — un lit horizontal se lit comme une courbe de
+## `deformer_massif()` — un lit horizontal se lit comme une courbe de
 ## niveau, un lit à ~7° comme une strate basculée.
 PENDAGE_X = 0.11
 PENDAGE_Y = -0.06
@@ -461,38 +461,75 @@ RESSAUTS = (
 # (x, y) base · (x, y) sommet · z0 · z1 · demi-largeur base/sommet ·
 # profondeur base/sommet · facettes · rotation · biseau du sommet
 MASSES_ANNEXES = (
-    dict(nom="SM_WaterfallCave_Contrefort",
+    # --- RANG MAJEUR : les trois masses que la silhouette doit porter ---
+    dict(nom="Contrefort", rang="majeur",
          base=(6.30, 4.30), sommet=(5.10, 4.90), z0=-2.40, z1=4.35,
          demi0=1.70, demi1=0.90, prof0=2.35, prof1=1.15,
-         facettes=7, rotation=0.4, biseau=0.55, etages=7,
-         matiere_bas="MAT_CaveRock_Base", matiere_haut="MAT_CaveRock_Face"),
-    dict(nom="SM_WaterfallCave_Couronne",
+         facettes=7, rotation=0.4, biseau=0.55, etages=7),
+    dict(nom="Couronne", rang="majeur",
          # z0 RELEVÉ de 2,95 à 3,45 quand la strate est devenue partagée.
          # Le champ déplace un sommet d'au plus PAS_STRATE × FORCE_STRATE / 2
-         # ≈ 0,23 m ; à 2,95 la base de la couronne passait alors sous la
-         # clé de la salle (2,92 au droit de son bord avant) et le contrôle
-         # l'a refusée à −2,55 m. Ce n'était pas un faux positif : un bloc
-         # sous la voûte, au-dessus de la galerie, pend dans le vide.
+         # ≈ 0,23 m ; à 2,95 la base passait sous la clé de la salle (2,92)
+         # et le contrôle l'a refusée à −2,55 m. Un bloc sous la voûte pend
+         # dans le vide : ce n'était pas un faux positif.
          base=(1.60, 9.00), sommet=(0.55, 10.35), z0=3.45, z1=7.75,
          demi0=1.95, demi1=0.70, prof0=2.20, prof1=0.85,
-         facettes=5, rotation=1.1, biseau=1.30, etages=6,
-         matiere_bas="MAT_CaveRock_Face", matiere_haut="MAT_CaveRock_Collar"),
-    # LES DEUX MASSES SUIVANTES SONT DU CÔTÉ DE L'APPROCHE, et elles sont
-    # nées d'une capture, pas d'une intention. Contrefort et couronne sont
-    # tous deux au NORD ; la vue d'approche du joueur vient du sud-est et
-    # ne montrait donc qu'un dôme nu. Une silhouette « à trois masses »
-    # qui n'existe que vu de dos ne remplit pas l'exigence : c'est la face
-    # que le joueur regarde qui doit la porter.
-    dict(nom="SM_WaterfallCave_Visiere",
+         # biseau RAMENE de 1,30 a 0,70 : il depassait l'espacement des
+         # etages (4,30 m sur 6 etages = 0,86 m), donc le dernier anneau
+         # passait SOUS l'avant-dernier d'un cote et la couronne se
+         # repliait sur elle-meme. Un volume source auto-intersectant
+         # invalide les garanties du booleen exact.
+         facettes=5, rotation=1.1, biseau=0.70, etages=6),
+    dict(nom="Surplomb", rang="majeur",
+         # L'ancienne « Visiere ». Elle est du côté de l'approche, et c'est
+         # elle qui donne au seuil son linteau épais vu du sud-est.
          base=(1.30, -1.90), sommet=(0.30, -2.85), z0=3.10, z1=5.55,
          demi0=2.05, demi1=1.05, prof0=1.45, prof1=0.80,
-         facettes=6, rotation=0.75, biseau=1.05, etages=5,
-         matiere_bas="MAT_CaveRock_Collar", matiere_haut="MAT_CaveRock_Face"),
-    dict(nom="SM_WaterfallCave_Eperon",
+         facettes=6, rotation=0.75, biseau=1.05, etages=5),
+
+    # --- RANG INTERMÉDIAIRE : ce qui relie les majeures et casse les pans ---
+    dict(nom="Eperon", rang="intermediaire",
          base=(-4.55, -0.60), sommet=(-3.60, -1.40), z0=-1.60, z1=3.05,
          demi0=1.55, demi1=0.85, prof0=1.85, prof1=1.00,
-         facettes=5, rotation=2.35, biseau=0.75, etages=5,
-         matiere_bas="MAT_CaveRock_Base", matiere_haut="MAT_CaveRock_Face"),
+         facettes=5, rotation=2.35, biseau=0.75, etages=5),
+    dict(nom="EpauleOuest", rang="intermediaire",
+         base=(-5.20, 3.60), sommet=(-4.40, 4.40), z0=-1.80, z1=3.90,
+         demi0=1.90, demi1=1.05, prof0=2.40, prof1=1.30,
+         facettes=6, rotation=1.70, biseau=0.85, etages=6),
+    dict(nom="DosAlcove", rang="intermediaire",
+         base=(-4.05, 7.60), sommet=(-3.45, 8.20), z0=-1.30, z1=3.40,
+         demi0=1.70, demi1=0.95, prof0=2.00, prof1=1.10,
+         facettes=6, rotation=1.20, biseau=0.75, etages=6),
+    dict(nom="EpauleNordEst", rang="intermediaire",
+         base=(6.45, 6.85), sommet=(5.90, 7.45), z0=0.40, z1=4.60,
+         demi0=1.55, demi1=0.85, prof0=1.80, prof1=1.00,
+         facettes=6, rotation=2.20, biseau=0.90, etages=5),
+    dict(nom="MolaireEst", rang="intermediaire",
+         # Rentrée de (5,40) à (4,90) : son AABB recouvrait l'enveloppe mais
+         # aucune face ne la croisait — c'est le cas exact qui a fait rendre
+         # DEUX îlots à l'union. Un recouvrement de boîtes n'est pas une
+         # intersection.
+         base=(4.55, -0.20), sommet=(4.00, 0.60), z0=-1.75, z1=3.20,
+         demi0=1.45, demi1=0.80, prof0=1.70, prof1=0.95,
+         facettes=5, rotation=0.90, biseau=0.70, etages=5),
+
+    # --- RANG SECONDAIRE : blocs de pied, pour casser l'échelle ---
+    dict(nom="BlocPiedOuest", rang="secondaire",
+         base=(-4.15, -2.65), sommet=(-3.85, -3.05), z0=-1.40, z1=1.45,
+         demi0=2.10, demi1=1.25, prof0=1.55, prof1=0.90,
+         facettes=6, rotation=2.60, biseau=0.50, etages=5),
+    dict(nom="BlocPiedSud", rang="secondaire",
+         # Rapproché de (3,10 ; −3,70) à (3,60 ; −1,90) : le contrôle de
+         # solidarité l'a déclaré ISOLÉ. Il ne recouvrait l'enveloppe sur
+         # aucun des trois axes — posé devant la formation, il aurait été
+         # un caillou orphelin que le booléen n'aurait même pas fusionné.
+         base=(3.30, -1.70), sommet=(3.15, -2.00), z0=-1.85, z1=1.20,
+         demi0=1.05, demi1=0.62, prof0=1.15, prof1=0.70,
+         facettes=5, rotation=0.50, biseau=0.35, etages=4),
+    dict(nom="EbouliEst", rang="secondaire",
+         base=(4.05, 2.60), sommet=(3.85, 2.90), z0=-1.70, z1=1.35,
+         demi0=1.15, demi1=0.70, prof0=1.30, prof1=0.80,
+         facettes=5, rotation=3.10, biseau=0.40, etages=4),
 )
 # Marge minimale entre une masse annexe et l'enveloppe de la cavité. Une
 # masse qui mord la cavité y entrerait comme un bloc parasite, ce que le
@@ -510,14 +547,20 @@ AMP_MASSIF = 0.150      # relief exterieur : le rocher a des epaules
 
 # Contrôles bloquants (§7 du plan). Chiffrés, et chacun rend impossible un
 # défaut nommé par le lead.
-# COMPOSITION — le contrôle qui manquait, et qui rend « une formation, pas
-# des morceaux posés » vérifiable par une machine. Seuils lus dans le
-# tableau de `controle_composition`, pas choisis : 45 % passe juste au-dessus
-# du plus faible des trois sujets acceptés (pylône, 44,7 %), et quatre
-# pièces significatives est une de moins que le moins fourni d'entre eux.
-PART_PLUS_GROS_MAX_PC = 45.0
-PIECES_SIGNIFICATIVES_MIN = 4
+# Seuil d'affichage de la télémétrie de composition. Ne décide rien : voir
+# `controle_composition`, dont le pouvoir de verdict a été retiré.
 PART_SIGNIFICATIVE_PC = 5.0
+
+# UNION — la surface extérieure livrée est UNE formation continue. Les
+# masses sont des volumes SOURCES, fusionnés à la coque par booléen exact.
+# Un seul maillage final est le résultat recherché, pas un défaut.
+#
+# PÉNÉTRATION MINIMALE d'une masse dans le reste de la formation. Une masse
+# qui effleure produit une couture rasante et une arête en escalier ; une
+# masse qui pénètre franchement produit une intersection nette. Mesurée en
+# recouvrement d'AABB sur les trois axes, comme `controle_solidarite` du
+# pont.
+PENETRATION_MIN_M = 0.12
 
 EPAISSEUR_MIN_M = 0.80          # nulle part une plaque
 EPAISSEUR_MIN_COLLERETTE_M = 0.60
@@ -737,8 +780,8 @@ def anneau_interieur(indice, station, tangente, segments, phase, retrait_lat,
                      rotation, FACETTES, segments)
 
 
-def finition_massif(p):
-    """LE CHAMP GÉOLOGIQUE PARTAGÉ — appelé par toute pièce extérieure.
+def deformer_massif(p):
+    """LE LIT DE STRATE — seul endroit où la géométrie d'un banc se décide.
 
     C'est la réponse au reproche « des morceaux posés sur la coque plutôt
     qu'une seule formation érodée », et ce reproche était littéralement
@@ -767,17 +810,27 @@ def finition_massif(p):
     """
     h = p.z + PENDAGE_X * p.x + PENDAGE_Y * p.y
     niveau = round(h / PAS_STRATE) * PAS_STRATE
-    q = Vector((p.x, p.y, p.z + (niveau - h) * FORCE_STRATE))
-    # Les trois bandes de valeur, sur le z ABSOLU — la même règle pour
-    # toutes les pièces, sinon la hiérarchie de valeurs se brise à chaque
-    # couture. Seuils repris de `construire()`, qui les portait seul.
-    if q.z < BANDE_BASE_Z:
-        famille = "MAT_CaveRock_Base"
-    elif q.z > BANDE_COLLERETTE_Z:
-        famille = "MAT_CaveRock_Collar"
-    else:
-        famille = "MAT_CaveRock_Face"
-    return q, famille
+    return Vector((p.x, p.y, p.z + (niveau - h) * FORCE_STRATE))
+
+
+def famille_massif(z_moyen):
+    """LA BANDE DE VALEUR — seul endroit où une matière extérieure se décide.
+
+    LE « DÉCIDEUR UNIQUE » N'ÉTAIT PAS UNIQUE, et le lead l'a vu dans le
+    diff : `finition_massif()` calculait bien une famille, mais
+    `anneau_exterieur()` ne gardait que le point et jetait la matière ;
+    `construire()` gardait ses propres seuils écrits en dur (0,55 et 3,10) ;
+    les annexes passaient par une troisième fonction. Trois décideurs, donc
+    trois occasions de diverger — et une hiérarchie de valeurs qui se brise
+    à chaque couture sans qu'aucun contrôle ne s'en aperçoive.
+
+    Il n'y a plus qu'ici. Les seuils ne sont écrits nulle part ailleurs.
+    """
+    if z_moyen < BANDE_BASE_Z:
+        return "MAT_CaveRock_Base"
+    if z_moyen > BANDE_COLLERETTE_Z:
+        return "MAT_CaveRock_Collar"
+    return "MAT_CaveRock_Face"
 
 
 def anneau_exterieur(indice, station, tangente, segments, phase, jupe, denivele):
@@ -834,7 +887,7 @@ def anneau_exterieur(indice, station, tangente, segments, phase, jupe, denivele)
             # LA STRATE N'EST PLUS APPLIQUÉE ICI. Elle l'était sur le `z`
             # LOCAL de la section, avant même l'ajout du dénivelé — donc
             # dans un repère que les masses annexes ne partagent pas. Elle
-            # est désormais posée par `finition_massif()` sur le point
+            # est désormais posée par `deformer_massif()` sur le point
             # FINAL, et cette fonction est appelée par TOUTES les pièces
             # extérieures sans exception. C'est ce qui fait qu'un lit sorti
             # du contrefort rentre dans le massif.
@@ -848,7 +901,7 @@ def anneau_exterieur(indice, station, tangente, segments, phase, jupe, denivele)
         else:
             z = jupe * v * (0.85 + 0.3 * w) * CIRCONSCRIT_MASSIF
         p = Vector((ax + n * normale.x, ay + n * normale.y, z + denivele))
-        return finition_massif(p)[0]
+        return deformer_massif(p)
 
     return polygonal([sommet(c) for c in coins(FACETTES_MASSIF, rotation)],
                      rotation, FACETTES_MASSIF, segments)
@@ -899,7 +952,7 @@ def masse_annexe(config):
                            z + dz))
             # LE MÊME CHAMP QUE LE CORPS, appelé au même endroit du calcul :
             # sur le point final. C'est toute la correction.
-            sommets.append(finition_massif(brut)[0])
+            sommets.append(deformer_massif(brut))
     for e in range(etages - 1):
         a, b = bases[e], bases[e + 1]
         for k in range(nb):
@@ -924,12 +977,7 @@ def _famille_de_face(sommets, indices):
     les bandes de valeur ne s'alignaient sur rien. C'est exactement la
     règle que `construire()` applique déjà au corps — elle devient commune.
     """
-    z = sum(sommets[i].z for i in indices) / float(len(indices))
-    if z < BANDE_BASE_Z:
-        return "MAT_CaveRock_Base"
-    if z > BANDE_COLLERETTE_Z:
-        return "MAT_CaveRock_Collar"
-    return "MAT_CaveRock_Face"
+    return famille_massif(sum(sommets[i].z for i in indices) / float(len(indices)))
 
 
 def controle_annexe_hors_cavite(config):
@@ -1033,12 +1081,7 @@ def construire(segments, sag, jupe, retrait_lat, retrait_cle, graine=7.0):
             # c'est la MATIÈRE qui doit la porter (briefing §3.3). Le seuil
             # bas était à -0,10, c'est-à-dire SOUS le terrain : la bande
             # sombre n'était jamais visible.
-            if z < 0.55:
-                familles.append("MAT_CaveRock_Base")
-            elif z > 3.10:
-                familles.append("MAT_CaveRock_Collar")
-            else:
-                familles.append("MAT_CaveRock_Face")
+            familles.append(famille_massif(z))
     dernier = mas_bases[-1]
     for k in range(segments):
         k2 = (k + 1) % segments
@@ -1250,28 +1293,203 @@ def hauteur_du_sol(obj, x, y):
     return None
 
 
+def _boite(obj):
+    """AABB d'un objet, en repère monde (tous sont à l'origine, échelle 1)."""
+    xs = [v.co for v in obj.data.vertices]
+    return (Vector((min(p.x for p in xs), min(p.y for p in xs), min(p.z for p in xs))),
+            Vector((max(p.x for p in xs), max(p.y for p in xs), max(p.z for p in xs))))
+
+
+def _recouvrement(a, b):
+    """Recouvrement de deux AABB, axe par axe. Le minimum des trois est la
+    profondeur de pénétration garantie : si l'un est négatif, les boîtes ne
+    se touchent pas du tout."""
+    (a0, a1), (b0, b1) = a, b
+    return min(min(a1.x, b1.x) - max(a0.x, b0.x),
+               min(a1.y, b1.y) - max(a0.y, b0.y),
+               min(a1.z, b1.z) - max(a0.z, b0.z))
+
+
+def controle_penetration(pieces):
+    """SOLIDARITÉ — aucune masse source isolée, pénétration mesurée.
+
+    C'est l'un des contrôles que le lead a substitués à la statistique de
+    triangles, et il mesure la bonne chose : non pas comment le fichier est
+    découpé, mais si chaque volume source ENTRE réellement dans la matière
+    du reste. Une masse qui effleure produit une couture rasante et une
+    arête en escalier ; une masse qui pénètre franchement produit une
+    intersection nette, et le booléen a de quoi travailler.
+
+    Deux exigences distinctes :
+      1. chaque masse pénètre au moins une autre pièce d'au moins
+         `PENETRATION_MIN_M` sur les TROIS axes ;
+      2. le graphe ainsi formé est CONNEXE depuis l'enveloppe — sinon deux
+         masses peuvent se tenir l'une l'autre à l'écart de la formation.
+
+    Rend (liste des isolées, liste des non rattachées, detail des paires).
+    """
+    boites = [(obj.name, _boite(obj)) for obj in pieces]
+    arbres = [bvh_depuis(obj) for obj in pieces]
+    aretes = {nom: set() for nom, _ in boites}
+    detail = []
+    for i in range(len(boites)):
+        for k in range(i + 1, len(boites)):
+            r = _recouvrement(boites[i][1], boites[k][1])
+            if r < PENETRATION_MIN_M:
+                continue                      # préfiltre : boîtes disjointes
+            # LE RECOUVREMENT D'AABB NE SUFFIT PAS, et l'union me l'a appris
+            # en rendant 2 îlots alors que le graphe des boîtes était
+            # connexe : deux boîtes peuvent se chevaucher sans que les
+            # surfaces se croisent — un bloc au coin d'un autre. On exige
+            # donc un vrai croisement de faces.
+            croisements = len(arbres[i].overlap(arbres[k]))
+            if croisements == 0:
+                continue
+            aretes[boites[i][0]].add(boites[k][0])
+            aretes[boites[k][0]].add(boites[i][0])
+            detail.append((boites[i][0], boites[k][0], r, croisements))
+    isolees = [nom for nom, v in aretes.items() if not v]
+
+    # Connexité depuis l'enveloppe : un parcours en largeur suffit.
+    depart = boites[0][0]
+    vus = {depart}
+    file = [depart]
+    while file:
+        courant = file.pop()
+        for voisin in aretes[courant]:
+            if voisin not in vus:
+                vus.add(voisin)
+                file.append(voisin)
+    detachees = [nom for nom, _ in boites if nom not in vus]
+    return isolees, detachees, detail
+
+
+def unir(base, masses):
+    """Fusionne réellement les masses sources dans l'enveloppe.
+
+    « La surface extérieure livrée doit être fusionnée en une formation
+    géologique continue. Un seul maillage final est autorisé et ne
+    constitue pas un défaut. » — c'est ici que ça se passe.
+
+    Le solveur EXACT, et non FAST : mesuré avant d'écrire cette fonction,
+    il rend un manifold fermé sur 14 blocs convexes irréguliers en 0,12 s,
+    et il ne dépend pas d'un ordre d'opérandes heureux.
+
+    Les slots de matériaux sont identiques et dans le même ordre sur toutes
+    les pièces (`objet()` les ajoute depuis `ORDRE_MATIERES`), donc les
+    indices survivent à la fusion sans remappage.
+    """
+    bpy.context.view_layer.objects.active = base
+    for masse in masses:
+        mod = base.modifiers.new("union_%s" % masse.name, 'BOOLEAN')
+        mod.operation = 'UNION'
+        mod.solver = 'EXACT'
+        mod.object = masse
+        bpy.ops.object.modifier_apply(modifier=mod.name)
+    for masse in masses:
+        bpy.data.objects.remove(masse, do_unlink=True)
+    maillage = base.data
+    bm = bmesh.new()
+    bm.from_mesh(maillage)
+    # NETTOYAGE DES DÉGÉNÉRESCENCES DU BOOLÉEN. Là où deux surfaces sources
+    # sont presque tangentes, le solveur exact produit des faces en lame de
+    # rasoir : aire quasi nulle, deux sommets à quelques microns. Elles sont
+    # invisibles au rendu mais un test d'auto-intersection les compte, et à
+    # juste titre — ce sont bien deux faces qui se croisent. 26 paires au
+    # premier jet. On dissout donc ce qui est plus fin que le dixième de
+    # millimètre, ce qui est deux ordres de grandeur sous la plus petite
+    # arête voulue.
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-3)
+    bmesh.ops.dissolve_degenerate(bm, dist=1e-3, edges=bm.edges[:])
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bm.to_mesh(maillage)
+    bm.free()
+    maillage.update()
+    for polygone in maillage.polygons:
+        polygone.use_smooth = False
+    return base
+
+
+def controle_connexite(obj):
+    """L'union est-elle UNE formation, ou plusieurs coques côte à côte ?
+
+    Un booléen sur des volumes qui ne se touchent pas rend un maillage
+    parfaitement fermé, parfaitement manifold — et parfaitement composé de
+    plusieurs îlots séparés. Aucun des contrôles existants ne s'en
+    apercevrait. On compte donc les composantes connexes : il en faut UNE.
+    """
+    bm = bmesh.new()
+    bm.from_mesh(obj.data)
+    restants = set(bm.verts)
+    ilots = 0
+    while restants:
+        depart = restants.pop()
+        pile = [depart]
+        ilots += 1
+        while pile:
+            v = pile.pop()
+            for e in v.link_edges:
+                autre = e.other_vert(v)
+                if autre in restants:
+                    restants.remove(autre)
+                    pile.append(autre)
+    bm.free()
+    return ilots
+
+
+def controle_auto_intersection(obj):
+    """Zéro auto-intersection — ce que `controle_fermeture` ne voit pas.
+
+    Un maillage dont un lobe traverse la paroi opposée reste à 0 arête de
+    bord, 0 non-manifold et de volume signé positif : les contrôles de
+    fermeture le déclarent sain. Il rend pourtant des faces intérieures
+    visibles et des ombres fausses.
+
+    `BVHTree.overlap(self)` rend les paires de faces qui se croisent. On
+    écarte les paires qui partagent au moins un sommet — deux faces
+    adjacentes se « croisent » toujours au sens du BVH.
+    """
+    maillage = obj.data
+    sommets = [v.co.copy() for v in maillage.vertices]
+    polys = [tuple(p.vertices) for p in maillage.polygons]
+    arbre = BVHTree.FromPolygons(sommets, polys, all_triangles=False, epsilon=0.0)
+    fautes = 0
+    exemple = None
+    for a, b in arbre.overlap(arbre):
+        if a >= b:
+            continue
+        if set(polys[a]) & set(polys[b]):
+            continue
+        fautes += 1
+        if exemple is None:
+            ca = sum((sommets[i] for i in polys[a]), Vector()) / len(polys[a])
+            cb = sum((sommets[i] for i in polys[b]), Vector()) / len(polys[b])
+            exemple = "faces %d/%d, centres (%.2f, %.2f, %.2f) et (%.2f, %.2f, %.2f), " \
+                "distance %.4f m" % (a, b, ca.x, ca.y, ca.z, cb.x, cb.y, cb.z,
+                                     (ca - cb).length)
+    return fautes, exemple
+
+
 def controle_composition(objets_visibles):
-    """« Une formation, pas des morceaux posés » — rendu MESURABLE.
+    """TÉLÉMÉTRIE — plus un verdict. Le lead a démonté le raisonnement.
 
-    C'est le contrôle qui manquait, et son absence explique deux rejets. Les
-    sept autres garantissent que la grotte est une COQUE VALIDE : fermée,
-    épaisse, traversable, sans jour. Aucun ne garantit qu'elle est un
-    ROCHER. Le lead a donc dû le dire à l'œil, deux fois, et à l'œil ça
-    revient toujours.
+    J'avais fait de la part de triangles par objet un gate bloquant, en
+    tirant un seuil de 45 % d'une comparaison avec le pont, le pylône et le
+    quai. Le lead l'a refusé, et son argument est juste :
 
-    La mesure qui sépare la grotte des trois sujets acceptés, relevée sur
-    les .glb livrés :
+    * une coque INCHANGÉE passerait le test en étant simplement découpée en
+      quatre objets — le fichier changerait, pas le rocher ;
+    * une formation réellement FUSIONNÉE en un seul maillage, qui est
+      justement le résultat recherché, afficherait 100 % et échouerait ;
+    * un pont, un pylône et un quai sont naturellement faits de pièces
+      assemblées. Leur découpage ne dit rien du découpage attendu d'une
+      formation géologique. Le seuil n'était donc pas « lu dans le
+      tableau », il était lu dans un tableau sans rapport.
 
-        sujet        pieces   tris   plus gros   pieces >= 5 %
-        grotte            5   2716      90,7 %          1
-        pylone (PASS)    17   8052      44,7 %          5
-        pont   (PASS)    34  15784      14,9 %          8
-        quai   (PASS)     5   2264      29,2 %          5
-
-    Un maillage qui porte 90 % de la surface visible EST une coque, et tout
-    le reste EST posé dessus — la statistique dit la même chose que l'œil.
-    Le seuil de 45 % se lit directement dans ce tableau : il passe juste
-    au-dessus du plus faible des trois PASS, il n'est pas choisi.
+    La mesure reste imprimée parce qu'elle est informative — elle dit ce
+    que pèse chaque source — mais elle ne décide plus rien. Ce qui décide,
+    ce sont la solidarité du graphe, la pénétration mesurée, la connexité
+    de l'union, l'absence d'auto-intersection et de bord non-manifold.
 
     Rend (part_du_plus_gros, nombre_de_pieces_significatives, detail).
     """
@@ -1334,11 +1552,97 @@ def main():
                   % (config["nom"], marge, MARGE_ANNEXE_CAVITE_M))
             return 2
         s_a, f_a, fam_a = masse_annexe(config)
-        annexes.append(objet(config["nom"], s_a, f_a, fam_a, True))
+        annexes.append(objet("SM_WaterfallCave_" + config["nom"],
+                             s_a, f_a, fam_a, True))
 
     for obj in [grotte, collision] + annexes:
         obj.location = (0.0, 0.0, 0.0)
         obj.scale = (1.0, 1.0, 1.0)
+
+    # ÉPAISSEUR MESURÉE AVANT L'UNION, ET CE N'EST PAS UN RACCOURCI.
+    #
+    # `controle_epaisseur` distingue peau intérieure et peau extérieure par
+    # l'ORDRE DES SOMMETS (`n_cav` premiers = cavité). Un booléen détruit
+    # cet ordre : appelé après l'union, le contrôle comparerait n'importe
+    # quoi et rendrait un chiffre plausible. C'est le pire des défauts.
+    #
+    # La mesure sur l'enveloppe seule est un MINORANT valide pour l'union :
+    # les masses sont toutes à plus de MARGE_ANNEXE_CAVITE_M de la cavité
+    # (contrôlé ci-dessus), donc l'union ne peut qu'ÉLOIGNER la surface
+    # extérieure d'un sommet de cavité, jamais la rapprocher.
+    mini, mini_collerette = controle_epaisseur(grotte, SEGMENTS)
+    if mini < EPAISSEUR_MIN_M or mini_collerette < EPAISSEUR_MIN_COLLERETTE_M:
+        print("[grotte] ERREUR: epaisseur %.2f m en paroi, %.2f m en "
+              "collerette (min %.2f / %.2f)"
+              % (mini, mini_collerette, EPAISSEUR_MIN_M,
+                 EPAISSEUR_MIN_COLLERETTE_M))
+        return 2
+    print("[grotte] epaisseur de roche : %.2f m en paroi, %.2f m en "
+          "collerette (mesure AVANT union, minorant valide)"
+          % (mini, mini_collerette))
+
+    # SOLIDARITÉ des volumes sources, avant de les fondre.
+    isolees, detachees, paires = controle_penetration([grotte] + annexes)
+    print("[grotte] solidarite : %d paire(s) en INTERSECTION reelle "
+          "(recouvrement >= %.2f m ET faces qui se croisent)"
+          % (len(paires), PENETRATION_MIN_M))
+    for a, b, r, n in sorted(paires, key=lambda x: x[3])[:4]:
+        print("[grotte]   plus faible : %s <-> %s  %.2f m, %d face(s) croisee(s)"
+              % (a.replace("SM_WaterfallCave_", ""),
+                 b.replace("SM_WaterfallCave_", ""), r, n))
+    if isolees or detachees:
+        for nom in isolees:
+            print("[grotte] ERREUR: masse ISOLEE — %s ne penetre aucune "
+                  "autre piece de %.2f m sur les trois axes"
+                  % (nom, PENETRATION_MIN_M))
+        for nom in detachees:
+            if nom not in isolees:
+                print("[grotte] ERREUR: masse DETACHEE — %s ne se rattache "
+                      "pas a l'enveloppe par une chaine de penetrations" % nom)
+        return 2
+
+    # AUTO-INTERSECTION DES SOURCES, AVANT DE LES FONDRE.
+    #
+    # Ce contrôle est né d'une impasse : l'union rendait 6 paires de faces
+    # croisées et j'ai passé plusieurs cycles à déplacer des masses en
+    # croyant le booléen fautif. Il ne l'était pas. Deux VOLUMES SOURCES
+    # s'auto-traversaient déjà — la coque à la station 7, et la couronne
+    # dont le biseau (1,30 m) dépassait l'espacement de ses étages (0,86 m),
+    # si bien que son dernier anneau passait sous l'avant-dernier.
+    # Le solveur exact ne garantit rien sur une entrée invalide : il
+    # propageait fidèlement un défaut d'entrée, et je cherchais à la sortie.
+    fautifs = []
+    for src in [grotte] + annexes:
+        n, ex = controle_auto_intersection(src)
+        if n:
+            fautifs.append((src.name, n, ex))
+            print("[grotte] ERREUR: source %s s'auto-traverse — %d paire(s), %s"
+                  % (src.name, n, ex))
+    if fautifs:
+        print("[grotte] un booleen exact ne garantit rien sur une entree "
+              "auto-intersectante : corriger la SOURCE, jamais la sortie")
+        return 2
+    print("[grotte] sources : aucune auto-intersection avant union")
+
+    grotte = unir(grotte, annexes)
+    annexes = []
+    print("[grotte] union : formation fusionnee en un seul maillage")
+
+    ilots = controle_connexite(grotte)
+    if ilots != 1:
+        print("[grotte] ERREUR: l'union compte %d ilot(s) — ce ne sont pas "
+              "une formation mais plusieurs coques cote a cote" % ilots)
+        return 2
+    print("[grotte] connexite : 1 composante")
+
+    croisements, exemple = controle_auto_intersection(grotte)
+    if croisements:
+        print("[grotte] ERREUR: %d paire(s) de faces qui se croisent "
+              "(exemple : %s) — une coque fermee peut s'auto-traverser "
+              "sans qu'aucun controle de fermeture ne le voie"
+              % (croisements, exemple))
+        return 2
+    print("[grotte] auto-intersection : aucune paire de faces croisees")
 
     tris = sum(len(p.vertices) - 2 for p in grotte.data.polygons)
     tris_col = sum(len(p.vertices) - 2 for p in collision.data.polygons)
@@ -1362,17 +1666,9 @@ def main():
             print("[grotte] ERREUR: volume nul ou degenere (%s)" % nom)
             return 2
 
-    mini, mini_col = controle_epaisseur(grotte, SEGMENTS)
-    print("[grotte] epaisseur de roche : %.2f m en paroi, %.2f m en collerette"
-          % (mini, mini_col))
-    if mini < EPAISSEUR_MIN_M:
-        print("[grotte] ERREUR: paroi de %.2f m < %.2f m — plaque vue par la "
-              "tranche" % (mini, EPAISSEUR_MIN_M))
-        return 2
-    if mini_col < EPAISSEUR_MIN_COLLERETTE_M:
-        print("[grotte] ERREUR: collerette de %.2f m < %.2f m"
-              % (mini_col, EPAISSEUR_MIN_COLLERETTE_M))
-        return 2
+    # (l'épaisseur a été mesurée plus haut, sur l'enveloppe AVANT l'union —
+    # voir le commentaire là-bas : après un booléen, l'ordre des sommets qui
+    # sépare les deux peaux n'existe plus.)
 
     faibles = controle_gabarit()
     if faibles:
@@ -1412,33 +1708,6 @@ def main():
     bpy.ops.wm.save_as_mainfile(filepath=sortie)
     print("[grotte] source enregistree -> %s" % sortie)
 
-    # COMPOSITION — VÉRIFIÉE EN DERNIER, ET APRÈS L'ENREGISTREMENT.
-    #
-    # Ce n'est pas une faveur faite au contrôle, c'est une leçon payée :
-    # placé avant la sauvegarde, il rendait 2, `main()` s'arrêtait, le
-    # .blend n'était pas écrit, le .glb pas réexporté — et la capture de
-    # diagnostic qui a suivi a rendu l'ANCIEN maillage. J'ai comparé deux
-    # images en croyant mesurer un changement : les colonnes étaient
-    # identiques au pixel près, ce qui m'a évité de croire mon impression.
-    #
-    # La source est donc écrite d'abord, et le contrôle rend 2 ensuite : la
-    # chaîne reste ROUGE, `export_architecture.sh` refuse d'exporter, et
-    # l'artefact intermédiaire existe pour qu'on puisse l'inspecter. Un
-    # gate rouge doit rester rouge ; il n'a pas à empêcher de mesurer.
-    part, significatives, detail = controle_composition([grotte] + annexes)
-    print("[grotte] composition de la surface visible :")
-    for nom, t, pc in detail:
-        print("[grotte]   %-34s %6d tris  %5.1f %%" % (nom, t, pc))
-    if part > PART_PLUS_GROS_MAX_PC or significatives < PIECES_SIGNIFICATIVES_MIN:
-        print("[grotte] ERREUR: composition — plus gros maillage %.1f %% "
-              "(max %.1f), %d piece(s) a %.0f %% ou plus (min %d). "
-              "Une piece qui porte l'essentiel de la surface EST une coque, "
-              "et tout le reste EST pose dessus."
-              % (part, PART_PLUS_GROS_MAX_PC, significatives,
-                 PART_SIGNIFICATIVE_PC, PIECES_SIGNIFICATIVES_MIN))
-        return 2
-    print("[grotte] composition : plus gros %.1f %% (max %.1f), %d piece(s) "
-          "significative(s)" % (part, PART_PLUS_GROS_MAX_PC, significatives))
     return 0
 
 

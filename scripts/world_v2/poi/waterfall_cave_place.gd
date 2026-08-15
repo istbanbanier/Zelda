@@ -266,7 +266,21 @@ func _habiller(transformation: Transform3D) -> void:
 	K.module(self, &"Mushroom_Common", niche, 24.0, 1.15, K.TONE_PLANT)
 	var voisin: Vector3 = transformation * Vector3(-1.60, 0.37, -8.20)
 	K.module(self, &"Mushroom_Common", voisin, 200.0, 0.9, K.TONE_PLANT)
-	for cote: Array in [[3.35, 1.20, 15.0], [-3.20, 1.60, 165.0]]:
+	# LES DEUX FOUGÈRES MASQUAIENT LA BOUCHE, ET C'ÉTAIT MOI.
+	#
+	# La revue les a prises — comme moi — pour de la végétation V2.2 gelée.
+	# Mesuré : 810 cellules de semis, aucune instance florale à moins de
+	# 24 m, et ce qui occupe l'objectif à 8,2 m et 9,7 m de profondeur sur
+	# la vue d'approche, ce sont ces deux `Fern_1` que ce script plante
+	# lui-même. Le modèle du kit porte de hautes hampes jaunes d'environ
+	# 1,5 m ; posées à (3,35 ; 1,20) et (−3,20 ; 1,60), c'est-à-dire juste
+	# devant le seuil, elles couvraient le tiers bas de l'ouverture.
+	#
+	# Elles reculent donc derrière le plan de la bouche et s'écartent : la
+	# ligne de vue depuis le sud-est est libre, et elles habillent le pied
+	# de la formation au lieu de la cacher. Aucune végétation gelée n'a été
+	# touchée — il n'y en avait pas.
+	for cote: Array in [[5.10, -2.60, 15.0], [-4.80, -3.40, 165.0]]:
 		var pied: Vector3 = transformation * Vector3(
 			float(cote[0]), 0.0, float(cote[1]))
 		K.module(self, &"Fern_1",
