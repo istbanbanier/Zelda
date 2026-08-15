@@ -252,6 +252,14 @@ MASSIF_APEX = (4.65, 11.65, 1.20)
 # le volume garde sa forme.
 PAS_STRATE = 0.85
 FORCE_STRATE = 0.55
+## Pendage du banc : tangente de l'angle en X et en Y. Voir
+## `finition_massif()` — un lit horizontal se lit comme une courbe de
+## niveau, un lit à ~7° comme une strate basculée.
+PENDAGE_X = 0.11
+PENDAGE_Y = -0.06
+## Bandes de valeur, sur le z ABSOLU, partagées par toutes les pièces.
+BANDE_BASE_Z = 0.55
+BANDE_COLLERETTE_Z = 3.10
 
 # DIACLASE ET CORNICHE — ce qui rend un contour CONCAVE.
 #
@@ -459,7 +467,13 @@ MASSES_ANNEXES = (
          facettes=7, rotation=0.4, biseau=0.55, etages=7,
          matiere_bas="MAT_CaveRock_Base", matiere_haut="MAT_CaveRock_Face"),
     dict(nom="SM_WaterfallCave_Couronne",
-         base=(1.60, 9.00), sommet=(0.55, 10.35), z0=2.95, z1=7.40,
+         # z0 RELEVÉ de 2,95 à 3,45 quand la strate est devenue partagée.
+         # Le champ déplace un sommet d'au plus PAS_STRATE × FORCE_STRATE / 2
+         # ≈ 0,23 m ; à 2,95 la base de la couronne passait alors sous la
+         # clé de la salle (2,92 au droit de son bord avant) et le contrôle
+         # l'a refusée à −2,55 m. Ce n'était pas un faux positif : un bloc
+         # sous la voûte, au-dessus de la galerie, pend dans le vide.
+         base=(1.60, 9.00), sommet=(0.55, 10.35), z0=3.45, z1=7.75,
          demi0=1.95, demi1=0.70, prof0=2.20, prof1=0.85,
          facettes=5, rotation=1.1, biseau=1.30, etages=6,
          matiere_bas="MAT_CaveRock_Face", matiere_haut="MAT_CaveRock_Collar"),
@@ -496,6 +510,15 @@ AMP_MASSIF = 0.150      # relief exterieur : le rocher a des epaules
 
 # Contrôles bloquants (§7 du plan). Chiffrés, et chacun rend impossible un
 # défaut nommé par le lead.
+# COMPOSITION — le contrôle qui manquait, et qui rend « une formation, pas
+# des morceaux posés » vérifiable par une machine. Seuils lus dans le
+# tableau de `controle_composition`, pas choisis : 45 % passe juste au-dessus
+# du plus faible des trois sujets acceptés (pylône, 44,7 %), et quatre
+# pièces significatives est une de moins que le moins fourni d'entre eux.
+PART_PLUS_GROS_MAX_PC = 45.0
+PIECES_SIGNIFICATIVES_MIN = 4
+PART_SIGNIFICATIVE_PC = 5.0
+
 EPAISSEUR_MIN_M = 0.80          # nulle part une plaque
 EPAISSEUR_MIN_COLLERETTE_M = 0.60
 GABARIT_DEMI_LARGEUR_M = 0.95   # capsule joueur r = 0,45 m
@@ -714,6 +737,49 @@ def anneau_interieur(indice, station, tangente, segments, phase, retrait_lat,
                      rotation, FACETTES, segments)
 
 
+def finition_massif(p):
+    """LE CHAMP GÉOLOGIQUE PARTAGÉ — appelé par toute pièce extérieure.
+
+    C'est la réponse au reproche « des morceaux posés sur la coque plutôt
+    qu'une seule formation érodée », et ce reproche était littéralement
+    dans le code : `anneau_exterieur` quantifiait sa hauteur sur
+    `PAS_STRATE`, appliquait la corniche et étiquetait sa matière sur le z
+    ABSOLU ; `masse_annexe` ne faisait rien de tout cela et choisissait sa
+    matière sur l'INDICE D'ÉTAGE. Les annexes portaient donc des lits de
+    strate qui n'existaient pas et des bandes de valeur qui ne
+    s'alignaient sur rien. Aucun réglage ne pouvait corriger ça : deux
+    pièces qui n'obéissent pas au même champ ne peuvent pas appartenir au
+    même rocher.
+
+    Le champ est fonction de la POSITION FINALE, pas de la section, pas de
+    l'étage, pas de l'azimut. Deux sommets voisins de part et d'autre
+    d'une couture reçoivent donc le même traitement, et le lit traverse.
+
+    LE PENDAGE EST CE QUI FAIT LA DIFFÉRENCE ENTRE UNE STRATE ET UNE
+    COURBE DE NIVEAU. Un lit rigoureusement horizontal se lit comme un
+    contour topographique ; incliné de quelques degrés, il se lit comme un
+    banc sédimentaire basculé — et c'est ce que demande
+    VISUAL_ASSET_BIBLE §2.1, « strates horizontales larges cassées par des
+    fractures diagonales ». `PENDAGE_X/Y` valent la tangente de l'angle :
+    0,11 et −0,06 font un plongement d'environ 7°.
+
+    Rend (point déplacé, nom de matière).
+    """
+    h = p.z + PENDAGE_X * p.x + PENDAGE_Y * p.y
+    niveau = round(h / PAS_STRATE) * PAS_STRATE
+    q = Vector((p.x, p.y, p.z + (niveau - h) * FORCE_STRATE))
+    # Les trois bandes de valeur, sur le z ABSOLU — la même règle pour
+    # toutes les pièces, sinon la hiérarchie de valeurs se brise à chaque
+    # couture. Seuils repris de `construire()`, qui les portait seul.
+    if q.z < BANDE_BASE_Z:
+        famille = "MAT_CaveRock_Base"
+    elif q.z > BANDE_COLLERETTE_Z:
+        famille = "MAT_CaveRock_Collar"
+    else:
+        famille = "MAT_CaveRock_Face"
+    return q, famille
+
+
 def anneau_exterieur(indice, station, tangente, segments, phase, jupe, denivele):
     ax, ay, hw, cle, jeu_lat, jeu_cle = station
     rotation = FACETTE_ROTATION_MASSIF * indice
@@ -765,8 +831,13 @@ def anneau_exterieur(indice, station, tangente, segments, phase, jupe, denivele)
         n = ((hw + lat) * w + gain_lat) * u * CIRCONSCRIT_MASSIF
         if v >= 0.0:
             z = ((cle + cle_jeu) * (v ** 0.85) * w + gain_z) * CIRCONSCRIT_MASSIF
-            niveau = round(z / PAS_STRATE) * PAS_STRATE
-            z += (niveau - z) * FORCE_STRATE
+            # LA STRATE N'EST PLUS APPLIQUÉE ICI. Elle l'était sur le `z`
+            # LOCAL de la section, avant même l'ajout du dénivelé — donc
+            # dans un repère que les masses annexes ne partagent pas. Elle
+            # est désormais posée par `finition_massif()` sur le point
+            # FINAL, et cette fonction est appelée par TOUTES les pièces
+            # extérieures sans exception. C'est ce qui fait qu'un lit sorti
+            # du contrefort rentre dans le massif.
             # Corniche : saillie latérale dans une bande de hauteur, du
             # côté du soleil. N'ajoute que de la matière — elle ne peut
             # donc jamais amincir la roche.
@@ -776,7 +847,8 @@ def anneau_exterieur(indice, station, tangente, segments, phase, jupe, denivele)
             n += CORNICHE_AMPL * portee * bande_c * (1.0 if u >= 0.0 else -1.0)
         else:
             z = jupe * v * (0.85 + 0.3 * w) * CIRCONSCRIT_MASSIF
-        return Vector((ax + n * normale.x, ay + n * normale.y, z + denivele))
+        p = Vector((ax + n * normale.x, ay + n * normale.y, z + denivele))
+        return finition_massif(p)[0]
 
     return polygonal([sommet(c) for c in coins(FACETTES_MASSIF, rotation)],
                      rotation, FACETTES_MASSIF, segments)
@@ -822,21 +894,42 @@ def masse_annexe(config):
             if e == etages - 1:
                 # Biseau : le sommet est tranché en pente, pas arrondi.
                 dz = -config["biseau"] * (0.5 + 0.5 * math.cos(theta - 0.9))
-            sommets.append(Vector((cx + demi * r * math.cos(theta),
-                                   cy + prof * r * math.sin(theta),
-                                   z + dz)))
+            brut = Vector((cx + demi * r * math.cos(theta),
+                           cy + prof * r * math.sin(theta),
+                           z + dz))
+            # LE MÊME CHAMP QUE LE CORPS, appelé au même endroit du calcul :
+            # sur le point final. C'est toute la correction.
+            sommets.append(finition_massif(brut)[0])
     for e in range(etages - 1):
         a, b = bases[e], bases[e + 1]
         for k in range(nb):
             k2 = (k + 1) % nb
             faces.append((a + k, a + k2, b + k2, b + k))
-            familles.append(config["matiere_bas"] if e < etages // 2
-                            else config["matiere_haut"])
-    faces.append(tuple(range(bases[0], bases[0] + nb)))
-    familles.append(config["matiere_bas"])
-    faces.append(tuple(range(bases[-1], bases[-1] + nb)))
-    familles.append(config["matiere_haut"])
+            familles.append(_famille_de_face(sommets, (a + k, a + k2, b + k2, b + k)))
+    bas = tuple(range(bases[0], bases[0] + nb))
+    faces.append(bas)
+    familles.append(_famille_de_face(sommets, bas))
+    haut = tuple(range(bases[-1], bases[-1] + nb))
+    faces.append(haut)
+    familles.append(_famille_de_face(sommets, haut))
     return sommets, faces, familles
+
+
+def _famille_de_face(sommets, indices):
+    """Matière d'une face, par la hauteur MOYENNE de ses sommets.
+
+    Remplace `matiere_bas si e < etages // 2 sinon matiere_haut`. L'ancienne
+    règle étiquetait par l'indice d'étage : deux masses de hauteurs
+    différentes changeaient donc de matière à des altitudes différentes, et
+    les bandes de valeur ne s'alignaient sur rien. C'est exactement la
+    règle que `construire()` applique déjà au corps — elle devient commune.
+    """
+    z = sum(sommets[i].z for i in indices) / float(len(indices))
+    if z < BANDE_BASE_Z:
+        return "MAT_CaveRock_Base"
+    if z > BANDE_COLLERETTE_Z:
+        return "MAT_CaveRock_Collar"
+    return "MAT_CaveRock_Face"
 
 
 def controle_annexe_hors_cavite(config):
@@ -1157,6 +1250,44 @@ def hauteur_du_sol(obj, x, y):
     return None
 
 
+def controle_composition(objets_visibles):
+    """« Une formation, pas des morceaux posés » — rendu MESURABLE.
+
+    C'est le contrôle qui manquait, et son absence explique deux rejets. Les
+    sept autres garantissent que la grotte est une COQUE VALIDE : fermée,
+    épaisse, traversable, sans jour. Aucun ne garantit qu'elle est un
+    ROCHER. Le lead a donc dû le dire à l'œil, deux fois, et à l'œil ça
+    revient toujours.
+
+    La mesure qui sépare la grotte des trois sujets acceptés, relevée sur
+    les .glb livrés :
+
+        sujet        pieces   tris   plus gros   pieces >= 5 %
+        grotte            5   2716      90,7 %          1
+        pylone (PASS)    17   8052      44,7 %          5
+        pont   (PASS)    34  15784      14,9 %          8
+        quai   (PASS)     5   2264      29,2 %          5
+
+    Un maillage qui porte 90 % de la surface visible EST une coque, et tout
+    le reste EST posé dessus — la statistique dit la même chose que l'œil.
+    Le seuil de 45 % se lit directement dans ce tableau : il passe juste
+    au-dessus du plus faible des trois PASS, il n'est pas choisi.
+
+    Rend (part_du_plus_gros, nombre_de_pieces_significatives, detail).
+    """
+    parts = []
+    for obj in objets_visibles:
+        tris = sum(len(p.vertices) - 2 for p in obj.data.polygons)
+        parts.append((obj.name, tris))
+    total = sum(t for _, t in parts)
+    if total <= 0:
+        return 100.0, 0, []
+    parts.sort(key=lambda x: -x[1])
+    detail = [(nom, tris, 100.0 * tris / total) for nom, tris in parts]
+    significatives = sum(1 for _, _, pc in detail if pc >= PART_SIGNIFICATIVE_PC)
+    return detail[0][2], significatives, detail
+
+
 def controle_assise(obj):
     zs = [v.co.z for v in obj.data.vertices]
     seuil = [v.co.z for i, v in enumerate(obj.data.vertices)
@@ -1280,6 +1411,34 @@ def main():
                           "SM_WaterfallCave.blend")
     bpy.ops.wm.save_as_mainfile(filepath=sortie)
     print("[grotte] source enregistree -> %s" % sortie)
+
+    # COMPOSITION — VÉRIFIÉE EN DERNIER, ET APRÈS L'ENREGISTREMENT.
+    #
+    # Ce n'est pas une faveur faite au contrôle, c'est une leçon payée :
+    # placé avant la sauvegarde, il rendait 2, `main()` s'arrêtait, le
+    # .blend n'était pas écrit, le .glb pas réexporté — et la capture de
+    # diagnostic qui a suivi a rendu l'ANCIEN maillage. J'ai comparé deux
+    # images en croyant mesurer un changement : les colonnes étaient
+    # identiques au pixel près, ce qui m'a évité de croire mon impression.
+    #
+    # La source est donc écrite d'abord, et le contrôle rend 2 ensuite : la
+    # chaîne reste ROUGE, `export_architecture.sh` refuse d'exporter, et
+    # l'artefact intermédiaire existe pour qu'on puisse l'inspecter. Un
+    # gate rouge doit rester rouge ; il n'a pas à empêcher de mesurer.
+    part, significatives, detail = controle_composition([grotte] + annexes)
+    print("[grotte] composition de la surface visible :")
+    for nom, t, pc in detail:
+        print("[grotte]   %-34s %6d tris  %5.1f %%" % (nom, t, pc))
+    if part > PART_PLUS_GROS_MAX_PC or significatives < PIECES_SIGNIFICATIVES_MIN:
+        print("[grotte] ERREUR: composition — plus gros maillage %.1f %% "
+              "(max %.1f), %d piece(s) a %.0f %% ou plus (min %d). "
+              "Une piece qui porte l'essentiel de la surface EST une coque, "
+              "et tout le reste EST pose dessus."
+              % (part, PART_PLUS_GROS_MAX_PC, significatives,
+                 PART_SIGNIFICATIVE_PC, PIECES_SIGNIFICATIVES_MIN))
+        return 2
+    print("[grotte] composition : plus gros %.1f %% (max %.1f), %d piece(s) "
+          "significative(s)" % (part, PART_PLUS_GROS_MAX_PC, significatives))
     return 0
 
 
