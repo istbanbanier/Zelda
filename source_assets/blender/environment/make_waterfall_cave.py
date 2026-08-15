@@ -331,7 +331,18 @@ CORNICHE_ETAL = 0.17
 # qu'aucune facette ne soit exactement opposée à une autre — une section
 # paire lit encore comme un tube aplati.
 FACETTES = 9
-FACETTE_ROTATION = 0.23      # rad ajoutés par station : les arêtes vrillent
+# 0,23 rad par station A ÉTÉ MESURÉ COMME REPLIANT LA SURFACE. Le vrillage
+# s'accumule (0,23 × 8 = 1,84 rad, soit 105°, deux facettes et demie) ; entre
+# les stations 7 et 8, où la demi-largeur chute de 36 %, la bande de quads se
+# croise elle-même — deux paires de faces, colonnes 1 et 54, invisibles à
+# `controle_fermeture`. Balayage complet :
+#   0,23 -> 2 croisements · 0,18 -> 0 · 0,14 -> 1 · 0,10 -> 0 · 0,06 -> 0
+#   0,03 -> 0 · 0,00 -> 0
+# Le phénomène est en lame de couteau, et 0,18 ne passe que par chance : on
+# prend 0,10, au milieu d'un palier de zéros, et le contrôle
+# d'auto-intersection des sources reste en place pour le jour où une autre
+# constante rapprochera à nouveau deux bandes.
+FACETTE_ROTATION = 0.10      # rad ajoutés par station : les arêtes vrillent
 FACETTES_MASSIF = 7
 FACETTE_ROTATION_MASSIF = 0.31
 ## Voir `anneau_exterieur` : rend le polygone du massif CIRCONSCRIT à la
@@ -493,7 +504,7 @@ MASSES_ANNEXES = (
          demi0=1.55, demi1=0.85, prof0=1.85, prof1=1.00,
          facettes=5, rotation=2.35, biseau=0.75, etages=5),
     dict(nom="EpauleOuest", rang="intermediaire",
-         base=(-5.20, 3.60), sommet=(-4.40, 4.40), z0=-1.80, z1=3.90,
+         base=(-4.70, 3.60), sommet=(-4.00, 4.40), z0=-1.80, z1=3.90,
          demi0=1.90, demi1=1.05, prof0=2.40, prof1=1.30,
          facettes=6, rotation=1.70, biseau=0.85, etages=6),
     dict(nom="DosAlcove", rang="intermediaire",
@@ -555,12 +566,22 @@ PART_SIGNIFICATIVE_PC = 5.0
 # masses sont des volumes SOURCES, fusionnés à la coque par booléen exact.
 # Un seul maillage final est le résultat recherché, pas un défaut.
 #
-# PÉNÉTRATION MINIMALE d'une masse dans le reste de la formation. Une masse
-# qui effleure produit une couture rasante et une arête en escalier ; une
-# masse qui pénètre franchement produit une intersection nette. Mesurée en
-# recouvrement d'AABB sur les trois axes, comme `controle_solidarite` du
-# pont.
-PENETRATION_MIN_M = 0.12
+# PRÉFILTRE — et rien de plus. `_recouvrement()` mesure le chevauchement des
+# BOÎTES ENGLOBANTES, pas une profondeur de pénétration : deux volumes
+# peuvent partager 0,50 m de boîte en se touchant seulement par un coin.
+# Je l'avais nommé `PENETRATION_MIN_M`, ce qui laissait croire à une mesure
+# de matière ; l'union a d'ailleurs rendu DEUX îlots alors que ce seuil
+# était satisfait partout. Il ne sert qu'à écarter les paires manifestement
+# disjointes avant l'appel BVH, qui est le vrai juge.
+#
+# La preuve de solidarité est la CONJONCTION de cinq mesures, dont
+# celle-ci est la moins forte :
+#   1. recouvrement d'AABB (ce seuil) ;
+#   2. croisement réel de faces, par BVHTree.overlap ;
+#   3. graphe rattaché à l'enveloppe ;
+#   4. union finale à une seule composante ;
+#   5. union manifold et sans auto-intersection.
+RECOUVREMENT_AABB_MIN_M = 0.12
 
 EPAISSEUR_MIN_M = 0.80          # nulle part une plaque
 EPAISSEUR_MIN_COLLERETTE_M = 0.60
@@ -1322,7 +1343,7 @@ def controle_penetration(pieces):
 
     Deux exigences distinctes :
       1. chaque masse pénètre au moins une autre pièce d'au moins
-         `PENETRATION_MIN_M` sur les TROIS axes ;
+         `RECOUVREMENT_AABB_MIN_M` sur les TROIS axes ;
       2. le graphe ainsi formé est CONNEXE depuis l'enveloppe — sinon deux
          masses peuvent se tenir l'une l'autre à l'écart de la formation.
 
@@ -1335,7 +1356,7 @@ def controle_penetration(pieces):
     for i in range(len(boites)):
         for k in range(i + 1, len(boites)):
             r = _recouvrement(boites[i][1], boites[k][1])
-            if r < PENETRATION_MIN_M:
+            if r < RECOUVREMENT_AABB_MIN_M:
                 continue                      # préfiltre : boîtes disjointes
             # LE RECOUVREMENT D'AABB NE SUFFIT PAS, et l'union me l'a appris
             # en rendant 2 îlots alors que le graphe des boîtes était
@@ -1581,20 +1602,31 @@ def main():
           "collerette (mesure AVANT union, minorant valide)"
           % (mini, mini_collerette))
 
+    # TÉLÉMÉTRIE de composition — imprimée, jamais bloquante. Elle était
+    # annoncée comme telle dans le commit précédent sans être appelée nulle
+    # part : une télémétrie qui ne s'exécute pas n'est pas une télémétrie,
+    # c'est du code mort qui ment sur ce qu'il fait.
+    _, _, detail = controle_composition([grotte] + annexes)
+    print("[grotte] composition des volumes SOURCES (telemetrie, ne bloque "
+          "rien ; l'union les fond ensuite en un seul maillage) :")
+    for nom, t, pc in detail:
+        print("[grotte]   %-34s %6d tris  %5.1f %%"
+              % (nom.replace("SM_WaterfallCave_", ""), t, pc))
+
     # SOLIDARITÉ des volumes sources, avant de les fondre.
     isolees, detachees, paires = controle_penetration([grotte] + annexes)
     print("[grotte] solidarite : %d paire(s) en INTERSECTION reelle "
-          "(recouvrement >= %.2f m ET faces qui se croisent)"
-          % (len(paires), PENETRATION_MIN_M))
+          "(prefiltre AABB >= %.2f m, PUIS croisement de faces verifie)"
+          % (len(paires), RECOUVREMENT_AABB_MIN_M))
     for a, b, r, n in sorted(paires, key=lambda x: x[3])[:4]:
         print("[grotte]   plus faible : %s <-> %s  %.2f m, %d face(s) croisee(s)"
               % (a.replace("SM_WaterfallCave_", ""),
                  b.replace("SM_WaterfallCave_", ""), r, n))
     if isolees or detachees:
         for nom in isolees:
-            print("[grotte] ERREUR: masse ISOLEE — %s ne penetre aucune "
-                  "autre piece de %.2f m sur les trois axes"
-                  % (nom, PENETRATION_MIN_M))
+            print("[grotte] ERREUR: masse ISOLEE — aucune face de %s ne "
+                  "croise une autre piece (prefiltre AABB %.2f m)"
+                  % (nom, RECOUVREMENT_AABB_MIN_M))
         for nom in detachees:
             if nom not in isolees:
                 print("[grotte] ERREUR: masse DETACHEE — %s ne se rattache "

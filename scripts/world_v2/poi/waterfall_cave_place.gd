@@ -130,7 +130,7 @@ const MODELE_SALLE: Vector3 = Vector3(1.05, 0.22, -6.25)
 ## l'efface. La mise en scène tient donc au creux de l'alcôve, à la lampe
 ## qui la prend de face, et au sol qui s'élève de −0,04 m au seuil à
 ## +0,33 m au fond. Ce sont les seules valeurs mesurées.
-const MODELE_NICHE: Vector3 = Vector3(-1.20, 0.34, -8.20)
+const MODELE_NICHE: Vector3 = Vector3(-1.20, 0.43, -8.20)
 
 
 func default_place_id() -> StringName:
@@ -264,7 +264,7 @@ func _eclairer(ouvrage: Node3D) -> void:
 func _habiller(transformation: Transform3D) -> void:
 	var niche: Vector3 = transformation * MODELE_NICHE
 	K.module(self, &"Mushroom_Common", niche, 24.0, 1.15, K.TONE_PLANT)
-	var voisin: Vector3 = transformation * Vector3(-1.60, 0.37, -8.20)
+	var voisin: Vector3 = transformation * Vector3(-1.60, 0.55, -8.20)
 	K.module(self, &"Mushroom_Common", voisin, 200.0, 0.9, K.TONE_PLANT)
 	# LES DEUX FOUGÈRES MASQUAIENT LA BOUCHE, ET C'ÉTAIT MOI.
 	#
