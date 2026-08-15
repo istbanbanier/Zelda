@@ -90,9 +90,18 @@ func _initialize() -> void:
 ## livrer comme preuve d'un travail la photographie de son état antérieur.
 ##
 ## C'est la même famille que le défaut `--scene=` documenté plus haut : une
-## capture plausible et fausse ne se rattrape pas à l'œil. On compare donc
-## la date de chaque source importable à celle de l'artefact qu'elle a
-## produit, et on refuse de capturer si l'une est plus récente.
+## capture plausible et fausse ne se rattrape pas à l'œil.
+##
+## LA DATE NE SUFFIT PAS, et le premier jet du contrôle l'a prouvé sur-le-
+## champ : il a bloqué sur `SM_TestCube.glb` et `SK_TestRigAnim.glb`, dont
+## le mtime avait bougé alors que le CONTENU était identique — Godot avait
+## donc raison de ne pas les réimporter. Un garde-fou qui rougit à tort
+## finit désactivé, et celui-ci serait mort dans l'heure.
+##
+## On applique donc le critère de Godot lui-même : le `source_md5` inscrit
+## dans `.godot/imported/*.md5` au moment de l'import. Il compare le
+## contenu, pas l'horloge ; il ne peut ni manquer une vraie modification, ni
+## en inventer une.
 func _assets_non_reimportes() -> PackedStringArray:
 	var perimes: PackedStringArray = PackedStringArray()
 	_parcourir_imports("res://assets", perimes)
@@ -115,14 +124,13 @@ func _parcourir_imports(dossier: String, perimes: PackedStringArray) -> void:
 			var produit: String = _artefact_importe(chemin)
 			if produit.is_empty():
 				perimes.append(source + " (aucun artefact importé)")
+			elif not FileAccess.file_exists(produit):
+				perimes.append(source + " (artefact absent)")
 			else:
-				var t_source: int = FileAccess.get_modified_time(
-					ProjectSettings.globalize_path(source))
-				var t_produit: int = FileAccess.get_modified_time(
-					ProjectSettings.globalize_path(produit))
-				if t_produit == 0:
-					perimes.append(source + " (artefact absent)")
-				elif t_source > t_produit:
+				var empreinte: String = _md5_source_a_l_import(produit)
+				if empreinte.is_empty():
+					perimes.append(source + " (empreinte d'import absente)")
+				elif empreinte != FileAccess.get_md5(source):
 					perimes.append(source)
 		nom = acces.get_next()
 	acces.list_dir_end()
@@ -137,6 +145,21 @@ func _artefact_importe(chemin_import: String) -> String:
 		if ligne.begins_with("path="):
 			fichier.close()
 			return ligne.trim_prefix("path=").replace("\"", "")
+	fichier.close()
+	return ""
+
+
+## `source_md5` tel que Godot l'a inscrit à l'import, à côté de l'artefact.
+func _md5_source_a_l_import(produit: String) -> String:
+	var chemin: String = produit.get_basename() + ".md5"
+	var fichier: FileAccess = FileAccess.open(chemin, FileAccess.READ)
+	if fichier == null:
+		return ""
+	while not fichier.eof_reached():
+		var ligne: String = fichier.get_line().strip_edges()
+		if ligne.begins_with("source_md5="):
+			fichier.close()
+			return ligne.trim_prefix("source_md5=").replace("\"", "")
 	fichier.close()
 	return ""
 
