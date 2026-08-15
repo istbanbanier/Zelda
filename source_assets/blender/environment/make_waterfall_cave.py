@@ -781,28 +781,83 @@ def rochers_gaine():
         # désigné les DIAGONALES : stations 1 et 4, azimuts 135° et 141°,
         # « 0 croisement ». Entre un flanc et une voûte il reste un quart de
         # tour, et un rocher ne remplit pas sa boîte englobante.
+        # LA GAINE NE DOIT PAS DÉCIDER DE LA CRÊTE, et elle le faisait.
+        #
+        # Mesuré : à l'échelle 1,45 et à 1,60 m du bord, ses trente-cinq
+        # rochers culminaient à `cle + 5,31` ≈ 8,26 m quand les masses de
+        # composition plafonnent à 9,16 m. Un demi-mètre d'écart, sur
+        # trente-cinq positions régulières le long du tube : le sommet de
+        # la formation devenait une RANGÉE DE DENTS, c'est-à-dire la
+        # « pointe arbitraire » interdite, en série. Une gaine dont le rôle
+        # est d'être invisible ne peut pas porter la silhouette.
+        #
+        # LA CORRECTION PAR LE SOMMET A ÉCHOUÉ, ET C'EST INSTRUCTIF. Ancrer
+        # le sommet à `cle + marge` ramenait bien la crête à 4,56 m — mais
+        # en donnant la MÊME hauteur à tous les azimuts, donc en faisant
+        # descendre les diagonales hautes de 2,4 m. Le contrôle a répondu
+        # aussitôt : station 6, azimuts 51 à 71°, « 0 croisement — le rayon
+        # sort par un JOUR ». Le placement RADIAL n'était pas un détail de
+        # forme, c'est lui qui garantit la couverture.
+        #
+        # La crête se plafonne donc par la TAILLE, pas par la position :
+        # placement radial conservé, échelle ramenée à `GAINE_ECHELLE`, et
+        # `GAINE_MARGE_M` devient l'enfoncement du CENTRE au-delà de la
+        # paroi. L'arithmétique, pour que le prochain lecteur n'ait pas à
+        # la refaire — module natif 2,64 × 2,81 × 4,35 m :
+        #
+        #   demi-extension radiale = 1,32 m   (2,64 / 2, échelle 1,00)
+        #   bord intérieur         = marge − 1,32 = −0,77 m  → mord la paroi
+        #   bord extérieur         = marge + 1,32 = +1,87 m  → > 0,80 exigé
+        #   crête                  = cle + marge + 2,18 ≈ 5,68 m
+        #
+        # Soit 3,5 m sous les masses majeures et 1,6 m sous les
+        # intermédiaires : la gaine ne peut plus être le point haut. Elle
+        # mord aussi PLUS profondément la paroi qu'avant (0,77 m contre
+        # 0,32 m), donc la couverture ne repose plus sur une marge mince.
         for k, azimut in enumerate(GAINE_AZIMUTS):
             theta = math.radians(azimut)
-            centre_x = ax + (hw + GAINE_MARGE_M) * math.cos(theta)
-            centre_z = (cle + GAINE_MARGE_M) * math.sin(theta)
+            rayon_lat = hw + GAINE_MARGE_M
+            rayon_haut = cle + GAINE_MARGE_M
+            hauteur = MODULES["R"]["natif"][2] * GAINE_ECHELLE
             sortie.append(dict(
                 nom="Gaine_%d_%03d" % (i, azimut), mod="R",
-                pose=(centre_x, ay, max(-1.60, centre_z - 2.60)),
+                pose=(ax + rayon_lat * math.cos(theta), ay,
+                      rayon_haut * math.sin(theta) - hauteur * 0.5),
                 lacet=(i * 47 + k * 71) % 360,
                 tangage=(i % 3) * 4 - 4, roulis=(k % 5) * 3 - 6,
-                ech=1.45, rang="gaine"))
+                ech=GAINE_ECHELLE, rang="gaine"))
     return sortie
 
 
-## Marge de roche demandée autour de la cavité par la gaine. Un peu plus que
-## `EPAISSEUR_MIN_M` : le rocher du kit ne remplit pas sa boîte englobante,
-## et la décimation en reprend encore quelques centimètres.
-GAINE_MARGE_M = 1.60
+## ENFONCEMENT DU CENTRE de la roche de gaine au-delà de la paroi, en
+## mètres. Ce n'était pas cela au départ : à 1,60 m la roche était posée
+## LOIN dehors et ne mordait la paroi que de 0,32 m, si bien que la
+## couverture tenait à une marge mince — et que la roche dépassait de
+## 3,5 m vers l'extérieur, donc par-dessus la composition. À 0,55 m elle
+## mord 0,77 m de paroi et porte encore 1,87 m de roche vers le dehors,
+## pour 0,80 m exigés. Le détail du calcul est dans `rochers_gaine()`.
+GAINE_MARGE_M = 0.55
 
-## Azimuts de la gaine, en degrés, mesurés depuis +X vers +Z. Cinq suffisent
-## parce que chaque roche fait plus de trois mètres et couvre largement plus
-## d'un quart de tour ; le contrôle par rayon le vérifie sur 56 azimuts.
-GAINE_AZIMUTS = (0, 45, 90, 135, 180)
+## Azimuts de la gaine, en degrés, mesurés depuis +X vers +Z.
+##
+## Trois ne suffisaient pas : le contrôle a désigné les DIAGONALES. Cinq ont
+## tenu tant que la roche faisait 1,45 d'échelle. À 1,00 et sept azimuts, les
+## jours se sont refermés mais l'épaisseur est tombée à 0,16 m « station 5,
+## azimut 109° » — la SALLE, la station la plus large : à 3,05 m de rayon, un
+## pas de 30° laisse 1,58 m de corde entre deux roches, et une roche du kit ne
+## remplit pas sa boîte. Neuf azimuts ramènent le pas à 23°, donc la corde à
+## 1,20 m. Le contrôle par rayon vérifie sur 56 azimuts, et c'est lui qui
+## tranche — pas ce commentaire.
+GAINE_AZIMUTS = (0, 22, 45, 67, 90, 112, 135, 157, 180)
+
+## Échelle des roches de gaine. Elles sont invisibles ; seules comptent leur
+## capacité à porter `EPAISSEUR_MIN_M` autour du tube et leur INCAPACITÉ à
+## porter la crête (voir l'arithmétique dans `rochers_gaine()`).
+##
+## 1,15 et non 1,00 : la même mesure d'épaisseur demandait aussi plus de
+## portée radiale. La crête passe de 5,68 à 6,00 m, soit encore 1,3 m sous
+## les masses intermédiaires (7,29 m) et 3,2 m sous les majeures (9,16 m).
+GAINE_ECHELLE = 1.15
 
 ASSISE = dict(x0=-6.40, x1=6.90, y0=-3.10, y1=9.10, z0=-2.35, z1=-0.55)
 
@@ -2812,6 +2867,20 @@ def main():
     print("[grotte] %d roche(s) du kit posee(s) : %s, plus l'assise enterree"
           % (len(implantation), ", ".join("%d %s" % (n, r)
                                           for r, n in sorted(compte.items()))))
+    # QUI DÉCIDE DE LA CRÊTE ? La question n'est pas rhétorique : sur la
+    # capture précédente le sommet de la formation était une rangée de
+    # dents régulières, et il a fallu la deviner faute de mesure. Ce
+    # relevé la donne — le rang `gaine` doit rester NETTEMENT sous les
+    # rangs de composition, sans quoi l'invisible décide du visible.
+    faite = {}
+    for config, obj in zip(implantation, pieces[1:]):
+        haut = max(v.co.z for v in obj.data.vertices)
+        rang = config["rang"]
+        faite[rang] = max(faite.get(rang, -1e9), haut)
+    print("[grotte] faite par rang (z max, m) : %s"
+          % ", ".join("%s %.2f" % (r, z) for r, z in sorted(
+              faite.items(), key=lambda kv: -kv[1])))
+
     for obj in pieces + [collision]:
         obj.location = (0.0, 0.0, 0.0)
         obj.scale = (1.0, 1.0, 1.0)
