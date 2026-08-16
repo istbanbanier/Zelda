@@ -5,6 +5,63 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-16 — R2a-3.4 : corrective multi-agent (flore, composition, seuil)
+
+Trois agents, trois worktrees détachés de `59e0adb`, verrou `flock` partagé,
+intégration par cherry-pick sans commit de fusion. Preuves :
+`evidence/world_v2/v2_3_r2a/grotte/tranche4_final/R2A_3_4.md`.
+
+### Ce que chaque agent a trouvé
+
+**A — flore.** Le bâtisseur de végétation V2 était le seul poseur de World V2 à
+ne pas consulter `KitScale` : `Flower_4_Group` culminait à 2,841 m pour un
+plafond bible de 0,55 m. Corrigé par la voie canonique, bande (0,69 ; 0,99)
+choisie pour conserver le rapport de variance d'origine à 0,2 % près.
+
+**B — forensic.** Une **circularité dans une chaîne de contrôles** :
+`controle_epaisseur` excluait les rayons descendants en renvoyant à
+`controle_aucun_jour`, qui ne tire que vers le haut. Rien n'a jamais regardé le
+sol. Le générateur imprimait d'ailleurs déjà la mesure du défaut le jour de la
+livraison — `sol : -0,416` pour un attendu de `-0,040` — illisible parce que la
+ligne n'imprime pas l'attendu à côté. `ISS-044`.
+
+**C — composition.** Le cv 0,06 était **arithmétique** : le faîte de
+`template-detail` fait 0,93 m et 81 % des colonnes avaient leur crête portée par
+une seule roche. Corrigé par chevauchement horizontal et anisotropie bornée.
+
+### Deux erreurs attrapées par la reproduction
+
+L'agent C annonçait « 81 → 13 percées » ; j'en mesurais « 761 → 113 » sur des
+sha256 identiques. Cause : le drapeau `--rapide`, jamais écrit dans la preuve.
+En se relisant, il a trouvé pire — `--rapide` lui avait fait écrire
+« dispersées » là où **40 rayons convergent** derrière l'alcôve. Cible ensuite
+fermée en une tentative.
+
+> Quand deux mesures indépendantes du même défaut ne coïncident pas aux bornes,
+> l'écart est le sujet, pas un détail de formulation.
+
+### Trois pièges d'outillage consignés (`tools/CLAUDE.md`, `1b4da4d`)
+
+Worktree neuf sans `.godot/` → le runner accuse `GateTestCase`, un innocent ;
+`--path .` résout contre le cwd de la **session** ; tous les worktrees partagent
+un seul `user://`.
+
+### Prochaine action exacte
+
+**Attendre le verdict visuel du lead sur `tranche4_final/`.** Quatre points sont
+déclarés `NON SATISFAITE` et ne doivent pas être compensés par un score
+technique : sonde `FAIL` global sur 73 percées isolées ; linteau à 0,61 m pour
+un seuil de 0,60 ; contrefort droit pas « en retrait » ; contrôle 3 `PARTIAL`.
+
+Le conflit de spécifications nommé par l'agent C appartient au lead : la galerie
+passe au milieu de la formation, les deux cols sont les points bas de la crête
+au-dessus d'elle, et épaissir pour fermer tire sur la même roche que creuser
+pour garder trois masses.
+
+Pylône, pont et hameau gelés. `GO_V2_3_R2B=FALSE`, `GO_V2_3_B=FALSE`.
+
+---
+
 ## 2026-08-15 (suite) — R2a-3.3 : extérieur de la grotte rebâti en roches CC0
 
 Point de contrôle livré, **aucun verdict artistique auto-déclaré**. Preuves :

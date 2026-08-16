@@ -1,0 +1,47 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "clip_below": 3.0,
+  "commit": "55c4803c7183c2e7c17d9e19b4c05de03dd6be8f",
+  "emprise_m": [
+    23.6516418457031,
+    10.1434764862061,
+    23.6516513824463
+  ],
+  "engine": "4.7.1-stable (custom_build)",
+  "mode": "lieu dans le monde monté",
+  "place_id": "valley.poi.waterfall_cave.01",
+  "projection": "orthogonale",
+  "provenance": {
+    "correctif_floral": {
+      "chemin": "scripts/world_v2/world_v2_vegetation_builder.gd",
+      "commit": "4ed364bd171fe2ddf5e09c71dd6c32c90fc8190e"
+    },
+    "geometrie": {
+      "chemin": "assets/environment/caves/SM_WaterfallCave.glb",
+      "commit": "504ecbe2e606222783980be73a62a8ecce347a5b"
+    },
+    "sonde_seuil": {
+      "chemin": "tools/probe_cave_openings.py",
+      "commit": "e513bea194a2d60721206ba1dddaa6a3a4cee07c"
+    }
+  },
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "size": "900x1200",
+  "sujet": "grotte_r2a34",
+  "vues": [
+    {
+      "angle_deg": 55.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_r2a/grotte/tranche4_final/silhouette_grotte_r2a34_055.png",
+      "sujet_pct": 16.3944444444444
+    },
+    {
+      "angle_deg": 100.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_r2a/grotte/tranche4_final/silhouette_grotte_r2a34_100.png",
+      "sujet_pct": 15.9796296296296
+    }
+  ]
+}
