@@ -59,6 +59,35 @@ Aucun `S0`/`S1` ouvert n'est admis pour un build candidat.
   laquelle l'échantillonnage le long de X rougit et l'échantillonnage le long de
   la normale passe.
 
+## ISS-050 — Des vides de 0,18 à 1,74 m dorment dans le massif entre la galerie et la paroi · `S4` · OUVERT
+
+- **Build** : géométrie R2a-3.5.2 (base `8bc8b9f9…` et livrable collerette
+  `4dd1642f…` — identique dans les deux, donc antérieur à la visière).
+- **Mesuré** par `tools/plot_cave_section.py`, qui publie le PREMIER bloc de
+  roche là où `controle_epaisseur` publie la SOMME. Sur 24 rayons à `u >= 1`,
+  le premier bloc tombe sous 0,80 m, minimum 0,12 m. En regardant ce que le
+  rayon traverse vraiment :
+
+  ```
+  u 4.75 az 190  ->  ROCHE 0.20   vide 1.10   ROCHE 3.84
+  u 4.75 az 180  ->  ROCHE 0.45   vide 1.74   ROCHE 3.21
+  u 5.25 az 180  ->  ROCHE 0.58   vide 0.18   ROCHE 0.35  vide 0.91  ROCHE 3.30
+  ```
+
+- **Ce n'est PAS un défaut de paroi.** Le bloc mince est une nervure intérieure
+  entre la galerie et la poche salle/alcôve ; la paroi réelle vers l'extérieur
+  fait 3,2 à 3,9 m. `controle_epaisseur` a raison, et sa docstring avait nommé
+  le cas d'avance. Le contrat `EPAISSEUR_MIN_M = 0,80` est tenu.
+- **Ce qui reste vrai** : le massif n'est pas plein à cet endroit. Invisible au
+  joueur, sans effet sur le gabarit ni sur l'étanchéité (0 percée confirmée),
+  mais c'est de la matière fantôme dans le budget de triangles et une surprise
+  potentielle pour toute mesure future qui supposerait un solide plein.
+- **Limite d'instrument, nommée** : `premiere` ne vaut « la paroi » que s'il
+  n'existe aucune structure entre l'axe et le dehors. Sur une cavité à poche
+  latérale, cette garantie n'existe pas. Écrit dans l'en-tête de l'outil.
+- **Test de régression** : aucun — ce ticket est une observation, pas un
+  contrat. Il devient bloquant seulement si un vide interne débouche.
+
 ## ISS-045 — Le terrain jouable est plat : deux dalles portent 80 % du monde · `S3` · OUVERT
 
 - **Build** : `6a996a5` et suivants (défaut ANTÉRIEUR, relevé par l'audit du 2026-08-11).

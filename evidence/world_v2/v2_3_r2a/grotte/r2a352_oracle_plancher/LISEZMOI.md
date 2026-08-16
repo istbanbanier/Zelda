@@ -108,3 +108,42 @@ consignée dans `tools/CLAUDE.md`.
 Les empreintes des deux maillages mesurés figurent en tête du journal. Aucun
 seuil n'a été modifié. Aucune géométrie n'est versée au chemin livrable par ce
 dossier.
+
+---
+
+## Addendum — mon instrument de coupe a crié au loup, et j'ai vérifié plutôt que choisir
+
+En mesurant la géométrie de l'agent collerette, `tools/plot_cave_section.py` a
+signalé **24 rayons sous le minimum contractuel de paroi de 0,80 m**, dont un à
+**0,12 m** vers la station 4,75. Le générateur, lui, publie 0,87 m et passe.
+
+Deux chiffres pour la même grandeur : la situation exacte que cette passe traque.
+La tentation est de choisir celui qui arrange. J'ai regardé ce que le rayon
+traverse réellement :
+
+```
+u 4.75 az 190  ->  ROCHE 0.20   vide 1.10   ROCHE 3.84
+u 5.00 az 190  ->  ROCHE 0.76   vide 0.36   ROCHE 3.94
+u 4.75 az 180  ->  ROCHE 0.45   vide 1.74   ROCHE 3.21
+u 5.25 az 180  ->  ROCHE 0.58   vide 0.18   ROCHE 0.35  vide 0.91  ROCHE 3.30
+```
+
+Le premier bloc mince n'est **pas la paroi** : c'est une **nervure intérieure**
+entre la galerie et la poche de la salle/alcôve, suivie d'un vide court, puis de
+3,2 à 3,9 m de roche vers l'extérieur. `controle_epaisseur` a raison, et sa
+docstring avait anticipé le cas mot pour mot — « un rayon effleurait d'abord le
+bord d'un rocher secondaire avant d'atteindre la paroi. Ce n'est pas la paroi. »
+
+**Mon instrument avait tort sur le contrat de paroi**, et sa limite est
+maintenant nommée : `premiere` ne vaut « la paroi » que s'il n'y a aucune
+structure entre l'axe et le dehors. Sur une cavité à poche latérale, il n'y en a
+pas la garantie.
+
+Ce que le signal dit quand même, et qui reste vrai : **il existe des vides de
+0,18 à 1,74 m à l'intérieur du massif**, entre la galerie et la paroi, vers les
+stations 4,75 à 5,25 du côté large. Invisibles au joueur, sans effet sur le
+contrat, mais le massif n'est pas plein à cet endroit. Consigné, non bloquant.
+
+Et le fait qui compte pour la passe en cours : ces 24 cases sont **identiques
+avant et après** l'ajout de la visière — 24 des deux côtés, à `u ≥ 1`. Elles
+préexistent à la base R2a-3.5.2 et ne sont pas l'œuvre de la collerette.
