@@ -169,6 +169,34 @@ coque.
 Le gate topologique passe **en premier** : mesurer l'épaisseur d'une coque
 trouée n'a pas de sens, puisqu'il n'y a pas de séparation à mesurer.
 
+### 5.1 Trois verdicts, pas deux — ajouté le 2026-08-16, avant toute mesure
+
+La §2.6 pose `borne = lecture − h`. Écrite ainsi, elle laisse un cas sans
+réponse, et il faut le trancher **avant** de le rencontrer :
+
+| cas | verdict |
+|---|---|
+| `lecture − h ≥ 0,80` | **PASS**, garanti |
+| `lecture < 0,80` | **FAIL**, mesuré |
+| `lecture ≥ 0,80` **et** `lecture − h < 0,80` | **`BLOQUÉ`, RC 3** |
+
+Le troisième cas est le piège : la coque est peut-être conforme, et `h` est
+simplement trop grand pour le dire. Rendre `FAIL` accuserait la géométrie d'un
+**défaut d'instrument** ; rendre `PASS` violerait le contrat, qui se prononce sur
+la borne et non sur la lecture.
+
+**`BLOQUÉ` est donc le seul verdict honnête**, accompagné de la liste des points
+concernés et du `h` qu'il faudrait pour trancher. Si la zone indécidable est
+petite, elle se raffine localement — bien moins coûteux que de raffiner partout.
+
+> **`h` accompagne toujours la borne. Une borne sans son `h` n'est pas une
+> borne.**
+
+Corollaire : réduire `h` pour tenir dans un budget de calcul **affaiblit la
+borne, jamais le seuil**. C'est légitime, à condition de le dire — et le
+troisième verdict est précisément ce qui rend cet affaiblissement visible au lieu
+de le laisser passer pour un vert.
+
 Résolution du portail d'étanchéité : **0,06 m au maximum**, avec raffinement
 adaptatif jusqu'à **0,005 m** autour de toute anomalie ou couture. Justification
 mesurée : le même oracle rend **VERT au pas de 0,10 m** et **ROUGE à 0,06** sur la
