@@ -2269,6 +2269,136 @@ raffinaient ; celle-ci le retire.
 
 ---
 
+## 36. R2a-3.5.4 — CLÔTURE. La percée est fermée ; la coque est trop mince.
+
+**Verdict : `PARTIAL`.** Un item du gate échoue, mesuré et reproduit par
+l'intégrateur. Preuves : `evidence/world_v2/v2_3_r2a/grotte/r2a354_gate/`.
+
+### 36.1 Le gate, item par item
+
+| item | verdict | mesure | reproduit |
+|---|---|---|---|
+| **topologique** | **PASS** | genre 1 → **0** · oracle `ROUGE → VERT` à 0,06 · barrière duale valide dès `ay = −1,615` | intégrateur, **3 chemins disjoints** |
+| **batterie d'oracle** | **PASS** | **8/8 CONFORME**, 1 tentative, placebo compris, sur genres 0, 1 et 2 | intégrateur, `RC=0` |
+| suite adverse · mutations · topologie | **PASS** | `RC=0` depuis le tronc | intégrateur |
+| **épaisseur de coque** | **FAIL** | lecture **0,6613 m** · borne garantie **0,5613 m** (`h = 0,10`) · seuil **0,80 m** | intégrateur, `RC=1` |
+
+**Argmin : `(1,036 ; 5,173 ; 2,316)` en repère modèle — `ay = 5,17`, deux mètres
+au-delà de la dernière station de `CAVITE`.**
+
+`FAIL` **mesuré sur la lecture**, pas `BLOQUÉ` de résolution : le troisième
+verdict du contrat (§5.1) ne s'applique pas, la lecture elle-même étant sous le
+seuil.
+
+### 36.2 Le contrat a attrapé ce qu'il avait été écrit pour attraper
+
+C'est le résultat de méthode de la passe, et il vaut plus que le verdict.
+
+`CONTRAT_COQUE_STRUCTURELLE.md` est committé à `a4e91dc`, **avant** toute
+correction géométrique — antériorité vérifiable dans Git. Il attrape un défaut à
+`ay = 5,17`. **L'ancien `controle_epaisseur`, borné à `ay = 3,17`, ne pouvait pas
+le voir.** C'est mot pour mot la clause du §2.4 :
+
+> *Aucun point de la coque ne peut être écarté au motif qu'il se trouve au-delà
+> de la dernière station de `CAVITE`.*
+
+Quinzième occurrence de la même cause de fond depuis le début de la série.
+
+### 36.3 Ce qui est acquis, et ne l'était pas il y a une passe
+
+**La percée est fermée à la source**, par trois chemins indépendants : genre
+(1 → 0), inondation (`ROUGE C3 → VERT` au pas 0,06), graphe dual (aucune barrière
+valide sur `cc3596c5` à aucun `ay` ; valide dès `ay = −1,615` sur la corrigée).
+Une grotte à une seule bouche est topologiquement une bosselure — genre 0. La
+corrigée l'atteint, quand la géométrie **livrée** porte genre 2.
+
+**La cause est nommée** : le vide n'existait à **aucune étape source**, il était
+**creusé par le booléen**. `OUTIL_Cavite` déborde à `y = +7,245` quand la dernière
+station est à `3,17` ; `hw · gauche` atteint `4,23 m` et la normale y est à ~85 %
+alignée avec `−Y`. Le gabarit intérieur est intouchable ; ce qui manquait, c'est
+la roche qui aurait dû le couvrir.
+
+**Le portail d'oracle est devenu générique** : 8/8 sur trois genres différents,
+une seule tentative par contrôle, restauration byte-identique.
+
+### 36.4 Les cinq précisions de l'addendum, une par une
+
+| précision | ce qui a été fait |
+|---|---|
+| **gel du contrat à `cca1778`** | respecté. Deux ambiguïtés rencontrées → publiées au lead, **aucune** modification rétroactive du contrat |
+| **ordre des gates** | le déclassement de `controle_epaisseur_domaine()` **n'est PAS appliqué**. Il reste dans le patch de l'agent A, non intégré : le gate de remplacement existe mais **échoue**, donc son contrôle négatif ne l'a pas encore qualifié dans un état vert. La reclassification est un commit de politique **séparé**, et son moment n'est pas venu |
+| **circularité topologique** | **tranchée par la mesure**, sous un plafond `z ≤ 1,20` qui exclut la percée par construction. Le vide ciblé est en composante 3 — celle de `SALLE` et `NICHE` — **avant comme après**. 5 composantes d'air des deux côtés : aucune bulle isolée créée. Ce n'était pas un défaut de vide mais de **couverture**, et la correction ajoute la roche au-dessus. Détail : `r2a354_percee_fermee/CIRCULARITE.md`, mes deux runs concordant ligne pour ligne avec ceux de l'agent |
+| **certificat de couverture** | le premier jet de l'agent C mêlait critère de circonrayon et échantillons au centroïde — incohérent, 3,52 % de dépassement mesuré sur un triangle rectangle isocèle. Corrigé en centroïde + `max‖V−G‖` avec subdivision aux milieux d'arêtes, fixture obtuse comprise. `h` accompagne la borne partout |
+| **tâches arrêtées** | les trois worktrees `r2a354/{a_percee,b_portail,c_verif}` inventoriés avant relance ; aucun agent dupliqué ; fichiers et commits préservés |
+
+### 36.5 Deux questions qui remontent au lead, non tranchées ici
+
+**1. L'emprise du masque de bouche n'est pas définie par le contrat.** Le §2.5
+dit *« seule la bouche canonique, explicitement masquée, est exclue »* sans fixer
+son emprise. Le verdict ne bouge pas — `FAIL` sous les deux lectures — mais la
+**cause publiée** change du tout au tout : emprise 0,00–1,50 m donne
+`0,0216 → 0,0565 m` collé au rebord du porche ; emprise 2,00 / 3,00 m donne
+**0,6613 m** à `ay = 5,17`. Le contrat étant gelé, l'agent a refusé de trancher et
+publié la courbe entière. **C'est la conduite exigée par le gel.**
+
+**2. « 0 auto-intersection » contre une tolérance de 0,020 m.** Le livrable porte
+**2 paires, repli 0,000612 m**, **pré-existantes** — le candidat les portait déjà.
+Le contrôle du générateur passe ; le libellé du gate dit « 0 ». Attribution
+mesurée : le repli **naît à la décimation**, et une seconde fragilité — un
+triangle d'**aire rigoureusement nulle** en `(−1,504 ; −3,099 ; −0,639)` — **naît à
+la soustraction**. R2a-3.4 survit au CSG parce qu'elle porte quatre triangles
+*presque* dégénérés mais **aucun exactement nul** : le critère n'est pas « petite
+face », c'est « aire nulle ». **Deux défauts distincts, tous deux dans la chaîne,
+aucun dans la source** — donc des tickets, pas une passe.
+
+### 36.6 Ce qui n'est pas fait, et pourquoi
+
+- **aucune capture** — le gate est rouge, la directive l'interdit ;
+- **aucun export livrable** — la géométrie corrigée `c184c8dc` reste **en patch**,
+  `agentA_calotte_nord_ET_reclassement.patch`, 321 lignes ;
+- **aucune propagation**, aucun `validate_fast.sh`, aucune des 38 captures ;
+- **le tronc construit et livre toujours R2a-3.4** (`8bf1a1b3`, commit `504ecbe`) ;
+- **golden masters 3/4** inchangés ; ISS-052 et ISS-053 non touchés ;
+- **aucun seuil abaissé, aucun test neutralisé.**
+
+### 36.7 Prochaine action exacte
+
+**Faire passer la coque à `≥ 0,80 m` autour de `(1,036 ; 5,173 ; 2,316)`**, par la
+même correction préférée que la percée : **ajouter de la roche vers l'extérieur**,
+sans toucher au gabarit intérieur, à la collerette, à la visière ni à l'orteil.
+
+**Première question à trancher, et elle n'est PAS tranchée ici : l'argmin
+tombe-t-il sous la calotte nord, ou à côté d'elle ?** Les deux causes appellent
+des corrections opposées — épaissir la couverture posée, ou étendre son emprise.
+Ce que je sais et ce que je ne sais pas :
+
+- la calotte est paramétrée en abscisse **le long du chemin**, `CALOTTE_U0 = 3,50`
+  → `CALOTTE_U1 = 7,20`, azimuts `100°` → `176°`, plafond `4,00 m` ;
+- **la correspondance entre cette abscisse et `ay` n'a pas été vérifiée.** Lire
+  `5,17 ∈ [3,50 ; 7,20]` serait comparer un paramètre de courbe à une coordonnée
+  — exactement le genre de raccourci qui a produit les quatorze occasions
+  précédentes.
+
+Leviers data-driven disponibles une fois la question tranchée :
+`CALOTTE_COUVERTURE_M = 1,60`, `CALOTTE_ECHELLE = (1,00 ; 1,00 ; 0,55)`,
+`CALOTTE_U0/U1`, `CALOTTE_THETA0/THETA1`.
+
+Séquence imposée, dans cet ordre :
+
+1. corriger la géométrie, mesurer avec `cave_check_hull.py`, obtenir la **borne
+   garantie** `≥ 0,80` ;
+2. **puis seulement** qualifier le gate de remplacement par son contrôle négatif
+   complet — sain → sabotage fermé → ROUGE attendu → restauration byte-identique
+   → VERT ;
+3. **puis** le commit de politique séparé qui déclasse
+   `controle_epaisseur_domaine()`, non mêlé au diff géométrique ;
+4. **puis** l'export, les captures, le gate.
+
+Deux tickets à ouvrir, indépendants de la passe : repli à la décimation, triangle
+d'aire nulle à la soustraction.
+
+---
+
 ## ANNEXE A — chronologie des instruments et de leurs défauts
 
 Quatorze occurrences du **même** défaut : un contrôle place ses points à
