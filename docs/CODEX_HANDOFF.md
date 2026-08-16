@@ -2188,6 +2188,87 @@ contrat **exécutable**. Ses six étapes n'existent aujourd'hui qu'en prose.
 
 ---
 
+## 35. R2a-3.5.4 — RETRAIT : l'aire de la percée n'a jamais été mesurée valablement
+
+**FAIT REPRODUIT.** Preuves :
+`evidence/world_v2/v2_3_r2a/grotte/r2a353_percee/` (bandeau de retrait en tête).
+
+### 35.1 Ce qui est retiré
+
+**Les aires : 85,8 cm², 2 638 cm², équivalent disque 104 mm.** Toutes.
+
+La directive R2a-3.5.4 les reprend comme un acquis — *« aire mesurée :
+85,8 cm² »*. **Elles ne le sont pas**, et il faut le dire avant qu'elles ne
+servent de référence à une correction.
+
+### 35.2 Pourquoi la mesure est invalide
+
+Le test employé — *« depuis `z = 1,50`, zéro traversée en montant, avec de la
+roche en dessous »* — compte en réalité **toute colonne dont le sommet du
+maillage est sous `z = 1,50`**. Il confond :
+
+- un **toit absent** au-dessus de la cavité ;
+- une **enveloppe simplement plus basse** à cet endroit.
+
+Le garde-fou que j'avais ajouté — exiger de la roche **en dessous** — écarte les
+colonnes hors du solide, mais **pas** celles situées au-dessus d'un massif plus
+bas que 1,50. C'est le cas majoritaire dès qu'on quitte la zone haute.
+
+### 35.3 Le contrôle qui l'a montré, et qui manquait
+
+Élargissement progressif de la fenêtre, candidat contre R2a-3.4 :
+
+| fenêtre | contrôle R2a-3.4 | « aire » candidat |
+|---|---:|---:|
+| 0,30 × 0,30 m | 0 | 85,8 cm² |
+| 1,20 × 1,60 m | 0 | 2 704 cm² |
+| 2,20 × 2,50 m | 0 | 8 208 cm² |
+| 3,20 × 3,50 m | 0 | 19 412 cm² |
+| 4,20 × 4,50 m | 0 | **47 264 cm²** |
+
+**Un trou ne grandit pas quand on élargit la fenêtre.** Et le zéro constant de
+R2a-3.4 n'est pas une validation : il s'explique par un **massif plus haut**, pas
+par son étanchéité. J'avais lu ce zéro comme un contrôle ; ce n'était qu'une
+coïncidence de hauteur.
+
+### 35.4 Ce qui tient, et par quels chemins
+
+**La percée est réelle.** Deux méthodes, aucune ne passant par cette métrique :
+
+| géométrie | `χ` | genre | lecture |
+|---|---:|---:|---|
+| candidat `cc3596c5` | 0 | **1** | une anse, sur une forme qui devrait être de genre 0 |
+| R2a-3.4 livrée | −2 | 2 | deux anses — arches, étanchéité confirmée par l'oracle |
+| **corrigée R2a-3.5.4 `c184c8dc`** | **2** | **0** | **l'anse a disparu** |
+
+plus la trace d'inondation sortant en `(0,618 ; 5,895)` au pas de 0,06.
+
+**L'agent A a donc bien fermé la percée** — genre 1 → 0, 0 bord libre,
+0 non-manifold — et par une mesure qui ne dépend d'aucune convention d'altitude.
+Sa géométrie est topologiquement **plus propre que la livrée**.
+
+### 35.5 Ce qui reste inconnu
+
+**L'aire réelle de l'ouverture.** Elle se mesurerait comme l'aire des faces de la
+**coupure** entre air intérieur et air extérieur — pas comme un compte de
+colonnes. **Elle n'est pas nécessaire au verdict** : le genre tranche.
+
+Statut : **`NON VÉRIFIÉ`**, et il n'y a pas lieu de le lever pour clore la passe.
+
+### 35.6 La leçon, à mon débit
+
+> **Un contrôle sur une géométrie saine, dans la même fenêtre, avant de publier
+> un chiffre.**
+
+Je l'ai appliqué à l'oracle, aux épreuves adverses, à la connexité. Je ne l'ai
+pas appliqué à ma propre métrique d'aire, parce qu'un zéro obtenu au premier
+essai ressemble à une validation. C'est la troisième correction que je porte sur
+ce même chiffre — d'abord une boîte englobante prise pour une aire, puis une
+fenêtre trop étroite, enfin la métrique elle-même. Les deux premières le
+raffinaient ; celle-ci le retire.
+
+---
+
 ## ANNEXE A — chronologie des instruments et de leurs défauts
 
 Quatorze occurrences du **même** défaut : un contrôle place ses points à

@@ -1,5 +1,47 @@
 # LE CANDIDAT EST PERCÉ. La géométrie livrée ne l'est pas.
 
+> # ⚠ RETRAIT DE L'AIRE — 2026-08-16, passe R2a-3.5.4
+>
+> **Toutes les aires citées dans cette fiche sont retirées : 85,8 cm², 2 638 cm²,
+> et l'équivalent disque de 104 mm.** La percée reste **réelle** ; c'est sa
+> **mesure de surface** qui ne vaut rien.
+>
+> **Pourquoi.** Le test employé ici — *« depuis `z = 1,50`, zéro traversée en
+> montant, avec de la roche en dessous »* — compte en réalité **toute colonne
+> dont le sommet du maillage est sous `z = 1,50`**. Il confond donc deux choses
+> très différentes : un **toit absent** au-dessus de la cavité, et une
+> **enveloppe simplement plus basse** à cet endroit.
+>
+> **Le contrôle qui l'a montré, et que j'aurais dû lancer avant de publier** :
+> en élargissant la fenêtre, l'« aire » du candidat passe de 85,8 à 2 704, puis
+> 8 208, 19 412 et **47 264 cm²**, pendant que R2a-3.4 reste à **zéro** partout.
+> **Un trou ne grandit pas quand on élargit la fenêtre.** Le zéro de R2a-3.4
+> s'explique par un massif plus haut, pas par son étanchéité.
+>
+> **Ce qui tient**, par deux chemins qui n'empruntent pas cette métrique :
+>
+> | géométrie | `χ` | genre |
+> |---|---:|---:|
+> | candidat `cc3596c5` | 0 | **1** — une anse, sur une forme qui devrait être de genre 0 |
+> | R2a-3.4 livrée | −2 | 2 |
+> | **corrigée R2a-3.5.4 `c184c8dc`** | **2** | **0** — l'anse a disparu |
+>
+> plus la trace d'inondation qui sort en `(0,618 ; 5,895)`. **Le genre et
+> l'inondation établissent la percée ; le compte de colonnes ne l'a jamais
+> établie.**
+>
+> **L'aire réelle de l'ouverture n'est pas connue par une méthode valide.** Elle
+> se mesurerait comme l'aire des faces de la **coupure** entre air intérieur et
+> air extérieur — pas comme un compte de colonnes. Elle n'est pas nécessaire au
+> verdict.
+>
+> **Leçon, et elle est à mon débit** : *un contrôle sur une géométrie saine, dans
+> la même fenêtre, avant de publier un chiffre.* Le zéro de R2a-3.4 dans une
+> petite fenêtre m'a paru une validation ; il n'était qu'une coïncidence de
+> hauteur de massif.
+>
+> Le corps ci-dessous n'est pas réécrit. Lire chaque aire comme retirée.
+
 **C'est le résultat qui clôt R2a-3.5.3**, et il retourne tout ce que la passe
 précédente croyait avoir établi.
 
