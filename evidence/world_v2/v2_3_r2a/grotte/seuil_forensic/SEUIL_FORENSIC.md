@@ -25,7 +25,7 @@ Périmètre : `valley.poi.waterfall_cave.01`. Aucune géométrie de production n
 |---|---|---|
 | plancher de la galerie | **FAIL** | 87 fautes sur 455 points ; le sol manque sur 6,5 m |
 | jour (sphère entière) | **FAIL** | 761 percées sur 38 049 rayons ; le fond est ouvert sur 1,50 × 1,25 m |
-| ligne de vue (règle du moteur) | **FAIL** | 1 pixel perçant dans `t3_03`, à l'intérieur exact d'une zone verte mesurée |
+| ligne de vue (règle du moteur) | **PARTIAL** | 1 pixel perçant dans `t3_03`, dans une zone verte mesurée ; transformation monde→modèle `NON VÉRIFIÉ` (voir §6) |
 | cohérence coque / collision | `PASS` | `COL_WaterfallCave` reste un maillage distinct, jamais rendu |
 
 ---
@@ -215,12 +215,22 @@ en 0.
   dénombrement. Le vert du plancher, lui, ne peut apparaître que dans le
   contrôle 1, où le rayon touche bien de la roche — mais la mauvaise, un
   demi-mètre trop bas.
-* **La transformation monde → modèle du contrôle 3 est déduite, pas mesurée en
-  moteur.** Origine `(−106,0 ; 3,50 ; 3,5)`, lacet 45°, dérivée de
-  `world_v2_layout.json` (`v2_site`), de `SEUIL_LOCAL`, de `EXHAUSSEMENT` et de
-  l'absence de rotation dans `world_v2_places_builder.gd`. Le hasard n'explique
-  pas qu'elle place un pixel perçant dans la bonne zone verte, mais la
-  vérification en moteur reste `NON VÉRIFIÉ`.
+* **La transformation monde → modèle du contrôle 3 est déduite, et sa
+  vérification a ÉCHOUÉ.** Origine `(−106,0 ; 3,50 ; 3,5)`, lacet 45°, dérivée
+  de `world_v2_layout.json` (`v2_site`), de `SEUIL_LOCAL`, de `EXHAUSSEMENT` et
+  de l'absence de rotation dans `world_v2_places_builder.gd`. J'ai tenté de la
+  valider en superposant la silhouette calculée à la capture, avec la luminance
+  comme discriminant : **le test n'est pas concluant**, parce que le fond de ces
+  captures est aussi sombre que la formation. Sur `t3_07_trois_masses` la
+  concordance n'est que de 52,4 %, et décaler l'origine de +3 m l'améliore — ce
+  qui disqualifie la mesure, pas seulement l'origine. Le contrôle 3 est donc
+  `PARTIAL` : son unique pixel perçant tombe dans la bonne zone verte, ce qui
+  corrobore, mais ne prouve pas. Statut de la transformation : `NON VÉRIFIÉ`.
+
+  **Cela n'affaiblit en rien les contrôles 1 et 2**, qui sont l'essentiel de ce
+  rapport : ils travaillent entièrement en repère modèle, sur le GLB seul, et
+  n'utilisent aucune transformation de monde. La preuve du plancher absent et
+  du fond percé ne dépend d'aucune caméra.
 * **La cote du terrain gelé sous le site (3,00 m) est documentaire**, reprise des
   commentaires de `waterfall_cave_place.gd`. Elle n'a pas été relue par sonde
   dans cette passe.
