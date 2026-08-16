@@ -2120,6 +2120,74 @@ composante rocheuse · récompense et salle dans la même composante de vide ·
 
 ---
 
+## 34. R2a-3.5.4 — ouverture. Le domaine est écrit AVANT la correction.
+
+**R2a-3.5.3 reste définitivement `PARTIAL`.** Cette passe ferme la percée et
+qualifie le portail.
+
+Point de départ imposé `a4fa7b1` — vérifié : branche, HEAD local == distant,
+arbre propre, aucun processus lourd.
+
+### 34.1 Arbitrage du lead, reçu et appliqué
+
+- **la percée est réelle et bloquante** — 85,8 cm² d'aire ouverte, à ne jamais
+  confondre avec sa boîte englobante de 160 × 200 mm ;
+- **l'enveloppe R2a-3.5.2 n'est pas abandonnée** : la reprise part du défaut
+  d'enveloppe, **pas de la collerette**, qui réduit les zones minces de 276 à 205
+  et doit être conservée ;
+- **`EPAISSEUR_MIN_M = 0,80` reste strictement inchangé** ; c'est son **domaine**
+  qui est clarifié.
+
+### 34.2 `a4e91dc` — le contrat, committé AVANT toute géométrie
+
+`docs/CONTRAT_COQUE_STRUCTURELLE.md`. **C'est le premier commit de la passe, et
+son antériorité se vérifie dans Git** : un domaine de mesure choisi *après* avoir
+vu le résultat n'est pas un contrat, c'est une justification.
+
+Ce qu'il fixe :
+
+| | |
+|---|---|
+| **coque structurelle** | surfaces rocheuses séparant l'air intérieur canonique de l'extérieur. Définition **topologique** — ni station, ni `ay`, ni distance à un axe. **Aucun point écarté au motif qu'il est au-delà de `ay = 3,17`** |
+| **épaisseur** | distance **euclidienne** à la surface extérieure la plus proche. Sans convention de direction, **minorante**, et sous-estimant encore de −0,76 à −1,12 × pas sur grille. On publie la lecture **et** la borne `lecture − pas` ; **le gate se prononce sur la borne** |
+| **balayage vertical** | **conservé, déclassé en télémétrie** de non-régression. Motif mesuré : il rend 326 plaques sur R2a-3.4 déjà validée visuellement contre 167 sur le candidat — un critère qui condamne plus fort la référence que le sujet ne peut pas décider seul |
+| **deux gates durs** | topologique **d'abord** — mesurer l'épaisseur d'une coque trouée n'a pas de sens — puis épaisseur |
+| **résolution** | portail d'étanchéité à **0,06 m maximum**, raffinement adaptatif à **0,005**. Le même oracle rend VERT à 0,10 et ROUGE à 0,06 sur la même géométrie |
+
+Le contrôle historique sur les stations **reste actif** : il n'est ni retiré ni
+affaibli, il cesse d'être la seule chose qui regarde.
+
+### 34.3 Socle `1580711`, et le piège qu'il fallait éviter
+
+Worktree `/home/user/zelda-r2a354/socle`, détaché sur `a4e91dc`, plus quatre
+applications locales **jamais poussées**.
+
+**Le tronc porte désormais les instruments de R2a-3.5.3.** Appliquer la base
+R2a-3.5.2 à l'aveugle aurait **révoqué** `plot_cave_section.py` et
+`probe_cave_openings.py`, ramenés d'un état base+instruments à un état base seule.
+Vérifié fichier par fichier avant application : **7 fichiers portés, 2 laissés au
+niveau du tronc**. Les quatre instruments témoins sont confirmés identiques à
+`a4e91dc` après construction.
+
+### 34.4 Les trois agents
+
+| agent | worktree | propriété exclusive |
+|---|---|---|
+| **A — percée** | `zelda-r2a354/a_percee` | `make_waterfall_cave.py`, `tools/cave_fix_*.py` |
+| **B — portail** | `zelda-r2a354/b_portail` | `tools/cave_oracle_*.py` |
+| **C — vérification** | `zelda-r2a354/c_verif` | `tools/cave_check_*.py` |
+
+**Une dépendance d'ordre, explicite** : le socle porte le
+`controle_epaisseur_domaine()` **câblé en gate**, donc la chaîne sort `RC=1`.
+L'agent A doit le **reclasser en télémétrie avant de pouvoir exporter** — ce qui
+applique l'arbitrage écrit, et n'est pas neutraliser un test : le gate dur devient
+la coque, mesurée par borne minorante.
+
+**Le livrable le plus important de la passe est celui de l'agent C** : rendre le
+contrat **exécutable**. Ses six étapes n'existent aujourd'hui qu'en prose.
+
+---
+
 ## ANNEXE A — chronologie des instruments et de leurs défauts
 
 Quatorze occurrences du **même** défaut : un contrôle place ses points à
