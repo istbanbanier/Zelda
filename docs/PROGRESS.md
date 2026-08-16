@@ -5,6 +5,79 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-16 — R2a-3.5 : changement d'architecture de la grotte · EN COURS
+
+Le lead a rendu R2a-3.4 `FAIL TECHNIQUE — FAIL VISUEL` et **arbitré** le conflit
+que la passe précédente lui avait renvoyé : « la galerie ne doit plus passer sous
+les deux cols […] **déplacer le vide intérieur, pas sacrifier la silhouette
+extérieure** ». Quatre couches désormais séparées : enveloppe rocheuse, galerie,
+soustraction, détails de surface — dans cet ordre, la cavité n'étant soustraite
+qu'après validation de l'enveloppe.
+
+### Ce qui est acquis et poussé
+
+* **Enveloppe.** Loft entre un polygone de sol irrégulier et un ruban de crête à
+  largeur variable (0,25 m aux extrémités, 1,3–1,45 m au sommet) : aucun sommet
+  plat n'est possible **par construction**. Trois masses aux azimuts 55/225,
+  contenance 9/9 stations, linteau +1,36 m.
+* **Outil de coupe et de carte d'épaisseur** (`tools/plot_cave_section.py`,
+  `15abf21`), qui manquait : il mesure le **GLB livré**, pas les objets Blender,
+  et ne juge rien.
+* **Référence chiffrée de l'état rejeté**
+  (`evidence/…/grotte/r2a35_coupe_baseline/`, `f4a3df5`), publiée **avant**
+  d'avoir vu la nouvelle géométrie pour qu'elle ne puisse pas être choisie après
+  coup : écart horizontal entre la crête de la tranche et l'axe de galerie
+  = 0,00 m au seuil, **2,84 m en moyenne, 7,95 m au maximum**. C'est la mesure du
+  constat que le lead avait fait à l'œil.
+
+### Deux erreurs de méthode à mon débit, consignées
+
+1. **J'ai accepté l'enveloppe sur les preuves que j'avais moi-même demandées.**
+   Planches de silhouette, comptage de masses, sonde de contenance — aucune des
+   trois n'est `controle_amas`, le portail du tronc, sous lequel l'enveloppe
+   rendait un rapport de cols de 1,17 pour un minimum de 1,25. C'est l'agent qui
+   l'a trouvé, pas moi. Règle qui en sort : **une couche produite hors du tronc
+   se reçoit en la passant par les contrôles DU TRONC.**
+2. **Un garde-fou qui ne pouvait pas se fermer.** `dans_le_vide` rend un couple
+   `(bool, compte)` et `(False, 0)` est vrai en Python : ma garde publiait
+   « 0,00 m d'épaisseur » là où la mesure était simplement impossible. Un
+   garde-fou qui ne peut pas rougir est pire que pas de garde-fou — il donne
+   confiance. Corrigé et commenté dans le code.
+
+### Une clause de contrôle change de sens, et c'est documenté
+
+`controle_amas` exigeait qu'un faîte soit porté par **au moins trois** copies de
+`template-detail` — utile quand les modules ÉTAIENT la silhouette. Sous la
+nouvelle architecture le lead écrit qu'ils ne doivent plus la porter : la clause
+est donc **inversée** (zéro module de détail dans la bande de faîte, la crête
+appartient à l'enveloppe), avec les deux versions et la raison du basculement
+écrites au-dessus du code. Les six clauses neutres — largeurs, cols, dominante,
+décentrement — gardent les valeurs du tronc ; **aucune n'a baissé**.
+
+### Prochaine action exacte
+
+Le câblage de l'enveloppe dans `main()` de `make_waterfall_cave.py` est **le seul
+morceau restant** avant les preuves ; la centerline et la clause inversée sont
+prêtes en patches (`evidence/…/r2a35_fusion/couche2_*.patch`,
+`couche4_*.patch`) et **ne peuvent pas atterrir seules** — chacune isolément met
+le générateur en sortie 2, ce qui laisserait un tronc rouge sur `HEAD`.
+
+Attention en le faisant : `tools/probe_cave_openings.py` porte sa **propre copie**
+de `CAVITE`/`PALIER` et `controle_coherence_cotes()` la fait rougir dès que le
+générateur diverge — mettre la copie à jour dans le **même commit** que la
+centerline. Et `scripts/world_v2/poi/waterfall_cave_place.gd` porte
+`MODELE_SALLE` / `MODELE_NICHE` en repère modèle Godot, à recalculer depuis les
+stations Blender par `(ax, z, −ay)`, sans quoi le filet de comportement marche
+vers un point qui n'existe plus.
+
+Ensuite seulement : sonde à **zéro percée confirmée**, chaîne RC=0, silhouettes
+**après** les détails, coupe et carte d'épaisseur, puis les dix vues et trois A/B
+du lead — gauche = R2a-3.4 (géométrie `504ecbe`, arbre de capture `55c4803`).
+
+Rien de tout cela ne prononce le verdict visuel : il appartient au lead.
+
+---
+
 ## 2026-08-16 — R2a-3.4 : corrective multi-agent (flore, composition, seuil)
 
 Trois agents, trois worktrees détachés de `59e0adb`, verrou `flock` partagé,
