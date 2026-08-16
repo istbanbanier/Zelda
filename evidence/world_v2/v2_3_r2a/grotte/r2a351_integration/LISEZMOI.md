@@ -47,32 +47,52 @@ L'azimut 55 n'est plus fragile : le ratio passe de **2,02** (+1 %) à **2,16**
 |---|---:|---:|
 | **collerette** au porche (station 0, azimut 32°) | **0,48 m** | 0,60 |
 | rayons sortant par un jour, station 0, azimuts 39–64° | 5 | 0 |
-| **percées confirmées** | **38** (23 toit, 15 `paroi_plus_x`) | 0 |
+| **plancher absent**, `y +2,88` à `+3,17`, stations 6 à 8 | écart 0,44–0,45 m | 0 |
+
+Le défaut de plancher est **une régression de cette passe** : la géométrie
+livrée R2a-3.4, mesurée avec le même instrument corrigé et ses propres cotes,
+passe ce contrôle. Il est présent à l'identique dans le run d'**avant** la
+correction d'échantillonnage — ce n'est donc pas elle qui le révèle ; il était
+là et n'entrait pas dans le compte des percées.
+
+Les stations 7 et 8 sont celles qui **ferment la calotte** : `controle_epaisseur`
+et `controle_gabarit` les excluent tous deux par construction. La zone est aussi
+celle où `droite` descend à 0,25–0,27, donc où la section devient un coin
+étroit — piste à mesurer, pas conclusion.
 
 ## Le chiffre d'étanchéité, même instrument des deux côtés
 
-| géométrie | percées confirmées |
-|---|---:|
-| R2a-3.5, avant cette passe | **403** |
-| cavité asymétrique seule | 162 |
-| **fusion cavité + enveloppe** | **38** |
+| géométrie | échantillonnage d'origine | échantillonnage corrigé |
+|---|---:|---:|
+| R2a-3.5, avant cette passe | 403 | — |
+| cavité asymétrique seule | 162 | 118 |
+| **fusion cavité + enveloppe** | 38 | **0** |
 
-Et il faut le lire comme un **plancher**, pas un plafond : l'échantillonneur du
-contrôle 2 place ses points à `ax + f·hw` — symétriquement, et le long de X. Sur
-un profil devenu très asymétrique il ne couvre que **36 % du côté large** aux
-stations 4 à 8. La correction est en cours ; tant qu'elle n'est pas passée, 38
-est un minorant et le dire fait partie du chiffre.
+**Zéro percée confirmée**, reproduit indépendamment.
 
-## Un écart entre deux instruments, que je ne tranche pas
+Le passage de 38 à 0 n'est pas un aveuglement de l'instrument, c'est une
+correction démontrée. L'échantillonneur du contrôle 2 plaçait ses points à
+`ax + f·hw` — symétriquement, et le long de X. Sur un profil devenu très
+asymétrique il ne couvrait que 36 % du côté large et **débordait de l'autre**.
+Pour chacune des 38 :
 
-`tools/plot_cave_section.py` rend, sur cette même géométrie : **zéro station
-trouée** et **zéro rayon de paroi sans roche** dans la galerie, 24 rayons sur
-986 sous 0,80 m. La sonde, elle, confirme 38 percées.
+* **38 / 38** partaient **hors de la cavité réelle** ;
+* **38 / 38** avaient **deux impacts entre l'axe et ce point** — c'est-à-dire
+  une **paroi intacte**, traversée à l'aller et au retour.
 
-Les deux échantillonnent différemment — l'un sur l'axe analytique station par
-station, l'autre par la sphère complète depuis des points intérieurs. **L'écart
-est le sujet**, et il sera réconcilié comme l'a été celui des contrôles 2 et 4.
-Publier le chiffre confortable serait ici un choix, pas une mesure.
+La sonde se tenait dehors, derrière un mur intact, et comptait comme percée
+chaque direction qui s'en échappait. Ce n'est pas une sonde qu'on a aveuglée,
+c'est une sonde qu'on a fait rentrer.
+
+La propriété de sûreté qui le prouve : sur un profil **symétrique**, l'écart
+entre l'ancien et le nouveau placement vaut **0,00 m sur 495 points** — la
+correction ne déplace rien là où il n'y avait rien à corriger. Couverture
+désormais 60 % des deux côtés à toutes les stations, 0 point hors cavité contre
+36 sur 495, et 38 196 rayons jugés contre 33 007 : le côté large enfin visité.
+
+L'écart que j'avais publié entre mes deux instruments — ma coupe rendait zéro
+station trouée là où la sonde confirmait 38 — est **réconcilié par cette
+correction, et dans le sens de ma coupe**.
 
 ## Ce que le porche demande, et pourquoi ce n'est pas un conflit de contrat
 
