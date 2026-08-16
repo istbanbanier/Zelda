@@ -915,13 +915,19 @@ ROCHERS = (
     # dominante en une seule masse. Elle reste la joue de la bouche ; elle
     # ne décide plus de la crête.
     dict(nom="Bouche_Joue",    mod="R", pose=(-0.60, 1.60,   2.00),
-         lacet=172, tangage=-5, roulis=4,  ech=(1.30, 1.25, 0.90),
+         lacet=172, tangage=-5, roulis=4,  ech=(1.52, 1.46, 0.90),
          rang="intermediaire"),
     dict(nom="Bouche_Visiere", mod="R", pose=(0.20, -1.85,   2.45),
          lacet=8,   tangage=-9, roulis=3,  ech=1.25,
          rang="majeur", amas="dominante"),
     # AUVENT ABAISSÉ pour la même raison : à 8,07 m il débordait le faîte de
     # la dominante par la gauche et comblait le col ouest.
+    # AUVENT : NE PAS L'ÉLARGIR. Essayé à (1,52 ; 1,46 ; 0,95) pour rendre
+    # de la marge au linteau ; `controle_amas` a refusé — « azimut 100 : les
+    # deux cols entaillent de 1,51 et 1,64 m ». À 100° il se projette en
+    # x écran +1,14, c'est-à-dire en plein dans le col est, et son faîte à
+    # 5,43 m le comblait. La joue, elle, se projette sous la dominante et
+    # peut grandir sans risque.
     dict(nom="Seuil_Auvent",   mod="R", pose=(-0.30, -1.60,  1.30),
          lacet=25,  tangage=-7, roulis=5,  ech=(1.30, 1.25, 0.95),
          rang="intermediaire"),
@@ -1079,8 +1085,27 @@ def rochers_gaine():
     donc deux exécutions donnent le même rocher.
     """
     sortie = []
-    for i, (ax, ay, hw, cle) in enumerate(CAVITE):
-        if i == 0 or i >= len(CAVITE) - 1:
+    # LA DERNIÈRE STATION N'ÉTAIT PAS GAINÉE, ET C'EST UNE DES TROIS CAUSES
+    # DU TROU DU FOND. `i >= len(CAVITE) - 1` écartait la station 8
+    # (y = 9,25), c'est-à-dire précisément là où la sonde mesure une
+    # ouverture de 1,50 × 1,25 m. La calotte au-delà (`CAVITE_APEX`,
+    # y = 9,55) n'était couverte par rien du tout : ni gaine, ni assise
+    # (`ASSISE["y1"]` s'arrêtait à 9,10). On gaine donc TOUTES les stations
+    # sauf le porche — qui est ouvert par construction — et on ajoute un
+    # anneau de calotte derrière la dernière.
+    # TOUTES LES STATIONS, ET UN ANNEAU DE CALOTTE DERRIÈRE LA DERNIÈRE.
+    # LE PORCHE RESTE NON GAINÉ, ET CE N'EST PAS UN OUBLI. Gainer `i == 0`
+    # pour rendre de la marge à la collerette a été essayé : `controle_amas`
+    # a refusé — « azimut 100 : les deux cols entaillent de 1,51 et 1,64 m ».
+    # L'arithmétique le dit sans ambiguïté : à l'azimut 45° l'anneau du
+    # porche culmine à 4,87 m et le col est de la composition est à 4,58.
+    # La bouche se trouve sous ce col ; épaissir l'une comble l'autre.
+    stations = [("%d" % i, s[0], s[1], s[2], s[3], i)
+                for i, s in enumerate(CAVITE)]
+    ax_a, ay_a, r_a = CAVITE_APEX
+    stations.append(("apex", ax_a, ay_a, r_a, r_a, len(CAVITE)))
+    for etiquette, ax, ay, hw, cle, i in stations:
+        if i == 0:
             continue
         # CINQ AZIMUTS, PAS TROIS. La première gaine ne posait que deux
         # flancs et une voûte — 0°, 90°, 180° — et le contrôle a aussitôt
@@ -1122,11 +1147,43 @@ def rochers_gaine():
         # 0,32 m), donc la couverture ne repose plus sur une marge mince.
         for k, azimut in enumerate(GAINE_AZIMUTS):
             theta = math.radians(azimut)
-            rayon_lat = hw + GAINE_MARGE_M
+            # L'ALCÔVE CREUSAIT SANS REMBLAI, ET LA GAINE NE LE SAVAIT PAS.
+            #
+            # `anneau_interieur()` élargit la cavité de `ALCOVE["ampl"]` aux
+            # stations 5 à 7, azimut 180°. La gaine, elle, se posait à
+            # `hw + marge` : à l'alcôve, elle se retrouvait DANS la cavité,
+            # donc entièrement retirée par la soustraction. Il ne restait
+            # rien derrière la poche.
+            #
+            # Le lobe compensateur existait pourtant — `dos_alcove` dans
+            # `LOBES` — mais `LOBES` est consommé par `anneau_exterieur()`,
+            # qui depuis le pivot R2a-3.3 ne fabrique plus que la coque de
+            # collision, jamais rendue. Le creusement a survécu au pivot, le
+            # remblai non. On rend donc à la gaine la MÊME formule que celle
+            # qui creuse, au lieu d'ajouter une roche à la main : si
+            # `ALCOVE` change, le remblai suit.
+            pousse = (ALCOVE["ampl"]
+                      * le_long(i, ALCOVE["i0"], ALCOVE["i1"])
+                      * fenetre(theta, ALCOVE["theta"], ALCOVE["dtheta"]))
+            rayon_lat = hw + pousse + GAINE_MARGE_M
             rayon_haut = cle + GAINE_MARGE_M
             hauteur = MODULES["R"]["natif"][2] * GAINE_ECHELLE
+            # LE DÉCALAGE LATÉRAL RESTE EN X, ET C'EST MESURÉ.
+            #
+            # J'ai essayé de le poser sur la normale, comme la semelle : la
+            # géométrie du tube le demande, la galerie s'infléchissant de
+            # 31°. Le contrôle d'épaisseur a répondu tout de suite —
+            # 0,60 m en paroi contre 1,09 avant, donc REFUS — parce que
+            # `controle_epaisseur()` tire ses rayons dans le plan
+            # `(cos θ, 0, sin θ)`, c'est-à-dire en X lui aussi : déplacer la
+            # gaine sur la normale l'éloigne de là où l'épaisseur se mesure.
+            #
+            # Les deux conventions ne peuvent pas être satisfaites en
+            # déplaçant les mêmes roches. La couverture se gagne donc par la
+            # DENSITÉ le long du chemin (voir l'échantillonnage ci-dessus),
+            # pas en déplaçant ce qui tient déjà l'épaisseur.
             sortie.append(dict(
-                nom="Gaine_%d_%03d" % (i, azimut), mod="R",
+                nom="Gaine_%s_%03d" % (etiquette, azimut), mod="R",
                 pose=(ax + rayon_lat * math.cos(theta), ay,
                       rayon_haut * math.sin(theta) - hauteur * 0.5),
                 lacet=(i * 47 + k * 71) % 360,
@@ -1163,9 +1220,241 @@ GAINE_AZIMUTS = (0, 22, 45, 67, 90, 112, 135, 157, 180)
 ## 1,15 et non 1,00 : la même mesure d'épaisseur demandait aussi plus de
 ## portée radiale. La crête passe de 5,68 à 6,00 m, soit encore 1,3 m sous
 ## les masses intermédiaires (7,29 m) et 3,2 m sous les majeures (9,16 m).
+## R2a-3.5 : RESTE À 1,15, ET TROIS LEVIERS ONT ÉTÉ ESSAYÉS PUIS MESURÉS
+## AVANT DE LE LAISSER TRANQUILLE. Chacun déplaçait ce qui tenait déjà.
+##
+##   * poser la gaine le long de la NORMALE au chemin, comme la semelle :
+##     REFUSÉ, épaisseur de paroi 0,60 m contre 1,09. `controle_epaisseur()`
+##     tire ses rayons dans le plan `(cos θ, 0, sin θ)`, donc en X : mettre
+##     la gaine sur la normale l'éloigne de là où l'épaisseur se mesure ;
+##   * densifier les couronnes le long du chemin (pas 0,85 m, 126 roches) :
+##     REFUSÉ, 0,63 m — l'échantillonnage fractionnaire change aussi les
+##     lacets, donc l'orientation, et un module du kit ne remplit pas sa
+##     boîte ;
+##   * porter l'échelle à 1,30 : REFUSÉ par `controle_amas`, « azimut 100 :
+##     les deux cols entaillent de 1,18 et 1,37 m ». La crête de gaine passait
+##     de 6,01 à 6,33 m et comblait les cols de la composition. C'est
+##     précisément la régression que ce contrôle existe pour attraper.
+##
+## La couverture manquante se gagne donc par une DOUBLURE ajoutée
+## (`rochers_doublure()`), qui ne déplace rien.
 GAINE_ECHELLE = 1.15
 
-ASSISE = dict(x0=-6.40, x1=6.90, y0=-3.10, y1=9.10, z0=-2.35, z1=-0.55)
+
+# ---------------------------------------------------------------------------
+# LE PROFIL DE SOL — UN SEUL DÉCIDEUR, ET C'EST LE DÉFAUT QUI L'IMPOSE.
+#
+# `TRANCHE3.md` a publié « sol : −0,416 » là où le profil en attend −0,040.
+# Le générateur IMPRIMAIT la mesure du défaut le jour de la livraison, et
+# elle était illisible parce que rien ne se tenait à côté pour dire ce
+# qu'elle aurait dû valoir. Une télémétrie qui imprime une mesure sans son
+# attendu n'est pas un contrôle (ISS-044).
+#
+# Cette fonction est donc la seule source de l'attendu. Elle recopie la
+# moitié basse de `anneau_interieur()` — `z = sag·v + PALIER[i] + denivele`
+# — et rien d'autre :
+#
+#   * la cuvette est au plus profond sur l'AXE (v = −1) et remonte vers les
+#     parois (v = 0), donc `−SAG·(1 − |f|)` avec `f` la fraction de
+#     demi-largeur ;
+#   * `PORCHE_DENIVELE` ne s'applique qu'au porche et s'éteint à la
+#     station 1.
+#
+# Elle sert à trois endroits, et c'est le point : la SEMELLE en dérive son
+# altitude, `hauteur_du_sol()` en dérive son attendu, et le contrôle de
+# semelle en dérive son verdict. Si `PALIER` ou `CAVITE` change, les trois
+# suivent ensemble.
+def sol_de_cavite(u, lateral=0.0):
+    """Altitude théorique du sol de la galerie, en repère MODÈLE.
+
+    `u` est un indice de station, éventuellement fractionnaire ; `lateral`
+    une fraction de demi-largeur dans [-1 ; +1].
+    """
+    i = max(0, min(len(PALIER) - 1, int(math.floor(u))))
+    j = min(len(PALIER) - 1, i + 1)
+    t = max(0.0, min(1.0, u - i))
+    palier = PALIER[i] * (1.0 - t) + PALIER[j] * t
+    denivele = PORCHE_DENIVELE * max(0.0, 1.0 - u)
+    return palier - SAG * (1.0 - min(1.0, abs(lateral))) + denivele
+
+
+def station_de_cavite(u):
+    """(ax, ay, hw, cle) à un indice de station éventuellement fractionnaire."""
+    i = max(0, min(len(CAVITE) - 1, int(math.floor(u))))
+    j = min(len(CAVITE) - 1, i + 1)
+    t = max(0.0, min(1.0, u - i))
+    a, b = CAVITE[i], CAVITE[j]
+    return tuple(a[k] * (1.0 - t) + b[k] * t for k in range(4))
+
+
+def normale_de_cavite(u):
+    """Axe LATÉRAL de la section à l'indice `u`, dans le plan (x, y).
+
+    `anneau_interieur()` place ses sommets à `ax + n·normale.x`,
+    `ay + n·normale.y` avec `normale = (tangente.y, −tangente.x)`. Décaler
+    le long de X au lieu de la normale paraît anodin tant que la galerie
+    court droit — et devient faux dès qu'elle s'infléchit.
+
+    MESURÉ, ET C'EST CE QUI M'A COÛTÉ DEUX PASSES. Entre les stations 7 et
+    8 le chemin part en (0,707 ; 0,707) : la normale y est à 45° de X. Un
+    point placé à `ax + f·hw` s'y retrouve hors de la cavité, dans la roche
+    pleine — le contrôle de plancher y voyait « aucun sol » et le trace des
+    impacts l'a dit en une ligne : un seul impact, à z = −2,75, normale
+    −1,00, c'est-à-dire le DESSOUS du solide, touché de l'intérieur.
+    """
+    eps = 0.02
+    a = station_de_cavite(max(0.0, u - eps))
+    b = station_de_cavite(min(len(CAVITE) - 1.0, u + eps))
+    tx, ty = b[0] - a[0], b[1] - a[1]
+    n = math.hypot(tx, ty)
+    if n < 1e-9:
+        return (1.0, 0.0)
+    return (ty / n, -tx / n)
+
+
+# LA DOUBLURE A ÉTÉ CONSTRUITE PUIS RETIRÉE, ET LA TRACE VAUT MIEUX QUE LE
+# CODE MORT. Objectif : fermer les treize percées dispersées que la sonde
+# mesure encore dans le coude, où la gaine — décalée en X — s'écarte du
+# flanc réel. Une seconde peau alignée sur la NORMALE, plus petite et plus
+# serrée, ajoutait de la matière sans en déplacer.
+#
+# Quatre variantes, quatre refus, tous d'un contrôle MESURÉ et non d'une
+# impression :
+#   * gaine posée sur la normale        -> epaisseur de paroi 0,60 m (min 0,80)
+#   * gaine densifiee, pas 0,85 m       -> 0,63 m
+#   * gaine a l'echelle 1,30            -> cols 1,18 / 1,37 m, rapport 1,16
+#   * doublure ajoutee, puis plafonnee  -> cols 1,51 / 1,64 m, rapport 1,08
+#
+# Le constat est structurel et mérite d'être écrit : la galerie passe au
+# MILIEU de la formation, et les deux cols de la composition sont les points
+# bas de la crête juste au-dessus d'elle. Toute matière ajoutée autour du
+# tube remonte donc vers un col. Épaissir pour fermer les percées et creuser
+# pour garder trois masses tirent sur la même roche, en sens contraires.
+# Les treize percées restantes sont dispersées — aucune maille de 1,5 m n'en
+# regroupe plus de deux, là où le trou du fond en faisait converger 27 — et
+# elles sont livrées comme telles, mesurées, plutôt que fermées au prix
+# d'une régression de composition.
+
+
+def rochers_semelle():
+    """LA SEMELLE — de la roche DÉRIVÉE sous le plancher de la galerie.
+
+    CE QU'ELLE RÉPARE, MESURÉ PAR `tools/probe_cave_openings.py` sur le GLB
+    livré : « plancher absent de y = +0,00 à y = +5,50 (stations 1 à 4) ».
+    Sur ces six mètres, un rayon tiré vers le bas depuis l'intérieur tombait
+    de 0,97 à 2,00 m au lieu de 0,60 à 1,40 — il traversait le sol annoncé
+    et n'était arrêté que par le sommet de l'assise enterrée, à z ≈ −0,45.
+    Le joueur marchait donc à soixante centimètres sous le profil déclaré.
+
+    POURQUOI PERSONNE NE L'AVAIT VU. La chaîne était circulaire, et c'est
+    écrit dans les deux fonctions : `controle_epaisseur()` écarte les rayons
+    descendants (`if math.sin(theta) < -0.30: continue`) en renvoyant à
+    `controle_aucun_jour()`, qui ne tire que vers le HAUT. Rien ne regardait
+    le sol.
+
+    POURQUOI UNE SEMELLE ET NON DES ROCHES POSÉES. L'emprise mesurée invite
+    à rustiner jusqu'à l'emprise, et le docstring de `rochers_gaine()`
+    raconte déjà ce que ça coûte : « j'ai répondu seize fois en ajoutant une
+    roche là où il pointait […] je corrigeais une mesure au lieu de garantir
+    la propriété ». La semelle garantit la propriété : pour CHAQUE station
+    de `CAVITE` et CHAQUE position latérale de la demi-largeur, il existe de
+    la matière continue entre le profil de sol et l'assise. Si `CAVITE` ou
+    `PALIER` change, la semelle suit — aucune cote n'est recopiée.
+
+    LA CONTINUITÉ SE DÉMONTRE, elle ne s'espère pas. Le faîte sculpté de
+    `template-detail` mesure 0,93 × ech en largeur (mesuré sur ses 600
+    sommets, tous axes confondus) : deux roches espacées de moins que cela
+    ont leur plateau qui se recouvre, et le creux entre elles reste sous
+    0,15 × ez. Les pas longitudinal et latéral sont donc bornés par
+    `SEMELLE_PAS_M`, et `SEMELLE_MARGE_M` (0,60 m) domine largement ce
+    creux. C'est la même arithmétique que celle des amas de R2a-3.4.
+
+    Le sommet de chaque roche est à `sol + SEMELLE_MARGE_M` : la
+    soustraction de la cavité vient ensuite y tailler le plancher réel, qui
+    est donc EXACTEMENT le profil déclaré, et non la surface d'une roche.
+    Le fond de chaque roche descend sous `ASSISE["z1"]`, si bien que la
+    semelle et l'assise ne forment qu'une masse.
+    """
+    sortie = []
+    u = 0.0
+    rang_long = 0
+    while u <= len(CAVITE) - 1 + 1e-6:
+        ax, ay, hw, _ = station_de_cavite(u)
+        nx, ny = normale_de_cavite(u)
+        demi = hw * SEMELLE_PART_LAT
+        n_lat = max(1, int(math.ceil(2.0 * demi / SEMELLE_PAS_M)))
+        for k in range(n_lat + 1):
+            f = (-1.0 + 2.0 * k / n_lat) if n_lat > 0 else 0.0
+            sommet = sol_de_cavite(u, f * SEMELLE_PART_LAT) + SEMELLE_MARGE_M
+            hauteur = MODULES["R"]["natif"][2] * SEMELLE_ECHELLE[2]
+            sortie.append(dict(
+                nom="Semelle_%02d_%d" % (rang_long, k), mod="R",
+                pose=(ax + f * demi * nx, ay + f * demi * ny,
+                      sommet - hauteur),
+                lacet=(rang_long * 53 + k * 79) % 360,
+                tangage=(rang_long % 3) * 3 - 3, roulis=(k % 4) * 3 - 4,
+                ech=SEMELLE_ECHELLE, rang="semelle"))
+        rang_long += 1
+        # Pas d'avance converti en mètres le long de l'axe : deux stations
+        # voisines sont distantes de 0,60 à 1,60 m, donc un pas fixe en
+        # indice de station ne bornerait pas le pas en mètres.
+        prochain = min(len(CAVITE) - 1.0, u + 0.05)
+        avance = 0.0
+        while prochain < len(CAVITE) - 1.0 and avance < SEMELLE_PAS_M:
+            a = station_de_cavite(u)
+            b = station_de_cavite(prochain)
+            avance = math.hypot(b[0] - a[0], b[1] - a[1])
+            if avance < SEMELLE_PAS_M:
+                prochain = min(len(CAVITE) - 1.0, prochain + 0.05)
+        if prochain >= len(CAVITE) - 1.0 and u >= len(CAVITE) - 1.0:
+            break
+        u = prochain
+    return sortie
+
+
+## Pas maximal, longitudinal ET latéral, entre deux roches de semelle. Borné
+## par la largeur du faîte du module (0,93 × ech) pour que les plateaux se
+## recouvrent : au-delà, le creux entre deux voisines dépasse la marge et un
+## trou de plancher se rouvre.
+SEMELLE_PAS_M = 1.25
+## Fraction de la demi-largeur couverte, le long de la NORMALE au chemin.
+## 1,05 et non 0,90 : `tools/probe_cave_openings.py` échantillonne, lui, le
+## long de X (`p = (ax + f·hw, ay, z)`), si bien que ses points s'écartent de
+## la normale là où la galerie s'infléchit. La bande couverte doit donc
+## déborder la demi-largeur, sans quoi les deux instruments ne mesurent pas
+## le même sol.
+SEMELLE_PART_LAT = 1.05
+## De combien le sommet de la semelle dépasse le profil de sol déclaré. La
+## soustraction retaille ensuite le plancher au profil exact ; cette marge ne
+## sert qu'à garantir qu'il reste de la matière à tailler, y compris dans le
+## creux entre deux roches voisines.
+SEMELLE_MARGE_M = 0.60
+## Échelle des roches de semelle. LE PREMIER JET A ÉTÉ REFUSÉ PAR MA PROPRE
+## BORNE, et c'est le contrôle qui a eu raison : (1,35 ; 1,35 ; 0,62) fait
+## une anisotropie de 2,18 pour un plafond de 2,00. Desserrer le plafond
+## aurait été le geste facile ; la semelle est certes invisible, mais une
+## borne qu'on relâche pour le cas qui gêne ne borne plus rien.
+##
+## (1,45 ; 1,45 ; 0,75) tient à 1,93 et donne 3,26 m de hauteur : le fond
+## descend de 2,66 m sous le profil de sol, donc sous `ASSISE["z1"]` (−0,55)
+## à TOUTES les stations, et la semelle ne fait qu'une masse avec l'assise.
+## Le plateau du module y mesure 0,93 × 1,45 = 1,35 m, ce qui autorise le pas
+## de 1,25 m. Elles restent invisibles : la soustraction les ouvre côté
+## galerie, la gaine les enferme côté flancs, l'assise côté dessous.
+SEMELLE_ECHELLE = (1.45, 1.45, 0.75)
+
+# `y1` ALLAIT À 9,10 ET S'ARRÊTAIT AVANT LA FIN DE LA CAVITÉ. La dernière
+# station est à y = 9,25 et la calotte (`CAVITE_APEX`) à 9,55 : l'assise ne
+# passait donc pas sous le fond de la galerie, et c'est l'une des trois
+# causes du trou mesuré par la sonde en x[+0,97 ; +2,47] z[+1,02 ; +2,27].
+# Portée à 10,60, elle dépasse l'apex de plus d'un mètre.
+#
+# `z1` NE BOUGE PAS, et ce n'est pas un oubli. L'assise couvre
+# x[−6,40 ; 6,90] et y[−3,10 ; 10,60], soit bien plus large que la galerie :
+# la remonter au-dessus du terrain (−0,50) ferait apparaître un plateau de
+# roche plat tout autour de la formation — le défaut « grands aplats », en
+# pire, parce qu'il serait horizontal et à hauteur d'œil.
+ASSISE = dict(x0=-6.40, x1=6.90, y0=-3.10, y1=10.60, z0=-2.35, z1=-0.55)
 
 AMP_INTERIEUR = 0.085   # relief de paroi : lisible, la salle reste jouable
 # 0,150 au premier jet : l'épaisseur minimale de roche tombait à 0,87 m, à
@@ -1307,6 +1596,23 @@ VOXEL_M = 0.12
 GABARIT_DEMI_LARGEUR_M = 0.95   # capsule joueur r = 0,45 m
 GABARIT_CLE_M = 2.05
 ASSISE_JUPE_MIN_M = 2.00
+
+## Tolérance entre le sol mesuré et le sol déclaré par `sol_de_cavite()`.
+## Même valeur que `PLANCHER_TOLERANCE_M` dans `tools/probe_cave_openings.py`
+## — les deux mesurent la même propriété, et deux tolérances différentes
+## fabriqueraient un désaccord entre le générateur et la sonde.
+SOL_TOLERANCE_M = 0.25
+## Pas d'échantillonnage du plancher, en mètres le long de l'axe, et
+## fractions latérales de la demi-largeur. Le contrôle tire un rayon vers le
+## BAS depuis le vide de la galerie — la direction que ni
+## `controle_epaisseur()` (qui écarte `sin θ < −0,30`) ni
+## `controle_aucun_jour()` (qui ne tire que `+Z`) n'a jamais regardée.
+PLANCHER_PAS_M = 0.75
+PLANCHER_FRACTIONS = (-0.75, -0.45, -0.15, 0.15, 0.45, 0.75)
+## Hauteur libre minimale sous laquelle un point latéral ne veut plus rien
+## dire : la voûte y rejoint le sol, et un rayon vertical n'y mesure que
+## l'épaisseur de la paroi. `controle_epaisseur()` s'en charge.
+PLANCHER_HAUTEUR_MIN_M = 0.45
 
 # ---------------------------------------------------------------------------
 # Matières. glTF stocke `baseColorFactor` en LINÉAIRE et Godot le réencode
@@ -2463,6 +2769,93 @@ def controle_plage_plane(obj, z_mini, exterieur_seul=True):
     return aire, centre, aire_facade, centre_facade
 
 
+
+def controle_plancher(obj):
+    """LE RAYON VERS LE BAS — la direction que rien ne regardait.
+
+    LA CIRCULARITÉ, ÉCRITE DANS LE TEXTE DES DEUX FONCTIONS :
+
+      * `controle_epaisseur()` écarte les rayons descendants —
+        `if math.sin(theta) < -0.30: continue` — en justifiant que « le
+        plancher est garanti autrement : par `controle_aucun_jour` » ;
+      * `controle_aucun_jour()` ne tire que `Vector((0.0, 0.0, 1.0))`,
+        c'est-à-dire vers le HAUT.
+
+    Chacune renvoyait à l'autre. Le sol de la galerie n'a donc jamais été
+    mesuré, et `tools/probe_cave_openings.py` — écrit hors du générateur,
+    justement pour sortir du cercle — a trouvé le plancher ABSENT de
+    y = +0,00 à y = +5,50 : le rayon tombait jusqu'au sommet de l'assise, à
+    z ≈ −0,45, soixante centimètres sous le profil déclaré.
+
+    Ce contrôle-ci ferme le cercle à l'intérieur du générateur, pour que la
+    faute soit vue avant l'export et non trois quarts d'heure après. Il ne
+    remplace pas la sonde : la sonde mesure le GLB LIVRÉ, ce qui vaut mieux,
+    et couvre en plus la sphère entière et la ligne de vue.
+
+    Le départ du rayon est pris au-dessus du sol déclaré, jamais à une
+    hauteur fixe : un départ fixe tombe dans la roche aux stations dont le
+    palier remonte, et rend alors une face de dessous pour un plancher.
+    On ne retient que le premier impact dont la NORMALE regarde vers le
+    haut — c'est la définition d'un sol.
+
+    Rend (nombre de points sondés, liste de fautes).
+    """
+    bvh = bvh_depuis(obj)
+    fautes = []
+    sondes = 0
+    u = 0.0
+    while u <= len(CAVITE) - 1 + 1e-6:
+        ax, ay, hw, cle = station_de_cavite(u)
+        nx, ny = normale_de_cavite(u)
+        for f in PLANCHER_FRACTIONS:
+            attendu = sol_de_cavite(u, f)
+            x, yl = ax + f * hw * nx, ay + f * hw * ny
+            # LA HAUTEUR DE DÉPART SE DÉRIVE DE LA SECTION, PAS D'UNE
+            # CONSTANTE. Premier jet : départ à `attendu + cle · 0,45` quelle
+            # que soit la position latérale. Mesuré — à la fraction ±0,75 de
+            # la station 8, la voûte est déjà redescendue à 1,46 m et le
+            # départ tombait à 1,80 : le rayon partait DANS la roche, ne
+            # rencontrait aucune normale tournée vers le haut, et le contrôle
+            # criait « aucun sol » là où il y avait de la roche pleine. Un
+            # contrôle qui rougit à tort finit désactivé.
+            #
+            # On reprend donc la branche haute de `anneau_interieur()` —
+            # `z = cle · v^0,75` — avec `v = sqrt(1 − f²)` sur la section.
+            voute = cle * max(0.0, 1.0 - f * f) ** 0.375
+            libre = voute - attendu
+            if libre < PLANCHER_HAUTEUR_MIN_M:
+                continue          # trop près de la paroi pour vouloir dire quoi que ce soit
+            depart = Vector((x, yl, attendu + 0.45 * libre))
+            sondes += 1
+            position = depart.copy()
+            mesure = None
+            trace = []
+            for _ in range(12):
+                r = bvh.ray_cast(position, Vector((0.0, 0.0, -1.0)), 8.0)
+                if r is None or r[0] is None:
+                    break
+                trace.append((r[0].z, r[1].z if r[1] is not None else 0.0))
+                if r[1] is not None and r[1].z > 0.30:
+                    mesure = r[0].z
+                    break
+                position = r[0] - Vector((0.0, 0.0, 0.002))
+            if mesure is None:
+                fautes.append((u, f, x, yl, attendu, None, depart.z, trace))
+            elif abs(mesure - attendu) > SOL_TOLERANCE_M:
+                fautes.append((u, f, x, yl, attendu, mesure, depart.z, trace))
+        prochain = min(len(CAVITE) - 1.0, u + 0.05)
+        avance = 0.0
+        while prochain < len(CAVITE) - 1.0 and avance < PLANCHER_PAS_M:
+            a = station_de_cavite(u)
+            b = station_de_cavite(prochain)
+            avance = math.hypot(b[0] - a[0], b[1] - a[1])
+            if avance < PLANCHER_PAS_M:
+                prochain = min(len(CAVITE) - 1.0, prochain + 0.05)
+        if prochain >= len(CAVITE) - 1.0 and u >= len(CAVITE) - 1.0:
+            break
+        u = prochain
+    return sondes, fautes
+
 def controle_gabarit():
     """Une capsule r = 0,45 m, h = 1,85 m passe partout sur le chemin."""
     faibles = []
@@ -2536,6 +2929,66 @@ def hauteur_du_sol(obj, x, y):
             return r[0].z
         position = r[0] - Vector((0.0, 0.0, 0.002))
     return None
+
+
+def sol_attendu_en(x, y):
+    """L'attendu de `hauteur_du_sol` au même point — indice et fraction.
+
+    On retrouve la station la plus proche en projetant (x, y) sur la
+    polyligne de l'axe, puis la fraction latérale par la distance à cet axe
+    rapportée à la demi-largeur. L'altitude vient de `sol_de_cavite()`,
+    seul décideur du profil.
+    """
+    meilleur = None
+    n = 240
+    for k in range(n + 1):
+        u = (len(CAVITE) - 1.0) * k / n
+        ax, ay, hw, _ = station_de_cavite(u)
+        d = math.hypot(x - ax, y - ay)
+        if meilleur is None or d < meilleur[0]:
+            meilleur = (d, u, ax, ay, hw)
+    _, u, ax, ay, hw = meilleur
+    lateral = min(1.0, math.hypot(x - ax, y - ay) / max(0.05, hw))
+    return sol_de_cavite(u, lateral), u, lateral
+
+
+def controle_sol_repere(obj, reperes):
+    """LE CONTRÔLE QUI MANQUAIT : la mesure imprimée AVEC son attendu.
+
+    C'est le défaut le plus instructif de la passe précédente, et il ne
+    tient pas à la géométrie mais à une ligne de `print`. `TRANCHE3.md` a
+    publié « sol : −0,416 » là où le profil en attend −0,040 : le générateur
+    IMPRIMAIT la mesure du défaut le jour même de la livraison, et personne
+    n'a pu la lire, parce que rien ne se tenait à côté pour dire ce qu'elle
+    aurait dû valoir.
+
+    Une télémétrie qui imprime une mesure sans son attendu n'est pas un
+    contrôle. Elle en a l'apparence, ce qui est pire que rien : elle occupe
+    la place qu'aurait prise un vrai contrôle. Voir `ISS-044`.
+
+    Rend (liste de lignes, liste de fautes).
+    """
+    lignes, fautes = [], []
+    for nom, x, y in reperes:
+        mesure = hauteur_du_sol(obj, x, y)
+        attendu, u, lateral = sol_attendu_en(x, y)
+        if mesure is None:
+            lignes.append("[grotte] sol sous %-10s (%5.2f, %5.2f) : AUCUN — "
+                          "hors cavite (attendu %+.3f m)" % (nom, x, y, attendu))
+            fautes.append("%s (%.2f, %.2f) : aucun sol sous le rayon, "
+                          "%+.3f m attendu" % (nom, x, y, attendu))
+            continue
+        ecart = mesure - attendu
+        lignes.append("[grotte] sol sous %-10s (%5.2f, %5.2f) : mesure %+.3f m, "
+                      "attendu %+.3f m (station %.2f, lateral %.2f), ecart "
+                      "%+.3f m — tolerance %.2f"
+                      % (nom, x, y, mesure, attendu, u, lateral, ecart,
+                         SOL_TOLERANCE_M))
+        if abs(ecart) > SOL_TOLERANCE_M:
+            fautes.append("%s (%.2f, %.2f) : sol a %+.3f m pour %+.3f m "
+                          "attendu, ecart %+.3f m" % (nom, x, y, mesure,
+                                                      attendu, ecart))
+    return lignes, fautes
 
 
 def _boite(obj):
@@ -3441,7 +3894,8 @@ def main():
     #    enterrée ferme la formation par le bas.
     try:
         pieces = [assise_enterree()]
-        implantation = list(ROCHERS) + rochers_gaine()
+        implantation = list(ROCHERS) + rochers_gaine() \
+            + rochers_semelle()
         for config in implantation:
             pieces.append(poser_rocher(config))
     except RuntimeError as erreur:
@@ -3684,6 +4138,22 @@ def main():
     print("[grotte] gabarit : capsule r=0,45 h=1,85 passe aux %d stations "
           "du chemin" % (len(CAVITE) - 2))
 
+    sondes, fautes_sol_bas = controle_plancher(grotte)
+    print("[grotte] plancher : %d point(s) sondes VERS LE BAS depuis le vide "
+          "de la galerie, %d faute(s) (tolerance %.2f m)"
+          % (sondes, len(fautes_sol_bas), SOL_TOLERANCE_M))
+    if fautes_sol_bas:
+        for u, f, x, y, attendu, mesure, z0, trace in fautes_sol_bas[:8]:
+            print("[grotte] ERREUR: plancher station %.2f lateral %+.2f "
+                  "(x %.2f, y %.2f) — depart z %+.3f, attendu %+.3f m, %s"
+                  % (u, f, x, y, z0, attendu,
+                     "AUCUN sol sous le rayon" if mesure is None
+                     else "mesure %+.3f m (ecart %+.3f)" % (mesure,
+                                                            mesure - attendu)))
+            print("[grotte]          impacts (z, normale.z) : %s"
+                  % (" ".join("%+.2f/%+.2f" % t for t in trace) or "aucun"))
+        return 2
+
     fautes = controle_aucun_jour(grotte, SEGMENTS)
     if fautes:
         for x, y, n in fautes[:5]:
@@ -3696,11 +4166,15 @@ def main():
     # Ces deux chiffres sont la SEULE source correcte pour les constantes
     # `MODELE_NICHE.y` et `MODELE_SALLE.y` de `waterfall_cave_place.gd` :
     # elles vivent dans un autre fichier, et le sol vient de bouger.
-    for nom, x, y in (("axe_seuil", 0.05, 1.60), ("salle", 1.05, 6.25),
-                      ("niche", -1.20, 8.20), ("voisin", -1.60, 8.20)):
-        h = hauteur_du_sol(grotte, x, y)
-        print("[grotte] sol sous %s (%.2f, %.2f) : %s"
-              % (nom, x, y, "AUCUN — hors cavite" if h is None else "%.3f m" % h))
+    lignes_sol, fautes_sol = controle_sol_repere(grotte, (
+        ("axe_seuil", 0.05, 1.60), ("salle", 1.05, 6.25),
+        ("niche", -1.20, 8.20), ("voisin", -1.60, 8.20)))
+    for ligne in lignes_sol:
+        print(ligne)
+    if fautes_sol:
+        for faute in fautes_sol:
+            print("[grotte] ERREUR: repere de sol — %s" % faute)
+        return 2
 
     if -mini_z < ASSISE_JUPE_MIN_M:
         print("[grotte] ERREUR: jupe de %.2f m < %.2f m — masse posee, non "
