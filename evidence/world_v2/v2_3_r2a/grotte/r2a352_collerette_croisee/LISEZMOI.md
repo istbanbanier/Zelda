@@ -111,3 +111,68 @@ et au-dessus de la cible de conception de 0,70.
 |---|---|
 | `journal_cave_collar.txt` | l'outil **non corrigé** sur les deux géométries, tel que mesuré avant la calibration |
 | `calibration_de_ma_coupe.txt` | mon propre instrument confronté à la réponse analytique |
+
+---
+
+## Addendum final — la cause était géométrique, et une tension d'instruments reste ouverte
+
+### Pourquoi le goulot valait 0,566 m
+
+L'agent collerette a écrit un **troisième** mécanisme pour vérifier le second sans
+partager une ligne : EDT euclidienne **exacte** (Felzenszwalb, pas de chanfrein),
+pas 0,04 m, épaisseur définie par le **goulot de la coupe minimale** — la plus
+grande érosion que la roche supporte avant que l'ouverture communique avec le
+dehors, par union-find. Résultat : **0,5657 m**, à 24 cm du point désigné par
+`cave_collar.py`.
+
+Cause, et elle n'est pas numérique : **le jambage droit est un bandeau incliné de
+36°.** 0,70 m de large à l'horizontale, donc **0,566 m perpendiculairement**. *La
+largeur horizontale n'est pas l'épaisseur.* Et la sphère inscrite de l'agent était
+optimiste parce qu'**une sphère 3D s'échappe le long de Y**, où le jambage est
+épais : une méthode sans direction n'est pas pour autant sans biais.
+
+### L'état final, trois instruments
+
+Sur `cc3596c5` :
+
+| instrument | lecture |
+|---|---:|
+| `cave_collar.py` A (rayons normale, biais 0,0006) | **0,8265 m** |
+| EDT exacte de l'agent collerette (goulot, pas 0,04) | **1,040 m** |
+| `cave_collar.py` B (calibré, +une maille) | **1,1000 m** |
+
+Tous au-dessus de 0,60 **et** de la cible de conception de 0,70. Le goulot a
+quitté le jambage droit pour l'épaule gauche. Le gate de collerette n'est plus en
+doute quelle que soit la lecture retenue.
+
+### Mais la tension de calibration n'est pas résolue
+
+`cave_collar.py` B **non corrigé** lisait 0,5657 au pas de 0,05 ; l'EDT exacte de
+l'autre agent lit 0,5657 au pas de 0,04. **Deux pas différents, le même nombre à
+quatre décimales.** Si les deux portaient le biais d'une maille démontré sur le
+cylindre, ils devraient différer de 0,01 m. Ils ne diffèrent pas.
+
+De même sur la géométrie finale : `cave_collar.py` B **non corrigé** vaudrait
+1,05 ; l'EDT exacte lit 1,040.
+
+Deux lectures possibles, et je ne tranche pas :
+
+1. la correction d'une maille, valide sur un cercle aligné à la grille,
+   **sur-corrige** sur une frontière irrégulière ;
+2. l'EDT « exacte » porte le même biais de discrétisation, et la coïncidence des
+   pas est fortuite.
+
+**Le discriminant est le même cylindre** : `tools/cave_collar_calibration.py`
+existe, et l'EDT exacte n'y a pas été confrontée. Tant que ce n'est pas fait, la
+correction `+ pas` est justifiée sur une forme analytique et **contredite par un
+instrument indépendant sur la forme réelle** — un fait à porter, pas à taire.
+
+### Le `PARTIAL` que l'agent signale de lui-même
+
+Sa sonde 3D sort encore en **1** : 0,32 m au `(0,60 ; −1,87 ; 1,27)`. Son propre
+profil de recul dit pourquoi — 0,32 dans la bande 0,2–0,4 m, puis **0,62 · 1,56 ·
+1,82**. C'est la signature d'un **biseau d'overhang**, qui s'amincit vers son bord
+par construction ; une colonne verticale au même endroit traverse 1,57 m de roche.
+Il n'a **pas** relevé `RECUL_MIN_M` pour faire passer la géométrie, et l'essai de
+suppression du biseau coûtait 0,13 m de goulot sans rien rendre. Que ce biseau se
+lise comme de la roche relève de l'œil.

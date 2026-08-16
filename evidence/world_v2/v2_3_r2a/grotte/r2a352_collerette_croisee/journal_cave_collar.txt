@@ -49,3 +49,31 @@ A = 0.6533 m, B = 0.5657 m, ecart 0.0877 m, seuil 0.60 m
 VERDICT : FAIL — 1 mesure(s) sous le seuil
 ==============================================================================
 RC=1
+
+===== ETAT FINAL DU LOT COLLERETTE — cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49 =====
+outil : cave_collar.py CALIBRE (correction +pas), commit 0860ca9d9a20ec46040b13e5ac94e05f3523d1ba
+==============================================================================
+COLLERETTE — deux mesures, deux mecanismes
+==============================================================================
+maillage : /home/user/zelda-r2a352/b_collerette/assets/environment/caves/SM_WaterfallCave.glb
+   20090 triangles, plan de bouche y = -1.15, pas de coupe 0.050 m
+
+MESURE A — rayons selon la normale locale
+   epaisseur minimale 0.8265 m
+      u 0.60, azimut 140.0 deg
+
+MESURE B — transformee de distance sur une coupe transversale
+   (corrigee de +1 maille = +0.0500 m ; biais mesure sur cylindre
+    analytique, voir tools/cave_collar_calibration.py)
+   plan utilise : y = -1.15
+   3625 case(s) d'ouverture (creux non relie au bord de la coupe)
+   epaisseur minimale 1.1000 m
+      au point (x +1.43 ; z -0.45) du plan de bouche
+
+==============================================================================
+A = 0.8265 m, B = 1.1000 m, ecart 0.2735 m, seuil 0.60 m
+VERDICT : PASS — les deux mecanismes sont au-dessus du seuil
+   ATTENTION: les deux mesures divergent de 0.274 m. Elles ne mesurent
+   pas la meme chose, ou l'une se trompe — l'ecart est rapporte, pas moyenne.
+==============================================================================
+RC=0
