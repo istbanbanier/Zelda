@@ -89,6 +89,65 @@ traitement :
 
 Un vert obtenu par un contrôle qui mesure autre chose n'est pas un vert.
 
+## 0ter. CORRECTION — R2a-3.5.3, 2026-08-16
+
+Le bloc `0bis` ci-dessus est daté du checkpoint 1 et reste tel quel. Celui-ci
+lui succède ; même règle, le corps n'est pas réécrit.
+
+### C4 — le maillage n'est PAS ouvert par le dessous. Le §30.1 se trompe de cause.
+
+**FAIT REPRODUIT par l'intégrateur**, après signalement de l'agent C — mesure
+refaite avec un lecteur GLB indépendant, sommets **soudés par position** (sans
+soudure, les six primitives de matériau rendent des milliers de faux bords
+libres) :
+
+| géométrie | nœud | bord libre | non-manifold | `χ = V−E+F` | genre |
+|---|---|---:|---:|---:|---:|
+| candidat `cc3596c5` | `SM_WaterfallCave` | **0** | **0** | 0 | **1** |
+| `BASE352` `8bc8b9f9` | `SM_WaterfallCave` | **0** | **4** | 4 | non défini |
+| R2a-3.4 `8bf1a1b3` | `SM_WaterfallCave` | **0** | **0** | −2 | **2** |
+| les trois | `COL_WaterfallCave` | 0 | 0 | 2 | 0 |
+
+**Zéro bord libre sur les trois. Le maillage est fermé.**
+
+Le §30.1 et `evidence/.../r2a352_toit_mince/LISEZMOI.md` écrivent que mes deux
+inondations 3D « s'échappent par le **dessous ouvert du modèle**, qui est ouvert
+par conception — un rocher planté dans le terrain ». **C'est faux.** Le fait
+observé — les deux inondations atteignent le bord de la grille — reste vrai ; sa
+cause était mal nommée. Elles sortent par la **bouche**, ou par autre chose, mais
+pas par un dessous qui n'existe pas.
+
+**Ce qui ne change pas** : la joignabilité du vide au toit mince reste
+`NON VÉRIFIÉ`, et le verdict d'épaisseur ne dépendait pas d'elle. Le contrat
+`EPAISSEUR_MIN_M` porte sur la roche, pas sur l'accès.
+
+**Ce qui change, et c'est important** : la mauvaise cause servait d'excuse à
+l'indétermination. Le maillage étant fermé, la question **redevient décidable**,
+et le masque « limite inférieure » que la directive envisageait pour l'oracle est
+**inutile** — le plus large des deux angles morts disparaît avant d'être écrit.
+
+### C5 — un genre non nul, sur les deux géométries, reste à expliquer
+
+**FAIT REPRODUIT, conséquence non levée.** Une grotte à une seule bouche est
+topologiquement une **bosselure** : genre 0. Le candidat est de genre **1**, la
+géométrie **livrée** R2a-3.4 de genre **2**. Chacune porte donc une ou deux
+**anses** — une boucle de matière, ou un trou traversant.
+
+Deux hypothèses, non équivalentes :
+
+- **arche naturelle** (visière, orteil, pied formant un pont) — légitime et
+  cohérent avec la composition voulue ;
+- **trou traversant entre la cavité et le dehors** — c'est-à-dire une **percée**,
+  que toutes les sondes annoncent à **0**.
+
+Confié à l'agent C, à traiter comme une hypothèse **à réfuter**. Le genre est un
+invariant **global** : il établit qu'une anse existe, jamais où. Statut :
+**NON VÉRIFIÉ**.
+
+Noter au passage, pour le gate : `BASE352` porte **4 arêtes non-manifold** quand
+le candidat en porte 0. Ajouter la collerette les a donc **réparées** — plausible
+si la visière recouvre la zone fautive, **non vérifié**.
+
 ---
 
 ## 1. Branche

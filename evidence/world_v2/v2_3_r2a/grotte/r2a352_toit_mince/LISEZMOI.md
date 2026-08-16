@@ -68,6 +68,21 @@ avec un toit qui passe de 4,22 m à 0,054 m puis remonte à 2,08 m.
 
 ## Ce que l'intégrateur n'a PAS pu établir
 
+> ### CORRECTION — 2026-08-16, passe R2a-3.5.3
+>
+> **Le paragraphe ci-dessous nomme une cause qui est fausse, et il est conservé
+> tel quel plutôt qu'effacé.** Mesure refaite, lecteur GLB indépendant, sommets
+> soudés par position : **0 bord libre** sur le candidat, sur `BASE352` et sur
+> R2a-3.4. **Le maillage est fermé. Il n'est pas ouvert par le dessous.**
+>
+> Le fait observé reste vrai — les deux inondations atteignent le bord de la
+> grille — mais elles ne sortent pas par un dessous qui n'existe pas.
+>
+> Le verdict d'épaisseur n'en dépendait pas : `EPAISSEUR_MIN_M` porte sur la
+> roche, pas sur l'accès. Ce qui change, c'est que la mauvaise cause servait
+> d'excuse à l'indétermination : le maillage étant fermé, **la question redevient
+> décidable**. Détail et suites : `docs/CODEX_HANDOFF.md` §0ter, C4 et C5.
+
 **La joignabilité par le joueur reste indéterminée.** Deux inondations 3D lancées
 depuis la galerie, l'une sans bouchon, l'autre avec la dalle de bouche entière
 bouchée, **atteignent toutes deux le bord de la grille** : elles s'échappent par
