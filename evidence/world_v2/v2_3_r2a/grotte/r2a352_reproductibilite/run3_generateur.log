@@ -1,0 +1,108 @@
+Blender 4.0.2
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+[grotte] module R (template-detail) : 241 faces, volume 8.89 m3, ferme et sans auto-intersection
+[grotte] 38 piece(s) : 5 enveloppe, 3 gaine, 30 semelle, plus l'assise enterree
+[grotte] faite par rang (z max, m) : enveloppe 8.35, gaine 3.56, semelle 1.33
+[grotte] silhouette a 55 deg : emprise 16.87 m
+[grotte]   entaille 0.60 : 3 masse(s) (3 exigees)  sommets 1.31 1.85 1.23  emprises 5.86 7.47 3.47  cv 0.19 (ratio emprises 2.16, 2.00 exige)
+[grotte]   entaille 0.90 : 3 masse(s) (3 exigees)  sommets 1.62 2.23 1.46  emprises 5.86 7.47 3.47  cv 0.19 (ratio emprises 2.16, 2.00 exige)
+[grotte]   entaille 1.20 : 3 masse(s) (3 exigees)  sommets 2.08 2.54 1.77  emprises 5.86 7.47 3.47  cv 0.15 (ratio emprises 2.16, 2.00 exige)
+[grotte]   entaille 1.50 : 3 masse(s) (3 exigees)  sommets 2.47 3.00 1.93  emprises 5.86 7.47 3.47  cv 0.18 (ratio emprises 2.16, 2.00 exige)
+[grotte]   masse 1  sommet  1.62 m  emprise  5.86 m  proeminence  1.95 m  faite  4.85 m
+[grotte]   masse 2  sommet  2.23 m  emprise  7.47 m  proeminence  7.57 m  faite  8.35 m
+[grotte]   masse 3  sommet  1.46 m  emprise  3.47 m  proeminence  2.89 m  faite  4.49 m
+[grotte]   decentrement du faite dominant : 1.77 m = 10.5 % de l'emprise
+[grotte] silhouette a 100 deg : emprise 14.87 m
+[grotte]   entaille 0.60 : 3 masse(s) (3 exigees)  sommets 1.36 1.83 1.29  emprises 5.09 6.72 2.99  cv 0.16 (ratio emprises 2.25, 2.00 exige)
+[grotte]   entaille 0.90 : 3 masse(s) (3 exigees)  sommets 1.63 2.04 1.49  emprises 5.09 6.72 2.99  cv 0.13 (ratio emprises 2.25, 2.00 exige)
+[grotte]   entaille 1.20 : 3 masse(s) (3 exigees)  sommets 1.97 2.17 1.76  emprises 5.09 6.72 2.99  cv 0.08 (ratio emprises 2.25, 2.00 exige)
+[grotte]   entaille 1.50 : 2 masse(s) (3 exigees)  sommets 2.31 2.44  emprises 5.09 9.71  cv 0.03 (ratio emprises 1.91, 2.00 exige)
+[grotte]   masse 1  sommet  1.63 m  emprise  5.09 m  proeminence  1.92 m  faite  4.85 m
+[grotte]   masse 2  sommet  2.04 m  emprise  6.72 m  proeminence  8.31 m  faite  8.35 m
+[grotte]   masse 3  sommet  1.49 m  emprise  2.99 m  proeminence  1.21 m  faite  4.49 m
+[grotte]   decentrement du faite dominant : 2.14 m = 14.4 % de l'emprise
+[grotte] azimut 225 — TELEMETRIE SEULE, ne bloque pas
+[grotte] silhouette a 225 deg : emprise 17.03 m
+[grotte]   entaille 0.60 : 3 masse(s) (3 exigees)  sommets 1.24 1.79 1.32  emprises 3.42 7.70 5.91  cv 0.17 (ratio emprises 2.25, 2.00 exige)
+[grotte]   entaille 0.90 : 3 masse(s) (3 exigees)  sommets 1.48 2.18 1.63  emprises 3.42 7.70 5.91  cv 0.17 (ratio emprises 2.25, 2.00 exige)
+[grotte]   entaille 1.20 : 3 masse(s) (3 exigees)  sommets 1.71 2.49 2.02  emprises 3.42 7.70 5.91  cv 0.15 (ratio emprises 2.25, 2.00 exige)
+[grotte]   entaille 1.50 : 2 masse(s) (3 exigees)  sommets 1.94 3.03  emprises 3.42 13.61  cv 0.22 (ratio emprises 3.98, 2.00 exige)
+[grotte]   (225) sommet  1.48 m  emprise  3.42 m  proeminence  2.56 m  faite  4.49 m
+[grotte]   (225) sommet  2.18 m  emprise  7.70 m  proeminence  7.60 m  faite  8.35 m
+[grotte]   (225) sommet  1.63 m  emprise  5.91 m  proeminence  1.38 m  faite  4.85 m
+[grotte] composition : trois amas d'emprises inegales, faites portes par plusieurs roches, deux cols de profondeurs differentes
+[grotte] composition des volumes SOURCES (telemetrie, ne bloque rien ; l'union les fond ensuite en un seul maillage) :
+[grotte]   SM_Env_Corps                     1556 tris    8.2 %
+[grotte]   SM_Env_Levre                      572 tris    3.0 %
+[grotte]   SM_Env_Contrefort                 524 tris    2.7 %
+[grotte]   SM_Env_Talus                      500 tris    2.6 %
+[grotte]   DosAlcove_1_2                     472 tris    2.5 %
+[grotte]   DosAlcove_1_3                     472 tris    2.5 %
+[grotte]   DosAlcove_1_4                     472 tris    2.5 %
+[grotte]   Semelle_00_0                      472 tris    2.5 %
+[grotte]   Semelle_00_1                      472 tris    2.5 %
+[grotte]   Semelle_00_2                      472 tris    2.5 %
+[grotte]   Semelle_00_3                      472 tris    2.5 %
+[grotte]   Semelle_00_4                      472 tris    2.5 %
+[grotte]   Semelle_01_0                      472 tris    2.5 %
+[grotte]   Semelle_01_1                      472 tris    2.5 %
+[grotte]   Semelle_01_2                      472 tris    2.5 %
+[grotte]   Semelle_01_3                      472 tris    2.5 %
+[grotte]   Semelle_02_0                      472 tris    2.5 %
+[grotte]   Semelle_02_1                      472 tris    2.5 %
+[grotte]   Semelle_02_2                      472 tris    2.5 %
+[grotte]   Semelle_02_3                      472 tris    2.5 %
+[grotte]   Semelle_02_4                      472 tris    2.5 %
+[grotte]   Semelle_03_0                      472 tris    2.5 %
+[grotte]   Semelle_03_1                      472 tris    2.5 %
+[grotte]   Semelle_03_2                      472 tris    2.5 %
+[grotte]   Semelle_03_3                      472 tris    2.5 %
+[grotte]   Semelle_03_4                      472 tris    2.5 %
+[grotte]   Semelle_03_5                      472 tris    2.5 %
+[grotte]   Semelle_04_0                      472 tris    2.5 %
+[grotte]   Semelle_04_1                      472 tris    2.5 %
+[grotte]   Semelle_04_2                      472 tris    2.5 %
+[grotte]   Semelle_04_3                      472 tris    2.5 %
+[grotte]   Semelle_04_4                      472 tris    2.5 %
+[grotte]   Semelle_04_5                      472 tris    2.5 %
+[grotte]   Semelle_05_0                      472 tris    2.5 %
+[grotte]   Semelle_05_1                      472 tris    2.5 %
+[grotte]   Semelle_05_2                      472 tris    2.5 %
+[grotte]   Semelle_05_3                      472 tris    2.5 %
+[grotte]   SM_Env_Queue                      320 tris    1.7 %
+[grotte]   Assise                             12 tris    0.1 %
+[grotte] solidarite : 416 paire(s) en INTERSECTION reelle (prefiltre AABB >= 0.12 m, PUIS croisement de faces verifie)
+[grotte]   plus faible : Semelle_00_1 <-> Semelle_02_1  0.86 m, 4 face(s) croisee(s)
+[grotte]   plus faible : Semelle_02_2 <-> Semelle_04_5  0.41 m, 4 face(s) croisee(s)
+[grotte]   plus faible : Semelle_02_4 <-> Semelle_05_3  1.55 m, 4 face(s) croisee(s)
+[grotte]   plus faible : SM_Env_Contrefort <-> Semelle_05_1  1.36 m, 5 face(s) croisee(s)
+[grotte] remaillage voxel 0.12 m : 134100 tris
+[grotte]   coque +  829.23 m3, boite (-8.8..8.2, -3.1..11.9, -3.5..8.3), 67052 sommets
+[grotte] remaillage : 1 coque(s) exterieure(s), 0 bulle(s) interne(s) et 0 ecaille(s) retirees
+[grotte] remaillage : 0 arete(s) de bord, 0 non-manifold, 829.2 m3
+[grotte] apres stratification : 0 paire(s) croisee(s), repli maximal 0.0000 m
+[grotte] decimation : 134100 -> 19000 tris (ratio 0.142)
+[grotte] volume negatif de cavite : ferme, 83.1 m3
+[grotte] nettoyage de la soustraction : 0 -> 0 arete(s) irreguliere(s)
+[grotte] soustraction : la bouche est la trace de decoupe du tube
+[grotte]   coque +  771.13 m3, boite (-8.8..8.2, -3.1..11.9, -3.6..8.2), 9996 sommets
+[grotte] soustraction : 1 coque(s) exterieure(s), 0 bulle(s) et 0 ecaille(s) retirees
+[grotte] connexite : 1 composante, avant et apres soustraction
+[grotte] auto-intersection du livrable : 0 paire(s), repli maximal 0.0000 m (seuil 0.020 m)
+[grotte] visuel : 0 arete(s) de bord, 0 non-manifold, volume 771.2 m3
+[grotte] collision : 0 arete(s) de bord, 0 non-manifold, volume 243.7 m3
+[grotte] visuel 17241 faces (19992 tris), collision 460 faces (880 tris)
+[grotte] emprise Z de -3.55 m a 8.19 m (jupe 3.55 m sous le sol)
+[grotte] budget : 19992 tris dans [12000 ; 25000]
+[grotte] plage plane toutes faces confondues (cavite comprise) : 8.36 m2 — informatif, l'interieur releve d'un autre jalon
+[grotte] plus grande plage plane au-dessus du sol : 8.36 m2, centree en (1.35, 9.04, 2.33) — seuil 12.00
+[grotte] plus grande plage plane EN FACADE (y <= 2.0) : 4.63 m2, centree en (-0.58, -0.60, 2.71) — seuil 6.00
+[grotte] paroi la plus mince : station 6, azimut 32°, z 1.26
+[grotte] collerette la plus mince : station 0, azimut 32°, z 1.26
+[grotte] 1 ecaille(s) de moins de 0.05 m ignoree(s) le long des rayons
+[grotte] ERREUR: station 0, azimut 39° — 0 croisement(s) seulement : le rayon sort par un JOUR
+[grotte] ERREUR: station 0, azimut 45° — 0 croisement(s) seulement : le rayon sort par un JOUR
+[grotte] ERREUR: station 0, azimut 51° — 0 croisement(s) seulement : le rayon sort par un JOUR
+[grotte] ERREUR: station 0, azimut 58° — 0 croisement(s) seulement : le rayon sort par un JOUR
+[grotte] ERREUR: station 0, azimut 64° — 0 croisement(s) seulement : le rayon sort par un JOUR

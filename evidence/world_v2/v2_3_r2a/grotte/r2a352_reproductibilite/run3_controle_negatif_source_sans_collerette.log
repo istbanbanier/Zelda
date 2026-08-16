@@ -1,0 +1,19 @@
+=== Blender: Blender 4.0.2 ===
+
+--- waterfall_cave : génération de la source ---
+  ÉCHEC: la génération a rendu non-zéro — voir /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/determinisme/pipeline3/architecture_waterfall_cave_make.log
+  | [grotte] budget : 19992 tris dans [12000 ; 25000]
+  | [grotte] plage plane toutes faces confondues (cavite comprise) : 8.36 m2 — informatif, l'interieur releve d'un autre jalon
+  | [grotte] plus grande plage plane au-dessus du sol : 8.36 m2, centree en (1.35, 9.04, 2.33) — seuil 12.00
+  | [grotte] plus grande plage plane EN FACADE (y <= 2.0) : 4.63 m2, centree en (-0.58, -0.60, 2.71) — seuil 6.00
+  | [grotte] paroi la plus mince : station 6, azimut 32°, z 1.26
+  | [grotte] collerette la plus mince : station 0, azimut 32°, z 1.26
+  | [grotte] 1 ecaille(s) de moins de 0.05 m ignoree(s) le long des rayons
+  | [grotte] ERREUR: station 0, azimut 39° — 0 croisement(s) seulement : le rayon sort par un JOUR
+  | [grotte] ERREUR: station 0, azimut 45° — 0 croisement(s) seulement : le rayon sort par un JOUR
+  | [grotte] ERREUR: station 0, azimut 51° — 0 croisement(s) seulement : le rayon sort par un JOUR
+  | [grotte] ERREUR: station 0, azimut 58° — 0 croisement(s) seulement : le rayon sort par un JOUR
+  | [grotte] ERREUR: station 0, azimut 64° — 0 croisement(s) seulement : le rayon sort par un JOUR
+
+=== EXPORT ARCHITECTURE : ROUGE ===
+RC=1

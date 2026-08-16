@@ -29,6 +29,68 @@ interchangeables.
 
 ---
 
+## 0bis. CORRECTIONS APPORTÉES À CE DOCUMENT — checkpoint 1, 2026-08-16
+
+Trois affirmations du corps de ce document se sont révélées fausses ou
+trompeuses à la vérification. Elles sont corrigées ici et **le corps n'a pas été
+réécrit** : un document de transmission qui efface ses erreurs apprend à son
+lecteur à lui faire confiance sans raison.
+
+### C1 — §7.1 était trompeur : le tronc ne porte RIEN de la base R2a-3.5.2
+
+**FAIT REPRODUIT.** `git merge-base --is-ancestor c79341e d25fadc` → **NON**.
+Le tronc et la base ont divergé à `202d849` : 7 commits d'un côté, 2 de l'autre.
+
+Le §7.1 écrivait « générateur — modifications R2a-3.5 / 3.5.1 déjà présentes dans
+`c79341e`, non versées au chemin livrable ». Exact sur le GLB, **faux par
+implication** sur tout le reste. Sont au niveau `202d849` (ANCIEN) ou absents du
+tronc :
+
+```
+make_waterfall_cave.py          ANCIEN        probe_cave_openings.py    ANCIEN
+SM_WaterfallCave.blend          ANCIEN        plot_cave_section.py      ANCIEN
+waterfall_cave_place.gd         ANCIEN        probe_cave_selftest.py    ANCIEN
+probe_cave_negative_control.py  ABSENT        diag_cave_etapes.py       ABSENT
+prototypes/SM_WaterfallCave_BASE352.glb       ABSENT
+```
+
+**Conséquence sur l'intégration** : il faut un **commit 0 = base R2a-3.5.2**
+(`f3afa0e` + `c79341e` aplatis) avant les instruments. Sans lui, les commits
+suivants mentiraient sur ce qu'ils apportent : `git checkout e0e7567 -- <py>`
+n'apporte pas le delta collerette de +209 lignes, il apporte **base + collerette
+en un seul blob**.
+
+### C2 — §16.1 se trompait de commit mélangé
+
+**FAIT REPRODUIT.** `ea5636f` est **PROPRE** : 2 fichiers, tous source. Les
+commits mélangés sont **`460a3a3`** et **`e0e7567`**, les deux commits « preuve »,
+qui portent chacun `.glb` + `.blend` + preuves. Les trois commits de géométrie du
+lot collerette ne portent que du `.py`.
+
+### C3 — §14 est périmé : les épreuves adverses sont à 10/10, pas 7/10
+
+**RAPPORTÉ PAR UN AGENT MAIS NON REPRODUIT PAR L'INTÉGRATEUR.** La suite a été
+relancée telle quelle : `RC=0, 10 épreuves, 0 échec`, 58 s. L'agent précédent
+avait réécrit le code sans jamais relancer la suite.
+
+L'épreuve 5 vise un **chemin**, pas une empreinte épinglée : le fichier a changé
+sous elle, et elle imprime déjà `sha256 cc3596c5d68cbfd8`. Le « recâblage »
+demandé au §25 est **sans objet**.
+
+Mais trois défauts rendent ces verts peu probants, et ils sont en cours de
+traitement :
+1. l'épreuve 5 **n'ampute pas ce qu'elle dit** — sa docstring annonce
+   `MAT_CaveRock_Collar`, son code retire 1440 triangles **toutes matières
+   confondues** dans une boîte de 3 m ;
+2. sa chute de mesure B **compare deux plans différents** (`y −1,15` intact,
+   `y −0,75` amputé) : le rouge est réel, pas pour la raison annoncée ;
+3. l'épreuve 10 **tient sur une seule faute** (1/72) — un rien la bascule à 0 et
+   elle devient « ne peut pas échouer ».
+
+Un vert obtenu par un contrôle qui mesure autre chose n'est pas un vert.
+
+---
+
 ## 1. Branche
 
 ```
@@ -1211,6 +1273,99 @@ Reprises du §13 de la directive et des règles permanentes du dépôt.
 - déclaration GDScript non typée ;
 - inventer une capture, un FPS, une durée ou un résultat de test ;
 - transformer `NON VÉRIFIÉ` en `PASS` par déduction.
+
+---
+
+## 27. CHECKPOINT 1 — ce que l'intégrateur a établi lui-même
+
+Tout ce qui suit est **FAIT REPRODUIT** par l'intégrateur, commandes et sorties
+dans `evidence/world_v2/v2_3_r2a/grotte/r2a352_reproductibilite/`.
+
+### 27.1 Le GLB candidat est reproductible byte-identique — la condition d'arrêt ne se déclenche pas
+
+Worktree isolé `/home/user/zelda-r2a352/determinisme` créé sur `e0e7567`, chaîne
+officielle `tools/blender/export_architecture.sh waterfall_cave` sous verrou
+global :
+
+| | source | RC | GLB produit |
+|---|---|---:|---|
+| run 1 | `e0e7567`, avec collerette | **0** | `cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49` |
+| run 2 | idem, relancé | **0** | **empreinte identique, 64 caractères** |
+| run 3 | `c79341e`, **sans** collerette | **1** | aucun — la chaîne refuse d'exporter |
+
+Le run 3 est le contrôle négatif, et il prouve que les deux premiers ne sont pas
+une chaîne inerte : avec la source d'avant la collerette, le générateur sort
+non-zéro et imprime lui-même le défaut —
+`station 0, azimut 39°/45°/51°/58°/64° — 0 croisement(s) : le rayon sort par un JOUR`.
+C'est exactement le défaut corrigé par le lot, retrouvé sans instrument tiers.
+
+### 27.2 Le `.blend` n'est PAS reproductible, et cela impose une étape
+
+Trois empreintes pour la même entrée : `c2913166…` versionné, `3c19d05e…` après
+run 1, `b468b665…` après run 2. Comportement documenté de Blender.
+
+**La séquence d'intégration doit comporter un `git checkout -- <blend>` explicite
+après l'export et avant le commit du GLB**, sinon aucune capture ne pourra venir
+d'un arbre propre. Le `.blend` est un **conteneur** ; la source est le `.py`.
+
+### 27.3 Les repères de gameplay — re-dérivation, pas déplacement de récompense
+
+Le §26 interdit de déplacer la récompense, et la base `c79341e` change
+`MODELE_NICHE`. Mesuré, plutôt qu'arbitré — rayon vertical, parité d'impacts,
+sur le candidat `cc3596c5` :
+
+| constante | état dans la roche |
+|---|---|
+| `MODELE_NICHE` **ancien** `(-1.20, 0.43, -8.20)` | **DANS LA ROCHE** |
+| `MODELE_NICHE` `c79341e` `(2.78, 0.50, -4.09)` | **DANS LE VIDE** — sol 0,49, plafond 2,23 |
+| `MODELE_SALLE` **ancien** `(1.05, 0.22, -6.25)` | **DANS LA ROCHE** |
+| `MODELE_SALLE` `c79341e` `(2.62, 0.09, -2.58)` | **DANS LE VIDE** — sol 0,08, plafond 2,89 |
+
+Les anciennes valeurs murent la récompense. Les conserver n'est pas « ne pas la
+déplacer », c'est la laisser **inatteignable**.
+
+Deux vérifications referment le raisonnement :
+- le sol lu sous la niche vaut **0,49 m** ; `controle_sol_repere` du générateur
+  publie **+0,492** pour le même repère — deux chemins indépendants, même valeur ;
+- la directive en cours **a déjà accepté la conséquence** de la valeur corrigée
+  (« la récompense demeure accessible »), accessibilité calculée avec
+  `(2,78 ; 0,50 ; −4,09)`.
+
+**Décision de l'intégrateur, ouverte à renversement par le lead** : re-dérivation
+légitime. Les huit `APPUIS_MODELE` et la lampe de seuil suivent la même cavité et
+relèvent du même raisonnement, **mais restent à mesurer un par un**.
+
+### 27.4 Surface de conflit entre lots — vide, mesurée
+
+`b_collerette ∩ c_instruments` → vide. `b_collerette ∩ tronc-depuis-202d849` →
+vide. `c_instruments ∩ tronc-depuis-202d849` → vide.
+`probe_cave_openings.py` n'est touché que par `c_instruments`. `a_plancher` a
+0 commit et un diff vide à `c79341e` — **confirmé, non supposé**.
+
+L'ordre séquentiel est donc légitime au sens textuel.
+
+### 27.5 Périmètre — zéro débordement
+
+Union exhaustive des lots : **48 fichiers**, dont 17 hors `evidence/`. Aucun
+n'appartient à un domaine gelé. Cinq correspondances d'un premier balayage large
+étaient des faux positifs : « Waterfall » contient « water ».
+
+### 27.6 Séquence d'intégration retenue — six commits
+
+| # | contenu | nature | précondition |
+|---:|---|---|---|
+| **0** | base R2a-3.5.2 — `f3afa0e` + `c79341e` aplatis | source + `.blend` + prototype `.glb` | aucune |
+| 1 | instruments durcis et calibrés | `tools/` + preuves, chemin normalisé vers `evidence/world_v2/v2_3_r2a/grotte/r2a352_instruments/` | instruments reproduits verts **par l'intégrateur** |
+| 2 | source + `.blend` collerette | source + `.blend`, **sans le `.glb`** | **gate technique complet** |
+| 3 | export GLB contrôlé | artefact | hash == `cc3596c5…`, après `git checkout -- <blend>` |
+| 4 | journaux du lot collerette | preuves | commit 3 réussi |
+| 5 | captures et manifestes | preuves | **non exécutable en l'état** — 0 PNG |
+
+### 27.7 Le lot plancher est clos
+
+**`REFUTED — NO GEOMETRY CHANGE`.** Aucune géométrie de plancher n'est construite.
+Les preuves et les instruments corrigés sont conservés. Les stations 7 et 8 sont
+hors du trajet praticable mesuré ; la récompense demeure accessible.
 
 ---
 
