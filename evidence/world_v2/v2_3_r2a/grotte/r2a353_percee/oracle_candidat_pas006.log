@@ -1,0 +1,74 @@
+==============================================================================
+ORACLE GLOBAL — topologie + classement d'espace
+==============================================================================
+maillage : assets/environment/caves/SM_WaterfallCave.glb
+sha256   : cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49
+noeud    : SM_WaterfallCave   (COL_WaterfallCave, proxy de collision, n'est PAS mesure)
+triangles: 20090   matieres : MAT_CaveIn_Deep, MAT_CaveIn_Floor, MAT_CaveIn_Wall, MAT_CaveRock_Base, MAT_CaveRock_Collar, MAT_CaveRock_Face
+AABB     : x[-8.772 8.174] y[-3.135 11.899] z[-3.551 8.192]
+
+------------------------------------------------------------------------------
+METHODE A — TOPOLOGIE (combinatoire pure, sans grille ni rayon)
+------------------------------------------------------------------------------
+   sommets soudes 10045   aretes 30135   faces 20090
+   aretes par nombre de faces : {'2': 30135}
+   bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 1
+      composante 0 : F=20090 V=10045 E=30135  khi=0  genre 1
+
+------------------------------------------------------------------------------
+METHODE B — CLASSEMENT D'ESPACE (segment centre-a-centre)
+------------------------------------------------------------------------------
+   reperes lus dans scripts/world_v2/poi/waterfall_cave_place.gd (script de LIEU, pas le generateur)
+   graine interieure (repere MODELE) : (2.62 ; 2.58 ; 0.99)
+   grille 323x291x236 = 22182348 case(s), pas 0.060 m
+   segments (colonnes repliees) : 223453
+   dont 1 composante(s) d'UNE SEULE CASE, ecartee(s) de C1/C2
+      (plancher de resolution de la grille : leur nombre croit quand le pas
+       diminue. La methode A, sans resolution, couvre ce cas.)
+   composantes d'espace (sans barriere) : 3
+      AIR        18536266 case(s)    4003.83 m3  bord  474402  voix air/roche 129604/0
+      ROCHE       3646081 case(s)     787.55 m3  bord       0  voix air/roche 1/129313
+      ROCHE             1 case(s)       0.00 m3  bord       0  voix air/roche 0/2
+   barriere de bouche : couche j=52, surface a y=-1.155 (epaisseur nulle)
+   composante de la graine : AIR, 14810108 case(s) = 3198.98 m3, emprise x[-9.94 9.38] y[-1.12 13.10] z[-4.72 9.38]
+
+   TRACE DE LA FUITE — chemin le plus court, en segments, de la graine
+   jusqu'a la premiere case de bord (89 etape(s)) :
+         0 : x=  2.598  y=  2.595  z=[  0.139   2.839]
+         3 : x=  2.418  y=  2.595  z=[  0.079   2.839]
+         6 : x=  2.238  y=  2.595  z=[  0.079   2.839]
+         9 : x=  2.058  y=  2.595  z=[  0.079   2.839]
+        12 : x=  1.878  y=  2.595  z=[  0.079   2.779]
+        15 : x=  1.698  y=  2.595  z=[  0.079   2.779]
+        18 : x=  1.518  y=  2.595  z=[  0.079   2.719]
+        21 : x=  1.338  y=  2.595  z=[  0.019   2.659]
+        24 : x=  1.158  y=  2.595  z=[  0.019   2.659]
+        27 : x=  0.978  y=  2.595  z=[  0.019   2.599]
+        30 : x=  0.798  y=  2.595  z=[  0.019   2.599]
+        33 : x=  0.618  y=  2.595  z=[  0.019   2.539]
+        36 : x=  0.618  y=  2.775  z=[  0.019   2.539]
+        39 : x=  0.618  y=  2.955  z=[  0.019   2.479]
+        42 : x=  0.618  y=  3.135  z=[  0.019   2.479]
+        45 : x=  0.618  y=  3.315  z=[  0.019   2.419]
+        48 : x=  0.618  y=  3.495  z=[  0.019   2.359]
+        51 : x=  0.618  y=  3.675  z=[  0.079   2.359]
+        54 : x=  0.618  y=  3.855  z=[  0.079   2.299]
+        57 : x=  0.618  y=  4.035  z=[  0.079   2.239]
+        60 : x=  0.618  y=  4.215  z=[  0.079   2.179]
+        63 : x=  0.618  y=  4.395  z=[  0.079   2.119]
+        66 : x=  0.618  y=  4.575  z=[  0.079   2.119]
+        69 : x=  0.618  y=  4.755  z=[  0.079   2.059]
+        72 : x=  0.618  y=  4.935  z=[  0.079   1.999]
+        75 : x=  0.618  y=  5.115  z=[  0.139   1.939]
+        78 : x=  0.618  y=  5.295  z=[  0.139   1.819]
+        81 : x=  0.618  y=  5.475  z=[  0.139   1.759]
+        84 : x=  0.618  y=  5.655  z=[  0.139   1.639]
+        87 : x=  0.618  y=  5.835  z=[  0.139   1.579]
+        88 : x=  0.618  y=  5.895  z=[  0.139   9.379]  <- BORD
+      temoin MODELE_NICHE           (2.78 ; 4.09 ; 0.80) : DANS la cavite scellee
+      temoin MODELE_SALLE           (2.62 ; 2.58 ; 0.39) : DANS la cavite scellee
+
+==============================================================================
+VERDICT : ROUGE
+   C3 : la composante interieure atteint 340246 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (repere MODELE) : [[-9.94, -1.12, -4.72], [-9.94, -1.06, -4.72], [-9.94, -1.0, -4.72], [-9.94, -0.94, -4.72], [-9.94, -0.88, -4.72], [-9.94, -0.82, -4.72]]
+==============================================================================

@@ -1988,6 +1988,132 @@ point (`0,374 m` en `(0,80 ; 6,00)`), pas sur le domaine complet.
 
 ---
 
+## 33. R2a-3.5.3 — CLÔTURE. Le candidat est PERCÉ ; la géométrie livrée ne l'est pas.
+
+### 33.1 BLOQUANT — un trou de 160 × 200 mm vers le ciel, au-dessus de la galerie
+
+**FAIT REPRODUIT.** Preuves :
+`evidence/world_v2/v2_3_r2a/grotte/r2a353_percee/`.
+
+Ce que R2a-3.5.2 appelait « une lame de roche de 3,8 cm » n'est pas une lame :
+c'est le **bord d'un trou**.
+
+Test : depuis un point **dans la galerie** (`z = 1,50`), compter les traversées
+en **montant**. Zéro = on voit le ciel. Fenêtre de 30 × 30 cm, **3 721 colonnes
+au pas de 5 mm**, avec garde-fou exigeant de la roche **en dessous** :
+
+| géométrie | colonnes ouvertes | emprise |
+|---|---:|---|
+| **candidat `cc3596c5`** | **343 / 3 721** | **160 × 200 mm** |
+| **`BASE352`** | **343** | **identique** |
+| **R2a-3.4 LIVRÉE** | **0** | — |
+
+`x ∈ [0,468 ; 0,623]`, `y ∈ [5,850 ; 6,045]` en repère modèle. **Hérité de
+l'enveloppe R2a-3.5.2, pas du lot collerette.**
+
+**Trois chemins indépendants concordent** : le **genre** (candidat genre 1, sur
+une forme qui devrait être de genre 0) l'annonçait avant toute inondation ;
+l'**inondation sans parité** de l'agent C le localise (`RC=1` au pas 0,06, la
+plage bascule de `[0,139 ; 1,579]` à `[0,139 ; 9,379]` en `y = 5,895`) ; et ma
+**connexité par colonnes** lisait déjà `première 0,002 m · cumul 0,002 m` en
+`(0,60 ; 5,90)` — deux millimètres de roche — **avant** que le trou soit nommé,
+sans que je l'aie lu pour ce que c'était.
+
+**La géométrie livrée est étanche au même pas** : oracle depuis le tronc,
+`VERT, RC=0` à 0,10 **et** à 0,06. La comparaison n'est pas biaisée par la
+résolution ; le même oracle rend VERT à 0,10 sur le candidat et **ROUGE à 0,06**.
+Un portail dont le pas dépasse la taille du défaut ne dit rien.
+
+**Deux tests faux avant le bon, de ma main** : compter *tous* les croisements de
+la verticale ne peut pas voir une percée — le rayon traverse le trou puis coupe
+le plancher — et j'ai failli **réfuter un résultat juste** avec. Puis « zéro
+traversée au-dessus » peut vouloir dire « déjà au-dessus du massif » ; le
+garde-fou a mesuré **0 colonne écartée**, mais il fallait le vérifier.
+
+### 33.2 La lecture de R2a-3.5.2 ne survit pas à la mesure complète
+
+`evidence/world_v2/v2_3_r2a/grotte/r2a353_connexite/`.
+
+« Régression d'un facteur dix sur l'épaisseur » était le minimum dans une
+**fenêtre** de 5 × 3 m. Sur le domaine complet, roche mince **au-dessus de la
+galerie jouable** :
+
+| géométrie | mince sur la galerie | membrane interne | bulle isolée |
+|---|---:|---:|---:|
+| candidat | **205** | 0 | 11 |
+| `BASE352` | **276** | 0 | 6 |
+| R2a-3.4 LIVRÉE | **202** | 64 | 307 |
+
+Candidat et livrée sont **équivalents** sur ce critère. Le lot collerette
+**améliore réellement** : 276 → 205, soit **−26 %**. Et la livrée porte **307
+bulles internes** contre 11 — ISS-050 à l'échelle.
+
+**La vraie régression n'était donc pas l'épaisseur ; c'est l'étanchéité.** Et le
+débat sur le niveau d'épaisseur à viser devient secondaire : un trou n'est pas un
+débat de seuil.
+
+### 33.3 Les trois agents
+
+| agent | livré | reproduit par l'intégrateur |
+|---|---|---|
+| **A — toiture** | `controle_epaisseur_domaine()` (257 lignes, 4 constantes neuves, **0 seuil touché**), 7 outils de toit, contrôle négatif fermé concluant | ✔ 167/232/**326** plaques, min **0,020 m** sur la LIVRÉE |
+| **B — adverses** | **10/10** + banc `--mutations` (5 mutations dont un **témoin inerte**) | ✔ `RC=0` sur les deux, y compris **depuis le tronc** |
+| **C — oracle** | oracle sans parité ni vote, batterie 7/7, sabotages par booléen **fermé** | ✔ percée reproduite indépendamment au pas de 5 mm |
+
+**Chacun a trouvé et publié un défaut dans son propre travail** — A mesurait les
+**deux** maillages du GLB, la coque de collision rebouchant la galerie, ce qui
+lui a fait conclure un moment que le défaut n'existait pas ; B a découvert que
+son sabotage visait une direction **devinée**, fausse de 90° ; C a trouvé quatre
+défauts dont un `χ` impair causé par un **sommet pincé**, invisible à tout
+compteur d'arêtes.
+
+**B a aussi vu que son propre banc de mutations ne savait dire que « détectée »**
+— un test qui ne peut pas échouer, l'anti-motif déplacé d'un cran — et y a ajouté
+un témoin inerte qui doit rester vert.
+
+### 33.4 Ce qui est versé au tronc, et ce qui ne l'est pas
+
+**Versé** — instruments seuls, aucune géométrie, aucun seuil : suite adverse,
+banc de mutations, 7 outils de toit, 5 outils d'oracle, instruments calibrés du
+lot précédent, `cave_topology_check.py`, `cave_void_connectivity.py`. **Les cinq
+familles tournent vertes depuis le tronc**, vérifié avant commit.
+
+Deux **fusions** plutôt que deux écrasements : `tools/CLAUDE.md` et
+`plot_cave_section.py` auraient perdu du travail si j'avais pris le blob du lot.
+
+**Non versé, conservé en patch** (`r2a353_lots_non_integres/`) : la base
+R2a-3.5.2, la source collerette, et le `controle_epaisseur_domaine()`. **Pas
+parce qu'il rougit** — il rougit à juste titre. Parce qu'il ne peut pas être
+versé seul : l'ensemble donnerait un dépôt dont la source dit R2a-3.5.2, dont
+l'artefact est R2a-3.4, et dont la chaîne refuse de les réconcilier. Un tronc qui
+ment sur lui-même est pire qu'un tronc incomplet.
+
+### 33.5 Verdict du gate §5
+
+**ROUGE**, sur un item indivisible : *0 percée confirmée*. Le candidat porte un
+trou de 160 × 200 mm vers le ciel, au-dessus de l'espace jouable.
+
+Verts par ailleurs, et ils restent acquis : 10 épreuves adverses décisives ·
+batterie d'oracle · 0 bord libre · 0 non-manifold sur le candidat · une seule
+composante rocheuse · récompense et salle dans la même composante de vide ·
+14 seuils inchangés · aucun domaine gelé touché · GLB byte-reproductible
+(4ᵉ confirmation, la 1ʳᵉ avec instruments).
+
+### 33.6 Prochaine action exacte
+
+1. **Le trou est dans l'enveloppe R2a-3.5.2**, présent sur `BASE352`. Toute
+   reprise part de là, pas de la collerette — qui, elle, **améliore** et devrait
+   être conservée.
+2. **Étendre le domaine des sondes au-delà de `ay = 3,17`.** C'est la cause
+   commune du toit mince, de la collerette sous-mesurée, des quatorze occurrences
+   d'échantillonnage — **et de cette percée**. Le domaine, pas la méthode.
+3. **Rejouer tout portail d'étanchéité à `--pas 0.06` au minimum.** À 0,10 le
+   trou est invisible.
+4. La question du niveau d'épaisseur à viser (§32.6) **reste ouverte**, mais elle
+   n'est plus bloquante : elle ne se pose qu'une fois l'enveloppe étanche.
+
+---
+
 ## ANNEXE A — chronologie des instruments et de leurs défauts
 
 Quatorze occurrences du **même** défaut : un contrôle place ses points à
