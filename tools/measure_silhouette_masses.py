@@ -26,11 +26,22 @@ R2a-3.4 les 5,58 / 3,60 / 2,18 m dont je me servais comme preuve de masses
 larges ETAIENT la platitude des sommets que le lead a rejetee. Un plancher
 `--exige` fonde sur ce nombre aurait rejete la correction demandee.
 
-L'outil rend donc deux nombres, et `--exige` porte sur le second :
+ET LA DEUXIEME VERSION SE TROMPAIT AUSSI, DANS L'AUTRE SENS. « Etendue
+jusqu'au plus haut des deux cols » mesure la PROFONDEUR DU COL : des qu'un
+col est bas, la masse deborde sur ses voisines. Mesure sur l'enveloppe
+R2a-3.5 : la dominante couvrait 16,77 m sur une formation de 17,5 m.
+
+Le fil commun des deux fautes : un seul nombre, choisi sans se demander ce
+qu'il devient dans le cas degenere.
+
+L'outil rend donc deux nombres :
 
   sommet   largeur a `sommet - entaille` — dit si le sommet est plat ou vif
-  emprise  etendue jusqu'au plus haut des deux cols — dit si la masse est
-           large, independamment de la forme de son sommet
+  emprise  PARTITION EN BASSINS : la frontiere entre deux masses est la
+           POSITION du col (argmin du profil entre les deux sommets), pas
+           son altitude. Emprises disjointes, exhaustives, sommant a
+           l'emprise de la formation ; independantes de la forme du sommet
+           comme de la profondeur du col
 
 Le coefficient de variation des largeurs (`cv_largeurs`) chiffre cette
 inegalite : proche de 0 = toutes les masses ont la meme largeur.
@@ -158,19 +169,11 @@ def _sommets(profil: list[int | None], entaille_px: float,
             b = j
             while b < n - 1 and haut[b + 1] >= niveau:
                 b += 1
-            # EMPRISE — jusqu'au plus haut des deux cols. C'est l'etendue
-            # reelle de la masse, celle qui dit « large » au sens du brief.
-            # Elle ne depend pas de la forme du sommet : une crete vive et
-            # une table plate de meme base rendent la meme emprise.
-            col = max(col_g, col_d)
-            ac = i
-            while ac > 0 and haut[ac - 1] > col:
-                ac -= 1
-            bc = j
-            while bc < n - 1 and haut[bc + 1] > col:
-                bc += 1
+            # L'emprise est calculee APRES la selection, en partitionnant le
+            # profil (voir plus bas). On ne retient ici que l'indice du
+            # sommet, dont elle a besoin.
             sortie.append((x0 + a, x0 + b, b - a + 1, haut[i], proeminence,
-                           x0 + ac, x0 + bc, bc - ac + 1))
+                           0, 0, 0, i))
         i = j + 1
 
     # Deux sommets peuvent partager la meme emprise au niveau mesure ; on ne
@@ -182,7 +185,41 @@ def _sommets(profil: list[int | None], entaille_px: float,
         if not any(s[0] <= r[1] and r[0] <= s[1] for r in retenus):
             retenus.append(s)
     retenus.sort(key=lambda s: s[0])
-    return retenus
+
+    # EMPRISE — PARTITION EN BASSINS, ET C'EST LA DEUXIEME CORRECTION DE
+    # CETTE GRANDEUR.
+    #
+    # Premiere version : largeur a `sommet - entaille`. Elle mesurait la
+    # PLATITUDE DU SOMMET — un sommet plat y est large, une crete vive y est
+    # etroite, donc elle notait le defaut.
+    #
+    # Deuxieme version : etendue jusqu'au plus haut des deux cols. Elle
+    # mesurait la PROFONDEUR DU COL — des que le col d'une masse est bas,
+    # son etendue deborde sur ses voisines. Mesure sur l'enveloppe R2a-3.5 :
+    # la dominante couvrait 16,77 m sur une formation de 17,5.
+    #
+    # Le fil commun des deux fautes : un seul nombre, choisi sans se demander
+    # ce qu'il devient dans le cas degenere.
+    #
+    # Version correcte : la frontiere entre deux masses voisines est la
+    # POSITION du col — l'argmin du profil entre les deux sommets — et non
+    # son altitude. Les emprises sont alors DISJOINTES par construction,
+    # exhaustives, et leur somme vaut l'emprise de la formation. Elles ne
+    # dependent ni de la forme du sommet ni de la profondeur du col.
+    if retenus:
+        pics = [s[8] for s in retenus]
+        bornes = [0]
+        for g, d in zip(pics, pics[1:]):
+            creux = min(range(g, d + 1), key=lambda q: haut[q])
+            bornes.append(creux)
+        bornes.append(n - 1)
+        finis = []
+        for k, s in enumerate(retenus):
+            ac, bc = bornes[k], bornes[k + 1]
+            finis.append((s[0], s[1], s[2], s[3], s[4],
+                          x0 + ac, x0 + bc, bc - ac + 1))
+        return finis
+    return []
 
 
 ## `--exige=` — CONTROLE DE NON-REGRESSION, PAS GATE VISUEL.
@@ -219,9 +256,14 @@ def _exiger(nom: str, masses: list, largeurs: list, m_par_px: float,
     #     R2a-3.4 : 5,58 / 3,60 / 2,18 m, et ces nombres ELEVES etaient
     #     exactement la platitude que le lead a rejetee. Un plancher fonde
     #     dessus rejetterait une crete vive, c'est-a-dire la correction ;
-    #   - l'EMPRISE jusqu'au col degenere sur la masse dominante : son col
-    #     est le sol, donc son emprise vaut toute la formation (17,75 m sur
-    #     R2a-3.4). Elle ne discrimine plus rien.
+    #   - l'EMPRISE JUSQU'AU COL degenerait sur la masse dominante : son col
+    #     est le sol, donc son emprise valait toute la formation (17,75 m sur
+    #     R2a-3.4). Elle ne discriminait plus rien. Cette definition-la est
+    #     CORRIGEE — l'emprise est desormais une partition en bassins — mais
+    #     le plancher reste retire : il avait ete fixe sur l'ancienne
+    #     grandeur, il ne porte donc l'autorite d'aucune validation sur la
+    #     nouvelle. Le retablir demanderait une decision du lead, pas un
+    #     ajustement de session.
     #
     # Les deux nombres restent IMPRIMES — ils informent. Aucun ne juge. Le
     # lead a tranche : « la mesure ne remplace pas ce constat ».
@@ -230,7 +272,11 @@ def _exiger(nom: str, masses: list, largeurs: list, m_par_px: float,
               "dans le code ; les deux largeurs sont des telemetries, pas des "
               "criteres" % larg_min)
     if masses:
-        emprise = (masses[-1][1] - masses[0][0]) * m_par_px
+        # Emprise de la FORMATION, bord a bord : les bassins etant
+        # exhaustifs, c'est la borne gauche du premier a la borne droite du
+        # dernier. L'ancienne version prenait les bornes de SOMMET, qui
+        # ignoraient les pieds de la formation.
+        emprise = (masses[-1][6] - masses[0][5]) * m_par_px
         if not (emp_min <= emprise <= emp_max):
             fautes.append("%s : emprise des masses %.2f m hors de [%.2f ; "
                           "%.2f] — le critere de largeur ne doit pas se "
