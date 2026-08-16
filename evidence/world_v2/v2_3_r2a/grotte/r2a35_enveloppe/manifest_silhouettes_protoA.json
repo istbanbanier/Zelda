@@ -1,7 +1,7 @@
 {
   "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
   "clip_below": 0.0,
-  "commit": "c11fee90c35f0df6d24b5d4aaabb16945472fe55",
+  "commit": "da6f5a016b56fcf058de26207084af9a7da36fae",
   "emprise_m": [
     17.8215923309326,
     8.35000038146973,
