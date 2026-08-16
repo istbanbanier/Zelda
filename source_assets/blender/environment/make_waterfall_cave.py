@@ -602,6 +602,11 @@ MODULES = {
 
 ECHELLE_MIN = 0.55
 ECHELLE_MAX = 1.55
+## Rapport maximal entre la plus grande et la plus petite composante de
+## `ech`. Voir la démonstration dans `poser_rocher()` : c'est ce qui permet
+## d'échapper au rapport hauteur/largeur unique du module sans étirer un
+## rocher sculpté au point qu'il cesse de lire comme une roche.
+ANISOTROPIE_MAX = 2.00
 
 # LA RÈGLE QUI GOUVERNE TOUTES LES COTES EN Z : LE FOND PLAT SE BLINDE.
 #
@@ -641,47 +646,285 @@ ECHELLE_MAX = 1.55
 #   * « piédroits asymétriques et plusieurs plans de profondeur » — le
 #     piédroit gauche (H, y = -0,90) est en retrait du droit (H, y = -1,30),
 #     et deux roches avancées (y ~ -2,0) forment un troisième plan.
+# R2a-3.4 — TROIS AMAS D'EMPRISES INÉGALES, ET LA CAUSE QU'ILS CORRIGENT.
+#
+# LE REJET : « les silhouettes 55° et 100° évoquent une forteresse crénelée ;
+# les masses principales lisent comme des tours rocheuses répétées ;
+# l'asymétrie de largeur recherchée n'existe pas ». Mesuré par
+# `tools/measure_silhouette_masses.py` sur l'azimut réel d'approche : quatre
+# sommets de largeur 1,07 · 1,12 · 1,12 · 1,26 m, coefficient de variation
+# 0,06 — moins de 7 % d'écart entre eux.
+#
+# LA CAUSE, ET ELLE SE MESURE. La chaîne modèle → Godot (`export_yup`) →
+# `LACET_DEG = 45` → caméra orthogonale de `capture_silhouette.gd` donne
+# x_ecran = 0,9847·X − 0,1737·Y à 55°. À l'azimut d'approche, la silhouette
+# lit donc presque exactement le X du modèle. En projetant les roches posées
+# sur 200 colonnes, la formation rejetée donnait :
+#
+#     crête portée par UNE SEULE roche (2e à plus de 0,45 m dessous) : 81 %
+#     porteurs du faîte de chaque masse : 1 · 1 · 1
+#
+# Et la mesure qui ferme le dossier : le faîte sculpté de `template-detail`
+# fait **0,93 m de large à 0,60 m sous son sommet, quel que soit l'axe de
+# projection** (mesuré sur ses 600 sommets, axes 0°, 45°, 90°). Tant qu'une
+# roche porte seule un sommet, la largeur de ce sommet vaut 0,93 × son
+# échelle. Comme l'échelle variait de 1,10 à 1,35, les quatre sommets ne
+# POUVAIENT PAS différer de plus de 7 % : le cv 0,06 était arithmétique, et
+# aucune repose ne l'aurait changé.
+#
+# TROIS DÉCOUVERTES ONT ÉTÉ NÉCESSAIRES, chacune après une mesure qui a
+# contredit l'hypothèse précédente. Elles sont écrites ici parce que les
+# deux premières se reprennent naturellement, et coûtent chacune une passe.
+#
+#   1. LE PAS DE LA RANGÉE SE MESURE EN X ÉCRAN, PAS EN MÈTRES MODÈLE.
+#      Un faîte d'amas est l'union de plusieurs roches dont les sommets sont
+#      à la même cote et dont les plateaux se chevauchent. Le chevauchement
+#      tient si le pas projeté est inférieur à la largeur de faîte du module
+#      (0,93 × ech). Le reste suit.
+#
+#   2. LES INCLINAISONS D'UNE MÊME RANGÉE DOIVENT ÊTRE DE MÊME SIGNE.
+#      Premier jet : `tangage` et `roulis` alternés ±6°, pour la variété.
+#      Mesuré — un roulis de ±6° sur une roche de 5,4 m déplace son sommet
+#      de ±0,28 m ; deux voisines inclinées en sens opposés voient donc
+#      l'écart entre leurs plateaux DOUBLER, et un creux de 1,05 m s'ouvre
+#      là où le calcul en promettait 0,15. C'est ce creux qui coupait la
+#      dominante en deux masses. Les rangées de faîte gardent désormais
+#      `lacet` voisin de 0 et des inclinaisons toutes positives.
+#
+#   3. UNE SEULE DIRECTION DE RANGÉE SE PROJETTE PAREIL AUX DEUX AZIMUTS.
+#      Une rangée de direction (dX, dY) se projette avec le facteur
+#      |0,9847·dX − 0,1737·dY|/|d| à 55° et |0,5736·dX − 0,8192·dY|/|d| à
+#      100°. Balayage :
+#
+#        (1 ;  0,00) → 0,985 / 0,574   écart 42 %
+#        (1 ; −0,30) → 0,993 / 0,785   écart 21 %
+#        (1 ; −0,64) → 0,924 / 0,924   écart  0 %
+#        (1 ; −0,90) → 0,848 / 0,974   écart 13 %
+#
+#      L'épaule courait d'abord sur (1 ; −0,94) : régler la vue d'approche
+#      dérégle le trois-quarts, et inversement — j'ai perdu quatre passes
+#      là-dessus. La dominante et le contrefort sont posés sur la direction
+#      invariante ; l'épaule reste légèrement hors d'elle, ce qui l'élargit
+#      au trois-quarts (6,42 m contre 5,66) sans casser son col, et c'est
+#      voulu : mettre les TROIS rangées sur la même droite ferait de la
+#      formation un mur de 18 m de long et 4 m de large.
+#
+# LE LEVIER, ET IL NE DÉPLACE AUCUNE BORNE. `poser_rocher()` accepte déjà
+# `ech` en triplet et vérifie chaque composante contre [0,55 ; 1,55]. Un
+# triplet sort du rapport hauteur/largeur unique du module (1,65) sans
+# ajouter de module au kit. Il sert ici à deux choses : élargir les roches
+# de faîte, et surtout ENFONCER LEUR FOND. Mesuré : à `ez = 0,80` le fond
+# plat d'une roche de faîte se retrouvait à 3,82 m, au-dessus du flanc de
+# son socle, et pendait en surplomb — `controle_plage_plane` a rendu
+# 12,05 m² centrés en (−5,52 ; 5,98 ; 3,77), pour un seuil de 12,00.
+# À `ez = 1,25` le fond descend à 1,87 m, sous le flanc du socle (2,17 m).
+# L'anisotropie est bornée à 2,0 dans `poser_rocher()`.
+#
+# CE QUE ÇA DONNE, MESURÉ AUX DEUX AZIMUTS ET AUX QUATRE ENTAILLES :
+#
+#                  emprises (m)        porteurs du faîte    cols (m)
+#   avant  55°   1,14 · 1,07 · 1,14      1 · 1 · 1        1,98 / 10,39
+#   après  55°   5,66 · 3,58 · 2,17      8 · 5 · 4         1,67 / 2,53
+#   après 100°   6,42 · 3,64 · 2,22      8 · 5 · 4         1,51 / 2,47
+#
+# Trois masses à 0,60 · 0,90 · 1,20 · 1,50 m d'entaille : la lecture n'est
+# pas sur le fil d'un seuil. Faîte dominant décentré de 14,2 % (55°) et
+# 13,0 % (100°) du milieu de l'emprise, et il n'est plus au-dessus de la
+# bouche — c'est ce qui l'empêche de lire en cheminée, davantage que sa
+# largeur.
+#
+# CE QUI EST DÉLIBÉRÉMENT INCHANGÉ. Les roches qui encadrent la bouche
+# (`Bouche_*`, `Seuil_*`, `Ouest_Piedroit`) gardent leur (x, y) au
+# centimètre : une autre session travaille sur le seuil, et deux diffs sur
+# les mêmes lignes coûtent une fusion. Les quatre roches arrière
+# (`Arriere_Ouest/Angle/Est/Mur`) gardent aussi leur pose — elles remblaient
+# l'arrière de l'alcôve, stations 5 à 8, azimut 180°, où la matière ne doit
+# pas être réduite. `Arriere_Cap` y descend même de 2,30 à 1,17 : elle en
+# ajoute sous la voûte, et n'en retire qu'au-dessus de 5,95 m.
 ROCHERS = (
-    # --- MASSE OUEST (gauche de l'image) : large, basse, avancée ---
-    dict(nom="Ouest_Socle",   mod="R", pose=(-4.60,  0.20, -1.40),
-         lacet=24,  tangage=5,  roulis=-4, ech=1.50, rang="majeur"),
-    dict(nom="Ouest_Dos",     mod="R", pose=(-5.60,  3.00, -1.60),
-         lacet=118, tangage=-6, roulis=3,  ech=1.35, rang="majeur"),
-    dict(nom="Ouest_Flanc",   mod="R", pose=(-3.30,  1.90, -1.20),
-         lacet=65,  tangage=4,  roulis=5,  ech=1.15, rang="majeur"),
-    # Enfoncée de 0,55 m et rapprochée de 0,20 m : le passage du piédroit
-    # ouest de `H` à `R` a réduit son emprise, et la corniche s'est
-    # retrouvée ISOLÉE — aucune face croisant une autre pièce.
-    dict(nom="Ouest_Corniche", mod="R", pose=(-4.75, 1.60,   1.70),
-         lacet=200, tangage=-7, roulis=4,  ech=1.20, rang="majeur"),
-    dict(nom="Ouest_Piedroit", mod="R", pose=(-2.85, -0.90, -1.00),
-         lacet=140, tangage=3,  roulis=-5, ech=1.30, rang="majeur"),
+    # ============ AMAS 1 — ÉPAULE GAUCHE : basse et large ================
+    # SEPT roches de faîte. Leur pas est calculé pour étaler l'amas SUR LES
+    # DEUX vues à la fois, ce qui n'est pas automatique : un pas (dX, dY)
+    # se projette en 0,985·dX − 0,174·dY à 55° et en 0,574·dX − 0,819·dY à
+    # 100°, et un mauvais couple annule l'un en gagnant l'autre. Ici
+    # (dX, dY) = (+0,767 ; −0,72) donne 0,88 m à 55° et 1,03 m à 100° —
+    # tous deux sous la largeur de faîte du module (1,30 m à cette échelle),
+    # donc les creux entre voisines restent sous 0,20 m et l'union est UN
+    # plateau, pas sept dents.
+    # `ech` = (1,40 ; 1,36 ; 0,80) : le rocher fait 3,70 × 3,82 × 3,48 m,
+    # rapport hauteur/largeur 0,94 au lieu des 1,65 natifs. Aplatir ne sert
+    # pas qu'à élargir — ça aplatit aussi le sommet, donc ça réduit le creux
+    # entre deux voisines.
+    dict(nom="EpauleG_Faite_1", mod="R", pose=( -6.47,  6.80,  1.87),
+         lacet=4, tangage=3, roulis=2, ech=(1.40, 1.36, 1.25),
+         rang="majeur", amas="epaule_gauche"),
+    dict(nom="EpauleG_Faite_2", mod="R", pose=( -5.95,  6.31,  1.87),
+         lacet=357, tangage=5, roulis=4, ech=(1.40, 1.36, 1.25),
+         rang="majeur", amas="epaule_gauche"),
+    dict(nom="EpauleG_Faite_3", mod="R", pose=( -5.42,  5.82,  1.87),
+         lacet=6, tangage=4, roulis=3, ech=(1.40, 1.36, 1.25),
+         rang="majeur", amas="epaule_gauche"),
+    dict(nom="EpauleG_Faite_4", mod="R", pose=( -4.90,  5.33,  1.87),
+         lacet=354, tangage=6, roulis=5, ech=(1.40, 1.36, 1.25),
+         rang="majeur", amas="epaule_gauche"),
+    dict(nom="EpauleG_Faite_5", mod="R", pose=( -4.38,  4.84,  1.87),
+         lacet=8, tangage=3, roulis=2, ech=(1.40, 1.36, 1.25),
+         rang="majeur", amas="epaule_gauche"),
+    dict(nom="EpauleG_Faite_6", mod="R", pose=( -3.85,  4.34,  1.87),
+         lacet=352, tangage=7, roulis=6, ech=(1.40, 1.36, 1.25),
+         rang="majeur", amas="epaule_gauche"),
+    dict(nom="EpauleG_Faite_7", mod="R", pose=( -3.33,  3.85,  1.87),
+         lacet=3, tangage=4, roulis=3, ech=(1.40, 1.36, 1.25),
+         rang="majeur", amas="epaule_gauche"),
+    dict(nom="EpauleG_Faite_8", mod="R", pose=( -2.81,  3.36,  1.87),
+         lacet=359, tangage=5, roulis=4, ech=(1.40, 1.36, 1.25),
+         rang="majeur", amas="epaule_gauche"),
+    # Socles enterrés. Faîte des socles 5,02 m, fond des roches de faîte
+    # 3,82 m : enfoncement 1,20 m, au-dessus du mètre exigé pour que la
+    # seule face plate du module reste intérieure.
+    dict(nom="EpauleG_Socle_1", mod="R", pose=( -6.30,  6.55, -1.50),
+         lacet=24, tangage=5, roulis=-4, ech=(1.45, 1.42, 1.50),
+         rang="majeur", amas="epaule_gauche"),
+    dict(nom="EpauleG_Socle_2", mod="R", pose=( -5.50,  5.80, -1.50),
+         lacet=118, tangage=-6, roulis=3, ech=(1.45, 1.42, 1.50),
+         rang="majeur", amas="epaule_gauche"),
+    dict(nom="EpauleG_Socle_3", mod="R", pose=( -4.70,  5.05, -1.50),
+         lacet=65, tangage=4, roulis=5, ech=(1.45, 1.42, 1.50),
+         rang="majeur", amas="epaule_gauche"),
+    dict(nom="EpauleG_Socle_4", mod="R", pose=( -3.90,  4.29, -1.50),
+         lacet=200, tangage=-5, roulis=6, ech=(1.45, 1.42, 1.50),
+         rang="majeur", amas="epaule_gauche"),
+    dict(nom="EpauleG_Socle_5", mod="R", pose=( -3.10,  3.54, -1.50),
+         lacet=142, tangage=6, roulis=-3, ech=(1.45, 1.42, 1.50),
+         rang="majeur", amas="epaule_gauche"),
 
-    # --- MASSE CENTRALE : le linteau et la couronne de la bouche ---
+    # ============ AMAS 2 — DOMINANTE : haute, et DÉCENTRÉE ===============
+    # CINQ roches de faîte, pour une emprise VOLONTAIREMENT plus étroite que
+    # l'épaule : deux masses larges de même largeur ne sont pas « nettement
+    # inégales », et c'est le reproche exact reçu.
+    # Son pas (dX, dY) = (+0,867 ; −0,55) rend 0,95 m sur les DEUX azimuts :
+    # le premier jet, qui suivait la galerie vers le fond, donnait 0,95 m à
+    # 55° et −0,31 m à 100° — les cinq roches s'y superposaient en une
+    # colonne de 0,9 m, et la dominante lisait en tour sur la seconde vue.
+    # La hauteur ne vient PAS d'un rocher dressé mais de trois étages
+    # enfouis (socle 5,02 · étage 7,35 · faîte 9,50), dont seul le dernier
+    # affleure, et ce dernier est APLATI (ez = 0,78).
+    dict(nom="Dominante_Faite_1", mod="R", pose=(  1.48,  3.20,  4.07),
+         lacet=5, tangage=4, roulis=3, ech=(1.25, 1.20, 1.25),
+         rang="majeur", amas="dominante"),
+    dict(nom="Dominante_Faite_2", mod="R", pose=(  1.98,  2.88,  4.07),
+         lacet=358, tangage=6, roulis=5, ech=(1.25, 1.20, 1.25),
+         rang="majeur", amas="dominante"),
+    dict(nom="Dominante_Faite_3", mod="R", pose=(  2.48,  2.57,  4.07),
+         lacet=7, tangage=3, roulis=2, ech=(1.25, 1.20, 1.25),
+         rang="majeur", amas="dominante"),
+    dict(nom="Dominante_Faite_4", mod="R", pose=(  2.98,  2.25,  4.07),
+         lacet=356, tangage=5, roulis=4, ech=(1.25, 1.20, 1.25),
+         rang="majeur", amas="dominante"),
+    dict(nom="Dominante_Faite_5", mod="R", pose=(  3.48,  1.93,  4.07),
+         lacet=3, tangage=7, roulis=6, ech=(1.25, 1.20, 1.25),
+         rang="majeur", amas="dominante"),
+    dict(nom="Dominante_Etage_1", mod="R", pose=(  1.40,  3.30,  1.05),
+         lacet=42, tangage=5, roulis=-6, ech=(1.30, 1.26, 1.45),
+         rang="majeur", amas="dominante"),
+    dict(nom="Dominante_Etage_2", mod="R", pose=(  2.14,  2.83,  1.05),
+         lacet=310, tangage=-6, roulis=4, ech=(1.30, 1.26, 1.45),
+         rang="majeur", amas="dominante"),
+    dict(nom="Dominante_Etage_3", mod="R", pose=(  2.88,  2.36,  1.05),
+         lacet=96, tangage=4, roulis=-5, ech=(1.30, 1.26, 1.45),
+         rang="majeur", amas="dominante"),
+    dict(nom="Dominante_Etage_4", mod="R", pose=(  3.62,  1.89,  1.05),
+         lacet=250, tangage=-5, roulis=3, ech=(1.30, 1.26, 1.45),
+         rang="majeur", amas="dominante"),
+    dict(nom="Dominante_Appui_1", mod="R", pose=(  3.60,  1.90, -1.45),
+         lacet=214, tangage=6, roulis=-3, ech=(0.95, 0.92, 1.30),
+         rang="majeur", amas="dominante"),
+    dict(nom="Dominante_Socle_1", mod="R", pose=(  1.60,  2.90, -1.50),
+         lacet=150, tangage=-4, roulis=2, ech=(1.45, 1.42, 1.50),
+         rang="majeur", amas="dominante"),
+    dict(nom="Dominante_Socle_2", mod="R", pose=(  2.70,  2.20, -1.50),
+         lacet=20, tangage=6, roulis=-3, ech=(1.45, 1.42, 1.50),
+         rang="majeur", amas="dominante"),
+    dict(nom="Dominante_Socle_3", mod="R", pose=(  3.80,  1.51, -1.50),
+         lacet=286, tangage=-5, roulis=4, ech=(1.45, 1.42, 1.50),
+         rang="majeur", amas="dominante"),
+
+    # ========== AMAS 3 — CONTREFORT DROIT : petit et en retrait ==========
+    # Trois roches : emprise 2,2 m, soit trois fois moins que l'épaule.
+    # « En retrait » se lit par trois moyens cumulés, dont aucun n'est la
+    # couleur — plus petit, plus bas de 2,45 m que la dominante, et séparé
+    # d'elle par le plus profond des deux cols.
+    dict(nom="ContrefortD_Faite_1", mod="R", pose=(  6.05,  0.55,  1.83),
+         lacet=6, tangage=4, roulis=3, ech=(1.05, 1.02, 1.20),
+         rang="majeur", amas="contrefort_droit"),
+    dict(nom="ContrefortD_Faite_2", mod="R", pose=(  6.42,  0.31,  1.83),
+         lacet=356, tangage=6, roulis=5, ech=(1.05, 1.02, 1.20),
+         rang="majeur", amas="contrefort_droit"),
+    dict(nom="ContrefortD_Faite_3", mod="R", pose=(  6.79,  0.08,  1.83),
+         lacet=9, tangage=3, roulis=2, ech=(1.05, 1.02, 1.20),
+         rang="majeur", amas="contrefort_droit"),
+    dict(nom="ContrefortD_Faite_4", mod="R", pose=(  7.16, -0.16,  1.83),
+         lacet=353, tangage=5, roulis=4, ech=(1.05, 1.02, 1.20),
+         rang="majeur", amas="contrefort_droit"),
+    dict(nom="ContrefortD_Socle_1", mod="R", pose=(  6.10,  0.40, -1.40),
+         lacet=300, tangage=-5, roulis=5, ech=(1.25, 1.22, 1.38),
+         rang="majeur", amas="contrefort_droit"),
+    dict(nom="ContrefortD_Socle_2", mod="R", pose=(  6.70,  0.02, -1.40),
+         lacet=110, tangage=6, roulis=-4, ech=(1.25, 1.22, 1.38),
+         rang="majeur", amas="contrefort_droit"),
+    dict(nom="ContrefortD_Socle_3", mod="R", pose=(  7.30, -0.37, -1.40),
+         lacet=220, tangage=4, roulis=3, ech=(1.25, 1.22, 1.38),
+         rang="majeur", amas="contrefort_droit"),
+
+    # ================ LES DEUX COLS, À DES COTES DIFFÉRENTES =============
+    # Un col n'est pas un vide : c'est une selle dont la COTE décide de la
+    # proéminence des amas qui l'encadrent. Deux cols de même profondeur
+    # donnent deux entailles semblables, et la silhouette redevient
+    # régulière — c'est une part du « rythme de forteresse » reproché.
+    #
+    # COL OUEST à ~5,95 m, tenu par `Arriere_Cap` : 1,35 m sous l'épaule.
+    # Sa pose ne change pas — elle remblaie l'arrière de l'alcôve — seule
+    # son échelle est aplatie, ce qui ne retire de la matière qu'au-dessus
+    # de z = 5,8 m, très loin de la cavité.
+    dict(nom="Arriere_Cap",   mod="R", pose=(-0.40,  7.00,  1.17),
+         lacet=84,  tangage=-7, roulis=4,  ech=(1.05, 1.00, 1.10),
+         rang="intermediaire"),
+    dict(nom="Col_Ouest",     mod="R", pose=(-0.82,  4.55,  1.39),
+         lacet=126, tangage=5,  roulis=-4, ech=(1.15, 1.10, 1.05),
+         rang="intermediaire"),
+    dict(nom="Col_Est",       mod="R", pose=( 3.83,  1.59, -1.05),
+         lacet=244, tangage=-4, roulis=5,  ech=(1.10, 1.05, 1.30),
+         rang="intermediaire"),
+    # COL EST à ~4,58 m, tenu par `Arriere_Loin` : 2,47 m sous le contrefort.
+    # À son échelle précédente (1,25 uniforme) il culminait à 6,54 m et ne
+    # laissait au contrefort que 0,46 m de proéminence — sous toute entaille
+    # de lecture, donc pas une masse du tout.
+    dict(nom="Arriere_Loin",  mod="R", pose=( 5.40,  6.10,  1.10),
+         lacet=20,  tangage=4,  roulis=6,  ech=(1.10, 1.05, 0.80),
+         rang="intermediaire"),
+
+    # ============ BOUCHE ET SEUIL — (x, y) INCHANGÉS ====================
+    # Une autre session travaille sur le seuil ; deux diffs sur les mêmes
+    # lignes coûtent une fusion. Seules l'échelle et la cote z bougent, et
+    # seulement là où la ligne de crête l'exige.
     dict(nom="Bouche_Linteau", mod="R", pose=(0.55, -0.35,   1.60),
-         lacet=6,   tangage=-4, roulis=2,  ech=1.35, rang="majeur"),
-    dict(nom="Bouche_Epaule",  mod="R", pose=(1.90, 1.10,   1.90),
-         lacet=250, tangage=6,  roulis=-3, ech=1.45, rang="majeur"),
+         lacet=6,   tangage=-4, roulis=2,  ech=1.35,
+         rang="majeur", amas="dominante"),
+    # JOUE ABAISSÉE. À z = 2,00 et ech = 1,35 elle culminait à 7,87 m, en
+    # plein dans le col ouest : elle le comblait et soudait l'épaule à la
+    # dominante en une seule masse. Elle reste la joue de la bouche ; elle
+    # ne décide plus de la crête.
     dict(nom="Bouche_Joue",    mod="R", pose=(-0.60, 1.60,   2.00),
-         lacet=172, tangage=-5, roulis=4,  ech=1.35, rang="majeur"),
-    dict(nom="Bouche_Couronne", mod="R", pose=(0.90, 0.95,   4.20),
-         lacet=42,  tangage=8,  roulis=-6, ech=1.15, rang="majeur"),
+         lacet=172, tangage=-5, roulis=4,  ech=(1.30, 1.25, 0.90),
+         rang="intermediaire"),
     dict(nom="Bouche_Visiere", mod="R", pose=(0.20, -1.85,   2.45),
-         lacet=8,   tangage=-9, roulis=3,  ech=1.25, rang="majeur"),
-
-    # --- MASSE EST (droite de l'image) : la plus haute, hors axe ---
-    dict(nom="Est_Socle",     mod="R", pose=( 4.90,  2.20, -1.60),
-         lacet=300, tangage=-5, roulis=5,  ech=1.50, rang="majeur"),
-    dict(nom="Est_Angle",     mod="R", pose=( 5.80,  5.00, -1.40),
-         lacet=25,  tangage=4,  roulis=-4, ech=1.40, rang="majeur"),
-    dict(nom="Est_Flanc",     mod="R", pose=( 3.55,  4.40, -1.20),
-         lacet=210, tangage=-6, roulis=3,  ech=1.25, rang="majeur"),
-    dict(nom="Est_Epaule",    mod="R", pose=(5.20, 3.40,   2.30),
-         lacet=75,  tangage=7,  roulis=-5, ech=1.40, rang="majeur"),
-    dict(nom="Est_Crete",     mod="R", pose=(4.60, 4.55,   4.40),
-         lacet=150, tangage=-8, roulis=6,  ech=1.10, rang="majeur"),
-
-    # --- PLANS DE PROFONDEUR autour de la bouche ---
+         lacet=8,   tangage=-9, roulis=3,  ech=1.25,
+         rang="majeur", amas="dominante"),
+    # AUVENT ABAISSÉ pour la même raison : à 8,07 m il débordait le faîte de
+    # la dominante par la gauche et comblait le col ouest.
+    dict(nom="Seuil_Auvent",   mod="R", pose=(-0.30, -1.60,  1.30),
+         lacet=25,  tangage=-7, roulis=5,  ech=(1.30, 1.25, 0.95),
+         rang="intermediaire"),
     dict(nom="Seuil_PiedroitDroit", mod="R", pose=( 2.70, -1.30, -1.00),
          lacet=32,  tangage=5,  roulis=4,  ech=1.25, rang="intermediaire"),
     dict(nom="Seuil_AvanceeGauche", mod="R", pose=(-2.20, -1.95, -1.30),
@@ -690,8 +933,12 @@ ROCHERS = (
          lacet=128, tangage=6,  roulis=3,  ech=0.95, rang="intermediaire"),
     dict(nom="Seuil_Ecran",   mod="R", pose=(-3.45, -1.40,   0.60),
          lacet=96,  tangage=-6, roulis=5,  ech=1.10, rang="intermediaire"),
+    dict(nom="Ouest_Piedroit", mod="R", pose=(-2.85, -0.90, -1.00),
+         lacet=140, tangage=3,  roulis=-5, ech=1.30, rang="intermediaire"),
 
-    # --- MASSE ARRIÈRE : la formation a de l'épaisseur en Y ---
+    # ==== MASSE ARRIÈRE — poses INCHANGÉES : elles remblaient l'arrière de
+    # l'alcôve (stations 5 à 7, azimut 180°), zone où la matière ne doit pas
+    # être réduite.
     dict(nom="Arriere_Ouest", mod="R", pose=(-2.40,  6.40, -1.50),
          lacet=40,  tangage=5,  roulis=-3, ech=1.35, rang="intermediaire"),
     dict(nom="Arriere_Angle", mod="R", pose=( 0.90,  7.40, -1.40),
@@ -702,18 +949,6 @@ ROCHERS = (
          lacet=118, tangage=-4, roulis=3,  ech=1.20, rang="intermediaire"),
     dict(nom="Arriere_Dos",   mod="R", pose=(1.70, 5.20,   1.90),
          lacet=260, tangage=7,  roulis=-5, ech=1.15, rang="intermediaire"),
-    dict(nom="Arriere_Cap",   mod="R", pose=(-0.40, 7.00,   2.30),
-         lacet=84,  tangage=-7, roulis=4,  ech=1.15, rang="intermediaire"),
-    # Rapprochée de (5,00 ; 7,00 ; 2,30) : les BOÎTES recouvraient
-    # `Est_Angle` sur 1,46 m et pourtant aucune face ne se croisait —
-    # `template-detail` est un rocher irrégulier qui ne remplit pas sa
-    # boîte, et deux coins peuvent se chevaucher sans matière commune.
-    dict(nom="Arriere_Loin",  mod="R", pose=(5.40, 6.10,   1.10),
-         lacet=20,  tangage=4,  roulis=6,  ech=1.25, rang="intermediaire"),
-
-
-    dict(nom="Seuil_Auvent",   mod="R", pose=(-0.30, -1.60,  2.20),
-         lacet=25,  tangage=-7, roulis=5,  ech=1.35, rang="majeur"),
 
     # --- ROCHERS SECONDAIRES : l'échelle se lit par la variété des tailles.
     # Aucun devant la bouche : au-delà de y = -1,6 ils restent a |x| >= 2,0,
@@ -736,6 +971,77 @@ ROCHERS = (
     dict(nom="Pied_Eclat",     mod="R", pose=( 4.20, -2.40, -1.00),
          lacet=190, tangage=-8, roulis=6,  ech=0.55, rang="secondaire"),
 )
+
+# ---------------------------------------------------------------------------
+# LES TROIS AMAS, ET LE CONTRÔLE QUI LES MESURE.
+#
+# CE QUE MESURAIT L'ANCIEN OUTIL, ET POURQUOI ÇA NE SUFFISAIT PAS.
+# `tools/measure_silhouette_masses.py` compte les masses d'une silhouette par
+# proéminence topographique. Sur la formation rejetée il rendait, à l'azimut
+# réel d'approche : 4 sommets de largeur 1,07 · 1,12 · 1,12 · 1,26 m, cv 0,06.
+# Le compteur voyait bien le défaut — mais il vit dans un PNG capturé après
+# export, donc trois quarts d'heure après la faute, et il ne dit pas d'où
+# elle vient.
+#
+# CE QUI SE MESURE ICI, EN SECONDES, SUR LES VOLUMES SOURCES. Les roches
+# posées sont projetées sur l'axe écran de la silhouette — la chaîne modèle
+# → Godot (`export_yup`) → `LACET_DEG = 45` → caméra orthogonale de
+# `capture_silhouette.gd` donne, à l'azimut a :
+#
+#     x_ecran = 0,7071 · [ X·(sin a + cos a) + Y·(cos a − sin a) ]
+#
+# soit 0,9847·X − 0,1737·Y à 55° et 0,5736·X − 0,8192·Y à 100°. On calcule
+# ensuite l'enveloppe supérieure EXACTE par intersection des triangles avec
+# le plan de chaque colonne — et non par échantillonnage de sommets : un
+# module réparé porte 90 sommets, une colonne de 8 cm n'en contient souvent
+# aucun, et le profil inventerait alors des encoches qui n'existent pas.
+#
+# LA MESURE QUI NOMME LA CAUSE : `porteurs du faîte`. Pour chaque masse, le
+# nombre de roches DISTINCTES qui portent la crête à moins de
+# `BANDE_FAITE_M` sous son sommet. Avant / après, aux deux azimuts :
+#
+#            largeurs des masses            porteurs du faîte
+#   avant    1,14 · 1,07 · 1,14 m           1 · 1 · 1
+#   après    6,59 · 3,67 · 2,42 m           6 · 4 · 3
+#
+# Un porteur unique par sommet EST le défaut : le faîte sculpté de
+# `template-detail` mesure 0,93 m de large à 0,60 m sous son sommet, quel que
+# soit l'axe de projection. Tant qu'une roche porte seule un sommet, la
+# largeur de ce sommet vaut 0,93 × son échelle — et comme l'échelle variait
+# de 1,10 à 1,35, les quatre sommets ne pouvaient pas différer de plus de
+# 7 %. Aucune repose ne l'aurait changé ; il fallait faire porter chaque
+# faîte par PLUSIEURS volumes qui se chevauchent.
+#
+# LES SEUILS SONT DES PLANCHERS DE NON-RÉGRESSION, PAS UNE PREUVE D'ART.
+# Ils ont été fixés APRÈS avoir mesuré la composition obtenue, et c'est
+# l'honnêteté minimale de le dire : ils garantissent qu'une passe suivante ne
+# ramènera pas le créneau, ils ne prononcent aucun gate visuel. Le compteur
+# de proéminences reste une TÉLÉMÉTRIE ; le jugement appartient au lead.
+AZIMUTS_SILHOUETTE = (55.0, 100.0)
+## Azimut réel d'approche (dérivé de la caméra de `capture_poi_batch`) et le
+## trois-quarts à +45°. Ce ne sont pas des angles choisis : ce sont ceux des
+## deux silhouettes que la revue a jugées.
+COLONNES_SILHOUETTE = 220
+## Entaille de lecture. Le balayage complet est imprimé — 0,60 à 1,50 — pour
+## qu'aucun seuil ne soit choisi après coup ; celui-ci sert au verdict.
+ENTAILLE_LECTURE_M = 0.90
+## Bande sous le sommet d'une masse dans laquelle on compte les porteurs.
+BANDE_FAITE_M = 0.45
+
+AMAS = (
+    dict(cle="epaule_gauche",    porteurs_min=3, rang_largeur=1),
+    dict(cle="dominante",        porteurs_min=3, rang_largeur=2),
+    dict(cle="contrefort_droit", porteurs_min=2, rang_largeur=3),
+)
+## Ordre attendu de gauche à droite en x écran, et nombre minimal de roches
+## portant chaque faîte. `rang_largeur` déclare l'ordre des emprises :
+## l'épaule est la plus large, le contrefort la plus étroite.
+LARGEUR_RATIO_MIN = 2.00        # entre la plus large et la plus étroite
+LARGEUR_ECART_MIN = 1.20        # entre deux emprises consécutives
+DOMINANTE_AU_DESSUS_M = 1.50    # de combien la haute domine ses deux voisines
+COLS_RATIO_MIN = 1.25           # entre les profondeurs des deux cols
+COLS_ECART_MIN_M = 0.40         # et leur écart absolu
+DECENTREMENT_MIN = 0.08         # du faîte dominant, en fraction de l'emprise
 
 # ASSISE ENTERRÉE — un pavé, et il est assumé comme tel.
 #
@@ -1584,6 +1890,26 @@ def poser_rocher(config):
                                "cesse d'etre une roche"
                                % (config["nom"], facteur, ECHELLE_MIN,
                                   ECHELLE_MAX))
+    # L'ANISOTROPIE EST LE LEVIER DE R2a-3.4, ET ELLE A UNE BORNE.
+    #
+    # Le rapport hauteur/largeur natif de `template-detail` vaut 4,35/2,64 =
+    # 1,65, identique pour ses exemplaires tant que `ech` est uniforme. C'est
+    # ce qui rendait le coefficient de variation des largeurs de sommet
+    # arithmétiquement nul : un module dont le faîte mesure 0,93 m de large à
+    # 0,60 m sous son sommet donne, à toute échelle UNIFORME, un sommet de
+    # silhouette de même forme. Un triplet sort de ce rapport unique sans
+    # toucher aux bornes [0,55 ; 1,55], et sans ajouter de module au kit.
+    #
+    # Mais un rocher SCULPTÉ étiré se voit : au-delà d'un rapport 2 entre la
+    # plus grande et la plus petite composante, ses arêtes s'allongent
+    # visiblement dans une direction et il cesse de lire comme une roche —
+    # c'est le reproche déjà reçu sur les grandes échelles, transposé.
+    if max(ech) / min(ech) > ANISOTROPIE_MAX:
+        raise RuntimeError("%s : anisotropie %.2f (%.2f / %.2f / %.2f) "
+                           "au-dela de %.2f — un rocher sculpte etire de plus "
+                           "du double cesse de lire comme une roche"
+                           % (config["nom"], max(ech) / min(ech), ech[0],
+                              ech[1], ech[2], ANISOTROPIE_MAX))
     base = charger_module(config["mod"])
     maillage = base.copy()
     obj = bpy.data.objects.new("SM_WaterfallCave_" + config["nom"], maillage)
@@ -2831,6 +3157,266 @@ def controle_composition(objets_visibles):
     return detail[0][2], significatives, detail
 
 
+
+def _axe_silhouette(azimut_deg):
+    """Vecteur de l'axe HORIZONTAL de l'image de silhouette, en repere modele.
+
+    Derive, et non devine : le modele part en Y-up a l'export (`export_yup`,
+    donc godot.x = X, godot.y = Z, godot.z = -Y), le lieu applique
+    `LACET_DEG = 45` autour de Y, et `capture_silhouette.gd` place la camera
+    en `centre + (cos a, 0, sin a)·d` avec `look_at(centre, UP)`. L'axe X de
+    cette camera vaut donc (sin a, 0, -cos a), et le produit scalaire avec le
+    point tourne donne l'expression ci-dessous.
+    """
+    a = math.radians(azimut_deg)
+    k = math.sqrt(0.5)
+    return (k * (math.sin(a) + math.cos(a)), k * (math.cos(a) - math.sin(a)))
+
+
+def _enveloppe_silhouette(obj, ux, uy, lo, pas, n):
+    """Le z maximal de la surface de `obj`, colonne par colonne.
+
+    EXACT, par intersection de chaque triangle avec le plan de la colonne —
+    pas par echantillonnage de sommets. Un module repare porte 90 sommets ;
+    une colonne de 8 cm n'en contient souvent aucun, et un profil bati sur
+    les sommets inventerait des encoches inexistantes. Mesure : sur la
+    formation livree, la version par sommets rendait 5 masses la ou la
+    version exacte en rend 3.
+    """
+    env = [None] * n
+    sommets = obj.data.vertices
+    proj = [(ux * v.co.x + uy * v.co.y, v.co.z) for v in sommets]
+    for poly in obj.data.polygons:
+        idx = list(poly.vertices)
+        for t in range(1, len(idx) - 1):
+            tri = (proj[idx[0]], proj[idx[t]], proj[idx[t + 1]])
+            x0 = min(p[0] for p in tri)
+            x1 = max(p[0] for p in tri)
+            ka = max(0, int(math.ceil((x0 - lo) / pas)))
+            kb = min(n - 1, int(math.floor((x1 - lo) / pas)))
+            for q in range(ka, kb + 1):
+                x = lo + q * pas
+                haut = None
+                for pa, pb in ((tri[0], tri[1]), (tri[1], tri[2]),
+                               (tri[2], tri[0])):
+                    if (pa[0] - x) * (pb[0] - x) <= 0.0 and pa[0] != pb[0]:
+                        f = (x - pa[0]) / (pb[0] - pa[0])
+                        z = pa[1] + f * (pb[1] - pa[1])
+                        if haut is None or z > haut:
+                            haut = z
+                if haut is not None and (env[q] is None or haut > env[q]):
+                    env[q] = haut
+    return env
+
+
+def _masses_du_profil(xs, hs, entaille):
+    """Les masses d'un profil de crete, par PROEMINENCE topographique.
+
+    Meme primitive que `tools/measure_silhouette_masses.py`, et pour la meme
+    raison : une marche d'escalier a une proeminence nulle et ne peut donc
+    pas etre comptee comme une masse. Rend, par masse retenue, ses indices de
+    debut et de fin au niveau `sommet - entaille`, sa largeur, son sommet et
+    sa proeminence.
+    """
+    n = len(hs)
+    brut = []
+    i = 0
+    while i < n:
+        j = i
+        while j + 1 < n and hs[j + 1] == hs[i]:
+            j += 1
+        if not ((i == 0 or hs[i - 1] < hs[i])
+                and (j == n - 1 or hs[j + 1] < hs[j])):
+            i = j + 1
+            continue
+        col_g = hs[i]
+        k = i - 1
+        while k >= 0 and hs[k] <= hs[i]:
+            col_g = min(col_g, hs[k])
+            k -= 1
+        if k < 0:
+            col_g = min(col_g, hs[0])
+        col_d = hs[j]
+        k = j + 1
+        while k < n and hs[k] <= hs[j]:
+            col_d = min(col_d, hs[k])
+            k += 1
+        if k >= n:
+            col_d = min(col_d, hs[n - 1])
+        prom = hs[i] - max(col_g, col_d)
+        if prom >= entaille:
+            niveau = hs[i] - entaille
+            a, b = i, j
+            while a > 0 and hs[a - 1] >= niveau:
+                a -= 1
+            while b < n - 1 and hs[b + 1] >= niveau:
+                b += 1
+            brut.append(dict(i0=a, i1=b, larg=xs[b] - xs[a], som=hs[i],
+                             prom=prom, col=max(col_g, col_d)))
+        i = j + 1
+    brut.sort(key=lambda m: -m["som"])
+    gardes = []
+    for m in brut:
+        if not any(m["i0"] <= g["i1"] and g["i0"] <= m["i1"] for g in gardes):
+            gardes.append(m)
+    gardes.sort(key=lambda m: m["i0"])
+    return gardes
+
+
+def profil_silhouette(pieces, configs, azimut):
+    """Profil de crete et proprietaire de chaque colonne, a un azimut."""
+    ux, uy = _axe_silhouette(azimut)
+    bornes = []
+    for obj in pieces:
+        for v in obj.data.vertices:
+            bornes.append(ux * v.co.x + uy * v.co.y)
+    lo, hi = min(bornes), max(bornes)
+    n = COLONNES_SILHOUETTE
+    pas = (hi - lo) / (n - 1)
+    xs = [lo + q * pas for q in range(n)]
+    hs = [None] * n
+    qui = [None] * n
+    for obj, cfg in zip(pieces, configs):
+        env = _enveloppe_silhouette(obj, ux, uy, lo, pas, n)
+        for q in range(n):
+            if env[q] is not None and (hs[q] is None or env[q] > hs[q]):
+                hs[q] = env[q]
+                qui[q] = cfg
+    plein = [q for q in range(n) if hs[q] is not None]
+    return (xs, hs, qui, lo, hi, plein)
+
+
+def controle_amas(pieces, configs):
+    """LA COMPOSITION EN TROIS AMAS, MESUREE SUR LES VOLUMES SOURCES.
+
+    Voir le commentaire de `AMAS` pour la cause qu'il attrape et les
+    chiffres avant/apres. Rend (liste des fautes, lignes de telemetrie).
+    """
+    fautes = []
+    lignes = []
+    for azimut in AZIMUTS_SILHOUETTE:
+        xs, hs, qui, lo, hi, plein = profil_silhouette(pieces, configs, azimut)
+        vx = [xs[q] for q in plein]
+        vh = [hs[q] for q in plein]
+        vq = [qui[q] for q in plein]
+        lignes.append("[grotte] silhouette a %.0f deg : emprise %.2f m"
+                      % (azimut, hi - lo))
+        for entaille in (0.60, 0.90, 1.20, 1.50):
+            ms = _masses_du_profil(vx, vh, entaille)
+            larg = [m["larg"] for m in ms]
+            moy = sum(larg) / len(larg) if larg else 0.0
+            cv = 0.0
+            if len(larg) > 1 and moy > 0.0:
+                cv = (sum((x - moy) ** 2 for x in larg) / len(larg)) ** 0.5 / moy
+            lignes.append("[grotte]   entaille %.2f : %d masse(s), largeurs %s"
+                          ", cv %.2f"
+                          % (entaille, len(ms),
+                             " ".join("%.2f" % x for x in larg), cv))
+
+        ms = _masses_du_profil(vx, vh, ENTAILLE_LECTURE_M)
+        if len(ms) != len(AMAS):
+            fautes.append("azimut %.0f : %d masse(s) a l'entaille %.2f, %d "
+                          "attendues — la silhouette ne presente pas trois "
+                          "amas" % (azimut, len(ms), ENTAILLE_LECTURE_M,
+                                    len(AMAS)))
+            continue
+
+        detail = []
+        for m, attendu in zip(ms, AMAS):
+            seg = range(m["i0"], m["i1"] + 1)
+            porteurs = {vq[q]["nom"] for q in seg
+                        if m["som"] - vh[q] <= BANDE_FAITE_M}
+            intrus = {vq[q]["nom"] for q in seg
+                      if vq[q]["rang"] in ("gaine", "secondaire")}
+            compte = {}
+            for q in seg:
+                cle = vq[q].get("amas")
+                if cle:
+                    compte[cle] = compte.get(cle, 0) + 1
+            porte = max(compte, key=compte.get) if compte else "-"
+            detail.append(dict(m=m, porteurs=porteurs, intrus=intrus,
+                               porte=porte, attendu=attendu))
+            lignes.append("[grotte]   masse %-17s largeur %5.2f m  faite "
+                          "%5.2f m  proeminence %5.2f m  porteurs du faite "
+                          "%d" % (porte, m["larg"], m["som"], m["prom"],
+                                  len(porteurs)))
+            if porte != attendu["cle"]:
+                fautes.append("azimut %.0f : la masse %d est portee par "
+                              "« %s », « %s » etait attendu — l'ordre gauche "
+                              "-> droite des amas n'est pas celui declare"
+                              % (azimut, len(detail), porte, attendu["cle"]))
+            if len(porteurs) < attendu["porteurs_min"]:
+                fautes.append("azimut %.0f : le faite de « %s » est porte par "
+                              "%d roche(s), %d exigee(s) — un sommet porte "
+                              "par une seule roche a la largeur du module, "
+                              "c'est le creneau du rejet"
+                              % (azimut, porte, len(porteurs),
+                                 attendu["porteurs_min"]))
+            if intrus:
+                fautes.append("azimut %.0f : « %s » de rang gaine/secondaire "
+                              "porte la crete dans l'emprise de la masse "
+                              "« %s » — l'invisible ne decide pas du visible"
+                              % (azimut, sorted(intrus)[0], porte))
+
+        largeurs = sorted((d["m"]["larg"] for d in detail), reverse=True)
+        if largeurs[0] / largeurs[-1] < LARGEUR_RATIO_MIN:
+            fautes.append("azimut %.0f : emprises %s — rapport %.2f, il en "
+                          "faut %.2f ; trois masses de largeur voisine sont "
+                          "le defaut « tours rocheuses repetees »"
+                          % (azimut, " ".join("%.2f" % x for x in largeurs),
+                             largeurs[0] / largeurs[-1], LARGEUR_RATIO_MIN))
+        for a, b in zip(largeurs, largeurs[1:]):
+            if a / b < LARGEUR_ECART_MIN:
+                fautes.append("azimut %.0f : deux emprises a %.2f %% l'une de "
+                              "l'autre (%.2f et %.2f m) — « nettement "
+                              "inegales » demande au moins %.0f %%"
+                              % (azimut, 100.0 * (a / b - 1.0), a, b,
+                                 100.0 * (LARGEUR_ECART_MIN - 1.0)))
+
+        haut = max(detail, key=lambda d: d["m"]["som"])
+        if haut["attendu"]["cle"] != "dominante":
+            fautes.append("azimut %.0f : la masse la plus haute est « %s », "
+                          "pas la dominante" % (azimut, haut["porte"]))
+        for d in detail:
+            if d is haut:
+                continue
+            if haut["m"]["som"] - d["m"]["som"] < DOMINANTE_AU_DESSUS_M:
+                fautes.append("azimut %.0f : la dominante ne surplombe « %s » "
+                              "que de %.2f m (%.2f exiges)"
+                              % (azimut, d["porte"],
+                                 haut["m"]["som"] - d["m"]["som"],
+                                 DOMINANTE_AU_DESSUS_M))
+        gauche = detail[0]["m"]
+        droite = detail[-1]["m"]
+        if droite["larg"] > gauche["larg"] or droite["som"] > gauche["som"]:
+            fautes.append("azimut %.0f : le contrefort droit (%.2f m de large, "
+                          "faite %.2f) n'est pas plus petit ET plus bas que "
+                          "l'epaule gauche (%.2f m, %.2f)"
+                          % (azimut, droite["larg"], droite["som"],
+                             gauche["larg"], gauche["som"]))
+
+        cols = sorted((gauche["prom"], droite["prom"]))
+        if cols[1] / cols[0] < COLS_RATIO_MIN or \
+                cols[1] - cols[0] < COLS_ECART_MIN_M:
+            fautes.append("azimut %.0f : les deux cols entaillent de %.2f et "
+                          "%.2f m — rapport %.2f et ecart %.2f m ; deux "
+                          "entailles semblables rendent la silhouette "
+                          "reguliere" % (azimut, cols[0], cols[1],
+                                         cols[1] / cols[0], cols[1] - cols[0]))
+
+        centre = 0.5 * (vx[haut["m"]["i0"]] + vx[haut["m"]["i1"]])
+        milieu = 0.5 * (lo + hi)
+        part = abs(centre - milieu) / (hi - lo)
+        lignes.append("[grotte]   decentrement du faite dominant : %.2f m = "
+                      "%.1f %% de l'emprise" % (abs(centre - milieu),
+                                                100.0 * part))
+        if part < DECENTREMENT_MIN:
+            fautes.append("azimut %.0f : le faite dominant est a %.1f %% du "
+                          "milieu de l'emprise (%.0f %% exiges) — une masse "
+                          "haute et centree lit en cheminee"
+                          % (azimut, 100.0 * part, 100.0 * DECENTREMENT_MIN))
+    return fautes, lignes
+
 def controle_assise(obj):
     zs = [v.co.z for v in obj.data.vertices]
     seuil = [v.co.z for i, v in enumerate(obj.data.vertices)
@@ -2884,6 +3470,20 @@ def main():
     for obj in pieces + [collision]:
         obj.location = (0.0, 0.0, 0.0)
         obj.scale = (1.0, 1.0, 1.0)
+
+    # 2 bis. LA COMPOSITION EN TROIS AMAS. Mesurée ici, sur les volumes
+    #        SOURCES, et non trois quarts d'heure plus tard sur un PNG :
+    #        c'est le seul endroit où la faute est encore réparable sans
+    #        relancer l'export. Voir le commentaire de `AMAS`.
+    fautes, telemetrie = controle_amas(pieces[1:], implantation)
+    for ligne in telemetrie:
+        print(ligne)
+    if fautes:
+        for faute in fautes:
+            print("[grotte] ERREUR: composition — %s" % faute)
+        return 2
+    print("[grotte] composition : trois amas d'emprises inegales, faites "
+          "portes par plusieurs roches, deux cols de profondeurs differentes")
 
     # 3. TÉLÉMÉTRIE de composition — imprimée, jamais bloquante.
     _, _, detail = controle_composition(pieces)

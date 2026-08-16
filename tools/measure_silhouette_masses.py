@@ -158,7 +158,50 @@ def _sommets(profil: list[int | None], entaille_px: float,
     return retenus
 
 
-def mesurer(manifeste: Path, entaille_m: float) -> int:
+## `--exige=` — CONTROLE DE NON-REGRESSION, PAS GATE VISUEL.
+##
+## Le lead a tranche : le compteur de proeminences est une TELEMETRIE, il ne
+## prononce pas le verdict artistique. Ce drapeau ne change donc rien a ce
+## qui est imprime ; il ajoute seulement un code retour non nul quand la
+## silhouette redescend sous un plancher DEJA ATTEINT. Il sert a empecher une
+## passe suivante de ramener le creneau de R2a-3.3, jamais a prouver qu'une
+## composition est reussie.
+##
+## Les planchers sont fixes APRES mesure de la composition obtenue, et il
+## faut le dire : ce sont des minorants de non-regression, pas des cibles
+## dont l'atteinte demontrerait quoi que ce soit.
+##
+##   --exige=masses,largeur_min,emprise_min,emprise_max
+##
+## `largeur_min` porte sur CHAQUE masse : c'est le critere qui attrape le
+## defaut nomme par le lead. Sur la formation rejetee les quatre sommets
+## mesuraient 1,07 a 1,26 m — la largeur du faite du module, parce qu'une
+## seule roche portait chaque sommet. Les bornes d'emprise empechent de le
+## passer en agrandissant simplement le rocher.
+def _exiger(nom: str, masses: list, largeurs: list, m_par_px: float,
+            regle: tuple) -> list[str]:
+    n_min, larg_min, emp_min, emp_max = regle
+    fautes: list[str] = []
+    if len(masses) < int(n_min):
+        fautes.append("%s : %d masse(s), %d exigee(s)"
+                      % (nom, len(masses), int(n_min)))
+    for (a, b, _, _, _), l in zip(masses, largeurs):
+        if l < larg_min:
+            fautes.append("%s : une masse de %.2f m de large (x %d-%d), %.2f m "
+                          "exiges — un sommet aussi etroit est porte par une "
+                          "seule roche du kit" % (nom, l, a, b, larg_min))
+    if masses:
+        emprise = (masses[-1][1] - masses[0][0]) * m_par_px
+        if not (emp_min <= emprise <= emp_max):
+            fautes.append("%s : emprise des masses %.2f m hors de [%.2f ; "
+                          "%.2f] — le critere de largeur ne doit pas se "
+                          "passer en agrandissant la formation"
+                          % (nom, emprise, emp_min, emp_max))
+    return fautes
+
+
+def mesurer(manifeste: Path, entaille_m: float,
+            exige: tuple | None = None) -> int:
     meta = json.loads(manifeste.read_text(encoding="utf-8"))
     if meta.get("projection") != "orthogonale":
         print("BLOQUÉ : projection « %s » — l'echelle ne se refait qu'en "
@@ -176,6 +219,7 @@ def mesurer(manifeste: Path, entaille_m: float) -> int:
     print("sujet %s — %.4f m/pixel, entaille %.2f m = %.1f px"
           % (meta.get("sujet", "?"), m_par_px, entaille_m, entaille_px))
     racine = manifeste.parent
+    fautes: list[str] = []
     for vue in meta["vues"]:
         chemin = Path(vue["image"])
         if not chemin.exists():
@@ -195,21 +239,35 @@ def mesurer(manifeste: Path, entaille_m: float) -> int:
         for (a, b, n, sommet, prom), l in zip(masses, largeurs):
             print("      x %4d-%4d   largeur %5.2f m   proeminence %5.2f m"
                   % (a, b, l, prom * m_par_px))
+        if exige is not None:
+            fautes += _exiger(chemin.name, masses, largeurs, m_par_px, exige)
+    if fautes:
+        for faute in fautes:
+            print("ECHEC (non-regression) : %s" % faute)
+        return 1
     return 0
 
 
 def main() -> int:
     entaille = 0.60
+    exige = None
     args = []
     for a in sys.argv[1:]:
         if a.startswith("--entaille="):
             entaille = float(a.split("=", 1)[1])
+        elif a.startswith("--exige="):
+            champs = a.split("=", 1)[1].split(",")
+            if len(champs) != 4:
+                print("BLOQUÉ : --exige=masses,largeur_min,emprise_min,"
+                      "emprise_max — quatre valeurs attendues")
+                return 2
+            exige = tuple(float(v) for v in champs)
         else:
             args.append(a)
     if not args:
         print(__doc__)
         return 2
-    return mesurer(Path(args[0]), entaille)
+    return mesurer(Path(args[0]), entaille, exige)
 
 
 if __name__ == "__main__":
