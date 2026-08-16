@@ -135,6 +135,28 @@ Z_PIED = -1.35          # semelle plantée sous le sol — masse POSÉE, pas pos
 #
 # Retenu : dx = 6,6 m, dy = +0,7 m.
 #   séparation 55° : 6,38 m   séparation 100° : 3,21 m   recul : 1,84 m
+# CENTERLINE DE LA GALERIE, établie par l'agent galerie :
+# (ax, ay, demi-largeur, clé, palier). Elle n'est PAS construite ici — ce
+# fichier ne fabrique aucune cavité. Elle sert uniquement de gabarit au
+# contrôle de contenance ci-dessous.
+CENTERLINE = [
+    (0.00, -1.15, 1.90, 2.80, 0.00),   # porche, hors bouche
+    (0.00, 0.00, 1.70, 2.85, 0.00),    # seuil — linteau
+    (0.22, 1.05, 1.75, 2.90, 0.02),
+    (1.00, 1.62, 2.10, 2.90, 0.06),    # coude
+    (1.82, 2.12, 2.60, 2.92, 0.10),
+    (2.62, 2.58, 3.00, 2.92, 0.16),    # salle
+    (3.10, 2.88, 2.50, 2.80, 0.34),
+    (3.40, 3.06, 1.85, 2.45, 0.56),    # alcôve
+    (3.58, 3.17, 1.30, 2.00, 0.70),
+]
+## Toit minimal exigé au-dessus de la clé. La station 0 est le PORCHE : il
+## est dehors, et exiger de la roche au-dessus serait exiger de boucher la
+## bouche. La station 1 est le seuil : c'est le LINTEAU, et l'objectif de
+## conception du lead y est 0,90 m.
+TOIT_MINI = 0.60
+LINTEAU_MINI = 0.90
+
 ANCRE_EPAULE = Vector((-5.00, 5.30))
 ANCRE_DOMINANTE = Vector((-0.80, 4.20))
 ANCRE_CONTREFORT = Vector((5.80, 4.90))
@@ -439,142 +461,209 @@ def _objet(nom: str, bm: bmesh.types.BMesh) -> bpy.types.Object:
 
 
 # ---------------------------------------------------------------------------
-# PROTOTYPE A — « CUESTA À RESSAUTS »
+# PROTOTYPE A — « CUESTA À RESSAUTS », plan refondu pour CONTENIR la galerie
 #
-# Un seul corps porte l'épaule gauche ET la masse dominante : la crête est
-# une polyligne continue de vingt-deux sommets qui monte par paliers,
-# marque un col, culmine sur une TABLE INCLINÉE décentrée, se casse et
-# plonge. La formation ne peut pas se lire comme des blocs posés côte à
-# côte, puisqu'il n'y a pas de blocs — les « trois masses » sont trois
-# bosses d'un même relief. Le contrefort est un corps séparé, reculé, qui
-# émerge de derrière l'escarpement.
+# CE QUE LA REFONTE CORRIGE, ET POURQUOI ELLE N'EST PAS UN RÉGLAGE. La
+# version retenue par le lead a été mesurée contre la centerline de
+# l'agent galerie : toit entre -2,74 et +0,09 m au-dessus de la clé, sur
+# les neuf stations. Elle ne peut porter AUCUNE des deux galeries — pas
+# davantage l'ancienne (-3,95 à +5,29, sept stations en faute). La matrice
+# complète est dans `evidence/.../r2a35_fusion/`.
 #
-# Chaque quadruplet est (x, y, z, largeur_de_ruban). Les largeurs sont le
-# vrai levier de lecture : 0,25 m aux extrémités donne une arête, 0,8 à
-# 1,3 m donne un replat, 2,1 à 2,4 m donne la table sommitale.
+# La cause n'est pas un défaut d'exécution, c'est un défaut de cahier des
+# charges, et il faut l'écrire : le proto A a été conçu comme une
+# SILHOUETTE. Le pied évasé et la masse haute étroite — les deux
+# propriétés qui ont tué la lecture de tour — sont exactement celles qui
+# le rendent incapable de contenir quoi que ce soit. Environ 15 m² de plan
+# seulement dépassaient 4,1 m, et le noyau au-dessus de 5 m tenait dans
+# 3 x 4 m, à trois mètres du corridor.
+#
+# CE QUI CHANGE : la masse haute cesse d'être une ARÊTE et devient un
+# MASSIF LARGE centré sur le corridor, autour de (1,45 ; 2,05).
+#
+#   * la crête ne traverse plus le massif d'ouest en est ; elle décrit un
+#     arc qui descend de l'épaule vers le sommet puis remonte vers l'est,
+#     de sorte que le point haut se trouve AU-DESSUS de la galerie ;
+#   * le contour 4,1 m devient un disque d'environ 2,9 m de rayon, soit
+#     ~26 m² : la contrainte formulée en fin de mesure ;
+#   * le linteau de la bouche cesse d'être négatif — la station 1 passe
+#     sous roche au lieu d'être à l'air libre.
+#
+# CE QUI NE CHANGE PAS, parce que c'est ce que le lead a jugé : ruban de
+# crête à largeur variable (aucun sommet plat possible), profil de flanc à
+# ressauts (aucun triangle), pied évasé (masse posée), cape en bande
+# (aucun créneau de triangulation).
+#
+# POURQUOI UN MASSIF ET NON UNE ARÊTE ALIGNÉE SUR LA GALERIE. Une arête
+# suivant le cap de la galerie serait vue EN BOUT à l'azimut monde 100° :
+# la direction du corridor (0,857 ; 0,515) y projette 0,070 m par mètre,
+# contre 0,755 à l'azimut 55°. Autrement dit une arête alignée sur la
+# galerie donnerait une masse large de face et un pic étroit de trois
+# quarts — une tour, exactement le procès qu'on cherche à éviter. Un
+# massif, lui, projette sa girth à tous les azimuts.
 # ---------------------------------------------------------------------------
 
 
 def proto_a() -> list:
     objets = []
 
-    # Corps principal. Rampe gauche à ressauts, épaule 4,30, col A 2,80
-    # (1,50 m plus bas), montée par deux vires, table sommitale de 8,45 à
-    # 8,10 sur 0,65 m — soit 9° d'inclinaison —, cassure, puis plongée.
+    # Corps principal. La crête décrit un arc : elle entre par la gauche à
+    # y ≈ 6,5, descend vers y ≈ 1,95 au sommet — c'est-à-dire AU-DESSUS du
+    # corridor —, puis remonte vers l'est. Le sommet est donc décentré vers
+    # +x, ce qui satisfait « masse dominante décentrée » par la même
+    # opération qui la met sur la galerie.
     crete = [
-        (-7.80, 7.05, 0.55, 0.25),
-        (-7.05, 6.80, 1.55, 0.45),
-        (-6.55, 6.60, 1.70, 0.75),   # vire
-        (-5.80, 6.30, 2.85, 0.50),
-        (-5.35, 6.05, 3.05, 0.85),   # vire
-        (-4.70, 5.70, 4.45, 0.55),
-        (-4.25, 5.45, 4.85, 1.20),   # épaule : petite table inclinée
-        (-3.75, 5.20, 4.35, 0.70),
-        (-3.45, 5.05, 3.45, 0.45),
-        (-2.85, 4.75, 2.55, 0.55),   # col A
-        (-2.35, 4.55, 3.95, 0.40),
-        (-2.00, 4.40, 4.25, 0.75),   # vire
-        (-1.45, 4.20, 5.85, 0.45),
-        (-1.10, 4.10, 6.15, 0.70),   # vire
-        (-0.55, 3.95, 7.65, 0.95),
-        (-0.10, 3.85, 8.35, 1.35),   # table sommitale, début
-        (0.60, 3.70, 8.10, 1.45),    # table sommitale, fin — 20° d'inclinaison
-        (1.05, 3.60, 7.35, 1.05),    # cassure
-        (1.45, 3.55, 6.60, 1.15),    # vire
-        (1.85, 3.50, 4.55, 0.55),
-        (2.15, 3.45, 4.05, 0.85),    # vire
-        (2.45, 3.40, 2.05, 0.30),
+        (-7.90, 6.55, 0.55, 0.25),
+        (-7.10, 6.35, 1.60, 0.45),
+        (-6.55, 6.20, 1.75, 0.85),   # vire
+        (-5.85, 5.95, 2.95, 0.50),
+        (-5.35, 5.75, 3.15, 0.95),   # vire
+        (-4.75, 5.50, 4.35, 0.55),
+        (-4.30, 5.30, 4.85, 1.20),   # épaule — table inclinée
+        (-3.80, 5.05, 4.55, 0.70),
+        (-3.35, 4.80, 3.85, 0.45),
+        (-2.60, 4.35, 2.60, 0.55),   # col A — 2,25 m sous l'épaule
+        (-1.90, 3.90, 3.95, 0.40),
+        (-1.40, 3.55, 4.30, 0.75),   # vire
+        (-0.70, 3.00, 5.90, 0.45),
+        (-0.20, 2.60, 6.35, 0.70),   # vire
+        (0.45, 2.20, 7.65, 0.90),
+        (1.05, 1.95, 8.35, 1.30),    # table sommitale — début
+        (1.85, 1.95, 8.10, 1.45),    # table sommitale — fin
+        (2.35, 2.20, 7.10, 1.05),    # cassure
+        (2.80, 2.55, 6.65, 1.15),    # vire
+        (3.30, 3.00, 5.15, 0.55),
+        (3.70, 3.35, 4.70, 0.85),    # vire
+        (4.05, 3.70, 3.55, 0.50),
+        (4.40, 4.05, 2.75, 0.35),    # terminaison GRADUÉE — voir ci-dessous
+        (4.70, 4.35, 2.05, 0.25),
     ]
+    # La crête s'arrêtait auparavant net à (4,20 ; 3,85 ; 3,30) juste
+    # au-dessus d'un talus à 2,03 : en vue arrière, cette fin brutale
+    # mesurait 2,19 m de chute sur 30 cm — la plus raide de toute
+    # l'enveloppe, et une régression sur la seule vue que le lead a rendue
+    # bloquante. Trois points au lieu d'un étalent la terminaison sans
+    # remonter le col B, qui se lit 0,4 m plus à l'est à l'azimut 55°.
     bm = bmesh.new()
     masse_crete(bm, crete,
-                ancre_sol=Vector((-2.60, 4.40)),
-                demi_grand=5.30, demi_petit=4.80,
+                ancre_sol=Vector((-1.60, 4.00)),
+                demi_grand=6.00, demi_petit=5.20,
                 n=48, niveaux=15, seed=11,
                 p_flanc=0.62, bombement=0.22,
-                biais_amp=0.17, biais_az_deg=248.0)
+                biais_amp=0.18, biais_az_deg=252.0)
     objets.append(_objet("SM_ProtoA_Corps", bm))
 
-    # Contrefort droit — reculé de 1,84 m, plus petit, crête descendante.
+    # Contrefort droit — reculé, plus petit, crête descendante. Il recule
+    # de la même quantité qu'avant ; le contrefort absorbé à l'azimut monde
+    # 100° reste tranché `PARTIAL`, et rien n'est dépensé pour lui.
     crete_c = [
-        (3.95, 6.00, 1.85, 0.25),
-        (4.45, 5.75, 3.00, 0.45),
-        (4.85, 5.55, 3.25, 0.95),    # vire
-        (5.35, 5.25, 4.20, 0.55),
-        (5.75, 5.05, 4.55, 1.25),    # table
-        (6.15, 4.90, 4.30, 0.90),
-        (6.70, 4.70, 3.35, 0.50),
-        (7.10, 4.60, 3.10, 0.80),    # vire
-        (7.55, 4.45, 1.45, 0.25),
+        (4.95, 5.05, 2.10, 0.25),
+        (5.45, 5.20, 3.35, 0.45),
+        (5.85, 5.30, 3.65, 0.95),    # vire
+        (6.35, 5.45, 4.45, 0.55),
+        (6.75, 5.55, 4.60, 1.20),    # table
+        (7.15, 5.65, 4.30, 0.85),
+        (7.65, 5.75, 3.30, 0.50),
+        (8.05, 5.85, 3.05, 0.80),    # vire
+        (8.45, 5.95, 1.40, 0.25),
     ]
     bm = bmesh.new()
     masse_crete(bm, crete_c,
-                ancre_sol=Vector((5.75, 5.15)),
-                demi_grand=2.60, demi_petit=2.35,
+                ancre_sol=Vector((6.65, 5.95)),
+                demi_grand=2.10, demi_petit=2.15,
                 n=22, niveaux=12, seed=23,
                 p_flanc=0.70, bombement=0.16,
                 biais_amp=0.18, biais_az_deg=300.0)
     objets.append(_objet("SM_ProtoA_Contrefort", bm))
 
-    # Talus continu. Il ne doit surtout PAS être une plinthe : sa crête
-    # ondule de 0,85 à 3,55 m et son plan est franchement dissymétrique,
-    # large à l'avant-gauche, mince à droite.
+    # Talus continu. Deux altitudes sont désormais CONTRAINTES et non
+    # choisies : sous le col A (x ≈ -2,9) et sous le col B (x ≈ 5,4) il
+    # doit rester bas, sinon il comble les échancrures — c'est le même
+    # mécanisme de rayon rasant que la queue, et il s'applique à toute
+    # masse posée dans la colonne d'un col.
     crete_t = [
-        (-8.20, 3.20, 0.95, 0.35),
-        (-6.90, 2.55, 2.10, 0.90),
-        (-5.80, 1.95, 2.55, 1.60),
-        (-4.40, 1.45, 2.30, 1.10),
-        (-3.10, 1.05, 2.15, 1.80),
-        (-1.70, 0.90, 2.45, 1.30),
-        (-0.40, 0.85, 2.30, 1.70),
-        (0.90, 1.25, 3.05, 1.20),
-        (2.20, 1.75, 3.05, 1.60),
-        (3.60, 2.35, 2.55, 1.20),
-        (4.90, 2.95, 2.05, 1.50),
-        (6.20, 3.45, 1.55, 1.00),
-        (7.40, 3.95, 0.85, 0.35),
+        (-8.30, 3.60, 0.95, 0.35),
+        (-6.90, 2.85, 2.20, 0.90),
+        (-5.60, 2.20, 2.60, 1.50),
+        (-4.20, 1.75, 2.35, 1.10),
+        (-2.90, 1.45, 2.10, 1.60),   # sous le col A — bas
+        (-1.50, 1.30, 1.85, 1.20),
+        (-0.10, 1.35, 2.15, 1.60),
+        (1.30, 1.60, 2.45, 1.20),
+        (2.70, 2.05, 2.30, 1.50),
+        (4.10, 2.70, 2.15, 1.10),
+        (5.40, 3.45, 1.80, 1.40),    # sous le col B — bas
+        (6.80, 4.30, 1.35, 1.00),
+        (8.10, 5.20, 0.75, 0.35),
     ]
     bm = bmesh.new()
     masse_crete(bm, crete_t,
-                ancre_sol=Vector((-0.35, 3.60)),
-                demi_grand=7.60, demi_petit=4.90,
+                ancre_sol=Vector((-0.20, 3.70)),
+                demi_grand=7.20, demi_petit=4.70,
                 n=28, niveaux=9, seed=37,
                 p_flanc=0.56, bombement=0.28,
                 biais_amp=0.16, biais_az_deg=250.0)
     objets.append(_objet("SM_ProtoA_Talus", bm))
 
-    # Queue enterrée au nord : la masse se perd dans le ressaut au lieu de
-    # s'arrêter net. C'est ce qui manque le plus à la vue arrière.
-    #
-    # SON ALTITUDE EST DÉSORMAIS CONTRAINTE PAR UNE MESURE, pas choisie.
-    # À l'azimut monde 55° un rayon de projection est presque parallèle à
-    # l'axe de la galerie (0,176 m en x pour 1 m en y) : il balaie donc
-    # TOUTE la profondeur du massif à x constant. La queue, à y ≈ 8,9 et
-    # z = 4,15, retombait ainsi exactement dans le col A et en relevait le
-    # fond de 3,90 à 5,51 m — l'épaule n'avait plus que 0,67 m de
-    # proéminence, à peine au-dessus de l'entaille de 0,60. Une masse
-    # située à neuf mètres derrière décidait de la lisibilité de l'épaule,
-    # et rien dans l'image ne le disait.
-    #
-    # D'où le creux à (-2,60 ; 8,85) : c'est le seul sommet de queue dont
-    # le rayon traverse le col. Les autres sont conservés, sinon la queue
-    # cesse d'enterrer le massif — ce que la vue arrière paierait.
+    # Queue enterrée au nord. Son creux reste, et sa raison aussi : à
+    # l'azimut monde 55° le rayon est presque parallèle à l'axe de galerie
+    # (0,176 m en x pour 1 m en y), donc une masse arrière retombe dans un
+    # col avant. Le creux est ici recalé sur la NOUVELLE position du col A
+    # (x ≈ -2,6), dont le rayon passe par (-1,8 ; 8,9).
     crete_q = [
-        (-3.90, 8.20, 3.10, 0.60),
-        (-2.60, 8.85, 2.75, 1.40),   # creux : voir ci-dessus
-        (-1.30, 9.45, 3.55, 2.00),
-        (0.10, 9.90, 3.50, 1.60),
-        (1.40, 10.20, 3.05, 1.80),
-        (2.60, 10.10, 2.50, 1.20),
-        (3.80, 9.90, 1.80, 0.40),
+        (-4.10, 8.40, 2.90, 0.60),
+        (-2.80, 9.00, 2.45, 1.40),
+        (-1.50, 9.45, 2.35, 2.00),   # creux — rayon du col A
+        (-0.10, 9.75, 3.30, 1.60),
+        (1.30, 9.90, 3.15, 1.80),
+        (2.60, 9.80, 2.55, 1.20),
+        (3.80, 9.55, 1.85, 0.40),
     ]
     bm = bmesh.new()
     masse_crete(bm, crete_q,
-                ancre_sol=Vector((-0.40, 8.40)),
-                demi_grand=5.60, demi_petit=3.40,
+                ancre_sol=Vector((-0.20, 8.50)),
+                demi_grand=5.40, demi_petit=3.10,
                 n=18, niveaux=9, seed=53,
                 p_flanc=0.60, bombement=0.22,
                 biais_amp=0.20, biais_az_deg=90.0)
     objets.append(_objet("SM_ProtoA_Queue", bm))
+
+    # LÈVRE — le linteau de la bouche, et rien d'autre.
+    #
+    # Le contrôle de contenance a rendu une faute et une seule : 0,47 m de
+    # roche au-dessus de la clé du seuil, pour 0,90 exigés. Les huit autres
+    # stations passaient de +2,05 à +5,39. Le corps ne peut pas donner ce
+    # mètre sans avancer son sommet, ce qui le sortirait du corridor.
+    #
+    # D'où une masse dédiée, et elle répond mot pour mot à la cible du
+    # lead : « lèvre rocheuse épaisse », « linteau naturel et irrégulier ».
+    # Sa crête est POSÉE EN AVANT de son pied (crête à y ≈ 0,40, pied
+    # centré à y = 1,35) : la masse déverse donc au-dessus de la bouche au
+    # lieu de la border, et l'ouverture se lit sous un surplomb, pas sous
+    # un linteau de porte.
+    #
+    # ELLE NE TOUCHE AUCUNE SILHOUETTE, et c'est vérifiable : culminant à
+    # 4,25 m, elle se projette aux azimuts monde 55 / 100 / 225 en
+    # écran-x -0,01 / -0,43 / -0,05, où le flanc du corps est déjà à 6,9 ;
+    # 7,1 et 6,9 m. Elle est donc entièrement à l'intérieur du contour aux
+    # trois vues. La roche est réelle, la macro-silhouette est intacte.
+    crete_l = [
+        (-1.85, 0.95, 2.30, 0.30),
+        (-1.15, 0.60, 3.35, 0.70),
+        (-0.55, 0.40, 3.95, 1.10),
+        (0.05, 0.35, 4.25, 1.35),    # au droit de la bouche
+        (0.65, 0.45, 4.05, 1.15),
+        (1.25, 0.70, 3.30, 0.75),
+        (1.90, 1.05, 2.20, 0.30),
+    ]
+    bm = bmesh.new()
+    masse_crete(bm, crete_l,
+                ancre_sol=Vector((0.05, 1.35)),
+                demi_grand=2.60, demi_petit=2.20,
+                n=18, niveaux=10, seed=71,
+                p_flanc=0.66, bombement=0.18,
+                biais_amp=0.30, biais_az_deg=270.0)
+    objets.append(_objet("SM_ProtoA_Levre", bm))
     return objets
 
 
@@ -871,13 +960,72 @@ def _exporter(nom: str, objets: list) -> None:
     print("[protos]   -> %s (%d octets)" % (chemin, os.path.getsize(chemin)))
 
 
+def controle_contenance(objets: list) -> list:
+    """L'enveloppe porte-t-elle la galerie ? Rend la liste des fautes.
+
+    POURQUOI CE CONTRÔLE EXISTE, ET CE QUE SON ABSENCE A COÛTÉ. La
+    première enveloppe a été jugée, retenue, corrigée puis intégrée sans
+    que personne ne vérifie qu'elle pouvait CONTENIR quelque chose. Elle
+    ne le pouvait pas : toit entre -2,74 et +0,09 m au-dessus de la clé,
+    sur les neuf stations. Le défaut n'était visible sur aucune
+    silhouette, aucune capture, aucun test — parce qu'il n'était nulle
+    part vérifié. Il l'est désormais, et il bloque l'export.
+
+    MÉTHODE : rayon DESCENDANT depuis z = +50 sur un BVH du maillage
+    construit. Un rayon montant depuis la clé mesurerait l'épaisseur de la
+    voûte sur un solide creux, pas la roche au-dessus — erreur commise et
+    attrapée par un témoin sur la géométrie livrée.
+    """
+    from mathutils.bvhtree import BVHTree
+    sommets, faces = [], []
+    for ob in objets:
+        me = ob.data
+        me.calc_loop_triangles()
+        base = len(sommets)
+        for v in me.vertices:
+            sommets.append(ob.matrix_world @ v.co)
+        for t in me.loop_triangles:
+            faces.append(tuple(base + i for i in t.vertices))
+    bvh = BVHTree.FromPolygons(sommets, faces, all_triangles=True)
+
+    fautes = []
+    print("[protos]   contenance : st | couronne | z_sommet |  toit")
+    for i, (ax, ay, _hw, cle, palier) in enumerate(CENTERLINE):
+        couronne = palier + cle
+        hit = bvh.ray_cast(Vector((ax, ay, 50.0)), Vector((0.0, 0.0, -1.0)), 200.0)
+        z_som = None if hit[0] is None else hit[0].z
+        toit = None if z_som is None else z_som - couronne
+        exige = 0.0 if i == 0 else (LINTEAU_MINI if i == 1 else TOIT_MINI)
+        etat = "  --" if exige <= 0.0 else ("  ok" if toit is not None
+                                            and toit >= exige else "FAUTE")
+        print("[protos]              %2d |   %5.2f  |  %6s  | %6s  %s"
+              % (i, couronne, "AUCUN" if z_som is None else "%.2f" % z_som,
+                 "AUCUN" if toit is None else "%+.2f" % toit, etat))
+        if exige > 0.0 and (toit is None or toit < exige):
+            fautes.append((i, toit, exige))
+    return fautes
+
+
 def main() -> int:
     print("[protos] Blender %s" % bpy.app.version_string)
+    fautes_a = None
     for nom, fabrique in (("ProtoA", proto_a), ("ProtoB", proto_b),
                           ("ProtoC", proto_c)):
         _vider()
-        _exporter(nom, fabrique())
-    print("[protos] OK — 3 prototypes")
+        objets = fabrique()
+        if nom == "ProtoA":
+            # Seul le proto A est candidat enveloppe : lui seul est tenu de
+            # contenir la galerie. B et C restent des pièces de comparaison.
+            fautes_a = controle_contenance(objets)
+        _exporter(nom, objets)
+    if fautes_a:
+        print("[protos] ÉCHEC : %d station(s) sans toit suffisant sous le "
+              "proto A" % len(fautes_a))
+        for i, toit, exige in fautes_a:
+            print("         station %d : toit %s, exigé %.2f m"
+                  % (i, "AUCUN" if toit is None else "%+.2f" % toit, exige))
+        return 1
+    print("[protos] OK — 3 prototypes, contenance du proto A vérifiée")
     return 0
 
 
