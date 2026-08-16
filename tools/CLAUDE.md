@@ -119,6 +119,47 @@ sauvegarde — c'est le mécanisme d'ISS-038. Un verrou partagé
 (`.git/heavy_tools.lock`, `flock`) est la seule protection ; il doit être pris
 par **chaque** invocation de Godot ou Blender, quel que soit l'arbre.
 
+## Mesurer la largeur d'une masse « juste sous son sommet » mesure sa PLATITUDE
+
+Mesuré le 2026-08-16, et corrigé **deux fois au même endroit logique** parce que
+la première correction n'a pas été propagée.
+
+Pour compter les masses d'une silhouette, on découpe le profil supérieur aux
+entailles, puis on veut la largeur de chaque masse. La façon évidente — la
+largeur du segment à `sommet - entaille` — est un piège :
+
+```
+sommet PLAT  -> segment large  -> bonne note
+crête VIVE   -> segment étroit -> mauvaise note
+```
+
+C'est **l'inverse** de ce qu'on cherche. Sur la grotte R2a-3.4, les
+5,58 / 3,60 / 2,18 m que j'avançais comme preuve de « masses larges » étaient
+la mesure des tables horizontales que la revue a rejetées. Un plancher fondé
+sur ce nombre **rejette la correction demandée**.
+
+La largeur honnête est l'**emprise** : l'étendue de la masse jusqu'au plus haut
+de ses deux cols. Elle ne dit rien de la forme du sommet, et c'est précisément
+sa qualité. Publier **les deux** — `sommet` et `emprise` — parce qu'un seul
+nombre choisit la réponse avant de mesurer.
+
+Corrigé dans `tools/measure_silhouette_masses.py`, dont l'en-tête porte le
+récit. **Non propagé** à `controle_amas` de
+`source_assets/blender/environment/make_waterfall_cave.py`, où le même chiffre
+condamné a continué de servir de plancher (`LARGEUR_RATIO_MIN`,
+`LARGEUR_ECART_MIN`) pendant toute une passe.
+
+Leçon transposable : **quand un défaut de mesure est trouvé dans un outil,
+chercher tout de suite les AUTRES endroits qui font la même mesure.** Un
+générateur, un test et un outil de revue mesurent souvent la même grandeur avec
+trois codes différents.
+
+Corollaire sur les seuils : un seuil calibré sur une géométrie **ensuite
+rejetée** n'est pas un plancher de qualité, c'est un plancher du défaut. Le
+recalibrer sur la géométrie qu'on est en train de juger serait calibrer sur le
+sujet. Changer la mesure **et** fixer de nouveaux seuils dans la même passe est
+la manière exacte dont un portail s'affaiblit sans que personne ne mente.
+
 ## Une boucle d'attente sur `pgrep -f` se voit elle-même et dort pour toujours
 
 Mesuré le 2026-08-16 : une heure de verrou perdue.
