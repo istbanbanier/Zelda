@@ -119,6 +119,36 @@ sauvegarde — c'est le mécanisme d'ISS-038. Un verrou partagé
 (`.git/heavy_tools.lock`, `flock`) est la seule protection ; il doit être pris
 par **chaque** invocation de Godot ou Blender, quel que soit l'arbre.
 
+## Exporter à la main après une chaîne interrompue rend l'ANCIEN maillage
+
+Mesuré le 2026-08-16. Le fichier produit avait un **nom neuf**, une **date
+neuve**, et des octets **rigoureusement identiques** à ceux de la veille.
+
+`make_waterfall_cave.py` n'enregistre le `.blend` qu'à la **toute dernière
+ligne** de `main()`. Une chaîne qui sort en 2 à mi-parcours laisse donc le
+`.blend` de la passe précédente en place. Appeler ensuite l'exporteur à la
+main exporte cette source périmée, sans un mot.
+
+Le piège est bien pire qu'un simple export raté, parce que **les mesures qui
+suivent, elles, réussissent** : la sonde a rendu « 4 percées confirmées » sur
+un maillage ancien traversé par la centerline nouvelle. Un résultat faux,
+précis, plausible, et parfaitement inutile.
+
+`tools/blender/export_architecture.sh` s'en protège — il pose un jeton et
+compare le mtime du `.glb`. **En l'appelant directement, on perd ce
+garde-fou**, et c'est ce que j'ai fait.
+
+Parade, quel que soit le chemin employé :
+
+```bash
+sha256sum <nouveau.glb> <ancien.glb>   # identiques = rien n'a ete regenere
+```
+
+Règle générale : **avant de mesurer un artefact, prouver qu'il vient d'être
+produit.** Un mtime ne le prouve pas, un nom de fichier encore moins. C'est
+la même famille que l'ISS-018 — mesurer avec assurance quelque chose qui
+n'est pas ce qu'on croit.
+
 ## Mesurer la largeur d'une masse « juste sous son sommet » mesure sa PLATITUDE
 
 Mesuré le 2026-08-16, et corrigé **deux fois au même endroit logique** parce que
