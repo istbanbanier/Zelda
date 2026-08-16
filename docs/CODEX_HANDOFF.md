@@ -242,9 +242,11 @@ sans reconstruire la géométrie** depuis `ea5636f` puis `d922c4c`.
 
 | arbre | octets | sha256 (16) |
 |---|---:|---|
-| `base` | 1 767 556 | `c1263d5f1cf6fa3f` |
-| `c_instruments` | 1 767 556 | `c1263d5f1cf6fa3f` |
-| `b_collerette` | 1 777 204 | `c29131661550d558` |
+| `base` | 1 767 556 | `c1263d5f1cf6fa3f5858c3764659a50b9321c8ef91d38f0942f6751d26f828b2` |
+| `a_plancher` | 1 767 556 | idem `base` |
+| `c_instruments` | 1 767 556 | idem `base` |
+| `b_collerette` | 1 777 204 | `c29131661550d558edf37182a4e0bae6e95a104937e2120a1747d5d9da4edeef` |
+| **tronc** | **1 788 656** | `c858b9a7cb7c6b5617f6b064e1ca5db1441a5fd217cc8264e56d1b966731f912` |
 
 Seul le lot collerette a modifié le `.blend`. **Les binaires ne fusionnent pas
 textuellement** : à l'intégration, le `.blend` du lot collerette doit être pris
@@ -1366,6 +1368,115 @@ n'appartient à un domaine gelé. Cinq correspondances d'un premier balayage lar
 **`REFUTED — NO GEOMETRY CHANGE`.** Aucune géométrie de plancher n'est construite.
 Les preuves et les instruments corrigés sont conservés. Les stations 7 et 8 sont
 hors du trajet praticable mesuré ; la récompense demeure accessible.
+
+---
+
+## 28. CHECKPOINT 2 — l'audit d'intégration, et un danger de périmètre
+
+Stratégie complète : `scratchpad/r2a352/audit/06_strategie.md`. Ce qui suit en est
+l'essentiel, avec ce que l'intégrateur a tranché.
+
+### 28.1 DANGER — la chaîne d'export sans argument touche quatre assets GELÉS
+
+**FAIT REPRODUIT** (lecture de `tools/blender/export_architecture.sh`).
+
+`pylon`, `stone_bridge`, `village_quay` et `village_wall` vivent dans **la même
+liste `SUJETS`** que `waterfall_cave`. Lancer :
+
+```sh
+tools/blender/export_architecture.sh          # SANS argument
+```
+
+régénère les quatre, c'est-à-dire **trois golden masters validés**. C'est la seule
+véritable porte de sortie du périmètre trouvée sur les 48 fichiers de la passe, et
+elle ne s'ouvre pas par malveillance : elle s'ouvre quand la commande est tapée de
+mémoire.
+
+**RÈGLE : l'argument de sujet est obligatoire.** Toute commande de chaîne écrite
+dans un document, un script ou un message porte `waterfall_cave` explicitement.
+Les trois runs de déterminisme du checkpoint 1 le portaient — vérifié dans leurs
+journaux.
+
+### 28.2 Le `.blend` est une SORTIE de la chaîne, jamais une entrée
+
+**FAIT REPRODUIT** : `read_factory_settings(use_empty=True)` → import du kit →
+`save_as_mainfile`. Le `.blend` n'est lu nulle part comme source. Combiné à sa
+non-reproductibilité (§27.2), cela commande trois règles :
+
+1. **ne jamais committer le `.blend` fraîchement produit** — il diffère à chaque
+   exécution et ne correspondrait à aucune empreinte citée ;
+2. le `.blend` versé au commit 2 est celui du lot, `c29131661550d558…`, obtenu par
+   `git checkout e0e7567 -- <blend>`. **Décision de l'intégrateur**, contre la
+   proposition par défaut de l'audit (rendre à `c79341e`) : un tronc dont le
+   `.blend` ne correspond pas à son propre `.py` induirait en erreur tout lecteur
+   ultérieur ;
+3. après la chaîne du commit 3, `git checkout e0e7567 -- <blend>` restaure l'arbre
+   avant le commit du GLB.
+
+### 28.3 Commit 0 — liste close à neuf fichiers
+
+`git diff --name-status 202d849..c79341e` → 9 fichiers, 3 ajouts, 6 modifications.
+
+Touchés ensuite par un lot (3) : `make_waterfall_cave.py`, `SM_WaterfallCave.blend`,
+`probe_cave_openings.py`.
+
+**Touchés par personne (6)** — sans le commit 0 ils resteraient anciens ou absents :
+`waterfall_cave_place.gd` · `plot_cave_section.py` · `probe_cave_selftest.py` ·
+`probe_cave_negative_control.py` · `diag_cave_etapes.py` ·
+`prototypes/SM_WaterfallCave_BASE352.glb`.
+
+`base(202d849..c79341e) ∩ tronc(202d849..d25fadc)` → **vide**. Aucune collision.
+
+`BASE352` entre dans le commit 0, **étiqueté artefact de diagnostic**, jamais
+livrable : des preuves déjà versées au tronc mesurent sur `8bc8b9f9`, et sans lui
+le tronc porterait des journaux désignant une empreinte introuvable.
+
+`f3afa0e` et `c79341e` sont **aplatis** : verser `f3afa0e` séparément recréerait
+sur le tronc l'état exact qui a fait mesurer le mauvais maillage à un agent.
+
+Le cherry-pick est prouvé **conflictuel** sur les deux lots (`git merge-tree`,
+RC 1) : l'application se fait par `git checkout <sha> -- <chemin>`.
+
+### 28.4 Les repères — une confirmation, une nuance, une réserve
+
+**Confirmation.** L'audit reproduit indépendamment la mesure du §27.3 :
+`MODELE_NICHE` et `MODELE_SALLE` anciens dans la roche, nouveaux dans le vide,
+sol +0,49 et +0,08. Le +0,49 recoupe le +0,492 de `controle_sol_repere`.
+
+**Nuance, et elle corrige l'intégrateur.** La **lampe de seuil ne relève pas du
+même raisonnement** : ses deux positions sont dans le vide (ancienne sol +0,00,
+nouvelle sol −0,05). L'ancienne n'était **pas** murée. C'est un ajustement de mise
+en scène, **pas une réparation**, et le message du commit 0 ne doit pas les
+confondre.
+
+**`APPUIS_MODELE`.** Mesure par coupe exacte au plan `y = 0`, 484 segments :
+anciens écart moyen **1,37 m** (max 3,27) · nouveaux **0,43 m** (max 0,92). Les
+nouveaux suivent le contour réel trois fois mieux.
+
+**RÉSERVE OUVERTE** : un des huit **nouveaux** appuis tombe **0,92 m en dehors**
+de la coupe au sol. HYPOTHÈSE de l'intégrateur, à éprouver : il serait **sous un
+surplomb** — la coupe à `y = 0` exclut les surplombs par construction, et la zone
+remodelée (porche évasé, visière, orteil, pied élargi) déborde précisément vers
+l'avant au-dessus du sol. Trois mesures tranchent : appartenance à la silhouette
+projetée, présence de roche au-dessus, altitude à laquelle elle commence.
+
+L'audit a posé **deux mauvais tests avant le bon** et les a consignés tous les
+trois, dont une fausse alerte due à un point de contour tangent qu'un rayon peut
+manquer.
+
+### 28.5 Le contrôle final compare les DELTAS, pas le vide
+
+Un `git diff` vide entre le tronc et `c79341e` ne prouverait que l'égalité finale,
+pas l'absence de contenu tiers. Le contrôle exige que le générateur sur le tronc
+vaille **exactement** `c79341e..e0e7567` et `probe_cave_openings.py` **exactement**
+`c79341e..0860ca9`, par comparaison de deux patches.
+
+### 28.6 Ce que l'audit n'a PAS vérifié
+
+`NON VÉRIFIÉ` de son propre aveu : la reproductibilité du GLB (mesure de
+l'intégrateur, non rejouée par lui), les dix épreuves adverses, et le filet
+`world_v2_places` sur l'appui aberrant — cette dernière lui est confiée en lecture
+de code.
 
 ---
 
