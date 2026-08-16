@@ -1471,7 +1471,58 @@ pas l'absence de contenu tiers. Le contrôle exige que le générateur sur le tr
 vaille **exactement** `c79341e..e0e7567` et `probe_cave_openings.py` **exactement**
 `c79341e..0860ca9`, par comparaison de deux patches.
 
-### 28.6 Ce que l'audit n'a PAS vérifié
+### 28.6 Le filet `world_v2_places` NE PEUT PAS ÉCHOUER sur les appuis — BLOQUANT de preuve
+
+**FAIT REPRODUIT** par lecture de code, chaîne fermée maillon par maillon, sans
+aucune exécution Godot. Détail complet : **ISS-052**.
+
+L'appui est déclaré à `ground_local_y(...)`, qui rend
+`_ground.call(x, z) - global_position.y`. Le builder injecte ce même `height_at`
+comme `_ground`. Le test compare `absf(world_point.y - height_at(x, z))` à 0,65 m.
+Le lacet de 45° étant porté par `ouvrage` et non par le nœud du lieu, `to_global`
+préserve `y` exactement. **L'écart vaut 0 par construction.**
+
+Le commentaire du code l'écrivait déjà — « l'écart au sol est nul par
+construction » — mais personne n'en avait tiré que l'assertion correspondante
+était vide. C'est l'anti-motif nommé au `PROMPT4_METHOD` §2.
+
+**Portée au-delà de la grotte** : `stone_bridge_place.gd:237` construit ses appuis
+de la même façon. **Le pont est un golden master validé.**
+
+**Conséquence directe sur le gate §10.** L'item « filets `world_v2_places` 8/8 »
+peut être cité, mais **uniquement pour ce qu'il couvre réellement** :
+
+| ce que le 8/8 atteste | ce qu'il n'atteste PAS |
+|---|---|
+| chaque lieu déclare des appuis non vides | qu'un appui appartienne au massif |
+| chaque lieu s'instancie seul | l'écart réel d'un appui au terrain |
+| le lieu n'est ni flottant ni enterré *(AABB visuelle du lieu entier)* | quoi que ce soit **par appui** |
+
+Le correctif n'est **pas** appliqué dans cette passe : rendre un contrôle vide
+signifiant peut faire rougir un golden master validé. C'est une décision de lead.
+
+### 28.7 Un appui de la grotte est à l'air libre — RÉSERVE NON LEVÉE, non bloquante
+
+**FAIT REPRODUIT.** L'hypothèse du surplomb formulée par l'intégrateur est
+**réfutée** : la colonne verticale de l'appui `(8.14 ; −6.03)` porte **0 impact à
+toute hauteur**, quand les sept autres appuis neufs en portent **tous exactement
+2**. Sommet de maillage le plus proche : 0,74 m. Il est à l'air libre.
+
+Écarts signés à la coupe au sol, liste `c79341e` : `+0,92` *(dehors)* · −0,09 ·
+−0,17 · −0,20 · −0,37 · −0,46 · −0,58 · −0,67.
+
+**Gravité bornée par la mesure, pas par l'opinion** : recherche exhaustive de
+`get_meta(&"support_points")` → lu seulement par le filet de test,
+`tools/godot/probe_place_metrics.gd`, et `riverside_village_place.gd` pour ses
+propres appuis. **Aucun effet de gameplay, collision, navmesh ou rendu.** Défaut
+de véracité, `S3` — **ISS-053**, ticket, pas blocage de gate.
+
+Note de méthode : l'intégrateur avait interverti les deux listes en lisant un
+`git diff c79341e f3afa0e`, qui parcourt le temps **à l'envers**. L'audit a relu
+par `git show` aux deux révisions plutôt que de se fier au diff. Un diff dont on
+ne vérifie pas le sens est un piège ordinaire.
+
+### 28.8 Ce que l'audit n'a PAS vérifié
 
 `NON VÉRIFIÉ` de son propre aveu : la reproductibilité du GLB (mesure de
 l'intégrateur, non rejouée par lui), les dix épreuves adverses, et le filet

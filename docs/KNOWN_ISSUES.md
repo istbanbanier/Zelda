@@ -43,6 +43,72 @@ Aucun `S0`/`S1` ouvert n'est admis pour un build candidat.
   de `probe_cave_collerette.py` ne sont pas calibrés. Le cylindre existe et prend
   une minute.
 
+## ISS-052 — Le contrôle d'appuis de `world_v2_places` compare la hauteur du terrain à elle-même · `S2` · OUVERT
+
+- **Vu** : 2026-08-16, par lecture de code pendant l'intégration R2a-3.5.2.
+  Aucune exécution Godot — la chaîne est établie maillon par maillon.
+- **La chaîne fermée** :
+  - `waterfall_cave_place.gd` déclare l'appui à
+    `declare_support(Vector3(x, ground_local_y(x, z), z))` ;
+  - `world_v2_place.gd` : `ground_local_y()` rend
+    `_ground.call(world.x, world.z) - global_position.y` ;
+  - `world_v2_places_builder.gd:73` injecte `_ground` par
+    `place.call("bind_terrain", Callable(_heightmap, "height_at"))` ;
+  - `tests/world_v2/test_world_v2_places_contract.gd`,
+    `test_les_fondations_epousent_le_terrain_gele` (a), compare
+    `absf(world_point.y - height_at(x, z))` à `SUPPORT_TOLERANCE_M = 0,65`.
+  - le lacet de 45° est porté par `ouvrage`, **pas** par le nœud du lieu :
+    `to_global` est une translation pure et `y` est préservé exactement.
+- **Conséquence** : `_ground` **est** le `height_at` que le test interroge. L'écart
+  vaut **0 par construction**. **Le contrôle ne peut pas échouer.**
+- **Le code le dit déjà** : « leur hauteur est lue sur le terrain gelé, donc
+  l'écart au sol est nul par construction ». La phrase était là ; personne n'en
+  avait tiré que l'assertion correspondante était vide.
+- **Anti-motif nommé** : `PROMPT4_METHOD` §2 — « la comparaison d'une constante
+  avec elle-même », « toute assertion qui ne rougirait pas réellement en cas de
+  régression ».
+- **Portée au-delà de la grotte** : `stone_bridge_place.gd:237` construit ses
+  appuis avec le même `ground_local_y`, donc bénéficie du même acquittement
+  automatique. **Le pont est un golden master validé.**
+- **Ce que le « 8/8 » atteste réellement** : chaque lieu déclare des appuis non
+  vides, s'instancie seul, et n'est ni flottant ni enterré (partie (b), sur
+  l'AABB visuelle du lieu entier, qui ne regarde **aucun** appui). Il n'atteste
+  **rien** de l'appartenance d'un appui au massif. **Ne pas le citer comme preuve
+  sur ce point.**
+- **Correctif possible, NON APPLIQUÉ dans cette passe** : déclarer l'appui à `y`
+  du **modèle** (0,0) au lieu de la hauteur du terrain, ce qui rendrait la
+  comparaison signifiante ; ou ajouter un contrôle d'appartenance par colonne
+  verticale. Corriger un contrôle vide peut faire rougir un golden master
+  validé — c'est une décision de lead, pas d'intégrateur, et sûrement pas au
+  milieu d'une passe géométrique.
+- **Test de régression** : à écrire avec le correctif — un appui déplacé de 2 m
+  doit rougir.
+
+## ISS-053 — Un appui déclaré de la grotte est à l'air libre, 0,92 m hors du massif · `S3` · OUVERT
+
+- **Build** : base R2a-3.5.2 (`c79341e`), mesuré sur le candidat `cc3596c5`.
+- **Observé** : le premier des huit `APPUIS_MODELE`, `(8.14 ; −6.03)`, tombe
+  **+0,92 m en dehors** de la coupe du massif au plan `y = 0` (484 segments, sans
+  échantillonnage). Les sept autres sont dedans, de 0,09 à 0,67 m.
+- **L'hypothèse du surplomb est RÉFUTÉE**, et nettement : la colonne verticale de
+  ce point porte **0 impact à toute hauteur** ; les sept autres appuis neufs
+  portent **tous exactement 2 impacts**. Sommet de maillage le plus proche en
+  projection : 0,74 m. Il n'est ni sous la visière, ni sous l'orteil, ni sous le
+  porche évasé.
+- **Gravité bornée par la mesure** : `_support_points` n'est lu que par
+  `set_meta`, par le filet de test, par `tools/godot/probe_place_metrics.gd` et
+  par `riverside_village_place.gd` pour ses propres appuis. **Aucun effet de
+  gameplay, aucune collision, aucun navmesh, aucun rendu** — vérifié par
+  recherche exhaustive de `get_meta(&"support_points")`. C'est un défaut de
+  **véracité** : une déclaration de contact qui ne touche rien.
+- **Pourquoi ce n'est pas corrigé ici** : la passe R2a-3.5.2 a un périmètre borné
+  à la collerette, et les repères de gameplay n'entrent au tronc qu'en tant que
+  base héritée. Déplacer un appui serait une modification de contenu hors
+  mandat.
+- **Lien** : invisible au filet à cause d'ISS-052. Les deux se corrigent
+  ensemble ou pas du tout.
+- **Test de régression** : à écrire avec le correctif d'ISS-052.
+
 ## ISS-048 — La semelle de la grotte ne dérive plus de la cavité, elle la rencontre · `S3` · OUVERT
 
 - **Build** : géométrie R2a-3.5.2, GLB `8bc8b9f9eb9e…`.
