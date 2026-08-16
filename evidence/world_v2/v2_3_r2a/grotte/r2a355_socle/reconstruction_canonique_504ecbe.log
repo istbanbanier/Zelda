@@ -1,0 +1,68 @@
+=== ÉCHAFAUDAGE grotte — NON LIVRABLE ===
+=== Blender: Blender 4.0.2 ===
+--- génération de la source (mode diagnostic) ---
+  [grotte]   Semelle_09_2                      472 tris    0.5 %
+  [grotte]   Semelle_09_3                      472 tris    0.5 %
+  [grotte]   Assise                             12 tris    0.0 %
+  [grotte] solidarite : 3126 paire(s) en INTERSECTION reelle (prefiltre AABB >= 0.12 m, PUIS croisement de faces verifie)
+  [grotte]   plus faible : EpauleG_Faite_3 <-> EpauleG_Faite_8  1.00 m, 4 face(s) croisee(s)
+  [grotte]   plus faible : EpauleG_Faite_8 <-> Arriere_Ouest  0.48 m, 4 face(s) croisee(s)
+  [grotte]   plus faible : EpauleG_Socle_2 <-> Gaine_5_157  0.13 m, 4 face(s) croisee(s)
+  [grotte]   plus faible : Dominante_Faite_1 <-> Gaine_4_045  1.03 m, 4 face(s) croisee(s)
+  [grotte] remaillage voxel 0.12 m : 209960 tris
+  [grotte]   coque + 1109.26 m3, boite (-8.3..8.9, -4.0..12.2, -3.5..9.5), 104972 sommets
+  [grotte] remaillage : 1 coque(s) exterieure(s), 0 bulle(s) interne(s) et 1 ecaille(s) retirees
+  [grotte] remaillage : 0 arete(s) de bord, 0 non-manifold, 1109.3 m3
+  [grotte] apres stratification : 0 paire(s) croisee(s), repli maximal 0.0000 m
+  [grotte] decimation : 209948 -> 19000 tris (ratio 0.090)
+  [grotte] volume negatif de cavite : ferme, 132.4 m3
+  [grotte] nettoyage de la soustraction : 0 -> 0 arete(s) irreguliere(s)
+  [grotte] soustraction : la bouche est la trace de decoupe du tube
+  [grotte]   coque +  994.81 m3, boite (-8.3..8.9, -4.0..12.3, -3.6..9.6), 9975 sommets
+  [grotte] soustraction : 1 coque(s) exterieure(s), 0 bulle(s) et 0 ecaille(s) retirees
+  [grotte] connexite : 1 composante, avant et apres soustraction
+  [grotte] auto-intersection du livrable : 0 paire(s), repli maximal 0.0000 m (seuil 0.020 m)
+  [grotte] visuel : 0 arete(s) de bord, 0 non-manifold, volume 994.7 m3
+  [grotte] collision : 0 arete(s) de bord, 0 non-manifold, volume 459.1 m3
+  [grotte] visuel 17875 faces (19954 tris), collision 460 faces (880 tris)
+  [grotte] emprise Z de -3.55 m a 9.64 m (jupe 3.55 m sous le sol)
+  [grotte] budget : 19954 tris dans [12000 ; 25000]
+  [grotte] plage plane toutes faces confondues (cavite comprise) : 33.17 m2 — informatif, l'interieur releve d'un autre jalon
+  [grotte] plus grande plage plane au-dessus du sol : 4.21 m2, centree en (6.41, -0.55, 4.65) — seuil 12.00
+  [grotte] plus grande plage plane EN FACADE (y <= 2.0) : 4.21 m2, centree en (6.41, -0.55, 4.65) — seuil 6.00
+  [grotte] paroi la plus mince : station 4, azimut 0°, z 1.30
+  [grotte] collerette la plus mince : station 1, azimut 154°, z 1.28
+  [grotte] epaisseur de roche : 1.09 m en paroi, 0.61 m au linteau (rayons lateraux et montants sur le maillage FINAL ; le plancher releve du terrain gele, voir controle_epaisseur)
+  [grotte] gabarit : capsule r=0,45 h=1,85 passe aux 7 stations du chemin
+  [grotte] plancher : 96 point(s) sondes VERS LE BAS depuis le vide de la galerie, 0 faute(s) (tolerance 0.25 m)
+  [grotte] aucun jour : 25 rayons verticaux, croisements pairs et >= 2
+  [grotte] sol sous axe_seuil  ( 0.05,  1.60) : mesure -0.039 m, attendu -0.040 m (station 2.00, lateral 0.01), ecart +0.000 m — tolerance 0.25
+  [grotte] sol sous salle      ( 1.05,  6.25) : mesure +0.185 m, attendu +0.180 m (station 5.00, lateral 0.00), ecart +0.005 m — tolerance 0.25
+  [grotte] sol sous niche      (-1.20,  8.20) : mesure +0.386 m, attendu +0.410 m (station 5.63, lateral 0.98), ecart -0.024 m — tolerance 0.25
+  [grotte] sol sous voisin     (-1.60,  8.20) : mesure +0.510 m, attendu +0.388 m (station 5.53, lateral 1.00), ecart +0.122 m — tolerance 0.25
+  [grotte] source enregistree -> /home/user/zelda-r2a355/canon34/source_assets/blender/environment/SM_WaterfallCave.blend
+  RC_MAKE=0  (2 attendu tant qu'un portail reste rouge)
+--- export .glb ---
+  [export_gltf] Blender 4.0.2
+  [export_gltf] io_scene_gltf2 version (4, 0, 44)
+  [export_gltf] preset: export_animation_mode=ACTIONS, export_animations=False, export_apply=True, export_cameras=False, export_extras=False, export_force_sampling=True, export_format=GLB, export_lights=False, export_materials=EXPORT, export_normals=True, export_optimize_animation_size=False, export_skins=True, export_tangents=True, export_texcoords=True, export_yup=True, use_selection=False, use_visible=True
+  [export_gltf] OK -> /home/user/zelda-r2a355/canon34/assets/environment/caves/SM_WaterfallCave.glb (1506684 octets)
+--- inspection glTF hors moteur ---
+    bbox_min               : [-8.2934, -3.5503, -12.2514]
+    bbox_max               : [8.9118, 9.6435, 3.9919]
+    dimensions_m           : [17.2052, 13.1937, 16.2433]
+    [AVERT] mesh 'COL_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] min Y = -3.5503 (attendu ~0 : bas de l'objet au sol, §7.15)
+  === VALIDE ===
+
+GLB     : 8bf1a1b309aee79f  (1506684 octets)
+RC_MAKE=0 RC_EXPORT=0 RC_INSPECT=0
+=== ÉCHAFAUDAGE terminé — ce GLB N'EST PAS LIVRABLE tant que
+=== export_architecture.sh waterfall_cave ne rend pas 0.
+RC=0

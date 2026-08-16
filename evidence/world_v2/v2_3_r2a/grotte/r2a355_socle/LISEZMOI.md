@@ -99,3 +99,34 @@ nécessaire. **La couverture reste prouvée ; c'est le coût qui ne l'est pas.**
 Statut : `NON MESURÉE`, jamais « probablement bonne ». Un instrument qui ne
 termine pas doit le **dire** — même règle que « une étape sautée sort en 3, pas
 en 0 », appliquée au temps de calcul.
+
+## L'appariement GLB ↔ générateur de R2a-3.4 est PROUVÉ, plus supposé
+
+L'agent C posait à juste titre en **hypothèse** que le GLB `8bf1a1b3` sorte du
+générateur de `504ecbe` : le `.blend` est une sortie non reproductible, et le
+manifeste étiquette d'ailleurs ce GLB « R2a-3.6 ».
+
+Reconstruit depuis un worktree neuf détaché sur `504ecbe` :
+
+```
+reconstruit : 8bf1a1b309aee79f92c77371   1 506 684 octets
+livré HEAD  : 8bf1a1b309aee79f92c77371   1 506 684 octets
+cmp         : IDENTIQUE au bit près
+git status --porcelain assets/  : vide
+```
+
+**L'hypothèse devient un fait.** Et le résultat est plus large que la question
+posée : la chaîne est **déterministe de bout en bout sur la géométrie
+canonique**, 60 commits et un worktree neuf plus tard.
+
+`RC_MAKE=0` : la chaîne de R2a-3.4 est **verte**, contrairement à celle du
+socle. La raison est simple et il faut la dire précisément —
+`controle_epaisseur_domaine` a **0 occurrence** dans le générateur de `504ecbe`.
+Il a été ajouté à R2a-3.5.3.
+
+> **Précision qui compte.** « 326 plaques sur R2a-3.4 » n'est pas un verdict que
+> la chaîne de R2a-3.4 aurait rendu sur elle-même : c'est le contrôle de
+> R2a-3.5.3 **appliqué après coup** à la géométrie de R2a-3.4. La géométrie
+> livrée n'a jamais été soumise à ce contrôle par sa propre chaîne. C'est
+> exactement pourquoi un critère qui condamne plus fort la référence que le sujet
+> ne peut pas décider seul.
