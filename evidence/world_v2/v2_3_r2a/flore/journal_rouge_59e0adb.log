@@ -1,0 +1,56 @@
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: flora_scale
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 11582 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+  ÉCHEC test_world_v2_flora_scale.gd::test_aucune_fleur_plantee_ne_depasse_le_plafond_de_la_bible — aucune fleur plantée ne dépasse 0.55 m (bible §3) — la plus haute est Flower_4_Group dans c2r8 (natif 2.4868 m x instance 1.1423) à 2.841 m. Dépassements : Flower_4_Group dans c10r11 : 2.723 m (natif 2.4868 x instance 1.0950) ; Flower_4_Group dans c10r12 : 2.439 m (natif 2.4868 x instance 0.9810) ; Flower_4_Group dans c10r13 : 2.510 m (natif 2.4868 x instance 1.0093) ; Flower_4_Group dans c10r9 : 2.341 m (natif 2.4868 x instance 0.9414) ; Flower_4_Group dans c11r10 : 2.720 m (natif 2.4868 x instance 1.0937) ; Flower_4_Group dans c11r11 : 2.290 m (natif 2.4868 x instance 0.9210) ; (+50 autres)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5387 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_flora_scale.gd::test_les_elements_non_floraux_sont_inchanges (5 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 1 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_flora_scale.gd::test_aucune_fleur_plantee_ne_depasse_le_plafond_de_la_bible — aucune fleur plantée ne dépasse 0.55 m (bible §3) — la plus haute est Flower_4_Group dans c2r8 (natif 2.4868 m x instance 1.1423) à 2.841 m. Dépassements : Flower_4_Group dans c10r11 : 2.723 m (natif 2.4868 x instance 1.0950) ; Flower_4_Group dans c10r12 : 2.439 m (natif 2.4868 x instance 0.9810) ; Flower_4_Group dans c10r13 : 2.510 m (natif 2.4868 x instance 1.0093) ; Flower_4_Group dans c10r9 : 2.341 m (natif 2.4868 x instance 0.9414) ; Flower_4_Group dans c11r10 : 2.720 m (natif 2.4868 x instance 1.0937) ; Flower_4_Group dans c11r11 : 2.290 m (natif 2.4868 x instance 0.9210) ; (+50 autres)
