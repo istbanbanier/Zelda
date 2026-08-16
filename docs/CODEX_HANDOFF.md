@@ -1590,6 +1590,116 @@ surveillée.
 
 ---
 
+## 30. CHECKPOINT 4 — ARRÊT. La passe s'arrête en `PARTIAL`.
+
+Trois conditions d'arrêt de la directive sont réunies. Aucune géométrie n'est
+intégrée ; le tronc porte toujours R2a-3.4.
+
+### 30.1 BLOQUANT — le toit du massif tombe à 3,8 cm au-dessus d'un vide de 1,4 m
+
+**FAIT REPRODUIT** par l'intégrateur, signalé d'abord par l'agent instruments.
+Preuves : `evidence/world_v2/v2_3_r2a/grotte/r2a352_toit_mince/`.
+
+Épaisseur de la première roche au-dessus d'un vide ≥ 1,00 m, balayage
+`x ∈ [−2 ; 3]`, `y ∈ [4 ; 7]`, pas 0,10 :
+
+| géométrie | toit minimal | où |
+|---|---:|---|
+| **candidat `cc3596c5`** | **0,038 m** | `(0,50 ; 5,80)` |
+| **BASE352 `8bc8b9f9`** | **0,038 m** | identique |
+| tronc R2a-3.4 `8bf1a1b3` | **0,374 m** | `(0,80 ; 6,00)` |
+
+Seuil : `EPAISSEUR_MIN_M = 0,80 m`. **L'item de gate « paroi ≥ 0,80 m » échoue.**
+
+Deux lectures, distinctes : **le lot collerette n'en est pas la cause** (identique
+sur `BASE352`, donc hérité de l'enveloppe R2a-3.5.2) ; mais c'est une
+**régression d'un facteur dix contre la géométrie livrée**.
+
+Ce n'est pas un artefact de rayon rasant : la carte du toit montre une **arête de
+roche continue**, ~0,30 m de large sur ~0,60 m de long, dont l'épaisseur varie
+régulièrement de 0,58 à 0,038 m puis remonte. Sous elle, 1,36 à 1,47 m de vide.
+
+**Pourquoi aucun contrôle ne l'a vu** : `controle_epaisseur` publie 0,87 m et
+n'a pas tort — il mesure **là où il regarde**, et il ne regarde que les stations
+de `CAVITE`, dont la dernière est à `ay = 3,17`. Le défaut est à `ay ≈ 5,8`, soit
+**2,6 m au-delà**. Hors domaine.
+
+**Joignabilité INDÉTERMINÉE** : deux inondations 3D, l'une sans bouchon, l'autre
+avec la dalle de bouche entière bouchée, **atteignent toutes deux le bord de la
+grille** — elles s'échappent par le **dessous ouvert du modèle**, ouvert par
+conception. Une coulée qui sort n'établit aucune connexité intérieure. Cela ne
+change pas le verdict : le contrat porte sur l'épaisseur de la roche, pas sur la
+joignabilité, et une lame de 3,8 cm est à une décimation d'être un trou.
+
+### 30.2 BLOQUANT — épreuves adverses 9/10, et l'échec est structurel
+
+L'épreuve 5 est `FAIL`, pour une raison qui ne se répare pas par un réglage :
+
+- **S1** — 164 triangles de `MAT_CaveRock_Collar` retirés → **A et B strictement
+  inchangés**. La matière que la docstring prétendait amputer **ne porte pas la
+  mesure**. Le rouge du tour précédent venait des 1 276 autres triangles emportés
+  par une boîte de 3 m ;
+- **S2** — 101 triangles au goulot → **B MONTE**, 1,1000 → 1,1107. L'emprise de B
+  **est l'ouverture elle-même** : la roche retirée devient air, l'ouverture
+  rétrécit (3 625 → 3 515 cases) et son point le plus mince disparaît avec elle.
+  **B n'est pas monotone sous ablation locale** — une épreuve bâtie sur
+  « ablater ⇒ la mesure tombe » ne peut donc pas mordre ;
+- **S3** — direction sortante tombée dans le vide, 1 triangle retiré. Échec de
+  l'agent, nommé comme tel.
+
+Le défaut de comparaison entre deux plans est corrigé (plan imposé `y = −1,15`).
+
+### 30.3 BLOQUANT — l'oracle global n'est pas validé
+
+Il rend `ÉTANCHE` sur le candidat, et **ce verdict ne prouve rien** :
+**cinq contrôles négatifs sur six ne rougissent pas**, avec des tunnels de 0,35 à
+0,65 m de rayon libre mesuré, de la graine jusqu'au dehors.
+
+Cause de fond : percer en retirant des triangles rend le maillage **ouvert** ; la
+parité n'y définit plus de dedans ; **le vote à trois axes rebouche le trou, 2
+voix contre 1**. Le vote, introduit pour corriger un vrai défaut, devient la cause
+de la cécité.
+
+**La Phase I reste sans second oracle opérationnel.**
+
+### 30.4 Ce qui est ACQUIS malgré l'arrêt
+
+- **GLB reproductible byte-identique**, 3 runs + contrôle négatif rouge (§27) ;
+- **séquence d'intégration jouée à blanc depuis le tronc**, elle aboutit (§29) ;
+- **gates du générateur reproduits** par l'intégrateur (masses, ratios, plage
+  plane, gabarit, plancher) ;
+- **plancher réel** : oracle sans stations, RC 0, 420 vides, 0 ouvert ;
+- **débord d'overhang AUTORISÉ** — cinq conditions, contrôle négatif à coque
+  creuse **refusé** (2 poches) ;
+- **§23.3 tranché** : la correction `+ pas` **sur-corrige**. Le biais de B suit la
+  **phase de la frontière dans la grille**, pas l'angle. `B` sur-lit jusqu'à +1
+  maille, borne à employer `lecture − pas` ; l'EDT sous-lit de −0,76 à −1,12 ×
+  pas, sa lecture brute **est déjà une borne inférieure**. Les deux instruments
+  sont biaisés **en sens contraires** : leur « convergence à quatre décimales »
+  ne pouvait pas en être une ;
+- **contrôle rasant** : l'EDT rend 0,08 m pour 0,60 m attendus, faute de voter sur
+  une seule parité ; `cave_collar`, qui vote sur quatre, lit +0,0003 m ;
+- **ISS-052** — le filet d'appuis `world_v2_places` **ne peut pas échouer** ;
+- **audit de vacuité** : `controle_aller_retour` et `controle_gabarit` sont sains
+  et portent l'histoire de leur propre réparation.
+
+### 30.5 Prochaine action exacte
+
+1. **Traiter le toit mince** — il appartient à l'enveloppe R2a-3.5.2, pas à la
+   collerette. Soit épaissir la lame, soit abaisser le vide, soit démontrer que
+   la zone est hors du modèle jouable **et** hors contrat.
+2. **Étendre le domaine des contrôles au-delà de `CAVITE`.** Tant que
+   `controle_epaisseur` s'arrête à `ay = 3,17`, il ne peut pas voir ce qui vit à
+   `ay = 5,8`. C'est la cause commune des trois faits bruts de l'agent
+   instruments.
+3. **Reconstruire l'épreuve 5 sur un sabotage qui laisse le maillage clos**, seule
+   forme qui puisse mordre sur une mesure non monotone.
+4. **Reconstruire l'oracle** de même — un sabotage qui laisse le maillage clos.
+5. Les captures AVANT restent valides et utiles : elles sont la baseline de la
+   reprise.
+
+---
+
 ## ANNEXE A — chronologie des instruments et de leurs défauts
 
 Quatorze occurrences du **même** défaut : un contrôle place ses points à
