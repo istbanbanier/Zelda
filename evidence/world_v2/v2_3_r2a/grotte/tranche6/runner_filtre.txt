@@ -1,0 +1,4 @@
+  ok   test_grotte_sans_jour.gd::test_le_sol_de_la_galerie_existe_sous_le_joueur (6 assertions)
+  ok   test_grotte_sans_jour.gd::test_le_fond_de_la_galerie_est_plein (3 assertions)
+  ok   test_grotte_sans_jour.gd::test_la_coque_de_collision_reste_distincte_du_rendu (4 assertions)
+=== RÉSULTAT: 67 réussi(s), 0 échoué(s) ===
