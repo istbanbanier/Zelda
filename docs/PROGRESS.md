@@ -54,27 +54,64 @@ appartient à l'enveloppe), avec les deux versions et la raison du basculement
 écrites au-dessus du code. Les six clauses neutres — largeurs, cols, dominante,
 décentrement — gardent les valeurs du tronc ; **aucune n'a baissé**.
 
+### Ce que la passe a établi
+
+Le câblage est fait. Un mode `--diagnostic` a été ajouté — aucun contrôle
+modifié, code retour toujours 2, export vers `prototypes/` et jamais vers le
+livrable — parce qu'un portail rouge sur la composition nous rendait aveugles
+à toute la suite de la chaîne. Il a immédiatement payé : **six défauts
+bloquants mesurés** au lieu d'un seul connu.
+
+**L'arbitrage du lead est exécuté, et c'est le résultat central.** Écart
+horizontal entre la crête de la tranche et l'axe de galerie, mesuré sur le GLB
+livré : **2,84 m moyen / 7,95 m max** sur la géométrie rejetée, **1,06 / 2,29**
+sur la nouvelle. Le chiffre de gauche avait été publié d'avance (`f4a3df5`).
+
+Le sommet plat a disparu : largeur au sommet 5,58 / 3,60 / 2,18 m → **1,54 /
+2,02 / 1,58 m**. Et deux instruments qui ne partagent aucun code convergent à
+3 cm sur les emprises (générateur sur volumes sources ; mesure sur les pixels
+d'une silhouette rendue par Godot).
+
+Preuves : `evidence/world_v2/v2_3_r2a/grotte/r2a35_diagnostic/`.
+
+### Le blocage réel, mesuré deux fois
+
+385 percées confirmées, épaisseur de paroi 0,11 m pour 0,80 exigés. Cause :
+l'enveloppe fait 7 à 8,6 m de profondeur d'un côté et 0,07 m à rien de l'autre
+— la galerie longe le bord mince. **La sonde de contenance qui avait validé
+l'enveloppe ne mesurait que le toit** ; les parois latérales n'ont jamais été
+mesurées, et je l'ai accepté.
+
+Le remède évident — décaler la galerie de 1,8 m vers la roche disponible — a
+été appliqué et mesuré. Trois indicateurs de bord s'améliorent (paroi
+0,11 → 0,37 ; « le sol voit le ciel » 2 → 0 ; plancher +0,956 → +0,701) et
+**les percées ne bougent pas : 385 → 390**.
+
+Cet échec est plus utile qu'une réussite partielle : il réfute « la galerie est
+un peu trop d'un côté ». La section de cavité ne tient nulle part sur un trajet
+qui doit partir d'une bouche **gelée** et finir **sous la dominante**.
+
 ### Prochaine action exacte
 
-Le câblage de l'enveloppe dans `main()` de `make_waterfall_cave.py` est **le seul
-morceau restant** avant les preuves ; la centerline et la clause inversée sont
-prêtes en patches (`evidence/…/r2a35_fusion/couche2_*.patch`,
-`couche4_*.patch`) et **ne peuvent pas atterrir seules** — chacune isolément met
-le générateur en sortie 2, ce qui laisserait un tronc rouge sur `HEAD`.
+**Porter l'arbitrage au lead, pas le trancher.** Trois de ses exigences se
+contredisent, chacune explicite : bouche gelée (point 1), poche sous la
+dominante (point 4), épaisseur réelle (0,80 / 0,60). Les trois leviers restants
+touchent chacun une décision qui lui appartient — élargir l'enveloppe (mais
+« ne pas sacrifier la silhouette extérieure »), réduire la section (mais le
+gabarit joueur est un contrat), déplacer la bouche (mais elle est gelée).
 
-Attention en le faisant : `tools/probe_cave_openings.py` porte sa **propre copie**
-de `CAVITE`/`PALIER` et `controle_coherence_cotes()` la fait rougir dès que le
-générateur diverge — mettre la copie à jour dans le **même commit** que la
-centerline. Et `scripts/world_v2/poi/waterfall_cave_place.gd` porte
-`MODELE_SALLE` / `MODELE_NICHE` en repère modèle Godot, à recalculer depuis les
-stations Blender par `(ax, z, −ay)`, sans quoi le filet de comportement marche
-vers un point qui n'existe plus.
+Deux défauts de composition restent indépendamment ouverts et ne dépendent
+d'aucun arbitrage : **azimut 100 à deux masses** (le contrefort disparaît en
+projection ; R2a-3.4 en présentait trois, la cible est donc atteignable) et
+**plage plane de 9,01 m² en façade** pour 6,00 (centrée en −4,68 ; 1,63 ; 2,24,
+c'est-à-dire la face avant de l'épaule).
 
-Ensuite seulement : sonde à **zéro percée confirmée**, chaîne RC=0, silhouettes
-**après** les détails, coupe et carte d'épaisseur, puis les dix vues et trois A/B
-du lead — gauche = R2a-3.4 (géométrie `504ecbe`, arbre de capture `55c4803`).
+Le tronc reste **vert et inchangé** : le générateur livré construit toujours la
+géométrie R2a-3.4, la sonde passe, rien de rouge sur `HEAD`. Le câblage complet
+vit dans `r2a35_diagnostic/couche1_3_cablage_enveloppe.patch`, applicable d'un
+bloc.
 
-Rien de tout cela ne prononce le verdict visuel : il appartient au lead.
+Aucun verdict visuel n'est prononcé ici ; il appartient au lead.
 
 ---
 
