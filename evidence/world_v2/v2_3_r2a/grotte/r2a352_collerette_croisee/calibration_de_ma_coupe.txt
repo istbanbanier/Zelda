@@ -1,0 +1,19 @@
+CALIBRATION DE plot_cave_section.py — l'instrument de l'integrateur
+Forme analytique : tube de rayon r dans un cylindre de rayon R.
+Verite : epaisseur = R - r dans toute direction horizontale.
+
+   r      R    attendu   premiere    biais     totale     biais
+  1.0    1.3    0.3000    0.3204   +0.0204    0.3204   +0.0204
+  1.0    1.6    0.6000    0.6327   +0.0327    0.6327   +0.0327
+  1.0    2.2    1.2000    1.2465   +0.0465    1.2465   +0.0465
+  1.5    1.8    0.3000    0.3013   +0.0013    0.3013   +0.0013
+  1.5    2.7    1.2000    1.2034   +0.0034    1.2034   +0.0034
+  2.0    2.3    0.3000    0.3000   +0.0000    0.3000   +0.0000
+  2.0    3.2    1.2000    1.2000   +0.0000    1.2000   +0.0000
+  0.8    1.5    0.7000    0.7897   +0.0897    0.7897   +0.0897
+
+biais maximal : +0.0897 m — l'instrument SUR-EVALUE, et d'autant plus
+que le rayon de la galerie est petit. Signature d'une origine de rayon
+qui n'est pas sur l'axe du cercle : le rayon parcourt une corde, pas un
+rayon. `premiere` et `totale` coincident partout, ce qui est attendu sur
+une paroi unique — la lecture des blocs, elle, n'est pas en cause.

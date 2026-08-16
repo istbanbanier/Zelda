@@ -8,6 +8,41 @@ Aucun `S0`/`S1` ouvert n'est admis pour un build candidat.
 
 ---
 
+## ISS-051 — Deux instruments de mesure d'épaisseur étaient biaisés, et l'un est le mien · `S3` · PARTIEL
+
+- **Vu** : 2026-08-16, en confrontant les instruments à une réponse connue
+  analytiquement (`tools/cave_collar_calibration.py` : tube de rayon `r` dans un
+  cylindre de rayon `R`, collerette exactement `R − r`).
+- **`cave_collar.py` méthode B sous-estimait d'exactement une maille de raster.**
+  Biais / pas = −1,00 à quatre pas différents, et invariant quand l'épaisseur
+  passe de 0,30 à 1,20 m : le biais suit le pas et ignore la grandeur mesurée,
+  signature de discrétisation. **CORRIGÉ** (`+ pas`), biais 0,0000 sur huit
+  formes. Vérification qui ne dépend d'aucune reprise : 0,5657 mesuré avant la
+  correction, au pas de 0,05, plus 0,05, donne 0,6157 — la valeur publiée après.
+- **La calibration a sorti un défaut de plus** : la coupe classait le plan par
+  UNE seule rangée de rayons le long de +X. Un rayon rasant perd une
+  intersection et la parité de toute la fin de rangée s'inverse. Sur le cylindre,
+  18 289 cases creuses étaient déclarées « air libre » et l'ouverture valait
+  **zéro case** — sur une forme dont l'ouverture est un disque parfait. Vote sur
+  quatre parités désormais.
+- **`plot_cave_section.py` SUR-ÉVALUE, et ce n'est pas corrigé.** Biais jusqu'à
+  **+0,0897 m**, croissant quand le rayon de la galerie diminue (0,8 m → +0,090 ;
+  2,0 m → 0,000). Signature d'une origine de rayon hors de l'axe du cercle : le
+  rayon parcourt une corde, pas un rayon. Au porche (`hw` 1,70–1,90) le biais
+  attendu est de +0,00 à +0,03 m.
+- **Ce qui reste valide** dans les lectures de cet outil : les COMPTES (rayons
+  sans aucune roche) et la STRUCTURE des blocs (`ROCHE 0,20 · vide 1,10 ·
+  ROCHE 3,84`) ne dépendent pas de l'échelle. Seuls les chiffres absolus
+  d'épaisseur sont à corriger vers le bas.
+- **Enseignement, et il vaut plus que les deux correctifs** : deux instruments
+  biaisés en sens contraires peuvent converger et donner l'illusion d'une preuve.
+  Ma coupe lisait 0,10 m là où le B corrigé lit 0,1000 m ; j'ai cité cette
+  convergence comme un argument, et la calibration montre qu'elle était fragile.
+  **Une convergence entre instruments non calibrés n'est pas une validation.**
+- **Reste ouvert** : le `controle_epaisseur` du générateur et la sphère inscrite
+  de `probe_cave_collerette.py` ne sont pas calibrés. Le cylindre existe et prend
+  une minute.
+
 ## ISS-048 — La semelle de la grotte ne dérive plus de la cavité, elle la rencontre · `S3` · OUVERT
 
 - **Build** : géométrie R2a-3.5.2, GLB `8bc8b9f9eb9e…`.

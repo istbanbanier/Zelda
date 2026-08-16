@@ -1,69 +1,113 @@
-# La collerette mesurée par cinq instruments — et pourquoi le gate reste rouge
+# La collerette mesurée par cinq instruments — et deux d'entre eux étaient biaisés
 
-**Ce dossier ne valide rien.** Il croise les instruments et publie l'écart au lieu
-de le moyenner.
+**Ce dossier ne valide aucune livraison.** Il croise les instruments, calibre
+ceux qu'on peut calibrer, et publie l'écart au lieu de le moyenner.
 
-## Les cinq lectures de la même grandeur
+## L'histoire courte
 
-| instrument | mécanisme | AVANT (`8bc8b9f9`) | APRÈS visière (`4dd1642f`) |
+Quatre chiffres existaient pour une même grandeur : **1,05 · 0,83 · 0,68 · 0,57**.
+Le plus bas échouait au seuil de 0,60, et j'ai refusé de choisir. La calibration
+sur une forme à réponse connue a montré que **le chiffre bas était faux d'une
+maille de raster**, et que **le mien est faux dans l'autre sens**.
+
+Aucun seuil n'a été touché.
+
+## La calibration, et pourquoi elle tranche
+
+Un tube de rayon `r` dans un cylindre de rayon `R` : la collerette vaut
+exactement `R − r`, partout, dans toutes les directions. Aucune place pour un
+désaccord d'emprise. Polygone à 96 côtés, écart de surface 0,053 % — deux ordres
+sous le biais cherché.
+
+### `cave_collar.py` méthode B sous-estimait d'exactement une maille
+
+| pas | 0,1000 | 0,0500 | 0,0250 | 0,0125 |
+|---|---:|---:|---:|---:|
+| biais | −0,1000 | −0,0500 | −0,0250 | −0,0125 |
+| biais / pas | −1,00 | −1,00 | −1,00 | −1,00 |
+
+À pas constant, le biais ne bouge pas quand l'épaisseur passe de 0,30 à 1,20 m :
+**il suit le pas et ignore la grandeur mesurée.** C'est de la discrétisation. La
+première case de roche est à une demi-maille de l'air, la dernière à une
+demi-maille de l'ouverture, et le compte perd une maille entre les deux.
+Correction `+ pas` ; après, biais **0,0000 m sur les huit formes**.
+
+**La vérification indépendante que je peux faire sans rejouer quoi que ce soit** :
+j'avais mesuré 0,5657 m avec l'outil non corrigé, au pas de 0,05. `0,5657 + 0,0500
+= 0,6157` — exactement la valeur que l'outil corrigé publie. Le chiffre que
+j'avais noté avant que la correction existe confirme la correction.
+
+### Ma propre coupe sur-évalue, et je ne m'exempte pas
+
+`plot_cave_section.py`, même forme analytique (`calibration_de_ma_coupe.txt`) :
+
+| r | R | attendu | `premiere` | biais |
+|---:|---:|---:|---:|---:|
+| 0,8 | 1,5 | 0,7000 | 0,7897 | **+0,0897** |
+| 1,0 | 2,2 | 1,2000 | 1,2465 | +0,0465 |
+| 1,0 | 1,3 | 0,3000 | 0,3204 | +0,0204 |
+| 1,5 | 1,8 | 0,3000 | 0,3013 | +0,0013 |
+| 2,0 | 3,2 | 1,2000 | 1,2000 | **+0,0000** |
+
+**Elle sur-évalue, d'autant plus que le rayon de la galerie est petit.** Signature
+d'une origine de rayon qui n'est pas sur l'axe du cercle : le rayon parcourt une
+corde, pas un rayon. Au porche, où `hw` vaut 1,70–1,90, le biais attendu est de
+l'ordre de +0,00 à +0,03 m.
+
+Ce qui reste valide dans mes lectures : **les comptes** (13 rayons sans aucune
+roche → 0) et **la structure des blocs** (`ROCHE 0,20 · vide 1,10 · ROCHE 3,84`)
+ne dépendent pas de cette échelle. Ce qui est à corriger vers le bas : mes
+chiffres absolus d'épaisseur.
+
+Et la « convergence à quatre décimales » entre ma coupe (0,10 m) et le B corrigé
+(0,1000 m) sur la géométrie d'avant est donc **plus fragile qu'elle n'en avait
+l'air** : deux instruments biaisés en sens contraires peuvent se croiser. Je la
+retire comme argument.
+
+## Les lectures, après calibration
+
+| instrument | mécanisme | AVANT `8bc8b9f9` | APRÈS visière |
 |---|---|---:|---:|
-| générateur, `controle_epaisseur` | cumul des blocs sur rayon, `i <= 1` | 0,48 m *(min. de 7 rayons)* | **1,05 m** *(de 33)* |
-| ma coupe, `plot_cave_section.py` | premier bloc, direction transverse | 0,10 m | 0,83 m |
-| agent collerette, méthode A | rayons selon la normale, rim topologique | — | 0,83 m |
-| agent collerette, méthode B | sphère inscrite | 0,25 m | 0,68 m |
-| **instruments, `cave_collar.py` A** | rayons normale + garde anti-rasant | **0,060 m** | **0,653 m** |
-| **instruments, `cave_collar.py` B** | transformée de distance 2D, **aucun rayon** | **0,050 m** | **0,566 m** |
+| générateur, `controle_epaisseur` | cumul des blocs, `i <= 1` | 0,48 m *(min. de 7 rayons)* | 1,05 m *(de 33)* |
+| ma coupe *(sur-évalue jusqu'à +0,09)* | premier bloc, transverse | 0,10 m | 0,83 m |
+| agent collerette, sphère inscrite | rayon 3D | 0,25 m | 0,68 m |
+| **`cave_collar.py` A** *(biais 0,0006)* | rayons normale + garde anti-rasant | 0,0601 m | **0,7699 m** |
+| **`cave_collar.py` B** *(calibré, biais 0,0000)* | transformée de distance 2D, **aucun rayon** | **0,1000 m** | **0,7500 m** |
 
-Journal brut : `journal_cave_collar.txt`.
+Dernière ligne mesurée par moi sur `a4cce09c`, l'état du lot collerette à
+l'instant du run — **l'agent itérait encore, et ce n'est donc pas un livrable**.
+Sur l'état précédent `4dd1642f` : A 0,6533, B 0,6157.
 
-## Ce qui est acquis, et qui n'est pas discutable
+**Verdict de `cave_collar.py` : `PASS`, les deux mécanismes au-dessus de 0,60**,
+et au-dessus de la cible de conception de 0,70.
 
-**La visière ferme le porche.** Toutes les lectures montent d'un facteur 3 à 11,
-et deux faits ne viennent d'aucune convention de mesure :
+## Ce qui est acquis sans dépendre d'aucune convention de mesure
 
 1. **43 colonnes coiffées apparaissent**, toutes entre `y −2,25` et `−1,25`,
-   c'est-à-dire exactement devant le porche, et **aucune colonne n'est perdue
-   ailleurs** (`audit_cave_floor_columns.py`, qui ignore tout de la collerette).
+   exactement devant le porche, **zéro perdue ailleurs**
+   (`audit_cave_floor_columns.py`, qui ignore tout de la collerette).
 2. **Le plan de bouche `y = −1,15` devient utilisable.** Avant, `cave_collar.py`
-   devait reculer à `y = −0,95` parce que « le plan de bouche lui-même est ouvert
-   latéralement ». Après, il travaille sur `y = −1,15`. Personne n'a conçu cet
-   outil pour rapporter cela ; c'est tombé de la mesure.
+   devait reculer à `y = −0,95` : « le plan de bouche lui-même est ouvert
+   latéralement ». Personne n'a conçu cet outil pour rapporter cela.
+3. Le « avant » de référence n'est pas 0,48 m mais **25 rayons sur 33 sortant par
+   un jour**, azimuts 39–193° sans interruption : sur plus des trois quarts du
+   pourtour, **pas de roche du tout**. Le 0,48 était le minimum des sept rayons
+   survivants — juste sur un échantillon qui excluait le défaut.
 
-Et le « avant » de référence n'est pas 0,48 m mais **25 rayons sur 33 qui sortent
-par un jour**, azimuts 39–193° sans interruption : sur plus des trois quarts du
-pourtour, il n'y avait **pas de roche du tout**. Le 0,48 était le minimum des
-sept rayons survivants — un chiffre juste sur un échantillon qui excluait le
-défaut.
+## Ce qui reste ouvert
 
-## Ce qui reste rouge, et pourquoi je ne le déclare pas vert
+- **Le générateur et la sphère inscrite ne sont pas calibrés.** Le cylindre existe
+  (`tools/cave_collar_calibration.py`), il prend une minute, et il a déjà attrapé
+  deux défauts en une passe. Tant qu'ils ne le sont pas, leurs chiffres sont des
+  indications, pas des preuves.
+- **Le biais de ma coupe n'est pas corrigé**, seulement mesuré et publié.
+- **Aucune capture.** Rien n'établit que la visière se *lise* comme de la roche
+  plutôt que comme une arche. C'est une question d'œil, elle n'appartient pas aux
+  instruments.
 
-**`cave_collar.py` méthode B rend 0,566 m pour un seuil de 0,60.** Verdict `FAIL`,
-manque **0,034 m**.
+## Fichiers
 
-C'est la mesure la plus conservatrice, produite par le seul mécanisme qui
-n'emploie **ni rayon, ni normale, ni station** : une transformée de distance
-8-connexe sur une coupe transversale rastérisée, l'ouverture étant reconnue par
-inondation 2D.
-
-Quatre chiffres pour une seule grandeur — 1,05 · 0,83 · 0,68 · 0,57 — et le plus
-bas est sous le seuil. **Tant que l'écart n'est pas expliqué, l'item est
-`NON VÉRIFIÉ`, pas `PASS`.** Le choisir serait exactement la faute que cette
-passe traque depuis le début : un seul nombre, choisi parce qu'il arrange.
-
-L'agent instruments marque d'ailleurs ses deux mesures **`NON CALIBRÉES`** de
-lui-même, et nomme le suspect : deux mesures qui s'accordent peuvent partager une
-erreur d'emprise. Sur la géométrie d'avant, il lit 0,050–0,060 m là où le
-générateur lit 0,48 — l'écart de calibration est donc établi, il n'est pas
-hypothétique.
-
-## Ce qu'il faut avant de trancher
-
-1. **Calibrer** `cave_collar.py` sur une forme dont l'épaisseur est connue
-   analytiquement — un tube dans un cylindre. Un instrument qui n'a jamais été
-   confronté à une réponse connue ne peut ni condamner ni acquitter.
-2. **Faire converger les emprises** : les cinq instruments ne s'accordent pas sur
-   ce qu'est « la limite de l'ouverture ». Tant que cette définition diffère, ils
-   ne mesurent pas la même chose et leur désaccord n'est pas informatif.
-3. Seulement ensuite, décider si 0,566 m condamne la visière ou l'instrument.
-
-**Aucun seuil ne sera abaissé pour résoudre ceci.**
+| fichier | contenu |
+|---|---|
+| `journal_cave_collar.txt` | l'outil **non corrigé** sur les deux géométries, tel que mesuré avant la calibration |
+| `calibration_de_ma_coupe.txt` | mon propre instrument confronté à la réponse analytique |
