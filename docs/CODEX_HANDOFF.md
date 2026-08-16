@@ -1700,6 +1700,107 @@ de la cécité.
 
 ---
 
+## 31. CHECKPOINT 5 — clôture matérielle de la passe `PARTIAL`
+
+Trois commits après l'arrêt. **Aucun ne touche la géométrie, aucun n'intègre
+quoi que ce soit.** Ils existent pour que la passe soit reprenable, ce qui est la
+seule chose qu'un `PARTIAL` doive encore garantir.
+
+### 31.1 Les SHA, à distinguer
+
+| commit | rôle | fichiers |
+|---|---|---:|
+| `1152c92` | répétition d'intégration à blanc (checkpoint 3) | — |
+| `fa59912` | **ARRÊT** — le toit à 0,038 m | — |
+| `39f0e1d` | **baseline AVANT conservée** + la mesure du confondant | 71 |
+| `23b7960` | **les trois lots non intégrés, en patches texte** | 7 |
+| `HEAD` actuel | ce checkpoint | — |
+
+`HEAD` = `origin/claude/world-v2-reconstruction`, arbre propre, à chaque étape.
+
+### 31.2 `39f0e1d` — la baseline AVANT, et pourquoi elle n'est pas un A/B
+
+`evidence/world_v2/v2_3_r2a/grotte/r2a352_avant/` — 7 perspectives, 3 silhouettes,
+vignettes, niveaux de gris, planche de lecture gamma, `reproduction/` (9 pièces,
+self-contained), `SHA256SUMS.txt` (41 fichiers, `sha256sum -c` sans échec).
+
+Le LISEZMOI **mène** avec « LE CÔTÉ APRÈS MANQUE », parce qu'une planche A/B à un
+seul côté sera lue comme un verdict si elle ne dit pas qu'elle est incomplète.
+
+**Le résultat le plus important du lot n'est pas une image.** Les deux lampes
+intérieures se déplacent entre les deux côtés : un A/B naïf aurait comparé
+**géométrie + éclairage** et attribué à la roche ce qui appartient à une lampe.
+Triptyque à GLB constant, aux octets près, seules les deux lignes de lampe
+changeant :
+
+| vue | pixels changés par l'**éclairage seul** |
+|---|---:|
+| `04_interieur_sortie` | **83,97 %** |
+| `03_gros_plan_seuil` | **61,20 %** |
+| `10_visiere_dessous` | **14,77 %** |
+| `09_visiere_profil` | 1,25 % |
+
+> **Règle de lecture, à porter sur toute planche future :**
+> **A→B = l'éclairage seul · B→C = la géométrie seule.**
+> **A→C ne doit jamais être présenté seul sur `03`, `04`, `10`.**
+
+Deux chiffres pour le jour où le côté APRÈS existera : l'outil cadre sur l'AABB
+**du sujet**, donc l'A/B **n'est pas à échelle constante** — le sujet APRÈS
+paraîtra **+4,28 %**, centre décalé de 0,642 m horizontal et −0,726 m vertical.
+Rien dans l'image ne le dit.
+
+**Le décalage entre commit de capture (`1152c92`) et commit de versement est
+inerte, et c'est mesuré** : `git diff --name-only 1152c92..HEAD` hors `docs/` et
+`evidence/` est **vide** — 81 fichiers changés, les 81 sous ces deux dossiers.
+Recapturer n'aurait changé qu'une chaîne de caractères pour des pixels
+identiques. Vérifié par l'intégrateur, pas repris sur parole.
+
+### 31.3 `23b7960` — les patches, et pourquoi le `.blend` n'y est pas
+
+Les commits des trois lots vivent dans des **worktrees détachés**, donc dans
+l'objet-store d'un conteneur **éphémère**. Non poussés, ils disparaissent avec
+lui. Les pousser sur des branches séparées est interdit par les règles de la
+session ; les conserver en patches texte committés respecte la règle et rend le
+travail récupérable.
+
+| lot | plage | contenu | taille |
+|---|---|---|---:|
+| instruments | `c79341e..51a7dab` | 4 commits `format-patch` complets | 692 K |
+| collerette | `c79341e..e0e7567` | **source seule** | 60 K |
+| base R2a-3.5.2 | `202d849..c79341e` | **source seule** | 180 K |
+
+La source seule suffit **parce que c'est mesuré** : la chaîne reproduit le GLB
+candidat byte-identique depuis elle, trois fois, avec un contrôle négatif qui
+rougit. Le `.blend` est délibérément **absent** — il est une *sortie* de la
+chaîne, non reproductible d'un run à l'autre (trois empreintes pour la même
+entrée), jamais lu en entrée. Le conserver donnerait l'illusion d'une source.
+
+Et le LISEZMOI le dit sans le noyer : **« reprendre ces patches, c'est reprendre
+le défaut avec »** — le toit mince appartient à la base, pas à la collerette.
+
+### 31.4 Ce checkpoint — l'audit de vacuité versé
+
+`evidence/world_v2/v2_3_r2a/grotte/r2a352_audit_vacuite/`. Il était retenu par le
+gel du tronc ; le gel est levé.
+
+Il conclut qu'un seul contrôle vide a été trouvé — **ISS-052**, les appuis
+`world_v2_places`, qui comparent la hauteur du terrain à elle-même et affectent
+un golden master déjà validé. Et il se termine par la distinction qui a coûté la
+passe : **vacuité et domaine sont deux maladies distinctes.**
+`controle_epaisseur` est parfaitement falsifiable — il *peut* rougir — et
+pourtant aveugle, parce que son domaine s'arrête où le défaut commence.
+
+### 31.5 État final, sans adoucissement
+
+- **aucune géométrie intégrée** ; le tronc construit et livre toujours R2a-3.4
+  (`8bf1a1b3`, commit de chemin `504ecbe`) ;
+- **aucun seuil abaissé, aucun test neutralisé, aucun domaine gelé touché** ;
+- golden masters **3/4**, inchangés ;
+- `GO_V2_3_R2B=FALSE`, `GO_V2_3_B=FALSE` ;
+- verdict visuel **NON VÉRIFIÉ**, et il n'appartient à aucun instrument.
+
+---
+
 ## ANNEXE A — chronologie des instruments et de leurs défauts
 
 Quatorze occurrences du **même** défaut : un contrôle place ses points à

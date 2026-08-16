@@ -4,6 +4,14 @@
 s'est arrêtée en `PARTIAL` avant l'intégration : le candidat n'a jamais été versé
 au tronc, donc jamais rendu. Il n'y a **qu'un seul côté**.
 
+**Pourquoi elle s'est arrêtée**, puisque la reprise lira ce dossier avant
+l'historique : le toit du massif tombe à **0,038 m** au-dessus d'un vide de 1,4 m
+en `(0,50 ; 5,80)`, pour un contrat de **0,80 m**. La cause n'est pas la
+géométrie seule — c'est que `controle_epaisseur` ne balaie que les stations de
+`CAVITE`, dont **la dernière est à `ay 3,17`**, alors que le défaut vit à
+`ay ≈ 5,8`. **Hors domaine.** Le contrôle publiait 0,87 m et passait. Détail et
+cartographie : `../r2a352_toit_mince/`.
+
 Ne lisez rien ici comme un verdict, ni comme une comparaison. C'est une
 **baseline conservée pour la reprise** — la seule fenêtre où la géométrie R2a-3.4
 était encore joignable depuis un arbre committé et propre.
@@ -23,6 +31,18 @@ Ne lisez rien ici comme un verdict, ni comme une comparaison. C'est une
 
 La provenance de la géométrie a été **re-dérivée par l'outil de manifeste**, sans
 qu'on la lui donne : quatrième confirmation indépendante de la baseline.
+
+**Le lot est capturé à `1152c92` et versé plus tard — sans effet, et c'est
+mesuré**, pas supposé :
+
+```
+git diff --name-only 1152c92..HEAD | grep -vE '^(docs/|evidence/)'   →  vide
+```
+
+81 fichiers ont changé sur la plage, **les 81 sous `docs/` ou `evidence/`**. Rien
+de ce qui est *rendu* n'a bougé : recapturer n'aurait changé qu'une chaîne de
+caractères pour des pixels identiques. Sans cette ligne, la prochaine session
+verrait deux SHA différents et douterait des images.
 
 ## Contenu
 
