@@ -1,0 +1,275 @@
+diff --git a/source_assets/blender/environment/make_waterfall_cave.py b/source_assets/blender/environment/make_waterfall_cave.py
+index 21f20fa..88f7c2d 100644
+--- a/source_assets/blender/environment/make_waterfall_cave.py
++++ b/source_assets/blender/environment/make_waterfall_cave.py
+@@ -3537,6 +3537,221 @@ def controle_epaisseur(obj, segments):
+     return mini, mini_collerette, percees
+ 
+ 
++## -------------------------------------------------------------------------
++## R2a-3.5.3 — LE DOMAINE DU CONTRÔLE D'ÉPAISSEUR, ÉTENDU À TOUTE LA ROCHE
++## -------------------------------------------------------------------------
++## `controle_epaisseur()` ci-dessus tire ses rayons depuis les stations de
++## `CAVITE`, dont la dernière est à `ay = 3,17`. Toute roche au-delà est
++## HORS DE SON DOMAINE — pas mal mesurée : pas mesurée du tout. Le massif
++## court jusqu'à `ay ≈ 11,9`.
++##
++## Ces constantes sont NOUVELLES. Aucun seuil existant n'est touché :
++## `EPAISSEUR_MIN_M` vaut toujours 0,80 m et c'est lui qui juge.
++PAS_DOMAINE_M = 0.10        # pas métrique du balayage, publié dans le rapport
++MARGE_DOMAINE_M = 0.60      # dilatation de l'emprise : un bord doit être vu
++VIDE_QUALIFIANT_M = 1.00    # sous 1 m, c'est une fissure, pas une salle
++VOISINS_PLAQUE_MIN = 6      # >= 6 des 8 voisins ont un vide -> plaque
++
++
++def _tranches_verticales(arbre, ax, ay, z_ciel, z_fond):
++    """Colonne verticale en (ax, ay), lue PAR ENLACEMENT et non par parité.
++
++    POURQUOI PAS LA PARITÉ, ET C'EST LE RÉSULTAT QUI A OUVERT R2a-3.5.3
++    ==================================================================
++
++    La règle de parité de `tools/CLAUDE.md` suppose que le maillage ne se
++    traverse pas lui-même. Celui-ci se traverse — `controle_repli()` le
++    mesure et le TOLÈRE jusqu'à `REPLI_LIVRABLE_MAX_M`. Mesuré sur le
++    candidat `cc3596c5`, la colonne (0,50 ; 5,80) rend la séquence de
++    normales
++
++        entree, entree, sortie, sortie, entree, entree, sortie, sortie
++
++    qui n'alterne pas. Lue par parité elle annonce « 0,038 m de roche
++    au-dessus d'un vide de 1,41 m » — le défaut qui a arrêté la passe
++    précédente. Lue par enlacement, et vérifiée dans huit directions
++    indépendantes, elle rend **3,06 m de roche continue au-dessus d'un vide
++    de 0,30 m**. Il n'y a pas de lame à cet endroit.
++
++    On accumule donc les traversées signées depuis le ciel : +1 quand la
++    face regarde vers le haut (le rayon descendant entre), -1 sinon.
++    Enlacement >= 1 = matière. Les tranches de même nature qui se touchent
++    sont fusionnées, sans quoi un pli interne découperait une roche
++    continue en fausses lames.
++    """
++    depart = Vector((ax, ay, z_ciel))
++    direction = Vector((0.0, 0.0, -1.0))
++    portee = (z_ciel - z_fond)
++    impacts = []
++    parcouru = 0.0
++    for _ in range(64):
++        touche = arbre.ray_cast(depart, direction, portee - parcouru)
++        if touche is None or touche[0] is None:
++            break
++        z = touche[0].z
++        nz = touche[1].z
++        if abs(nz) > 1e-6:
++            delta = +1 if nz > 0.0 else -1
++            if not impacts or abs(impacts[-1][0] - z) > 1e-4 \
++                    or impacts[-1][1] != delta:
++                impacts.append((z, delta))
++        avance = (touche[0] - depart).length + 1e-4
++        parcouru += avance
++        depart = touche[0] + direction * 1e-4
++        if parcouru >= portee:
++            break
++    brut, enlacement = [], 0
++    for k in range(len(impacts) - 1):
++        enlacement += impacts[k][1]
++        brut.append(("roche" if enlacement >= 1 else "vide",
++                     impacts[k][0], impacts[k + 1][0]))
++    tranches = []
++    for nature, haut, bas in brut:
++        if tranches and tranches[-1][0] == nature:
++            tranches[-1] = (nature, tranches[-1][1], bas)
++        else:
++            tranches.append((nature, haut, bas))
++    return tranches
++
++
++def _cumul_au_dessus_du_vide(tranches):
++    """Toute la roche séparant du ciel le vide qualifiant le plus HAUT.
++
++    LE CUMUL, ET NON « LA PREMIÈRE ROCHE ». C'est la définition que
++    `controle_epaisseur()` se donne à lui-même vingt lignes plus haut :
++    « La question posée est "combien de roche sépare la galerie du dehors",
++    et sa réponse est la somme. »
++
++    Mesuré en (1,70 ; 5,30) sur le candidat, la première roche au-dessus du
++    vide fait 0,050 m — mais 0,135 m plus haut se tient un banc de 2,086 m.
++    Le joueur est sous 2,14 m de pierre ; annoncer 5 cm désignerait un
++    feuillet délaminé par la décimation comme s'il était le toit.
++
++    MAIS LE CUMUL NE SUFFIT PAS, ET C'EST UNE CORRECTION DE R2a-3.5.3.
++    ==================================================================
++
++    Le cumul peut CACHER une lame derrière un banc épais. Mesuré sur la
++    géométrie livrée R2a-3.4, en (-0,20 ; -2,60), la colonne vaut
++
++        roche 0,957 | vide 0,471 | roche 0,020 | vide 2,768 | roche 2,602
++
++    Le vide de 0,471 m ne qualifie pas ; le cumul additionne donc
++    0,957 + 0,020 = 0,977 m et PASSE le seuil, alors qu'il y a bel et bien
++    une lame de deux centimètres — vérifiée dans huit directions
++    indépendantes, et plus mince que le défaut qui a arrêté la passe
++    précédente.
++
++    On rend donc LES DEUX : le cumul, qui répond à « combien de roche
++    sépare du dehors », et l'épaisseur du premier banc surmontant le vide,
++    qui répond à « y a-t-il une plaque », c'est-à-dire à la lettre du
++    contrat. C'est la seconde qui juge ; la première est publiée à côté.
++
++    Rend (cumul, premier_banc, hauteur_du_vide, nombre_de_bancs) ou None.
++    """
++    for k, (nature, haut, bas) in enumerate(tranches):
++        if nature != "vide" or (haut - bas) < VIDE_QUALIFIANT_M:
++            continue
++        cumul, bancs, dernier = 0.0, 0, None
++        for nature2, haut2, bas2 in tranches[:k]:
++            if nature2 != "roche":
++                continue
++            e = haut2 - bas2
++            if e >= EPAISSEUR_ECAILLE_M:
++                cumul += e
++                bancs += 1
++                dernier = e
++        return (cumul, dernier if dernier is not None else 0.0,
++                haut - bas, bancs)
++    return None
++
++
++def controle_epaisseur_domaine(obj):
++    """Épaisseur de roche sur TOUT le domaine, pas seulement aux stations.
++
++    Trois états par colonne, et la distinction n'est pas cosmétique :
++
++      * `aucune matiere` — un vide qualifiant sans un gramme de roche
++        au-dessus. C'est la BOUCHE, ou le ciel au-dessus du terrain : la
++        géométrie voulue, jamais une faute ;
++      * `matiere pleine` — cumul >= `EPAISSEUR_MIN_M` ;
++      * `lame mince`     — 0 < cumul < `EPAISSEUR_MIN_M`. La faute.
++
++    Les lames sont ensuite séparées en PLAQUES et BORDS. Un rayon vertical
++    rend une épaisseur qui tend vers zéro partout où un vide se termine
++    latéralement : au bord d'un porche ou d'un surplomb, l'épaisseur
++    verticale de la roche EST nulle, par définition du bord. Mesuré, le
++    minimum du domaine complet tombe sur un tel bord sur les TROIS
++    géométries, y compris la livrée R2a-3.4. Une colonne mince est donc
++    tenue pour une plaque si au moins `VOISINS_PLAQUE_MIN` de ses huit
++    voisins présentent eux aussi un vide qualifiant ; sinon c'est un bord.
++    Les deux populations sont comptées et publiées séparément — on n'en
++    cache aucune.
++
++    LE CONTRÔLE DE COUVERTURE. Ce balayage n'a le droit d'annoncer un
++    minimum que s'il a réellement vu tout le domaine. Il compare donc son
++    emprise échantillonnée à l'emprise réelle du maillage, dilatée de
++    `MARGE_DOMAINE_M`, et rend une faute de couverture s'il en manque un
++    bout. Sans cela il répéterait exactement la panne qu'il corrige :
++    publier un chiffre juste sur un domaine trop petit.
++
++    Rend un dictionnaire de télémétrie, toujours — jamais None.
++    """
++    arbre = bvh_depuis(obj)
++    xs_o = [v.co.x for v in obj.data.vertices]
++    ys_o = [v.co.y for v in obj.data.vertices]
++    zs_o = [v.co.z for v in obj.data.vertices]
++    exige = (min(xs_o) - MARGE_DOMAINE_M, max(xs_o) + MARGE_DOMAINE_M,
++             min(ys_o) - MARGE_DOMAINE_M, max(ys_o) + MARGE_DOMAINE_M)
++    z_ciel, z_fond = max(zs_o) + 1.0, min(zs_o) - 1.0
++
++    n_x = int(math.ceil((exige[1] - exige[0]) / PAS_DOMAINE_M)) + 1
++    n_y = int(math.ceil((exige[3] - exige[2]) / PAS_DOMAINE_M)) + 1
++    xs = [exige[0] + i * PAS_DOMAINE_M for i in range(n_x)]
++    ys = [exige[2] + j * PAS_DOMAINE_M for j in range(n_y)]
++
++    couvert = (xs[0], xs[-1], ys[0], ys[-1])
++    manques = []
++    if couvert[0] > exige[0] + 1e-9 or couvert[1] < exige[1] - 1e-9:
++        manques.append("x couvert [%.2f ; %.2f], exige [%.2f ; %.2f]"
++                       % (couvert[0], couvert[1], exige[0], exige[1]))
++    if couvert[2] > exige[2] + 1e-9 or couvert[3] < exige[3] - 1e-9:
++        manques.append("y couvert [%.2f ; %.2f], exige [%.2f ; %.2f]"
++                       % (couvert[2], couvert[3], exige[2], exige[3]))
++    if len(xs) * len(ys) != n_x * n_y:
++        manques.append("compte de colonnes incoherent")
++
++    vides = {}
++    aucune, pleine, minces = 0, 0, []
++    for j, ay in enumerate(ys):
++        for i, ax in enumerate(xs):
++            trouve = _cumul_au_dessus_du_vide(
++                _tranches_verticales(arbre, ax, ay, z_ciel, z_fond))
++            if trouve is None:
++                continue
++            vides[(i, j)] = trouve
++            cumul, banc, hauteur, bancs = trouve
++            if bancs == 0:
++                aucune += 1
++            elif banc >= EPAISSEUR_MIN_M:
++                pleine += 1
++            else:
++                # LE BANC, PAS LE CUMUL : c'est lui qui dit « plaque ».
++                minces.append((banc, ax, ay, hauteur, i, j, cumul))
++    minces.sort()
++
++    plaques, bords = [], []
++    for banc, ax, ay, hauteur, i, j, cumul in minces:
++        n = sum(1 for di in (-1, 0, 1) for dj in (-1, 0, 1)
++                if (di or dj) and (i + di, j + dj) in vides)
++        (plaques if n >= VOISINS_PLAQUE_MIN else bords).append(
++            (banc, ax, ay, hauteur, n, cumul))
++
++    return dict(pas=PAS_DOMAINE_M, couvert=couvert, exige=exige,
++                colonnes=len(xs) * len(ys), qualifiantes=len(vides),
++                manques=manques, aucune_matiere=aucune, matiere_pleine=pleine,
++                plaques=plaques, bords=bords)
++
++
+ def controle_plage_plane(obj, z_mini, exterieur_seul=True):
+     """LA PLUS GRANDE PLAGE PLANE CONNEXE, en m2 — le contrôle qui manquait.
+ 
+@@ -5349,6 +5564,48 @@ def main():
+           "releve du terrain gele, voir controle_epaisseur)"
+           % (mini, mini_collerette))
+ 
++    # R2a-3.5.3 — LE MÊME CONTRAT, MAIS SUR TOUT LE DOMAINE. Le contrôle
++    # ci-dessus s'arrête à la dernière station de CAVITE (ay = 3,17) ; le
++    # massif court jusqu'à ay ~ 11,9. Celui-ci balaie la totalité, publie
++    # les bornes qu'il a réellement couvertes, et REFUSE de conclure s'il
++    # n'a pas tout vu.
++    dom = controle_epaisseur_domaine(grotte)
++    print("[grotte] domaine : pas %.2f m, %d colonnes, x [%.2f ; %.2f] "
++          "y [%.2f ; %.2f]" % (dom["pas"], dom["colonnes"], dom["couvert"][0],
++                               dom["couvert"][1], dom["couvert"][2],
++                               dom["couvert"][3]))
++    if dom["manques"]:
++        for m in dom["manques"]:
++            print("[grotte] ERREUR: COUVERTURE incomplete — %s" % m)
++        print("[grotte] un minimum publie sur un domaine incomplet est "
++              "exactement la panne que ce controle corrige")
++        if not franchir("couverture du domaine"):
++            return 2
++    print("[grotte] domaine : %d colonne(s) a vide qualifiant (>= %.2f m) — "
++          "%d sans aucune matiere au-dessus (bouche/ciel), %d en matiere "
++          "pleine, %d lame(s) mince(s)"
++          % (dom["qualifiantes"], VIDE_QUALIFIANT_M, dom["aucune_matiere"],
++             dom["matiere_pleine"],
++             len(dom["plaques"]) + len(dom["bords"])))
++    if dom["bords"]:
++        c, ax, ay, h, n, _cum = dom["bords"][0]
++        print("[grotte] domaine : bord le plus mince %.3f m en (%.2f ; %.2f), "
++              "vide %.2f m, %d voisin(s) — terminaison laterale d'un vide, "
++              "pas une lame" % (c, ax, ay, h, n))
++    if dom["plaques"]:
++        for c, ax, ay, h, n, cum in dom["plaques"][:5]:
++            print("[grotte] ERREUR: PLAQUE %.3f m en (%.2f ; %.2f) sous "
++                  "%.2f m de vide, %d/8 voisins — moins que EPAISSEUR_MIN_M "
++                  "= %.2f m (cumul de la colonne %.3f m)"
++                  % (c, ax, ay, h, n, EPAISSEUR_MIN_M, cum))
++        print("[grotte] domaine : %d plaque(s) sous le seuil, la plus mince "
++              "%.3f m" % (len(dom["plaques"]), dom["plaques"][0][0]))
++        if not franchir("epaisseur sur le domaine"):
++            return 2
++    else:
++        print("[grotte] domaine : aucune plaque sous %.2f m ; les colonnes "
++              "minces sont toutes des bords" % EPAISSEUR_MIN_M)
++
+     faibles = controle_gabarit()
+     print("[grotte] gabarit : bande utile par station (m) : %s"
+           % ", ".join("%d:%.2f" % (i, bande_utile(i))
