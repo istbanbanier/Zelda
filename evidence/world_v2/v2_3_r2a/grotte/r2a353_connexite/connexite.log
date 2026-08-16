@@ -1,0 +1,122 @@
+commit du code : 4e2b41d8972c8f2e2b6c1b80892e104073e0f9d3
+
+cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49  /home/user/zelda-r2a353/socle/assets/environment/caves/SM_WaterfallCave.glb
+8bc8b9f9eb9ead12dcccf381e271f66cd8ee0a4fd66f41ba35b24fde0d0f4416  /home/user/zelda-r2a353/socle/assets/environment/caves/prototypes/SM_WaterfallCave_BASE352.glb
+8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110  /home/user/zelda-r2a353/reference/SM_WaterfallCave_R2a34.glb
+
+############################## candidat cc3596c5 ##############################
+triangles (visuel seul) : 20090
+domaine  : ax [-8.80 ; 8.20]  ay [-3.20 ; 11.90]  pas 0.10  -> 25992 colonnes
+colonnes portant du vide : 3336   intervalles : 3384
+reperes de gameplay : jeu COURANT (c79341e)
+  MODELE_SALLE   modele (2.62 ; 2.58 ; 0.09) -> vide [0.08 ; 2.89]
+  MODELE_NICHE   modele (2.78 ; 4.09 ; 0.50) -> vide [0.51 ; 2.17]
+  niche et salle dans la MEME composante : OUI
+composantes de vide : 101   la galerie en contient 2966 intervalle(s)
+
+=== LAMES < 0,80 m AU-DESSUS D'UN VIDE >= 1.00 m ===
+  RELIEES a la galerie jouable : 205
+  sur un vide ISOLE            : 11
+
+  --- LE CHIFFRE QUI DECIDE ---
+  Une lame RELIEE dont le CUMUL tient 0,80 m est une membrane interne :
+  il reste un banc de roche au-dessus. Une lame reliee dont le cumul
+  NE tient pas est de la roche mince entre la galerie et le ciel.
+    reliees, cumul < 0,80 m  (roche mince sur la galerie) : 205
+    reliees, cumul >= 0,80 m (membrane interne)           : 0
+    isolees, cumul < 0,80 m  (bulle interne du massif)    : 11
+  les 6 plus minces RELIEES (par PREMIERE dalle) :
+     premiere 0.002 m   cumul 0.002 m   en (  0.60 ;   5.90)   vide 1.438 m
+     premiere 0.002 m   cumul 0.065 m   en ( -1.30 ;  -2.40)   vide 2.930 m
+     premiere 0.010 m   cumul 0.010 m   en ( -1.70 ;  -2.20)   vide 2.890 m
+     premiere 0.022 m   cumul 0.022 m   en ( -1.90 ;  -2.10)   vide 2.840 m
+     premiere 0.038 m   cumul 0.038 m   en (  0.50 ;   5.80)   vide 1.408 m
+     premiere 0.039 m   cumul 0.569 m   en ( -1.20 ;  -2.40)   vide 2.940 m
+     dont 0 ou le CUMUL tient les 0,80 m — membrane interne, pas un trou vers le ciel
+  les 6 plus minces ISOLEES (par PREMIERE dalle) :
+     premiere 0.000 m   cumul 0.000 m   en (  4.50 ;   1.70)   vide 3.719 m
+     premiere 0.017 m   cumul 0.017 m   en ( -7.30 ;   2.00)   vide 1.480 m
+     premiere 0.161 m   cumul 0.161 m   en ( -7.00 ;   1.20)   vide 1.484 m
+     premiere 0.395 m   cumul 0.395 m   en (  2.40 ;  -1.70)   vide 1.925 m
+     premiere 0.448 m   cumul 0.448 m   en (  2.70 ;  -1.10)   vide 1.402 m
+     premiere 0.564 m   cumul 0.564 m   en ( -6.90 ;   1.00)   vide 1.000 m
+     dont 0 ou le CUMUL tient les 0,80 m — membrane interne, pas un trou vers le ciel
+RC=0
+
+############################## BASE352 8bc8b9f9 ##############################
+triangles (visuel seul) : 19992
+domaine  : ax [-8.80 ; 8.20]  ay [-3.20 ; 11.90]  pas 0.10  -> 25992 colonnes
+colonnes portant du vide : 2876   intervalles : 2921
+reperes de gameplay : jeu COURANT (c79341e)
+  MODELE_SALLE   modele (2.62 ; 2.58 ; 0.09) -> vide [0.08 ; 2.89]
+  MODELE_NICHE   modele (2.78 ; 4.09 ; 0.50) -> vide [0.51 ; 2.17]
+  niche et salle dans la MEME composante : OUI
+composantes de vide : 81   la galerie en contient 2568 intervalle(s)
+
+=== LAMES < 0,80 m AU-DESSUS D'UN VIDE >= 1.00 m ===
+  RELIEES a la galerie jouable : 276
+  sur un vide ISOLE            : 6
+
+  --- LE CHIFFRE QUI DECIDE ---
+  Une lame RELIEE dont le CUMUL tient 0,80 m est une membrane interne :
+  il reste un banc de roche au-dessus. Une lame reliee dont le cumul
+  NE tient pas est de la roche mince entre la galerie et le ciel.
+    reliees, cumul < 0,80 m  (roche mince sur la galerie) : 276
+    reliees, cumul >= 0,80 m (membrane interne)           : 0
+    isolees, cumul < 0,80 m  (bulle interne du massif)    : 6
+  les 6 plus minces RELIEES (par PREMIERE dalle) :
+     premiere 0.002 m   cumul 0.002 m   en (  0.60 ;   5.90)   vide 1.438 m
+     premiere 0.006 m   cumul 0.006 m   en ( -1.60 ;  -1.10)   vide 2.894 m
+     premiere 0.018 m   cumul 0.018 m   en ( -1.80 ;  -1.00)   vide 2.863 m
+     premiere 0.034 m   cumul 0.034 m   en (  0.80 ;  -1.30)   vide 1.664 m
+     premiere 0.038 m   cumul 0.038 m   en (  0.50 ;   5.80)   vide 1.408 m
+     premiere 0.040 m   cumul 0.040 m   en ( -0.10 ;  -1.10)   vide 2.666 m
+     dont 0 ou le CUMUL tient les 0,80 m — membrane interne, pas un trou vers le ciel
+  les 6 plus minces ISOLEES (par PREMIERE dalle) :
+     premiere 0.000 m   cumul 0.000 m   en (  4.50 ;   1.70)   vide 3.719 m
+     premiere 0.017 m   cumul 0.017 m   en ( -7.30 ;   2.00)   vide 1.480 m
+     premiere 0.161 m   cumul 0.161 m   en ( -7.00 ;   1.20)   vide 1.484 m
+     premiere 0.564 m   cumul 0.564 m   en ( -6.90 ;   1.00)   vide 1.000 m
+     premiere 0.580 m   cumul 0.580 m   en ( -7.10 ;   1.50)   vide 1.428 m
+     premiere 0.663 m   cumul 0.663 m   en ( -7.20 ;   1.80)   vide 1.244 m
+     dont 0 ou le CUMUL tient les 0,80 m — membrane interne, pas un trou vers le ciel
+RC=0
+
+############################## R2a-3.4 LIVREE 8bf1a1b3 ##############################
+triangles (visuel seul) : 19954
+domaine  : ax [-8.30 ; 9.00]  ay [-4.00 ; 12.30]  pas 0.10  -> 28536 colonnes
+colonnes portant du vide : 8129   intervalles : 8425
+reperes de gameplay : jeu ANCIEN (avant re-derivation R2a-3.5.2)
+  MODELE_SALLE   modele (1.05 ; 6.25 ; 0.22) -> vide [0.18 ; 2.90]
+  MODELE_NICHE   modele (-1.20 ; 8.20 ; 0.43) -> vide [0.42 ; 1.35]
+  niche et salle dans la MEME composante : OUI
+composantes de vide : 194   la galerie en contient 6040 intervalle(s)
+
+=== LAMES < 0,80 m AU-DESSUS D'UN VIDE >= 1.00 m ===
+  RELIEES a la galerie jouable : 266
+  sur un vide ISOLE            : 307
+
+  --- LE CHIFFRE QUI DECIDE ---
+  Une lame RELIEE dont le CUMUL tient 0,80 m est une membrane interne :
+  il reste un banc de roche au-dessus. Une lame reliee dont le cumul
+  NE tient pas est de la roche mince entre la galerie et le ciel.
+    reliees, cumul < 0,80 m  (roche mince sur la galerie) : 202
+    reliees, cumul >= 0,80 m (membrane interne)           : 64
+    isolees, cumul < 0,80 m  (bulle interne du massif)    : 303
+  les 6 plus minces RELIEES (par PREMIERE dalle) :
+     premiere 0.013 m   cumul 2.377 m   en ( -1.80 ;   1.90)   vide 1.533 m
+     premiere 0.014 m   cumul 0.014 m   en (  1.50 ;  -2.30)   vide 3.298 m
+     premiere 0.019 m   cumul 0.019 m   en ( -0.90 ;  -2.40)   vide 3.503 m
+     premiere 0.020 m   cumul 0.977 m   en ( -0.20 ;  -2.60)   vide 2.768 m
+     premiere 0.026 m   cumul 0.697 m   en (  0.00 ;  -3.00)   vide 2.559 m
+     premiere 0.033 m   cumul 0.033 m   en ( -0.50 ;  -2.60)   vide 3.434 m
+     dont 64 ou le CUMUL tient les 0,80 m — membrane interne, pas un trou vers le ciel
+  les 6 plus minces ISOLEES (par PREMIERE dalle) :
+     premiere 0.000 m   cumul 0.000 m   en ( -4.70 ;   3.20)   vide 3.390 m
+     premiere 0.002 m   cumul 0.002 m   en ( -4.60 ;   3.10)   vide 2.559 m
+     premiere 0.003 m   cumul 0.003 m   en ( -2.40 ;   2.40)   vide 3.284 m
+     premiere 0.003 m   cumul 0.003 m   en (  6.90 ;  -2.80)   vide 1.491 m
+     premiere 0.004 m   cumul 0.004 m   en (  5.30 ;   4.90)   vide 1.469 m
+     premiere 0.005 m   cumul 0.005 m   en ( -4.00 ;   6.90)   vide 2.523 m
+     dont 4 ou le CUMUL tient les 0,80 m — membrane interne, pas un trou vers le ciel
+RC=0
