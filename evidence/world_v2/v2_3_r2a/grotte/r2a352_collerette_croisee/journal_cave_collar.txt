@@ -1,0 +1,51 @@
+# cave_collar.py (agent instruments) applique aux deux geometries — par l'integrateur
+date   : 2026-08-16T12:57:14Z
+outil  : tools/cave_collar.py au commit 6e3725970f1221ed596504363f940f68a2cf8c8e de l'arbre c_instruments
+avant  : 8bc8b9f9eb9ead12dcccf381e271f66cd8ee0a4fd66f41ba35b24fde0d0f4416
+apres  : 4dd1642fcb13ec6a7fd9a8de56adf59a42860f33be1261e17905ee1a5d1d615b
+
+===== AVANT — BASE352 =====
+==============================================================================
+COLLERETTE — deux mesures, deux mecanismes
+==============================================================================
+maillage : /home/user/zelda-r2a352/base/assets/environment/caves/prototypes/SM_WaterfallCave_BASE352.glb
+   19992 triangles, plan de bouche y = -1.15, pas de coupe 0.050 m
+
+MESURE A — rayons selon la normale locale
+   epaisseur minimale 0.0601 m
+      u 0.10, azimut 140.0 deg
+
+MESURE B — transformee de distance sur une coupe transversale
+   plan utilise : y = -0.95  (le plan de bouche lui-meme est ouvert lateralement)
+   3588 case(s) d'ouverture (creux non relie au bord de la coupe)
+   epaisseur minimale 0.0500 m
+      au point (x -1.97 ; z +2.20) du plan de bouche
+
+==============================================================================
+A = 0.0601 m, B = 0.0500 m, ecart 0.0101 m, seuil 0.60 m
+VERDICT : FAIL — 2 mesure(s) sous le seuil
+==============================================================================
+RC=1
+
+===== APRES — visiere =====
+==============================================================================
+COLLERETTE — deux mesures, deux mecanismes
+==============================================================================
+maillage : /home/user/zelda-r2a352/b_collerette/assets/environment/caves/SM_WaterfallCave.glb
+   19966 triangles, plan de bouche y = -1.15, pas de coupe 0.050 m
+
+MESURE A — rayons selon la normale locale
+   epaisseur minimale 0.6533 m
+      u 0.00, azimut 10.0 deg
+
+MESURE B — transformee de distance sur une coupe transversale
+   plan utilise : y = -1.15
+   3625 case(s) d'ouverture (creux non relie au bord de la coupe)
+   epaisseur minimale 0.5657 m
+      au point (x +1.38 ; z +0.20) du plan de bouche
+
+==============================================================================
+A = 0.6533 m, B = 0.5657 m, ecart 0.0877 m, seuil 0.60 m
+VERDICT : FAIL — 1 mesure(s) sous le seuil
+==============================================================================
+RC=1
