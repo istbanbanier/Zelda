@@ -110,3 +110,52 @@ Les manifestes portent `repo_dirty: true` : ces captures viennent d'un arbre de
 travail, pas d'un commit. C'est cohérent avec leur statut — **diagnostic**, pas
 preuve. Une preuve de livraison se capture d'un arbre committé, et il n'y a
 rien à livrer tant que le portail est rouge.
+
+---
+
+## Tentative de remède, mesurée, et son échec
+
+Le diagnostic ci-dessus désignait une cause unique : la galerie longe le bord
+mince de l'enveloppe. Le remède évident suivait l'arbitrage du lead — déplacer
+le vide vers `−normale`, là où sept mètres de roche attendent, sans toucher à
+l'enveloppe.
+
+Décalage appliqué : centerline translatée de 0,9 à 1,8 m vers `−normale`,
+stations 2 à 8, la bouche gelée au millimètre. Direction fixe pour garder
+l'axe monotone en `y`, contrainte de `Profil.u_pour_y` dans la sonde.
+
+Journaux : `generateur_galerie_decalee.log`,
+`sonde_percees_galerie_decalee.log`.
+
+| grandeur | avant décalage | après décalage |
+|---|---:|---:|
+| épaisseur minimale de paroi | 0,11 m | **0,37 m** |
+| épaisseur de collerette | 0,18 m | 0,15 m |
+| « le sol voit le ciel » | 2 points | **0** |
+| écart du plancher au porche | +0,956 m | **+0,701 m** |
+| plage plane en façade | 9,01 m² | 9,09 m² |
+| rayons sortant par un jour au porche | 5 | 5 |
+| **percées confirmées** | **385** | **390** |
+
+Et, comme prévu par construction, la silhouette ne bouge pas d'un centimètre —
+`controle_amas` mesure les volumes **avant** soustraction : 5,90 / 7,37 / 3,65
+dans les deux cas.
+
+**Ce que cet échec établit, et c'est plus utile qu'une réussite partielle.**
+Un déplacement latéral de 1,8 m améliore trois mesures de bord et laisse le
+nombre de percées inchangé. Le défaut n'est donc **pas** « la galerie est un
+peu trop d'un côté » : la section de cavité — jusqu'à 4,2 m de demi-largeur
+avec l'alcôve, 2,92 m de clé — ne tient nulle part sur un trajet qui doit
+partir d'une **bouche gelée** et finir **sous la dominante**.
+
+Trois exigences se contredisent, et l'arbitrage appartient au lead :
+
+1. la bouche garde son ancre et sa position (arbitrage R2a-3.5, point 1) ;
+2. la poche principale est sous la masse dominante, loin des cols (point 4) ;
+3. l'épaisseur est réelle — 0,80 m en paroi, 0,60 m en collerette.
+
+Deux tentatives de repositionnement du vide n'ont pas réconcilié les trois.
+Les leviers restants touchent chacun une décision explicite : élargir
+l'enveloppe (mais « ne pas sacrifier la silhouette extérieure »), réduire la
+section de la galerie (mais le gabarit joueur est un contrat), ou déplacer la
+bouche (mais elle est gelée).
