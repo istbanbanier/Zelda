@@ -118,3 +118,38 @@ concurrents, même dans des worktrees différents, écrivent donc la même
 sauvegarde — c'est le mécanisme d'ISS-038. Un verrou partagé
 (`.git/heavy_tools.lock`, `flock`) est la seule protection ; il doit être pris
 par **chaque** invocation de Godot ou Blender, quel que soit l'arbre.
+
+## Une boucle d'attente sur `pgrep -f` se voit elle-même et dort pour toujours
+
+Mesuré le 2026-08-16 : une heure de verrou perdue.
+
+```bash
+until ! pgrep -f "make_waterfall_cave" > /dev/null; do sleep 15; done   # NE TERMINE JAMAIS
+```
+
+La ligne de commande de la boucle **contient le motif**. `pgrep -f` cherche
+dans les lignes de commande complètes, il trouve donc la boucle elle-même, la
+condition reste fausse, et l'attente est éternelle. Rien ne le crie : le
+processus a l'air de travailler.
+
+C'est le même mécanisme que le piège déjà consigné pour les garde-fous
+(`PROMPT4_METHOD` §1) — *« les scripts de garde-fou s'excluent eux-mêmes : le
+premier push a été refusé par le plancher attrapant sa propre ligne de
+motifs »*. Il se reproduit partout où un script cherche un motif qu'il porte.
+
+Trois parades, de la moins bonne à la meilleure :
+
+```bash
+pgrep -f motif | grep -v "^$$\$"        # exclut son propre PID — fragile, oublie les enfants
+pgrep -x godot                          # -x compare le NOM du binaire, pas la ligne complète
+until grep -q "^RC=" journal; do …      # attend un JETON ÉCRIT PAR LA COMMANDE elle-même
+```
+
+La troisième est la seule qui ne dépende pas de la façon dont le processus est
+nommé, enveloppé (`flock`, `xvfb-run`, `nohup`) ou relancé. Faire écrire
+`echo "RC=$?" >> journal` par la commande surveillée, puis attendre ce jeton.
+
+Corollaire : enchaîner une attente de verrou et un travail lourd dans une même
+commande de premier plan expose le tout à être mis en arrière-plan puis tué.
+Détacher (`nohup`), et écrire le code retour dans le journal — c'est ce qui
+permet de distinguer « tué avant de commencer » de « a échoué ».
