@@ -8,6 +8,57 @@ Aucun `S0`/`S1` ouvert n'est admis pour un build candidat.
 
 ---
 
+## ISS-048 — La semelle de la grotte ne dérive plus de la cavité, elle la rencontre · `S3` · OUVERT
+
+- **Build** : géométrie R2a-3.5.2, GLB `8bc8b9f9eb9e…`.
+- **Observé** : `SEMELLE_PART_LAT = 1.05` fait porter la semelle sur ±1,05·hw
+  autour de l'axe. Depuis la section asymétrique, le vide atteint 1,34 à
+  1,69·hw du côté large, plus la poussée de l'alcôve — déficit mesuré
+  **−2,50 m** à la station 6.
+- **Pourquoi ce n'est PAS un défaut visible** : le plancher existe bel et bien,
+  et massivement. Cinq instruments concordent, dont un qui ignore les stations
+  (`tools/audit_cave_floor_columns.py`, evidence `r2a352_oracle_plancher/`) :
+  **2,89 m de roche sous les 33 colonnes habitables des stations terminales.**
+  Le sol est porté par l'enveloppe générale, pas par la semelle.
+- **Pourquoi c'est quand même une dette** : la docstring de `rochers_semelle()`
+  promet une propriété **dérivée** — « la semelle suit la cavité » — alors
+  qu'elle n'est plus que **rencontrée**. Le jour où l'enveloppe s'amincira à cet
+  endroit, plus rien ne garantira le plancher, et le commentaire dira le
+  contraire du code.
+- **Correctif attendu** : faire dépendre `SEMELLE_PART_LAT` de la demi-largeur
+  RÉELLE du côté considéré (`CAVITE_ASYM` × `facteur_lateral`), ou bien réécrire
+  la docstring pour dire ce qui est vrai. Ne pas toucher à la géométrie tant que
+  le contrôle est vert : ce serait modifier une forme validée sur un défaut
+  théorique.
+- **Test de régression** : à écrire avec le correctif — un profil dont
+  l'enveloppe est amincie sous la station 6 doit rougir.
+
+## ISS-049 — Le même défaut d'échantillonnage est réapparu SEPT fois · `S2` · OUVERT
+
+- **Build** : outils de la passe R2a-3.5.x.
+- **Le défaut** : un contrôle place ses points à `ax + f·hw`, c'est-à-dire
+  **symétriquement et le long de X**, sur une cavité devenue asymétrique et dont
+  l'axe tourne. Il mesure alors une station pour une autre.
+- **Occurrences connues** : six corrigées lors de R2a-3.5.1 — dont
+  `points_interieurs`, qui portait le commentaire « SIXIÈME ET DERNIER ENDROIT
+  DE LA MÊME FAUTE ». Il n'était pas le dernier : `carte_du_plancher()` portait
+  la septième.
+- **Ce que la septième a coûté** : elle a produit **9 lignes fautives sur 33**,
+  écart maximal 0,45 m, et c'est elle qui a fait inscrire au cahier des charges
+  de R2a-3.5.2 un « défaut de plancher des stations 6 à 8 » **qui n'existe pas
+  dans la roche**. Le même contrôle, échantillonné le long de la normale ×
+  `facteur_lateral` : **0 faute sur 33**, écart maximal 0,03 m.
+- **Pourquoi le commentaire a menti** : il affirmait une exhaustivité que
+  personne n'avait vérifiée. Un commentaire qui dit « c'est le dernier » sans
+  test qui l'établisse est une promesse, pas un constat.
+- **Filet à construire** : un contrôle qui BALAIE les outils à la recherche du
+  motif `ax + f * hw` (et variantes) et rougit sur toute occurrence non annotée.
+  Tant qu'il n'existe pas, ce ticket reste OUVERT même si les sept occurrences
+  connues sont corrigées.
+- **Test de régression** : fixture adverse à profil fortement tourné, sur
+  laquelle l'échantillonnage le long de X rougit et l'échantillonnage le long de
+  la normale passe.
+
 ## ISS-045 — Le terrain jouable est plat : deux dalles portent 80 % du monde · `S3` · OUVERT
 
 - **Build** : `6a996a5` et suivants (défaut ANTÉRIEUR, relevé par l'audit du 2026-08-11).
@@ -1137,6 +1188,15 @@ Le point 3 est le plus parlant : les deux tests fautifs dépendent d'un délai.
   `tools/probe_cave_openings.py` (rayons descendants, stations 0 à 8 comprises,
   sphère complète). Le filet existant n'est **pas** corrigé : il teste la
   hauteur libre, ce qui reste son objet légitime.
+- **Troisième couche, 2026-08-16** : `tools/audit_cave_floor_columns.py`, qui
+  répond à la même question **sans connaître les stations** — ni `CAVITE_ASYM`,
+  ni `facteur_lateral`, ni `u`. Il balaie des colonnes verticales et lit
+  l'alternance roche/vide par parité d'impacts. Il existe parce que les trois
+  contrôles précédents partagent tous le même placement de points, et qu'une
+  faute dans ce placement les aveugle ENSEMBLE — c'est exactement ce qui vient
+  d'arriver (voir ISS-049). Contrôle négatif intégré (`--saboter`) : retirer le
+  plancher fait rougir l'oracle sur le même maillage ; retirer seulement le
+  sous-sol ne le fait pas.
 - **Piste** : ajouter au filet de praticabilité un contrôle de sol sous chaque
   pas, et faire imprimer à `hauteur_du_sol` la valeur attendue à côté de la
   valeur mesurée, avec l'écart. Les deux sont des changements d'une ligne dont

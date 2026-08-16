@@ -1,0 +1,138 @@
+# Oracle de plancher en colonnes — journal brut
+
+outil   : tools/audit_cave_floor_columns.py
+date    : 2026-08-16T11:44:43Z
+commit  : 867d2ba536d052c9460b725df55570567784ac45  (arbre au moment du run : 2 fichier(s) modifie(s))
+base352 : 8bc8b9f9eb9ead12dcccf381e271f66cd8ee0a4fd66f41ba35b24fde0d0f4416
+tronc   : 8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110
+
+===== A — base352, global =====
+glb        : /home/user/zelda-r2a352/base/assets/environment/caves/prototypes/SM_WaterfallCave_BASE352.glb
+triangles  : 19992  ·  matieres : 6
+emprise    : x -8.77..8.17  y -3.13..11.90  z -3.55..8.19
+pas        : 0.25 m  ·  vide retenu a partir de 1.20 m de haut
+
+colonnes balayees          : 4148
+colonnes portant un vide   : 358
+vides interieurs >= 1.20 m : 358
+sol median mesure          : 0.01 m  (repere a -0.49 m)
+colonnes ouvertes SOUS le massif, normal : 3155
+VIDES OUVERTS A HAUTEUR DE PLANCHER : 0
+roche sous le vide, minimum : 2.521 m en (0.48 ; -1.14)
+vides dont la roche sous le sol est < 0.30 m : 0 sur 358
+altitude des sols : min -0.65  median 0.01  max 0.58
+
+VERDICT : PASS — tout vide interieur habitable repose sur de la roche
+RC=0
+
+===== B — base352, fenetre stations terminales =====
+glb        : /home/user/zelda-r2a352/base/assets/environment/caves/prototypes/SM_WaterfallCave_BASE352.glb
+triangles  : 19992  ·  matieres : 6
+emprise    : x -8.77..8.17  y -3.13..11.90  z -3.55..8.19
+pas        : 0.25 m  ·  vide retenu a partir de 1.20 m de haut
+fenetre du verdict : x 1.50..4.00  y 3.50..6.50
+ouvertures hors fenetre, non jugees : 0
+roche sous le vide DANS LA FENETRE, minimum : 2.887 m en (1.73 ; 3.62)  sur 33 vide(s)
+
+colonnes balayees          : 4148
+colonnes portant un vide   : 358
+vides interieurs >= 1.20 m : 358
+sol median mesure          : 0.01 m  (repere a -0.49 m)
+colonnes ouvertes SOUS le massif, normal : 3155
+VIDES OUVERTS A HAUTEUR DE PLANCHER : 0
+roche sous le vide, minimum : 2.521 m en (0.48 ; -1.14)
+vides dont la roche sous le sol est < 0.30 m : 0 sur 358
+altitude des sols : min -0.65  median 0.01  max 0.58
+
+VERDICT : PASS — tout vide interieur habitable repose sur de la roche
+RC=0
+
+===== C — base352 SABOTE sous le plancher (z<0.00) — le plancher survit =====
+SABOTAGE : 202 triangles retires sur 19992 (sous z=0.00, x 1.50..4.00, y 4.00..6.00)
+glb        : /home/user/zelda-r2a352/base/assets/environment/caves/prototypes/SM_WaterfallCave_BASE352.glb
+triangles  : 19790  ·  matieres : 6
+emprise    : x -8.77..8.17  y -3.13..11.90  z -3.55..8.19
+pas        : 0.25 m  ·  vide retenu a partir de 1.20 m de haut
+fenetre du verdict : x 1.50..4.00  y 3.50..6.50
+ouvertures hors fenetre, non jugees : 0
+roche sous le vide DANS LA FENETRE, minimum : 2.887 m en (1.73 ; 3.62)  sur 33 vide(s)
+
+colonnes balayees          : 4148
+colonnes portant un vide   : 358
+vides interieurs >= 1.20 m : 358
+sol median mesure          : 0.01 m  (repere a -0.49 m)
+colonnes ouvertes SOUS le massif, normal : 3078
+VIDES OUVERTS A HAUTEUR DE PLANCHER : 0
+roche sous le vide, minimum : 2.521 m en (0.48 ; -1.14)
+vides dont la roche sous le sol est < 0.30 m : 0 sur 358
+altitude des sols : min -0.65  median 0.01  max 0.58
+
+VERDICT : PASS — tout vide interieur habitable repose sur de la roche
+RC=0
+
+===== D — base352 SABOTE plancher compris (z<0.60) — le rouge attendu =====
+SABOTAGE : 319 triangles retires sur 19992 (sous z=0.60, x 1.50..4.00, y 4.00..6.00)
+glb        : /home/user/zelda-r2a352/base/assets/environment/caves/prototypes/SM_WaterfallCave_BASE352.glb
+triangles  : 19673  ·  matieres : 6
+emprise    : x -8.77..8.17  y -3.13..11.90  z -3.55..8.19
+pas        : 0.25 m  ·  vide retenu a partir de 1.20 m de haut
+fenetre du verdict : x 1.50..4.00  y 3.50..6.50
+ouvertures hors fenetre, non jugees : 1
+roche sous le vide DANS LA FENETRE, minimum : 2.887 m en (1.73 ; 3.62)  sur 14 vide(s)
+
+colonnes balayees          : 4148
+colonnes portant un vide   : 338
+vides interieurs >= 1.20 m : 338
+sol median mesure          : 0.01 m  (repere a -0.49 m)
+colonnes ouvertes SOUS le massif, normal : 3067
+VIDES OUVERTS A HAUTEUR DE PLANCHER : 21
+roche sous le vide, minimum : 2.521 m en (0.48 ; -1.14)
+vides dont la roche sous le sol est < 0.30 m : 0 sur 338
+altitude des sols : min -2.86  median 0.01  max 0.58
+  OUVERT (1.73 ; 4.37)  plafond 2.51  sol -40.00  haut 42.51
+  OUVERT (1.73 ; 4.62)  plafond 2.46  sol -40.00  haut 42.46
+  OUVERT (1.73 ; 4.87)  plafond 2.41  sol -40.00  haut 42.41
+  OUVERT (1.73 ; 5.12)  plafond 2.35  sol -40.00  haut 42.35
+  OUVERT (1.73 ; 5.37)  plafond 2.02  sol -40.00  haut 42.02
+  OUVERT (1.98 ; 4.12)  plafond 2.57  sol -40.00  haut 42.57
+  OUVERT (1.98 ; 4.37)  plafond 2.52  sol -40.00  haut 42.52
+  OUVERT (1.98 ; 4.62)  plafond 2.46  sol -40.00  haut 42.46
+  OUVERT (1.98 ; 4.87)  plafond 2.32  sol -40.00  haut 42.32
+  OUVERT (1.98 ; 5.12)  plafond 2.06  sol -40.00  haut 42.06
+  OUVERT (1.98 ; 5.37)  plafond 1.35  sol -40.00  haut 41.35
+  OUVERT (2.23 ; 4.12)  plafond 2.57  sol -40.00  haut 42.57
+
+VERDICT : FAIL — 21 vide(s) interieur(s) sans roche dessous
+RC=1
+
+===== E — tronc R2a-3.4 livre, global =====
+glb        : assets/environment/caves/SM_WaterfallCave.glb
+triangles  : 19954  ·  matieres : 6
+emprise    : x -8.29..8.91  y -3.99..12.25  z -3.55..9.64
+pas        : 0.25 m  ·  vide retenu a partir de 1.20 m de haut
+
+colonnes balayees          : 4485
+colonnes portant un vide   : 922
+vides interieurs >= 1.20 m : 924
+sol median mesure          : 0.06 m  (repere a -0.44 m)
+colonnes ouvertes SOUS le massif, normal : 3300
+VIDES OUVERTS A HAUTEUR DE PLANCHER : 15
+roche sous le vide, minimum : 0.139 m en (4.21 ; 1.01)
+vides dont la roche sous le sol est < 0.30 m : 1 sur 924
+altitude des sols : min -3.30  median 0.06  max 6.86
+  OUVERT (-8.04 ; 7.26)  plafond 1.83  sol -40.00  haut 41.83
+  OUVERT (-8.04 ; 7.51)  plafond 1.86  sol -40.00  haut 41.86
+  OUVERT (-7.79 ; 7.26)  plafond 1.81  sol -40.00  haut 41.81
+  OUVERT (-7.79 ; 7.51)  plafond 1.82  sol -40.00  haut 41.82
+  OUVERT (-7.79 ; 7.76)  plafond 1.85  sol -40.00  haut 41.85
+  OUVERT (-7.29 ; 8.26)  plafond 1.87  sol -40.00  haut 41.87
+  OUVERT (-6.79 ; 8.51)  plafond 1.88  sol -40.00  haut 41.88
+  OUVERT (-6.54 ; 8.51)  plafond 1.85  sol -0.95  haut 2.80
+  OUVERT (-0.04 ; -3.24)  plafond 2.77  sol -40.00  haut 42.77
+  OUVERT (0.21 ; -3.24)  plafond 2.74  sol -40.00  haut 42.74
+  OUVERT (0.46 ; -3.24)  plafond 2.72  sol -40.00  haut 42.72
+  OUVERT (0.71 ; -3.24)  plafond 2.70  sol -40.00  haut 42.70
+
+VERDICT : FAIL — 15 vide(s) interieur(s) sans roche dessous
+RC=1
+

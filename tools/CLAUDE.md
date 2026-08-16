@@ -251,3 +251,45 @@ Corollaire : enchaîner une attente de verrou et un travail lourd dans une même
 commande de premier plan expose le tout à être mis en arrière-plan puis tué.
 Détacher (`nohup`), et écrire le code retour dans le journal — c'est ce qui
 permet de distinguer « tué avant de commencer » de « a échoué ».
+
+## Quand un rayon cesse de rencontrer des faces, cela veut dire PLEIN
+
+Mesuré le 2026-08-16, sur `tools/audit_cave_floor_columns.py` : **trois verdicts
+faux avant un juste**, et les trois sont la même erreur de lecture.
+
+Un rayon descendant qui traverse un solide compte ses impacts par parité :
+entre le 1er et le 2e il y a de la matière, entre le 2e et le 3e du vide, et
+ainsi de suite. La question piège est celle de la **fin de course** :
+
+| impacts | état après le dernier | signification |
+|---|---|---|
+| nombre **impair** | **dans la roche** | solide ouvert par le bas — un rocher planté dans le terrain. Le cas le plus SÛR. |
+| nombre **pair** | dans l'air | le solide s'est refermé, ou le vide s'échappe vers le bas |
+
+Les trois fautes commises, dans l'ordre :
+
+1. « parité impaire = vide ouvert vers le bas » — l'exact contraire. Trois
+   colonnes dont le rayon s'enfonçait de trois mètres **dans** la matière ont
+   été déclarées trouées.
+2. `sous_plancher = None` quand il n'y a plus d'impact après l'entrée dans le
+   plancher, puis `ferme = False`. Même inversion, **autre branche du même
+   fichier, vingt minutes plus tard**. Quatre colonnes au sol infiniment épais
+   déclarées trouées.
+3. Le minimum d'épaisseur ignorait la fenêtre du verdict : après avoir saboté
+   les stations terminales, l'outil imprimait encore « minimum 2,521 m », chiffre
+   exact mais mesuré à la bouche. **Un chiffre juste au mauvais endroit est un
+   chiffre faux.**
+
+La leçon n'est pas « la parité est subtile ». Elle est : cette lecture s'écrit
+**une** fois, dans une fonction nommée, et se réutilise — pas une fois par
+branche, où on la redérive et où on se trompe. Et tout filtre appliqué au
+verdict (`--fenetre`) doit être appliqué **aussi** aux mesures publiées à côté,
+sinon les deux répondent à des questions différentes.
+
+Corollaire de méthode, et il vaut pour tout contrôle de ce dépôt : **le
+sabotage doit retirer la chose testée, pas ce qui est en dessous.** Un premier
+contrôle négatif retirait la matière sous `z = 0` alors que le plancher vit à
+`z ≈ 0,1..0,37` : il laissait la peau du plancher intacte, l'outil restait
+vert, et on aurait pu en conclure que l'outil était aveugle. Vérifier ce que le
+sabotage a réellement enlevé (`SABOTAGE : N triangles retirés`) avant de croire
+le verdict qu'il produit.
