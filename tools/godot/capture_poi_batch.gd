@@ -41,6 +41,20 @@ var _height: int = 720
 var _build_frames: int = 45
 var _settle_frames: int = 10
 
+## PROVENANCE : « quel commit a produit CE QU'ON VOIT ».
+##
+## Le manifeste portait un seul `commit`, celui de l'arbre de capture. Ça ne
+## suffit pas, et le lead l'a relevé sur R2a-3.3 : un rapport nommait un
+## commit comme « prouvé » alors que les manifestes en portaient un autre.
+## Trois rôles distincts se cachaient derrière un seul champ — la géométrie
+## exportée, le correctif d'environnement, et l'arbre d'où part la capture.
+##
+## `--provenance=role:chemin,role:chemin` inscrit, pour chaque chemin, le
+## DERNIER COMMIT QUI L'A TOUCHÉ, lu dans git. Le SHA est donc **dérivé**, pas
+## déclaré : on ne peut pas se tromper en le recopiant, ni le faire mentir en
+## le tapant à la main.
+var _provenance: PackedStringArray = PackedStringArray()
+
 
 func _initialize() -> void:
 	for arg: String in OS.get_cmdline_user_args():
@@ -50,6 +64,8 @@ func _initialize() -> void:
 			_out_dir = arg.trim_prefix("--out-dir=")
 		elif arg.begins_with("--scene="):
 			_scene_path = arg.trim_prefix("--scene=")
+		elif arg.begins_with("--provenance="):
+			_provenance = arg.trim_prefix("--provenance=").split(",", false)
 		elif arg.begins_with("--build-frames="):
 			_build_frames = maxi(1, arg.trim_prefix("--build-frames=").to_int())
 		elif arg.begins_with("--size="):
@@ -238,6 +254,7 @@ func _run() -> void:
 		"size": "%dx%d" % [_width, _height],
 		"commit": _current_commit(),
 		"repo_dirty": _repo_is_dirty(),
+		"provenance": _provenance_par_role(),
 		"shots": manifest,
 	}
 	var out: FileAccess = FileAccess.open("%s/manifest.json" % _out_dir,
@@ -254,6 +271,35 @@ func _hide_interface(node: Node) -> void:
 		(node as CanvasLayer).visible = false
 	for child: Node in node.get_children():
 		_hide_interface(child)
+
+
+## Pour chaque `role:chemin`, le dernier commit qui a touché ce chemin.
+##
+## Un chemin qui n'existe pas, ou qu'aucun commit n'a jamais touché, rend
+## `"inconnu"` — jamais une valeur plausible. Une provenance fausse serait
+## pire que pas de provenance du tout.
+func _provenance_par_role() -> Dictionary:
+	var sortie: Dictionary = {}
+	for entree: String in _provenance:
+		var coupe: int = entree.find(":")
+		if coupe <= 0:
+			printerr("[poi] provenance ignorée, format « role:chemin » "
+				+ "attendu : %s" % entree)
+			continue
+		var role: String = entree.substr(0, coupe)
+		var chemin: String = entree.substr(coupe + 1)
+		var out: Array = []
+		var rc: int = OS.execute("git", ["-C",
+			ProjectSettings.globalize_path("res://"), "log", "-1",
+			"--format=%H", "--", chemin], out, true)
+		var sha: String = ""
+		if rc == 0 and not out.is_empty():
+			sha = String(out[0]).strip_edges()
+		sortie[role] = {
+			"chemin": chemin,
+			"commit": sha if not sha.is_empty() else "inconnu",
+		}
+	return sortie
 
 
 func _current_commit() -> String:
