@@ -1531,6 +1531,65 @@ de code.
 
 ---
 
+## 29. CHECKPOINT 3 — la séquence d'intégration jouée à blanc, et elle aboutit
+
+**FAIT REPRODUIT.** Preuves :
+`evidence/world_v2/v2_3_r2a/grotte/r2a352_reproductibilite/repetition_integration.md`.
+
+Worktree jetable `repetition`, détaché sur le tronc `179806b`. Commits 0, 2 et 3
+joués, puis le contrôle final.
+
+Ce que cela ajoute au checkpoint 1, et ce n'est pas la même chose : le
+checkpoint 1 prouvait la reproduction **depuis l'arbre du lot**. Il ne disait rien
+de ce que la chaîne produirait **depuis le tronc**, dont tous les autres fichiers
+diffèrent — à commencer par le kit de modules que le générateur importe.
+
+```
+GLB produit depuis TRONC + commit 0 + commit 2 :
+  cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49
+```
+
+**Byte-identique au candidat.** Les autres fichiers du tronc n'influencent pas la
+géométrie.
+
+Contrôle final sur les **deltas** : `git diff c79341e HEAD -- <générateur>` est
+**identique** à `git diff c79341e e0e7567 -- <générateur>`. Le tronc simulé porte
+exactement le delta collerette, ni plus ni moins. Et les six fichiers de base que
+personne ne touche sont bien à leur état `c79341e`, vérifiés blob par blob.
+
+Après le commit 3 : **arbre propre**, une fois le `.blend` restauré par
+`git checkout e0e7567 --`.
+
+**Non couvert** : le commit 1 (instruments), dont le contenu bouge encore — sa
+liste devra être **relue au moment d'appliquer**. Et la répétition prouve la
+**mécanique**, pas le **droit** d'intégrer : les gates de qualité restent ouverts.
+
+### 29.1 Worktrees existants au moment de ce checkpoint
+
+Deux worktrees ont été créés par l'intégrateur, tous deux jetables, jamais
+poussés, sans lien avec la branche :
+
+| chemin | base | rôle |
+|---|---|---|
+| `zelda-r2a352/determinisme` | `e0e7567` | trois runs de reproductibilité (checkpoint 1) |
+| `zelda-r2a352/repetition` | `179806b` | répétition de l'intégration, 3 commits locaux jetables |
+
+Ils s'ajoutent aux quatre worktrees d'agents du §6.2. Toute session qui découvre
+un worktree inattendu doit demander avant d'agir — c'est
+`COMMENT_TRAVAILLER_ENSEMBLE` §1, et l'audit l'a correctement appliqué.
+
+### 29.2 Un piège de shell, signalé par l'agent preuves visuelles
+
+Son premier lancement a **rendu 0 sans rien exécuter** : redirection vers un
+fichier dans un répertoire que le script devait lui-même créer. Le shell a échoué
+**avant** la première commande, et le code retour du pipeline valait 0.
+
+Même famille que les pièges déjà consignés : **créer l'arborescence avant**, et ne
+croire un travail terminé que sur son jeton `^RC=` écrit par la commande
+surveillée.
+
+---
+
 ## ANNEXE A — chronologie des instruments et de leurs défauts
 
 Quatorze occurrences du **même** défaut : un contrôle place ses points à
