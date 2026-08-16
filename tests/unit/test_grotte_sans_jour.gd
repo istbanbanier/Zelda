@@ -105,20 +105,29 @@ func test_le_fond_de_la_galerie_est_plein() -> void:
 			% [NOEUD_RENDU, OUVRAGE])
 		return
 	# Depuis la salle (station 5), a hauteur de tete, on regarde vers le
-	# fond. La galerie se termine par une calotte : un rayon doit donc
-	# entrer dans la roche puis en sortir — deux impacts au moins, et un
-	# nombre PAIR. Zero impact veut dire que le regard traverse la
-	# formation de part en part.
+	# fond. La galerie se termine par une calotte : le rayon DOIT rencontrer
+	# de la roche.
+	#
+	# LE CRITERE EST « AU MOINS UN IMPACT », PAS UNE PARITE, ET C'EST
+	# DELIBERE. Une parite paire supposerait que
+	# `Geometry3D.ray_intersects_triangle` compte aussi les faces abordees
+	# par le dos. Je n'ai pas mesure ce comportement sur le 4.7.1 installe,
+	# et un filet qui repose sur une supposition d'API rougit un jour pour
+	# une raison qui n'est pas la sienne. « Au moins un impact » est vrai
+	# quel que soit le culling — et suffit largement ici : le defaut mesure
+	# donne ZERO impact, le rayon ressort de la formation sans rencontrer un
+	# seul triangle. La parite rigoureuse est faite par
+	# `tools/probe_cave_openings.py`, qui implemente son propre lancer de
+	# rayon et ne depend d'aucune API de moteur.
 	var hauteur: float = PALIER[5] - SAG + 1.00
 	for x: float in SONDES_FOND:
 		var depart: Vector3 = _vers_godot(Vector3(x, 6.25, hauteur))
 		var impacts: Array[float] = _distances(
 			faces, depart, _vers_godot_direction(Vector3(0.0, 1.0, 0.0)))
-		check(impacts.size() >= 2 and impacts.size() % 2 == 0,
-			"fond PERCE a x = %.2f : %d impact(s) vers le fond de la "
-			% [x, impacts.size()]
-			+ "galerie, il en faut un nombre pair et au moins 2 — "
-			+ "sinon le joueur voit le monde a travers la roche")
+		check(impacts.size() >= 1,
+			"fond PERCE a x = %.2f : aucun impact vers le fond de la " % x
+			+ "galerie — le regard traverse la formation de part en part, "
+			+ "le joueur voit le monde a travers la roche")
 
 
 func test_la_coque_de_collision_reste_distincte_du_rendu() -> void:
