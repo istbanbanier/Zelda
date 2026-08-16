@@ -1106,3 +1106,38 @@ Le point 3 est le plus parlant : les deux tests fautifs dépendent d'un délai.
 - **Piste** : un contrôle de forme dans `validate_fast.sh` — compter les
   colonnes de chaque ligne et échouer sur l'écart. Il rougirait aujourd'hui sur
   huit lignes, ce qui est le comportement correct : la dette est réelle.
+
+## ISS-044 — Le filet de praticabilité de la grotte ne regarde jamais sous ses pieds · `S2` · OUVERT
+
+- **Vu** : 2026-08-16, par la sonde `tools/probe_cave_openings.py` de la passe
+  R2a-3.4.
+- **Observé** : `test_la_grotte_a_un_seuil_et_un_interieur_praticables` est resté
+  **VERT** sur une galerie dont le plancher est absent sur 6,5 m. Il marche du
+  seuil vers l'intérieur et exige 1,75 m de hauteur libre tous les 0,40 m — il
+  vérifie donc ce qu'il y a **au-dessus de la tête**, jamais ce qu'il y a sous
+  les pieds.
+- **Le même angle mort existait dans le générateur**, et c'est ce qui rend le
+  cas instructif : `controle_epaisseur` exclut les rayons descendants en
+  justifiant par écrit que « le plancher est garanti autrement, par
+  `controle_aucun_jour` » ; or `controle_aucun_jour` ne tire que
+  `Vector((0, 0, 1))`, vers le haut. La justification renvoyait à un contrôle
+  qui ne faisait pas ce qu'on lui prêtait. **Une circularité entre deux
+  contrôles se lit comme une couverture double ; c'est une couverture nulle.**
+- **Conséquence mesurée** : le sol visible de la galerie était le sommet de
+  l'assise enterrée, 0,38 à 0,53 m sous le profil, et les touffes d'herbe du
+  terrain gelé (0,30 m) montaient 0,24 m au-dessus de ce faux sol — visibles à
+  l'écran depuis le seuil.
+- **Aggravant, et c'est le vrai enseignement** : le générateur **imprimait déjà
+  la mesure du défaut** le jour de la livraison. `TRANCHE3.md` publie
+  `sol : -0,416` là où le profil attend `-0,040`. La ligne était illisible
+  parce qu'elle n'imprime que la valeur mesurée, sans l'attendu à côté.
+  **Une télémétrie qui imprime une mesure sans son attendu n'est pas un
+  contrôle.**
+- **Couvert désormais** par `tests/unit/test_grotte_sans_jour.gd` et
+  `tools/probe_cave_openings.py` (rayons descendants, stations 0 à 8 comprises,
+  sphère complète). Le filet existant n'est **pas** corrigé : il teste la
+  hauteur libre, ce qui reste son objet légitime.
+- **Piste** : ajouter au filet de praticabilité un contrôle de sol sous chaque
+  pas, et faire imprimer à `hauteur_du_sol` la valeur attendue à côté de la
+  valeur mesurée, avec l'écart. Les deux sont des changements d'une ligne dont
+  l'absence a coûté une livraison.
