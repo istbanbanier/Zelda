@@ -1336,6 +1336,111 @@ def normale_de_cavite(u):
 # d'une régression de composition.
 
 
+def rochers_dos_alcove():
+    """LE REMBLAI DE L'ALCÔVE — dérivé d'`ALCOVE`, pas posé à la main.
+
+    CE QU'IL FERME, MESURÉ EN MODE COMPLET (jamais `--rapide`) :
+
+        19 rayon(s) quittent la galerie en x~-0.23 y~+8.76 z~+1.32
+        17 rayon(s) quittent la galerie en x~+0.21 y~+8.92 z~+1.37
+         4 rayon(s) quittent la galerie en x~+0.65 y~+9.09 z~+1.48
+
+    Quarante rayons dans une même zone, alimentée par six stations, quand
+    toutes les autres mailles plafonnent à trois. Rapportées aux sections,
+    les trois fuites tombent sur celle de la STATION 6 — écart hors section
+    0,21 · 0,55 · 0,90 m, contre 1,4 à 2,5 m pour ses voisines — à l'azimut
+    ~153°, au rayon ~2,8 m, à v ~ 0,45.
+
+    POURQUOI LA GAINE NE LES COUVRE PAS, ALORS QU'ELLE PORTE DÉJÀ LA
+    POUSSÉE D'ALCÔVE. Parce qu'elle se pose en X : `ax + rayon·cos θ`. À la
+    station 6 la normale au chemin est à 26,6° de X, si bien qu'à 4,06 m de
+    rayon la couronne est déplacée de 1,87 m par rapport au flanc réel.
+    Poser la gaine ENTIÈRE sur la normale a été essayé et refusé —
+    `controle_epaisseur` tombait de 1,09 à 0,60 m, parce que ce contrôle
+    mesure lui aussi en X. On ne déplace donc rien : on ajoute, là où la
+    poche creuse, une famille qui suit la vraie section.
+
+    ELLE EST DÉRIVÉE, ET C'EST LA CONDITION. La position de chaque roche est
+    le POINT DE PAROI que `anneau_interieur()` calcule pour l'alcôve — même
+    `le_long`, même `fenetre`, même gaussienne en v, même normale. Si
+    `ALCOVE` change, le remblai suit ; aucune cote n'est recopiée.
+
+    ELLE NE PEUT PAS TOUCHER LA COMPOSITION. Son sommet est plafonné à
+    `DOS_ALCOVE_PLAFOND_M` = 4,20 m, sous les deux cols mesurés (4,58 m à
+    l'est, 5,65 m à l'ouest). C'est la leçon des quatre refus précédents :
+    toute matière ajoutée autour du tube remonte vers un col, donc une
+    famille qui n'a pas à monter se plafonne.
+    """
+    sortie = []
+    hauteur = MODULES["R"]["natif"][2] * DOS_ALCOVE_ECHELLE[2]
+    u = float(ALCOVE["i0"])
+    rang = 0
+    while u <= ALCOVE["i1"] + 1e-6:
+        ax, ay, hw, cle = station_de_cavite(u)
+        nx, ny = normale_de_cavite(u)
+        i = max(0, min(len(CAVITE_ASYM) - 1, int(math.floor(u))))
+        j = min(len(CAVITE_ASYM) - 1, i + 1)
+        t = max(0.0, min(1.0, u - i))
+        gauche = CAVITE_ASYM[i][0] * (1.0 - t) + CAVITE_ASYM[j][0] * t
+        for k in range(DOS_ALCOVE_AZIMUTS):
+            tf = math.radians(DOS_ALCOVE_THETA0
+                              + k * (180.0 - DOS_ALCOVE_THETA0)
+                              / max(1, DOS_ALCOVE_AZIMUTS - 1))
+            v = math.sin(tf)
+            # LE POINT DE PAROI, recopié de `anneau_interieur()`.
+            pousse = (ALCOVE["ampl"]
+                      * le_long(u, ALCOVE["i0"], ALCOVE["i1"])
+                      * fenetre(tf, ALCOVE["theta"], ALCOVE["dtheta"])
+                      * math.exp(-(((v - ALCOVE["v0"]) / ALCOVE["dv"]) ** 2.0)))
+            if pousse < DOS_ALCOVE_POUSSEE_MIN_M:
+                continue          # hors de l'influence de la poche
+            n = (hw * gauche + pousse) * math.cos(tf)
+            z_paroi = cle * (max(0.0, v) ** 0.75)
+            base = min(z_paroi - hauteur * 0.45,
+                       DOS_ALCOVE_PLAFOND_M - hauteur)
+            sortie.append(dict(
+                nom="DosAlcove_%d_%d" % (rang, k), mod="R",
+                pose=(ax + n * nx, ay + n * ny, base),
+                lacet=(rang * 43 + k * 67) % 360,
+                tangage=(rang % 3) * 3 - 3, roulis=(k % 4) * 3 - 4,
+                ech=DOS_ALCOVE_ECHELLE, rang="gaine"))
+        rang += 1
+        prochain = min(float(ALCOVE["i1"]), u + 0.05)
+        avance = 0.0
+        while prochain < ALCOVE["i1"] and avance < DOS_ALCOVE_PAS_M:
+            a = station_de_cavite(u)
+            b = station_de_cavite(prochain)
+            avance = math.hypot(b[0] - a[0], b[1] - a[1])
+            if avance < DOS_ALCOVE_PAS_M:
+                prochain = min(float(ALCOVE["i1"]), prochain + 0.05)
+        if prochain >= ALCOVE["i1"] and u >= ALCOVE["i1"]:
+            break
+        u = prochain
+    return sortie
+
+
+## Azimut de départ du balayage, en degrés, et nombre d'azimuts jusqu'à 180°.
+## La fenêtre de l'alcôve fait ±52° ; on couvre la moitié haute, celle où la
+## sonde mesure les fuites (v ~ 0,45 à 0,51). La moitié basse relève de la
+## semelle.
+DOS_ALCOVE_THETA0 = 130.0
+DOS_ALCOVE_AZIMUTS = 5
+## Poussée sous laquelle on ne pose rien : hors de l'influence de la poche,
+## la gaine ordinaire suffit et une roche de plus ne ferait qu'épaissir là où
+## `controle_epaisseur` mesure déjà 1,09 m.
+DOS_ALCOVE_POUSSEE_MIN_M = 0.08
+DOS_ALCOVE_PAS_M = 0.70
+## La roche est centrée sur le point de paroi : elle en garde environ 1,8 m
+## derrière (au-delà des 0,80 m exigés) et 1,8 m devant, que la soustraction
+## retire. Anisotropie 1,50, sous le plafond de 2,00.
+DOS_ALCOVE_ECHELLE = (1.35, 1.35, 0.90)
+## Cote maximale du sommet. Les deux cols de la composition sont mesurés à
+## 4,58 m (est) et 5,65 m (ouest) : à 4,20 m cette famille ne peut atteindre
+## ni l'un ni l'autre, donc ne peut pas refaire la régression que
+## `controle_amas` a refusée quatre fois.
+DOS_ALCOVE_PLAFOND_M = 4.20
+
+
 def rochers_semelle():
     """LA SEMELLE — de la roche DÉRIVÉE sous le plancher de la galerie.
 
@@ -3895,7 +4000,7 @@ def main():
     try:
         pieces = [assise_enterree()]
         implantation = list(ROCHERS) + rochers_gaine() \
-            + rochers_semelle()
+            + rochers_dos_alcove() + rochers_semelle()
         for config in implantation:
             pieces.append(poser_rocher(config))
     except RuntimeError as erreur:
