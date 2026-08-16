@@ -1,0 +1,39 @@
+
+=== CORRIGE R2a-3.5.4 ===
+    /home/user/zelda-r2a354/a_percee/assets/environment/caves/SM_WaterfallCave.glb
+  noeud COL_WaterfallCave
+    V=442  E=1320  F=880   composantes=1
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+  noeud SM_WaterfallCave
+    V=10038  E=30108  F=20072   composantes=1
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+
+=== BASE352 8bc8b9f9 ===
+    /home/user/zelda-r2a354/a_percee/assets/environment/caves/prototypes/SM_WaterfallCave_BASE352.glb
+  noeud COL_WaterfallCave
+    V=442  E=1320  F=880   composantes=1
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+  noeud SM_WaterfallCave
+    V=9996  E=29984  F=19992   composantes=1
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 4
+    khi = V-E+F = 4   (genre non defini)
+
+=== R2a-3.4 livree 8bf1a1b3 ===
+    /home/user/zelda-r2a354/reference/SM_WaterfallCave_R2a34.glb
+  noeud COL_WaterfallCave
+    V=442  E=1320  F=880   composantes=1
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+  noeud SM_WaterfallCave
+    V=9975  E=29931  F=19954   composantes=1
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = -2   ->  genre 2

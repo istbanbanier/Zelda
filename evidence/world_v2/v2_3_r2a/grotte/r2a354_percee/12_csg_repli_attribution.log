@@ -1,0 +1,91 @@
+Blender 4.0.2
+[csg] ======================================================================
+[csg] QUESTION 1 — ou vit le repli, et a quelle etape apparait-il ?
+[csg] ======================================================================
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.05s
+[csg] 0 joint (avant remesh)        19540 faces  bords libres 21970 -> 0 apres soudure  (nm 0)  18 face(s) degeneree(s)  vol   1678.1 m3
+[csg]     repli : 39145 paire(s), profondeur max 1.512910 m
+[csg]     exemple : faces 15970/17192, centres (2.51, 3.10, -0.70) et (2.47, 1.47, -0.55), enfoncement 1.5129 m
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.32s
+[csg] 1 remaille                   136428 faces  bords libres 210278 -> 0 apres soudure  (nm 0)  0 face(s) degeneree(s)  vol    853.5 m3
+[csg]     repli : 0 paire(s), profondeur max 0.000000 m
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.33s
+[csg] 2 stratifie                  136428 faces  bords libres 257106 -> 0 apres soudure  (nm 0)  0 face(s) degeneree(s)  vol    854.5 m3
+[csg]     repli : 0 paire(s), profondeur max 0.000000 m
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.06s
+[csg] 3 decime                      19000 faces  bords libres 53100 -> 0 apres soudure  (nm 0)  0 face(s) degeneree(s)  vol    854.4 m3
+[csg]     repli : 2 paire(s), profondeur max 0.000612 m
+[csg]     exemple : faces 13117/13133, centres (2.01, -2.18, -0.69) et (2.25, -1.78, -0.67), enfoncement 0.0006 m
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.06s
+[csg] 4 soustrait                   20090 faces  bords libres 54812 -> 0 apres soudure  (nm 0)  1 face(s) degeneree(s)  vol    788.5 m3
+[csg]     repli : 2 paire(s), profondeur max 0.000612 m
+[csg]     exemple : faces 13173/13189, centres (2.01, -2.18, -0.69) et (2.25, -1.78, -0.67), enfoncement 0.0006 m
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.06s
+[csg] FINAL candidat cc3596c5       20090 faces  bords libres 54812 -> 0 apres soudure  (nm 0)  1 face(s) degeneree(s)  vol    788.5 m3
+[csg]     repli : 2 paire(s), profondeur max 0.000612 m
+[csg]     exemple : faces 13173/13189, centres (2.01, -2.18, -0.69) et (2.25, -1.78, -0.67), enfoncement 0.0006 m
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.06s
+[csg] FINAL corrige c184c8dc        20072 faces  bords libres 54832 -> 0 apres soudure  (nm 0)  1 face(s) degeneree(s)  vol    796.4 m3
+[csg]     repli : 2 paire(s), profondeur max 0.000612 m
+[csg]     exemple : faces 12973/12989, centres (2.01, -2.18, -0.69) et (2.25, -1.78, -0.67), enfoncement 0.0006 m
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.06s
+[csg] FINAL R2a-3.4 livree          19954 faces  bords libres 55542 -> 0 apres soudure  (nm 0)  2 face(s) degeneree(s)  vol    994.8 m3
+[csg]     repli : 0 paire(s), profondeur max 0.000000 m
+[csg] ======================================================================
+[csg] QUESTION 2 — le booleen INOFFENSIF (cube a 500 m) ouvre-t-il ?
+[csg] ======================================================================
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.04s
+[csg] 0 joint (avant remesh)       faces 19540 -> 1336 ; bords libres (soudes) 0 -> 0 ; nm 0 -> 0 ; vol 1678.086 -> 544.115 m3
+[csg]     appariement par centroide : 18204 disparue(s), 0 apparue(s)
+[csg]       DISPARUE  (1.811, 6.022, 0.829)
+[csg]       DISPARUE  (1.945, 5.788, 0.958)
+[csg]       DISPARUE  (1.468, 6.375, 0.942)
+[csg]       DISPARUE  (1.583, 6.251, 1.149)
+[csg]       DISPARUE  (0.751, 6.078, 0.843)
+[csg]       DISPARUE  (1.063, 6.222, 1.124)
+[csg]     a comparer au repli : faces 15970/17192, centres (2.51, 3.10, -0.70) et (2.47, 1.47, -0.55), enfoncement 1.5129 m
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.31s
+[csg] 1 remaille                   faces 136428 -> 136428 ; bords libres (soudes) 0 -> 0 ; nm 0 -> 0 ; vol 853.466 -> 853.466 m3
+[csg]     appariement par centroide : 0 disparue(s), 0 apparue(s)
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.34s
+[csg] 2 stratifie                  faces 136428 -> 136428 ; bords libres (soudes) 0 -> 0 ; nm 0 -> 0 ; vol 854.532 -> 854.532 m3
+[csg]     appariement par centroide : 0 disparue(s), 0 apparue(s)
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.06s
+[csg] 3 decime                     faces 19000 -> 19000 ; bords libres (soudes) 0 -> 0 ; nm 0 -> 0 ; vol 854.448 -> 854.448 m3
+[csg]     appariement par centroide : 0 disparue(s), 0 apparue(s)
+[csg]     a comparer au repli : faces 13117/13133, centres (2.01, -2.18, -0.69) et (2.25, -1.78, -0.67), enfoncement 0.0006 m
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.06s
+[csg] 4 soustrait                  faces 20090 -> 20089 ; bords libres (soudes) 0 -> 3 ; nm 0 -> 3 ; vol 788.526 -> 788.526 m3
+[csg]     appariement par centroide : 1 disparue(s), 0 apparue(s)
+[csg]       DISPARUE  (-1.504, -3.099, -0.639)
+[csg]     a comparer au repli : faces 13173/13189, centres (2.01, -2.18, -0.69) et (2.25, -1.78, -0.67), enfoncement 0.0006 m
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.06s
+[csg] FINAL candidat cc3596c5      faces 20090 -> 20089 ; bords libres (soudes) 0 -> 3 ; nm 0 -> 3 ; vol 788.526 -> 788.526 m3
+[csg]     appariement par centroide : 1 disparue(s), 0 apparue(s)
+[csg]       DISPARUE  (-1.504, -3.099, -0.639)
+[csg]     a comparer au repli : faces 13173/13189, centres (2.01, -2.18, -0.69) et (2.25, -1.78, -0.67), enfoncement 0.0006 m
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.06s
+[csg] FINAL corrige c184c8dc       faces 20072 -> 20071 ; bords libres (soudes) 0 -> 3 ; nm 0 -> 3 ; vol 796.445 -> 796.445 m3
+[csg]     appariement par centroide : 1 disparue(s), 0 apparue(s)
+[csg]       DISPARUE  (-1.504, -3.099, -0.639)
+[csg]     a comparer au repli : faces 12973/12989, centres (2.01, -2.18, -0.69) et (2.25, -1.78, -0.67), enfoncement 0.0006 m
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.06s
+[csg] FINAL R2a-3.4 livree         faces 19954 -> 19954 ; bords libres (soudes) 0 -> 0 ; nm 0 -> 0 ; vol 994.807 -> 994.807 m3
+[csg]     appariement par centroide : 0 disparue(s), 0 apparue(s)
+RC=0

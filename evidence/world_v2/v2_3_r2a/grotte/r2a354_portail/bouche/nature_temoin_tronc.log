@@ -1,0 +1,9 @@
+NATURE DES TEMOINS DU TRONC DANS LA GEOMETRIE CANDIDATE cc3596c5
+(rayon vertical : parite des traversees sous le point)
+      MODELE_SALLE_tronc (1.050 ; 6.250 ; 0.520) : AIR   sol 0.353   plafond 1.440
+      MODELE_NICHE_tronc (-1.200 ; 8.200 ; 0.730) : ROCHE   sol -   plafond -
+      graine_tronc     (1.050 ; 6.250 ; 1.120) : AIR   sol 0.353   plafond 1.440
+
+Et, pour comparaison, les temoins du SOCLE :
+      MODELE_SALLE_socle (2.620 ; 2.580 ; 0.390) : AIR   sol 0.084   plafond 2.888
+      MODELE_NICHE_socle (2.780 ; 4.090 ; 0.800) : AIR   sol 0.492   plafond 2.233

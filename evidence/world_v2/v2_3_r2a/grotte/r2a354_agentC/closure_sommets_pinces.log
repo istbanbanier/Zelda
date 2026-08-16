@@ -1,0 +1,99 @@
+==========================================================================
+FICHIER : assets/environment/caves/SM_WaterfallCave.glb
+sha256  : cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49
+noeud   : SM_WaterfallCave   (leve si absent — pas de repli sur COL_)
+soudure : 54810 sommets bruts -> 10045 soudes (44765 doublons fusionnes)
+          20090 triangles -> 20090 retenus (0 degeneres retires)
+boite modele : x[-8.772 8.174] ay[-3.135 11.899] az[-3.551 8.192]
+--------------------------------------------------------------------------
+aretes a 1 face  (bord libre)   : 0
+aretes a >2 faces (non-manifold): 0
+aretes mal orientees            : 0
+SOMMETS PINCES (lien a >1 cycle): 0      <-- LE TEST QUI MANQUAIT
+sommets partages entre composantes : 0
+composantes de faces : 1
+--------------------------------------------------------------------------
+  comp 0 : V=10045 E=30135 F=20090  aire 848.041232 m2
+           dans la composante : 0 bord(s) libre(s), 0 non-manifold, 0 arete(s) partagee(s) au dehors
+           khi naif = 0   pincements = 0   khi CORRIGE = 0
+           genre = 1 (ANSES)
+
+==========================================================================
+FICHIER : assets/environment/caves/prototypes/SM_WaterfallCave_BASE352.glb
+sha256  : 8bc8b9f9eb9ead12dcccf381e271f66cd8ee0a4fd66f41ba35b24fde0d0f4416
+noeud   : SM_WaterfallCave   (leve si absent — pas de repli sur COL_)
+soudure : 54329 sommets bruts -> 9996 soudes (44333 doublons fusionnes)
+          19992 triangles -> 19992 retenus (0 degeneres retires)
+boite modele : x[-8.772 8.174] ay[-3.135 11.899] az[-3.551 8.192]
+--------------------------------------------------------------------------
+aretes a 1 face  (bord libre)   : 0
+aretes a >2 faces (non-manifold): 4
+aretes mal orientees            : 0
+SOMMETS PINCES (lien a >1 cycle): 0      <-- LE TEST QUI MANQUAIT
+sommets partages entre composantes : 7
+composantes de faces : 5
+--------------------------------------------------------------------------
+  comp 0 : V=9992 E=29976 F=19984  aire 827.713902 m2
+           dans la composante : 0 bord(s) libre(s), 0 non-manifold, 4 arete(s) partagee(s) au dehors
+           khi naif = 0   pincements = 0   khi CORRIGE = 0
+           genre = 1 (ANSES)
+  comp 1 : V=3 E=3 F=2  aire 0.000206 m2
+           dans la composante : 0 bord(s) libre(s), 0 non-manifold, 1 arete(s) partagee(s) au dehors
+           khi naif = 2   pincements = 0   khi CORRIGE = 2
+           genre = 0 (sphere — aucune anse)
+  comp 2 : V=3 E=3 F=2  aire 0.000796 m2
+           dans la composante : 0 bord(s) libre(s), 0 non-manifold, 1 arete(s) partagee(s) au dehors
+           khi naif = 2   pincements = 0   khi CORRIGE = 2
+           genre = 0 (sphere — aucune anse)
+  comp 3 : V=3 E=3 F=2  aire 0.001539 m2
+           dans la composante : 0 bord(s) libre(s), 0 non-manifold, 1 arete(s) partagee(s) au dehors
+           khi naif = 2   pincements = 0   khi CORRIGE = 2
+           genre = 0 (sphere — aucune anse)
+  comp 4 : V=3 E=3 F=2  aire 0.000263 m2
+           dans la composante : 0 bord(s) libre(s), 0 non-manifold, 1 arete(s) partagee(s) au dehors
+           khi naif = 2   pincements = 0   khi CORRIGE = 2
+           genre = 0 (sphere — aucune anse)
+
+==========================================================================
+FICHIER : /home/user/zelda-r2a354/reference/SM_WaterfallCave_R2a34.glb
+sha256  : 8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110
+noeud   : SM_WaterfallCave   (leve si absent — pas de repli sur COL_)
+soudure : 55542 sommets bruts -> 9975 soudes (45567 doublons fusionnes)
+          19954 triangles -> 19954 retenus (0 degeneres retires)
+boite modele : x[-8.293 8.912] ay[-3.992 12.251] az[-3.550 9.643]
+--------------------------------------------------------------------------
+aretes a 1 face  (bord libre)   : 0
+aretes a >2 faces (non-manifold): 0
+aretes mal orientees            : 0
+SOMMETS PINCES (lien a >1 cycle): 0      <-- LE TEST QUI MANQUAIT
+sommets partages entre composantes : 0
+composantes de faces : 1
+--------------------------------------------------------------------------
+  comp 0 : V=9975 E=29931 F=19954  aire 1267.134166 m2
+           dans la composante : 0 bord(s) libre(s), 0 non-manifold, 0 arete(s) partagee(s) au dehors
+           khi naif = -2   pincements = 0   khi CORRIGE = -2
+           genre = 2 (ANSES)
+
+==========================================================================
+FICHIER : /home/user/zelda-r2a354/a_percee/assets/environment/caves/SM_WaterfallCave.glb
+sha256  : c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed
+noeud   : SM_WaterfallCave   (leve si absent — pas de repli sur COL_)
+soudure : 54831 sommets bruts -> 10038 soudes (44793 doublons fusionnes)
+          20072 triangles -> 20072 retenus (0 degeneres retires)
+boite modele : x[-8.772 8.174] ay[-3.135 11.899] az[-3.551 8.192]
+--------------------------------------------------------------------------
+aretes a 1 face  (bord libre)   : 0
+aretes a >2 faces (non-manifold): 0
+aretes mal orientees            : 0
+SOMMETS PINCES (lien a >1 cycle): 0      <-- LE TEST QUI MANQUAIT
+sommets partages entre composantes : 0
+composantes de faces : 1
+--------------------------------------------------------------------------
+  comp 0 : V=10038 E=30108 F=20072  aire 843.967950 m2
+           dans la composante : 0 bord(s) libre(s), 0 non-manifold, 0 arete(s) partagee(s) au dehors
+           khi naif = 2   pincements = 0   khi CORRIGE = 2
+           genre = 0 (sphere — aucune anse)
+
+==========================================================================
+VERDICT : au moins une geometrie porte un defaut de fermeture.
+RC=1

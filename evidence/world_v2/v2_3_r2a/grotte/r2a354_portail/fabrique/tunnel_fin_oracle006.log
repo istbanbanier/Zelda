@@ -1,0 +1,47 @@
+==============================================================================
+ORACLE GLOBAL — topologie + classement d'espace
+==============================================================================
+maillage : /tmp/sab_fin/SABOTAGE_toit.glb
+sha256   : 095a30551de4fc2eeeb2d86af2039a75e6473ef3a945d5a681fe09708dda70b9
+noeud    : SM_WaterfallCave   (COL_WaterfallCave, proxy de collision, n'est PAS mesure)
+triangles: 20380   matieres : MAT_CaveIn_Deep, MAT_CaveIn_Floor, MAT_CaveIn_Wall, MAT_CaveRock_Base, MAT_CaveRock_Collar, MAT_CaveRock_Face
+AABB     : x[-8.293 8.912] y[-3.992 12.251] z[-3.550 9.643]
+
+------------------------------------------------------------------------------
+METHODE A — TOPOLOGIE (combinatoire pure, sans grille ni rayon)
+------------------------------------------------------------------------------
+   sommets soudes 10186   aretes 30570   faces 20380
+   aretes par nombre de faces : {'2': 30570}
+   bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 1
+      composante 0 : F=20380 V=10186 E=30570  khi=-4  genre 3
+
+------------------------------------------------------------------------------
+METHODE B — CLASSEMENT D'ESPACE (segment centre-a-centre)
+------------------------------------------------------------------------------
+   reperes lus dans : evidence/world_v2/v2_3_r2a/grotte/r2a354_portail/reperes_tronc_a4e91dc.gd
+   sha256 de cette source : 6d3c6cd2bf09657e95d2b3c7ac09ac4a577efc7cfaaa2b92d39925a12eb09a75
+   AVERTISSEMENT : une geometrie doit etre mesuree avec SES
+   reperes. Les reperes ont ete re-derives a R2a-3.5.2 ; croiser
+   une geometrie et les reperes d'une autre revision rend un
+   verdict credible sur un couple qui n'existe pas.
+   graine interieure = MODELE_SALLE relevee de 0.90 m (hauteur de torse) : (1.05 ; 6.25 ; 1.12)
+   temoins = repere releve de 0.30 m (les MODELE_* designent un point au SOL ; au ras de la surface la case est indecise)
+   grille 327x311x260 = 26441220 case(s), pas 0.060 m
+   segments (colonnes repliees) : 262882
+   dont 2 composante(s) d'UNE SEULE CASE, ecartee(s) de C1/C2
+      (plancher de resolution de la grille : leur nombre croit quand le pas
+       diminue. La methode A, sans resolution, couvre ce cas.)
+   composantes d'espace (sans barriere) : 4
+      AIR        21839778 case(s)    4717.39 m3  bord  531570  voix air/roche 161192/0
+      ROCHE       4601440 case(s)     993.91 m3  bord       0  voix air/roche 0/161174
+      AIR               1 case(s)       0.00 m3  bord       0  voix air/roche 2/0
+      AIR               1 case(s)       0.00 m3  bord       0  voix air/roche 2/0
+   barriere de bouche : couche j=66, surface a y=-1.172 (epaisseur nulle)
+   composante de la graine : AIR, 16635680 case(s) = 3593.31 m3, emprise x[-9.46 10.10] y[-1.14 13.44] z[-4.72 10.82]
+      temoin MODELE_NICHE           (-1.20 ; 8.20 ; 0.73) : DANS la cavite scellee [AIR]
+      temoin MODELE_SALLE           (1.05 ; 6.25 ; 0.52) : DANS la cavite scellee [AIR]
+
+==============================================================================
+VERDICT : ROUGE
+   C3 : la composante interieure atteint 369330 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (repere MODELE) : [[-9.46, -1.14, -4.72], [-9.46, -1.08, -4.72], [-9.46, -1.02, -4.72], [-9.46, -0.96, -4.72], [-9.46, -0.9, -4.72], [-9.46, -0.84, -4.72]]
+==============================================================================

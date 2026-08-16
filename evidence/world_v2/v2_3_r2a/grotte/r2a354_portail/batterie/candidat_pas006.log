@@ -1,0 +1,189 @@
+==============================================================================
+BATTERIE DE CONTROLES NEGATIFS
+==============================================================================
+source        : /home/user/zelda-r2a354/b_portail/assets/environment/caves/SM_WaterfallCave.glb
+source sha256 : cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49
+pas de grille : 0.060 m
+reperes       : (depot courant)
+
+------------------------------------------------------------------------------
+PLACEMENTS DERIVES DE CE MAILLAGE
+------------------------------------------------------------------------------
+   graine : (2.620 ; 2.580 ; 0.990)  AIR  degagement 0.906 m
+   rayon  : 0.3000 m   (= 0.55 x degagement, borne a [0.08 0.30])
+   longueur de tunnel : 53.775 m  (2 x diagonale AABB)
+   poche  : (-1.005 ; 2.979 ; 1.424)  roche, epaisseur verticale 8.225 m, degagement 0.926 m
+   placebo: (-0.400 ; 2.378 ; 6.444)  peau exterieure, roche dessous 9.211 m, rayon 0.300 m
+   bloc   : (-0.299 ; 4.382 ; 9.492)  rayon 0.300  disjoint OUI
+   maillage : /home/user/zelda-r2a354/b_portail/assets/environment/caves/SM_WaterfallCave.glb
+   sha256   : cc3596c5d68cbfd8
+   reperes  : /home/user/zelda-r2a354/b_portail/scripts/world_v2/poi/waterfall_cave_place.gd
+
+------------------------------------------------------------------------------
+VERDICT DE LA SOURCE, AVANT TOUT SABOTAGE
+------------------------------------------------------------------------------
+   oracle sur la source en 14 s : ROUGE   (RC=1)
+      C3 : la composante interieure atteint 340246 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (r
+
+   AVERTISSEMENT : la source n'est pas VERTE a ce pas.
+   Les controles attendus ROUGE deviennent NON INFORMATIFS :
+   ils rougiraient pour le defaut de la source, pas pour le
+   sabotage. Ils sont joues et publies, mais ne comptent pas
+   comme preuve de falsifiabilite de l'oracle.
+
+------------------------------------------------------------------------------
+CONTROLE : temoin     (attendu : VERT)
+------------------------------------------------------------------------------
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20090
+   SABOTAGE-TENTATIVES : 1
+   SABOTAGE-FACES-APRES : 20090
+   fabrique en 1 s   sha256 b47233b3524bb32b
+     bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 1
+        composante 0 : F=20090 V=10045 E=30135  khi=0  genre 1
+   oracle en 14 s : ROUGE   (RC=1)
+      C3 : la composante interieure atteint 340246 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (r
+   -> NON CONFORME
+
+------------------------------------------------------------------------------
+CONTROLE : placebo     (attendu : VERT)
+------------------------------------------------------------------------------
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20090
+   SABOTAGE-TENTATIVES : 1
+   SABOTAGE-FACES-APRES : 20856
+   fabrique en 1 s   sha256 a5a56a3163727ead
+     bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 1
+        composante 0 : F=20856 V=10428 E=31284  khi=0  genre 1
+   oracle en 15 s : ROUGE   (RC=1)
+      C3 : la composante interieure atteint 340246 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (r
+   -> NON CONFORME
+
+------------------------------------------------------------------------------
+CONTROLE : toit     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20090
+   SABOTAGE-TENTATIVES : 1
+   SABOTAGE-FACES-APRES : 20424
+   fabrique en 1 s   sha256 8b9986e47520ac57
+     bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 1
+        composante 0 : F=20424 V=10210 E=30636  khi=-2  genre 2
+   traversees restantes sur l'axe : 0
+   RAYON LIBRE MESURE : 0.280 m   (diametre libre 0.560 m)
+   AXE TRAVERSANT : plus aucune face sur l'axe, de la graine jusqu'au dehors.
+   oracle en 15 s : ROUGE   (RC=1)
+      C3 : la composante interieure atteint 340246 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (r
+   -> NON INFORMATIF
+
+------------------------------------------------------------------------------
+CONTROLE : paroi_est     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20090
+   SABOTAGE-TENTATIVES : 1
+   SABOTAGE-FACES-APRES : 20412
+   fabrique en 1 s   sha256 b1b5783cb4a33c10
+     bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 1
+        composante 0 : F=20412 V=10204 E=30618  khi=-2  genre 2
+   traversees restantes sur l'axe : 0
+   RAYON LIBRE MESURE : 0.280 m   (diametre libre 0.560 m)
+   AXE TRAVERSANT : plus aucune face sur l'axe, de la graine jusqu'au dehors.
+   oracle en 15 s : ROUGE   (RC=1)
+      C3 : la composante interieure atteint 340246 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (r
+   -> NON INFORMATIF
+
+------------------------------------------------------------------------------
+CONTROLE : paroi_ouest     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20090
+   SABOTAGE-TENTATIVES : 1
+   SABOTAGE-FACES-APRES : 20398
+   fabrique en 1 s   sha256 3a2ad58dc57d501b
+     bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 1
+        composante 0 : F=20398 V=10197 E=30597  khi=-2  genre 2
+   traversees restantes sur l'axe : 0
+   RAYON LIBRE MESURE : 0.280 m   (diametre libre 0.560 m)
+   AXE TRAVERSANT : plus aucune face sur l'axe, de la graine jusqu'au dehors.
+   oracle en 15 s : ROUGE   (RC=1)
+      C3 : la composante interieure atteint 340246 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (r
+   -> NON INFORMATIF
+
+------------------------------------------------------------------------------
+CONTROLE : plancher     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20090
+   SABOTAGE-TENTATIVES : 1
+   SABOTAGE-FACES-APRES : 20376
+   fabrique en 1 s   sha256 2323e2627f348fb2
+     bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 1
+        composante 0 : F=20376 V=10186 E=30564  khi=-2  genre 2
+   traversees restantes sur l'axe : 0
+   RAYON LIBRE MESURE : 0.280 m   (diametre libre 0.560 m)
+   AXE TRAVERSANT : plus aucune face sur l'axe, de la graine jusqu'au dehors.
+   oracle en 15 s : ROUGE   (RC=1)
+      C3 : la composante interieure atteint 340246 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (r
+   -> NON INFORMATIF
+
+------------------------------------------------------------------------------
+CONTROLE : poche     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20090
+   SABOTAGE-TENTATIVES : 1
+   SABOTAGE-FACES-APRES : 21050
+   fabrique en 1 s   sha256 2f08857a98fa2f7e
+     bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 2
+        composante 0 : F=20090 V=10045 E=30135  khi=0  genre 1
+        composante 1 : F=960 V=482 E=1440  khi=2  genre 0
+   oracle en 15 s : ROUGE   (RC=1)
+      T1 : 2 composantes de surface au lieu d'une -> corps detache
+      C2 : 2 composante(s) AIR au lieu d'une seule -> poche d'air parasite
+      C3 : la composante interieure atteint 340246 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (r
+   -> NON INFORMATIF
+
+------------------------------------------------------------------------------
+CONTROLE : roche_flottante     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20090
+   SABOTAGE-TENTATIVES : 1
+   SABOTAGE-FACES-APRES : 20096
+   fabrique en 1 s   sha256 95c74e55a4dddd9c
+     bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 2
+        composante 0 : F=20090 V=10045 E=30135  khi=0  genre 1
+        composante 1 : F=12 V=8 E=18  khi=2  genre 0
+   oracle en 15 s : ROUGE   (RC=1)
+      T1 : 2 composantes de surface au lieu d'une -> corps detache
+      C1 : 2 composante(s) ROCHE au lieu d'une seule -> roche flottante ou massif scinde
+      C3 : la composante interieure atteint 361765 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (r
+   -> NON INFORMATIF
+
+------------------------------------------------------------------------------
+RESTAURATION ET VERT SUR LA SOURCE
+------------------------------------------------------------------------------
+   sha256 source AVANT batterie : cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49
+   sha256 source APRES batterie : cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49
+   -> BYTE-IDENTIQUE
+   oracle sur la source en 14 s : ROUGE   (RC=1)
+
+==============================================================================
+controle           attendu  obtenu   etat           tentatives rayon libre
+------------------------------------------------------------------------------
+temoin             VERT     ROUGE    NON CONFORME   1          -
+placebo            VERT     ROUGE    NON CONFORME   1          -
+toit               ROUGE    ROUGE    NON INFORMATIF 1          0.280 m
+paroi_est          ROUGE    ROUGE    NON INFORMATIF 1          0.280 m
+paroi_ouest        ROUGE    ROUGE    NON INFORMATIF 1          0.280 m
+plancher           ROUGE    ROUGE    NON INFORMATIF 1          0.280 m
+poche              ROUGE    ROUGE    NON INFORMATIF 1          -
+roche_flottante    ROUGE    ROUGE    NON INFORMATIF 1          -
+------------------------------------------------------------------------------
+BATTERIE : NON CONFORME
+   MOTIF PREMIER : la source est ROUGE a ce pas. La batterie ne peut pas
+   demontrer la falsifiabilite de l'oracle sur une geometrie deja defectueuse ;
+   corriger la geometrie, puis rejouer.
+   non conformes : temoin (NON CONFORME), placebo (NON CONFORME), toit (NON INFORMATIF), paroi_est (NON INFORMATIF), paroi_ouest (NON INFORMATIF), plancher (NON INFORMATIF), poche (NON INFORMATIF), roche_flottante (NON INFORMATIF)
+==============================================================================

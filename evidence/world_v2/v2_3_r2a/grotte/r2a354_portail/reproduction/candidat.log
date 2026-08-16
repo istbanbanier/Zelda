@@ -1,0 +1,114 @@
+==============================================================================
+BATTERIE DE CONTROLES NEGATIFS
+==============================================================================
+source        : /home/user/zelda-r2a354/b_portail/assets/environment/caves/SM_WaterfallCave.glb
+source sha256 : cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49
+pas de grille : 0.100 m     rayon de percement : 0.30 m
+graine        : 2.62,2.58,0.99     point poche/bloc : 1.50,-0.40,2.00
+
+------------------------------------------------------------------------------
+CONTROLE : temoin     (attendu : VERT)
+------------------------------------------------------------------------------
+   fabrique en 2 s   sha256 6952c964e93229f3
+     bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 1
+        composante 0 : F=20090 V=10045 E=30135  khi=0  genre 1
+   oracle en 8 s : VERT   (RC=0)
+   -> CONFORME
+
+------------------------------------------------------------------------------
+CONTROLE : toit     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   fabrique en 8 s   sha256 4050156055b80edc
+     bords libres 0   aretes non-manifold 0   sommets pinces 1   composantes 1
+        composante 0 : F=20430 V=10212 E=30645  khi=-3, DEPINCE -2 (1 sommet(s) pince(s))  genre 2
+   traversees restantes sur l'axe : 0
+   RAYON LIBRE MESURE : 0.280 m   (diametre libre 0.560 m)
+   AXE TRAVERSANT : plus aucune face sur l'axe, de la graine jusqu'au dehors.
+   oracle en 8 s : ROUGE   (RC=1)
+      C3 : la composante interieure atteint 122404 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (repere MODELE) : [[-9.92, -1.08, -4.7], [-9.92, -0.98, -4.7], [-9.92, -0.88, -4.7], [-9.92, -0.78, -4.7], [-9.92, -0.68, -4.7], [-9.92, -0.58, -4.7]]
+   -> CONFORME
+
+------------------------------------------------------------------------------
+CONTROLE : paroi_est     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   fabrique en 7 s   sha256 260c3955503cfcf1
+     bords libres 0   aretes non-manifold 0   sommets pinces 1   composantes 1
+        composante 0 : F=20418 V=10206 E=30627  khi=-3, DEPINCE -2 (1 sommet(s) pince(s))  genre 2
+   traversees restantes sur l'axe : 0
+   RAYON LIBRE MESURE : 0.280 m   (diametre libre 0.560 m)
+   AXE TRAVERSANT : plus aucune face sur l'axe, de la graine jusqu'au dehors.
+   oracle en 8 s : ROUGE   (RC=1)
+      C3 : la composante interieure atteint 122404 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (repere MODELE) : [[-9.92, -1.08, -4.7], [-9.92, -0.98, -4.7], [-9.92, -0.88, -4.7], [-9.92, -0.78, -4.7], [-9.92, -0.68, -4.7], [-9.92, -0.58, -4.7]]
+   -> CONFORME
+
+------------------------------------------------------------------------------
+CONTROLE : paroi_ouest     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   fabrique en 5 s   sha256 c23dd2cbf1d52741
+     bords libres 0   aretes non-manifold 0   sommets pinces 1   composantes 1
+        composante 0 : F=20402 V=10198 E=30603  khi=-3, DEPINCE -2 (1 sommet(s) pince(s))  genre 2
+   traversees restantes sur l'axe : 0
+   RAYON LIBRE MESURE : 0.280 m   (diametre libre 0.560 m)
+   AXE TRAVERSANT : plus aucune face sur l'axe, de la graine jusqu'au dehors.
+   oracle en 9 s : ROUGE   (RC=1)
+      C3 : la composante interieure atteint 122404 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (repere MODELE) : [[-9.92, -1.08, -4.7], [-9.92, -0.98, -4.7], [-9.92, -0.88, -4.7], [-9.92, -0.78, -4.7], [-9.92, -0.68, -4.7], [-9.92, -0.58, -4.7]]
+   -> CONFORME
+
+------------------------------------------------------------------------------
+CONTROLE : plancher     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   fabrique en 6 s   sha256 4ff0926d23da2ee5
+     bords libres 0   aretes non-manifold 0   sommets pinces 1   composantes 1
+        composante 0 : F=20382 V=10188 E=30573  khi=-3, DEPINCE -2 (1 sommet(s) pince(s))  genre 2
+   traversees restantes sur l'axe : 0
+   RAYON LIBRE MESURE : 0.280 m   (diametre libre 0.560 m)
+   AXE TRAVERSANT : plus aucune face sur l'axe, de la graine jusqu'au dehors.
+   oracle en 8 s : ROUGE   (RC=1)
+      C3 : la composante interieure atteint 122404 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (repere MODELE) : [[-9.92, -1.08, -4.7], [-9.92, -0.98, -4.7], [-9.92, -0.88, -4.7], [-9.92, -0.78, -4.7], [-9.92, -0.68, -4.7], [-9.92, -0.58, -4.7]]
+   -> CONFORME
+
+------------------------------------------------------------------------------
+CONTROLE : poche     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   fabrique en 5 s   sha256 71173cc4f3a1d3fc
+     bords libres 0   aretes non-manifold 0   sommets pinces 1   composantes 2
+        composante 0 : F=20096 V=10047 E=30144  khi=-1, DEPINCE 0 (1 sommet(s) pince(s))  genre 1
+        composante 1 : F=960 V=482 E=1440  khi=2  genre 0
+   oracle en 8 s : ROUGE   (RC=1)
+      T1 : 2 composantes de surface au lieu d'une -> corps detache
+      C2 : 2 composante(s) AIR au lieu d'une seule -> poche d'air parasite
+   -> CONFORME
+
+------------------------------------------------------------------------------
+CONTROLE : roche_flottante     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   fabrique en 1 s   sha256 600a65731e41191b
+     bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 2
+        composante 0 : F=20090 V=10045 E=30135  khi=0  genre 1
+        composante 1 : F=12 V=8 E=18  khi=2  genre 0
+   oracle en 8 s : ROUGE   (RC=1)
+      T1 : 2 composantes de surface au lieu d'une -> corps detache
+      C1 : 2 composante(s) ROCHE au lieu d'une seule -> roche flottante ou massif scinde
+   -> CONFORME
+
+------------------------------------------------------------------------------
+RESTAURATION ET VERT SUR LA SOURCE
+------------------------------------------------------------------------------
+   sha256 source AVANT batterie : cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49
+   sha256 source APRES batterie : cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49
+   -> BYTE-IDENTIQUE
+   oracle sur la source en 8 s : VERT   (RC=0)
+
+==============================================================================
+controle           attendu  obtenu   etat           rayon libre
+------------------------------------------------------------------------------
+temoin             VERT     VERT     CONFORME       -
+toit               ROUGE    ROUGE    CONFORME       0.280 m
+paroi_est          ROUGE    ROUGE    CONFORME       0.280 m
+paroi_ouest        ROUGE    ROUGE    CONFORME       0.280 m
+plancher           ROUGE    ROUGE    CONFORME       0.280 m
+poche              ROUGE    ROUGE    CONFORME       -
+roche_flottante    ROUGE    ROUGE    CONFORME       -
+------------------------------------------------------------------------------
+BATTERIE : CONFORME
+==============================================================================

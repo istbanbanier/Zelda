@@ -1,0 +1,43 @@
+==============================================================================
+ORACLE GLOBAL — topologie + classement d'espace
+==============================================================================
+maillage : assets/environment/caves/SM_WaterfallCave.glb
+sha256   : cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49
+noeud    : SM_WaterfallCave   (COL_WaterfallCave, proxy de collision, n'est PAS mesure)
+triangles: 20090   matieres : MAT_CaveIn_Deep, MAT_CaveIn_Floor, MAT_CaveIn_Wall, MAT_CaveRock_Base, MAT_CaveRock_Collar, MAT_CaveRock_Face
+AABB     : x[-8.772 8.174] y[-3.135 11.899] z[-3.551 8.192]
+
+------------------------------------------------------------------------------
+METHODE A — TOPOLOGIE (combinatoire pure, sans grille ni rayon)
+------------------------------------------------------------------------------
+   sommets soudes 10045   aretes 30135   faces 20090
+   aretes par nombre de faces : {'2': 30135}
+   bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 1
+      composante 0 : F=20090 V=10045 E=30135  khi=0  genre 1
+
+------------------------------------------------------------------------------
+METHODE B — CLASSEMENT D'ESPACE (segment centre-a-centre)
+------------------------------------------------------------------------------
+   reperes lus dans : /home/user/zelda-r2a354/b_portail/scripts/world_v2/poi/waterfall_cave_place.gd
+   sha256 de cette source : 7eb402f3910e00eb9dccc9d7956dde187b7598b6ef6a52904e0e5445e5cd7c87
+   AVERTISSEMENT : une geometrie doit etre mesuree avec SES
+   reperes. Les reperes ont ete re-derives a R2a-3.5.2 ; croiser
+   une geometrie et les reperes d'une autre revision rend un
+   verdict credible sur un couple qui n'existe pas.
+   graine interieure = MODELE_SALLE relevee de 0.90 m (hauteur de torse) : (2.62 ; 2.58 ; 0.99)
+   temoins = repere releve de 0.30 m (les MODELE_* designent un point au SOL ; au ras de la surface la case est indecise)
+   grille 194x175x142 = 4820900 case(s), pas 0.100 m
+   segments (colonnes repliees) : 80674
+   composantes d'espace (sans barriere) : 2
+      AIR         4031896 case(s)    4031.90 m3  bord  170660  voix air/roche 46782/0
+      ROCHE        789004 case(s)     789.00 m3  bord       0  voix air/roche 0/46666
+   barriere de bouche : couche j=72, surface a y=2.965 (epaisseur nulle)
+   composante de la graine : AIR, 1649133 case(s) = 1649.13 m3, emprise x[-9.92 9.38] y[-4.28 2.92] z[-4.70 9.40]
+      temoin MODELE_NICHE           (2.78 ; 4.09 ; 0.80) : DEHORS                 [AIR]
+      temoin MODELE_SALLE           (2.62 ; 2.58 ; 0.39) : DANS la cavite scellee [AIR]
+
+==============================================================================
+VERDICT : ROUGE
+   C3 : la composante interieure atteint 75644 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (repere MODELE) : [[-9.92, -4.28, -4.7], [-9.92, -4.18, -4.7], [-9.92, -4.08, -4.7], [-9.92, -3.98, -4.7], [-9.92, -3.88, -4.7], [-9.92, -3.78, -4.7]]
+   C4 : temoin(s) dans l'AIR mais hors de la cavite scellee : MODELE_NICHE -> le scellement ampute la cavite au lieu de la fermer, ou la cavite est coupee en deux
+==============================================================================

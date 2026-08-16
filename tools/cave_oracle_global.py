@@ -167,6 +167,22 @@ NOEUD_DEFAUT = "SM_WaterfallCave"
 SCRIPT_LIEU = "scripts/world_v2/poi/waterfall_cave_place.gd"
 GRAINE_HAUTEUR_M = 0.90        # a hauteur de torse, pas au ras du sol
 
+## RELEVEMENT DES TEMOINS — decalage EXPLICITE, pas une coordonnee.
+##
+## Les `MODELE_*` designent un point AU SOL : `waterfall_cave_place.gd` y
+## pose des objets, il n'y decrit pas un volume d'air. Un point exactement
+## au sol tombe sur la surface, ou la case de grille est indecise. On releve
+## donc, et ce chiffre doit rester un DECALAGE NOMME : une valeur relevee
+## par convention tacite survit trois passes sans que personne ne sache d'ou
+## elle vient, et passe dans la roche en silence le jour ou le sol remonte.
+##
+## `cave_oracle_bouche.py` MESURE sol et plafond a l'aplomb de chaque repere
+## et publie les deux : le relevement est donc verifiable a chaque execution
+## au lieu d'etre suppose.
+TEMOIN_RELEVEMENT_M = 0.30
+TEMOIN_RELEVEMENT_MOTIF = ("les MODELE_* designent un point au SOL ; au ras "
+                           "de la surface la case est indecise")
+
 ## Plan de bouche par defaut. Meme valeur que les deux oracles precedents,
 ## pour que les resultats restent comparables. Surchargeable, et TOUJOURS
 ## corrobore par le balayage (`--balayage`), jamais cru sur parole.
@@ -773,13 +789,23 @@ def racine_depot(depart):
     return os.path.abspath(depart)
 
 
-def lire_reperes(racine):
+def lire_reperes(racine, chemin=None):
     """`MODELE_*` du script de lieu, convertis en repere MODELE Blender.
 
     Godot -> Blender : `(X, Y, Z)` devient `(X, -Z, Y)`. Ecrite ICI une
     fois, jamais redérivée par branche.
+
+    `chemin` PERMET DE NOMMER LA SOURCE, et ce n'est pas un confort.
+    MESURE DU 2026-08-16 : les reperes ont ete re-derives a R2a-3.5.2. Le
+    tronc porte `MODELE_SALLE (1,05 ; 0,22 ; -6,25)`, la base R2a-3.5.2
+    porte `(2,62 ; 0,09 ; -2,58)` — deux points distants de plus de quatre
+    metres. Mesurer une geometrie avec les reperes d'une AUTRE revision
+    rend un verdict parfaitement credible sur un couple qui n'existe pas.
+    C'est la meme famille que l'ISS-018 : mesurer avec assurance autre
+    chose que ce qu'on croit. La source employee est donc imprimee avec son
+    sha256, toujours, et jamais deduite du silence.
     """
-    chemin = os.path.join(racine, SCRIPT_LIEU)
+    chemin = chemin or os.path.join(racine, SCRIPT_LIEU)
     if not os.path.isfile(chemin):
         return {}
     sortie = {}
@@ -966,22 +992,65 @@ def juger(espace, y_bouche, graine, temoins, bavard=True, tracer=False):
                     print("      %4d : x=%7.3f  y=%7.3f  z=[%7.3f %7.3f]  "
                           "<- BORD" % (len(pts) - 1, x, y, zb, zh))
 
+    # --- C4, ET LA DISTINCTION QUI MANQUAIT --------------------------------
+    #
+    # MESURE DU 2026-08-16, et c'est la cause du `C4` reste non tranche
+    # toute une passe. Un temoin peut manquer a l'appel pour DEUX raisons
+    # qui n'ont rien a voir :
+    #
+    #   1. il est dans l'AIR, mais dans une autre composante que la graine
+    #      -> le scellement ampute vraiment, ou la cavite est coupee en
+    #         deux. C'est un DEFAUT de la geometrie : C4, ROUGE ;
+    #   2. il est dans la ROCHE -> le repere ne decrit pas cette geometrie.
+    #      Rien n'a ete ampute : le couple (maillage, reperes) est
+    #      incoherent. Rendre ROUGE ici accuse la geometrie d'un defaut
+    #      qu'elle n'a pas.
+    #
+    # L'oracle appliquait deja cette lecture a la GRAINE — « une graine dans
+    # la roche rendrait ETANCHE sans rien prouver » — et ne l'appliquait pas
+    # aux TEMOINS. Cette asymetrie a produit un rouge credible et faux :
+    # candidat cc3596c5 juge avec les reperes du tronc a4e91dc, dont
+    # MODELE_NICHE (-1,20 ; 8,20 ; 0,73) tombe dans la roche pleine. Avec
+    # SES propres reperes, la meme geometrie est VERTE.
     manquants = []
+    egares = []
     for nom, point in sorted(temoins.items()):
         s = espace.segment_du_point(point)
-        dedans = s is not None and trouver(s) == racine_int
+        if s is None:
+            nat_t = "HORS-GRILLE"
+            dedans = False
+        else:
+            racine_t = trouver(s)
+            nat_t = espace.nature(groupes[racine_t])[0]
+            dedans = racine_t == racine_int
         r.setdefault("temoins", {})[nom] = dict(
-            point=[round(v, 3) for v in point], dans_interieur=bool(dedans))
+            point=[round(v, 3) for v in point], dans_interieur=bool(dedans),
+            nature=nat_t)
         if bavard:
-            print("      temoin %-22s (%.2f ; %.2f ; %.2f) : %s"
+            print("      temoin %-22s (%.2f ; %.2f ; %.2f) : %-22s [%s]"
                   % (nom, point[0], point[1], point[2],
-                     "DANS la cavite scellee" if dedans else "DEHORS"))
-        if not dedans:
+                     "DANS la cavite scellee" if dedans else "DEHORS", nat_t))
+        if dedans:
+            continue
+        if nat_t == "AIR":
             manquants.append(nom)
+        else:
+            egares.append("%s (%s)" % (nom, nat_t))
+
+    if egares:
+        r["bloque"] = (
+            "temoin(s) hors de l'air de cette geometrie : %s. Le repere ne "
+            "decrit pas ce maillage — rien n'a ete ampute, le couple "
+            "(maillage, reperes) est incoherent. Mesurer avec les reperes "
+            "de LA revision qui a produit ce maillage, ou dire que la paire "
+            "n'existe pas ; ne pas lire ceci comme un defaut de la "
+            "geometrie." % ", ".join(egares))
+        return r
     if manquants:
         r["defauts"].append(
-            "C4 : temoin(s) hors de la cavite scellee : %s -> le scellement "
-            "ampute la cavite au lieu de la fermer" % ", ".join(manquants))
+            "C4 : temoin(s) dans l'AIR mais hors de la cavite scellee : %s "
+            "-> le scellement ampute la cavite au lieu de la fermer, ou la "
+            "cavite est coupee en deux" % ", ".join(manquants))
     return r
 
 
@@ -1027,6 +1096,11 @@ def main():
     ap.add_argument("--noeud", default=NOEUD_DEFAUT)
     ap.add_argument("--pas", type=float, default=0.10)
     ap.add_argument("--y-bouche", type=float, default=Y_BOUCHE_DEFAUT)
+    ap.add_argument("--reperes", default=None,
+                    help="script de LIEU d'ou lire les MODELE_*. Par defaut "
+                         "celui du depot qui contient l'oracle. A NOMMER "
+                         "explicitement des qu'on mesure une geometrie "
+                         "d'une autre revision que l'arbre courant.")
     ap.add_argument("--tracer", action="store_true",
                     help="en cas de fuite, publie le chemin le plus court "
                          "de la graine au bord : le genre ne localise pas, "
@@ -1134,9 +1208,10 @@ def main():
         return 1 if defauts_topo else 0
 
     # ---------------- METHODE B ------------------------------------------
-    reperes = lire_reperes(racine)
+    source_reperes = args.reperes or os.path.join(racine, SCRIPT_LIEU)
+    reperes = lire_reperes(racine, args.reperes)
     if "MODELE_SALLE" not in reperes:
-        print("BLOQUE : MODELE_SALLE illisible dans %s" % SCRIPT_LIEU)
+        print("BLOQUE : MODELE_SALLE illisible dans %s" % source_reperes)
         return 3
     salle = reperes["MODELE_SALLE"]
     graine = (salle[0], salle[1], salle[2] + GRAINE_HAUTEUR_M)
@@ -1144,15 +1219,40 @@ def main():
     for nom in ("MODELE_SALLE", "MODELE_NICHE"):
         if nom in reperes:
             p = reperes[nom]
-            temoins[nom] = (p[0], p[1], p[2] + 0.30)
+            temoins[nom] = (p[0], p[1], p[2] + TEMOIN_RELEVEMENT_M)
 
     print("-" * 78)
     print("METHODE B — CLASSEMENT D'ESPACE (segment centre-a-centre)")
     print("-" * 78)
-    print("   reperes lus dans %s (script de LIEU, pas le generateur)"
-          % SCRIPT_LIEU)
-    print("   graine interieure (repere MODELE) : (%.2f ; %.2f ; %.2f)"
-          % graine)
+    sha_rep = hashlib.sha256(
+        open(source_reperes, "rb").read()).hexdigest() \
+        if os.path.isfile(source_reperes) else "?"
+    print("   reperes lus dans : %s" % source_reperes)
+    print("   sha256 de cette source : %s" % sha_rep)
+    print("   AVERTISSEMENT : une geometrie doit etre mesuree avec SES")
+    print("   reperes. Les reperes ont ete re-derives a R2a-3.5.2 ; croiser")
+    print("   une geometrie et les reperes d'une autre revision rend un")
+    print("   verdict credible sur un couple qui n'existe pas.")
+    rapport["reperes_source"] = source_reperes
+    rapport["reperes_sha256"] = sha_rep
+    rapport["reperes"] = {k: [round(v, 4) for v in p]
+                          for k, p in sorted(reperes.items())}
+    ## PROVENANCE IMPRIMEE, PAS DEDUITE. Trois passes ont bute sur cette
+    ## symetrie : le GLB et le script de lieu doivent venir du MEME etat.
+    ## Un desaccord ne se voit nulle part ailleurs — il produit un verdict
+    ## parfaitement credible sur un couple qui n'existe pas.
+    print("   valeurs lues (repere MODELE, apres conversion "
+          "Godot -> Blender) :")
+    for _nom, _p in sorted(reperes.items()):
+        print("      %-22s (%8.3f ; %8.3f ; %8.3f)"
+              % (_nom, _p[0], _p[1], _p[2]))
+    print("   le GLB mesure et ce script doivent provenir du MEME etat du")
+    print("   depot ; sinon le verdict porte sur un couple qui n'existe pas.")
+    print("   graine interieure = MODELE_SALLE relevee de %.2f m "
+          "(hauteur de torse) : (%.2f ; %.2f ; %.2f)"
+          % (GRAINE_HAUTEUR_M, graine[0], graine[1], graine[2]))
+    print("   temoins = repere releve de %.2f m (%s)"
+          % (TEMOIN_RELEVEMENT_M, TEMOIN_RELEVEMENT_MOTIF))
     espace = Espace(triangles, args.pas)
     print("   grille %dx%dx%d = %d case(s), pas %.3f m"
           % (espace.dim[0], espace.dim[1], espace.dim[2],

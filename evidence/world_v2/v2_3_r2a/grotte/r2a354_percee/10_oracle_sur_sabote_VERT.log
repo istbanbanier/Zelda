@@ -1,0 +1,37 @@
+==============================================================================
+ORACLE GLOBAL — topologie + classement d'espace
+==============================================================================
+maillage : /tmp/nc/sabote.glb
+sha256   : b01ae4706eb61e6a675cc51888cd006e8b1afab7cbaa6aceba199a20268c8a65
+noeud    : SM_WaterfallCave   (COL_WaterfallCave, proxy de collision, n'est PAS mesure)
+triangles: 20072   matieres : MAT_CaveIn_Deep, MAT_CaveIn_Floor, MAT_CaveIn_Wall, MAT_CaveRock_Base, MAT_CaveRock_Collar, MAT_CaveRock_Face
+AABB     : x[-8.772 8.174] y[-3.135 11.899] z[-3.551 8.192]
+
+------------------------------------------------------------------------------
+METHODE A — TOPOLOGIE (combinatoire pure, sans grille ni rayon)
+------------------------------------------------------------------------------
+   sommets soudes 10038   aretes 30108   faces 20072
+   aretes par nombre de faces : {'2': 30108}
+   bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 1
+      composante 0 : F=20072 V=10038 E=30108  khi=2  genre 0
+
+------------------------------------------------------------------------------
+METHODE B — CLASSEMENT D'ESPACE (segment centre-a-centre)
+------------------------------------------------------------------------------
+   reperes lus dans scripts/world_v2/poi/waterfall_cave_place.gd (script de LIEU, pas le generateur)
+   graine interieure (repere MODELE) : (2.62 ; 2.58 ; 0.99)
+   grille 323x291x236 = 22182348 case(s), pas 0.060 m
+   segments (colonnes repliees) : 223699
+   composantes d'espace (sans barriere) : 2
+      AIR        18507163 case(s)    3997.55 m3  bord  474402  voix air/roche 129858/0
+      ROCHE       3675185 case(s)     793.84 m3  bord       0  voix air/roche 1/129553
+   barriere de bouche : couche j=52, surface a y=-1.155 (epaisseur nulle)
+   composante de la graine : AIR, 256995 case(s) = 55.51 m3, emprise x[-2.50 3.74] y[-1.12 7.16] z[-0.64 3.02]
+      temoin MODELE_NICHE           (2.78 ; 4.09 ; 0.80) : DANS la cavite scellee
+      temoin MODELE_SALLE           (2.62 ; 2.58 ; 0.39) : DANS la cavite scellee
+
+==============================================================================
+VERDICT : VERT — une composante ROCHE, une composante AIR,
+          cavite scellee par la seule bouche, temoins dedans.
+==============================================================================
+RC=0

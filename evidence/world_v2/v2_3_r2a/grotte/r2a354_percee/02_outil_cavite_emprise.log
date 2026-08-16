@@ -1,0 +1,34 @@
+Blender 4.0.2
+[outil] OUTIL_Cavite : 562 sommets, 616 faces, volume 83.1 m3, 0 bord(s), 0 non-manifold
+[outil] BOITE : x [-2.529 ; +3.745]  y [-4.200 ; +7.245]  z [-0.658 ; +3.056]
+[outil] CAVITE derniere station (3.58, 3.17, 1.3, 2.0), APEX (3.72, 3.25, 0.7)
+[outil] PROLONGE_PORCHE_M = 3.05 m vers -Y
+[outil] 12 sommets les plus au +Y :
+[outil]    (+0.414 ; +7.245 ; +0.533)
+[outil]    (+0.502 ; +7.101 ; +0.468)
+[outil]    (+0.597 ; +6.947 ; +0.822)
+[outil]    (+0.629 ; +6.895 ; +0.436)
+[outil]    (+0.757 ; +6.688 ; +0.403)
+[outil]    (+0.781 ; +6.649 ; +1.110)
+[outil]    (+0.235 ; +6.596 ; +0.674)
+[outil]    (+0.250 ; +6.572 ; +0.810)
+[outil]    (+0.255 ; +6.563 ; +0.573)
+[outil]    (+0.275 ; +6.530 ; +0.472)
+[outil]    (+0.294 ; +6.497 ; +0.370)
+[outil]    (+0.884 ; +6.481 ; +0.371)
+[outil] emprise Y de chaque anneau (station : ax, ay, hw, cle) :
+[outil]   st0 (0.00 ; -1.15) hw 1.90  gauche 1.34 droite 0.79 -> y [-1.15 ; -1.15]  x [-2.53 ; +1.43]  extreme +Y en (+1.43 ; -1.15 ; -0.22)
+[outil]   st1 (0.00 ; 0.00) hw 1.70  gauche 1.30 droite 0.81 -> y [-0.13 ; +0.21]  x [-2.14 ; +1.34]  extreme +Y en (-2.14 ; +0.21 ; -0.01)
+[outil]   st2 (0.22 ; 1.05) hw 1.75  gauche 0.56 droite 1.15 -> y [+0.02 ; +1.53]  x [-0.56 ; +1.88]  extreme +Y en (-0.56 ; +1.53 ; +0.26)
+[outil]   st3 (1.00 ; 1.62) hw 2.10  gauche 0.97 droite 1.05 -> y [-0.16 ; +3.19]  x [-0.05 ; +2.19]  extreme +Y en (-0.05 ; +3.19 ; +1.20)
+[outil]   st4 (1.82 ; 2.12) hw 2.60  gauche 1.68 droite 0.41 -> y [+1.20 ; +5.63]  x [-0.26 ; +2.37]  extreme +Y en (-0.26 ; +5.63 ; +0.88)
+[outil]   st5 (2.62 ; 2.58) hw 3.00  gauche 1.69 droite 0.33 -> y [+1.71 ; +6.60]  x [+0.24 ; +3.13]  extreme +Y en (+0.24 ; +6.60 ; +0.67)
+[outil]   st6 (3.10 ; 2.88) hw 2.50  gauche 1.69 droite 0.25 -> y [+2.35 ; +7.24]  x [+0.41 ; +3.42]  extreme +Y en (+0.41 ; +7.24 ; +0.53)
+[outil]   st7 (3.40 ; 3.06) hw 1.85  gauche 1.65 droite 0.27 -> y [+2.65 ; +5.69]  x [+1.81 ; +3.65]  extreme +Y en (+1.81 ; +5.69 ; +0.56)
+[outil]   st8 (3.58 ; 3.17) hw 1.30  gauche 1.61 droite 0.25 -> y [+2.90 ; +4.97]  x [+2.48 ; +3.74]  extreme +Y en (+2.48 ; +4.97 ; +0.69)
+[outil] defaut   (0.55 ; 5.95) : 2 impact(s) 1.474 0.111
+[outil] amont    (0.55 ; 5.20) : 2 impact(s) 1.851 0.080
+[outil] aval     (0.55 ; 6.40) : 2 impact(s) 1.133 0.229
+[outil] galerie  (0.55 ; 2.60) : 2 impact(s) 2.568 -0.003
+[outil] apex     (3.60 ; 3.20) : 2 impact(s) 1.565 0.641
+[outil] loin     (0.55 ; 7.20) : 0 impact(s) aucun

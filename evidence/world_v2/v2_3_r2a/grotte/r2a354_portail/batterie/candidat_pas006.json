@@ -1,0 +1,243 @@
+{
+  "source": "/home/user/zelda-r2a354/b_portail/assets/environment/caves/SM_WaterfallCave.glb",
+  "sha256_debut": "cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49",
+  "sha256_fin": "cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49",
+  "pas": 0.06,
+  "reperes": null,
+  "placements": {
+    "maillage": "/home/user/zelda-r2a354/b_portail/assets/environment/caves/SM_WaterfallCave.glb",
+    "sha256": "cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49",
+    "noeud": "SM_WaterfallCave",
+    "aabb": {
+      "lo": [
+        -9.1717,
+        -3.5348,
+        -3.9509
+      ],
+      "hi": [
+        8.5739,
+        12.2987,
+        8.5923
+      ],
+      "diagonale": 26.8875
+    },
+    "reperes_source": "/home/user/zelda-r2a354/b_portail/scripts/world_v2/poi/waterfall_cave_place.gd",
+    "reperes_sha256": "7eb402f3910e00eb9dccc9d7956dde187b7598b6ef6a52904e0e5445e5cd7c87",
+    "graine": {
+      "point": [
+        2.62,
+        2.58,
+        0.99
+      ],
+      "air": true,
+      "traversees_dessous": 2,
+      "degagement": 0.9056,
+      "detail": {
+        "+1+0+0": 0.9754,
+        "-1+0+0": 2.8388,
+        "+0+1+0": 2.1765,
+        "+0-1+0": 1.1319,
+        "+0+0+1": 1.8979,
+        "+0+0-1": 0.9056
+      }
+    },
+    "rayon": 0.3,
+    "longueur": 53.775,
+    "poche": {
+      "point": [
+        -1.0047,
+        2.979,
+        1.4244
+      ],
+      "degagement": 0.926,
+      "epaisseur_verticale": 8.2248,
+      "detail": {
+        "+1+0+0": 0.926,
+        "-1+0+0": 6.7819,
+        "+0+1+0": 3.0707,
+        "+0-1+0": 1.8758,
+        "+0+0+1": 4.1124,
+        "+0+0-1": 4.1124
+      }
+    },
+    "rayon_poche": 0.3,
+    "placebo": {
+      "point": [
+        -0.3997,
+        2.3777,
+        6.4439
+      ],
+      "rayon": 0.3,
+      "epaisseur_peau": 9.2106
+    },
+    "bloc": {
+      "point": [
+        -0.2989,
+        4.3819,
+        9.4923
+      ],
+      "rayon": 0.3,
+      "disjoint": true
+    }
+  },
+  "resultats": [
+    {
+      "nom": "temoin",
+      "attendu": "VERT",
+      "axe": null,
+      "fabrique_rc": 0,
+      "tentatives": 1,
+      "glb": "/tmp/bat_cand006/SABOTAGE_temoin.glb",
+      "sha256": "b47233b3524bb32b885ff4db3ac75594a8dda7ea2e141b13a2242c4570d73842",
+      "ferme": true,
+      "oracle_rc": 1,
+      "verdict": "ROUGE",
+      "motifs": [
+        "C3 : la composante interieure atteint 340246 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (repere MODELE) : [[-9.94, -1.12, -4.72], [-9.94, -1.06, -4.72], [-9.94, -1.0, -4.72], [-9.94, -0.94, -4.72], [-9.94, -0.88, -4.72], [-9.94, -0.82, -4.72]]"
+      ],
+      "etat": "NON CONFORME"
+    },
+    {
+      "nom": "placebo",
+      "attendu": "VERT",
+      "axe": null,
+      "fabrique_rc": 0,
+      "tentatives": 1,
+      "glb": "/tmp/bat_cand006/SABOTAGE_placebo.glb",
+      "sha256": "a5a56a3163727ead6b1713f2df16b3bb117ab4325ffe4b9fd93e232c6b8f6c45",
+      "ferme": true,
+      "different_du_temoin": true,
+      "oracle_rc": 1,
+      "verdict": "ROUGE",
+      "motifs": [
+        "C3 : la composante interieure atteint 340246 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (repere MODELE) : [[-9.94, -1.12, -4.72], [-9.94, -1.06, -4.72], [-9.94, -1.0, -4.72], [-9.94, -0.94, -4.72], [-9.94, -0.88, -4.72], [-9.94, -0.82, -4.72]]"
+      ],
+      "etat": "NON CONFORME"
+    },
+    {
+      "nom": "toit",
+      "attendu": "ROUGE",
+      "axe": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "fabrique_rc": 0,
+      "tentatives": 1,
+      "glb": "/tmp/bat_cand006/SABOTAGE_toit.glb",
+      "sha256": "8b9986e47520ac578253f83f993776edb18d921447a48476ba1968a50912e72c",
+      "ferme": true,
+      "percee_rc": 0,
+      "rayon_libre_m": 0.28,
+      "oracle_rc": 1,
+      "verdict": "ROUGE",
+      "motifs": [
+        "C3 : la composante interieure atteint 340246 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (repere MODELE) : [[-9.94, -1.12, -4.72], [-9.94, -1.06, -4.72], [-9.94, -1.0, -4.72], [-9.94, -0.94, -4.72], [-9.94, -0.88, -4.72], [-9.94, -0.82, -4.72]]"
+      ],
+      "etat": "NON INFORMATIF"
+    },
+    {
+      "nom": "paroi_est",
+      "attendu": "ROUGE",
+      "axe": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "fabrique_rc": 0,
+      "tentatives": 1,
+      "glb": "/tmp/bat_cand006/SABOTAGE_paroi_est.glb",
+      "sha256": "b1b5783cb4a33c10f7d0de391d6f47981cfbe8a944f764a437ab64ebc982de06",
+      "ferme": true,
+      "percee_rc": 0,
+      "rayon_libre_m": 0.28,
+      "oracle_rc": 1,
+      "verdict": "ROUGE",
+      "motifs": [
+        "C3 : la composante interieure atteint 340246 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (repere MODELE) : [[-9.94, -1.12, -4.72], [-9.94, -1.06, -4.72], [-9.94, -1.0, -4.72], [-9.94, -0.94, -4.72], [-9.94, -0.88, -4.72], [-9.94, -0.82, -4.72]]"
+      ],
+      "etat": "NON INFORMATIF"
+    },
+    {
+      "nom": "paroi_ouest",
+      "attendu": "ROUGE",
+      "axe": [
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "fabrique_rc": 0,
+      "tentatives": 1,
+      "glb": "/tmp/bat_cand006/SABOTAGE_paroi_ouest.glb",
+      "sha256": "3a2ad58dc57d501bec00de1d24cb23fdbcffb63c893cedfa557395448dbd6e8c",
+      "ferme": true,
+      "percee_rc": 0,
+      "rayon_libre_m": 0.28,
+      "oracle_rc": 1,
+      "verdict": "ROUGE",
+      "motifs": [
+        "C3 : la composante interieure atteint 340246 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (repere MODELE) : [[-9.94, -1.12, -4.72], [-9.94, -1.06, -4.72], [-9.94, -1.0, -4.72], [-9.94, -0.94, -4.72], [-9.94, -0.88, -4.72], [-9.94, -0.82, -4.72]]"
+      ],
+      "etat": "NON INFORMATIF"
+    },
+    {
+      "nom": "plancher",
+      "attendu": "ROUGE",
+      "axe": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "fabrique_rc": 0,
+      "tentatives": 1,
+      "glb": "/tmp/bat_cand006/SABOTAGE_plancher.glb",
+      "sha256": "2323e2627f348fb2df02a87fbbba01a6a7c5d83db842d21e08af16c85983d7bb",
+      "ferme": true,
+      "percee_rc": 0,
+      "rayon_libre_m": 0.28,
+      "oracle_rc": 1,
+      "verdict": "ROUGE",
+      "motifs": [
+        "C3 : la composante interieure atteint 340246 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (repere MODELE) : [[-9.94, -1.12, -4.72], [-9.94, -1.06, -4.72], [-9.94, -1.0, -4.72], [-9.94, -0.94, -4.72], [-9.94, -0.88, -4.72], [-9.94, -0.82, -4.72]]"
+      ],
+      "etat": "NON INFORMATIF"
+    },
+    {
+      "nom": "poche",
+      "attendu": "ROUGE",
+      "axe": null,
+      "fabrique_rc": 0,
+      "tentatives": 1,
+      "glb": "/tmp/bat_cand006/SABOTAGE_poche.glb",
+      "sha256": "2f08857a98fa2f7e5460b761f55be6bca01b79adec1d903c62e4fe44c99b83df",
+      "ferme": true,
+      "oracle_rc": 1,
+      "verdict": "ROUGE",
+      "motifs": [
+        "T1 : 2 composantes de surface au lieu d'une -> corps detache",
+        "C2 : 2 composante(s) AIR au lieu d'une seule -> poche d'air parasite",
+        "C3 : la composante interieure atteint 340246 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (repere MODELE) : [[-9.94, -1.12, -4.72], [-9.94, -1.06, -4.72], [-9.94, -1.0, -4.72], [-9.94, -0.94, -4.72], [-9.94, -0.88, -4.72], [-9.94, -0.82, -4.72]]"
+      ],
+      "etat": "NON INFORMATIF"
+    },
+    {
+      "nom": "roche_flottante",
+      "attendu": "ROUGE",
+      "axe": null,
+      "fabrique_rc": 0,
+      "tentatives": 1,
+      "glb": "/tmp/bat_cand006/SABOTAGE_roche_flottante.glb",
+      "sha256": "95c74e55a4dddd9ce5fe150492b9928664593b2af2babcd02ca39d20d5fc554f",
+      "ferme": true,
+      "oracle_rc": 1,
+      "verdict": "ROUGE",
+      "motifs": [
+        "T1 : 2 composantes de surface au lieu d'une -> corps detache",
+        "C1 : 2 composante(s) ROCHE au lieu d'une seule -> roche flottante ou massif scinde",
+        "C3 : la composante interieure atteint 361765 case(s) de bord de grille alors que la bouche est barree -> COMMUNICATION NON INTENTIONNELLE. Exemples (repere MODELE) : [[-9.94, -1.12, -4.72], [-9.94, -1.06, -4.72], [-9.94, -1.0, -4.72], [-9.94, -0.94, -4.72], [-9.94, -0.88, -4.72], [-9.94, -0.82, -4.72]]"
+      ],
+      "etat": "NON INFORMATIF"
+    }
+  ],
+  "verdict_source": "ROUGE"
+}

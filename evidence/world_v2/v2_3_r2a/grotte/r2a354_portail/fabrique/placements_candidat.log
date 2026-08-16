@@ -1,0 +1,14 @@
+==============================================================================
+PLACEMENT DERIVE DES OUTILS DE SABOTAGE
+==============================================================================
+   graine : (2.620 ; 2.580 ; 0.990)  AIR  degagement 0.906 m
+   rayon  : 0.3000 m   (= 0.55 x degagement, borne a [0.08 0.30])
+   longueur de tunnel : 53.775 m  (2 x diagonale AABB)
+   poche  : (-1.005 ; 2.979 ; 1.424)  roche, epaisseur verticale 8.225 m, degagement 0.926 m
+   placebo: (-0.400 ; 2.378 ; 6.444)  peau exterieure, roche dessous 9.211 m, rayon 0.300 m
+   bloc   : (-0.299 ; 4.382 ; 9.492)  rayon 0.300  disjoint OUI
+   maillage : assets/environment/caves/SM_WaterfallCave.glb
+   sha256   : cc3596c5d68cbfd8
+   reperes  : /home/user/zelda-r2a354/b_portail/scripts/world_v2/poi/waterfall_cave_place.gd
+
+PLACEMENTS DERIVES

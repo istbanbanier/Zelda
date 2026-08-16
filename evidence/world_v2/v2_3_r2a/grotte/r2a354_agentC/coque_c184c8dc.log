@@ -1,0 +1,129 @@
+============================================================================
+COQUE STRUCTURELLE — contrat docs/CONTRAT_COQUE_STRUCTURELLE.md
+============================================================================
+fichier : /home/user/zelda-r2a354/a_percee/assets/environment/caves/SM_WaterfallCave.glb
+sha256  : c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed        <- lu AVANT la mesure
+noeud   : SM_WaterfallCave
+h (rayon de couverture) = 0.1000 m   |   seuil = 0.80 m
+reperes : COURANTS
+
+--- fermeture prealable ---
+bords libres 0 | non-manifold 0 | 20072 faces | 10038 sommets soudes
+volume signe = +796.445 m3  -> normales sortantes
+
+--- §2.3 les deux graines sont-elles dans l'AIR ? (angle solide) ---
+  MODELE_SALLE  modele (2.620 ; 2.580 ; 0.090)  enroulement -0.0000  -> AIR
+  MODELE_NICHE  modele (2.780 ; 4.090 ; 0.500)  enroulement +0.0000  -> AIR
+
+--- references de faces ---
+  temoins de l'ENVELOPPE EXTERIEURE : 26 faces distinctes,
+     vues de 26 directions a grande distance
+  face de SALLE  : 19950   face de NICHE : 20038
+
+--- §2.1 derivation de la bouche : balayage du profil ---
+  axe de balayage : ay   de -3.115 a 5.865, pas 0.250 m
+  TROIS conditions de validite, et chacune a ete apprise a ses
+  depens sur cette geometrie :
+    1. le contour isole SALLE de 26 TEMOINS de l'enveloppe ;
+       — le perimetre seul elisait une VERRUE de 6 faces, et un
+         temoin unique au zenith laissait passer une BISSECTION
+         du massif entier (628 m2 contre 639 m2) ;
+    2. la face de NICHE reste du cote graine ;
+       — sinon la barriere ampute l'arriere de la cavite ;
+    3. aire(cote graine) < aire(cote ciel).
+       — sinon on retient le complement : un bouton isolant le
+         CIEL satisfait 1 et 2 en laissant 20 078 faces dedans.
+  Parmi les valides on prend la PLUS EXTERIEURE — celle qui
+  enferme le PLUS de cavite. Prendre l'etranglement le plus
+  etroit amputerait le fond, ce que §2.4 interdit.
+
+  ay        contours perim.min  valide   aire int.   perimetre
+  -3.115    3        0.200      non      
+  -2.865    2        0.855      non      
+  -2.615    3        0.488      non      
+  -2.365    3        1.057      non      
+  -2.115    3        3.448      non      
+  -1.865    1        52.649     non      
+  -1.615    2        11.978     OUI      95.19       11.978 m
+  -1.365    2        11.978     OUI      95.19       11.978 m
+  -1.115    2        11.955     OUI      79.97       11.955 m
+  -0.865    2        11.796     OUI      79.97       11.796 m
+  -0.615    2        11.637     OUI      79.97       11.637 m
+  -0.365    2        11.477     OUI      79.97       11.477 m
+  -0.115    3        0.985      OUI      78.93       11.405 m
+  0.135     2        14.127     OUI      69.54       14.127 m
+  0.385     3        0.693      OUI      62.08       13.268 m
+  0.635     2        12.521     OUI      60.85       12.521 m
+  0.885     3        1.079      OUI      59.49       11.951 m
+  1.135     2        11.495     OUI      57.94       11.495 m
+  1.385     2        11.177     OUI      53.65       11.177 m
+  1.635     2        11.274     OUI      46.61       11.274 m
+  1.885     2        11.523     OUI      44.28       11.523 m
+  2.135     2        11.548     OUI      42.17       11.548 m
+  2.385     2        11.479     OUI      39.54       11.479 m
+  2.635     2        11.474     non      
+  2.885     2        11.341     non      
+  3.135     2        11.127     non      
+  3.385     2        10.852     non      
+  3.635     2        10.470     non      
+  3.885     2        10.032     non      
+  4.135     2        9.596      non      
+  4.385     2        9.169      non      
+  4.635     2        8.747      non      
+  4.885     2        8.318      non      
+  5.135     3        2.022      non      
+  5.385     2        7.316      non      
+  5.635     2        6.499      non      
+
+bouche retenue : ay = -1.615, perimetre 11.978 m,
+                 la plus EXTERIEURE des barrieres valides —
+                 elle enferme 95.19 m2 de peau interieure.
+                 175 aretes coupees
+  emprise du contour : x[-2.529 1.432] ay[-1.615 -1.615] az[-0.658 2.348]
+
+--- §2.2/§2.4 peau interieure ---
+  peau INTERIEURE : 1008 faces, aire 95.19 m2
+  peau EXTERIEURE : 19064 faces, aire 748.78 m2
+  niche bordee par la peau interieure : OUI
+
+--- §2.5 masque de bouche (seule exclusion) ---
+  Au REBORD MEME de la bouche l'epaisseur tend vers zero : c'est
+  une arete, pas un defaut. Le masque ecarte donc un voisinage
+  GEODESIQUE du contour, mesure SUR la surface.
+  Toute emprise de masque est un CHOIX. On ne choisit donc pas :
+  on publie le minimum EN FONCTION de l'emprise, et le lecteur
+  voit exactement ce que chaque metre exclut. Un minimum qui
+  remonte brutalement avec l'emprise est un REBORD ; un minimum
+  qui reste bas est un vrai amincissement de coque.
+
+  122376 echantillons sur la peau interieure (couverture PROUVEE <= h = 0.1000 m)
+
+  masque    echant.  lecture     borne       argmin (x ; ay ; az)
+  0.00      114376   0.0216      -0.0784     (1.423 ; -1.129 ; -0.098)
+  0.25      114376   0.0216      -0.0784     (1.423 ; -1.129 ; -0.098)
+  0.50      114376   0.0216      -0.0784     (1.423 ; -1.129 ; -0.098)
+  0.75      111432   0.0254      -0.0746     (1.009 ; -1.128 ; -0.622)
+  1.00      105800   0.0260      -0.0740     (0.792 ; -1.128 ; -0.635)
+  1.50      91064    0.0565      -0.0435     (-0.772 ; -1.100 ; -0.628)
+  2.00      86020    0.6613      0.5613      (1.036 ; 5.173 ; 2.316)
+  3.00      69408    0.6613      0.5613      (1.036 ; 5.173 ; 2.316)
+
+  emprise retenue : 0.60 m
+  coque structurelle : 952 faces, 87.71 m2
+  domaine couvert en ay : [-0.811 ; 6.981]   <- AUCUNE borne de
+     station : la derniere station de CAVITE est a ay = 3,17 et
+     la coque est mesuree bien au-dela. C'est la clause §2.4.
+
+--- §2.6 epaisseur : distance euclidienne exacte ---
+  LECTURE brute      : 0.0216 m
+  BORNE GARANTIE     : -0.0784 m   = lecture - h  (h = 0.1000)
+  ARGMIN localise    : modele (1.423 ; -1.129 ; -0.098), face 18988
+     (l'argmin, pas seulement le minimum : un minimum qui se
+      deplace est une migration qu'aucun total ne montre)
+  echantillons sous le seuil en LECTURE : 19173
+  echantillons INDECIDABLES (lecture>=0,80 mais borne<0,80) : 8158
+
+============================================================================
+GATE EPAISSEUR : **FAIL** — lecture 0.0216 m < 0.80 m, mesuree.
+============================================================================
+RC=1

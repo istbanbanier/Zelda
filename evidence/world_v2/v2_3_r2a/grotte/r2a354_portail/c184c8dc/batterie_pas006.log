@@ -1,0 +1,138 @@
+==============================================================================
+BATTERIE DE CONTROLES NEGATIFS
+==============================================================================
+source        : /tmp/c184c8dc.glb
+source sha256 : c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed
+pas de grille : 0.060 m
+reperes       : (depot courant)
+
+------------------------------------------------------------------------------
+PLACEMENTS DERIVES DE CE MAILLAGE
+------------------------------------------------------------------------------
+   graine : (2.620 ; 2.580 ; 0.990)  AIR  degagement 0.906 m
+   rayon  : 0.3000 m   (= 0.55 x degagement, borne a [0.08 0.30])
+   longueur de tunnel : 53.775 m  (2 x diagonale AABB)
+   poche  : (-1.005 ; 2.979 ; 1.424)  roche, epaisseur verticale 8.225 m, degagement 0.926 m
+   placebo: (-0.400 ; 2.378 ; 6.444)  peau exterieure, roche dessous 9.211 m, rayon 0.300 m
+   bloc   : (-0.299 ; 4.382 ; 9.492)  rayon 0.300  disjoint OUI
+   maillage : /tmp/c184c8dc.glb
+   sha256   : c184c8dc0c0e754a
+   reperes  : /home/user/zelda-r2a354/b_portail/scripts/world_v2/poi/waterfall_cave_place.gd
+
+------------------------------------------------------------------------------
+VERDICT DE LA SOURCE, AVANT TOUT SABOTAGE
+------------------------------------------------------------------------------
+   oracle sur la source en 15 s : VERT   (RC=0)
+
+------------------------------------------------------------------------------
+CONTROLE : temoin     (attendu : VERT)
+------------------------------------------------------------------------------
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20072
+   SABOTAGE-TENTATIVES : 1
+   SABOTAGE-FACES-APRES : 20072
+   fabrique en 23 s   sha256 4bcff448821528bf
+     bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 1
+        composante 0 : F=20072 V=10038 E=30108  khi=2  genre 0
+   oracle en 15 s : VERT   (RC=0)
+   -> CONFORME
+
+------------------------------------------------------------------------------
+CONTROLE : placebo     (attendu : VERT)
+------------------------------------------------------------------------------
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20072
+   SABOTAGE-ECHEC-FERMETURE : 6 tentative(s), aucune n'a rendu un maillage ferme. Ce n'est PAS un constat sur l'oracle : c'est la fabrique qui n'a pas su produire l'objet demande.
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20072
+   SABOTAGE-ECHEC-FERMETURE : 6 tentative(s), aucune n'a rendu un maillage ferme. Ce n'est PAS un constat sur l'oracle : c'est la fabrique qui n'a pas su produire l'objet demande.
+   BLOQUE : fabrication impossible (rc=2)
+------------------------------------------------------------------------------
+CONTROLE : toit     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20072
+   SABOTAGE-ECHEC-FERMETURE : 6 tentative(s), aucune n'a rendu un maillage ferme. Ce n'est PAS un constat sur l'oracle : c'est la fabrique qui n'a pas su produire l'objet demande.
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20072
+   SABOTAGE-ECHEC-FERMETURE : 6 tentative(s), aucune n'a rendu un maillage ferme. Ce n'est PAS un constat sur l'oracle : c'est la fabrique qui n'a pas su produire l'objet demande.
+   BLOQUE : fabrication impossible (rc=2)
+------------------------------------------------------------------------------
+CONTROLE : paroi_est     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20072
+   SABOTAGE-ECHEC-FERMETURE : 6 tentative(s), aucune n'a rendu un maillage ferme. Ce n'est PAS un constat sur l'oracle : c'est la fabrique qui n'a pas su produire l'objet demande.
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20072
+   SABOTAGE-ECHEC-FERMETURE : 6 tentative(s), aucune n'a rendu un maillage ferme. Ce n'est PAS un constat sur l'oracle : c'est la fabrique qui n'a pas su produire l'objet demande.
+   BLOQUE : fabrication impossible (rc=2)
+------------------------------------------------------------------------------
+CONTROLE : paroi_ouest     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20072
+   SABOTAGE-ECHEC-FERMETURE : 6 tentative(s), aucune n'a rendu un maillage ferme. Ce n'est PAS un constat sur l'oracle : c'est la fabrique qui n'a pas su produire l'objet demande.
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20072
+   SABOTAGE-ECHEC-FERMETURE : 6 tentative(s), aucune n'a rendu un maillage ferme. Ce n'est PAS un constat sur l'oracle : c'est la fabrique qui n'a pas su produire l'objet demande.
+   BLOQUE : fabrication impossible (rc=2)
+------------------------------------------------------------------------------
+CONTROLE : plancher     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20072
+   SABOTAGE-ECHEC-FERMETURE : 6 tentative(s), aucune n'a rendu un maillage ferme. Ce n'est PAS un constat sur l'oracle : c'est la fabrique qui n'a pas su produire l'objet demande.
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20072
+   SABOTAGE-ECHEC-FERMETURE : 6 tentative(s), aucune n'a rendu un maillage ferme. Ce n'est PAS un constat sur l'oracle : c'est la fabrique qui n'a pas su produire l'objet demande.
+   BLOQUE : fabrication impossible (rc=2)
+------------------------------------------------------------------------------
+CONTROLE : poche     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20072
+   SABOTAGE-ECHEC-FERMETURE : 6 tentative(s), aucune n'a rendu un maillage ferme. Ce n'est PAS un constat sur l'oracle : c'est la fabrique qui n'a pas su produire l'objet demande.
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20072
+   SABOTAGE-ECHEC-FERMETURE : 6 tentative(s), aucune n'a rendu un maillage ferme. Ce n'est PAS un constat sur l'oracle : c'est la fabrique qui n'a pas su produire l'objet demande.
+   BLOQUE : fabrication impossible (rc=2)
+------------------------------------------------------------------------------
+CONTROLE : roche_flottante     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 20072
+   SABOTAGE-TENTATIVES : 1
+   SABOTAGE-FACES-APRES : 20078
+   fabrique en 1 s   sha256 45337dbc9b87ed59
+     bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 2
+        composante 0 : F=20072 V=10038 E=30108  khi=2  genre 0
+        composante 1 : F=12 V=8 E=18  khi=2  genre 0
+   oracle en 15 s : ROUGE   (RC=1)
+      T1 : 2 composantes de surface au lieu d'une -> corps detache
+      C1 : 2 composante(s) ROCHE au lieu d'une seule -> roche flottante ou massif scinde
+   -> CONFORME
+
+------------------------------------------------------------------------------
+RESTAURATION ET VERT SUR LA SOURCE
+------------------------------------------------------------------------------
+   sha256 source AVANT batterie : c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed
+   sha256 source APRES batterie : c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed
+   -> BYTE-IDENTIQUE
+   oracle sur la source en 15 s : VERT   (RC=0)
+
+==============================================================================
+controle           attendu  obtenu   etat           tentatives rayon libre
+------------------------------------------------------------------------------
+temoin             VERT     VERT     CONFORME       1          -
+placebo            VERT     -        BLOQUE         -          -
+toit               ROUGE    -        BLOQUE         -          -
+paroi_est          ROUGE    -        BLOQUE         -          -
+paroi_ouest        ROUGE    -        BLOQUE         -          -
+plancher           ROUGE    -        BLOQUE         -          -
+poche              ROUGE    -        BLOQUE         -          -
+roche_flottante    ROUGE    ROUGE    CONFORME       1          -
+------------------------------------------------------------------------------
+BATTERIE : NON CONFORME
+   non conformes : placebo (BLOQUE), toit (BLOQUE), paroi_est (BLOQUE), paroi_ouest (BLOQUE), plancher (BLOQUE), poche (BLOQUE)
+==============================================================================

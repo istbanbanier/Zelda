@@ -1,0 +1,15 @@
+3 decime      19000 triangles, 0 d'aire < 1e-9
+4 soustrait   20090 triangles, 2 d'aire < 1e-9
+      aire 0.000e+00  centre (-1.504, -3.099, -0.639)  distance a la face supprimee : 0.0005 m   <-- MEME FACE
+      aire 3.242e-10  centre (1.064, -1.798, 0.655)  distance a la face supprimee : 3.1558 m
+cc3596c5      20090 triangles, 2 d'aire < 1e-9
+      aire 0.000e+00  centre (-1.504, -3.099, -0.639)  distance a la face supprimee : 0.0005 m   <-- MEME FACE
+      aire 3.242e-10  centre (1.064, -1.798, 0.655)  distance a la face supprimee : 3.1558 m
+c184c8dc      20072 triangles, 2 d'aire < 1e-9
+      aire 0.000e+00  centre (-1.504, -3.099, -0.639)  distance a la face supprimee : 0.0005 m   <-- MEME FACE
+      aire 3.242e-10  centre (1.064, -1.798, 0.655)  distance a la face supprimee : 3.1558 m
+R2a-3.4       19954 triangles, 4 d'aire < 1e-9
+      aire 1.313e-10  centre (-0.781, -3.099, -0.652)  distance a la face supprimee : 0.7231 m
+      aire 4.825e-10  centre (1.425, -3.424, 0.027)  distance a la face supprimee : 3.0210 m
+      aire 6.731e-10  centre (-2.163, -3.123, -0.612)  distance a la face supprimee : 0.6598 m
+      aire 8.297e-10  centre (-2.368, -2.941, 0.338)  distance a la face supprimee : 1.3134 m

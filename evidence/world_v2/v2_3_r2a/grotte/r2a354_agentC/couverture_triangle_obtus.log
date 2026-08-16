@@ -1,0 +1,62 @@
+==============================================================================
+FIXTURE ADVERSE — couverture d'echantillonnage sur triangles obtus
+==============================================================================
+Regle : la couverture reelle doit rester <= h. Sinon `lecture - h`
+n'est pas une borne, et le contrat exige alors BLOQUE.
+
+------------------------------------------------------------------------------
+rectangle isocele (LE contre-exemple)      h = 0.720
+  circonradius        R = 0.707107   circoncentre dans la face : oui
+  rayon de couverture   = 0.745356   (max_i |V_i - centroide|)
+  NAIVE   (circonradius/circoncentre) :    1 echantillon(s), couverture reelle 0.707107  OK
+  MON BUG (circonradius + centroide)  :    1 echantillon(s), couverture reelle 0.745356  *** VIOLE h ***
+          point non couvert : (0.0000 ; 1.0000 ; 0.0000), depassement 0.025356 m (3.52 %)
+  RETENUE (centroide/couverture exacte):    4 echantillon(s), couverture reelle 0.372678  OK
+          echantillons hors de la face : 0
+------------------------------------------------------------------------------
+obtus 150 deg, tres etire      h = 0.400
+  circonradius        R = 3.717641   circoncentre dans la face : NON
+  rayon de couverture   = 0.952826   (max_i |V_i - centroide|)
+  NAIVE   (circonradius/circoncentre) :  256 echantillon(s), couverture reelle 0.232353  OK
+          256 echantillon(s) HORS de la face — ils ne sont meme pas sur la surface mesuree
+  MON BUG (circonradius + centroide)  :  256 echantillon(s), couverture reelle 0.059552  OK
+  RETENUE (centroide/couverture exacte):   16 echantillon(s), couverture reelle 0.238207  OK
+          echantillons hors de la face : 0
+------------------------------------------------------------------------------
+obtus 170 deg, quasi degenere      h = 0.500
+  circonradius        R = 18.718346   circoncentre dans la face : NON
+  rayon de couverture   = 1.268087   (max_i |V_i - centroide|)
+  NAIVE   (circonradius/circoncentre) : 4096 echantillon(s), couverture reelle 0.292474  OK
+          4096 echantillon(s) HORS de la face — ils ne sont meme pas sur la surface mesuree
+  MON BUG (circonradius + centroide)  : 4096 echantillon(s), couverture reelle 0.019814  OK
+  RETENUE (centroide/couverture exacte):   16 echantillon(s), couverture reelle 0.317022  OK
+          echantillons hors de la face : 0
+------------------------------------------------------------------------------
+equilateral (temoin sain)      h = 0.400
+  circonradius        R = 0.577350   circoncentre dans la face : oui
+  rayon de couverture   = 0.577350   (max_i |V_i - centroide|)
+  NAIVE   (circonradius/circoncentre) :    4 echantillon(s), couverture reelle 0.288675  OK
+  MON BUG (circonradius + centroide)  :    4 echantillon(s), couverture reelle 0.288675  OK
+  RETENUE (centroide/couverture exacte):    4 echantillon(s), couverture reelle 0.288675  OK
+          echantillons hors de la face : 0
+------------------------------------------------------------------------------
+aiguille : 2 cm sur 1,4 m      h = 0.300
+  circonradius        R = 12.260000   circoncentre dans la face : NON
+  rayon de couverture   = 0.700032   (max_i |V_i - centroide|)
+  NAIVE   (circonradius/circoncentre) : 4096 echantillon(s), couverture reelle 0.191563  OK
+          4096 echantillon(s) HORS de la face — ils ne sont meme pas sur la surface mesuree
+  MON BUG (circonradius + centroide)  : 4096 echantillon(s), couverture reelle 0.010938  OK
+  RETENUE (centroide/couverture exacte):   16 echantillon(s), couverture reelle 0.175008  OK
+          echantillons hors de la face : 0
+------------------------------------------------------------------------------
+
+BILAN
+  construction NAIVE   : 0 temoin(s) sur 5 violent la couverture
+  MON BUG d'origine    : 1 temoin(s) sur 5 violent la couverture
+  construction RETENUE : 0 temoin(s) sur 5 violent la couverture
+
+VERDICT : la construction fautive est prise en defaut, la retenue
+couvre partout, et tous ses echantillons sont DANS la face.
+`h` est donc une vraie borne de couverture, et `lecture - h` une
+vraie borne inferieure.
+RC=0

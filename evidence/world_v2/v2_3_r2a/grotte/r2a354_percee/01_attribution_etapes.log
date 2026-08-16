@@ -1,0 +1,234 @@
+Blender 4.0.2
+[etapes] enveloppe posee sur joindre() -> etape_0_joint.glb
+[etapes] enveloppe posee sur remailler_voxel() -> etape_1_remaille.glb
+[etapes] enveloppe posee sur stratifier() -> etape_2_stratifie.glb
+[etapes] enveloppe posee sur decimer() -> etape_3_decime.glb
+[etapes] enveloppe posee sur soustraire() -> etape_4_soustrait.glb
+[etapes] lancement de main() du generateur
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+[grotte] module R (template-detail) : 241 faces, volume 8.89 m3, ferme et sans auto-intersection
+[grotte] 39 piece(s) : 6 enveloppe, 3 gaine, 30 semelle, plus l'assise enterree
+[grotte] faite par rang (z max, m) : enveloppe 8.35, gaine 3.56, semelle 1.33
+[grotte] silhouette a 55 deg : emprise 16.87 m
+[grotte]   entaille 0.60 : 3 masse(s) (3 exigees)  sommets 1.31 1.85 1.23  emprises 5.86 7.47 3.47  cv 0.19 (ratio emprises 2.16, 2.00 exige)
+[grotte]   entaille 0.90 : 3 masse(s) (3 exigees)  sommets 1.62 2.23 1.46  emprises 5.86 7.47 3.47  cv 0.19 (ratio emprises 2.16, 2.00 exige)
+[grotte]   entaille 1.20 : 3 masse(s) (3 exigees)  sommets 2.08 2.54 1.77  emprises 5.86 7.47 3.47  cv 0.15 (ratio emprises 2.16, 2.00 exige)
+[grotte]   entaille 1.50 : 3 masse(s) (3 exigees)  sommets 2.47 3.00 1.93  emprises 5.86 7.47 3.47  cv 0.18 (ratio emprises 2.16, 2.00 exige)
+[grotte]   masse 1  sommet  1.62 m  emprise  5.86 m  proeminence  1.95 m  faite  4.85 m
+[grotte]   masse 2  sommet  2.23 m  emprise  7.47 m  proeminence  7.57 m  faite  8.35 m
+[grotte]   masse 3  sommet  1.46 m  emprise  3.47 m  proeminence  2.89 m  faite  4.49 m
+[grotte]   decentrement du faite dominant : 1.77 m = 10.5 % de l'emprise
+[grotte] silhouette a 100 deg : emprise 14.87 m
+[grotte]   entaille 0.60 : 3 masse(s) (3 exigees)  sommets 1.36 1.83 1.29  emprises 5.09 6.79 2.92  cv 0.16 (ratio emprises 2.33, 2.00 exige)
+[grotte]   entaille 0.90 : 3 masse(s) (3 exigees)  sommets 1.63 2.04 1.49  emprises 5.09 6.79 2.92  cv 0.13 (ratio emprises 2.33, 2.00 exige)
+[grotte]   entaille 1.20 : 2 masse(s) (3 exigees)  sommets 1.97 2.17  emprises 5.09 9.71  cv 0.05 (ratio emprises 1.91, 2.00 exige)
+[grotte]   entaille 1.50 : 2 masse(s) (3 exigees)  sommets 2.31 2.44  emprises 5.09 9.71  cv 0.03 (ratio emprises 1.91, 2.00 exige)
+[grotte]   masse 1  sommet  1.63 m  emprise  5.09 m  proeminence  1.92 m  faite  4.85 m
+[grotte]   masse 2  sommet  2.04 m  emprise  6.79 m  proeminence  8.31 m  faite  8.35 m
+[grotte]   masse 3  sommet  1.49 m  emprise  2.92 m  proeminence  1.06 m  faite  4.49 m
+[grotte]   decentrement du faite dominant : 2.14 m = 14.4 % de l'emprise
+[grotte] azimut 225 — TELEMETRIE SEULE, ne bloque pas
+[grotte] silhouette a 225 deg : emprise 17.03 m
+[grotte]   entaille 0.60 : 3 masse(s) (3 exigees)  sommets 1.24 1.79 1.32  emprises 3.42 7.70 5.91  cv 0.17 (ratio emprises 2.25, 2.00 exige)
+[grotte]   entaille 0.90 : 3 masse(s) (3 exigees)  sommets 1.48 2.18 1.63  emprises 3.42 7.70 5.91  cv 0.17 (ratio emprises 2.25, 2.00 exige)
+[grotte]   entaille 1.20 : 3 masse(s) (3 exigees)  sommets 1.71 2.49 2.02  emprises 3.42 7.70 5.91  cv 0.15 (ratio emprises 2.25, 2.00 exige)
+[grotte]   entaille 1.50 : 2 masse(s) (3 exigees)  sommets 1.94 3.03  emprises 3.42 13.61  cv 0.22 (ratio emprises 3.98, 2.00 exige)
+[grotte]   (225) sommet  1.48 m  emprise  3.42 m  proeminence  2.56 m  faite  4.49 m
+[grotte]   (225) sommet  2.18 m  emprise  7.70 m  proeminence  7.60 m  faite  8.35 m
+[grotte]   (225) sommet  1.63 m  emprise  5.91 m  proeminence  1.38 m  faite  4.85 m
+[grotte] composition : trois amas d'emprises inegales, faites portes par plusieurs roches, deux cols de profondeurs differentes
+[grotte] composition des volumes SOURCES (telemetrie, ne bloque rien ; l'union les fond ensuite en un seul maillage) :
+[grotte]   SM_Env_Corps                     1556 tris    8.0 %
+[grotte]   SM_Env_Levre                      572 tris    2.9 %
+[grotte]   SM_Env_Contrefort                 524 tris    2.7 %
+[grotte]   SM_Env_Talus                      500 tris    2.6 %
+[grotte]   SM_Env_Visiere                    480 tris    2.5 %
+[grotte]   DosAlcove_1_2                     472 tris    2.4 %
+[grotte]   DosAlcove_1_3                     472 tris    2.4 %
+[grotte]   DosAlcove_1_4                     472 tris    2.4 %
+[grotte]   Semelle_00_0                      472 tris    2.4 %
+[grotte]   Semelle_00_1                      472 tris    2.4 %
+[grotte]   Semelle_00_2                      472 tris    2.4 %
+[grotte]   Semelle_00_3                      472 tris    2.4 %
+[grotte]   Semelle_00_4                      472 tris    2.4 %
+[grotte]   Semelle_01_0                      472 tris    2.4 %
+[grotte]   Semelle_01_1                      472 tris    2.4 %
+[grotte]   Semelle_01_2                      472 tris    2.4 %
+[grotte]   Semelle_01_3                      472 tris    2.4 %
+[grotte]   Semelle_02_0                      472 tris    2.4 %
+[grotte]   Semelle_02_1                      472 tris    2.4 %
+[grotte]   Semelle_02_2                      472 tris    2.4 %
+[grotte]   Semelle_02_3                      472 tris    2.4 %
+[grotte]   Semelle_02_4                      472 tris    2.4 %
+[grotte]   Semelle_03_0                      472 tris    2.4 %
+[grotte]   Semelle_03_1                      472 tris    2.4 %
+[grotte]   Semelle_03_2                      472 tris    2.4 %
+[grotte]   Semelle_03_3                      472 tris    2.4 %
+[grotte]   Semelle_03_4                      472 tris    2.4 %
+[grotte]   Semelle_03_5                      472 tris    2.4 %
+[grotte]   Semelle_04_0                      472 tris    2.4 %
+[grotte]   Semelle_04_1                      472 tris    2.4 %
+[grotte]   Semelle_04_2                      472 tris    2.4 %
+[grotte]   Semelle_04_3                      472 tris    2.4 %
+[grotte]   Semelle_04_4                      472 tris    2.4 %
+[grotte]   Semelle_04_5                      472 tris    2.4 %
+[grotte]   Semelle_05_0                      472 tris    2.4 %
+[grotte]   Semelle_05_1                      472 tris    2.4 %
+[grotte]   Semelle_05_2                      472 tris    2.4 %
+[grotte]   Semelle_05_3                      472 tris    2.4 %
+[grotte]   SM_Env_Queue                      320 tris    1.6 %
+[grotte]   Assise                             12 tris    0.1 %
+[grotte] solidarite : 439 paire(s) en INTERSECTION reelle (prefiltre AABB >= 0.12 m, PUIS croisement de faces verifie)
+[grotte]   plus faible : Semelle_00_1 <-> Semelle_02_1  0.86 m, 4 face(s) croisee(s)
+[grotte]   plus faible : Semelle_02_2 <-> Semelle_04_5  0.41 m, 4 face(s) croisee(s)
+[grotte]   plus faible : Semelle_02_4 <-> Semelle_05_3  1.55 m, 4 face(s) croisee(s)
+[grotte]   plus faible : SM_Env_Contrefort <-> Semelle_05_1  1.36 m, 5 face(s) croisee(s)
+[etapes] 0_joint     defaut    AUCUN vide >= 0,30 m — colonne pleine ou hors solide (15 impact(s))
+[etapes]     impacts (z/signe) : 1.309/+1 0.845/+1 0.713/+1 -0.394/-1 -0.524/+1 -0.527/+1 -0.550/+1 -0.996/-1 -1.350/-1 -1.478/+1 -1.714/-1 -1.991/+1 -2.350/-1 -2.457/-1 -2.483/-1
+[etapes] 0_joint     amont     AUCUN vide >= 0,30 m — colonne pleine ou hors solide (13 impact(s))
+[etapes]     impacts (z/signe) : 2.338/+1 0.770/+1 0.236/+1 0.144/+1 -0.393/-1 -0.449/+1 -0.550/+1 -1.055/-1 -1.350/-1 -1.506/+1 -2.350/-1 -2.455/-1 -2.513/-1
+[etapes] 0_joint     aval      AUCUN vide >= 0,30 m — colonne pleine ou hors solide (13 impact(s))
+[etapes]     impacts (z/signe) : 2.951/+1 1.254/+1 -0.321/+1 -0.395/-1 -0.509/+1 -0.550/+1 -0.853/+1 -0.961/-1 -1.350/-1 -1.521/+1 -1.737/-1 -2.350/-1 -2.499/-1
+[etapes] 0_joint     galerie   AUCUN vide >= 0,30 m — colonne pleine ou hors solide (22 impact(s))
+[etapes]     impacts (z/signe) : 7.486/+1 1.994/+1 0.656/+1 0.459/+1 -0.550/+1 -0.664/+1 -0.816/+1 -1.180/+1 -1.350/-1 -2.031/+1 -2.128/+1 -2.350/-1 -2.376/+1 -2.495/-1 -2.497/+1 -2.594/-1 -2.601/-1 -2.667/-1 -2.686/-1 -2.700/-1 -2.705/-1 -2.724/-1
+21:24:40 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
+21:24:40 | INFO: Starting glTF 2.0 export
+21:24:40 | INFO: Extracting primitive: SM_WaterfallCave_Assise
+21:24:40 | INFO: Primitives created: 3
+21:24:40 | INFO: Finished glTF 2.0 export in 0.07708358764648438 s
+
+[etapes] 0_joint -> /home/user/zelda-r2a354/a_percee/evidence/world_v2/v2_3_r2a/grotte/r2a354_percee/etapes/etape_0_joint.glb (713056 octets)
+[etapes] 1_remaille  defaut    AUCUN vide >= 0,30 m — colonne pleine ou hors solide (2 impact(s))
+[etapes]     impacts (z/signe) : 1.386/+1 -2.481/-1
+[etapes] 1_remaille  amont     AUCUN vide >= 0,30 m — colonne pleine ou hors solide (2 impact(s))
+[etapes]     impacts (z/signe) : 2.342/+1 -2.515/-1
+[etapes] 1_remaille  aval      AUCUN vide >= 0,30 m — colonne pleine ou hors solide (2 impact(s))
+[etapes]     impacts (z/signe) : 2.931/+1 -2.498/-1
+[etapes] 1_remaille  galerie   AUCUN vide >= 0,30 m — colonne pleine ou hors solide (2 impact(s))
+[etapes]     impacts (z/signe) : 7.462/+1 -2.722/-1
+21:24:41 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
+21:24:41 | INFO: Starting glTF 2.0 export
+21:24:41 | INFO: Extracting primitive: SM_WaterfallCave
+21:24:42 | INFO: Primitives created: 1
+21:24:42 | INFO: Finished glTF 2.0 export in 0.6660773754119873 s
+
+[etapes] 1_remaille -> /home/user/zelda-r2a354/a_percee/evidence/world_v2/v2_3_r2a/grotte/r2a354_percee/etapes/etape_1_remaille.glb (6996040 octets)
+[grotte] remaillage voxel 0.12 m : 136428 tris
+[grotte]   coque +  853.47 m3, boite (-8.8..8.2, -3.1..11.9, -3.5..8.3), 68216 sommets
+[grotte] remaillage : 1 coque(s) exterieure(s), 0 bulle(s) interne(s) et 0 ecaille(s) retirees
+[grotte] remaillage : 0 arete(s) de bord, 0 non-manifold, 853.5 m3
+[etapes] 2_stratifie defaut    AUCUN vide >= 0,30 m — colonne pleine ou hors solide (2 impact(s))
+[etapes]     impacts (z/signe) : 1.512/+1 -2.612/-1
+[etapes] 2_stratifie amont     AUCUN vide >= 0,30 m — colonne pleine ou hors solide (2 impact(s))
+[etapes]     impacts (z/signe) : 2.371/+1 -2.650/-1
+[etapes] 2_stratifie aval      AUCUN vide >= 0,30 m — colonne pleine ou hors solide (2 impact(s))
+[etapes]     impacts (z/signe) : 3.009/+1 -2.612/-1
+[etapes] 2_stratifie galerie   AUCUN vide >= 0,30 m — colonne pleine ou hors solide (2 impact(s))
+[etapes]     impacts (z/signe) : 7.361/+1 -2.837/-1
+21:24:43 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
+21:24:43 | INFO: Starting glTF 2.0 export
+21:24:43 | INFO: Extracting primitive: SM_WaterfallCave
+21:24:43 | INFO: Primitives created: 1
+21:24:43 | INFO: Finished glTF 2.0 export in 0.5978367328643799 s
+
+[etapes] 2_stratifie -> /home/user/zelda-r2a354/a_percee/evidence/world_v2/v2_3_r2a/grotte/r2a354_percee/etapes/etape_2_stratifie.glb (7892656 octets)
+[grotte] apres stratification : 0 paire(s) croisee(s), repli maximal 0.0000 m
+[grotte] decimation : 136428 -> 19000 tris (ratio 0.139)
+[etapes] 3_decime    defaut    AUCUN vide >= 0,30 m — colonne pleine ou hors solide (2 impact(s))
+[etapes]     impacts (z/signe) : 1.512/+1 -2.613/-1
+[etapes] 3_decime    amont     AUCUN vide >= 0,30 m — colonne pleine ou hors solide (2 impact(s))
+[etapes]     impacts (z/signe) : 2.371/+1 -2.650/-1
+[etapes] 3_decime    aval      AUCUN vide >= 0,30 m — colonne pleine ou hors solide (2 impact(s))
+[etapes]     impacts (z/signe) : 3.000/+1 -2.610/-1
+[etapes] 3_decime    galerie   AUCUN vide >= 0,30 m — colonne pleine ou hors solide (2 impact(s))
+[etapes]     impacts (z/signe) : 7.363/+1 -2.837/-1
+21:24:46 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
+21:24:46 | INFO: Starting glTF 2.0 export
+21:24:46 | INFO: Extracting primitive: SM_WaterfallCave
+21:24:46 | INFO: Primitives created: 1
+21:24:46 | INFO: Finished glTF 2.0 export in 0.0847015380859375 s
+
+[etapes] 3_decime -> /home/user/zelda-r2a354/a_percee/evidence/world_v2/v2_3_r2a/grotte/r2a354_percee/etapes/etape_3_decime.glb (1389512 octets)
+[grotte] volume negatif de cavite : ferme, 83.1 m3
+[grotte] nettoyage de la soustraction : 0 -> 0 arete(s) irreguliere(s)
+[etapes] 4_soustrait defaut    banc  0.043 m  cumul  0.043 m  vide  1.36 m  sommet massif  1.512 m  (4 impacts)
+[etapes]     impacts (z/signe) : 1.512/+1 1.468/-1 0.111/+1 -2.613/-1
+[etapes] 4_soustrait amont     banc  0.550 m  cumul  0.550 m  vide  1.74 m  sommet massif  2.371 m  (4 impacts)
+[etapes]     impacts (z/signe) : 2.371/+1 1.822/-1 0.080/+1 -2.650/-1
+[etapes] 4_soustrait aval      banc  1.867 m  cumul  1.867 m  vide  0.90 m  sommet massif  3.000 m  (4 impacts)
+[etapes]     impacts (z/signe) : 3.000/+1 1.133/-1 0.229/+1 -2.610/-1
+[etapes] 4_soustrait galerie   banc  4.795 m  cumul  4.795 m  vide  2.57 m  sommet massif  7.363 m  (4 impacts)
+[etapes]     impacts (z/signe) : 7.363/+1 2.568/-1 -0.003/+1 -2.837/-1
+21:24:47 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
+21:24:47 | INFO: Starting glTF 2.0 export
+21:24:47 | INFO: Extracting primitive: SM_WaterfallCave
+21:24:47 | INFO: Primitives created: 6
+21:24:47 | INFO: Finished glTF 2.0 export in 0.09655880928039551 s
+
+[etapes] 4_soustrait -> /home/user/zelda-r2a354/a_percee/evidence/world_v2/v2_3_r2a/grotte/r2a354_percee/etapes/etape_4_soustrait.glb (1441164 octets)
+[grotte] soustraction : la bouche est la trace de decoupe du tube
+[grotte]   coque +  788.52 m3, boite (-8.8..8.2, -3.1..11.9, -3.6..8.2), 10045 sommets
+[grotte] soustraction : 1 coque(s) exterieure(s), 0 bulle(s) et 0 ecaille(s) retirees
+[grotte] connexite : 1 composante, avant et apres soustraction
+[grotte] auto-intersection du livrable : 2 paire(s), repli maximal 0.0006 m (seuil 0.020 m)
+[grotte] visuel : 0 arete(s) de bord, 0 non-manifold, volume 788.5 m3
+[grotte] collision : 0 arete(s) de bord, 0 non-manifold, volume 243.7 m3
+[grotte] visuel 17441 faces (20090 tris), collision 460 faces (880 tris)
+[grotte] emprise Z de -3.55 m a 8.19 m (jupe 3.55 m sous le sol)
+[grotte] budget : 20090 tris dans [12000 ; 25000]
+[grotte] plage plane toutes faces confondues (cavite comprise) : 8.35 m2 — informatif, l'interieur releve d'un autre jalon
+[grotte] plus grande plage plane au-dessus du sol : 8.35 m2, centree en (1.36, 9.04, 2.33) — seuil 12.00
+[grotte] plus grande plage plane EN FACADE (y <= 2.0) : 3.06 m2, centree en (-6.00, 1.19, 1.56) — seuil 6.00
+[grotte] paroi la plus mince : station 6, azimut 32°, z 1.26
+[grotte] collerette la plus mince : station 0, azimut 32°, z 1.26
+[grotte] epaisseur de roche : 0.87 m en paroi, 1.15 m au linteau (rayons lateraux et montants sur le maillage FINAL ; le plancher releve du terrain gele, voir controle_epaisseur)
+[grotte] TELEMETRIE domaine (CONTRAT_COQUE_STRUCTURELLE §4 — ne bloque plus la chaine ; le gate dur est la coque structurelle)
+[grotte] TELEMETRIE domaine : pas 0.10 m, 30012 colonnes, x [-9.37 ; 8.83] y [-3.73 ; 12.57]
+[grotte] TELEMETRIE domaine : 2716 colonne(s) a vide qualifiant (>= 1.00 m) — 4 sans aucune matiere au-dessus (bouche/ciel), 2500 en matiere pleine, 212 lame(s) mince(s) dont 167 plaque(s) et 45 bord(s)
+[grotte] TELEMETRIE domaine : minimum vertical 0.050 m en (0.53 ; 5.77), sous 1.44 m de vide, 8/8 voisins, cumul de colonne 0.050 m
+[grotte] TELEMETRIE domaine : bord le plus mince 0.055 m en (0.93 ; -1.93), vide 1.48 m, 5 voisin(s) — terminaison laterale d'un vide, pas une lame
+[grotte] TELEMETRIE domaine : PLAQUE 0.050 m en (0.53 ; 5.77) sous 1.44 m de vide, 8/8 voisins — sous EPAISSEUR_MIN_M = 0.80 m (cumul de colonne 0.050 m)
+[grotte] TELEMETRIE domaine : PLAQUE 0.052 m en (0.63 ; 5.97) sous 1.41 m de vide, 8/8 voisins — sous EPAISSEUR_MIN_M = 0.80 m (cumul de colonne 0.052 m)
+[grotte] TELEMETRIE domaine : PLAQUE 0.061 m en (0.53 ; 5.97) sous 1.33 m de vide, 8/8 voisins — sous EPAISSEUR_MIN_M = 0.80 m (cumul de colonne 0.061 m)
+[grotte] TELEMETRIE domaine : PLAQUE 0.078 m en (0.63 ; 5.87) sous 1.48 m de vide, 8/8 voisins — sous EPAISSEUR_MIN_M = 0.80 m (cumul de colonne 0.078 m)
+[grotte] TELEMETRIE domaine : PLAQUE 0.114 m en (-0.07 ; -2.13) sous 2.63 m de vide, 6/8 voisins — sous EPAISSEUR_MIN_M = 0.80 m (cumul de colonne 0.114 m)
+[grotte] TELEMETRIE domaine : 167 plaque(s) sous 0.80 m, la plus mince 0.050 m — a comparer aux REFERENCES (R2a-3.4 : 326 ; candidat cc3596c5 : 167), pas a un seuil
+[grotte] gabarit : bande utile par station (m) : 0:2.65, 1:2.65, 2:1.95, 3:3.15, 4:3.45, 5:4.00, 6:2.85
+[grotte] gabarit : capsule r=0,45 h=1,85 passe aux 7 stations du chemin
+[grotte] plancher : 54 point(s) sondes VERS LE BAS depuis le vide de la galerie, 0 faute(s) (tolerance 0.25 m)
+[grotte] aucun jour : 25 rayons verticaux, croisements pairs et >= 2
+[grotte] sol sous axe_seuil  ( 0.11,  0.52) : mesure -0.068 m, attendu -0.070 m (station 1.50, lateral 0.00), ecart +0.001 m — tolerance 0.25
+[grotte] sol sous salle      ( 2.62,  2.58) : mesure +0.084 m, attendu +0.080 m (station 5.00, lateral 0.00), ecart +0.004 m — tolerance 0.25
+[grotte] sol sous niche      ( 2.78,  4.09) : mesure +0.492 m, attendu +0.537 m (station 7.03, lateral 0.66), ecart -0.045 m — tolerance 0.25
+[grotte] sol sous voisin     ( 2.71,  3.39) : mesure +0.244 m, attendu +0.262 m (station 5.90, lateral 0.25), ecart -0.019 m — tolerance 0.25
+Info: Total files 1 | Changed 1 | Failed 0
+Info: Saved "SM_WaterfallCave.blend"
+[grotte] source enregistree -> /home/user/zelda-r2a354/a_percee/source_assets/blender/environment/SM_WaterfallCave.blend
+[etapes] main() rend 0
+[etapes] ==================================================================
+[etapes] TABLEAU D'ATTRIBUTION — banc de roche au-dessus du vide
+[etapes] etape       point         banc    cumul     vide      tris
+[etapes] 0_joint     defaut           -        -        -     19540
+[etapes] 0_joint     amont            -        -        -     19540
+[etapes] 0_joint     aval             -        -        -     19540
+[etapes] 0_joint     galerie          -        -        -     19540
+[etapes] 1_remaille  defaut           -        -        -    136428
+[etapes] 1_remaille  amont            -        -        -    136428
+[etapes] 1_remaille  aval             -        -        -    136428
+[etapes] 1_remaille  galerie          -        -        -    136428
+[etapes] 2_stratifie defaut           -        -        -    136428
+[etapes] 2_stratifie amont            -        -        -    136428
+[etapes] 2_stratifie aval             -        -        -    136428
+[etapes] 2_stratifie galerie          -        -        -    136428
+[etapes] 3_decime    defaut           -        -        -     19000
+[etapes] 3_decime    amont            -        -        -     19000
+[etapes] 3_decime    aval             -        -        -     19000
+[etapes] 3_decime    galerie          -        -        -     19000
+[etapes] 4_soustrait defaut       0.043    0.043     1.36     20090
+[etapes] 4_soustrait amont        0.550    0.550     1.74     20090
+[etapes] 4_soustrait aval         1.867    1.867     0.90     20090
+[etapes] 4_soustrait galerie      4.795    4.795     2.57     20090
+[etapes] ==================================================================
+[etapes] fichiers d'etape : etape_0_joint.glb, etape_1_remaille.glb, etape_2_stratifie.glb, etape_3_decime.glb, etape_4_soustrait.glb
+RC=0

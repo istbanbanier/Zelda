@@ -1,0 +1,98 @@
+============================================================================
+COQUE STRUCTURELLE — contrat docs/CONTRAT_COQUE_STRUCTURELLE.md
+============================================================================
+fichier : /home/user/zelda-r2a354/reference/SM_WaterfallCave_R2a34.glb
+sha256  : 8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110        <- lu AVANT la mesure
+noeud   : SM_WaterfallCave
+h (rayon de couverture) = 0.1500 m   |   seuil = 0.80 m
+reperes : ANCIENS (pre R2a-3.5.2)
+
+--- fermeture prealable ---
+bords libres 0 | non-manifold 0 | 19954 faces | 9975 sommets soudes
+volume signe = +994.807 m3  -> normales sortantes
+
+--- §2.3 les deux graines sont-elles dans l'AIR ? (angle solide) ---
+  MODELE_SALLE  modele (1.050 ; 6.250 ; 0.220)  enroulement -0.0000  -> AIR
+  MODELE_NICHE  modele (-1.200 ; 8.200 ; 0.430)  enroulement +0.0000  -> AIR
+
+--- references de faces ---
+  temoins de l'ENVELOPPE EXTERIEURE : 25 faces distinctes,
+     vues de 26 directions a grande distance
+  face de SALLE  : 19826   face de NICHE : 19807
+
+--- §2.1 derivation de la bouche : balayage du profil ---
+  axe de balayage : ay   de -3.972 a 5.008, pas 0.250 m
+  TROIS conditions de validite, et chacune a ete apprise a ses
+  depens sur cette geometrie :
+    1. le contour isole SALLE de 26 TEMOINS de l'enveloppe ;
+       — le perimetre seul elisait une VERRUE de 6 faces, et un
+         temoin unique au zenith laissait passer une BISSECTION
+         du massif entier (628 m2 contre 639 m2) ;
+    2. la face de NICHE reste du cote graine ;
+       — sinon la barriere ampute l'arriere de la cavite ;
+    3. aire(cote graine) < aire(cote ciel).
+       — sinon on retient le complement : un bouton isolant le
+         CIEL satisfait 1 et 2 en laissant 20 078 faces dedans.
+  Parmi les valides on prend la PLUS EXTERIEURE — celle qui
+  enferme le PLUS de cavite. Prendre l'etranglement le plus
+  etroit amputerait le fond, ce que §2.4 interdit.
+
+  ay        contours perim.min  valide   aire int.   perimetre
+  -3.972    1        1.275      non      
+  -3.722    3        1.241      non      
+  -3.472    3        1.102      non      
+  -3.222    4        1.283      non      
+  -2.972    8        0.731      non      
+  -2.722    4        1.800      non      
+  -2.472    3        1.207      non      
+  -2.222    3        0.795      non      
+  -1.972    2        13.879     OUI      156.86      13.879 m
+  -1.722    2        13.787     OUI      156.09      13.787 m
+  -1.472    5        1.940      OUI      154.64      12.097 m
+  -1.222    2        11.978     OUI      154.56      11.978 m
+  -0.972    3        5.214      OUI      138.37      11.864 m
+  -0.722    3        2.511      OUI      138.37      11.705 m
+  -0.472    2        11.546     OUI      138.37      11.546 m
+  -0.222    2        11.386     OUI      138.37      11.386 m
+  0.028     3        0.852      OUI      128.50      11.268 m
+  0.278     2        11.283     OUI      122.21      11.283 m
+  0.528     4        0.942      OUI      122.21      11.306 m
+  0.778     3        4.258      OUI      122.21      11.329 m
+  1.028     3        3.625      OUI      122.21      11.352 m
+  1.278     3        4.145      OUI      122.21      11.375 m
+  1.528     2        11.427     OUI      117.66      11.427 m
+  1.778     3        2.890      OUI      103.57      11.611 m
+  2.028     2        11.723     OUI      103.57      11.723 m
+  2.278     3        0.814      OUI      103.57      11.834 m
+  2.528     2        11.946     OUI      103.57      11.946 m
+  2.778     2        12.058     OUI      103.57      12.058 m
+  3.028     2        12.219     OUI      97.25       12.219 m
+  3.278     2        12.418     OUI      92.15       12.418 m
+  3.528     2        12.699     OUI      84.51       12.699 m
+  3.778     3        1.429      OUI      84.51       13.093 m
+  4.028     2        13.470     OUI      82.95       13.470 m
+  4.278     2        13.813     OUI      78.81       13.813 m
+  4.528     2        14.132     OUI      75.92       14.132 m
+  4.778     4        0.846      OUI      73.12       14.443 m
+
+bouche retenue : ay = -1.972, perimetre 13.879 m,
+                 la plus EXTERIEURE des barrieres valides —
+                 elle enferme 156.86 m2 de peau interieure.
+                 174 aretes coupees
+  emprise du contour : x[-2.529 1.672] ay[-1.972 -1.972] az[-0.658 2.348]
+
+--- §2.2/§2.4 peau interieure ---
+  peau INTERIEURE : 1118 faces, aire 156.86 m2
+  peau EXTERIEURE : 18836 faces, aire 1110.27 m2
+  niche bordee par la peau interieure : OUI
+
+--- §2.5 masque de bouche (seule exclusion) ---
+  emprise geodesique demandee : 0.60 m, mesuree SUR la surface
+  coque structurelle retenue : 994 faces, 146.32 m2
+  masquee (bouche)           : 124 faces, 10.54 m2
+  domaine couvert en ay : [-1.532 ; 10.108]   <- AUCUNE borne de
+     station : la derniere station de CAVITE est a ay = 3,17 et
+     la coque est mesuree bien au-dela. C'est la clause §2.4.
+
+--- §2.6 epaisseur : distance euclidienne exacte ---
+  16854916 echantillons (couverture prouvee <= 0.1500 m)
