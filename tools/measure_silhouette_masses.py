@@ -16,8 +16,21 @@ creux d'au moins `--entaille` metres sous les deux sommets qui les
 encadrent. Chaque segment entre deux entailles est une masse ; l'outil rend
 sa largeur et sa hauteur, en metres.
 
-  masses larges et asymetriques -> peu de segments, largeurs tres inegales
-  picket de colonnes            -> beaucoup de segments, largeurs serrees
+  masses larges et asymetriques -> peu de segments, emprises tres inegales
+  picket de colonnes            -> beaucoup de segments, emprises serrees
+
+AVERTISSEMENT — LA PREMIERE VERSION RECOMPENSAIT LE DEFAUT. Elle ne rendait
+qu'une largeur, mesuree a `sommet - entaille`, c'est-a-dire la largeur DU
+SOMMET. Or un sommet PLAT y est large et une crete VIVE y est etroite : sur
+R2a-3.4 les 5,58 / 3,60 / 2,18 m dont je me servais comme preuve de masses
+larges ETAIENT la platitude des sommets que le lead a rejetee. Un plancher
+`--exige` fonde sur ce nombre aurait rejete la correction demandee.
+
+L'outil rend donc deux nombres, et `--exige` porte sur le second :
+
+  sommet   largeur a `sommet - entaille` — dit si le sommet est plat ou vif
+  emprise  etendue jusqu'au plus haut des deux cols — dit si la masse est
+           large, independamment de la forme de son sommet
 
 Le coefficient de variation des largeurs (`cv_largeurs`) chiffre cette
 inegalite : proche de 0 = toutes les masses ont la meme largeur.
@@ -136,6 +149,8 @@ def _sommets(profil: list[int | None], entaille_px: float,
 
         proeminence = haut[i] - max(col_g, col_d)
         if proeminence >= entaille_px:
+            # LARGEUR DE SOMMET — a `sommet - entaille`. Voir l'avertissement
+            # en tete de fichier : elle RECOMPENSE un sommet plat.
             niveau = haut[i] - entaille_px
             a = i
             while a > 0 and haut[a - 1] >= niveau:
@@ -143,7 +158,19 @@ def _sommets(profil: list[int | None], entaille_px: float,
             b = j
             while b < n - 1 and haut[b + 1] >= niveau:
                 b += 1
-            sortie.append((x0 + a, x0 + b, b - a + 1, haut[i], proeminence))
+            # EMPRISE — jusqu'au plus haut des deux cols. C'est l'etendue
+            # reelle de la masse, celle qui dit « large » au sens du brief.
+            # Elle ne depend pas de la forme du sommet : une crete vive et
+            # une table plate de meme base rendent la meme emprise.
+            col = max(col_g, col_d)
+            ac = i
+            while ac > 0 and haut[ac - 1] > col:
+                ac -= 1
+            bc = j
+            while bc < n - 1 and haut[bc + 1] > col:
+                bc += 1
+            sortie.append((x0 + a, x0 + b, b - a + 1, haut[i], proeminence,
+                           x0 + ac, x0 + bc, bc - ac + 1))
         i = j + 1
 
     # Deux sommets peuvent partager la meme emprise au niveau mesure ; on ne
@@ -185,11 +212,23 @@ def _exiger(nom: str, masses: list, largeurs: list, m_par_px: float,
     if len(masses) < int(n_min):
         fautes.append("%s : %d masse(s), %d exigee(s)"
                       % (nom, len(masses), int(n_min)))
-    for (a, b, _, _, _), l in zip(masses, largeurs):
-        if l < larg_min:
-            fautes.append("%s : une masse de %.2f m de large (x %d-%d), %.2f m "
-                          "exiges — un sommet aussi etroit est porte par une "
-                          "seule roche du kit" % (nom, l, a, b, larg_min))
+    # LE PLANCHER DE LARGEUR EST RETIRE, ET C'EST UNE CORRECTION, PAS UN
+    # ASSOUPLISSEMENT. Aucune des deux largeurs ne fait un plancher sain :
+    #
+    #   - la largeur de SOMMET recompense un sommet plat. Mesure sur
+    #     R2a-3.4 : 5,58 / 3,60 / 2,18 m, et ces nombres ELEVES etaient
+    #     exactement la platitude que le lead a rejetee. Un plancher fonde
+    #     dessus rejetterait une crete vive, c'est-a-dire la correction ;
+    #   - l'EMPRISE jusqu'au col degenere sur la masse dominante : son col
+    #     est le sol, donc son emprise vaut toute la formation (17,75 m sur
+    #     R2a-3.4). Elle ne discrimine plus rien.
+    #
+    # Les deux nombres restent IMPRIMES — ils informent. Aucun ne juge. Le
+    # lead a tranche : « la mesure ne remplace pas ce constat ».
+    if larg_min > 0.0:
+        print("   [note] plancher de largeur %.2f m IGNORE — voir la raison "
+              "dans le code ; les deux largeurs sont des telemetries, pas des "
+              "criteres" % larg_min)
     if masses:
         emprise = (masses[-1][1] - masses[0][0]) * m_par_px
         if not (emp_min <= emprise <= emp_max):
@@ -227,7 +266,8 @@ def mesurer(manifeste: Path, entaille_m: float,
         image = Image.open(chemin)
         profil = _profil_superieur(image)
         masses = _sommets(profil, entaille_px, hauteur_px)
-        largeurs = [n * m_par_px for _, _, n, _, _ in masses]
+        sommets = [n * m_par_px for _, _, n, _, _, _, _, _ in masses]
+        largeurs = [e * m_par_px for _, _, _, _, _, _, _, e in masses]
         moyenne = sum(largeurs) / len(largeurs) if largeurs else 0.0
         if len(largeurs) > 1 and moyenne > 0.0:
             variance = sum((l - moyenne) ** 2 for l in largeurs) / len(largeurs)
@@ -236,9 +276,11 @@ def mesurer(manifeste: Path, entaille_m: float,
             cv = 0.0
         print("  %-38s %2d masse(s), largeur moyenne %.2f m, cv %.2f"
               % (chemin.name, len(masses), moyenne, cv))
-        for (a, b, n, sommet, prom), l in zip(masses, largeurs):
-            print("      x %4d-%4d   largeur %5.2f m   proeminence %5.2f m"
-                  % (a, b, l, prom * m_par_px))
+        for (a, b, n, sommet, prom, ac, bc, e), l, s in zip(
+                masses, largeurs, sommets):
+            print("      x %4d-%4d   emprise %5.2f m   sommet %5.2f m   "
+                  "proeminence %5.2f m"
+                  % (ac, bc, l, s, prom * m_par_px))
         if exige is not None:
             fautes += _exiger(chemin.name, masses, largeurs, m_par_px, exige)
     if fautes:
