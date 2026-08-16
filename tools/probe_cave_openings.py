@@ -919,6 +919,47 @@ def grouper_pixels(percees, pas_px):
 # Cohérence des cotes recopiées.
 # ---------------------------------------------------------------------------
 
+## Exhaussement du sol construit au-dessus du terrain gelé, recopié de
+## `waterfall_cave_place.gd`. Le terrain se trouve donc à `-EXHAUSSEMENT` en
+## repère modèle, PAR CONSTRUCTION : le script de lieu pose l'ouvrage à
+## `terrain + EXHAUSSEMENT`.
+EXHAUSSEMENT = 0.50
+## Hauteur des touffes d'herbe gelées, mesurée et consignée dans les
+## commentaires de `make_waterfall_cave.py` (« hautes d'environ 0,30 m »).
+HERBE_M = 0.30
+
+
+def controle_garde_au_terrain():
+    """Le profil DÉCLARÉ garde-t-il assez d'air au-dessus du terrain gelé ?
+
+    CE CONTRÔLE FERME UN CONTOURNEMENT, IL NE MESURE PAS UN DÉFAUT.
+
+    Les contrôles 1 à 3 vérifient que le sol RÉALISÉ correspond au profil
+    DÉCLARÉ (`PALIER`, `SAG`, `PORCHE_DENIVELE`). Cette formulation a un
+    angle mort, et il faut le dire avant que quelqu'un tombe dedans :
+    ABAISSER le profil déclaré jusqu'au niveau de l'assise enterrée ferait
+    passer le contrôle 1 au vert sans rien réparer. Le sol de la galerie
+    serait simplement descendu d'un demi-mètre, les touffes d'herbe gelées
+    continueraient de le traverser, et la mesure dirait « conforme ».
+
+    On vérifie donc, sur les CONSTANTES seules et sans aucun maillage, que
+    le profil déclaré laisse plus que la hauteur de l'herbe au-dessus du
+    terrain gelé.
+
+    La station 0 est exclue : la lèvre du porche est enterrée à dessein
+    (`PORCHE_DENIVELE`), et c'est ce qui fait du mètre de porche un seuil
+    de roche que l'on monte.
+    """
+    fautes = []
+    for i in range(1, len(CAVITE)):
+        sol = PALIER[i] - SAG
+        garde = sol + EXHAUSSEMENT
+        if garde < HERBE_M:
+            fautes.append(dict(station=i, sol_declare=round(sol, 3),
+                               garde_m=round(garde, 3)))
+    return fautes
+
+
 def controle_coherence_cotes(source):
     """Les cotes de la sonde correspondent-elles encore au générateur ?
 
@@ -995,6 +1036,19 @@ def main():
             return 3
         print("cotes  : CAVITE, PALIER, SAG, PORCHE_DENIVELE conformes au "
               "generateur")
+        garde = controle_garde_au_terrain()
+        if garde:
+            print("BLOQUE: le profil DECLARE du sol ne garde pas %.2f m "
+                  "au-dessus du terrain gele — un profil abaisse ferait "
+                  "verdir le controle 1 sans rien reparer :" % HERBE_M)
+            for f in garde:
+                print("        station %d : sol declare %+.3f, garde %.3f m"
+                      % (f["station"], f["sol_declare"], f["garde_m"]))
+            return 3
+        print("garde  : le profil declare laisse au moins %.2f m au-dessus du "
+              "terrain a toutes les stations (herbe %.2f m)"
+              % (min(PALIER[i] - SAG + EXHAUSSEMENT
+                     for i in range(1, len(CAVITE))), HERBE_M))
         tris, par_matiere = triangles_du_glb(args.glb)
     except Blocage as erreur:
         print("BLOQUE: %s" % erreur)

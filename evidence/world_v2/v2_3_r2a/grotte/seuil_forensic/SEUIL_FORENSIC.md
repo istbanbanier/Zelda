@@ -245,7 +245,45 @@ en 0.
 
 ---
 
-## 7. Lignes de continuité
+## 7. Un piège rencontré en chemin — l'erreur accuse le mauvais coupable
+
+Un `git worktree add --detach` neuf n'a **aucun `.godot/`**. Le runner de tests
+y échoue alors ainsi :
+
+```
+SCRIPT ERROR: Parse Error: Could not find type "GateTestCase" in the current scope.
+          at: GDScript::reload (res://tools/godot/test_runner.gd:215)
+```
+
+Le message désigne `GateTestCase` et `tools/godot/test_runner.gd`. La cause
+n'est ni l'un ni l'autre : c'est l'absence de
+`.godot/global_script_class_cache.cfg`, qui n'existe qu'après
+`godot --headless --path . --import`. Sans ce cache, **aucun `class_name` du
+projet n'est résoluble**, et le premier fichier qui en cite un porte le blâme.
+Le même symptôme frappe `--check-only --script` sur n'importe quel test.
+
+`docs/COMMENT_TRAVAILLER_ENSEMBLE.md` prescrit un worktree séparé par tâche, et
+`CLAUDE.md` liste bien la commande d'import — mais rien ne relie les deux. Une
+session qui suit la consigne de worktree et lance directement le runner reçoit
+une erreur qui l'envoie chercher un défaut dans les fichiers de test.
+`tools/validate_fast.sh` fait l'import lui-même, ce qui masque le piège tant
+qu'on passe par lui — et le masque précisément quand on l'a remplacé par le
+runner filtré.
+
+Ordre correct dans un worktree neuf, en un seul passage sous verrou :
+
+```bash
+flock /home/user/Zelda/.git/heavy_tools.lock -c '
+  godot --headless --path . --import > /tmp/import.log 2>&1
+  godot --headless --path . --script tools/godot/test_runner.gd -- --filter=... > /tmp/run.log 2>&1'
+```
+
+L'import produit environ 142 Mo de cache et prend plusieurs minutes ; il n'est
+à faire qu'une fois par worktree.
+
+---
+
+## 8. Lignes de continuité
 
 Aucun document de continuité n'a été modifié — arbitrage du coordinateur. Les
 lignes à reporter, telles quelles :
