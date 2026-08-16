@@ -1,0 +1,87 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "clip_below": 3.0,
+  "commit": "1152c92d70c1f718b71e4d6fd9f53d92ed59bbe4",
+  "emprise_m": [
+    23.6516418457031,
+    10.1434764862061,
+    23.6516513824463
+  ],
+  "engine": "4.7.1-stable (custom_build)",
+  "mode": "lieu dans le monde monté",
+  "place_id": "valley.poi.waterfall_cave.01",
+  "preuve": {
+    "arbre_de_capture": "/home/user/Zelda",
+    "branche": "claude/world-v2-reconstruction",
+    "cote": "AVANT — R2a-3.4 REJETEE (504ecbe, 8bf1a1b3)",
+    "environnement": {
+      "gpu": "ABSENT — rendu logiciel Mesa llvmpipe sous Xvfb",
+      "interdit": "aucune mesure de performance ne peut sortir de ces images (CLAUDE.md, limites de l'environnement)"
+    },
+    "exposition": {
+      "ambient_light_energy": 0.6,
+      "auto_exposure_enabled": false,
+      "note": "exposition FIXE : aucune auto-exposition, donc identique des deux cotes d'un A/B",
+      "source": "scenes/world_v2/WorldV2.tscn",
+      "tonemap_exposure": 1.0,
+      "tonemap_exposure_origine": "defaut Godot (absent du .tscn)",
+      "tonemap_mode": "FILMIC",
+      "tonemap_white": 1.0
+    },
+    "fov": {
+      "champ_fov_signifie": "FOV VERTICAL en degres",
+      "convention": "Camera3D.keep_aspect = KEEP_HEIGHT (defaut Godot)",
+      "piege": "VISUAL_ASSET_BIBLE 3.1 — un FOV horizontal de 68 deg vaut ~41,6 deg vertical en 16:9. Ne jamais saisir 68 comme fov."
+    },
+    "geometrie": {
+      "chemin": "assets/environment/caves/SM_WaterfallCave.glb",
+      "dernier_commit_du_chemin": "504ecbe2e606222783980be73a62a8ecce347a5b",
+      "octets": 1506684,
+      "sha256": "8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110",
+      "sha256_court": "8bf1a1b309aee79f"
+    },
+    "repo_dirty": false,
+    "sha_code": "1152c92d70c1f718b71e4d6fd9f53d92ed59bbe4",
+    "sha_code_court": "1152c92"
+  },
+  "projection": "orthogonale",
+  "provenance": {
+    "geometrie": {
+      "chemin": "assets/environment/caves/SM_WaterfallCave.glb",
+      "commit": "504ecbe2e606222783980be73a62a8ecce347a5b"
+    },
+    "lieu": {
+      "chemin": "scripts/world_v2/poi/waterfall_cave_place.gd",
+      "commit": "1fb57d34b1ac7e03bca278a9068d6a4fee57b77b"
+    },
+    "monde": {
+      "chemin": "scenes/world_v2/WorldV2.tscn",
+      "commit": "131b74dbd4330832d1cd7af63601c4246f278c93"
+    }
+  },
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "size": "1200x900",
+  "sujet": "grotte_avant",
+  "vues": [
+    {
+      "angle_deg": 55.0,
+      "hors_bandes_pct": 0.0,
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/visuel/avant/silhouettes/silhouette_grotte_avant_055.png",
+      "sujet_pct": 29.1477777777778
+    },
+    {
+      "angle_deg": 100.0,
+      "hors_bandes_pct": 0.0,
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/visuel/avant/silhouettes/silhouette_grotte_avant_100.png",
+      "sujet_pct": 28.4192592592593
+    },
+    {
+      "angle_deg": 225.0,
+      "hors_bandes_pct": 0.0,
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/visuel/avant/silhouettes/silhouette_grotte_avant_225.png",
+      "sujet_pct": 27.7118518518519
+    }
+  ]
+}

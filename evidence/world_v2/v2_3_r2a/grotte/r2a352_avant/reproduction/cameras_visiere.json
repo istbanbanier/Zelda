@@ -1,0 +1,130 @@
+[
+  {
+    "name": "08_visiere_face",
+    "from": [
+      -96.383,
+      7.7,
+      13.965
+    ],
+    "look": [
+      -105.576,
+      6.5,
+      4.773
+    ],
+    "fov": 30.0,
+    "_repere": {
+      "cible_modele": [
+        -0.6,
+        -1.2,
+        3.0
+      ],
+      "azimut_monde_deg": 45.0,
+      "azimut_glb_deg": 90.0,
+      "distance_m": 13.0,
+      "pitch_deg": -5.27,
+      "fov_vertical_deg": 30.0,
+      "fov_horizontal_16_9_deg": 50.94,
+      "champ_vertical_m": 6.97,
+      "champ_horizontal_m": 12.39,
+      "appui_bbox_m": 3.992,
+      "degagement_m": 10.208,
+      "pourquoi": "Q1. Premier jet a 8 m / fov 28 : le cadre etait rempli par l'ouverture noire et le fond de galerie. A 13 m / fov 30 le champ vertical passe de 3,99 a 6,97 m : la ROCHE au-dessus de la bouche domine, l'ouverture devient un element parmi d'autres."
+    }
+  },
+  {
+    "name": "09_visiere_profil",
+    "from": [
+      -107.833,
+      8.0,
+      17.575
+    ],
+    "look": [
+      -105.576,
+      6.5,
+      4.773
+    ],
+    "fov": 30.0,
+    "_repere": {
+      "cible_modele": [
+        -0.6,
+        -1.2,
+        3.0
+      ],
+      "azimut_monde_deg": 100.0,
+      "azimut_glb_deg": 145.0,
+      "distance_m": 13.0,
+      "pitch_deg": -6.58,
+      "fov_vertical_deg": 30.0,
+      "fov_horizontal_16_9_deg": 50.94,
+      "champ_vertical_m": 6.97,
+      "champ_horizontal_m": 12.39,
+      "appui_bbox_m": 9.475,
+      "degagement_m": 4.705,
+      "pourquoi": "Q1. DEUX jets rejetes avant celui-ci. Azimut 315 : camera DANS le massif (appui 8,91 pour une projection de 5,94). Azimut 135 : degagee, mais un profil a 90 deg RASE la face et le flanc du massif masque le porche — image dominee par un pilier au premier plan. L'azimut 100 est un TROIS-QUARTS a 55 deg de l'axe de bouche : il montre a la fois la face et la profondeur du surplomb, ce qu'un profil pur ne peut pas faire. C'est aussi l'azimut de la silhouette de composition, donc les deux se lisent ensemble."
+    }
+  },
+  {
+    "name": "10_visiere_dessous",
+    "from": [
+      -99.282,
+      4.5,
+      11.349
+    ],
+    "look": [
+      -105.646,
+      5.85,
+      4.985
+    ],
+    "fov": 36.0,
+    "_repere": {
+      "cible_modele": [
+        -0.8,
+        -1.3,
+        2.35
+      ],
+      "azimut_monde_deg": 45.0,
+      "azimut_glb_deg": 90.0,
+      "distance_m": 9.0,
+      "pitch_deg": 8.53,
+      "fov_vertical_deg": 36.0,
+      "fov_horizontal_16_9_deg": 60.02,
+      "champ_vertical_m": 5.85,
+      "champ_horizontal_m": 10.4,
+      "appui_bbox_m": 3.992,
+      "degagement_m": 6.308,
+      "pourquoi": "Q2. Le premier jet etait deja structurellement juste : on voit l'arc de bouche par en dessous. Recule de 5 a 9 m et fov elargi pour que la sous-face tienne dans le cadre sans etre rognee."
+    }
+  },
+  {
+    "name": "11_orteil_pied",
+    "from": [
+      -100.057,
+      4.9,
+      7.99
+    ],
+    "look": [
+      -103.914,
+      4.1,
+      3.394
+    ],
+    "fov": 34.0,
+    "_repere": {
+      "cible_modele": [
+        1.55,
+        -1.4,
+        0.6
+      ],
+      "azimut_monde_deg": 50.0,
+      "azimut_glb_deg": 95.0,
+      "distance_m": 6.0,
+      "pitch_deg": -7.59,
+      "fov_vertical_deg": 34.0,
+      "fov_horizontal_16_9_deg": 57.05,
+      "champ_vertical_m": 3.67,
+      "champ_horizontal_m": 6.52,
+      "appui_bbox_m": 4.741,
+      "degagement_m": 2.518,
+      "pourquoi": "Q2. TROIS jets rejetes avant celui-ci. Azimut 350 : rasant, a demi enterre. Azimut 20 a 12 m : trop loin, trop a l'est, un rocher occupe le tiers droit. Azimut 35 a 7,5 m : le pied +x est bien au premier plan mais il masque la bouche, composition confuse. L'azimut 50 a 6 m est a 5 deg de l'axe de bouche : le pied se lit de trois-quarts AVEC le porche derriere lui, au lieu de le cacher. C'est la zone ou le lot collerette a cree puis comble une poche de 0,24 m en (1,43 ; -1,51 ; -0,28), et aucune autre vue ne la regarde. Degagement 2,52 m : le plus serre du lot, mais au-dessus de la marge."
+    }
+  }
+]
