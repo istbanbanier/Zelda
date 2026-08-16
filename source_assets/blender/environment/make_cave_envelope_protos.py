@@ -31,18 +31,24 @@
 #
 # LA MÉTHODE ICI. Aucune masse n'est capée à plat. Chaque volume est un
 # LOFT entre un polygone de sol irrégulier et un RUBAN DE CRÊTE : une
-# boucle fermée très étroite (0,30 m) qui suit une polyligne 3D montante,
-# cassée et inclinée. Le sommet n'est donc pas une face horizontale mais
-# une ARÊTE, et sa pente est un paramètre, pas un accident. C'est la
-# différence structurelle avec la version rejetée, et elle ne peut pas se
-# perdre au réglage : il n'existe aucune valeur des paramètres qui rende
-# un sommet plat.
+# boucle fermée qui suit une polyligne 3D montante, cassée et inclinée, et
+# dont la LARGEUR EST DONNÉE POINT PAR POINT. Le sommet n'est donc jamais
+# une face horizontale ; c'est une table inclinée là où le ruban est large
+# (2,0 à 2,4 m) et une arête vive là où il est mince (0,25 m).
 #
-# Le profil de flanc suit horiz(t) = t^p avec p < 1. La pente vaut alors
-# dz/dh ∝ 1/(p·t^(p-1)) : nulle en t = 0 (pied évasé, masse POSÉE au sol)
-# et maximale en t = 1 (crête vive). Un p > 1 donnerait l'inverse — pied
-# vertical et sommet évasé, soit exactement le champignon qu'on ne veut
-# pas. Le sens de cette inégalité est le cœur du fichier.
+# DEUX ÉCHECS OPPOSÉS SE RÈGLENT LÀ, et il a fallu les rencontrer tous
+# les deux pour trouver la borne :
+#   * cape horizontale        -> créneau, « forteresse » (R2a-3.4) ;
+#   * ruban partout très fin  -> cône, sommet en pointe, « montagne de
+#     dessin animé » (première exécution de ce fichier, capturée et
+#     jetée).
+# La largeur variable est la seule forme qui échappe aux deux.
+#
+# LE FLANC N'EST PAS UNE DROITE NON PLUS. La première exécution employait
+# horiz(t) = t^0,62, une courbe presque droite : trois triangles nets. Un
+# flanc de rocher alterne replats et murs, ce qu'imposent les sept points
+# de contrôle `RESSAUTS`, décalés en basse fréquence d'azimut pour que les
+# vires serpentent au lieu de faire des anneaux — sinon, pièce montée.
 #
 # TROIS CONSTRUCTIONS INDÉPENDANTES, pas trois réglages :
 #
@@ -104,7 +110,6 @@ TAU = math.pi * 2.0
 # ---------------------------------------------------------------------------
 
 Z_PIED = -1.35          # semelle plantée sous le sol — masse POSÉE, pas posée dessus
-LARGEUR_RUBAN = 0.30    # largeur de la boucle de crête : une arête, pas un plateau
 
 # Ancrages de plan des trois masses, en mètres, repère Blender.
 #
@@ -158,48 +163,102 @@ def _rayon_ellipse(delta: float, demi_grand: float, demi_petit: float) -> float:
         (demi_petit * c) ** 2 + (demi_grand * s) ** 2)
 
 
-def _densifier(polyline: list, count: int) -> list:
+def _densifier(points: list, count: int) -> list:
     """Porte la polyligne à `count` points SANS PERDRE AUCUN SOMMET D'ORIGINE.
 
-    LE PIÈGE QUE CETTE FONCTION ÉVITE, et il a coûté une passe de mesure :
-    un rééchantillonnage par abscisse curviligne place ses points à pas
+    LE PIÈGE QUE CETTE FONCTION ÉVITE, et il a coûté une exécution : un
+    rééchantillonnage par abscisse curviligne place ses points à pas
     constant, donc il RATE les sommets de la polyligne. Sur la première
-    exécution, la crête culminait à 8,60 m et le maillage exporté à
-    7,87 m : l'apex avait été raboté de 73 cm par l'échantillonneur, en
-    silence. Une silhouette dont le point haut est décidé par l'outil de
-    discrétisation et non par la crête ne prouve rien.
+    version, la crête culminait à 8,60 m et le maillage exporté à 7,87 m :
+    l'apex avait été raboté de 73 cm par l'échantillonneur, en silence.
+    Une silhouette dont le point haut est décidé par l'outil de
+    discrétisation, et non par la crête, ne prouve rien.
 
     On garde donc tous les sommets et on n'insère des points QUE dans les
-    segments, en servant d'abord les plus longs.
+    segments, en servant d'abord les plus longs. Les points sont des
+    n-uplets (x, y, z, largeur_de_ruban) : la largeur s'interpole comme le
+    reste.
     """
-    if count < len(polyline):
+    if count < len(points):
         raise ValueError("count (%d) < sommets de crête (%d) : augmenter n"
-                         % (count, len(polyline)))
-    segments = len(polyline) - 1
+                         % (count, len(points)))
+    segments = len(points) - 1
     insertions = [0] * segments
-    longueurs = [(polyline[i + 1] - polyline[i]).length for i in range(segments)]
-    reste = count - len(polyline)
-    for _ in range(reste):
-        # Le segment dont le pas courant est le plus grand reçoit le point.
+    longueurs = []
+    for i in range(segments):
+        a, b = points[i], points[i + 1]
+        longueurs.append(math.dist(a[:3], b[:3]))
+    for _ in range(count - len(points)):
         cible = max(range(segments), key=lambda i: longueurs[i] / (insertions[i] + 1))
         insertions[cible] += 1
     sortie = []
     for i in range(segments):
-        sortie.append(polyline[i])
+        sortie.append(tuple(points[i]))
+        a, b = points[i], points[i + 1]
         for j in range(insertions[i]):
             u = (j + 1) / (insertions[i] + 1)
-            sortie.append(polyline[i].lerp(polyline[i + 1], u))
-    sortie.append(polyline[-1])
+            sortie.append(tuple(a[d] + (b[d] - a[d]) * u for d in range(len(a))))
+    sortie.append(tuple(points[-1]))
     return sortie
 
 
-def _ruban_crete(crete: list, n: int, largeur: float) -> list:
+## RESSAUTS DE FLANC. Points de contrôle (t, f) du profil horizontal.
+##
+## POURQUOI ILS EXISTENT. La première exécution donnait un profil
+## horiz(t) = t^0,62, donc une ligne presque droite du pied à la crête :
+## en silhouette, trois triangles. La formation avait cessé d'être un
+## château pour devenir une montagne de dessin animé — défaut différent,
+## échec identique. Un flanc de rocher n'est pas une droite : il alterne
+## des replats (f avance vite pour peu de z) et des murs (f avance peu).
+## Ces sept points imposent cette alternance ; le bruit par pan les
+## décale, de sorte que les replats serpentent au lieu de former des
+## anneaux — sans quoi on obtiendrait une pièce montée.
+RESSAUTS = [
+    (0.00, 0.00),
+    (0.13, 0.25),   # évasement du pied — replat
+    (0.36, 0.35),   # mur
+    (0.46, 0.56),   # vire
+    (0.70, 0.66),   # mur
+    (0.82, 0.84),   # épaulement
+    (1.00, 1.00),
+]
+
+
+def _profil_ressauts(t: float, decal_t: float, decal_f: float) -> float:
+    """Profil horizontal par morceaux, monotone, décalé par pan."""
+    n = len(RESSAUTS)
+    for i in range(n - 1):
+        t0, f0 = RESSAUTS[i]
+        t1, f1 = RESSAUTS[i + 1]
+        if i > 0:
+            t0 += decal_t
+            f0 += decal_f
+        if i + 1 < n - 1:
+            t1 += decal_t
+            f1 += decal_f
+        if t <= t1 or i == n - 2:
+            if t1 - t0 <= 1e-9:
+                return f1
+            u = min(1.0, max(0.0, (t - t0) / (t1 - t0)))
+            return f0 + (f1 - f0) * u
+    return 1.0
+
+
+def _ruban_crete(crete: list, n: int) -> list:
     """Boucle fermée de `n` sommets serrée autour d'une polyligne de crête.
 
-    C'EST LA PIÈCE QUI INTERDIT LE SOMMET PLAT. Le loft se termine sur
-    cette boucle au lieu d'un polygone horizontal : la face de fermeture
-    est un ruban de `largeur` mètres, donc l'œil lit une arête et sa
-    pente, jamais une table.
+    C'EST LA PIÈCE QUI INTERDIT LE SOMMET PLAT ET LE SOMMET POINTU. Le
+    loft se termine sur cette boucle au lieu d'un polygone horizontal : la
+    face de fermeture est un ruban dont la largeur est donnée POINT PAR
+    POINT par la quatrième coordonnée de la crête.
+
+    Les deux échecs successifs se règlent ici, et ils sont opposés :
+      * largeur nulle partout -> cône, sommet en pointe, « montagne de
+        dessin animé » ;
+      * face horizontale       -> créneau, « forteresse ».
+    Une largeur de 0,25 m aux extrémités et de 2,0 à 2,6 m au sommet
+    donne ce que le lead demande : une TABLE INCLINÉE, cassée à ses deux
+    bouts. Ni pointe, ni plateau horizontal.
 
     `crete` va de l'extrémité « moins » à l'extrémité « plus » le long de
     l'axe de crête. L'indice 0 de la boucle retombe sur l'extrémité
@@ -215,22 +274,41 @@ def _ruban_crete(crete: list, n: int, largeur: float) -> list:
     for i in range(demi):
         a = echant[max(0, i - 1)]
         b = echant[min(demi - 1, i + 1)]
-        t = Vector((b.x - a.x, b.y - a.y))
+        t = Vector((b[0] - a[0], b[1] - a[1]))
         if t.length < 1e-6:
             t = Vector((1.0, 0.0))
         tangentes.append(t.normalized())
     perp = [Vector((-t.y, t.x)) for t in tangentes]
-    demi_l = largeur * 0.5
-    cote_a = [Vector((p.x + q.x * demi_l, p.y + q.y * demi_l, p.z))
-              for p, q in zip(echant, perp)]
-    cote_b = [Vector((p.x - q.x * demi_l, p.y - q.y * demi_l, p.z))
-              for p, q in zip(echant, perp)]
+    cote_a, cote_b = [], []
+    for p, q in zip(echant, perp):
+        demi_l = max(0.10, p[3]) * 0.5
+        cote_a.append(Vector((p[0] + q.x * demi_l, p[1] + q.y * demi_l, p[2])))
+        cote_b.append(Vector((p[0] - q.x * demi_l, p[1] - q.y * demi_l, p[2])))
     # côté A parcouru de « plus » vers « moins », puis côté B en retour.
     return list(reversed(cote_a)) + cote_b
 
 
-def _loft(bm: bmesh.types.BMesh, anneaux: list) -> None:
-    """Coud une pile d'anneaux de même cardinal, avec les deux fonds."""
+def _loft(bm: bmesh.types.BMesh, anneaux: list, cape_en_bande: bool = False) -> None:
+    """Coud une pile d'anneaux de même cardinal, avec les deux fonds.
+
+    `cape_en_bande` ferme le dernier anneau par une BANDE DE QUADS entre
+    ses deux flancs, au lieu d'un n-gone.
+
+    POURQUOI CETTE OPTION EXISTE, ET CE QU'ELLE A COÛTÉ DE NE PAS L'AVOIR.
+    Le ruban de crête est une boucle en épingle : elle descend un flanc et
+    remonte l'autre. Fermée par un n-gone de 48 sommets, Blender la
+    triangule en reliant des points très éloignés de l'épingle — le toit
+    obtenu n'est pas la crête mais un assemblage arbitraire. Mesuré sur la
+    capture à l'azimut monde 100° : deux cornes à 8,45 et 8,39 m séparées
+    par une encoche À FOND PLAT de 0,70 m. Autrement dit un CRÉNEAU, le
+    défaut exact que toute cette passe cherche à supprimer, réintroduit
+    non par la forme voulue mais par la triangulation du capot.
+
+    Un n-gone convexe (le fond) ne pose pas ce problème ; une épingle, si.
+    D'où la bande : chaque quad relie deux échantillons consécutifs de la
+    crête sur les deux flancs, et le toit ne peut alors qu'épouser la
+    polyligne.
+    """
     n = len(anneaux[0])
     verts = [[bm.verts.new(tuple(p)) for p in anneau] for anneau in anneaux]
     for i in range(len(anneaux) - 1):
@@ -241,9 +319,23 @@ def _loft(bm: bmesh.types.BMesh, anneaux: list) -> None:
                 bm.faces.new([bas[k], bas[k2], haut[k2], haut[k]])
             except ValueError:
                 pass
-    for boucle in (list(reversed(verts[0])), verts[-1]):
+    try:
+        bm.faces.new(list(reversed(verts[0])))
+    except ValueError:
+        pass
+    haut = verts[-1]
+    if not cape_en_bande:
         try:
-            bm.faces.new(boucle)
+            bm.faces.new(haut)
+        except ValueError:
+            pass
+        return
+    demi = n // 2
+    for s in range(demi - 1):
+        quad = [haut[demi - 1 - s], haut[demi - 2 - s],
+                haut[demi + s + 1], haut[demi + s]]
+        try:
+            bm.faces.new(quad)
         except ValueError:
             pass
 
@@ -261,12 +353,12 @@ def masse_crete(bm, crete, ancre_sol, demi_grand, demi_petit, *, n=16,
     symétrique par construction, et aucune quantité de bruit ne le
     dissymétrise.
     """
-    crete = [Vector(p) for p in crete]
-    axe = Vector((crete[-1].x - crete[0].x, crete[-1].y - crete[0].y))
+    crete = [tuple(p) for p in crete]
+    axe = Vector((crete[-1][0] - crete[0][0], crete[-1][1] - crete[0][1]))
     psi = math.atan2(axe.y, axe.x) if axe.length > 1e-6 else 0.0
     biais_az = math.radians(biais_az_deg)
 
-    ruban = _ruban_crete(crete, n, LARGEUR_RUBAN)
+    ruban = _ruban_crete(crete, n)
     rayon_bruit = _bruit(seed, n, bruit_rayon)
     bombe_bruit = _bruit(seed + 97, n, 1.0)
     p_bruit = _bruit(seed + 41, n, 0.10)
@@ -281,13 +373,23 @@ def masse_crete(bm, crete, ancre_sol, demi_grand, demi_petit, *, n=16,
         dehors.append(d)
         base.append(Vector((ancre_sol.x + d.x * r, ancre_sol.y + d.y * r, z_pied)))
 
+    # Décalages des ressauts, en BASSE FRÉQUENCE d'azimut et non en bruit
+    # blanc : deux pans voisins doivent partager leur vire, sinon les
+    # replats se hachent en dents de scie au lieu de serpenter.
+    decal_t = [0.040 * math.sin(TAU * k / n + seed * 0.7)
+               + 0.022 * math.sin(2.0 * TAU * k / n + seed * 1.3) for k in range(n)]
+    decal_f = [0.038 * math.sin(TAU * k / n + seed * 1.9 + 1.1)
+               for k in range(n)]
+
     anneaux = []
     for i in range(niveaux):
         t = i / (niveaux - 1)
         anneau = []
         for k in range(n):
-            p = max(0.30, p_flanc * p_bruit[k])
-            f = t ** p
+            # `p_flanc` module encore le profil à ressauts : < 1 conserve
+            # le pied évasé, > 1 le redresse.
+            f = _profil_ressauts(t, decal_t[k], decal_f[k])
+            f = f ** max(0.55, p_flanc * p_bruit[k] * 1.45)
             x = base[k].x + (ruban[k].x - base[k].x) * f
             y = base[k].y + (ruban[k].y - base[k].y) * f
             # Renflement de mi-hauteur : sans lui le flanc est une surface
@@ -298,7 +400,7 @@ def masse_crete(bm, crete, ancre_sol, demi_grand, demi_petit, *, n=16,
             z = z_pied + (ruban[k].z - z_pied) * t
             anneau.append(Vector((x, y, z)))
         anneaux.append(anneau)
-    _loft(bm, anneaux)
+    _loft(bm, anneaux, cape_en_bande=True)
 
 
 def banc(bm, centre, psi_deg, demi_grand, demi_petit, *, plan, epaisseur,
@@ -337,80 +439,105 @@ def _objet(nom: str, bm: bmesh.types.BMesh) -> bpy.types.Object:
 
 
 # ---------------------------------------------------------------------------
-# PROTOTYPE A — « CUESTA »
+# PROTOTYPE A — « CUESTA À RESSAUTS »
 #
 # Un seul corps porte l'épaule gauche ET la masse dominante : la crête est
-# une polyligne continue de douze sommets qui monte en rampe, marque un
-# col, culmine à 8,55 décentré, se casse et plonge. La formation ne peut
-# pas se lire comme des blocs posés côte à côte, puisqu'il n'y a pas de
-# blocs — les « trois masses » sont trois bosses d'un même relief.
-# Le contrefort est un corps séparé, reculé, qui émerge de derrière
-# l'escarpement.
+# une polyligne continue de vingt-deux sommets qui monte par paliers,
+# marque un col, culmine sur une TABLE INCLINÉE décentrée, se casse et
+# plonge. La formation ne peut pas se lire comme des blocs posés côte à
+# côte, puisqu'il n'y a pas de blocs — les « trois masses » sont trois
+# bosses d'un même relief. Le contrefort est un corps séparé, reculé, qui
+# émerge de derrière l'escarpement.
+#
+# Chaque quadruplet est (x, y, z, largeur_de_ruban). Les largeurs sont le
+# vrai levier de lecture : 0,25 m aux extrémités donne une arête, 0,8 à
+# 1,3 m donne un replat, 2,1 à 2,4 m donne la table sommitale.
 # ---------------------------------------------------------------------------
 
 
 def proto_a() -> list:
     objets = []
 
-    # Corps principal. Rampe gauche à 39° (0,55 -> 4,30 sur 4,6 m), col A
-    # à 2,80, montée à 8,55, cassure à 7,15, plongée vers le col B.
+    # Corps principal. Rampe gauche à ressauts, épaule 4,30, col A 2,80
+    # (1,50 m plus bas), montée par deux vires, table sommitale de 8,45 à
+    # 8,10 sur 0,65 m — soit 9° d'inclinaison —, cassure, puis plongée.
     crete = [
-        (-7.80, 6.10, 0.55),
-        (-6.55, 5.75, 1.90),
-        (-5.35, 5.30, 3.15),
-        (-4.25, 4.85, 4.30),   # épaule — sommet local
-        (-3.45, 4.50, 3.55),
-        (-2.85, 4.20, 2.80),   # col A : 1,50 m sous l'épaule
-        (-2.00, 3.95, 5.05),
-        (-1.00, 3.90, 7.10),
-        (-0.10, 4.15, 8.55),   # sommet dominant, décentré
-        (0.75, 4.55, 7.15),    # cassure
-        (1.55, 4.95, 5.05),
-        (2.40, 5.30, 2.35),    # descente vers le col B
+        (-7.80, 7.05, 0.55, 0.25),
+        (-7.05, 6.80, 1.55, 0.45),
+        (-6.55, 6.60, 1.70, 0.75),   # vire
+        (-5.80, 6.30, 2.85, 0.50),
+        (-5.35, 6.05, 3.05, 0.85),   # vire
+        (-4.70, 5.70, 4.45, 0.55),
+        (-4.25, 5.45, 4.85, 1.20),   # épaule : petite table inclinée
+        (-3.75, 5.20, 4.35, 0.70),
+        (-3.45, 5.05, 3.45, 0.45),
+        (-2.85, 4.75, 2.55, 0.55),   # col A
+        (-2.35, 4.55, 3.95, 0.40),
+        (-2.00, 4.40, 4.25, 0.75),   # vire
+        (-1.45, 4.20, 5.85, 0.45),
+        (-1.10, 4.10, 6.15, 0.70),   # vire
+        (-0.55, 3.95, 7.65, 0.95),
+        (-0.10, 3.85, 8.35, 1.35),   # table sommitale, début
+        (0.60, 3.70, 8.10, 1.45),    # table sommitale, fin — 20° d'inclinaison
+        (1.05, 3.60, 7.35, 1.05),    # cassure
+        (1.45, 3.55, 6.60, 1.15),    # vire
+        (1.85, 3.50, 4.90, 0.55),
+        (2.15, 3.45, 4.55, 0.85),    # vire
+        (2.45, 3.40, 2.35, 0.30),
     ]
     bm = bmesh.new()
     masse_crete(bm, crete,
-                ancre_sol=Vector((-2.70, 4.60)),
-                demi_grand=5.70, demi_petit=4.30,
-                n=26, niveaux=13, seed=11,
+                ancre_sol=Vector((-2.60, 4.40)),
+                demi_grand=5.30, demi_petit=4.80,
+                n=48, niveaux=15, seed=11,
                 p_flanc=0.62, bombement=0.22,
                 biais_amp=0.20, biais_az_deg=260.0)
     objets.append(_objet("SM_ProtoA_Corps", bm))
 
     # Contrefort droit — reculé de 1,84 m, plus petit, crête descendante.
     crete_c = [
-        (3.95, 6.00, 1.85),
-        (4.85, 5.55, 3.60),
-        (5.75, 5.05, 4.55),
-        (6.70, 4.70, 3.35),
-        (7.55, 4.45, 1.45),
+        (3.95, 6.00, 1.85, 0.25),
+        (4.45, 5.75, 3.00, 0.45),
+        (4.85, 5.55, 3.25, 0.95),    # vire
+        (5.35, 5.25, 4.20, 0.55),
+        (5.75, 5.05, 4.55, 1.25),    # table
+        (6.15, 4.90, 4.30, 0.90),
+        (6.70, 4.70, 3.35, 0.50),
+        (7.10, 4.60, 3.10, 0.80),    # vire
+        (7.55, 4.45, 1.45, 0.25),
     ]
     bm = bmesh.new()
     masse_crete(bm, crete_c,
                 ancre_sol=Vector((5.75, 5.15)),
                 demi_grand=2.60, demi_petit=2.35,
-                n=16, niveaux=10, seed=23,
+                n=22, niveaux=12, seed=23,
                 p_flanc=0.70, bombement=0.16,
                 biais_amp=0.18, biais_az_deg=300.0)
     objets.append(_objet("SM_ProtoA_Contrefort", bm))
 
     # Talus continu. Il ne doit surtout PAS être une plinthe : sa crête
-    # ondule de 0,95 à 3,55 m et son plan est franchement dissymétrique,
+    # ondule de 0,85 à 3,55 m et son plan est franchement dissymétrique,
     # large à l'avant-gauche, mince à droite.
     crete_t = [
-        (-8.20, 3.20, 0.95),
-        (-5.80, 1.95, 2.55),
-        (-3.10, 1.05, 3.55),
-        (-0.40, 0.85, 2.30),
-        (2.20, 1.75, 3.20),
-        (4.90, 2.95, 2.05),
-        (7.40, 3.95, 0.85),
+        (-8.20, 3.20, 0.95, 0.35),
+        (-6.90, 2.55, 2.10, 0.90),
+        (-5.80, 1.95, 2.55, 1.60),
+        (-4.40, 1.45, 2.30, 1.10),
+        (-3.10, 1.05, 2.15, 1.80),
+        (-1.70, 0.90, 2.45, 1.30),
+        (-0.40, 0.85, 2.30, 1.70),
+        (0.90, 1.25, 3.05, 1.20),
+        (2.20, 1.75, 3.05, 1.60),
+        (3.60, 2.35, 2.55, 1.20),
+        (4.90, 2.95, 2.05, 1.50),
+        (6.20, 3.45, 1.55, 1.00),
+        (7.40, 3.95, 0.85, 0.35),
     ]
     bm = bmesh.new()
     masse_crete(bm, crete_t,
                 ancre_sol=Vector((-0.35, 3.60)),
                 demi_grand=7.60, demi_petit=4.90,
-                n=18, niveaux=7, seed=37,
+                n=28, niveaux=9, seed=37,
                 p_flanc=0.56, bombement=0.28,
                 biais_amp=0.16, biais_az_deg=250.0)
     objets.append(_objet("SM_ProtoA_Talus", bm))
@@ -418,16 +545,19 @@ def proto_a() -> list:
     # Queue enterrée au nord : la masse se perd dans le ressaut au lieu de
     # s'arrêter net. C'est ce qui manque le plus à la vue arrière.
     crete_q = [
-        (-3.90, 8.20, 3.60),
-        (-1.30, 9.45, 4.45),
-        (1.40, 10.20, 3.30),
-        (3.80, 9.90, 1.85),
+        (-3.90, 8.20, 3.60, 0.60),
+        (-2.60, 8.85, 4.15, 1.40),
+        (-1.30, 9.45, 4.45, 2.00),
+        (0.10, 9.90, 4.20, 1.60),
+        (1.40, 10.20, 3.30, 1.80),
+        (2.60, 10.10, 2.60, 1.20),
+        (3.80, 9.90, 1.85, 0.40),
     ]
     bm = bmesh.new()
     masse_crete(bm, crete_q,
                 ancre_sol=Vector((-0.40, 8.40)),
                 demi_grand=5.60, demi_petit=3.40,
-                n=16, niveaux=8, seed=53,
+                n=18, niveaux=9, seed=53,
                 p_flanc=0.60, bombement=0.22,
                 biais_amp=0.20, biais_az_deg=90.0)
     objets.append(_objet("SM_ProtoA_Queue", bm))
@@ -437,19 +567,36 @@ def proto_a() -> list:
 # ---------------------------------------------------------------------------
 # PROTOTYPE B — « STRATES BASCULÉES »
 #
-# Aucune masse n'est modelée : la formation est une pile de bancs
-# tabulaires, tous inclinés, emboîtés et décalés vers +x. Le profil
-# supérieur est donc, par construction, une succession de segments
-# inclinés séparés par des ressauts — jamais une horizontale, jamais une
-# verticale continue. L'escalier est long à gauche (rampe) et court à
-# droite (escarpement) : la même cuesta que A, par un tout autre chemin.
+# Aucune masse n'est modelée : la formation est une pile de onze bancs
+# tabulaires inclinés, emboîtés et décalés. Le profil supérieur est donc,
+# par construction, une succession de segments inclinés séparés par des
+# ressauts — jamais une horizontale, jamais une verticale continue.
+# L'escalier est long à gauche (rampe) et court à droite (escarpement) :
+# la même cuesta que A, par un tout autre chemin.
+#
+# CHAQUE BANC EST DÉFINI PAR SES DEUX BOUTS, pas par un plan abstrait :
+# (x0, z0) -> (x1, z1). Le pendage s'en déduit. Écrire le plan et espérer
+# l'altitude, c'est ce que faisait la première version — et deux bancs
+# flottaient à 0,4 m au-dessus de leur porteur sans que rien ne le crie.
+# Le recouvrement de chaque banc par le suivant est ici VÉRIFIÉ à la main,
+# banc par banc, et l'épaisseur choisie en conséquence.
 #
 # RISQUE ASSUMÉ, ET NOMMÉ : c'est la construction la plus exposée au
 # reproche que le lead a porté sur la vue arrière — « plaques et piliers,
-# volumes qui paraissent assemblés ». D'où des bancs ÉPAIS (1,2 à 3,6 m),
-# jamais des plaques, et un recouvrement franc de chaque banc par le
-# suivant.
+# volumes qui paraissent assemblés ». D'où des bancs ÉPAIS (1,5 à 4,0 m),
+# jamais des plaques.
 # ---------------------------------------------------------------------------
+
+
+def banc_x(bm, x0, x1, z0, z1, *, y, dp, epaisseur, psi_deg=0.0, ky=0.0,
+           n=13, seed=1, fruit=0.87):
+    """Un banc défini par ses deux extrémités en x et leurs altitudes."""
+    kx = (z1 - z0) / (x1 - x0)
+    plan = (z0 - kx * x0 - ky * y, kx, ky)
+    centre = Vector(((x0 + x1) * 0.5, y))
+    demi_grand = (x1 - x0) * 0.5 / max(0.6, math.cos(math.radians(psi_deg)))
+    banc(bm, centre, psi_deg, demi_grand, dp, plan=plan, epaisseur=epaisseur,
+         n=n, seed=seed, fruit=fruit)
 
 
 def proto_b() -> list:
@@ -459,45 +606,47 @@ def proto_b() -> list:
     # plantent la formation. Leur face inférieure reste sous z = 0 sur
     # toute leur emprise — sinon la formation flotte.
     bm = bmesh.new()
-    banc(bm, Vector((-3.00, 4.90)), 8.0, 5.60, 4.40,
-         plan=(2.10, 0.160, 0.045), epaisseur=3.10, n=15, seed=101, fruit=0.91)
-    banc(bm, Vector((3.40, 5.20)), -7.0, 4.70, 4.10,
-         plan=(2.55, 0.100, 0.030), epaisseur=3.60, n=14, seed=113, fruit=0.90)
+    banc_x(bm, -8.60, 3.00, 0.35, 2.30, y=4.60, dp=4.30, epaisseur=2.60,
+           psi_deg=6.0, ky=0.03, n=15, seed=101, fruit=0.91)
+    banc_x(bm, -2.40, 8.60, 2.20, 0.90, y=5.30, dp=4.00, epaisseur=3.00,
+           psi_deg=-6.0, ky=0.02, n=14, seed=113, fruit=0.90)
     objets.append(_objet("SM_ProtoB_Assise", bm))
 
-    # Rampe gauche : deux bancs à fort pendage (0,42 = 22,8°), de plus en
-    # plus courts vers le haut et décalés vers +x.
+    # Rampe gauche : deux bancs, pendage croissant, qui montent à l'épaule.
     bm = bmesh.new()
-    banc(bm, Vector((-4.60, 5.20)), 12.0, 4.40, 3.40,
-         plan=(5.40, 0.420, 0.060), epaisseur=1.90, n=14, seed=127, fruit=0.87)
-    banc(bm, Vector((-3.30, 4.90)), 18.0, 3.50, 2.80,
-         plan=(6.35, 0.420, 0.050), epaisseur=1.70, n=13, seed=139, fruit=0.85)
+    banc_x(bm, -7.60, -2.40, 1.35, 3.55, y=5.00, dp=3.40, epaisseur=2.30,
+           psi_deg=14.0, ky=0.05, n=14, seed=127, fruit=0.87)
+    banc_x(bm, -6.00, -3.40, 2.85, 5.05, y=4.95, dp=2.90, epaisseur=2.10,
+           psi_deg=22.0, ky=0.04, n=13, seed=139, fruit=0.85)
     objets.append(_objet("SM_ProtoB_Rampe", bm))
 
-    # Dominante : quatre bancs courts empilés, décalés vers +x, le dernier
-    # à pendage inversé pour que la crête KINKE au lieu de continuer.
+    # Dominante : quatre bancs de moins en moins longs, décalés vers +x.
+    # Le dernier a un pendage INVERSÉ : la crête kinke au lieu de
+    # continuer, et le sommet devient une table inclinée à 12,5°.
     bm = bmesh.new()
-    banc(bm, Vector((-1.60, 4.40)), 22.0, 3.00, 2.50,
-         plan=(7.05, 0.420, 0.040), epaisseur=1.60, n=13, seed=151, fruit=0.84)
-    banc(bm, Vector((-0.40, 4.20)), 30.0, 2.30, 1.90,
-         plan=(7.85, 0.380, 0.030), epaisseur=1.40, n=12, seed=163, fruit=0.82)
-    banc(bm, Vector((0.50, 4.60)), 40.0, 1.60, 1.25,
-         plan=(8.45, 0.200, -0.180), epaisseur=1.20, n=11, seed=173, fruit=0.76)
+    banc_x(bm, -3.20, 3.40, 3.15, 4.60, y=4.45, dp=3.20, epaisseur=3.20,
+           psi_deg=10.0, ky=0.04, n=14, seed=151, fruit=0.86)
+    banc_x(bm, -1.70, 3.00, 4.90, 6.10, y=4.35, dp=2.70, epaisseur=1.60,
+           psi_deg=18.0, ky=0.03, n=13, seed=163, fruit=0.84)
+    banc_x(bm, -0.70, 2.60, 6.60, 7.60, y=4.40, dp=2.20, epaisseur=1.70,
+           psi_deg=26.0, ky=0.03, n=12, seed=173, fruit=0.82)
+    banc_x(bm, 0.50, 2.30, 8.35, 7.95, y=4.70, dp=1.70, epaisseur=1.50,
+           psi_deg=38.0, ky=-0.05, n=12, seed=181, fruit=0.78)
     objets.append(_objet("SM_ProtoB_Dominante", bm))
 
     # Contrefort droit, reculé : deux bancs à pendage INVERSÉ, donc une
     # crête qui descend vers la droite au lieu de prolonger la rampe.
     bm = bmesh.new()
-    banc(bm, Vector((5.80, 5.40)), -18.0, 3.00, 2.40,
-         plan=(4.90, -0.180, 0.070), epaisseur=2.40, n=13, seed=191, fruit=0.88)
-    banc(bm, Vector((5.55, 5.05)), -32.0, 2.20, 1.75,
-         plan=(6.05, -0.260, 0.060), epaisseur=1.55, n=12, seed=199, fruit=0.80)
+    banc_x(bm, 3.40, 7.80, 1.90, 1.30, y=5.55, dp=2.60, epaisseur=2.20,
+           psi_deg=-20.0, ky=0.05, n=13, seed=191, fruit=0.89)
+    banc_x(bm, 3.90, 6.50, 4.45, 3.85, y=5.30, dp=2.05, epaisseur=2.80,
+           psi_deg=-34.0, ky=0.04, n=12, seed=199, fruit=0.82)
     objets.append(_objet("SM_ProtoB_Contrefort", bm))
 
     # Queue enterrée, banc épais prolongé vers le nord.
     bm = bmesh.new()
-    banc(bm, Vector((-0.50, 9.20)), 4.0, 5.40, 3.30,
-         plan=(3.20, 0.120, -0.060), epaisseur=4.20, n=14, seed=211, fruit=0.90)
+    banc_x(bm, -5.00, 4.00, 2.60, 3.40, y=9.30, dp=3.30, epaisseur=4.00,
+           psi_deg=4.0, ky=-0.06, n=14, seed=211, fruit=0.90)
     objets.append(_objet("SM_ProtoB_Queue", bm))
     return objets
 
@@ -524,53 +673,66 @@ def proto_c() -> list:
     # Épaule gauche : basse, large, déversée vers l'avant-gauche ; sa
     # crête est une croupe qui descend vers l'extérieur, pas une table.
     crete_g = [
-        (-7.60, 3.30, 1.55),
-        (-6.40, 4.05, 3.15),
-        (-5.20, 4.85, 4.40),
-        (-4.10, 5.75, 3.75),
-        (-3.20, 6.65, 2.40),
+        (-7.35, 6.40, 1.55, 0.30),
+        (-6.75, 5.95, 2.60, 0.55),
+        (-6.25, 5.60, 2.85, 0.95),
+        (-5.65, 5.15, 3.95, 0.60),
+        (-5.15, 4.80, 4.55, 1.35),
+        (-4.60, 4.40, 4.15, 0.90),
+        (-4.10, 4.05, 3.60, 0.55),
+        (-3.65, 3.70, 3.35, 0.85),
+        (-3.20, 3.35, 2.40, 0.30),
     ]
     bm = bmesh.new()
     masse_crete(bm, crete_g,
-                ancre_sol=Vector((-4.70, 5.90)),
+                ancre_sol=Vector((-5.10, 6.10)),
                 demi_grand=4.10, demi_petit=3.40,
-                n=18, niveaux=11, seed=301,
+                n=22, niveaux=13, seed=301,
                 p_flanc=0.60, bombement=0.26,
-                biais_amp=0.26, biais_az_deg=225.0)
+                biais_amp=0.20, biais_az_deg=215.0)
     objets.append(_objet("SM_ProtoC_Epaule", bm))
 
     # Dominante : proue déversée vers l'arrière (+y). Le pied est en
     # avant, la crête en arrière : le front est en dévers, jamais une
     # paroi — et c'est ce dévers qui abritera la bouche.
     crete_d = [
-        (-2.75, 6.20, 4.35),
-        (-1.70, 5.80, 6.70),
-        (-0.60, 5.45, 8.55),
-        (0.55, 5.35, 7.20),
-        (1.60, 5.60, 4.80),
-        (2.50, 6.05, 2.60),
+        (-2.75, 6.85, 4.35, 0.35),
+        (-2.30, 6.55, 5.55, 0.65),
+        (-2.00, 6.35, 5.80, 1.05),
+        (-1.55, 6.05, 7.05, 0.60),
+        (-1.15, 5.75, 7.35, 1.05),
+        (-0.60, 5.35, 8.45, 1.30),
+        (0.15, 4.85, 8.10, 1.45),
+        (0.55, 4.60, 7.20, 0.95),
+        (1.00, 4.35, 6.75, 1.10),
+        (1.60, 4.05, 4.80, 0.55),
+        (2.05, 3.85, 4.50, 0.85),
+        (2.50, 3.65, 2.60, 0.30),
     ]
     bm = bmesh.new()
     masse_crete(bm, crete_d,
-                ancre_sol=Vector((-0.60, 3.30)),
-                demi_grand=4.40, demi_petit=3.70,
-                n=20, niveaux=12, seed=317,
+                ancre_sol=Vector((-0.60, 3.60)),
+                demi_grand=4.60, demi_petit=4.10,
+                n=26, niveaux=14, seed=317,
                 p_flanc=0.64, bombement=0.24,
                 biais_amp=0.22, biais_az_deg=250.0)
     objets.append(_objet("SM_ProtoC_Dominante", bm))
 
     # Contrefort droit : reculé, penché vers +x, crête courte et oblique.
     crete_c = [
-        (4.10, 6.35, 2.10),
-        (5.05, 5.70, 4.15),
-        (6.05, 5.10, 4.95),
-        (7.10, 4.70, 3.05),
+        (4.10, 6.35, 2.10, 0.30),
+        (4.60, 6.00, 3.35, 0.55),
+        (5.05, 5.70, 3.65, 1.05),
+        (5.55, 5.40, 4.60, 0.60),
+        (6.05, 5.10, 4.95, 1.30),
+        (6.50, 4.90, 4.55, 0.95),
+        (7.10, 4.70, 3.05, 0.30),
     ]
     bm = bmesh.new()
     masse_crete(bm, crete_c,
                 ancre_sol=Vector((5.35, 5.85)),
                 demi_grand=2.70, demi_petit=2.40,
-                n=16, niveaux=10, seed=331,
+                n=18, niveaux=12, seed=331,
                 p_flanc=0.68, bombement=0.18,
                 biais_amp=0.24, biais_az_deg=330.0)
     objets.append(_objet("SM_ProtoC_Contrefort", bm))
@@ -578,48 +740,58 @@ def proto_c() -> list:
     # Talus liant — ici structurel. Deux corps qui se recouvrent, jamais
     # une nappe unique : une nappe unique redonnerait la plinthe.
     crete_t1 = [
-        (-7.90, 3.90, 1.05),
-        (-5.30, 2.25, 2.85),
-        (-2.30, 1.15, 3.70),
-        (0.40, 1.55, 2.45),
-        (2.80, 2.75, 1.25),
+        (-7.90, 3.90, 1.05, 0.35),
+        (-6.60, 3.05, 2.35, 1.10),
+        (-5.30, 2.25, 2.85, 1.70),
+        (-3.80, 1.65, 2.55, 1.20),
+        (-2.30, 1.15, 3.70, 1.80),
+        (-0.95, 1.35, 2.85, 1.30),
+        (0.40, 1.55, 2.45, 1.60),
+        (1.60, 2.15, 1.95, 1.10),
+        (2.80, 2.75, 1.25, 0.35),
     ]
     bm = bmesh.new()
     masse_crete(bm, crete_t1,
-                ancre_sol=Vector((-2.70, 3.70)),
-                demi_grand=6.30, demi_petit=4.20,
-                n=16, niveaux=7, seed=347,
+                ancre_sol=Vector((-2.50, 3.70)),
+                demi_grand=5.80, demi_petit=4.20,
+                n=22, niveaux=9, seed=347,
                 p_flanc=0.56, bombement=0.30,
                 biais_amp=0.18, biais_az_deg=250.0)
     objets.append(_objet("SM_ProtoC_TalusOuest", bm))
 
     crete_t2 = [
-        (1.20, 2.95, 2.15),
-        (3.60, 3.65, 3.15),
-        (5.80, 4.65, 2.40),
-        (7.50, 5.60, 1.00),
+        (1.20, 2.95, 2.15, 0.40),
+        (2.40, 3.30, 2.85, 1.20),
+        (3.60, 3.65, 3.15, 1.70),
+        (4.70, 4.15, 2.85, 1.30),
+        (5.80, 4.65, 2.40, 1.50),
+        (6.65, 5.10, 1.75, 1.00),
+        (7.50, 5.60, 1.00, 0.35),
     ]
     bm = bmesh.new()
     masse_crete(bm, crete_t2,
                 ancre_sol=Vector((4.50, 5.20)),
                 demi_grand=4.60, demi_petit=3.50,
-                n=16, niveaux=7, seed=359,
+                n=18, niveaux=9, seed=359,
                 p_flanc=0.58, bombement=0.26,
                 biais_amp=0.18, biais_az_deg=280.0)
     objets.append(_objet("SM_ProtoC_TalusEst", bm))
 
     # Queue enterrée.
     crete_q = [
-        (-3.40, 8.70, 3.40),
-        (-0.70, 9.75, 4.35),
-        (2.10, 10.15, 3.15),
-        (4.40, 9.60, 1.70),
+        (-3.40, 8.70, 3.40, 0.50),
+        (-2.10, 9.30, 4.05, 1.30),
+        (-0.70, 9.75, 4.35, 1.90),
+        (0.70, 10.05, 4.00, 1.50),
+        (2.10, 10.15, 3.15, 1.70),
+        (3.30, 9.95, 2.45, 1.10),
+        (4.40, 9.60, 1.70, 0.35),
     ]
     bm = bmesh.new()
     masse_crete(bm, crete_q,
                 ancre_sol=Vector((0.10, 8.80)),
                 demi_grand=5.30, demi_petit=3.20,
-                n=16, niveaux=8, seed=367,
+                n=18, niveaux=9, seed=367,
                 p_flanc=0.60, bombement=0.22,
                 biais_amp=0.20, biais_az_deg=90.0)
     objets.append(_objet("SM_ProtoC_Queue", bm))
