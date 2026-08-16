@@ -562,7 +562,7 @@ def controle_plancher(grille, echantillons):
 # CONTRÔLE 2 — LE JOUR, sur la sphère entière.
 # ---------------------------------------------------------------------------
 
-def sort_par_la_bouche(origine, direction):
+def sort_par_la_bouche(origine, direction, profil=None):
     """Le rayon quitte-t-il la cavité par l'OUVERTURE, et non par un trou ?
 
     SANS CE FILTRE LA SONDE MENT. Un premier jet signalait 61 « percées » à
@@ -579,7 +579,8 @@ def sort_par_la_bouche(origine, direction):
     bouche serait absous. L'inverse — un faux positif à chaque rayon
     sortant — noierait les vraies percées sous soixante bruits.
     """
-    ax, ay, hw, cle = CAVITE[0]
+    profil = profil or PROFIL_GROTTE
+    ax, ay, hw, cle = profil.cavite[0]
     if direction[1] >= -1e-9:
         return False                      # ne va pas vers la bouche
     t = (ay - origine[1]) / direction[1]
@@ -587,12 +588,12 @@ def sort_par_la_bouche(origine, direction):
         return False                      # le porche est derrière le point
     px = origine[0] + direction[0] * t
     pz = origine[2] + direction[2] * t
-    sol = PORCHE_DENIVELE - SAG
-    return (abs(px - ax) <= hw * 1.34
+    sol = profil.porche_denivele - profil.sag
+    return (abs(px - ax) <= hw * profil.asym
             and sol - 0.10 <= pz <= cle * 1.05)
 
 
-def dans_enveloppe(point):
+def dans_enveloppe(point, profil=None):
     """Le point est-il dans l'enveloppe NOMINALE de la cavité ?
 
     Enveloppe analytique, calculée depuis `CAVITE`/`PALIER` — pas depuis le
@@ -600,24 +601,19 @@ def dans_enveloppe(point):
     maillage ne peut pas dire quand justement il n'y a rien à cet endroit.
     Majorée du facteur d'asymétrie maximal de `CAVITE_ASYM` (1,34).
     """
-    y = point[1]
-    if y < CAVITE[0][1] or y > CAVITE[-1][1]:
+    profil = profil or PROFIL_GROTTE
+    u = profil.u_pour_y(point[1])
+    if u is None:
         return False
-    u = 0.0
-    for i in range(len(CAVITE) - 1):
-        if CAVITE[i][1] <= y <= CAVITE[i + 1][1]:
-            span = CAVITE[i + 1][1] - CAVITE[i][1]
-            u = i + ((y - CAVITE[i][1]) / span if span else 0.0)
-            break
-    ax, _, hw, cle, palier = station_interpolee(u)
-    sol = palier - SAG - (PORCHE_DENIVELE if u < 1.0 else 0.0) * 0.0
+    ax, _, hw, cle, palier = profil.station(u)
+    sol = palier - profil.sag
     if u < 1.0:
-        sol += PORCHE_DENIVELE * (1.0 - u)
-    return (abs(point[0] - ax) <= hw * 1.34
+        sol += profil.porche_denivele * (1.0 - u)
+    return (abs(point[0] - ax) <= hw * profil.asym
             and sol - 0.30 <= point[2] <= palier + cle * 1.10)
 
 
-def sortie_de_cavite(origine, direction, portee=40.0, pas=0.10):
+def sortie_de_cavite(origine, direction, portee=40.0, pas=0.10, profil=None):
     """Dernier point du rayon encore dans l'enveloppe de cavité.
 
     C'est la LOCALISATION DU TROU : l'endroit où le rayon quitte la
@@ -629,12 +625,23 @@ def sortie_de_cavite(origine, direction, portee=40.0, pas=0.10):
     t = 0.0
     while t <= portee:
         p = tuple(origine[k] + direction[k] * t for k in range(3))
-        if dans_enveloppe(p):
+        if dans_enveloppe(p, profil):
             dernier = p
         elif dernier is not None:
             break
         t += pas
     return dernier
+
+
+def controle_jour_profil(grille, echantillons, directions, profil):
+    """`controle_jour`, mais sur un profil injecté.
+
+    Existe pour que `tools/probe_cave_selftest.py` puisse soumettre à la
+    MÊME fonction une géométrie dont il connaît la réponse. Un contrôle
+    qu'on ne peut pas éprouver sur une réponse connue n'est pas un contrôle,
+    c'est une opinion outillée.
+    """
+    return _controle_jour(grille, echantillons, directions, profil)
 
 
 def controle_jour(grille, echantillons, directions):
@@ -645,6 +652,10 @@ def controle_jour(grille, echantillons, directions):
     directions qu'il ne tire pas — vers le bas, le long de l'axe, et aux
     stations 0, 1, 7, 8.
     """
+    return _controle_jour(grille, echantillons, directions, PROFIL_GROTTE)
+
+
+def _controle_jour(grille, echantillons, directions, profil):
     fautes = []
     hors_cavite = []
     testes = 0
@@ -657,7 +668,7 @@ def controle_jour(grille, echantillons, directions):
         # sort par-dessus la lèvre, ce qui est le comportement voulu. Le
         # contrôle commence donc au SEUIL, station 1, y = 0,00. Le plancher,
         # lui, reste jugé au porche — et il y passe.
-        if ech["p"][1] < CAVITE[1][1] - 1e-9:
+        if ech["p"][1] < profil.cavite[1][1] - 1e-9:
             ecartes += 1
             continue
         vide, _ = dans_le_vide(grille, ech["p"])
@@ -688,7 +699,7 @@ def controle_jour(grille, echantillons, directions):
                                     part_enclose=round(part, 3)))
             continue
         for direction in directions:
-            if sort_par_la_bouche(ech["p"], direction):
+            if sort_par_la_bouche(ech["p"], direction, profil):
                 bouche += 1
                 continue
             testes += 1
@@ -701,7 +712,8 @@ def controle_jour(grille, echantillons, directions):
             # echantillonnage fautif : un vrai trou fait converger les
             # percees vers une meme region de la coque, un mauvais point
             # les disperse partout.
-            sortie = sortie_de_cavite(ech["p"], direction) or ech["p"]
+            sortie = sortie_de_cavite(ech["p"], direction, profil=profil) \
+                or ech["p"]
             fautes.append(dict(station=ech["station"], u=round(ech["u"], 2),
                                x=round(ech["p"][0], 2), y=round(ech["p"][1], 2),
                                z=round(ech["p"][2], 2),
@@ -774,7 +786,7 @@ def _croix(a, b):
 
 
 def monde_vers_modele(point, origine_monde, lacet_deg):
-    """Monde Godot -> repère modèle Blender.
+    """Monde Godot -> repère modèle Blender. FORME FERMÉE, écrite à la main.
 
     L'ouvrage est posé sans échelle, avec un seul lacet autour de Y
     (`waterfall_cave_place.gd` : `ouvrage.rotation.y = deg_to_rad(45)`), et
@@ -782,6 +794,13 @@ def monde_vers_modele(point, origine_monde, lacet_deg):
     `place.position = Vector3(...)` et rien d'autre). La transformation est
     donc une translation suivie d'une rotation, et son inverse s'écrit sans
     matrice.
+
+    CETTE FONCTION EST L'UN DES DEUX CHEMINS DE `Pose`. L'autre est la
+    chaîne de matrices de `Pose.vers_monde()`, écrite indépendamment. Le
+    contrôle d'aller-retour compare les deux ; si l'un des deux se trompe de
+    signe ou d'axe, il rougit. Ne PAS réécrire l'un en appelant l'autre :
+    l'aller-retour deviendrait un test qui ne peut pas échouer
+    (`docs/PROMPT4_METHOD.md` §2).
     """
     dx = point[0] - origine_monde[0]
     dy = point[1] - origine_monde[1]
@@ -797,6 +816,258 @@ def direction_monde_vers_modele(direction, lacet_deg):
     lx = direction[0] * math.cos(a) + direction[2] * math.sin(a)
     lz = -direction[0] * math.sin(a) + direction[2] * math.cos(a)
     return (lx, -lz, direction[1])
+
+
+# ---------------------------------------------------------------------------
+# LA POSE — ce qui était `NON VÉRIFIÉ`, et pourquoi il l'était.
+#
+# L'origine monde de l'ouvrage était passée en OPTION (`--origine-monde
+# -106.0,3.50,3.5`). Une valeur en ligne de commande n'est pas une mesure :
+# elle est vraie tant que personne ne déplace le lieu, et fausse en silence
+# le jour où quelqu'un le fait. La tentative de la valider en superposant
+# une silhouette calculée à la capture a échoué — 52,4 % de concordance sur
+# `t3_07`, et décaler l'origine de +3 m AMÉLIORAIT le score, ce qui
+# disqualifie la mesure elle-même.
+#
+# La réparation n'est pas de mieux superposer. Elle est de ne plus deviner :
+# la pose se DÉRIVE des mêmes fichiers que le jeu lit, et trois contrôles
+# indépendants l'éprouvent.
+#
+#   1. DÉRIVATION      — `Pose.depuis_les_sources()` lit `v2_site` dans
+#                        `world_v2_layout.json` et `SEUIL_LOCAL`,
+#                        `LACET_DEG`, `EXHAUSSEMENT` dans
+#                        `waterfall_cave_place.gd`. Aucun nombre n'est
+#                        recopié ici. Un fichier qui change fait bouger la
+#                        pose, ou fait sortir la sonde en 3 (BLOQUÉ).
+#   2. ALLER-RETOUR    — deux implémentations indépendantes (chaîne de
+#                        matrices contre forme fermée) doivent se rendre le
+#                        même point à `TOLERANCE_ALLER_RETOUR_M` près.
+#   3. CAS SYNTHÉTIQUE — `tools/probe_cave_selftest.py` fabrique une
+#                        géométrie dont la pose est CONNUE, la regarde par
+#                        une caméra monde, et exige que le trou apparaisse
+#                        dans la boîte de pixels prédite. C'est ce qu'aucune
+#                        superposition d'image ne pouvait établir.
+#
+# LE Y DU LIEU N'INTERVIENT PAS, et c'est une simplification réelle, pas une
+# approximation. Le bâtisseur pose le lieu à `y = height_at(site)`, puis
+# `ground_local_y()` retranche exactement ce même `global_position.y` :
+#
+#     assise      = height_at(seuil_monde) - height_at(site) + EXHAUSSEMENT
+#     y_ouvrage   = height_at(site) + assise
+#                 = height_at(seuil_monde) + EXHAUSSEMENT
+#
+# L'altitude du site s'annule. Il ne reste qu'UNE inconnue documentaire :
+# la hauteur du terrain gelé SOUS LE SEUIL. Elle est déclarée séparément,
+# son statut est dit, et `Pose.sensibilite_y` mesure ce qu'elle change.
+# ---------------------------------------------------------------------------
+
+## Tolérance de l'aller-retour monde -> modèle -> monde.
+##
+## POURQUOI CETTE VALEUR, ET PAS UNE AUTRE. Elle n'est pas un budget
+## d'erreur géométrique : c'est un PLANCHER DE BRUIT NUMÉRIQUE.
+##
+##   * au-dessus du bruit : les coordonnées valent ~120 m, l'epsilon des
+##     flottants 64 bits y vaut 1,4e-14 m, et la chaîne fait une dizaine
+##     d'opérations. 1e-9 m est donc ~5 ordres de grandeur au-dessus du
+##     bruit — l'aller-retour ne peut pas rougir pour une raison de
+##     virgule flottante ;
+##   * très en dessous de toute erreur réelle : un signe de lacet inversé
+##     déplace un point de plusieurs mètres, un axe échangé aussi. Toute
+##     faute de transformation vaut donc au moins 1e8 fois la tolérance.
+##
+## Autrement dit : entre « ça marche » et « c'est faux » il y a huit ordres
+## de grandeur de marge, et le seuil est posé au milieu. Ce n'est pas un
+## réglage à ajuster si un jour le test rougit — s'il rougit, la
+## transformation est fausse.
+TOLERANCE_ALLER_RETOUR_M = 1e-9
+
+## Hauteur du terrain gelé sous le seuil, en monde. DOCUMENTAIRE, et dit
+## comme tel : reprise des commentaires d'implantation de
+## `waterfall_cave_place.gd` (« plateau plat à y = 3,00 sur x ∈ [-118 ;
+## -102], z ∈ [0 ; +9] »), jamais relue par sonde. `Pose.sensibilite_y()`
+## mesure ce qu'une erreur de ±1 m y changerait.
+TERRAIN_SOUS_SEUIL_M = 3.00
+
+
+def _mat_identite():
+    return [[1.0, 0.0, 0.0, 0.0], [0.0, 1.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 1.0]]
+
+
+def _mat_produit(a, b):
+    return [[sum(a[i][k] * b[k][j] for k in range(4)) for j in range(4)]
+            for i in range(4)]
+
+
+def _mat_applique(m, p):
+    return tuple(m[i][0] * p[0] + m[i][1] * p[1] + m[i][2] * p[2] + m[i][3]
+                 for i in range(3))
+
+
+def _mat_applique_direction(m, d):
+    return tuple(m[i][0] * d[0] + m[i][1] * d[1] + m[i][2] * d[2]
+                 for i in range(3))
+
+
+class Pose(object):
+    """Pose monde de l'ouvrage, DÉRIVÉE des sources que le jeu lit.
+
+    `origine` est la position monde de l'origine du modèle ; `lacet_deg` le
+    lacet autour de Y. `provenance` dit d'où vient chaque nombre, pour que
+    le rapport n'ait pas à faire confiance à la sonde sur parole.
+    """
+
+    def __init__(self, origine, lacet_deg, provenance):
+        self.origine = tuple(float(v) for v in origine)
+        self.lacet_deg = float(lacet_deg)
+        self.provenance = dict(provenance)
+        self._chaine = self._construire_chaine()
+
+    # -- CHEMIN A : chaîne de matrices, écrite comme Godot compose ---------
+    def _construire_chaine(self):
+        """`T(origine) · Ry(lacet) · S(axes)`, dans cet ordre.
+
+        Chaque facteur est une matrice élémentaire écrite séparément, et le
+        produit est fait par `_mat_produit`. Aucune formule fermée ici : ce
+        chemin doit pouvoir contredire l'autre.
+
+        `S(axes)` est le changement de repère MODÈLE BLENDER -> LOCAL GODOT.
+        Il vaut `(x, y, z)_bl -> (x, z, -y)_gd`, ce que
+        `tests/unit/test_grotte_sans_jour.gd::_vers_godot` applique déjà et
+        que l'exportateur glTF réalise à l'écriture du fichier.
+        """
+        axes = _mat_identite()
+        axes[0] = [1.0, 0.0, 0.0, 0.0]      # x_gd =  x_bl
+        axes[1] = [0.0, 0.0, 1.0, 0.0]      # y_gd =  z_bl
+        axes[2] = [0.0, -1.0, 0.0, 0.0]     # z_gd = -y_bl
+
+        a = math.radians(self.lacet_deg)
+        rot = _mat_identite()
+        rot[0] = [math.cos(a), 0.0, math.sin(a), 0.0]
+        rot[2] = [-math.sin(a), 0.0, math.cos(a), 0.0]
+
+        trans = _mat_identite()
+        for i in range(3):
+            trans[i][3] = self.origine[i]
+
+        return _mat_produit(trans, _mat_produit(rot, axes))
+
+    def vers_monde(self, point_modele):
+        return _mat_applique(self._chaine, point_modele)
+
+    def direction_vers_monde(self, direction_modele):
+        return _mat_applique_direction(self._chaine, direction_modele)
+
+    # -- CHEMIN B : forme fermée, déjà écrite plus haut --------------------
+    def vers_modele(self, point_monde):
+        return monde_vers_modele(point_monde, self.origine, self.lacet_deg)
+
+    def direction_vers_modele(self, direction_monde):
+        return direction_monde_vers_modele(direction_monde, self.lacet_deg)
+
+    # -- CONTRÔLE : les deux chemins se rendent-ils le même point ? --------
+    def controle_aller_retour(self, points_modele=None):
+        """Modèle -> monde (matrices) -> modèle (forme fermée) -> monde.
+
+        Rend (ecart_max_m, details). Les points d'épreuve couvrent les huit
+        coins d'une boîte de 20 m ET des points hors axe : un aller-retour
+        éprouvé seulement sur l'origine passerait quelle que soit la
+        rotation — c'est l'exemple canonique d'une assertion qui n'éprouve
+        qu'un seul bras (`PROMPT4_METHOD` §2).
+        """
+        if points_modele is None:
+            points_modele = []
+            for sx in (-10.0, 10.0):
+                for sy in (-10.0, 10.0):
+                    for sz in (-10.0, 10.0):
+                        points_modele.append((sx, sy, sz))
+            points_modele += [(0.0, 0.0, 0.0), (1.05, 6.25, 0.22),
+                              (0.0, -1.15, 0.0), (2.85, 9.25, 0.92),
+                              (-3.7, 4.1, -0.6), (0.31, 7.77, 2.13)]
+        pire = 0.0
+        details = []
+        for p in points_modele:
+            monde = self.vers_monde(p)
+            retour = self.vers_modele(monde)
+            ecart = max(abs(retour[k] - p[k]) for k in range(3))
+            pire = max(pire, ecart)
+            if ecart > TOLERANCE_ALLER_RETOUR_M:
+                details.append(dict(modele=[round(c, 4) for c in p],
+                                    monde=[round(c, 4) for c in monde],
+                                    retour=[round(c, 6) for c in retour],
+                                    ecart_m=ecart))
+        # Les DIRECTIONS aussi : un lacet correct sur les points mais
+        # inversé sur les directions ferait viser à côté sans que
+        # l'aller-retour des points s'en aperçoive.
+        for d in ((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0),
+                  (0.577, 0.577, 0.577), (-0.6, 0.8, 0.0)):
+            monde = self.direction_vers_monde(d)
+            retour = self.direction_vers_modele(monde)
+            ecart = max(abs(retour[k] - d[k]) for k in range(3))
+            pire = max(pire, ecart)
+            if ecart > TOLERANCE_ALLER_RETOUR_M:
+                details.append(dict(direction=[round(c, 4) for c in d],
+                                    retour=[round(c, 6) for c in retour],
+                                    ecart_m=ecart))
+        return pire, details
+
+    def decalee(self, dx, dy, dz):
+        """Même pose, origine déplacée. Sert aux balayages de sensibilité."""
+        return Pose((self.origine[0] + dx, self.origine[1] + dy,
+                     self.origine[2] + dz), self.lacet_deg,
+                    dict(self.provenance, decalage=[dx, dy, dz]))
+
+    # -- DÉRIVATION depuis les fichiers du jeu -----------------------------
+    @staticmethod
+    def depuis_les_sources(place_gd, layout_json, poi_id,
+                           terrain_sous_seuil=TERRAIN_SOUS_SEUIL_M):
+        """Lit `v2_site`, `SEUIL_LOCAL`, `LACET_DEG`, `EXHAUSSEMENT`.
+
+        Lecture TEXTUELLE du GDScript, comme `controle_coherence_cotes` le
+        fait déjà du générateur : la sonde reste en Python pur. Toute valeur
+        introuvable est un BLOCAGE, jamais un défaut par défaut — une pose
+        devinée est précisément ce que cette classe existe pour supprimer.
+        """
+        if not os.path.isfile(layout_json):
+            raise Blocage("layout introuvable : %s" % layout_json)
+        if not os.path.isfile(place_gd):
+            raise Blocage("script de lieu introuvable : %s" % place_gd)
+        layout = json.load(open(layout_json, "r", encoding="utf-8"))
+        site = None
+        for poi in layout.get("pois", []):
+            if poi.get("id") == poi_id:
+                site = poi.get("v2_site")
+                break
+        if site is None or len(site) != 3:
+            raise Blocage("v2_site absent du layout pour %s" % poi_id)
+
+        texte = open(place_gd, "r", encoding="utf-8").read()
+
+        def _const(nom, motif):
+            marque = "\nconst %s" % nom
+            if marque not in texte:
+                raise Blocage("constante %s absente de %s" % (nom, place_gd))
+            ligne = texte.split(marque, 1)[1].split("\n", 1)[0]
+            if motif not in ligne:
+                raise Blocage("constante %s : forme inattendue (%s)"
+                              % (nom, ligne.strip()))
+            return ligne.split(motif, 1)[1]
+
+        brut = _const("SEUIL_LOCAL", "Vector2(").split(")", 1)[0]
+        seuil = [float(v) for v in brut.split(",")]
+        lacet = float(_const("LACET_DEG", "=").split("#")[0].strip())
+        exhaussement = float(_const("EXHAUSSEMENT", "=").split("#")[0].strip())
+
+        origine = (site[0] + seuil[0],
+                   terrain_sous_seuil + exhaussement,
+                   site[2] + seuil[1])
+        return Pose(origine, lacet, dict(
+            v2_site=[float(v) for v in site], seuil_local=seuil,
+            lacet_deg=lacet, exhaussement=exhaussement,
+            terrain_sous_seuil=terrain_sous_seuil,
+            terrain_statut="NON VERIFIE — documentaire, cf. commentaires "
+                           "d'implantation de waterfall_cave_place.gd",
+            layout=layout_json, script=place_gd))
 
 
 def carte_du_fond(grille, pas=0.25):
@@ -835,7 +1106,8 @@ def carte_du_fond(grille, pas=0.25):
                 ouvertes=ouvertes)
 
 
-def controle_ligne_de_vue(grille, prise, origine_monde, lacet_deg, pas_px):
+def controle_ligne_de_vue(grille, prise, origine_monde, lacet_deg, pas_px,
+                          profil=None):
     """Pour chaque pixel visé, le premier triangle FACE AVANT existe-t-il ?
 
     Godot rend en `cull_back` : le pixel affiche le premier triangle dont
@@ -879,15 +1151,94 @@ def controle_ligne_de_vue(grille, prise, origine_monde, lacet_deg, pas_px):
                 _normaliser(monde), lacet_deg))
             liste = impacts(grille, origine_modele, direction)
             if not liste:
-                continue          # ne vise pas la formation : hors sujet
+                # AUCUN IMPACT — ET C'EST LE CAS QUI COMPTE LE PLUS.
+                #
+                # La version precedente s'arretait ici en disant « ne vise
+                # pas la formation ». C'est vrai pour un pixel de ciel, et
+                # radicalement faux pour un pixel qui traverse un trou
+                # FRANC : un rayon qui passe par une percee nette ne
+                # rencontre justement AUCUN triangle. Le controle rangeait
+                # donc le defaut le plus grave dans la case « hors sujet ».
+                #
+                # Mesure de l'ecart : sur le tunnel synthetique perce au
+                # fond, l'ancien critere ne retenait que 10 pixels — le
+                # liseré rasant du bord du trou — la ou le trou en occupe
+                # une quarantaine de cote. Il voyait le contour, pas le
+                # trou.
+                #
+                # Le rayon est donc percant s'il TRAVERSE le noyau de la
+                # cavite sans rien rencontrer : le pixel montre alors ce
+                # qu'il y a derriere la grotte.
+                if profil is not None and _entree_noyau(
+                        profil, origine_modele, direction, 400.0) is not None:
+                    traversants += 1
+                    percees.append(dict(px=px, py=py, impacts=0,
+                                        genre="traversee_franche"))
+                continue
             traversants += 1
             if any(orientation < 0.0 for _, orientation in liste):
                 continue          # de la roche est affichée : rien à dire
             sortie = [origine_modele[k] + direction[k] * liste[-1][0]
                       for k in range(3)]
             percees.append(dict(px=px, py=py, impacts=len(liste),
+                                genre="aucune_face_avant",
                                 sortie=[round(c, 2) for c in sortie]))
     return traversants, percees
+
+
+def _rayon_pixel(prise, pose, px, py):
+    """Direction MODÈLE du rayon passant par le pixel (px, py).
+
+    Extrait de `controle_ligne_de_vue` pour être réutilisable — la
+    confirmation d'ouverture doit tirer exactement le même rayon que le
+    contrôle, sans quoi elle mesurerait autre chose.
+    """
+    camera, cible, fov = prise["from"], prise["look"], prise["fov"]
+    largeur, hauteur = prise["taille"]
+    avant = _normaliser((cible[0] - camera[0], cible[1] - camera[1],
+                         cible[2] - camera[2]))
+    axe_z = (-avant[0], -avant[1], -avant[2])
+    axe_x = _normaliser(_croix((0.0, 1.0, 0.0), axe_z))
+    axe_y = _croix(axe_z, axe_x)
+    demi_v = math.tan(math.radians(fov) * 0.5)
+    demi_h = demi_v * largeur / float(hauteur)
+    ndc_x = (px + 0.5) / largeur * 2.0 - 1.0
+    ndc_y = 1.0 - (py + 0.5) / hauteur * 2.0
+    monde = tuple(avant[k] + ndc_x * demi_h * axe_x[k]
+                  + ndc_y * demi_v * axe_y[k] for k in range(3))
+    return _normaliser(pose.direction_vers_modele(_normaliser(monde)))
+
+
+def _penetration(grille, profil, pose, prise):
+    """Longueur de vide parcourue DANS la galerie par le rayon central.
+
+    Rend None si le rayon ne touche pas la formation. La mesure : on suit le
+    rayon central de la caméra en repère modèle et on additionne les
+    segments passés dans le noyau de la cavité, en s'arrêtant au premier
+    triangle rencontré. Une pose juste donne plusieurs mètres ; une pose
+    fausse de deux mètres heurte la coque avant d'entrer, ou manque le
+    rocher — et rend zéro.
+    """
+    camera = pose.vers_modele(prise["from"])
+    direction = _rayon_pixel(prise, pose, prise["taille"][0] / 2.0 - 0.5,
+                             prise["taille"][1] / 2.0 - 0.5)
+    liste = impacts(grille, camera, direction, 200.0)
+    if not liste:
+        return None
+    limite = liste[0][0]
+    parcouru, t, pas = 0.0, 0.0, 0.05
+    while t < limite:
+        p = tuple(camera[k] + direction[k] * t for k in range(3))
+        if dans_le_noyau(profil, p):
+            parcouru += pas
+        t += pas
+    return parcouru
+
+
+def _dire_penetration(valeur):
+    if valeur is None:
+        return "le rayon central ne touche pas la formation"
+    return "%.2f m de vide de galerie avant le premier triangle" % valeur
 
 
 def grouper_pixels(percees, pas_px):
@@ -913,6 +1264,570 @@ def grouper_pixels(percees, pas_px):
                            y0=min(ys), y1=max(ys) + pas_px - 1))
     boites.sort(key=lambda b: -b["pixels"])
     return boites
+
+
+# ---------------------------------------------------------------------------
+# LE PROFIL — les cotes de la cavité, rendues REMPLAÇABLES.
+#
+# Les contrôles 1 et 2 lisent les constantes de module `CAVITE`/`PALIER`.
+# C'est correct pour la Grotte du Couchant et inutilisable pour prouver quoi
+# que ce soit : on ne peut pas fabriquer une géométrie d'épreuve dont on
+# connaît la réponse si le profil est câblé. Le `Profil` rend les mêmes
+# cotes injectables — la grotte réelle en est une instance, le cas
+# synthétique en est une autre.
+# ---------------------------------------------------------------------------
+
+class Profil(object):                                    # noqa: E302
+    """Profil analytique d'une cavité : stations, sol, clé, noyau.
+
+    `asym` majore la demi-largeur nominale. Pour la grotte c'est le facteur
+    d'asymétrie maximal de `CAVITE_ASYM` (1,34) ; pour une galerie droite
+    c'est 1,0.
+    """
+
+    def __init__(self, cavite, palier, sag, porche_denivele, asym=1.34,
+                 nom="grotte"):
+        self.cavite = [tuple(s) for s in cavite]
+        self.palier = tuple(palier)
+        self.sag = float(sag)
+        self.porche_denivele = float(porche_denivele)
+        self.asym = float(asym)
+        self.nom = nom
+
+    def station(self, u):
+        i = min(int(math.floor(u)), len(self.cavite) - 2)
+        i = max(i, 0)
+        f = u - i
+        a, b = self.cavite[i], self.cavite[i + 1]
+        pa, pb = self.palier[i], self.palier[i + 1]
+        return (a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f,
+                a[2] + (b[2] - a[2]) * f, a[3] + (b[3] - a[3]) * f,
+                pa + (pb - pa) * f)
+
+    def u_pour_y(self, y):
+        """Station continue à l'abscisse `y`, ou None hors emprise.
+
+        L'axe est monotone en y (stations -1,15 -> +9,25), l'inversion est
+        donc exacte et sans ambiguïté.
+        """
+        if y < self.cavite[0][1] or y > self.cavite[-1][1]:
+            return None
+        for i in range(len(self.cavite) - 1):
+            y0, y1 = self.cavite[i][1], self.cavite[i + 1][1]
+            if y0 <= y <= y1:
+                return i + ((y - y0) / (y1 - y0) if y1 > y0 else 0.0)
+        return float(len(self.cavite) - 1)
+
+    def sol(self, u, lateral):
+        _, _, _, _, palier = self.station(u)
+        denivele = self.porche_denivele * max(0.0, 1.0 - u) if u < 1.0 else 0.0
+        creux = -self.sag * (1.0 - min(1.0, abs(lateral)))
+        return palier + creux + denivele
+
+    def toit(self, u):
+        _, _, _, cle, palier = self.station(u)
+        return palier + cle
+
+
+## La Grotte du Couchant. `asym` reprend le facteur maximal de
+## `CAVITE_ASYM` du générateur (1,34), déjà employé par `dans_enveloppe`.
+PROFIL_GROTTE = Profil(CAVITE, PALIER, SAG, PORCHE_DENIVELE, 1.34, "grotte")
+
+
+## LE NOYAU — le volume où il DOIT y avoir de l'air, et rien d'autre.
+##
+## Les rasters de surface tirent depuis l'extérieur vers la cavité, et
+## déclarent une case ouverte quand le rayon atteint le vide sans rencontrer
+## de roche. « Le vide » ne peut pas être l'enveloppe NOMINALE : la coque
+## réelle est modelée, elle rentre par endroits en deçà du profil théorique,
+## et un rayon qui l'atteindrait serait compté ouvert à tort. On vise donc
+## un noyau franchement intérieur — 55 % de la demi-largeur, 55 % de la clé,
+## 0,15 m au-dessus du sol.
+##
+## Le biais est ASSUMÉ ET DIRECTIONNEL : un noyau réduit fait manquer des
+## trous marginaux, il n'en fabrique jamais. Un raster de surface ne peut
+## donc pas crier au loup ; il peut rester silencieux sur un trou qui
+## n'ouvre que sur la marge. C'est pour cela que le raster ne décide de
+## rien seul — il propose des candidats que la mesure d'ouverture confirme,
+## et que le contrôle 2 (rayons partant de l'intérieur) double.
+NOYAU_LARGEUR = 0.55
+NOYAU_HAUTEUR = 0.55
+NOYAU_MARGE_SOL = 0.15
+
+
+def dans_le_noyau(profil, point):
+    u = profil.u_pour_y(point[1])
+    if u is None:
+        return False
+    ax, _, hw, cle, palier = profil.station(u)
+    demi = hw * NOYAU_LARGEUR
+    if abs(point[0] - ax) > demi:
+        return False
+    lateral = (point[0] - ax) / hw if hw else 0.0
+    bas = profil.sol(u, lateral) + NOYAU_MARGE_SOL
+    haut = palier + cle * NOYAU_HAUTEUR
+    return bas <= point[2] <= haut
+
+
+# ---------------------------------------------------------------------------
+# CE QUE « PERCÉE CONFIRMÉE » VEUT DIRE.
+#
+# Le gate du lead est « 0 percée confirmée ». Le mot doit donc porter une
+# définition mesurable, et une définition capable de me contredire.
+#
+#   RAYON SUSPECT     — un rayon parti du vide de la galerie et qui n'en
+#                       ressort pas par la bouche avec une parité paire.
+#                       C'est ce que comptait la version précédente, et
+#                       c'est ce qu'elle appelait « percée ». Un rayon
+#                       suspect ne prouve rien : il naît aussi bien d'un
+#                       vrai trou que d'un rayon rasant une arête ou d'une
+#                       fente de décimation d'un dixième de millimètre.
+#
+#   PERCÉE CONFIRMÉE  — il existe une direction `d` et un point `p` du vide
+#                       tels que TOUS les rayons d'une grille de pas
+#                       `PAS_OUVERTURE_M`, couvrant un CARRÉ de côté
+#                       `OUVERTURE_CONFIRMEE_M` perpendiculaire à `d` et
+#                       parallèles à `d`, sortent de la formation.
+#                       Autrement dit : un carré de 10 cm de côté est
+#                       INTÉGRALEMENT percé.
+#
+# POURQUOI UN CARRÉ, ET POURQUOI 10 cm.
+#
+#   * un carré, parce qu'une fente ne se voit pas. Une fissure de 0,3 mm de
+#     large et d'un mètre de long produit des dizaines de rayons suspects et
+#     n'est visible à aucune distance : à 4 m, 0,3 mm sous-tend 0,004°, soit
+#     0,07 pixel dans les captures livrées. Exiger un carré la rejette,
+#     exiger une surface ne suffirait pas ;
+#   * 10 cm, parce que c'est le plus petit trou dont la visibilité est
+#     DÉMONTRABLE plutôt que plaidée. Les captures de preuve font 1280x720
+#     à 40–55° de champ, soit au mieux 0,058°/pixel. Un carré de 0,10 m vu
+#     à la plus grande distance intérieure possible (~10,4 m, la longueur
+#     de la galerie) sous-tend 0,55°, donc environ 9 pixels de côté : il est
+#     dans l'image. Sous 10 cm, on ne peut plus l'affirmer ;
+#   * 10 cm, aussi, parce que c'est le double de `EPAISSEUR_ECAILLE_M`
+#     (0,05 m), l'épaisseur sous laquelle le générateur déclare lui-même que
+#     deux impacts sont un pli vu deux fois. Une écaille ne peut donc pas
+#     produire une percée confirmée.
+#
+# LE SEUIL EST UN RÉGLAGE (`--ouverture`), PAS UNE VÉRITÉ. Le baisser
+# resserre le gate ; le monter le relâche. Ce qui n'est pas négociable, et
+# ce que le lead a fixé, c'est la conséquence : UNE SEULE percée confirmée
+# fait échouer la géométrie.
+# ---------------------------------------------------------------------------
+
+OUVERTURE_CONFIRMEE_M = 0.10
+PAS_OUVERTURE_M = 0.025
+## Demi-étendue du faisceau. 0,15 m, soit trois fois l'ouverture exigée :
+## le carré de 10 cm est cherché N'IMPORTE OÙ dans le faisceau, jamais
+## seulement en son centre. Sans cette marge, un trou de 12 cm dont le rayon
+## suspect part de son bord serait déclaré non confirmé — la sonde
+## sous-compterait, et un gate qui sous-compte ment dans le sens dangereux.
+DEMI_FAISCEAU_M = 0.15
+
+
+def _base_orthonormee(direction):
+    d = _normaliser(direction)
+    appui = (0.0, 0.0, 1.0) if abs(d[2]) < 0.9 else (1.0, 0.0, 0.0)
+    u = _normaliser(_croix(d, appui))
+    v = _croix(d, u)
+    return u, v
+
+
+def _plus_grand_carre(masque):
+    """Côté (en cases) du plus grand carré plein du masque booléen.
+
+    Programmation dynamique classique. Rend (cote, i, j) où (i, j) est le
+    coin bas-droit du carré, ou (0, -1, -1).
+    """
+    n = len(masque)
+    m = len(masque[0]) if n else 0
+    meilleur, bi, bj = 0, -1, -1
+    dp = [[0] * m for _ in range(n)]
+    for i in range(n):
+        for j in range(m):
+            if not masque[i][j]:
+                continue
+            if i == 0 or j == 0:
+                dp[i][j] = 1
+            else:
+                dp[i][j] = 1 + min(dp[i - 1][j], dp[i][j - 1],
+                                   dp[i - 1][j - 1])
+            if dp[i][j] > meilleur:
+                meilleur, bi, bj = dp[i][j], i, j
+    return meilleur, bi, bj
+
+
+def mesurer_ouverture(grille, origine, direction, profil,
+                      demi=DEMI_FAISCEAU_M, pas=PAS_OUVERTURE_M):
+    """Côté, en mètres, du plus grand carré INTÉGRALEMENT percé.
+
+    Un faisceau de rayons parallèles à `direction`, décalés latéralement sur
+    une grille de pas `pas`, part de points voisins de `origine`. Un rayon
+    compte comme sortant s'il quitte la formation — parité impaire ou aucun
+    impact — et si son point de départ est bien dans le vide.
+
+    LE CONTRÔLE DU VIDE N'EST PAS DÉCORATIF. Sans lui, un point de départ
+    décalé qui tombe DANS la roche donne une parité impaire, donc un faux
+    « sortant », donc une ouverture surestimée. C'est le seul biais de cette
+    mesure qui irait dans le sens dangereux ; il est fermé.
+
+    Rend (cote_m, sortants, total, centre_du_carre_ou_None).
+    """
+    u, v = _base_orthonormee(direction)
+    n = int(round(demi / pas))
+    masque = []
+    sortants = 0
+    total = 0
+    for i in range(-n, n + 1):
+        ligne = []
+        for j in range(-n, n + 1):
+            p = tuple(origine[k] + u[k] * (i * pas) + v[k] * (j * pas)
+                      for k in range(3))
+            total += 1
+            vide, _ = dans_le_vide(grille, p)
+            if not vide:
+                ligne.append(False)
+                continue
+            if sort_par_la_bouche(p, direction, profil):
+                ligne.append(False)
+                continue
+            liste = impacts(grille, p, direction)
+            ouvert = (len(liste) == 0) or (len(liste) % 2 != 0)
+            if ouvert:
+                sortants += 1
+            ligne.append(ouvert)
+        masque.append(ligne)
+    cote, bi, bj = _plus_grand_carre(masque)
+    centre = None
+    if cote > 0:
+        ci = bi - (cote - 1) / 2.0 - n
+        cj = bj - (cote - 1) / 2.0 - n
+        centre = tuple(origine[k] + u[k] * (ci * pas) + v[k] * (cj * pas)
+                       for k in range(3))
+    return (max(0, cote - 1) * pas, sortants, total, centre)
+
+
+def confirmer_percees(grille, suspects, profil, ouverture=OUVERTURE_CONFIRMEE_M,
+                      plafond=None):
+    """Promeut les rayons suspects en percées CONFIRMÉES, ou les écarte.
+
+    Les suspects sont d'abord regroupés par point de sortie (maille de
+    0,25 m) : dix rayons issus du même trou n'exigent pas dix mesures, et
+    ne doivent pas compter pour dix percées. Une percée confirmée est un
+    LIEU, pas un rayon.
+    """
+    amas = {}
+    for f in suspects:
+        cle = tuple(int(math.floor(c / 0.25)) for c in f["sortie"])
+        amas.setdefault(cle, []).append(f)
+    ordre = sorted(amas.items(), key=lambda kv: -len(kv[1]))
+    if plafond is not None:
+        ordre = ordre[:plafond]
+    confirmees, ecartees = [], []
+    for _, lot in ordre:
+        # Le rayon le plus représentatif du groupe : celui dont la sortie
+        # est la plus proche du centre de l'amas.
+        centre = [sum(f["sortie"][k] for f in lot) / len(lot) for k in range(3)]
+        lot = sorted(lot, key=lambda f: sum(
+            (f["sortie"][k] - centre[k]) ** 2 for k in range(3)))
+        temoin = lot[0]
+        origine = (temoin["x"], temoin["y"], temoin["z"])
+        azimut = math.radians(temoin["azimut"])
+        elevation = math.radians(temoin["elevation"])
+        direction = (math.cos(elevation) * math.cos(azimut),
+                     math.cos(elevation) * math.sin(azimut),
+                     math.sin(elevation))
+        cote, sortants, total, milieu = mesurer_ouverture(
+            grille, origine, direction, profil)
+        fiche = dict(rayons_suspects=len(lot),
+                     sortie=[round(c, 2) for c in centre],
+                     depart=[round(c, 2) for c in origine],
+                     azimut=temoin["azimut"], elevation=temoin["elevation"],
+                     ouverture_m=round(cote, 4),
+                     faisceau_sortant=sortants, faisceau_total=total,
+                     surface=surface_de_sortie(profil, centre))
+        if milieu is not None:
+            fiche["centre_ouverture"] = [round(c, 2) for c in milieu]
+        if cote >= ouverture - 1e-9:
+            confirmees.append(fiche)
+        else:
+            ecartees.append(fiche)
+    return confirmees, ecartees
+
+
+def surface_de_sortie(profil, point):
+    """Par QUELLE face de la cavité le rayon est-il sorti ?
+
+    Le plafond n'était nommé nulle part : le contrôle 1 regarde le sol, la
+    carte du fond regarde le fond, et le contrôle 2 tire bien vers le haut
+    mais range ses fautes par station et azimut — on ne pouvait donc pas
+    lire « le toit est percé » dans sa sortie. Cette fonction attribue à
+    chaque sortie l'une des six faces, pour que le rapport nomme le défaut
+    par son endroit.
+    """
+    u = profil.u_pour_y(point[1])
+    if u is None:
+        return "fond" if point[1] > profil.cavite[-1][1] else "bouche"
+    ax, _, hw, cle, palier = profil.station(u)
+    lateral = (point[0] - ax) / hw if hw else 0.0
+    dz_haut = (palier + cle) - point[2]
+    dz_bas = point[2] - profil.sol(u, lateral)
+    dx = hw - abs(point[0] - ax)
+    if min(dz_haut, dz_bas, dx) == dz_haut:
+        return "toit"
+    if min(dz_bas, dx) == dz_bas:
+        return "plancher"
+    return "paroi_plus_x" if point[0] > ax else "paroi_moins_x"
+
+
+# ---------------------------------------------------------------------------
+# LES CINQ SURFACES — plancher, toit, deux parois, fond.
+#
+# Le contrôle 2 tire depuis l'INTÉRIEUR ; ces rasters tirent depuis
+# l'EXTÉRIEUR, une face à la fois, en visant le noyau. Deux méthodes
+# indépendantes qui se contredisent valent mieux qu'une seule qui se
+# confirme elle-même — et surtout, le raster répond à la question que le
+# contrôle 2 ne pose pas : « quelle FACE est percée, et sur quelle
+# emprise ? ». La version précédente n'avait de carte que pour le plancher
+# et le fond ; le TOIT et les PAROIS n'étaient cartographiés nulle part.
+#
+# Le pas vaut la moitié de l'ouverture exigée : un trou de
+# `OUVERTURE_CONFIRMEE_M` ne peut pas passer entre deux échantillons
+# (Nyquist). Le raster ne CONCLUT pas — il désigne des candidats que
+# `mesurer_ouverture` confirme ou écarte, avec la même définition que les
+# rayons suspects du contrôle 2.
+# ---------------------------------------------------------------------------
+
+SURFACES = ("plancher", "toit", "paroi_moins_x", "paroi_plus_x", "fond")
+
+
+_EMPRISE_CACHE = {}
+
+
+def _emprise_noyau(profil, pas_u=0.05):
+    cle = (id(profil), pas_u)
+    if cle in _EMPRISE_CACHE:
+        return _EMPRISE_CACHE[cle]
+    xs, ys, zs = [], [], []
+    u = 1.0                      # depuis le SEUIL : le porche est ouvert
+    while u <= len(profil.cavite) - 1 + 1e-9:
+        ax, ay, hw, cle, palier = profil.station(u)
+        xs += [ax - hw * NOYAU_LARGEUR, ax + hw * NOYAU_LARGEUR]
+        ys.append(ay)
+        zs += [profil.sol(u, 0.0) + NOYAU_MARGE_SOL, palier + cle * NOYAU_HAUTEUR]
+        u += pas_u
+    _EMPRISE_CACHE[cle] = ((min(xs), max(xs)), (min(ys), max(ys)),
+                          (min(zs), max(zs)))
+    return _EMPRISE_CACHE[cle]
+
+
+def raster_surface(grille, profil, surface, pas=None):
+    """Une face vue de l'extérieur : où la roche manque-t-elle ?
+
+    Une case est OUVERTE quand le rayon, tiré du dehors vers la cavité,
+    atteint le noyau sans avoir rencontré un seul triangle. Rend un masque,
+    ses axes, et les points monde-modèle des cases ouvertes.
+    """
+    if pas is None:
+        pas = OUVERTURE_CONFIRMEE_M / 2.0
+    (x0, x1), (y0, y1), (z0, z1) = _emprise_noyau(profil)
+    lo, hi = grille.aabb()
+    marge = 2.0
+
+    def _axe(a, b):
+        n = max(1, int(math.ceil((b - a) / pas)) + 1)
+        return [a + i * pas for i in range(n)]
+
+    if surface in ("plancher", "toit"):
+        axe_a, axe_b = _axe(x0, x1), _axe(y0, y1)
+        if surface == "plancher":
+            direction, base = (0.0, 0.0, 1.0), lo[2] - marge
+        else:
+            direction, base = (0.0, 0.0, -1.0), hi[2] + marge
+
+        def _origine(a, b):
+            return (a, b, base)
+        noms = ("x", "y")
+    elif surface in ("paroi_moins_x", "paroi_plus_x"):
+        axe_a, axe_b = _axe(y0, y1), _axe(z0, z1)
+        if surface == "paroi_moins_x":
+            direction, base = (1.0, 0.0, 0.0), lo[0] - marge
+        else:
+            direction, base = (-1.0, 0.0, 0.0), hi[0] + marge
+
+        def _origine(a, b):
+            return (base, a, b)
+        noms = ("y", "z")
+    else:                        # fond
+        axe_a, axe_b = _axe(x0, x1), _axe(z0, z1)
+        direction, base = (0.0, -1.0, 0.0), hi[1] + marge
+
+        def _origine(a, b):
+            return (a, base, b)
+        noms = ("x", "z")
+
+    portee = max(hi[k] - lo[k] for k in range(3)) + 2.0 * marge
+    masque, ouvertes = [], []
+    for a in axe_a:
+        ligne = []
+        for b in axe_b:
+            origine = _origine(a, b)
+            t_noyau = _entree_noyau(profil, origine, direction, portee)
+            if t_noyau is None:
+                ligne.append(False)
+                continue
+            liste = impacts(grille, origine, direction, portee)
+            ouvert = (not liste) or (liste[0][0] > t_noyau)
+            ligne.append(ouvert)
+            if ouvert:
+                point = tuple(origine[k] + direction[k] * t_noyau
+                              for k in range(3))
+                ouvertes.append(dict(a=round(a, 3), b=round(b, 3),
+                                     point=[round(c, 2) for c in point]))
+        masque.append(ligne)
+    return dict(surface=surface, pas=pas, axes=noms, axe_a=axe_a, axe_b=axe_b,
+                masque=masque, ouvertes=ouvertes, direction=direction,
+                base=base)
+
+
+def _entree_noyau(profil, origine, direction, portee, pas=0.05):
+    """Premier paramètre `t` où le rayon entre dans le noyau, ou None.
+
+    Marche à pas fin. Les rayons de raster sont axiaux et le noyau est
+    convexe en section, mais la galerie s'infléchit : une résolution
+    analytique par axe serait un cas particulier de plus à maintenir, et
+    la marche coûte moins d'une milliseconde.
+    """
+    # PRÉ-TEST DE BOÎTE. Sans lui, un rayon de ciel marche 8 000 pas pour
+    # rien, et le contrôle 3 passe de quelques secondes à plusieurs minutes.
+    # Mesuré : le pré-test ramène l'épreuve de ligne de vue sous la seconde.
+    (bx0, bx1), (by0, by1), (bz0, bz1) = _emprise_noyau(profil)
+    t0, t1 = 0.0, portee
+    for k, (lo_k, hi_k) in enumerate(((bx0, bx1), (by0, by1), (bz0, bz1))):
+        if abs(direction[k]) < 1e-12:
+            if origine[k] < lo_k or origine[k] > hi_k:
+                return None
+            continue
+        a = (lo_k - origine[k]) / direction[k]
+        b = (hi_k - origine[k]) / direction[k]
+        if a > b:
+            a, b = b, a
+        t0, t1 = max(t0, a), min(t1, b)
+    if t0 > t1:
+        return None
+    t = max(0.0, t0 - pas)
+    while t <= t1 + pas:
+        p = (origine[0] + direction[0] * t, origine[1] + direction[1] * t,
+             origine[2] + direction[2] * t)
+        if dans_le_noyau(profil, p):
+            return t
+        t += pas
+    return None
+
+
+def candidats_du_raster(raster, ouverture=OUVERTURE_CONFIRMEE_M):
+    """Blocs de cases ouvertes assez larges pour mériter une confirmation.
+
+    Un bloc isolé de une ou deux cases ne peut pas porter un carré de
+    `ouverture` : on ne dépense pas un faisceau dessus. Le raster propose,
+    la mesure d'ouverture dispose.
+    """
+    masque = raster["masque"]
+    cote_mini = max(2, int(round(ouverture / raster["pas"])) + 1)
+    n, m = len(masque), len(masque[0]) if masque else 0
+    vus = set()
+    blocs = []
+    for i in range(n):
+        for j in range(m):
+            if not masque[i][j] or (i, j) in vus:
+                continue
+            pile, amas = [(i, j)], []
+            vus.add((i, j))
+            while pile:
+                ci, cj = pile.pop()
+                amas.append((ci, cj))
+                for di, dj in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    vi, vj = ci + di, cj + dj
+                    if 0 <= vi < n and 0 <= vj < m and (vi, vj) not in vus \
+                            and masque[vi][vj]:
+                        vus.add((vi, vj))
+                        pile.append((vi, vj))
+            ia = [c[0] for c in amas]
+            ja = [c[1] for c in amas]
+            large = (max(ia) - min(ia) + 1) >= cote_mini \
+                and (max(ja) - min(ja) + 1) >= cote_mini
+            blocs.append(dict(cases=len(amas),
+                              a0=round(raster["axe_a"][min(ia)], 3),
+                              a1=round(raster["axe_a"][max(ia)], 3),
+                              b0=round(raster["axe_b"][min(ja)], 3),
+                              b1=round(raster["axe_b"][max(ja)], 3),
+                              centre=(raster["axe_a"][(min(ia) + max(ia)) // 2],
+                                      raster["axe_b"][(min(ja) + max(ja)) // 2]),
+                              assez_large=large))
+    blocs.sort(key=lambda b: -b["cases"])
+    return blocs
+
+
+def controle_surfaces(grille, profil, pas=None, ouverture=OUVERTURE_CONFIRMEE_M):
+    """Les cinq faces, rasterisées et confirmées.
+
+    La BOUCHE n'est pas rasterisée : elle est ouverte par construction, et
+    la juger fabriquerait un défaut — même arbitrage que le contrôle 2, et
+    pour la même raison. Le PORCHE est exclu de l'emprise pour la même
+    raison (`_emprise_noyau` part de la station 1).
+    """
+    sortie = {}
+    for surface in SURFACES:
+        raster = raster_surface(grille, profil, surface, pas)
+        blocs = candidats_du_raster(raster, ouverture)
+        confirmees = []
+        for bloc in blocs:
+            if not bloc["assez_large"]:
+                continue
+            a, b = bloc["centre"]
+            direction = raster["direction"]
+            # On mesure l'ouverture DEPUIS L'INTÉRIEUR, en tirant vers
+            # l'extérieur : c'est la question du joueur, et cela réutilise
+            # exactement la définition appliquée aux rayons suspects.
+            t = _entree_noyau(profil, _origine_raster(raster, a, b), direction,
+                              200.0)
+            if t is None:
+                continue
+            origine = _origine_raster(raster, a, b)
+            interieur = tuple(origine[k] + direction[k] * (t + 0.30)
+                              for k in range(3))
+            inverse = tuple(-c for c in direction)
+            cote, sortants, total, milieu = mesurer_ouverture(
+                grille, interieur, inverse, profil)
+            fiche = dict(bloc_cases=bloc["cases"],
+                         emprise={raster["axes"][0]: [bloc["a0"], bloc["a1"]],
+                                  raster["axes"][1]: [bloc["b0"], bloc["b1"]]},
+                         ouverture_m=round(cote, 4),
+                         faisceau_sortant=sortants, faisceau_total=total,
+                         depart=[round(c, 2) for c in interieur])
+            if cote >= ouverture - 1e-9:
+                confirmees.append(fiche)
+        sortie[surface] = dict(
+            cases=sum(len(l) for l in raster["masque"]),
+            cases_ouvertes=sum(1 for l in raster["masque"] for c in l if c),
+            blocs=blocs[:6], confirmees=confirmees, pas=raster["pas"],
+            axes=list(raster["axes"]))
+    return sortie
+
+
+def _origine_raster(raster, a, b):
+    """Point de départ d'un rayon de raster, aux coordonnées d'axe (a, b).
+
+    Les deux axes du raster sont ceux que `raster_surface` a nommés ; le
+    troisième est l'axe de tir, dont la coordonnée de départ est `base`.
+    """
+    direction = raster["direction"]
+    base = raster["base"]
+    if direction[2] != 0.0:                 # plancher / toit : tir en Z
+        return (a, b, base)
+    if direction[0] != 0.0:                 # parois : tir en X
+        return (base, a, b)
+    return (a, base, b)                     # fond : tir en Y
 
 
 # ---------------------------------------------------------------------------
@@ -1013,12 +1928,23 @@ def main():
                             "make_waterfall_cave.py")
     ap.add_argument("--manifeste", default=None,
                     help="manifeste de capture ; active le controle 3")
-    ap.add_argument("--origine-monde", default="-106.0,3.50,3.5",
-                    help="origine monde de l'ouvrage (x,y,z). Deduite du "
-                         "layout et de SEUIL_LOCAL ; le controle 3 verifie "
-                         "lui-meme sa plausibilite.")
-    ap.add_argument("--lacet", type=float, default=45.0)
+    ap.add_argument("--place",
+                    default="scripts/world_v2/poi/waterfall_cave_place.gd",
+                    help="script de lieu d'ou la POSE est derivee")
+    ap.add_argument("--layout",
+                    default="resources/world_v2/world_v2_layout.json")
+    ap.add_argument("--poi", default="valley.poi.waterfall_cave.01")
+    ap.add_argument("--terrain-sous-seuil", type=float,
+                    default=TERRAIN_SOUS_SEUIL_M,
+                    help="hauteur monde du terrain gele sous le seuil. "
+                         "DOCUMENTAIRE ; sa sensibilite est mesuree.")
     ap.add_argument("--pas-pixel", type=int, default=8)
+    ap.add_argument("--ouverture", type=float, default=OUVERTURE_CONFIRMEE_M,
+                    help="cote minimal, en metres, d'un carre integralement "
+                         "perce pour qu'une percee soit CONFIRMEE")
+    ap.add_argument("--pas-raster", type=float, default=None,
+                    help="pas des rasters de surface (defaut : ouverture/2, "
+                         "Nyquist)")
     ap.add_argument("--json", default=None)
     ap.add_argument("--rapide", action="store_true",
                     help="echantillonnage reduit, pour iterer")
@@ -1050,9 +1976,50 @@ def main():
               % (min(PALIER[i] - SAG + EXHAUSSEMENT
                      for i in range(1, len(CAVITE))), HERBE_M))
         tris, par_matiere = triangles_du_glb(args.glb)
+        pose = Pose.depuis_les_sources(args.place, args.layout, args.poi,
+                                       args.terrain_sous_seuil)
     except Blocage as erreur:
         print("BLOQUE: %s" % erreur)
         return 3
+
+    profil = PROFIL_GROTTE
+
+    print()
+    print("-" * 74)
+    print("CONTROLE 0 — LA POSE MONDE, DERIVEE ET EPROUVEE")
+    print("-" * 74)
+    print("origine   : (%.3f ; %.3f ; %.3f), lacet %.1f deg" %
+          (pose.origine + (pose.lacet_deg,)))
+    print("derivee de: %s -> v2_site %s" % (args.layout,
+                                            pose.provenance["v2_site"]))
+    print("            %s -> SEUIL_LOCAL %s, LACET_DEG %.1f, EXHAUSSEMENT %.2f"
+          % (args.place, pose.provenance["seuil_local"],
+             pose.provenance["lacet_deg"], pose.provenance["exhaussement"]))
+    print("            terrain sous le seuil %.2f m — %s"
+          % (pose.provenance["terrain_sous_seuil"],
+             pose.provenance["terrain_statut"]))
+    ecart_ar, details_ar = pose.controle_aller_retour()
+    print("aller-retour modele->monde(matrices)->modele(forme fermee) :")
+    print("   ecart max %.3e m sur 14 points et 5 directions, tolerance %.0e m"
+          % (ecart_ar, TOLERANCE_ALLER_RETOUR_M))
+    resultat_pose = dict(origine=[round(c, 4) for c in pose.origine],
+                         lacet_deg=pose.lacet_deg,
+                         provenance=pose.provenance,
+                         aller_retour_ecart_m=ecart_ar,
+                         aller_retour_tolerance_m=TOLERANCE_ALLER_RETOUR_M)
+    if ecart_ar > TOLERANCE_ALLER_RETOUR_M:
+        print("   BLOQUE — les deux implementations de la transformation ne "
+              "se rendent pas le meme point :")
+        for d in details_ar[:5]:
+            print("      %s" % d)
+        resultat_pose["verdict"] = "BLOQUE"
+        if args.json:
+            json.dump(dict(pose=resultat_pose, verdict="BLOQUE"),
+                      open(args.json, "w", encoding="utf-8"), indent=1,
+                      ensure_ascii=False)
+        return 3
+    print("   PASS — les deux chemins concordent")
+    resultat_pose["verdict"] = "PASS"
 
     print("maillage rendu : %d triangles (COL_WaterfallCave ecarte)" % len(tris))
     for nom, compte in sorted(par_matiere.items(), key=lambda kv: -kv[1]):
@@ -1070,8 +2037,13 @@ def main():
           "generateur saute comprises)" % len(echantillons))
 
     resultat = dict(glb=args.glb, triangles=len(tris),
-                    triangles_par_matiere=par_matiere)
+                    triangles_par_matiere=par_matiere, pose=resultat_pose,
+                    ouverture_confirmee_m=args.ouverture)
     rouge = False
+    ## Le gate du lead : 0 PERCÉE CONFIRMÉE. Cette liste est ce qu'il
+    ## compte ; `rouge` reste pour les autres classes de défaut (plancher
+    ## trop bas, cotes divergentes), qui ne sont pas des percées.
+    confirmees_totales = []
 
     print()
     print("-" * 74)
@@ -1143,12 +2115,14 @@ def main():
     print("%d point(s) ecarte(s) comme HORS CAVITE (enclosure < %.2f)"
           % (len(hors_j), ENCLOSURE_MIN))
     print("%d rayon(s) juges, %d ecarte(s) parce qu'ils sortent par la BOUCHE, "
-          "%d percee(s)" % (testes_j, bouche_j, len(fautes_j)))
+          "%d RAYON(S) SUSPECT(S)" % (testes_j, bouche_j, len(fautes_j)))
+    print("   « suspect » n'est pas « percee » : voir la definition en tete de")
+    print("   OUVERTURE_CONFIRMEE_M. La confirmation est faite plus bas.")
     resultat["jour"] = dict(rayons_testes=testes_j, rayons_par_la_bouche=bouche_j,
                             points_porche_ecartes=ecartes_j,
-                            points_hors_cavite=hors_j, fautes=fautes_j)
+                            points_hors_cavite=hors_j, fautes=fautes_j,
+                            rayons_suspects=len(fautes_j))
     if fautes_j:
-        rouge = True
         stations = {}
         for f in fautes_j:
             stations.setdefault(f["station"], []).append(f)
@@ -1156,7 +2130,8 @@ def main():
             lot = stations[station]
             azimuts = sorted(set(round(f["azimut"]) for f in lot))
             elevations = sorted(set(round(f["elevation"]) for f in lot))
-            print("   station %d : %3d percee(s), azimuts %s, elevations %s"
+            print("   station %d : %3d rayon(s) suspect(s), azimuts %s, "
+                  "elevations %s"
                   % (station, len(lot),
                      "%d..%d" % (azimuts[0], azimuts[-1]),
                      "%d..%d" % (elevations[0], elevations[-1])))
@@ -1212,6 +2187,71 @@ def main():
 
     print()
     print("-" * 74)
+    print("CONTROLE 2b — CONFIRMATION DES RAYONS SUSPECTS")
+    print("-" * 74)
+    print("Un rayon suspect n'est pas une percee. Une percee est CONFIRMEE")
+    print("quand un carre de %.2f m de cote, perpendiculaire au rayon, est"
+          % args.ouverture)
+    print("INTEGRALEMENT perce — faisceau de pas %.3f m sur +/-%.2f m."
+          % (PAS_OUVERTURE_M, DEMI_FAISCEAU_M))
+    conf_j, ecart_j = confirmer_percees(grille, fautes_j, profil,
+                                        args.ouverture)
+    print("%d amas de sortie mesure(s) : %d CONFIRME(S), %d ecarte(s)"
+          % (len(conf_j) + len(ecart_j), len(conf_j), len(ecart_j)))
+    resultat["jour"]["percees_confirmees"] = conf_j
+    resultat["jour"]["amas_ecartes"] = ecart_j
+    if ecart_j:
+        pire = max(e["ouverture_m"] for e in ecart_j)
+        print("   la plus grande ouverture parmi les amas ecartes : %.3f m "
+              "(seuil %.2f m)" % (pire, args.ouverture))
+        for e in sorted(ecart_j, key=lambda x: -x["ouverture_m"])[:5]:
+            print("      ouverture %.3f m  %2d rayon(s)  sortie %s  "
+                  "faisceau %d/%d sortant  surface %s"
+                  % (e["ouverture_m"], e["rayons_suspects"], e["sortie"],
+                     e["faisceau_sortant"], e["faisceau_total"], e["surface"]))
+    for c in conf_j:
+        confirmees_totales.append(dict(c, origine="controle_2"))
+        print("   >>> PERCEE CONFIRMEE  ouverture %.3f m  surface %-13s "
+              "sortie %s  %d rayon(s)"
+              % (c["ouverture_m"], c["surface"], c["sortie"],
+                 c["rayons_suspects"]))
+    if not conf_j:
+        print("   PASS — aucun amas ne porte un carre de %.2f m integralement "
+              "perce" % args.ouverture)
+
+    print()
+    print("-" * 74)
+    print("CONTROLE 4 — LES CINQ SURFACES (plancher, TOIT, parois, fond)")
+    print("-" * 74)
+    print("Rayons tires du DEHORS vers le noyau, une face a la fois. Methode")
+    print("independante du controle 2, et la seule qui nomme le TOIT — que la")
+    print("version precedente ne cartographiait nulle part.")
+    surfaces = controle_surfaces(grille, profil, args.pas_raster,
+                                 args.ouverture)
+    resultat["surfaces"] = surfaces
+    for nom in SURFACES:
+        s = surfaces[nom]
+        larges = sum(1 for b in s["blocs"] if b["assez_large"])
+        print("   %-14s pas %.3f m  %6d case(s), %4d ouverte(s), %d bloc(s) "
+              "assez large(s), %d confirmee(s)"
+              % (nom, s["pas"], s["cases"], s["cases_ouvertes"], larges,
+                 len(s["confirmees"])))
+        for b in s["blocs"][:3]:
+            if b["cases"] <= 1 and not b["assez_large"]:
+                continue
+            print("        bloc %4d case(s)  %s[%.2f..%.2f] %s[%.2f..%.2f]%s"
+                  % (b["cases"], s["axes"][0], b["a0"], b["a1"],
+                     s["axes"][1], b["b0"], b["b1"],
+                     "  ASSEZ LARGE" if b["assez_large"] else ""))
+        for c in s["confirmees"]:
+            confirmees_totales.append(dict(c, surface=nom, origine="controle_4"))
+            print("        >>> PERCEE CONFIRMEE sur %s : ouverture %.3f m, "
+                  "emprise %s" % (nom, c["ouverture_m"], c["emprise"]))
+    if not any(surfaces[n]["confirmees"] for n in SURFACES):
+        print("   PASS — aucune des cinq faces ne porte une percee confirmee")
+
+    print()
+    print("-" * 74)
     print("CONTROLE 3 — LIGNE DE VUE (regle du moteur : cull_back)")
     print("-" * 74)
     if args.manifeste is None:
@@ -1221,39 +2261,139 @@ def main():
         print("BLOQUE: manifeste introuvable : %s" % args.manifeste)
         return 3
     else:
-        origine = tuple(float(v) for v in args.origine_monde.split(","))
         manifeste = json.load(open(args.manifeste, "r", encoding="utf-8"))
         taille = manifeste.get("size", "1280x720").split("x")
         taille = (int(taille[0]), int(taille[1]))
-        print("origine monde de l'ouvrage : %s, lacet %.0f°"
-              % (str(origine), args.lacet))
+        prises = [dict(p, taille=taille) for p in manifeste.get("shots", [])]
+
+        # -- LA POSE, EPROUVEE PAR UNE MESURE QUI POUVAIT LA CONTREDIRE ----
+        #
+        # La tentative precedente superposait une silhouette calculee a la
+        # capture et comparait des luminances. Elle a echoue parce que le
+        # fond est aussi sombre que la formation, et decaler l'origine de
+        # +3 m AMELIORAIT le score : la mesure elle-meme etait plate.
+        #
+        # Ce controle-ci n'a besoin d'aucune image. Il pose une question
+        # geometrique dont la reponse est piquee : le rayon central d'une
+        # camera d'approche, transformee en repere modele, PENETRE-T-IL la
+        # galerie ? Si la pose est juste, il entre par la bouche et parcourt
+        # plusieurs metres de vide. Si elle est fausse de deux metres, il
+        # heurte la coque du dehors ou manque le rocher.
+        #
+        # Le balayage de sensibilite est ce qui en fait une preuve et non
+        # une coincidence : la penetration doit s'EFFONDRER de part et
+        # d'autre. Un plateau plat signifierait que la mesure ne distingue
+        # rien — exactement le defaut d'hier — et le controle le dirait.
+        print("POSE — penetration du rayon central dans la galerie")
+        base = [dict(nom=p["name"],
+                     profondeur=_penetration(grille, profil, pose, p))
+                for p in prises]
+        for b in base:
+            print("   %-26s %s" % (b["nom"], _dire_penetration(b["profondeur"])))
+        reference = max((b["profondeur"] or 0.0) for b in base)
+        balayage = []
+        for delta in (-3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0):
+            for axe, nom_axe in ((0, "x"), (2, "z")):
+                if delta == 0.0 and axe == 2:
+                    continue
+                decal = [0.0, 0.0, 0.0]
+                decal[axe] = delta
+                autre = pose.decalee(*decal)
+                pire = max((_penetration(grille, profil, autre, p) or 0.0)
+                           for p in prises)
+                balayage.append(dict(axe=nom_axe, delta_m=delta,
+                                     penetration_max_m=round(pire, 2)))
+        print("   balayage de l'origine (penetration max, tous plans) :")
+        ligne_x = " ".join("%+0.0f:%4.1f" % (b["delta_m"], b["penetration_max_m"])
+                           for b in balayage if b["axe"] == "x")
+        ligne_z = " ".join("%+0.0f:%4.1f" % (b["delta_m"], b["penetration_max_m"])
+                           for b in balayage if b["axe"] == "z")
+        print("      dx  %s" % ligne_x)
+        print("      dz  %s" % ligne_z)
+        optimum = max(balayage, key=lambda b: b["penetration_max_m"])
+        pique = (abs(optimum["delta_m"]) < 1e-9
+                 and reference > 2.0
+                 and reference >= 1.5 * max(
+                     [b["penetration_max_m"] for b in balayage
+                      if abs(b["delta_m"]) >= 2.0] or [0.0]))
+        etat_pose = "PASS" if pique else "PARTIAL"
+        print("   maximum du balayage : %s %+0.1f m, penetration %.2f m"
+              % (optimum["axe"], optimum["delta_m"],
+                 optimum["penetration_max_m"]))
+        print("   %s — la penetration est %s a l'origine derivee"
+              % (etat_pose, "maximale et piquee" if pique
+                 else "PLATE ou decalee : la pose n'est pas etablie par cette "
+                      "mesure"))
+        resultat["pose"]["penetration_m"] = round(reference, 2)
+        resultat["pose"]["balayage"] = balayage
+        resultat["pose"]["verdict_penetration"] = etat_pose
+
         lignes = []
-        for prise in manifeste.get("shots", []):
-            prise = dict(prise)
-            prise["taille"] = taille
+        for prise in prises:
             traversants, percees = controle_ligne_de_vue(
-                grille, prise, origine, args.lacet, args.pas_pixel)
+                grille, prise, pose.origine, pose.lacet_deg, args.pas_pixel,
+                profil)
             boites = grouper_pixels(percees, args.pas_pixel)
-            etat = "PASS" if not percees else "FAIL"
-            print("   %-26s %5d pixel(s) sur la formation, %4d percant(s)  %s"
-                  % (prise["name"], traversants, len(percees), etat))
+            # Un pixel percant isole est un rayon SUSPECT, comme ailleurs.
+            # La confirmation applique la meme definition : le pixel doit
+            # porter un carre de `ouverture` integralement perce.
+            conf_px = []
+            camera_modele = pose.vers_modele(prise["from"])
+            for b in boites:
+                cx = (b["x0"] + b["x1"]) / 2.0
+                cy = (b["y0"] + b["y1"]) / 2.0
+                direction = _rayon_pixel(prise, pose, cx, cy)
+                liste = impacts(grille, camera_modele, direction)
+                if not liste:
+                    continue
+                dedans = tuple(camera_modele[k] + direction[k]
+                               * (liste[0][0] + 0.30) for k in range(3))
+                cote, sortants, total, _ = mesurer_ouverture(
+                    grille, dedans, direction, profil)
+                if cote >= args.ouverture - 1e-9:
+                    conf_px.append(dict(boite=b, ouverture_m=round(cote, 4)))
+            etat = "PASS" if not conf_px else "FAIL"
+            print("   %-26s %5d pixel(s) sur la formation, %4d suspect(s), "
+                  "%d confirmee(s)  %s"
+                  % (prise["name"], traversants, len(percees), len(conf_px),
+                     etat))
             for b in boites[:6]:
                 print("        boite x[%4d..%4d] y[%4d..%4d]  %d pixel(s)"
                       % (b["x0"], b["x1"], b["y0"], b["y1"], b["pixels"]))
             if traversants == 0:
                 print("        ATTENTION: aucun pixel ne touche la formation "
-                      "— la transformation monde->modele est probablement "
-                      "fausse, ce resultat ne prouve rien")
+                      "— ce resultat ne prouve rien")
             lignes.append(dict(nom=prise["name"], pixels_formation=traversants,
-                               pixels_percants=len(percees), boites=boites))
-            if percees:
-                rouge = True
+                               pixels_suspects=len(percees),
+                               percees_confirmees=conf_px, boites=boites))
+            for c in conf_px:
+                confirmees_totales.append(dict(c, surface="ligne_de_vue",
+                                               origine="controle_3"))
         resultat["ligne_de_vue"] = lignes
+
+    resultat["percees_confirmees_total"] = len(confirmees_totales)
+    resultat["percees_confirmees"] = confirmees_totales
 
     print()
     print("=" * 74)
-    print("VERDICT : %s" % ("FAIL — defaut mesure" if rouge else "PASS"))
+    print("GATE — 0 PERCEE CONFIRMEE")
     print("=" * 74)
+    print("percees confirmees : %d  (seuil d'ouverture %.2f m)"
+          % (len(confirmees_totales), args.ouverture))
+    for c in confirmees_totales:
+        print("   %-12s surface %-14s ouverture %.3f m"
+              % (c.get("origine", "?"), c.get("surface", "?"),
+                 c.get("ouverture_m", 0.0)))
+    echoue = rouge or bool(confirmees_totales)
+    if confirmees_totales:
+        raison = "%d percee(s) confirmee(s)" % len(confirmees_totales)
+    elif rouge:
+        raison = "defaut de plancher ou de fond mesure"
+    else:
+        raison = ""
+    print("VERDICT : %s" % ("FAIL — %s" % raison if echoue else "PASS"))
+    print("=" * 74)
+    rouge = echoue
 
     if args.json:
         dossier = os.path.dirname(args.json)
