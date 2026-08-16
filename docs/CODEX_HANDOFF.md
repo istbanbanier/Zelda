@@ -1801,6 +1801,134 @@ pourtant aveugle, parce que son domaine s'arrête où le défaut commence.
 
 ---
 
+## 32. R2a-3.5.3 — ouverture de passe, socle de mesure, trois agents
+
+**R2a-3.5.2 est close en `PARTIAL` et ne doit pas être relue rétrospectivement
+comme verte.** La passe R2a-3.5.3 reprend au même endroit avec un mandat
+différent : *corriger le défaut réel de toiture, étendre le domaine des contrôles
+qui ne le voyaient pas, reconstruire les preuves adverses et l'oracle global,
+puis seulement si tout devient vert produire un nouveau candidat.*
+
+Point de départ imposé : `bd78b1853da70603e22825a2a416df15e1121736`. Vérifié —
+branche, HEAD local, HEAD distant, arbre propre.
+
+### 32.1 Ce que la directive interdit de rouvrir
+
+- **il est interdit d'intégrer directement `cc3596c5`** ;
+- la correction du toit produira nécessairement un **nouveau SHA256**. Si
+  l'export après correction reste byte-identique à `cc3596c5`, **la correction
+  n'a pas atteint l'artefact** et il faut s'arrêter ;
+- plancher : `REFUTED — NO GEOMETRY CHANGE` ; débord de visière : autorisé ;
+  collerette (orteil, visière, porche, jambage) : **gelée** sauf défaut nouveau
+  démontré ; pylône, pont, hameau, V2.2 : gelés ;
+- ISS-052 et ISS-053 **ne sont pas corrigés dans cette passe** ; le filet
+  `world_v2_places` 8/8 ne doit jamais être présenté comme une preuve de validité
+  individuelle des appuis.
+
+### 32.2 Le socle de mesure — `507ef6a`
+
+Preuves : `evidence/world_v2/v2_3_r2a/grotte/r2a353_socle/`.
+
+Worktree `/home/user/zelda-r2a353/socle`, détaché sur `bd78b18`, plus quatre
+applications locales **jamais poussées** — c'est un échafaudage, pas une
+intégration :
+
+| # | contenu | provenance | mesure |
+|---|---|---|---:|
+| 0 | base R2a-3.5.2 | `c79341e` | `2687 insertions(+), 221 deletions(-)`, 9 fichiers |
+| 1 | instruments durcis et calibrés | `51a7dab` | 54 fichiers |
+| 2 | collerette, **source + `.blend`, sans le `.glb`** | `e0e7567` | 13 fichiers |
+| 3 | GLB candidat `cc3596c5` | `e0e7567` | échafaudage de mesure |
+
+Le chiffre du commit 0 est **identique** à celui de la répétition du
+checkpoint 3. Recoupement gratuit, non recherché.
+
+### 32.3 FAIT REPRODUIT — la chaîne reproduit `cc3596c5` AVEC les instruments
+
+Le checkpoint 3 prouvait la reproduction depuis **tronc + base + collerette**. Il
+ne disait rien de ce que la chaîne produirait **avec les instruments appliqués**,
+qui touchent `probe_cave_openings.py` et `plot_cave_section.py`.
+
+```
+avant : cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49
+CHAINE_RC=0        === VALIDE ===        20 970 triangles
+apres : cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49
+```
+
+**Byte-identique** — quatrième confirmation indépendante, la première avec les
+instruments. Contrôle de périmètre après la chaîne : `git status --porcelain
+assets/ source_assets/` ne montre **qu'une ligne**, le `.blend`, sortie non
+déterministe restaurée aussitôt. Le `.glb` n'apparaît même pas.
+
+Conséquence utile pour l'agent A : toute divergence d'empreinte qu'il observera
+après une modification vient **de sa modification**, pas du bruit de la chaîne.
+
+### 32.4 Contrôles de provenance — sur les deltas, pas sur l'égalité
+
+| contrôle | résultat |
+|---|---|
+| générateur `bd78b18..socle` == `202d849..e0e7567` | **IDENTIQUE** |
+| `probe_cave_openings.py` `bd78b18..socle` == `202d849..51a7dab` | **IDENTIQUE** |
+| 5 fichiers de base intouchés, blob à blob vs `c79341e` | **5 / 5** |
+| fichiers de domaine gelé dans le diff | **aucun** |
+| **14 seuils nommés, un par un** | **0 modifié** |
+
+**Un contrôle mal fait, consigné plutôt qu'effacé.** Le premier contrôle de
+seuils cherchait `^[-+][A-Z_]+ *=` et a rougi — sur `CAVITE_APEX`, `MASSIF_APEX`,
+`PALIER`, c'est-à-dire sur la géométrie de la base, qui a légitimement changé. Le
+motif venait du §16.1, où il était juste parce qu'il y portait sur le seul delta
+collerette. Étendu à une plage qui inclut la base, il ne distingue plus un seuil
+d'une table de coordonnées. **Un contrôle qui rougit sur du travail légitime est
+un contrôle qu'on apprend à ignorer** — c'est la façon ordinaire dont un portail
+meurt. Remplacé par la lecture des quatorze seuils nommés.
+
+**Fusion plutôt qu'écrasement.** Le lot instruments et le tronc ont tous deux
+ajouté un piège en fin de `tools/CLAUDE.md` : prendre le blob du lot aurait
+**révoqué** le piège de parité versé au tronc. Le delta a été appliqué, le
+conflit résolu en gardant les deux, la présence des deux vérifiée.
+
+### 32.5 Les trois agents
+
+Worktrees détachés sur `507ef6a`, propriétés de fichiers **disjointes**, aucun ne
+pousse.
+
+| agent | worktree | propriété exclusive |
+|---|---|---|
+| **A — toiture et domaine** | `zelda-r2a353/a_toit` | `make_waterfall_cave.py`, `tools/cave_roof_*.py` |
+| **B — épreuves adverses** | `zelda-r2a353/b_adverse` | `probe_cave_adversarial.py` et ses fixtures |
+| **C — oracle global** | `zelda-r2a353/c_oracle` | `cave_voxel_oracle.py`, `cave_seal_oracle.py`, `tools/cave_oracle_*.py` |
+
+B et C travaillent sur `cc3596c5` : leur mandat porte sur les **instruments**,
+pas sur la géométrie. L'intégrateur rejouera leurs outils sur le maillage corrigé
+par A.
+
+Cadrage commun remis aux trois : `/home/user/zelda-r2a353/CADRAGE_COMMUN.md`
+(hors dépôt — échafaudage).
+
+### 32.6 QUESTION OUVERTE, posée à l'agent A — régression, ou violation préexistante ?
+
+**`EPAISSEUR_MIN_M = 0,80`. La géométrie livrée R2a-3.4 mesure `0,374 m`.** Elle
+est donc, elle aussi, **sous le seuil**, d'un facteur deux.
+
+Nous avons qualifié le candidat de « régression d'un facteur dix ». C'est exact
+en relatif. Mais si le contrat n'a **jamais** été tenu hors du domaine des
+stations, alors ce que la passe précédente a découvert n'est pas une régression
+introduite par R2a-3.5.2 : c'est une **violation de contrat préexistante que
+personne ne pouvait voir**, faute d'instrument regardant là.
+
+Les deux lectures commandent des corrections différentes — revenir au
+comportement de R2a-3.4 suffirait dans un cas, pas dans l'autre.
+
+Le `controle_epaisseur` étendu sera donc passé sur **trois** géométries :
+`cc3596c5`, `8bc8b9f9` et `8bf1a1b3`. **Si R2a-3.4 échoue aussi, c'est un
+résultat qui appartient au lead** : il ne peut servir ni à abaisser un seuil, ni
+à requalifier le défaut en non-problème.
+
+**Statut : NON VÉRIFIÉ.** La mesure sur R2a-3.4 n'existe pour l'instant qu'en un
+point (`0,374 m` en `(0,80 ; 6,00)`), pas sur le domaine complet.
+
+---
+
 ## ANNEXE A — chronologie des instruments et de leurs défauts
 
 Quatorze occurrences du **même** défaut : un contrôle place ses points à
