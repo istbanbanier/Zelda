@@ -105,6 +105,52 @@ const TREES_WOOD: Array[StringName] = [&"CommonTree_1", &"CommonTree_2",
 const TREES_DRY: Array[StringName] = [&"TwistedTree_1", &"TwistedTree_2", &"Pine_4"]
 const TREES_DEAD: Array[StringName] = [&"DeadTree_1", &"DeadTree_2", &"TwistedTree_3"]
 const FLOWER_MODELS: Array[StringName] = [&"Flower_3_Group", &"Flower_4_Group"]
+
+## ÉCHELLE FLORALE — régression V2.2 mesurée, corrigée par la voie unique.
+##
+## Revue R2a-3.3 du lead : « les fleurs géantes masquent l'entrée » de la
+## Grotte du Couchant. Mesuré, monde monté (journal rouge dans
+## `evidence/world_v2/v2_3_r2a/flore/`) : `Flower_4_Group` culminait à
+## **2,841 m** dans la cellule `c2r8`, contre 0,18-0,55 m au tableau §3 de
+## `VISUAL_ASSET_BIBLE`. Soit 5,2 fois le plafond, et un mètre de plus qu'un
+## héros d'1,78 m.
+##
+## La cause n'était pas la variation ci-dessous : c'était son APPLICATION À
+## LA TAILLE NATIVE. Les modèles font 2,4868 m et 2,0548 m
+## (`tools/gltf_inspect.py`, concordant avec l'AABB moteur à la quatrième
+## décimale). Ce bâtisseur était le seul poseur de World V2 à ne pas
+## consulter `KitScale` — le « huitième module » que l'en-tête de `KitScale`
+## annonçait. `scripts/world_v2/poi/world_v2_place_kit.gd` l'appliquait déjà.
+##
+## POURQUOI CES DEUX NOMBRES, et pas la bande d'origine (0,80 ; 1,15) :
+##
+##  - `KitScale` seul ne suffit pas. Il ramène la cible à 0,55 m, mais
+##    0,55 x 1,15 rend **0,632 m** — encore au-dessus du plafond. Déclarer
+##    un plafond de 0,632 m reviendrait à inventer un contrat pour l'ajuster
+##    au code ; c'est le littéral de la bible qui tient.
+##  - le rapport min/max est CONSERVÉ. L'original vaut 0,80/1,15 = 0,6957 ;
+##    celui-ci vaut 0,69/0,99 = 0,6970, à 0,2 % près. On corrige l'échelle
+##    sans toucher à l'amplitude relative des tailles — deux touffes
+##    identiques se voient, et cette variation-là reste voulue.
+##  - le haut de bande s'arrête à 0,99 et non 1,00. Une hauteur corrigée est
+##    un produit de flottants (natif x cible/natif x variation) : à 1,00
+##    exact elle retombe sur 0,5499999 ou 0,5500001 selon l'arrondi, et une
+##    assertion `<= 0,55` deviendrait intermittente. 5,5 mm de marge
+##    suppriment le sujet.
+##
+## Résultat : `Flower_4_Group` 0,380-0,545 m, `Flower_3_Group` 0,359-0,515 m.
+## Surveillé par `tests/world_v2/test_world_v2_flora_scale.gd`.
+##
+## OPTION DÉLIBÉRÉMENT NON PRISE. Router aussi les arbres et les rochers par
+## `KitScale` serait inerte aujourd'hui — aucun de leurs modèles ne figure
+## dans `MEASURED`, le facteur vaudrait exactement 1,0. Mais ce serait un
+## changement de comportement LATENT dans un système gelé : le jour où
+## quelqu'un ajouterait un arbre à la table, toute la végétation V2.2 se
+## redimensionnerait sans que personne l'ait demandé. Périmètre limité aux
+## fleurs, dont le dépassement est prouvé.
+const FLOWER_VARIATION_MIN: float = 0.69
+const FLOWER_VARIATION_MAX: float = 0.99
+
 const BOULDER_MODELS: Array[StringName] = [&"Rock_Medium_1", &"Rock_Medium_2", &"Rock_Medium_3"]
 const PEBBLE_MODELS: Array[StringName] = [&"Pebble_Round_2", &"Pebble_Round_4", &"Pebble_Square_1"]
 
@@ -272,12 +318,22 @@ func _build_cell(parent: Node3D, cx: int, cz: int,
 		# palette ; la jaune (Flower_4_Group) porte §1.4, la rose reste rare.
 		var flower_model: StringName = FLOWER_MODELS[1] if rng.randf() < 0.85 \
 			else FLOWER_MODELS[0]
+		# §3 : correction d'échelle du kit végétal, point unique
+		# (`KitScale`). Le facteur du site reste une VARIATION et se
+		# MULTIPLIE à la correction. Multiplier les BORNES plutôt que le
+		# tirage est délibéré : `randf_range(a*k, b*k)` consomme exactement
+		# un tirage, comme avant — la séquence de la graine de cellule est
+		# donc intacte, et positions, rotations, comptes et densités
+		# survivent bit pour bit (témoin d'invariance dans
+		# `tests/world_v2/test_world_v2_flora_scale.gd`).
+		var kit: float = KitScale.factor(String(flower_model))
 		for f: int in range(rng.randi_range(5, 12)):
 			var p: Vector2 = center + Vector2(rng.randf_range(-1.6, 1.6),
 				rng.randf_range(-1.6, 1.6))
 			if _spot_allows(p, GRASS_MAX_SLOPE_DEG, -1.0, ctx):
 				_append_model(flowers, flower_model,
-					_ground_transform(p, rng, 0.8, 1.15, -0.03))
+					_ground_transform(p, rng, FLOWER_VARIATION_MIN * kit,
+						FLOWER_VARIATION_MAX * kit, -0.03))
 
 	# 4. Arbres : bosquets dans le Bois, isolés ailleurs, morts dans la Marche.
 	var tree_profile: Dictionary = _profile_at(Vector2(origin_x + CELL_M * 0.5,

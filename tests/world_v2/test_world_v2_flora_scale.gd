@@ -70,10 +70,15 @@ const EXPECTED_FLOWER_MODELS: Array[String] = ["Flower_3_Group", "Flower_4_Group
 ## `evidence/world_v2/v2_3_r2a/flore/`).
 ##
 ## Cinq nombres par catégorie : nombre d'instances, puis les sommes des X, Y,
-## Z d'origine et des facteurs d'échelle, arrondies au millième. Une seule
-## instance déplacée d'un millimètre change une somme de 0,001, soit le
-## double de la tolérance de comparaison — le témoin voit donc un défaut
+## Z d'origine et des facteurs d'échelle, publiées au dix-millième. Une
+## seule instance déplacée d'un millimètre change une somme de 0,001, soit
+## le double de la tolérance de comparaison — le témoin voit donc un défaut
 ## d'une instance sur des milliers.
+##
+## MESURÉ, pas supposé : perturber ici la somme X des roseaux de 0,001 —
+## l'équivalent d'un seul roseau déplacé d'un millimètre — fait bien
+## ÉCHOUER ce test, en nommant la catégorie et le champ
+## (`evidence/world_v2/v2_3_r2a/flore/controle_negatif_temoin.log`).
 ##
 ## Ces littéraux sont MESURÉS, jamais recopiés d'une constante du bâtisseur :
 ## un test qui lit la valeur qu'il surveille suit l'erreur (PROMPT4 §2). Deux
