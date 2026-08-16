@@ -28,7 +28,7 @@ générateur.
 
 Usage (Blender, sous verrou d'outil lourd) :
     flock /home/user/Zelda/.git/heavy_tools.lock -c \\
-      'cd /home/user/zelda-r2a354/a_percee && blender --background \\
+      'cd <worktree> && blender --background \\
        --python-exit-code 1 --python tools/cave_fix_outil.py'
 """
 

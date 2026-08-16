@@ -27,6 +27,7 @@ nombre de composantes connexes, et caracteristique d'Euler V-E+F.
 """
 
 import json
+import os
 import struct
 import sys
 from collections import defaultdict
@@ -200,14 +201,44 @@ def banc():
     return 0 if ko == 0 else 1
 
 
+## LES CHEMINS SE PASSENT EN ARGUMENT. CE N'ETAIT PAS LE CAS, ET L'OUTIL
+## ETAIT CASSE AU TRONC SANS QUE RIEN NE LE DISE.
+##
+## Mesure du 2026-08-16 : ce bloc portait en dur trois chemins absolus vers
+## `/home/user/zelda-r2a353/socle/...`, un worktree de passe close. Il les
+## parcourait quel que soit `sys.argv` — donc appeler l'outil AVEC un fichier
+## rendait quand meme `FileNotFoundError` sur un chemin que l'appelant n'avait
+## jamais nomme. Le worktree supprime, l'outil est devenu inutilisable.
+##
+## Ce qui rend le defaut couteux : le banc `--banc`, lui, passait au vert. Un
+## outil dont l'auto-test reussit pendant que son chemin de production est mort
+## est exactement la panne que `PROMPT4_METHOD` §2 decrit — un test qui ne peut
+## pas echouer sur ce qui compte. Le banc n'eprouvait que l'analyse ; personne
+## n'eprouvait la LECTURE des fichiers reels.
+##
+## MASTER_SPEC §7.15 l'interdisait deja : « aucun fichier dependant d'un chemin
+## prive ». La regle existait, elle ne mordait nulle part.
 if __name__ == "__main__":
     if "--banc" in sys.argv:
         print("=== BANC A REPONSE CONNUE ===")
         sys.exit(banc())
 
-    for chemin, et in [
-        ("/home/user/zelda-r2a353/socle/assets/environment/caves/SM_WaterfallCave.glb", "candidat cc3596c5"),
-        ("/home/user/zelda-r2a353/socle/assets/environment/caves/prototypes/SM_WaterfallCave_BASE352.glb", "BASE352 8bc8b9f9"),
-        ("/home/user/zelda-r2a353/reference/SM_WaterfallCave_R2a34.glb", "R2a-3.4 livree 8bf1a1b3"),
-    ]:
-        analyser(chemin, et)
+    chemins = [a for a in sys.argv[1:] if not a.startswith("-")]
+    if not chemins:
+        print(__doc__.strip().splitlines()[0])
+        print()
+        print("usage : cave_topology_check.py <fichier.glb> [<fichier.glb> ...]")
+        print("        cave_topology_check.py --banc")
+        print()
+        print("Aucun chemin par defaut : un defaut par defaut est un chemin")
+        print("qui pourrit en silence. Nommer ce qu'on mesure.")
+        sys.exit(2)
+
+    manquants = [c for c in chemins if not os.path.exists(c)]
+    if manquants:
+        for c in manquants:
+            print("ABSENT : %s" % c)
+        sys.exit(2)
+
+    for chemin in chemins:
+        analyser(chemin, os.path.basename(chemin))

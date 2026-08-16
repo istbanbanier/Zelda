@@ -43,7 +43,7 @@ disparues » pourrait tout aussi bien vouloir dire « mon appariement a
 
 Usage (Blender, sous verrou d'outil lourd) :
     flock /home/user/Zelda/.git/heavy_tools.lock -c \\
-      'cd /home/user/zelda-r2a354/a_percee && blender --background \\
+      'cd <worktree> && blender --background \\
        --python-exit-code 1 --python tools/cave_fix_csg_diagnostic.py'
 """
 
@@ -70,7 +70,7 @@ SUJETS = [
     ("/tmp/ref354/SM_WaterfallCave_cc3596c5.glb", "FINAL candidat cc3596c5"),
     (os.path.join(RACINE, "assets", "environment", "caves",
                   "SM_WaterfallCave.glb"), "FINAL corrige c184c8dc"),
-    ("/home/user/zelda-r2a354/reference/SM_WaterfallCave_R2a34.glb",
+    (os.environ.get("GLB_R2A34", "assets/environment/caves/SM_WaterfallCave.glb"),
      "FINAL R2a-3.4 livree"),
 ]
 
