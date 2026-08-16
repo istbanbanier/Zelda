@@ -5,6 +5,81 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-16 — R2a-3.5.1 : cavité asymétrique · `PARTIAL`
+
+Le lead a refusé ma conclusion « trois exigences se contredisent » et il avait
+raison : je n'avais essayé qu'un levier, translater la galerie **en gardant sa
+section symétrique**. Une contradiction établie sur un seul levier n'est pas une
+contradiction. Son arbitrage : **section intérieure asymétrique** — vide limité
+au gabarit joueur du côté mince, élargissement déporté du côté où sept mètres de
+roche attendent. Le chiffre qui lui donnait raison était déjà dans le code :
+`GABARIT_DEMI_LARGEUR_M = 0,95 m` contre 3,48 m de demi-vide à la station 5.
+
+Trois agents, trois worktrees sur `34c305d`, fusion **sans conflit**.
+Preuves : `evidence/world_v2/v2_3_r2a/grotte/r2a351_integration/`.
+
+### Étanchéité : `403 → 0` percées confirmées
+
+| géométrie | échantillonnage d'origine | corrigé |
+|---|---:|---:|
+| R2a-3.5 | 403 | — |
+| cavité asymétrique seule | 162 | 118 |
+| **fusion cavité + enveloppe** | 38 | **0** |
+
+Le passage de 38 à 0 est une correction **démontrée**, pas un aveuglement :
+l'échantillonneur plaçait ses points symétriquement le long de X, et pour
+chacune des 38 percées, **38/38 partaient hors de la cavité** avec **deux
+impacts entre l'axe et ce point** — une paroi intacte, traversée à l'aller et au
+retour. La sonde se tenait dehors, derrière un mur. Propriété de sûreté vérifiée :
+sur un profil symétrique l'écart ancien/nouveau vaut **0,00 m sur 495 points**.
+
+Aussi vert : paroi **0,87 m** (seuil 0,80) · **trois masses aux trois azimuts**,
+100 compris · ratio d'emprises **2,16** (était 2,02 pour 2,00) · plage plane
+8,36 globale et **4,63 en façade** (seuils 12,00 / 6,00) · raster des cinq
+surfaces zéro case ouverte.
+
+### Ce qui reste rouge — deux défauts, tous deux au bout de la galerie
+
+1. **Collerette 0,48 m pour 0,60**, au porche. Ce n'est pas un conflit de
+   contrat : R2a-3.4 tenait ce seuil grâce à une **« visière saillante »** que
+   l'ancien `MASSIF` portait à la station 0 et que la nouvelle enveloppe n'a pas.
+   Deux remèdes mesurés échouent — porter la lèvre **mure le porche**, un biais
+   plus fort fait tomber la collerette à 0,08 m. **La forme qui reste à essayer
+   est une visière : de la matière au-dessus et sur les côtés de l'ouverture,
+   pas devant elle.**
+2. **Plancher absent de `y +2,88` à `+3,17`, stations 6 à 8**, écart 0,44–0,45 m.
+   **Régression de cette passe** — la géométrie livrée R2a-3.4 passe ce contrôle
+   avec le même instrument corrigé. Présent à l'identique avant la correction
+   d'échantillonnage : il était là, caché derrière le compte de percées. Les
+   stations 7 et 8 ferment la calotte et sont exclues de `controle_epaisseur` et
+   de `controle_gabarit` par construction ; c'est aussi là que `droite` descend à
+   0,25–0,27. Piste, pas conclusion.
+
+### Sept fois la même faute, et c'est l'enseignement de la passe
+
+**Un seul nombre, qui répond à une autre question que celle posée.** La sonde ne
+connaissait de l'asymétrie qu'un scalaire appliqué des deux côtés (704 rayons
+absous à tort) ; `dans_enveloppe`, `dans_le_noyau`, `_emprise_noyau`,
+`points_interieurs`, `controle_gabarit`, `controle_plancher` et
+`controle_aucun_jour` mesuraient tous une demi-largeur **symétrique** le long de
+**X** au lieu de la normale ; la contenance qui avait validé l'enveloppe ne
+mesurait que le **toit** ; ma propre mesure du contrefort était prise **après**
+soustraction, là où la peau était déjà emportée ; et le journal imprimait
+`PASS — un sol existe sous chaque point sondé` **au-dessus** d'une carte pleine
+de `<-- TROU`.
+
+### Prochaine action exacte
+
+**La visière du porche**, dans l'enveloppe : matière au-dessus et sur les côtés
+de l'ouverture, ancre et cadrage gelés, sans que les silhouettes 55° et 225°
+régressent. Puis le plancher des stations 6–8. Les deux patches sont dans
+`r2a351_integration/` et s'appliquent d'un bloc sur `34c305d`.
+
+Le tronc construit toujours la géométrie R2a-3.4 et **reste vert** : rien de
+cette passe n'est versé au chemin livrable tant que le portail est rouge.
+
+---
+
 ## 2026-08-16 — R2a-3.5 : changement d'architecture de la grotte · EN COURS
 
 Le lead a rendu R2a-3.4 `FAIL TECHNIQUE — FAIL VISUEL` et **arbitré** le conflit
