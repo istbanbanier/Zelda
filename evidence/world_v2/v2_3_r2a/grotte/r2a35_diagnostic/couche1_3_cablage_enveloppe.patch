@@ -1,0 +1,737 @@
+diff --git a/source_assets/blender/environment/make_waterfall_cave.py b/source_assets/blender/environment/make_waterfall_cave.py
+index 4c748d1..97e5eb2 100644
+--- a/source_assets/blender/environment/make_waterfall_cave.py
++++ b/source_assets/blender/environment/make_waterfall_cave.py
+@@ -121,6 +121,7 @@
+ #       --out assets/environment/caves/SM_WaterfallCave.glb
+ 
+ import math
++import random
+ import os
+ import sys
+ from pathlib import Path
+@@ -175,19 +176,35 @@ COL_MARGE_CLE = 0.35
+ # hauteur libre à chaque pas de 0,40 m. La corde d'un arc de 31° sur
+ # 6,25 m s'écarte au plus de 0,30 m de l'axe — la demi-largeur minimale
+ # (1,55 m) l'absorbe largement, et la clé y reste au-dessus de 2,4 m.
++# CENTERLINE R2a-3.5 — établie par l'agent galerie, mesurée par la sonde
++# `probe_envelope_vs_centerline.py`, et validée AVANT d'être posée ici :
++# sous l'enveloppe actuelle elle a plus de toit que l'ancienne (+2,60 à
++# +6,51 contre +1,98 à +5,14) ; sous l'enveloppe proto A v2 elle a +1,36
++# (linteau) à +5,39. Les deux mesures sont dans
++# `evidence/.../r2a35_fusion/`.
++#
++# CE QUI CHANGE ET POURQUOI. L'ancienne galerie filait vers +y sur 10,4 m
++# et passait SOUS LES DEUX COLS de la silhouette — c'est le conflit que
++# trois passes ont payé : épaissir pour la roche et creuser pour les
++# masses tiraient sur la même pierre. La nouvelle tient en 5,05 m, coude
++# de 42° à la station 2 puis cap tenu à 31° ± 1° : elle quitte l'axe des
++# cols et se range sous la masse dominante.
++#
++# Le porche et le seuil ne bougent pas d'un millimètre : la bouche est
++# figée, et c'est elle que le joueur voit.
+ CAVITE = [
+     # ax     ay     hw     cle
+     (0.00, -1.15, 1.90, 2.80),   # porche évasé, sol sous le terrain
+-    (0.00,  0.00, 1.70, 2.85),   # seuil
+-    (0.06,  1.60, 1.85, 2.95),
+-    (0.24,  3.20, 2.15, 2.80),
+-    (0.58,  4.75, 2.70, 2.90),
+-    (1.05,  6.25, 3.05, 2.92),   # SALLE
+-    (1.62,  7.60, 2.80, 2.92),   # cle relevee : le palier du fond mange la hauteur
+-    (2.25,  8.65, 2.20, 2.55),   # elargie : le profil s'y repliait aussi
+-    (2.85,  9.25, 1.40, 2.00),   # elargie : a 1,15/1,80 le profil se repliait
++    (0.00,  0.00, 1.70, 2.85),   # seuil — INCHANGÉ
++    (0.22,  1.05, 1.75, 2.90),   # fin du vestibule : 1,07 m
++    (1.00,  1.62, 2.10, 2.90),   # LE COUDE, 42°
++    (1.82,  2.12, 2.60, 2.92),
++    (2.62,  2.58, 3.00, 2.92),   # SALLE, sous la dominante
++    (3.10,  2.88, 2.50, 2.80),
++    (3.40,  3.06, 1.85, 2.45),   # alcôve / niche
++    (3.58,  3.17, 1.30, 2.00),   # calotte du fond
+ ]
+-CAVITE_APEX = (3.25, 9.55, 0.70)     # pointe de la calotte du fond
++CAVITE_APEX = (3.72, 3.25, 0.70)     # pointe de la calotte du fond
+ # La lèvre du porche plonge sous le terrain. -0,06 au premier jet, avec un
+ # exhaussement de 0,02 : la CUVETTE du sol (SAG) descendait alors 8 cm sous
+ # le plan, donc 6 cm sous le terrain — mesuré en capture, l'herbe du
+@@ -227,22 +244,27 @@ PORCHE_DENIVELE = -0.58
+ # Le jeu de clé ne descend jamais sous 1,35 m tant que la cavité existe :
+ # à 0,95 m, le contrôle d'épaisseur tombait à 0,35 m de linteau — un
+ # creux de bruit extérieur et une bosse de bruit intérieur se cumulent.
++# MASSIF ne sert plus qu'au PROXY DE COLLISION (voir `construire()`), et il
++# doit donc envelopper la NOUVELLE cavité. Ses stations suivent désormais la
++# centerline, avec le même jeu latéral et de clé qu'avant ; les trois
++# dernières prolongent la queue enterrée au nord-est, où la formation se
++# perd dans le ressaut.
+ MASSIF = [
+     # ax     ay    hw_ref cle_ref  jeu_lat jeu_cle
+     (0.00, -1.15, 1.90, 2.80, 1.70, 1.55),   # visière saillante
+     (0.00,  0.00, 1.70, 2.85, 1.60, 1.45),   # retrait derrière la visière
+-    (0.06,  1.60, 1.85, 2.95, 1.85, 1.55),
+-    (0.24,  3.20, 2.15, 2.80, 2.10, 2.15),   # SOMMET 1
+-    (0.58,  4.75, 2.70, 2.90, 2.00, 1.68),   # col
+-    (1.05,  6.25, 3.05, 2.92, 2.10, 2.22),   # SOMMET 2, au-dessus de la salle
+-    (1.62,  7.60, 2.80, 2.80, 1.95, 1.62),
+-    (2.25,  8.65, 2.00, 2.40, 2.15, 1.70),   # épaule latérale
+-    (2.85,  9.25, 1.15, 1.80, 1.95, 1.35),
+-    (3.35,  9.90, 0.85, 1.35, 1.60, 1.55),   # ressaut de queue
+-    (3.85, 10.55, 0.55, 0.95, 1.35, 0.90),
+-    (4.30, 11.15, 0.30, 0.55, 0.95, 0.70),
++    (0.22,  1.05, 1.75, 2.90, 1.85, 1.55),
++    (1.00,  1.62, 2.10, 2.90, 2.10, 2.15),
++    (1.82,  2.12, 2.60, 2.92, 2.00, 1.68),
++    (2.62,  2.58, 3.00, 2.92, 2.10, 2.22),   # au-dessus de la salle
++    (3.10,  2.88, 2.50, 2.80, 1.95, 1.62),
++    (3.40,  3.06, 1.85, 2.45, 2.15, 1.70),
++    (3.58,  3.17, 1.30, 2.00, 1.95, 1.35),
++    (3.95,  3.55, 0.90, 1.45, 1.60, 1.55),   # ressaut de queue
++    (4.35,  4.00, 0.60, 1.00, 1.35, 0.90),
++    (4.70,  4.40, 0.35, 0.60, 0.95, 0.70),
+ ]
+-MASSIF_APEX = (4.65, 11.65, 1.20)
++MASSIF_APEX = (5.00, 4.75, 1.20)
+ 
+ # STRATES. La roche de la vallée est sédimentaire ocre : « strates
+ # horizontales larges cassées par des fractures diagonales »
+@@ -421,7 +443,7 @@ ALCOVE_SEUIL = 0.0
+ # Un relief plus fin que la résolution du polygone n'existe pas — c'est la
+ # contrepartie du choix de facettes larges, et il vaut mieux l'écrire que
+ # de laisser un mécanisme qui ne produit rien.
+-PALIER = (0.00, 0.00, 0.04, 0.10, 0.16, 0.26, 0.50, 0.78, 0.92)
++PALIER = (0.00, 0.00, 0.02, 0.06, 0.10, 0.16, 0.34, 0.56, 0.70)
+ 
+ NERVURES_THETA = (math.radians(56.0), math.radians(124.0))
+ NERVURE_DEMI = math.radians(10.0)
+@@ -1034,10 +1056,15 @@ ENTAILLE_LECTURE_M = 0.90
+ ## Bande sous le sommet d'une masse dans laquelle on compte les porteurs.
+ BANDE_FAITE_M = 0.45
+ 
++## RANG DE L'ENVELOPPE. Les masses loftées qui portent la silhouette
++## (`SM_ProtoA_*`) le déclarent ; tout le reste — kit de roches, gaine,
++## semelle, dos d'alcôve — est un DÉTAIL DE SURFACE au sens de la couche 4.
++RANG_ENVELOPPE = "enveloppe"
++
+ AMAS = (
+-    dict(cle="epaule_gauche",    porteurs_min=3, rang_largeur=1),
+-    dict(cle="dominante",        porteurs_min=3, rang_largeur=2),
+-    dict(cle="contrefort_droit", porteurs_min=2, rang_largeur=3),
++    dict(cle="epaule_gauche",    modules_faite_max=0, rang_largeur=1),
++    dict(cle="dominante",        modules_faite_max=0, rang_largeur=2),
++    dict(cle="contrefort_droit", modules_faite_max=0, rang_largeur=3),
+ )
+ ## Ordre attendu de gauche à droite en x écran, et nombre minimal de roches
+ ## portant chaque faîte. `rang_largeur` déclare l'ordre des emprises :
+@@ -2652,6 +2679,280 @@ def objet(nom, sommets, faces, familles, avec_matieres):
+ # le script rend 2 et n'enregistre rien si l'un échoue.
+ # ---------------------------------------------------------------------------
+ 
++# ---------------------------------------------------------------------------
++# ENVELOPPE EXTÉRIEURE — R2a-3.5. C'est ELLE qui porte la silhouette.
++#
++# CE QUI CHANGE, ET C'EST L'ORDRE DU LEAD. Jusqu'à R2a-3.4 la silhouette
++# était faite de copies de `template-detail` posées par `poser_rocher()`.
++# Verdict : « trois tours verticales, sommets plats, forteresse crénelée ;
++# la mesure ne remplace pas ce constat ». Les modules ne doivent plus
++# porter la silhouette principale — ils peuvent casser des surfaces,
++# jamais fabriquer des tours ni décider des sommets. Cette section est ce
++# qui les remplace ; `controle_amas` a été inversé pour l'exiger.
++#
++# LA PIÈCE STRUCTURELLE est le RUBAN DE CRÊTE : le loft se termine sur une
++# boucle dont la LARGEUR est donnée point par point. Il n'existe donc
++# aucune valeur des paramètres qui rende un sommet plat — et aucune non
++# plus qui le rende pointu, ce qui était l'échec opposé. Le profil de
++# flanc suit sept points de contrôle alternant vires et murs : sans eux
++# le flanc est une droite, et trois droites font trois triangles.
++#
++# LE PLAN EST CONTRAINT PAR LA GALERIE, pas choisi. La masse haute est un
++# MASSIF centré sur le corridor, pas une arête : la direction de la
++# galerie projette 0,070 m par mètre à l'azimut monde 100° contre 0,755 à
++# 55°, si bien qu'une arête alignée sur elle serait large de face et pic
++# étroit de trois quarts. Un massif projette sa girth partout.
++#
++# L'ÉPAULE ET LA DOMINANTE SONT DEUX LOFTS ET NON UN, et c'est une
++# concession au contrôle, pas au dessin : `controle_amas` attribue chaque
++# masse à UNE clé d'amas. Les deux se recouvrent franchement au col A et
++# le remaillage voxel les refond ; la formation reste un seul volume.
++# ---------------------------------------------------------------------------
++
++RESSAUTS_ENV = [
++    (0.00, 0.00), (0.13, 0.25), (0.36, 0.35), (0.46, 0.56),
++    (0.70, 0.66), (0.82, 0.84), (1.00, 1.00),
++]
++
++
++def _bruit_env(graine, compte, amplitude):
++    rng = random.Random(graine)
++    return [1.0 + rng.uniform(-amplitude, amplitude) for _ in range(compte)]
++
++
++def _rayon_ellipse_env(delta, demi_grand, demi_petit):
++    c, sn = math.cos(delta), math.sin(delta)
++    return (demi_grand * demi_petit) / math.sqrt(
++        (demi_petit * c) ** 2 + (demi_grand * sn) ** 2)
++
++
++def _densifier_env(points, compte):
++    """Densifie SANS perdre un seul sommet d'origine.
++
++    Un rééchantillonnage à pas constant rate les sommets de la polyligne :
++    mesuré, il rabotait l'apex de 73 cm en silence. On n'insère donc que
++    DANS les segments, en servant d'abord les plus longs.
++    """
++    if compte < len(points):
++        raise RuntimeError("enveloppe : n trop petit pour %d sommets de crete"
++                           % len(points))
++    segments = len(points) - 1
++    ajouts = [0] * segments
++    longueurs = [math.dist(points[i][:3], points[i + 1][:3])
++                 for i in range(segments)]
++    for _ in range(compte - len(points)):
++        cible = max(range(segments),
++                    key=lambda i: longueurs[i] / (ajouts[i] + 1))
++        ajouts[cible] += 1
++    sortie = []
++    for i in range(segments):
++        sortie.append(tuple(points[i]))
++        a, b = points[i], points[i + 1]
++        for j in range(ajouts[i]):
++            u = (j + 1) / (ajouts[i] + 1)
++            sortie.append(tuple(a[d] + (b[d] - a[d]) * u for d in range(4)))
++    sortie.append(tuple(points[-1]))
++    return sortie
++
++
++def _profil_env(t, decal_t, decal_f):
++    n = len(RESSAUTS_ENV)
++    for i in range(n - 1):
++        t0, f0 = RESSAUTS_ENV[i]
++        t1, f1 = RESSAUTS_ENV[i + 1]
++        if i > 0:
++            t0 += decal_t
++            f0 += decal_f
++        if i + 1 < n - 1:
++            t1 += decal_t
++            f1 += decal_f
++        if t <= t1 or i == n - 2:
++            if t1 - t0 <= 1e-9:
++                return f1
++            u = min(1.0, max(0.0, (t - t0) / (t1 - t0)))
++            return f0 + (f1 - f0) * u
++    return 1.0
++
++
++def _ruban_env(crete, n):
++    """Boucle fermée serrée autour de la crête, largeur donnée point par point."""
++    demi = n // 2
++    echant = _densifier_env(crete, demi)
++    perp = []
++    for i in range(demi):
++        a = echant[max(0, i - 1)]
++        b = echant[min(demi - 1, i + 1)]
++        t = Vector((b[0] - a[0], b[1] - a[1]))
++        t = t.normalized() if t.length > 1e-6 else Vector((1.0, 0.0))
++        perp.append(Vector((-t.y, t.x)))
++    cote_a, cote_b = [], []
++    for pt, q in zip(echant, perp):
++        demi_l = max(0.10, pt[3]) * 0.5
++        cote_a.append(Vector((pt[0] + q.x * demi_l, pt[1] + q.y * demi_l, pt[2])))
++        cote_b.append(Vector((pt[0] - q.x * demi_l, pt[1] - q.y * demi_l, pt[2])))
++    return list(reversed(cote_a)) + cote_b
++
++
++def masse_enveloppe(cfg):
++    """Un volume d'enveloppe : polygone de sol -> ruban de crête incliné.
++
++    Rend (sommets, faces, familles). La cape du dernier anneau est une
++    BANDE de quads et non un n-gone : le ruban est une épingle, et un
++    n-gone d'épingle se triangule en reliant des points éloignés — mesuré,
++    cela recréait deux cornes et une encoche à fond plat, c'est-à-dire un
++    créneau produit par la triangulation et non par la forme voulue.
++    """
++    crete = [tuple(pt) for pt in cfg["crete"]]
++    n = cfg["n"]
++    if n % 2:
++        raise RuntimeError("enveloppe : n pair requis")
++    axe = Vector((crete[-1][0] - crete[0][0], crete[-1][1] - crete[0][1]))
++    psi = math.atan2(axe.y, axe.x) if axe.length > 1e-6 else 0.0
++    biais_az = math.radians(cfg.get("biais_az", 270.0))
++    biais = cfg.get("biais", 0.0)
++    ruban = _ruban_env(crete, n)
++    bruit_r = _bruit_env(cfg["graine"], n, 0.13)
++    bruit_b = _bruit_env(cfg["graine"] + 97, n, 1.0)
++    bruit_p = _bruit_env(cfg["graine"] + 41, n, 0.10)
++    ancre = cfg["ancre"]
++
++    base, dehors = [], []
++    for k in range(n):
++        a = psi + TAU * k / n
++        r = _rayon_ellipse_env(a - psi, cfg["dg"], cfg["dp"]) * bruit_r[k]
++        r *= 1.0 + biais * math.cos(a - biais_az)
++        d = Vector((math.cos(a), math.sin(a)))
++        dehors.append(d)
++        base.append(Vector((ancre[0] + d.x * r, ancre[1] + d.y * r, -SKIRT_ENV)))
++
++    dec_t = [0.040 * math.sin(TAU * k / n + cfg["graine"] * 0.7)
++             + 0.022 * math.sin(2.0 * TAU * k / n + cfg["graine"] * 1.3)
++             for k in range(n)]
++    dec_f = [0.038 * math.sin(TAU * k / n + cfg["graine"] * 1.9 + 1.1)
++             for k in range(n)]
++
++    niveaux = cfg["niveaux"]
++    sommets, anneaux = [], []
++    for i in range(niveaux):
++        t = i / (niveaux - 1)
++        depart = len(sommets)
++        for k in range(n):
++            f = _profil_env(t, dec_t[k], dec_f[k])
++            f = f ** max(0.55, cfg["p_flanc"] * bruit_p[k] * 1.45)
++            g = cfg["bombement"] * bruit_b[k] * math.sin(math.pi * t)
++            x = base[k].x + (ruban[k].x - base[k].x) * f + dehors[k].x * g
++            y = base[k].y + (ruban[k].y - base[k].y) * f + dehors[k].y * g
++            z = -SKIRT_ENV + (ruban[k].z + SKIRT_ENV) * t
++            sommets.append(Vector((x, y, z)))
++        anneaux.append(depart)
++
++    faces, familles = [], []
++    for i in range(niveaux - 1):
++        a, b = anneaux[i], anneaux[i + 1]
++        for k in range(n):
++            k2 = (k + 1) % n
++            faces.append((a + k, a + k2, b + k2, b + k))
++            centre = 0.25 * (sommets[a + k] + sommets[a + k2]
++                             + sommets[b + k] + sommets[b + k2])
++            familles.append(famille_massif(centre))
++    fond = anneaux[0]
++    faces.append(tuple(reversed([fond + k for k in range(n)])))
++    familles.append("MAT_CaveRock_Base")
++    haut = anneaux[-1]
++    demi = n // 2
++    for st in range(demi - 1):
++        faces.append((haut + demi - 1 - st, haut + demi - 2 - st,
++                      haut + demi + st + 1, haut + demi + st))
++        familles.append("MAT_CaveRock_Face")
++    return sommets, faces, familles
++
++
++## Jupe de l'enveloppe sous le plan de sol — masse PLANTÉE, jamais posée.
++SKIRT_ENV = 1.35
++
++ENVELOPPE = [
++    # UN SEUL LOFT PORTE L'ÉPAULE ET LA DOMINANTE, et c'est mesuré.
++    # Scindé en deux (pour donner une clé d'amas à chacune), le col A se
++    # remplissait : deux bases elliptiques qui se chevauchent y cumulent
++    # leurs bombements là où une crête unique creuse. Le compte de masses
++    # tombait de 3 à 2 aux deux azimuts. Or ce compte est PUREMENT
++    # géométrique — `_masses_du_profil()` ne lit aucun objet — donc la
++    # scission dégradait la seule mesure qui était déjà juste, pour
++    # satisfaire une attribution devenue sans objet (voir `controle_amas`).
++    dict(nom="SM_Env_Corps", amas="corps", rang=RANG_ENVELOPPE,
++         ancre=(-1.60, 4.00), dg=6.00, dp=5.20, n=52, niveaux=15, graine=11,
++         p_flanc=0.62, bombement=0.22, biais=0.18, biais_az=252.0,
++         crete=[
++             (-7.90, 6.55, 0.55, 0.25), (-7.10, 6.35, 1.60, 0.45),
++             (-6.55, 6.20, 1.75, 0.85), (-5.85, 5.95, 2.95, 0.50),
++             (-5.35, 5.75, 3.15, 0.95), (-4.75, 5.50, 4.35, 0.55),
++             (-4.30, 5.30, 4.85, 1.20), (-3.80, 5.05, 4.55, 0.70),
++             (-3.35, 4.80, 3.85, 0.45), (-2.60, 4.35, 2.60, 0.55),
++             (-1.90, 3.90, 3.95, 0.40), (-1.40, 3.55, 4.30, 0.75),
++             (-0.70, 3.00, 5.90, 0.45), (-0.20, 2.60, 6.35, 0.70),
++             (0.45, 2.20, 7.65, 0.90), (1.05, 1.95, 8.35, 1.30),
++             (1.85, 1.95, 8.10, 1.45), (2.35, 2.20, 7.10, 1.05),
++             (2.80, 2.55, 6.65, 1.15), (3.30, 3.00, 5.15, 0.55),
++             (3.70, 3.35, 4.70, 0.85), (4.05, 3.70, 3.35, 0.50),
++             (4.40, 4.05, 2.45, 0.35), (4.70, 4.35, 1.75, 0.30),
++             (4.95, 4.60, 1.30, 0.25),
++         ]),
++    dict(nom="SM_Env_Contrefort", amas="contrefort_droit", rang=RANG_ENVELOPPE,
++         ancre=(6.65, 5.95), dg=2.10, dp=2.15, n=22, niveaux=12, graine=37,
++         p_flanc=0.70, bombement=0.16, biais=0.18, biais_az=300.0,
++         crete=[
++             (4.95, 5.05, 1.50, 0.25), (5.45, 5.20, 3.00, 0.45),
++             (5.85, 5.30, 3.65, 0.95), (6.35, 5.45, 4.45, 0.55),
++             (6.75, 5.55, 4.60, 1.20), (7.15, 5.65, 4.30, 0.85),
++             (7.65, 5.75, 3.30, 0.50), (8.05, 5.85, 3.05, 0.80),
++             (8.45, 5.95, 1.40, 0.25),
++         ]),
++    dict(nom="SM_Env_Talus", amas="talus", rang=RANG_ENVELOPPE,
++         ancre=(-0.20, 3.70), dg=7.20, dp=4.70, n=28, niveaux=9, graine=53,
++         p_flanc=0.56, bombement=0.28, biais=0.16, biais_az=250.0,
++         crete=[
++             (-8.30, 3.60, 0.95, 0.35), (-6.90, 2.85, 2.20, 0.90),
++             (-5.60, 2.20, 2.60, 1.50), (-4.20, 1.75, 2.35, 1.10),
++             (-2.90, 1.45, 2.10, 1.60), (-1.50, 1.30, 1.85, 1.20),
++             (-0.10, 1.35, 2.15, 1.60), (1.30, 1.60, 2.45, 1.20),
++             (2.70, 2.05, 2.30, 1.50), (4.10, 2.70, 1.60, 1.10),
++             (5.40, 3.45, 1.30, 1.40), (6.80, 4.30, 1.35, 1.00),
++             (8.10, 5.20, 0.75, 0.35),
++         ]),
++    dict(nom="SM_Env_Queue", amas="queue", rang=RANG_ENVELOPPE,
++         ancre=(-0.20, 8.50), dg=5.40, dp=3.10, n=18, niveaux=9, graine=71,
++         p_flanc=0.60, bombement=0.22, biais=0.20, biais_az=90.0,
++         crete=[
++             (-4.10, 8.40, 2.90, 0.60), (-2.80, 9.00, 2.45, 1.40),
++             (-1.50, 9.45, 2.35, 2.00), (-0.10, 9.75, 3.30, 1.60),
++             (1.30, 9.90, 3.15, 1.80), (2.60, 9.80, 2.55, 1.20),
++             (3.80, 9.55, 1.85, 0.40),
++         ]),
++    # LÈVRE — le linteau, et rien d'autre. Sa crête est posée EN AVANT de
++    # son pied : elle déverse au-dessus de la bouche au lieu de la border.
++    # Sans elle le seuil n'a que 0,47 m de roche pour 0,90 exigés.
++    dict(nom="SM_Env_Levre", amas="levre", rang=RANG_ENVELOPPE,
++         ancre=(0.05, 1.35), dg=2.60, dp=2.20, n=18, niveaux=10, graine=89,
++         p_flanc=0.66, bombement=0.18, biais=0.30, biais_az=270.0,
++         crete=[
++             (-1.85, 0.95, 2.30, 0.30), (-1.15, 0.60, 3.35, 0.70),
++             (-0.55, 0.40, 3.95, 1.10), (0.05, 0.35, 4.25, 1.35),
++             (0.65, 0.45, 4.05, 1.15), (1.25, 0.70, 3.30, 0.75),
++             (1.90, 1.05, 2.20, 0.30),
++         ]),
++]
++
++
++def pieces_enveloppe():
++    """Construit les volumes d'enveloppe et rend (objets, configs)."""
++    objets, configs = [], []
++    for cfg in ENVELOPPE:
++        s, f, fam = masse_enveloppe(cfg)
++        objets.append(objet(cfg["nom"], s, f, fam, True))
++        configs.append(cfg)
++    return objets, configs
++
++
+ def controle_fermeture(obj):
+     """Aucune arête de bord, aucune arête non-manifold, volume > 0.
+ 
+@@ -3810,7 +4111,7 @@ def _masses_du_profil(xs, hs, entaille):
+             while b < n - 1 and hs[b + 1] >= niveau:
+                 b += 1
+             brut.append(dict(i0=a, i1=b, larg=xs[b] - xs[a], som=hs[i],
+-                             prom=prom, col=max(col_g, col_d)))
++                             prom=prom, col=max(col_g, col_d), pk=i))
+         i = j + 1
+     brut.sort(key=lambda m: -m["som"])
+     gardes = []
+@@ -3818,6 +4119,40 @@ def _masses_du_profil(xs, hs, entaille):
+         if not any(m["i0"] <= g["i1"] and g["i0"] <= m["i1"] for g in gardes):
+             gardes.append(m)
+     gardes.sort(key=lambda m: m["i0"])
++
++    # EMPRISE — PARTITION TOPOGRAPHIQUE EN BASSINS, et c'est la troisième
++    # définition essayée dans cette passe. Les deux premières répondaient
++    # à côté, chacune à sa manière, et il faut le dire pour que personne
++    # ne les réessaie :
++    #
++    #   1. `larg`, largeur au sommet mesurée `entaille` sous l'apex : un
++    #      sommet PLAT y est large. Sur la géométrie rejetée elle valait
++    #      5,58 / 3,60 / 2,18 m — le critère notait la platitude que le
++    #      lead a condamnée, et il la notait bien.
++    #   2. « étendue jusqu'au plus haut des deux cols » : dès qu'un col
++    #      est bas, la masse déborde sur ses voisines. Mesuré, la
++    #      dominante couvrait 16,77 m sur une formation de 17,5 — ce
++    #      nombre mesurait la profondeur du col, pas la largeur.
++    #
++    # Le fil commun des deux erreurs : un seul nombre, choisi sans se
++    # demander ce qu'il devient dans le cas dégénéré.
++    #
++    # ICI la frontière entre deux masses est la POSITION du col — l'argmin
++    # du profil entre deux sommets retenus — et non son altitude. Les
++    # bassins sont donc disjoints, exhaustifs, et leur somme vaut l'emprise
++    # de la formation. Indépendants à la fois de la platitude du sommet et
++    # de la profondeur du col.
++    if gardes:
++        frontieres = [0]
++        for g, h in zip(gardes, gardes[1:]):
++            a, b = g["pk"], h["pk"]
++            creux = min(range(a, b + 1), key=lambda q: hs[q])
++            frontieres.append(creux)
++        frontieres.append(n - 1)
++        for k, m in enumerate(gardes):
++            m["f0"] = frontieres[k]
++            m["f1"] = frontieres[k + 1]
++            m["emp"] = xs[m["f1"]] - xs[m["f0"]]
+     return gardes
+ 
+ 
+@@ -3852,7 +4187,16 @@ def controle_amas(pieces, configs):
+     """
+     fautes = []
+     lignes = []
+-    for azimut in AZIMUTS_SILHOUETTE:
++    # L'AZIMUT 225 EST IMPRIMÉ, PAS BLOQUANT. La vue arrière est le point
++    # bloquant du VERDICT du lead, et n'être aveugle dessus sert personne ;
++    # mais ajouter un azimut à l'ensemble bloquant serait durcir un contrôle
++    # dans la même passe où on en refond la mesure. On imprime, on ne juge
++    # pas — et le journal le dit à chaque exécution.
++    for azimut in tuple(AZIMUTS_SILHOUETTE) + (225.0,):
++        telemetrie_seule = azimut not in AZIMUTS_SILHOUETTE
++        if telemetrie_seule:
++            lignes.append("[grotte] azimut %.0f — TELEMETRIE SEULE, ne bloque "
++                          "pas" % azimut)
+         xs, hs, qui, lo, hi, plein = profil_silhouette(pieces, configs, azimut)
+         vx = [xs[q] for q in plein]
+         vh = [hs[q] for q in plein]
+@@ -3866,12 +4210,26 @@ def controle_amas(pieces, configs):
+             cv = 0.0
+             if len(larg) > 1 and moy > 0.0:
+                 cv = (sum((x - moy) ** 2 for x in larg) / len(larg)) ** 0.5 / moy
+-            lignes.append("[grotte]   entaille %.2f : %d masse(s), largeurs %s"
+-                          ", cv %.2f"
+-                          % (entaille, len(ms),
+-                             " ".join("%.2f" % x for x in larg), cv))
++            # LES DEUX NOMBRES, ET L'ATTENDU À CÔTÉ. Une télémétrie qui
++            # imprime une mesure sans son attendu n'est pas un contrôle :
++            # c'est ISS-044, et elle a coûté une livraison.
++            emp = [m["emp"] for m in ms]
++            lignes.append("[grotte]   entaille %.2f : %d masse(s) (%d exigees)"
++                          "  sommets %s  emprises %s  cv %.2f (ratio emprises "
++                          "%.2f, %.2f exige)"
++                          % (entaille, len(ms), len(AMAS),
++                             " ".join("%.2f" % x for x in larg),
++                             " ".join("%.2f" % x for x in emp), cv,
++                             (max(emp) / min(emp)) if emp and min(emp) > 0
++                             else 0.0, LARGEUR_RATIO_MIN))
+ 
+         ms = _masses_du_profil(vx, vh, ENTAILLE_LECTURE_M)
++        if telemetrie_seule:
++            for m in ms:
++                lignes.append("[grotte]   (225) sommet %5.2f m  emprise %5.2f m"
++                              "  proeminence %5.2f m  faite %5.2f m"
++                              % (m["larg"], m["emp"], m["prom"], m["som"]))
++            continue
+         if len(ms) != len(AMAS):
+             fautes.append("azimut %.0f : %d masse(s) a l'entaille %.2f, %d "
+                           "attendues — la silhouette ne presente pas trois "
+@@ -3891,35 +4249,110 @@ def controle_amas(pieces, configs):
+                 cle = vq[q].get("amas")
+                 if cle:
+                     compte[cle] = compte.get(cle, 0) + 1
+-            porte = max(compte, key=compte.get) if compte else "-"
++            porte = "masse %d" % (len(detail) + 1)
+             detail.append(dict(m=m, porteurs=porteurs, intrus=intrus,
+                                porte=porte, attendu=attendu))
+-            lignes.append("[grotte]   masse %-17s largeur %5.2f m  faite "
+-                          "%5.2f m  proeminence %5.2f m  porteurs du faite "
+-                          "%d" % (porte, m["larg"], m["som"], m["prom"],
+-                                  len(porteurs)))
+-            if porte != attendu["cle"]:
+-                fautes.append("azimut %.0f : la masse %d est portee par "
+-                              "« %s », « %s » etait attendu — l'ordre gauche "
+-                              "-> droite des amas n'est pas celui declare"
+-                              % (azimut, len(detail), porte, attendu["cle"]))
+-            if len(porteurs) < attendu["porteurs_min"]:
+-                fautes.append("azimut %.0f : le faite de « %s » est porte par "
+-                              "%d roche(s), %d exigee(s) — un sommet porte "
+-                              "par une seule roche a la largeur du module, "
+-                              "c'est le creneau du rejet"
+-                              % (azimut, porte, len(porteurs),
+-                                 attendu["porteurs_min"]))
++            lignes.append("[grotte]   %-8s sommet %5.2f m  emprise %5.2f m  "
++                          "proeminence %5.2f m  faite %5.2f m"
++                          % (porte, m["larg"], m["emp"], m["prom"], m["som"]))
++            # L'IDENTITÉ D'UN AMAS EST DEVENUE POSITIONNELLE EN R2a-3.5,
++            # et l'ancienne raison est conservée ici — c'est le second
++            # contrôle refondu de cette passe, donc la trace compte double.
++            #
++            # AVANT : « la masse n est portée par « X », « Y » était
++            #   attendu — l'ordre gauche → droite des amas n'est pas celui
++            #   déclaré ». La silhouette ÉTAIT alors un assemblage de
++            #   roches groupées par intention ; la clause attrapait le cas
++            #   où le groupe voulu comme épaule finissait à droite.
++            #
++            # APRÈS : la silhouette est un loft continu. Il n'existe plus
++            #   de groupe séparément intentionné, donc rien qui puisse
++            #   atterrir du mauvais côté : la clause ne mesurait plus un
++            #   défaut possible, elle exigeait seulement une découpe en
++            #   objets que l'architecture n'a aucune raison d'avoir. Le
++            #   rôle se lit désormais de la POSITION dans le profil, que
++            #   `_masses_du_profil()` ordonne déjà de gauche à droite.
++            #
++            # Les vérifications de ces rôles n'ont pas bougé d'un
++            # caractère : elles comparent `detail[0]` et `detail[-1]`, et
++            # la plus haute doit être encadrée. Aucune valeur numérique
++            # n'a baissé.
++            # CETTE CLAUSE A ÉTÉ INVERSÉE EN R2a-3.5, ET SON ANCIENNE
++            # RAISON EST CONSERVÉE ICI — un contrôle qui change de sens sans
++            # laisser trace de son ancienne raison est indistinguable d'un
++            # contrôle affaibli.
++            #
++            # AVANT (R2a-3.4) : « le faîte doit être porté par >= 3 roches ».
++            #   La silhouette ÉTAIT alors faite de copies de
++            #   `template-detail`, et un faîte porté par UNE roche avait la
++            #   largeur du module, donc lisait en créneau. Exiger plusieurs
++            #   porteurs élargissait le sommet.
++            #
++            # APRÈS (R2a-3.5) : « le faîte doit être porté par l'ENVELOPPE,
++            #   et par ZÉRO module de détail ».
++            #   La silhouette vient désormais d'une enveloppe loftée. La
++            #   clause d'avant mesurerait exactement le contraire de ce
++            #   qu'on veut : elle EXIGERAIT des modules dans la crête, alors
++            #   que la consigne du lead est que les copies de
++            #   `template-detail` ne portent plus la silhouette principale
++            #   et ne décident jamais des sommets.
++            #
++            # La mesure ne change pas — mêmes porteurs, même bande
++            # `BANDE_FAITE_M` sous le sommet. Seul l'attendu bascule.
++            modules_faite = sorted(
++                vq[q]["nom"] for q in seg
++                if m["som"] - vh[q] <= BANDE_FAITE_M
++                and vq[q]["rang"] != RANG_ENVELOPPE)
++            enveloppe_faite = {vq[q]["nom"] for q in seg
++                               if m["som"] - vh[q] <= BANDE_FAITE_M
++                               and vq[q]["rang"] == RANG_ENVELOPPE}
++            if not enveloppe_faite:
++                fautes.append("azimut %.0f : le faite de « %s » n'appartient "
++                              "a aucune piece d'enveloppe — la silhouette est "
++                              "portee par autre chose qu'elle"
++                              % (azimut, porte))
++            if len(modules_faite) > attendu["modules_faite_max"]:
++                fautes.append("azimut %.0f : le module « %s » remonte dans le "
++                              "faite de « %s » (%d module(s) dans la bande de "
++                              "%.2f m sous le sommet, %d tolere(s)) — il est "
++                              "trop gros : un detail de surface casse une "
++                              "surface, il ne decide pas d'un sommet"
++                              % (azimut, modules_faite[0], porte,
++                                 len(modules_faite), BANDE_FAITE_M,
++                                 attendu["modules_faite_max"]))
+             if intrus:
+                 fautes.append("azimut %.0f : « %s » de rang gaine/secondaire "
+                               "porte la crete dans l'emprise de la masse "
+                               "« %s » — l'invisible ne decide pas du visible"
+                               % (azimut, sorted(intrus)[0], porte))
+ 
+-        largeurs = sorted((d["m"]["larg"] for d in detail), reverse=True)
++        # CES DEUX CLAUSES SONT PASSÉES DE LA LARGEUR AU SOMMET À
++        # L'EMPRISE EN R2a-3.5. C'est le troisième contrôle refondu de la
++        # passe, et l'ancienne version est conservée pour la même raison
++        # que les deux autres.
++        #
++        # AVANT : `larg`, la largeur mesurée 0,90 m sous l'apex. Un sommet
++        #   PLAT y est large, une crête vive y est étroite — le critère
++        #   récompensait donc la platitude. La démonstration est dans les
++        #   chiffres de la géométrie rejetée : 5,58 / 3,60 / 2,18 m, un
++        #   rapport de 2,56 qui passait haut la main, et c'ÉTAIENT les
++        #   tables horizontales que le lead a condamnées. Le même défaut
++        #   avait déjà été trouvé et corrigé dans
++        #   `tools/measure_silhouette_masses.py` ; il n'avait pas été
++        #   propagé ici, et le chiffre condamné y servait encore de
++        #   plancher.
++        #
++        # APRÈS : `emp`, l'étendue de la masse jusqu'au plus haut de ses
++        #   deux cols. Elle mesure ce que « trois masses d'emprises
++        #   inégales » veut dire, sans rien exiger du sommet.
++        #
++        # LES SEUILS NE BOUGENT PAS. Ils ont été calibrés sur la géométrie
++        # rejetée ; les recalibrer sur l'enveloppe qu'on juge serait
++        # calibrer sur le sujet. Un échec se rend en mesure.
++        largeurs = sorted((d["m"]["emp"] for d in detail), reverse=True)
+         if largeurs[0] / largeurs[-1] < LARGEUR_RATIO_MIN:
+             fautes.append("azimut %.0f : emprises %s — rapport %.2f, il en "
+-                          "faut %.2f ; trois masses de largeur voisine sont "
++                          "faut %.2f ; trois masses d'emprise voisine sont "
+                           "le defaut « tours rocheuses repetees »"
+                           % (azimut, " ".join("%.2f" % x for x in largeurs),
+                              largeurs[0] / largeurs[-1], LARGEUR_RATIO_MIN))
+@@ -3932,9 +4365,16 @@ def controle_amas(pieces, configs):
+                                  100.0 * (LARGEUR_ECART_MIN - 1.0)))
+ 
+         haut = max(detail, key=lambda d: d["m"]["som"])
+-        if haut["attendu"]["cle"] != "dominante":
+-            fautes.append("azimut %.0f : la masse la plus haute est « %s », "
+-                          "pas la dominante" % (azimut, haut["porte"]))
++        # Positionnel : la dominante est la masse la plus haute, et elle
++        # doit être ENCADRÉE. Une silhouette dont le point haut est à un
++        # bout est une rampe, pas trois masses.
++        if haut is detail[0] or haut is detail[-1]:
++            fautes.append("azimut %.0f : la masse la plus haute est celle de "
++                          "%s (faite %.2f m) — la dominante doit etre "
++                          "encadree par l'epaule et le contrefort, sinon la "
++                          "silhouette est une rampe"
++                          % (azimut, "gauche" if haut is detail[0] else
++                             "droite", haut["m"]["som"]))
+         for d in detail:
+             if d is haut:
+                 continue
+@@ -3997,19 +4437,50 @@ def main():
+     # 2. LES ROCHES DU KIT — le relief vient d'elles, plus d'un rayon
+     #    quantifié. Chacune est chargée soudée et vérifiée fermée ; l'assise
+     #    enterrée ferme la formation par le bas.
++    # R2a-3.5 — L'ORDRE DES COUCHES DU LEAD EST ICI, ET IL EST LISIBLE.
++    #   couche 1  l'enveloppe porte la silhouette ;
++    #   couche 4  les modules du kit ne font que casser des surfaces.
++    # `ROCHERS`, qui composait la silhouette jusqu'à R2a-3.4, ne fait plus
++    # partie de l'implantation : sa fonction est reprise par `ENVELOPPE`,
++    # et `controle_amas` refuse désormais qu'un module remonte dans un
++    # faîte. Le kit subsiste par `rochers_gaine` (gaine de galerie),
++    # `rochers_dos_alcove` et `rochers_semelle`, qui scellent et ne
++    # composent pas.
+     try:
+         pieces = [assise_enterree()]
+-        implantation = list(ROCHERS) + rochers_gaine() \
+-            + rochers_dos_alcove() + rochers_semelle()
+-        for config in implantation:
++        env_objets, env_configs = pieces_enveloppe()
++        pieces.extend(env_objets)
++        implantation = list(env_configs)
++        # LA GAINE EST RETIRÉE, et ce n'est pas un réglage.
++        #
++        # `rochers_gaine()` a été inventée en R2a-3.4 pour donner de
++        # l'épaisseur de roche autour de la galerie quand la silhouette
++        # ÉTAIT faite de roches : il n'y avait rien d'autre pour porter la
++        # masse. Aujourd'hui l'enveloppe porte la masse ET la silhouette,
++        # et la sonde de contenance le mesure station par station.
++        #
++        # Elle coûtait exactement ce qu'elle était censée éviter. Mesuré
++        # par isolement, à l'azimut monde 55 :
++        #     enveloppe seule            -> 3 masses, cols 1,36 / 0,74
++        #     enveloppe + gaine + semelle -> 2 masses
++        # Ses 84 roches, faîte 5,98 m, comblent le col A depuis le porche.
++        # Baisser leur échelle de 1,15 à 0,92 ne déplace aucune largeur
++        # d'un centimètre : ce n'est pas leur taille, c'est leur position.
++        #
++        # On retire, on mesure, et on ne réintroduit que ce que
++        # `controle_epaisseur` exige — station par station, chiffre en
++        # face. Si la mesure n'exige rien, la gaine disparaît.
++        rocs = rochers_dos_alcove() + rochers_semelle()
++        for config in rocs:
+             pieces.append(poser_rocher(config))
++        implantation.extend(rocs)
+     except RuntimeError as erreur:
+         print("[grotte] ERREUR: %s" % erreur)
+         return 2
+     compte = {}
+     for config in implantation:
+         compte[config["rang"]] = compte.get(config["rang"], 0) + 1
+-    print("[grotte] %d roche(s) du kit posee(s) : %s, plus l'assise enterree"
++    print("[grotte] %d piece(s) : %s, plus l'assise enterree"
+           % (len(implantation), ", ".join("%d %s" % (n, r)
+                                           for r, n in sorted(compte.items()))))
+     # QUI DÉCIDE DE LA CRÊTE ? La question n'est pas rhétorique : sur la
+diff --git a/tools/probe_cave_openings.py b/tools/probe_cave_openings.py
+index 7527d79..4cf1e7f 100644
+--- a/tools/probe_cave_openings.py
++++ b/tools/probe_cave_openings.py
+@@ -97,15 +97,15 @@ CHUNK_BIN = 0x004E4942
+ CAVITE = [
+     (0.00, -1.15, 1.90, 2.80),
+     (0.00, 0.00, 1.70, 2.85),
+-    (0.06, 1.60, 1.85, 2.95),
+-    (0.24, 3.20, 2.15, 2.80),
+-    (0.58, 4.75, 2.70, 2.90),
+-    (1.05, 6.25, 3.05, 2.92),
+-    (1.62, 7.60, 2.80, 2.92),
+-    (2.25, 8.65, 2.20, 2.55),
+-    (2.85, 9.25, 1.40, 2.00),
++    (0.22, 1.05, 1.75, 2.90),
++    (1.00, 1.62, 2.10, 2.90),
++    (1.82, 2.12, 2.60, 2.92),
++    (2.62, 2.58, 3.00, 2.92),
++    (3.10, 2.88, 2.50, 2.80),
++    (3.40, 3.06, 1.85, 2.45),
++    (3.58, 3.17, 1.30, 2.00),
+ ]
+-PALIER = (0.00, 0.00, 0.04, 0.10, 0.16, 0.26, 0.50, 0.78, 0.92)
++PALIER = (0.00, 0.00, 0.02, 0.06, 0.10, 0.16, 0.34, 0.56, 0.70)
+ SAG = 0.08
+ PORCHE_DENIVELE = -0.58
+ 
