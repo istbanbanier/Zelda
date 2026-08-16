@@ -481,9 +481,9 @@ def proto_a() -> list:
         (0.60, 3.70, 8.10, 1.45),    # table sommitale, fin — 20° d'inclinaison
         (1.05, 3.60, 7.35, 1.05),    # cassure
         (1.45, 3.55, 6.60, 1.15),    # vire
-        (1.85, 3.50, 4.90, 0.55),
-        (2.15, 3.45, 4.55, 0.85),    # vire
-        (2.45, 3.40, 2.35, 0.30),
+        (1.85, 3.50, 4.55, 0.55),
+        (2.15, 3.45, 4.05, 0.85),    # vire
+        (2.45, 3.40, 2.05, 0.30),
     ]
     bm = bmesh.new()
     masse_crete(bm, crete,
@@ -491,7 +491,7 @@ def proto_a() -> list:
                 demi_grand=5.30, demi_petit=4.80,
                 n=48, niveaux=15, seed=11,
                 p_flanc=0.62, bombement=0.22,
-                biais_amp=0.20, biais_az_deg=260.0)
+                biais_amp=0.17, biais_az_deg=248.0)
     objets.append(_objet("SM_ProtoA_Corps", bm))
 
     # Contrefort droit — reculé de 1,84 m, plus petit, crête descendante.
@@ -544,14 +544,28 @@ def proto_a() -> list:
 
     # Queue enterrée au nord : la masse se perd dans le ressaut au lieu de
     # s'arrêter net. C'est ce qui manque le plus à la vue arrière.
+    #
+    # SON ALTITUDE EST DÉSORMAIS CONTRAINTE PAR UNE MESURE, pas choisie.
+    # À l'azimut monde 55° un rayon de projection est presque parallèle à
+    # l'axe de la galerie (0,176 m en x pour 1 m en y) : il balaie donc
+    # TOUTE la profondeur du massif à x constant. La queue, à y ≈ 8,9 et
+    # z = 4,15, retombait ainsi exactement dans le col A et en relevait le
+    # fond de 3,90 à 5,51 m — l'épaule n'avait plus que 0,67 m de
+    # proéminence, à peine au-dessus de l'entaille de 0,60. Une masse
+    # située à neuf mètres derrière décidait de la lisibilité de l'épaule,
+    # et rien dans l'image ne le disait.
+    #
+    # D'où le creux à (-2,60 ; 8,85) : c'est le seul sommet de queue dont
+    # le rayon traverse le col. Les autres sont conservés, sinon la queue
+    # cesse d'enterrer le massif — ce que la vue arrière paierait.
     crete_q = [
-        (-3.90, 8.20, 3.60, 0.60),
-        (-2.60, 8.85, 4.15, 1.40),
-        (-1.30, 9.45, 4.45, 2.00),
-        (0.10, 9.90, 4.20, 1.60),
-        (1.40, 10.20, 3.30, 1.80),
-        (2.60, 10.10, 2.60, 1.20),
-        (3.80, 9.90, 1.85, 0.40),
+        (-3.90, 8.20, 3.10, 0.60),
+        (-2.60, 8.85, 2.75, 1.40),   # creux : voir ci-dessus
+        (-1.30, 9.45, 3.55, 2.00),
+        (0.10, 9.90, 3.50, 1.60),
+        (1.40, 10.20, 3.05, 1.80),
+        (2.60, 10.10, 2.50, 1.20),
+        (3.80, 9.90, 1.80, 0.40),
     ]
     bm = bmesh.new()
     masse_crete(bm, crete_q,
