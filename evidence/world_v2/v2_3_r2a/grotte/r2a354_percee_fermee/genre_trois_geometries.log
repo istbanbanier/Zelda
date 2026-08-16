@@ -1,0 +1,27 @@
+
+=== AVANT sabotage ===
+    /tmp/nc/original.glb
+  noeud COL_WaterfallCave
+    V=442  E=1320  F=880   composantes=1
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+  noeud SM_WaterfallCave
+    V=10038  E=30108  F=20072   composantes=1
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+
+=== APRES sabotage ===
+    /tmp/nc/sabote.glb
+  noeud COL_WaterfallCave
+    V=442  E=1320  F=880   composantes=1
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+  noeud SM_WaterfallCave
+    V=10038  E=30108  F=20072   composantes=1
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+RC=0

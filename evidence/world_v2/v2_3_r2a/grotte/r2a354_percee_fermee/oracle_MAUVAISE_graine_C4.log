@@ -1,0 +1,37 @@
+==============================================================================
+ORACLE GLOBAL — topologie + classement d'espace
+==============================================================================
+maillage : /home/user/zelda-r2a354/a_percee/assets/environment/caves/SM_WaterfallCave.glb
+sha256   : c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed
+noeud    : SM_WaterfallCave   (COL_WaterfallCave, proxy de collision, n'est PAS mesure)
+triangles: 20072   matieres : MAT_CaveIn_Deep, MAT_CaveIn_Floor, MAT_CaveIn_Wall, MAT_CaveRock_Base, MAT_CaveRock_Collar, MAT_CaveRock_Face
+AABB     : x[-8.772 8.174] y[-3.135 11.899] z[-3.551 8.192]
+
+------------------------------------------------------------------------------
+METHODE A — TOPOLOGIE (combinatoire pure, sans grille ni rayon)
+------------------------------------------------------------------------------
+   sommets soudes 10038   aretes 30108   faces 20072
+   aretes par nombre de faces : {'2': 30108}
+   bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 1
+      composante 0 : F=20072 V=10038 E=30108  khi=2  genre 0
+
+------------------------------------------------------------------------------
+METHODE B — CLASSEMENT D'ESPACE (segment centre-a-centre)
+------------------------------------------------------------------------------
+   reperes lus dans scripts/world_v2/poi/waterfall_cave_place.gd (script de LIEU, pas le generateur)
+   graine interieure (repere MODELE) : (1.05 ; 6.25 ; 1.12)
+   grille 323x291x236 = 22182348 case(s), pas 0.060 m
+   segments (colonnes repliees) : 223700
+   composantes d'espace (sans barriere) : 2
+      AIR        18499572 case(s)    3995.91 m3  bord  474402  voix air/roche 129858/0
+      ROCHE       3682776 case(s)     795.48 m3  bord       0  voix air/roche 1/129555
+   barriere de bouche : couche j=52, surface a y=-1.155 (epaisseur nulle)
+   composante de la graine : AIR, 257023 case(s) = 55.52 m3, emprise x[-2.50 3.74] y[-1.12 7.16] z[-0.64 3.02]
+      temoin MODELE_NICHE           (-1.20 ; 8.20 ; 0.73) : DEHORS
+      temoin MODELE_SALLE           (1.05 ; 6.25 ; 0.52) : DANS la cavite scellee
+
+==============================================================================
+VERDICT : ROUGE
+   C4 : temoin(s) hors de la cavite scellee : MODELE_NICHE -> le scellement ampute la cavite au lieu de la fermer
+==============================================================================
+RC=1
