@@ -1,9 +1,9 @@
 {
   "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
   "clip_below": 0.0,
-  "commit": "92051c9466f190b641002cf86556f760f47f8742",
+  "commit": "c11fee90c35f0df6d24b5d4aaabb16945472fe55",
   "emprise_m": [
-    17.821590423584,
+    17.8215923309326,
     8.35000038146973,
     15.0566864013672
   ],
@@ -14,11 +14,11 @@
   "provenance": {
     "generateur": {
       "chemin": "source_assets/blender/environment/make_cave_envelope_protos.py",
-      "commit": "92051c9466f190b641002cf86556f760f47f8742"
+      "commit": "95c963715c7f72e9a34148ee0ea76108b4eda482"
     },
     "geometrie": {
       "chemin": "assets/environment/caves/prototypes/SM_CaveEnvelope_ProtoA.glb",
-      "commit": "92051c9466f190b641002cf86556f760f47f8742"
+      "commit": "95c963715c7f72e9a34148ee0ea76108b4eda482"
     }
   },
   "renderer": "forward_plus",
@@ -31,19 +31,19 @@
       "angle_deg": 100.0,
       "hors_bandes_pct": 0.0,
       "image": "evidence/world_v2/v2_3_r2a/grotte/r2a35_enveloppe/silhouette_protoA_100.png",
-      "sujet_pct": 15.0066666666667
+      "sujet_pct": 14.7348148148148
     },
     {
       "angle_deg": 145.0,
       "hors_bandes_pct": 0.0,
       "image": "evidence/world_v2/v2_3_r2a/grotte/r2a35_enveloppe/silhouette_protoA_145.png",
-      "sujet_pct": 12.9759259259259
+      "sujet_pct": 12.5411111111111
     },
     {
       "angle_deg": 270.0,
       "hors_bandes_pct": 0.0,
       "image": "evidence/world_v2/v2_3_r2a/grotte/r2a35_enveloppe/silhouette_protoA_270.png",
-      "sujet_pct": 15.2685185185185
+      "sujet_pct": 15.0485185185185
     }
   ]
 }
