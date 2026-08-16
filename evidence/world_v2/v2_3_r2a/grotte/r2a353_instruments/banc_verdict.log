@@ -1,0 +1,100 @@
+==============================================================================
+VERDICT — trois instruments, memes octets, meme reponse de reference
+==============================================================================
+   forme                |   pas | attendu | biais A | biais B | biais EDT | predit B
+   ---------------------------------------------------------------------------------
+   anneau_centre        | 0.100 |  0.7996 | +0.0000 | +0.0004 | -0.0785 |  0.0000
+   anneau_centre        | 0.050 |  0.7996 | +0.0000 | +0.0004 | -0.0380 |  0.0000
+   anneau_centre        | 0.040 |  0.7996 | +0.0000 | +0.0004 | -0.0449 |  0.0000
+   anneau_centre        | 0.025 |  0.7996 | +0.0000 | +0.0004 | -0.0234 |  0.0000
+   decentre_00.0deg     | 0.050 |  0.7996 | +0.0004 | +0.0504 | +0.0004 |  0.0000
+   decentre_00.0deg     | 0.040 |  0.7996 | +0.0004 | +0.0404 | -0.0117 |  0.0000
+   decentre_18.0deg     | 0.050 |  0.7994 | +0.0006 | +0.0285 | -0.0378 |  0.0632
+   decentre_18.0deg     | 0.040 |  0.7994 | +0.0006 | +0.0326 | -0.0404 |  0.0632
+   decentre_22.5deg     | 0.100 |  0.7996 | +0.0000 | +0.0075 | -0.0785 |  0.0659
+   decentre_22.5deg     | 0.050 |  0.7996 | +0.0000 | +0.0282 | -0.0380 |  0.0659
+   decentre_22.5deg     | 0.040 |  0.7996 | +0.0000 | +0.0324 | -0.0406 |  0.0659
+   decentre_22.5deg     | 0.025 |  0.7996 | +0.0000 | +0.0254 | -0.0234 |  0.0659
+   decentre_36.0deg     | 0.050 |  0.7993 | +0.0011 | +0.0078 | -0.0377 |  0.0419
+   decentre_36.0deg     | 0.040 |  0.7993 | +0.0011 | +0.0161 | -0.0445 |  0.0419
+   decentre_45.0deg     | 0.050 |  0.7996 | +0.0026 | +0.0075 | -0.0380 |  0.0000
+   decentre_45.0deg     | 0.040 |  0.7996 | +0.0026 | +0.0158 | -0.0117 |  0.0000
+   bruite               | 0.050 |  0.7564 | +0.0091 | +0.0350 | -0.0284 |  0.0598
+   bruite               | 0.040 |  0.7564 | +0.0091 | +0.0368 | -0.0319 |  0.0598
+   fente_sous_maille    | 0.050 |  0.0300 |  AUCUNE |  AUCUNE | +0.0700 |  0.0000
+   fente_sous_maille    | 0.040 |  0.0300 |  AUCUNE |  AUCUNE | +0.0500 |  0.0000
+   rasant               | 0.050 |  0.5997 | +0.0000 | +0.0003 | -0.0612 |  0.0000
+   rasant               | 0.040 |  0.5997 | +0.0000 | +0.0003 | -0.5197 |  0.0000
+
+------------------------------------------------------------------------------
+1. LA PREDICTION SUR B : biais(B) suit-il l'ANGLE ?
+------------------------------------------------------------------------------
+   pas 0.025 :
+      theta  22.5 deg : biais B +0.0254 m, predit +0.0659 m, ecart -0.0405 m
+   pas 0.040 :
+      theta   0.0 deg : biais B +0.0404 m, predit +0.0000 m, ecart +0.0404 m
+      theta  18.0 deg : biais B +0.0326 m, predit +0.0632 m, ecart -0.0306 m
+      theta  22.5 deg : biais B +0.0324 m, predit +0.0659 m, ecart -0.0335 m
+      theta  36.0 deg : biais B +0.0161 m, predit +0.0419 m, ecart -0.0258 m
+      theta  45.0 deg : biais B +0.0158 m, predit +0.0000 m, ecart +0.0158 m
+   pas 0.050 :
+      theta   0.0 deg : biais B +0.0504 m, predit +0.0000 m, ecart +0.0504 m
+      theta  18.0 deg : biais B +0.0285 m, predit +0.0632 m, ecart -0.0347 m
+      theta  22.5 deg : biais B +0.0282 m, predit +0.0659 m, ecart -0.0376 m
+      theta  36.0 deg : biais B +0.0078 m, predit +0.0419 m, ecart -0.0341 m
+      theta  45.0 deg : biais B +0.0075 m, predit +0.0000 m, ecart +0.0075 m
+   pas 0.100 :
+      theta  22.5 deg : biais B +0.0075 m, predit +0.0659 m, ecart -0.0583 m
+   ecart maximal a la prediction : 0.0583 m
+   >>> LA PREDICTION NE TIENT PAS. Le biais de B n'est pas
+       explique par le chanfrein seul.
+
+------------------------------------------------------------------------------
+2. LA PREDICTION SUR L'EDT : biais entre 0 et +pas, INDEPENDANT de theta ?
+------------------------------------------------------------------------------
+      anneau_centre        pas 0.025 : biais EDT -0.0234 m  (0..+0.025) <-- HORS DE LA BANDE PREDITE
+      anneau_centre        pas 0.040 : biais EDT -0.0449 m  (0..+0.040) <-- HORS DE LA BANDE PREDITE
+      anneau_centre        pas 0.050 : biais EDT -0.0380 m  (0..+0.050) <-- HORS DE LA BANDE PREDITE
+      anneau_centre        pas 0.100 : biais EDT -0.0785 m  (0..+0.100) <-- HORS DE LA BANDE PREDITE
+      bruite               pas 0.040 : biais EDT -0.0319 m  (0..+0.040) <-- HORS DE LA BANDE PREDITE
+      bruite               pas 0.050 : biais EDT -0.0284 m  (0..+0.050) <-- HORS DE LA BANDE PREDITE
+      decentre_00.0deg     pas 0.040 : biais EDT -0.0117 m  (0..+0.040) <-- HORS DE LA BANDE PREDITE
+      decentre_00.0deg     pas 0.050 : biais EDT +0.0004 m  (0..+0.050) OK
+      decentre_18.0deg     pas 0.040 : biais EDT -0.0404 m  (0..+0.040) <-- HORS DE LA BANDE PREDITE
+      decentre_18.0deg     pas 0.050 : biais EDT -0.0378 m  (0..+0.050) <-- HORS DE LA BANDE PREDITE
+      decentre_22.5deg     pas 0.025 : biais EDT -0.0234 m  (0..+0.025) <-- HORS DE LA BANDE PREDITE
+      decentre_22.5deg     pas 0.040 : biais EDT -0.0406 m  (0..+0.040) <-- HORS DE LA BANDE PREDITE
+      decentre_22.5deg     pas 0.050 : biais EDT -0.0380 m  (0..+0.050) <-- HORS DE LA BANDE PREDITE
+      decentre_22.5deg     pas 0.100 : biais EDT -0.0785 m  (0..+0.100) <-- HORS DE LA BANDE PREDITE
+      decentre_36.0deg     pas 0.040 : biais EDT -0.0445 m  (0..+0.040) <-- HORS DE LA BANDE PREDITE
+      decentre_36.0deg     pas 0.050 : biais EDT -0.0377 m  (0..+0.050) <-- HORS DE LA BANDE PREDITE
+      decentre_45.0deg     pas 0.040 : biais EDT -0.0117 m  (0..+0.040) <-- HORS DE LA BANDE PREDITE
+      decentre_45.0deg     pas 0.050 : biais EDT -0.0380 m  (0..+0.050) <-- HORS DE LA BANDE PREDITE
+      rasant               pas 0.040 : biais EDT -0.5197 m  (0..+0.040) <-- HORS DE LA BANDE PREDITE
+      rasant               pas 0.050 : biais EDT -0.0612 m  (0..+0.050) <-- HORS DE LA BANDE PREDITE
+   etendue du biais EDT sur les angles : 0.0789 m
+   19 cas sur 20 hors de la bande [0, pas].
+
+------------------------------------------------------------------------------
+3. LE CONTROLE NEGATIF — la fente sous la maille
+------------------------------------------------------------------------------
+      pas 0.050 (ecart pose 0.030 m) : B AUCUNE | EDT 0.1000 m
+         l'instrument ECHOUE comme attendu : B oui, EDT oui
+      pas 0.040 (ecart pose 0.030 m) : B AUCUNE | EDT 0.0800 m
+         l'instrument ECHOUE comme attendu : B oui, EDT oui
+
+------------------------------------------------------------------------------
+4. LE CONTROLE RASANT — la parite a une seule direction de l'EDT
+------------------------------------------------------------------------------
+      pas 0.050 : biais EDT -0.0612 m ; cases de roche 2856 ; aire rasterisee 7.140 m2 pour 7.158 m2 attendus
+         ecart d'aire 0.2 % — la parite tient
+      pas 0.040 : biais EDT -0.5197 m ; cases de roche 4672 ; aire rasterisee 7.475 m2 pour 7.158 m2 attendus
+         ecart d'aire 4.4 % — LA PARITE A UNE SEULE DIRECTION A LACHE
+
+verdict brut : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/verdict.json
+==============================================================================
+RAPPEL DE VOCABULAIRE : aucune de ces trois mesures n'est une
+« distance exacte ». Chacune est une distance exacte SUR SA
+GRILLE. Ce qu'on publie a cote d'un seuil est une BORNE
+INFERIEURE, valable pour LA CLASSE DE FORMES DE CE BANC.
+==============================================================================

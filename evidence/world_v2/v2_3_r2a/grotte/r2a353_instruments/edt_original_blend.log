@@ -1,0 +1,28 @@
+Blender 4.0.2
+Read blend: "/home/user/zelda-r2a352/b_collerette/source_assets/blender/environment/SM_WaterfallCave.blend"
+[edt] grille 200x130, pas 0.040 m, plan y=-1.15
+[edt] l'ouverture est-elle DEJA reliee au dehors ? False
+[edt] GOULOT : demi-epaisseur 0.5200 m -> COLLERETTE 1.0400 m, au (x -2.06, z 2.70)
+[edt] plus grande dt de roche par tranche z, cote x>0.6 (m) :
+[edt]   z=-0.78  2*dt=1.252 m  a x=2.02
+[edt]   z=-0.58  2*dt=1.120 m  a x=1.98
+[edt]   z=-0.38  2*dt=1.120 m  a x=1.98
+[edt]   z=-0.18  2*dt=1.120 m  a x=1.98
+[edt]   z= 0.02  2*dt=1.120 m  a x=1.98
+[edt]   z= 0.22  2*dt=1.189 m  a x=2.02
+[edt]   z= 0.42  2*dt=1.252 m  a x=1.98
+[edt]   z= 0.62  2*dt=1.399 m  a x=1.94
+[edt]   z= 0.82  2*dt=1.520 m  a x=1.90
+[edt]   z= 1.02  2*dt=1.665 m  a x=1.82
+[edt]   z= 1.22  2*dt=1.503 m  a x=1.58
+[edt]   z= 1.42  2*dt=1.290 m  a x=1.30
+[edt]   z= 1.62  2*dt=1.131 m  a x=1.02
+[edt]   z= 1.82  2*dt=1.131 m  a x=0.86
+[edt]   z= 2.02  2*dt=1.242 m  a x=0.74
+[edt]   z= 2.22  2*dt=1.358 m  a x=0.62
+[edt]   z= 2.42  2*dt=1.245 m  a x=0.62
+[edt]   z= 2.62  2*dt=0.963 m  a x=0.62
+[edt]   z= 2.82  2*dt=0.755 m  a x=0.62
+
+Blender quit
+RC=0

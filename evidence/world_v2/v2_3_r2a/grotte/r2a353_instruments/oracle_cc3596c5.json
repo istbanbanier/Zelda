@@ -1,0 +1,186 @@
+{
+ "maillage": "/home/user/zelda-r2a352/b_collerette/assets/environment/caves/SM_WaterfallCave.glb",
+ "sha256": "cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49",
+ "triangles": 20090,
+ "pas": 0.1,
+ "graine_visee": [
+  2.62,
+  2.58,
+  0.99
+ ],
+ "controles": [
+  {
+   "nom": "bouche ouverte",
+   "attendu": "fuite",
+   "obtenu": "fuite",
+   "ok": true,
+   "retires": 0
+  },
+  {
+   "nom": "toit (+Z)",
+   "attendu": "fuite",
+   "obtenu": "etanche",
+   "ok": false,
+   "retires": 299,
+   "largeur_libre": 0.49999999999999994,
+   "emprise": {
+    "lo": [
+     1.4663585424423218,
+     1.3793280124664307,
+     0.926973283290863
+    ],
+    "hi": [
+     3.6267526149749756,
+     3.634237289428711,
+     7.748237133026123
+    ]
+   }
+  },
+  {
+   "nom": "plancher (-Z)",
+   "attendu": "fuite",
+   "obtenu": "etanche",
+   "ok": false,
+   "retires": 129,
+   "largeur_libre": 0.65,
+   "emprise": {
+    "lo": [
+     1.447646141052246,
+     1.4470148086547852,
+     -2.960768938064575
+    ],
+    "hi": [
+     3.628127098083496,
+     3.6071064472198486,
+     0.926973283290863
+    ]
+   }
+  },
+  {
+   "nom": "flanc +X",
+   "attendu": "fuite",
+   "obtenu": "etanche",
+   "ok": false,
+   "retires": 447,
+   "largeur_libre": 0.65,
+   "emprise": {
+    "lo": [
+     2.427098512649536,
+     1.6365492343902588,
+     -0.20466478168964386
+    ],
+    "hi": [
+     8.025347709655762,
+     3.680607795715332,
+     2.2054014205932617
+    ]
+   }
+  },
+  {
+   "nom": "flanc -X",
+   "attendu": "fuite",
+   "obtenu": "etanche",
+   "ok": false,
+   "retires": 136,
+   "largeur_libre": 0.44999999999999996,
+   "emprise": {
+    "lo": [
+     -8.246076583862305,
+     1.4902763366699219,
+     -0.13320723176002502
+    ],
+    "hi": [
+     0.06724411249160767,
+     3.625446081161499,
+     2.1646692752838135
+    ]
+   }
+  },
+  {
+   "nom": "fond +Y",
+   "attendu": "fuite",
+   "obtenu": "fuite",
+   "ok": true,
+   "retires": 491,
+   "largeur_libre": 0.49999999999999994,
+   "emprise": {
+    "lo": [
+     1.3188766241073608,
+     2.5926079750061035,
+     -0.2493930459022522
+    ],
+    "hi": [
+     3.7200000286102295,
+     11.067730903625488,
+     2.238738775253296
+    ]
+   }
+  },
+  {
+   "nom": "avant -Y",
+   "attendu": "fuite",
+   "obtenu": "etanche",
+   "ok": false,
+   "retires": 182,
+   "largeur_libre": 0.35,
+   "emprise": {
+    "lo": [
+     1.7251121997833252,
+     -2.3100385665893555,
+     0.031253963708877563
+    ],
+    "hi": [
+     3.6880784034729004,
+     2.8263566493988037,
+     1.9204826354980469
+    ]
+   }
+  },
+  {
+   "nom": "angle mort",
+   "attendu": "sans objet",
+   "obtenu": "sans objet",
+   "ok": true,
+   "retires": 0,
+   "raison": "bouchon d'une seule case"
+  }
+ ],
+ "balayage_bouchon": [
+  {
+   "cases": 1,
+   "epaisseur_m": 0.1,
+   "fuite": false,
+   "volume_graine": null
+  }
+ ],
+ "epaisseur_bouchon_m": 0.1,
+ "reference": {
+  "fuite": false,
+  "volume_exterieur": 3921417,
+  "volume_graine": 52873,
+  "graine": [
+   125,
+   69,
+   57
+  ],
+  "dalle": [
+   31,
+   32
+  ],
+  "pas": 0.1,
+  "dim": [
+   194,
+   175,
+   142
+  ],
+  "air": 4019714
+ },
+ "sha256_apres": "cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49",
+ "echecs": [
+  "toit (+Z) : trou non detecte",
+  "plancher (-Z) : trou non detecte",
+  "flanc +X : trou non detecte",
+  "flanc -X : trou non detecte",
+  "avant -Y : trou non detecte"
+ ]
+}

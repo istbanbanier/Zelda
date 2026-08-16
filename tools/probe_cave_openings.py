@@ -64,6 +64,29 @@ z_bl = Y_glb. Les deux changements de repère sont des rotations pures
 (déterminant +1), donc l'enroulement des faces est préservé et le test de
 face avant reste valide.
 
+DOMAINE DE VALIDITÉ — la limite qui n'est pas un défaut mais une frontière
+=========================================================================
+
+`EXPLOITABLE DANS LA CAVITÉ DÉCLARÉE`. Toutes les mesures de ce fichier
+s'ancrent sur `CAVITE` et `PALIER` : stations, normale locale, demi-largeur
+de chaque côté. C'est ce qui les rend justes sur une galerie asymétrique et
+infléchie — et c'est aussi ce qui borne leur portée.
+
+`CAVITE` s'arrête à `ay = 3,17`. Mesure du 2026-08-16 sur `cc3596c5`, par
+colonnes verticales et SANS station (`tools/cave_seal_oracle.py`) : du vide
+connecté à la galerie court jusqu'à `y ≈ 7,0` au moins, et l'épaisseur de
+roche au-dessus y tombe à **0,054 m** vers `(x 0,58 ; y 5,80)`, contre
+`EPAISSEUR_MIN_M = 0,80`.
+
+Cette zone n'est pas mal échantillonnée : elle est **hors du domaine**.
+Aucun réglage de pas, aucune correction de placement ne l'y fera entrer.
+Un `0 percée` de cette sonde signifie donc « zéro percée dans la cavité
+déclarée », jamais « zéro percée dans le maillage ».
+
+Ce qui regarde sans station, et qu'il faut croiser : `tools/cave_seal_oracle.py`
+(classement de l'espace) et `tools/audit_cave_floor_columns.py` (colonnes
+verticales).
+
 Usage :
     python3 tools/probe_cave_openings.py assets/environment/caves/SM_WaterfallCave.glb \\
         [--manifeste evidence/.../manifest.json] [--json sortie.json] [--rapide]
@@ -94,20 +117,83 @@ CHUNK_BIN = 0x004E4942
 # lecture textuelle. Une divergence est un ÉCHEC, pas un avertissement :
 # une sonde qui mesure des stations périmées ment plus qu'elle n'informe.
 # ---------------------------------------------------------------------------
+## LA FAMILLE DE FAUTE QUI REVIENT — DÉCOMPTE TENU À JOUR, SANS « DERNIER ».
+##
+## Une seule erreur, commise dix fois : **employer un axe du MONDE là où le
+## repère LOCAL de la section est requis** — décaler le long de X au lieu de
+## la normale, ou appliquer une demi-largeur symétrique à une section qui ne
+## l'est pas, ou attribuer une station par la seule coordonnée `y`.
+##
+## | # | endroit | ce que ça faussait |
+## |---|---|---|
+## | 1 | `dans_enveloppe` | localisation d'un trou |
+## | 2 | `sort_par_la_bouche` | 1,05 m de roche pleine absous au porche |
+## | 3 | `_emprise_noyau` | emprise du raster décalée |
+## | 4 | `dans_le_noyau` | noyau débordant dans la roche |
+## | 5 | `cle_au_lateral` | 16 percées de toit qui étaient la porte |
+## | 6 | `points_interieurs` | 36 % du côté large jamais visité |
+## | 7 | `carte_du_plancher` | **le rouge de plancher des stations 6 à 8** |
+## | 8 | `carte_du_fond` | fenêtre arrière trop étroite à gauche, trop large à droite |
+## | 9 | `surface_de_sortie` | percée attribuée au mauvais flanc |
+## | 10 | `u_pour_y` sur point décalé | point réel de l'alcôve déclaré hors cavité |
+##
+## Le n° 7 a été trouvé par l'agent plancher, pas par cet outil, alors même
+## que le n° 6 portait le mot « DERNIER ». C'est la raison d'être de ce
+## tableau : il n'a pas de ligne finale, et une passe qui n'en ajoute aucune
+## doit le dire plutôt que le supposer.
+##
+## Onzième défaut, de la même famille mais distinct : comparer la hauteur
+## mesurée d'un point au sol ATTENDU d'une AUTRE station — voir
+## `station_reelle_du_point`.
+FAMILLE_REPERE_LOCAL = 10
+
 CAVITE = [
     (0.00, -1.15, 1.90, 2.80),
-    (0.00, 0.00, 1.70, 2.85),
-    (0.06, 1.60, 1.85, 2.95),
-    (0.24, 3.20, 2.15, 2.80),
-    (0.58, 4.75, 2.70, 2.90),
-    (1.05, 6.25, 3.05, 2.92),
-    (1.62, 7.60, 2.80, 2.92),
-    (2.25, 8.65, 2.20, 2.55),
-    (2.85, 9.25, 1.40, 2.00),
+    (0.00,  0.00, 1.70, 2.85),
+    (0.22,  1.05, 1.75, 2.90),
+    (1.00,  1.62, 2.10, 2.90),
+    (1.82,  2.12, 2.60, 2.92),
+    (2.62,  2.58, 3.00, 2.92),
+    (3.10,  2.88, 2.50, 2.80),
+    (3.40,  3.06, 1.85, 2.45),
+    (3.58,  3.17, 1.30, 2.00),
 ]
-PALIER = (0.00, 0.00, 0.04, 0.10, 0.16, 0.26, 0.50, 0.78, 0.92)
+PALIER = (0.00, 0.00, 0.02, 0.06, 0.10, 0.16, 0.34, 0.56, 0.70)
 SAG = 0.08
 PORCHE_DENIVELE = -0.58
+
+## L'ASYMÉTRIE PAR STATION — `(gauche, droite, inclinaison)`, recopiée de
+## `CAVITE_ASYM` du générateur.
+##
+## POURQUOI ELLE ARRIVE TARD, ET CE QU'ELLE RÉPARE.
+##
+## La sonde ne connaissait de l'asymétrie qu'un SCALAIRE : `asym = 1.34`, le
+## facteur MAXIMAL de la table, appliqué des DEUX côtés. C'est la faute
+## récurrente de cette passe — un seul nombre qui répond à une autre question
+## que celle posée — et elle avait ici deux conséquences mesurables :
+##
+##   * `sort_par_la_bouche()` absolvait tout rayon sortant à moins de
+##     1,34·hw de l'axe. Au porche, le côté DROIT ne va qu'à 0,79·hw : la
+##     bande entre 0,79·hw et 1,34·hw est de la ROCHE PLEINE, et un trou qui
+##     s'y trouvait était classé « sort par la bouche », donc absous. La
+##     bouche déclarée était 70 % trop large de ce côté (1,34/0,79).
+##   * `dans_enveloppe()` déclarait « encore dans la galerie » des points
+##     situés dans le massif, ce qui déplace la localisation d'un trou.
+##
+## Le générateur applique `demi = hw · (gauche si u < 0 sinon droite)` avec
+## `u = cos(azimut)` (`anneau_interieur`). Le côté est donc décidé par le
+## SIGNE DE L'OFFSET NORMAL, et les deux côtés ne partagent aucun rayon.
+CAVITE_ASYM = [
+    (1.34, 0.79, -0.44),
+    (1.30, 0.81, -0.40),
+    (0.56, 1.15, -0.24),
+    (0.97, 1.05, 0.10),
+    (1.68, 0.41, 0.16),
+    (1.69, 0.33, 0.08),
+    (1.69, 0.25, -0.06),
+    (1.65, 0.27, -0.12),
+    (1.61, 0.25, -0.10),
+]
 
 ## Tolérance sur la hauteur du premier impact vers le bas. Le sol de la
 ## galerie est une facette de la cavité soustraite ; entre deux sommets de
@@ -129,11 +215,32 @@ EPSILON_MARCHE = 1e-4
 ## est pathologique et on le dit au lieu de boucler.
 IMPACTS_MAX = 64
 
-## Part minimale de la sphère qui doit rencontrer de la roche pour qu'un
-## point d'échantillonnage compte comme « dans la cavité ». Voir le
-## commentaire de `controle_jour` : 0,50 ne peut pas absoudre un trou, il
-## écarte seulement les points qui ne sont plus dans une grotte du tout.
-ENCLOSURE_MIN = 0.50
+## TREIZIÈME DÉFAUT, ET IL A FABRIQUÉ 101 PERCÉES.
+##
+## Ce seuil comptait une direction comme « enclose » dès que `impacts()`
+## rendait quelque chose dans les 40 m. Ce n'est pas « je suis dans une
+## grotte » : c'est « je vois de la roche quelque part ». Un point posé EN
+## PLEIN AIR contre un massif de vingt mètres voit de la roche dans les
+## trois quarts du ciel et passait donc un seuil de 0,50 sans difficulté.
+##
+## Mesuré sur `SM_WaterfallCave_BASE352.glb`, sur les origines des 101
+## percées confirmées :
+##
+##   * **81 origines sur 150 ont au moins UNE direction cardinale qui ne
+##     rencontre aucune roche** — vers le haut, ou vers +X, à l'infini ;
+##   * 19 à 29 des 100 directions de sphère s'échappent sans rien toucher ;
+##   * et l'enclosure mesurée valait pourtant 0,71 à 0,81.
+##
+## Un point d'où l'on voit le ciel n'est pas dans une grotte. Le critère est
+## donc désormais : AUCUNE direction ne doit s'échapper — sauf par la
+## bouche, qui est une ouverture légitime et que `sort_par_la_bouche` sait
+## reconnaître. Le seuil monte en conséquence.
+ENCLOSURE_MIN = 0.95
+
+## Les six cardinales doivent TOUTES rencontrer de la roche ou sortir par la
+## bouche. C'est le test qui sépare le plus franchement le dedans du dehors,
+## et c'est celui qui manquait.
+CARDINALES_ENCLOSES_EXIGEES = 6
 
 
 # ---------------------------------------------------------------------------
@@ -421,6 +528,36 @@ def station_interpolee(u):
             pa + (pb - pa) * f)
 
 
+def station_reelle_du_point(profil, point):
+    """Station à laquelle ce point appartient VRAIMENT, et sa dérive.
+
+    ONZIÈME DÉFAUT, ET C'EST CELUI QUI FABRIQUAIT LE ROUGE DE PLANCHER.
+
+    Décaler un point le long de la normale ne le laisse PAS à sa station
+    quand l'axe est courbe : sur le côté convexe d'un coude, la projection
+    du point glisse le long de l'axe. Mesuré par l'agent plancher sur la
+    géométrie livrée :
+
+        u nominal 7,00, f = -0,60  ->  u réel 4,95   (dérive -2,05)
+
+    Le sol attendu était donc lu à la station 7 — palier 0,56 — pendant que
+    le point se trouvait à la station 5 — palier 0,16. Le palier monte de
+    0,34 à 0,70 sur les derniers 0,56 m de galerie : deux mètres de dérive
+    valent 0,45 m d'écart de sol, et 0,45 m dépasse la tolérance de 0,25 m.
+
+    Neuf lignes sur trente-trois rougissaient ainsi. Le plancher n'avait
+    rien : la sonde comparait la hauteur d'un endroit à celle d'un autre.
+
+    Quatre contrôles correctement échantillonnés concordent sur l'absence de
+    défaut — `controle_plancher` du générateur (54 points), le contrôle 1 sur
+    `points_interieurs` corrigé (468 points), les rasters `plancher`
+    (10 197 cases) et `fond` (3 762 cases), et cette carte une fois corrigée
+    (écart max 0,03 m).
+    """
+    u = profil.u_projete(point)
+    return u
+
+
 def sol_attendu(u, lateral):
     """Hauteur théorique du sol, en repère modèle.
 
@@ -435,26 +572,219 @@ def sol_attendu(u, lateral):
     return palier + creux + denivele
 
 
-def points_interieurs(pas_long, fractions_lat, hauteurs):
+def largeur_reelle_mesuree(grille, profil, u, signe,
+                           hauteurs=(0.35, 0.90, 1.50)):
+    """Distance de l'axe à la paroi RÉELLE, du côté `signe`, par rayon.
+
+    POURQUOI LA LARGEUR NOMINALE NE SUFFIT PAS À DÉFINIR UNE COUVERTURE.
+    ===================================================================
+
+    `CAVITE` × `CAVITE_ASYM` donne la largeur VOULUE. La coque livrée est
+    modelée, décimée, et s'écarte de ce profil dans les deux sens. Deux
+    conséquences opposées, toutes deux mesurées sur `f3afa0e` :
+
+      * là où la coque RENTRE, un échantillon posé juste en deçà de la
+        paroi nominale tombe dans la roche. Il ne couvre rien, et le
+        compter couvrant serait annoncer une couverture qu'on n'a pas ;
+      * là où elle BOMBE, une bande d'air réelle n'est jamais visitée —
+        angle mort qu'aucune fraction du nominal ne peut fermer, puisque
+        le nominal ne sait pas qu'elle existe.
+
+    La couverture se mesure donc contre la paroi RÉELLE : c'est elle qui
+    borne l'air qu'on prétend avoir inspecté. Le nominal reste publié à
+    côté ; l'écart entre les deux est lui-même une information utile.
+
+    Rend `(largeur_m, hauteur)` ou `(None, hauteur)` quand un rayon ne
+    rencontre AUCUNE roche. Ce cas n'est pas une largeur infinie, c'est une
+    percée latérale, et il est rendu distinct pour être nommé comme telle.
+    """
+    ax, ay, _, _, _ = profil.station(u)
+    nx, ny = profil.normale(u)
+    direction = (signe * nx, signe * ny, 0.0)
+    meilleure, hauteur = None, None
+    for h in hauteurs:
+        depart = (ax, ay, profil.sol(u, 0.0) + h)
+        vide, _ = dans_le_vide(grille, depart)
+        if not vide:
+            continue
+        liste = impacts(grille, depart, direction, 60.0)
+        if not liste:
+            return (None, round(h, 3))
+        if meilleure is None or liste[0][0] > meilleure:
+            meilleure, hauteur = liste[0][0], round(h, 3)
+    return (meilleure, hauteur)
+
+
+def offsets_lateraux(profil, u, pas_lateral_m, marge_paroi_m=0.05,
+                     largeurs=None):
+    """Offsets latéraux SIGNÉS, en mètres, couvrant les DEUX côtés.
+
+    `largeurs` est un couple `(gauche, droite)` de demi-largeurs MESURÉES.
+    Quand il est fourni, la bande échantillonnée s'étend jusqu'à la paroi
+    réelle et non jusqu'à la nominale — voir `largeur_reelle_mesuree`. Sans
+    lui, on retombe sur le nominal, ce qui reste le comportement correct
+    pour un profil synthétique dont la coque EST le nominal.
+
+    POURQUOI UN PAS MÉTRIQUE, ET PAS DES FRACTIONS.
+    ==============================================
+
+    Des fractions de la demi-largeur donnent un espacement PROPORTIONNEL à
+    la largeur du côté. Mesuré à la station 8 de la géométrie courante :
+    paroi gauche 2,09 m, paroi droite 0,33 m. Avec `f = ±0,30` l'espacement
+    vaut 0,63 m à gauche et 0,10 m à droite — six fois plus lâche du côté
+    LARGE, c'est-à-dire du côté de l'alcôve, c'est-à-dire là où la revue
+    veut la preuve. Une fraction ne peut donc pas porter une garantie
+    d'espacement, et sans garantie d'espacement il n'y a pas de couverture.
+
+    Un pas en MÈTRES donne le même espacement partout, des deux côtés, à
+    toutes les stations. C'est la seule forme sous laquelle « 100 % couvert »
+    veut dire quelque chose de vérifiable : tout point de la bande est à
+    moins de `pas/2` d'un échantillon.
+
+    La marge de paroi est petite et ASSUMÉE : la coque réelle est modelée et
+    rentre par endroits en deçà du profil nominal, donc un échantillon posé
+    exactement sur la paroi nominale peut tomber dans la roche. Il n'est pas
+    perdu pour autant — `dans_le_vide` l'écarte, et le rapport de couverture
+    compte séparément ce qui a été VISÉ et ce qui a été effectivement SONDÉ.
+    Cacher cet écart serait annoncer une couverture qu'on n'a pas.
+    """
+    sortie = [0.0]
+    for indice, signe in ((0, -1.0), (1, 1.0)):
+        nominale = profil.demi_largeur(u, signe)
+        mesuree = largeurs[indice] if largeurs else None
+        # ON ÉCHANTILLONNE JUSQU'AU PLUS LOIN DES DEUX. Prendre le minimum
+        # laisserait l'air situé au-delà du nominal hors de portée, et c'est
+        # exactement le genre de bande où un défaut se cache — celle dont le
+        # profil déclaré ignore l'existence.
+        # LA PAROI MESUREE FAIT FOI QUAND ELLE EXISTE.
+        #
+        # `max(nominale, mesuree)` visait a ne pas manquer l'air situe
+        # au-dela du nominal. Sur ce maillage il fait l'inverse du bien
+        # voulu : aux stations 4 a 6 le facteur `gauche` vaut 1,68 a 1,69
+        # pour un `hw` de 2,60 a 3,00, soit une demi-largeur NOMINALE de
+        # 4,4 a 5,1 m — bien au-dela de la cavite reelle. Les echantillons
+        # sortaient du massif, et 101 percees « confirmees » en sont nees.
+        #
+        # La couverture de l'air situe au-dela du nominal n'est pas perdue :
+        # `tools/cave_frame.py` mesure l'intervalle creux reel et sonde
+        # jusqu'a ses bornes. C'est son travail, pas celui-ci.
+        demi = mesuree if mesuree is not None else nominale
+        limite = demi - marge_paroi_m
+        if limite <= 0.0:
+            continue
+        n = int(math.floor(limite / pas_lateral_m))
+        for i in range(1, n + 1):
+            sortie.append(signe * i * pas_lateral_m)
+        # LE DERNIER ÉCHANTILLON VA JUSQU'À LA PAROI. Sans lui, la bande
+        # comprise entre `n·pas` et la paroi n'est jamais visitée, et sa
+        # largeur peut valoir jusqu'à un pas entier — soit exactement le
+        # trou de couverture que ce pas métrique est censé fermer.
+        if abs(limite - n * pas_lateral_m) > 1e-6:
+            sortie.append(signe * limite)
+    return sorted(sortie)
+
+
+def points_interieurs(pas_long, fractions_lat, hauteurs, profil=None,
+                      pas_lateral_m=None, marge_paroi_m=0.05, grille=None):
     """Points d'échantillonnage DANS le vide de la galerie.
 
     Les stations 0, 1, 7 et 8 sont incluses — c'est précisément ce que les
     contrôles du générateur sautent, et c'est là que la revue a vu le
     défaut.
+
+    LES FRACTIONS SONT RELATIVES À LA PAROI DU CÔTÉ, PAS À `hw`.
+    ===========================================================
+
+    SIXIÈME ENDROIT DE LA MÊME FAUTE — ET IL N'ÉTAIT PAS LE DERNIER.
+
+    Ce paragraphe a longtemps dit « SIXIÈME ET DERNIER ». C'était faux, et
+    la fausseté a coûté une passe : `carte_du_plancher` portait exactement
+    la même ligne, personne ne l'a cherchée puisqu'un commentaire affirmait
+    que la chasse était close, et c'est elle qui a rendu le rouge de
+    plancher des stations 6 à 8. Un commentaire qui proclame une
+    exhaustivité qu'il n'a pas vérifiée est pire que pas de commentaire :
+    il éteint la recherche.
+
+    Le décompte tenu à jour vit désormais dans `FAMILLE_REPERE_LOCAL`, en
+    tête de module, et il n'y a plus de « dernier ».
+
+    Le placement s'écrivait
+    `p = (ax + f·hw, ay, z)` : symétrique, et décalé le long de X. Cinq
+    fonctions avaient déjà été corrigées (`dans_enveloppe`,
+    `sort_par_la_bouche`, `_emprise_noyau`, `dans_le_noyau`,
+    `cle_au_lateral`) ; celle-ci décide de l'ENDROIT D'OÙ TOUT PART, donc
+    de ce que le contrôle 2 peut voir. Mesuré sur la géométrie A1 :
+
+      * côté ÉTROIT, les échantillons DÉBORDENT. Aux stations 4 à 8 la
+        paroi `droite` est à 0,33–1,07 m et `0,60·hw` tombe à 0,60·hw, au
+        delà. 36 des 495 points étaient hors cavité. Ils ne fabriquent pas
+        de fausse percée — `dans_le_vide` les rejette quand la roche est
+        là — mais ils gaspillent l'échantillon ;
+      * côté LARGE, et c'est le vrai dégât, la couverture s'arrête à
+        **36 %** de la paroi aux stations 4 à 8 : l'alcôve porte à
+        3,05–5,07 m, l'échantillonnage à 1,11–1,80 m. Près des deux tiers
+        du côté large n'étaient JAMAIS visités.
+
+    Un `0 percée` obtenu sur cette couverture ne serait pas une étanchéité,
+    ce serait un angle mort — la faute de la passe une fois de plus, sous sa
+    forme la plus coûteuse puisqu'elle clôturerait le gate.
+
+    `f` vaut donc désormais une fraction de la demi-largeur RÉELLE du côté
+    visé, et le point se place le long de la NORMALE de section. Sur un
+    profil symétrique (`cavite_asym` plat), le placement est identique à
+    l'ancien : la correction ne déplace rien là où il n'y avait rien à
+    corriger.
     """
+    profil = profil or PROFIL_GROTTE
     sortie = []
     u = 0.0
-    while u <= len(CAVITE) - 1 + 1e-9:
-        ax, ay, hw, cle, palier = station_interpolee(u)
-        for f in fractions_lat:
-            sol = sol_attendu(u, f)
+    while u <= len(profil.cavite) - 1 + 1e-9:
+        ax, ay, hw, cle, palier = profil.station(u)
+        nx, ny = profil.normale(u)
+        if pas_lateral_m is not None:
+            # Mode MÉTRIQUE : `f` n'est plus une fraction mais l'offset lui-
+            # même. On le renormalise pour les champs qui attendent une
+            # fraction (`sol`, `lateral`), afin que le reste de la sonde ne
+            # change pas de contrat.
+            #
+            # LES PAROIS SONT MESURÉES quand une grille est fournie : c'est
+            # ce qui empêche l'échantillonnage de sortir du massif là où le
+            # profil déclaré est plus large que la roche.
+            largeurs = None
+            if grille is not None:
+                largeurs = (largeur_reelle_mesuree(grille, profil, u, -1.0,
+                                                   hauteurs)[0],
+                            largeur_reelle_mesuree(grille, profil, u, 1.0,
+                                                   hauteurs)[0])
+            lateraux = offsets_lateraux(profil, u, pas_lateral_m,
+                                        marge_paroi_m, largeurs)
+        else:
+            lateraux = None
+        for f in (fractions_lat if lateraux is None else lateraux):
+            # `demi_largeur` choisit le côté sur le SIGNE ; à f = 0 le point
+            # est sur l'axe et le côté n'a aucune conséquence.
+            if lateraux is None:
+                demi = profil.demi_largeur(u, f)
+                lateral_m = f * demi
+            else:
+                lateral_m = f
+                demi = profil.demi_largeur(u, lateral_m)
+                f = (lateral_m / demi) if demi else 0.0
+            sol = profil.sol(u, f)
+            # Le plafond suit le LINTEAU INCLINÉ : côté relevé il autorise
+            # plus haut, côté abaissé moins. Un plafond symétrique
+            # échantillonnait dans la roche d'un côté et s'arrêtait trop bas
+            # de l'autre.
+            toit_utile = palier + profil.cle_au_lateral(u, lateral_m) * 0.80
             for h in hauteurs:
                 z = sol + h
-                if z > palier + cle * 0.80:
+                if z > toit_utile:
                     continue
                 sortie.append(dict(u=u, station=int(round(u)), lateral=f,
+                                   lateral_m=round(lateral_m, 4),
                                    hauteur=h,
-                                   p=(ax + f * hw, ay, z),
+                                   p=(ax + lateral_m * nx,
+                                      ay + lateral_m * ny, z),
                                    sol_attendu=sol, hw=hw, cle=cle))
         u += pas_long
     return sortie
@@ -573,11 +903,18 @@ def sort_par_la_bouche(origine, direction, profil=None):
     Critère : le rayon traverse le plan du porche (y = -1,15) vers l'avant,
     et son point de passage tombe dans la section de la station 0.
 
-    L'ouverture est prise GÉNÉREUSEMENT — demi-largeur majorée du facteur
-    d'asymétrie maximal de `CAVITE_ASYM` (1,34), clé majorée de 5 %. C'est
-    un arbitrage explicite : un trou situé exactement sur le pourtour de la
-    bouche serait absous. L'inverse — un faux positif à chaque rayon
-    sortant — noierait les vraies percées sous soixante bruits.
+    L'ouverture est prise GÉNÉREUSEMENT en hauteur — clé majorée de 5 %.
+    C'est un arbitrage explicite : un trou situé exactement sur le linteau
+    serait absous. L'inverse — un faux positif à chaque rayon sortant —
+    noierait les vraies percées sous soixante bruits.
+
+    EN LARGEUR, ELLE NE L'EST PLUS. Elle l'a été, et c'était un trou dans le
+    contrôle : la demi-largeur était majorée du facteur MAXIMAL (1,34) des
+    DEUX côtés, alors que le porche vaut 1,34·hw à gauche et 0,79·hw à
+    droite. Toute percée du flanc droit située entre 0,79·hw et 1,34·hw —
+    c'est-à-dire dans 0,55·hw = 1,05 m de roche pleine — était classée
+    « sort par la bouche » et disparaissait du verdict. La largeur est
+    désormais lue PAR CÔTÉ, sur l'offset normal.
     """
     profil = profil or PROFIL_GROTTE
     ax, ay, hw, cle = profil.cavite[0]
@@ -587,30 +924,89 @@ def sort_par_la_bouche(origine, direction, profil=None):
     if t <= 0.0:
         return False                      # le porche est derrière le point
     px = origine[0] + direction[0] * t
+    py = origine[1] + direction[1] * t
     pz = origine[2] + direction[2] * t
-    sol = profil.porche_denivele - profil.sag
-    return (abs(px - ax) <= hw * profil.asym
-            and sol - 0.10 <= pz <= cle * 1.05)
+    lateral = profil.lateral((px, py, pz), 0.0)
+    # DOUZIEME DEFAUT, ET C'EST UNE FIXTURE QUI L'A SORTI.
+    #
+    # Le sol de la bouche s'ecrivait `porche_denivele - sag`, sans le
+    # PALIER de la station 0. Sur la Grotte du Couchant `PALIER[0]` vaut
+    # 0,00, donc la faute etait exactement invisible — le nombre juste,
+    # pour une raison fausse. Sur la premiere geometrie d'epreuve dont le
+    # palier ne valait pas zero, la bouche s'est retrouvee 0,60 m trop
+    # haut : tout rayon sortant par le BAS de l'ouverture cessait d'etre
+    # excuse et devenait une percee. 1 513 rayons suspects sur un tunnel
+    # sain.
+    #
+    # C'est l'argument entier des fixtures adversariales : un controle qui
+    # n'a jamais menti sur la geometrie de production n'est pas pour autant
+    # un controle juste.
+    sol = profil.palier[0] + profil.porche_denivele - profil.sag
+    # La voûte de la bouche est PENCHÉE : plafonner à `cle · 1,05` compte
+    # comme percée du toit tout rayon sortant par le haut de l'ouverture du
+    # côté relevé. Voir `Profil.cle_au_lateral`.
+    plafond = profil.cle_au_lateral(0.0, lateral)
+    return (abs(lateral) <= profil.demi_largeur(0.0, lateral)
+            and sol - 0.10 <= pz <= plafond * 1.05)
+
+
+def _entre_les_bouts(profil, point):
+    """Le point est-il entre le plan de bouche et le plan de fond ?
+
+    Les deux plans sont normaux a la TANGENTE de leur station, pas a un axe
+    du monde : c'est la meme discipline que partout ailleurs dans ce
+    fichier, et pour la meme raison — apres le coude, y ne dit plus ou l'on
+    est le long de la galerie.
+    """
+    for u_bout, sens in ((0.0, -1.0),
+                         (float(len(profil.cavite) - 1), 1.0)):
+        ax, ay = profil.station(u_bout)[0], profil.station(u_bout)[1]
+        nx, ny = profil.normale(u_bout)
+        tx, ty = -ny, nx
+        if ((point[0] - ax) * tx + (point[1] - ay) * ty) * sens > 0.0:
+            return False
+    return True
 
 
 def dans_enveloppe(point, profil=None):
     """Le point est-il dans l'enveloppe NOMINALE de la cavité ?
 
-    Enveloppe analytique, calculée depuis `CAVITE`/`PALIER` — pas depuis le
-    maillage. Elle sert à dire OÙ un rayon quitte la galerie, ce que le
-    maillage ne peut pas dire quand justement il n'y a rien à cet endroit.
-    Majorée du facteur d'asymétrie maximal de `CAVITE_ASYM` (1,34).
+    Enveloppe analytique, calculée depuis `CAVITE`/`PALIER`/`CAVITE_ASYM` —
+    pas depuis le maillage. Elle sert à dire OÙ un rayon quitte la galerie,
+    ce que le maillage ne peut pas dire quand justement il n'y a rien à cet
+    endroit.
+
+    La largeur est lue PAR CÔTÉ, sur l'offset NORMAL à l'axe. Les deux
+    corrections sont indépendantes et toutes deux nécessaires :
+    l'ancien `abs(point[0] - ax) <= hw · 1.34` se trompait de côté ET de
+    direction de mesure (voir `Profil.normale`).
     """
     profil = profil or PROFIL_GROTTE
-    u = profil.u_pour_y(point[1])
-    if u is None:
+    # PROJECTION, pas inversion par y : voir `Profil.u_projete`. Un point
+    # decale lateralement apres le coude change de y, et l'inversion le
+    # rapportait a la mauvaise station — ou le rejetait tout net.
+    #
+    # MAIS LA PROJECTION BORNE, LA OU L'INVERSION REJETAIT — et c'est une
+    # regression que l'epreuve `fond_perce` du selftest a attrapee en une
+    # execution. `u_pour_y` rendait None au-dela des extremites ; `u_projete`
+    # rend la station la plus proche, donc un point situe DERRIERE le fond
+    # etait rapporte a la derniere station et pouvait passer pour « encore
+    # dans la galerie ». `sortie_de_cavite` marchait alors trop loin et
+    # localisait le trou a 1,36 m de son centre au lieu de 0,77 m.
+    #
+    # Les bornes sont donc explicites, et prises le long de la TANGENTE —
+    # pas le long de y, qui est precisement l'axe monde dont on se defait.
+    if not _entre_les_bouts(profil, point):
         return False
-    ax, _, hw, cle, palier = profil.station(u)
+    u = profil.u_projete(point)
+    _, _, _, cle, palier = profil.station(u)
     sol = palier - profil.sag
     if u < 1.0:
         sol += profil.porche_denivele * (1.0 - u)
-    return (abs(point[0] - ax) <= hw * profil.asym
-            and sol - 0.30 <= point[2] <= palier + cle * 1.10)
+    lateral = profil.lateral(point, u)
+    return (abs(lateral) <= profil.demi_largeur(u, lateral)
+            and sol - 0.30 <= point[2]
+            <= palier + profil.cle_au_lateral(u, lateral) * 1.10)
 
 
 def sortie_de_cavite(origine, direction, portee=40.0, pas=0.10, profil=None):
@@ -688,15 +1084,27 @@ def _controle_jour(grille, echantillons, directions, profil):
         # seuil est bas EXPRÈS — il ne peut pas absoudre un vrai trou, car
         # un trou qui ouvrirait plus de la moitié du ciel ne serait plus un
         # trou mais le dehors.
-        rencontres = sum(1 for d in directions
-                         if impacts(grille, ech["p"], d, 40.0))
+        # UNE DIRECTION EST ACCEPTABLE SI ELLE RENCONTRE DE LA ROCHE **OU**
+        # SI ELLE SORT PAR LA BOUCHE. Sans le second terme, tout point du
+        # vestibule serait declare hors cavite, parce qu'une grotte a par
+        # definition une ouverture. Avec le seul premier terme et un seuil
+        # bas, un point du dehors passait. Il faut les deux.
+        rencontres = sum(
+            1 for d in directions
+            if impacts(grille, ech["p"], d, 40.0)
+            or sort_par_la_bouche(ech["p"], d, profil))
         part = rencontres / float(len(directions))
-        if part < ENCLOSURE_MIN:
+        cardinales = sum(
+            1 for d in AXES
+            if impacts(grille, ech["p"], d, 60.0)
+            or sort_par_la_bouche(ech["p"], d, profil))
+        if part < ENCLOSURE_MIN or cardinales < CARDINALES_ENCLOSES_EXIGEES:
             hors_cavite.append(dict(station=ech["station"],
                                     x=round(ech["p"][0], 2),
                                     y=round(ech["p"][1], 2),
                                     z=round(ech["p"][2], 2),
-                                    part_enclose=round(part, 3)))
+                                    part_enclose=round(part, 3),
+                                    cardinales_encloses=cardinales))
             continue
         for direction in directions:
             if sort_par_la_bouche(ech["p"], direction, profil):
@@ -724,7 +1132,9 @@ def _controle_jour(grille, echantillons, directions, profil):
     return testes, bouche, ecartes, hors_cavite, fautes
 
 
-def carte_du_plancher(grille, pas_long, fractions):
+def carte_du_plancher(grille, pas_long, fractions, profil=None,
+                      pas_lateral_m=None, marge_paroi_m=0.05,
+                      grille_parois=None):
     """Où le plancher existe-t-il, et où manque-t-il ?
 
     Le contrôle 1 rend une liste de fautes ; celle-ci rend la CARTE, parce
@@ -732,19 +1142,70 @@ def carte_du_plancher(grille, pas_long, fractions):
     y à tel y »), pas en nuage de points. Pour chaque abscisse le long de
     l'axe, on compte les positions latérales qui ont un sol à la hauteur
     attendue.
+
+    SEPTIÈME ENDROIT DE LA MÊME FAUTE — ET LE PLUS COÛTEUX DES SEPT.
+    ===============================================================
+
+    Le départ s'écrivait `(ax + f·hw, ay, sol + 0,90)` : décalé le long de
+    X, contre une demi-largeur SYMÉTRIQUE, et le sol lu par `sol_attendu()`
+    — la fonction de module, celle qui ignore `CAVITE_ASYM`. Les six autres
+    sites avaient été corrigés ; celui-ci ne l'avait pas été, et il ne
+    figurait sur aucune liste parce qu'il n'avait jamais rougi à tort.
+
+    Or c'est lui qui PORTE LE VERDICT. Le rouge « plancher absent de
+    y = +2,88 à y = +3,09 » vient de cette carte, et de nulle part ailleurs.
+    Mesuré sur `f3afa0e` : aux stations 6 à 8, sur les cinq fractions
+    demandées, **une seule** tombait dans le vide — les quatre autres
+    atterrissaient dans la roche et étaient silencieusement sautées par
+    `dans_le_vide`. Le journal imprimait « 0/1 » et je lisais « trou » ; la
+    vérité est qu'un seul point était interrogé sur cinq, à un endroit
+    choisi par une formule fausse.
+
+    Un rouge tiré d'un échantillon sur cinq mal placé n'est pas une mesure
+    de plancher : c'est un tirage au sort. Le défaut de plancher aux
+    stations terminales est peut-être réel — la passe est là pour ça — mais
+    il devra être établi par un instrument qui vise la galerie.
     """
+    profil = profil or PROFIL_GROTTE
     lignes = []
     u = 0.0
-    while u <= len(CAVITE) - 1 + 1e-9:
-        ax, ay, hw, cle, palier = station_interpolee(u)
+    while u <= len(profil.cavite) - 1 + 1e-9:
+        ax, ay, hw, cle, palier = profil.station(u)
+        nx, ny = profil.normale(u)
+        if pas_lateral_m is not None:
+            largeurs = None
+            if grille_parois is not None:
+                largeurs = (largeur_reelle_mesuree(grille_parois, profil, u,
+                                                   -1.0)[0],
+                            largeur_reelle_mesuree(grille_parois, profil, u,
+                                                   1.0)[0])
+            lateraux = offsets_lateraux(profil, u, pas_lateral_m,
+                                        marge_paroi_m, largeurs)
+        else:
+            lateraux = [f * profil.demi_largeur(u, f) for f in fractions]
         presents, absents = 0, 0
         pires = []
         zs = []
-        for f in fractions:
-            sol = sol_attendu(u, f)
-            depart = (ax + f * hw, ay, sol + 0.90)
+        vises = len(lateraux)
+        hors_vide = 0
+        derives = []
+        for lateral_m in lateraux:
+            demi = profil.demi_largeur(u, lateral_m)
+            fraction = (lateral_m / demi) if demi else 0.0
+            # LE SOL ATTENDU SE LIT A LA STATION REELLE DU POINT, pas a la
+            # station nominale. Voir `station_reelle_du_point` : sur le cote
+            # convexe d'un coude, un offset lateral fait glisser la
+            # projection de plus de deux stations, et comparer alors la
+            # hauteur mesuree au palier de la station nominale fabrique
+            # jusqu'a 0,45 m d'ecart la ou la roche est saine.
+            provisoire = (ax + lateral_m * nx, ay + lateral_m * ny, 0.0)
+            u_reel = station_reelle_du_point(profil, provisoire)
+            derives.append(abs(u_reel - u))
+            sol = profil.sol(u_reel, fraction)
+            depart = (ax + lateral_m * nx, ay + lateral_m * ny, sol + 0.90)
             vide, _ = dans_le_vide(grille, depart)
             if not vide:
+                hors_vide += 1
                 continue
             liste = impacts(grille, depart, (0.0, 0.0, -1.0))
             if not liste:
@@ -765,6 +1226,14 @@ def carte_du_plancher(grille, pas_long, fractions):
         lignes.append(dict(u=round(u, 2), y=round(ay, 2),
                            station=int(round(u)), presents=presents,
                            absents=absents,
+                           # CE QUI A ÉTÉ VISÉ, ET CE QUI A ÉTÉ SONDÉ. Sans
+                           # ces deux nombres, « 0/1 » se lit comme un trou
+                           # alors qu'il dit surtout qu'on n'a interrogé
+                           # qu'un point. Un dénominateur muet est un
+                           # mensonge par omission.
+                           vises=vises, hors_vide=hors_vide,
+                           derive_station_max=round(max(derives), 3)
+                           if derives else 0.0,
                            z_impact_trou=round(sum(zs) / len(zs), 3) if zs else None,
                            ecart_max_m=round(max(pires), 3) if pires else None))
         u += pas_long
@@ -1081,9 +1550,28 @@ def carte_du_fond(grille, pas=0.25):
     Le balayage est borné à l'emprise de la DERNIÈRE station, majorée : au
     delà on ne mesure plus la grotte mais l'air à côté du rocher, et compter
     cet air comme un trou serait un faux positif.
+
+    HUITIÈME ENDROIT DE LA MÊME FAUTE. L'emprise s'écrivait
+    `ax ± hw·1,34` : le facteur MAJORANT appliqué symétriquement, le long de
+    X. À la station 8 la paroi gauche vaut 1,61·hw et la droite 0,25·hw. La
+    fenêtre était donc simultanément TROP ÉTROITE à gauche — 1,34 au lieu de
+    1,61, soit 0,35 m d'alcôve hors champ, précisément le coin où vit la
+    récompense — et TROP LARGE à droite de 1,42 m, dans du massif où toute
+    case ouverte aurait été de l'air à côté du rocher.
+
+    L'emprise est désormais construite le long de la NORMALE, côté par côté,
+    avec une marge additive plutôt qu'un facteur : une marge multiplicative
+    d'un côté étroit ne fabrique presque rien, et du côté large elle
+    fabrique des mètres.
     """
-    ax, ay, hw, cle = CAVITE[-1]
-    x0, x1 = ax - hw * 1.34, ax + hw * 1.34
+    profil = PROFIL_GROTTE
+    u_fin = float(len(profil.cavite) - 1)
+    ax, ay, hw, cle, palier_fin = profil.station(u_fin)
+    nx, ny = profil.normale(u_fin)
+    MARGE_FOND_M = 0.40
+    bords = [ax + signe * (profil.demi_largeur(u_fin, signe) + MARGE_FOND_M)
+             * nx for signe in (-1.0, 1.0)]
+    x0, x1 = min(bords), max(bords)
     z0, z1 = PALIER[-1] - SAG - 0.20, PALIER[-1] + cle * 1.05
     ouvertes, total, lignes = [], 0, []
     z = z1
@@ -1280,19 +1768,112 @@ def grouper_pixels(percees, pas_px):
 class Profil(object):                                    # noqa: E302
     """Profil analytique d'une cavité : stations, sol, clé, noyau.
 
-    `asym` majore la demi-largeur nominale. Pour la grotte c'est le facteur
-    d'asymétrie maximal de `CAVITE_ASYM` (1,34) ; pour une galerie droite
-    c'est 1,0.
+    `asym` est le facteur MAJORANT, conservé pour les profils synthétiques
+    droits (`asym=1.0`) et pour les bornes grossières. `cavite_asym` est la
+    table PAR STATION `(gauche, droite, inclinaison)` : c'est elle qui fait
+    foi dès qu'elle est fournie. Quand elle est absente, on fabrique une
+    table plate à partir du scalaire, de sorte qu'un profil droit se
+    comporte exactement comme avant.
+
+    LE CÔTÉ N'EST PAS UNE OPINION. Le générateur décide `gauche` / `droite`
+    sur le signe de l'offset NORMAL à l'axe. Toute mesure qui parle de
+    « côté » dans cette sonde passe par `lateral()`, jamais par x.
     """
 
     def __init__(self, cavite, palier, sag, porche_denivele, asym=1.34,
-                 nom="grotte"):
+                 nom="grotte", cavite_asym=None):
         self.cavite = [tuple(s) for s in cavite]
         self.palier = tuple(palier)
         self.sag = float(sag)
         self.porche_denivele = float(porche_denivele)
         self.asym = float(asym)
         self.nom = nom
+        if cavite_asym is None:
+            self.cavite_asym = [(self.asym, self.asym, 0.0)] * len(self.cavite)
+        else:
+            self.cavite_asym = [tuple(a) for a in cavite_asym]
+        if len(self.cavite_asym) != len(self.cavite):
+            raise ValueError("cavite_asym : %d entrees pour %d stations"
+                             % (len(self.cavite_asym), len(self.cavite)))
+
+    # -- géométrie de section -------------------------------------------
+
+    def asym_station(self, u):
+        """`(gauche, droite, inclinaison)` interpolés à la station `u`.
+
+        Même interpolation linéaire que le générateur (`dos_alcove`).
+        """
+        i = max(0, min(len(self.cavite_asym) - 1, int(math.floor(u))))
+        j = min(len(self.cavite_asym) - 1, i + 1)
+        t = max(0.0, min(1.0, u - i))
+        a, b = self.cavite_asym[i], self.cavite_asym[j]
+        return tuple(a[k] * (1.0 - t) + b[k] * t for k in range(3))
+
+    def normale(self, u):
+        """Axe LATÉRAL de la section en `u`, dans le plan (x, y).
+
+        RECOPIÉ DE `normale_de_cavite()` DU GÉNÉRATEUR, dont le commentaire
+        dit ce que ce détail a coûté : « Décaler le long de X au lieu de la
+        normale paraît anodin tant que la galerie court droit — et devient
+        faux dès qu'elle s'infléchit. MESURÉ, ET C'EST CE QUI M'A COÛTÉ DEUX
+        PASSES. » Entre les stations 7 et 8 la normale est à 45° de X.
+
+        La sonde commettait EXACTEMENT cette erreur : `dans_enveloppe()` et
+        `sort_par_la_bouche()` comparaient `abs(point[0] - ax)`, une distance
+        alignée sur X, à une demi-largeur mesurée le long de la normale.
+        """
+        eps = 0.02
+        umax = float(len(self.cavite) - 1)
+        a = self.station(max(0.0, u - eps))
+        b = self.station(min(umax, u + eps))
+        tx, ty = b[0] - a[0], b[1] - a[1]
+        n = math.hypot(tx, ty)
+        if n < 1e-9:
+            return (1.0, 0.0)
+        return (ty / n, -tx / n)
+
+    def lateral(self, point, u):
+        """Offset SIGNÉ du point le long de la normale de section.
+
+        Négatif = côté `gauche` du générateur, positif = côté `droite`.
+        C'est la seule définition de « côté » employée par cette sonde.
+        """
+        ax, ay = self.station(u)[0], self.station(u)[1]
+        nx, ny = self.normale(u)
+        return (point[0] - ax) * nx + (point[1] - ay) * ny
+
+    def demi_largeur(self, u, lateral):
+        """Demi-largeur admise à la station `u`, DU CÔTÉ de `lateral`."""
+        hw = self.station(u)[2]
+        gauche, droite, _ = self.asym_station(u)
+        return hw * (gauche if lateral < 0.0 else droite)
+
+    def cle_au_lateral(self, u, lateral):
+        """Hauteur de voûte à l'offset latéral `lateral` — LINTEAU INCLINÉ.
+
+        TROISIÈME DIMENSION DE LA MÊME FAUTE. L'asymétrie de `CAVITE_ASYM`
+        ne joue pas que sur la largeur : sa troisième composante incline la
+        clé. Le générateur écrit `biais = 1 + inclinaison·cos(theta)` et
+        `z = cle · v^0,75 · w · biais` (`anneau_interieur`), donc la voûte
+        monte d'un côté et descend de l'autre.
+
+        MESURÉ sur la bouche de la géométrie A1 : `cle` nominale 2,80 m,
+        `inclinaison` -0,44 — la voûte réelle atteint **4,03 m** au bord
+        gauche et **1,57 m** au bord droit. `sort_par_la_bouche()` plafonnait
+        à `cle·1,05 = 2,94 m` : tout rayon quittant la grotte par le HAUT de
+        l'ouverture, entre 2,94 et 4,03 m, était compté comme une percée du
+        TOIT. Seize sur les cinquante et une percées de toit de A1 étaient
+        exactement cela — la porte d'entrée, prise pour un trou.
+        """
+        cle = self.station(u)[3]
+        _, _, inclinaison = self.asym_station(u)
+        demi = self.demi_largeur(u, lateral)
+        ucos = max(-1.0, min(1.0, (lateral / demi) if demi else 0.0))
+        return cle * (1.0 + inclinaison * ucos)
+
+    @staticmethod
+    def nom_du_cote(lateral):
+        return "gauche" if lateral < 0.0 else "droite"
 
     def station(self, u):
         i = min(int(math.floor(u)), len(self.cavite) - 2)
@@ -1304,11 +1885,47 @@ class Profil(object):                                    # noqa: E302
                 a[2] + (b[2] - a[2]) * f, a[3] + (b[3] - a[3]) * f,
                 pa + (pb - pa) * f)
 
+    def u_projete(self, point, pas=0.02):
+        """Station continue dont l'axe est le PLUS PROCHE du point.
+
+        DIXIÈME ENDROIT DE LA MÊME FAMILLE DE FAUTE, et il touche la
+        localisation plutôt que le placement.
+
+        `u_pour_y()` inverse l'axe par la seule coordonnée `y`. C'est exact
+        tant que la galerie court le long de y — c'est-à-dire jusqu'au
+        coude — et faux ensuite, parce que la NORMALE acquiert une
+        composante en y. À la station 8 elle vaut `(0,521 ; -0,853)` : un
+        offset latéral de 2 m y déplace le point de +1,71 m EN Y. Le point
+        est alors rapporté à une station qui n'est pas la sienne, ou —
+        quand y dépasse celui de la dernière station — déclaré HORS CAVITÉ.
+
+        Mesuré sur `f3afa0e` : à la station 8, l'intégralité des offsets de
+        l'alcôve, pourtant dans le vide, était rejetée par `dans_enveloppe`
+        via ce chemin. Un point réel de la galerie classé hors galerie.
+
+        La projection sur la polyligne d'axe n'a pas ce défaut : elle ne
+        suppose rien de l'orientation. Elle coûte un balayage, ce qui est
+        sans conséquence ici et vaut mieux qu'une inversion valable sur la
+        moitié de l'ouvrage.
+        """
+        meilleur_u, meilleure_d = 0.0, None
+        u = 0.0
+        umax = float(len(self.cavite) - 1)
+        while u <= umax + 1e-9:
+            ax, ay = self.station(u)[0], self.station(u)[1]
+            d = (point[0] - ax) ** 2 + (point[1] - ay) ** 2
+            if meilleure_d is None or d < meilleure_d:
+                meilleur_u, meilleure_d = u, d
+            u += pas
+        return meilleur_u
+
     def u_pour_y(self, y):
         """Station continue à l'abscisse `y`, ou None hors emprise.
 
-        L'axe est monotone en y (stations -1,15 -> +9,25), l'inversion est
-        donc exacte et sans ambiguïté.
+        VALABLE SEULEMENT SUR UN POINT DE L'AXE. L'axe est monotone en y,
+        donc l'inversion est exacte pour lui — et pour lui seul. Pour un
+        point décalé latéralement, employer `u_projete` : voir le récit qui
+        y est attaché.
         """
         if y < self.cavite[0][1] or y > self.cavite[-1][1]:
             return None
@@ -1329,9 +1946,11 @@ class Profil(object):                                    # noqa: E302
         return palier + cle
 
 
-## La Grotte du Couchant. `asym` reprend le facteur maximal de
-## `CAVITE_ASYM` du générateur (1,34), déjà employé par `dans_enveloppe`.
-PROFIL_GROTTE = Profil(CAVITE, PALIER, SAG, PORCHE_DENIVELE, 1.34, "grotte")
+## La Grotte du Couchant. `asym` conserve le facteur MAJORANT (1,34) pour
+## les bornes grossières ; `cavite_asym` porte la vérité par station et par
+## côté, et c'est elle qui décide des limites latérales.
+PROFIL_GROTTE = Profil(CAVITE, PALIER, SAG, PORCHE_DENIVELE, 1.34, "grotte",
+                       cavite_asym=CAVITE_ASYM)
 
 
 ## LE NOYAU — le volume où il DOIT y avoir de l'air, et rien d'autre.
@@ -1356,15 +1975,41 @@ NOYAU_MARGE_SOL = 0.15
 
 
 def dans_le_noyau(profil, point):
-    u = profil.u_pour_y(point[1])
-    if u is None:
+    """Le point est-il dans le volume qui DOIT être de l'air ?
+
+    CORRIGÉ POUR L'ASYMÉTRIE, ET C'ÉTAIT LE TROISIÈME ENDROIT.
+
+    `dans_enveloppe()` et `sort_par_la_bouche()` avaient été corrigés ;
+    celle-ci portait encore les deux mêmes fautes, et elle décide à elle
+    seule de tout le contrôle 4 :
+
+      * `demi = hw · 0,55` est SYMÉTRIQUE. Sur une section franchement
+        dissymétrique, le noyau déborde du côté étroit. Mesuré sur la
+        géométrie A1 : aux stations 4 à 8 le noyau symétrique dépasse la
+        paroi `droite` de 0,36 à 0,75 m, c'est-à-dire qu'une partie du
+        volume « qui doit être de l'air » est DANS LA ROCHE. Un rayon tiré
+        du dehors y rencontre de la matière avant d'atteindre le noyau et
+        la case est comptée fermée : le contrôle 4 se tait sur une paroi
+        qu'il croit examiner ;
+      * `abs(point[0] - ax)` mesure le long de X, pas de la normale — le
+        piège que le générateur porte en commentaire depuis deux passes.
+
+    Le biais du noyau reste assumé et directionnel (55 % : il fait manquer
+    des trous marginaux, il n'en fabrique pas). Ce qui est réparé ici, ce
+    n'est pas le biais, c'est le fait qu'il n'était plus centré sur la
+    cavité.
+    """
+    if not _entre_les_bouts(profil, point):
         return False
-    ax, _, hw, cle, palier = profil.station(u)
-    demi = hw * NOYAU_LARGEUR
-    if abs(point[0] - ax) > demi:
+    u = profil.u_projete(point)
+    _, _, hw, cle, palier = profil.station(u)
+    lateral = profil.lateral(point, u)
+    demi = profil.demi_largeur(u, lateral) * NOYAU_LARGEUR
+    if abs(lateral) > demi:
         return False
-    lateral = (point[0] - ax) / hw if hw else 0.0
-    bas = profil.sol(u, lateral) + NOYAU_MARGE_SOL
+    largeur_cote = profil.demi_largeur(u, lateral)
+    bas = profil.sol(u, (lateral / largeur_cote) if largeur_cote else 0.0) \
+        + NOYAU_MARGE_SOL
     haut = palier + cle * NOYAU_HAUTEUR
     return bas <= point[2] <= haut
 
@@ -1564,20 +2209,45 @@ def surface_de_sortie(profil, point):
     lire « le toit est percé » dans sa sortie. Cette fonction attribue à
     chaque sortie l'une des six faces, pour que le rapport nomme le défaut
     par son endroit.
+
+    NEUVIÈME ENDROIT DE LA MÊME FAUTE. Trois lignes, trois fois la même :
+    `(point[0] - ax)/hw` mesurait le long de X contre une demi-largeur
+    symétrique, `dx = hw - abs(...)` aussi, et le côté se décidait sur
+    `point[0] > ax`. Conséquence directe : une percée du flanc GAUCHE d'une
+    section inclinée pouvait être nommée `paroi_plus_x`, et une percée de
+    paroi être nommée `plancher` parce que la distance à la paroi était
+    calculée dans la mauvaise direction. Le compte de percées ne changeait
+    pas ; l'ADRESSE écrite dans la consigne de correction, si — et une
+    consigne qui désigne le mauvais flanc envoie corriger de la roche saine.
+
+    Les noms `paroi_moins_x` / `paroi_plus_x` sont CONSERVÉS pour ne pas
+    casser `SURFACES` ni les rasters, mais ils désignent désormais les côtés
+    `gauche` (offset normal négatif) et `droite`. Le libellé est un héritage,
+    la mesure ne l'est plus.
     """
-    u = profil.u_pour_y(point[1])
-    if u is None:
-        return "fond" if point[1] > profil.cavite[-1][1] else "bouche"
-    ax, _, hw, cle, palier = profil.station(u)
-    lateral = (point[0] - ax) / hw if hw else 0.0
-    dz_haut = (palier + cle) - point[2]
-    dz_bas = point[2] - profil.sol(u, lateral)
-    dx = hw - abs(point[0] - ax)
-    if min(dz_haut, dz_bas, dx) == dz_haut:
+    u = profil.u_projete(point)
+    # Au-dela de la derniere station le long de la TANGENTE, c'est le fond.
+    axf = profil.station(float(len(profil.cavite) - 1))
+    tx, ty = -profil.normale(float(len(profil.cavite) - 1))[1], \
+        profil.normale(float(len(profil.cavite) - 1))[0]
+    if (point[0] - axf[0]) * tx + (point[1] - axf[1]) * ty > 0.0:
+        return "fond"
+    ax0 = profil.station(0.0)
+    tx0, ty0 = -profil.normale(0.0)[1], profil.normale(0.0)[0]
+    if (point[0] - ax0[0]) * tx0 + (point[1] - ax0[1]) * ty0 < 0.0:
+        return "bouche"
+    _, _, hw, cle, palier = profil.station(u)
+    lateral_m = profil.lateral(point, u)
+    demi = profil.demi_largeur(u, lateral_m)
+    fraction = (lateral_m / demi) if demi else 0.0
+    dz_haut = (palier + profil.cle_au_lateral(u, lateral_m)) - point[2]
+    dz_bas = point[2] - profil.sol(u, fraction)
+    dlat = demi - abs(lateral_m)
+    if min(dz_haut, dz_bas, dlat) == dz_haut:
         return "toit"
-    if min(dz_bas, dx) == dz_bas:
+    if min(dz_bas, dlat) == dz_bas:
         return "plancher"
-    return "paroi_plus_x" if point[0] > ax else "paroi_moins_x"
+    return "paroi_plus_x" if lateral_m > 0.0 else "paroi_moins_x"
 
 
 # ---------------------------------------------------------------------------
@@ -1605,20 +2275,40 @@ _EMPRISE_CACHE = {}
 
 
 def _emprise_noyau(profil, pas_u=0.05):
-    cle = (id(profil), pas_u)
-    if cle in _EMPRISE_CACHE:
-        return _EMPRISE_CACHE[cle]
+    """Boîte alignée sur les axes contenant le noyau.
+
+    DEUX DÉFAUTS RÉPARÉS ICI.
+
+    1. `cle` servait de CLÉ DE CACHE puis était écrasée par la hauteur de
+       clé rendue par `station()`. L'écriture se faisait donc sous un
+       flottant, jamais sous la clé lue — le cache ne servait jamais et le
+       dictionnaire se remplissait d'entrées mortes. Silencieux, comme il
+       se doit pour ce genre de faute.
+    2. L'emprise était calculée le long de X et symétriquement. Sur une
+       galerie qui s'infléchit, le noyau est décalé le long de la NORMALE :
+       une emprise en X manque une partie du volume, et le raster n'a alors
+       aucune case en face.
+    """
+    memo = (id(profil), pas_u)
+    if memo in _EMPRISE_CACHE:
+        return _EMPRISE_CACHE[memo]
     xs, ys, zs = [], [], []
     u = 1.0                      # depuis le SEUIL : le porche est ouvert
     while u <= len(profil.cavite) - 1 + 1e-9:
-        ax, ay, hw, cle, palier = profil.station(u)
-        xs += [ax - hw * NOYAU_LARGEUR, ax + hw * NOYAU_LARGEUR]
+        ax, ay, _, cle_voute, palier = profil.station(u)
+        nx, ny = profil.normale(u)
+        for signe in (-1.0, 1.0):
+            # `demi_largeur` attend un latéral SIGNÉ pour choisir le côté.
+            demi = profil.demi_largeur(u, signe) * NOYAU_LARGEUR
+            xs.append(ax + signe * demi * nx)
+            ys.append(ay + signe * demi * ny)
         ys.append(ay)
-        zs += [profil.sol(u, 0.0) + NOYAU_MARGE_SOL, palier + cle * NOYAU_HAUTEUR]
+        zs += [profil.sol(u, 0.0) + NOYAU_MARGE_SOL,
+               palier + cle_voute * NOYAU_HAUTEUR]
         u += pas_u
-    _EMPRISE_CACHE[cle] = ((min(xs), max(xs)), (min(ys), max(ys)),
-                          (min(zs), max(zs)))
-    return _EMPRISE_CACHE[cle]
+    _EMPRISE_CACHE[memo] = ((min(xs), max(xs)), (min(ys), max(ys)),
+                            (min(zs), max(zs)))
+    return _EMPRISE_CACHE[memo]
 
 
 def raster_surface(grille, profil, surface, pas=None):
@@ -1875,6 +2565,82 @@ def controle_garde_au_terrain():
     return fautes
 
 
+def _lire_table(texte, nom):
+    """Table de tuples `NOM = [ (...), (...) ]` lue textuellement."""
+    marque = "%s = [" % nom
+    if marque not in texte:
+        return None
+    bloc = texte.split(marque, 1)[1].split("]", 1)[0]
+    lignes = [l.split("#")[0].strip().strip(",")
+              for l in bloc.split("\n") if l.strip().startswith("(")]
+    return [tuple(float(v) for v in l.strip("()").split(",") if v.strip())
+            for l in lignes]
+
+
+def charger_les_cotes(source):
+    """Rebinde les cotes de la sonde sur CELLES D'UN GÉNÉRATEUR DONNÉ.
+
+    POURQUOI CETTE PORTE EXISTE, ET POURQUOI ELLE EST ÉTROITE.
+
+    Les cotes de ce fichier décrivent UNE galerie. Mesurer un autre `.glb`
+    avec elles reviendrait à promener un tube imaginaire dans de la roche
+    réelle : chaque nombre sortirait plausible et aucun ne voudrait rien
+    dire. C'est le mode de panne le plus coûteux de cette sonde, parce qu'il
+    ne produit ni erreur ni silence — il produit un rapport.
+
+    Mesuré : entre la galerie livrée (R2a-3.4) et celle de la passe en
+    cours, l'axe passe de y ∈ [-1,15 ; 9,25] à y ∈ [-1,15 ; 3,17], et
+    `PALIER` change à six stations sur neuf. Deux grottes différentes sous
+    le même nom de fichier.
+
+    On ne recopie donc rien : on LIT le générateur qui a produit le maillage
+    qu'on s'apprête à mesurer, et on rebinde. `controle_coherence_cotes()`
+    tourne ensuite contre CE MÊME fichier, donc il passe — ce n'est pas un
+    contournement du garde-fou, c'est le garde-fou appliqué à la bonne
+    référence.
+    """
+    global CAVITE, CAVITE_ASYM, PALIER, SAG, PORCHE_DENIVELE, PROFIL_GROTTE
+    if not os.path.isfile(source):
+        raise Blocage("source du generateur introuvable : %s" % source)
+    texte = open(source, "r", encoding="utf-8").read()
+    cavite = _lire_table(texte, "CAVITE")
+    asym = _lire_table(texte, "CAVITE_ASYM")
+    if not cavite:
+        raise Blocage("CAVITE absente ou illisible dans %s" % source)
+    if not asym:
+        raise Blocage("CAVITE_ASYM absente ou illisible dans %s" % source)
+    if len(asym) != len(cavite):
+        raise Blocage("CAVITE (%d) et CAVITE_ASYM (%d) de longueurs "
+                      "differentes dans %s" % (len(cavite), len(asym), source))
+    scalaires = {}
+    for nom in ("SAG", "PORCHE_DENIVELE"):
+        marque = "\n%s = " % nom
+        if marque not in texte:
+            raise Blocage("constante %s absente de %s" % (nom, source))
+        lu = texte.split(marque, 1)[1].split("\n", 1)[0].split("#")[0].strip()
+        scalaires[nom] = float(lu)
+    if "PALIER = (" not in texte:
+        raise Blocage("PALIER absent de %s" % source)
+    brut = texte.split("PALIER = (", 1)[1].split(")", 1)[0]
+    palier = tuple(float(v) for v in brut.replace("\n", " ").split(",")
+                   if v.strip())
+    if len(palier) != len(cavite):
+        raise Blocage("PALIER (%d) et CAVITE (%d) de longueurs differentes"
+                      % (len(palier), len(cavite)))
+
+    CAVITE = cavite
+    CAVITE_ASYM = asym
+    PALIER = palier
+    SAG = scalaires["SAG"]
+    PORCHE_DENIVELE = scalaires["PORCHE_DENIVELE"]
+    PROFIL_GROTTE = Profil(CAVITE, PALIER, SAG, PORCHE_DENIVELE,
+                           max(max(a[0], a[1]) for a in CAVITE_ASYM),
+                           "grotte", cavite_asym=CAVITE_ASYM)
+    return dict(source=source, stations=len(CAVITE),
+                y_min=CAVITE[0][1], y_max=CAVITE[-1][1],
+                palier=PALIER, sag=SAG, porche_denivele=PORCHE_DENIVELE)
+
+
 def controle_coherence_cotes(source):
     """Les cotes de la sonde correspondent-elles encore au générateur ?
 
@@ -1901,21 +2667,140 @@ def controle_coherence_cotes(source):
                         if v.strip())
         if valeurs != PALIER:
             ecarts.append("PALIER : generateur %s, sonde %s" % (valeurs, PALIER))
-    if "CAVITE = [" in texte:
-        bloc = texte.split("CAVITE = [", 1)[1].split("]", 1)[0]
+    # `CAVITE` et `CAVITE_ASYM` se lisent pareil, mais `"CAVITE = ["` est un
+    # préfixe de `"CAVITE_ASYM = ["`... non : c'est l'inverse qui menace, un
+    # `split("CAVITE = [")` naïf trouverait aussi le début de `CAVITE_ASYM`
+    # si la marque était `"CAVITE"` seule. Les marques portent donc ` = [`,
+    # ce qui les rend disjointes.
+    for nom, attendu in (("CAVITE", [tuple(s) for s in CAVITE]),
+                         ("CAVITE_ASYM", [tuple(a) for a in CAVITE_ASYM])):
+        marque = "%s = [" % nom
+        if marque not in texte:
+            ecarts.append("table %s absente du generateur" % nom)
+            continue
+        bloc = texte.split(marque, 1)[1].split("]", 1)[0]
         lignes = [l.split("#")[0].strip().strip(",")
                   for l in bloc.split("\n") if l.strip().startswith("(")]
         valeurs = []
         for ligne in lignes:
             valeurs.append(tuple(float(v) for v in
                                  ligne.strip("()").split(",") if v.strip()))
-        if valeurs != [tuple(s) for s in CAVITE]:
-            ecarts.append("CAVITE : %d station(s) au generateur, la sonde ne "
-                          "correspond pas" % len(valeurs))
+        if valeurs != attendu:
+            # ON DIT OÙ. « ne correspond pas » envoie relire 9 lignes à la
+            # main ; la station divergente est une consigne.
+            detail = "%d station(s) au generateur, %d a la sonde" % (
+                len(valeurs), len(attendu))
+            for i in range(min(len(valeurs), len(attendu))):
+                if valeurs[i] != attendu[i]:
+                    detail = ("station %d : generateur %s, sonde %s"
+                              % (i, valeurs[i], attendu[i]))
+                    break
+            ecarts.append("%s : %s" % (nom, detail))
     return ecarts
 
 
 # ---------------------------------------------------------------------------
+
+## LES MARQUEURS DE DÉFAUT, ET POURQUOI ILS SONT UNE LISTE ET NON UNE
+## HABITUDE DE LECTURE.
+##
+## Mon journal de la passe précédente imprimait, textuellement :
+##
+##     y  +3.06  station 7  .   0/1  ecart max 0.45 m  z du fond +0.08  <-- TROU
+##     ...
+##     PASS — un sol existe sous chaque point sonde
+##
+## Les deux lignes disaient le contraire l'une de l'autre, à trente lignes
+## d'intervalle, et la seconde a été recopiée dans un rapport. Le défaut
+## n'est pas d'avoir mal lu : c'est qu'une machine acceptait d'imprimer les
+## deux. La correction ne peut donc pas être « faire attention » — c'est
+## exactement le genre de correction qui ne tient pas une passe.
+##
+## `Journal` enregistre chaque ligne. `dire_pass()` refuse d'émettre un
+## acquittement tant qu'un marqueur de défaut a été vu, et le contrôle final
+## `incoherences()` rebalaye TOUT le journal : un site futur qui imprimerait
+## « PASS » sans passer par `dire_pass` serait attrapé quand même.
+MARQUEURS_DEFAUT = ("<-- TROU", ">>> PERCEE CONFIRMEE", "BLOQUE:",
+                    "PERCEE CONFIRMEE", "OUVERT :")
+
+## Ce qui compte comme un acquittement dans une relecture rapide.
+MARQUEURS_ACQUIT = ("PASS —", "PASS -", "VERDICT : PASS")
+
+
+class Journal(object):
+    """Sortie de la sonde, avec mémoire et interdiction mécanique.
+
+    Une seule règle, et elle est structurelle : dans une même SECTION, un
+    acquittement ne peut pas coexister avec un marqueur de défaut. Pas
+    « ne devrait pas » — la fonction refuse d'imprimer.
+
+    POURQUOI PAR SECTION, ET NON SUR LE JOURNAL ENTIER.
+    ==================================================
+
+    Une interdiction globale serait plus simple et serait FAUSSE : le
+    contrôle 2 peut légitimement acquitter les parois pendant que la carte
+    du plancher montre un trou. Ce sont deux questions, et les confondre
+    referait au verdict ce que le défaut d'origine faisait au plancher —
+    répondre à une autre question que celle posée.
+
+    Ce qui a menti, c'est un acquittement de PLANCHER trente lignes sous un
+    trou de PLANCHER. C'est cette coexistence-là, et elle seule, qui est
+    rendue impossible.
+    """
+
+    def __init__(self):
+        self.lignes = []                  # (section, texte)
+        self.section_courante = "entete"
+        self.acquits_refuses = []
+
+    def __call__(self, texte=""):
+        self.lignes.append((self.section_courante, texte))
+        print(texte)
+
+    def section(self, nom):
+        self.section_courante = nom
+
+    def defauts_vus(self, section=None):
+        return [t for s, t in self.lignes
+                if (section is None or s == section)
+                and any(m in t for m in MARQUEURS_DEFAUT)]
+
+    def dire_pass(self, texte):
+        """Imprime un acquittement, ou explique pourquoi il est refusé."""
+        vus = self.defauts_vus(self.section_courante)
+        if vus:
+            self("   ACQUITTEMENT REFUSE — la section « %s » porte deja %d "
+                 "marqueur(s) de defaut." % (self.section_courante, len(vus)))
+            self("      premier defaut : %s" % vus[0].strip())
+            self("      texte refuse   : %s" % texte.strip())
+            self.acquits_refuses.append(
+                dict(section=self.section_courante, texte=texte.strip(),
+                     defaut=vus[0].strip()))
+            return False
+        self(texte)
+        return True
+
+    def incoherences(self):
+        """Acquittements coexistant, DANS LEUR SECTION, avec un défaut.
+
+        Rebalaye le journal entier, y compris les lignes imprimées sans
+        passer par `dire_pass`. C'est le filet qui rattrape le site futur —
+        celui qu'on écrira dans six mois sans avoir lu ce commentaire.
+        """
+        trouvees = []
+        sections = []
+        for s, _ in self.lignes:
+            if s not in sections:
+                sections.append(s)
+        for s in sections:
+            defauts = self.defauts_vus(s)
+            if not defauts:
+                continue
+            for sec, texte in self.lignes:
+                if sec == s and any(m in texte for m in MARQUEURS_ACQUIT):
+                    trouvees.append((s, texte, defauts[0]))
+        return trouvees
+
 
 def main():
     ap = argparse.ArgumentParser(
@@ -1945,14 +2830,49 @@ def main():
     ap.add_argument("--pas-raster", type=float, default=None,
                     help="pas des rasters de surface (defaut : ouverture/2, "
                          "Nyquist)")
+    ap.add_argument("--cotes-de", default=None,
+                    help="generateur d'ou LIRE les cotes, au lieu de celles "
+                         "recopiees dans cette sonde. Indispensable pour "
+                         "mesurer un .glb produit par un autre generateur : "
+                         "sans lui on promene un tube imaginaire dans de la "
+                         "roche reelle et tous les chiffres sortent "
+                         "plausibles. Implique --source.")
+    ap.add_argument("--pas-lateral", type=float, default=0.20,
+                    help="pas LATERAL en metres. Metrique et non fractionnaire "
+                         "expres : une fraction de la demi-largeur espace six "
+                         "fois plus les echantillons du cote large que du cote "
+                         "etroit, donc ne peut porter aucune garantie de "
+                         "couverture. Voir offsets_lateraux().")
     ap.add_argument("--json", default=None)
     ap.add_argument("--rapide", action="store_true",
                     help="echantillonnage reduit, pour iterer")
     args = ap.parse_args()
 
+    ## TOUT le journal passe par l'enregistreur — c'est ce qui rend le
+    ## contrôle de cohérence final exhaustif au lieu de sélectif. Le nom
+    ## `print` est masqué localement : aucun site d'impression de `main()`
+    ## n'échappe au filet, y compris ceux qui seront écrits demain.
+    journal = Journal()
+    print = journal                                        # noqa: A001
+
     print("=" * 74)
     print("SONDE DE CONTINUITE — Grotte du Couchant")
     print("=" * 74)
+
+    if args.cotes_de:
+        # LES COTES D'ABORD : tout ce qui suit en depend, y compris le
+        # controle de coherence, qui doit porter sur CE generateur-la.
+        try:
+            charge = charger_les_cotes(args.cotes_de)
+        except Blocage as erreur:
+            print("BLOQUE: cotes illisibles — %s" % erreur)
+            return 3
+        args.source = args.cotes_de
+        print("cotes  : LUES dans %s" % charge["source"])
+        print("         %d stations, axe y de %+.2f a %+.2f, sag %.2f, "
+              "denivele de porche %+.2f"
+              % (charge["stations"], charge["y_min"], charge["y_max"],
+                 charge["sag"], charge["porche_denivele"]))
 
     try:
         ecarts = controle_coherence_cotes(args.source)
@@ -1960,8 +2880,8 @@ def main():
             for e in ecarts:
                 print("BLOQUE: cotes divergentes — %s" % e)
             return 3
-        print("cotes  : CAVITE, PALIER, SAG, PORCHE_DENIVELE conformes au "
-              "generateur")
+        print("cotes  : CAVITE, CAVITE_ASYM, PALIER, SAG, PORCHE_DENIVELE "
+              "conformes au generateur")
         garde = controle_garde_au_terrain()
         if garde:
             print("BLOQUE: le profil DECLARE du sol ne garde pas %.2f m "
@@ -1986,6 +2906,7 @@ def main():
 
     print()
     print("-" * 74)
+    journal.section("controle_0_pose")
     print("CONTROLE 0 — LA POSE MONDE, DERIVEE ET EPROUVEE")
     print("-" * 74)
     print("origine   : (%.3f ; %.3f ; %.3f), lacet %.1f deg" %
@@ -2032,9 +2953,18 @@ def main():
     pas_long = 0.50 if args.rapide else 0.25
     fractions = (-0.45, 0.0, 0.45) if args.rapide else (-0.60, -0.30, 0.0, 0.30, 0.60)
     hauteurs = (0.60, 1.40) if args.rapide else (0.35, 0.90, 1.50)
-    echantillons = points_interieurs(pas_long, fractions, hauteurs)
+    ## LE PAS LATÉRAL EST MÉTRIQUE, ET C'EST LE CŒUR DE LA COUVERTURE.
+    ## Des fractions donnent un espacement proportionnel à la largeur, donc
+    ## six fois plus lâche du côté large — c'est-à-dire du côté de l'alcôve.
+    ## Voir `offsets_lateraux`.
+    pas_lateral = args.pas_lateral
+    echantillons = points_interieurs(pas_long, fractions, hauteurs, profil,
+                                     pas_lateral_m=pas_lateral,
+                                     grille=grille)
     print("echantillons interieurs : %d (stations 0 a 8, les quatre que le "
           "generateur saute comprises)" % len(echantillons))
+    print("   pas longitudinal %.2f m, pas LATERAL METRIQUE %.2f m, hauteurs %s"
+          % (pas_long, pas_lateral, ", ".join("%.2f" % h for h in hauteurs)))
 
     resultat = dict(glb=args.glb, triangles=len(tris),
                     triangles_par_matiere=par_matiere, pose=resultat_pose,
@@ -2047,6 +2977,7 @@ def main():
 
     print()
     print("-" * 74)
+    journal.section("controle_1_plancher")
     print("CONTROLE 1 — PLANCHER (rayon vers le BAS depuis l'interieur)")
     print("-" * 74)
     print("Aucune fonction du generateur ne fait ce controle :")
@@ -2075,20 +3006,34 @@ def main():
                      ("%.2f" % f["chute_reelle_m"]) if "chute_reelle_m" in f
                      else "aucune", f["chute_attendue_m"]))
     else:
-        print("   PASS — un sol existe sous chaque point sonde, a la hauteur "
-              "attendue")
+        # CE « PASS » NE PORTE QUE SUR LA HAUTEUR, et il s'imprimait juste
+        # au-dessus d'une carte pouvant etre pleine de « TROU ». Deux
+        # questions, une seule etiquette : la faute de cette passe, en
+        # miniature, dans mon propre journal. `controle_plancher` compte les
+        # points dont le sol est a la MAUVAISE HAUTEUR ; la carte, plus bas,
+        # cherche les positions laterales SANS AUCUN sol, et c'est elle qui
+        # decide du rouge.
+        print("   sur le critere de HAUTEUR seulement : aucune faute")
+        print("   (l'ABSENCE de sol est jugee par la carte ci-dessous, pas "
+              "ici — ne pas lire cette ligne comme un plancher sain)")
 
     print()
     print("   CARTE DU PLANCHER (positions laterales avec sol / sans sol) :")
-    carte = carte_du_plancher(grille, pas_long, fractions)
+    print("   « vises » = positions demandees ; « hors vide » = positions")
+    print("   tombees dans la ROCHE et donc jamais interrogees. Un denominateur")
+    print("   de 1 sur 5 vises ne dit pas « trou », il dit « presque aveugle ».")
+    carte = carte_du_plancher(grille, pas_long, fractions, profil,
+                              pas_lateral_m=pas_lateral, grille_parois=grille)
     resultat["plancher"]["carte"] = carte
     manquants = [l for l in carte if l["absents"] > 0]
     for ligne in carte:
         barre = "#" * ligne["presents"] + "." * ligne["absents"]
         marque = "  <-- TROU" if ligne["absents"] else ""
-        print("      y %+6.2f  station %d  %-8s %d/%d  ecart max %s m  z du fond %s%s"
+        print("      y %+6.2f  st %d  %-14s %2d/%-2d sondes (%2d vises, %2d hors "
+              "vide)  ecart max %s m  z fond %s%s"
               % (ligne["y"], ligne["station"], barre, ligne["presents"],
                  ligne["presents"] + ligne["absents"],
+                 ligne["vises"], ligne["hors_vide"],
                  ("%.2f" % ligne["ecart_max_m"]) if ligne["ecart_max_m"] is not None
                  else "-",
                  ("%+.2f" % ligne["z_impact_trou"]) if ligne["z_impact_trou"]
@@ -2104,6 +3049,7 @@ def main():
 
     print()
     print("-" * 74)
+    journal.section("controle_2_jour")
     print("CONTROLE 2 — JOUR (sphere entiere, stations 0 a 8)")
     print("-" * 74)
     directions = directions_sphere(5, 10) if args.rapide else directions_sphere(7, 14)
@@ -2158,7 +3104,7 @@ def main():
                  stations=sorted(set(f["station"] for f in lot)))
             for cle, lot in sorted(amas.items(), key=lambda kv: -len(kv[1]))]
     else:
-        print("   PASS — aucun rayon ne sort du vide de la galerie")
+        journal.dire_pass("   PASS — aucun rayon ne sort du vide de la galerie")
 
     print()
     print("   CARTE DU FOND (vue de derriere, emprise de la derniere station)")
@@ -2187,6 +3133,7 @@ def main():
 
     print()
     print("-" * 74)
+    journal.section("controle_2b_confirmation")
     print("CONTROLE 2b — CONFIRMATION DES RAYONS SUSPECTS")
     print("-" * 74)
     print("Un rayon suspect n'est pas une percee. Une percee est CONFIRMEE")
@@ -2216,16 +3163,31 @@ def main():
               % (c["ouverture_m"], c["surface"], c["sortie"],
                  c["rayons_suspects"]))
     if not conf_j:
-        print("   PASS — aucun amas ne porte un carre de %.2f m integralement "
-              "perce" % args.ouverture)
+        journal.dire_pass("   PASS — aucun amas ne porte un carre de %.2f m "
+                          "integralement perce" % args.ouverture)
 
     print()
     print("-" * 74)
+    journal.section("controle_4_surfaces")
     print("CONTROLE 4 — LES CINQ SURFACES (plancher, TOIT, parois, fond)")
     print("-" * 74)
     print("Rayons tires du DEHORS vers le noyau, une face a la fois. Methode")
     print("independante du controle 2, et la seule qui nomme le TOIT — que la")
     print("version precedente ne cartographiait nulle part.")
+    print()
+    print("  LIRE « 0 CONFIRMEE » ICI COMME « SAINE » EST UNE ERREUR, ET ELLE")
+    print("  EST STRUCTURELLE. Ce controle vise le NOYAU (55 %% de la demi-")
+    print("  largeur) par des rayons alignes sur les axes. Deux angles morts")
+    print("  lui sont propres, mesures sur la geometrie A1_ASYM :")
+    print("    * une percee qui ouvre sur la MARGE, entre le noyau et la")
+    print("      paroi, n'est pas visee — 59 des 161 percees du controle 2")
+    print("      partaient hors du noyau ;")
+    print("    * une percee OBLIQUE peut avoir de la roche au zenith et rien")
+    print("      sur sa propre direction — 16 cas, invisibles a un raster")
+    print("      aligne sur les axes.")
+    print("  Le controle 2 part de l'interieur et balaie la sphere entiere.")
+    print("  Les deux ne se remplacent pas : le verdict est le PLUS SEVERE")
+    print("  des deux, jamais le plus rassurant.")
     surfaces = controle_surfaces(grille, profil, args.pas_raster,
                                  args.ouverture)
     resultat["surfaces"] = surfaces
@@ -2248,10 +3210,11 @@ def main():
             print("        >>> PERCEE CONFIRMEE sur %s : ouverture %.3f m, "
                   "emprise %s" % (nom, c["ouverture_m"], c["emprise"]))
     if not any(surfaces[n]["confirmees"] for n in SURFACES):
-        print("   PASS — aucune des cinq faces ne porte une percee confirmee")
+        journal.dire_pass("   PASS — aucune des cinq faces ne porte une percee confirmee")
 
     print()
     print("-" * 74)
+    journal.section("controle_3_ligne_de_vue")
     print("CONTROLE 3 — LIGNE DE VUE (regle du moteur : cull_back)")
     print("-" * 74)
     if args.manifeste is None:
@@ -2426,6 +3389,7 @@ def main():
 
     print()
     print("=" * 74)
+    journal.section("gate")
     print("GATE — 0 PERCEE CONFIRMEE")
     print("=" * 74)
     print("percees confirmees : %d  (seuil d'ouverture %.2f m)"
@@ -2434,11 +3398,42 @@ def main():
         print("   %-12s surface %-14s ouverture %.3f m"
               % (c.get("origine", "?"), c.get("surface", "?"),
                  c.get("ouverture_m", 0.0)))
-    echoue = rouge or bool(confirmees_totales)
+
+    ## LE CONTRÔLE QUI REND LE MENSONGE MÉCANIQUEMENT IMPOSSIBLE.
+    ##
+    ## Rebalaye le journal ENTIER, à la recherche d'un acquittement
+    ## coexistant avec un marqueur de défaut. C'est la faute exacte de la
+    ## passe précédente — « PASS — un sol existe sous chaque point sonde »
+    ## imprimé trente lignes sous une carte pleine de « <-- TROU » —
+    ## transformée en défaut détecté plutôt qu'en règle de lecture.
+    incoherences = journal.incoherences()
+    resultat["journal"] = dict(
+        lignes=len(journal.lignes),
+        marqueurs_defaut=len(journal.defauts_vus()),
+        acquits_refuses=journal.acquits_refuses,
+        incoherences=[[s, a.strip(), d.strip()] for s, a, d in incoherences])
+    if incoherences:
+        print()
+        print("INCOHERENCE DE JOURNAL — %d acquittement(s) coexistent, DANS "
+              "LEUR SECTION, avec un marqueur de defaut :" % len(incoherences))
+        for section, acquit, defaut in incoherences[:5]:
+            print("   section: %s" % section)
+            print("   acquit : %s" % acquit.strip())
+            print("   defaut : %s" % defaut.strip())
+        print("   Ce n'est pas un defaut de la geometrie, c'est un defaut du")
+        print("   JOURNAL — et il compte comme un echec, sinon il reviendrait.")
+    if journal.acquits_refuses:
+        print("acquittements refuses par le journal : %d"
+              % len(journal.acquits_refuses))
+
+    echoue = rouge or bool(confirmees_totales) or bool(incoherences)
     if confirmees_totales:
         raison = "%d percee(s) confirmee(s)" % len(confirmees_totales)
     elif rouge:
         raison = "defaut de plancher ou de fond mesure"
+    elif incoherences:
+        raison = "journal incoherent (%d acquittement(s) sur defaut)" % len(
+            incoherences)
     else:
         raison = ""
     print("VERDICT : %s" % ("FAIL — %s" % raison if echoue else "PASS"))

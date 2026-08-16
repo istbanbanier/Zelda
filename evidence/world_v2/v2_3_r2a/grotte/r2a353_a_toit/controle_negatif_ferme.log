@@ -1,0 +1,19 @@
+Blender 4.0.2
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.10s
+[sab] soudure : 54810 -> 10045 sommets (l'export glTF les dedouble par face)
+[sab] maillage SM_WaterfallCave : 10045 sommets, 20090 polygones
+[sab] empreinte des coordonnees AVANT : 950699a3fd7837ec63f77c9a7415573d
+[sab] integrite AVANT : 0 arete(s) de bord, 0 non-manifold
+[sab] 1. AVANT   : cumul 1.481 m sur un vide de 1.63 m (1 banc)
+[sab]            -> VERT ici (1.481 >= 0.80)
+[sab] 2. SABOTAGE : 35 sommets deplaces (disque r=0.45 m, chute max 1.60 m) ; 0 triangle retire
+[sab]            integrite APRES : 0 arete(s) de bord, 0 non-manifold
+[sab] 3. MESURE  : toit 1.481 m -> 0.682 m (-0.798 m) ; vide 1.63 -> 2.43 m
+[sab] 4. APRES   : ROUGE ici (0.682 < 0.80)
+[sab] 5. RESTAURE: empreinte 950699a3fd7837ec63f77c9a7415573d
+[sab]            identique a l'originale : OUI
+[sab]            integrite : 0 bord, 0 non-manifold
+[sab]            cumul 1.481 m -> VERT
+[sab] CONTROLE NEGATIF CONCLUANT : vert -> rouge -> vert, maillage ferme et manifold a chaque etape
+RC=0

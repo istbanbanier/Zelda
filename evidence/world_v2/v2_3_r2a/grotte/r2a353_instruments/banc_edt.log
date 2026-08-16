@@ -1,0 +1,292 @@
+Blender 4.0.2
+
+[banc] 1/22  anneau_centre  pas 0.1000
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/anneau_centre.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -2.400..2.400 y -1.150..7.450 z -2.400..2.400
+[edt] grille 60x60, pas 0.1000 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? False
+[edt] GOULOT : demi-epaisseur 0.3606 m -> COLLERETTE 0.7211 m, au (x -1.85, z -0.55)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.6211 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_anneau_centre_01000.json
+[banc]   collerette 0.7211 m | cases de roche 992 | aire 9.920 m2
+
+[banc] 2/22  anneau_centre  pas 0.0500
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/anneau_centre.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -2.400..2.400 y -1.150..7.450 z -2.400..2.400
+[edt] grille 120x120, pas 0.0500 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? False
+[edt] GOULOT : demi-epaisseur 0.3808 m -> COLLERETTE 0.7616 m, au (x -1.93, z -0.62)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.7116 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_anneau_centre_00500.json
+[banc]   collerette 0.7616 m | cases de roche 4004 | aire 10.010 m2
+
+[banc] 3/22  anneau_centre  pas 0.0400
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/anneau_centre.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -2.400..2.400 y -1.150..7.450 z -2.400..2.400
+[edt] grille 150x150, pas 0.0400 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? False
+[edt] GOULOT : demi-epaisseur 0.3774 m -> COLLERETTE 0.7547 m, au (x -1.66, z -1.06)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.7147 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_anneau_centre_00400.json
+[banc]   collerette 0.7547 m | cases de roche 6280 | aire 10.048 m2
+
+[banc] 4/22  anneau_centre  pas 0.0250
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/anneau_centre.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -2.400..2.400 y -1.150..7.450 z -2.400..2.400
+[edt] grille 240x240, pas 0.0250 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? False
+[edt] GOULOT : demi-epaisseur 0.3881 m -> COLLERETTE 0.7762 m, au (x -1.94, z -0.44)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.7512 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_anneau_centre_00250.json
+[banc]   collerette 0.7762 m | cases de roche 16060 | aire 10.038 m2
+
+[banc] 5/22  decentre_00.0deg  pas 0.0500
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_00.0deg.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -3.600..2.400 y -1.150..7.450 z -3.000..3.000
+[edt] grille 168x168, pas 0.0500 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? False
+[edt] GOULOT : demi-epaisseur 0.4000 m -> COLLERETTE 0.8000 m, au (x 1.92, z -0.67)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.7500 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_decentre_00.0deg_00500.json
+[banc]   collerette 0.8000 m | cases de roche 8076 | aire 20.190 m2
+
+[banc] 6/22  decentre_00.0deg  pas 0.0400
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_00.0deg.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -3.600..2.400 y -1.150..7.450 z -3.000..3.000
+[edt] grille 210x210, pas 0.0400 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? False
+[edt] GOULOT : demi-epaisseur 0.3940 m -> COLLERETTE 0.7879 m, au (x 1.94, z -0.62)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.7479 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_decentre_00.0deg_00400.json
+[banc]   collerette 0.7879 m | cases de roche 12628 | aire 20.205 m2
+
+[banc] 7/22  decentre_18.0deg  pas 0.0500
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_18.0deg.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -3.571..2.429 y -1.150..7.450 z -3.185..2.815
+[edt] grille 168x168, pas 0.0500 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? False
+[edt] GOULOT : demi-epaisseur 0.3808 m -> COLLERETTE 0.7616 m, au (x 1.78, z 0.88)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.7116 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_decentre_18.0deg_00500.json
+[banc]   collerette 0.7616 m | cases de roche 8068 | aire 20.170 m2
+
+[banc] 8/22  decentre_18.0deg  pas 0.0400
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_18.0deg.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -3.571..2.429 y -1.150..7.450 z -3.185..2.815
+[edt] grille 210x210, pas 0.0400 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? False
+[edt] GOULOT : demi-epaisseur 0.3795 m -> COLLERETTE 0.7589 m, au (x 1.90, z 0.70)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.7189 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_decentre_18.0deg_00400.json
+[banc]   collerette 0.7589 m | cases de roche 12634 | aire 20.214 m2
+
+[banc] 9/22  decentre_22.5deg  pas 0.1000
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_22.5deg.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -3.554..2.446 y -1.150..7.450 z -3.230..2.770
+[edt] grille 84x84, pas 0.1000 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? False
+[edt] GOULOT : demi-epaisseur 0.3606 m -> COLLERETTE 0.7211 m, au (x 1.65, z 1.25)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.6211 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_decentre_22.5deg_01000.json
+[banc]   collerette 0.7211 m | cases de roche 2013 | aire 20.130 m2
+
+[banc] 10/22  decentre_22.5deg  pas 0.0500
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_22.5deg.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -3.554..2.446 y -1.150..7.450 z -3.230..2.770
+[edt] grille 168x168, pas 0.0500 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? False
+[edt] GOULOT : demi-epaisseur 0.3808 m -> COLLERETTE 0.7616 m, au (x 1.73, z 1.08)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.7116 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_decentre_22.5deg_00500.json
+[banc]   collerette 0.7616 m | cases de roche 8075 | aire 20.188 m2
+
+[banc] 11/22  decentre_22.5deg  pas 0.0400
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_22.5deg.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -3.554..2.446 y -1.150..7.450 z -3.230..2.770
+[edt] grille 210x210, pas 0.0400 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? False
+[edt] GOULOT : demi-epaisseur 0.3795 m -> COLLERETTE 0.7589 m, au (x 1.90, z 0.70)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.7189 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_decentre_22.5deg_00400.json
+[banc]   collerette 0.7589 m | cases de roche 12640 | aire 20.224 m2
+
+[banc] 12/22  decentre_22.5deg  pas 0.0250
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_22.5deg.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -3.554..2.446 y -1.150..7.450 z -3.230..2.770
+[edt] grille 336x336, pas 0.0250 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? False
+[edt] GOULOT : demi-epaisseur 0.3881 m -> COLLERETTE 0.7762 m, au (x 1.89, z 0.71)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.7512 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_decentre_22.5deg_00250.json
+[banc]   collerette 0.7762 m | cases de roche 32333 | aire 20.208 m2
+
+[banc] 13/22  decentre_36.0deg  pas 0.0500
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_36.0deg.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -3.485..2.515 y -1.150..7.450 z -3.353..2.647
+[edt] grille 168x168, pas 0.0500 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? False
+[edt] GOULOT : demi-epaisseur 0.3808 m -> COLLERETTE 0.7616 m, au (x 1.63, z 1.23)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.7116 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_decentre_36.0deg_00500.json
+[banc]   collerette 0.7616 m | cases de roche 8081 | aire 20.203 m2
+
+[banc] 14/22  decentre_36.0deg  pas 0.0400
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_36.0deg.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -3.485..2.515 y -1.150..7.450 z -3.353..2.647
+[edt] grille 210x210, pas 0.0400 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? False
+[edt] GOULOT : demi-epaisseur 0.3774 m -> COLLERETTE 0.7547 m, au (x 1.62, z 1.22)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.7147 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_decentre_36.0deg_00400.json
+[banc]   collerette 0.7547 m | cases de roche 12641 | aire 20.226 m2
+
+[banc] 15/22  decentre_45.0deg  pas 0.0500
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_45.0deg.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -3.424..2.576 y -1.150..7.450 z -3.424..2.576
+[edt] grille 168x168, pas 0.0500 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? False
+[edt] GOULOT : demi-epaisseur 0.3808 m -> COLLERETTE 0.7616 m, au (x 0.92, z 1.83)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.7116 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_decentre_45.0deg_00500.json
+[banc]   collerette 0.7616 m | cases de roche 8053 | aire 20.133 m2
+
+[banc] 16/22  decentre_45.0deg  pas 0.0400
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_45.0deg.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -3.424..2.576 y -1.150..7.450 z -3.424..2.576
+[edt] grille 210x210, pas 0.0400 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? False
+[edt] GOULOT : demi-epaisseur 0.3940 m -> COLLERETTE 0.7879 m, au (x 0.98, z 1.78)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.7479 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_decentre_45.0deg_00400.json
+[banc]   collerette 0.7879 m | cases de roche 12626 | aire 20.202 m2
+
+[banc] 17/22  bruite  pas 0.0500
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/bruite.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -3.043..2.407 y -1.150..7.450 z -2.942..2.474
+[edt] grille 146x146, pas 0.0500 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? False
+[edt] GOULOT : demi-epaisseur 0.3640 m -> COLLERETTE 0.7280 m, au (x 1.87, z -0.58)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.6780 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_bruite_00500.json
+[banc]   collerette 0.7280 m | cases de roche 5942 | aire 14.855 m2
+
+[banc] 18/22  bruite  pas 0.0400
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/bruite.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -3.043..2.407 y -1.150..7.450 z -2.942..2.474
+[edt] grille 183x183, pas 0.0400 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? False
+[edt] GOULOT : demi-epaisseur 0.3622 m -> COLLERETTE 0.7244 m, au (x 1.92, z -0.56)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.6844 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_bruite_00400.json
+[banc]   collerette 0.7244 m | cases de roche 9295 | aire 14.872 m2
+
+[banc] 19/22  fente_sous_maille  pas 0.0500
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/fente_sous_maille.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -1.630..1.630 y -1.150..7.450 z -1.630..1.630
+[edt] grille 89x89, pas 0.0500 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? True
+[edt] GOULOT : demi-epaisseur 0.0500 m -> COLLERETTE 0.1000 m, au (x -1.60, z -0.25)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.0500 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_fente_sous_maille_00500.json
+[banc]   collerette 0.1000 m | cases de roche 123 | aire 0.308 m2
+
+[banc] 20/22  fente_sous_maille  pas 0.0400
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/fente_sous_maille.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -1.630..1.630 y -1.150..7.450 z -1.630..1.630
+[edt] grille 112x112, pas 0.0400 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? True
+[edt] GOULOT : demi-epaisseur 0.0400 m -> COLLERETTE 0.0800 m, au (x -1.61, z -0.21)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.0400 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_fente_sous_maille_00400.json
+[banc]   collerette 0.0800 m | cases de roche 237 | aire 0.379 m2
+
+[banc] 21/22  rasant  pas 0.0500
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/rasant.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -2.200..2.200 y -1.150..7.450 z -2.200..2.200
+[edt] grille 148x148, pas 0.0500 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? False
+[edt] GOULOT : demi-epaisseur 0.2693 m -> COLLERETTE 0.5385 m, au (x -1.68, z -0.83)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.4885 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_rasant_00500.json
+[banc]   collerette 0.5385 m | cases de roche 2856 | aire 7.140 m2
+
+[banc] 22/22  rasant  pas 0.0400
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+[edt] source GLB : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/rasant.glb -> objet SM_WaterfallCave
+[edt] 1826 sommets, 3648 polygones, bbox x -2.200..2.200 y -1.150..7.450 z -2.200..2.200
+[edt] grille 185x185, pas 0.0400 m, plan y=2.85
+[edt] l'ouverture est-elle DEJA reliee au dehors ? True
+[edt] GOULOT : demi-epaisseur 0.0400 m -> COLLERETTE 0.0800 m, au (x -2.20, z -3.68)
+[edt] BORNE INFERIEURE CONSERVATRICE (lecture - pas) : 0.0400 m
+[edt] distance exacte SUR LA GRILLE, pas distance exacte.
+[edt] json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/edt_rasant_00400.json
+[banc]   collerette 0.0800 m | cases de roche 4672 | aire 7.475 m2
+
+[banc] 22 cas -> /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/resultats_edt.json
+
+Blender quit
+RC=0

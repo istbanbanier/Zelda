@@ -1,0 +1,11 @@
+fichier   : assets/environment/caves/SM_WaterfallCave.glb
+sha256    : cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49
+triangles : 20970
+echantillon : 150 points, graine 7, dans x[-2:3] y[4:7] z[-1:5]
+
+points dans la matiere : 96
+points dans le vide    : 54
+points indecis (desaccord entre directions) : 0
+divergences colonne verticale <-> enlacement : 0
+
+VERT: les deux methodes s'accordent sur 150 points couvrant les deux etats ; le balayage vertical rapide est legitime

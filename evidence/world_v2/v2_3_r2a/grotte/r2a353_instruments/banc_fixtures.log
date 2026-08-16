@@ -1,0 +1,35 @@
+==============================================================================
+BANC ELARGI — fixtures, reponse exacte, mesures A et B
+==============================================================================
+polygone a 96 cotes ; la reponse de reference est la distance minimale
+entre les DEUX POLYGONES EXPORTES, pas `R - r`.
+
+   forme                |   pas |  attendu |        A |  biais A |        B |  biais B
+   -----------------------------------------------------------------------------------
+   anneau_centre        | 0.100 |   0.7996 |   0.7996 |   0.0000 |   0.8000 |   0.0004
+   anneau_centre        | 0.050 |   0.7996 |   0.7996 |   0.0000 |   0.8000 |   0.0004
+   anneau_centre        | 0.040 |   0.7996 |   0.7996 |   0.0000 |   0.8000 |   0.0004
+   anneau_centre        | 0.025 |   0.7996 |   0.7996 |   0.0000 |   0.8000 |   0.0004
+   decentre_00.0deg     | 0.050 |   0.7996 |   0.8000 |   0.0004 |   0.8500 |   0.0504
+   decentre_00.0deg     | 0.040 |   0.7996 |   0.8000 |   0.0004 |   0.8400 |   0.0404
+   decentre_18.0deg     | 0.050 |   0.7994 |   0.7999 |   0.0006 |   0.8278 |   0.0285
+   decentre_18.0deg     | 0.040 |   0.7994 |   0.7999 |   0.0006 |   0.8320 |   0.0326
+   decentre_22.5deg     | 0.100 |   0.7996 |   0.7996 |   0.0000 |   0.8071 |   0.0075
+   decentre_22.5deg     | 0.050 |   0.7996 |   0.7996 |   0.0000 |   0.8278 |   0.0282
+   decentre_22.5deg     | 0.040 |   0.7996 |   0.7996 |   0.0000 |   0.8320 |   0.0324
+   decentre_22.5deg     | 0.025 |   0.7996 |   0.7996 |   0.0000 |   0.8250 |   0.0254
+   decentre_36.0deg     | 0.050 |   0.7993 |   0.8003 |   0.0011 |   0.8071 |   0.0078
+   decentre_36.0deg     | 0.040 |   0.7993 |   0.8003 |   0.0011 |   0.8154 |   0.0161
+   decentre_45.0deg     | 0.050 |   0.7996 |   0.8022 |   0.0026 |   0.8071 |   0.0075
+   decentre_45.0deg     | 0.040 |   0.7996 |   0.8022 |   0.0026 |   0.8154 |   0.0158
+   bruite               | 0.050 |   0.7564 |   0.7655 |   0.0091 |   0.7914 |   0.0350
+   bruite               | 0.040 |   0.7564 |   0.7655 |   0.0091 |   0.7931 |   0.0368
+   fente_sous_maille    | 0.050 |   0.0300 |        - |        - |        - |        -
+   fente_sous_maille    | 0.040 |   0.0300 |        - |        - |        - |        -
+   rasant               | 0.050 |   0.5997 |   0.5997 |   0.0000 |   0.6000 |   0.0003
+   rasant               | 0.040 |   0.5997 |   0.5997 |   0.0000 |   0.6000 |   0.0003
+
+plan : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/plan.json  (22 cas)
+etape suivante : blender --background --python-exit-code 1 \
+    --python tools/blender/cave_edt_bench.py -- --plan /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/plan.json
+RC=0

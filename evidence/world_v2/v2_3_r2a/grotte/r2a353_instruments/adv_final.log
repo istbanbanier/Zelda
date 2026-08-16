@@ -1,0 +1,173 @@
+==========================================================================
+EPREUVES ADVERSARIALES — sabotage, rouge, archive, restauration, vert
+==========================================================================
+dossier de travail : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/adv_final
+
+--------------------------------------------------------------------------
+EPREUVE 1  — coque SYMETRIQUE : ancien et nouvel echantillonnage IDENTIQUES
+--------------------------------------------------------------------------
+   85 point(s) compares, ecart maximal 0.00e+00 m
+   sur une coque ASYMETRIQUE, les deux divergent de 0.720 m
+   journal archive : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/adv_final/epreuve1_symetrie.txt
+   sabotage  -> ROUGE   asymetrie 1,8 : les deux echantillonnages divergent de 0.72 m
+   restaure  -> VERT   profil droit : ecart 0.0e+00 m, la correction ne deplace RIEN
+   PASS — le controle sait rougir ET sait se taire
+
+--------------------------------------------------------------------------
+EPREUVE 2  — coque ASYMETRIQUE a deux epaisseurs CONNUES
+--------------------------------------------------------------------------
+   cote gauche  epaisseur posee 1.40 m, mesuree 1.384 m
+   cote droite  epaisseur posee 0.50 m, mesuree 0.494 m
+   apres ECHANGE : gauche 0.508 m, droite 1.370 m
+   journal archive : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/adv_final/epreuve2_asymetrie.json
+   sabotage  -> ROUGE   epaisseurs echangees : le verdict s'echange aussi
+   restaure  -> VERT   epaisseurs rendues a 0,12 m pres, du bon cote
+   PASS — le controle sait rougir ET sait se taire
+
+--------------------------------------------------------------------------
+EPREUVE 3  — TROU dans le TOIT
+--------------------------------------------------------------------------
+   perce  : 73 percee(s) confirmee(s), 996 suspect(s), ouverture max 0.300 m
+   intact : 0 percee(s) confirmee(s), 640 suspect(s), ouverture max 0.000 m
+   restauration exacte : sha256 95adb564e507fe45 identique
+   journal archive : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/adv_final/epreuve3_toit.json
+   sabotage  -> ROUGE   trou de 1.10 m sur toit : 73 percee(s) confirmee(s)
+   restaure  -> VERT   geometrie intacte : 0 percee(s)
+   PASS — le controle sait rougir ET sait se taire
+
+--------------------------------------------------------------------------
+EPREUVE 4  — TROU dans le PLANCHER
+--------------------------------------------------------------------------
+   perce  : 95 percee(s) confirmee(s), 1095 suspect(s), ouverture max 0.300 m
+   intact : 0 percee(s) confirmee(s), 640 suspect(s), ouverture max 0.000 m
+   restauration exacte : sha256 95adb564e507fe45 identique
+   journal archive : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/adv_final/epreuve4_plancher.json
+   sabotage  -> ROUGE   trou de 1.10 m sur plancher : 95 percee(s) confirmee(s)
+   restaure  -> VERT   geometrie intacte : 0 percee(s)
+   PASS — le controle sait rougir ET sait se taire
+
+--------------------------------------------------------------------------
+EPREUVE 5  — COLLERETTE amputee sur le MAILLAGE REEL
+--------------------------------------------------------------------------
+   maillage livre : 20090 triangles, sha256 cc3596c5d68cbfd8
+   matieres du maillage : MAT_CaveIn_Deep 518, MAT_CaveIn_Floor 466, MAT_CaveIn_Wall 182, MAT_CaveRock_Base 8081, MAT_CaveRock_Collar 3750, MAT_CaveRock_Face 7093
+   intact           : A 0.8265 m | B (plan impose y -1.15) 1.1000 m, 3625 case(s) d'ouverture
+   le goulot de B est au (x 1.43, z -0.45) du plan
+   SABOTAGE 1 — matiere nommee : 164 triangle(s) de MAT_CaveRock_Collar retire(s) sur 3750 ; emprise x -2.34..2.77 y -2.38..0.35 z 2.48..3.65
+   ampute (S1)      : A 0.8265 m | B (plan impose y -1.15) 1.1000 m, 3625 case(s) d'ouverture
+   SABOTAGE 2 — au goulot (x 1.43, z -0.45), toutes matieres : 101 triangle(s) retire(s)
+   retires par matiere : MAT_CaveIn_Floor 38, MAT_CaveIn_Wall 9, MAT_CaveRock_Base 53, MAT_CaveRock_Face 1
+   emprise du retrait : x 0.90..2.03  y -2.35..0.27  z -0.68..0.33
+   ampute (S2)      : A 0.8265 m | B (plan impose y -1.15) 1.1107 m, 3515 case(s) d'ouverture
+   SABOTAGE 3 — peau exterieure au (x 2.07, z -1.15), direction sortante (0.68 ; -0.74) : 1 triangle(s) retire(s)
+   retires par matiere : MAT_CaveRock_Base 1
+   ampute (S3)      : A 0.8265 m | B (plan impose y -1.15) 1.1000 m, 3625 case(s) d'ouverture
+   restauration exacte : sha256 cc3596c5d68cbfd8 identique
+   journal archive : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/adv_final/epreuve5_collerette.json
+   >>> FAIT : retirer 164 triangle(s) de MAT_CaveRock_Collar au porche ne deplace NI A NI B. La matiere nommee ne porte pas le goulot ; le rouge du tour precedent venait des AUTRES matieres emportees par une boite de 3 m.
+   >>> FAIT : S2 ne fait pas tomber B, il le fait MONTER (1.1000 -> 1.1107). L'emprise de B EST l'ouverture : retirer la roche au goulot transforme ces cases en air libre, l'ouverture retrecit (3625 -> 3515 cases) et son point le plus mince disparait avec elle. B n'est PAS monotone sous une ablation locale.
+   sabotage  -> PAS DE ROUGE   S3 : 1 triangle(s) de peau exterieure -> B 1.100 m ; S2 : 101 triangle(s) au goulot -> A 0.826 -> 0.826 m, B 1.100 -> 1.111 m   [S1, matiere nommee seule : 164 retire(s), mesure inchangee]
+   restaure  -> VERT   maillage livre, au plan impose y -1.15 : A 0.826 m, B 1.100 m
+   >>> ECHEC : le sabotage n'a pas fait rougir : le controle ne peut pas echouer
+
+--------------------------------------------------------------------------
+EPREUVE 6  — PAROI LATERALE amincie sous 0,80 m
+--------------------------------------------------------------------------
+   paroi saine  posee 1.00 m, mesuree 0.995 m  -> au-dessus
+   paroi mince  posee 0.42 m, mesuree 0.430 m  -> SOUS LE SEUIL
+   journal archive : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/adv_final/epreuve6_paroi.json
+   sabotage  -> ROUGE   0,42 m pose -> 0.430 m mesure, sous le seuil de 0.80 m
+   restaure  -> VERT   1,00 m pose -> 0.995 m mesure, au-dessus du seuil
+   PASS — le controle sait rougir ET sait se taire
+
+--------------------------------------------------------------------------
+EPREUVE 7  — TRANSFORMATION rotation + translation + ECHELLE non triviale
+--------------------------------------------------------------------------
+   aller-retour modele -> monde -> modele : ecart max 3.55e-15 m
+   distance en repere modele 5.0000 m, en repere monde 6.8500 m
+   rapport 1.3700, echelle posee 1.37
+   transformation SANS echelle : distance monde 5.0000 m (devrait etre 6.8500)
+   journal archive : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/adv_final/epreuve7_transformation.json
+   sabotage  -> ROUGE   echelle omise : la longueur monde tombe a 5.000 au lieu de 6.850
+   restaure  -> VERT   aller-retour 3.6e-15 m et rapport de longueurs exactement 1.37
+   PASS — le controle sait rougir ET sait se taire
+
+--------------------------------------------------------------------------
+EPREUVE 8  — JOURNAL — acquittement interdit sous un `<-- TROU`
+--------------------------------------------------------------------------
+      y +3.06  station 7  .   0/1   <-- TROU
+   ACQUITTEMENT REFUSE — la section « plancher » porte deja 1 marqueur(s) de defaut.
+      premier defaut : y +3.06  station 7  .   0/1   <-- TROU
+      texte refuse   : PASS — un sol existe sous chaque point sonde
+   section portant un TROU : dire_pass rend False, incoherences 1
+      y +3.06  station 7  .   0/1   <-- TROU
+   PASS — imprime sans passer par dire_pass
+   acquittement imprime SANS dire_pass : 1 incoherence(s) detectee(s) par le rebalayage
+      y +3.06  station 7  .   0/1   <-- TROU
+   PASS — aucun rayon ne sort des parois
+   acquittement d'une AUTRE section : dire_pass rend True (la portee est la section, pas le journal entier)
+      y +3.06  station 7  #####  5/5
+   PASS — un sol existe sous chaque point
+   section sans defaut : dire_pass rend True, incoherences 0
+   journal archive : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/adv_final/epreuve8_journal.json
+   sabotage  -> ROUGE   sous un TROU : refus a la source ET rebalayage qui attrape le contournement
+   restaure  -> VERT   sans TROU, et dans une autre section : l'acquittement passe
+   PASS — le controle sait rougir ET sait se taire
+
+--------------------------------------------------------------------------
+EPREUVE 9  — GEOMETRIE INTACTE restauree -> VERT
+--------------------------------------------------------------------------
+   quatre faces percees : 312 percee(s), ouverture max 0.300 m
+   restauree : 0 percee(s), 640 suspect(s), 0 faute(s) de plancher
+   restauration exacte : sha256 95adb564e507fe45 identique
+   journal archive : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/adv_final/epreuve9_intacte.json
+   sabotage  -> ROUGE   quatre faces percees : 312 percee(s) confirmee(s)
+   restaure  -> VERT   geometrie restauree : 0 percee, 0 faute de plancher
+   PASS — le controle sait rougir ET sait se taire
+
+--------------------------------------------------------------------------
+EPREUVE 10 — COURBURE + PLANCHER MONTANT — fixture de la 7e occurrence
+--------------------------------------------------------------------------
+   ecart de la normale a l'axe X : 0.0 a 69.9 degres
+   le plancher monte de -0.60 m a -0.10 m
+   85 couple(s) (u, f) engendres UNE fois, deux placements
+   tombent dans le vide : ANCIEN 72, NOUVEAU 85 — l'ancien perd 13 point(s) dans la roche
+   sur les 72 couple(s) ou LES DEUX sont dans le vide :
+      ANCIEN  (X, largeur symetrique, station nominale) : 1 faute(s)
+      NOUVEAU (normale, largeur du cote, station reelle) : 0 faute(s)
+   meme roche, meme jeu de points, meme denominateur : l'ecart est entierement produit par le placement.
+   robustesse (TELEMETRIE, ne fonde aucun verdict) :
+      pas_u | positions f            | communs | ANCIEN | NOUVEAU
+       0.25 | 3 (-0,6 0 0,6)         |      76 |      1 |       0
+       0.25 | 5 canonique            |     140 |      1 |       0
+       0.25 | 7 (+-0,15)             |     204 |      1 |       0
+       0.50 | 3 (-0,6 0 0,6)         |      39 |      1 |       0
+       0.50 | 5 canonique            |      72 |      1 |       0
+       0.50 | 7 (+-0,15)             |     104 |      1 |       0
+       1.00 | 3 (-0,6 0 0,6)         |      21 |      1 |       0
+       1.00 | 5 canonique            |      38 |      1 |       0
+       1.00 | 7 (+-0,15)             |      54 |      1 |       0
+      0 combinaison(s) sur 9 ou l'ANCIEN ne rougit pas ; 0 ou le NOUVEAU fauterait.
+   journal archive : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/adv_final/epreuve10_courbure.json
+   sabotage  -> ROUGE   le long de X : 1 faute(s) sur 72 couples communs, roche saine
+   restaure  -> VERT   le long de la normale : 0 faute(s) sur les MEMES 72 couples
+   PASS — le controle sait rougir ET sait se taire
+
+==========================================================================
+BILAN
+==========================================================================
+   1   coque SYMETRIQUE : ancien et nouvel echantillonnage IDENTI PASS
+   2   coque ASYMETRIQUE a deux epaisseurs CONNUES                PASS
+   3   TROU dans le TOIT                                          PASS
+   4   TROU dans le PLANCHER                                      PASS
+   5   COLLERETTE amputee sur le MAILLAGE REEL                    FAIL
+   6   PAROI LATERALE amincie sous 0,80 m                         PASS
+   7   TRANSFORMATION rotation + translation + ECHELLE non trivia PASS
+   8   JOURNAL — acquittement interdit sous un `<-- TROU`         PASS
+   9   GEOMETRIE INTACTE restauree -> VERT                        PASS
+   10  COURBURE + PLANCHER MONTANT — fixture de la 7e occurrence  PASS
+
+10 epreuve(s), 1 echec(s)
+   ECHEC 5 — le sabotage n'a pas fait rougir : le controle ne peut pas echouer
+bilan : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/adv_final/bilan.json
+RC=1

@@ -1331,3 +1331,65 @@ Le point 3 est le plus parlant : les deux tests fautifs dépendent d'un délai.
   pas, et faire imprimer à `hauteur_du_sol` la valeur attendue à côté de la
   valeur mesurée, avec l'écart. Les deux sont des changements d'une ligne dont
   l'absence a coûté une livraison.
+
+---
+
+## ISS-045 — L'épreuve 5 mesurait un maillage d'un AUTRE worktree, par chemin absolu · `S2` · CORRIGÉ
+
+- **Vu** : 2026-08-16, passe R2a-3.5.3, agent B (épreuves adverses), en lisant
+  `tools/probe_cave_adversarial.py` avant de reconstruire l'épreuve 5.
+- **Observé** : la constante `MAILLAGE_COLLERETTE` valait le chemin **absolu**
+  `/home/user/zelda-r2a352/b_collerette/assets/environment/caves/SM_WaterfallCave.glb`
+  — le worktree d'un **autre agent**, d'une **passe précédente**, hors du socle
+  `507ef6a`. L'épreuve 5 — la seule des dix qui mesure la géométrie livrée
+  plutôt qu'une fixture — ne mesurait donc pas le fichier de son propre arbre.
+- **Pourquoi personne ne l'a vu** : le fichier visé portait, ce jour-là, le
+  **même sha256** que le candidat du socle (`cc3596c5d68cbfd8`). Vérifié :
+
+  ```
+  sha256sum /home/user/zelda-r2a352/b_collerette/assets/environment/caves/SM_WaterfallCave.glb \
+            /home/user/zelda-r2a353/b_adverse/assets/environment/caves/SM_WaterfallCave.glb
+  cc3596c5…  (identiques)
+  ```
+
+  L'épreuve mesurait donc la bonne chose — **par chance**. Rien ne le
+  garantissait : il suffisait qu'une session régénère l'autre worktree pour
+  que la suite rende un verdict **précis, plausible, et portant sur une
+  géométrie que personne n'avait sous les yeux**.
+- **Famille du défaut** : identique à celle que `tools/CLAUDE.md` consigne sous
+  « exporter à la main après une chaîne interrompue rend l'ANCIEN maillage » —
+  *un résultat faux, précis, plausible et parfaitement inutile* — et à ISS-018 :
+  mesurer avec assurance quelque chose qui n'est pas ce qu'on croit. Le journal
+  n'imprimait pas le chemin mesuré ; seule la lecture du code pouvait le
+  révéler.
+- **Aggravant** : le défaut est **auto-reproductible**. Chaque nouvelle passe
+  crée un worktree neuf ; un chemin absolu y pointe toujours vers le précédent.
+  Il aurait donc survécu à R2a-3.5.3, puis à la suivante.
+- **Correction appliquée** (`tools/probe_cave_adversarial.py`) :
+  1. le chemin est calculé depuis `__file__` (`RACINE_DEPOT`), donc **relatif à
+     la racine du dépôt** — chaque worktree mesure le sien ;
+  2. absence du fichier → échec **bruyant** consigné dans les échecs de la
+     suite, jamais un `SKIP` silencieux ;
+  3. le **sha256 mesuré est imprimé** au journal à chaque exécution, à côté du
+     chemin complet.
+- **Ce qui a été délibérément NON fait, et pourquoi** : l'empreinte n'est **pas
+  épinglée**. L'imprimer rend une substitution visible ; l'épingler
+  transformerait la suite adverse en **obstacle** dès que la géométrie sera
+  corrigée — et une épreuve adversariale qui interdit de réparer son sujet a
+  changé de camp. La distinction vaut d'être retenue : *rendre visible* n'est
+  pas *rendre impossible*.
+- **Leçon transposable** : un chemin absolu vers un autre arbre de travail est
+  un défaut de **conception**, pas un détail de confort. Chercher les autres —
+  `grep -rn "/home/user/zelda-" tools/ scripts/` — car un instrument mesure
+  rarement seul.
+- **Recherche effectuée, et elle a trouvé trois autres occurrences** :
+  `tools/blender/diag_cave_etapes.py` porte `SOURCE`, `SORTIE` et
+  `FICHIER_FEINT` en absolu vers `/home/user/zelda-r2a351/a_profil/` et
+  `/home/user/zelda-r2a351/b_sonde/` — deux worktrees de la passe R2a-3.5.1
+  qui **n'existent plus** (vérifié : `ABSENT`). Ce fichier n'appartient pas à
+  l'agent B et n'a **pas** été modifié.
+  **La distinction de gravité mérite d'être notée** : ces trois chemins-là ne
+  résolvent plus, donc l'outil **échoue bruyamment** — il ne ment pas. Celui de
+  l'épreuve 5 résolvait vers un fichier plausible, et **mesurait en silence**.
+  Un chemin absolu cassé est un `S3` ; un chemin absolu qui marche encore par
+  hasard est un `S2`.

@@ -1,0 +1,141 @@
+==============================================================================
+ORACLE D'ETANCHEITE — classement de l'espace, sans station
+==============================================================================
+maillage : /home/user/zelda-r2a352/b_collerette/assets/environment/caves/SM_WaterfallCave.glb
+sha256   : cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49
+triangles: 20090   matieres : MAT_CaveIn_Deep, MAT_CaveIn_Floor, MAT_CaveIn_Wall, MAT_CaveRock_Base, MAT_CaveRock_Collar, MAT_CaveRock_Face
+graine visee (repere MODELE, depuis scripts/world_v2/poi/waterfall_cave_place.gd + 0.90 m) : (2.62 ; 2.58 ; 0.99)
+
+------------------------------------------------------------------------------
+BALAYAGE — quelle EPAISSEUR de bouchon coupe l'entonnoir ?
+------------------------------------------------------------------------------
+   La bouche n'est pas plane : le bord du porche evase court sur
+   une plage de y. On ne CHOISIT donc pas l'epaisseur du bouchon,
+   on la MESURE — et l'angle mort de l'instrument vaut exactement
+   l'epaisseur retenue.
+   parite +X : 15 colonne(s) sur 24850 de parite IMPAIRE (0.060 %)
+   parite +Y : 18 colonne(s) sur 27548 de parite IMPAIRE (0.065 %)
+   parite +Z : 26 colonne(s) sur 33950 de parite IMPAIRE (0.077 %)
+   vote a trois axes : 38208 case(s) en desaccord sur 4820900 (0.7925 %)
+   grille 194x175x142, 4019714 case(s) d'air
+       1 case(s) = 0.10 m : ETANCHE, composante EXTERIEURE  3921417 case(s)
+
+   >>> EPAISSEUR RETENUE : 0.10 m (1 case[s]). ANGLE MORT DE
+       L'INSTRUMENT : tout trou entierement contenu dans cette
+       tranche est invisible. Mesure ci-dessous.
+
+------------------------------------------------------------------------------
+REFERENCE — maillage intact, bouchon canonique en place
+------------------------------------------------------------------------------
+   grille 194x175x142, pas 0.100 m, 4019714 case(s) d'air sur 4820900
+   dalle bouchee : j = [31, 32], soit y dans [-1.235, -1.035)
+   graine interieure : case (125, 69, 57), centre (2.58 ; 2.62 ; 1.00), montee de 0 case(s) depuis le repere
+   composante EXTERIEURE 3921417 case(s) = 3921.4 m3 | composante de la GRAINE 52873 case(s) = 52.9 m3
+   VERDICT : ETANCHE
+
+------------------------------------------------------------------------------
+CONTROLE 0 — bouche NON bouchee : la fuite est ATTENDUE
+------------------------------------------------------------------------------
+   grille 194x175x142, pas 0.100 m, 4019714 case(s) d'air sur 4820900
+   AUCUNE dalle bouchee
+   graine interieure : case (125, 69, 57), centre (2.58 ; 2.62 ; 1.00), montee de 0 case(s) depuis le repere
+   composante EXTERIEURE 4019714 case(s) = 4019.7 m3 | composante de la GRAINE 4019714 case(s) = 4019.7 m3
+   VERDICT : FUITE   (attendu : FUITE)
+
+------------------------------------------------------------------------------
+CONTROLE — trou vers le toit (+Z)
+------------------------------------------------------------------------------
+   299 triangle(s) retire(s) sur 20090 ; tunnel jusqu'a t = 6.47 m
+   emprise du retrait : x 1.47..3.63  y 1.38..3.63  z 0.93..7.75
+   largeur libre mesuree : rayon 0.50 m (5.0 case[s]) sans aucun impact
+   grille 194x175x142, pas 0.100 m, 4019696 case(s) d'air sur 4820900
+   dalle bouchee : j = [31, 32], soit y dans [-1.235, -1.035)
+   graine interieure : case (125, 69, 57), centre (2.58 ; 2.62 ; 1.00), montee de 0 case(s) depuis le repere
+   composante EXTERIEURE 3920744 case(s) = 3920.7 m3 | composante de la GRAINE 53528 case(s) = 53.5 m3
+   VERDICT : ETANCHE   (attendu : FUITE)
+
+------------------------------------------------------------------------------
+CONTROLE — trou vers le plancher (-Z)
+------------------------------------------------------------------------------
+   129 triangle(s) retire(s) sur 20090 ; tunnel jusqu'a t = 4.47 m
+   emprise du retrait : x 1.45..3.63  y 1.45..3.61  z -2.96..0.93
+   largeur libre mesuree : rayon 0.65 m (6.5 case[s]) sans aucun impact
+   grille 194x175x142, pas 0.100 m, 4020067 case(s) d'air sur 4820900
+   dalle bouchee : j = [31, 32], soit y dans [-1.235, -1.035)
+   graine interieure : case (125, 69, 57), centre (2.58 ; 2.62 ; 1.00), montee de 0 case(s) depuis le repere
+   composante EXTERIEURE 3921550 case(s) = 3921.6 m3 | composante de la GRAINE 53093 case(s) = 53.1 m3
+   VERDICT : ETANCHE   (attendu : FUITE)
+
+------------------------------------------------------------------------------
+CONTROLE — trou vers le flanc +X
+------------------------------------------------------------------------------
+   447 triangle(s) retire(s) sur 20090 ; tunnel jusqu'a t = 5.50 m
+   emprise du retrait : x 2.43..8.03  y 1.64..3.68  z -0.20..2.21
+   largeur libre mesuree : rayon 0.65 m (6.5 case[s]) sans aucun impact
+   grille 194x175x142, pas 0.100 m, 4018165 case(s) d'air sur 4820900
+   dalle bouchee : j = [31, 32], soit y dans [-1.235, -1.035)
+   graine interieure : case (125, 69, 57), centre (2.58 ; 2.62 ; 1.00), montee de 0 case(s) depuis le repere
+   composante EXTERIEURE 3920575 case(s) = 3920.6 m3 | composante de la GRAINE 52130 case(s) = 52.1 m3
+   VERDICT : ETANCHE   (attendu : FUITE)
+
+------------------------------------------------------------------------------
+CONTROLE — trou vers le flanc -X
+------------------------------------------------------------------------------
+   136 triangle(s) retire(s) sur 20090 ; tunnel jusqu'a t = 10.73 m
+   emprise du retrait : x -8.25..0.07  y 1.49..3.63  z -0.13..2.16
+   largeur libre mesuree : rayon 0.45 m (4.5 case[s]) sans aucun impact
+   grille 194x175x142, pas 0.100 m, 4020883 case(s) d'air sur 4820900
+   dalle bouchee : j = [31, 32], soit y dans [-1.235, -1.035)
+   graine interieure : case (125, 69, 57), centre (2.58 ; 2.62 ; 1.00), montee de 0 case(s) depuis le repere
+   composante EXTERIEURE 3921982 case(s) = 3922.0 m3 | composante de la GRAINE 53470 case(s) = 53.5 m3
+   VERDICT : ETANCHE   (attendu : FUITE)
+
+------------------------------------------------------------------------------
+CONTROLE — trou vers le fond +Y
+------------------------------------------------------------------------------
+   491 triangle(s) retire(s) sur 20090 ; tunnel jusqu'a t = 8.85 m
+   emprise du retrait : x 1.32..3.72  y 2.59..11.07  z -0.25..2.24
+   largeur libre mesuree : rayon 0.50 m (5.0 case[s]) sans aucun impact
+   grille 194x175x142, pas 0.100 m, 4018939 case(s) d'air sur 4820900
+   dalle bouchee : j = [31, 32], soit y dans [-1.235, -1.035)
+   graine interieure : case (125, 69, 57), centre (2.58 ; 2.62 ; 1.00), montee de 0 case(s) depuis le repere
+   composante EXTERIEURE 3973497 case(s) = 3973.5 m3 | composante de la GRAINE 3186064 case(s) = 3186.1 m3
+   VERDICT : FUITE   (attendu : FUITE)
+
+------------------------------------------------------------------------------
+CONTROLE — trou vers le avant -Y
+------------------------------------------------------------------------------
+   182 triangle(s) retire(s) sur 20090 ; tunnel jusqu'a t = 4.58 m
+   emprise du retrait : x 1.73..3.69  y -2.31..2.83  z 0.03..1.92
+   largeur libre mesuree : rayon 0.35 m (3.5 case[s]) sans aucun impact
+   grille 194x175x142, pas 0.100 m, 4021922 case(s) d'air sur 4820900
+   dalle bouchee : j = [31, 32], soit y dans [-1.235, -1.035)
+   graine interieure : case (125, 69, 57), centre (2.58 ; 2.62 ; 1.00), montee de 0 case(s) depuis le repere
+   composante EXTERIEURE 3920932 case(s) = 3920.9 m3 | composante de la GRAINE 55537 case(s) = 55.5 m3
+   VERDICT : ETANCHE   (attendu : FUITE)
+
+------------------------------------------------------------------------------
+CONTROLE — l'ANGLE MORT du bouchon, mesure
+------------------------------------------------------------------------------
+   SANS OBJET : le balayage a retenu UNE case (0.10 m).
+   L'angle mort du bouchon se confond alors avec la limite
+   de resolution de la grille, deja enoncee et deja bornee.
+   Fabriquer ici une epreuve reviendrait a mesurer deux
+   fois la meme cecite, et a la presenter comme deux
+   garanties. Elle redeviendra necessaire si un bouchon
+   plus epais est un jour retenu.
+
+------------------------------------------------------------------------------
+RESTAURATION : sha256 cc3596c5d68cbfd8 -> cc3596c5d68cbfd8   IDENTIQUE
+------------------------------------------------------------------------------
+
+==============================================================================
+ECHEC : toit (+Z) : trou non detecte
+ECHEC : plancher (-Z) : trou non detecte
+ECHEC : flanc +X : trou non detecte
+ECHEC : flanc -X : trou non detecte
+ECHEC : avant -Y : trou non detecte
+VERDICT GLOBAL : FAIL
+==============================================================================
+json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/oracle_cc3596c5.json
+RC=1

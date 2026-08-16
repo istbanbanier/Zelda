@@ -293,3 +293,40 @@ contrôle négatif retirait la matière sous `z = 0` alors que le plancher vit �
 vert, et on aurait pu en conclure que l'outil était aveugle. Vérifier ce que le
 sabotage a réellement enlevé (`SABOTAGE : N triangles retirés`) avant de croire
 le verdict qu'il produit.
+## `export_architecture.sh` sans argument régénère QUATRE assets gelés
+
+Mesuré le 2026-08-16, par lecture du script — trouvé par l'audit d'intégration
+de la passe R2a-3.5.2.
+
+```bash
+tools/blender/export_architecture.sh                 # régénère les CINQ sujets
+tools/blender/export_architecture.sh waterfall_cave  # celui qu'on voulait
+```
+
+`DEMANDE="${1:-}"`, puis dans la boucle :
+
+```bash
+[ -n "$DEMANDE" ] && [ "$DEMANDE" != "$ID" ] && continue
+```
+
+Quand `DEMANDE` est vide, la garde ne se déclenche jamais et **aucun sujet
+n'est sauté**. La liste `SUJETS` contient `pylon`, `stone_bridge`,
+`waterfall_cave`, `village_quay`, `village_wall` : oublier un mot réécrit donc
+le pylône, le pont et le hameau — **trois des quatre golden masters validés**.
+
+Ce qui rend le piège dangereux, c'est qu'il ne s'ouvre pas par malveillance et
+qu'il ne dit rien : la commande réussit, le script imprime son vert, et la
+sortie du périmètre ne se voit que dans `git status`, plus tard, quand trois
+binaires ont bougé sans raison. C'est la même famille que le vert obtenu en ne
+faisant rien, déjà consigné dans ce même script vingt lignes plus haut.
+
+**Règle : l'argument de sujet est obligatoire.** Toute commande de chaîne
+écrite dans un document, un script, un journal de preuve ou un rapport le porte
+explicitement. Une commande citée de mémoire sans sujet est un défaut de
+rédaction, pas une abréviation.
+
+Contrôle après coup, avant de mesurer quoi que ce soit :
+
+```bash
+git status --porcelain assets/    # doit ne montrer QUE l'asset visé
+```
