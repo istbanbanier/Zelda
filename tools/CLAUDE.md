@@ -119,6 +119,33 @@ sauvegarde — c'est le mécanisme d'ISS-038. Un verrou partagé
 (`.git/heavy_tools.lock`, `flock`) est la seule protection ; il doit être pris
 par **chaque** invocation de Godot ou Blender, quel que soit l'arbre.
 
+## `^` en Python n'est PAS multiligne par défaut — et `re.S` ne le corrige pas
+
+Mesuré le 2026-08-16, deux tours perdus.
+
+```python
+re.search(r"^CAVITE = \[\n(?:.*?\n)*?\]", source, re.S)   # ne trouve RIEN
+re.search(r"^CAVITE = \[\n(?:.*?\n)*?\]", source, re.S | re.M)   # correct
+```
+
+`re.S` (DOTALL) fait que `.` mange les sauts de ligne ; il ne dit **rien** de
+`^`, qui reste ancré au début de la chaîne tant que `re.M` est absent. Le
+motif a donc l'air multiligne, se lit comme multiligne, et ne peut matcher
+qu'à l'offset 0.
+
+Ce qui rend le piège coûteux, c'est la **vérification qui ment ensuite** : j'ai
+contrôlé le succès par `grep "1.68,  4.13"` sur le fichier, obtenu une ligne, et
+conclu « appliqué ». La ligne venait d'un autre bloc. Un `grep` sur une valeur
+qui apparaît à plusieurs endroits ne prouve pas qu'un remplacement précis a eu
+lieu.
+
+Deux règles qui en sortent :
+
+1. **Faire échouer bruyamment.** Un `str.replace()` dont le motif est absent ne
+   fait rien et ne dit rien. Vérifier la présence avant, ou lever.
+2. **Vérifier en relisant l'endroit exact**, pas en cherchant une valeur :
+   `sed -n '/^CAVITE = \[/,/^\]/p' fichier` puis lire la ligne attendue.
+
 ## Exporter à la main après une chaîne interrompue rend l'ANCIEN maillage
 
 Mesuré le 2026-08-16. Le fichier produit avait un **nom neuf**, une **date
