@@ -17,11 +17,22 @@ Test : depuis un point **dans la galerie** (`z = 1,50`), compter les traversées
 en **montant**. Zéro traversée = on voit le ciel. Fenêtre de 30 × 30 cm autour du
 défaut, **3 721 colonnes au pas de 5 mm**.
 
-| géométrie | colonnes ouvertes sur le ciel | emprise du trou |
-|---|---:|---|
-| **candidat `cc3596c5`** | **343 / 3 721** | **160 × 200 mm** |
-| **`BASE352` `8bc8b9f9`** | **343 / 3 721** | **identique** |
-| **R2a-3.4, la géométrie LIVRÉE** | **0** | — |
+| géométrie | colonnes ouvertes sur le ciel | aire ouverte | boîte englobante |
+|---|---:|---:|---|
+| **candidat `cc3596c5`** | **343 / 3 721** | **85,8 cm²** | 160 × 200 mm |
+| **`BASE352` `8bc8b9f9`** | **343 / 3 721** | **85,8 cm²** | identique |
+| **R2a-3.4, la géométrie LIVRÉE** | **0** | — | — |
+
+> **CORRECTION, 2026-08-16.** La première version de cette fiche n'annonçait que
+> « **160 × 200 mm** ». C'est la **boîte englobante**, et la présenter seule
+> **surestime le trou** : les 343 colonnes de 5 × 5 mm couvrent **85,8 cm²**,
+> soit **27 %** de cette boîte — l'ouverture est irrégulière, équivalente à un
+> disque de **104 mm** de diamètre.
+>
+> L'agent C annonce de son côté **20 × 20 mm**, mesuré au pas de 2 cm sur ~1 200
+> colonnes : c'est le **noyau** de l'ouverture, et cela **sous-estime** d'autant.
+> Les deux chiffres décrivent la même chose à deux résolutions ; aucun des deux
+> seul n'était honnête. Le nombre à citer est **l'aire**.
 
 Trou centré sur `x ∈ [0,468 ; 0,623]`, `y ∈ [5,850 ; 6,045]` en repère modèle —
 exactement là où la passe précédente mesurait « 0,038 m de toit ».

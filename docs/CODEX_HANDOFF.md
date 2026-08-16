@@ -2002,11 +2002,17 @@ Test : depuis un point **dans la galerie** (`z = 1,50`), compter les traversées
 en **montant**. Zéro = on voit le ciel. Fenêtre de 30 × 30 cm, **3 721 colonnes
 au pas de 5 mm**, avec garde-fou exigeant de la roche **en dessous** :
 
-| géométrie | colonnes ouvertes | emprise |
-|---|---:|---|
-| **candidat `cc3596c5`** | **343 / 3 721** | **160 × 200 mm** |
-| **`BASE352`** | **343** | **identique** |
-| **R2a-3.4 LIVRÉE** | **0** | — |
+| géométrie | colonnes ouvertes | aire ouverte | boîte |
+|---|---:|---:|---|
+| **candidat `cc3596c5`** | **343 / 3 721** | **85,8 cm²** | 160 × 200 mm |
+| **`BASE352`** | **343** | **85,8 cm²** | identique |
+| **R2a-3.4 LIVRÉE** | **0** | — | — |
+
+**Corrigé après coup** : j'avais publié « 160 × 200 mm » seul, ce qui est la
+**boîte englobante** et **surestime** l'ouverture — les 343 colonnes couvrent
+85,8 cm², soit 27 % de cette boîte, équivalent à un disque de 104 mm. L'agent C
+annonce 20 × 20 mm, mesuré à 2 cm : c'est le **noyau**, et cela sous-estime.
+**Le nombre à citer est l'aire.**
 
 `x ∈ [0,468 ; 0,623]`, `y ∈ [5,850 ; 6,045]` en repère modèle. **Hérité de
 l'enveloppe R2a-3.5.2, pas du lot collerette.**
