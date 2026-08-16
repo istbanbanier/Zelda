@@ -58,6 +58,12 @@ var _place_id: String = ""
 ## le tiers inférieur de la silhouette et en écrasait la lecture : on
 ## jugeait un bloc rectangulaire qui n'existe pas pour le joueur.
 var _clip_below: float = 0.0
+
+## PROVENANCE PAR RÔLE — même besoin, même forme que `capture_poi_batch`.
+## Un manifeste de silhouette qui ne dit pas QUELLE géométrie il montre ne
+## prouve rien de plus qu'une image jolie. Le SHA est dérivé de git, jamais
+## déclaré.
+var _provenance: PackedStringArray = PackedStringArray()
 var _clip_actif: bool = false
 var _angles: PackedFloat32Array = PackedFloat32Array([0.0, 90.0])
 var _width: int = 900
@@ -79,6 +85,8 @@ func _initialize() -> void:
 		elif argument.begins_with("--clip-below="):
 			_clip_below = argument.trim_prefix("--clip-below=").to_float()
 			_clip_actif = true
+		elif argument.begins_with("--provenance="):
+			_provenance = argument.trim_prefix("--provenance=").split(",", false)
 		elif argument.begins_with("--build-frames="):
 			_build_frames = maxi(1, argument.trim_prefix("--build-frames=").to_int())
 		elif argument.begins_with("--angles="):
@@ -251,6 +259,7 @@ func _run() -> void:
 		"emprise_m": [boite.size.x, boite.size.y, boite.size.z],
 		"commit": _current_commit(),
 		"repo_dirty": _repo_is_dirty(),
+		"provenance": _provenance_par_role(),
 		"vues": manifeste,
 	}
 	var out: FileAccess = FileAccess.open(
@@ -377,6 +386,32 @@ func _controle_bimodal(image: Image) -> Dictionary:
 		"fond_pct": 100.0 * float(fond) / float(maxi(total, 1)),
 		"hors_bandes_pct": hors_pct,
 	}
+
+
+## Pour chaque `role:chemin`, le dernier commit qui a touché ce chemin.
+## Un chemin inconnu de git rend « inconnu », jamais une valeur plausible.
+func _provenance_par_role() -> Dictionary:
+	var sortie: Dictionary = {}
+	for entree: String in _provenance:
+		var coupe: int = entree.find(":")
+		if coupe <= 0:
+			printerr("[silhouette] provenance ignorée, format "
+				+ "« role:chemin » attendu : %s" % entree)
+			continue
+		var role: String = entree.substr(0, coupe)
+		var chemin: String = entree.substr(coupe + 1)
+		var out: Array = []
+		var rc: int = OS.execute("git", ["-C",
+			ProjectSettings.globalize_path("res://"), "log", "-1",
+			"--format=%H", "--", chemin], out, true)
+		var sha: String = ""
+		if rc == 0 and not out.is_empty():
+			sha = String(out[0]).strip_edges()
+		sortie[role] = {
+			"chemin": chemin,
+			"commit": sha if not sha.is_empty() else "inconnu",
+		}
+	return sortie
 
 
 func _current_commit() -> String:
