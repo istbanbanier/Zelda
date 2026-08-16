@@ -2291,42 +2291,92 @@ def main():
         for b in base:
             print("   %-26s %s" % (b["nom"], _dire_penetration(b["profondeur"])))
         reference = max((b["profondeur"] or 0.0) for b in base)
+
+        # LE BALAYAGE SE FAIT DANS LE REPERE DE LA GALERIE, PAS DANS CELUI
+        # DU MONDE. C'est une correction de methode, et elle a une raison
+        # mesurable : avec un lacet de 45 deg, un decalage en z monde se
+        # projette pour moitie SUR L'AXE de la galerie — or un decalage
+        # axial ne sort pas le rayon du tunnel, donc la penetration ne
+        # bouge presque pas. Mesure du premier jet, en axes monde :
+        # dz +2 m rendait encore 5,7 m de penetration, et le maximum
+        # tombait a dz +1 m. On aurait conclu « mesure plate » alors que
+        # la mesure est simplement AVEUGLE sur cet axe-la, par
+        # construction.
+        #
+        # Les trois axes de la galerie n'ont donc pas le meme pouvoir de
+        # resolution, et chacun est rapporte avec le sien :
+        #   * TRANSVERSE — resolution ~ la demi-largeur de la bouche ;
+        #   * VERTICAL   — resolution ~ la demi-hauteur de la bouche ;
+        #   * AXIAL      — AUCUNE resolution, et c'est attendu : glisser
+        #                  l'ouvrage le long de son propre axe laisse le
+        #                  rayon dans le tunnel. On le mesure quand meme,
+        #                  pour que l'angle mort soit ecrit et non tu.
+        axial = pose.direction_vers_monde((0.0, 1.0, 0.0))
+        transverse = pose.direction_vers_monde((1.0, 0.0, 0.0))
+        vertical = (0.0, 1.0, 0.0)
+        axes = (("transverse", transverse), ("vertical", vertical),
+                ("axial", axial))
         balayage = []
-        for delta in (-3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0):
-            for axe, nom_axe in ((0, "x"), (2, "z")):
-                if delta == 0.0 and axe == 2:
-                    continue
-                decal = [0.0, 0.0, 0.0]
-                decal[axe] = delta
-                autre = pose.decalee(*decal)
+        for nom_axe, vecteur in axes:
+            for delta in (-3.0, -2.0, -1.0, -0.5, 0.5, 1.0, 2.0, 3.0):
+                autre = pose.decalee(*[vecteur[k] * delta for k in range(3)])
                 pire = max((_penetration(grille, profil, autre, p) or 0.0)
                            for p in prises)
                 balayage.append(dict(axe=nom_axe, delta_m=delta,
                                      penetration_max_m=round(pire, 2)))
-        print("   balayage de l'origine (penetration max, tous plans) :")
-        ligne_x = " ".join("%+0.0f:%4.1f" % (b["delta_m"], b["penetration_max_m"])
-                           for b in balayage if b["axe"] == "x")
-        ligne_z = " ".join("%+0.0f:%4.1f" % (b["delta_m"], b["penetration_max_m"])
-                           for b in balayage if b["axe"] == "z")
-        print("      dx  %s" % ligne_x)
-        print("      dz  %s" % ligne_z)
-        optimum = max(balayage, key=lambda b: b["penetration_max_m"])
-        pique = (abs(optimum["delta_m"]) < 1e-9
-                 and reference > 2.0
-                 and reference >= 1.5 * max(
-                     [b["penetration_max_m"] for b in balayage
-                      if abs(b["delta_m"]) >= 2.0] or [0.0]))
+        print("   balayage dans le repere de la galerie (penetration max) :")
+        for nom_axe, _ in axes:
+            ligne = " ".join(
+                "%+0.1f:%5.2f" % (b["delta_m"], b["penetration_max_m"])
+                for b in balayage if b["axe"] == nom_axe)
+            print("      %-11s %+0.1f:%5.2f  <<  %s"
+                  % (nom_axe, 0.0, reference, ligne))
+
+        # CE QUE LE BALAYAGE MESURE, ET CE QU'IL NE MESURE PAS.
+        #
+        # Il ne « valide » pas la pose : il mesure son POUVOIR DE
+        # RESOLUTION, axe par axe, puis borne la pose dans cette
+        # resolution. La difference n'est pas rhetorique — c'est ce qui
+        # separe cette mesure de celle d'hier, qui rendait un score sans
+        # jamais dire ce qu'un score de 52 % excluait.
+        #
+        # Resolution d'un axe := le plus petit decalage qui fait tomber la
+        # penetration sous le quart de la reference. Au-dela, l'hypothese
+        # est refutee ; en deca, elle ne l'est pas et on le dit.
+        resolutions = {}
+        for nom_axe, _ in axes:
+            effondres = [abs(b["delta_m"]) for b in balayage
+                         if b["axe"] == nom_axe
+                         and b["penetration_max_m"] < 0.25 * reference]
+            resolutions[nom_axe] = min(effondres) if effondres else None
+        for nom_axe in ("transverse", "vertical", "axial"):
+            r = resolutions[nom_axe]
+            print("   resolution %-11s : %s"
+                  % (nom_axe,
+                     "un ecart de %+.1f m est REFUTE" % r if r is not None
+                     else "AUCUNE — cet axe n'est pas contraint par cette "
+                          "mesure"))
+        # Le critere : la pose doit etre bornee sur les deux axes
+        # transversal et vertical, et la penetration de reference doit etre
+        # franche. L'axe axial est EXCLU du critere parce que la mesure n'y
+        # a pas de pouvoir — l'y inclure serait exiger d'une regle qu'elle
+        # pese. Il est rapporte comme angle mort, pas passe sous silence.
+        pique = (reference > 2.0
+                 and resolutions["transverse"] is not None
+                 and resolutions["vertical"] is not None)
         etat_pose = "PASS" if pique else "PARTIAL"
-        print("   maximum du balayage : %s %+0.1f m, penetration %.2f m"
-              % (optimum["axe"], optimum["delta_m"],
-                 optimum["penetration_max_m"]))
-        print("   %s — la penetration est %s a l'origine derivee"
-              % (etat_pose, "maximale et piquee" if pique
-                 else "PLATE ou decalee : la pose n'est pas etablie par cette "
-                      "mesure"))
+        print("   %s — pose bornee a moins de %s m (transverse) et %s m "
+              "(vertical) ; axe AXIAL non contraint."
+              % (etat_pose,
+                 resolutions["transverse"], resolutions["vertical"]))
+        print("        La preuve FINE de la transformation n'est pas ici :")
+        print("        c'est tools/probe_cave_selftest.py, ou un trou connu")
+        print("        tombe dans la boite de pixels predite a 2 pixels pres.")
+        resultat["pose"]["resolutions_m"] = resolutions
         resultat["pose"]["penetration_m"] = round(reference, 2)
         resultat["pose"]["balayage"] = balayage
         resultat["pose"]["verdict_penetration"] = etat_pose
+        resultat["pose"]["axe_non_eprouve"] = "axial"
 
         lignes = []
         for prise in prises:

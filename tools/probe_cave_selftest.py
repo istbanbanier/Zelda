@@ -685,6 +685,80 @@ def epreuve_ligne_de_vue(journal, dossier, pose):
 
 
 # ---------------------------------------------------------------------------
+# ÉPREUVE 4 — la mutation SUR LA GÉOMÉTRIE DE PRODUCTION.
+# ---------------------------------------------------------------------------
+
+def epreuve_mutation_reelle(journal, glb):
+    """Le gate distingue-t-il sur le maillage LIVRÉ, et pas seulement sur
+    un tunnel de laboratoire ?
+
+    On retire du maillage réel les triangles qui croisent une colonne
+    verticale de 0,25 m au toit de la station 4, et rien d'autre. Aucun
+    fichier n'est modifié : la mutation vit en mémoire.
+
+    C'est l'épreuve qui empêche de conclure trop vite. Un `PASS` sur le
+    maillage intact ne vaut que si le MÊME contrôle, sur le MÊME maillage
+    à six triangles près, rend `FAIL`. Sans cette paire, un vert ne
+    distingue pas « la grotte est fermée » de « la sonde ne regarde pas ».
+    """
+    print()
+    print("-" * 74)
+    print("EPREUVE 4 — MUTATION DU MAILLAGE LIVRE")
+    print("-" * 74)
+    if not os.path.isfile(glb):
+        journal.verifier(False, "maillage de production lisible", glb)
+        return
+    tris, _ = P.triangles_du_glb(glb)
+    profil = P.PROFIL_GROTTE
+    echantillons = P.points_interieurs(
+        0.25, (-0.60, -0.30, 0.0, 0.30, 0.60), (0.35, 0.90, 1.50))
+    directions = P.directions_sphere(7, 14)
+
+    def _juger(triangles, titre):
+        grille = P.Grille(triangles)
+        _, _, _, _, suspects = P.controle_jour(grille, echantillons, directions)
+        confirmees, ecartees = P.confirmer_percees(grille, suspects, profil)
+        ouverture = max([e["ouverture_m"] for e in ecartees]
+                        + [c["ouverture_m"] for c in confirmees] + [0.0])
+        print("   %-30s %5d tris  %3d suspect(s)  %3d confirmee(s)  "
+              "ouverture max %.3f m"
+              % (titre, len(triangles), len(suspects), len(confirmees),
+                 ouverture))
+        return len(confirmees), ouverture, len(suspects)
+
+    intact, ouv_intact, susp_intact = _juger(tris, "maillage LIVRE, intact")
+
+    ax, ay, _, cle, palier = profil.station(4.0)
+    demi, seuil_z = 0.125, palier + cle - 0.60
+    perce = [t for t in tris
+             if not any(abs(s[0] - ax) <= demi and abs(s[1] - ay) <= demi
+                        and s[2] > seuil_z for s in t)]
+    retires = len(tris) - len(perce)
+    mute, ouv_mute, susp_mute = _juger(
+        perce, "toit perce 0,25 m, station 4")
+
+    journal.verifier(
+        retires > 0,
+        "la mutation retire bien de la matiere du maillage livre",
+        "%d triangle(s) retire(s) sur %d" % (retires, len(tris)))
+    journal.verifier(
+        intact == 0,
+        "maillage LIVRE intact : 0 percee confirmee",
+        "%d rayon(s) suspect(s), ouverture max %.3f m"
+        % (susp_intact, ouv_intact))
+    journal.verifier(
+        mute > 0,
+        "maillage MUTE : le gate rougit",
+        "%d percee(s) confirmee(s), ouverture %.3f m, suspects %d -> %d"
+        % (mute, ouv_mute, susp_intact, susp_mute))
+    journal.verifier(
+        intact != mute,
+        "le verdict CHANGE pour %d triangle(s) de difference" % retires,
+        "intact PASS, mute FAIL — le vert du maillage livre est une mesure, "
+        "pas un reglage")
+
+
+# ---------------------------------------------------------------------------
 
 def main():
     ap = argparse.ArgumentParser(
@@ -697,6 +771,9 @@ def main():
     ap.add_argument("--layout",
                     default="resources/world_v2/world_v2_layout.json")
     ap.add_argument("--poi", default="valley.poi.waterfall_cave.01")
+    ap.add_argument("--reel",
+                    default="assets/environment/caves/SM_WaterfallCave.glb",
+                    help="maillage de production, pour l'epreuve 4")
     args = ap.parse_args()
 
     print("=" * 74)
@@ -720,6 +797,7 @@ def main():
         epreuve_transformation(journal, pose)
         epreuve_discrimination(journal, dossier)
         epreuve_ligne_de_vue(journal, dossier, pose)
+        epreuve_mutation_reelle(journal, args.reel)
     finally:
         if not args.garder:
             shutil.rmtree(dossier, ignore_errors=True)
