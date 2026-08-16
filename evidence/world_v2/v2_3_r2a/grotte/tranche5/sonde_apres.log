@@ -1,0 +1,90 @@
+==========================================================================
+SONDE DE CONTINUITE — Grotte du Couchant
+==========================================================================
+cotes  : CAVITE, PALIER, SAG, PORCHE_DENIVELE conformes au generateur
+garde  : le profil declare laisse au moins 0.42 m au-dessus du terrain a toutes les stations (herbe 0.30 m)
+maillage rendu : 20000 triangles (COL_WaterfallCave ecarte)
+   MAT_CaveRock_Collar      7449 tris
+   MAT_CaveRock_Base        5812 tris
+   MAT_CaveRock_Face        5491 tris
+   MAT_CaveIn_Deep           551 tris
+   MAT_CaveIn_Floor          499 tris
+   MAT_CaveIn_Wall           198 tris
+emprise modele : x[-8.69..9.31] y[-4.39..12.65] z[-3.95..10.04]
+echantillons interieurs : 102 (stations 0 a 8, les quatre que le generateur saute comprises)
+
+--------------------------------------------------------------------------
+CONTROLE 1 — PLANCHER (rayon vers le BAS depuis l'interieur)
+--------------------------------------------------------------------------
+Aucune fonction du generateur ne fait ce controle :
+  controle_epaisseur  : `if math.sin(theta) < -0.30: continue`
+  controle_aucun_jour : `Vector((0.0, 0.0, 1.0))` — vers le HAUT
+93 point(s) du vide sondes vers le bas, 0 faute(s)
+   PASS — un sol existe sous chaque point sonde, a la hauteur attendue
+
+   CARTE DU PLANCHER (positions laterales avec sol / sans sol) :
+      y  -1.15  station 0  ###      3/3  ecart max 0.03 m  z du fond    -
+      y  -0.57  station 0  ###      3/3  ecart max 0.03 m  z du fond    -
+      y  +0.00  station 1  ###      3/3  ecart max 0.03 m  z du fond    -
+      y  +0.80  station 2  ###      3/3  ecart max 0.03 m  z du fond    -
+      y  +1.60  station 2  ###      3/3  ecart max 0.03 m  z du fond    -
+      y  +2.40  station 2  ###      3/3  ecart max 0.03 m  z du fond    -
+      y  +3.20  station 3  ###      3/3  ecart max 0.03 m  z du fond    -
+      y  +3.98  station 4  ###      3/3  ecart max 0.03 m  z du fond    -
+      y  +4.75  station 4  ###      3/3  ecart max 0.04 m  z du fond    -
+      y  +5.50  station 4  ###      3/3  ecart max 0.05 m  z du fond    -
+      y  +6.25  station 5  ###      3/3  ecart max 0.06 m  z du fond    -
+      y  +6.92  station 6  ###      3/3  ecart max 0.11 m  z du fond    -
+      y  +7.60  station 6  ###      3/3  ecart max 0.11 m  z du fond    -
+      y  +8.12  station 6  ###      3/3  ecart max 0.15 m  z du fond    -
+      y  +8.65  station 7  ###      3/3  ecart max 0.15 m  z du fond    -
+      y  +8.95  station 8  ##       2/2  ecart max 0.11 m  z du fond    -
+      y  +9.25  station 8  ##       2/2  ecart max 0.10 m  z du fond    -
+
+--------------------------------------------------------------------------
+CONTROLE 2 — JOUR (sphere entiere, stations 0 a 8)
+--------------------------------------------------------------------------
+52 direction(s) par point, elevations -90 a +90 : le fond (±Y) et le sol (-Z) sont couverts
+12 point(s) du porche ecarte(s) (ouvert par construction)
+0 point(s) ecarte(s) comme HORS CAVITE (enclosure < 0.50)
+3975 rayon(s) juges, 237 ecarte(s) parce qu'ils sortent par la BOUCHE, 13 percee(s)
+   station 2 :   3 percee(s), azimuts 0..324, elevations 0..30
+   station 3 :   1 percee(s), azimuts 216..216, elevations 60..60
+   station 4 :   3 percee(s), azimuts 108..252, elevations 0..60
+   station 5 :   1 percee(s), azimuts 108..108, elevations 0..0
+   station 6 :   2 percee(s), azimuts 144..144, elevations 0..0
+   station 7 :   1 percee(s), azimuts 324..324, elevations 30..30
+   station 8 :   2 percee(s), azimuts 180..180, elevations 0..0
+   OU LES RAYONS SORTENT (regroupe par maille de 1,5 m sur la coque) — un vrai trou fait converger, un mauvais point disperse :
+        2 rayon(s) quittent la galerie en x~-0.12 y~+8.83 z~+1.34  (stations de depart 4,6)
+        2 rayon(s) quittent la galerie en x~+1.04 y~+9.25 z~+1.46  (stations de depart 8)
+        1 rayon(s) quittent la galerie en x~+2.37 y~+0.80 z~+1.89  (stations de depart 2)
+        1 rayon(s) quittent la galerie en x~+1.05 y~+3.93 z~+3.24  (stations de depart 2)
+        1 rayon(s) quittent la galerie en x~+2.33 y~+0.81 z~+0.59  (stations de depart 2)
+        1 rayon(s) quittent la galerie en x~-1.90 y~+2.35 z~+3.17  (stations de depart 3)
+        1 rayon(s) quittent la galerie en x~-0.07 y~+5.45 z~+3.33  (stations de depart 4)
+        1 rayon(s) quittent la galerie en x~-1.79 y~+1.46 z~+3.22  (stations de depart 4)
+
+   CARTE DU FOND (vue de derriere, emprise de la derniere station)
+   'O' = le rayon traverse la galerie de part en part
+      z +3.02  ................
+      z +2.77  ................
+      z +2.52  ................
+      z +2.27  ................
+      z +2.02  ................
+      z +1.77  ................
+      z +1.52  ................
+      z +1.27  ................
+      z +1.02  ................
+      z +0.77  ................
+      x de +0.97 a +4.73, pas 0,25 m
+      aucune case ouverte : le fond de la galerie est plein
+
+--------------------------------------------------------------------------
+CONTROLE 3 — LIGNE DE VUE (regle du moteur : cull_back)
+--------------------------------------------------------------------------
+NON VERIFIE — aucun manifeste fourni (--manifeste)
+
+==========================================================================
+VERDICT : FAIL — defaut mesure
+==========================================================================
