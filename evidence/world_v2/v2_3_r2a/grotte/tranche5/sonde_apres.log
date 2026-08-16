@@ -11,7 +11,7 @@ maillage rendu : 20000 triangles (COL_WaterfallCave ecarte)
    MAT_CaveIn_Floor          499 tris
    MAT_CaveIn_Wall           198 tris
 emprise modele : x[-8.69..9.31] y[-4.39..12.65] z[-3.95..10.04]
-echantillons interieurs : 102 (stations 0 a 8, les quatre que le generateur saute comprises)
+echantillons interieurs : 495 (stations 0 a 8, les quatre que le generateur saute comprises)
 
 --------------------------------------------------------------------------
 CONTROLE 1 — PLANCHER (rayon vers le BAS depuis l'interieur)
@@ -19,51 +19,68 @@ CONTROLE 1 — PLANCHER (rayon vers le BAS depuis l'interieur)
 Aucune fonction du generateur ne fait ce controle :
   controle_epaisseur  : `if math.sin(theta) < -0.30: continue`
   controle_aucun_jour : `Vector((0.0, 0.0, 1.0))` — vers le HAUT
-93 point(s) du vide sondes vers le bas, 0 faute(s)
+454 point(s) du vide sondes vers le bas, 0 faute(s)
    PASS — un sol existe sous chaque point sonde, a la hauteur attendue
 
    CARTE DU PLANCHER (positions laterales avec sol / sans sol) :
-      y  -1.15  station 0  ###      3/3  ecart max 0.03 m  z du fond    -
-      y  -0.57  station 0  ###      3/3  ecart max 0.03 m  z du fond    -
-      y  +0.00  station 1  ###      3/3  ecart max 0.03 m  z du fond    -
-      y  +0.80  station 2  ###      3/3  ecart max 0.03 m  z du fond    -
-      y  +1.60  station 2  ###      3/3  ecart max 0.03 m  z du fond    -
-      y  +2.40  station 2  ###      3/3  ecart max 0.03 m  z du fond    -
-      y  +3.20  station 3  ###      3/3  ecart max 0.03 m  z du fond    -
-      y  +3.98  station 4  ###      3/3  ecart max 0.03 m  z du fond    -
-      y  +4.75  station 4  ###      3/3  ecart max 0.04 m  z du fond    -
-      y  +5.50  station 4  ###      3/3  ecart max 0.05 m  z du fond    -
-      y  +6.25  station 5  ###      3/3  ecart max 0.06 m  z du fond    -
-      y  +6.92  station 6  ###      3/3  ecart max 0.11 m  z du fond    -
-      y  +7.60  station 6  ###      3/3  ecart max 0.11 m  z du fond    -
-      y  +8.12  station 6  ###      3/3  ecart max 0.15 m  z du fond    -
-      y  +8.65  station 7  ###      3/3  ecart max 0.15 m  z du fond    -
-      y  +8.95  station 8  ##       2/2  ecart max 0.11 m  z du fond    -
-      y  +9.25  station 8  ##       2/2  ecart max 0.10 m  z du fond    -
+      y  -1.15  station 0  #####    5/5  ecart max 0.03 m  z du fond    -
+      y  -0.86  station 0  #####    5/5  ecart max 0.04 m  z du fond    -
+      y  -0.57  station 0  #####    5/5  ecart max 0.04 m  z du fond    -
+      y  -0.29  station 1  #####    5/5  ecart max 0.04 m  z du fond    -
+      y  +0.00  station 1  #####    5/5  ecart max 0.04 m  z du fond    -
+      y  +0.40  station 1  #####    5/5  ecart max 0.03 m  z du fond    -
+      y  +0.80  station 2  #####    5/5  ecart max 0.03 m  z du fond    -
+      y  +1.20  station 2  #####    5/5  ecart max 0.03 m  z du fond    -
+      y  +1.60  station 2  #####    5/5  ecart max 0.03 m  z du fond    -
+      y  +2.00  station 2  #####    5/5  ecart max 0.04 m  z du fond    -
+      y  +2.40  station 2  #####    5/5  ecart max 0.04 m  z du fond    -
+      y  +2.80  station 3  #####    5/5  ecart max 0.03 m  z du fond    -
+      y  +3.20  station 3  #####    5/5  ecart max 0.03 m  z du fond    -
+      y  +3.59  station 3  #####    5/5  ecart max 0.03 m  z du fond    -
+      y  +3.98  station 4  #####    5/5  ecart max 0.03 m  z du fond    -
+      y  +4.36  station 4  #####    5/5  ecart max 0.04 m  z du fond    -
+      y  +4.75  station 4  #####    5/5  ecart max 0.04 m  z du fond    -
+      y  +5.12  station 4  #####    5/5  ecart max 0.05 m  z du fond    -
+      y  +5.50  station 4  #####    5/5  ecart max 0.06 m  z du fond    -
+      y  +5.88  station 5  #####    5/5  ecart max 0.06 m  z du fond    -
+      y  +6.25  station 5  #####    5/5  ecart max 0.07 m  z du fond    -
+      y  +6.59  station 5  #####    5/5  ecart max 0.11 m  z du fond    -
+      y  +6.92  station 6  #####    5/5  ecart max 0.13 m  z du fond    -
+      y  +7.26  station 6  #####    5/5  ecart max 0.14 m  z du fond    -
+      y  +7.60  station 6  #####    5/5  ecart max 0.14 m  z du fond    -
+      y  +7.86  station 6  #####    5/5  ecart max 0.16 m  z du fond    -
+      y  +8.12  station 6  ####     4/4  ecart max 0.18 m  z du fond    -
+      y  +8.39  station 7  ####     4/4  ecart max 0.19 m  z du fond    -
+      y  +8.65  station 7  ####     4/4  ecart max 0.19 m  z du fond    -
+      y  +8.80  station 7  ####     4/4  ecart max 0.17 m  z du fond    -
+      y  +8.95  station 8  ####     4/4  ecart max 0.15 m  z du fond    -
+      y  +9.10  station 8  ###      3/3  ecart max 0.14 m  z du fond    -
+      y  +9.25  station 8  ###      3/3  ecart max 0.13 m  z du fond    -
 
 --------------------------------------------------------------------------
 CONTROLE 2 — JOUR (sphere entiere, stations 0 a 8)
 --------------------------------------------------------------------------
-52 direction(s) par point, elevations -90 a +90 : le fond (±Y) et le sol (-Z) sont couverts
-12 point(s) du porche ecarte(s) (ouvert par construction)
+100 direction(s) par point, elevations -90 a +90 : le fond (±Y) et le sol (-Z) sont couverts
+60 point(s) du porche ecarte(s) (ouvert par construction)
 0 point(s) ecarte(s) comme HORS CAVITE (enclosure < 0.50)
-3975 rayon(s) juges, 237 ecarte(s) parce qu'ils sortent par la BOUCHE, 13 percee(s)
-   station 2 :   3 percee(s), azimuts 0..324, elevations 0..30
-   station 3 :   1 percee(s), azimuts 216..216, elevations 60..60
-   station 4 :   3 percee(s), azimuts 108..252, elevations 0..60
-   station 5 :   1 percee(s), azimuts 108..108, elevations 0..0
-   station 6 :   2 percee(s), azimuts 144..144, elevations 0..0
-   station 7 :   1 percee(s), azimuts 324..324, elevations 30..30
-   station 8 :   2 percee(s), azimuts 180..180, elevations 0..0
+37950 rayon(s) juges, 1850 ecarte(s) parce qu'ils sortent par la BOUCHE, 113 percee(s)
+   station 1 :  10 percee(s), azimuts 0..257, elevations -68..45
+   station 2 :  15 percee(s), azimuts 0..334, elevations -68..45
+   station 3 :   7 percee(s), azimuts 26..334, elevations -22..45
+   station 4 :  16 percee(s), azimuts 0..309, elevations -45..68
+   station 5 :  17 percee(s), azimuts 0..334, elevations -45..68
+   station 6 :  31 percee(s), azimuts 26..309, elevations -68..68
+   station 7 :  12 percee(s), azimuts 129..309, elevations -22..68
+   station 8 :   5 percee(s), azimuts 180..309, elevations 0..68
    OU LES RAYONS SORTENT (regroupe par maille de 1,5 m sur la coque) — un vrai trou fait converger, un mauvais point disperse :
-        2 rayon(s) quittent la galerie en x~-0.12 y~+8.83 z~+1.34  (stations de depart 4,6)
-        2 rayon(s) quittent la galerie en x~+1.04 y~+9.25 z~+1.46  (stations de depart 8)
-        1 rayon(s) quittent la galerie en x~+2.37 y~+0.80 z~+1.89  (stations de depart 2)
-        1 rayon(s) quittent la galerie en x~+1.05 y~+3.93 z~+3.24  (stations de depart 2)
-        1 rayon(s) quittent la galerie en x~+2.33 y~+0.81 z~+0.59  (stations de depart 2)
-        1 rayon(s) quittent la galerie en x~-1.90 y~+2.35 z~+3.17  (stations de depart 3)
-        1 rayon(s) quittent la galerie en x~-0.07 y~+5.45 z~+3.33  (stations de depart 4)
-        1 rayon(s) quittent la galerie en x~-1.79 y~+1.46 z~+3.22  (stations de depart 4)
+       19 rayon(s) quittent la galerie en x~-0.23 y~+8.76 z~+1.32  (stations de depart 2,3,4,5,6)
+       17 rayon(s) quittent la galerie en x~+0.21 y~+8.92 z~+1.37  (stations de depart 3,4,5,6,7)
+        4 rayon(s) quittent la galerie en x~+0.65 y~+9.09 z~+1.48  (stations de depart 6,7)
+        3 rayon(s) quittent la galerie en x~+2.21 y~+0.02 z~+0.49  (stations de depart 1,2)
+        3 rayon(s) quittent la galerie en x~+2.31 y~+0.42 z~+1.67  (stations de depart 1,2)
+        3 rayon(s) quittent la galerie en x~+1.55 y~+8.25 z~+3.60  (stations de depart 6,7)
+        3 rayon(s) quittent la galerie en x~+1.03 y~+9.25 z~+1.21  (stations de depart 8)
+        2 rayon(s) quittent la galerie en x~-0.67 y~+0.51 z~-0.32  (stations de depart 1,2)
 
    CARTE DU FOND (vue de derriere, emprise de la derniere station)
    'O' = le rayon traverse la galerie de part en part

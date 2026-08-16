@@ -24,10 +24,23 @@ Chacun renvoyait à l'autre. Rien n'avait jamais regardé le sol.
 
 | défaut mesuré sur le GLB livré | valeur |
 |---|---|
-| plancher absent | de `y = 0,00` à `y = 5,50`, chute de 0,97 à 2,00 m au lieu de 0,60 à 1,40 |
+| plancher absent | de `y = −0,29` à `y = +6,25` (stations 1 à 5), 66 fautes sur 455 points |
 | sol réellement rencontré | `z ≈ −0,45`, c'est-à-dire le sommet de l'assise enterrée |
 | fond de galerie ouvert | `1,50 × 1,25 m`, `x[+0,97 ; +2,47]`, `z[+1,02 ; +2,27]` |
-| convergence | 27 rayons vers la même maille de 1,5 m — un vrai trou |
+| convergence | **536 rayons sur 736** vers cinq mailles voisines autour de `y ≈ 9,2` — un vrai trou |
+
+> **AVERTISSEMENT DE LECTURE — CE RAPPORT A PORTÉ DES CHIFFRES FAUX D'UN
+> FACTEUR DIX, ET LA CORRECTION EST ICI.** La première version mesurait avec
+> `--rapide`, sans le dire. Ce drapeau échantillonne dix fois moins : pas
+> longitudinal 0,50 m au lieu de 0,25, trois fractions latérales au lieu de
+> cinq, deux hauteurs au lieu de trois. Il rendait « 81 → 13 percées » là où
+> la mesure complète rend **736 → 113**, et « plancher absent de y +0,00 à
+> +5,50 » là où elle rend **y −0,29 à +6,25**.
+>
+> Les rapports d'amélioration étaient justes (÷6,2 contre ÷6,5) parce que
+> l'échantillon était cohérent — mais un rapport de livraison n'annonce pas
+> une sous-population sans la nommer. Tous les chiffres ci-dessous viennent
+> désormais de `python3 tools/probe_cave_openings.py <glb>` **sans drapeau**.
 
 ---
 
@@ -122,6 +135,8 @@ la branche haute de `anneau_interieur()`, `z = cle·v^0,75` avec `v = √(1−f�
 
 ```
 193 roches : 81 gaine, 53 semelle, 35 majeur, 16 intermediaire, 8 secondaire
+             (controles du GENERATEUR : ils ne passent pas par la sonde,
+              donc ils ne sont pas affectes par --rapide)
 faite par rang    : majeur 9.52, intermediaire 6.87, gaine 6.01, semelle 1.55
 composition       : 3 amas aux deux azimuts, 5.66/3.58/2.17 et 6.42/3.64/2.22
                     faites portes par 8/5/4 roches — INCHANGE depuis R2a-3.4
@@ -141,11 +156,18 @@ aucun jour        : 25 rayons verticaux, croisements pairs et >= 2
 
 ### Sonde de l'agent B, sur le GLB livré
 
-| | avant (`8368550`/`6a18751`) | après (`5500b7a`) |
+Mesure **complète**, sans `--rapide`, les deux GLB passés au même instrument
+(`probe_cave_openings.py`, sha256 `30a708dfb993da0d`) :
+
+| | avant (`6a18751`) | après (`5500b7a`) |
 |---|---|---|
-| contrôle 1 — plancher | absent de y 0,00 à 5,50, 12 fautes | **93 points, 0 faute** |
-| fond de galerie | ouvert 1,50 × 1,25 m, 27 rayons convergents | **« aucune case ouverte »** |
-| contrôle 2 — percées | 81 | **13**, dispersées |
+| contrôle 1 — plancher | absent de y −0,29 à +6,25, **66 fautes** sur 455 points | **454 points, 0 faute** |
+| fond de galerie | ouvert 1,50 × 1,25 m, 536 rayons convergents | **« aucune case ouverte »** |
+| contrôle 2 — percées | **736** | **113** |
+
+Le lead mesure 761 sur le GLB de R2a-3.3 (`8368550`) ; mes 736 portent sur
+`6a18751`, qui contient déjà la recomposition de R2a-3.4. Les deux chiffres
+sont justes, ils ne décrivent pas le même objet.
 
 ### Runner filtré — `--filter=world_v2,grotte,cave`
 
@@ -157,12 +179,31 @@ aucun jour        : 25 rayons verticaux, croisements pairs et >= 2
 
 ## Ce qui reste ouvert, et pourquoi je ne l'ai pas forcé
 
-### Les 13 percées résiduelles — `PARTIAL`, pas vert
+### Les 113 percées résiduelles — `PARTIAL`, pas vert
 
-La sonde rend toujours `FAIL` global. Les 13 percées sont **dispersées** : aucune
-maille de 1,5 m n'en regroupe plus de deux, là où le trou du fond en faisait
-converger 27. L'outil énonce lui-même le critère : *« un vrai trou fait
-converger, un mauvais point disperse »*.
+La sonde rend toujours `FAIL` global : **113 percées** sur 37 950 rayons.
+
+**ET ELLES NE SONT PAS DISPERSÉES.** C'est la seconde erreur de la première
+version de ce rapport, et elle est plus grave que celle des chiffres, parce
+qu'elle portait une conclusion. En mode complet, les mailles de 1,5 m
+regroupent :
+
+```
+19 rayon(s) en x~-0.23 y~+8.76 z~+1.32   (stations de depart 2,3,4,5,6)
+17 rayon(s) en x~+0.21 y~+8.92 z~+1.37   (stations de depart 3,4,5,6,7)
+ 4 rayon(s) en x~+0.65 y~+9.09 z~+1.48   (stations de depart 6,7)
+```
+
+Soit **40 rayons dans une même zone**, alimentée par six stations. L'outil
+énonce le critère — *« un vrai trou fait converger, un mauvais point
+disperse »* — et il converge. Position : `y ≈ 8,8 à 9,1`, `z ≈ 1,3 à 1,5`,
+du côté `−x`, c'est-à-dire **le dos de l'alcôve** (stations 5 à 7, azimut
+180°). C'est la troisième cause nommée par le lead : j'ai rendu à la gaine la
+formule de poussée qui creuse, ce qui a divisé les percées par 6,5 et fermé
+le trou du fond, mais **la couverture derrière la poche reste insuffisante**.
+
+Le reste se répartit sur des mailles de 2 ou 3 rayons, dont deux au seuil
+(`x~+2,2 ; y~0,0`) qui relèvent de la collerette mince traitée plus bas.
 
 **Quatre leviers ont été essayés, quatre refus, tous d'un contrôle mesuré :**
 
@@ -172,6 +213,10 @@ converger, un mauvais point disperse »*.
 | gaine densifiée, pas 0,85 m, 126 roches | paroi **0,63 m** |
 | gaine à l'échelle 1,30 | `controle_amas` : cols **1,18 / 1,37**, rapport 1,16 |
 | doublure normale ajoutée, puis plafonnée | `controle_amas` : cols **1,51 / 1,64**, rapport 1,08 |
+
+Ces quatre mesures ont été prises en mode `--rapide` comme le reste ; leurs
+**verdicts** (refus par `controle_epaisseur` ou `controle_amas`) ne dépendent
+pas de la sonde et restent valides — ce sont des contrôles du générateur.
 
 Le constat est structurel et mérite d'être écrit : **la galerie passe au milieu
 de la formation, et les deux cols de la composition sont les points bas de la
