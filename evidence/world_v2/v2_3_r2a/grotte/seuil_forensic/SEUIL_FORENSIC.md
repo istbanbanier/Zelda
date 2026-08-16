@@ -19,7 +19,33 @@ Périmètre : `valley.poi.waterfall_cave.01`. Aucune géométrie de production n
 
 ---
 
-## 1. Verdict par contrôle
+## 1. Verdict
+
+### Suite filtrée — exécutée, et rouge au bon endroit
+
+```bash
+flock /home/user/Zelda/.git/heavy_tools.lock -c '
+  godot --headless --path . --import > /tmp/import_seuil.log 2>&1
+  godot --headless --path . --script tools/godot/test_runner.gd -- \
+      --filter=world_v2,grotte,cave > /tmp/rouge.log 2>&1'
+```
+
+`IMPORT_RC=0` · `RUNNER_RC=1` · `=== RÉSULTAT: 63 réussi(s), 6 échoué(s) ===`
+· 417 assertions · **un seul** en-tête `Godot Engine v4` et **une seule** ligne
+de résultat, donc aucune suite concurrente (`tools/CLAUDE.md`).
+
+Les six échecs sont **tous** dans `test_grotte_sans_jour.gd` — trois sur le
+plancher, trois sur le fond. Aucun ailleurs ; les huit tests préexistants de
+`test_valley_caves.gd` restent verts. Journal complet : `runner_grotte.log`.
+
+Un détail qui vaut le rapport : `test_world_v2_places_behavior.gd::`
+`test_la_grotte_a_un_seuil_et_un_interieur_praticables` est **vert**. Ce filet
+marche du seuil à l'intérieur et exige 1,75 m de hauteur libre tous les
+0,40 m — il ne regarde jamais **sous** ses pieds. L'angle mort du générateur
+existe donc aussi dans la suite, et il y est resté vert sur une galerie sans
+plancher.
+
+### Verdict par contrôle de la sonde
 
 | contrôle | verdict | ce qui est mesuré |
 |---|---|---|
