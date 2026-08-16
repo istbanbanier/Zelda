@@ -1,0 +1,73 @@
+==========================================================================
+EPREUVE DE LA SONDE — geometrie synthetique a pose connue
+==========================================================================
+pose eprouvee : origine (-106.000 ; 3.500 ; 3.500), lacet 45.0 deg
+
+--------------------------------------------------------------------------
+EPREUVE 1 — TRANSFORMATION MONDE <-> MODELE
+--------------------------------------------------------------------------
+   [PASS] axe de bouche = sud-est (0,707 ; 0 ; 0,707), declare par le lieu calcule (0.7071 ; 0.0000 ; 0.7071), ecart 1.11e-16
+   [PASS] aller-retour matrices <-> forme fermee                     ecart max 4.663e-15 m, tolerance 1e-09 m
+   [PASS] MUTATION « lacet de signe inverse » fait rougir l'aller-retour ecart 20.000 m, soit 2e+10 fois la tolerance
+   [PASS] MUTATION « axes Y et Z echanges » fait rougir l'aller-retour ecart 20.000 m, soit 2e+10 fois la tolerance
+   [PASS] la marge entre bruit numerique et faute reelle depasse 1e6 bruit 4.66e-15 m, plus petite faute 20.000 m
+
+--------------------------------------------------------------------------
+EPREUVE 2 — DISCRIMINATION, LOCALISATION, SEUIL
+--------------------------------------------------------------------------
+Six tunnels identiques a un trou pres. Une sonde qui rend le meme
+verdict sur les six ne mesure rien, quelle que soit sa couleur.
+
+   scelle           trou 0.000 m sur -             suspects   0  confirmees c2=0 c4=0
+   toit_perce       trou 0.600 m sur toit          suspects 275  confirmees c2=42 c4=1
+   plancher_perce   trou 0.500 m sur plancher      suspects 159  confirmees c2=37 c4=1
+   paroi_percee     trou 0.400 m sur paroi_plus_x  suspects  80  confirmees c2=31 c4=1
+   fond_perce       trou 0.700 m sur fond          suspects 134  confirmees c2=21 c4=1
+   trou_d_epingle   trou 0.040 m sur toit          suspects   4  confirmees c2=0 c4=0
+   [PASS] les six tunnels ne recoivent PAS le meme verdict           verts : scelle, trou_d_epingle | rouges : toit_perce, plancher_perce, paroi_percee, fond_perce
+   [PASS] tunnel SCELLE : aucune percee confirmee                    0 rayon(s) suspect(s), tous ecartes
+   [PASS] toit_perce       : percee confirmee sur la face toit       controle 2 -> ['toit'] ; controle 4 -> ['toit']
+   [PASS] plancher_perce   : percee confirmee sur la face plancher   controle 2 -> ['plancher'] ; controle 4 -> ['plancher']
+   [PASS] paroi_percee     : percee confirmee sur la face paroi_plus_x controle 2 -> ['paroi_plus_x'] ; controle 4 -> ['paroi_plus_x']
+   [PASS] fond_perce       : percee confirmee sur la face fond       controle 2 -> ['paroi_moins_x', 'paroi_plus_x', 'plancher', 'toit'] ; controle 4 -> ['fond']
+   [PASS] toit_perce       : sortie a moins de 0.70 m du centre du trou centre reel (0.40 ; 4.00 ; 2.50), sortie la plus proche a 0.21 m
+   [PASS] plancher_perce   : sortie a moins de 0.63 m du centre du trou centre reel (-0.60 ; 2.50 ; 0.00), sortie la plus proche a 0.29 m
+   [PASS] paroi_percee     : sortie a moins de 0.56 m du centre du trou centre reel (1.50 ; 6.50 ; 1.20), sortie la plus proche a 0.08 m
+   [PASS] fond_perce       : sortie a moins de 0.77 m du centre du trou centre reel (0.20 ; 9.25 ; 1.40), sortie la plus proche a 0.07 m
+   [PASS] trou d'epingle 0.040 m de cote : VU (rayons suspects)      4 rayon(s) suspect(s)
+   [PASS] trou d'epingle : REFUSE a la confirmation                  plus grande ouverture mesuree 0.025 m, seuil 0.10 m
+   [PASS] toit_perce       : ouverture mesuree <= cote reel du trou  mesuree 0.300 m, cote reel 0.600 m — la mesure ne SURESTIME pas
+   [PASS] plancher_perce   : ouverture mesuree <= cote reel du trou  mesuree 0.300 m, cote reel 0.500 m — la mesure ne SURESTIME pas
+   [PASS] paroi_percee     : ouverture mesuree <= cote reel du trou  mesuree 0.300 m, cote reel 0.400 m — la mesure ne SURESTIME pas
+   [PASS] fond_perce       : ouverture mesuree <= cote reel du trou  mesuree 0.300 m, cote reel 0.700 m — la mesure ne SURESTIME pas
+
+--------------------------------------------------------------------------
+EPREUVE 3 — LIGNE DE VUE, POSE CONNUE, TROU CONNU
+--------------------------------------------------------------------------
+Une camera posee en MONDE regarde un tunnel dont on connait la pose
+et le trou. La sonde doit faire apparaitre le trou dans la boite de
+pixels PREDITE. C'est ce qu'aucune superposition d'image ne pouvait
+etablir : ici, la reponse est connue avant la mesure.
+
+   [PASS] la camera monde voit bien la formation                     31911 pixel(s) touchent la coque
+   boite PREDITE (projection independante) : x[631..673] y[330..372]
+   boite MESUREE  (lancer de rayon de la sonde) : x[632..675] y[332..371], 80 pixel(s)
+   [PASS] le trou du fond produit des pixels percants                1 boite(s), 80 pixel(s)
+   [PASS] les pixels percants tombent dans la boite PREDITE          ecarts x +1/+2, y +2/-1 pixel(s)
+   [PASS] une origine fausse de 3 m CHANGE franchement le resultat   pixels sur la coque 31911 -> 30763 ; boites 1 -> 1
+
+--------------------------------------------------------------------------
+EPREUVE 4 — MUTATION DU MAILLAGE LIVRE
+--------------------------------------------------------------------------
+   maillage LIVRE, intact         19954 tris   73 suspect(s)    0 confirmee(s)  ouverture max 0.000 m
+   toit perce 0,25 m, station 4   19948 tris  506 suspect(s)  118 confirmee(s)  ouverture max 0.300 m
+   [PASS] la mutation retire bien de la matiere du maillage livre    6 triangle(s) retire(s) sur 19954
+   [PASS] maillage LIVRE intact : 0 percee confirmee                 73 rayon(s) suspect(s), ouverture max 0.000 m
+   [PASS] maillage MUTE : le gate rougit                             118 percee(s) confirmee(s), ouverture 0.300 m, suspects 73 -> 506
+   [PASS] le verdict CHANGE pour 6 triangle(s) de difference         intact PASS, mute FAIL — le vert du maillage livre est une mesure, pas un reglage
+
+==========================================================================
+EPREUVES : 29 / 29 passees
+VERDICT : PASS
+==========================================================================
+SELFTEST_RC=0
