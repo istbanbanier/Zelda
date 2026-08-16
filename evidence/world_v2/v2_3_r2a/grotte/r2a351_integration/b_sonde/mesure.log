@@ -1,0 +1,17 @@
+triangles : 19792  ·  matieres : 6
+glb sha256 : 18dcbc86517c8f05c3bf0dd13d456aba3404496f580a96860fdfd117a67a0486
+seuils LUS au generateur : paroi 0.80 m · collerette 0.60 m
+
+MINIMA PAR COTE — valeur / seuil  (jamais un chiffre unique)
+  gauche  : 0.14 m / 0.80 m  FAIL   (station u = 1.50, azimut 150 deg)
+            stations sous seuil 2/27 · stations TROUEES 2  (u = 1.00, 1.25)
+  droite  : 0.07 m / 0.80 m  FAIL   (station u = 2.00, azimut 330 deg)
+            stations sous seuil 10/13 · stations TROUEES 16  (u = 1.75, 3.00, 3.25, 3.50, 3.75, 4.00, 4.25, 4.50)
+rayons de paroi sous 0.80 m : 113 sur 915 mesures  (galerie seule)
+rayons de paroi SANS ROCHE dans la galerie : 71  (indication de percee — la CONFIRMATION appartient a probe_cave_openings)
+PORCHE (u < 1.0) — contrat COLLERETTE : minimum 0.15 m / 0.60 m, 11 rayon(s) sous seuil sur 81 ; 55 rayon(s) sans roche = l'OUVERTURE, pas un defaut
+stations non mesurables : aucune
+ecart crete/axe : min 0.00  moyen 1.06  max 2.29 m
+images  : evidence/R2a-3.5.1/b_sonde/coupe_technique.png, evidence/R2a-3.5.1/b_sonde/carte_epaisseur.png, evidence/R2a-3.5.1/b_sonde/profil_asymetrique.png
+journal : evidence/R2a-3.5.1/b_sonde/journal_minima.csv
+RC=0

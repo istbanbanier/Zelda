@@ -1,0 +1,3816 @@
+{
+ "glb": "/home/user/Zelda/assets/environment/caves/SM_WaterfallCave.glb",
+ "jour": {
+  "amas_de_sortie": [
+   {
+    "centre": [
+     1.39,
+     0.3,
+     0.49
+    ],
+    "rayons": 3,
+    "stations": [
+     1,
+     2
+    ]
+   },
+   {
+    "centre": [
+     1.41,
+     0.4,
+     1.27
+    ],
+    "rayons": 3,
+    "stations": [
+     1,
+     2
+    ]
+   },
+   {
+    "centre": [
+     3.12,
+     3.92,
+     0.67
+    ],
+    "rayons": 3,
+    "stations": [
+     2,
+     4
+    ]
+   },
+   {
+    "centre": [
+     1.55,
+     8.25,
+     3.6
+    ],
+    "rayons": 3,
+    "stations": [
+     6,
+     7
+    ]
+   },
+   {
+    "centre": [
+     -0.67,
+     0.51,
+     -0.32
+    ],
+    "rayons": 2,
+    "stations": [
+     1,
+     2
+    ]
+   },
+   {
+    "centre": [
+     2.79,
+     4.78,
+     3.34
+    ],
+    "rayons": 2,
+    "stations": [
+     1,
+     6
+    ]
+   },
+   {
+    "centre": [
+     -0.18,
+     1.23,
+     -0.33
+    ],
+    "rayons": 2,
+    "stations": [
+     2
+    ]
+   },
+   {
+    "centre": [
+     2.19,
+     2.48,
+     1.65
+    ],
+    "rayons": 2,
+    "stations": [
+     3,
+     5
+    ]
+   },
+   {
+    "centre": [
+     -0.54,
+     3.32,
+     -0.23
+    ],
+    "rayons": 2,
+    "stations": [
+     4
+    ]
+   },
+   {
+    "centre": [
+     -1.56,
+     4.62,
+     3.26
+    ],
+    "rayons": 2,
+    "stations": [
+     4,
+     6
+    ]
+   },
+   {
+    "centre": [
+     -2.12,
+     5.25,
+     2.28
+    ],
+    "rayons": 2,
+    "stations": [
+     4
+    ]
+   },
+   {
+    "centre": [
+     1.41,
+     3.66,
+     -0.22
+    ],
+    "rayons": 2,
+    "stations": [
+     4,
+     6
+    ]
+   },
+   {
+    "centre": [
+     0.39,
+     5.4,
+     3.33
+    ],
+    "rayons": 2,
+    "stations": [
+     5,
+     6
+    ]
+   },
+   {
+    "centre": [
+     2.45,
+     6.54,
+     3.5
+    ],
+    "rayons": 2,
+    "stations": [
+     6
+    ]
+   },
+   {
+    "centre": [
+     1.33,
+     7.51,
+     3.59
+    ],
+    "rayons": 2,
+    "stations": [
+     6,
+     8
+    ]
+   },
+   {
+    "centre": [
+     2.01,
+     9.25,
+     1.52
+    ],
+    "rayons": 2,
+    "stations": [
+     8
+    ]
+   },
+   {
+    "centre": [
+     0.51,
+     0.74,
+     3.17
+    ],
+    "rayons": 1,
+    "stations": [
+     1
+    ]
+   },
+   {
+    "centre": [
+     0.14,
+     2.83,
+     3.19
+    ],
+    "rayons": 1,
+    "stations": [
+     1
+    ]
+   },
+   {
+    "centre": [
+     2.6,
+     9.16,
+     0.84
+    ],
+    "rayons": 1,
+    "stations": [
+     1
+    ]
+   },
+   {
+    "centre": [
+     -1.52,
+     0.4,
+     -0.32
+    ],
+    "rayons": 1,
+    "stations": [
+     1
+    ]
+   },
+   {
+    "centre": [
+     0.33,
+     -0.5,
+     -0.62
+    ],
+    "rayons": 1,
+    "stations": [
+     1
+    ]
+   },
+   {
+    "centre": [
+     -2.48,
+     -1.01,
+     1.84
+    ],
+    "rayons": 1,
+    "stations": [
+     2
+    ]
+   },
+   {
+    "centre": [
+     -1.86,
+     3.83,
+     2.47
+    ],
+    "rayons": 1,
+    "stations": [
+     2
+    ]
+   },
+   {
+    "centre": [
+     -1.03,
+     1.57,
+     3.23
+    ],
+    "rayons": 1,
+    "stations": [
+     2
+    ]
+   },
+   {
+    "centre": [
+     1.24,
+     0.88,
+     -0.28
+    ],
+    "rayons": 1,
+    "stations": [
+     2
+    ]
+   },
+   {
+    "centre": [
+     -1.15,
+     1.28,
+     -0.27
+    ],
+    "rayons": 1,
+    "stations": [
+     2
+    ]
+   },
+   {
+    "centre": [
+     1.61,
+     1.32,
+     1.49
+    ],
+    "rayons": 1,
+    "stations": [
+     2
+    ]
+   },
+   {
+    "centre": [
+     1.18,
+     1.65,
+     -0.31
+    ],
+    "rayons": 1,
+    "stations": [
+     2
+    ]
+   },
+   {
+    "centre": [
+     3.44,
+     4.36,
+     2.4
+    ],
+    "rayons": 1,
+    "stations": [
+     3
+    ]
+   },
+   {
+    "centre": [
+     1.96,
+     2.15,
+     0.61
+    ],
+    "rayons": 1,
+    "stations": [
+     3
+    ]
+   },
+   {
+    "centre": [
+     0.12,
+     1.43,
+     3.23
+    ],
+    "rayons": 1,
+    "stations": [
+     3
+    ]
+   },
+   {
+    "centre": [
+     -2.14,
+     5.11,
+     0.96
+    ],
+    "rayons": 1,
+    "stations": [
+     3
+    ]
+   },
+   {
+    "centre": [
+     1.44,
+     4.51,
+     3.26
+    ],
+    "rayons": 1,
+    "stations": [
+     4
+    ]
+   },
+   {
+    "centre": [
+     1.42,
+     0.31,
+     2.14
+    ],
+    "rayons": 1,
+    "stations": [
+     4
+    ]
+   },
+   {
+    "centre": [
+     -0.5,
+     5.94,
+     3.41
+    ],
+    "rayons": 1,
+    "stations": [
+     4
+    ]
+   },
+   {
+    "centre": [
+     1.9,
+     2.08,
+     3.02
+    ],
+    "rayons": 1,
+    "stations": [
+     4
+    ]
+   },
+   {
+    "centre": [
+     2.57,
+     3.13,
+     1.72
+    ],
+    "rayons": 1,
+    "stations": [
+     4
+    ]
+   },
+   {
+    "centre": [
+     3.0,
+     3.84,
+     1.93
+    ],
+    "rayons": 1,
+    "stations": [
+     4
+    ]
+   },
+   {
+    "centre": [
+     0.32,
+     7.11,
+     3.58
+    ],
+    "rayons": 1,
+    "stations": [
+     5
+    ]
+   },
+   {
+    "centre": [
+     3.55,
+     4.62,
+     0.51
+    ],
+    "rayons": 1,
+    "stations": [
+     5
+    ]
+   },
+   {
+    "centre": [
+     -2.17,
+     6.59,
+     0.54
+    ],
+    "rayons": 1,
+    "stations": [
+     5
+    ]
+   },
+   {
+    "centre": [
+     4.73,
+     6.59,
+     3.0
+    ],
+    "rayons": 1,
+    "stations": [
+     5
+    ]
+   },
+   {
+    "centre": [
+     -2.11,
+     6.59,
+     1.14
+    ],
+    "rayons": 1,
+    "stations": [
+     5
+    ]
+   },
+   {
+    "centre": [
+     2.29,
+     5.69,
+     3.38
+    ],
+    "rayons": 1,
+    "stations": [
+     5
+    ]
+   },
+   {
+    "centre": [
+     3.19,
+     7.37,
+     0.14
+    ],
+    "rayons": 1,
+    "stations": [
+     6
+    ]
+   },
+   {
+    "centre": [
+     4.59,
+     7.26,
+     0.24
+    ],
+    "rayons": 1,
+    "stations": [
+     6
+    ]
+   },
+   {
+    "centre": [
+     2.61,
+     3.28,
+     2.61
+    ],
+    "rayons": 1,
+    "stations": [
+     6
+    ]
+   },
+   {
+    "centre": [
+     3.27,
+     9.13,
+     0.53
+    ],
+    "rayons": 1,
+    "stations": [
+     6
+    ]
+   },
+   {
+    "centre": [
+     2.2,
+     8.45,
+     0.44
+    ],
+    "rayons": 1,
+    "stations": [
+     6
+    ]
+   },
+   {
+    "centre": [
+     0.56,
+     8.12,
+     3.61
+    ],
+    "rayons": 1,
+    "stations": [
+     6
+    ]
+   },
+   {
+    "centre": [
+     4.27,
+     5.65,
+     2.13
+    ],
+    "rayons": 1,
+    "stations": [
+     7
+    ]
+   },
+   {
+    "centre": [
+     -0.77,
+     7.51,
+     3.69
+    ],
+    "rayons": 1,
+    "stations": [
+     7
+    ]
+   },
+   {
+    "centre": [
+     -0.37,
+     8.8,
+     1.03
+    ],
+    "rayons": 1,
+    "stations": [
+     7
+    ]
+   },
+   {
+    "centre": [
+     4.49,
+     5.84,
+     3.34
+    ],
+    "rayons": 1,
+    "stations": [
+     8
+    ]
+   }
+  ],
+  "amas_ecartes": [
+   {
+    "azimut": 0.0,
+    "centre_ouverture": [
+     -0.51,
+     0.03,
+     0.41
+    ],
+    "depart": [
+     -0.51,
+     0.0,
+     0.29
+    ],
+    "elevation": 0.0,
+    "faisceau_sortant": 5,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 2,
+    "sortie": [
+     1.3,
+     0.0,
+     0.29
+    ],
+    "surface": "plancher"
+   },
+   {
+    "azimut": 25.7,
+    "centre_ouverture": [
+     0.1,
+     2.51,
+     1.02
+    ],
+    "depart": [
+     0.15,
+     2.4,
+     0.89
+    ],
+    "elevation": 0.0,
+    "faisceau_sortant": 3,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 2,
+    "sortie": [
+     3.09,
+     3.88,
+     0.94
+    ],
+    "surface": "paroi_plus_x"
+   },
+   {
+    "azimut": 257.1,
+    "centre_ouverture": [
+     0.98,
+     7.86,
+     0.86
+    ],
+    "depart": [
+     0.98,
+     7.86,
+     0.86
+    ],
+    "elevation": 45.0,
+    "faisceau_sortant": 2,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 2,
+    "sortie": [
+     0.39,
+     5.4,
+     3.33
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 25.7,
+    "centre_ouverture": [
+     -1.14,
+     0.13,
+     0.85
+    ],
+    "depart": [
+     -1.02,
+     0.0,
+     0.87
+    ],
+    "elevation": -67.5,
+    "faisceau_sortant": 7,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -0.57,
+     0.22,
+     -0.33
+    ],
+    "surface": "plancher"
+   },
+   {
+    "azimut": 51.4,
+    "centre_ouverture": [
+     -0.98,
+     -0.03,
+     0.87
+    ],
+    "depart": [
+     -1.02,
+     0.0,
+     0.87
+    ],
+    "elevation": 22.5,
+    "faisceau_sortant": 4,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     2.67,
+     4.62,
+     3.32
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 25.7,
+    "depart": [
+     -1.02,
+     0.0,
+     1.47
+    ],
+    "elevation": 45.0,
+    "faisceau_sortant": 0,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     0.51,
+     0.74,
+     3.17
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 77.1,
+    "centre_ouverture": [
+     -0.64,
+     -0.02,
+     0.34
+    ],
+    "depart": [
+     -0.51,
+     0.0,
+     0.29
+    ],
+    "elevation": 45.0,
+    "faisceau_sortant": 2,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     0.14,
+     2.83,
+     3.19
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 77.1,
+    "depart": [
+     0.51,
+     0.0,
+     0.84
+    ],
+    "elevation": 0.0,
+    "faisceau_sortant": 0,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     2.6,
+     9.16,
+     0.84
+    ],
+    "surface": "plancher"
+   },
+   {
+    "azimut": 0.0,
+    "centre_ouverture": [
+     0.48,
+     0.12,
+     0.91
+    ],
+    "depart": [
+     0.51,
+     0.0,
+     0.84
+    ],
+    "elevation": 22.5,
+    "faisceau_sortant": 2,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     1.34,
+     0.0,
+     1.19
+    ],
+    "surface": "paroi_plus_x"
+   },
+   {
+    "azimut": 180.0,
+    "centre_ouverture": [
+     -0.98,
+     0.55,
+     0.86
+    ],
+    "depart": [
+     -1.03,
+     0.4,
+     0.88
+    ],
+    "elevation": -67.5,
+    "faisceau_sortant": 3,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -1.52,
+     0.4,
+     -0.32
+    ],
+    "surface": "plancher"
+   },
+   {
+    "azimut": 257.1,
+    "centre_ouverture": [
+     0.69,
+     0.38,
+     0.28
+    ],
+    "depart": [
+     0.54,
+     0.4,
+     0.3
+    ],
+    "elevation": -45.0,
+    "faisceau_sortant": 3,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     0.33,
+     -0.5,
+     -0.62
+    ],
+    "surface": "plancher"
+   },
+   {
+    "azimut": 0.0,
+    "centre_ouverture": [
+     -1.12,
+     0.85,
+     0.3
+    ],
+    "depart": [
+     -1.03,
+     0.8,
+     0.34
+    ],
+    "elevation": -67.5,
+    "faisceau_sortant": 5,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -0.77,
+     0.8,
+     -0.31
+    ],
+    "surface": "plancher"
+   },
+   {
+    "azimut": 231.4,
+    "depart": [
+     -1.03,
+     0.8,
+     0.89
+    ],
+    "elevation": 22.5,
+    "faisceau_sortant": 0,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -2.48,
+     -1.01,
+     1.84
+    ],
+    "surface": "paroi_moins_x"
+   },
+   {
+    "azimut": 0.0,
+    "centre_ouverture": [
+     -0.51,
+     0.8,
+     0.33
+    ],
+    "depart": [
+     -0.5,
+     0.8,
+     0.31
+    ],
+    "elevation": 22.5,
+    "faisceau_sortant": 1,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     1.53,
+     0.8,
+     1.16
+    ],
+    "surface": "paroi_plus_x"
+   },
+   {
+    "azimut": 128.6,
+    "depart": [
+     0.56,
+     0.8,
+     0.86
+    ],
+    "elevation": 22.5,
+    "faisceau_sortant": 0,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -1.86,
+     3.83,
+     2.47
+    ],
+    "surface": "paroi_moins_x"
+   },
+   {
+    "azimut": 334.3,
+    "centre_ouverture": [
+     0.53,
+     0.73,
+     1.58
+    ],
+    "depart": [
+     0.56,
+     0.8,
+     1.46
+    ],
+    "elevation": 0.0,
+    "faisceau_sortant": 1,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     1.37,
+     0.41,
+     1.46
+    ],
+    "surface": "paroi_plus_x"
+   },
+   {
+    "azimut": 154.3,
+    "centre_ouverture": [
+     0.56,
+     0.8,
+     1.46
+    ],
+    "depart": [
+     0.56,
+     0.8,
+     1.46
+    ],
+    "elevation": 45.0,
+    "faisceau_sortant": 2,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -1.03,
+     1.57,
+     3.23
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 334.3,
+    "centre_ouverture": [
+     -0.5,
+     1.2,
+     0.32
+    ],
+    "depart": [
+     -0.5,
+     1.2,
+     0.32
+    ],
+    "elevation": -67.5,
+    "faisceau_sortant": 10,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -0.26,
+     1.08,
+     -0.32
+    ],
+    "surface": "plancher"
+   },
+   {
+    "azimut": 334.3,
+    "centre_ouverture": [
+     0.66,
+     1.35,
+     1.47
+    ],
+    "depart": [
+     0.59,
+     1.2,
+     1.47
+    ],
+    "elevation": -67.5,
+    "faisceau_sortant": 2,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     1.24,
+     0.88,
+     -0.28
+    ],
+    "surface": "plancher"
+   },
+   {
+    "azimut": 205.7,
+    "depart": [
+     -0.5,
+     1.6,
+     1.48
+    ],
+    "elevation": -67.5,
+    "faisceau_sortant": 0,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -1.15,
+     1.28,
+     -0.27
+    ],
+    "surface": "plancher"
+   },
+   {
+    "azimut": 231.4,
+    "centre_ouverture": [
+     0.21,
+     1.73,
+     0.23
+    ],
+    "depart": [
+     0.06,
+     1.6,
+     0.31
+    ],
+    "elevation": -67.5,
+    "faisceau_sortant": 4,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -0.11,
+     1.39,
+     -0.34
+    ],
+    "surface": "plancher"
+   },
+   {
+    "azimut": 308.6,
+    "centre_ouverture": [
+     0.68,
+     2.0,
+     0.9
+    ],
+    "depart": [
+     0.68,
+     2.0,
+     0.9
+    ],
+    "elevation": 0.0,
+    "faisceau_sortant": 1,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     1.56,
+     0.91,
+     0.9
+    ],
+    "surface": "paroi_plus_x"
+   },
+   {
+    "azimut": 308.6,
+    "centre_ouverture": [
+     0.81,
+     2.44,
+     0.89
+    ],
+    "depart": [
+     0.75,
+     2.4,
+     0.91
+    ],
+    "elevation": 22.5,
+    "faisceau_sortant": 2,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     1.61,
+     1.32,
+     1.49
+    ],
+    "surface": "paroi_plus_x"
+   },
+   {
+    "azimut": 257.1,
+    "centre_ouverture": [
+     1.25,
+     2.43,
+     1.54
+    ],
+    "depart": [
+     1.35,
+     2.4,
+     1.54
+    ],
+    "elevation": -67.5,
+    "faisceau_sortant": 9,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     1.18,
+     1.65,
+     -0.31
+    ],
+    "surface": "plancher"
+   },
+   {
+    "azimut": 25.7,
+    "centre_ouverture": [
+     0.14,
+     2.94,
+     0.89
+    ],
+    "depart": [
+     0.2,
+     2.8,
+     0.91
+    ],
+    "elevation": 22.5,
+    "faisceau_sortant": 3,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     3.44,
+     4.36,
+     2.4
+    ],
+    "surface": "paroi_plus_x"
+   },
+   {
+    "azimut": 308.6,
+    "centre_ouverture": [
+     1.55,
+     2.82,
+     1.09
+    ],
+    "depart": [
+     1.44,
+     2.8,
+     0.95
+    ],
+    "elevation": -22.5,
+    "faisceau_sortant": 2,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     1.96,
+     2.15,
+     0.61
+    ],
+    "surface": "paroi_plus_x"
+   },
+   {
+    "azimut": 334.3,
+    "centre_ouverture": [
+     0.87,
+     3.2,
+     0.96
+    ],
+    "depart": [
+     0.88,
+     3.2,
+     0.94
+    ],
+    "elevation": 22.5,
+    "faisceau_sortant": 1,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     2.22,
+     2.56,
+     1.56
+    ],
+    "surface": "paroi_plus_x"
+   },
+   {
+    "azimut": 231.4,
+    "depart": [
+     1.53,
+     3.2,
+     0.97
+    ],
+    "elevation": 45.0,
+    "faisceau_sortant": 0,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     0.12,
+     1.43,
+     3.23
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 154.3,
+    "centre_ouverture": [
+     0.99,
+     3.54,
+     0.81
+    ],
+    "depart": [
+     1.01,
+     3.59,
+     0.96
+    ],
+    "elevation": 0.0,
+    "faisceau_sortant": 2,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -2.14,
+     5.11,
+     0.96
+    ],
+    "surface": "paroi_moins_x"
+   },
+   {
+    "azimut": 282.9,
+    "centre_ouverture": [
+     -0.97,
+     4.01,
+     0.43
+    ],
+    "depart": [
+     -1.04,
+     3.98,
+     0.45
+    ],
+    "elevation": -45.0,
+    "faisceau_sortant": 3,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -0.89,
+     3.29,
+     -0.26
+    ],
+    "surface": "plancher"
+   },
+   {
+    "azimut": 282.9,
+    "centre_ouverture": [
+     -0.42,
+     4.07,
+     0.31
+    ],
+    "depart": [
+     -0.32,
+     3.98,
+     0.42
+    ],
+    "elevation": -45.0,
+    "faisceau_sortant": 2,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -0.18,
+     3.35,
+     -0.21
+    ],
+    "surface": "plancher"
+   },
+   {
+    "azimut": 0.0,
+    "depart": [
+     1.14,
+     3.98,
+     0.97
+    ],
+    "elevation": -22.5,
+    "faisceau_sortant": 0,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     3.17,
+     3.98,
+     0.13
+    ],
+    "surface": "paroi_plus_x"
+   },
+   {
+    "azimut": 128.6,
+    "depart": [
+     1.86,
+     3.98,
+     1.6
+    ],
+    "elevation": 67.5,
+    "faisceau_sortant": 0,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     1.44,
+     4.51,
+     3.26
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 180.0,
+    "centre_ouverture": [
+     -1.09,
+     4.33,
+     0.99
+    ],
+    "depart": [
+     -1.04,
+     4.36,
+     1.01
+    ],
+    "elevation": 67.5,
+    "faisceau_sortant": 2,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -1.96,
+     4.36,
+     3.23
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 154.3,
+    "centre_ouverture": [
+     -0.24,
+     4.35,
+     1.66
+    ],
+    "depart": [
+     -0.27,
+     4.36,
+     1.59
+    ],
+    "elevation": 22.5,
+    "faisceau_sortant": 3,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -2.11,
+     5.24,
+     2.43
+    ],
+    "surface": "paroi_moins_x"
+   },
+   {
+    "azimut": 282.9,
+    "centre_ouverture": [
+     0.49,
+     4.36,
+     0.41
+    ],
+    "depart": [
+     0.49,
+     4.36,
+     0.41
+    ],
+    "elevation": 22.5,
+    "faisceau_sortant": 3,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     1.42,
+     0.31,
+     2.14
+    ],
+    "surface": "paroi_plus_x"
+   },
+   {
+    "azimut": 154.3,
+    "centre_ouverture": [
+     -1.03,
+     4.75,
+     1.65
+    ],
+    "depart": [
+     -1.04,
+     4.75,
+     1.63
+    ],
+    "elevation": 22.5,
+    "faisceau_sortant": 5,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -2.12,
+     5.27,
+     2.13
+    ],
+    "surface": "paroi_moins_x"
+   },
+   {
+    "azimut": 102.9,
+    "centre_ouverture": [
+     -0.28,
+     4.68,
+     0.47
+    ],
+    "depart": [
+     -0.23,
+     4.75,
+     0.45
+    ],
+    "elevation": 67.5,
+    "faisceau_sortant": 3,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -0.5,
+     5.94,
+     3.41
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 308.6,
+    "centre_ouverture": [
+     -0.25,
+     4.78,
+     1.69
+    ],
+    "depart": [
+     -0.23,
+     4.75,
+     1.6
+    ],
+    "elevation": 22.5,
+    "faisceau_sortant": 8,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     1.9,
+     2.08,
+     3.02
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 282.9,
+    "centre_ouverture": [
+     2.2,
+     4.77,
+     1.08
+    ],
+    "depart": [
+     2.2,
+     4.75,
+     1.03
+    ],
+    "elevation": 22.5,
+    "faisceau_sortant": 1,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     2.57,
+     3.13,
+     1.72
+    ],
+    "surface": "paroi_plus_x"
+   },
+   {
+    "azimut": 257.1,
+    "centre_ouverture": [
+     1.58,
+     5.11,
+     1.63
+    ],
+    "depart": [
+     1.53,
+     5.12,
+     1.63
+    ],
+    "elevation": -45.0,
+    "faisceau_sortant": 2,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     1.12,
+     3.33,
+     -0.21
+    ],
+    "surface": "plancher"
+   },
+   {
+    "azimut": 308.6,
+    "centre_ouverture": [
+     1.62,
+     5.5,
+     1.14
+    ],
+    "depart": [
+     1.68,
+     5.5,
+     1.05
+    ],
+    "elevation": 22.5,
+    "faisceau_sortant": 2,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     3.0,
+     3.84,
+     1.93
+    ],
+    "surface": "paroi_plus_x"
+   },
+   {
+    "azimut": 77.1,
+    "depart": [
+     0.04,
+     5.88,
+     0.53
+    ],
+    "elevation": 67.5,
+    "faisceau_sortant": 0,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     0.32,
+     7.11,
+     3.58
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 334.3,
+    "centre_ouverture": [
+     0.94,
+     5.9,
+     0.43
+    ],
+    "depart": [
+     0.93,
+     5.88,
+     0.51
+    ],
+    "elevation": 0.0,
+    "faisceau_sortant": 1,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     3.55,
+     4.62,
+     0.51
+    ],
+    "surface": "paroi_plus_x"
+   },
+   {
+    "azimut": 180.0,
+    "centre_ouverture": [
+     -0.64,
+     6.56,
+     1.28
+    ],
+    "depart": [
+     -0.6,
+     6.59,
+     1.19
+    ],
+    "elevation": -22.5,
+    "faisceau_sortant": 3,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -2.17,
+     6.59,
+     0.54
+    ],
+    "surface": "paroi_moins_x"
+   },
+   {
+    "azimut": 0.0,
+    "centre_ouverture": [
+     0.31,
+     6.59,
+     1.14
+    ],
+    "depart": [
+     0.3,
+     6.59,
+     1.16
+    ],
+    "elevation": 22.5,
+    "faisceau_sortant": 1,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     4.73,
+     6.59,
+     3.0
+    ],
+    "surface": "paroi_plus_x"
+   },
+   {
+    "azimut": 180.0,
+    "centre_ouverture": [
+     1.19,
+     6.67,
+     1.26
+    ],
+    "depart": [
+     1.19,
+     6.59,
+     1.14
+    ],
+    "elevation": 0.0,
+    "faisceau_sortant": 1,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -2.11,
+     6.59,
+     1.14
+    ],
+    "surface": "paroi_moins_x"
+   },
+   {
+    "azimut": 282.9,
+    "centre_ouverture": [
+     1.19,
+     6.59,
+     1.72
+    ],
+    "depart": [
+     1.19,
+     6.59,
+     1.74
+    ],
+    "elevation": 0.0,
+    "faisceau_sortant": 1,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     2.15,
+     2.4,
+     1.74
+    ],
+    "surface": "paroi_plus_x"
+   },
+   {
+    "azimut": 282.9,
+    "centre_ouverture": [
+     2.11,
+     6.52,
+     1.13
+    ],
+    "depart": [
+     2.09,
+     6.59,
+     1.16
+    ],
+    "elevation": 67.5,
+    "faisceau_sortant": 4,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     2.29,
+     5.69,
+     3.38
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 231.4,
+    "centre_ouverture": [
+     0.63,
+     6.9,
+     0.76
+    ],
+    "depart": [
+     0.46,
+     6.92,
+     0.67
+    ],
+    "elevation": 45.0,
+    "faisceau_sortant": 4,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -1.17,
+     4.88,
+     3.29
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 77.1,
+    "centre_ouverture": [
+     2.97,
+     7.04,
+     1.29
+    ],
+    "depart": [
+     3.09,
+     6.92,
+     1.25
+    ],
+    "elevation": -67.5,
+    "faisceau_sortant": 9,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     3.19,
+     7.37,
+     0.14
+    ],
+    "surface": "plancher"
+   },
+   {
+    "azimut": 231.4,
+    "centre_ouverture": [
+     2.99,
+     6.93,
+     1.23
+    ],
+    "depart": [
+     3.09,
+     6.92,
+     1.25
+    ],
+    "elevation": 67.5,
+    "faisceau_sortant": 1,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     2.52,
+     6.21,
+     3.47
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 0.0,
+    "centre_ouverture": [
+     0.62,
+     7.21,
+     1.88
+    ],
+    "depart": [
+     0.62,
+     7.26,
+     1.88
+    ],
+    "elevation": -22.5,
+    "faisceau_sortant": 2,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     4.59,
+     7.26,
+     0.24
+    ],
+    "surface": "paroi_plus_x"
+   },
+   {
+    "azimut": 205.7,
+    "centre_ouverture": [
+     3.33,
+     7.2,
+     1.35
+    ],
+    "depart": [
+     3.19,
+     7.26,
+     1.31
+    ],
+    "elevation": 67.5,
+    "faisceau_sortant": 2,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     2.37,
+     6.86,
+     3.53
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 51.4,
+    "depart": [
+     0.78,
+     7.6,
+     0.79
+    ],
+    "elevation": 67.5,
+    "faisceau_sortant": 0,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     1.5,
+     8.5,
+     3.57
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 308.6,
+    "centre_ouverture": [
+     0.92,
+     7.67,
+     1.87
+    ],
+    "depart": [
+     0.78,
+     7.6,
+     1.94
+    ],
+    "elevation": 22.5,
+    "faisceau_sortant": 4,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     2.91,
+     4.93,
+     3.36
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 282.9,
+    "centre_ouverture": [
+     1.61,
+     7.63,
+     0.84
+    ],
+    "depart": [
+     1.62,
+     7.6,
+     0.77
+    ],
+    "elevation": 22.5,
+    "faisceau_sortant": 8,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     2.61,
+     3.28,
+     2.61
+    ],
+    "surface": "paroi_plus_x"
+   },
+   {
+    "azimut": 257.1,
+    "centre_ouverture": [
+     2.67,
+     7.86,
+     1.36
+    ],
+    "depart": [
+     2.57,
+     7.86,
+     1.41
+    ],
+    "elevation": -22.5,
+    "faisceau_sortant": 1,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     1.69,
+     3.99,
+     -0.23
+    ],
+    "surface": "plancher"
+   },
+   {
+    "azimut": 282.9,
+    "centre_ouverture": [
+     1.26,
+     8.1,
+     0.91
+    ],
+    "depart": [
+     1.19,
+     8.12,
+     0.93
+    ],
+    "elevation": 67.5,
+    "faisceau_sortant": 3,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     1.42,
+     7.08,
+     3.52
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 25.7,
+    "centre_ouverture": [
+     1.24,
+     8.03,
+     1.5
+    ],
+    "depart": [
+     1.19,
+     8.12,
+     1.48
+    ],
+    "elevation": -22.5,
+    "faisceau_sortant": 1,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     3.27,
+     9.13,
+     0.53
+    ],
+    "surface": "plancher"
+   },
+   {
+    "azimut": 51.4,
+    "centre_ouverture": [
+     1.94,
+     8.1,
+     1.45
+    ],
+    "depart": [
+     1.94,
+     8.12,
+     1.46
+    ],
+    "elevation": -67.5,
+    "faisceau_sortant": 1,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     2.2,
+     8.45,
+     0.44
+    ],
+    "surface": "plancher"
+   },
+   {
+    "azimut": 180.0,
+    "depart": [
+     2.69,
+     8.12,
+     1.48
+    ],
+    "elevation": 45.0,
+    "faisceau_sortant": 0,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     0.56,
+     8.12,
+     3.61
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 308.6,
+    "centre_ouverture": [
+     2.17,
+     8.45,
+     2.0
+    ],
+    "depart": [
+     2.09,
+     8.39,
+     2.13
+    ],
+    "elevation": 0.0,
+    "faisceau_sortant": 3,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     4.27,
+     5.65,
+     2.13
+    ],
+    "surface": "paroi_plus_x"
+   },
+   {
+    "azimut": 205.7,
+    "depart": [
+     1.59,
+     8.65,
+     1.07
+    ],
+    "elevation": 45.0,
+    "faisceau_sortant": 0,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -0.77,
+     7.51,
+     3.69
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 257.1,
+    "centre_ouverture": [
+     1.74,
+     8.67,
+     2.24
+    ],
+    "depart": [
+     1.59,
+     8.65,
+     2.22
+    ],
+    "elevation": 67.5,
+    "faisceau_sortant": 4,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     1.46,
+     8.09,
+     3.61
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 180.0,
+    "depart": [
+     1.2,
+     8.8,
+     1.68
+    ],
+    "elevation": -22.5,
+    "faisceau_sortant": 0,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     -0.37,
+     8.8,
+     1.03
+    ],
+    "surface": "paroi_moins_x"
+   },
+   {
+    "azimut": 308.6,
+    "depart": [
+     1.2,
+     8.8,
+     1.68
+    ],
+    "elevation": 67.5,
+    "faisceau_sortant": 0,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     1.7,
+     8.17,
+     3.62
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 257.1,
+    "centre_ouverture": [
+     1.47,
+     8.95,
+     1.17
+    ],
+    "depart": [
+     1.47,
+     8.95,
+     1.17
+    ],
+    "elevation": 67.5,
+    "faisceau_sortant": 5,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     1.24,
+     7.94,
+     3.66
+    ],
+    "surface": "toit"
+   },
+   {
+    "azimut": 308.6,
+    "centre_ouverture": [
+     2.02,
+     8.9,
+     1.57
+    ],
+    "depart": [
+     2.01,
+     8.95,
+     1.69
+    ],
+    "elevation": 22.5,
+    "faisceau_sortant": 2,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     4.49,
+     5.84,
+     3.34
+    ],
+    "surface": "paroi_plus_x"
+   },
+   {
+    "azimut": 102.9,
+    "centre_ouverture": [
+     1.98,
+     9.26,
+     1.26
+    ],
+    "depart": [
+     2.01,
+     9.25,
+     1.24
+    ],
+    "elevation": -45.0,
+    "faisceau_sortant": 3,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     2.01,
+     9.25,
+     1.24
+    ],
+    "surface": "plancher"
+   },
+   {
+    "azimut": 128.6,
+    "centre_ouverture": [
+     2.03,
+     9.27,
+     1.69
+    ],
+    "depart": [
+     2.01,
+     9.25,
+     1.79
+    ],
+    "elevation": 0.0,
+    "faisceau_sortant": 1,
+    "faisceau_total": 169,
+    "ouverture_m": 0.0,
+    "rayons_suspects": 1,
+    "sortie": [
+     2.01,
+     9.25,
+     1.79
+    ],
+    "surface": "paroi_moins_x"
+   }
+  ],
+  "carte_du_fond": {
+   "cases": 160,
+   "cases_ouvertes": 0,
+   "lignes": [
+    [
+     3.02,
+     "................"
+    ],
+    [
+     2.77,
+     "................"
+    ],
+    [
+     2.52,
+     "................"
+    ],
+    [
+     2.27,
+     "................"
+    ],
+    [
+     2.02,
+     "................"
+    ],
+    [
+     1.77,
+     "................"
+    ],
+    [
+     1.52,
+     "................"
+    ],
+    [
+     1.27,
+     "................"
+    ],
+    [
+     1.02,
+     "................"
+    ],
+    [
+     0.77,
+     "................"
+    ]
+   ],
+   "x0": 0.97,
+   "x1": 4.73
+  },
+  "fautes": [
+   {
+    "azimut": 25.7,
+    "elevation": -67.5,
+    "impacts": 3,
+    "sortie": [
+     -0.57,
+     0.22,
+     -0.33
+    ],
+    "station": 1,
+    "u": 1.0,
+    "x": -1.02,
+    "y": 0.0,
+    "z": 0.87
+   },
+   {
+    "azimut": 51.4,
+    "elevation": 22.5,
+    "impacts": 3,
+    "sortie": [
+     2.67,
+     4.62,
+     3.32
+    ],
+    "station": 1,
+    "u": 1.0,
+    "x": -1.02,
+    "y": 0.0,
+    "z": 0.87
+   },
+   {
+    "azimut": 25.7,
+    "elevation": 45.0,
+    "impacts": 5,
+    "sortie": [
+     0.51,
+     0.74,
+     3.17
+    ],
+    "station": 1,
+    "u": 1.0,
+    "x": -1.02,
+    "y": 0.0,
+    "z": 1.47
+   },
+   {
+    "azimut": 0.0,
+    "elevation": 0.0,
+    "impacts": 3,
+    "sortie": [
+     1.29,
+     0.0,
+     0.29
+    ],
+    "station": 1,
+    "u": 1.0,
+    "x": -0.51,
+    "y": 0.0,
+    "z": 0.29
+   },
+   {
+    "azimut": 77.1,
+    "elevation": 45.0,
+    "impacts": 5,
+    "sortie": [
+     0.14,
+     2.83,
+     3.19
+    ],
+    "station": 1,
+    "u": 1.0,
+    "x": -0.51,
+    "y": 0.0,
+    "z": 0.29
+   },
+   {
+    "azimut": 0.0,
+    "elevation": 0.0,
+    "impacts": 3,
+    "sortie": [
+     1.31,
+     0.0,
+     0.29
+    ],
+    "station": 1,
+    "u": 1.0,
+    "x": 0.51,
+    "y": 0.0,
+    "z": 0.29
+   },
+   {
+    "azimut": 77.1,
+    "elevation": 0.0,
+    "impacts": 3,
+    "sortie": [
+     2.6,
+     9.16,
+     0.84
+    ],
+    "station": 1,
+    "u": 1.0,
+    "x": 0.51,
+    "y": 0.0,
+    "z": 0.84
+   },
+   {
+    "azimut": 0.0,
+    "elevation": 22.5,
+    "impacts": 5,
+    "sortie": [
+     1.34,
+     0.0,
+     1.19
+    ],
+    "station": 1,
+    "u": 1.0,
+    "x": 0.51,
+    "y": 0.0,
+    "z": 0.84
+   },
+   {
+    "azimut": 180.0,
+    "elevation": -67.5,
+    "impacts": 3,
+    "sortie": [
+     -1.52,
+     0.4,
+     -0.32
+    ],
+    "station": 1,
+    "u": 1.25,
+    "x": -1.03,
+    "y": 0.4,
+    "z": 0.88
+   },
+   {
+    "azimut": 257.1,
+    "elevation": -45.0,
+    "impacts": 3,
+    "sortie": [
+     0.33,
+     -0.5,
+     -0.62
+    ],
+    "station": 1,
+    "u": 1.25,
+    "x": 0.54,
+    "y": 0.4,
+    "z": 0.3
+   },
+   {
+    "azimut": 0.0,
+    "elevation": -67.5,
+    "impacts": 3,
+    "sortie": [
+     -0.77,
+     0.8,
+     -0.31
+    ],
+    "station": 2,
+    "u": 1.5,
+    "x": -1.03,
+    "y": 0.8,
+    "z": 0.34
+   },
+   {
+    "azimut": 231.4,
+    "elevation": 22.5,
+    "impacts": 5,
+    "sortie": [
+     -2.48,
+     -1.01,
+     1.84
+    ],
+    "station": 2,
+    "u": 1.5,
+    "x": -1.03,
+    "y": 0.8,
+    "z": 0.89
+   },
+   {
+    "azimut": 0.0,
+    "elevation": 22.5,
+    "impacts": 3,
+    "sortie": [
+     1.53,
+     0.8,
+     1.16
+    ],
+    "station": 2,
+    "u": 1.5,
+    "x": -0.5,
+    "y": 0.8,
+    "z": 0.31
+   },
+   {
+    "azimut": 128.6,
+    "elevation": 22.5,
+    "impacts": 3,
+    "sortie": [
+     -1.86,
+     3.83,
+     2.47
+    ],
+    "station": 2,
+    "u": 1.5,
+    "x": 0.56,
+    "y": 0.8,
+    "z": 0.86
+   },
+   {
+    "azimut": 334.3,
+    "elevation": 0.0,
+    "impacts": 3,
+    "sortie": [
+     1.37,
+     0.41,
+     1.46
+    ],
+    "station": 2,
+    "u": 1.5,
+    "x": 0.56,
+    "y": 0.8,
+    "z": 1.46
+   },
+   {
+    "azimut": 154.3,
+    "elevation": 45.0,
+    "impacts": 5,
+    "sortie": [
+     -1.03,
+     1.57,
+     3.23
+    ],
+    "station": 2,
+    "u": 1.5,
+    "x": 0.56,
+    "y": 0.8,
+    "z": 1.46
+   },
+   {
+    "azimut": 334.3,
+    "elevation": -67.5,
+    "impacts": 3,
+    "sortie": [
+     -0.26,
+     1.08,
+     -0.32
+    ],
+    "station": 2,
+    "u": 1.75,
+    "x": -0.5,
+    "y": 1.2,
+    "z": 0.32
+   },
+   {
+    "azimut": 334.3,
+    "elevation": -67.5,
+    "impacts": 3,
+    "sortie": [
+     1.24,
+     0.88,
+     -0.28
+    ],
+    "station": 2,
+    "u": 1.75,
+    "x": 0.59,
+    "y": 1.2,
+    "z": 1.47
+   },
+   {
+    "azimut": 205.7,
+    "elevation": -67.5,
+    "impacts": 3,
+    "sortie": [
+     -1.15,
+     1.28,
+     -0.27
+    ],
+    "station": 2,
+    "u": 2.0,
+    "x": -0.5,
+    "y": 1.6,
+    "z": 1.48
+   },
+   {
+    "azimut": 231.4,
+    "elevation": -67.5,
+    "impacts": 3,
+    "sortie": [
+     -0.11,
+     1.39,
+     -0.34
+    ],
+    "station": 2,
+    "u": 2.0,
+    "x": 0.06,
+    "y": 1.6,
+    "z": 0.31
+   },
+   {
+    "azimut": 308.6,
+    "elevation": 0.0,
+    "impacts": 3,
+    "sortie": [
+     1.56,
+     0.91,
+     0.9
+    ],
+    "station": 2,
+    "u": 2.25,
+    "x": 0.68,
+    "y": 2.0,
+    "z": 0.9
+   },
+   {
+    "azimut": 25.7,
+    "elevation": 0.0,
+    "impacts": 3,
+    "sortie": [
+     3.03,
+     3.79,
+     0.89
+    ],
+    "station": 2,
+    "u": 2.5,
+    "x": 0.15,
+    "y": 2.4,
+    "z": 0.89
+   },
+   {
+    "azimut": 308.6,
+    "elevation": 22.5,
+    "impacts": 5,
+    "sortie": [
+     1.61,
+     1.32,
+     1.49
+    ],
+    "station": 2,
+    "u": 2.5,
+    "x": 0.75,
+    "y": 2.4,
+    "z": 0.91
+   },
+   {
+    "azimut": 257.1,
+    "elevation": -67.5,
+    "impacts": 3,
+    "sortie": [
+     1.18,
+     1.65,
+     -0.31
+    ],
+    "station": 2,
+    "u": 2.5,
+    "x": 1.35,
+    "y": 2.4,
+    "z": 1.54
+   },
+   {
+    "azimut": 25.7,
+    "elevation": 22.5,
+    "impacts": 5,
+    "sortie": [
+     3.44,
+     4.36,
+     2.4
+    ],
+    "station": 3,
+    "u": 2.75,
+    "x": 0.2,
+    "y": 2.8,
+    "z": 0.91
+   },
+   {
+    "azimut": 308.6,
+    "elevation": -22.5,
+    "impacts": 3,
+    "sortie": [
+     1.96,
+     2.15,
+     0.61
+    ],
+    "station": 3,
+    "u": 2.75,
+    "x": 1.44,
+    "y": 2.8,
+    "z": 0.95
+   },
+   {
+    "azimut": 334.3,
+    "elevation": 22.5,
+    "impacts": 3,
+    "sortie": [
+     2.22,
+     2.56,
+     1.56
+    ],
+    "station": 3,
+    "u": 3.0,
+    "x": 0.88,
+    "y": 3.2,
+    "z": 0.94
+   },
+   {
+    "azimut": 231.4,
+    "elevation": 45.0,
+    "impacts": 5,
+    "sortie": [
+     0.12,
+     1.43,
+     3.23
+    ],
+    "station": 3,
+    "u": 3.0,
+    "x": 1.53,
+    "y": 3.2,
+    "z": 0.97
+   },
+   {
+    "azimut": 154.3,
+    "elevation": 0.0,
+    "impacts": 3,
+    "sortie": [
+     -2.14,
+     5.11,
+     0.96
+    ],
+    "station": 3,
+    "u": 3.25,
+    "x": 1.01,
+    "y": 3.59,
+    "z": 0.96
+   },
+   {
+    "azimut": 282.9,
+    "elevation": -45.0,
+    "impacts": 3,
+    "sortie": [
+     -0.89,
+     3.29,
+     -0.26
+    ],
+    "station": 4,
+    "u": 3.5,
+    "x": -1.04,
+    "y": 3.98,
+    "z": 0.45
+   },
+   {
+    "azimut": 282.9,
+    "elevation": -45.0,
+    "impacts": 3,
+    "sortie": [
+     -0.18,
+     3.35,
+     -0.21
+    ],
+    "station": 4,
+    "u": 3.5,
+    "x": -0.32,
+    "y": 3.98,
+    "z": 0.42
+   },
+   {
+    "azimut": 0.0,
+    "elevation": -22.5,
+    "impacts": 5,
+    "sortie": [
+     3.17,
+     3.98,
+     0.13
+    ],
+    "station": 4,
+    "u": 3.5,
+    "x": 1.14,
+    "y": 3.98,
+    "z": 0.97
+   },
+   {
+    "azimut": 0.0,
+    "elevation": 22.5,
+    "impacts": 5,
+    "sortie": [
+     3.16,
+     3.98,
+     0.98
+    ],
+    "station": 4,
+    "u": 3.5,
+    "x": 1.86,
+    "y": 3.98,
+    "z": 0.45
+   },
+   {
+    "azimut": 128.6,
+    "elevation": 67.5,
+    "impacts": 3,
+    "sortie": [
+     1.44,
+     4.51,
+     3.26
+    ],
+    "station": 4,
+    "u": 3.5,
+    "x": 1.86,
+    "y": 3.98,
+    "z": 1.6
+   },
+   {
+    "azimut": 180.0,
+    "elevation": 67.5,
+    "impacts": 3,
+    "sortie": [
+     -1.96,
+     4.36,
+     3.23
+    ],
+    "station": 4,
+    "u": 3.75,
+    "x": -1.04,
+    "y": 4.36,
+    "z": 1.01
+   },
+   {
+    "azimut": 154.3,
+    "elevation": 22.5,
+    "impacts": 3,
+    "sortie": [
+     -2.11,
+     5.24,
+     2.43
+    ],
+    "station": 4,
+    "u": 3.75,
+    "x": -0.27,
+    "y": 4.36,
+    "z": 1.59
+   },
+   {
+    "azimut": 282.9,
+    "elevation": 22.5,
+    "impacts": 5,
+    "sortie": [
+     1.42,
+     0.31,
+     2.14
+    ],
+    "station": 4,
+    "u": 3.75,
+    "x": 0.49,
+    "y": 4.36,
+    "z": 0.41
+   },
+   {
+    "azimut": 154.3,
+    "elevation": 22.5,
+    "impacts": 3,
+    "sortie": [
+     -2.12,
+     5.27,
+     2.13
+    ],
+    "station": 4,
+    "u": 4.0,
+    "x": -1.04,
+    "y": 4.75,
+    "z": 1.63
+   },
+   {
+    "azimut": 102.9,
+    "elevation": 67.5,
+    "impacts": 5,
+    "sortie": [
+     -0.5,
+     5.94,
+     3.41
+    ],
+    "station": 4,
+    "u": 4.0,
+    "x": -0.23,
+    "y": 4.75,
+    "z": 0.45
+   },
+   {
+    "azimut": 308.6,
+    "elevation": 22.5,
+    "impacts": 3,
+    "sortie": [
+     1.9,
+     2.08,
+     3.02
+    ],
+    "station": 4,
+    "u": 4.0,
+    "x": -0.23,
+    "y": 4.75,
+    "z": 1.6
+   },
+   {
+    "azimut": 282.9,
+    "elevation": 22.5,
+    "impacts": 5,
+    "sortie": [
+     2.57,
+     3.13,
+     1.72
+    ],
+    "station": 4,
+    "u": 4.0,
+    "x": 2.2,
+    "y": 4.75,
+    "z": 1.03
+   },
+   {
+    "azimut": 257.1,
+    "elevation": -45.0,
+    "impacts": 3,
+    "sortie": [
+     1.12,
+     3.33,
+     -0.21
+    ],
+    "station": 4,
+    "u": 4.25,
+    "x": 1.53,
+    "y": 5.12,
+    "z": 1.63
+   },
+   {
+    "azimut": 308.6,
+    "elevation": 22.5,
+    "impacts": 5,
+    "sortie": [
+     3.0,
+     3.84,
+     1.93
+    ],
+    "station": 4,
+    "u": 4.5,
+    "x": 1.68,
+    "y": 5.5,
+    "z": 1.05
+   },
+   {
+    "azimut": 77.1,
+    "elevation": 67.5,
+    "impacts": 5,
+    "sortie": [
+     0.32,
+     7.11,
+     3.58
+    ],
+    "station": 5,
+    "u": 4.75,
+    "x": 0.04,
+    "y": 5.88,
+    "z": 0.53
+   },
+   {
+    "azimut": 334.3,
+    "elevation": 0.0,
+    "impacts": 5,
+    "sortie": [
+     3.55,
+     4.62,
+     0.51
+    ],
+    "station": 5,
+    "u": 4.75,
+    "x": 0.93,
+    "y": 5.88,
+    "z": 0.51
+   },
+   {
+    "azimut": 282.9,
+    "elevation": 67.5,
+    "impacts": 5,
+    "sortie": [
+     0.34,
+     5.35,
+     3.32
+    ],
+    "station": 5,
+    "u": 5.0,
+    "x": 0.14,
+    "y": 6.25,
+    "z": 1.1
+   },
+   {
+    "azimut": 180.0,
+    "elevation": -22.5,
+    "impacts": 5,
+    "sortie": [
+     -2.17,
+     6.59,
+     0.54
+    ],
+    "station": 5,
+    "u": 5.25,
+    "x": -0.6,
+    "y": 6.59,
+    "z": 1.19
+   },
+   {
+    "azimut": 0.0,
+    "elevation": 22.5,
+    "impacts": 5,
+    "sortie": [
+     4.73,
+     6.59,
+     3.0
+    ],
+    "station": 5,
+    "u": 5.25,
+    "x": 0.3,
+    "y": 6.59,
+    "z": 1.16
+   },
+   {
+    "azimut": 180.0,
+    "elevation": 0.0,
+    "impacts": 7,
+    "sortie": [
+     -2.11,
+     6.59,
+     1.14
+    ],
+    "station": 5,
+    "u": 5.25,
+    "x": 1.19,
+    "y": 6.59,
+    "z": 1.14
+   },
+   {
+    "azimut": 282.9,
+    "elevation": 0.0,
+    "impacts": 3,
+    "sortie": [
+     2.15,
+     2.4,
+     1.74
+    ],
+    "station": 5,
+    "u": 5.25,
+    "x": 1.19,
+    "y": 6.59,
+    "z": 1.74
+   },
+   {
+    "azimut": 282.9,
+    "elevation": 67.5,
+    "impacts": 3,
+    "sortie": [
+     2.29,
+     5.69,
+     3.38
+    ],
+    "station": 5,
+    "u": 5.25,
+    "x": 2.09,
+    "y": 6.59,
+    "z": 1.16
+   },
+   {
+    "azimut": 231.4,
+    "elevation": 45.0,
+    "impacts": 5,
+    "sortie": [
+     -1.17,
+     4.88,
+     3.29
+    ],
+    "station": 6,
+    "u": 5.5,
+    "x": 0.46,
+    "y": 6.92,
+    "z": 0.67
+   },
+   {
+    "azimut": 77.1,
+    "elevation": -67.5,
+    "impacts": 3,
+    "sortie": [
+     3.19,
+     7.37,
+     0.14
+    ],
+    "station": 6,
+    "u": 5.5,
+    "x": 3.09,
+    "y": 6.92,
+    "z": 1.25
+   },
+   {
+    "azimut": 231.4,
+    "elevation": 67.5,
+    "impacts": 3,
+    "sortie": [
+     2.52,
+     6.21,
+     3.47
+    ],
+    "station": 6,
+    "u": 5.5,
+    "x": 3.09,
+    "y": 6.92,
+    "z": 1.25
+   },
+   {
+    "azimut": 0.0,
+    "elevation": -22.5,
+    "impacts": 5,
+    "sortie": [
+     4.59,
+     7.26,
+     0.24
+    ],
+    "station": 6,
+    "u": 5.75,
+    "x": 0.62,
+    "y": 7.26,
+    "z": 1.88
+   },
+   {
+    "azimut": 205.7,
+    "elevation": 67.5,
+    "impacts": 3,
+    "sortie": [
+     2.37,
+     6.86,
+     3.53
+    ],
+    "station": 6,
+    "u": 5.75,
+    "x": 3.19,
+    "y": 7.26,
+    "z": 1.31
+   },
+   {
+    "azimut": 51.4,
+    "elevation": 67.5,
+    "impacts": 3,
+    "sortie": [
+     1.5,
+     8.5,
+     3.57
+    ],
+    "station": 6,
+    "u": 6.0,
+    "x": 0.78,
+    "y": 7.6,
+    "z": 0.79
+   },
+   {
+    "azimut": 308.6,
+    "elevation": 22.5,
+    "impacts": 7,
+    "sortie": [
+     2.91,
+     4.93,
+     3.36
+    ],
+    "station": 6,
+    "u": 6.0,
+    "x": 0.78,
+    "y": 7.6,
+    "z": 1.94
+   },
+   {
+    "azimut": 282.9,
+    "elevation": 22.5,
+    "impacts": 3,
+    "sortie": [
+     2.61,
+     3.28,
+     2.61
+    ],
+    "station": 6,
+    "u": 6.0,
+    "x": 1.62,
+    "y": 7.6,
+    "z": 0.77
+   },
+   {
+    "azimut": 257.1,
+    "elevation": 45.0,
+    "impacts": 3,
+    "sortie": [
+     0.43,
+     5.45,
+     3.34
+    ],
+    "station": 6,
+    "u": 6.25,
+    "x": 0.98,
+    "y": 7.86,
+    "z": 0.86
+   },
+   {
+    "azimut": 257.1,
+    "elevation": -22.5,
+    "impacts": 3,
+    "sortie": [
+     1.69,
+     3.99,
+     -0.23
+    ],
+    "station": 6,
+    "u": 6.25,
+    "x": 2.57,
+    "y": 7.86,
+    "z": 1.41
+   },
+   {
+    "azimut": 282.9,
+    "elevation": 67.5,
+    "impacts": 3,
+    "sortie": [
+     1.42,
+     7.08,
+     3.52
+    ],
+    "station": 6,
+    "u": 6.5,
+    "x": 1.19,
+    "y": 8.12,
+    "z": 0.93
+   },
+   {
+    "azimut": 25.7,
+    "elevation": -22.5,
+    "impacts": 3,
+    "sortie": [
+     3.27,
+     9.13,
+     0.53
+    ],
+    "station": 6,
+    "u": 6.5,
+    "x": 1.19,
+    "y": 8.12,
+    "z": 1.48
+   },
+   {
+    "azimut": 51.4,
+    "elevation": -67.5,
+    "impacts": 3,
+    "sortie": [
+     2.2,
+     8.45,
+     0.44
+    ],
+    "station": 6,
+    "u": 6.5,
+    "x": 1.94,
+    "y": 8.12,
+    "z": 1.46
+   },
+   {
+    "azimut": 180.0,
+    "elevation": 45.0,
+    "impacts": 3,
+    "sortie": [
+     0.56,
+     8.12,
+     3.61
+    ],
+    "station": 6,
+    "u": 6.5,
+    "x": 2.69,
+    "y": 8.12,
+    "z": 1.48
+   },
+   {
+    "azimut": 308.6,
+    "elevation": 0.0,
+    "impacts": 3,
+    "sortie": [
+     4.27,
+     5.65,
+     2.13
+    ],
+    "station": 7,
+    "u": 6.75,
+    "x": 2.09,
+    "y": 8.39,
+    "z": 2.13
+   },
+   {
+    "azimut": 205.7,
+    "elevation": 45.0,
+    "impacts": 3,
+    "sortie": [
+     -0.77,
+     7.51,
+     3.69
+    ],
+    "station": 7,
+    "u": 7.0,
+    "x": 1.59,
+    "y": 8.65,
+    "z": 1.07
+   },
+   {
+    "azimut": 257.1,
+    "elevation": 67.5,
+    "impacts": 5,
+    "sortie": [
+     1.46,
+     8.09,
+     3.61
+    ],
+    "station": 7,
+    "u": 7.0,
+    "x": 1.59,
+    "y": 8.65,
+    "z": 2.22
+   },
+   {
+    "azimut": 180.0,
+    "elevation": -22.5,
+    "impacts": 3,
+    "sortie": [
+     -0.37,
+     8.8,
+     1.03
+    ],
+    "station": 7,
+    "u": 7.25,
+    "x": 1.2,
+    "y": 8.8,
+    "z": 1.68
+   },
+   {
+    "azimut": 308.6,
+    "elevation": 67.5,
+    "impacts": 3,
+    "sortie": [
+     1.7,
+     8.17,
+     3.62
+    ],
+    "station": 7,
+    "u": 7.25,
+    "x": 1.2,
+    "y": 8.8,
+    "z": 1.68
+   },
+   {
+    "azimut": 257.1,
+    "elevation": 67.5,
+    "impacts": 3,
+    "sortie": [
+     1.24,
+     7.94,
+     3.66
+    ],
+    "station": 8,
+    "u": 7.5,
+    "x": 1.47,
+    "y": 8.95,
+    "z": 1.17
+   },
+   {
+    "azimut": 308.6,
+    "elevation": 22.5,
+    "impacts": 3,
+    "sortie": [
+     4.49,
+     5.84,
+     3.34
+    ],
+    "station": 8,
+    "u": 7.5,
+    "x": 2.01,
+    "y": 8.95,
+    "z": 1.69
+   },
+   {
+    "azimut": 102.9,
+    "elevation": -45.0,
+    "impacts": 3,
+    "sortie": [
+     2.01,
+     9.25,
+     1.24
+    ],
+    "station": 8,
+    "u": 8.0,
+    "x": 2.01,
+    "y": 9.25,
+    "z": 1.24
+   },
+   {
+    "azimut": 128.6,
+    "elevation": 0.0,
+    "impacts": 3,
+    "sortie": [
+     2.01,
+     9.25,
+     1.79
+    ],
+    "station": 8,
+    "u": 8.0,
+    "x": 2.01,
+    "y": 9.25,
+    "z": 1.79
+   }
+  ],
+  "percees_confirmees": [],
+  "points_hors_cavite": [],
+  "points_porche_ecartes": 60,
+  "rayons_par_la_bouche": 1575,
+  "rayons_suspects": 74,
+  "rayons_testes": 38225
+ },
+ "ligne_de_vue": "NON VERIFIE",
+ "ouverture_confirmee_m": 0.1,
+ "percees_confirmees": [],
+ "percees_confirmees_total": 0,
+ "plancher": {
+  "carte": [
+   {
+    "absents": 0,
+    "ecart_max_m": 0.034,
+    "presents": 5,
+    "station": 0,
+    "u": 0.0,
+    "y": -1.15,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.037,
+    "presents": 5,
+    "station": 0,
+    "u": 0.25,
+    "y": -0.86,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.039,
+    "presents": 5,
+    "station": 0,
+    "u": 0.5,
+    "y": -0.57,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.042,
+    "presents": 5,
+    "station": 1,
+    "u": 0.75,
+    "y": -0.29,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.044,
+    "presents": 5,
+    "station": 1,
+    "u": 1.0,
+    "y": 0.0,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.034,
+    "presents": 5,
+    "station": 1,
+    "u": 1.25,
+    "y": 0.4,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.034,
+    "presents": 5,
+    "station": 2,
+    "u": 1.5,
+    "y": 0.8,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.034,
+    "presents": 5,
+    "station": 2,
+    "u": 1.75,
+    "y": 1.2,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.034,
+    "presents": 5,
+    "station": 2,
+    "u": 2.0,
+    "y": 1.6,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.036,
+    "presents": 5,
+    "station": 2,
+    "u": 2.25,
+    "y": 2.0,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.037,
+    "presents": 5,
+    "station": 2,
+    "u": 2.5,
+    "y": 2.4,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.034,
+    "presents": 5,
+    "station": 3,
+    "u": 2.75,
+    "y": 2.8,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.031,
+    "presents": 5,
+    "station": 3,
+    "u": 3.0,
+    "y": 3.2,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.031,
+    "presents": 5,
+    "station": 3,
+    "u": 3.25,
+    "y": 3.59,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.033,
+    "presents": 5,
+    "station": 4,
+    "u": 3.5,
+    "y": 3.98,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.035,
+    "presents": 5,
+    "station": 4,
+    "u": 3.75,
+    "y": 4.36,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.036,
+    "presents": 5,
+    "station": 4,
+    "u": 4.0,
+    "y": 4.75,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.051,
+    "presents": 5,
+    "station": 4,
+    "u": 4.25,
+    "y": 5.12,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.056,
+    "presents": 5,
+    "station": 4,
+    "u": 4.5,
+    "y": 5.5,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.061,
+    "presents": 5,
+    "station": 5,
+    "u": 4.75,
+    "y": 5.88,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.065,
+    "presents": 5,
+    "station": 5,
+    "u": 5.0,
+    "y": 6.25,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.106,
+    "presents": 5,
+    "station": 5,
+    "u": 5.25,
+    "y": 6.59,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.134,
+    "presents": 5,
+    "station": 6,
+    "u": 5.5,
+    "y": 6.92,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.138,
+    "presents": 5,
+    "station": 6,
+    "u": 5.75,
+    "y": 7.26,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.142,
+    "presents": 5,
+    "station": 6,
+    "u": 6.0,
+    "y": 7.6,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.163,
+    "presents": 5,
+    "station": 6,
+    "u": 6.25,
+    "y": 7.86,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.184,
+    "presents": 4,
+    "station": 6,
+    "u": 6.5,
+    "y": 8.12,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.188,
+    "presents": 4,
+    "station": 7,
+    "u": 6.75,
+    "y": 8.39,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.187,
+    "presents": 4,
+    "station": 7,
+    "u": 7.0,
+    "y": 8.65,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.171,
+    "presents": 4,
+    "station": 7,
+    "u": 7.25,
+    "y": 8.8,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.153,
+    "presents": 4,
+    "station": 8,
+    "u": 7.5,
+    "y": 8.95,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.136,
+    "presents": 3,
+    "station": 8,
+    "u": 7.75,
+    "y": 9.1,
+    "z_impact_trou": null
+   },
+   {
+    "absents": 0,
+    "ecart_max_m": 0.127,
+    "presents": 3,
+    "station": 8,
+    "u": 8.0,
+    "y": 9.25,
+    "z_impact_trou": null
+   }
+  ],
+  "fautes": [],
+  "points_testes": 454
+ },
+ "pose": {
+  "aller_retour_ecart_m": 4.6629367034256575e-15,
+  "aller_retour_tolerance_m": 1e-09,
+  "lacet_deg": 45.0,
+  "origine": [
+   -106.0,
+   3.5,
+   3.5
+  ],
+  "provenance": {
+   "exhaussement": 0.5,
+   "lacet_deg": 45.0,
+   "layout": "resources/world_v2/world_v2_layout.json",
+   "script": "scripts/world_v2/poi/waterfall_cave_place.gd",
+   "seuil_local": [
+    4.0,
+    -2.5
+   ],
+   "terrain_sous_seuil": 3.0,
+   "terrain_statut": "NON VERIFIE — documentaire, cf. commentaires d'implantation de waterfall_cave_place.gd",
+   "v2_site": [
+    -110.0,
+    3.0,
+    6.0
+   ]
+  },
+  "verdict": "PASS"
+ },
+ "surfaces": {
+  "fond": {
+   "axes": [
+    "x",
+    "z"
+   ],
+   "blocs": [],
+   "cases": 4092,
+   "cases_ouvertes": 0,
+   "confirmees": [],
+   "pas": 0.05
+  },
+  "paroi_moins_x": {
+   "axes": [
+    "y",
+    "z"
+   ],
+   "blocs": [],
+   "cases": 8184,
+   "cases_ouvertes": 0,
+   "confirmees": [],
+   "pas": 0.05
+  },
+  "paroi_plus_x": {
+   "axes": [
+    "y",
+    "z"
+   ],
+   "blocs": [],
+   "cases": 8184,
+   "cases_ouvertes": 0,
+   "confirmees": [],
+   "pas": 0.05
+  },
+  "plancher": {
+   "axes": [
+    "x",
+    "y"
+   ],
+   "blocs": [],
+   "cases": 17298,
+   "cases_ouvertes": 0,
+   "confirmees": [],
+   "pas": 0.05
+  },
+  "toit": {
+   "axes": [
+    "x",
+    "y"
+   ],
+   "blocs": [],
+   "cases": 17298,
+   "cases_ouvertes": 0,
+   "confirmees": [],
+   "pas": 0.05
+  }
+ },
+ "triangles": 19954,
+ "triangles_par_matiere": {
+  "MAT_CaveIn_Deep": 514,
+  "MAT_CaveIn_Floor": 499,
+  "MAT_CaveIn_Wall": 198,
+  "MAT_CaveRock_Base": 5799,
+  "MAT_CaveRock_Collar": 7389,
+  "MAT_CaveRock_Face": 5555
+ },
+ "verdict": "PASS"
+}

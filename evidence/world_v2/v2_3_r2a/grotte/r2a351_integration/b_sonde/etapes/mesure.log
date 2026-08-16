@@ -1,0 +1,34 @@
+remaille   137304 triangles
+stratifie  137304 triangles
+decime      19000 triangles
+final       19858 triangles
+
+19 ouvertures FRANCHES (rien au zenith, rien sur loblique, hors bouche)
+
+Distance a la PEAU EXTERIEURE le long du rayon, par etape (m) :
+  #   depart                 remaille  stratif   decime    final
+  0   [4.51, 3.06, 2.03]         RIEN     RIEN     RIEN     RIEN
+  1   [4.47, 3.09, 2.06]         RIEN     RIEN     RIEN     RIEN
+  2   [4.6, 2.88, 1.81]          RIEN     RIEN     RIEN     RIEN
+  3   [4.47, 3.09, 2.06]         RIEN     RIEN     RIEN     RIEN
+  4   [4.55, 2.8, 1.76]          RIEN     RIEN     RIEN     RIEN
+  5   [4.55, 2.8, 1.76]          RIEN     RIEN     RIEN     RIEN
+  6   [4.58, 2.92, 1.86]         RIEN     RIEN     RIEN     RIEN
+  7   [4.6, 2.88, 1.81]          RIEN     RIEN     RIEN     RIEN
+  8   [4.53, 3.02, 1.97]         RIEN     RIEN     RIEN     RIEN
+  9   [4.44, 3.12, 2.1]          RIEN     RIEN     RIEN     RIEN
+  10  [4.55, 2.8, 1.76]          RIEN     RIEN     RIEN     RIEN
+  11  [4.58, 2.92, 1.86]         RIEN     RIEN     RIEN     RIEN
+  12  [4.58, 2.92, 1.86]         RIEN     RIEN     RIEN     RIEN
+  13  [4.58, 2.92, 1.86]         RIEN     RIEN     RIEN     RIEN
+  14  [4.55, 2.97, 1.92]         RIEN     RIEN     RIEN     RIEN
+  15  [4.55, 2.97, 1.92]         RIEN     RIEN     RIEN     RIEN
+  16  [4.53, 3.02, 1.97]         RIEN     RIEN     RIEN     RIEN
+  17  [4.53, 3.02, 1.97]         RIEN     RIEN     RIEN     RIEN
+  18  [4.44, 3.12, 2.1]          RIEN     RIEN     RIEN     RIEN
+
+  remaille   : 19 rayon(s) SANS peau ; distances min - max -
+  stratifie  : 19 rayon(s) SANS peau ; distances min - max -
+  decime     : 19 rayon(s) SANS peau ; distances min - max -
+  final      : 19 rayon(s) SANS peau ; distances min - max -
+RC=0
