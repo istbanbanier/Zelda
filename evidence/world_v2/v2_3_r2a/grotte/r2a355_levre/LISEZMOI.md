@@ -199,3 +199,39 @@ région**. Le porche de l'enveloppe R2a-3.5.2 est malformé.
 Et personne ne l'avait vu, parce que **aucun contrôle n'a jamais été appelé sur
 `COL_WaterfallCave`** — y compris quand R2a-3.5.4 a déclaré la percée fermée et
 le portail conforme.
+
+---
+
+## Pourquoi le porche a régressé alors que ses stations n'ont PAS bougé
+
+Le paradoxe méritait d'être levé : les stations 0 (porche) et 1 (seuil) sont
+**identiques au chiffre près** entre R2a-3.4 et R2a-3.5.x — le générateur
+annote même la seconde « seuil — INCHANGÉ ». Et pourtant le maillage du porche
+est plus mince **et** porte 32 auto-intersections que la livrée n'a pas.
+
+**C'est la voisine qui a bougé.**
+
+| révision | segment seuil → station 2 | longueur | virage au seuil |
+|---|---|---:|---:|
+| R2a-3.4 | `(0,00 ; 0,00) → (0,06 ; 1,60)` | 1,601 m | **2,15°** |
+| R2a-3.5.x | `(0,00 ; 0,00) → (0,22 ; 1,05)` | 1,073 m | **11,83°** |
+
+Le segment sortant du seuil est **33 % plus court** et vire **5,5 fois plus**.
+
+Or la section d'une station est orientée par `normale_de_cavite(u)`, qui vaut
+`(tangente.y, −tangente.x)` : **l'orientation de la section au seuil dépend de
+ses voisines**. Une section de 1,90 m de demi-largeur qu'on fait pivoter de près
+de 10° par rapport à sa voisine se cisaille — et un loft cisaillé se replie du
+côté intérieur du virage.
+
+**Statut : hypothèse mécanique, non prouvée.** Elle est cohérente avec les deux
+mesures indépendantes qui convergent sur le porche, et elle explique pourquoi
+figer les stations du porche n'a pas suffi à figer le porche. Elle se réfuterait
+en rallongeant le segment sortant sans toucher aux stations 0 et 1.
+
+**Ce qu'elle change pour la suite** : « les stations de la bouche sont
+inchangées » ne garantit **pas** que la bouche est inchangée. L'addendum du
+masque s'appuie sur cette stabilité de stations — elle reste vraie pour le
+*chemin*, elle est fausse pour la *géométrie*. Le masque, lui, ne dépend que du
+chemin, donc il tient ; mais la phrase « R2a-3.5.2 n'a pas touché la bouche »
+doit se lire « n'a pas touché ses stations », et rien de plus.
