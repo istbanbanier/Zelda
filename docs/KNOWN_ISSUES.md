@@ -84,6 +84,56 @@ Aucun `S0`/`S1` ouvert n'est admis pour un build candidat.
 - **Test de régression** : à écrire avec le correctif — un appui déplacé de 2 m
   doit rougir.
 
+## ISS-054 — La coque de COLLISION porte 62 auto-intersections à 0,457 m, et aucun contrôle ne l'a jamais regardée · `S2` · OUVERT
+
+- **Build** : enveloppe R2a-3.5.2, mesuré sur `cc3596c5` et `c184c8dc`, reproduit
+  par l'intégrateur (`RC=0` sur les trois géométries).
+- **Observé**, sur `COL_WaterfallCave` :
+
+  | géométrie | paires | enfoncement max | où, en `ay` réel |
+  |---|---:|---:|---|
+  | R2a-3.4 **livrée** | 7 | **0,020 m** | `+8,37` à `+9,11` |
+  | `cc3596c5` | **62** | **0,457 m** | 32 au porche, 28 vers `+2,9…3,1` |
+  | `c184c8dc` | **62** | **0,457 m** | identique, ligne pour ligne |
+
+- **Gravité** : 0,457 m d'enfoncement, soit **23 fois** `REPLI_LIVRABLE_MAX_M`,
+  sur la géométrie qui **arrête réellement le joueur**. Le maillage visuel, lui,
+  reste 33 fois sous le seuil.
+- **Attribution certaine** : `cc3596c5` et `c184c8dc` sont identiques ligne pour
+  ligne, donc la régression vient **entièrement de l'enveloppe R2a-3.5.2**. Ni la
+  passe R2a-3.5.5 ni la calotte nord ne l'ont fabriquée.
+- **Cause la plus probable, NON PROUVÉE** : un loft dont la **section change trop
+  vite**, pas un loft qui vire. L'hypothèse du coude de 42° est **réfutée** — il
+  porte 2 paires sur 62, soit 3 %. Les pénétrations sont aux **deux extrémités**
+  du tube, dans les trois géométries, y compris R2a-3.4 en beaucoup plus bénin.
+- **Ce qui rend le défaut durable** : ni l'ancien `controle_repli()` ni le
+  nouveau `controle_penetration_exacte()` n'est appelé sur `COL_WaterfallCave`.
+  Elles étaient déjà là quand R2a-3.5.4 a déclaré la percée fermée et le portail
+  conforme. **Personne ne regardait cette coque.**
+- **Non corrigé** : hors périmètre de R2a-3.5.5, et `COL_MARGE_LAT` /
+  `COL_MARGE_CLE` ne doivent pas bouger sans décision.
+
+## ISS-055 — Le contrôle d'auto-intersection testait des PLANS, pas des triangles bornés · `S2` · CORRIGÉ (2026-08-17)
+
+- **Observé** : `_straddle_points()` publiait **0** pénétration là où un juge
+  exact — prédicats en `Fraction`, aucune tolérance — en trouve **6** sur le
+  candidat et **10 sur R2a-3.4 livrée et validée**. Il ratait des pénétrations et
+  en inventait : « 0 auto-intersection » n'a jamais été vrai sur aucune géométrie.
+- **Mode de panne** : celui d'ISS-018 — un test vert qui ne rougirait pas.
+- **Corrigé** par `controle_penetration_exacte()` : prédicats exacts, **aucune
+  tolérance** (un prédicat exact n'en a pas besoin), seuil `REPLI_LIVRABLE_MAX_M`
+  **inchangé**, les deux compteurs imprimés côte à côte dont l'ancien marqué « il
+  SOUS-COMPTE ». Sept cas de garde, zéro échec : voit une pénétration de **1 µm**,
+  ne compte **aucun** des quatre contacts (arête, sommet, tangence, coplanaires).
+- **Angle mort résiduel, mesuré, NON RÉSOLU** : dans la chaîne le contrôle publie
+  **4** là où le juge trouve **6** sur le GLB, parce que la triangulation interne
+  `bmesh BEAUTY` et celle de l'exportateur divergent sur **2 178 triangles sur
+  20 072, soit 10,9 %**. **Le « 4 » du générateur est un MINORANT du « 6 » réel.**
+- **Ce que la mesure a corrigé dans mon propre argumentaire** : « 6 contre 10 »
+  est vrai sur le compte et **faux sur la sévérité**. Les 10 de R2a-3.4 ont un
+  enfoncement **sous le demi-micron** — des contacts tangents ; celles du candidat
+  sont mille fois plus profondes, avec des coutures 4,5 fois plus longues.
+
 ## ISS-053 — Un appui déclaré de la grotte est à l'air libre, 0,92 m hors du massif · `S3` · OUVERT
 
 - **Build** : base R2a-3.5.2 (`c79341e`), mesuré sur le candidat `cc3596c5`.
