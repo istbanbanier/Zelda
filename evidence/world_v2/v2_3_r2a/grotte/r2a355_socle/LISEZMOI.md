@@ -149,3 +149,24 @@ Les 42 outils `cave_*` et `probe_cave_*` du tronc ont été lancés sans argumen
 `cave_topology_check.py` était donc la **seule** victime de la suppression des
 worktrees de passes closes. Le périmètre du dégât est borné et mesuré, pas
 supposé.
+
+## L'hypothèse de l'intégrateur sur l'argmin est RÉFUTÉE — consigné à mon débit
+
+J'avais averti l'agent A que l'argmin `(1,036 ; 5,173 ; 2,316)` serait
+« deux mètres au-delà de la fin du chemin », la dernière station du socle étant à
+`ay = 3,17`, et lui avais demandé de traiter explicitement l'écrêtage de
+`station_de_cavite`.
+
+**Mesuré : le pied de projection tombe dans un segment INTERNE**, stations 4→5,
+`t = 0,9124` **non écrêté**, `s = +3,8413 m` depuis le seuil. Les deux mètres
+d'écart en `ay` sont **intégralement latéraux** : la normale y est à 86,7 %
+alignée sur +Y, donc 3,04 m de déport déplacent le point de 2,63 m en `ay` sans
+avancer d'un pas le long du chemin.
+
+Ma mise en garde portait sur le bon piège — l'écrêtage silencieux existe bien —
+mais ma conclusion était fausse. L'agent a publié le drapeau à chaque conversion,
+ce qui est exactement ce qu'il fallait faire.
+
+Leçon, et elle est la même que celle du masque : **une distance en `ay` n'est pas
+une abscisse le long d'un chemin courbe.** Deux façons différentes de commettre la
+même confusion en une seule passe.
