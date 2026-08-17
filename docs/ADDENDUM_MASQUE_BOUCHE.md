@@ -279,6 +279,99 @@ en découle**.
 
 ---
 
+## 2quater. L'ÉPAISSEUR EST MAJORÉE PAR `d` — théorème, et réparation de la loi
+
+Écrit après démonstration, avant toute mesure de production. Instrument :
+`tools/cave_borne_rebord.py`, banc 15/15 vert.
+
+### 2quater.1 Le théorème
+
+`docs/CONTRAT_COQUE_STRUCTURELLE.md` §2.6 définit l'épaisseur en un point de la
+peau intérieure comme **la distance euclidienne à la surface extérieure la plus
+proche**. Et `Γ` est, par construction, la courbe où la peau intérieure s'arrête
+et où la surface extérieure commence : **`Γ` est donc contenue dans `S_ext`**.
+
+```
+(1)  e(p) = dist(p, S_ext)  ≤  dist(p, Γ)     car Γ ⊂ S_ext
+(2)  dist(p, Γ)             ≤  d(p)           euclidien ≤ géodésique
+———
+     e(p) ≤ d(p)      pour tout p, sur toute géométrie.
+```
+
+Ce n'est pas un constat sur cette grotte. C'est une conséquence directe de la
+définition d'épaisseur du contrat, combinée à la définition de `Γ`.
+
+### 2quater.2 Les trois conséquences, et elles condamnent le §2bis.2
+
+1. **`e ≥ min(d ; 0,80)` force `e = d` exactement** partout où `d < 0,80`. La
+   loi n'est pas un plancher : elle **est le majorant**. La marge maximale
+   atteignable y vaut **zéro**, sur une géométrie parfaite comprise.
+2. **Avec la borne conservatrice**, exigée en toutes lettres par §2bis.3.1, il
+   faudrait `e − h ≥ d`, donc `e ≥ d + h`, que (1)+(2) interdisent. La loi
+   littérale est **insatisfiable** sur `d < 0,80`, pour tout `h > 0`.
+3. **Le même argument condamne tout seuil constant `S` en deçà de `d = S`** : la
+   collerette à 0,60 m est inatteignable à moins de 0,60 m du rebord, et le
+   seuil structurel à 0,80 m à moins de 0,80 m. **C'est exactement ce que
+   R2a-3.5.5 avait mesuré sans le nommer** — `lecture / h` rigoureusement
+   constant à un facteur 8 près sur deux géométries indépendantes, signature
+   d'une arête. Le théorème l'explique et l'étend à toute la série.
+
+Ouvrir la lèvre n'y change rien : au-delà de 90°, le point le plus proche
+**devient le rebord lui-même**, et la distance sature à `d`. La table A de
+l'instrument le montre — aucun angle ne rend une marge strictement positive.
+
+### 2quater.3 `LOI-R` — la réparation, et elle est dérivée, pas choisie
+
+La plus grande exigence qu'une géométrie parfaite puisse satisfaire sous un
+instrument de résolution `h` est `d − h`. D'où :
+
+```
+LOI-R :  e_requise(p) = min( max(0 ; d(p) − h) , 0,80 m )
+```
+
+- pente **1** conservée : c'est l'intention du lead, inchangée ;
+- le genou passe de `d = 0,80` à **`d = 0,80 + h`** ;
+- à `h = 0,05` : genou à **0,85 m** — le nombre que la directive §4 exigeait
+  **déjà** comme borne garantie hors zone progressive. Il n'a pas été choisi
+  pour tomber juste, il tombe ;
+- `d ≤ h` : exigence nulle, gate sur continuité et topologie — la directive le
+  prévoyait à `d = 0` ; le théorème dit que cette bande a la largeur `h`, pas
+  zéro, et que sa largeur est **dictée par l'instrument**, pas négociée ;
+- `h → 0` : `LOI-R` converge vers la loi littérale du §2bis.2.
+
+**Contradiction contractuelle à trancher par le lead.** La directive §1 écrit
+« 0,80 m constant dès `d = 0,80` » et sa §4 écrit « borne garantie ≥ 0,85 m ».
+Ces deux phrases sont incompatibles entre elles d'exactement `h`. `LOI-R` retient
+la seconde. Aucun seuil n'est abaissé : `EPAISSEUR_MIN_M = 0,80` et
+`EPAISSEUR_MIN_COLLERETTE_M = 0,60` restent identiques et restent exigés partout
+où le théorème les rend atteignables.
+
+### 2quater.4 Ce qui rend la bande NON exempte : l'angle, pas l'épaisseur
+
+Une épaisseur ne peut pas être le critère au voisinage immédiat du rebord —
+table C de l'instrument : aucun choix de pente `α < 1` ne ramène à zéro la bande
+`d < h/(1−α)` où la borne conservatrice ne tranche pas.
+
+La grandeur qui **reste décidable** y est l'**angle de lèvre `θ(p)`** : sans
+dimension, il ne rétrécit pas avec `h`. Il se mesure directement sur le maillage,
+et `θ ≥ θ_min` équivaut localement à `e ≥ sin(θ_min)·d`.
+
+```
+θ(p) ≥ θ_min  exigé sur tout le domaine où d(p) < 0,85 m
+```
+
+**`θ_min = 60°`** — et c'est le seul nombre de cette section que j'ai choisi
+plutôt que dérivé. Justification : il tranche de façon décisive la liste de
+fixtures que la directive impose elle-même. **15°, 36° et 45° rougissent ;
+70° passe.** Un `θ_min` qui laisserait passer 36° ne serait pas un contrôle
+négatif, et un `θ_min` à 90° exigerait l'idéal.
+
+Aucun point n'est ignoré : hors bande, gate sur l'épaisseur bornée ; dans la
+bande, gate sur l'angle et la topologie. Les deux se recouvrent sur
+`h < d < 0,85`, où les deux doivent passer.
+
+---
+
 ## 2ter. CODES RETOUR — convention de cette passe, et une divergence à trancher
 
 **Convention imposée par la directive R2a-3.5.6 §2**, appliquée aux instruments
