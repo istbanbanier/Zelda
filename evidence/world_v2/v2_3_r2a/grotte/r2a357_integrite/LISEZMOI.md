@@ -106,3 +106,105 @@ bouche comparée à `a76f594b`, pas au livré · silhouette **rendue** non mesur
 les chiffres sont géométriques · `godot --import` rend **`RC=134`** (SIGABRT)
 après `loading_editor_layout DONE`, cache écrit et 8 tests exécutés — ticket, non
 poursuivi · tout ce qui touche `COL_WaterfallCave`, par consigne.
+
+---
+
+## 9. La face d'aire nulle est CORRIGÉE — et sa cause était une étape non mesurée
+
+GLB `3a80ae71` → **`40714c46`**, 1 488 700 octets.
+
+L'agent a exporté **chaque étape** de la chaîne et mesuré chacune. Les deux
+défauts ne partagent pas de cause, contrairement à ce que le sommet commun 13031
+laissait croire :
+
+| étape | triangles | aire nulle | traversées |
+|---|---:|---:|---:|
+| 4 · stratifier | 135 212 | 0 | 0 |
+| 5 · **décimer** | 19 000 | 0 | **2** ← |
+| 6 · **soustraire** | 20 070 | **1** ← | 2 |
+
+### La cause, et elle vaut au-delà de ce défaut
+
+**La face d'aire nulle naît de la TRIANGULATION, pas du booléen.** Dans Blender
+il n'y a **aucune** face plate — 17 424 polygones, aire minimale `1,29e-05`. Le
+coupable est le **polygone 7756, un treize-gone** de 0,2726 m² dont le bord porte
+`a, b, c` consécutifs et **colinéaires** ; `b` est légitimement utilisé par deux
+quadrangles de la découpe et ne peut pas être supprimé.
+
+Tant que c'est un n-gone, tout va bien. Mais **l'exportateur glTF triangule de
+toute façon** :
+
+> une étape **non mesurée**, capable d'injecter un défaut **après le dernier
+> contrôle**.
+
+C'est la même famille que le piège déjà consigné — mesurer un artefact sans
+prouver qu'il vient d'être produit — et elle explique pourquoi aucun contrôle
+côté Blender ne pouvait voir ce triangle. Le correctif fait faire la
+triangulation par le générateur, donc **avant** les contrôles.
+
+**Le rayon d'action était le vrai sujet.** Trianguler les 2 515 n-gones d'un bloc
+a rendu « 1 arête de bord, 1 non-manifold » et **cassé le build**. On ne triangule
+donc que les polygones portant un triplet colinéaire — **5 n-gones**.
+
+## 10. Les deux traversées — jugées NON RÉELLES, sur un seuil qui préexiste
+
+L'agent a tenté `_resoudre_auto_intersection` après décimation. Les 2 traversées
+disparaissaient, **mais le solveur laissait un sommet pincé** (6080) là où il n'y
+en avait aucun. Il a **annulé** : échanger 0,6 mm de recouvrement contre un défaut
+de fermeture est un recul.
+
+**Quelle grandeur juge « réelle ».** L'**enfoncement mutuel** — le repli — et non
+la corde. C'est lui qui décide si une nappe **ressort visiblement** de l'autre ;
+la corde ne mesure que la *longueur* du contact et surestime un frôlement rasant.
+La profondeur sommet-au-plan (0,0485 m) est dominée par la **taille des
+triangles**, pas par l'interpénétration.
+
+| | valeur |
+|---|---:|
+| repli mesuré | **0,0006 m** |
+| `REPLI_LIVRABLE_MAX_M` | **0,02 m** |
+| rapport | **33× sous le seuil** |
+| part de l'arête médiane | 0,24 % |
+
+**Vérification du lead, parce que la directive interdit de transformer une
+intersection réelle en zéro par une tolérance** : `REPLI_LIVRABLE_MAX_M = 0.02`
+existe **dans le générateur du tronc à `504ecbe`**, aux côtés de
+`PROFONDEUR_REPLI_MAX_M = 0.15`. Ce n'est donc **pas** une tolérance inventée pour
+cette passe : c'est le seuil de livrabilité que le projet s'était donné avant, et
+sous lequel l'asset livré a été validé.
+
+> **Verdict du lead : les deux traversées ne sont pas réelles**, au sens du
+> critère préexistant du projet, avec un facteur 33 de marge. Le chiffre est
+> publié, la grandeur est nommée, et le seuil n'a pas bougé.
+
+Ce qui **est** corrigé, c'est le trou de surveillance : rien ne mesurait les
+traversées entre `decimer()` et la fin.
+
+## 11. Tableau republié — les trois prédictions tiennent au chiffre près
+
+Genre **0**, composition **3/3/3**, ratios **2,23 / 2,37 / 2,25** inchangés. Et
+mieux : **V, E, F, aire totale (842,188236 m²) et volume (798,8 m³) sont
+identiques** — le correctif ne touche que la triangulation de 5 polygones.
+
+| critère | avant | après |
+|---|---|---|
+| aire exactement nulle | **1** | **0** — aire min non nulle `4,840e-09` |
+| lamelles sous `1e-9` | 1 | **0** |
+| lamelles sous `1e-6` | 9 | **6** |
+| tous les autres critères visuels | PASS | **PASS**, inchangés |
+| `world_v2_places` | 7/8 | **7/8**, collision inchangée — défaut de sonde établi |
+
+## 12. Deux aveux, et le premier est une leçon générale
+
+**Un garde-fou écrit mais jamais observé.** L'agent avait stubé
+`bpy.ops.wm.save_as_mainfile` et **documenté** que la course ne toucherait rien de
+suivi. Faux : `bpy.ops.wm` re-résout par `__getattr__`, le jeton `NEUTRALISE`
+n'est **jamais sorti**, et la course a réécrit le `.blend`. Le GLB candidat, lui,
+n'a jamais bougé.
+
+> **Un garde-fou vaut par son observation.** Poser un stub et écrire qu'il
+> protège n'est pas le vérifier — il fallait exiger le jeton, comme pour
+> `FIN NOMINALE` et `^RC=`.
+
+**Et sa première correction était un recul**, su seulement en re-mesurant avec ses
+propres instruments au lieu de croire le « 0 face plate résorbée » du générateur.
