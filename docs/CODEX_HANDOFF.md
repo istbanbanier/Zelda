@@ -2534,6 +2534,135 @@ effectif identique, générateur reproduit dans le socle, GLB copiés.
 
 ---
 
+## 38. R2a-3.5.5 — CLÔTURE. Au rebord d'une bouche, il n'y a pas d'épaisseur.
+
+**Verdict : `PARTIAL`.** Le gate d'épaisseur ne peut pas être rendu décisif, et
+c'est démontré plutôt que constaté. **Aucun export.** Le tronc continue de livrer
+R2a-3.4 (`8bf1a1b3`).
+
+### 38.1 La démonstration, reproduite par l'intégrateur
+
+`h` visé divisé par 8, sur les deux géométries :
+
+| `h` | R2a-3.4 **livrée et validée** | `lect./h` | `c184c8dc` | `lect./h` |
+|---:|---:|---:|---:|---:|
+| 0,400 | 0,00400 | **0,010** | 0,00800 | **0,020** |
+| 0,200 | 0,00200 | **0,010** | 0,00400 | **0,020** |
+| 0,100 | 0,00100 | **0,010** | 0,00200 | **0,020** |
+| 0,050 | 0,00050 | **0,010** | 0,00100 | **0,020** |
+
+**Le rapport `lecture / h` est exactement constant.** La lecture ne converge pas
+vers une valeur finie : elle suit la résolution. C'est la signature mathématique
+d'une **arête** — au contour de bouche la peau intérieure rejoint la peau
+extérieure, et un échantillon posé à `r` du contour lit `r`.
+
+> **Il n'y a pas d'épaisseur à mesurer là. Il y a un bord.**
+
+Ce n'est donc pas un résultat sur ces deux géométries : c'est un résultat sur
+**toute grotte pourvue d'une bouche**. Aucun seuil strictement positif n'y est
+tenable. Et la géométrie **livrée est la plus mince des deux** — le critère la
+condamne soixante-dix fois plus fort que le sujet, mot pour mot le motif qui a
+déclassé `controle_epaisseur_domaine`.
+
+### 38.2 D'où vient le trou, et il est dans MON addendum
+
+L'ancien instrument **excluait** un voisinage géodésique du contour, avec la
+phrase juste : *« au rebord même de la bouche l'épaisseur tend vers zéro : c'est
+une arête, pas un défaut »*. Mon addendum a remplacé cette exclusion par une
+**classification** — plus dur, comme le lead le demandait — sans provision pour ce
+fait géométrique.
+
+Et le masque ne peut pas rattraper : il commence à `s_dehors = −1,60` quand la
+lèvre vit à `s ≈ −2,04`. **Aucune emprise vers l'intérieur ne la couvre.**
+
+Je n'ai pas amendé l'addendum. Il a été écrit avant la mesure exactement pour
+qu'un `FAIL` ne puisse pas le faire bouger. La provision de rebord — et surtout
+son **emprise** — est une décision du lead.
+
+### 38.3 La géométrie N'EST PAS intégrée, et c'est la décision de la passe
+
+Trois mesures indépendantes disent que l'enveloppe R2a-3.5.2 **régresse le
+porche** par rapport à ce qui est en ligne :
+
+| mesure | R2a-3.4 livrée | candidat |
+|---|---:|---:|
+| roche **près** du rebord — sommets sous 0,80 m | **71** | 89 |
+| idem, minimum | **0,363 m** | 0,283 m |
+| coque de **collision** — paires | **7** | **62** |
+| idem, enfoncement max | **0,020 m** | **0,457 m** |
+
+Le second est le plus grave : 23 fois le seuil du visuel, **sur la géométrie qui
+arrête réellement le joueur**, et aucun contrôle — ni l'ancien ni le nouveau —
+n'a jamais été appelé sur elle. Elles étaient déjà là quand R2a-3.5.4 a déclaré
+la percée fermée et le portail conforme.
+
+**Cause mécanique nommée, non prouvée.** Les stations 0 et 1 sont identiques au
+chiffre près entre les deux révisions — le générateur annote même « seuil —
+INCHANGÉ ». Mais leur **voisine** a bougé : le segment sortant du seuil passe de
+1,601 m à 1,073 m et le virage de 2,15° à 11,83°. Or `normale_de_cavite` oriente
+la section par la **tangente** : une section de 1,90 m de demi-largeur pivotée de
+près de 10° se cisaille, et un loft cisaillé se replie.
+
+> **« Les stations de la bouche sont inchangées » ne garantit pas que la bouche
+> est inchangée.**
+
+Intégrer cette enveloppe livrerait un porche plus mauvais que celui en ligne.
+**Les quatre patches de géométrie sont préservés et rejouables** sous
+`r2a355_lots_non_integres/`.
+
+### 38.4 Ce qui est acquis, et entre au tronc
+
+| | |
+|---|---|
+| **addendum du masque** | `f27b44c`, committé **avant toute géométrie** ; ambiguïté du §2.5 **fermée** — le verdict est stable vis-à-vis de l'emprise, sur les trois géométries |
+| **socle prouvé fidèle** | la pile de 4 patches rend `c184c8dc` **au bit près** |
+| **appariement R2a-3.4 prouvé** | reconstruit depuis `504ecbe`, `cmp` identique, `git status assets/` vide |
+| **gate topologique** | genre 2 / 1 / **0**, zéro bord libre, zéro non-manifold |
+| **batterie d'oracle** | **8/8 CONFORME**, une tentative, placebo compris |
+| **ISS-055 corrigée** | le contrôle d'auto-intersection testait des **plans** ; il publiait 0 là où il y en a 6, et 10 sur la livrée |
+| **triangle d'aire nulle** | corrigé, attribution héritée **réfutée** — il naît de la triangulation d'export, pas de la soustraction |
+| **dix instruments** | intégrés, tous parsent, aucun chemin absolu, chacun rend un code non nul sans argument |
+
+### 38.5 Instruments morts, et ce que ça enseigne
+
+`tools/cave_topology_check.py` portait trois chemins absolus vers un worktree
+supprimé **et ignorait son argument**. Découvert en voulant reproduire mon propre
+gate. **Son banc `--banc` passait au vert** : il n'éprouvait que l'analyse,
+personne n'éprouvait la lecture. Balayage des 42 outils grotte : **c'était le
+seul**. `diag_cave_etapes.py` (ISS-045) corrigé au passage.
+
+### 38.6 Quatre corrections à mon propre travail
+
+1. **Emprise du masque en indice de station** — les tables `CAVITE` diffèrent
+   entre révisions ; corrigé en longueur d'arc **avant** commit.
+2. **« L'argmin est au-delà du chemin »** — réfuté : le pied tombe dans un segment
+   interne, `t = 0,9124` non écrêté. Les deux mètres d'`ay` sont **latéraux**.
+3. **Outil de lèvre, deux versions invalides** — mesurait d'abord la longueur
+   d'arête, puis la largeur des ouvertures. Attrapées parce que le chiffre était
+   invraisemblable **sur une géométrie déjà validée**.
+4. **« Le candidat est meilleur, 6 contre 10 »** — vrai sur le compte, **faux sur
+   la sévérité** : les 10 de la référence sont sous le demi-micron.
+
+### 38.7 Prochaine action exacte
+
+**Deux décisions du lead, dans cet ordre.**
+
+1. **La provision de rebord.** Quelle emprise géodésique autour du contour de
+   bouche est exclue des deux seuils ? L'ancien instrument en avait une ; mon
+   addendum l'a supprimée. Sans elle, aucun gate d'épaisseur ne peut passer.
+   Le diagnostic hors contrat de l'agent C, à marge 0,60 m, donne l'ordre de
+   grandeur : la référence remonte à 0,0094 m et le candidat à 0,6610 m.
+2. **Faut-il réparer le porche de R2a-3.5.2 avant de l'intégrer ?** La régression
+   est mesurée et attribuée. L'hypothèse du cisaillement de tangente est
+   réfutable en rallongeant le segment sortant sans toucher aux stations 0 et 1.
+
+**Trois tickets ouverts** : ISS-054 (collision, `S2`), l'angle mort de
+triangulation (10,9 % des triangles divergent entre `bmesh` et l'exportateur —
+le « 4 » du générateur est un **minorant** du « 6 » réel), et la décimation
+(4 pénétrations nées au collapse).
+
+---
+
 ## ANNEXE A — chronologie des instruments et de leurs défauts
 
 Quatorze occurrences du **même** défaut : un contrôle place ses points à
