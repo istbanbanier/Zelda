@@ -99,3 +99,76 @@ telle qu'elle a été écrite avant toute mesure.
 L'analyse est fermée et se rejoue en quelques lignes ; les fixtures analytiques
 de l'agent A la confirmeront ou la réfuteront **sur un maillage réel**, ce que
 cette page ne fait pas.
+
+---
+
+## Suite — ce que la démonstration a donné, et ce qu'elle ne sauve pas
+
+Écrit le 2026-08-17, après les commits `5688de3`, `28b4628` et `78a87a8`.
+
+### La proposition ci-dessus est dépassée par un résultat plus fort
+
+La section précédente proposait de rendre la pente explicite via `sin(θ_min)`.
+Elle partait d'un constat sur le coin. Le résultat obtenu ensuite est un
+**théorème**, et il est plus simple que la proposition :
+
+```
+e(p) = dist(p, S_ext) ≤ dist(p, Γ) ≤ d(p)        car Γ ⊂ S_ext
+```
+
+`e ≤ d` partout, sur toute géométrie. Voir `docs/ADDENDUM_MASQUE_BOUCHE.md`
+§2quater et `tools/cave_borne_rebord.py`, banc 15/15 dont trois contrôles
+négatifs. La loi retenue est `LOI-R = min(max(0 ; d − h) ; 0,80)`, avec le gate
+d'angle `θ ≥ 60°` dans la bande où aucune épaisseur ne tranche.
+
+### L'argmin n'est PAS un artefact de rebord — le théorème ne le sauve pas
+
+C'était l'espoir raisonnable : si l'argmin vivait au bord de la bouche, le
+théorème l'exempterait et aucune roche ne serait à poser. Mesure :
+
+| | |
+|---|---|
+| argmin (modèle), agent A R2a-3.5.5 | `(1,036 ; 5,173 ; 2,316)` |
+| ancre de bouche `MODELE_SEUIL_DEHORS` | `(0 ; 0,10 ; 1,60)` |
+| écart | `(1,036 ; 5,073 ; 0,716)` |
+| **‖écart‖** | **5,227 m** |
+
+C'est un **minorant grossier** de `d(argmin)` : `Γ` est un contour *autour* de
+l'ancre, donc plus loin encore, et le géodésique majore l'euclidien. Le
+reclassement de l'agent C le corrobore par une voie indépendante — `d ≥ 2,252 m`
+sur les 1 122 échantillons.
+
+Donc l'exigence y vaut **0,80 m pleins**, sous `LOI-R` comme sous la loi
+littérale. **Il manque réellement de la roche.** Le théorème répare le gate ; il
+n'excuse pas la géométrie.
+
+### Arbitrage C2 rendu : famille « joue droite », pas `ENVELOPPE`
+
+L'agent C a établi que le porteur de la joue droite à l'argmin est `ENVELOPPE`,
+la silhouette elle-même, et a demandé un arbitrage entre la modifier ou ajouter
+une famille de roches.
+
+Tranché en faveur de **l'ajout**, sur une preuve de l'agent B et non sur une
+préférence : l'empreinte `3a15d9b49eb5d60d` inchangée sur sept étapes de chaîne
+prouve que **la totalité des auto-intersections naît à `construire()`**, dont
+`ENVELOPPE` est l'entrée — 40 `env×env`, 28 `cav×env`, **0 `cav×cav`**. Modifier
+`ENVELOPPE`, c'est toucher la pièce dont on a la preuve qu'elle fabrique tous les
+défauts qu'on combat. `poser_rocher()` n'est pas dans `construire()` : l'ajout
+est additif, et ses deux risques — composition et intersection avec l'enveloppe —
+sont l'un et l'autre déjà instrumentés par des portails qui tournent.
+
+C'est aussi la lettre de la directive §4 : « ajouter de la roche localement vers
+l'extérieur ».
+
+Trois contraintes dures posées avec l'arbitrage : simuler avant de construire ;
+ne pas lever la crête ; ne pas combler de col. La troisième est la leçon exacte
+qui a tué `rochers_gaine()`, et elle interdit le rattrapage par l'échelle —
+*« ce n'est pas leur taille, c'est leur position »*.
+
+### Deux mesures de lead versées dans le même mouvement
+
+- `ECHANGE_DE_FAMILLE_HORS_TABLES.md` — une famille de roches échangée entre le
+  livré et le candidat, vérifiée par AST, qui instruit TICKET-B4.
+- `MESURE_DE_L_ASSET_LIVRE.md` — l'échelle du maillage livré, qui borne la
+  finesse de la rampe **par le maillage et non par `h`**, et les 4 lamelles à
+  `1e-10` m² qui chiffrent l'arbitrage du TICKET-B5.
