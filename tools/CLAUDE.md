@@ -422,3 +422,37 @@ pas une lamelle fine d'une face nulle ; la distribution, si.
 Même famille qu'ISS-018 : **un test vert sur une grandeur qui n'est pas celle
 qu'on croit mesurer.** Quand un défaut échappe à un contrôle, demander d'abord ce
 que le contrôle mesure réellement, avant de douter du défaut.
+
+## Annoter un journal pendant qu'un processus y écrit **efface l'annotation**
+
+Mesuré le 2026-08-17, et le résultat est un fichier **propre, complet et faux**.
+
+Un agent a annoté « journal abandonné » à la fin d'un log **pendant que le
+processus tournait encore**. Un `>>` écrit à la fin **courante** du fichier ; le
+processus, lui, continue d'écrire à **son propre offset**, qu'il a mémorisé. Il
+repasse donc par-dessus l'annotation et la fait disparaître.
+
+Le fichier se lit ensuite comme une exécution normale et achevée, **sans aucune
+trace du fait qu'il mesurait une géométrie abandonnée**. Un lecteur ultérieur le
+prend pour un résultat sur le livrable. C'est pire qu'un journal tronqué : un
+tronqué se voit, celui-ci non.
+
+Parade, dans cet ordre :
+
+```bash
+until grep -q "^RC=" journal; do : ; done      # attendre le jeton, jamais avant
+echo "ABANDONNE : mesurait <quoi>" >> journal   # annoter APRES
+grep -c "ABANDONNE" journal                     # RELIRE pour verifier
+```
+
+**Annoter seulement après le jeton `RC=`, puis relire.** Une annotation qu'on n'a
+pas relue n'est pas une annotation.
+
+C'est la même faute, dans la même session, que le stub de
+`bpy.ops.wm.save_as_mainfile` écrit et jamais observé : `bpy.ops.wm` re-résout par
+`__getattr__`, le jeton de neutralisation n'est jamais sorti, et la course a
+réécrit le `.blend` qu'on croyait protégé.
+
+> **Un garde-fou vaut par son observation, pas par son intention.** Écrire qu'on
+> protège quelque chose et ne pas vérifier que la protection s'est déclenchée est
+> la façon la plus régulière de fabriquer une preuve fausse dans ce dépôt.
