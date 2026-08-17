@@ -363,3 +363,30 @@ Cas concret rencontré : placer un générateur témoin dans `/tmp` casse
 script lève, Blender rend 0, et la mesure qui suit porte sur une scène vide.
 Corollaire : **ne jamais copier un script de génération hors de son arbre** — il
 lit son propre chemin pour trouver ses ressources.
+
+## `diff` sur deux fichiers ABSENTS rend un diff vide, donc `exit 0`
+
+Mesuré le 2026-08-17. Une comparaison a imprimé « IDENTIQUE » **sans rien
+comparer**.
+
+```bash
+diff a.log b.log && echo IDENTIQUE     # a.log et b.log n'existent pas -> IDENTIQUE
+```
+
+`diff` sur des chemins inexistants n'a rien à signaler ; il rend 0, et le `&&`
+s'exécute. Le message est vrai au sens littéral — les deux ensembles vides sont
+identiques — et faux au sens qui compte.
+
+Parade : **compter ce qui a été réellement comparé**, et le publier.
+
+```bash
+[ -s a.log ] && [ -s b.log ] || { echo "ECHEC: fichier absent ou vide"; exit 2; }
+n=$(diff a.log b.log | wc -l); echo "$(wc -l < a.log) lignes comparees, $n differences"
+```
+
+Même famille que `blender --background` qui rend 0 en ayant levé, et que le
+`RC=0` d'un journal mort : **une commande qui réussit en ne faisant rien**. La
+règle générale du dépôt, retrouvée une troisième fois en une seule passe :
+
+> un verdict doit publier **la taille de ce qu'il a examiné**, pas seulement son
+> résultat. Un « aucune différence » sans « sur N lignes » ne prouve rien.
