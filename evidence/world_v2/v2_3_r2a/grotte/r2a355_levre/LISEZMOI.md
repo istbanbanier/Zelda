@@ -141,3 +141,61 @@ de l'enveloppe R2a-3.5.2**, et R2a-3.5.2 l'a amincie par rapport à R2a-3.4.
 **Non établi** : que la lèvre du candidat soit visuellement inacceptable. 0,283 m
 de roche à une lèvre de porche peut très bien se lire correctement. **Aucun
 instrument ne prononce ce verdict**, et cette mesure n'y prétend pas.
+
+---
+
+## La coque de COLLISION — reproduit par l'intégrateur, et deux corrections de lecture
+
+`tools/cave_localiser_penetrations.py --maillage=COL_WaterfallCave`, `RC=0` sur
+les trois.
+
+| géométrie | paires | enfoncement max | où, en `ay` RÉEL |
+|---|---:|---:|---|
+| R2a-3.4 **livrée** | **7** | **0,020 m** | `+8,37` à `+9,11` |
+| `cc3596c5` percé | **62** | **0,457 m** | 32 au porche `−1,15…0`, 28 vers `+2,9…3,1` |
+| `c184c8dc` corrigé | **62** | **0,457 m** | **identique à `cc3596c5`, ligne pour ligne** |
+
+### Correction 1 — mon hypothèse du coude est réfutée
+
+J'avais proposé que le coude de 42° de R2a-3.5.2 fabrique les pénétrations. **Il
+en porte 2 sur 62, soit 3 %.** Le milieu de la galerie, coude compris, est propre.
+Elles sont aux **deux extrémités** du tube.
+
+L'hypothèse de l'agent B est meilleure et non réfutée : la signature est celle
+d'un loft dont la **section change trop vite**, pas d'un loft qui vire. Entre les
+stations 6 et 8 la demi-largeur chute de 2,50 à 1,30 (−48 %) sur 0,48 m de
+progression, et le porche est symétriquement l'endroit où la lèvre s'évase.
+
+### Correction 2 — l'étiquetage par station de R2a-3.4 est un artefact d'écrêtage
+
+L'outil recopie `CAVITE` **du socle**, dont la dernière station est à `ay = 3,17`.
+Les pénétrations de R2a-3.4 vivent à `ay = 8,4` à `9,1` : la projection les
+**écrête** toutes sur la dernière station et les étiquette « station 8 ».
+
+Le tell est dans les données publiées : **`écart axe` de 5,2 à 5,9 m**. Aucune
+pénétration à 5 m de l'axe n'est « à une station ».
+
+La conclusion de l'agent B — *« toutes à la calotte du fond »* — **est juste en
+substance** : `ay ≈ 8,4–9,1` est bien le fond de la galerie **de R2a-3.4**, dont
+les stations vont jusqu'à 9,25. Mais elle est juste par accident de vocabulaire,
+et le comparatif station-par-station entre les deux familles **n'est pas valide** :
+les tables diffèrent. **Seules les positions brutes en `ay` se comparent.**
+
+Ainsi lu, le résultat est plus fort : les trois géométries portent leurs
+pénétrations **aux extrémités de leur propre tube**, ce qui soutient l'hypothèse
+du changement de section rapide — R2a-3.4 comprise, en beaucoup plus bénin.
+
+### Ce que ça vaut
+
+**Attribution certaine** : `cc3596c5` et `c184c8dc` sont identiques ligne pour
+ligne. La régression vient **entièrement de l'enveloppe R2a-3.5.2** ; ni cette
+passe ni la calotte nord ne l'ont fabriquée.
+
+**Convergence de deux instruments** : le porche concentre à la fois la roche la
+plus mince (0,283 m contre 0,363 pour la livrée) et 32 des 62 pénétrations à
+0,457 m. Deux mesures indépendantes, deux grandeurs différentes, **la même
+région**. Le porche de l'enveloppe R2a-3.5.2 est malformé.
+
+Et personne ne l'avait vu, parce que **aucun contrôle n'a jamais été appelé sur
+`COL_WaterfallCave`** — y compris quand R2a-3.5.4 a déclaré la percée fermée et
+le portail conforme.
