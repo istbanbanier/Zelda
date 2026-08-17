@@ -118,3 +118,70 @@ avant. C'est la bonne réponse à `ISS-056`.
   `(−1,6064 ; −0,2796 ; 2,5602)`, face porteuse 19194. Deux instruments sur un
   même point sont décidables ; sur deux points, non ;
 - commentaire faux ligne 5583 signalé, non corrigé — hors couloir.
+
+---
+
+## 9. Le tour de l'amas 1 — le diagnostic est le résultat, pas la géométrie
+
+### Le levier avait changé de côté, et le diagnostic l'a montré à temps
+
+Le nouvel argmin `(2,210 ; 5,015 ; 1,873)` n'est **pas** côté droit :
+**91,0 % horizontal, côté `−n`, joue GAUCHE/NORD**, déport `−2,289 m`,
+`u = 6,958` — **dans l'emprise de la calotte**. Étendre la joue droite, comme
+l'agent l'avait proposé et comme je l'avais autorisé, **aurait été une erreur**.
+
+C'est le diagnostic qui l'a évitée, pas la chance : `--porteurs` rend **16 boîtes
+de calotte** contenant le point, corde 1,087 pour 1,200.
+
+### Ce qui bloque réellement — nommé, et contre-indiqué
+
+Ni densité, ni couverture verticale, ni composition : il manque de la **portée
+latérale**, à `−2,289 m` de la courbe, quand le module en porte `1,320` au-delà de
+son centre.
+
+Augmenter le déport **détacherait les deux couronnes** — le recouvrement vaut
+`1,320 − déport`. La suite est donc un changement de **taille de module**, ce que
+la leçon de `rochers_gaine()` interdit de toucher sans mesure dédiée.
+
+**Un déficit dont on connaît la cause *et* la contre-indication est un bon endroit
+où s'arrêter.** Il vaut mieux que trois tours d'itération à l'aveugle.
+
+### La doublure a été construite, mesurée, et rate sa cible
+
+L'agent a testé l'hypothèse « locale ou globale » contre une trace laissée dans le
+générateur — une doublure **globale** refusée en R2a-3.5 pour `cols 1,51 / 1,64,
+rapport 1,08` contre 2,00 exigé. Sa joue droite, **locale**, n'avait rien
+régressé ; la question était donc légitime et il l'a tranchée par la mesure.
+
+`controle_amas` **passe** : faîtes `8,35 / 4,01 / 1,33`, 3/3/3 à l'entaille 0,90,
+ratios `2,23 / 2,37 / 2,25` inchangés, aucune régression à aucune entaille.
+
+| masque 2,00 ; `h = 0,10` | joue droite | + doublure |
+|---|---:|---:|
+| lecture | 0,7198 | **0,7193** |
+| argmin | `(2,190 ; 5,032 ; 1,877)` | **identique** |
+| indécidables | 4 049 | **2 916** (−28,0 %) |
+
+Elle visait l'argmin ; elle ne le déplace pas et ne remonte pas sa lecture —
+**−0,5 mm, dans le bruit**.
+
+**Cible lecture ≥ 0,85 : NON ATTEINTE. Il reste 0,1307 m.**
+
+### Arbitrage du lead : la doublure est retirée
+
+Sur la doctrine écrite dans le fichier lui-même, celle qui a tué la gaine :
+*« on ne réintroduit que ce que `controle_epaisseur` exige — station par station,
+chiffre en face. Si la mesure n'exige rien, la gaine disparaît. »*
+
+Les `−28 %` d'indécidables ne la sauvent pas : c'est une métrique de
+**l'incertitude de l'instrument**, pas de l'épaisseur de la roche. Elle ne rend la
+coque plus épaisse nulle part où la mesure la cherche.
+
+Et dix roches qui ne font pas leur travail ne sont pas neutres : elles sont
+exactement ce que `rochers_gaine()` était devenue — de la matière posée pour une
+raison qui n'existe plus, qu'une passe ultérieure devra mesurer, attribuer et
+défaire. Cette série a déjà payé ce prix une fois ; c'est `TICKET-B4`, toujours
+ouvert.
+
+**`rochers_joue_droite()` reste** : elle, a fait son travail — 1 122 → 499
+échantillons sous seuil, lecture `+0,0385 m`, trois contraintes tenues.
