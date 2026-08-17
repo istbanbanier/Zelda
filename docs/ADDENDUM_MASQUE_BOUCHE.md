@@ -301,6 +301,35 @@ et où la surface extérieure commence : **`Γ` est donc contenue dans `S_ext`**
 Ce n'est pas un constat sur cette grotte. C'est une conséquence directe de la
 définition d'épaisseur du contrat, combinée à la définition de `Γ`.
 
+#### L'hypothèse, et elle est violable par l'implémentation
+
+Le pas (1) exige **`Γ ⊂ S_ext`** : le contour doit être une courbe **posée sur la
+roche**, là où la peau intérieure s'arrête et où la surface extérieure commence.
+
+Ce n'est pas automatique. Le masque du §2.4 fixe son extrémité extérieure à
+`MODELE_SEUIL_DEHORS`, soit **0,45 m devant la lèvre du porche** — donc *dans
+l'air*. Une implémentation qui prendrait pour `Γ` la **section du masque à cette
+extrémité** obtiendrait une courbe qui ne touche aucune surface, et alors :
+
+- le pas (1) tombe, et le théorème avec lui ;
+- pire, `d(p)` lui-même perd son sens — une distance géodésique *sur la peau*
+  vers une courbe *hors de la peau* n'est pas définie, et tout code qui en rend
+  une l'a fabriquée.
+
+**`Γ` est le rebord, pas la section de masque.** Concrètement : la courbe fermée
+de `∂S` qui borde l'ouverture, celle que la peau intérieure et la surface
+extérieure ont en commun.
+
+Contrôle exécutable, à faire **avant** de croire un seul chiffre de `d` :
+`max_{q ∈ Γ} dist(q, ∂S)` doit valoir zéro à la tolérance du maillage. S'il vaut
+0,45 m, l'implémentation a pris la section de masque, et tous les `d` publiés
+sont faux — dans le sens indulgent, puisqu'un `Γ` avancé dans l'air **majore**
+les distances et donc l'exigence, mais sur une base sans rapport avec la roche.
+
+C'est la même famille d'erreur que l'abscisse en indice de station du §2.3 : deux
+grandeurs qui portent le même nom, dont l'une seule a un sens, et rien dans le
+code qui crie quand on prend l'autre.
+
 ### 2quater.2 Les trois conséquences, et elles condamnent le §2bis.2
 
 1. **`e ≥ min(d ; 0,80)` force `e = d` exactement** partout où `d < 0,80`. La
