@@ -2989,5 +2989,127 @@ du vide, donc une plaque à 6/8 voisins est un toit mince, pas un rebord.
 
 ---
 
+## 40. R2a-3.5.7 — CLÔTURE `PARTIAL`. Le maillage visuel est vert, la collision non.
+
+**Verdict : `PARTIAL`**, sur un défaut **concret, localisé et mesuré**, comme la
+directive §11 le prévoit. Rien n'est intégré au tronc, l'asset livré reste
+`8bf1a1b3`, **zéro capture**.
+
+### 40.1 Ce qui est vert, et vérifié par le lead
+
+**Maillage visuel** — GLB candidat `40714c46`, reproduit par mon propre lecteur :
+0 aire exactement nulle, 0 lamelle sous `1e-9`, aire totale `842,188236 m²`,
+20 070 triangles. Genre **0**, une composante, 0 bord libre, 0 non-manifold,
+0 sommet pincé. Composition **3/3/3**, ratios `2,23 / 2,37 / 2,25`. `gltf_inspect`
+valide.
+
+**Zéro trou vers le ciel** — le critère le plus important, prouvé **depuis
+l'intérieur** et sans dépendre d'une résolution : couper le seul contour de bouche
+sépare exactement `1 008 + 19 062 = 20 070` faces, graines salle et niche prouvées
+dans l'air par angle solide. Corroboré indépendamment par le genre 0.
+
+**Traversabilité** — instrument exact à `1e-9 m` près : les **deux** rayons de
+capsule en litige passent partout, sur `COL_` comme sur `SM_`, marge la plus
+faible `+0,1213 m`, soit **48× l'erreur**. `COL_` est partout `0,10 à 0,30 m` plus
+étroit que `SM_` : **aucune paroi invisible dans la galerie**.
+
+**Le `7/8` de `world_v2_places` est un défaut de SONDE**, établi par trois
+mesures : le chemin canonique donne **zéro échantillon sous contrat** (2,28 à
+2,38 m pour 1,75 exigés) ; l'ancre du tronc est **pire** que l'actuelle ; et les
+11 points fautifs ont `0,013 à 0,045 m` de dégagement là où une capsule en exige
+`0,450` — ils sont **dans la paroi**. Le filet marche une corde droite dans une
+galerie coudée.
+
+### 40.2 Le seul défaut bloquant restant
+
+**4 auto-intersections de collision, repli `0,243436 m`.**
+
+Elles sont **réelles** au sens du critère préexistant du projet :
+`REPLI_LIVRABLE_MAX_M = 0.02`, présent dans le générateur du tronc à `504ecbe`.
+`0,2434 m` est **12× au-dessus**. Le même critère innocente les 2 traversées du
+maillage visuel, à `0,0006 m` — **33× sous**. On ne peut pas appliquer
+l'instrument dans un sens seulement.
+
+**Le zéro existe et il est vérifié sur le GLB exporté** : à
+`COL_MARGE_LAT = 0,50`, zéro pénétration, repli `0,000000 m`. **Arbitrage rendu :
+non.** `0,50` ne se dérive d'aucune constante ; le prix est **`0,845 m` de paroi
+invisible dans la niche de récompense**, à l'endroit précis où le joueur doit
+aller ; et `COL_MARGE_LAT` est une marge de passage gelée. L'interrupteur est
+d'une ligne, il reste publié, et la décision appartient au propriétaire.
+
+### 40.3 Deux causes nommées, et c'est ce qui rend les correctifs réutilisables
+
+**La face d'aire nulle naissait de la TRIANGULATION, pas du booléen.** Dans
+Blender il n'y a aucune face plate. Le coupable est un treize-gone dont le bord
+porte trois sommets colinéaires — et **l'exportateur glTF triangule de toute
+façon** : une étape **non mesurée, capable d'injecter un défaut après le dernier
+contrôle**. Le générateur triangule désormais lui-même, et seulement les 5 n-gones
+concernés — les 2 515 d'un bloc cassaient le build.
+
+**Les pénétrations de collision** : `retrait_lat` est soustrait de `hw` **avant**
+la multiplication par `CAVITE_ASYM`. Au flanc de l'alcôve la paroi recule de
+`0,676 m` quand on ne retranche que `0,40` : **l'alcôve reculait deux fois moins
+que la paroi qu'elle prolonge.** Corrigé sans constante nouvelle — insuffisant,
+mais nommé.
+
+### 40.4 Ordre d'intégration — l'ordre imposé était impossible
+
+Vérifié par moi : `531cdd8` descend de `f2ea189` **et** `fd4effe`, donc il n'y a
+**pas trois greffes mais une seule**, plus `MASSIF`. Et `MASSIF` **ne peut pas**
+venir en 2ᵉ position — `RC=1`, hunk #2 `FAILED` sur le tronc contre `RC=0` en 6/6
+sur `531cdd8`. Raison sémantique plus forte encore : le ratio rayon/courbure vaut
+`0,98` au tronc, donc **on lisserait une courbe saine**.
+
+**Piège évité** : prendre `531cdd8` par `checkout` détruirait 12 outils et
+~4 000 lignes créés par le tronc, dont `cave_exact_intersect.py` — l'instrument
+même qui mesure ce que `MASSIF` prétend corriger.
+
+**Couplage dur** : `place.gd` déplace `MODELE_SALLE` de **3,994 m**. Livrer le GLB
+sans lui met la récompense et les lampes dans la roche.
+
+### 40.5 Quatre angles morts d'outillage, tous consignés
+
+1. **Le dégénéré est une propriété d'AIRE, pas d'indices.** `cave_check_mesh.py`
+   retire par égalité d'indices : une T-jonction passe. Vérifié sur une
+   démonstration fermée.
+2. **Annoter un journal pendant qu'un processus y écrit efface l'annotation** —
+   le fichier se lit ensuite comme une exécution normale et achevée. Pire qu'un
+   tronqué : un tronqué se voit.
+3. **Un garde-fou vaut par son observation** : un stub de `save_as_mainfile`
+   re-résolu par `__getattr__`, jamais déclenché, a laissé réécrire le `.blend`
+   qu'il prétendait protéger.
+4. **Le compteur interne sous-estime le repli de 12 %** — documenté comme minorant
+   du *compte*, il l'est aussi du *repli*, et ce n'était écrit nulle part.
+
+### 40.6 Trois erreurs de lead, corrigées dans la preuve
+
+**Mon hypothèse de courbure était fausse** : la seule station encore au ratio ≥ 1
+ne porte **aucune** pénétration, et celles qui en portent ont les ratios **les plus
+bas**. Réfutée par la mesure, corrélation nulle et même inversée.
+
+**Mon hypothèse sur `MODELE_SALLE`** — l'ancre déplacée expliquerait le `7/8` —
+était fausse aussi : l'ancre du **tronc** donne 13 points fautifs contre 11. La
+corde rasait déjà la paroi avant, et plus fort.
+
+**Ma formulation de la raison mécanique** : la table `MASSIF` **existe** au tronc,
+ce sont ses valeurs qui diffèrent. Et mon premier test du patch a échoué pour une
+raison d'outillage — un échec qui *ressemblait* à une confirmation.
+
+### 40.7 `NON VÉRIFIÉ`, et deux sont lourds
+
+- **Rien n'a été éprouvé en moteur** : ni `validate_fast`, ni la capsule joueur en
+  jeu, ni les 7 stations.
+- **`export_architecture.sh waterfall_cave` est ROUGE** — 29 plaques au porche,
+  préexistant. **Le GLB candidat n'est pas livrable en l'état** ; il vient de
+  l'échafaudage.
+- **71 des 240 sommets d'enveloppe sortent du rocher visible**, jusqu'à `2,72 m`.
+  Préexistant, **jamais mesuré avant cette passe**, terrain non mesuré.
+- Le déclassement du portail d'épaisseur de domaine est décidé et documenté mais
+  **pas encore appliqué au code** : il ne peut l'être qu'à l'intégration, la
+  fonction n'existant pas au tronc.
+- `godot --import` rend `RC=134` (SIGABRT) après écriture du cache de classes.
+
+---
+
 *Fin de CODEX_HANDOFF. Actualiser à chaque checkpoint majeur, avant tout rapport
 final.*
