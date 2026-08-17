@@ -201,3 +201,76 @@ propos des boucles d'attente : **`pkill -f` et `pgrep -f` cherchent dans des
 lignes de commande complètes, sans notion d'arbre ni de session.** Ils ne
 peuvent pas être rendus sûrs par un motif plus précis ; ils doivent être
 remplacés.
+
+---
+
+## 13. Mon hypothèse sur `Γ` est RÉFUTÉE, et par la mesure
+
+J'avais conclu des 116,16 m que `Γ` captait des séparations ailleurs que la
+bouche, et demandé de le restreindre à la composante contenant l'ancre. **Faux.**
+
+| GLB | composantes | arêtes | longueur | arête méd. de `Γ` | maillage | facteur | dist. ancre |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `R2a34_8bf1a1b3` | **1** | 88 | 122,901 m | 1,3321 | 0,3325 | 4,0× | 0,755 m |
+| `c184c8dc` | **1** | 86 | 116,164 m | 1,1106 | 0,2475 | 4,5× | 0,757 m |
+| `bf68bfda` | **1** | 86 | 116,164 m | 1,1106 | 0,2480 | 4,5× | 0,757 m |
+
+**Tous les sommets sont de degré 2** : `Γ` est une courbe simple fermée. La
+composante bordant l'ancre **est** `Γ` en entier, égalité d'ensembles vérifiée. Et
+elle est bien à la bouche — boîte `3,96 × 1,95 × 3,01 m`, ancre canonique à
+0,757 m.
+
+**Ma fourchette « 10-15 m » était juste, mais elle décrit la bouche, pas `Γ`.**
+Une ellipse aux dimensions de la boîte mesure **10,99 m**. Les 116 m viennent donc
+d'un facteur **10,6× de dentelure**, pas d'une étendue parasite.
+
+Cause mesurée : `Γ` est porté par des arêtes **4,0 à 4,5 fois plus longues que la
+médiane du maillage**. La séparation des peaux suit les arêtes ; sur les plus
+grosses faces, cette frontière serpente au lieu de suivre une courbe.
+**L'instrument n'est pas cassé en position, il est cassé en résolution.**
+
+### Et les déficits n'augmentent pas — mesuré, pas déduit
+
+| champ | `Γ` entier | `Γ` restreint à l'ancre |
+|---|---|---|
+| verdict | `FAIL` | `FAIL` |
+| argmin | `(−1,6064 ; −0,2796 ; 2,5602)` | **identique** |
+| face porteuse / rayon | 19194 / 0,46423 m | identique |
+| `e_requise` / `e_mesurée` | 0,8000 / 0,7000 m | identique |
+| **déficit** | **0,1000 m** | **0,1000 m** |
+| `d(p)` encadrée | `[0,9199 ; 1,3410]` | `[0,9199 ; 0,9199]` |
+
+J'attendais une hausse et j'avais dit préférer une mauvaise nouvelle honnête.
+Elle est **neutre** : il n'y avait rien à retirer. La seule différence est que
+l'encadrement de `d` devient **exact** en ce point, et c'est l'effet du majorant
+resserré, pas de la restriction.
+
+### Le remède, et deux constats y convergent
+
+Un `Γ` de 11 m **ne s'obtiendra pas en filtrant, il s'obtiendra en maillant**. La
+dentelure fait plonger `Γ` vers l'intérieur par endroits, donc `d(p)` y est
+localement sous-estimée et l'exigence avec elle — le sens de l'erreur reste
+protecteur, mais la loi ne mesure pas la distance à une bouche lisse.
+
+C'est **exactement** le remède qu'imposent déjà les cinq paliers de la rampe
+(§6). Deux constats obtenus par deux chemins indépendants demandent la même
+action unique :
+
+> **raffiner le maillage au voisinage de la bouche.**
+
+C'est le seul travail géométrique que cette passe a identifié comme
+indispensable et qu'elle n'a pas fait.
+
+### Un détail de méthode qui vaut d'être imité
+
+`ANCRE_MODELE = (0,00 ; −1,60 ; 0,10)` est figée en tête de
+`tools/cave_loi_rebord_glb.py` **avec sa forme Godot** `(0,00 ; 0,10 ; 1,60)` et
+la note que les deux triplets désignent le même point ; le front imprime les deux
+à chaque journal. C'est la parade directe à la confusion de repère qui a déjà
+coûté à cette série.
+
+L'agent a aussi corrigé une phrase de son propre front qui affirmait
+« l'exigence monte, les déficits ne peuvent qu'augmenter » même quand la
+restriction ne retire rien. Le journal `prod_c184c8dc_gamma_ancre.txt` porte
+l'ancienne formulation, produite avant le correctif — **le tableau ci-dessus la
+dément**, et c'est le tableau qui fait foi.
