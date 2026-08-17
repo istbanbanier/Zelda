@@ -72,3 +72,35 @@ une géométrie saine, dans la même fenêtre, avant de publier un chiffre.*
 python3 tools/cave_levre_porche.py <a.glb> <b.glb>
 # --boite=x0,x1,y0,y1,z0,z1  --anneau=1.5  --pas=0.5  --rangs=3  --opposition=-0.30
 ```
+
+---
+
+## CORRECTION — « le candidat est meilleur » était partiel, donc trompeur
+
+J'ai écrit, sur la foi du seul **compte** de pénétrations, que le candidat était
+meilleur que la référence. L'agent B a mesuré les deux autres grandeurs et m'a
+corrigé avant que le chiffre ne serve d'argument :
+
+| grandeur | candidat | R2a-3.4 livrée | meilleur |
+|---|---:|---:|---|
+| paires, maillage visuel | 6 | 10 | candidat |
+| **enfoncement max, visuel** | **0,000612 m** | **0,000000 m** | **R2a-3.4** |
+| **couture max, visuel** | **0,570 m** | **0,125 m** | **R2a-3.4** |
+
+Les 10 pénétrations de R2a-3.4 ont un enfoncement **sous le demi-micron** : ce
+sont des contacts tangents, pas des pénétrations. Celles du candidat sont **mille
+fois plus profondes**, avec des coutures 4,5 fois plus longues.
+
+**Sur les deux grandeurs qui décrivent la sévérité, la référence est meilleure.**
+Un comparatif fondé sur le seul compte choisissait sa réponse avant de mesurer —
+la même faute que celle qui m'a fait publier une aire de percée trois fois.
+
+## Ce qui ne change pas, et ce qui s'aggrave
+
+**Ne change pas** : les 6 pénétrations du visuel sont toutes 33 fois sous
+`REPLI_LIVRABLE_MAX_M = 0,020`. Le contrôle réparé reste vert, honnêtement.
+
+**S'aggrave** : la coque de **collision** du candidat porte **62 pénétrations à
+0,457 m d'enfoncement**, contre 7 à 0,020 m pour R2a-3.4. C'est 23 fois le seuil
+du visuel, sur la géométrie qui arrête réellement le joueur — et aucun contrôle,
+ni l'ancien ni le nouveau, n'a jamais été appelé sur elle.
