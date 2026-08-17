@@ -1443,3 +1443,88 @@ Le point 3 est le plus parlant : les deux tests fautifs dépendent d'un délai.
   l'épreuve 5 résolvait vers un fichier plausible, et **mesurait en silence**.
   Un chemin absolu cassé est un `S3` ; un chemin absolu qui marche encore par
   hasard est un `S2`.
+
+---
+
+## ISS-056 — `pkill -f` traverse les frontières entre arbres de travail — S2, CONSIGNÉ
+
+**Découvert** : 2026-08-17, passe R2a-3.5.6, **auto-signalé par l'agent A**.
+
+Pour arrêter ses propres calculs, un agent a employé :
+
+```bash
+pkill -f cave_
+pkill -f "python3 -"
+```
+
+Ces motifs ne sont bornés à **aucun** arbre. Ils matchent les processus d'un
+worktree voisin aussi bien que les siens. Les processus vus ensuite étaient
+vivants, mais rien ne les protégeait, et **le passé reste indécidable** : un
+calcul tué avant l'observation est indiscernable d'un calcul jamais lancé.
+
+C'est le dégât que `COMMENT_TRAVAILLER_ENSEMBLE` §1 décrit — une action qui
+traverse la frontière entre sessions — et la directive de la passe l'interdisait
+nommément.
+
+**Vérification faite sans `pgrep -f`**, en lisant `/proc/<pid>/cwd` : aucun
+calcul vivant au moment du constat, donc rien en cours d'endommagement.
+
+**Parades, dans l'ordre de solidité :**
+
+1. **ne jamais employer `pkill -f` ni `pgrep -f`** dans un dépôt à worktrees
+   multiples — le motif ne peut pas être rendu sûr, il doit être remplacé ;
+2. relever les PID nominativement après avoir lu `/proc/<pid>/cwd` ;
+3. faire écrire par chaque commande surveillée un jeton `RC=` en fin de journal.
+   **Tout journal sans ce jeton est réputé mort et doit être rejoué** : c'est la
+   seule règle qui rende un `kill` détectable après coup.
+
+Même famille que le piège déjà consigné dans `tools/CLAUDE.md` — `pgrep -f` dans
+une boucle d'attente se voit lui-même. Les deux viennent de ce que `-f` cherche
+dans des lignes de commande complètes, **sans notion d'arbre ni de session**.
+
+## ISS-057 — `blender --background --python` rend `0` même quand le script lève — S2, CONSIGNÉ
+
+**Découvert** : 2026-08-17, passe R2a-3.5.6, par l'agent B. Deux exécutions ont
+rendu `RC=0` en ayant échoué.
+
+Blender attrape l'exception du script, l'imprime, puis **quitte normalement**. Le
+shell voit 0. **Tout banc Blender de ce dépôt est exposé**, y compris ceux qui
+mesurent une géométrie — le verdict porte alors sur une scène vide.
+
+`--python-exit-code 1` corrige le cas nominal ; il ne couvre ni les scripts qui
+rattrapent leur propre exception, ni les échecs postérieurs au script.
+
+**Parade** : faire imprimer `FIN NOMINALE` en **dernière** ligne du script et
+exiger ce jeton, quel que soit le code retour. Consigné dans `tools/CLAUDE.md`.
+
+**Cas concret** : placer un générateur témoin dans `/tmp` casse
+`KIT_ROCHES = parents[3]`, qui remonte trois répertoires depuis `__file__`. D'où
+la règle : **ne jamais copier un script de génération hors de son arbre** — il
+lit son propre chemin pour trouver ses ressources.
+
+## ISS-058 — le maillage de la bouche est trop grossier pour la loi de rebord — S2, OUVERT
+
+**Découvert** : 2026-08-17, par deux chemins indépendants qui convergent sur une
+seule action.
+
+1. **La rampe n'a que cinq paliers.** `LOI-R` est progressive sur `[0 ; 0,80]`,
+   mais à l'arête médiane réelle de `SM_WaterfallCave` — **0,3325 m**, mesurée
+   sur l'asset livré — elle ne peut porter que 5 valeurs distinctes. Elle n'est
+   pas progressive, elle est quasi binaire. Et la lâcheté du majorant de `d` y
+   vaut **0,0412 m, soit 82 % de `h = 0,05`** : l'encadrement consomme presque
+   toute la marge de la loi.
+2. **`Γ` est dentelé d'un facteur 10,6.** `Γ` est bien une courbe simple fermée à
+   la bouche — une composante, tous sommets de degré 2, ancre à 0,757 m — mais il
+   mesure **116,16 m** quand une ellipse à ses dimensions en mesure **10,99 m**.
+   Cause : `Γ` est porté par des arêtes **4,0 à 4,5 fois plus longues** que la
+   médiane du maillage, donc la frontière serpente au lieu de suivre une courbe.
+
+**Le remède est le même dans les deux cas, et il n'est pas un filtrage** : un `Γ`
+de 11 m ne s'obtiendra pas en filtrant, il s'obtiendra **en maillant**. Raffiner
+le maillage au voisinage de la bouche est le seul travail géométrique que cette
+passe a identifié comme indispensable et qu'elle n'a pas fait.
+
+**Sens de l'erreur, et il protège** : la dentelure fait plonger `Γ` vers
+l'intérieur, donc `d(p)` est localement **sous-estimée** et l'exigence avec elle.
+Les `FAIL` publiés sont donc valides et probablement **sous-estimés** ; en
+revanche **aucun `PASS` de production ne pourrait être cru** sur cette base.
