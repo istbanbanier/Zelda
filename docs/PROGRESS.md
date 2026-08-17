@@ -5,6 +5,47 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-17 — R2a-3.5.5 : au rebord d'une bouche, il n'y a pas d'épaisseur · `PARTIAL`
+
+**Le gate d'épaisseur ne peut pas être rendu décisif, et c'est démontré.** Le
+rapport `lecture / h` est **exactement constant** quand `h` varie d'un facteur 8
+— 0,010 sur R2a-3.4, 0,020 sur le candidat. La lecture ne converge pas vers une
+valeur finie, elle **suit la résolution** : signature mathématique d'une arête.
+Au contour de bouche la peau intérieure rejoint la peau extérieure. Aucun seuil
+strictement positif n'y est tenable, sur **aucune** grotte pourvue d'une bouche.
+Et la géométrie **livrée** est la plus mince des deux.
+
+Le trou est dans mon propre addendum : il a remplacé l'exclusion géodésique de
+l'ancien instrument par une classification — plus dur, comme demandé — sans
+provision pour ce fait géométrique. Je ne l'ai pas amendé : il a été écrit avant
+la mesure exactement pour qu'un `FAIL` ne puisse pas le faire bouger.
+
+**La géométrie n'est PAS intégrée**, et c'est la décision de la passe. Trois
+mesures indépendantes disent que l'enveloppe R2a-3.5.2 **régresse le porche** :
+89 sommets sous 0,80 m contre 71, minimum 0,283 contre 0,363 m, et surtout
+**62 auto-intersections à 0,457 m sur la coque de collision contre 7 à 0,020 m**
+— 23 fois le seuil, sur la géométrie qui arrête le joueur, et qu'aucun contrôle
+n'a jamais regardée. Cause nommée : les stations du porche sont identiques mais
+**leur voisine a bougé**, et la section est orientée par la tangente.
+
+**Entrent au tronc** : l'addendum du masque (committé avant toute géométrie), dix
+instruments, les preuves des trois agents et les miennes, ISS-055 corrigée. Les
+quatre patches de géométrie sont préservés et rejouables.
+
+**Prochaine action exacte — deux décisions du lead, dans cet ordre :**
+
+1. **Fixer la provision de rebord.** Quelle emprise géodésique autour du contour
+   de bouche est exclue des deux seuils ? Sans elle, aucun gate d'épaisseur ne
+   peut passer. Ordre de grandeur mesuré hors contrat, à marge 0,60 m : la
+   référence remonte à 0,0094 m, le candidat à 0,6610 m.
+2. **Trancher si le porche de R2a-3.5.2 doit être réparé avant intégration.**
+   L'hypothèse du cisaillement de tangente est réfutable en rallongeant le
+   segment sortant du seuil sans toucher aux stations 0 et 1.
+
+Détail complet : `docs/CODEX_HANDOFF.md` §38.
+
+---
+
 ## 2026-08-16 — R2a-3.5.1 : cavité asymétrique · `PARTIAL`
 
 Le lead a refusé ma conclusion « trois exigences se contredisent » et il avait
