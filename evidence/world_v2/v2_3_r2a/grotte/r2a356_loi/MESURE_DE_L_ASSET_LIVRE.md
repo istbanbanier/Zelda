@@ -32,7 +32,14 @@ C'est un résultat sur **l'instrument**, pas sur la roche, et il tient quelle qu
 soit la loi retenue — littérale ou `LOI-R`. Il faut soit raffiner la peau près de
 la bouche, soit calculer `d(p)` autrement que par saut de face.
 
-### Conséquence : la collision est huit fois plus grossière que le rendu
+### Conséquence : la collision est quatre fois plus grossière que le rendu
+
+> **Correction du 2026-08-17.** Cette section disait « huit fois » : c'est faux.
+> `1,3384 / 0,3325 = 4,03`. L'agent A a reproduit mes deux mesures au chiffre
+> près par un autre chemin et relevé l'erreur ; il donne aussi 4,11 sur les trois
+> autres géométries, et **22,7** pour le rapport du *nombre de faces* — le
+> facteur 8 ne correspond à aucun des deux. La conclusion qualitative ne bouge
+> pas, le nombre si.
 
 Arête médiane 1,3384 m contre 0,3325 m. Tout enfoncement mesuré sur
 `COL_WaterfallCave` porte donc une incertitude d'un autre ordre que sur le rendu,

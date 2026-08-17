@@ -338,6 +338,14 @@ code qui crie quand on prend l'autre.
 2. **Avec la borne conservatrice**, exigée en toutes lettres par §2bis.3.1, il
    faudrait `e − h ≥ d`, donc `e ≥ d + h`, que (1)+(2) interdisent. La loi
    littérale est **insatisfiable** sur `d < 0,80`, pour tout `h > 0`.
+
+   *Précision de l'agent A, et elle est plus rigoureuse que ma formulation
+   initiale :* sur une lèvre parfaitement perpendiculaire, un instrument correct
+   rend **`BLOQUÉ`, pas `FAIL`**. À l'égalité stricte, ni le vert ni le rouge
+   n'est prouvé — c'est le troisième verdict du contrat §5.1, et c'est le verdict
+   exact. Le théorème se constate donc par **l'absence de tout `PASS`**, jamais
+   par la présence d'un rouge. Mesuré : `max(e − d_euclidien) = +0,000000 m` sur
+   la lèvre droite, `−0,0024` à 70°, `−0,0116` à 45°.
 3. **Le même argument condamne tout seuil constant `S` en deçà de `d = S`** : la
    collerette à 0,60 m est inatteignable à moins de 0,60 m du rebord, et le
    seuil structurel à 0,80 m à moins de 0,80 m. **C'est exactement ce que
@@ -389,11 +397,26 @@ et `θ ≥ θ_min` équivaut localement à `e ≥ sin(θ_min)·d`.
 θ(p) ≥ θ_min  exigé sur tout le domaine où d(p) < 0,85 m
 ```
 
-**`θ_min = 60°`** — et c'est le seul nombre de cette section que j'ai choisi
-plutôt que dérivé. Justification : il tranche de façon décisive la liste de
-fixtures que la directive impose elle-même. **15°, 36° et 45° rougissent ;
-70° passe.** Un `θ_min` qui laisserait passer 36° ne serait pas un contrôle
-négatif, et un `θ_min` à 90° exigerait l'idéal.
+**`θ_min = 70,25°`**, et il est **dérivé**, non choisi. J'avais d'abord écrit 60°
+en le justifiant par la coupe des fixtures ; l'agent A a montré que c'était le
+mauvais nombre, et l'a remplacé par un calcul :
+
+sur la rampe, `LOI-R` exige `e ≥ d − h`, et une lèvre conique offre `d·sin θ`.
+Donc `sin θ ≥ 1 − h/d`, contrainte la plus dure **au genou** `d = 0,80 + h` :
+
+```
+θ_min = asin(1 − h/(0,80 + h)) = asin(1 − 0,05/0,85) = 70,25°   à h = 0,05
+```
+
+**Conséquence à ne pas manquer : `LOI-R` est strictement plus exigeante qu'un
+gate à 60°.** Elle rejette tout `θ ∈ [60 ; 70,25[` que ce gate laisserait passer.
+Tant que `LOI-R` s'applique — c'est-à-dire dès `d > h` — **le gate d'angle
+n'ajoute aucune contrainte**. Il n'est décisif que dans la bande `d ≤ h`, où
+l'exigence d'épaisseur de `LOI-R` vaut zéro. C'est là, et seulement là, que
+`θ ≥ θ_min` est le critère.
+
+Vérifié en machine par l'agent A : `θ = 70°` rend `FAIL` sous `LOI-R` aux deux
+planchers testés, ce qui est le comportement attendu de `70 < 70,25`.
 
 Aucun point n'est ignoré : hors bande, gate sur l'épaisseur bornée ; dans la
 bande, gate sur l'angle et la topologie. Les deux se recouvrent sur
