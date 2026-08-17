@@ -1,0 +1,53 @@
+{
+  "architecture": {
+    "chunks_terrain": 64,
+    "elements_orage": 34,
+    "gardes_frontiere": 36,
+    "pics_lointains": 12,
+    "quads_eau": {
+      "MainCourseWater": 55,
+      "StormLakeWater": 20,
+      "TributaryWater": 18
+    }
+  },
+  "commit": "398e3a07615bc7cd391aa651cb8c1148abfd33d3",
+  "montage_ms": 10180,
+  "shaders_montes": [
+    "res://shaders/world_v2/SH_WorldV2Ground.gdshader",
+    "res://shaders/world_v2/SH_WorldV2Water.gdshader",
+    "res://shaders/foliage/foliage_wind.gdshader"
+  ],
+  "vegetation": {
+    "cellules": 166,
+    "colliders_rochers": 225,
+    "colliders_troncs": 194,
+    "instances_total": 16651,
+    "multimesh_noeuds": 810,
+    "par_couche": {
+      "flowers_Flower_3_Group": 145,
+      "flowers_Flower_4_Group": 1049,
+      "grass": 12570,
+      "reeds": 7,
+      "rock_Pebble_Round_2": 164,
+      "rock_Pebble_Round_4": 163,
+      "rock_Pebble_Square_1": 149,
+      "rock_Rock_Medium_1": 80,
+      "rock_Rock_Medium_2": 75,
+      "rock_Rock_Medium_3": 67,
+      "tall": 1985,
+      "tree_CommonTree_1": 26,
+      "tree_CommonTree_2": 35,
+      "tree_CommonTree_3": 3,
+      "tree_CommonTree_4": 41,
+      "tree_CommonTree_5": 7,
+      "tree_DeadTree_1": 3,
+      "tree_DeadTree_2": 4,
+      "tree_Pine_1": 23,
+      "tree_Pine_3": 23,
+      "tree_Pine_4": 3,
+      "tree_TwistedTree_1": 11,
+      "tree_TwistedTree_2": 14,
+      "tree_TwistedTree_3": 4
+    }
+  }
+}

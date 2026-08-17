@@ -1,0 +1,22 @@
+# GLB AVANT (c184c8dc), extrait de git par : git show fd4effe~2:assets/environment/caves/SM_WaterfallCave.glb
+# meme commande que connexite_bf68bfda.log, pour comparer les bulles
+=== connexite INTERNE — /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/avant_c184c8dc.glb
+    pas 0.060 m, plafond de grille z <= 1.20, barriere de bouche y = -1.155 (epaisseur nulle), plancher z >= -1.00
+    grille 341 x 314 colonnes sur x [-10.20 ; 10.20] y [-5.20 ; 13.60]
+    colonnes lues 107072 ; colonnes a compte IMPAIR (ecartees) 2
+    composantes d'AIR sous le plafond : 5
+      composante 2 : 52201 segment(s), 353.11 m3
+      composante 0 : 22801 segment(s), 168.36 m3
+      composante 3 : 7069 segment(s), 28.88 m3
+      composante 4 : 64 segment(s), 0.03 m3
+      composante 1 : 1 segment(s), 0.00 m3
+    classement des temoins :
+      MODELE_SALLE     (2.62 ; 2.58 ; 0.63) : AIR, composante 3
+      MODELE_NICHE     (2.78 ; 4.09 ; 1.04) : AIR, composante 3
+      VIDE CIBLE       (0.55 ; 5.95 ; 0.80) : AIR, composante 3
+    colonnes SANS aucun triangle (donc hors du solide) : 46228
+      temoin DEHORS    (-10.20 ; 13.58 ; 1.00) : AIR, composante 2
+    ------------------------------------------------------------------
+    l'exterieur (composante 2) est bien SEPARE de la salle (composante 3) sous ce plafond : la mesure est exploitable
+    VERDICT : le vide cible REJOINT LA SALLE par un chemin SOUS le plafond, donc independant de l'ancienne percee
+RC=0

@@ -1,0 +1,118 @@
+==========================================================================
+SONDE DE CONTINUITE — Grotte du Couchant
+==========================================================================
+cotes  : CAVITE, PALIER, SAG, PORCHE_DENIVELE conformes au generateur
+garde  : le profil declare laisse au moins 0.42 m au-dessus du terrain a toutes les stations (herbe 0.30 m)
+maillage rendu : 20450 triangles (COL_WaterfallCave ecarte)
+   MAT_CaveRock_Collar      7357 tris
+   MAT_CaveRock_Base        5882 tris
+   MAT_CaveRock_Face        5613 tris
+   MAT_CaveIn_Floor          729 tris
+   MAT_CaveIn_Deep           671 tris
+   MAT_CaveIn_Wall           198 tris
+emprise modele : x[-8.69..9.30] y[-4.39..10.64] z[-3.18..10.04]
+echantillons interieurs : 495 (stations 0 a 8, les quatre que le generateur saute comprises)
+
+--------------------------------------------------------------------------
+CONTROLE 1 — PLANCHER (rayon vers le BAS depuis l'interieur)
+--------------------------------------------------------------------------
+Aucune fonction du generateur ne fait ce controle :
+  controle_epaisseur  : `if math.sin(theta) < -0.30: continue`
+  controle_aucun_jour : `Vector((0.0, 0.0, 1.0))` — vers le HAUT
+455 point(s) du vide sondes vers le bas, 66 faute(s)
+   parite_impaire      3
+   sol_trop_bas       63
+   emprise des fautes : y[-0.29 .. 6.25], stations 1, 2, 4, 5
+   parite_impaire   station 1  (x  -1.03, y   0.40, z   0.33)  impacts 3  chute 0.38 m (attendue 0.35)
+   parite_impaire   station 1  (x  -1.03, y   0.40, z   0.88)  impacts 3  chute 0.93 m (attendue 0.90)
+   parite_impaire   station 1  (x  -1.03, y   0.40, z   1.48)  impacts 3  chute 1.53 m (attendue 1.50)
+   sol_trop_bas     station 4  (x  -0.05, y   5.50, z   0.50)  impacts 2  chute 1.10 m (attendue 0.35)
+   sol_trop_bas     station 4  (x  -0.05, y   5.50, z   1.05)  impacts 2  chute 1.66 m (attendue 0.90)
+   sol_trop_bas     station 4  (x  -0.05, y   5.50, z   1.65)  impacts 2  chute 2.25 m (attendue 1.50)
+   sol_trop_bas     station 5  (x   0.04, y   5.88, z   0.53)  impacts 2  chute 1.07 m (attendue 0.35)
+   sol_trop_bas     station 5  (x   0.04, y   5.88, z   1.08)  impacts 2  chute 1.62 m (attendue 0.90)
+
+   CARTE DU PLANCHER (positions laterales avec sol / sans sol) :
+      y  -1.15  station 0  #####    5/5  ecart max 0.03 m  z du fond    -
+      y  -0.86  station 0  #####    5/5  ecart max 0.05 m  z du fond    -
+      y  -0.57  station 0  #####    5/5  ecart max 0.18 m  z du fond    -
+      y  -0.29  station 1  ####.    4/5  ecart max 0.31 m  z du fond -0.51  <-- TROU
+      y  +0.00  station 1  ####.    4/5  ecart max 0.37 m  z du fond -0.45  <-- TROU
+      y  +0.40  station 1  ####.    4/5  ecart max 0.37 m  z du fond -0.44  <-- TROU
+      y  +0.80  station 2  ####.    4/5  ecart max 0.37 m  z du fond -0.43  <-- TROU
+      y  +1.20  station 2  ####.    4/5  ecart max 0.37 m  z du fond -0.42  <-- TROU
+      y  +1.60  station 2  ####.    4/5  ecart max 0.37 m  z du fond -0.41  <-- TROU
+      y  +2.00  station 2  ###..    3/5  ecart max 0.41 m  z du fond -0.41  <-- TROU
+      y  +2.40  station 2  ####.    4/5  ecart max 0.42 m  z du fond -0.41  <-- TROU
+      y  +2.80  station 3  #####    5/5  ecart max 0.03 m  z du fond    -
+      y  +3.20  station 3  #####    5/5  ecart max 0.03 m  z du fond    -
+      y  +3.59  station 3  #####    5/5  ecart max 0.03 m  z du fond    -
+      y  +3.98  station 4  ####.    4/5  ecart max 0.42 m  z du fond -0.37  <-- TROU
+      y  +4.36  station 4  ####.    4/5  ecart max 0.51 m  z du fond -0.44  <-- TROU
+      y  +4.75  station 4  ###..    3/5  ecart max 0.53 m  z du fond -0.42  <-- TROU
+      y  +5.12  station 4  ##...    2/5  ecart max 0.71 m  z du fond -0.48  <-- TROU
+      y  +5.50  station 4  ###..    3/5  ecart max 0.76 m  z du fond -0.54  <-- TROU
+      y  +5.88  station 5  ###..    3/5  ecart max 0.72 m  z du fond -0.46  <-- TROU
+      y  +6.25  station 5  ####.    4/5  ecart max 0.59 m  z du fond -0.39  <-- TROU
+      y  +6.59  station 5  #####    5/5  ecart max 0.11 m  z du fond    -
+      y  +6.92  station 6  #####    5/5  ecart max 0.13 m  z du fond    -
+      y  +7.26  station 6  #####    5/5  ecart max 0.14 m  z du fond    -
+      y  +7.60  station 6  #####    5/5  ecart max 0.14 m  z du fond    -
+      y  +7.86  station 6  #####    5/5  ecart max 0.16 m  z du fond    -
+      y  +8.12  station 6  ####     4/4  ecart max 0.18 m  z du fond    -
+      y  +8.39  station 7  ####     4/4  ecart max 0.19 m  z du fond    -
+      y  +8.65  station 7  ####     4/4  ecart max 0.19 m  z du fond    -
+      y  +8.80  station 7  ####     4/4  ecart max 0.17 m  z du fond    -
+      y  +8.95  station 8  ####     4/4  ecart max 0.15 m  z du fond    -
+      y  +9.10  station 8  ###      3/3  ecart max 0.14 m  z du fond    -
+      y  +9.25  station 8  ###      3/3  ecart max 0.13 m  z du fond    -
+   >>> plancher absent de y = -0.29 a y = +6.25 (stations 1 a 5)
+
+--------------------------------------------------------------------------
+CONTROLE 2 — JOUR (sphere entiere, stations 0 a 8)
+--------------------------------------------------------------------------
+100 direction(s) par point, elevations -90 a +90 : le fond (±Y) et le sol (-Z) sont couverts
+60 point(s) du porche ecarte(s) (ouvert par construction)
+0 point(s) ecarte(s) comme HORS CAVITE (enclosure < 0.50)
+38049 rayon(s) juges, 1851 ecarte(s) parce qu'ils sortent par la BOUCHE, 736 percee(s)
+   station 1 :  26 percee(s), azimuts 0..334, elevations -90..45
+   station 2 :  48 percee(s), azimuts 0..334, elevations -68..68
+   station 3 :  27 percee(s), azimuts 26..334, elevations -68..45
+   station 4 :  51 percee(s), azimuts 0..309, elevations -68..68
+   station 5 :  50 percee(s), azimuts 0..334, elevations -45..68
+   station 6 : 142 percee(s), azimuts 26..334, elevations -45..68
+   station 7 : 148 percee(s), azimuts 0..309, elevations -68..90
+   station 8 : 244 percee(s), azimuts 0..309, elevations -68..90
+   OU LES RAYONS SORTENT (regroupe par maille de 1,5 m sur la coque) — un vrai trou fait converger, un mauvais point disperse :
+      235 rayon(s) quittent la galerie en x~+1.60 y~+9.21 z~+1.51  (stations de depart 1,2,3,4,5,6,7,8)
+      158 rayon(s) quittent la galerie en x~+2.30 y~+9.22 z~+1.44  (stations de depart 1,3,5,6,7,8)
+       80 rayon(s) quittent la galerie en x~+1.70 y~+9.22 z~+2.23  (stations de depart 4,5,6,7,8)
+       33 rayon(s) quittent la galerie en x~+3.69 y~+9.25 z~+2.38  (stations de depart 6,8)
+       30 rayon(s) quittent la galerie en x~+1.48 y~+9.21 z~+0.89  (stations de depart 1,2,3,4,6,7)
+       23 rayon(s) quittent la galerie en x~-0.25 y~+8.76 z~+1.22  (stations de depart 2,3,4,5,6)
+       21 rayon(s) quittent la galerie en x~+0.72 y~+9.12 z~+1.25  (stations de depart 4,5,6,7)
+       20 rayon(s) quittent la galerie en x~+0.20 y~+8.91 z~+1.34  (stations de depart 3,4,5,6,7)
+
+   CARTE DU FOND (vue de derriere, emprise de la derniere station)
+   'O' = le rayon traverse la galerie de part en part
+      z +3.02  ................
+      z +2.77  ................
+      z +2.52  ................
+      z +2.27  ...O............
+      z +2.02  ..OOO...........
+      z +1.77  ..OOOO..........
+      z +1.52  .O.OOO..........
+      z +1.27  .OOOOO..........
+      z +1.02  OOOOOOO.........
+      z +0.77  ................
+      x de +0.97 a +4.73, pas 0,25 m
+   >>> fond de la galerie OUVERT : 24 case(s) sur 160, emprise x[+0.97 .. +2.47] z[+1.02 .. +2.27], soit 1.50 x 1.25 m
+
+--------------------------------------------------------------------------
+CONTROLE 3 — LIGNE DE VUE (regle du moteur : cull_back)
+--------------------------------------------------------------------------
+NON VERIFIE — aucun manifeste fourni (--manifeste)
+
+==========================================================================
+VERDICT : FAIL — defaut mesure
+==========================================================================

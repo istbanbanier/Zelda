@@ -1,0 +1,127 @@
+{
+ "epreuves": [
+  {
+   "numero": "1",
+   "titre": "coque SYMETRIQUE : ancien et nouvel echantillonnage IDENTIQUES",
+   "rouge": true,
+   "vert": true,
+   "empreinte_avant": null,
+   "empreinte_apres": null,
+   "details": [
+    "asymetrie 1,8 : les deux echantillonnages divergent de 0.72 m",
+    "profil droit : ecart 0.0e+00 m, la correction ne deplace RIEN"
+   ]
+  },
+  {
+   "numero": "2",
+   "titre": "coque ASYMETRIQUE a deux epaisseurs CONNUES",
+   "rouge": true,
+   "vert": true,
+   "empreinte_avant": null,
+   "empreinte_apres": null,
+   "details": [
+    "epaisseurs echangees : le verdict s'echange aussi",
+    "epaisseurs rendues a 0,12 m pres, du bon cote"
+   ]
+  },
+  {
+   "numero": "3",
+   "titre": "TROU dans le TOIT",
+   "rouge": true,
+   "vert": true,
+   "empreinte_avant": "95adb564e507fe45b4f4b0944e66a0516a29b1009f900ba9415ae66280845831",
+   "empreinte_apres": "95adb564e507fe45b4f4b0944e66a0516a29b1009f900ba9415ae66280845831",
+   "details": [
+    "trou de 1.10 m sur toit : 73 percee(s) confirmee(s)",
+    "geometrie intacte : 0 percee(s)"
+   ]
+  },
+  {
+   "numero": "4",
+   "titre": "TROU dans le PLANCHER",
+   "rouge": true,
+   "vert": true,
+   "empreinte_avant": "95adb564e507fe45b4f4b0944e66a0516a29b1009f900ba9415ae66280845831",
+   "empreinte_apres": "95adb564e507fe45b4f4b0944e66a0516a29b1009f900ba9415ae66280845831",
+   "details": [
+    "trou de 1.10 m sur plancher : 95 percee(s) confirmee(s)",
+    "geometrie intacte : 0 percee(s)"
+   ]
+  },
+  {
+   "numero": "5",
+   "titre": "COLLERETTE amputee sur le MAILLAGE REEL",
+   "rouge": false,
+   "vert": true,
+   "empreinte_avant": "cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49",
+   "empreinte_apres": "cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49",
+   "details": [
+    "S3 : 1 triangle(s) de peau exterieure -> B 1.100 m ; S2 : 101 triangle(s) au goulot -> A 0.826 -> 0.826 m, B 1.100 -> 1.111 m   [S1, matiere nommee seule : 164 retire(s), mesure inchangee]",
+    "maillage livre, au plan impose y -1.15 : A 0.826 m, B 1.100 m"
+   ]
+  },
+  {
+   "numero": "6",
+   "titre": "PAROI LATERALE amincie sous 0,80 m",
+   "rouge": true,
+   "vert": true,
+   "empreinte_avant": null,
+   "empreinte_apres": null,
+   "details": [
+    "0,42 m pose -> 0.430 m mesure, sous le seuil de 0.80 m",
+    "1,00 m pose -> 0.995 m mesure, au-dessus du seuil"
+   ]
+  },
+  {
+   "numero": "7",
+   "titre": "TRANSFORMATION rotation + translation + ECHELLE non triviale",
+   "rouge": true,
+   "vert": true,
+   "empreinte_avant": null,
+   "empreinte_apres": null,
+   "details": [
+    "echelle omise : la longueur monde tombe a 5.000 au lieu de 6.850",
+    "aller-retour 3.6e-15 m et rapport de longueurs exactement 1.37"
+   ]
+  },
+  {
+   "numero": "8",
+   "titre": "JOURNAL — acquittement interdit sous un `<-- TROU`",
+   "rouge": true,
+   "vert": true,
+   "empreinte_avant": null,
+   "empreinte_apres": null,
+   "details": [
+    "sous un TROU : refus a la source ET rebalayage qui attrape le contournement",
+    "sans TROU, et dans une autre section : l'acquittement passe"
+   ]
+  },
+  {
+   "numero": "9",
+   "titre": "GEOMETRIE INTACTE restauree -> VERT",
+   "rouge": true,
+   "vert": true,
+   "empreinte_avant": "95adb564e507fe45b4f4b0944e66a0516a29b1009f900ba9415ae66280845831",
+   "empreinte_apres": "95adb564e507fe45b4f4b0944e66a0516a29b1009f900ba9415ae66280845831",
+   "details": [
+    "quatre faces percees : 312 percee(s) confirmee(s)",
+    "geometrie restauree : 0 percee, 0 faute de plancher"
+   ]
+  },
+  {
+   "numero": "10",
+   "titre": "COURBURE + PLANCHER MONTANT — fixture de la 7e occurrence",
+   "rouge": true,
+   "vert": true,
+   "empreinte_avant": null,
+   "empreinte_apres": null,
+   "details": [
+    "le long de X : 1 faute(s) sur 72 couples communs, roche saine",
+    "le long de la normale : 0 faute(s) sur les MEMES 72 couples"
+   ]
+  }
+ ],
+ "echecs": [
+  "5 — le sabotage n'a pas fait rougir : le controle ne peut pas echouer"
+ ]
+}

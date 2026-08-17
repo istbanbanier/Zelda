@@ -1,0 +1,42 @@
+==========================================================================
+CARTE DES PERCEES — telemetrie de non-regression (contrat §4)
+==========================================================================
+critere : l'air ou se tient le joueur communique-t-il avec le ciel ?
+graine  : COURANTS modele (2.620 ; 2.580 ; 0.090)
+
+--------------------------------------------------------------------------
+fichier : assets/environment/caves/SM_WaterfallCave.glb
+sha256  : cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49   <- lu AVANT la mesure
+passe GROSSIERE  pas 0.050 m  x[-8.772 8.174] ay[-3.135 11.899]
+  cavite : 80427 colonnes | percees : 80427 colonnes (2010675.00 cm2)
+  colonnes a croisements IMPAIRS (verticale rasante) : 0
+passe FINE       pas 0.005 m  x[0.396 0.696] ay[5.798 6.098]
+  impairs : 0
+
+  SENSIBILITE A L'ALTITUDE DE SONDE — on ne choisit pas, on
+  publie. Une emprise STABLE sur plusieurs altitudes est le
+  signe d'une percee verticale franche ; une emprise qui
+  derive avec l'altitude serait un artefact de sondage.
+  az sonde  colonnes  aire cm2    emprise x / ay
+  1.00      47        11.75       x[0.591 0.626] ay[5.853 5.908]
+  1.25      47        11.75       x[0.591 0.626] ay[5.853 5.908]
+  1.50      920       230.00      x[0.396 0.626] ay[5.853 6.098]
+  1.75      2828      707.00      x[0.396 0.645] ay[5.798 6.098]
+  2.00      2921      730.25      x[0.396 0.655] ay[5.798 6.098]
+  -> retenu pour le diff : az = 1,50 m (celle de la reference)
+
+  DECOMPOSITION EN AMAS — un total ne distingue pas un trou
+  de dix, et un amas qui touche le bord de la fenetre est
+  TRONQUE : son aire ne mesure rien.
+   az=1.25 : 1 amas
+         47 col.    11.75 cm2  x[0.591 0.626] ay[5.853 5.908] 
+   az=1.50 : 2 amas
+        873 col.   218.25 cm2  x[0.396 0.530] ay[5.897 6.098] <== TOUCHE LE BORD, TRONQUE
+         47 col.    11.75 cm2  x[0.591 0.626] ay[5.853 5.908] 
+
+--------------------------------------------------------------------------
+RESUME
+--------------------------------------------------------------------------
+  SM_WaterfallCave.glb          920 colonnes ouvertes / 3721      230.00 cm2   impairs 0
+                             emprise x[0.3955 0.6255] ay[5.8525 6.0975]
+

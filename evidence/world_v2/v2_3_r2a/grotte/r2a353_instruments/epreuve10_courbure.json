@@ -1,0 +1,101 @@
+{
+ "ecart_normale_deg": [
+  0.0,
+  69.90208060369551
+ ],
+ "couples": 85,
+ "communs": 72,
+ "vide_ancien": 72,
+ "vide_nouveau": 85,
+ "ancien": {
+  "fautes": 1,
+  "points": 72
+ },
+ "nouveau": {
+  "fautes": 0,
+  "points": 72
+ },
+ "balayage_robustesse": [
+  {
+   "pas_u": 0.25,
+   "positions": "3 (-0,6 0 0,6)",
+   "communs": 76,
+   "ancien": 1,
+   "nouveau": 0,
+   "vide_ancien": 76,
+   "vide_nouveau": 99
+  },
+  {
+   "pas_u": 0.25,
+   "positions": "5 canonique",
+   "communs": 140,
+   "ancien": 1,
+   "nouveau": 0,
+   "vide_ancien": 140,
+   "vide_nouveau": 165
+  },
+  {
+   "pas_u": 0.25,
+   "positions": "7 (+-0,15)",
+   "communs": 204,
+   "ancien": 1,
+   "nouveau": 0,
+   "vide_ancien": 205,
+   "vide_nouveau": 230
+  },
+  {
+   "pas_u": 0.5,
+   "positions": "3 (-0,6 0 0,6)",
+   "communs": 39,
+   "ancien": 1,
+   "nouveau": 0,
+   "vide_ancien": 39,
+   "vide_nouveau": 51
+  },
+  {
+   "pas_u": 0.5,
+   "positions": "5 canonique",
+   "communs": 72,
+   "ancien": 1,
+   "nouveau": 0,
+   "vide_ancien": 72,
+   "vide_nouveau": 85
+  },
+  {
+   "pas_u": 0.5,
+   "positions": "7 (+-0,15)",
+   "communs": 104,
+   "ancien": 1,
+   "nouveau": 0,
+   "vide_ancien": 105,
+   "vide_nouveau": 118
+  },
+  {
+   "pas_u": 1.0,
+   "positions": "3 (-0,6 0 0,6)",
+   "communs": 21,
+   "ancien": 1,
+   "nouveau": 0,
+   "vide_ancien": 21,
+   "vide_nouveau": 27
+  },
+  {
+   "pas_u": 1.0,
+   "positions": "5 canonique",
+   "communs": 38,
+   "ancien": 1,
+   "nouveau": 0,
+   "vide_ancien": 38,
+   "vide_nouveau": 45
+  },
+  {
+   "pas_u": 1.0,
+   "positions": "7 (+-0,15)",
+   "communs": 54,
+   "ancien": 1,
+   "nouveau": 0,
+   "vide_ancien": 55,
+   "vide_nouveau": 62
+  }
+ ]
+}

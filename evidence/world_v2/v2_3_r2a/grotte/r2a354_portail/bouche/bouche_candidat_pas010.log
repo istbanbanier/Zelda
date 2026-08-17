@@ -1,0 +1,76 @@
+==============================================================================
+DERIVATION DE LA BOUCHE CANONIQUE
+==============================================================================
+maillage : assets/environment/caves/SM_WaterfallCave.glb
+sha256   : cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49
+pas      : 0.1000 m
+
+------------------------------------------------------------------------------
+REPERES DE GAMEPLAY — sol et plafond MESURES a leur aplomb
+------------------------------------------------------------------------------
+      MODELE_NICHE     (2.780 ; 4.090 ; 0.500) : AIR   sol 0.492   plafond 2.233
+      MODELE_SALLE     (2.620 ; 2.580 ; 0.090) : AIR   sol 0.084   plafond 2.888
+      MODELE_SEUIL_DEHORS (0.000 ; -1.600 ; 0.100) : AIR   sol -0.655   plafond 1.903
+
+   grille 194x175x142, pas 0.1000 m, 80674 segment(s)
+   graine de derivation (salle relevee de 0.90 m) : (2.62 ; 2.58 ; 0.99)
+
+------------------------------------------------------------------------------
+MARCHE VERS L'AVANT — connexite 2D par tranche, jamais selon y
+------------------------------------------------------------------------------
+   tranche de MODELE_SALLE : j=69  y=2.615  section AIR  CLOSE
+   derniere tranche CLOSE : j=26  y=-1.685
+   premiere tranche OUVERTE devant : j=25  y=-1.785
+   -> BOUCHE DERIVEE : plan y = -1.7348  (barriere j=25, epaisseur nulle)
+
+   PROFIL DE TRANCHES (de la salle vers l'avant) :
+      j      y         section   segments        cases
+      69     2.615     CLOSE           38          904
+      68     2.515     CLOSE           38          915
+      67     2.415     CLOSE           37          916
+      66     2.315     CLOSE           37          914
+      65     2.215     CLOSE           37          927
+      64     2.115     CLOSE           37          930
+      63     2.015     CLOSE           36          920
+      62     1.915     CLOSE           37          924
+      61     1.815     CLOSE           37          914
+      60     1.715     CLOSE           36          887
+      59     1.615     CLOSE           36          867
+      58     1.515     CLOSE           34          846
+      57     1.415     CLOSE           34          842
+      56     1.315     CLOSE           33          844
+      55     1.215     CLOSE           34          867
+      54     1.115     CLOSE           34          886
+      53     1.015     CLOSE           35          906
+      52     0.915     CLOSE           36          928
+      51     0.815     CLOSE           37          944
+      50     0.715     CLOSE           39          965
+      49     0.615     CLOSE           40          979
+      48     0.515     CLOSE           40          993
+      47     0.415     CLOSE           41         1007
+      46     0.315     CLOSE           42         1016
+      45     0.215     CLOSE           44         1029
+      44     0.115     CLOSE           44          997
+      43     0.015     CLOSE           43          936
+      42     -0.085    CLOSE           39          870
+      41     -0.185    CLOSE           36          851
+      40     -0.285    CLOSE           36          863
+      39     -0.385    CLOSE           36          857
+      38     -0.485    CLOSE           37          874
+      37     -0.585    CLOSE           38          872
+      36     -0.685    CLOSE           38          888
+      35     -0.785    CLOSE           39          882
+      34     -0.885    CLOSE           39          898
+      33     -0.985    CLOSE           39          899
+      32     -1.085    CLOSE           39          909
+      31     -1.185    CLOSE           39          910
+      30     -1.285    CLOSE           39          910
+      29     -1.385    CLOSE           39          910
+      28     -1.485    CLOSE           39          910
+      27     -1.585    CLOSE           39          910
+      26     -1.685    CLOSE           39          910
+      25     -1.785    OUVERTE        375        23373
+
+BOUCHE DERIVEE : y = -1.7348   (barriere j=25, epaisseur nulle)
+   a comparer a la CONSTANTE historique Y_BOUCHE_DEFAUT = -1.150  -> ecart -0.5848 m
+RC=0

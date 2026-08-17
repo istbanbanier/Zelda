@@ -1,0 +1,9361 @@
+{
+ "resume": {
+  "glb": "assets/environment/caves/SM_WaterfallCave.glb",
+  "glb_commit": "504ecbe2e606222783980be73a62a8ecce347a5b",
+  "triangles": 19954,
+  "epaisseur_min": {
+   "u": 7.75,
+   "azimut": 190,
+   "metres": 0.178
+  },
+  "sous_contrat": 18,
+  "rayons_mesures": 1152,
+  "stations_non_mesurables": [
+   8.0
+  ],
+  "ecart_crete_axe": {
+   "min": 0.0,
+   "max": 7.945,
+   "moyen": 2.843
+  },
+  "images": [
+   "evidence/world_v2/v2_3_r2a/grotte/r2a35_coupe_baseline/coupe_technique.png",
+   "evidence/world_v2/v2_3_r2a/grotte/r2a35_coupe_baseline/carte_epaisseur.png"
+  ]
+ },
+ "crete": [
+  {
+   "u": 0.0,
+   "ax": 0.0,
+   "ay": -1.15,
+   "toit_galerie": 2.8,
+   "sol_galerie": -0.66,
+   "enveloppe_sur_axe": 7.942,
+   "crete_tranche": 7.942,
+   "crete_x": 0.0
+  },
+  {
+   "u": 0.154,
+   "ax": 0.0,
+   "ay": -0.973,
+   "toit_galerie": 2.808,
+   "sol_galerie": -0.571,
+   "enveloppe_sur_axe": 7.943,
+   "crete_tranche": 7.943,
+   "crete_x": 0.0
+  },
+  {
+   "u": 0.308,
+   "ax": 0.0,
+   "ay": -0.796,
+   "toit_galerie": 2.815,
+   "sol_galerie": -0.482,
+   "enveloppe_sur_axe": 7.873,
+   "crete_tranche": 7.919,
+   "crete_x": 0.25
+  },
+  {
+   "u": 0.462,
+   "ax": 0.0,
+   "ay": -0.619,
+   "toit_galerie": 2.823,
+   "sol_galerie": -0.392,
+   "enveloppe_sur_axe": 7.534,
+   "crete_tranche": 7.811,
+   "crete_x": 0.25
+  },
+  {
+   "u": 0.615,
+   "ax": 0.0,
+   "ay": -0.442,
+   "toit_galerie": 2.831,
+   "sol_galerie": -0.303,
+   "enveloppe_sur_axe": 6.32,
+   "crete_tranche": 7.287,
+   "crete_x": 0.25
+  },
+  {
+   "u": 0.769,
+   "ax": 0.0,
+   "ay": -0.265,
+   "toit_galerie": 2.838,
+   "sol_galerie": -0.214,
+   "enveloppe_sur_axe": 7.059,
+   "crete_tranche": 7.29,
+   "crete_x": 0.5
+  },
+  {
+   "u": 0.923,
+   "ax": 0.0,
+   "ay": -0.088,
+   "toit_galerie": 2.846,
+   "sol_galerie": -0.125,
+   "enveloppe_sur_axe": 7.2,
+   "crete_tranche": 7.336,
+   "crete_x": 0.5
+  },
+  {
+   "u": 1.077,
+   "ax": 0.005,
+   "ay": 0.123,
+   "toit_galerie": 2.861,
+   "sol_galerie": -0.077,
+   "enveloppe_sur_axe": 7.213,
+   "crete_tranche": 7.32,
+   "crete_x": 0.5
+  },
+  {
+   "u": 1.231,
+   "ax": 0.014,
+   "ay": 0.369,
+   "toit_galerie": 2.882,
+   "sol_galerie": -0.071,
+   "enveloppe_sur_axe": 7.144,
+   "crete_tranche": 7.287,
+   "crete_x": 0.5
+  },
+  {
+   "u": 1.385,
+   "ax": 0.023,
+   "ay": 0.615,
+   "toit_galerie": 2.904,
+   "sol_galerie": -0.065,
+   "enveloppe_sur_axe": 5.743,
+   "crete_tranche": 7.2,
+   "crete_x": 0.5
+  },
+  {
+   "u": 1.538,
+   "ax": 0.032,
+   "ay": 0.862,
+   "toit_galerie": 2.925,
+   "sol_galerie": -0.058,
+   "enveloppe_sur_axe": 5.573,
+   "crete_tranche": 9.304,
+   "crete_x": 4.0
+  },
+  {
+   "u": 1.692,
+   "ax": 0.042,
+   "ay": 1.108,
+   "toit_galerie": 2.947,
+   "sol_galerie": -0.052,
+   "enveloppe_sur_axe": 5.601,
+   "crete_tranche": 9.416,
+   "crete_x": 3.5
+  },
+  {
+   "u": 1.846,
+   "ax": 0.051,
+   "ay": 1.354,
+   "toit_galerie": 2.968,
+   "sol_galerie": -0.046,
+   "enveloppe_sur_axe": 5.672,
+   "crete_tranche": 9.443,
+   "crete_x": 3.75
+  },
+  {
+   "u": 2.0,
+   "ax": 0.06,
+   "ay": 1.6,
+   "toit_galerie": 2.99,
+   "sol_galerie": -0.04,
+   "enveloppe_sur_axe": 5.689,
+   "crete_tranche": 9.521,
+   "crete_x": 3.0
+  },
+  {
+   "u": 2.154,
+   "ax": 0.088,
+   "ay": 1.846,
+   "toit_galerie": 2.976,
+   "sol_galerie": -0.031,
+   "enveloppe_sur_axe": 5.04,
+   "crete_tranche": 9.54,
+   "crete_x": 3.0
+  },
+  {
+   "u": 2.308,
+   "ax": 0.115,
+   "ay": 2.092,
+   "toit_galerie": 2.962,
+   "sol_galerie": -0.022,
+   "enveloppe_sur_axe": 5.176,
+   "crete_tranche": 9.583,
+   "crete_x": 2.5
+  },
+  {
+   "u": 2.462,
+   "ax": 0.143,
+   "ay": 2.338,
+   "toit_galerie": 2.948,
+   "sol_galerie": -0.012,
+   "enveloppe_sur_axe": 5.633,
+   "crete_tranche": 9.611,
+   "crete_x": 2.25
+  },
+  {
+   "u": 2.615,
+   "ax": 0.171,
+   "ay": 2.585,
+   "toit_galerie": 2.935,
+   "sol_galerie": -0.003,
+   "enveloppe_sur_axe": 5.643,
+   "crete_tranche": 9.602,
+   "crete_x": 2.5
+  },
+  {
+   "u": 2.769,
+   "ax": 0.198,
+   "ay": 2.831,
+   "toit_galerie": 2.921,
+   "sol_galerie": 0.006,
+   "enveloppe_sur_axe": 5.48,
+   "crete_tranche": 9.63,
+   "crete_x": 1.5
+  },
+  {
+   "u": 2.923,
+   "ax": 0.226,
+   "ay": 3.077,
+   "toit_galerie": 2.907,
+   "sol_galerie": 0.015,
+   "enveloppe_sur_axe": 6.564,
+   "crete_tranche": 9.623,
+   "crete_x": 1.75
+  },
+  {
+   "u": 3.077,
+   "ax": 0.266,
+   "ay": 3.319,
+   "toit_galerie": 2.912,
+   "sol_galerie": 0.025,
+   "enveloppe_sur_axe": 6.578,
+   "crete_tranche": 9.32,
+   "crete_x": 1.75
+  },
+  {
+   "u": 3.231,
+   "ax": 0.318,
+   "ay": 3.558,
+   "toit_galerie": 2.937,
+   "sol_galerie": 0.034,
+   "enveloppe_sur_axe": 6.556,
+   "crete_tranche": 8.174,
+   "crete_x": 0.75
+  },
+  {
+   "u": 3.385,
+   "ax": 0.371,
+   "ay": 3.796,
+   "toit_galerie": 2.962,
+   "sol_galerie": 0.043,
+   "enveloppe_sur_axe": 6.232,
+   "crete_tranche": 7.308,
+   "crete_x": 1.0
+  },
+  {
+   "u": 3.538,
+   "ax": 0.423,
+   "ay": 4.035,
+   "toit_galerie": 2.986,
+   "sol_galerie": 0.052,
+   "enveloppe_sur_axe": 5.71,
+   "crete_tranche": 7.085,
+   "crete_x": -4.25
+  },
+  {
+   "u": 3.692,
+   "ax": 0.475,
+   "ay": 4.273,
+   "toit_galerie": 3.011,
+   "sol_galerie": 0.062,
+   "enveloppe_sur_axe": 4.858,
+   "crete_tranche": 7.143,
+   "crete_x": -4.5
+  },
+  {
+   "u": 3.846,
+   "ax": 0.528,
+   "ay": 4.512,
+   "toit_galerie": 3.035,
+   "sol_galerie": 0.071,
+   "enveloppe_sur_axe": 5.113,
+   "crete_tranche": 7.183,
+   "crete_x": -5.0
+  },
+  {
+   "u": 4.0,
+   "ax": 0.58,
+   "ay": 4.75,
+   "toit_galerie": 3.06,
+   "sol_galerie": 0.08,
+   "enveloppe_sur_axe": 5.766,
+   "crete_tranche": 7.216,
+   "crete_x": -5.0
+  },
+  {
+   "u": 4.154,
+   "ax": 0.652,
+   "ay": 4.981,
+   "toit_galerie": 3.078,
+   "sol_galerie": 0.095,
+   "enveloppe_sur_axe": 5.793,
+   "crete_tranche": 7.223,
+   "crete_x": -5.0
+  },
+  {
+   "u": 4.308,
+   "ax": 0.725,
+   "ay": 5.212,
+   "toit_galerie": 3.097,
+   "sol_galerie": 0.111,
+   "enveloppe_sur_axe": 5.788,
+   "crete_tranche": 7.284,
+   "crete_x": -5.5
+  },
+  {
+   "u": 4.462,
+   "ax": 0.797,
+   "ay": 5.442,
+   "toit_galerie": 3.115,
+   "sol_galerie": 0.126,
+   "enveloppe_sur_axe": 5.785,
+   "crete_tranche": 7.299,
+   "crete_x": -5.5
+  },
+  {
+   "u": 4.615,
+   "ax": 0.869,
+   "ay": 5.673,
+   "toit_galerie": 3.134,
+   "sol_galerie": 0.142,
+   "enveloppe_sur_axe": 6.637,
+   "crete_tranche": 7.339,
+   "crete_x": -6.0
+  },
+  {
+   "u": 4.769,
+   "ax": 0.942,
+   "ay": 5.904,
+   "toit_galerie": 3.152,
+   "sol_galerie": 0.157,
+   "enveloppe_sur_axe": 6.657,
+   "crete_tranche": 7.375,
+   "crete_x": -6.0
+  },
+  {
+   "u": 4.923,
+   "ax": 1.014,
+   "ay": 6.135,
+   "toit_galerie": 3.171,
+   "sol_galerie": 0.172,
+   "enveloppe_sur_axe": 6.634,
+   "crete_tranche": 7.35,
+   "crete_x": -6.0
+  },
+  {
+   "u": 5.077,
+   "ax": 1.094,
+   "ay": 6.354,
+   "toit_galerie": 3.198,
+   "sol_galerie": 0.198,
+   "enveloppe_sur_axe": 5.829,
+   "crete_tranche": 7.407,
+   "crete_x": -6.5
+  },
+  {
+   "u": 5.231,
+   "ax": 1.182,
+   "ay": 6.562,
+   "toit_galerie": 3.235,
+   "sol_galerie": 0.235,
+   "enveloppe_sur_axe": 5.797,
+   "crete_tranche": 7.423,
+   "crete_x": -6.5
+  },
+  {
+   "u": 5.385,
+   "ax": 1.269,
+   "ay": 6.769,
+   "toit_galerie": 3.272,
+   "sol_galerie": 0.272,
+   "enveloppe_sur_axe": 5.794,
+   "crete_tranche": 7.424,
+   "crete_x": -6.5
+  },
+  {
+   "u": 5.538,
+   "ax": 1.357,
+   "ay": 6.977,
+   "toit_galerie": 3.309,
+   "sol_galerie": 0.309,
+   "enveloppe_sur_axe": 5.818,
+   "crete_tranche": 7.32,
+   "crete_x": -6.5
+  },
+  {
+   "u": 5.692,
+   "ax": 1.445,
+   "ay": 7.185,
+   "toit_galerie": 3.346,
+   "sol_galerie": 0.346,
+   "enveloppe_sur_axe": 5.835,
+   "crete_tranche": 6.694,
+   "crete_x": -6.5
+  },
+  {
+   "u": 5.846,
+   "ax": 1.532,
+   "ay": 7.392,
+   "toit_galerie": 3.383,
+   "sol_galerie": 0.383,
+   "enveloppe_sur_axe": 5.819,
+   "crete_tranche": 6.018,
+   "crete_x": -1.0
+  },
+  {
+   "u": 6.0,
+   "ax": 1.62,
+   "ay": 7.6,
+   "toit_galerie": 3.42,
+   "sol_galerie": 0.42,
+   "enveloppe_sur_axe": 5.679,
+   "crete_tranche": 5.919,
+   "crete_x": -1.0
+  },
+  {
+   "u": 6.154,
+   "ax": 1.717,
+   "ay": 7.762,
+   "toit_galerie": 3.406,
+   "sol_galerie": 0.463,
+   "enveloppe_sur_axe": 4.899,
+   "crete_tranche": 5.689,
+   "crete_x": 2.5
+  },
+  {
+   "u": 6.308,
+   "ax": 1.814,
+   "ay": 7.923,
+   "toit_galerie": 3.392,
+   "sol_galerie": 0.506,
+   "enveloppe_sur_axe": 5.188,
+   "crete_tranche": 5.701,
+   "crete_x": 0.75
+  },
+  {
+   "u": 6.462,
+   "ax": 1.911,
+   "ay": 8.085,
+   "toit_galerie": 3.378,
+   "sol_galerie": 0.549,
+   "enveloppe_sur_axe": 5.655,
+   "crete_tranche": 5.804,
+   "crete_x": 0.5
+  },
+  {
+   "u": 6.615,
+   "ax": 2.008,
+   "ay": 8.246,
+   "toit_galerie": 3.365,
+   "sol_galerie": 0.592,
+   "enveloppe_sur_axe": 5.707,
+   "crete_tranche": 5.791,
+   "crete_x": 0.75
+  },
+  {
+   "u": 6.769,
+   "ax": 2.105,
+   "ay": 8.408,
+   "toit_galerie": 3.351,
+   "sol_galerie": 0.635,
+   "enveloppe_sur_axe": 5.741,
+   "crete_tranche": 5.769,
+   "crete_x": 0.5
+  },
+  {
+   "u": 6.923,
+   "ax": 2.202,
+   "ay": 8.569,
+   "toit_galerie": 3.337,
+   "sol_galerie": 0.678,
+   "enveloppe_sur_axe": 5.678,
+   "crete_tranche": 5.67,
+   "crete_x": 2.25
+  },
+  {
+   "u": 7.077,
+   "ax": 2.296,
+   "ay": 8.696,
+   "toit_galerie": 3.298,
+   "sol_galerie": 0.711,
+   "enveloppe_sur_axe": 5.506,
+   "crete_tranche": 5.527,
+   "crete_x": 2.25
+  },
+  {
+   "u": 7.231,
+   "ax": 2.388,
+   "ay": 8.788,
+   "toit_galerie": 3.235,
+   "sol_galerie": 0.732,
+   "enveloppe_sur_axe": 4.967,
+   "crete_tranche": 5.436,
+   "crete_x": 3.25
+  },
+  {
+   "u": 7.385,
+   "ax": 2.481,
+   "ay": 8.881,
+   "toit_galerie": 3.172,
+   "sol_galerie": 0.754,
+   "enveloppe_sur_axe": 4.949,
+   "crete_tranche": 5.403,
+   "crete_x": 3.25
+  },
+  {
+   "u": 7.538,
+   "ax": 2.573,
+   "ay": 8.973,
+   "toit_galerie": 3.109,
+   "sol_galerie": 0.775,
+   "enveloppe_sur_axe": 4.943,
+   "crete_tranche": 5.255,
+   "crete_x": 3.25
+  },
+  {
+   "u": 7.692,
+   "ax": 2.665,
+   "ay": 9.065,
+   "toit_galerie": 3.046,
+   "sol_galerie": 0.797,
+   "enveloppe_sur_axe": 4.936,
+   "crete_tranche": 5.195,
+   "crete_x": 0.75
+  },
+  {
+   "u": 7.846,
+   "ax": 2.758,
+   "ay": 9.158,
+   "toit_galerie": 2.983,
+   "sol_galerie": 0.818,
+   "enveloppe_sur_axe": 4.918,
+   "crete_tranche": 5.198,
+   "crete_x": 0.75
+  },
+  {
+   "u": 8.0,
+   "ax": 2.85,
+   "ay": 9.25,
+   "toit_galerie": 2.92,
+   "sol_galerie": 0.84,
+   "enveloppe_sur_axe": 4.896,
+   "crete_tranche": 5.187,
+   "crete_x": 0.75
+  }
+ ],
+ "epaisseurs": [
+  {
+   "u": 0.0,
+   "ax": 0.0,
+   "ay": -1.15,
+   "origine_z": 1.07,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 2.96968110681478,
+     "totale": 5.120328260316132,
+     "blocs": 2
+    },
+    {
+     "azimut": 10,
+     "premiere": 2.832126765535169,
+     "totale": 4.993731086500808,
+     "blocs": 3
+    },
+    {
+     "azimut": 20,
+     "premiere": 3.073604484639119,
+     "totale": 3.073604484639119,
+     "blocs": 1
+    },
+    {
+     "azimut": 30,
+     "premiere": 3.4398054987376763,
+     "totale": 3.4398054987376763,
+     "blocs": 1
+    },
+    {
+     "azimut": 40,
+     "premiere": 1.9715711947942594,
+     "totale": 3.6247737891344385,
+     "blocs": 3
+    },
+    {
+     "azimut": 50,
+     "premiere": 2.067638209299046,
+     "totale": 2.067638209299046,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 2.5438725119778356,
+     "totale": 2.5438725119778356,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 3.0419022986988336,
+     "totale": 3.0419022986988336,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 3.8944926866146483,
+     "totale": 3.8944926866146483,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 6.0384933682530635,
+     "totale": 6.0384933682530635,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 4.371719922219652,
+     "totale": 4.371719922219652,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 2.3551195036156183,
+     "totale": 2.3551195036156183,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 2.771420317299259,
+     "totale": 2.771420317299259,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 2.6481303840987116,
+     "totale": 2.6481303840987116,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 1.9135352179520846,
+     "totale": 3.480372569591996,
+     "blocs": 2
+    },
+    {
+     "azimut": 150,
+     "premiere": 2.803547162594042,
+     "totale": 2.803547162594042,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 2.3189020148330806,
+     "totale": 2.3189020148330806,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 2.2899004229497315,
+     "totale": 2.2899004229497315,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 2.626776409006225,
+     "totale": 2.925170587916141,
+     "blocs": 2
+    },
+    {
+     "azimut": 190,
+     "premiere": 1.8182425462968705,
+     "totale": 3.1313522996948286,
+     "blocs": 2
+    },
+    {
+     "azimut": 200,
+     "premiere": 2.0883013351726816,
+     "totale": 3.957115954251869,
+     "blocs": 2
+    },
+    {
+     "azimut": 210,
+     "premiere": 4.0227506633499,
+     "totale": 4.0227506633499,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 2.903754560254979,
+     "totale": 2.903754560254979,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.5945987286879153,
+     "totale": 3.5945987286879153,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.298972813313407,
+     "totale": 3.298972813313407,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 3.059124072980402,
+     "totale": 3.059124072980402,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 2.7146410386253406,
+     "totale": 2.7146410386253406,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.5331217715816594,
+     "totale": 2.5331217715816594,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 2.5589742559960933,
+     "totale": 2.5589742559960933,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 2.741643177030949,
+     "totale": 2.741643177030949,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.090889654248336,
+     "totale": 3.090889654248336,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.5481876467195104,
+     "totale": 3.5481876467195104,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 3.6475037135484705,
+     "totale": 3.6475037135484705,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 5.169072593257687,
+     "totale": 5.169072593257687,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 3.145246026573953,
+     "totale": 5.93738794688366,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 2.969408802103696,
+     "totale": 6.256039799619509,
+     "blocs": 2
+    }
+   ]
+  },
+  {
+   "u": 0.25,
+   "ax": 0.0,
+   "ay": -0.862,
+   "origine_z": 1.149,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 3.0204950868449063,
+     "totale": 5.3513464770514805,
+     "blocs": 2
+    },
+    {
+     "azimut": 10,
+     "premiere": 2.5758179408323394,
+     "totale": 5.10530818086357,
+     "blocs": 2
+    },
+    {
+     "azimut": 20,
+     "premiere": 2.645461022443312,
+     "totale": 3.1844379245361596,
+     "blocs": 2
+    },
+    {
+     "azimut": 30,
+     "premiere": 2.5982533638135106,
+     "totale": 3.451612241240211,
+     "blocs": 2
+    },
+    {
+     "azimut": 40,
+     "premiere": 1.7605580165485872,
+     "totale": 1.864443887902859,
+     "blocs": 2
+    },
+    {
+     "azimut": 50,
+     "premiere": 1.9182854435075578,
+     "totale": 1.9182854435075578,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 2.3188087555643806,
+     "totale": 2.3188087555643806,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 2.853421932911473,
+     "totale": 2.853421932911473,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 3.224583605212807,
+     "totale": 3.224583605212807,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 5.8667067200445056,
+     "totale": 5.8667067200445056,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 4.138642490353279,
+     "totale": 4.138642490353279,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 2.905662007358601,
+     "totale": 2.905662007358601,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 2.5818784977055094,
+     "totale": 2.5818784977055094,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 2.529739439733195,
+     "totale": 2.529739439733195,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 1.8675932917127795,
+     "totale": 2.9635145854182294,
+     "blocs": 2
+    },
+    {
+     "azimut": 150,
+     "premiere": 1.3640084188186234,
+     "totale": 2.388362309459018,
+     "blocs": 2
+    },
+    {
+     "azimut": 160,
+     "premiere": 2.168277118326633,
+     "totale": 2.168277118326633,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 2.315086279269623,
+     "totale": 2.315086279269623,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 2.4148829243365104,
+     "totale": 2.4148829243365104,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 2.050792746931286,
+     "totale": 3.2461627168152365,
+     "blocs": 2
+    },
+    {
+     "azimut": 200,
+     "premiere": 2.2080795431428175,
+     "totale": 3.927631533025038,
+     "blocs": 2
+    },
+    {
+     "azimut": 210,
+     "premiere": 4.225948517320436,
+     "totale": 4.225948517320436,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 3.113165666436076,
+     "totale": 3.113165666436076,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.826517493633795,
+     "totale": 3.826517493633795,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.4638271100657123,
+     "totale": 3.4638271100657123,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 3.204629553474209,
+     "totale": 3.204629553474209,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 2.863149624385815,
+     "totale": 2.863149624385815,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.670657851255343,
+     "totale": 2.670657851255343,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 2.691358479598171,
+     "totale": 2.691358479598171,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 2.8839293095230865,
+     "totale": 2.8839293095230865,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.2468949638595994,
+     "totale": 3.2468949638595994,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.626096957936894,
+     "totale": 3.626096957936894,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 3.820159064513133,
+     "totale": 3.820159064513133,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 5.2608958468286495,
+     "totale": 5.2608958468286495,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 3.1533089225420525,
+     "totale": 5.970048538864215,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 3.092309319271288,
+     "totale": 6.379349624316699,
+     "blocs": 2
+    }
+   ]
+  },
+  {
+   "u": 0.5,
+   "ax": 0.0,
+   "ay": -0.575,
+   "origine_z": 1.228,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 3.0892588863698114,
+     "totale": 5.609839401432835,
+     "blocs": 2
+    },
+    {
+     "azimut": 10,
+     "premiere": 2.057242347051561,
+     "totale": 4.579460487169433,
+     "blocs": 2
+    },
+    {
+     "azimut": 20,
+     "premiere": 2.176576455041653,
+     "totale": 3.6899589597728504,
+     "blocs": 2
+    },
+    {
+     "azimut": 30,
+     "premiere": 2.3702357645029,
+     "totale": 3.9121617086008644,
+     "blocs": 2
+    },
+    {
+     "azimut": 40,
+     "premiere": 2.737341730126918,
+     "totale": 2.737341730126918,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 2.3374446914850244,
+     "totale": 2.3374446914850244,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 1.9679201915797166,
+     "totale": 1.9679201915797166,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 2.689462287613777,
+     "totale": 2.689462287613777,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 4.027118735016333,
+     "totale": 4.027118735016333,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 4.084685782434658,
+     "totale": 4.531712422991093,
+     "blocs": 2
+    },
+    {
+     "azimut": 100,
+     "premiere": 3.1656032268109904,
+     "totale": 3.1656032268109904,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 3.138998698896115,
+     "totale": 3.138998698896115,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 2.3062659935810146,
+     "totale": 2.3062659935810146,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 2.09123822797309,
+     "totale": 2.09123822797309,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 1.4796847082819433,
+     "totale": 1.4796847082819433,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 0.9790442771512033,
+     "totale": 0.9790442771512033,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 0.9761294014316801,
+     "totale": 0.9761294014316801,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 2.4204598618851416,
+     "totale": 2.4204598618851416,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 2.3484524099959496,
+     "totale": 2.3484524099959496,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 2.268502063196541,
+     "totale": 2.890061356827659,
+     "blocs": 2
+    },
+    {
+     "azimut": 200,
+     "premiere": 2.305605286547937,
+     "totale": 3.922898034546304,
+     "blocs": 2
+    },
+    {
+     "azimut": 210,
+     "premiere": 4.429146377438869,
+     "totale": 4.429146377438869,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 3.320134368135028,
+     "totale": 3.320134368135028,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.7240425066434626,
+     "totale": 3.7240425066434626,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.616594986660331,
+     "totale": 3.616594986660331,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 3.3405906464182014,
+     "totale": 3.3405906464182014,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 3.0123290302501524,
+     "totale": 3.0123290302501524,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.8078949522664614,
+     "totale": 2.8078949522664614,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 2.8523541964525068,
+     "totale": 2.8523541964525068,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.0332243810301547,
+     "totale": 3.0332243810301547,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.4068363789573906,
+     "totale": 3.4068363789573906,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.600289852416745,
+     "totale": 3.600289852416745,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 3.9840529441361507,
+     "totale": 3.9840529441361507,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 5.467267043640305,
+     "totale": 5.467267043640305,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 3.0296858099925843,
+     "totale": 5.966417692603267,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 3.1076813855823997,
+     "totale": 6.444685558242739,
+     "blocs": 2
+    }
+   ]
+  },
+  {
+   "u": 0.75,
+   "ax": 0.0,
+   "ay": -0.287,
+   "origine_z": 1.306,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 3.1687119522915363,
+     "totale": 5.559752896229274,
+     "blocs": 2
+    },
+    {
+     "azimut": 10,
+     "premiere": 2.0392102326100168,
+     "totale": 5.711007765243223,
+     "blocs": 3
+    },
+    {
+     "azimut": 20,
+     "premiere": 2.182676250428358,
+     "totale": 4.99618990986102,
+     "blocs": 3
+    },
+    {
+     "azimut": 30,
+     "premiere": 2.3871275172800352,
+     "totale": 4.486356715926969,
+     "blocs": 2
+    },
+    {
+     "azimut": 40,
+     "premiere": 2.628317244195138,
+     "totale": 3.677334598557243,
+     "blocs": 2
+    },
+    {
+     "azimut": 50,
+     "premiere": 2.5792892318122087,
+     "totale": 2.5792892318122087,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 3.001338076002759,
+     "totale": 3.001338076002759,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 3.177627606063979,
+     "totale": 3.177627606063979,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 4.90748594704341,
+     "totale": 4.90748594704341,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 4.452251595595932,
+     "totale": 4.452251595595932,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 2.9254868471299122,
+     "totale": 2.9254868471299122,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 2.9982467321539072,
+     "totale": 2.9982467321539072,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 2.191162944921494,
+     "totale": 2.191162944921494,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 1.6859821196532367,
+     "totale": 1.6859821196532367,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 1.2017646181306292,
+     "totale": 1.2017646181306292,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 0.7031150364520258,
+     "totale": 0.7031150364520258,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 0.7931973168186977,
+     "totale": 0.7931973168186977,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 0.7482104117532793,
+     "totale": 1.5552953762475172,
+     "blocs": 2
+    },
+    {
+     "azimut": 180,
+     "premiere": 2.207993000890431,
+     "totale": 2.207993000890431,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 2.178068630494893,
+     "totale": 2.178068630494893,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 2.379079382395586,
+     "totale": 3.7475966095586366,
+     "blocs": 2
+    },
+    {
+     "azimut": 210,
+     "premiere": 4.645366642393853,
+     "totale": 4.645366642393853,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 3.5191133101372833,
+     "totale": 3.5191133101372833,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.6266399639543083,
+     "totale": 3.6266399639543083,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.7690953637086007,
+     "totale": 3.7690953637086007,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 3.4026449543482657,
+     "totale": 3.4026449543482657,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 3.1616294208114226,
+     "totale": 3.1616294208114226,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.9444841833816584,
+     "totale": 2.9444841833816584,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 3.020620133236554,
+     "totale": 3.020620133236554,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.1907572246558216,
+     "totale": 3.1907572246558216,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.5655959691940513,
+     "totale": 3.5655959691940513,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.654222045175681,
+     "totale": 3.654222045175681,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 4.1470128575811644,
+     "totale": 4.1470128575811644,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 5.670361104906545,
+     "totale": 5.670361104906545,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 2.8348576517302004,
+     "totale": 5.813681206543857,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 3.1299336479256343,
+     "totale": 6.796763427088558,
+     "blocs": 2
+    }
+   ]
+  },
+  {
+   "u": 1.0,
+   "ax": 0.0,
+   "ay": 0.0,
+   "origine_z": 1.385,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 3.1789274559982186,
+     "totale": 5.623563649905226,
+     "blocs": 2
+    },
+    {
+     "azimut": 10,
+     "premiere": 2.037615599624741,
+     "totale": 6.026543540544617,
+     "blocs": 3
+    },
+    {
+     "azimut": 20,
+     "premiere": 2.1796694169191464,
+     "totale": 5.593095886236783,
+     "blocs": 3
+    },
+    {
+     "azimut": 30,
+     "premiere": 2.388451763268779,
+     "totale": 4.764249715487791,
+     "blocs": 3
+    },
+    {
+     "azimut": 40,
+     "premiere": 2.486423750633638,
+     "totale": 3.627541300761547,
+     "blocs": 2
+    },
+    {
+     "azimut": 50,
+     "premiere": 2.529593939177209,
+     "totale": 2.529593939177209,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 2.9915754507950685,
+     "totale": 2.9915754507950685,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 3.042391141069988,
+     "totale": 3.042391141069988,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 4.781733781750659,
+     "totale": 4.781733781750659,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 4.601950290941479,
+     "totale": 4.601950290941479,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 2.8820959192048874,
+     "totale": 2.8820959192048874,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 2.712634295741485,
+     "totale": 2.712634295741485,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 1.8860718793371263,
+     "totale": 1.8860718793371263,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 1.458762090359907,
+     "totale": 1.458762090359907,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 1.116413358652148,
+     "totale": 1.116413358652148,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 0.666534854666613,
+     "totale": 0.666534854666613,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 0.8165231162937325,
+     "totale": 0.8165231162937325,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 0.7950423949427101,
+     "totale": 0.7950423949427101,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 0.782984679499366,
+     "totale": 0.782984679499366,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 0.8376835987549507,
+     "totale": 0.8376835987549507,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 1.915270737670113,
+     "totale": 2.821055800721501,
+     "blocs": 2
+    },
+    {
+     "azimut": 210,
+     "premiere": 4.8626005272579365,
+     "totale": 4.8626005272579365,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 3.7345975271060206,
+     "totale": 3.7345975271060206,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.3883859394315614,
+     "totale": 3.3883859394315614,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.9301091369126167,
+     "totale": 3.9301091369126167,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 3.56906161422436,
+     "totale": 3.56906161422436,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 3.3136399823701974,
+     "totale": 3.3136399823701974,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 3.0806916022372266,
+     "totale": 3.0806916022372266,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 3.1967146388345276,
+     "totale": 3.1967146388345276,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.3498868668110227,
+     "totale": 3.3498868668110227,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.7172040380847413,
+     "totale": 3.7172040380847413,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.6606468988637477,
+     "totale": 3.6606468988637477,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 4.298980837862693,
+     "totale": 4.298980837862693,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 5.85244694923633,
+     "totale": 5.85244694923633,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 2.689306903297381,
+     "totale": 6.416635811392356,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 3.221270896732741,
+     "totale": 6.898190188230207,
+     "blocs": 2
+    }
+   ]
+  },
+  {
+   "u": 1.25,
+   "ax": 0.015,
+   "ay": 0.4,
+   "origine_z": 1.407,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 3.061879812754726,
+     "totale": 5.7781906543274095,
+     "blocs": 2
+    },
+    {
+     "azimut": 10,
+     "premiere": 1.719549944596361,
+     "totale": 6.3841456543839215,
+     "blocs": 3
+    },
+    {
+     "azimut": 20,
+     "premiere": 1.8423982478521017,
+     "totale": 5.80647677121612,
+     "blocs": 3
+    },
+    {
+     "azimut": 30,
+     "premiere": 2.0065877664083462,
+     "totale": 5.110277528908934,
+     "blocs": 3
+    },
+    {
+     "azimut": 40,
+     "premiere": 2.3035778234129674,
+     "totale": 3.4178762907916354,
+     "blocs": 2
+    },
+    {
+     "azimut": 50,
+     "premiere": 2.3857918710308605,
+     "totale": 2.3857918710308605,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 2.7325734884489536,
+     "totale": 2.7325734884489536,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 2.3514732170207955,
+     "totale": 2.3514732170207955,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 4.72134213376114,
+     "totale": 4.72134213376114,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 3.982186456020939,
+     "totale": 3.982186456020939,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 2.7969068649829425,
+     "totale": 2.7969068649829425,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 1.4531145009520972,
+     "totale": 1.4531145009520972,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 1.0523676868131129,
+     "totale": 1.0523676868131129,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 0.5504961021149604,
+     "totale": 0.5504961021149604,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 0.8150379681319149,
+     "totale": 0.8150379681319149,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 0.4170459690861823,
+     "totale": 0.4170459690861823,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 0.455969865266316,
+     "totale": 0.455969865266316,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 0.6123739281594232,
+     "totale": 0.6123739281594232,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 0.6940913664072268,
+     "totale": 0.6940913664072268,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 0.732957512342371,
+     "totale": 0.732957512342371,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 0.9742395303334797,
+     "totale": 1.8942662110813528,
+     "blocs": 2
+    },
+    {
+     "azimut": 210,
+     "premiere": 1.4110880504693797,
+     "totale": 4.570705243478201,
+     "blocs": 2
+    },
+    {
+     "azimut": 220,
+     "premiere": 3.7274600245555116,
+     "totale": 3.7274600245555116,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.3286125171132763,
+     "totale": 3.3286125171132763,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.8595651441631995,
+     "totale": 3.8595651441631995,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 3.5875576585359714,
+     "totale": 3.5875576585359714,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 3.3116088440514817,
+     "totale": 3.3116088440514817,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 3.077515997466832,
+     "totale": 3.077515997466832,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 3.1733818109666454,
+     "totale": 3.1733818109666454,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.384683724587526,
+     "totale": 3.384683724587526,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.722742710598265,
+     "totale": 3.722742710598265,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.3618371853932745,
+     "totale": 3.3618371853932745,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 4.244686582810033,
+     "totale": 4.244686582810033,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 5.835179836942082,
+     "totale": 5.835179836942082,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 6.80454054422019,
+     "totale": 6.80454054422019,
+     "blocs": 1
+    },
+    {
+     "azimut": 350,
+     "premiere": 3.9487421456678993,
+     "totale": 7.2914697819513465,
+     "blocs": 2
+    }
+   ]
+  },
+  {
+   "u": 1.5,
+   "ax": 0.03,
+   "ay": 0.8,
+   "origine_z": 1.43,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 3.3224381103731044,
+     "totale": 5.705036118364251,
+     "blocs": 2
+    },
+    {
+     "azimut": 10,
+     "premiere": 1.1905273712829778,
+     "totale": 6.730306938900498,
+     "blocs": 3
+    },
+    {
+     "azimut": 20,
+     "premiere": 1.2290317222182319,
+     "totale": 5.769031363303319,
+     "blocs": 3
+    },
+    {
+     "azimut": 30,
+     "premiere": 1.3771989335938715,
+     "totale": 5.234600238767318,
+     "blocs": 3
+    },
+    {
+     "azimut": 40,
+     "premiere": 1.3480196154943096,
+     "totale": 4.2195812698272706,
+     "blocs": 3
+    },
+    {
+     "azimut": 50,
+     "premiere": 1.6758608315260968,
+     "totale": 2.083445378423926,
+     "blocs": 2
+    },
+    {
+     "azimut": 60,
+     "premiere": 2.131901672413006,
+     "totale": 2.131901672413006,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 2.1801783567753574,
+     "totale": 2.1801783567753574,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 2.9653263401619094,
+     "totale": 2.9653263401619094,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 2.9055738777832563,
+     "totale": 2.9055738777832563,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 2.9095798547278444,
+     "totale": 2.9095798547278444,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 1.844799853465934,
+     "totale": 1.844799853465934,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 1.124085084347564,
+     "totale": 1.124085084347564,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 0.8220788195102264,
+     "totale": 0.8220788195102264,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 0.9782133229546817,
+     "totale": 0.9782133229546817,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 0.6105613740518008,
+     "totale": 0.6105613740518008,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 0.8330857931199591,
+     "totale": 0.8330857931199591,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 0.8685852973768708,
+     "totale": 0.8685852973768708,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 0.8255193012278919,
+     "totale": 0.8255193012278919,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 0.8961693798381094,
+     "totale": 0.8961693798381094,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 1.1593335439788213,
+     "totale": 2.08337103665996,
+     "blocs": 2
+    },
+    {
+     "azimut": 210,
+     "premiere": 1.3574917240602824,
+     "totale": 4.467995364396515,
+     "blocs": 2
+    },
+    {
+     "azimut": 220,
+     "premiere": 3.718741768712807,
+     "totale": 3.718741768712807,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.3112783100115877,
+     "totale": 3.3112783100115877,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.0297535192612406,
+     "totale": 3.0297535192612406,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 2.9104375919010015,
+     "totale": 2.9104375919010015,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 2.821162351353344,
+     "totale": 2.821162351353344,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 3.078720487693796,
+     "totale": 3.078720487693796,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 2.831875549552802,
+     "totale": 2.831875549552802,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.0825511110498036,
+     "totale": 3.0825511110498036,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.2481575480982006,
+     "totale": 3.2481575480982006,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.323016963252559,
+     "totale": 3.323016963252559,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 4.180763533230639,
+     "totale": 4.180763533230639,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 5.834521500698678,
+     "totale": 5.834521500698678,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 6.796222837692563,
+     "totale": 6.796222837692563,
+     "blocs": 1
+    },
+    {
+     "azimut": 350,
+     "premiere": 3.9608827932648563,
+     "totale": 6.955938323064579,
+     "blocs": 2
+    }
+   ]
+  },
+  {
+   "u": 1.75,
+   "ax": 0.045,
+   "ay": 1.2,
+   "origine_z": 1.452,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 3.7429588973069796,
+     "totale": 5.092299011470746,
+     "blocs": 2
+    },
+    {
+     "azimut": 10,
+     "premiere": 6.622319584976972,
+     "totale": 6.622319584976972,
+     "blocs": 1
+    },
+    {
+     "azimut": 20,
+     "premiere": 6.308292429649962,
+     "totale": 6.308292429649962,
+     "blocs": 1
+    },
+    {
+     "azimut": 30,
+     "premiere": 4.620098063501706,
+     "totale": 5.232758417479138,
+     "blocs": 2
+    },
+    {
+     "azimut": 40,
+     "premiere": 4.919872520813711,
+     "totale": 4.919872520813711,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 1.314036928923968,
+     "totale": 1.314036928923968,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 1.7353067648274174,
+     "totale": 3.781284352579776,
+     "blocs": 2
+    },
+    {
+     "azimut": 70,
+     "premiere": 2.6610889017781787,
+     "totale": 2.6610889017781787,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 3.1521959847735825,
+     "totale": 3.1521959847735825,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 2.903355781473222,
+     "totale": 2.903355781473222,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 2.9528234021774784,
+     "totale": 2.9528234021774784,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 2.5941592984932837,
+     "totale": 2.5941592984932837,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 1.3335403725541917,
+     "totale": 1.3335403725541917,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 0.9871047621013123,
+     "totale": 0.9871047621013123,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 1.198699995616638,
+     "totale": 1.198699995616638,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 1.0171942209921034,
+     "totale": 1.0171942209921034,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 1.0643077560745988,
+     "totale": 1.0643077560745988,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 1.176045489815211,
+     "totale": 1.176045489815211,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 1.1556609689773065,
+     "totale": 1.1556609689773065,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 1.1762582348195751,
+     "totale": 1.1762582348195751,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 1.2523629287666034,
+     "totale": 2.1838749123564027,
+     "blocs": 2
+    },
+    {
+     "azimut": 210,
+     "premiere": 1.8081792516276227,
+     "totale": 4.885850208268233,
+     "blocs": 2
+    },
+    {
+     "azimut": 220,
+     "premiere": 3.708356929735636,
+     "totale": 3.708356929735636,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.2939017957359935,
+     "totale": 3.2939017957359935,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.0170195891381004,
+     "totale": 3.0170195891381004,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 2.878738730424905,
+     "totale": 2.878738730424905,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 2.8095989580329235,
+     "totale": 2.8095989580329235,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.799949593929483,
+     "totale": 2.799949593929483,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 2.8443380437883725,
+     "totale": 2.8443380437883725,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 2.9458164523825316,
+     "totale": 2.9458164523825316,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.232250489727739,
+     "totale": 3.232250489727739,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.285854183542773,
+     "totale": 3.285854183542773,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 4.109085498702217,
+     "totale": 4.109085498702217,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 5.834379177006164,
+     "totale": 5.834379177006164,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 6.813522699928265,
+     "totale": 6.813522699928265,
+     "blocs": 1
+    },
+    {
+     "azimut": 350,
+     "premiere": 3.774043507855434,
+     "totale": 6.414713258349879,
+     "blocs": 2
+    }
+   ]
+  },
+  {
+   "u": 2.0,
+   "ax": 0.06,
+   "ay": 1.6,
+   "origine_z": 1.475,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 3.6697801463906994,
+     "totale": 4.983655846378861,
+     "blocs": 2
+    },
+    {
+     "azimut": 10,
+     "premiere": 6.191543895028092,
+     "totale": 6.191543895028092,
+     "blocs": 1
+    },
+    {
+     "azimut": 20,
+     "premiere": 4.120451480082322,
+     "totale": 4.803765048300863,
+     "blocs": 3
+    },
+    {
+     "azimut": 30,
+     "premiere": 4.605934852251965,
+     "totale": 4.605934852251965,
+     "blocs": 1
+    },
+    {
+     "azimut": 40,
+     "premiere": 4.8264856831572995,
+     "totale": 4.8264856831572995,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 5.921783768047565,
+     "totale": 5.921783768047565,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 3.402978784461987,
+     "totale": 7.303733011094525,
+     "blocs": 2
+    },
+    {
+     "azimut": 70,
+     "premiere": 2.6172747774426,
+     "totale": 2.6172747774426,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 3.1627844773460385,
+     "totale": 3.1627844773460385,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 2.9222759883743077,
+     "totale": 2.9222759883743077,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 2.916645609762881,
+     "totale": 2.916645609762881,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 2.3671440129844328,
+     "totale": 2.3671440129844328,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 1.7825862659516616,
+     "totale": 1.7825862659516616,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 1.4014506213197404,
+     "totale": 1.4014506213197404,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 1.7750696921821405,
+     "totale": 1.7750696921821405,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 1.673145798049462,
+     "totale": 1.673145798049462,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 1.425637027281497,
+     "totale": 1.425637027281497,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 1.4815606254566156,
+     "totale": 1.4815606254566156,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 1.0798434692572267,
+     "totale": 1.0798434692572267,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 1.2599255767601032,
+     "totale": 1.2599255767601032,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 1.4337362673794392,
+     "totale": 2.408996528755736,
+     "blocs": 2
+    },
+    {
+     "azimut": 210,
+     "premiere": 5.133307983631369,
+     "totale": 5.133307983631369,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 3.6899016199047683,
+     "totale": 3.6899016199047683,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.2582527608417973,
+     "totale": 3.2582527608417973,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.000152393308994,
+     "totale": 3.000152393308994,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 2.8648406538036317,
+     "totale": 2.8648406538036317,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 2.7962792727014394,
+     "totale": 2.7962792727014394,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.7966332191087147,
+     "totale": 2.7966332191087147,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 2.8545310194899316,
+     "totale": 2.8545310194899316,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 2.935432892948347,
+     "totale": 2.935432892948347,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.2074038155372326,
+     "totale": 3.2074038155372326,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.261890725547894,
+     "totale": 3.261890725547894,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 4.051789396968392,
+     "totale": 4.051789396968392,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 5.814820236595671,
+     "totale": 5.814820236595671,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 6.768017809060185,
+     "totale": 6.768017809060185,
+     "blocs": 1
+    },
+    {
+     "azimut": 350,
+     "premiere": 3.5572441778791672,
+     "totale": 6.0439558714912875,
+     "blocs": 2
+    }
+   ]
+  },
+  {
+   "u": 2.25,
+   "ax": 0.105,
+   "ay": 2.0,
+   "origine_z": 1.471,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 3.5358911521000262,
+     "totale": 4.770345522015986,
+     "blocs": 2
+    },
+    {
+     "azimut": 10,
+     "premiere": 3.7253402287236357,
+     "totale": 5.543667864413748,
+     "blocs": 2
+    },
+    {
+     "azimut": 20,
+     "premiere": 3.923463263971731,
+     "totale": 3.923463263971731,
+     "blocs": 1
+    },
+    {
+     "azimut": 30,
+     "premiere": 4.515762475267194,
+     "totale": 4.515762475267194,
+     "blocs": 1
+    },
+    {
+     "azimut": 40,
+     "premiere": 4.773753249482883,
+     "totale": 4.773753249482883,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 5.846165067829811,
+     "totale": 5.846165067829811,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 7.530188241891352,
+     "totale": 7.530188241891352,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 3.0548204480502754,
+     "totale": 5.643276165980089,
+     "blocs": 2
+    },
+    {
+     "azimut": 80,
+     "premiere": 3.026904682806583,
+     "totale": 3.026904682806583,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 2.045596300243266,
+     "totale": 2.045596300243266,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 2.8079192919472256,
+     "totale": 2.8079192919472256,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 2.146003888076343,
+     "totale": 2.146003888076343,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 1.6206397042652743,
+     "totale": 1.6206397042652743,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 1.0610206789771115,
+     "totale": 1.0610206789771115,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 1.6561902925018546,
+     "totale": 1.6561902925018546,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 2.2805991143098465,
+     "totale": 2.2805991143098465,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 2.0892784558044344,
+     "totale": 2.0892784558044344,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 2.071041988544656,
+     "totale": 2.071041988544656,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 1.0793664653905728,
+     "totale": 1.0793664653905728,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 1.3352763326219397,
+     "totale": 1.3352763326219397,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 2.7539445433230005,
+     "totale": 3.867125521282805,
+     "blocs": 2
+    },
+    {
+     "azimut": 210,
+     "premiere": 5.190167679360538,
+     "totale": 5.190167679360538,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 3.683771272078209,
+     "totale": 3.683771272078209,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.247764983429894,
+     "totale": 3.247764983429894,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 2.9926418294454784,
+     "totale": 2.9926418294454784,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 2.8513752867051934,
+     "totale": 2.8513752867051934,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 2.791338554203315,
+     "totale": 2.791338554203315,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.800222282491348,
+     "totale": 2.800222282491348,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 2.8597198020401713,
+     "totale": 2.8597198020401713,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.0238782094908596,
+     "totale": 3.0238782094908596,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.1871762478439116,
+     "totale": 3.1871762478439116,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.2738172548432756,
+     "totale": 3.2738172548432756,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 3.919395816839353,
+     "totale": 3.919395816839353,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 5.623568222425985,
+     "totale": 5.623568222425985,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 6.545933073227392,
+     "totale": 6.545933073227392,
+     "blocs": 1
+    },
+    {
+     "azimut": 350,
+     "premiere": 3.2805873256168283,
+     "totale": 5.084778499403114,
+     "blocs": 2
+    }
+   ]
+  },
+  {
+   "u": 2.5,
+   "ax": 0.15,
+   "ay": 2.4,
+   "origine_z": 1.467,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 3.3898821321403165,
+     "totale": 3.7084143988704206,
+     "blocs": 2
+    },
+    {
+     "azimut": 10,
+     "premiere": 3.345530653467325,
+     "totale": 3.6902240329177003,
+     "blocs": 2
+    },
+    {
+     "azimut": 20,
+     "premiere": 3.567092844755609,
+     "totale": 3.567092844755609,
+     "blocs": 1
+    },
+    {
+     "azimut": 30,
+     "premiere": 4.22996438313668,
+     "totale": 4.22996438313668,
+     "blocs": 1
+    },
+    {
+     "azimut": 40,
+     "premiere": 5.034889573152856,
+     "totale": 5.034889573152856,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 5.6343966362859685,
+     "totale": 5.6343966362859685,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 6.646299981465518,
+     "totale": 6.646299981465518,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 7.325479940599404,
+     "totale": 7.325479940599404,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 4.632518839564124,
+     "totale": 4.632518839564124,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 2.915840611727626,
+     "totale": 2.915840611727626,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 2.954111253494367,
+     "totale": 2.954111253494367,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 2.265431446980573,
+     "totale": 2.265431446980573,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 1.5011910445209549,
+     "totale": 3.4274830179420888,
+     "blocs": 2
+    },
+    {
+     "azimut": 130,
+     "premiere": 1.0461147772302726,
+     "totale": 3.3464954447192143,
+     "blocs": 2
+    },
+    {
+     "azimut": 140,
+     "premiere": 3.6224366562873245,
+     "totale": 3.6224366562873245,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 3.1138815585855832,
+     "totale": 3.1138815585855832,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 2.96075293229769,
+     "totale": 2.96075293229769,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 2.861705451974988,
+     "totale": 2.861705451974988,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 1.4154656402361303,
+     "totale": 1.4154656402361303,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 1.6751102417489674,
+     "totale": 2.6470822354821903,
+     "blocs": 2
+    },
+    {
+     "azimut": 200,
+     "premiere": 5.041068358756398,
+     "totale": 5.041068358756398,
+     "blocs": 1
+    },
+    {
+     "azimut": 210,
+     "premiere": 5.220275991368659,
+     "totale": 5.220275991368659,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 3.683360746613711,
+     "totale": 3.683360746613711,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.2427309973433966,
+     "totale": 3.2427309973433966,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.0057931067655392,
+     "totale": 3.0057931067655392,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 2.8485924662092916,
+     "totale": 2.8485924662092916,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 2.792204612530578,
+     "totale": 2.792204612530578,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.7955469187266644,
+     "totale": 2.7955469187266644,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 2.8869836287210973,
+     "totale": 2.8869836287210973,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.0627988011365366,
+     "totale": 3.0627988011365366,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.1472176233308033,
+     "totale": 3.1472176233308033,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.3093418323286206,
+     "totale": 3.3093418323286206,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 3.9183515979605335,
+     "totale": 3.9183515979605335,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 5.415765915677683,
+     "totale": 5.415765915677683,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 5.430805343042515,
+     "totale": 5.430805343042515,
+     "blocs": 1
+    },
+    {
+     "azimut": 350,
+     "premiere": 3.1395872105948754,
+     "totale": 3.888542542186145,
+     "blocs": 2
+    }
+   ]
+  },
+  {
+   "u": 2.75,
+   "ax": 0.195,
+   "ay": 2.8,
+   "origine_z": 1.464,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 2.907944216699196,
+     "totale": 2.907944216699196,
+     "blocs": 1
+    },
+    {
+     "azimut": 10,
+     "premiere": 3.020741164209553,
+     "totale": 3.020741164209553,
+     "blocs": 1
+    },
+    {
+     "azimut": 20,
+     "premiere": 3.368852249124042,
+     "totale": 3.368852249124042,
+     "blocs": 1
+    },
+    {
+     "azimut": 30,
+     "premiere": 4.084773471917288,
+     "totale": 4.084773471917288,
+     "blocs": 1
+    },
+    {
+     "azimut": 40,
+     "premiere": 4.928634035895311,
+     "totale": 4.928634035895311,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 4.918141854818318,
+     "totale": 4.918141854818318,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 5.336601647206376,
+     "totale": 5.336601647206376,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 7.129459242482,
+     "totale": 7.129459242482,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 7.0278622289543,
+     "totale": 7.0278622289543,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 2.8907044574240843,
+     "totale": 2.8907044574240843,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 2.9526776672750037,
+     "totale": 2.9526776672750037,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 2.3968811335623514,
+     "totale": 2.3968811335623514,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 2.301849567230226,
+     "totale": 4.411042999307245,
+     "blocs": 2
+    },
+    {
+     "azimut": 130,
+     "premiere": 5.012675214602789,
+     "totale": 5.012675214602789,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 4.399311145954883,
+     "totale": 4.399311145954883,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 4.247104279078869,
+     "totale": 4.247104279078869,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 3.694167385533636,
+     "totale": 3.694167385533636,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 3.293016567226144,
+     "totale": 3.293016567226144,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 3.005959946319299,
+     "totale": 3.005959946319299,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 3.8964028281520986,
+     "totale": 3.8964028281520986,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 5.111740984685153,
+     "totale": 5.111740984685153,
+     "blocs": 1
+    },
+    {
+     "azimut": 210,
+     "premiere": 5.250384303376782,
+     "totale": 5.250384303376782,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 3.682292518224296,
+     "totale": 3.682292518224296,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.2377271197339814,
+     "totale": 3.2377271197339814,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.004267923010487,
+     "totale": 3.004267923010487,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 2.854101133002256,
+     "totale": 2.854101133002256,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 2.7943974802358293,
+     "totale": 2.7943974802358293,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.796376353207074,
+     "totale": 2.796376353207074,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 2.8911538505212664,
+     "totale": 2.8911538505212664,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.0902279108709245,
+     "totale": 3.0902279108709245,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.0712161274465735,
+     "totale": 3.0712161274465735,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.272145744383238,
+     "totale": 3.272145744383238,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 3.916125257263502,
+     "totale": 3.916125257263502,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 5.172802978662434,
+     "totale": 5.172802978662434,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 3.4223082392167385,
+     "totale": 4.550839004620043,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 2.8741049850243203,
+     "totale": 2.8741049850243203,
+     "blocs": 1
+    }
+   ]
+  },
+  {
+   "u": 3.0,
+   "ax": 0.24,
+   "ay": 3.2,
+   "origine_z": 1.46,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 2.75380554624664,
+     "totale": 2.75380554624664,
+     "blocs": 1
+    },
+    {
+     "azimut": 10,
+     "premiere": 2.87702361261152,
+     "totale": 2.87702361261152,
+     "blocs": 1
+    },
+    {
+     "azimut": 20,
+     "premiere": 3.1505304018336533,
+     "totale": 3.1505304018336533,
+     "blocs": 1
+    },
+    {
+     "azimut": 30,
+     "premiere": 3.9427971720002306,
+     "totale": 3.9427971720002306,
+     "blocs": 1
+    },
+    {
+     "azimut": 40,
+     "premiere": 4.6784201730381545,
+     "totale": 4.6784201730381545,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 4.773313469351106,
+     "totale": 4.773313469351106,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 4.9434598773306,
+     "totale": 4.9434598773306,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 6.4823230027719845,
+     "totale": 6.4823230027719845,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 7.062237049870361,
+     "totale": 7.062237049870361,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 3.9414024546115334,
+     "totale": 3.9414024546115334,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 2.357653159877559,
+     "totale": 2.357653159877559,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 2.3899170830681946,
+     "totale": 2.3899170830681946,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 2.206146351675135,
+     "totale": 3.3570678779862475,
+     "blocs": 2
+    },
+    {
+     "azimut": 130,
+     "premiere": 5.799166743988264,
+     "totale": 5.799166743988264,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 5.309961190622113,
+     "totale": 5.309961190622113,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 4.771004300008115,
+     "totale": 4.771004300008115,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 4.531775513412327,
+     "totale": 4.531775513412327,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 4.427862184149671,
+     "totale": 4.427862184149671,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 4.779071617925949,
+     "totale": 4.779071617925949,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 4.686031756350354,
+     "totale": 4.686031756350354,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 5.673972746412309,
+     "totale": 5.673972746412309,
+     "blocs": 1
+    },
+    {
+     "azimut": 210,
+     "premiere": 5.310446766622109,
+     "totale": 5.310446766622109,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 3.67566239737817,
+     "totale": 3.67566239737817,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.2374414892271712,
+     "totale": 3.2374414892271712,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 2.9701097206671685,
+     "totale": 2.9701097206671685,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 2.8519868893522613,
+     "totale": 2.8519868893522613,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 2.7825279294821303,
+     "totale": 2.7825279294821303,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.79845863850172,
+     "totale": 2.79845863850172,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 2.9019880068157287,
+     "totale": 2.9019880068157287,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.1132193923825024,
+     "totale": 3.1132193923825024,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.167908225240745,
+     "totale": 3.167908225240745,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.323571124457774,
+     "totale": 3.323571124457774,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 3.923732061035175,
+     "totale": 3.923732061035175,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 5.036917080854168,
+     "totale": 5.036917080854168,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 3.168342122434042,
+     "totale": 4.2903303418306855,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 2.6397903862856182,
+     "totale": 2.6397903862856182,
+     "blocs": 1
+    }
+   ]
+  },
+  {
+   "u": 3.25,
+   "ax": 0.325,
+   "ay": 3.588,
+   "origine_z": 1.487,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 2.624596402743368,
+     "totale": 2.624596402743368,
+     "blocs": 1
+    },
+    {
+     "azimut": 10,
+     "premiere": 2.7651719577709875,
+     "totale": 2.7651719577709875,
+     "blocs": 1
+    },
+    {
+     "azimut": 20,
+     "premiere": 3.0413194187877637,
+     "totale": 3.0413194187877637,
+     "blocs": 1
+    },
+    {
+     "azimut": 30,
+     "premiere": 3.8380377934839442,
+     "totale": 3.8380377934839442,
+     "blocs": 1
+    },
+    {
+     "azimut": 40,
+     "premiere": 4.3098007572644965,
+     "totale": 4.3098007572644965,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 4.595715869642877,
+     "totale": 4.595715869642877,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 4.789714118015085,
+     "totale": 4.789714118015085,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 4.888997802200498,
+     "totale": 4.888997802200498,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 6.782270747889573,
+     "totale": 6.782270747889573,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 3.8814254005690416,
+     "totale": 3.8814254005690416,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 3.024187590891574,
+     "totale": 3.024187590891574,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 2.1011692516178364,
+     "totale": 2.1011692516178364,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 1.402451109443507,
+     "totale": 1.402451109443507,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 1.113518370812704,
+     "totale": 4.478226888216101,
+     "blocs": 4
+    },
+    {
+     "azimut": 140,
+     "premiere": 6.260118266987421,
+     "totale": 6.260118266987421,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 5.976699950673099,
+     "totale": 5.976699950673099,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 5.833045077362486,
+     "totale": 5.833045077362486,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 5.578039292928811,
+     "totale": 5.578039292928811,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 5.204576780589596,
+     "totale": 5.204576780589596,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 5.7326907969297185,
+     "totale": 5.7326907969297185,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 6.336038609220886,
+     "totale": 6.336038609220886,
+     "blocs": 1
+    },
+    {
+     "azimut": 210,
+     "premiere": 5.248792880399937,
+     "totale": 5.248792880399937,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 3.7088228087065205,
+     "totale": 3.7088228087065205,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.248238605229946,
+     "totale": 3.248238605229946,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 2.971629991700046,
+     "totale": 2.971629991700046,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 2.8305755224766966,
+     "totale": 2.8305755224766966,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 2.7793006234996263,
+     "totale": 2.7793006234996263,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.80890839385534,
+     "totale": 2.80890839385534,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 2.920584487189455,
+     "totale": 2.920584487189455,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.1142418015448348,
+     "totale": 3.1142418015448348,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.234013030858274,
+     "totale": 3.234013030858274,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.344557718141287,
+     "totale": 3.344557718141287,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 3.94051956238981,
+     "totale": 3.94051956238981,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 4.96585611601853,
+     "totale": 4.96585611601853,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 2.382114604309459,
+     "totale": 3.421941348977679,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 2.3789992317471236,
+     "totale": 2.3789992317471236,
+     "blocs": 1
+    }
+   ]
+  },
+  {
+   "u": 3.5,
+   "ax": 0.41,
+   "ay": 3.975,
+   "origine_z": 1.515,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 2.137373865946901,
+     "totale": 2.137373865946901,
+     "blocs": 1
+    },
+    {
+     "azimut": 10,
+     "premiere": 2.1685639026087595,
+     "totale": 2.1685639026087595,
+     "blocs": 1
+    },
+    {
+     "azimut": 20,
+     "premiere": 1.5558536200853723,
+     "totale": 1.729362645124092,
+     "blocs": 2
+    },
+    {
+     "azimut": 30,
+     "premiere": 2.027309946052024,
+     "totale": 2.027309946052024,
+     "blocs": 1
+    },
+    {
+     "azimut": 40,
+     "premiere": 3.2994040375018683,
+     "totale": 3.2994040375018683,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 3.8561710170165036,
+     "totale": 3.8561710170165036,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 4.4996122411795465,
+     "totale": 4.4996122411795465,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 3.7888551723644537,
+     "totale": 3.7888551723644537,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 3.7628794923603026,
+     "totale": 3.7628794923603026,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 3.006509716952869,
+     "totale": 3.006509716952869,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 3.2128052058153713,
+     "totale": 3.2128052058153713,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 2.6101910810241944,
+     "totale": 2.6101910810241944,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 1.818840550591844,
+     "totale": 1.818840550591844,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 1.2185749083144248,
+     "totale": 2.227874807451863,
+     "blocs": 3
+    },
+    {
+     "azimut": 140,
+     "premiere": 2.9141421814791495,
+     "totale": 6.163831879468264,
+     "blocs": 2
+    },
+    {
+     "azimut": 150,
+     "premiere": 6.826670168167743,
+     "totale": 6.826670168167743,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 6.778437999284115,
+     "totale": 6.778437999284115,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 7.041740145657418,
+     "totale": 7.041740145657418,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 6.776036734525464,
+     "totale": 6.776036734525464,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 6.608863151205371,
+     "totale": 6.608863151205371,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 6.761963404831766,
+     "totale": 6.761963404831766,
+     "blocs": 1
+    },
+    {
+     "azimut": 210,
+     "premiere": 5.224214121473001,
+     "totale": 5.224214121473001,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 3.709862155099543,
+     "totale": 3.709862155099543,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.245585551860026,
+     "totale": 3.245585551860026,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 2.9813619644001443,
+     "totale": 2.9813619644001443,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 2.8273056669103993,
+     "totale": 2.8273056669103993,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 2.782786730736011,
+     "totale": 2.782786730736011,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.822931673429922,
+     "totale": 2.822931673429922,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 2.937829410370004,
+     "totale": 2.937829410370004,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.126683012262265,
+     "totale": 3.126683012262265,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.281234653526397,
+     "totale": 3.281234653526397,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.322953809129203,
+     "totale": 3.322953809129203,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 3.965707443534194,
+     "totale": 3.965707443534194,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 4.910850226624843,
+     "totale": 4.910850226624843,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 1.760417351281165,
+     "totale": 2.6506424111883455,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 1.5548481158545604,
+     "totale": 1.5548481158545604,
+     "blocs": 1
+    }
+   ]
+  },
+  {
+   "u": 3.75,
+   "ax": 0.495,
+   "ay": 4.362,
+   "origine_z": 1.542,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 1.2555370326555297,
+     "totale": 1.2555370326555297,
+     "blocs": 1
+    },
+    {
+     "azimut": 10,
+     "premiere": 1.3125966786924996,
+     "totale": 1.3125966786924996,
+     "blocs": 1
+    },
+    {
+     "azimut": 20,
+     "premiere": 0.9053367056764254,
+     "totale": 0.9053367056764254,
+     "blocs": 1
+    },
+    {
+     "azimut": 30,
+     "premiere": 1.0452846556517994,
+     "totale": 1.0452846556517994,
+     "blocs": 1
+    },
+    {
+     "azimut": 40,
+     "premiere": 1.5873692325063167,
+     "totale": 1.5873692325063167,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 2.536550287745608,
+     "totale": 2.536550287745608,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 3.210273491565265,
+     "totale": 3.210273491565265,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 2.9334473706433317,
+     "totale": 2.9334473706433317,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 2.8955222519765815,
+     "totale": 2.8955222519765815,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 2.123639464867809,
+     "totale": 2.123639464867809,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 3.207586632245306,
+     "totale": 3.207586632245306,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 2.7801696970383745,
+     "totale": 2.7801696970383745,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 1.9744185713854057,
+     "totale": 2.283474446565666,
+     "blocs": 2
+    },
+    {
+     "azimut": 130,
+     "premiere": 2.8010659577914634,
+     "totale": 2.8010659577914634,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 2.292573271139125,
+     "totale": 4.856611943158061,
+     "blocs": 2
+    },
+    {
+     "azimut": 150,
+     "premiere": 7.1215369661318855,
+     "totale": 7.1215369661318855,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 7.0170674789945435,
+     "totale": 7.0170674789945435,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 7.120477882466071,
+     "totale": 7.120477882466071,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 6.837898705706001,
+     "totale": 6.837898705706001,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 6.699807685113344,
+     "totale": 6.699807685113344,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 7.004162355187656,
+     "totale": 7.004162355187656,
+     "blocs": 1
+    },
+    {
+     "azimut": 210,
+     "premiere": 5.199257853552187,
+     "totale": 5.199257853552187,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 3.8155029368028988,
+     "totale": 3.8155029368028988,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.2375646529164555,
+     "totale": 3.2375646529164555,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 2.9730758189485638,
+     "totale": 2.9730758189485638,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 2.833126157512594,
+     "totale": 2.833126157512594,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 2.7878151912029985,
+     "totale": 2.7878151912029985,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.832694052218302,
+     "totale": 2.832694052218302,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 2.952863068700468,
+     "totale": 2.952863068700468,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.170564848447432,
+     "totale": 3.170564848447432,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.105645414107539,
+     "totale": 3.105645414107539,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.244155716859351,
+     "totale": 3.244155716859351,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 3.975225275564577,
+     "totale": 3.975225275564577,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 4.782902315414976,
+     "totale": 4.782902315414976,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 0.8870862341738244,
+     "totale": 2.093329163062246,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 1.075009837558035,
+     "totale": 1.6532326449725652,
+     "blocs": 2
+    }
+   ]
+  },
+  {
+   "u": 4.0,
+   "ax": 0.58,
+   "ay": 4.75,
+   "origine_z": 1.57,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 0.2658962347377254,
+     "totale": 0.2658962347377254,
+     "blocs": 1
+    },
+    {
+     "azimut": 10,
+     "premiere": 0.2145771205129301,
+     "totale": 0.2145771205129301,
+     "blocs": 1
+    },
+    {
+     "azimut": 20,
+     "premiere": 0.41947658268486254,
+     "totale": 0.41947658268486254,
+     "blocs": 1
+    },
+    {
+     "azimut": 30,
+     "premiere": 0.8984465196405944,
+     "totale": 0.8984465196405944,
+     "blocs": 1
+    },
+    {
+     "azimut": 40,
+     "premiere": 1.434474747935835,
+     "totale": 1.434474747935835,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 2.123080795226887,
+     "totale": 2.123080795226887,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 2.678035580195637,
+     "totale": 2.678035580195637,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 2.8384755041910386,
+     "totale": 2.8384755041910386,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 1.9412131993601989,
+     "totale": 1.9412131993601989,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 2.9820406508742927,
+     "totale": 2.9820406508742927,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 3.146048892616987,
+     "totale": 3.146048892616987,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 2.383461564395606,
+     "totale": 2.383461564395606,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 1.5505880360506348,
+     "totale": 1.8807848281237591,
+     "blocs": 2
+    },
+    {
+     "azimut": 130,
+     "premiere": 1.276165109460938,
+     "totale": 2.593503720911893,
+     "blocs": 2
+    },
+    {
+     "azimut": 140,
+     "premiere": 3.129284111059615,
+     "totale": 4.14128346611113,
+     "blocs": 2
+    },
+    {
+     "azimut": 150,
+     "premiere": 3.0433466652645604,
+     "totale": 5.570973572174261,
+     "blocs": 2
+    },
+    {
+     "azimut": 160,
+     "premiere": 7.7568658531127275,
+     "totale": 7.7568658531127275,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 7.428500902995138,
+     "totale": 7.428500902995138,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 2.702235943768778,
+     "totale": 4.8654292978058,
+     "blocs": 2
+    },
+    {
+     "azimut": 190,
+     "premiere": 6.48916528734258,
+     "totale": 6.48916528734258,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 6.829309105729061,
+     "totale": 6.829309105729061,
+     "blocs": 1
+    },
+    {
+     "azimut": 210,
+     "premiere": 5.230196430315295,
+     "totale": 5.230196430315295,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 3.972667832816757,
+     "totale": 3.972667832816757,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.2619169309293787,
+     "totale": 3.2619169309293787,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 2.9835153852861267,
+     "totale": 2.9835153852861267,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 2.8360283862626776,
+     "totale": 2.8360283862626776,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 2.793044796060636,
+     "totale": 2.793044796060636,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.823996643358011,
+     "totale": 2.823996643358011,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 2.9079201698601587,
+     "totale": 2.9079201698601587,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.129827446768304,
+     "totale": 3.129827446768304,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.117895707040006,
+     "totale": 3.117895707040006,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.265308042605942,
+     "totale": 3.265308042605942,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 3.98604252367427,
+     "totale": 3.98604252367427,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 4.707344653754928,
+     "totale": 4.707344653754928,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 0.7688117491635951,
+     "totale": 2.240605121614259,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 0.876353228171848,
+     "totale": 1.6161733885047336,
+     "blocs": 2
+    }
+   ]
+  },
+  {
+   "u": 4.25,
+   "ax": 0.698,
+   "ay": 5.125,
+   "origine_z": 1.597,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 0.6787803406487591,
+     "totale": 0.6787803406487591,
+     "blocs": 1
+    },
+    {
+     "azimut": 10,
+     "premiere": 0.1913943622464669,
+     "totale": 0.1913943622464669,
+     "blocs": 1
+    },
+    {
+     "azimut": 20,
+     "premiere": 0.4370278545189348,
+     "totale": 0.4370278545189348,
+     "blocs": 1
+    },
+    {
+     "azimut": 30,
+     "premiere": 1.017792949678519,
+     "totale": 1.017792949678519,
+     "blocs": 1
+    },
+    {
+     "azimut": 40,
+     "premiere": 1.6261375928620923,
+     "totale": 1.6261375928620923,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 2.352044185676749,
+     "totale": 2.352044185676749,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 2.235811236864163,
+     "totale": 2.235811236864163,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 2.8817404177833126,
+     "totale": 2.8817404177833126,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 1.7082983433619827,
+     "totale": 1.7082983433619827,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 2.9732648440374243,
+     "totale": 2.9732648440374243,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 3.0386212450553973,
+     "totale": 3.0386212450553973,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 1.4768225554075538,
+     "totale": 1.4768225554075538,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 0.8213196661032525,
+     "totale": 0.8213196661032525,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 0.7089841016068312,
+     "totale": 0.7089841016068312,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 1.6482251138058102,
+     "totale": 2.810290250249945,
+     "blocs": 2
+    },
+    {
+     "azimut": 150,
+     "premiere": 2.802280216910998,
+     "totale": 2.802280216910998,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 2.3879880584830584,
+     "totale": 5.917130283441007,
+     "blocs": 2
+    },
+    {
+     "azimut": 170,
+     "premiere": 2.53666444101598,
+     "totale": 6.701058964794848,
+     "blocs": 2
+    },
+    {
+     "azimut": 180,
+     "premiere": 2.364536369933143,
+     "totale": 2.364536369933143,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 2.226006892303582,
+     "totale": 5.307579418044129,
+     "blocs": 3
+    },
+    {
+     "azimut": 200,
+     "premiere": 6.485470335537309,
+     "totale": 6.485470335537309,
+     "blocs": 1
+    },
+    {
+     "azimut": 210,
+     "premiere": 5.220765573618818,
+     "totale": 5.220765573618818,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 4.186728160462197,
+     "totale": 4.186728160462197,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.311088447659893,
+     "totale": 3.311088447659893,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.001579882379707,
+     "totale": 3.001579882379707,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 2.8534763228654607,
+     "totale": 2.8534763228654607,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 2.808548809215052,
+     "totale": 2.808548809215052,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.8464355151723444,
+     "totale": 2.8464355151723444,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 2.954951971233169,
+     "totale": 2.954951971233169,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.0886734467139902,
+     "totale": 3.0886734467139902,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.106924129045656,
+     "totale": 3.106924129045656,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.29823817160847,
+     "totale": 3.29823817160847,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 4.015395467081136,
+     "totale": 4.015395467081136,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 4.624929119522018,
+     "totale": 4.624929119522018,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 0.7296939086150411,
+     "totale": 2.323941538152158,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 0.7978588386804653,
+     "totale": 1.6651450573004531,
+     "blocs": 2
+    }
+   ]
+  },
+  {
+   "u": 4.5,
+   "ax": 0.815,
+   "ay": 5.5,
+   "origine_z": 1.625,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 1.1778332559839413,
+     "totale": 1.7196612002206697,
+     "blocs": 2
+    },
+    {
+     "azimut": 10,
+     "premiere": 0.8239816556859703,
+     "totale": 0.8239816556859703,
+     "blocs": 1
+    },
+    {
+     "azimut": 20,
+     "premiere": 1.0895729214156065,
+     "totale": 1.0895729214156065,
+     "blocs": 1
+    },
+    {
+     "azimut": 30,
+     "premiere": 1.672077099004261,
+     "totale": 1.672077099004261,
+     "blocs": 1
+    },
+    {
+     "azimut": 40,
+     "premiere": 1.817754905190526,
+     "totale": 1.817754905190526,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 2.4692553320300696,
+     "totale": 2.4692553320300696,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 2.3089579830411053,
+     "totale": 2.3089579830411053,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 2.8857187287064874,
+     "totale": 2.8857187287064874,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 3.0970121006325178,
+     "totale": 3.0970121006325178,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 2.9525010523959905,
+     "totale": 2.9525010523959905,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 0.503846274685477,
+     "totale": 0.503846274685477,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 0.4979390937185131,
+     "totale": 0.4979390937185131,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 0.5453534482822118,
+     "totale": 0.5453534482822118,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 0.7659384891855108,
+     "totale": 1.5428283905851397,
+     "blocs": 2
+    },
+    {
+     "azimut": 140,
+     "premiere": 3.0674988236500713,
+     "totale": 3.0674988236500713,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 2.406805535421959,
+     "totale": 2.406805535421959,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 1.9040286165607334,
+     "totale": 2.6982742051673236,
+     "blocs": 2
+    },
+    {
+     "azimut": 170,
+     "premiere": 2.127119280420663,
+     "totale": 4.800842509401901,
+     "blocs": 2
+    },
+    {
+     "azimut": 180,
+     "premiere": 2.0927228911244815,
+     "totale": 2.0927228911244815,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 2.1221630104495386,
+     "totale": 4.0596052026292355,
+     "blocs": 2
+    },
+    {
+     "azimut": 200,
+     "premiere": 2.1367855730389276,
+     "totale": 5.395722430780523,
+     "blocs": 2
+    },
+    {
+     "azimut": 210,
+     "premiere": 5.222593980154893,
+     "totale": 5.222593980154893,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 4.44732631576608,
+     "totale": 4.44732631576608,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.296551251900115,
+     "totale": 3.296551251900115,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.015188864611215,
+     "totale": 3.015188864611215,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 2.8616474749576524,
+     "totale": 2.8616474749576524,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 2.82393538962821,
+     "totale": 2.82393538962821,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.8653290404549443,
+     "totale": 2.8653290404549443,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 2.985748299301208,
+     "totale": 2.985748299301208,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.1512838040262086,
+     "totale": 3.1512838040262086,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.0298115026420573,
+     "totale": 3.0298115026420573,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.336913677839312,
+     "totale": 3.336913677839312,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 4.0538359477414625,
+     "totale": 4.0538359477414625,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 4.444683684606725,
+     "totale": 4.444683684606725,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 1.4075167274395128,
+     "totale": 3.181583340238087,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 1.3682351377413888,
+     "totale": 2.3856122790163856,
+     "blocs": 2
+    }
+   ]
+  },
+  {
+   "u": 4.75,
+   "ax": 0.932,
+   "ay": 5.875,
+   "origine_z": 1.653,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 1.298110974471136,
+     "totale": 2.1402051045354806,
+     "blocs": 2
+    },
+    {
+     "azimut": 10,
+     "premiere": 1.5207905392551688,
+     "totale": 1.5207905392551688,
+     "blocs": 1
+    },
+    {
+     "azimut": 20,
+     "premiere": 1.3217580223315393,
+     "totale": 1.3217580223315393,
+     "blocs": 1
+    },
+    {
+     "azimut": 30,
+     "premiere": 2.00588305663816,
+     "totale": 2.00588305663816,
+     "blocs": 1
+    },
+    {
+     "azimut": 40,
+     "premiere": 1.702343955310061,
+     "totale": 1.702343955310061,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 2.233142071511381,
+     "totale": 2.233142071511381,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 2.091188004726453,
+     "totale": 2.091188004726453,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 2.128137769104452,
+     "totale": 2.128137769104452,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 3.681015803539613,
+     "totale": 3.681015803539613,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 3.783123481037221,
+     "totale": 3.783123481037221,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 1.0563410211283617,
+     "totale": 1.0563410211283617,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 0.5096134989303429,
+     "totale": 0.5096134989303429,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 1.8278684725861205,
+     "totale": 1.8278684725861205,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 2.5926138800431087,
+     "totale": 2.650725854648052,
+     "blocs": 2
+    },
+    {
+     "azimut": 140,
+     "premiere": 2.83996476106351,
+     "totale": 2.83996476106351,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 2.416526890692758,
+     "totale": 2.416526890692758,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 1.8875847213809445,
+     "totale": 1.8875847213809445,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 2.465346927782229,
+     "totale": 4.032924231546135,
+     "blocs": 2
+    },
+    {
+     "azimut": 180,
+     "premiere": 2.6516281004875566,
+     "totale": 2.6516281004875566,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 2.342709261309858,
+     "totale": 2.342709261309858,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 2.1975915456905883,
+     "totale": 4.881519582415661,
+     "blocs": 2
+    },
+    {
+     "azimut": 210,
+     "premiere": 5.260289674199447,
+     "totale": 5.260289674199447,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 4.468052844042262,
+     "totale": 4.468052844042262,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.357679561112816,
+     "totale": 3.357679561112816,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.050637360783594,
+     "totale": 3.050637360783594,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 2.8714282633943435,
+     "totale": 2.8714282633943435,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 2.8414961446947684,
+     "totale": 2.8414961446947684,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.8625772863361876,
+     "totale": 2.8625772863361876,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 2.9659377496116366,
+     "totale": 2.9659377496116366,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.0182085195499453,
+     "totale": 3.0182085195499453,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.074890566574403,
+     "totale": 3.074890566574403,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.369412623486517,
+     "totale": 3.369412623486517,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 4.088083027833926,
+     "totale": 4.088083027833926,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 4.303940272683752,
+     "totale": 4.303940272683752,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 1.4832753634569436,
+     "totale": 3.388387234869894,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 1.3371969908041477,
+     "totale": 2.415821477110468,
+     "blocs": 2
+    }
+   ]
+  },
+  {
+   "u": 5.0,
+   "ax": 1.05,
+   "ay": 6.25,
+   "origine_z": 1.68,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 1.1705317504322101,
+     "totale": 2.008698063059253,
+     "blocs": 2
+    },
+    {
+     "azimut": 10,
+     "premiere": 1.4397805617505988,
+     "totale": 1.4397805617505988,
+     "blocs": 1
+    },
+    {
+     "azimut": 20,
+     "premiere": 1.2739965786108192,
+     "totale": 1.2739965786108192,
+     "blocs": 1
+    },
+    {
+     "azimut": 30,
+     "premiere": 1.993174867480302,
+     "totale": 1.993174867480302,
+     "blocs": 1
+    },
+    {
+     "azimut": 40,
+     "premiere": 1.6729832007604997,
+     "totale": 1.6729832007604997,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 1.866439209905325,
+     "totale": 1.866439209905325,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 2.1156932158093293,
+     "totale": 2.1156932158093293,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 2.3715829071815246,
+     "totale": 2.3715829071815246,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 3.188361064082522,
+     "totale": 3.188361064082522,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 2.9752246994246807,
+     "totale": 3.2927537170680514,
+     "blocs": 2
+    },
+    {
+     "azimut": 100,
+     "premiere": 3.011646493324454,
+     "totale": 3.011646493324454,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 3.16545709119849,
+     "totale": 3.16545709119849,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 3.6589563212056624,
+     "totale": 3.6589563212056624,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 2.6339585386750253,
+     "totale": 2.6339585386750253,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 1.8762164174467553,
+     "totale": 1.8762164174467553,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 2.401297116171863,
+     "totale": 2.401297116171863,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 2.5796373726556014,
+     "totale": 2.5796373726556014,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 2.2513521632756004,
+     "totale": 2.2513521632756004,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 2.4633841014851052,
+     "totale": 2.4633841014851052,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 2.2014869971754214,
+     "totale": 2.2014869971754214,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 2.1537377833395994,
+     "totale": 4.495958143131189,
+     "blocs": 2
+    },
+    {
+     "azimut": 210,
+     "premiere": 5.3415816867577774,
+     "totale": 5.3415816867577774,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 4.4671323905995255,
+     "totale": 4.4671323905995255,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.437283987312363,
+     "totale": 3.437283987312363,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.0606314846827996,
+     "totale": 3.0606314846827996,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 2.8851472719317988,
+     "totale": 2.8851472719317988,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 2.8434134027022253,
+     "totale": 2.8434134027022253,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.8876363085218877,
+     "totale": 2.8876363085218877,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 2.990444970550646,
+     "totale": 2.990444970550646,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.070967779691817,
+     "totale": 3.070967779691817,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.1725994946326783,
+     "totale": 3.1725994946326783,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.4071610950508986,
+     "totale": 3.4071610950508986,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 4.1179706466904005,
+     "totale": 4.1179706466904005,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 4.258333257604395,
+     "totale": 4.258333257604395,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 1.4336663801013376,
+     "totale": 3.3934893145752696,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 1.2089793263327753,
+     "totale": 2.3113464010224423,
+     "blocs": 2
+    }
+   ]
+  },
+  {
+   "u": 5.25,
+   "ax": 1.193,
+   "ay": 6.588,
+   "origine_z": 1.74,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 1.2994625017039416,
+     "totale": 2.134121780716569,
+     "blocs": 2
+    },
+    {
+     "azimut": 10,
+     "premiere": 1.2282192281199578,
+     "totale": 1.2282192281199578,
+     "blocs": 1
+    },
+    {
+     "azimut": 20,
+     "premiere": 1.325253081680636,
+     "totale": 1.325253081680636,
+     "blocs": 1
+    },
+    {
+     "azimut": 30,
+     "premiere": 1.9987869281376391,
+     "totale": 1.9987869281376391,
+     "blocs": 1
+    },
+    {
+     "azimut": 40,
+     "premiere": 2.2852781773903588,
+     "totale": 2.2852781773903588,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 2.6039488662256742,
+     "totale": 2.6039488662256742,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 2.6071451528950877,
+     "totale": 2.6071451528950877,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 2.9594455048037114,
+     "totale": 2.9594455048037114,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 2.8531019672284006,
+     "totale": 2.8531019672284006,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 2.907854326085725,
+     "totale": 2.907854326085725,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 3.0582042668790796,
+     "totale": 3.0582042668790796,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 3.118729687077857,
+     "totale": 3.118729687077857,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 3.7107884993790305,
+     "totale": 3.7107884993790305,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 2.883973647893941,
+     "totale": 2.883973647893941,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 2.4968784250429277,
+     "totale": 2.4968784250429277,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 2.2672130575909986,
+     "totale": 2.2672130575909986,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 2.4411468561068315,
+     "totale": 2.4411468561068315,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 2.117753137682113,
+     "totale": 2.117753137682113,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 2.173078929540509,
+     "totale": 2.173078929540509,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 1.920288348781733,
+     "totale": 1.920288348781733,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 2.2782663923442916,
+     "totale": 4.755387390717817,
+     "blocs": 2
+    },
+    {
+     "azimut": 210,
+     "premiere": 5.519847813167877,
+     "totale": 5.519847813167877,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 4.529391891530673,
+     "totale": 4.529391891530673,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.436942196184651,
+     "totale": 3.436942196184651,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.097532796758186,
+     "totale": 3.097532796758186,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 2.9358020154722047,
+     "totale": 2.9358020154722047,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 2.900874184664932,
+     "totale": 2.900874184664932,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.951401472943871,
+     "totale": 2.951401472943871,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 3.052578697382192,
+     "totale": 3.052578697382192,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.121986931880274,
+     "totale": 3.121986931880274,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.286403538269238,
+     "totale": 3.286403538269238,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.495871349616597,
+     "totale": 3.495871349616597,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 4.2099900558643215,
+     "totale": 4.2099900558643215,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 4.203141143898464,
+     "totale": 4.203141143898464,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 1.3964145334123272,
+     "totale": 3.331994066226621,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 1.3364061381573298,
+     "totale": 2.3681181826581015,
+     "blocs": 2
+    }
+   ]
+  },
+  {
+   "u": 5.5,
+   "ax": 1.335,
+   "ay": 6.925,
+   "origine_z": 1.8,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 1.5169976988635283,
+     "totale": 2.242104101962037,
+     "blocs": 2
+    },
+    {
+     "azimut": 10,
+     "premiere": 1.7465308082416278,
+     "totale": 1.7465308082416278,
+     "blocs": 1
+    },
+    {
+     "azimut": 20,
+     "premiere": 1.394668573713357,
+     "totale": 1.394668573713357,
+     "blocs": 1
+    },
+    {
+     "azimut": 30,
+     "premiere": 2.006687985142234,
+     "totale": 2.006687985142234,
+     "blocs": 1
+    },
+    {
+     "azimut": 40,
+     "premiere": 2.6468252842688162,
+     "totale": 2.6468252842688162,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 2.7811994770992055,
+     "totale": 2.7811994770992055,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 2.967351567176749,
+     "totale": 2.967351567176749,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 3.017995132290501,
+     "totale": 3.017995132290501,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 2.2651072403407415,
+     "totale": 2.2651072403407415,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 2.94621525198499,
+     "totale": 2.94621525198499,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 2.4636437023934077,
+     "totale": 2.4636437023934077,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 1.511877551389089,
+     "totale": 1.511877551389089,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 1.6233785371813574,
+     "totale": 1.6233785371813574,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 0.9908424857145366,
+     "totale": 2.1517181874692612,
+     "blocs": 2
+    },
+    {
+     "azimut": 140,
+     "premiere": 0.8751073651289349,
+     "totale": 0.8751073651289349,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 2.435129616825234,
+     "totale": 2.435129616825234,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 2.0969440947224243,
+     "totale": 2.0969440947224243,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 2.190830062974627,
+     "totale": 2.190830062974627,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 2.4016476233267947,
+     "totale": 2.4016476233267947,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 2.082479193563418,
+     "totale": 2.082479193563418,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 2.071125174455395,
+     "totale": 4.499542018153605,
+     "blocs": 2
+    },
+    {
+     "azimut": 210,
+     "premiere": 5.637840636891449,
+     "totale": 5.637840636891449,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 4.207297428883808,
+     "totale": 4.207297428883808,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.585623374578511,
+     "totale": 3.585623374578511,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.155093994626339,
+     "totale": 3.155093994626339,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 2.990596534369219,
+     "totale": 2.990596534369219,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 2.9388883682018423,
+     "totale": 2.9388883682018423,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 3.0028779092995874,
+     "totale": 3.0028779092995874,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 3.117563675489702,
+     "totale": 3.117563675489702,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.1167812800769195,
+     "totale": 3.1167812800769195,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.179379337619876,
+     "totale": 3.179379337619876,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.4498161557568636,
+     "totale": 3.4498161557568636,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 4.321197367704839,
+     "totale": 4.321197367704839,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 4.059463558552611,
+     "totale": 4.059463558552611,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 1.1727985305844597,
+     "totale": 3.0458172159565193,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 1.8235572428606561,
+     "totale": 1.8235572428606561,
+     "blocs": 1
+    }
+   ]
+  },
+  {
+   "u": 5.75,
+   "ax": 1.478,
+   "ay": 7.262,
+   "origine_z": 1.86,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 3.158725369729279,
+     "totale": 3.158725369729279,
+     "blocs": 1
+    },
+    {
+     "azimut": 10,
+     "premiere": 2.864285411755926,
+     "totale": 2.864285411755926,
+     "blocs": 1
+    },
+    {
+     "azimut": 20,
+     "premiere": 3.3394227370833574,
+     "totale": 3.3394227370833574,
+     "blocs": 1
+    },
+    {
+     "azimut": 30,
+     "premiere": 2.3009896627170834,
+     "totale": 2.576601994380212,
+     "blocs": 2
+    },
+    {
+     "azimut": 40,
+     "premiere": 2.5095549280236287,
+     "totale": 2.5095549280236287,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 2.6445565661772426,
+     "totale": 2.6445565661772426,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 2.8121120454313204,
+     "totale": 2.8121120454313204,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 3.0487788914731504,
+     "totale": 3.0487788914731504,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 2.490799245675848,
+     "totale": 2.490799245675848,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 2.990228256278724,
+     "totale": 2.990228256278724,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 2.0188513958013927,
+     "totale": 2.0188513958013927,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 2.4040391757557384,
+     "totale": 2.4040391757557384,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 1.8282763654348875,
+     "totale": 1.8282763654348875,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 1.4696682185572192,
+     "totale": 2.486219748119183,
+     "blocs": 3
+    },
+    {
+     "azimut": 140,
+     "premiere": 2.724693399749824,
+     "totale": 2.724693399749824,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 2.6599713710434028,
+     "totale": 2.6599713710434028,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 2.2201743624536228,
+     "totale": 2.2201743624536228,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 2.132802129281334,
+     "totale": 2.132802129281334,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 2.435707525928031,
+     "totale": 2.435707525928031,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 2.3609569414121974,
+     "totale": 2.3609569414121974,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 1.925101809096497,
+     "totale": 4.266107565836053,
+     "blocs": 2
+    },
+    {
+     "azimut": 210,
+     "premiere": 5.7429762647203155,
+     "totale": 5.7429762647203155,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 4.159472666761221,
+     "totale": 4.159472666761221,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.6630997583457647,
+     "totale": 3.6630997583457647,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.2117611076723875,
+     "totale": 3.2117611076723875,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 3.04339520415604,
+     "totale": 3.04339520415604,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 2.9383728159338807,
+     "totale": 2.9383728159338807,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.9772207669050514,
+     "totale": 2.9772207669050514,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 3.100152099708061,
+     "totale": 3.100152099708061,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.15222521370395,
+     "totale": 3.15222521370395,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.2354705096759133,
+     "totale": 3.2354705096759133,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.5438074302413973,
+     "totale": 3.5438074302413973,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 4.437012613123697,
+     "totale": 4.437012613123697,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 3.920930004320424,
+     "totale": 3.920930004320424,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 1.5467434713315864,
+     "totale": 1.9151150881829917,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 3.068539264030963,
+     "totale": 3.068539264030963,
+     "blocs": 1
+    }
+   ]
+  },
+  {
+   "u": 6.0,
+   "ax": 1.62,
+   "ay": 7.6,
+   "origine_z": 1.92,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 3.2331245901310783,
+     "totale": 3.2331245901310783,
+     "blocs": 1
+    },
+    {
+     "azimut": 10,
+     "premiere": 3.1245579573036757,
+     "totale": 3.1245579573036757,
+     "blocs": 1
+    },
+    {
+     "azimut": 20,
+     "premiere": 3.634997448071587,
+     "totale": 3.634997448071587,
+     "blocs": 1
+    },
+    {
+     "azimut": 30,
+     "premiere": 2.433423807438503,
+     "totale": 2.783858269927732,
+     "blocs": 2
+    },
+    {
+     "azimut": 40,
+     "premiere": 1.9075275026457374,
+     "totale": 1.9075275026457374,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 2.1460979842459715,
+     "totale": 2.1460979842459715,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 2.3381423883588512,
+     "totale": 2.3381423883588512,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 3.034000820921582,
+     "totale": 3.034000820921582,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 2.900456926992845,
+     "totale": 2.900456926992845,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 2.858089147767142,
+     "totale": 2.858089147767142,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 1.6059606742916523,
+     "totale": 1.6059606742916523,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 3.0935106557105243,
+     "totale": 3.0935106557105243,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 2.3711763672044635,
+     "totale": 2.3711763672044635,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 2.2355343570236608,
+     "totale": 2.2355343570236608,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 1.8555879249442784,
+     "totale": 1.8555879249442784,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 2.1080324414156264,
+     "totale": 2.1080324414156264,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 2.1381742776664314,
+     "totale": 2.1381742776664314,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 2.197804702034837,
+     "totale": 2.197804702034837,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 2.3584061736566744,
+     "totale": 2.3584061736566744,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 2.5778866988028595,
+     "totale": 2.5778866988028595,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 1.9286285915586951,
+     "totale": 1.9286285915586951,
+     "blocs": 1
+    },
+    {
+     "azimut": 210,
+     "premiere": 4.817567612719248,
+     "totale": 4.817567612719248,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 4.133222113028177,
+     "totale": 4.133222113028177,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.6982260145354395,
+     "totale": 3.6982260145354395,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.2761283173925246,
+     "totale": 3.2761283173925246,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 3.1184164835176884,
+     "totale": 3.1184164835176884,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 3.0406343490215684,
+     "totale": 3.0406343490215684,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 2.9696976694918202,
+     "totale": 2.9696976694918202,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 3.1220279029424245,
+     "totale": 3.1220279029424245,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.261741054809187,
+     "totale": 3.261741054809187,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.3229620844633265,
+     "totale": 3.3229620844633265,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.628865377162666,
+     "totale": 3.628865377162666,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 4.525564349019934,
+     "totale": 4.525564349019934,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 3.971123191461611,
+     "totale": 3.971123191461611,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 1.619851789768615,
+     "totale": 2.3116611024026787,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 3.3237443119372476,
+     "totale": 3.3237443119372476,
+     "blocs": 1
+    }
+   ]
+  },
+  {
+   "u": 6.25,
+   "ax": 1.778,
+   "ay": 7.862,
+   "origine_z": 1.944,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 3.263999197277821,
+     "totale": 3.263999197277821,
+     "blocs": 1
+    },
+    {
+     "azimut": 10,
+     "premiere": 3.2601019090968126,
+     "totale": 3.2601019090968126,
+     "blocs": 1
+    },
+    {
+     "azimut": 20,
+     "premiere": 3.7459756390501253,
+     "totale": 3.7459756390501253,
+     "blocs": 1
+    },
+    {
+     "azimut": 30,
+     "premiere": 2.5316147140027763,
+     "totale": 2.8418961333542994,
+     "blocs": 2
+    },
+    {
+     "azimut": 40,
+     "premiere": 1.9102240092065594,
+     "totale": 1.9102240092065594,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 2.1491387427812514,
+     "totale": 2.1491387427812514,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 2.3739576120039882,
+     "totale": 2.3739576120039882,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 3.1690794524979626,
+     "totale": 3.1690794524979626,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 3.068226412850264,
+     "totale": 3.068226412850264,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 2.1640036704930155,
+     "totale": 2.1640036704930155,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 0.7660926232122599,
+     "totale": 0.7660926232122599,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 0.5115022204879955,
+     "totale": 2.304929532315672,
+     "blocs": 2
+    },
+    {
+     "azimut": 120,
+     "premiere": 2.5640860527881024,
+     "totale": 2.5640860527881024,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 2.217539855648105,
+     "totale": 2.217539855648105,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 1.8078492904004362,
+     "totale": 1.8078492904004362,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 2.110646941269617,
+     "totale": 2.110646941269617,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 2.135626465055017,
+     "totale": 2.135626465055017,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 1.6537043457402645,
+     "totale": 1.6537043457402645,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 2.350508902886836,
+     "totale": 2.350508902886836,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 2.123269896030159,
+     "totale": 2.123269896030159,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 1.8554931641996673,
+     "totale": 1.8554931641996673,
+     "blocs": 1
+    },
+    {
+     "azimut": 210,
+     "premiere": 3.354628362891036,
+     "totale": 3.354628362891036,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 4.264430510966234,
+     "totale": 4.264430510966234,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.8234499366500305,
+     "totale": 3.8234499366500305,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.4362276621744514,
+     "totale": 3.4362276621744514,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 3.1956694432903925,
+     "totale": 3.1956694432903925,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 3.1140651052036254,
+     "totale": 3.1140651052036254,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 3.009845199071937,
+     "totale": 3.009845199071937,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 3.2129830918271485,
+     "totale": 3.2129830918271485,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.352332651291019,
+     "totale": 3.352332651291019,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.4084424347540083,
+     "totale": 3.4084424347540083,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.7066389450495203,
+     "totale": 3.7066389450495203,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 4.613574709808271,
+     "totale": 4.613574709808271,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 4.171959134650542,
+     "totale": 4.171959134650542,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 1.7117624392067858,
+     "totale": 2.806097019396913,
+     "blocs": 3
+    },
+    {
+     "azimut": 350,
+     "premiere": 3.5116937684547738,
+     "totale": 3.5116937684547738,
+     "blocs": 1
+    }
+   ]
+  },
+  {
+   "u": 6.5,
+   "ax": 1.935,
+   "ay": 8.125,
+   "origine_z": 1.968,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 3.441503948173051,
+     "totale": 3.441503948173051,
+     "blocs": 1
+    },
+    {
+     "azimut": 10,
+     "premiere": 3.609272719738259,
+     "totale": 3.609272719738259,
+     "blocs": 1
+    },
+    {
+     "azimut": 20,
+     "premiere": 2.1620270031614353,
+     "totale": 3.756194682700999,
+     "blocs": 2
+    },
+    {
+     "azimut": 30,
+     "premiere": 2.2717169215443933,
+     "totale": 2.885328193582688,
+     "blocs": 2
+    },
+    {
+     "azimut": 40,
+     "premiere": 2.065339294956889,
+     "totale": 2.065339294956889,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 2.474686526651212,
+     "totale": 2.474686526651212,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 2.5892294326255842,
+     "totale": 2.5892294326255842,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 3.2216542594968383,
+     "totale": 3.2216542594968383,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 3.15435052422753,
+     "totale": 3.15435052422753,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 3.0611944418668733,
+     "totale": 3.0611944418668733,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 1.993463432333875,
+     "totale": 1.993463432333875,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 2.6565797054421987,
+     "totale": 2.6565797054421987,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 2.8741133445240745,
+     "totale": 2.8741133445240745,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 2.1907586968477064,
+     "totale": 2.1907586968477064,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 1.8140489065748613,
+     "totale": 1.8140489065748613,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 2.0931967877810598,
+     "totale": 2.0931967877810598,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 1.831785152791977,
+     "totale": 1.831785152791977,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 1.8305367663420071,
+     "totale": 1.8305367663420071,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 2.4247125216982774,
+     "totale": 2.4247125216982774,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 2.342770532887608,
+     "totale": 2.342770532887608,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 2.1229783495981667,
+     "totale": 2.1229783495981667,
+     "blocs": 1
+    },
+    {
+     "azimut": 210,
+     "premiere": 3.155151022984141,
+     "totale": 3.155151022984141,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 4.159015709471836,
+     "totale": 4.159015709471836,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.895501926434296,
+     "totale": 3.895501926434296,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.501748240236586,
+     "totale": 3.501748240236586,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 3.2630924887882156,
+     "totale": 3.2630924887882156,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 3.184654780076717,
+     "totale": 3.184654780076717,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 3.183336499895243,
+     "totale": 3.183336499895243,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 3.313049544327579,
+     "totale": 3.313049544327579,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.4133549523631865,
+     "totale": 3.4133549523631865,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.567162607909572,
+     "totale": 3.567162607909572,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.847254317924979,
+     "totale": 3.847254317924979,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 4.762213321370197,
+     "totale": 4.762213321370197,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 2.400776534332221,
+     "totale": 3.8170473076565643,
+     "blocs": 2
+    },
+    {
+     "azimut": 340,
+     "premiere": 1.9622378204587494,
+     "totale": 1.9622378204587494,
+     "blocs": 1
+    },
+    {
+     "azimut": 350,
+     "premiere": 3.773476363528762,
+     "totale": 3.773476363528762,
+     "blocs": 1
+    }
+   ]
+  },
+  {
+   "u": 6.75,
+   "ax": 2.093,
+   "ay": 8.387,
+   "origine_z": 1.991,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 3.6604841698344166,
+     "totale": 3.6604841698344166,
+     "blocs": 1
+    },
+    {
+     "azimut": 10,
+     "premiere": 1.6926012226634586,
+     "totale": 3.360752418260049,
+     "blocs": 2
+    },
+    {
+     "azimut": 20,
+     "premiere": 1.8658400210197952,
+     "totale": 3.0300063370521197,
+     "blocs": 2
+    },
+    {
+     "azimut": 30,
+     "premiere": 2.094909495955511,
+     "totale": 2.5372021650701537,
+     "blocs": 2
+    },
+    {
+     "azimut": 40,
+     "premiere": 2.3861285785939814,
+     "totale": 2.3861285785939814,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 2.8860136954142517,
+     "totale": 2.8860136954142517,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 2.744724994529541,
+     "totale": 2.744724994529541,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 2.565185274457399,
+     "totale": 2.565185274457399,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 3.0331943322215595,
+     "totale": 3.0331943322215595,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 3.2221373439018675,
+     "totale": 3.2221373439018675,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 2.4403621022209503,
+     "totale": 2.4403621022209503,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 2.705710336253178,
+     "totale": 2.705710336253178,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 2.9687792513240017,
+     "totale": 2.9687792513240017,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 2.2276523134013013,
+     "totale": 2.2276523134013013,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 2.0771153691525552,
+     "totale": 2.0771153691525552,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 2.1743469480925546,
+     "totale": 2.1743469480925546,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 1.9217456645598192,
+     "totale": 1.9217456645598192,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 2.083024202651974,
+     "totale": 2.083024202651974,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 2.2868219211707252,
+     "totale": 2.2868219211707252,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 2.32953029233989,
+     "totale": 2.32953029233989,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 2.3431295618722108,
+     "totale": 2.3431295618722108,
+     "blocs": 1
+    },
+    {
+     "azimut": 210,
+     "premiere": 2.963227373843574,
+     "totale": 2.963227373843574,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 4.143497548135262,
+     "totale": 4.143497548135262,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.908973581297014,
+     "totale": 3.908973581297014,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.5683576736183,
+     "totale": 3.5683576736183,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 3.3298337610204505,
+     "totale": 3.3298337610204505,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 3.2555711621131707,
+     "totale": 3.2555711621131707,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 3.3040598483700885,
+     "totale": 3.3040598483700885,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 3.056960371812657,
+     "totale": 3.056960371812657,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.333303681100505,
+     "totale": 3.333303681100505,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.726428971494366,
+     "totale": 3.726428971494366,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 3.9935472952679016,
+     "totale": 3.9935472952679016,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 4.911481489767279,
+     "totale": 4.911481489767279,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 2.38757993022758,
+     "totale": 3.5366247691159867,
+     "blocs": 2
+    },
+    {
+     "azimut": 340,
+     "premiere": 2.14559681184424,
+     "totale": 2.14559681184424,
+     "blocs": 1
+    },
+    {
+     "azimut": 350,
+     "premiere": 4.018007449239969,
+     "totale": 4.018007449239969,
+     "blocs": 1
+    }
+   ]
+  },
+  {
+   "u": 7.0,
+   "ax": 2.25,
+   "ay": 8.65,
+   "origine_z": 2.015,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 3.8739994227060945,
+     "totale": 3.8739994227060945,
+     "blocs": 1
+    },
+    {
+     "azimut": 10,
+     "premiere": 1.908885568445991,
+     "totale": 3.5767542533908667,
+     "blocs": 2
+    },
+    {
+     "azimut": 20,
+     "premiere": 2.0643517389081114,
+     "totale": 3.432255336260931,
+     "blocs": 2
+    },
+    {
+     "azimut": 30,
+     "premiere": 2.2824216467526823,
+     "totale": 2.691358660258587,
+     "blocs": 2
+    },
+    {
+     "azimut": 40,
+     "premiere": 2.5833688817285902,
+     "totale": 2.5833688817285902,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 3.0758067830046874,
+     "totale": 3.0758067830046874,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 2.847743673805815,
+     "totale": 2.847743673805815,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 2.585882274673632,
+     "totale": 2.585882274673632,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 2.807198133318154,
+     "totale": 2.807198133318154,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 3.179140235420003,
+     "totale": 3.179140235420003,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 2.560955151478586,
+     "totale": 2.560955151478586,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 2.396448060389108,
+     "totale": 2.396448060389108,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 1.9592632675167807,
+     "totale": 1.9592632675167807,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 2.0225260828292124,
+     "totale": 2.0225260828292124,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 2.060670446474811,
+     "totale": 2.060670446474811,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 1.7977136494854133,
+     "totale": 1.7977136494854133,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 1.5407386350879595,
+     "totale": 1.5407386350879595,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 1.900439210999796,
+     "totale": 1.900439210999796,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 1.545849757349167,
+     "totale": 1.545849757349167,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 2.3454811208625275,
+     "totale": 2.3454811208625275,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 2.4225451329283376,
+     "totale": 2.4225451329283376,
+     "blocs": 1
+    },
+    {
+     "azimut": 210,
+     "premiere": 2.6911541214813255,
+     "totale": 2.6911541214813255,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 4.1540436111055286,
+     "totale": 4.1540436111055286,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.850937933819049,
+     "totale": 3.850937933819049,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.646230650000147,
+     "totale": 3.646230650000147,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 3.407384325808672,
+     "totale": 3.407384325808672,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 3.3332783239114834,
+     "totale": 3.3332783239114834,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 3.3733271356649626,
+     "totale": 3.3733271356649626,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 3.1285376235922318,
+     "totale": 3.1285376235922318,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.283814438891087,
+     "totale": 3.283814438891087,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.804969899141409,
+     "totale": 3.804969899141409,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 4.058411814439962,
+     "totale": 4.058411814439962,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 4.989759222476715,
+     "totale": 4.989759222476715,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 2.571325027446088,
+     "totale": 3.8944694433703795,
+     "blocs": 2
+    },
+    {
+     "azimut": 340,
+     "premiere": 2.3906296315738027,
+     "totale": 2.836826541771977,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 4.312483385037586,
+     "totale": 4.312483385037586,
+     "blocs": 1
+    }
+   ]
+  },
+  {
+   "u": 7.25,
+   "ax": 2.4,
+   "ay": 8.8,
+   "origine_z": 1.981,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 3.9816484038271733,
+     "totale": 4.836394795739861,
+     "blocs": 2
+    },
+    {
+     "azimut": 10,
+     "premiere": 4.147938250426143,
+     "totale": 4.147938250426143,
+     "blocs": 1
+    },
+    {
+     "azimut": 20,
+     "premiere": 2.128459672725287,
+     "totale": 3.6105382203527125,
+     "blocs": 2
+    },
+    {
+     "azimut": 30,
+     "premiere": 2.327300539950928,
+     "totale": 2.7679368489944918,
+     "blocs": 2
+    },
+    {
+     "azimut": 40,
+     "premiere": 2.600452355356205,
+     "totale": 2.600452355356205,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 3.0978097598353864,
+     "totale": 3.0978097598353864,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 2.968817239025219,
+     "totale": 2.968817239025219,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 2.7240022215828312,
+     "totale": 2.7240022215828312,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 2.8484759181835306,
+     "totale": 2.8484759181835306,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 2.6890816817352667,
+     "totale": 2.6890816817352667,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 2.1520497108009433,
+     "totale": 2.1520497108009433,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 1.957565408973501,
+     "totale": 1.957565408973501,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 1.49495331774457,
+     "totale": 1.49495331774457,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 1.3739083673806742,
+     "totale": 1.3739083673806742,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 1.5735718865956385,
+     "totale": 1.5735718865956385,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 1.278995698776652,
+     "totale": 1.278995698776652,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 1.055370324244483,
+     "totale": 1.055370324244483,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 0.8495289414061147,
+     "totale": 1.6243668822571777,
+     "blocs": 2
+    },
+    {
+     "azimut": 180,
+     "premiere": 0.6057123887822815,
+     "totale": 1.4663871742614019,
+     "blocs": 2
+    },
+    {
+     "azimut": 190,
+     "premiere": 1.5791901617055484,
+     "totale": 1.5791901617055484,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 1.6150377930671564,
+     "totale": 1.6150377930671564,
+     "blocs": 1
+    },
+    {
+     "azimut": 210,
+     "premiere": 1.847334471317211,
+     "totale": 1.847334471317211,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 3.042613425327183,
+     "totale": 3.042613425327183,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.186910908540962,
+     "totale": 3.186910908540962,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.6284647959528282,
+     "totale": 3.6284647959528282,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 3.4621644219134415,
+     "totale": 3.4621644219134415,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 3.3818677377789657,
+     "totale": 3.3818677377789657,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 3.414544678765165,
+     "totale": 3.414544678765165,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 3.1423359725489397,
+     "totale": 3.1423359725489397,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.3209156775016684,
+     "totale": 3.3209156775016684,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.799380821590548,
+     "totale": 3.799380821590548,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 4.042705104724803,
+     "totale": 4.042705104724803,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 4.9694332907439165,
+     "totale": 4.9694332907439165,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 5.0487480942020095,
+     "totale": 5.0487480942020095,
+     "blocs": 1
+    },
+    {
+     "azimut": 340,
+     "premiere": 2.7966945340439677,
+     "totale": 4.596287031537722,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 4.412126304011646,
+     "totale": 5.312675368407806,
+     "blocs": 2
+    }
+   ]
+  },
+  {
+   "u": 7.5,
+   "ax": 2.55,
+   "ay": 8.95,
+   "origine_z": 1.948,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 4.340483824305031,
+     "totale": 4.940696988583525,
+     "blocs": 2
+    },
+    {
+     "azimut": 10,
+     "premiere": 2.2178005787245554,
+     "totale": 4.057707609241448,
+     "blocs": 2
+    },
+    {
+     "azimut": 20,
+     "premiere": 2.3080245161575803,
+     "totale": 3.773223907492214,
+     "blocs": 2
+    },
+    {
+     "azimut": 30,
+     "premiere": 2.4840727096087343,
+     "totale": 3.0899537787530957,
+     "blocs": 2
+    },
+    {
+     "azimut": 40,
+     "premiere": 2.766217750533583,
+     "totale": 2.766217750533583,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 3.2205426818937952,
+     "totale": 3.2205426818937952,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 3.1040719798782073,
+     "totale": 3.1040719798782073,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 3.027258144322335,
+     "totale": 3.027258144322335,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 3.2631541198690344,
+     "totale": 3.2631541198690344,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 2.8069000592320528,
+     "totale": 2.8069000592320528,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 2.0228808674117142,
+     "totale": 2.0228808674117142,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 1.578450733573234,
+     "totale": 1.578450733573234,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 1.3913383085549924,
+     "totale": 1.3913383085549924,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 1.210676640290962,
+     "totale": 1.210676640290962,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 0.9068326040163018,
+     "totale": 0.9068326040163018,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 0.6922648884479929,
+     "totale": 0.6922648884479929,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 0.8256859229242364,
+     "totale": 0.8256859229242364,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 0.6853941691981268,
+     "totale": 0.6853941691981268,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 0.5114164966821314,
+     "totale": 0.5114164966821314,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 0.22471904112506857,
+     "totale": 0.9010522018371256,
+     "blocs": 3
+    },
+    {
+     "azimut": 200,
+     "premiere": 1.409192318098873,
+     "totale": 1.409192318098873,
+     "blocs": 1
+    },
+    {
+     "azimut": 210,
+     "premiere": 1.553465989070804,
+     "totale": 1.553465989070804,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 2.9565471018397185,
+     "totale": 2.9565471018397185,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.205784779175041,
+     "totale": 3.205784779175041,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.378176911729964,
+     "totale": 3.378176911729964,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 3.5024745961880805,
+     "totale": 3.5024745961880805,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 3.4222885417430335,
+     "totale": 3.4222885417430335,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 3.454486863465606,
+     "totale": 3.454486863465606,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 3.1600561843454713,
+     "totale": 3.1600561843454713,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.3120444180065407,
+     "totale": 3.3120444180065407,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.8841802389012723,
+     "totale": 3.8841802389012723,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 4.121165338012552,
+     "totale": 4.121165338012552,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 5.048577706858708,
+     "totale": 5.048577706858708,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 3.059336901650539,
+     "totale": 4.977478285655999,
+     "blocs": 2
+    },
+    {
+     "azimut": 340,
+     "premiere": 2.843803373919937,
+     "totale": 4.478268125549794,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 4.7459641867041125,
+     "totale": 5.391881796168609,
+     "blocs": 2
+    }
+   ]
+  },
+  {
+   "u": 7.75,
+   "ax": 2.7,
+   "ay": 9.1,
+   "origine_z": 1.914,
+   "mesurable": true,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": 4.700344223715566,
+     "totale": 4.700344223715566,
+     "blocs": 1
+    },
+    {
+     "azimut": 10,
+     "premiere": 2.4567552028797106,
+     "totale": 3.9687481969332135,
+     "blocs": 3
+    },
+    {
+     "azimut": 20,
+     "premiere": 2.492741993371043,
+     "totale": 3.6890025077725195,
+     "blocs": 2
+    },
+    {
+     "azimut": 30,
+     "premiere": 2.617632093509701,
+     "totale": 3.2448586861351707,
+     "blocs": 2
+    },
+    {
+     "azimut": 40,
+     "premiere": 2.814306785997353,
+     "totale": 2.814306785997353,
+     "blocs": 1
+    },
+    {
+     "azimut": 50,
+     "premiere": 3.0945541662102163,
+     "totale": 3.0945541662102163,
+     "blocs": 1
+    },
+    {
+     "azimut": 60,
+     "premiere": 3.1802896619073424,
+     "totale": 3.1802896619073424,
+     "blocs": 1
+    },
+    {
+     "azimut": 70,
+     "premiere": 3.294692220381703,
+     "totale": 3.294692220381703,
+     "blocs": 1
+    },
+    {
+     "azimut": 80,
+     "premiere": 3.4789056385995516,
+     "totale": 3.4789056385995516,
+     "blocs": 1
+    },
+    {
+     "azimut": 90,
+     "premiere": 2.9278184380372485,
+     "totale": 2.9278184380372485,
+     "blocs": 1
+    },
+    {
+     "azimut": 100,
+     "premiere": 2.1015093993297467,
+     "totale": 2.1015093993297467,
+     "blocs": 1
+    },
+    {
+     "azimut": 110,
+     "premiere": 1.76312293362322,
+     "totale": 1.76312293362322,
+     "blocs": 1
+    },
+    {
+     "azimut": 120,
+     "premiere": 1.5241757537302838,
+     "totale": 1.5241757537302838,
+     "blocs": 1
+    },
+    {
+     "azimut": 130,
+     "premiere": 1.2258794355077096,
+     "totale": 1.2258794355077096,
+     "blocs": 1
+    },
+    {
+     "azimut": 140,
+     "premiere": 0.9707213472293993,
+     "totale": 0.9707213472293993,
+     "blocs": 1
+    },
+    {
+     "azimut": 150,
+     "premiere": 0.7620212052066871,
+     "totale": 0.7620212052066871,
+     "blocs": 1
+    },
+    {
+     "azimut": 160,
+     "premiere": 0.6265314767593695,
+     "totale": 0.6265314767593695,
+     "blocs": 1
+    },
+    {
+     "azimut": 170,
+     "premiere": 0.4979277987669579,
+     "totale": 0.4979277987669579,
+     "blocs": 1
+    },
+    {
+     "azimut": 180,
+     "premiere": 0.3756494432218568,
+     "totale": 0.3756494432218568,
+     "blocs": 1
+    },
+    {
+     "azimut": 190,
+     "premiere": 0.17839038459715195,
+     "totale": 0.17839038459715195,
+     "blocs": 1
+    },
+    {
+     "azimut": 200,
+     "premiere": 0.6393532977191163,
+     "totale": 0.6393532977191163,
+     "blocs": 1
+    },
+    {
+     "azimut": 210,
+     "premiere": 0.7748220833657589,
+     "totale": 0.7748220833657589,
+     "blocs": 1
+    },
+    {
+     "azimut": 220,
+     "premiere": 3.0245304008141094,
+     "totale": 3.0245304008141094,
+     "blocs": 1
+    },
+    {
+     "azimut": 230,
+     "premiere": 3.228273586196579,
+     "totale": 3.228273586196579,
+     "blocs": 1
+    },
+    {
+     "azimut": 240,
+     "premiere": 3.1750351120740508,
+     "totale": 3.1750351120740508,
+     "blocs": 1
+    },
+    {
+     "azimut": 250,
+     "premiere": 3.5422712837070067,
+     "totale": 3.5422712837070067,
+     "blocs": 1
+    },
+    {
+     "azimut": 260,
+     "premiere": 3.4630906378842097,
+     "totale": 3.4630906378842097,
+     "blocs": 1
+    },
+    {
+     "azimut": 270,
+     "premiere": 3.4941795863982126,
+     "totale": 3.4941795863982126,
+     "blocs": 1
+    },
+    {
+     "azimut": 280,
+     "premiere": 3.266554023268756,
+     "totale": 3.266554023268756,
+     "blocs": 1
+    },
+    {
+     "azimut": 290,
+     "premiere": 3.3272611857304693,
+     "totale": 3.3272611857304693,
+     "blocs": 1
+    },
+    {
+     "azimut": 300,
+     "premiere": 3.787481925486066,
+     "totale": 3.787481925486066,
+     "blocs": 1
+    },
+    {
+     "azimut": 310,
+     "premiere": 4.207104725947004,
+     "totale": 4.207104725947004,
+     "blocs": 1
+    },
+    {
+     "azimut": 320,
+     "premiere": 5.133368361414375,
+     "totale": 5.133368361414375,
+     "blocs": 1
+    },
+    {
+     "azimut": 330,
+     "premiere": 3.1681494628534868,
+     "totale": 4.880592818901625,
+     "blocs": 2
+    },
+    {
+     "azimut": 340,
+     "premiere": 3.071279956758379,
+     "totale": 4.212001196440179,
+     "blocs": 2
+    },
+    {
+     "azimut": 350,
+     "premiere": 4.8759646951391495,
+     "totale": 4.8759646951391495,
+     "blocs": 1
+    }
+   ]
+  },
+  {
+   "u": 8.0,
+   "ax": 2.85,
+   "ay": 9.25,
+   "origine_z": 1.88,
+   "mesurable": false,
+   "mesures": [
+    {
+     "azimut": 0,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 10,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 20,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 30,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 40,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 50,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 60,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 70,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 80,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 90,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 100,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 110,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 120,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 130,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 140,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 150,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 160,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 170,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 180,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 190,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 200,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 210,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 220,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 230,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 240,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 250,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 260,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 270,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 280,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 290,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 300,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 310,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 320,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 330,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 340,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    },
+    {
+     "azimut": 350,
+     "premiere": null,
+     "totale": null,
+     "blocs": 0
+    }
+   ]
+  }
+ ],
+ "sections": [
+  {
+   "u": 1.0,
+   "ax": 0.0,
+   "ay": 0.0,
+   "origine_z": 1.385,
+   "contour": [
+    {
+     "azimut": 0,
+     "cavite": 0.994130124138911,
+     "enveloppe": 8.439106815835913
+    },
+    {
+     "azimut": 4,
+     "cavite": 0.959663183111852,
+     "enveloppe": 8.49745627503607
+    },
+    {
+     "azimut": 8,
+     "cavite": 0.931894087930848,
+     "enveloppe": 8.541454121861134
+    },
+    {
+     "azimut": 12,
+     "cavite": 0.9099955956833496,
+     "enveloppe": 8.624892915139027
+    },
+    {
+     "azimut": 16,
+     "cavite": 0.8933550644362913,
+     "enveloppe": 8.722898923839098
+    },
+    {
+     "azimut": 20,
+     "cavite": 0.8815297943831202,
+     "enveloppe": 8.452396173781272
+    },
+    {
+     "azimut": 24,
+     "cavite": 0.8742169511182832,
+     "enveloppe": 8.46721361203692
+    },
+    {
+     "azimut": 28,
+     "cavite": 0.8712340820765767,
+     "enveloppe": 8.68564816568755
+    },
+    {
+     "azimut": 32,
+     "cavite": 0.8725078150384908,
+     "enveloppe": 8.959762431011127
+    },
+    {
+     "azimut": 36,
+     "cavite": 0.8780694070450145,
+     "enveloppe": 9.192474073324034
+    },
+    {
+     "azimut": 40,
+     "cavite": 0.8880566383278189,
+     "enveloppe": 8.976611403267583
+    },
+    {
+     "azimut": 44,
+     "cavite": 0.9027222591451978,
+     "enveloppe": 3.2454924946156956
+    },
+    {
+     "azimut": 48,
+     "cavite": 0.9224499442219992,
+     "enveloppe": 3.3478673029738566
+    },
+    {
+     "azimut": 52,
+     "cavite": 0.9477797839295596,
+     "enveloppe": 3.5989116683013687
+    },
+    {
+     "azimut": 56,
+     "cavite": 0.9575125427064614,
+     "enveloppe": 3.8428923400029475
+    },
+    {
+     "azimut": 60,
+     "cavite": 0.969754649469166,
+     "enveloppe": 3.9613301002642345
+    },
+    {
+     "azimut": 64,
+     "cavite": 0.9871856049255566,
+     "enveloppe": 3.895415897122997
+    },
+    {
+     "azimut": 68,
+     "cavite": 1.0059914931766674,
+     "enveloppe": 3.899443058011589
+    },
+    {
+     "azimut": 72,
+     "cavite": 1.027882827424317,
+     "enveloppe": 4.21032273236323
+    },
+    {
+     "azimut": 76,
+     "cavite": 1.0560073150585874,
+     "enveloppe": 4.807208697386424
+    },
+    {
+     "azimut": 80,
+     "cavite": 1.0911798303207707,
+     "enveloppe": 5.87291361207143
+    },
+    {
+     "azimut": 84,
+     "cavite": 1.1344936377094357,
+     "enveloppe": 5.976186271867381
+    },
+    {
+     "azimut": 88,
+     "cavite": 1.1874122958787727,
+     "enveloppe": 5.874811018282748
+    },
+    {
+     "azimut": 92,
+     "cavite": 1.2519069655474526,
+     "enveloppe": 4.814799048995611
+    },
+    {
+     "azimut": 96,
+     "cavite": 1.3306653366227748,
+     "enveloppe": 4.516385204871958
+    },
+    {
+     "azimut": 100,
+     "cavite": 1.4274195927457813,
+     "enveloppe": 4.309515511950669
+    },
+    {
+     "azimut": 104,
+     "cavite": 1.5474776238060992,
+     "enveloppe": 4.289983051040995
+    },
+    {
+     "azimut": 108,
+     "cavite": 1.6904497431789784,
+     "enveloppe": 4.394635556850223
+    },
+    {
+     "azimut": 112,
+     "cavite": 1.7491718937918497,
+     "enveloppe": 4.252739556441707
+    },
+    {
+     "azimut": 116,
+     "cavite": 1.784419153743998,
+     "enveloppe": 3.8603881856581936
+    },
+    {
+     "azimut": 120,
+     "cavite": 1.803359323629558,
+     "enveloppe": 3.6894312029666843
+    },
+    {
+     "azimut": 124,
+     "cavite": 1.8317255867331619,
+     "enveloppe": 3.3515289961917443
+    },
+    {
+     "azimut": 128,
+     "cavite": 1.8702558083445742,
+     "enveloppe": 3.3334673890123194
+    },
+    {
+     "azimut": 132,
+     "cavite": 1.9199968657248097,
+     "enveloppe": 3.3709269387173006
+    },
+    {
+     "azimut": 136,
+     "cavite": 1.9823778348488215,
+     "enveloppe": 3.286221821647098
+    },
+    {
+     "azimut": 140,
+     "cavite": 2.0593181684372563,
+     "enveloppe": 3.1757315270894044
+    },
+    {
+     "azimut": 144,
+     "cavite": 2.1533870364380614,
+     "enveloppe": 3.0387282333029297
+    },
+    {
+     "azimut": 148,
+     "cavite": 2.1864731766873833,
+     "enveloppe": 2.9135796568596164
+    },
+    {
+     "azimut": 152,
+     "cavite": 2.1906448148756716,
+     "enveloppe": 2.8202117567024314
+    },
+    {
+     "azimut": 156,
+     "cavite": 2.1335222471802573,
+     "enveloppe": 2.7456030968571032
+    },
+    {
+     "azimut": 160,
+     "cavite": 2.0892228113935056,
+     "enveloppe": 2.905745927687238
+    },
+    {
+     "azimut": 164,
+     "cavite": 2.056541031215657,
+     "enveloppe": 2.8695743167244396
+    },
+    {
+     "azimut": 168,
+     "cavite": 2.034625801006435,
+     "enveloppe": 2.840893678210955
+    },
+    {
+     "azimut": 172,
+     "cavite": 2.0229242865250505,
+     "enveloppe": 2.807869745766898
+    },
+    {
+     "azimut": 176,
+     "cavite": 2.021147118411874,
+     "enveloppe": 2.804705521688412
+    },
+    {
+     "azimut": 180,
+     "cavite": 2.0292506992380015,
+     "enveloppe": 2.8122353787373675
+    },
+    {
+     "azimut": 184,
+     "cavite": 2.047434572327196,
+     "enveloppe": 2.8316218174376684
+    },
+    {
+     "azimut": 188,
+     "cavite": 2.0761535463268865,
+     "enveloppe": 2.8656272490845676
+    },
+    {
+     "azimut": 192,
+     "cavite": 2.1161459719558864,
+     "enveloppe": 3.7095019414794144
+    },
+    {
+     "azimut": 196,
+     "cavite": 2.1684815119901524,
+     "enveloppe": 3.842723669960797
+    },
+    {
+     "azimut": 200,
+     "cavite": 2.234634470083236,
+     "enveloppe": 6.812532442951928
+    },
+    {
+     "azimut": 204,
+     "cavite": 2.3165919796165713,
+     "enveloppe": 7.007368014837217
+    },
+    {
+     "azimut": 208,
+     "cavite": 2.4127691509772307,
+     "enveloppe": 7.249163946917275
+    },
+    {
+     "azimut": 212,
+     "cavite": 2.5267741879542926,
+     "enveloppe": 6.992931475735893
+    },
+    {
+     "azimut": 216,
+     "cavite": 2.3970225782770846,
+     "enveloppe": 6.420371273312726
+    },
+    {
+     "azimut": 220,
+     "cavite": 2.219060696066482,
+     "enveloppe": 5.953658223172503
+    },
+    {
+     "azimut": 224,
+     "cavite": 2.075000838931789,
+     "enveloppe": 5.57993609879541
+    },
+    {
+     "azimut": 228,
+     "cavite": 1.9449141003457804,
+     "enveloppe": 5.336793721847783
+    },
+    {
+     "azimut": 232,
+     "cavite": 1.8379016048248422,
+     "enveloppe": 5.225996472409806
+    },
+    {
+     "azimut": 236,
+     "cavite": 1.7501082927569127,
+     "enveloppe": 5.7001963800226125
+    },
+    {
+     "azimut": 240,
+     "cavite": 1.6781229722773925,
+     "enveloppe": 5.608232109190009
+    },
+    {
+     "azimut": 244,
+     "cavite": 1.6194033666115213,
+     "enveloppe": 5.411771209635825
+    },
+    {
+     "azimut": 248,
+     "cavite": 1.572054131647805,
+     "enveloppe": 5.223347444639764
+    },
+    {
+     "azimut": 252,
+     "cavite": 1.534659405531654,
+     "enveloppe": 5.026883357898677
+    },
+    {
+     "azimut": 256,
+     "cavite": 1.5061697856667318,
+     "enveloppe": 4.874897875405026
+    },
+    {
+     "azimut": 260,
+     "cavite": 1.4858255161067278,
+     "enveloppe": 4.799465498476925
+    },
+    {
+     "azimut": 264,
+     "cavite": 1.4714430367764615,
+     "enveloppe": 4.6488204069513746
+    },
+    {
+     "azimut": 268,
+     "cavite": 1.4638768130923572,
+     "enveloppe": 4.5642972561846635
+    },
+    {
+     "azimut": 272,
+     "cavite": 1.4623228177551824,
+     "enveloppe": 4.5271918296067835
+    },
+    {
+     "azimut": 276,
+     "cavite": 1.4679160773161446,
+     "enveloppe": 4.5269961920029
+    },
+    {
+     "azimut": 280,
+     "cavite": 1.480794271558362,
+     "enveloppe": 4.6775089103928895
+    },
+    {
+     "azimut": 284,
+     "cavite": 1.5012792452905128,
+     "enveloppe": 4.7362927053518
+    },
+    {
+     "azimut": 288,
+     "cavite": 1.5298969963363753,
+     "enveloppe": 4.834012569931605
+    },
+    {
+     "azimut": 292,
+     "cavite": 1.5674116507589335,
+     "enveloppe": 4.968851812402494
+    },
+    {
+     "azimut": 296,
+     "cavite": 1.6148776464855539,
+     "enveloppe": 5.1545275625890214
+    },
+    {
+     "azimut": 300,
+     "cavite": 1.6709455909249804,
+     "enveloppe": 5.388149629009722
+    },
+    {
+     "azimut": 304,
+     "cavite": 1.7326868705733545,
+     "enveloppe": 5.681191988047165
+    },
+    {
+     "azimut": 308,
+     "cavite": 1.8077216594099532,
+     "enveloppe": 5.93215711003306
+    },
+    {
+     "azimut": 312,
+     "cavite": 1.8992210973558443,
+     "enveloppe": 5.394602355095169
+    },
+    {
+     "azimut": 316,
+     "cavite": 1.858265943606254,
+     "enveloppe": 5.573993929491357
+    },
+    {
+     "azimut": 320,
+     "cavite": 1.7134261400541266,
+     "enveloppe": 6.01240697791682
+    },
+    {
+     "azimut": 324,
+     "cavite": 1.5967489593117485,
+     "enveloppe": 6.498293039388745
+    },
+    {
+     "azimut": 328,
+     "cavite": 1.5017993539198071,
+     "enveloppe": 7.012515735709624
+    },
+    {
+     "azimut": 332,
+     "cavite": 1.4240566827215047,
+     "enveloppe": 7.703372462654341
+    },
+    {
+     "azimut": 336,
+     "cavite": 1.3602676802335638,
+     "enveloppe": 7.59123586496141
+    },
+    {
+     "azimut": 340,
+     "cavite": 1.308047835310037,
+     "enveloppe": 8.131778978112838
+    },
+    {
+     "azimut": 344,
+     "cavite": 1.2276358172595492,
+     "enveloppe": 9.236702250450412
+    },
+    {
+     "azimut": 348,
+     "cavite": 1.1508152861090264,
+     "enveloppe": 8.96165335191823
+    },
+    {
+     "azimut": 352,
+     "cavite": 1.087965257796993,
+     "enveloppe": 8.78840967081854
+    },
+    {
+     "azimut": 356,
+     "cavite": 1.0364024425853247,
+     "enveloppe": 8.597493583220595
+    }
+   ]
+  },
+  {
+   "u": 3.0,
+   "ax": 0.24,
+   "ay": 3.2,
+   "origine_z": 1.46,
+   "contour": [
+    {
+     "azimut": 0,
+     "cavite": 2.053135456203425,
+     "enveloppe": 4.806941002450065
+    },
+    {
+     "azimut": 4,
+     "cavite": 2.029705611815071,
+     "enveloppe": 4.823374316232363
+    },
+    {
+     "azimut": 8,
+     "cavite": 2.016517958876549,
+     "enveloppe": 4.862196081852044
+    },
+    {
+     "azimut": 12,
+     "cavite": 2.0103120945567285,
+     "enveloppe": 4.925529181082061
+    },
+    {
+     "azimut": 16,
+     "cavite": 1.9957511977126259,
+     "enveloppe": 5.015290419153182
+    },
+    {
+     "azimut": 20,
+     "cavite": 1.9841656218121424,
+     "enveloppe": 5.1346960236457955
+    },
+    {
+     "azimut": 24,
+     "cavite": 1.8505712858794938,
+     "enveloppe": 5.283175849978029
+    },
+    {
+     "azimut": 28,
+     "cavite": 1.7417824257899008,
+     "enveloppe": 5.506973277531214
+    },
+    {
+     "azimut": 32,
+     "cavite": 1.6526786944650367,
+     "enveloppe": 5.754244011140441
+    },
+    {
+     "azimut": 36,
+     "cavite": 1.579568850830742,
+     "enveloppe": 6.0294683411845655
+    },
+    {
+     "azimut": 40,
+     "cavite": 1.5197436821196761,
+     "enveloppe": 6.198163855157831
+    },
+    {
+     "azimut": 44,
+     "cavite": 1.471190639493054,
+     "enveloppe": 6.457068313279297
+    },
+    {
+     "azimut": 48,
+     "cavite": 1.4324064045630809,
+     "enveloppe": 6.297658314677973
+    },
+    {
+     "azimut": 52,
+     "cavite": 1.4022709157750726,
+     "enveloppe": 6.0900734981293745
+    },
+    {
+     "azimut": 56,
+     "cavite": 1.3799618112886602,
+     "enveloppe": 5.857147842581235
+    },
+    {
+     "azimut": 60,
+     "cavite": 1.3648969137191018,
+     "enveloppe": 6.308356791049702
+    },
+    {
+     "azimut": 64,
+     "cavite": 1.3566956651708273,
+     "enveloppe": 6.733181612268408
+    },
+    {
+     "azimut": 68,
+     "cavite": 1.3543714997290839,
+     "enveloppe": 7.48347013512284
+    },
+    {
+     "azimut": 72,
+     "cavite": 1.3062270276578734,
+     "enveloppe": 8.244686691425006
+    },
+    {
+     "azimut": 76,
+     "cavite": 1.267350340570995,
+     "enveloppe": 8.102298633357538
+    },
+    {
+     "azimut": 80,
+     "cavite": 1.236301559722205,
+     "enveloppe": 8.298538609592566
+    },
+    {
+     "azimut": 84,
+     "cavite": 1.212400912701071,
+     "enveloppe": 6.75439483831596
+    },
+    {
+     "azimut": 88,
+     "cavite": 1.1951189165630798,
+     "enveloppe": 6.703192821116176
+    },
+    {
+     "azimut": 92,
+     "cavite": 1.1840099983536323,
+     "enveloppe": 4.290472651507933
+    },
+    {
+     "azimut": 96,
+     "cavite": 1.1787957961449946,
+     "enveloppe": 4.117364071201636
+    },
+    {
+     "azimut": 100,
+     "cavite": 1.1793478235670953,
+     "enveloppe": 3.5370009834446545
+    },
+    {
+     "azimut": 104,
+     "cavite": 1.1856796113364678,
+     "enveloppe": 3.3819253920839225
+    },
+    {
+     "azimut": 108,
+     "cavite": 1.197947538908585,
+     "enveloppe": 3.2886954856705857
+    },
+    {
+     "azimut": 112,
+     "cavite": 1.2164603694840141,
+     "enveloppe": 3.649149863371869
+    },
+    {
+     "azimut": 116,
+     "cavite": 1.2416987207650905,
+     "enveloppe": 3.727486715897695
+    },
+    {
+     "azimut": 120,
+     "cavite": 1.2743465432446546,
+     "enveloppe": 6.604906058828785
+    },
+    {
+     "azimut": 124,
+     "cavite": 1.315338914618865,
+     "enveloppe": 6.861717227224876
+    },
+    {
+     "azimut": 128,
+     "cavite": 1.365932069019956,
+     "enveloppe": 7.104510092714186
+    },
+    {
+     "azimut": 132,
+     "cavite": 1.3727967127348133,
+     "enveloppe": 6.940286752448325
+    },
+    {
+     "azimut": 136,
+     "cavite": 1.3723663787413403,
+     "enveloppe": 6.742720661907373
+    },
+    {
+     "azimut": 140,
+     "cavite": 1.373088446418033,
+     "enveloppe": 6.683049637040146
+    },
+    {
+     "azimut": 144,
+     "cavite": 1.3703662369212561,
+     "enveloppe": 6.445095003232494
+    },
+    {
+     "azimut": 148,
+     "cavite": 1.3743371843597516,
+     "enveloppe": 6.188112390055019
+    },
+    {
+     "azimut": 152,
+     "cavite": 1.3850989003068355,
+     "enveloppe": 6.042527207239327
+    },
+    {
+     "azimut": 156,
+     "cavite": 1.4029193132325466,
+     "enveloppe": 5.867189826510999
+    },
+    {
+     "azimut": 160,
+     "cavite": 1.428253257597582,
+     "enveloppe": 5.96002877100991
+    },
+    {
+     "azimut": 164,
+     "cavite": 1.4617715919239125,
+     "enveloppe": 5.949580923175558
+    },
+    {
+     "azimut": 168,
+     "cavite": 1.5044064098663559,
+     "enveloppe": 5.970130589031338
+    },
+    {
+     "azimut": 172,
+     "cavite": 1.5574185305632735,
+     "enveloppe": 6.485222242408343
+    },
+    {
+     "azimut": 176,
+     "cavite": 1.6224965399306635,
+     "enveloppe": 6.510052187998612
+    },
+    {
+     "azimut": 180,
+     "cavite": 1.7019033273433792,
+     "enveloppe": 6.480974945269328
+    },
+    {
+     "azimut": 184,
+     "cavite": 1.7891164351388515,
+     "enveloppe": 6.482427090310948
+    },
+    {
+     "azimut": 188,
+     "cavite": 1.842260689653194,
+     "enveloppe": 6.517997600269103
+    },
+    {
+     "azimut": 192,
+     "cavite": 1.8712908432283881,
+     "enveloppe": 6.60060051401799
+    },
+    {
+     "azimut": 196,
+     "cavite": 1.8930623035596799,
+     "enveloppe": 7.766892011485178
+    },
+    {
+     "azimut": 200,
+     "cavite": 1.9248343151641267,
+     "enveloppe": 7.598807061576435
+    },
+    {
+     "azimut": 204,
+     "cavite": 1.9674398112802223,
+     "enveloppe": 7.496429699241804
+    },
+    {
+     "azimut": 208,
+     "cavite": 2.022048368180508,
+     "enveloppe": 7.616257501397522
+    },
+    {
+     "azimut": 212,
+     "cavite": 2.0902491658698135,
+     "enveloppe": 6.931339796323938
+    },
+    {
+     "azimut": 216,
+     "cavite": 2.1683331157497734,
+     "enveloppe": 6.299314243322571
+    },
+    {
+     "azimut": 220,
+     "cavite": 2.162466816775218,
+     "enveloppe": 5.838129214153388
+    },
+    {
+     "azimut": 224,
+     "cavite": 2.020793945514952,
+     "enveloppe": 5.504459645332003
+    },
+    {
+     "azimut": 228,
+     "cavite": 1.9052544262472837,
+     "enveloppe": 5.216786399466142
+    },
+    {
+     "azimut": 232,
+     "cavite": 1.8093082744713072,
+     "enveloppe": 4.9841433400441915
+    },
+    {
+     "azimut": 236,
+     "cavite": 1.7230469486108817,
+     "enveloppe": 4.7830043702367195
+    },
+    {
+     "azimut": 240,
+     "cavite": 1.6508240362217397,
+     "enveloppe": 4.620933756888908
+    },
+    {
+     "azimut": 244,
+     "cavite": 1.5918554815736619,
+     "enveloppe": 4.499837428199775
+    },
+    {
+     "azimut": 248,
+     "cavite": 1.544218229834521,
+     "enveloppe": 4.4112666121917155
+    },
+    {
+     "azimut": 252,
+     "cavite": 1.5064754191467786,
+     "enveloppe": 4.340135675846497
+    },
+    {
+     "azimut": 256,
+     "cavite": 1.4775603443023138,
+     "enveloppe": 4.281700397640693
+    },
+    {
+     "azimut": 260,
+     "cavite": 1.4566975827863133,
+     "enveloppe": 4.239225512268444
+    },
+    {
+     "azimut": 264,
+     "cavite": 1.4433497227255268,
+     "enveloppe": 4.216044958841715
+    },
+    {
+     "azimut": 268,
+     "cavite": 1.4371824973992768,
+     "enveloppe": 4.223638275019506
+    },
+    {
+     "azimut": 272,
+     "cavite": 1.4380439484338043,
+     "enveloppe": 4.252011743047092
+    },
+    {
+     "azimut": 276,
+     "cavite": 1.4459552004478406,
+     "enveloppe": 4.294184300445295
+    },
+    {
+     "azimut": 280,
+     "cavite": 1.4611117470000605,
+     "enveloppe": 4.363099753815789
+    },
+    {
+     "azimut": 284,
+     "cavite": 1.4819963899802004,
+     "enveloppe": 4.456328164798412
+    },
+    {
+     "azimut": 288,
+     "cavite": 1.5102853349700642,
+     "enveloppe": 4.57505293841231
+    },
+    {
+     "azimut": 292,
+     "cavite": 1.5470965262457808,
+     "enveloppe": 4.669318541051954
+    },
+    {
+     "azimut": 296,
+     "cavite": 1.5935696761122427,
+     "enveloppe": 4.689757275579952
+    },
+    {
+     "azimut": 300,
+     "cavite": 1.6512149836345502,
+     "enveloppe": 4.819123208875295
+    },
+    {
+     "azimut": 304,
+     "cavite": 1.7218910275032984,
+     "enveloppe": 4.953852485633328
+    },
+    {
+     "azimut": 308,
+     "cavite": 1.808090565786842,
+     "enveloppe": 5.116880635729044
+    },
+    {
+     "azimut": 312,
+     "cavite": 1.913187448932459,
+     "enveloppe": 5.279851678773365
+    },
+    {
+     "azimut": 316,
+     "cavite": 2.0418174469805317,
+     "enveloppe": 5.641345647482303
+    },
+    {
+     "azimut": 320,
+     "cavite": 2.197450290103235,
+     "enveloppe": 6.12118235113841
+    },
+    {
+     "azimut": 324,
+     "cavite": 2.375049519782511,
+     "enveloppe": 6.712862360309656
+    },
+    {
+     "azimut": 328,
+     "cavite": 2.5929083725904456,
+     "enveloppe": 7.364867117663332
+    },
+    {
+     "azimut": 332,
+     "cavite": 2.602648077662456,
+     "enveloppe": 7.63828734324828
+    },
+    {
+     "azimut": 336,
+     "cavite": 2.4676094704809315,
+     "enveloppe": 7.390518662469768
+    },
+    {
+     "azimut": 340,
+     "cavite": 2.3568085279795254,
+     "enveloppe": 7.178849377449695
+    },
+    {
+     "azimut": 344,
+     "cavite": 2.2660962673849445,
+     "enveloppe": 4.9432678700607795
+    },
+    {
+     "azimut": 348,
+     "cavite": 2.1923932315498185,
+     "enveloppe": 4.8332244321236875
+    },
+    {
+     "azimut": 352,
+     "cavite": 2.13339971765481,
+     "enveloppe": 4.780201790655692
+    },
+    {
+     "azimut": 356,
+     "cavite": 2.0874009592411826,
+     "enveloppe": 4.81399294087138
+    }
+   ]
+  },
+  {
+   "u": 5.0,
+   "ax": 1.05,
+   "ay": 6.25,
+   "origine_z": 1.68,
+   "contour": [
+    {
+     "azimut": 0,
+     "cavite": 2.9138849129084203,
+     "enveloppe": 6.8874398553329215
+    },
+    {
+     "azimut": 4,
+     "cavite": 2.761276311743519,
+     "enveloppe": 6.8850632693347125
+    },
+    {
+     "azimut": 8,
+     "cavite": 2.6360607286077915,
+     "enveloppe": 4.059434841726298
+    },
+    {
+     "azimut": 12,
+     "cavite": 2.533516499699395,
+     "enveloppe": 3.971382812126534
+    },
+    {
+     "azimut": 16,
+     "cavite": 2.4159943077503776,
+     "enveloppe": 3.5339483385170145
+    },
+    {
+     "azimut": 20,
+     "cavite": 2.2857552846847975,
+     "enveloppe": 3.5597518632956167
+    },
+    {
+     "azimut": 24,
+     "cavite": 2.0744758471649933,
+     "enveloppe": 3.6488034186146554
+    },
+    {
+     "azimut": 28,
+     "cavite": 1.9004884061141938,
+     "enveloppe": 3.7612882599182322
+    },
+    {
+     "azimut": 32,
+     "cavite": 1.7613444964665506,
+     "enveloppe": 3.7590745572612563
+    },
+    {
+     "azimut": 36,
+     "cavite": 1.648669584910359,
+     "enveloppe": 3.514853681961766
+    },
+    {
+     "azimut": 40,
+     "cavite": 1.5566717101091259,
+     "enveloppe": 3.2296549108696255
+    },
+    {
+     "azimut": 44,
+     "cavite": 1.4812334151769744,
+     "enveloppe": 3.1045473977692137
+    },
+    {
+     "azimut": 48,
+     "cavite": 1.41936431418498,
+     "enveloppe": 3.2100332218374263
+    },
+    {
+     "azimut": 52,
+     "cavite": 1.3688579207475249,
+     "enveloppe": 3.285454265836885
+    },
+    {
+     "azimut": 56,
+     "cavite": 1.3280703360623756,
+     "enveloppe": 3.3525519899808334
+    },
+    {
+     "azimut": 60,
+     "cavite": 1.295773321374909,
+     "enveloppe": 3.4114665371842383
+    },
+    {
+     "azimut": 64,
+     "cavite": 1.2710552932289145,
+     "enveloppe": 3.3694482516955726
+    },
+    {
+     "azimut": 68,
+     "cavite": 1.2532540826853988,
+     "enveloppe": 3.4316672330893603
+    },
+    {
+     "azimut": 72,
+     "cavite": 1.2419115008110841,
+     "enveloppe": 3.8523310660203243
+    },
+    {
+     "azimut": 76,
+     "cavite": 1.2299574383320928,
+     "enveloppe": 4.087167561329207
+    },
+    {
+     "azimut": 80,
+     "cavite": 1.2220315975683669,
+     "enveloppe": 4.410392661650889
+    },
+    {
+     "azimut": 84,
+     "cavite": 1.2201134614906446,
+     "enveloppe": 4.958131689196235
+    },
+    {
+     "azimut": 88,
+     "cavite": 1.224155955723587,
+     "enveloppe": 4.9512662556009035
+    },
+    {
+     "azimut": 92,
+     "cavite": 1.2105690736519312,
+     "enveloppe": 4.1407907937189155
+    },
+    {
+     "azimut": 96,
+     "cavite": 1.1913097525071312,
+     "enveloppe": 4.181966069511511
+    },
+    {
+     "azimut": 100,
+     "cavite": 1.1783043215830669,
+     "enveloppe": 4.189950814907521
+    },
+    {
+     "azimut": 104,
+     "cavite": 1.1712242492629983,
+     "enveloppe": 4.111613930086009
+    },
+    {
+     "azimut": 108,
+     "cavite": 1.169894350553249,
+     "enveloppe": 4.339678696640062
+    },
+    {
+     "azimut": 112,
+     "cavite": 1.1742819931691337,
+     "enveloppe": 4.298087856633418
+    },
+    {
+     "azimut": 116,
+     "cavite": 1.1844951366984966,
+     "enveloppe": 4.780716902933681
+    },
+    {
+     "azimut": 120,
+     "cavite": 1.2007889428010707,
+     "enveloppe": 4.859745264006733
+    },
+    {
+     "azimut": 124,
+     "cavite": 1.2235815850184177,
+     "enveloppe": 4.524319464082818
+    },
+    {
+     "azimut": 128,
+     "cavite": 1.2534812361366643,
+     "enveloppe": 4.082093445383044
+    },
+    {
+     "azimut": 132,
+     "cavite": 1.291327557608479,
+     "enveloppe": 3.7771276650257426
+    },
+    {
+     "azimut": 136,
+     "cavite": 1.3382532326647876,
+     "enveloppe": 3.5030227612655525
+    },
+    {
+     "azimut": 140,
+     "cavite": 1.3957744803869008,
+     "enveloppe": 3.271990897833656
+    },
+    {
+     "azimut": 144,
+     "cavite": 1.4659252051845928,
+     "enveloppe": 3.205838603414487
+    },
+    {
+     "azimut": 148,
+     "cavite": 1.5514590907878574,
+     "enveloppe": 3.6529868879985457
+    },
+    {
+     "azimut": 152,
+     "cavite": 1.6561615866401473,
+     "enveloppe": 4.384316049743035
+    },
+    {
+     "azimut": 156,
+     "cavite": 1.7853463139018422,
+     "enveloppe": 4.651695453767093
+    },
+    {
+     "azimut": 160,
+     "cavite": 1.9466756762876922,
+     "enveloppe": 4.526313048943294
+    },
+    {
+     "azimut": 164,
+     "cavite": 2.091819762275101,
+     "enveloppe": 4.425845494065855
+    },
+    {
+     "azimut": 168,
+     "cavite": 2.1447772653333255,
+     "enveloppe": 4.4146661134169225
+    },
+    {
+     "azimut": 172,
+     "cavite": 2.210771540756611,
+     "enveloppe": 4.490943487744289
+    },
+    {
+     "azimut": 176,
+     "cavite": 2.291512623590091,
+     "enveloppe": 4.857162754256995
+    },
+    {
+     "azimut": 180,
+     "cavite": 2.3904625164345124,
+     "enveloppe": 4.853846617919618
+    },
+    {
+     "azimut": 184,
+     "cavite": 2.5111296623882224,
+     "enveloppe": 4.869203832174178
+    },
+    {
+     "azimut": 188,
+     "cavite": 2.6582657486529744,
+     "enveloppe": 4.914029845939621
+    },
+    {
+     "azimut": 192,
+     "cavite": 2.8384069740892213,
+     "enveloppe": 4.982875892649298
+    },
+    {
+     "azimut": 196,
+     "cavite": 3.0607332834333296,
+     "enveloppe": 5.130359990088385
+    },
+    {
+     "azimut": 200,
+     "cavite": 3.1444495396256458,
+     "enveloppe": 8.43983704751226
+    },
+    {
+     "azimut": 204,
+     "cavite": 3.167267103399432,
+     "enveloppe": 8.682059706804827
+    },
+    {
+     "azimut": 208,
+     "cavite": 3.0958513023617464,
+     "enveloppe": 8.858953980294102
+    },
+    {
+     "azimut": 212,
+     "cavite": 2.773006961852474,
+     "enveloppe": 7.640641276249168
+    },
+    {
+     "azimut": 216,
+     "cavite": 2.5122616604584893,
+     "enveloppe": 7.1256002360434
+    },
+    {
+     "azimut": 220,
+     "cavite": 2.3066091828451483,
+     "enveloppe": 6.773741573444673
+    },
+    {
+     "azimut": 224,
+     "cavite": 2.1417230645331777,
+     "enveloppe": 5.916345869016807
+    },
+    {
+     "azimut": 228,
+     "cavite": 2.0070912890070387,
+     "enveloppe": 5.565382310802515
+    },
+    {
+     "azimut": 232,
+     "cavite": 1.8958321634676616,
+     "enveloppe": 5.2311017066802
+    },
+    {
+     "azimut": 236,
+     "cavite": 1.8028576432895134,
+     "enveloppe": 5.01043528273214
+    },
+    {
+     "azimut": 240,
+     "cavite": 1.725949627363587,
+     "enveloppe": 4.786581112046386
+    },
+    {
+     "azimut": 244,
+     "cavite": 1.6631057616525573,
+     "enveloppe": 4.621859982619275
+    },
+    {
+     "azimut": 248,
+     "cavite": 1.6122563297173453,
+     "enveloppe": 4.515315339582693
+    },
+    {
+     "azimut": 252,
+     "cavite": 1.5718548060835411,
+     "enveloppe": 4.441256313263263
+    },
+    {
+     "azimut": 256,
+     "cavite": 1.5407514984498036,
+     "enveloppe": 4.3892387197780005
+    },
+    {
+     "azimut": 260,
+     "cavite": 1.518107818065192,
+     "enveloppe": 4.361521220767417
+    },
+    {
+     "azimut": 264,
+     "cavite": 1.5033381009511793,
+     "enveloppe": 4.367776454197859
+    },
+    {
+     "azimut": 268,
+     "cavite": 1.4960714812159175,
+     "enveloppe": 4.374520118077468
+    },
+    {
+     "azimut": 272,
+     "cavite": 1.4961286919331742,
+     "enveloppe": 4.396528178557416
+    },
+    {
+     "azimut": 276,
+     "cavite": 1.5035111396323286,
+     "enveloppe": 4.4409698793120365
+    },
+    {
+     "azimut": 280,
+     "cavite": 1.518400983953782,
+     "enveloppe": 4.508845954504428
+    },
+    {
+     "azimut": 284,
+     "cavite": 1.5411722367042793,
+     "enveloppe": 4.560385873631613
+    },
+    {
+     "azimut": 288,
+     "cavite": 1.5724141633905182,
+     "enveloppe": 4.630600661472652
+    },
+    {
+     "azimut": 292,
+     "cavite": 1.6129697632019544,
+     "enveloppe": 4.712953183169661
+    },
+    {
+     "azimut": 296,
+     "cavite": 1.6639942016561442,
+     "enveloppe": 4.802684689599143
+    },
+    {
+     "azimut": 300,
+     "cavite": 1.7268866457387833,
+     "enveloppe": 4.899486140371462
+    },
+    {
+     "azimut": 304,
+     "cavite": 1.8037625221570885,
+     "enveloppe": 5.033304700557019
+    },
+    {
+     "azimut": 308,
+     "cavite": 1.8969251234628732,
+     "enveloppe": 5.238870577610166
+    },
+    {
+     "azimut": 312,
+     "cavite": 2.006832099224402,
+     "enveloppe": 5.543769260200436
+    },
+    {
+     "azimut": 316,
+     "cavite": 2.1413323008643372,
+     "enveloppe": 6.014064659318134
+    },
+    {
+     "azimut": 320,
+     "cavite": 2.307204263307963,
+     "enveloppe": 6.425174909998363
+    },
+    {
+     "azimut": 324,
+     "cavite": 2.514208947406421,
+     "enveloppe": 7.080873587048997
+    },
+    {
+     "azimut": 328,
+     "cavite": 2.7768823624035264,
+     "enveloppe": 7.343394973112079
+    },
+    {
+     "azimut": 332,
+     "cavite": 3.117806559826493,
+     "enveloppe": 7.0577294158832045
+    },
+    {
+     "azimut": 336,
+     "cavite": 3.305894190149855,
+     "enveloppe": 6.978534979680899
+    },
+    {
+     "azimut": 340,
+     "cavite": 3.4525902537938524,
+     "enveloppe": 7.694636971824494
+    },
+    {
+     "azimut": 344,
+     "cavite": 3.6314228994176485,
+     "enveloppe": 7.42315311517373
+    },
+    {
+     "azimut": 348,
+     "cavite": 3.5998053922654454,
+     "enveloppe": 7.082884746112263
+    },
+    {
+     "azimut": 352,
+     "cavite": 3.3296118602189413,
+     "enveloppe": 6.981634184615004
+    },
+    {
+     "azimut": 356,
+     "cavite": 3.1003369124182036,
+     "enveloppe": 6.918110413877967
+    }
+   ]
+  }
+ ]
+}

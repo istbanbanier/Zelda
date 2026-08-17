@@ -1,0 +1,10 @@
+{
+ "gauche": "evidence/world_v2/v2_3_r2a/grotte/avant_r2a_3_1/02_approche_joueur.png",
+ "gauche_libelle": "R2a-3.1 — loft quantifié · 71d1817",
+ "droite": "evidence/world_v2/v2_3_r2a/grotte/tranche3/t3_02_approche_joueur.png",
+ "droite_libelle": "R2a-3.3 — roches CC0 · 73dc20a",
+ "png": "evidence/world_v2/v2_3_r2a/grotte/tranche3/AB_approche.png",
+ "titre": "approche joueur — caméra identique, fov 55°",
+ "resolution_par_moitie": "1280x720",
+ "timestamp_utc": "2026-08-15 16:49:53"
+}

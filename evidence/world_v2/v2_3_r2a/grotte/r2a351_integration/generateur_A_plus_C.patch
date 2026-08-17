@@ -1,0 +1,558 @@
+diff --git a/source_assets/blender/environment/make_waterfall_cave.py b/source_assets/blender/environment/make_waterfall_cave.py
+index fb91204..3981949 100644
+--- a/source_assets/blender/environment/make_waterfall_cave.py
++++ b/source_assets/blender/environment/make_waterfall_cave.py
+@@ -396,15 +396,90 @@ CAVITE_ASYM = [
+     # contour de l'ouverture est une ligne brisée penchée, plus un arc.
+     (1.34, 0.79, -0.44),   # porche : la joue gauche déborde, linteau penché
+     (1.30, 0.81, -0.40),   # seuil
+-    (1.12, 0.90, -0.24),
+-    (0.92, 1.10, 0.10),    # la galerie se décale de l'autre côté
+-    (0.95, 1.14, 0.16),
+-    (1.06, 1.16, 0.08),    # SALLE, large des deux côtés
+-    (1.00, 0.98, -0.06),   # l'alcôve élargit déjà ce côté : ne pas empiler
+-    (1.00, 0.92, -0.12),
+-    (0.96, 0.90, -0.10),
++    # R2a-3.5.1 — À PARTIR D'ICI LA SECTION EST FRANCHEMENT DISSYMÉTRIQUE, ET
++    # CE N'EST PAS UN CHOIX DE DESSIN : c'est la roche disponible qui la
++    # dicte. Voir le pavé « L'ASYMÉTRIE EST DÉRIVÉE » sous cette table.
++    (0.56, 1.15, -0.24),   # fin du vestibule : ici c'est le côté -n qui manque
++    (0.97, 1.05, 0.10),    # LE COUDE, largeur totale inchangée (4,24 m)
++    (1.68, 0.41, 0.16),    # le vide bascule côté -n, largeur totale inchangée
++    (1.69, 0.33, 0.08),    # SALLE, déportée sous la masse et non centrée
++    (1.69, 0.25, -0.06),   # l'alcôve élargit déjà ce côté : elle s'y ajoute
++    (1.65, 0.27, -0.12),
++    (1.61, 0.25, -0.10),
+ ]
+ 
++# L'ASYMÉTRIE EST DÉRIVÉE D'UNE MESURE, PAS RÉGLÉE À VUE.
++#
++# LE DÉFAUT. 385 percées confirmées par `tools/probe_cave_openings.py`,
++# épaisseur de paroi 0,11 m pour 0,80 exigés, et la sonde de surfaces les
++# attribue toutes à une seule d'entre elles : `paroi_plus_x`, 413 cases
++# ouvertes sur 2470 quand `paroi_moins_x` en a 4 sur 2470. Le flanc `+normale`
++# de la galerie sort de la formation ; l'autre est enterré sous 7 à 8,6 m.
++#
++# CE QUI A ÉTÉ ESSAYÉ AVANT, ET MESURÉ. Translater la galerie entière de
++# 1,8 m vers `-normale` : trois indicateurs de bord s'améliorent (paroi
++# 0,11 -> 0,37 · « le sol voit le ciel » 2 points -> 0 · plancher +0,956 ->
++# +0,701) et les percées ne bougent pas — 385 -> 390. Déplacer une section
++# SYMÉTRIQUE ne peut pas réconcilier deux flancs dont l'un a 0,07 m de marge
++# et l'autre 7,63 : il faut que la section cesse d'être symétrique.
++#
++# LA MESURE QUI DÉCIDE. `tools/blender/probe_cave_asym_budget.py` reconstruit
++# la roche AVANT soustraction et rejoue `controle_epaisseur()` par
++# arithmétique d'intervalles. Le « avant soustraction » est le point : une
++# mesure prise sur le maillage FINAL est confondue, parce que là où la galerie
++# a percé, la peau extérieure a déjà été emportée et le rayon ne trouve plus
++# rien. Un premier relevé pris de cette façon concluait « aucune roche du côté
++# +normale aux stations 4 à 6, donc aucune réduction ne peut fermer » — et il
++# était faux. Roche réellement disponible depuis l'axe, côté `+n` :
++#
++#     station 2  2,96 m      station 5  1,69 m
++#     station 3  2,69 m      station 6  1,44 m
++#     station 4  2,23 m      station 7  1,32 m
++#
++# Elle existe ; c'est le vide qui la dépassait — 3,48 m de demi-largeur à la
++# station 5 pour 1,69 m de roche.
++#
++# LES DEUX RECHERCHES QUI ONT ÉCHOUÉ, ET CE QU'ELLES ONT APPRIS. Bissection
++# par station : oscille. Les rayons du contrôle partent dans le plan MONDE
++# `(cos θ, 0, sin θ)`, or près du coude la galerie file elle-même vers +x — un
++# rayon d'azimut 0° parti de la station 2 descend LE LONG de la galerie et
++# ressort par le flanc de la salle (mesuré : `r_in` = 3,99 m pour une
++# demi-largeur propre de 1,58 m). Le minimum d'une station ne dépend donc pas
++# de son propre facteur. Échelle globale unique : impossible des deux côtés,
++# le côté mince demandant une réduction et le côté épais une réduction à la
++# station 2 ET un élargissement ailleurs. Ce qui converge : tout au plancher —
++# état dont on a MESURÉ qu'il est réalisable, 0,89 m côté `+n` — puis
++# croissance gloutonne station par station contre le minimum GLOBAL. Réduire
++# un facteur ne peut qu'ajouter de la roche : la croissance est monotone.
++#
++# CE QUI EST RETENU, ET LA RÈGLE QUI L'A TAILLÉ. Le côté mince n'est jamais
++# élargi au-delà de sa valeur d'origine, et la largeur qu'on lui retire est
++# rendue au côté épais. La largeur totale de la section est donc conservée :
++#
++#     st | demi-vide +n     | gauche       | largeur totale
++#      2 | 1,57 -> 2,01 m   | 1,12 -> 0,56 | 3,54 -> 2,99 m
++#      3 | 2,31 -> 2,21 m   | 0,92 -> 0,97 | 4,24 -> 4,24 m
++#      4 | 2,96 -> 1,07 m   | 0,95 -> 1,68 | 5,43 -> 5,43 m
++#      5 | 3,48 -> 0,99 m   | 1,06 -> 1,69 | 6,66 -> 6,06 m
++#      6 | 2,45 -> 0,62 m   | 1,00 -> 1,69 | 4,95 -> 4,85 m
++#      7 | 1,70 -> 0,50 m   | 1,00 -> 1,65 | 3,55 -> 3,55 m
++#      8 | 1,17 -> 0,33 m   | 0,96 -> 1,61 | 2,42 -> 2,42 m
++#
++# La station 2 fait exception à la règle du côté mince, et pour une cause
++# mesurée : là, la roche manque du côté `-n` (2,34 m seulement) et abonde du
++# côté `+n` (2,96 m). C'est le PLAFOND qui bride la bande — le linteau y
++# penche de -0,24 — et non la roche. Le vide y est donc rendu au côté `+n`
++# jusqu'à ce que la bande du gabarit repasse le contrat : 1,70 -> 1,95 m.
++#
++# LA DEMI-LARGEUR DE 3,48 m N'ÉTAIT PAS LE GABARIT DU JOUEUR. La réduire du
++# côté mince ne réduit donc pas le contrat de traversée : c'est la BANDE utile
++# qui le porte, et `controle_gabarit()` la mesure désormais pour de bon —
++# 1,95 à 4,00 m selon la station, pour 1,90 exigés.
++#
++# LES STATIONS 0 ET 1 NE BOUGENT PAS D'UN MILLIMÈTRE : la bouche est gelée,
++# ancre et cadrage compris. Leur déficit propre est consigné tel quel dans le
++# rapport de passe, il n'est pas corrigé ici.
++
+ # ALCÔVE LATÉRALE — la poche qui met la récompense en scène. Elle élargit
+ # la cavité d'un seul côté sur trois stations, et relève le sol de
+ # `ALCOVE_SEUIL` pour donner une TABLETTE de roche : la récompense se pose
+@@ -1314,6 +1389,39 @@ def station_de_cavite(u):
+     return tuple(a[k] * (1.0 - t) + b[k] * t for k in range(4))
+ 
+ 
++def facteur_lateral(u, fraction):
++    """Facteur d'asymétrie du CÔTÉ visé, à l'indice de station `u`.
++
++    R2a-3.5.1 — LA MÊME FAUTE QUE `normale_de_cavite` RÉPARAIT, D'UN CRAN
++    PLUS LOIN. Cette fonction-là a corrigé « décaler le long de X au lieu de
++    la normale ». Restait : décaler de `fraction · hw` alors que la section
++    n'est PAS symétrique. `anneau_interieur()` pose sa demi-largeur à
++    `hw · (gauche si u < 0 sinon droite)` ; un sondage à `+0,75 · hw` tombe
++    donc DANS LA ROCHE dès que `droite < 0,75`.
++
++    Mesuré : à `(1,69 ; 0,25)`, le contrôle de plancher est passé de 1 faute
++    à 9, dont sept « AUCUN sol sous le rayon » — c'est-à-dire des rayons
++    partis de la roche pleine. Aucune n'était un défaut du maillage ; toutes
++    étaient l'instrument qui mesurait à côté de la cavité.
++
++    La fraction reste donc une fraction DU CÔTÉ, pas de `hw` : la couverture
++    du contrôle est inchangée, elle est seulement posée au bon endroit.
++    """
++    i = max(0, min(len(CAVITE_ASYM) - 1, int(math.floor(u))))
++    j = min(len(CAVITE_ASYM) - 1, i + 1)
++    t = max(0.0, min(1.0, u - i))
++    k = 1 if fraction >= 0.0 else 0
++    return CAVITE_ASYM[i][k] * (1.0 - t) + CAVITE_ASYM[j][k] * t
++
++
++def inclinaison_de_cavite(u):
++    """Inclinaison du linteau à l'indice `u` — la voûte n'est pas centrée."""
++    i = max(0, min(len(CAVITE_ASYM) - 1, int(math.floor(u))))
++    j = min(len(CAVITE_ASYM) - 1, i + 1)
++    t = max(0.0, min(1.0, u - i))
++    return CAVITE_ASYM[i][2] * (1.0 - t) + CAVITE_ASYM[j][2] * t
++
++
+ def normale_de_cavite(u):
+     """Axe LATÉRAL de la section à l'indice `u`, dans le plan (x, y).
+ 
+@@ -2887,8 +2995,20 @@ ENVELOPPE = [
+              (-6.55, 6.20, 1.75, 0.85), (-5.85, 5.95, 2.95, 0.50),
+              (-5.35, 5.75, 3.15, 0.95), (-4.75, 5.50, 4.35, 0.55),
+              (-4.30, 5.30, 4.85, 1.20), (-3.80, 5.05, 4.55, 0.70),
+-             (-3.35, 4.80, 3.85, 0.45), (-2.60, 4.35, 2.60, 0.55),
+-             (-1.90, 3.90, 3.95, 0.40), (-1.40, 3.55, 4.30, 0.75),
++             # LE COL A EST RECULÉ DE 0,30 m LE LONG DE LA DIRECTION QUI
++             # N'EXISTE PAS À 55°. Les axes écran sont (0,9848 ; -0,1736) à
++             # 55° et (0,5736 ; -0,8192) à 100° : la droite dx = 0,1763·dy
++             # est donc de x écran CONSTANT à 55° et rapporte -0,718 m par
++             # mètre à 100°. Reculer le col déplace la frontière de bassin
++             # entre l'épaule et la dominante vers la gauche À 100° SEULEMENT,
++             # ce qui grossit la dominante sans rien changer à la vue
++             # d'approche. Mesuré, à 100° : emprises 4,80 / 6,60 / 3,13 au
++             # lieu de 5,06 / 6,33 / 3,13, donc rapport 2,09 au lieu de 2,02
++             # — la clause qui franchissait de 1 % en franchit 4.
++             # Les deux voisins suivent à mi-course, sinon la crête se casse
++             # en angle vif au lieu de fléchir.
++             (-3.32, 4.95, 3.85, 0.45), (-2.55, 4.65, 2.60, 0.55),
++             (-1.87, 4.05, 3.95, 0.40), (-1.40, 3.55, 4.30, 0.75),
+              (-0.70, 3.00, 5.90, 0.45), (-0.20, 2.60, 6.35, 0.70),
+              (0.45, 2.20, 7.65, 0.90), (1.05, 1.95, 8.35, 1.30),
+              (1.85, 1.95, 8.10, 1.45), (2.35, 2.20, 7.10, 1.05),
+@@ -2897,30 +3017,117 @@ ENVELOPPE = [
+              (4.40, 4.05, 2.45, 0.35), (4.70, 4.35, 1.75, 0.30),
+              (4.95, 4.60, 1.30, 0.25),
+          ]),
++    # LE CONTREFORT EST AVANCÉ DE 4,00 m, ET C'EST LE DÉFAUT « deux masses
++    # à l'azimut 100 » QUI L'EXIGE. Le relevé par pièce le nomme sans
++    # ambiguïté : à 100° le contrefort occupait l'écran de -2,84 à +1,72 et
++    # le corps de -9,98 à +2,48 en le SURPLOMBANT PARTOUT — 6,18 puis 8,35
++    # puis 2,31 m contre 4,60 au mieux. Il n'était pas « absorbé par
++    # superposition » : il était intégralement sous l'enveloppe voisine, et
++    # aucun creusement de col ne pouvait l'en sortir.
++    #
++    # POURQUOI 4,00 m ET PAS 3,27. La mesure de la passe précédente est
++    # exacte et le balayage la reproduit au centième : à dy = -3,27 le
++    # profil à 100° est INCHANGÉ (2 masses, emprises 6,05 / 9,46). Le seuil
++    # de sortie est entre -3,27 et -4,00 ; en deçà le contrefort reste sous
++    # le corps, au-delà il émerge. Une piste écartée à -3,27 n'était donc
++    # pas la mauvaise piste, seulement la bonne piste trop courte.
++    #
++    # LA TRANSLATION SUIT dx = 0,1763·dy, la droite de x écran constant à
++    # 55°. Conséquence mesurée : l'emprise à 55° reste 17,00 m et le
++    # décentrement du faîte 10,0 % POUR TOUT dy — la contrainte
++    # `DECENTREMENT_MIN`, qui n'avait que 0,60 m de marge à droite, n'est
++    # jamais sollicitée. À 225° l'axe écran vaut (-1 ; 0) : y n'y intervient
++    # pas du tout, et l'avancée y est gratuite par construction.
++    #
++    # LA CRÊTE TOURNE SON SOMMET VERS L'EST (le point haut passe de
++    # l'indice 4 à l'indice 5, faîte 4,60 -> 4,49). Le pied rétrécit de
++    # 2,10/2,15 à 1,90/1,95 : sa flanquée monte plus tard, le col se
++    # déplace vers la droite, et les trois emprises s'écartent au lieu de
++    # se ressembler. Aux trois azimuts le rapport d'emprises passe de
++    # 2,02 / 1,56 / 1,90 à 2,13 / 2,09 / 2,16.
++    #
++    # CE QU'ON PERD, ET IL FAUT LE DIRE : le contrefort n'est plus reculé
++    # dans la profondeur. Son ancre passe de y = 5,95 à y = 1,95, soit
++    # 2,05 m EN AVANT de la dominante au lieu de 3,35 m derrière. C'est le
++    # conflit que le calcul d'implantation de R2a-3.5 avait posé et tranché
++    # dans l'autre sens ; il se tranche ici dans celui-ci, parce que le
++    # recul et les trois masses à 100° ne sont pas simultanément tenables
++    # avec un corps de ce diamètre.
+     dict(nom="SM_Env_Contrefort", amas="contrefort_droit", rang=RANG_ENVELOPPE,
+-         ancre=(6.65, 5.95), dg=2.10, dp=2.15, n=22, niveaux=12, graine=37,
++         ancre=(5.94, 1.95), dg=1.90, dp=1.95, n=22, niveaux=12, graine=37,
+          p_flanc=0.70, bombement=0.16, biais=0.18, biais_az=300.0,
+          crete=[
+-             (4.95, 5.05, 1.50, 0.25), (5.45, 5.20, 3.00, 0.45),
+-             (5.85, 5.30, 3.65, 0.95), (6.35, 5.45, 4.45, 0.55),
+-             (6.75, 5.55, 4.60, 1.20), (7.15, 5.65, 4.30, 0.85),
+-             (7.65, 5.75, 3.30, 0.50), (8.05, 5.85, 3.05, 0.80),
+-             (8.45, 5.95, 1.40, 0.25),
++             (4.24, 1.05, 1.50, 0.25), (4.74, 1.18, 1.82, 0.29),
++             (5.14, 1.28, 2.41, 0.37), (5.64, 1.41, 3.28, 0.67),
++             (6.04, 1.51, 3.90, 0.82), (6.44, 1.62, 4.49, 0.74),
++             (6.94, 1.74, 4.30, 0.86), (7.34, 1.85, 3.23, 0.58),
++             (7.74, 1.95, 1.40, 0.25),
+          ]),
+     dict(nom="SM_Env_Talus", amas="talus", rang=RANG_ENVELOPPE,
+          ancre=(-0.20, 3.70), dg=7.20, dp=4.70, n=28, niveaux=9, graine=53,
+          p_flanc=0.56, bombement=0.28, biais=0.16, biais_az=250.0,
++         # LA LARGEUR DU RUBAN ALTERNE FORTEMENT, ET C'EST LA CORRECTION DE
++         # LA PLAGE PLANE EN FAÇADE. Le pan de 9,01 m² était centré en
++         # (-4,68 ; 1,63 ; 2,24) avec une normale à (-0,00 ; -0,26 ; +0,97),
++         # c'est-à-dire QUASI HORIZONTALE : ce n'était pas une paroi mais le
++         # DESSUS de ce ruban, large de 1,1 à 1,6 m sur 5 m de long.
++         #
++         # POURQUOI `stratifier()` NE POUVAIT PAS LE CASSER, et c'est une
++         # propriété du champ, pas un réglage : `deformer_massif` déplace
++         # les sommets VERTICALEMENT en fonction de h = z + 0,11x - 0,06y,
++         # et sa marche `s(t)` s'aplatit au MILIEU de chaque lit. Sur une
++         # surface déjà presque horizontale il ne casse donc rien : il la
++         # tire vers un replat, il en FABRIQUE un. Les points 2 et 3
++         # avaient h = 1,852 et 1,783 — le même lit de 0,85 m — donc les
++         # 2,7 m qui les séparent formaient une seule terrasse.
++         #
++         # ESSAYÉ ET MESURÉ, dans l'ordre : séparer les points d'un lit
++         # entier en z rend la façade PIRE (11,37 m²) et casse les cols à
++         # 100°, parce que le point 2 se projette en écran -5,01, soit
++         # exactement sur le col A. C'est la LARGEUR seule qui travaille :
++         # un segment étroit est une arête, un segment large une table, et
++         # les alterner interdit qu'une table couvre cinq mètres. Le
++         # basculement latéral du quadrilatère de cape passe de 10,1° —
++         # sous le seuil de regroupement de 12° — à 19,7°.
++         # Amplitude mesurée : 0,20 -> 14,18 m² ; 0,30 -> 6,17 ; 0,45 ->
++         # 8,55. Le milieu n'est pas un compromis, c'est un optimum.
+          crete=[
+-             (-8.30, 3.60, 0.95, 0.35), (-6.90, 2.85, 2.20, 0.90),
+-             (-5.60, 2.20, 2.60, 1.50), (-4.20, 1.75, 2.35, 1.10),
+-             (-2.90, 1.45, 2.10, 1.60), (-1.50, 1.30, 1.85, 1.20),
+-             (-0.10, 1.35, 2.15, 1.60), (1.30, 1.60, 2.45, 1.20),
+-             (2.70, 2.05, 2.30, 1.50), (4.10, 2.70, 1.60, 1.10),
+-             (5.40, 3.45, 1.30, 1.40), (6.80, 4.30, 1.35, 1.00),
++             (-8.30, 3.60, 0.95, 0.35), (-6.90, 2.85, 2.20, 0.60),
++             (-5.60, 2.20, 2.60, 1.80), (-4.20, 1.75, 2.35, 0.80),
++             (-2.90, 1.45, 2.10, 1.90), (-1.50, 1.30, 1.85, 0.90),
++             (-0.10, 1.35, 2.15, 1.90), (1.30, 1.60, 2.45, 0.90),
++             (2.70, 2.05, 2.30, 1.80), (4.10, 2.70, 1.60, 0.80),
++             (5.40, 3.45, 1.30, 1.70), (6.80, 4.30, 1.35, 0.70),
+              (8.10, 5.20, 0.75, 0.35),
+          ]),
++    # LA QUEUE RÉTRÉCIT AU LIEU D'AVANCER, ET C'EST UNE CORRECTION D'UNE
++    # PREMIÈRE TENTATIVE QUI AVAIT ÉTÉ MESURÉE MAUVAISE.
++    #
++    # Ce qu'il fallait obtenir : c'est la queue qui tient le bord GAUCHE de
++    # la silhouette à 100° — relevé par pièce, Queue[-11,11 .. -3,82] quand
++    # le corps s'arrête à -9,98 — alors qu'à 55° elle occupe
++    # [-6,26 .. 3,36] pour un bord à -9,25, et à 225° [-5,05 .. 4,98] pour
++    # un bord à 8,83. Elle n'est extrême qu'à 100°, donc la retoucher n'y
++    # coûte rien ailleurs. Une fois le contrefort sorti, la faute résiduelle
++    # à 100° était « deux emprises à 1,02 % l'une de l'autre » : il fallait
++    # remonter `lo`.
++    #
++    # PREMIÈRE TENTATIVE, AVANCER DE 1,20 m : la faute de silhouette passe,
++    # mais la plage plane globale explose de 10,02 à 19,66 m² — une rampe
++    # de 8,55 x 3,38 m inclinée à 36°, centrée en (0,53 ; 7,75 ; 2,25),
++    # normale (+0,20 ; -0,55 ; +0,81). La cause est lisible : avancer la
++    # queue referme le vallon qui la séparait du corps, et le remaillage
++    # voxel fond les deux flancs en un seul plan continu.
++    #
++    # CE QUI MARCHE : la garder à sa place et réduire son demi-petit axe.
++    # La direction écran à 100° tombe à 116,7° de son axe de crête, où le
++    # rayon d'ellipse est pondéré 0,894 par `dp` et seulement 0,45 par
++    # `dg` — c'est donc `dp` qui tient `lo`, et `ddg = -1,6` ne l'avait
++    # déplacé que de 2 cm. Mesuré : dp 3,10 -> 2,50 rend le même effet de
++    # silhouette (100° : ratio 2,02, consécutif 1,25) avec la plage globale
++    # à 8,39 m², soit MIEUX que les 10,02 m² d'avant la passe.
+     dict(nom="SM_Env_Queue", amas="queue", rang=RANG_ENVELOPPE,
+-         ancre=(-0.20, 8.50), dg=5.40, dp=3.10, n=18, niveaux=9, graine=71,
++         ancre=(-0.20, 8.50), dg=5.40, dp=2.50, n=18, niveaux=9, graine=71,
+          p_flanc=0.60, bombement=0.22, biais=0.20, biais_az=90.0,
+          crete=[
+              (-4.10, 8.40, 2.90, 0.60), (-2.80, 9.00, 2.45, 1.40),
+@@ -2928,17 +3135,53 @@ ENVELOPPE = [
+              (1.30, 9.90, 3.15, 1.80), (2.60, 9.80, 2.55, 1.20),
+              (3.80, 9.55, 1.85, 0.40),
+          ]),
+-    # LÈVRE — le linteau, et rien d'autre. Sa crête est posée EN AVANT de
+-    # son pied : elle déverse au-dessus de la bouche au lieu de la border.
+-    # Sans elle le seuil n'a que 0,47 m de roche pour 0,90 exigés.
++    # LÈVRE — le linteau ET LES DEUX JAMBAGES. Sa crête est posée EN AVANT
++    # de son pied : elle déverse au-dessus de la bouche au lieu de la
++    # border. Sans elle le seuil n'a que 0,47 m de roche pour 0,90 exigés.
++    #
++    # ELLE S'ÉPAISSIT PARCE QUE LA MESURE L'EXIGE, PAS PAR GOÛT. Sonde de
++    # portée depuis l'axe, station 1, dans le plan XZ à z = clé·0,45 =
++    # 1,28 m — la même origine que `controle_epaisseur` :
++    #
++    #     azimut   120°   135°   150°   165°   180°     45°    60°
++    #     avant    2,17   1,96   1,92   1,83   3,21    2,10   2,26
++    #     après    3,20   3,47   3,45   3,61   3,73    3,20   2,91
++    #
++    # La cible est 2,86 m = 2,26 m de portée latérale de la cavité refondue
++    # plus les 0,60 m de `EPAISSEUR_MIN_COLLERETTE_M`. Tous les azimuts
++    # latéraux la franchissent désormais ; le minimum est 2,91 m à 60°.
++    # C'est le défaut que la collerette signalait à 0,18 m, station 1,
++    # azimut 129° — le JAMBAGE GAUCHE.
++    #
++    # POURQUOI LA CRÊTE, ET NON LE PIED. Le point à couvrir à 135° est
++    # (-2,02 ; 0 ; 3,30) : il est AU-DESSUS de l'ancienne crête, qui ne
++    # valait que 2,30 m à x = -1,85. Aucun élargissement de base ne
++    # l'atteint — mesuré, `dg` de 2,60 à 4,30 avec bombement et p_flanc
++    # poussés au maximum ne monte 165° que de 1,83 à 2,26. Il fallait
++    # ALLONGER et RELEVER la crête vers -x. Les deux jambages sont
++    # volontairement inégaux — gauche plus long et plus haut — ce qui est
++    # aussi la cible écrite pour la bouche : « jambages non parallèles ».
++    #
++    # `dp` RESTE À 2,20, ET C'EST UN INTERDIT MESURÉ : à 2,70 la station 0
++    # passe de « aucune matière » à 1,00–1,55 m de roche sur tout le tour.
++    # Autrement dit la lèvre MURE LE PORCHE. On épaissit sur ±x, jamais
++    # vers -y.
+     dict(nom="SM_Env_Levre", amas="levre", rang=RANG_ENVELOPPE,
+-         ancre=(0.05, 1.35), dg=2.60, dp=2.20, n=18, niveaux=10, graine=89,
+-         p_flanc=0.66, bombement=0.18, biais=0.30, biais_az=270.0,
++         ancre=(-0.35, 1.35), dg=4.00, dp=2.20, n=24, niveaux=12, graine=89,
++         # `biais` RESTE A 0,30 : ESSAYE A 0,42, MESURE, REJETE. Pousser
++         # la levre plus loin vers -y ameliore la portee brute au porche
++         # (45° : 0,40 -> 1,09 m) mais fait tomber la collerette de 0,48 a
++         # 0,08 m et deplace les percees vers 109-135°. La cause est
++         # geometrique : la masse deversee devient une coquille mince que
++         # le rayon traverse au lieu d'un jambage. Plus de porte-a-faux
++         # n'est pas plus de roche.
++         p_flanc=0.88, bombement=0.40, biais=0.30, biais_az=270.0,
+          crete=[
+-             (-1.85, 0.95, 2.30, 0.30), (-1.15, 0.60, 3.35, 0.70),
+-             (-0.55, 0.40, 3.95, 1.10), (0.05, 0.35, 4.25, 1.35),
+-             (0.65, 0.45, 4.05, 1.15), (1.25, 0.70, 3.30, 0.75),
+-             (1.90, 1.05, 2.20, 0.30),
++             (-3.60, 1.15, 2.30, 0.40), (-2.85, 0.80, 3.40, 0.85),
++             (-2.05, 0.52, 4.05, 1.15), (-1.05, 0.38, 4.30, 1.30),
++             (0.05, 0.35, 4.25, 1.35), (1.10, 0.40, 4.05, 1.20),
++             (2.10, 0.55, 3.70, 1.00), (3.00, 0.85, 2.95, 0.70),
++             (3.75, 1.30, 2.05, 0.30),
+          ]),
+ ]
+ 
+@@ -3215,7 +3458,12 @@ def controle_plancher(obj):
+         nx, ny = normale_de_cavite(u)
+         for f in PLANCHER_FRACTIONS:
+             attendu = sol_de_cavite(u, f)
+-            x, yl = ax + f * hw * nx, ay + f * hw * ny
++            # LA FRACTION EST CELLE DU CÔTÉ, PAS DE `hw` — voir
++            # `facteur_lateral()`. Sans ce terme, sept des neuf fautes de
++            # plancher relevées en R2a-3.5.1 étaient des rayons partis de la
++            # roche pleine, du côté que l'asymétrie venait de rétrécir.
++            fac = facteur_lateral(u, f)
++            x, yl = ax + f * hw * fac * nx, ay + f * hw * fac * ny
+             # LA HAUTEUR DE DÉPART SE DÉRIVE DE LA SECTION, PAS D'UNE
+             # CONSTANTE. Premier jet : départ à `attendu + cle · 0,45` quelle
+             # que soit la position latérale. Mesuré — à la fraction ±0,75 de
+@@ -3227,7 +3475,11 @@ def controle_plancher(obj):
+             #
+             # On reprend donc la branche haute de `anneau_interieur()` —
+             # `z = cle · v^0,75` — avec `v = sqrt(1 − f²)` sur la section.
+-            voute = cle * max(0.0, 1.0 - f * f) ** 0.375
++            # Le linteau est INCLINÉ : `anneau_interieur()` multiplie la clé
++            # par `1 + inclinaison·u`. Sans ce facteur, la voûte estimée est
++            # trop haute du côté bas et le contrôle sonde dans la roche.
++            voute = (cle * max(0.0, 1.0 - f * f) ** 0.375
++                     * (1.0 + inclinaison_de_cavite(u) * f))
+             libre = voute - attendu
+             if libre < PLANCHER_HAUTEUR_MIN_M:
+                 continue          # trop près de la paroi pour vouloir dire quoi que ce soit
+@@ -3262,19 +3514,106 @@ def controle_plancher(obj):
+         u = prochain
+     return sondes, fautes
+ 
++## Pas d'échantillonnage latéral de la bande utile. 0,05 m : plus fin ne
++## change pas le verdict (la section n'a que 9 facettes, interpolées sur 56
++## segments), plus grossier raterait une bande juste au contrat.
++GABARIT_PAS_M = 0.05
++
++
++def _section_de_station(indice):
++    """Le POLYGONE RÉEL de la section, tel que la soustraction le creuse.
++
++    Mêmes arguments que `cavite_solide()` : c'est la seule façon d'être sûr
++    que le contrôle mesure la cavité livrée et non une cavité idéalisée.
++    """
++    tangente = tangentes(CAVITE)[indice]
++    denivele = PORCHE_DENIVELE if indice == 0 else 0.0
++    return anneau_interieur(indice, CAVITE[indice], tangente, SEGMENTS,
++                            phases(len(CAVITE), 7.0)[indice],
++                            0.0, 0.0, denivele, SAG)
++
++
++def bande_utile(indice):
++    """Largeur de la bande CONTIGUË où la hauteur libre atteint le contrat.
++
++    Le profil est ramené dans le plan (normale, z) de la station, puis
++    balayé : à chaque abscisse latérale on prend le plafond et le plancher du
++    polygone, et on cherche le plus long segment où leur écart atteint
++    `GABARIT_CLE_M`.
++
++    Plafond et plancher sont pris comme le MAXIMUM et le MINIMUM des
++    intersections. Sur une section étoilée autour de l'axe — ce qu'elle est,
++    par construction de `anneau_interieur()` — c'est l'enveloppe extérieure,
++    donc la mesure est un MAJORANT si jamais une nervure venait à rendre le
++    profil non étoilé. Aucune ne le fait aujourd'hui : `NERVURE_V_MIN` les
++    tient au-dessus de la capsule.
++    """
++    pts = _section_de_station(indice)
++    ax, ay = CAVITE[indice][0], CAVITE[indice][1]
++    tangente = tangentes(CAVITE)[indice]
++    normale = Vector((tangente.y, -tangente.x))
++
++    def lateral(p):
++        return (p.x - ax) * normale.x + (p.y - ay) * normale.y
++
++    lats = [lateral(p) for p in pts]
++    x = min(lats)
++    fin = max(lats)
++    meilleure, courante = 0.0, 0.0
++    while x <= fin:
++        zs = []
++        for k in range(len(pts)):
++            a, b = pts[k], pts[(k + 1) % len(pts)]
++            da, db = lats[k], lats[(k + 1) % len(pts)]
++            if (da - x) * (db - x) > 0.0 or abs(db - da) < 1e-12:
++                continue
++            u = (x - da) / (db - da)
++            zs.append(a.z + (b.z - a.z) * u)
++        libre = (max(zs) - min(zs)) if len(zs) >= 2 else -1.0
++        if libre >= GABARIT_CLE_M:
++            courante += GABARIT_PAS_M
++            meilleure = max(meilleure, courante)
++        else:
++            courante = 0.0
++        x += GABARIT_PAS_M
++    return meilleure
++
++
+ def controle_gabarit():
+-    """Une capsule r = 0,45 m, h = 1,85 m passe partout sur le chemin."""
++    """Une capsule r = 0,45 m, h = 1,85 m passe partout sur le chemin.
++
++    R2a-3.5.1 — CE CONTRÔLE ÉTAIT DEVENU FAUX, ET IL L'AURAIT DIT VERT.
++    Il mesurait `hw * (1 - AMP_INTERIEUR)`, c'est-à-dire une DEMI-LARGEUR
++    SYMÉTRIQUE, en ignorant `CAVITE_ASYM`. Tant que gauche ≈ droite l'erreur
++    restait petite ; à `(1,69 ; 0,25)` elle est de 1 à 7 — le contrôle
++    annonçait 2,74 m de demi-largeur à la station 5 quand le côté mince n'en
++    offre que 0,99. Un contrôle qui ne voit pas l'asymétrie qu'on vient
++    d'introduire est pire qu'inutile : il donne un vert qui interdit de
++    chercher.
++
++    Il ne mesure donc plus une demi-largeur mais LA BANDE UTILE : la largeur
++    contiguë où la hauteur libre tient le contrat. C'est la question à
++    laquelle la capsule répond réellement, et elle ne suppose rien sur la
++    position de l'axe dans la section — ce qui est le point, puisque le vide
++    est désormais franchement déporté d'un côté.
++
++    Le contrat est inchangé : `2 × GABARIT_DEMI_LARGEUR_M` de large sous
++    `GABARIT_CLE_M` de haut. Sur une section symétrique les deux formulations
++    coïncident, et le maillage d'avant la passe passe le nouveau contrôle
++    (2,60 à 4,55 m de bande) — ce n'est donc pas un durcissement rétroactif,
++    c'est la même exigence enfin mesurée là où elle vit.
++    """
++    exigee = 2.0 * GABARIT_DEMI_LARGEUR_M
+     faibles = []
+     for i, (_, ay, hw, cle) in enumerate(CAVITE):
+         if i >= len(CAVITE) - 2:
+             continue          # les deux dernières stations FERMENT la calotte
+-        marge_hw = hw * (1.0 - AMP_INTERIEUR)
+-        # LE PALIER MONTE LE SOL, donc il MANGE la hauteur libre. Sans ce
+-        # terme, le contrôle mesurerait la clé au-dessus d'un sol qui n'est
+-        # plus là : un gabarit vert au-dessus d'un couloir devenu trop bas.
+-        marge_cle = cle * (1.0 - AMP_INTERIEUR) - PALIER[i]
+-        if marge_hw < GABARIT_DEMI_LARGEUR_M or marge_cle < GABARIT_CLE_M:
+-            faibles.append((i, ay, marge_hw, marge_cle))
++        bande = bande_utile(i)
++        # LE PALIER MONTE LE SOL, donc il MANGE la hauteur libre. Il est déjà
++        # dans le profil (`anneau_interieur` pose `z = sag·v + PALIER[i]`) :
++        # la bande le porte sans qu'on ait à le soustraire une seconde fois.
++        if bande < exigee:
++            faibles.append((i, ay, bande, exigee))
+     return faibles
+ 
+ 
+@@ -3290,11 +3629,28 @@ def controle_aucun_jour(obj, segments):
+     fautes = []
+     for i in range(2, len(CAVITE) - 2):
+         ax, ay, hw, _ = CAVITE[i]
++        nx, ny = normale_de_cavite(float(i))
+         for lat in (-0.55, -0.25, 0.0, 0.25, 0.55):
++            # DEUX FAUTES D'ÉCHANTILLONNAGE CORRIGÉES ICI, R2a-3.5.1, et les
++            # deux étaient dans ce contrôle depuis l'origine :
++            #
++            #   * il décalait le long de X MONDE. La galerie s'infléchit de
++            #     31° : c'est exactement ce que `normale_de_cavite()` a été
++            #     écrite pour corriger ailleurs, et personne ne l'avait
++            #     appliqué ici ;
++            #   * il décalait de `lat · hw`, donc en supposant la section
++            #     symétrique. Voir `facteur_lateral()` : à `droite = 0,25`,
++            #     un point à `+0,55 · hw` est dans la roche, le rayon montant
++            #     n'en sort qu'une fois, et « le sol voit le ciel » est
++            #     prononcé sur du plein.
++            #
+             # L'origine SUIT le palier : partie d'une hauteur fixe, elle
+             # serait sous le sol au fond de la galerie et compterait des
+             # croisements qui ne veulent plus rien dire.
+-            origine = Vector((ax + lat * hw, ay, 0.35 + PALIER[i]))
++            fac = facteur_lateral(float(i), lat)
++            px = ax + lat * hw * fac * nx
++            py = ay + lat * hw * fac * ny
++            origine = Vector((px, py, 0.35 + PALIER[i]))
+             croisements, position, garde = 0, origine.copy(), 0
+             while garde < 16:
+                 garde += 1
+@@ -3304,7 +3660,7 @@ def controle_aucun_jour(obj, segments):
+                 croisements += 1
+                 position = r[0] + Vector((0.0, 0.0, 0.002))
+             if croisements < 2 or croisements % 2 != 0:
+-                fautes.append((ax + lat * hw, ay, croisements))
++                fautes.append((px, py, croisements))
+     return fautes
+ 
+ 
+@@ -4785,10 +5141,14 @@ def main():
+           % (mini, mini_collerette))
+ 
+     faibles = controle_gabarit()
++    print("[grotte] gabarit : bande utile par station (m) : %s"
++          % ", ".join("%d:%.2f" % (i, bande_utile(i))
++                      for i in range(len(CAVITE) - 2)))
+     if faibles:
+-        for i, ay, hw, cle in faibles:
+-            print("[grotte] ERREUR: station %d (y=%.2f) hors gabarit — "
+-                  "demi-largeur %.2f m, cle %.2f m" % (i, ay, hw, cle))
++        for i, ay, bande, exigee in faibles:
++            print("[grotte] ERREUR: station %d (y=%.2f) hors gabarit — bande "
++                  "utile %.2f m sous %.2f m de hauteur libre, %.2f m exiges"
++                  % (i, ay, bande, GABARIT_CLE_M, exigee))
+         if not franchir("gabarit de station"):
+             return 2
+     print("[grotte] gabarit : capsule r=0,45 h=1,85 passe aux %d stations "

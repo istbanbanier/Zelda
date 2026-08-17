@@ -1,0 +1,18 @@
+=== INSPECTION glTF : assets/architecture/village/SM_Village_Wall.glb ===
+  format                 : GLB v2, 25052 octets
+  chunk_binaire          : 23088 octets
+  generateur             : Khronos glTF Blender I/O v4.0.44
+  version_gltf           : 2.0
+  meshes                 : 2
+  materiaux              : 2 (MAT_Village_WallStone, MAT_Village_Coping)
+  textures               : 0 image(s), 0 texture(s)
+  noeuds                 : 2 (SM_VillageWall_Course, SM_VillageWall_Coping)
+  skins                  : 0
+  animations             : 0 (aucune)
+  triangles              : 488
+  bbox_min               : [-0.07, 0, -0.47]
+  bbox_max               : [4.07, 0.4619, 0.47]
+  dimensions_m           : [4.14, 0.4619, 0.94]
+  [AVERT] mesh 'SM_VillageWall_Course': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_VillageWall_Coping': pas d'UV0 — lightmap et matériaux limités
+=== VALIDE ===

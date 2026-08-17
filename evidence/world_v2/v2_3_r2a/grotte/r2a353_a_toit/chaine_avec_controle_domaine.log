@@ -1,0 +1,19 @@
+=== Blender: Blender 4.0.2 ===
+
+--- waterfall_cave : génération de la source ---
+  ÉCHEC: la génération a rendu non-zéro — voir evidence/pipeline/architecture_waterfall_cave_make.log
+  | [grotte] paroi la plus mince : station 6, azimut 32°, z 1.26
+  | [grotte] collerette la plus mince : station 0, azimut 32°, z 1.26
+  | [grotte] epaisseur de roche : 0.87 m en paroi, 1.15 m au linteau (rayons lateraux et montants sur le maillage FINAL ; le plancher releve du terrain gele, voir controle_epaisseur)
+  | [grotte] domaine : pas 0.10 m, 30012 colonnes, x [-9.37 ; 8.83] y [-3.73 ; 12.57]
+  | [grotte] domaine : 2716 colonne(s) a vide qualifiant (>= 1.00 m) — 4 sans aucune matiere au-dessus (bouche/ciel), 2500 en matiere pleine, 212 lame(s) mince(s)
+  | [grotte] domaine : bord le plus mince 0.055 m en (0.93 ; -1.93), vide 1.48 m, 5 voisin(s) — terminaison laterale d'un vide, pas une lame
+  | [grotte] ERREUR: PLAQUE 0.050 m en (0.53 ; 5.77) sous 1.44 m de vide, 8/8 voisins — moins que EPAISSEUR_MIN_M = 0.80 m (cumul de la colonne 0.050 m)
+  | [grotte] ERREUR: PLAQUE 0.052 m en (0.63 ; 5.97) sous 1.41 m de vide, 8/8 voisins — moins que EPAISSEUR_MIN_M = 0.80 m (cumul de la colonne 0.052 m)
+  | [grotte] ERREUR: PLAQUE 0.061 m en (0.53 ; 5.97) sous 1.33 m de vide, 8/8 voisins — moins que EPAISSEUR_MIN_M = 0.80 m (cumul de la colonne 0.061 m)
+  | [grotte] ERREUR: PLAQUE 0.078 m en (0.63 ; 5.87) sous 1.48 m de vide, 8/8 voisins — moins que EPAISSEUR_MIN_M = 0.80 m (cumul de la colonne 0.078 m)
+  | [grotte] ERREUR: PLAQUE 0.114 m en (-0.07 ; -2.13) sous 2.63 m de vide, 6/8 voisins — moins que EPAISSEUR_MIN_M = 0.80 m (cumul de la colonne 0.114 m)
+  | [grotte] domaine : 167 plaque(s) sous le seuil, la plus mince 0.050 m
+
+=== EXPORT ARCHITECTURE : ROUGE ===
+RC=1

@@ -1,0 +1,8 @@
+[bool] === /home/user/zelda-r2a355/reference/SM_WaterfallCave_c184c8dc.glb
+[bool] avant booleen              faces  20072  bords libres 54832  non-manifold   0
+[bool] apres booleen a 500 m      faces  20071  bords libres   3  non-manifold   0
+[bool] VERDICT: LE BOOLEEN A MODIFIE LE MAILLAGE (faces 20072 -> 20071, bords 54832 -> 3)
+[bool] === assets/environment/caves/SM_WaterfallCave.glb
+[bool] avant booleen              faces  20072  bords libres 54836  non-manifold   0
+[bool] apres booleen a 500 m      faces  20072  bords libres   0  non-manifold   0
+[bool] VERDICT: INOFFENSIF — rien n'a bouge

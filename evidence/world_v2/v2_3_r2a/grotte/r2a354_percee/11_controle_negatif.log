@@ -1,0 +1,27 @@
+=== CONTROLE NEGATIF — journal integral ===
+
+-- 1. fermeture AVANT sabotage
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+-- 2. sabotage par ECRETAGE (deplacement de sommets, jamais ablation)
+[sabotage] cible (0.55 ; 5.95) rayon 0.60 m, ECRETAGE a z = 2.02 m
+[sabotage] 336 sommet(s) DEPLACE(S) sur 54831 lus ; z d'origine des sommets touches : [2.052 ; 3.864]
+[sabotage] taille 1490320 -> 1490320 octets (identique = seules les positions ont change)
+-- 3. fermeture APRES sabotage (le rouge ne peut pas venir d'une ouverture)
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+-- 4. mesure INDEPENDANTE (point-triangle, sans rayon ni parite)
+    DISTANCE EUCLIDIENNE au toit : 1.0992 m
+    DISTANCE EUCLIDIENNE au toit : 0.6517 m
+-- 5. ROUGE sur l'epaisseur
+  original   colonnes < 0,80 m : 24 au total, dont 0 DANS le disque r=0,60 autour de (0,55 ; 5,95)
+  sabote     colonnes < 0,80 m : 97 au total, dont 1 DANS le disque r=0,60 autour de (0,55 ; 5,95)
+-- 6. restauration byte-identique
+c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed  /tmp/nc/original.glb
+b01ae4706eb61e6a675cc51888cd006e8b1afab7cbaa6aceba199a20268c8a65  /tmp/nc/sabote.glb
+c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed  /tmp/nc/restaure.glb
+cmp : identiques
+-- 7. VERT retrouve
+    DISTANCE EUCLIDIENNE au toit : 1.0992 m

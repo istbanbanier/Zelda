@@ -1,0 +1,18 @@
+{
+  "commit": "f9f4f55448acc07fe084cc8a28cfbf077a52d321",
+  "display_server": "X11",
+  "distinct_colors_sampled": 4598,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 40,
+  "height": 720,
+  "label": "v2_2_fondation_cam01",
+  "luma_mean": 0.674,
+  "luma_stddev": 0.1456,
+  "png": "evidence/world_v2/v2_2/captures/capture_cam01.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "timestamp_utc": "2026-08-13 12:31:53",
+  "width": 1280
+}

@@ -1,0 +1,13 @@
+# CONTRÔLES V2.3 (lieux) — ROUGES AVANT construction, géométrie de 158561e
+# Date : 2026-08-14T06:57:15Z ; 7 échecs nommés : lot pilote resté
+# marqueurs, registre vide (0/9), grotte/bassin/récompenses/pylône absents.
+# Un seul vert légitime : aucun acteur ni blocage de route (état vide sûr).
+  ok   test_world_v2_places_contract.gd::test_aucun_acteur_et_les_routes_restent_libres (3 assertions)
+=== RÉSULTAT: 1 réussi(s), 7 échoué(s) ===
+  ÉCHEC: test_world_v2_places_behavior.gd::test_la_grotte_a_un_seuil_et_un_interieur_praticables — la grotte a un seuil et un intérieur praticables (1 écart(s)) — waterfall_cave : lieu ABSENT (resté marqueur)
+  ÉCHEC: test_world_v2_places_behavior.gd::test_le_bassin_conducteur_garde_son_comportement — le bassin conducteur garde son comportement (1 écart(s)) — conductive_basin : lieu ABSENT (resté marqueur)
+  ÉCHEC: test_world_v2_places_behavior.gd::test_les_recompenses_canoniques_sont_raccordees — les récompenses canoniques sont raccordées (8 écart(s)) — valley.poi.riverside_village.01 : lieu ABSENT ; valley.poi.abandoned_farm.01 : lieu ABSENT ; valley.poi.stone_bridge.01 : lieu ABSENT ; valley.poi.waterfall_cave.01 : lieu ABSENT ; valley.poi.thunderstruck_tree.01 : lieu ABSENT ; valley.poi.ember_raider_camps.01 : lieu ABSENT ; … et 2 autres
+  ÉCHEC: test_world_v2_places_behavior.gd::test_le_pylone_est_un_repere_majeur — le pylône est un repère majeur (1 écart(s)) — pylon : lieu ABSENT (resté marqueur)
+  ÉCHEC: test_world_v2_places_contract.gd::test_le_lot_pilote_est_fait_de_lieux_reels — le lot pilote est fait de lieux réels (9 écart(s)) — camp : RESTÉ SIMPLE MARQUEUR (absent du registre) ; valley.poi.riverside_village.01 : RESTÉ SIMPLE MARQUEUR (absent du registre) ; valley.poi.abandoned_farm.01 : RESTÉ SIMPLE MARQUEUR (absent du registre) ; valley.poi.stone_bridge.01 : RESTÉ SIMPLE MARQUEUR (absent du registre) ; valley.poi.waterfall_cave.01 : RESTÉ SIMPLE MARQUEUR (absent du registre) ; valley.poi.thunderstruck_tree.01 : RESTÉ SIMPLE MARQUEUR (absent du registre) ; … et 3 autres
+  ÉCHEC: test_world_v2_places_contract.gd::test_chaque_scene_du_registre_est_autonome — le registre couvre le lot pilote (0/9)
+  ÉCHEC: test_world_v2_places_contract.gd::test_les_fondations_epousent_le_terrain_gele — les fondations épousent le terrain gelé (1 écart(s)) — seulement 0 lieu(x) monté(s) sur 9 attendus

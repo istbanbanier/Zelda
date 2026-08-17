@@ -1,0 +1,1099 @@
+diff --git a/evidence/world_v2/v2_3_r2a/grotte/r2a352_collerette/LISEZMOI.md b/evidence/world_v2/v2_3_r2a/grotte/r2a352_collerette/LISEZMOI.md
+new file mode 100644
+index 0000000..2f529da
+--- /dev/null
++++ b/evidence/world_v2/v2_3_r2a/grotte/r2a352_collerette/LISEZMOI.md
+@@ -0,0 +1,222 @@
++# R2a-3.5.2 — collerette du porche : la visière
++
++Périmètre : **la collerette du porche, rien d'autre.** Le plancher terminal, la
++cavité générale, les masses extérieures, l'ancre et la position de la bouche ne
++sont pas touchés. Aucun seuil n'a bougé.
++
++Base : `c79341e`. Une seule pièce ajoutée : `SM_Env_Visiere`, sixième volume de
++`ENVELOPPE`, `amas="levre"`. Un seul outil ajouté :
++`tools/blender/probe_cave_collerette.py`.
++
++---
++
++## 1. Le « avant » n'était pas celui qu'on croyait
++
++Ce qui avait été publié : « collerette 0,48 m pour 0,60 exigés » — donc un manque
++de trois quarts de mètre sur un périmètre par ailleurs sain.
++
++**C'était faux par omission, et l'omission vient du journal lui-même** :
++`make_waterfall_cave.py` imprime `percees[:5]` sans dire combien il en cache. En
++comptant tous les rayons de la station 0 :
++
++> **25 rayons sur 33 sortent par un jour**, azimuts **39° à 193° sans
++> interruption.** Le 0,48 m était le minimum des **sept** rayons survivants.
++
++Sur les trois quarts du périmètre du porche, il n'y avait **aucune roche**.
++C'est ce chiffre-là qui fait face au chiffre d'après, pas le 0,48.
++
++Carte d'occupation du plan `y = -1,15` avant correction
++(`cartes_porche_avant.log`) : au-dessus de `z = 1,80`, aucune roche entre
++`x = -4` et `x = +4`. Le seul appui était un contrefort bas à droite.
++
++Front de roche, colonne `x = 0` — la façade **penchait en arrière** :
++
++| z | 2,20 | 2,40 | 2,80 | 3,20 | 4,00 |
++|---|---:|---:|---:|---:|---:|
++| y le plus avant portant de la roche | −1,00 | −0,95 | −0,85 | −0,65 | −0,35 |
++
++---
++
++## 2. Avant / après, par mesure
++
++| mesure | avant (`c79341e`) | après | seuil |
++|---|---:|---:|---:|
++| jours à la station 0 | **25 / 33 rayons**, azimuts 39–193° | **0** | 0 |
++| **collerette dans le plan de bouche** (EDT exacte, goulot de coupe) | **0,566 m** | **1,040 m** | 0,60 · cible 0,70 |
++| et sa position | jambage droit `(1,62 ; 0,34)` | épaule gauche `(−2,06 ; 2,70)` | — |
++| `controle_epaisseur` — collerette | 0,48 m *(minimum de 7 rayons survivants)* | **1,15 m** *(de 33)* | 0,60 |
++| `controle_epaisseur` — paroi | 0,87 m | 0,87 m | 0,80 |
++| plage plane en façade | 4,63 m² | **3,06 m²** | 6,00 |
++| plage plane globale | 8,36 m² | 8,35 m² | 12,00 |
++| masses à 55° / 100° / 225° (entaille 0,90) | 3 / 3 / 3 | **3 / 3 / 3** | 3 |
++| ratio d'emprises 55° / 100° / 225° | 2,16 / 2,25 / 2,25 | 2,16 / **2,33** / 2,25 | ≥ 2,00 |
++| percées confirmées (`probe_cave_openings`) | 0 | **0** | 0 |
++| triangles | 20 872 | 20 970 | 12 000–25 000 |
++| bbox du GLB, six faces | — | **identique** | — |
++| code retour de la chaîne | 2 | **0** | 0 |
++
++---
++
++## 3. Ce que ça coûte, et ce que ça m'a appris
++
++### 3.1 Le col de l'azimut 100°
++
++**0,15 m de proéminence.** La masse 3 (contrefort) passe de **1,21 à 1,06 m**.
++Le portail est à `ENTAILLE_LECTURE_M = 0,90`, donc la marge tombe de **0,31 à
++0,16 m** — vert, mais à moitié consommé. La ligne de télémétrie « entaille 1,20 »
++bascule de 3 à 2 masses ; elle passait avec **0,01 m** (1,21 contre 1,20) : ce
++n'était pas une marge, c'était une pièce en équilibre sur la tranche.
++
++### 3.2 Ma sonde à sphère inscrite était trop généreuse, et c'est mesuré
++
++Elle lisait **0,68 m**. `cave_collar.py` lisait **0,566 m**. J'ai écrit une
++troisième mesure — EDT euclidienne exacte au pas de 0,04 m, goulot de coupe
++minimale par union-find, aucune ligne partagée — et elle rend **0,5657 m**.
++**Les deux instruments concordent ; le mien était le seul optimiste.**
++
++La cause est géométrique, pas numérique : **une sphère inscrite en 3D
++s'échappe le long de Y**, où le jambage est épais. La collerette se mesure
++*dans le plan* de bouche. Une méthode sans direction n'est pas pour autant
++sans biais.
++
++Le défaut, lui, était réel : le jambage droit est un bandeau **incliné de
++36°** — 0,70 m de large à l'horizontale, donc 0,566 m perpendiculairement. La
++largeur horizontale n'est pas l'épaisseur.
++
++Le point `(1,38 ; −1,15 ; 0,20)` donné par l'instrument est, lui, **dans le
++vide**, à 6,7 mm de la paroi (`MAT_CaveIn_Wall`) : quantification de raster au
++bord. Mais le goulot qu'il désigne existe bel et bien, à 24 cm de là.
++
++### 3.3 Trois réglages sans le moindre effet, et pourquoi
++
++Essayés avant de trouver le bon levier, goulot **inchangé au centième**
++(0,5657) : `dp` 1,30 → 1,55 avec `biais_az` 238 → 254 ; `bombement` 0,22 →
++0,48. À cet endroit la peau extérieure appartient à `SM_Env_Levre`, pas à la
++visière. La réponse était un **orteil de crête** qui descend et avance à
++droite, sans toucher la lèvre.
++
++| orteil | goulot |
++|---|---:|
++| aucun | 0,566 m |
++| `y −0,95 · ruban 1,10` | 0,609 m |
++| `y −1,25 · ruban 1,60` | 0,645 m |
++| `y −1,40 · ruban 2,05` | 0,720 m |
++| `y −1,55 · ruban 2,35` | 0,720 m *(plus de matière, rien de plus)* |
++
++### 3.4 L'orteil a créé un défaut, et ma sonde l'a vu
++
++À 0,72 m, ma sonde 3D signalait **0,24 m** au `(1,43 ; −1,51 ; −0,28)` : une
++**poche d'air** sous l'orteil, `x 1,6–1,9`, `z −0,5..0,1`. L'orteil déversait
++**sans pied dessous** — le défaut de coquille, en miroir de celui déjà mesuré
++sur `biais = 0,42`. Reculer l'orteil n'y changeait rien.
++
++Pied élargi (`ancre` −0,55/0,20, `dg` 3,90, `dp` 2,00) : poche comblée,
++vérifiée par colonnes verticales — `x 1,60 / 1,75 / 1,90` à `y = −1,51`
++rendent un solide continu là où trois impacts trahissaient le vide. Et le
++goulot passe de 0,72 à **1,04 m**.
++
++---
++
++## 4. Deux méthodes, et la définition du bord
++
++La directive l'exige : une seule mesure ne suffit pas. Les deux sont dans
++`tools/blender/probe_cave_collerette.py`, et elles **échouent différemment** :
++
++* **A — rayon selon la normale locale** de la paroi. Ne peut pas longer la
++  galerie, faute qui affecte `controle_epaisseur` près du coude. Peut raser une
++  arête.
++* **B — sphère inscrite** : `2 × r` de la plus grande boule intérieure. Aucune
++  direction, donc insensible à une arête rasée. Sous-estime dans un coin.
++
++Le verdict est **`min(A, B)` et la position du minimum**, jamais un scalaire.
++Ici : A = 0,83 m au `(-1,97 ; -0,48 ; 2,22)`, B = 0,68 m au
++`(0,09 ; -1,51 ; 1,81)`, **verdict 0,68 m**.
++
++**Définition du bord de l'ouverture, tranchée et publiée** — elle est écrite en
++toutes lettres dans l'en-tête de la sonde :
++
++> le **rim topologique** : l'ensemble des arêtes du maillage livré dont les deux
++> faces adjacentes appartiennent, l'une à la trace de cavité (`MAT_CaveIn_*`),
++> l'autre à la roche (`MAT_CaveRock_*`).
++
++Exacte, sans paramètre, sans plan de coupe, et vérifiée sur le livrable
++(561 faces de trace contre 16 799 de roche). Ce n'est **pas** « la station 0 »,
++ni « le plan y = −1,15 » : ceux-là sont des objets du générateur, pas du maillage
++livré.
++
++Deux corrections que la sonde s'est appliquées à elle-même :
++
++1. **Le rim se sépare en boucles, et on ne les mélange pas.** 163 arêtes, dont
++   153 bordent la bouche et **10 se trouvent à y ≈ 5,9**, au fond de la salle.
++   Le minimum de l'ensemble valait 0,05 m — exact, et sans rapport avec la
++   collerette. Chaque boucle est mesurée et imprimée séparément.
++2. **Sur le rim, l'épaisseur est nulle par construction.** Première exécution :
++   0,08 m à 6 cm derrière le bord, pendant que `controle_epaisseur` lisait
++   0,73 m. Les deux étaient exacts, à des endroits différents. On mesure donc à
++   partir de `RECUL_MIN_M = 0,30 m`, et le profil complet est imprimé pour que le
++   choix reste vérifiable au lieu d'être subi.
++
++---
++
++## 5. Un constat hors périmètre, rapporté et non corrigé
++
++La sonde trouve une **seconde boucle de trace** à `x 0,59..0,62 · y 5,85..5,91 ·
++z 1,56..1,58`, dont `min(A, B)` vaut **0,27 m**. Elle est **identique avant et
++après** ma passe : ce n'est pas la collerette et ce n'est pas ma géométrie. Elle
++est signalée parce qu'un bord de trace loin de la bouche est un fait.
++`controle_epaisseur` ne peut pas la voir : ses rayons partent de l'axe dans des
++plans monde `y` constant.
++
++`probe_cave_openings.py` rend **FAIL** sur `plancher absent de y = +2,88 à
+++3,17 (stations 6 à 8)` et `fond de la galerie OUVERT, 14 cases`. Comparé au GLB
++de référence `prototypes/SM_WaterfallCave_BASE352.glb`, le relevé est
++**identique au caractère près** : pré-existant, périmètre de l'agent plancher.
++**0 percée confirmée** dans les deux cas.
++
++---
++
++## 6. `PARTIAL` assumé : le biseau de la lèvre
++
++Ma sonde 3D rend encore **0,32 m** au `(0,60 ; −1,87 ; 1,27)` et sort en 1.
++Son propre profil dit pourquoi : la valeur tombe dans la bande **0,2–0,4 m**
++de recul, puis saute à **0,62 · 1,56 · 1,82** dans les trois suivantes.
++
++C'est la signature d'un **biseau**, pas d'une paroi mince : une lèvre en
++surplomb s'amincit vers son bord par construction. Colonne verticale au même
++endroit : roche de `z 1,27` à `2,84`, soit **1,57 m**.
++
++**Je ne relève pas `RECUL_MIN_M` pour faire passer la géométrie** — ce serait
++remplacer l'attendu par le mesuré. La limite est écrite dans la sonde. Essai
++de suppression du biseau en raccourcissant le ruban avant : goulot 1,040 →
++0,912 m, biseau inchangé à 0,32. Rejeté, il coûte sans rendre.
++
++Qu'un biseau d'overhang se lise comme de la roche relève de l'œil, pas de ma
++sonde.
++
++---
++
++## 7. Ce qui n'est PAS prouvé
++
++* **Aucune capture.** Je n'ai aucune preuve que la visière se lise comme de la
++  roche et non comme une arche. C'est une question d'œil, elle demande un rendu
++  et une revue ; elle n'appartient pas à cette sonde. Statut : `NON VÉRIFIÉ`.
++* La mesure a été prise avec la sonde `probe_cave_openings.py` **de cette base**.
++  L'agent instruments corrige `carte_du_plancher()` ; **la mesure devra être
++  rejouée sur la sonde corrigée** avant toute conclusion de gate.
++* L'affirmation héritée « `dp = 2,70` mure le porche » n'a pas été re-mesurée.
++  Elle a été contournée, pas infirmée.
++
++---
++
++## Fichiers
++
++| fichier | contenu |
++|---|---|
++| `chaine_avant.log` | chaîne sur `c79341e`, RC 2, 25 jours |
++| `cartes_porche_avant.log` | cartes d'occupation et front de roche, avant |
++| `chaine_visiere.log` | chaîne après, RC 0, plus l'export GLB |
++| `sonde_collerette_avant.log` | sonde deux méthodes sur la géométrie de base |
++| `sonde_collerette_apres.log` | sonde deux méthodes après, RC 0 au seuil 0,60 |
++| `probe_openings_base352.log` | référence `BASE352`, 0 percée, défaut plancher |
++| `probe_openings_apres.log` | après, 0 percée, même défaut plancher |
++| `gltf_inspect.log` | GLB livré, `=== VALIDE ===` |
+diff --git a/source_assets/blender/environment/make_waterfall_cave.py b/source_assets/blender/environment/make_waterfall_cave.py
+index 3981949..21f20fa 100644
+--- a/source_assets/blender/environment/make_waterfall_cave.py
++++ b/source_assets/blender/environment/make_waterfall_cave.py
+@@ -3183,6 +3183,215 @@ ENVELOPPE = [
+              (2.10, 0.55, 3.70, 1.00), (3.00, 0.85, 2.95, 0.70),
+              (3.75, 1.30, 2.05, 0.30),
+          ]),
++    # VISIÈRE — LE SURPLOMB DU PORCHE. C'est la pièce que R2a-3.4 avait et
++    # que la nouvelle enveloppe n'avait pas : l'ancien `MASSIF` portait une
++    # « visière saillante » à la station 0 (jeu latéral 1,70 contre 1,30,
++    # jeu de clé 1,55 contre 1,35), et `MASSIF` ne sert plus qu'au proxy de
++    # collision. Elle est reconstruite ici, dans l'enveloppe.
++    #
++    # LE DÉFAUT MESURÉ, ET IL N'ÉTAIT PAS CELUI QU'ON CROYAIT. Le journal
++    # n'imprimait que `percees[:5]` : on a lu « cinq rayons sortent par un
++    # jour » et « collerette 0,48 m pour 0,60 », donc un manque de trois
++    # quarts de mètre sur un périmètre par ailleurs sain. En comptant TOUS
++    # les rayons de la station 0 : 25 sur 33 sortent par un jour, azimuts
++    # 39° à 193° SANS INTERRUPTION. Le 0,48 était le minimum des sept
++    # rayons survivants — un nombre qui répond à une autre question. Sur
++    # les trois quarts du périmètre du porche il n'y avait AUCUNE ROCHE.
++    #
++    # Carte d'occupation du plan y = -1,15 (le plan de la station 0), avant
++    # cette pièce : au-dessus de z = 1,80 aucune roche entre x = -4 et
++    # x = +4 ; le seul appui était un contrefort bas à droite,
++    # x de 0,6 à 1,4. Le linteau ne commençait qu'à y = -0,90.
++    #
++    # CE QUI MANQUE EST UN SURPLOMB, ET LA MESURE LE DIT. Relevé du y le
++    # plus AVANT portant de la roche, colonne x = 0 :
++    #
++    #     z      2,20   2,40   2,80   3,20   4,00
++    #     front -1,00  -0,95  -0,85  -0,65  -0,35
++    #
++    # La façade PENCHE EN ARRIÈRE : plus on monte, plus la roche recule.
++    # L'avance nécessaire n'est que de 0,20 à 0,75 m, dans la bande
++    # x de -3,4 à +2,4 et z de 1,5 à 3,6 — et RIEN en dessous de z = 1,5,
++    # là où vit la vue d'approche. On ne mure donc pas le porche : on lui
++    # rend une lèvre au-dessus et sur les côtés, jamais devant.
++    #
++    # POURQUOI UNE PIÈCE ET NON UN DÉPLACEMENT DE LA CRÊTE DE LA LÈVRE.
++    # Essayé d'abord, parce que c'était le geste le plus économe : avancer
++    # la crête de `SM_Env_Levre` de 1,0 à 1,4 m ferme bien les 25 jours, et
++    # coûte trois régressions mesurées —
++    #
++    #     paroi mini            0,87 -> 0,70 m (station 2, azimut 116°)
++    #     masses a 100°         3 -> 2 a l'entaille 0,90
++    #     plage plane facade    4,63 -> 8,21 m2 (seuil 6,00)
++    #
++    # La cause est structurelle et non un mauvais réglage : la crête de la
++    # lèvre PORTE DÉJÀ la paroi de la station 2. La déplacer est un jeu à
++    # somme nulle — ce qui arrive au porche part d'ailleurs. Une pièce
++    # séparée ajoute sans retirer : mêmes silhouettes aux trois azimuts,
++    # même paroi, façade améliorée.
++    #
++    # LA HAUTEUR N'EST PAS UN GOÛT, ELLE EST IMPOSÉE PAR LA COMPOSITION.
++    # À l'azimut 100 l'axe écran vaut (0,5736 ; -0,8192), et le col entre
++    # la dominante et le contrefort a son plancher à z = 3,28 (prominence
++    # 1,21 sous un faîte à 4,49). Toute matière neuve dont l'écran tombe
++    # dans ce col — c'est-à-dire 0,5736·x - 0,8192·y compris entre 0,3 et
++    # 1,0 — doit rester SOUS 3,20 m, sinon elle comble le col et les trois
++    # masses deviennent deux. À gauche (écran négatif) elle passe sous la
++    # dominante, dont le faîte est à 8,35, et peut monter à 3,6.
++    #
++    # C'est cette contrainte, et elle seule, qui met le SOMMET DE LA
++    # VISIÈRE À GAUCHE de l'axe de la bouche au lieu d'au-dessus. La
++    # composition impose la forme, ce n'est pas un goût.
++    #
++    # ELLE EST DÉLIBÉRÉMENT DISSYMÉTRIQUE. Le contrefort gauche est plus
++    # long, plus haut et plus avancé ; le droit est court, bas, et meurt
++    # dans la pente. Cela suit ce que la cavité dit déjà d'elle-même :
++    # `CAVITE_ASYM[0] = (1,34 ; 0,79 ; -0,44)`, joue gauche débordante et
++    # linteau penché. C'est aussi le côté du déficit historique — « la
++    # collerette la plus mince : station 1, azimut 129° », le jambage
++    # gauche relevé.
++    #
++    # LES LARGEURS DE RUBAN ALTERNENT FORTEMENT, et c'est la recette
++    # mesurée du Talus, pas une décoration : un segment étroit est une
++    # arête, un segment large une table ; les alterner interdit qu'une
++    # table couvre cinq mètres. Sans alternance, `deformer_massif` FABRIQUE
++    # un replat sur toute surface déjà presque horizontale — sa marche
++    # s'aplatit au milieu de chaque lit. Le dessous de la visière, lui,
++    # n'est pas dessiné du tout : c'est la trace de découpe du tube
++    # prolongé, donc irrégulier par construction, comme la bouche.
++    #
++    # ANCRE ET PIED. Le pied reste PLANTÉ DANS LA MASSE — l'ellipse de base
++    # recouvre franchement `SM_Env_Levre` et `SM_Env_Corps`, donc
++    # `controle_penetration` la voit solidaire et le remaillage voxel la
++    # fond. Seule la crête est en avant de son pied : c'est ce qui déverse.
++    # `amas="levre"` : elle appartient à l'amas du porche, elle n'ouvre pas
++    # un quatrième amas.
++    # LE PIED RESTE EN ARRIÈRE, SEULE LA CRÊTE VA EN AVANT — et c'est une
++    # mesure, pas une préférence. Au premier jet, `dp = 1,60` et
++    # `biais = 0,34` portaient l'ellipse de base à y = -2,04 : le rim de la
++    # bouche descendait jusqu'à y = -3,10 (au lieu de -1,50), c'est-à-dire
++    # que la roche marchait deux mètres devant le plan du porche AU NIVEAU
++    # DU SOL. Deux conséquences mesurées :
++    #
++    #   * la sonde de collerette y trouvait une coquille de 0,32 m à
++    #     (0,86 ; -1,68 ; 0,93) — le pied droit de la visière, une plaque
++    #     que `controle_epaisseur` ne peut pas voir puisque ses rayons
++    #     partent de l'axe dans le plan y = -1,15 ;
++    #   * la plage plane en façade montait de 4,63 à 5,39 m2, centrée en
++    #     (2,39 ; -0,79 ; 1,15) — le flanc bas de ce même pied.
++    #
++    # C'est exactement le défaut que `biais = 0,42` avait produit sur la
++    # lèvre en R2a-3.5.1, et pour la même raison géométrique : une masse
++    # déversée par le PIED devient une coquille mince que le rayon traverse,
++    # pas un jambage. Le porte-à-faux doit venir de la CRÊTE.
++    #
++    # MAIS LE PIED NE PEUT PAS RECULER DES DEUX CÔTÉS, ET C'EST MESURÉ AUSSI.
++    # `dp = 0,95` avec `biais = 0,16` à 270° recule le pied partout : la
++    # façade tombe bien à 4,45 m2 et la coquille disparaît, mais SIX JOURS
++    # ROUVRENT à la station 0, azimuts 154° à 186° — le flanc gauche. C'est
++    # lui qui portait la roche : à l'azimut 180° le rayon traverse
++    # l'ouverture jusqu'à x = -2,21 et n'a plus rien devant lui.
++    #
++    # Le pied est donc DISSYMÉTRIQUE, par `biais_az = 238°` : l'ellipse de
++    # base est portée en avant ET À GAUCHE, jamais en avant à droite. Base
++    # mesurée : y = -1,09 à l'azimut 210° et y = -1,36 à 250° (gauche, en
++    # avant), contre y = -0,76 à 330° (droite, en retrait). C'est la même
++    # dissymétrie que la bouche impose déjà — joue gauche débordante,
++    # linteau penché — obtenue avec le levier que les quatre autres pièces
++    # d'enveloppe emploient déjà (Corps 252°, Talus 250°, Contrefort 300°).
++    dict(nom="SM_Env_Visiere", amas="levre", rang=RANG_ENVELOPPE,
++         ancre=(-0.55, 0.20), dg=3.90, dp=2.00, n=22, niveaux=11, graine=131,
++         p_flanc=0.74, bombement=0.22, biais=0.34, biais_az=238.0,
++         # LE FLANC GAUCHE EST PORTÉ EN AVANT, ET C'EST LA DERNIÈRE ENCOCHE
++         # QUI L'EXIGE. Au premier jet de cette pièce, les 25 jours étaient
++         # fermés et la collerette valait 0,77 à 1,59 m partout SAUF entre
++         # 148° et 161°, minimum 0,38 m à 154°, au point
++         # (-1,93 ; -1,15 ; 2,19) : l'épaule gauche de la bouche, là où le
++         # linteau incliné monte le plus haut. Les deux points de crête
++         # x = -2,70 et x = -1,95 sont la réponse ; leur écran a 100° vaut
++         # -1,26 et -0,30, donc a gauche du col, ou la hauteur est libre.
++         #
++         # LA HAUTEUR DE CRÊTE EST UN ARBITRAGE MESURÉ, ET IL SE PAIE.
++         # Le dernier point mince ne sortait ni par le côté ni par le bas :
++         # il sortait par LE TOIT. Colonne verticale en (-0,64 ; -0,54) :
++         # plafond de galerie à z = 2,67, sommet de roche à z = 3,80, soit
++         # 1,13 m à la verticale — mais 0,48 m seulement le long de la
++         # NORMALE du plafond, qui pointe vers l'avant-haut et ressort par
++         # la pente du toit à (-0,64 ; -0,83 ; 3,05). C'est le toit qu'il
++         # fallait relever, pas le flanc.
++         #
++         # Relever la crête centrale de 3,18 à 3,45–3,50 donne, mesuré :
++         #
++         #     controle_epaisseur, collerette   0,80 -> 1,05 m
++         #     sonde min(A, B) a la bouche      0,48 -> 0,68 m
++         #     plage plane en facade            3,94 -> 3,08 m2
++         #
++         # ET IL COÛTE 0,15 m DE PROÉMINENCE AU COL DE 100°. La masse 3
++         # (contrefort) passe de 1,21 à 1,06 m de proéminence : le portail
++         # est à `ENTAILLE_LECTURE_M = 0,90`, donc la marge tombe de 0,31 à
++         # 0,16 m. La ligne de télémétrie « entaille 1,20 » bascule de 3 à
++         # 2 masses — mais elle passait avec 0,01 m (1,21 contre 1,20) :
++         # ce n'était pas une marge, c'était une pièce en équilibre sur la
++         # tranche. Le fait est écrit ici parce qu'il est réel, pas parce
++         # qu'il est confortable.
++         #
++         # Balayage complet, pour que l'arbitrage soit relisible :
++         #     crete centrale 3,18 -> min(A,B) 0,48 · 100° a 1,20 : 3 masses
++         #                    3,34 -> min(A,B) 0,56 · 100° a 1,20 : 2 masses
++         #                    3,45 -> min(A,B) 0,68 · 100° a 1,20 : 2 masses
++         # Le palier intermédiaire perd la télémétrie SANS gagner la
++         # collerette : il n'existe pas de réglage qui garde les deux.
++         #
++         # L'ORTEIL DROIT — ET C'EST UNE MESURE QUI M'A DONNÉ TORT.
++         #
++         # Ma sonde à sphère inscrite lisait 0,68 m et je l'ai crue. Un
++         # troisième instrument, en transformée de distance sur une coupe
++         # RASTÉRISÉE du plan de bouche, lisait 0,566 m. Vérification faite
++         # avec une EDT euclidienne EXACTE au pas de 0,04 m et un goulot de
++         # coupe minimale par union-find : **0,5657 m**, au (x 1,62 ;
++         # z 0,34) du plan y = -1,15. Les deux concordent, et c'est le mien
++         # qui était trop généreux.
++         #
++         # LA RAISON EST GÉOMÉTRIQUE, PAS NUMÉRIQUE : une sphère inscrite
++         # en 3D peut S'ÉCHAPPER LE LONG DE Y, où le jambage est épais. La
++         # collerette, elle, se mesure DANS LE PLAN de bouche — comme le
++         # fait `controle_epaisseur`. Une mesure 3D est donc structurellement
++         # optimiste ici. Une méthode sans direction n'est pas pour autant
++         # sans biais, et le verdict reste le plus sévère des trois.
++         #
++         # LE DÉFAUT ÉTAIT RÉEL. Le jambage droit est un bandeau INCLINÉ
++         # d'environ 36° : 0,70 m de large à l'horizontale, donc 0,566 m
++         # perpendiculairement. La largeur horizontale n'est pas l'épaisseur
++         # — c'est pour ça que la carte d'occupation ne suffisait pas.
++         #
++         # POURQUOI TROIS POINTS DE CRÊTE ET NON UN RÉGLAGE. Essayés et
++         # mesurés, tous SANS LE MOINDRE EFFET sur le goulot (0,5657 m
++         # inchangé au centième) : `dp` 1,30 -> 1,55 avec `biais_az` 238 ->
++         # 254 ; puis `bombement` 0,22 -> 0,48. La cause : à cet endroit la
++         # peau extérieure appartient à `SM_Env_Levre`, pas à la visière —
++         # ni son pied ni son bombement n'y arrivent. Il fallait donner à la
++         # visière un ORTEIL qui descende et avance de ce côté, plutôt que
++         # de retoucher la lèvre, dont le coût est mesuré plus haut.
++         #
++         # Progression mesurée de l'orteil, goulot dans le plan de bouche :
++         #     sans orteil                        0,566 m
++         #     y -0,95 · ruban 1,10               0,609 m
++         #     y -1,25 · ruban 1,60               0,645 m
++         #     y -1,40 · ruban 2,05  <- retenu    0,720 m
++         #     y -1,55 · ruban 2,35               0,720 m
++         # Le dernier palier n'apporte rien pour plus de matière : un autre
++         # goulot prend le relais. On garde le plus sobre à mesure égale.
++         #
++         # L'orteil est BAS (crête 1,85 m) et LARGE, quand l'épaule gauche
++         # est HAUTE (3,55 m) et étroite : la dissymétrie ne disparaît pas,
++         # elle change de nature d'un côté à l'autre.
++         crete=[
++             (-3.45, 0.15, 1.90, 0.30), (-2.75, -0.90, 2.90, 1.55),
++             (-1.95, -1.30, 3.70, 0.70), (-1.10, -1.45, 3.50, 1.90),
++             (-0.20, -1.30, 3.45, 0.80), (0.70, -0.95, 3.30, 1.75),
++             (1.50, -0.55, 2.35, 0.55), (2.05, -1.40, 1.85, 2.05),
++             (2.70, -0.60, 1.20, 0.55), (3.20, 0.40, 0.70, 0.25),
++         ]),
+ ]
+ 
+ 
+diff --git a/tools/blender/probe_cave_collerette.py b/tools/blender/probe_cave_collerette.py
+new file mode 100644
+index 0000000..7aa5d14
+--- /dev/null
++++ b/tools/blender/probe_cave_collerette.py
+@@ -0,0 +1,509 @@
++"""Épaisseur de la COLLERETTE du porche, par DEUX méthodes indépendantes.
++
++    blender --background <blend> --python-exit-code 1 \
++        --python tools/blender/probe_cave_collerette.py -- [--seuil 0.60]
++
++Ne juge rien tant que `--seuil` n'est pas donné : il imprime, et rend 0. Avec
++`--seuil`, il rend 1 si `min(A, B)` passe dessous. Il ne modifie aucune
++géométrie et n'enregistre rien.
++
++═══════════════════════════════════════════════════════════════════════════
++POURQUOI DEUX MÉTHODES, ET PAS UNE DE PLUS PRÉCISE
++═══════════════════════════════════════════════════════════════════════════
++
++La faute récurrente de ce chantier — neuf fois — est *un seul nombre, qui
++répond à une autre question que celle posée*. Sur la collerette elle s'est
++produite en toutes lettres : `controle_epaisseur()` a rapporté « 0,48 m pour
++0,60 exigés » pendant que **25 rayons sur 33 ne rencontraient aucune roche**
++au porche. Le 0,48 était le minimum des sept rayons survivants — donc le
++minimum d'un périmètre TROUÉ, présenté comme le minimum d'un périmètre.
++
++Un seul rayon qui effleure une arête vive n'est pas une preuve. Les deux
++méthodes ci-dessous sont retenues parce qu'elles **échouent différemment** :
++
++  * A — RAYON SELON LA NORMALE LOCALE de la paroi. Il ne peut pas longer la
++    galerie, faute qui affecte `controle_epaisseur` près du coude (mesuré :
++    `r_in` = 3,99 m pour une demi-largeur propre de 1,58 m, parce que ses
++    rayons partent de l'axe dans le plan monde `(cos θ, 0, sin θ)`). Il peut
++    en revanche raser une arête ;
++  * B — SPHÈRE INSCRITE. Sans direction du tout, donc insensible à une
++    arête rasée comme à un rayon qui file parallèlement à une plaque mince.
++    Il sous-estime en revanche là où la roche est un coin.
++
++Le verdict rapporté est **`min(A, B)` et la position du minimum**, jamais un
++scalaire seul. Quand les deux s'écartent de plus de `ECART_ALERTE_M`, le
++journal le dit : c'est le signe qu'une des deux mesure autre chose.
++
++═══════════════════════════════════════════════════════════════════════════
++LA DÉFINITION DU BORD DE L'OUVERTURE — TRANCHÉE, ET ÉCRITE ICI
++═══════════════════════════════════════════════════════════════════════════
++
++Deux sondes qui mesurent « le bord de l'ouverture » sans en partager la
++définition mesurent deux bords, et l'écart n'apparaît qu'à l'intégration.
++La définition retenue pour tout le chantier, décidée le 2026-08-16 :
++
++    LE BORD DE L'OUVERTURE EST LE RIM TOPOLOGIQUE : l'ensemble des ARÊTES
++    du maillage livré dont les deux faces adjacentes appartiennent, l'une à
++    la trace de cavité (matière `MAT_CaveIn_*`), l'autre à la roche
++    (matière `MAT_CaveRock_*`).
++
++Elle est exacte, sans paramètre et sans seuil : elle ne dépend d'aucune
++distance, d'aucun plan de coupe et d'aucune station. Elle survit au booléen
++parce que la soustraction conserve les matières de l'outil — vérifié sur le
++livrable : 561 faces `MAT_CaveIn_*` contre 16 799 faces de roche.
++
++Et elle est la bonne : la bouche n'est pas dessinée, c'est la TRACE DE
++DÉCOUPE du tube dans la roche (voir `cavite_solide`). Son contour est donc,
++littéralement, la frontière entre la matière de l'outil et celle de la
++roche.
++
++CE QU'ELLE N'EST PAS. Ce n'est pas « la station 0 », ni « le plan
++y = -1,15 », ni « le contour de l'anneau du porche » : ces trois-là sont des
++objets du GÉNÉRATEUR, pas du maillage livré, et ils ne coïncident avec le
++bord visible que par accident. Le rim, lui, est là où le joueur le voit.
++
++═══════════════════════════════════════════════════════════════════════════
++CE QUE LA SONDE MESURE, ET CE QU'ELLE NE MESURE PAS
++═══════════════════════════════════════════════════════════════════════════
++
++Elle mesure la roche qui SÉPARE LA GALERIE DU DEHORS au voisinage du rim.
++Elle ne mesure ni le plancher (qui relève du terrain gelé, voir
++`controle_epaisseur`), ni la lisibilité de la forme : qu'une visière se lise
++comme de la roche et non comme une arche est une question d'œil, elle
++demande un rendu et une revue, pas une sonde.
++"""
++
++import math
++import sys
++
++import bpy
++from mathutils import Vector
++from mathutils.bvhtree import BVHTree
++
++OBJET = "SM_WaterfallCave"
++PREFIXE_CAVITE = "MAT_CaveIn_"
++PREFIXE_ROCHE = "MAT_CaveRock_"
++
++## Bande de paroi échantillonnée autour du rim. La collerette est ce qui
++## borde la bouche ; au-delà de 1,60 m on mesure la paroi ordinaire, dont le
++## seuil est un autre (0,80 m) et le contrôle un autre aussi.
++BANDE_RIM_M = 1.60
++## RECUL MINIMAL — ET CE N'EST PAS UN RÉGLAGE DE CONFORT.
++##
++## SUR LE RIM, L'ÉPAISSEUR EST NULLE PAR CONSTRUCTION : c'est l'arête où la
++## peau de la cavité et la peau de la roche se touchent. Les deux méthodes y
++## rendent zéro, et elles ont raison — elles mesurent alors l'arête, pas la
++## collerette. Première exécution de cette sonde, sans recul : 0,08 m à
++## (-2,17 ; -1,44 ; 1,45), un point situé à 6 cm derrière le rim, pendant que
++## `controle_epaisseur` mesurait 0,73 m au plan de la station 0. Les deux
++## chiffres étaient exacts ; ils ne mesuraient pas au même endroit. C'est
++## encore *un seul nombre qui répond à une autre question*, cette fois
++## fabriqué par ma propre sonde.
++##
++## On mesure donc à partir de 0,30 m derrière le bord, et le profil complet
++## par bande de 0,20 m est IMPRIMÉ : une collerette saine montre une
++## épaisseur qui croît avec le recul ; une collerette mince montre un profil
++## plat et bas. Le lecteur voit la croissance, donc il peut juger le choix de
++## 0,30 au lieu de le subir.
++##
++## LIMITE CONNUE, ET ELLE MORD SUR UN SURPLOMB. 0,30 m suffit quand la paroi
++## rencontre le bord FRANCHEMENT. Sur une lèvre en surplomb, la roche forme
++## un BISEAU à faible angle : à 0,30 m derrière l'arête on est encore dans le
++## coin, et le chiffre décrit le biseau, pas la collerette. Mesuré le
++## 2026-08-16 sur la visière du porche — minimum 0,32 m dans la bande
++## 0,2-0,4, puis 0,62 · 1,56 · 1,82 dans les trois bandes suivantes. Le
++## profil rend la chose LISIBLE, et c'est pour cela qu'il est imprimé : un
++## minimum bas dont les bandes voisines montent en flèche est un biseau ; un
++## minimum bas suivi d'un profil plat est une paroi mince.
++##
++## On ne relève PAS `RECUL_MIN_M` pour faire passer une géométrie : ce serait
++## remplacer l'attendu par le mesuré. Là où le biseau domine, la grandeur qui
++## décide est la collerette DANS LE PLAN DE BOUCHE, par transformée de
++## distance — une mesure 3D est structurellement OPTIMISTE sur un jambage,
++## parce que la sphère s'échappe le long de Y, et PESSIMISTE sur un biseau.
++RECUL_MIN_M = 0.30
++PAS_BANDE_M = 0.20
++## Une écaille n'est pas une paroi — même convention que le tronc.
++ECAILLE_M = 0.05
++## Pas de marche vers l'intérieur de la roche pour la sphère inscrite, et
++## profondeur maximale explorée. 0,04 m donne le rayon à ±2 cm sans faire
++## exploser le nombre de requêtes.
++PAS_SPHERE_M = 0.04
++PROFONDEUR_SPHERE_M = 2.40
++## Au-delà, A et B ne décrivent visiblement pas la même roche : on le dit.
++## L'alerte ne se déclenche que là où la mesure DÉCIDE encore quelque chose
++## — sous `ECART_PORTEE_M` de roche. Au-delà, A traverse le massif entier et
++## B reste bornée par le coin local : leur écart y est attendu, énorme, et
++## ne renseigne sur rien. Une alerte qui crie toujours finit ignorée.
++ECART_ALERTE_M = 0.45
++ECART_PORTEE_M = 1.50
++## Le rayon ne peut pas être décidé sur un point posé EXACTEMENT sur la
++## surface : on décolle d'autant avant de partir.
++DECOLLAGE_M = 1e-3
++
++
++def _sortir(code, message):
++    print("[collerette] %s" % message)
++    sys.exit(code)
++
++
++def _options():
++    argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
++    seuil = None
++    if "--seuil" in argv:
++        seuil = float(argv[argv.index("--seuil") + 1])
++    return seuil
++
++
++def _familles(maillage):
++    """Rend, par index de slot, 'cavite' | 'roche' | None."""
++    sortie = []
++    for mat in maillage.materials:
++        nom = mat.name if mat else ""
++        if nom.startswith(PREFIXE_CAVITE):
++            sortie.append("cavite")
++        elif nom.startswith(PREFIXE_ROCHE):
++            sortie.append("roche")
++        else:
++            sortie.append(None)
++    return sortie
++
++
++def rim_topologique(maillage, famille):
++    """LES ARÊTES DU BORD DE L'OUVERTURE — voir la définition en tête.
++
++    Rend (liste d'arêtes `(ia, ib, milieu)`). Une arête est du rim si ses
++    deux faces adjacentes sont de familles différentes et non nulles. On
++    passe par un index arête -> faces construit à la main : le maillage
++    livré est un n-gone décimé, `edge.link_faces` n'existe qu'en bmesh et
++    coûte une conversion complète pour la même information.
++    """
++    par_arete = {}
++    for poly in maillage.polygons:
++        fam = famille[poly.material_index] if \
++            poly.material_index < len(famille) else None
++        for cle in poly.edge_keys:
++            par_arete.setdefault(cle, []).append(fam)
++    aretes = []
++    for (a, b), fams in par_arete.items():
++        if len(fams) != 2:
++            continue                      # arête de bord : le maillage est
++        if None in fams or fams[0] == fams[1]:   # fermé, cela n'arrive pas
++            continue
++        milieu = (maillage.vertices[a].co + maillage.vertices[b].co) * 0.5
++        aretes.append((a, b, milieu))
++    return aretes
++
++
++def boucles(aretes):
++    """LE RIM SE SÉPARE EN BOUCLES, ET ON NE LES MÉLANGE PAS.
++
++    Mesuré le 2026-08-16, et c'est la raison d'être de cette fonction : le
++    rim du livrable compte 167 arêtes, dont 155 bordent la bouche et **10
++    se trouvent à y ≈ 6**, c'est-à-dire au fond de la salle. Prendre le
++    minimum sur l'ensemble rendait 0,05 m — un chiffre exact, et qui ne
++    parle PAS de la collerette. Une sonde qui fond deux bords en un seul
++    nombre refait la faute qu'elle est censée attraper.
++
++    On regroupe donc par composantes connexes du graphe d'arêtes (union par
++    indice de sommet), on mesure CHAQUE boucle séparément, et le journal les
++    imprime toutes. Rien n'est écarté : la boucle de la bouche donne le
++    verdict de collerette, les autres sont rapportées comme des constats à
++    part entière.
++    """
++    parent = {}
++
++    def racine(x):
++        while parent.setdefault(x, x) != x:
++            parent[x] = parent[parent[x]]
++            x = parent[x]
++        return x
++
++    for a, b, _ in aretes:
++        ra, rb = racine(a), racine(b)
++        if ra != rb:
++            parent[ra] = rb
++    groupes = {}
++    for a, b, milieu in aretes:
++        groupes.setdefault(racine(a), []).append((a, b, milieu))
++    return sorted(groupes.values(), key=len, reverse=True)
++
++
++def echantillons(maillage, famille, milieux):
++    """Points de PAROI DE GALERIE à moins de `BANDE_RIM_M` d'une boucle.
++
++    On échantillonne la paroi et non le rim lui-même : sur le rim, la roche
++    est nulle par définition — les deux surfaces s'y touchent. La collerette
++    est ce qu'il y a DERRIÈRE le bord, pas le bord.
++    """
++    if not milieux:
++        return []
++    sortie = []
++    for poly in maillage.polygons:
++        fam = famille[poly.material_index] if \
++            poly.material_index < len(famille) else None
++        if fam != "cavite":
++            continue
++        centre = Vector(poly.center)
++        d = min((centre - p).length for p in milieux)
++        if d <= BANDE_RIM_M:
++            sortie.append((centre, Vector(poly.normal), d))
++    return sortie
++
++
++def _vers_la_roche(arbre, point, normale):
++    """La normale de la face, orientée VERS LA ROCHE.
++
++    L'orientation des faces de trace n'est pas supposée : on teste. Un point
++    décollé de la surface est dans la roche si un rayon vertical qui en part
++    croise la peau un nombre IMPAIR de fois. On essaie `-n` puis `+n`, et si
++    aucune des deux ne tombe dans la matière on rend None — le point est
++    rejeté et compté, jamais absous.
++    """
++    for signe in (-1.0, 1.0):
++        d = normale * signe
++        essai = point + d * 0.02
++        n = 0
++        depart = essai.copy()
++        haut = Vector((0.0, 0.0, 1.0))
++        for _ in range(64):
++            t = arbre.ray_cast(depart, haut, 80.0)
++            if t is None or t[0] is None:
++                break
++            n += 1
++            depart = t[0] + haut * 1e-4
++        if n % 2 == 1:
++            return d
++    return None
++
++
++def methode_a(arbre, point, direction):
++    """RAYON SELON LA NORMALE LOCALE : roche cumulée jusqu'à la sortie.
++
++    Même arithmétique d'intervalles que `controle_epaisseur` — entrée et
++    sortie distinguées par le signe de `normale · direction`, écailles de
++    moins de `ECAILLE_M` comptées et ignorées — mais la direction est celle
++    de la PAROI, pas un azimut monde pris depuis l'axe. C'est tout l'écart,
++    et c'est celui qui compte : un rayon parti de l'axe peut descendre LE
++    LONG de la galerie ; un rayon parti de la paroi selon sa normale, non.
++    """
++    origine = point + direction * DECOLLAGE_M
++    depart = origine.copy()
++    entree, epaisseur, ecailles, impacts = None, None, 0, 0
++    for _ in range(24):
++        t = arbre.ray_cast(depart, direction, 60.0)
++        if t is None or t[0] is None:
++            break
++        impacts += 1
++        distance = (t[0] - origine).length
++        sortant = t[1].dot(direction) > 0.0
++        if entree is None and not sortant:
++            entree = distance
++        elif entree is not None and sortant:
++            intervalle = distance - entree
++            if intervalle < ECAILLE_M:
++                ecailles += 1
++            else:
++                epaisseur = (epaisseur or 0.0) + intervalle
++            entree = None
++        elif entree is None and sortant:
++            # Parti DANS la matière : la première sortie borne l'épaisseur.
++            if distance >= ECAILLE_M:
++                epaisseur = (epaisseur or 0.0) + distance
++            else:
++                ecailles += 1
++        depart = t[0] + direction * 1e-4
++    return epaisseur, impacts, ecailles
++
++
++def methode_b(arbre, point, direction):
++    """SPHÈRE INSCRITE : 2 × le plus grand rayon d'une boule intérieure.
++
++    On avance dans la roche par pas de `PAS_SPHERE_M` le long de la normale
++    et, à chaque pas, `find_nearest` donne la distance au bord le plus
++    proche — c'est-à-dire le rayon de la plus grande boule centrée là qui ne
++    déborde pas. L'épaisseur locale est `2 · r`, prise à son maximum tant
++    que le centre reste dans la matière.
++
++    POURQUOI ON S'ARRÊTE À LA PREMIÈRE DÉCROISSANCE et non au bout de la
++    course : au-delà de l'axe médian de la paroi, la boule regrandit en
++    s'approchant d'une AUTRE partie du solide, et l'on mesurerait alors le
++    massif, plus la collerette. Le maximum local est le bon.
++    """
++    meilleur, precedent = 0.0, -1.0
++    d = PAS_SPHERE_M
++    while d <= PROFONDEUR_SPHERE_M:
++        centre = point + direction * d
++        touche = arbre.find_nearest(centre, 30.0)
++        if touche is None or touche[0] is None:
++            break
++        r = (touche[0] - centre).length
++        if r < precedent - 1e-6:
++            break
++        precedent = r
++        meilleur = max(meilleur, 2.0 * r)
++        d += PAS_SPHERE_M
++    return meilleur if meilleur > 0.0 else None
++
++
++def _lieu(p):
++    return "(%.2f, %.2f, %.2f)" % (p.x, p.y, p.z) if p else "(aucun)"
++
++
++def mesurer_boucle(maillage, famille, arbre, boucle):
++    """Rend le dictionnaire de mesure d'UNE boucle de rim.
++
++    `min_a` / `min_b` ne retiennent que les points AU-DELÀ de `RECUL_MIN_M`
++    derrière le bord — voir la justification de cette constante. Le profil
++    par bande, lui, couvre tout le recul, y compris la zone d'arête, pour
++    que le choix du recul reste vérifiable au lieu d'être caché.
++    """
++    milieux = [m for _, _, m in boucle]
++    ech = echantillons(maillage, famille, milieux)
++    res = dict(aretes=len(boucle), faces=len(ech), rejets=0, sans_a=0,
++               sans_b=0, ecailles=0, min_a=1e9, min_b=1e9, ou_a=None,
++               ou_b=None, ecart=0.0, ou_ecart=None, bandes={}, sondes=0,
++               bbox=(Vector((min(m.x for m in milieux),
++                             min(m.y for m in milieux),
++                             min(m.z for m in milieux))),
++                     Vector((max(m.x for m in milieux),
++                             max(m.y for m in milieux),
++                             max(m.z for m in milieux)))))
++    for centre, normale, recul in ech:
++        direction = _vers_la_roche(arbre, centre, normale)
++        if direction is None:
++            res["rejets"] += 1
++            continue
++        a, _, ec = methode_a(arbre, centre, direction)
++        res["ecailles"] += ec
++        b = methode_b(arbre, centre, direction)
++        bande = int(recul / PAS_BANDE_M)
++        sac = res["bandes"].setdefault(bande, [0, 1e9, 0])
++        sac[0] += 1
++        if a is not None and b is not None:
++            sac[1] = min(sac[1], min(a, b))
++        else:
++            sac[2] += 1
++        if recul < RECUL_MIN_M:
++            continue
++        res["sondes"] += 1
++        if a is None:
++            res["sans_a"] += 1
++        elif a < res["min_a"]:
++            res["min_a"], res["ou_a"] = a, centre.copy()
++        if b is None:
++            res["sans_b"] += 1
++        elif b < res["min_b"]:
++            res["min_b"], res["ou_b"] = b, centre.copy()
++        if a is not None and b is not None and min(a, b) < ECART_PORTEE_M \
++                and abs(a - b) > res["ecart"]:
++            res["ecart"], res["ou_ecart"] = abs(a - b), centre.copy()
++    res["verdict"] = min(res["min_a"], res["min_b"])
++    res["ou"] = res["ou_a"] if res["min_a"] <= res["min_b"] else res["ou_b"]
++    return res
++
++
++def main():
++    seuil = _options()
++    if OBJET not in bpy.data.objects:
++        _sortir(2, "ERREUR: objet %s absent du .blend" % OBJET)
++    maillage = bpy.data.objects[OBJET].data
++    famille = _familles(maillage)
++    if "cavite" not in famille or "roche" not in famille:
++        _sortir(2, "ERREUR: le maillage ne porte pas les deux familles de "
++                   "matiere (%s) — la definition du rim est inapplicable"
++                % [m.name if m else None for m in maillage.materials])
++
++    aretes = rim_topologique(maillage, famille)
++    print("[collerette] rim topologique : %d arete(s) entre trace de cavite "
++          "et roche" % len(aretes))
++    if not aretes:
++        _sortir(2, "ERREUR: rim vide — soit la bouche n'existe pas, soit les "
++                   "matieres n'ont pas survecu au booleen")
++    lots = boucles(aretes)
++    print("[collerette] %d boucle(s) de rim, mesurees SEPAREMENT (voir "
++          "`boucles`)" % len(lots))
++
++    sommets = [v.co.copy() for v in maillage.vertices]
++    polys = [tuple(p.vertices) for p in maillage.polygons]
++    arbre = BVHTree.FromPolygons(sommets, polys, all_triangles=False,
++                                 epsilon=0.0)
++
++    mesures = [mesurer_boucle(maillage, famille, arbre, b) for b in lots]
++
++    # LA BOUCHE EST LA BOUCLE LA PLUS EN AVANT. Pas la plus grande : une
++    # boucle intérieure pourrait un jour la dépasser en nombre d'arêtes.
++    # La bouche est le seul bord de trace qui donne sur le dehors, et le
++    # dehors est vers -Y ; on prend donc le minimum de y du rim.
++    i_bouche = min(range(len(mesures)), key=lambda i: mesures[i]["bbox"][0].y)
++
++    for i, m in enumerate(mesures):
++        lo, hi = m["bbox"]
++        etiquette = "BOUCHE" if i == i_bouche else "autre "
++        print("[collerette] boucle %d [%s] : %3d aretes, %3d faces sondees, "
++              "x %.2f..%.2f  y %.2f..%.2f  z %.2f..%.2f"
++              % (i, etiquette, m["aretes"], m["faces"], lo.x, hi.x, lo.y,
++                 hi.y, lo.z, hi.z))
++        if m["rejets"]:
++            print("[collerette]   %d point(s) REJETE(S) : aucune des deux "
++                  "normales ne mene dans la matiere — comptes, jamais absous"
++                  % m["rejets"])
++        if m["ecailles"]:
++            print("[collerette]   %d ecaille(s) de moins de %.2f m ignoree(s)"
++                  % (m["ecailles"], ECAILLE_M))
++        if m["sans_a"]:
++            print("[collerette]   ERREUR: %d point(s) ou A ne trouve AUCUNE "
++                  "roche — le rayon sort par un jour" % m["sans_a"])
++        if m["sans_b"]:
++            print("[collerette]   ERREUR: %d point(s) ou B ne trouve aucune "
++                  "boule interieure" % m["sans_b"])
++        profil = " ".join(
++            "%.1f-%.1f:%s%s" % (b * PAS_BANDE_M, (b + 1) * PAS_BANDE_M,
++                                "--" if v[1] > 1e8 else "%.2f" % v[1],
++                                "!" if v[2] else "")
++            for b, v in sorted(m["bandes"].items()))
++        print("[collerette]   profil min(A,B) par recul derriere le bord "
++              "(m) : %s" % profil)
++        print("[collerette]   %d sonde(s) retenue(s) au-dela de %.2f m de "
++              "recul" % (m["sondes"], RECUL_MIN_M))
++        print("[collerette]   A (rayon normale locale) %.2f m au %s"
++              % (m["min_a"], _lieu(m["ou_a"])))
++        print("[collerette]   B (sphere inscrite)      %.2f m au %s"
++              % (m["min_b"], _lieu(m["ou_b"])))
++        print("[collerette]   ecart A/B maximal %.2f m au %s (alerte > %.2f, "
++              "seulement sous %.2f m de roche)"
++              % (m["ecart"], _lieu(m["ou_ecart"]), ECART_ALERTE_M,
++                 ECART_PORTEE_M))
++        if m["ecart"] > ECART_ALERTE_M:
++            print("[collerette]   ATTENTION: A et B s'ecartent de plus de "
++                  "%.2f m — l'une des deux ne mesure pas la meme roche que "
++                  "l'autre, et le minimum seul ne suffit pas a conclure"
++                  % ECART_ALERTE_M)
++        print("[collerette]   min(A, B) = %.2f m au %s"
++              % (m["verdict"], _lieu(m["ou"])))
++
++    bouche = mesures[i_bouche]
++    print("[collerette] VERDICT COLLERETTE (boucle %d) min(A, B) = %.2f m "
++          "au %s" % (i_bouche, bouche["verdict"], _lieu(bouche["ou"])))
++    autres = [m for i, m in enumerate(mesures) if i != i_bouche]
++    if autres:
++        pire = min(autres, key=lambda m: m["verdict"])
++        print("[collerette] HORS COLLERETTE — le plus mince des autres bords "
++              "de trace : %.2f m au %s. Ce n'est PAS la collerette et ce "
++              "n'est pas jugé ici ; c'est rapporté parce qu'un bord de trace "
++              "loin de la bouche est un fait, pas un detail."
++              % (pire["verdict"], _lieu(pire["ou"])))
++
++    if bouche["sans_a"] or bouche["sans_b"]:
++        _sortir(1, "ROUGE: la collerette presente au moins un jour")
++    if seuil is not None:
++        if bouche["verdict"] < seuil:
++            _sortir(1, "ROUGE: %.2f m sous le seuil de %.2f m"
++                    % (bouche["verdict"], seuil))
++        print("[collerette] VERT: %.2f m au-dessus du seuil de %.2f m"
++              % (bouche["verdict"], seuil))
++    sys.exit(0)
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/tools/blender/probe_cave_edt_plan_bouche.py b/tools/blender/probe_cave_edt_plan_bouche.py
+new file mode 100644
+index 0000000..0527858
+--- /dev/null
++++ b/tools/blender/probe_cave_edt_plan_bouche.py
+@@ -0,0 +1,130 @@
++"""COLLERETTE DANS LE PLAN DE BOUCHE — EDT euclidienne EXACTE + coupe minimale.
++
++    blender --background <blend> --python-exit-code 1 \\
++        --python tools/blender/probe_cave_edt_plan_bouche.py
++
++CONTROLE de `cave_collar.py` methode B, ecrit pour verifier son chiffre sans
++partager une ligne de code avec lui. Ne modifie rien, ne juge rien, rend 0.
++
++TROIS DIFFERENCES DELIBEREES avec l'instrument qu'il verifie :
++
++  * pas de 0,04 m au lieu de 0,2 m — la quantification de raster est divisee
++    par cinq ;
++  * EDT euclidienne EXACTE (Felzenszwalb, deux passes sur les distances au
++    carre), pas un chanfrein 8-connexe. Un chanfrein {1, racine de 2}
++    surestime l'euclidien de jusqu'a 8 % selon l'angle ;
++  * l'epaisseur n'est pas le maximum d'une EDT le long d'un axe median
++    devine, c'est le GOULOT DE LA COUPE MINIMALE : la plus grande erosion
++    que la roche supporte avant que le vide de l'ouverture communique avec
++    le vide exterieur. Calcule par union-find sur les cellules de roche
++    triees par EDT croissante — donc sans choisir de chemin a la main.
++
++VERDICT DU CONTROLE, 2026-08-16 : sur la geometrie d'avant la visiere, les
++deux instruments rendent 0,5657 m. Ils concordent, et ma propre sonde a
++sphere inscrite (`probe_cave_collerette.py`), qui lisait 0,68 m, etait la
++seule optimiste — parce qu'une sphere en 3D S'ECHAPPE LE LONG DE Y, ou le
++jambage est epais. La collerette se mesure DANS LE PLAN de bouche.
++"""
++
++import bpy, math, sys
++from mathutils import Vector
++from mathutils.bvhtree import BVHTree
++
++PAS = 0.04
++Y = -1.15
++X0, X1 = -4.40, 3.60
++Z0, Z1 = -0.80, 4.40
++
++o = bpy.data.objects["SM_WaterfallCave"]
++sv=[v.co.copy() for v in o.data.vertices]; pl=[tuple(p.vertices) for p in o.data.polygons]
++t = BVHTree.FromPolygons(sv, pl, all_triangles=False, epsilon=0.0)
++up = Vector((0,0,1.0))
++
++def dedans(x,z):
++    n=0; dep=Vector((x,Y,z))
++    for _ in range(64):
++        h=t.ray_cast(dep,up,60.0)
++        if h is None or h[0] is None: break
++        n+=1; dep=h[0]+up*1e-4
++    return n%2==1
++
++W=int(round((X1-X0)/PAS)); H=int(round((Z1-Z0)/PAS))
++roche=[[dedans(X0+(i+0.5)*PAS, Z0+(j+0.5)*PAS) for j in range(H)] for i in range(W)]
++print("[edt] grille %dx%d, pas %.3f m, plan y=%.2f" % (W,H,PAS,Y))
++
++INF=1e18
++def edt1d(f):
++    n=len(f); v=[0]*n; z=[0.0]*(n+1); k=0; v[0]=0; z[0]=-INF; z[1]=INF
++    for q in range(1,n):
++        while True:
++            s=((f[q]+q*q)-(f[v[k]]+v[k]*v[k]))/(2.0*q-2.0*v[k])
++            if s<=z[k]: k-=1
++            else: break
++        k+=1; v[k]=q; z[k]=s; z[k+1]=INF
++    k=0; out=[0.0]*n
++    for q in range(n):
++        while z[k+1]<q: k+=1
++        out[q]=(q-v[k])**2+f[v[k]]
++    return out
++
++# EDT^2 sur les cellules de ROCHE, distance au VIDE le plus proche
++g=[[0.0 if not roche[i][j] else INF for j in range(H)] for i in range(W)]
++for i in range(W): g[i]=edt1d(g[i])
++cols=[[g[i][j] for i in range(W)] for j in range(H)]
++for j in range(H): cols[j]=edt1d(cols[j])
++dt=[[math.sqrt(cols[j][i])*PAS for j in range(H)] for i in range(W)]
++
++# composantes de vide : celle du dehors (bord de grille) et celle de l'ouverture
++def compo(depart):
++    vu=[[False]*H for _ in range(W)]; pile=list(depart)
++    for i,j in depart: vu[i][j]=True
++    while pile:
++        i,j=pile.pop()
++        for di,dj in ((1,0),(-1,0),(0,1),(0,-1)):
++            a,b=i+di,j+dj
++            if 0<=a<W and 0<=b<H and not vu[a][b] and not roche[a][b]:
++                vu[a][b]=True; pile.append((a,b))
++    return vu
++bord=[(i,j) for i in range(W) for j in (0,H-1) if not roche[i][j]] + \
++     [(i,j) for j in range(H) for i in (0,W-1) if not roche[i][j]]
++dehors=compo(bord)
++ia=int((0.0-X0)/PAS); ja=int((1.10-Z0)/PAS)
++if roche[ia][ja]: sys.exit("[edt] ERREUR: le point d'ouverture est dans la roche")
++ouv=compo([(ia,ja)])
++print("[edt] l'ouverture est-elle DEJA reliee au dehors ? %s" % dehors[ia][ja])
++
++# goulot : union-find sur cellules de roche triees par dt croissante
++parent=list(range(W*H+2)); DEH=W*H; OUV=W*H+1
++def rac(x):
++    while parent[x]!=x: parent[x]=parent[parent[x]]; x=parent[x]
++    return x
++def uni(a,b):
++    ra,rb=rac(a),rac(b)
++    if ra!=rb: parent[ra]=rb
++actif=[[False]*H for _ in range(W)]
++cells=sorted(((dt[i][j],i,j) for i in range(W) for j in range(H) if roche[i][j]))
++seuil=None; ou=None
++for d,i,j in cells:
++    actif[i][j]=True; k=i*H+j
++    for di in (-1,0,1):
++        for dj in (-1,0,1):
++            a,b=i+di,j+dj
++            if not (0<=a<W and 0<=b<H) or (di==0 and dj==0): continue
++            if roche[a][b] and actif[a][b]: uni(k,a*H+b)
++            elif not roche[a][b]:
++                if dehors[a][b]: uni(k,DEH)
++                if ouv[a][b]: uni(k,OUV)
++    if rac(DEH)==rac(OUV):
++        seuil=d; ou=(X0+(i+0.5)*PAS, Z0+(j+0.5)*PAS); break
++print("[edt] GOULOT : demi-epaisseur %.4f m -> COLLERETTE %.4f m, au (x %.2f, z %.2f)"
++      % (seuil, 2.0*seuil, ou[0], ou[1]))
++# profil : max de dt le long du bandeau, par tranche de z, cote droit
++print("[edt] plus grande dt de roche par tranche z, cote x>0.6 (m) :")
++for jz in range(0,H,5):
++    z=Z0+(jz+0.5)*PAS
++    best=0.0; bx=None
++    for i in range(W):
++        x=X0+(i+0.5)*PAS
++        if x>0.6 and roche[i][jz] and dt[i][jz]>best: best,bx=dt[i][jz],x
++    if bx is not None and z<3.0:
++        print("[edt]   z=%5.2f  2*dt=%.3f m  a x=%.2f" % (z,2*best,bx))

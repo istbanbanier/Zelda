@@ -1,0 +1,111 @@
+=== identite      (x, y, z)
+[exact] === identite      (x, y, z) : 10038 sommets soudes, 20072 triangles
+[exact] aire EXACTEMENT nulle : 1 face(s)
+[exact]   face 10486  centre (-1.5044, -0.6392, 3.0989)
+[exact]     sommets [7663, 7664, 7665]
+[exact]       s0 = (-1.263276935, -0.643638015, 3.099800587)
+[exact]       s1 = (-1.504409909, -0.639240623, 3.098918915)
+[exact]       s2 = (-1.745542884, -0.634843230, 3.098037243)
+[exact]     aretes 0.241174679 / 0.241174679 / 0.482349358 m
+[exact]     deux sommets confondus : NON ; plus courte arete 0.241174679 m
+[exact] aire < 1e-9 m2 mais NON nulle : 1 face(s)
+[exact]   face 4838  aire 3.242e-10 m2  centre (1.0635, 0.6552, 1.7981)
+[exact] paires a boites chevauchantes : 140126
+[exact]   CONTACT              130660
+[exact]   COPLANAIRE           32
+[exact]   DEGENERE             11
+[exact]   DISJOINT             9417
+[exact]   PENETRATION          6
+[exact] PENETRATIONS REELLES : 6
+[exact]   faces 1356 / 19117  sommets communs 1
+[exact]     centres (0.2789, 1.7772, 2.2401) et (0.1985, 1.6965, 1.8824)
+[exact]     point interieur commun (0.207663655, 1.686876893, 2.248672310)
+[exact]   faces 1356 / 19121  sommets communs 1
+[exact]     centres (0.2789, 1.7772, 2.2401) et (0.1376, 1.7599, 1.8801)
+[exact]     point interieur commun (0.116296506, 1.782054901, 2.245224897)
+[exact]   faces 8882 / 12973  sommets communs 1
+[exact]     centres (2.4041, -0.6865, 1.6347) et (2.0090, -0.6871, 2.1816)
+[exact]     point interieur commun (2.527375662, -0.687934573, 1.495621223)
+[exact]   faces 12973 / 12989  sommets communs 0
+[exact]     centres (2.0090, -0.6871, 2.1816) et (2.2451, -0.6739, 1.7814)
+[exact]     point interieur commun (2.377898883, -0.687851231, 1.703541466)
+[exact]   faces 8883 / 12973  sommets communs 0
+[exact]     centres (2.3434, -0.6581, 1.6011) et (2.0090, -0.6871, 2.1816)
+[exact]     point interieur commun (2.400338337, -0.687989545, 1.680736277)
+[exact]   faces 8887 / 12973  sommets communs 1
+[exact]     centres (2.5024, -0.6707, 1.4544) et (2.0090, -0.6871, 2.1816)
+[exact]     point interieur commun (2.549815115, -0.688072887, 1.472816034)
+=== permute  (z, x, -y)
+[exact] === permute  (z, x, -y) : 10038 sommets soudes, 20072 triangles
+[exact] aire EXACTEMENT nulle : 1 face(s)
+[exact]   face 10486  centre (3.0989, -1.5044, 0.6392)
+[exact]     sommets [7663, 7664, 7665]
+[exact]       s0 = (3.099800587, -1.263276935, 0.643638015)
+[exact]       s1 = (3.098918915, -1.504409909, 0.639240623)
+[exact]       s2 = (3.098037243, -1.745542884, 0.634843230)
+[exact]     aretes 0.241174679 / 0.241174679 / 0.482349358 m
+[exact]     deux sommets confondus : NON ; plus courte arete 0.241174679 m
+[exact] aire < 1e-9 m2 mais NON nulle : 1 face(s)
+[exact]   face 4838  aire 3.242e-10 m2  centre (1.7981, 1.0635, -0.6552)
+[exact] paires a boites chevauchantes : 140126
+[exact]   CONTACT              130660
+[exact]   COPLANAIRE           32
+[exact]   DEGENERE             11
+[exact]   DISJOINT             9417
+[exact]   PENETRATION          6
+[exact] PENETRATIONS REELLES : 6
+[exact]   faces 1356 / 19121  sommets communs 1
+[exact]     centres (2.2401, 0.2789, -1.7772) et (1.8801, 0.1376, -1.7599)
+[exact]     point interieur commun (2.245224897, 0.116296506, -1.782054901)
+[exact]   faces 1356 / 19117  sommets communs 1
+[exact]     centres (2.2401, 0.2789, -1.7772) et (1.8824, 0.1985, -1.6965)
+[exact]     point interieur commun (2.248672310, 0.207663655, -1.686876893)
+[exact]   faces 8882 / 12973  sommets communs 1
+[exact]     centres (1.6347, 2.4041, 0.6865) et (2.1816, 2.0090, 0.6871)
+[exact]     point interieur commun (1.495621223, 2.527375662, 0.687934573)
+[exact]   faces 12973 / 12989  sommets communs 0
+[exact]     centres (2.1816, 2.0090, 0.6871) et (1.7814, 2.2451, 0.6739)
+[exact]     point interieur commun (1.703541466, 2.377898883, 0.687851231)
+[exact]   faces 8883 / 12973  sommets communs 0
+[exact]     centres (1.6011, 2.3434, 0.6581) et (2.1816, 2.0090, 0.6871)
+[exact]     point interieur commun (1.680736277, 2.400338337, 0.687989545)
+[exact]   faces 8887 / 12973  sommets communs 1
+[exact]     centres (1.4544, 2.5024, 0.6707) et (2.1816, 2.0090, 0.6871)
+[exact]     point interieur commun (1.472816034, 2.549815115, 0.688072887)
+=== miroir   (-x, y, z)
+[exact] === miroir   (-x, y, z) : 10038 sommets soudes, 20072 triangles
+[exact] aire EXACTEMENT nulle : 1 face(s)
+[exact]   face 10486  centre (1.5044, -0.6392, 3.0989)
+[exact]     sommets [7663, 7664, 7665]
+[exact]       s0 = (1.263276935, -0.643638015, 3.099800587)
+[exact]       s1 = (1.504409909, -0.639240623, 3.098918915)
+[exact]       s2 = (1.745542884, -0.634843230, 3.098037243)
+[exact]     aretes 0.241174679 / 0.241174679 / 0.482349358 m
+[exact]     deux sommets confondus : NON ; plus courte arete 0.241174679 m
+[exact] aire < 1e-9 m2 mais NON nulle : 1 face(s)
+[exact]   face 4838  aire 3.242e-10 m2  centre (-1.0635, 0.6552, 1.7981)
+[exact] paires a boites chevauchantes : 140126
+[exact]   CONTACT              130660
+[exact]   COPLANAIRE           32
+[exact]   DEGENERE             11
+[exact]   DISJOINT             9417
+[exact]   PENETRATION          6
+[exact] PENETRATIONS REELLES : 6
+[exact]   faces 1356 / 19117  sommets communs 1
+[exact]     centres (-0.2789, 1.7772, 2.2401) et (-0.1985, 1.6965, 1.8824)
+[exact]     point interieur commun (-0.207663655, 1.686876893, 2.248672310)
+[exact]   faces 1356 / 19121  sommets communs 1
+[exact]     centres (-0.2789, 1.7772, 2.2401) et (-0.1376, 1.7599, 1.8801)
+[exact]     point interieur commun (-0.116296506, 1.782054901, 2.245224897)
+[exact]   faces 8882 / 12973  sommets communs 1
+[exact]     centres (-2.4041, -0.6865, 1.6347) et (-2.0090, -0.6871, 2.1816)
+[exact]     point interieur commun (-2.527375662, -0.687934573, 1.495621223)
+[exact]   faces 12973 / 12989  sommets communs 0
+[exact]     centres (-2.0090, -0.6871, 2.1816) et (-2.2451, -0.6739, 1.7814)
+[exact]     point interieur commun (-2.377898883, -0.687851231, 1.703541466)
+[exact]   faces 8887 / 12973  sommets communs 1
+[exact]     centres (-2.5024, -0.6707, 1.4544) et (-2.0090, -0.6871, 2.1816)
+[exact]     point interieur commun (-2.549815115, -0.688072887, 1.472816034)
+[exact]   faces 8883 / 12973  sommets communs 0
+[exact]     centres (-2.3434, -0.6581, 1.6011) et (-2.0090, -0.6871, 2.1816)
+[exact]     point interieur commun (-2.400338337, -0.687989545, 1.680736277)

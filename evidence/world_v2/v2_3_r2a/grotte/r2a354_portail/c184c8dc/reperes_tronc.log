@@ -1,0 +1,39 @@
+==============================================================================
+ORACLE GLOBAL — topologie + classement d'espace
+==============================================================================
+maillage : /tmp/c184c8dc.glb
+sha256   : c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed
+noeud    : SM_WaterfallCave   (COL_WaterfallCave, proxy de collision, n'est PAS mesure)
+triangles: 20072   matieres : MAT_CaveIn_Deep, MAT_CaveIn_Floor, MAT_CaveIn_Wall, MAT_CaveRock_Base, MAT_CaveRock_Collar, MAT_CaveRock_Face
+AABB     : x[-8.772 8.174] y[-3.135 11.899] z[-3.551 8.192]
+
+------------------------------------------------------------------------------
+METHODE A — TOPOLOGIE (combinatoire pure, sans grille ni rayon)
+------------------------------------------------------------------------------
+   sommets soudes 10038   aretes 30108   faces 20072
+   aretes par nombre de faces : {'2': 30108}
+   bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 1
+      composante 0 : F=20072 V=10038 E=30108  khi=2  genre 0
+
+------------------------------------------------------------------------------
+METHODE B — CLASSEMENT D'ESPACE (segment centre-a-centre)
+------------------------------------------------------------------------------
+   reperes lus dans : /home/user/zelda-r2a354/b_portail/evidence/world_v2/v2_3_r2a/grotte/r2a354_portail/reperes_tronc_a4e91dc.gd
+   sha256 de cette source : 6d3c6cd2bf09657e95d2b3c7ac09ac4a577efc7cfaaa2b92d39925a12eb09a75
+   AVERTISSEMENT : une geometrie doit etre mesuree avec SES
+   reperes. Les reperes ont ete re-derives a R2a-3.5.2 ; croiser
+   une geometrie et les reperes d'une autre revision rend un
+   verdict credible sur un couple qui n'existe pas.
+   graine interieure = MODELE_SALLE relevee de 0.90 m (hauteur de torse) : (1.05 ; 6.25 ; 1.12)
+   temoins = repere releve de 0.30 m (les MODELE_* designent un point au SOL ; au ras de la surface la case est indecise)
+   grille 194x175x142 = 4820900 case(s), pas 0.100 m
+   segments (colonnes repliees) : 80767
+   composantes d'espace (sans barriere) : 2
+      AIR         4024017 case(s)    4024.02 m3  bord  170660  voix air/roche 46876/0
+      ROCHE        796883 case(s)     796.88 m3  bord       0  voix air/roche 0/46758
+   barriere de bouche : couche j=31, surface a y=-1.135 (epaisseur nulle)
+   composante de la graine : AIR, 55349 case(s) = 55.35 m3, emprise x[-2.42 3.68] y[-1.08 7.12] z[-0.60 3.00]
+      temoin MODELE_NICHE           (-1.20 ; 8.20 ; 0.73) : DEHORS                 [ROCHE]
+      temoin MODELE_SALLE           (1.05 ; 6.25 ; 0.52) : DANS la cavite scellee [AIR]
+
+BLOQUE : temoin(s) hors de l'air de cette geometrie : MODELE_NICHE (ROCHE). Le repere ne decrit pas ce maillage — rien n'a ete ampute, le couple (maillage, reperes) est incoherent. Mesurer avec les reperes de LA revision qui a produit ce maillage, ou dire que la paire n'existe pas ; ne pas lire ceci comme un defaut de la geometrie.

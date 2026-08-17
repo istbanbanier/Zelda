@@ -1,0 +1,24 @@
+PROVENANCE DES REPERES — pourquoi C4 rougit sur une geometrie saine
+===================================================================
+
+Le script de lieu n'est PAS recopie ici : la regle d'ancrage du projet
+dit de citer un chemin stable, pas de dupliquer du code — et un .gd
+verse dans evidence/ ne parse pas, ce que le plancher pre-push refuse
+a juste titre.
+
+  chemin  : scripts/world_v2/poi/waterfall_cave_place.gd
+  au tronc: a4e91dc  (base R2a-3.5.2 JAMAIS integree au tronc)
+  a la base c79341e (celle dont derive la geometrie mesuree)
+
+--- TRONC a4e91dc : les ANCIENS reperes ---
+118:const MODELE_SALLE: Vector3 = Vector3(1.05, 0.22, -6.25)
+133:const MODELE_NICHE: Vector3 = Vector3(-1.20, 0.43, -8.20)
+
+--- BASE c79341e : les NOUVEAUX, re-derives a R2a-3.5.2 ---
+118:const MODELE_SALLE: Vector3 = Vector3(2.62, 0.09, -2.58)
+133:const MODELE_NICHE: Vector3 = Vector3(2.78, 0.50, -4.09)
+
+Mesurer une geometrie R2a-3.5.2 avec les reperes du tronc place
+MODELE_NICHE dans la roche pleine : C4 se declenche, et il a RAISON.
+Le verdict correct est BLOQUE, pas ROUGE : c'est un defaut de
+provenance, pas un defaut de roche.

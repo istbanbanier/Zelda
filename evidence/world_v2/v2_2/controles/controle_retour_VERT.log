@@ -1,0 +1,9 @@
+# CONTRAT PAYSAGER — VERT après retrait des quatre injections de contrôle
+# Date : 2026-08-13T12:30:27Z ; arbre restauré sur ec2e135 (git checkout --)
+  ok   test_world_v2_landscape_contract.gd::test_les_six_cameras_v2_1_sont_gelees_par_litteraux (3 assertions)
+  ok   test_world_v2_landscape_contract.gd::test_chaque_chunk_porte_le_materiau_de_paysage (3 assertions)
+  ok   test_world_v2_landscape_contract.gd::test_la_vegetation_est_cellulaire_et_presente_ou_le_masterplan_l_exige (8 assertions)
+  ok   test_world_v2_landscape_contract.gd::test_la_vegetation_est_ancree_au_sol_et_hors_des_couloirs (3 assertions)
+  ok   test_world_v2_landscape_contract.gd::test_le_paysage_se_reconstruit_a_l_identique (3 assertions)
+  ok   test_world_v2_landscape_contract.gd::test_les_diagnostics_sont_caches_par_defaut (3 assertions)
+=== RÉSULTAT: 6 réussi(s), 0 échoué(s) ===

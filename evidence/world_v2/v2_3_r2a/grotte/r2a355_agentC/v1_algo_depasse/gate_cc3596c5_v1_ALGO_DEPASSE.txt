@@ -1,0 +1,31 @@
+============================================================================
+COQUE STRUCTURELLE A DEUX SEUILS — addendum §3
+============================================================================
+
+--- PROVENANCE (addendum §4) — publiee AVANT toute mesure ---
+  GLB     : /home/user/zelda-r2a355/reference/SM_WaterfallCave_cc3596c5.glb
+  sha256  : cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49
+  tables du generateur : /home/user/zelda-r2a355/c_instruments/source_assets/blender/environment/make_waterfall_cave.py
+  script de lieu       : /home/user/zelda-r2a355/c_instruments/scripts/world_v2/poi/waterfall_cave_place.gd
+  valeurs lues (Godot -> modele) :
+    MODELE_SEUIL_DEHORS  (0.000 ; 0.100 ; 1.600) -> (0.000 ; -1.600 ; 0.100)
+    MODELE_SALLE         (2.620 ; 0.090 ; -2.580) -> (2.620 ; 2.580 ; 0.090)
+    MODELE_NICHE         (2.780 ; 0.500 ; -4.090) -> (2.780 ; 4.090 ; 0.500)
+
+  fermeture : 0 bords libres, 0 non-manifold, 20090 faces
+
+  appartenance des reperes a l'AIR interieur (angle solide) :
+    MODELE_SALLE  modele (2.620 ; 2.580 ; 0.090)  enroulement -0.0000 -> AIR
+    MODELE_NICHE  modele (2.780 ; 4.090 ; 0.500)  enroulement +0.0000 -> AIR
+  -> provenance COHERENTE, la mesure peut commencer.
+
+--- peau interieure (contrat §2.1 a §2.4) ---
+  AUCUNE barriere de bouche valide n'isole l'interieur.
+
+============================================================================
+GATE TOPOLOGIQUE : **ROUGE** (RC=1)
+============================================================================
+La cavite communique avec le dehors AILLEURS que par la bouche.
+L'epaisseur n'est pas mesuree : mesurer l'epaisseur d'une coque
+trouee n'a pas de sens (contrat §5).
+RC=1

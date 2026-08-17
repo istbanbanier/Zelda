@@ -1,0 +1,5 @@
+# FILET EAU V2.2R — ROUGE fail-first : quads de torsion aux waypoints
+# Date : 2026-08-13T15:49:19Z ; base : df965c5 (ruban par segments V2.2)
+=== RÉSULTAT: 0 réussi(s), 2 échoué(s) ===
+  ÉCHEC: test_world_v2_water_mesh.gd::test_les_rubans_d_eau_n_ont_aucun_quad_de_torsion — les rubans portent bien des quads à mesurer (93)
+  ÉCHEC: test_world_v2_water_mesh.gd::test_les_rubans_d_eau_n_ont_aucun_quad_de_torsion — aucun quad dégénéré aux coudes (20) — MainCourseWater : quad de torsion en (170, 20) ; MainCourseWater : quad de torsion en (152, 14) ; MainCourseWater : quad de torsion en (134, 24) ; MainCourseWater : quad de torsion en (114, 26) ; MainCourseWater : quad de torsion en (96, 16) ; MainCourseWater : q

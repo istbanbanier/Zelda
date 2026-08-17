@@ -1,0 +1,5 @@
+dim [194, 175, 142] lo ['-9.97', '-4.33', '-4.75'] hi ['9.37', '13.10', '9.39']
+axe +Z : 33950 colonnes, 26 IMPAIRES (0.077 %), max 6 impacts
+axe +X : 24850 colonnes, 15 IMPAIRES (0.060 %), max 10 impacts
+axe +Y : 27548 colonnes, 18 IMPAIRES (0.065 %), max 12 impacts
+RC=0

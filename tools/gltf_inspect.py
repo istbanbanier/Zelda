@@ -112,12 +112,26 @@ def read_source(path: str, rep: Report) -> dict:
     return read_glb(path, rep)
 
 
-def accessor_bounds(gltf: dict, mesh_index: int) -> tuple:
-    """Bounding box monde-local approximée depuis min/max des accessors POSITION."""
+def accessor_bounds(gltf: dict, mesh_index=None) -> tuple:
+    """Bounding box monde-local approximée depuis min/max des accessors POSITION.
+
+    `mesh_index=None` accumule sur TOUS les maillages.
+
+    Pourquoi ce défaut a changé le 2026-08-14. L'appel était câblé sur le
+    maillage 0. Sur un asset mono-pièce, c'était l'asset entier ; sur un
+    asset à plusieurs objets — ce que produit désormais tout le pipeline
+    R2a — c'était UNE pièce sur dix-sept. Mesuré sur le pylône :
+    l'inspecteur annonçait « dimensions_m [10.6, 1.7, 10.6] » pour un
+    ouvrage de 34,56 m, parce que le maillage 0 est la plinthe. Et le
+    contrôle « min Y ≈ 0 » ne regardait que cette plinthe : une pièce
+    flottant vingt mètres au-dessus n'aurait déclenché aucun avertissement.
+    """
     lo = [float("inf")] * 3
     hi = [float("-inf")] * 3
-    mesh = gltf.get("meshes", [])[mesh_index]
-    for prim in mesh.get("primitives", []):
+    meshes = gltf.get("meshes", [])
+    cibles = meshes if mesh_index is None else [meshes[mesh_index]]
+    primitives = [prim for mesh in cibles for prim in mesh.get("primitives", [])]
+    for prim in primitives:
         acc_index = prim.get("attributes", {}).get("POSITION")
         if acc_index is None:
             continue
@@ -186,7 +200,7 @@ def inspect(path: str, expect_anim: bool, expect_skin: bool) -> Report:
     rep.info("triangles", total_tris)
 
     if meshes:
-        lo, hi = accessor_bounds(gltf, 0)
+        lo, hi = accessor_bounds(gltf)
         if lo is not None:
             size = [round(hi[i] - lo[i], 4) for i in range(3)]
             rep.info("bbox_min", [round(v, 4) for v in lo])

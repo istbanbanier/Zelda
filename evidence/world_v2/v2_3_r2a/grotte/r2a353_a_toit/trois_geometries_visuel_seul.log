@@ -1,0 +1,18 @@
+=== candidat      sha cc3596c5  20090 tris (VISUEL SEUL) ===
+  colonnes a vide qualifiant : 2716
+  aucune matiere (bouche/ciel) : 1 | matiere pleine : 2501 | lames : 214
+  dont PLAQUES 168, BORDS 46
+  PLAQUE la plus mince 0.038 m en (0.50 ; 5.80) vide 1.41 m 8/8 voisins
+  BORD  le plus mince 0.010 m en (-1.70 ; -2.20) vide 2.89 m 4/8 voisins
+=== BASE352       sha 8bc8b9f9  19992 tris (VISUEL SEUL) ===
+  colonnes a vide qualifiant : 2325
+  aucune matiere (bouche/ciel) : 1 | matiere pleine : 2044 | lames : 280
+  dont PLAQUES 232, BORDS 48
+  PLAQUE la plus mince 0.038 m en (0.50 ; 5.80) vide 1.41 m 8/8 voisins
+  BORD  le plus mince 0.006 m en (-1.60 ; -1.10) vide 2.89 m 3/8 voisins
+=== R2a34-LIVREE  sha 8bf1a1b3  19954 tris (VISUEL SEUL) ===
+  colonnes a vide qualifiant : 6297
+  aucune matiere (bouche/ciel) : 5 | matiere pleine : 5792 | lames : 500
+  dont PLAQUES 271, BORDS 229
+  PLAQUE la plus mince 0.049 m en (5.30 ; 5.00) vide 1.62 m 7/8 voisins
+  BORD  le plus mince 0.005 m en (-4.00 ; 6.90) vide 2.52 m 4/8 voisins

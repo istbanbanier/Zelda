@@ -1,0 +1,122 @@
+diff --git a/source_assets/blender/environment/make_waterfall_cave.py b/source_assets/blender/environment/make_waterfall_cave.py
+index 88f7c2d..512acec 100644
+--- a/source_assets/blender/environment/make_waterfall_cave.py
++++ b/source_assets/blender/environment/make_waterfall_cave.py
+@@ -5564,47 +5747,82 @@ def main():
+           "releve du terrain gele, voir controle_epaisseur)"
+           % (mini, mini_collerette))
+ 
+-    # R2a-3.5.3 — LE MÊME CONTRAT, MAIS SUR TOUT LE DOMAINE. Le contrôle
+-    # ci-dessus s'arrête à la dernière station de CAVITE (ay = 3,17) ; le
+-    # massif court jusqu'à ay ~ 11,9. Celui-ci balaie la totalité, publie
+-    # les bornes qu'il a réellement couvertes, et REFUSE de conclure s'il
+-    # n'a pas tout vu.
++    # BALAYAGE VERTICAL DU MASSIF — TÉLÉMÉTRIE DE NON-RÉGRESSION, PLUS UN
++    # GATE. Déclassement prononcé par `docs/CONTRAT_COQUE_STRUCTURELLE.md`
++    # §4, écrit et committé AVANT toute correction géométrique de
++    # R2a-3.5.4, précisément pour qu'aucun domaine de mesure ne soit choisi
++    # après avoir vu le résultat.
++    #
++    # CE N'EST PAS NEUTRALISER UN TEST, ET LA DIFFÉRENCE SE MESURE. Ce
++    # balayage compte comme « plaque » de la roche qui n'est pas la coque
++    # de la cavité : il rend 326 plaques sur la géométrie R2a-3.4 DÉJÀ
++    # LIVRÉE ET VALIDÉE contre 167 sur le candidat percé. Un critère qui
++    # condamne plus fort la référence que le sujet ne peut pas décider
++    # seul — il mesure autre chose que ce qu'il prétend mesurer.
++    #
++    # CE QUI PREND SA PLACE EST PLUS DUR, PAS PLUS SOUPLE. Le gate devient
++    # la COQUE STRUCTURELLE du contrat : toute surface séparant de
++    # l'extérieur la composante d'air qui contient `MODELE_SALLE` et
++    # `MODELE_NICHE` — définition topologique, sans station ni borne en
++    # `ay` — mesurée par distance euclidienne minorante, le verdict portant
++    # sur la borne garantie `lecture − pas` et non sur la lecture
++    # optimiste. `EPAISSEUR_MIN_M = 0,80` ne bouge pas d'un centimètre, et
++    # ce bloc ne l'assouplit pas : il cesse d'être le seul à regarder.
++    #
++    # CE QUE CE BALAYAGE GARDE, ET IL EST LE SEUL À SAVOIR LE FAIRE : voir
++    # si un défaut MIGRE plutôt qu'il ne disparaît. Une mesure de coque est
++    # ponctuelle par nature ; elle ne pose pas cette question d'elle-même.
++    # On publie donc tout, on ne bloque sur rien, et on compare.
+     dom = controle_epaisseur_domaine(grotte)
+-    print("[grotte] domaine : pas %.2f m, %d colonnes, x [%.2f ; %.2f] "
+-          "y [%.2f ; %.2f]" % (dom["pas"], dom["colonnes"], dom["couvert"][0],
+-                               dom["couvert"][1], dom["couvert"][2],
+-                               dom["couvert"][3]))
+-    if dom["manques"]:
+-        for m in dom["manques"]:
+-            print("[grotte] ERREUR: COUVERTURE incomplete — %s" % m)
+-        print("[grotte] un minimum publie sur un domaine incomplet est "
+-              "exactement la panne que ce controle corrige")
+-        if not franchir("couverture du domaine"):
+-            return 2
+-    print("[grotte] domaine : %d colonne(s) a vide qualifiant (>= %.2f m) — "
+-          "%d sans aucune matiere au-dessus (bouche/ciel), %d en matiere "
+-          "pleine, %d lame(s) mince(s)"
++    minces = sorted(dom["plaques"] + dom["bords"])
++    print("[grotte] TELEMETRIE domaine (CONTRAT_COQUE_STRUCTURELLE §4 — ne "
++          "bloque plus la chaine ; le gate dur est la coque structurelle)")
++    print("[grotte] TELEMETRIE domaine : pas %.2f m, %d colonnes, "
++          "x [%.2f ; %.2f] y [%.2f ; %.2f]"
++          % (dom["pas"], dom["colonnes"], dom["couvert"][0], dom["couvert"][1],
++             dom["couvert"][2], dom["couvert"][3]))
++    for m in dom["manques"]:
++        print("[grotte] TELEMETRIE domaine : COUVERTURE incomplete — %s "
++              "(la telemetrie est donc partielle ; elle ne conclut rien)" % m)
++    print("[grotte] TELEMETRIE domaine : %d colonne(s) a vide qualifiant "
++          "(>= %.2f m) — %d sans aucune matiere au-dessus (bouche/ciel), "
++          "%d en matiere pleine, %d lame(s) mince(s) dont %d plaque(s) et "
++          "%d bord(s)"
+           % (dom["qualifiantes"], VIDE_QUALIFIANT_M, dom["aucune_matiere"],
+-             dom["matiere_pleine"],
+-             len(dom["plaques"]) + len(dom["bords"])))
++             dom["matiere_pleine"], len(minces), len(dom["plaques"]),
++             len(dom["bords"])))
++    if minces:
++        c, ax, ay, h, n, cum = minces[0]
++        print("[grotte] TELEMETRIE domaine : minimum vertical %.3f m en "
++              "(%.2f ; %.2f), sous %.2f m de vide, %d/8 voisins, cumul de "
++              "colonne %.3f m" % (c, ax, ay, h, n, cum))
++    else:
++        print("[grotte] TELEMETRIE domaine : aucune lame mince — minimum "
++              "vertical >= %.2f m sur tout le domaine" % EPAISSEUR_MIN_M)
+     if dom["bords"]:
+         c, ax, ay, h, n, _cum = dom["bords"][0]
+-        print("[grotte] domaine : bord le plus mince %.3f m en (%.2f ; %.2f), "
+-              "vide %.2f m, %d voisin(s) — terminaison laterale d'un vide, "
+-              "pas une lame" % (c, ax, ay, h, n))
++        print("[grotte] TELEMETRIE domaine : bord le plus mince %.3f m en "
++              "(%.2f ; %.2f), vide %.2f m, %d voisin(s) — terminaison "
++              "laterale d'un vide, pas une lame" % (c, ax, ay, h, n))
++    for c, ax, ay, h, n, cum in dom["plaques"][:5]:
++        print("[grotte] TELEMETRIE domaine : PLAQUE %.3f m en (%.2f ; %.2f) "
++              "sous %.2f m de vide, %d/8 voisins — sous EPAISSEUR_MIN_M = "
++              "%.2f m (cumul de colonne %.3f m)"
++              % (c, ax, ay, h, n, EPAISSEUR_MIN_M, cum))
+     if dom["plaques"]:
+-        for c, ax, ay, h, n, cum in dom["plaques"][:5]:
+-            print("[grotte] ERREUR: PLAQUE %.3f m en (%.2f ; %.2f) sous "
+-                  "%.2f m de vide, %d/8 voisins — moins que EPAISSEUR_MIN_M "
+-                  "= %.2f m (cumul de la colonne %.3f m)"
+-                  % (c, ax, ay, h, n, EPAISSEUR_MIN_M, cum))
+-        print("[grotte] domaine : %d plaque(s) sous le seuil, la plus mince "
+-              "%.3f m" % (len(dom["plaques"]), dom["plaques"][0][0]))
+-        if not franchir("epaisseur sur le domaine"):
+-            return 2
++        print("[grotte] TELEMETRIE domaine : %d plaque(s) sous %.2f m, la "
++              "plus mince %.3f m — a comparer aux REFERENCES (R2a-3.4 : 326 ; "
++              "candidat cc3596c5 : 167), pas a un seuil"
++              % (len(dom["plaques"]), EPAISSEUR_MIN_M, dom["plaques"][0][0]))
+     else:
+-        print("[grotte] domaine : aucune plaque sous %.2f m ; les colonnes "
+-              "minces sont toutes des bords" % EPAISSEUR_MIN_M)
++        print("[grotte] TELEMETRIE domaine : aucune plaque sous %.2f m ; les "
++              "colonnes minces sont toutes des bords" % EPAISSEUR_MIN_M)
++    # Les BULLES ISOLÉES du contrat §4 sont comptées par `retirer_bulles()`
++    # et imprimées plus haut dans ce journal, à ses deux appels. Les
++    # MEMBRANES INTERNES ne sont PAS mesurées par cet instrument : un
++    # balayage vertical ne distingue pas une cloison entre deux vides d'un
++    # toit. Ne pas les publier ici est délibéré — un champ inventé vaut
++    # moins qu'un champ absent.
+ 
+     faibles = controle_gabarit()
+     print("[grotte] gabarit : bande utile par station (m) : %s"

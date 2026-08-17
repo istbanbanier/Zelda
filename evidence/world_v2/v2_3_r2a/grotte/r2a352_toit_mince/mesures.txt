@@ -1,0 +1,41 @@
+# Toit mince — mesures brutes, reproduites par l'integrateur
+date   : 2026-08-16T15:59:08Z
+commit : 1152c92d70c1f718b71e4d6fd9f53d92ed59bbe4
+
+candidat : cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49
+base352  : 8bc8b9f9eb9ead12dcccf381e271f66cd8ee0a4fd66f41ba35b24fde0d0f4416
+tronc    : 8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110
+
+== 1. toit minimal au-dessus d'un vide >= 1,00 m, x[-2;3] y[4;7] pas 0,10 ==
+candidat  cc3596c5        vides sondes  514   TOIT MINIMAL 0.038 m  en (0.50 ; 5.80)
+BASE352   8bc8b9f9        vides sondes  514   TOIT MINIMAL 0.038 m  en (0.50 ; 5.80)
+tronc R2a-3.4 8bf1a1b3    vides sondes 1428   TOIT MINIMAL 0.374 m  en (0.80 ; 6.00)
+seuil contractuel EPAISSEUR_MIN_M = 0.80
+
+== 2. carte du toit, epaisseur de la premiere roche (m) ==
+   y  |  x=0.30   0.40   0.50   0.58   0.66   0.75   0.90
+  5.40 |  0.540  0.580  0.566  0.532  0.479  0.392  0.250
+  5.60 |  0.276  0.254  0.305  0.406  0.470  0.446  0.400
+  5.70 |  0.244  0.160  0.145  0.293  0.412  0.529  1.333
+  5.80 |  0.267  0.138  0.038  0.054  0.503  1.115  1.481
+  5.90 |  0.266  0.137  0.058  1.428  0.692  1.617  1.599
+  6.00 |  0.274  0.145  0.076  0.053  1.033  1.703  1.695
+  6.20 |  0.419  0.393  1.443  1.502  1.637  1.805  1.830
+
+== 3. le vide sous la lame, balayage en y a x=0.58 ==
+  y 3.00 : vide 2.50 m   premiere roche 4.215
+  y 4.00 : vide 2.21 m   premiere roche 3.039
+  y 5.00 : vide 1.87 m   premiere roche 0.520
+  y 5.80 : vide 1.47 m   premiere roche 0.054
+  y 6.00 : vide 1.36 m   premiere roche 0.053
+  y 6.50 : vide 0.72 m   premiere roche 1.962
+  y 7.00 : plus de vide  premiere roche 2.075
+  (CAVITE s'arrete a ay = 3.17 : le defaut est 2,6 m au-dela)
+
+== 4. joignabilite : INDETERMINEE ==
+inondation 3D depuis (2.62 ; 2.58 ; 1.20), pas 0.25
+  sans bouchon        : 144956 cellules, touche le BORD  -> ne prouve rien
+  bouche bouchee y<=-1.13 : 120845 cellules, touche le BORD -> ne prouve rien
+cause : le modele est OUVERT PAR LE BAS par conception (rocher plante
+        dans le terrain). La coulee sort par le dessous, pas par un trou.
+le contrat EPAISSEUR_MIN_M porte sur la roche, pas sur la joignabilite.

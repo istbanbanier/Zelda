@@ -1,0 +1,126 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "1152c92d70c1f718b71e4d6fd9f53d92ed59bbe4",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {
+    "geometrie": {
+      "chemin": "assets/environment/caves/SM_WaterfallCave.glb",
+      "commit": "504ecbe2e606222783980be73a62a8ecce347a5b"
+    },
+    "lieu": {
+      "chemin": "scripts/world_v2/poi/waterfall_cave_place.gd",
+      "commit": "1fb57d34b1ac7e03bca278a9068d6a4fee57b77b"
+    }
+  },
+  "renderer": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 55.0,
+      "from": [
+        -100.0,
+        3.42,
+        12.0
+      ],
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/visuel/diag_plan_b/perspectives/02_approche_joueur.png",
+      "look": [
+        -106.0,
+        4.6,
+        3.6
+      ],
+      "name": "02_approche_joueur"
+    },
+    {
+      "fov": 28.0,
+      "from": [
+        -101.9,
+        4.65,
+        7.6
+      ],
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/visuel/diag_plan_b/perspectives/03_gros_plan_seuil.png",
+      "look": [
+        -106.15,
+        4.7,
+        3.35
+      ],
+      "name": "03_gros_plan_seuil"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -109.677,
+        5.2,
+        -1.662
+      ],
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/visuel/diag_plan_b/perspectives/04_interieur_sortie.png",
+      "look": [
+        -106.0,
+        4.55,
+        3.5
+      ],
+      "name": "04_interieur_sortie"
+    },
+    {
+      "fov": 30.0,
+      "from": [
+        -96.383,
+        7.7,
+        13.965
+      ],
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/visuel/diag_plan_b/perspectives/08_visiere_face.png",
+      "look": [
+        -105.576,
+        6.5,
+        4.773
+      ],
+      "name": "08_visiere_face"
+    },
+    {
+      "fov": 30.0,
+      "from": [
+        -107.833,
+        8.0,
+        17.575
+      ],
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/visuel/diag_plan_b/perspectives/09_visiere_profil.png",
+      "look": [
+        -105.576,
+        6.5,
+        4.773
+      ],
+      "name": "09_visiere_profil"
+    },
+    {
+      "fov": 36.0,
+      "from": [
+        -99.282,
+        4.5,
+        11.349
+      ],
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/visuel/diag_plan_b/perspectives/10_visiere_dessous.png",
+      "look": [
+        -105.646,
+        5.85,
+        4.985
+      ],
+      "name": "10_visiere_dessous"
+    },
+    {
+      "fov": 34.0,
+      "from": [
+        -100.057,
+        4.9,
+        7.99
+      ],
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/visuel/diag_plan_b/perspectives/11_orteil_pied.png",
+      "look": [
+        -103.914,
+        4.1,
+        3.394
+      ],
+      "name": "11_orteil_pied"
+    }
+  ],
+  "size": "1280x720"
+}

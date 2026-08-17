@@ -1,0 +1,18 @@
+=== candidat cc3596c5 ===  3721 colonnes, pas 5 mm, depart z=1.50
+   TROU  (roche dessous, 0 traversee au-dessus) : 343
+   dalle (2 traversees au-dessus)               : 2624
+   ecartees, hors du solide                     : 0
+   autre nombre de traversees                   : 754
+   >>> EMPRISE : x [0.468 ; 0.623]  y [5.850 ; 6.045]  =  160 x 200 mm
+=== BASE352 ===  3721 colonnes, pas 5 mm, depart z=1.50
+   TROU  (roche dessous, 0 traversee au-dessus) : 343
+   dalle (2 traversees au-dessus)               : 2624
+   ecartees, hors du solide                     : 0
+   autre nombre de traversees                   : 754
+   >>> EMPRISE : x [0.468 ; 0.623]  y [5.850 ; 6.045]  =  160 x 200 mm
+=== R2a-3.4 livree ===  3721 colonnes, pas 5 mm, depart z=1.50
+   TROU  (roche dessous, 0 traversee au-dessus) : 0
+   dalle (2 traversees au-dessus)               : 3581
+   ecartees, hors du solide                     : 0
+   autre nombre de traversees                   : 140
+RC_scan=0

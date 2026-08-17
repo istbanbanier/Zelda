@@ -1,0 +1,86 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "416580172732c4336ece2c06af5d07f0157f8600",
+  "engine": "4.7.1-stable (custom_build)",
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 62.0,
+      "from": [
+        100.0,
+        26.0,
+        10.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/pylone/pylone_composition.png",
+      "look": [
+        124.0,
+        30.0,
+        -20.5
+      ],
+      "name": "pylone_composition"
+    },
+    {
+      "fov": 52.0,
+      "from": [
+        112.0,
+        10.2,
+        4.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/pylone/pylone_approche.png",
+      "look": [
+        124.0,
+        30.6,
+        -20.5
+      ],
+      "name": "pylone_approche"
+    },
+    {
+      "fov": 50.0,
+      "from": [
+        111.2,
+        19.6,
+        -14.8
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/pylone/pylone_base.png",
+      "look": [
+        124.0,
+        21.5,
+        -20.5
+      ],
+      "name": "pylone_base"
+    },
+    {
+      "fov": 40.0,
+      "from": [
+        134.4,
+        37.0,
+        -26.5
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/pylone/pylone_structure_canal.png",
+      "look": [
+        124.0,
+        36.0,
+        -20.5
+      ],
+      "name": "pylone_structure_canal"
+    },
+    {
+      "fov": 36.0,
+      "from": [
+        62.0,
+        36.0,
+        52.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/pylone/pylone_lointain_96m.png",
+      "look": [
+        124.0,
+        32.0,
+        -20.5
+      ],
+      "name": "pylone_lointain_96m"
+    }
+  ],
+  "size": "1280x720"
+}

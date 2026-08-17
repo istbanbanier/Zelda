@@ -1,0 +1,785 @@
+From 0860ca9d9a20ec46040b13e5ac94e05f3523d1ba Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sun, 16 Aug 2026 13:07:53 +0000
+Subject: [PATCH 3/4] =?UTF-8?q?instruments(collerette):=20calibree=20sur?=
+ =?UTF-8?q?=20reponse=20analytique=20=E2=80=94=20B=20sous-estimait=20d'une?=
+ =?UTF-8?q?=20maille?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+LA QUESTION POSEE : 0,566 condamne-t-il la visiere ou l'instrument ?
+REPONSE MESUREE : l'instrument. Il sous-estimait d'exactement une maille.
+
+a. CALIBRATION SUR REPONSE CONNUE — `tools/cave_collar_calibration.py`
+
+Tube cylindrique de rayon `r` dans un cylindre de rayon `R` : collerette
+exactement `R - r`, la meme partout, dans toutes les directions. Aucune
+place pour un desaccord d'emprise — ni cote large, ni linteau incline, ni
+sol, ni alcove. Polygone a 96 cotes INSCRIT : ecart de surface 0,053 %,
+deux ordres sous le biais cherche, et c'est dit plutot que suppose.
+
+MESURE A — biais maximal 0,0006 m sur huit formes, insensible au pas comme
+a l'epaisseur. A est EXACTE. Un ecart de A sur la geometrie reelle vient
+donc de son EMPRISE, pas de sa methode.
+
+MESURE B — avant correction :
+
+  pas     0,1000  0,0500  0,0250  0,0125
+  biais  -0,1000 -0,0500 -0,0250 -0,0125
+  /pas    -1,00   -1,00   -1,00   -1,00
+
+et a pas constant, le biais ne bouge pas d'un micron quand l'epaisseur passe
+de 0,30 a 1,20 m. Un biais qui suit le PAS et ignore la GRANDEUR MESUREE est
+de la discretisation : la premiere case de roche est a une demi-maille de
+l'air, la derniere a une demi-maille de l'ouverture, et le compte de pas
+perd exactement une maille entre les deux. Correction `+ pas`, appliquee
+dans l'outil — un biais connu qu'on rapporte sans le corriger est un piege
+pose pour la session suivante. Apres correction : biais 0,0000 m sur les
+huit formes.
+
+UN QUATORZIEME DEFAUT TROUVE EN CHEMIN. La coupe classait le plan par UNE
+seule rangee de rayons le long de +X. Un rayon rasant perd une intersection
+et la parite de toute la fin de rangee s'inverse. Sur le cylindre de
+calibration, les 18 289 cases creuses etaient declarees « air libre » et
+l'ouverture valait ZERO case — sur une forme dont l'ouverture est un disque
+parfait. La coupe vote desormais sur QUATRE paries (+X, -X, +Z, -Z), comme
+`dans_le_vide` vote deja sur six axes et pour la meme raison ecrite.
+
+b. L'EMPRISE, EN UNE PHRASE VERIFIABLE CHACUNE
+
+  A : « le pourtour de la cavite sur les six premiers dixiemes de station,
+      tous azimuts de la section » — une BANDE de galerie, minimum sur la
+      bande.
+  B : « dans le premier plan y ou le vide central n'atteint pas le bord du
+      plan, la frontiere entre ce vide central et la roche » — une COURBE
+      FERMEE dans un plan, definie par topologie seule.
+
+La sphere inscrite mesure un rayon en TROIS dimensions : la ou la roche est
+epaisse hors du plan, elle lira plus que B. Une mesure indexee sur `u` suit
+la galerie, B suit un plan fixe ; sur un porche evase elles divergent par
+construction. A prend un minimum sur 0,60 station et attrape donc n'importe
+quel point mince de cette bande, y compris hors visiere — c'est ce qui
+explique son 0,060 m sur l'avant.
+
+Consequence : B est la mesure a citer pour un seuil de collerette, son
+emprise etant definie sans convention. A localise un point mince, elle
+n'acquitte pas une collerette.
+
+c. VERDICT, APRES CALIBRATION SEULEMENT
+
+  AVANT 8bc8b9f9 : A 0,0601   B 0,1000   plan y = -0,95
+  APRES 4dd1642f : A 0,6533   B 0,6157   plan y = -1,15
+
+Le B corrige de l'AVANT vaut **exactement 0,1000 m**, la valeur que la coupe
+du coordinateur lit independamment. Deux instruments qui ne partagent rien
+tombent sur le meme nombre a quatre decimales : la correction d'une maille
+n'est pas un ajustement de confort.
+
+Sur l'APRES, les deux mecanismes passent le seuil de 0,60. **Le 0,566
+condamnait l'instrument, pas la visiere.** Le quatrieme chiffre de la serie
+1,05 / 0,83 / 0,68 / 0,57 etait une maille trop bas.
+
+`tools/probe_cave_selftest.py` : 30/30, inchange.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01H1fHocGwj11SthNfNZ9hxk
+---
+ .../collerette_apres_4dd1642f.json            |  20 ++
+ .../collerette_avant_8bc8b9f9.json            |  20 ++
+ .../collerette_calibration.json               |  99 ++++++
+ .../collerette_calibration.log                |  48 +++
+ tools/cave_collar.py                          | 126 +++++++-
+ tools/cave_collar_calibration.py              | 299 ++++++++++++++++++
+ 6 files changed, 597 insertions(+), 15 deletions(-)
+ create mode 100644 evidence/r2a352_c_instruments/collerette_apres_4dd1642f.json
+ create mode 100644 evidence/r2a352_c_instruments/collerette_avant_8bc8b9f9.json
+ create mode 100644 evidence/r2a352_c_instruments/collerette_calibration.json
+ create mode 100644 evidence/r2a352_c_instruments/collerette_calibration.log
+ create mode 100644 tools/cave_collar_calibration.py
+
+diff --git a/evidence/r2a352_c_instruments/collerette_apres_4dd1642f.json b/evidence/r2a352_c_instruments/collerette_apres_4dd1642f.json
+new file mode 100644
+index 0000000..e5a3797
+--- /dev/null
++++ b/evidence/r2a352_c_instruments/collerette_apres_4dd1642f.json
+@@ -0,0 +1,20 @@
++{
++ "cases_ouverture": 3625,
++ "detail_a": [
++  {
++   "azimut_deg": 10.0,
++   "epaisseur_m": 0.6533,
++   "u": 0.0
++  }
++ ],
++ "glb": "/home/user/zelda-r2a352/b_collerette/assets/environment/caves/SM_WaterfallCave.glb",
++ "mesure_a_m": 0.6533361569240901,
++ "mesure_b_m": 0.6156854249492382,
++ "plan_utilise_y": -1.15,
++ "point_b": [
++  1.3782743453979496,
++  0.1991128921508789
++ ],
++ "seuil_m": 0.6,
++ "triangles": 19966
++}
+\ No newline at end of file
+diff --git a/evidence/r2a352_c_instruments/collerette_avant_8bc8b9f9.json b/evidence/r2a352_c_instruments/collerette_avant_8bc8b9f9.json
+new file mode 100644
+index 0000000..5204579
+--- /dev/null
++++ b/evidence/r2a352_c_instruments/collerette_avant_8bc8b9f9.json
+@@ -0,0 +1,20 @@
++{
++ "cases_ouverture": 3588,
++ "detail_a": [
++  {
++   "azimut_deg": 140.0,
++   "epaisseur_m": 0.0601,
++   "u": 0.1
++  }
++ ],
++ "glb": "assets/environment/caves/prototypes/SM_WaterfallCave_BASE352.glb",
++ "mesure_a_m": 0.06011852681487451,
++ "mesure_b_m": 0.1,
++ "plan_utilise_y": -0.95,
++ "point_b": [
++  -1.97172565460205,
++  2.199112892150879
++ ],
++ "seuil_m": 0.6,
++ "triangles": 19992
++}
+\ No newline at end of file
+diff --git a/evidence/r2a352_c_instruments/collerette_calibration.json b/evidence/r2a352_c_instruments/collerette_calibration.json
+new file mode 100644
+index 0000000..6961b57
+--- /dev/null
++++ b/evidence/r2a352_c_instruments/collerette_calibration.json
+@@ -0,0 +1,99 @@
++{
++ "par_epaisseur": [
++  {
++   "R": 1.9,
++   "attendu_m": 0.2999999999999998,
++   "biais_a_m": -0.00014265546640990223,
++   "biais_b_m": 2.220446049250313e-16,
++   "cases_ouverture": 3207,
++   "mesure_a_m": 0.2998573445335899,
++   "mesure_b_m": 0.30000000000000004,
++   "pas": 0.05,
++   "r": 1.6
++  },
++  {
++   "R": 2.2,
++   "attendu_m": 0.6000000000000001,
++   "biais_a_m": -0.00028529962571899325,
++   "biais_b_m": 0.0,
++   "cases_ouverture": 3207,
++   "mesure_a_m": 0.5997147003742811,
++   "mesure_b_m": 0.6000000000000001,
++   "pas": 0.05,
++   "r": 1.6
++  },
++  {
++   "R": 2.6,
++   "attendu_m": 1.0,
++   "biais_a_m": -0.0004759944173673425,
++   "biais_b_m": 0.0,
++   "cases_ouverture": 3207,
++   "mesure_a_m": 0.9995240055826327,
++   "mesure_b_m": 1.0,
++   "pas": 0.05,
++   "r": 1.6
++  },
++  {
++   "R": 2.4,
++   "attendu_m": 1.2,
++   "biais_a_m": -0.0005711708227578161,
++   "biais_b_m": 2.220446049250313e-16,
++   "cases_ouverture": 1791,
++   "mesure_a_m": 1.1994288291772421,
++   "mesure_b_m": 1.2000000000000002,
++   "pas": 0.05,
++   "r": 1.2
++  }
++ ],
++ "par_pas": [
++  {
++   "R": 2.2,
++   "attendu_m": 0.6000000000000001,
++   "biais_a_m": -0.00028529962571899325,
++   "biais_b_m": 0.0,
++   "cases_ouverture": 795,
++   "mesure_a_m": 0.5997147003742811,
++   "mesure_b_m": 0.6000000000000001,
++   "pas": 0.1,
++   "r": 1.6
++  },
++  {
++   "R": 2.2,
++   "attendu_m": 0.6000000000000001,
++   "biais_a_m": -0.00028529962571899325,
++   "biais_b_m": 0.0,
++   "cases_ouverture": 3207,
++   "mesure_a_m": 0.5997147003742811,
++   "mesure_b_m": 0.6000000000000001,
++   "pas": 0.05,
++   "r": 1.6
++  },
++  {
++   "R": 2.2,
++   "attendu_m": 0.6000000000000001,
++   "biais_a_m": -0.00028529962571899325,
++   "biais_b_m": 0.0,
++   "cases_ouverture": 12843,
++   "mesure_a_m": 0.5997147003742811,
++   "mesure_b_m": 0.6000000000000001,
++   "pas": 0.025,
++   "r": 1.6
++  },
++  {
++   "R": 2.2,
++   "attendu_m": 0.6000000000000001,
++   "biais_a_m": -0.00028529962571899325,
++   "biais_b_m": 0.0,
++   "cases_ouverture": 51399,
++   "mesure_a_m": 0.5997147003742811,
++   "mesure_b_m": 0.6000000000000001,
++   "pas": 0.0125,
++   "r": 1.6
++  }
++ ],
++ "segments": 96,
++ "verdict": [
++  "A exacte",
++  "B sous-estime de 0.0 maille"
++ ]
++}
+\ No newline at end of file
+diff --git a/evidence/r2a352_c_instruments/collerette_calibration.log b/evidence/r2a352_c_instruments/collerette_calibration.log
+new file mode 100644
+index 0000000..cf44375
+--- /dev/null
++++ b/evidence/r2a352_c_instruments/collerette_calibration.log
+@@ -0,0 +1,48 @@
++==============================================================================
++CALIBRATION — tube cylindrique, collerette exactement R - r
++==============================================================================
++polygone a 96 cotes INSCRIT : la surface est entre rayon*cos(pi/N)
++et rayon, soit 0.0535 % d'ecart — deux ordres sous le biais cherche.
++
++------------------------------------------------------------------------------
++1. MEME FORME, PAS DE RASTER VARIABLE  (r = 1,60 ; R = 2,20 ; attendu 0,600 m)
++------------------------------------------------------------------------------
++   pas   |  mesure A  | biais A  |  mesure B  | biais B  | biais B / pas
++   ------+------------+----------+------------+----------+--------------
++   0.1000 |     0.5997 |  -0.0003 |     0.6000 |   0.0000 | +0.00
++   0.0500 |     0.5997 |  -0.0003 |     0.6000 |   0.0000 | +0.00
++   0.0250 |     0.5997 |  -0.0003 |     0.6000 |   0.0000 | +0.00
++   0.0125 |     0.5997 |  -0.0003 |     0.6000 |   0.0000 | +0.00
++
++------------------------------------------------------------------------------
++2. MEME PAS (0,05 m), EPAISSEUR VARIABLE
++------------------------------------------------------------------------------
++   r     |  R    | attendu | mesure A | biais A  | mesure B | biais B
++   ------+-------+---------+----------+----------+----------+---------
++   1.60  | 1.90  |   0.300 |   0.2999 |  -0.0001 |   0.3000 |   0.0000
++   1.60  | 2.20  |   0.600 |   0.5997 |  -0.0003 |   0.6000 |   0.0000
++   1.60  | 2.60  |   1.000 |   0.9995 |  -0.0005 |   1.0000 |   0.0000
++   1.20  | 2.40  |   1.200 |   1.1994 |  -0.0006 |   1.2000 |   0.0000
++
++==============================================================================
++DIAGNOSTIC
++==============================================================================
++MESURE A — biais maximal +0.0006 m sur 8 formes.
++   A est EXACTE sur une forme sans ambiguite. Un ecart de A
++   sur la geometrie reelle vient donc de l'EMPRISE — de ce
++   qu'elle vise — et non de sa methode.
++
++MESURE B — biais de +0.0000 a +0.0000 m selon le pas.
++   biais / pas : de +0.00 a +0.00, etendue 0.00
++   biais selon l'EPAISSEUR, a pas constant : etendue 0.0000 m
++
++   >>> LE BIAIS SUIT LE PAS, PAS L'EPAISSEUR. C'est de la
++       DISCRETISATION : la transformee de distance compte
++       des cases, et la premiere case de roche est deja a
++       une demi-maille de l'air. B SOUS-ESTIME d'environ
++       0.00 maille(s), soit 0.0000 m au pas de 0,05 m.
++
++   A exacte
++   B sous-estime de 0.0 maille
++==============================================================================
++sortie brute : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/cal/calibration3.json
+diff --git a/tools/cave_collar.py b/tools/cave_collar.py
+index 71909dd..0d4080a 100644
+--- a/tools/cave_collar.py
++++ b/tools/cave_collar.py
+@@ -27,6 +27,43 @@ Elles peuvent donc se tromper, mais pas de la même façon. Une normale
+ inversée fausse A et laisse B intacte ; un trou trop fin pour la maille
+ échappe à B et pas à A.
+ 
++L'EMPRISE — CE QUE J'APPELLE « LA LIMITE DE L'OUVERTURE »
++=========================================================
++
++Cinq instruments mesurent « l'epaisseur de collerette » et ne s'accordent
++pas. Tant que chacun garde sa definition implicite de l'emprise, leur
++desaccord n'est pas une information : ils repondent a des questions
++differentes. Voici la mienne, en une phrase verifiable chacune.
++
++  EMPRISE DE A — « le pourtour de la cavite sur les six premiers dixiemes
++  de station, tous azimuts de la section ». C'est une BANDE DE GALERIE, pas
++  une courbe : de u = 0,00 a u = 0,60 par pas de 0,10, et 36 azimuts par
++  station. L'epaisseur retenue est le MINIMUM sur cette bande.
++
++  EMPRISE DE B — « dans le premier plan y ou le vide central n'atteint pas
++  le bord du plan, la frontiere entre ce vide central et la roche ». C'est
++  une COURBE FERMEE dans un plan, definie par topologie seule : le vide qui
++  ne communique pas avec le dehors DANS CE PLAN.
++
++En quoi elles different des autres, autant que je puisse le dire sans avoir
++lu leur code :
++
++  * la sphere inscrite de l'agent collerette mesure un rayon en TROIS
++    dimensions ; la ou la roche est epaisse hors du plan de coupe, elle lira
++    plus que B, qui reste dans le plan. Les deux ont raison sur leur propre
++    question ;
++  * une mesure indexee sur la station `u` suit la galerie ; B suit un plan
++    fixe. Sur un porche evase les deux divergent par construction ;
++  * A prend un MINIMUM sur une bande de 0,60 station. Elle attrape donc
++    n'importe quel point mince de cette bande, y compris un point qui
++    n'appartient a aucune collerette. C'est ce qui explique son 0,060 m sur
++    la geometrie d'avant : la methode est exacte — la calibration le prouve
++    a 0,6 mm pres — mais son emprise ratisse plus large que la visiere.
++
++Consequence pratique : **B est la mesure a citer pour un seuil de
++collerette**, parce que son emprise est definie sans convention. A sert a
++localiser un point mince, pas a acquitter une collerette.
++
+ CE QUE CE FICHIER NE FAIT PAS
+ =============================
+ 
+@@ -132,18 +169,55 @@ def coupe_du_plan(grille, y, pas, marge=1.0):
+     z0, z1 = lo[2] - marge, hi[2] + marge
+     nx = int(math.ceil((x1 - x0) / pas)) + 1
+     nz = int(math.ceil((z1 - z0) / pas)) + 1
+-    creux = [[False] * nz for _ in range(nx)]
+-    portee = (x1 - x0) + 2.0 * marge
+-    for k in range(nz):
+-        z = z0 + k * pas
+-        liste = P.impacts(grille, (x0 - marge, y, z), (1.0, 0.0, 0.0), portee)
+-        bornes = [x0 - marge + t for t, _ in liste]
+-        indice = 0
+-        for i in range(nx):
+-            x = x0 + i * pas
+-            while indice < len(bornes) and bornes[indice] <= x:
+-                indice += 1
+-            creux[i][k] = (indice % 2 == 0)
++
++    # QUATRE PARITÉS, ET UN VOTE — parce qu'UNE parité ne suffit pas.
++    #
++    # Première version : une seule rangée de rayons, le long de +X. Un rayon
++    # qui rase une arête du polygone perd une intersection, la parité de
++    # TOUTE LA FIN DE LA RANGÉE s'inverse, et le trou ainsi créé relie
++    # l'alésage au dehors. Mesuré sur le cylindre de calibration : les
++    # 18 289 cases creuses étaient toutes déclarées « air libre », zéro case
++    # d'ouverture, sur une forme dont l'ouverture est un disque parfait.
++    #
++    # C'est le même mécanisme que `dans_le_vide`, qui vote déjà sur six axes
++    # pour cette raison exacte, et son commentaire le dit : « le vote absorbe
++    # le cas rasant où un rayon effleure une arête ». La coupe n'en profitait
++    # pas ; elle en profite maintenant, sur quatre directions du plan.
++    def _parite(axe, sens):
++        """Grille de parité obtenue en balayant selon un seul axe."""
++        grille_p = [[False] * nz for _ in range(nx)]
++        if axe == 0:
++            for k in range(nz):
++                z = z0 + k * pas
++                depart = (x0 - marge, y, z) if sens > 0 else (x1 + marge, y, z)
++                d = (float(sens), 0.0, 0.0)
++                portee = (x1 - x0) + 3.0 * marge
++                bornes = sorted(depart[0] + sens * t
++                                for t, _ in P.impacts(grille, depart, d, portee))
++                for i in range(nx):
++                    x = x0 + i * pas
++                    avant = sum(1 for b in bornes
++                                if (b <= x if sens > 0 else b >= x))
++                    grille_p[i][k] = (avant % 2 == 0)
++        else:
++            for i in range(nx):
++                x = x0 + i * pas
++                depart = (x, y, z0 - marge) if sens > 0 else (x, y, z1 + marge)
++                d = (0.0, 0.0, float(sens))
++                portee = (z1 - z0) + 3.0 * marge
++                bornes = sorted(depart[2] + sens * t
++                                for t, _ in P.impacts(grille, depart, d, portee))
++                for k in range(nz):
++                    z = z0 + k * pas
++                    avant = sum(1 for b in bornes
++                                if (b <= z if sens > 0 else b >= z))
++                    grille_p[i][k] = (avant % 2 == 0)
++        return grille_p
++
++    votes = [_parite(0, 1), _parite(0, -1), _parite(1, 1), _parite(1, -1)]
++    creux = [[sum(1 for v in votes if v[i][k]) >= 3 for k in range(nz)]
++             for i in range(nx)]
++
+     # Inondation 2D depuis le bord : l'air libre.
+     libre = [[False] * nz for _ in range(nx)]
+     pile = []
+@@ -218,7 +292,26 @@ def mesure_b(coupe):
+                     dist[a][c] = d
+                     suivant.append((a, c))
+         front = suivant
+-    # Le POURTOUR de l'ouverture : les cases d'ouverture qui touchent la roche.
++    # LE BIAIS D'UNE MAILLE, MESURE ET CORRIGE.
++    #
++    # `tools/cave_collar_calibration.py`, sur un tube cylindrique dont
++    # l'epaisseur vaut exactement `R - r` :
++    #
++    #   pas     0,1000  0,0500  0,0250  0,0125
++    #   biais  -0,1000 -0,0500 -0,0250 -0,0125
++    #   /pas    -1,00   -1,00   -1,00   -1,00
++    #
++    # et a pas constant, le biais ne bouge pas d'un micron quand l'epaisseur
++    # passe de 0,30 a 1,20 m. Un biais qui suit le PAS et ignore la
++    # GRANDEUR MESUREE est de la discretisation, pas une erreur d'echelle :
++    # la premiere case de roche est deja a une demi-maille de l'air, la
++    # derniere a une demi-maille de l'ouverture, et le compte de pas perd
++    # exactement une maille entre les deux.
++    #
++    # La correction est donc `+ pas`, elle est exacte, et elle est appliquee
++    # ici plutot que laissee au lecteur — un biais connu qu'on rapporte sans
++    # le corriger est un piege pose pour la prochaine session.
++    CORRECTION_MAILLE = 1.0
+     pire, ou = None, None
+     for i, k in ouverture:
+         for di, dk, _ in voisins:
+@@ -227,9 +320,9 @@ def mesure_b(coupe):
+                 continue
+             if creux[a][c]:
+                 continue
+-            d = dist[a][c] * pas
+-            if d == INF:
++            if dist[a][c] == INF:
+                 continue
++            d = (dist[a][c] + CORRECTION_MAILLE) * pas
+             if pire is None or d < pire:
+                 pire = d
+                 ou = (coupe["x0"] + i * pas, coupe["z0"] + k * pas)
+@@ -311,6 +404,9 @@ def main():
+             print("      u %.2f, azimut %.1f deg" % (d["u"], d["azimut_deg"]))
+     print()
+     print("MESURE B — transformee de distance sur une coupe transversale")
++    print("   (corrigee de +1 maille = %+.4f m ; biais mesure sur cylindre"
++          % args.pas)
++    print("    analytique, voir tools/cave_collar_calibration.py)")
+     if resultat.get("plan_utilise_y") is None:
+         print("   aucun plan entre y = %+.2f et y = %+.2f ne porte une "
+               "ouverture close" % (args.y_bouche, args.y_bouche + 1.60))
+diff --git a/tools/cave_collar_calibration.py b/tools/cave_collar_calibration.py
+new file mode 100644
+index 0000000..d363d71
+--- /dev/null
++++ b/tools/cave_collar_calibration.py
+@@ -0,0 +1,299 @@
++#!/usr/bin/env python3
++# -*- coding: utf-8 -*-
++"""CALIBRATION DES DEUX MESURES DE COLLERETTE, sur une réponse ANALYTIQUE.
++
++POURQUOI CE FICHIER EXISTE
++==========================
++
++`tools/cave_collar.py` rend deux nombres. Sur la géométrie livrée, la
++mesure B rend 0,5657 m pour un seuil de 0,60 — il manque 3,4 cm — et sur la
++géométrie d'avant elle rend 0,050 m là où le générateur lit 0,48 m et la
++coupe du coordinateur 0,10 m. Un facteur huit entre deux instruments sur le
++même objet n'est pas du bruit.
++
++Un instrument qui n'a jamais rencontré de réponse connue ne peut ni
++acquitter ni condamner. Avant de dire si 0,566 condamne la visière, il faut
++savoir ce que l'instrument fait d'une collerette dont l'épaisseur est
++exactement posée.
++
++LA FORME, ET POURQUOI ELLE EST CELLE-LÀ
++=======================================
++
++Un tube cylindrique de rayon intérieur `r` dans un cylindre de rayon `R`,
++même axe, épaisseur de collerette **exactement `R − r`**, la même partout et
++dans toutes les directions. C'est la seule forme où les deux mesures
++répondent à la même question sans qu'aucune convention d'emprise
++n'intervienne : il n'y a ni côté large, ni linteau incliné, ni sol, ni
++alcôve, donc aucune place pour un désaccord de définition.
++
++Le polygone à `SEGMENTS` côtés est INSCRIT dans le cercle : sa surface se
++trouve entre `rayon·cos(π/N)` et `rayon`. À N = 96 l'écart vaut 0,05 % du
++rayon, soit moins d'un dixième de millimètre à nos échelles — deux ordres de
++grandeur sous le biais qu'on cherche à mesurer. Le dire est nécessaire :
++sans cela on attribuerait à l'instrument une erreur de la fixture.
++
++CE QUE LA CALIBRATION DOIT TRANCHER
++===================================
++
++  * la mesure A est-elle exacte sur une forme sans ambiguïté ?
++  * la mesure B sous-estime-t-elle, et **le biais suit-il le pas de
++    raster** ? Si oui, c'est de la discrétisation, elle est corrigible et
++    le 0,566 remonte. Sinon, c'est la géométrie qui est mince.
++
++Un biais qui varie avec `pas` et pas avec `R − r` est un artefact de
++maille. Un biais proportionnel à `R − r` serait une erreur d'échelle. Les
++deux se distinguent en faisant varier les deux, et c'est ce que fait ce
++fichier.
++
++Usage :
++    python3 tools/cave_collar_calibration.py [--json sortie.json]
++
++Codes de sortie : 0 = les deux mesures calibrées · 1 = biais non expliqué
++· 3 = BLOQUÉ.
++"""
++
++import argparse
++import json
++import math
++import os
++import sys
++import tempfile
++
++sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++import probe_cave_openings as P                                # noqa: E402
++import cave_collar as C                                        # noqa: E402
++from probe_cave_adversarial import ecrire_glb                  # noqa: E402
++
++
++SEGMENTS = 96
++Y_DEBUT = -1.15
++Y_FIN = 6.85
++
++
++def cylindre(r, R, n_stations=9):
++    """Tube annulaire : peau intérieure `r`, peau extérieure `R`.
++
++    Ouvert à l'avant — c'est une bouche —, fermé à l'arrière par deux
++    disques séparés par l'épaisseur, pour que la parité reste paire depuis
++    l'intérieur. Un simple disque serait une membrane d'épaisseur nulle,
++    et la sonde aurait raison de la compter comme une percée.
++    """
++    ys = [Y_DEBUT + (Y_FIN - Y_DEBUT) * i / (n_stations - 1.0)
++          for i in range(n_stations)]
++    dedans, dehors = [], []
++    for y in ys:
++        anneau_in, anneau_out = [], []
++        for k in range(SEGMENTS):
++            a = 2.0 * math.pi * k / SEGMENTS
++            anneau_in.append((r * math.cos(a), y, r * math.sin(a)))
++            anneau_out.append((R * math.cos(a), y, R * math.sin(a)))
++        dedans.append(anneau_in)
++        dehors.append(anneau_out)
++
++    tris = []
++
++    def _quad(a, b, c, d):
++        tris.append((a, b, c))
++        tris.append((a, c, d))
++
++    for i in range(n_stations - 1):
++        for k in range(SEGMENTS):
++            k2 = (k + 1) % SEGMENTS
++            _quad(dedans[i][k], dedans[i + 1][k], dedans[i + 1][k2],
++                  dedans[i][k2])
++            _quad(dehors[i][k2], dehors[i + 1][k2], dehors[i + 1][k],
++                  dehors[i][k])
++    # Couronne de bouche : referme l'épaisseur, laisse le fût ouvert.
++    for k in range(SEGMENTS):
++        k2 = (k + 1) % SEGMENTS
++        _quad(dedans[0][k2], dehors[0][k2], dehors[0][k], dedans[0][k])
++    # Fond : deux disques séparés par l'épaisseur `R - r`.
++    recul = R - r
++    fin_in = dedans[-1]
++    fin_out = [(p[0], p[1] + recul, p[2]) for p in dehors[-1]]
++    c_in = (0.0, Y_FIN, 0.0)
++    c_out = (0.0, Y_FIN + recul, 0.0)
++    for k in range(SEGMENTS):
++        k2 = (k + 1) % SEGMENTS
++        tris.append((fin_in[k], fin_in[k2], c_in))
++        tris.append((fin_out[k2], fin_out[k], c_out))
++        _quad(dehors[-1][k], fin_out[k], fin_out[k2], dehors[-1][k2])
++    return tris
++
++
++def profil_cylindre(r, n_stations=9):
++    """`Profil` decrivant le tube : droit, symétrique, axe à z = 0.
++
++    `palier = -0,90` place l'origine des rayons de la mesure A exactement
++    sur l'axe : `sol(u, 0) + 0,90 = 0`. Sans cela la mesure partirait à
++    côté du centre et rendrait une corde, pas un diamètre.
++    """
++    cavite = [(0.0, Y_DEBUT + (Y_FIN - Y_DEBUT) * i / (n_stations - 1.0),
++               r, r) for i in range(n_stations)]
++    palier = [-0.90] * n_stations
++    return P.Profil(cavite, palier, 0.0, 0.0, 1.0, "cylindre")
++
++
++def calibrer(r, R, pas, dossier):
++    """Mesures A et B sur un tube dont la réponse vaut exactement `R - r`."""
++    attendu = R - r
++    chemin = os.path.join(dossier, "cyl_%.2f_%.2f.glb" % (r, R))
++    ecrire_glb(chemin, cylindre(r, R))
++    tris, _ = P.triangles_du_glb(chemin)
++    grille = P.Grille(tris)
++    profil = profil_cylindre(r)
++
++    a, _ = C.mesure_a(grille, profil, Y_DEBUT, u_max=4.0, pas_u=0.50)
++    # La mesure B est prise au MILIEU du tube : au plan de bouche la
++    # couronne est en biseau numérique d'une demi-maille, ce qui ajouterait
++    # au biais de discrétisation un effet de bord sans rapport.
++    y_milieu = (Y_DEBUT + Y_FIN) / 2.0
++    coupe = C.coupe_du_plan(grille, y_milieu, pas)
++    b, _, cases = C.mesure_b(coupe)
++    return dict(r=r, R=R, pas=pas, attendu_m=attendu,
++                mesure_a_m=a, mesure_b_m=b,
++                biais_a_m=(a - attendu) if a is not None else None,
++                biais_b_m=(b - attendu) if b is not None else None,
++                cases_ouverture=cases)
++
++
++def main():
++    ap = argparse.ArgumentParser(
++        description="Calibration des deux mesures de collerette sur une "
++                    "reponse analytique.")
++    ap.add_argument("--json", default=None)
++    ap.add_argument("--garder", default=None)
++    args = ap.parse_args()
++
++    dossier = args.garder or tempfile.mkdtemp(prefix="cal_collar_")
++    if not os.path.isdir(dossier):
++        os.makedirs(dossier)
++
++    print("=" * 78)
++    print("CALIBRATION — tube cylindrique, collerette exactement R - r")
++    print("=" * 78)
++    print("polygone a %d cotes INSCRIT : la surface est entre rayon*cos(pi/N)"
++          % SEGMENTS)
++    print("et rayon, soit %.4f %% d'ecart — deux ordres sous le biais cherche."
++          % (100.0 * (1.0 - math.cos(math.pi / SEGMENTS))))
++    print()
++
++    # 1. LE BIAIS SUIT-IL LE PAS ? Meme forme, quatre mailles.
++    print("-" * 78)
++    print("1. MEME FORME, PAS DE RASTER VARIABLE  (r = 1,60 ; R = 2,20 ; "
++          "attendu 0,600 m)")
++    print("-" * 78)
++    print("   pas   |  mesure A  | biais A  |  mesure B  | biais B  | "
++          "biais B / pas")
++    print("   ------+------------+----------+------------+----------+"
++          "--------------")
++    par_pas = []
++    for pas in (0.10, 0.05, 0.025, 0.0125):
++        res = calibrer(1.60, 2.20, pas, dossier)
++        par_pas.append(res)
++        print("   %.4f | %10s | %+8s | %10s | %+8s | %s"
++              % (pas,
++                 ("%.4f" % res["mesure_a_m"]) if res["mesure_a_m"] else "-",
++                 ("%.4f" % res["biais_a_m"]) if res["biais_a_m"] is not None
++                 else "-",
++                 ("%.4f" % res["mesure_b_m"]) if res["mesure_b_m"] else "-",
++                 ("%.4f" % res["biais_b_m"]) if res["biais_b_m"] is not None
++                 else "-",
++                 ("%+.2f" % (res["biais_b_m"] / pas))
++                 if res["biais_b_m"] is not None else "-"))
++
++    # 2. LE BIAIS SUIT-IL L'EPAISSEUR ? Meme maille, quatre epaisseurs.
++    print()
++    print("-" * 78)
++    print("2. MEME PAS (0,05 m), EPAISSEUR VARIABLE")
++    print("-" * 78)
++    print("   r     |  R    | attendu | mesure A | biais A  | mesure B | "
++          "biais B")
++    print("   ------+-------+---------+----------+----------+----------+"
++          "---------")
++    par_epaisseur = []
++    for r, R in ((1.60, 1.90), (1.60, 2.20), (1.60, 2.60), (1.20, 2.40)):
++        res = calibrer(r, R, 0.05, dossier)
++        par_epaisseur.append(res)
++        print("   %.2f  | %.2f  | %7.3f | %8s | %+8s | %8s | %+8s"
++              % (r, R, res["attendu_m"],
++                 ("%.4f" % res["mesure_a_m"]) if res["mesure_a_m"] else "-",
++                 ("%.4f" % res["biais_a_m"]) if res["biais_a_m"] is not None
++                 else "-",
++                 ("%.4f" % res["mesure_b_m"]) if res["mesure_b_m"] else "-",
++                 ("%.4f" % res["biais_b_m"]) if res["biais_b_m"] is not None
++                 else "-"))
++
++    # -- DIAGNOSTIC ------------------------------------------------------
++    print()
++    print("=" * 78)
++    print("DIAGNOSTIC")
++    print("=" * 78)
++    biais_a = [x["biais_a_m"] for x in par_pas + par_epaisseur
++               if x["biais_a_m"] is not None]
++    biais_b = [x["biais_b_m"] for x in par_pas if x["biais_b_m"] is not None]
++    biais_b_ep = [x["biais_b_m"] for x in par_epaisseur
++                  if x["biais_b_m"] is not None]
++    verdict = []
++    if biais_a:
++        pire_a = max(abs(v) for v in biais_a)
++        print("MESURE A — biais maximal %+.4f m sur %d formes."
++              % (pire_a, len(biais_a)))
++        if pire_a < 0.01:
++            print("   A est EXACTE sur une forme sans ambiguite. Un ecart de A")
++            print("   sur la geometrie reelle vient donc de l'EMPRISE — de ce")
++            print("   qu'elle vise — et non de sa methode.")
++            verdict.append("A exacte")
++        else:
++            print("   A porte un biais propre ; il doit etre soustrait avant")
++            print("   toute comparaison a un seuil.")
++            verdict.append("A biaisee de %+.4f m" % pire_a)
++    if len(biais_b) >= 2:
++        rapports = [x["biais_b_m"] / x["pas"] for x in par_pas
++                    if x["biais_b_m"] is not None]
++        etendue = max(rapports) - min(rapports)
++        print()
++        print("MESURE B — biais de %+.4f a %+.4f m selon le pas."
++              % (min(biais_b), max(biais_b)))
++        print("   biais / pas : de %+.2f a %+.2f, etendue %.2f"
++              % (min(rapports), max(rapports), etendue))
++        constant_en_epaisseur = (max(biais_b_ep) - min(biais_b_ep)
++                                 if biais_b_ep else 0.0)
++        print("   biais selon l'EPAISSEUR, a pas constant : etendue %.4f m"
++              % constant_en_epaisseur)
++        if etendue < 0.6 and constant_en_epaisseur < 0.02:
++            print()
++            print("   >>> LE BIAIS SUIT LE PAS, PAS L'EPAISSEUR. C'est de la")
++            print("       DISCRETISATION : la transformee de distance compte")
++            print("       des cases, et la premiere case de roche est deja a")
++            print("       une demi-maille de l'air. B SOUS-ESTIME d'environ")
++            print("       %.2f maille(s), soit %.4f m au pas de 0,05 m."
++                  % (abs(sum(rapports) / len(rapports)),
++                     abs(sum(rapports) / len(rapports)) * 0.05))
++            verdict.append("B sous-estime de %.1f maille"
++                           % abs(sum(rapports) / len(rapports)))
++        else:
++            print()
++            print("   >>> LE BIAIS NE SUIT PAS LE PAS. Ce n'est donc pas de la")
++            print("       discretisation, et il ne peut pas etre corrige par")
++            print("       une maille plus fine.")
++            verdict.append("B : biais non explique par la maille")
++    print()
++    for v in verdict:
++        print("   %s" % v)
++    print("=" * 78)
++
++    if args.json:
++        d = os.path.dirname(args.json)
++        if d and not os.path.isdir(d):
++            os.makedirs(d)
++        with open(args.json, "w", encoding="utf-8") as poignee:
++            json.dump(dict(segments=SEGMENTS, par_pas=par_pas,
++                           par_epaisseur=par_epaisseur, verdict=verdict),
++                      poignee, indent=1, sort_keys=True, ensure_ascii=False)
++        print("sortie brute : %s" % args.json)
++    return 0
++
++
++if __name__ == "__main__":
++    sys.exit(main())

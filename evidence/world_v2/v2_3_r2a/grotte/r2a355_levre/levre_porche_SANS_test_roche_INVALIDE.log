@@ -1,0 +1,26 @@
+=== EPAISSEUR LOCALE DANS LA BOITE DU PORCHE ===
+  boite   x [-4.00 ; 4.00]  ay [-2.60 ; 0.20]  z [-1.50 ; 3.00]
+  anneau de recherche 1.50 m, grille 0.50 m, 3 rang(s) exclus, opposition de normale < -0.30
+  maillage mesure : SM_WaterfallCave SEUL (jamais COL_)
+  NB : distance a la face NON ADJACENTE la plus proche. Sert a
+       COMPARER deux maillages sur la meme grandeur, jamais a
+       prononcer un verdict de contrat.
+
+--- SM_WaterfallCave_R2a34_8bf1a1b3.glb
+    321 sommet(s) dans la boite, 3899 face(s) retenues
+    minimum 0.1640 m   median 0.8842 m   p90 1.7781 m
+    sous 0,05 m : 0   sous 0,20 m : 4   sous 0,60 m : 76   sous 0,80 m : 137
+      0.1640 m  en (1.307 ; -0.615 ; 2.789)
+      0.1775 m  en (1.291 ; -0.616 ; 2.802)
+      0.1810 m  en (1.290 ; -0.616 ; 2.821)
+      0.1857 m  en (1.287 ; -0.624 ; 2.799)
+
+--- SM_WaterfallCave_c184c8dc.glb
+    473 sommet(s) dans la boite, 4530 face(s) retenues
+    minimum 0.1015 m   median 0.9269 m   p90 1.9398 m
+    sous 0,05 m : 0   sous 0,20 m : 8   sous 0,60 m : 103   sous 0,80 m : 184
+      0.1015 m  en (1.712 ; -2.470 ; 2.949)
+      0.1029 m  en (1.671 ; -2.550 ; 2.895)
+      0.1150 m  en (2.287 ; -2.580 ; 2.766)
+      0.1175 m  en (2.328 ; -2.498 ; 2.839)
+

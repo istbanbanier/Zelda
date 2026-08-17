@@ -1,0 +1,27 @@
+==============================================================================
+DERIVATION DE LA BOUCHE CANONIQUE
+==============================================================================
+maillage : /tmp/c184c8dc.glb
+sha256   : c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed
+pas      : 0.1000 m
+
+------------------------------------------------------------------------------
+REPERES DE GAMEPLAY — sol et plafond MESURES a leur aplomb
+------------------------------------------------------------------------------
+      MODELE_NICHE     (2.780 ; 4.090 ; 0.500) : AIR   sol 0.492   plafond 2.233
+      MODELE_SALLE     (2.620 ; 2.580 ; 0.090) : AIR   sol 0.084   plafond 2.888
+      MODELE_SEUIL_DEHORS (0.000 ; -1.600 ; 0.100) : AIR   sol -0.655   plafond 1.903
+
+   grille 194x175x142, pas 0.1000 m, 80767 segment(s)
+   graine de derivation (salle relevee de 0.90 m) : (2.62 ; 2.58 ; 0.99)
+
+------------------------------------------------------------------------------
+MARCHE VERS L'AVANT — connexite 2D par tranche, jamais selon y
+------------------------------------------------------------------------------
+   tranche de MODELE_SALLE : j=69  y=2.615  section AIR  CLOSE
+   derniere tranche CLOSE : j=26  y=-1.685
+   premiere tranche OUVERTE devant : j=25  y=-1.785
+   -> BOUCHE DERIVEE : plan y = -1.7348  (barriere j=25, epaisseur nulle)
+
+BOUCHE DERIVEE : y = -1.7348   (barriere j=25, epaisseur nulle)
+   a comparer a la CONSTANTE historique Y_BOUCHE_DEFAUT = -1.150  -> ecart -0.5848 m

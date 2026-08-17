@@ -1,0 +1,32 @@
+============================================================================
+LEVRE DU PORCHE — arete ou amincissement ?
+============================================================================
+GLB    : /home/user/zelda-r2a355/reference/SM_WaterfallCave_c184c8dc.glb
+sha256 : c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed
+tables : /home/user/zelda-r2a355/c_instruments/source_assets/blender/environment/make_waterfall_cave.py
+lieu   : /home/user/zelda-r2a355/c_instruments/scripts/world_v2/poi/waterfall_cave_place.gd
+
+bouche derivee a ay = -1.615 | peau interieure 1008 faces
+
+  masque : la LETTRE de l'addendum §2.5, donc VIDE -> tout COQUE
+
+  h vise   lecture     borne       lect./h   d(contour)  argmin (ax ; ay ; az)
+  0.400    0.00800     -0.33331    0.020     0.1841      (-2.489 ; -1.798 ; -0.583)
+  0.200    0.00400     -0.16666    0.020     1.3176      (-2.437 ; -2.932 ; -0.588)
+  0.100    0.00200     -0.08333    0.020     0.4270      (-2.483 ; -2.041 ; -0.584)
+  0.050    0.00100     -0.04166    0.020     0.4675      (-2.482 ; -2.082 ; -0.584)
+
+--- lecture ---
+  `h` divise par 8.0  ->  lecture divisee par 8.0
+
+  La lecture SUIT `h`. C'est la signature d'une ARETE :
+  au contour de bouche la peau interieure rejoint la peau
+  exterieure, donc un echantillon pose a distance `r` du
+  contour lit environ `r`. Il n'y a pas d'epaisseur a
+  mesurer la — il y a un BORD.
+
+  Consequence, et elle ne depend pas de la geometrie : le
+  gate d'epaisseur applique a une peau interieure qui
+  INCLUT SON PROPRE BORD ne peut passer sur AUCUNE
+  geometrie de cette famille, si soignee soit-elle.
+RC=0

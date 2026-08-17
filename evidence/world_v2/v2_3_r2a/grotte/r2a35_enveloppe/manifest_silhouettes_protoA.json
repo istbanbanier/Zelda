@@ -1,0 +1,49 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "clip_below": 0.0,
+  "commit": "da6f5a016b56fcf058de26207084af9a7da36fae",
+  "emprise_m": [
+    17.8215923309326,
+    8.35000038146973,
+    15.0566864013672
+  ],
+  "engine": "4.7.1-stable (custom_build)",
+  "mode": "asset isolé",
+  "place_id": "",
+  "projection": "orthogonale",
+  "provenance": {
+    "generateur": {
+      "chemin": "source_assets/blender/environment/make_cave_envelope_protos.py",
+      "commit": "95c963715c7f72e9a34148ee0ea76108b4eda482"
+    },
+    "geometrie": {
+      "chemin": "assets/environment/caves/prototypes/SM_CaveEnvelope_ProtoA.glb",
+      "commit": "95c963715c7f72e9a34148ee0ea76108b4eda482"
+    }
+  },
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://assets/environment/caves/prototypes/SM_CaveEnvelope_ProtoA.glb",
+  "size": "900x1200",
+  "sujet": "protoA",
+  "vues": [
+    {
+      "angle_deg": 100.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_r2a/grotte/r2a35_enveloppe/silhouette_protoA_100.png",
+      "sujet_pct": 14.7348148148148
+    },
+    {
+      "angle_deg": 145.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_r2a/grotte/r2a35_enveloppe/silhouette_protoA_145.png",
+      "sujet_pct": 12.5411111111111
+    },
+    {
+      "angle_deg": 270.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_r2a/grotte/r2a35_enveloppe/silhouette_protoA_270.png",
+      "sujet_pct": 15.0485185185185
+    }
+  ]
+}

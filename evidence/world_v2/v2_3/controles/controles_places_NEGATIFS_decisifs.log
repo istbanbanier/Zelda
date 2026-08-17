@@ -1,0 +1,14 @@
+# CONTRÔLES NÉGATIFS V2.3-A — trois sabotages simultanés, chacun NOMMÉ par le filet
+# Date : 2026-08-14T08:14:25Z ; code sain = 3d57a12 ; sabotages posés puis RESTAURÉS :
+#  NC-1 arbre foudroyé retiré du registre  -> RESTÉ SIMPLE MARQUEUR + registre 8/9 + lieu ABSENT
+#  NC-2 ferme décalée de +3 m en x         -> posé à (-49,92), layout (-52,92)
+#  NC-3 camp soulevé de +2 m               -> racine à y=8.00, sol à 6.00
+=== RÉSULTAT: 4 réussi(s), 4 échoué(s) ===
+  ÉCHEC: test_world_v2_places_behavior.gd::test_les_recompenses_canoniques_sont_raccordees — les récompenses canoniques sont raccordées (1 écart(s)) — valley.poi.thunderstruck_tree.01 : lieu ABSENT
+  ÉCHEC: test_world_v2_places_contract.gd::test_le_lot_pilote_est_fait_de_lieux_reels — le lot pilote est fait de lieux réels (3 écart(s)) — valley.poi.thunderstruck_tree.01 : RESTÉ SIMPLE MARQUEUR (absent du registre) ; camp : racine à y=8.00, sol à 6.00 ; valley.poi.abandoned_farm.01 : posé à (-49.0, 92.0), layout (-52.0, 92.0)
+  ÉCHEC: test_world_v2_places_contract.gd::test_chaque_scene_du_registre_est_autonome — le registre couvre le lot pilote (8/9)
+  ÉCHEC: test_world_v2_places_contract.gd::test_les_fondations_epousent_le_terrain_gele — les fondations épousent le terrain gelé (1 écart(s)) — seulement 8 lieu(x) monté(s) sur 9 attendus
+# CONTRÔLES V2.3-A — VERT RESTAURÉ après les trois sabotages (code 3d57a12, arbre propre)
+# Date : 2026-08-14T08:16:16Z
+=== RÉSULTAT: 8 réussi(s), 0 échoué(s) ===
+# Suite world_v2 complète au même code : 53/0 (suite_v23a2)

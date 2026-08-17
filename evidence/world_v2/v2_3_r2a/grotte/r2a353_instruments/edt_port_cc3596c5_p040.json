@@ -1,0 +1,28 @@
+{
+ "source": "/home/user/zelda-r2a352/b_collerette/assets/environment/caves/SM_WaterfallCave.glb",
+ "objet": "SM_WaterfallCave",
+ "pas": 0.04,
+ "plan_y": -1.15,
+ "boite": [
+  -4.4,
+  3.6,
+  -0.8,
+  4.4
+ ],
+ "grille": [
+  200,
+  130
+ ],
+ "graine": [
+  0.0,
+  1.1
+ ],
+ "ouverture_deja_reliee": false,
+ "demi_epaisseur_m": 0.52,
+ "collerette_m": 1.04,
+ "borne_inferieure_m": 1.0,
+ "point": [
+  -2.0600000000000005,
+  2.7
+ ]
+}

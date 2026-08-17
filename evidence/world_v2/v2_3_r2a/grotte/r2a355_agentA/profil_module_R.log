@@ -1,0 +1,23 @@
+# commande : python3 tools/cave_argmin_localiser.py <glb> --profil-module
+============================================================================
+LOCALISATION DE L'ARGMIN D'EPAISSEUR — projection, direction,
+generateur responsable. Cet outil ne rend AUCUN verdict.
+============================================================================
+fichier : assets/environment/caves/SM_WaterfallCave.glb
+sha256  : c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed        <- lu AVANT la mesure
+maillage mesure : SM_WaterfallCave  (COL_WaterfallCave, la coque
+   de collision qui BOUCHE la galerie, est exclue nommement)
+h = 0.1000 m   masque = 2.00 m   pas de balayage = 0.050 m
+
+--- PROFIL DU MODULE DE CALOTTE ---
+  module template-detail a l'echelle de la calotte (1.00 ; 1.00 ; 0.55)
+  hauteur de BOITE : 2.393 m
+  rayon    mediane    min        max       
+  0.00     2.392      2.392      2.392     
+  0.20     2.392      2.346      2.392     
+  0.40     2.312      1.524      2.353     
+  0.60     1.050      0.730      1.797     
+  0.80     0.949      0.186      1.794     
+  1.00     0.714      0.000      1.727     
+  1.20     0.230      0.000      0.697     
+RC=0

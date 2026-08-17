@@ -1,0 +1,37 @@
+[
+  {
+    "name": "pylone_composition",
+    "from": [100.0, 26.0, 10.0],
+    "look": [124.0, 30.0, -20.5],
+    "fov": 62.0,
+    "note": "Caméra IDENTIQUE à R2a-4 : la comparaison avec la passe précédente doit être honnête. Azimut 128,2° depuis le centre — l'ouverture de l'anneau (130°) regarde cet objectif."
+  },
+  {
+    "name": "pylone_approche",
+    "from": [112.0, 10.2, 4.0],
+    "look": [124.0, 30.6, -20.5],
+    "fov": 52.0,
+    "note": "HAUTEUR DE JOUEUR : sol mesuré 8,5 m en (112 ; 4), oeil à +1,7. R2a-4 plaçait cette caméra à y=20, soit 11,5 m en l'air — ce n'était pas une approche."
+  },
+  {
+    "name": "pylone_base",
+    "from": [111.2, 19.6, -14.8],
+    "look": [124.0, 21.5, -20.5],
+    "fov": 50.0,
+    "note": "HAUTEUR DE JOUEUR : sol mesuré 17,9 m, oeil à +1,7. Azimut 156°, à mi-chemin entre deux pieds. CÔTÉ ÉCLAIRÉ : la direction du Sun de WorldV2.tscn (-Z de sa base) porte vers l'azimut 19,5°, donc le soleil est à 199,5° — le premier cadrage à 36° prenait la base à contre-jour et aucun chanfrein ne se lisait."
+  },
+  {
+    "name": "pylone_structure_canal",
+    "from": [134.4, 37.0, -26.5],
+    "look": [124.0, 36.0, -20.5],
+    "fov": 40.0,
+    "note": "SUR LE RAYON DU CANAL. Canal modele 30° -> azimut monde 330° par la conversion Z-up/Y-up (un azimut modele t donne la direction monde (cos t ; -sin t)). R2a-4 visait l'azimut 39°, soit 51° hors du canal le plus proche : la vue montrait le flanc du fut, pas le creux. Canal 330° et non 90° : à 90° le flanc gauche tombe à 19° de la normale au soleil et sature à 0,91 mesuré ; à 330° il est éclairé à 40° d'incidence et la matière garde sa valeur. Oeil remonté à 37 m : à 29 m une canopée occupait la moitié droite du cadre."
+  },
+  {
+    "name": "pylone_lointain_96m",
+    "from": [62.0, 36.0, 52.0],
+    "look": [124.0, 32.0, -20.5],
+    "fov": 36.0,
+    "note": "95,4 m du centre. Caméra IDENTIQUE à R2a-4. Azimut 130,5° : l'ouverture de l'anneau doit s'y lire."
+  }
+]

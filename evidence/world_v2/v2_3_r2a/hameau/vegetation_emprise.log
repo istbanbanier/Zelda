@@ -1,0 +1,148 @@
+[verrou] 02:47:20 obtenu par PID 3738 — godot --headless --path /home/user/Zelda --script tools/godot/probe_vegetation_near.gd -- --place=valley.poi.riverside_village.01 --margin=0.35
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 28625 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[vegetation] lieu valley.poi.riverside_village.01
+  emprise monde : x [-109.9 ; -75.4]  z [20.0 ; 45.6]  y [0.0 ; 14.3]
+  pièces bâties retenues : 107 (emprise ≤ 14 m, hauteur ≥ 0.80 m)
+  instances de semis gelé dans le monde : 16651
+  instances dans l'emprise du lieu (marge 0.35 m) : 80
+
+  1 INTERSECTION(S) :
+    veg_c6r8_grass                 (-82.56 ; 3.22 ; 35.65) DANS PoteauAvant_0 [x -83.10–-82.71, z 36.00–36.39, y 3.16–5.53]
+
+  distance de la plante la plus proche, par pièce bâtie :
+    Anvil_Log                      1.14 m
+    Axe_Bronze                     1.54 m
+    Balcony_Simple_Straight        2.30 m
+    Balcony_Simple_Straight        2.57 m
+    Banner_1                       0.54 m
+    Barrel                         0.00 m
+    Barrel                         2.14 m
+    Barrel                         2.45 m
+    Barrel_Apples                  0.33 m
+    Barrel_Holder                  0.00 m
+    Barrel_Holder                  1.18 m
+    Bed_Twin1                      1.27 m
+    Bed_Twin1                      2.79 m
+    Cauldron                       3.21 m
+    Chair_1                        0.33 m
+    Corner_Exterior_Wood           0.14 m
+    Corner_Exterior_Wood           0.14 m
+    Corner_Exterior_Wood           0.18 m
+    Corner_Exterior_Wood           0.90 m
+    Corner_Exterior_Wood           0.90 m
+    Corner_Exterior_Wood           1.34 m
+    Corner_Exterior_Wood           1.89 m
+    Corner_Exterior_Wood           3.47 m
+    Corner_Exterior_Wood           3.47 m
+    Corner_Exterior_Wood           3.62 m
+    Corner_Exterior_Wood           3.62 m
+    Corner_Exterior_Wood           3.63 m
+    Crate_Metal                    2.65 m
+    Crate_Wooden                   0.00 m
+    Crate_Wooden                   0.08 m
+    Crate_Wooden                   1.90 m
+    Lantern_Wall                   1.29 m
+    Mesh                           3.50 m
+    Overhang_Plaster_Long          0.59 m
+    Overhang_UnevenBrick_Long      0.49 m
+    PoteauAvant_0                  0.38 m
+    PoteauAvant_1                  1.31 m
+    PoteauAvant_2                  2.14 m
+    PoteauFond_0                   1.64 m
+    PoteauFond_1                   1.74 m
+    PoteauFond_2                   2.20 m
+    PoteauSechoir_-10_-13          1.97 m
+    PoteauSechoir_-10_13           3.35 m
+    PoteauSechoir_10_-13           3.96 m
+    PoteauSechoir_10_13            4.81 m
+    Prop_Chimney                   1.59 m
+    Prop_Chimney                   3.50 m
+    Prop_Wagon                     3.57 m
+    Prop_WoodenFence_Single        0.67 m
+    Prop_WoodenFence_Single        2.70 m
+    Prop_WoodenFence_Single        6.20 m
+    PuitsMontant                   2.44 m
+    PuitsMontant2                  0.70 m
+    Roof_Front_Brick4              0.00 m
+    Roof_Front_Brick4              1.55 m
+    Roof_Front_Brick6              0.00 m
+    Roof_Front_Brick6              2.65 m
+    Roof_RoundTiles_4x6            0.00 m
+    Roof_RoundTiles_6x8            0.00 m
+    SM_VillageQuay_Piles           0.00 m
+    Shelf_Arch                     3.82 m
+    Stair_Interior_Simple          0.04 m
+    Stall_Cart_Empty               0.01 m
+    Table_Large                    0.38 m
+    Wall_Plaster_Door_Round        3.38 m
+    Wall_Plaster_Straight          0.00 m
+    Wall_Plaster_Straight          0.00 m
+    Wall_Plaster_Straight          0.16 m
+    Wall_Plaster_Straight          0.16 m
+    Wall_Plaster_Straight          0.69 m
+    Wall_Plaster_Straight          0.69 m
+    Wall_Plaster_Straight          0.84 m
+    Wall_Plaster_Straight          3.35 m
+    Wall_Plaster_Straight          3.40 m
+    Wall_Plaster_Straight          3.40 m
+    Wall_Plaster_Straight          3.54 m
+    Wall_Plaster_Window_Wide_Round 0.07 m
+    Wall_Plaster_Window_Wide_Round 0.07 m
+    Wall_Plaster_Window_Wide_Round 0.25 m
+    Wall_Plaster_Window_Wide_Round 0.25 m
+    Wall_Plaster_Window_Wide_Round 0.42 m
+    Wall_Plaster_Window_Wide_Round 0.42 m
+    Wall_Plaster_Window_Wide_Round 0.82 m
+    Wall_Plaster_Window_Wide_Round 0.82 m
+    Wall_Plaster_Window_Wide_Round 0.84 m
+    Wall_Plaster_Window_Wide_Round 1.44 m
+    Wall_Plaster_Window_Wide_Round 1.44 m
+    Wall_Plaster_Window_Wide_Round 2.12 m
+    Wall_Plaster_Window_Wide_Round 2.12 m
+    Wall_Plaster_Window_Wide_Round 3.35 m
+    Wall_Plaster_Window_Wide_Round 3.38 m
+    Wall_Plaster_Window_Wide_Round 3.54 m
+    Wall_UnevenBrick_Door_Round    0.27 m
+    Wall_UnevenBrick_Straight      0.00 m
+    Wall_UnevenBrick_Straight      0.00 m
+    Wall_UnevenBrick_Straight      0.28 m
+    Wall_UnevenBrick_Straight      0.84 m
+    Wall_UnevenBrick_Straight      1.59 m
+    Wall_UnevenBrick_Straight      1.69 m
+    Wall_UnevenBrick_Straight      1.83 m
+    Wall_UnevenBrick_Straight      1.83 m
+    Wall_UnevenBrick_Window_Wide_Round 0.00 m
+    Wall_UnevenBrick_Window_Wide_Round 0.00 m
+    Wall_UnevenBrick_Window_Wide_Round 0.58 m
+    Wall_UnevenBrick_Window_Wide_Round 2.74 m
+    Whetstone                      1.07 m
+    Workbench                      0.51 m
+WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 1 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+[verrou] 02:48:08 rendu après 48 s — code 1

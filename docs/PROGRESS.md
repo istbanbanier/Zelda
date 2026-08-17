@@ -5,4408 +5,677 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
-## 2026-08-12 (suite) — sprint artistique : cinq transformations, trois commits
+## 2026-08-17 — R2a-3.5.5 : au rebord d'une bouche, il n'y a pas d'épaisseur · `PARTIAL`
 
-**Mode** : sprint (directive du propriétaire) — boucle rapide 720p, tests
-sélectifs, validation complète UNIQUE en fin, ≤ 5 commits. **Branche** :
-`claude/vslice-pass3-silhouettes`. **Preuves finales** :
-`evidence/vslice_pass3_20260812/sprint_final/`.
+**Le gate d'épaisseur ne peut pas être rendu décisif, et c'est démontré.** Le
+rapport `lecture / h` est **exactement constant** quand `h` varie d'un facteur 8
+— 0,010 sur R2a-3.4, 0,020 sur le candidat. La lecture ne converge pas vers une
+valeur finie, elle **suit la résolution** : signature mathématique d'une arête.
+Au contour de bouche la peau intérieure rejoint la peau extérieure. Aucun seuil
+strictement positif n'y est tenable, sur **aucune** grotte pourvue d'une bouche.
+Et la géométrie **livrée** est la plus mince des deux.
 
-1. **Prairie du corridor** : cellules MultiMesh de touffes en grappes sur la
-   terrasse du camp, la plaine sud, la berge du gué et la plaine nord —
-   les grands aplats verts des caméras 3-5 sont habités.
-2. **Cols d'horizon** : 76 selles entre les pics de crête — l'arête
-   horizontale du mur de bordure (la « couture ») ne se découpe plus sur
-   le ciel.
-3. **Berges du gué** : roseaux, herbes hautes et pierres du kit CC0 le long
-   des deux rives, tablier dégagé.
-4. **Toits harmonisés** : les tuiles rouges méditerranéennes des quatre
-   abris repeintes bois/bronze (leçon : `from_standard` ignore
-   `albedo_color` dès qu'une texture existe — repeinte plate obligatoire).
-5. **Le coureur des steppes** : monture originale Blender→glb (3 412 tris,
-   agent isolé, script déterministe versionné) remplace la boîte-animal ;
-   collision/selle/gameplay inchangés, graybox en repli.
+Le trou est dans mon propre addendum : il a remplacé l'exclusion géodésique de
+l'ancien instrument par une classification — plus dur, comme demandé — sans
+provision pour ce fait géométrique. Je ne l'ai pas amendé : il a été écrit avant
+la mesure exactement pour qu'un `FAIL` ne puisse pas le faire bouger.
+
+**La géométrie n'est PAS intégrée**, et c'est la décision de la passe. Trois
+mesures indépendantes disent que l'enveloppe R2a-3.5.2 **régresse le porche** :
+89 sommets sous 0,80 m contre 71, minimum 0,283 contre 0,363 m, et surtout
+**62 auto-intersections à 0,457 m sur la coque de collision contre 7 à 0,020 m**
+— 23 fois le seuil, sur la géométrie qui arrête le joueur, et qu'aucun contrôle
+n'a jamais regardée. Cause nommée : les stations du porche sont identiques mais
+**leur voisine a bougé**, et la section est orientée par la tangente.
+
+**Entrent au tronc** : l'addendum du masque (committé avant toute géométrie), dix
+instruments, les preuves des trois agents et les miennes, ISS-055 corrigée. Les
+quatre patches de géométrie sont préservés et rejouables.
+
+**Prochaine action exacte — deux décisions du lead, dans cet ordre :**
+
+1. **Fixer la provision de rebord.** Quelle emprise géodésique autour du contour
+   de bouche est exclue des deux seuils ? Sans elle, aucun gate d'épaisseur ne
+   peut passer. Ordre de grandeur mesuré hors contrat, à marge 0,60 m : la
+   référence remonte à 0,0094 m, le candidat à 0,6610 m.
+2. **Trancher si le porche de R2a-3.5.2 doit être réparé avant intégration.**
+   L'hypothèse du cisaillement de tangente est réfutable en rallongeant le
+   segment sortant du seuil sans toucher aux stations 0 et 1.
+
+Détail complet : `docs/CODEX_HANDOFF.md` §38.
+
+---
+
+## 2026-08-16 — R2a-3.5.1 : cavité asymétrique · `PARTIAL`
+
+Le lead a refusé ma conclusion « trois exigences se contredisent » et il avait
+raison : je n'avais essayé qu'un levier, translater la galerie **en gardant sa
+section symétrique**. Une contradiction établie sur un seul levier n'est pas une
+contradiction. Son arbitrage : **section intérieure asymétrique** — vide limité
+au gabarit joueur du côté mince, élargissement déporté du côté où sept mètres de
+roche attendent. Le chiffre qui lui donnait raison était déjà dans le code :
+`GABARIT_DEMI_LARGEUR_M = 0,95 m` contre 3,48 m de demi-vide à la station 5.
+
+Trois agents, trois worktrees sur `34c305d`, fusion **sans conflit**.
+Preuves : `evidence/world_v2/v2_3_r2a/grotte/r2a351_integration/`.
+
+### Étanchéité : `403 → 0` percées confirmées
+
+| géométrie | échantillonnage d'origine | corrigé |
+|---|---:|---:|
+| R2a-3.5 | 403 | — |
+| cavité asymétrique seule | 162 | 118 |
+| **fusion cavité + enveloppe** | 38 | **0** |
+
+Le passage de 38 à 0 est une correction **démontrée**, pas un aveuglement :
+l'échantillonneur plaçait ses points symétriquement le long de X, et pour
+chacune des 38 percées, **38/38 partaient hors de la cavité** avec **deux
+impacts entre l'axe et ce point** — une paroi intacte, traversée à l'aller et au
+retour. La sonde se tenait dehors, derrière un mur. Propriété de sûreté vérifiée :
+sur un profil symétrique l'écart ancien/nouveau vaut **0,00 m sur 495 points**.
+
+Aussi vert : paroi **0,87 m** (seuil 0,80) · **trois masses aux trois azimuts**,
+100 compris · ratio d'emprises **2,16** (était 2,02 pour 2,00) · plage plane
+8,36 globale et **4,63 en façade** (seuils 12,00 / 6,00) · raster des cinq
+surfaces zéro case ouverte.
+
+### Ce qui reste rouge — deux défauts, tous deux au bout de la galerie
+
+1. **Collerette 0,48 m pour 0,60**, au porche. Ce n'est pas un conflit de
+   contrat : R2a-3.4 tenait ce seuil grâce à une **« visière saillante »** que
+   l'ancien `MASSIF` portait à la station 0 et que la nouvelle enveloppe n'a pas.
+   Deux remèdes mesurés échouent — porter la lèvre **mure le porche**, un biais
+   plus fort fait tomber la collerette à 0,08 m. **La forme qui reste à essayer
+   est une visière : de la matière au-dessus et sur les côtés de l'ouverture,
+   pas devant elle.**
+2. **Plancher absent de `y +2,88` à `+3,17`, stations 6 à 8**, écart 0,44–0,45 m.
+   **Régression de cette passe** — la géométrie livrée R2a-3.4 passe ce contrôle
+   avec le même instrument corrigé. Présent à l'identique avant la correction
+   d'échantillonnage : il était là, caché derrière le compte de percées. Les
+   stations 7 et 8 ferment la calotte et sont exclues de `controle_epaisseur` et
+   de `controle_gabarit` par construction ; c'est aussi là que `droite` descend à
+   0,25–0,27. Piste, pas conclusion.
+
+### Sept fois la même faute, et c'est l'enseignement de la passe
+
+**Un seul nombre, qui répond à une autre question que celle posée.** La sonde ne
+connaissait de l'asymétrie qu'un scalaire appliqué des deux côtés (704 rayons
+absous à tort) ; `dans_enveloppe`, `dans_le_noyau`, `_emprise_noyau`,
+`points_interieurs`, `controle_gabarit`, `controle_plancher` et
+`controle_aucun_jour` mesuraient tous une demi-largeur **symétrique** le long de
+**X** au lieu de la normale ; la contenance qui avait validé l'enveloppe ne
+mesurait que le **toit** ; ma propre mesure du contrefort était prise **après**
+soustraction, là où la peau était déjà emportée ; et le journal imprimait
+`PASS — un sol existe sous chaque point sondé` **au-dessus** d'une carte pleine
+de `<-- TROU`.
 
 ### Prochaine action exacte
 
-État poussé sur la branche (autorisation du propriétaire, sprint §3) —
-prêt pour la revue visuelle. Prochain sprint candidat : ruines centrales
-et POI du parcours (kits modulaires), donjon hors périmètre tant que non
-autorisé.
+**La visière du porche**, dans l'enveloppe : matière au-dessus et sur les côtés
+de l'ouverture, ancre et cadrage gelés, sans que les silhouettes 55° et 225°
+régressent. Puis le plancher des stations 6–8. Les deux patches sont dans
+`r2a351_integration/` et s'appliquent d'un bloc sur `34c305d`.
 
-## 2026-08-12 — passe 3 : les six défauts de la revue Codex
+Le tronc construit toujours la géométrie R2a-3.4 et **reste vert** : rien de
+cette passe n'est versé au chemin livrable tant que le portail est rouge.
 
-**Branche** : `claude/vslice-pass3-silhouettes`, créée sur `2c4fbf9` (merge
-PR #7) après verdict **ÉCHEC** du gate visuel indépendant (tests 832/0 et
-preuves acceptés, objectif visuel non atteint). Lots B à E uniquement — ni
-lot F, ni donjon, ni UI. **Preuves** : `evidence/vslice_pass3_20260812/`
-(baseline `avant/`, un dossier `apres_*` par défaut, jeu `final/`).
+---
 
-Les six défauts traités, chacun : AVANT → cause réelle mesurée → test rouge
-exécuté → plus petit correctif → APRÈS même caméra → commit thématique.
-Détail dans le README du dossier de preuves. Trois choses que les tests
-verts n'avaient PAS vues et que les recaptures ont attrapées : l'enclume du
-nuage redevenue soucoupe (test élargi à toute sphère `Cloud*`),
-l'enroulement anti-horaire qui rendait le chemin invisible (leçon ISS-018),
-et `_hull_mesh` à 8 sommets qui dégénérait les buttes. Le filet
-anti-enterrement du relief a attrapé trois vraies fautes de placement.
+## 2026-08-16 — R2a-3.5 : changement d'architecture de la grotte · EN COURS
 
-Jeu `final/` : **5 caméras sur 6 conformes §1.5** — la caméra 6 pour la
-première fois (désaturation de la roche) ; la 5 en verdict non pertinent
-(bandeau haut sans ciel : nuage/citadelle/montagnes), reporté tel quel.
+Le lead a rendu R2a-3.4 `FAIL TECHNIQUE — FAIL VISUEL` et **arbitré** le conflit
+que la passe précédente lui avait renvoyé : « la galerie ne doit plus passer sous
+les deux cols […] **déplacer le vide intérieur, pas sacrifier la silhouette
+extérieure** ». Quatre couches désormais séparées : enveloppe rocheuse, galerie,
+soustraction, détails de surface — dans cet ordre, la cavité n'étant soustraite
+qu'après validation de l'enveloppe.
 
-ISS-046 et ISS-047 passés CORRIGÉ (verdict d'image en attente) ; ISS-045
-atténué (buttes de flanc), remodelage des dalles TOUJOURS au backlog.
+### Ce qui est acquis et poussé
+
+* **Enveloppe.** Loft entre un polygone de sol irrégulier et un ruban de crête à
+  largeur variable (0,25 m aux extrémités, 1,3–1,45 m au sommet) : aucun sommet
+  plat n'est possible **par construction**. Trois masses aux azimuts 55/225,
+  contenance 9/9 stations, linteau +1,36 m.
+* **Outil de coupe et de carte d'épaisseur** (`tools/plot_cave_section.py`,
+  `15abf21`), qui manquait : il mesure le **GLB livré**, pas les objets Blender,
+  et ne juge rien.
+* **Référence chiffrée de l'état rejeté**
+  (`evidence/…/grotte/r2a35_coupe_baseline/`, `f4a3df5`), publiée **avant**
+  d'avoir vu la nouvelle géométrie pour qu'elle ne puisse pas être choisie après
+  coup : écart horizontal entre la crête de la tranche et l'axe de galerie
+  = 0,00 m au seuil, **2,84 m en moyenne, 7,95 m au maximum**. C'est la mesure du
+  constat que le lead avait fait à l'œil.
+
+### Deux erreurs de méthode à mon débit, consignées
+
+1. **J'ai accepté l'enveloppe sur les preuves que j'avais moi-même demandées.**
+   Planches de silhouette, comptage de masses, sonde de contenance — aucune des
+   trois n'est `controle_amas`, le portail du tronc, sous lequel l'enveloppe
+   rendait un rapport de cols de 1,17 pour un minimum de 1,25. C'est l'agent qui
+   l'a trouvé, pas moi. Règle qui en sort : **une couche produite hors du tronc
+   se reçoit en la passant par les contrôles DU TRONC.**
+2. **Un garde-fou qui ne pouvait pas se fermer.** `dans_le_vide` rend un couple
+   `(bool, compte)` et `(False, 0)` est vrai en Python : ma garde publiait
+   « 0,00 m d'épaisseur » là où la mesure était simplement impossible. Un
+   garde-fou qui ne peut pas rougir est pire que pas de garde-fou — il donne
+   confiance. Corrigé et commenté dans le code.
+
+### Une clause de contrôle change de sens, et c'est documenté
+
+`controle_amas` exigeait qu'un faîte soit porté par **au moins trois** copies de
+`template-detail` — utile quand les modules ÉTAIENT la silhouette. Sous la
+nouvelle architecture le lead écrit qu'ils ne doivent plus la porter : la clause
+est donc **inversée** (zéro module de détail dans la bande de faîte, la crête
+appartient à l'enveloppe), avec les deux versions et la raison du basculement
+écrites au-dessus du code. Les six clauses neutres — largeurs, cols, dominante,
+décentrement — gardent les valeurs du tronc ; **aucune n'a baissé**.
+
+### Ce que la passe a établi
+
+Le câblage est fait. Un mode `--diagnostic` a été ajouté — aucun contrôle
+modifié, code retour toujours 2, export vers `prototypes/` et jamais vers le
+livrable — parce qu'un portail rouge sur la composition nous rendait aveugles
+à toute la suite de la chaîne. Il a immédiatement payé : **six défauts
+bloquants mesurés** au lieu d'un seul connu.
+
+**L'arbitrage du lead est exécuté, et c'est le résultat central.** Écart
+horizontal entre la crête de la tranche et l'axe de galerie, mesuré sur le GLB
+livré : **2,84 m moyen / 7,95 m max** sur la géométrie rejetée, **1,06 / 2,29**
+sur la nouvelle. Le chiffre de gauche avait été publié d'avance (`f4a3df5`).
+
+Le sommet plat a disparu : largeur au sommet 5,58 / 3,60 / 2,18 m → **1,54 /
+2,02 / 1,58 m**. Et deux instruments qui ne partagent aucun code convergent à
+3 cm sur les emprises (générateur sur volumes sources ; mesure sur les pixels
+d'une silhouette rendue par Godot).
+
+Preuves : `evidence/world_v2/v2_3_r2a/grotte/r2a35_diagnostic/`.
+
+### Le blocage réel, mesuré deux fois
+
+385 percées confirmées, épaisseur de paroi 0,11 m pour 0,80 exigés. Cause :
+l'enveloppe fait 7 à 8,6 m de profondeur d'un côté et 0,07 m à rien de l'autre
+— la galerie longe le bord mince. **La sonde de contenance qui avait validé
+l'enveloppe ne mesurait que le toit** ; les parois latérales n'ont jamais été
+mesurées, et je l'ai accepté.
+
+Le remède évident — décaler la galerie de 1,8 m vers la roche disponible — a
+été appliqué et mesuré. Trois indicateurs de bord s'améliorent (paroi
+0,11 → 0,37 ; « le sol voit le ciel » 2 → 0 ; plancher +0,956 → +0,701) et
+**les percées ne bougent pas : 385 → 390**.
+
+Cet échec est plus utile qu'une réussite partielle : il réfute « la galerie est
+un peu trop d'un côté ». La section de cavité ne tient nulle part sur un trajet
+qui doit partir d'une bouche **gelée** et finir **sous la dominante**.
 
 ### Prochaine action exacte
 
-1. Lancer `tools/validate_fast.sh` (suite complète, ~25 min) et joindre le
-   verdict au dossier de preuves — fait en fin de session si le journal en
-   contient le log ; sinon C'EST LA PREMIÈRE CHOSE À FAIRE.
-2. Livrer l'état à la **seconde revue indépendante de Codex** — ne rien
-   pousser sans l'autorisation explicite du propriétaire.
-3. Ne PAS déclarer le gate vert : le verdict appartient à Codex.
+**Porter l'arbitrage au lead, pas le trancher.** Trois de ses exigences se
+contredisent, chacune explicite : bouche gelée (point 1), poche sous la
+dominante (point 4), épaisseur réelle (0,80 / 0,60). Les trois leviers restants
+touchent chacun une décision qui lui appartient — élargir l'enveloppe (mais
+« ne pas sacrifier la silhouette extérieure »), réduire la section (mais le
+gabarit joueur est un contrat), déplacer la bouche (mais elle est gelée).
 
-## 2026-08-11 (suite) — étapes 1 à 8 : suite verte, citadelle, chemins, talus
+Deux défauts de composition restent indépendamment ouverts et ne dépendent
+d'aucun arbitrage : **azimut 100 à deux masses** (le contrefort disparaît en
+projection ; R2a-3.4 en présentait trois, la cible est donc atteignable) et
+**plage plane de 9,01 m² en façade** pour 6,00 (centrée en −4,68 ; 1,63 ; 2,24,
+c'est-à-dire la face avant de l'épaule).
 
-**Branche** : `claude/new-session-840w2o`. **Preuves** : `evidence/vertical_slice_20260811/`
-(`final/` = jeu de référence).
+Le tronc reste **vert et inchangé** : le générateur livré construit toujours la
+géométrie R2a-3.4, la sonde passe, rien de rouge sur `HEAD`. Le câblage complet
+vit dans `r2a35_diagnostic/couche1_3_cablage_enveloppe.patch`, applicable d'un
+bloc.
 
-- **Les 8 échecs de sauvegarde n'existaient pas.** Le journal portait DEUX
-  résumés « === RÉSULTAT » et une ligne coupée en plein mot : deux runners
-  concurrents (un survivant de pkill) partageaient `user://saves` et se
-  corrompaient mutuellement. Verrou dans `validate_fast.sh` (sortie 3 BLOQUÉ),
-  piège documenté dans `tools/CLAUDE.md`. Contre-épreuve : suite SEULE →
-  **823/0, RC=0**.
-- **Caméra de descente désenterrée** (5 m sous la crête depuis sa création) ;
-  `test_gate_cameras_are_not_buried` sonde les six caméras, contrôle négatif
-  rouge. Paire 02 recapturée honnêtement.
-- **Étape 4 / citadelle** : terrasses en troncs de pyramide (`_frustum_in`),
-  arcade percée (3 vides plus sombres que la moitié de la pierre — attention
-  au LIFT painterly : pic < 0,14 remonté ×5, le canal bleu du vide est posé à
-  0,14 pile), brèche penchée, deux courtines déviées. Décor sans collision
-  (PT-D1-09). Test rouge d'abord.
-- **Étape 5 / chemins** : chaînes de tronçons ≤ 7 m plaqués individuellement
-  au sol, épaulements `PathEdges` (clairance 8 mm sous les quads), pierres de
-  bord. Le test rouge a mesuré 59 m d'un seul tenant avant.
-- **Étape 7 / mesas** : talus sur pylône (S+E) et falaise d'apprentissage (S)
-  — la face EST de LearningCliff est LA paroi d'escalade : l'exclusion est
-  TESTÉE.
-- Matrice : 3 PROUVÉ / 2 CORRIGÉ / 5 À TRAITER / 3 BLOQUÉ / 74 REPORTÉ.
-
-### PROCHAINE ACTION EXACTE
-
-1. Faire NOTER les captures `final/` par Codex (North Star, gate d'image) —
-   rien ne s'auto-attribue ici.
-2. Si le verdict d'image est favorable : lot F (Options 720p — layout 775 px
-   dans 720, ScrollContainer + test de bornes ; reformuler « Manette prise en
-   charge »).
-3. Les restes rouges nommés au README §4 : Keep/tours en boîtes à collision
-   (remodelage = toucher les colliders, faire précéder d'un filet), terrain
-   plat (ISS-045, filet d'abord), couture bordure/crêtes, monture graybox.
+Aucun verdict visuel n'est prononcé ici ; il appartient au lead.
 
 ---
 
-## 2026-08-11 — Tranche verticale d'ouverture, lots A à D : la valeur avant la forme
+## 2026-08-16 — R2a-3.4 : corrective multi-agent (flore, composition, seuil)
 
-**Branche** : `claude/new-session-840w2o`. **Base** : `6a996a5`.
-**Preuves** : `evidence/vertical_slice_20260811/`.
+Trois agents, trois worktrees détachés de `59e0adb`, verrou `flock` partagé,
+intégration par cherry-pick sans commit de fusion. Preuves :
+`evidence/world_v2/v2_3_r2a/grotte/tranche4_final/R2A_3_4.md`.
 
-### D'abord, un écart de dépôt qu'il faut connaître
+### Ce que chaque agent a trouvé
 
-Le prompt de reprise annonce `claude/vertical-slice-opening-polish` au commit
-`c8fc1ab048a48fe8eeb214195a09ec1e012d4ac9`. **Ce SHA n'existe dans aucune
-référence du dépôt** — les quatre commits locaux de l'audit ont été réécrits
-avant d'être poussés, et la branche distante porte le même travail jusqu'à
-`b0fe61c`. La branche de cette session en était **13 commits en arrière** :
-travailler dessus telle quelle, c'était refaire le dégât du 2026-08-07
-(`COMMENT_TRAVAILLER_ENSEMBLE` §1). Fusion **locale** de la branche auditée
-avant tout travail, diff purement additif, aucun push.
+**A — flore.** Le bâtisseur de végétation V2 était le seul poseur de World V2 à
+ne pas consulter `KitScale` : `Flower_4_Group` culminait à 2,841 m pour un
+plafond bible de 0,55 m. Corrigé par la voie canonique, bande (0,69 ; 0,99)
+choisie pour conserver le rapport de variance d'origine à 0,2 % près.
 
-Godot n'était pas dans le conteneur. Le binaire OFFICIEL 4.7.1-stable se
-télécharge depuis les *releases GitHub* (sha512 vérifié contre `SHA512-SUMS.txt`,
-build `a13da4feb` = le commit épinglé par `setup_godot.sh`) — une à deux heures
-de compilation économisées. `tools/setup_godot.sh` mérite cette note : sa
-politique réseau bloque `downloads.godotengine.org`, pas `github.com`.
-Blender installé aussi : le niveau 3b de `validate_fast.sh` s'exécute enfin.
+**B — forensic.** Une **circularité dans une chaîne de contrôles** :
+`controle_epaisseur` excluait les rayons descendants en renvoyant à
+`controle_aucun_jour`, qui ne tire que vers le haut. Rien n'a jamais regardé le
+sol. Le générateur imprimait d'ailleurs déjà la mesure du défaut le jour de la
+livraison — `sol : -0,416` pour un attendu de `-0,040` — illisible parce que la
+ligne n'imprime pas l'attendu à côté. `ISS-044`.
 
-### Ce que la mesure a dit avant que je touche à quoi que ce soit
+**C — composition.** Le cv 0,06 était **arithmétique** : le faîte de
+`template-detail` fait 0,93 m et 81 % des colonnes avaient leur crête portée par
+une seule roche. Corrigé par chevauchement horizontal et anisotropie bornée.
 
-Le dépôt possédait déjà `tools/check_value_bands.py`, appelé par
-`validate_release.sh` étape 5b. Personne ne l'avait exécuté sur la capture de
-référence. Il sort en **code 1** :
+### Deux erreurs attrapées par la reproduction
 
-    sol p95 = 73 %  >=  ciel p50 = 70 %
+L'agent C annonçait « 81 → 13 percées » ; j'en mesurais « 761 → 113 » sur des
+sha256 identiques. Cause : le drapeau `--rapide`, jamais écrit dans la preuve.
+En se relisant, il a trouvé pire — `--rapide` lui avait fait écrire
+« dispersées » là où **40 rayons convergent** derrière l'alcôve. Cible ensuite
+fermée en une tentative.
 
-Le sol de la vallée rendait plus clair que son ciel, sur **cinq des six**
-caméras de gate. Et le niveau de gris montrait pourquoi aucune passe de
-modélisation n'y pouvait rien : tiers haut 65,6 %, tiers milieu 67,5 %, soit
-**1,9 point** d'écart et dans le mauvais sens. C'est pour ça que le lot A n'est
-pas de la géométrie.
+> Quand deux mesures indépendantes du même défaut ne coïncident pas aux bornes,
+> l'écart est le sujet, pas un détail de formulation.
 
-Deux sondes ajoutées, parce que le gate parle de choses que rien ne mesurait :
-`probe_frame_masses.gd` (emprise À L'ÉCRAN, pas boîte englobante monde) et
-`make_review_pack.py` (vignette, niveau de gris, écarts de valeur).
+### Trois pièges d'outillage consignés (`tools/CLAUDE.md`, `1b4da4d`)
 
-### Les lots
-
-- **A — valeurs.** Palettes descendues en moyenne, ÉLARGIES en écart ; le
-  « vert acide » et le chemin le plus clair du cadre corrigés (rechute
-  d'ISS-037) ; récession peinte dans la couleur. §1.5 : 1 caméra conforme
-  sur 6 → **4 sur 6**.
-- **B.0 — la rampe de la citadelle était un tapis vert** sur 55,5 % du cadre
-  d'approche. Trouvé par repeinture magenta puis recapture, pas par lecture.
-  La passe de peinture exemptait les sols par une LISTE DE NOMS qui citait
-  douze dalles et **aucune rampe**. Exemption passée dans un GROUPE que
-  `_slab()` et `_ramp()` posent eux-mêmes.
-- **B — trois boîtes faisaient 71 % du cadre** de la route du nord. Falaise à
-  trois rangs recouvrants sur la face sud du plateau (ses 14 contreforts
-  passaient largeur et profondeur **inversées**) ; jupes de bordure et crêtes
-  élargies et recouvrantes.
-- **D — le camp.** `prop.tent` et `prop.campfire` pointaient vers des scènes
-  absentes ET n'étaient consommés par personne. Livrés (`AwningTent`,
-  `CampfireProp`, originaux, construits par script) et montés par la terrasse.
-  La colonne de fumée était repeinte en CUTOUT opaque malgré son alpha 0,22 :
-  la recette refusait les émissifs, pas les translucides.
-- **D bis** — et le voile ainsi rendu translucide devenait **invisible** depuis
-  la crête (contraste +22,6 → +1,6). Remonté en valeur : **+39,7**, mieux
-  qu'avant, et on voit les montagnes au travers.
-
-### PROCHAINE ACTION EXACTE
-
-**Lot C, et rien d'autre : intégrer les chemins au relief.**
-`probe_frame_masses.gd --camera=VistaCamera_Hero01` classe `PathStrip00`
-**deuxième masse du cadre d'ouverture à 22,2 %**, pour un `PlaneMesh` de
-20 × 6 m **sans épaisseur** posé au-dessus du sol (`_build_paths`, dix
-segments). C'est le « chemin lu comme une bande posée sur l'herbe » du gate.
-La correction n'est pas de le teinter : c'est de le faire APPARTENIR au sol —
-compression d'herbe, terre, interruption des fleurs, ruptures de niveau — et
-de rejouer le parcours physique après.
-
-Ne pas toucher au relief des deux grandes plaines avant d'avoir un test qui
-prouve qu'aucun objet placé ne s'y retrouve enterré ou suspendu :
-`test_opening_dressing_rests_on_ground.gd` donne le patron.
-
----
-
-## 2026-08-10 — Tranche verticale d'ouverture, lot 1 : le décor de la crête était ENTERRÉ
-
-Session ouverte sur la branche `claude/vertical-slice-opening-polish`, mandat
-borné : rendre les dix premières minutes visuellement professionnelles, sans
-nouvelle mécanique ni nouveau contenu.
-
-### La base a demandé une décision avant toute chose
-
-`02d5212` — le build que teste le propriétaire — **n'était pas un ancêtre du
-HEAD**. La PR nº6 avait fusionné la branche à l'état `bec93f1`, puis 7 commits
-ont continué dessus. Vérifié : `02d5212` contient 100 % du contenu du HEAD, dont
-le correctif de la porte du donjon et son test de régression ; le HEAD n'a rien
-d'unique (son seul commit propre est le merge, et le diff vers `02d5212` ne
-contient que des restaurations). Base retenue : `02d5212`. Rien supprimé, rien
-réinitialisé, tag et release intacts.
-
-### Environnement
-
-Godot était ABSENT du conteneur : compilé depuis la source épinglée
-(`a13da4feb`, tag 4.7.1-stable) en 29 min via `tools/setup_godot.sh`. Blender
-était absent aussi, ce qui laissait le niveau 3b ROUGE — installé par
-`tools/setup_blender.sh` (4.0.2). Plancher de référence sur l'arbre propre :
-**`validate_fast.sh` VERT, RC=0**, 3b compris (6 personnages, un seul corps
-solidaire).
-
-### Le défaut, mesuré et non supposé
-
-`ValleyTerrain._dress_zone()` posait chaque pièce à la cote littérale de sa
-table, **sans jamais sonder le terrain**. Les 21 pièces de `DressZoneCrest`
-étaient écrites à `y = 24` — la cote de spawn de MASTER_SPEC §3.3 — alors que la
-crête culmine à **y = 32,00** depuis la passe H-5.
-
-| Zone | Constat mesuré |
-|---|---|
-| `DressZoneCrest` | 21 pièces **enterrées de 8,00 à 8,36 m** — fleurs, trèfle, fougères, touffes, galets du tout premier plan du jeu, invisibles |
-| `DressZoneDescent` | 4 pièces enterrées (0,80 à 4,61 m) et 4 **suspendues** jusqu'à 13,99 m au-dessus de la plaine |
-
-C'est **la même classe de défaut** que les deux fruits de la crête corrigés le
-2026-08-07 (« sol à 32,00, pose à 24,00, la cote du spawn jamais mise à jour
-quand le relief a été bâti ») : le correctif d'alors n'avait touché que les
-ramassables. Et les quatre pièces suspendues sont, mot pour mot, « un rocher et
-des poteaux qui flottent dans le ciel » du rapport de jeu du même jour.
-
-### Pourquoi la sonde existante ne l'avait pas dit
-
-`probe_world_boxes.gd` tire son rayon depuis 40 cm sous la pièce. Pour une pièce
-enterrée, ce départ est **à l'intérieur** du terrain : le rayon en sort sans le
-voir et rapporte la plaine du dessous. Elle annonçait donc « flotte à 22 m » là
-où la vérité est « enterrée de 8 m » — signe inversé — et signalait **le joueur
-lui-même** comme flottant, ce qui a mis sur la piste. Le nouveau test tire de
-très haut, seule façon de trouver la surface plutôt qu'une face intérieure.
-
-### Livré
-
-- `tests/integration/test_opening_dressing_rests_on_ground.gd` — **écrit avant
-  le correctif et vérifié ROUGE** : 28 pièces fautives sur 33 mesurées, chacune
-  nommée avec son écart. Vert après.
-- `ValleyTerrain._snap_dressing_to_ground()` — repose le semis sur le sol réel,
-  au `call_deferred` (même timing que `_drop_pickups_to_ground`, pour la même
-  raison : l'espace physique ignore les colliders créés dans la frame courante).
-  **X et Z ne bougent pas** : la composition de §11.A n'est pas mon travail.
-  `DressZoneCitadel` est exclue à dessein — ses bannières et torches sont
-  accrochées à des murs.
-
-### Verdict de non-régression
-
-**`validate_fast.sh` VERT, RC=0, 817 tests** après correctif (816 avant + le
-nouveau) — `evidence/vslice/validate_fast_APRES_e70a2a7.log`, à comparer au
-plancher de référence `evidence/vslice/validate_fast_AVANT_base_02d5212.log`.
-
-Nuance imposée par ISS-038 : la suite n'est pas déterministe, donc **un passage
-vert ne prouve pas qu'un test est sain**. Ce qui est dit ici est plus modeste :
-trois passages complets (deux sur la base, un après correctif) n'ont montré
-aucune régression.
-
-### Ce que ce lot ne prouve PAS
-
-La capture `VistaCamera_Hero01` change **très peu** : la caméra est à z = 153,4
-et le décor de la crête s'étend de z = 151 à 169, donc l'essentiel est à côté ou
-derrière elle. Le gain se verra en marchant sur la crête et en descendant, pas
-sur cette image. Ne pas présenter ce correctif comme une transformation
-visuelle : c'est une géométrie fausse redevenue juste.
-
-Aucun jugement de rendu, de composition, de lisibilité ou de plaisir n'est porté
-ici — ni par moi, ni par un test.
+Worktree neuf sans `.godot/` → le runner accuse `GateTestCase`, un innocent ;
+`--path .` résout contre le cwd de la **session** ; tous les worktrees partagent
+un seul `user://`.
 
 ### Prochaine action exacte
 
-1. Les trois joueurs blackbox de l'Étape 1 **n'ont pas été lancés** (≈ 100 min,
-   séquentiels obligatoires — `play.sh` tue toute autre instance de Godot) :
-   `tools/blackbox_player/play.sh occasionnel A 80`, puis `explorateur E 120`,
-   puis `experimente C 120`. Le parcours `C` est le plus informatif : il vise
-   l'entrée de la citadelle, c'est-à-dire le correctif qui a atterri dans cette
-   base et qui n'a jamais été joué.
-2. Défauts **observés et non traités** : ISS-039 (chemin posé sur l'herbe) et
-   ISS-040 (cubes nus) étaient **déjà consignés** et sont confirmés par le
-   rapport de jeu — ne pas les redécouvrir. Deux constats nouveaux ajoutés :
-   **ISS-041** (le pied de la colonne de fumée se soulève de 0,219 m — signe
-   inversé, calculé) et **ISS-042** (la sonde `probe_world_boxes.gd` inverse le
-   signe sur une pièce enterrée, d'où son « joueur flottant »).
-3. La **flamme détachée du foyer** signalée le 2026-08-07 reste **non
-   identifiée** : ce n'est pas la fumée (compensation horizontale exacte,
-   vérifiée). Elle demande une capture au camp, pas une lecture de code.
+**Attendre le verdict visuel du lead sur `tranche4_final/`.** Quatre points sont
+déclarés `NON SATISFAITE` et ne doivent pas être compensés par un score
+technique : sonde `FAIL` global sur 73 percées isolées ; linteau à 0,61 m pour
+un seuil de 0,60 ; contrefort droit pas « en retrait » ; contrôle 3 `PARTIAL`.
+
+Le conflit de spécifications nommé par l'agent C appartient au lead : la galerie
+passe au milieu de la formation, les deux cols sont les points bas de la crête
+au-dessus d'elle, et épaissir pour fermer tire sur la même roche que creuser
+pour garder trois masses.
+
+Pylône, pont et hameau gelés. `GO_V2_3_R2B=FALSE`, `GO_V2_3_B=FALSE`.
 
 ---
 
-## 2026-08-07 — Les quatre réparations du playtest, dans l'ordre du joueur
+## 2026-08-15 (suite) — R2a-3.3 : extérieur de la grotte rebâti en roches CC0
 
-Session ouverte sur `evidence/blackbox_player/session_20260807_141313` : 74
-minutes de jeu, **0 coffre ouvert, 0 ingrédient ramassé, donjon jamais
-atteint**. Les quatre défauts ont été repris dans l'ordre où le joueur les
-rencontre, chacun avec son test.
+Point de contrôle livré, **aucun verdict artistique auto-déclaré**. Preuves :
+`evidence/world_v2/v2_3_r2a/grotte/tranche3/TRANCHE3.md`.
 
-### 1. L'interaction — la chaîne n'était pas cassée, elle était MUETTE
+### Le pivot
 
-Les deux hypothèses de départ sont tombées, et la première est tombée grâce au
-rapport du joueur lui-même :
+`anneau_exterieur()` ne rend plus aucune surface : il ne sert plus qu'à la
+coque de collision, jamais rendue. L'extérieur est fait de **98 roches du kit
+CC0** `kenney_modular_cave_1_0`, échelle 0,55 à 1,55, fondues par remaillage
+volumétrique 0,12 m puis décimées, la cavité étant soustraite comme un solide.
+Six des sept modules du kit ont été **écartés sur mesure** : leur dos est plat
+par construction (plage plane 7,2 à 18,0 m² contre 2,59 pour `template-detail`),
+ou ils résistent à la réparation, ou ils font échouer l'union sans jamais
+échouer un contrôle — ce dernier cas n'a été trouvé que par bissection.
 
-| Hypothèse | Verdict | Ce qui l'a tranchée |
-|---|---|---|
-| `_bind_player()` différé qui rate | **ÉCARTÉE** | vie, endurance, flèches et verrouillage s'affichaient pendant sa partie — les quatre sont branchés dans le MÊME appel que `interact_focus_changed` |
-| objets hors du groupe, ou ligne de vue qui rejette | **ÉCARTÉE** | `tools/godot/diagnose_interaction.gd` : **53/55 atteignables** dès le premier passage, feu de cuisine compris, invite du HUD comprise |
+### Trois exécutions, trois causes, aucune trouvée à l'œil
 
-Ce qui a réellement échoué : `E` appuyé sur du décor ne produisait **rien** —
-ni son, ni message, ni refus. Le joueur a essayé sur une enclume, un cadavre,
-un objet orange et un foyer décoratif, en a conclu que la touche était morte,
-et a cessé d'essayer. 55 objets répondaient pourtant.
+Un relevé « faite par rang » a été ajouté au générateur : la gaine culminait à
+8,26 m contre 9,16 m pour les masses majeures, donc trente-cinq dents
+régulières décidaient de la crête. La correction évidente — ancrer le sommet —
+a **ouvert un jour** (station 6, azimuts 51 à 71°, 0 croisement), parce que le
+placement radial était ce qui garantissait la couverture. La crête se plafonne
+donc par la taille : échelle 1,45 → 1,15, marge 1,60 → 0,55, sept puis neuf
+azimuts après une épaisseur tombée à 0,16 m dans la salle.
 
-Le projet applique déjà « jamais de silence sur une action impossible » à
-l'attaque lourde refusée (point 6.10 du plan de test) ; la règle manquait
-exactement là où un débutant apprend ce que fait une touche.
+Chaîne verte, RC = 0. Crête gaine 6,01 m. `gltf_inspect` VALIDE, 21 324 tris.
 
-Deux corrections :
+### Deux caméras de preuve étaient fausses, et ce n'était pas le maillage
 
-- `_refuse_interaction()` : son + « Rien à portée — approchez-vous et faites
-  face. », cadencé à 1,2 s pour qu'un martèlement ne noie pas l'écran ;
-- les ramassables se posent sur le **sol réel** au lieu d'une cote écrite à la
-  main. Les deux fruits de la crête étaient **enterrés de 8,00 m** (sondé : sol
-  à y = 32,00, pose à y = 24,00 — la cote du spawn de MASTER_SPEC §3.3, jamais
-  mise à jour quand le relief a été bâti). Ce sont les deux PREMIERS
-  ramassables de la partie. Même classe de défaut qu'ISS-035.
+Le « gros plan du seuil » visait à travers la bouche : la **capture R2a-3.1 à
+la même caméra** montre la même masse grise au même endroit, sur un maillage
+entièrement différent. Et la vue « trois masses » était prise du côté opposé à
+l'approche du joueur. Les deux caméras fausses sont **conservées** pour que les
+A/B restent à caméra identique ; deux caméras justes ont été ajoutées à côté.
 
-Après correction : **55/55 atteignables**.
+### Ce que la mesure dit de la composition
 
-### 2. L'arc — une cascade `elif` dans le mauvais ordre
+`tools/measure_silhouette_masses.py` (nouveau) compte les sommets d'une
+silhouette par **proéminence topographique**. Sur l'azimut réel d'approche
+(55°, dérivé de la caméra, pas choisi) : **4 sommets de largeur 1,07 à 1,26 m,
+coefficient de variation 0,06**. La consigne demandait « trois masses larges et
+**asymétriques** » ; l'asymétrie de largeur n'y est pas. Cause nommée : un seul
+module, à rapport hauteur/largeur 1,6, répété. Le levier — grouper les majeures
+en trois amas d'emprises inégales — n'a **pas** été actionné : c'est une
+décision de composition.
 
-`attack_light` et `shoot` sont tous deux sur le clic gauche (`button_index 1`,
-vérifié dans `project.godot`) et `player_input_reader.gd` les teste dans une
-suite de `elif`, l'attaque en premier : le clic était toujours avalé. La visée
-tenue passe désormais devant ; hors visée rien ne change.
+Une première version de cet outil comptait les marches d'escalier comme des
+masses et rendait des « masses » de 6 cm. Corrigée, et la raison est écrite
+dans le fichier.
 
-Le test reproduit le symptôme exact du joueur — compteur **« 8 → 8 »** — sans
-le correctif, et passe avec. Aucun test existant ne pouvait le voir : ils
-envoient des `InputEventAction`, qui ne portent qu'UNE action et ne peuvent pas
-reproduire la collision. Il fallait de vrais `InputEventMouseButton`.
+### Aussi
 
-### 3. Les têtes — le modèle n'en contenait aucune
-
-Vérifié dans les sources, pas déduit : `Male_Ranger.gltf` ne livre que
-`Male_Ranger_Head_Hood`, la **capuche seule** ; `Male_Peasant.gltf` (les trois
-pillards) livre Arms/Body/Feet/Legs et **rien au-dessus du cou**. La « pointe
-métallique argentée » vue par le testeur est le maillage `_Hard`, 4,8 cm de
-haut, posé sur un pavé de peau de 10,6 cm de large.
-
-`tools/extract_head.py` découpe un crâne réel dans le corps de base Quaternius
-(CC0, déjà dans le dépôt). Trois faits mesurés l'autorisent, et l'outil REFUSE
-d'écrire si l'un manque : mêmes 65 os dans le même ordre, `Head` au même index,
-et **matrice de liaison inverse identique au flottant près** (écart 0,00e+00).
-La tête se pose donc sans un seul décalage réglé à la main.
-
-Portée par un `BoneAttachment3D`, échelle **déduite du squelette** (0,821
-braise · 0,921 azur · 1,001 héros · 1,101 briseur) : rien à ressaisir si un
-modèle change. Hauteurs de crâne mesurées en jeu : 0,167 à 0,223 m.
-
-### 4. Caméra et sensibilité
-
-Cause lue dans le moteur installé, pas supposée : `SpringArm3D` n'a **aucune
-distance minimale**. `spring_arm_3d.cpp:196` pose son enfant à
-`origine + direction * (spring_length * motion_delta)`, et `motion_delta` tombe
-à **zéro** dès qu'un obstacle touche le pivot — la caméra atterrit alors
-exactement sur le pivot, à `camera_target_height` = 1,45 m, dans le torse.
-
-Trois garde-fous, dans `_process` donc TOUJOURS après le bras, sans dépendre de
-l'ordre des nœuds : plancher de distance (0,85 m), effacement progressif du
-héros sous le seuil, et sonde verticale qui relève la caméra au-dessus du sol
-(le lit de la rivière est une tranchée de 3,5 m que le bras ne voit pas, car il
-ne sonde que le segment pivot→caméra).
-
-Le curseur de sensibilité déclare enfin ses bornes **dans la scène** au lieu de
-naître avec les défauts de `Range` (0 à 100) et d'être recadré après coup ; et
-le curseur système est reposé au centre quand la souris est rendue — le premier
-clic partait jusqu'ici à l'endroit où le curseur avait été capturé, souvent
-contre un bord d'écran.
-
-### Deux erreurs de mes propres tests, corrigées
-
-Consignées parce qu'elles auraient donné de faux verts :
-
-- « enterré » mesuré par un rayon venu du ciel déclarait enfouies les
-  récompenses posées **dans** les cabanes, qui ont légitimement un toit. Le
-  critère est devenu l'**atteignabilité**, seule chose qui compte pour le
-  joueur ;
-- la hauteur de crâne comparée au **repos** du squelette alors que
-  `BoneAttachment3D` suit la pose **animée** : l'idle du briseur baisse la
-  nuque de 16 cm, ce qui faisait conclure à un crâne de 6,5 cm.
+`ISS-043` : neuf lignes de `ASSET_MANIFEST.csv` ne sont pas du CSV valide
+(champ à virgules non quoté). Seule celle de la grotte est corrigée ; les huit
+autres appartiennent à des lots gelés et sont nommées, pas touchées.
 
 ### Prochaine action exacte
 
-1. **Faire jouer le propriétaire** : les quatre corrections sont prouvées en
-   headless, aucune ne l'est à l'écran. La sensibilité « au maximum » vient
-   d'un testeur à souris SYNTHÉTIQUE — le curseur bute au bord de l'écran chez
-   lui, ce qui n'arrive pas avec une souris capturée sur une vraie machine.
-   Cette observation-là demande ses mains, pas un test.
-2. **Le donjon reste inatteignable** : le joueur a vu la citadelle plusieurs
-   fois sans jamais trouver d'entrée praticable. C'est le prochain blocage de
-   progression, et il est intact.
-3. Défauts consignés et NON traités, hors périmètre demandé : ennemis sans arme
-   en main, ennemis qui flottent ou traversent le héros, cube vert et dalle de
-   terrain flottante au village nord, herse jamais ouverte.
+**Attendre le verdict du lead sur les captures de la tranche 3.** Rien d'autre
+ne doit partir : pylône, pont et hameau restent gelés, `GO_V2_3_R2B` et
+`GO_V2_3_B` restent FAUX, `validate_fast` et les 38 plans restent interdits
+tant que la stabilité visuelle n'est pas prononcée.
+
+Si le lead demande la composition en trois amas : le levier est
+`ROCHERS`/`rang` dans `make_waterfall_cave.py`, et la mesure de contrôle est
+`tools/measure_silhouette_masses.py --entaille=1.50` sur la vue 55°, qui rend
+aujourd'hui 3 masses à cv 0,39.
 
 ---
 
-## 2026-08-01 — A.2 gelé, protocole de validation humaine préparé
-
-**A.2 validé et gelé sur `9414fd0`** par décision du propriétaire.
-
-### Livré
-
-`docs/MANUAL_VALIDATION.md` : protocole en six étapes, écrit pour être exécuté
-**sans moi** par une personne disposant d'un écran, d'un clavier AZERTY et d'une
-manette. Chaque étape a ses commandes exactes, ses preuves attendues et ses
-critères `PASS`/`FAIL` — jamais « vérifier que ça marche ».
-
-`tools/manual_validation_kit.sh` prépare `evidence/gateA/`, y dépose le rapport
-d'environnement et un gabarit de rapport à remplir. Son mode `--finalize` écrit un
-manifeste (commit, machine, versions, SHA-256 de chaque preuve) et **sort en code 3
-tant qu'une preuve manque** — cohérent avec `validate_release.sh`, et empêchant de
-clore la campagne sur un dossier incomplet.
-
-`scenes/tests/InputAudit.tscn` : **sans elle, le protocole serait inexécutable.**
-À ce stade il n'existe ni joueur ni monde, donc appuyer sur `Q` ne produit rien de
-visible. La sonde rend l'InputMap observable et, surtout, interroge la disposition
-clavier réelle du système via `DisplayServer.keyboard_get_keycode_from_physical()` :
-elle affiche quel nom la disposition courante donne à la position liée à
-« gauche ». Sur AZERTY, ce doit être « Q ». L'invariant devient objectif et
-capturable, au lieu d'être ressenti.
-
-Quatre tests verrouillent la sonde elle-même : si une action est ajoutée à
-l'InputMap sans être ajoutée à la sonde, la validation manuelle testerait un
-sous-ensemble sans que personne ne s'en aperçoive.
-
-### État des gates
-
-- **Gate 0** : `GELÉ / ACCEPTÉ AVEC RÉSERVES` (D-006).
-- **Gate A** : **`EN ATTENTE`**. Volet automatisable vert — 52 tests. Les six
-  contrôles humains sont `NON VÉRIFIÉ`, et `--finalize` le confirme : 13 preuves
-  manquantes, code 3.
-
-**La Phase B ne démarre pas.** Elle attend le verdict du Gate A.
-
----
-
-## 2026-08-01 — Session 1 (suite) — Durcissement du harnais, gel du Gate 0
-
-**Quatre revues adverses à contexte frais, quatre `FAIL`.** Chacune a trouvé des
-défauts réels ; trois ont réfuté un correctif de la précédente. C'est le résultat le
-plus utile de la Phase 0 : sans elles, un harnais qui ne détectait plus rien aurait
-été déclaré vert.
-
-### Défauts corrigés, par revue
-
-- **1re** (D1-D17) : erreur d'exécution comptée « ok » ; test sans reporter avalant
-  ses assertions ; `validate_release.sh` vert en sautant des étapes ; capture d'une
-  scène vide indiscernable d'une vraie.
-- **2e** (N1-N11) : parse error dans un script non référencé → vert ; filtre
-  d'erreurs trop étroit (asset supprimé invisible) ; contrat de test contournable ;
-  comptage de couleurs ne distinguant pas plein de vide.
-- **3e** (B1-B8) : contrat contournable par 3 vecteurs de plus ; `Light3D` compté
-  comme géométrie ; perte de couverture par renommage ; fichier de test illisible
-  avalé ; « 0 test exécuté » sortant en 0.
-- **4e** (Q1-Q8) : `func<TAB>check(` et classe de base intermédiaire échappant au
-  scan ; plancher de couverture franchissable par un faux résumé imprimé ; géométrie
-  hors champ acceptée ; **deux journaux de preuve produits par une version
-  antérieure du code**.
-
-### Les deux corrections de fond
-
-Les tentatives 1 à 3 reposaient sur de l'**inspection statique** — lire le code pour
-deviner s'il triche. Toutes ont été contournées. Remplacées par de la **mesure** :
-
-1. **Sonde comportementale du contrat de test** : le runner appelle lui-même les
-   quatre méthodes d'assertion et vérifie qu'elles atteignent son enregistreur.
-   Ne lit rien, mesure un effet — insensible à la syntaxe et à l'héritage.
-2. **Rendu différentiel pour la capture** : la scène est rendue deux fois, dont une
-   géométrie masquée, et les images doivent différer. Référence : 1,414 % des pixels.
-   Les trois attaques : 0,000 %.
-
-### Décision
-
-D-006 : Gate 0 **gelé, accepté avec réserves** sur décision du propriétaire — pas
-`PASS`. La boucle durcissait un harnais contre un auteur de test hostile alors que
-le projet n'a aucun gameplay et que son risque dominant est l'art (RSK-01).
-
-### Vérification de clôture (2026-08-01)
-
-| Contrôle | Résultat |
-|---|---|
-| Arbre Git propre, synchronisé avec l'origine | ✅ |
-| `validate_fast.sh` nominal | `RC=0` (compte de tests : voir `docs/TEST_REPORT.md`) |
-| `validate_release.sh` nominal | `RC=3` (BLOQUÉ, attendu) |
-| Contrat de test — classe de base intermédiaire | `RC=1` ✅ |
-| Capture — géométrie hors champ avec ciel | `RC=7`, aucun PNG ✅ |
-| Erreur d'exécution dans un test | `RC=1` ✅ |
-| Manifeste de capture rattaché à un commit existant | ✅ |
-
----
-
-## 2026-07-31 — Session 1 — Phase 0 : initialisation et continuité
-
-**Jalon pris** : Phase 0 uniquement, jusqu'au Gate 0. Aucun gameplay.
-
-### Ce qui a été fait
-
-1. **Lecture intégrale** du cahier des charges (2358 lignes), conservé en
-   `docs/MASTER_SPEC.md` comme source de vérité.
-2. **Audit de l'environnement** : dépôt vide sans commit, Godot absent, Blender
-   absent, aucun GPU, aucun affichage, politique réseau restrictive.
-3. **Résolution de la disponibilité du moteur.** Les binaires officiels sont
-   inaccessibles (egress 403). Après avoir écarté Godot 3.5.2 d'apt (mauvaise
-   version majeure) et vérifié que ni PyPI ni npm ne distribuent le moteur, le tag
-   `4.7.1-stable` a été trouvé accessible en lecture git et compilé depuis la
-   source, épinglé au commit `a13da4fe`.
-4. **Système de continuité complet** (§0.3) : les 12 artefacts obligatoires, plus
-   `RISKS.md` et `BUILD_ENVIRONMENT.md`. `CLAUDE.md` tenu sous 150 lignes.
-5. **Outillage de preuve** : `env_report.sh`, `setup_godot.sh`, `validate_fast.sh`,
-   `validate_release.sh`, `test_runner.gd`, `capture_reference.gd`.
-6. **Pipeline d'assets Blender → glTF vérifié de bout en bout**, deux bugs réels
-   trouvés et corrigés au passage (voir ISS-R01 et ISS-R02).
-7. **Réglages moteur vérifiés dans la source du tag**, pas supposés : noms exacts de
-   `physics/3d/physics_engine`, `"Jolt Physics"`, `rendering_method`, `CONFIG_VERSION`.
-
-### Ce qui n'a pas été fait, et pourquoi
-
-- **Aucune mesure de performance ni score visuel.** La capture, elle, s'est
-  révélée possible via Xvfb + llvmpipe (rendu logiciel) — hypothèse R-004
-  infirmée dans le bon sens. Mais llvmpipe interdit toute mesure, et il n'existe
-  aucune scène North Star à noter. Gates H, I et J restent bloqués ici.
-- **Aucune scène laboratoire** (`StyleLab`, `HeroShotLab`…) : elles n'ont de sens
-  qu'avec un rendu, et §7.16 exige de les capturer. Les créer aveuglément
-  produirait des coquilles vides.
-- **Aucun gameplay** : c'est le périmètre de la Phase A. La consigne était de ne
-  pas dépasser la Phase 0.
-- **L'image de référence n'a pas pu être versionnée** : fournie dans la
-  conversation, pas comme fichier (ISS-003). Son analyse est consignée.
-
-### Décisions prises
-
-D-001 (compiler Godot depuis la source), D-002 (Blender 4.0.2 Ubuntu),
-D-003 (`.glb` seul format d'échange), D-004 (validation glTF hors moteur),
-D-005 (`validate_release.sh` sort en BLOQUÉ plutôt qu'en faux vert).
-
-### Erreurs commises et corrigées
-
-- Introspection de l'exporter glTF par la mauvaise API : le preset partait vide et
-  aucun `.glb` n'était produit. Détecté par le script de validation, pas deviné.
-- Dépendance numpy manquante dans le Blender Ubuntu, invisible jusqu'à l'exécution
-  réelle de l'export.
-
-Les deux confirment la règle : une chaîne d'outils n'est vérifiée que lorsqu'elle
-a réellement tourné.
-
----
-
-## 2026-08-01 — Jalon B.1 : Player, CameraRig, locomotion
-
-**Gate visé** : B (traversal). **État du dépôt à l'ouverture** : Gate A gelé sur
-`9414fd0`, B.0 (couche d'entrée) livré, aucun joueur.
-
-### Changement réel
-
-Un joueur existe et se déplace. `PlayerController` (`CharacterBody3D`), `CameraRig`
-(pivots + `SpringArm3D`), réglages dans `resources/tuning/locomotion_default.tres`,
-bac à sable `TraversalSandbox.tscn`. 21 nouveaux cas de test, tous pilotés par
-`InputIntent` **injectée** : aucune touche simulée, aucun périphérique requis.
-
-### Trois défauts réels, dont deux étaient invisibles
-
-- **La rampe de test était une boîte tournée.** Sa face basse formait un surplomb :
-  la capsule passait **sous** la rampe au lieu de la gravir, s'arrêtait net au ras
-  du sol, `is_on_floor()` vrai et `is_on_wall()` faux. Aucun drapeau de collision ne
-  signalait quoi que ce soit. Trouvé en imprimant position et drapeaux à chaque
-  tick, pas en relisant le code. Les rampes sont désormais des **prismes pleins**.
-- **Le décalage d'épaule de §8.3 était silencieusement perdu.** `SpringArm3D`
-  réécrit intégralement la position de ses enfants directs ; la caméra placée en
-  `x = 0,32` revenait en `x = 0`. Rien ne le signalait — ni erreur, ni
-  avertissement, ni test rouge. Trouvé en relisant la position **après** quelques
-  frames au lieu de faire confiance à la scène (D-014).
-- **La caméra s'arrêtait à 0,8 mm du mur.** Techniquement en deçà de la face, donc
-  « conforme » ; visuellement dedans. `SpringArm3D.margin` s'est révélé sans effet
-  (mesuré à 0,01 / 0,25 / 0,50 : longueur identique). Corrigé par une sonde
-  volumique, dégagement mesuré exactement égal au rayon (D-015).
-
-### Deux enseignements de méthode
-
-- **Un contrôle négatif peut mentir.** Muter la valeur par défaut d'un `@export`
-  n'a aucun effet si une ressource `.tres` sérialise sa propre valeur : le test
-  reste vert et se lit à tort « ce test ne prouve rien ». Il fallait muter le
-  `.tres`. Consigné en R-006bis, avec la règle qui en découle.
-- **Un commentaire de justification est une affirmation, donc une dette de
-  preuve.** Le code affirmait qu'une caméra non-enfant-direct « traverserait les
-  murs ». Le contrôle négatif C7 l'a **réfuté** : avec un nœud intercalé à position
-  nulle, l'anti-traversée tient. Le vrai mécanisme, isolé par C8, est autre. Le
-  commentaire a été réécrit pour dire ce qui a été mesuré, pas ce qui semblait
-  plausible.
-
-### Vérification
-
-`tools/validate_fast.sh` → `RC=0`, VERT, plancher relevé à 80. Huit contrôles
-négatifs rejoués et archivés dans `docs/TEST_REPORT.md` : chacun casse une défense
-et fait rougir le test visé.
-
-### Ce que B.1 ne prouve pas
-
-Le sprint n'a **aucun coût** (§9.1 en B.2). Le ressenti et la latence en ticks
-(§10.6) ne sont pas mesurés. Le jitter caméra n'est pas testé. Il n'y a ni modèle
-ni animation. Et piloter le contrôleur par intention injectée prouve qu'il n'exige
-pas de clavier — **jamais** que la manette fonctionne : `CONTROLLER-001` reste
-ouverte et ne sera jamais levée par un test automatique.
-
----
-
-## 2026-08-01 — Jalon B.2 : endurance
-
-**Gate visé** : B (traversal). **État à l'ouverture** : B.1 livré, sprint sans coût.
-
-### Changement réel
-
-`StaminaComponent` (§5.8, §9.1) et `StaminaTuning`, câblés au sprint. Le composant
-ne connaît ni le joueur ni la locomotion : l'escalade (§9.2), l'esquive et
-l'attaque lourde (§10.2) s'y brancheront sans le modifier. Le contrôleur prend
-**une seule** décision de sprint par tick et la transmet à la caméra, à la vitesse
-et à l'endurance — trois recalculs auraient divergé précisément au moment où la
-jauge se vide.
-
-20 nouveaux cas de test. Plancher relevé à 100.
-
-### Le défaut que §9.1 ne pouvait pas prévenir
-
-§9.1 décrit ce qui arrive à zéro, mais pas **à quelle condition l'épuisement se
-lève**. L'implémentation littérale le levait dès la première unité régénérée :
-sprint maintenu, la jauge repartait, le sprint reprenait **un seul tick**, se
-revidait. Sept cycles en quinze secondes — le joueur aurait vu sa vitesse osciller
-entre 6 et 9 m/s six fois par seconde.
-
-Rien dans le code ne clochait à la relecture : chaque ligne suivait la spec. C'est
-le **comptage du signal** `exhausted` qui a nommé le défaut (« attendu 1, obtenu
-7 »). Corrigé par un seuil de récupération, marqué comme valeur hors spec et donc à
-confirmer par un essai humain (D-016).
-
-### Deux réglages de méthode
-
-- **Un test qui sprinte « 15 s puis mesure » ne mesure pas l'épuisement** mais un
-  cycle plus tard : l'effort maintenu laisse la jauge repartir. D'où
-  `_drain_until_exhausted()`, qui s'arrête exactement à la transition.
-- **Une mesure d'intégration ne doit pas dépendre de la taille du décor.** Vider
-  100 d'endurance à 12/s demande 8,3 s, soit 75 m à la vitesse de sprint : le
-  joueur quittait le sol du bac à sable et la mesure portait sur une chute. La
-  réserve est désormais amorcée basse ; la durée réelle est mesurée côté unitaire,
-  où elle ne dépend d'aucune géométrie.
-
-### Vérification
-
-`tools/validate_fast.sh` → `RC=0`, VERT, 100 tests. Huit contrôles négatifs rejoués
-et archivés ; N3 reproduit le défaut d'origine et affiche « rafale de 0,017 s ».
-
-### Ce que B.2 ne prouve pas
-
-Les coûts d'escalade, d'esquive et d'attaque lourde sont **déclarés, pas
-consommés** — les câbler sans escalade ni combat serait du code mort. Aucune jauge
-à l'écran (§17.2), aucun souffle (ISS-004), aucune animation d'épuisement. Le seuil
-de récupération n'a été validé par aucun joueur. `CONTROLLER-001` reste ouverte.
-
----
-
-## 2026-08-01 — Jalon B.3 : escalade et mantle
-
-**Gate visé** : B (traversal). **État à l'ouverture** : B.2 livré, aucune escalade.
-
-### Changement réel
-
-Trois composants, aucun n'appartenant au contrôleur : `ClimbingComponent` (les
-trois sondes de §9.2, qui **répondent** au lieu de décider), `LedgeDetectorComponent`
-(§9.3, refus nommés) et `ActionAlignmentComponent` (§7.12, celui qui servira aussi
-aux coffres, à la cuisine et au pylône). Le contrôleur gagne un `Mode` à trois
-valeurs plutôt que la `StateMachine` de §8.1, qui attendra d'avoir des états de
-combat à porter (D-018).
-
-L'endurance n'a pas eu à changer : les coûts d'escalade déclarés en B.2 n'avaient
-qu'à être appelés, et `can_sustain()` produisait déjà le « lâcher du mur » de §9.1.
-
-23 nouveaux cas de test. Plancher relevé à 124.
-
-### Quatre défauts, dont deux se masquaient mutuellement
-
-- **Le contrôle de dégagement refusait tout rebord dégagé.** Posée pile sur la
-  surface d'arrivée, la capsule la touche ; avec 2 cm de marge, tout franchissement
-  se déclarait `blocked`. Le piège : le test du plafond **passait** — en accusant le
-  rebord au lieu du plafond. Un test vert pour la mauvaise raison est pire qu'un
-  test rouge.
-- **Le trajet traversait le rebord.** La droite qui relie le pied d'un rebord à son
-  dessus coupe le coin ; le contrôle de capsule annulait à mi-parcours, comme il
-  doit. Le composant faisait son travail, c'est la forme du trajet qui était fausse.
-  D'où `begin_path()` — monter, puis avancer. C'est la réponse à **R-009**, restée
-  ouverte depuis le Gate 0.
-- **Une bande d'angles ni marchable ni escaladable.** Seuil de paroi à 50°, sol à
-  46° : quatre degrés où l'on glisse sans pouvoir s'accrocher. Aucune erreur, aucun
-  test rouge. Trouvé en cherchant quelle surface exercerait le filtre d'angle
-  (D-019).
-- **La branche « surplomb » n'était couverte par aucun test** — révélé par le
-  contrôle négatif P2, qui a retiré l'exigence de contact aux pieds **sans rien
-  casser**. Un contrôle négatif qui ne casse rien désigne un trou de couverture,
-  pas un test robuste.
-
-### Un constat de géométrie qui a corrigé un test, pas le code
-
-Un test devait vérifier qu'une pente à 40° est refusée pour `too_shallow`. Elle est
-refusée, mais pour `no_wall` : un rayon horizontal parti de la hauteur du torse ne
-rencontre une pente d'angle θ qu'à la distance `1,10 / tan θ`, laquelle dépasse la
-portée d'accroche sous environ 57°. Le filtre d'angle ne peut donc rien départager
-à l'approche depuis le sol — il agit sur les parois irrégulières rencontrées **en
-cours d'escalade**. Le test affirmait une raison qu'il ne pouvait pas obtenir ;
-c'est lui qui a été corrigé, et le constat consigné (R-011).
-
-### Vérification
-
-`tools/validate_fast.sh` → `RC=0`, VERT, 124 tests. Huit contrôles négatifs rejoués
-et archivés.
-
-### Ce que B.3 ne prouve pas
-
-Le lissage de la normale et la vitesse latérale ne sont **pas testés** — le bac à
-sable n'a que des parois planes. « Aucun snap visible » est mesuré, pas vu : aucun
-œil humain n'a regardé un franchissement, et il n'y a ni squelette ni animation.
-`ClimbRest` et les corniches de repos relèvent du level design. `CONTROLLER-001`
-reste ouverte.
-
----
-
-## 2026-08-01 — Jalon B.4 : franchissement de marche et parcours enchaîné
-
-**Gate visé** : B (traversal). **État à l'ouverture** : B.3 livré ; §8.2 incomplet,
-aucun parcours enchaîné.
-
-### Changement réel
-
-`_try_step_up()` — trois sondes, trois refus possibles — et
-`scenes/tests/TraversalCourse.tscn`, un tracé linéaire qu'un pilote scripté
-parcourt d'un bout à l'autre : sol, marche de 0,32 m, rampe à 40°, saut par-dessus
-un vide, escalade d'une tour de 4 m, franchissement du sommet. **§8.2 est
-désormais couvert en entier.**
-
-Le parcours est le premier test de `tests/playthrough/`, resté vide depuis le
-Gate 0. Il vérifie ce qu'aucun test unitaire ne peut dire : que les capacités
-s'enchaînent, et qu'aucune ne laisse le personnage dans un état qui casse la
-suivante.
-
-### Deux mesures avant d'écrire une ligne
-
-- **`move_and_slide()` ne monte aucune marche.** Une marche de 0,32 m arrêtait le
-  personnage net, `is_on_wall()` vrai, position figée trois secondes, aucune
-  erreur. Le franchissement ne pouvait donc pas être un réglage — il fallait un
-  shape cast.
-- **`is_on_wall()` est faux contre un mur.** Plaqué contre le mur de 6 m du bac à
-  sable, poussant depuis deux secondes : `false`. Le franchissement y était
-  adossé ; il se serait tu précisément là où il faut décider. Remplacé par une
-  comparaison entre distance demandée et distance parcourue (D-020).
-
-### Deux contrôles négatifs non concluants, et pourquoi c'est un résultat
-
-- **Q3** : le retrait *simultané* des deux contrôles censés distinguer un mur d'une
-  marche laisse `test_a_tall_wall_is_not_treated_as_a_step` **vert**. Cause
-  mesurée : devant un mur plein, la sonde descendante ne trouve aucun sol et la
-  fonction refuse avant d'atteindre ses contrôles. Défense en profondeur réelle —
-  mais ce test ne valide aucune ligne précise, et sa docstring le dit désormais.
-- **Q5** : remettre `is_on_wall()` comme déclencheur laisse la suite verte. **Aucun
-  test ne départage les deux déclencheurs.** Le changement repose sur la mesure,
-  pas sur un test ; c'est écrit dans D-020 et dans le test concerné.
-
-Les deux logs sont archivés au même titre que les autres. Un contrôle négatif qui
-ne casse rien est une information — en B.3 il avait révélé un trou de couverture,
-ici il délimite ce qu'un test prouve réellement.
-
-### Ce que le parcours mesure et que rien d'autre ne mesurait
-
-La caméra est sondée **à chaque tick** par une sphère de 12 cm posée au point de
-vue : 0 image sur environ 1 400 où l'œil se trouve dans la géométrie. C'est la
-formulation la plus directe de §23.1 — non pas que le bras se raccourcisse, mais
-que la caméra ne soit jamais dans la roche.
-
-Un filet est posé sous le vide. Il ne fait pas partie du parcours : sans lui, un
-saut raté produirait une chute infinie que le test lirait comme « toujours en
-mouvement ».
-
-### Vérification
-
-`tools/validate_fast.sh` → `RC=0`, VERT, 129 tests. Cinq contrôles négatifs joués,
-trois concluants, deux informatifs.
-
-### Ce que B.4 ne prouve pas
-
-Le parcours est joué par un **pilote scripté, pas par une personne** : il prouve
-l'absence de blocage mécanique, pas l'agrément. Le jitter caméra (§8.3) et la
-latence en ticks (§10.6) restent hors de portée d'un test headless.
-`CONTROLLER-001` reste ouverte.
-
----
-
-## 2026-08-01 — Jalon B.5 : latence instrumentée, protocole manuel, terrain d'essai
-
-**Gate visé** : B. **État à l'ouverture** : B.4 livré ; il manquait la mesure de
-latence, le protocole humain et la revue.
-
-### Changement réel
-
-- **`LatencyInstrument`** (§10.6, §23.1) : pose l'intention entre deux ticks — la
-  position temporelle exacte d'un événement de périphérique — et compte les ticks
-  jusqu'au premier effet. Mesuré : **1 tick** (16,7 ms à 60 Hz), pire cas sur cinq
-  essais, mouvement comme saut, stable. §23.1 (« visible au tick physique
-  suivant ») est un chiffre, plus une intention.
-- **Protocole Gate B** dans `docs/MANUAL_VALIDATION.md` : six essais (B-1 à B-6)
-  couvrant §21.4, le jitter (§8.3) et le ressenti (§10.6), chacun avec but,
-  procédure, critère et preuve attendue. Il dit aussi ce que l'automatique prouve
-  déjà, pour que l'opérateur ne perde pas son temps à le re-prouver.
-- **`TraversalPlayground.tscn`** : le terrain d'essai jouable qui manquait au
-  protocole — sandbox + joueur + panneau d'état (endurance, mode, vitesse,
-  événements journalisés), souris capturée, lancé réellement en headless (RC=0).
-  Lancement documenté : `--debug-collisions`, car le bac à sable n'a pas de meshes.
-- **Silhouette graybox** (capsule + nez d'orientation) : le minimum pour qu'un
-  opérateur voie le corps et son orientation. Pas un personnage (§7.14).
-
-### Contrôles négatifs
-
-L1 (accélération réduite à l'imperceptible dans le `.tres`) : la mesure passe à
-3 ticks, le test rougit. **L2 (réordonnancement `_try_jump()` avant
-`_update_timers()`)** : latence de saut mesurée à 2 ticks — c'est exactement la
-régression d'architecture que §10.6 vise, une action tardive par ordre
-d'exécution. Le test la chiffre : « min 2, max 2, 33,3 ms ».
-
-### Vérification
-
-`tools/validate_fast.sh` → `RC=0`, VERT, 133 tests, plancher 133.
-
-### Ce que B.5 ne prouve pas
-
-Le protocole est **prêt, pas joué** : ressenti, jitter et lisibilité restent
-`NON VÉRIFIÉ`. La latence mesurée est celle du pipeline intention → mouvement —
-périphérique et écran exclus, comme §10.6 le fait lui-même. La falaise
-irrégulière de §21.4 n'est pas jugeable en graybox (essai B-2, rejouer en
-Phase D). `CONTROLLER-001` reste ouverte.
-
----
-
-## 2026-08-01 — Revue contradictoire du Gate B, constats traités, volet automatique clos
-
-**Gate visé** : B. **État à l'ouverture** : B.5 livré, revue à lancer.
-
-### La revue
-
-Menée à contexte frais sur `c31534c`, preuves ré-exécutées (dépôt principal + clone
-frais, playground, release) et sondes adverses propres. **Verdict : BLOQUÉ / EN
-ATTENTE, aucun `FAIL`** — identique à ma proposition mais établi indépendamment.
-Rapport intégral : `evidence/gateB/REVUE.md`.
-
-Elle a démontré ce que mes propres contrôles n'avaient pas vu :
-
-- **fenêtres de saut non défendues** — coyote et buffer mutés à 5,0 s, suite
-  verte ;
-- **tests de vitesse circulaires** — mesure comparée au tuning lui-même ;
-- **poussée diagonale contre la marche jamais franchie** — glissement à ~71 % de
-  la distance demandée, déclencheur muet.
-
-### Le traitement, et une découverte en cascade
-
-Quatre tests ajoutés (fermeture de fenêtre, expiration de tampon, épinglage §8.2,
-franchissement diagonal), quatre contrôles négatifs V1–V4 tous rouges comme
-attendu, plancher à 137.
-
-En corrigeant le déclencheur diagonal, la mesure fondatrice de D-020 s'est révélée
-**fausse** : « `is_on_wall()` faux contre le mur » était un artefact — le joueur
-avait SAISI le mur (tenu à 0,42 m, aucun contact). Ni moi ni la revue ne l'avions
-vu ; c'est la sonde de collisions de glissement qui l'a montré. D-020 porte un
-amendement daté, Q5 est caduc (archive conservée intacte), et le déclencheur
-définitif écoute les collisions de glissement — présent de face et en diagonale,
-jamais sur sol libre.
-
-Constats mineurs traités : convention `RC=` en fin de log (V-série + Q3
-régénéré), compte de contrôles retiré de PROGRESS, nombre de ticks sondés archivé
-dans le message caméra du parcours, R-012/R-013 consignées.
-
-### Vérification
-
-`tools/validate_fast.sh` → `RC=0`, VERT, **137 tests**, plancher 137.
-
-### Ce que cette clôture ne dit pas
-
-Le Gate B n'est **pas** `PASS`. Les six essais humains restent à jouer, la dette
-manette court, et la leçon de la session vaut d'être écrite : deux mesures de
-suite ont fondé des décisions — l'une mal interprétée (D-020), l'autre incomplète
-(distance vs projection) — et c'est la revue plus une troisième mesure qui les ont
-rattrapées. Mesurer ne suffit pas ; il faut mesurer **ce qui discrimine**.
-
----
-
-## 2026-08-01 — D-021 : Gate B clos pour continuation · Jalon C.0 : fondations de dégâts
-
-### La décision
-
-Product Owner, sur revue rendue : essais manuels (manette comprise) reportés à la
-passe finale, limitations GPU non bloquantes, pas de deuxième revue. La revue
-n'ayant démontré **aucun défaut bloquant** (ses constats non bloquants étaient
-déjà traités), Gate B est clos « **accepté pour continuation, validation humaine
-finale différée** » (D-021). Dettes enregistrées : VALIDATION-B-001 s'ajoute à
-CONTROLLER-001, toutes deux `S2`, à solder avant toute déclaration `Final`.
-
-### C.0 — changement réel
-
-Le pipeline de §10.1 et la formule de §10.3, en composants : `DamageEvent`
-(l'événement complet exigé par la spec), `DamageFormula` (fonction pure, côté
-attaquant / côté défenseur séparés), `HealthComponent` (mort idempotente),
-`HurtboxComponent` (récepteur pur, point faible déclaré), `HitboxComponent`
-(fenêtre active par méthode, set des cibles touchées, attack ID globalement
-uniques). 14 nouveaux cas de test, plancher à 151.
-
-Le critère central du Gate C — « une touche par swing » — est prouvé dans les
-deux sens : 30 frames de chevauchement → 1 coup, et le contrôle W1 montre 30
-coups (santé 100 → 0) dès que le set disparaît.
-
-### Le piège moteur du jour (R-014)
-
-`Area3D.monitoring` coupé puis rallumé entre deux ticks laisse
-`get_overlapping_areas()` **définitivement vide** — le second swing d'un
-enchaînement ne touchait jamais. Mesuré à la sonde. Correctif : `monitoring`
-permanent, la fenêtre active vit dans `_active`, le balayage est coupé hors
-fenêtre. C'est le test « deux swings, deux coups » qui l'a attrapé — en C.1 ce
-bug aurait été un coup fantôme intraçable en plein combat.
-
-### Vérification
-
-`tools/validate_fast.sh` → `RC=0`, VERT, **151 tests**, plancher 151. Contrôles
-W1–W4 archivés avec `RC=`.
-
-### Ce que C.0 ne prouve pas
-
-Personne n'appelle encore `activate()` en gameplay : ni arme, ni ennemi, ni état
-d'attaque, ni hurtbox sur le joueur. Poise, recul, élément transportés mais non
-consommés ; résistance et armure neutres. C'est le squelette du combat, pas le
-combat.
-
----
-
-## 2026-08-01 — Jalon C.1 : épée, combo, premier échange
-
-**Gate visé** : C. **État à l'ouverture** : C.0 livré, personne n'appelait
-`activate()`.
-
-### Changement réel
-
-L'attaque est un contrat de données : `AttackDefinition` (startup / actif /
-recovery / buffer / fenêtre de combo / hit-stop, §10.6) exécutée par
-`AttackControllerComponent`, trois `.tres` d'épée (multiplicateurs 1,0 / 1,05 /
-1,3), mode `ATTACKING` du joueur (locomotion figée, gravité conservée), hurtbox
-et santé câblées sur le joueur, `CombatDummy` (45 PV — pillard braise) et
-l'embryon du `CombatLab`. 15 nouveaux cas, plancher à 165.
-
-Le premier échange est chiffré : 12 ; 12,6 ; 15,6 ; puis 12 — le combo complet
-(40,2) laisse le mannequin à 4,8 PV, le quatrième coup le couche, et son montant
-« 12 tout rond » prouve la remise à zéro du combo.
-
-### Trois défauts, trois natures
-
-- **Mon arithmétique** (test) : j'affirmais 40,2 ≥ 45. Le test corrigé prouve
-  plus qu'avant.
-- **L'infrastructure** : le monde `queue_free` du test précédent survit une
-  frame — le joueur apparaissait posé dessus (y = 0,87), chutait, et son premier
-  appui était consommé en l'air. Symptôme trompeur (appui unique perdu,
-  martèlement OK), diagnostic obtenu par sonde EN CONTEXTE DE RUNNER — la sonde
-  isolée « prouvait » que tout allait bien. Règle : attendre l'état, jamais des
-  ticks.
-- **Le contrat** : un appui 0,1 s avant la fin du combo mourait à l'idle —
-  l'entrée avalée que §10.6 interdit. Report de buffer ajouté, borné par le même
-  0,15 s, deux tests (frais → relance à zéro ; périmé → rien).
-
-### Vérification
-
-`tools/validate_fast.sh` → `RC=0`, VERT, **165 tests**. X1–X4 archivés avec `RC=`,
-dont X4 qui chiffre la perte du terme « attack » de la formule.
-
-### Ce que C.1 ne prouve pas
-
-Personne ne frappe le joueur. Ni esquive, ni lock-on, ni stagger, ni hit-stop, ni
-son. `base_damage` provisoire en attendant `WeaponDefinition` (C.3). Le ressenti
-reste une dette de passe finale.
-
----
-
-## 2026-08-01 — Jalon C.2 : esquive, i-frames, lock-on, premier pillard
-
-**Gate visé** : C. **État à l'ouverture** : C.1 livré, personne ne frappait le
-joueur.
-
-### Changement réel
-
-L'esquive (§10.2 : quatre directions, i-frames 0,02–0,27 par l'effet, coût de 15
-enfin consommé, dodge cancel de la recovery), le verrouillage (§8.4 : cône
-caméra, LOS réelle, hystérésis de distance, strafe face à la cible, convergence
-caméra sous butées), la poise (transportée depuis C.0, consommée : 2 coups
-d'épée étourdissent), et le **pillard braise** — perception en cône par cadence,
-télégraphe de 0,8 s, repli après esquive réussie, mort inerte. Le duel complet
-de §12.1 tient en assertions : télégraphe mesuré, esquive chronométrée sur
-l'annonce, 0 dégât, repli à distance. 21 cas, plancher à 186.
-
-D-018 amendée : l'absorption du Mode a eu lieu **en place** — la machine plate à
-cinq états EST celle de §8.1, la version nodale restant un besoin, pas un dogme.
-D-022 : pilotage direct sans navmesh, à échéance dure (Phase D).
-
-### Cinq défauts — tous dans MES TESTS, aucun dans le code livré
-
-Masque de hitbox par défaut (assertion verte pour la mauvaise raison, révélée
-par le contrôle inverse), pillard posé derrière le joueur (l'épée battait
-l'air), course de signaux au setup (annonce manquée), élan résiduel d'esquive
-(cible sortie du volume), assertion ignorant la régénération. Détail et leçons :
-`TEST_REPORT`, C2-1 à C2-5. Le code livré, lui, n'a pas bougé d'une ligne après
-l'écriture — les cinq corrections sont des corrections de mesure.
-
-### Vérification
-
-`tools/validate_fast.sh` → `RC=0`, VERT, **186 tests**. Y1–Y5 archivés avec
-`RC=` ; Y5 rougit comportement ET enveloppe, indépendamment.
-
-### Ce que C.2 ne prouve pas
-
-Le joueur encaisse sans réaction (Hurt/knockback/anti-stunlock : C.3). Pas de
-changement de cible, ni de présentation (hit-stop/VFX/son). Navmesh et audition
-différés (D-022). Le ressenti du duel attend l'essai humain — le CombatLab avec
-pillard vivant est prêt pour lui.
-
----
-
-## 2026-08-01 — Jalon C.3 : attaque lourde, réaction du joueur, arc
-
-**Fait** : l'item 12 de §22 est complet et l'item 13 ouvert. La lourde (×1,8,
-poise 25, 20 d'endurance prélevés à l'amorce, refusée à jauge insuffisante), la
-réaction Hurt (recul dans la direction du coup, 0,25 s de perte de contrôle,
-grâce anti-stunlock 0,85 s qui protège le contrôle mais jamais les PV), l'arc
-complet (balistique par balayage CCD, origine-poitrine anti-tir-à-travers-mur,
-pool, chute de gravité mesurée, mort à la première victime, visée obligatoire),
-et le changement de cible directionnel de §8.4 (sans boucle, jamais à travers un
-mur). 14 cas de test, plancher relevé 186 → **200**, `validate_fast` VERT.
-
-**Défaut réel trouvé par la première exécution** : `_on_hit_received` écrit mais
-**jamais connecté** à la hurtbox — dégâts passés, réaction morte. Corrigé
-(connexion dans `_ready`), rejoué en contrôle négatif (Z5). C'est exactement le
-scénario que la doctrine « le test doit pouvoir échouer » existe pour attraper :
-sans test comportemental, la réaction serait restée décorative jusqu'au premier
-essai humain.
-
-**Défauts de mes tests** : mesure d'endurance polluée par la régénération du
-recovery (C2-5 récidivé — mesurer immédiatement après le prélèvement) ; géométrie
-du changement de cible comptée depuis le joueur au lieu de la caméra (épaule
-x +0,32 — la « gauche » de la caméra n'est pas celle du joueur) et mur trop
-étroit que la caméra voyait par-dessus le côté.
-
-**Contrôles négatifs** : Z1–Z6, tous ÉCHEC avec `RC=`, dans
-`evidence/gateC/negative_controls/`. Z6 isole l'impulsion de recul : sans elle,
-le mode HURT s'ouvre encore et seule l'assertion de déplacement rougit.
-
-**Limites** : arc sans munitions comptées (C.4), pas de réticule ni de
-présentation (§10.7), ressenti non prouvé (dette de passe finale), gardes
-Hurt-pendant-escalade/mantle non testées.
-
----
-
-## 2026-08-01 — Jalon C.4 : inventaire, durabilité, rupture
-
-**Fait** : les items 13–14 de §22 sont clos — la Phase C a couvert ses cinq
-items. `WeaponDefinition` immuable + les six `.tres` de la table §11.1 ;
-`WeaponInstance` (état mutable séparé) ; `InventoryComponent` (8 armes, aucun
-doublon, flèches à part). Le `base_damage = 12` provisoire de C.1 est remplacé :
-l'export du contrôleur devient la valeur mains nues (3, D-023), l'arme fournit
-dégâts ET portée (face avant du volume de frappe posée à `reach_m` — la lance
-touche à 2,4 m, l'épée non). Usure au contact seulement, avertissement à 25 %
-une fois, rupture qui coupe la fenêtre AU MILIEU du tick, retire l'exemplaire
-et équipe la suivante — jusqu'aux mains nues qui restent un état de combat.
-Flèches comptées, consommées par tir réel uniquement. 14 cas de test, plancher
-200 → **214**, `validate_fast` VERT. Six choix non fixés par la spec actés en
-D-023.
-
-**L'invariant de CLAUDE.md est prouvé dans les trois directions** : user un
-exemplaire laisse le jumeau ET la définition intacts ; le contrôle AA4
-(durabilité écrite dans la ressource partagée) déclenche 15 échecs dans quatre
-suites.
-
-**Défaut de MON test attrapé par son propre contrôle** : « à zéro flèche, aucun
-tir » restait verte portail retiré — la CADENCE de l'arc bloquait le tir à la
-place du compteur (récidive C2-1 : purger tout système de refus concurrent avant
-de tester celui qu'on vise). Test corrigé, AA6 rejoué, deux rouges.
-
-**Limites** : durabilité de l'arc (28 tirs) non décomptée — l'arc n'est pas
-encore un exemplaire d'inventaire ; pas d'entrée clavier de sélection (API
-`equip_next`) ; pas d'usure visuelle/son (Phase H) ; pas de ramassage (coffres,
-Phase D).
-
----
-
-## 2026-08-01 — Revue du Gate C (passe unique, D-024) · Jalon D.0 : la vallée existe
-
-**Revue** : passe unique à contexte frais (décision propriétaire), code jugé
-`78f2b9a`, rapport dans `evidence/gateC/REVUE.md`. Quatre critères **PASS au
-volet automatique**, rejoués. Constats traités le jour même : **D1 (S2) — la
-mort du joueur n'existait pas** (cadavre courant/attaquant/esquivant, pillard
-frappant le cadavre sans fin) → `Mode.DEAD` + désengagement du pillard +
-régression `test_player_death.gd` rejouant la sonde du réviseur ; D2 — lignes
-`RC=` des logs W/X/Y annotées invalides (artefact de capture), sans
-régénération ; D3 — garde null. Verdict prononcé : **ACCEPTÉ POUR CONTINUATION
-AVEC VALIDATION HUMAINE DIFFÉRÉE** (D-024).
-
-**D.0** (ordonné par D-024, sans laboratoire préalable) : `ValleyWorld.tscn` —
-sol 512 × 512 m, spawn sud (§3.3), camp à (45, 0, 65) avec trois pillards, le
-coffre garanti du camp (`valley.chest.camp.01`, hache + 12 flèches, jamais de
-second loot) et un gourdin ramassable. Le geste d'interaction de §14.2 existe
-enfin (2,2 m, cône avant, le plus proche gagne) ; `WeaponPickup` et `Chest`
-versent dans l'inventaire de C.4 — inventaire plein = l'objet RESTE, rien n'est
-perdu. « Nouvelle partie » (et « Continuer ») entrent réellement dans la vallée
-via `SceneFlow`. 7 cas de test, plancher 216 → **221**, `validate_fast` VERT.
-
-**Pièges mesurés** : StaticBody3D ajouté puis déplacé = un tick DANS le joueur,
-dépénétration de 0,6 m (positionner AVANT `add_child`) ; les tests du menu
-doivent bloquer `SceneFlow` pendant l'appui, sinon la transition réelle
-remplace la scène du runner et fige l'arbre en pause.
-
-**Limites** : sol plat sans relief/rivière/pylône/citadelle ; « Continuer »
-repart du spawn (état : Phase E) ; pas d'invite d'interaction à l'écran ;
-filet anti-chute à −20 m en attendant les bords réels.
-
----
-
-## 2026-08-01 — Jalon D.1 : relief macro, proxys, navmesh prouvé
-
-**Fait** (portée D-025) : `ValleyTerrain` — blockout déclaratif portant TOUTE la
-relation de §3.3 : crête de départ (0, 24, 170), descente en S (3 rampes, 2
-paliers, 14–18°), terrasse du camp (45, 6, 65), lit de rivière (bande z 4–16,
-deux gués), falaise d'apprentissage ouest (12 m, deux corniches de repos §9.3),
-terrasse du pylône (115, 18, −25) et sa rampe, forêt SE (12 troncs à collision),
-ruines centrales avec salle en U, plateau monumental (0, 34, −210), rampe
-processionnelle, **proxys émissifs du pylône et de la citadelle** — la relation
-héros → camp → pylône → objectif se lit depuis la crête. Soleil ouest 22°
-(§7.7), ciel/brume §3.4, `VistaCamera_Hero01` à constantes fixes (§21.8).
-Navmesh baké versionné (488 polygones, outil `bake_valley_navmesh.gd`) ;
-navigation du pillard par requêtes serveur + suivi 2D manuel. 4 tests de
-risques critiques (parcours piloté 11 jalons, détour hors d'une salle en U,
-filet de chute, spawn/jalons), plancher 221 → **225**, `validate_fast` VERT.
-Capture de la caméra de départ : `evidence/gateD/` (commit suivant).
-
-**Pièges moteur, trois sondes** (détail D-025) : le suiveur de
-`NavigationAgent3D` compare en 3D contre des hauteurs voxelisées (~0,45 m
-au-dessus des pieds) — gel sur place (seuil 0,4), gel au coin (0,8),
-réinitialisation d'index en reposant la cible à cadence fixe. Remplacé par
-`map_get_path` + avancement 2D. Et une sonde qui interroge l'agent CONSOMME ses
-waypoints — instrumenter DANS le code observé. Corrigé aussi en route : une
-rampe qui atterrit DANS l'emprise d'un plateau laisse un mur en travers —
-atterrir AU RAS du bord (sondé aux points clés, 21 hauteurs vérifiées).
-
-**Limites** : pas d'eau dans le lit, un seul coffre (les 8 + validateur d'IDs :
-emplacements définitifs), pas de bords de monde, S de rivière rectiligne,
-proxys ≠ art.
-
----
-
-## 2026-08-01 — Package de playtest D.1, C.5 mis en attente du premier retour humain
-
-**Fait** (ordre propriétaire) : `docs/PLAYTEST_D1.md` — package auto-suffisant
-pour un testeur : commit de référence du code jouable (`316e4dd`), Godot
-4.7.1-stable exigé et vérifiable, lancement, table AZERTY **honnête** (chaque
-ligne dit si l'action a un effet réel : Tab/F/Échap liées mais inertes, manette
-jamais validée), limites connues distinguées des bugs (silence total, aucun
-HUD — l'endurance invisible est LA confusion prévisible —, mort définitive,
-« Continuer » au spawn, proxys). Formulaire de retour dans
-`evidence/gateD/playtest01/` : contexte machine, chronologie de mémoire, les
-cinq questions de §21.9 au mot près, questions D.1 (lecture de la vallée,
-descente, camp, combat, falaise, arc), tableau de bugs S0–S4. README remis à
-l'état réel (il annonçait la Phase 0).
-
----
-
-## 2026-08-01 — D.1R : version corrective après le playtest humain n° 1
-
-**Verdict propriétaire consigné** : D.1 n'était pas jouable (12 constats,
-`evidence/gateD/playtest01/FORMULAIRE.md` — retour testeur et audit technique
-séparés). C.5 et toute passe artistique SUSPENDUS jusqu'à version corrective.
-
-**Fait**, cinq sous-jalons enchaînés, chacun commité avec ses régressions :
-
-- **D.1R.1 souris/caméra/pause** (`d3a5214`) : capture souris (seam
-  `wants_mouse_captured()` — headless refuse CAPTURED, mesuré), 360° de lacet
-  (`wrapf`), canaux de regard séparés — `look_mouse` en radians appliqués TELS
-  QUELS, `look_analog` en vitesse×delta ; le bug originel était un
-  double-échelonnage ÷25. Échap = pause réellement suspensive
-  (`tree.paused`), sensibilité persistée `user://settings.cfg` (UserSettings).
-- **D.1R.2 corps séparés** (`4ebd987`) : masques joueur 5 (World+Enemy) et
-  pillard 7 (World+Player+Enemy) — on ne traverse plus personne ; séparation
-  locale des pillards (poussée 1,7 m, morts exclus) — plus de tas ; le détour
-  navmesh de la salle en U reste prouvé.
-- **D.1R.3 lisibilité** (`c7fb7cd`) : `GameplayShell` (CanvasLayer 64) — HUD
-  vie/endurance/flèches/arme+durabilité/verrouillage/réticule/notifications
-  (EventBus `gameplay_notification`, D-026) ; invite unique « E — Verbe » avec
-  LIGNE DE VUE (paroi = ni invite ni interaction) ; inventaire Tab (8 cases,
-  équiper, réordonner) ; molette = arme hors lock, cible pendant lock ; 3
-  coffres extérieurs ajoutés (rivière, falaise, pylône — IDs stables, loot
-  déterministe) ; feedback graybox : arme visible en main (couleur par type),
-  pose d'attaque, télégraphe rouge du pillard, flash de touche, stagger, mort
-  visibles.
-- **D.1R.4 limites et promesses** (`5d55766`) : anneau montagneux continu
-  (BORDER 250→292, h 70, `unclimbable` ; prouvé par 16 rayons — les diagonales
-  exigent 200 m de portée) ; filet précoce −6 m + fondu + retour au DERNIER
-  POINT SÛR ; interface de mort (Retry → monde-checkpoint via
-  `pending_spawn`) ; VRAIE porte de citadelle → vestibule graybox explorable
-  (colonnes, omni cyan, porte scellée honnête, sortie → DEVANT la porte).
-  Piège moteur : `ValleyTerrain` positionnait ses StaticBody APRÈS `add_child`
-  — montagnes-fantômes catapultant le joueur (+4,6 m mesuré). Règle
-  position-avant-add_child généralisée à TOUS les générateurs.
-- **D.1R.5 « Continuer » honnête** (`b0c681e`) : la vallée applique slot0 à
-  son chargement — armes par id + durabilités, arme équipée, flèches, coffres
-  ouverts (silencieux) ; autosave sur ouverture de coffre et départ de scène ;
-  partie neuve = instantané sans clés d'inventaire → no-op. Aucune duplication
-  de loot après rechargement (prouvé).
-
-**Validation** : `tools/validate_fast.sh` VERT après chaque sous-jalon —
-251 réussis, 0 échoué. Les 18 régressions exigées mesurent l'EFFET (distances,
-positions, états), pas la présence d'un nœud.
-
-**Revue contradictoire consolidée** (`evidence/gateD/REVUE_D1R.md`) : 23
-critères rejoués à contexte frais — aucun S0/S1/S2, trois S3 démontrés
-(QA-D1R-01 pickup dupliqué après « Continuer », QA-D1R-02 settings.cfg hostile
-contournant les bornes, QA-D1R-03 souris recapturée sous l'écran de mort),
-**corrigés le jour même** avec une régression chacun → **254 réussis,
-plancher 254**. QA-D1R-04 (S4) : surdéclarations de TEST_REPORT corrigées.
-
-**Hors périmètre maintenu** : cuisine, salles électriques, boss, art/animation/
-audio finaux, optimisation, manette.
-
----
-## 2026-08-01 — Passe visuelle V4.1 (lots V4.0 → V4.6)
-
-**Ordre propriétaire** : D.1R validé pour continuation (playtest de contrôle
-sans blocage), pack visuel V4 (5 images) érigé en référence d'autorité —
-installer le langage visuel dans la VRAIE build sans toucher aux systèmes
-D.1R. Le ZIP binaire n'a pas atteint le conteneur : provenance et lecture
-consignées (`source_assets/concepts/final_v4/README.md`, ART_BIBLE §1bis),
-PNG à déposer.
-
-**Livré, un commit poussé par lot** :
-
-- **V4.0 (`b777772`)** : provenance + lecture d'autorité + état initial
-  (capture baseline, minutage llvmpipe indicatif).
-- **V4.1 (`ccaa4c7`)** lumière/atmosphère : soleil #FFD68A + ombres, horizon
-  réchauffé, filmic + glow faible seuil haut, brume étagée (aerial 0,35,
-  densité 0,0009 — la première passe NOYAIT le plan moyen, ÷2), brume basse
-  y<6, StormCell : orage LOCAL (8 grumeaux disable_fog, voile de pluie,
-  éclair déterministe cœur blanc/halo cyan, tenu en mode vista — llvmpipe :
-  ~250 ms/frame réels, la cadence temps-réel échappait à la capture), motes.
-  3 itérations sur capture.
-- **V4.2 (`42e1c87`)** terrain/limites/profondeur : eau turquoise en S dans
-  le lit (visuel sans collision), chemins des deux routes, variations de sol,
-  pics en TENTES sur deux rangées (lointaine bleuie) plafonnés derrière la
-  citadelle, 8 contreforts physiques unclimbable (navmesh 646), prairie §7.5
-  partitionnée en GRAPPES de touffes (3 quads croisés) sur la bande avant de
-  la crête + fleurs. Piège : le RenderingServer headless ne relit pas les
-  tampons MultiMesh → seam origins/tints.
-- **V4.3 (`6e67ef8`)** repères : camp habité (3 tentes physiques, foyer
-  chaud), pylône ouvragé (socle/anneaux/runes émissives), façade monumentale
-  (gradins DERRIÈRE le plan de la porte, piliers à conduits cyan, linteau,
-  braseros, marches mesurées ≤ 0,31 m), vestibule 22 × 26 m à 6 colonnes et
-  4 braseros contre la veine cyan du seuil scellé. Navmesh 749.
-- **V4.4 (`370cdec`)** HUD (réf. 03) : HudStyle source unique — vie en 5
-  RUBIS (somme affichée = seam), endurance turquoise pendant l'usage
-  seulement, plaque de cible à la vraie vie de l'ennemi, carte d'arme à
-  durabilité SEGMENTÉE, invite en cartouche, notifications sur plaque.
-- **V4.5/V4.6 (`4289d5e`)** inventaire (réf. 04) : grille 2 × 4, huit cartes
-  (vides estompées), détail véridique (dégâts/portée/durabilité/conductivité
-  comparés à la .tres par le test) ; pause sur plaque centrée par ancrage,
-  monde visible ; rien d'inexistant affiché.
-
-**Validation** : `validate_fast` VERT après CHAQUE lot — **270 réussis,
-plancher 270** (+12 régressions V4 qui mesurent l'effet). Lancements réels
-Xvfb sans erreur de script après chaque lot. Perfs llvmpipe INDICATIVES
-consignées (`evidence/passeV4/baseline/perf_indicative.txt`). Captures
-par lot dans `evidence/passeV4/` avec manifestes.
-
-**Hors périmètre tenu** : aucun système D.1R réécrit, pas de décor définitif
-au mètre carré, pas de personnages finaux, pas de donjon complet.
-
----
-
-## HANDOFF — prochaine action exacte
-
-> **Gates** : A `RÉSERVE` (D-012) · B `CONTINUATION` (D-021) · C
-> `CONTINUATION` (D-024) · D **en cours** — D.1R corrigé post-revue, Passe
-> visuelle V4.1 livrée (V4.0 → V4.6).
-> **C.5** : la Passe V4 en tient lieu sur la crête réelle — la notation
-> §3.5 sur capture et le verdict appartiennent au REGARD HUMAIN.
-
-### Action suivante : playtest humain n° 2 (hors conteneur)
-
-1. Suivre `docs/PLAYTEST_D1R.md` (contrôles inchangés) — le build a EN PLUS
-   l'atmosphère V4 : orage local, éclairs, eau, prairie, chemins, camp
-   habité, façade monumentale, HUD rubis, inventaire en grille.
-2. Vérifier les 12 constats du n° 1 ET la lisibilité V4 (trois plans, orage
-   localisé, routes guidantes, HUD discret).
-3. Déposer le retour dans `evidence/gateD/playtest02/FORMULAIRE.md`.
-
-### ART-P0 livré (2026-08-01, plus récent) — ARRÊT pour validation
-
-> Décision propriétaire : audit validé, stratégie hybride, premier asset =
-> l'ÉPÉE USÉE de bout en bout. **Livré** : `SM_WornSword` — création
-> originale procédurale (tools/blender/make_worn_sword.py, seed fixe,
-> 414 tris, lame patinée à entailles de silhouette, garde bronze
-> asymétrique, poignée cuir à gorges, pommeau vieilli, goupille+pastille
-> ivoire, ZÉRO cyan), textures 512 BaseColor+MR générées, .blend 448 Ko /
-> .glb 190 Ko (Git LFS INDISPONIBLE — vérifié — donc tailles contenues),
-> gltf_inspect VALIDE, icône RENDUE du modèle (256, fond transparent).
-> Intégré sans toucher un chiffre de gameplay : en main (WeaponModel via
-> mesh_scene, usure < 25 % par instance), au sol (pickup), inventaire
-> (icône carte + détail), repli boîte CONTRÔLÉ pour les armes sans modèle.
-> validate_fast VERT 276/276 (6 régressions ART-P0, plancher 276), vallée
-> et inventaire lancés réellement sans erreur. Captures gate :
-> evidence/artP0/ (Blender, Godot socle/usée/sol/main, inventaire).
-> S4 consigné : la plaque d'inventaire se cale en haut-gauche sous le
-> harnais de capture (CenterContainer ajouté ; position à vérifier sur
-> poste). **Le verdict du gate visuel est HUMAIN — arrêt : ni héros, ni
-> autres armes, ni remplacement massif avant décision.**
-
-### Verdict propriétaire sur la Passe V4 (2026-08-01, plus récent)
-
-> Infrastructure technique et fonctionnelle ACCEPTÉE ; gate artistique
-> **REFUSÉ** — un graybox décoré de primitives n'est pas la cible V4.
-> Livré en réponse : `docs/assets/ASSET_READINESS_AUDIT.md` (inventaire
-> complet, primitives vs production, manquants, créer/acquérir/remplacer,
-> licences/formats, risques). Les 5 PNG V4 ne peuvent PAS être déposés
-> depuis le conteneur (jamais arrivés sur disque — vérifié) : dépôt à faire
-> depuis la machine du propriétaire. **ARRÊT — aucune couche artistique
-> supplémentaire avant validation de l'audit et décision propriétaire.**
-
-### Rappels
-
-- Rebaker le navmesh après TOUTE modification du relief (749 poly).
-- Pièges frais : position-avant-add_child ; tampons MultiMesh illisibles en
-  headless (seam origins/tints) ; cadence Timer temps-réel vs frames
-  llvmpipe (~250 ms) ; PrismMesh : arête le long de Z ; plaques UI ancrées
-  centre, jamais par `position` avant le premier layout.
-- `MIN_TESTS` = 270 ; compte de référence dans TEST_REPORT uniquement.
-- Le pack V4 binaire reste à déposer dans `source_assets/concepts/final_v4/`.
-
-## 2026-08-02 — E.2 (fondations) : règles de cuisine et effets d'état
-
-> **Logique pure livrée AVANT le câblage** (interrompu par l'ordre de nuit
-> V3 — acquisition Quaternius prioritaire). `RecipeRules.cook()` (§13.4 :
-> soin sommé clampé 100, familles majeures, ragoût instable ×0.3, durée
-> 60+30/compatible+45/épice max 300 — D-027) et `StatusEffectComponent`
-> (§13.5 : un seul buff, remplacement signalé, minuterie `_process`
-> pausable, multiplicateurs 1.25/0.75/1.6/0.4, snapshot/restore
-> primitives). 7 tests unitaires purs ; plancher 285 → **292**.
-> **RESTE À FAIRE (reprise E.2)** : meal_pressed dans l'intent,
-> multiplicateurs câblés (hitbox/hurtbox/stamina), _meals en inventaire,
-> composant dans Player.tscn, _eat_quick_meal, autosave meals/buff,
-> label HUD, tests d'intégration.
-
-## 2026-08-02 (nuit) — ART-Q0 : acquisition Quaternius + 11 ids livrés
-
-> **Acquisition** : les 7 archives depuis la Release GitHub
-> `asset-inbox-quaternius-free-v1` (canal API + curl), SHA-256 identiques
-> aux digests GitHub, `unzip -tq` OK, zéro chemin dangereux, licences
-> **CC0 1.0 lues dans chaque archive**. Zone : /tmp, jamais dans le dépôt.
-> **Ingestion** : 12 modèles copiés à l'octet près (~101 Mo, max 12,7 Mo/f),
-> inscrits dans ATTRIBUTIONS + MANIFEST AVANT import ; `gltf_inspect`
-> étendu au .gltf texte (mêmes contrôles) ; import headless zéro erreur.
-> **Livraison** : 11 wrappers .tscn aux chemins réservés du registre
-> (arbres ×2, rochers ×2, buisson, coffre/caisse/tonneau, porte/mur/colonne).
-> Héros `Male_Ranger` importé en CANDIDAT (préview calibration, étiqueté) —
-> câblage animé = ART-Q1. **Squelette héros = squelette UAL (65 os,
-> différence ensembliste vide, vérifié par script)** : retargeting direct.
-> Tests 292 → **294** (ids livrés montent des maillages réels ; rig du
-> héros survit à l'import). Captures : evidence/artQ0/ (2 lumières,
-> manifestes). tent/campfire ABSENTS des packs — consigné, options Q3.
-> **PROCHAINE ACTION (ART-Q1)** : ingérer UAL1/UAL2 in-place + créer
-> HeroVisual.tscn animé (12 états via CharacterAnimSet), sockets main/dos,
-> capsule autorité, root motion neutralisé documenté par clip.
-
-## 2026-08-02 (nuit) — ART-Q1 : héros riggé vertical LIVRÉ
-
-> UAL1+UAL2 in-place ingérés (.glb, 65 os = squelette Ranger).
-> `bake_hero_animations.gd` cuit AL_HeroStates.res : 12 états, bouclage
-> EXPLICITE, **audit root motion par clip** (boucles fermées à 0,000 m ;
-> one-shots = déplacement de POSE documenté, ex. Death01 0,81 m corps
-> couché ; seuils : boucle 0,05 m / one-shot 1,2 m anti-_RM ; zéro piste
-> de position de nœud). `HeroVisual.tscn` = Male_Ranger + AnimationPlayer
-> (root_node→modèle, chemins de pistes identiques) + sockets
-> SOCKET_HAND_R/SOCKET_BACK/SOCKET_BOW (hand_r/spine_03/hand_l).
-> Player.tscn : CharacterVisual (char.hero) + PlayerVisualDriver — mode et
-> vitesse RÉELS → clips ; graybox masqué ; **capsule intouchée** ; épée
-> dans la MAIN (pivot sous le socket, prise (90,0,0) retenue par balayage
-> de 6 orientations par capture) ; balayage procédural et tilt de mort
-> coupés quand le modèle est monté (Death01 couche le corps).
-> Régression corrigée : chemin dur `VisualRoot/WeaponPivot` dans
-> test_hud_and_inventory (cascade de 19 tests) → find_children.
-> Tests 294 → **300**. Lancements vallée + vestibule 300 frames zéro
-> erreur script. Preuves : evidence/artQ1/ (audit JSON, calibration,
-> vallée héros de dos, épée main/attaque).
-> **PROCHAINE ACTION (ART-Q2)** : pillard animé sur la VRAIE IA
-> (raider_red) + 2 variantes de teinte, mêmes contrats (capsule, hitbox).
-
-## 2026-08-02 (nuit) — ART-Q2 : pillard animé sur la vraie IA + variantes
-
-> Male_Peasant ingéré (12 894 tris, 65 os ; textures Peasant RÉDUITES
-> 4K→2K par Blender — budget §7.10 ennemi standard, réduction mécanique
-> documentée au manifeste). Outil de cuisson GÉNÉRALISÉ
-> (bake_character_animations.gd) : AL_RaiderStates (11 clips, attaque =
-> Melee_Hook — grammaire distincte de l'épée du héros, §12), audit root
-> motion evidence/artQ2/. Wrappers RaiderRed/Blue/BlackVisual (teintes de
-> faction par instance, matériaux dupliqués §5.4) ; CharacterModelSockets
-> généralisé (ex-HeroVisualModel) + teinte. RaiderRed.tscn RÉEL :
-> CharacterVisual sous Pivot, graybox masqué, gourdin REPARENTÉ dans la
-> main animée (même grammaire de prise que l'épée), télégraphe §12.1
-> refondu sur les matériaux ACTIFS (survit au masquage du graybox),
-> bascules procédurales (mort, étourdissement) coupées sous modèle —
-> Death01/Hit_Chest portent. Clips pilotés par le signal state_changed
-> (zéro polling). **Bug moteur compris et traité** : la mise à jour
-> différée du RenderingServer citait des matériaux teintés déjà libérés
-> (« material is null » headless) → surcharges vidées à la sortie de
-> l'arbre (NOTIFICATION_EXIT_TREE). Tests 300 → **304**. Captures :
-> calibration 18 socles, 4 personnages teintés distincts.
-> **PROCHAINE ACTION (ART-Q3)** : camp props production (coffre/caisse/
-> tonneau déjà livrés : les brancher dans la vallée en préservant IDs,
-> loot, interactions ; feu de camp composé ou graybox documenté).
-
-## 2026-08-02 (nuit) — ART-Q3 : props de production au camp
-
-> **Coffre réel** : le modèle Quaternius est RIGGÉ avec ses clips
-> (Chest_Open/Chest_Opened/Close) — chest.gd le monte via le registre,
-> masque son graybox, garde sa collision, joue Chest_Open à l'ouverture
-> et la POSE Chest_Opened à l'application d'état (§19.4, sans loot ni
-> geste). IDs, loot garanti, atomicité inventaire-plein : INTACTS
-> (tests). **Camp** : 2 caisses + 2 tonneaux de production en obstacles
-> physiques (repli graybox conservé), anneau de 8 galets autour du foyer
-> (Pebble_Round_1-3 ingérés, texture PathRocks 1K). Caméra de contrôle
-> reproductible du camp (VALLEY_CAMP=1, §21.5 « vue camp »). Les
-> pillards du camp portent AUTOMATIQUEMENT le modèle Q2 — la capture
-> montre trois pillards braise animés, gourdin en main. Tentes : AUCUN
-> asset dans les 7 packs — PrismMesh graybox conservé, documenté.
-> Tests 304 → **307**. Capture : evidence/artQ3/camp_props.png.
-> **PROCHAINE ACTION (ART-Q4)** : biome nature composé (arbres/buissons/
-> rochers réels dans la vallée, pas de dispersion uniforme, navmesh
-> rebaké 749 poly à revalider).
-
-## 2026-08-02 (nuit) — ART-Q4 : biome nature composé
-
-> Forêt : les 12 troncs graybox gardent leurs COLLISIONS (le navmesh et la
-> preuve de navigation ne bougent pas d'un polygone — suite verte), les
-> visuels sont les vrais arbres (large/medium alternés en motif
-> irrégulier, lacet à l'angle d'or, échelle variée — testé : ≥10 lacets et
-> ≥8 échelles distincts). « Phrases » végétales §7.17 : lisière de forêt
-> (3 buissons serrés + isolé), cadrage de crête, langue de galets au coude
-> de rivière, 2 rochers-obstacles au pied de la falaise — groupes
-> délibérés, test de composition (voisin < 3 m ET vide > 15 m). Un asset
-> manquant laisse un VIDE, jamais une boîte. Tests 307 → **309**.
-> Captures : evidence/artQ4/ (vista + camp avec forêt réelle).
-> **PROCHAINE ACTION (ART-Q5)** : architecture pénétrable — façade
-> citadelle + vestibule avec les modules pierre (porte/mur/colonne),
-> système de scène préservé.
-
-## 2026-08-02 (nuit) — ART-Q5 : architecture pénétrable
-
-> Vestibule : les SIX colonnes graybox gardent leurs collisions boîte ;
-> le visuel est une PILE de trois modules de pilier (3×3,04 m ≈ 9,1 m,
-> lacet alterné par segment — le module étant une pièce d'angle, la pile
-> lit « tour brute » ; candidate à l'harmonisation Q6, verdict humain).
-> Seuil scellé encadré du portail de pierre (×2,3). Façade vallée : la
-> MÊME arche à l'échelle monumentale (continuité de matière) + deux
-> piliers de flanc au pied des marches. SceneDoors aller/retour, cotes
-> et volumes d'interaction : INTACTS (testés). **Correctif au passage** :
-> la retenue de réception du pilote visuel comptait en ms murales —
-> instable en headless rapide ; passée en TICKS physiques (§20.9).
-> Tests 309 → **311**. Capture : evidence/artQ5/vestibule_modules.png
-> (contraste ambre/cyan §7.8 sur vraie pierre).
-> **PROCHAINE ACTION (ART-Q6)** : cohérence lumière/matériaux/palette V4
-> sur les captures de référence (vista, camp, vestibule, calibration).
-
-## 2026-08-02 (nuit) — ART-Q6 : cohérence palette V4
-
-> Teinte SÉLECTIVE par matériau (tint_material_filter) : le héros teinte
-> sa tenue MI_Ranger vers le turquoise (§7.11 : « le turquoise relie le
-> héros à la citadelle » — accents épaulière/sangles/bottes répondant au
-> cyan de la porte/éclair/pylône dans la vista), la PEAU reste vierge
-> (testé). Choix (0.38, 0.92, 1.7) par balayage de 3 candidates en
-> capture. LIMITE honnête : la capuche saturée résiste au multiplicatif
-> (pas de bleu dans la texture à amplifier) — re-texture complète =
-> décision humaine de Phase H, consignée. Paquet de référence Q6 :
-> evidence/artQ6/ (vista, camp, vestibule, calibration lumière vallée),
-> même état, mêmes caméras — la base de la revue Q7. Tests 311 → **312**.
-> **PROCHAINE ACTION (ART-Q7)** : revue contradictoire à contexte frais,
-> corrections S0/S1/S2 (+S3 contraires à l'ordre), package playtest.
-
-## 2026-08-02 (aube) — ART-Q7 : revue contradictoire PASS, package playtest
-
-> Revue adverse à contexte frais sur f9a0e0d..ed39f8e : **PASS global,
-> zéro S0-S3** (evidence/artQ7/REVUE.md — acquisition recoupée
-> INDÉPENDAMMENT via l'API GitHub, stats gameplay au diff VIDE, plancher
-> strictement croissant, validate_fast rejoué 312/312). Quatre S4
-> traités : repo_dirty resserré aux fichiers SUIVIS (capture_reference),
-> paquet de référence recapturé post-commit, ISS-013 (bbox skinnés) et
-> ISS-014 (couture WEAPON_GRIP, à retirer Phase I) consignés, audits de
-> bake régénérés. Package playtest SANS ZIP : docs/PLAYTEST_ARTQ.md —
-> le dépôt est le package. STATUS/TEST_REPORT à jour.
-> **PROCHAINE ACTION** : reprise du prompt maître — E.2 (cuisine/buffs) :
-> câblage des fondations déjà commitées (meal_pressed, multiplicateurs
-> hitbox/hurtbox/stamina, _meals, StatusEffect dans Player.tscn,
-> _eat_quick_meal, autosave meals/buff, label HUD, tests).
-
-## 2026-08-02 (aube) — E.2a : plats et buffs câblés (reprise prompt maître)
-
-> Sur les fondations E.2 (f9a0e0d) : `meal_pressed` (intention + lecteur,
-> action `quick_meal` de §8.5), plats FIFO bornée (6) en primitives dans
-> l'inventaire (§11.3 « plats séparés »), StatusEffectComponent dans
-> Player.tscn, `_eat_quick_meal` (soin TOUJOURS appliqué, buff majeur
-> remplacé, plat consommé UNE fois), multiplicateurs §13.5 propagés PAR
-> SIGNAL (hitbox ×1.25 infligé, hurtbox ×0.75 reçu AVANT émission,
-> stamina ×1.6 régén) et retombés à l'expiration. Autosave : "meals" +
-> "buff" (déclencheurs meals_changed ET buff_applied — le buff s'applique
-> APRÈS le prélèvement du plat, mesuré par le test de rechargement).
-> 3 tests (25 assertions) sur le VRAI joueur et la VRAIE vallée ; plancher
-> 312 → **315**. **RESTE (E.2b)** : UI de cuisine au feu de camp
-> (sélection 1-5, aperçu §13.3), label de buff au HUD (§17.2), déclencheur
-> feu de camp. Les règles pures (RecipeRules) sont déjà testées.
-
-## 2026-08-02 (nuit V4, lot 1) — correctif : expiration de buff persistée
-
-> Défaut CONFIRMÉ par test rouge : `buff_expired` remettait le composant à
-> neutre mais ne produisait AUCUN instantané — le buff sauvegardé à
-> l'application ressuscitait au rechargement avec tout son temps et son
-> multiplicateur (×1.25 mesuré). Correctif : `buff_expired` → autosave
-> (valley_world). Testé : expiration pilotée → rechargement → aucun buff,
-> aucun multiplicateur résiduel ; le remplacement restait couvert. Aucune
-> valeur de gameplay modifiée. Plancher 315 → **316**.
-
-## 2026-08-02 (nuit V4, lot 2) — catalogue exhaustif automatisé
-
-> `tools/catalog_quaternius.py` (reproductible depuis la Release) : **2162
-> entrées brutes traitées à 100 %** — 805 DOUBLON_FORMAT (FBX/OBJ/copies
-> Unity-UE), 495 SOURCE_TECHNIQUE (bins/licences/blend/mtl), 359
-> DOUBLON_CONTENU (hash identique), 4 VARIANTE_ROOT_MOTION, 81 GALERIE
-> (textures), 61 UTILISÉ_RUNTIME, et **375 modèles canoniques scorés**
-> (grille §7 transparente, mots-clés lisibles dans le script) : 249
-> CANDIDAT_RUNTIME (≥65), 102 À_ADAPTER, 6 REJETÉ. Métriques réelles par
-> modèle (tris, bbox TOUS meshes, matériaux, os, clips). Sorties : JSON
-> (946 Ko), CSV, CATALOG_REPORT.md. Le score est un TRI préparatoire —
-> le verdict artistique reste humain.
-
-## 2026-08-02 (nuit V4, lot 3) — promotion massive, index direct, galerie
-
-> `tools/promote_quaternius.py` + `docs/assets/PROMOTIONS.csv` (sélection
-> commentée par zone, rejouable depuis la Release) : **113 nouveaux modèles
-> promus** (265 fichiers, 76,5 Mo — nature 30, rochers 8, props 43,
-> architecture 32), import Godot ZÉRO erreur, 119 lignes de manifeste
-> générées depuis le catalogue. `AssetRegistry.model(nom)` : index
-> paresseux nom canonique → PackedScene (jamais 130 constantes à la main).
-> Galerie paginée `AssetGallery.tscn` (§8) : 12 modèles/page, catégorie/
-> page/espacement par environnement, promus depuis le dépôt + candidats
-> depuis l'extraction (GLTFDocument runtime), échec d'asset = jalon orange
-> consigné. **35 planches-contact** capturées (toutes les pages de toutes
-> les catégories) : evidence/v4lot3/. Tests : index ≥110 + page pleine
-> sans perte. Plancher 316 → **318**.
-
-## 2026-08-02 (nuit V4, lot 4) — zones A/B/C : crête, descente, prairie
-
-> Système de placement par zone (`_place_model`/`_dress_zone`) sur la
-> topologie INTACTE : crête (cadre latéral d'arbres, rochers héroïques,
-> premier plan fleuri — **couloir de vista x −12..12 vide de toute
-> silhouette haute, TESTÉ**), descente (bornes de pierre aux paliers,
-> buissons aux bords EXTÉRIEURS, jalons verticaux — jamais rien sur l'axe
-> de course), prairie (arbres isolés à collision de tronc, bouquets
-> groupés avec vides, herbes de berge, galets du gué ouest). 51
-> placements, ~25 modèles distincts. Correction sur capture : l'arbre
-> tordu ROUGE quittait l'axe de la citadelle pour marquer le coude ouest
-> (accent hors axe, §11.A). Caméra de contrôle DESCENTE (VALLEY_DESCENT).
-> Tests zones+couloir. Plancher 318 → **320**. evidence/v4lot4/.
-
-## 2026-08-02 (nuit V4, lot 5) — le camp habité
-
-> `_dress_camp_life` : 30 éléments — cuisine (chaudron SUR le foyer, table
-> dressée avec pot/tasse/bouteille/carotte, banc, tabouret, seau), réserve
-> (tonneau de pommes, cageots, sacs), coin de travail (enclume, billot +
-> hache, pierre à affûter, corde), râtelier d'armes + épée + bouclier,
-> charrette et bannière à l'entrée, clôture PARTIELLE au nord, abri
-> ASSEMBLÉ (panneau de toit incliné + couche + chandelle — un pillard dort
-> là). Aucune entité gameplay dupliquée (feu, coffre, viande intouchés,
-> §11.D). Test : 30/30 maillages réels. Capture : evidence/v4lot5/.
-
-## 2026-08-02 (nuit V4, lots 6-7) — forêt et rivière
-
-> Forêt (§11.E) : +6 troncs à collision (feuillus, morts-bois au nord,
-> pin de lisière est) — le couloir diagonal (60,50)→(90,28) reste
-> praticable ; sous-bois aux pieds des troncs (fougères, grandes plantes,
-> trèfles), lisière ouest en phrase de buissons, ronde de champignons
-> (repère 1), ruine-curiosité arche+briques+lierre (repère 2). Rivière
-> (§11.F) : arbre tordu penché au coude ouest (près du coffre-corniche
-> existant, récompense route 2), roseaux de berge, 4 pierres émergentes
-> HORS des gués, bivouac abandonné au gué est (seau renversé, corde,
-> bouteille). 41 placements. Tests de zones étendus (26 + 15).
-
-## 2026-08-02 (nuit V4, lots 8-9) — falaise ouest et pylône rituel
-
-> Falaise (§11.G) : bosquet de pins au sommet (les hauteurs §12),
-> mort-bois en repère de corniche, gros rochers d'appui au pied dont une
-> formation EMPILÉE, herbes sèches clairsemées — surfaces d'escalade et
-> corniches de repos intactes. Pylône (§11.H) : composition rituelle —
-> cercle de dalles autour du socle, piliers de brique encadrant
-> l'approche, bannières de seuil (lieu entretenu), pierres votives,
-> végétation quasi absente (§7.5 près du danger électrique). 24
-> placements. Tests de zones : 7 zones couvertes.
-
-## 2026-08-02 (nuit V4, lot 10) — approche de la citadelle en quatre couches
-
-> §11.I : ruines extérieures dans la plaine (murs effondrés, briques,
-> lierre — la route traverse un passé), rampe fortifiée (deux paires
-> pilier+torchère à mi-montée, bannières hautes), terrasse d'accueil
-> (murs d'enceinte PARTIELS en corridor, fenêtres, charrette de siège,
-> ravitaillement), seuil monumental (bannières sur les piliers de bronze
-> V4.3). 24 placements à collisions d'obstacle. Rampe processionnelle et
-> SceneDoor intactes. Test de zone. evidence/v4lot10/.
-> **PROCHAINE ACTION (V4 lot 11)** : vestibule — casser la répétition du
-> pilier d'angle (variantes), panneaux muraux, allée de dalles, mobilier
-> martial ; puis lot 12 structures pénétrables (avant-poste, abri
-> rivière, sanctuaire falaise, poste de garde).
-
-## 2026-08-02 (nuit V4, lot 11) — vestibule varié et meublé
-
-> §11.J : la répétition du pilier d'angle unique est cassée — les piles
-> de colonnes alternent module LARGE (arch.column.module ×1.6) et
-> variante ÉTROITE (Corner_Exterior_Brick ×2.1, repli propre sur le
-> large si absente). Intérieur habité : allée processionnelle de 6
-> dalles Floor_Brick vers la porte de sortie, 2 panneaux muraux
-> plâtre au nord, mobilier martial (râtelier d'armes, bouclier, banc,
-> caisse+parchemin — un poste de garde, pas un hall vide), 2 bannières
-> latérales, 2 lanternes murales avec OmniLight chauds MOTIVÉS (§7.8 :
-> sources visibles, aucun couloir noir). 17 placements + 2 lumières.
-> Tests citadel_dressing 2/2 (structure ColumnStack/Segment préservée).
-> Capture : evidence/v4lot11/vestibule_dressed.png (manifeste).
-> **PROCHAINE ACTION (V4 lot 12)** : structures secondaires pénétrables
-> (avant-poste route nord, abri rivière, sanctuaire falaise, poste de
-> garde citadelle) — chaque intérieur : raison d'être, récompense,
-> dimensions joueur, sortie sûre.
-
-## 2026-08-02 (nuit V4, lot 12) — structures secondaires pénétrables
-
-> Aucun bâtiment important ne reste une boîte fermée : quatre abris 4×6 m
-> sur le kit modulaire 2 m (cotes mesurées au catalogue), coquille
-> complète (6 dalles, 10 murs à collision, 4 angles, toit, lanterne +
-> omni chaude MOTIVÉE §7.8), porte JAMAIS barrée (deux flancs + linteau,
-> l'arche 1,2×2,3 m reste franche). Avant-poste route nord (guet des
-> ruines : table+ordres, râtelier+hache, tonneau — récompense VIANDE),
-> abri de rivière (pêcheur : lit, étagère, corde — récompense FRUIT),
-> sanctuaire de falaise (autel, chandelles, livres — l'épice rare
-> EXISTANTE devient l'offrande au centre), poste de garde citadelle
-> (râtelier, bouclier, chaîne — récompense BAIE D'ORAGE, §13.5 : la
-> résistance AVANT le donjon). 3 nouveaux IngredientPickup persistants.
-> Face en relief des murs vers l'INTÉRIEUR (l'expérience pénétrable
-> prime) ; angles de pierre + bannière/torche portent l'extérieur.
-> Limite connue : pignons ouverts sous le toit (aucune pièce de gable
-> promue) ; navmesh non recuit (aucune IA ne fréquente ces abris).
-> Wall_UnevenBrick_Straight ajouté à PROMOTIONS.csv (présent depuis
-> ART-Q0, vérifié identique à l'octet). Test : 48 assertions (coquilles,
-> portes franches, récompenses DANS les abris). Caméras de contrôle
-> VALLEY_STRUCTURES=1/2. Captures : evidence/v4lot12/. Plancher 321.
-> **PROCHAINE ACTION (V4 lot 13)** : personnages et palettes (capuche
-> héros bleu-vert réel, pillards ≠ paysans recolorés, silhouettes).
-
-## 2026-08-02 (nuit V4, lot 13) — personnages et palettes
-
-> §12 « pas de simples recolorations » TENU : les trois pillards partagent
-> le squelette UAL 65 os mais plus la silhouette. Système de GREFFE de
-> pièces modulaires (maillages skinnés re-parentés sous le Skeleton3D,
-> binds identiques vérifiés) : azur = épaulière + bottes de ranger ;
-> obsidienne = capuche sombre + épaulière + carrure ×1,12 (visuel seul,
-> capsule intacte) ; braise = ligne de base. Les trois reçoivent le CORPS
-> DE BASE Superhero_Male (tête, yeux, sourcils — ils étaient SANS TÊTE de
-> face, invisible jusqu'ici faute de capture frontale) ; la peau est
-> RETRACTÉE (grow −8 mm) sous la tenue contre le z-fighting §21.8, et la
-> teinte de faction est désormais limitée aux VÊTEMENTS (MI_Peasant +
-> MI_Ranger) — peau et visage naturels. Héros : la teinte globale
-> turquoise est REMPLACÉE par une texture dérivée où seule la capuche est
-> #168F9B — script reproductible tools/godot/recolor_hero_hood.gd
-> (masque = UV de la pièce capuche rasterisées, 2136 triangles, manifeste
-> JSON), peau/cuir/tunique intacts (§7.11). Bibliothèque de silhouettes
-> scenes/tests/SilhouetteLineup.tscn (§7.18) : 4 personnages, mode
-> SILHOUETTE_FLAT=1 en aplats noirs — captures matière + aplats dans
-> evidence/v4lot13/. Défaut amont consigné : 2 normal maps du corps de
-> base référencées sous un nom absent de l'archive (copies renommées,
-> ATTRIBUTIONS.md). Test hero_visual mis à jour vers le nouveau contrat
-> (substitution blanche, peau vierge) ; nouveau test variantes (greffes
-> liées, comptes relatifs, carrure) + test lineup. Plancher 323.
-> **PROCHAINE ACTION (V4 lot 14)** : animations supplémentaires
-> (escalade, interaction, cuisine, arc) depuis les bibliothèques UAL.
-
-## 2026-08-02 (nuit V4, lot 14) — animations supplémentaires
-
-> Trois états OPTIONNELS cuits dans AL_HeroStates (15 clips : 12
-> obligatoires + 3), audités in-place (dérive pelvis 0,0000 m chacun) :
-> mantle = ClimbUp_1m (le franchissement joue enfin un vrai clip, la
-> limite « départ de saut » du TEST_REPORT est levée), interact =
-> Interact, consume = Consume. CharacterAnimSet : exports optionnels
-> hors du contrat des douze (un vide n'est pas un trou). Câblage §7.18
-> (l'animation visualise, ne décide pas) : signal typé interacted(cible)
-> émis quand l'interactable ACCEPTE, meal_eaten(nom) émis au plat
-> rapide ; le pilote joue le geste et le TIENT 45 ticks à l'arrêt —
-> bouger l'annule immédiatement, le contrôle prime. Le geste de cuisine
-> (E.2b) branchera consume au feu de camp. Tests : bibliothèque 15
-> clips épinglée, audit 15 entrées, nouveau test geste (consommation
-> réelle par le chemin plat rapide + annulation par mouvement).
-> Plancher 324.
-> **PROCHAINE ACTION (V4 lot 15)** : optimisation (matériaux partagés,
-> mesures taille/temps d'import) puis lot 16 revue contradictoire.
-
-## 2026-08-02 (nuit V4, lot 15) — optimisation et mesures
-
-> Cache de matériaux graybox par clé (couleur, émission) : ~150 volumes
-> partagent ~10 ressources au lieu d'une chacun ; les personnalisations
-> (braises du camp, runes du pylône) deviennent des DUPLICATAS explicites
-> — la mutation en place aurait teinté tous les volumes de même clé.
-> Outil de mesure reproductible tools/godot/measure_world_metrics.gd
-> (CPU headless, JAMAIS un budget de frame) : vallée = 1627 nœuds, 647
-> maillages, 194 collisions, 9 lumières, 353 matériaux uniques, load
-> 395 ms. Dépôt : .git 258 Mo, plus gros fichier suivi 12,1 Mo (<100).
-> PERFORMANCE.md §6 : première entrée du journal. Test de partage (4
-> assertions). Leçon consignée : ne JAMAIS éditer un script pendant
-> qu'une validation tourne — le processus garde l'ancienne version en
-> cache et le verdict devient un état mixte (mesuré cette nuit).
-> Plancher 325.
-> **PROCHAINE ACTION (V4 lot 16)** : revue contradictoire à contexte
-> frais (liste de chasse §20 de l'ordre V4) puis lot 17 package.
-
-## 2026-08-02 (nuit V4, lot 16) — revue contradictoire et correctifs
-
-> Revue à contexte frais (agent adversarial-qa, périmètre
-> 2bf9e2b..71748e7, liste de chasse §20 de l'ordre V4) : 11 points
-> rejoués commande par commande. Verdict initial **FAIL** — deux défauts
-> réels, corrigés dans ce lot :
-> 1. **Reproductibilité (principal)** : le rejeu de la promotion sur
->    clone frais sortait en erreur sur les 2 textures au nommage amont
->    défectueux (Superhero_Male_FullBody). Correctif : table
->    UPSTREAM_RENAMES dans tools/promote_quaternius.py (repli documenté,
->    renvoie vers ATTRIBUTIONS.md). Rejeu prouvé : « 0 fichier à copier,
->    744 identiques », exit 0.
-> 2. **Couloir de vista (mineur)** : un buisson de _build_nature_phrases
->    (ART-Q4) à x=11, 1,5 m de haut, DANS le couloir x −12..12 — hors du
->    périmètre de l'ancien test (enfants de DressZoneCrest seulement).
->    Correctifs : buisson déplacé à x=14,5 ET test étendu à TOUS les
->    nœuds de la crête (20 assertions ; échec avant / succès après
->    prouvé en re-plaçant temporairement le buisson).
-> Signal transversal admis : preuves capturées en arbre sale au commit
-> précédent — règle ajoutée à .claude/rules/evidence.md : capturer APRÈS
-> le commit du code (manifeste repo_dirty:false), commit d'evidence
-> immédiat ensuite. Points PASS notables : compositions non uniformes,
-> structures pénétrables, personnages, audits d'animation, sauvegarde,
-> dépôt < 100 Mo, mesures honnêtes, validate_fast VERT 325.
-> **PROCHAINE ACTION (V4 lot 17)** : clore le package de playtest
-> (document déjà commité 7059ae9), puis §17 : E.2b cuisine visible.
-
-## 2026-08-02 (nuit V4, lot 17) — package de playtest clos
-
-> docs/PLAYTEST_PACKAGE.md (commité 7059ae9) : le package EST le dépôt —
-> archive HEAD ~310 Mo SANS ZIP source, plus gros fichier suivi 12,1 Mo,
-> reconstruction de la promotion prouvée depuis la Release (« 0 à
-> copier, 744 identiques » après le correctif lot 16). Prérequis,
-> import, scènes de contrôle, protocole humain §21.4 + points V4,
-> limites honnêtes. Première capture conforme à la nouvelle règle
-> d'evidence : vista rejouée depuis l'arbre COMMITTÉ (95b757d,
-> repo_dirty:false) — evidence/v4lot16/vista_post_review.png : couloir
-> dégagé (buisson déplacé), capuche turquoise lisible de dos.
-> **Les 17 lots de l'ordre V4 sont livrés.**
-> **PROCHAINE ACTION (§17 de l'ordre)** : E.2b cuisine visible au feu
-> (code prêt en scratchpad : Campfire interactable + atelier du shell +
-> label de buff HUD + 4 tests), puis revue Gate E, puis Phase F selon
-> l'addendum multi-étages (graphe sandbox d'abord).
-
-## 2026-08-02 (E.2b, travail en vol clos — ordre corrigé reçu)
-
-> E.2b était en cours d'écriture à l'arrivée de la CORRECTION du
-> propriétaire (arrêt des lots artistiques V4, réouverture du Gate D).
-> Le travail produit est conservé et clos proprement : feu de cuisine
-> interactable SUR le foyer du camp (Campfire, groupe interactable,
-> « Cuisiner »), atelier du shell (§13.3 : sélection 1-5 bornée au stock
-> possédé, aperçu honnête nom+soin via RecipeRules, confirmation
-> ATOMIQUE — place et stocks revérifiés avant tout retrait, annulation
-> gratuite car la sélection n'est qu'un plan), label de buff au HUD
-> (famille + secondes restantes), autosave déjà câblé (meals_changed,
-> E.2a). 4 tests d'intégration (28 assertions) sur la vraie scène ;
-> le geste d'interaction (lot 14) part à l'ouverture du feu.
-> **Gate E : NON fermé** — la revue attendra le Gate D (ordre corrigé).
-> **PROCHAINE ACTION (ordre corrigé)** : audit complet du Gate D —
-> matrice de preuve items 16-20, puis implémentation des QUATRE familles
-> ennemies manquantes (§12.2-12.5 : azur, obsidienne, colosse,
-> chasseur), batterie de tests §12, aplats des cinq familles.
-
-## 2026-08-02 (ordre corrigé, jalon 1) — audit du Gate D : ROUVERT
-
-> Matrice de preuve items 16-20 rejouée au commit 056788c
-> (docs/GATE_D_AUDIT.md) : 16 PASS, 17 PASS, 18 PARTIEL (4/8 coffres —
-> les 4 de la vallée conformes §11.4, le solde appartient aux salles de
-> Phase F, consigné), 19 **FAIL** (0/4 familles au-delà du pillard
-> braise — le lot V4-13 n'a produit que des variantes visuelles), 20
-> PARTIEL (bloqué par 19). Verdict global FAIL : Gate D rouvert. Plan
-> de fermeture en 7 jalons D-EN.0..6 (socle+mémoire+territoire, azur,
-> obsidienne, coordinateur, colosse, chasseur, placements+aplats+revue).
-> **PROCHAINE ACTION** : D-EN.0 — socle commun extrait de raider_red,
-> mémoire de dernière position (§12.7) et territoire/retour (§12.9),
-> raider_red re-testé à l'identique.
-
-## 2026-08-02 (Gate D, D-EN.0) — socle ennemi : mémoire, territoire, ouïe
-
-> EnemyBase extrait de raider_red et GÉNÉRALISÉ (§12.6-§12.10) — les 12
-> tests pillard existants passent inchangés. États communs de §12.7 :
-> Idle, Patrol (points optionnels), Suspicious (pause orientée),
-> Investigate, Chase, Reposition (réservé familles), Attack, Retreat,
-> Staggered, Flee, Return, Dead ; « Alert » = instant d'acquisition,
-> « Recover » = phase RECOVERY du contrat d'attaque (mappings
-> documentés). NOUVEAU : mémoire de dernière position (poursuite de
-> mémoire, investigation, recherche, retour), territoire borné avec
-> garde anti-oscillation (une cible hors territoire n'intéresse pas),
-> ouïe par événements réels (NoiseEvents : sprint du joueur ÉMET toutes
-> les 0,5 s, l'impact reçu ÉMET — rupture/flèche à câbler avec l'arc de
-> l'azur), LOS torse PUIS tête, fuite à la mort d'un allié (§12.1 : le
-> braise détale, les autres familles décideront), alerte §12.2 (le
-> receveur endormi adopte la cible). EnemyTuning : 6 champs nouveaux.
-> raider_red devient une sous-classe MINCE (gourdin, recul sur esquive,
-> fuite). 5 tests D-EN.0 (18 assertions) : mémoire→recherche→maison,
-> frontière SANS oscillation, bruit→suspicion→investigation (+ bruit
-> hors d'audition ignoré), fuite réelle mesurée, alerte reçue.
-> Plancher 334.
-> **PROCHAINE ACTION (D-EN.1)** : pillard azur — 85 PV, LANCE (contrat
-> d'attaque propre), contournement (crochet de vitesse de chasse),
-> maintien de distance, esquive de lourde (cooldown 8 s), alerte 14 m.
-
-## 2026-08-02 (Gate D, D-EN.1) — pillard azur : deuxième famille RÉELLE
-
-> §12.2 au complet, prouvé en physique réelle : 85 PV, LANCE (contrat
-> d'attaque propre spear_thrust — pique 0,55 s/0,18/0,85, hitbox longue
-> et étroite, portée 2,4 m où le gourdin ne touche pas), silhouette
-> droite (capsule 1,75), vision 30 m/105°, audition 20 m, poursuite
-> 5,8 m/s. Comportements PROPRES : contournement (crochet
-> _family_chase_velocity du socle — composante latérale 45 % à
-> mi-distance, flanc déterministe par spawn), alternance
-> distance/attaque (il ROUVRE l'écart pendant son cooldown), esquive
-> d'une lourde télégraphiée (lecture du CONTRAT d'attaque du joueur —
-> startup d'une lourde à portée —, pas latéral 0,28 s, cooldown 8 s
-> mesuré : la 2e lourde n'est PAS esquivée), alerte 14 m via le socle.
-> 5 tests (18 assertions). Leçon de test consignée : l'attente
-> d'atterrissage du setup laisse le temps d'attaquer — démarrer le
-> joueur hors de vue puis le téléporter dans le scénario. Plancher 339.
-> **PROCHAINE ACTION (D-EN.2)** : briseur d'obsidienne — 150 PV, masse
-> en combo 2-3 coups (chaînage par la vraie fenêtre), garde frontale à
-> jauge (amorti + rupture = ouverture), poise 60.
-
-## 2026-08-02 (Gate D, D-EN.2) — briseur d'obsidienne : troisième famille
-
-> §12.3 au complet : 150 PV, poise 60 (la séquence qui couche le braise
-> laisse le briseur DEBOUT — mesuré), capsule large et basse (0,5/1,5),
-> vision 26 m/90°, audition 22 m, poursuite 5,0. MASSE en chaîne de 3
-> contrats (mace_1/2/3 — le chaînage passe par la VRAIE fenêtre de
-> combo, attack_started ré-émis avec index > 0 ; recovery 1,2-1,4 s sur
-> les derniers coups = l'ouverture §12.3). GARDE FRONTALE À JAUGE :
-> amorti ×0,25 dans l'arc de 120° face à la menace (levée pendant sa
-> propre ANNONCE — l'ouverture est après le combo, pas pendant le
-> télégraphe), drain par coup encaissé, rupture = STAGGER, régénération
-> après 5 s d'accalmie. DEUX DÉFAUTS RÉELS trouvés par les tests et
-> corrigés au socle et aux scènes : (1) attaquer sans être TOURNÉ vers
-> la cible (acquis de dos, le coup partait dans le vide — le socle exige
-> désormais ≤30° de désaxement, le pivot travaille d'abord) ; (2) portée
-> d'engagement > extension de la hitbox (boucle de coups courts à
-> jamais — volumes de masse ET de gourdin étendus à la portée). Test de
-> rupture par injection aux instants de garde (le duel réel est prouvé
-> par le test frontal ; le duel complet est trop bruité pour compter des
-> drains). 5 tests briseur, 22/22 sur toutes les suites pillards.
-> Plancher 344.
-> **PROCHAINE ACTION (D-EN.3)** : CombatCoordinator §12.8 (2 tokens
-> mêlée, 1 lourd, libération garantie, plafond 10-14 IA), puis D-EN.4
-> colosse des ravins.
-
-## 2026-08-02 (Gate D, D-EN.3) — coordinateur de combat §12.8
-
-> CombatCoordinator par groupe : DEUX tokens mêlée, UN lourd (réservé
-> colosse/chasseur), purge par cadence — un token n'est tenu que par un
-> porteur VIVANT et EN ATTAQUE, la libération est STRUCTURELLE (mort,
-> stagger, interruption, sortie : rien ne bloque la file, aucune
-> référence morte). Sans token : l'ennemi ENCERCLE (orbite au lieu de
-> s'empiler). Plafond §12.9 : au-delà de 14 IA vivantes, les plus
-> lointaines du joueur DORMENT (physique coupée, réveil au rang).
-> SANS coordinateur en scène : accord implicite — aucun duel existant
-> ne change. Libérations câblées au socle (fin d'attaque, poise brisée,
-> mort). 3 tests : ≤2 attaquants simultanés mesuré sur 6 s avec
-> encerclement réel du tiers, token du mort repris par un survivant,
-> 16 vivantes → 2 dormeuses (les plus lointaines exactement). Leçon :
-> un test avorté (erreur script) saute son teardown et contamine le
-> suivant par le groupe global — l'isolation du cas l'a démontré.
-> Plancher 347.
-> **PROCHAINE ACTION (D-EN.4)** : colosse des ravins §12.4 — 420 PV,
-> 3,5-4,5 m, balayage/verticale/onde de choc évitable, lancer de
-> rocher, point faible dorsal, token lourd.
-
-## 2026-08-02 (Gate D, D-EN.4) — colosse des ravins : quatrième famille
-
-> §12.4 : 420 PV, poise 100, capsule de 3,8 m (rayon 1,1 — sa TAILLE
-> est sa navigation : un test prouve qu'une porte de 1,6 m le refuse
-> physiquement alors qu'il pousse contre elle), vision 35 m/115°,
-> audition 30 m, poursuite 4,8, virage LENT (3,5). Trois attaques :
-> balayage (renversement, knockback 6) chaîné d'une frappe VERTICALE,
-> et COUP AU SOL lourd dont l'impact émet une ONDE DE CHOC — anneau
-> autonome qui s'étend à 9 m/s jusqu'à 8 m, frappe UNE fois, et
-> ÉPARGNE un joueur DÉCOLLÉ (§12.4 « évitable par saut » — les deux cas
-> mesurés sur la même onde). LANCER DE ROCHER entre 6 et 16 m :
-> annonce immobile orientée 0,9 s (rougeoiement de télégraphe), vrai
-> projectile balistique (le balayage CCD de la flèche, réutilisé, jamais
-> ré-instancié). POINT FAIBLE DORSAL : deux hurtbox non chevauchantes,
-> le dos à ×2 (§10.3, appliqué par la formule). Token LOURD (§12.8).
-> Deux défauts réels trouvés par les tests : (1) le socle exigeait la
-> hurtbox à la RACINE — le dos doit tourner avec le pivot, résolution
-> par recherche de nom dans le sous-arbre ; (2) le rocher naissait DANS
-> la carrure du colosse et mourait au premier tick — il part désormais
-> devant et au-dessus. 5 tests colosse, 22/22 pillards, 5/5 socle.
-> Plancher 352.
-> **PROCHAINE ACTION (D-EN.5)** : chasseur quadrupède §12.5 — ~650 PV,
-> centauroïde original, charge télégraphiée, salve d'arc plafonnée,
-> combo rapproché, cri d'annonce, territoire à frontière d'abandon.
-
-## 2026-08-02 (Gate D, D-EN.5) — chasseur quadrupède : CINQUIÈME famille
-
-> §12.5 : 650 PV, poise 80, silhouette CENTAUROÏDE originale et mesurée
-> (corps bas allongé 1,6×1,1×3,0 — plus long que large, quadrupède —
-> surmonté d'un torse haut porté vers l'avant ; aucun élément d'une
-> licence existante), vision 48 m/130°, audition 38 m, poursuite 11 m/s
-> (le plus rapide du bestiaire), token lourd. Quatre comportements
-> propres : CRI d'annonce 0,8 s immobile et orienté avant toute manœuvre
-> majeure (mesuré : vitesse < 0,5 m/s pendant l'annonce) ; CHARGE en
-> ligne FIGÉE au départ — la trajectoire réelle garde son cap malgré un
-> décalage latéral de la proie (alignement > 0,95 sur tous les pas),
-> donc esquivable ; SALVE d'arc de 3 flèches espacées suivie d'un repos
-> de 5 s (cadence plafonnée par construction, pool de projectiles) ;
-> REPOSITIONNEMENT CIRCULAIRE entre 4 et 9 m. Territoire à frontière
-> d'abandon (rencontre FACULTATIVE §4.1) : mesuré, il rentre. 5 tests.
-> Plancher 357. **Les cinq familles de §12 existent et sont testées.**
-> **PROCHAINE ACTION (D-EN.6)** : placements dans la vallée, aplats
-> noirs des cinq familles à la même échelle, batterie transverse
-> (occlusion, mémoire, retour, séparations, cadavres, loot unique),
-> puis revue contradictoire du Gate D.
-
-## 2026-08-02 (Gate D, D-EN.6) — placements, aplats, batterie transverse
-
-> Les cinq familles sont DANS la vallée à leur poste (§12.2-§12.5) :
-> azur au gué est et en lisière de forêt (lignes de tir), briseur au
-> sommet de la falaise ouest gardant la Lame conductrice, colosse aux
-> ruines centrales sur la route du donjon, chasseur à l'est DERRIÈRE le
-> pylône (territoire optionnel, hors corridor principal — testé). Un
-> CombatCoordinator gouverne le groupe. Planche du bestiaire
-> (scenes/tests/BestiaryLineup.tscn, BESTIARY_FLAT=1) : les cinq à la
-> MÊME échelle, en matière et en aplats noirs — evidence/gateD/. §12.9 :
-> DEUX navmesh cuits depuis la même géométrie (agent 0,7 m : 1098
-> polygones ; agent 1,2 m : 1044) sur des cartes SÉPARÉES ; colosse et
-> chasseur empruntent la grande via tuning.uses_large_navmesh. Batterie
-> transverse test_bestiary_gate (107 assertions) : stats/armes/carrures
-> toutes distinctes et aucun identifiant de contrat partagé, aucune
-> vision à travers un mur sur les cinq, aucune hitbox ni hurtbox active
-> après la mort, placements et navigation vérifiés. TROIS défauts réels
-> corrigés : hurtbox secondaire (dos du colosse) encore frappable après
-> la mort ; deux _exit_tree concurrents ; fuite de RID de la carte de
-> navigation créée en code. Audit du Gate D réécrit avec preuves
-> rejouées : **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE DIFFÉRÉE**
-> (jamais de PASS humain ; item 18 PARTIEL assumé, coffres du donjon en
-> Phase F). Plancher 362.
-> **PROCHAINE ACTION** : revue contradictoire du Gate D à contexte frais
-> (ordre corrigé §5), puis fin de Phase E (Gate E) puis Phase F.
-
-## 2026-08-02 (Gate D) — revue contradictoire : FAIL, sept correctifs
-
-> Verdict de la revue à contexte frais sur a465299 : **FAIL**. Mon
-> auto-évaluation était trop généreuse. Sept défauts réels, tous
-> corrigés dans ce lot :
-> 1. **`move_and_slide()` appelé DEUX FOIS par tick** dès qu'une famille
->    bougeait puis rendait `true` — toutes les vitesses de manœuvre
->    doublées EN SILENCE (charge du chasseur mesurée à 30 m/s pour 15
->    déclarés, soit le double du plafond §12.6). Le socle bouge une
->    fois, les familles jamais. Test de vitesse réelle ajouté.
-> 2. **Le plafond d'IA gelait un attaquant en pleine attaque** : hitbox
->    armée à jamais (§12.10) et token confisqué (§12.8). Nouvelle sortie
->    propre sleep_for_activity_cap(). Test de reproduction ajouté.
-> 3. Le briseur rendait la main sans rendre son token.
-> 4. Proportions du briseur : 1,12 UNIFORME le rendait simplement plus
->    grand, contre §12.3 (« large et bas ») et contre sa capsule —
->    remplacé par 1,18 × 0,94 × 1,18.
-> 5. Assertion tautologique (x == x) + deux messages qui affirmaient
->    plus que leur condition (coordinateur, colosse) — resserrés.
-> 6. La preuve de l'item 20 RETIRAIT les ennemis et s'arrêtait 190 m
->    avant la porte. Remplacée par un pilote scripté qui marche
->    réellement de la plaine nord au seuil, bestiaire en place, en
->    contournant les ruines (blocage franc mesuré à z = −29 : le détour
->    est délibéré).
-> 7. ROADMAP.md déclarait encore le Gate D « non commencé ».
-> Item 19 ramené à **PARTIEL** et limites CONSIGNÉES : les trois
-> pillards partagent maillage et bibliothèque d'animations ; colosse et
-> chasseur n'ont ni modèle riggé ni animation (Phase H). Le verdict
-> global reste **ACCEPTÉ POUR CONTINUATION — VALIDATION HUMAINE
-> DIFFÉRÉE**, désormais sur des preuves qui tiennent. Plancher 364.
-> **PROCHAINE ACTION** : recapturer les planches du bestiaire depuis
-> l'arbre COMMITTÉ (manifestes au bon commit), puis fin de Phase E
-> (migration de schéma + chaîne complète), puis Gate E.
-
-## 2026-08-02 (Phase E, E.3) — migrations et chaîne complète
-
-> Les deux derniers items de la Phase E (§19, §22 Gate E) :
-> 1. **Migration RÉELLE de schéma** (SaveSystem 1 → 2) : une sauvegarde
->    d'avant la cuisine n'a ni plats, ni buff, ni ingrédients récoltés —
->    la migration les pose À VIDE, en chaîne, sur une COPIE. La source
->    n'est jamais réécrite (§19.4), le contenu d'origine (armes,
->    durabilités, flèches, coffres) est intact — 10 assertions.
-> 2. **Chaîne complète de bout en bout** sur la vraie vallée : récolte
->    par interaction réelle → cuisine à l'atelier du feu (sélection,
->    confirmation atomique) → buff actif et NOMMÉ au HUD → sauvegarde
->    contenant plat, buff et ingrédients → vallée DÉCHARGÉE et rejouée
->    depuis le disque → plat et buff survivent, les ingrédients récoltés
->    ne repoussent pas. 15 assertions.
-> Leçon consignée : le label du HUD se rafraîchit sur la cadence de
-> _process (0,1 s), pas au tick physique — un test qui n'attend que des
-> frames physiques ne le voit jamais. Plancher 367.
-> **PROCHAINE ACTION** : revue de Gate E (les critères §22 sont
-> couverts ; verdict attendu ACCEPTÉ POUR CONTINUATION — VALIDATION
-> HUMAINE DIFFÉRÉE), puis Phase F : graphe électrique en sandbox
-> automatisée AVANT toute salle (§22 ordre obligatoire).
-
-## 2026-08-02 (Gate E) — revue et verdict
-
-> `docs/GATE_E_AUDIT.md` : les HUIT items de la Phase E (§22) rejoués un
-> par un — récolte (ingredients 4/4), atelier du feu (cooking_ui 4/4),
-> sélection 1-5 bornée au stock, aperçu honnête, règles de recettes
-> (cooking_rules 7/7), label de buff au HUD, sauvegarde et migration
-> (phase_e 2/2, save 9/9, meals_and_buffs 4/4), chaîne complète de bout
-> en bout. Transverses §13.3/§19 : annulation gratuite, confirmation
-> atomique, un seul buff majeur, écriture atomique, refus d'un schéma
-> plus récent. Un filtre cité dans le premier jet de l'audit
-> (`--filter=recipes`) N'EXISTAIT PAS : corrigé en `cooking_rules` après
-> rejeu — exactement le défaut que la revue du Gate D avait reproché.
-> Non couvert et consigné : animation de cuisson (Phase H), essai
-> humain (impossible ici). Verdict : **ACCEPTÉ POUR CONTINUATION —
-> VALIDATION HUMAINE DIFFÉRÉE**.
-> **PROCHAINE ACTION (Phase F, ordre §22 obligatoire)** : le graphe
-> électrique dans une SANDBOX AUTOMATISÉE, avant toute salle — types de
-> nœuds §15.1, algorithme §15.2 (marquage dirty, BFS depuis les sources,
-> cycles sans récursion infinie, signaux seulement au changement).
-
-## 2026-08-02 (Phase F, F.1) — graphe électrique en sandbox automatisée
-
-> §22 exige le graphe AVANT toute salle : c'est fait, et rien d'autre
-> n'a été construit. `ElectricNode` (§15.1 au complet : ID stable, ports
-> ORIENTÉS en espace local, conductivité, enabled, signaux
-> connection_changed/power_changed, set_powered IDEMPOTENT, aucune
-> ligne de rendu) et `ElectricGraph` (§15.2 point par point : marquage
-> dirty, regroupement jusqu'à la fin du tick, reconstruction des
-> contacts réels port-à-port avec tolérance et sens, BFS depuis TOUTES
-> les sources avec ensemble visited, signaux au seul changement).
-> 11 tests en sandbox — aucun n'est une salle : circuit droit et nœud
-> orphelin hors de portée, interrupteur ouvert qui reçoit sans
-> transmettre, isolant sans même un voisin, CYCLE de quatre câbles qui
-> termine, dix marquages = UN recalcul et vingt ticks inactifs = ZÉRO,
-> trois recalculs identiques = un seul signal, bloc mobile qui relie
-> deux plaques (le cœur de §15.5, prouvé hors salle), relais tourné d'un
-> quart qui COUPE la ligne (§15.7), batterie qui alimente loin de toute
-> source (§15.8), sauvegarde qui restaure les interrupteurs et RECALCULE
-> l'alimentation (§19.1), validateur d'IDs vides et dupliqués (§19.3).
-> Plancher 378.
-> **PROCHAINE ACTION (F.2)** : salle 1 grayboxée et testée SEULE (§15.5
-> exactement : source et récepteur séparés par un vide court, bloc
-> métallique mobile, deux plaques, ouverture différée 0,6-1,2 s, bouton
-> reset, solution impossible à perdre).
-
-## 2026-08-02 (Phase F, F.2) — salle 1 d'initiation, testable seule
-
-> §15.5 implémenté ligne à ligne dans une scène qui se joue et se teste
-> **isolément** : source à l'ouest, deux plaques séparées par 2,8 m de
-> vide (contre 0,85 m de portée de port : le vide est un VRAI vide),
-> bloc métallique de 40 kg poussé dans un couloir guidé, butée qui
-> l'arrête EXACTEMENT au contact, propagation lumineuse qui parcourt le
-> circuit, anneau du récepteur qui se ferme, porte différée de 0,9 s
-> (fenêtre 0,6-1,2 s mesurée tick par tick), bouton de reset, aucun
-> texte dans la salle. La salle ouvre sur un couloir réel terminé par un
-> seuil honnêtement scellé — une porte qui donnerait sur le néant serait
-> un mensonge, pas un raccourci.
-> Le test central ne triche pas : le joueur MARCHE (déplacement relatif
-> à la caméra, aucune téléportation, aucun transform écrit), pousse le
-> bloc sur 7 m et la porte s'ouvre. Pour qu'il passe, il a fallu ajouter
-> au contrôleur la poussée d'objets physiques de §14.1 — impulsions
-> bornées sur les corps du groupe `pushable`, jamais d'écriture de
-> transform — et découvrir par la mesure que la poussée doit se calculer
-> sur la vitesse VOULUE : après `move_and_slide()`, la composante qui
-> entre dans l'obstacle vaut ~0, l'impulsion tombe sous le seuil de
-> frottement et le bloc reste immobile 600 ticks durant (mesuré, D-027).
-> Anti-softlock §15.11 couvert par quatre tests : reset qui rejoue
-> l'énigme sans refermer la porte, bloc jeté hors du monde qui revient
-> en 1-2 s à son transform de secours (§14.3), rechargement DEPUIS LE
-> DISQUE d'une salle résolue (porte ouverte à la première image) et
-> d'une salle à mi-résolution (ni résolue, ni bloquée, encore soluble).
-> 12 tests `--filter=room1`, plancher relevé.
-> Deux captures depuis l'arbre COMMITTÉ (`evidence/F2/`, `repo_dirty:
-> false`) : l'énigme telle qu'on la découvre — la ligne cyan s'arrête net
-> au vide — et la même image une fois le bloc au contact, circuit allumé
-> jusqu'à la porte, anneau fermé, panneau monté. La première capture a
-> d'ailleurs révélé deux défauts qu'aucun test ne pouvait voir : le bloc
-> conducteur, sans matériau, passait pour une caisse de bois, et le
-> premier plan tombait dans le noir (§7.8 : « aucun couloir noir »).
-> Un diagnostic FAUX a été corrigé au passage : la capture « salle
-> résolue » montrait l'état initial, ce que j'ai d'abord attribué à un
-> blocage du solveur — la vraie cause est que `_ready()` ne tourne pas
-> dans `add_child()` depuis un script `SceneTree`, si bien que la
-> préparation tombait sur une scène à moitié construite. Le contournement
-> bâti sur la fausse cause a été retiré, pas empilé.
-> **PROCHAINE ACTION (F.3)** : salle 2, circuit vertical (§15.6) —
-> ascenseur non alimenté, puits latéral escaladable, électrodes
-> intermittentes au rythme observable, interrupteur supérieur qui
-> redirige le courant, corniches de repos, une jauge d'endurance pleine
-> qui suffit, chute qui renvoie à un palier proche, ascenseur qui ne
-> peut ni écraser ni coincer le joueur, état sauvegardé cohérent.
-
-## 2026-08-02 (Phase F, F.3) — salle 2, circuit vertical
-
-> §15.6 implémenté dans une scène jouable et testable seule. Un puits de
-> 22 m : trois blocs de pierre décalés le long du mur ouest (le mur
-> lui-même est `unclimbable` — la voie passe par eux, sinon l'énigme
-> n'existerait pas), trois électrodes intermittentes qui battent 1,1 s de
-> décharge pour 1,7 s de calme, phases décalées, un ascenseur SANS
-> courant, et sur la mezzanine un levier qui REDIRIGE le courant : la
-> branche danger meurt, la branche ascenseur vit, la porte du haut
-> s'ouvre.
-> Trois briques réutilisables sont nées avec la salle : `ElectricSwitch`
-> (aiguillage réel — deux nœuds `SWITCH` commandés d'un seul geste, pas
-> un booléen de salle), `ElectricHazard` (décharge rythmée qui blesse ET
-> retire la prise via le groupe `electrified` de §9.2) et
-> `ElevatorPlatform` (`AnimatableBody3D`, deux zones de garde).
-> Le buff de résistance électrique de §13.5 SERT enfin : c'est la
-> première source de dégâts électriques du jeu, et un test mesure que la
-> décharge coûte nettement moins avec le plat de baies.
-> Deux défauts trouvés par la mesure, pas par relecture : (1) les deux
-> branches se touchaient directement au carrefour, si bien que les
-> aiguillages ne servaient à rien et que TOUT était alimenté d'un bloc —
-> corrigé en éloignant les ports de sortie ; (2) la garde haute de
-> l'ascenseur prenait son propre passager pour un obstacle, et la
-> plateforme ne démarrait jamais — elle surveille désormais la tranche
-> 1,9-3,9 m au-dessus du plancher.
-> 12 tests `--filter=room2`, dont une montée RÉELLE du joueur (poussée
-> vers la paroi, 5 m gravis, aucun transform écrit pendant la montée),
-> l'arrêt de l'ascenseur devant un corps, le transport du joueur, la
-> chute qui retombe sur le palier du dessous sans dégâts, et le
-> rechargement depuis le disque.
-> **PROCHAINE ACTION (F.4)** : salle 3, relais rotatifs (§15.7) — quatre
-> colonnes à ports visibles, rotations discrètes, allumage progressif des
-> segments valides, aucune erreur mortelle, retour distinct sur chemin
-> partiel, solveur automatique qui prouve qu'au moins une configuration
-> résout, bouton reset qui restaure la configuration initiale.
-
-## 2026-08-02 (Phase F, F.4) — salle 3, relais rotatifs
-
-> §15.7 implémenté : quatre colonnes-relais dont les DEUX bras de cuivre
-> sont exactement les deux ports du graphe (§15.3 : « pour une colonne
-> rotative, dépendre de l'orientation des ports »). Rotations discrètes
-> d'un quart de tour, une à la fois, 0,35 s ; le graphe n'est marqué qu'à
-> l'arrivée, si bien qu'une colonne qui tourne ne fait pas clignoter le
-> circuit. Le chemin fait un créneau autour de la salle : source à
-> l'ouest, récepteur à l'est, et la ligne cyan s'arrête EXACTEMENT à la
-> première colonne mal tournée — c'est le « feedback distinct si chemin
-> partiel » de §15.7, sans un mot de texte.
-> Le solveur automatique exigé par §15.7 est un test : il énumère les 256
-> configurations sur le VRAI graphe et prouve qu'il existe exactement UNE
-> solution, que la configuration de départ n'en est pas une, et que la
-> solution reste rare. Aucun danger dans cette salle : se tromper coûte
-> un quart de tour, jamais un point de vie — un test le vérifie aussi.
-> 8 tests `--filter=room3`, dont la résolution complète par le VRAI
-> chemin d'interaction (7 quarts de tour) et le rechargement qui restaure
-> l'orientation des colonnes.
-> **PROCHAINE ACTION (F.5)** : salle 4, batterie transportable (§15.8) —
-> une source, deux mécanismes successifs, batterie chargeable et
-> transportable, socket explicite, zone d'eau conductrice dangereuse
-> quand elle est alimentée, couper le courant ou construire une
-> passerelle isolante, batterie hors limites qui réapparaît, aucune porte
-> qui verrouille la batterie du mauvais côté, retour toujours possible.
-
-## 2026-08-02 (Phase F, F.5) — salle 4, batterie transportable
-
-> §15.8 implémenté avec ses DEUX solutions, pas une. Un canal de 6 m —
-> au-delà de la portée d'un saut de §8.2 — coupe la salle en deux ; la
-> nappe est un nœud `WATER_ZONE` du graphe, pas un décor : sous tension
-> elle frappe en continu. Aucun câble ne traverse : le courant ne passe
-> de l'autre côté que DANS la batterie.
-> Trois briques nouvelles, toutes réutilisables : `CarryableObject`
-> (prendre / porter / poser, §14.2 ; corps gelé en cinématique pendant le
-> transport, jamais un transform écrit sur un corps actif),
-> `PortableBattery` (charge stockée, socket et décharge sont trois choses
-> distinctes comme l'exige §15.3) et `ObjectSocket` (berceau visible,
-> zone réelle, calage franc — §15.3 refuse « proche d'un point invisible
-> sans retour visuel »). Le socket n'ajoute AUCUNE règle électrique : une
-> fois l'objet calé, ce sont les ports qui se touchent.
-> Les deux chemins de §15.8 sont testés séparément : couper le courant au
-> levier (la nappe meurt, et le berceau de charge avec elle — c'est le
-> prix, et c'est ce qui rend l'ordre des gestes intéressant), ou poser la
-> planche de bois isolante sur ses berceaux et passer au-dessus de l'eau
-> vive sans prendre un point de dégât.
-> Anti-softlock vérifié plutôt qu'affirmé : la seule porte est à l'est,
-> au-delà du récepteur ; le berceau de charge, le point de secours de la
-> batterie ET celui de la planche sont tous à l'ouest ; patauger coûte
-> mais ne tue pas ; le levier est rebasculable.
-> 11 tests `--filter=room4`, dont le ramassage/transport/dépose par le
-> vrai chemin d'interaction et le retour de la batterie tombée au canal.
-> **PROCHAINE ACTION (F.6)** : salle centrale et antichambre (§15.9,
-> §15.10) — trois récepteurs indépendants alimentés par les trois
-> circuits permanents, trois anneaux, ouverture MÉCANIQUE de la porte du
-> boss, carte murale, checkpoint, coffre garanti, station de cuisine,
-> baies électriques, aperçu de l'arène, retour possible ; plus
-> l'architecture multi-niveaux qui relie enfin les quatre salles.
-
-## 2026-08-02 (Phase F, F.6) — salle centrale, antichambre, donjon assemblé
-
-> §15.9 et §15.10 livrés, et surtout : **les six scènes du donjon sont
-> enfin reliées**. Vestibule → salle 1 → salle centrale → salles 2/3/4 →
-> salle centrale → antichambre, avec un chemin retour partout et, pour
-> chaque salle à énigme, un SECOND seuil ouvert par son puzzle : le
-> raccourci est la récompense.
-> Salle centrale (§15.9) : trois récepteurs sur trois piliers, trois
-> anneaux, et trois branches **électriquement séparées**. C'est le point
-> dur : relier les trois branches à un nœud commun (la porte, par
-> exemple) ferait remonter le courant du premier circuit dans les deux
-> autres et fermerait les trois anneaux d'un coup. La porte du boss a
-> donc TROIS CONDITIONS (`ElectricDoor.required_paths`) et n'ouvre qu'à
-> la troisième. Un test le prouve : une salle résolue n'allume que SON
-> anneau. Le tableau « quelle salle fournit quel récepteur », exigé
-> nommément par §15.9, est en tête de `central_hall.gd` et vérifié salle
-> par salle par un test.
-> Architecture à deux niveaux : les portes des salles au sol, la porte du
-> boss six mètres plus haut sur la galerie, deux rampes à 36,9° — sous
-> les 46° praticables de §8.2. Le pied des rampes est ENTERRÉ dans la
-> dalle : mesuré, une rampe posée sur le sol présente une tranche de
-> 0,75 m, c'est-à-dire un mur. Un test fait monter le joueur en marchant.
-> Antichambre (§15.10) : checkpoint écrit à l'entrée, coffre garanti
-> (lame conductrice + 12 flèches), feu de cuisine, quatre baies de
-> tempête, retour libre, aperçu réel de l'arène et ses quatre pylônes
-> derrière la baie — et une fresque qui ENSEIGNE §14.4 par la
-> démonstration : deux lignes du graphe, celle du métal arrive au bout,
-> celle du bois meurt au barreau.
-> 15 tests neufs (`--filter=dungeon_hub`, `--filter=topology`), dont la
-> vérification que chaque traversée dépose le joueur DEVANT la porte de
-> retour, et que toutes les salles sont atteignables depuis le vestibule.
-> **PROCHAINE ACTION (F.7)** : anti-softlock et persistance sur le donjon
-> ENTIER — reprise depuis une sauvegarde vierge, reprise en milieu de
-> résolution dans chaque salle, objets essentiels hors limites, mort et
-> retour au checkpoint, aucune ressource obligatoire destructible.
-
-## 2026-08-03 (Phase F, F.6 — suite) — trois rouges, une seule cause utile
-
-> La suite complète est repassée ROUGE après l'assemblage, sur des tests
-> qui n'avaient pas changé : mort du joueur et parcours de traversal. La
-> chaîne réelle, trouvée par la mesure et non par relecture :
-> 1. `test_valley_dressing` interrogeait encore `SealedDoor` — le mur que
->    F.6 vient de remplacer par une vraie porte. `get_node()` renvoie
->    null, l'accès suivant lève une erreur de script, et la fonction de
->    test s'arrête AVANT son nettoyage ;
-> 2. le vestibule reste donc dans l'arbre, avec son joueur et ses
->    colonnes ;
-> 3. trente fichiers plus loin, le parcours de traversal démarre entre
->    ces colonnes et se bloque à x = 5,05 (`Column3` nommée par le
->    diagnostic) ;
-> 4. en parallèle, `GameplayShell` liait son affichage au PREMIER joueur
->    du groupe global : avec deux mondes chargés, le shell de la vallée
->    écoutait la santé d'un autre joueur, et la mort ne déclenchait plus
->    rien.
-> Trois corrections, aucune cosmétique : l'assertion périmée est mise à
-> jour (la porte du fond EXISTE, elle mène au donjon), le shell se lie au
-> joueur de SA scène (`test_shell_binding.gd` couvre la régression), et
-> le **runner refuse maintenant qu'un test laisse une scène dans
-> l'arbre** — il photographie la racine avant chaque test et échoue le
-> test fautif en nommant ce qu'il a laissé. Sans ce garde, la prochaine
-> fuite coûterait à nouveau une demi-journée à un autre endroit.
-> Les deux attentes de panneau de mort se comptent désormais en temps
-> réel, pas en images : en headless la cadence varie du simple au double.
-> validate_fast VERT, 438 tests, aucune fuite détectée.
-> **PROCHAINE ACTION (F.7)** : anti-softlock et persistance sur le donjon
-> entier.
-
-## 2026-08-03 (Phase F, F.7 et F.8) — anti-softlock, run complet, Gate F
-
-> F.7 : les garanties de §15.11 sont vérifiées pour les SIX scènes d'un
-> seul tenant — chargement depuis une sauvegarde vierge, rechargement à
-> mi-résolution, objets essentiels jetés hors du monde qui reviennent
-> tous, reset qui ne retire jamais un acquis, sortie/retour qui conserve,
-> cent recalculs de graphe sans blocage ni voisin mort, indice visuel
-> sans une ligne de texte. L'outil de debug exigé nommément par §15.11
-> existe : `ElectricDebugOverlay` liste IDs, types, ports, voisins et
-> état `powered`, et se RETIRE de l'arbre dans un build non-debug.
-> Il a d'ailleurs servi immédiatement : son compteur d'orphelins a
-> désigné le seul nœud sans voisin de la salle 1 — le conducteur du bloc,
-> normal avant qu'on le pousse. La métrique distingue donc désormais un
-> nœud FIXE mal posé (faute) d'un objet mobile en attente (normal).
-> F.8 : le donjon est résolu de bout en bout par ses GESTES RÉELS — le
-> bloc poussé à la marche, le levier basculé, les quatre colonnes
-> tournées une à une, la batterie prise, chargée, reprise et posée. Deux
-> runs : depuis une sauvegarde vierge, et coupé en deux avec relecture du
-> fichier depuis le disque. Dans les deux cas, les trois circuits de la
-> salle centrale débitent et la porte du boss s'ouvre.
-> Le run a trouvé un comportement systémique qu'on a GARDÉ : une batterie
-> laissée dans son berceau continue d'alimenter le circuit, donc l'eau.
-> Il faut la reprendre PUIS couper. Cohérent avec §15.1 et §15.3, sans
-> risque d'enfermement, et désormais couvert par un test qui l'énonce.
-> `docs/GATE_F_AUDIT.md` : tous les items automatisables PASS.
-> validate_fast VERT, 449 tests, plancher 449.
-> **PROCHAINE ACTION (Phase G)** : arène circulaire 32-42 m, quatre
-> pylônes de mise à la terre branchés sur le MÊME système électrique que
-> le donjon, puis machine à états du boss et ses trois phases.
-
-## 2026-08-03 — Phase G, jalons G.1 à G.3 : l'arène, le combat, la conclusion
-
-> G.1 : l'arène du Gardien est un DISQUE de 38 m (§16.1 : 32-42), fermé
-> par un mur circulaire continu, avec trois zones de sol emboîtées — dalle
-> du noyau, anneau de combat, marge de terre — et rien au milieu qui
-> puisse gêner la caméra. Les quatre pylônes de mise à la terre sont de
-> vrais nœuds du graphe du donjon, comme §16.3 l'exige nommément : un
-> anneau fermé de 24 câbles court à leurs pieds, alimenté par un puits de
-> terre au nord. C'est un CYCLE, et c'en est la démonstration en jeu
-> plutôt qu'en laboratoire (§15.2 pt. 5).
-> Le premier pylône était FAUX et un test l'a dit : il basculait
-> `ElectricNode.enabled`, drapeau que le graphe n'écoute que pour SOURCE,
-> SWITCH et BATTERY. Les quatre s'allumaient à l'ouverture de la scène.
-> Corrigé par la géométrie, pas par une exception : le mât est
-> télescopique et son sabot de cuivre descend sur le rail quand on le
-> dresse. Rétracté, il est relevé de 1,6 m, très au-delà des 0,5 m de
-> portée. Même doctrine que le bloc de la salle 1 et la batterie de la
-> salle 4 (§15.3).
-> La caméra reçoit un SUPPLÉMENT de cadrage tant que le Gardien vit — la
-> distance et le FOV s'ouvrent sur la même courbe interpolée que le FOV de
-> sprint, donc sans snap (§8.3), et le `SpringArm3D` continue de sonder :
-> reculer ne fait jamais traverser un mur. Le HUD gagne sa barre de boss
-> (§17.2), qui affiche la vie réelle et nomme la phase.
-> L'arène n'enferme personne : son seuil sud reste ouvert vers
-> l'antichambre, donc vers le feu de cuisine. §15.11 ne s'arrête pas à la
-> porte du boss.
-> G.2 : le combat. Un test par exigence chiffrée de §16, écrits pour faire
-> échouer plutôt que pour confirmer. Deux défauts trouvés ainsi :
-> — les 5 s d'éveil de §16.1 n'existaient pas. `_enter()` étant idempotent
-> (ce qui protège les seuils de PV, §16.2), entrer dans INTRO depuis INTRO
-> ne faisait rien : le timer restait à zéro et le Gardien basculait en
-> phase 1 au premier tick. L'intro est désormais armée explicitement ;
-> — le boss était INFAISABLE. Le test de solvabilité de §16.7, écrit avant
-> tout réglage, a mesuré la marge à -16 % : sous des hypothèses
-> pessimistes, le loot garanti plafonne à ~755 dégâts utiles, contre
-> 900 PV. Les PV sont maintenant DÉRIVÉS de ce calcul — 560, marge +35 %,
-> dans la bande 30-50 % que §16.7 impose. La borne haute est testée aussi.
-> Le reste est joué avec les vraies pièces du jeu : deux pylônes (pas un)
-> pour la mise à la terre, l'armure à ×0,2 qui n'est pas une
-> invulnérabilité, les cristaux révélés en phase 2, le gourdin qui ne
-> renvoie rien et la lame conductrice qui brûle les doigts en surcharge,
-> le buff de résistance qui amortit, la fenêtre de télégraphe chronométrée
-> entre 0,7 et 1,0 s et bornée à la construction.
-> G.3 : la conclusion de §16.8, dans son ordre. Les hazards s'arrêtent, le
-> puits de terre se tait et le rail s'éteint, le ciel se dissipe
-> PARTIELLEMENT — il s'ouvre sans redevenir un midi bleu —, le coffre
-> final naît au centre, `boss_defeated` est écrit, et la cinématique est
-> passable : ouvrir le coffre la termine sur-le-champ. L'écran de victoire
-> offre les trois issues exigées, avec cycle de focus fermé et
-> confirmation avant d'écraser une partie terminée.
-> **PROCHAINE ACTION (G.4)** : le run complet de 25-40 minutes du Gate G,
-> du spawn à la victoire, sans debug — puis l'audit contradictoire.
-
-## 2026-08-03 — Phase H, lot H.1 : le Gardien cesse d'être une capsule
-
-> Le boss de la Phase G était un `CharacterBody3D` avec des `MeshInstance3D`
-> VIDES : il n'avait littéralement aucun corps visible. H.1 lui en donne un,
-> et c'est une création du projet — `tools/blender/make_storm_guardian.py`
-> bâtit la bête-machine de VISUAL_ASSET_BIBLE §15.1 depuis des primitives,
-> avec un seed fixe : six appuis dont deux antérieurs lourds, dos voûté,
-> tête à trois plaques de céramique, épaules de bronze, queue segmentée
-> terminée par une fourche de terre, anneau vertical incomplet en trois
-> segments, noyau fendu au sternum. Aucun pack externe, aucune anatomie
-> réelle citable.
-> 27 meshes NOMMÉS, parce que les phases 2 et 3 les manipulent un par un.
-> Les volumes de combat ont été replacés SUR le modèle, et un test refuse
-> maintenant toute hurtbox qui ne serait pas dans le corps visible.
-> Trois défauts trouvés en mesurant : `matrix_world` périmée après un
-> reparentage (Blender annonçait 9,58 m quand Godot en mesurait 14,50) ; le
-> parentage « BONE » qui accroche à la QUEUE de l'os (remplacé par des
-> groupes de sommets à poids 1) ; et une boîte de collision dont le bas
-> flottait à 0,80 m — le Gardien tombait indéfiniment, ce qui le rendait
-> plus lent en phase 3 qu'en phase 1.
-> Densité assumée : 6 324 triangles contre un plafond de 110-160k. La
-> silhouette et la structure y sont, le détail de surface non. C'est au
-> manifeste, pas caché.
-> **PROCHAINE ACTION (H.2)** : les trois pillards en silhouettes réellement
-> distinctes — l'ordre de la Phase H interdit qu'une variante de couleur
-> tienne lieu de famille visuelle. Puis le colosse (H.3, modèle original
-> rigged : « un humain agrandi ne constitue pas un colosse ») et le
-> chasseur quadrupède (H.4, corps inférieur non équin).
-
-## 2026-08-03 — Phase H, lot H.2 : trois pillards, trois corps
-
-> Les trois pillards étaient le même modèle acheté, teinté trois fois —
-> exactement ce que l'ordre de la Phase H interdit. Ils ont désormais trois
-> géométries construites par le projet : le braise voûté aux avant-bras
-> longs et aux excroissances tournées vers l'arrière, l'azur droit aux
-> épaules segmentées en parenthèses, le briseur bas et très large à la
-> visière fendue et aux deux plaques d'épaule inégales.
-> Le SQUELETTE, lui, est celui qui existait : 65 os UAL, poids
-> automatiques. `AL_RaiderStates.res` s'applique donc sans retargeting —
-> refaire les rigs aurait voulu dire réécrire toutes les animations.
-> Le test qui vérifiait des teintes vérifie maintenant des corps : tailles
-> dans les bandes de la bible, ordonnées, briseur le plus large, maillages
-> distincts. La couleur reste un marqueur de faction, plus une preuve.
-> Deux défauts trouvés en mesurant : l'isolation des matériaux n'était
-> déclenchée que par une teinte, si bien que le télégraphe d'attaque n'avait
-> plus rien où écrire une fois la teinte supprimée ; et l'échelle partait
-> DEUX fois vers glTF (cuite dans les sommets par `export_apply`, puis
-> reportée par le nœud), Blender annonçant 1,42 m quand Godot mesurait 1,17.
-> Règle qui en sort : une cote se vérifie dans Godot, jamais sur le log de
-> l'outil qui l'a produite.
-> Deux runs de validation ont aussi été perdus parce que j'ai ajouté des
-> scènes référençant des `.glb` non importés PENDANT le run. Le dépôt doit
-> rester figé entre le lancement et le verdict.
-> **PROCHAINE ACTION (H.3)** : le colosse des ravins — modèle original
-> rigged, torse incliné, bassin massif, bras ASYMÉTRIQUES dont un couvert
-> d'une croissance rocheuse, nodule minéral pâle entre omoplate et nuque
-> comme point faible. « Un humain agrandi ne constitue pas un colosse. »
-
-## 2026-08-03 — Phase H, lots H.3 et H.4 : colosse et chasseur BÂTIS
-
-> Les deux dernières familles n'existaient qu'en boîtes de graybox — une
-> capsule de 3,8 m pour le colosse, deux boîtes pour le chasseur. Elles ont
-> maintenant des modèles : `tools/blender/make_creatures.py`.
-> Le colosse (3,97 m, bande 3,7-4,3) porte ce que la bible §14.4 demande :
-> torse incliné, bassin massif, bras ASYMÉTRIQUES dont un couvert d'une
-> croissance rocheuse, petites jambes puissantes, et le nodule minéral pâle
-> entre omoplate et nuque qui est son point faible. Aucune massue : ses
-> mains servent à arracher et à lancer.
-> Le chasseur (3,20 m de haut, 4,69 m de long) a un corps inférieur bas et
-> allongé, quatre pattes à trois doigts larges, les épaules avant plus
-> hautes que la croupe, une queue courte en lames — ni sabots, ni crinière,
-> ni croupe de cheval. Son torse supérieur naît EN AVANT du bassin
-> inférieur, ce qui le distingue d'un centaure classique.
-> **LIMITE À DIRE FRANCHEMENT** : les deux `.glb` sont dans le dépôt,
-> valides à l'inspection, mais AUCUNE SCÈNE NE LES MONTE encore. En jeu,
-> le colosse et le chasseur restent des boîtes. Le travail n'est pas perdu,
-> il n'est pas fini.
-> **PROCHAINE ACTION** : monter les deux modèles dans `RavineTroll.tscn` et
-> `CentaurHunter.tscn` (entrées `char.ravine_troll` et `char.centaur_hunter`
-> au registre, `CharacterVisual` sous le Pivot comme les pillards, graybox
-> masqué, volumes de combat replacés SUR la géométrie et vérifiés par un
-> test du même type que `test_the_combat_volumes_sit_inside_the_body_you_can_see`).
-
-## 2026-08-03 — Phase H, H.3/H.4 montés : les cinq familles ont un corps
-
-> Les deux modèles bâtis au lot précédent sont maintenant DANS le jeu.
-> Colosse et chasseur passent par `CharacterVisual` comme les pillards :
-> registre → wrapper → montage sous le pivot, graybox masqué.
-> Un vrai défaut au passage : `EnemyBase._mount_visual()` ne masquait que
-> `BodyMesh`. Le chasseur en porte DEUX (corps et torse) — n'en cacher
-> qu'une laissait une boîte plantée dans le modèle. Tous les maillages
-> enfants directs du pivot disparaissent désormais ; le modèle riggé, lui,
-> vit sous `CharacterVisual` et n'est jamais atteint par cette boucle.
-> Le chasseur a dû être RETOURNÉ : construit tête vers +Y en Blender, donc
-> vers -Z après conversion, alors que les ennemis regardent +Z. Le colosse,
-> lui, tombait juste — vérifié en mesurant, pas en raisonnant.
-> Quatre tests neufs : cotes dans Godot, graybox masqués, nodule du colosse
-> du même côté que la hurtbox arrière ×2, corps du chasseur plus de deux
-> fois et demie plus long que large, et les deux créatures qui regardent le
-> côté où elles frappent.
-> **Limite assumée** : l'envergure du colosse (4,06 m) dépasse sa capsule
-> (rayon 1,1 m). Règle ART-P0 — le modèle est un visuel, la capsule reste
-> l'autorité. Le joueur peut passer « à travers » les bras tendus.
-> **Limite** : aucune animation pour ces deux créatures. Les rigs sont là
-> (8 et 6 os), les clips non : elles gardent leur pose de repos.
-> **PROCHAINE ACTION** : les clips d'animation du colosse et du chasseur
-> (locomotion lourde, balayage, frappe verticale, coup au sol pour l'un ;
-> pas/trot/galop, charge, salve, cri pour l'autre — §14.4 et §14.5), puis
-> ceux du Gardien (entrée 5-8 s, dégâts visuels progressifs, mort).
-
-## 2026-08-03 — Phase H lot H.5 : la capture dit ce que les tests ne voient pas
-
-> Le lot précédent avait « monté » les cinq familles, et tous les tests
-> étaient verts. La première CAPTURE du vrai moteur a montré autre chose :
-> les six modèles générés se lisent en PIÈCES DÉTACHÉES. Construits comme
-> des empilements de boîtes indépendantes, ils laissent des jours de 0,15 à
-> 0,25 m à chaque articulation — tête flottant au-dessus des épaules,
-> avant-bras séparés du coude, queue en chapelet.
-> Aucun test ne pouvait le voir : `get_aabb()` d'un maillage skinné rend la
-> géométrie de LIAISON, pas le rendu, et les boîtes englobantes restaient
-> dans les bonnes bandes pendant que les pièces flottaient.
-> **Diagnostic initial FAUX, consigné** : j'ai d'abord accusé le skinning
-> (transformation de nœud ignorée par glTF). Un ré-import du `.glb` dans
-> Blender a montré le modèle correctement assemblé après déformation — la
-> cause était la géométrie source. Le durcissement appliqué entre-temps
-> (`apply_transforms` avant liaison) reste juste, et il est de toute façon
-> exigé par `.claude/rules/assets.md`, mais il ne corrigeait pas ce
-> défaut-là.
-> Une passe de « mordant » — chaque volume RECOUVRE son voisin, les membres
-> sont allongés d'un diamètre, les attaches ramenées dans la masse — a
-> réparé les trois pillards et le tronc du colosse. C'est visible sur
-> `evidence/phaseH/lineup_matiere.png`.
-> **CE QUI N'EST PAS FINI** : avant-bras et pieds du colosse, chasseur
-> presque entier, extrémités du Gardien. ISS-018, sévérité S2. Aucun
-> critère visuel de la Phase H n'est déclaré tenu.
-> La bibliothèque de silhouettes est passée de quatre à SEPT sujets — sans
-> le colosse, le chasseur et le Gardien, elle ne pouvait pas servir au test
-> d'affordance de §30.3 qu'elle est censée porter.
-> **PROCHAINE ACTION** : poursuivre la passe de mordant créature par
-> créature, en RE-CAPTURANT après chacune — c'est le seul contrôle qui voit
-> ce défaut. Puis écrire le test de contiguïté d'ISS-019 pour qu'il ne
-> revienne pas en silence.
-
----
-
-## 2026-08-03 — Phase H, lot H.6 : ISS-018 clos par la cause, pas par retouches
-
-**Commits** : `30ae2d3` (continuité), `29a3303` (corps des pillards),
-`be96545` (chasseur + planche d'inspection).
-
-### La cause racine, enfin
-
-La passe de « mordant » de la session précédente traitait un symptôme.
-La cause tient en une ligne : `bmesh.ops.create_cube(size=1.0)` pose ses
-sommets à **±0,5**, donc la taille passée à `add_box` et `limb` est la
-dimension **pleine**. Un `* 0.5` traînait sur la longueur de chaque segment
-dans `make_creatures.py` et `make_raiders.py` ; les mêmes facteurs `* 0.62`
-et `* 0.52` dans `make_storm_guardian.py`. Chaque membre était donc bâti à
-la moitié — ou aux deux tiers — de sa portée et s'arrêtait à mi-chemin de
-son articulation. Le mordant que les commentaires décrivaient n'a jamais
-existé.
-
-Vérifié par un script d'une ligne dans Blender, pas déduit.
-
-Corrigé à la source, puis pièce par pièce sur ce que la MESURE indiquait :
-nodule du colosse à 39 cm du dos, ceinture de troncs autour du vide, doigts
-sous la paume, cage thoracique du chasseur en rondelles, bras du chasseur et
-des pillards sans clavicule, anneau du Gardien orienté radialement au lieu
-de tangentiellement, et un tiers d'anneau entièrement en l'air.
-
-### Le contrôle qui manquait (ISS-019)
-
-`tools/blender/check_continuity.py` lit le `.glb` LIVRÉ, évalue le graphe de
-dépendances — donc **après déformation par l'armature** —, ressoude les
-sommets que l'export glTF sépare, découpe en morceaux connexes et exige
-**un seul corps solidaire**.
-
-Trois pièges de mesure, tous rencontrés et tous corrigés :
-
-1. **sans ressoudure**, l'export sépare les sommets par normale et par UV :
-   le Gardien comptait 1520 « îlots » d'une face, tous voisins entre eux, et
-   le contrôle ne voyait rien ;
-2. **« chaque pièce a un voisin » ne suffit pas** : le chasseur passait ce
-   critère avec ses deux bras flottant à 11 cm du buste, chaque bras
-   touchant son propre avant-bras. D'où le critère de connexité globale, qui
-   a immédiatement révélé la même faute sur deux des trois pillards ;
-3. **la distance sommet à sommet ment** sur deux boîtes tournées l'une par
-   rapport à l'autre : l'anneau du Gardien ressortait « détaché » alors que
-   ses maillons s'enfilaient.
-
-Câblé en niveau **3b** de `tools/validate_fast.sh`. Contrôle négatif : une
-pièce déplacée de 0,60 m fait sortir le script en code 1, le modèle réparé
-en code 0.
-
-### Deux décisions de qualité prises seules
-
-**Les pillards reprennent le corps du pack CC0.** La capture les montrait en
-figurines de fil de fer : membres de 4 cm de section. Le pack Quaternius
-« Universal Base Characters », déjà dans le dépôt et déjà attribué, fournit
-un humanoïde de 12 894 triangles texturé en PBR et pesé sur les mêmes 65 os
-— et `load_skeleton` le JETAIT pour ne garder que l'armature. Le corps est
-conservé ; restent construites les pièces qui distinguent les familles. La
-tête en fait partie : les personnages Quaternius sont modulaires et livrés
-sans tête, ce qui tombe bien puisque la bible §14.1-14.3 demande des crânes
-non humains. `ATTRIBUTIONS.md` requalifie les pillards en œuvre dérivée avec
-la liste exacte des modifications.
-
-**Le chasseur passe du plateau à la bête.** Cage thoracique portée de 0,52 à
-1,00 m de profondeur, poitrail nettement plus haut que la croupe, tronc de
-liaison entre le poitrail et le buste — la jonction que l'ordre nommait —,
-épaules et hanches ajoutées, pattes épaissies.
-
-### Preuves
-
-- `evidence/phaseH/turntable_*.png` + manifestes : chaque personnage de
-  face, de trois quarts, de profil, de dos et en aplat noir ;
-- `evidence/phaseH/bestiaire_apres.png` : les cinq familles côte à côte ;
-- `evidence/pipeline/continuity_*.log` : six personnages, un seul corps.
-
-Nouvelle scène de DEV `CharacterTurntable` (`--creature=<id>`). L'alignement
-du bestiaire ne montrait que la face à 25 m : une pièce détachée sur le
-flanc ou dans le dos y restait invisible, et c'est ainsi qu'ISS-018 avait
-survécu à une capture.
-
-### Ce qui reste honnêtement à faire
-
-Les créatures restent des assemblages de primitives : lisibles, cohérentes,
-aux bonnes cotes, mais sans sculpture. Le Gardien et le colosse sont au
-plafond de qualité de cette approche. Aucun score visuel n'est revendiqué —
-le WOW Gate de §30.2 porte sur la vue d'ouverture, pas sur le bestiaire, et
-il n'a pas été rejoué.
-
-**PROCHAINE ACTION** : Phase H suite — reprendre l'ordre des lots là où
-`docs/ROADMAP.md` le laisse, la continuité des personnages n'étant plus un
-obstacle.
-
----
-
-## 2026-08-03 — Phase H, lot H.7 : prairie de crête · et prise en compte de l'ordre d'EXTENSION
-
-**Commit** : `96950f0`. `validate_fast.sh` **VERT**, 493 tests, plancher
-relevé 490 → 493. Preuve : `evidence/phaseH/vista_prairie.png` (manifeste
-`repo_dirty: false`, commit `96950f0`).
-
-### Ce qui a été fait
-
-La vue d'ouverture a d'abord été capturée telle quelle : c'est un graybox.
-Le tiers inférieur du cadre, que §3.2 veut porter « une pente herbeuse
-riche », était un aplat vert. La prairie tournait à **0,6 touffe/m²** contre
-7 à 14 exigées par §7.2 — et le test qui la couvrait demandait « au moins
-300 instances par cellule », critère qu'une prairie vide satisfait du moment
-qu'elle est large. **Un nombre d'instances ne dit rien sans la surface.**
-
-Densité portée à 9 touffes/m² en zone héroïque et 4,5 sur les côtés, quatre
-cellules de 23 m (§7.5). Monter la densité a révélé la faute que la rareté
-cachait : la touffe était faite de trois quads de 34 cm, et le premier plan
-s'est couvert de petits sapins. Brins refaits à 3,6 cm, sept par touffe,
-ployés, normales inclinées à 72 % vers le ciel (voir D-039 et D-040).
-
-### ORDRE D'EXTENSION reçu — état des lieux fait, travail NON commencé
-
-L'ordre demande un monde 500 × 500 m entièrement explorable : village de la
-rivière, deux hameaux, ruines, grottes, lieux naturels, territoires ennemis,
-système de découverte, densité d'un intérêt toutes les 45-75 s, itinéraires
-multiples, vie et narration environnementale.
-
-**Découverte importante pour la suite** : tout le nécessaire est DÉJÀ sur
-disque, en CC0, sans aucun téléchargement.
-
-- Les sept packs Quaternius sont extraits dans
-  `/tmp/eclats-quaternius.X2JMwF/extracted/` (992 Mo, 2162 fichiers).
-- `Medieval.Village.MegaKit` (936 fichiers) est un kit modulaire complet :
-  murs plâtre et brique, portes et encadrements, fenêtres, sols, toits,
-  balcons, débords, angles, escaliers, clôtures, cheminée, chariot. C'est le
-  village, les hameaux, les ruines ET les intérieurs.
-- `Stylized.Nature.MegaKit` (454) : 31 familles — 5 arbres communs,
-  5 pins, 3 tordus, arbres morts, buissons, fougères, fleurs, champignons,
-  trèfle, VRAIS modèles d'herbe, galets, dalles de chemin, rochers.
-- `Fantasy.Props.MegaKit` (517) : enclume, établi, étal de marché, tonneaux,
-  caisses, lits, tables, bibliothèques, chaudron, bannières, torches,
-  lanternes, râteliers, outils.
-
-`tools/promote_quaternius.py` promeut une sélection CURATÉE : ses 744
-fichiers sont déjà dans le dépôt (~140 `.gltf`). Étendre le monde demande
-donc d'**élargir la sélection de l'outil**, pas de retélécharger.
-
-**RISQUE À TRAITER EN PRIORITÉ** : `/tmp` est éphémère. Si ce répertoire est
-recyclé, les packs sont perdus — la réacquisition avait échoué (403 du
-Godot Asset Store, voir `docs/assets/QUATERNIUS_INBOX.md`). La première
-action de la prochaine session doit être de promouvoir dans le dépôt les
-familles nécessaires au monde ouvert.
-
-### PROCHAINE ACTION, dans cet ordre
-
-1. **Sauver les assets** : élargir la sélection de `promote_quaternius.py`
-   (kit village complet, arbres et rochers manquants, props de village) et
-   promouvoir depuis `/tmp/eclats-quaternius.X2JMwF/extracted/`, tant qu'il
-   existe. Mettre à jour `ATTRIBUTIONS.md` et le manifeste.
-2. **Chasseur de production** (point 1 de l'ordre) : tête et silhouette
-   restent faibles ; la planche `CharacterTurntable --creature=chasseur` est
-   l'outil de jugement.
-3. **Registre des points d'intérêt et système de découverte** (§3 et §8 de
-   l'ordre) AVANT de poser du contenu en masse : identifiant stable, nom au
-   premier passage, sauvegarde, aucune seconde récompense au rechargement,
-   test d'atteignabilité. C'est vérifiable en headless, donc réellement
-   validable ici — contrairement à la géométrie.
-4. Puis le contenu : village de la rivière, hameaux, ruines, grottes.
-
-### Limites honnêtes de l'état actuel
-
-La vallée reste un graybox hors premier plan : montagnes en boîtes grises à
-plein contraste, citadelle sans terrasses qui se confond avec elles, sol en
-aplat vert, cubes de placeholder, HUD visible dans les captures de
-référence. Aucun score WOW n'est revendiqué (§30.2 demande un œil humain et
-un GPU réel — ISS-002).
-
----
-
-## 2026-08-03 — Ordre d'extension : assets sécurisés, chasseur, registre des découvertes
-
-**Commits** : promotion CC0, `b7ec49d` (tête du chasseur), puis le présent
-lot (registre des découvertes).
-
-### 1. Assets du monde ouvert sauvés de `/tmp`
-
-Les sept packs Quaternius vivaient dans `/tmp`, éphémère, et leur
-réacquisition avait échoué (403). 63 modèles promus par sélection
-**fonctionnelle** — pas en vrac, comme l'exige §7 de l'ordre : toitures et
-débords, sols d'intérieur, portes, fenêtres de toit, escaliers, balcons,
-clôtures, cheminée ; puis essences par biome, herbes hautes, plantes,
-rochers, dalles. Nouveau dossier `assets/environment/village/` : 53 pièces
-d'architecture modulaire, de quoi bâtir un village à VRAIS intérieurs, deux
-hameaux et des ruines. 56,8 Mo après déduplication des textures par dossier
-cible — le chiffrage brut annonçait 715 Mo en comptant chaque texture une
-fois par modèle. `ATTRIBUTIONS.md` : ART-Q8, même CC0 que ART-Q0.
-
-### 2. Chasseur — point 1 de l'ordre
-
-La tête n'était qu'un cube : à distance de jeu la bête n'avait pas de
-regard, donc aucune direction de menace avant la charge. Crâne refait en
-quatre masses (nuque, crâne, museau, mâchoire), plaque frontale inclinée,
-deux cornes filant vers l'arrière, mandibules élargies. Cotes tenues :
-3,45 m de haut, 4,20 m de long. Continuité : 64 morceaux, un seul corps.
-
-### 3. Registre des découvertes — la fondation du monde ouvert
-
-`DiscoveryLog` + `PointOfInterest`. Choix structurant : **un lieu ne sait
-pas s'il a déjà été vu, il le DEMANDE**. La règle « aucune seconde
-récompense après rechargement » devient donc vraie par construction, pas par
-discipline — un lieu ne peut pas se déclarer neuf tout seul.
-
-Identifiants au format §19.3 `zone.category.name.index`, unicité refusée en
-double, sauvegarde ne sérialisant que des chaînes (§19.2), lieu supprimé par
-une mise à jour journalisé puis ignoré (§19.4), regroupement par région pour
-une carte.
-
-12 tests : 9 unitaires, 3 d'intégration avec un vrai corps physique qui
-traverse le volume. Le scénario central de l'ordre est couvert de bout en
-bout — découvrir, sauvegarder, recharger, repasser, ne rien recevoir.
-
-Détail qui aurait fait rougir la suite entière : les refus (identifiant en
-double, lieu non déclaré) étaient signalés par `push_error`, et
-`validate_fast` traite — à raison — tout `ERROR:` du journal comme un échec.
-Un refus lu dans la valeur de retour n'est pas une erreur moteur : ils sont
-passés en avertissement.
-
-Plancher de couverture 493 → 505.
-
-### PROCHAINE ACTION
-
-Poser le CONTENU, maintenant que chaque lieu peut naître avec son
-identifiant, sa sauvegarde et son test :
-
-1. **Village de la rivière** (§2 de l'ordre) avec le kit promu : place,
-   auberge visitable, forge, marché, moulin, sanctuaire, habitations, quai.
-   Au moins un intérieur réel — §1 interdit une porte visible qui n'ouvre
-   sur rien.
-2. Deux hameaux, puis les ruines, puis les grottes.
-3. À chaque lieu : un `PointOfInterest` avec identifiant, un contenu
-   significatif (§3), et un test d'atteignabilité (§8).
-4. Carte des POI et liste des identifiants (§8) — le registre les fournit
-   déjà par `registered_ids()` et `by_region()`.
-
-### Limites honnêtes
-
-Aucun contenu de monde ouvert n'est encore posé : le lot ci-dessus livre les
-FONDATIONS et les assets, pas les lieux. La vallée reste un graybox hors
-premier plan.
-
----
-
-## 2026-08-03 — Monde ouvert : premier lieu posé, village de la rivière
-
-`validate_fast.sh` VERT à 509 tests avant ce lot ; plancher désormais 510.
-
-### Fait
-
-**Village de la rivière**, bâti du kit modulaire CC0 promu juste avant :
-auberge, forge, moulin, sanctuaire, deux habitations, place de marché,
-quai. Monté dans `ValleyWorld` — un lieu bâti mais jamais posé ne compte
-pas — et déclaré au journal sous `valley.poi.riverside_village.01`.
-
-**Le point dur de §1 est tenu et PROUVÉ** : l'auberge a un intérieur réel.
-Le test y fait entrer un corps physique, exige qu'il se pose sur un
-plancher, puis le pousse contre chaque mur et exige qu'il reste dedans. Un
-décor de façades aurait passé n'importe quel test de comptage.
-
-Cela imposait une collision posée à la main : le kit est purement visuel, et
-un collider unique par mur aurait muré l'auberge de l'intérieur. Un mur à
-baie reçoit deux jambages et un linteau. Les habitations, elles, sont
-fermées — pas de porte praticable, donc aucune promesse trompeuse.
-
-Les découvertes partent dans la sauvegarde de la vallée et en reviennent.
-
-### PROCHAINE ACTION
-
-1. **Resserrer le village** : la capture le montre en maisons éparpillées,
-   pas en bourg groupé autour d'une place. Rapprocher les corps de bâtiment,
-   dessiner la place au sol, poser des chemins entre les portes.
-2. **Habitants** (§6) : quelques villageois qui marchent entre deux points,
-   fumée de cheminée, lumière aux fenêtres.
-3. **Deux hameaux** (§2), puis les RUINES, puis les GROTTES — chacun avec
-   son `PointOfInterest`, son contenu significatif (§3) et son test
-   d'atteignabilité.
-4. **Carte des POI et liste des identifiants** (§8) : `registered_ids()` et
-   `by_region()` les fournissent déjà, il reste à les écrire dans un
-   document et à les relier aux captures de région.
-5. Puis §4 (rythme d'exploration), §5 (itinéraires multiples), §9 (passe
-   artistique de la vallée, performances, Phase H, puis I et J).
-
-### Limites honnêtes
-
-**Un seul lieu sur la liste de §2 est posé.** Manquent : les deux hameaux,
-les ruines, les grottes, les lieux naturels mémorables, les territoires
-ennemis, les habitants, les histoires environnementales, la carte des POI et
-le parcours d'atteignabilité de toute la carte. La vallée reste un graybox
-hors premier plan et hors village. Aucun score visuel n'est revendiqué.
-
-## 2026-08-03 — Monde ouvert MO.4 : les ancrages de récompense
-
-Commits `2bf440f`, `018b8b6`, `9538dcf`.
-
-### Ce qui a changé
-
-Les 31 lieux portent chacun un `RewardAnchor` explicite, nommé, déclaré dans
-la table de son bâtisseur. Plus aucun repli au centre du volume.
-
-Les positions ne sont pas choisies : `tools/godot/probe_reward_anchors.gd`
-monte la vallée réelle et éprouve, autour de chaque lieu, sol, dégagement au
-gabarit du joueur, couloir d'approche, absence d'eau et LIGNE DE VUE depuis le
-point de station. Le résultat est figé dans le code.
-
-`RewardAnchorAudit` fait ensuite marcher un corps : aller, retour, et pour le
-belvédère la montée complète de l'échine — un navmesh aurait répondu
-« accessible » sans rien prouver.
-
-Les récompenses sont diversifiées et pilotées par données : coffres, armes au
-sol, ingrédients, savoirs, fragments d'histoire lisibles.
-
-### Ce que les preuves ont réellement trouvé
-
-L'audit physique a rendu 14 défauts au premier passage, puis 3, puis 1. Quatre
-causes distinctes, aucune contournée : la récompense masquait le sol sous son
-propre ancrage ; la sonde prenait pour sol le coffre du tour précédent ; un
-rocher en surplomb servait de sol ; un point d'arrivée dégagé au bout d'un
-couloir muré.
-
-Puis les 31 captures ont montré ce que la physique ne pouvait pas voir : trois
-récompenses **dans l'eau**, deux **derrière le tronc** de l'arbre qui donne son
-nom au lieu, une **hors champ**. D'où les deux règles ajoutées à la sonde —
-volumes d'eau lus par leur nom, et ligne de vue exigée.
-
-Deux bogues réels ont été corrigés au passage, tous deux masqués par l'ordre de
-construction : les découvertes n'étaient **jamais** restaurées au rechargement,
-et les récompenses échappaient à la persistance — une arme ramassée revenait.
+## 2026-08-15 — R2a-3.1 : la grotte refaite, et un défaut dans mon propre code
+
+Verdict de la revue au HEAD `9f25e78` : pont et hameau **PASS visuel**,
+golden masters 2/4 et 3/4 ; **grotte FAIL visuel**, corrective R2a-3.1
+exigée. Travail redevenu séquentiel, agents non relancés, pont/hameau/pylône
+non touchés, ni les 38 captures ni `validate_fast` relancés.
+
+### Hameau : gelable, mesuré
+
+Sonde de végétation rejouée sur toute l'emprise (107 pièces, 16 651
+instances de semis gelé, 78 dans l'emprise) : **aucune intersection**. Le cas
+le plus serré est à 0,35 m — à côté, pas dedans. Aucune reconstruction, la
+végétation V2.2 reste intacte. `evidence/…/hameau/VEGETATION_VERDICT.md`.
+
+### Grotte : la première corrective ne changeait rien, et j'ai su pourquoi
+
+La première R2a-3.1 (commit `d8404bb`) passait tous les contrôles et a été
+capturée : bouche encore en demi-cercle, façade lisse, galerie en tube.
+Mesuré, σ = 13,3 sur la façade et **5,8** sur la paroi intérieure.
+
+La cause était dans mon code, pas dans les réglages. `facette()` quantifiait
+le **rayon** mais plaçait le sommet au **vrai azimut** — or un rayon constant
+sur un secteur trace un **arc de cercle**. La « section polygonale » que
+j'avais annoncée n'existait pas dans le maillage. `coins()` et `polygonal()`
+construisent maintenant de vrais polygones, arêtes droites entre sommets.
+
+Le reste a suivi, chaque fois vérifié par une mesure et non par une
+intention : polygone du massif **circonscrit** pour ne pas perdre 0,47 m
+d'épaisseur ; **visière** et **éperon** ajoutés du côté de l'approche parce
+que contrefort et couronne étaient tous deux au nord et que la vue du joueur
+ne montrait qu'un dôme ; **collerette** biseautée par une rangée intercalée.
+
+**Deux mécanismes ont été retirés plutôt que gardés** : une banquette et une
+tablette d'alcôve, mesurées là où elles devaient culminer, ne relevaient
+rien — une fenêtre d'azimut de 52° est plus étroite que l'écart entre deux
+sommets (40° à 9 facettes), et l'arête qui joint les voisins l'efface.
+
+### Trois contrôles rendus honnêtes en cours de route
+
+`hauteur_du_sol` rendait 1,544 m à un endroit et −2,078 m à 60 cm de là : le
+rayon partait dans la roche. Corrigée (premier impact dont la normale
+regarde vers le haut), **elle a montré que la récompense flottait de 0,7 m**.
+`controle_annexe_hors_cavite` imprimait `1000000000.00 m` quand il n'avait
+rien comparé. Le gabarit ne soustrayait pas le palier de la hauteur libre —
+il a d'ailleurs refusé le premier réglage, à 2,04 m pour 2,05 exigés.
+
+### État livré
+
+Commit prouvé `71d1817`, `repo_dirty: false` : 7 vues monde, tournette 8
+vues, 2 silhouettes isolées. Filets de lieux **8/8**. Sonde de végétation
+rejouée sur l'emprise agrandie : **aucune intersection**. Détail et aveux :
+`evidence/world_v2/v2_3_r2a/grotte/CORRECTIVE_R2a_3_1.md`.
+
+**Sept exigences sur huit sont PASS. L'exigence 5 — récompense mise en scène
+par la géométrie — est PARTIAL**, et c'est écrit ainsi : le creux de
+l'alcôve, la lampe et le palier tiennent la scène, pas une tablette.
 
 ### Prochaine action exacte
 
-1. Relancer `tools/godot/capture_reward_anchors.gd` et réinspecter les 31 vues
-   après le déplacement des huit ancrages.
-2. Relever `MIN_TESTS` dans `tools/validate_fast.sh` au nombre réellement
-   exécuté, puis lancer la validation complète.
-3. Commit propre, puis publication de l'archive par le workflow
-   `publish-playtest.yml` (éprouvé en mode auto-test : Release créée, ZIP et
-   `.sha256` téléversés).
+**Attendre le verdict visuel du lead sur la grotte.** Aucun verdict
+artistique n'est auto-déclaré. Ne pas relancer les trois agents, ne pas
+toucher au pont, au hameau ni au pylône, ne pas lancer les 38 captures ni
+`validate_fast` tant que ce verdict n'est pas rendu.
 
-### Limites honnêtes
+Si la grotte passe : R2a-5, passe silhouette complète sur les quatre sujets
+(angles rasants + contrôle négatif contre l'ancienne planche), puis R2a-6.
 
-Six lieux — les cinq territoires et la cavité de cristal — portent une
-récompense dont la condition d'ouverture n'existe pas. Le coffre est réel et
-persistant ; le verrou, non. `DiscoveryRewards.deferred_gates()` les nomme.
+## 2026-08-14 (suite 15) — V2.3-A.R2a OUVERTE : changement de PIPELINE artistique
 
-La vallée reste un graybox hors premier plan et hors lieux. Aucun score visuel
-n'est revendiqué.
+**Verdict du lead sur V2.3-A.R** : chaîne technique et preuves SHA `PASS` ;
+**gate artistique ÉCHEC** ; `GO_V2_3_B=FALSE` ; aucune propagation aux cinq
+lieux restants ni aux 31 POI. Base de la passe : `c946b0e`, additif strict.
 
----
+### Ce que le lead accepte
 
-## 2026-08-04 — Un vrai joueur visuel, et ce qu'il a trouvé du premier coup
+La correction de la chaîne de capture : vraie ligne de base `775aa32`,
+`--scene` obligatoire, planches non vides, manifestes propres,
+`validate_fast` 899/0.
 
-Commit `96ad94a` (dispositif) puis le lot d'échelle du kit.
+### Ce qu'il refuse, et c'est une décision de MÉTHODE
 
-### Le problème qu'on a arrêté de contourner
+> « Les lieux sont encore principalement construits comme des assemblages
+> procéduraux visibles, puis corrigés localement. Cela produit des
+> intersections, des blocs disjoints et des silhouettes de prototype. »
 
-Les deux « playtests » précédents n'en étaient pas. Le premier exécutait un
-plan écrit à l'avance ; le second fermait la boucle mais la décision venait de
-moi — quelqu'un qui a lu le code, connaît la carte et sait où sont les
-coffres. Un joueur qui connaît la solution ne mesure rien.
+Corriger localement un assemblage de `BoxMesh` ne le sauvera pas. La règle
+change : **les scripts de scène cessent de fabriquer seuls la surface
+artistique finale**. Ils gardent l'instanciation, l'implantation, les
+interfaces fonctionnelles, les collisions simples et les variations
+contrôlées. La peau vient de modules CC0 correctement assemblés ou de
+vrais meshes Blender à source conservée. Les primitives ne servent plus
+qu'aux collisions, sondes et supports **invisibles**.
 
-### Ce qui a été construit
+### Périmètre de R2a — QUATRE golden masters, pas neuf lieux
 
-Un serveur MCP stdio (`tools/blackbox_player/server.py`) qui expose cinq
-outils et rien d'autre : regarder, agir, cliquer, attendre, noter. Chaque appel
-renvoie la nouvelle image — le joueur ne PEUT pas agir deux fois sans regarder.
+1. hameau de la rivière · 2. pont de pierre · 3. grotte de la cascade ·
+4. pylône de Résonance.
 
-Les entrées sont réelles : `xdotool` parle au serveur X, Godot les reçoit comme
-un clavier, elles traversent l'InputMap puis `PlayerInputReader`. Aucune
-méthode de gameplay n'est appelée. Le jeu est suspendu par `SIGSTOP` pendant
-que le modèle réfléchit — extérieur au jeu, donc sans fuite d'état privé.
+Ferme, arbre foudroyé, camp braise et bassin **restent en attente** : ils
+ne seront repris qu'après validation des quatre références. Le camp /
+checkpoint est le seul sujet jugé en progrès ; il reste **gelé** pendant
+ce sous-gate.
 
-Le joueur est un processus `claude -p` **neuf**, dont les outils sont imposés
-par `--allowedTools`/`--disallowedTools` : ni Read, ni Bash, ni Grep, ni Glob,
-ni Web. Il ne peut pas lire le code même s'il le voulait.
+### Défauts bloquants relevés, sujet par sujet
 
-### Deux vérifications qui ont changé le plan
+Village : une maison domine seule, éléments blancs non finis, silhouette
+collective absente · Ferme : charpente en dents verticales, mur
+rectangulaire intact, et la capture `structure_ferme_charpente` **manque le
+sujet** · Pont : blocs désolidarisés, grandes faces blanches, géométrie
+qui dépasse des culées, la vue sous arche **entre dans le maillage** ·
+Grotte : enveloppe ouverte, plaques fines, la caméra intérieure est
+**dans les polygones** · Arbre : blocs bruns, noirs et blancs disjoints ·
+Camp braise : accumulation sans hiérarchie, illisible à 94 m · Bassin :
+fragments blancs anguleux, arbre masquant le centre · Pylône : progrès à
+distance, mais base en amas de blocs · **Planche de silhouettes : non
+vide, mais c'est une mosaïque couleur — ce n'est pas un test de
+silhouette.**
 
-`.mcp.json` et `.claude/agents/*.md` sont lus au **démarrage** de Claude Code.
-Créés en cours de session, ils ne sont pas chargés — constaté deux fois. D'où
-le processus séparé plutôt que le sous-agent.
+### R2a-0 — FAIT : l'enquête, et ses trois trouvailles
 
-L'API Computer Use n'est pas accessible ici : ni clé, ni SDK `anthropic`.
-Vérifié, pas supposé.
+**Blender était présent et INCAPABLE d'exporter, en silence.** numpy
+manquait ; l'exporteur glTF en dépend ; l'échec rendait **code 0** et
+`run_export.sh` revalidait alors les `.glb` déjà versionnés en annonçant
+« VERT ». Corrigé (numpy, `--python-exit-code 1`, jeton de fraîcheur) et
+**prouvé en le faisant rougir** : numpy masqué → RC 1, ROUGE.
 
-### Ce que le joueur a compris seul
+**Les pivots des modules CC0 sont enfin mesurés**
+(`tools/godot/probe_kit_seating.gd`, 48 modules). `KitScale.factor()` rend
+1,000 partout où l'on comptait bâtir : aucun redimensionnement silencieux.
+Tous les murs font 2,00 × 3,12 × 0,41 m, pivot centre/min/**0,77**. Et
+`seat()` plaque au sol tout module dont l'origine n'est pas à sa base —
+une fenêtre passée par `K.module()` finit **par terre** (1,016 m mesurés).
 
-`Z Q S D`, l'orientation du personnage, le sprint, et **l'endurance déduite de
-la barre bleue** apparue pendant le sprint. Personne ne le lui a dit. Il a vu
-la citadelle, l'éclair, le camp de bois, et s'y est dirigé.
+**Aucun module CC0 ne peut couvrir le pylône** : ni fût à dosserets, ni
+anneau incomplet, ni couronne bifide, ni canal creux. Blender était la
+seule voie honnête — d'où l'ordre des travaux.
 
-### Ce qu'il a trouvé, et que 585 tests n'avaient pas vu
+### R2a-4 — FAIT : pylône, premier golden master
 
-Une fleur jaune occupant un quart de l'écran, plus haute que la poitrine du
-héros. Mesure : `Flower_4_Group` = **2,49 m**, quand la bible §3 borne les
-fleurs à 0,18–0,55 m. Et ce n'était pas un cas isolé : `Fern_1` fait **9,05 m
-de large**, `Grass_Common_Tall` 1,87 m, `Clover_2` 1,26 m.
+Script de scène : **238 maillages GDScript → zéro**. Il instancie un GLB
+produit par `source_assets/blender/architecture/make_pylon_resonance.py`
+(source reproductible versionnée). Aucun booléen — que des volumes
+**loftés**. Les trois canaux sont dans le **profil** du fût. 17 objets,
+34,56 m, base à z = 0. Filets `world_v2_places` 8/8 verts.
 
-Le kit végétal entier avait été importé sans normalisation et posé à l'échelle
-native par **sept** modules. C'est une violation de l'invariant « 1 unité =
-1 m », pas un désaccord de goût : une fougère de neuf mètres détruit la lecture
-d'échelle, donc la profondeur, donc la composition North Star.
+Deux défauts d'outillage trouvés en chemin, tous deux silencieux :
+`gltf_inspect.py` ne mesurait **qu'un maillage** (1,7 m annoncés pour
+34,56) ; et le pylône rendait **blanc** à cause de la conversion
+sRGB/linéaire de `baseColorFactor` (0,40 écrit → 0,67 reçu, 0,14 → 0,41 :
+contraste écrasé). Les deux corrigés et mesurés.
 
-Corrigé par `KitScale` — un seul point, une table qui garde hauteur mesurée ET
-hauteur visée pour rester vérifiable. Deux tests de régression : un à la source
-(un asset ajouté demain sans échelle échoue), un dans la vallée montée (une
-table correcte mais non appliquée échoue).
+### R2a-4.1 — FAIT : recalibrage du pylône sur verdict du lead
+
+Verdict reçu : R2a-0 `PASS`, R2a-4 « progrès majeur, pas encore golden
+master », plus **un défaut de preuve** — le manifeste portait
+`commit: 6ddac267` et `repo_dirty: true`, donc des images produites avant
+le commit du code, depuis un arbre modifié. Corrigé à la racine : toutes
+les preuves de cette passe portent `commit 4165801` et `repo_dirty: false`.
+
+Les quatre points demandés, et ce que chacun a réellement révélé :
+
+1. **Pieds** — section octogonale chanfreinée, sabot noyé dans la plinthe,
+   chapiteau sous le collier. Demi-largeur 1,80 → 1,32 m *après mesure sur
+   silhouette isolée* : trois volumes séparés dans le maillage ne font pas
+   trois pieds séparés à l'œil, c'est la projection qui décide.
+2. **Canaux** — nervures de part et d'autre, cyan découpé en neuf inserts
+   calés sur les bandeaux, émission 1,4 → 0,85. Puis le balayage a montré
+   le vrai défaut : le noyau sombre était **6 cm derrière** le fond du
+   canal, donc invisible, et le fond rendait 0,203 — la valeur exacte du
+   flanc. Noyau ressorti de 4 cm : fond 0,133 contre nervures 0,260,
+   **cyan coupé**.
+3. **Anneau** — le défaut était un PIVOT. `rotation_euler` tourne autour de
+   l'origine de l'objet, au sol : 9° appliqués à z = 22,30 décentraient
+   l'anneau de **3,49 m**, et la bande traversait le fût. Basculement
+   refait autour du centre de l'anneau ; consoles dans le même repère ; le
+   générateur refuse d'enregistrer si l'étalement dépasse 1,10 m.
+   Ouverture élargie à 84° et **présentée de profil** — pointée vers
+   l'objectif elle donnait deux cornes et aucun anneau.
+4. **Couronne et matières** — effilement 3,3×, coiffe en volume unique
+   terminé en pointe, fourche décalée en Y (deux dents alignées sur le seul
+   axe X disparaissaient l'une derrière l'autre à 0°). Matières recalibrées
+   **sur la capture** : l'écart d'éclairement (×1,63) égalait l'écart de
+   matière (×1,62), donc les trois matériaux rendaient la même valeur.
+   Mesuré après : bronze 0,398 · pierre 0,553 · ivoire 0,678.
+
+Deux outils créés, parce qu'une preuve doit être rejouable :
+`tools/blender/export_architecture.sh` (le pylône de R2a-4 avait été
+exporté à la main) et `tools/godot/capture_silhouette.gd`, qui produit la
+silhouette isolée et **refuse d'écrire** une image non bimodale — le
+contrôle qui manquait à la « mosaïque de couleurs ».
+
+Trois cadrages de R2a-4 étaient faux et ont été refaits par le calcul : le
+gros plan visait 51° à côté du canal le plus proche, et deux vues « à
+hauteur de joueur » étaient à 11,5 m du sol. Détail et nombres :
+`evidence/world_v2/v2_3_r2a/README.md`.
+
+### VERDICT LEAD SUR R2a-4.1 — PASS, pylône GELÉ
+
+Reçu : « PASS artistique et technique. Le pylône est validé comme golden
+master 1/4 ». Six critères `PASS` — preuves au SHA `4165801`, pipeline
+Blender→GLB→Godot reproductible, silhouette générale et couronne bifide,
+tripode et ancrage, canal géométrique sombre à cyan rythmé, anneau
+incomplet lisible dans les axes réels de jeu.
+
+L'arbitrage de la silhouette à 0° est **accepté** : « il n'est pas
+nécessaire qu'un anneau ouvert conserve la même lecture sous tous les
+azimuts ».
+
+**PYLÔNE GELÉ au code `4165801`** — ne plus le modifier hors régression
+démontrée. Le lead précise qu'il « valide la méthode et la cohérence
+géométrique » mais « ne constitue pas un plafond de richesse
+architecturale » pour les trois sujets restants.
+
+### R2a-2/3/1 — production PARALLÈLE contrôlée, en cours
+
+Trois worktrees et trois branches créés depuis `d327e5e` :
+
+| agent | worktree | branche | sujet |
+|---|---|---|---|
+| pont | `/home/user/zelda-r2b/pont` | `claude/r2a-pont` | `stone_bridge_place.gd` |
+| grotte | `/home/user/zelda-r2b/grotte` | `claude/r2a-grotte` | `waterfall_cave_place.gd` |
+| hameau | `/home/user/zelda-r2b/hameau` | `claude/r2a-hameau` | `riverside_village_place.gd` |
+
+Propriété EXCLUSIVE des fichiers : chaque agent ne touche que son
+générateur, son GLB, son `*_place.gd` et son dossier de preuves. Réservés
+au lead et interdits aux agents : `PROGRESS`, `STATUS`, le README global
+de R2a, le manifeste d'assets, les builders et kits partagés, le layout,
+et tout ce qui est gelé en V2.2 (terrain, eau, végétation, navigation,
+caméras).
+
+**Blender tourne en parallèle ; Godot est SÉRIALISÉ.** Trois worktrees
+partagent la même machine et le même `user://` — le 2026-08-11, deux
+suites concurrentes ont fabriqué huit échecs de sauvegarde et coupé une
+ligne de journal en plein mot. Le verrou `/home/user/zelda-r2b/godot_serialise.sh`
+enveloppe chaque invocation dans un `flock` ; il sort en 3 (BLOQUÉ), jamais
+en 0, si le verrou n'est pas obtenu. Aucun agent ne lance `validate_fast`
+ni le runner de tests.
+
+Le briefing commun `/home/user/zelda-r2b/BRIEFING_COMMUN.md` porte les
+pièges mesurés sur le pylône, pour qu'ils ne soient pas repayés trois
+fois : `--python-exit-code 1`, conversion sRGB→linéaire, écart de matière
+qui doit dépasser l'écart d'éclairement, pivot de `rotation_euler`,
+azimut modèle θ → direction monde `(cos θ ; −sin θ)`, soleil à 199,5°,
+hauteur de joueur = sol sondé + 1,7 m, et l'assise `seat()` qui plaque les
+fenêtres par terre.
+
+### Les trois candidats sont INTÉGRÉS
+
+Ordre imposé par le lead, tenu : pont → grotte → hameau. Après chaque
+fusion : import propre, filets, capture ciblée depuis MON arbre, inspection
+à taille réelle. Les trois agents ont respecté la propriété exclusive des
+fichiers ; aucun fichier réservé n'a été touché.
+
+| sujet | branche | tris | filets après fusion |
+|---|---|---:|---|
+| pont | `claude/r2a-pont` | 15 784 | places 8/8 · hydro 4/4 · ancres 2/2 |
+| grotte | `claude/r2a-grotte` | 3 192 | places 8/8 |
+| hameau | `claude/r2a-hameau` | 2 264 + 488 | places 8/8 · hydro 4/4 |
+
+### Deux outils à moi étaient cassés, et ce sont les agents qui l'ont vu
+
+**`capture_silhouette.gd` aurait menti sur le hameau.** Il instanciait la
+scène hors du monde, où `ground_local_y()` rend 0 : quatre bâtiments posés
+sur trois niveaux de terrain s'y seraient aplatis, et la silhouette en
+gradins — le cœur du sujet — aurait montré une composition inexistante.
+Mode `--place=` ajouté, vérifié par contrôle : le pylône y rend la même
+silhouette qu'en mode asset.
+
+**`probe_vegetation_near.gd` rendait des comptes faux avec aplomb**, et
+trois passes s'en étaient servies pour décider d'implantations. Le test qui
+tranche est un balayage de rayon sur un même point : avant, 0 · 0 · **180**
+à 3, 6 et 12 m — une marche d'escalier, la cellule entière basculant quand
+l'origine de son nœud passe sous le rayon. Après correction : 0 · 0 · **2**.
+Facteur d'erreur 90.
+
+La cause était **déjà écrite dans le dépôt** : `world_v2_vegetation_builder.gd`
+documente que le renderer DUMMY du mode headless jette les données
+d'instance de MultiMesh et rend l'identité, et que le bâtisseur écrit pour
+cette raison son plan de plantation en méta `instance_origins`. La sonde
+interrogeait le renderer factice.
+
+Ma première tentative de correctif était elle-même fausse — une attente de
+stabilisation qui comptait 166 « positions distinctes », c'est-à-dire les
+166 cellules. Un détecteur qui se stabilise n'est pas un détecteur qui
+mesure.
+
+### Deux points d'arbitrage remontés au lead, non tranchés ici
+
+1. **Le pont est à 28,8 m de son `v2_site`**, contre 19,4 m avant. Mesuré
+   et vérifié par moi : à `x = −22`, le sol est en eau de `z = −12` à
+   `z = +12` — l'ouvrage précédent était parallèle au chenal et posé dans
+   l'eau sur toute sa longueur, ce qui explique rétrospectivement le défaut
+   « géométrie qui déborde des culées ». Il n'y avait pas de berge où
+   ancrer. La note du layout dit toujours « berge sud du gué central » ;
+   personne n'y a touché.
+2. **Il n'y a aucune chute d'eau à la « Grotte de la cascade ».** L'affluent
+   gelé descend de 3,0 à 0,5 sur ~14 m, pente maximale 0,25 m/m. L'agent
+   n'a pas inventé d'eau — l'hydrologie est gelée. C'est une question de
+   nommage.
+
+### La faiblesse principale, dite sans l'adoucir
+
+La **richesse de surface de la grotte est en deçà du pylône** : parois
+intérieures lisses (amplitude 0,085), masse extérieure en miche. Le lead
+avait écrit que le pylône « ne constitue pas un plafond » ; sur ce sujet on
+est sous le plancher. Le pont et le hameau, eux, le dépassent.
 
 ### Prochaine action exacte
 
-1. Lancer les trois contrôles négatifs
-   (`tools/blackbox_player/negative_controls.sh`). **Tant qu'ils n'ont pas
-   tourné, on ne sait pas si un joueur privé d'image continuerait de « raconter »
-   le jeu — auquel cas tous les verdicts seraient sans valeur.**
-2. Valider l'arbre courant : `tools/validate_fast.sh` (plancher 586).
-3. Enchaîner les parcours B à E, un profil par parcours, jusqu'au boss.
-
-### Limites honnêtes
-
-Le parcours A s'est arrêté à l'approche du camp : **aucun combat n'a été
-gagné**, donc aucune note sur le combat n'est recevable. `BL-01` reste ouvert —
-le jeu complet n'a jamais été terminé en boîte noire.
-
----
-
-## 2026-08-04 — Le joueur ne bougeait pas : le harnais parlait la mauvaise disposition
-
-Deux sessions blackbox successives se sont arrêtées avant le camp, sans combat.
-La première a conclu à une « limite invisible » du monde. C'était faux, et la
-mesure le montre : entre deux captures séparées par 2 s de sprint, la bande de
-**fond** (y = 100..300) ne variait pas d'un pixel — `0.000`. Un personnage
-bloqué par une collision fait quand même bouger la caméra. Là, rien.
-
-### La cause
-
-`project.godot` mappe ses actions en `physical_keycode` : `move_forward` = 87
-(W), `move_left` = 65 (A). C'est **correct** — un code physique désigne une
-position, étiquetée selon le clavier US, et c'est exactement ainsi qu'on écrit
-« AZERTY : Z avance, Q va à gauche » sans casser le QWERTY.
-
-Le harnais, lui, envoyait `xdotool keydown z` sur un Xvfb en disposition **US** :
-la position du Z américain, jamais celle du W. Aucune action de déplacement ne
-pouvait se déclencher.
-
-Ce qui a mis sur la piste, c'est une **asymétrie** : `Échap` ouvrait bien la
-pause et les clics de menu fonctionnaient. Or ce sont précisément les entrées
-identiques dans les deux dispositions. Seules les lettres déplacées échouaient.
-
-### Correction et preuve
-
-`KEYMAP` traduit désormais l'étiquette AZERTY vers la position physique
-(`z` → keysym `w`, `q` → keysym `a`), et `shift`/`ctrl` passent aux keysyms
-canoniques. Vérifié à deux niveaux — livraison des touches par `xev` sur un
-Xvfb jetable, puis bout en bout dans le jeu : ancien mapping `0.013` (bruit),
-nouveau `1.782`, puis sprint `13.27`, gauche `50.80`, arrière `20.25`, droite
-`28.58`, saut `17.19`. Preuve : `evidence/blackbox_player/fix_clavier_20260804_034919/`.
-
-Un second défaut du harnais a été corrigé au passage : `xdotool mousemove
---sync` gelait 60 s chaque rotation de caméra, parce qu'il attend une position
-que Godot ne laisse jamais atteindre en souris capturée. Le joueur n'avait donc
-aucune caméra non plus.
-
-### Ce que cela change
-
-Le héros traverse la prairie, atteint une clairière d'où les huttes du camp
-sont visibles, et la **jauge d'endurance turquoise** apparaît au sprint — un
-élément d'interface qu'aucun playtest n'avait encore pu observer.
-
-### Prochaine action exacte
-
-1. Dépouiller le parcours du joueur vierge lancé sur la version corrigée, dont
-   l'objectif unique est de **gagner un combat**. Tant qu'aucun combat n'est
-   gagné, `BL-01` reste ouvert et aucune note de combat n'est recevable.
-2. Corriger `S1 — Le menu Pause enferme le joueur` (voir `KNOWN_ISSUES.md`) :
-   c'est le prochain blocage sur le chemin critique, et il perd la partie sur
-   place. Piste à instruire : `process_mode` des nœuds du panneau.
-3. Ajouter un écran de chargement (`S2`) : 32 à 65 s de noir muet, deux joueurs
-   ont cru à un plantage.
-
-### Limites honnêtes
-
-Le correctif prouve la **locomotion**, rien d'autre. Combat, endurance,
-durabilité, arc, esquive, donjon et boss restent `UNVERIFIED` en boîte noire.
-
----
-
-## 2026-08-04 — Phase I (volet export) : premier binaire Linux autonome publié
-
-### Ce qui a été fait
-
-- **Export local prouvé** : templates `linux_release` compilés depuis
-  `/opt/src/godot` (le proxy refuse godotengine.org), installés sous
-  `4.7.1.stable` ET `4.7.1.stable.custom_build` ; export du preset
-  `Linux x86_64` (PCK embarqué) → `builds/linux/EclatsDOrage.x86_64`
-  (371 Mo), `savepack DONE`, `--version` répond `4.7.1.stable.custom_build`.
-- **Workflow enrichi** (`publish-playtest.yml`) : le runner GitHub télécharge
-  le Godot 4.7.1-stable officiel + templates, exporte le binaire et le joint
-  à la Release (zip + sha256), en *meilleur effort* (`continue-on-error`) —
-  un échec du binaire ne bloque jamais l'archive source.
-- Deux itérations de mise au point, chacune tracée au run exact :
-  1. `ls motif_A motif_B` sous `pipefail` mourait quand UN motif ne matchait
-     rien (run 30940389658) → `|| true` + garde-fou conservé ;
-  2. `rm -rf builds/linux` emportait le `.gitkeep` suivi et le garde-fou de
-     propreté refusait (run 30941179807) → suppression du seul binaire.
-- **Release verte** : `playtest-3038fc5` (run 30941820988), 4 assets —
-  archive source 396 Mo, binaire Linux 287 Mo, deux `.sha256`.
-
-### Ce que cela change
-
-§25.1 « build natif disponible » passe de promesse à fait : un testeur Linux
-lance le jeu sans installer Godot. Chaque prochaine Release embarquera le
-binaire automatiquement.
-
-### Prochaine action exacte
-
-1. Répondre à la question Phase H en attente : « le jeu doit ressembler à
-   l'image North Star — comment faire ? » (plan honnête, limites du conteneur).
-2. Relancer la suite playthrough (golden path) tuée par le redémarrage du
-   conteneur — peu coûteuse, verdict requis avant toute note Gate G/J.
-3. `BL-01` (victoire en combat en boîte noire) reste ouvert — ne PAS relancer
-   de joueur visuel sans accord explicite (coût).
-
-### Limites honnêtes
-
-Le binaire runner n'a pas été **lancé** (pas de GPU sur le runner non plus) :
-il est le produit de la même chaîne d'export que le binaire local vérifié,
-rien de plus. Profilage, budgets de frame et session 60 min : toujours
-impossibles ici (ISS-002).
-
----
-
-## 2026-08-04 — Passe H-1 : silhouettes (montagnes, nuage, citadelle, arbres)
-
-### Ce qui a été fait
-
-Diagnostic sur `evidence/phaseH/vista_horizon_etage.png` contre la grille
-§30.2 (≈ 40/100, honnêtement), puis correction des quatre pires défauts :
-
-- **Montagnes** : 44 crêtes + 64 massifs lointains convertis de `BoxMesh`
-  (« mur de gratte-ciels ») en `PrismMesh` à sommet décentré déterministe
-  (R-015 : `left_to_right`, vérifié dans la source 4.7.1).
-- **Nuage** : 14 grumeaux en deux étages, hauteur proportionnelle au rayon
-  (0,9-1,5×), jupe sombre — la « soucoupe » venait de lobes de 8-13 m de
-  haut pour ~26 m de rayon.
-- **Citadelle §2.4** : masse 24→34 m, épaules latérales, tours coupées à
-  4 hauteurs, spire en 3 segments + cône (sommet y = 100), conduit cyan.
-  L'éclair frappe désormais le SOMMET DE LA SPIRE (cellule remontée à
-  y 118 ; invariant testé |impact − spire| ≤ 6 m).
-- **Arbres torsadés** : feuilles rouge sang (RGB 95/13/13) → variante olive
-  (ratio V/R 1,48), 4 gltf repointés, dérivation dans `ATTRIBUTIONS.md`.
-- **Palette** : `COL_GRASS_LIT` recalé sur l'ancre `#B2C85A`.
-
-Fail-first : 13 échecs avant, 22 assertions vertes après
-(`test_phase_h_silhouettes.gd`).
-
-### Dettes découvertes par la suite complète (corrigées dans la foulée)
-
-1. Deux worktrees d'agents FUSIONNÉS traînaient dans `.claude/worktrees/`
-   → 228 faux « parse errors » (doublons de `class_name`). Supprimés.
-2. Le test de grâce anti-stunlock frappait 2× en 0,45 s : la fenêtre de
-   mercy (0,6 s, commit 9d55cf1) bloque désormais le 2e coup. Test recalé
-   sur [0,60 ; 0,85] s — son esprit (la grâce ne protège que la réaction)
-   est intact.
-3. Les berges de rivière pleine longueur (d3edd75) enterraient l'ancrage
-   de l'Arche de pierre 0,67 m sous leur pente. Berges percées sur la
-   travée du pont (x −24..−4) : le site garde son lit aménagé.
-
-### Verdict de la capture (`vista_h1_silhouettes`, commit 2ca5713)
-
-Gagné : arbres olive, nuage cumuliforme accroché au haut du cadre, spire et
-étagement de citadelle lisibles, crêtes triangulaires. Score §30.2
-auto-évalué ≈ 47/100 (baseline ≈ 40).
-
-### Passe H-2 exécutée (a/b/c/d — verdict)
-
-Quatre itérations tracées à l'instrument (sondes + mesures de zones) :
-l'éclair frappe la spire et se lit (colonne 18 m, halo 2,2 m) ; la face
-sud du plateau — le VRAI « mur-barrage » mesuré, pas le mur de bordure —
-porte 14 jupes ocre ; le mur de bordure porte 52 jupes hautes ; le sol a
-une variation macro RÉELLE (deux causes racines : distribution FBM
-gaussienne → gradient resserré, et mips en vue rasante → anisotrope +
-motifs 15 m — R-016). Score §30.2 auto-évalué ≈ 50/100 : les gains sont
-réels mais l'image reste dominée par les chantiers différés.
-
-### Passe H-3 exécutée (a/b/c — verdict)
-
-LA transformation de la Phase H à ce jour : la crête descend en PENTE
-vers la vallée (SpawnSlope ~15°, invariant testé : aucune marche > 4 m
-sur l'axe), le héros se tient au bord de la rupture (spawn z 146), la
-caméra plonge à −8° — la vallée est enfin EN CONTREBAS comme dans la
-référence, trois plans réels, l'éclair frappe la spire dans le cadre.
-L'audit des ancrages a gouverné le tracé deux fois (ferme abandonnée,
-puis sanctuaire forestier — déplacé à (34, 94), aucun test ne
-l'épinglait). Navmesh rebaké deux fois. Score §30.2 ≈ 52/100.
-
-### Passe H-4 exécutée — verdict
-
-Plafonds du fond nord testés (crêtes ≤ 96, pics ≤ 96 coins compris,
-rangée éloignée ≤ 112) et flore de pente (3600 brins qui épousent
-l'inclinaison ±0,6 m testé, 340 fleurs concentrées vers la rupture).
-Gain réel mais BORNÉ par la géométrie : à pitch −8° (haut de cadre
-+13°), un fond à 96 m sur 400 m pointe encore à ~10° — le ciel ne peut
-pas dépasser ~20 % du cadre tant que le CONTREBAS ne se creuse pas.
-La référence a ~60 m de dénivelé héros→vallée ; nous en avons 22.
-Score §30.2 ≈ 53/100.
-
-### Passe H-5 exécutée — verdict
-
-Crête à 32 m, contrebas 30 m (testé ≥ 28), pente raidie à 19,6° à emprise
-IDENTIQUE (zéro nouveau conflit d'ancrage), rampe A ré-ancrée, fumée du
-camp relevée avec l'œil (invariant croisé S3 verrouillé par le test :
-sommet 44,5 > 40). Le village se lit nettement EN DESSOUS — la profondeur
-a gagné ce que la géométrie promettait ; le ciel, peu (~+3 %, comme
-calculé). Score §30.2 ≈ 55/100. AVANT le patch : fausse alerte S1 donjon
-réfutée par bissection des journaux (R-017 — contention CPU, zéro
-régression réelle).
-
-### Passe H-6 exécutée — verdict
-
-Couronne de capture (anneau de cuivre patiné incliné, TorusMesh — la
-foudre la frappe), trois lignes d'énergie descendantes, quatre
-contreforts, pierre ocre/bronze (r−b 0,012 → 0,08). La couronne et les
-lignes portent l'identité « Résonance » de la focale ; la chaleur de la
-pierre se perd dans la brume à 360 m. Score §30.2 ≈ 56/100.
-
-### Prochaine action exacte (H-7 et au-delà — le mur de l'art)
-
-Les passes géométriques ont donné l'essentiel de leur valeur (40 → 55).
-Ce qui sépare 55 de 85 est désormais de l'ASSET : citadelle au langage
-§2.4 complet, camp lisible dans le cadre, matériaux painterly
-(SH_RockTriplanar/SH_GroundBlend réels), silhouettes de montagnes
-sculptées, pétales-quads. Chantiers plus longs, à séquencer en sessions.
-Reste aussi : flancs de SpawnSlope (dette H-3), correction de fond
-ISS-024 (budgets en ticks).
-
-### (ancien plan H-5)
-
-1. **Creuser le contrebas** : crête 24 → ~36-40 m (spawn, vista, pente
-   rallongée, paliers, meadow) OU plaine nord abaissée — à trancher en
-   ouvrant avec l'audit des ancrages ET le golden path (la descente
-   fait partie du chemin critique). C'est LE déblocage du ciel et de
-   la profondeur — les deux domaines §30.2 encore à la traîne.
-2. Fleurs de pente : les pétales-cubes lisent « Minecraft » en gros
-   plan — passer à 2 quads croisés ou réduire à 0,08 m.
-3. Flancs de la SpawnSlope (dette H-3, toujours ouverte).
-
-### Ancien plan H-4 (réalisé)
-
-1. **Ciel trop mince** (~15-20 % du cadre vs 38-48 % référence) : la
-   crête devrait dominer la vallée davantage, ou l'horizon descendre —
-   chantier macro-terrain (crête +8-12 m ? plaine −4 m ?), à trancher
-   avec l'audit des ancrages dès l'ouverture.
-2. **Fond pâle en boîtes** : la bande skyline/mur au-dessus du plateau
-   reste l'élément le plus « graybox » du cadre — passer les GRANDES
-   faces au langage prismes/jupes, ou les fondre davantage (fog).
-3. **Fleurs et brins sur la pente** : la rupture est nue — la référence
-   y met fleurs et herbes longues (§1.1 : premier plan végétal Y 72-100 %).
-4. **Flancs verticaux de la SpawnSlope** (dette H-3) : adoucir par
-   éboulis/prismes.
-
-### Passe H-3 — limites honnêtes
-
-Camera §1.1 vérifiée par calcul avant travaux : azimuts déjà conformes
-(héros 0,42, citadelle 0,50, camp 0,85, pylône 0,96 — l'ordre de la
-référence) ; le manque était VERTICAL, d'où la pente. La « tour blanche »
-suspectée était la cascade (écume COL_FOAM) — conforme à la référence,
-conservée.
-
-### Limites honnêtes
-
-Rendu llvmpipe : la capture prouve la composition et les couleurs, jamais
-la performance. Le score §30.2 restera une auto-évaluation tant qu'aucune
-revue contradictoire à contexte frais n'a tranché.
-
----
-
-## 2026-08-05 — Blocs A→D : Prompt 4 installé, H-7, golden path, release, VERDICT DE GATE
-
-(Entrée de rattrapage — la revue contradictoire a relevé, à raison, que le
-journal s'arrêtait avant H-7.)
-
-### Fait
-
-- **Prompt 4 installé** (`ART_DIRECTION_MODE.md`) + `ART_DECISIONS.md`.
-- **Bloc A** : `AUDIT_V0_PHASE_H.md`, `SOURCING_MATRIX.md`, AD-001/002/003.
-- **Bloc B — H-7 a/b/c** : matière macro étendue à roche et montagne, fleurs
-  ellipsoïdes, flancs de pente (surdimensionnés puis réduits sur capture),
-  fog aerial 0,62→0,48 mesuré. Dette du verdict sérialisé soldée
-  (test_valley_dressing recalé crête 32).
-- **Bloc C** : golden path 4/4 VERT (boss, donjon ×2, traversal) ;
-  Release `playtest-65709df` (source + binaire Linux).
-- **Bloc D** : cinq caméras de gate (§21.5), captures produites — deux
-  aveugles CONSIGNÉES (ISS-025 salle noire, ISS-026 caméra boss) ;
-  cadence complète 4 cycles dans `ROADMAP.md`.
-
-### VERDICT GATE H : FAIL (revue contradictoire à contexte frais)
-
-Score prouvé ≈ 31-41/100 (auto-éval 56 trop généreuse de 15-25 pts) ;
-2 captures aveugles sur 5 ; chemin critique en placeholders assumés ;
-HeroShotLab jamais construit ; VICE DE FORME : la North Star précédait
-H-7c (capture ≠ code livré). Détail complet : `TEST_REPORT.md`.
-
-### Corrections adoptées (les 5 de la revue, ordonnées)
-
-1. Lumière fin d'après-midi réelle (direct 1,45 / ambiance 0,55) — FAIT,
-   à prouver par recapture ;
-2. Recadrages boss/camp + recapture North Star depuis HEAD — FAIT au
-   commit suivant ;
-3. Rivière en S turquoise (Cycle 3, chantier eau) ;
-4. Camp dans le cadre North Star + pylône 75-79 % X (Cycle 3) ;
-5. Éclair cœur blanc + nuage modelé + cape héros (Cycle 3) ; vidéo
-   10-20 s = machine utilisateur.
-
-### Prochaine action exacte
-
-Cycle 1 de la cadence : **P2-0** (audit Prompt 2, `PROMPT2_AUDIT.md`,
-baseline, backlog) puis P2-1/P2-2 (Bracelet). Les corrections 3-5
-attendent le Cycle 3 — ne pas re-décorer avant le systémique.
-
-## 2026-08-05 — Coursier d'assets + P2-0 + P2-1 (latence instrumentée)
-
-### Fait
-
-- **Coursier v2 vert** (workflow `asset-courier.yml`, run n°2) : 6 packs
-  Kenney dans `source_assets/external/` — Mini Arena **CC0** (colonnes,
-  murs, statue, bannière, râtelier, épée, lance : kit donjon/camp §10.2),
-  starter kits MIT (sons locomotion/impact/ambience, sprites VFX).
-  Licences lues et consignées (`ATTRIBUTIONS.md`, `SOURCING_MATRIX.md`).
-  Échecs documentés : KayKit et Quaternius absents de leurs GitHub,
-  kenney.nl direct 404. Promotion vers `assets/` manuelle, à l'usage.
-- **P2-0** : `PROMPT2_AUDIT.md` commis — constat central : le Bracelet
-  n'existe pas (zéro ligne) ; backlog P2 ordonné.
-- **P2-1** : `LatencyProbe` (réception au front d'événement dans le SEUL
-  lecteur d'InputMap, consommation au changement d'état réel, refus
-  expliqués) ; test fail-first `test_p2_latency.gd` rouge→vert : saut et
-  attaque légale **≤ 1 tick physique** via la vraie chaîne
-  `parse_input_event → _input → intent → tick`. `LabOverlay` dans
-  TraversalPlayground et CombatLab. Articulation avec `LatencyInstrument`
-  B.5 consignée (D-048) ; D-047 : ReactionSystem = nœud de scène, pas
-  d'autoload. `GAMEPLAY_BIBLE.md` créée (P2 §1.2).
-- **Validation par tranches** (leçon : la suite monolithique meurt entre
-  les tours — 2 morts silencieuses) : import OK, parse 236 scripts OK,
-  unitaires **109/109**, intégration **502/502**, playthrough en cours au
-  moment de cette entrée (verdict ci-dessous ou au commit suivant).
-
-### Prochaine action exacte
-
-FAIT depuis cette entrée : lois 6/6 + 8 profils .tres 2/2 (`4bc430c`) ;
-Pulse 5/5 (`test_resonance_pulse` : rayon+LOS, jamais à travers un mur,
-cooldown refuse/rend la main, expiration, bruit entendu par les ennemis),
-action `resonance_pulse` (physique 81 = étiquette AZERTY A + d-pad haut),
-`ResonanceController`/`ResonanceTargetComponent`, câblage contrôleur avec
-sonde (consommé/refusé). Non-régression : input 18/18, latences 6/6.
-
-Prochaine action : **Arc Link** (P2 §3.3) fail-first — sélection de deux
-ports compatibles, lien temporaire = nœud CABLE injecté dans le graphe
-électrique existant (propagation/cycles déjà prouvés Gate F), annulation
-sûre (port détruit, hors portée, rechargement).
-
-## 2026-08-05 (suite) — P2-2 : les CINQ opérations du Bracelet prouvées
-
-### Fait (chaque tranche fail-first : rouge prouvé avant l'implémentation)
-
-- **Lois** (`4bc430c`) : MaterialProfile/ElementPacket/MaterialStateComponent/
-  ReactionSystem — 6/6 + 8 profils canoniques 2/2.
-- **Pulse** (`0208282`) : 5/5 — LOS réelle, cooldown, expiration, bruit
-  entendu par les ennemis ; action `resonance_pulse` (étiquette AZERTY A).
-- **Arc Link** (`d481f89`) : 6/6 — nœud CABLE injecté dans le graphe du
-  Gate F ; transporte sans créer ; un seul lien ; dissolution sûre.
-- **Polarité** (`b6d607a`) : 5/5 — impulsions bornées Jolt, vitesse
-  plafonnée, continuité tick à tick, rupture à la décharge.
-- **Arc Step** (`6be890c`) : 5/5 — sweep de capsule intégral, coût à
-  l'exécution seulement, validation d'arrivée, budget de secours 0,8 s.
-- **Ground** (commit courant) : 3/3 — startup immobile 0,35 s, drainage
-  ENTIER ou RIEN, annulation propre si la cible s'échappe.
-
-### Fait ensuite (même nuit) : le focus rend le Bracelet JOUABLE
-
-`test_resonance_focus` 6/6 (fail-first) : sélection par axe de visée + LOS,
-hystérésis au cycle, dispatch par nature de cible (ancrage→Arc Step,
-port→lien en deux temps avec oubli du A au relâchement, métal→Polarité),
-et le clic en focus ne déclenche JAMAIS l'épée (verrous épée/lourde/
-molette-armes/molette-lock-on pendant le maintien). Ground direct sur T
-(cible auto = objet chargé le plus proche, groupe `material_states`).
-Actions câblées : A=Pulse, G=focus (maintien)+L1, T=Ground, d-pad
-haut/gauche manette. Résonance 31/31.
-
-### Fait ensuite : ResonanceLab + clôture P2-2
-
-`ResonanceLab.tscn` jouable (zones Pulse/LOS, Link avec lampes pilotées par
-`power_changed`, Polarité avec recharge de lab, fosse d'Arc Step, Ground) —
-test structurel 1/1, Résonance 32/32. Liens d'Arc Link éphémères par design
-(D-049) : rien à persister. **P2-2 est TERMINÉ hors présentation** — les
-VFX/audio des cinq opérations rejoignent la passe visuelle du Cycle 3.
-
-### Fait ensuite : P2-3 tranche 1 — garde et déviation parfaite
-
-`damage_gate` GÉNÉRIQUE sur la hurtbox (le Briseur §14.3 pourra s'en
-servir) ; garde = clic D tenu avec une arme de mêlée (l'arc vise), cône
-frontal 135°, blocage à 20 % de dégâts contre endurance (GuardBreak à
-jauge vide), déviation parfaite dans les 0,12 s de la levée : zéro dégât,
-zéro endurance, Clarity 0,35 s, et la POISE de l'attaquant paie (40) — le
-stagger passe par le composant, pas par un script spécial. Un coup bloqué
-ne déclenche NI HURT NI mercy (recul court seulement). Tuning data-driven
-(`guard_default.tres`). 4/4 fail-first ; non-régression hurt 6/6, combat
-10/10, raiders 22/22, boss 11/11, buffs 4/4.
-
-### Fait ensuite : P2-3 tranche 2 — la posture
-
-`PostureComponent` partagé (jauge tactique : rupture UNIQUE, recharge
-après accalmie, jamais de re-rupture à zéro) ; `posture_damage` transporté
-de bout en bout (AttackDefinition → AttackController → Hitbox →
-DamageEvent) ; le Briseur MIGRÉ dessus sans changer un seul comportement
-observable (5/5 historiques verts — l'arc et l'amorti restent à lui, la
-jauge est le composant, le même que portera le boss en P2-5) ; un coup à
-posture_damage 12 brise sa garde en UN coup même à 2 de dégâts ; la
-déviation parfaite nourrit la POSTURE quand la cible en porte (6 par
-parade → 2 parades brisent un Briseur), la POISE sinon. 3/3 fail-first.
-
-### Fait ensuite : P2-3 tranche 3 — identités d'armes
-
-Constat d'entrée : TOUTES les familles empruntaient les attaques de
-l'épée, lourde comprise (câblée en dur dans Player.tscn) — les « six
-recolorations » que P2 §7.5 interdit. Fait : `heavy_attack` et
-`parry_window_bonus` sur WeaponDefinition ; le contrôleur échange la
-lourde avec l'arme (repli = export historique) ; CINQ lourdes de famille
-en pure data — gourdin `club_heavy_sweep` (recul 7, projette), lance
-`spear_heavy_thrust` (perce vite, recovery long), hache `axe_heavy_break`
-(posture 12 = brise la garde d'un Briseur EN UN COUP, startup 0,55 très
-annoncé), lame `blade_heavy_surge` (élément électrique), épée garde la
-sienne + bonus de déviation 0,04 s. 2/2 (45 assertions) ; non-régression
-armes 9/9, combat 10/10, garde 24/24, boss 11/11. ISS-027 consigné
-(faux « ok » du runner sur erreur post-assertion).
-
-### Fait ensuite : P2-3 tranche 4a — sélection utilitaire explicable
-
-Constat : le `CombatCoordinator` était DÉJÀ conforme §12.8 (tokens 2
-mêlée + 1 lourde, purge structurelle — jamais de référence morte —,
-plafond 14 IA) : rien à refaire. Le manque réel était l'EXPLICABILITÉ
-(P2 §8.1). Fait : `UtilityBrain` (choix scoré, trace des trois meilleurs
-avec raisons, égalité départagée par priorité de déclaration) 2/2 ;
-l'azur refactoré dessus — rouvrir/flanquer/presser aux MÊMES seuils que
-la cascade historique (22/22 raiders verts), mais chaque décision se lit
-(`chase_trace()`). Leçon de mise en scène récurrente consignée deux fois
-cette nuit : le pivot ennemi regarde +Z par défaut — placer le joueur
-côté +Z ou tourner le pivot, sinon pas d'aggro.
-
-### Fait ensuite : P2-3 tranche 4b — camp trois approches. P2-3 TERMINÉ.
-
-La diversion s'est prouvée SYSTÉMIQUE du premier coup : Pulse depuis un
-couvert plein → le garde passe suspicious/investigate, quitte son poste
-vers le bruit, et n'atteint JAMAIS alert (il n'a rien vu — §12.7, zéro
-omniscience). Aucun code d'infiltration dédié : la chaîne P2-2 × bruit
-existante suffisait — c'est le pilier « le monde écoute » qui paie.
-L'approche environnement : une caisse métallique chargeable par
-campement braise (RigidBody + profil métal + marqueur Polarité), cible
-légitime de Polarité (projeter) et Ground. 2/2 (10 assertions),
-territoires 8/8.
-
-**P2-3 est TERMINÉ** : garde/déviation, posture, identités d'armes,
-utility explicable, tokens (déjà conformes), camp trois approches.
-
-### Fait ensuite : P2-4a — l'autel de terre (premier POI Bracelet)
-
-Greffé au sanctuaire forestier existant (densité avant étalement) : un
-cœur PRÉ-CHARGÉ (profil terre conductrice, 4 d'énergie) posé sur l'autel,
-ciblable au Bracelet ; le mettre à la terre allume la stèle dormante —
-conséquence par SIGNAUX d'états réels (patron ResonanceLab), et la
-recharge lente du composant ré-arme l'exercice (la stèle s'éteint quand
-le cœur se rallume — cohérence lisible). C'est l'« exercice sûr » de
-Ground que P2 §3.7 exige avant le donjon. 2/2 fail-first (10 assertions),
-reliques 7/7, monde 9/9.
-
-### Fait ensuite : P2-4b — pont magnétique (composant) + correctif décroissance
-
-DÉFAUT DE DESIGN repéré et corrigé fail-first : la décroissance de
-charge universelle (0,35/s) aurait vidé tout cœur de POI en ~11 s —
-l'autel se serait éteint avant l'arrivée du joueur. Correctif :
-`charge_decay_enabled` (7/7), faux sur les cœurs de POI, la loi par
-défaut inchangée partout ailleurs. L'autel corrigé.
-
-Le PONT MAGNÉTIQUE (2/2, 11 assertions, vert du premier coup) : diorama
-autonome (rives + vide + tablier chargé qui retient sa charge) ; on se
-poste DERRIÈRE et on REPOUSSE (la Polarité enseigne son second mode) ;
-l'entrée en zone verrouille — gel, alignement par transform (légitime :
-plus un corps actif), mise à la terre (le raccourci est DÉFINITIF, la
-Polarité répond ensuite pas_charge), signal unique, rayon de portance
-prouvé au centre du vide.
-
-### Fait ensuite : P2-4c — le pont est dans la vallée
-
-Sonde d'abord (`tools/godot/probe_bridge_site.gd` : 8 candidats sur la
-route des ruines, tous plats à y = 2,00) ; site retenu (−34, 3, 44),
-lacet 90°, entre l'aqueduc et la ferme. Implanté dans ValleyRelics comme
-32ᵉ LIEU déclaré (POI valley.poi.magnetic_bridge.01, ancre PUZZLE sur la
-rive lointaine). Deux défauts attrapés par les suites de lieux : ancre
-enterrée (y local −0,5 = dans la rive → 0,0) et DOUBLE attache (la table
-ANCHORS attache déjà via _place_poi). Placement 1/1 (8 assertions),
-reliques 7/7 (compte 4→5 délibéré), ancres 8/8 (33 saines).
-
-### Fait ensuite : P2-4d — le bassin conducteur (33ᵉ lieu)
-
-Composant `ConductiveBasin` 2/2 : circuit pré-arrangé avec UN maillon
-manquant (source à 6 m de l'eau, hors portée des ports), un seul Arc
-Link source→eau complète — le courant TRAVERSE l'eau (la leçon) et
-allume le récepteur ; dissoudre rend tout (transport, jamais création).
-Un défaut de géométrie attrapé par le rouge : le récepteur à 0,67 m du
-port de l'eau (portée 0,6) — rapproché à 0,5. Placement sondé (16, 2,
-28, rive est du S), 33ᵉ lieu déclaré (POI + ancre PUZZLE), reliques 7/7
-à SIX lieux, ancres 8/8 (34 saines).
-
-### Fait ensuite : P2-4e — les trois Fragments (4/4, 22 assertions)
-
-API stricte (trois identifiants connus, jamais deux fois, l'inconnu
-refusé, signal). ÉCHO : le contrôleur rejoint un groupe
-`noise_listeners` (NoiseEvents étendu — même fait de perception, un
-groupe de plus), mémorise la dernière source FRAÎCHE (≤ 8 s), et le
-Pulse émet une direction normalisée — jamais son propre bruit (garde
-anti-boucle pendant l'émission). FLUX : une terre ≥ 2 de charge rend
-15 d'endurance (nouvelle API StaminaComponent.restore, notifiée),
-cooldown 10 s. ÉLAN : l'arrivée d'Arc Step conserve 35 % de l'élan,
-plafonné à la vitesse de course. Deux bugs de MESURE corrigés en route
-(pic capté pendant le dash encore actif ; régénération naturelle
-polluant la phase cooldown — dépenser juste avant mesure).
-
-### Fait ensuite : éclats posés + persistance — P2-4 TERMINÉ
-
-`FragmentPickup` (contrat WeaponPickup : interactable, §19.3,
-mark_taken_silently) ; les trois éclats posés à LEURS écoles — Flux à
-l'autel de terre, Élan sur la rive lointaine du pont, Écho au bassin —
-la leçon et sa récompense au même endroit. Un éclat d'un fragment déjà
-détenu REFUSE et reste en place. Persistance : champ `fragments` du
-payload ValleyWorld (chaînes primitives §19.2), re-accord au chargement
-(grant refuse les doublons), suppression des éclats déjà pris (même
-boucle que les armes au sol). 2/2 (17 assertions) ; non-régression
-reliques 7/7, monde 9/9, save 15/15. Intégration 566/566 (post-
-Fragments). **P2-4 est TERMINÉ.**
-
-### Fait ensuite : P2-5 tranche 1 — le BossDirector (5/5, 122 assertions)
-
-L'audit a trouvé le `randf() < 0.45` pur dans `_choose_attack` de
-StormGuardian — exactement ce que P2 §10.5 interdit. Fail-first :
-`test_boss_director.gd` rouge prouvé, puis `BossDirector` (RefCounted,
-seed 0 = tirée puis CONSIGNÉE) : bibliothèque taguée {portée, phases,
-cooldown, poids}, filtre de légalité → anti-répétition (le dernier
-choix s'écarte SI une alternative légale existe) → tirage pondéré sur
-générateur semé → historique. `&""` = rien de légal, le boss ATTEND
-(fallback déterministe). Contrats verts : légalité seule (60 tirs),
-jamais deux de suite, pas de famine du seul légal, seed 42 rejoue la
-même séquence ×15, cooldown + historique ordonné. StormGuardian migré :
-`director_seed` exporté, bibliothèque combo/frappe_sol/arc reflétant
-le comportement historique, cadences 2,2/1,7 et 3,4/2,6 conservées,
-`_phase_tag()` (PHASE2/OVERLOAD → phase2). Suites boss 38/38 ;
-playthrough boss_run 1/1 (toutes phases traversées, boss vaincu 0/560)
-— le directeur décide désormais chaque coup du Gardien.
-
-### Fait ensuite : P2-5 tranche 2 — la posture du boss (0/11 → 5/5)
-
-Intégration complète post-directeur d'abord : **688/688, zéro échec**.
-Puis le Gardien reçoit le `PostureComponent` PARTAGÉ (celui du
-Briseur) : max 36 (trois lourdes de hache à 12), recharge 9/s après
-5 s d'accalmie. Rupture = même écroulement que la mise à la terre mais
-fenêtre de 3,5 s < 6 s — « alternative plus lente par posture »
-(P2 §10.2), la terre reste le chemin roi et REMET la jauge à neuf (pas
-de double peine). Seuls les coups à intention brise-garde
-(`posture_damage > 0`) nourrissent ; l'éveil (§16.1) et la fenêtre déjà
-ouverte sont exclus ; les pylônes ne se déchargent pas sur une rupture
-(ils n'y sont pour rien). Rouge prouvé 0/11, vert 5/5 (22 assertions),
-boss 43/43, playthrough inchangé — le golden path ne porte aucun
-`posture_damage`, dérive nulle par construction.
-
-### Fait ensuite : P2-5 tranche 3 — l'eau du donjon parle les lois (6/6)
-
-L'audit a montré que le profil `eau` ne STOCKE pas (capacité 0,
-conductivité 1) : la vérité des lois n'est donc pas « l'eau se
-charge » mais « l'eau RELAIE ». Implémenté dans `ElectricHazard`
-(WATER_ZONE seulement) : matière `eau` portée par la nappe, arbitre
-`ReactionSystem` garanti (localisé, sinon créé en nœud de scène —
-D-047), masque élargi aux props (128 — le chemin de dégâts ne lit que
-les hurtbox, dérive nulle), `body_entered` → paquet `wetness` (l'eau
-mouille, tension ou pas), et pendant la décharge : une impulsion
-électrique par cadence de dégâts et par cible À MATIÈRE (action_id
-par impulsion, chaîne anti-boucle §4.3). Le métal baigné est mouillé
-puis chargé (couplage humide ×1,5), le bois traverse sans jamais se
-charger, une eau mise à la terre SUSPEND le relais (la terre est une
-loi de matière, pas un coupe-circuit : les dégâts du graphe
-continuent). La planche de la salle 4 est du bois aux yeux des lois.
-Rouge 1/10 prouvé (le test-gardien des dégâts §13.5 vert avant ET
-après — c'est son rôle), vert 6/6 ; salles 44/44, réactions 7/7,
-playthrough donjon 2/2.
-
-### Fait ensuite : P2-5 tranche 4 — hints gradués (rouge → 5/5)
-
-`PuzzleHintTracker` (P2 §9.8) : trois échecs OBSERVÉS ouvrent le
-palier 1 (rappeler la LOI), six le palier 2 (attirer vers la CAUSE),
-neuf le palier 3 (montrer la RELATION) — le temps seul n'ouvre RIEN
-(prouvé : 120 ticks sans montée), jamais la séquence complète au
-premier palier, salle résolue = silence définitif (`close()` branché
-sur `solved`/`rerouted`). `DungeonRoom.install_hints` branche les
-échecs RÉELS que chaque salle possède déjà : bouton reset pressé,
-objet essentiel hors limites (`rescued`), décharge subie par le joueur
-(équipe `hazard` seule — un combat perdu n'est pas un échec d'énigme).
-Textes loi/cause/relation par salle. Présentation graybox intégrée
-(ligne discrète, remplacée au Cycle 3) ; l'option §12.3 viendra avec
-l'écran d'options. Rouge prouvé (classe absente), vert 5/5 dont les
-DEUX branchements réels (salle 1 : reset ×3 → palier 1 ; salle 4 :
-décharges comptées + reset → palier 1). Salles 44/44, donjon 2/2.
-Solveur : déjà prouvé au Gate F (256 configurations, salle 3).
-**P2-5 est TERMINÉ — le Cycle 2 (P2-3 → P2-5) est complet.**
-
-### Fait ensuite : clôture du Cycle 2 — 704/704 + revue PASS
-
-Suite intégrale de clôture sur arbre propre `e284ffd` : **704/704,
-zéro échec** ; preuves datées commit `1337550`
-(`evidence/p2_5/2026-08-05_cloture_cycle2.md`). **Revue contradictoire
-à contexte frais : PASS** — elle a rejoué la suite intégrale (704/704,
-code 0, zéro SCRIPT ERROR) et les suites ciblées, tenté un
-contre-exemple sur le relais mis à la terre (échoué : l'assertion
-discrimine), vérifié les textes des quatre salles (le 1er hint est la
-loi partout). Sept faiblesses non bloquantes consignées → ISS-028
-(bibliothèque du directeur partiellement taguée), ISS-029 (la parade
-contourne les gardes de posture du boss — exposition nulle
-aujourd'hui), ISS-030 (asymétrie eau vallée/donjon), ISS-031 (sources
-d'échec inégales des hints). **Cycles 1 et 2 de la cadence : CLOS.**
-
-### Fait ensuite : Cycle 3 tranche 1 — HeroShotLab construit (5/5) + capture v0
-
-Le lab que la revue du Gate H a nommé comme jamais construit EXISTE
-(`scenes/lookdev/HeroShotLab.tscn`). Idée clé : les éléments lointains
-sont AUTORÉS EN CONTRAT D'ÉCRAN — `_world_at(x %, y %, distance)`
-inverse la projection de la caméra North Star, donc un anchor posé à
-(63,5 %, 61 %, 90 m) TOMBE dans sa fenêtre par construction ; le test
-revérifie par la projection directe, indépendamment. Fail-first rouge
-(classe absente) puis 5/5 (41 assertions) : éléments §11.1, caméra
-§3.1 (FOV 44° vertical = 71,4° horizontal — le piège « 68 en
-vertical » évité et documenté), fenêtres §1.1 (héros 41,6 % X pieds
-91,9 %/tête 43,5 %, camp 63,5 %, pylône 77 % base 57 %/sommet 16,6 %,
-citadelle 50,5 %, spire 10 %), rivière en S (2 inflexions), plans
-90/105/316 m. Incohérence INTERNE de la bible documentée : un pylône
-d'asset 28-36 m ne peut pas remplir sa fenêtre verticale à 140-190 m
-(il faudrait ~52 m) — posé à 105 m, fenêtres du cadre prioritaires.
-Capture v0 réelle (llvmpipe, arbre `ce76b24` propre, manifeste) :
-le contrat TIENT à l'image (pylône 76 % X, couronne 18 % Y) ; six
-défauts v0 diagnostiqués et ORDONNÉS dans
-`evidence/cycle3/2026-08-05_herolab_v0.md`.
-
-### Fait ensuite : HeroShotLab v1 — la vallée SE LIT (v0→v1 consigné)
-
-Les six défauts v0 corrigés (`evidence/cycle3/2026-08-05_herolab_v1.md`,
-capture officielle depuis arbre committé `5e59415`). Découverte
-structurante, prouvée par calcul d'occlusion et documentée dans le
-code : un plateau à bord franc OCCULTAIT toute la vallée depuis la
-caméra quasi horizontale — le héros se tient désormais sur une PENTE
-CONTINUE de 8° (ligne de fuite ~63 %), et rivière/camp/pylône/chemin/
-herbe épousent ce profil. À l'image : ruban turquoise visible, camp
-lisible (tentes, DEUX fanions, flamme renforcée, fumée), pylône
-couronné cyan au tiers droit, citadelle étagée sous l'orage (brouillard
-0,0045 + perspective aérienne 0,5), bras du héros posés à l'os (aucune
-animation dans le glTF — sondé). Contrat `test_hero_shot_lab` 5/5
-(41 assertions) MAINTENU à chaque itération ; le test de la rivière
-encode la physique de la ligne de fuite.
-
-### Fait ensuite : HeroShotLab v2 — les 4 chantiers + le verdict du gris
-
-v2 faite et poussée (`782480d`, contrat 5/5 maintenu) : amorce de
-rivière bas-gauche DEVANT le héros, phrases d'herbe §7.4 (touffes
-inégales, densité au cœur, vides) + fleurs en groupes (bleues rares),
-éclair majeur TENU dans la fenêtre de capture (`hold_flash`, §21.5),
-horizon montagneux §1.1/§3.3 qui referme la part de ciel. Protocole
-§30.1 exécuté : capture officielle + vignette 320×180 + NIVEAUX DE
-GRIS (`evidence/cycle3/2026-08-05_herolab_v2.md`). Le gris rend un
-verdict précieux : héros et nuage tiennent (masses les plus sombres),
-mais rivière/camp/pylône/citadelle FUSIONNENT dans une bande 60-75 % —
-la rivière ne vit que par son cyan, ce que §1.5 interdit.
-
-### Fait ensuite : HeroShotLab v3 — la passe de valeurs (v2→v3 consignée)
-
-La charte du gris exécutée (`8f6fc1e`, evidence
-`2026-08-05_herolab_v3.md`) : rivière à lit sombre + BERGES (lisible en
-gris, l'interdit §1.5 levé), citadelle en masse dédiée 35-60 % avec le
-brouillard au point d'équilibre MESURÉ (0,0022 — à 0,0045 la
-transmittance de 24 % à 316 m plafonnait tout le lointain à ~65 %,
-citadelle et montagnes fusionnaient), toiles du camp assombries,
-étagement §1.3 en valeurs (falaises sombres/chaudes devant, montagnes
-pâles au fond). Protocole §30.1 exécuté sur la v3 (couleur + vignette
-+ gris, capture officielle depuis arbre committé). Contrat 5/5
-maintenu à chaque itération.
-
-### Fait ensuite : Passe V3 — les 5 signes du héros (0/8 → 4/4)
-
-`HeroSigns` réutilisable (`scripts/player/hero_signs.gd`), volumes
-graybox aux os sondés : mantelet turquoise (#168F9B désaturé, JAMAIS le
-cyan électrique — écart RGB testé) couvrant les épaules à deux pointes
-INÉGALES, épaulière ivoire/bronze côté OPPOSÉ au Bracelet, Bracelet à
-l'avant-bras gauche (canal cyan, émission 0,8 discrète), X arc/carquois
-en diagonales opposées (28°/−20°). Placement en GLOBAL à l'attache (les
-axes locaux d'un rig importé ne sont pas fiables), itéré par capture
-(« sac à dos » → cape d'épaules). Leçon API : `Color.distance_to`
-n'existe pas (4.7.1). Suites héros 17/17 ; evidence v4 + carte des
-masses sombres (étiquetée honnêtement : PAS la silhouette §30.3 — le
-vrai outil est `SilhouetteLineup` SILHOUETTE_FLAT=1).
-
-### Fait ensuite : v5 (doigts/ruban/fumée) + planche de silhouettes signée
-
-v5 (`03fb65c`) : phalanges repliées (l'éventail de bind pose trahissait
-le mannequin), amorce de rivière resserrée en ruban, fumée assombrie —
-17/17. Puis `SilhouetteLineup` monte le héros SIGNÉ et DE DOS
-(`fc66774`) : la planche §30.3 en aplats montre SEPT silhouettes toutes
-distinctes — le X et le mantelet cassent le contour du héros
-(`evidence/cycle3/silhouettes_signees.png`, suites 8/8).
-
-### Prochaine action exacte
-
-**Le Cycle 3 côté conteneur est au taquet : les prochaines étapes
-passent par la machine utilisateur.**
-1. MACHINE UTILISATEUR (`docs/MANUAL_VALIDATION.md`) : juger le
-   HeroShotLab v5 au protocole §30.2 (score /100) — le gate
-   intermédiaire §29 V2 exige ≥ 75 avant tout remplacement de proxies,
-   ≥ 85 avant propagation ; plus les contrôles §21.4 en souffrance
-   (AZERTY réel, manette) et le feel des labs (Resonance/Combat).
-2. Si le gate passe : **V4 ROADMAP** (propagation de la recette du lab
-   à la vallée réelle — pente/valeurs/phrases d'herbe/berges sur
-   `ValleyWorld`, mêmes contrats de composition en tests).
-3. Sinon : itérer le lab sur les défauts nommés par le score.
-Chantiers conteneur encore ouverts si besoin : ISS-027 (tranche
-outillage du runner), ISS-031 (sources d'échec des hints salles 2-3).
-
-### Fait ensuite : ISS-027 RÉSOLU — le runner ne ment plus
-
-Le faux « ok » (erreur de script après une assertion passée = méthode
-avortée, comptée réussie) est mort : le runner lit le journal de SON
-processus (`user://logs/godot.log`) et la moindre `SCRIPT ERROR` rend
-la suite ROUGE, ligne de vérité imprimée à chaque passage. Sonde
-rouge/vert : « ok, code 0 » avant, « ÉCHEC ISS-027, code 1 » après ;
-zéro faux positif (hints 7/7, directeur 5/5 — 0 erreur). Les preuves
-fail-first futures n'ont plus besoin du contournement manuel.
-
-### Fait ensuite : ISS-031 RÉSOLU — chaque salle observe ses vrais échecs
-
-Salle 3 : une rotation qui ne fait pas PROGRESSER le courant est un
-échec observé (§9.8) — `turned` arme, le recalcul du graphe compare
-(relais alimentés + récepteur qui VAUT la solution). Salle 2 : chute
-AÉRIENNE rapide (> 4,5 m à > 5 m/s — l'ascenseur au sol et la descente
-d'escalade lente ne comptent pas). Fail-first 5/8 → 7/7 (19 assertions)
-avec DEUX bugs de staging de test corrigés en route, prouvés par sonde :
-`turn_one_step` incrémente l'index immédiatement (attendre l'ANIMATION
-qui émet `turned`), et `is_on_floor()` reste vrai un tick après un
-téléport (laisser la chute commencer). Blindage revue P2-5 posé
-(`before < capacité` au test de terre). Non-régression : salles 44/44,
-lois 6/6, donjon 2/2.
-
-### Fait ensuite : suite 713/713 + ISS-030 RÉSOLU (l'eau unifiée)
-
-Suite intégrale de fin de session : **713/713, zéro échec** (arbre
-`39bb653`, relancée après un redémarrage conteneur). Puis ISS-030 :
-`WaterMatterComponent` PARTAGÉ (scripts/reaction) — matière `eau` sur
-le NŒUD électrique des deux côtés, mouillage à l'entrée (tension ou
-pas), relais borné sous tension (cadence héritée du danger côté
-donjon), terre = suspension. Le bassin de la vallée gagne sa zone de
-baignade et reste une école SÛRE (zéro dégât — P2 §9.6) ; le hazard ne
-garde que le chemin de dégâts §13.5. Fail-first 0/6 →
-`test_water_unification` 3/3 (le relais prouvé par un VRAI Arc Link,
-et l'unification STRUCTURELLE : même classe des deux côtés).
-Non-régression : lois 6/6, bassin 3/3, salles 44/44, réactions 7/7,
-donjon 2/2. Changement délibéré documenté : les tests qui lisaient
-`MaterialState` sur la racine du hazard lisent le nœud.
-
-## 2026-08-06 — Passe art « wahou » (Prompt de lancement) : Lots 1-2
-
-Nouveau mandat : passe art visuelle en continuation du Cycle 3, sur
-branche dédiée `claude/eclats-art-visual-pass-tyfhgc` (tout le tip le
-plus avancé fusionné dedans, `fa7243d`). Rappels contraignants tenus :
-gameplay INTOUCHABLE, score /100 à l'humain sur GPU, jamais « 60 FPS »,
-push après chaque lot.
-
-### Lot 1 — auto-évaluation sévère v5 + bifurcation AD-004
-
-Grille §30.2 appliquée durement au v5 committé : **58/100 `UNVERIFIED`**
-(`evidence/cycle3/2026-08-06_eval_v5_severe.md`). Sous le seuil 75 du
-gate intermédiaire → décision consignée AD-004 (révocable) : **itérer
-le lab avant toute propagation V4**, dans l'ordre des domaines faibles
-(lumière 8/15, matériaux 5/10, mouvement 2/10).
-
-### Lot 2 — `SH_CharacterPainterly` existe, trois pilotes 3/3
-
-LE chantier nommé depuis la Phase H : half-Lambert, deux paliers FONDUS
-(`ramp_soft` ≥ 0,08 contractuel — toon dur interdit), Gooch chaud/froid
-réservé au soleil (`LIGHT_IS_DIRECTIONAL` vérifié dans la source 4.7.1),
-plancher d'ombre §1.5, rim discret, macro lente, spéculaire coupé.
-Fail-first 0/6 → `test_painterly_pilot` 3/3 (28 assertions, garde
-ISS-027 « 0 erreur journal »). Trois pilotes SEULEMENT (bible §29 V1) :
-rocher `CliffLeftNear`, touffe `Grass_0_0`, héros entier (9 meshes, la
-texture d'albedo du modèle extraite puis rebranchée). Non-régression
-héros 17/17. Evidence v6 : capture officielle depuis `504f01d`,
-vignette + gris — les bandes de valeurs §1.5 SURVIVENT au grade
-(deltas localisés aux pilotes : falaise 47,6→44,0 %, héros 28,6→25,8 %,
-reste inchangé au dixième). Note : `2026-08-06_herolab_v6.md`.
-
-### Prochaine action exacte
-
-1. Relancer la suite intégrale sur la branche art pour classer les deux
-   échecs intermittents observés (boss_arena checkpoint,
-   antisoftlock retour) : déterministe → tranche de débogage ;
-   intermittent → blinder les fenêtres + occurrence ISS-024.
-2. Lot 3 : vidéo de stabilité 10-20 s (§30.1, jamais produite).
-3. Étendre le painterly aux autres surfaces du lab, puis re-évaluation
-   sévère + revue contradictoire ; V4 seulement si ≥ 75 tenu.
-
-### Fait ensuite : Lot 3 — la vidéo de stabilité EXISTE (et elle a mordu)
-
-Première séquence §30.1 du projet : dolly 18,1 s (arrêt 3 s → marche
-3,5 → sprint 9 → rotation ±35°), Movie Maker `--fixed-fps 12` (vérifié
-source 4.7.1 — le pas fixe échantillonne le vent au bon rythme malgré
-llvmpipe), 217 frames assemblées en WebP animé (pas de ffmpeg ici).
-Fail-first 0/4 → 2/2 ; attente bornée par condition (ISS-024). La vidéo
-a fait son travail de révélateur : (1) l'herbe du lab était FIGÉE
-(sondes phase immobile : diffs 0,00 — contre §11.1) → corrigé,
-`SH_FoliageWindPainterly` sur toute l'herbe (rouge 0/8 → pilotes 3/3,
-héros 17/17, sondes 1,62-2,03) ; (2) le lab est un décor à UNE caméra
-(sol nu en contrebas, rivière-planche) — consigné comme GARDE-FOU pour
-la propagation V4 ; (3) zéro shimmer/pop — en partie parce qu'il n'y a
-encore ni LOD ni transparence. Capture officielle v7 recapturée (herbe
-entière painterly) : bandes §1.5 identiques au dixième. Note :
-`evidence/cycle3/2026-08-06_stabilite_lot3.md`.
-
-### Prochaine action exacte
-
-1. Étendre le painterly aux surfaces restantes du lab (falaises,
-   terrain, camp, citadelle, montagnes, rivière) — mêmes contrats.
-2. Re-évaluation sévère §30.2 + revue contradictoire (gate-review).
-3. V4 seulement si ≥ 75 tenu, avec le garde-fou « survivre au
-   mouvement » du dolly.
-
-### Fait ensuite : Lot 4 — le lab ENTIER est peint
-
-`_material()` du lab EST la peinture (toute surface mate →
-SH_CharacterPainterly ou feuillage venté) ; trois émissifs justifiés et
-testés (`_emissive_material` : rivière-guide, flamme, couronne cyan).
-Rouge prouvé avec l'inventaire exact des surfaces nues, puis
-`test_painterly_lab` 1/1, peinture 4/4, héros 17/17, dolly 2/2. Capture
-v8 officielle (`76835be`) : bandes §1.5 intactes (héros 24,7 %,
-citadelle 51,5 %), herbe du premier plan = grand gagnant. Défauts
-dominants NOMMÉS pour la suite : éclair minuscule, rivière-guide
-timide, citadelle boîtes grises.
-
-### Fait ensuite : Lots 5-8 — revue contradictoire, vérité, lumière, sculpture
-
-Lot 5 : éclair allongé (nuage +8 m, frappe au flanc) + rivière-guide
-rapprochée/élargie (S testé). **Revue contradictoire à contexte frais :
-FAIL** — éval v9 (72) surestimée (re-notation ≈ 63) : halo d'éclair
-OPAQUE cachant le cœur, peau des bras en PBR (surface 1), flamme
-clippée blanche, rivière quasi mate dans l'exception émissive, deux
-tests infalsifiables, ciel symétrique, héros ~51 % vs 38-45. Erratum
-consigné SANS maquiller la preuve. Lot 6 : chaque contre-exemple
-corrigé fail-first (tests par SURFACE, fallback 1×1 rejeté, seuil réel
-d'émission, halo translucide additif dans StormCell — correctif §9.3
-partagé —, flamme orange, fleurs ventées, tools/video committé).
-Lot 7 (AD-005) : le contrat d'IMAGE §1.1 prime sur la distance §3.1
-(incompatibilité mathématique au FOV verrouillé) — objectif 1,75 m,
-recul 5,0 m : tête 44,7 %, pieds 89,3 %, hauteur 44,6 % ; soleil
-replacé DEVANT-GAUCHE (l'ancien yaw le mettait derrière-droite) ; halo
-62°/0,28 : zone solaire MESURÉE 83,7 vs 73,5. Lot 8 : ombres portées
-(héros ancré), citadelle 19 formes §2.4, falaise-escalier qui guide.
-Éval fin de journée ≈ 71,5 UNVERIFIED (< 75 : pas de V4, AD-004).
-
-### Prochaine action exacte
-
-1. Re-rendre la vidéo de stabilité sur l'état v13 (elle date de v6).
-2. Textures procédurales maison (AD-001) roche/terre/tissu — le manque
-   dominant (matériaux 6,5/10).
-3. Puis re-évaluation + revue contradictoire ; V4 seulement si ≥ 75.
-
-### Fait ensuite : Lot 9 — habillage aux vrais modèles (mandat utilisateur)
-
-13 modèles Quaternius CC0 du dépôt (5 arbres/3 espèces, 4 rochers, 4
-props de camp), peints par SURFACE avec vraies textures, poses variées,
-garde-fou de composition TESTÉ (3 props attrapés dans le couloir du
-pylône avant de rester). v14 a révélé les contours sombres des cartes
-de feuilles (transparence ignorée — §1.6) → `SH_CharacterPainterlyCutout`
-(alpha scissor + double face, auto-choisi). Carte blanche
-téléchargements : sites d'assets bloqués par le proxy (403), seul
-GitHub passe ; kit Kenney cloné/inspecté/REJETÉ (hors style) ; liste
-remise à l'utilisateur pour sa machine. Habillage 3/3, peinture 4/4,
-contrats 5/5.
-
-### Prochaine action exacte
-
-1. Si l'utilisateur dépose des packs (dossier `incoming_assets/` ou
-   commit direct) : licence → ATTRIBUTIONS → manifeste → peinture →
-   habillage, dans cet ordre.
-2. Sinon : textures procédurales maison (AD-001) roche/terre/tissu.
-3. Re-évaluation sévère + revue contradictoire ; V4 si ≥ 75.
-
-### Fait ensuite : Lots 10-11 — la matière (grain procédural + vraies textures)
-
-Lot 10 : grain `FastNoiseLite` généré par le moteur (AD-001, aucune
-image), projection monde deux axes, grandes formes (0,012) et discret
-(0,12) : +8,9 % de variation du sol. Lot 11 : le propriétaire a déposé
-quatre packs CC0 sur la release `assets-1` (les sites d'assets sont
-bloqués par le proxy, seul GitHub passe) — licences vérifiées et
-inscrites AVANT l'entrée dans le build, règle §2 désormais EXÉCUTABLE
-par test. Six matériaux ambientCG réduits 2K→1K, trois cartes chacun
-(7,3 Mo au lieu de 111) ; la photo MODULE la peinture au lieu de la
-remplacer (§1.6), projection monde à l'échelle PHYSIQUE (tuile en
-mètres, contrat 0,3-12 m). Deux corrections de palette MESURÉES : sol
-#5BAC3A → #BBBE5C (saturation 66 → 52 %, ancre 55) ; lointain jaune vif
-#EADA9E → #C5BFA3 refroidi (§1.3). Variation du sol 20,97 → 27,30.
-Kenney Nature Kit, KayKit Dungeon et Quaternius Ultimate Nature (150
-OBJ) déposés et attribués, sélection au lot suivant.
-
-### Prochaine action exacte
-
-1. Sélection et import des modèles Kenney/Quaternius déposés (falaises,
-   saules, rochers moussus, troncs) — même chaîne : licence → manifeste
-   → peinture → habillage → capture.
-2. Re-évaluation sévère §30.2 + revue contradictoire.
-3. V4 (propagation vallée) seulement si ≥ 75 tenu.
-
-## 2026-08-06 (soir) — Phase A « tour du monde » + propagation carte entière
-
-### Phase A — le tour du monde en images (fait, committé)
-
-11 zones capturées depuis l'arbre committé `c6a6994`
-(`evidence/tour_du_monde/`), dont les **premières captures jamais
-prises** du donjon salle par salle, du vestibule et de l'arène. Table
-`KEEP / REWORK / REPLACE / MISSING` en fin de
-`docs/assets/AUDIT_V0_PHASE_H.md`. Verdicts : vestibule `KEEP` (le
-meilleur intérieur), six salles `REWORK` (boîtes brunes plates), arène
-`REPLACE` (disque nu — déficit visuel n°1), bestiaire `REWORK`
-(primitives), KayKit `MISSING` d'intégration.
-
-### Lot 14 — TOUTE la carte peinte (3768 surfaces)
-
-`PainterlyRecipe` (scripts/art) devient le point UNIQUE de la direction
-artistique ; `ValleyWorld` l'appelle en dernier dans son `_ready`.
-Matériaux mutualisés par signature. Contrat NÉGATIF vert : aucun
-matériau qui émet vraiment n'est repeint (télégraphes). **Quatre
-régressions attrapées à l'image** que le laboratoire de 80 m ne pouvait
-pas révéler : grésillement (textures importées sans mipmaps + fondu de
-distance ajouté), carte délavée (seuil d'éclaircissement 0,45 → 0,14 ;
-plancher d'ombre 0,26 → 0,14), nuage blanchi (`CitadelStorm` absent de
-la liste d'exclusion), sol gris (couleurs de sommets — d'abord
-ignorées, puis appliquées à tort ; désormais conditionnées au drapeau
-de la source). **Terrain exclu, décision assumée** : la recette le
-délavait (lointain 65 → 74 %) ; mesuré après exclusion, il est
-identique à l'avant (#335F1E contre #335F1F).
-
-### Lot 15 — donjon : tenté, MESURÉ, RETIRÉ (AD-008)
-
-Peinture branchée sur six salles + arène + vestibule, puis retirée sur
-preuve : gain de matière réel (contraste des murs 16,9 → 26,5 en salle
-3) mais luminance 17 % → 9-11 % sur un donjon DÉJÀ trop sombre
-(ISS-025), et contraste des marques de sol de l'arène 45,5 → 16,3.
-`paint_room()` reste écrit et documenté, NON appelé.
-
-### Lot 16 — citadelle en terrasses
-
-Socle étagé, quatre contreforts, trois conduits cuivre (§2.4), sans
-collision. Gain honnête : largement masqué depuis la vue d'ouverture
-par les falaises du plan moyen.
-
-### Prochaine action exacte
-
-1. **Éclairage du donjon d'abord** (ambre de circulation §12.8, sources
-   motivées) — c'est le préalable nommé par AD-008 ; la peinture
-   intérieure suivra et paiera enfin.
-2. Arène du boss : sol à zones lisibles + présence des pylônes
-   (déficit visuel n°1 selon le tour du monde).
-3. Habillage KayKit du donjon une fois l'éclairage repris.
----
-
-## Playtest PT-BRACELET — lisibilité du Bracelet et terrain d'entraînement
-
-**Constats du playtest** : (1) l'Arc Link « ne fait rien » au bassin ;
-(2) on ne comprend ni à quoi servent les pouvoirs ni comment les utiliser ;
-(3) les utiliser n'affiche rien ; (4) décor incohérent — « maisons sans murs,
-bois qui flotte ». Combat et cuisine jugés bons, non touchés.
-
-**Ce qui a été mesuré, pas supposé**
-
-- L'Arc Link du bassin **fonctionne à la visée** : nouveau test
-  `test_the_link_is_reachable_by_aiming_not_only_by_api` (6 assertions, vert).
-  Les deux tests d'origine appelaient `try_link` DIRECTEMENT — le chemin
-  joueur (focus + deux confirmations) n'était couvert nulle part. L'échec
-  venait donc de l'absence de retour, pas d'un défaut de logique.
-- **Le kit `village/` ne contient AUCUNE pièce de mur** (53 pièces : sols,
-  toits, débords, escaliers). Tous les `Wall_*` sont dans `dungeon/`. Un
-  bâtiment monté du seul kit village ne peut pas avoir de murs → cause
-  directe du défaut observé. Consigné en PT-BRACELET-02.
-
-**Livré**
-
-- Viseur de Résonance dans `GameplayShell` : anneau qui se referme sur une
-  cible, losange doublé sur le port retenu, viseur barré au refus, raison du
-  refus écrite en français, action nommée avant le clic. Aucune information
-  par la seule couleur (P3 §1.6).
-- `PlayerController.resonance_verdict` (signal typé) + branchement de
-  `pulse_fired` / `link_dissolved` / `ground_completed` / `ground_cancelled`,
-  qui n'étaient écoutés nulle part hors du laboratoire.
-- `scenes/world/TrainingGrounds.tscn` — les CINQ épreuves du Bracelet côte à
-  côte, alignées sur une grille de 2 m, chacune avec panneau (touche, pourquoi,
-  comment) et lampe de réussite branchée sur le signal réel. Rangée de
-  référence avec une maison assemblée COMPLÈTE, murs et collisions compris.
-
-**Preuves** : `godot --headless --path . --script tools/godot/test_runner.gd`
-→ **736 réussis, 0 échoué**. `validate_fast.sh` sort ROUGE pour une seule
-raison : Blender absent du conteneur (étape 3b, gate d'environnement).
-
-**Prochaine action exacte** : audit des assemblages de bâtiments de la vallée
-(`valley_world`, hameaux, ferme) avec le patron de `_reference_house` — murs
-`dungeon/` + collision par mur + pose à y = 0. Ensuite seulement : mode vol
-dev et monture, dans cet ordre, comme demandé.
-
----
-
-## Vol libre de développement et monture
-
-Les deux demandes de fin de playtest, dans l'ordre annoncé. Elles reposent sur
-une MÊME brique nouvelle : `PlayerController.set_frozen()`. Le héros cède la
-conduite — il ne consomme plus d'entrée et ne se déplace plus de lui-même —
-mais sa caméra reste son enfant, donc le joueur garde le regard.
-
-**Vol libre** (`scripts/tools/dev_fly_mode.gd`, touche F2). Caméra libre,
-Espace/Ctrl pour monter et descendre, Maj pour accélérer. En sortant, le héros
-est reposé au sol sous la caméra **si** un sol est atteignable ET si sa capsule
-y tient ; sinon il reste exactement où il était. Refusé dans un build exporté
-(`DevFlyMode.is_allowed`), sauf `--allow-dev-fly` : ce n'est pas une mécanique
-de jeu.
-
-**Monture** (`scripts/world/mount.gd`, touche E). Convention `interactable`
-existante — aucune action nouvelle à apprendre. Galop à 14 m/s contre 9 m/s au
-sprint. On ne descend que sur une place libre, sondée à la capsule réelle du
-héros ; sinon la descente est REFUSÉE et annoncée. **GRAYBOX assumé** : aucun
-quadrupède n'existe dans les kits, la silhouette est en primitives — ce n'est
-pas un modèle final.
-
-**Trois défauts trouvés en écrivant les tests, tous corrigés**
-
-1. Gelé, le héros ne vidait plus les fronts d'entrée : ils s'accumulaient et
-   seraient tous partis au dégel. C'est désormais au GELEUR de les consommer.
-2. `fly_toggle_pressed` était vidé par `consume_edges()` : l'activation
-   dépendait alors de l'ordre des nœuds dans l'arbre et se perdait une fois
-   sur deux. `DevFlyMode` en est maintenant le seul lecteur.
-3. Monture et vol lisaient le lecteur d'entrée BRUT, que `set_intent_source`
-   désactive — la monture était sourde sous intention injectée (mesuré :
-   0,5 m en 40 ticks). Les deux passent par `current_intent()`.
-
-**Point d'attention non résolu** : `tools/godot/setup_project.gd` est PÉRIMÉ —
-il ne déclare pas les actions `resonance_*`, et il supprime toute action qu'il
-ne déclare pas. **Le lancer amputerait l'InputMap.** Les actions `dev_fly_*`
-ont donc été ajoutées via `ProjectSettings`, sans passe de suppression. Ce
-générateur doit être remis à jour ou retiré avant d'être réutilisé.
-
-**Preuve** : `test_mount_and_dev_fly.gd` 11/11, `test_training_grounds.gd` 7/7.
-
----
-
-## Audit des bâtiments de la vallée — « maisons sans murs, bois qui flotte »
-
-Audit fait par la MESURE (`tools/gltf_inspect.py` sur chaque pièce), pas par
-lecture de noms de fichiers — le nom ment : `Roof_RoundTiles_4x4` fait
-en réalité 5,51 m.
-
-**Trois résultats**
-
-1. **Les murs ne manquaient pas.** Tous les scripts de bâtiment posent des
-   `Wall_*`, résolus depuis `dungeon/` où ils vivent tous. Les modules sont
-   conformes : 2,00 m de large, 3,12 m de haut.
-2. **Le bois flottant était réel et localisé.** `Roof_Wooden_2x1_Center`
-   mesure 2,00 × 1,21 × 1,50 m : une TUILE DE RANGÉE. La forge du village et
-   la grange de la ferme en posaient UNE SEULE au-dessus d'une emprise de
-   4 × 6 m — 12 % de couverture, aucun contact avec un mur. Corrigé : rangée
-   complète au pas de 1,5 m. Vérifié au passage que l'auvent des camps (deux
-   perches), l'abri du terrain (appuyé sur une caisse) et le moulin des
-   hameaux (quatre poteaux porteurs) reposent bien sur des appuis réels.
-3. **Cause racine du silence des tests.** `riverside_village`, `hamlets` et
-   `valley_territories` ne nommaient pas les pièces instanciées. Godot
-   rebaptise les homonymes `@Node3D@366` : sur les cinq murs de la forge, un
-   seul gardait un nom lisible. **Aucun test ne pouvait désigner cette
-   géométrie.** `ValleyRelics._spawn` s'en protégeait déjà ; les trois autres
-   l'ignoraient. Corrigé partout.
-
-**Garde-fou** : `test_roofs_are_supported.gd` vérifie la règle, pas les deux
-correctifs — toute toiture EN L'AIR doit couvrir ≥ 60 % de l'emprise des murs
-qu'elle abrite ; les toitures tombées au sol en sont exemptées (la
-`TourDeGuet` est une ruine dont le cône gît volontairement dans l'herbe).
-15 bâtiments inspectés.
-
-**Deux défauts trouvés en écrivant ce test, corrigés dans le test lui-même** :
-il mesurait les emprises en repère LOCAL (un mur pivoté à 90° comptait donc
-2,0 m de large au lieu de 0,4), et il ne distinguait pas un toit tombé d'un
-toit suspendu.
-
-**Laissé au jugement de l'auteur** : la forge est un appentis volontairement
-ouvert sur deux côtés, et la grange annonce « trois murs » là où son code n'en
-pose que deux. Quelle face doit s'ouvrir est une décision de level design.
-
-**Preuve** : 748 tests réussis, 0 échoué.
-
-## 2026-08-07 — Trois défauts nommés par le propriétaire, mesurés puis corrigés
-
-Commit du code : `1ede044` · outil de preuve : `d24a36a` · captures :
-`evidence/atlas/verif3_aqueduc.png`, `verif3_arche_vs_aqueduc.png`
-(manifestes `repo_dirty: false`).
-
-Méthode imposée, la même pour les trois : **ne pas juger à l'œil, mesurer**.
-Nouvel outil `tools/godot/probe_world_boxes.gd` — il monte la vallée réelle et
-rend la boîte englobante MONDE de toute pièce, plus l'écart au sol trouvé par
-rayon. Sa première version signalait de faux flottants (le rayon partait DANS
-la dalle porteuse) ; corrigé et documenté dans le code.
-
-| Défaut | Avant (mesuré) | Après (mesuré) |
-|---|---|---|
-| Arcade « par la tranche » | 2 parements de 0,064 m, 1,88 m de vide sous un tablier de 2,00 m | 2 anneaux de 0,450 m, 1,10 m de jour |
-| « Caisse claire » | `BoxMesh` nue 0,55×1,10×0,55, émission ambre sur 6 faces ; récepteur 0,40 m enterré | socle + fût + noyau, base à y 2,00 = le sol, émission réduite au noyau de 0,28 m |
-| Arche ∩ aqueduc | culées avalant 1,90 m des piles, tablier recoupant les deux piles intérieures | arche x −25,58..−14,00 contre pile −13,31 → 0,69 m de dégagement, zéro recouvrement |
-
-Ce qui a tranché n'était jamais l'image : la « caisse » n'était pas une caisse
-mais le fanal du bassin conducteur, et l'arcade restait mince parce que
-l'épaisseur de `Wall_Arch` tient sur son axe **Z local** — invisible sur une
-capture, lisible dans le glTF.
-
-Validation : `748 réussis, 4 échoués`, et les quatre sont les cas connus et
-antérieurs (caméra du boss, langage de résonance de la citadelle, route
-crête→plaine nord ISS-032 ×2) + Blender absent. **Zéro régression.** Après
-fusion avec la session parallèle, `dungeon 31/31` et `topology 5/5` — les deux
-échecs apparus à la fusion venaient d'un `class_name` (`ResonanceOverlay`) non
-encore enregistré, effacés par un réimport.
-
-Consigné et NON corrigé — **ISS-035** : les pas japonais de la rivière flottent
-2,04 m au-dessus du lit (y ≈ 0,5 pour un fond à −1,50). Fichier hors du
-périmètre demandé, et les bouger touche le tracé du gué.
-
-### Prochaine action exacte
-
-1. **ISS-035** : dériver la cote des pas japonais du lit (−1,50) et non de la
-   plaine, dans le dressage de zone F de `valley_terrain.gd`, puis re-mesurer
-   à la sonde.
-2. Passer la sonde de boîtes sur la vallée ENTIÈRE avec un seuil de flottement
-   à 0,3 m : les trois défauts corrigés ici ont tous été trouvés à la main,
-   secteur par secteur — la sonde peut désormais les trouver toute seule.
-3. Éclairage du donjon (préalable nommé par AD-008), inchangé.
-
-## 2026-08-07 — Inspection de world-of-claudecraft, barre en couches, ISS-035
-
-Commits : `e7eca0a` (hooks) · `18b0565` (correctif du plancher) · `b9d763c`
-(R-015) · `222a44f` (PROMPT 4) · `a736ec6` (ISS-035) · `d82ed14` + `44b3a9f`
-(sonde) · `b11a893` (KNOWN_ISSUES) · `ba7407b` (.uid).
-
-**Origine** : demande d'inspecter `levy-street/world-of-claudecraft` et d'en
-tirer des leçons. Dépôt cloné intégralement — 9 873 commits en deux mois, 570
-branches, 2 623 refs de PR, une livraison tous les 1 à 3 jours. Constats
-mesurés en **R-014** (barre de qualité) et **R-015** (fabrique d'assets depuis
-une image de référence, qui est notre problème central non résolu).
-
-**Ce qui a été construit**, en transposant le mécanisme et jamais les règles :
-
-- `.claude/hooks/qa-stop.sh` — hook `Stop`, scanne les lignes AJOUTÉES à chaque
-  tour, bloque sur quatre invariants durs. Zéro faux positif vérifié sur huit
-  formes GDScript typées légitimes ;
-- `.githooks/pre-push` — mêmes règles sur le diff poussé, plus `--check-only`
-  des `.gd` modifiés. **Les deux chemins sont prouvés** : il a refusé du contenu
-  interdit, puis une vraie erreur de syntaxe ;
-- `tests/unit/test_invariants.gd` — **7 réussis, 0 échoué**. Plus `NON VÉRIFIÉ` ;
-- `docs/PROMPT4_METHOD.md` — quatrième cahier cumulatif, enregistré dans
-  `CLAUDE.md`. Onze de ses treize éléments sont `[À DÉCIDER]` : ils touchent la
-  barre de qualité, qui appartient au propriétaire.
-
-**Le garde-fou a refusé mon propre premier push** : les scripts de garde-fou
-PORTENT les motifs interdits, et `.githooks` manquait à leur liste d'exclusion.
-Vrai défaut, trouvé par l'outil sur lui-même.
-
-**ISS-035 — le correctif prescrit était faux.** La consigne disait « dériver la
-cote du lit ». Mesuré : lit −1,50, surface de l'eau −0,55, dalles de 0,11 à
-0,18 m. Poser une dalle sur le lit met son sommet **0,79 m sous l'eau**. Aucune
-dalle du kit n'atteint les 0,95 m nécessaires : le défaut n'était pas une cote,
-c'était le choix du modèle. Décision du propriétaire : de vrais rochers posés au
-fond. Quatre `Rock_Medium_*`, base −1,550, émergences 0,14 à 0,42 m, collision
-ajoutée.
-
-**Décisivité prouvée** : sans le correctif, le test rougit sur 2,04 / 1,99 /
-2,04 / 1,99 m — exactement les valeurs de `KNOWN_ISSUES`. En le vérifiant, un
-défaut du test lui-même est apparu : son filtre ne reconnaissait pas `RockPath_`,
-donc une dalle suspendue remise à côté de bons blocs serait passée inaperçue.
-
-**Premier balayage complet de la vallée** (point 2 de la consigne précédente).
-Trois défauts en sont sortis, deux dans mes outils :
-
-1. `--exempt` vide exemptait TOUT (`_matches()` retourne vrai sur liste vide) :
-   « 0 candidate, 704 exemptées », rapport parfaitement vide et faux ;
-2. les maillages SKINNÉS polluaient le relevé — leur boîte est la pose de
-   liaison, pas ce qui est dessiné. **ISS-018 qui se rejouait dans la sonde.**
-   704 → 605 candidates ; Bestiary 57 → 2 ; le camp disparaît entièrement ;
-3. le filtre du test des pierres, ci-dessus.
-
-**ISS-036 ouvert (CANDIDAT)** : deux fruits de la crête n'ont aucune collision
-sous eux (rayon à 22 m). Deux lectures possibles, non départagées, écrites
-toutes les deux — la sonde mesure un écart, elle ne sait pas si la pièce est
-censée reposer dessus.
-
-**Validation** : `784 réussis, 4 échoués`, 314 scripts parsés, Boot → menu
-atteint. Les quatre échecs sont les connus antérieurs (caméra du boss, langage
-de résonance de la citadelle, ISS-032 ×2). **Zéro régression, et pas seulement
-« encore rouge »** : ISS-032 rend `9/11 jalons en 1907 ticks, min y = −0,50`,
-identique AU TICK près aux chiffres consignés. La collision ajoutée en rivière
-n'a donc rien perturbé. Niveau 3b non exécuté : Blender absent.
-
-### Prochaine action exacte
-
-1. **Trier les 605 candidates du balayage.** Elles sont dans
-   `probe_world_boxes.gd --sweep --float=0.3 --limit=800`. Commencer par les
-   zones de gameplay (`Ingredients` 6, `DressZoneRiver` 1, `Camp`) plutôt que
-   par les plus hautes, qui sont légitimes (nuages, éclairs, créneaux).
-   Construire `--exempt` **sur cette sortie réelle**, une entrée à la fois, avec
-   sa raison — jamais sur une supposition.
-2. **ISS-036** : relancer la sonde en région resserrée autour de `(0, 170)` et
-   vérifier si la dalle de crête possède une collision à ces coordonnées.
-3. **Limite connue de la sonde, à traiter** : une pièce posée sur une géométrie
-   DÉCORATIVE sans collision est toujours signalée flottante (le rayon ne teste
-   que la couche 1). C'est la cause probable d'une bonne part des 120 candidates
-   de `ValleyRuins` et des 104 de `Terrain`. À documenter dans l'outil, ou à
-   traiter par une seconde passe.
-4. Éclairage du donjon (préalable nommé par AD-008), inchangé.
-
-## 2026-08-07 — Outillage volé à World of ClaudeCraft : neuf relecteurs et la comparaison avant/après
-
-Session ouverte par le propriétaire sur un autre front (écrire à l'auteur de
-`levy-street/world-of-claudecraft` pour lui demander conseil). **Le front
-précédent n'est pas perdu : ISS-035 et la sonde de boîtes restent la prochaine
-action exacte, telle qu'écrite dans l'entrée du 2026-08-07 ci-dessus.**
-
-### Ce qui a été fait
-
-1. **Lettre** — `docs/outreach/2026-08-07_reuben_horne_conseils.md`, prête,
-   **non envoyée** : aucune session ici n'a d'outil d'envoi d'e-mail.
-2. **Neuf relecteurs** sous `.claude/agents/`, transposés des neuf siens. Trois
-   des siens visent Postgres, un serveur et des PR d'inconnus : leur fonction a
-   été conservée, leur domaine remplacé par un risque réellement porté ici
-   (autorité temporelle, budget de frame, sauvegarde, parité preset/entrée,
-   couture présentation, hygiène de livraison, licence d'asset). Origine nommée
-   en tête de chaque fichier.
-3. **`gate-review` devient le répartiteur** (son rôle de `qa-checklist`) : table
-   de convocation par nature de diff, passe adverse finale « qu'est-ce qui
-   manque », relevé où un spécialiste non convoqué se voit.
-4. **`adversarial-qa`** gagne un portail de périmètre et une couverture
-   auditable : les critères non touchés se déclarent `hérité de <commit>`, et un
-   verdict hérité dont la preuve précède le dernier changement du fichier
-   redevient `NON VÉRIFIÉ`.
-5. **`tools/capture_ab.sh`** — la moitié qui manquait aux captures. L'AVANT est
-   rendu depuis un **worktree détaché sur le commit de base**, à réglages
-   identiques ; l'arbre courant n'est jamais touché (ni stash, ni checkout —
-   règle 1 de `COMMENT_TRAVAILLER_ENSEMBLE.md`). Refuse un arbre sale, retire le
-   worktree par `trap` même en cas d'échec, écrit `comparison.json`.
-
-### Ce qui n'est PAS prouvé
-
-- **Aucun des neuf agents n'a tourné sur un vrai diff.** Ils sont écrits, pas
-  éprouvés. Leur première exécution est aussi leur premier test.
-- **`capture_ab.sh` n'a pas fait une seule capture.** `godot` est ABSENT de ce
-  conteneur (`command -v` → rien) ; seuls sont vérifiés : les quatre refus
-  d'arguments, le refus d'arbre sale, le cycle worktree ajout/retrait/prune avec
-  arbre principal intact, et le générateur de `comparison.json` sur fixtures.
-  **Le chemin de capture lui-même est `NON VÉRIFIÉ`.**
-- La suite GDScript n'a pas été rejouée : aucun code de jeu n'a été touché.
-
-### Ce qu'on a appris de son dépôt, et qui vaut d'être retenu
-
-Sa compétence `pr-screenshots` automatise entièrement la **production** des
-images (Puppeteer, worktree séparé pour l'avant) et **pas du tout leur
-jugement** — sa propre documentation dit : « There is no automated visual
-validation; human judgment determines acceptability ». Le projet le plus outillé
-des deux n'a pas d'œil automatique non plus. L'outillage sert à poser devant
-l'humain une comparaison honnête, pas à se passer de lui.
-
-### Prochaine action exacte
-
-1. Lancer `tools/capture_ab.sh` **sur une machine avec Godot** pour lever le
-   `NON VÉRIFIÉ` du chemin de capture — cible naturelle : `HeroShotLab`, où les
-   itérations v0→v3 se comparaient jusqu'ici de mémoire.
-2. Faire tourner **un** des neuf agents sur un vrai diff et corriger ce qui
-   s'avérera faux dans sa consigne. Le plus rentable : `test-coverage-auditor`
-   sur les 748 tests existants.
-3. Reprendre le front précédent : ISS-035 (pas japonais) puis la sonde de boîtes
-   sur la vallée entière.
-
-## 2026-08-08 — Consolidation des cinq branches, ISS-037, et le test qui manquait
-
-Godot 4.7.1-stable **compilé ici** (22 min, commit épinglé `a13da4feb`) —
-ISS-001 re-vérifiée et toujours vraie. Le binaire vit dans `/opt`, hors du
-dépôt : chaque nouvelle session devra recompiler.
-
-### 1. Cinq versions du jeu, ramenées à une
-
-Le dépôt n'avait **aucune branche par défaut** et cinq branches divergentes
-d'un ancêtre commun du 07-08 18h13. Matrice de contenance mesurée
-commit par commit (`git merge-base --is-ancestor`, pas lecture de titres) :
-aucune branche ne portait plus de **deux** des six morceaux de travail.
-
-Fusionnées dans `claude/world-of-claudecraft-advice-snt1qa`, dans un worktree
-isolé. Deux conflits, aucun de code : `PROGRESS.md` (deux journaux — les deux
-entrées conservées) et un `.uid` (deux identifiants Godot pour le même test,
-aucune collision, un gardé). Les cinq branches d'origine sont **intactes**.
-
-Portail avant/après la fusion : **775 → 801 réussis, 4 échoués dans les deux
-cas, les mêmes** (caméra du boss, résonance de la citadelle, route
-crête→plaine nord ×2). **Zéro régression.**
-
-Découvert au passage : une autre session avait porté les **hooks** de
-world-of-claudecraft (`qa-stop.sh`, `ensure-hooks.sh`) pendant que celle-ci
-portait ses **neuf agents**. Les deux moitiés de sa méthode, arrivées par deux
-chemins qui s'ignoraient. Coup de chance, pas méthode.
-
-### 2. ISS-037 — corrigé, cause établie par test décisif
-
-Le chemin de la vue North Star rendait à **97 % de valeur / 0,71 de
-saturation** là où §1.5 veut 35-65 % pour un sol. Il était l'objet le plus
-clair de l'image et captait le regard avant la citadelle (§1.2).
-
-**Deux hypothèses fausses avant la bonne**, conservées dans le ticket : la
-texture nommée « terre » est verte, et la sonde de projection écrite pour
-l'occasion désignait le mauvais nœud (son axe Y est faux — documenté en tête
-du fichier). Ce qui a tranché : repeindre `PathCrest` en bleu pur, recapturer,
-mesurer → `#2830FF`.
-
-Le test bleu a livré la cause en prime : un albédo bleu PUR ressort à B=255,
-donc le labo a un gain lumineux de ≈ 1,8. `#8A5A36` est une couleur **peinte
-cible**, pas un albédo. Correction : albédo × 0,57 → **44 % de valeur**,
-toujours distinct de l'herbe (29 %).
-
-### 3. Le test qui manquait, et qui explique tout le reste
-
-Ce défaut a survécu à **quatre itérations v0→v3** et à une évaluation sévère à
-58/100 parce qu'**aucun des 801 tests ne vérifiait les bandes de valeurs**.
-
-`tools/check_value_bands.py` + étape **5b** de `validate_release.sh`. Il ne
-teste pas « aucun pixel de sol au-dessus de 65 % » — les reflets et les fleurs
-blanches montent toujours à 100 %, et l'herbe éclairée a le droit d'être
-claire. Il teste la **hiérarchie** que §1.5 énonce vraiment : *le sol ne peut
-pas être plus clair que le ciel* (sol p95 < ciel p50).
-
-Fail-first prouvé : **code 1** sur la capture d'avant correction (sol p95 =
-100 % ≥ ciel p50 = 83 %), **code 0** sur celle d'après (74 % < 83 %). Chaîne
-complète exécutée, étape 5b verte.
-
-Pillow absent ⇒ code **3 BLOQUÉ**, jamais vert, et le blocage remonte au
-verdict final (`BLOCKERS` est consommé trop tôt dans le script pour servir ici).
-
-### Ce qui n'est PAS fait
-
-- **Aucun des neuf agents n'a tourné sur un vrai diff.** Écrits, pas éprouvés.
-- Les **4 tests rouges** connus restent rouges, dont la route crête→plaine nord
-  qui n'est pas franchissable — défaut de jouabilité, prioritaire sur l'art.
-- **Toujours aucune branche par défaut** : c'est la cause racine de la
-  divergence. Tant qu'elle manque, le problème reviendra.
-- Vus sur la capture agrandie, **non traités** : le chemin est une dalle POSÉE
-  sur l'herbe (tranche visible) au lieu d'être creusée ; des cubes bleus et
-  blancs non habillés traînent dans la prairie.
-
-### Prochaine action exacte
-
-1. Déclarer une branche par défaut sur le dépôt — décision du propriétaire.
-2. Route crête→plaine nord (ISS-032) : 9 jalons atteints sur 11, `min y = -0.50`.
-   Défaut de jouabilité, donc avant toute nouvelle passe d'art.
-3. Faire tourner `test-coverage-auditor` sur les 801 tests — le premier des
-   neuf agents à éprouver, et le plus rentable.
-
-## 2026-08-08 (suite) — Les quatre échecs connus, corrigés ; et un cinquième découvert
-
-Prolongement direct de l'entrée précédente, même session.
-
-### Les quatre échecs, chacun pour une raison différente
-
-Aucune n'était celle qu'on aurait devinée. Deux sur quatre n'étaient **pas** des
-défauts du jeu, mais des tests restés en arrière.
-
-| Échec | Ce qu'on croyait | Ce que la mesure a dit |
-|---|---|---|
-| Route crête→plaine nord | terrain manquant | sol à 2,00 partout ; **falaise de 2,6 m au bord du gué** |
-| Caméra du boss | la caméra saute | elle interpole ; **le test téléportait** puis jugeait le transitoire |
-| Citadelle « pierre froide » | défaut d'art | pierre à **r − b = 0,080** ; **le test lisait la mauvaise classe de matériau** |
-| Cuisine | régression | **intermittent** (voir ISS-038) |
-
-**ISS-032** — les deux gués faisaient 12 m et s'arrêtaient net : 12 m était la
-largeur du tablier, il manquait l'épaulement. Un joueur venant de la plaine sud
-en diagonale arrivait à x = 26,4, quarante centimètres au-delà du bord, et
-tombait à côté du passage. Élargis à 20 m. **C'est le seul des quatre qui était
-un vrai gain de jouabilité, et il ne se voyait sur aucune capture.**
-
-**Caméra du boss** — `update_fov()` lisse par `lerpf` à poids exponentiel ; le
-premier pas d'une exponentielle vers une cible qui vient de sauter est toujours
-le plus grand (0,431 m). §20.9 dit qu'après une téléportation on réinitialise
-l'interpolation, on ne la juge pas. Scénario rendu physique, **seuils
-inchangés**.
-
-**H-6** — la passe art a repeint la carte en `ShaderMaterial` ; le test
-n'interrogeait que `StandardMaterial3D`, lisait null, affichait `0.000` et
-accusait la pierre d'être froide. Helper `_albedo_of()` posé dans le fichier :
-le piège guette **tous** les tests d'art, pas seulement celui-là.
-
-### Blender installé, ISS-019 levée
-
-Blender 4.0.2 depuis le dépôt Ubuntu (contournement D-002). La continuité des
-personnages a tourné **pour la première fois** : « 6 personnages, un seul corps
-solidaire, aucune pièce détachée ». Comme Godot, Blender vit hors du dépôt et
-ne survivra pas au conteneur.
-
-### ISS-038 — et c'est le plus important
-
-Deux exécutions complètes du même code : **804/0 puis 802/2**. Les deux tests
-fautifs passent en isolation. Classé `S2` parce que **tant que la suite rend
-deux verdicts, aucun vert ne prouve rien** — y compris le 804/0.
-
-### Prochaine action exacte
-
-1. **ISS-038** : relancer la suite en ordre inversé pour confirmer la pollution
-   d'ordre, puis isoler le pollueur par paires. C'est le préalable à toute
-   déclaration de gate, puisque c'est lui qui décide si un vert vaut quelque
-   chose.
-2. Déclarer une **branche par défaut** — décision du propriétaire, cause racine
-   des cinq versions divergentes.
-3. Faire tourner **un** des neuf agents sur un vrai diff (`test-coverage-auditor`
-   d'abord) : ils sont écrits, aucun n'est éprouvé.
-
-## 2026-08-08 — Phase S0 franchie : la suite est déterministe, prouvée deux fois
-
-Session bornée à S0 du prompt d'activation. Aucune fonctionnalité touchée,
-aucune passe artistique.
-
-### S0.1 — la vérité du dépôt rétablie
-
-**La PR #5 n'avait pas tout emporté.** `git merge-base --is-ancestor` — pas la
-lecture du fil — montre que le commit `e5625b6` manquait à la branche par
-défaut. Réintégré par fusion. Le fil d'une PR n'est pas une preuve de contenu.
-
-Checklist d'adoption de `PROMPT4_METHOD` §13 reclassée sur le disque : le test
-d'invariants passe de `NON VÉRIFIÉ` à **EXÉCUTÉ** (7 tests verts, dont `Q` à
-gauche via `physical_keycode`) ; les règles par répertoire et le portail
-sélectif passent `[EN PLACE]` ; les neuf relecteurs restent **`EN PLACE` et
-`NON VÉRIFIÉ`** — la nuance compte, un mécanisme jamais exécuté est disponible,
-pas adopté.
-
-### S0.2 — ISS-038 fermé, deux causes distinctes
-
-Un seul symptôme recouvrait **deux défauts sans rapport**, ce qui explique
-pourquoi chaque explication unique a échoué.
-
-| | Cause réelle |
-|---|---|
-| `test_cooking_ui` | course de PHASE contre le throttle du HUD (`HUD_TEXT_REFRESH = 0,1 s`), pas course de vitesse |
-| `test_heads...` | pose lue pendant `Jump_Land` — le héros mesurait en plein atterrissage |
-
-Preuve, `tools/validate_fast.sh`, code retour capturé sans tube :
-
-| Condition | Résultat |
-|---|---|
-| Machine au repos | **804 / 0 — VERT** (code 0) |
-| 4 processus sur 4 cœurs | **804 / 0 — VERT** (code 0) |
-
-### Ce que cette phase a démoli, et qui vaut d'être retenu
-
-Quatre certitudes successives sont tombées : la PR complète, la cause d'ISS-038,
-le mécanisme écrit dans les commentaires, et trois de mes propres correctifs —
-qui contenaient **trois assertions incapables d'échouer**, trouvées par
-`test-coverage-auditor` à contexte frais.
-
-Le geste le plus rentable de toute l'enquête n'a coûté qu'une ligne : **faire
-imprimer au test le nom de l'animation qu'il voyait**. Il a livré la cause en
-une exécution, après des heures d'hypothèses brillantes et fausses.
-
-### Dette laissée, nommée
-
-Tout test qui lit une POSE (position, hauteur, orientation) juste après le
-chargement d'une scène jouable porte le même défaut latent que le crâne : il
-mesure avant que le monde soit prêt. Et tout `for i in range(N): await frame`
-suivi d'une affirmation porte celui du HUD. Aucun balayage systématique n'a été
-fait.
-
-### Prochaine action exacte
-
-**Phase S1 — construire le gate BOOT-TO-FUN.** Dans cet ordre :
-
-1. `docs/BOOT_TO_FUN_CONTRACT.md` : parcours attendu, critères automatiques,
-   critères exigeant un humain, mapping critère → test, commandes, états
-   autorisés, interdiction de moyenner.
-2. Le **Boot Smoke** : depuis le vrai `Boot`, à travers le menu normal, jusqu'à
-   la vallée — joueur vivant sur un sol valide, HUD présent, première
-   interaction et premier combat atteignables, mort et reprise, arrêt propre.
-3. **Ne pas commencer S2** tant que le gate ne sait pas rougir sur au moins un
-   contrôle négatif : un gate qui n'a jamais échoué ne prouve rien.
+**Attendre le verdict du lead sur les trois candidats.** Aucun verdict
+artistique n'est auto-déclaré.
+
+Si les trois passent : R2a-5, la passe silhouette complète sur les quatre
+sujets — l'outil existe et a servi ici, il reste à l'étendre aux angles
+rasants et à lui écrire son contrôle négatif contre l'ancienne planche —
+puis R2a-6, les preuves finales, puis `validate_fast` et les 38 plans, que
+le lead a interdit de relancer avant stabilité visuelle.
 
 
 ## 2026-08-12 — Finition visuelle monde entier (branche `claude/full-world-visual-finish`)
@@ -4424,3 +693,52 @@ dans ATTRIBUTIONS + manifeste AVANT commit. Preuves :
 (occasionnel/explorateur/expérimenté), jeu de captures complet (31 POI +
 vues générales + salles + acteurs + UI), pousser la branche, livrer à la
 revue Codex. Le gate visuel n'est JAMAIS auto-déclaré.
+
+
+## 2026-08-17 — R2a-3.5.6, grotte : la loi de rebord est démontrée, la roche manque
+
+Branche `claude/world-v2-reconstruction`. **`PARTIAL`. Rien n'intégré au tronc**,
+asset livré inchangé (`8bf1a1b3`), zéro capture, 14/14 seuils identiques à
+`504ecbe`, `assets/` et `source_assets/` intouchés, golden masters intacts.
+
+**Le résultat de la passe est un théorème**, tiré des définitions déjà gelées et
+non d'une mesure : `e(p) ≤ dist(p, Γ) ≤ d(p)` partout, sur toute géométrie, parce
+que `Γ` est contenue dans la surface extérieure. La loi de rebord littérale ne
+demande donc pas un plancher — **elle demande le majorant**, avec une marge
+maximale nulle, et sous borne conservatrice elle est insatisfiable. Le même
+argument condamne tout seuil constant en deçà de sa propre valeur, ce qui explique
+enfin le `lecture / h` constant mesuré en R2a-3.5.5 sur deux géométries.
+Réparation `LOI-R` écrite **avant** toute mesure (`ADDENDUM_MASQUE_BOUCHE`
+§2quater), genou à `0,80 + h = 0,85 m`, `θ_min = 70,25°` **dérivé**.
+
+**Réparé et mesuré, non intégré** : `MASSIF` — auto-intersections `env×env`
+**34 → 0**, `SM_` inchangé au bit près, prédiction falsifiable posée avant mesure
+et tenue sous deux instruments ; `rochers_joue_droite()` — échantillons sous
+seuil **1 122 → 499**, trois contraintes tenues.
+
+**Deux blocages, un seul géométrique.** Le contractuel est **circulaire** : la
+chaîne ne peut verdir tant que `controle_epaisseur_domaine` n'est pas déclassé, et
+la directive interdit de le déclasser avant qualification verte — alors que le
+contrat gelé `cca1778` l'a **déjà** déclassé. Aucune sculpture ne dénoue cela. Le
+géométrique est nommé **et contre-indiqué** : il manque `0,1307 m`, faute de
+**portée latérale** à `−2,289 m` de la courbe quand le module en porte `1,320` ;
+augmenter le déport détacherait les deux couronnes.
+
+**Prochaine action exacte** : `ISS-058` — **raffiner le maillage au voisinage de
+la bouche**. C'est le seul travail géométrique identifié comme indispensable et
+non fait, et deux constats indépendants y convergent : à l'arête médiane réelle
+de `SM_` (`0,3325 m`) la rampe `[0 ; 0,80]` ne porte que **cinq valeurs** et la
+lâcheté du majorant de `d` vaut **82 % de `h`** ; et `Γ`, courbe simple fermée à
+la bouche, est **dentelée d'un facteur 10,6** — `116,16 m` contre `10,99` pour
+une ellipse à ses dimensions. Un `Γ` de 11 m ne s'obtiendra pas en filtrant, il
+s'obtiendra en maillant.
+
+**Ce qui revient au propriétaire, pas à une session** : appliquer au code le
+déclassement de `controle_epaisseur_domaine()` déjà décidé au contrat. Tant qu'il
+ne l'est pas, aucune géométrie ne peut qualifier cette passe. Le livré porte
+**320** plaques sous 0,80 m contre 29 pour le candidat, la plus mince `0,051`
+contre `0,114 m` — et ce portail n'existait pas quand le livré a été validé.
+
+Détail complet : `CODEX_HANDOFF` §39, `evidence/world_v2/v2_3_r2a/grotte/r2a356_loi/`.
+Incidents : `ISS-056` (`pkill -f` inter-worktree), `ISS-057` (Blender rend `0` en
+ayant levé), `ISS-058` (maillage de la bouche).

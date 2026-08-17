@@ -1,0 +1,1044 @@
+{
+ "phase": "V2.0",
+ "base_v1": "58d4996839abfe95dcbed89dd896f755d1977238",
+ "statuts_autorises": [
+  "PROTECTED_UNCHANGED",
+  "DUAL_WORLD",
+  "V1_SPATIAL_REPLACE",
+  "MIGRATION_REQUIRED",
+  "BLOCKED"
+ ],
+ "familles": [
+  {
+   "famille": "Déplacement / locomotion",
+   "statut": "PROTECTED_UNCHANGED",
+   "note_statut": "",
+   "responsabilite": "Locomotion caméra-relative du héros (marche, course, saut, marches, pentes, mantle piloté) dans _physics_process, sans jamais lire un périphérique (D-013 : consommation d'une InputIntent).",
+   "fichiers": [
+    "scripts/player/player_controller.gd",
+    "scripts/components/input_intent.gd",
+    "scripts/components/player_input_reader.gd",
+    "scripts/components/action_alignment_component.gd",
+    "resources/tuning/locomotion_tuning.gd",
+    "resources/tuning/locomotion_default.tres"
+   ],
+   "scenes": [
+    "scenes/player/Player.tscn",
+    "scenes/tests/TraversalCourse.tscn",
+    "scenes/tests/TraversalPlayground.tscn",
+    "scenes/tests/TraversalSandbox.tscn"
+   ],
+   "tests_protecteurs": [
+    "tests/integration/test_locomotion.gd",
+    "tests/playthrough/test_traversal_course.gd",
+    "tests/integration/test_latency.gd",
+    "tests/integration/test_p2_latency.gd",
+    "tests/unit/test_action_alignment.gd"
+   ],
+   "interface_v2": "Instancier la PackedScene res://scenes/player/Player.tscn (racine CharacterBody3D, groupes \"player\" et \"damageable\") et la poser sur un SpawnPoint ; le tuning est une Resource LocomotionTuning exportée ; signaux typés landed/left_ground/stepped_up/mantle_started/mantle_finished/mantle_refused sur PlayerController ; les tests injectent une InputIntent sans clavier.",
+   "dependance_spatiale_v1": "aucune — la position vient de la scène hôte (ValleyWorld pose $Player via $SpawnPoint, valley_world.gd)."
+  },
+  {
+   "famille": "Sprint / endurance",
+   "statut": "PROTECTED_UNCHANGED",
+   "note_statut": "",
+   "responsabilite": "Jauge d'endurance partagée par sprint, escalade, esquive et attaque lourde, avec protocole try_sustain/try_spend puis update(delta) une fois par tick.",
+   "fichiers": [
+    "scripts/components/stamina_component.gd",
+    "resources/tuning/stamina_tuning.gd",
+    "resources/tuning/stamina_default.tres"
+   ],
+   "scenes": [
+    "scenes/player/Player.tscn"
+   ],
+   "tests_protecteurs": [
+    "tests/unit/test_stamina.gd"
+   ],
+   "interface_v2": "Nœud Components/StaminaComponent embarqué dans Player.tscn ; StaminaTuning en Resource ; les consommateurs appellent try_sustain()/try_spend() — V2 n'a rien à raccorder tant qu'il instancie Player.tscn tel quel.",
+   "dependance_spatiale_v1": "aucune."
+  },
+  {
+   "famille": "Escalade / mantle",
+   "statut": "PROTECTED_UNCHANGED",
+   "note_statut": "V2 pose le groupe unclimbable sur ses décors",
+   "responsabilite": "Sondes tête/torse/pieds répondant « paroi saisissable ? à quelle distance ? quelle normale ? » (ClimbingComponent) et détection de lèvre (LedgeDetector) ; le contrôleur décide et déplace.",
+   "fichiers": [
+    "scripts/components/climbing_component.gd",
+    "scripts/components/ledge_detector_component.gd",
+    "resources/tuning/climb_tuning.gd",
+    "resources/tuning/climb_default.tres",
+    "scripts/player/player_controller.gd"
+   ],
+   "scenes": [
+    "scenes/player/Player.tscn",
+    "scenes/tests/TraversalSandbox.tscn"
+   ],
+   "tests_protecteurs": [
+    "tests/integration/test_climbing.gd"
+   ],
+   "interface_v2": "Composants enfants de Player.tscn ; contrat par GROUPE : toute surface interdite d'escalade doit porter le groupe \"unclimbable\" (refus explicite, la pierre graybox est saisissable par défaut) ; signaux grabbed_wall/released_wall(reason) sur PlayerController.",
+   "dependance_spatiale_v1": "aucune coordonnée ; V2 doit poser lui-même le groupe \"unclimbable\" sur ses décors, comme le font valley_terrain.gd:145/2704, room2_vertical.gd:103-106 et boss_arena.gd:186 en V1."
+  },
+  {
+   "famille": "Caméra",
+   "statut": "PROTECTED_UNCHANGED",
+   "note_statut": "",
+   "responsabilite": "Rig pivots + SpringArm3D avec Camera3D enfant direct : suivi, collision (couches World Static 1 + Enemy 4), garde-sol, fade du héros, lock-on et cadrage boss, sans hériter de la rotation du corps.",
+   "fichiers": [
+    "scripts/player/camera_rig.gd",
+    "resources/tuning/locomotion_tuning.gd"
+   ],
+   "scenes": [
+    "scenes/player/Player.tscn",
+    "scenes/lookdev/StabilityDolly.tscn"
+   ],
+   "tests_protecteurs": [
+    "tests/integration/test_camera_rig.gd",
+    "tests/integration/test_mouse_camera.gd",
+    "tests/integration/test_camera_never_enters_the_hero.gd",
+    "tests/integration/test_stability_dolly.gd"
+   ],
+   "interface_v2": "Nœud CameraRig déjà dans Player.tscn ($YawPivot/PitchPivot/SpringArm3D/Camera3D) ; API set_boss_framing() consommée par BossArena ; rien à instancier séparément.",
+   "dependance_spatiale_v1": "aucune."
+  },
+  {
+   "famille": "Combat (santé/hitbox/combo/esquive/lock-on/poise/posture/garde)",
+   "statut": "PROTECTED_UNCHANGED",
+   "note_statut": "",
+   "responsabilite": "Pipeline §10.1 : AttackController à trois phases piloté par AttackDefinition, hitbox à balayage « une touche par swing », DamageEvent transportant le montant final (DamageFormula pure), poise/posture/garde-déviation et verrouillage de cible avec LOS par cadence.",
+   "fichiers": [
+    "scripts/combat/attack_controller.gd",
+    "scripts/components/hitbox_component.gd",
+    "scripts/components/hurtbox_component.gd",
+    "scripts/components/health_component.gd",
+    "scripts/combat/damage_event.gd",
+    "scripts/combat/damage_formula.gd",
+    "scripts/components/poise_component.gd",
+    "scripts/components/posture_component.gd"
+   ],
+   "scenes": [
+    "scenes/player/Player.tscn",
+    "scenes/tests/CombatLab.tscn",
+    "scenes/tests/CombatDummy.tscn"
+   ],
+   "tests_protecteurs": [
+    "tests/integration/test_hit_detection.gd",
+    "tests/integration/test_combat_exchange.gd",
+    "tests/integration/test_dodge.gd",
+    "tests/integration/test_guard_deflect.gd",
+    "tests/integration/test_posture.gd",
+    "tests/integration/test_lock_on.gd",
+    "tests/unit/test_attack_controller.gd",
+    "tests/unit/test_damage.gd"
+   ],
+   "interface_v2": "Groupes contractuels \"damageable\", \"lock_on_targets\", \"enemies\" ; couches physiques nommées project.godot:224-239 (Hurtbox=6, Player/Enemy Hitbox=4/5) ; Resources AttackDefinition/DodgeDefinition/GuardTuning sous resources/combat/ et resources/tuning/ ; signaux hit_received/damaged/died/poise_broken/posture_broken, guard_blocked/parried/guard_broken sur PlayerController ; lock-on via scripts/components/lock_on_component.gd (signaux target_acquired/target_released). Tests complémentaires : test_heavy_and_hurt.gd, test_mercy_invulnerability.gd, test_hit_impact_feel.gd.",
+   "dependance_spatiale_v1": "aucune."
+  },
+  {
+   "famille": "Arc / projectiles",
+   "statut": "PROTECTED_UNCHANGED",
+   "note_statut": "",
+   "responsabilite": "Arc tirant des flèches poolées depuis la poitrine (anti-tir-à-travers-mur), balistique par balayage-rayon (CCD) qui touche corps et hurtbox.",
+   "fichiers": [
+    "scripts/combat/bow_component.gd",
+    "scripts/combat/arrow_projectile.gd",
+    "resources/combat/bow_tuning.gd",
+    "resources/combat/bow_default.tres"
+   ],
+   "scenes": [
+    "scenes/player/Player.tscn",
+    "scenes/weapons/SimpleBow.tscn"
+   ],
+   "tests_protecteurs": [
+    "tests/integration/test_bow.gd",
+    "tests/integration/test_bow_fires_on_left_click.gd"
+   ],
+   "interface_v2": "BowComponent est un Node3D de Player.tscn ; BowTuning en Resource ; flèches en pool interne (jamais instanciées par la scène hôte) ; direction fournie par l'appelant (caméra corrigée vers l'origine).",
+   "dependance_spatiale_v1": "aucune."
+  },
+  {
+   "famille": "IA (perception/utility/tokens/5 familles ennemies)",
+   "statut": "PROTECTED_UNCHANGED",
+   "note_statut": "implantations V1 (valley_world.gd:779-800) = V1_SPATIAL_REPLACE",
+   "responsabilite": "Socle EnemyBase (perception par cadence avec LOS réelle, mémoire de dernière position, territoire ancré au spawn, ouïe via NoiseEvents, fuite/alerte) spécialisé par cinq sous-classes minces, coordination par tokens (2 mêlée + 1 lourd) et sélection utilitaire traçable.",
+   "fichiers": [
+    "scripts/enemies/enemy_base.gd",
+    "scripts/enemies/raider_red.gd",
+    "scripts/enemies/raider_blue.gd",
+    "scripts/enemies/raider_black.gd",
+    "scripts/enemies/ravine_troll.gd",
+    "scripts/enemies/centaur_hunter.gd",
+    "scripts/enemies/combat_coordinator.gd",
+    "scripts/ai/utility_brain.gd"
+   ],
+   "scenes": [
+    "scenes/enemies/RaiderRed.tscn",
+    "scenes/enemies/RaiderBlue.tscn",
+    "scenes/enemies/RaiderBlack.tscn",
+    "scenes/enemies/RavineTroll.tscn",
+    "scenes/enemies/CentaurHunter.tscn"
+   ],
+   "tests_protecteurs": [
+    "tests/integration/test_enemy_base.gd",
+    "tests/integration/test_raider.gd",
+    "tests/integration/test_raider_blue.gd",
+    "tests/integration/test_raider_black.gd",
+    "tests/integration/test_ravine_troll.gd",
+    "tests/integration/test_centaur_hunter.gd",
+    "tests/integration/test_combat_coordinator.gd",
+    "tests/integration/test_utility_brain.gd"
+   ],
+   "interface_v2": "PackedScenes à instancier (groupes \"enemies\"/\"damageable\"/\"lock_on_targets\" déjà déclarés dans les .tscn) ; le territoire est l'origine AU SPAWN — aucune coordonnée interne ; EnemyTuning en Resource (resources/enemies/*_default.tres) ; bruit par scripts/enemies/noise_events.gd (statique, position+rayon) ; CombatCoordinator optionnel, découvert par groupe \"combat_coordinator\" (sans lui, accord implicite des tokens) ; la cible joueur est trouvée par groupe \"player\" (enemy_base.gd:664). Grandes carrures : ValleyWorld crée une carte de navigation dédiée (groupe \"large_navigation\", valley_world.gd:827-835).",
+   "dependance_spatiale_v1": "les scènes ennemies sont libres de position ; les positions V1 sont codées en dur dans valley_world.gd:779-800 (chemins de scènes + Vector3 de spawn) — c'est au monde V2 de fournir ses propres implantations."
+  },
+  {
+   "famille": "Inventaire / armes / durabilité",
+   "statut": "PROTECTED_UNCHANGED",
+   "note_statut": "",
+   "responsabilite": "Inventaire d'armes (8 max), flèches, ingrédients empilables et plats ; WeaponInstance porte la durabilité mutable (jamais dans la définition), rupture et auto-équipement de la suivante.",
+   "fichiers": [
+    "scripts/components/inventory_component.gd",
+    "scripts/inventory/weapon_instance.gd",
+    "resources/weapons/weapon_definition.gd",
+    "scripts/combat/weapon_model.gd",
+    "scripts/core/asset_registry.gd"
+   ],
+   "scenes": [
+    "scenes/player/Player.tscn",
+    "scenes/weapons/WornSword.tscn",
+    "scenes/weapons/WoodClub.tscn",
+    "scenes/weapons/Spear.tscn",
+    "scenes/weapons/HeavyAxe.tscn",
+    "scenes/weapons/ConductiveBlade.tscn"
+   ],
+   "tests_protecteurs": [
+    "tests/unit/test_weapon_data.gd",
+    "tests/integration/test_durability.gd",
+    "tests/integration/test_weapon_identities.gd",
+    "tests/integration/test_worn_sword_asset.gd"
+   ],
+   "interface_v2": "InventoryComponent est un nœud de Player.tscn ; signaux weapon_equipped/weapon_added/weapon_removed/arrows_changed/ingredients_changed/meals_changed ; définitions immuables WeaponDefinition en .tres sous resources/weapons/ ; visuels résolus par AssetRegistry.resolve(&\"weapon.*\") (statique, sans autoload).",
+   "dependance_spatiale_v1": "aucune."
+  },
+  {
+   "famille": "Coffres / ramassables / récompenses de découverte",
+   "statut": "DUAL_WORLD",
+   "note_statut": "table PLAN et mémoire _taken de la vallée = V1_SPATIAL_REPLACE ; IDs §19.3 conservés",
+   "responsabilite": "Interactables à ID stable (zone.category.name.index) versant leur loot UNE fois, et registre DiscoveryLog/PointOfInterest/RewardAnchor garantissant « aucune seconde récompense après rechargement » par construction.",
+   "fichiers": [
+    "scripts/interaction/chest.gd",
+    "scripts/interaction/weapon_pickup.gd",
+    "scripts/interaction/ingredient_pickup.gd",
+    "scripts/interaction/fragment_pickup.gd",
+    "scripts/world/point_of_interest.gd",
+    "scripts/world/discovery_log.gd",
+    "scripts/world/discovery_rewards.gd",
+    "scripts/world/reward_anchor.gd"
+   ],
+   "scenes": [
+    "scenes/interactables/Chest.tscn",
+    "scenes/interactables/WeaponPickup.tscn"
+   ],
+   "tests_protecteurs": [
+    "tests/integration/test_reward_anchors.gd",
+    "tests/integration/test_point_of_interest.gd",
+    "tests/unit/test_discovery_log.gd",
+    "tests/integration/test_fragment_pickups.gd",
+    "tests/integration/test_save_continuity.gd",
+    "tests/integration/test_interaction_reachable.gd"
+   ],
+   "interface_v2": "Tout passe par le groupe \"interactable\" + méthode interact(player) ; Chest.tscn est une PackedScene avec exports chest_id/weapon_loot/arrows_loot ; PointOfInterest est une Area3D qui émet first_visit ; RewardAnchor est un contrat vérifiable (sol réel, dégagement, accessibilité) audité par scripts/world/reward_anchor_audit.gd — un lieu V2 sans ancrage est SIGNALÉ, pas servi au hasard ; notifications via EventBus.gameplay_notification.",
+   "dependance_spatiale_v1": "forte côté contenu V1 : la table PLAN de discovery_rewards.gd mappe les 31 lieux de la vallée V1, les IDs sont préfixés \"valley.\" (ex. chest.gd:17), et ValleyWorld tient la mémoire _taken_pickups/_taken_ingredients (valley_world.gd) — V2 devra fournir ses propres ancrages, IDs et table."
+  },
+  {
+   "famille": "Cuisine / buffs / ingrédients",
+   "statut": "PROTECTED_UNCHANGED",
+   "note_statut": "les instances V2 exportent leurs campfire_id",
+   "responsabilite": "RecipeRules.cook() pur et déterministe (1-5 ingrédients, effet dominant, ragoût instable, durée plafonnée 300 s) ; Campfire ouvre l'atelier du shell ; StatusEffectComponent applique UN buff majeur à la fois, suspendu par la vraie pause.",
+   "fichiers": [
+    "scripts/cooking/recipe_rules.gd",
+    "scripts/interaction/campfire.gd",
+    "resources/ingredients/ingredient_definition.gd",
+    "scripts/components/status_effect_component.gd"
+   ],
+   "scenes": [
+    "scenes/environment/Campfire.tscn",
+    "scenes/ui/GameplayShell.tscn",
+    "scenes/player/Player.tscn"
+   ],
+   "tests_protecteurs": [
+    "tests/unit/test_cooking_rules.gd",
+    "tests/integration/test_cooking_ui.gd",
+    "tests/integration/test_meals_and_buffs.gd",
+    "tests/integration/test_ingredients.gd",
+    "tests/integration/test_phase_e_chain.gd"
+   ],
+   "interface_v2": "RecipeRules est statique et pur (retourne un Dictionary de primitives sérialisable §19.2) ; sept IngredientDefinition en .tres sous resources/ingredients/ ; Campfire groupe \"interactable\" avec export campfire_id ; les plats vivent dans InventoryComponent (_meals), le buff dans StatusEffectComponent (signaux buff_applied/buff_expired).",
+   "dependance_spatiale_v1": "campfire.gd:11 code en dur l'ID par défaut \"valley.campfire.camp.01\" — V2 doit exporter ses propres campfire_id."
+  },
+  {
+   "famille": "Sauvegarde",
+   "statut": "MIGRATION_REQUIRED",
+   "note_statut": "contrat additif world_version — docs/WORLD_V2_SAVE_MIGRATION.md ; mécanisme lui-même protégé",
+   "responsabilite": "Autoload SaveSystem : écriture atomique (temporaire + relecture + .bak), schéma versionné (SCHEMA_VERSION=4) avec migrations, validation au chargement ; les scènes fusionnent leur clé dans le slot commun sans écraser les autres.",
+   "fichiers": [
+    "scripts/save/save_system.gd",
+    "scripts/dungeon/dungeon_room.gd",
+    "scripts/world/valley_world.gd"
+   ],
+   "scenes": [],
+   "tests_protecteurs": [
+    "tests/unit/test_save_system.gd",
+    "tests/integration/test_save_continuity.gd",
+    "tests/integration/test_save_merge_and_vitals.gd",
+    "tests/integration/test_save_player_position.gd"
+   ],
+   "interface_v2": "Autoload /root/SaveSystem (project.godot:23) ; signaux save_completed/save_failed/load_completed/load_failed ; convention de fusion par clé dans le slot \"slot0\" (DungeonRoom.SAVE_SLOT) ; identités par IDs primitifs uniquement, jamais de référence Node/Resource.",
+   "dependance_spatiale_v1": "le schéma 3 stocke player_position/player_yaw écrits et relus par ValleyWorld (valley_world.gd:919-1022) ; l'absence des champs = « position inconnue » → spawn — V2 réutilise ce contrat tel quel."
+  },
+  {
+   "famille": "Interactions / portes de scène",
+   "statut": "DUAL_WORLD",
+   "note_statut": "SceneDoor.target_scene par instance",
+   "responsabilite": "Sélection de l'interactable le plus pertinent par cône/distance dans PlayerController (_select_interactable) et invite HUD unique ; SceneDoor déclenche une transition SceneFlow vers une scène cible avec spawn_tag.",
+   "fichiers": [
+    "scripts/player/player_controller.gd",
+    "scripts/interaction/scene_door.gd",
+    "scripts/dungeon/carryable_object.gd",
+    "scripts/dungeon/reset_button.gd",
+    "scripts/interaction/story_fragment.gd"
+   ],
+   "scenes": [
+    "scenes/player/Player.tscn"
+   ],
+   "tests_protecteurs": [
+    "tests/integration/test_interaction_reachable.gd",
+    "tests/integration/test_interact_is_never_silent.gd",
+    "tests/playthrough/test_flow_wiring_path.gd"
+   ],
+   "interface_v2": "Contrat unique : groupe \"interactable\" + méthode interact(player) (player_controller.gd:1376-1441) ; SceneDoor expose target_scene (String) et passe par /root/SceneFlow et /root/GameState (pending_spawn) — V2 crée ses portes en réglant target_scene.",
+   "dependance_spatiale_v1": "les target_scene V1 sont codés en dur : valley_terrain.gd:2610 → CitadelVestibule.tscn ; citadel_vestibule.gd:119/170 → Room1Initiation.tscn / ValleyWorld.tscn."
+  },
+  {
+   "famille": "Bracelet de Résonance (Pulse/Arc Link/Polarité/Arc Step/Ground)",
+   "statut": "PROTECTED_UNCHANGED",
+   "note_statut": "",
+   "responsabilite": "ResonanceController porte les cinq opérations (Pulse audible avec LOS, Arc Link entre deux ports, Polarité par impulsions bornées, Arc Step balayé à la capsule, Ground vers un support réel) sans jamais lire l'InputMap ; PlayerController transmet la décision et republie le verdict.",
+   "fichiers": [
+    "scripts/reaction/resonance_controller.gd",
+    "scripts/reaction/resonance_target_component.gd",
+    "scripts/reaction/resonance_link_node.gd",
+    "scripts/ui/resonance_overlay.gd",
+    "scripts/tools/resonance_lab.gd",
+    "scripts/interaction/fragment_pickup.gd"
+   ],
+   "scenes": [
+    "scenes/player/Player.tscn",
+    "scenes/tests/ResonanceLab.tscn"
+   ],
+   "tests_protecteurs": [
+    "tests/integration/test_resonance_pulse.gd",
+    "tests/integration/test_resonance_link.gd",
+    "tests/integration/test_resonance_polarity.gd",
+    "tests/integration/test_resonance_arc_step.gd",
+    "tests/integration/test_resonance_ground.gd",
+    "tests/integration/test_resonance_focus.gd",
+    "tests/integration/test_resonance_fragments.gd",
+    "tests/integration/test_resonance_hud.gd"
+   ],
+   "interface_v2": "ResonanceController est un nœud de Player.tscn (Components/ResonanceController, aussi groupe \"noise_listeners\") ; une cible V2 devient détectable en portant un ResonanceTargetComponent (groupe \"resonance_targets\") ; liens dans le groupe \"resonance_links\" ; signaux pulse_fired/link_created/link_dissolved/ground_completed/ground_cancelled/fragment_granted/echo_trace ; actions InputMap resonance_pulse/resonance_focus/resonance_ground déclarées dans project.godot ; verdict UI via le signal resonance_verdict de PlayerController.",
+   "dependance_spatiale_v1": "aucune."
+  },
+  {
+   "famille": "Lois de matière / ReactionSystem",
+   "statut": "DUAL_WORLD",
+   "note_statut": "par conception D-047 : un ReactionSystem par monde",
+   "responsabilite": "Arbitre central des réactions matière : MaterialProfile immuable (8 profils) + MaterialStateComponent par instance, ElementPacket (kinetic/electric/heat/wetness) soumis en file et résolus au tick sous budget (48/tick), sans énergie créée ni cascade non bornée.",
+   "fichiers": [
+    "scripts/reaction/reaction_system.gd",
+    "scripts/reaction/material_profile.gd",
+    "scripts/reaction/material_state_component.gd",
+    "scripts/reaction/element_packet.gd",
+    "scripts/reaction/water_matter_component.gd",
+    "scripts/world/conductive_basin.gd"
+   ],
+   "scenes": [
+    "scenes/tests/ResonanceLab.tscn",
+    "scenes/world/valley/ValleyWorld.tscn"
+   ],
+   "tests_protecteurs": [
+    "tests/integration/test_reaction_system.gd",
+    "tests/unit/test_material_profiles.gd",
+    "tests/integration/test_conductive_basin.gd",
+    "tests/integration/test_water_unification.gd"
+   ],
+   "interface_v2": "ReactionSystem est un nœud de SCÈNE, JAMAIS un autoload (D-047) : chaque monde V2 doit instancier le sien ; découverte par ReactionSystem.locate(tree) via le groupe \"reaction_system\" ; soumission par submit(target, packet) ; profils en .tres resources/materials/MAT_PROFILE_*.tres ; états d'instance via MaterialStateComponent (groupe \"material_states\") ; signal reaction_resolved.",
+   "dependance_spatiale_v1": "aucune — WaterMatterComponent est justement le composant partagé qui a levé l'asymétrie vallée/donjon (ISS-030)."
+  },
+  {
+   "famille": "Graphe électrique",
+   "statut": "PROTECTED_UNCHANGED",
+   "note_statut": "spatial par conception, local à la scène hôte",
+   "responsabilite": "Propagation pure §15.2 : marquage dirty regroupé au tick, reconstruction des connexions spatiales, BFS depuis les sources avec visited, set_powered idempotent et signaux émis seulement au changement — zéro rendu dans le graphe.",
+   "fichiers": [
+    "scripts/electricity/electric_graph.gd",
+    "scripts/electricity/electric_node.gd",
+    "scripts/electricity/electric_relay.gd",
+    "scripts/electricity/electric_switch.gd",
+    "scripts/electricity/electric_door.gd",
+    "scripts/electricity/electric_hazard.gd",
+    "scripts/electricity/receiver_ring.gd",
+    "scripts/electricity/electric_visual.gd"
+   ],
+   "scenes": [
+    "scenes/dungeon/rooms/Room1Initiation.tscn",
+    "scenes/dungeon/rooms/Room2Vertical.tscn",
+    "scenes/dungeon/rooms/Room3Relays.tscn",
+    "scenes/dungeon/rooms/Room4Battery.tscn",
+    "scenes/boss/BossArena.tscn"
+   ],
+   "tests_protecteurs": [
+    "tests/integration/test_electric_graph.gd",
+    "tests/integration/test_dungeon_laws.gd"
+   ],
+   "interface_v2": "ElectricGraph est un Node par scène (groupe \"electric_graphs\", export nodes_root NodePath, API mark_dirty(), signal graph_recomputed) ; les briques sont des ElectricNode Node3D (groupe \"electric_nodes\") dont LA POSITION MONDIALE EST la donnée de connexion — V2 pose ses nœuds où il veut ; signaux connection_changed/power_changed ; conductivité 0-1 partagée avec MaterialProfile ; debug via electric_debug_overlay.gd.",
+   "dependance_spatiale_v1": "spatial par conception mais local à la scène hôte : aucune coordonnée V1 globale dans le système ; groupes \"conductive\"/\"insulated\"/\"electrified\" posés par les scènes."
+  },
+  {
+   "famille": "Énigmes des 4 salles du donjon",
+   "statut": "PROTECTED_UNCHANGED",
+   "note_statut": "enveloppe architecturale = V1_SPATIAL_REPLACE (V2.6+) ; logique/solveur/anti-softlock verrouillés",
+   "responsabilite": "DungeonRoom (coque commune : reset, respawn des objets essentiels, fusion de persistance dans slot0, chemin retour) spécialisée en Room1 chaîne, Room2 circuit vertical/ascenseur, Room3 relais rotatifs, Room4 batterie+eau, plus CentralHall (3 anneaux → porte du boss) et Antechamber (checkpoint).",
+   "fichiers": [
+    "scripts/dungeon/dungeon_room.gd",
+    "scripts/dungeon/room1_initiation.gd",
+    "scripts/dungeon/room2_vertical.gd",
+    "scripts/dungeon/room3_relays.gd",
+    "scripts/dungeon/room4_battery.gd",
+    "scripts/dungeon/central_hall.gd",
+    "scripts/dungeon/antechamber.gd",
+    "scripts/dungeon/puzzle_hint_tracker.gd"
+   ],
+   "scenes": [
+    "scenes/dungeon/rooms/Room1Initiation.tscn",
+    "scenes/dungeon/rooms/Room2Vertical.tscn",
+    "scenes/dungeon/rooms/Room3Relays.tscn",
+    "scenes/dungeon/rooms/Room4Battery.tscn",
+    "scenes/dungeon/rooms/CentralHall.tscn",
+    "scenes/dungeon/rooms/Antechamber.tscn",
+    "scenes/world/citadel/CitadelVestibule.tscn"
+   ],
+   "tests_protecteurs": [
+    "tests/integration/test_room1_initiation.gd",
+    "tests/integration/test_room2_vertical.gd",
+    "tests/integration/test_room3_relays.gd",
+    "tests/integration/test_room4_battery.gd",
+    "tests/integration/test_dungeon_antisoftlock.gd",
+    "tests/integration/test_dungeon_topology.gd",
+    "tests/integration/test_puzzle_hints.gd",
+    "tests/playthrough/test_dungeon_run.gd"
+   ],
+   "interface_v2": "PackedScenes autonomes reliées par SceneDoor/SceneFlow ; décor construit en code (déterministe) ; état par IDs room_id + fusion dans le slot \"slot0\" ; briques réutilisables PushableBlock (groupes \"pushable\"/\"conductive\"), PortableBattery, ObjectSocket, ElevatorPlatform, CarryableObject (groupe \"carryable\"), ResetButton ; GameState.set_flow(DUNGEON) posé à l'entrée.",
+   "dependance_spatiale_v1": "chemins de scènes V1 codés en dur : room1_initiation.gd:25-26 (VESTIBULE, HALL), room2_vertical.gd:25, room3_relays.gd:22, room4_battery.gd:18, central_hall.gd:31-35, antechamber.gd:16-17 (ARENA) ; le vestibule renvoie vers ValleyWorld.tscn (citadel_vestibule.gd:170) — la topologie V2 devra rebrancher ces constantes."
+  },
+  {
+   "famille": "Boss (StormGuardian / BossDirector / arène)",
+   "statut": "PROTECTED_UNCHANGED",
+   "note_statut": "habillage de l'arène = V1_SPATIAL_REPLACE (V2.7+) ; contraintes 19/19,6/13/14 immuables",
+   "responsabilite": "Gardien de l'Orage à machine d'états idempotente en dix états (Intro→Dead, seuils de PV non redéclenchables), mise à la terre via GroundingPylon (vrais nœuds du graphe électrique), directeur de patterns seedable sans random pur, arène circulaire 38 m avec cadrage caméra dédié.",
+   "fichiers": [
+    "scripts/boss/storm_guardian.gd",
+    "scripts/boss/boss_director.gd",
+    "scripts/boss/boss_arena.gd",
+    "scripts/boss/grounding_pylon.gd",
+    "scripts/boss/guardian_visual.gd",
+    "scripts/boss/lightning_strike.gd"
+   ],
+   "scenes": [
+    "scenes/boss/BossArena.tscn",
+    "scenes/boss/StormGuardian.tscn",
+    "scenes/boss/GuardianVisual.tscn"
+   ],
+   "tests_protecteurs": [
+    "tests/unit/test_boss_director.gd",
+    "tests/integration/test_boss_arena.gd",
+    "tests/integration/test_boss_guardian.gd",
+    "tests/integration/test_boss_posture.gd",
+    "tests/integration/test_boss_victory.gd",
+    "tests/playthrough/test_boss_run.gd"
+   ],
+   "interface_v2": "BossArena.tscn est la scène complète (relit le checkpoint et rééquipe le joueur) ; StormGuardian.tscn instanciable seul (groupes \"enemies\"/\"damageable\"/\"lock_on_targets\"/\"boss\", signaux phase_changed/grounded/posture_ruptured/crystal_destroyed/died) ; BossDirector est un RefCounted à seed reproductible (set_library de Dictionnaires tagués) ; cadrage via CameraRig.set_boss_framing() ; attaques en AttackDefinition resources/combat/boss/*.tres.",
+   "dependance_spatiale_v1": "boss_arena.gd:27-28 code en dur ANTECHAMBER (retour) et GUARDIAN (chemins de scènes V1) ; l'arène elle-même est bâtie en code autour de arena_center/arena_radius."
+  },
+  {
+   "famille": "HUD / menus / UI",
+   "statut": "DUAL_WORLD",
+   "note_statut": "routage « Continuer » = MIGRATION_REQUIRED (V2.5+)",
+   "responsabilite": "GameplayShell (CanvasLayer instanciée dans chaque scène jouable) : capture souris, pause, HUD miroir des composants réels, inventaire, cuisine, mort/retry, notifications ; plus MainMenu, VictoryScreen, options et viseur Résonance purement dessinant.",
+   "fichiers": [
+    "scripts/ui/gameplay_shell.gd",
+    "scripts/ui/main_menu.gd",
+    "scripts/ui/victory_screen.gd",
+    "scripts/ui/options_panel.gd",
+    "scripts/ui/hud_style.gd",
+    "scripts/ui/resonance_overlay.gd"
+   ],
+   "scenes": [
+    "scenes/ui/GameplayShell.tscn",
+    "scenes/ui/MainMenu.tscn",
+    "scenes/ui/VictoryScreen.tscn"
+   ],
+   "tests_protecteurs": [
+    "tests/integration/test_shell_binding.gd",
+    "tests/integration/test_hud_and_inventory.gd",
+    "tests/integration/test_hud_style.gd",
+    "tests/integration/test_inventory_layout.gd",
+    "tests/integration/test_main_menu.gd",
+    "tests/integration/test_resonance_hud.gd"
+   ],
+   "interface_v2": "Instancier GameplayShell.tscn dans chaque scène jouable V2 et régler l'export world_scene_path (scène rechargée par « Réessayer ») ; le shell trouve le joueur par le groupe \"player\" (gameplay_shell.gd:365/977) et s'annonce dans le groupe \"gameplay_shell\" ; notifications entrantes via EventBus.gameplay_notification.",
+   "dependance_spatiale_v1": "défauts V1 codés en dur : gameplay_shell.gd:22 world_scene_path=ValleyWorld.tscn ; main_menu.gd:15 VALLEY_SCENE et :20 TRAINING_SCENE ; victory_screen.gd:18 VALLEY_SCENE — à repointer pour V2."
+  },
+  {
+   "famille": "InputMap / couche d'entrée",
+   "statut": "PROTECTED_UNCHANGED",
+   "note_statut": "",
+   "responsabilite": "Actions sémantiques déclarées dans project.godot (move_*, jump, sprint, interact, attack_*, aim/shoot, dodge, lock_on, target_prev/next, inventory, quick_meal, resonance_*, pause, look_*, dev_fly_*) lues UNIQUEMENT par PlayerInputReader qui produit une InputIntent (D-013).",
+   "fichiers": [
+    "project.godot",
+    "scripts/components/player_input_reader.gd",
+    "scripts/components/input_intent.gd",
+    "scripts/tools/input_audit.gd",
+    "scripts/core/user_settings.gd",
+    "scripts/core/latency_probe.gd"
+   ],
+   "scenes": [
+    "scenes/tests/InputAudit.tscn"
+   ],
+   "tests_protecteurs": [
+    "tests/unit/test_input_map.gd",
+    "tests/unit/test_input_layer_isolation.gd",
+    "tests/unit/test_input_audit.gd",
+    "tests/unit/test_invariants.gd"
+   ],
+   "interface_v2": "V2 ne touche jamais l'InputMap : il instancie Player.tscn qui contient PlayerInputReader ; sensibilité via UserSettings statique (user://settings.cfg) ; invariant AZERTY protégé par test_invariants.gd (Q=gauche via physical_keycode, lock_on jamais sur Q) et par test_input_layer_isolation.gd (aucun script de gameplay ne lit une touche).",
+   "dependance_spatiale_v1": "aucune."
+  },
+  {
+   "famille": "Autoloads / flux de jeu",
+   "statut": "PROTECTED_UNCHANGED",
+   "note_statut": "",
+   "responsabilite": "Six autoloads (GameState flux+difficulté+pause, EventBus quasi vide par politique, SaveSystem, AudioManager, SceneFlow transitions avec voile de fondu survivant aux scènes, DevMode) ; aucun ne conserve de référence à un nœud de scène.",
+   "fichiers": [
+    "scripts/core/game_state.gd",
+    "scripts/core/event_bus.gd",
+    "scripts/core/scene_flow.gd",
+    "scripts/core/audio_manager.gd",
+    "scripts/core/boot.gd",
+    "scripts/tools/dev_mode.gd",
+    "scripts/save/save_system.gd"
+   ],
+   "scenes": [
+    "scenes/boot/Boot.tscn"
+   ],
+   "tests_protecteurs": [
+    "tests/unit/test_autoloads.gd",
+    "tests/playthrough/test_boot_smoke.gd",
+    "tests/unit/test_restore_root.gd"
+   ],
+   "interface_v2": "Accès par /root/<Nom> (déclarés project.godot:19-26) ; GameState.set_flow(Flow.VALLEY|DUNGEON|BOSS_ARENA|VICTORY) + signaux flow_changed/paused_changed ; SceneFlow signaux transition_started/finished/failed ; EventBus n'accepte un nouveau signal qu'avec émetteur+récepteur réels et entrée DECISIONS.md (is_intentionally_empty le vérifie en test) ; les systèmes trouvent le joueur par groupe, jamais via un autoload.",
+   "dependance_spatiale_v1": "aucune — les cibles de transition appartiennent aux appelants."
+  },
+  {
+   "famille": "Resources de définition / tuning",
+   "statut": "PROTECTED_UNCHANGED",
+   "note_statut": "",
+   "responsabilite": "Toutes les définitions immuables et l'équilibrage vivent en Resource sous resources/ (armes, attaques, esquive, garde, ingrédients, ennemis, profils de matière, locomotion/endurance/escalade), l'état mutable étant systématiquement séparé.",
+   "fichiers": [
+    "resources/weapons/weapon_definition.gd",
+    "resources/combat/attack_definition.gd",
+    "resources/combat/dodge_definition.gd",
+    "resources/ingredients/ingredient_definition.gd",
+    "resources/enemies/enemy_tuning.gd",
+    "scripts/reaction/material_profile.gd",
+    "resources/tuning/locomotion_tuning.gd",
+    "resources/tuning/guard_tuning.gd"
+   ],
+   "scenes": [],
+   "tests_protecteurs": [
+    "tests/unit/test_weapon_data.gd",
+    "tests/unit/test_material_profiles.gd",
+    "tests/unit/test_cooking_rules.gd",
+    "tests/unit/test_damage.gd"
+   ],
+   "interface_v2": "Chargement direct des .tres (resources/weapons/*.tres, resources/combat/**, resources/ingredients/*.tres, resources/enemies/*_default.tres, resources/materials/MAT_PROFILE_*.tres, resources/tuning/*_default.tres) ; V2 ne modifie jamais une définition à l'exécution — il crée ses propres .tres si besoin.",
+   "dependance_spatiale_v1": "aucune."
+  },
+  {
+   "famille": "Monture / mode dev / vol libre",
+   "statut": "DUAL_WORLD",
+   "note_statut": "instancié par le monde hôte",
+   "responsabilite": "Mount graybox (CharacterBody3D consommant la même InputIntent, montée/descente via groupe interactable, descente refusée sans place libre), DevFlyMode (héros gelé + caméra libre, refusé en build exporté) et DevMode autoload F3/F4/F5 d'enregistrement honnête sans triche.",
+   "fichiers": [
+    "scripts/world/mount.gd",
+    "scripts/tools/dev_fly_mode.gd",
+    "scripts/tools/dev_mode.gd",
+    "scripts/tools/dev_recorder.gd"
+   ],
+   "scenes": [],
+   "tests_protecteurs": [
+    "tests/integration/test_mount_and_dev_fly.gd",
+    "tests/unit/test_dev_recorder.gd"
+   ],
+   "interface_v2": "Mount et DevFlyMode n'ont PAS de .tscn : ils sont construits en code par le monde hôte (Mount.new() / DevFlyMode.new(), valley_world.gd:1175-1196, exposés par mount() et dev_fly()) — V2 doit les instancier lui-même ; DevMode est un autoload toujours présent (project.godot:26) qui échantillonne le héros via le groupe \"player\" ; actions dev_fly_toggle/up/down dans l'InputMap.",
+   "dependance_spatiale_v1": "instanciation V1 uniquement dans valley_world.gd (positions de spawn de la monture posées par le monde) — le système lui-même est sans coordonnées."
+  },
+  {
+   "famille": "Monde spatial V1 (ValleyWorld, terrain, 9 bâtisseurs, navmesh, vestibule)",
+   "statut": "V1_SPATIAL_REPLACE",
+   "note_statut": "reste intact et servi par le flux normal jusqu'au gate V2.9 ; le vestibule (seul intérieur réussi) est conservé comme acquis",
+   "responsabilite": "tout le contenu spatial et visuel que World V2 reconstruit",
+   "fichiers": [
+    "scenes/world/valley/ValleyWorld.tscn",
+    "scripts/world/valley_world.gd",
+    "scripts/world/valley_terrain.gd",
+    "scripts/world/valley_*.gd",
+    "scenes/world/citadel/CitadelVestibule.tscn"
+   ],
+   "scenes": [],
+   "tests_protecteurs": [
+    "48 tests de catégorie B — voir section tests"
+   ],
+   "interface_v2": "aucune — V2 n'y touche jamais (balayage d'isolation)",
+   "dependance_spatiale_v1": "est la définition même du spatial V1"
+  }
+ ],
+ "tests": {
+  "comptes": {
+   "total_fichiers_test": 161,
+   "unit": 20,
+   "integration": 135,
+   "playthrough": 6,
+   "A_comportement_pur": 95,
+   "B_spatial_V1": 48,
+   "C_transverse_V1_et_V2": 15,
+   "E_preuve_visuelle": 3,
+   "fichiers_support_non_tests": 3,
+   "note_A": "95 = 161 − 48 − 15 − 3 ; seuls 15 exemples A sont listés (dont les tests spatial-DONJON/BOSS — room1..4 sauf la couture de room1, hub, topology, antisoftlock, laws, puzzle_hints, boss_*, dungeon_run, boss_run — qui portent des hypothèses spatiales du donjon/arène mais AUCUNE de la vallée V1, et les tests de labos lookdev StyleLab/HeroShotLab-kits : test_lab_dressing, test_riverside_kit, test_painterly_lab, test_painterly_pilot, test_cliff_kit, test_hero_signs, test_stability_dolly). Support non-tests : tests/test_case.gd (GateTestCase), tests/test_recorder.gd, tests/support/noise_ear.gd."
+  },
+  "definition_categories": {
+   "A": "comportement pur — reste identique",
+   "B": "spatial V1 — équivalent V2 requis avant tout retrait",
+   "C": "transverse — devra tourner sur V1 ET V2",
+   "D": "migration — nouveaux tests (contrat au §5 de WORLD_V2_SAVE_MIGRATION.md)",
+   "E": "preuve visuelle — baseline de comparaison, jamais remplacée en silence"
+  },
+  "classement": [
+   {
+    "path": "tests/integration/test_valley_world.gd",
+    "category": "B",
+    "evidence": "ln 87 `var camp: Vector3 = Vector3(45.0, 6.0, 65.0)` ; ln 96/101 `Camp/CampChest`, `Camp/ClubPickup` ; ln 228-229 `Terrain/PylonShaft`, `Terrain/CitadelProxy/Keep` ; ln 238 `VistaCamera_Hero01` ; ln 207 test « the_spawn_ridge_holds_the_player… » ; const VALLEY = res://scenes/world/valley/ValleyWorld.tscn"
+   },
+   {
+    "path": "tests/integration/test_valley_wonders.gd",
+    "category": "B",
+    "evidence": "ln 94-101 : arbre doyen (-96,2,-62), source aux reflets (-72,2,78), champ de fleurs (-34,2,112), arche de pierre (-21,0,10), belvédère du guetteur (168,0,40), village de la rivière (-70,2,36), hameau des bûcherons (110,2,40), poste minier (-68,2,86)"
+   },
+   {
+    "path": "tests/integration/test_valley_caves.gd",
+    "category": "B",
+    "evidence": "ln 238-242 : village (-70,2,36), camp ennemi (45,6,65), pylône (115,18,-25), donjon (0,34,-210), crête de départ (0,24,170) ; sites via scripts/world/valley_caves.gd (SITE_WATERFALL (-118,2,26), SITE_MINE (160,2,-70), SITE_CRYPT (-60,2,-90))"
+   },
+   {
+    "path": "tests/integration/test_valley_undergrounds.gd",
+    "category": "B",
+    "evidence": "ln 370-377 : village (-70,2,36), hameau des bûcherons (110,2,40), poste minier (-68,2,86), camp (45,6,65), pylône (115,18,-25), donjon (0,34,-210), crête (0,24,170), ruine de guet (-128,14,82) ; ln 93 nœud `PassageDerobe/GalerieInclinee`"
+   },
+   {
+    "path": "tests/integration/test_valley_relics.gd",
+    "category": "B",
+    "evidence": "ln 131-136 : POI_OBSERVATORY « Observatoire en ruine », POI_CEMETERY, POI_RAMPART, POI_SHRINE, POI_BRIDGE « Pont magnétique », POI_BASIN « Bassin conducteur » ; ln 175 « village de la rivière » Vector3(-70,2,36)"
+   },
+   {
+    "path": "tests/integration/test_valley_territories.gd",
+    "category": "B",
+    "evidence": "ln 119-137 (Vector2 x,z) : village (-70,36), belvédère du sommet (168,40), pont de pierre (-21,10), camp ennemi (45,65), pylône (115,-25), crête de départ (0,170) ; ln 188-190 POI_BRAISE/AZURE/BASTION/LAIR/HUNTER ; ln 248 nœud `CampsDePillardsBraise`"
+   },
+   {
+    "path": "tests/integration/test_valley_landmarks.gd",
+    "category": "B",
+    "evidence": "ln 124-128 : ValleyLandmarks.SITE_ANCIENT_TREE/SITE_SPRING/SITE_FLOWER_FIELD/SITE_STONE_BRIDGE/SITE_OVERLOOK (valeurs dans scripts/world/valley_landmarks.gd, ex. SITE_ANCIENT_TREE (-96,2,-62)) ; ln 30 VILLAGE_RADIUS = 23.0 ; ln 32 MIN_LANDMARK_GAP = 40.0"
+   },
+   {
+    "path": "tests/integration/test_valley_ruins.gd",
+    "category": "B",
+    "evidence": "ln 158-159 ValleyRuins.POI_WATCHTOWER/POI_AQUEDUCT/POI_FARM/POI_CARAVAN ; ln 198 Marker3D `Belvedere` ; ln 262 `FermeAbandonnee`/`Maison`"
+   },
+   {
+    "path": "tests/integration/test_hamlets.gd",
+    "category": "B",
+    "evidence": "ln 90-101 nœuds `HameauDesBucherons`, `PosteMinier` et leurs quartiers ; ln 189 `PosteMinier/CorpsDeGarde` ; ln 129 ID `valley.poi.riverside_village.01` ; sites dans scripts/world/hamlets.gd : SITE_LOGGING (110,2,40), SITE_MINING (-68,2,86)"
+   },
+   {
+    "path": "tests/integration/test_riverside_village.gd",
+    "category": "B",
+    "evidence": "ln 122/134 RiversideVillage.SITE (= Vector3(-70,2,36), scripts/world/riverside_village.gd:43) ; ln 65 nœud `Auberge` ; ln 156 la vallée doit porter le nœud `RiversideVillage` ; ln 188 nœuds `ValleyLandmarks`, `ValleyWonders`, `ValleyTerritories`"
+   },
+   {
+    "path": "tests/integration/test_basin_placement.gd",
+    "category": "B",
+    "evidence": "ln 7 `const SITE: Vector3 = Vector3(16.0, 2.0, 28.0)` ; ln 30 nœud `BassinConducteur`"
+   },
+   {
+    "path": "tests/integration/test_bridge_placement.gd",
+    "category": "B",
+    "evidence": "ln 11 `const SITE: Vector3 = Vector3(-34.0, 3.0, 44.0)` ; ln 34 nœud `PontMagnetique`"
+   },
+   {
+    "path": "tests/integration/test_earth_altar.gd",
+    "category": "B",
+    "evidence": "ln 33/76 nœud `SanctuaireForestier` ; ln 71 sol de test posé à Vector3(34.0, 1.5, 94.0) autour du site V1"
+   },
+   {
+    "path": "tests/integration/test_camp_props.gd",
+    "category": "B",
+    "evidence": "const VALLEY ln 9 ; ln 137-146 nœuds `CampLife`, `Cauldron_0` du camp de la vallée"
+   },
+   {
+    "path": "tests/integration/test_camp_smoke_column.gd",
+    "category": "B",
+    "evidence": "ln 23 `const SMOKE_PATH: String = \"Camp/SmokeColumn\"` dans ValleyWorld.tscn"
+   },
+   {
+    "path": "tests/integration/test_camp_composes_three_activity_poles.gd",
+    "category": "B",
+    "evidence": "const VALLEY ln 29 ; ln 30-32 MAX_GROUP_SPREAD_M 8, MIN_TRIANGLE_SIDE_M 13, CENTER_VOID_RADIUS_M 4.5 (géométrie du camp V1) ; ln 94 ≥ 2 bannières"
+   },
+   {
+    "path": "tests/integration/test_camp_three_approaches.gd",
+    "category": "B",
+    "evidence": "ln 101 nœud `CampsDePillardsBraise` (ancrage frontal du camp, via ValleyTerritories)"
+   },
+   {
+    "path": "tests/integration/test_bestiary_gate.gd",
+    "category": "B",
+    "evidence": "ln 191/276 charge res://scenes/world/valley/ValleyWorld.tscn ; commentaire ~ln 270 « le colosse posté à (-16, 2, -48) est SUR la route du donjon » ; test « la route nord vers la citadelle reste marchable » bestiaire en place"
+   },
+   {
+    "path": "tests/integration/test_mount_and_dev_fly.gd",
+    "category": "B",
+    "evidence": "ln 326-345 : monture dans la vallée à moins de 30 m du `SpawnPoint` ; ln 303 vol libre téléporté à Vector3(900, 30, 900) (hors monde V1)"
+   },
+   {
+    "path": "tests/integration/test_heads_reach_the_real_valley.gd",
+    "category": "B",
+    "evidence": "const VALLEY ln 20 — les têtes des personnages doivent exister dans la vraie vallée jouée (pas en labo)"
+   },
+   {
+    "path": "tests/integration/test_interaction_reachable.gd",
+    "category": "B",
+    "evidence": "const VALLEY ln 21 — invites d'interaction atteignables du point de vue joueur dans la vraie vallée (régression playtest 2026-08-07)"
+   },
+   {
+    "path": "tests/integration/test_interact_is_never_silent.gd",
+    "category": "B",
+    "evidence": "ln 70/101 `_player.global_position = Vector3(-180.0, 3.0, 200.0)` dans la vallée chargée (const VALLEY ln 23)"
+   },
+   {
+    "path": "tests/integration/test_camera_never_enters_the_hero.gd",
+    "category": "B",
+    "evidence": "const VALLEY ln 23 ; ln 143 `_player.global_position = Vector3(20.0, 4.0, 10.0)` (près de la rivière, défaut caméra sous le terrain du playtest)"
+   },
+   {
+    "path": "tests/integration/test_world_bounds_and_death.gd",
+    "category": "B",
+    "evidence": "ln 69 « la crête de départ » comme dernier point sûr ; 16 rayons de périmètre ; ln 204 chaîne porte vallée → CitadelVestibule → `ExitDoor` (consts VALLEY ln 12, VESTIBULE ln 13)"
+   },
+   {
+    "path": "tests/integration/test_world_dressing.gd",
+    "category": "B",
+    "evidence": "ln 3/64-85 « le COULOIR DE LA VISTA (x −12..12 vers la citadelle) ne contient AUCUNE silhouette haute » ; ln 107-120 nœuds `Terrain/PlainSouth/PlainSouthMesh`, `SpawnRidge/SpawnRidgeMesh`, `PylonRunes`, `PylonHead`"
+   },
+   {
+    "path": "tests/integration/test_valley_dressing.gd",
+    "category": "B",
+    "evidence": "const VALLEY ln 10 ; ln 93 MultiMesh `Flowers` du pré ; ln 311-335 vestibule `WallNorth`/`WallSouthTop`, `DungeonDoor` ciblant res://scenes/dungeon/rooms/Room1Initiation.tscn, `SealedLintel`"
+   },
+   {
+    "path": "tests/integration/test_valley_atmosphere.gd",
+    "category": "B",
+    "evidence": "ln 37/64 nœud `CitadelStorm` (StormCell), ln 77 `Bolt`, ln 100 `Sun`, ln 107 `ValleyEnvironment` — tous dans ValleyWorld.tscn"
+   },
+   {
+    "path": "tests/integration/test_storm_cloud_hangs_above_the_spire.gd",
+    "category": "B",
+    "evidence": "ln 30 `const BELLY_FLOOR_WORLD_Y: float = 106.0` ; ln 34 MAX_LUMP_RADIUS_M = 24.0 ; nœud `CitadelStorm` (ln 73/96/118) au-dessus de la spire V1"
+   },
+   {
+    "path": "tests/integration/test_nature_biome.gd",
+    "category": "B",
+    "evidence": "const VALLEY ln 8 ; ln 69 nœuds `Canopy%02d` de la forêt de la vallée"
+   },
+   {
+    "path": "tests/integration/test_citadel_carries_voids_and_asymmetry.gd",
+    "category": "B",
+    "evidence": "ln 75-80 nœuds `Terrain/CitadelProxy`, `Keep/KeepMesh` dans la vallée (const VALLEY ln 27)"
+   },
+   {
+    "path": "tests/integration/test_citadel_masses_wear_battered_cladding.gd",
+    "category": "B",
+    "evidence": "ln 45 `valley.get_node_or_null(\"Terrain/CitadelProxy\")` (const VALLEY ln 24)"
+   },
+   {
+    "path": "tests/integration/test_citadel_dressing.gd",
+    "category": "B",
+    "evidence": "consts VESTIBULE/VALLEY ln 8-9 ; ln 39-58 nœuds `ColumnStack%d`/`Segment2`, `Column%d`, `SealedDoorFrame` du CitadelVestibule (scène monde res://scenes/world/citadel/)"
+   },
+   {
+    "path": "tests/integration/test_dungeon_door_is_reachable_at_centre.gd",
+    "category": "B",
+    "evidence": "ln 21 `const VESTIBULE: String = \"res://scenes/world/citadel/CitadelVestibule.tscn\"` — la porte du donjon doit être atteignable au centre du vestibule"
+   },
+   {
+    "path": "tests/integration/test_mesas_wear_talus.gd",
+    "category": "B",
+    "evidence": "ln 43-49 : nœud `MesaSkirts`, faces `PylonMesaS`/`PylonMesaE` avec rebord à 18.0 m (const VALLEY ln 19)"
+   },
+   {
+    "path": "tests/integration/test_plains_carry_flanking_relief.gd",
+    "category": "B",
+    "evidence": "const VALLEY ln 23 ; ln 26 `const MIN_WIDTH_TO_HEIGHT: float = 4.0` sur les plaines du terrain V1"
+   },
+   {
+    "path": "tests/integration/test_paths_belong_to_the_ground.gd",
+    "category": "B",
+    "evidence": "const VALLEY ln 37 ; ln 38 `MAX_PIECE_LENGTH_M = 12.0` — chemins collés au sol de la vallée"
+   },
+   {
+    "path": "tests/integration/test_opening_dressing_rests_on_ground.gd",
+    "category": "B",
+    "evidence": "const VALLEY ln 28 ; ln 39-43 TOLERANCE_M 0.50, RAY_START_Y 200.0, RAY_END_Y -50.0 — habillage de l'ouverture posé sur le terrain V1"
+   },
+   {
+    "path": "tests/integration/test_river_stones_reach_the_bed.gd",
+    "category": "B",
+    "evidence": "ln 34-35 `const BED: float = -1.5` et `const WATER_TOP: float = -0.55` (niveaux du lit de rivière V1), SINK_MAX 0.60, LIFT_MAX 0.10 (const VALLEY ln 28)"
+   },
+   {
+    "path": "tests/integration/test_kit_scale.gd",
+    "category": "B",
+    "evidence": "ln 168 charge la vallée ; test ln 115 « no_planted_foliage_towers_over_the_hero » sur la végétation PLANTÉE dans ValleyWorld ; VARIATION_MAX 1.3 ln 31"
+   },
+   {
+    "path": "tests/integration/test_valley_painterly.gd",
+    "category": "B",
+    "evidence": "const VALLEY ln 12 ; ln 153-155 : `Player` présent dans la vallée, comptage des `PointOfInterest` via find_children — recette painterly appliquée à toute la carte V1"
+   },
+   {
+    "path": "tests/integration/test_ground_carriers_keep_their_material.gd",
+    "category": "B",
+    "evidence": "ln 59-69 : chaque rampe/dalle de la vallée déclarée « ground carrier » (groupe), comparée à EXPECTED_CARRIERS (const VALLEY ln 30)"
+   },
+   {
+    "path": "tests/integration/test_roofs_are_supported.gd",
+    "category": "B",
+    "evidence": "ln 152 `await _open(\"res://scenes/world/valley/ValleyWorld.tscn\")` — toits du village de la vallée soutenus par des murs"
+   },
+   {
+    "path": "tests/integration/test_ingredients.gd",
+    "category": "B",
+    "evidence": "ln 133-136 : recensement des `IngredientPickup` posés dans ValleyWorld (const VALLEY ln 7)"
+   },
+   {
+    "path": "tests/integration/test_cooking_ui.gd",
+    "category": "B",
+    "evidence": "ln 25 charge VALLEY ; ln 48-50 premier `Campfire` trouvé dans la vallée par find_children"
+   },
+   {
+    "path": "tests/integration/test_hud_and_inventory.gd",
+    "category": "B",
+    "evidence": "const VALLEY ln 15 ; ln 250 charge la vraie vallée pour la liaison HUD"
+   },
+   {
+    "path": "tests/integration/test_mouse_camera.gd",
+    "category": "B",
+    "evidence": "ln 159-170 : pause/reprise mesurée dans la vraie vallée chargée (`valley.player()`, `GameplayShell`) — const VALLEY ln 11"
+   },
+   {
+    "path": "tests/integration/test_training_grounds.gd",
+    "category": "B",
+    "evidence": "ln 17 `const SCENE: String = \"res://scenes/world/TrainingGrounds.tscn\"` — scène monde dédiée (cinq épreuves alignées, fosse d'Arc Step, maison de référence)"
+   },
+   {
+    "path": "tests/playthrough/test_physical_run.gd",
+    "category": "B",
+    "evidence": "ln 34-40 ROUTE_RIDGE : (14,152) (26,134) (36,112) (27,94) (18,79) (28,70) (40,60) (40,38) (36,22) (20,10) (12,-8) ; ln 43-48 ROUTE_CITADEL : (20,-34) (20,-72) (4,-100) (0,-132) (0,-162) — parcours à pied Boot→vallée→seuil citadelle, BELOW_WORLD -5.0"
+   },
+   {
+    "path": "tests/unit/test_save_system.gd",
+    "category": "C",
+    "evidence": "ln 32 checkpoint `valley.camp.start` ; ln 35 `chests_opened: [\"valley.chest.river_ledge.01\"]` — IDs persistants V1 dans le schéma de sauvegarde"
+   },
+   {
+    "path": "tests/unit/test_discovery_log.gd",
+    "category": "C",
+    "evidence": "ln 15-19 IDs POI `valley.poi.riverside_village.01`, `valley.poi.watchtower_ruin.01`, `valley.poi.waterfall_cave.01` — contrat du journal de découverte"
+   },
+   {
+    "path": "tests/integration/test_save_player_position.gd",
+    "category": "C",
+    "evidence": "ln 16 `const AWAY_POSITION: Vector3 = Vector3(35.0, 16.6, 109.0)` ; ln 63 `SpawnPoint` de ValleyWorld (const VALLEY ln 11) — sauvegarde/restauration du transform joueur"
+   },
+   {
+    "path": "tests/integration/test_save_continuity.gd",
+    "category": "C",
+    "evidence": "const VALLEY ln 6 ; ln 56/93/148-150 `Camp/CampChest`, `Camp/ClubPickup` — coffre ouvert/arme ramassée persistent au rechargement"
+   },
+   {
+    "path": "tests/integration/test_save_merge_and_vitals.gd",
+    "category": "C",
+    "evidence": "const VALLEY ln 14, charge ln 42 — fusion du payload (boss_defeated posé par l'arène ne doit pas être effacé par l'autosave de la vallée) + vitals sauvegardés"
+   },
+   {
+    "path": "tests/integration/test_meals_and_buffs.gd",
+    "category": "C",
+    "evidence": "ln 162-213 : double chargement de VALLEY — « plats + buff restant survivent au rechargement de la vallée » (E.2a)"
+   },
+   {
+    "path": "tests/integration/test_phase_e_chain.gd",
+    "category": "C",
+    "evidence": "const VALLEY ln 8 ; ln 67/125 `IngredientPickup` de la vallée — chaîne Gate E collecte→cuisine→buff→save/load"
+   },
+   {
+    "path": "tests/integration/test_reward_anchors.gd",
+    "category": "C",
+    "evidence": "ln 46 charge ValleyWorld ; ln 66-67 itère tous les `PointOfInterest` — ancrages/récompenses des 31 lieux éprouvés en faisant MARCHER un corps (en-tête : 23 coffres « au centre du lieu » dont certains dans un mur)"
+   },
+   {
+    "path": "tests/integration/test_point_of_interest.gd",
+    "category": "C",
+    "evidence": "en-tête ln 1-6 : un corps du groupe `player` traversant le volume déclenche la découverte, un ennemi non, et après rechargement le même passage ne redonne rien — contrat POI transverse (pas de coordonnée V1)"
+   },
+   {
+    "path": "tests/integration/test_fragment_pickups.gd",
+    "category": "C",
+    "evidence": "en-tête : « chaque POI-école porte SON éclat (Flux à l'autel, Élan au pont, Écho au bassin) » via ValleyRelics (ln ~26) + aller-retour du champ `fragments` du save"
+   },
+   {
+    "path": "tests/integration/test_shell_binding.gd",
+    "category": "C",
+    "evidence": "ln 12-13 consts VALLEY + Room1Initiation — le `GameplayShell` se lie dans la vallée ET dans une salle du donjon"
+   },
+   {
+    "path": "tests/integration/test_boss_victory.gd",
+    "category": "C",
+    "evidence": "ln 211/281 : les issues de l'écran victoire ciblent `res://scenes/world/valley/ValleyWorld.tscn` (contrat de flux arène→monde)"
+   },
+   {
+    "path": "tests/integration/test_room1_initiation.gd",
+    "category": "C",
+    "evidence": "ln 373-375 : la sortie de la salle 1 cible `res://scenes/world/citadel/CitadelVestibule.tscn` et `CentralHall.tscn` — couture donjon↔monde ; le reste du fichier est spatial-donjon, pas vallée"
+   },
+   {
+    "path": "tests/playthrough/test_boot_smoke.gd",
+    "category": "C",
+    "evidence": "ln 16 BOOT = res://scenes/boot/Boot.tscn, ln 19 BELOW_WORLD -5.0 ; commentaire ln ~14 « le sol jouable de la vallée est à y ≥ 2 hors lit » — vrai Boot → vrai menu → vallée, joueur vivant sur sol valide"
+   },
+   {
+    "path": "tests/playthrough/test_flow_wiring_path.gd",
+    "category": "C",
+    "evidence": "ln 33 BOOT ; en-tête : câblage `Boot` → menu → SceneFlow → vallée → Chest.interact() → SceneDoor → vestibule → salle 1"
+   },
+   {
+    "path": "tests/integration/test_gate_cameras_are_not_buried.gd",
+    "category": "E",
+    "evidence": "ln 54/101 itère `ValleyWorld.GATE_CAMERA_NAMES` (scripts/world/valley_world.gd:605-612 : VistaCamera_Hero01, DescentCamera_01, CampCamera_01, GateCamera_Ford, GateCamera_NorthRoad, GateCamera_Citadel) ; incident en-tête : `DescentCamera_01` à (14; 27; 152) enterrée sous SpawnRidge (x −50..50, z 144..208, sommet y = 32) — sa capture de gate était un aplat vert"
+   },
+   {
+    "path": "tests/integration/test_phase_h_silhouettes.gd",
+    "category": "E",
+    "evidence": "invariants de silhouette dérivés des captures `vista_horizon_etage`/`vista_h1_silhouettes`/`vista_h3c_final` : nœuds `Terrain/BorderCrests`, `FarSkyline`, `CitadelStorm`, `Terrain/CitadelProxy` (ln 54-91) ; ln 249 « bord nord de la crête (z 144) tombait de 22 m d'un coup » ; ln 411 fumée vs « l'œil vista est à 34,9 » (seuil 40 m)"
+   },
+   {
+    "path": "tests/integration/test_hero_shot_lab.gd",
+    "category": "E",
+    "evidence": "ln 77 `VistaCamera_Hero01` ; en-tête : ancres héros/camp/pylône/citadelle/rivière projetées à travers la caméra North Star 16:9 dans leurs fenêtres d'écran (pylône 75-79 % X, rivière en S) — scène res://scenes/lookdev/HeroShotLab.tscn (labo 80×80, contrat de composition North Star, pas la vallée elle-même)"
+   },
+   {
+    "path": "tests/unit/test_stamina.gd",
+    "category": "A",
+    "evidence": "règles pures d'endurance, aucun monde chargé"
+   },
+   {
+    "path": "tests/unit/test_damage.gd",
+    "category": "A",
+    "evidence": "formule de dégâts pure"
+   },
+   {
+    "path": "tests/unit/test_cooking_rules.gd",
+    "category": "A",
+    "evidence": "règles de recettes pures"
+   },
+   {
+    "path": "tests/unit/test_input_map.gd",
+    "category": "A",
+    "evidence": "InputMap AZERTY, aucune référence spatiale"
+   },
+   {
+    "path": "tests/unit/test_invariants.gd",
+    "category": "A",
+    "evidence": "invariants d'état du projet (Q=gauche, version 4.7.1) — pas de monde"
+   },
+   {
+    "path": "tests/unit/test_boss_director.gd",
+    "category": "A",
+    "evidence": "directeur de patterns en pur calcul"
+   },
+   {
+    "path": "tests/integration/test_electric_graph.gd",
+    "category": "A",
+    "evidence": "graphe construit en mémoire par le test (ex. ln 65 CABLE à Vector3(20,0,0) local), aucune scène monde"
+   },
+   {
+    "path": "tests/integration/test_locomotion.gd",
+    "category": "A",
+    "evidence": "géométrie de test construite localement (setups à Vector3(-20,1.5,4.5) etc. sur sols créés par le test)"
+   },
+   {
+    "path": "tests/integration/test_lock_on.gd",
+    "category": "A",
+    "evidence": "sol BoxShape 80×80 créé par le test (ln 26), positions locales"
+   },
+   {
+    "path": "tests/integration/test_combat_exchange.gd",
+    "category": "A",
+    "evidence": "sol 30×30 local (ln 33), mannequins instanciés par le test"
+   },
+   {
+    "path": "tests/integration/test_resonance_pulse.gd",
+    "category": "A",
+    "evidence": "sol 80×80 local (ln 36), aucune scène monde"
+   },
+   {
+    "path": "tests/integration/test_utility_brain.gd",
+    "category": "A",
+    "evidence": "décor local 80×80 (ln 59), scoring utilitaire"
+   },
+   {
+    "path": "tests/integration/test_room2_vertical.gd",
+    "category": "A",
+    "evidence": "spatial DONJON (res://scenes/dungeon/rooms/Room2Vertical.tscn), aucune hypothèse vallée V1 — cible CentralHall (donjon-interne)"
+   },
+   {
+    "path": "tests/integration/test_boss_arena.gd",
+    "category": "A",
+    "evidence": "spatial ARÈNE BOSS (res://scenes/boss/BossArena.tscn), positions internes à l'arène (ln 191-192), aucune hypothèse vallée V1"
+   },
+   {
+    "path": "tests/playthrough/test_traversal_course.gd",
+    "category": "A",
+    "evidence": "scène de test dédiée res://scenes/tests/TraversalCourse.tscn (ln 14), pas la vallée"
+   }
+  ]
+ }
+}

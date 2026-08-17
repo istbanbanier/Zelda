@@ -1,0 +1,7 @@
+# CONTRÔLE F2 (confluence) — VERT après correction V2.2R.2 (pièce soudée à 5 sommets de bord)
+# Date : 2026-08-13T23:56:52Z ; run : test_runner --filter=world_v2 (45/0) ;
+# extraits du même run : F2 (confluence), F (raccords), maillage, hydrologie.
+  ok   test_world_v2_water_confluence.gd::test_la_confluence_est_une_jonction_topologique (2 assertions)
+  ok   test_world_v2_water_junctions.gd::test_chaque_extremite_de_ruban_est_raccordee (2 assertions)
+  ok   test_world_v2_water_mesh.gd::test_les_rubans_d_eau_n_ont_aucun_quad_de_torsion (3 assertions)
+=== RÉSULTAT: 45 réussi(s), 0 échoué(s) ===

@@ -1,0 +1,20 @@
+# commande : python3 tools/cave_argmin_localiser.py <glb> --simuler-azimuts
+============================================================================
+LOCALISATION DE L'ARGMIN D'EPAISSEUR — projection, direction,
+generateur responsable. Cet outil ne rend AUCUN verdict.
+============================================================================
+fichier : assets/environment/caves/SM_WaterfallCave.glb
+sha256  : c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed        <- lu AVANT la mesure
+maillage mesure : SM_WaterfallCave  (COL_WaterfallCave, la coque
+   de collision qui BOUCHE la galerie, est exclue nommement)
+h = 0.1000 m   masque = 2.00 m   pas de balayage = 0.050 m
+
+--- SIMULATION (aucun fichier ecrit, aucun seuil touche) ---
+  cible : (1.036 ; 5.173 ; 2.316)
+  azimuts   pas       roches    traversees  sommet     ep. vert.
+  5         19.00     23        8           2.631      0.315 m
+  7         12.67     33        12          4.001      1.685 m
+  9         9.50      43        15          3.943      1.627 m
+  11        7.60      53        21          3.991      1.675 m
+  13        6.33      63        23          4.002      1.686 m
+RC=0

@@ -1,0 +1,5 @@
+# CONTRÔLE NÉGATIF A (rejoué V2.2R) — matériau du chunk c3r3 remplacé par un StandardMaterial3D
+# Date : 2026-08-13T16:57:13Z ; base : 50e9718 + injection temporaire (jamais commitée)
+  ÉCHEC test_world_v2_landscape_contract.gd::test_chaque_chunk_porte_le_materiau_de_paysage — chaque chunk porte le matériau de paysage (1 écart(s)) — c3r3 : matériau de diagnostic, pas de paysage
+=== RÉSULTAT: 5 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_landscape_contract.gd::test_chaque_chunk_porte_le_materiau_de_paysage — chaque chunk porte le matériau de paysage (1 écart(s)) — c3r3 : matériau de diagnostic, pas de paysage

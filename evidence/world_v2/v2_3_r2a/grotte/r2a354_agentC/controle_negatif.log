@@ -1,0 +1,84 @@
+============================================================================
+CONTROLE NEGATIF FERME — contrat §3
+============================================================================
+source  : /home/user/zelda-r2a354/a_percee/assets/environment/caves/SM_WaterfallCave.glb
+sha256  : c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed   <- AVANT
+cible d'epaisseur apres sabotage : 0.600 m (seuil 0.80)
+
+--- ETAPE 1 : fermeture prouvee AVANT sabotage ---
+  bords libres 0 | non-manifold 0 | sommets PINCES 0 | aretes mal orientees 0
+  composantes 1 | genres [0]
+
+--- choix du point a amincir ---
+  sommet 8510, modele (0.848 ; 4.798 ; 3.182)
+  TEMOIN AVANT : portee du rayon vers l'interieur = 0.9853 m
+  deplacement demande : 0.3853 m (soit 0.600 m restants)
+
+--- ETAPE 2 : sabotage par DEPLACEMENT (aucune face retiree) ---
+  Le rayon est ASSERVI au deplacement, et augmente jusqu'a ce
+  qu'aucun triangle ne se retourne. Mesure : un deplacement de
+  1,16 m dans un disque de 0,40 m REPLIE la surface (3 triangles
+  retournes) ; a 1,86 m il en reste 1. Un maillage auto-intersecte
+  n'est pas un amincissement de coque, et le rouge qu'il produit
+  aurait une AUTRE CAUSE que celle annoncee — §3 l'interdit.
+  rayon     sommets   triangles retournes
+  0.617     43        0
+  retenu : rayon 0.617 m, 43 sommets deplaces, 0 triangle retourne
+  faces retirees : 0   <- la connectivite est intacte
+
+  ecrit : /tmp/cave_sabote_ferme.glb
+  sha256 sabote : 4f7b12ded42ac3e00d1e6bf8e80c637eb65ff377958e5a5df0481ebe2d7845cd
+
+--- fermeture APRES sabotage (doit etre identique) ---
+  bords libres 0 | non-manifold 0 | sommets PINCES 0 | aretes mal orientees 0
+  composantes 1 | genres [0]
+  -> maillage toujours FERME, manifold, meme genre.
+
+--- ETAPE 3 : le TEMOIN INDEPENDANT confirme l'amincissement ---
+  portee du rayon AVANT : 0.9853 m
+  portee du rayon APRES : 0.6000 m
+  baisse mesuree        : 0.3853 m
+  euclidienne <= portee du rayon, donc l'epaisseur EUCLIDIENNE
+  y est aussi < 0,80 m. L'implication ne vaut que dans ce sens,
+  et c'est celui dont on a besoin.
+
+--- ETAPE 4 : verdict de l'instrument ---
+  §3 : « Un rouge obtenu pour une AUTRE CAUSE que celle annoncee
+  ne compte pas. » On mesure donc AUSSI la geometrie saine, et on
+  exige que l'argmin se DEPLACE vers le site du sabotage.
+  /usr/local/bin/python3 /home/user/zelda-r2a354/c_verif/tools/cave_check_hull.py /home/user/zelda-r2a354/a_percee/assets/environment/caves/SM_WaterfallCave.glb --pas-balayage=0.25 --h=0.150 --masque=2.00
+    [SAIN] LECTURE brute      : 0.6613 m
+    [SAIN] BORNE GARANTIE     : 0.5113 m   = lecture - h  (h = 0.1500)
+    [SAIN] ARGMIN localise    : modele (1.036 ; 5.173 ; 2.316), face 19341
+    [SAIN] echantillons sous le seuil en LECTURE : 1422
+    [SAIN] GATE EPAISSEUR : **FAIL** — lecture 0.6613 m < 0.80 m, mesuree.
+    [SAIN] RC = 1
+
+  /usr/local/bin/python3 /home/user/zelda-r2a354/c_verif/tools/cave_check_hull.py /tmp/cave_sabote_ferme.glb --pas-balayage=0.25 --h=0.150 --masque=2.00
+    [SABOTE] LECTURE brute      : 0.5204 m
+    [SABOTE] BORNE GARANTIE     : 0.3704 m   = lecture - h  (h = 0.1500)
+    [SABOTE] ARGMIN localise    : modele (1.134 ; 4.556 ; 2.393), face 19338
+    [SABOTE] echantillons sous le seuil en LECTURE : 1648
+    [SABOTE] GATE EPAISSEUR : **FAIL** — lecture 0.5204 m < 0.80 m, mesuree.
+    [SABOTE] RC = 1
+
+--- ETAPE 5 : restauration ---
+  sha256 source AVANT : c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed
+  sha256 source APRES : c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed
+  identiques : OUI   <- la source n'a JAMAIS ete reecrite ; le
+  sabotage vit dans un fichier separe, donc la restauration est
+  byte-identique par construction plutot que par diligence.
+
+--- ATTRIBUTION : le rouge vient-il de MON sabotage ? ---
+  site du sabotage   : (0.993 ; 4.590 ; 2.893)
+  argmin SAIN        : (1.036 ; 5.173 ; 2.316)
+  argmin SABOTE      : (1.134 ; 4.556 ; 2.393)
+  distance argmin(sabote) -> site : 0.520 m
+  attribue au sabotage : OUI
+
+============================================================================
+CONTROLE NEGATIF : **CONCLUANT** — la coque amincie ROUGIT,
+l'argmin s'est deplace SUR le site du sabotage, le maillage
+est reste ferme, et la baisse est prouvee par un instrument
+different de celui qu'on eprouve.
+RC=0

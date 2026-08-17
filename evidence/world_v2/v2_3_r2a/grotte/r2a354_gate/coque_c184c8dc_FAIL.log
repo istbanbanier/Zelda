@@ -1,0 +1,273 @@
+============================================================================
+COQUE STRUCTURELLE — contrat docs/CONTRAT_COQUE_STRUCTURELLE.md
+============================================================================
+fichier : /home/user/zelda-r2a354/a_percee/assets/environment/caves/SM_WaterfallCave.glb
+sha256  : c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed        <- lu AVANT la mesure
+noeud   : SM_WaterfallCave
+h (rayon de couverture) = 0.1000 m   |   seuil = 0.80 m
+reperes : COURANTS
+
+--- fermeture prealable ---
+bords libres 0 | non-manifold 0 | 20072 faces | 10038 sommets soudes
+volume signe = +796.445 m3  -> normales sortantes
+
+--- §2.3 les deux graines sont-elles dans l'AIR ? (angle solide) ---
+  MODELE_SALLE  modele (2.620 ; 2.580 ; 0.090)  enroulement -0.0000  -> AIR
+  MODELE_NICHE  modele (2.780 ; 4.090 ; 0.500)  enroulement +0.0000  -> AIR
+
+--- references de faces ---
+  temoins de l'ENVELOPPE EXTERIEURE : 26 faces distinctes,
+     vues de 26 directions a grande distance
+  face de SALLE  : 19950   face de NICHE : 20038
+
+--- §2.1 derivation de la bouche : balayage du profil ---
+  axe de balayage : ay   de -3.115 a 5.865, pas 0.050 m
+  TROIS conditions de validite, et chacune a ete apprise a ses
+  depens sur cette geometrie :
+    1. le contour isole SALLE de 26 TEMOINS de l'enveloppe ;
+       — le perimetre seul elisait une VERRUE de 6 faces, et un
+         temoin unique au zenith laissait passer une BISSECTION
+         du massif entier (628 m2 contre 639 m2) ;
+    2. la face de NICHE reste du cote graine ;
+       — sinon la barriere ampute l'arriere de la cavite ;
+    3. aire(cote graine) < aire(cote ciel).
+       — sinon on retient le complement : un bouton isolant le
+         CIEL satisfait 1 et 2 en laissant 20 078 faces dedans.
+  Parmi les valides on prend la PLUS EXTERIEURE — celle qui
+  enferme le PLUS de cavite. Prendre l'etranglement le plus
+  etroit amputerait le fond, ce que §2.4 interdit.
+
+  ay        contours perim.min  valide   aire int.   perimetre
+  -3.115    3        0.200      non      
+  -3.065    3        1.168      non      
+  -3.015    5        0.822      non      
+  -2.965    4        1.403      non      
+  -2.915    2        1.985      non      
+  -2.865    2        0.855      non      
+  -2.815    2        4.849      non      
+  -2.765    2        4.900      non      
+  -2.715    3        1.715      non      
+  -2.665    3        1.174      non      
+  -2.615    3        0.488      non      
+  -2.565    1        32.493     non      
+  -2.515    2        0.729      non      
+  -2.465    2        1.371      non      
+  -2.415    1        33.839     non      
+  -2.365    3        1.057      non      
+  -2.315    4        0.673      non      
+  -2.265    4        0.371      non      
+  -2.215    4        2.386      non      
+  -2.165    5        0.663      non      
+  -2.115    3        3.448      non      
+  -2.065    2        9.507      non      
+  -2.015    1        52.676     non      
+  -1.965    1        52.531     non      
+  -1.915    1        52.611     non      
+  -1.865    1        52.649     non      
+  -1.815    1        52.976     non      
+  -1.765    1        53.756     OUI      95.19       53.756 m
+  -1.715    2        11.978     OUI      95.19       11.978 m
+  -1.665    2        11.978     OUI      95.19       11.978 m
+  -1.615    2        11.978     OUI      95.19       11.978 m
+  -1.565    2        11.978     OUI      95.19       11.978 m
+  -1.515    2        11.978     OUI      95.19       11.978 m
+  -1.465    2        11.978     OUI      95.19       11.978 m
+  -1.415    2        11.978     OUI      95.19       11.978 m
+  -1.365    2        11.978     OUI      95.19       11.978 m
+  -1.315    2        11.978     OUI      95.19       11.978 m
+  -1.265    2        11.978     OUI      95.19       11.978 m
+  -1.215    2        11.978     OUI      95.19       11.978 m
+  -1.165    2        11.978     OUI      95.19       11.978 m
+  -1.115    2        11.955     OUI      79.97       11.955 m
+  -1.065    2        11.923     OUI      79.97       11.923 m
+  -1.015    2        11.892     OUI      79.97       11.892 m
+  -0.965    2        11.860     OUI      79.97       11.860 m
+  -0.915    2        11.828     OUI      79.97       11.828 m
+  -0.865    2        11.796     OUI      79.97       11.796 m
+  -0.815    2        11.764     OUI      79.97       11.764 m
+  -0.765    2        11.732     OUI      79.97       11.732 m
+  -0.715    2        11.700     OUI      79.97       11.700 m
+  -0.665    2        11.669     OUI      79.97       11.669 m
+  -0.615    2        11.637     OUI      79.97       11.637 m
+  -0.565    2        11.605     OUI      79.97       11.605 m
+  -0.515    2        11.573     OUI      79.97       11.573 m
+  -0.465    2        11.541     OUI      79.97       11.541 m
+  -0.415    2        11.509     OUI      79.97       11.509 m
+  -0.365    2        11.477     OUI      79.97       11.477 m
+  -0.315    2        11.446     OUI      79.97       11.446 m
+  -0.265    2        11.414     OUI      79.97       11.414 m
+  -0.215    2        11.382     OUI      79.97       11.382 m
+  -0.165    2        11.350     OUI      79.97       11.350 m
+  -0.115    3        0.985      OUI      78.93       11.405 m
+  -0.065    3        1.755      OUI      77.50       11.663 m
+  -0.015    3        2.549      OUI      76.32       11.934 m
+  0.035     2        15.176     OUI      73.27       15.176 m
+  0.085     2        14.710     OUI      71.79       14.710 m
+  0.135     2        14.127     OUI      69.54       14.127 m
+  0.185     2        14.041     OUI      67.66       14.041 m
+  0.235     2        13.843     OUI      62.87       13.843 m
+  0.285     2        13.640     OUI      62.60       13.640 m
+  0.335     2        13.442     OUI      62.52       13.442 m
+  0.385     3        0.693      OUI      62.08       13.268 m
+  0.435     3        0.081      OUI      61.79       13.097 m
+  0.485     4        0.935      OUI      61.79       12.942 m
+  0.535     3        0.825      OUI      61.31       12.791 m
+  0.585     4        0.465      OUI      61.16       12.655 m
+  0.635     2        12.521     OUI      60.85       12.521 m
+  0.685     3        0.485      OUI      60.85       12.393 m
+  0.735     3        0.266      OUI      60.18       12.273 m
+  0.785     3        1.564      OUI      60.18       12.161 m
+  0.835     3        0.204      OUI      59.85       12.054 m
+  0.885     3        1.079      OUI      59.49       11.951 m
+  0.935     3        0.800      OUI      59.32       11.856 m
+  0.985     2        11.762     OUI      58.97       11.762 m
+  1.035     2        11.669     OUI      58.84       11.669 m
+  1.085     2        11.581     OUI      58.27       11.581 m
+  1.135     2        11.495     OUI      57.94       11.495 m
+  1.185     2        11.411     OUI      57.82       11.411 m
+  1.235     2        11.351     OUI      56.60       11.351 m
+  1.285     2        11.291     OUI      55.72       11.291 m
+  1.335     2        11.231     OUI      54.87       11.231 m
+  1.385     2        11.177     OUI      53.65       11.177 m
+  1.435     2        11.136     OUI      52.39       11.136 m
+  1.485     2        11.115     OUI      51.64       11.115 m
+  1.535     2        11.139     OUI      47.26       11.139 m
+  1.585     2        11.205     OUI      47.13       11.205 m
+  1.635     2        11.274     OUI      46.61       11.274 m
+  1.685     2        11.345     OUI      46.40       11.345 m
+  1.735     2        11.403     OUI      46.25       11.403 m
+  1.785     2        11.440     OUI      45.66       11.440 m
+  1.835     2        11.481     OUI      44.79       11.481 m
+  1.885     2        11.523     OUI      44.28       11.523 m
+  1.935     2        11.543     OUI      43.63       11.543 m
+  1.985     2        11.554     OUI      42.87       11.554 m
+  2.035     2        11.565     OUI      42.62       11.565 m
+  2.085     2        11.565     OUI      42.23       11.565 m
+  2.135     2        11.548     OUI      42.17       11.548 m
+  2.185     2        11.532     OUI      41.51       11.532 m
+  2.235     2        11.516     OUI      41.51       11.516 m
+  2.285     2        11.501     OUI      40.99       11.501 m
+  2.335     2        11.485     OUI      40.71       11.485 m
+  2.385     2        11.479     OUI      39.54       11.479 m
+  2.435     2        11.482     OUI      39.20       11.482 m
+  2.485     2        11.484     OUI      39.06       11.484 m
+  2.535     2        11.480     OUI      38.45       11.480 m
+  2.585     2        11.477     OUI      37.75       11.477 m
+  2.635     2        11.474     non      
+  2.685     2        11.452     non      
+  2.735     2        11.423     non      
+  2.785     2        11.395     non      
+  2.835     2        11.368     non      
+  2.885     2        11.341     non      
+  2.935     2        11.305     non      
+  2.985     2        11.264     non      
+  3.035     2        11.222     non      
+  3.085     2        11.172     non      
+  3.135     2        11.127     non      
+  3.185     2        11.087     non      
+  3.235     2        11.053     non      
+  3.285     2        10.996     non      
+  3.335     2        10.924     non      
+  3.385     2        10.852     non      
+  3.435     2        10.781     non      
+  3.485     2        10.706     non      
+  3.535     2        10.629     non      
+  3.585     2        10.551     non      
+  3.635     2        10.470     non      
+  3.685     2        10.383     non      
+  3.735     2        10.297     non      
+  3.785     2        10.208     non      
+  3.835     2        10.120     non      
+  3.885     2        10.032     non      
+  3.935     2        9.944      non      
+  3.985     2        9.856      non      
+  4.035     2        9.768      non      
+  4.085     2        9.681      non      
+  4.135     2        9.596      non      
+  4.185     2        9.510      non      
+  4.235     2        9.425      non      
+  4.285     2        9.339      non      
+  4.335     2        9.254      non      
+  4.385     2        9.169      non      
+  4.435     3        1.940      non      
+  4.485     3        1.501      non      
+  4.535     3        1.105      non      
+  4.585     2        8.831      non      
+  4.635     2        8.747      non      
+  4.685     2        8.662      non      
+  4.735     2        8.576      non      
+  4.785     2        8.490      non      
+  4.835     2        8.404      non      
+  4.885     2        8.318      non      
+  4.935     2        8.232      non      
+  4.985     2        8.143      non      
+  5.035     2        8.051      non      
+  5.085     2        7.956      non      
+  5.135     3        2.022      non      
+  5.185     3        1.410      non      
+  5.235     3        0.412      non      
+  5.285     3        0.094      non      
+  5.335     2        7.441      non      
+  5.385     2        7.316      non      
+  5.435     2        7.182      non      
+  5.485     2        7.027      non      
+  5.535     2        6.857      non      
+  5.585     2        6.685      non      
+  5.635     2        6.499      non      
+  5.685     2        6.299      non      
+  5.735     2        6.099      non      
+  5.785     2        5.899      non      
+  5.835     2        5.700      non      
+
+bouche retenue : ay = -1.765, perimetre 53.756 m,
+                 la plus EXTERIEURE des barrieres valides —
+                 elle enferme 95.19 m2 de peau interieure.
+                 532 aretes coupees
+  emprise du contour : x[-6.400 6.900] ay[-1.765 -1.765] az[-3.518 3.772]
+
+--- §2.2/§2.4 peau interieure ---
+  peau INTERIEURE : 1008 faces, aire 95.19 m2
+  peau EXTERIEURE : 19064 faces, aire 748.78 m2
+  niche bordee par la peau interieure : OUI
+
+--- §2.5 masque de bouche (seule exclusion) ---
+  Au REBORD MEME de la bouche l'epaisseur tend vers zero : c'est
+  une arete, pas un defaut. Le masque ecarte donc un voisinage
+  GEODESIQUE du contour, mesure SUR la surface.
+  Toute emprise de masque est un CHOIX. On ne choisit donc pas :
+  on publie le minimum EN FONCTION de l'emprise, et le lecteur
+  voit exactement ce que chaque metre exclut. Un minimum qui
+  remonte brutalement avec l'emprise est un REBORD ; un minimum
+  qui reste bas est un vrai amincissement de coque.
+
+  122376 echantillons sur la peau interieure (couverture PROUVEE <= h = 0.1000 m)
+
+  masque    echant.  lecture     borne       argmin (x ; ay ; az)
+  0.00      114376   0.0216      -0.0784     (1.423 ; -1.129 ; -0.098)
+  0.25      114376   0.0216      -0.0784     (1.423 ; -1.129 ; -0.098)
+  0.50      114376   0.0216      -0.0784     (1.423 ; -1.129 ; -0.098)
+  0.75      111432   0.0254      -0.0746     (1.009 ; -1.128 ; -0.622)
+  1.00      105800   0.0260      -0.0740     (0.792 ; -1.128 ; -0.635)
+  1.50      91064    0.0565      -0.0435     (-0.772 ; -1.100 ; -0.628)
+  2.00      86020    0.6613      0.5613      (1.036 ; 5.173 ; 2.316)
+  3.00      69408    0.6613      0.5613      (1.036 ; 5.173 ; 2.316)
+
+  emprise retenue : 2.00 m
+  coque structurelle : 796 faces, 70.35 m2
+  domaine couvert en ay : [-0.092 ; 6.981]   <- AUCUNE borne de
+     station : la derniere station de CAVITE est a ay = 3,17 et
+     la coque est mesuree bien au-dela. C'est la clause §2.4.
+
+--- §2.6 epaisseur : distance euclidienne exacte ---
+  LECTURE brute      : 0.6613 m
+  BORNE GARANTIE     : 0.5613 m   = lecture - h  (h = 0.1000)
+  ARGMIN localise    : modele (1.036 ; 5.173 ; 2.316), face 19341
+     (l'argmin, pas seulement le minimum : un minimum qui se
+      deplace est une migration qu'aucun total ne montre)
+  echantillons sous le seuil en LECTURE : 2216
+  echantillons INDECIDABLES (lecture>=0,80 mais borne<0,80) : 5430
+
+============================================================================
+GATE EPAISSEUR : **FAIL** — lecture 0.6613 m < 0.80 m, mesuree.
+============================================================================
+RC=1

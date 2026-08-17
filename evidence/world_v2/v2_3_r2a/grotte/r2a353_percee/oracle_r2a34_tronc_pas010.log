@@ -1,0 +1,44 @@
+==============================================================================
+ORACLE GLOBAL — topologie + classement d'espace
+==============================================================================
+maillage : assets/environment/caves/SM_WaterfallCave.glb
+sha256   : 8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110
+noeud    : SM_WaterfallCave   (COL_WaterfallCave, proxy de collision, n'est PAS mesure)
+triangles: 19954   matieres : MAT_CaveIn_Deep, MAT_CaveIn_Floor, MAT_CaveIn_Wall, MAT_CaveRock_Base, MAT_CaveRock_Collar, MAT_CaveRock_Face
+AABB     : x[-8.293 8.912] y[-3.992 12.251] z[-3.550 9.643]
+
+------------------------------------------------------------------------------
+METHODE A — TOPOLOGIE (combinatoire pure, sans grille ni rayon)
+------------------------------------------------------------------------------
+   sommets soudes 9975   aretes 29931   faces 19954
+   aretes par nombre de faces : {'2': 29931}
+   bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 1
+      composante 0 : F=19954 V=9975 E=29931  khi=-2  genre 2
+
+------------------------------------------------------------------------------
+METHODE B — CLASSEMENT D'ESPACE (segment centre-a-centre)
+------------------------------------------------------------------------------
+   reperes lus dans scripts/world_v2/poi/waterfall_cave_place.gd (script de LIEU, pas le generateur)
+   graine interieure (repere MODELE) : (1.05 ; 6.25 ; 1.12)
+   grille 197x187x156 = 5746884 case(s), pas 0.100 m
+   segments (colonnes repliees) : 94765
+   composantes d'espace (sans barriere) : 2
+      AIR         4751929 case(s)    4751.93 m3  bord  191334  voix air/roche 57962/0
+      ROCHE        994955 case(s)     994.96 m3  bord       0  voix air/roche 0/57890
+   barriere de bouche : couche j=39, surface a y=-1.192 (epaisseur nulle)
+   composante de la graine : AIR, 105031 case(s) = 105.03 m3, emprise x[-2.44 4.36] y[-1.14 10.16] z[-0.60 3.10]
+      temoin MODELE_NICHE           (-1.20 ; 8.20 ; 0.73) : DANS la cavite scellee
+      temoin MODELE_SALLE           (1.05 ; 6.25 ; 0.52) : DANS la cavite scellee
+
+==============================================================================
+VERDICT : VERT — une composante ROCHE, une composante AIR,
+          cavite scellee par la seule bouche, temoins dedans.
+
+   Corroboration croisee, et elle est le resultat le plus
+   utile de cette execution : le genre vaut 2, donc 2
+   anse(s) existe(nt). L'inondation montre que la cavite
+   NE communique PAS avec le dehors une fois la bouche
+   barree. Une anse qui ne relie pas la cavite au dehors
+   est une ARCHE de matiere, pas une percee. Les deux
+   methodes se corroborent sans partager de calcul.
+==============================================================================

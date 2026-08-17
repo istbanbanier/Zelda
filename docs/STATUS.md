@@ -1,5 +1,41 @@
 # STATUS — état par fonctionnalité
 
+## World V2 — reconstruction du monde (2026-08-13, `claude/world-v2-reconstruction`)
+
+| Phase | État | Preuve |
+|---|---|---|
+| V2.0 — squelette dual-monde, carte directrice, contrats | Validé | `evidence/world_v2/v2_0/` ; suites `tests/world_v2/test_world_v2_skeleton.gd`, `test_world_v2_layout.gd` |
+| V2.1 — vallée whitebox physique (relief, hydrologie, routes, limites, navigation, traversée réelle) | **Validé — Gate PASS** | `evidence/world_v2/v2_1/README.md` (verdicts par critère), revue contradictoire archivée, `validate_fast_final.log` ; SHA final dans `docs/PROGRESS.md` |
+| V2.2 — fondation artistique du paysage (matériau painterly, végétation cellulaire, eau, ciel/orage, silhouettes) | **Fonctionnel — gate technique PASS en revue contradictoire** | `evidence/world_v2/v2_2/README.md`, `revue_contradictoire.md`, `validate_fast_final.log`, contrôles négatifs A-D + angle mort E |
+| V2.2 — enveloppe du donjon | Différée par directive du lead | fil de détente `tests/world_v2/test_world_v2_dungeon_pins.gd` en place |
+| V2.3-0 — socle technique des lieux (registre, placement par layout, filets, contrôles négatifs) | **PASS prononcé par le lead** | `evidence/world_v2/v2_3/`, suites `test_world_v2_places_contract.gd`, `test_world_v2_places_behavior.gd` |
+| V2.3-A — lot pilote, 9 sujets : gate ARTISTIQUE | **REJETÉE par le lead** | verdict du lead ; planches de preuve vides et ligne de base mal étiquetée |
+| V2.3-A.R — passe corrective : preuves réparées, 9 sujets repris | chaîne technique et preuves SHA **PASS** ; gate artistique **ÉCHEC** | verdict du lead ; `evidence/world_v2/v2_3/MANIFESTE_V23AR.md` ; `validate_fast` 899/0 |
+| V2.3-A.R2a — changement de pipeline, 4 golden masters | **En cours** | base `c946b0e` ; hameau · pont · grotte · pylône seulement |
+| R2a-0 — enquête pipeline (Blender, pivots CC0, `gltf_inspect`) | **PASS prononcé par le lead** | `evidence/world_v2/v2_3_r2a/README.md` |
+| R2a-4 — pylône, 1er golden master | « progrès majeur, pas encore golden master » (lead) | trois faiblesses nommées + preuve invalide (`repo_dirty: true`) |
+| R2a-4.1 — pylône, golden master 1/4 | **PASS artistique ET technique prononcé par le lead — GELÉ au code `4165801`** | `evidence/world_v2/v2_3_r2a/README.md` §R2a-4.1 ; 7 vues + 2 manifestes `commit 4165801` / `repo_dirty: false` ; `world_v2_places` 8/8 ; `gltf_inspect` VALIDE |
+| R2a-2 pont — golden master 2/4 | **PASS visuel prononcé par le lead — GELÉ à partir de `9f25e78`** | verdict du lead ; réserves non bloquantes (intrados plat, tympans sobres) ; note du layout corrigée en `9583e25` (traversée en aval du gué, offset 28,8 m mesuré) |
+| R2a-3 grotte — golden master | **FAIL visuel prononcé par le lead** | sept défauts nommés : miche lisse, bouche en demi-cercle, tunnel cylindrique, silhouettes génériques, niche sans composition, flanc surexposé |
+| R2a-3.1 grotte — corrective | **NON VÉRIFIÉ — livré, en attente du verdict visuel du lead** | `evidence/.../grotte/CORRECTIVE_R2a_3_1.md` ; commit `71d1817`, `repo_dirty: false` ; 7 vues + tournette 8 + 2 silhouettes isolées ; sections POLYGONALES (le premier jet quantifiait le rayon et traçait des arcs) ; visière et éperon côté approche ; épaisseur 1,12 m / collerette 0,75 m ; places 8/8 ; végétation gelée sans intersection. **7 exigences PASS, exigence 5 (mise en scène de la récompense) PARTIAL, déclarée telle.** |
+| R2a-3.3 grotte — extérieur reconstruit en roches CC0 | **NON VÉRIFIÉ — livré, en attente du verdict visuel du lead** | `evidence/.../grotte/tranche3/TRANCHE3.md` ; géométrie et GLB au commit `8368550`, captures au commit `73dc20a`, `repo_dirty: false` sur tous les manifestes. `anneau_exterieur()` ne rend plus rien (collision seule) ; 98 roches du kit CC0, remaillage volumétrique, cavité soustraite comme solide. Chaîne verte RC = 0 : 20 444 tris, plage plane 3,45 m² global et 2,36 m² en façade, épaisseur 1,05 m en paroi et 1,30 m au linteau, coque fermée, 1 composante, gabarit aux 7 stations, aucun jour ; `gltf_inspect` VALIDE. **La consigne « trois masses larges et asymétriques » n'est PAS atteinte et c'est mesuré** : 4 sommets de largeur 1,07 à 1,26 m, cv 0,06, sur l'azimut réel d'approche (`tools/measure_silhouette_masses.py`). Deux caméras de preuve héritées étaient fausses — démontré par la baseline R2a-3.1 à la même caméra — conservées pour les A/B, doublées de caméras justes. Masses jaunes : `Flower_4_Group` V2.2, identifiées, **non corrigées** (propagation). |
+| R2a-3.4 grotte — corrective multi-agent | **NON VÉRIFIÉ — livré, en attente du verdict visuel du lead** | `evidence/.../grotte/tranche4_final/R2A_3_4.md`. Cinq SHA distingués : flore `4ed364b`, baseline `8900375`, géométrie `504ecbe`, capture `55c4803` (`repo_dirty: false`). **Flore V2.2** : `Flower_4_Group` 2,841 m → 0,545 m par `KitScale`, bande (0,69 ; 0,99) ; rouge reproduit, 4 verts, témoin d'invariance éprouvé. **Composition** : 3 masses de 5,58 / 3,60 / 2,18 m, cv 0,37, stables à quatre entailles et deux azimuts — contre 4 masses à cv 0,06 ; cause mesurée (faîte du module 0,93 m, 81 % de portage solo). **Seuil** : plancher 66 fautes → 0, fond ouvert → plein, percées 761 → 73 toutes isolées, filet `test_grotte_sans_jour` rouge → 67/0. **NON SATISFAITE** : sonde `FAIL` global sur 73 percées isolées ; linteau 0,61 m pour un seuil de 0,60 ; contrefort droit pas « en retrait » ; contrôle 3 de la sonde `PARTIAL`. Conflit de spécifications nommé : épaissir pour fermer et creuser pour trois masses tirent sur la même roche. |
+| R2a-1 hameau — golden master 3/4 | **PASS visuel conditionnel prononcé par le lead — condition LEVÉE, gelable** | `evidence/.../hameau/VEGETATION_VERDICT.md` : emprise complète sondée, 78 instances gelées dedans, **aucune intersection** ; cas le plus serré 0,35 m, à côté et non dedans ; aucune reconstruction, végétation V2.2 intacte |
+
+`GO_V2_3_B=FALSE` **et** `GO_V2_3_R2B=FALSE` : aucune propagation, ni aux cinq
+lieux restants, ni aux 31 POI, avant validation des quatre références.
+
+**Règle de production changée (verdict R2a)** : un script de scène ne fabrique
+plus la surface artistique finale sous forme d'assemblages de `BoxMesh`, de
+plaques ou de fragments visibles. Il garde l'instanciation, l'implantation, les
+interfaces fonctionnelles, les collisions simples et les variations contrôlées.
+La peau vient de modules CC0 assemblés ou de meshes Blender à source conservée ;
+les primitives sont réservées aux collisions, sondes et supports **invisibles**.
+
+Le verdict ARTISTIQUE de V2.2 appartient à Codex, Istvan et son frère
+(directive §17) — seuls les défauts techniques mesurables sont jugés ici ;
+résidus consignés dans le README d'evidence.
+
 ## Finition visuelle monde entier (2026-08-12, `claude/full-world-visual-finish`)
 
 | Lot | État | Preuve |

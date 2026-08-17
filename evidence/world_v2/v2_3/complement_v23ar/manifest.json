@@ -1,0 +1,86 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "4100f66012dbb3d008db59354b2b2ed96ae364fb",
+  "engine": "4.7.1-stable (custom_build)",
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 40.0,
+      "from": [
+        110.0,
+        30.0,
+        128.0
+      ],
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/comp/mini_camp_90m.png",
+      "look": [
+        45.0,
+        9.0,
+        65.0
+      ],
+      "name": "mini_camp_90m"
+    },
+    {
+      "fov": 38.0,
+      "from": [
+        26.0,
+        24.0,
+        62.0
+      ],
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/comp/mini_camp_braise_94m.png",
+      "look": [
+        96.0,
+        8.0,
+        120.0
+      ],
+      "name": "mini_camp_braise_94m"
+    },
+    {
+      "fov": 36.0,
+      "from": [
+        62.0,
+        36.0,
+        52.0
+      ],
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/comp/mini_pylone_96m.png",
+      "look": [
+        124.0,
+        32.0,
+        -20.5
+      ],
+      "name": "mini_pylone_96m"
+    },
+    {
+      "fov": 50.0,
+      "from": [
+        -24.0,
+        9.0,
+        -58.0
+      ],
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/comp/structure_ferme_charpente.png",
+      "look": [
+        -31.0,
+        7.0,
+        -64.0
+      ],
+      "name": "structure_ferme_charpente"
+    },
+    {
+      "fov": 42.0,
+      "from": [
+        130.0,
+        24.0,
+        -14.0
+      ],
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/comp/structure_pylone_canal.png",
+      "look": [
+        124.0,
+        24.0,
+        -20.5
+      ],
+      "name": "structure_pylone_canal"
+    }
+  ],
+  "size": "1280x720"
+}

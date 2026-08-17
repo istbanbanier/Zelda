@@ -1,0 +1,63 @@
+==============================================================================
+CLASSEMENT DU DEBORD D'OVERHANG
+==============================================================================
+maillage : /home/user/zelda-r2a352/b_collerette/assets/environment/caves/SM_WaterfallCave.glb
+sha256   : cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49
+point    : (0.60 ; -1.87 ; 1.27)
+
+------------------------------------------------------------------------------
+GEOMETRIE AU POINT — je re-mesure, je ne reprends pas le chiffre
+------------------------------------------------------------------------------
+   colonne verticale au point : 2 impact(s), 1.569 m de roche cumulee au-dessus
+   (l'agent collerette publiait 1,57 m par une colonne verticale ; sa sonde 3D publiait 0,32 m)
+
+------------------------------------------------------------------------------
+CAS 1 — candidat intact
+------------------------------------------------------------------------------
+   grille 194x175x142, pas 0.100 m
+   le point vise est dans la ROCHE
+   poches au voisinage (+-1.50 m) : 0, volumes aucune
+   air EXTERIEUR le plus proche : 0.076 m au (0.58 ; -1.88 ; 1.20)
+   composantes disjointes (pas de communication parasite) : oui
+
+------------------------------------------------------------------------------
+CONTROLE NEGATIF A — coque creuse sous la visiere, POCHE GARANTIE
+------------------------------------------------------------------------------
+   coque au (0.60 ; -1.92 ; 0.77), 24 triangle(s) ajoute(s)
+   grille 194x175x142, pas 0.100 m
+   le point vise est dans la ROCHE
+   poches au voisinage (+-1.50 m) : 2, volumes 0.0280 m3, 0.0030 m3
+   air EXTERIEUR le plus proche : 0.076 m au (0.58 ; -1.88 ; 1.20)
+   composantes disjointes (pas de communication parasite) : oui
+   le classement REFUSE-t-il ? OUI
+
+------------------------------------------------------------------------------
+CONTROLE NEGATIF B — mur-rideau : a-t-il REELLEMENT scelle ?
+------------------------------------------------------------------------------
+   dalle au (0.80 ; -2.29 ; 0.65), demi (1,00 ; 0,07 ; 0,70), 12 triangle(s)
+   grille 194x175x142, pas 0.100 m
+   le point vise est dans la ROCHE
+   poches au voisinage (+-1.50 m) : 0, volumes aucune
+   air EXTERIEUR le plus proche : 0.076 m au (0.58 ; -1.88 ; 1.20)
+   composantes disjointes (pas de communication parasite) : oui
+   le mur-rideau a-t-il scelle une poche ? NON — il n'a rien ferme ; ce n'est pas un controle rate, c'est un fait sur la geometrie
+
+RESTAURATION : sha256 cc3596c5d68cbfd8 -> cc3596c5d68cbfd8   IDENTIQUE
+
+==============================================================================
+VERDICT
+==============================================================================
+   (a) aucune poche au voisinage du debord                    OUI
+   (b) l'air du biseau appartient a l'EXTERIEUR               OUI
+   (c) aucune communication parasite (composantes disjointes) OUI
+   (d) le controle negatif a coque creuse est REFUSE          OUI
+   (e) le maillage source est intact                          OUI
+
+   DEBORD AUTORISE — l'air concerne est le dehors, il est
+   connecte a l'ouverture canonique, il n'enferme aucune
+   poche, et le classement a demontre qu'il sait refuser.
+   Ce verdict est GEOMETRIQUE. Il ne dit RIEN de la lecture
+   visuelle du biseau, qui reste au lead.
+==============================================================================
+json : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/debord.json
+RC=0

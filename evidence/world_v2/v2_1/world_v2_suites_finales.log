@@ -1,0 +1,40 @@
+# Suite world_v2 — état FINAL committé
+# date    : 2026-08-13T02:29:06Z
+# commit  : 487f9d68880b723b6f52ef923173e1923a2d05e1
+# commande: godot --headless --path . --script tools/godot/test_runner.gd -- --filter=world_v2
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+  ok   test_world_v2_anchors.gd::test_les_ancres_immuables_ont_un_sol_conforme (26 assertions)
+  ok   test_world_v2_anchors.gd::test_chaque_lieu_a_son_marqueur_au_sol (22 assertions)
+  ok   test_world_v2_borders.gd::test_le_monde_est_ferme_sur_tous_les_azimuts (2 assertions)
+  ok   test_world_v2_borders.gd::test_les_gardes_sont_visibles_et_hors_de_la_zone_jouable (3 assertions)
+  ok   test_world_v2_cameras.gd::test_les_six_fenetres_sont_posees_et_degagees (3 assertions)
+  ok   test_world_v2_hydrology.gd::test_l_eau_coule_dans_un_lit_qui_la_contient (2 assertions)
+  ok   test_world_v2_hydrology.gd::test_les_trois_gues_sont_praticables_meme_en_diagonale (3 assertions)
+  ok   test_world_v2_hydrology.gd::test_le_lac_est_un_bol_sous_sa_surface (6 assertions)
+  ok   test_world_v2_hydrology.gd::test_le_pont_magnetique_enjambe_l_eau (5 assertions)
+  ok   test_world_v2_layout.gd::test_la_carte_directrice_est_valide (3 assertions)
+  ok   test_world_v2_layout.gd::test_le_validateur_sait_dire_non (8 assertions)
+  ok   test_world_v2_layout.gd::test_aucun_lieu_declare_en_v1_nest_oublie (3 assertions)
+  ok   test_world_v2_layout.gd::test_les_identifiants_de_monde_sont_distincts (4 assertions)
+  ok   test_world_v2_navigation.gd::test_les_quatre_quadrants_sont_cuits_et_bornes (1 assertions)
+  ok   test_world_v2_navigation.gd::test_la_navigation_relie_les_ancres_mais_pas_le_lac (5 assertions)
+  ok   test_world_v2_protection.gd::test_le_schema_de_sauvegarde_reste_en_version_4 (1 assertions)
+  ok   test_world_v2_protection.gd::test_les_ancres_du_layout_restent_celles_du_master_spec (17 assertions)
+  ok   test_world_v2_routes.gd::test_chaque_route_a_un_sol_physique_continu (7 assertions)
+  ok   test_world_v2_skeleton.gd::test_la_v1_reste_le_flux_normal (6 assertions)
+  ok   test_world_v2_skeleton.gd::test_aucune_reference_croisee_interdite (3 assertions)
+  ok   test_world_v2_skeleton.gd::test_le_squelette_porte_le_vrai_joueur_sans_toucher_la_sauvegarde (24 assertions)
+  ok   test_world_v2_skeleton.gd::test_l_entree_developpeur_charge_v2_separement (5 assertions)
+  ok   test_world_v2_terrain.gd::test_le_monde_porte_exactement_64_chunks_raccordes (72 assertions)
+  ok   test_world_v2_terrain.gd::test_le_relief_n_est_pas_un_assemblage_de_dalles (5 assertions)
+  ok   test_world_v2_traversal.gd::test_le_trajet_principal_se_marche_du_spawn_a_la_porte (8 assertions)
+  ok   test_world_v2_traversal.gd::test_la_route_de_la_riviere_traverse_gues_et_pont (6 assertions)
+  ok   test_world_v2_traversal.gd::test_la_route_des_hauteurs_grimpe_et_redescend_a_la_rampe (6 assertions)
+  ok   test_world_v2_traversal.gd::test_la_route_des_ruines_rejoint_la_rampe_par_le_coeur (6 assertions)
+  ok   test_world_v2_waterways_contract.gd::test_chaque_traversee_de_riviere_passe_par_un_gue_ou_le_pont (7 assertions)
+  ok   test_world_v2_waterways_contract.gd::test_chaque_gue_est_pose_sur_son_cours (1 assertions)
+  ok   test_world_v2_waterways_contract.gd::test_aucun_lieu_dans_l_eau (2 assertions)
+  ok   test_world_v2_waterways_contract.gd::test_les_checkpoints_et_ancres_sont_hors_d_eau (2 assertions)
+  ok   test_world_v2_waterways_contract.gd::test_le_cours_n_a_pas_de_longue_ligne_droite (2 assertions)
+erreurs de script dans le journal : 0
+=== RÉSULTAT: 33 réussi(s), 0 échoué(s) ===

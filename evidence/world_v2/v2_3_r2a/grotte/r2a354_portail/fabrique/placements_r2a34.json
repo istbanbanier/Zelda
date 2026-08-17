@@ -1,0 +1,76 @@
+{
+  "maillage": "/home/user/zelda-r2a354/reference/SM_WaterfallCave_R2a34.glb",
+  "sha256": "8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110",
+  "noeud": "SM_WaterfallCave",
+  "aabb": {
+    "lo": [
+      -8.6934,
+      -4.3919,
+      -3.9503
+    ],
+    "hi": [
+      9.3118,
+      12.6514,
+      10.0435
+    ],
+    "diagonale": 28.469
+  },
+  "reperes_source": "/home/user/zelda-r2a354/b_portail/evidence/world_v2/v2_3_r2a/grotte/r2a354_portail/reperes_tronc_a4e91dc.gd",
+  "reperes_sha256": "6d3c6cd2bf09657e95d2b3c7ac09ac4a577efc7cfaaa2b92d39925a12eb09a75",
+  "graine": {
+    "point": [
+      1.05,
+      6.25,
+      1.12
+    ],
+    "air": true,
+    "traversees_dessous": 2,
+    "degagement": 0.9352,
+    "detail": {
+      "+1+0+0": 2.935,
+      "-1+0+0": 2.6279,
+      "+0+1+0": 3.7159,
+      "+0-1+0": 6.5969,
+      "+0+0+1": 1.7827,
+      "+0+0-1": 0.9352
+    }
+  },
+  "rayon": 0.3,
+  "longueur": 56.9381,
+  "poche": {
+    "point": [
+      2.8099,
+      2.7262,
+      3.3646
+    ],
+    "degagement": 2.0194,
+    "epaisseur_verticale": 12.0735,
+    "detail": {
+      "+1+0+0": 2.0654,
+      "-1+0+0": 4.5467,
+      "+0+1+0": 7.3122,
+      "+0-1+0": 2.0194,
+      "+0+0+1": 6.0367,
+      "+0+0-1": 6.0367
+    }
+  },
+  "rayon_poche": 0.3,
+  "placebo": {
+    "point": [
+      2.4098,
+      2.1246,
+      9.5979
+    ],
+    "rayon": 0.3,
+    "epaisseur_peau": 12.3243
+  },
+  "bloc": {
+    "point": [
+      0.3092,
+      4.1297,
+      10.9435
+    ],
+    "rayon": 0.3,
+    "disjoint": true
+  }
+}

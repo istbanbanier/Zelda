@@ -1,0 +1,71 @@
+{
+ "maillage": "/home/user/zelda-r2a352/b_collerette/assets/environment/caves/SM_WaterfallCave.glb",
+ "sha256": "cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49",
+ "point": [
+  0.6,
+  -1.87,
+  1.27
+ ],
+ "pas": 0.1,
+ "colonne_impacts": 2,
+ "roche_verticale_m": 1.5693350848201333,
+ "cas": [
+  {
+   "etiquette": "intact",
+   "fuite": false,
+   "poches": 0,
+   "volumes_poches": [],
+   "distance_air_exterieur": 0.0756050505850582,
+   "point_dans_air": false,
+   "point_dans_interieur": false,
+   "triangles": 20090
+  },
+  {
+   "etiquette": "coque creuse",
+   "fuite": false,
+   "poches": 2,
+   "volumes_poches": [
+    0.028000000000000008,
+    0.003000000000000001
+   ],
+   "distance_air_exterieur": 0.0756050505850582,
+   "point_dans_air": false,
+   "point_dans_interieur": false,
+   "triangles": 20114
+  },
+  {
+   "etiquette": "mur-rideau",
+   "fuite": false,
+   "poches": 0,
+   "volumes_poches": [],
+   "distance_air_exterieur": 0.0756050505850582,
+   "point_dans_air": false,
+   "point_dans_interieur": false,
+   "triangles": 20102
+  }
+ ],
+ "sha256_apres": "cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49",
+ "conditions": [
+  {
+   "texte": "(a) aucune poche au voisinage du debord",
+   "ok": true
+  },
+  {
+   "texte": "(b) l'air du biseau appartient a l'EXTERIEUR",
+   "ok": true
+  },
+  {
+   "texte": "(c) aucune communication parasite (composantes disjointes)",
+   "ok": true
+  },
+  {
+   "texte": "(d) le controle negatif a coque creuse est REFUSE",
+   "ok": true
+  },
+  {
+   "texte": "(e) le maillage source est intact",
+   "ok": true
+  }
+ ],
+ "autorise": true
+}

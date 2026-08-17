@@ -1,0 +1,42 @@
+=== marge pour la masse corrective — assets/environment/caves/SM_WaterfallCave.glb
+    20072 triangles ; seuil 0.80 m + marge 0.60 m ; retrait de silhouette 0.35 m
+    profil  55.0 deg : 212 colonnes, z de -0.08 a 8.18 m
+    profil 100.0 deg : 236 colonnes, z de -2.43 a 8.19 m
+    profil 225.0 deg : 213 colonnes, z de -0.04 a 8.19 m
+    colonnes du sol : 24 x 19, pas 0.20 m
+    legende : chiffre = jeu en dm (permis - exige), 'X' jeu < 0, '.' pas de vide, '=' deja conforme sans ajout
+       456789012345678901234567
+  3.80 ......=================.
+  4.00 ......================..
+  4.20 ......================..
+  4.40 ......===============...
+  4.60 ......===9==========....
+  4.80 ......===99========.....
+  5.00 ......====98=======.....
+  5.20 .....=====56===99=.....9
+  5.40 .....=====43===9=......9
+  5.60 .....===========.......9
+  5.80 ......=========.........
+  6.00 ......========.......9..
+  6.20 .......======...........
+  6.40 .......=====............
+  6.60 ........===.............
+  6.80 .........=..............
+  7.00 ........................
+  7.20 ........................
+  7.40 ........................
+    colonnes A CORRIGER (sommet - plafond < 1.40 m) : 16
+    les 10 plus contraintes :
+      (+1.00 ; 5.40)  plafond 2.19  sommet 3.52  exige 3.59  permis 3.92  jeu +0.32
+      (+0.80 ; 5.40)  plafond 2.01  sommet 3.19  exige 3.41  permis 3.87  jeu +0.45
+      (+0.80 ; 5.20)  plafond 2.09  sommet 2.95  exige 3.49  permis 4.03  jeu +0.54
+      (+1.00 ; 5.20)  plafond 2.30  sommet 3.11  exige 3.70  permis 4.39  jeu +0.69
+      (+1.00 ; 5.00)  plafond 2.32  sommet 3.17  exige 3.72  permis 4.62  jeu +0.90
+      (+0.80 ; 5.00)  plafond 2.17  sommet 3.15  exige 3.57  permis 4.49  jeu +0.92
+      (+0.80 ; 4.80)  plafond 2.24  sommet 3.19  exige 3.64  permis 4.63  jeu +0.99
+      (+0.60 ; 4.80)  plafond 2.03  sommet 3.23  exige 3.43  permis 4.56  jeu +1.14
+      (+0.60 ; 4.60)  plafond 2.09  sommet 3.41  exige 3.49  permis 4.65  jeu +1.16
+      (+1.80 ; 5.20)  plafond 2.19  sommet 3.11  exige 3.59  permis 5.05  jeu +1.45
+    colonnes SANS solution conforme (jeu < 0) : 0
+    sommet le plus haut EXIGE par la correction : 3.72 m
+RC=0

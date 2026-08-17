@@ -1,0 +1,64 @@
+{
+ "glb": "/home/user/zelda-r2a355/reference/SM_WaterfallCave_R2a34_8bf1a1b3.glb",
+ "sha256": "8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110",
+ "tables": "git:504ecbe:source_assets/blender/environment/make_waterfall_cave.py",
+ "lieu": "git:504ecbe:scripts/world_v2/poi/waterfall_cave_place.gd",
+ "anciens_reperes": false,
+ "capsule": false,
+ "h_vise": 0.05,
+ "budget": 400000,
+ "s_dehors": -1.6,
+ "verdict_global": "FAIL",
+ "stable": true,
+ "resultats": [
+  {
+   "emprise": 0.0,
+   "journal": {
+    "evaluations": 249813,
+    "budget_epuise": false,
+    "reste_en_file": 0,
+    "a_cheval": 0
+   },
+   "classes": {
+    "COLLERETTE": {
+     "seuil": 0.6,
+     "lecture": null,
+     "borne": null,
+     "cell": 0,
+     "sous_seuil": 0,
+     "h": 0.0,
+     "verdict": "VIDE"
+    },
+    "COQUE": {
+     "seuil": 0.8,
+     "lecture": 0.009361144807342717,
+     "borne": -0.01750022320494668,
+     "cell": 187587,
+     "sous_seuil": 151385,
+     "h": 0.026861368012289395,
+     "verdict": "FAIL",
+     "argmin": {
+      "modele": [
+       1.877203430980444,
+       9.83081927895546,
+       1.6551511660218239
+      ],
+      "godot": [
+       1.877203430980444,
+       1.6551511660218239,
+       -9.83081927895546
+      ],
+      "face": 19380,
+      "face_exterieure": 4480,
+      "d_masque": null,
+      "rayon_cellule": 0.026861368012289395,
+      "s": 9.63123887092175,
+      "u": 7.673352258279919,
+      "ay_station": 9.054011354967951,
+      "distance_axe": 1.0985723014620223
+     }
+    }
+   }
+  }
+ ]
+}

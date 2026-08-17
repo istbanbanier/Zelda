@@ -1,0 +1,102 @@
+{
+  "source": "/home/user/zelda-r2a354/reference/SM_WaterfallCave_R2a34.glb",
+  "sha256_debut": "8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110",
+  "sha256_fin": "8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110",
+  "pas": 0.1,
+  "rayon": 0.3,
+  "resultats": [
+    {
+      "nom": "temoin",
+      "attendu": "VERT",
+      "axe": null,
+      "fabrique_rc": 0,
+      "glb": "/tmp/repro_r2a34/SABOTAGE_temoin.glb",
+      "sha256": "5e2e320618ead9564d94ac53e315edf502e7cd4c40c3bd4ab6754abcf36b5315",
+      "ferme": true,
+      "oracle_rc": 3,
+      "verdict": "BLOQUE",
+      "motifs": [],
+      "etat": "NON CONFORME"
+    },
+    {
+      "nom": "toit",
+      "attendu": "ROUGE",
+      "axe": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "fabrique_rc": 0,
+      "glb": "/tmp/repro_r2a34/SABOTAGE_toit.glb",
+      "sha256": "3bb420b4a5b0427ec5d6ac014cdeb597dbc70f1d195969a011083d9f172b50ae",
+      "ferme": false,
+      "etat": "INEXPLOITABLE"
+    },
+    {
+      "nom": "paroi_est",
+      "attendu": "ROUGE",
+      "axe": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "fabrique_rc": 0,
+      "glb": "/tmp/repro_r2a34/SABOTAGE_paroi_est.glb",
+      "sha256": "c30a048d74772564590e866adcb20e681b9c00bf1d85312d78dccbdef4b54bb6",
+      "ferme": false,
+      "etat": "INEXPLOITABLE"
+    },
+    {
+      "nom": "paroi_ouest",
+      "attendu": "ROUGE",
+      "axe": [
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "fabrique_rc": 0,
+      "glb": "/tmp/repro_r2a34/SABOTAGE_paroi_ouest.glb",
+      "sha256": "44a15c3b53711506dc672f6acdd8d12a3a3db37fdbe1f75d84f5f9b7ddbdeac8",
+      "ferme": false,
+      "etat": "INEXPLOITABLE"
+    },
+    {
+      "nom": "plancher",
+      "attendu": "ROUGE",
+      "axe": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "fabrique_rc": 0,
+      "glb": "/tmp/repro_r2a34/SABOTAGE_plancher.glb",
+      "sha256": "b7616867a7ff8bd44cc6eaaac40bab811f3fef4feda447d537ed02ea4ce783ea",
+      "ferme": false,
+      "etat": "INEXPLOITABLE"
+    },
+    {
+      "nom": "poche",
+      "attendu": "ROUGE",
+      "axe": null,
+      "fabrique_rc": 0,
+      "glb": "/tmp/repro_r2a34/SABOTAGE_poche.glb",
+      "sha256": "8724f8085b5f832736a03e866fc92e719c17a2a0214ce411b9586150a44eef84",
+      "ferme": false,
+      "etat": "INEXPLOITABLE"
+    },
+    {
+      "nom": "roche_flottante",
+      "attendu": "ROUGE",
+      "axe": null,
+      "fabrique_rc": 0,
+      "glb": "/tmp/repro_r2a34/SABOTAGE_roche_flottante.glb",
+      "sha256": "db2f4b34b581d04e18f78691dbaf3437214898cc33f62bd0b56692333f610615",
+      "ferme": true,
+      "oracle_rc": 3,
+      "verdict": "BLOQUE",
+      "motifs": [],
+      "etat": "NON CONFORME"
+    }
+  ],
+  "verdict_source": "BLOQUE"
+}

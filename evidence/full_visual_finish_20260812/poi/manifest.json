@@ -1,0 +1,596 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "0b2810665a8004bd9ec74dfcfbbb9a7750a06010",
+  "engine": "4.7.1-stable (official)",
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world/valley/ValleyWorld.tscn",
+  "shots": [
+    {
+      "fov": 60.0,
+      "from": [
+        -52.0,
+        7.0,
+        52.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/01_riverside_village.png",
+      "look": [
+        -72.0,
+        3.0,
+        34.0
+      ],
+      "name": "01_riverside_village"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        94.0,
+        7.0,
+        56.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/02_logging_hamlet.png",
+      "look": [
+        110.0,
+        3.0,
+        40.0
+      ],
+      "name": "02_logging_hamlet"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -50.0,
+        8.0,
+        102.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/03_mining_post.png",
+      "look": [
+        -70.0,
+        3.0,
+        84.0
+      ],
+      "name": "03_mining_post"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -108.0,
+        22.0,
+        96.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/04_watchtower_ruin.png",
+      "look": [
+        -130.0,
+        16.0,
+        80.0
+      ],
+      "name": "04_watchtower_ruin"
+    },
+    {
+      "fov": 62.0,
+      "from": [
+        -4.0,
+        6.0,
+        26.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/05_ancient_aqueduct.png",
+      "look": [
+        -14.0,
+        1.0,
+        8.0
+      ],
+      "name": "05_ancient_aqueduct"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -2.0,
+        6.0,
+        92.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/06_abandoned_farm.png",
+      "look": [
+        -16.0,
+        3.0,
+        76.0
+      ],
+      "name": "06_abandoned_farm"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -24.0,
+        7.0,
+        -104.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/07_storm_caravan.png",
+      "look": [
+        -38.0,
+        2.0,
+        -122.0
+      ],
+      "name": "07_storm_caravan"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        62.0,
+        7.0,
+        142.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/08_ruined_observatory.png",
+      "look": [
+        76.0,
+        3.0,
+        128.0
+      ],
+      "name": "08_ruined_observatory"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        44.0,
+        8.0,
+        -62.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/09_barrow_cemetery.png",
+      "look": [
+        58.0,
+        2.0,
+        -80.0
+      ],
+      "name": "09_barrow_cemetery"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -88.0,
+        9.0,
+        -122.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/10_old_rampart.png",
+      "look": [
+        -106.0,
+        3.0,
+        -140.0
+      ],
+      "name": "10_old_rampart"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        32.0,
+        7.0,
+        116.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/11_forest_shrine.png",
+      "look": [
+        18.0,
+        3.0,
+        102.0
+      ],
+      "name": "11_forest_shrine"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -102.0,
+        7.0,
+        40.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/12_waterfall_cave.png",
+      "look": [
+        -118.0,
+        3.0,
+        26.0
+      ],
+      "name": "12_waterfall_cave"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        146.0,
+        8.0,
+        -54.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/13_abandoned_mine.png",
+      "look": [
+        160.0,
+        3.0,
+        -70.0
+      ],
+      "name": "13_abandoned_mine"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -46.0,
+        7.0,
+        -74.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/14_hollow_crypt.png",
+      "look": [
+        -61.0,
+        2.0,
+        -91.0
+      ],
+      "name": "14_hollow_crypt"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -118.0,
+        8.0,
+        136.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/15_hidden_passage.png",
+      "look": [
+        -134.0,
+        3.0,
+        122.0
+      ],
+      "name": "15_hidden_passage"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -124.0,
+        8.0,
+        -136.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/16_crystal_hollow.png",
+      "look": [
+        -140.0,
+        3.0,
+        -150.0
+      ],
+      "name": "16_crystal_hollow"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -80.0,
+        8.0,
+        -48.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/17_ancient_tree.png",
+      "look": [
+        -96.0,
+        5.0,
+        -62.0
+      ],
+      "name": "17_ancient_tree"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -58.0,
+        7.0,
+        92.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/18_turquoise_spring.png",
+      "look": [
+        -72.0,
+        3.0,
+        78.0
+      ],
+      "name": "18_turquoise_spring"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -20.0,
+        7.0,
+        126.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/19_flower_field.png",
+      "look": [
+        -34.0,
+        2.0,
+        112.0
+      ],
+      "name": "19_flower_field"
+    },
+    {
+      "fov": 62.0,
+      "from": [
+        -30.0,
+        6.0,
+        26.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/20_stone_bridge.png",
+      "look": [
+        -14.0,
+        0.0,
+        10.0
+      ],
+      "name": "20_stone_bridge"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        150.0,
+        8.0,
+        54.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/21_overlook_summit.png",
+      "look": [
+        168.0,
+        6.0,
+        40.0
+      ],
+      "name": "21_overlook_summit"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        134.0,
+        8.0,
+        132.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/22_veil_falls.png",
+      "look": [
+        150.0,
+        4.0,
+        118.0
+      ],
+      "name": "22_veil_falls"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -114.0,
+        8.0,
+        -14.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/23_watchers_circle.png",
+      "look": [
+        -132.0,
+        2.0,
+        -28.0
+      ],
+      "name": "23_watchers_circle"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        52.0,
+        9.0,
+        -80.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/24_wind_gorge.png",
+      "look": [
+        68.0,
+        3.0,
+        -96.0
+      ],
+      "name": "24_wind_gorge"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        8.0,
+        8.0,
+        -136.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/25_storm_grove.png",
+      "look": [
+        -8.0,
+        3.0,
+        -152.0
+      ],
+      "name": "25_storm_grove"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -76.0,
+        8.0,
+        132.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/26_thunderstruck_tree.png",
+      "look": [
+        -92.0,
+        4.0,
+        148.0
+      ],
+      "name": "26_thunderstruck_tree"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        56.0,
+        8.0,
+        126.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/27_ember_camps.png",
+      "look": [
+        72.0,
+        3.0,
+        112.0
+      ],
+      "name": "27_ember_camps"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        62.0,
+        8.0,
+        -62.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/28_azure_patrol.png",
+      "look": [
+        78.0,
+        3.0,
+        -78.0
+      ],
+      "name": "28_azure_patrol"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -122.0,
+        9.0,
+        -44.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/29_obsidian_bastion.png",
+      "look": [
+        -140.0,
+        3.0,
+        -60.0
+      ],
+      "name": "29_obsidian_bastion"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        132.0,
+        9.0,
+        -124.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/30_colossus_lair.png",
+      "look": [
+        150.0,
+        3.0,
+        -140.0
+      ],
+      "name": "30_colossus_lair"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        112.0,
+        8.0,
+        134.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/31_hunter_range.png",
+      "look": [
+        128.0,
+        3.0,
+        150.0
+      ],
+      "name": "31_hunter_range"
+    },
+    {
+      "fov": 66.0,
+      "from": [
+        -200.0,
+        42.0,
+        200.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/g1_coin_sud_ouest.png",
+      "look": [
+        -60.0,
+        2.0,
+        60.0
+      ],
+      "name": "g1_coin_sud_ouest"
+    },
+    {
+      "fov": 66.0,
+      "from": [
+        200.0,
+        42.0,
+        200.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/g2_coin_sud_est.png",
+      "look": [
+        60.0,
+        2.0,
+        60.0
+      ],
+      "name": "g2_coin_sud_est"
+    },
+    {
+      "fov": 66.0,
+      "from": [
+        -200.0,
+        42.0,
+        -200.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/g3_coin_nord_ouest.png",
+      "look": [
+        -60.0,
+        2.0,
+        -60.0
+      ],
+      "name": "g3_coin_nord_ouest"
+    },
+    {
+      "fov": 66.0,
+      "from": [
+        200.0,
+        42.0,
+        -200.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/g4_coin_nord_est.png",
+      "look": [
+        60.0,
+        2.0,
+        -60.0
+      ],
+      "name": "g4_coin_nord_est"
+    },
+    {
+      "fov": 62.0,
+      "from": [
+        0.0,
+        30.0,
+        120.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/g5_centre_vers_citadelle.png",
+      "look": [
+        0.0,
+        34.0,
+        -210.0
+      ],
+      "name": "g5_centre_vers_citadelle"
+    },
+    {
+      "fov": 58.0,
+      "from": [
+        38.0,
+        8.5,
+        74.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/a1_camp_acteurs.png",
+      "look": [
+        46.0,
+        6.5,
+        62.0
+      ],
+      "name": "a1_camp_acteurs"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        12.0,
+        34.5,
+        147.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/a2_monture.png",
+      "look": [
+        6.0,
+        32.8,
+        141.0
+      ],
+      "name": "a2_monture"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        0.0,
+        34.6,
+        178.0
+      ],
+      "image": "evidence/full_visual_finish_20260812/poi/a3_heros_dos.png",
+      "look": [
+        0.0,
+        32.2,
+        160.0
+      ],
+      "name": "a3_heros_dos"
+    }
+  ],
+  "size": "1280x720"
+}

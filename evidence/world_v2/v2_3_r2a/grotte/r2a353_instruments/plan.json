@@ -1,0 +1,552 @@
+[
+ {
+  "nom": "anneau_centre",
+  "role": "temoin, convergence",
+  "theta_deg": 0.0,
+  "pas": 0.1,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/anneau_centre.glb",
+  "attendu_m": 0.7995716699810923,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -3.000000000000001,
+   3.000000000000001,
+   -3.000000000000001,
+   3.000000000000001
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": 0.7996193381265624,
+  "biais_a_m": 4.7668145470081136e-05,
+  "mesure_b_m": 0.8,
+  "biais_b_m": 0.00042833001890774103,
+  "cases_ouverture": 795,
+  "aire_attendue_m2": 10.045920649749979
+ },
+ {
+  "nom": "anneau_centre",
+  "role": "temoin, convergence",
+  "theta_deg": 0.0,
+  "pas": 0.05,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/anneau_centre.glb",
+  "attendu_m": 0.7995716699810923,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -3.000000000000001,
+   3.000000000000001,
+   -3.000000000000001,
+   3.000000000000001
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": 0.7996193381265624,
+  "biais_a_m": 4.7668145470081136e-05,
+  "mesure_b_m": 0.8,
+  "biais_b_m": 0.00042833001890774103,
+  "cases_ouverture": 3207,
+  "aire_attendue_m2": 10.045920649749979
+ },
+ {
+  "nom": "anneau_centre",
+  "role": "temoin, convergence",
+  "theta_deg": 0.0,
+  "pas": 0.04,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/anneau_centre.glb",
+  "attendu_m": 0.7995716699810923,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -3.000000000000001,
+   3.000000000000001,
+   -3.000000000000001,
+   3.000000000000001
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": 0.7996193381265624,
+  "biais_a_m": 4.7668145470081136e-05,
+  "mesure_b_m": 0.8,
+  "biais_b_m": 0.00042833001890774103,
+  "cases_ouverture": 5015,
+  "aire_attendue_m2": 10.045920649749979
+ },
+ {
+  "nom": "anneau_centre",
+  "role": "temoin, convergence",
+  "theta_deg": 0.0,
+  "pas": 0.025,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/anneau_centre.glb",
+  "attendu_m": 0.7995716699810923,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -3.000000000000001,
+   3.000000000000001,
+   -3.000000000000001,
+   3.000000000000001
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": 0.7996193381265624,
+  "biais_a_m": 4.7668145470081136e-05,
+  "mesure_b_m": 0.8,
+  "biais_b_m": 0.00042833001890774103,
+  "cases_ouverture": 12843,
+  "aire_attendue_m2": 10.045920649749979
+ },
+ {
+  "nom": "decentre_00.0deg",
+  "role": "angle impose 0.0 deg",
+  "theta_deg": 0.0,
+  "pas": 0.05,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_00.0deg.glb",
+  "attendu_m": 0.7995716699810923,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -4.2,
+   4.2,
+   -4.2,
+   4.2
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": 0.8000000715255733,
+  "biais_a_m": 0.000428401544480983,
+  "mesure_b_m": 0.8500000000000001,
+  "biais_b_m": 0.050428330018907785,
+  "cases_ouverture": 3208,
+  "aire_attendue_m2": 20.217415307621835
+ },
+ {
+  "nom": "decentre_00.0deg",
+  "role": "angle impose 0.0 deg",
+  "theta_deg": 0.0,
+  "pas": 0.04,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_00.0deg.glb",
+  "attendu_m": 0.7995716699810923,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -4.2,
+   4.2,
+   -4.2,
+   4.2
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": 0.8000000715255733,
+  "biais_a_m": 0.000428401544480983,
+  "mesure_b_m": 0.84,
+  "biais_b_m": 0.040428330018907666,
+  "cases_ouverture": 5016,
+  "aire_attendue_m2": 20.217415307621835
+ },
+ {
+  "nom": "decentre_18.0deg",
+  "role": "angle impose 18.0 deg",
+  "theta_deg": 18.0,
+  "pas": 0.05,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_18.0deg.glb",
+  "attendu_m": 0.7993660781776731,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -4.199957163532148,
+   4.199957163532148,
+   -4.199957163532148,
+   4.199957163532148
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": 0.7999275127125485,
+  "biais_a_m": 0.000561434534875338,
+  "mesure_b_m": 0.8278174593052026,
+  "biais_b_m": 0.02845138112752943,
+  "cases_ouverture": 3219,
+  "aire_attendue_m2": 20.217415307621835
+ },
+ {
+  "nom": "decentre_18.0deg",
+  "role": "angle impose 18.0 deg",
+  "theta_deg": 18.0,
+  "pas": 0.04,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_18.0deg.glb",
+  "attendu_m": 0.7993660781776731,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -4.199957163532148,
+   4.199957163532148,
+   -4.199957163532148,
+   4.199957163532148
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": 0.7999275127125485,
+  "biais_a_m": 0.000561434534875338,
+  "mesure_b_m": 0.8319595949289336,
+  "biais_b_m": 0.03259351675126043,
+  "cases_ouverture": 5024,
+  "aire_attendue_m2": 20.217415307621835
+ },
+ {
+  "nom": "decentre_22.5deg",
+  "role": "angle impose 22.5 deg",
+  "theta_deg": 22.5,
+  "pas": 0.1,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_22.5deg.glb",
+  "attendu_m": 0.7995716699810923,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -4.2,
+   4.2,
+   -4.2,
+   4.2
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": 0.7996196472227866,
+  "biais_a_m": 4.797724169425255e-05,
+  "mesure_b_m": 0.8071067811865476,
+  "biais_b_m": 0.007535111205455247,
+  "cases_ouverture": 805,
+  "aire_attendue_m2": 20.217415307621827
+ },
+ {
+  "nom": "decentre_22.5deg",
+  "role": "angle impose 22.5 deg",
+  "theta_deg": 22.5,
+  "pas": 0.05,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_22.5deg.glb",
+  "attendu_m": 0.7995716699810923,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -4.2,
+   4.2,
+   -4.2,
+   4.2
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": 0.7996196472227866,
+  "biais_a_m": 4.797724169425255e-05,
+  "mesure_b_m": 0.8278174593052026,
+  "biais_b_m": 0.02824578932411026,
+  "cases_ouverture": 3213,
+  "aire_attendue_m2": 20.217415307621827
+ },
+ {
+  "nom": "decentre_22.5deg",
+  "role": "angle impose 22.5 deg",
+  "theta_deg": 22.5,
+  "pas": 0.04,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_22.5deg.glb",
+  "attendu_m": 0.7995716699810923,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -4.2,
+   4.2,
+   -4.2,
+   4.2
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": 0.7996196472227866,
+  "biais_a_m": 4.797724169425255e-05,
+  "mesure_b_m": 0.8319595949289336,
+  "biais_b_m": 0.03238792494784126,
+  "cases_ouverture": 5022,
+  "aire_attendue_m2": 20.217415307621827
+ },
+ {
+  "nom": "decentre_22.5deg",
+  "role": "angle impose 22.5 deg",
+  "theta_deg": 22.5,
+  "pas": 0.025,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_22.5deg.glb",
+  "attendu_m": 0.7995716699810923,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -4.2,
+   4.2,
+   -4.2,
+   4.2
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": 0.7996196472227866,
+  "biais_a_m": 4.797724169425255e-05,
+  "mesure_b_m": 0.8250000000000001,
+  "biais_b_m": 0.025428330018907763,
+  "cases_ouverture": 12859,
+  "aire_attendue_m2": 20.217415307621827
+ },
+ {
+  "nom": "decentre_36.0deg",
+  "role": "angle impose 36.0 deg",
+  "theta_deg": 36.0,
+  "pas": 0.05,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_36.0deg.glb",
+  "attendu_m": 0.7992632734684346,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -4.199828658410287,
+   4.199828658410287,
+   -4.199828658410287,
+   4.199828658410287
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": 0.8003386732243138,
+  "biais_a_m": 0.001075399755879225,
+  "mesure_b_m": 0.8071067811865478,
+  "biais_b_m": 0.007843507718113152,
+  "cases_ouverture": 3206,
+  "aire_attendue_m2": 20.21741530762185
+ },
+ {
+  "nom": "decentre_36.0deg",
+  "role": "angle impose 36.0 deg",
+  "theta_deg": 36.0,
+  "pas": 0.04,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_36.0deg.glb",
+  "attendu_m": 0.7992632734684346,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -4.199828658410287,
+   4.199828658410287,
+   -4.199828658410287,
+   4.199828658410287
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": 0.8003386732243138,
+  "biais_a_m": 0.001075399755879225,
+  "mesure_b_m": 0.8153910524340097,
+  "biais_b_m": 0.016127778965575046,
+  "cases_ouverture": 5018,
+  "aire_attendue_m2": 20.21741530762185
+ },
+ {
+  "nom": "decentre_45.0deg",
+  "role": "angle impose 45.0 deg",
+  "theta_deg": 45.0,
+  "pas": 0.05,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_45.0deg.glb",
+  "attendu_m": 0.7995716699810927,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -4.2,
+   4.2,
+   -4.2,
+   4.2
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": 0.8021869485799058,
+  "biais_a_m": 0.0026152785988130534,
+  "mesure_b_m": 0.8071067811865478,
+  "biais_b_m": 0.007535111205455025,
+  "cases_ouverture": 3222,
+  "aire_attendue_m2": 20.217415307621835
+ },
+ {
+  "nom": "decentre_45.0deg",
+  "role": "angle impose 45.0 deg",
+  "theta_deg": 45.0,
+  "pas": 0.04,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/decentre_45.0deg.glb",
+  "attendu_m": 0.7995716699810927,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -4.2,
+   4.2,
+   -4.2,
+   4.2
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": 0.8021869485799058,
+  "biais_a_m": 0.0026152785988130534,
+  "mesure_b_m": 0.8153910524340097,
+  "biais_b_m": 0.01581938245291692,
+  "cases_ouverture": 5028,
+  "aire_attendue_m2": 20.217415307621835
+ },
+ {
+  "nom": "bruite",
+  "role": "frontiere irreguliere",
+  "theta_deg": 27.0,
+  "pas": 0.05,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/bruite.glb",
+  "attendu_m": 0.7563772262369461,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -3.6561850873142854,
+   3.6561850873142854,
+   -3.6561850873142854,
+   3.6561850873142854
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": 0.7655094908705167,
+  "biais_a_m": 0.00913226463357053,
+  "mesure_b_m": 0.7914213562373096,
+  "biais_b_m": 0.03504413000036344,
+  "cases_ouverture": 3213,
+  "aire_attendue_m2": 14.873578287836542
+ },
+ {
+  "nom": "bruite",
+  "role": "frontiere irreguliere",
+  "theta_deg": 27.0,
+  "pas": 0.04,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/bruite.glb",
+  "attendu_m": 0.7563772262369461,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -3.6561850873142854,
+   3.6561850873142854,
+   -3.6561850873142854,
+   3.6561850873142854
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": 0.7655094908705167,
+  "biais_a_m": 0.00913226463357053,
+  "mesure_b_m": 0.7931370849898477,
+  "biais_b_m": 0.03675985875290155,
+  "cases_ouverture": 5019,
+  "aire_attendue_m2": 14.873578287836542
+ },
+ {
+  "nom": "fente_sous_maille",
+  "role": "CONTROLE NEGATIF : la roche est plus mince qu'une case, les instruments DOIVENT echouer",
+  "theta_deg": 0.0,
+  "pas": 0.05,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/fente_sous_maille.glb",
+  "attendu_m": 0.029983937624290677,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -2.2300000000000004,
+   2.2300000000000004,
+   -2.2300000000000004,
+   2.2300000000000004
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": null,
+  "biais_a_m": null,
+  "mesure_b_m": null,
+  "biais_b_m": null,
+  "cases_ouverture": 0,
+  "aire_attendue_m2": 0.3042030346752451
+ },
+ {
+  "nom": "fente_sous_maille",
+  "role": "CONTROLE NEGATIF : la roche est plus mince qu'une case, les instruments DOIVENT echouer",
+  "theta_deg": 0.0,
+  "pas": 0.04,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/fente_sous_maille.glb",
+  "attendu_m": 0.029983937624290677,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -2.2300000000000004,
+   2.2300000000000004,
+   -2.2300000000000004,
+   2.2300000000000004
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": null,
+  "biais_a_m": null,
+  "mesure_b_m": null,
+  "biais_b_m": null,
+  "cases_ouverture": 0,
+  "aire_attendue_m2": 0.3042030346752451
+ },
+ {
+  "nom": "rasant",
+  "role": "tangente posee sur un centre de case",
+  "theta_deg": 0.0,
+  "pas": 0.05,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/rasant.glb",
+  "attendu_m": 0.599678752485819,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -3.7000000000000006,
+   3.7000000000000006,
+   -3.7000000000000006,
+   3.7000000000000006
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": 0.5997147003742811,
+  "biais_a_m": 3.5947888462062316e-05,
+  "mesure_b_m": 0.6000000000000001,
+  "biais_b_m": 0.00032124751418105557,
+  "cases_ouverture": 3207,
+  "aire_attendue_m2": 7.157718462946873
+ },
+ {
+  "nom": "rasant",
+  "role": "tangente posee sur un centre de case",
+  "theta_deg": 0.0,
+  "pas": 0.04,
+  "glb": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/instruments/banc/rasant.glb",
+  "attendu_m": 0.599678752485819,
+  "plan_y": 2.8499999999999996,
+  "boite": [
+   -3.7000000000000006,
+   3.7000000000000006,
+   -3.7000000000000006,
+   3.7000000000000006
+  ],
+  "graine": [
+   0.0,
+   0.0
+  ],
+  "mesure_a_m": 0.5997147003742811,
+  "biais_a_m": 3.5947888462062316e-05,
+  "mesure_b_m": 0.6,
+  "biais_b_m": 0.00032124751418094455,
+  "cases_ouverture": 5015,
+  "aire_attendue_m2": 7.157718462946873
+ }
+]

@@ -1,0 +1,15 @@
+commande blender : blender --background --factory-startup --python /home/user/zelda-r2a354/b_portail/tools/cave_oracle_sabotage.py -- --entree /home/user/zelda-r2a354/reference/SM_WaterfallCave_R2a34.glb --sortie /tmp/sab_fin/SABOTAGE_toit.glb --type toit --placements /tmp/placements_r2a34_fin.json --tentatives 6
+   SABOTAGE-PLACEMENTS : /tmp/placements_r2a34_fin.json
+   SABOTAGE-AABB : x[-8.293 8.912] y[-3.992 12.251] z[-3.550 9.643]
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 19954
+   SABOTAGE-OUTIL-AABB : x[1.030 1.070] y[6.230 6.270] z[0.520 57.458]
+   SABOTAGE-TENTATIVE 1 : angle 0.000 deg  decalage 0.0000 m  rayon x1.000  ->  bords libres 0  non-manifold 0  FERME
+   SABOTAGE-TENTATIVES : 1
+   SABOTAGE-FACES-APRES : 20380
+   SABOTAGE-ECRIT : /tmp/sab_fin/SABOTAGE_toit.glb
+source sha256 AVANT : 8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110
+source sha256 APRES : 8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110
+source INTACTE (byte-identique)
+sabotage : /tmp/sab_fin/SABOTAGE_toit.glb
+sabotage sha256 : 095a30551de4fc2eeeb2d86af2039a75e6473ef3a945d5a681fe09708dda70b9

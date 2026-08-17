@@ -1,0 +1,9 @@
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: proof_boards
+  ÉCHEC test_world_v2_proof_boards.gd::test_les_planches_de_preuve_portent_vraiment_leurs_sujets — les planches de preuve portent leurs sujets (6 écart(s)) — planche_silhouettes_v23a.png : 1 couleur(s) sur toute la planche — VIDE ; planche_silhouettes_v23a.png : écart-type de luminance 0.0000 — aplat ; planche_silhouettes_v23a.png : manifeste de tuiles ABSENT (planche_silhouettes_v23a.json) ; planche_niveaux_de_gris_v23a.png : 1 couleur(s) sur toute la planche — VIDE ; planche_niveaux_de_gris_v23a.png : écart-type de luminance 0.0000 — aplat ; planche_niveaux_de_gris_v23a.png : manifeste de tuiles ABSENT (planche_niveaux_de_gris_v23a.json)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 0 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_proof_boards.gd::test_les_planches_de_preuve_portent_vraiment_leurs_sujets — les planches de preuve portent leurs sujets (6 écart(s)) — planche_silhouettes_v23a.png : 1 couleur(s) sur toute la planche — VIDE ; planche_silhouettes_v23a.png : écart-type de luminance 0.0000 — aplat ; planche_silhouettes_v23a.png : manifeste de tuiles ABSENT (planche_silhouettes_v23a.json) ; planche_niveaux_de_gris_v23a.png : 1 couleur(s) sur toute la planche — VIDE ; planche_niveaux_de_gris_v23a.png : écart-type de luminance 0.0000 — aplat ; planche_niveaux_de_gris_v23a.png : manifeste de tuiles ABSENT (planche_niveaux_de_gris_v23a.json)

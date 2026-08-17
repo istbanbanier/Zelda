@@ -1,0 +1,28 @@
+=== lignes de lampe apres application ===
+237:	seuil.position = Vector3(0.15, 1.50, -1.20)
+256:	salle.position = Vector3(2.70, 1.90, -3.35)
+=== diff du worktree (doit etre 1 fichier, 2 lignes) ===
+ scripts/world_v2/poi/waterfall_cave_place.gd | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+diff --git a/scripts/world_v2/poi/waterfall_cave_place.gd b/scripts/world_v2/poi/waterfall_cave_place.gd
+index 8242371..8e812c4 100644
+--- a/scripts/world_v2/poi/waterfall_cave_place.gd
++++ b/scripts/world_v2/poi/waterfall_cave_place.gd
+@@ -234,7 +234,7 @@ func _eclairer(ouvrage: Node3D) -> void:
+ 	seuil.omni_range = 5.5
+ 	seuil.omni_attenuation = 1.6
+ 	seuil.shadow_enabled = true
+-	seuil.position = Vector3(0.20, 1.50, -2.60)
++	seuil.position = Vector3(0.15, 1.50, -1.20)
+ 	ouvrage.add_child(seuil)
+ 
+ 	# Le coude est ce qui permet d'avoir À LA FOIS une bouche noire et une
+@@ -253,7 +253,7 @@ func _eclairer(ouvrage: Node3D) -> void:
+ 	# contre-jour et la noyait dans l'ombre de sa propre niche. Une
+ 	# récompense en scène est une récompense que la lumière désigne DE
+ 	# FACE.
+-	salle.position = Vector3(0.20, 1.90, -7.20)
++	salle.position = Vector3(2.70, 1.90, -3.35)
+ 	ouvrage.add_child(salle)
+ 
+ 

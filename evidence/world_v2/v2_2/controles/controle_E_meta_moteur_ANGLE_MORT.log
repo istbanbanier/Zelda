@@ -1,0 +1,10 @@
+# CONTRÔLE E — ANGLE MORT DOCUMENTÉ, PAS UN CONTRÔLE ROUGE/VERT
+# Date : 2026-08-13T15:17:25Z ; base : 298099f + injection temporaire (jamais commitée)
+# Injection : +2 m sur le transform envoyé AU MOTEUR, méta de plan intacte.
+# Résultat attendu ET obtenu : le contrat paysager reste VERT — le headless ne
+# peut pas voir le moteur (renderer dummy) ; c'est la LIMITE documentée du plan
+# en méta. Ce qui couvre ce trou : l'inspection des captures llvmpipe (vrai
+# renderer) et les sondes PHYSIQUES (visée caméra, gués, azimuts) qui ne passent
+# jamais par la méta. Démontré d'abord par la revue contradictoire, rejoué ici.
+
+=== RÉSULTAT: 6 réussi(s), 0 échoué(s) ===

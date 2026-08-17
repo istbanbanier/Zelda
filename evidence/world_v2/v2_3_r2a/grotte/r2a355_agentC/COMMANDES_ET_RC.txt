@@ -1,0 +1,80 @@
+COMMANDES EXACTES DE L'AGENT C — passe R2a-3.5.5, worktree c_instruments
+=========================================================================
+Base : f39b232 (detached). Aucun commit, aucun push.
+Toutes les commandes sont du Python pur : ni Blender, ni Godot, donc aucun
+verrou `heavy_tools.lock` n'a ete pris.
+
+Geometries mesurees, sha256 lus AVANT chaque mesure :
+  8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110  R2a-3.4 canonique
+  c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed  candidat corrige
+  cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49  candidat perce
+
+Chemin canonique R2a-3.4 lu par `git show 504ecbe:` — appariement GLB/tables
+PROUVE par le socle (reconstruction byte-identique), pas suppose.
+
+--- C1 : le masque canonique -------------------------------------------
+python3 tools/cave_masque_bouche.py <R2a34> --git=504ecbe:source_assets/blender/environment/make_waterfall_cave.py --git-lieu=504ecbe:scripts/world_v2/poi/waterfall_cave_place.gd --pas=0.05 --fin=3.00
+    -> masque_canonique_gabarit.txt                        RC=0
+  idem + --capsule
+    -> masque_canonique_capsule.txt                        RC=0
+python3 tools/cave_masque_bouche.py <c184c8dc> --pas=0.05 --fin=3.00
+    -> masque_c184c8dc_gabarit.txt                         RC=0
+
+--- C3 : provenance ------------------------------------------------------
+python3 tools/cave_check_coque_deux_seuils.py <R2a34> --h=0.15 --budget=200000 --emprises=0.0
+  (volontairement SANS --git-lieu : repere du HEAD sur geometrie du tronc)
+    -> provenance_R2a34_reperes_HEAD_doit_BLOQUER.txt      RC=3
+
+--- C2 + C5 : le gate a deux seuils, emprise de la LETTRE ----------------
+python3 tools/cave_check_coque_deux_seuils.py <R2a34> --h=0.05 --budget=400000 --emprises=0.0 --git=504ecbe:... --git-lieu=504ecbe:...
+    -> gate_R2a34_8bf1a1b3_lettre.txt                      RC=1
+python3 tools/cave_check_coque_deux_seuils.py <c184c8dc> --h=0.05 --budget=400000 --emprises=0.0
+    -> gate_c184c8dc_lettre.txt                            RC=1
+python3 tools/cave_check_coque_deux_seuils.py <cc3596c5> --h=0.05 --budget=400000 --emprises=0.0
+    -> gate_cc3596c5.txt                                   RC=1  (topologique ROUGE)
+
+--- le test discriminant : arete ou amincissement ? ---------------------
+python3 tools/cave_levre_convergence.py <R2a34> --hs=0.40,0.20,0.10,0.05 --budget=400000 --git=504ecbe:... --git-lieu=504ecbe:...
+    -> levre_convergence_R2a34.txt                         RC=0
+python3 tools/cave_levre_convergence.py <c184c8dc> --hs=0.40,0.20,0.10,0.05 --budget=400000
+    -> levre_convergence_c184c8dc.txt                      RC=0
+
+--- diagnostic HORS CONTRAT (marge de contour) --------------------------
+python3 tools/cave_check_coque_deux_seuils.py <c184c8dc> --h=0.05 --budget=400000 --emprises=0.0 --marge-contour=0.60
+    -> diag_horscontrat_c184c8dc.txt                       RC=1
+python3 tools/cave_check_coque_deux_seuils.py <R2a34> --h=0.05 --budget=400000 --emprises=0.0 --marge-contour=0.60 --git=504ecbe:... --git-lieu=504ecbe:...
+    -> diag_horscontrat_R2a34.txt                          RC=1
+
+--- C4 : controle negatif ------------------------------------------------
+python3 tools/cave_negatif_deux_seuils.py <c184c8dc> --classe=coque --cible=0.45 --h=0.05 --budget=400000 --marge-contour=0.60 --s-final=-1.60
+    -> negatif_COQUE_cible045.txt
+
+JOURNAUX SANS `RC=` — ce ne sont PAS des resultats
+==================================================
+Leur nom le dit, et c'est la seule facon de le voir sans les ouvrir :
+  negatif_COQUE_cible045_masque1m_INTERROMPU_TROP_LONG.txt
+  gate_c184c8dc_toutes_emprises_TRONQUE.txt
+  v1_algo_depasse/gate_R2a34_8bf1a1b3_v1_INTERROMPU_SANS_RC.txt
+
+v1_algo_depasse/ conserve les sorties du PREMIER algorithme, celui qui
+s'arretait de raffiner des qu'un FAIL etait avere et rendait donc des bornes
+negatives (-0,1179 m). Conserve parce que le defaut est documente dans le
+code qui le corrige, pas parce que ses chiffres valent quelque chose.
+
+RESULTATS AVEC LEURS RC (relecture finale)
+==========================================
+COMMANDES_ET_RC.txt                                        RC=
+diag_horscontrat_c184c8dc.txt                              RC=1
+diag_horscontrat_c184c8dc_emprise1m_INTERROMPU_SANS_RC.txt RC=
+gate_R2a34_8bf1a1b3_lettre.txt                             RC=1
+gate_c184c8dc_lettre.txt                                   RC=1
+gate_c184c8dc_toutes_emprises_TRONQUE.txt                  RC=1
+gate_cc3596c5.txt                                          RC=1
+levre_convergence_R2a34.txt                                RC=0
+levre_convergence_c184c8dc.txt                             RC=0
+masque_c184c8dc_gabarit.txt                                RC=0
+masque_canonique_capsule.txt                               RC=0
+masque_canonique_gabarit.txt                               RC=0
+negatif_COQUE_cible045.txt                                 RC=0
+negatif_COQUE_cible045_masque1m_INTERROMPU_TROP_LONG.txt   RC=
+provenance_R2a34_reperes_HEAD_doit_BLOQUER.txt             RC=3

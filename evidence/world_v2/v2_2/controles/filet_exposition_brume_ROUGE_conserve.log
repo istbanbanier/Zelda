@@ -1,0 +1,16 @@
+# FILET D'EXPOSITION, exclusion de BRUME par CHALEUR (r−g < 0.015 et saturation < 0.10) — V2.2R
+# 1er essai par saturation seule : séparateur trop proche (brume 0.082 / dalle 0.085) —
+# la chaleur sépare mieux, mesurée : brume r−g ≤ 0.010, dalles rejetées r−g ≥ 0.024.
+# Preuve de décision conservée : les CINQ captures AVANT rouges le restent ; les
+# fraîches V2.2R (cam01/02/03, arbre aa5148a) sortent à 0,0 %. Plafond inchangé (0,8 %).
+# Date : 2026-08-13T18:08:52Z ; AVANT = evidence/world_v2/v2_2/captures/
+[exposition] capture_cam01.png : blocs écrêtés 1.5 % (plafond 0.8) ; vert fluo 0.16 % (plafond 1.50)
+[exposition] VIOLATION
+[exposition] capture_cam02.png : blocs écrêtés 6.8 % (plafond 0.8) ; vert fluo 0.04 % (plafond 1.50)
+[exposition] VIOLATION
+[exposition] capture_cam04.png : blocs écrêtés 7.2 % (plafond 0.8) ; vert fluo 0.44 % (plafond 1.50)
+[exposition] VIOLATION
+[exposition] capture_cam05.png : blocs écrêtés 3.3 % (plafond 0.8) ; vert fluo 0.03 % (plafond 1.50)
+[exposition] VIOLATION
+[exposition] capture_cam06.png : blocs écrêtés 6.7 % (plafond 0.8) ; vert fluo 0.01 % (plafond 1.50)
+[exposition] VIOLATION

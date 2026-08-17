@@ -1,0 +1,6 @@
+=== TEMOIN NON CORRIGE (socle intact c184c8dc) — on EXIGE le rouge ===
+[negatif] /home/user/zelda-r2a355/reference/SM_WaterfallCave_c184c8dc.glb
+[negatif] triangles d'aire EXACTEMENT nulle : 1
+[negatif]   face 10486 en (-1.5044, -0.6392, 3.0989) <-- POSITION ANNONCEE
+[negatif] ROUGE OBTENU, ET A LA CAUSE ANNONCEE : 1 triangle(s) plat(s) en ((-1.5044, -0.6392, 3.0989),)
+RC=0

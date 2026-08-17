@@ -1,0 +1,46 @@
+# Contrat paysager V2.2 — journal ROUGE fail-first, AVANT tout habillage
+# Date : 2026-08-13T10:27:58Z ; base : commit 582deac (whitebox V2.1 intact + suite de contrat nouvelle)
+# Commande : godot --headless --path . --script tools/godot/test_runner.gd -- --filter=test_world_v2_landscape_contract
+# Attendu : matériau/cellules/ancrage/déterminisme ROUGES (le paysage n'existe pas encore) ;
+#           caméras gelées et diagnostics cachés VERTS (fils de détente sur l'état V2.1).
+
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ÉCHEC test_world_v2_landscape_contract.gd::test_la_vegetation_est_ancree_au_sol_et_hors_des_couloirs — assez d'instances échantillonnées pour juger (0)
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 4629 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 4501 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ÉCHEC test_world_v2_landscape_contract.gd::test_le_paysage_se_reconstruit_a_l_identique — le paysage a une signature à comparer (végétation présente)
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 4546 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_landscape_contract.gd::test_les_diagnostics_sont_caches_par_defaut (3 assertions)
+erreurs de script dans le journal : 0
+=== RÉSULTAT: 2 réussi(s), 9 échoué(s) ===
+  ÉCHEC: test_world_v2_landscape_contract.gd::test_chaque_chunk_porte_le_materiau_de_paysage — chaque chunk porte le matériau de paysage (64 écart(s)) — c0r0 : matériau de diagnostic, pas de paysage ; c1r0 : matériau de diagnostic, pas de paysage ; c2r0 : matériau de diagnostic, pas de paysage ; c3r0 : matériau de diagnostic, pas de paysage ; c4r0 : matériau de diagnostic, pas de paysage ; c5r0 : matériau de diagnostic, pas de paysage ; … et 58 autres
+  ÉCHEC: test_world_v2_landscape_contract.gd::test_la_vegetation_est_cellulaire_et_presente_ou_le_masterplan_l_exige — au moins 24 cellules végétales (obtenu 0)
+  ÉCHEC: test_world_v2_landscape_contract.gd::test_la_vegetation_est_cellulaire_et_presente_ou_le_masterplan_l_exige — au moins 2000 instances végétales (obtenu 0)
+  ÉCHEC: test_world_v2_landscape_contract.gd::test_la_vegetation_est_cellulaire_et_presente_ou_le_masterplan_l_exige — la végétation est présente dans r01_crete_de_l_aube (identité masterplan §4)
+  ÉCHEC: test_world_v2_landscape_contract.gd::test_la_vegetation_est_cellulaire_et_presente_ou_le_masterplan_l_exige — la végétation est présente dans r02_prairie_mille_fleurs (identité masterplan §4)
+  ÉCHEC: test_world_v2_landscape_contract.gd::test_la_vegetation_est_cellulaire_et_presente_ou_le_masterplan_l_exige — la végétation est présente dans r03_val_de_neris (identité masterplan §4)
+  ÉCHEC: test_world_v2_landscape_contract.gd::test_la_vegetation_est_cellulaire_et_presente_ou_le_masterplan_l_exige — la végétation est présente dans r06_bois_du_levant (identité masterplan §4)
+  ÉCHEC: test_world_v2_landscape_contract.gd::test_la_vegetation_est_ancree_au_sol_et_hors_des_couloirs — assez d'instances échantillonnées pour juger (0)
+  ÉCHEC: test_world_v2_landscape_contract.gd::test_le_paysage_se_reconstruit_a_l_identique — le paysage a une signature à comparer (végétation présente)
+RUN_RC=1

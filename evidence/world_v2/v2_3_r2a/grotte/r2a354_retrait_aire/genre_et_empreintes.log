@@ -1,0 +1,33 @@
+commit du code : cca1778f9a6cbb008cf7c8288d03e3b726db163b
+
+### les trois geometries mesurees
+cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49  /home/user/zelda-r2a354/socle/assets/environment/caves/SM_WaterfallCave.glb
+c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed  /home/user/zelda-r2a354/a_percee/assets/environment/caves/SM_WaterfallCave.glb
+8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110  /home/user/zelda-r2a354/reference/SM_WaterfallCave_R2a34.glb
+
+### genre — methode independante de toute convention d'altitude
+=== agent A c184c8dc ===
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+  noeud SM_WaterfallCave
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+=== candidat cc3596c5 ===
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+  noeud SM_WaterfallCave
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 0   ->  genre 1
+=== R2a-3.4 livree ===
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+  noeud SM_WaterfallCave
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = -2   ->  genre 2
+RC_genre=0

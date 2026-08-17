@@ -1,0 +1,121 @@
+{
+ "maillage": "/home/user/zelda-r2a352/b_collerette/assets/environment/caves/SM_WaterfallCave.glb",
+ "sha": "cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49",
+ "plan_impose_y": -1.15,
+ "total_par_matiere": {
+  "MAT_CaveRock_Face": 7093,
+  "MAT_CaveRock_Base": 8081,
+  "MAT_CaveRock_Collar": 3750,
+  "MAT_CaveIn_Wall": 182,
+  "MAT_CaveIn_Deep": 518,
+  "MAT_CaveIn_Floor": 466
+ },
+ "intact": {
+  "mesure_a_m": 0.8264811869234427,
+  "mesure_b_plan_impose_m": 1.1,
+  "point_b": [
+   1.4282743453979503,
+   -0.45088710784912145
+  ],
+  "cases_ouverture": 3625,
+  "triangles": 20090
+ },
+ "sabotage1": {
+  "cible": "MAT_CaveRock_Collar",
+  "retires": 164,
+  "par_matiere": {
+   "MAT_CaveRock_Collar": 164
+  },
+  "emprise": {
+   "lo": [
+    -2.3428444862365723,
+    -2.376499891281128,
+    2.4814388751983643
+   ],
+   "hi": [
+    2.7684693336486816,
+    0.35163044929504395,
+    3.646965503692627
+   ]
+  },
+  "apres": {
+   "mesure_a_m": 0.8264811869234427,
+   "mesure_b_plan_impose_m": 1.1,
+   "point_b": [
+    1.4282743453979503,
+    -0.45088710784912145
+   ],
+   "cases_ouverture": 3625,
+   "triangles": 19926
+  }
+ },
+ "sabotage2": {
+  "cible": "goulot de B",
+  "point": [
+   1.4282743453979503,
+   -0.45088710784912145
+  ],
+  "retires": 101,
+  "par_matiere": {
+   "MAT_CaveRock_Face": 1,
+   "MAT_CaveRock_Base": 53,
+   "MAT_CaveIn_Wall": 9,
+   "MAT_CaveIn_Floor": 38
+  },
+  "emprise": {
+   "lo": [
+    0.9046535491943359,
+    -2.350533962249756,
+    -0.6849042773246765
+   ],
+   "hi": [
+    2.0297539234161377,
+    0.27317869663238525,
+    0.3310585021972656
+   ]
+  },
+  "apres": {
+   "mesure_a_m": 0.8264811869234427,
+   "mesure_b_plan_impose_m": 1.1106601717798217,
+   "point_b": [
+    0.5782743453979489,
+    1.2491128921508787
+   ],
+   "cases_ouverture": 3515,
+   "triangles": 19989
+  }
+ },
+ "sabotage3": {
+  "cible": "peau exterieure",
+  "point": [
+   2.0718338190018537,
+   -1.1496940940296163
+  ],
+  "retires": 1,
+  "par_matiere": {
+   "MAT_CaveRock_Base": 1
+  },
+  "emprise": {
+   "lo": [
+    2.4077816009521484,
+    -1.4142787456512451,
+    -0.6881492733955383
+   ],
+   "hi": [
+    2.6976559162139893,
+    -1.1654605865478516,
+    -0.6351919174194336
+   ]
+  },
+  "apres": {
+   "mesure_a_m": 0.8264811869234427,
+   "mesure_b_plan_impose_m": 1.1,
+   "point_b": [
+    1.4282743453979503,
+    -0.45088710784912145
+   ],
+   "cases_ouverture": 3625,
+   "triangles": 20089
+  }
+ }
+}

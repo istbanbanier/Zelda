@@ -1,0 +1,92 @@
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: test_save
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+[art] vallée peinte : 4470 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_save_continuity.gd::test_chest_and_inventory_survive_a_reload_without_loot_duplication (9 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+[art] vallée peinte : 4470 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_save_continuity.gd::test_a_taken_pickup_never_respawns_after_reload (6 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_save_continuity.gd::test_a_fresh_new_game_save_applies_nothing (5 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_save_merge_and_vitals.gd::test_the_valley_autosave_preserves_the_boss_victory (2 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_save_merge_and_vitals.gd::test_health_and_stamina_survive_a_reload (3 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+WARNING: [save] santé sauvegardée invalide (-5.0) — pleine vie
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] _restore_player_vitals (res://scripts/world/valley_world.gd:1098)
+         [1] _apply_save (res://scripts/world/valley_world.gd:1081)
+         [2] test_corrupt_vitals_fall_back_to_full_health_without_crashing (res://tests/integration/test_save_merge_and_vitals.gd:138)
+         [3] _load_valley (res://tests/integration/test_save_merge_and_vitals.gd:45)
+         [4] _settle (res://tests/integration/test_save_merge_and_vitals.gd:24)
+  ok   test_save_merge_and_vitals.gd::test_corrupt_vitals_fall_back_to_full_health_without_crashing (2 assertions)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+[art] vallée peinte : 4470 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_save_player_position.gd::test_reload_restores_player_position_and_yaw (4 assertions)
+WARNING: [save] position sauvegardée invalide ({ "x": 5000.0, "y": 6.0, "z": 0.0 }) — reprise au point d'apparition (§19.4).
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] _restore_player_transform (res://scripts/world/valley_world.gd:1120)
+         [1] _apply_save (res://scripts/world/valley_world.gd:1080)
+         [2] _ready (res://scripts/world/valley_world.gd:125)
+         [3] _load_valley (res://tests/integration/test_save_player_position.gd:45)
+         [4] test_invalid_saved_positions_fall_back_to_spawn (res://tests/integration/test_save_player_position.gd:121)
+         [5] _run_script (res://tools/godot/test_runner.gd:297)
+         [6] _root_delta (res://tools/godot/test_runner.gd:390)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+WARNING: [save] position sauvegardée invalide ({ "x": 0.0, "y": -40.0, "z": 0.0 }) — reprise au point d'apparition (§19.4).
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] _restore_player_transform (res://scripts/world/valley_world.gd:1120)
+         [1] _apply_save (res://scripts/world/valley_world.gd:1080)
+         [2] _ready (res://scripts/world/valley_world.gd:125)
+         [3] _load_valley (res://tests/integration/test_save_player_position.gd:45)
+         [4] test_invalid_saved_positions_fall_back_to_spawn (res://tests/integration/test_save_player_position.gd:121)
+         [5] _cleanup (res://tests/integration/test_save_player_position.gd:57)
+         [6] _settle (res://tests/integration/test_save_player_position.gd:26)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+WARNING: [save] position sauvegardée invalide (corrompu) — reprise au point d'apparition (§19.4).
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] _restore_player_transform (res://scripts/world/valley_world.gd:1120)
+         [1] _apply_save (res://scripts/world/valley_world.gd:1080)
+         [2] _ready (res://scripts/world/valley_world.gd:125)
+         [3] _load_valley (res://tests/integration/test_save_player_position.gd:45)
+         [4] test_invalid_saved_positions_fall_back_to_spawn (res://tests/integration/test_save_player_position.gd:121)
+         [5] _cleanup (res://tests/integration/test_save_player_position.gd:57)
+         [6] _settle (res://tests/integration/test_save_player_position.gd:26)
+[art] vallée peinte : 4469 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_save_player_position.gd::test_invalid_saved_positions_fall_back_to_spawn (3 assertions)
+[art] vallée peinte : 4470 surfaces
+[monde] lieux habités : 8 chemins, 14 objets de vie
+  ok   test_save_player_position.gd::test_legacy_save_without_position_still_loads_at_spawn (4 assertions)
+  ok   test_save_system.gd::test_roundtrip_preserves_payload (7 assertions)
+  ok   test_save_system.gd::test_previous_save_is_kept_as_backup (4 assertions)
+  ok   test_save_system.gd::test_no_temporary_file_survives_a_successful_save (2 assertions)
+  ok   test_save_system.gd::test_corrupted_file_is_refused_not_half_applied (2 assertions)
+  ok   test_save_system.gd::test_future_schema_is_refused (2 assertions)
+  ok   test_save_system.gd::test_missing_slot_reports_failure (2 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 15 réussi(s), 0 échoué(s) ===
+WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 1 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

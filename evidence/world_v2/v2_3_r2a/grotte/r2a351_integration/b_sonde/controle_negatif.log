@@ -1,0 +1,51 @@
+==========================================================================
+CONTROLE NEGATIF DE LA CARTE D'EPAISSEUR
+==========================================================================
+seuils LUS au generateur : paroi 0.80 m · collerette 0.60 m
+
+--------------------------------------------------------------------------
+EPREUVE — fine_a_droite (gauche 1.20 m, droite 0.30 m, seuil 0.80 m)
+--------------------------------------------------------------------------
+   mesure : gauche 1.200 m (u=1.00)   droite 0.300 m (u=1.00)
+   [PASS] fine_a_droite : le cote gauche mesure l'epaisseur POSEE    pose 1.200 m, mesure 1.200 m, tolerance 0.02 m
+   [PASS] fine_a_droite : le cote droite mesure l'epaisseur POSEE    pose 0.300 m, mesure 0.300 m, tolerance 0.02 m
+   [PASS] fine_a_droite : le cote DESIGNE est celui qui est mince    aminci = droite, designe = droite
+   [PASS] fine_a_droite : verdict gauche attendu PASS                mesure 1.200 m / seuil 0.80 m -> PASS
+   [PASS] fine_a_droite : verdict droite attendu FAIL                mesure 0.300 m / seuil 0.80 m -> FAIL
+
+--------------------------------------------------------------------------
+EPREUVE — fine_a_gauche (gauche 0.30 m, droite 1.20 m, seuil 0.80 m)
+--------------------------------------------------------------------------
+   mesure : gauche 0.300 m (u=1.00)   droite 1.200 m (u=1.00)
+   [PASS] fine_a_gauche : le cote gauche mesure l'epaisseur POSEE    pose 0.300 m, mesure 0.300 m, tolerance 0.02 m
+   [PASS] fine_a_gauche : le cote droite mesure l'epaisseur POSEE    pose 1.200 m, mesure 1.200 m, tolerance 0.02 m
+   [PASS] fine_a_gauche : le cote DESIGNE est celui qui est mince    aminci = gauche, designe = gauche
+   [PASS] fine_a_gauche : verdict gauche attendu FAIL                mesure 0.300 m / seuil 0.80 m -> FAIL
+   [PASS] fine_a_gauche : verdict droite attendu PASS                mesure 1.200 m / seuil 0.80 m -> PASS
+
+   [PASS] ECHANGER LES PAROIS ECHANGE LA MESURE                      cas A (g=1.200, d=0.300) contre cas B (g=0.300, d=1.200)
+
+--------------------------------------------------------------------------
+EPREUVE — TROU LOCALISE (cote gauche, y in [3.6 ; 4.4], u attendu ~ 3.96)
+--------------------------------------------------------------------------
+   stations TROUEES : gauche [4.0]   droite aucune
+   [PASS] trou : le cote GAUCHE est signale troue                    stations [4.0]
+   [PASS] trou : le cote DROITE reste intact                         stations aucune
+   [PASS] trou : signale a la BONNE station (+/- 0,75)               attendu ~ 3.96, obtenu [4.0]
+   [PASS] trou : aucune percee n'est publiee comme une epaisseur de 0,00 m 0 entree(s) fondue(s)
+
+--------------------------------------------------------------------------
+EPREUVE — CAROTTAGE DU MAILLAGE REEL (cote gauche, station u = 6.0)
+--------------------------------------------------------------------------
+   impacts du rayon : [2.35, 4.21, 5.93, 9.54]
+   triangles retires : 412 sur 19792
+   [PASS] le carottage retire de la matiere                          412 triangle(s)
+   nouveaux trous : gauche [4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0]   droite aucun
+   [PASS] carottage : le cote gauche CAROTTE est signale             stations [4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0]
+   [PASS] carottage : le cote droite INTACT ne bouge pas             stations aucune
+
+==========================================================================
+EPREUVES : 18 / 18 passees
+VERDICT : PASS
+==========================================================================
+RC=0

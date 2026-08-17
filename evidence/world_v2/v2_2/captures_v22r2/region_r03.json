@@ -1,0 +1,18 @@
+{
+  "commit": "0ea916396b74f7150038a23d046f5261151911d7",
+  "display_server": "X11",
+  "distinct_colors_sampled": 4627,
+  "engine_version": "4.7.1-stable (custom_build)",
+  "frames_waited": 40,
+  "height": 720,
+  "label": "v22r2_region_r03",
+  "luma_mean": 0.4516,
+  "luma_stddev": 0.0865,
+  "png": "evidence/world_v2/v2_2/captures_v22r2/region_r03.png",
+  "rendering_driver": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "rendering_method": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "timestamp_utc": "2026-08-13 23:58:49",
+  "width": 1280
+}

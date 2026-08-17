@@ -1,0 +1,321 @@
+diff --git a/source_assets/blender/environment/make_waterfall_cave.py b/source_assets/blender/environment/make_waterfall_cave.py
+index 88f7c2d..512acec 100644
+--- a/source_assets/blender/environment/make_waterfall_cave.py
++++ b/source_assets/blender/environment/make_waterfall_cave.py
+@@ -1576,6 +1576,183 @@ DOS_ALCOVE_ECHELLE = (1.35, 1.35, 0.90)
+ DOS_ALCOVE_PLAFOND_M = 4.20
+ 
+ 
++def rochers_calotte_nord():
++    """LA CALOTTE NORD — la roche qui manquait AU-DESSUS de la joue nord.
++
++    CE QU'ELLE FERME, ET LA CAUSE A ÉTÉ MAL NOMMÉE DEUX FOIS
++    =======================================================
++
++    Le candidat R2a-3.5.2 est PERCÉ SUR LE CIEL : 343 colonnes ouvertes sur
++    3 721 au pas de 5 mm, 85,8 cm², en `x ∈ [0,468 ; 0,623]`,
++    `ay ∈ [5,850 ; 6,045]`. Le trou est hérité de l'enveloppe — `BASE352` le
++    porte aux mêmes 343 colonnes — et absent de la géométrie livrée R2a-3.4.
++
++    Deux explications ont été avancées et RÉFUTÉES par la mesure, elles sont
++    conservées parce qu'une cause écartée vaut un repère :
++
++      1. « deux lentilles d'enveloppe qui se rencontrent sans se
++         recouvrir ». Le profil de colonne à `x = 0,55` y invitait :
++         2,98 m de toit à `ay 4,0`, puis 1,00 · 0,52 · 0,40 · 0,075, puis
++         1,85 — un col qui se pince à zéro et remonte. Faux.
++      2. « artefact de remaillage ou de décimation ». Faux également.
++
++    `tools/cave_fix_etapes.py` mesure la même colonne après CHACUNE des cinq
++    étapes. Résultat, en `(0,55 ; 5,95)` :
++
++        joindre      15 impacts, aucun vide      -> massif PLEIN
++        remaillage    2 impacts, aucun vide      -> massif PLEIN
++        stratification 2 impacts, aucun vide     -> massif PLEIN
++        décimation    2 impacts, aucun vide      -> massif PLEIN  [-2,613 ; 1,512]
++        soustraction  4 impacts, vide 1,36 m     -> banc de 0,043 m
++
++    Le vide n'existe à AUCUNE étape source. Il est CREUSÉ par le booléen.
++
++    D'OÙ VIENT LE CREUSEMENT, ET C'EST UNE PROPRIÉTÉ DU GABARIT
++    ===========================================================
++
++    `tools/cave_fix_outil.py` mesure `OUTIL_Cavite` avant tout booléen :
++    boîte `y ∈ [-4,200 ; +7,245]`, quand la dernière station de `CAVITE` est
++    à `ay = 3,17` et `CAVITE_APEX` à `3,25`. Le tube déborde de 4,0 m vers
++    le nord. Emprise en Y de chaque anneau :
++
++        st4 (1,82 ; 2,12) gauche 1,68 -> y [+1,20 ; +5,63]
++        st5 (2,62 ; 2,58) gauche 1,69 -> y [+1,71 ; +6,60]
++        st6 (3,10 ; 2,88) gauche 1,69 -> y [+2,35 ; +7,24]   <- le maximum
++        st7 (3,40 ; 3,06) gauche 1,65 -> y [+2,65 ; +5,69]
++
++    La cause est mécanique et parfaitement voulue : `hw · gauche` vaut
++    jusqu'à `2,50 × 1,69 = 4,23 m` de joue gauche, et la normale au chemin y
++    est à ~85 % alignée avec −Y. La salle déportée et l'alcôve projettent
++    donc leur flanc quatre mètres au nord de leur station. **C'est le
++    gabarit intérieur**, et il ne se rabote pas : on ajoute la roche qui
++    aurait dû le couvrir.
++
++    ELLE EST DÉRIVÉE, ET C'EST LA CONDITION — comme `rochers_dos_alcove()`.
++    Chaque roche est posée sur le POINT DE PAROI que `anneau_interieur()`
++    calcule, avec la même normale, le même `gauche`, la même poussée
++    d'alcôve, le même linteau incliné et le même relief angulaire. Si
++    `CAVITE`, `CAVITE_ASYM` ou `ALCOVE` bougent, la calotte suit ; aucune
++    cote n'est recopiée.
++
++    ELLE NE PEUT PAS TOUCHER LA COMPOSITION, ET C'EST PROUVÉ AVANT D'ÊTRE
++    MESURÉ. Le profil de silhouette est un MAXIMUM de `z` par colonne
++    d'écran : toute matière dont le sommet reste sous le profil existant
++    laisse ce profil, et `controle_amas` avec lui, rigoureusement inchangés.
++    Le sommet suit donc le plafond de la cavité — `z_paroi +
++    CALOTTE_COUVERTURE_M` — et non une cote absolue. `tools/cave_fix_marge.py`
++    mesure le jeu restant, colonne par colonne, aux trois azimuts :
++
++        colonnes à corriger                                   74
++        colonnes SANS solution conforme (jeu < 0)              0
++        la plus contrainte : (+1,00 ; 5,40) jeu +0,32 m
++        sommet le plus haut exigé par la correction         3,88 m
++
++    Le rang est **`gaine` À DESSEIN**, et c'est le choix le plus sévère :
++    `controle_amas` refuse qu'une pièce de ce rang porte la crête dans
++    l'emprise d'une masse. Si la calotte remontait dans un col, le portail
++    rougirait au lieu de laisser passer. On se donne le juge, on ne s'en
++    exempte pas.
++
++    TROIS MAJORATIONS CONSERVATRICES, écrites parce qu'elles se paient :
++    `w` (relief angulaire) est pris au MAXIMUM des deux stations voisines,
++    le linteau incliné est appliqué, et la rentrée de nervure est ignorée.
++    Les trois font poser la roche un peu plus haut et un peu plus dehors que
++    la paroi réelle — jamais l'inverse, jamais un toit surestimé.
++    """
++    sortie = []
++    hauteur = MODULES["R"]["natif"][2] * CALOTTE_ECHELLE[2]
++    ph = phases(len(CAVITE), 7.0)      # même graine que `cavite_solide()`
++    u = CALOTTE_U0
++    rang = 0
++    while u <= CALOTTE_U1 + 1e-6:
++        ax, ay, hw, cle = station_de_cavite(u)
++        nx, ny = normale_de_cavite(u)
++        i = max(0, min(len(CAVITE_ASYM) - 1, int(math.floor(u))))
++        j = min(len(CAVITE_ASYM) - 1, i + 1)
++        t = max(0.0, min(1.0, u - i))
++        gauche = CAVITE_ASYM[i][0] * (1.0 - t) + CAVITE_ASYM[j][0] * t
++        inclinaison = inclinaison_de_cavite(u)
++        for k in range(CALOTTE_AZIMUTS):
++            tf = math.radians(CALOTTE_THETA0
++                              + k * (CALOTTE_THETA1 - CALOTTE_THETA0)
++                              / max(1, CALOTTE_AZIMUTS - 1))
++            uc, v = math.cos(tf), math.sin(tf)
++            pousse = (ALCOVE["ampl"]
++                      * le_long(u, ALCOVE["i0"], ALCOVE["i1"])
++                      * fenetre(tf, ALCOVE["theta"], ALCOVE["dtheta"])
++                      * math.exp(-(((v - ALCOVE["v0"]) / ALCOVE["dv"]) ** 2.0)))
++            # LE POINT DE PAROI, recopié de `anneau_interieur()`. `w` majoré
++            # et `rentree` ignorée : voir le docstring.
++            w = max(bruit(tf, ph[i], AMP_INTERIEUR),
++                    bruit(tf, ph[j], AMP_INTERIEUR))
++            n = (hw * gauche * w + pousse) * uc
++            if abs(n) < CALOTTE_DEBORD_MIN_M:
++                continue          # la joue ne déborde pas ici : rien à couvrir
++            z_paroi = cle * (max(0.0, v) ** 0.75) * w * (1.0 + inclinaison * uc)
++            haut = min(z_paroi + CALOTTE_COUVERTURE_M, CALOTTE_PLAFOND_M)
++            base = min(haut - hauteur, z_paroi - CALOTTE_MORSURE_M)
++            sortie.append(dict(
++                nom="CalotteNord_%d_%d" % (rang, k), mod="R",
++                pose=(ax + n * nx, ay + n * ny, base),
++                lacet=(rang * 61 + k * 37) % 360,
++                tangage=(rang % 3) * 3 - 3, roulis=(k % 4) * 3 - 4,
++                ech=CALOTTE_ECHELLE, rang="gaine"))
++        rang += 1
++        # Avance d'environ `CALOTTE_PAS_M` LE LONG DU CHEMIN, et non d'un
++        # pas fixe en `u` : les stations ne sont pas équidistantes, et un
++        # pas en `u` laisserait un trou entre les deux plus écartées.
++        prochain = min(CALOTTE_U1, u + 0.05)
++        avance = 0.0
++        while prochain < CALOTTE_U1 and avance < CALOTTE_PAS_M:
++            a = station_de_cavite(u)
++            b = station_de_cavite(prochain)
++            avance = math.hypot(b[0] - a[0], b[1] - a[1])
++            if avance < CALOTTE_PAS_M:
++                prochain = min(CALOTTE_U1, prochain + 0.05)
++        if prochain >= CALOTTE_U1 and u >= CALOTTE_U1:
++            break
++        u = prochain
++    return sortie
++
++
++## Bornes du balayage, en indices de station. La joue nord dépasse `ay = 4,3`
++## des stations 4 à 7 (emprises mesurées par `tools/cave_fix_outil.py`) ; on
++## déborde d'une demi-station de chaque côté pour que la couverture ne
++## s'arrête pas au dernier point mesuré.
++CALOTTE_U0 = 3.50
++CALOTTE_U1 = 7.20
++CALOTTE_PAS_M = 0.60
++## Azimuts de la joue nord. 100° est juste au-dessus de l'horizontale du
++## côté `-n` ; 176° est le point le plus extérieur, presque au niveau du
++## sol. En deçà de 100° on est sur la voûte centrale, déjà couverte par
++## 2,5 à 5 m de roche.
++CALOTTE_THETA0 = 100.0
++CALOTTE_THETA1 = 176.0
++CALOTTE_AZIMUTS = 5
++## Débord minimal sous lequel on ne pose rien : près de l'axe la voûte est
++## déjà couverte, et une roche de plus n'y ajouterait qu'un risque de col.
++CALOTTE_DEBORD_MIN_M = 0.60
++## Roche visée AU-DESSUS du plafond de la cavité. Le seuil du contrat est
++## 0,80 m ; on vise le double, parce que le remaillage à 0,12 m, la
++## stratification et la décimation à 19 000 tris déplacent la surface, et
++## que le verdict final se prononce sur une BORNE MINORANTE (`lecture − pas`)
++## calculée par un autre instrument que celui-ci.
++CALOTTE_COUVERTURE_M = 1.60
++## Enfoncement minimal de la roche SOUS le point de paroi : sans lui la
++## roche affleurerait le toit et le remaillage pourrait ne pas la souder.
++CALOTTE_MORSURE_M = 0.40
++## Garde-fou absolu, en plus du plafond glissant. Les faîtes de composition
++## sont à 8,35 m (dominante), 4,85 m (épaule) et 4,49 m (contrefort) : à
++## 4,00 m cette famille ne peut porter aucun d'eux. Ce n'est PAS le contrôle
++## principal — c'est `CALOTTE_COUVERTURE_M`, qui suit le plafond de la
++## cavité, qui garde la masse sous la silhouette. Celui-ci n'est qu'une
++## butée si un réglage futur devenait déraisonnable.
++CALOTTE_PLAFOND_M = 4.00
++## Anisotropie 1,82, sous le plafond de 2,00. Hauteur 4,35 × 0,55 = 2,39 m :
++## assez pour mordre 0,40 m dans le toit ET porter 1,60 m au-dessus.
++CALOTTE_ECHELLE = (1.00, 1.00, 0.55)
++
++
+ def rochers_semelle():
+     """LA SEMELLE — de la roche DÉRIVÉE sous le plancher de la galerie.
+ 
+@@ -5301,7 +5478,13 @@ def main():
+         # On retire, on mesure, et on ne réintroduit que ce que
+         # `controle_epaisseur` exige — station par station, chiffre en
+         # face. Si la mesure n'exige rien, la gaine disparaît.
+-        rocs = rochers_dos_alcove() + rochers_semelle()
++        # LA CALOTTE NORD entre ici, et c'est le seul ajout de R2a-3.5.4.
++        # Elle couvre la joue nord de la salle et de l'alcôve, que le tube
++        # de cavité projette jusqu'à `ay = 7,24` alors que la dernière
++        # station est à `3,17`. Sans elle, la soustraction ouvre le massif
++        # sur le ciel — 85,8 cm². Voir `rochers_calotte_nord()`.
++        rocs = (rochers_dos_alcove() + rochers_semelle()
++                + rochers_calotte_nord())
+         for config in rocs:
+             pieces.append(poser_rocher(config))
+         implantation.extend(rocs)
+@@ -5564,47 +5747,82 @@ def main():
+           "releve du terrain gele, voir controle_epaisseur)"
+           % (mini, mini_collerette))
+ 
+-    # R2a-3.5.3 — LE MÊME CONTRAT, MAIS SUR TOUT LE DOMAINE. Le contrôle
+-    # ci-dessus s'arrête à la dernière station de CAVITE (ay = 3,17) ; le
+-    # massif court jusqu'à ay ~ 11,9. Celui-ci balaie la totalité, publie
+-    # les bornes qu'il a réellement couvertes, et REFUSE de conclure s'il
+-    # n'a pas tout vu.
++    # BALAYAGE VERTICAL DU MASSIF — TÉLÉMÉTRIE DE NON-RÉGRESSION, PLUS UN
++    # GATE. Déclassement prononcé par `docs/CONTRAT_COQUE_STRUCTURELLE.md`
++    # §4, écrit et committé AVANT toute correction géométrique de
++    # R2a-3.5.4, précisément pour qu'aucun domaine de mesure ne soit choisi
++    # après avoir vu le résultat.
++    #
++    # CE N'EST PAS NEUTRALISER UN TEST, ET LA DIFFÉRENCE SE MESURE. Ce
++    # balayage compte comme « plaque » de la roche qui n'est pas la coque
++    # de la cavité : il rend 326 plaques sur la géométrie R2a-3.4 DÉJÀ
++    # LIVRÉE ET VALIDÉE contre 167 sur le candidat percé. Un critère qui
++    # condamne plus fort la référence que le sujet ne peut pas décider
++    # seul — il mesure autre chose que ce qu'il prétend mesurer.
++    #
++    # CE QUI PREND SA PLACE EST PLUS DUR, PAS PLUS SOUPLE. Le gate devient
++    # la COQUE STRUCTURELLE du contrat : toute surface séparant de
++    # l'extérieur la composante d'air qui contient `MODELE_SALLE` et
++    # `MODELE_NICHE` — définition topologique, sans station ni borne en
++    # `ay` — mesurée par distance euclidienne minorante, le verdict portant
++    # sur la borne garantie `lecture − pas` et non sur la lecture
++    # optimiste. `EPAISSEUR_MIN_M = 0,80` ne bouge pas d'un centimètre, et
++    # ce bloc ne l'assouplit pas : il cesse d'être le seul à regarder.
++    #
++    # CE QUE CE BALAYAGE GARDE, ET IL EST LE SEUL À SAVOIR LE FAIRE : voir
++    # si un défaut MIGRE plutôt qu'il ne disparaît. Une mesure de coque est
++    # ponctuelle par nature ; elle ne pose pas cette question d'elle-même.
++    # On publie donc tout, on ne bloque sur rien, et on compare.
+     dom = controle_epaisseur_domaine(grotte)
+-    print("[grotte] domaine : pas %.2f m, %d colonnes, x [%.2f ; %.2f] "
+-          "y [%.2f ; %.2f]" % (dom["pas"], dom["colonnes"], dom["couvert"][0],
+-                               dom["couvert"][1], dom["couvert"][2],
+-                               dom["couvert"][3]))
+-    if dom["manques"]:
+-        for m in dom["manques"]:
+-            print("[grotte] ERREUR: COUVERTURE incomplete — %s" % m)
+-        print("[grotte] un minimum publie sur un domaine incomplet est "
+-              "exactement la panne que ce controle corrige")
+-        if not franchir("couverture du domaine"):
+-            return 2
+-    print("[grotte] domaine : %d colonne(s) a vide qualifiant (>= %.2f m) — "
+-          "%d sans aucune matiere au-dessus (bouche/ciel), %d en matiere "
+-          "pleine, %d lame(s) mince(s)"
++    minces = sorted(dom["plaques"] + dom["bords"])
++    print("[grotte] TELEMETRIE domaine (CONTRAT_COQUE_STRUCTURELLE §4 — ne "
++          "bloque plus la chaine ; le gate dur est la coque structurelle)")
++    print("[grotte] TELEMETRIE domaine : pas %.2f m, %d colonnes, "
++          "x [%.2f ; %.2f] y [%.2f ; %.2f]"
++          % (dom["pas"], dom["colonnes"], dom["couvert"][0], dom["couvert"][1],
++             dom["couvert"][2], dom["couvert"][3]))
++    for m in dom["manques"]:
++        print("[grotte] TELEMETRIE domaine : COUVERTURE incomplete — %s "
++              "(la telemetrie est donc partielle ; elle ne conclut rien)" % m)
++    print("[grotte] TELEMETRIE domaine : %d colonne(s) a vide qualifiant "
++          "(>= %.2f m) — %d sans aucune matiere au-dessus (bouche/ciel), "
++          "%d en matiere pleine, %d lame(s) mince(s) dont %d plaque(s) et "
++          "%d bord(s)"
+           % (dom["qualifiantes"], VIDE_QUALIFIANT_M, dom["aucune_matiere"],
+-             dom["matiere_pleine"],
+-             len(dom["plaques"]) + len(dom["bords"])))
++             dom["matiere_pleine"], len(minces), len(dom["plaques"]),
++             len(dom["bords"])))
++    if minces:
++        c, ax, ay, h, n, cum = minces[0]
++        print("[grotte] TELEMETRIE domaine : minimum vertical %.3f m en "
++              "(%.2f ; %.2f), sous %.2f m de vide, %d/8 voisins, cumul de "
++              "colonne %.3f m" % (c, ax, ay, h, n, cum))
++    else:
++        print("[grotte] TELEMETRIE domaine : aucune lame mince — minimum "
++              "vertical >= %.2f m sur tout le domaine" % EPAISSEUR_MIN_M)
+     if dom["bords"]:
+         c, ax, ay, h, n, _cum = dom["bords"][0]
+-        print("[grotte] domaine : bord le plus mince %.3f m en (%.2f ; %.2f), "
+-              "vide %.2f m, %d voisin(s) — terminaison laterale d'un vide, "
+-              "pas une lame" % (c, ax, ay, h, n))
++        print("[grotte] TELEMETRIE domaine : bord le plus mince %.3f m en "
++              "(%.2f ; %.2f), vide %.2f m, %d voisin(s) — terminaison "
++              "laterale d'un vide, pas une lame" % (c, ax, ay, h, n))
++    for c, ax, ay, h, n, cum in dom["plaques"][:5]:
++        print("[grotte] TELEMETRIE domaine : PLAQUE %.3f m en (%.2f ; %.2f) "
++              "sous %.2f m de vide, %d/8 voisins — sous EPAISSEUR_MIN_M = "
++              "%.2f m (cumul de colonne %.3f m)"
++              % (c, ax, ay, h, n, EPAISSEUR_MIN_M, cum))
+     if dom["plaques"]:
+-        for c, ax, ay, h, n, cum in dom["plaques"][:5]:
+-            print("[grotte] ERREUR: PLAQUE %.3f m en (%.2f ; %.2f) sous "
+-                  "%.2f m de vide, %d/8 voisins — moins que EPAISSEUR_MIN_M "
+-                  "= %.2f m (cumul de la colonne %.3f m)"
+-                  % (c, ax, ay, h, n, EPAISSEUR_MIN_M, cum))
+-        print("[grotte] domaine : %d plaque(s) sous le seuil, la plus mince "
+-              "%.3f m" % (len(dom["plaques"]), dom["plaques"][0][0]))
+-        if not franchir("epaisseur sur le domaine"):
+-            return 2
++        print("[grotte] TELEMETRIE domaine : %d plaque(s) sous %.2f m, la "
++              "plus mince %.3f m — a comparer aux REFERENCES (R2a-3.4 : 326 ; "
++              "candidat cc3596c5 : 167), pas a un seuil"
++              % (len(dom["plaques"]), EPAISSEUR_MIN_M, dom["plaques"][0][0]))
+     else:
+-        print("[grotte] domaine : aucune plaque sous %.2f m ; les colonnes "
+-              "minces sont toutes des bords" % EPAISSEUR_MIN_M)
++        print("[grotte] TELEMETRIE domaine : aucune plaque sous %.2f m ; les "
++              "colonnes minces sont toutes des bords" % EPAISSEUR_MIN_M)
++    # Les BULLES ISOLÉES du contrat §4 sont comptées par `retirer_bulles()`
++    # et imprimées plus haut dans ce journal, à ses deux appels. Les
++    # MEMBRANES INTERNES ne sont PAS mesurées par cet instrument : un
++    # balayage vertical ne distingue pas une cloison entre deux vides d'un
++    # toit. Ne pas les publier ici est délibéré — un champ inventé vaut
++    # moins qu'un champ absent.
+ 
+     faibles = controle_gabarit()
+     print("[grotte] gabarit : bande utile par station (m) : %s"

@@ -1,0 +1,6951 @@
+From 6e3725970f1221ed596504363f940f68a2cf8c8e Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sun, 16 Aug 2026 12:55:31 +0000
+Subject: [PATCH 2/4] =?UTF-8?q?instruments(grotte):=20les=20101=20percees?=
+ =?UTF-8?q?=20sont=20des=20fantomes=20=E2=80=94=20origines=20hors=20massif?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+PRIORITE DU COORDINATEUR : l'ORIGINE, pas la sortie. Mesure publiee.
+
+LE DISCRIMINANT, SUR LES 150 ORIGINES DES 101 PERCEES CONFIRMEES
+
+  * **81 origines sur 150 ont au moins UNE direction CARDINALE qui ne
+    rencontre aucune roche** — vers le haut, ou vers +X, a l'infini ;
+  * 19 a 29 des 100 directions de sphere s'echappent sans rien toucher ;
+  * offsets lateraux de -1,80 a -4,84 m, cote gauche ;
+  * et l'enclosure mesurait 0,71 a 0,81, donc au-dessus du seuil de 0,50.
+
+Un point d'ou l'on voit le ciel dans deux directions cardinales n'est pas
+dans une grotte. Lecture 1 confirmee : la sonde echantillonnait au-dela de
+la cavite, exactement la classe des 38/38 de R2a-3.5.1.
+
+DEUX DEFAUTS D'INSTRUMENT, TOUS DEUX CORRIGES
+
+13e — `ENCLOSURE_MIN` comptait une direction comme enclose des que
+`impacts()` rendait quelque chose dans les 40 m. Ce n'est pas « je suis dans
+une grotte », c'est « je vois de la roche quelque part ». Un point pose en
+plein air contre un massif de vingt metres passait 0,50 sans difficulte. Le
+critere devient : aucune direction ne s'echappe — sauf par la bouche, que
+`sort_par_la_bouche` sait reconnaitre. Seuil 0,95, et les SIX cardinales
+exigees. Sans le terme de bouche, tout point du vestibule serait rejete :
+une grotte a par definition une ouverture.
+
+14e — `offsets_lateraux` prenait `max(nominale, mesuree)`. Aux stations 4 a
+6 le facteur `gauche` vaut 1,68-1,69 pour un `hw` de 2,60-3,00, soit une
+demi-largeur NOMINALE de 4,4 a 5,1 m, bien au-dela de la roche. La paroi
+MESUREE fait desormais foi. La couverture de l'air au-dela du nominal n'est
+pas perdue : `cave_frame.py` mesure l'intervalle creux reel et sonde
+jusqu'a ses bornes — c'est son travail, pas celui de la sonde.
+
+RESULTAT SUR `SM_WaterfallCave_BASE352.glb` (8bc8b9f9...)
+
+  echantillons          2183
+  hors cavite ecartes     13  (enclosure < 0,95 ou cardinale ouverte)
+  rayons juges        157743, dont 7357 sortent par la bouche
+  rayons suspects        125
+  PERCEES CONFIRMEES       0
+  plancher            ecart max 0,03 a 0,07 m a TOUTES les stations
+  fond                3762 cases, 0 ouverte
+  VERDICT             PASS, RC 0
+
+`tools/probe_cave_selftest.py` : 30/30, inchange par le durcissement.
+
+DEUX MESURES DE COLLERETTE — `tools/cave_collar.py`
+
+A : rayons selon la normale locale, avec garde anti-rasant (les deux faces
+doivent etre d'orientation OPPOSEE ; deux faces de meme sens sont un repli).
+B : transformee de distance 8-connexe sur une coupe transversale rasterisee,
+classee par inondation 2D. Aucun rayon, aucune normale, aucune station.
+
+Ne recopie pas la sphere inscrite de l'agent collerette : trois mesures ne
+valent que si elles sont trois.
+
+Sur BASE352 : A = 0,060 m, B = 0,050 m, ecart 0,010 m. Les deux mecanismes
+concordent et CONTREDISENT le 0,48 m de l'agent collerette. L'un des trois
+se trompe ; l'ecart est rapporte, pas moyenne. NON CALIBRE.
+
+Le plan de bouche y = -1,15 ne porte aucune ouverture close — le porche
+evase communique lateralement avec l'air libre. La mesure B avance donc
+jusqu'au premier plan utilisable (y = -0,95) et le DIT.
+
+RETRACTATION
+
+« L'axe declare est dans la roche aux stations 5 a 8 » et « CAVITE s'arrete
+a 3,17 quand le vide court jusqu'a 8,2 » etaient des artefacts du maillage
+8bf1a1b3 (tronc R2a-3.4). Sur BASE352 l'axe est dans le vide aux neuf
+stations, 6 directions paires sur 6.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01H1fHocGwj11SthNfNZ9hxk
+---
+ .../base352_sonde_durcie.json                 | 5733 +++++++++++++++++
+ .../base352_sonde_durcie.log                  |  172 +
+ .../collerette_deux_mesures.log               |   20 +
+ .../r2a352_c_instruments/selftest_30sur30.log |   16 +-
+ tools/cave_collar.py                          |  370 ++
+ tools/probe_cave_adversarial.py               |  287 +-
+ tools/probe_cave_openings.py                  |   95 +-
+ 7 files changed, 6575 insertions(+), 118 deletions(-)
+ create mode 100644 evidence/r2a352_c_instruments/base352_sonde_durcie.json
+ create mode 100644 evidence/r2a352_c_instruments/base352_sonde_durcie.log
+ create mode 100644 evidence/r2a352_c_instruments/collerette_deux_mesures.log
+ create mode 100644 tools/cave_collar.py
+
+diff --git a/evidence/r2a352_c_instruments/base352_sonde_durcie.json b/evidence/r2a352_c_instruments/base352_sonde_durcie.json
+new file mode 100644
+index 0000000..fa7e7b8
+--- /dev/null
++++ b/evidence/r2a352_c_instruments/base352_sonde_durcie.json
+@@ -0,0 +1,5733 @@
++{
++ "glb": "assets/environment/caves/prototypes/SM_WaterfallCave_BASE352.glb",
++ "jour": {
++  "amas_de_sortie": [
++   {
++    "centre": [
++     -0.11,
++     6.35,
++     1.8
++    ],
++    "rayons": 7,
++    "stations": [
++     5,
++     6,
++     7
++    ]
++   },
++   {
++    "centre": [
++     0.35,
++     6.66,
++     1.51
++    ],
++    "rayons": 6,
++    "stations": [
++     4,
++     5
++    ]
++   },
++   {
++    "centre": [
++     2.65,
++     4.63,
++     1.27
++    ],
++    "rayons": 6,
++    "stations": [
++     6,
++     8
++    ]
++   },
++   {
++    "centre": [
++     3.55,
++     2.56,
++     1.56
++    ],
++    "rayons": 5,
++    "stations": [
++     2,
++     5,
++     6
++    ]
++   },
++   {
++    "centre": [
++     0.16,
++     6.73,
++     0.57
++    ],
++    "rayons": 5,
++    "stations": [
++     5,
++     6
++    ]
++   },
++   {
++    "centre": [
++     0.44,
++     0.45,
++     -0.32
++    ],
++    "rayons": 4,
++    "stations": [
++     1,
++     2
++    ]
++   },
++   {
++    "centre": [
++     0.37,
++     1.54,
++     -0.31
++    ],
++    "rayons": 4,
++    "stations": [
++     2,
++     3
++    ]
++   },
++   {
++    "centre": [
++     3.29,
++     3.55,
++     1.46
++    ],
++    "rayons": 4,
++    "stations": [
++     3,
++     6,
++     7
++    ]
++   },
++   {
++    "centre": [
++     0.26,
++     6.51,
++     3.11
++    ],
++    "rayons": 4,
++    "stations": [
++     5,
++     6
++    ]
++   },
++   {
++    "centre": [
++     -0.56,
++     0.51,
++     -0.32
++    ],
++    "rayons": 3,
++    "stations": [
++     1,
++     2
++    ]
++   },
++   {
++    "centre": [
++     0.19,
++     4.83,
++     2.89
++    ],
++    "rayons": 3,
++    "stations": [
++     3,
++     4,
++     5
++    ]
++   },
++   {
++    "centre": [
++     2.86,
++     1.58,
++     1.54
++    ],
++    "rayons": 3,
++    "stations": [
++     3,
++     4
++    ]
++   },
++   {
++    "centre": [
++     0.6,
++     3.07,
++     -0.28
++    ],
++    "rayons": 3,
++    "stations": [
++     4
++    ]
++   },
++   {
++    "centre": [
++     0.29,
++     6.61,
++     2.34
++    ],
++    "rayons": 3,
++    "stations": [
++     4,
++     5
++    ]
++   },
++   {
++    "centre": [
++     2.21,
++     5.23,
++     1.5
++    ],
++    "rayons": 3,
++    "stations": [
++     5,
++     6
++    ]
++   },
++   {
++    "centre": [
++     3.5,
++     2.46,
++     0.74
++    ],
++    "rayons": 3,
++    "stations": [
++     5,
++     6
++    ]
++   },
++   {
++    "centre": [
++     2.61,
++     4.71,
++     0.91
++    ],
++    "rayons": 3,
++    "stations": [
++     6,
++     7
++    ]
++   },
++   {
++    "centre": [
++     0.21,
++     5.36,
++     2.93
++    ],
++    "rayons": 3,
++    "stations": [
++     6
++    ]
++   },
++   {
++    "centre": [
++     1.71,
++     0.07,
++     0.28
++    ],
++    "rayons": 2,
++    "stations": [
++     1,
++     6
++    ]
++   },
++   {
++    "centre": [
++     1.29,
++     0.32,
++     -0.3
++    ],
++    "rayons": 2,
++    "stations": [
++     2,
++     3
++    ]
++   },
++   {
++    "centre": [
++     -0.59,
++     1.5,
++     0.51
++    ],
++    "rayons": 2,
++    "stations": [
++     2,
++     6
++    ]
++   },
++   {
++    "centre": [
++     1.4,
++     1.48,
++     -0.28
++    ],
++    "rayons": 2,
++    "stations": [
++     4
++    ]
++   },
++   {
++    "centre": [
++     -0.17,
++     4.51,
++     0.73
++    ],
++    "rayons": 2,
++    "stations": [
++     4
++    ]
++   },
++   {
++    "centre": [
++     1.2,
++     6.21,
++     2.17
++    ],
++    "rayons": 2,
++    "stations": [
++     4,
++     6
++    ]
++   },
++   {
++    "centre": [
++     2.13,
++     1.81,
++     -0.23
++    ],
++    "rayons": 2,
++    "stations": [
++     4,
++     5
++    ]
++   },
++   {
++    "centre": [
++     3.12,
++     2.15,
++     -0.12
++    ],
++    "rayons": 2,
++    "stations": [
++     5
++    ]
++   },
++   {
++    "centre": [
++     -0.01,
++     6.67,
++     2.4
++    ],
++    "rayons": 2,
++    "stations": [
++     5
++    ]
++   },
++   {
++    "centre": [
++     2.72,
++     4.54,
++     2.42
++    ],
++    "rayons": 2,
++    "stations": [
++     5,
++     7
++    ]
++   },
++   {
++    "centre": [
++     2.11,
++     5.33,
++     2.2
++    ],
++    "rayons": 2,
++    "stations": [
++     6
++    ]
++   },
++   {
++    "centre": [
++     1.48,
++     3.3,
++     -0.24
++    ],
++    "rayons": 2,
++    "stations": [
++     6
++    ]
++   },
++   {
++    "centre": [
++     1.23,
++     6.08,
++     3.55
++    ],
++    "rayons": 2,
++    "stations": [
++     7
++    ]
++   },
++   {
++    "centre": [
++     1.15,
++     2.67,
++     -0.23
++    ],
++    "rayons": 2,
++    "stations": [
++     7
++    ]
++   },
++   {
++    "centre": [
++     -0.75,
++     0.8,
++     3.67
++    ],
++    "rayons": 1,
++    "stations": [
++     1
++    ]
++   },
++   {
++    "centre": [
++     -1.1,
++     1.05,
++     1.34
++    ],
++    "rayons": 1,
++    "stations": [
++     1
++    ]
++   },
++   {
++    "centre": [
++     1.6,
++     0.02,
++     1.43
++    ],
++    "rayons": 1,
++    "stations": [
++     1
++    ]
++   },
++   {
++    "centre": [
++     -1.88,
++     0.59,
++     0.74
++    ],
++    "rayons": 1,
++    "stations": [
++     1
++    ]
++   },
++   {
++    "centre": [
++     1.33,
++     -0.3,
++     0.34
++    ],
++    "rayons": 1,
++    "stations": [
++     1
++    ]
++   },
++   {
++    "centre": [
++     2.18,
++     -0.1,
++     0.72
++    ],
++    "rayons": 1,
++    "stations": [
++     2
++    ]
++   },
++   {
++    "centre": [
++     -1.26,
++     0.95,
++     1.22
++    ],
++    "rayons": 1,
++    "stations": [
++     2
++    ]
++   },
++   {
++    "centre": [
++     -2.43,
++     -0.85,
++     2.76
++    ],
++    "rayons": 1,
++    "stations": [
++     3
++    ]
++   },
++   {
++    "centre": [
++     -2.41,
++     -0.82,
++     1.53
++    ],
++    "rayons": 1,
++    "stations": [
++     3
++    ]
++   },
++   {
++    "centre": [
++     2.31,
++     0.49,
++     1.13
++    ],
++    "rayons": 1,
++    "stations": [
++     3
++    ]
++   },
++   {
++    "centre": [
++     0.74,
++     0.65,
++     2.82
++    ],
++    "rayons": 1,
++    "stations": [
++     3
++    ]
++   },
++   {
++    "centre": [
++     1.07,
++     2.35,
++     3.19
++    ],
++    "rayons": 1,
++    "stations": [
++     3
++    ]
++   },
++   {
++    "centre": [
++     -0.25,
++     4.96,
++     1.57
++    ],
++    "rayons": 1,
++    "stations": [
++     4
++    ]
++   },
++   {
++    "centre": [
++     0.04,
++     0.73,
++     3.24
++    ],
++    "rayons": 1,
++    "stations": [
++     4
++    ]
++   },
++   {
++    "centre": [
++     1.08,
++     6.26,
++     0.26
++    ],
++    "rayons": 1,
++    "stations": [
++     5
++    ]
++   },
++   {
++    "centre": [
++     0.44,
++     5.26,
++     3.03
++    ],
++    "rayons": 1,
++    "stations": [
++     5
++    ]
++   },
++   {
++    "centre": [
++     1.61,
++     5.83,
++     1.96
++    ],
++    "rayons": 1,
++    "stations": [
++     5
++    ]
++   },
++   {
++    "centre": [
++     1.19,
++     4.74,
++     3.17
++    ],
++    "rayons": 1,
++    "stations": [
++     6
++    ]
++   },
++   {
++    "centre": [
++     2.08,
++     -0.07,
++     -0.19
++    ],
++    "rayons": 1,
++    "stations": [
++     6
++    ]
++   },
++   {
++    "centre": [
++     -0.15,
++     4.93,
++     2.81
++    ],
++    "rayons": 1,
++    "stations": [
++     6
++    ]
++   },
++   {
++    "centre": [
++     1.31,
++     5.09,
++     3.25
++    ],
++    "rayons": 1,
++    "stations": [
++     6
++    ]
++   },
++   {
++    "centre": [
++     0.86,
++     6.04,
++     -0.09
++    ],
++    "rayons": 1,
++    "stations": [
++     6
++    ]
++   },
++   {
++    "centre": [
++     -0.41,
++     5.84,
++     2.57
++    ],
++    "rayons": 1,
++    "stations": [
++     6
++    ]
++   },
++   {
++    "centre": [
++     1.72,
++     5.76,
++     0.78
++    ],
++    "rayons": 1,
++    "stations": [
++     6
++    ]
++   },
++   {
++    "centre": [
++     3.15,
++     3.82,
++     2.03
++    ],
++    "rayons": 1,
++    "stations": [
++     7
++    ]
++   }
++  ],
++  "amas_ecartes": [
++   {
++    "azimut": 0.0,
++    "depart": [
++     1.31,
++     1.57,
++     0.9
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 3,
++    "sortie": [
++     2.86,
++     1.58,
++     1.54
++    ],
++    "surface": "paroi_plus_x"
++   },
++   {
++    "azimut": 128.6,
++    "centre_ouverture": [
++     2.14,
++     3.94,
++     0.54
++    ],
++    "depart": [
++     2.12,
++     3.92,
++     0.54
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 13,
++    "faisceau_total": 169,
++    "ouverture_m": 0.05,
++    "rayons_suspects": 3,
++    "sortie": [
++     -0.01,
++     6.6,
++     1.95
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 102.9,
++    "centre_ouverture": [
++     0.87,
++     3.94,
++     1.57
++    ],
++    "depart": [
++     1.02,
++     3.97,
++     1.57
++    ],
++    "elevation": 0.0,
++    "faisceau_sortant": 7,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 2,
++    "sortie": [
++     0.41,
++     6.63,
++     1.56
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 205.7,
++    "centre_ouverture": [
++     0.99,
++     5.33,
++     0.48
++    ],
++    "depart": [
++     0.99,
++     5.33,
++     0.48
++    ],
++    "elevation": 67.5,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 2,
++    "sortie": [
++     0.12,
++     4.9,
++     2.87
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 102.9,
++    "depart": [
++     3.09,
++     1.78,
++     0.5
++    ],
++    "elevation": -67.5,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 2,
++    "sortie": [
++     3.12,
++     2.15,
++     -0.12
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 128.6,
++    "depart": [
++     0.73,
++     5.88,
++     1.09
++    ],
++    "elevation": -22.5,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 2,
++    "sortie": [
++     0.01,
++     6.67,
++     0.61
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 334.3,
++    "centre_ouverture": [
++     0.98,
++     5.45,
++     0.62
++    ],
++    "depart": [
++     1.04,
++     5.37,
++     0.53
++    ],
++    "elevation": 45.0,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 2,
++    "sortie": [
++     2.72,
++     4.54,
++     2.42
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 128.6,
++    "centre_ouverture": [
++     1.69,
++     4.6,
++     0.56
++    ],
++    "depart": [
++     1.69,
++     4.6,
++     0.56
++    ],
++    "elevation": 45.0,
++    "faisceau_sortant": 2,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 2,
++    "sortie": [
++     0.17,
++     6.56,
++     3.03
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 154.3,
++    "centre_ouverture": [
++     2.13,
++     5.13,
++     0.85
++    ],
++    "depart": [
++     2.09,
++     5.07,
++     0.83
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 16,
++    "faisceau_total": 169,
++    "ouverture_m": 0.05,
++    "rayons_suspects": 2,
++    "sortie": [
++     -0.17,
++     6.2,
++     1.92
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 231.4,
++    "centre_ouverture": [
++     2.6,
++     4.4,
++     1.89
++    ],
++    "depart": [
++     2.5,
++     4.39,
++     1.96
++    ],
++    "elevation": -45.0,
++    "faisceau_sortant": 2,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 2,
++    "sortie": [
++     1.15,
++     2.67,
++     -0.23
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 77.1,
++    "centre_ouverture": [
++     2.6,
++     4.74,
++     1.06
++    ],
++    "depart": [
++     2.64,
++     4.71,
++     1.04
++    ],
++    "elevation": -45.0,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 2,
++    "sortie": [
++     2.62,
++     4.7,
++     1.02
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 25.7,
++    "centre_ouverture": [
++     -1.9,
++     0.22,
++     0.3
++    ],
++    "depart": [
++     -1.99,
++     0.2,
++     0.34
++    ],
++    "elevation": 67.5,
++    "faisceau_sortant": 3,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     -0.75,
++     0.8,
++     3.67
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 51.4,
++    "centre_ouverture": [
++     -1.74,
++     0.2,
++     0.77
++    ],
++    "depart": [
++     -1.79,
++     0.18,
++     0.89
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 2,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     -1.1,
++     1.05,
++     1.34
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 25.7,
++    "centre_ouverture": [
++     -0.69,
++     0.12,
++     0.26
++    ],
++    "depart": [
++     -0.6,
++     0.06,
++     0.29
++    ],
++    "elevation": -67.5,
++    "faisceau_sortant": 7,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     -0.36,
++     0.18,
++     -0.35
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 0.0,
++    "centre_ouverture": [
++     -0.4,
++     0.04,
++     0.28
++    ],
++    "depart": [
++     -0.4,
++     0.04,
++     0.28
++    ],
++    "elevation": 0.0,
++    "faisceau_sortant": 2,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     1.6,
++     0.04,
++     0.28
++    ],
++    "surface": "paroi_plus_x"
++   },
++   {
++    "azimut": 0.0,
++    "centre_ouverture": [
++     -0.2,
++     0.14,
++     1.43
++    ],
++    "depart": [
++     -0.2,
++     0.02,
++     1.43
++    ],
++    "elevation": 0.0,
++    "faisceau_sortant": 2,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     1.6,
++     0.02,
++     1.43
++    ],
++    "surface": "paroi_plus_x"
++   },
++   {
++    "azimut": 180.0,
++    "centre_ouverture": [
++     -1.49,
++     0.44,
++     0.84
++    ],
++    "depart": [
++     -1.51,
++     0.59,
++     0.89
++    ],
++    "elevation": -22.5,
++    "faisceau_sortant": 10,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     -1.88,
++     0.59,
++     0.74
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 0.0,
++    "centre_ouverture": [
++     -1.08,
++     0.54,
++     0.37
++    ],
++    "depart": [
++     -1.12,
++     0.51,
++     0.33
++    ],
++    "elevation": -45.0,
++    "faisceau_sortant": 5,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     -0.48,
++     0.51,
++     -0.31
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 0.0,
++    "centre_ouverture": [
++     -0.6,
++     0.49,
++     0.23
++    ],
++    "depart": [
++     -0.53,
++     0.39,
++     0.3
++    ],
++    "elevation": -45.0,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.1,
++     0.39,
++     -0.34
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 334.3,
++    "depart": [
++     0.25,
++     0.22,
++     0.84
++    ],
++    "elevation": -22.5,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     1.33,
++     -0.3,
++     0.34
++    ],
++    "surface": "paroi_plus_x"
++   },
++   {
++    "azimut": 154.3,
++    "centre_ouverture": [
++     0.96,
++     0.18,
++     0.29
++    ],
++    "depart": [
++     0.84,
++     0.1,
++     0.32
++    ],
++    "elevation": -67.5,
++    "faisceau_sortant": 5,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.6,
++     0.21,
++     -0.33
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 0.0,
++    "centre_ouverture": [
++     -1.33,
++     0.83,
++     0.9
++    ],
++    "depart": [
++     -1.33,
++     0.83,
++     0.9
++    ],
++    "elevation": -67.5,
++    "faisceau_sortant": 4,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     -0.83,
++     0.83,
++     -0.3
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 0.0,
++    "centre_ouverture": [
++     0.36,
++     0.54,
++     0.79
++    ],
++    "depart": [
++     0.5,
++     0.44,
++     0.85
++    ],
++    "elevation": -67.5,
++    "faisceau_sortant": 2,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     1.0,
++     0.44,
++     -0.35
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 334.3,
++    "depart": [
++     1.48,
++     0.24,
++     1.5
++    ],
++    "elevation": -45.0,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     2.18,
++     -0.1,
++     0.72
++    ],
++    "surface": "paroi_plus_x"
++   },
++   {
++    "azimut": 180.0,
++    "centre_ouverture": [
++     -0.58,
++     0.8,
++     1.39
++    ],
++    "depart": [
++     -0.62,
++     0.95,
++     1.48
++    ],
++    "elevation": -22.5,
++    "faisceau_sortant": 18,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     -1.26,
++     0.95,
++     1.22
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 25.7,
++    "centre_ouverture": [
++     -0.44,
++     0.96,
++     1.47
++    ],
++    "depart": [
++     -0.42,
++     0.91,
++     1.47
++    ],
++    "elevation": 0.0,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     3.72,
++     2.91,
++     1.47
++    ],
++    "surface": "paroi_plus_x"
++   },
++   {
++    "azimut": 180.0,
++    "depart": [
++     1.14,
++     0.58,
++     1.48
++    ],
++    "elevation": -67.5,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.42,
++     0.58,
++     -0.28
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 154.3,
++    "centre_ouverture": [
++     -0.51,
++     1.38,
++     0.89
++    ],
++    "depart": [
++     -0.46,
++     1.47,
++     0.91
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 2,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     -0.54,
++     1.51,
++     0.94
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 180.0,
++    "centre_ouverture": [
++     0.99,
++     0.71,
++     0.28
++    ],
++    "depart": [
++     0.9,
++     0.63,
++     0.32
++    ],
++    "elevation": -67.5,
++    "faisceau_sortant": 3,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.63,
++     0.63,
++     -0.32
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 231.4,
++    "centre_ouverture": [
++     0.52,
++     1.74,
++     0.27
++    ],
++    "depart": [
++     0.37,
++     1.66,
++     0.33
++    ],
++    "elevation": -67.5,
++    "faisceau_sortant": 6,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.21,
++     1.45,
++     -0.31
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 77.1,
++    "depart": [
++     -0.12,
++     2.75,
++     0.94
++    ],
++    "elevation": 45.0,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.32,
++     4.68,
++     2.92
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 282.9,
++    "centre_ouverture": [
++     -0.09,
++     2.63,
++     1.51
++    ],
++    "depart": [
++     -0.02,
++     2.61,
++     1.53
++    ],
++    "elevation": -67.5,
++    "faisceau_sortant": 5,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.15,
++     1.86,
++     -0.31
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 282.9,
++    "centre_ouverture": [
++     0.26,
++     2.23,
++     0.86
++    ],
++    "depart": [
++     0.33,
++     2.12,
++     0.91
++    ],
++    "elevation": -67.5,
++    "faisceau_sortant": 3,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.44,
++     1.64,
++     -0.29
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 205.7,
++    "centre_ouverture": [
++     0.97,
++     1.44,
++     0.29
++    ],
++    "depart": [
++     0.92,
++     1.32,
++     0.33
++    ],
++    "elevation": -67.5,
++    "faisceau_sortant": 9,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.68,
++     1.2,
++     -0.32
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 154.3,
++    "centre_ouverture": [
++     1.68,
++     0.07,
++     0.43
++    ],
++    "depart": [
++     1.82,
++     0.08,
++     0.38
++    ],
++    "elevation": -67.5,
++    "faisceau_sortant": 2,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     1.58,
++     0.2,
++     -0.26
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 231.4,
++    "depart": [
++     0.33,
++     2.62,
++     0.93
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     -2.43,
++     -0.85,
++     2.76
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 231.4,
++    "depart": [
++     0.33,
++     2.62,
++     1.53
++    ],
++    "elevation": 0.0,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     -2.41,
++     -0.82,
++     1.53
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 25.7,
++    "centre_ouverture": [
++     0.43,
++     2.47,
++     1.45
++    ],
++    "depart": [
++     0.44,
++     2.45,
++     1.52
++    ],
++    "elevation": 0.0,
++    "faisceau_sortant": 4,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     3.15,
++     3.75,
++     1.52
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 25.7,
++    "centre_ouverture": [
++     1.87,
++     0.34,
++     0.94
++    ],
++    "depart": [
++     1.89,
++     0.29,
++     0.94
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 2,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     2.31,
++     0.49,
++     1.13
++    ],
++    "surface": "paroi_plus_x"
++   },
++   {
++    "azimut": 282.9,
++    "depart": [
++     0.06,
++     3.62,
++     1.56
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.74,
++     0.65,
++     2.82
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 308.6,
++    "centre_ouverture": [
++     0.06,
++     3.62,
++     1.56
++    ],
++    "depart": [
++     0.06,
++     3.62,
++     1.56
++    ],
++    "elevation": 45.0,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     1.07,
++     2.35,
++     3.19
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 282.9,
++    "centre_ouverture": [
++     0.24,
++     3.85,
++     0.3
++    ],
++    "depart": [
++     0.26,
++     3.75,
++     0.41
++    ],
++    "elevation": -45.0,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.42,
++     3.06,
++     -0.3
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 282.9,
++    "centre_ouverture": [
++     1.2,
++     2.3,
++     0.87
++    ],
++    "depart": [
++     1.2,
++     2.21,
++     0.91
++    ],
++    "elevation": -67.5,
++    "faisceau_sortant": 2,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     1.31,
++     1.73,
++     -0.29
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 205.7,
++    "centre_ouverture": [
++     1.6,
++     1.42,
++     0.41
++    ],
++    "depart": [
++     1.72,
++     1.36,
++     0.38
++    ],
++    "elevation": -67.5,
++    "faisceau_sortant": 6,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     1.48,
++     1.24,
++     -0.27
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 205.7,
++    "depart": [
++     0.26,
++     4.21,
++     0.42
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     -0.07,
++     4.05,
++     0.57
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 282.9,
++    "depart": [
++     0.19,
++     4.87,
++     1.58
++    ],
++    "elevation": -45.0,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.6,
++     3.08,
++     -0.26
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 154.3,
++    "centre_ouverture": [
++     0.29,
++     4.7,
++     1.59
++    ],
++    "depart": [
++     0.29,
++     4.7,
++     1.57
++    ],
++    "elevation": 0.0,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     -0.25,
++     4.96,
++     1.57
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 102.9,
++    "centre_ouverture": [
++     1.2,
++     3.14,
++     0.4
++    ],
++    "depart": [
++     1.21,
++     3.15,
++     0.39
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 11,
++    "faisceau_total": 169,
++    "ouverture_m": 0.025,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.41,
++     6.67,
++     1.88
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 77.1,
++    "depart": [
++     0.03,
++     5.7,
++     1.01
++    ],
++    "elevation": 0.0,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.25,
++     6.68,
++     1.01
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 51.4,
++    "centre_ouverture": [
++     0.21,
++     5.42,
++     0.96
++    ],
++    "depart": [
++     0.23,
++     5.36,
++     1.0
++    ],
++    "elevation": 45.0,
++    "faisceau_sortant": 3,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     1.02,
++     6.35,
++     2.27
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 154.3,
++    "centre_ouverture": [
++     0.64,
++     4.39,
++     0.36
++    ],
++    "depart": [
++     0.72,
++     4.49,
++     0.43
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 2,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     -0.27,
++     4.97,
++     0.89
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 231.4,
++    "centre_ouverture": [
++     1.28,
++     3.57,
++     0.41
++    ],
++    "depart": [
++     1.22,
++     3.62,
++     0.41
++    ],
++    "elevation": -45.0,
++    "faisceau_sortant": 2,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.78,
++     3.07,
++     -0.29
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 282.9,
++    "centre_ouverture": [
++     2.02,
++     2.44,
++     1.54
++    ],
++    "depart": [
++     1.92,
++     2.41,
++     1.54
++    ],
++    "elevation": -67.5,
++    "faisceau_sortant": 4,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     2.08,
++     1.7,
++     -0.22
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 102.9,
++    "centre_ouverture": [
++     0.81,
++     4.77,
++     0.46
++    ],
++    "depart": [
++     0.82,
++     4.78,
++     0.45
++    ],
++    "elevation": 45.0,
++    "faisceau_sortant": 10,
++    "faisceau_total": 169,
++    "ouverture_m": 0.025,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.4,
++     6.64,
++     2.36
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 257.1,
++    "depart": [
++     0.92,
++     4.6,
++     1.59
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.04,
++     0.73,
++     3.24
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 102.9,
++    "centre_ouverture": [
++     0.67,
++     5.4,
++     0.47
++    ],
++    "depart": [
++     0.73,
++     5.41,
++     0.47
++    ],
++    "elevation": 67.5,
++    "faisceau_sortant": 12,
++    "faisceau_total": 169,
++    "ouverture_m": 0.025,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.46,
++     6.57,
++     3.33
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 102.9,
++    "centre_ouverture": [
++     0.67,
++     5.37,
++     1.05
++    ],
++    "depart": [
++     0.73,
++     5.41,
++     1.02
++    ],
++    "elevation": 45.0,
++    "faisceau_sortant": 10,
++    "faisceau_total": 169,
++    "ouverture_m": 0.025,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.46,
++     6.58,
++     2.22
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 334.3,
++    "depart": [
++     1.92,
++     3.33,
++     0.98
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     3.5,
++     2.57,
++     1.71
++    ],
++    "surface": "paroi_plus_x"
++   },
++   {
++    "azimut": 128.6,
++    "centre_ouverture": [
++     0.24,
++     6.39,
++     0.45
++    ],
++    "depart": [
++     0.31,
++     6.47,
++     0.5
++    ],
++    "elevation": -22.5,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.08,
++     6.76,
++     0.35
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 102.9,
++    "centre_ouverture": [
++     0.29,
++     6.39,
++     0.38
++    ],
++    "depart": [
++     0.37,
++     6.36,
++     0.5
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 5,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.31,
++     6.63,
++     0.61
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 25.7,
++    "depart": [
++     0.58,
++     6.02,
++     0.49
++    ],
++    "elevation": -22.5,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     1.08,
++     6.26,
++     0.26
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 334.3,
++    "centre_ouverture": [
++     0.63,
++     6.02,
++     0.37
++    ],
++    "depart": [
++     0.58,
++     6.02,
++     0.49
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     2.16,
++     5.26,
++     1.22
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 102.9,
++    "centre_ouverture": [
++     0.63,
++     5.65,
++     1.56
++    ],
++    "depart": [
++     0.78,
++     5.68,
++     1.64
++    ],
++    "elevation": 0.0,
++    "faisceau_sortant": 4,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.58,
++     6.55,
++     1.64
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 128.6,
++    "centre_ouverture": [
++     0.88,
++     5.52,
++     0.47
++    ],
++    "depart": [
++     0.88,
++     5.5,
++     0.48
++    ],
++    "elevation": 67.5,
++    "faisceau_sortant": 14,
++    "faisceau_total": 169,
++    "ouverture_m": 0.05,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.22,
++     6.34,
++     3.07
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 128.6,
++    "centre_ouverture": [
++     0.9,
++     5.47,
++     1.07
++    ],
++    "depart": [
++     0.88,
++     5.5,
++     1.03
++    ],
++    "elevation": 45.0,
++    "faisceau_sortant": 18,
++    "faisceau_total": 169,
++    "ouverture_m": 0.05,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.0,
++     6.61,
++     2.45
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 308.6,
++    "depart": [
++     2.11,
++     3.44,
++     1.6
++    ],
++    "elevation": -22.5,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     3.2,
++     2.07,
++     0.87
++    ],
++    "surface": "paroi_plus_x"
++   },
++   {
++    "azimut": 205.7,
++    "centre_ouverture": [
++     2.75,
++     2.18,
++     0.55
++    ],
++    "depart": [
++     2.82,
++     2.24,
++     0.46
++    ],
++    "elevation": -45.0,
++    "faisceau_sortant": 4,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     2.19,
++     1.93,
++     -0.24
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 51.4,
++    "depart": [
++     3.03,
++     1.89,
++     0.49
++    ],
++    "elevation": 0.0,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     3.65,
++     2.67,
++     0.49
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 128.6,
++    "depart": [
++     0.51,
++     6.22,
++     1.09
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.05,
++     6.79,
++     1.4
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 257.1,
++    "centre_ouverture": [
++     0.63,
++     6.06,
++     1.1
++    ],
++    "depart": [
++     0.62,
++     6.05,
++     1.09
++    ],
++    "elevation": 67.5,
++    "faisceau_sortant": 8,
++    "faisceau_total": 169,
++    "ouverture_m": 0.025,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.44,
++     5.26,
++     3.03
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 154.3,
++    "centre_ouverture": [
++     0.77,
++     5.65,
++     1.75
++    ],
++    "depart": [
++     0.83,
++     5.71,
++     1.68
++    ],
++    "elevation": -22.5,
++    "faisceau_sortant": 6,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     -0.17,
++     6.19,
++     1.23
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 128.6,
++    "centre_ouverture": [
++     1.06,
++     5.39,
++     0.53
++    ],
++    "depart": [
++     1.04,
++     5.37,
++     0.53
++    ],
++    "elevation": 45.0,
++    "faisceau_sortant": 2,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     -0.01,
++     6.7,
++     2.22
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 128.6,
++    "centre_ouverture": [
++     1.23,
++     5.03,
++     0.5
++    ],
++    "depart": [
++     1.26,
++     5.03,
++     0.52
++    ],
++    "elevation": 45.0,
++    "faisceau_sortant": 18,
++    "faisceau_total": 169,
++    "ouverture_m": 0.05,
++    "rayons_suspects": 1,
++    "sortie": [
++     -0.02,
++     6.63,
++     2.57
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 102.9,
++    "centre_ouverture": [
++     2.25,
++     3.7,
++     1.04
++    ],
++    "depart": [
++     2.1,
++     3.67,
++     1.04
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     1.61,
++     5.83,
++     1.96
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 308.6,
++    "centre_ouverture": [
++     2.74,
++     2.66,
++     1.6
++    ],
++    "depart": [
++     2.74,
++     2.66,
++     1.62
++    ],
++    "elevation": 0.0,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     3.24,
++     2.03,
++     1.62
++    ],
++    "surface": "paroi_plus_x"
++   },
++   {
++    "azimut": 282.9,
++    "centre_ouverture": [
++     1.02,
++     5.81,
++     0.58
++    ],
++    "depart": [
++     0.95,
++     5.78,
++     0.58
++    ],
++    "elevation": 67.5,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     1.19,
++     4.74,
++     3.17
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 51.4,
++    "depart": [
++     1.91,
++     4.26,
++     1.1
++    ],
++    "elevation": -22.5,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     2.42,
++     4.91,
++     0.76
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 257.1,
++    "depart": [
++     2.75,
++     2.9,
++     1.07
++    ],
++    "elevation": -22.5,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     2.08,
++     -0.07,
++     -0.19
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 51.4,
++    "depart": [
++     3.24,
++     2.13,
++     1.14
++    ],
++    "elevation": -22.5,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     3.64,
++     2.63,
++     0.87
++    ],
++    "surface": "paroi_plus_x"
++   },
++   {
++    "azimut": 334.3,
++    "centre_ouverture": [
++     0.39,
++     7.07,
++     0.58
++    ],
++    "depart": [
++     0.4,
++     6.93,
++     0.65
++    ],
++    "elevation": -45.0,
++    "faisceau_sortant": 5,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.4,
++     6.93,
++     0.65
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 231.4,
++    "centre_ouverture": [
++     0.82,
++     6.17,
++     0.62
++    ],
++    "depart": [
++     0.86,
++     6.2,
++     0.64
++    ],
++    "elevation": 67.5,
++    "faisceau_sortant": 9,
++    "faisceau_total": 169,
++    "ouverture_m": 0.025,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.26,
++     5.45,
++     2.95
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 231.4,
++    "centre_ouverture": [
++     0.86,
++     6.2,
++     1.19
++    ],
++    "depart": [
++     0.86,
++     6.2,
++     1.19
++    ],
++    "elevation": 45.0,
++    "faisceau_sortant": 6,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     -0.15,
++     4.93,
++     2.81
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 205.7,
++    "centre_ouverture": [
++     0.93,
++     6.02,
++     0.62
++    ],
++    "depart": [
++     0.97,
++     6.03,
++     0.63
++    ],
++    "elevation": 67.5,
++    "faisceau_sortant": 13,
++    "faisceau_total": 169,
++    "ouverture_m": 0.025,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.1,
++     5.61,
++     2.94
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 308.6,
++    "depart": [
++     0.97,
++     6.03,
++     1.18
++    ],
++    "elevation": 0.0,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     3.65,
++     2.67,
++     1.18
++    ],
++    "surface": "paroi_plus_x"
++   },
++   {
++    "azimut": 180.0,
++    "centre_ouverture": [
++     0.94,
++     6.06,
++     1.11
++    ],
++    "depart": [
++     0.97,
++     6.03,
++     1.18
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 2,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     -0.24,
++     6.03,
++     1.68
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 282.9,
++    "centre_ouverture": [
++     1.13,
++     5.78,
++     1.82
++    ],
++    "depart": [
++     1.18,
++     5.69,
++     1.78
++    ],
++    "elevation": 67.5,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     1.31,
++     5.09,
++     3.25
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 205.7,
++    "depart": [
++     1.28,
++     5.52,
++     1.77
++    ],
++    "elevation": 45.0,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.26,
++     5.03,
++     2.9
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 102.9,
++    "depart": [
++     2.45,
++     3.65,
++     0.58
++    ],
++    "elevation": 45.0,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     2.06,
++     5.38,
++     2.35
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 102.9,
++    "centre_ouverture": [
++     2.65,
++     3.36,
++     0.46
++    ],
++    "depart": [
++     2.66,
++     3.31,
++     0.58
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     2.23,
++     5.21,
++     1.38
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 282.9,
++    "centre_ouverture": [
++     0.78,
++     6.75,
++     0.76
++    ],
++    "depart": [
++     0.69,
++     6.8,
++     0.69
++    ],
++    "elevation": -45.0,
++    "faisceau_sortant": 7,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     0.86,
++     6.04,
++     -0.09
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 102.9,
++    "depart": [
++     1.53,
++     5.43,
++     1.82
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     1.38,
++     6.07,
++     2.08
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 257.1,
++    "depart": [
++     1.63,
++     5.26,
++     1.81
++    ],
++    "elevation": -45.0,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     1.18,
++     3.27,
++     -0.24
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 231.4,
++    "centre_ouverture": [
++     2.01,
++     4.74,
++     1.73
++    ],
++    "depart": [
++     1.95,
++     4.75,
++     1.8
++    ],
++    "elevation": -22.5,
++    "faisceau_sortant": 2,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     -0.65,
++     1.5,
++     0.08
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 308.6,
++    "centre_ouverture": [
++     1.97,
++     4.77,
++     1.9
++    ],
++    "depart": [
++     1.95,
++     4.75,
++     1.8
++    ],
++    "elevation": 0.0,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     3.63,
++     2.64,
++     1.8
++    ],
++    "surface": "paroi_plus_x"
++   },
++   {
++    "azimut": 102.9,
++    "centre_ouverture": [
++     2.45,
++     3.88,
++     0.65
++    ],
++    "depart": [
++     2.47,
++     3.9,
++     0.63
++    ],
++    "elevation": 45.0,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     2.16,
++     5.28,
++     2.05
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 180.0,
++    "centre_ouverture": [
++     1.41,
++     5.87,
++     0.71
++    ],
++    "depart": [
++     1.43,
++     5.84,
++     0.73
++    ],
++    "elevation": 45.0,
++    "faisceau_sortant": 16,
++    "faisceau_total": 169,
++    "ouverture_m": 0.05,
++    "rayons_suspects": 1,
++    "sortie": [
++     -0.41,
++     5.84,
++     2.57
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 77.1,
++    "depart": [
++     2.45,
++     4.13,
++     1.24
++    ],
++    "elevation": -22.5,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     2.6,
++     4.76,
++     0.98
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 51.4,
++    "depart": [
++     2.45,
++     4.13,
++     1.84
++    ],
++    "elevation": -45.0,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     2.72,
++     4.46,
++     1.42
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 257.1,
++    "centre_ouverture": [
++     2.69,
++     3.81,
++     1.75
++    ],
++    "depart": [
++     2.66,
++     3.78,
++     1.84
++    ],
++    "elevation": -22.5,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     1.82,
++     0.09,
++     0.27
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 102.9,
++    "depart": [
++     2.87,
++     3.44,
++     1.83
++    ],
++    "elevation": 0.0,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     2.55,
++     4.8,
++     1.83
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 25.7,
++    "centre_ouverture": [
++     3.06,
++     3.12,
++     1.2
++    ],
++    "depart": [
++     3.07,
++     3.1,
++     1.22
++    ],
++    "elevation": 0.0,
++    "faisceau_sortant": 4,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     3.43,
++     3.27,
++     1.22
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 102.9,
++    "centre_ouverture": [
++     1.79,
++     5.36,
++     0.78
++    ],
++    "depart": [
++     1.81,
++     5.37,
++     0.78
++    ],
++    "elevation": 0.0,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     1.72,
++     5.76,
++     0.78
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 257.1,
++    "centre_ouverture": [
++     2.23,
++     4.89,
++     1.27
++    ],
++    "depart": [
++     2.12,
++     4.86,
++     1.32
++    ],
++    "elevation": -45.0,
++    "faisceau_sortant": 4,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     1.77,
++     3.34,
++     -0.24
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 0.0,
++    "centre_ouverture": [
++     2.43,
++     4.34,
++     1.33
++    ],
++    "depart": [
++     2.43,
++     4.34,
++     1.31
++    ],
++    "elevation": 0.0,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     2.83,
++     4.34,
++     1.31
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 102.9,
++    "centre_ouverture": [
++     2.41,
++     4.33,
++     1.98
++    ],
++    "depart": [
++     2.43,
++     4.34,
++     1.91
++    ],
++    "elevation": 0.0,
++    "faisceau_sortant": 2,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     2.23,
++     5.22,
++     1.91
++    ],
++    "surface": "paroi_moins_x"
++   },
++   {
++    "azimut": 128.6,
++    "depart": [
++     2.19,
++     4.9,
++     1.98
++    ],
++    "elevation": 45.0,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     1.22,
++     6.12,
++     3.53
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 25.7,
++    "centre_ouverture": [
++     2.94,
++     3.72,
++     1.43
++    ],
++    "depart": [
++     2.91,
++     3.7,
++     1.34
++    ],
++    "elevation": -22.5,
++    "faisceau_sortant": 2,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     3.16,
++     3.82,
++     1.23
++    ],
++    "surface": "plancher"
++   },
++   {
++    "azimut": 0.0,
++    "centre_ouverture": [
++     2.62,
++     4.33,
++     0.89
++    ],
++    "depart": [
++     2.61,
++     4.45,
++     0.91
++    ],
++    "elevation": 22.5,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     2.8,
++     4.45,
++     0.99
++    ],
++    "surface": "fond"
++   },
++   {
++    "azimut": 128.6,
++    "centre_ouverture": [
++     2.9,
++     3.81,
++     0.98
++    ],
++    "depart": [
++     2.92,
++     3.94,
++     0.89
++    ],
++    "elevation": 45.0,
++    "faisceau_sortant": 2,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     1.25,
++     6.04,
++     3.58
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 102.9,
++    "centre_ouverture": [
++     3.24,
++     3.43,
++     2.0
++    ],
++    "depart": [
++     3.24,
++     3.43,
++     2.03
++    ],
++    "elevation": 0.0,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     3.15,
++     3.82,
++     2.03
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 51.4,
++    "depart": [
++     3.34,
++     3.26,
++     2.02
++    ],
++    "elevation": -45.0,
++    "faisceau_sortant": 0,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     3.43,
++     3.37,
++     1.88
++    ],
++    "surface": "toit"
++   },
++   {
++    "azimut": 77.1,
++    "centre_ouverture": [
++     2.58,
++     4.81,
++     0.99
++    ],
++    "depart": [
++     2.58,
++     4.81,
++     1.04
++    ],
++    "elevation": 0.0,
++    "faisceau_sortant": 1,
++    "faisceau_total": 169,
++    "ouverture_m": 0.0,
++    "rayons_suspects": 1,
++    "sortie": [
++     2.58,
++     4.81,
++     1.04
++    ],
++    "surface": "fond"
++   }
++  ],
++  "carte_du_fond": {
++   "cases": 70,
++   "cases_ouvertes": 0,
++   "lignes": [
++    [
++     2.8,
++     "......."
++    ],
++    [
++     2.55,
++     "......."
++    ],
++    [
++     2.3,
++     "......."
++    ],
++    [
++     2.05,
++     "......."
++    ],
++    [
++     1.8,
++     "......."
++    ],
++    [
++     1.55,
++     "......."
++    ],
++    [
++     1.3,
++     "......."
++    ],
++    [
++     1.05,
++     "......."
++    ],
++    [
++     0.8,
++     "......."
++    ],
++    [
++     0.55,
++     "......."
++    ]
++   ],
++   "x0": 2.28,
++   "x1": 3.96
++  },
++  "fautes": [
++   {
++    "azimut": 25.7,
++    "elevation": 67.5,
++    "impacts": 5,
++    "sortie": [
++     -0.75,
++     0.8,
++     3.67
++    ],
++    "station": 1,
++    "u": 1.0,
++    "x": -1.99,
++    "y": 0.2,
++    "z": 0.34
++   },
++   {
++    "azimut": 51.4,
++    "elevation": 22.5,
++    "impacts": 7,
++    "sortie": [
++     -1.1,
++     1.05,
++     1.34
++    ],
++    "station": 1,
++    "u": 1.0,
++    "x": -1.79,
++    "y": 0.18,
++    "z": 0.89
++   },
++   {
++    "azimut": 25.7,
++    "elevation": -67.5,
++    "impacts": 3,
++    "sortie": [
++     -0.36,
++     0.18,
++     -0.35
++    ],
++    "station": 1,
++    "u": 1.0,
++    "x": -0.6,
++    "y": 0.06,
++    "z": 0.29
++   },
++   {
++    "azimut": 0.0,
++    "elevation": 0.0,
++    "impacts": 5,
++    "sortie": [
++     1.6,
++     0.04,
++     0.28
++    ],
++    "station": 1,
++    "u": 1.0,
++    "x": -0.4,
++    "y": 0.04,
++    "z": 0.28
++   },
++   {
++    "azimut": 0.0,
++    "elevation": 0.0,
++    "impacts": 3,
++    "sortie": [
++     1.6,
++     0.02,
++     1.43
++    ],
++    "station": 1,
++    "u": 1.0,
++    "x": -0.2,
++    "y": 0.02,
++    "z": 1.43
++   },
++   {
++    "azimut": 180.0,
++    "elevation": -22.5,
++    "impacts": 3,
++    "sortie": [
++     -1.88,
++     0.59,
++     0.74
++    ],
++    "station": 1,
++    "u": 1.25,
++    "x": -1.51,
++    "y": 0.59,
++    "z": 0.89
++   },
++   {
++    "azimut": 0.0,
++    "elevation": -45.0,
++    "impacts": 3,
++    "sortie": [
++     -0.48,
++     0.51,
++     -0.31
++    ],
++    "station": 1,
++    "u": 1.25,
++    "x": -1.12,
++    "y": 0.51,
++    "z": 0.33
++   },
++   {
++    "azimut": 0.0,
++    "elevation": -45.0,
++    "impacts": 3,
++    "sortie": [
++     0.1,
++     0.39,
++     -0.34
++    ],
++    "station": 1,
++    "u": 1.25,
++    "x": -0.53,
++    "y": 0.39,
++    "z": 0.3
++   },
++   {
++    "azimut": 334.3,
++    "elevation": -22.5,
++    "impacts": 5,
++    "sortie": [
++     1.33,
++     -0.3,
++     0.34
++    ],
++    "station": 1,
++    "u": 1.25,
++    "x": 0.25,
++    "y": 0.22,
++    "z": 0.84
++   },
++   {
++    "azimut": 154.3,
++    "elevation": -67.5,
++    "impacts": 3,
++    "sortie": [
++     0.6,
++     0.21,
++     -0.33
++    ],
++    "station": 1,
++    "u": 1.25,
++    "x": 0.84,
++    "y": 0.1,
++    "z": 0.32
++   },
++   {
++    "azimut": 0.0,
++    "elevation": -67.5,
++    "impacts": 3,
++    "sortie": [
++     -0.83,
++     0.83,
++     -0.3
++    ],
++    "station": 2,
++    "u": 1.5,
++    "x": -1.33,
++    "y": 0.83,
++    "z": 0.9
++   },
++   {
++    "azimut": 0.0,
++    "elevation": -67.5,
++    "impacts": 3,
++    "sortie": [
++     1.0,
++     0.44,
++     -0.35
++    ],
++    "station": 2,
++    "u": 1.5,
++    "x": 0.5,
++    "y": 0.44,
++    "z": 0.85
++   },
++   {
++    "azimut": 334.3,
++    "elevation": -45.0,
++    "impacts": 3,
++    "sortie": [
++     2.18,
++     -0.1,
++     0.72
++    ],
++    "station": 2,
++    "u": 1.5,
++    "x": 1.48,
++    "y": 0.24,
++    "z": 1.5
++   },
++   {
++    "azimut": 180.0,
++    "elevation": -22.5,
++    "impacts": 3,
++    "sortie": [
++     -1.26,
++     0.95,
++     1.22
++    ],
++    "station": 2,
++    "u": 1.75,
++    "x": -0.62,
++    "y": 0.95,
++    "z": 1.48
++   },
++   {
++    "azimut": 25.7,
++    "elevation": 0.0,
++    "impacts": 3,
++    "sortie": [
++     3.72,
++     2.91,
++     1.47
++    ],
++    "station": 2,
++    "u": 1.75,
++    "x": -0.42,
++    "y": 0.91,
++    "z": 1.47
++   },
++   {
++    "azimut": 180.0,
++    "elevation": -67.5,
++    "impacts": 3,
++    "sortie": [
++     0.42,
++     0.58,
++     -0.28
++    ],
++    "station": 2,
++    "u": 1.75,
++    "x": 1.14,
++    "y": 0.58,
++    "z": 1.48
++   },
++   {
++    "azimut": 154.3,
++    "elevation": 22.5,
++    "impacts": 3,
++    "sortie": [
++     -0.54,
++     1.51,
++     0.94
++    ],
++    "station": 2,
++    "u": 2.0,
++    "x": -0.46,
++    "y": 1.47,
++    "z": 0.91
++   },
++   {
++    "azimut": 180.0,
++    "elevation": -67.5,
++    "impacts": 3,
++    "sortie": [
++     0.63,
++     0.63,
++     -0.32
++    ],
++    "station": 2,
++    "u": 2.0,
++    "x": 0.9,
++    "y": 0.63,
++    "z": 0.32
++   },
++   {
++    "azimut": 231.4,
++    "elevation": -67.5,
++    "impacts": 3,
++    "sortie": [
++     0.21,
++     1.45,
++     -0.31
++    ],
++    "station": 2,
++    "u": 2.5,
++    "x": 0.37,
++    "y": 1.66,
++    "z": 0.33
++   },
++   {
++    "azimut": 77.1,
++    "elevation": 45.0,
++    "impacts": 3,
++    "sortie": [
++     0.32,
++     4.68,
++     2.92
++    ],
++    "station": 3,
++    "u": 2.75,
++    "x": -0.12,
++    "y": 2.75,
++    "z": 0.94
++   },
++   {
++    "azimut": 282.9,
++    "elevation": -67.5,
++    "impacts": 3,
++    "sortie": [
++     0.15,
++     1.86,
++     -0.31
++    ],
++    "station": 3,
++    "u": 2.75,
++    "x": -0.02,
++    "y": 2.61,
++    "z": 1.53
++   },
++   {
++    "azimut": 282.9,
++    "elevation": -67.5,
++    "impacts": 3,
++    "sortie": [
++     0.44,
++     1.64,
++     -0.29
++    ],
++    "station": 3,
++    "u": 2.75,
++    "x": 0.33,
++    "y": 2.12,
++    "z": 0.91
++   },
++   {
++    "azimut": 205.7,
++    "elevation": -67.5,
++    "impacts": 3,
++    "sortie": [
++     0.68,
++     1.2,
++     -0.32
++    ],
++    "station": 3,
++    "u": 2.75,
++    "x": 0.92,
++    "y": 1.32,
++    "z": 0.33
++   },
++   {
++    "azimut": 154.3,
++    "elevation": -67.5,
++    "impacts": 3,
++    "sortie": [
++     1.58,
++     0.2,
++     -0.26
++    ],
++    "station": 3,
++    "u": 2.75,
++    "x": 1.82,
++    "y": 0.08,
++    "z": 0.38
++   },
++   {
++    "azimut": 231.4,
++    "elevation": 22.5,
++    "impacts": 3,
++    "sortie": [
++     -2.43,
++     -0.85,
++     2.76
++    ],
++    "station": 3,
++    "u": 3.0,
++    "x": 0.33,
++    "y": 2.62,
++    "z": 0.93
++   },
++   {
++    "azimut": 231.4,
++    "elevation": 0.0,
++    "impacts": 3,
++    "sortie": [
++     -2.41,
++     -0.82,
++     1.53
++    ],
++    "station": 3,
++    "u": 3.0,
++    "x": 0.33,
++    "y": 2.62,
++    "z": 1.53
++   },
++   {
++    "azimut": 25.7,
++    "elevation": 0.0,
++    "impacts": 3,
++    "sortie": [
++     3.15,
++     3.75,
++     1.52
++    ],
++    "station": 3,
++    "u": 3.0,
++    "x": 0.44,
++    "y": 2.45,
++    "z": 1.52
++   },
++   {
++    "azimut": 25.7,
++    "elevation": 22.5,
++    "impacts": 5,
++    "sortie": [
++     2.31,
++     0.49,
++     1.13
++    ],
++    "station": 3,
++    "u": 3.0,
++    "x": 1.89,
++    "y": 0.29,
++    "z": 0.94
++   },
++   {
++    "azimut": 282.9,
++    "elevation": 22.5,
++    "impacts": 3,
++    "sortie": [
++     0.74,
++     0.65,
++     2.82
++    ],
++    "station": 3,
++    "u": 3.25,
++    "x": 0.06,
++    "y": 3.62,
++    "z": 1.56
++   },
++   {
++    "azimut": 308.6,
++    "elevation": 45.0,
++    "impacts": 3,
++    "sortie": [
++     1.07,
++     2.35,
++     3.19
++    ],
++    "station": 3,
++    "u": 3.25,
++    "x": 0.06,
++    "y": 3.62,
++    "z": 1.56
++   },
++   {
++    "azimut": 0.0,
++    "elevation": 22.5,
++    "impacts": 5,
++    "sortie": [
++     2.88,
++     1.57,
++     1.55
++    ],
++    "station": 3,
++    "u": 3.25,
++    "x": 1.31,
++    "y": 1.57,
++    "z": 0.9
++   },
++   {
++    "azimut": 282.9,
++    "elevation": -45.0,
++    "impacts": 5,
++    "sortie": [
++     0.42,
++     3.06,
++     -0.3
++    ],
++    "station": 4,
++    "u": 3.5,
++    "x": 0.26,
++    "y": 3.75,
++    "z": 0.41
++   },
++   {
++    "azimut": 282.9,
++    "elevation": -67.5,
++    "impacts": 3,
++    "sortie": [
++     1.31,
++     1.73,
++     -0.29
++    ],
++    "station": 4,
++    "u": 3.5,
++    "x": 1.2,
++    "y": 2.21,
++    "z": 0.91
++   },
++   {
++    "azimut": 205.7,
++    "elevation": -67.5,
++    "impacts": 3,
++    "sortie": [
++     1.48,
++     1.24,
++     -0.27
++    ],
++    "station": 4,
++    "u": 3.5,
++    "x": 1.72,
++    "y": 1.36,
++    "z": 0.38
++   },
++   {
++    "azimut": 205.7,
++    "elevation": 22.5,
++    "impacts": 5,
++    "sortie": [
++     -0.07,
++     4.05,
++     0.57
++    ],
++    "station": 4,
++    "u": 3.75,
++    "x": 0.26,
++    "y": 4.21,
++    "z": 0.42
++   },
++   {
++    "azimut": 282.9,
++    "elevation": -45.0,
++    "impacts": 3,
++    "sortie": [
++     0.6,
++     3.08,
++     -0.26
++    ],
++    "station": 4,
++    "u": 4.0,
++    "x": 0.19,
++    "y": 4.87,
++    "z": 1.58
++   },
++   {
++    "azimut": 154.3,
++    "elevation": 0.0,
++    "impacts": 3,
++    "sortie": [
++     -0.25,
++     4.96,
++     1.57
++    ],
++    "station": 4,
++    "u": 4.0,
++    "x": 0.29,
++    "y": 4.7,
++    "z": 1.57
++   },
++   {
++    "azimut": 102.9,
++    "elevation": 22.5,
++    "impacts": 5,
++    "sortie": [
++     0.41,
++     6.67,
++     1.88
++    ],
++    "station": 4,
++    "u": 4.0,
++    "x": 1.21,
++    "y": 3.15,
++    "z": 0.39
++   },
++   {
++    "azimut": 102.9,
++    "elevation": 0.0,
++    "impacts": 5,
++    "sortie": [
++     0.41,
++     6.66,
++     1.54
++    ],
++    "station": 4,
++    "u": 4.0,
++    "x": 1.21,
++    "y": 3.15,
++    "z": 1.54
++   },
++   {
++    "azimut": 334.3,
++    "elevation": 0.0,
++    "impacts": 3,
++    "sortie": [
++     2.9,
++     1.6,
++     1.52
++    ],
++    "station": 4,
++    "u": 4.0,
++    "x": 1.82,
++    "y": 2.12,
++    "z": 1.52
++   },
++   {
++    "azimut": 77.1,
++    "elevation": 0.0,
++    "impacts": 3,
++    "sortie": [
++     0.25,
++     6.68,
++     1.01
++    ],
++    "station": 4,
++    "u": 4.25,
++    "x": 0.03,
++    "y": 5.7,
++    "z": 1.01
++   },
++   {
++    "azimut": 51.4,
++    "elevation": 45.0,
++    "impacts": 3,
++    "sortie": [
++     1.02,
++     6.35,
++     2.27
++    ],
++    "station": 4,
++    "u": 4.25,
++    "x": 0.23,
++    "y": 5.36,
++    "z": 1.0
++   },
++   {
++    "azimut": 154.3,
++    "elevation": 22.5,
++    "impacts": 3,
++    "sortie": [
++     -0.27,
++     4.97,
++     0.89
++    ],
++    "station": 4,
++    "u": 4.25,
++    "x": 0.72,
++    "y": 4.49,
++    "z": 0.43
++   },
++   {
++    "azimut": 102.9,
++    "elevation": 0.0,
++    "impacts": 5,
++    "sortie": [
++     0.42,
++     6.6,
++     1.57
++    ],
++    "station": 4,
++    "u": 4.25,
++    "x": 1.02,
++    "y": 3.97,
++    "z": 1.57
++   },
++   {
++    "azimut": 231.4,
++    "elevation": -45.0,
++    "impacts": 3,
++    "sortie": [
++     0.78,
++     3.07,
++     -0.29
++    ],
++    "station": 4,
++    "u": 4.25,
++    "x": 1.22,
++    "y": 3.62,
++    "z": 0.41
++   },
++   {
++    "azimut": 282.9,
++    "elevation": -67.5,
++    "impacts": 3,
++    "sortie": [
++     2.08,
++     1.7,
++     -0.22
++    ],
++    "station": 4,
++    "u": 4.25,
++    "x": 1.92,
++    "y": 2.41,
++    "z": 1.54
++   },
++   {
++    "azimut": 257.1,
++    "elevation": 67.5,
++    "impacts": 5,
++    "sortie": [
++     0.16,
++     4.9,
++     2.86
++    ],
++    "station": 4,
++    "u": 4.5,
++    "x": 0.33,
++    "y": 5.64,
++    "z": 1.01
++   },
++   {
++    "azimut": 102.9,
++    "elevation": 45.0,
++    "impacts": 3,
++    "sortie": [
++     0.4,
++     6.64,
++     2.36
++    ],
++    "station": 4,
++    "u": 4.5,
++    "x": 0.82,
++    "y": 4.78,
++    "z": 0.45
++   },
++   {
++    "azimut": 257.1,
++    "elevation": 22.5,
++    "impacts": 3,
++    "sortie": [
++     0.04,
++     0.73,
++     3.24
++    ],
++    "station": 4,
++    "u": 4.5,
++    "x": 0.92,
++    "y": 4.6,
++    "z": 1.59
++   },
++   {
++    "azimut": 334.3,
++    "elevation": -22.5,
++    "impacts": 5,
++    "sortie": [
++     2.79,
++     1.58,
++     1.54
++    ],
++    "station": 4,
++    "u": 4.5,
++    "x": 2.62,
++    "y": 1.66,
++    "z": 1.61
++   },
++   {
++    "azimut": 102.9,
++    "elevation": 67.5,
++    "impacts": 3,
++    "sortie": [
++     0.46,
++     6.57,
++     3.33
++    ],
++    "station": 5,
++    "u": 4.75,
++    "x": 0.73,
++    "y": 5.41,
++    "z": 0.47
++   },
++   {
++    "azimut": 102.9,
++    "elevation": 45.0,
++    "impacts": 3,
++    "sortie": [
++     0.46,
++     6.58,
++     2.22
++    ],
++    "station": 5,
++    "u": 4.75,
++    "x": 0.73,
++    "y": 5.41,
++    "z": 1.02
++   },
++   {
++    "azimut": 334.3,
++    "elevation": 22.5,
++    "impacts": 5,
++    "sortie": [
++     3.5,
++     2.57,
++     1.71
++    ],
++    "station": 5,
++    "u": 4.75,
++    "x": 1.92,
++    "y": 3.33,
++    "z": 0.98
++   },
++   {
++    "azimut": 128.6,
++    "elevation": -22.5,
++    "impacts": 3,
++    "sortie": [
++     0.08,
++     6.76,
++     0.35
++    ],
++    "station": 5,
++    "u": 5.0,
++    "x": 0.31,
++    "y": 6.47,
++    "z": 0.5
++   },
++   {
++    "azimut": 102.9,
++    "elevation": 22.5,
++    "impacts": 3,
++    "sortie": [
++     0.31,
++     6.63,
++     0.61
++    ],
++    "station": 5,
++    "u": 5.0,
++    "x": 0.37,
++    "y": 6.36,
++    "z": 0.5
++   },
++   {
++    "azimut": 25.7,
++    "elevation": -22.5,
++    "impacts": 3,
++    "sortie": [
++     1.08,
++     6.26,
++     0.26
++    ],
++    "station": 5,
++    "u": 5.0,
++    "x": 0.58,
++    "y": 6.02,
++    "z": 0.49
++   },
++   {
++    "azimut": 334.3,
++    "elevation": 22.5,
++    "impacts": 3,
++    "sortie": [
++     2.16,
++     5.26,
++     1.22
++    ],
++    "station": 5,
++    "u": 5.0,
++    "x": 0.58,
++    "y": 6.02,
++    "z": 0.49
++   },
++   {
++    "azimut": 102.9,
++    "elevation": 0.0,
++    "impacts": 3,
++    "sortie": [
++     0.58,
++     6.55,
++     1.64
++    ],
++    "station": 5,
++    "u": 5.0,
++    "x": 0.78,
++    "y": 5.68,
++    "z": 1.64
++   },
++   {
++    "azimut": 128.6,
++    "elevation": 67.5,
++    "impacts": 0,
++    "sortie": [
++     0.22,
++     6.34,
++     3.07
++    ],
++    "station": 5,
++    "u": 5.0,
++    "x": 0.88,
++    "y": 5.5,
++    "z": 0.48
++   },
++   {
++    "azimut": 128.6,
++    "elevation": 45.0,
++    "impacts": 1,
++    "sortie": [
++     0.0,
++     6.61,
++     2.45
++    ],
++    "station": 5,
++    "u": 5.0,
++    "x": 0.88,
++    "y": 5.5,
++    "z": 1.03
++   },
++   {
++    "azimut": 205.7,
++    "elevation": 67.5,
++    "impacts": 5,
++    "sortie": [
++     0.09,
++     4.9,
++     2.88
++    ],
++    "station": 5,
++    "u": 5.0,
++    "x": 0.99,
++    "y": 5.33,
++    "z": 0.48
++   },
++   {
++    "azimut": 308.6,
++    "elevation": -22.5,
++    "impacts": 3,
++    "sortie": [
++     3.2,
++     2.07,
++     0.87
++    ],
++    "station": 5,
++    "u": 5.0,
++    "x": 2.11,
++    "y": 3.44,
++    "z": 1.6
++   },
++   {
++    "azimut": 205.7,
++    "elevation": -45.0,
++    "impacts": 3,
++    "sortie": [
++     2.19,
++     1.93,
++     -0.24
++    ],
++    "station": 5,
++    "u": 5.0,
++    "x": 2.82,
++    "y": 2.24,
++    "z": 0.46
++   },
++   {
++    "azimut": 51.4,
++    "elevation": 0.0,
++    "impacts": 3,
++    "sortie": [
++     3.65,
++     2.67,
++     0.49
++    ],
++    "station": 5,
++    "u": 5.0,
++    "x": 3.03,
++    "y": 1.89,
++    "z": 0.49
++   },
++   {
++    "azimut": 102.9,
++    "elevation": -67.5,
++    "impacts": 5,
++    "sortie": [
++     3.03,
++     2.05,
++     -0.14
++    ],
++    "station": 5,
++    "u": 5.0,
++    "x": 3.09,
++    "y": 1.78,
++    "z": 0.5
++   },
++   {
++    "azimut": 128.6,
++    "elevation": 22.5,
++    "impacts": 3,
++    "sortie": [
++     0.05,
++     6.79,
++     1.4
++    ],
++    "station": 5,
++    "u": 5.25,
++    "x": 0.51,
++    "y": 6.22,
++    "z": 1.09
++   },
++   {
++    "azimut": 257.1,
++    "elevation": 67.5,
++    "impacts": 1,
++    "sortie": [
++     0.44,
++     5.26,
++     3.03
++    ],
++    "station": 5,
++    "u": 5.25,
++    "x": 0.62,
++    "y": 6.05,
++    "z": 1.09
++   },
++   {
++    "azimut": 128.6,
++    "elevation": -22.5,
++    "impacts": 5,
++    "sortie": [
++     0.03,
++     6.74,
++     0.63
++    ],
++    "station": 5,
++    "u": 5.25,
++    "x": 0.73,
++    "y": 5.88,
++    "z": 1.09
++   },
++   {
++    "azimut": 154.3,
++    "elevation": -22.5,
++    "impacts": 7,
++    "sortie": [
++     -0.17,
++     6.19,
++     1.23
++    ],
++    "station": 5,
++    "u": 5.25,
++    "x": 0.83,
++    "y": 5.71,
++    "z": 1.68
++   },
++   {
++    "azimut": 128.6,
++    "elevation": 45.0,
++    "impacts": 3,
++    "sortie": [
++     -0.01,
++     6.7,
++     2.22
++    ],
++    "station": 5,
++    "u": 5.25,
++    "x": 1.04,
++    "y": 5.37,
++    "z": 0.53
++   },
++   {
++    "azimut": 334.3,
++    "elevation": 45.0,
++    "impacts": 5,
++    "sortie": [
++     2.7,
++     4.57,
++     2.37
++    ],
++    "station": 5,
++    "u": 5.25,
++    "x": 1.04,
++    "y": 5.37,
++    "z": 0.53
++   },
++   {
++    "azimut": 128.6,
++    "elevation": 45.0,
++    "impacts": 0,
++    "sortie": [
++     -0.02,
++     6.63,
++     2.57
++    ],
++    "station": 5,
++    "u": 5.25,
++    "x": 1.26,
++    "y": 5.03,
++    "z": 0.52
++   },
++   {
++    "azimut": 128.6,
++    "elevation": 22.5,
++    "impacts": 1,
++    "sortie": [
++     -0.01,
++     6.62,
++     1.91
++    ],
++    "station": 5,
++    "u": 5.25,
++    "x": 1.26,
++    "y": 5.03,
++    "z": 1.07
++   },
++   {
++    "azimut": 128.6,
++    "elevation": 22.5,
++    "impacts": 1,
++    "sortie": [
++     -0.02,
++     6.59,
++     1.99
++    ],
++    "station": 5,
++    "u": 5.25,
++    "x": 1.36,
++    "y": 4.86,
++    "z": 1.07
++   },
++   {
++    "azimut": 102.9,
++    "elevation": 22.5,
++    "impacts": 3,
++    "sortie": [
++     1.61,
++     5.83,
++     1.96
++    ],
++    "station": 5,
++    "u": 5.25,
++    "x": 2.1,
++    "y": 3.67,
++    "z": 1.04
++   },
++   {
++    "azimut": 308.6,
++    "elevation": 0.0,
++    "impacts": 5,
++    "sortie": [
++     3.24,
++     2.03,
++     1.62
++    ],
++    "station": 5,
++    "u": 5.25,
++    "x": 2.74,
++    "y": 2.66,
++    "z": 1.62
++   },
++   {
++    "azimut": 77.1,
++    "elevation": -67.5,
++    "impacts": 3,
++    "sortie": [
++     3.22,
++     2.24,
++     -0.1
++    ],
++    "station": 5,
++    "u": 5.25,
++    "x": 3.16,
++    "y": 1.98,
++    "z": 0.55
++   },
++   {
++    "azimut": 154.3,
++    "elevation": 0.0,
++    "impacts": 5,
++    "sortie": [
++     0.0,
++     6.6,
++     0.59
++    ],
++    "station": 6,
++    "u": 5.5,
++    "x": 0.63,
++    "y": 6.29,
++    "z": 0.59
++   },
++   {
++    "azimut": 282.9,
++    "elevation": 67.5,
++    "impacts": 3,
++    "sortie": [
++     1.19,
++     4.74,
++     3.17
++    ],
++    "station": 6,
++    "u": 5.5,
++    "x": 0.95,
++    "y": 5.78,
++    "z": 0.58
++   },
++   {
++    "azimut": 128.6,
++    "elevation": 45.0,
++    "impacts": 3,
++    "sortie": [
++     0.19,
++     6.6,
++     3.03
++    ],
++    "station": 6,
++    "u": 5.5,
++    "x": 1.38,
++    "y": 5.1,
++    "z": 1.12
++   },
++   {
++    "azimut": 128.6,
++    "elevation": 45.0,
++    "impacts": 3,
++    "sortie": [
++     0.15,
++     6.53,
++     3.03
++    ],
++    "station": 6,
++    "u": 5.5,
++    "x": 1.69,
++    "y": 4.6,
++    "z": 0.56
++   },
++   {
++    "azimut": 51.4,
++    "elevation": -22.5,
++    "impacts": 5,
++    "sortie": [
++     2.42,
++     4.91,
++     0.76
++    ],
++    "station": 6,
++    "u": 5.5,
++    "x": 1.91,
++    "y": 4.26,
++    "z": 1.1
++   },
++   {
++    "azimut": 128.6,
++    "elevation": 22.5,
++    "impacts": 1,
++    "sortie": [
++     -0.01,
++     6.59,
++     1.96
++    ],
++    "station": 6,
++    "u": 5.5,
++    "x": 2.12,
++    "y": 3.92,
++    "z": 0.54
++   },
++   {
++    "azimut": 257.1,
++    "elevation": -22.5,
++    "impacts": 3,
++    "sortie": [
++     2.08,
++     -0.07,
++     -0.19
++    ],
++    "station": 6,
++    "u": 5.5,
++    "x": 2.75,
++    "y": 2.9,
++    "z": 1.07
++   },
++   {
++    "azimut": 51.4,
++    "elevation": -22.5,
++    "impacts": 5,
++    "sortie": [
++     3.64,
++     2.63,
++     0.87
++    ],
++    "station": 6,
++    "u": 5.5,
++    "x": 3.24,
++    "y": 2.13,
++    "z": 1.14
++   },
++   {
++    "azimut": 334.3,
++    "elevation": -45.0,
++    "impacts": 3,
++    "sortie": [
++     0.4,
++     6.93,
++     0.65
++    ],
++    "station": 6,
++    "u": 5.75,
++    "x": 0.4,
++    "y": 6.93,
++    "z": 0.65
++   },
++   {
++    "azimut": 231.4,
++    "elevation": 67.5,
++    "impacts": 1,
++    "sortie": [
++     0.26,
++     5.45,
++     2.95
++    ],
++    "station": 6,
++    "u": 5.75,
++    "x": 0.86,
++    "y": 6.2,
++    "z": 0.64
++   },
++   {
++    "azimut": 231.4,
++    "elevation": 45.0,
++    "impacts": 3,
++    "sortie": [
++     -0.15,
++     4.93,
++     2.81
++    ],
++    "station": 6,
++    "u": 5.75,
++    "x": 0.86,
++    "y": 6.2,
++    "z": 1.19
++   },
++   {
++    "azimut": 205.7,
++    "elevation": 67.5,
++    "impacts": 0,
++    "sortie": [
++     0.1,
++     5.61,
++     2.94
++    ],
++    "station": 6,
++    "u": 5.75,
++    "x": 0.97,
++    "y": 6.03,
++    "z": 0.63
++   },
++   {
++    "azimut": 308.6,
++    "elevation": 0.0,
++    "impacts": 3,
++    "sortie": [
++     3.65,
++     2.67,
++     1.18
++    ],
++    "station": 6,
++    "u": 5.75,
++    "x": 0.97,
++    "y": 6.03,
++    "z": 1.18
++   },
++   {
++    "azimut": 180.0,
++    "elevation": 22.5,
++    "impacts": 5,
++    "sortie": [
++     -0.24,
++     6.03,
++     1.68
++    ],
++    "station": 6,
++    "u": 5.75,
++    "x": 0.97,
++    "y": 6.03,
++    "z": 1.18
++   },
++   {
++    "azimut": 282.9,
++    "elevation": 67.5,
++    "impacts": 3,
++    "sortie": [
++     1.31,
++     5.09,
++     3.25
++    ],
++    "station": 6,
++    "u": 5.75,
++    "x": 1.18,
++    "y": 5.69,
++    "z": 1.78
++   },
++   {
++    "azimut": 205.7,
++    "elevation": 45.0,
++    "impacts": 5,
++    "sortie": [
++     0.26,
++     5.03,
++     2.9
++    ],
++    "station": 6,
++    "u": 5.75,
++    "x": 1.28,
++    "y": 5.52,
++    "z": 1.77
++   },
++   {
++    "azimut": 102.9,
++    "elevation": 45.0,
++    "impacts": 5,
++    "sortie": [
++     2.06,
++     5.38,
++     2.35
++    ],
++    "station": 6,
++    "u": 5.75,
++    "x": 2.45,
++    "y": 3.65,
++    "z": 0.58
++   },
++   {
++    "azimut": 102.9,
++    "elevation": 22.5,
++    "impacts": 7,
++    "sortie": [
++     2.23,
++     5.21,
++     1.38
++    ],
++    "station": 6,
++    "u": 5.75,
++    "x": 2.66,
++    "y": 3.31,
++    "z": 0.58
++   },
++   {
++    "azimut": 282.9,
++    "elevation": -45.0,
++    "impacts": 3,
++    "sortie": [
++     0.86,
++     6.04,
++     -0.09
++    ],
++    "station": 6,
++    "u": 6.0,
++    "x": 0.69,
++    "y": 6.8,
++    "z": 0.69
++   },
++   {
++    "azimut": 102.9,
++    "elevation": 22.5,
++    "impacts": 3,
++    "sortie": [
++     1.38,
++     6.07,
++     2.08
++    ],
++    "station": 6,
++    "u": 6.0,
++    "x": 1.53,
++    "y": 5.43,
++    "z": 1.82
++   },
++   {
++    "azimut": 257.1,
++    "elevation": -45.0,
++    "impacts": 3,
++    "sortie": [
++     1.18,
++     3.27,
++     -0.24
++    ],
++    "station": 6,
++    "u": 6.0,
++    "x": 1.63,
++    "y": 5.26,
++    "z": 1.81
++   },
++   {
++    "azimut": 231.4,
++    "elevation": -22.5,
++    "impacts": 3,
++    "sortie": [
++     -0.65,
++     1.5,
++     0.08
++    ],
++    "station": 6,
++    "u": 6.0,
++    "x": 1.95,
++    "y": 4.75,
++    "z": 1.8
++   },
++   {
++    "azimut": 308.6,
++    "elevation": 0.0,
++    "impacts": 3,
++    "sortie": [
++     3.63,
++     2.64,
++     1.8
++    ],
++    "station": 6,
++    "u": 6.0,
++    "x": 1.95,
++    "y": 4.75,
++    "z": 1.8
++   },
++   {
++    "azimut": 102.9,
++    "elevation": 45.0,
++    "impacts": 5,
++    "sortie": [
++     2.16,
++     5.28,
++     2.05
++    ],
++    "station": 6,
++    "u": 6.0,
++    "x": 2.47,
++    "y": 3.9,
++    "z": 0.63
++   },
++   {
++    "azimut": 180.0,
++    "elevation": 45.0,
++    "impacts": 1,
++    "sortie": [
++     -0.41,
++     5.84,
++     2.57
++    ],
++    "station": 6,
++    "u": 6.25,
++    "x": 1.43,
++    "y": 5.84,
++    "z": 0.73
++   },
++   {
++    "azimut": 77.1,
++    "elevation": -22.5,
++    "impacts": 5,
++    "sortie": [
++     2.6,
++     4.76,
++     0.98
++    ],
++    "station": 6,
++    "u": 6.25,
++    "x": 2.45,
++    "y": 4.13,
++    "z": 1.24
++   },
++   {
++    "azimut": 51.4,
++    "elevation": -45.0,
++    "impacts": 5,
++    "sortie": [
++     2.72,
++     4.46,
++     1.42
++    ],
++    "station": 6,
++    "u": 6.25,
++    "x": 2.45,
++    "y": 4.13,
++    "z": 1.84
++   },
++   {
++    "azimut": 257.1,
++    "elevation": -22.5,
++    "impacts": 5,
++    "sortie": [
++     1.82,
++     0.09,
++     0.27
++    ],
++    "station": 6,
++    "u": 6.25,
++    "x": 2.66,
++    "y": 3.78,
++    "z": 1.84
++   },
++   {
++    "azimut": 102.9,
++    "elevation": 0.0,
++    "impacts": 7,
++    "sortie": [
++     2.55,
++     4.8,
++     1.83
++    ],
++    "station": 6,
++    "u": 6.25,
++    "x": 2.87,
++    "y": 3.44,
++    "z": 1.83
++   },
++   {
++    "azimut": 25.7,
++    "elevation": 0.0,
++    "impacts": 3,
++    "sortie": [
++     3.43,
++     3.27,
++     1.22
++    ],
++    "station": 6,
++    "u": 6.25,
++    "x": 3.07,
++    "y": 3.1,
++    "z": 1.22
++   },
++   {
++    "azimut": 102.9,
++    "elevation": 0.0,
++    "impacts": 3,
++    "sortie": [
++     1.72,
++     5.76,
++     0.78
++    ],
++    "station": 6,
++    "u": 6.5,
++    "x": 1.81,
++    "y": 5.37,
++    "z": 0.78
++   },
++   {
++    "azimut": 257.1,
++    "elevation": -45.0,
++    "impacts": 5,
++    "sortie": [
++     1.77,
++     3.34,
++     -0.24
++    ],
++    "station": 6,
++    "u": 6.5,
++    "x": 2.12,
++    "y": 4.86,
++    "z": 1.32
++   },
++   {
++    "azimut": 0.0,
++    "elevation": 0.0,
++    "impacts": 5,
++    "sortie": [
++     2.83,
++     4.34,
++     1.31
++    ],
++    "station": 6,
++    "u": 6.5,
++    "x": 2.43,
++    "y": 4.34,
++    "z": 1.31
++   },
++   {
++    "azimut": 102.9,
++    "elevation": 0.0,
++    "impacts": 7,
++    "sortie": [
++     2.23,
++     5.22,
++     1.91
++    ],
++    "station": 6,
++    "u": 6.5,
++    "x": 2.43,
++    "y": 4.34,
++    "z": 1.91
++   },
++   {
++    "azimut": 154.3,
++    "elevation": 22.5,
++    "impacts": 1,
++    "sortie": [
++     -0.16,
++     6.16,
++     1.87
++    ],
++    "station": 7,
++    "u": 6.75,
++    "x": 2.09,
++    "y": 5.07,
++    "z": 0.83
++   },
++   {
++    "azimut": 128.6,
++    "elevation": 45.0,
++    "impacts": 3,
++    "sortie": [
++     1.22,
++     6.12,
++     3.53
++    ],
++    "station": 7,
++    "u": 6.75,
++    "x": 2.19,
++    "y": 4.9,
++    "z": 1.98
++   },
++   {
++    "azimut": 334.3,
++    "elevation": 45.0,
++    "impacts": 5,
++    "sortie": [
++     2.74,
++     4.52,
++     2.47
++    ],
++    "station": 7,
++    "u": 6.75,
++    "x": 2.3,
++    "y": 4.73,
++    "z": 1.97
++   },
++   {
++    "azimut": 231.4,
++    "elevation": -45.0,
++    "impacts": 3,
++    "sortie": [
++     1.14,
++     2.67,
++     -0.23
++    ],
++    "station": 7,
++    "u": 6.75,
++    "x": 2.5,
++    "y": 4.39,
++    "z": 1.96
++   },
++   {
++    "azimut": 25.7,
++    "elevation": -22.5,
++    "impacts": 3,
++    "sortie": [
++     3.16,
++     3.82,
++     1.23
++    ],
++    "station": 7,
++    "u": 6.75,
++    "x": 2.91,
++    "y": 3.7,
++    "z": 1.34
++   },
++   {
++    "azimut": 154.3,
++    "elevation": 22.5,
++    "impacts": 1,
++    "sortie": [
++     -0.17,
++     6.24,
++     1.96
++    ],
++    "station": 7,
++    "u": 7.0,
++    "x": 2.16,
++    "y": 5.11,
++    "z": 0.89
++   },
++   {
++    "azimut": 231.4,
++    "elevation": -45.0,
++    "impacts": 3,
++    "sortie": [
++     1.16,
++     2.66,
++     -0.24
++    ],
++    "station": 7,
++    "u": 7.0,
++    "x": 2.57,
++    "y": 4.43,
++    "z": 2.02
++   },
++   {
++    "azimut": 0.0,
++    "elevation": 22.5,
++    "impacts": 3,
++    "sortie": [
++     2.8,
++     4.45,
++     0.99
++    ],
++    "station": 7,
++    "u": 7.25,
++    "x": 2.61,
++    "y": 4.45,
++    "z": 0.91
++   },
++   {
++    "azimut": 128.6,
++    "elevation": 45.0,
++    "impacts": 5,
++    "sortie": [
++     1.25,
++     6.04,
++     3.58
++    ],
++    "station": 7,
++    "u": 7.25,
++    "x": 2.92,
++    "y": 3.94,
++    "z": 0.89
++   },
++   {
++    "azimut": 102.9,
++    "elevation": 0.0,
++    "impacts": 5,
++    "sortie": [
++     3.15,
++     3.82,
++     2.03
++    ],
++    "station": 7,
++    "u": 7.25,
++    "x": 3.24,
++    "y": 3.43,
++    "z": 2.03
++   },
++   {
++    "azimut": 51.4,
++    "elevation": -45.0,
++    "impacts": 3,
++    "sortie": [
++     3.43,
++     3.37,
++     1.88
++    ],
++    "station": 7,
++    "u": 7.25,
++    "x": 3.34,
++    "y": 3.26,
++    "z": 2.02
++   },
++   {
++    "azimut": 77.1,
++    "elevation": 0.0,
++    "impacts": 5,
++    "sortie": [
++     2.6,
++     4.68,
++     1.0
++    ],
++    "station": 8,
++    "u": 7.75,
++    "x": 2.6,
++    "y": 4.68,
++    "z": 1.0
++   },
++   {
++    "azimut": 77.1,
++    "elevation": 0.0,
++    "impacts": 5,
++    "sortie": [
++     2.58,
++     4.81,
++     1.04
++    ],
++    "station": 8,
++    "u": 8.0,
++    "x": 2.58,
++    "y": 4.81,
++    "z": 1.04
++   },
++   {
++    "azimut": 77.1,
++    "elevation": -45.0,
++    "impacts": 3,
++    "sortie": [
++     2.64,
++     4.71,
++     1.04
++    ],
++    "station": 8,
++    "u": 8.0,
++    "x": 2.64,
++    "y": 4.71,
++    "z": 1.04
++   }
++  ],
++  "percees_confirmees": [],
++  "points_hors_cavite": [
++   {
++    "cardinales_encloses": 5,
++    "part_enclose": 0.79,
++    "station": 4,
++    "x": 0.09,
++    "y": 6.06,
++    "z": 1.62
++   },
++   {
++    "cardinales_encloses": 5,
++    "part_enclose": 0.81,
++    "station": 4,
++    "x": 0.13,
++    "y": 5.99,
++    "z": 1.62
++   },
++   {
++    "cardinales_encloses": 5,
++    "part_enclose": 0.8,
++    "station": 4,
++    "x": 0.23,
++    "y": 5.82,
++    "z": 1.62
++   },
++   {
++    "cardinales_encloses": 5,
++    "part_enclose": 0.83,
++    "station": 5,
++    "x": 0.23,
++    "y": 6.28,
++    "z": 1.64
++   },
++   {
++    "cardinales_encloses": 5,
++    "part_enclose": 0.83,
++    "station": 5,
++    "x": 0.23,
++    "y": 6.28,
++    "z": 1.64
++   },
++   {
++    "cardinales_encloses": 5,
++    "part_enclose": 0.83,
++    "station": 5,
++    "x": 0.33,
++    "y": 6.11,
++    "z": 1.63
++   },
++   {
++    "cardinales_encloses": 5,
++    "part_enclose": 0.86,
++    "station": 5,
++    "x": 0.43,
++    "y": 5.93,
++    "z": 1.63
++   },
++   {
++    "cardinales_encloses": 5,
++    "part_enclose": 0.87,
++    "station": 5,
++    "x": 0.53,
++    "y": 5.76,
++    "z": 1.63
++   },
++   {
++    "cardinales_encloses": 5,
++    "part_enclose": 0.9,
++    "station": 5,
++    "x": 0.58,
++    "y": 6.02,
++    "z": 1.64
++   },
++   {
++    "cardinales_encloses": 4,
++    "part_enclose": 0.75,
++    "station": 8,
++    "x": 2.4,
++    "y": 5.0,
++    "z": 2.16
++   },
++   {
++    "cardinales_encloses": 4,
++    "part_enclose": 0.72,
++    "station": 8,
++    "x": 2.49,
++    "y": 4.85,
++    "z": 2.15
++   },
++   {
++    "cardinales_encloses": 4,
++    "part_enclose": 0.71,
++    "station": 8,
++    "x": 2.58,
++    "y": 4.81,
++    "z": 2.19
++   },
++   {
++    "cardinales_encloses": 4,
++    "part_enclose": 0.73,
++    "station": 8,
++    "x": 2.64,
++    "y": 4.71,
++    "z": 2.19
++   }
++  ],
++  "points_porche_ecartes": 276,
++  "rayons_par_la_bouche": 7357,
++  "rayons_suspects": 125,
++  "rayons_testes": 157743
++ },
++ "journal": {
++  "acquits_refuses": [],
++  "incoherences": [],
++  "lignes": 168,
++  "marqueurs_defaut": 1
++ },
++ "ligne_de_vue": "NON VERIFIE",
++ "ouverture_confirmee_m": 0.1,
++ "percees_confirmees": [],
++ "percees_confirmees_total": 0,
++ "plancher": {
++  "carte": [
++   {
++    "absents": 0,
++    "derive_station_max": 0.0,
++    "ecart_max_m": 0.03,
++    "hors_vide": 3,
++    "presents": 18,
++    "station": 0,
++    "u": 0.0,
++    "vises": 21,
++    "y": -1.15,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.01,
++    "ecart_max_m": 0.042,
++    "hors_vide": 2,
++    "presents": 18,
++    "station": 0,
++    "u": 0.25,
++    "vises": 20,
++    "y": -0.86,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.0,
++    "ecart_max_m": 0.065,
++    "hors_vide": 2,
++    "presents": 18,
++    "station": 0,
++    "u": 0.5,
++    "vises": 20,
++    "y": -0.57,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.01,
++    "ecart_max_m": 0.075,
++    "hors_vide": 3,
++    "presents": 17,
++    "station": 1,
++    "u": 0.75,
++    "vises": 20,
++    "y": -0.29,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.12,
++    "ecart_max_m": 0.031,
++    "hors_vide": 2,
++    "presents": 17,
++    "station": 1,
++    "u": 1.0,
++    "vises": 19,
++    "y": 0.0,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.01,
++    "ecart_max_m": 0.029,
++    "hors_vide": 1,
++    "presents": 17,
++    "station": 1,
++    "u": 1.25,
++    "vises": 18,
++    "y": 0.26,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 1.72,
++    "ecart_max_m": 0.055,
++    "hors_vide": 1,
++    "presents": 19,
++    "station": 2,
++    "u": 1.5,
++    "vises": 20,
++    "y": 0.53,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 1.63,
++    "ecart_max_m": 0.051,
++    "hors_vide": 1,
++    "presents": 18,
++    "station": 2,
++    "u": 1.75,
++    "vises": 19,
++    "y": 0.79,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.74,
++    "ecart_max_m": 0.051,
++    "hors_vide": 1,
++    "presents": 15,
++    "station": 2,
++    "u": 2.0,
++    "vises": 16,
++    "y": 1.05,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 1.05,
++    "ecart_max_m": 0.03,
++    "hors_vide": 0,
++    "presents": 16,
++    "station": 2,
++    "u": 2.25,
++    "vises": 16,
++    "y": 1.19,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 1.2,
++    "ecart_max_m": 0.044,
++    "hors_vide": 1,
++    "presents": 17,
++    "station": 2,
++    "u": 2.5,
++    "vises": 18,
++    "y": 1.33,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.01,
++    "ecart_max_m": 0.036,
++    "hors_vide": 0,
++    "presents": 18,
++    "station": 3,
++    "u": 2.75,
++    "vises": 18,
++    "y": 1.48,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.1,
++    "ecart_max_m": 0.031,
++    "hors_vide": 1,
++    "presents": 21,
++    "station": 3,
++    "u": 3.0,
++    "vises": 22,
++    "y": 1.62,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.01,
++    "ecart_max_m": 0.031,
++    "hors_vide": 1,
++    "presents": 23,
++    "station": 3,
++    "u": 3.25,
++    "vises": 24,
++    "y": 1.75,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.0,
++    "ecart_max_m": 0.03,
++    "hors_vide": 2,
++    "presents": 23,
++    "station": 4,
++    "u": 3.5,
++    "vises": 25,
++    "y": 1.87,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.01,
++    "ecart_max_m": 0.031,
++    "hors_vide": 1,
++    "presents": 25,
++    "station": 4,
++    "u": 3.75,
++    "vises": 26,
++    "y": 2.0,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.02,
++    "ecart_max_m": 0.029,
++    "hors_vide": 2,
++    "presents": 26,
++    "station": 4,
++    "u": 4.0,
++    "vises": 28,
++    "y": 2.12,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.01,
++    "ecart_max_m": 0.027,
++    "hors_vide": 1,
++    "presents": 26,
++    "station": 4,
++    "u": 4.25,
++    "vises": 27,
++    "y": 2.24,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.0,
++    "ecart_max_m": 0.025,
++    "hors_vide": 1,
++    "presents": 27,
++    "station": 4,
++    "u": 4.5,
++    "vises": 28,
++    "y": 2.35,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.01,
++    "ecart_max_m": 0.025,
++    "hors_vide": 2,
++    "presents": 27,
++    "station": 5,
++    "u": 4.75,
++    "vises": 29,
++    "y": 2.46,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.18,
++    "ecart_max_m": 0.057,
++    "hors_vide": 2,
++    "presents": 27,
++    "station": 5,
++    "u": 5.0,
++    "vises": 29,
++    "y": 2.58,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.01,
++    "ecart_max_m": 0.056,
++    "hors_vide": 2,
++    "presents": 27,
++    "station": 5,
++    "u": 5.25,
++    "vises": 29,
++    "y": 2.66,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.0,
++    "ecart_max_m": 0.052,
++    "hors_vide": 3,
++    "presents": 26,
++    "station": 6,
++    "u": 5.5,
++    "vises": 29,
++    "y": 2.73,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.01,
++    "ecart_max_m": 0.045,
++    "hors_vide": 4,
++    "presents": 26,
++    "station": 6,
++    "u": 5.75,
++    "vises": 30,
++    "y": 2.8,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.02,
++    "ecart_max_m": 0.033,
++    "hors_vide": 5,
++    "presents": 24,
++    "station": 6,
++    "u": 6.0,
++    "vises": 29,
++    "y": 2.88,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.01,
++    "ecart_max_m": 0.029,
++    "hors_vide": 5,
++    "presents": 21,
++    "station": 6,
++    "u": 6.25,
++    "vises": 26,
++    "y": 2.92,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.0,
++    "ecart_max_m": 0.027,
++    "hors_vide": 4,
++    "presents": 19,
++    "station": 6,
++    "u": 6.5,
++    "vises": 23,
++    "y": 2.97,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.01,
++    "ecart_max_m": 0.023,
++    "hors_vide": 5,
++    "presents": 16,
++    "station": 7,
++    "u": 6.75,
++    "vises": 21,
++    "y": 3.02,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.06,
++    "ecart_max_m": 0.041,
++    "hors_vide": 5,
++    "presents": 14,
++    "station": 7,
++    "u": 7.0,
++    "vises": 19,
++    "y": 3.06,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.01,
++    "ecart_max_m": 0.039,
++    "hors_vide": 4,
++    "presents": 13,
++    "station": 7,
++    "u": 7.25,
++    "vises": 17,
++    "y": 3.09,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.0,
++    "ecart_max_m": 0.037,
++    "hors_vide": 4,
++    "presents": 12,
++    "station": 8,
++    "u": 7.5,
++    "vises": 16,
++    "y": 3.12,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.01,
++    "ecart_max_m": 0.033,
++    "hors_vide": 3,
++    "presents": 11,
++    "station": 8,
++    "u": 7.75,
++    "vises": 14,
++    "y": 3.14,
++    "z_impact_trou": null
++   },
++   {
++    "absents": 0,
++    "derive_station_max": 0.0,
++    "ecart_max_m": 0.028,
++    "hors_vide": 6,
++    "presents": 7,
++    "station": 8,
++    "u": 8.0,
++    "vises": 13,
++    "y": 3.17,
++    "z_impact_trou": null
++   }
++  ],
++  "fautes": [],
++  "points_testes": 1904
++ },
++ "pose": {
++  "aller_retour_ecart_m": 4.6629367034256575e-15,
++  "aller_retour_tolerance_m": 1e-09,
++  "lacet_deg": 45.0,
++  "origine": [
++   -106.0,
++   3.5,
++   3.5
++  ],
++  "provenance": {
++   "exhaussement": 0.5,
++   "lacet_deg": 45.0,
++   "layout": "resources/world_v2/world_v2_layout.json",
++   "script": "scripts/world_v2/poi/waterfall_cave_place.gd",
++   "seuil_local": [
++    4.0,
++    -2.5
++   ],
++   "terrain_sous_seuil": 3.0,
++   "terrain_statut": "NON VERIFIE — documentaire, cf. commentaires d'implantation de waterfall_cave_place.gd",
++   "v2_site": [
++    -110.0,
++    3.0,
++    6.0
++   ]
++  },
++  "verdict": "PASS"
++ },
++ "surfaces": {
++  "fond": {
++   "axes": [
++    "x",
++    "z"
++   ],
++   "blocs": [],
++   "cases": 3762,
++   "cases_ouvertes": 0,
++   "confirmees": [],
++   "pas": 0.05
++  },
++  "paroi_moins_x": {
++   "axes": [
++    "y",
++    "z"
++   ],
++   "blocs": [],
++   "cases": 3914,
++   "cases_ouvertes": 0,
++   "confirmees": [],
++   "pas": 0.05
++  },
++  "paroi_plus_x": {
++   "axes": [
++    "y",
++    "z"
++   ],
++   "blocs": [],
++   "cases": 3914,
++   "cases_ouvertes": 0,
++   "confirmees": [],
++   "pas": 0.05
++  },
++  "plancher": {
++   "axes": [
++    "x",
++    "y"
++   ],
++   "blocs": [],
++   "cases": 10197,
++   "cases_ouvertes": 0,
++   "confirmees": [],
++   "pas": 0.05
++  },
++  "toit": {
++   "axes": [
++    "x",
++    "y"
++   ],
++   "blocs": [],
++   "cases": 10197,
++   "cases_ouvertes": 0,
++   "confirmees": [],
++   "pas": 0.05
++  }
++ },
++ "triangles": 19992,
++ "triangles_par_matiere": {
++  "MAT_CaveIn_Deep": 508,
++  "MAT_CaveIn_Floor": 468,
++  "MAT_CaveIn_Wall": 193,
++  "MAT_CaveRock_Base": 8381,
++  "MAT_CaveRock_Collar": 3604,
++  "MAT_CaveRock_Face": 6838
++ },
++ "verdict": "PASS"
++}
+\ No newline at end of file
+diff --git a/evidence/r2a352_c_instruments/base352_sonde_durcie.log b/evidence/r2a352_c_instruments/base352_sonde_durcie.log
+new file mode 100644
+index 0000000..04e1b18
+--- /dev/null
++++ b/evidence/r2a352_c_instruments/base352_sonde_durcie.log
+@@ -0,0 +1,172 @@
++==========================================================================
++SONDE DE CONTINUITE — Grotte du Couchant
++==========================================================================
++cotes  : CAVITE, CAVITE_ASYM, PALIER, SAG, PORCHE_DENIVELE conformes au generateur
++garde  : le profil declare laisse au moins 0.42 m au-dessus du terrain a toutes les stations (herbe 0.30 m)
++
++--------------------------------------------------------------------------
++CONTROLE 0 — LA POSE MONDE, DERIVEE ET EPROUVEE
++--------------------------------------------------------------------------
++origine   : (-106.000 ; 3.500 ; 3.500), lacet 45.0 deg
++derivee de: resources/world_v2/world_v2_layout.json -> v2_site [-110.0, 3.0, 6.0]
++            scripts/world_v2/poi/waterfall_cave_place.gd -> SEUIL_LOCAL [4.0, -2.5], LACET_DEG 45.0, EXHAUSSEMENT 0.50
++            terrain sous le seuil 3.00 m — NON VERIFIE — documentaire, cf. commentaires d'implantation de waterfall_cave_place.gd
++aller-retour modele->monde(matrices)->modele(forme fermee) :
++   ecart max 4.663e-15 m sur 14 points et 5 directions, tolerance 1e-09 m
++   PASS — les deux chemins concordent
++maillage rendu : 19992 triangles (COL_WaterfallCave ecarte)
++   MAT_CaveRock_Base        8381 tris
++   MAT_CaveRock_Face        6838 tris
++   MAT_CaveRock_Collar      3604 tris
++   MAT_CaveIn_Deep           508 tris
++   MAT_CaveIn_Floor          468 tris
++   MAT_CaveIn_Wall           193 tris
++emprise modele : x[-9.17..8.57] y[-3.53..12.30] z[-3.95..8.59]
++echantillons interieurs : 2183 (stations 0 a 8, les quatre que le generateur saute comprises)
++   pas longitudinal 0.25 m, pas LATERAL METRIQUE 0.20 m, hauteurs 0.35, 0.90, 1.50
++
++--------------------------------------------------------------------------
++CONTROLE 1 — PLANCHER (rayon vers le BAS depuis l'interieur)
++--------------------------------------------------------------------------
++Aucune fonction du generateur ne fait ce controle :
++  controle_epaisseur  : `if math.sin(theta) < -0.30: continue`
++  controle_aucun_jour : `Vector((0.0, 0.0, 1.0))` — vers le HAUT
++1904 point(s) du vide sondes vers le bas, 0 faute(s)
++   sur le critere de HAUTEUR seulement : aucune faute
++   (l'ABSENCE de sol est jugee par la carte ci-dessous, pas ici — ne pas lire cette ligne comme un plancher sain)
++
++   CARTE DU PLANCHER (positions laterales avec sol / sans sol) :
++   « vises » = positions demandees ; « hors vide » = positions
++   tombees dans la ROCHE et donc jamais interrogees. Un denominateur
++   de 1 sur 5 vises ne dit pas « trou », il dit « presque aveugle ».
++      y  -1.15  st 0  ################## 18/18 sondes (21 vises,  3 hors vide)  ecart max 0.03 m  z fond    -
++      y  -0.86  st 0  ################## 18/18 sondes (20 vises,  2 hors vide)  ecart max 0.04 m  z fond    -
++      y  -0.57  st 0  ################## 18/18 sondes (20 vises,  2 hors vide)  ecart max 0.07 m  z fond    -
++      y  -0.29  st 1  ################# 17/17 sondes (20 vises,  3 hors vide)  ecart max 0.07 m  z fond    -
++      y  +0.00  st 1  ################# 17/17 sondes (19 vises,  2 hors vide)  ecart max 0.03 m  z fond    -
++      y  +0.26  st 1  ################# 17/17 sondes (18 vises,  1 hors vide)  ecart max 0.03 m  z fond    -
++      y  +0.53  st 2  ################### 19/19 sondes (20 vises,  1 hors vide)  ecart max 0.06 m  z fond    -
++      y  +0.79  st 2  ################## 18/18 sondes (19 vises,  1 hors vide)  ecart max 0.05 m  z fond    -
++      y  +1.05  st 2  ############### 15/15 sondes (16 vises,  1 hors vide)  ecart max 0.05 m  z fond    -
++      y  +1.19  st 2  ################ 16/16 sondes (16 vises,  0 hors vide)  ecart max 0.03 m  z fond    -
++      y  +1.33  st 2  ################# 17/17 sondes (18 vises,  1 hors vide)  ecart max 0.04 m  z fond    -
++      y  +1.48  st 3  ################## 18/18 sondes (18 vises,  0 hors vide)  ecart max 0.04 m  z fond    -
++      y  +1.62  st 3  ##################### 21/21 sondes (22 vises,  1 hors vide)  ecart max 0.03 m  z fond    -
++      y  +1.75  st 3  ####################### 23/23 sondes (24 vises,  1 hors vide)  ecart max 0.03 m  z fond    -
++      y  +1.87  st 4  ####################### 23/23 sondes (25 vises,  2 hors vide)  ecart max 0.03 m  z fond    -
++      y  +2.00  st 4  ######################### 25/25 sondes (26 vises,  1 hors vide)  ecart max 0.03 m  z fond    -
++      y  +2.12  st 4  ########################## 26/26 sondes (28 vises,  2 hors vide)  ecart max 0.03 m  z fond    -
++      y  +2.24  st 4  ########################## 26/26 sondes (27 vises,  1 hors vide)  ecart max 0.03 m  z fond    -
++      y  +2.35  st 4  ########################### 27/27 sondes (28 vises,  1 hors vide)  ecart max 0.03 m  z fond    -
++      y  +2.46  st 5  ########################### 27/27 sondes (29 vises,  2 hors vide)  ecart max 0.03 m  z fond    -
++      y  +2.58  st 5  ########################### 27/27 sondes (29 vises,  2 hors vide)  ecart max 0.06 m  z fond    -
++      y  +2.66  st 5  ########################### 27/27 sondes (29 vises,  2 hors vide)  ecart max 0.06 m  z fond    -
++      y  +2.73  st 6  ########################## 26/26 sondes (29 vises,  3 hors vide)  ecart max 0.05 m  z fond    -
++      y  +2.80  st 6  ########################## 26/26 sondes (30 vises,  4 hors vide)  ecart max 0.04 m  z fond    -
++      y  +2.88  st 6  ######################## 24/24 sondes (29 vises,  5 hors vide)  ecart max 0.03 m  z fond    -
++      y  +2.92  st 6  ##################### 21/21 sondes (26 vises,  5 hors vide)  ecart max 0.03 m  z fond    -
++      y  +2.97  st 6  ################### 19/19 sondes (23 vises,  4 hors vide)  ecart max 0.03 m  z fond    -
++      y  +3.02  st 7  ################ 16/16 sondes (21 vises,  5 hors vide)  ecart max 0.02 m  z fond    -
++      y  +3.06  st 7  ############## 14/14 sondes (19 vises,  5 hors vide)  ecart max 0.04 m  z fond    -
++      y  +3.09  st 7  #############  13/13 sondes (17 vises,  4 hors vide)  ecart max 0.04 m  z fond    -
++      y  +3.12  st 8  ############   12/12 sondes (16 vises,  4 hors vide)  ecart max 0.04 m  z fond    -
++      y  +3.14  st 8  ###########    11/11 sondes (14 vises,  3 hors vide)  ecart max 0.03 m  z fond    -
++      y  +3.17  st 8  #######         7/7  sondes (13 vises,  6 hors vide)  ecart max 0.03 m  z fond    -
++
++--------------------------------------------------------------------------
++CONTROLE 2 — JOUR (sphere entiere, stations 0 a 8)
++--------------------------------------------------------------------------
++100 direction(s) par point, elevations -90 a +90 : le fond (±Y) et le sol (-Z) sont couverts
++276 point(s) du porche ecarte(s) (ouvert par construction)
++13 point(s) ecarte(s) comme HORS CAVITE (enclosure < 0.95)
++157743 rayon(s) juges, 7357 ecarte(s) parce qu'ils sortent par la BOUCHE, 125 RAYON(S) SUSPECT(S)
++   « suspect » n'est pas « percee » : voir la definition en tete de
++   OUVERTURE_CONFIRMEE_M. La confirmation est faite plus bas.
++   station 1 :  10 rayon(s) suspect(s), azimuts 0..334, elevations -68..68
++   station 2 :   9 rayon(s) suspect(s), azimuts 0..334, elevations -68..22
++   station 3 :  12 rayon(s) suspect(s), azimuts 0..309, elevations -68..45
++   station 4 :  19 rayon(s) suspect(s), azimuts 51..334, elevations -68..68
++   station 5 :  27 rayon(s) suspect(s), azimuts 26..334, elevations -68..68
++   station 6 :  34 rayon(s) suspect(s), azimuts 0..334, elevations -45..68
++   station 7 :  11 rayon(s) suspect(s), azimuts 0..334, elevations -45..45
++   station 8 :   3 rayon(s) suspect(s), azimuts 77..77, elevations -45..0
++   OU LES RAYONS SORTENT (regroupe par maille de 1,5 m sur la coque) — un vrai trou fait converger, un mauvais point disperse :
++        7 rayon(s) quittent la galerie en x~-0.11 y~+6.35 z~+1.80  (stations de depart 5,6,7)
++        6 rayon(s) quittent la galerie en x~+0.35 y~+6.66 z~+1.51  (stations de depart 4,5)
++        6 rayon(s) quittent la galerie en x~+2.65 y~+4.63 z~+1.27  (stations de depart 6,8)
++        5 rayon(s) quittent la galerie en x~+3.55 y~+2.56 z~+1.56  (stations de depart 2,5,6)
++        5 rayon(s) quittent la galerie en x~+0.16 y~+6.73 z~+0.57  (stations de depart 5,6)
++        4 rayon(s) quittent la galerie en x~+0.44 y~+0.45 z~-0.32  (stations de depart 1,2)
++        4 rayon(s) quittent la galerie en x~+0.37 y~+1.54 z~-0.31  (stations de depart 2,3)
++        4 rayon(s) quittent la galerie en x~+3.29 y~+3.55 z~+1.46  (stations de depart 3,6,7)
++
++   CARTE DU FOND (vue de derriere, emprise de la derniere station)
++   'O' = le rayon traverse la galerie de part en part
++      z +2.80  .......
++      z +2.55  .......
++      z +2.30  .......
++      z +2.05  .......
++      z +1.80  .......
++      z +1.55  .......
++      z +1.30  .......
++      z +1.05  .......
++      z +0.80  .......
++      z +0.55  .......
++      x de +2.28 a +3.96, pas 0,25 m
++      aucune case ouverte : le fond de la galerie est plein
++
++--------------------------------------------------------------------------
++CONTROLE 2b — CONFIRMATION DES RAYONS SUSPECTS
++--------------------------------------------------------------------------
++Un rayon suspect n'est pas une percee. Une percee est CONFIRMEE
++quand un carre de 0.10 m de cote, perpendiculaire au rayon, est
++INTEGRALEMENT perce — faisceau de pas 0.025 m sur +/-0.15 m.
++112 amas de sortie mesure(s) : 0 CONFIRME(S), 112 ecarte(s)
++   la plus grande ouverture parmi les amas ecartes : 0.050 m (seuil 0.10 m)
++      ouverture 0.050 m   3 rayon(s)  sortie [-0.01, 6.6, 1.95]  faisceau 13/169 sortant  surface paroi_moins_x
++      ouverture 0.050 m   2 rayon(s)  sortie [-0.17, 6.2, 1.92]  faisceau 16/169 sortant  surface paroi_moins_x
++      ouverture 0.050 m   1 rayon(s)  sortie [0.22, 6.34, 3.07]  faisceau 14/169 sortant  surface toit
++      ouverture 0.050 m   1 rayon(s)  sortie [0.0, 6.61, 2.45]  faisceau 18/169 sortant  surface paroi_moins_x
++      ouverture 0.050 m   1 rayon(s)  sortie [-0.02, 6.63, 2.57]  faisceau 18/169 sortant  surface paroi_moins_x
++   PASS — aucun amas ne porte un carre de 0.10 m integralement perce
++
++--------------------------------------------------------------------------
++CONTROLE 4 — LES CINQ SURFACES (plancher, TOIT, parois, fond)
++--------------------------------------------------------------------------
++Rayons tires du DEHORS vers le noyau, une face a la fois. Methode
++independante du controle 2, et la seule qui nomme le TOIT — que la
++version precedente ne cartographiait nulle part.
++
++  LIRE « 0 CONFIRMEE » ICI COMME « SAINE » EST UNE ERREUR, ET ELLE
++  EST STRUCTURELLE. Ce controle vise le NOYAU (55 %% de la demi-
++  largeur) par des rayons alignes sur les axes. Deux angles morts
++  lui sont propres, mesures sur la geometrie A1_ASYM :
++    * une percee qui ouvre sur la MARGE, entre le noyau et la
++      paroi, n'est pas visee — 59 des 161 percees du controle 2
++      partaient hors du noyau ;
++    * une percee OBLIQUE peut avoir de la roche au zenith et rien
++      sur sa propre direction — 16 cas, invisibles a un raster
++      aligne sur les axes.
++  Le controle 2 part de l'interieur et balaie la sphere entiere.
++  Les deux ne se remplacent pas : le verdict est le PLUS SEVERE
++  des deux, jamais le plus rassurant.
++   plancher       pas 0.050 m   10197 case(s),    0 ouverte(s), 0 bloc(s) assez large(s), 0 confirmee(s)
++   toit           pas 0.050 m   10197 case(s),    0 ouverte(s), 0 bloc(s) assez large(s), 0 confirmee(s)
++   paroi_moins_x  pas 0.050 m    3914 case(s),    0 ouverte(s), 0 bloc(s) assez large(s), 0 confirmee(s)
++   paroi_plus_x   pas 0.050 m    3914 case(s),    0 ouverte(s), 0 bloc(s) assez large(s), 0 confirmee(s)
++   fond           pas 0.050 m    3762 case(s),    0 ouverte(s), 0 bloc(s) assez large(s), 0 confirmee(s)
++   PASS — aucune des cinq faces ne porte une percee confirmee
++
++--------------------------------------------------------------------------
++CONTROLE 3 — LIGNE DE VUE (regle du moteur : cull_back)
++--------------------------------------------------------------------------
++NON VERIFIE — aucun manifeste fourni (--manifeste)
++
++==========================================================================
++GATE — 0 PERCEE CONFIRMEE
++==========================================================================
++percees confirmees : 0  (seuil d'ouverture 0.10 m)
++VERDICT : PASS
++==========================================================================
++sortie brute : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/base/base352_durci.json
++RC=0
+diff --git a/evidence/r2a352_c_instruments/collerette_deux_mesures.log b/evidence/r2a352_c_instruments/collerette_deux_mesures.log
+new file mode 100644
+index 0000000..9c90888
+--- /dev/null
++++ b/evidence/r2a352_c_instruments/collerette_deux_mesures.log
+@@ -0,0 +1,20 @@
++==============================================================================
++COLLERETTE — deux mesures, deux mecanismes
++==============================================================================
++maillage : assets/environment/caves/prototypes/SM_WaterfallCave_BASE352.glb
++   19992 triangles, plan de bouche y = -1.15, pas de coupe 0.050 m
++
++MESURE A — rayons selon la normale locale
++   epaisseur minimale 0.0601 m
++      u 0.10, azimut 140.0 deg
++
++MESURE B — transformee de distance sur une coupe transversale
++   plan utilise : y = -0.95  (le plan de bouche lui-meme est ouvert lateralement)
++   3588 case(s) d'ouverture (creux non relie au bord de la coupe)
++   epaisseur minimale 0.0500 m
++      au point (x -1.97 ; z +2.20) du plan de bouche
++
++==============================================================================
++A = 0.0601 m, B = 0.0500 m, ecart 0.0101 m, seuil 0.60 m
++VERDICT : FAIL — 2 mesure(s) sous le seuil
++==============================================================================
+diff --git a/evidence/r2a352_c_instruments/selftest_30sur30.log b/evidence/r2a352_c_instruments/selftest_30sur30.log
+index d76928f..f921cbe 100644
+--- a/evidence/r2a352_c_instruments/selftest_30sur30.log
++++ b/evidence/r2a352_c_instruments/selftest_30sur30.log
+@@ -19,10 +19,10 @@ Six tunnels identiques a un trou pres. Une sonde qui rend le meme
+ verdict sur les six ne mesure rien, quelle que soit sa couleur.
+ 
+    scelle           trou 0.000 m sur -             suspects   0  confirmees c2=0 c4=0
+-   toit_perce       trou 0.600 m sur toit          suspects 275  confirmees c2=42 c4=1
+-   plancher_perce   trou 0.500 m sur plancher      suspects 159  confirmees c2=37 c4=1
+-   paroi_percee     trou 0.400 m sur paroi_plus_x  suspects  80  confirmees c2=31 c4=1
+-   fond_perce       trou 0.700 m sur fond          suspects 134  confirmees c2=21 c4=1
++   toit_perce       trou 0.600 m sur toit          suspects 243  confirmees c2=39 c4=1
++   plancher_perce   trou 0.500 m sur plancher      suspects 148  confirmees c2=37 c4=1
++   paroi_percee     trou 0.400 m sur paroi_plus_x  suspects  74  confirmees c2=31 c4=1
++   fond_perce       trou 0.700 m sur fond          suspects 113  confirmees c2=21 c4=1
+    trou_d_epingle   trou 0.040 m sur toit          suspects   4  confirmees c2=0 c4=0
+    [PASS] les six tunnels ne recoivent PAS le meme verdict           verts : scelle, trou_d_epingle | rouges : toit_perce, plancher_perce, paroi_percee, fond_perce
+    [PASS] tunnel SCELLE : aucune percee confirmee                    0 rayon(s) suspect(s), tous ecartes
+@@ -30,10 +30,10 @@ verdict sur les six ne mesure rien, quelle que soit sa couleur.
+    [PASS] plancher_perce   : percee confirmee sur la face plancher   controle 2 -> ['plancher'] ; controle 4 -> ['plancher']
+    [PASS] paroi_percee     : percee confirmee sur la face paroi_plus_x controle 2 -> ['paroi_plus_x'] ; controle 4 -> ['paroi_plus_x']
+    [PASS] fond_perce       : percee confirmee sur la face fond       controle 2 -> ['paroi_moins_x', 'paroi_plus_x', 'plancher', 'toit'] ; controle 4 -> ['fond']
+-   [PASS] toit_perce       : sortie a moins de 0.70 m du centre du trou centre reel (0.40 ; 4.00 ; 2.50), sortie la plus proche a 0.21 m
+-   [PASS] plancher_perce   : sortie a moins de 0.63 m du centre du trou centre reel (-0.60 ; 2.50 ; 0.00), sortie la plus proche a 0.29 m
+-   [PASS] paroi_percee     : sortie a moins de 0.56 m du centre du trou centre reel (1.50 ; 6.50 ; 1.20), sortie la plus proche a 0.08 m
+-   [PASS] fond_perce       : sortie a moins de 0.77 m du centre du trou centre reel (0.20 ; 9.25 ; 1.40), sortie la plus proche a 0.07 m
++   [PASS] toit_perce       : sortie a moins de 0.70 m du centre du trou centre reel (0.40 ; 4.00 ; 2.50), sortie la plus proche a 0.22 m
++   [PASS] plancher_perce   : sortie a moins de 0.63 m du centre du trou centre reel (-0.60 ; 2.50 ; 0.00), sortie la plus proche a 0.28 m
++   [PASS] paroi_percee     : sortie a moins de 0.56 m du centre du trou centre reel (1.50 ; 6.50 ; 1.20), sortie la plus proche a 0.06 m
++   [PASS] fond_perce       : sortie a moins de 0.77 m du centre du trou centre reel (0.20 ; 9.25 ; 1.40), sortie la plus proche a 0.06 m
+    [PASS] trou d'epingle 0.040 m de cote : VU (rayons suspects)      4 rayon(s) suspect(s)
+    [PASS] trou d'epingle : REFUSE a la confirmation                  plus grande ouverture mesuree 0.025 m, seuil 0.10 m
+    [PASS] toit_perce       : ouverture mesuree <= cote reel du trou  mesuree 0.300 m, cote reel 0.600 m — la mesure ne SURESTIME pas
+diff --git a/tools/cave_collar.py b/tools/cave_collar.py
+new file mode 100644
+index 0000000..71909dd
+--- /dev/null
++++ b/tools/cave_collar.py
+@@ -0,0 +1,370 @@
++#!/usr/bin/env python3
++# -*- coding: utf-8 -*-
++"""COLLERETTE — deux mesures d'épaisseur qui ne partagent pas leur mécanisme.
++
++POURQUOI DEUX, ET POURQUOI CELLES-CI
++====================================
++
++Un seul rayon qui touche une arête vive n'est pas une preuve d'épaisseur.
++La revue demande donc deux mesures indépendantes de l'épaisseur de
++collerette, et « indépendantes » doit vouloir dire quelque chose de plus
++fort que « deux fonctions différentes » : il faut que la panne de l'une ne
++puisse pas être la panne de l'autre.
++
++  MESURE A — RAYONS SELON LA NORMALE LOCALE. Depuis l'intérieur, un rayon
++  part perpendiculairement à la paroi ; l'épaisseur est la distance entre le
++  premier impact (peau intérieure) et le suivant (peau extérieure). Elle
++  dépend de la normale locale, du lancer de rayon, et de la parité.
++
++  MESURE B — TRANSFORMÉE DE DISTANCE SUR UNE COUPE. On rastérise le plan de
++  la bouche, on classe chaque case en `ouverture` / `roche` / `air libre`
++  par inondation depuis le bord, puis on mesure, pour chaque case du
++  POURTOUR de l'ouverture, la distance à la case d'air libre la plus proche.
++  Aucun rayon, aucune normale, aucune notion de station : de la topologie
++  2D et une distance.
++
++Elles peuvent donc se tromper, mais pas de la même façon. Une normale
++inversée fausse A et laisse B intacte ; un trou trop fin pour la maille
++échappe à B et pas à A.
++
++CE QUE CE FICHIER NE FAIT PAS
++=============================
++
++Il ne recopie pas `tools/blender/probe_cave_collerette.py`, qui mesure par
++sphère inscrite. Trois mesures valent mieux que deux, à condition qu'elles
++soient trois — recopier la troisième en aurait fait une de plus au compteur
++et zéro de plus en preuve.
++
++Usage :
++    python3 tools/cave_collar.py [glb] [--y-bouche -1.15] [--pas 0.05]
++        [--seuil 0.60] [--json sortie.json]
++
++Codes de sortie : 0 = les deux mesures au-dessus du seuil · 1 = au moins une
++en dessous · 3 = BLOQUÉ.
++"""
++
++import argparse
++import json
++import math
++import os
++import sys
++
++sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++import probe_cave_openings as P                                # noqa: E402
++
++
++Y_BOUCHE_DEFAUT = -1.15
++
++
++# ---------------------------------------------------------------------------
++# MESURE A — rayons selon la normale locale
++# ---------------------------------------------------------------------------
++
++def mesure_a(grille, profil, y_bouche, u_max=0.60, pas_u=0.10, azimuts=36):
++    """Épaisseur minimale par rayons perpendiculaires à la paroi.
++
++    On balaie les premières stations — la collerette est le pourtour de la
++    bouche, pas toute la galerie — et, à chaque station, tous les azimuts de
++    la section. L'épaisseur est prise entre le premier et le deuxième impact,
++    en écartant les replis de moins de `ECAILLE_M` : deux impacts trop
++    proches sont le même pli de surface vu deux fois, pas deux peaux.
++    """
++    pire = None
++    details = []
++    u = 0.0
++    while u <= u_max + 1e-9:
++        ax, ay, _, _, _ = profil.station(u)
++        nx, ny = profil.normale(u)
++        depart = (ax, ay, profil.sol(u, 0.0) + 0.90)
++        vide, _ = P.dans_le_vide(grille, depart)
++        if not vide:
++            u += pas_u
++            continue
++        for k in range(azimuts):
++            theta = 2.0 * math.pi * k / azimuts
++            # La direction vit dans le plan de SECTION : normale x vertical.
++            d = (nx * math.cos(theta), ny * math.cos(theta), math.sin(theta))
++            liste = P.impacts(grille, depart, d, 60.0)
++            if len(liste) < 2:
++                continue
++            # UN RAYON RASANT N'EST PAS UNE MESURE D'EPAISSEUR, et c'est
++            # exactement le piege que la revue nomme : « un seul rayon
++            # touchant une arete vive n'est pas une preuve ». `impacts`
++            # rend l'orientation de chaque face ; on exige donc que la
++            # premiere soit traversee en SORTANT du vide et la seconde en
++            # ENTRANT dans l'air, c'est-a-dire deux faces d'orientation
++            # OPPOSEE. Deux faces de meme orientation successives sont un
++            # repli, pas une paroi.
++            entree, orient = liste[0]
++            epaisseur = None
++            for t, o in liste[1:]:
++                if t - entree <= P.ECAILLE_M:
++                    continue
++                if o == orient:
++                    continue
++                epaisseur = t - entree
++                break
++            if epaisseur is None:
++                continue
++            if pire is None or epaisseur < pire:
++                pire = epaisseur
++                details = [dict(u=round(u, 3),
++                                azimut_deg=round(math.degrees(theta), 1),
++                                epaisseur_m=round(epaisseur, 4))]
++        u += pas_u
++    return pire, details
++
++
++# ---------------------------------------------------------------------------
++# MESURE B — transformée de distance sur la coupe du plan de bouche
++# ---------------------------------------------------------------------------
++
++def coupe_du_plan(grille, y, pas, marge=1.0):
++    """Classe le plan `y` en `ouverture`, `roche`, `air libre`.
++
++    La classification vient de la PARITÉ le long de X — une colonne du plan,
++    pas un rayon vers la cavité — puis d'une inondation 2D depuis le bord.
++    Ce qui touche le bord est l'air libre autour du rocher ; ce qui est creux
++    sans toucher le bord est l'ouverture.
++    """
++    lo, hi = grille.aabb()
++    x0, x1 = lo[0] - marge, hi[0] + marge
++    z0, z1 = lo[2] - marge, hi[2] + marge
++    nx = int(math.ceil((x1 - x0) / pas)) + 1
++    nz = int(math.ceil((z1 - z0) / pas)) + 1
++    creux = [[False] * nz for _ in range(nx)]
++    portee = (x1 - x0) + 2.0 * marge
++    for k in range(nz):
++        z = z0 + k * pas
++        liste = P.impacts(grille, (x0 - marge, y, z), (1.0, 0.0, 0.0), portee)
++        bornes = [x0 - marge + t for t, _ in liste]
++        indice = 0
++        for i in range(nx):
++            x = x0 + i * pas
++            while indice < len(bornes) and bornes[indice] <= x:
++                indice += 1
++            creux[i][k] = (indice % 2 == 0)
++    # Inondation 2D depuis le bord : l'air libre.
++    libre = [[False] * nz for _ in range(nx)]
++    pile = []
++    for i in range(nx):
++        for k in (0, nz - 1):
++            if creux[i][k] and not libre[i][k]:
++                libre[i][k] = True
++                pile.append((i, k))
++    for k in range(nz):
++        for i in (0, nx - 1):
++            if creux[i][k] and not libre[i][k]:
++                libre[i][k] = True
++                pile.append((i, k))
++    while pile:
++        i, k = pile.pop()
++        for di, dk in ((1, 0), (-1, 0), (0, 1), (0, -1)):
++            a, c = i + di, k + dk
++            if 0 <= a < nx and 0 <= c < nz and creux[a][c] and not libre[a][c]:
++                libre[a][c] = True
++                pile.append((a, c))
++    return dict(x0=x0, z0=z0, pas=pas, nx=nx, nz=nz, creux=creux, libre=libre)
++
++
++def mesure_b(coupe):
++    """Distance minimale du POURTOUR de l'ouverture à l'air libre.
++
++    Transformée de distance par vagues successives depuis l'air libre — un
++    Dijkstra à poids uniformes sur la grille, en 8-connexité pour que les
++    diagonales ne surestiment pas la distance de 41 %.
++
++    Rend `(epaisseur_min, point, cases_ouverture)`. Une ouverture vide ou
++    directement collée à l'air libre rend 0,0 : ce n'est pas une collerette
++    fine, c'est une collerette ABSENTE, et les deux doivent se distinguer.
++    """
++    nx, nz, pas = coupe["nx"], coupe["nz"], coupe["pas"]
++    creux, libre = coupe["creux"], coupe["libre"]
++    ouverture = [(i, k) for i in range(nx) for k in range(nz)
++                 if creux[i][k] and not libre[i][k]]
++    if not ouverture:
++        return None, None, 0
++    # Vagues depuis l'air libre, en traversant la ROCHE uniquement.
++    INF = float("inf")
++    dist = [[INF] * nz for _ in range(nx)]
++    front = []
++    for i in range(nx):
++        for k in range(nz):
++            if libre[i][k]:
++                dist[i][k] = 0.0
++                front.append((i, k))
++    voisins = [(1, 0, 1.0), (-1, 0, 1.0), (0, 1, 1.0), (0, -1, 1.0),
++               (1, 1, math.sqrt(2.0)), (1, -1, math.sqrt(2.0)),
++               (-1, 1, math.sqrt(2.0)), (-1, -1, math.sqrt(2.0))]
++    while front:
++        suivant = []
++        for i, k in front:
++            for di, dk, poids in voisins:
++                a, c = i + di, k + dk
++                if not (0 <= a < nx and 0 <= c < nz):
++                    continue
++                # On ne progresse QUE dans la roche : la distance mesurée est
++                # une épaisseur de matière, pas une distance à vol d'oiseau.
++                if creux[a][c] and not libre[a][c]:
++                    d = dist[i][k] + poids
++                    if d < dist[a][c]:
++                        dist[a][c] = d
++                        suivant.append((a, c))
++                    continue
++                if creux[a][c]:
++                    continue
++                d = dist[i][k] + poids
++                if d < dist[a][c]:
++                    dist[a][c] = d
++                    suivant.append((a, c))
++        front = suivant
++    # Le POURTOUR de l'ouverture : les cases d'ouverture qui touchent la roche.
++    pire, ou = None, None
++    for i, k in ouverture:
++        for di, dk, _ in voisins:
++            a, c = i + di, k + dk
++            if not (0 <= a < nx and 0 <= c < nz):
++                continue
++            if creux[a][c]:
++                continue
++            d = dist[a][c] * pas
++            if d == INF:
++                continue
++            if pire is None or d < pire:
++                pire = d
++                ou = (coupe["x0"] + i * pas, coupe["z0"] + k * pas)
++    return pire, ou, len(ouverture)
++
++
++# ---------------------------------------------------------------------------
++
++def mesurer(chemin, y_bouche=Y_BOUCHE_DEFAUT, pas=0.05, triangles=None):
++    """Les deux mesures sur un maillage, ou sur une liste de triangles."""
++    if triangles is None:
++        triangles, _ = P.triangles_du_glb(chemin)
++    grille = P.Grille(triangles)
++    profil = P.PROFIL_GROTTE
++    a, detail_a = mesure_a(grille, profil, y_bouche)
++    # LE PLAN DE LA BOUCHE N'EST PAS TOUJOURS UTILISABLE, ET C'EST MESURE.
++    #
++    # A y = -1,15 le porche est EVASE et son sol plonge sous le terrain : le
++    # creux de l'ouverture communique lateralement avec l'air libre DANS LE
++    # PLAN, il n'y est donc pas clos, et l'inondation 2D ne trouve aucune
++    # case d'ouverture. Rendre 0 la-dessus serait annoncer une collerette
++    # absente ; rendre None serait perdre la mesure.
++    #
++    # On avance donc dans la galerie jusqu'au premier plan ou la section est
++    # une VRAIE ouverture close, et on dit lequel. C'est une limite de la
++    # methode, pas un reglage : elle est rapportee avec le resultat.
++    b = point_b = None
++    cases = 0
++    plan_utilise = None
++    y = y_bouche
++    while y <= y_bouche + 1.60 + 1e-9:
++        coupe = coupe_du_plan(grille, y, pas)
++        b, point_b, cases = mesure_b(coupe)
++        if cases > 0 and b is not None:
++            plan_utilise = y
++            break
++        y += 0.20
++    return dict(mesure_a_m=a, detail_a=detail_a, mesure_b_m=b,
++                point_b=point_b, cases_ouverture=cases,
++                plan_utilise_y=plan_utilise,
++                triangles=len(triangles))
++
++
++def main():
++    ap = argparse.ArgumentParser(
++        description="Epaisseur de collerette par deux mecanismes distincts.")
++    ap.add_argument("glb", nargs="?",
++                    default="assets/environment/caves/prototypes/"
++                            "SM_WaterfallCave_BASE352.glb")
++    ap.add_argument("--y-bouche", type=float, default=Y_BOUCHE_DEFAUT)
++    ap.add_argument("--pas", type=float, default=0.05)
++    ap.add_argument("--seuil", type=float, default=0.60)
++    ap.add_argument("--json", default=None)
++    args = ap.parse_args()
++
++    print("=" * 78)
++    print("COLLERETTE — deux mesures, deux mecanismes")
++    print("=" * 78)
++    if not os.path.isfile(args.glb):
++        print("BLOQUE: maillage introuvable : %s" % args.glb)
++        return 3
++    try:
++        resultat = mesurer(args.glb, args.y_bouche, args.pas)
++    except P.Blocage as erreur:
++        print("BLOQUE: %s" % erreur)
++        return 3
++
++    print("maillage : %s" % args.glb)
++    print("   %d triangles, plan de bouche y = %+.2f, pas de coupe %.3f m"
++          % (resultat["triangles"], args.y_bouche, args.pas))
++    print()
++    print("MESURE A — rayons selon la normale locale")
++    if resultat["mesure_a_m"] is None:
++        print("   AUCUNE epaisseur mesurable : aucun rayon ne rencontre deux "
++              "peaux.")
++    else:
++        print("   epaisseur minimale %.4f m" % resultat["mesure_a_m"])
++        for d in resultat["detail_a"]:
++            print("      u %.2f, azimut %.1f deg" % (d["u"], d["azimut_deg"]))
++    print()
++    print("MESURE B — transformee de distance sur une coupe transversale")
++    if resultat.get("plan_utilise_y") is None:
++        print("   aucun plan entre y = %+.2f et y = %+.2f ne porte une "
++              "ouverture close" % (args.y_bouche, args.y_bouche + 1.60))
++    else:
++        print("   plan utilise : y = %+.2f%s"
++              % (resultat["plan_utilise_y"],
++                 "" if abs(resultat["plan_utilise_y"] - args.y_bouche) < 1e-9
++                 else "  (le plan de bouche lui-meme est ouvert lateralement)"))
++    print("   %d case(s) d'ouverture (creux non relie au bord de la coupe)"
++          % resultat["cases_ouverture"])
++    if resultat["mesure_b_m"] is None:
++        print("   AUCUNE ouverture trouvee dans le plan : la mesure ne "
++              "s'applique pas ici.")
++    else:
++        print("   epaisseur minimale %.4f m" % resultat["mesure_b_m"])
++        if resultat["point_b"]:
++            print("      au point (x %+.2f ; z %+.2f) du plan de bouche"
++                  % resultat["point_b"])
++    print()
++    print("=" * 78)
++    valeurs = [v for v in (resultat["mesure_a_m"], resultat["mesure_b_m"])
++               if v is not None]
++    if len(valeurs) < 2:
++        print("NON VERIFIE — une des deux mesures n'a pas abouti ; deux")
++        print("mecanismes dont un seul repond ne corroborent rien.")
++        rc = 1
++    else:
++        ecart = abs(valeurs[0] - valeurs[1])
++        print("A = %.4f m, B = %.4f m, ecart %.4f m, seuil %.2f m"
++              % (valeurs[0], valeurs[1], ecart, args.seuil))
++        sous = [v for v in valeurs if v < args.seuil]
++        if sous:
++            print("VERDICT : FAIL — %d mesure(s) sous le seuil" % len(sous))
++            rc = 1
++        else:
++            print("VERDICT : PASS — les deux mecanismes sont au-dessus du "
++                  "seuil")
++            rc = 0
++        if ecart > 0.25:
++            print("   ATTENTION: les deux mesures divergent de %.3f m. Elles "
++                  "ne mesurent" % ecart)
++            print("   pas la meme chose, ou l'une se trompe — l'ecart est "
++                  "rapporte, pas moyenne.")
++    print("=" * 78)
++    if args.json:
++        dossier = os.path.dirname(args.json)
++        if dossier and not os.path.isdir(dossier):
++            os.makedirs(dossier)
++        with open(args.json, "w", encoding="utf-8") as poignee:
++            json.dump(dict(glb=args.glb, seuil_m=args.seuil, **resultat),
++                      poignee, indent=1, sort_keys=True, ensure_ascii=False)
++        print("sortie brute : %s" % args.json)
++    return rc
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff --git a/tools/probe_cave_adversarial.py b/tools/probe_cave_adversarial.py
+index 0eda3ad..525b2ea 100644
+--- a/tools/probe_cave_adversarial.py
++++ b/tools/probe_cave_adversarial.py
+@@ -93,7 +93,8 @@ def _anneau(centre, normale, demi_gauche, demi_droite, sol, toit):
+ 
+ 
+ def tunnel(stations, epaisseur_gauche=0.80, epaisseur_droite=0.80,
+-           epaisseur_toit=0.80, epaisseur_sol=0.80, trous=(), collerette=None):
++           epaisseur_toit=0.80, epaisseur_sol=0.80, trous=(), collerette=None,
++           prolonge=0.60):
+     """Tunnel fermé : peau intérieure + peau extérieure + bouchons.
+ 
+     `stations` : liste de `(ax, ay, demi_gauche, demi_droite, sol, toit)`.
+@@ -133,6 +134,31 @@ def tunnel(stations, epaisseur_gauche=0.80, epaisseur_droite=0.80,
+                   interieur[i + 1][k2], interieur[i][k2])
+             _quad(exterieur[i][k2], exterieur[i + 1][k2],
+                   exterieur[i + 1][k], exterieur[i][k])
++    # PROLONGE AVANT — comme `PROLONGE_PORCHE_M` du generateur.
++    #
++    # Sans lui, la station 0 EST le bord du maillage : un rayon vertical
++    # tire depuis y = -1,15 rase l'arete de la premiere nappe et la manque
++    # numeriquement. La carte du plancher rendait 13 « absences » de sol a
++    # cette seule station, sur une fixture parfaitement close. Le vrai
++    # generateur prolonge le tube de 3,05 m devant le porche pour la meme
++    # raison ; la fixture doit le faire aussi, sinon elle eprouve un cas que
++    # la production ne rencontre jamais.
++    if prolonge > 0.0:
++        tgx, tgy = -normales[0][1], normales[0][0]
++        avance = (-tgx * prolonge, -tgy * prolonge)
++        devant_in = [(p[0] + avance[0], p[1] + avance[1], p[2])
++                     for p in interieur[0]]
++        devant_out = [(p[0] + avance[0], p[1] + avance[1], p[2])
++                      for p in exterieur[0]]
++        for k in range(SEGMENTS):
++            k2 = (k + 1) % SEGMENTS
++            _quad(devant_in[k], interieur[0][k], interieur[0][k2],
++                  devant_in[k2])
++            _quad(exterieur[0][k2], devant_out[k2], devant_out[k],
++                  exterieur[0][k])
++        interieur[0] = devant_in
++        exterieur[0] = devant_out
++
+     # BOUCHON AVANT SEULEMENT. L'arriere en avait un aussi, et depuis que
+     # le fond est un vrai solide cet anneau le TRAVERSE : c'est une membrane
+     # interne, elle rend la parite impaire, et elle fabriquait des percees
+@@ -582,59 +608,98 @@ def _epreuve_trou(journal, numero, face, titre, dossier, demi=0.55):
+         "geometrie intacte : %d percee(s)" % n_intact)
+ 
+ 
+-def epreuve_5_collerette(journal, dossier):
+-    """Collerette amputée localement -> rouge.
++MAILLAGE_COLLERETTE = ("/home/user/zelda-r2a352/b_collerette/assets/"
++                       "environment/caves/SM_WaterfallCave.glb")
++
+ 
+-    La collerette est le bourrelet de la bouche. Son amputation n'ouvre pas
+-    la galerie : elle AMINCIT le pourtour. Le contrôle qui doit rougir n'est
+-    donc pas celui des percées mais celui de l'ÉPAISSEUR, et les confondre
+-    ferait passer une collerette rongée pour saine.
++def epreuve_5_collerette(journal, dossier):
++    """Collerette amputee sur le MAILLAGE REEL -> rouge.
++
++    LA PREMIERE VERSION SABOTAIT UNE FIXTURE, ET LE SABOTAGE NE MORDAIT PAS.
++    Elle visait le plafond de la station 0 d'un tunnel synthetique, ou il n'y
++    avait aucun bourrelet : l'amputation ne retirait rien, l'epaisseur ne
++    bougeait pas, et l'epreuve rendait « le controle ne peut pas echouer ».
++    C'etait exact, et c'etait un defaut de la fixture.
++
++    Il existe maintenant une cible reelle : l'agent collerette a livre
++    `SM_Env_Visiere`, fondue dans la matiere `MAT_CaveRock_Collar`. On ampute
++    donc cette matiere-la, dans une boite autour de la bouche, sur le
++    maillage LIVRE — et les deux mesures de `tools/cave_collar.py` doivent
++    tomber.
++
++    Le maillage source n'est jamais reecrit : les variantes vivent en
++    memoire. La « restauration » se prouve donc en verifiant que le sha256 du
++    fichier d'origine n'a pas bouge.
+     """
+-    journal.epreuve("5", "COLLERETTE amputee localement")
+-    stations = stations_asym(gauche=2.20, droite=0.80)
+-    profil = profil_de(stations, "asym")
+-    entiere = os.path.join(dossier, "collerette_entiere.glb")
+-    ecrire_glb(entiere, tunnel(stations, collerette=0.60))
+-    avant = empreinte(entiere)
+-    rongee = os.path.join(dossier, "collerette_rongee.glb")
+-    ecrire_glb(rongee, tunnel(stations, collerette=0.60,
+-                              trous=((0, "collerette", 0.70),)))
+-
+-    def _epaisseur_bouche(chemin):
+-        tris, _ = P.triangles_du_glb(chemin)
+-        grille = P.Grille(tris)
+-        ax, ay, _, _, _ = profil.station(0.30)
+-        mini = None
+-        for k in range(24):
+-            theta = 2.0 * math.pi * k / 24.0
+-            depart = (ax, ay, profil.sol(0.30, 0.0) + 0.90)
+-            d = (math.cos(theta), 0.0, math.sin(theta))
+-            liste = P.impacts(grille, depart, d, 40.0)
+-            if len(liste) >= 2:
+-                e = liste[1][0] - liste[0][0]
+-                if mini is None or e < mini:
+-                    mini = e
+-        return mini
+-
+-    e_entiere = _epaisseur_bouche(entiere)
+-    e_rongee = _epaisseur_bouche(rongee)
+-    journal.dire("   collerette entiere : epaisseur minimale %s m"
+-                 % (("%.3f" % e_entiere) if e_entiere else "AUCUNE"))
+-    journal.dire("   collerette rongee  : epaisseur minimale %s m"
+-                 % (("%.3f" % e_rongee) if e_rongee else "AUCUNE"))
+-    ecrire_glb(entiere, tunnel(stations, collerette=0.60))
+-    journal.restauration(avant, empreinte(entiere))
++    journal.epreuve("5", "COLLERETTE amputee sur le MAILLAGE REEL")
++    import cave_collar as C
++    if not os.path.isfile(MAILLAGE_COLLERETTE):
++        journal.dire("   BLOQUE : maillage de collerette introuvable : %s"
++                     % MAILLAGE_COLLERETTE)
++        journal.courante["rouge"] = False
++        journal.courante["vert"] = False
++        journal.echecs.append("5 — maillage de collerette absent")
++        return False
++    avant = empreinte(MAILLAGE_COLLERETTE)
++    tris, matieres = P.triangles_du_glb(MAILLAGE_COLLERETTE)
++    journal.dire("   maillage livre : %d triangles, sha256 %s"
++                 % (len(tris), avant[:16]))
++
++    # L'AMPUTATION EST BORNEE ET MESUREE. On retire la matiere de collerette
++    # dans une boite de 3 m autour du plan de bouche : ni tout le maillage —
++    # ce qui prouverait seulement qu'un maillage vide est mince — ni si peu
++    # que rien ne change.
++    tris_collerette, _ = P.triangles_du_glb(MAILLAGE_COLLERETTE)
++    garde = []
++    retires = 0
++    for t in tris_collerette:
++        bary = tuple(sum(s[k] for s in t) / 3.0 for k in range(3))
++        dans_boite = (abs(bary[1] - C.Y_BOUCHE_DEFAUT) <= 1.50
++                      and abs(bary[0]) <= 3.00 and -1.0 <= bary[2] <= 3.50)
++        if dans_boite:
++            retires += 1
++            continue
++        garde.append(t)
++    journal.dire("   amputation : %d triangle(s) retire(s) sur %d, dans une "
++                 "boite de 3,0 m autour de la bouche" % (retires, len(tris)))
++
++    intact = C.mesurer(MAILLAGE_COLLERETTE, triangles=tris)
++    ampute = C.mesurer(MAILLAGE_COLLERETTE, triangles=garde)
++    for nom, r in (("intact", intact), ("ampute", ampute)):
++        journal.dire("   %-7s : mesure A %s m, mesure B %s m (plan y %s)"
++                     % (nom,
++                        ("%.4f" % r["mesure_a_m"]) if r["mesure_a_m"] is not None
++                        else "AUCUNE",
++                        ("%.4f" % r["mesure_b_m"]) if r["mesure_b_m"] is not None
++                        else "AUCUNE",
++                        ("%+.2f" % r["plan_utilise_y"])
++                        if r.get("plan_utilise_y") is not None else "aucun"))
++    journal.restauration(avant, empreinte(MAILLAGE_COLLERETTE))
+     journal.archiver("epreuve5_collerette.json",
+-                     json.dumps(dict(entiere=e_entiere, rongee=e_rongee),
+-                                indent=1))
+-    rouge = (e_rongee is None
+-             or (e_entiere is not None and e_rongee < e_entiere - 0.10))
++                     json.dumps(dict(maillage=MAILLAGE_COLLERETTE,
++                                     sha=avant, retires=retires,
++                                     intact={k: v for k, v in intact.items()
++                                             if k != "detail_a"},
++                                     ampute={k: v for k, v in ampute.items()
++                                             if k != "detail_a"}), indent=1))
++
++    def _tombe(cle):
++        a, b = intact[cle], ampute[cle]
++        if a is None:
++            return False
++        return b is None or b < a - 0.02
++
++    rouge = _tombe("mesure_a_m") or _tombe("mesure_b_m")
++    vert = (intact["mesure_a_m"] is not None
++            and intact["mesure_b_m"] is not None)
+     return journal.rouge_puis_vert(
+-        rouge, e_entiere is not None and e_entiere >= 0.55,
+-        "amputation : epaisseur minimale tombe a %s"
+-        % (("%.3f m" % e_rongee) if e_rongee else "aucune matiere"),
+-        "collerette entiere : %.3f m, au-dessus du seuil de 0,55 m"
+-        % (e_entiere or 0.0))
++        rouge, vert,
++        "amputation de %d triangle(s) : au moins une des deux mesures tombe"
++        % retires,
++        "maillage livre : les deux mecanismes rendent une valeur "
++        "(A %s, B %s)"
++        % (("%.3f m" % intact["mesure_a_m"]) if intact["mesure_a_m"] else "-",
++           ("%.3f m" % intact["mesure_b_m"]) if intact["mesure_b_m"] else "-"))
+ 
+ 
+ def epreuve_6_paroi_mince(journal, dossier):
+@@ -884,50 +949,83 @@ def epreuve_10_courbure(journal, dossier):
+     journal.dire("   le plancher monte de %.2f m a %.2f m"
+                  % (-stations[0][4], -stations[-1][4]))
+ 
+-    def _fautes(le_long_de_x):
+-        """Carte du plancher, ancien ou nouveau placement."""
+-        fautes = 0
+-        lignes = 0
+-        u = 0.0
+-        while u <= len(profil.cavite) - 1 + 1e-9:
+-            ax, ay, hw, cle, palier = profil.station(u)
+-            nx, ny = profil.normale(u)
+-            for f in (-0.60, -0.30, 0.0, 0.30, 0.60):
+-                if le_long_de_x:
+-                    # ANCIEN : le long de X, demi-largeur SYMETRIQUE.
+-                    px, py = ax + f * hw, ay
+-                    sol = profil.sol(u, f)
+-                else:
+-                    # NOUVEAU : le long de la NORMALE, largeur du COTE, et
+-                    # sol lu a la station REELLE du point.
+-                    lat = f * profil.demi_largeur(u, f)
+-                    px, py = ax + lat * nx, ay + lat * ny
+-                    u_reel = P.station_reelle_du_point(profil, (px, py, 0.0))
+-                    sol = profil.sol(u_reel, f)
+-                depart = (px, py, sol + 0.90)
+-                vide, _ = P.dans_le_vide(grille, depart)
+-                if not vide:
+-                    continue
+-                lignes += 1
+-                liste = P.impacts(grille, depart, (0.0, 0.0, -1.0))
+-                if not liste or liste[0][0] - 0.90 > P.PLANCHER_TOLERANCE_M:
+-                    fautes += 1
+-            u += 0.5
+-        return fautes, lignes
+-
+-    f_ancien, n_ancien = _fautes(True)
+-    f_nouveau, n_nouveau = _fautes(False)
+-    journal.dire("   ANCIEN echantillonnage (le long de X, largeur "
+-                 "symetrique) : %d faute(s) sur %d point(s) sondes"
+-                 % (f_ancien, n_ancien))
+-    journal.dire("   NOUVEAU echantillonnage (normale, largeur du cote, sol "
+-                 "a la station reelle) : %d faute(s) sur %d"
+-                 % (f_nouveau, n_nouveau))
+-    journal.dire("   la roche est la MEME dans les deux cas : le rouge est "
+-                 "produit par l'instrument, pas par la geometrie.")
++    # À MÊME JEU DE POINTS — SEUL LE PLACEMENT CHANGE.
++    #
++    # La première version comparait 6 fautes sur 73 points à 5 sur 85. Deux
++    # nombres qui ne portent pas sur le même échantillon ne comparent rien :
++    # le dénominateur bougeait parce que les points de l'ancien placement
++    # tombaient dans la roche et étaient sautés. L'épreuve mesurait donc à la
++    # fois la perte de couverture ET l'erreur de hauteur, mélangées.
++    #
++    # Le jeu de couples `(u, f)` est désormais engendré UNE fois. Chaque
++    # couple reçoit ses deux placements, et la comparaison de fautes ne porte
++    # que sur les couples où LES DEUX tombent dans le vide : à ce moment-là,
++    # le seul écart possible est la hauteur attendue.
++    couples = []
++    u = 0.0
++    while u <= len(profil.cavite) - 1 + 1e-9:
++        for f in (-0.60, -0.30, 0.0, 0.30, 0.60):
++            couples.append((u, f))
++        u += 0.5
++
++    def _place(u, f, le_long_de_x):
++        ax, ay, hw, cle, palier = profil.station(u)
++        nx, ny = profil.normale(u)
++        if le_long_de_x:
++            # ANCIEN : le long de X, demi-largeur SYMETRIQUE, sol lu a la
++            # station NOMINALE.
++            px, py = ax + f * hw, ay
++            sol = profil.sol(u, f)
++        else:
++            # NOUVEAU : le long de la NORMALE, largeur du COTE, sol lu a la
++            # station REELLE du point.
++            lat = f * profil.demi_largeur(u, f)
++            px, py = ax + lat * nx, ay + lat * ny
++            sol = profil.sol(P.station_reelle_du_point(profil, (px, py, 0.0)), f)
++        return (px, py, sol + 0.90)
++
++    def _verdict(depart):
++        """(dans_le_vide, faute). Une faute suppose le point dans le vide."""
++        vide, _ = P.dans_le_vide(grille, depart)
++        if not vide:
++            return False, False
++        liste = P.impacts(grille, depart, (0.0, 0.0, -1.0))
++        return True, (not liste
++                      or liste[0][0] - 0.90 > P.PLANCHER_TOLERANCE_M)
++
++    vide_ancien = vide_nouveau = 0
++    communs = f_ancien = f_nouveau = 0
++    for u_c, f_c in couples:
++        va, fa = _verdict(_place(u_c, f_c, True))
++        vn, fn = _verdict(_place(u_c, f_c, False))
++        vide_ancien += 1 if va else 0
++        vide_nouveau += 1 if vn else 0
++        if va and vn:
++            communs += 1
++            f_ancien += 1 if fa else 0
++            f_nouveau += 1 if fn else 0
++    journal.dire("   %d couple(s) (u, f) engendres UNE fois, deux placements"
++                 % len(couples))
++    journal.dire("   tombent dans le vide : ANCIEN %d, NOUVEAU %d — l'ancien "
++                 "perd %d point(s) dans la roche"
++                 % (vide_ancien, vide_nouveau, vide_nouveau - vide_ancien))
++    journal.dire("   sur les %d couple(s) ou LES DEUX sont dans le vide :"
++                 % communs)
++    journal.dire("      ANCIEN  (X, largeur symetrique, station nominale) : "
++                 "%d faute(s)" % f_ancien)
++    journal.dire("      NOUVEAU (normale, largeur du cote, station reelle) : "
++                 "%d faute(s)" % f_nouveau)
++    journal.dire("   meme roche, meme jeu de points, meme denominateur : "
++                 "l'ecart est entierement produit par le placement.")
++    n_ancien = n_nouveau = communs
++
+     journal.archiver("epreuve10_courbure.json",
+                      json.dumps(dict(ecart_normale_deg=[min(ecarts),
+                                                         max(ecarts)],
++                                     couples=len(couples),
++                                     communs=communs,
++                                     vide_ancien=vide_ancien,
++                                     vide_nouveau=vide_nouveau,
+                                      ancien=dict(fautes=f_ancien,
+                                                  points=n_ancien),
+                                      nouveau=dict(fautes=f_nouveau,
+@@ -935,9 +1033,10 @@ def epreuve_10_courbure(journal, dossier):
+                                 indent=1))
+     return journal.rouge_puis_vert(
+         f_ancien > 0, f_nouveau == 0,
+-        "le long de X : %d faute(s) sur une roche saine" % f_ancien,
+-        "le long de la normale : %d faute(s) sur %d point(s)"
+-        % (f_nouveau, n_nouveau))
++        "le long de X : %d faute(s) sur %d couples communs, roche saine"
++        % (f_ancien, communs),
++        "le long de la normale : %d faute(s) sur les MEMES %d couples"
++        % (f_nouveau, communs))
+ 
+ 
+ def main():
+diff --git a/tools/probe_cave_openings.py b/tools/probe_cave_openings.py
+index ddc4df6..c757fab 100644
+--- a/tools/probe_cave_openings.py
++++ b/tools/probe_cave_openings.py
+@@ -192,11 +192,32 @@ EPSILON_MARCHE = 1e-4
+ ## est pathologique et on le dit au lieu de boucler.
+ IMPACTS_MAX = 64
+ 
+-## Part minimale de la sphère qui doit rencontrer de la roche pour qu'un
+-## point d'échantillonnage compte comme « dans la cavité ». Voir le
+-## commentaire de `controle_jour` : 0,50 ne peut pas absoudre un trou, il
+-## écarte seulement les points qui ne sont plus dans une grotte du tout.
+-ENCLOSURE_MIN = 0.50
++## TREIZIÈME DÉFAUT, ET IL A FABRIQUÉ 101 PERCÉES.
++##
++## Ce seuil comptait une direction comme « enclose » dès que `impacts()`
++## rendait quelque chose dans les 40 m. Ce n'est pas « je suis dans une
++## grotte » : c'est « je vois de la roche quelque part ». Un point posé EN
++## PLEIN AIR contre un massif de vingt mètres voit de la roche dans les
++## trois quarts du ciel et passait donc un seuil de 0,50 sans difficulté.
++##
++## Mesuré sur `SM_WaterfallCave_BASE352.glb`, sur les origines des 101
++## percées confirmées :
++##
++##   * **81 origines sur 150 ont au moins UNE direction cardinale qui ne
++##     rencontre aucune roche** — vers le haut, ou vers +X, à l'infini ;
++##   * 19 à 29 des 100 directions de sphère s'échappent sans rien toucher ;
++##   * et l'enclosure mesurée valait pourtant 0,71 à 0,81.
++##
++## Un point d'où l'on voit le ciel n'est pas dans une grotte. Le critère est
++## donc désormais : AUCUNE direction ne doit s'échapper — sauf par la
++## bouche, qui est une ouverture légitime et que `sort_par_la_bouche` sait
++## reconnaître. Le seuil monte en conséquence.
++ENCLOSURE_MIN = 0.95
++
++## Les six cardinales doivent TOUTES rencontrer de la roche ou sortir par la
++## bouche. C'est le test qui sépare le plus franchement le dedans du dehors,
++## et c'est celui qui manquait.
++CARDINALES_ENCLOSES_EXIGEES = 6
+ 
+ 
+ # ---------------------------------------------------------------------------
+@@ -612,7 +633,19 @@ def offsets_lateraux(profil, u, pas_lateral_m, marge_paroi_m=0.05,
+         # laisserait l'air situé au-delà du nominal hors de portée, et c'est
+         # exactement le genre de bande où un défaut se cache — celle dont le
+         # profil déclaré ignore l'existence.
+-        demi = max(nominale, mesuree) if mesuree is not None else nominale
++        # LA PAROI MESUREE FAIT FOI QUAND ELLE EXISTE.
++        #
++        # `max(nominale, mesuree)` visait a ne pas manquer l'air situe
++        # au-dela du nominal. Sur ce maillage il fait l'inverse du bien
++        # voulu : aux stations 4 a 6 le facteur `gauche` vaut 1,68 a 1,69
++        # pour un `hw` de 2,60 a 3,00, soit une demi-largeur NOMINALE de
++        # 4,4 a 5,1 m — bien au-dela de la cavite reelle. Les echantillons
++        # sortaient du massif, et 101 percees « confirmees » en sont nees.
++        #
++        # La couverture de l'air situe au-dela du nominal n'est pas perdue :
++        # `tools/cave_frame.py` mesure l'intervalle creux reel et sonde
++        # jusqu'a ses bornes. C'est son travail, pas celui-ci.
++        demi = mesuree if mesuree is not None else nominale
+         limite = demi - marge_paroi_m
+         if limite <= 0.0:
+             continue
+@@ -629,7 +662,7 @@ def offsets_lateraux(profil, u, pas_lateral_m, marge_paroi_m=0.05,
+ 
+ 
+ def points_interieurs(pas_long, fractions_lat, hauteurs, profil=None,
+-                      pas_lateral_m=None, marge_paroi_m=0.05):
++                      pas_lateral_m=None, marge_paroi_m=0.05, grille=None):
+     """Points d'échantillonnage DANS le vide de la galerie.
+ 
+     Les stations 0, 1, 7 et 8 sont incluses — c'est précisément ce que les
+@@ -690,8 +723,18 @@ def points_interieurs(pas_long, fractions_lat, hauteurs, profil=None,
+             # même. On le renormalise pour les champs qui attendent une
+             # fraction (`sol`, `lateral`), afin que le reste de la sonde ne
+             # change pas de contrat.
++            #
++            # LES PAROIS SONT MESURÉES quand une grille est fournie : c'est
++            # ce qui empêche l'échantillonnage de sortir du massif là où le
++            # profil déclaré est plus large que la roche.
++            largeurs = None
++            if grille is not None:
++                largeurs = (largeur_reelle_mesuree(grille, profil, u, -1.0,
++                                                   hauteurs)[0],
++                            largeur_reelle_mesuree(grille, profil, u, 1.0,
++                                                   hauteurs)[0])
+             lateraux = offsets_lateraux(profil, u, pas_lateral_m,
+-                                        marge_paroi_m)
++                                        marge_paroi_m, largeurs)
+         else:
+             lateraux = None
+         for f in (fractions_lat if lateraux is None else lateraux):
+@@ -1018,15 +1061,27 @@ def _controle_jour(grille, echantillons, directions, profil):
+         # seuil est bas EXPRÈS — il ne peut pas absoudre un vrai trou, car
+         # un trou qui ouvrirait plus de la moitié du ciel ne serait plus un
+         # trou mais le dehors.
+-        rencontres = sum(1 for d in directions
+-                         if impacts(grille, ech["p"], d, 40.0))
++        # UNE DIRECTION EST ACCEPTABLE SI ELLE RENCONTRE DE LA ROCHE **OU**
++        # SI ELLE SORT PAR LA BOUCHE. Sans le second terme, tout point du
++        # vestibule serait declare hors cavite, parce qu'une grotte a par
++        # definition une ouverture. Avec le seul premier terme et un seuil
++        # bas, un point du dehors passait. Il faut les deux.
++        rencontres = sum(
++            1 for d in directions
++            if impacts(grille, ech["p"], d, 40.0)
++            or sort_par_la_bouche(ech["p"], d, profil))
+         part = rencontres / float(len(directions))
+-        if part < ENCLOSURE_MIN:
++        cardinales = sum(
++            1 for d in AXES
++            if impacts(grille, ech["p"], d, 60.0)
++            or sort_par_la_bouche(ech["p"], d, profil))
++        if part < ENCLOSURE_MIN or cardinales < CARDINALES_ENCLOSES_EXIGEES:
+             hors_cavite.append(dict(station=ech["station"],
+                                     x=round(ech["p"][0], 2),
+                                     y=round(ech["p"][1], 2),
+                                     z=round(ech["p"][2], 2),
+-                                    part_enclose=round(part, 3)))
++                                    part_enclose=round(part, 3),
++                                    cardinales_encloses=cardinales))
+             continue
+         for direction in directions:
+             if sort_par_la_bouche(ech["p"], direction, profil):
+@@ -1055,7 +1110,8 @@ def _controle_jour(grille, echantillons, directions, profil):
+ 
+ 
+ def carte_du_plancher(grille, pas_long, fractions, profil=None,
+-                      pas_lateral_m=None, marge_paroi_m=0.05):
++                      pas_lateral_m=None, marge_paroi_m=0.05,
++                      grille_parois=None):
+     """Où le plancher existe-t-il, et où manque-t-il ?
+ 
+     Le contrôle 1 rend une liste de fautes ; celle-ci rend la CARTE, parce
+@@ -1094,8 +1150,14 @@ def carte_du_plancher(grille, pas_long, fractions, profil=None,
+         ax, ay, hw, cle, palier = profil.station(u)
+         nx, ny = profil.normale(u)
+         if pas_lateral_m is not None:
++            largeurs = None
++            if grille_parois is not None:
++                largeurs = (largeur_reelle_mesuree(grille_parois, profil, u,
++                                                   -1.0)[0],
++                            largeur_reelle_mesuree(grille_parois, profil, u,
++                                                   1.0)[0])
+             lateraux = offsets_lateraux(profil, u, pas_lateral_m,
+-                                        marge_paroi_m)
++                                        marge_paroi_m, largeurs)
+         else:
+             lateraux = [f * profil.demi_largeur(u, f) for f in fractions]
+         presents, absents = 0, 0
+@@ -2874,7 +2936,8 @@ def main():
+     ## Voir `offsets_lateraux`.
+     pas_lateral = args.pas_lateral
+     echantillons = points_interieurs(pas_long, fractions, hauteurs, profil,
+-                                     pas_lateral_m=pas_lateral)
++                                     pas_lateral_m=pas_lateral,
++                                     grille=grille)
+     print("echantillons interieurs : %d (stations 0 a 8, les quatre que le "
+           "generateur saute comprises)" % len(echantillons))
+     print("   pas longitudinal %.2f m, pas LATERAL METRIQUE %.2f m, hauteurs %s"
+@@ -2937,7 +3000,7 @@ def main():
+     print("   tombees dans la ROCHE et donc jamais interrogees. Un denominateur")
+     print("   de 1 sur 5 vises ne dit pas « trou », il dit « presque aveugle ».")
+     carte = carte_du_plancher(grille, pas_long, fractions, profil,
+-                              pas_lateral_m=pas_lateral)
++                              pas_lateral_m=pas_lateral, grille_parois=grille)
+     resultat["plancher"]["carte"] = carte
+     manquants = [l for l in carte if l["absents"] > 0]
+     for ligne in carte:

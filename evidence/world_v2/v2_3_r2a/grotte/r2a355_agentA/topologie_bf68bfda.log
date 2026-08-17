@@ -1,0 +1,19 @@
+# tools/cave_topology_check.py porte des chemins absolus vers un worktree
+# supprime (ISS-045, repare au tronc mais pas dans ce detachement). On
+# appelle donc analyser() directement, sans modifier le fichier — pour ne
+# pas creer un conflit avec la reparation du coordinateur.
+# commande : python3 -c "import sys;sys.path.insert(0,'tools');import cave_topology_check as T;T.analyser(<glb>, <etiquette>)"
+
+=== APRES bf68bfda (7 azimuts) ===
+    assets/environment/caves/SM_WaterfallCave.glb
+  noeud COL_WaterfallCave
+    V=442  E=1320  F=880   composantes=1
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+  noeud SM_WaterfallCave
+    V=10037  E=30105  F=20070   composantes=1
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+RC=0

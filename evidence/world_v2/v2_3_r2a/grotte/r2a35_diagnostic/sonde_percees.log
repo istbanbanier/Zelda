@@ -1,0 +1,934 @@
+==========================================================================
+SONDE DE CONTINUITE — Grotte du Couchant
+==========================================================================
+cotes  : CAVITE, PALIER, SAG, PORCHE_DENIVELE conformes au generateur
+garde  : le profil declare laisse au moins 0.42 m au-dessus du terrain a toutes les stations (herbe 0.30 m)
+
+--------------------------------------------------------------------------
+CONTROLE 0 — LA POSE MONDE, DERIVEE ET EPROUVEE
+--------------------------------------------------------------------------
+origine   : (-106.000 ; 3.500 ; 3.500), lacet 45.0 deg
+derivee de: resources/world_v2/world_v2_layout.json -> v2_site [-110.0, 3.0, 6.0]
+            scripts/world_v2/poi/waterfall_cave_place.gd -> SEUIL_LOCAL [4.0, -2.5], LACET_DEG 45.0, EXHAUSSEMENT 0.50
+            terrain sous le seuil 3.00 m — NON VERIFIE — documentaire, cf. commentaires d'implantation de waterfall_cave_place.gd
+aller-retour modele->monde(matrices)->modele(forme fermee) :
+   ecart max 4.663e-15 m sur 14 points et 5 directions, tolerance 1e-09 m
+   PASS — les deux chemins concordent
+maillage rendu : 19792 triangles (COL_WaterfallCave ecarte)
+   MAT_CaveRock_Base        8864 tris
+   MAT_CaveRock_Face        6229 tris
+   MAT_CaveRock_Collar      3422 tris
+   MAT_CaveIn_Deep           556 tris
+   MAT_CaveIn_Floor          469 tris
+   MAT_CaveIn_Wall           252 tris
+emprise modele : x[-9.17..9.29] y[-3.53..13.03] z[-3.95..8.59]
+echantillons interieurs : 495 (stations 0 a 8, les quatre que le generateur saute comprises)
+
+--------------------------------------------------------------------------
+CONTROLE 1 — PLANCHER (rayon vers le BAS depuis l'interieur)
+--------------------------------------------------------------------------
+Aucune fonction du generateur ne fait ce controle :
+  controle_epaisseur  : `if math.sin(theta) < -0.30: continue`
+  controle_aucun_jour : `Vector((0.0, 0.0, 1.0))` — vers le HAUT
+427 point(s) du vide sondes vers le bas, 45 faute(s)
+   sol_trop_bas       45
+   emprise des fautes : y[2.88 .. 3.17], stations 6, 7, 8
+   sol_trop_bas     station 7  (x   2.42, y   3.09, z   0.91)  impacts 2  chute 0.80 m (attendue 0.35)
+   sol_trop_bas     station 7  (x   2.42, y   3.09, z   1.46)  impacts 2  chute 1.35 m (attendue 0.90)
+   sol_trop_bas     station 7  (x   2.42, y   3.09, z   2.06)  impacts 2  chute 1.95 m (attendue 1.50)
+   sol_trop_bas     station 8  (x   2.54, y   3.12, z   0.95)  impacts 2  chute 0.80 m (attendue 0.35)
+   sol_trop_bas     station 8  (x   2.54, y   3.12, z   1.50)  impacts 2  chute 1.35 m (attendue 0.90)
+   sol_trop_bas     station 8  (x   2.54, y   3.12, z   2.10)  impacts 2  chute 1.95 m (attendue 1.50)
+   sol_trop_bas     station 7  (x   2.29, y   3.06, z   0.88)  impacts 2  chute 0.80 m (attendue 0.35)
+   sol_trop_bas     station 7  (x   2.29, y   3.06, z   1.43)  impacts 2  chute 1.34 m (attendue 0.90)
+
+   CARTE DU PLANCHER (positions laterales avec sol / sans sol) :
+      y  -1.15  station 0  #####    5/5  ecart max 0.03 m  z du fond    -
+      y  -0.86  station 0  #####    5/5  ecart max 0.05 m  z du fond    -
+      y  -0.57  station 0  #####    5/5  ecart max 0.06 m  z du fond    -
+      y  -0.29  station 1  #####    5/5  ecart max 0.07 m  z du fond    -
+      y  +0.00  station 1  #####    5/5  ecart max 0.08 m  z du fond    -
+      y  +0.26  station 1  #####    5/5  ecart max 0.04 m  z du fond    -
+      y  +0.53  station 2  #####    5/5  ecart max 0.04 m  z du fond    -
+      y  +0.79  station 2  #####    5/5  ecart max 0.04 m  z du fond    -
+      y  +1.05  station 2  #####    5/5  ecart max 0.04 m  z du fond    -
+      y  +1.19  station 2  #####    5/5  ecart max 0.05 m  z du fond    -
+      y  +1.33  station 2  #####    5/5  ecart max 0.06 m  z du fond    -
+      y  +1.48  station 3  #####    5/5  ecart max 0.07 m  z du fond    -
+      y  +1.62  station 3  #####    5/5  ecart max 0.07 m  z du fond    -
+      y  +1.75  station 3  #####    5/5  ecart max 0.07 m  z du fond    -
+      y  +1.87  station 4  #####    5/5  ecart max 0.08 m  z du fond    -
+      y  +2.00  station 4  #####    5/5  ecart max 0.08 m  z du fond    -
+      y  +2.12  station 4  #####    5/5  ecart max 0.09 m  z du fond    -
+      y  +2.24  station 4  #####    5/5  ecart max 0.10 m  z du fond    -
+      y  +2.35  station 4  #####    5/5  ecart max 0.11 m  z du fond    -
+      y  +2.46  station 5  ####     4/4  ecart max 0.12 m  z du fond    -
+      y  +2.58  station 5  ####     4/4  ecart max 0.12 m  z du fond    -
+      y  +2.66  station 5  ####     4/4  ecart max 0.16 m  z du fond    -
+      y  +2.73  station 6  ####     4/4  ecart max 0.20 m  z du fond    -
+      y  +2.80  station 6  ####     4/4  ecart max 0.24 m  z du fond    -
+      y  +2.88  station 6  ##.      2/3  ecart max 0.27 m  z du fond +0.04  <-- TROU
+      y  +2.92  station 6  ##.      2/3  ecart max 0.31 m  z du fond +0.05  <-- TROU
+      y  +2.97  station 6  #..      1/3  ecart max 0.36 m  z du fond +0.10  <-- TROU
+      y  +3.02  station 7  #..      1/3  ecart max 0.40 m  z du fond +0.13  <-- TROU
+      y  +3.06  station 7  #..      1/3  ecart max 0.45 m  z du fond +0.15  <-- TROU
+      y  +3.09  station 7  #..      1/3  ecart max 0.45 m  z du fond +0.18  <-- TROU
+      y  +3.12  station 8  #..      1/3  ecart max 0.45 m  z du fond +0.22  <-- TROU
+      y  +3.14  station 8  #..      1/3  ecart max 0.44 m  z du fond +0.27  <-- TROU
+      y  +3.17  station 8  ##.      2/3  ecart max 0.44 m  z du fond +0.23  <-- TROU
+   >>> plancher absent de y = +2.88 a y = +3.17 (stations 6 a 8)
+
+--------------------------------------------------------------------------
+CONTROLE 2 — JOUR (sphere entiere, stations 0 a 8)
+--------------------------------------------------------------------------
+100 direction(s) par point, elevations -90 a +90 : le fond (±Y) et le sol (-Z) sont couverts
+60 point(s) du porche ecarte(s) (ouvert par construction)
+0 point(s) ecarte(s) comme HORS CAVITE (enclosure < 0.50)
+34049 rayon(s) juges, 2851 ecarte(s) parce qu'ils sortent par la BOUCHE, 2066 RAYON(S) SUSPECT(S)
+   « suspect » n'est pas « percee » : voir la definition en tete de
+   OUVERTURE_CONFIRMEE_M. La confirmation est faite plus bas.
+   station 1 : 157 rayon(s) suspect(s), azimuts 0..309, elevations 0..68
+   station 2 : 420 rayon(s) suspect(s), azimuts 0..334, elevations -68..68
+   station 3 : 271 rayon(s) suspect(s), azimuts 0..334, elevations -45..68
+   station 4 : 446 rayon(s) suspect(s), azimuts 0..334, elevations -68..68
+   station 5 : 169 rayon(s) suspect(s), azimuts 103..334, elevations 0..45
+   station 6 : 314 rayon(s) suspect(s), azimuts 0..334, elevations -45..90
+   station 7 : 188 rayon(s) suspect(s), azimuts 0..334, elevations -45..90
+   station 8 : 101 rayon(s) suspect(s), azimuts 0..334, elevations -22..90
+   OU LES RAYONS SORTENT (regroupe par maille de 1,5 m sur la coque) — un vrai trou fait converger, un mauvais point disperse :
+      364 rayon(s) quittent la galerie en x~+3.47 y~+1.50 z~+1.54  (stations de depart 2,3,4,5,6,7,8)
+      210 rayon(s) quittent la galerie en x~+2.39 y~+0.56 z~+1.52  (stations de depart 1,2,3,4,5,6)
+      172 rayon(s) quittent la galerie en x~+2.75 y~+1.18 z~+1.52  (stations de depart 2,3,4,5,6,7,8)
+      143 rayon(s) quittent la galerie en x~+3.47 y~+1.50 z~+2.23  (stations de depart 2,3,4,5,6,7,8)
+       96 rayon(s) quittent la galerie en x~+3.45 y~+1.50 z~+0.88  (stations de depart 2,3,4,5,6,7,8)
+       82 rayon(s) quittent la galerie en x~+2.38 y~+0.55 z~+0.87  (stations de depart 1,2,3,4,6)
+       73 rayon(s) quittent la galerie en x~-2.35 y~-0.47 z~+1.56  (stations de depart 1,2,3,4,5,6)
+       67 rayon(s) quittent la galerie en x~-1.56 y~-0.59 z~+3.07  (stations de depart 1,2,3,4,6)
+
+   CARTE DU FOND (vue de derriere, emprise de la derniere station)
+   'O' = le rayon traverse la galerie de part en part
+      z +2.80  ..........OOOO
+      z +2.55  ...........OOO
+      z +2.30  ...........OOO
+      z +2.05  ............OO
+      z +1.80  ............O.
+      z +1.55  ..............
+      z +1.30  ..............
+      z +1.05  ..............
+      z +0.80  ..............
+      z +0.55  ..............
+      x de +1.84 a +5.32, pas 0,25 m
+   >>> fond de la galerie OUVERT : 13 case(s) sur 140, emprise x[+4.34 .. +5.09] z[+1.80 .. +2.80], soit 0.75 x 1.00 m
+
+--------------------------------------------------------------------------
+CONTROLE 2b — CONFIRMATION DES RAYONS SUSPECTS
+--------------------------------------------------------------------------
+Un rayon suspect n'est pas une percee. Une percee est CONFIRMEE
+quand un carre de 0.10 m de cote, perpendiculaire au rayon, est
+INTEGRALEMENT perce — faisceau de pas 0.025 m sur +/-0.15 m.
+404 amas de sortie mesure(s) : 384 CONFIRME(S), 20 ecarte(s)
+   la plus grande ouverture parmi les amas ecartes : 0.075 m (seuil 0.10 m)
+      ouverture 0.075 m   1 rayon(s)  sortie [-1.17, -1.1, 3.0]  faisceau 48/169 sortant  surface toit
+      ouverture 0.000 m   2 rayon(s)  sortie [2.3, 0.26, 0.32]  faisceau 3/169 sortant  surface paroi_plus_x
+      ouverture 0.000 m   1 rayon(s)  sortie [2.28, 0.26, 2.68]  faisceau 1/169 sortant  surface paroi_plus_x
+      ouverture 0.000 m   1 rayon(s)  sortie [-0.62, 1.46, 3.16]  faisceau 1/169 sortant  surface toit
+      ouverture 0.000 m   1 rayon(s)  sortie [-2.11, 0.79, 0.73]  faisceau 13/169 sortant  surface paroi_moins_x
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.14, 1.36, 1.59]  38 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.61, 1.11, 1.59]  31 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.35, 1.45, 1.61]  30 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_plus_x  sortie [2.4, 0.6, 0.88]  29 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.63, 1.58, 1.61]  28 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_plus_x  sortie [3.85, 1.67, 1.59]  28 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.61, 1.11, 0.9]  27 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.41, 0.61, 1.57]  25 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [3.14, 1.36, 0.91]  25 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.14, 1.35, 1.87]  24 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.4, 0.6, 1.41]  23 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.13, 1.35, 2.14]  23 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.64, 1.58, 1.92]  23 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.6, 1.1, 1.39]  22 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.6, 1.1, 2.1]  21 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [3.84, 1.66, 2.09]  21 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.63, 1.58, 1.38]  21 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.12, 1.35, 1.37]  20 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_plus_x  sortie [4.59, 3.14, 2.12]  20 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.65, 1.12, 1.87]  18 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.84, 1.21, 1.6]  18 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.37, 1.45, 2.14]  18 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.61, 1.57, 2.16]  18 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_plus_x  sortie [2.4, 0.6, 2.11]  17 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [2.45, 0.85, 0.88]  17 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [3.14, 1.34, 2.36]  17 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [3.84, 1.66, 0.92]  17 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.45, 0.85, 1.44]  16 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.35, 1.45, 0.93]  16 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_plus_x  sortie [3.83, 1.66, 1.43]  16 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.4, -0.67, 0.92]  15 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.85, 1.2, 2.13]  15 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.16, 1.35, 1.09]  15 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.36, 1.44, 1.88]  15 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.82, 1.66, 1.86]  15 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [3.62, 1.57, 0.91]  15 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.92, 1.28, 1.57]  15 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_moins_x sortie [-2.39, -0.66, 0.36]  14 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.41, 0.63, 1.89]  14 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [2.64, 1.13, 1.14]  14 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.36, 1.45, 1.1]  14 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.63, 1.58, 1.07]  14 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_plus_x  sortie [4.58, 3.15, 2.39]  14 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.4, -0.66, 1.57]  13 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.46, 0.86, 1.59]  13 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.34, 0.35, 1.59]  13 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.32, 0.35, 1.41]  13 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.87, 1.22, 1.88]  13 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.36, 1.44, 1.4]  13 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [3.82, 1.66, 1.13]  13 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [2.29, 0.15, 1.59]  12 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [2.31, 0.32, 0.89]  12 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [2.82, 1.21, 0.89]  12 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [3.36, 1.45, 2.36]  11 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [3.79, 1.65, 2.35]  11 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [3.62, 1.56, 2.37]  11 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [2.64, 1.12, 2.36]  10 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_plus_x  sortie [2.29, 0.14, 0.91]  10 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.83, 1.21, 1.41]  10 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.89, 1.22, 1.13]  10 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.91, 1.27, 0.91]  10 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [4.46, 3.13, 2.13]  10 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_moins_x sortie [-2.21, 0.11, 1.59]  9 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_moins_x sortie [-2.22, 0.13, 2.39]  9 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.32, -0.39, 1.46]  9 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [2.42, 0.63, 2.32]  9 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.28, -0.17, 1.63]  9 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.46, 0.86, 1.89]  9 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.46, 1.53, 1.62]  9 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface toit          sortie [-1.88, -0.43, 3.09]  8 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface toit          sortie [-1.14, -0.67, 3.06]  8 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_moins_x sortie [-2.32, -0.39, 0.87]  8 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.2, 0.27, 2.62]  8 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.46, 0.84, 2.08]  8 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_plus_x  sortie [2.34, 0.38, 1.88]  8 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [2.29, 0.11, 1.44]  8 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [4.16, 1.77, 2.09]  8 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface toit          sortie [-0.86, -1.09, 3.06]  7 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.52, 0.96, 1.81]  7 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.33, -0.38, 2.38]  7 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_moins_x sortie [-2.17, 0.28, 1.65]  7 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.51, 0.94, 1.59]  7 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.4, 0.61, 1.1]  7 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.46, 0.85, 1.15]  7 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [2.33, 0.32, 2.13]  7 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [2.85, 1.21, 2.34]  7 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.91, 1.27, 1.1]  7 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.94, 1.26, 2.1]  7 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.92, 1.28, 1.86]  7 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.125 m  surface paroi_plus_x  sortie [4.6, 3.14, 1.95]  7 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [5.88, 2.35, 1.34]  7 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_moins_x sortie [-2.21, 0.1, 2.12]  6 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.4, -0.67, 2.36]  6 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface toit          sortie [-1.19, -0.88, 3.05]  6 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.39, -0.68, 1.45]  6 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface toit          sortie [-1.43, -0.64, 3.06]  6 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface toit          sortie [-0.7, -0.9, 3.05]  6 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.2, 0.27, 2.09]  6 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_moins_x sortie [-2.28, -0.12, 1.46]  6 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.28, -0.16, 2.9]  6 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.35, 0.35, 1.08]  6 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [2.29, 0.19, 2.1]  6 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_plus_x  sortie [3.45, 1.53, 0.91]  6 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.45, 1.52, 1.85]  6 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_plus_x  sortie [4.02, 1.72, 1.16]  6 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_moins_x sortie [-2.22, 0.03, 1.46]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_moins_x sortie [-2.22, 0.1, 1.87]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_moins_x sortie [-2.23, 0.13, 2.63]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.4, -0.66, 3.05]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface toit          sortie [-1.72, 0.03, 3.1]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_moins_x sortie [-2.47, -0.96, 1.44]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface toit          sortie [-1.94, -0.7, 3.06]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_plus_x  sortie [2.52, 0.94, 1.16]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_moins_x sortie [-2.18, 0.27, 3.08]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface toit          sortie [-1.83, -0.19, 3.1]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [2.51, 0.96, 0.92]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.27, -0.13, 2.36]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_moins_x sortie [-2.32, -0.33, 1.6]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.39, -0.66, 2.6]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [2.28, 0.1, 1.08]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.4, -0.67, 2.88]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.13, -0.59, 3.08]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [2.52, 0.93, 2.32]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.51, 1.49, 1.87]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [2.96, 1.28, 2.31]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [4.16, 1.76, 2.4]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [4.17, 1.78, 2.6]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.94, 1.28, 1.35]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_plus_x  sortie [4.33, 1.83, 2.39]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.125 m  surface paroi_plus_x  sortie [4.82, 2.01, 2.31]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.47, 1.52, 2.09]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [3.45, 1.53, 1.14]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [4.32, 1.83, 1.86]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_plus_x  sortie [5.2, 2.12, 1.86]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [4.81, 3.14, 2.13]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface toit          sortie [4.16, 2.63, 3.33]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface toit          sortie [4.84, 2.63, 3.33]  5 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.18, 0.05, 3.09]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface toit          sortie [-1.72, -0.9, 3.08]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface toit          sortie [-1.39, -1.07, 3.05]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface toit          sortie [-1.62, -0.68, 3.08]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_moins_x sortie [-2.16, 0.54, 2.62]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface toit          sortie [-1.58, -0.4, 3.07]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.47, -0.96, 0.3]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_moins_x sortie [-2.47, -0.96, 0.85]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.39, -0.92, 3.05]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_moins_x sortie [-2.17, -0.89, 3.08]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface toit          sortie [-1.36, -0.96, 3.05]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.34, -0.4, 1.91]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.34, -0.4, 3.04]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface toit          sortie [-1.64, -0.13, 3.08]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [6.11, 2.88, 3.37]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [2.22, 0.03, 0.86]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_plus_x  sortie [2.22, 0.03, 1.45]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_plus_x  sortie [2.46, 0.84, 2.33]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.24, -0.12, 1.6]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [2.36, 0.39, 2.29]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [2.26, -0.06, 1.56]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.68, 1.14, 0.65]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.17, 1.35, 0.7]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [4.17, 1.75, 1.88]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [4.36, 1.84, 2.19]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [4.05, 1.72, 2.13]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_plus_x  sortie [3.45, 1.53, 2.33]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface toit          sortie [4.57, 2.89, 3.36]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [5.18, 2.14, 2.12]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface toit          sortie [5.15, 2.86, 3.33]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface toit          sortie [4.9, 3.15, 2.89]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface toit          sortie [5.12, 2.63, 3.32]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.125 m  surface paroi_plus_x  sortie [4.02, 1.71, 1.78]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_plus_x  sortie [4.78, 2.02, 1.89]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [5.83, 2.34, 1.89]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface toit          sortie [4.44, 2.39, 3.28]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface toit          sortie [4.7, 2.39, 3.28]  4 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_moins_x sortie [-2.11, 0.52, 3.11]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_moins_x sortie [-1.88, 0.32, 3.09]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface toit          sortie [-1.95, 0.05, 3.11]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface toit          sortie [-0.88, -0.95, 3.07]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.41, -0.69, 2.1]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface toit          sortie [-0.87, -0.66, 3.07]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.45, -0.94, 2.36]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.27, 0.0, 2.58]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.31, -0.32, 2.1]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface toit          sortie [-1.91, -0.95, 3.06]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface toit          sortie [-1.46, -0.23, 3.07]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.31, -0.36, 2.9]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface toit          sortie [-1.21, -1.12, 2.95]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_moins_x sortie [-2.33, -1.09, 3.07]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.21, 0.16, 2.91]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.32, -0.34, 2.63]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_moins_x sortie [-2.28, -0.21, 3.04]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.3, -0.22, 2.59]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [2.26, -0.07, 0.94]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [4.66, 1.94, 2.14]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [4.65, 1.93, 2.62]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.44, 1.51, 1.33]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [3.46, 1.53, 0.67]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [4.01, 1.71, 1.64]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [6.38, 2.87, 1.81]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [4.34, 1.84, 2.87]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [5.2, 2.11, 2.62]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface toit          sortie [5.04, 3.07, 3.13]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface toit          sortie [4.19, 2.38, 3.32]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface toit          sortie [4.97, 2.38, 3.32]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [5.21, 2.13, 2.88]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [5.89, 2.36, 2.6]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [5.23, 2.13, 1.55]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [5.94, 2.38, 2.06]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface toit          sortie [5.6, 2.55, 3.31]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface toit          sortie [4.35, 2.58, 3.33]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface toit          sortie [4.59, 2.58, 3.33]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface toit          sortie [4.96, 2.86, 3.36]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface toit          sortie [4.43, 3.16, 2.31]  3 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.41, -0.68, 1.93]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.08, -0.5, 3.08]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface toit          sortie [-0.3, -0.9, 3.08]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_moins_x sortie [-2.18, 0.56, 2.07]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.27, 0.0, 2.12]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.44, -0.94, 1.72]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface toit          sortie [-1.38, -0.42, 3.05]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_plus_x  sortie [6.15, 2.95, 3.13]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.125 m  surface toit          sortie [-0.3, -1.1, 3.06]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_moins_x sortie [-2.26, 0.0, 1.46]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface toit          sortie [-1.83, -1.13, 2.94]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.100 m  surface toit          sortie [-1.34, -1.15, 2.94]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.07, -0.14, 3.11]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_moins_x sortie [-2.19, 0.26, 1.94]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.39, -0.68, 1.09]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_moins_x sortie [-2.45, -0.96, 2.57]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_moins_x sortie [-2.17, 0.26, 2.81]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_moins_x sortie [-2.27, -0.14, 1.9]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_moins_x sortie [-2.13, -1.12, 3.04]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [2.21, 0.01, 1.58]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [2.47, 1.05, 0.89]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.47, 1.05, 1.49]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [2.29, -0.14, 1.04]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.24, -0.06, 2.12]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.51, 0.96, 1.29]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.5, 1.48, 0.96]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.5, 1.48, 1.56]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.5, 1.48, 1.39]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [3.5, 1.48, 2.42]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.125 m  surface paroi_plus_x  sortie [2.52, 0.94, 2.13]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface toit          sortie [-1.88, -1.12, 3.05]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.95, 1.24, 0.67]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.56, 1.56, 0.73]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [2.29, 0.17, 1.82]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_plus_x  sortie [4.84, 2.0, 2.92]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.51, 1.49, 0.69]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.51, 1.49, 1.23]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_plus_x  sortie [3.77, 1.65, 0.68]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [4.19, 1.82, 3.12]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [4.04, 1.73, 1.26]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [4.0, 1.71, 2.3]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface toit          sortie [4.67, 3.15, 2.58]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [4.69, 2.11, 3.24]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [5.2, 2.15, 1.44]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [5.13, 3.17, 2.08]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_plus_x  sortie [4.78, 1.98, 2.11]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_plus_x  sortie [5.8, 2.32, 2.39]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [5.09, 3.15, 2.4]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface toit          sortie [3.73, 1.82, 3.21]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface toit          sortie [4.79, 3.16, 2.62]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_plus_x  sortie [6.19, 2.95, 2.56]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [5.21, 2.14, 2.35]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [5.84, 2.33, 3.3]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [4.77, 1.98, 2.42]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [4.89, 3.16, 2.33]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [4.76, 1.97, 3.09]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [5.62, 3.08, 3.17]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface toit          sortie [4.46, 3.1, 3.08]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [5.61, 3.1, 1.6]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [5.61, 3.1, 2.08]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [5.61, 3.1, 2.56]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [5.95, 2.38, 2.77]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [5.2, 2.17, 3.29]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface toit          sortie [4.86, 3.1, 3.05]  2 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface toit          sortie [-0.45, -0.72, 3.09]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.42, -0.92, 1.17]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface toit          sortie [-0.25, -1.12, 3.07]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_moins_x sortie [-2.27, 0.0, 1.57]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface toit          sortie [-1.03, -0.5, 3.04]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.26, 0.0, 3.08]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.26, 0.0, 1.99]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_moins_x sortie [-2.44, -0.94, 1.97]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.16, 0.26, 2.34]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [6.15, 2.95, 2.86]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.26, -0.12, 2.09]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_moins_x sortie [-2.2, 0.53, 2.75]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_moins_x sortie [-2.32, -0.4, 1.18]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface toit          sortie [-1.73, -1.13, 2.98]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_moins_x sortie [-2.2, 0.53, 2.39]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.125 m  surface toit          sortie [-0.7, -1.13, 2.98]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_moins_x sortie [-2.45, -0.96, 2.87]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_moins_x sortie [-2.25, -0.12, 1.46]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_moins_x sortie [-2.46, -0.98, 2.02]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.125 m  surface paroi_moins_x sortie [-2.51, -1.06, 0.34]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_moins_x sortie [-2.5, -1.04, 1.45]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_moins_x sortie [-2.51, -1.05, 3.03]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_moins_x sortie [-2.51, -1.06, 0.89]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_moins_x sortie [-2.5, -1.04, 2.0]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_moins_x sortie [-2.51, -1.06, 1.49]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_moins_x sortie [-2.5, -1.04, 2.6]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_plus_x  sortie [2.22, 0.09, 1.21]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [2.22, 0.09, 1.76]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [2.33, -0.28, 0.89]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.125 m  surface paroi_moins_x sortie [-2.5, -1.07, 0.35]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_moins_x sortie [-2.53, -1.12, 1.57]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_moins_x sortie [-2.5, -1.07, 0.9]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_moins_x sortie [-2.53, -1.12, 2.12]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_moins_x sortie [-2.5, -1.07, 1.5]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_moins_x sortie [-2.53, -1.12, 2.72]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.25, -0.09, 2.67]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_moins_x sortie [-2.22, -0.03, 2.76]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.51, 0.97, 0.7]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [2.47, 0.9, 0.67]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_moins_x sortie [-2.45, -1.12, 2.98]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.29, 1.38, 0.73]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_plus_x  sortie [4.53, 1.87, 2.27]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [2.26, -0.08, 1.41]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [2.49, 1.01, 2.35]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface toit          sortie [-1.6, -1.02, 3.05]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [4.52, 1.87, 2.78]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [3.79, 1.61, 2.54]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [4.01, 1.77, 0.98]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [4.05, 1.73, 2.55]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_plus_x  sortie [4.03, 1.77, 1.0]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.125 m  surface paroi_plus_x  sortie [3.73, 1.6, 2.85]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_moins_x sortie [-2.12, -1.1, 2.98]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [3.91, 1.76, 1.09]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [3.91, 1.76, 1.69]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [5.28, 3.15, 1.76]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [4.73, 2.03, 1.76]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [5.64, 2.28, 1.76]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [6.5, 2.8, 2.57]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [5.3, 3.17, 2.11]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [5.64, 2.28, 2.26]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [5.26, 3.14, 2.54]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [3.63, 1.64, 3.25]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [5.64, 2.28, 2.97]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface toit          sortie [4.48, 3.14, 2.59]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface toit          sortie [4.42, 2.21, 3.24]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [2.74, 1.17, 2.51]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [5.14, 3.14, 1.81]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [6.45, 2.88, 2.57]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_plus_x  sortie [4.8, 1.98, 2.73]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [5.81, 2.3, 3.15]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface toit          sortie [5.25, 2.88, 3.38]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [2.35, 0.39, 0.71]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [6.24, 2.92, 1.17]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [4.8, 1.96, 2.85]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [6.13, 2.97, 1.27]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [5.25, 2.1, 1.46]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [6.16, 2.97, 1.92]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_plus_x  sortie [5.25, 2.1, 2.38]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [5.97, 2.97, 3.33]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface toit          sortie [3.72, 1.92, 3.26]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [4.29, 1.8, 3.12]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface toit          sortie [4.53, 3.02, 3.27]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [6.01, 3.02, 1.36]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_plus_x  sortie [5.93, 3.02, 1.97]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [6.01, 3.02, 2.59]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_plus_x  sortie [5.81, 3.02, 3.25]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface toit          sortie [3.74, 2.02, 3.25]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [4.25, 1.77, 3.25]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_plus_x  sortie [5.24, 2.13, 3.1]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [5.74, 2.43, 3.32]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface toit          sortie [5.07, 3.02, 3.27]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface toit          sortie [4.51, 3.06, 3.23]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [5.8, 3.06, 1.49]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.225 m  surface paroi_plus_x  sortie [5.26, 2.12, 1.53]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.275 m  surface paroi_plus_x  sortie [5.81, 3.06, 2.03]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [5.26, 2.12, 2.03]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [5.8, 3.06, 2.56]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.300 m  surface paroi_plus_x  sortie [5.26, 2.12, 2.53]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.250 m  surface paroi_plus_x  sortie [5.26, 2.12, 3.23]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.150 m  surface paroi_plus_x  sortie [3.99, 1.76, 0.89]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [3.99, 1.76, 1.44]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [4.72, 2.02, 2.06]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [4.72, 2.01, 2.52]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [4.21, 1.92, 3.27]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.200 m  surface paroi_plus_x  sortie [4.72, 1.98, 3.19]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface paroi_plus_x  sortie [5.35, 3.12, 3.02]  1 rayon(s)
+   >>> PERCEE CONFIRMEE  ouverture 0.175 m  surface toit          sortie [4.18, 2.01, 3.23]  1 rayon(s)
+
+--------------------------------------------------------------------------
+CONTROLE 4 — LES CINQ SURFACES (plancher, TOIT, parois, fond)
+--------------------------------------------------------------------------
+Rayons tires du DEHORS vers le noyau, une face a la fois. Methode
+independante du controle 2, et la seule qui nomme le TOIT — que la
+version precedente ne cartographiait nulle part.
+   plancher       pas 0.050 m    7150 case(s),    0 ouverte(s), 0 bloc(s) assez large(s), 0 confirmee(s)
+   toit           pas 0.050 m    7150 case(s),    3 ouverte(s), 0 bloc(s) assez large(s), 0 confirmee(s)
+        bloc    3 case(s)  x[4.42..4.46] y[2.85..2.90]
+   paroi_moins_x  pas 0.050 m    2470 case(s),    4 ouverte(s), 0 bloc(s) assez large(s), 0 confirmee(s)
+        bloc    3 case(s)  y[0.00..0.05] z[1.47..1.52]
+   paroi_plus_x   pas 0.050 m    2470 case(s),  413 ouverte(s), 1 bloc(s) assez large(s), 1 confirmee(s)
+        bloc  411 case(s)  y[0.30..1.70] z[0.82..1.62]  ASSEZ LARGE
+        bloc    2 case(s)  y[2.90..2.95] z[1.87..1.87]
+        >>> PERCEE CONFIRMEE sur paroi_plus_x : ouverture 0.300 m, emprise {'y': [0.3, 1.7], 'z': [0.82, 1.62]}
+   fond           pas 0.050 m    4180 case(s),    0 ouverte(s), 0 bloc(s) assez large(s), 0 confirmee(s)
+
+--------------------------------------------------------------------------
+CONTROLE 3 — LIGNE DE VUE (regle du moteur : cull_back)
+--------------------------------------------------------------------------
+NON VERIFIE — aucun manifeste fourni (--manifeste)
+
+==========================================================================
+GATE — 0 PERCEE CONFIRMEE
+==========================================================================
+percees confirmees : 385  (seuil d'ouverture 0.10 m)
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.225 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.275 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.225 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.275 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.275 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.225 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.225 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface paroi_moins_x  ouverture 0.150 m
+   controle_2   surface paroi_moins_x  ouverture 0.275 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.150 m
+   controle_2   surface paroi_moins_x  ouverture 0.200 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.275 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.225 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.125 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_moins_x  ouverture 0.275 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.275 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.275 m
+   controle_2   surface toit           ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.200 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.225 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.225 m
+   controle_2   surface paroi_moins_x  ouverture 0.150 m
+   controle_2   surface paroi_moins_x  ouverture 0.275 m
+   controle_2   surface paroi_moins_x  ouverture 0.250 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.150 m
+   controle_2   surface paroi_moins_x  ouverture 0.275 m
+   controle_2   surface toit           ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.275 m
+   controle_2   surface paroi_moins_x  ouverture 0.275 m
+   controle_2   surface toit           ouverture 0.225 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.275 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.225 m
+   controle_2   surface paroi_plus_x   ouverture 0.125 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.225 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface toit           ouverture 0.225 m
+   controle_2   surface toit           ouverture 0.225 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.275 m
+   controle_2   surface toit           ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.150 m
+   controle_2   surface toit           ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.275 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.275 m
+   controle_2   surface toit           ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.225 m
+   controle_2   surface paroi_plus_x   ouverture 0.225 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.225 m
+   controle_2   surface toit           ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface toit           ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.250 m
+   controle_2   surface toit           ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.125 m
+   controle_2   surface paroi_plus_x   ouverture 0.225 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface toit           ouverture 0.250 m
+   controle_2   surface toit           ouverture 0.275 m
+   controle_2   surface paroi_moins_x  ouverture 0.175 m
+   controle_2   surface paroi_moins_x  ouverture 0.225 m
+   controle_2   surface toit           ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.250 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.200 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.225 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.150 m
+   controle_2   surface paroi_moins_x  ouverture 0.200 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.225 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface toit           ouverture 0.175 m
+   controle_2   surface toit           ouverture 0.225 m
+   controle_2   surface toit           ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.250 m
+   controle_2   surface toit           ouverture 0.200 m
+   controle_2   surface toit           ouverture 0.200 m
+   controle_2   surface toit           ouverture 0.200 m
+   controle_2   surface toit           ouverture 0.175 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.225 m
+   controle_2   surface paroi_moins_x  ouverture 0.200 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.225 m
+   controle_2   surface toit           ouverture 0.125 m
+   controle_2   surface paroi_moins_x  ouverture 0.150 m
+   controle_2   surface toit           ouverture 0.150 m
+   controle_2   surface toit           ouverture 0.100 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.175 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.250 m
+   controle_2   surface paroi_moins_x  ouverture 0.200 m
+   controle_2   surface paroi_moins_x  ouverture 0.225 m
+   controle_2   surface paroi_moins_x  ouverture 0.225 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.125 m
+   controle_2   surface toit           ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.275 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.275 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface toit           ouverture 0.225 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.225 m
+   controle_2   surface paroi_plus_x   ouverture 0.275 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface toit           ouverture 0.200 m
+   controle_2   surface toit           ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.275 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface toit           ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface toit           ouverture 0.200 m
+   controle_2   surface toit           ouverture 0.150 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.200 m
+   controle_2   surface paroi_moins_x  ouverture 0.200 m
+   controle_2   surface toit           ouverture 0.150 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.275 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.175 m
+   controle_2   surface paroi_moins_x  ouverture 0.250 m
+   controle_2   surface toit           ouverture 0.175 m
+   controle_2   surface paroi_moins_x  ouverture 0.150 m
+   controle_2   surface toit           ouverture 0.125 m
+   controle_2   surface paroi_moins_x  ouverture 0.275 m
+   controle_2   surface paroi_moins_x  ouverture 0.200 m
+   controle_2   surface paroi_moins_x  ouverture 0.250 m
+   controle_2   surface paroi_moins_x  ouverture 0.125 m
+   controle_2   surface paroi_moins_x  ouverture 0.175 m
+   controle_2   surface paroi_moins_x  ouverture 0.225 m
+   controle_2   surface paroi_moins_x  ouverture 0.175 m
+   controle_2   surface paroi_moins_x  ouverture 0.175 m
+   controle_2   surface paroi_moins_x  ouverture 0.175 m
+   controle_2   surface paroi_moins_x  ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.275 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_moins_x  ouverture 0.125 m
+   controle_2   surface paroi_moins_x  ouverture 0.150 m
+   controle_2   surface paroi_moins_x  ouverture 0.150 m
+   controle_2   surface paroi_moins_x  ouverture 0.150 m
+   controle_2   surface paroi_moins_x  ouverture 0.150 m
+   controle_2   surface paroi_moins_x  ouverture 0.150 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_moins_x  ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.225 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface toit           ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.275 m
+   controle_2   surface paroi_plus_x   ouverture 0.125 m
+   controle_2   surface paroi_moins_x  ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface toit           ouverture 0.150 m
+   controle_2   surface toit           ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.225 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.275 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface toit           ouverture 0.225 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.275 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.275 m
+   controle_2   surface toit           ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.275 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface toit           ouverture 0.250 m
+   controle_2   surface toit           ouverture 0.225 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.225 m
+   controle_2   surface paroi_plus_x   ouverture 0.275 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.300 m
+   controle_2   surface paroi_plus_x   ouverture 0.250 m
+   controle_2   surface paroi_plus_x   ouverture 0.150 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.200 m
+   controle_2   surface paroi_plus_x   ouverture 0.175 m
+   controle_2   surface toit           ouverture 0.175 m
+   controle_4   surface paroi_plus_x   ouverture 0.300 m
+VERDICT : FAIL — 385 percee(s) confirmee(s)
+==========================================================================
+sortie brute : /tmp/sonde_r2a35.json

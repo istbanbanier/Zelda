@@ -1,0 +1,55 @@
+commit du code : 6cd464d04bc8ca389e0759427b14a1befb1f6eb0
+arbre propre   : 4 entree(s) avant mesure
+
+### empreintes des geometries mesurees
+cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49  /home/user/zelda-r2a353/socle/assets/environment/caves/SM_WaterfallCave.glb
+8bc8b9f9eb9ead12dcccf381e271f66cd8ee0a4fd66f41ba35b24fde0d0f4416  /home/user/zelda-r2a353/socle/assets/environment/caves/prototypes/SM_WaterfallCave_BASE352.glb
+8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110  /home/user/zelda-r2a353/reference/SM_WaterfallCave_R2a34.glb
+
+=== BANC A REPONSE CONNUE ===
+  tetraedre ferme              V=4     E=6     F=4     libres=0   khi=2    OK
+  tetraedre ampute d'1 face    V=4     E=6     F=3     libres=3   khi=1    OK
+  tore 8x8                     V=64    E=192   F=128   libres=0   khi=0    OK
+  banc : 3 vert(s), 0 rouge(s)
+RC_banc=0
+
+
+=== candidat cc3596c5 ===
+    /home/user/zelda-r2a353/socle/assets/environment/caves/SM_WaterfallCave.glb
+  noeud COL_WaterfallCave
+    V=442  E=1320  F=880   composantes=1
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+  noeud SM_WaterfallCave
+    V=10045  E=30135  F=20090   composantes=1
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 0   ->  genre 1
+
+=== BASE352 8bc8b9f9 ===
+    /home/user/zelda-r2a353/socle/assets/environment/caves/prototypes/SM_WaterfallCave_BASE352.glb
+  noeud COL_WaterfallCave
+    V=442  E=1320  F=880   composantes=1
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+  noeud SM_WaterfallCave
+    V=9996  E=29984  F=19992   composantes=1
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 4
+    khi = V-E+F = 4   (genre non defini)
+
+=== R2a-3.4 livree 8bf1a1b3 ===
+    /home/user/zelda-r2a353/reference/SM_WaterfallCave_R2a34.glb
+  noeud COL_WaterfallCave
+    V=442  E=1320  F=880   composantes=1
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+  noeud SM_WaterfallCave
+    V=9975  E=29931  F=19954   composantes=1
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = -2   ->  genre 2
+RC_glb=0

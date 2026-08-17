@@ -8,6 +8,237 @@ Aucun `S0`/`S1` ouvert n'est admis pour un build candidat.
 
 ---
 
+## ISS-051 — Deux instruments de mesure d'épaisseur étaient biaisés, et l'un est le mien · `S3` · PARTIEL
+
+- **Vu** : 2026-08-16, en confrontant les instruments à une réponse connue
+  analytiquement (`tools/cave_collar_calibration.py` : tube de rayon `r` dans un
+  cylindre de rayon `R`, collerette exactement `R − r`).
+- **`cave_collar.py` méthode B sous-estimait d'exactement une maille de raster.**
+  Biais / pas = −1,00 à quatre pas différents, et invariant quand l'épaisseur
+  passe de 0,30 à 1,20 m : le biais suit le pas et ignore la grandeur mesurée,
+  signature de discrétisation. **CORRIGÉ** (`+ pas`), biais 0,0000 sur huit
+  formes. Vérification qui ne dépend d'aucune reprise : 0,5657 mesuré avant la
+  correction, au pas de 0,05, plus 0,05, donne 0,6157 — la valeur publiée après.
+- **La calibration a sorti un défaut de plus** : la coupe classait le plan par
+  UNE seule rangée de rayons le long de +X. Un rayon rasant perd une
+  intersection et la parité de toute la fin de rangée s'inverse. Sur le cylindre,
+  18 289 cases creuses étaient déclarées « air libre » et l'ouverture valait
+  **zéro case** — sur une forme dont l'ouverture est un disque parfait. Vote sur
+  quatre parités désormais.
+- **`plot_cave_section.py` SUR-ÉVALUE, et ce n'est pas corrigé.** Biais jusqu'à
+  **+0,0897 m**, croissant quand le rayon de la galerie diminue (0,8 m → +0,090 ;
+  2,0 m → 0,000). Signature d'une origine de rayon hors de l'axe du cercle : le
+  rayon parcourt une corde, pas un rayon. Au porche (`hw` 1,70–1,90) le biais
+  attendu est de +0,00 à +0,03 m.
+- **Ce qui reste valide** dans les lectures de cet outil : les COMPTES (rayons
+  sans aucune roche) et la STRUCTURE des blocs (`ROCHE 0,20 · vide 1,10 ·
+  ROCHE 3,84`) ne dépendent pas de l'échelle. Seuls les chiffres absolus
+  d'épaisseur sont à corriger vers le bas.
+- **Enseignement, et il vaut plus que les deux correctifs** : deux instruments
+  biaisés en sens contraires peuvent converger et donner l'illusion d'une preuve.
+  Ma coupe lisait 0,10 m là où le B corrigé lit 0,1000 m ; j'ai cité cette
+  convergence comme un argument, et la calibration montre qu'elle était fragile.
+  **Une convergence entre instruments non calibrés n'est pas une validation.**
+- **Reste ouvert** : le `controle_epaisseur` du générateur et la sphère inscrite
+  de `probe_cave_collerette.py` ne sont pas calibrés. Le cylindre existe et prend
+  une minute.
+
+## ISS-052 — Le contrôle d'appuis de `world_v2_places` compare la hauteur du terrain à elle-même · `S2` · OUVERT
+
+- **Vu** : 2026-08-16, par lecture de code pendant l'intégration R2a-3.5.2.
+  Aucune exécution Godot — la chaîne est établie maillon par maillon.
+- **La chaîne fermée** :
+  - `waterfall_cave_place.gd` déclare l'appui à
+    `declare_support(Vector3(x, ground_local_y(x, z), z))` ;
+  - `world_v2_place.gd` : `ground_local_y()` rend
+    `_ground.call(world.x, world.z) - global_position.y` ;
+  - `world_v2_places_builder.gd:73` injecte `_ground` par
+    `place.call("bind_terrain", Callable(_heightmap, "height_at"))` ;
+  - `tests/world_v2/test_world_v2_places_contract.gd`,
+    `test_les_fondations_epousent_le_terrain_gele` (a), compare
+    `absf(world_point.y - height_at(x, z))` à `SUPPORT_TOLERANCE_M = 0,65`.
+  - le lacet de 45° est porté par `ouvrage`, **pas** par le nœud du lieu :
+    `to_global` est une translation pure et `y` est préservé exactement.
+- **Conséquence** : `_ground` **est** le `height_at` que le test interroge. L'écart
+  vaut **0 par construction**. **Le contrôle ne peut pas échouer.**
+- **Le code le dit déjà** : « leur hauteur est lue sur le terrain gelé, donc
+  l'écart au sol est nul par construction ». La phrase était là ; personne n'en
+  avait tiré que l'assertion correspondante était vide.
+- **Anti-motif nommé** : `PROMPT4_METHOD` §2 — « la comparaison d'une constante
+  avec elle-même », « toute assertion qui ne rougirait pas réellement en cas de
+  régression ».
+- **Portée au-delà de la grotte** : `stone_bridge_place.gd:237` construit ses
+  appuis avec le même `ground_local_y`, donc bénéficie du même acquittement
+  automatique. **Le pont est un golden master validé.**
+- **Ce que le « 8/8 » atteste réellement** : chaque lieu déclare des appuis non
+  vides, s'instancie seul, et n'est ni flottant ni enterré (partie (b), sur
+  l'AABB visuelle du lieu entier, qui ne regarde **aucun** appui). Il n'atteste
+  **rien** de l'appartenance d'un appui au massif. **Ne pas le citer comme preuve
+  sur ce point.**
+- **Correctif possible, NON APPLIQUÉ dans cette passe** : déclarer l'appui à `y`
+  du **modèle** (0,0) au lieu de la hauteur du terrain, ce qui rendrait la
+  comparaison signifiante ; ou ajouter un contrôle d'appartenance par colonne
+  verticale. Corriger un contrôle vide peut faire rougir un golden master
+  validé — c'est une décision de lead, pas d'intégrateur, et sûrement pas au
+  milieu d'une passe géométrique.
+- **Test de régression** : à écrire avec le correctif — un appui déplacé de 2 m
+  doit rougir.
+
+## ISS-054 — La coque de COLLISION porte 62 auto-intersections à 0,457 m, et aucun contrôle ne l'a jamais regardée · `S2` · OUVERT
+
+- **Build** : enveloppe R2a-3.5.2, mesuré sur `cc3596c5` et `c184c8dc`, reproduit
+  par l'intégrateur (`RC=0` sur les trois géométries).
+- **Observé**, sur `COL_WaterfallCave` :
+
+  | géométrie | paires | enfoncement max | où, en `ay` réel |
+  |---|---:|---:|---|
+  | R2a-3.4 **livrée** | 7 | **0,020 m** | `+8,37` à `+9,11` |
+  | `cc3596c5` | **62** | **0,457 m** | 32 au porche, 28 vers `+2,9…3,1` |
+  | `c184c8dc` | **62** | **0,457 m** | identique, ligne pour ligne |
+
+- **Gravité** : 0,457 m d'enfoncement, soit **23 fois** `REPLI_LIVRABLE_MAX_M`,
+  sur la géométrie qui **arrête réellement le joueur**. Le maillage visuel, lui,
+  reste 33 fois sous le seuil.
+- **Attribution certaine** : `cc3596c5` et `c184c8dc` sont identiques ligne pour
+  ligne, donc la régression vient **entièrement de l'enveloppe R2a-3.5.2**. Ni la
+  passe R2a-3.5.5 ni la calotte nord ne l'ont fabriquée.
+- **Cause la plus probable, NON PROUVÉE** : un loft dont la **section change trop
+  vite**, pas un loft qui vire. L'hypothèse du coude de 42° est **réfutée** — il
+  porte 2 paires sur 62, soit 3 %. Les pénétrations sont aux **deux extrémités**
+  du tube, dans les trois géométries, y compris R2a-3.4 en beaucoup plus bénin.
+- **Ce qui rend le défaut durable** : ni l'ancien `controle_repli()` ni le
+  nouveau `controle_penetration_exacte()` n'est appelé sur `COL_WaterfallCave`.
+  Elles étaient déjà là quand R2a-3.5.4 a déclaré la percée fermée et le portail
+  conforme. **Personne ne regardait cette coque.**
+- **Non corrigé** : hors périmètre de R2a-3.5.5, et `COL_MARGE_LAT` /
+  `COL_MARGE_CLE` ne doivent pas bouger sans décision.
+
+## ISS-055 — Le contrôle d'auto-intersection testait des PLANS, pas des triangles bornés · `S2` · CORRIGÉ (2026-08-17)
+
+- **Observé** : `_straddle_points()` publiait **0** pénétration là où un juge
+  exact — prédicats en `Fraction`, aucune tolérance — en trouve **6** sur le
+  candidat et **10 sur R2a-3.4 livrée et validée**. Il ratait des pénétrations et
+  en inventait : « 0 auto-intersection » n'a jamais été vrai sur aucune géométrie.
+- **Mode de panne** : celui d'ISS-018 — un test vert qui ne rougirait pas.
+- **Corrigé** par `controle_penetration_exacte()` : prédicats exacts, **aucune
+  tolérance** (un prédicat exact n'en a pas besoin), seuil `REPLI_LIVRABLE_MAX_M`
+  **inchangé**, les deux compteurs imprimés côte à côte dont l'ancien marqué « il
+  SOUS-COMPTE ». Sept cas de garde, zéro échec : voit une pénétration de **1 µm**,
+  ne compte **aucun** des quatre contacts (arête, sommet, tangence, coplanaires).
+- **Angle mort résiduel, mesuré, NON RÉSOLU** : dans la chaîne le contrôle publie
+  **4** là où le juge trouve **6** sur le GLB, parce que la triangulation interne
+  `bmesh BEAUTY` et celle de l'exportateur divergent sur **2 178 triangles sur
+  20 072, soit 10,9 %**. **Le « 4 » du générateur est un MINORANT du « 6 » réel.**
+- **Ce que la mesure a corrigé dans mon propre argumentaire** : « 6 contre 10 »
+  est vrai sur le compte et **faux sur la sévérité**. Les 10 de R2a-3.4 ont un
+  enfoncement **sous le demi-micron** — des contacts tangents ; celles du candidat
+  sont mille fois plus profondes, avec des coutures 4,5 fois plus longues.
+
+## ISS-053 — Un appui déclaré de la grotte est à l'air libre, 0,92 m hors du massif · `S3` · OUVERT
+
+- **Build** : base R2a-3.5.2 (`c79341e`), mesuré sur le candidat `cc3596c5`.
+- **Observé** : le premier des huit `APPUIS_MODELE`, `(8.14 ; −6.03)`, tombe
+  **+0,92 m en dehors** de la coupe du massif au plan `y = 0` (484 segments, sans
+  échantillonnage). Les sept autres sont dedans, de 0,09 à 0,67 m.
+- **L'hypothèse du surplomb est RÉFUTÉE**, et nettement : la colonne verticale de
+  ce point porte **0 impact à toute hauteur** ; les sept autres appuis neufs
+  portent **tous exactement 2 impacts**. Sommet de maillage le plus proche en
+  projection : 0,74 m. Il n'est ni sous la visière, ni sous l'orteil, ni sous le
+  porche évasé.
+- **Gravité bornée par la mesure** : `_support_points` n'est lu que par
+  `set_meta`, par le filet de test, par `tools/godot/probe_place_metrics.gd` et
+  par `riverside_village_place.gd` pour ses propres appuis. **Aucun effet de
+  gameplay, aucune collision, aucun navmesh, aucun rendu** — vérifié par
+  recherche exhaustive de `get_meta(&"support_points")`. C'est un défaut de
+  **véracité** : une déclaration de contact qui ne touche rien.
+- **Pourquoi ce n'est pas corrigé ici** : la passe R2a-3.5.2 a un périmètre borné
+  à la collerette, et les repères de gameplay n'entrent au tronc qu'en tant que
+  base héritée. Déplacer un appui serait une modification de contenu hors
+  mandat.
+- **Lien** : invisible au filet à cause d'ISS-052. Les deux se corrigent
+  ensemble ou pas du tout.
+- **Test de régression** : à écrire avec le correctif d'ISS-052.
+
+## ISS-048 — La semelle de la grotte ne dérive plus de la cavité, elle la rencontre · `S3` · OUVERT
+
+- **Build** : géométrie R2a-3.5.2, GLB `8bc8b9f9eb9e…`.
+- **Observé** : `SEMELLE_PART_LAT = 1.05` fait porter la semelle sur ±1,05·hw
+  autour de l'axe. Depuis la section asymétrique, le vide atteint 1,34 à
+  1,69·hw du côté large, plus la poussée de l'alcôve — déficit mesuré
+  **−2,50 m** à la station 6.
+- **Pourquoi ce n'est PAS un défaut visible** : le plancher existe bel et bien,
+  et massivement. Cinq instruments concordent, dont un qui ignore les stations
+  (`tools/audit_cave_floor_columns.py`, evidence `r2a352_oracle_plancher/`) :
+  **2,89 m de roche sous les 33 colonnes habitables des stations terminales.**
+  Le sol est porté par l'enveloppe générale, pas par la semelle.
+- **Pourquoi c'est quand même une dette** : la docstring de `rochers_semelle()`
+  promet une propriété **dérivée** — « la semelle suit la cavité » — alors
+  qu'elle n'est plus que **rencontrée**. Le jour où l'enveloppe s'amincira à cet
+  endroit, plus rien ne garantira le plancher, et le commentaire dira le
+  contraire du code.
+- **Correctif attendu** : faire dépendre `SEMELLE_PART_LAT` de la demi-largeur
+  RÉELLE du côté considéré (`CAVITE_ASYM` × `facteur_lateral`), ou bien réécrire
+  la docstring pour dire ce qui est vrai. Ne pas toucher à la géométrie tant que
+  le contrôle est vert : ce serait modifier une forme validée sur un défaut
+  théorique.
+- **Test de régression** : à écrire avec le correctif — un profil dont
+  l'enveloppe est amincie sous la station 6 doit rougir.
+
+## ISS-049 — Le même défaut d'échantillonnage est réapparu SEPT fois · `S2` · OUVERT
+
+- **Build** : outils de la passe R2a-3.5.x.
+- **Le défaut** : un contrôle place ses points à `ax + f·hw`, c'est-à-dire
+  **symétriquement et le long de X**, sur une cavité devenue asymétrique et dont
+  l'axe tourne. Il mesure alors une station pour une autre.
+- **Occurrences connues** : six corrigées lors de R2a-3.5.1 — dont
+  `points_interieurs`, qui portait le commentaire « SIXIÈME ET DERNIER ENDROIT
+  DE LA MÊME FAUTE ». Il n'était pas le dernier : `carte_du_plancher()` portait
+  la septième.
+- **Ce que la septième a coûté** : elle a produit **9 lignes fautives sur 33**,
+  écart maximal 0,45 m, et c'est elle qui a fait inscrire au cahier des charges
+  de R2a-3.5.2 un « défaut de plancher des stations 6 à 8 » **qui n'existe pas
+  dans la roche**. Le même contrôle, échantillonné le long de la normale ×
+  `facteur_lateral` : **0 faute sur 33**, écart maximal 0,03 m.
+- **Pourquoi le commentaire a menti** : il affirmait une exhaustivité que
+  personne n'avait vérifiée. Un commentaire qui dit « c'est le dernier » sans
+  test qui l'établisse est une promesse, pas un constat.
+- **Filet à construire** : un contrôle qui BALAIE les outils à la recherche du
+  motif `ax + f * hw` (et variantes) et rougit sur toute occurrence non annotée.
+  Tant qu'il n'existe pas, ce ticket reste OUVERT même si les sept occurrences
+  connues sont corrigées.
+- **Test de régression** : fixture adverse à profil fortement tourné, sur
+  laquelle l'échantillonnage le long de X rougit et l'échantillonnage le long de
+  la normale passe.
+
+## ISS-050 — Des vides de 0,18 à 1,74 m dorment dans le massif entre la galerie et la paroi · `S4` · OUVERT
+
+- **Build** : géométrie R2a-3.5.2 (base `8bc8b9f9…` et livrable collerette
+  `4dd1642f…` — identique dans les deux, donc antérieur à la visière).
+- **Mesuré** par `tools/plot_cave_section.py`, qui publie le PREMIER bloc de
+  roche là où `controle_epaisseur` publie la SOMME. Sur 24 rayons à `u >= 1`,
+  le premier bloc tombe sous 0,80 m, minimum 0,12 m. En regardant ce que le
+  rayon traverse vraiment :
+
+  ```
+  u 4.75 az 190  ->  ROCHE 0.20   vide 1.10   ROCHE 3.84
+  u 4.75 az 180  ->  ROCHE 0.45   vide 1.74   ROCHE 3.21
+  u 5.25 az 180  ->  ROCHE 0.58   vide 0.18   ROCHE 0.35  vide 0.91  ROCHE 3.30
+  ```
+
+- **Ce n'est PAS un défaut de paroi.** Le bloc mince est une nervure intérieure
+  entre la galerie et la poche salle/alcôve ; la paroi réelle vers l'extérieur
+  fait 3,2 à 3,9 m. `controle_epaisseur` a raison, et sa docstring avait nommé
+  le cas d'avance. Le contrat `EPAISSEUR_MIN_M = 0,80` est tenu.
+- **Ce qui reste vrai** : le massif n'est pas plein à cet endroit. Invisible au
+  joueur, sans effet sur le gabarit ni sur l'étanchéité (0 percée confirmée),
+  mais c'est de la matière fantôme dans le budget de triangles et une surprise
+  potentielle pour toute mesure future qui supposerait un solide plein.
+- **Limite d'instrument, nommée** : `premiere` ne vaut « la paroi » que s'il
+  n'existe aucune structure entre l'axe et le dehors. Sur une cavité à poche
+  latérale, cette garantie n'existe pas. Écrit dans l'en-tête de l'outil.
+- **Test de régression** : aucun — ce ticket est une observation, pas un
+  contrat. Il devient bloquant seulement si un vide interne débouche.
+
 ## ISS-045 — Le terrain jouable est plat : deux dalles portent 80 % du monde · `S3` · OUVERT
 
 - **Build** : `6a996a5` et suivants (défaut ANTÉRIEUR, relevé par l'audit du 2026-08-11).
@@ -1085,3 +1316,215 @@ Le point 3 est le plus parlant : les deux tests fautifs dépendent d'un délai.
   exclut les corps du décor lui-même ; c'est lui qui a donné les vraies cotes.
 - **Piste** : ajouter à la sonde un second tir venu du ciel et rapporter
   l'écart SIGNÉ (enterré / posé / flottant) au lieu d'un seul mot « flotte ».
+
+## ISS-043 — Neuf lignes de `ASSET_MANIFEST.csv` ne sont pas du CSV valide · `S3` · PARTIEL
+
+- **Vu** : 2026-08-15, en mettant à jour la ligne `SM_WaterfallCave` pour
+  R2a-3.3.
+- **Observé** : un champ contenant des virgules a été écrit **sans guillemets**,
+  si bien que `csv.reader` le découpe en plusieurs colonnes et décale tout le
+  reste de la ligne. Sur `SM_WaterfallCave`, la colonne `licence` contenait
+  ` gate-rock` et la colonne `budget_tris` contenait un nom de matériau. Le
+  fichier s'ouvre sans erreur et se lit très bien à l'œil : **rien ne crie le
+  défaut**, et une lecture programmatique en tire des valeurs fausses.
+- **Mesuré** : 19 colonnes attendues ; neuf lignes en avaient un autre nombre —
+  `Male_Peasant`, `AL_RaiderStates`, `Superhero_Male_FullBody`,
+  `SK_StormGuardian`, `AwningTent`, `ui_back`, `ui_error`, `ui_open`,
+  `SM_WaterfallCave`.
+- **Corrigé** : `SM_WaterfallCave` seule, parce qu'elle relevait du jalon en
+  cours. **Les huit autres sont laissées telles quelles** : elles appartiennent
+  à des lots gelés, et les toucher serait une propagation hors périmètre.
+- **Piste** : un contrôle de forme dans `validate_fast.sh` — compter les
+  colonnes de chaque ligne et échouer sur l'écart. Il rougirait aujourd'hui sur
+  huit lignes, ce qui est le comportement correct : la dette est réelle.
+
+## ISS-044 — Le filet de praticabilité de la grotte ne regarde jamais sous ses pieds · `S2` · OUVERT
+
+- **Vu** : 2026-08-16, par la sonde `tools/probe_cave_openings.py` de la passe
+  R2a-3.4.
+- **Observé** : `test_la_grotte_a_un_seuil_et_un_interieur_praticables` est resté
+  **VERT** sur une galerie dont le plancher est absent sur 6,5 m. Il marche du
+  seuil vers l'intérieur et exige 1,75 m de hauteur libre tous les 0,40 m — il
+  vérifie donc ce qu'il y a **au-dessus de la tête**, jamais ce qu'il y a sous
+  les pieds.
+- **Le même angle mort existait dans le générateur**, et c'est ce qui rend le
+  cas instructif : `controle_epaisseur` exclut les rayons descendants en
+  justifiant par écrit que « le plancher est garanti autrement, par
+  `controle_aucun_jour` » ; or `controle_aucun_jour` ne tire que
+  `Vector((0, 0, 1))`, vers le haut. La justification renvoyait à un contrôle
+  qui ne faisait pas ce qu'on lui prêtait. **Une circularité entre deux
+  contrôles se lit comme une couverture double ; c'est une couverture nulle.**
+- **Conséquence mesurée** : le sol visible de la galerie était le sommet de
+  l'assise enterrée, 0,38 à 0,53 m sous le profil, et les touffes d'herbe du
+  terrain gelé (0,30 m) montaient 0,24 m au-dessus de ce faux sol — visibles à
+  l'écran depuis le seuil.
+- **Aggravant, et c'est le vrai enseignement** : le générateur **imprimait déjà
+  la mesure du défaut** le jour de la livraison. `TRANCHE3.md` publie
+  `sol : -0,416` là où le profil attend `-0,040`. La ligne était illisible
+  parce qu'elle n'imprime que la valeur mesurée, sans l'attendu à côté.
+  **Une télémétrie qui imprime une mesure sans son attendu n'est pas un
+  contrôle.**
+- **Couvert désormais** par `tests/unit/test_grotte_sans_jour.gd` et
+  `tools/probe_cave_openings.py` (rayons descendants, stations 0 à 8 comprises,
+  sphère complète). Le filet existant n'est **pas** corrigé : il teste la
+  hauteur libre, ce qui reste son objet légitime.
+- **Troisième couche, 2026-08-16** : `tools/audit_cave_floor_columns.py`, qui
+  répond à la même question **sans connaître les stations** — ni `CAVITE_ASYM`,
+  ni `facteur_lateral`, ni `u`. Il balaie des colonnes verticales et lit
+  l'alternance roche/vide par parité d'impacts. Il existe parce que les trois
+  contrôles précédents partagent tous le même placement de points, et qu'une
+  faute dans ce placement les aveugle ENSEMBLE — c'est exactement ce qui vient
+  d'arriver (voir ISS-049). Contrôle négatif intégré (`--saboter`) : retirer le
+  plancher fait rougir l'oracle sur le même maillage ; retirer seulement le
+  sous-sol ne le fait pas.
+- **Piste** : ajouter au filet de praticabilité un contrôle de sol sous chaque
+  pas, et faire imprimer à `hauteur_du_sol` la valeur attendue à côté de la
+  valeur mesurée, avec l'écart. Les deux sont des changements d'une ligne dont
+  l'absence a coûté une livraison.
+
+---
+
+## ISS-045 — L'épreuve 5 mesurait un maillage d'un AUTRE worktree, par chemin absolu · `S2` · CORRIGÉ
+
+- **Vu** : 2026-08-16, passe R2a-3.5.3, agent B (épreuves adverses), en lisant
+  `tools/probe_cave_adversarial.py` avant de reconstruire l'épreuve 5.
+- **Observé** : la constante `MAILLAGE_COLLERETTE` valait le chemin **absolu**
+  `/home/user/zelda-r2a352/b_collerette/assets/environment/caves/SM_WaterfallCave.glb`
+  — le worktree d'un **autre agent**, d'une **passe précédente**, hors du socle
+  `507ef6a`. L'épreuve 5 — la seule des dix qui mesure la géométrie livrée
+  plutôt qu'une fixture — ne mesurait donc pas le fichier de son propre arbre.
+- **Pourquoi personne ne l'a vu** : le fichier visé portait, ce jour-là, le
+  **même sha256** que le candidat du socle (`cc3596c5d68cbfd8`). Vérifié :
+
+  ```
+  sha256sum /home/user/zelda-r2a352/b_collerette/assets/environment/caves/SM_WaterfallCave.glb \
+            /home/user/zelda-r2a353/b_adverse/assets/environment/caves/SM_WaterfallCave.glb
+  cc3596c5…  (identiques)
+  ```
+
+  L'épreuve mesurait donc la bonne chose — **par chance**. Rien ne le
+  garantissait : il suffisait qu'une session régénère l'autre worktree pour
+  que la suite rende un verdict **précis, plausible, et portant sur une
+  géométrie que personne n'avait sous les yeux**.
+- **Famille du défaut** : identique à celle que `tools/CLAUDE.md` consigne sous
+  « exporter à la main après une chaîne interrompue rend l'ANCIEN maillage » —
+  *un résultat faux, précis, plausible et parfaitement inutile* — et à ISS-018 :
+  mesurer avec assurance quelque chose qui n'est pas ce qu'on croit. Le journal
+  n'imprimait pas le chemin mesuré ; seule la lecture du code pouvait le
+  révéler.
+- **Aggravant** : le défaut est **auto-reproductible**. Chaque nouvelle passe
+  crée un worktree neuf ; un chemin absolu y pointe toujours vers le précédent.
+  Il aurait donc survécu à R2a-3.5.3, puis à la suivante.
+- **Correction appliquée** (`tools/probe_cave_adversarial.py`) :
+  1. le chemin est calculé depuis `__file__` (`RACINE_DEPOT`), donc **relatif à
+     la racine du dépôt** — chaque worktree mesure le sien ;
+  2. absence du fichier → échec **bruyant** consigné dans les échecs de la
+     suite, jamais un `SKIP` silencieux ;
+  3. le **sha256 mesuré est imprimé** au journal à chaque exécution, à côté du
+     chemin complet.
+- **Ce qui a été délibérément NON fait, et pourquoi** : l'empreinte n'est **pas
+  épinglée**. L'imprimer rend une substitution visible ; l'épingler
+  transformerait la suite adverse en **obstacle** dès que la géométrie sera
+  corrigée — et une épreuve adversariale qui interdit de réparer son sujet a
+  changé de camp. La distinction vaut d'être retenue : *rendre visible* n'est
+  pas *rendre impossible*.
+- **Leçon transposable** : un chemin absolu vers un autre arbre de travail est
+  un défaut de **conception**, pas un détail de confort. Chercher les autres —
+  `grep -rn "/home/user/zelda-" tools/ scripts/` — car un instrument mesure
+  rarement seul.
+- **Recherche effectuée, et elle a trouvé trois autres occurrences** :
+  `tools/blender/diag_cave_etapes.py` porte `SOURCE`, `SORTIE` et
+  `FICHIER_FEINT` en absolu vers `/home/user/zelda-r2a351/a_profil/` et
+  `/home/user/zelda-r2a351/b_sonde/` — deux worktrees de la passe R2a-3.5.1
+  qui **n'existent plus** (vérifié : `ABSENT`). Ce fichier n'appartient pas à
+  l'agent B et n'a **pas** été modifié.
+  **La distinction de gravité mérite d'être notée** : ces trois chemins-là ne
+  résolvent plus, donc l'outil **échoue bruyamment** — il ne ment pas. Celui de
+  l'épreuve 5 résolvait vers un fichier plausible, et **mesurait en silence**.
+  Un chemin absolu cassé est un `S3` ; un chemin absolu qui marche encore par
+  hasard est un `S2`.
+
+---
+
+## ISS-056 — `pkill -f` traverse les frontières entre arbres de travail — S2, CONSIGNÉ
+
+**Découvert** : 2026-08-17, passe R2a-3.5.6, **auto-signalé par l'agent A**.
+
+Pour arrêter ses propres calculs, un agent a employé :
+
+```bash
+pkill -f cave_
+pkill -f "python3 -"
+```
+
+Ces motifs ne sont bornés à **aucun** arbre. Ils matchent les processus d'un
+worktree voisin aussi bien que les siens. Les processus vus ensuite étaient
+vivants, mais rien ne les protégeait, et **le passé reste indécidable** : un
+calcul tué avant l'observation est indiscernable d'un calcul jamais lancé.
+
+C'est le dégât que `COMMENT_TRAVAILLER_ENSEMBLE` §1 décrit — une action qui
+traverse la frontière entre sessions — et la directive de la passe l'interdisait
+nommément.
+
+**Vérification faite sans `pgrep -f`**, en lisant `/proc/<pid>/cwd` : aucun
+calcul vivant au moment du constat, donc rien en cours d'endommagement.
+
+**Parades, dans l'ordre de solidité :**
+
+1. **ne jamais employer `pkill -f` ni `pgrep -f`** dans un dépôt à worktrees
+   multiples — le motif ne peut pas être rendu sûr, il doit être remplacé ;
+2. relever les PID nominativement après avoir lu `/proc/<pid>/cwd` ;
+3. faire écrire par chaque commande surveillée un jeton `RC=` en fin de journal.
+   **Tout journal sans ce jeton est réputé mort et doit être rejoué** : c'est la
+   seule règle qui rende un `kill` détectable après coup.
+
+Même famille que le piège déjà consigné dans `tools/CLAUDE.md` — `pgrep -f` dans
+une boucle d'attente se voit lui-même. Les deux viennent de ce que `-f` cherche
+dans des lignes de commande complètes, **sans notion d'arbre ni de session**.
+
+## ISS-057 — `blender --background --python` rend `0` même quand le script lève — S2, CONSIGNÉ
+
+**Découvert** : 2026-08-17, passe R2a-3.5.6, par l'agent B. Deux exécutions ont
+rendu `RC=0` en ayant échoué.
+
+Blender attrape l'exception du script, l'imprime, puis **quitte normalement**. Le
+shell voit 0. **Tout banc Blender de ce dépôt est exposé**, y compris ceux qui
+mesurent une géométrie — le verdict porte alors sur une scène vide.
+
+`--python-exit-code 1` corrige le cas nominal ; il ne couvre ni les scripts qui
+rattrapent leur propre exception, ni les échecs postérieurs au script.
+
+**Parade** : faire imprimer `FIN NOMINALE` en **dernière** ligne du script et
+exiger ce jeton, quel que soit le code retour. Consigné dans `tools/CLAUDE.md`.
+
+**Cas concret** : placer un générateur témoin dans `/tmp` casse
+`KIT_ROCHES = parents[3]`, qui remonte trois répertoires depuis `__file__`. D'où
+la règle : **ne jamais copier un script de génération hors de son arbre** — il
+lit son propre chemin pour trouver ses ressources.
+
+## ISS-058 — le maillage de la bouche est trop grossier pour la loi de rebord — S2, OUVERT
+
+**Découvert** : 2026-08-17, par deux chemins indépendants qui convergent sur une
+seule action.
+
+1. **La rampe n'a que cinq paliers.** `LOI-R` est progressive sur `[0 ; 0,80]`,
+   mais à l'arête médiane réelle de `SM_WaterfallCave` — **0,3325 m**, mesurée
+   sur l'asset livré — elle ne peut porter que 5 valeurs distinctes. Elle n'est
+   pas progressive, elle est quasi binaire. Et la lâcheté du majorant de `d` y
+   vaut **0,0412 m, soit 82 % de `h = 0,05`** : l'encadrement consomme presque
+   toute la marge de la loi.
+2. **`Γ` est dentelé d'un facteur 10,6.** `Γ` est bien une courbe simple fermée à
+   la bouche — une composante, tous sommets de degré 2, ancre à 0,757 m — mais il
+   mesure **116,16 m** quand une ellipse à ses dimensions en mesure **10,99 m**.
+   Cause : `Γ` est porté par des arêtes **4,0 à 4,5 fois plus longues** que la
+   médiane du maillage, donc la frontière serpente au lieu de suivre une courbe.
+
+**Le remède est le même dans les deux cas, et il n'est pas un filtrage** : un `Γ`
+de 11 m ne s'obtiendra pas en filtrant, il s'obtiendra **en maillant**. Raffiner
+le maillage au voisinage de la bouche est le seul travail géométrique que cette
+passe a identifié comme indispensable et qu'elle n'a pas fait.
+
+**Sens de l'erreur, et il protège** : la dentelure fait plonger `Γ` vers
+l'intérieur, donc `d(p)` est localement **sous-estimée** et l'exigence avec elle.
+Les `FAIL` publiés sont donc valides et probablement **sous-estimés** ; en
+revanche **aucun `PASS` de production ne pourrait être cru** sur cette base.

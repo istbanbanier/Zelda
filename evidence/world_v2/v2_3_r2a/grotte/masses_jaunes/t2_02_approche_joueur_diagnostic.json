@@ -1,0 +1,339 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "79e7ae25a5c6f2d64106d6b595157e874b2b85f1",
+  "engine": "4.7.1-stable (custom_build)",
+  "occupants_du_cone": 97,
+  "outil": "diagnose_screen_occupants",
+  "passes": [
+    {
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/diag/t2_02_approche_joueur_00_reference.png",
+      "passe": "reference"
+    },
+    {
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/diag/t2_02_approche_joueur_01_sans_places.png",
+      "passe": "places"
+    },
+    {
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/diag/t2_02_approche_joueur_02_sans_vegetation.png",
+      "passe": "vegetation"
+    },
+    {
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/diag/t2_02_approche_joueur_03_sans_terrain.png",
+      "passe": "terrain"
+    },
+    {
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/diag/t2_02_approche_joueur_04_sans_distant.png",
+      "passe": "distant"
+    },
+    {
+      "image": "/tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/diag/t2_02_approche_joueur_05_sans_fx.png",
+      "passe": "fx"
+    }
+  ],
+  "plan": {
+    "fov": 55.0,
+    "from": [
+      -100.0,
+      3.42,
+      12.0
+    ],
+    "look": [
+      -106.0,
+      4.6,
+      3.6
+    ],
+    "name": "t2_02_approche_joueur"
+  },
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "size": "1280x720",
+  "tete_de_cone": [
+    {
+      "categorie": "vegetation",
+      "ecran_x": 77,
+      "ecran_y": 717,
+      "hauteur_m": 0.32,
+      "hauteur_px": 77,
+      "instances": 159,
+      "noeud": "veg_c4r8_grass",
+      "profondeur_m": 2.85,
+      "proprietaire": "veg_c4r8"
+    },
+    {
+      "categorie": "vegetation",
+      "ecran_x": -38,
+      "ecran_y": 510,
+      "hauteur_m": 0.08,
+      "hauteur_px": 9,
+      "instances": 1,
+      "noeud": "veg_c4r8_rock_Pebble_Round_2",
+      "profondeur_m": 6.1,
+      "proprietaire": "veg_c4r8"
+    },
+    {
+      "categorie": "vegetation",
+      "ecran_x": 298,
+      "ecran_y": 487,
+      "hauteur_m": 2.14,
+      "hauteur_px": 216,
+      "instances": 12,
+      "noeud": "veg_c4r8_flowers_Flower_4_Group",
+      "profondeur_m": 6.86,
+      "proprietaire": "veg_c4r8"
+    },
+    {
+      "categorie": "vegetation",
+      "ecran_x": 1235,
+      "ecran_y": 508,
+      "hauteur_m": 2.37,
+      "hauteur_px": 222,
+      "instances": 1,
+      "noeud": "veg_c4r8_rock_Rock_Medium_2",
+      "profondeur_m": 7.37,
+      "proprietaire": "veg_c4r8"
+    },
+    {
+      "categorie": "places",
+      "ecran_x": 296,
+      "ecran_y": 471,
+      "hauteur_m": 0.19,
+      "hauteur_px": 18,
+      "instances": 1,
+      "noeud": "Fern_1",
+      "profondeur_m": 7.47,
+      "proprietaire": "lieu valley.poi.waterfall_cave.01"
+    },
+    {
+      "categorie": "places",
+      "ecran_x": 1038,
+      "ecran_y": 468,
+      "hauteur_m": 0.19,
+      "hauteur_px": 15,
+      "instances": 1,
+      "noeud": "Fern_1",
+      "profondeur_m": 8.68,
+      "proprietaire": "lieu valley.poi.waterfall_cave.01"
+    },
+    {
+      "categorie": "vegetation",
+      "ecran_x": 1158,
+      "ecran_y": 492,
+      "hauteur_m": 0.48,
+      "hauteur_px": 34,
+      "instances": 125,
+      "noeud": "veg_c4r7_grass",
+      "profondeur_m": 9.61,
+      "proprietaire": "veg_c4r7"
+    },
+    {
+      "categorie": "vegetation",
+      "ecran_x": 1042,
+      "ecran_y": 476,
+      "hauteur_m": 2.1,
+      "hauteur_px": 144,
+      "instances": 10,
+      "noeud": "veg_c4r7_flowers_Flower_4_Group",
+      "profondeur_m": 10.07,
+      "proprietaire": "veg_c4r7"
+    },
+    {
+      "categorie": "places",
+      "ecran_x": 655,
+      "ecran_y": 338,
+      "hauteur_m": 11.01,
+      "hauteur_px": 524,
+      "instances": 1,
+      "noeud": "SM_WaterfallCave",
+      "profondeur_m": 14.54,
+      "proprietaire": "lieu valley.poi.waterfall_cave.01"
+    },
+    {
+      "categorie": "vegetation",
+      "ecran_x": 810,
+      "ecran_y": 464,
+      "hauteur_m": 0.11,
+      "hauteur_px": 5,
+      "instances": 1,
+      "noeud": "veg_c4r7_rock_Pebble_Round_2",
+      "profondeur_m": 15.53,
+      "proprietaire": "veg_c4r7"
+    },
+    {
+      "categorie": "vegetation",
+      "ecran_x": 459,
+      "ecran_y": 461,
+      "hauteur_m": 7.22,
+      "hauteur_px": 304,
+      "instances": 2,
+      "noeud": "veg_c4r8_tree_CommonTree_2",
+      "profondeur_m": 16.43,
+      "proprietaire": "veg_c4r8"
+    },
+    {
+      "categorie": "vegetation",
+      "ecran_x": 251,
+      "ecran_y": 461,
+      "hauteur_m": 2.23,
+      "hauteur_px": 90,
+      "instances": 1,
+      "noeud": "veg_c4r8_rock_Rock_Medium_3",
+      "profondeur_m": 17.21,
+      "proprietaire": "veg_c4r8"
+    },
+    {
+      "categorie": "vegetation",
+      "ecran_x": 485,
+      "ecran_y": 460,
+      "hauteur_m": 10.7,
+      "hauteur_px": 424,
+      "instances": 2,
+      "noeud": "veg_c4r7_tree_CommonTree_4",
+      "profondeur_m": 17.43,
+      "proprietaire": "veg_c4r7"
+    },
+    {
+      "categorie": "places",
+      "ecran_x": 532,
+      "ecran_y": 407,
+      "hauteur_m": 0.42,
+      "hauteur_px": 16,
+      "instances": 1,
+      "noeud": "Mushroom_Common",
+      "profondeur_m": 18.14,
+      "proprietaire": "lieu valley.poi.waterfall_cave.01"
+    },
+    {
+      "categorie": "places",
+      "ecran_x": 546,
+      "ecran_y": 417,
+      "hauteur_m": 0.14,
+      "hauteur_px": 5,
+      "instances": 1,
+      "noeud": "Stem",
+      "profondeur_m": 18.24,
+      "proprietaire": "lieu valley.poi.waterfall_cave.01"
+    },
+    {
+      "categorie": "places",
+      "ecran_x": 546,
+      "ecran_y": 411,
+      "hauteur_m": 0.28,
+      "hauteur_px": 11,
+      "instances": 1,
+      "noeud": "Berry",
+      "profondeur_m": 18.26,
+      "proprietaire": "lieu valley.poi.waterfall_cave.01"
+    },
+    {
+      "categorie": "places",
+      "ecran_x": 545,
+      "ecran_y": 410,
+      "hauteur_m": 0.53,
+      "hauteur_px": 20,
+      "instances": 1,
+      "noeud": "Mushroom_Common",
+      "profondeur_m": 18.34,
+      "proprietaire": "lieu valley.poi.waterfall_cave.01"
+    },
+    {
+      "categorie": "vegetation",
+      "ecran_x": 1331,
+      "ecran_y": 509,
+      "hauteur_m": 0.47,
+      "hauteur_px": 17,
+      "instances": 158,
+      "noeud": "veg_c5r7_grass",
+      "profondeur_m": 19.14,
+      "proprietaire": "veg_c5r7"
+    },
+    {
+      "categorie": "vegetation",
+      "ecran_x": 361,
+      "ecran_y": 458,
+      "hauteur_m": 0.08,
+      "hauteur_px": 3,
+      "instances": 2,
+      "noeud": "veg_c4r8_rock_Pebble_Round_4",
+      "profondeur_m": 19.32,
+      "proprietaire": "veg_c4r8"
+    },
+    {
+      "categorie": "vegetation",
+      "ecran_x": -64,
+      "ecran_y": 231,
+      "hauteur_m": 0.4,
+      "hauteur_px": 12,
+      "instances": 190,
+      "noeud": "veg_c3r8_grass",
+      "profondeur_m": 23.68,
+      "proprietaire": "veg_c3r8"
+    },
+    {
+      "categorie": "vegetation",
+      "ecran_x": -43,
+      "ecran_y": 236,
+      "hauteur_m": 2.3,
+      "hauteur_px": 65,
+      "instances": 17,
+      "noeud": "veg_c3r8_flowers_Flower_4_Group",
+      "profondeur_m": 24.39,
+      "proprietaire": "veg_c3r8"
+    },
+    {
+      "categorie": "vegetation",
+      "ecran_x": 232,
+      "ecran_y": 267,
+      "hauteur_m": 0.42,
+      "hauteur_px": 11,
+      "instances": 133,
+      "noeud": "veg_c3r7_grass",
+      "profondeur_m": 27.17,
+      "proprietaire": "veg_c3r7"
+    },
+    {
+      "categorie": "vegetation",
+      "ecran_x": 864,
+      "ecran_y": 487,
+      "hauteur_m": 6.89,
+      "hauteur_px": 169,
+      "instances": 1,
+      "noeud": "veg_c4r7_tree_CommonTree_2",
+      "profondeur_m": 28.18,
+      "proprietaire": "veg_c4r7"
+    },
+    {
+      "categorie": "vegetation",
+      "ecran_x": 153,
+      "ecran_y": 269,
+      "hauteur_m": 0.12,
+      "hauteur_px": 3,
+      "instances": 1,
+      "noeud": "veg_c3r8_rock_Pebble_Round_2",
+      "profondeur_m": 28.88,
+      "proprietaire": "veg_c3r8"
+    },
+    {
+      "categorie": "vegetation",
+      "ecran_x": 987,
+      "ecran_y": 474,
+      "hauteur_m": 18.89,
+      "hauteur_px": 391,
+      "instances": 1,
+      "noeud": "veg_c4r7_tree_TwistedTree_1",
+      "profondeur_m": 33.42,
+      "proprietaire": "veg_c4r7"
+    },
+    {
+      "categorie": "terrain",
+      "ecran_x": 1233,
+      "ecran_y": 372,
+      "hauteur_m": 10.66,
+      "hauteur_px": 219,
+      "instances": 1,
+      "noeud": "GroundMesh",
+      "profondeur_m": 33.63,
+      "proprietaire": "c2r3"
+    }
+  ]
+}

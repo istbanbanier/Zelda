@@ -1,0 +1,27 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "clip_below": 0.0,
+  "commit": "1fb57d34b1ac7e03bca278a9068d6a4fee57b77b",
+  "emprise_m": [
+    21.736213684082,
+    11.0121450424194,
+    21.7362060546875
+  ],
+  "engine": "4.7.1-stable (custom_build)",
+  "mode": "lieu dans le monde monté",
+  "place_id": "valley.poi.waterfall_cave.01",
+  "projection": "orthogonale",
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "size": "900x1200",
+  "sujet": "grotte_t2",
+  "vues": [
+    {
+      "angle_deg": 0.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_r2a/grotte/tranche2/silhouette_grotte_t2_000.png",
+      "sujet_pct": 14.212962962963
+    }
+  ]
+}

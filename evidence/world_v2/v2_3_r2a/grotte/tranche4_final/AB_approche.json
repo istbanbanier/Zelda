@@ -1,0 +1,10 @@
+{
+ "gauche": "evidence/world_v2/v2_3_r2a/grotte/tranche4_baseline/approche_joueur.png",
+ "gauche_libelle": "R2a-3.3 recapturée après correction florale · 4ed364b",
+ "droite": "evidence/world_v2/v2_3_r2a/grotte/tranche4_final/approche_joueur.png",
+ "droite_libelle": "R2a-3.4 · 55c4803",
+ "png": "evidence/world_v2/v2_3_r2a/grotte/tranche4_final/AB_approche.png",
+ "titre": "approche joueur — mêmes caméras, même scène, fov 55°",
+ "resolution_par_moitie": "1280x720",
+ "timestamp_utc": "2026-08-16 04:07:24"
+}

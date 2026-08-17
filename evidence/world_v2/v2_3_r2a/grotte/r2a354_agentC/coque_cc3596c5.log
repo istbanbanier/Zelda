@@ -1,0 +1,97 @@
+============================================================================
+COQUE STRUCTURELLE — contrat docs/CONTRAT_COQUE_STRUCTURELLE.md
+============================================================================
+fichier : assets/environment/caves/SM_WaterfallCave.glb
+sha256  : cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49        <- lu AVANT la mesure
+noeud   : SM_WaterfallCave
+h (rayon de couverture) = 0.1000 m   |   seuil = 0.80 m
+reperes : COURANTS
+
+--- fermeture prealable ---
+bords libres 0 | non-manifold 0 | 20090 faces | 10045 sommets soudes
+volume signe = +788.526 m3  -> normales sortantes
+
+--- §2.3 les deux graines sont-elles dans l'AIR ? (angle solide) ---
+  MODELE_SALLE  modele (2.620 ; 2.580 ; 0.090)  enroulement -0.0000  -> AIR
+  MODELE_NICHE  modele (2.780 ; 4.090 ; 0.500)  enroulement +0.0000  -> AIR
+
+--- references de faces ---
+  temoins de l'ENVELOPPE EXTERIEURE : 26 faces distinctes,
+     vues de 26 directions a grande distance
+  face de SALLE  : 19968   face de NICHE : 20056
+
+--- §2.1 derivation de la bouche : balayage du profil ---
+  axe de balayage : ay   de -3.115 a 5.865, pas 0.250 m
+  TROIS conditions de validite, et chacune a ete apprise a ses
+  depens sur cette geometrie :
+    1. le contour isole SALLE de 26 TEMOINS de l'enveloppe ;
+       — le perimetre seul elisait une VERRUE de 6 faces, et un
+         temoin unique au zenith laissait passer une BISSECTION
+         du massif entier (628 m2 contre 639 m2) ;
+    2. la face de NICHE reste du cote graine ;
+       — sinon la barriere ampute l'arriere de la cavite ;
+    3. aire(cote graine) < aire(cote ciel).
+       — sinon on retient le complement : un bouton isolant le
+         CIEL satisfait 1 et 2 en laissant 20 078 faces dedans.
+  Parmi les valides on prend la PLUS EXTERIEURE — celle qui
+  enferme le PLUS de cavite. Prendre l'etranglement le plus
+  etroit amputerait le fond, ce que §2.4 interdit.
+
+  ay        contours perim.min  valide   aire int.   perimetre
+  -3.115    3        0.199      non      
+  -2.865    2        0.855      non      
+  -2.615    3        0.488      non      
+  -2.365    3        1.057      non      
+  -2.115    3        3.448      non      
+  -1.865    1        52.652     non      
+  -1.615    2        11.978     non      
+  -1.365    2        11.978     non      
+  -1.115    2        11.955     non      
+  -0.865    2        11.796     non      
+  -0.615    2        11.637     non      
+  -0.365    2        11.477     non      
+  -0.115    3        0.985      non      
+  0.135     2        14.127     non      
+  0.385     3        0.693      non      
+  0.635     2        12.521     non      
+  0.885     3        1.079      non      
+  1.135     2        11.495     non      
+  1.385     2        11.177     non      
+  1.635     2        11.274     non      
+  1.885     2        11.523     non      
+  2.135     2        11.548     non      
+  2.385     2        11.479     non      
+  2.635     2        11.474     non      
+  2.885     2        11.341     non      
+  3.135     2        11.127     non      
+  3.385     2        10.852     non      
+  3.635     2        10.470     non      
+  3.885     2        10.032     non      
+  4.135     2        9.596      non      
+  4.385     2        9.169      non      
+  4.635     2        8.747      non      
+  4.885     2        8.318      non      
+  5.135     3        2.022      non      
+  5.385     2        7.316      non      
+  5.635     2        6.499      non      
+
+============================================================================
+GATE TOPOLOGIQUE : **ROUGE**
+============================================================================
+AUCUNE barriere de bouche valide n'isole l'interieur.
+
+Lecture : sceller la bouche ne suffit pas a isoler l'interieur.
+La cavite communique donc avec le dehors AILLEURS que par la
+bouche. Ce test n'a AUCUNE RESOLUTION — il verrait une fissure
+de n'importe quelle largeur, la ou une inondation a 6 cm est
+aveugle en dessous de son pas.
+
+L'epaisseur n'est pas mesuree : mesurer l'epaisseur d'une coque
+trouee n'a pas de sens, il n'y a pas de separation a mesurer.
+(§5 : le gate topologique passe EN PREMIER.)
+
+CE TEST NE LOCALISE PAS. Il dit qu'une communication existe,
+pas ou elle est — c'est l'appariement du §6 :
+    python3 tools/cave_check_sky_map.py <glb> --pas=0.005 \
+            --autour-du-defaut
+RC=1

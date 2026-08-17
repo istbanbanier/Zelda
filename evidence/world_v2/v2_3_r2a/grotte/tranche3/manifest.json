@@ -1,0 +1,86 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "73dc20adb738fa6d37646dbe0af2fe1790302e44",
+  "engine": "4.7.1-stable (custom_build)",
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 55.0,
+      "from": [
+        -100.0,
+        3.42,
+        12.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/tranche3/t3_02_approche_joueur.png",
+      "look": [
+        -106.0,
+        4.6,
+        3.6
+      ],
+      "name": "t3_02_approche_joueur"
+    },
+    {
+      "fov": 28.0,
+      "from": [
+        -101.9,
+        4.65,
+        7.6
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/tranche3/t3_03_gros_plan_seuil.png",
+      "look": [
+        -106.15,
+        4.7,
+        3.35
+      ],
+      "name": "t3_03_gros_plan_seuil"
+    },
+    {
+      "fov": 40.0,
+      "from": [
+        -101.4,
+        4.9,
+        10.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/tranche3/t3_04_seuil_cadre.png",
+      "look": [
+        -106.0,
+        4.3,
+        3.9
+      ],
+      "name": "t3_04_seuil_cadre"
+    },
+    {
+      "fov": 45.0,
+      "from": [
+        -96.0,
+        8.0,
+        16.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/tranche3/t3_07_trois_masses.png",
+      "look": [
+        -107.0,
+        6.0,
+        3.0
+      ],
+      "name": "t3_07_trois_masses"
+    },
+    {
+      "fov": 44.0,
+      "from": [
+        -95.0,
+        6.2,
+        -11.5
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/tranche3/t3_08_flanc_arriere.png",
+      "look": [
+        -108.2,
+        5.6,
+        -3.2
+      ],
+      "name": "t3_08_flanc_arriere"
+    }
+  ],
+  "size": "1280x720"
+}

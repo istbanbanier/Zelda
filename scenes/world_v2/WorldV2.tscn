@@ -1,0 +1,87 @@
+[gd_scene load_steps=7 format=3]
+
+; World V2 — VALLÉE WHITEBOX (phase V2.1). Le sol temporaire de V2.0 a été
+; remplacé par le monde réel : 64 chunks de relief continu, hydrologie,
+; marqueurs, limites et caméras sont construits AU CHARGEMENT par la racine
+; depuis resources/world_v2/world_v2_layout.json (une carte invalide arrête
+; le monde bruyamment). Matériaux de diagnostic uniquement — rien ici ne
+; prétend être final.
+;
+; Le spawn est l'ancre §3.3 de la crête (0, 24, 170) — la fonction de
+; hauteur y garantit un plateau doux exactement à 24.
+
+[ext_resource type="Script" path="res://scripts/world_v2/world_v2_root.gd" id="1_root"]
+[ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/ui/GameplayShell.tscn" id="3_shell"]
+[ext_resource type="Shader" path="res://shaders/world_v2/SH_WorldV2Sky.gdshader" id="4_sky"]
+
+[sub_resource type="ShaderMaterial" id="SkyMaterial"]
+shader = ExtResource("4_sky")
+
+[sub_resource type="Sky" id="ValleySky"]
+sky_material = SubResource("SkyMaterial")
+
+[sub_resource type="Environment" id="ValleyEnvironment"]
+background_mode = 2
+sky = SubResource("ValleySky")
+ambient_light_source = 2
+ambient_light_color = Color(0.76, 0.84, 0.92, 1)
+ambient_light_energy = 0.6
+tonemap_mode = 2
+fog_enabled = true
+fog_light_color = Color(0.54, 0.62, 0.69, 1)
+fog_density = 0.0012
+fog_sky_affect = 0.05
+fog_aerial_perspective = 0.15
+
+[node name="WorldV2" type="Node3D"]
+script = ExtResource("1_root")
+
+[node name="TerrainChunks" type="Node3D" parent="."]
+
+[node name="Water" type="Node3D" parent="."]
+
+[node name="Biomes" type="Node3D" parent="."]
+
+[node name="Routes" type="Node3D" parent="."]
+
+[node name="Landmarks" type="Node3D" parent="."]
+
+[node name="POIs" type="Node3D" parent="."]
+
+[node name="Places" type="Node3D" parent="."]
+
+[node name="Encounters" type="Node3D" parent="."]
+
+[node name="Navigation" type="Node3D" parent="."]
+
+[node name="Vegetation" type="Node3D" parent="."]
+
+[node name="Lighting" type="Node3D" parent="."]
+
+[node name="Sun" type="DirectionalLight3D" parent="Lighting"]
+transform = Transform3D(-0.333807, 0.368318, -0.867707, 0, 0.920505, 0.390731, 0.942641, 0.13043, -0.307271, 0, 120, 0)
+light_color = Color(1, 0.87, 0.65, 1)
+light_energy = 1.3
+shadow_enabled = true
+directional_shadow_max_distance = 260.0
+
+[node name="AtmosphereEnvironment" type="WorldEnvironment" parent="Lighting"]
+environment = SubResource("ValleyEnvironment")
+
+[node name="CaptureCameras" type="Node3D" parent="."]
+
+[node name="DiagnosticCamera" type="Camera3D" parent="CaptureCameras"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 30, 186)
+fov = 55.0
+
+[node name="WorldBindings" type="Node" parent="."]
+
+[node name="SpawnPoint" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 24.4, 170)
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 24.4, 170)
+
+[node name="GameplayShell" parent="." instance=ExtResource("3_shell")]
+world_scene_path = "res://scenes/world_v2/WorldV2.tscn"

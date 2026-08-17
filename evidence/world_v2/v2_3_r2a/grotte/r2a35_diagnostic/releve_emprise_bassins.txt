@@ -1,0 +1,23 @@
+[grotte] 38 piece(s) : 5 enveloppe, 3 gaine, 30 semelle, plus l'assise enterree
+[grotte] faite par rang (z max, m) : enveloppe 8.35, gaine 3.56, semelle 1.33
+[grotte]   entaille 0.60 : 3 masse(s) (3 exigees)  sommets 1.32 1.86 1.40  emprises 5.90 7.37 3.65  cv 0.16 (ratio emprises 2.02, 2.00 exige)
+[grotte]   entaille 0.90 : 3 masse(s) (3 exigees)  sommets 1.79 2.25 1.71  emprises 5.90 7.37 3.65  cv 0.13 (ratio emprises 2.02, 2.00 exige)
+[grotte]   entaille 1.20 : 3 masse(s) (3 exigees)  sommets 2.10 2.56 2.02  emprises 5.90 7.37 3.65  cv 0.11 (ratio emprises 2.02, 2.00 exige)
+[grotte]   entaille 1.50 : 3 masse(s) (3 exigees)  sommets 2.48 2.95 2.56  emprises 5.90 7.37 3.65  cv 0.08 (ratio emprises 2.02, 2.00 exige)
+[grotte]   masse 1  sommet  1.79 m  emprise  5.90 m  proeminence  2.05 m  faite  4.85 m
+[grotte]   masse 2  sommet  2.25 m  emprise  7.37 m  proeminence  7.96 m  faite  8.35 m
+[grotte]   masse 3  sommet  1.71 m  emprise  3.65 m  proeminence  2.79 m  faite  4.60 m
+[grotte]   decentrement du faite dominant : 1.71 m = 10.0 % de l'emprise
+[grotte]   entaille 0.60 : 2 masse(s) (3 exigees)  sommets 1.42 1.85  emprises 6.05 9.46  cv 0.13 (ratio emprises 1.56, 2.00 exige)
+[grotte]   entaille 0.90 : 2 masse(s) (3 exigees)  sommets 1.71 1.99  emprises 6.05 9.46  cv 0.08 (ratio emprises 1.56, 2.00 exige)
+[grotte]   entaille 1.20 : 2 masse(s) (3 exigees)  sommets 2.06 2.20  emprises 6.05 9.46  cv 0.03 (ratio emprises 1.56, 2.00 exige)
+[grotte]   entaille 1.50 : 2 masse(s) (3 exigees)  sommets 2.42 2.35  emprises 6.05 9.46  cv 0.01 (ratio emprises 1.56, 2.00 exige)
+[grotte] azimut 225 — TELEMETRIE SEULE, ne bloque pas
+[grotte]   entaille 0.60 : 3 masse(s) (3 exigees)  sommets 1.38 1.78 1.38  emprises 3.97 7.53 6.15  cv 0.13 (ratio emprises 1.90, 2.00 exige)
+[grotte]   entaille 0.90 : 3 masse(s) (3 exigees)  sommets 1.62 2.19 1.70  emprises 3.97 7.53 6.15  cv 0.14 (ratio emprises 1.90, 2.00 exige)
+[grotte]   entaille 1.20 : 3 masse(s) (3 exigees)  sommets 1.94 2.59 2.02  emprises 3.97 7.53 6.15  cv 0.13 (ratio emprises 1.90, 2.00 exige)
+[grotte]   entaille 1.50 : 3 masse(s) (3 exigees)  sommets 2.51 3.00 2.35  emprises 3.97 7.53 6.15  cv 0.11 (ratio emprises 1.90, 2.00 exige)
+[grotte]   (225) sommet  1.62 m  emprise  3.97 m  proeminence  3.03 m  faite  4.60 m
+[grotte]   (225) sommet  2.19 m  emprise  7.53 m  proeminence  8.12 m  faite  8.35 m
+[grotte]   (225) sommet  1.70 m  emprise  6.15 m  proeminence  1.97 m  faite  4.85 m
+[grotte] ERREUR: composition — azimut 100 : 2 masse(s) a l'entaille 0.90, 3 attendues — la silhouette ne presente pas trois amas

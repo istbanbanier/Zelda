@@ -1,0 +1,17 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "altitude_m": 600.0,
+  "center": "0.0,0.0",
+  "commit": "ac548599b78926fb8a81a60534de3b3893c8b4c2",
+  "engine": "4.7.1-stable (custom_build)",
+  "fog": "désactivé",
+  "geometry_instances": 965,
+  "image": "evidence/world_v2/v2_2/captures/carte_regions.png",
+  "label": "carte_vallee",
+  "metres_per_pixel": 0.25390625,
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "size": "2048x2048",
+  "span_m": 520.0
+}

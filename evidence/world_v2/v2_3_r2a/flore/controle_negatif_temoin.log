@@ -1,0 +1,56 @@
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: flora_scale
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 11224 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+  ok   test_world_v2_flora_scale.gd::test_aucune_fleur_plantee_ne_depasse_le_plafond_de_la_bible (8 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5412 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ÉCHEC test_world_v2_flora_scale.gd::test_les_elements_non_floraux_sont_inchanges — la végétation NON FLORALE est strictement inchangée par la correction d'échelle — dérives : reeds / somme X : attendu -588.144, obtenu -588.143. Mesure courante : {"grass": [12570, 20004.2914, 128604.1517, 816381.5592, 13513.6401], "tall": [1985, -87.4601, 40697.9946, 334611.8255, 2128.5345], "reeds": [7, -588.1430, 13.4484, 135.7969, 7.5395], "tree": [197, 14889.9664, 1900.7008, 9588.2803, 218.0460], "rock": [698, 1788.8191, 9815.9115, -6175.0403, 800.5724], "flowers": [1194, -22648.5969, 13960.9344, 130360.7182, 225.4038]}
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 1 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_flora_scale.gd::test_les_elements_non_floraux_sont_inchanges — la végétation NON FLORALE est strictement inchangée par la correction d'échelle — dérives : reeds / somme X : attendu -588.144, obtenu -588.143. Mesure courante : {"grass": [12570, 20004.2914, 128604.1517, 816381.5592, 13513.6401], "tall": [1985, -87.4601, 40697.9946, 334611.8255, 2128.5345], "reeds": [7, -588.1430, 13.4484, 135.7969, 7.5395], "tree": [197, 14889.9664, 1900.7008, 9588.2803, 218.0460], "rock": [698, 1788.8191, 9815.9115, -6175.0403, 800.5724], "flowers": [1194, -22648.5969, 13960.9344, 130360.7182, 225.4038]}

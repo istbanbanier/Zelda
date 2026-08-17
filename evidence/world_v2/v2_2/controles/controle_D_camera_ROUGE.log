@@ -1,0 +1,4 @@
+# CONTRÔLE NÉGATIF D — cam03 déplacée de 5 m (117 au lieu de 112)
+# Date : 2026-08-13T12:29:01Z ; base : ec2e135 + injection temporaire (jamais commitée)
+=== RÉSULTAT: 5 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_landscape_contract.gd::test_les_six_cameras_v2_1_sont_gelees_par_litteraux — les six transforms V2.1 sont intactes — cam03_pylone_marche déplacée : (117.00, -14.00) au lieu de (112.00, -14.00)

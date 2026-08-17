@@ -52,6 +52,11 @@ const WORLD: String = "res://scenes/world/valley/ValleyWorld.tscn"
 
 func _initialize() -> void:
 	var args: PackedStringArray = OS.get_cmdline_user_args()
+	# `--scene=` : la sonde servait la vallée V1 seule. World V2 pose ses
+	# lieux dans un AUTRE arbre, et la question « qu'est-ce qui masque le
+	# pylône ? » ne se pose que là. Défaut inchangé — aucun appel existant
+	# ne change de comportement.
+	var world_path: String = WORLD
 	var patterns: PackedStringArray = PackedStringArray()
 	var region: Rect2 = Rect2(-1e6, -1e6, 2e6, 2e6)
 	var float_threshold: float = 0.35
@@ -72,10 +77,12 @@ func _initialize() -> void:
 			limit = int(arg.substr(8))
 		elif arg.begins_with("--exempt="):
 			exempt = arg.substr(9).to_lower().split(",", false)
+		elif arg.begins_with("--scene="):
+			world_path = arg.substr(8)
 		elif arg == "--sweep":
 			sweep = true
 
-	var scene: PackedScene = load(WORLD) as PackedScene
+	var scene: PackedScene = load(world_path) as PackedScene
 	var world: Node = scene.instantiate()
 	root.add_child(world)
 	await process_frame

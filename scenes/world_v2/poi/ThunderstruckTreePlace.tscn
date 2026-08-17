@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+; Lieu V2.3 — scène AUTONOME : la géométrie se construit dans _build()
+; du script ; le bâtisseur des lieux l'ancre au site du layout et lui lie
+; le terrain gelé. Voir docs/WORLD_V2_POI_CONTRACTS.md.
+
+[ext_resource type="Script" path="res://scripts/world_v2/poi/thunderstruck_tree_place.gd" id="1_place"]
+
+[node name="ThunderstruckTreePlace" type="Node3D"]
+script = ExtResource("1_place")

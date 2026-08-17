@@ -1,0 +1,134 @@
+Blender 4.0.2
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.02s
+[grotte] module R (template-detail) : 241 faces, volume 8.89 m3, ferme et sans auto-intersection
+[grotte] 38 piece(s) : 5 enveloppe, 3 gaine, 30 semelle, plus l'assise enterree
+[grotte] faite par rang (z max, m) : enveloppe 8.35, gaine 3.56, semelle 1.33
+[grotte] silhouette a 55 deg : emprise 17.00 m
+[grotte]   entaille 0.60 : 3 masse(s) (3 exigees)  sommets 1.32 1.86 1.40  emprises 5.90 7.37 3.65  cv 0.16 (ratio emprises 2.02, 2.00 exige)
+[grotte]   entaille 0.90 : 3 masse(s) (3 exigees)  sommets 1.79 2.25 1.71  emprises 5.90 7.37 3.65  cv 0.13 (ratio emprises 2.02, 2.00 exige)
+[grotte]   entaille 1.20 : 3 masse(s) (3 exigees)  sommets 2.10 2.56 2.02  emprises 5.90 7.37 3.65  cv 0.11 (ratio emprises 2.02, 2.00 exige)
+[grotte]   entaille 1.50 : 3 masse(s) (3 exigees)  sommets 2.48 2.95 2.56  emprises 5.90 7.37 3.65  cv 0.08 (ratio emprises 2.02, 2.00 exige)
+[grotte]   masse 1  sommet  1.79 m  emprise  5.90 m  proeminence  2.05 m  faite  4.85 m
+[grotte]   masse 2  sommet  2.25 m  emprise  7.37 m  proeminence  7.96 m  faite  8.35 m
+[grotte]   masse 3  sommet  1.71 m  emprise  3.65 m  proeminence  2.79 m  faite  4.60 m
+[grotte]   decentrement du faite dominant : 1.71 m = 10.0 % de l'emprise
+[grotte] silhouette a 100 deg : emprise 15.58 m
+[grotte]   entaille 0.60 : 2 masse(s) (3 exigees)  sommets 1.42 1.85  emprises 6.05 9.46  cv 0.13 (ratio emprises 1.56, 2.00 exige)
+[grotte]   entaille 0.90 : 2 masse(s) (3 exigees)  sommets 1.71 1.99  emprises 6.05 9.46  cv 0.08 (ratio emprises 1.56, 2.00 exige)
+[grotte]   entaille 1.20 : 2 masse(s) (3 exigees)  sommets 2.06 2.20  emprises 6.05 9.46  cv 0.03 (ratio emprises 1.56, 2.00 exige)
+[grotte]   entaille 1.50 : 2 masse(s) (3 exigees)  sommets 2.42 2.35  emprises 6.05 9.46  cv 0.01 (ratio emprises 1.56, 2.00 exige)
+[grotte] azimut 225 — TELEMETRIE SEULE, ne bloque pas
+[grotte] silhouette a 225 deg : emprise 17.73 m
+[grotte]   entaille 0.60 : 3 masse(s) (3 exigees)  sommets 1.38 1.78 1.38  emprises 3.97 7.53 6.15  cv 0.13 (ratio emprises 1.90, 2.00 exige)
+[grotte]   entaille 0.90 : 3 masse(s) (3 exigees)  sommets 1.62 2.19 1.70  emprises 3.97 7.53 6.15  cv 0.14 (ratio emprises 1.90, 2.00 exige)
+[grotte]   entaille 1.20 : 3 masse(s) (3 exigees)  sommets 1.94 2.59 2.02  emprises 3.97 7.53 6.15  cv 0.13 (ratio emprises 1.90, 2.00 exige)
+[grotte]   entaille 1.50 : 3 masse(s) (3 exigees)  sommets 2.51 3.00 2.35  emprises 3.97 7.53 6.15  cv 0.11 (ratio emprises 1.90, 2.00 exige)
+[grotte]   (225) sommet  1.62 m  emprise  3.97 m  proeminence  3.03 m  faite  4.60 m
+[grotte]   (225) sommet  2.19 m  emprise  7.53 m  proeminence  8.12 m  faite  8.35 m
+[grotte]   (225) sommet  1.70 m  emprise  6.15 m  proeminence  1.97 m  faite  4.85 m
+[grotte] ERREUR: composition — azimut 100 : 2 masse(s) a l'entaille 0.90, 3 attendues — la silhouette ne presente pas trois amas
+==========================================================================
+DIAGNOSTIC — LE PORTAIL EST ROUGE, CE MAILLAGE N'EST PAS LIVRABLE
+==========================================================================
+[grotte] DIAGNOSTIC — porte « composition (amas) » ROUGE, franchie pour mesurer l'aval ; code retour final 2.
+[grotte] composition des volumes SOURCES (telemetrie, ne bloque rien ; l'union les fond ensuite en un seul maillage) :
+[grotte]   SM_Env_Corps                     1556 tris    8.3 %
+[grotte]   SM_Env_Contrefort                 524 tris    2.8 %
+[grotte]   SM_Env_Talus                      500 tris    2.7 %
+[grotte]   DosAlcove_1_2                     472 tris    2.5 %
+[grotte]   DosAlcove_1_3                     472 tris    2.5 %
+[grotte]   DosAlcove_1_4                     472 tris    2.5 %
+[grotte]   Semelle_00_0                      472 tris    2.5 %
+[grotte]   Semelle_00_1                      472 tris    2.5 %
+[grotte]   Semelle_00_2                      472 tris    2.5 %
+[grotte]   Semelle_00_3                      472 tris    2.5 %
+[grotte]   Semelle_00_4                      472 tris    2.5 %
+[grotte]   Semelle_01_0                      472 tris    2.5 %
+[grotte]   Semelle_01_1                      472 tris    2.5 %
+[grotte]   Semelle_01_2                      472 tris    2.5 %
+[grotte]   Semelle_01_3                      472 tris    2.5 %
+[grotte]   Semelle_02_0                      472 tris    2.5 %
+[grotte]   Semelle_02_1                      472 tris    2.5 %
+[grotte]   Semelle_02_2                      472 tris    2.5 %
+[grotte]   Semelle_02_3                      472 tris    2.5 %
+[grotte]   Semelle_02_4                      472 tris    2.5 %
+[grotte]   Semelle_03_0                      472 tris    2.5 %
+[grotte]   Semelle_03_1                      472 tris    2.5 %
+[grotte]   Semelle_03_2                      472 tris    2.5 %
+[grotte]   Semelle_03_3                      472 tris    2.5 %
+[grotte]   Semelle_03_4                      472 tris    2.5 %
+[grotte]   Semelle_03_5                      472 tris    2.5 %
+[grotte]   Semelle_04_0                      472 tris    2.5 %
+[grotte]   Semelle_04_1                      472 tris    2.5 %
+[grotte]   Semelle_04_2                      472 tris    2.5 %
+[grotte]   Semelle_04_3                      472 tris    2.5 %
+[grotte]   Semelle_04_4                      472 tris    2.5 %
+[grotte]   Semelle_04_5                      472 tris    2.5 %
+[grotte]   Semelle_05_0                      472 tris    2.5 %
+[grotte]   Semelle_05_1                      472 tris    2.5 %
+[grotte]   Semelle_05_2                      472 tris    2.5 %
+[grotte]   Semelle_05_3                      472 tris    2.5 %
+[grotte]   SM_Env_Levre                      356 tris    1.9 %
+[grotte]   SM_Env_Queue                      320 tris    1.7 %
+[grotte]   Assise                             12 tris    0.1 %
+[grotte] solidarite : 419 paire(s) en INTERSECTION reelle (prefiltre AABB >= 0.12 m, PUIS croisement de faces verifie)
+[grotte]   plus faible : SM_Env_Levre <-> Semelle_05_2  0.88 m, 4 face(s) croisee(s)
+[grotte]   plus faible : Semelle_00_1 <-> Semelle_02_1  0.86 m, 4 face(s) croisee(s)
+[grotte]   plus faible : Semelle_02_2 <-> Semelle_04_5  0.41 m, 4 face(s) croisee(s)
+[grotte]   plus faible : Semelle_02_4 <-> Semelle_05_3  1.55 m, 4 face(s) croisee(s)
+[grotte] remaillage voxel 0.12 m : 137088 tris
+[grotte]   coque +  825.59 m3, boite (-8.8..8.9, -3.1..12.6, -3.5..8.3), 68546 sommets
+[grotte] remaillage : 1 coque(s) exterieure(s), 0 bulle(s) interne(s) et 0 ecaille(s) retirees
+[grotte] remaillage : 0 arete(s) de bord, 0 non-manifold, 825.6 m3
+[grotte] apres stratification : 0 paire(s) croisee(s), repli maximal 0.0000 m
+[grotte] decimation : 137088 -> 19000 tris (ratio 0.139)
+[grotte] volume negatif de cavite : ferme, 88.3 m3
+[grotte] nettoyage de la soustraction : 0 -> 0 arete(s) irreguliere(s)
+[grotte] soustraction : la bouche est la trace de decoupe du tube
+[grotte]   coque +  770.90 m3, boite (-8.8..8.9, -3.1..12.6, -3.6..8.2), 9896 sommets
+[grotte] soustraction : 1 coque(s) exterieure(s), 0 bulle(s) et 0 ecaille(s) retirees
+[grotte] connexite : 1 composante, avant et apres soustraction
+[grotte] auto-intersection du livrable : 0 paire(s), repli maximal 0.0000 m (seuil 0.020 m)
+[grotte] visuel : 0 arete(s) de bord, 0 non-manifold, volume 770.9 m3
+[grotte] collision : 0 arete(s) de bord, 0 non-manifold, volume 240.4 m3
+[grotte] visuel 16866 faces (19792 tris), collision 460 faces (880 tris)
+[grotte] emprise Z de -3.55 m a 8.19 m (jupe 3.55 m sous le sol)
+[grotte] budget : 19792 tris dans [12000 ; 25000]
+[grotte] plage plane toutes faces confondues (cavite comprise) : 10.02 m2 — informatif, l'interieur releve d'un autre jalon
+[grotte] plus grande plage plane au-dessus du sol : 10.02 m2, centree en (1.00, 9.13, 2.39) — seuil 12.00
+[grotte] plus grande plage plane EN FACADE (y <= 2.0) : 9.01 m2, centree en (-4.68, 1.63, 2.24) — seuil 6.00
+[grotte] ERREUR: 10.02 m2 global / 9.01 m2 en facade — c'est le defaut 'grandes surfaces planes' du rejet, et le loft precedent affichait 60,93 m2 en passant les neuf autres controles
+[grotte] DIAGNOSTIC — porte « surface (plage plane) » ROUGE, franchie pour mesurer l'aval ; code retour final 2.
+[grotte] paroi la plus mince : station 4, azimut 13°, z 1.31
+[grotte] collerette la plus mince : station 1, azimut 129°, z 1.28
+[grotte] ERREUR: station 0, azimut 0° — 0 croisement(s) seulement : le rayon sort par un JOUR
+[grotte] ERREUR: station 0, azimut 6° — 0 croisement(s) seulement : le rayon sort par un JOUR
+[grotte] ERREUR: station 0, azimut 13° — 0 croisement(s) seulement : le rayon sort par un JOUR
+[grotte] ERREUR: station 0, azimut 19° — 0 croisement(s) seulement : le rayon sort par un JOUR
+[grotte] ERREUR: station 0, azimut 26° — 0 croisement(s) seulement : le rayon sort par un JOUR
+[grotte] DIAGNOSTIC — porte « epaisseur (jour au rayon) » ROUGE, franchie pour mesurer l'aval ; code retour final 2.
+[grotte] ERREUR: epaisseur 0.11 m en paroi, 0.18 m en collerette (min 0.80 / 0.60)
+[grotte] DIAGNOSTIC — porte « epaisseur minimale » ROUGE, franchie pour mesurer l'aval ; code retour final 2.
+[grotte] epaisseur de roche : 0.11 m en paroi, 0.18 m au linteau (rayons lateraux et montants sur le maillage FINAL ; le plancher releve du terrain gele, voir controle_epaisseur)
+[grotte] gabarit : capsule r=0,45 h=1,85 passe aux 7 stations du chemin
+[grotte] plancher : 54 point(s) sondes VERS LE BAS depuis le vide de la galerie, 1 faute(s) (tolerance 0.25 m)
+[grotte] ERREUR: plancher station 0.00 lateral +0.75 (x 1.42, y -1.15) — depart z +0.594, attendu -0.600 m, mesure +0.356 m (ecart +0.956)
+[grotte]          impacts (z, normale.z) : +0.36/+0.77
+[grotte] DIAGNOSTIC — porte « plancher de cavite » ROUGE, franchie pour mesurer l'aval ; code retour final 2.
+[grotte] ERREUR: le sol voit le ciel en (4.27, 2.58) — 1 croisement(s)
+[grotte] ERREUR: le sol voit le ciel en (4.47, 2.88) — 1 croisement(s)
+[grotte] DIAGNOSTIC — porte « aucun jour depuis le sol » ROUGE, franchie pour mesurer l'aval ; code retour final 2.
+[grotte] aucun jour : 25 rayons verticaux, croisements pairs et >= 2
+[grotte] sol sous axe_seuil  ( 0.11,  0.52) : mesure -0.068 m, attendu -0.070 m (station 1.50, lateral 0.00), ecart +0.001 m — tolerance 0.25
+[grotte] sol sous salle      ( 2.62,  2.58) : mesure +0.085 m, attendu +0.080 m (station 5.00, lateral 0.00), ecart +0.005 m — tolerance 0.25
+[grotte] sol sous niche      ( 2.78,  4.09) : mesure +0.504 m, attendu +0.537 m (station 7.03, lateral 0.66), ecart -0.033 m — tolerance 0.25
+[grotte] sol sous voisin     ( 2.71,  3.39) : mesure +0.243 m, attendu +0.262 m (station 5.90, lateral 0.25), ecart -0.019 m — tolerance 0.25
+Info: Total files 1 | Changed 1 | Failed 0
+Info: Saved "SM_WaterfallCave.blend"
+[grotte] source enregistree -> /home/user/zelda-r2a351/c_silhouette/source_assets/blender/environment/SM_WaterfallCave.blend
+==========================================================================
+DIAGNOSTIC — FIN. LE PORTAIL ETAIT ROUGE : sortie 2.
+  Le maillage existe pour etre MESURE, pas pour etre livre.
+==========================================================================
+RC=2

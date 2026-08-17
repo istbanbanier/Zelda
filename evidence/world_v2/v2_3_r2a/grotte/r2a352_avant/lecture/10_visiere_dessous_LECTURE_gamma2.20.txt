@@ -1,0 +1,16 @@
+PLANCHE DE LECTURE — DERIVEE, PAS UNE CAPTURE
+=============================================
+
+source        : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/r2a352/visuel/avant/perspectives/10_visiere_dessous.png
+operation     : gamma pur, sortie = 255*(entree/255)**(1/2.2000)
+               aucun recadrage, aucun contraste local, aucune
+               saturation, aucun debruitage. Transformation
+               monotone : ne peut pas creer un detail absent.
+pixels sous luma 0.094 : 0.00 % avant  ->  0.00 % apres
+
+STATUT. Cette image n'est PAS un rendu du moteur a cette
+exposition et ne doit jamais etre comptee dans le lot de
+captures. La preuve est le PNG source. Cette planche sert a
+regarder sous le surplomb, la ou `check_capture_exposure.gd`
+ne mesure rien : il ne voit que l'ecretage HAUT et la
+fluorescence, jamais des noirs bouches.

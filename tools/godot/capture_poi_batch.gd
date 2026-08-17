@@ -18,15 +18,42 @@
 ## `repo_dirty` — une capture d'arbre sale ne prouve rien (evidence.md).
 extends SceneTree
 
-const DEFAULT_SCENE: String = "res://scenes/world/valley/ValleyWorld.tscn"
-
-var _scene_path: String = DEFAULT_SCENE
+## `--scene=` EST OBLIGATOIRE — et voici pourquoi, mesuré le 2026-08-14.
+##
+## Cet outil avait `res://scenes/world/valley/ValleyWorld.tscn` (la vallée
+## V1) pour défaut. Une passe de captures V2.3-A.R a été lancée SANS
+## `--scene` : les 21 plans sont sortis, le code retour a été 0, le
+## manifeste s'est écrit, et pendant vingt minutes j'ai cherché pourquoi
+## le pylône refait « ne rendait pas ». Il rendait très bien — dans un
+## monde qui n'était pas le sien. La vallée V1 partage les ancres §3.3,
+## donc les caméras visaient des objets PLAUSIBLES : rien dans l'image ne
+## criait l'erreur.
+##
+## Un défaut qui produit une image crédible et un code retour 0 ne se
+## rattrape pas à l'œil. Le défaut par défaut est donc supprimé : sans
+## `--scene`, l'outil s'arrête en BLOQUÉ (3). Le manifeste porte déjà le
+## chemin de scène ; c'est lui qu'il faut lire avant de croire un plan.
+var _scene_path: String = ""
 var _shots_path: String = ""
 var _out_dir: String = "evidence/poi_batch"
 var _width: int = 1280
 var _height: int = 720
 var _build_frames: int = 45
 var _settle_frames: int = 10
+
+## PROVENANCE : « quel commit a produit CE QU'ON VOIT ».
+##
+## Le manifeste portait un seul `commit`, celui de l'arbre de capture. Ça ne
+## suffit pas, et le lead l'a relevé sur R2a-3.3 : un rapport nommait un
+## commit comme « prouvé » alors que les manifestes en portaient un autre.
+## Trois rôles distincts se cachaient derrière un seul champ — la géométrie
+## exportée, le correctif d'environnement, et l'arbre d'où part la capture.
+##
+## `--provenance=role:chemin,role:chemin` inscrit, pour chaque chemin, le
+## DERNIER COMMIT QUI L'A TOUCHÉ, lu dans git. Le SHA est donc **dérivé**, pas
+## déclaré : on ne peut pas se tromper en le recopiant, ni le faire mentir en
+## le tapant à la main.
+var _provenance: PackedStringArray = PackedStringArray()
 
 
 func _initialize() -> void:
@@ -37,6 +64,8 @@ func _initialize() -> void:
 			_out_dir = arg.trim_prefix("--out-dir=")
 		elif arg.begins_with("--scene="):
 			_scene_path = arg.trim_prefix("--scene=")
+		elif arg.begins_with("--provenance="):
+			_provenance = arg.trim_prefix("--provenance=").split(",", false)
 		elif arg.begins_with("--build-frames="):
 			_build_frames = maxi(1, arg.trim_prefix("--build-frames=").to_int())
 		elif arg.begins_with("--size="):
@@ -48,7 +77,107 @@ func _initialize() -> void:
 		printerr("[poi] BLOQUÉ : --shots=<json> requis")
 		quit(3)
 		return
+	if _scene_path.is_empty():
+		printerr("[poi] BLOQUÉ : --scene=<res://…> requis — aucun défaut, "
+			+ "une capture du mauvais monde ressemble à une bonne capture")
+		quit(3)
+		return
+	var perimes: PackedStringArray = _assets_non_reimportes()
+	if not perimes.is_empty():
+		printerr("[poi] BLOQUÉ : %d asset(s) modifié(s) depuis leur import. "
+			% perimes.size()
+			+ "La capture rendrait la GÉOMÉTRIE PRÉCÉDENTE, et l'image "
+			+ "serait parfaitement crédible. Lancer d'abord :\n"
+			+ "    godot --headless --path . --import")
+		for chemin: String in perimes:
+			printerr("[poi]   %s" % chemin)
+		quit(3)
+		return
 	_run()
+
+
+## LE CACHE D'IMPORT EST PÉRIMÉ, ET L'IMAGE NE LE DIT PAS.
+##
+## Mesuré le 2026-08-15. `SM_WaterfallCave.glb` réexporté à 16:11, cache
+## d'import daté de 10:52 : la passe de captures a rendu l'ANCIENNE grotte,
+## pixel pour pixel identique à celle de la tranche précédente. Le code
+## retour était 0, le manifeste s'est écrit avec le bon commit et
+## `repo_dirty: false`, et rien dans l'image ne criait l'erreur — j'ai failli
+## livrer comme preuve d'un travail la photographie de son état antérieur.
+##
+## C'est la même famille que le défaut `--scene=` documenté plus haut : une
+## capture plausible et fausse ne se rattrape pas à l'œil.
+##
+## LA DATE NE SUFFIT PAS, et le premier jet du contrôle l'a prouvé sur-le-
+## champ : il a bloqué sur `SM_TestCube.glb` et `SK_TestRigAnim.glb`, dont
+## le mtime avait bougé alors que le CONTENU était identique — Godot avait
+## donc raison de ne pas les réimporter. Un garde-fou qui rougit à tort
+## finit désactivé, et celui-ci serait mort dans l'heure.
+##
+## On applique donc le critère de Godot lui-même : le `source_md5` inscrit
+## dans `.godot/imported/*.md5` au moment de l'import. Il compare le
+## contenu, pas l'horloge ; il ne peut ni manquer une vraie modification, ni
+## en inventer une.
+func _assets_non_reimportes() -> PackedStringArray:
+	var perimes: PackedStringArray = PackedStringArray()
+	_parcourir_imports("res://assets", perimes)
+	return perimes
+
+
+func _parcourir_imports(dossier: String, perimes: PackedStringArray) -> void:
+	var acces: DirAccess = DirAccess.open(dossier)
+	if acces == null:
+		return
+	acces.list_dir_begin()
+	var nom: String = acces.get_next()
+	while nom != "":
+		var chemin: String = dossier.path_join(nom)
+		if acces.current_is_dir():
+			if not nom.begins_with("."):
+				_parcourir_imports(chemin, perimes)
+		elif nom.ends_with(".import"):
+			var source: String = chemin.trim_suffix(".import")
+			var produit: String = _artefact_importe(chemin)
+			if produit.is_empty():
+				perimes.append(source + " (aucun artefact importé)")
+			elif not FileAccess.file_exists(produit):
+				perimes.append(source + " (artefact absent)")
+			else:
+				var empreinte: String = _md5_source_a_l_import(produit)
+				if empreinte.is_empty():
+					perimes.append(source + " (empreinte d'import absente)")
+				elif empreinte != FileAccess.get_md5(source):
+					perimes.append(source)
+		nom = acces.get_next()
+	acces.list_dir_end()
+
+
+func _artefact_importe(chemin_import: String) -> String:
+	var fichier: FileAccess = FileAccess.open(chemin_import, FileAccess.READ)
+	if fichier == null:
+		return ""
+	while not fichier.eof_reached():
+		var ligne: String = fichier.get_line().strip_edges()
+		if ligne.begins_with("path="):
+			fichier.close()
+			return ligne.trim_prefix("path=").replace("\"", "")
+	fichier.close()
+	return ""
+
+
+## `source_md5` tel que Godot l'a inscrit à l'import, à côté de l'artefact.
+func _md5_source_a_l_import(produit: String) -> String:
+	var chemin: String = produit.get_basename() + ".md5"
+	var fichier: FileAccess = FileAccess.open(chemin, FileAccess.READ)
+	if fichier == null:
+		return ""
+	while not fichier.eof_reached():
+		var ligne: String = fichier.get_line().strip_edges()
+		if ligne.begins_with("source_md5="):
+			fichier.close()
+			return ligne.trim_prefix("source_md5=").replace("\"", "")
+	fichier.close()
+	return ""
 
 
 func _run() -> void:
@@ -125,6 +254,7 @@ func _run() -> void:
 		"size": "%dx%d" % [_width, _height],
 		"commit": _current_commit(),
 		"repo_dirty": _repo_is_dirty(),
+		"provenance": _provenance_par_role(),
 		"shots": manifest,
 	}
 	var out: FileAccess = FileAccess.open("%s/manifest.json" % _out_dir,
@@ -141,6 +271,35 @@ func _hide_interface(node: Node) -> void:
 		(node as CanvasLayer).visible = false
 	for child: Node in node.get_children():
 		_hide_interface(child)
+
+
+## Pour chaque `role:chemin`, le dernier commit qui a touché ce chemin.
+##
+## Un chemin qui n'existe pas, ou qu'aucun commit n'a jamais touché, rend
+## `"inconnu"` — jamais une valeur plausible. Une provenance fausse serait
+## pire que pas de provenance du tout.
+func _provenance_par_role() -> Dictionary:
+	var sortie: Dictionary = {}
+	for entree: String in _provenance:
+		var coupe: int = entree.find(":")
+		if coupe <= 0:
+			printerr("[poi] provenance ignorée, format « role:chemin » "
+				+ "attendu : %s" % entree)
+			continue
+		var role: String = entree.substr(0, coupe)
+		var chemin: String = entree.substr(coupe + 1)
+		var out: Array = []
+		var rc: int = OS.execute("git", ["-C",
+			ProjectSettings.globalize_path("res://"), "log", "-1",
+			"--format=%H", "--", chemin], out, true)
+		var sha: String = ""
+		if rc == 0 and not out.is_empty():
+			sha = String(out[0]).strip_edges()
+		sortie[role] = {
+			"chemin": chemin,
+			"commit": sha if not sha.is_empty() else "inconnu",
+		}
+	return sortie
 
 
 func _current_commit() -> String:

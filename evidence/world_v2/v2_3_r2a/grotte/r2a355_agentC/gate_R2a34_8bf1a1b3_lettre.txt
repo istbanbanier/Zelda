@@ -1,0 +1,68 @@
+============================================================================
+COQUE STRUCTURELLE A DEUX SEUILS — addendum §3
+============================================================================
+
+--- PROVENANCE (addendum §4) — publiee AVANT toute mesure ---
+  GLB     : /home/user/zelda-r2a355/reference/SM_WaterfallCave_R2a34_8bf1a1b3.glb
+  sha256  : 8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110
+  tables du generateur : git:504ecbe:source_assets/blender/environment/make_waterfall_cave.py
+  script de lieu       : git:504ecbe:scripts/world_v2/poi/waterfall_cave_place.gd
+  valeurs lues (Godot -> modele) :
+    MODELE_SEUIL_DEHORS  (0.000 ; 0.100 ; 1.600) -> (0.000 ; -1.600 ; 0.100)
+    MODELE_SALLE         (1.050 ; 0.220 ; -6.250) -> (1.050 ; 6.250 ; 0.220)
+    MODELE_NICHE         (-1.200 ; 0.430 ; -8.200) -> (-1.200 ; 8.200 ; 0.430)
+
+  fermeture : 0 bords libres, 0 non-manifold, 19954 faces
+
+  appartenance des reperes a l'AIR interieur (angle solide) :
+    MODELE_SALLE  modele (1.050 ; 6.250 ; 0.220)  enroulement -0.0000 -> AIR
+    MODELE_NICHE  modele (-1.200 ; 8.200 ; 0.430)  enroulement +0.0000 -> AIR
+  -> provenance COHERENTE, la mesure peut commencer.
+
+--- peau interieure (contrat §2.1 a §2.4) ---
+  bouche derivee a ay = -1.972, perimetre 13.879 m
+  peau INTERIEURE : 1118 faces, 156.86 m2
+  peau EXTERIEURE : 18836 faces
+
+--- le masque (addendum §2) ---
+  section : GABARIT CONTRACTUEL, demi-largeur 0.950 m, cle 2.050 m
+  s_dehors = -1.6000 m (u = -0.3913), mesure par projection
+
+  peau interieure : 1118 cellules initiales
+  rayon de couverture maximal 1.6328 m ; h vise 0.0500 m ; budget 400000 evaluations
+
+--- verdicts, par emprise de masque ---
+  emprise 0,00 = la LETTRE de l'addendum §2.5 mesuree sur cette
+  geometrie : la condition des 72 rayons y est vraie des
+  `s_dehors`, donc le masque est VIDE et tout est COQUE a 0,80 m.
+  C'est la lecture CONSERVATRICE. Les autres lignes disent si le
+  verdict DEPEND de cette ambiguite. Elles ne la tranchent pas.
+
+  emprise   classe      cellules  lecture   h         borne       verdict
+  0.00      COLLERETTE  0         (aucune)
+  0.00      COQUE       289256    0.0005    0.0490    -0.0485     FAIL
+     evaluations 385302 | cellules a cheval non departagees 0
+
+============================================================================
+ARGMINS (addendum §3.2) — emprise de la lettre, 0.00 m
+============================================================================
+
+  classe COLLERETTE   (seuil 0.60 m)
+    aucune cellule de cette classe.
+
+  classe COQUE   (seuil 0.80 m)
+    repere modele : (-2.493 ; -2.043 ; -0.583)
+    repere Godot  : (-2.493 ; -0.583 ; 2.043)
+    projection    : s = -2.0428 m, u = -0.7763, ay de la station interpolee = -2.043
+                    distance a l'axe du chemin = 2.4933 m
+    raison        : d_masque = +inf (masque vide), au-dela de le seuil de 0.60 m
+    lecture 0.0005 m | h 0.0490 m | lecture - h -0.0485 m | seuil 0.80 m
+    face porteuse : index 18819 (peau interieure), face exterieure la plus proche : 18820
+    rayon de couverture de la cellule argmin : 0.02551 m
+
+============================================================================
+VERDICT GLOBAL : **FAIL**   (le PLUS FAIBLE des deux, jamais la moyenne)
+============================================================================
+  sensibilite a l'emprise de masque : STABLE — le verdict ne depend pas de l'ambiguite de §2.5
+  ecrit : evidence/world_v2/v2_3_r2a/grotte/r2a355_agentC/gate_R2a34_8bf1a1b3_lettre.json
+RC=1

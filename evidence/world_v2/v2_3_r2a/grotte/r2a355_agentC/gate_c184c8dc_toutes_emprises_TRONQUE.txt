@@ -1,0 +1,47 @@
+============================================================================
+COQUE STRUCTURELLE A DEUX SEUILS — addendum §3
+============================================================================
+
+--- PROVENANCE (addendum §4) — publiee AVANT toute mesure ---
+  GLB     : /home/user/zelda-r2a355/reference/SM_WaterfallCave_c184c8dc.glb
+  sha256  : c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed
+  tables du generateur : /home/user/zelda-r2a355/c_instruments/source_assets/blender/environment/make_waterfall_cave.py
+  script de lieu       : /home/user/zelda-r2a355/c_instruments/scripts/world_v2/poi/waterfall_cave_place.gd
+  valeurs lues (Godot -> modele) :
+    MODELE_SEUIL_DEHORS  (0.000 ; 0.100 ; 1.600) -> (0.000 ; -1.600 ; 0.100)
+    MODELE_SALLE         (2.620 ; 0.090 ; -2.580) -> (2.620 ; 2.580 ; 0.090)
+    MODELE_NICHE         (2.780 ; 0.500 ; -4.090) -> (2.780 ; 4.090 ; 0.500)
+
+  fermeture : 0 bords libres, 0 non-manifold, 20072 faces
+
+  appartenance des reperes a l'AIR interieur (angle solide) :
+    MODELE_SALLE  modele (2.620 ; 2.580 ; 0.090)  enroulement -0.0000 -> AIR
+    MODELE_NICHE  modele (2.780 ; 4.090 ; 0.500)  enroulement +0.0000 -> AIR
+  -> provenance COHERENTE, la mesure peut commencer.
+
+--- peau interieure (contrat §2.1 a §2.4) ---
+  bouche derivee a ay = -1.615, perimetre 11.978 m
+  peau INTERIEURE : 1008 faces, 95.19 m2
+  peau EXTERIEURE : 19064 faces
+
+--- le masque (addendum §2) ---
+  section : GABARIT CONTRACTUEL, demi-largeur 0.950 m, cle 2.050 m
+  s_dehors = -1.6000 m (u = -0.3913), mesure par projection
+
+  peau interieure : 1008 cellules initiales
+  rayon de couverture maximal 1.6411 m ; h vise 0.0500 m ; budget 400000 evaluations
+
+--- verdicts, par emprise de masque ---
+  emprise 0,00 = la LETTRE de l'addendum §2.5 mesuree sur cette
+  geometrie : la condition des 72 rayons y est vraie des
+  `s_dehors`, donc le masque est VIDE et tout est COQUE a 0,80 m.
+  C'est la lecture CONSERVATRICE. Les autres lignes disent si le
+  verdict DEPEND de cette ambiguite. Elles ne la tranchent pas.
+
+  emprise   classe      cellules  lecture   h         borne       verdict
+  0.00      COLLERETTE  0         (aucune)
+  0.00      COQUE       141138    0.0010    0.0427    -0.0417     FAIL
+     evaluations 187848 | cellules a cheval non departagees 0
+  0.50      COLLERETTE  38915     0.0011    0.0423    -0.0412     FAIL
+  0.50      COQUE       101863    0.0010    0.0427    -0.0417     FAIL
+     evaluations 187368 | cellules a cheval non departagees 5537

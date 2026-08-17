@@ -1,0 +1,94 @@
+==============================================================================
+BATTERIE DE CONTROLES NEGATIFS
+==============================================================================
+source        : /home/user/zelda-r2a354/reference/SM_WaterfallCave_R2a34.glb
+source sha256 : 8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110
+pas de grille : 0.100 m     rayon de percement : 0.30 m
+graine        : 2.62,2.58,0.99     point poche/bloc : 1.50,-0.40,2.00
+
+------------------------------------------------------------------------------
+CONTROLE : temoin     (attendu : VERT)
+------------------------------------------------------------------------------
+   fabrique en 2 s   sha256 5e2e320618ead956
+     bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 1
+        composante 0 : F=19954 V=9975 E=29931  khi=-2  genre 2
+   oracle en 10 s : BLOQUE   (RC=3)
+   -> NON CONFORME
+
+------------------------------------------------------------------------------
+CONTROLE : toit     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   fabrique en 8 s   sha256 3bb420b4a5b0427e
+     bords libres 1   aretes non-manifold 3   sommets pinces 0   composantes 1
+        composante 0 : F=20266 V=10128 E=30398  khi=-4  genre indefini
+   INEXPLOITABLE : le sabotage a OUVERT le maillage.
+   Un vert obtenu ici ne prouverait rien sur l'oracle —
+   c'est exactement l'erreur de la passe precedente.
+------------------------------------------------------------------------------
+CONTROLE : paroi_est     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   fabrique en 7 s   sha256 c30a048d74772564
+     bords libres 1   aretes non-manifold 3   sommets pinces 0   composantes 1
+        composante 0 : F=20264 V=10127 E=30395  khi=-4  genre indefini
+   INEXPLOITABLE : le sabotage a OUVERT le maillage.
+   Un vert obtenu ici ne prouverait rien sur l'oracle —
+   c'est exactement l'erreur de la passe precedente.
+------------------------------------------------------------------------------
+CONTROLE : paroi_ouest     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   fabrique en 7 s   sha256 44a15c3b53711506
+     bords libres 1   aretes non-manifold 3   sommets pinces 0   composantes 1
+        composante 0 : F=20616 V=10303 E=30923  khi=-4  genre indefini
+   INEXPLOITABLE : le sabotage a OUVERT le maillage.
+   Un vert obtenu ici ne prouverait rien sur l'oracle —
+   c'est exactement l'erreur de la passe precedente.
+------------------------------------------------------------------------------
+CONTROLE : plancher     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   fabrique en 8 s   sha256 b7616867a7ff8bd4
+     bords libres 1   aretes non-manifold 2   sommets pinces 0   composantes 1
+        composante 0 : F=20317 V=10154 E=30475  khi=-4  genre indefini
+   INEXPLOITABLE : le sabotage a OUVERT le maillage.
+   Un vert obtenu ici ne prouverait rien sur l'oracle —
+   c'est exactement l'erreur de la passe precedente.
+------------------------------------------------------------------------------
+CONTROLE : poche     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   fabrique en 7 s   sha256 8724f8085b5f8327
+     bords libres 1   aretes non-manifold 3   sommets pinces 0   composantes 2
+        composante 0 : F=19958 V=9976 E=29936  khi=-2  genre indefini
+        composante 1 : F=960 V=482 E=1440  khi=2  genre 0
+   INEXPLOITABLE : le sabotage a OUVERT le maillage.
+   Un vert obtenu ici ne prouverait rien sur l'oracle —
+   c'est exactement l'erreur de la passe precedente.
+------------------------------------------------------------------------------
+CONTROLE : roche_flottante     (attendu : ROUGE)
+------------------------------------------------------------------------------
+   fabrique en 1 s   sha256 db2f4b34b581d04e
+     bords libres 0   aretes non-manifold 0   sommets pinces 0   composantes 2
+        composante 0 : F=19954 V=9975 E=29931  khi=-2  genre 2
+        composante 1 : F=12 V=8 E=18  khi=2  genre 0
+   oracle en 9 s : BLOQUE   (RC=3)
+   -> NON CONFORME
+
+------------------------------------------------------------------------------
+RESTAURATION ET VERT SUR LA SOURCE
+------------------------------------------------------------------------------
+   sha256 source AVANT batterie : 8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110
+   sha256 source APRES batterie : 8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110
+   -> BYTE-IDENTIQUE
+   oracle sur la source en 9 s : BLOQUE   (RC=3)
+
+==============================================================================
+controle           attendu  obtenu   etat           rayon libre
+------------------------------------------------------------------------------
+temoin             VERT     BLOQUE   NON CONFORME   -
+toit               ROUGE    -        INEXPLOITABLE  -
+paroi_est          ROUGE    -        INEXPLOITABLE  -
+paroi_ouest        ROUGE    -        INEXPLOITABLE  -
+plancher           ROUGE    -        INEXPLOITABLE  -
+poche              ROUGE    -        INEXPLOITABLE  -
+roche_flottante    ROUGE    BLOQUE   NON CONFORME   -
+------------------------------------------------------------------------------
+BATTERIE : NON CONFORME
+==============================================================================

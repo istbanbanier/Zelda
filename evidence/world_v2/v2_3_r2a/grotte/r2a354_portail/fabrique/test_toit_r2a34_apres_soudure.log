@@ -1,0 +1,63 @@
+commande blender : blender --background --factory-startup --python /home/user/zelda-r2a354/b_portail/tools/cave_oracle_sabotage.py -- --entree /home/user/zelda-r2a354/reference/SM_WaterfallCave_R2a34.glb --sortie /tmp/sab_test_r2a34/SABOTAGE_toit.glb --type toit --placements /home/user/zelda-r2a354/b_portail/evidence/world_v2/v2_3_r2a/grotte/r2a354_portail/fabrique/placements_r2a34.json --tentatives 6
+   SABOTAGE-PLACEMENTS : /home/user/zelda-r2a354/b_portail/evidence/world_v2/v2_3_r2a/grotte/r2a354_portail/fabrique/placements_r2a34.json
+   SABOTAGE-AABB : x[-8.293 8.912] y[-3.992 12.251] z[-3.550 9.643]
+   SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+   SABOTAGE-FACES-AVANT : 19954
+   SABOTAGE-OUTIL-AABB : x[0.750 1.350] y[5.950 6.550] z[0.520 57.458]
+   SABOTAGE-TENTATIVE 1 : angle 0.000 deg  decalage 0.0000 m  rayon x1.000  ->  bords libres 1  non-manifold 2  OUVERT
+   SABOTAGE-TENTATIVE 2 : angle 0.370 deg  decalage 0.0131 m  rayon x1.017  ->  bords libres 1  non-manifold 2  OUVERT
+   SABOTAGE-TENTATIVE 3 : angle 0.740 deg  decalage 0.0262 m  rayon x1.034  ->  bords libres 1  non-manifold 3  OUVERT
+   SABOTAGE-TENTATIVE 4 : angle 1.110 deg  decalage 0.0393 m  rayon x1.051  ->  bords libres 1  non-manifold 2  OUVERT
+   SABOTAGE-TENTATIVE 5 : angle 1.480 deg  decalage 0.0524 m  rayon x1.068  ->  bords libres 1  non-manifold 2  OUVERT
+   SABOTAGE-TENTATIVE 6 : angle 1.850 deg  decalage 0.0655 m  rayon x1.085  ->  bords libres 1  non-manifold 3  OUVERT
+   SABOTAGE-ECHEC-FERMETURE : 6 tentative(s), aucune n'a rendu un maillage ferme. Ce n'est PAS un constat sur l'oracle : c'est la fabrique qui n'a pas su produire l'objet demande.
+SABOTAGE ECHOUE (rc=2)
+Blender 4.0.2
+SABOTAGE-PLACEMENTS : /home/user/zelda-r2a354/b_portail/evidence/world_v2/v2_3_r2a/grotte/r2a354_portail/fabrique/placements_r2a34.json
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.11s
+Info: Removed 45567 vertice(s)
+SABOTAGE-AABB : x[-8.293 8.912] y[-3.992 12.251] z[-3.550 9.643]
+SABOTAGE-FERMETURE-AVANT : bords libres 0  non-manifold 0  FERME
+SABOTAGE-FACES-AVANT : 19954
+SABOTAGE-OUTIL-AABB : x[0.750 1.350] y[5.950 6.550] z[0.520 57.458]
+Info: Removed 7 vertice(s)
+Info: Removed: 0 vertices, 11 edges, 12 faces
+Info: Removed: 0 vertices, 0 edges, 0 faces
+SABOTAGE-TENTATIVE 1 : angle 0.000 deg  decalage 0.0000 m  rayon x1.000  ->  bords libres 1  non-manifold 2  OUVERT
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.10s
+Info: Removed 45567 vertice(s)
+Info: Removed 7 vertice(s)
+Info: Removed: 0 vertices, 11 edges, 12 faces
+Info: Removed: 0 vertices, 0 edges, 0 faces
+SABOTAGE-TENTATIVE 2 : angle 0.370 deg  decalage 0.0131 m  rayon x1.017  ->  bords libres 1  non-manifold 2  OUVERT
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.09s
+Info: Removed 45567 vertice(s)
+Info: Removed 7 vertice(s)
+Info: Removed: 0 vertices, 11 edges, 12 faces
+Info: Removed: 0 vertices, 0 edges, 0 faces
+SABOTAGE-TENTATIVE 3 : angle 0.740 deg  decalage 0.0262 m  rayon x1.034  ->  bords libres 1  non-manifold 3  OUVERT
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.10s
+Info: Removed 45567 vertice(s)
+Info: Removed 7 vertice(s)
+Info: Removed: 0 vertices, 11 edges, 12 faces
+Info: Removed: 0 vertices, 0 edges, 0 faces
+SABOTAGE-TENTATIVE 4 : angle 1.110 deg  decalage 0.0393 m  rayon x1.051  ->  bords libres 1  non-manifold 2  OUVERT
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.09s
+Info: Removed 45567 vertice(s)
+Info: Removed 7 vertice(s)
+Info: Removed: 0 vertices, 11 edges, 12 faces
+Info: Removed: 0 vertices, 0 edges, 0 faces
+SABOTAGE-TENTATIVE 5 : angle 1.480 deg  decalage 0.0524 m  rayon x1.068  ->  bords libres 1  non-manifold 2  OUVERT
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.09s
+Info: Removed 45567 vertice(s)
+Info: Removed 7 vertice(s)
+Info: Removed: 0 vertices, 11 edges, 12 faces
+Info: Removed: 0 vertices, 0 edges, 0 faces
+SABOTAGE-TENTATIVE 6 : angle 1.850 deg  decalage 0.0655 m  rayon x1.085  ->  bords libres 1  non-manifold 3  OUVERT
+SABOTAGE-ECHEC-FERMETURE : 6 tentative(s), aucune n'a rendu un maillage ferme. Ce n'est PAS un constat sur l'oracle : c'est la fabrique qui n'a pas su produire l'objet demande.

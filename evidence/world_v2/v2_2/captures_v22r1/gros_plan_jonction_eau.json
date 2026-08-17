@@ -1,0 +1,17 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "altitude_m": 600.0,
+  "center": "0.0,0.0",
+  "commit": "a37ec160affc0985192b1e45cf222651e9129ab5",
+  "engine": "4.7.1-stable (custom_build)",
+  "fog": "désactivé",
+  "geometry_instances": 974,
+  "image": "/home/user/Zelda/evidence/world_v2/v2_2/captures_v22r1/gros_plan_jonction_eau.png",
+  "label": "v22r1_jonction",
+  "metres_per_pixel": 0.40625,
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "size": "1280x720",
+  "span_m": 520.0
+}

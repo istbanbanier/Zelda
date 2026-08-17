@@ -1,0 +1,25 @@
+[ou] fichier   /home/user/zelda-r2a355/reference/SM_WaterfallCave_R2a34_8bf1a1b3.glb
+[ou] maillage  COL_WaterfallCave : 442 sommets, 880 triangles
+[ou] penetrations : 7
+[ou]
+[ou] station  ay      ecart axe  enfoncement  couture   position Blender
+[ou]   8.00  +8.368    5.200 m    0.020325 m   0.0488 m  (+3.473, +8.368, +0.872)
+[ou]   8.00  +8.447    5.279 m    0.012086 m   0.1122 m  (+3.462, +8.447, +0.876)
+[ou]   8.00  +8.492    5.323 m    0.013002 m   0.2935 m  (+3.470, +8.492, +0.873)
+[ou]   8.00  +8.560    5.392 m    0.015617 m   0.1165 m  (+3.446, +8.560, +0.881)
+[ou]   8.00  +8.645    5.477 m    0.015617 m   0.0572 m  (+3.431, +8.645, +0.890)
+[ou]   8.00  +8.673    5.505 m    0.015617 m   0.0000 m  (+3.427, +8.673, +0.893)
+[ou]   8.00  +9.112    5.947 m    0.012482 m   0.9148 m  (+3.338, +9.112, +0.796)
+[ou]
+[ou] HISTOGRAMME PAR STATION (le coude est la station 3, ay=1.62)
+[ou]   station 0 (ax 0.00, ay -1.15) :   0                                            enfoncement max 0.000000 m
+[ou]   station 1 (ax 0.00, ay +0.00) :   0                                            enfoncement max 0.000000 m
+[ou]   station 2 (ax 0.22, ay +1.05) :   0                                            enfoncement max 0.000000 m
+[ou]   station 3 (ax 1.00, ay +1.62) :   0                                            enfoncement max 0.000000 m  <-- LE COUDE, 42 deg
+[ou]   station 4 (ax 1.82, ay +2.12) :   0                                            enfoncement max 0.000000 m
+[ou]   station 5 (ax 2.62, ay +2.58) :   0                                            enfoncement max 0.000000 m
+[ou]   station 6 (ax 3.10, ay +2.88) :   0                                            enfoncement max 0.000000 m
+[ou]   station 7 (ax 3.40, ay +3.06) :   0                                            enfoncement max 0.000000 m
+[ou]   station 8 (ax 3.58, ay +3.17) :   7  ########################################  enfoncement max 0.020325 m
+[ou]
+[ou] concentration autour du coude (station 2.5 a 3.5) : 0 sur 7, soit 0 %

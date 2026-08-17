@@ -1,0 +1,14 @@
+# FILET EXPOSITION V2.2R — ROUGE sur les captures AVANT (les cinq fenêtres extérieures)
+# Date : 2026-08-13T15:53:42Z ; calibré sur les dalles mesurées (91 % de luma moyen,
+# >80 % des pixels au-dessus de 0,86) — un premier réglage trop lâche passait tout vert
+# et a été durci AVANT tout correctif (un filet qui ne rougit jamais ne prouve rien).
+[exposition] capture_cam01.png : blocs écrêtés 2.4 % (plafond 0.8) ; vert fluo 0.16 % (plafond 1.50)
+[exposition] VIOLATION
+[exposition] capture_cam02.png : blocs écrêtés 7.1 % (plafond 0.8) ; vert fluo 0.04 % (plafond 1.50)
+[exposition] VIOLATION
+[exposition] capture_cam04.png : blocs écrêtés 8.6 % (plafond 0.8) ; vert fluo 0.44 % (plafond 1.50)
+[exposition] VIOLATION
+[exposition] capture_cam05.png : blocs écrêtés 6.8 % (plafond 0.8) ; vert fluo 0.03 % (plafond 1.50)
+[exposition] VIOLATION
+[exposition] capture_cam06.png : blocs écrêtés 6.9 % (plafond 0.8) ; vert fluo 0.01 % (plafond 1.50)
+[exposition] VIOLATION

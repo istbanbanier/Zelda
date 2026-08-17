@@ -1,0 +1,11 @@
+=== candidat cc3596c5 ===  3721 colonnes, pas 5 mm, depart z=1.50
+   TROU  : 343   aire 85.8 cm2
+   dalle : 2624   ecartees : 0   autres : 754
+   >>> EMPRISE : x [0.468 ; 0.623]  y [5.850 ; 6.045]  =  160 x 200 mm
+=== BASE352 ===  3721 colonnes, pas 5 mm, depart z=1.50
+   TROU  : 343   aire 85.8 cm2
+   dalle : 2624   ecartees : 0   autres : 754
+   >>> EMPRISE : x [0.468 ; 0.623]  y [5.850 ; 6.045]  =  160 x 200 mm
+=== R2a-3.4 livree ===  3721 colonnes, pas 5 mm, depart z=1.50
+   TROU  : 0   aire 0.0 cm2
+   dalle : 3581   ecartees : 0   autres : 140

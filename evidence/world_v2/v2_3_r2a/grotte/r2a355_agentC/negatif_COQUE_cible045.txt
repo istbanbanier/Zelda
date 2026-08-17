@@ -1,0 +1,89 @@
+============================================================================
+CONTROLE NEGATIF — gate a DEUX SEUILS
+============================================================================
+source : /home/user/zelda-r2a355/reference/SM_WaterfallCave_c184c8dc.glb
+sha256 : c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed   <- AVANT
+classe visee : COQUE   |   epaisseur cible apres sabotage : 0.450 m
+
+--- ETAPE 1 : fermeture prouvee AVANT sabotage (contrat §3.1) ---
+  bords libres 0 | non-manifold 0 | sommets PINCES 0 | aretes mal orientees 0
+  composantes 1 | genres [0]
+
+  marge de contour transmise au gate : %.3f m (HORS CONTRAT,
+  necessaire pour que le controle negatif eprouve quoi que ce
+  soit : sans elle l'argmin reste sur l'arete de bouche)
+
+--- le masque de cette mesure ---
+  s de -1.6000 a -1.6000  (emprise 0.000 m)
+
+--- ETAPE 2 : choix du site, CLASSE PUBLIEE AVANT sabotage ---
+  Exigence du lead : la classification du site est publiee avant
+  ET apres. Un sabotage qui ferait basculer la face d'une classe
+  a l'autre changerait le seuil sous nos pieds, et le verdict ne
+  voudrait plus rien dire.
+  sommet 9800, modele (3.603 ; 3.132 ; 1.764)
+  CLASSE AVANT : COQUE   (d_masque = inf m, rayon local 0.5385 m)
+  TEMOIN INDEPENDANT AVANT : portee du rayon = 1.0163 m
+  deplacement demande : 0.5663 m (soit 0.450 m restants)
+
+--- ETAPE 3 : sabotage par DEPLACEMENT (aucune face retiree) ---
+  rayon 0.906 m : 37 sommets, 0 triangles retournes
+  retenu : rayon 0.906 m, 37 sommets, 0 triangle retourne, 0 face retiree
+  ecrit  : /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/neg_coque_sabote.glb
+  sha256 : 16e75307a5909131f23e583c6135ce2287d8377eb1a98bbbcf0594e234845627
+
+--- ETAPE 4 : fermeture APRES (doit etre identique) ---
+  bords libres 0 | non-manifold 0 | sommets PINCES 0 | genres [0]
+  -> toujours FERME, manifold, meme genre.
+
+--- ETAPE 5 : temoin independant, et CLASSE APRES ---
+  portee AVANT 1.0163 m  ->  APRES 0.4500 m   (baisse 0.5663 m)
+  CLASSE APRES : COQUE   (d_masque = inf m)
+  -> classe INCHANGEE, le seuil applicable est le meme des deux
+     cotes de la mesure.
+  L'euclidienne est <= la portee du rayon : l'epaisseur
+  EUCLIDIENNE est donc elle aussi <= 0.4500 m. L'implication ne
+  vaut que dans ce sens, et c'est celui dont on a besoin.
+
+--- ETAPE 6 : le gate, sur la geometrie SAINE puis SABOTEE ---
+  Sur ces geometries le gate est DEJA rouge avant tout sabotage
+  (rebord du porche). « Obtenir ROUGE » ne prouve donc rien : le
+  contenu probant est le DEPLACEMENT DE L'ARGMIN de la classe
+  visee vers le site, et la BAISSE de sa lecture.
+  $ /usr/local/bin/python3 /home/user/zelda-r2a355/c_instruments/tools/cave_check_coque_deux_seuils.py /home/user/zelda-r2a355/reference/SM_WaterfallCave_c184c8dc.glb --h=0.05 --budget=400000 --s-final=-1.600000 --pas-balayage=0.25 --marge-contour=0.6000
+    [SAIN] RC = 1
+    [SAIN] COQUE       lecture 0.6610  argmin (1.054 ; 5.180 ; 2.320)
+
+  $ /usr/local/bin/python3 /home/user/zelda-r2a355/c_instruments/tools/cave_check_coque_deux_seuils.py /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/neg_coque_sabote.glb --h=0.05 --budget=400000 --s-final=-1.600000 --pas-balayage=0.25 --marge-contour=0.6000
+    [SABOTE] RC = 1
+    [SABOTE] COQUE       lecture 0.3422  argmin (4.102 ; 3.202 ; 1.907)
+
+--- ETAPE 7 : restauration ---
+  sha256 source AVANT : c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed
+  sha256 source APRES : c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed
+  identiques : OUI   <- la source n'a JAMAIS ete reecrite ; le
+  sabotage vit dans un fichier separe, donc la restauration est
+  byte-identique PAR CONSTRUCTION plutot que par diligence.
+
+--- ETAPE 8 : ATTRIBUTION — le rouge vient-il de MON sabotage ? ---
+  site du sabotage : (4.097 ; 3.291 ; 1.992)
+  argmin COQUE SAIN   : (1.054 ; 5.180 ; 2.320)
+  argmin COQUE SABOTE : (4.102 ; 3.202 ; 1.907)
+  distance argmin(sabote) -> site : 0.1229 m  (rayon 0.906 m)
+  lecture COQUE : 0.6610 (sain) -> 0.3422 (sabote)
+  argmin deplace vers le site : OUI
+  lecture de la classe en baisse : OUI
+
+--- ETAPE 9 : DISCRIMINATION DES DEUX SEUILS ---
+  epaisseur cible 0.450 m, seuil de la classe COQUE = 0.80 m
+  attendu : la classe COQUE ROUGIT
+  observe : lecture 0.3422 m -> la classe ROUGIT
+
+============================================================================
+CONTROLE NEGATIF : **CONCLUANT** pour la classe COQUE
+============================================================================
+Le sabotage a deplace l'argmin de la classe vers son site et
+abaisse sa lecture, la classe du site n'a pas change, le
+maillage est reste ferme et manifold, et la source est
+byte-identique.
+RC=0

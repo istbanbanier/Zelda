@@ -1,0 +1,76 @@
+{
+  "maillage": "assets/environment/caves/SM_WaterfallCave.glb",
+  "sha256": "cc3596c5d68cbfd8060987604aad6d5356772df18086f3f76f5aa8dbf8a73f49",
+  "noeud": "SM_WaterfallCave",
+  "aabb": {
+    "lo": [
+      -9.1717,
+      -3.5348,
+      -3.9509
+    ],
+    "hi": [
+      8.5739,
+      12.2987,
+      8.5923
+    ],
+    "diagonale": 26.8875
+  },
+  "reperes_source": "/home/user/zelda-r2a354/b_portail/scripts/world_v2/poi/waterfall_cave_place.gd",
+  "reperes_sha256": "7eb402f3910e00eb9dccc9d7956dde187b7598b6ef6a52904e0e5445e5cd7c87",
+  "graine": {
+    "point": [
+      2.62,
+      2.58,
+      0.99
+    ],
+    "air": true,
+    "traversees_dessous": 2,
+    "degagement": 0.9056,
+    "detail": {
+      "+1+0+0": 0.9754,
+      "-1+0+0": 2.8388,
+      "+0+1+0": 2.1765,
+      "+0-1+0": 1.1319,
+      "+0+0+1": 1.8979,
+      "+0+0-1": 0.9056
+    }
+  },
+  "rayon": 0.3,
+  "longueur": 53.775,
+  "poche": {
+    "point": [
+      -1.0047,
+      2.979,
+      1.4244
+    ],
+    "degagement": 0.926,
+    "epaisseur_verticale": 8.2248,
+    "detail": {
+      "+1+0+0": 0.926,
+      "-1+0+0": 6.7819,
+      "+0+1+0": 3.0707,
+      "+0-1+0": 1.8758,
+      "+0+0+1": 4.1124,
+      "+0+0-1": 4.1124
+    }
+  },
+  "rayon_poche": 0.3,
+  "placebo": {
+    "point": [
+      -0.3997,
+      2.3777,
+      6.4439
+    ],
+    "rayon": 0.3,
+    "epaisseur_peau": 9.2106
+  },
+  "bloc": {
+    "point": [
+      -0.2989,
+      4.3819,
+      9.4923
+    ],
+    "rayon": 0.3,
+    "disjoint": true
+  }
+}
