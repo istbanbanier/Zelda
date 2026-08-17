@@ -2848,5 +2848,146 @@ grille 0,025 m. Ce n'est **pas** la même chose qu'un rayon suspect.
 
 ---
 
+## 39. R2a-3.5.6 — CLÔTURE `PARTIAL`. Le portail est réparé, la roche manque encore.
+
+**Verdict : `PARTIAL`.** Rien n'est intégré au tronc. L'asset livré reste
+`8bf1a1b3` (R2a-3.4). Zéro capture, conformément à la directive §8.
+
+### 39.1 Le résultat qui explique toute la série — un théorème
+
+À partir des définitions **déjà gelées** : le contrat §2.6 définit l'épaisseur
+comme la distance euclidienne à la surface extérieure la plus proche, et `Γ` est
+par construction la courbe où la peau intérieure s'arrête et où la surface
+extérieure commence, donc `Γ ⊂ S_ext`. Alors
+
+```
+e(p) = dist(p, S_ext) ≤ dist(p, Γ) ≤ d(p)      pour tout p, sur toute géométrie
+```
+
+Conséquences, aucune propre à cette grotte :
+
+- `e ≥ min(d ; 0,80)` ne demande pas un plancher, **elle demande le majorant** :
+  marge maximale **nulle**, géométrie parfaite comprise ;
+- sous la borne conservatrice, exigée en toutes lettres, la loi littérale est
+  **insatisfiable** sur `d < 0,80` pour tout `h > 0` ;
+- **tout seuil constant `S` est inatteignable en deçà de `d = S`** — ce qui
+  explique enfin le `lecture / h` rigoureusement constant à un facteur 8 près
+  mesuré en R2a-3.5.5 sur deux géométries indépendantes.
+
+Réparation, écrite **avant** toute mesure et committée : `LOI-R`, §2quater de
+`docs/ADDENDUM_MASQUE_BOUCHE.md`.
+
+```
+e_requise(p) = min( max(0 ; d(p) − h) , 0,80 m )
+θ(p) ≥ θ_min = 70,25°   dans la bande d ≤ h
+```
+
+Genou à `0,80 + h` = **0,85 m** à `h = 0,05` — le nombre que la directive §4
+exigeait déjà par ailleurs ; il tombe, il n'est pas choisi. `θ_min` est dérivé de
+`asin(1 − h/(0,80+h))` et **non choisi** : mon 60° initial était le seul nombre
+arbitraire de la loi, et il était faux. `LOI-R` étant strictement plus exigeante,
+**le gate d'angle n'ajoute rien tant que `LOI-R` s'applique**.
+
+Instrument : `tools/cave_borne_rebord.py`, banc **15/15** dont trois contrôles
+négatifs. Vérifié indépendamment par l'agent A, qui a atteint le même résultat
+avant réception du message.
+
+### 39.2 Ce qui est réparé, mesuré, et non intégré
+
+| lot | résultat | preuve |
+|---|---|---|
+| **`MASSIF`** | auto-intersections `env×env` **34 → 0**, collision **62 → 16**, enfoncement max `0,457 → 0,245 m`, **`SM_` inchangé au bit près** | prédiction falsifiable posée avant mesure, tenue sous **deux** instruments |
+| **`rochers_joue_droite()`** | échantillons sous seuil **1 122 → 499** (−55,5 %), lecture `0,6813 → 0,7198 m` | trois contraintes tenues : crête, cols, intérieur |
+| **loi de rebord** | outillée, banc vert, contrôle négatif **concluant** | `Γ` vérifié sur la roche à `0,000000000000 m` |
+
+Cause de `MASSIF`, **intrinsèque et non accidentelle** : rayon latéral `3,30 m`
+contre rayon de courbure `2,37 m`. Un tube plus large que le virage qu'il suit se
+traverse nécessairement. R2a-3.4 y échappait en filant droit sur 10,4 m.
+
+### 39.3 Les deux blocages, et un seul est géométrique
+
+**a) Contractuel, et circulaire.** Un seul portail est rouge dans toute la
+chaîne : `controle_epaisseur_domaine`, 29 plaques. Tout le reste est vert. Or ce
+portail est **déjà déclassé en télémétrie par le contrat gelé `cca1778`**, et la
+directive interdit d'appliquer ce déclassement avant qualification verte.
+
+```
+la chaîne ne peut pas verdir     tant que le portail n'est pas déclassé
+le portail ne peut pas être déclassé   tant que la chaîne n'est pas verte
+```
+
+**Aucune sculpture ne dénoue cela.** Vérifié et non supposé : la fonction
+n'existe **ni** dans `504ecbe`, **ni** sur le tronc — elle est entièrement côté
+candidat. Intégrer la pile introduit donc un portail qui n'existe pas aujourd'hui
+et qu'elle échoue. Et le livré porte **320** plaques contre 29, la plus mince
+`0,051` contre `0,114 m`, dont **204 à plus de 4 m** de la lèvre contre 1.
+
+**b) Géométrique, et nommé.** Cible `borne ≥ 0,80` non atteinte : lecture
+`0,7194`, il manque **0,1307 m**. La lecture ne bouge que de **0,4 mm** entre
+`h = 0,10` et `h = 0,05` : elle a convergé, donc **aucun raffinement d'instrument
+ne fournira ce qui manque**. Le déficit est géométrique, pas métrologique.
+
+Cause diagnostiquée **et contre-indiquée** : il manque de la **portée latérale**
+à `−2,289 m` de la courbe, quand le module en porte `1,320`. Augmenter le déport
+détacherait les deux couronnes. La suite est un changement de **taille de
+module** — ce que la leçon de `rochers_gaine()` interdit sans mesure dédiée.
+
+### 39.4 La prochaine action exacte
+
+**`ISS-058` — raffiner le maillage au voisinage de la bouche.** C'est le seul
+travail géométrique que cette passe a identifié comme indispensable et qu'elle
+n'a pas fait, et **deux constats indépendants y convergent** :
+
+1. à l'arête médiane réelle de `SM_` — `0,3325 m`, mesurée sur l'asset livré — la
+   rampe `[0 ; 0,80]` ne porte que **cinq valeurs**, et la lâcheté du majorant de
+   `d` y vaut **82 % de `h`** ;
+2. `Γ` est une courbe simple fermée à la bouche, mais **dentelée d'un facteur
+   10,6** — `116,16 m` quand une ellipse à ses dimensions en mesure `10,99`.
+
+Un `Γ` de 11 m **ne s'obtiendra pas en filtrant, il s'obtiendra en maillant**.
+
+### 39.5 Ce qui revient au propriétaire, pas à une session
+
+Le déclassement de `controle_epaisseur_domaine()` est une décision de **barre de
+qualité** (`PROMPT4_METHOD` §13). Elle est déjà prise au contrat ; elle n'est pas
+appliquée au code. **Tant qu'elle ne l'est pas, aucune géométrie ne peut
+qualifier cette passe.**
+
+### 39.6 Trois erreurs de lead, corrigées dans la preuve
+
+Consignées parce qu'elles se reproduiront sinon.
+
+1. **`θ_min = 60°`** — choisi au lieu d'être dérivé ; corrigé à `70,25°` par
+   l'agent A.
+2. **« la collision est huit fois plus grossière »** — faux,
+   `1,3384 / 0,3325 = 4,03`.
+3. **« divergence de 0,12 m entre agents »** — écrite deux fois dans des fichiers
+   versés. Je comparais une **borne** à une **lecture** : `0,6813 − 0,10 = 0,5813`
+   exactement. Le vrai écart vaut `0,0187 m`, entre deux points différents.
+   **Quand un écart vaut un paramètre connu de l'instrument, soupçonner le
+   paramètre avant la mesure.**
+
+Et une inférence corrigée en cours de route : j'avais supposé que les plaques
+rouges, étant près du porche, seraient reclassées par la loi de rebord. La
+lecture du code l'a démentie — `_cumul_au_dessus_du_vide` rend le banc **au-dessus**
+du vide, donc une plaque à 6/8 voisins est un toit mince, pas un rebord.
+
+### 39.7 Incidents de la passe
+
+- **`ISS-056`** — `pkill -f` traverse les frontières entre worktrees.
+  Auto-signalé. Présent vérifié sans `pgrep -f`, par `/proc/<pid>/cwd`. Règle
+  posée : **tout journal sans jeton `^RC=` est réputé mort et doit être rejoué**,
+  et un journal sans jeton se supprime **sans être lu**.
+- **`ISS-057`** — `blender --background --python` rend `0` même quand le script
+  lève. Tout banc Blender du dépôt est exposé. Parade par jeton `FIN NOMINALE`.
+- **Changement hors tables trouvé** — `main()` pose `rochers_gaine()` sur le
+  tronc et `rochers_calotte_nord()` sur le candidat : 84 roches échangées,
+  invisibles à toute comparaison de tables. Instruit `TICKET-B4`, ne le clôt pas.
+- **`TICKET-B5` chiffré** — l'asset livré porte **0** triangle d'aire exactement
+  nulle, mais **4** lamelles à `1e-10 m²`. Un portail post-export sous `1e-9`
+  rougirait ce qui est en ligne.
+
+---
+
 *Fin de CODEX_HANDOFF. Actualiser à chaque checkpoint majeur, avant tout rapport
 final.*
