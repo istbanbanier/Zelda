@@ -282,3 +282,73 @@ c'est pour cela qu'ils ordonnent les géométries différemment :
 
 Le premier fait rend le gate inatteignable. Le second reste une **régression
 réelle du candidat**, actionnable indépendamment.
+
+---
+
+## DEUX CORRECTIONS APRÈS LE RAPPORT FINAL DE L'AGENT A
+
+### 1. Ma réserve sur le périmètre de bouche est RÉFUTÉE
+
+J'avais arrêté l'agent A sur un périmètre de 53,755 m, invraisemblable contre les
+~10,6 m d'une ouverture de 3,8 × 2,9 m, et conclu que sa lecture était
+« probablement optimiste ». **Elle ne l'est pas**, et les données le montrent :
+
+| | pas 0,050 | pas 0,250 |
+|---|---:|---:|
+| arêtes coupées | 533 | 175 |
+| **bordant la peau INTÉRIEURE** | **99** | **99** |
+| → **faces de départ du front** | **56** | **56** |
+| bordant la peau extérieure seule | 434 | 76 — **ignorées** |
+| emprise des faces de départ | **3,96 × 3,01 m** | **3,96 × 3,01 m** |
+
+Le front géodésique ne part que des faces `dedans`. Les deux exécutions publient
+des tables **identiques au point près** — 86 020 échantillons, 0,6613 m, même
+argmin. Les trois chiffres viennent du **même outil**, `cave_check_hull.py`, et ne
+diffèrent que par `--pas-balayage` ; le troisième (13,879 m) porte sur R2a-3.4,
+une autre géométrie.
+
+**Ce qui reste vrai** : le champ publié s'appelle « périmètre de la bouche » et
+publie le **contour de coupe complet**. C'est un défaut d'étiquette, pas de
+mesure — et il m'a coûté un aller-retour. **Ticket.**
+
+La cause est réelle et vaut d'être notée : les deux barrières enferment
+*exactement* 95,19 m², donc le critère « la plus extérieure des valides » est
+**dégénéré**, et un pas fin élit un plan qui coupe le massif entier.
+
+### 2. Le tableau d'ensemble était trop sombre
+
+La correction de calotte a mieux marché que ce que j'ai rapporté :
+
+| | avant | après |
+|---|---:|---:|
+| lecture / borne | 0,6613 / 0,5613 | 0,6813 / 0,5813 |
+| argmin | `(1,036 ; 5,173 ; 2,316)` | `(3,039 ; 1,920 ; 1,704)` |
+| **direction** | **97,1 % verticale** | **98,2 % horizontale** |
+| **échantillons sous 0,80 m** | 2 216 | **1 122** — **−49,4 %** |
+| **points sous 0,60 m** | — | **0** |
+
+**Au point visé** : certificat local `h = 0,05`, rayon 0,30 m → lecture
+**1,1777 m**, borne **1,1277 m**, zéro point sous seuil. La cible de la passe —
+mesure centrale ≥ 0,90, borne ≥ 0,85 — est **dépassée**.
+
+**Et la distribution est groupée** : 5 amas → 3, le plus gros à 67,8 %, **97 %
+des points restants entre 0,70 et 0,80 m**. Ce n'est donc pas une coque mince
+partout : c'est une **bande étroite sous le seuil**, bornée et localisée.
+
+L'argmin a changé de **nature** : le défaut corrigé était zénithal, du ressort de
+la calotte ; le suivant est **latéral sur la joue droite**, que la calotte ne
+couvre pas par construction (azimuts 100→176°, côté `−n`). Le même levier ne s'y
+applique pas.
+
+**Non-régression** : genre 0 conservé, 0 bord libre, 0 non-manifold, composition
+3/3/3, ratios 2,16 / **2,37** / 2,25 — le ratio central *monte* (2,33 avant),
+domaine 29 → 28 plaques, connexité 5 composantes avant et après, les mêmes,
+aucune bulle nouvelle.
+
+### Ce que ça change pour la décision du lead
+
+Le seuil de 0,80 m reste hors de portée **au rebord**, et c'est structurel. Mais
+hors rebord, l'écart restant est **1 122 échantillons dans une bande de 0,70 à
+0,80 m, en trois amas**, sans aucun point sous 0,60. **C'est un problème borné,
+pas systémique** — et il serait entièrement conforme à un seuil de collerette de
+0,60 m.

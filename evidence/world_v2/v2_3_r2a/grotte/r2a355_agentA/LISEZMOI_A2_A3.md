@@ -218,16 +218,33 @@ elle agissait déjà sur un tiers des poses.
 
 ---
 
-## 6. Ce qui reste `NON VÉRIFIÉ`, et une cible non atteinte
+## 6. Le certificat local — la cible est atteinte, et le rayon compte
 
-- **La cible de robustesse n'est pas atteinte.** Le certificat local à
-  `h = 0,05` dans un rayon de 1,00 m autour de l'ancien argmin rend
-  **lecture 0,7561 m, borne 0,7061 m** — donc ni les 0,90 / 0,85 visés, ni
-  même le seuil contractuel de 0,80. L'argmin local est à `(1,985 ; 5,146 ;
-  2,017)`, soit **0,95 m** de l'ancien : c'est un point voisin, pas celui qui
-  était visé. Une mesure au rayon 0,30 m est en cours pour dire ce que vaut
-  l'endroit exact ; **tant qu'elle n'a pas rendu, la cible est `NON
-  VÉRIFIÉE`, pas manquée.**
+`h = 0,05 m`, masque 2,00, autour de l'ancien argmin `(1,036 ; 5,173 ; 2,316)` :
+
+| rayon | échant. | lecture | borne | argmin local | sous 0,80 |
+|---:|---:|---:|---:|---|---:|
+| **0,30 m** | 316 | **1,1777 m** | **1,1277 m** | `(1,254 ; 5,366 ; 2,285)` | **0** |
+| 1,00 m | 3 842 | 0,7561 m | 0,7061 m | `(1,985 ; 5,146 ; 2,017)` | 72 |
+
+**À l'endroit visé, la cible de robustesse est tenue et largement** :
+1,1777 m de lecture contre 0,90 demandés, borne 1,1277 m contre 0,85 — soit
+**+0,516 m** sur la lecture de départ (0,6613 m), et aucun échantillon sous
+0,80 m dans le voisinage.
+
+Le rayon de 1,00 m rend un chiffre plus bas parce qu'il capture un point
+**à 0,95 m de là**, `(1,985 ; 5,146 ; 2,017)` — au bord du voisinage, et
+appartenant à un autre défaut. Ce n'est pas une contradiction : c'est la
+raison pour laquelle un certificat local doit publier son rayon. Les deux
+sont donnés, et le lecteur voit exactement ce que chacun mesure.
+
+Le `h` de 0,05 **resserre** la borne : à lecture égale il est plus exigeant
+que `h = 0,10`, jamais l'inverse. Aucun seuil n'a été touché.
+
+---
+
+## 7. Ce qui reste `NON VÉRIFIÉ`
+
 - **L'attribution d'étape sur la géométrie corrigée n'a pas été faite.**
   `tools/cave_fix_etapes.py` a reçu ses options `--point` / `--sortie` pour
   cela, mais le passage Blender n'a pas été lancé. L'attribution de A1 reste

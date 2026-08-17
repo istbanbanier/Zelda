@@ -15,3 +15,15 @@ h = 0.0500 m   masque = 2.00 m   pas de balayage = 0.050 m
   MODELE_NICHE  (2.780 ; 4.090 ; 0.500)  enroulement +0.0000 -> AIR
   bouche derivee : ay = -1.765, perimetre 53.755 m, peau interieure 95.19 m2
   489504 echantillons sur la peau interieure (couverture <= h = 0.0500)
+  centre  : (1.036 ; 5.173 ; 2.316)   rayon 0.30 m
+  h       : 0.0500 m  (borne = lecture - h)
+  echantillons dans le voisinage : 316
+  lecture locale : 1.1777 m
+  borne garantie : 1.1277 m
+  argmin local   : (1.254 ; 5.366 ; 2.285)
+  echantillons locaux sous 0.80 m : 0
+
+  cible de robustesse de la passe : lecture >= 0,90 m et borne
+  >= 0,85 m. Seuil CONTRACTUEL, inchange : 0,80 m.
+  >>> CIBLE DE ROBUSTESSE ATTEINTE localement.
+RC=0

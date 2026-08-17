@@ -1,3 +1,6 @@
+diff --git a/source_assets/blender/environment/SM_WaterfallCave.blend b/source_assets/blender/environment/SM_WaterfallCave.blend
+index 060df2b..6bb42f6 100644
+Binary files a/source_assets/blender/environment/SM_WaterfallCave.blend and b/source_assets/blender/environment/SM_WaterfallCave.blend differ
 diff --git a/source_assets/blender/environment/make_waterfall_cave.py b/source_assets/blender/environment/make_waterfall_cave.py
 index 88916a7..f62a1b0 100644
 --- a/source_assets/blender/environment/make_waterfall_cave.py
