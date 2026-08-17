@@ -424,17 +424,83 @@ bande, gate sur l'angle et la topologie. Les deux se recouvrent sur
 
 ---
 
+## 2quinquies. RETRAIT — la loi de rebord n'est plus un gate bloquant
+
+**Décidé par la directive R2a-3.5.7 §1, le 2026-08-17.** Cette section prime sur
+§2bis et §2quater pour ce qui est de leur **usage** ; elle ne retire rien de leur
+**contenu**.
+
+### Ce qui est retiré
+
+`e ≥ min(d ; 0,80)` et sa réparation `LOI-R` **cessent d'être des portails
+bloquants**. Le théorème `e(p) ≤ dist(p, Γ) ≤ d(p)` établit qu'atteindre le
+majorant avec une marge conservatrice est impossible, y compris sur une géométrie
+idéale. On ne sculpte pas une grotte pour satisfaire une propriété impossible.
+
+### Ce qui est conservé, et reste vrai
+
+Le théorème · les mesures · `LOI-R` et son genou dérivé · la carte d'épaisseur ·
+les déficits · `θ_min = 70,25°` · `ISS-058`. Rien n'est effacé : c'est le
+**statut** qui change, pas le contenu.
+
+### Ce qui remplace le portail
+
+L'épaisseur de domaine devient une **télémétrie non bloquante**, conformément au
+contrat gelé `cca1778` qui l'avait déjà décidé. Elle doit continuer à s'exécuter
+et à publier lecture, borne, argmin et distribution, marquée `TELEMETRIE`, sans
+modifier le verdict global.
+
+### Les deux interdits qui accompagnent le retrait
+
+1. **Aucune bande n'est exclue en silence.** Le retrait est explicite, daté,
+   motivé par un théorème, et il porte sur le **domaine entier** — pas sur un
+   voisinage discrètement soustrait au contrôle.
+2. **Aucune affirmation « coque conforme à 0,80 m » ne peut être prononcée.** La
+   limite résiduelle mesurée — lecture `0,7194 m`, borne `0,6694 m` à
+   `h = 0,05`, soit **`0,1307 m` manquants** — reste publiée telle quelle.
+
+### Pourquoi ce n'est pas un abaissement de seuil après échec
+
+Quatre faits, tous mesurés avant la décision :
+
+- le déclassement **précède** la géométrie : il est écrit dans `cca1778`, gelé
+  avant les mesures de cette passe ;
+- le portail n'existe **ni dans `504ecbe`, ni dans le tronc livré** — vérifié par
+  `grep -c`, qui rend 0 dans les deux ;
+- son remplacement s'est révélé **mathématiquement indécidable au rebord**, et la
+  démonstration est indépendante de cette grotte ;
+- les propriétés qui comptent réellement — topologie, absence de trou vers le
+  ciel, collision, traversabilité, composition — **restent couvertes par des
+  gates directs**, et ce sont eux qui décident désormais.
+
+`EPAISSEUR_MIN_M = 0,80` **ne bouge pas**. Ce qui change n'est pas sa valeur,
+c'est le fait qu'un contrôle indécidable cesse de bloquer une livraison.
+
+---
+
 ## 2ter. CODES RETOUR — convention de cette passe, et une divergence à trancher
 
-**Convention imposée par la directive R2a-3.5.6 §2**, appliquée aux instruments
-de gate de cette passe :
+> **CORRIGÉ le 2026-08-17 par la directive R2a-3.5.7 §3.** La convention
+> ci-dessous portait `BLOQUÉ = 2`. Elle entrait en conflit avec celle que le
+> dépôt applique déjà — la divergence était signalée quatre lignes plus bas et
+> non tranchée. **Elle est tranchée : le dépôt a raison.**
 
-| verdict | code |
-|---|---|
-| `PASS` | **0** |
-| `FAIL` géométrique | **1** |
-| `BLOQUÉ` — résolution, provenance, domaine indécidable | **2** |
-| erreur d'outil | **3** ou plus |
+| verdict | code | |
+|---|---|---|
+| `PASS` | **0** | inchangé |
+| `FAIL` géométrique | **1** | inchangé |
+| `BLOQUÉ` — résolution, provenance, domaine indécidable | **3** | ~~2~~ **corrigé** |
+| erreur d'outil | **3** ou plus | absorbé dans `BLOQUÉ` |
+
+Les instruments de la grotte s'alignent sur `0 / 1 / 3`, comme
+`tools/validate_release.sh`, `tools/CLAUDE.md`, `.claude/rules/evidence.md` et le
+`CLAUDE.md` racine. **Aucun refactor des autres outils dans cette passe** : ce
+serait de la propagation.
+
+La leçon vaut d'être gardée : j'avais **mesuré** la divergence, **écrit** qu'elle
+fabriquerait une panne silencieuse, puis appliqué quand même la convention
+minoritaire au motif qu'elle était « la plus récente ». Une divergence identifiée
+et non tranchée est une dette, pas une neutralité.
 
 > **Un verdict indécidable ne rend JAMAIS `RC=0`.** Si un `RC=0` publié ne
 > concerne qu'une expérience diagnostique, le journal final doit le dire
