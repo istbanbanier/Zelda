@@ -2643,6 +2643,40 @@ seul**. `diag_cave_etapes.py` (ISS-045) corrigé au passage.
 4. **« Le candidat est meilleur, 6 contre 10 »** — vrai sur le compte, **faux sur
    la sévérité** : les 10 de la référence sont sous le demi-micron.
 
+### 38.6bis Le correctif de calotte marche, et l'écart restant est BORNÉ
+
+Rapport final de l'agent A, arrivé après la première rédaction de cette section
+et qui en corrige le ton :
+
+| | avant | après |
+|---|---:|---:|
+| lecture / borne | 0,6613 / 0,5613 | 0,6813 / 0,5813 |
+| argmin | `(1,036 ; 5,173 ; 2,316)` | `(3,039 ; 1,920 ; 1,704)` |
+| **direction** | **97,1 % verticale** | **98,2 % horizontale** |
+| **échantillons sous 0,80 m** | 2 216 | **1 122 — −49,4 %** |
+| **points sous 0,60 m** | — | **0** |
+
+**Au point visé**, certificat local `h = 0,05`, rayon 0,30 m : lecture
+**1,1777 m**, borne **1,1277 m**, zéro point sous seuil. La cible de la passe —
+mesure centrale ≥ 0,90, borne ≥ 0,85 — est **dépassée**.
+
+**La distribution est groupée** : 5 amas → 3, le plus gros à 67,8 %, **97 % des
+points restants entre 0,70 et 0,80 m**. Ce n'est pas une coque mince partout,
+c'est une **bande étroite**, bornée et localisée. L'argmin a changé de **nature** :
+zénithal avant, **latéral sur la joue droite** après — que la calotte ne couvre
+pas par construction (azimuts 100→176°, côté `−n`). Le même levier ne s'y applique
+pas.
+
+Non-régression : genre 0, 0 bord libre, 0 non-manifold, composition 3/3/3, ratios
+2,16 / **2,37** / 2,25 — le ratio central *monte*, domaine 29 → 28 plaques,
+connexité identique, aucune bulle nouvelle.
+
+**Ma réserve sur le périmètre de bouche est RÉFUTÉE.** Aux deux pas de balayage,
+**99** arêtes bordent la peau intérieure et **56** faces amorcent le front —
+identiques ; les 434 autres sont ignorées, et les deux exécutions publient des
+tables identiques au point près. Le défaut est une **étiquette** : le champ dit
+« périmètre de la bouche » et publie le contour de coupe complet. **Ticket.**
+
 ### 38.7 Prochaine action exacte
 
 **Deux décisions du lead, dans cet ordre.**
@@ -2656,10 +2690,19 @@ seul**. `diag_cave_etapes.py` (ISS-045) corrigé au passage.
    est mesurée et attribuée. L'hypothèse du cisaillement de tangente est
    réfutable en rallongeant le segment sortant sans toucher aux stations 0 et 1.
 
-**Trois tickets ouverts** : ISS-054 (collision, `S2`), l'angle mort de
+**Quatre tickets ouverts** : ISS-054 (collision, `S2`), l'angle mort de
 triangulation (10,9 % des triangles divergent entre `bmesh` et l'exportateur —
-le « 4 » du générateur est un **minorant** du « 6 » réel), et la décimation
-(4 pénétrations nées au collapse).
+le « 4 » du générateur est un **minorant** du « 6 » réel), la décimation
+(4 pénétrations nées au collapse), et l'étiquette « périmètre de la bouche » de
+`cave_check_hull.py`, qui publie le contour de coupe complet — le critère « la
+plus extérieure des barrières valides » est **dégénéré**, les deux enfermant
+exactement 95,19 m².
+
+**Ce que la mesure dit du seuil lui-même**, et qui devrait peser dans la
+décision : hors rebord, l'écart restant est **1 122 échantillons dans une bande
+de 0,70 à 0,80 m, en trois amas**, sans **aucun** point sous 0,60. La coque
+serait donc **entièrement conforme à un seuil de collerette de 0,60 m**. Le
+problème n'est pas systémique ; il est borné et localisé.
 
 ---
 
