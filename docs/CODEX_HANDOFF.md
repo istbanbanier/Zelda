@@ -2399,6 +2399,141 @@ d'aire nulle à la soustraction.
 
 ---
 
+## 37. R2a-3.5.5 — ouverture. Le socle est prouvé fidèle, et un instrument était mort.
+
+Départ imposé `0cdfd91` — vérifié : branche `claude/world-v2-reconstruction`,
+HEAD local == distant, arbre propre, aucun processus lourd. **Aucune branche
+parallèle créée** ; `claude/world-v2-reconstruction-khgmlu`, que le cadrage de
+session nomme, n'existe nulle part et les SHA du lead vivent ici.
+
+### 37.1 `f27b44c` — l'addendum du masque, committé AVANT toute géométrie
+
+`docs/ADDENDUM_MASQUE_BOUCHE.md`. Il **instancie** la clause §2.5 du contrat gelé
+`cca1778` sans le modifier, et son antériorité se vérifie dans Git.
+
+**Le changement est de nature, et il durcit le gate.** Le masque ne retire plus
+une zone de la mesure : il la **classe** à 0,60 m quand le reste est à 0,80 m.
+Plus rien n'est exempté.
+
+L'instruction du lead — dériver le masque des repères de R2a-3.4 — n'était
+exécutable qu'à une condition, vérifiée grandeur par grandeur **avant** de
+l'affirmer :
+
+| grandeur | R2a-3.4 | R2a-3.5.x | verdict |
+|---|---|---|---|
+| `CAVITE` stations 0 et 1 (porche, seuil) | `(0,-1.15,1.90,2.80)` · `(0,0,1.70,2.85)` | **identiques**, annotée « seuil — INCHANGÉ » | utilisable |
+| `MODELE_SEUIL_DEHORS` | `(0.0, 0.10, 1.60)` | **identique** | utilisable |
+| `SEUIL_LOCAL` · `LACET_DEG` · `EXHAUSSEMENT` | `(4.0,-2.5)` · `45.0` · `0.50` | **identiques** | utilisable |
+| `MODELE_SALLE` | `(1.05, 0.22, -6.25)` | `(2.62, 0.09, -2.58)` | **divergent — interdit** |
+| `MODELE_NICHE` | `(-1.20, 0.43, -8.20)` | `(2.78, 0.50, -4.09)` | **divergent — interdit** |
+
+R2a-3.5.2 a **raccourci et coudé** la galerie — salle de `ay = 6,25` à `2,58`,
+dernière station de `9,25` à `3,17`, coude de 42° — mais **n'a pas touché la
+bouche**. Le masque n'emploie que des grandeurs stables. S'il avait eu besoin de
+`MODELE_SALLE`, l'instruction aurait été contradictoire et l'addendum se serait
+arrêté en `BLOQUÉ`.
+
+Trois points sans définition dans le dépôt, tranchés **avant** mesure : « première
+section entièrement enfermée » (trois lectures incompatibles coexistaient), la
+section balayée (le gabarit contractuel, la capsule ayant **trois** valeurs en
+litige), et la classification collerette/coque (bande = le seuil lui-même, donc
+aucune constante nouvelle).
+
+> **L'emprise s'exprime en longueur d'arc, jamais en indice de station.** Les
+> tables `CAVITE` diffèrent : `u = 2` vaut `ay = 1,60` dans l'une et `1,05` dans
+> l'autre. J'avais écrit la comparaison fautive dans ce handoff avant de la
+> retirer ; elle est maintenant interdite par écrit.
+
+### 37.2 Le socle reproduit le candidat au bit près
+
+Le tronc porte encore le générateur **de R2a-3.4** (`4c748d1`), inchangé depuis
+31 commits : toute la géométrie R2a-3.5.2 → 3.5.4 vit hors tronc, en patches.
+
+Rejouée sur `0cdfd91`, la pile de quatre patches rend un générateur dont l'écart
+avec celui de l'agent A est **exactement** les 105 lignes du hunk de politique,
+retiré ici — le déclassement ne pouvant venir qu'après qualification du nouveau
+gate (addendum de cadrage §2).
+
+**Preuve d'exécution : `c184c8dc0c0e754a`, 1 490 320 octets, byte-identique.**
+Cinquième confirmation de reproductibilité de la série, et elle établit trois
+choses d'un coup — la pile est fidèle, `--diagnostic` ne touche pas la géométrie,
+la chaîne est déterministe.
+
+Deux outils sont gardés **au tronc** plutôt qu'au patch : `probe_cave_openings.py`
+et `probe_cave_edt_plan_bouche.py` portent des correctifs postérieurs à `c79341e`.
+Appliquer le patch les aurait fait régresser.
+
+### 37.3 L'appariement de R2a-3.4 est prouvé, plus supposé
+
+Worktree neuf détaché sur `504ecbe`, chaîne rejouée : le GLB rendu est
+`8bf1a1b3`, **1 506 684 octets, `cmp` identique au bit près**, et
+`git status --porcelain assets/` reste vide. La chaîne est donc **déterministe de
+bout en bout sur la géométrie canonique**, 60 commits et un worktree neuf plus
+tard.
+
+> **Précision qui compte.** `RC_MAKE=0` sur R2a-3.4 n'indique pas une meilleure
+> conformité : `controle_epaisseur_domaine` a **zéro occurrence** dans le
+> générateur de `504ecbe`. « 326 plaques sur R2a-3.4 » est le contrôle de
+> R2a-3.5.3 appliqué **après coup** à sa géométrie — jamais un verdict que sa
+> propre chaîne aurait rendu.
+
+### 37.4 Gates reproduits par l'intégrateur
+
+| mesure | R2a-3.4 `8bf1a1b3` | percé `cc3596c5` | corrigé `c184c8dc` |
+|---|---:|---:|---:|
+| bords libres · non-manifold | 0 · 0 | 0 · 0 | 0 · 0 |
+| χ | −2 | 0 | **2** |
+| **genre** | **2** | **1** | **0** |
+| batterie d'oracle, pas 0,06 | — | — | **8/8 CONFORME**, 1 tentative |
+
+`COL_WaterfallCave` est de genre 0 dans les trois cas.
+
+### 37.5 Un instrument du tronc était mort, et son banc passait au vert
+
+`tools/cave_topology_check.py` portait **trois chemins absolus** vers
+`/home/user/zelda-r2a353/` — worktree de passe close, supprimé pour libérer du
+disque — **et ignorait son argument de ligne de commande**. Découvert en voulant
+reproduire mon propre gate.
+
+Ce qui rend le défaut coûteux : **`--banc` passait au vert.** Un outil dont
+l'auto-test réussit pendant que son chemin de production est mort est la panne
+exacte que `PROMPT4_METHOD` §2 décrit. Le banc n'éprouvait que l'analyse ;
+personne n'éprouvait la lecture. `MASTER_SPEC` §7.15 l'interdisait déjà.
+
+Corrigé : chemins en argument, **aucun défaut**, `RC=2` et mode d'emploi sans
+argument. **Balayage des 42 outils `cave_*` / `probe_cave_*` : c'était le
+seul.** 34 démarrent, 5 échouent sur `bpy` (attendu hors Blender), 3 dépassent
+60 s en travaillant. Le périmètre du dégât est mesuré, pas supposé.
+
+### 37.6 Un manque réel, à ne pas habiller
+
+**L'épaisseur de R2a-3.4 n'a jamais été mesurée.** Le journal de la passe
+précédente s'arrêtait **sans `RC=`** et a été renommé
+`coque_R2a34_INTERROMPU_SANS_RC.log` par son auteur.
+
+Cause structurelle : la subdivision d'échantillonnage est 4-aire et **uniforme**,
+et quelques triangles à grand rayon imposent leur profondeur à toute la face.
+
+| géométrie | peau intérieure | échantillons à `h = 0,15` |
+|---|---:|---:|
+| `c184c8dc` | 95 m² | 114 376 — termine |
+| **R2a-3.4** | **628 m²** | **16 854 916 — ne termine pas** |
+
+Pas effectif ≈ 6 mm là où `h` valait 0,150. **La couverture reste prouvée ; c'est
+le coût qui ne l'est pas.** Statut : `NON MESURÉE`, jamais « probablement bonne ».
+Un instrument qui ne termine pas doit le dire — même règle que « une étape sautée
+sort en 3, pas en 0 », appliquée au temps de calcul.
+
+### 37.7 Disque : 147 Mo restants au démarrage
+
+Le conteneur était **plein** ; la création des worktrees d'agents a échoué sur
+`No space left on device`. Les dix worktrees des passes r2a352 et r2a353 étaient
+tous propres — vérifié entrée par entrée avant suppression — et 15 Go ont été
+libérés. Rien d'unique n'y vivait : outils sur le tronc, dossiers de preuve à
+effectif identique, générateur reproduit dans le socle, GLB copiés.
+
+---
+
 ## ANNEXE A — chronologie des instruments et de leurs défauts
 
 Quatorze occurrences du **même** défaut : un contrôle place ses points à
