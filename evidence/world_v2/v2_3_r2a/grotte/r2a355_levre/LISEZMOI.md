@@ -104,3 +104,40 @@ la même faute que celle qui m'a fait publier une aire de percée trois fois.
 0,457 m d'enfoncement**, contre 7 à 0,020 m pour R2a-3.4. C'est 23 fois le seuil
 du visuel, sur la géométrie qui arrête réellement le joueur — et aucun contrôle,
 ni l'ancien ni le nouveau, n'a jamais été appelé sur elle.
+
+---
+
+## Le triptyque complet — la lèvre est HÉRITÉE de R2a-3.5.2, et plus mince que la livrée
+
+| | R2a-3.4 **livrée** | `cc3596c5` percé | `c184c8dc` corrigé |
+|---|---:|---:|---:|
+| minimum | **0,3633 m** | 0,2828 m | 0,2828 m |
+| médiane | 1,1305 m | 1,3587 m | 1,3587 m |
+| sous 0,60 m | **26** | 52 | 52 |
+| sous 0,80 m | **71** | 89 | 89 |
+| argmin | `(1,307 ; −0,615 ; 2,789)` | `(1,426 ; −0,100 ; 2,077)` | **identique** |
+
+Deux lectures, et elles ne disent pas la même chose :
+
+**1. Le candidat percé et le candidat corrigé sont IDENTIQUES au porche** — mêmes
+comptes, même minimum, même argmin. La calotte nord travaille sur la joue nord,
+pas sur le porche : elle n'a donc ni amélioré ni dégradé cette zone, ce qui est
+le comportement attendu et le confirme.
+
+**2. Les deux sont plus minces que la géométrie LIVRÉE** — 0,283 contre 0,363 au
+minimum, 52 contre 26 sous 0,60, 89 contre 71 sous 0,80. **La lèvre est héritée
+de l'enveloppe R2a-3.5.2**, et R2a-3.5.2 l'a amincie par rapport à R2a-3.4.
+
+## Ce que le triptyque établit, et ce qu'il n'établit pas
+
+**Établi** : deux faits distincts qui doivent être tenus ensemble.
+
+- le seuil de 0,80 m **n'est tenu par aucune** des trois géométries au porche, y
+  compris la livrée et visuellement validée — un gate qui l'exige partout ne peut
+  donc pas passer ;
+- **et** le candidat est **mesurablement pire que la référence** sur cette zone.
+  Ce second fait est actionnable indépendamment du premier.
+
+**Non établi** : que la lèvre du candidat soit visuellement inacceptable. 0,283 m
+de roche à une lèvre de porche peut très bien se lire correctement. **Aucun
+instrument ne prononce ce verdict**, et cette mesure n'y prétend pas.
