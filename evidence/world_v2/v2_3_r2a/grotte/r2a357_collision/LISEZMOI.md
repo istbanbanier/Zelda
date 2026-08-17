@@ -202,3 +202,92 @@ Piste à confirmer ou tuer : `CAVITE_ASYM[1] = (1,30 ; 0,81)` décentre la secti
 mais même 0,81 m reste très au-dessus de 0,450. Si le dégagement réel tombe à
 0,431, **quelque chose rétrécit la bouche au-delà de la section analytique** —
 roches posées, calotte, joue droite.
+
+---
+
+## 10. Le seuil est VERT — la question « le joueur peut-il entrer » est close
+
+Instrument **exact**, distance point-triangle, erreur ~`1e-9 m` :
+
+| | verdict |
+|---|---|
+| capsule `r = 0,45` (commentaire générateur) | **passe partout** |
+| capsule `r = 0,35` (`Player.tscn`) | **passe partout** |
+| sur `COL_` **et** sur `SM_` | les deux |
+| marge la plus faible | **`+0,1213 m`** à la salle — **48× l'erreur de l'instrument** |
+
+**Aucune paroi invisible dans la galerie** : `COL_` est partout `0,10 à 0,30 m` plus
+étroit que `SM_`, donc le collider est **dans le vide visible** — c'est la marge de
+passage, et elle joue dans le bon sens.
+
+Deux résultats annexes qui ferment des questions ouvertes :
+
+- **la piste `CAVITE_ASYM[1]` est tuée** : rien ne borde le seuil qui le resserre ;
+- **la contradiction avec `bande utile 2,65 m` est levée**, et pour la troisième
+  fois de cette passe la réponse est « ils ne mesurent pas la même chose » :
+  `_section_de_station()` passe `0.0, 0.0`, donc elle mesure la cavité **visible**,
+  pas le collider.
+
+> Trois critères d'occupabilité ont été essayés, **deux étaient faux, et pour le
+> même motif les deux fois : ils mesuraient le plancher.** C'est désormais écrit
+> au-dessus de la fonction, pour que la passe suivante ne le repaie pas.
+
+## 11. La vraie dilution, trouvée — et elle ne suffit pas
+
+Ma proposition était déjà en place : le retrait porte l'amplitude de l'alcôve
+**dans `sommet(tf)`**, au niveau des coins, avant `polygonal()`. L'arithmétique le
+confirme — à la station 6 un coin tombe à 5,6° de l'azimut de l'alcôve, où la
+fenêtre vaut 0,971. Le retrait s'appliquait **déjà à plein**.
+
+La vraie cause est ailleurs, et elle est nette :
+
+> `retrait_lat` est soustrait de `hw` **avant** la multiplication par
+> `CAVITE_ASYM`. Au flanc de l'alcôve, `gauche = 1,69` : la paroi recule donc
+> réellement de **0,676 m** pendant qu'on ne retranche que `0,40` de
+> l'élargissement. **L'alcôve reculait deux fois moins que la paroi qu'elle
+> prolonge.**
+
+Corrigé en mettant le retrait à la même échelle, **sans constante nouvelle** —
+`COL_MARGE_LAT` et `CAVITE_ASYM` existent toutes deux.
+
+**Et ça ne suffit pas** : sur le GLB exporté, **4 pénétrations, repli
+`0,243436 m`** — pratiquement inchangé. `SM_` reste bit-identique.
+
+## 12. Le zéro existe, il est vérifié, et son prix est un arbitrage
+
+| `COL_MARGE_LAT` | alcôve en collision | pénétrations | repli |
+|---|---|---:|---:|
+| **0,40** (gelé) | 0,524 m | **4** | 0,2434 m |
+| 0,50 | 0,355 m | **0** | **0,000000 m** |
+
+Mesuré par `cave_exact_intersect.py` sur le GLB **réellement exporté**, pas en
+laboratoire. L'interrupteur est d'une ligne. L'agent ne l'a **pas** actionné.
+
+### Arbitrage du lead : NON. On garde `0,40`.
+
+Trois raisons, et la troisième suffirait seule.
+
+1. **`0,50` ne se dérive d'aucune constante existante.** L'adopter, c'est ajouter
+   une valeur réglée — exactement ce que `tools/CLAUDE.md` nomme un plancher
+   calibré sur le sujet qu'il juge.
+2. **Le prix est visible par le joueur** : `0,845 m` de paroi invisible **dans la
+   niche de récompense** — `0,355 m` de collision pour `1,20 m` visible, soit
+   trois à huit fois la marge normale, et à l'endroit précis où le joueur doit
+   aller. On échangerait un défaut mesurable mais invisible contre un défaut que
+   le joueur heurte.
+3. **`COL_MARGE_LAT` est une marge de passage, gelée par la directive.** La
+   déplacer pour faire passer un gate est le geste que cette série s'interdit.
+
+Le zéro reste **publié, mesuré et atteignable** : si le propriétaire juge que
+`0,845 m` de paroi invisible dans la niche est acceptable, l'interrupteur est
+d'une ligne. Ce n'est pas à la session de le décider.
+
+## 13. Un piège de mesure qui a failli passer
+
+La bissection avait d'abord été faite au **compteur interne du générateur**. Sur
+la même géométrie il rend **`0,2144 m`** là où `cave_exact_intersect.py` sur le
+GLB rend **`0,2434 m`** : il **sous-estime le repli de 12 %**.
+
+Le compteur interne est documenté comme minorant du **compte**. Il l'est aussi du
+**repli**, et **ce n'était écrit nulle part**. Refait sur le GLB avant de
+conclure.
