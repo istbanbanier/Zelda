@@ -144,11 +144,38 @@ contrat gelé `cca1778`, écrite bien avant ces mesures.
 5. Les compteurs `vertes`/`indécises` d'un journal `FAIL` sont partiels : élagage
    après le premier rouge, jamais avant.
 
-## 11. Une divergence entre agents, non résolue
+## 11. La « divergence entre agents » était MON erreur — lecture contre borne
 
-L'agent A mesure `e = 0,7000 m` à l'argmin du candidat ; l'agent C mesure une
-borne à **0,5813 m**. Instruments et masques différents, écart 0,12 m. Aucun des
-deux n'est disqualifié par ce qui précède, et la divergence n'est pas expliquée.
+**Version d'origine, fausse, conservée pour l'histoire :** *« L'agent A mesure
+`e = 0,7000 m` à l'argmin du candidat ; l'agent C mesure une borne à 0,5813 m.
+Écart 0,12 m, non expliqué. »*
+
+Le `0,5813` de l'agent C est une **borne**, à `h = 0,10`. Sa **lecture** vaut
+`0,6813`. Et `0,6813 − 0,10 = 0,5813` **exactement**.
+
+```
+écart lecture ↔ borne   (ce que je comparais)  : 0,1187 m
+écart lecture ↔ lecture (ce qu'il fallait)     : 0,0187 m
+```
+
+**Les cinq sixièmes de la « divergence » étaient `h`.** J'ai comparé une lecture à
+une borne — précisément ce que `docs/CONTRAT_COQUE_STRUCTURELLE.md` §2.6 interdit
+en une phrase : *« `h` accompagne toujours la borne. Une borne sans son `h` n'est
+pas une borne. »* Je l'avais citée dans cette même passe.
+
+Reste **0,0187 m** entre deux lectures, prises à **deux points différents** —
+leurs argmin ne coïncident pas — par deux instruments dont les majorants sont
+indépendants. Un écart de 1,9 cm entre deux mesures en deux endroits n'est pas
+une anomalie ; ce n'est même pas nécessairement un désaccord.
+
+La mesure qui trancherait reste utile et a été demandée : que l'agent C lise **au
+point de l'agent A**, `(−1,6064 ; −0,2796 ; 2,5602)`, face porteuse 19194. Deux
+instruments sur un même point sont décidables ; sur deux points, non.
+
+**Leçon, et elle est de méthode :** quand deux mesures divergent d'un montant
+proche d'un paramètre connu de l'instrument, soupçonner le paramètre avant la
+mesure. Ici l'écart valait `h` à 1,9 cm près, et j'ai passé deux tours à traiter
+cela comme une énigme physique en l'écrivant deux fois dans des fichiers versés.
 
 ---
 

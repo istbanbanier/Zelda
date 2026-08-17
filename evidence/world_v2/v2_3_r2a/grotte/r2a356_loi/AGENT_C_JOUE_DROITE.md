@@ -110,7 +110,9 @@ avant. C'est la bonne réponse à `ISS-056`.
   l'ancienne géométrie ;
 - **5 817 indécidables** non tranchés ;
 - **amas 2** — 111 points à `ay = 0,13` — non couvert ;
-- **divergence de 0,12 m avec l'agent A non expliquée**, et aggravée : leurs deux
+- **divergence avec l'agent A : réduite à 0,0187 m** — voir la correction dans
+  `AGENT_A_LOI_INSTRUMENTEE.md` §11, où j'avais comparé une lecture à une borne.
+  Restent deux lectures prises en **deux points différents** : leurs deux
   argmin ne sont plus le même point, donc aucun des deux ne peut trancher seul.
   Mesure demandée : que l'agent C lise **au point de l'agent A**,
   `(−1,6064 ; −0,2796 ; 2,5602)`, face porteuse 19194. Deux instruments sur un
