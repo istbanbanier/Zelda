@@ -79,6 +79,13 @@ func _ready() -> void:
 	# Le joueur apparaît TOUJOURS au point d'apparition — aucune position de
 	# sauvegarde n'est lue ici (contrat de migration).
 	_player.global_position = _spawn.global_position
+	# `DiagnosticCamera` précède le joueur dans WorldV2.tscn : Godot la rend
+	# automatiquement courante lorsqu'elle entre seule dans le Viewport. Les
+	# caméras de preuve ne doivent jamais décider de la vue d'une partie normale.
+	# On reprend donc explicitement la main une fois le monde monté ; les outils
+	# de capture pourront toujours activer ensuite leur caméra nommée.
+	if not activate_gameplay_camera():
+		push_error("[world_v2] caméra du joueur introuvable — vue jouable impossible")
 
 	_diag_camera.look_at_from_position(
 		_diag_camera.global_position, _spawn.global_position, Vector3.UP)
@@ -190,6 +197,19 @@ func probe_ground_below_spawn() -> Dictionary:
 ## -- caméras de capture -------------------------------------------------------
 ## L'outil de capture appelle une méthode SANS argument (`--call=`) : une
 ## méthode par fenêtre, mêmes noms que les tests.
+
+func activate_gameplay_camera() -> bool:
+	var typed_player: PlayerController = player()
+	if typed_player == null:
+		return false
+	var rig: CameraRig = typed_player.camera_rig()
+	if rig == null:
+		return false
+	var camera: Camera3D = rig.get_camera()
+	if camera == null:
+		return false
+	camera.current = true
+	return true
 
 func activate_diagnostic_camera() -> void:
 	_diag_camera.current = true

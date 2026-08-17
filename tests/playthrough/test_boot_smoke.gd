@@ -188,6 +188,12 @@ func test_boot_smoke_from_boot_to_playable_world_v2() -> void:
 	# --- B6. Caméra et HUD présents ----------------------------------------
 	var rig: Node = player.call("camera_rig") if player.has_method("camera_rig") else null
 	check(rig != null, "B6 — le joueur porte son rig de caméra")
+	var player_camera: Camera3D = rig.call("get_camera") as Camera3D \
+		if rig != null and rig.has_method("get_camera") else null
+	var active_camera: Camera3D = world.get_viewport().get_camera_3d()
+	check(player_camera != null and active_camera == player_camera,
+		"…et la vue active est celle du JOUEUR, jamais une caméra de preuve "
+			+ "(active : %s)" % (active_camera.name if active_camera != null else "aucune"))
 	var shell: Node = world.get_node_or_null("GameplayShell")
 	check(shell != null, "…et le HUD de jeu est monté")
 
