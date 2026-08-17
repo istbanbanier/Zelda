@@ -235,3 +235,50 @@ masque s'appuie sur cette stabilité de stations — elle reste vraie pour le
 *chemin*, elle est fausse pour la *géométrie*. Le masque, lui, ne dépend que du
 chemin, donc il tient ; mais la phrase « R2a-3.5.2 n'a pas touché la bouche »
 doit se lire « n'a pas touché ses stations », et rien de plus.
+
+---
+
+## LA PREUVE — au rebord, il n'y a pas d'épaisseur, il y a un BORD
+
+Reproduit par l'intégrateur, `RC=0`, sur les deux géométries. `h` visé divisé
+par 8 :
+
+| `h` | R2a-3.4 **livrée** | `lect./h` | `c184c8dc` | `lect./h` |
+|---:|---:|---:|---:|---:|
+| 0,400 | 0,00400 | **0,010** | 0,00800 | **0,020** |
+| 0,200 | 0,00200 | **0,010** | 0,00400 | **0,020** |
+| 0,100 | 0,00100 | **0,010** | 0,00200 | **0,020** |
+| 0,050 | 0,00050 | **0,010** | 0,00100 | **0,020** |
+
+**Le rapport `lecture / h` est exactement constant.** La lecture ne converge pas
+vers une valeur finie : elle **suit la résolution**. C'est la signature
+mathématique d'une **arête** — au contour de bouche la peau intérieure rejoint la
+peau extérieure, et un échantillon posé à `r` du contour lit `r`.
+
+> **Il n'y a pas d'épaisseur à mesurer là. Il y a un bord.**
+
+Ce n'est donc pas un résultat sur ces deux géométries : c'est un résultat sur
+**toute grotte pourvue d'une bouche**. Aucun seuil strictement positif ne peut y
+être tenu, si soignée que soit la sculpture.
+
+Et la géométrie **livrée et visuellement validée est la plus mince des deux** —
+0,0005 contre 0,0010 m à `h = 0,05`. Le critère la condamne plus fort que le
+sujet, exactement comme `controle_epaisseur_domaine` avec ses 326 plaques.
+
+### Deux faits distincts, qui ne se contredisent pas
+
+Mon outil de lèvre et celui de l'agent C ne mesurent pas au même endroit, et
+c'est pour cela qu'ils ordonnent les géométries différemment :
+
+| | mesure | R2a-3.4 | candidat | qui est le plus mince |
+|---|---|---:|---:|---|
+| **AU rebord** | échantillons jusqu'au contour | 0,0005 m | 0,0010 m | **la référence** |
+| **PRÈS du rebord** | sommets, 3 rangs exclus, test roche | 0,363 m | 0,283 m | **le candidat** |
+
+- **Au rebord** : les deux tendent vers 0. C'est de la géométrie, pas un défaut,
+  et la référence a l'arête la plus vive.
+- **Près du rebord** : la roche du porche du candidat est réellement plus mince —
+  89 sommets sous 0,80 m contre 71, minimum 0,283 contre 0,363.
+
+Le premier fait rend le gate inatteignable. Le second reste une **régression
+réelle du candidat**, actionnable indépendamment.
