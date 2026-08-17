@@ -1,0 +1,146 @@
+============================================================================
+LOCALISATION DE L'ARGMIN D'EPAISSEUR — projection, direction,
+generateur responsable. Cet outil ne rend AUCUN verdict.
+============================================================================
+fichier : assets/environment/caves/SM_WaterfallCave.glb
+sha256  : bf68bfda37976758f31e372713fb17e0cbdfc4fbe3a3a452f77277b6917465f0        <- lu AVANT la mesure
+maillage mesure : SM_WaterfallCave  (COL_WaterfallCave, la coque
+   de collision qui BOUCHE la galerie, est exclue nommement)
+h = 0.1000 m   masque = 2.00 m   pas de balayage = 0.050 m
+
+--- generateur charge hors Blender ---
+  CAVITE : 9 stations, de ay = -1.15 a ay = 3.17
+  CALOTTE_U0 = 3.50   CALOTTE_U1 = 7.20   (INDICES de station)
+  CALOTTE_THETA0 = 100.0 deg  THETA1 = 176.0 deg  AZIMUTS = 7
+
+--- le chemin, en LONGUEUR D'ARC ---
+  origine s = 0 : station 1 (le seuil), la seule identique
+  u    ax        ay        s (m)    
+  0    0.000     -1.150       -1.150
+  1    0.000     0.000        +0.000
+  2    0.220     1.050        +1.073
+  3    1.000     1.620        +2.039
+  4    1.820     2.120        +2.999
+  5    2.620     2.580        +3.922
+  6    3.100     2.880        +4.488
+  7    3.400     3.060        +4.838
+  8    3.580     3.170        +5.049
+  emprise de la calotte, CONVERTIE (jamais comparee a un ay) :
+     u = 3.50 -> s = +2.519 m
+     u = 7.20 -> s = +4.880 m
+     longueur couverte : 2.361 m
+
+--- reconstruction de la coque (contrat §2.1-§2.5) ---
+  maillage : 20070 faces, 10037 sommets soudes, 0 bord libre, 0 non-manifold
+  MODELE_SALLE  (2.620 ; 2.580 ; 0.090)  enroulement -0.0000 -> AIR
+  MODELE_NICHE  (2.780 ; 4.090 ; 0.500)  enroulement +0.0000 -> AIR
+  bouche derivee : ay = -1.765, perimetre 53.755 m, peau interieure 95.19 m2
+  122376 echantillons sur la peau interieure (couverture <= h = 0.1000)
+
+============================================================================
+1. L'ARGMIN, ET LA DIRECTION DANS LAQUELLE LA ROCHE MANQUE
+============================================================================
+  argmin (modele)     : (3.039 ; 1.920 ; 1.704)   face int. 19370
+  Godot equivalent    : (3.039 ; 1.704 ; -1.920)   (gx=ax, gy=az, gz=-ay)
+  lecture             : 0.6813 m   borne = lecture - h = 0.5813 m
+  echantillons sous 0.80 m en LECTURE : 1122
+
+  point EXTERIEUR le plus proche : (3.647 ; 1.640 ; 1.831)  face 2029
+  vecteur argmin -> exterieur    : (+0.608 ; -0.281 ; +0.127)
+  norme 0.6813 m
+  unitaire                       : (+0.892 ; -0.412 ; +0.187)
+  part VERTICALE   |z| = 18.7 %   (angle au zenith 79.2 deg)
+  part HORIZONTALE     = 98.2 %   dont +Y (nord) -41.2 %
+  >>> DIRECTION DOMINANTE : FLANC — emprise laterale
+
+============================================================================
+2. PROJECTION SUR LE CHEMIN — en longueur d'arc, jamais en indice
+============================================================================
+  segment le plus proche : stations 5 -> 6
+  parametre local t      : 0.0107   (t libre non ecrete : 0.0107)
+  indice de station u    : 5.0107
+  parametre CUMULE s     : +3.9282 m depuis le seuil
+  pied de projection     : (2.625 ; 2.583)
+  distance a la courbe   : 0.7817 m en (x,y) ; 0.7817 m en 3D
+  cote (le long de la normale) : +0.782 m  -> joue DROITE (+n)
+  >>> DANS l'emprise longitudinale du chemin : le pied tombe
+      a l'INTERIEUR du segment, l'ecart est LATERAL.
+  emprise de la calotte en s : [+2.519 ; +4.880] m ; le point est a s = +3.928  -> DEDANS
+
+============================================================================
+3. LE GENERATEUR — qui pose la roche ici, et a quel azimut
+============================================================================
+  paroi de cavite la plus proche a u = 5.0107 :
+     azimut theta = 90.00 deg   point (2.625 ; 2.583 ; 2.923)
+     ecart au point mesure : 1.4482 m
+     n (deport lateral) = +0.000 m   z de paroi = 2.923 m
+     >>> ECART IMPORTANT : le point n'est pas sur la paroi
+         analytique. A interpreter avec prudence.
+  azimuts REELLEMENT poses par la calotte : 100.0, 112.7, 125.3, 138.0, 150.7, 163.3, 176.0
+  les deux plus proches de 90.00 deg : 100.0 et 112.7  (ecarts 10.00 et 22.67 deg)
+  pas d'azimut 12.7 deg ; a |n| = 0.00 m la CORDE entre deux roches vaut 0.000 m
+
+[grotte] calotte nord : 10/33 poses ECRETEES par CALOTTE_PLAFOND_M = 4.00 m ; retrait max 0.499 m en (2.06 ; 3.27) ; couverture la plus mince obtenue 1.101 m pour 1.60 visee
+  calotte rejouee : 33 roches ; module a l'echelle 2.64 x 2.81 x 2.39 m
+  roches dont la BOITE MAJORANTE contient l'argmin : 3
+  les 6 plus proches     ecart x   ecart y   ecart z   pire     
+  CalotteNord_2_0           -1.100    -0.585    -0.262    -0.262
+  CalotteNord_1_0           -0.373    -1.023    -0.188    -0.188
+  CalotteNord_3_0           -1.147    -0.032    -0.262    -0.032
+  CalotteNord_3_1           -1.110    +0.367    -0.193    +0.367
+  CalotteNord_0_1           +0.382    -0.899    -0.193    +0.382
+  CalotteNord_1_1           +0.402    +0.261    -0.119    +0.402
+
+  RAPPEL : une boite qui contient le point ne prouve pas que la
+  ROCHE le contient — le module ne remplit pas sa boite. Une
+  boite MAJORANTE qui ne le contient PAS, elle, prouve l'absence.
+
+--- ecretage de CALOTTE_PLAFOND_M : mord-il ? ---
+  CALOTTE_PLAFOND_M = 4.00 m ; couverture visee 1.60 m
+  poses ou le plafond ECRETE la couverture : 10 sur 33
+  >>> la butee AGIT. Une butee qui agit sans le dire est
+      exactement la famille de defaut qu'on debusque.
+============================================================================
+4. LA MATIERE EST-ELLE DANS LA SOURCE ? — sommet des roches de
+   calotte a l'APLOMB de l'argmin, avant toute etape de chaine
+============================================================================
+  module R (template-detail) : 320 faces, boite 2.644 x 2.812 x 4.348 m
+  roches dont la VERTICALE de l'argmin traverse la geometrie : 0 (sur 33 posees)
+  >>> AUCUNE roche de calotte ne couvre cette verticale.
+      La cause est un TROU DE POSE, pas une couverture mince.
+
+============================================================================
+5. LES 1122 ECHANTILLONS SOUS LE SEUIL — sont-ils GROUPES ou
+   DISPERSES ? Corriger un point n'est pas corriger un defaut.
+============================================================================
+  1122 echantillons sous 0.80 m (en LECTURE)
+
+  histogramme des lectures :
+     [0.00 ; 0.20)      0  
+     [0.20 ; 0.40)      0  
+     [0.40 ; 0.60)      0  
+     [0.60 ; 0.70)     33  #
+     [0.70 ; 0.80)   1089  ##########################################################
+
+  emprise : x[1.89 ; 3.68]  ay[0.05 ; 5.26]  az[1.29 ; 2.40]
+
+  amas (agglomeration a 0.50 m) : 3
+  amas   pts     %        centre (x ; ay ; az)       min lect. geod. bouche
+  0      761     67.8     (  3.23 ;   2.36 ;   1.75)     0.6813    3.96-6.33 m
+  1      250     22.3     (  2.24 ;   4.93 ;   1.92)     0.7198    7.62-8.78 m
+  2      111     9.9      (  2.01 ;   0.13 ;   1.93)     0.7451    2.25-3.51 m
+
+  le plus gros amas porte 67.8 % des echantillons sous seuil.
+  >>> GROUPES. Un seul defaut domine ; le corriger devrait
+      emporter l'essentiel.
+
+  RAPPEL. Sous l'addendum du masque, les echantillons proches de
+  la bouche relevent de la COLLERETTE et n'exigent que 0,60 m.
+  La colonne « geod. bouche » est la grandeur du classement ;
+  elle est publiee BRUTE, sans qu'aucun classement soit
+  presuppose ici.
+
+============================================================================
+Mesure faite. Aucun verdict rendu ici — voir cave_check_hull.py.
+============================================================================
+RC=0

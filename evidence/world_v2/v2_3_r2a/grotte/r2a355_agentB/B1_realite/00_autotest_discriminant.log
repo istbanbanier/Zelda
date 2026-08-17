@@ -1,0 +1,11 @@
+OK     deux triangles tres loin                      attendu DISJOINT             obtenu DISJOINT             symetrique oui
+OK     croix franche (X traverse Y)                  attendu PENETRATION          obtenu PENETRATION          symetrique oui
+OK     arete commune, non coplanaires                attendu CONTACT              obtenu CONTACT              symetrique oui
+OK     sommet commun seulement                       attendu CONTACT              obtenu CONTACT              symetrique oui
+OK     tangence pointe sur face (touche sans entrer) attendu CONTACT              obtenu CONTACT              symetrique oui
+OK     pointe qui ENTRE de 1 micron                  attendu PENETRATION          obtenu PENETRATION          symetrique oui
+OK     plans paralleles distincts                    attendu DISJOINT             obtenu DISJOINT             symetrique oui
+OK     coplanaires superposes                        attendu COPLANAIRE           obtenu COPLANAIRE           symetrique oui
+OK     triangle degenere (colineaire)                attendu DEGENERE             obtenu DEGENERE             symetrique oui
+OK     traversee franche coin dans coin              attendu PENETRATION          obtenu PENETRATION          symetrique oui
+RC=0

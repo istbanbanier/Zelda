@@ -1,0 +1,17 @@
+# commande : python3 tools/cave_argmin_localiser.py <glb> --h=0.05 --masque=2.00 --autour=1.036,5.173,2.316,0.30
+============================================================================
+LOCALISATION DE L'ARGMIN D'EPAISSEUR — projection, direction,
+generateur responsable. Cet outil ne rend AUCUN verdict.
+============================================================================
+fichier : assets/environment/caves/SM_WaterfallCave.glb
+sha256  : bf68bfda37976758f31e372713fb17e0cbdfc4fbe3a3a452f77277b6917465f0        <- lu AVANT la mesure
+maillage mesure : SM_WaterfallCave  (COL_WaterfallCave, la coque
+   de collision qui BOUCHE la galerie, est exclue nommement)
+h = 0.0500 m   masque = 2.00 m   pas de balayage = 0.050 m
+
+--- CERTIFICAT LOCAL, h fin autour d'un point ---
+  maillage : 20070 faces, 10037 sommets soudes, 0 bord libre, 0 non-manifold
+  MODELE_SALLE  (2.620 ; 2.580 ; 0.090)  enroulement -0.0000 -> AIR
+  MODELE_NICHE  (2.780 ; 4.090 ; 0.500)  enroulement +0.0000 -> AIR
+  bouche derivee : ay = -1.765, perimetre 53.755 m, peau interieure 95.19 m2
+  489504 echantillons sur la peau interieure (couverture <= h = 0.0500)

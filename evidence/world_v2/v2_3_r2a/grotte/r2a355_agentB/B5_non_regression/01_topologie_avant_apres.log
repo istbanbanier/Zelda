@@ -1,0 +1,33 @@
+=== AVANT (socle intact c184c8dc) ===
+[topo] fichier /home/user/zelda-r2a355/reference/SM_WaterfallCave_c184c8dc.glb
+[topo] COL_WaterfallCave
+[topo]   V=442  E=1320  F=880
+[topo]   aretes de bord libre : 0
+[topo]   aretes non-manifold  : 0
+[topo]   composantes connexes : 1
+[topo]   khi = 2
+[topo]   genre = 0.0  (khi = 2*C - 2g)
+[topo] SM_WaterfallCave
+[topo]   V=10038  E=30108  F=20072
+[topo]   aretes de bord libre : 0
+[topo]   aretes non-manifold  : 0
+[topo]   composantes connexes : 1
+[topo]   khi = 2
+[topo]   genre = 0.0  (khi = 2*C - 2g)
+
+=== APRES (corrige 5bd1b4f5) ===
+[topo] fichier assets/environment/caves/SM_WaterfallCave.glb
+[topo] COL_WaterfallCave
+[topo]   V=442  E=1320  F=880
+[topo]   aretes de bord libre : 0
+[topo]   aretes non-manifold  : 0
+[topo]   composantes connexes : 1
+[topo]   khi = 2
+[topo]   genre = 0.0  (khi = 2*C - 2g)
+[topo] SM_WaterfallCave
+[topo]   V=10038  E=30108  F=20072
+[topo]   aretes de bord libre : 0
+[topo]   aretes non-manifold  : 0
+[topo]   composantes connexes : 1
+[topo]   khi = 2
+[topo]   genre = 0.0  (khi = 2*C - 2g)

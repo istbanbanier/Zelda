@@ -1,0 +1,10 @@
+[negdisc] cas                                                  attendu   NOUVEAU   ancien   
+[negdisc] penetration franche                                  True      True      True       OK     (enfoncement 1.0000000 m)
+[negdisc] penetration de 1 micron                              True      True      False      OK     (enfoncement 0.0000010 m)
+[negdisc]     -> l'ancien compteur RATAIT une penetration reelle
+[negdisc] penetration de 0.6 mm (l'ordre de grandeur mesure)   True      True      True       OK     (enfoncement 0.0006120 m)
+[negdisc] CONTACT tangent : pointe posee sur la face           False     False     False      OK     (enfoncement 0.0000000 m)
+[negdisc] CONTACT : arete commune                              False     False     False      OK     (enfoncement 0.0000000 m)
+[negdisc] CONTACT : sommet commun                              False     False     False      OK     (enfoncement 0.0000000 m)
+[negdisc] coplanaires superposes (recouvrement, pas traversee) False     False     False      OK     (enfoncement 0.0000000 m)
+[negdisc] RESULTAT : 0 echec(s)

@@ -1,0 +1,68 @@
+=== ÉCHAFAUDAGE grotte — NON LIVRABLE ===
+=== Blender: Blender 4.0.2 ===
+--- génération de la source (mode diagnostic) ---
+  [grotte] nettoyage de la soustraction : 0 -> 0 arete(s) irreguliere(s)
+  [grotte] n-gones colineaires : 1 face(s) porteuse(s) d'un triplet consecutif exactement aligne
+  [grotte] desamorcage : 0 bascule(s) d'arete, 0 triangle(s) d'aire nulle restant(s)
+  [grotte] soustraction : la bouche est la trace de decoupe du tube
+  [grotte]   coque +  796.44 m3, boite (-8.8..8.2, -3.1..11.9, -3.6..8.2), 10038 sommets
+  [grotte] soustraction : 1 coque(s) exterieure(s), 0 bulle(s) et 0 ecaille(s) retirees
+  [grotte] connexite : 1 composante, avant et apres soustraction
+  [grotte] auto-intersection du livrable (EXACT) : 4 paire(s), enfoncement maximal 0.000612 m (seuil 0.020 m), couture maximale 0.570507 m
+  [grotte]   ancien compteur (plans + tolerance 1e-04) : 2 paire(s), 0.000612 m — telemetrie, il SOUS-COMPTE
+  [grotte]   exemple : faces 3660/11994, centres (2.40, -1.63, -0.69) et (2.01, -2.18, -0.69), enfoncement 0.000612 m, couture 0.570507 m
+  [grotte] visuel : 0 arete(s) de bord, 0 non-manifold, volume 796.4 m3
+  [grotte] collision : 0 arete(s) de bord, 0 non-manifold, volume 243.7 m3
+  [grotte] visuel 17468 faces (20072 tris), collision 460 faces (880 tris)
+  [grotte] emprise Z de -3.55 m a 8.19 m (jupe 3.55 m sous le sol)
+  [grotte] budget : 20072 tris dans [12000 ; 25000]
+  [grotte] plage plane toutes faces confondues (cavite comprise) : 8.28 m2 — informatif, l'interieur releve d'un autre jalon
+  [grotte] plus grande plage plane au-dessus du sol : 8.28 m2, centree en (1.37, 9.05, 2.33) — seuil 12.00
+  [grotte] plus grande plage plane EN FACADE (y <= 2.0) : 3.06 m2, centree en (-6.00, 1.19, 1.56) — seuil 6.00
+  [grotte] paroi la plus mince : station 6, azimut 32°, z 1.26
+  [grotte] collerette la plus mince : station 0, azimut 32°, z 1.26
+  [grotte] epaisseur de roche : 0.87 m en paroi, 1.15 m au linteau (rayons lateraux et montants sur le maillage FINAL ; le plancher releve du terrain gele, voir controle_epaisseur)
+  [grotte] domaine : pas 0.10 m, 30012 colonnes, x [-9.37 ; 8.83] y [-3.73 ; 12.57]
+  [grotte] domaine : 2719 colonne(s) a vide qualifiant (>= 1.00 m) — 4 sans aucune matiere au-dessus (bouche/ciel), 2651 en matiere pleine, 64 lame(s) mince(s)
+  [grotte] domaine : bord le plus mince 0.055 m en (0.93 ; -1.93), vide 1.48 m, 5 voisin(s) — terminaison laterale d'un vide, pas une lame
+  [grotte] ERREUR: PLAQUE 0.114 m en (-0.07 ; -2.13) sous 2.63 m de vide, 6/8 voisins — moins que EPAISSEUR_MIN_M = 0.80 m (cumul de la colonne 0.114 m)
+  [grotte] ERREUR: PLAQUE 0.205 m en (0.03 ; -2.13) sous 2.53 m de vide, 7/8 voisins — moins que EPAISSEUR_MIN_M = 0.80 m (cumul de la colonne 0.205 m)
+  [grotte] ERREUR: PLAQUE 0.249 m en (1.03 ; -1.73) sous 1.12 m de vide, 7/8 voisins — moins que EPAISSEUR_MIN_M = 0.80 m (cumul de la colonne 0.249 m)
+  [grotte] ERREUR: PLAQUE 0.288 m en (1.13 ; -1.73) sous 1.19 m de vide, 6/8 voisins — moins que EPAISSEUR_MIN_M = 0.80 m (cumul de la colonne 0.288 m)
+  [grotte] ERREUR: PLAQUE 0.296 m en (0.13 ; -2.13) sous 2.42 m de vide, 8/8 voisins — moins que EPAISSEUR_MIN_M = 0.80 m (cumul de la colonne 0.296 m)
+  [grotte] domaine : 29 plaque(s) sous le seuil, la plus mince 0.114 m
+  [grotte] DIAGNOSTIC — porte « epaisseur sur le domaine » ROUGE, franchie pour mesurer l'aval ; code retour final 2.
+  [grotte] gabarit : bande utile par station (m) : 0:2.65, 1:2.65, 2:1.95, 3:3.15, 4:3.45, 5:4.00, 6:2.85
+  [grotte] gabarit : capsule r=0,45 h=1,85 passe aux 7 stations du chemin
+  [grotte] plancher : 54 point(s) sondes VERS LE BAS depuis le vide de la galerie, 0 faute(s) (tolerance 0.25 m)
+  [grotte] aucun jour : 25 rayons verticaux, croisements pairs et >= 2
+  [grotte] sol sous axe_seuil  ( 0.11,  0.52) : mesure -0.068 m, attendu -0.070 m (station 1.50, lateral 0.00), ecart +0.001 m — tolerance 0.25
+  [grotte] sol sous salle      ( 2.62,  2.58) : mesure +0.084 m, attendu +0.080 m (station 5.00, lateral 0.00), ecart +0.004 m — tolerance 0.25
+  [grotte] sol sous niche      ( 2.78,  4.09) : mesure +0.492 m, attendu +0.537 m (station 7.03, lateral 0.66), ecart -0.045 m — tolerance 0.25
+  [grotte] sol sous voisin     ( 2.71,  3.39) : mesure +0.244 m, attendu +0.262 m (station 5.90, lateral 0.25), ecart -0.019 m — tolerance 0.25
+  [grotte] source enregistree -> /home/user/zelda-r2a355/b_chaine/source_assets/blender/environment/SM_WaterfallCave.blend
+  RC_MAKE=2  (2 attendu tant qu'un portail reste rouge)
+--- export .glb ---
+  [export_gltf] Blender 4.0.2
+  [export_gltf] io_scene_gltf2 version (4, 0, 44)
+  [export_gltf] preset: export_animation_mode=ACTIONS, export_animations=False, export_apply=True, export_cameras=False, export_extras=False, export_force_sampling=True, export_format=GLB, export_lights=False, export_materials=EXPORT, export_normals=True, export_optimize_animation_size=False, export_skins=True, export_tangents=True, export_texcoords=True, export_yup=True, use_selection=False, use_visible=True
+  [export_gltf] OK -> /home/user/zelda-r2a355/b_chaine/assets/environment/caves/SM_WaterfallCave.glb (1490392 octets)
+--- inspection glTF hors moteur ---
+    bbox_min               : [-8.7717, -3.5509, -11.8987]
+    bbox_max               : [8.1739, 8.1923, 3.2305]
+    dimensions_m           : [16.9456, 11.7432, 15.1292]
+    [AVERT] mesh 'COL_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] min Y = -3.5509 (attendu ~0 : bas de l'objet au sol, §7.15)
+  === VALIDE ===
+
+GLB     : 5bd1b4f5115bfd35  (1490392 octets)
+RC_MAKE=2 RC_EXPORT=0 RC_INSPECT=0
+=== ÉCHAFAUDAGE terminé — ce GLB N'EST PAS LIVRABLE tant que
+=== export_architecture.sh waterfall_cave ne rend pas 0.
+RC=0

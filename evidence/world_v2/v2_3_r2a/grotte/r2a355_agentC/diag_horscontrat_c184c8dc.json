@@ -1,0 +1,133 @@
+{
+ "glb": "/home/user/zelda-r2a355/reference/SM_WaterfallCave_c184c8dc.glb",
+ "sha256": "c184c8dc0c0e754a61624e1d3542a8b70fa496334366a17889bb4c41ade028ed",
+ "tables": "/home/user/zelda-r2a355/c_instruments/source_assets/blender/environment/make_waterfall_cave.py",
+ "lieu": "/home/user/zelda-r2a355/c_instruments/scripts/world_v2/poi/waterfall_cave_place.gd",
+ "anciens_reperes": false,
+ "capsule": false,
+ "h_vise": 0.05,
+ "budget": 400000,
+ "s_dehors": -1.6,
+ "verdict_global": "FAIL",
+ "stable": true,
+ "resultats": [
+  {
+   "emprise": 0.0,
+   "journal": {
+    "evaluations": 145200,
+    "budget_epuise": false,
+    "reste_en_file": 0,
+    "a_cheval": 0
+   },
+   "classes": {
+    "COLLERETTE": {
+     "seuil": 0.6,
+     "lecture": null,
+     "borne": null,
+     "cell": 0,
+     "sous_seuil": 0,
+     "h": 0.0,
+     "verdict": "VIDE"
+    },
+    "COQUE": {
+     "seuil": 0.8,
+     "lecture": 0.0107909363652259,
+     "borne": -0.028497942877787275,
+     "cell": 109138,
+     "sous_seuil": 76709,
+     "h": 0.03928887924301318,
+     "verdict": "FAIL",
+     "argmin": {
+      "modele": [
+       1.4247409266730149,
+       -1.1393541196982067,
+       -0.09866818110458553
+      ],
+      "godot": [
+       1.4247409266730149,
+       -0.09866818110458553,
+       1.1393541196982067
+      ],
+      "face": 18988,
+      "face_exterieure": 18921,
+      "d_masque": null,
+      "rayon_cellule": 0.025423606949853322,
+      "s": -1.1393541196982067,
+      "u": 0.009257287218950656,
+      "ay_station": -1.1393541196982067,
+      "distance_axe": 1.4247409266730149
+     }
+    }
+   }
+  },
+  {
+   "emprise": 1.0,
+   "journal": {
+    "evaluations": 134916,
+    "budget_epuise": false,
+    "reste_en_file": 0,
+    "a_cheval": 8478
+   },
+   "classes": {
+    "COLLERETTE": {
+     "seuil": 0.6,
+     "lecture": 0.011331912118483492,
+     "borne": -0.02475689396332679,
+     "cell": 31905,
+     "sous_seuil": 27111,
+     "h": 0.03608880608181028,
+     "verdict": "FAIL",
+     "argmin": {
+      "modele": [
+       1.3151968369881313,
+       -1.139291460936268,
+       0.31419280885408324
+      ],
+      "godot": [
+       1.3151968369881313,
+       0.31419280885408324,
+       1.139291460936268
+      ],
+      "face": 18994,
+      "face_exterieure": 18927,
+      "d_masque": 0.5644428811719354,
+      "rayon_cellule": 0.026473976740975104,
+      "s": -1.139291460936268,
+      "u": 0.00931177309889723,
+      "ay_station": -1.139291460936268,
+      "distance_axe": 1.3151968369881313
+     }
+    },
+    "COQUE": {
+     "seuil": 0.8,
+     "lecture": 0.0107909363652259,
+     "borne": -0.028497942877787275,
+     "cell": 69520,
+     "sous_seuil": 40095,
+     "h": 0.03928887924301318,
+     "verdict": "FAIL",
+     "argmin": {
+      "modele": [
+       1.4247409266730149,
+       -1.1393541196982067,
+       -0.09866818110458553
+      ],
+      "godot": [
+       1.4247409266730149,
+       -0.09866818110458553,
+       1.1393541196982067
+      ],
+      "face": 18988,
+      "face_exterieure": 18921,
+      "d_masque": 0.6739730579993551,
+      "rayon_cellule": 0.025423606949853322,
+      "s": -1.1393541196982067,
+      "u": 0.009257287218950656,
+      "ay_station": -1.1393541196982067,
+      "distance_axe": 1.4247409266730149
+     }
+    }
+   }
+  }
+ ]
+}

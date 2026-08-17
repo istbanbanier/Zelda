@@ -1,0 +1,108 @@
+diff --git a/source_assets/blender/environment/make_waterfall_cave.py b/source_assets/blender/environment/make_waterfall_cave.py
+index 88916a7..f62a1b0 100644
+--- a/source_assets/blender/environment/make_waterfall_cave.py
++++ b/source_assets/blender/environment/make_waterfall_cave.py
+@@ -1664,6 +1664,7 @@ def rochers_calotte_nord():
+     ph = phases(len(CAVITE), 7.0)      # même graine que `cavite_solide()`
+     u = CALOTTE_U0
+     rang = 0
++    ecretes = []
+     while u <= CALOTTE_U1 + 1e-6:
+         ax, ay, hw, cle = station_de_cavite(u)
+         nx, ny = normale_de_cavite(u)
+@@ -1689,7 +1690,16 @@ def rochers_calotte_nord():
+             if abs(n) < CALOTTE_DEBORD_MIN_M:
+                 continue          # la joue ne déborde pas ici : rien à couvrir
+             z_paroi = cle * (max(0.0, v) ** 0.75) * w * (1.0 + inclinaison * uc)
+-            haut = min(z_paroi + CALOTTE_COUVERTURE_M, CALOTTE_PLAFOND_M)
++            vise = z_paroi + CALOTTE_COUVERTURE_M
++            haut = min(vise, CALOTTE_PLAFOND_M)
++            if vise > CALOTTE_PLAFOND_M:
++                # R2a-3.5.5 — LA BUTÉE PARLE MAINTENANT. Elle mordait 7 poses
++                # sur 23 en silence, et son commentaire la présentait comme
++                # une simple sécurité qui n'agit pas. Une butée qui agit sans
++                # le dire est la famille de défaut que cette série débusque :
++                # on la trace, on ne change pas ce qu'elle fait.
++                ecretes.append((vise - CALOTTE_PLAFOND_M,
++                                ax + n * nx, ay + n * ny, haut - z_paroi))
+             base = min(haut - hauteur, z_paroi - CALOTTE_MORSURE_M)
+             sortie.append(dict(
+                 nom="CalotteNord_%d_%d" % (rang, k), mod="R",
+@@ -1712,6 +1722,18 @@ def rochers_calotte_nord():
+         if prochain >= CALOTTE_U1 and u >= CALOTTE_U1:
+             break
+         u = prochain
++    if ecretes:
++        pire = max(ecretes, key=lambda e: e[0])
++        mince = min(e[3] for e in ecretes)
++        print("[grotte] calotte nord : %d/%d poses ECRETEES par "
++              "CALOTTE_PLAFOND_M = %.2f m ; retrait max %.3f m en "
++              "(%.2f ; %.2f) ; couverture la plus mince obtenue %.3f m "
++              "pour %.2f visee"
++              % (len(ecretes), len(sortie), CALOTTE_PLAFOND_M, pire[0],
++                 pire[1], pire[2], mince, CALOTTE_COUVERTURE_M))
++    else:
++        print("[grotte] calotte nord : aucune pose ecretee par "
++              "CALOTTE_PLAFOND_M = %.2f m" % CALOTTE_PLAFOND_M)
+     return sortie
+ 
+ 
+@@ -1728,7 +1750,57 @@ CALOTTE_PAS_M = 0.60
+ ## 2,5 à 5 m de roche.
+ CALOTTE_THETA0 = 100.0
+ CALOTTE_THETA1 = 176.0
+-CALOTTE_AZIMUTS = 5
++## R2a-3.5.5 — 5 -> 7, ET CE N'EST PAS UN RÉGLAGE QUI « MARCHE MIEUX ».
++##
++## LE DÉFAUT, MESURÉ. Le gate d'épaisseur de coque échouait à 0,6613 m
++## (borne 0,5613 pour 0,80 exigés) en modèle `(1,036 ; 5,173 ; 2,316)`.
++## `tools/cave_argmin_localiser.py` a localisé ce point : direction de la
++## roche manquante **97,1 % verticale**, projection à `u = 4,9124` soit
++## `s = +3,841 m` du seuil — DANS l'emprise de la calotte, qui couvre
++## `s ∈ [+2,519 ; +4,880]` — et azimut réel **126,50°**, entre deux poses.
++##
++## AUCUNE ÉTAPE DE CHAÎNE N'EST EN CAUSE : à la verticale de ce point, la
++## source ne pose que 0,317 m de roche quand le GLB en porte 0,661. Rien
++## n'a été raboté, la matière n'a jamais été là.
++##
++## POURQUOI. `CALOTTE_COUVERTURE_M` promet une hauteur de BOÎTE, et
++## `template-detail` ne remplit pas la sienne. Profil mesuré à l'échelle de
++## la calotte, hauteur de boîte 2,393 m :
++##
++##     rayon   0,00   0,20   0,40   0,60   0,80   1,00
++##     médiane 2,392  2,392  2,312  1,050  0,949  0,714
++##
++## C'est un pic : il perd 56 % entre 0,4 et 0,6 m de son axe. À 19° de pas
++## et 3,07 m de déport, le point de paroi le plus mal servi tombe à
++## **0,560 m** du centre le plus proche — en pleine chute.
++##
++## CE N'EST PAS « LE PAS DE LA GAINE ». Le pas de la calotte (19°) est déjà
++## plus FIN que celui de la gaine corrigée (22,5°). La grandeur qui compare
++## est la CORDE, pas l'angle : la gaine a reçu son raffinement sur ce
++## raisonnement, et la calotte, écrite après, pose ses roches à un rayon
++## bien plus grand sans que ce raisonnement lui ait été appliqué. Son pas
++## angulaire plus fin masquait une corde plus longue. Mesuré par
++## `--familles` : écart max entre roches voisines 1,600 m pour une limite
++## de 1,200 m (deux fois le rayon de demi-hauteur du module à l'échelle).
++##
++## POURQUOI 7 ET PAS 9. Prédiction mesurée avant modification, sommet de la
++## calotte à l'aplomb de l'argmin :
++##
++##     azimuts  5 -> 2,631 m   (épaisseur verticale 0,315 m)
++##     azimuts  7 -> 4,001 m   (1,685 m)
++##     azimuts  9 -> 3,943 m   (1,627 m)
++##     azimuts 13 -> 4,002 m   (1,686 m)
++##
++## Tout le gain est entre 5 et 7 ; au-delà la roche bute sur
++## `CALOTTE_PLAFOND_M` et l'on ne paie que des opérandes de booléen.
++##
++## NOTE DE FORME, à ne pas confondre avec ce correctif : `GAINE_AZIMUTS`
++## est un tuple d'angles explicites, `CALOTTE_AZIMUTS` et
++## `DOS_ALCOVE_AZIMUTS` sont des comptes. Trois écritures d'un même concept
++## dans un fichier — c'est ce qui fait qu'un correctif appliqué à l'un ne se
++## voit pas manquer à l'autre. Non uniformisé ici, à dessein : ce serait un
++## changement sans mesure.
++CALOTTE_AZIMUTS = 7
+ ## Débord minimal sous lequel on ne pose rien : près de l'axe la voûte est
+ ## déjà couverte, et une roche de plus n'y ajouterait qu'un risque de col.
+ CALOTTE_DEBORD_MIN_M = 0.60

@@ -1,0 +1,29 @@
+============================================================================
+COQUE STRUCTURELLE A DEUX SEUILS — addendum §3
+============================================================================
+
+--- PROVENANCE (addendum §4) — publiee AVANT toute mesure ---
+  GLB     : /home/user/zelda-r2a355/reference/SM_WaterfallCave_R2a34_8bf1a1b3.glb
+  sha256  : 8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110
+  tables du generateur : /home/user/zelda-r2a355/c_instruments/source_assets/blender/environment/make_waterfall_cave.py
+  script de lieu       : /home/user/zelda-r2a355/c_instruments/scripts/world_v2/poi/waterfall_cave_place.gd
+  valeurs lues (Godot -> modele) :
+    MODELE_SEUIL_DEHORS  (0.000 ; 0.100 ; 1.600) -> (0.000 ; -1.600 ; 0.100)
+    MODELE_SALLE         (2.620 ; 0.090 ; -2.580) -> (2.620 ; 2.580 ; 0.090)
+    MODELE_NICHE         (2.780 ; 0.500 ; -4.090) -> (2.780 ; 4.090 ; 0.500)
+
+  fermeture : 0 bords libres, 0 non-manifold, 19954 faces
+
+  appartenance des reperes a l'AIR interieur (angle solide) :
+    MODELE_SALLE  modele (2.620 ; 2.580 ; 0.090)  enroulement +1.0000 -> ROCHE
+    MODELE_NICHE  modele (2.780 ; 4.090 ; 0.500)  enroulement -0.0000 -> AIR
+
+============================================================================
+BLOQUE (RC=3) : DEFAUT DE PROVENANCE, pas defaut de roche.
+============================================================================
+Un repere tombe dans la roche : le couple (maillage, reperes)
+n'est pas coherent. Addendum §4 — « le verdict correct dans ce
+cas est BLOQUE, jamais ROUGE ». Rendre ROUGE accuserait la
+geometrie d'une faute qui appartient au script de lieu.
+Si la geometrie est anterieure a R2a-3.5.2 : --anciens-reperes
+RC=3

@@ -1,0 +1,78 @@
+[exact] fichier /home/user/zelda-r2a355/reference/SM_WaterfallCave_R2a34_8bf1a1b3.glb
+[exact] noeud COL_WaterfallCave        matrice=non translation=None rotation=None echelle=None
+[exact] noeud SM_WaterfallCave         matrice=non translation=None rotation=None echelle=None
+[exact] COL_WaterfallCave : 1784 positions brutes -> 442 apres soudure
+[exact] === COL_WaterfallCave : 442 sommets soudes, 880 triangles
+[exact] aire EXACTEMENT nulle : 0 face(s)
+[exact] aire < 1e-9 m2 mais NON nulle : 0 face(s)
+[exact] paires a boites chevauchantes : 6305
+[exact]   CONTACT              5604
+[exact]   DISJOINT             694
+[exact]   PENETRATION          7
+[exact] PENETRATIONS REELLES : 7
+[exact]   faces 281 / 319  sommets communs 1
+[exact]     centres (3.4827, 0.8760, -8.3262) et (3.4772, 0.8677, -8.3310)
+[exact]     point interieur commun (3.470138463, 0.873135398, -8.491635194)
+[exact]   faces 283 / 316  sommets communs 0
+[exact]     centres (3.4490, 0.9134, -8.3599) et (3.4067, 0.7973, -8.0863)
+[exact]     point interieur commun (3.445994470, 0.881172711, -8.560162876)
+[exact]   faces 283 / 318  sommets communs 0
+[exact]     centres (3.4490, 0.9134, -8.3599) et (3.4952, 0.8278, -8.0204)
+[exact]     point interieur commun (3.461631914, 0.875709513, -8.447382998)
+[exact]   faces 283 / 319  sommets communs 0
+[exact]     centres (3.4490, 0.9134, -8.3599) et (3.4772, 0.8677, -8.3310)
+[exact]     point interieur commun (3.472610940, 0.871837117, -8.368397374)
+[exact]   faces 283 / 317  sommets communs 0
+[exact]     centres (3.4490, 0.9134, -8.3599) et (3.3451, 0.8359, -8.4405)
+[exact]     point interieur commun (3.431167200, 0.890430707, -8.645210133)
+[exact]   faces 283 / 338  sommets communs 0
+[exact]     centres (3.4490, 0.9134, -8.3599) et (3.3420, 0.8239, -8.9913)
+[exact]     point interieur commun (3.426670164, 0.892805395, -8.673329994)
+[exact]   faces 321 / 338  sommets communs 1
+[exact]     centres (3.3545, 0.8485, -8.9788) et (3.3420, 0.8239, -8.9913)
+[exact]     point interieur commun (3.338335083, 0.796402686, -9.111665118)
+[exact] SM_WaterfallCave : 55542 positions brutes -> 9975 apres soudure
+[exact] === SM_WaterfallCave : 9975 sommets soudes, 19954 triangles
+[exact] aire EXACTEMENT nulle : 0 face(s)
+[exact] aire < 1e-9 m2 mais NON nulle : 4 face(s)
+[exact]   face 3822  aire 4.825e-10 m2  centre (1.4247, 0.0275, 3.4236)
+[exact]   face 5863  aire 1.313e-10 m2  centre (-0.7810, -0.6524, 3.0986)
+[exact]   face 8415  aire 6.731e-10 m2  centre (-2.1628, -0.6116, 3.1226)
+[exact]   face 8700  aire 8.297e-10 m2  centre (-2.3678, 0.3376, 2.9411)
+[exact] paires a boites chevauchantes : 140708
+[exact]   CONTACT              131193
+[exact]   COPLANAIRE           29
+[exact]   DISJOINT             9476
+[exact]   PENETRATION          10
+[exact] PENETRATIONS REELLES : 10
+[exact]   faces 6988 / 19539  sommets communs 0
+[exact]     centres (1.4827, -0.2700, 2.7834) et (1.4311, -0.5113, 3.2011)
+[exact]     point interieur commun (1.430643678, -0.470143617, 2.795155529)
+[exact]   faces 6988 / 19541  sommets communs 1
+[exact]     centres (1.4827, -0.2700, 2.7834) et (1.4313, -0.5238, 2.9953)
+[exact]     point interieur commun (1.430868447, -0.488894731, 2.791906955)
+[exact]   faces 6988 / 19545  sommets communs 1
+[exact]     centres (1.4827, -0.2700, 2.7834) et (1.4297, -0.3878, 3.0072)
+[exact]     point interieur commun (1.429903448, -0.408395528, 2.805853250)
+[exact]   faces 6988 / 19546  sommets communs 0
+[exact]     centres (1.4827, -0.2700, 2.7834) et (1.4302, -0.4290, 3.2037)
+[exact]     point interieur commun (1.430643678, -0.470143616, 2.795155530)
+[exact]   faces 5825 / 5826  sommets communs 1
+[exact]     centres (0.3121, -0.6529, 3.0919) et (0.6353, -0.6765, 3.0915)
+[exact]     point interieur commun (0.306881446, -0.652895878, 3.092337262)
+[exact]   faces 5826 / 19497  sommets communs 0
+[exact]     centres (0.6353, -0.6765, 3.0915) et (0.3771, -0.6523, 1.7941)
+[exact]     point interieur commun (0.441076040, -0.651827395, 3.082275139)
+[exact]   faces 5826 / 19498  sommets communs 0
+[exact]     centres (0.6353, -0.6765, 3.0915) et (0.3132, -0.6528, 2.4430)
+[exact]     point interieur commun (0.404370974, -0.652119646, 3.085027341)
+[exact]   faces 5826 / 19500  sommets communs 0
+[exact]     centres (0.6353, -0.6765, 3.0915) et (0.5050, -0.6513, 1.7941)
+[exact]     point interieur commun (0.441076041, -0.651827395, 3.082275138)
+[exact]   faces 5826 / 19501  sommets communs 1
+[exact]     centres (0.6353, -0.6765, 3.0915) et (0.4806, -0.6515, 3.0676)
+[exact]     point interieur commun (0.448370090, -0.651769310, 3.081728212)
+[exact]   faces 5826 / 19502  sommets communs 0
+[exact]     centres (0.6353, -0.6765, 3.0915) et (0.5397, -0.6510, 2.4239)
+[exact]     point interieur commun (0.441076061, -0.651827395, 3.082275137)
+[exact] TOTAL : 0 face(s) d'aire exactement nulle, 17 penetration(s) reelle(s)

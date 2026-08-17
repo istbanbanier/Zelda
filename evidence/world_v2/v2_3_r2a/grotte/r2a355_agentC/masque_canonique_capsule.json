@@ -1,0 +1,763 @@
+{
+ "glb": "/home/user/zelda-r2a355/reference/SM_WaterfallCave_R2a34_8bf1a1b3.glb",
+ "sha256": "8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110",
+ "tables": "git:504ecbe:source_assets/blender/environment/make_waterfall_cave.py",
+ "lieu": "git:504ecbe:scripts/world_v2/poi/waterfall_cave_place.gd",
+ "denivele_fige": false,
+ "gabarit": {
+  "demi_largeur": 0.35,
+  "cle": 1.8,
+  "capsule": true
+ },
+ "s_dehors": -1.6,
+ "pas": 0.05,
+ "s_enclos_litteral": -1.6,
+ "s_enclos_apres_ouverture": null,
+ "i_seuil": 1,
+ "courbe": [
+  {
+   "s": -1.6,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.0005240095271711635,
+   "portee_med": 1.2303150110215373,
+   "portee_max": 3.0252253453567897
+  },
+  {
+   "s": -1.55,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.031197620459006117,
+   "portee_med": 1.2283617198818708,
+   "portee_max": 3.063551080519967
+  },
+  {
+   "s": -1.5,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.06187123139084134,
+   "portee_med": 1.1685061114038953,
+   "portee_max": 3.1018768156831453
+  },
+  {
+   "s": -1.45,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.09254484232267642,
+   "portee_med": 1.1926624050644905,
+   "portee_max": 3.1402025508463223
+  },
+  {
+   "s": -1.4,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.007813841359798358,
+   "portee_med": 1.1678908764900588,
+   "portee_max": 3.17623374689787
+  },
+  {
+   "s": -1.35,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.03457208360968101,
+   "portee_med": 1.1828366239618766,
+   "portee_max": 3.210015761857533
+  },
+  {
+   "s": -1.3,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.0105965155803632,
+   "portee_med": 1.1551203735453213,
+   "portee_max": 3.0926451188170296
+  },
+  {
+   "s": -1.25,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.03962831669782438,
+   "portee_med": 1.1521031487304192,
+   "portee_max": 3.1207153566745056
+  },
+  {
+   "s": -1.2,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.06866011781528569,
+   "portee_med": 1.1517993716985482,
+   "portee_max": 3.1487855945319803
+  },
+  {
+   "s": -1.15,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.09769191893274673,
+   "portee_med": 1.1514955946666776,
+   "portee_max": 3.1768558323894562
+  },
+  {
+   "s": -1.1,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.09903920968854463,
+   "portee_med": 1.147507364320072,
+   "portee_max": 3.2029883336338627
+  },
+  {
+   "s": -1.05,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.10038648666283569,
+   "portee_med": 1.1513985352326375,
+   "portee_max": 3.227851821092952
+  },
+  {
+   "s": -1.0,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.1017337636371271,
+   "portee_med": 1.1439214064154646,
+   "portee_max": 3.252656362231075
+  },
+  {
+   "s": -0.95,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.10308104061141787,
+   "portee_med": 1.141272000405903,
+   "portee_max": 3.2773599218861817
+  },
+  {
+   "s": -0.9,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.10442831758570882,
+   "portee_med": 1.1458586974831313,
+   "portee_max": 3.302063481541289
+  },
+  {
+   "s": -0.85,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.1057739395316395,
+   "portee_med": 1.1500429260929232,
+   "portee_max": 3.3267670411963963
+  },
+  {
+   "s": -0.8,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.10711668933981257,
+   "portee_med": 1.143253643620284,
+   "portee_max": 3.351470600851503
+  },
+  {
+   "s": -0.75,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.1084594391479862,
+   "portee_med": 1.136464361147645,
+   "portee_max": 3.367744677880049
+  },
+  {
+   "s": -0.7,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.10980218895615966,
+   "portee_med": 1.1296750786750065,
+   "portee_max": 3.3813865694672907
+  },
+  {
+   "s": -0.65,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.111144938764333,
+   "portee_med": 1.1228857962023677,
+   "portee_max": 3.393451943605372
+  },
+  {
+   "s": -0.6,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.11248768857250656,
+   "portee_med": 1.116096513729729,
+   "portee_max": 3.405045883155222
+  },
+  {
+   "s": -0.55,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.11383043838067979,
+   "portee_med": 1.10930723125709,
+   "portee_max": 3.416639822705072
+  },
+  {
+   "s": -0.5,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.11517318818885314,
+   "portee_med": 1.1025179487844508,
+   "portee_max": 3.432510073352039
+  },
+  {
+   "s": -0.45,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.11651593799702668,
+   "portee_med": 1.0960399479145235,
+   "portee_max": 3.4625194258262373
+  },
+  {
+   "s": -0.4,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.1178586878052002,
+   "portee_med": 1.0973031943208469,
+   "portee_max": 3.4925287783004375
+  },
+  {
+   "s": -0.35,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.11920143761337361,
+   "portee_med": 1.09856644072717,
+   "portee_max": 3.5225381307746373
+  },
+  {
+   "s": -0.3,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.00016523047989063885,
+   "portee_med": 1.0755524951678093,
+   "portee_max": 3.552547483248836
+  },
+  {
+   "s": -0.25,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 4.9231035373796594e-05,
+   "portee_med": 1.0358517301648984,
+   "portee_max": 3.582556835723036
+  },
+  {
+   "s": -0.2,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.00017478312780612557,
+   "portee_med": 1.0291898340539973,
+   "portee_max": 3.6125661881972353
+  },
+  {
+   "s": -0.15,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.00030033522023842883,
+   "portee_med": 1.0225279379430967,
+   "portee_max": 3.6425755406714346
+  },
+  {
+   "s": -0.1,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.0004258873126707578,
+   "portee_med": 1.0158660418321976,
+   "portee_max": 3.6725848931456344
+  },
+  {
+   "s": -0.05,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.0005514394051031377,
+   "portee_med": 1.009204145721296,
+   "portee_max": 3.7025942456198346
+  },
+  {
+   "s": 0.0,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.1206246166515223,
+   "portee_med": 1.0867488574905089,
+   "portee_max": 3.7301110394537798
+  },
+  {
+   "s": 0.05,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.11791039702811634,
+   "portee_med": 1.0913558874616562,
+   "portee_max": 3.7311670641488215
+  },
+  {
+   "s": 0.1,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.11506542801112478,
+   "portee_med": 1.1003048743695876,
+   "portee_max": 3.7323526258583346
+  },
+  {
+   "s": 0.15,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.11222045899413324,
+   "portee_med": 1.1093270724031246,
+   "portee_max": 3.732987431217952
+  },
+  {
+   "s": 0.2,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.10937548997714204,
+   "portee_med": 1.1130282970734848,
+   "portee_max": 3.7335416182014938
+  },
+  {
+   "s": 0.25,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.1065305209601505,
+   "portee_med": 1.1132118597743883,
+   "portee_max": 3.736315002304525
+  },
+  {
+   "s": 0.3,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.10368555194315908,
+   "portee_med": 1.113395422475292,
+   "portee_max": 3.740131301851271
+  },
+  {
+   "s": 0.35,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.10084058292616753,
+   "portee_med": 1.1150321910272016,
+   "portee_max": 3.7439476013980166
+  },
+  {
+   "s": 0.4,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.09799561390917623,
+   "portee_med": 1.1169320198767412,
+   "portee_max": 3.7477639009447627
+  },
+  {
+   "s": 0.45,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.09515064489218468,
+   "portee_med": 1.1188318487262807,
+   "portee_max": 3.751580200491508
+  },
+  {
+   "s": 0.5,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.09233857371856398,
+   "portee_med": 1.1217586922638472,
+   "portee_max": 3.75420754269022
+  },
+  {
+   "s": 0.55,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.08953927636766469,
+   "portee_med": 1.1303347183446306,
+   "portee_max": 3.756153083992301
+  },
+  {
+   "s": 0.6,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.08673997901676525,
+   "portee_med": 1.1325593482469005,
+   "portee_max": 3.734226736650891
+  },
+  {
+   "s": 0.65,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.08394068166586582,
+   "portee_med": 1.1321365414844466,
+   "portee_max": 3.7018467719186505
+  },
+  {
+   "s": 0.7,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.08114138431496638,
+   "portee_med": 1.1317805988999887,
+   "portee_max": 3.137332638089016
+  },
+  {
+   "s": 0.75,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.078342086964067,
+   "portee_med": 1.1314246563155317,
+   "portee_max": 3.0797645747768763
+  },
+  {
+   "s": 0.8,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.07554278961316759,
+   "portee_med": 1.132900028662708,
+   "portee_max": 3.0771136446704896
+  },
+  {
+   "s": 0.85,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.07274349226226803,
+   "portee_med": 1.1412207718467215,
+   "portee_max": 2.9772017310891545
+  },
+  {
+   "s": 0.9,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.06994419491136873,
+   "portee_med": 1.1495415150307342,
+   "portee_max": 2.975061562779629
+  },
+  {
+   "s": 0.95,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.06714489756046896,
+   "portee_med": 1.1578622582147478,
+   "portee_max": 2.9773648029896482
+  },
+  {
+   "s": 1.0,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.0035035987982305,
+   "portee_med": 1.1397299660712183,
+   "portee_max": 2.895552260911605
+  },
+  {
+   "s": 1.05,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.008124072142221349,
+   "portee_med": 1.1435426936320747,
+   "portee_max": 2.8941056392912055
+  },
+  {
+   "s": 1.1,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.012744545486211978,
+   "portee_med": 1.1515860655875851,
+   "portee_max": 2.8926590176708054
+  },
+  {
+   "s": 1.15,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.017365018830202576,
+   "portee_med": 1.1596294375430956,
+   "portee_max": 2.8912123960504057
+  },
+  {
+   "s": 1.2,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.02198549217419332,
+   "portee_med": 1.1676907766501607,
+   "portee_max": 2.889765774430005
+  },
+  {
+   "s": 1.25,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.026605965518184047,
+   "portee_med": 1.1758050139439227,
+   "portee_max": 2.888319152809606
+  },
+  {
+   "s": 1.3,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.031226438862174657,
+   "portee_med": 1.1839192512376846,
+   "portee_max": 2.886872531189206
+  },
+  {
+   "s": 1.35,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.03584691220616525,
+   "portee_med": 1.192033488531446,
+   "portee_max": 2.8854259095688053
+  },
+  {
+   "s": 1.4,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.040467385550155985,
+   "portee_med": 1.2001477258252085,
+   "portee_max": 2.8839792879484065
+  },
+  {
+   "s": 1.45,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.03910388331051559,
+   "portee_med": 1.2082619631189702,
+   "portee_max": 2.882532666328005
+  },
+  {
+   "s": 1.5,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.0363045133329949,
+   "portee_med": 1.2163762004127316,
+   "portee_max": 2.8811407958973576
+  },
+  {
+   "s": 1.55,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.03353226034471028,
+   "portee_med": 1.2267810068709974,
+   "portee_max": 2.8797507400347855
+  },
+  {
+   "s": 1.6,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.03104999132792432,
+   "portee_med": 1.223681039431046,
+   "portee_max": 2.876629818178508
+  },
+  {
+   "s": 1.65,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.025331663023911738,
+   "portee_med": 1.2189154341744084,
+   "portee_max": 2.877536301629393
+  },
+  {
+   "s": 1.7,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.01907602178826124,
+   "portee_med": 1.2329192006268084,
+   "portee_max": 2.880251833601871
+  },
+  {
+   "s": 1.75,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.012820380552610724,
+   "portee_med": 1.2328617904141417,
+   "portee_max": 2.885347980819451
+  },
+  {
+   "s": 1.8,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.0065647393169602055,
+   "portee_med": 1.2522978614981441,
+   "portee_max": 2.8904441280370308
+  },
+  {
+   "s": 1.85,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.00030909808130984184,
+   "portee_med": 1.271733932582145,
+   "portee_max": 2.89554027525461
+  },
+  {
+   "s": 1.9,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.08886041565162597,
+   "portee_med": 1.2911700036661475,
+   "portee_max": 2.995480142191423
+  },
+  {
+   "s": 1.95,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.09402502424827035,
+   "portee_med": 1.3108898635026884,
+   "portee_max": 3.0007369971784206
+  },
+  {
+   "s": 2.0,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.09918963284491401,
+   "portee_med": 1.3201035241703754,
+   "portee_max": 3.0059938521654175
+  },
+  {
+   "s": 2.05,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.10435424144155797,
+   "portee_med": 1.3354178260333243,
+   "portee_max": 3.0112507071524153
+  },
+  {
+   "s": 2.1,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.10951885003820198,
+   "portee_med": 1.3546815618006935,
+   "portee_max": 3.016507562139413
+  },
+  {
+   "s": 2.15,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.11468345863484576,
+   "portee_med": 1.368405786146099,
+   "portee_max": 3.02176441712641
+  },
+  {
+   "s": 2.2,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.11984806723148973,
+   "portee_med": 1.38885303811689,
+   "portee_max": 3.0263505523367837
+  },
+  {
+   "s": 2.25,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.12501267582813372,
+   "portee_med": 1.405490152727498,
+   "portee_max": 3.0301279565777923
+  },
+  {
+   "s": 2.3,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.1301772844247777,
+   "portee_med": 1.4213681540493173,
+   "portee_max": 3.0339053608187996
+  },
+  {
+   "s": 2.35,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.13534189302142174,
+   "portee_med": 1.4406755317935187,
+   "portee_max": 3.0376827650598086
+  },
+  {
+   "s": 2.4,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.14050650161806544,
+   "portee_med": 1.4321922717458888,
+   "portee_max": 3.0414601693008163
+  },
+  {
+   "s": 2.45,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.14567111021470933,
+   "portee_med": 1.420218493408993,
+   "portee_max": 3.045237573541825
+  },
+  {
+   "s": 2.5,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.1497790521703503,
+   "portee_med": 1.4348704545080206,
+   "portee_max": 3.049014977782833
+  },
+  {
+   "s": 2.55,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.14473901957108118,
+   "portee_med": 1.4245676285377868,
+   "portee_max": 3.052792382023841
+  },
+  {
+   "s": 2.6,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.13969898697181188,
+   "portee_med": 1.4142648025675533,
+   "portee_max": 3.0565697862648507
+  },
+  {
+   "s": 2.65,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.13465895437254258,
+   "portee_med": 1.4151865514829238,
+   "portee_max": 3.060167598024034
+  },
+  {
+   "s": 2.7,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.1296189217732733,
+   "portee_med": 1.4325270276715178,
+   "portee_max": 3.0636393721785287
+  },
+  {
+   "s": 2.75,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.12457888917400414,
+   "portee_med": 1.4202240623473013,
+   "portee_max": 3.0671111463330227
+  },
+  {
+   "s": 2.8,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.11953314897049022,
+   "portee_med": 1.4063895267967494,
+   "portee_max": 3.0705829204875172
+  },
+  {
+   "s": 2.85,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.11448025407550515,
+   "portee_med": 1.392554991246198,
+   "portee_max": 3.0740546946420104
+  },
+  {
+   "s": 2.9,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.10942735918051999,
+   "portee_med": 1.3914815163547523,
+   "portee_max": 3.0775264687965045
+  },
+  {
+   "s": 2.95,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.10437446428553458,
+   "portee_med": 1.405847837309919,
+   "portee_max": 3.080998242950999
+  },
+  {
+   "s": 3.0,
+   "sortants": 0,
+   "enferme": true,
+   "portee_min": 0.09932156939054938,
+   "portee_med": 1.3977424367902442,
+   "portee_max": 3.0844700171054926
+  }
+ ]
+}

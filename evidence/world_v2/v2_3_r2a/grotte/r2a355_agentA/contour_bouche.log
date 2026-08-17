@@ -1,0 +1,63 @@
+# commande : python3 tools/cave_argmin_localiser.py <glb> --contour --pas-balayage=0.05
+============================================================================
+LOCALISATION DE L'ARGMIN D'EPAISSEUR — projection, direction,
+generateur responsable. Cet outil ne rend AUCUN verdict.
+============================================================================
+fichier : assets/environment/caves/SM_WaterfallCave.glb
+sha256  : bf68bfda37976758f31e372713fb17e0cbdfc4fbe3a3a452f77277b6917465f0        <- lu AVANT la mesure
+maillage mesure : SM_WaterfallCave  (COL_WaterfallCave, la coque
+   de collision qui BOUCHE la galerie, est exclue nommement)
+h = 0.1000 m   masque = 2.00 m   pas de balayage = 0.050 m
+
+--- LE CONTOUR DE BOUCHE, DECOMPOSE ---
+  pas de balayage      : 0.050 m
+  plan retenu          : ay = -1.765
+  perimetre publie     : 53.755 m
+  aretes coupees       : 533
+  peau interieure      : 1008 faces, 95.19 m2
+  emprise du contour   : x[-6.400 ; 6.900]  az[-3.518 ; 3.772]
+     soit 13.30 m de large sur 7.29 m de haut
+
+  DECOMPOSITION DES ARETES DU CONTOUR :
+     bordant la peau INTERIEURE : 99  -> 56 face(s) de depart
+     bordant la peau EXTERIEURE seule : 434  -> IGNOREES par le
+        front geodesique du masque, qui ne part que des faces
+        `dedans`. C'est ce qui rend la mesure d'epaisseur
+        INSENSIBLE au choix du contour.
+
+  emprise des FACES DE DEPART (la bouche effective) :
+     x[-2.529 ; 1.432]  ay[-3.100 ; -1.150]  az[-0.658 ; 2.348]
+     soit 3.96 m de large sur 3.01 m de haut
+RC=0
+
+# commande : ... --contour --pas-balayage=0.25
+============================================================================
+LOCALISATION DE L'ARGMIN D'EPAISSEUR — projection, direction,
+generateur responsable. Cet outil ne rend AUCUN verdict.
+============================================================================
+fichier : assets/environment/caves/SM_WaterfallCave.glb
+sha256  : bf68bfda37976758f31e372713fb17e0cbdfc4fbe3a3a452f77277b6917465f0        <- lu AVANT la mesure
+maillage mesure : SM_WaterfallCave  (COL_WaterfallCave, la coque
+   de collision qui BOUCHE la galerie, est exclue nommement)
+h = 0.1000 m   masque = 2.00 m   pas de balayage = 0.250 m
+
+--- LE CONTOUR DE BOUCHE, DECOMPOSE ---
+  pas de balayage      : 0.250 m
+  plan retenu          : ay = -1.615
+  perimetre publie     : 11.978 m
+  aretes coupees       : 175
+  peau interieure      : 1008 faces, 95.19 m2
+  emprise du contour   : x[-2.529 ; 1.432]  az[-0.658 ; 2.348]
+     soit 3.96 m de large sur 3.01 m de haut
+
+  DECOMPOSITION DES ARETES DU CONTOUR :
+     bordant la peau INTERIEURE : 99  -> 56 face(s) de depart
+     bordant la peau EXTERIEURE seule : 76  -> IGNOREES par le
+        front geodesique du masque, qui ne part que des faces
+        `dedans`. C'est ce qui rend la mesure d'epaisseur
+        INSENSIBLE au choix du contour.
+
+  emprise des FACES DE DEPART (la bouche effective) :
+     x[-2.529 ; 1.432]  ay[-3.100 ; -1.150]  az[-0.658 ; 2.348]
+     soit 3.96 m de large sur 3.01 m de haut
+RC=0

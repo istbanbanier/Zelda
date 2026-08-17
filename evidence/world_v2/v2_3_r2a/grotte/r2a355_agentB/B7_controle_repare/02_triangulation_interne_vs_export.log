@@ -1,0 +1,7 @@
+[cmp] maillage Blender : 17468 polygones dont 2481 a plus de 3 cotes
+[cmp] triangulation interne BEAUTY : 20072 triangles
+[cmp] triangulation d'export        : 20072 triangles
+[cmp] triangles IDENTIQUES des deux cotes : 17893
+[cmp] presents seulement en interne       : 2178
+[cmp] presents seulement a l'export       : 2179
+[cmp] VERDICT: LES DEUX TRIANGULATIONS DIFFERENT — le controle interne ne mesure pas exactement le maillage livre

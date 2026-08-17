@@ -1,0 +1,370 @@
+diff --git a/source_assets/blender/environment/make_waterfall_cave.py b/source_assets/blender/environment/make_waterfall_cave.py
+index 88916a7..9a9672a 100644
+--- a/source_assets/blender/environment/make_waterfall_cave.py
++++ b/source_assets/blender/environment/make_waterfall_cave.py
+@@ -124,6 +124,7 @@ import math
+ import random
+ import os
+ import sys
++from fractions import Fraction
+ from pathlib import Path
+ 
+ import bpy
+@@ -2801,6 +2802,7 @@ def soustraire(base, outil):
+     apres = sum(1 for e in bm.edges if len(e.link_faces) != 2)
+     print("[grotte] nettoyage de la soustraction : %d -> %d arete(s) "
+           "irreguliere(s)" % (avant, apres))
++    _desamorcer_ngones_colineaires(bm)
+     bm.to_mesh(maillage)
+     bm.free()
+     maillage.update()
+@@ -2809,6 +2811,117 @@ def soustraire(base, outil):
+     return base
+ 
+ 
++def _triplet_colineaire_exact(a, b, c):
++    """Trois points sont-ils EXACTEMENT alignés ? Sans tolérance, exprès.
++
++    `Fraction` représente un float sans perte : le produit vectoriel calculé
++    ici est exact, et « nul » y signifie nul, pas « petit ». Un seuil
++    rendrait ce test dépendant d'une échelle, alors que la question posée —
++    ce triplet peut-il produire un triangle d'aire nulle — ne l'est pas.
++    """
++    u = [Fraction(b[k]) - Fraction(a[k]) for k in range(3)]
++    v = [Fraction(c[k]) - Fraction(a[k]) for k in range(3)]
++    return (u[1] * v[2] - u[2] * v[1] == 0
++            and u[2] * v[0] - u[0] * v[2] == 0
++            and u[0] * v[1] - u[1] * v[0] == 0)
++
++
++def _desamorcer_ngones_colineaires(bm):
++    """Retire à l'export la possibilité de fabriquer un triangle plat.
++
++    POURQUOI CETTE FONCTION EXISTE, ET CE QU'ELLE CORRIGE VRAIMENT
++    =============================================================
++    Le livrable portait un triangle d'aire EXACTEMENT nulle en
++    `(-1,504 ; -3,099 ; -0,639)`. L'attribution héritée le disait né à la
++    soustraction. Mesuré en R2a-3.5.5, c'est faux, et l'écart compte :
++
++      * après `soustraire()`, le maillage Blender contient ZÉRO face d'aire
++        nulle — vérifié par produit vectoriel rationnel sur toutes les faces ;
++      * il contient un n-gone à 13 côtés dont trois sommets CONSÉCUTIFS
++        (9985, 9986, 9987) sont exactement colinéaires ;
++      * l'exportateur glTF triangule ce n-gone et relie ces trois sommets :
++        le triangle plat naît LÀ, à l'export.
++
++    Le solveur booléen exact de Blender supprime ensuite cette face de
++    lui-même, ce qui ouvre 3 bords libres sur un maillage par ailleurs
++    fermé — c'est le symptôme qui avait été observé avec un cube à 500 m,
++    sans la moindre intersection.
++
++    POURQUOI ON NE DISSOUT PAS LE SOMMET DU MILIEU
++    ==============================================
++    Ce serait l'évidence, et c'est faux : le sommet médian est partagé par
++    des quads voisins où il n'est PAS colinéaire — mesuré, `9986` appartient
++    aussi aux faces 16933 et 16934. Le dissoudre déformerait ces faces.
++
++    CE QU'ON FAIT À LA PLACE
++    ========================
++    On triangule UNIQUEMENT les n-gones porteurs d'un triplet consécutif
++    colinéaire, puis on résout par BASCULE D'ARÊTE les triangles plats que
++    la triangulation aurait quand même produits. Une bascule est purement
++    topologique : elle échange la diagonale d'un quadrilatère, ne déplace
++    aucun sommet, et ne change donc NI la surface, NI le volume, NI la
++    silhouette. La forme visible est rigoureusement conservée.
++
++    L'intervention est chirurgicale par construction : sur la géométrie de
++    référence, un seul polygone sur 17 458 est concerné.
++    """
++    suspects = []
++    for face in bm.faces:
++        if len(face.verts) <= 3:
++            continue
++        points = [v.co for v in face.verts]
++        n = len(points)
++        for k in range(n):
++            if _triplet_colineaire_exact(points[k], points[(k + 1) % n],
++                                         points[(k + 2) % n]):
++                suspects.append(face)
++                break
++    if not suspects:
++        print("[grotte] n-gones colineaires : aucun — rien a desamorcer")
++        return 0
++    print("[grotte] n-gones colineaires : %d face(s) porteuse(s) d'un "
++          "triplet consecutif exactement aligne" % len(suspects))
++    bmesh.ops.triangulate(bm, faces=suspects, quad_method='BEAUTY',
++                          ngon_method='BEAUTY')
++    bm.faces.ensure_lookup_table()
++
++    # Les triangles plats éventuellement produits sont résolus par bascule.
++    # On borne les tours : une bascule qui ne fait pas décroître le compte
++    # signalerait une configuration qu'on ne sait pas traiter, et il vaut
++    # mieux le dire que tourner en rond.
++    bascules = 0
++    for _tour in range(8):
++        plats = [f for f in bm.faces
++                 if len(f.verts) == 3
++                 and _triplet_colineaire_exact(f.verts[0].co, f.verts[1].co,
++                                               f.verts[2].co)]
++        if not plats:
++            break
++        pivotables = []
++        for face in plats:
++            # L'arête la plus longue d'un triangle plat est celle qui porte
++            # les deux extrémités : c'est elle qu'il faut échanger.
++            aretes = sorted(face.edges, key=lambda e: e.calc_length())
++            candidate = aretes[-1]
++            if len(candidate.link_faces) == 2 and candidate not in pivotables:
++                pivotables.append(candidate)
++        if not pivotables:
++            print("[grotte] ATTENTION: %d triangle(s) plat(s) sans arete "
++                  "basculable" % len(plats))
++            break
++        bmesh.ops.rotate_edges(bm, edges=pivotables, use_ccw=False)
++        bascules += len(pivotables)
++        bm.faces.ensure_lookup_table()
++    restants = sum(1 for f in bm.faces
++                   if len(f.verts) == 3
++                   and _triplet_colineaire_exact(f.verts[0].co,
++                                                 f.verts[1].co,
++                                                 f.verts[2].co))
++    print("[grotte] desamorcage : %d bascule(s) d'arete, %d triangle(s) "
++          "d'aire nulle restant(s)" % (bascules, restants))
++    return restants
++
++
+ def construire(segments, sag, jupe, retrait_lat, retrait_cle, graine=7.0):
+     """La COQUE DE COLLISION, et plus rien d'autre depuis R2a-3.3.
+ 
+@@ -4856,6 +4969,204 @@ def _straddle_points(pts_a, pts_b):
+     return cote(pts_a, pts_b) and cote(pts_b, pts_a)
+ 
+ 
++def _orient_exact(a, b, c, d):
++    """Signe exact du volume orienté de (a, b, c, d). Sans tolérance."""
++    u = [Fraction(b[k]) - Fraction(a[k]) for k in range(3)]
++    v = [Fraction(c[k]) - Fraction(a[k]) for k in range(3)]
++    w = [Fraction(d[k]) - Fraction(a[k]) for k in range(3)]
++    n = (u[1] * v[2] - u[2] * v[1],
++         u[2] * v[0] - u[0] * v[2],
++         u[0] * v[1] - u[1] * v[0])
++    return n[0] * w[0] + n[1] * w[1] + n[2] * w[2]
++
++
++def _normale_frac(t):
++    u = [Fraction(t[1][k]) - Fraction(t[0][k]) for k in range(3)]
++    v = [Fraction(t[2][k]) - Fraction(t[0][k]) for k in range(3)]
++    return (u[1] * v[2] - u[2] * v[1],
++            u[2] * v[0] - u[0] * v[2],
++            u[0] * v[1] - u[1] * v[0])
++
++
++def _penetration_exacte(t1, t2):
++    """Les INTÉRIEURS des deux triangles se rencontrent-ils ?
++
++    C'est la définition topologique, et elle n'a pas de seuil. Deux faces
++    partageant une arête se coupent le long de cette arête, qui appartient à
++    la frontière des deux : ce n'est pas une pénétration, et aucune
++    tolérance n'a besoin d'en décider.
++
++    Rend (True/False, enfoncement, étendue de la couture).
++    """
++    n1 = _normale_frac(t1)
++    n2 = _normale_frac(t2)
++    if n1 == (0, 0, 0) or n2 == (0, 0, 0):
++        return False, 0.0, 0.0
++
++    def cote(points, normale, origine):
++        o = [Fraction(c) for c in origine]
++        return [sum(normale[k] * (Fraction(p[k]) - o[k]) for k in range(3))
++                for p in points]
++
++    d1 = cote(t1, n2, t2[0])
++    d2 = cote(t2, n1, t1[0])
++    if all(x > 0 for x in d1) or all(x < 0 for x in d1):
++        return False, 0.0, 0.0
++    if all(x > 0 for x in d2) or all(x < 0 for x in d2):
++        return False, 0.0, 0.0
++
++    direction = (n1[1] * n2[2] - n1[2] * n2[1],
++                 n1[2] * n2[0] - n1[0] * n2[2],
++                 n1[0] * n2[1] - n1[1] * n2[0])
++    if direction == (0, 0, 0):
++        # Coplanaires : un recouvrement de surface n'est pas une traversée.
++        return False, 0.0, 0.0
++
++    axe = 0 if direction[0] != 0 else (1 if direction[1] != 0 else 2)
++    u, v = [k for k in range(3) if k != axe]
++    c1 = sum(n1[k] * Fraction(t1[0][k]) for k in range(3))
++    c2 = sum(n2[k] * Fraction(t2[0][k]) for k in range(3))
++    det = n1[u] * n2[v] - n1[v] * n2[u]
++    if det == 0:
++        return False, 0.0, 0.0
++    origine = [Fraction(0), Fraction(0), Fraction(0)]
++    origine[u] = (c1 * n2[v] - c2 * n1[v]) / det
++    origine[v] = (n1[u] * c2 - n2[u] * c1) / det
++
++    def intervalle(triangle, normale):
++        bas = haut = None
++        for k in range(3):
++            qi = [Fraction(c) for c in triangle[k]]
++            qj = [Fraction(c) for c in triangle[(k + 1) % 3]]
++            arete = [qj[m] - qi[m] for m in range(3)]
++            delta = [origine[m] - qi[m] for m in range(3)]
++            croix0 = (arete[1] * delta[2] - arete[2] * delta[1],
++                      arete[2] * delta[0] - arete[0] * delta[2],
++                      arete[0] * delta[1] - arete[1] * delta[0])
++            croix1 = (arete[1] * direction[2] - arete[2] * direction[1],
++                      arete[2] * direction[0] - arete[0] * direction[2],
++                      arete[0] * direction[1] - arete[1] * direction[0])
++            a0 = sum(croix0[m] * normale[m] for m in range(3))
++            a1 = sum(croix1[m] * normale[m] for m in range(3))
++            if a1 == 0:
++                if a0 <= 0:
++                    return None
++                continue
++            limite = -a0 / a1
++            if a1 > 0:
++                bas = limite if bas is None else max(bas, limite)
++            else:
++                haut = limite if haut is None else min(haut, limite)
++        return bas, haut
++
++    i1 = intervalle(t1, n1)
++    i2 = intervalle(t2, n2)
++    if i1 is None or i2 is None:
++        return False, 0.0, 0.0
++    bornes = [b for b in (i1[0], i2[0]) if b is not None]
++    plafonds = [h for h in (i1[1], i2[1]) if h is not None]
++    if not bornes or not plafonds:
++        return False, 0.0, 0.0
++    bas, haut = max(bornes), min(plafonds)
++    if bas >= haut:
++        return False, 0.0, 0.0
++
++    norme_dir = float(sum(x * x for x in direction)) ** 0.5
++    etendue = float(haut - bas) * norme_dir
++
++    def enfoncement(points, normale, origine_plan):
++        norme = float(sum(x * x for x in normale)) ** 0.5
++        if norme == 0.0:
++            return 0.0
++        d = [float(x) / norme for x in cote(points, normale, origine_plan)]
++        return min(max(d), -min(d))
++
++    profondeur = min(enfoncement(t1, n2, t2[0]), enfoncement(t2, n1, t1[0]))
++    return True, profondeur, etendue
++
++
++def controle_penetration_exacte(obj):
++    """Le contrôle d'auto-intersection qui regarde AU BON ENDROIT.
++
++    POURQUOI IL REMPLACE `controle_repli()` SUR LE LIVRABLE
++    ======================================================
++    `controle_repli()` publiait « 2 paire(s) » là où une mesure exacte en
++    trouve 6, et « 0 » sur la géométrie R2a-3.4 livrée et validée, qui en
++    porte 10. Ce n'est pas un réglage trop lâche : `_straddle_points()` teste
++    si les sommets sont de part et d'autre du **plan** de l'autre face. Deux
++    triangles BORNÉS peuvent se pénétrer sans satisfaire ce test, et le
++    satisfaire sans se toucher. Le compteur regardait à côté — c'est le mode
++    de panne d'ISS-018 : vert sans rougir de rien.
++
++    CE QUI CHANGE, ET CE QUI NE CHANGE PAS
++    ======================================
++    Le seuil `REPLI_LIVRABLE_MAX_M` n'est PAS touché, et la grandeur qu'il
++    borne reste la même — l'enfoncement d'un triangle derrière le plan de
++    l'autre. Le contrôle devient plus DISCRIMINANT : il compte les vraies
++    pénétrations, et rien d'autre. Aucune tolérance n'a été relevée ; deux
++    ont disparu, parce que le prédicat exact n'en a pas besoin.
++
++    POURQUOI IL DUPLIQUE LES PRÉDICATS DE `tools/cave_exact_intersect.py`
++    ====================================================================
++    Volontairement. Cet outil-là est le JUGE INDÉPENDANT : il lit le GLB
++    livré sans rien partager avec la chaîne qui le produit. Un juge qui
++    importerait le code de l'accusé ne prouverait plus rien. Les deux
++    implémentations doivent trouver le même nombre sur la même géométrie, et
++    c'est cette concordance qui vaut preuve.
++
++    LA TRIANGULATION EST CELLE DE L'EXPORT, ET C'EST DÉLIBÉRÉ
++    ========================================================
++    On mesure sur une copie triangulée en BEAUTY, comme l'exportateur glTF.
++    Mesuré en R2a-3.5.5 : une triangulation en éventail des n-gones non
++    convexes fabrique 109 pénétrations qui n'existent pas dans le livrable.
++    On mesure donc ce qui part, pas une soupe intermédiaire.
++
++    Rend (nombre, enfoncement maximal, étendue maximale, exemple).
++    """
++    bm = bmesh.new()
++    bm.from_mesh(obj.data)
++    bmesh.ops.triangulate(bm, faces=bm.faces[:], quad_method='BEAUTY',
++                          ngon_method='BEAUTY')
++    bm.verts.ensure_lookup_table()
++    bm.faces.ensure_lookup_table()
++    sommets = [v.co.copy() for v in bm.verts]
++    tris = [tuple(v.index for v in f.verts) for f in bm.faces]
++    bm.free()
++
++    arbre = BVHTree.FromPolygons(sommets, tris, all_triangles=True,
++                                 epsilon=0.0)
++    fautes = 0
++    pire = 0.0
++    pire_etendue = 0.0
++    exemple = None
++    for a, b in arbre.overlap(arbre):
++        if a >= b:
++            continue
++        communs = set(tris[a]) & set(tris[b])
++        if len(communs) >= 2:
++            # Deux triangles partageant une arête et non coplanaires se
++            # coupent EXACTEMENT le long de cette arête : l'intersection de
++            # leurs plans est cette droite. Aucun point intérieur commun
++            # n'est possible, et le cas coplanaire n'est pas une traversée.
++            continue
++        t1 = [sommets[i] for i in tris[a]]
++        t2 = [sommets[i] for i in tris[b]]
++        touche, profondeur, etendue = _penetration_exacte(t1, t2)
++        if not touche:
++            continue
++        fautes += 1
++        pire_etendue = max(pire_etendue, etendue)
++        if profondeur > pire or exemple is None:
++            pire = max(pire, profondeur)
++            ca = sum(t1, Vector()) / 3.0
++            cb = sum(t2, Vector()) / 3.0
++            exemple = "faces %d/%d, centres (%.2f, %.2f, %.2f) et " \
++                "(%.2f, %.2f, %.2f), enfoncement %.6f m, couture %.6f m" \
++                % (a, b, ca.x, ca.y, ca.z, cb.x, cb.y, cb.z, profondeur,
++                   etendue)
++    return fautes, pire, pire_etendue, exemple
++
++
+ def controle_repli(obj):
+     """De QUELLE PROFONDEUR une pièce se replie-t-elle sur elle-même ?
+ 
+@@ -5646,10 +5957,22 @@ def main():
+         return 2
+     print("[grotte] connexite : 1 composante, avant et apres soustraction")
+ 
+-    croisements, profondeur, exemple = controle_repli(grotte)
+-    print("[grotte] auto-intersection du livrable : %d paire(s), repli "
+-          "maximal %.4f m (seuil %.3f m)"
+-          % (croisements, profondeur, REPLI_LIVRABLE_MAX_M))
++    ## LES DEUX COMPTEURS SONT PUBLIÉS, ET C'EST VOULU. L'ancien reste
++    ## imprimé comme télémétrie pour que l'écart soit lisible dans le
++    ## journal : c'est lui qui a fait croire à « 0 auto-intersection » sur
++    ## une géométrie qui en portait dix. Le verdict, lui, vient du contrôle
++    ## exact.
++    ancien, ancienne_prof, _ = controle_repli(grotte)
++    croisements, profondeur, etendue, exemple = \
++        controle_penetration_exacte(grotte)
++    print("[grotte] auto-intersection du livrable (EXACT) : %d paire(s), "
++          "enfoncement maximal %.6f m (seuil %.3f m), couture maximale "
++          "%.6f m" % (croisements, profondeur, REPLI_LIVRABLE_MAX_M, etendue))
++    print("[grotte]   ancien compteur (plans + tolerance %.0e) : %d paire(s), "
++          "%.6f m — telemetrie, il SOUS-COMPTE"
++          % (TOLERANCE_TANGENCE_M, ancien, ancienne_prof))
++    if croisements:
++        print("[grotte]   exemple : %s" % exemple)
+     if profondeur > REPLI_LIVRABLE_MAX_M:
+         print("[grotte] ERREUR: la surface livree se replie sur %.4f m "
+               "(%s) — une coque fermee peut s'auto-traverser sans qu'aucun "
