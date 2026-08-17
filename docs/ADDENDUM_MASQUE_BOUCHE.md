@@ -206,7 +206,121 @@ en coordonnées **modèle**, jamais en indices de station.
 
 ---
 
-## 3. Classification de la roche, et les deux seuils
+## 2bis. LOI DE REBORD PROGRESSIVE — remplace les deux seuils du §3
+
+**Écrit le 2026-08-17, sur arbitrage du lead (directive R2a-3.5.6 §1), AVANT
+toute mesure sous cette loi.** Même discipline que le reste de ce document : la
+loi est posée avant d'être éprouvée, pour qu'un `FAIL` ne puisse pas la faire
+bouger.
+
+### 2bis.1 Ce que la mesure de R2a-3.5.5 a établi, et qui force ce changement
+
+Le rapport `lecture / h` est **exactement constant** — 0,010 sur R2a-3.4, 0,020
+sur le candidat, `h` variant d'un facteur 8. La lecture **suit la résolution** au
+lieu de converger : au contour de bouche la peau intérieure rejoint la peau
+extérieure, et un échantillon posé à `r` du contour lit `r`.
+
+**Il est donc géométriquement impossible d'imposer une épaisseur strictement
+positive exactement sur l'arête ouverte d'une bouche.** Ce n'est pas un défaut de
+géométrie, c'est une propriété de toute surface ouverte.
+
+### 2bis.2 La loi — et ce n'est PAS une bande exclue
+
+Le lead **refuse** une bande simplement retirée des contrôles. Soit :
+
+- `Γ` : le contour canonique de la bouche ;
+- `d(p)` : distance **géodésique** de `p`, sur la peau intérieure, à `Γ` ;
+- `e_garantie(p)` : la borne inférieure qualifiée de l'épaisseur.
+
+```
+e_requise(p) = min( d(p) , 0,80 m )
+```
+
+| `d(p)` | exigence |
+|---|---|
+| `0` | le gate porte sur la **continuité et la topologie** du rebord |
+| `0,60 m` | au moins **0,60 m** garantis |
+| entre `0,60` et `0,80` | l'exigence **croît** jusqu'à 0,80 |
+| `≥ 0,80 m` | au moins **0,80 m** garantis |
+
+**Aucun point n'est ignoré.** Le rebord reçoit une loi adaptée à une surface
+ouverte ; il ne sort pas du domaine.
+
+### 2bis.3 Trois clauses qui empêchent la loi de devenir molle
+
+1. **Le gate porte sur la borne conservatrice**, jamais sur la mesure centrale,
+   jamais sur une moyenne. **Aucun percentile ne peut masquer un point rouge.**
+2. **Le seuil général reste 0,80 m** au-delà des 0,80 premiers mètres
+   géodésiques. Le constat de R2a-3.5.5 — *« hors rebord, tout serait conforme à
+   0,60 m »* — **ne vaut donc aucune validation** : 0,60 n'est pas un seuil
+   général, c'est une valeur de la rampe.
+3. **Contrôle négatif obligatoire** : une lèvre réellement trop aiguë doit
+   **rougir**, même si la topologie reste fermée. Une loi qui ne rougit sur
+   aucune lèvre n'est pas une loi, c'est une exemption déguisée.
+
+### 2bis.4 Validation analytique exigée avant tout usage
+
+La loi se valide sur des **fixtures analytiques** — coques ouvertes et rebords
+inclinés à **15°, 36°, 45° et 70°**, à plusieurs résolutions — avant d'être
+appliquée à une géométrie de production. Une loi éprouvée seulement sur le sujet
+qu'elle doit juger ne prouve rien.
+
+### 2bis.5 Ce que cette loi remplace
+
+Elle **remplace** la classification binaire du §3 ci-dessous (collerette 0,60 /
+coque 0,80). Le §3 est conservé pour l'histoire — il documente pourquoi la
+classification binaire ne suffisait pas — mais **il ne fait plus autorité**.
+
+Ce qui du §3 **reste vrai et s'applique** : la publication obligatoire des deux
+variantes de masque (§2.2), les trois verdicts du contrat §5.1 appliqués à
+`e_requise(p)` au lieu d'un seuil constant, et les six champs que chaque argmin
+doit publier (§3.2) — auxquels s'ajoute désormais **`d(p)` et l'`e_requise` qui
+en découle**.
+
+---
+
+## 2ter. CODES RETOUR — convention de cette passe, et une divergence à trancher
+
+**Convention imposée par la directive R2a-3.5.6 §2**, appliquée aux instruments
+de gate de cette passe :
+
+| verdict | code |
+|---|---|
+| `PASS` | **0** |
+| `FAIL` géométrique | **1** |
+| `BLOQUÉ` — résolution, provenance, domaine indécidable | **2** |
+| erreur d'outil | **3** ou plus |
+
+> **Un verdict indécidable ne rend JAMAIS `RC=0`.** Si un `RC=0` publié ne
+> concerne qu'une expérience diagnostique, le journal final doit le dire
+> explicitement.
+
+### La divergence, mesurée, que je ne tranche pas
+
+Le dépôt utilise déjà **`RC=3` pour `BLOQUÉ`**, en quatre endroits :
+
+| document | texte |
+|---|---|
+| `tools/CLAUDE.md` | « une étape impossible sort en **3 (BLOQUÉ)**, jamais en 0 » |
+| `tools/CLAUDE.md` | « `validate_fast.sh` sort désormais en **3 (BLOQUÉ)** si… » |
+| `.claude/rules/evidence.md` | « échouer ou signaler `BLOQUÉ` (**code 3**) » |
+| `CLAUDE.md` racine | « `validate_release.sh` … sort en **3 (BLOQUÉ)** » |
+
+et `tools/validate_release.sh` l'implémente (`exit 3`).
+
+**Deux conventions coexistent donc dans le dépôt**, et c'est exactement ainsi
+qu'une panne silencieuse naît : un appelant qui teste `rc == 3` pour `BLOQUÉ`
+lira le `3` d'un nouvel outil comme « erreur d'outil », et son `2` comme un échec
+géométrique.
+
+**Ce que je fais** : j'applique la convention de la directive aux **instruments
+de gate de cette passe**, parce que c'est son domaine et qu'elle est la plus
+récente. Je **ne touche pas** à `validate_release.sh` — ce serait de la
+propagation, interdite. La divergence est **signalée au lead**, non tranchée.
+
+---
+
+## 3. Classification de la roche, et les deux seuils — HISTORIQUE, remplacé par §2bis
 
 Soit `p` un échantillon de la coque structurelle au sens du contrat §2.4 —
 c'est-à-dire, sans changement, toute surface séparant l'air intérieur canonique
