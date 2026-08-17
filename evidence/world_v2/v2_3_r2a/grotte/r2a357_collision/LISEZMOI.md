@@ -130,3 +130,75 @@ capsule ne pouvant s'approcher d'une paroi à moins de son rayon.
   moteur.**
 - `balayage_marge_alcove.py` **se contredit** avec `cave_epaisseur_col.py` : il a
   un défaut, ses chiffres n'ont servi à rien et **ne doivent pas être cités**.
+
+---
+
+## 8. Le `7/8` est un défaut de SONDE, pas de roche — trois mesures, hypothèse confirmée
+
+Les trois épreuves demandées ont été faites, et elles concordent.
+
+| épreuve | résultat |
+|---|---|
+| **chemin canonique** (polyligne des stations) | **zéro échantillon sous contrat** ; hauteur libre **2,28 à 2,38 m** pour 1,75 exigés, dégagement latéral 0,53 à 0,96 m |
+| **corde vers l'ancre du TRONC** `(1,05 ; 0,22 ; −6,25)` | **13 fautifs, pire 0,365 m** — contre 11 et 0,667 m avec l'ancre actuelle. **L'ancienne est PIRE** |
+| **érosion par le rayon de capsule** | les 11 fautifs ont **0,013 à 0,045 m** de dégagement là où 0,450 est requis. Le pire point géométrique en a **0,039** |
+
+> **Aucun point fautif n'est occupable, sur aucun des trois trajets.**
+
+Deux conséquences.
+
+**Il n'y a pas de plafond bas dans la galerie.** Le corps donne 2,3 m de hauteur
+libre ; le filet échantillonne des points **situés dans la paroi**, d'un facteur
+10 à 30 sous ce qu'une capsule exige.
+
+**Et ce n'est pas le déplacement de l'ancre.** Mon hypothèse portait sur les
+3,994 m de `MODELE_SALLE` ; la mesure la corrige : la corde rasait déjà la paroi
+**avant**, et plus fort. Replacer l'ancre n'y changerait rien. Faire suivre le
+chemin canonique à la sonde, oui.
+
+### L'aveu qui rend le reste croyable
+
+Le premier critère d'occupabilité de l'agent était **faux**, et il l'a vu avant de
+le rendre. Il mesurait la distance **3D** de l'axe de capsule à toute la
+géométrie — or le bas de cet axe est à `sol + R`, donc **le sol est toujours à
+exactement `R`**. Le critère plafonnait à 0,450 partout et déclarait la galerie
+entière non occupable, axe compris.
+
+> Il rendait le même verdict en tout point : **il ne mesurait rien, et il aurait
+> « confirmé » mon hypothèse pour une raison fausse.**
+
+Corrigé en distance **horizontale** dans la bande de hauteur du corps — la capsule
+repose sur le sol, le plancher n'est pas un obstacle. Le critère discrimine
+alors : **0,96 m sur l'axe contre 0,04 m sur la corde**. C'est cette version qui
+produit les chiffres ci-dessus. Même famille qu'ISS-018, attrapée à temps.
+
+## 9. La question qui remplace celle-là, et elle est plus grave
+
+Sur le chemin canonique, les cinq premiers échantillons — porche et seuil — ont
+**0,061 à 0,431 m** de dégagement latéral pour 0,450 requis, avec une hauteur
+libre pourtant bonne (2,1 à 2,4 m). Au seuil : **0,431 contre 0,450**.
+
+> **L'écart est inférieur à l'erreur d'échantillonnage de l'instrument**
+> (barycentrique `subdiv=6`, erreur bornée ~0,08 m).
+
+Un instrument dont l'erreur dépasse la grandeur mesurée **ne peut pas conclure** —
+c'est ce que cette série a mis trois passes à apprendre sur l'épaisseur. L'agent a
+donc eu raison de laisser `NON VÉRIFIÉ`.
+
+Mais ce n'est plus une question de plafond. C'est **« le joueur peut-il entrer
+dans la grotte ? »**, et c'est désormais la dernière inconnue bloquante.
+
+Mesure demandée avec un instrument **exact** — distance point-triangle, pas
+d'échantillonnage — contre `COL_` et `SM_`, pour les **deux** rayons en litige
+(`0,45` du commentaire générateur, `0,35` de `Player.tscn`).
+
+**Et une contradiction à lever** : le générateur imprime
+`gabarit : bande utile par station : 0:2.65, 1:2.65`. Une bande utile de 2,65 m
+et un dégagement de 0,431 m au même endroit ne peuvent pas être vrais ensemble.
+C'est la troisième fois de cette passe que deux instruments se contredisent ; les
+deux fois précédentes, la réponse fut « ils ne mesurent pas la même chose ».
+
+Piste à confirmer ou tuer : `CAVITE_ASYM[1] = (1,30 ; 0,81)` décentre la section,
+mais même 0,81 m reste très au-dessus de 0,450. Si le dégagement réel tombe à
+0,431, **quelque chose rétrécit la bouche au-delà de la section analytique** —
+roches posées, calotte, joue droite.
