@@ -185,3 +185,64 @@ ouvert.
 
 **`rochers_joue_droite()` reste** : elle, a fait son travail — 1 122 → 499
 échantillons sous seuil, lecture `+0,0385 m`, trois contraintes tenues.
+
+---
+
+## 10. État FINAL, mesuré sur le GLB publié
+
+```
+3a80ae71c89bfc97db10e0fd31fa9a6233a332df5b0219e880ff4d3684c0b000
+1 488 532 octets
+```
+
+**Reproduit deux fois** : le build de la joue droite seule et le build après
+retrait de la doublure rendent **le même sha256**. Le retrait est donc exact,
+sans résidu — et les mesures déjà prises sur `3a80ae71` portent sur ce GLB **au
+bit près**, ce n'est pas une extrapolation.
+
+Le code de la doublure sort ; **la trace reste en commentaire**, comme pour la
+doublure globale refusée en R2a-3.5. L'hypothèse « local ≠ global » demeure
+validée et réutilisable — c'est ce qui distingue un retrait d'un effacement.
+
+### La mesure
+
+| masque 2,00 | `h = 0,10` | `h = 0,05` |
+|---|---:|---:|
+| lecture | **0,7198 m** | 0,7194 m |
+| borne | 0,6198 m | **0,6694 m** |
+| échantillons sous seuil | **499** | 2 023 |
+| gate | `FAIL` | `FAIL` |
+
+> **Les deux colonnes d'« échantillons » ne se comparent pas entre elles** : un
+> `h` deux fois plus fin échantillonne plus dense. La comparaison valable est à
+> `h` égal — référence R2a-3.5.5 : `0,6813 / 0,5813 / **1 122**`, à `h = 0,10`.
+
+**Gain : lecture `+0,0385 m`, échantillons sous seuil `−55,5 %`.**
+**Cible `0,85` non atteinte : il manque `0,1307 m`.**
+
+### Non-régression, entaille 0,90
+
+3/3/3, ratios **`2,23 / 2,37 / 2,25`** contre `2,16 / 2,37 / 2,25` en référence.
+Faîtes `8,35 / 4,01 / 1,33`, cavité 83,1 m³, connexité 1, gabarit aux 7 stations,
+plancher 0 faute, auto-intersections 2 paires / 0,0006 m, budget 20 070 tris.
+**Aucune régression.**
+
+### La dette nommée est payée
+
+Le reclassement encadré a tourné sur la géométrie **finale** : lot **499**,
+minorant min **1,791 m**, exigence pleine **prouvée 499/499**, **0 vert**. Le
+chiffre publié porte enfin sur le GLB publié — c'est la règle d'ancrage de
+`PROMPT4_METHOD`, et elle était en dette depuis deux tours.
+
+### Un troisième faux-vert, produit et corrigé dans le même tour
+
+La première comparaison `make_FINAL` / `make_APRES` a imprimé « IDENTIQUE »
+**sans rien comparer** : `diff` sur deux fichiers absents rend un diff vide, donc
+`exit 0`, donc le `&&` s'exécute. Refaite avec garde d'existence — **15 lignes
+réellement comparées**.
+
+Troisième occurrence du même schéma en une seule passe, avec `ISS-057` et le
+`RC=0` d'un journal mort. D'où la règle générale versée dans `tools/CLAUDE.md` :
+
+> un verdict doit publier **la taille de ce qu'il a examiné**, pas seulement son
+> résultat. Un « aucune différence » sans « sur N lignes » ne prouve rien.

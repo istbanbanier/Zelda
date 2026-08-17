@@ -2897,7 +2897,7 @@ avant réception du message.
 | lot | résultat | preuve |
 |---|---|---|
 | **`MASSIF`** | auto-intersections `env×env` **34 → 0**, collision **62 → 16**, enfoncement max `0,457 → 0,245 m`, **`SM_` inchangé au bit près** | prédiction falsifiable posée avant mesure, tenue sous **deux** instruments |
-| **`rochers_joue_droite()`** | échantillons sous seuil **1 122 → 499** (−55,5 %), lecture `0,6813 → 0,7198 m` | trois contraintes tenues : crête, cols, intérieur |
+| **`rochers_joue_droite()`** | échantillons sous seuil **1 122 → 499** (−55,5 %), lecture `0,6813 → 0,7198 m`, GLB final `3a80ae71c89bfc97` reproduit deux fois | trois contraintes tenues ; reclassement encadré rejoué sur la géométrie finale : **499/499 à exigence pleine, 0 vert** |
 | **loi de rebord** | outillée, banc vert, contrôle négatif **concluant** | `Γ` vérifié sur la roche à `0,000000000000 m` |
 
 Cause de `MASSIF`, **intrinsèque et non accidentelle** : rayon latéral `3,30 m`
