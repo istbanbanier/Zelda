@@ -330,3 +330,36 @@ Contrôle après coup, avant de mesurer quoi que ce soit :
 ```bash
 git status --porcelain assets/    # doit ne montrer QUE l'asset visé
 ```
+
+## `blender --background --python` rend **0** même quand le script lève
+
+Mesuré le 2026-08-17. Deux exécutions ont rendu `RC=0` en ayant échoué.
+
+Blender attrape l'exception du script, l'imprime sur la sortie, puis **quitte
+normalement**. Le shell voit 0. Un banc qui ne vérifie que le code retour conclut
+donc « vert » sur un script qui n'a rien exécuté — et **tout banc Blender de ce
+dépôt est exposé**, y compris ceux qui mesurent une géométrie.
+
+L'option `--python-exit-code 1` existe et corrige le cas nominal ; elle ne
+couvre pas les scripts qui rattrapent eux-mêmes leur exception, ni les échecs
+survenus après le script.
+
+Parade, la seule qui ne dépende pas de la façon dont Blender est lancé :
+
+```python
+print("FIN NOMINALE")      # DERNIERE ligne du script, apres tout le travail
+```
+
+```bash
+grep -q "FIN NOMINALE" journal || echo "ECHEC quel que soit RC"
+```
+
+C'est la même famille que le jeton `^RC=` déjà consigné plus haut pour les
+attentes de verrou : **faire écrire la preuve de succès par la chose surveillée
+elle-même**, jamais l'inférer de son enveloppe.
+
+Cas concret rencontré : placer un générateur témoin dans `/tmp` casse
+`KIT_ROCHES = parents[3]`, qui remonte trois répertoires depuis `__file__`. Le
+script lève, Blender rend 0, et la mesure qui suit porte sur une scène vide.
+Corollaire : **ne jamais copier un script de génération hors de son arbre** — il
+lit son propre chemin pour trouver ses ressources.
