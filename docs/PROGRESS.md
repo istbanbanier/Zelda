@@ -693,3 +693,52 @@ dans ATTRIBUTIONS + manifeste AVANT commit. Preuves :
 (occasionnel/explorateur/expérimenté), jeu de captures complet (31 POI +
 vues générales + salles + acteurs + UI), pousser la branche, livrer à la
 revue Codex. Le gate visuel n'est JAMAIS auto-déclaré.
+
+
+## 2026-08-17 — R2a-3.5.6, grotte : la loi de rebord est démontrée, la roche manque
+
+Branche `claude/world-v2-reconstruction`. **`PARTIAL`. Rien n'intégré au tronc**,
+asset livré inchangé (`8bf1a1b3`), zéro capture, 14/14 seuils identiques à
+`504ecbe`, `assets/` et `source_assets/` intouchés, golden masters intacts.
+
+**Le résultat de la passe est un théorème**, tiré des définitions déjà gelées et
+non d'une mesure : `e(p) ≤ dist(p, Γ) ≤ d(p)` partout, sur toute géométrie, parce
+que `Γ` est contenue dans la surface extérieure. La loi de rebord littérale ne
+demande donc pas un plancher — **elle demande le majorant**, avec une marge
+maximale nulle, et sous borne conservatrice elle est insatisfiable. Le même
+argument condamne tout seuil constant en deçà de sa propre valeur, ce qui explique
+enfin le `lecture / h` constant mesuré en R2a-3.5.5 sur deux géométries.
+Réparation `LOI-R` écrite **avant** toute mesure (`ADDENDUM_MASQUE_BOUCHE`
+§2quater), genou à `0,80 + h = 0,85 m`, `θ_min = 70,25°` **dérivé**.
+
+**Réparé et mesuré, non intégré** : `MASSIF` — auto-intersections `env×env`
+**34 → 0**, `SM_` inchangé au bit près, prédiction falsifiable posée avant mesure
+et tenue sous deux instruments ; `rochers_joue_droite()` — échantillons sous
+seuil **1 122 → 499**, trois contraintes tenues.
+
+**Deux blocages, un seul géométrique.** Le contractuel est **circulaire** : la
+chaîne ne peut verdir tant que `controle_epaisseur_domaine` n'est pas déclassé, et
+la directive interdit de le déclasser avant qualification verte — alors que le
+contrat gelé `cca1778` l'a **déjà** déclassé. Aucune sculpture ne dénoue cela. Le
+géométrique est nommé **et contre-indiqué** : il manque `0,1307 m`, faute de
+**portée latérale** à `−2,289 m` de la courbe quand le module en porte `1,320` ;
+augmenter le déport détacherait les deux couronnes.
+
+**Prochaine action exacte** : `ISS-058` — **raffiner le maillage au voisinage de
+la bouche**. C'est le seul travail géométrique identifié comme indispensable et
+non fait, et deux constats indépendants y convergent : à l'arête médiane réelle
+de `SM_` (`0,3325 m`) la rampe `[0 ; 0,80]` ne porte que **cinq valeurs** et la
+lâcheté du majorant de `d` vaut **82 % de `h`** ; et `Γ`, courbe simple fermée à
+la bouche, est **dentelée d'un facteur 10,6** — `116,16 m` contre `10,99` pour
+une ellipse à ses dimensions. Un `Γ` de 11 m ne s'obtiendra pas en filtrant, il
+s'obtiendra en maillant.
+
+**Ce qui revient au propriétaire, pas à une session** : appliquer au code le
+déclassement de `controle_epaisseur_domaine()` déjà décidé au contrat. Tant qu'il
+ne l'est pas, aucune géométrie ne peut qualifier cette passe. Le livré porte
+**320** plaques sous 0,80 m contre 29 pour le candidat, la plus mince `0,051`
+contre `0,114 m` — et ce portail n'existait pas quand le livré a été validé.
+
+Détail complet : `CODEX_HANDOFF` §39, `evidence/world_v2/v2_3_r2a/grotte/r2a356_loi/`.
+Incidents : `ISS-056` (`pkill -f` inter-worktree), `ISS-057` (Blender rend `0` en
+ayant levé), `ISS-058` (maillage de la bouche).
