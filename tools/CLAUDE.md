@@ -390,3 +390,35 @@ règle générale du dépôt, retrouvée une troisième fois en une seule passe 
 
 > un verdict doit publier **la taille de ce qu'il a examiné**, pas seulement son
 > résultat. Un « aucune différence » sans « sur N lignes » ne prouve rien.
+
+## Un triangle dégénéré est une propriété d'AIRE, jamais d'indices
+
+Mesuré le 2026-08-17. Un triangle d'aire **exactement nulle** vivait dans un GLB
+candidat sans qu'aucun outil du dépôt puisse le voir.
+
+`tools/cave_check_mesh.py` soude les sommets par position quantifiée, puis retire
+les faces dégénérées par **égalité d'indices** après remap :
+
+```python
+degenere = (ra == rb or rb == rc or ra == rc)     # ne voit que les doublons
+```
+
+Une **T-jonction** — trois sommets distincts et colinéaires, le milieu posé sur
+l'arête — reçoit trois indices distincts. Elle passe. Démonstration fermée :
+
+```
+b milieu exact de a-c, segment 0,482 m
+test topologique -> PASSE, l outil ne voit rien
+aire exacte      -> 0.0, donc DEGENERE
+```
+
+Le produit vectoriel est exactement `(0,0,0)` et `c - a = 2·(b - a)` exact : ce
+n'est pas un problème de tolérance, c'est un problème de **grandeur mesurée**.
+
+Parade : mesurer l'aire par produit vectoriel, et publier la **distribution** des
+petites aires — pas seulement un compte de zéros. Un seuil unique ne distingue
+pas une lamelle fine d'une face nulle ; la distribution, si.
+
+Même famille qu'ISS-018 : **un test vert sur une grandeur qui n'est pas celle
+qu'on croit mesurer.** Quand un défaut échappe à un contrôle, demander d'abord ce
+que le contrôle mesure réellement, avant de douter du défaut.
