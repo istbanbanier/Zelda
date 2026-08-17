@@ -130,3 +130,22 @@ Il a été ajouté à R2a-3.5.3.
 > livrée n'a jamais été soumise à ce contrôle par sa propre chaîne. C'est
 > exactement pourquoi un critère qui condamne plus fort la référence que le sujet
 > ne peut pas décider seul.
+
+## Balayage : l'instrument cassé était le SEUL
+
+Trouver un défaut par hasard oblige à chercher ses frères — c'est la leçon
+consignée dans `tools/CLAUDE.md` (« quand un défaut de mesure est trouvé dans un
+outil, chercher tout de suite les AUTRES endroits qui font la même mesure »).
+
+Les 42 outils `cave_*` et `probe_cave_*` du tronc ont été lancés sans argument :
+
+| classe | nombre | lecture |
+|---|---:|---|
+| démarrent normalement | 34 | aucun chemin mort |
+| `ModuleNotFoundError: bpy` | 5 | scripts Blender, comportement attendu hors Blender |
+| dépassent 60 s | 3 | travaillent réellement sans argument — lents, pas cassés |
+| **cassés par un chemin mort** | **0** | après correction de `cave_topology_check.py` |
+
+`cave_topology_check.py` était donc la **seule** victime de la suppression des
+worktrees de passes closes. Le périmètre du dégât est borné et mesuré, pas
+supposé.
