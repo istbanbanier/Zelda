@@ -4,15 +4,14 @@
 ## visible, **aucun piège de focus** (la liste boucle), et confirmation avant
 ## d'écraser une sauvegarde.
 ##
-## ÉTAT PHASE A, dit sans détour : il n'existe aucun monde à charger. « Continuer »
-## et « Nouvelle partie » agissent donc réellement sur la sauvegarde et sur l'état
-## de jeu, puis affichent que la vallée arrive en Phase D. Le menu ne simule pas
-## une transition vers une scène qui n'existe pas — ce serait un faux progrès.
+## CHECKPOINT WORLD V2 : « Continuer » et « Nouvelle partie » ouvrent désormais
+## la reconstruction jouable. La vallée V1 reste dans le dépôt comme référence
+## de régression, mais n'est plus la destination du joueur depuis le menu.
 extends Control
 
 const DEFAULT_SLOT: String = "slot0"
 const INPUT_AUDIT_SCENE: String = "res://scenes/tests/InputAudit.tscn"
-const VALLEY_SCENE: String = "res://scenes/world/valley/ValleyWorld.tscn"
+const WORLD_SCENE: String = "res://scenes/world_v2/WorldV2.tscn"
 ## Terrain d'entraînement (playtest) : les cinq épreuves du Bracelet côte à
 ## côte, avec leurs panneaux. Atteignable depuis le MENU — livré d'abord comme
 ## une scène à lancer en ligne de commande, donc invisible pour qui joue
@@ -153,19 +152,19 @@ func _on_continue() -> void:
 	if data.is_empty():
 		_show_error("Sauvegarde illisible — voir le journal.")
 		return
-	# D.1R.5 : la vallée applique elle-même la sauvegarde à son chargement —
-	# inventaire, durabilités, arme équipée, flèches, coffres ouverts. Point de
-	# reprise documenté : le spawn de la crête (checkpoints riches : Phase E).
-	_enter_valley()
+	# Le checkpoint World V2 repart de son spawn canonique. La migration fine
+	# des positions et états V1 reste hors de ce playtest : la sauvegarde permet
+	# de reprendre le monde, elle ne réactive pas une géométrie expérimentale.
+	_enter_world()
 
 
-func _enter_valley() -> void:
+func _enter_world() -> void:
 	var flow: Node = get_node_or_null("/root/SceneFlow")
-	if flow == null or not bool(flow.call("can_go_to", VALLEY_SCENE)):
+	if flow == null or not bool(flow.call("can_go_to", WORLD_SCENE)):
 		# Texte épinglé par test_main_menu — le son s'ajoute, le libellé ne bouge pas.
-		_show_error("Vallée indisponible — voir le journal.")
+		_show_error("Monde indisponible — voir le journal.")
 		return
-	flow.call("go_to", VALLEY_SCENE)
+	flow.call("go_to", WORLD_SCENE)
 
 
 ## §17.3 : confirmation avant écrasement d'une sauvegarde. Deux appuis successifs
@@ -192,7 +191,7 @@ func _on_new_game() -> void:
 	# absente), le menu reste cohérent — « Continuer » reflète la sauvegarde.
 	_refresh()
 	_wire_focus_cycle()
-	_enter_valley()
+	_enter_world()
 
 
 ## Contenu minimal et honnête d'une partie neuve : ce que la Phase A sait déjà
@@ -200,7 +199,7 @@ func _on_new_game() -> void:
 func _new_game_payload() -> Dictionary:
 	return {
 		"schema": 2,
-		"checkpoint": "valley.camp.start",
+		"checkpoint": "world_v2.spawn",
 		"playtime_seconds": 0.0,
 		"boss_defeated": false,
 	}

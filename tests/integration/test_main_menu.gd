@@ -177,12 +177,12 @@ func test_new_game_creates_a_save_and_enables_continue() -> void:
 	if continue_button != null:
 		check(not continue_button.disabled,
 			"« Continuer » doit s'activer une fois la sauvegarde créée")
-	# D.0 : la transition vers la vallée a été DEMANDÉE — le flux bloqué l'a
+	# La transition vers World V2 a été DEMANDÉE — le flux bloqué l'a
 	# refusée par le chemin d'échec prévu, et le menu l'a dit.
 	var status: Label = menu.find_child("StatusLabel", true, false) as Label
 	if status != null:
-		check_equal(status.text, "Vallée indisponible — voir le journal.",
-			"« Nouvelle partie » tente bien d'entrer dans la vallée")
+		check_equal(status.text, "Monde indisponible — voir le journal.",
+			"« Nouvelle partie » tente bien d'entrer dans World V2")
 	_close_menu()
 	_clear_save()
 

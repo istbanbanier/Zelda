@@ -301,8 +301,8 @@ const _APPEAR_BUDGET_S: float = 15.0
 ##
 ## Voici le mécanisme qui a fait rougir `B4` deux fois dans la suite complète,
 ## alors que le parcours passait seul : `SceneFlow.can_go_to()` rend FAUX tant
-## que `_busy` est vrai, et `MainMenu._enter_valley()` se contente alors
-## d'écrire « Vallée indisponible » dans un libellé — sans `push_warning`, sans
+## que `_busy` est vrai, et `MainMenu._enter_world()` se contente alors
+## d'écrire « Monde indisponible » dans un libellé — sans `push_warning`, sans
 ## `push_error`, sans transition. L'appui est avalé en silence.
 ##
 ## Or `_busy` ne retombe qu'à la toute fin de `go_to()`, après le fondu de

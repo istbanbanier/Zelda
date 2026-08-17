@@ -5,6 +5,7 @@
 extends GateTestCase
 
 const VALLEY: String = "res://scenes/world/valley/ValleyWorld.tscn"
+const WORLD_V2: String = "res://scenes/world_v2/WorldV2.tscn"
 const PLAYER: String = "res://scenes/player/Player.tscn"
 const PICKUP: String = "res://scenes/interactables/WeaponPickup.tscn"
 const CHEST: String = "res://scenes/interactables/Chest.tscn"
@@ -189,19 +190,20 @@ func test_the_chest_gives_its_loot_exactly_once() -> void:
 	_teardown()
 
 
-func test_the_menu_reaches_the_valley_scene() -> void:
-	## Le câblage « Nouvelle partie » → vallée : la constante du menu pointe une
-	## scène que SceneFlow accepte réellement de charger.
+func test_the_menu_reaches_world_v2() -> void:
+	## Le câblage « Nouvelle partie » → World V2 : la constante du menu pointe
+	## une scène que SceneFlow accepte réellement de charger. La vallée V1 reste
+	## testée directement par les autres méthodes de ce fichier.
 	var menu_script: GDScript = load("res://scripts/ui/main_menu.gd") as GDScript
 	var constants: Dictionary = menu_script.get_script_constant_map()
-	check(constants.has("VALLEY_SCENE"), "le menu déclare la scène de la vallée")
-	var path: String = String(constants.get("VALLEY_SCENE", ""))
-	check_equal(path, VALLEY, "et c'est bien ValleyWorld.tscn")
+	check(constants.has("WORLD_SCENE"), "le menu déclare la scène du monde jouable")
+	var path: String = String(constants.get("WORLD_SCENE", ""))
+	check_equal(path, WORLD_V2, "et c'est bien WorldV2.tscn")
 	var flow: Node = _tree().root.get_node_or_null("/root/SceneFlow")
 	check_not_null(flow, "SceneFlow est chargé")
 	if flow != null:
 		check(bool(flow.call("can_go_to", path)),
-			"SceneFlow accepte la transition vers la vallée")
+			"SceneFlow accepte la transition vers World V2")
 
 
 func test_the_spawn_ridge_holds_the_player_and_shows_the_landmarks() -> void:

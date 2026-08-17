@@ -1,6 +1,8 @@
 ## PARCOURS PHYSIQUE — le héros MARCHE, et ne triche pas.
 ##
-## Exigé par l'audit indépendant du 2026-08-09. `test_flow_wiring_path.gd`
+## Exigé par l'audit indépendant du 2026-08-09. La vallée V1 n'est plus le
+## flux joueur normal : le menu ouvre World V2. Ce parcours garde la longue
+## traversée V1 comme régression explicite. `test_flow_wiring_path.gd`
 ## prouve que les fils sont branchés ; celui-ci prouve qu'un joueur peut s'en
 ## servir. Les deux sont nécessaires et ne se remplacent pas.
 ##
@@ -27,6 +29,7 @@
 extends GateTestCase
 
 const BOOT: String = "res://scenes/boot/Boot.tscn"
+const LEGACY_VALLEY: String = "res://scenes/world/valley/ValleyWorld.tscn"
 const BELOW_WORLD: float = -5.0
 
 ## Descente de la crête vers la plaine nord. Éprouvés par
@@ -347,7 +350,7 @@ func test_a_player_walks_from_the_menu_to_the_first_dungeon_room() -> void:
 	remember_saves()
 	remember_root()
 
-	# --- P1. Le flux normal, sans raccourci --------------------------------
+	# --- P1. Chargement explicite de la régression V1 -----------------------
 	var boot: Node = (load(BOOT) as PackedScene).instantiate()
 	_tree().root.add_child(boot)
 	var reached_menu: bool = await _wait_until(
@@ -357,18 +360,15 @@ func test_a_player_walks_from_the_menu_to_the_first_dungeon_room() -> void:
 	if menu == null:
 		await _teardown()
 		return
-	var new_game: Button = menu.get_node_or_null("%NewGameButton") as Button
-	if new_game == null:
-		check(false, "P1b — pas de bouton « Nouvelle partie » : parcours NON VÉRIFIÉ")
+	var flow: Node = _tree().root.get_node_or_null("/root/SceneFlow")
+	if flow == null:
+		check(false, "P1b — SceneFlow absent : régression V1 NON VÉRIFIÉE")
 		await _teardown()
 		return
-	await await_flow_idle()   # presser pendant le fondu est avalé en silence
-	new_game.emit_signal("pressed")
-	await _settle(2)
-	if is_instance_valid(new_game) and new_game.text != "Nouvelle partie":
-		new_game.emit_signal("pressed")
+	await await_flow_idle()
+	flow.call("go_to", LEGACY_VALLEY)
 	var in_valley: bool = await await_scene("ValleyWorld")
-	check(in_valley, "P1b — la vallée s'ouvre par le bouton")
+	check(in_valley, "P1b — la vallée V1 de régression s'ouvre par SceneFlow")
 	var valley: Node = _find("ValleyWorld")
 	if valley == null:
 		await _teardown()

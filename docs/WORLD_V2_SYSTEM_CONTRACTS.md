@@ -49,7 +49,7 @@ contraignant** ; les sous-lignes précisent.
 | Sauvegarde | `MIGRATION_REQUIRED` (contrat additif) | autoload `SaveSystem` (atomique, schéma 4, migrations par étape) ; fusion par clé dans `slot0` | AUCUN identifiant de monde dans le schéma 4 ; `player_position` bornée aux dimensions V1 (`ValleyWorld.SAVED_POSITION_LIMIT_XZ/_Y`) ; contrat complet : `docs/WORLD_V2_SAVE_MIGRATION.md` |
 | Autoloads / flux | `PROTECTED_UNCHANGED` | `/root/{GameState,EventBus,SaveSystem,AudioManager,SceneFlow,DevMode}` ; `SceneFlow.go_to()` est LA porte de toute transition, V2 compris | aucune — les cibles appartiennent aux appelants |
 | Resources de définition / tuning | `PROTECTED_UNCHANGED` | chargement des `.tres` ; V2 crée ses propres `.tres` si besoin, ne modifie jamais une définition | aucune |
-| HUD / menus / UI | `DUAL_WORLD` (shell) + `MIGRATION_REQUIRED` (routage « Continuer ») | instancier `GameplayShell.tscn` par scène jouable et régler l'export `world_scene_path` (fait dans le squelette : il cible la scène V2) ; le shell trouve le joueur par groupe | `gameplay_shell.gd (export world_scene_path)`, `main_menu.gd (const VALLEY_SCENE)`, `victory_screen.gd (const VALLEY_SCENE)` codent la vallée V1 en dur ; « Continuer » charge la V1 **inconditionnellement** (`main_menu.gd (_on_continue → _enter_valley)`) — le routage par `world_version` arrive avec la migration (V2.5+), jamais avant |
+| HUD / menus / UI | `DUAL_WORLD` (shell) + migration de reprise fine encore requise | instancier `GameplayShell.tscn` par scène jouable et régler l'export `world_scene_path` ; le shell trouve le joueur par groupe ; depuis le checkpoint jouable du 2026-08-17, `main_menu.gd (WORLD_SCENE)` ouvre World V2 pour « Continuer » et « Nouvelle partie » | `gameplay_shell.gd` garde la vallée V1 comme valeur par défaut mais World V2 la remplace dans sa scène ; `victory_screen.gd (const VALLEY_SCENE)` cible encore la V1 ; la migration des positions/états de reprise reste à faire sans activer les prototypes R2a-3.5 |
 | Monture / mode dev / vol libre | `DUAL_WORLD` | `Mount.new()` / `DevFlyMode.new()` construits par le monde hôte (modèle `valley_world.gd (mount() / dev_fly())`) ; `DevMode` autoload lit le groupe `player` | instanciation V1 dans la vallée uniquement — V2 instanciera les siens |
 
 ### 1.3 Logique protégée du donjon et du boss
@@ -63,7 +63,7 @@ contraignant** ; les sous-lignes précisent.
 
 | Élément | Statut | Note |
 |---|---|---|
-| `scenes/world/valley/ValleyWorld.tscn` + `valley_world.gd` + `valley_terrain.gd` + 9 bâtisseurs de lieux + navmesh versionnés | `V1_SPATIAL_REPLACE` | reste INTACT et servi par le flux normal jusqu'au gate V2.9 ; AUCUN script V2 ne le modifie (vérifié par balayage : `test_world_v2_skeleton.gd`) |
+| `scenes/world/valley/ValleyWorld.tscn` + `valley_world.gd` + `valley_terrain.gd` + 9 bâtisseurs de lieux + navmesh versionnés | `V1_SPATIAL_REPLACE` | reste INTACT comme référence et régression explicite ; depuis le checkpoint jouable du 2026-08-17, le flux normal ouvre World V2. AUCUN bâtisseur V2 ne consomme son contenu spatial (vérifié par `test_world_v2_skeleton.gd`) |
 | `scenes/world/citadel/CitadelVestibule.tscn` | `V1_SPATIAL_REPLACE` | seul intérieur réussi de V1 (WORLD_ATLAS §3) — l'enveloppe V2 le CONSERVE comme acquis et s'y raccorde ; épinglé par `tests/integration/test_dungeon_topology.gd` (catégorie B de fait : cet épinglage protège l'acquis conservé) |
 | `TrainingGrounds.tscn` | `DUAL_WORLD` | écoles du Bracelet hors monde ; inchangé |
 
@@ -94,8 +94,9 @@ surprise future :
 
 1. `gameplay_shell.gd (export world_scene_path)` — `world_scene_path` par défaut = vallée V1 (le
    squelette V2 le repointe déjà par export d'instance).
-2. `main_menu.gd (_on_continue → _enter_valley)` — « Continuer » charge la V1 sans lire le
-   checkpoint : le routage par monde est LE morceau central de la migration.
+2. `main_menu.gd (_on_continue → _enter_world)` — depuis le checkpoint jouable du
+   2026-08-17, « Continuer » et « Nouvelle partie » chargent World V2 ; la reprise
+   fine des positions/états V1 reste le morceau central de la migration.
 3. `victory_screen.gd (const VALLEY_SCENE)` — les issues de victoire ciblent la vallée V1.
 4. `campfire.gd (export campfire_id, défaut « valley.campfire.camp.01 »)` — ID de feu par défaut `valley.campfire.camp.01`.
 5. `ValleyWorld.SAVED_POSITION_LIMIT_XZ/_Y` — bornes de position sauvegardée calées sur les

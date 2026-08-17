@@ -1,7 +1,8 @@
 [gd_scene load_steps=2 format=3]
 
 ; Entrée développeur EXPLICITE du monde World V2 (phase V2.0).
-; Le flux normal du jeu (Boot → MainMenu → vallée) ne mène jamais ici :
+; Le flux normal du jeu mène directement à WorldV2.tscn ; ce wrapper reste
+; utile pour lancer et diagnostiquer la reconstruction sans traverser le menu :
 ;   godot --path . res://scenes/world_v2/WorldV2Bootstrap.tscn
 
 [ext_resource type="Script" path="res://scripts/world_v2/world_v2_bootstrap.gd" id="1_bootstrap"]

@@ -159,6 +159,13 @@ func spawn_position() -> Vector3:
 	return _spawn.global_position
 
 
+## Point d'accès commun aux scènes jouables. Le menu et la coquille chargent
+## désormais World V2 comme monde principal ; les filets de parcours doivent
+## pouvoir interroger le vrai joueur sans connaître l'arbre interne de la scène.
+func player() -> PlayerController:
+	return _player as PlayerController
+
+
 func layout() -> Dictionary:
 	return _layout
 

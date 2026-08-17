@@ -6,7 +6,7 @@
 ## qui n'existait pas.
 ##
 ## CE QU'IL PROUVE — le câblage, et rien d'autre :
-##   - `Boot` → menu → `SceneFlow` → vallée ;
+##   - `SceneFlow` → vallée V1 de régression ;
 ##   - `Chest.interact()` → inventaire du joueur ;
 ##   - `HealthComponent.take_damage()` → mort de l'ennemi ;
 ##   - `SceneDoor.interact()` → `SceneFlow` → vestibule, puis salle 1.
@@ -23,6 +23,8 @@
 ##   - que la RÉSONANCE agisse. `try_pulse()` appelé à la main rend `fired` même
 ##     si aucune touche ne peut l'atteindre.
 ##
+## La vallée V1 n'est plus le flux joueur normal : le menu ouvre World V2.
+## Ce filet conserve explicitement la chaîne de gameplay V1 comme régression.
 ## Le parcours qui joue réellement ces gestes est `test_physical_run.gd`. Les
 ## deux sont nécessaires : celui-ci tombe vite et désigne le fil coupé, l'autre
 ## est lent et dit si un joueur y arrive.
@@ -31,6 +33,7 @@
 extends GateTestCase
 
 const BOOT: String = "res://scenes/boot/Boot.tscn"
+const LEGACY_VALLEY: String = "res://scenes/world/valley/ValleyWorld.tscn"
 
 
 func _tree() -> SceneTree:
@@ -100,24 +103,15 @@ func test_the_flow_wires_boot_to_the_first_dungeon_room() -> void:
 	if menu == null:
 		await _teardown()
 		return
-	var new_game: Button = menu.get_node_or_null("%NewGameButton") as Button
-	check(new_game != null, "W2 — le menu expose un bouton « Nouvelle partie »")
-	if new_game == null:
+	var flow: Node = _tree().root.get_node_or_null("/root/SceneFlow")
+	check(flow != null, "W2 — SceneFlow est disponible pour la régression V1")
+	if flow == null:
 		await _teardown()
 		return
-	await await_flow_idle()   # presser pendant le fondu est avalé en silence
-	new_game.emit_signal("pressed")
-	await _settle(2)
-	# Sans sauvegarde, ce premier appui part droit vers la vallée et libère le
-	# menu : lire `.text` ensuite lève une erreur qui avorte la méthode EN
-	# SILENCE. Voir le commentaire long de `test_boot_smoke.gd`.
-	var asked_confirmation: bool = is_instance_valid(new_game) \
-		and new_game.text != "Nouvelle partie"
-	if asked_confirmation:
-		new_game.emit_signal("pressed")   # confirmation d'écrasement (§17.3)
+	await await_flow_idle()
+	flow.call("go_to", LEGACY_VALLEY)
 	var in_valley: bool = await await_scene("ValleyWorld")
-	check(in_valley, "W3 — le signal du bouton mène à la vallée (%s)"
-		% ("après confirmation" if asked_confirmation else "sans sauvegarde"))
+	check(in_valley, "W3 — SceneFlow charge la vallée V1 de régression")
 	var valley: Node = _find("ValleyWorld")
 	if valley == null:
 		await _teardown()

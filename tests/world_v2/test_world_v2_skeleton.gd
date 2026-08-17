@@ -1,10 +1,9 @@
-## World V2, phase V2.0 — le SQUELETTE prouve l'architecture sans toucher à la V1.
+## World V2 — le SQUELETTE prouve l'architecture du monde désormais jouable.
 ##
 ## Ce que ce fichier tient, et pourquoi chaque garde existe :
-##   - la V1 reste le flux normal (Boot → MainMenu → vallée V1) — une
-##     reconstruction qui détournerait le flux avant son gate final ferait
-##     revivre le dégât du 2026-08-07 (deux moitiés de jeu livrées) ;
-##   - V2 n'est atteignable QUE nommément — aucun fichier V1 ne la référence ;
+##   - Boot → MainMenu → Nouvelle partie/Continuer mène désormais à V2 ;
+##   - cette unique référence d'entrée est autorisée dans le menu, sans faire
+##     dépendre les bâtisseurs V1 et V2 les uns des autres ;
 ##   - le VRAI joueur apparaît dans V2, sur un sol qui PORTE (collision réelle,
 ##     pas une promesse) ;
 ##   - la coquille de jeu (HUD) se raccorde et son « Réessayer » reste en V2 ;
@@ -27,7 +26,7 @@ const TEMP_GROUND_TOP_Y: float = 24.0
 const SETTLE_PHYSICS_FRAMES: int = 40
 
 
-func test_la_v1_reste_le_flux_normal() -> void:
+func test_la_v2_est_le_flux_normal() -> void:
 	var main_scene: String = String(ProjectSettings.get_setting(
 		"application/run/main_scene", ""))
 	check_equal(main_scene, "res://scenes/boot/Boot.tscn",
@@ -42,17 +41,18 @@ func test_la_v1_reste_le_flux_normal() -> void:
 	var menu_script: Script = load("res://scripts/ui/main_menu.gd") as Script
 	check_not_null(menu_script, "script du menu lisible")
 	var menu_constants: Dictionary = menu_script.get_script_constant_map()
-	var menu_target: String = String(menu_constants.get("VALLEY_SCENE", ""))
-	check_equal(menu_target, "res://scenes/world/valley/ValleyWorld.tscn",
-		"« Continuer »/« Nouvelle partie » mènent toujours au monde V1")
-	check(not menu_target.contains("world_v2"),
-		"le flux normal ne mentionne jamais V2")
+	var menu_target: String = String(menu_constants.get("WORLD_SCENE", ""))
+	check_equal(menu_target, WORLD_V2_SCENE,
+		"« Continuer »/« Nouvelle partie » mènent au monde V2")
+	check(menu_target.contains("world_v2"),
+		"le flux normal référence explicitement V2")
 
 
 ## Balayage d'isolation, dans LES DEUX directions. Un seul fichier fautif rend
 ## le nom exact — pas un compte muet.
 func test_aucune_reference_croisee_interdite() -> void:
-	# Direction 1 : rien de V1 (scripts/ et scenes/ hors world_v2) ne parle de V2.
+	# Direction 1 : hors de l'unique point d'entrée du menu, rien de V1
+	# (scripts/ et scenes/ hors world_v2) ne parle de V2.
 	var v1_offenders: Array[String] = []
 	var v1_files: Array[String] = []
 	_walk_files("res://scripts", ["gd", "tscn", "tres"], v1_files)
@@ -60,10 +60,12 @@ func test_aucune_reference_croisee_interdite() -> void:
 	for path: String in v1_files:
 		if path.contains("world_v2"):
 			continue
+		if path == "res://scripts/ui/main_menu.gd":
+			continue
 		if _file_contains(path, ["world_v2"]) != "":
 			v1_offenders.append(path)
 	check(v1_offenders.is_empty(),
-		"aucun fichier V1 ne référence world_v2 — fautifs : %s"
+		"hors menu, aucun fichier V1 ne référence world_v2 — fautifs : %s"
 			% ", ".join(v1_offenders))
 
 	# Direction 2 : rien de V2 ne consomme le CONTENU SPATIAL V1 (sa scène de

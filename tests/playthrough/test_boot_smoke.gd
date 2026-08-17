@@ -1,10 +1,10 @@
 ## BOOT SMOKE — le parcours court du gate BOOT-TO-FUN (phase S1).
 ##
 ## Il part du VRAI `Boot.tscn`, traverse le VRAI menu en pressant son bouton,
-## et arrive dans la vallée par `SceneFlow`. Rien n'est instancié à la main.
+## et arrive dans World V2 par `SceneFlow`. Rien n'est instancié à la main.
 ##
 ## La distinction n'est pas théorique. `test_valley_world.gd` contient déjà
-## `test_the_menu_reaches_the_valley_scene`, qui vérifie une CONSTANTE du menu
+## `test_the_menu_reaches_world_v2`, qui vérifie une CONSTANTE du menu
 ## et `can_go_to()`. C'est un test de câblage : il resterait vert si le bouton
 ## n'était plus connecté, si `_ready()` plantait, ou si la vallée s'ouvrait sans
 ## joueur. Un test de présence ne prouve jamais l'atteignabilité.
@@ -68,13 +68,8 @@ func _teardown() -> void:
 	if game_state != null:
 		game_state.call("set_flow", 0)
 		game_state.call("consume_pending_spawn")
-	# L'AMBIANCE SURVIT AU MONDE. `ValleyWorld._ready()` demande
-	# `AudioManager.play_ambience(&"amb_valley")`, et `AudioManager` est un
-	# autoload : son lecteur et le WAV restent référencés après la disparition
-	# de la vallée. En fin de processus, Godot le signale — « 2 ObjectDB
-	# instances were leaked », « Resource still in use: amb_valley.wav ». Ce
-	# n'est pas une fuite de gameplay ; c'est un test qui ne rend pas le
-	# processus tel qu'il l'a trouvé. On le rend.
+	# L'audio est un autoload et peut survivre au monde. Le test le rend à son
+	# état initial pour ne pas garder de ressource référencée après le parcours.
 	var audio: Node = _tree().root.get_node_or_null("/root/AudioManager")
 	if audio != null and audio.has_method("stop_ambience"):
 		audio.call("stop_ambience")
@@ -82,7 +77,7 @@ func _teardown() -> void:
 	restore_saves()
 
 
-func test_boot_smoke_from_boot_to_a_playable_valley() -> void:
+func test_boot_smoke_from_boot_to_playable_world_v2() -> void:
 	remember_saves()
 	remember_root()
 
@@ -143,7 +138,7 @@ func test_boot_smoke_from_boot_to_a_playable_valley() -> void:
 	# Pas de borne fixe sur un CHARGEMENT : voir `GateTestCase.await_scene()`.
 	# Une borne fixe exigeait que la machine soit rapide, et B4 a fini par
 	# rougir dans la suite complète après être passé seul.
-	var reached_valley: bool = await await_scene("ValleyWorld")
+	var reached_world: bool = await await_scene("WorldV2")
 	# DIRE POURQUOI. `_on_new_game()` a trois sorties muettes : pas de
 	# SaveSystem, confirmation demandée, et — la plus discrète — échec de
 	# `save_slot()`, qui n'écrit qu'une phrase dans le libellé d'état et ne
@@ -155,23 +150,23 @@ func test_boot_smoke_from_boot_to_a_playable_valley() -> void:
 	var status: Label = menu.get_node_or_null("%StatusLabel") as Label \
 		if is_instance_valid(menu) else null
 	var flow: Node = _tree().root.get_node_or_null("/root/SceneFlow")
-	check(reached_valley,
-		"B4 — presser « Nouvelle partie » ouvre RÉELLEMENT la vallée (%s"
+	check(reached_world,
+		"B4 — presser « Nouvelle partie » ouvre RÉELLEMENT World V2 (%s"
 			% ("après confirmation d'écrasement (§17.3)" if asked_confirmation
 				else "aucune sauvegarde : départ direct")
 		+ " · bouton « %s » · état « %s » · flux occupé=%s)"
 			% [new_game.text if is_instance_valid(new_game) else "libéré",
 				status.text if status != null else "(pas de StatusLabel)",
 				str(flow.call("is_busy")) if flow != null else "?"])
-	var valley: Node = _find("ValleyWorld")
-	if valley == null:
+	var world: Node = _find("WorldV2")
+	if world == null:
 		await _teardown()
 		return
 	await _settle(12)
 
 	# --- B5. Un joueur vivant, posé sur un sol valide -----------------------
-	var player: PlayerController = valley.call("player") as PlayerController
-	check(player != null, "B5 — la vallée porte un joueur")
+	var player: PlayerController = world.call("player") as PlayerController
+	check(player != null, "B5 — World V2 porte un joueur")
 	if player == null:
 		await _teardown()
 		return
@@ -193,7 +188,7 @@ func test_boot_smoke_from_boot_to_a_playable_valley() -> void:
 	# --- B6. Caméra et HUD présents ----------------------------------------
 	var rig: Node = player.call("camera_rig") if player.has_method("camera_rig") else null
 	check(rig != null, "B6 — le joueur porte son rig de caméra")
-	var shell: Node = valley.get_node_or_null("GameplayShell")
+	var shell: Node = world.get_node_or_null("GameplayShell")
 	check(shell != null, "…et le HUD de jeu est monté")
 
 	# --- B7. Il ne tombe pas sous le monde ----------------------------------
@@ -226,31 +221,26 @@ func test_boot_smoke_from_boot_to_a_playable_valley() -> void:
 		"B7b — soulevé de 3 m, le héros RETOMBE et se repose (y %.2f → %.2f)"
 			% [ground_y + 3.0, player.global_position.y])
 
-	# --- B8. Une interaction et un ennemi sont PRÉSENTS près du spawn -------
-	#
-	# Le mot « atteignable » a été retiré, et l'audit avait raison de l'exiger :
-	# ce critère mesure une DISTANCE EUCLIDIENNE, à vol d'oiseau. Il ne dit rien
-	# de la route — un ravin, une falaise ou un mur entre les deux le laisserait
-	# vert. L'atteignabilité réelle est prouvée par `test_physical_run.gd`, qui
-	# y va à pied ; ici on constate seulement que le contenu n'est pas à l'autre
-	# bout de la carte.
-	var spawn: Vector3 = player.global_position
-	var nearest_interactable: float = INF
-	for node: Node in _tree().get_nodes_in_group("interactable"):
-		var as_3d: Node3D = node as Node3D
-		if as_3d != null:
-			nearest_interactable = minf(nearest_interactable,
-				spawn.distance_to(as_3d.global_position))
-	check(nearest_interactable < 220.0,
-		"B8 — une interaction est présente à %.0f m du spawn (rayon euclidien ; "
-			% nearest_interactable + "la route n'est PAS éprouvée ici)")
-	var nearest_enemy: float = INF
-	for node: Node in _tree().get_nodes_in_group("enemies"):
-		var as_3d: Node3D = node as Node3D
-		if as_3d != null:
-			nearest_enemy = minf(nearest_enemy, spawn.distance_to(as_3d.global_position))
-	check(nearest_enemy < 220.0,
-		"…et un ennemi à %.0f m, même mesure et même réserve" % nearest_enemy)
+	# --- B8. Le joueur MARCHE dans le vrai World V2 -------------------------
+	# V2.3-A ne contient volontairement aucun acteur ennemi. Une présence
+	# d'ennemi serait donc un faux critère de jouabilité. On injecte la même
+	# intention que le clavier/manette et on exige un déplacement réel sur le
+	# terrain monté, puis la présence du lot pilote et des 64 chunks.
+	var start: Vector3 = player.global_position
+	var intent: InputIntent = InputIntent.new()
+	player.set_intent_source(intent)
+	intent.move = Vector2(0.0, 1.0)
+	for i: int in range(90):
+		await _tree().physics_frame
+	intent.move = Vector2.ZERO
+	var walked: float = Vector2(start.x, start.z).distance_to(
+		Vector2(player.global_position.x, player.global_position.z))
+	check(walked > 1.0,
+		"B8 — une intention joueur déplace le héros de %.2f m dans World V2" % walked)
+	check_equal(_tree().get_nodes_in_group(&"world_v2_terrain").size(), 64,
+		"…les 64 chunks du monde sont réellement montés")
+	check_equal(_tree().get_nodes_in_group(&"world_v2_places").size(), 9,
+		"…et les neuf lieux du lot pilote sont présents")
 
 	# --- B9. Le CÂBLAGE santé → mort → panneau → reprise --------------------
 	#
@@ -281,7 +271,7 @@ func test_boot_smoke_from_boot_to_a_playable_valley() -> void:
 	check(panel_shown, "B9a — la mort ouvre le panneau de reprise")
 	# `%RetryButton` ne se résout pas depuis ici : les noms uniques sont
 	# relatifs au PROPRIÉTAIRE de scène, et `GameplayShell` est instancié dans
-	# `ValleyWorld`. On cherche donc par nom, ce qui marche quel que soit
+	# `WorldV2`. On cherche donc par nom, ce qui marche quel que soit
 	# l'imbriquement.
 	var retries: Array[Node] = shell.find_children("RetryButton", "", true, false)
 	var retry: Button = retries[0] as Button if not retries.is_empty() else null
@@ -291,15 +281,15 @@ func test_boot_smoke_from_boot_to_a_playable_valley() -> void:
 	# La reprise RECHARGE la scène : on laisse d'abord la transition finir à son
 	# rythme, puis on borne seulement la VÉRIFICATION de vitalité. Chronométrer
 	# le chargement reviendrait à exiger une machine rapide.
-	await await_scene("ValleyWorld")
+	await await_scene("WorldV2")
 	var recovered: bool = await _wait_until(
 		func() -> bool:
 			# La scène est RECHARGÉE : l'ancien joueur est détruit, il faut
 			# donc interroger le nouveau, pas la référence d'avant.
-			var world: Node = _find("ValleyWorld")
-			if world == null:
+			var reloaded_world: Node = _find("WorldV2")
+			if reloaded_world == null:
 				return false
-			var hero: Node = world.call("player")
+			var hero: Node = reloaded_world.call("player")
 			if hero == null or not is_instance_valid(hero):
 				return false
 			var hp: Node = hero.call("health") if hero.has_method("health") else null
@@ -310,5 +300,5 @@ func test_boot_smoke_from_boot_to_a_playable_valley() -> void:
 
 	# --- B10. Arrêt propre ---------------------------------------------------
 	await _teardown()
-	check(_find("ValleyWorld") == null and _find("MainMenu") == null,
-		"B10 — l'arrêt ne laisse ni vallée ni menu résiduels sous la racine")
+	check(_find("WorldV2") == null and _find("MainMenu") == null,
+		"B10 — l'arrêt ne laisse ni World V2 ni menu résiduels sous la racine")
