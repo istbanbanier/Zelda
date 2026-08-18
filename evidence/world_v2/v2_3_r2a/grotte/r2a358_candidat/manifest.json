@@ -1,0 +1,246 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "47f3a2ec51d032b95190f6d6d9b94ec6f10264ab",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {
+    "geometrie": {
+      "chemin": "assets/environment/caves/candidates/SM_WaterfallCave_r2a358.glb",
+      "commit": "aec039b52eb849cfd899f9c172e82f3aafe43a68"
+    },
+    "lieu": {
+      "chemin": "scripts/world_v2/poi/waterfall_cave_place.gd",
+      "commit": "a2c000ee21b999921fbe643e748e280eb85947e1"
+    }
+  },
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 44.0,
+      "from": [
+        -95.69,
+        6.6,
+        17.74
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/01_composition.png",
+      "look": [
+        -104.87,
+        3.6,
+        4.63
+      ],
+      "name": "01_composition"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        -99.97,
+        5.2,
+        12.18
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/02_approche_joueur.png",
+      "look": [
+        -104.87,
+        3.6,
+        4.63
+      ],
+      "name": "02_approche_joueur"
+    },
+    {
+      "fov": 28.0,
+      "from": [
+        -101.01,
+        4.8,
+        9.23
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/03_gros_plan_seuil.png",
+      "look": [
+        -104.87,
+        3.6,
+        4.63
+      ],
+      "name": "03_gros_plan_seuil"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        -105.97,
+        4.99,
+        -0.18
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/04_interieur_sortie.png",
+      "look": [
+        -104.87,
+        3.6,
+        4.63
+      ],
+      "name": "04_interieur_sortie"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -105.97,
+        4.99,
+        -0.18
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/05_interieur_niche.png",
+      "look": [
+        -106.93,
+        4.0,
+        -1.36
+      ],
+      "name": "05_interieur_niche"
+    },
+    {
+      "fov": 45.0,
+      "from": [
+        -90.1,
+        6.1,
+        2.03
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/06_flanc_strates.png",
+      "look": [
+        -104.87,
+        3.6,
+        4.63
+      ],
+      "name": "06_flanc_strates"
+    },
+    {
+      "fov": 45.0,
+      "from": [
+        -95.63,
+        8.1,
+        16.45
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/07_trois_masses.png",
+      "look": [
+        -104.87,
+        3.6,
+        4.63
+      ],
+      "name": "07_trois_masses"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        -100.0,
+        3.42,
+        12.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/AB_approche_joueur.png",
+      "look": [
+        -106.0,
+        4.6,
+        3.6
+      ],
+      "name": "AB_approche_joueur"
+    },
+    {
+      "fov": 40.0,
+      "from": [
+        -101.4,
+        4.9,
+        10.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/AB_seuil_cadre.png",
+      "look": [
+        -106.0,
+        4.3,
+        3.9
+      ],
+      "name": "AB_seuil_cadre"
+    },
+    {
+      "fov": 45.0,
+      "from": [
+        -96.0,
+        8.0,
+        16.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/AB_trois_masses.png",
+      "look": [
+        -107.0,
+        6.0,
+        3.0
+      ],
+      "name": "AB_trois_masses"
+    },
+    {
+      "fov": 44.0,
+      "from": [
+        -95.0,
+        6.2,
+        -11.5
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/AB_flanc_arriere.png",
+      "look": [
+        -108.2,
+        5.6,
+        -3.2
+      ],
+      "name": "AB_flanc_arriere"
+    },
+    {
+      "fov": 40.0,
+      "from": [
+        -109.28,
+        11.82,
+        22.65
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/tournette_000.png",
+      "look": [
+        -109.28,
+        5.82,
+        0.65
+      ],
+      "name": "tournette_000"
+    },
+    {
+      "fov": 40.0,
+      "from": [
+        -87.28,
+        11.82,
+        0.65
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/tournette_090.png",
+      "look": [
+        -109.28,
+        5.82,
+        0.65
+      ],
+      "name": "tournette_090"
+    },
+    {
+      "fov": 40.0,
+      "from": [
+        -109.28,
+        11.82,
+        -21.35
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/tournette_180.png",
+      "look": [
+        -109.28,
+        5.82,
+        0.65
+      ],
+      "name": "tournette_180"
+    },
+    {
+      "fov": 40.0,
+      "from": [
+        -131.28,
+        11.82,
+        0.65
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/tournette_270.png",
+      "look": [
+        -109.28,
+        5.82,
+        0.65
+      ],
+      "name": "tournette_270"
+    }
+  ],
+  "size": "1280x720"
+}

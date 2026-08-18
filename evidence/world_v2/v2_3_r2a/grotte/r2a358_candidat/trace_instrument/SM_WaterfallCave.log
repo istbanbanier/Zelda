@@ -1,0 +1,17 @@
+triangles : 20070  ·  matieres : 6
+glb sha256 : 5ff4ec6ee7a5bb6fef95114055354f348e2372f39cf4a104b8164f1b212a8d75
+seuils LUS au generateur : paroi 0.80 m · collerette 0.60 m
+
+MINIMA PAR COTE — valeur / seuil  (jamais un chiffre unique)
+  gauche  : 1.24 m / 0.80 m  PASS   (station u = 1.25, azimut 110 deg)
+            stations sous seuil 0/29 · stations TROUEES 0
+  droite  : 0.23 m / 0.80 m  FAIL   (station u = 1.50, azimut 10 deg)
+            stations sous seuil 2/29 · stations TROUEES 0
+rayons de paroi sous 0.80 m : 3 sur 986 mesures  (galerie seule)
+rayons de paroi SANS ROCHE dans la galerie : 0  (indication de percee — la CONFIRMATION appartient a probe_cave_openings)
+PORCHE (u < 1.0) — contrat COLLERETTE : minimum 0.83 m / 0.60 m, 0 rayon(s) sous seuil sur 136 ; 0 rayon(s) sans roche = l'OUVERTURE, pas un defaut
+stations non mesurables : aucune
+ecart crete/axe : min 0.00  moyen 1.12  max 2.29 m
+images  : evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/trace_instrument/SM_WaterfallCave/coupe_technique.png, evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/trace_instrument/SM_WaterfallCave/carte_epaisseur.png, evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/trace_instrument/SM_WaterfallCave/profil_asymetrique.png
+journal : evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/trace_instrument/SM_WaterfallCave/journal_minima.csv
+RC=0
