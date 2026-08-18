@@ -80,6 +80,29 @@ extends WorldV2Place
 const K: GDScript = preload("res://scripts/world_v2/poi/world_v2_place_kit.gd")
 const OUVRAGE: String = "res://assets/environment/caves/SM_WaterfallCave.glb"
 
+## ---- Bascule de REVUE R2a-3.5.8 -----------------------------------------
+## Le candidat au quatrième golden master (GLB 5ff4ec6e) est committé sous
+## candidates/ SANS remplacer la production : R2a-3.4 reste la grotte servie
+## au joueur jusqu'au verdict visuel Codex/Istvan. La bascule n'est lue qu'au
+## montage et seule la chaîne de CAPTURE la pose
+## (WORLD_V2_GROTTE_CANDIDAT=r2a358) — même motif que WORLD_V2_DIAGNOSTIC.
+## Chaque constante _R2A358 est le pendant candidat d'une constante de ce
+## fichier, reprise du script de lieu des arbres candidats (7eb402f3).
+## Couplage dur consigné en R2a-3.5.7 §4 : afficher un GLB sans ses repères
+## met la récompense et les lampes dans la roche.
+const OUVRAGE_R2A358: String = "res://assets/environment/caves/candidates/SM_WaterfallCave_r2a358.glb"
+const MODELE_SALLE_R2A358: Vector3 = Vector3(2.62, 0.09, -2.58)
+const MODELE_NICHE_R2A358: Vector3 = Vector3(2.78, 0.50, -4.09)
+const LAMPE_SEUIL_R2A358: Vector3 = Vector3(0.15, 1.50, -1.20)
+const LAMPE_SALLE_R2A358: Vector3 = Vector3(2.70, 1.90, -3.35)
+const VOISIN_NICHE_R2A358: Vector3 = Vector3(2.71, 0.24, -3.39)
+const APPUIS_MODELE_R2A358: Array[Vector2] = [
+	Vector2(8.14, -6.03), Vector2(0.94, -11.42),
+	Vector2(-1.42, -11.38), Vector2(-7.24, -6.01),
+	Vector2(-8.00, -3.25), Vector2(-2.87, 0.36),
+	Vector2(4.19, 0.30), Vector2(6.32, -3.24),
+]
+
 ## Seuil de la bouche, en LOCAL. Le seuil est donc à (-107,5 ; 6,4) en
 ## monde. Il était à (-111,0 ; 6,4) au premier jet, et c'était trop à
 ## l'ouest : la QUEUE de la cavité tombait alors vers (-115,5 ; -2,7), où
@@ -133,6 +156,26 @@ const MODELE_SALLE: Vector3 = Vector3(1.05, 0.22, -6.25)
 const MODELE_NICHE: Vector3 = Vector3(-1.20, 0.43, -8.20)
 
 
+func _revue_candidat_r2a358() -> bool:
+	return OS.get_environment("WORLD_V2_GROTTE_CANDIDAT") == "r2a358"
+
+
+func _ouvrage_chemin() -> String:
+	return OUVRAGE_R2A358 if _revue_candidat_r2a358() else OUVRAGE
+
+
+func _modele_salle() -> Vector3:
+	return MODELE_SALLE_R2A358 if _revue_candidat_r2a358() else MODELE_SALLE
+
+
+func _modele_niche() -> Vector3:
+	return MODELE_NICHE_R2A358 if _revue_candidat_r2a358() else MODELE_NICHE
+
+
+func _appuis_modele() -> Array[Vector2]:
+	return APPUIS_MODELE_R2A358 if _revue_candidat_r2a358() else APPUIS_MODELE
+
+
 func default_place_id() -> StringName:
 	return &"valley.poi.waterfall_cave.01"
 
@@ -150,9 +193,9 @@ func _build() -> void:
 	# avec plus de 2,7 m sous la clé.
 	var transformation: Transform3D = ouvrage.transform
 	set_meta(&"cave_threshold", transformation * MODELE_SEUIL_DEHORS)
-	set_meta(&"cave_interior", transformation * MODELE_SALLE)
+	set_meta(&"cave_interior", transformation * _modele_salle())
 
-	for point: Vector2 in APPUIS_MODELE:
+	for point: Vector2 in _appuis_modele():
 		var au_sol: Vector3 = transformation * Vector3(point.x, 0.0, point.y)
 		declare_support(Vector3(au_sol.x,
 			ground_local_y(au_sol.x, au_sol.z), au_sol.z))
@@ -174,8 +217,8 @@ func _build() -> void:
 
 	# La récompense est APRÈS le coude : la poche paie d'être entrée, et
 	# elle ne se voit pas depuis le seuil.
-	var niche: Vector3 = transformation * MODELE_NICHE
-	var approche: Vector3 = (transformation * MODELE_SALLE) - niche
+	var niche: Vector3 = transformation * _modele_niche()
+	var approche: Vector3 = (transformation * _modele_salle()) - niche
 	RewardAnchor.attach(self, default_place_id(), RewardAnchor.Kind.INGREDIENT,
 		niche, approche.normalized())
 
@@ -183,7 +226,7 @@ func _build() -> void:
 ## Instancie la coque, en extrait la collision, libère le maillage de
 ## collision (il ne doit ni se rendre ni compter comme surface visible).
 func _poser_ouvrage(local: Vector3) -> Node3D:
-	var paquet: PackedScene = load(OUVRAGE) as PackedScene
+	var paquet: PackedScene = load(_ouvrage_chemin()) as PackedScene
 	var ouvrage: Node3D = paquet.instantiate() as Node3D
 	ouvrage.name = "Coque"
 	ouvrage.position = local
@@ -234,7 +277,8 @@ func _eclairer(ouvrage: Node3D) -> void:
 	seuil.omni_range = 5.5
 	seuil.omni_attenuation = 1.6
 	seuil.shadow_enabled = true
-	seuil.position = Vector3(0.20, 1.50, -2.60)
+	seuil.position = LAMPE_SEUIL_R2A358 if _revue_candidat_r2a358() \
+		else Vector3(0.20, 1.50, -2.60)
 	ouvrage.add_child(seuil)
 
 	# Le coude est ce qui permet d'avoir À LA FOIS une bouche noire et une
@@ -253,7 +297,8 @@ func _eclairer(ouvrage: Node3D) -> void:
 	# contre-jour et la noyait dans l'ombre de sa propre niche. Une
 	# récompense en scène est une récompense que la lumière désigne DE
 	# FACE.
-	salle.position = Vector3(0.20, 1.90, -7.20)
+	salle.position = LAMPE_SALLE_R2A358 if _revue_candidat_r2a358() \
+		else Vector3(0.20, 1.90, -7.20)
 	ouvrage.add_child(salle)
 
 
@@ -262,9 +307,10 @@ func _eclairer(ouvrage: Node3D) -> void:
 ## d'écart suffiraient à l'enfoncer), et deux fougères d'ombre au pied de
 ## la collerette, posées hors de l'axe d'entrée.
 func _habiller(transformation: Transform3D) -> void:
-	var niche: Vector3 = transformation * MODELE_NICHE
+	var niche: Vector3 = transformation * _modele_niche()
 	K.module(self, &"Mushroom_Common", niche, 24.0, 1.15, K.TONE_PLANT)
-	var voisin: Vector3 = transformation * Vector3(-1.60, 0.55, -8.20)
+	var voisin: Vector3 = transformation * (VOISIN_NICHE_R2A358
+		if _revue_candidat_r2a358() else Vector3(-1.60, 0.55, -8.20))
 	K.module(self, &"Mushroom_Common", voisin, 200.0, 0.9, K.TONE_PLANT)
 	# LES DEUX FOUGÈRES MASQUAIENT LA BOUCHE, ET C'ÉTAIT MOI.
 	#
