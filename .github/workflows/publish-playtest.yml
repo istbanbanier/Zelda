@@ -247,12 +247,35 @@ jobs:
             echo "macOS : ÉCHEC (les autres cibles continuent)"
           fi
 
+          # Web — priorite 1 du checkpoint d'Istvan : partageable sans rien
+          # installer. Godot FORCE le renderer Compatibility sur cette cible —
+          # `rendering/renderer/rendering_method.web` vaut `gl_compatibility`
+          # par defaut et son enum ne contient que cette valeur (verifie dans
+          # main/main.cpp du moteur installe). Le jeu demarre donc, mais SANS
+          # fog volumetrique, SDFGI, SSIL ni SSR : c'est la limite annoncee par
+          # MASTER_SPEC §5.2, pas une regression.
+          #
+          # L'export Web produit une DIZAINE de fichiers (html, js, wasm, pck,
+          # png). On zippe le repertoire entier : ouvrir index.html seul ne
+          # donne rien.
+          mkdir -p builds/web
+          if "$G" --headless --path . --export-release "Web" \
+                builds/web/index.html; then
+            write_readme builds/web/LISEZ_MOI.txt "Navigateur (Web)" "1. Decompresser l'archive.\n2. Ouvrir un terminal DANS le dossier decompresse.\n3. Lancer :  python3 -m http.server 8000\n4. Ouvrir http://localhost:8000 dans Chrome ou Firefox.\n\nUn double-clic sur index.html NE MARCHE PAS : les navigateurs refusent\nde charger un jeu depuis un fichier local. Le petit serveur ci-dessus\nexiste pour ca, et il s'arrete avec Ctrl+C."
+            ( cd builds/web && zip -qr \
+                "../EclatsDOrage_Web_${STAMP}.zip" . )
+            echo "Web : exporte ($(du -sh builds/web | cut -f1))"
+          else
+            echo "Web : ECHEC (les autres cibles continuent)"
+          fi
+
           # Ne laisser que les ZIP dans builds/ : `rm -rf builds/<os>`
           # emporterait les `.gitkeep` SUIVIS, et le garde-fou de propreté
           # verrait « D ».
           rm -f builds/linux/EclatsDOrage.x86_64 builds/linux/LISEZ_MOI.txt \
                 builds/windows/EclatsDOrage.exe builds/windows/LISEZ_MOI.txt \
                 builds/macos/EclatsDOrage.zip builds/macos/LISEZ_MOI.txt
+          find builds/web -mindepth 1 -not -name '.gitkeep' -delete 2>/dev/null || true
           ls -1 builds/*.zip 2>/dev/null || echo "aucun binaire produit"
 
       # macOS n'est PLUS un meilleur effort quand la livraison EST la version
