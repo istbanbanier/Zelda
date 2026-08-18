@@ -1,0 +1,37 @@
+=== Blender: Blender 4.0.2 ===
+
+--- waterfall_cave_r2a358 : génération de la source ---
+--- waterfall_cave_r2a358 : export .glb ---
+  [export_gltf] Blender 4.0.2
+  [export_gltf] io_scene_gltf2 version (4, 0, 44)
+  [export_gltf] preset: export_animation_mode=ACTIONS, export_animations=False, export_apply=True, export_cameras=False, export_extras=False, export_force_sampling=True, export_format=GLB, export_lights=False, export_materials=EXPORT, export_normals=True, export_optimize_animation_size=False, export_skins=True, export_tangents=True, export_texcoords=True, export_yup=True, use_selection=False, use_visible=True
+  [export_gltf] OK -> /home/user/Zelda/assets/environment/caves/candidates/SM_WaterfallCave_r2a358.glb (1488700 octets)
+  frais: assets/environment/caves/candidates/SM_WaterfallCave_r2a358.glb (1488700 octets)
+--- waterfall_cave_r2a358 : inspection glTF hors moteur ---
+  === INSPECTION glTF : assets/environment/caves/candidates/SM_WaterfallCave_r2a358.glb ===
+    format                 : GLB v2, 1488700 octets
+    chunk_binaire          : 1482852 octets
+    generateur             : Khronos glTF Blender I/O v4.0.44
+    version_gltf           : 2.0
+    meshes                 : 2
+    materiaux              : 6 (MAT_CaveRock_Face, MAT_CaveRock_Base, MAT_CaveRock_Collar, MAT_CaveIn_Wall, MAT_CaveIn_Deep, MAT_CaveIn_Floor)
+    textures               : 0 image(s), 0 texture(s)
+    noeuds                 : 2 (COL_WaterfallCave, SM_WaterfallCave)
+    skins                  : 0
+    animations             : 0 (aucune)
+    triangles              : 20950
+    bbox_min               : [-8.7717, -3.5509, -11.8987]
+    bbox_max               : [8.1739, 8.1923, 3.1348]
+    dimensions_m           : [16.9456, 11.7432, 15.0335]
+    [AVERT] mesh 'COL_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_WaterfallCave': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] min Y = -3.5509 (attendu ~0 : bas de l'objet au sol, §7.15)
+  === VALIDE ===
+
+=== EXPORT ARCHITECTURE : VERT ===
+RC=0

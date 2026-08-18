@@ -1,0 +1,48 @@
+[exact] fichier assets/environment/caves/candidates/SM_WaterfallCave_r2a358.glb
+[exact] noeud COL_WaterfallCave        matrice=non translation=None rotation=None echelle=None
+[exact] noeud SM_WaterfallCave         matrice=non translation=None rotation=None echelle=None
+[exact] COL_WaterfallCave : 1784 positions brutes -> 442 apres soudure
+[exact] === COL_WaterfallCave : 442 sommets soudes, 880 triangles
+[exact] aire EXACTEMENT nulle : 0 face(s)
+[exact] aire < 1e-9 m2 mais NON nulle : 0 face(s)
+[exact] paires a boites chevauchantes : 6631
+[exact]   CONTACT              5642
+[exact]   DISJOINT             989
+[exact] PENETRATIONS REELLES : 0
+[exact] SM_WaterfallCave : 54764 positions brutes -> 10037 apres soudure
+[exact] === SM_WaterfallCave : 10037 sommets soudes, 20070 triangles
+[exact] aire EXACTEMENT nulle : 0 face(s)
+[exact] aire < 1e-9 m2 mais NON nulle : 0 face(s)
+[exact] paires a boites chevauchantes : 140136
+[exact]   CONTACT              130705
+[exact]   COPLANAIRE           33
+[exact]   DISJOINT             9392
+[exact]   PENETRATION          6
+[exact] PENETRATIONS REELLES : 6
+[exact]   faces 1371 / 19115  sommets communs 1
+[exact]     centres (0.2789, 1.7772, 2.2401) et (0.1985, 1.6965, 1.8824)
+[exact]     enfoncement 0.000000 m   etendue de couture 0.079697 m
+[exact]     point interieur commun (0.207663655, 1.686876893, 2.248672310)
+[exact]   faces 1371 / 19119  sommets communs 1
+[exact]     centres (0.2789, 1.7772, 2.2401) et (0.1376, 1.7599, 1.8801)
+[exact]     enfoncement 0.000000 m   etendue de couture 0.184263 m
+[exact]     point interieur commun (0.116296506, 1.782054901, 2.245224897)
+[exact]   faces 8910 / 13015  sommets communs 1
+[exact]     centres (2.4041, -0.6865, 1.6347) et (2.0090, -0.6871, 2.1816)
+[exact]     enfoncement 0.000612 m   etendue de couture 0.570507 m
+[exact]     point interieur commun (2.527375662, -0.687934573, 1.495621223)
+[exact]   faces 13015 / 13031  sommets communs 0
+[exact]     centres (2.0090, -0.6871, 2.1816) et (2.2451, -0.6739, 1.7814)
+[exact]     enfoncement 0.000612 m   etendue de couture 0.059026 m
+[exact]     point interieur commun (2.377898883, -0.687851231, 1.703541466)
+[exact]   faces 8911 / 13015  sommets communs 0
+[exact]     centres (2.3434, -0.6581, 1.6011) et (2.0090, -0.6871, 2.1816)
+[exact]     enfoncement 0.000612 m   etendue de couture 0.004972 m
+[exact]     point interieur commun (2.400338337, -0.687989545, 1.680736277)
+[exact]   faces 8916 / 13015  sommets communs 1
+[exact]     centres (2.5024, -0.6707, 1.4544) et (2.0090, -0.6871, 2.1816)
+[exact]     enfoncement 0.000612 m   etendue de couture 0.507200 m
+[exact]     point interieur commun (2.549815115, -0.688072887, 1.472816034)
+[exact]   ENFONCEMENT MAXIMAL 0.000612 m  (seuil livrable 0.020 m)  ETENDUE MAXIMALE 0.570507 m
+[exact] TOTAL : 0 face(s) d'aire exactement nulle, 6 penetration(s) reelle(s)
+RC=0
