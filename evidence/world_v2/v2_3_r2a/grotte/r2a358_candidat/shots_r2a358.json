@@ -1,0 +1,309 @@
+{
+ "passe": "R2a-3.5.8",
+ "geometrie_baseline": "40714c46544e27d23fce271d2814020c0683aa78f71106934215ee8666dc11a0",
+ "origine_monde": [
+  -106.0,
+  3.5,
+  3.5
+ ],
+ "lacet_deg": 45.0,
+ "fov_convention": "VERTICAL (Godot KEEP_HEIGHT)",
+ "taille": "1280x720",
+ "shots": [
+  {
+   "name": "01_composition",
+   "from": [
+    -95.69,
+    6.6,
+    17.74
+   ],
+   "look": [
+    -104.87,
+    3.6,
+    4.63
+   ],
+   "fov": 44.0,
+   "but": "les trois masses et la bouche dans un seul cadre",
+   "interieur": false,
+   "ab_reference": null,
+   "derivation": "ancre [0.0, 0.1, 1.6], azimut monde 35 deg, distance 16 m, +3 m",
+   "degagement": "OK (marge 11.72 m)"
+  },
+  {
+   "name": "02_approche_joueur",
+   "from": [
+    -99.97,
+    5.2,
+    12.18
+   ],
+   "look": [
+    -104.87,
+    3.6,
+    4.63
+   ],
+   "fov": 55.0,
+   "but": "hauteur d'oeil joueur, sentier d'approche",
+   "interieur": false,
+   "ab_reference": null,
+   "derivation": "ancre [0.0, 0.1, 1.6], azimut monde 33 deg, distance 9 m, +1.6 m",
+   "degagement": "OK (marge 4.36 m)"
+  },
+  {
+   "name": "03_gros_plan_seuil",
+   "from": [
+    -101.01,
+    4.8,
+    9.23
+   ],
+   "look": [
+    -104.87,
+    3.6,
+    4.63
+   ],
+   "fov": 28.0,
+   "but": "linteau et joues du seuil, lisibilite du passage",
+   "interieur": false,
+   "ab_reference": null,
+   "derivation": "ancre [0.0, 0.1, 1.6], azimut monde 40 deg, distance 6 m, +1.2 m",
+   "degagement": "OK (marge 2.19 m)"
+  },
+  {
+   "name": "04_interieur_sortie",
+   "from": [
+    -109.68,
+    5.12,
+    -1.66
+   ],
+   "look": [
+    -104.87,
+    3.6,
+    4.63
+   ],
+   "fov": 65.0,
+   "but": "depuis la salle vers la lumiere de la bouche",
+   "interieur": true,
+   "ab_reference": null,
+   "derivation": "ancre [1.05, 0.22, -6.25], azimut monde 0 deg, distance 0 m, +1.4 m",
+   "degagement": "n/a (vue interieure, hors controle AABB)"
+  },
+  {
+   "name": "05_interieur_niche",
+   "from": [
+    -109.68,
+    5.12,
+    -1.66
+   ],
+   "look": [
+    -112.65,
+    3.93,
+    -1.45
+   ],
+   "fov": 60.0,
+   "but": "la niche et son champignon (recompense)",
+   "interieur": true,
+   "ab_reference": null,
+   "derivation": "ancre [1.05, 0.22, -6.25], azimut monde 0 deg, distance 0 m, +1.4 m",
+   "degagement": "n/a (vue interieure, hors controle AABB)"
+  },
+  {
+   "name": "06_flanc_strates",
+   "from": [
+    -90.1,
+    6.1,
+    2.03
+   ],
+   "look": [
+    -104.87,
+    3.6,
+    4.63
+   ],
+   "fov": 45.0,
+   "but": "strates du flanc est, raccord terrain",
+   "interieur": false,
+   "ab_reference": null,
+   "derivation": "ancre [0.0, 0.1, 1.6], azimut monde 100 deg, distance 15 m, +2.5 m",
+   "degagement": "OK (marge 6.35 m)"
+  },
+  {
+   "name": "07_trois_masses",
+   "from": [
+    -95.63,
+    8.1,
+    16.45
+   ],
+   "look": [
+    -104.87,
+    3.6,
+    4.63
+   ],
+   "fov": 45.0,
+   "but": "silhouette des trois masses, cadre large",
+   "interieur": false,
+   "ab_reference": null,
+   "derivation": "ancre [0.0, 0.1, 1.6], azimut monde 38 deg, distance 15 m, +4.5 m",
+   "degagement": "OK (marge 10.76 m)"
+  },
+  {
+   "name": "AB_approche_joueur",
+   "from": [
+    -100.0,
+    3.42,
+    12.0
+   ],
+   "look": [
+    -106.0,
+    4.6,
+    3.6
+   ],
+   "fov": 55.0,
+   "but": "A/B contre R2a-3.4 — MEME camera, deux geometries",
+   "interieur": false,
+   "ab_reference": "evidence/world_v2/v2_3_r2a/grotte/tranche4_final/approche_joueur.png",
+   "derivation": "reprise a l'identique de tranche4_final/manifest.json (commit 55c4803c)",
+   "degagement": "OK (marge 5.34 m)"
+  },
+  {
+   "name": "AB_seuil_cadre",
+   "from": [
+    -101.4,
+    4.9,
+    10.0
+   ],
+   "look": [
+    -106.0,
+    4.3,
+    3.9
+   ],
+   "fov": 40.0,
+   "but": "A/B contre R2a-3.4 — MEME camera, deux geometries",
+   "interieur": false,
+   "ab_reference": "evidence/world_v2/v2_3_r2a/grotte/tranche4_final/seuil_cadre.png",
+   "derivation": "reprise a l'identique de tranche4_final/manifest.json (commit 55c4803c)",
+   "degagement": "OK (marge 3.00 m)"
+  },
+  {
+   "name": "AB_trois_masses",
+   "from": [
+    -96.0,
+    8.0,
+    16.0
+   ],
+   "look": [
+    -107.0,
+    6.0,
+    3.0
+   ],
+   "fov": 45.0,
+   "but": "A/B contre R2a-3.4 — MEME camera, deux geometries",
+   "interieur": false,
+   "ab_reference": "evidence/world_v2/v2_3_r2a/grotte/tranche4_final/trois_masses.png",
+   "derivation": "reprise a l'identique de tranche4_final/manifest.json (commit 55c4803c)",
+   "degagement": "OK (marge 11.54 m)"
+  },
+  {
+   "name": "AB_flanc_arriere",
+   "from": [
+    -95.0,
+    6.2,
+    -11.5
+   ],
+   "look": [
+    -108.2,
+    5.6,
+    -3.2
+   ],
+   "fov": 44.0,
+   "but": "A/B contre R2a-3.4 — MEME camera, deux geometries",
+   "interieur": false,
+   "ab_reference": "evidence/world_v2/v2_3_r2a/grotte/tranche4_final/flanc_arriere.png",
+   "derivation": "reprise a l'identique de tranche4_final/manifest.json (commit 55c4803c)",
+   "degagement": "OK (marge 8.39 m)"
+  },
+  {
+   "name": "tournette_000",
+   "from": [
+    -109.28,
+    11.82,
+    22.65
+   ],
+   "look": [
+    -109.28,
+    5.82,
+    0.65
+   ],
+   "fov": 40.0,
+   "but": "rotation cardinale, controle des raccords",
+   "interieur": false,
+   "ab_reference": "evidence/world_v2/v2_3_r2a/grotte/tournette_000.png",
+   "derivation": "ancre [-109.27602571723727, 5.8207, 0.6466827165560433], azimut monde 0 deg, distance 22 m, +6 m",
+   "degagement": "OK (marge 10.32 m)"
+  },
+  {
+   "name": "tournette_090",
+   "from": [
+    -87.28,
+    11.82,
+    0.65
+   ],
+   "look": [
+    -109.28,
+    5.82,
+    0.65
+   ],
+   "fov": 40.0,
+   "but": "rotation cardinale, controle des raccords",
+   "interieur": false,
+   "ab_reference": "evidence/world_v2/v2_3_r2a/grotte/tournette_090.png",
+   "derivation": "ancre [-109.27602571723727, 5.8207, 0.6466827165560433], azimut monde 90 deg, distance 22 m, +6 m",
+   "degagement": "OK (marge 10.31 m)"
+  },
+  {
+   "name": "tournette_180",
+   "from": [
+    -109.28,
+    11.82,
+    -21.35
+   ],
+   "look": [
+    -109.28,
+    5.82,
+    0.65
+   ],
+   "fov": 40.0,
+   "but": "rotation cardinale, controle des raccords",
+   "interieur": false,
+   "ab_reference": "evidence/world_v2/v2_3_r2a/grotte/tournette_180.png",
+   "derivation": "ancre [-109.27602571723727, 5.8207, 0.6466827165560433], azimut monde 180 deg, distance 22 m, +6 m",
+   "degagement": "OK (marge 10.31 m)"
+  },
+  {
+   "name": "tournette_270",
+   "from": [
+    -131.28,
+    11.82,
+    0.65
+   ],
+   "look": [
+    -109.28,
+    5.82,
+    0.65
+   ],
+   "fov": 40.0,
+   "but": "rotation cardinale, controle des raccords",
+   "interieur": false,
+   "ab_reference": "evidence/world_v2/v2_3_r2a/grotte/tournette_270.png",
+   "derivation": "ancre [-109.27602571723727, 5.8207, 0.6466827165560433], azimut monde 270 deg, distance 22 m, +6 m",
+   "degagement": "OK (marge 10.32 m)"
+  }
+ ],
+ "silhouettes": {
+  "angles_deg": [
+   55,
+   100,
+   225
+  ],
+  "outil": "capture_silhouette.gd puis measure_silhouette_masses.py --entaille=0.90",
+  "reference": "tranche4_final/manifest_silhouettes_grotte_r2a34.json"
+ },
+ "note": "cameras derivees, captures NON faites — elles attendent l'arbre committe (regle evidence.md)."
+}
