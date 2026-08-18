@@ -1,0 +1,16 @@
+fichier : sha256 5ff4ec6ee7a5bb6fef95114055354f348e2372f39cf4a104b8164f1b212a8d75 (1488700 octets)
+maillage COL_WaterfallCave  :   1784 sommets    880 triangles  geo e322e4b5687bea199ca8a4b0df438480ff261989788cf632b77d1b6b5e4cc3cc
+maillage SM_WaterfallCave   :  54764 sommets  20070 triangles  geo dd3ea5c6bf9cee3b1788fb3c71122848f4927fd3e79cad2ae026fe9db3c99434
+SM_ == baseline dd3ea5c6 : OUI (bit-identique)
+COL_ != pre-MASSIF f17852ba : oui, modifie comme attendu
+
+provenance A : sha256 28535fb3f48d80c6546d76d7c42c8af4f3c7053b8ee444170c75b5ed0fddc3af
+garde de tables CAVITE (provenance A vs instruments) : OK
+provenance A porte formule alcove 86b01ece : OUI
+provenance A porte construire passe retrait_alcove=retrait_lat : OUI
+
+atlas it1 : 442 positions ; 0 ABSENTES du COL_ livre (attendu 0)
+atlas PERIME correctif_v1 : 18/442 positions absentes du GLB livre — la garde du plan l'aurait ecarte
+
+FIN NOMINALE
+RC=0

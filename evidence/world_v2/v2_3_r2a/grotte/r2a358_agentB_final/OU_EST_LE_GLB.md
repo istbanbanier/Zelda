@@ -1,0 +1,1 @@
+Le GLB mesuré par ces journaux n'est pas dupliqué ici : il est commité à assets/environment/caves/candidates/SM_WaterfallCave_r2a358.glb (sha256 5ff4ec6ee7a5bb6fef95114055354f348e2372f39cf4a104b8164f1b212a8d75, identité vérifiée par le lead avant archivage).

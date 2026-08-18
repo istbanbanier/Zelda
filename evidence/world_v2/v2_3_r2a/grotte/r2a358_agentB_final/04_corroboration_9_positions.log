@@ -1,0 +1,12 @@
+COL_ rodage pre-MASSIF : 442 positions soudees
+COL_ agent A           : 442 positions soudees
+positions du GLB A absentes du pre-MASSIF : 269 (pile MASSIF+86b01ece+9 d'A)
+dont bande de queue ay 5,3-7,0 : 23
+dont zone de cavite jouable ay < 3,3 : 165
+  distances a l'axe (min/max) : 0.058 / 6.409 m — la peau de cavite
+  est a ~1,0-2,4 m ; au-dela c'est l'enveloppe/le massif
+
+La comparaison A-vs-SA-base (9/442) appartient a l'evidence d'A ; la
+mienne mesure la pile entiere et n'a PAS a retrouver 9.
+FIN NOMINALE
+RC=0

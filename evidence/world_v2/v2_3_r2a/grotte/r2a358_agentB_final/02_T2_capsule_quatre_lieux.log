@@ -1,0 +1,53 @@
+=== FINAL T2a — instrument des stations (3D exact, continuite 3.5.7), atlas it1 ===
+[seuil] COL_WaterfallCave : 1784 sommets, 880 triangles
+[seuil] instrument EXACT : decoupage par plans + distance 2D fermee ; erreur = arrondi flottant, ~1e-9 m
+[seuil] bande occupee : de sol+0.15 a sol+1.90
+
+      st   x       z             sol      d_min       jeu  h_pire   ce qui serre
+      1    0.00    0.00       -0.077     0.4498   -0.0002    0.45   cav st[1, 2] az[15, 16] (tri 70)
+      3    1.00    -1.62      -0.017     0.4497   -0.0003    0.45   cav st[3, 4] az[14, 15] (tri 148)
+      5    2.62    -2.58       0.084     0.4284   -0.0216    0.45   cav st[5, 6] az[15, 16] (tri 230)
+      7    3.40    -3.06       0.488     0.0006   -0.4494    1.26   cav st[6, 7] az[3, 4] (tri 247)
+
+[seuil] verdict par rayon de capsule (capsule REELLE : cylindre
+[seuil] entre sol+r et sol+h-r, calottes spheriques au-dela) :
+[seuil]   r=0.45 h=1.85 : NE PASSE PAS a 2 station(s) — jeu st5 -0.0216, st7 -0.4494
+[seuil]   r=0.35 h=1.85 : NE PASSE PAS a 2 station(s) — jeu st5 -0.0168, st7 -0.3494
+[seuil] erreur de l'instrument : distance point-triangle EXACTE ;
+[seuil] axe echantillonne a 0.0050 m, donc erreur <= 0.0025 m.
+[seuil] tolerance de tangence au sol d'appui : 0.0075 m.
+FIN NOMINALE
+RC_COL=1
+[seuil] SM_WaterfallCave : 54764 sommets, 20070 triangles
+[seuil] instrument EXACT : decoupage par plans + distance 2D fermee ; erreur = arrondi flottant, ~1e-9 m
+[seuil] bande occupee : de sol+0.15 a sol+1.90
+
+      st   x       z             sol      d_min       jeu  h_pire   ce qui serre
+      1    0.00    0.00       -0.077     0.4499   -0.0001    0.45   tri 19744
+      3    1.00    -1.62      -0.017     0.4497   -0.0003    0.45   tri 19842
+      5    2.62    -2.58       0.084     0.4284   -0.0216    0.45   tri 19949
+      7    3.40    -3.06       0.488     0.1076   -0.3424    1.40   tri 19506
+
+[seuil] verdict par rayon de capsule (capsule REELLE : cylindre
+[seuil] entre sol+r et sol+h-r, calottes spheriques au-dela) :
+[seuil]   r=0.45 h=1.85 : NE PASSE PAS a 2 station(s) — jeu st5 -0.0216, st7 -0.3424
+[seuil]   r=0.35 h=1.85 : NE PASSE PAS a 2 station(s) — jeu st5 -0.0168, st7 -0.2967
+[seuil] erreur de l'instrument : distance point-triangle EXACTE ;
+[seuil] axe echantillonne a 0.0050 m, donc erreur <= 0.0025 m.
+[seuil] tolerance de tangence au sol d'appui : 0.0075 m.
+FIN NOMINALE
+RC_SM=1
+
+=== FINAL T2b — critere de BANDE (verdict-porteur ; le 3D rend r(cos a - 1) sur sol en pente) ===
+bande [sol+r, sol+h-r] ; distance horizontale exacte ~1e-9 m ; jeu = largeur - r
+lieu             (x,z) | COL larg45 jeu45     jeu35     | SM larg45  jeu45     jeu35    
+seuil st1        (0.00,0.00) |   0.7013  +0.2513  +0.3038 |   1.0048  +0.5548  +0.5962
+virage st3       (1.00,-1.62) |   1.2001  +0.7501  +0.8269 |   1.3328  +0.8828  +0.9723
+salle st5        (2.62,-2.58) |   0.5713  +0.1213  +0.1979 |   0.6920  +0.2420  +0.3210
+niche-axe st7    (3.40,-3.06) |   0.0000  -0.4500  -0.3500 |   0.1282  -0.3218  -0.2865
+ancre de niche   (2.78,-4.09) |   0.0000  -0.4500  -0.3500 |   0.1260  -0.3240  -0.2610
+
+relevé 3.5.7 (log 23, COL post-correctif b_chaine) pour comparaison :
+  st1 0.7013/+0.2513 · st3 1.2001/+0.7501 · st5 0.5713/+0.1213 (r=0.45)
+RC_bande=0
+RC=0
