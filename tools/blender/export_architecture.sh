@@ -34,6 +34,7 @@ SUJETS=(
   "pylon|source_assets/blender/architecture/make_pylon_resonance.py|source_assets/blender/architecture/SM_Pylon_Resonance.blend|assets/architecture/pylon/SM_Pylon_Resonance.glb"
   "stone_bridge|source_assets/blender/architecture/make_stone_bridge.py|source_assets/blender/architecture/SM_StoneBridge_Arch.blend|assets/architecture/stone_bridge/SM_StoneBridge_Arch.glb"
   "waterfall_cave|source_assets/blender/environment/make_waterfall_cave.py|source_assets/blender/environment/SM_WaterfallCave.blend|assets/environment/caves/SM_WaterfallCave.glb"
+  "waterfall_cave_r2a358|source_assets/blender/environment/make_waterfall_cave_r2a358.py|source_assets/blender/environment/SM_WaterfallCave_r2a358.blend|assets/environment/caves/candidates/SM_WaterfallCave_r2a358.glb"
   "village_quay|source_assets/blender/village/make_village_quay.py|source_assets/blender/village/SM_Village_Quay.blend|assets/architecture/village/SM_Village_Quay.glb"
   "village_wall|source_assets/blender/village/make_village_wall.py|source_assets/blender/village/SM_Village_Wall.blend|assets/architecture/village/SM_Village_Wall.glb"
 )
