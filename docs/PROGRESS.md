@@ -742,3 +742,35 @@ contre `0,114 m` — et ce portail n'existait pas quand le livré a été valid�
 Détail complet : `CODEX_HANDOFF` §39, `evidence/world_v2/v2_3_r2a/grotte/r2a356_loi/`.
 Incidents : `ISS-056` (`pkill -f` inter-worktree), `ISS-057` (Blender rend `0` en
 ayant levé), `ISS-058` (maillage de la bouche).
+
+## 2026-08-18 — R2a-3.5.8 : collider sain, candidat intégré sous candidates/, revue visuelle demandée
+
+Le zéro est atteint et INTÉGRÉ. Les 4 auto-intersections du collider sont à
+zéro sur le GLB exporté `5ff4ec6e…`, en une itération sur un budget de trois,
+`SM_` inchangé au bit près. Les trois couloirs (collision, traversabilité,
+provenance/identité visuelle) sont verts, chaque affirmation décisive
+reproduite par le lead — dont la jauge de poche au fil du couteau, refaite à
+l'éventail indépendant (`r2a358_lead/repro_poche/`).
+
+Intégration §7 exécutée SANS remplacer la production : source candidate
+`make_waterfall_cave_r2a358.py` (28535fb3 + déclassement cca1778 + nom de
+.blend), sujet d'export dédié `waterfall_cave_r2a358`, GLB commité sous
+`assets/environment/caves/candidates/`, bascule de revue
+`WORLD_V2_GROTTE_CANDIDAT=r2a358` lue seulement par la capture. R2a-3.4
+(`8bf1a1b3…`) reste la grotte servie au joueur.
+
+Piège rejoué et consigné : les caméras intérieures du manifeste dérivaient
+des ancres R2a-3.4 — vu à l'inspection pleine taille, re-dérivées sur les
+ancres candidates (5ᵉ récidive du piège des caméras périmées).
+
+Validation §9 : suite world_v2 56/56 ; boot 23 assertions des deux côtés de
+la bascule ; validate_fast 904/904 tests verts mais verdict ROUGE sur des
+fuites de fin de processus — **préexistantes, mesurées identiques à la base
+Codex `0b0ef54`** (ISS-059, dette nommée, hors gates de la grotte).
+
+**Prochaine action exacte** : recueillir le verdict visuel Codex/Istvan sur
+les montages A/B (`evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/
+montages_ab/`) ; si le candidat est retenu, l'activation est un petit commit
+de bascule (chemins + constantes appariées déjà en place) ; sinon, R2a-3.4
+reste active et le candidat demeure archivé. Ensuite : CHECKPOINT JOUABLE
+pour Istvan (tâches #89/#90), dont le PLAYABLE_SHA dépend de ce verdict.

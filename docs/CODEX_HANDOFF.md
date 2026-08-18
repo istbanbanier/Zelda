@@ -3113,3 +3113,58 @@ raison d'outillage — un échec qui *ressemblait* à une confirmation.
 
 *Fin de CODEX_HANDOFF. Actualiser à chaque checkpoint majeur, avant tout rapport
 final.*
+
+## 41. R2a-3.5.8 — GROTTE TECHNIQUEMENT VERTE. Candidat intégré, verdict visuel attendu.
+
+Ce que 3.5.7 laissait rouge — les 4 auto-intersections du collider à
+0,2434 m de repli — est à **zéro sur le binaire exporté**, en une itération
+de géométrie (budget : trois), sans toucher un octet du maillage visuel.
+
+### 41.1 Le mécanisme, en trois lignes
+
+La cause a inversé le diagnostic initial : ce n'était pas l'alcôve de la
+cavité mais la **queue de l'enveloppe** (st7-9, az9-11) qui revendiquait de
+la roche dans le vide de la niche. Réparation `_reconstruire_alcove_col()` :
+enfouissement le long du plus court chemin derrière la surface visible
+(marges 0,06/0,03 m), 9 sommets déplacés, direction intrinsèquement sûre —
+le collider recule HORS du vide, DANS la roche.
+
+### 41.2 Les quatre SHA de la livraison
+
+| Rôle | SHA |
+|---|---|
+| code (source candidate + bascule + outils) | `4a51e3b`, `a2c000e`, `c780bb8`, `27946c4` |
+| GLB candidat (commit) | `aec039b` — fichier `5ff4ec6ee7a5bb6f…` |
+| captures (arbre de capture) | `47f3a2e` (manifeste `repo_dirty:false`) |
+| evidence (checkpoints, rapport, contrôles) | `ae9b8c0`, `22639b9`, `a00af60` + commit de clôture |
+
+### 41.3 Ce que Codex doit savoir avant de juger
+
+- **R2a-3.4 reste active** : `assets/environment/caves/SM_WaterfallCave.glb`
+  est toujours `8bf1a1b3…`. Le candidat vit sous `candidates/`, monté
+  UNIQUEMENT quand `WORLD_V2_GROTTE_CANDIDAT=r2a358` (chaîne de capture).
+- L'activation, si le verdict est favorable, est un petit commit : basculer
+  `OUVRAGE`/ancres de `waterfall_cave_place.gd` sur les constantes `_R2A358`
+  déjà en place, et promouvoir le GLB. Rien d'autre à construire.
+- Le **déclassement du balayage de domaine** (décision gelée `cca1778`,
+  politique `28fa140`) est appliqué au code du candidat seulement : la
+  mesure s'imprime à chaque build, elle ne bloque plus. Les 9 autres portes
+  `franchir()` restent bloquantes ; aucun seuil n'a changé.
+- La poche de collision est **rétrécie par conception** (0,583 contre 1,065
+  pré-correctif ; plancher de conception 0,524 tenu) — c'est le prix arbitré
+  du zéro pénétration, publié par l'agent B, reproduit par le lead.
+- Les montages A/B : `evidence/world_v2/v2_3_r2a/grotte/r2a358_candidat/
+  montages_ab/` — R2a-3.4 à gauche, candidat à droite, mêmes caméras.
+
+- **validate_fast (§9)** : 904/904 tests verts ; verdict ROUGE (RC=1) sur
+  des fuites de fin de processus de la suite COMPLÈTE — **préexistantes,
+  mesurées aux comptes identiques à la base Codex `0b0ef54`** (ISS-059).
+  Un rouge préexistant ne se rebaptise pas vert ; il n'appartient pas aux
+  gates de la grotte et attend une session de dette dédiée.
+
+### 41.4 La question posée au propriétaire et à Codex, sans réponse du lead
+
+> « La grotte se lit-elle désormais comme une formation rocheuse naturelle,
+> avec une bouche, un virage et une poche intérieure cohérents, ou
+> reste-t-elle visuellement inférieure à R2a-3.4 malgré ses améliorations
+> techniques ? »

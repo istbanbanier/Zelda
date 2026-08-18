@@ -1528,3 +1528,33 @@ passe a identifié comme indispensable et qu'elle n'a pas fait.
 l'intérieur, donc `d(p)` est localement **sous-estimée** et l'exigence avec elle.
 Les `FAIL` publiés sont donc valides et probablement **sous-estimés** ; en
 revanche **aucun `PASS` de production ne pourrait être cru** sur cette base.
+
+## ISS-059 — fuites de fin de processus sur la suite COMPLÈTE : validate_fast ROUGE, préexistant — S3, OUVERT
+
+Constaté le 2026-08-18 au premier `validate_fast.sh` complet depuis V2.3-A.R
+(chaque passe R2a-3.x avait interdiction de le lancer). **Les 904 tests sont
+verts** ; le rouge vient du filtre N1 sur les diagnostics de sortie du
+processus : `3409 ObjectDB instances leaked`, `238 resources still in use`,
+fuites RID `DummyMaterial`/`DummyShader`/`DummyMesh`
+(`evidence/world_v2/v2_3_r2a/grotte/r2a358_lead/validation/`).
+
+**Préexistant, MESURÉ et non inféré** : la suite complète rejouée à la base
+`0b0ef54` (tête Codex, zéro commit R2a-3.5.8) porte la même signature aux
+comptes IDENTIQUES. La passe R2a-3.5.8 n'ajoute pas un objet à la fuite.
+
+**Ce qui est cerné** : la fuite n'apparaît sur AUCUN lot isolé — `boot_smoke`,
+`world_v2` (56 tests), `unit` (137), `boss_run`, `dungeon_run` sortent tous
+avec zéro ligne de fuite. Elle n'existe que sur le processus qui exécute la
+suite entière ; le lot `integration` seul dépasse 30 min et n'a pas pu être
+isolé dans le budget de la passe. Précédent : `42ee1db` (2026-08-09) — même
+famille de symptôme, cause d'alors : l'ambiance audio ; cause actuelle non
+identifiée, fenêtre de régression [`f550101` … `0b0ef54`].
+
+**Contournement** : aucun nécessaire pour juger un lot — tout filtre isolé
+est propre. **Règle maintenue** : le verdict validate_fast reste ROUGE tant
+que la cause n'est pas traitée ; un rouge préexistant ne se rebaptise pas
+vert (`PROMPT4_METHOD` §3, discipline du budget rouge).
+
+**Propriétaire** : prochaine session de dette technique — bissection par
+moitiés de la liste des tests dans un même processus, puis `--verbose` sur
+le sous-ensemble coupable.
