@@ -620,3 +620,85 @@ regarder.
 sature à **255** en pleine zone d'ombre. Ce n'est pas un placeholder — le
 recadrage montre une corolle sur tige, un asset de flore réel. Végétation gelée,
 je n'y touche pas ; c'est chaud pour §1.4 de la bible mais minuscule.
+
+## 18. Le socle est CONFIRMÉ par attribution indépendante — et deux mesures se recoupent
+
+L'audit a attribué la composante que j'avais seulement soupçonnée :
+
+| grandeur | sa mesure sur `c44f430b` | ma mesure sur l'état livré par A |
+|---|---|---|
+| taille | 92 173 px = **10,00 %** | **11,62 %** (et 10,12 % sur R2B.1) |
+| boîte | `X 3–949 · Y 542–703` | `X 3–949 · Y 530–703` |
+| couleur | RGB (65, 64, 59) | RGB (64, 64, 58) |
+| **attribution** | **`FERME_socle_bati` à 99,3 % de pureté** | — |
+
+**Boîtes identiques en X au pixel près**, 12 px d'écart en Y, couleurs à une
+unité par canal — deux instruments écrits séparément, deux états différents, le
+même objet. `FERME_socle_bati` ne contient que `Socle` comme géométrie **rendue** :
+`Fermette_plinthe` et `Fermette_sol` sont des `K.collider_box`, donc invisibles.
+Le terrain tombe dans `reste`, qui ne recueille que **0,7 %** de cette
+composante.
+
+**Ce n'est donc pas du sol à l'ombre. C'est du bâti, et c'est le socle.**
+
+Et l'audit a produit à cette occasion un cas témoin qui a **corrigé son propre
+attendu** : il attendait 1 composante pour une plaque neutre sur fond uni,
+l'outil en rend 2 — parce que **le fond est lui aussi parfaitement plat**. Son
+attendu était faux, le code avait raison. Conclusion qu'il en tire et que je
+reprends : **un `max` toutes teintes ne se lit jamais seul, il se lit avec
+l'identité de sa composante.** Ici 99,3 % de socle, et c'est ce qui en fait un
+constat plutôt qu'un chiffre.
+
+## 19. Une impression que la mesure N'A PAS confirmée
+
+Sur `ferme_laterale`, les deux pilastres clairs m'ont paru trop lumineux pour
+une ruine, et j'allais le signaler. Mesuré avant de le dire :
+
+| surface | luminance |
+|---|---:|
+| pilastre clair | **0,437** |
+| mur de pierre texturé | 0,267 |
+| gravats au pied | 0,278 |
+| pan de toit tombé | 0,184 |
+
+`VISUAL_ASSET_BIBLE` §1.5 place la roche entre **0,35 et 0,65**. Le pilastre à
+0,437 est **dans la bande** ; c'est le **mur**, à 0,267, qui est sous la bande —
+il tombe dans celle des ombres (0,18–0,38).
+
+Donc mon impression de contraste était réelle, mais mon diagnostic était
+inversé : le pilastre n'est pas trop clair, la maçonnerie texturée est trop
+sombre. Je ne renvoie rien à l'agent A sur cette base — un écart de valeur
+d'ensemble se juge à la revue visuelle, pas par un envoi de plus. Consigné pour
+qu'elle l'ait sous les yeux.
+
+## 20. Ce que la ferme donne à voir aujourd'hui, vue par vue
+
+Inspection en taille réelle des six captures de travail d'A.
+
+| vue | ce qui marche | ce qui reste |
+|---|---|---|
+| `ferme_seuil` | la pierre du kit se lit comme de la pierre appareillée à bout portant ; intérieur, chevrons et pan tombé lisibles | **le socle, 11,6 %, dalle grise unie** |
+| `ferme_laterale` | ruine crédible : toiture rompue, pan tombé, gravats texturés, poteaux | maçonnerie sous la bande de valeur (§19) |
+| `ferme_arriere` | maçonnerie texturée franche, chaînages d'angle nets | mur d'apparence intacte à ce cadrage |
+| `ferme_approche` | silhouette de ruine lisible à 16 m | un **grand pan crème sans matière** sur la face gauche |
+| `ferme_composition` | tuiles désaturées, ruine lisible à 19 m | la composante grise ici est le **relief de fond**, pas la ferme |
+| `ferme_arriere`/`approche` | — | — |
+
+Le geste le plus efficace de la passe est sans conteste la texture de kit sur la
+maçonnerie neuve : elle retire la lecture de plaque là où elle était la plus
+visible. Ce qui reste est **du bâti non texturable par UV** — socle et,
+probablement, le pan crème de `ferme_approche`.
+
+## 21. Note de périmètre — l'audit a écrit dans `tools/CLAUDE.md`
+
+La directive interdit aux agents de toucher à la documentation partagée. L'audit
+y a ajouté une règle locale de 16 lignes : `| head` tue un outil d'analyse par
+**SIGPIPE avant son `json.dump`**, la console affiche un résultat crédible et
+**aucun fichier n'est écrit** — piège payé deux fois dans la même passe, la
+seconde en croyant à un défaut de nommage.
+
+**J'intègre le contenu** : il est mesuré, daté, de la même famille que le piège
+de `flock` que je venais d'y consigner, et il appartient exactement à ce
+fichier. Je note l'écart de périmètre sans en faire une affaire — sa raison
+d'être était d'éviter les conflits d'édition, et ses seize lignes s'ajoutent en
+fin de fichier là où les miennes sont au milieu.
