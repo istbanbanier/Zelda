@@ -92,9 +92,24 @@ ANNEAU_SOUCHE = 16
 ANNEAU_MOITIE = 14
 ANNEAU_MEMBRE = 10
 
-# Azimuts BLENDER des trois extrémités. En Godot : −15° (vivant), +120°
-# (mort), +235° (membre). Écarts en plan 135° / 115° / 110° — inégaux à
-# dessein : trois directions équidistantes redonneraient une étoile.
+# Azimuts BLENDER des trois extrémités. En Godot : −15,0° (vivant),
+# +104,6° (mort), +222,1° (membre) — écarts en plan 119,6° / 117,5° /
+# 122,9°, donc PRESQUE ÉGAUX, et c'est voulu : trois masses réparties à
+# 120° sont ce qui rend l'emprise comparable sous tout azimut (anisotropie
+# mesurée 1,17). L'irrégularité qui compte n'est pas là — elle est dans
+# les SAILLIES, dont les écarts vont de 41° à 78°. Répartir les grandes
+# masses régulièrement et les petites irrégulièrement : l'inverse donne
+# soit un pilier, soit une étoile.
+# Les DEUX ruptures restent du côté frappé,
+# secteur 105..222, à l'opposé de la moitié survivante : elles
+# appartiennent à la même blessure (restriction du lead).
+#
+# Ces trois valeurs, les longueurs et les yaws de moignon viennent d'une
+# RECHERCHE SOUS CONTRAINTE, pas d'un réglage à la main : emprise au pire
+# azimut ≥ 4,0 m, anisotropie ≤ 1,24, écarts de saillie ≥ 26° et de
+# rapport max/min dans [1,4 ; 2,2]. Trois passes de tâtonnement n'y
+# arrivaient pas, parce que l'azimut APPARENT d'un moignon n'est pas son
+# yaw — le fût penche, et le décalage mesuré va de −18° à +35°.
 AZ_VIVANT = math.radians(15.0)
 AZ_MORT = math.radians(-104.6)
 AZ_MEMBRE = math.radians(137.9)
