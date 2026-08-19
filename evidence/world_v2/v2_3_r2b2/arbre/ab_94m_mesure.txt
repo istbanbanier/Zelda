@@ -1,0 +1,37 @@
+R2B.1  aire   271 px | boite  26 x  45 px | REMPLISSAGE  23.2 % | ouverture de fourche   4.0 deg | seuil 80 (fond 108)
+R2B.2  aire   271 px | boite  25 x  47 px | REMPLISSAGE  23.1 % | ouverture de fourche   3.5 deg | seuil 80 (fond 108)
+
+DELTA  aire +0.0 % | hauteur +2 px | largeur -1 px | remplissage -0.1 pt | ouverture -0.5 deg
+
+R2B.1  EMPRISE COMPLETE (brindilles comprises) : 1124 px sur une boite  69 x  78 -> remplissage  20.9 %
+R2B.2  EMPRISE COMPLETE (brindilles comprises) : 1001 px sur une boite  77 x  77 -> remplissage  16.9 %
+
+Echelle a cette camera : 6,82 px/m, soit 1 px = 0,147 m
+
+--- COMPTAGE PAR SEUIL DANS LA FENETRE DE L'ARBRE (79 x 79 px) ---
+R2B.1  pixels sombres 583 | pixels clairs 167 | somme 750
+R2B.2  pixels sombres 551 | pixels clairs 124 | somme 675   (-10,0 %)
+
+LECTURE HONNETE. Le NOYAU de silhouette — plus grosse composante connexe
+sombre ne touchant pas le bord — est INCHANGE : aire +0,0 %, hauteur +2 px,
+largeur -1 px, ouverture de fourche -0,5 deg, remplissage -0,1 pt. C'est la
+mesure de non-regression, et elle est verte.
+
+En revanche le COMPTAGE PAR SEUIL de l'occupation molle baisse de 10 %, et je
+n'en ai pas d'explication complete. L'hypothese « le bois pale remplace de
+l'ecorce sombre » est ECARTEE par la mesure : les pixels CLAIRS baissent aussi
+(167 -> 124). L'hypothese restante est que les facettes plus nombreuses
+(14->18 et 16->22 cotes) et les cannelures rapprochent les valeurs de la
+moyenne, si bien que moins de pixels franchissent l'un ou l'autre seuil. C'est
+un effet d'OMBRAGE, pas de silhouette.
+
+La comparaison visuelle des deux vignettes (ab_94m_zoom.png, x4) ne montre
+aucune perte de lisibilite : fourche, deux bras, couronne d'echardes et bois
+au pied sont au meme endroit et de la meme taille.
+
+RESERVE DE METHODE. Les deux images comparees viennent de commits differents
+(e2bf32ab pour R2B.1, c6ee953b pour R2B.2). La ROI est choisie serree autour
+de l'arbre pour exclure la ferme et tout ce qui a pu bouger ailleurs. La
+comparaison A/B a commit IDENTIQUE, GLB seul echange, n'a PAS pu etre faite :
+le verrou Godot est partage avec les sessions voisines et les deux tentatives
+ont expire. C'est une limite de cette passe, pas un resultat.
