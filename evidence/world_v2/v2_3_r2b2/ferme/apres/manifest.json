@@ -1,0 +1,118 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "d4b37a3eaf7e5f7e2292ce8f7c7212086ec2ad2e",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {
+    "generateur_ferme": {
+      "chemin": "source_assets/blender/architecture/make_farm_ruins.py",
+      "commit": "d4b37a3eaf7e5f7e2292ce8f7c7212086ec2ad2e",
+      "sha256": "35510a603a12dd90ecc938d24ea2091c71f8c31b2224e767c219f4b05ea9f159"
+    },
+    "glb_ferme": {
+      "chemin": "assets/architecture/farm/SM_Farm_Ruins.glb",
+      "commit": "d4b37a3eaf7e5f7e2292ce8f7c7212086ec2ad2e",
+      "sha256": "9c7b94e1848dc1a1d33967343ee1c2a7868b38ab239d003de6cf4dcbc3216b3c"
+    },
+    "lieu_ferme": {
+      "chemin": "scripts/world_v2/poi/abandoned_farm_place.gd",
+      "commit": "d4b37a3eaf7e5f7e2292ce8f7c7212086ec2ad2e",
+      "sha256": "297048d5105d4afe221fd173df67143474c532bcefca7395fd312c6645ebce30"
+    }
+  },
+  "renderer": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 60.0,
+      "from": [
+        -40.0,
+        7.0,
+        84.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b2/ferme/apres/ferme_approche.png",
+      "look": [
+        -52.0,
+        5.5,
+        92.0
+      ],
+      "name": "ferme_approche"
+    },
+    {
+      "fov": 52.0,
+      "from": [
+        -39.0,
+        9.5,
+        80.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b2/ferme/apres/ferme_composition.png",
+      "look": [
+        -52.0,
+        6.0,
+        91.0
+      ],
+      "name": "ferme_composition"
+    },
+    {
+      "fov": 50.0,
+      "from": [
+        -50.5,
+        6.6,
+        100.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b2/ferme/apres/ferme_facade.png",
+      "look": [
+        -53.5,
+        5.8,
+        91.5
+      ],
+      "name": "ferme_facade"
+    },
+    {
+      "fov": 50.0,
+      "from": [
+        -44.0,
+        6.6,
+        92.5
+      ],
+      "image": "evidence/world_v2/v2_3_r2b2/ferme/apres/ferme_laterale.png",
+      "look": [
+        -53.5,
+        5.6,
+        91.0
+      ],
+      "name": "ferme_laterale"
+    },
+    {
+      "fov": 52.0,
+      "from": [
+        -62.0,
+        7.4,
+        86.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b2/ferme/apres/ferme_arriere.png",
+      "look": [
+        -53.5,
+        5.6,
+        91.5
+      ],
+      "name": "ferme_arriere"
+    },
+    {
+      "fov": 66.0,
+      "from": [
+        -52.4,
+        6.2,
+        96.2
+      ],
+      "image": "evidence/world_v2/v2_3_r2b2/ferme/apres/ferme_seuil.png",
+      "look": [
+        -54.6,
+        5.4,
+        89.5
+      ],
+      "name": "ferme_seuil"
+    }
+  ],
+  "size": "1280x720"
+}

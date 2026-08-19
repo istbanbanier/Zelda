@@ -1,0 +1,46 @@
+=== DISTRIBUTION DES 29 GRAINES — CE QUE LE NOMBRE PROUVE ===
+date: 2026-08-19T19:22:37Z
+question du lead : est-ce la FAMILLE de géométrie qui passe, ou seulement
+la graine 6,3 ? Une graine est gratuite, donc la recherche est illimitée.
+Configuration ÉVALUÉE = celle du code : BRUIT 3,6 · DENT 3,2 · BASE 0,62 ·
+seconde dent à marches-3. Indicateur = min(résidu linéaire, résidu log)
+sur l'ARÊTE CONTIGUË seule. Plancher 12 %.
+
+graine  indicateur %%  dent m   passe 12 %%
+   0.7        15.7    0.538   OUI
+   1.4        18.3    0.568   OUI
+   2.1        17.4    0.457   OUI
+   2.8        13.7    0.396   OUI
+   3.5         9.7    0.271   non
+   4.2        14.1    0.345   OUI
+   4.9        15.0    0.206   OUI
+   6.3        21.8    0.552   OUI
+   7.0        16.0    0.564   OUI
+   7.7        26.0    0.653   OUI
+   8.4        17.4    0.465   OUI
+   9.1        15.7    0.489   OUI
+   9.8        11.1    0.322   non
+  10.5        14.5    0.373   OUI
+  11.2        14.6    0.238   OUI
+  12.6        20.5    0.520   OUI
+  13.3        16.5    0.593   OUI
+  14.0        24.5    0.616   OUI
+  14.7        17.5    0.476   OUI
+  15.4        15.8    0.540   OUI
+  16.1        10.9    0.348   non
+  16.8        15.4    0.382   OUI
+  17.5        14.2    0.240   OUI
+  18.2        11.6    0.257   non
+  18.9        12.0    0.248   non
+  19.6        18.4    0.569   OUI
+  20.3        24.4    0.608   OUI
+
+n = 27 graines evaluees
+  minimum   9.7 %
+  Q1        14.1 %
+  MEDIANE   15.7 %
+  Q3        17.9 %
+  maximum   26.0 %
+  passent le plancher de 12 % : 22 / 27  (81 %)
+  graine retenue 6,3 : 21.8 %  (rang 24/27 par valeur croissante)
+RC=0

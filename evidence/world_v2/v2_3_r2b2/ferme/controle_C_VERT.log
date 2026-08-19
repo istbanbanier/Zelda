@@ -1,0 +1,27 @@
+=== CONTRÔLE C — APLATS APRÈS LE GESTE, AVEC TÉMOIN GRIS ===
+date: 2026-08-19T19:24:39Z
+captures : evidence/world_v2/v2_3_r2b2/ferme/apres (six caméras IMPOSÉES de R2B.1)
+
+vue                    max % total % baseline  gris % grisMax  verdict
+ferme_approche          0.63    0.63     3.92    6.08    4.74     VERT
+ferme_arriere           1.28    3.95     6.89    0.78    0.33     VERT
+ferme_composition       0.84    0.84     3.03   11.63    6.50     VERT
+ferme_facade            0.27    0.50     4.83    5.42    1.47     VERT
+ferme_laterale          0.17    0.17    11.91    4.51    1.06     VERT
+ferme_seuil             2.92   20.16    23.74   13.71   11.62     VERT
+LIANT   : max <= 8.0 % (portail lead, importe) et composante unique <= 3.0 % (controle interne)
+TEMOINS : gris %% et grisMax — surface PLATE que le liant ne peut pas
+          voir (est_beige exige r > v > b strict). Publies sans
+          verdict ; attribution de la geometrie : audit independant.
+TEMOINS : total % et ecart a la baseline R2B — publies SANS verdict ; le seuil total <= 12.0 % a ete RETIRE par le lead le 2026-08-19 (plancher de kit mesure a 21,85 / 26,37 % sur ferme_seuil, zero piece ajoutee). Voir l'en-tete du fichier.
+VERT : les six vues passent les trois criteres
+RC=0
+
+--- RAPPEL : même mesure sur l'état R2B.1 (avant ce lot) ---
+ferme_approche          0.80    1.43     3.92    6.08    4.74     VERT
+ferme_arriere           1.25    4.05     6.89    0.78    0.33     VERT
+ferme_composition       0.84    1.52     3.03   11.65    6.50     VERT
+ferme_facade            1.29    6.49     4.83    5.46    1.47     VERT
+ferme_laterale          3.15   11.99    11.91    5.07    0.99    ROUGE
+ferme_seuil             7.32   35.34    23.74   10.45   10.12    ROUGE
+LIANT   : max <= 8.0 % (portail lead, importe) et composante unique <= 3.0 % (controle interne)

@@ -1,0 +1,19 @@
+=== CONTRÔLE D2 DURCI — IRRÉGULARITÉ DE L'ARRACHEMENT, ROUGE AVANT LE GESTE ===
+date:   2026-08-19T18:43:15Z
+profil: evidence/world_v2/v2_3_r2b2/ferme/profil_arase_nord.log (sonde Godot)
+origine: relevé du lead, 2026-08-19 — « le sommet de chaque gradin est posé
+         exactement sur la diagonale ». σ mesure la dispersion, pas
+         l'irrégularité : une diagonale parfaite a une grande dispersion.
+
+profil, 25 colonnes de 0,25 m :
+  3.00 3.12 3.12 3.12 3.12 3.12 3.12 3.12 3.12 3.12 3.12 3.12 3.12 3.12 3.12 3.12 3.12 2.68 2.46 2.24 2.03 1.81 1.59 1.45 1.14
+
+critere 1  RESIDU   : RMS 0.0256 m / amplitude 1.540 m = 1.7 %   (min 12 %)  -> ROUGE
+critere 2  DENT     : plus grand residu positif +0.061 m        (min 0,25 m) -> ROUGE
+critere 3  PLATEAU  : 16 colonnes identiques d'affilee = 4.00 m   (max 10)     -> ROUGE
+
+cause, ecrite noir sur blanc dans _gradins (make_farm_ruins.py) :
+    x1 += _graine(i * 5.1) * 0.16      <- bruit sur la LONGUEUR
+    z_haut = z_depart + (z_fin - z_depart) * t0   <- aucun bruit
+Le jitter porte sur la longueur des marches, jamais sur leur hauteur.
+RC=1

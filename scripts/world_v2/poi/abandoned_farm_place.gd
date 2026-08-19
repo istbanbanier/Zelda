@@ -112,6 +112,34 @@ const TEINTES_TEXTUREES: Dictionary = {
 	"MAT_Farm_Tiles": Color(0.68, 0.56, 0.48),
 }
 
+## LE SOCLE, ET POURQUOI IL EST À PART.
+##
+## `_socle_assises()` lofte `SM_Village_Wall.glb` : deux primitives, **zéro
+## UV0**, et golden master GELÉ (`GM_BASELINE_SHA256.txt` ligne 6, sha
+## 24f39047…). Il ne peut donc pas recevoir de texture par dépliage — ni ici,
+## ni ailleurs, sans toucher à un fichier interdit. Résultat mesuré par le lead
+## sur `ferme_seuil` : 132 pixels de haut à (64-65, 64, 59), écart max-min de
+## SIX, arête supérieure franche. Une dalle grise unie, la plus grande surface
+## plate de la vue décisive — et le point 4 de la directive mot pour mot.
+##
+## `StandardMaterial3D` sait plaquer SANS UV. Les trois propriétés ont été
+## VÉRIFIÉES présentes et affectables sur le moteur 4.7.1-stable installé le
+## 2026-08-19, jamais reprises de mémoire (règle du projet : ne jamais
+## halluciner une propriété Godot).
+##
+## `uv1_world_triplanar = true` ET NON LOCAL, et c'est mesuré, pas préféré :
+## chaque run de socle porte `scale.x = longueur / ASSISE_L`. Une projection
+## LOCALE se ferait étirer par cette échelle, différemment sur chaque côté du
+## bâtiment. La projection MONDE ignore l'échelle du nœud et donne la même
+## pierre aux quatre runs. Le socle ne bouge jamais : la contrepartie
+## habituelle du triplanaire monde — la texture qui glisse quand l'objet se
+## déplace — ne s'applique pas.
+const SOCLE_TRIPLANAIRE_UV_M: float = 0.48
+const SOCLE_TEXTURES: Array[String] = ["T_UnevenBrick_BaseColor",
+	"T_UnevenBrick_Normal", "T_UnevenBrick_Roughness"]
+## Plus sombre que les murs : une plinthe porte, elle ne brille pas.
+const SOCLE_TEINTE: Color = Color(0.74, 0.62, 0.50)
+
 static var _cache_materiaux: Dictionary = {}
 
 
@@ -456,9 +484,10 @@ func _socle_assises(house: Node3D, half: float, drop: float) -> void:
 		assise.position = depart
 		assise.rotation.y = deg_to_rad(yaw)
 		assise.scale = Vector3(longueur / ASSISE_L, 1.0, 1.0)
-		# ×1,55 : mesuré sur `ferme_proche` — à l'ombre des faces est et
-		# nord, la pierre du hameau rendait un bandeau noir sous les murs.
-		_peindre_glb(assise, 1.55)
+		# TRIPLANAIRE : ce maillage n'a pas d'UV0 et son GLB est gelé. Le gain
+		# de 1,55 tombe — il corrigeait une pierre UNIE à l'ombre, or c'est la
+		# carte qui porte désormais la variation.
+		_peindre_glb(assise, 1.0, true)
 		# L'appui du run, au sol du lieu (coordonnées locales du lieu).
 		var milieu: Vector3 = house.position + (depart + Vector3(
 			cos(deg_to_rad(yaw)) * longueur * 0.5, 0.0,
@@ -477,7 +506,8 @@ func _socle_assises(house: Node3D, half: float, drop: float) -> void:
 ## (albédo 0,232) vit ici sur les faces à l'OMBRE et rendait un bandeau
 ## NOIR — le gain réel du monde à l'ombre est bien plus bas que le ×1,8
 ## du plein soleil (scripts/CLAUDE.md, gain non linéaire).
-func _peindre_glb(racine: Node3D, gain: float = 1.0) -> void:
+func _peindre_glb(racine: Node3D, gain: float = 1.0,
+		triplanaire: bool = false) -> void:
 	for node: Node in racine.find_children("*", "MeshInstance3D", true, false):
 		var instance: MeshInstance3D = node as MeshInstance3D
 		if instance.mesh == null:
@@ -488,14 +518,41 @@ func _peindre_glb(racine: Node3D, gain: float = 1.0) -> void:
 			if base == null:
 				continue
 			var famille: String = base.resource_name
-			var cle: String = "glb|%d|%.2f" % [base.get_instance_id(), gain]
+			# LA CLÉ PORTE LE MODE, et ce n'est pas cosmétique : sans lui, un
+			# appelant NON triplanaire recevrait le matériau triplanaire déjà
+			# mis en cache pour le socle. Le cache est déjà `static` sur cette
+			# CLASSE seule — le hameau de la rivière, qui partage le même GLB,
+			# a le sien — mais un mode manquant dans la clé rouvrirait la fuite
+			# à l'intérieur même de la ferme.
+			var cle: String = "glb|%d|%.2f|%s" % [base.get_instance_id(), gain,
+				"tri" if triplanaire else "uv"]
 			var mat: StandardMaterial3D = \
 				_cache_materiaux.get(cle) as StandardMaterial3D
 			if mat == null:
+				# DUPLIQUÉ, TOUJOURS : on ne touche jamais le matériau importé,
+				# qui est partagé avec le hameau GELÉ. `set_surface_override_
+				# material` ci-dessous n'écrit que sur CETTE instance.
 				mat = base.duplicate() as StandardMaterial3D
 				mat.roughness = maxf(mat.roughness, 0.95)
 				mat.metallic_specular = 0.1
-				if TEXTURES_PAR_MATERIAU.has(famille):
+				if triplanaire:
+					mat.albedo_texture = load(
+						TEX_DIR + SOCLE_TEXTURES[0] + ".png") as Texture2D
+					var n_socle: Texture2D = load(
+						TEX_DIR + SOCLE_TEXTURES[1] + ".png") as Texture2D
+					if n_socle != null:
+						mat.normal_enabled = true
+						mat.normal_texture = n_socle
+						mat.normal_scale = 0.55
+					mat.roughness_texture = load(
+						TEX_DIR + SOCLE_TEXTURES[2] + ".png") as Texture2D
+					mat.roughness = 1.0
+					mat.uv1_triplanar = true
+					mat.uv1_world_triplanar = true
+					mat.uv1_scale = Vector3(SOCLE_TRIPLANAIRE_UV_M,
+						SOCLE_TRIPLANAIRE_UV_M, SOCLE_TRIPLANAIRE_UV_M)
+					mat.albedo_color = SOCLE_TEINTE
+				elif TEXTURES_PAR_MATERIAU.has(famille):
 					# TEXTURÉE : la teinte REMPLACE l'albédo plat, elle ne le
 					# multiplie pas — la couleur plate du générateur était la
 					# couleur finale, la garder assombrirait la carte deux fois.

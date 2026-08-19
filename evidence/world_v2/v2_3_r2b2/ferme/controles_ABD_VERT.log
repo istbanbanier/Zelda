@@ -1,28 +1,8 @@
-=== CONTRÔLES A / B / D — VERTS APRÈS LE GESTE ===
-date: 2026-08-19T16:49:13Z
-cmd:  godot --headless --path . --script tools/godot/test_runner.gd -- --filter=r2b2_ferme,ferme,farm
+=== CONTRÔLES A/B/D + FILETS VOISINS — VERTS APRÈS LE GESTE ===
+commit HEAD au moment du jeu : d115d3b34e263657d7225ee194511c0a947fb3a6
+date: 2026-08-19T19:18:51Z
+cmd:  godot --headless --path . --script tools/godot/test_runner.gd -- --filter=r2b2_ferme,r2b1_ferme,r2b_farm
 
-Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
-
-=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
-filtre: r2b2_ferme,ferme,farm
-  ok   test_world_v2_r2b1_ferme.gd::test_l_arase_de_maconnerie_casse (2 assertions)
-  ok   test_world_v2_r2b1_ferme.gd::test_des_pans_de_mur_s_arretent_a_mi_hauteur (2 assertions)
-  ok   test_world_v2_r2b1_ferme.gd::test_le_pignon_est_rompu_et_massif (2 assertions)
-  ok   test_world_v2_r2b1_ferme.gd::test_la_masse_effondree_git_au_pied_de_la_breche (2 assertions)
-  ok   test_world_v2_r2b1_ferme.gd::test_l_interieur_n_est_pas_une_coque_vide (2 assertions)
-  ok   test_world_v2_r2b1_ferme.gd::test_le_verger_est_un_alignement (2 assertions)
-  ok   test_world_v2_r2b1_ferme.gd::test_la_face_brique_des_murs_regarde_dehors (2 assertions)
-  ok   test_world_v2_r2b1_ferme.gd::test_le_budget_tient_et_les_pieces_r2b_survivent (1 assertions)
-  ok   test_world_v2_r2b2_ferme.gd::test_chaque_piece_porte_uv0_et_une_texture (2 assertions)
-  ok   test_world_v2_r2b2_ferme.gd::test_les_pieces_frontales_entrent_dans_le_mur (1 assertions)
-  ok   test_world_v2_r2b2_ferme.gd::test_le_pignon_est_solidaire_du_mur_nord (2 assertions)
-  ok   test_world_v2_r2b2_ferme.gd::test_le_sommet_du_mur_nord_manque (2 assertions)
-  ok   test_world_v2_r2b_farm_tree.gd::test_zero_bloc_procedural_hors_exemption_nommee (2 assertions)
-  ok   test_world_v2_r2b_farm_tree.gd::test_la_charpente_est_portee_par_ses_murs (2 assertions)
-  ok   test_world_v2_r2b_farm_tree.gd::test_l_arbre_est_un_asset_glb_valide (2 assertions)
-  ok   test_world_v2_r2b_farm_tree.gd::test_le_pipeline_blender_est_frais_et_verifie (1 assertions)
 erreurs de script dans le journal : 0
-
 === RÉSULTAT: 16 réussi(s), 0 échoué(s) ===
 RC=0

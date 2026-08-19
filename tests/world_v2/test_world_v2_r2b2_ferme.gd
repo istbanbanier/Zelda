@@ -43,6 +43,10 @@ extends GateTestCase
 
 const FARM_SCENE: String = "res://scenes/world_v2/poi/AbandonedFarmPlace.tscn"
 const FARM_GLB: String = "res://assets/architecture/farm/SM_Farm_Ruins.glb"
+## Le golden master du socle, GELÉ (`GM_BASELINE_SHA256.txt` ligne 6,
+## sha 24f39047…) et SANS UV0 sur ses deux primitives — mesuré le 2026-08-19.
+## Il sert aussi au hameau de la rivière, lieu GELÉ ayant passé sa revue.
+const MUR_GLB: String = "res://assets/architecture/village/SM_Village_Wall.glb"
 
 ## Arase mesurée du module de mur (`probe_kit_seating`, 2026-08-19).
 const ARASE_M: float = 3.12
@@ -124,6 +128,93 @@ const NORD_PLAT_TOLERANCE_M: float = 0.02
 ## La partie « descendante » : tout ce qui est nettement sous le point haut.
 const NORD_DESCENTE_MARGE_M: float = 0.30
 const NORD_DESCENTE_MIN_COLONNES: int = 5
+
+
+## -- E. Le socle porte la matière, et le gelé n'a pas bougé ------------------
+##
+## LA PLUS GRANDE SURFACE PLATE DE LA VUE DÉCISIVE. Coupe verticale du lead
+## dans `ferme_seuil` à x = 300 : 132 pixels de haut à (64-65, 64, 59), écart
+## max-min de 6, arête supérieure franche — une dalle grise absolument unie
+## entre la maçonnerie et le gazon. C'est le point 4 de la directive, mot pour
+## mot : « supprimer toute lecture de panneau beige ou de carton découpé ».
+##
+## SA CAUSE N'EST PAS UN OUBLI : `_socle_assises()` lofte `SM_Village_Wall.glb`,
+## qui n'a AUCUN UV0 et qui est un golden master INTERDIT DE MODIFICATION. Le
+## socle ne peut donc pas recevoir de texture par dépliage. `StandardMaterial3D`
+## sait projeter SANS UV — `uv1_triplanar`, vérifié PRÉSENT et affectable sur le
+## moteur 4.7.1-stable installé le 2026-08-19, jamais supposé de mémoire.
+##
+## ET LE RISQUE DE PÉRIMÈTRE EST CONTRÔLÉ ICI, pas espéré : le même GLB sert au
+## hameau de la rivière. Un matériau modifié en amont — base non dupliquée,
+## cache partagé, ressource importée — changerait un lieu gelé. Le second volet
+## de ce contrôle recharge le GLB à neuf et exige que son matériau de base soit
+## RESTÉ nu.
+
+func test_le_socle_porte_la_matiere_sans_toucher_au_gele() -> void:
+	remember_root()
+	var faults: Array[String] = []
+	var place: Node3D = _mount_alone(FARM_SCENE)
+	var surfaces: int = 0
+	if place == null:
+		faults.append("ferme : la scène ne se monte pas seule")
+	else:
+		await _tree().process_frame
+		var socle: Node3D = _named_child(place, "Socle")
+		if socle == null:
+			faults.append("aucun nœud « Socle »")
+		else:
+			for child: Node in socle.find_children("*", "MeshInstance3D",
+					true, false):
+				var mi: MeshInstance3D = child as MeshInstance3D
+				if mi.mesh == null:
+					continue
+				for s: int in range(mi.mesh.get_surface_count()):
+					surfaces += 1
+					var mat: StandardMaterial3D = mi.get_active_material(s) \
+						as StandardMaterial3D
+					if mat == null or mat.albedo_texture == null:
+						faults.append("socle %s s%d : aucune albedo_texture "
+							% [mi.name, s] + "— dalle unie, la matière du kit "
+							+ "n'est pas reprise")
+						continue
+					if not mat.uv1_triplanar:
+						faults.append("socle %s s%d : texture posée sans "
+							% [mi.name, s] + "triplanaire, or ce maillage n'a "
+							+ "PAS d'UV0 — la carte ne peut pas se plaquer")
+			if surfaces < 4:
+				faults.append("%d surface(s) de socle inspectée(s) (plancher "
+					% surfaces + "4, un run par côté) — le contrôle ne regarde "
+					+ "rien")
+		_dismount(place)
+	# LE GELÉ : rechargé À NEUF, il doit être resté nu.
+	var packed: PackedScene = load(MUR_GLB) as PackedScene
+	if packed == null:
+		faults.append("le golden master de socle ne se charge pas")
+	else:
+		var racine: Node3D = packed.instantiate() as Node3D
+		for child: Node in racine.find_children("*", "MeshInstance3D", true,
+				false):
+			var mi: MeshInstance3D = child as MeshInstance3D
+			if mi.mesh == null:
+				continue
+			for s: int in range(mi.mesh.get_surface_count()):
+				var base: StandardMaterial3D = mi.mesh.surface_get_material(s) \
+					as StandardMaterial3D
+				if base == null:
+					continue
+				if base.albedo_texture != null or base.uv1_triplanar:
+					faults.append("FUITE DE PÉRIMÈTRE : le matériau de base de "
+						+ "%s a été modifié (texture=%s, triplanar=%s) — le " \
+						% [MUR_GLB, base.albedo_texture != null,
+						   base.uv1_triplanar]
+						+ "hameau de la rivière est GELÉ et partage ce GLB")
+		racine.free()
+	check(faults.is_empty(),
+		"le socle porte la matière du kit par triplanaire (%d surface(s)) et "
+		% surfaces + "le golden master partagé reste nu (%d écart(s)) — %s"
+		% [faults.size(), _capped(faults)])
+	var clean: bool = await restore_root()
+	check(clean, "démontage propre (socle) — %s" % restore_root_reason())
 
 
 func _tree() -> SceneTree:

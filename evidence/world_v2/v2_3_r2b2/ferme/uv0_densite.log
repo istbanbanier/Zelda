@@ -1,0 +1,55 @@
+=== DENSITÉ UV MESURÉE PAR AIRE (tuiles/m) ===
+date: 2026-08-19T19:03:40Z
+
+RÉPONSE À LA QUESTION DU LEAD. Mon premier relevé (uv0_echelle.log,
+supprimé) divisait l'ÉTENDUE UV d'une primitive par la plus grande
+dimension de sa BOÎTE ENGLOBANTE. Sur une poutre de 6 m de long et 0,14 m
+de section, la composante V traverse la SECTION — 0,09 UV — et se trouvait
+divisée par 6 m : 0,015 UV/m. Le chiffre ne décrivait rien. Le lead avait
+raison de douter du CHIFFRE ; l'erreur était dans l'instrument, pas dans
+le dépliage. La grandeur juste est invariante par forme :
+    densite = sqrt( somme(aires_uv) / somme(aires_monde) )   [tuiles/m]
+Outil : tools/mesure_densite_uv.py. Noms de matériau COMPLETS.
+
+=== assets/environment/dungeon/Wall_UnevenBrick_Straight.gltf ===
+piece                        materiau                  aire m2    aire UV  tuiles/m
+Cube.059                     MI_WoodTrim                 2.253      0.562     0.499
+Cube.059                     MI_Plaster                  6.000      1.250     0.456
+Cube.059                     MI_UnevenBrick              6.000      1.423     0.487
+=== assets/environment/village/Roof_Dormer_RoundTile.gltf ===
+piece                        materiau                  aire m2    aire UV  tuiles/m
+Cube.197                     MI_WoodTrim                17.901      9.133     0.714
+Cube.197                     MI_Plaster                  7.951      0.414     0.228
+Cube.197                     MI_WindowGlass              0.685     28.409     6.439
+Cube.197                     MI_RoundTiles              13.021      0.668     0.226
+=== assets/environment/village/Roof_FrontSupports.gltf ===
+piece                        materiau                  aire m2    aire UV  tuiles/m
+Cube.108                     MI_WoodTrim                 5.402      1.104     0.452
+=== assets/architecture/farm/SM_Farm_Ruins.glb ===
+piece                        materiau                  aire m2    aire UV  tuiles/m
+SM_Farm_Truss                MAT_Farm_Wood              26.415     12.161     0.679
+SM_Farm_Truss                MAT_Farm_BrokenWood         0.326      0.188     0.760
+SM_Farm_RoofPan_Intact       MAT_Farm_Wood               2.773      2.031     0.856
+SM_Farm_RoofPan_Intact       MAT_Farm_Tiles             58.493      2.532     0.208
+SM_Farm_RoofPan_Fallen       MAT_Farm_Wood               2.930      1.747     0.772
+SM_Farm_RoofPan_Fallen       MAT_Farm_Tiles             24.330      4.500     0.430
+SM_Farm_Debris_A             MAT_Farm_Wood               1.513      0.756     0.707
+SM_Farm_Debris_A             MAT_Farm_Tiles              2.434      3.546     1.207
+SM_Farm_Debris_A             MAT_Farm_BrokenWood         0.029      0.010     0.583
+SM_Farm_Debris_B             MAT_Farm_Wood               1.182      0.656     0.745
+SM_Farm_Debris_B             MAT_Farm_Tiles              2.969      4.260     1.198
+SM_Farm_Debris_B             MAT_Farm_BrokenWood         0.029      0.010     0.583
+SM_Farm_GableBreak           MAT_Farm_Stone             23.126      5.300     0.479
+SM_Farm_WallStub_East        MAT_Farm_Stone              7.442      1.707     0.479
+SM_Farm_Rubble_Wall          MAT_Farm_Wood               1.069      0.524     0.700
+SM_Farm_Rubble_Wall          MAT_Farm_BrokenWood         0.065      0.024     0.604
+SM_Farm_Rubble_Wall          MAT_Farm_Stone             11.257      2.586     0.479
+SM_Farm_Jamb_Door            MAT_Farm_Stone             10.559      2.431     0.480
+SM_Farm_Jamb_Breach          MAT_Farm_Stone              7.789      1.793     0.480
+SM_Farm_InteriorFrame        MAT_Farm_Wood               9.419      1.513     0.401
+SM_Farm_JoistStubs           MAT_Farm_Wood               2.070      0.874     0.650
+SM_Farm_JoistStubs           MAT_Farm_BrokenWood         0.261      0.091     0.589
+SM_Farm_JoistStubs           MAT_Farm_Stone              0.871      0.200     0.479
+SM_Farm_WallBreak_North      MAT_Farm_Stone             33.200      7.624     0.479
+SM_Farm_Rubble_North         MAT_Farm_Stone             10.528      2.418     0.479
+RC=0

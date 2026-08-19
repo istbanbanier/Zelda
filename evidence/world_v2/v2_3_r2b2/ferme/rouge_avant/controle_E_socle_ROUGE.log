@@ -1,0 +1,8 @@
+=== CONTRÔLE E — LE SOCLE, ROUGE AVANT LE GESTE ===
+date: 2026-08-19T19:27:58Z
+uv1_triplanar vérifié PRÉSENT sur le moteur installé (4.7.1-stable) avant usage.
+golden master SM_Village_Wall.glb : sha 24f39047… = baseline ligne 6, 0 UV0.
+
+  ÉCHEC test_world_v2_r2b2_ferme.gd::test_le_socle_porte_la_matiere_sans_toucher_au_gele — le socle porte la matière du kit par triplanaire (4 surface(s)) et le golden master partagé reste nu (4 écart(s)) — socle SM_VillageWall_Course s0 : aucune albedo_texture — dalle unie, la matière du kit n'est pas reprise ; socle SM_VillageWall_Course s0 : aucune albedo_texture — dalle unie, la matière du kit n'est pas reprise ; socle SM_VillageWall_Course s0 : aucune albedo_texture — dalle unie, la matière du kit n'est pas reprise ; socle SM_VillageWall_Course s0 : aucune albedo_texture — dalle unie, la matière du kit n'est pas reprise
+=== RÉSULTAT: 4 réussi(s), 1 échoué(s) ===
+RC=0
