@@ -363,3 +363,38 @@ Sous cette réserve, un fait tient déjà : **le `max` de l'arbre ne dépasse ja
 2,17 %**, contre 7,32 % pour la ferme. L'arbre n'a pas le défaut d'aplat de la
 ferme, même sans aucune texture. Cela ne dispense pas de le mesurer proprement ;
 cela dit seulement où porter l'attention.
+
+## 14. Portée exacte de tout ce qui précède — et l'engagement qui va avec
+
+L'audit indépendant a posé la limite, et elle est juste :
+
+> une mesure prise sur un arbre de travail atteste **cet arbre**, pas le
+> livrable.
+
+C'est la règle établie en R2B.1, où `9aa8978806` et `b75e3e5215` n'étaient
+ancêtres ni l'un ni l'autre de `e2bf32ab59`. Elle s'applique **à moi** ici :
+les §2, §3, §4, §6, §7, §8 et §9 ci-dessus portent sur les arbres de travail
+d'A et de B, pas sur ce que je livrerai.
+
+**Engagement, sans exception :** chacune de ces mesures est **rejouée sur le SHA
+intégré** avant tout verdict. Un écart entre les deux ne serait pas un détail —
+ce serait la preuve que l'intégration a changé quelque chose que personne n'a
+vu, et il serait rapporté comme tel.
+
+Les §1, §10, §11 et §13 échappent à cette réserve : le manifeste et les caméras
+sont lus dans git et non dans un rendu, et la mesure d'aplats du §13 porte sur
+des captures **déjà committées** de R2B et R2B.1.
+
+### Un chiffre de plus, apporté par l'audit en recoupant les miens
+
+L'audit a refait mon arithmétique de fourche — divergence `|+15,0 − (−104,6)|
+= 119,6°`, et `atan(2,744 / 94) = 100,3′` — puis a tiré le nombre que ni le
+meilleur ni le pire azimut ne montrent seuls :
+
+> **rapport 4,1× entre le meilleur azimut (4,319 m) et le pire (0,675 m).**
+
+Il dit que la lisibilité de la fourche **dépend fortement de l'azimut**. La
+caméra de référence à 000° est à 2,744 m, dans la moitié haute de cette plage,
+mais un observateur libre à 30° verra quatre fois moins d'écart. Publié tel
+quel : c'est une propriété de l'objet, pas un défaut, et la revue visuelle doit
+l'avoir sous les yeux plutôt que de la découvrir en tournant autour.
