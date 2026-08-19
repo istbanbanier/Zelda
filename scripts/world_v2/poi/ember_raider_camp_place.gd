@@ -18,7 +18,23 @@
 ##    du kit est REMPLACÉE, pas multipliée) — fini le bleu ;
 ##  - appentis `Roof_Wooden_2x1` charbon sur poteaux inégaux — plus de
 ##    toile commune (`AwningTent`) avec le camp du joueur ;
-##  - butin : `Shield_Wooden`, `Chain_Coil`, `Prop_Wagon` renversé.
+##  - butin : `Prop_Wagon` renversé, `WeaponStand`, `Crate_Wooden`.
+##
+## R2B.1 (2026-08-19) — BUDGET. Le lieu montait 54 modules pour un
+## plafond de 45 (`WORLD_V2_POI_CONTRACTS.md` §4). Le lead a arbitré la
+## coupe de NEUF modules, choisis par emprise écran mesurée aux cinq
+## plans de preuve, sans toucher à la composition validée :
+##  - `Pouch_Large` et les deux poteaux ARRIÈRE de l'appentis —
+##    invisibles (≤ 0,088 % de cadre), les seconds occultés par le toit
+##    qu'ils portaient ;
+##  - le MENU butin `Pot_1`, `Shield_Wooden`, `Chain_Coil` — le tas
+##    survit par `Prop_Wagon`, `WeaponStand` et `Crate_Wooden` ;
+##  - trois des quatre poteaux de palissade (100°, 200°, 280°), bâtons
+##    de 0,25 m plantés contre des panneaux de 3,5 m ; le poteau 0°
+##    reste, ainsi que les 12 panneaux et les 4 coupures d'éboulis.
+## INTOUCHÉS : guet, enceinte, chicots, trois approches, seuil, foyer
+## mort, sentier d'usure, teintes et positions. Le contrôle exécutable
+## du plafond vit dans `tests/world_v2/test_world_v2_r2b1_braise.gd`.
 ##
 ## INCHANGÉS (contrat R2B) : les brèches ouest/NE, le flanc éboulé
 ## 203–244° borné ≤ 1,0 m (mesure `camp_braise_approche` en tête du
@@ -125,7 +141,13 @@ func _palisade() -> void:
 			facing, fence_scale, K.TONE_CHARRED)
 		if fence != null:
 			fence.rotation.z = deg_to_rad(lean)
-		if kind == 1:
+		if index == 1:
+			# UN SEUL poteau sur l'anneau (R2B.1, arbitrage du lead du
+			# 2026-08-19). Les trois autres — 100°, 200°, 280° — étaient des
+			# bâtons de 0,22–0,31 m plantés CONTRE un panneau de 3,3–4,0 m
+			# dont l'emprise écran vaut 10 à 30 fois la leur (mesuré : 1,10 /
+			# 1,05 / 0,31 % de cadre cumulés sur les cinq plans de preuve).
+			# Coupés pour tenir le plafond §4 sans toucher aux panneaux.
 			# Le poteau qui tient le tronçon : décalé le long de la
 			# tangente, légèrement hors d'aplomb lui aussi.
 			var tangent: Vector3 = Vector3(-sin(radians), 0.0, cos(radians))
@@ -253,7 +275,8 @@ func _hearth_zone() -> void:
 	_lean_to("AppentisNord", 2.6, 4.9, 196.0, 1.0)
 	# Toiles de rechange et paquetage roulés, groupés PAR USAGE.
 	K.module(self, &"Bag", _seated(1.6, 3.4), 25.0, 1.0, K.TONE_CLOTH)
-	K.module(self, &"Pouch_Large", _seated(2.3, 2.7), 0.0, 1.0, K.TONE_CLOTH)
+	# (`Pouch_Large` coupé en R2B.1 : 0,16 × 0,23 m, 0,028 % de cadre au
+	# mieux des cinq plans — invisible à toute caméra de preuve.)
 	K.stone_block(self, "ToileRoulee", _seated(-3.0, -2.9)
 		+ Vector3(0.0, 0.22, 0.0), Vector3(1.7, 0.44, 0.44), 28.0,
 		EMBER_CLOTH, 10040, 0.14)
@@ -273,10 +296,12 @@ func _lean_to(lean_name: String, local_x: float, local_z: float,
 	lean.scale = Vector3.ONE * factor
 	add_child(lean)
 	declare_support(lean.position)
-	# Deux poteaux hauts devant (0,55/0,48 → 1,65 m et 1,44 m), deux
-	# chicots derrière (0,40 m et 0,54 m) : rien d'aplomb, rien d'égal.
-	for post: Array in [[-1.0, 0.7, 0.55, 3.0], [1.0, 0.7, 0.48, -4.0],
-			[-1.0, -0.8, 0.18, 2.0], [1.0, -0.8, 0.13, -3.0]]:
+	# Deux poteaux hauts devant (0,55/0,48 → 1,65 m et 1,44 m), inégaux et
+	# hors d'aplomb. Les deux chicots ARRIÈRE (0,54 m et 0,39 m) sont
+	# coupés en R2B.1 : mesurés à 0,088 % et 0,036 % de cadre au mieux des
+	# cinq plans, ils étaient OCCULTÉS par le toit qu'ils portaient
+	# (8,73 % au guet à lui seul). Les deux poteaux avant portent seuls.
+	for post: Array in [[-1.0, 0.7, 0.55, 3.0], [1.0, 0.7, 0.48, -4.0]]:
 		var upright: Node3D = K.module(lean, &"Corner_Exterior_Wood",
 			Vector3(float(post[0]), 0.0, float(post[1])), 0.0,
 			float(post[2]), K.TONE_CHARRED)
@@ -335,15 +360,10 @@ func _retreat_zone() -> void:
 	# Le butin, entassé sous la plateforme et derrière : ce qu'ils ont
 	# pris, ce qu'on reprend.
 	K.module(self, &"Crate_Wooden", _seated(7.6, 3.5), 30.0, 1.0, K.TONE_CHARRED)
-	K.module(self, &"Pot_1", _seated(4.9, 6.4), 0.0, 1.0, K.TONE_STONE)
-	var shield: Node3D = K.module(self, &"Shield_Wooden", _seated(5.0, 4.35),
-		200.0, 1.0, K.TONE_CHARRED)
-	if shield != null:
-		# Pivot CENTRÉ en Y (sonde d'assise) : posé au sol il serait à
-		# moitié enterré — remonté d'une demi-hauteur, adossé au montant.
-		shield.rotation.z = deg_to_rad(14.0)
-		shield.position.y += 0.32
-	K.module(self, &"Chain_Coil", _seated(7.0, 4.3), 55.0, 1.0, K.TONE_STONE)
+	# Le MENU butin — `Pot_1` (0,22 m), `Shield_Wooden` (0,75 m) et
+	# `Chain_Coil` (galette de 0,09 m, 3 744 tris) — est coupé en R2B.1 :
+	# 0,230 / 0,803 / 0,858 % de cadre au mieux des cinq plans. Le TAS
+	# reste lisible par ses trois grosses pièces, ci-dessus et ci-dessous.
 	# Le wagon renversé : le pillage interrompu, couché sur le flanc.
 	var wagon: Node3D = K.module(self, &"Prop_Wagon", _seated(7.4, 1.6),
 		305.0, 0.9, K.TONE_CHARRED)
