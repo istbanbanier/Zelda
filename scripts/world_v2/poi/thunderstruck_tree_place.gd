@@ -35,12 +35,16 @@ const ARBRE_SCENE: PackedScene = preload(
 ## Terre vitrifiée sous l'impact. Mesuré : à 0,31 la galette ressortait
 ## PLUS CLAIRE que la prairie — le gain de lumière de ce monde est ≈ 1,8
 ## (`scripts/CLAUDE.md`), donc une « terre brûlée » d'albédo 0,31 rend
-## 0,56. Abaissée pour que la brûlure lise comme une brûlure.
-const SCORCH: Color = Color(0.17, 0.15, 0.13)
-## 4,6 m : le disque doit ATTEINDRE la lisière du tapis de fleurs gelé
-## (mesuré à ≈ 8 m du pied) sans la franchir — c'est lui qui tient le
-## premier plan de la vue de composition.
-const SCORCH_RADIUS_M: float = 4.6
+## 0,56. Abaissée pour que la brûlure lise comme une brûlure ; remontée de
+## 0,17 à 0,20 en R2B.1 parce que le lead voyait « un socle noir opaque
+## qui masque la lecture du tronc » — c'est la teinte de BORD, dégradée
+## vers la prairie, qui règle vraiment ce défaut (voir `_scorched_ground`).
+const SCORCH: Color = Color(0.20, 0.175, 0.150)
+## 2,7 m au lieu de 4,6. Le disque r02 couvrait 34,5 m², soit 3,9 fois
+## l'emprise de la souche : ce n'était plus une brûlure, c'était un socle.
+## À 2,7 il couvre 19 m² et s'arrête au bord de la plaque de racines, ce
+## qui est la lecture juste — la foudre a vitrifié le pied, pas la prairie.
+const SCORCH_RADIUS_M: float = 2.7
 ## Plafond painterly commun aux GLB du monde (même règle que le hameau).
 const ALBEDO_MAX: float = 0.80
 
@@ -150,31 +154,81 @@ func _peindre_glb(racine: Node3D) -> void:
 func _scorched_ground(foot: Vector3) -> void:
 	var disc: MeshInstance3D = MeshInstance3D.new()
 	disc.name = "SolBrule"
-	var segments: int = 30
+	var segments: int = 44
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var rim: PackedVector3Array = PackedVector3Array()
-	for i: int in range(segments + 1):
-		var angle: float = TAU * float(i % segments) / float(segments)
-		var r: float = SCORCH_RADIUS_M * (0.72 + sin(angle * 2.0) * 0.16
-			+ sin(angle * 5.0 + 1.1) * 0.11)
-		var x: float = cos(angle) * r
-		var z: float = sin(angle) * r
-		rim.append(Vector3(x, ground_local_y(x, z) - foot.y + 0.045, z))
-	var centre: Vector3 = Vector3(0.0, 0.06, 0.0)
+	# LE BORD N'EST PLUS HARMONIQUE. Le r02 modulait son rayon par
+	# `sin(a·2)·0,16 + sin(a·5+1,1)·0,11` : deux raies pures, cinq lobes
+	# réguliers, rmax/rmin = 2,13 — mesuré, et c'est exactement l'« étoile »
+	# que le lead a vue. Ici le rayon vient d'un hachage par secteur, lissé
+	# sur trois voisins : la modulation n'a plus de période, et son énergie
+	# se répartit au lieu de tenir dans une raie.
+	var brut: PackedFloat32Array = PackedFloat32Array()
 	for i: int in range(segments):
-		var shade: float = 0.82 + float(i % 4) * 0.06
-		var normal: Vector3 = Vector3.UP
-		for point: Vector3 in [centre, rim[i], rim[i + 1]]:
-			st.set_color(Color(shade, shade, shade, 1.0))
-			st.set_normal(normal)
-			st.add_vertex(point)
+		brut.append(_alea(float(i) * 1.7 + 4.3))
+	var rayons: PackedFloat32Array = PackedFloat32Array()
+	for i: int in range(segments):
+		var lisse: float = (brut[(i - 1 + segments) % segments] + brut[i]
+			+ brut[(i + 1) % segments]) / 3.0
+		rayons.append(SCORCH_RADIUS_M * (0.92 + 0.16 * lisse))
+	# DEUX ANNEAUX. Un disque à un seul anneau part d'un sommet central
+	# unique : trente secteurs identiques en éventail, que la teinte
+	# périodique `0,82 + (i%4)·0,06` soulignait encore. L'anneau
+	# intermédiaire casse l'éventail, et la teinte de bord remonte vers la
+	# prairie pour que la brûlure s'éteigne au lieu de se découper.
+	var interieur: PackedVector3Array = PackedVector3Array()
+	var exterieur: PackedVector3Array = PackedVector3Array()
+	var teinte_int: PackedFloat32Array = PackedFloat32Array()
+	var teinte_ext: PackedFloat32Array = PackedFloat32Array()
+	for i: int in range(segments):
+		var angle: float = TAU * float(i) / float(segments)
+		var r_ext: float = rayons[i]
+		var r_int: float = r_ext * (0.40 + 0.09 * _alea(float(i) * 3.1 + 19.0))
+		var xi: float = cos(angle) * r_int
+		var zi: float = sin(angle) * r_int
+		var xe: float = cos(angle) * r_ext
+		var ze: float = sin(angle) * r_ext
+		interieur.append(Vector3(xi, ground_local_y(xi, zi) - foot.y + 0.050, zi))
+		exterieur.append(Vector3(xe, ground_local_y(xe, ze) - foot.y + 0.045, ze))
+		teinte_int.append(0.74 + 0.10 * _alea(float(i) * 5.9 + 2.0))
+		teinte_ext.append(1.16 + 0.20 * _alea(float(i) * 7.3 + 31.0))
+	var centre: Vector3 = Vector3(0.0, 0.062, 0.0)
+	for i: int in range(segments):
+		var j: int = (i + 1) % segments
+		_triangle_degrade(st, centre, interieur[i], interieur[j],
+			0.62, teinte_int[i], teinte_int[j])
+		_triangle_degrade(st, interieur[i], exterieur[i], exterieur[j],
+			teinte_int[i], teinte_ext[i], teinte_ext[j])
+		_triangle_degrade(st, interieur[i], exterieur[j], interieur[j],
+			teinte_int[i], teinte_ext[j], teinte_int[j])
 	disc.mesh = st.commit()
 	var material: StandardMaterial3D = K.flat_material(SCORCH)
 	material.vertex_color_use_as_albedo = true
 	disc.mesh.surface_set_material(0, material)
 	disc.position = foot
 	add_child(disc)
+
+
+## Hachage déterministe dans [−1 ; 1]. Pas de `randf()` : le disque doit
+## être identique d'un montage à l'autre, sinon la régression visuelle
+## compare deux formes différentes et ne prouve rien.
+func _alea(graine: float) -> float:
+	var v: float = sin(graine * 127.1 + 311.7) * 43758.5453
+	return (v - floor(v)) * 2.0 - 1.0
+
+
+## Un triangle dont CHAQUE SOMMET porte sa valeur. `K._triangle` existe et
+## fait presque la même chose, mais avec UNE valeur pour tout le triangle :
+## c'est justement ce qu'il ne faut pas ici, puisque le dégradé du cœur
+## vitrifié vers le bord cendreux est ce qui empêche le disque de se lire
+## comme une plaque découpée. Deux fonctions voisines, une raison nommée.
+func _triangle_degrade(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3,
+		ta: float, tb: float, tc: float) -> void:
+	for paire: Array in [[a, ta], [b, tb], [c, tc]]:
+		var t: float = paire[1]
+		st.set_color(Color(t, t, t, 1.0))
+		st.set_normal(Vector3.UP)
+		st.add_vertex(paire[0])
 
 
 func _seated(local_x: float, local_z: float) -> Vector3:

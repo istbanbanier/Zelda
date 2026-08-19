@@ -1,11 +1,15 @@
 Blender 4.0.2
-[thunderstruck_tree] SM_ThunderstruckTree_Bark     609 tris
-[thunderstruck_tree] SM_ThunderstruckTree_Heart    224 tris
-[thunderstruck_tree] SM_ThunderstruckTree_BranchA   72 tris
-[thunderstruck_tree] SM_ThunderstruckTree_BranchB   72 tris
-[thunderstruck_tree] emprise X -4.39..3.76  Y -1.13..3.13  Z 0.000..11.02 — 977 tris (budget 6000)
-[thunderstruck_tree] cicatrice : rayon relatif 0.826 dans la bande (3 sommets), 1.011 hors bande (12) — creux 0.185
+[thunderstruck_tree] SM_ThunderstruckTree_Bark        1370 tris
+[thunderstruck_tree] SM_ThunderstruckTree_Heart        436 tris
+[thunderstruck_tree] SM_ThunderstruckTree_Roots        280 tris
+[thunderstruck_tree] SM_ThunderstruckTree_BranchA       88 tris
+[thunderstruck_tree] SM_ThunderstruckTree_BranchB       88 tris
+[thunderstruck_tree] SM_ThunderstruckTree_BranchC       88 tris
+[thunderstruck_tree] SM_ThunderstruckTree_BranchD       88 tris
+[thunderstruck_tree] SM_ThunderstruckTree_BranchE       88 tris
+[thunderstruck_tree] emprise X -4.56..4.14  Y -4.38..4.10  Z 0.000..11.02 — 2526 tris (budget 6000)
+[thunderstruck_tree] cicatrice : rayon relatif 0.791 dans la bande (14 sommets), 0.941 hors bande (47) — creux 0.150
 Info: Total files 0 | Changed 0 | Failed 0
 Info: Saved "SM_ThunderstruckTree.blend"
-[thunderstruck_tree] source enregistrée -> /home/user/zelda-r2b/b_ferme_arbre/source_assets/blender/environment/SM_ThunderstruckTree.blend
+[thunderstruck_tree] source enregistrée -> /home/user/zelda-r2b1/b_arbre/source_assets/blender/environment/SM_ThunderstruckTree.blend
 FIN NOMINALE

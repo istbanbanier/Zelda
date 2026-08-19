@@ -1,39 +1,48 @@
 === Blender: Blender 4.0.2 ===
 
 --- thunderstruck_tree : génération de la source ---
-  [thunderstruck_tree] SM_ThunderstruckTree_Bark     609 tris
-  [thunderstruck_tree] SM_ThunderstruckTree_Heart    224 tris
-  [thunderstruck_tree] SM_ThunderstruckTree_BranchA   72 tris
-  [thunderstruck_tree] SM_ThunderstruckTree_BranchB   72 tris
-  [thunderstruck_tree] emprise X -4.39..3.76  Y -1.13..3.13  Z 0.000..11.02 — 977 tris (budget 6000)
-  [thunderstruck_tree] cicatrice : rayon relatif 0.826 dans la bande (3 sommets), 1.011 hors bande (12) — creux 0.185
-  [thunderstruck_tree] source enregistrée -> /home/user/zelda-r2b/b_ferme_arbre/source_assets/blender/environment/SM_ThunderstruckTree.blend
+  [thunderstruck_tree] SM_ThunderstruckTree_Bark        1370 tris
+  [thunderstruck_tree] SM_ThunderstruckTree_Heart        436 tris
+  [thunderstruck_tree] SM_ThunderstruckTree_Roots        280 tris
+  [thunderstruck_tree] SM_ThunderstruckTree_BranchA       88 tris
+  [thunderstruck_tree] SM_ThunderstruckTree_BranchB       88 tris
+  [thunderstruck_tree] SM_ThunderstruckTree_BranchC       88 tris
+  [thunderstruck_tree] SM_ThunderstruckTree_BranchD       88 tris
+  [thunderstruck_tree] SM_ThunderstruckTree_BranchE       88 tris
+  [thunderstruck_tree] emprise X -4.56..4.14  Y -4.38..4.10  Z 0.000..11.02 — 2526 tris (budget 6000)
+  [thunderstruck_tree] cicatrice : rayon relatif 0.791 dans la bande (14 sommets), 0.941 hors bande (47) — creux 0.150
+  [thunderstruck_tree] source enregistrée -> /home/user/zelda-r2b1/b_arbre/source_assets/blender/environment/SM_ThunderstruckTree.blend
 --- thunderstruck_tree : export .glb ---
   [export_gltf] Blender 4.0.2
   [export_gltf] io_scene_gltf2 version (4, 0, 44)
   [export_gltf] preset: export_animation_mode=ACTIONS, export_animations=False, export_apply=True, export_cameras=False, export_extras=False, export_force_sampling=True, export_format=GLB, export_lights=False, export_materials=EXPORT, export_normals=True, export_optimize_animation_size=False, export_skins=True, export_tangents=True, export_texcoords=True, export_yup=True, use_selection=False, use_visible=True
-  [export_gltf] OK -> /home/user/zelda-r2b/b_ferme_arbre/assets/architecture/flora/SM_ThunderstruckTree.glb (56500 octets)
-  frais: assets/architecture/flora/SM_ThunderstruckTree.glb (56500 octets)
+  [export_gltf] OK -> /home/user/zelda-r2b1/b_arbre/assets/architecture/flora/SM_ThunderstruckTree.glb (142584 octets)
+  frais: assets/architecture/flora/SM_ThunderstruckTree.glb (142584 octets)
 --- thunderstruck_tree : inspection glTF hors moteur ---
   === INSPECTION glTF : assets/architecture/flora/SM_ThunderstruckTree.glb ===
-    format                 : GLB v2, 56500 octets
-    chunk_binaire          : 53120 octets
+    format                 : GLB v2, 142584 octets
+    chunk_binaire          : 135636 octets
     generateur             : Khronos glTF Blender I/O v4.0.44
     version_gltf           : 2.0
-    meshes                 : 4
-    materiaux              : 2 (MAT_Tree_CharredBark, MAT_Tree_Heartwood)
+    meshes                 : 8
+    materiaux              : 3 (MAT_Tree_CharredBark, MAT_Tree_Charcoal, MAT_Tree_Heartwood)
     textures               : 0 image(s), 0 texture(s)
-    noeuds                 : 4 (SM_ThunderstruckTree_Bark, SM_ThunderstruckTree_Heart, SM_ThunderstruckTree_BranchA, SM_ThunderstruckTree_BranchB)
+    noeuds                 : 8 (SM_ThunderstruckTree_Bark, SM_ThunderstruckTree_Heart, SM_ThunderstruckTree_Roots, SM_ThunderstruckTree_BranchA, SM_ThunderstruckTree_BranchB, SM_ThunderstruckTree_BranchC, SM_ThunderstruckTree_BranchD, SM_ThunderstruckTree_BranchE)
     skins                  : 0
     animations             : 0 (aucune)
-    triangles              : 977
-    bbox_min               : [-4.39, 0, -3.1314]
-    bbox_max               : [3.7604, 11.02, 1.133]
-    dimensions_m           : [8.1504, 11.02, 4.2644]
+    triangles              : 2526
+    bbox_min               : [-4.5578, 0, -4.0974]
+    bbox_max               : [4.1423, 11.02, 4.3816]
+    dimensions_m           : [8.7001, 11.02, 8.479]
+    [AVERT] mesh 'SM_ThunderstruckTree_Bark': pas d'UV0 — lightmap et matériaux limités
     [AVERT] mesh 'SM_ThunderstruckTree_Bark': pas d'UV0 — lightmap et matériaux limités
     [AVERT] mesh 'SM_ThunderstruckTree_Heart': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_ThunderstruckTree_Roots': pas d'UV0 — lightmap et matériaux limités
     [AVERT] mesh 'SM_ThunderstruckTree_BranchA': pas d'UV0 — lightmap et matériaux limités
     [AVERT] mesh 'SM_ThunderstruckTree_BranchB': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_ThunderstruckTree_BranchC': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_ThunderstruckTree_BranchD': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_ThunderstruckTree_BranchE': pas d'UV0 — lightmap et matériaux limités
   === VALIDE ===
 
 === EXPORT ARCHITECTURE : VERT ===
