@@ -740,6 +740,36 @@ func test_le_sol_brule_n_est_ni_etoile_ni_plaque() -> void:
 	check(clean, "démontage propre (sol brûlé) — %s" % restore_root_reason())
 
 
+## Complète un profil angulaire : tout secteur sans sommet reçoit une
+## valeur interpolée entre ses voisins occupés les plus proches, en
+## circulaire. Sans ça, un maillage grossier rend une aire artificiellement
+## petite — et le contrôle récompense la géométrie la plus pauvre.
+func _profil_rempli(brut: Dictionary, n: int) -> PackedFloat32Array:
+	var occupes: Array[int] = []
+	for k: int in brut.keys():
+		occupes.append(k)
+	occupes.sort()
+	var out: PackedFloat32Array = PackedFloat32Array()
+	out.resize(n)
+	for i: int in range(n):
+		if brut.has(i):
+			out[i] = float(brut[i])
+			continue
+		var avant: int = occupes[occupes.size() - 1]
+		var apres: int = occupes[0]
+		for k2: int in occupes:
+			if k2 < i:
+				avant = k2
+			if k2 > i:
+				apres = k2
+				break
+		var d_av: float = float(posmod(i - avant, n))
+		var d_ap: float = float(posmod(apres - i, n))
+		var t: float = d_av / maxf(1.0, d_av + d_ap)
+		out[i] = lerpf(float(brut[avant]), float(brut[apres]), t)
+	return out
+
+
 ## -- 8. La masse sombre au sol n'écrase ni le pied ni la lecture ----------
 ##
 ## Le disque, les contreforts-racines et les bois tombés forment ENSEMBLE
@@ -790,29 +820,40 @@ func test_la_masse_sombre_au_sol_reste_sobre() -> void:
 					if est_souche and p.y <= 0.30:
 						var s4: int = int(ang / TAU * 24.0)
 						souche[s4] = maxf(souche.get(s4, 0.0), r)
-		if sol.size() < 36 or souche.size() < 8:
+		if sol.size() < 12 or souche.size() < 6:
 			faults.append("masse au sol non mesurable (%d secteurs sol, %d souche)"
 				% [sol.size(), souche.size()])
 		else:
+			# SECTEURS VIDES INTERPOLÉS, et c'est une correction, pas un
+			# raffinement. Premier jet : on sommait les secteurs OCCUPÉS.
+			# Le disque du r02 n'a que 30 sommets de bord pour 72 secteurs,
+			# donc plus de la moitié des secteurs restaient vides et l'aire
+			# était sous-estimée d'autant : le contrôle passait AU VERT sur
+			# la géométrie qu'il était écrit pour recaler. Un test qui ne
+			# peut pas rougir ne compte pas. Le profil est une courbe
+			# fermée : un secteur sans sommet n'est pas un secteur sans
+			# matière, il est entre deux sommets.
+			var rayons_sol: PackedFloat32Array = _profil_rempli(sol, 72)
+			var rayons_souche: PackedFloat32Array = _profil_rempli(souche, 24)
 			var aire: float = 0.0
 			var moyen: float = 0.0
-			for s5: int in sol.keys():
-				aire += 0.5 * pow(sol[s5], 2.0) * TAU / 72.0
-				moyen += sol[s5]
-			moyen /= float(sol.size())
+			for k2: int in range(72):
+				aire += 0.5 * pow(rayons_sol[k2], 2.0) * TAU / 72.0
+				moyen += rayons_sol[k2]
+			moyen /= 72.0
 			var aire_souche: float = 0.0
-			for s6: int in souche.keys():
-				aire_souche += 0.5 * pow(souche[s6], 2.0) * TAU / 24.0
+			for k3: int in range(24):
+				aire_souche += 0.5 * pow(rayons_souche[k3], 2.0) * TAU / 24.0
 			var ratio: float = aire / maxf(0.01, aire_souche)
 			var total: float = 0.0
 			var raies: Array[float] = []
 			for k: int in range(1, 13):
 				var re: float = 0.0
 				var im: float = 0.0
-				for s7: int in sol.keys():
+				for s7: int in range(72):
 					var a2: float = (float(s7) + 0.5) / 72.0 * TAU
-					re += (sol[s7] - moyen) * cos(float(k) * a2)
-					im += (sol[s7] - moyen) * sin(float(k) * a2)
+					re += (rayons_sol[s7] - moyen) * cos(float(k) * a2)
+					im += (rayons_sol[s7] - moyen) * sin(float(k) * a2)
 				var pw: float = re * re + im * im
 				raies.append(pw)
 				total += pw

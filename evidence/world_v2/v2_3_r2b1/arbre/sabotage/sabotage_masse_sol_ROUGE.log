@@ -1,0 +1,6 @@
+=== SABOTAGE : GLB et lieu ramenés au r02 (git checkout 7c3d3ca), le reste inchangé ===
+Le 8e portail rougit : masse sombre 38.0 m² (plafond 34) et 53 % de l'énergie
+dans une seule raie (plafond 45). Les 7 autres rougissent aussi.
+  ÉCHEC test_la_masse_sombre_au_sol_reste_sobre — masse sombre de 38.0 m² au pied, plafond 34, masse sombre en étoile : 53% de l'énergie dans une seule raie, plafond 45%
+=== RÉSULTAT: 0 réussi(s), 8 échoué(s) ===
+RC=1
