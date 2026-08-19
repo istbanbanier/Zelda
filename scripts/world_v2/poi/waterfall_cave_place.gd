@@ -95,6 +95,17 @@ const MODELE_NICHE_R2A358: Vector3 = Vector3(2.78, 0.50, -4.09)
 const LAMPE_SEUIL_R2A358: Vector3 = Vector3(0.15, 1.50, -1.20)
 const LAMPE_SALLE_R2A358: Vector3 = Vector3(2.70, 1.90, -3.35)
 const VOISIN_NICHE_R2A358: Vector3 = Vector3(2.71, 0.24, -3.39)
+## Chemin canonique COURBE seuil→salle, repère MODÈLE, discrétisé depuis la
+## mesure de l'agent B (r2a358_agentB_final/03_T3_champ_paroi.log, colonne
+## canon, un point sur deux — aucun nombre inventé). C'est le contrat de
+## traversabilité prouvé par T1 : la CORDE droite, elle, compte 11 fautes
+## (corde-témoin) — un filet qui marche droit ne teste pas cette grotte.
+## Six jalons : jambes de 0,67 à 1,25 m (le garde « trajet trop court » du
+## filet refuse les jambes sous 0,5 m), déviation à la mesure ≤ 0,11 m.
+const ROUTE_CANONIQUE_R2A358: Array[Vector2] = [
+	Vector2(0.00, 0.35), Vector2(0.17, -0.83), Vector2(0.69, -1.39),
+	Vector2(1.35, -1.83), Vector2(2.04, -2.24),
+]
 const APPUIS_MODELE_R2A358: Array[Vector2] = [
 	Vector2(8.14, -6.03), Vector2(0.94, -11.42),
 	Vector2(-1.42, -11.38), Vector2(-7.24, -6.01),
@@ -193,6 +204,14 @@ func _build() -> void:
 	var transformation: Transform3D = ouvrage.transform
 	set_meta(&"cave_threshold", transformation * MODELE_SEUIL_DEHORS)
 	set_meta(&"cave_interior", transformation * _modele_salle())
+	# La galerie R2a-3.5.8 est COURBE par conception : le filet de
+	# comportement suit cette route au lieu de la corde. R2a-3.4
+	# (fallback) n'en publie pas — sa galerie se marche en ligne droite.
+	if not _fallback_r2a34():
+		var route: Array[Vector3] = []
+		for etape: Vector2 in ROUTE_CANONIQUE_R2A358:
+			route.append(transformation * Vector3(etape.x, 0.10, etape.y))
+		set_meta(&"cave_route", route)
 
 	for point: Vector2 in _appuis_modele():
 		var au_sol: Vector3 = transformation * Vector3(point.x, 0.0, point.y)

@@ -55,8 +55,22 @@ func test_la_grotte_a_un_seuil_et_un_interieur_praticables() -> void:
 		else:
 			var from_p: Vector3 = cave.to_global(threshold as Vector3)
 			var to_p: Vector3 = cave.to_global(interior as Vector3)
-			faults.append_array(_walk_faults(from_p, to_p, "seuil→intérieur"))
-			faults.append_array(_walk_faults(to_p, from_p, "intérieur→seuil"))
+			# Depuis GM4, le lieu publie sa route canonique COURBE : la
+			# marcher jambe par jambe. Sans meta (fallback R2a-3.4), la
+			# corde droite reste le contrat.
+			var jalons: Array[Vector3] = [from_p]
+			var route: Variant = cave.get_meta(&"cave_route", null)
+			if route is Array:
+				for etape: Variant in (route as Array):
+					if etape is Vector3:
+						jalons.append(cave.to_global(etape as Vector3))
+			jalons.append(to_p)
+			for i: int in range(jalons.size() - 1):
+				faults.append_array(_walk_faults(jalons[i], jalons[i + 1],
+					"seuil→intérieur (jambe %d)" % i))
+			for i: int in range(jalons.size() - 1, 0, -1):
+				faults.append_array(_walk_faults(jalons[i], jalons[i - 1],
+					"intérieur→seuil (jambe %d)" % i))
 			# La poche est COUVERTE : un rayon vertical depuis l'intérieur
 			# touche un plafond proche — sinon ce n'est qu'une tranchée.
 			var interior_ground: float = _ground_at(to_p)
@@ -228,7 +242,21 @@ func _walk_faults(from_p: Vector3, to_p: Vector3, label: String) -> Array[String
 	while walk <= total:
 		var t: float = walk / total
 		var p: Vector3 = from_p.lerp(to_p, t)
-		var ground: float = _ground_at(p)
+		# SONDE CONSCIENTE DES SURPLOMBS (GM4). Une grotte a un toit : une
+		# sonde qui part de p.y + 3 traverse la visière du porche et lit
+		# SON toit comme « sol » — mesuré à la promotion R2a-3.5.8 (faux
+		# ressaut de +3,57 m au seuil, alors que le joueur y marche sous
+		# 2 m de roche). Le sol d'un marcheur est le plancher CONTINU avec
+		# son appui : premier échantillon depuis la hauteur d'intention du
+		# méta (+1,0 m), les suivants depuis sol_précédent + marche_max +
+		# 0,9 — toujours SOUS un plafond légal (headroom exigé 1,75 m) et
+		# AU-DESSUS d'une marche légale (0,55 m).
+		var origine_y: float = (p.y + 1.0) if previous_ground > 1e8 \
+			else previous_ground + CAVE_MAX_RISE_M + 0.9
+		var sonde: Dictionary = _ray(Vector3(p.x, origine_y, p.z),
+			Vector3(p.x, origine_y - 8.0, p.z))
+		var ground: float = (sonde["position"] as Vector3).y \
+			if not sonde.is_empty() else -1e9
 		if ground < -1e8:
 			faults.append("grotte %s : AUCUN SOL vers (%.1f, %.1f)"
 				% [label, p.x, p.z])
