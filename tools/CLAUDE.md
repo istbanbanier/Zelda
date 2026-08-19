@@ -38,6 +38,51 @@ mot, deux lignes `=== RÉSULTAT`. Les mêmes tests passaient 6/6 isolément.
 trouve un runner. Après un kill, toujours VÉRIFIER la mort réelle avant de
 relancer — et se méfier d'un verdict rouge dont le journal porte deux résumés.
 
+## `flock -w N` : un RC non testé est un résultat PERDU qui ressemble à un résultat
+
+Mesuré le 2026-08-19, R2B.2, par l'audit indépendant sur son propre script.
+
+Quand `flock -w N` expire, il rend **1 et n'exécute PAS la commande**. Une
+boucle qui ne teste pas ce code imprime l'en-tête de l'itération suivante et
+passe à la vue d'après : le journal montre `### ferme_seuil` puis
+`### ferme_facade`, ce qui **ressemble exactement à une progression normale**.
+Deux vues ont été perdues ainsi, sans un seul message d'erreur.
+
+```bash
+flock -w 3600 /tmp/godot.lock timeout 900 "$GODOT_BIN" ... ; RC=$?
+if [ "$RC" -ne 0 ]; then
+  echo "BLOQUE: <vue> RC=$RC — verrou non obtenu ou rendu échoué, RIEN écrit" >&2
+  exit 3          # jamais 0, jamais « on continue »
+fi
+```
+
+Deux règles, et la seconde compte autant que la première :
+
+1. **tester le RC après tout `flock`, et s'arrêter au premier échec** plutôt
+   que de continuer sur du vide ;
+2. **dimensionner `-w` sur la plus longue prise légitime, pas sur son propre
+   travail.** Une suite d'intégration tient le verrou **50 minutes** ; un
+   `-w 400` (6,7 min) ou un `-w 1800` (30 min) expire alors qu'aucune anomalie
+   n'a eu lieu. Une heure est le bon ordre de grandeur quand plusieurs arbres
+   de travail partagent la machine.
+
+`validate_fast.sh` ne tombe pas dans ce piège : il utilise `flock -n` et sort
+en **3 (BLOQUÉ)**, bruyamment. Le piège est dans les commandes ad hoc.
+
+## Le verrou suit le DÉPÔT, pas le répertoire
+
+Dans un arbre de travail git, `.git` est un **fichier**, pas un dossier :
+`$PROJECT_DIR/.git/validate_fast.lock` rend `Not a directory` puis
+`flock: 9: Bad file descriptor`, donc **BLOQUÉ (code 3) alors qu'aucune suite ne
+tourne**. Mesuré le 2026-08-19 depuis `/home/user/zelda-r2b2/a_ferme`.
+
+`validate_fast.sh` résout désormais son verrou par
+`git rev-parse --git-common-dir`. **`--git-common-dir` et non `--git-dir`** :
+c'est le `.git` **partagé**, et c'est bien ce qu'on veut — deux arbres de
+travail partagent `user://saves`, donc leurs suites doivent se sérialiser.
+Dans l'arbre principal la commande rend `.git` relatif, préfixé par
+`PROJECT_DIR` : le chemin est identique à l'ancien, au caractère près.
+
 ## Une capture vient d'un arbre COMMITTÉ
 
 Le manifeste doit porter `repo_dirty: false` et le hash du commit prouvé. Ordre :
