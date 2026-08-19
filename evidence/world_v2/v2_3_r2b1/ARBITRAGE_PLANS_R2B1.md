@@ -112,3 +112,56 @@ coupe n'est échangée contre cette place : les neuf prises étaient déjà les
 moins visibles, la dixième serait plus voyante que ce qu'elle rachèterait.
 **La prochaine session doit lire « 45/45, aucune place » avant d'ajouter quoi
 que ce soit** — c'est écrit dans l'en-tête du test, pas seulement ici.
+
+## Décisions d'intégration (lead, après rendu des voies)
+
+**LEAD-1 — Le portail de budget passait au VERT sur un camp VIDE.** Trouvé par
+le lead en reproduisant le contrôle de la voie C : en cassant le bâtisseur pour
+vérifier que le portail savait rougir, le lieu s'est monté vide et le contrôle
+a imprimé « budget §4 tenu : 0/45 modules » puis a rendu VERT. Un plafond seul
+déclare conforme tout ce qui n'existe pas. La suite rougissait, mais par
+ISS-027 (détecteur d'erreur de script) — un filet qui dépend d'un autre filet
+pour signaler l'absence de son propre sujet n'est pas un portail.
+**Planchers 30 / 45 / 4 posés par le lead**, sous les deux camps mesurés
+(braise 45/70/10, checkpoint 34/47/5) avec marge franche. Cycle prouvé en trois
+journaux (`braise/planchers/`) : camp vide VERT (la faiblesse), camp vide ROUGE
+par le portail lui-même, camp réel 45/45 VERT.
+Deux erreurs du lead dans cette séquence, consignées : le premier sabotage
+visait un module INEXISTANT (rien ne se montait, donc rien ne pouvait rougir) ;
+le second était inséré au milieu d'un appel multi-ligne et cassait le parsing.
+Le contrôle négatif final a été fait proprement, par un `return` en tête de
+`_build()`, pour que le rouge vienne du portail et non d'une erreur de syntaxe.
+
+**LEAD-2 — Ferme : PARTIAL assumé, le résiduel est nommé et NON maquillé.**
+La voie A a supprimé le défaut principal — le panneau beige uni plein cadre de
+`ferme_laterale` a disparu, remplacé par du parement des deux côtés, toit crevé,
+intérieur ouvert. Elle a aussi démontré et corrigé un vrai bug : **cinq murs
+présentaient leur face brique VERS L'INTÉRIEUR** (yaw 90°/270° inversés), prouvé
+en image par une même façade montrant pierre au nord et plâtre uni à l'est.
+Portail visuel du lead : **max ≤ 8 % PASS sur les six vues** ; total ≤ 12 %
+PASS sur cinq, **FAIL sur `ferme_seuil` (23,74 → 35,46 %)**.
+
+L'agent impute ce FAIL à une limite de l'outil (« il mesure la platitude du
+rendu, pas la richesse du volume »). **Le lead ne le suit qu'à moitié** : après
+inspection à taille réelle, les tableaux et poteaux de `ferme_seuil` et le
+pignon de `ferme_arriere` se lisent comme des **plaques pâles sans matière**,
+posées devant la pierre texturée. La directive interdit nommément « les plans
+visiblement sans épaisseur » : le chiffre pointe donc aussi un défaut RÉEL, pas
+seulement un artefact. Cause exacte : les onze pièces neuves **n'ont pas d'UV0**
+(signalé par `gltf_inspect` à chaque export), donc pas de texture.
+
+Décision : **on livre ce PARTIAL tel quel, sans y toucher.** Rouvrir la matière
+au moment de l'intégration, sans le contexte de mesure de l'agent, risquerait
+de défaire un recalage déjà éprouvé sur capture (la pierre avait viré gris
+ardoise à la première passe : le défaut était la SATURATION, pas la luminance).
+**Dette nommée : déplier les UV des `SM_Farm_*`.**
+Observation supplémentaire du lead, à porter devant la revue plutôt qu'à
+laisser découvrir : sur `ferme_arriere`, le mur nord reste un rectangle propre
+d'un bout à l'autre — c'est le pignon rompu qui apporte l'irrégularité de
+silhouette, pas la maçonnerie.
+
+**LEAD-3 — Deux agents non résumables en fin de passe.** Les transcripts des
+voies A et C ont expiré avant la fin de l'intégration. Les corrections encore
+nécessaires ont donc été faites PAR LE LEAD dans leurs worktrees, et sont
+signées comme telles dans leurs messages de commit. Aucune n'est attribuée aux
+agents.
