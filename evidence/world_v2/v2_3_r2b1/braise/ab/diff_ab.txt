@@ -1,0 +1,15 @@
+PLAN                  objet identifié            px changés   %% du cadre
+braise_composition   Chain_Coil (anneau au sol)             595    0.065 %
+braise_proche        Shield_Wooden (disque sous le guet)    2170    0.235 %
+braise_guet          poteau palissade 280°                 3535    0.384 %
+
+PLAN                  total changé   dont objets   reste (scintillement d'herbe)
+braise_composition     12780 px        595 px      12185 px  (1.322 % du cadre)
+braise_proche           8517 px       2170 px       6347 px  (0.689 % du cadre)
+braise_guet            12986 px       3535 px       9451 px  (1.025 % du cadre)
+RC=0
+
+CONTRÔLE — zone SANS aucune géométrie du camp (colline lointaine, plan guet)
+  boîte x752-1096 y192-328 : 3146 px changés sur 46784 (6.72 % de la zone)
+  => du scintillement d'herbe existe LOIN du camp : la part non-objet du
+     diff est temporelle (vent/instanciation), pas causée par les coupes.
