@@ -7,11 +7,11 @@ filtre: world_v2_r2b2_arbre
 [r2b2-arbre] C1c cohérence verticale du relief -0.320 sur 4 couples
 [r2b2-arbre] C1d crête-à-crête du profil radial 0.123 du rayon moyen
   ÉCHEC test_world_v2_r2b2_arbre.gd::test_c1_le_fut_n_est_plus_un_prisme — C1 le fût n'est plus un prisme (4 écart(s)) — C1a méridiens non brisés : |Δφ| moyen 0.003°, plancher 4.0°, C1b rotation trop régulière : écart-type 0.003°, plancher 2.0°, C1c relief incohérent d'un anneau au suivant (du bruit) : -0.320, plancher 0.55, C1d relief trop faible (un cône lisse) : 0.123, plancher 0.16
-[r2b2-arbre] C2a flanc des racines 10.0 % de 11.95 m² d'aire
+[r2b2-arbre] C2a flanc 10.0 % / surface presque horizontale 68.5 % sur 11.95 m²
 [r2b2-arbre] C2b sagitta en plan des 5 racines : [0.00070088915807, 0.00047004071317, 0.00031708702071, 0.00089699068528, 0.00037849406519] (min 0.00 %)
 [r2b2-arbre] C2c écarts d'azimut des racines [74.9978870792593, 93.0006654548538, 67.0020513543613, 65.0012596418992, 59.9981364696263] → max/min 1.55
 [r2b2-arbre] C2d hauteur max des racines hors collider 0.382 m (20 sommet(s) au-dessus de 0.32)
-  ÉCHEC test_world_v2_r2b2_arbre.gd::test_c2_les_racines_ont_du_volume — C2 les racines ont du volume (4 écart(s)) — C2a racines en plaques : flanc 10.0 %, plancher 28.0 %, C2b racine rectiligne : sagitta min 0.00 %, plancher 7.0 %, C2c éventail régulier : écarts max/min 1.55, plancher 2.20, C2d contrefort non enjambable : 0.382 m hors collider, plafond 0.32 m
+  ÉCHEC test_world_v2_r2b2_arbre.gd::test_c2_les_racines_ont_du_volume — C2 les racines ont du volume (5 écart(s)) — C2a racines sans flanc : 10.0 %, plancher 15.0 %, C2a racines en plaques : 68.5 % de surface presque horizontale, plafond 60.0 %, C2b racine rectiligne : sagitta min 0.00 %, plancher 7.0 %, C2c éventail régulier : écarts max/min 1.55, plancher 2.20, C2d contrefort non enjambable : 0.382 m hors collider, plafond 0.32 m
 [r2b2-arbre] C3a sagitta en plan des bois : [0.12033089162066, 0.15962777951283, 0.1606565953026, 0.13332870115911, 0.18908171270611]
 [r2b2-arbre] C3b effilements [0.63161104678261, 0.66804334195227, 0.62241598173257, 0.63037955440748, 0.65535049937237] → max/min 1.073
 [r2b2-arbre] C3c triangles par bois [88, 88, 88, 88, 88] → 1 compte(s) distinct(s)
@@ -31,7 +31,7 @@ erreurs de script dans le journal : 0
 
 === RÉSULTAT: 0 réussi(s), 5 échoué(s) ===
   ÉCHEC: test_world_v2_r2b2_arbre.gd::test_c1_le_fut_n_est_plus_un_prisme — C1 le fût n'est plus un prisme (4 écart(s)) — C1a méridiens non brisés : |Δφ| moyen 0.003°, plancher 4.0°, C1b rotation trop régulière : écart-type 0.003°, plancher 2.0°, C1c relief incohérent d'un anneau au suivant (du bruit) : -0.320, plancher 0.55, C1d relief trop faible (un cône lisse) : 0.123, plancher 0.16
-  ÉCHEC: test_world_v2_r2b2_arbre.gd::test_c2_les_racines_ont_du_volume — C2 les racines ont du volume (4 écart(s)) — C2a racines en plaques : flanc 10.0 %, plancher 28.0 %, C2b racine rectiligne : sagitta min 0.00 %, plancher 7.0 %, C2c éventail régulier : écarts max/min 1.55, plancher 2.20, C2d contrefort non enjambable : 0.382 m hors collider, plafond 0.32 m
+  ÉCHEC: test_world_v2_r2b2_arbre.gd::test_c2_les_racines_ont_du_volume — C2 les racines ont du volume (5 écart(s)) — C2a racines sans flanc : 10.0 %, plancher 15.0 %, C2a racines en plaques : 68.5 % de surface presque horizontale, plafond 60.0 %, C2b racine rectiligne : sagitta min 0.00 %, plancher 7.0 %, C2c éventail régulier : écarts max/min 1.55, plancher 2.20, C2d contrefort non enjambable : 0.382 m hors collider, plafond 0.32 m
   ÉCHEC: test_world_v2_r2b2_arbre.gd::test_c3_les_bois_tombes_ne_sont_plus_homothetiques — C3 les bois tombés ne sont plus homothétiques (3 écart(s)) — C3a bois rectiligne : sagitta min 0.12 %, plancher 5.0 %, C3b une seule loi d'effilement : max/min 1.073, plancher 1.60, C3c topologies identiques : 1 compte(s) distinct(s) sur 5 bois, plancher 4
   ÉCHEC: test_world_v2_r2b2_arbre.gd::test_c4_la_cicatrice_est_un_volume_arrache — C4 la cicatrice est un volume arraché (5 écart(s)) — C4c bande ininterrompue : 1 fragment(s), plancher 3, C4a largeur constante à l'échelle de l'œil : CV lissé 0.212, plancher 0.32, C4b enveloppe plate : largeur lissée max/min 2.27, plancher 3.00, C4d ruban d'épaisseur constante, pas un volume arraché : max/min 2.22, plancher 3.50, C4e aucun éclat hors des plans de rupture : 0, plancher 6
   ÉCHEC: test_world_v2_r2b2_arbre.gd::test_c5_paliers_de_valeur_et_budget — C5 paliers de valeur et budget (1 écart(s)) — C5 pas de valeur intermédiaire : 2 palier(s), plancher 3

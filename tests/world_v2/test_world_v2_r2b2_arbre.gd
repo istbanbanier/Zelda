@@ -57,7 +57,18 @@ const PHASE_SD_MIN_DEG: float = 2.0      # R2B.1 : 0,000
 const PHASE_NET_MAX_DEG: float = 60.0    # borne haute : interdit l'effet barbier
 const FLUTE_CORR_MIN: float = 0.55       # R2B.1 : −0,52
 const FLUTE_PP_MIN: float = 0.16         # R2B.1 : 0,089
-const ROOT_FLANK_MIN_PCT: float = 28.0   # R2B.1 : 10,0
+## SEUIL CORRIGÉ APRÈS CALCUL, ET IL FAUT DIRE POURQUOI. Le plan proposait
+## « flanc ≥ 28 % ». Pour une section elliptique de demi-axes (a horizontal,
+## b vertical), la part de surface dont la normale est à plus de 70° de la
+## verticale vaut ≈ 2·2·atan(0,364·b/a)/2π : 12,7 % pour l'aplatissement 1,80
+## d'aujourd'hui (mesuré 10,0 %), 20 % pour une section légèrement plus haute
+## que large, 22 % pour un cercle parfait. 28 % EXIGERAIT UNE SECTION PLUS
+## HAUTE QUE LARGE — une nageoire, pas un contrefort. Le seuil était donc
+## inatteignable sans fabriquer un autre défaut. On garde le flanc, plus bas,
+## et on lui ADJOINT la mesure qui décrit vraiment « une plaque » : la part de
+## surface presque horizontale.
+const ROOT_FLANK_MIN_PCT: float = 15.0   # R2B.1 : 10,0 ; cercle parfait : 22
+const ROOT_PLATE_MAX_PCT: float = 60.0   # R2B.1 : 68,5 ; cercle parfait : 50
 const ROOT_SAG_MIN_PCT: float = 7.0      # R2B.1 : 0,0
 const ROOT_GAP_RATIO_MIN: float = 2.20   # R2B.1 : 1,55
 const ROOT_STEP_MAX_M: float = 0.32      # R2B.1 : 0,382 (défaut PRÉEXISTANT)
@@ -498,6 +509,7 @@ func test_c2_les_racines_ont_du_volume() -> void:
 	# --- C2a : part de FLANC. Une plaque n'a que du dessus et du dessous.
 	var aire_tot: float = 0.0
 	var aire_flanc: float = 0.0
+	var aire_plaque: float = 0.0
 	for t: int in range(0, idx.size() - 2, 3):
 		var a: Vector3 = verts[idx[t]]
 		var b: Vector3 = verts[idx[t + 1]]
@@ -507,14 +519,21 @@ func test_c2_les_racines_ont_du_volume() -> void:
 		if aire <= 1.0e-9:
 			continue
 		aire_tot += aire
-		if absf(n.normalized().y) < cos(deg_to_rad(70.0)):
+		var ny: float = absf(n.normalized().y)
+		if ny < cos(deg_to_rad(70.0)):
 			aire_flanc += aire
+		if ny > cos(deg_to_rad(45.0)):
+			aire_plaque += aire
 	var pct_flanc: float = 100.0 * aire_flanc / maxf(1.0e-6, aire_tot)
-	print("[r2b2-arbre] C2a flanc des racines %.1f %% de %.2f m² d'aire"
-		% [pct_flanc, aire_tot])
+	var pct_plaque: float = 100.0 * aire_plaque / maxf(1.0e-6, aire_tot)
+	print("[r2b2-arbre] C2a flanc %.1f %% / surface presque horizontale %.1f %% sur %.2f m²"
+		% [pct_flanc, pct_plaque, aire_tot])
 	if pct_flanc < ROOT_FLANK_MIN_PCT:
-		faults.append("C2a racines en plaques : flanc %.1f %%, plancher %.1f %%"
+		faults.append("C2a racines sans flanc : %.1f %%, plancher %.1f %%"
 			% [pct_flanc, ROOT_FLANK_MIN_PCT])
+	if pct_plaque > ROOT_PLATE_MAX_PCT:
+		faults.append("C2a racines en plaques : %.1f %% de surface presque horizontale, plafond %.1f %%"
+			% [pct_plaque, ROOT_PLATE_MAX_PCT])
 
 	# --- C2b : chaque racine est COURBE en plan.
 	var comps: Array = _components(verts, idx)
