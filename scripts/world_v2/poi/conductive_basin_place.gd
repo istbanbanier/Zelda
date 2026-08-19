@@ -302,12 +302,15 @@ func _source_side() -> void:
 		rubble_large.name = "RuptureGravatsB"
 	# Deux briques éparses. Pivot Y CENTRÉ mesuré à la sonde d'assise
 	# (`probe_kit_seating`) : posées telles quelles, elles s'enterrent à
-	# moitié — on les remonte d'une demi-hauteur (0,105 m).
+	# moitié — on les remonte d'une demi-hauteur (0,105 m). SANS teinte :
+	# vu sur capture (diagnose_screen_occupants sur bassin_fonctionnel),
+	# la teinte pierre effaçait la terre cuite et la brique lisait comme
+	# un cube beige — sa matière naturelle EST son identité de brique.
 	for brick: Array in [[-4.9, 0.7, 40.0], [-3.75, -0.4, 155.0]]:
 		var laid: Node3D = K.module(self, &"Prop_Brick1",
 			_seated(float(brick[0]), float(brick[1]))
 				+ Vector3(0.0, 0.105, 0.0),
-			float(brick[2]), 1.0, KIT_CUT_STONE)
+			float(brick[2]), 1.0)
 		if laid != null:
 			laid.name = "RuptureBrique_%d" % int(brick[2])
 	# Dalles descellées, culbutées hors du caniveau.
