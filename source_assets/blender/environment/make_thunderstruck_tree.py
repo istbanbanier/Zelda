@@ -252,22 +252,36 @@ ECHARDES_PARCOURS = (
 # tiré par la section et absorbe une part de la courbure. Il faut donc environ
 # 60° de dérive — une flexion douce sur deux mètres, pas un crochet — pour
 # qu'une racine cesse de se mesurer comme un rayon droit.
+# PORTÉES RENTRÉES d'environ un tiers (rejet du lead sur le point 6). La
+# hauteur, elle, NE BOUGE PAS : relever la jupe améliorerait le rapport
+# d'aspect sans rien corriger de ce qu'on voit, et rouvrirait le défaut de
+# traversabilité que cette passe vient de fermer.
 RACINES = (
-    (math.radians(-8.0), 2.30, 0.26, math.radians(74.0), 0.58),
+    (math.radians(-8.0), 1.45, 0.26, math.radians(74.0), 0.58),
     # Portée relevée de 1,05 à 1,45 m : à 1,05 m la racine est aussi épaisse
     # que longue, son axe principal est tiré par sa section, et même 52° de
     # dérive ne rendaient que 6,1 % de sagitta. Allonger est ici plus honnête
     # que courber davantage — au-delà, une racine devient un crochet.
-    (math.radians(-42.0), 1.45, 0.20, math.radians(-60.0), None),
-    (math.radians(-140.0), 2.55, 0.24, math.radians(60.0), None),
-    (math.radians(-206.0), 1.60, 0.22, math.radians(-54.0), 0.66),
-    (math.radians(-262.0), 1.75, 0.25, math.radians(44.0), None),
+    (math.radians(-42.0), 1.00, 0.20, math.radians(-60.0), None),
+    (math.radians(-140.0), 1.50, 0.24, math.radians(60.0), None),
+    (math.radians(-206.0), 1.10, 0.22, math.radians(-54.0), 0.66),
+    (math.radians(-262.0), 1.25, 0.25, math.radians(44.0), None),
 )
 RACINE_COTES = 8
-RACINE_LATERAL = 1.06       # R2B.1 : 1,35 (et 0,75 en vertical -> aplati 1,80)
-RACINE_VERTICAL = 0.94      # aplatissement ramené à 1,13
+# Section très légèrement PLUS HAUTE QUE LARGE. Une section large, même à
+# flancs arrondis, se recouvre en projection avec sa voisine dès que la caméra
+# descend, et cinq contreforts finissent par former une tôle continue.
+RACINE_LATERAL = 0.98       # R2B.1 : 1,35
+RACINE_VERTICAL = 1.00      # R2B.1 : 0,75 -> aplatissement 1,80, ici 0,98
 RACINE_R0 = 0.38
-RACINE_DECROISSANCE = 0.70
+RACINE_DECROISSANCE = 0.62
+# LA POINTE MEURT. Sur les 28 derniers pour cent de sa course, le contrefort
+# s'effile jusqu'à 1,2 cm et disparaît dans l'herbe. Sans ça il court en drap
+# mince de 5 cm d'épaisseur sur deux mètres — invisible en section, mais c'est
+# exactement la matière qui faisait la plaque : 68 % des sommets vivaient là,
+# plafonnés à 0,28 m de haut.
+RACINE_MOURANTE_DEBUT = 0.72
+RACINE_RAYON_POINTE = 0.012
 
 # BOIS TOMBÉS — empreintes, longueurs et rayons GELÉS (ils portent l'acquis
 # R2B.1 et l'enveloppe en plan). Ce qui change, c'est la LOI DE FORME :
@@ -749,8 +763,11 @@ def _contrefort(bm, yaw0, d0, portee, crete, dyaw, echelle, graine):
         t = k / float(n_rings - 1)
         d = d0 + portee * t
         yaw = yaw0 + dyaw * (t - 0.35 * t * t)
-        r = max(0.045, RACINE_R0 * echelle
-                * math.exp(-(d - d0) / RACINE_DECROISSANCE))
+        r = RACINE_R0 * echelle * math.exp(-(d - d0) / RACINE_DECROISSANCE)
+        if t > RACINE_MOURANTE_DEBUT:
+            u = (t - RACINE_MOURANTE_DEBUT) / (1.0 - RACINE_MOURANTE_DEBUT)
+            r *= (1.0 - u) ** 0.8
+        r = max(RACINE_RAYON_POINTE, r)
         r *= 1.0 + 0.08 * _graine(graine * 7.0 + k)
         collet = crete * (max(0.0, 1.0 - d / 0.95) ** 1.7)
         zc = 0.015 + RACINE_VERTICAL * r + collet
@@ -863,9 +880,19 @@ def coeur(bm):
                 fragments.append(fragment)
             fragment = []
             continue
-        fragment.append(_section_cicatrice(z, largeur, prof))
+        fragment.append((z, largeur, prof))
     if len(fragment) >= 4:
         fragments.append(fragment)
+    # LES BOUTS DE FRAGMENT SE FERMENT EN BISEAU. Coupés net, ils laissent une
+    # marche entre la lèvre pâle et l'écorce qui reprend son plein rayon — et
+    # cette marche se lit, sur `arbre_fracture`, comme un TROU NOIR sous la
+    # crête. Elle ne se répare pas en supprimant la lèvre : elle se répare en
+    # donnant un fond au surplomb, c'est-à-dire en faisant mourir le coin.
+    fragments = [[(z, l * (0.26 if i in (0, len(f) - 1) else 1.0),
+                   p * (0.26 if i in (0, len(f) - 1) else 1.0))
+                  for i, (z, l, p) in enumerate(f)] for f in fragments]
+    fragments = [[_section_cicatrice(z, l, p) for z, l, p in f]
+                 for f in fragments]
     for frag in fragments:
         # Les deux arêtes et la crête reçoivent l'AUBIER GRILLÉ : c'est le
         # palier de valeur entre l'écorce (0,218) et le cœur (0,748) que le
@@ -993,7 +1020,9 @@ def _axe_branche(bx, by, yaw, longueur, fleche, pos_fleche, t):
 def branche(bm, bx, by, yaw, longueur, rayon, releve, cotes, fleche,
             pos_fleche, loi, chicots):
     n_rings = _ANNEAUX_LOI[loi]
-    aplat = 0.88 if releve <= 0.001 else 1.0   # une pièce posée s'écrase un peu
+    # 0,88 écrasait assez pour qu'un bois posé se lise en madrier à bords
+    # parallèles sous une caméra rasante (observé sur `arbre_pied`).
+    aplat = 0.95 if releve <= 0.001 else 1.0
     ph = phases(n_rings, cotes, rayon * 97.0)
     anneaux_branche = []
     for k in range(n_rings):
