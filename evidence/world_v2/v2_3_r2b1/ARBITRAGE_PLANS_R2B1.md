@@ -77,3 +77,38 @@ image plausible. Corrigées à 9,5 et 9,3, baseline recapturée (`63c4097`).
 Même famille de piège que le checkpoint 4 de la grotte : une origine posée au
 jugé sous une masse, et l'image reste crédible tant qu'on ne la regarde pas en
 grand. Transmise aux trois agents comme avertissement.
+
+## Arbitrages rendus PENDANT l'implémentation
+
+**C3 — Sabotage du lead corrigé par l'agent.** Le lead avait prescrit
+« remets `Chain_Coil` seul → 46 → doit rougir ». Faux : avec l'exemption du
+coffre que le lead venait lui-même d'accorder, `Chain_Coil` seul ramène le
+compte bâtisseur à 45, donc le test serait resté **VERT** et ce vert aurait été
+pris pour une preuve. L'agent l'a détecté et remplacé par un sabotage à DEUX
+PAS — 45 attendu vert, 46 attendu rouge — qui prouve les deux côtés de la
+frontière et établit que le plafond est **inclusif**. L'erreur est du lead ;
+la correction est acquise et gravée dans l'en-tête du test.
+
+**C4 — Neutralité visuelle : la promesse ne tenait pas à toutes les caméras.**
+L'agent a mesuré sa neutralité aux cinq plans R2B (approche par l'ouest) ; aux
+trois plans du lead (approche par l'est), **trois coupes sur neuf se voient** :
+poteau de palissade 280° (3 535 px, 0,384 % du cadre), `Shield_Wooden`
+(2 170 px, 0,235 %), `Chain_Coil` (595 px, 0,065 %). L'agent a publié l'écart
+au lieu de s'abriter derrière ses propres cadrages, et a séparé le bruit :
+1,3 % de diff résiduel est du scintillement d'herbe, établi par un témoin —
+6,72 % de diff dans une zone de colline **sans aucune géométrie du camp**.
+
+**C5 — Le lead remet le poteau de palissade 280°, et lui seul.** C'est le plus
+visible des trois, c'est une VERTICALE d'avant-plan (une verticale qui
+disparaît change la lecture ; un rouleau de chaîne au sol, non), et il
+appartient à la palissade, que la directive nomme parmi ce qui doit survivre
+intact. Les deux autres restent coupés : la directive nomme « chaînes ou coils
+peu visibles » en tête de ce qu'il faut couper, et le manifeste appelle
+`Chain_Coil` « candidat n°1 à la coupe ».
+
+**C6 — MARGE NULLE, assumée.** La remise porte le compte bâtisseur à **45 pour
+un plafond de 45**. Le plafond est inclusif, donc conforme. Aucune dixième
+coupe n'est échangée contre cette place : les neuf prises étaient déjà les
+moins visibles, la dixième serait plus voyante que ce qu'elle rachèterait.
+**La prochaine session doit lire « 45/45, aucune place » avant d'ajouter quoi
+que ce soit** — c'est écrit dans l'en-tête du test, pas seulement ici.
