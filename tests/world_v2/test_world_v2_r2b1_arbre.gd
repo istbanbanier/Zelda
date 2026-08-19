@@ -64,6 +64,15 @@ const SPLINTER_PLANES_MIN: int = 2      # r02 : 1
 const SCORCH_LOBE_RATIO_MAX: float = 1.55   # r02 : 2,13
 const SCORCH_HARMONIC_MAX: float = 0.45     # r02 : ≈ 1,00
 const SCORCH_AREA_MAX_M2: float = 24.0      # r02 : 34,5
+## 8e portail — LA MASSE SOMBRE AU SOL, tous éléments confondus. Ajouté
+## après coup : j'avais SIGNALÉ au lead que les contreforts-racines se
+## lisaient comme des plaques et refaisaient, avec les bois tombés, une
+## masse radiale au pied — et aucun des sept portails ne la mesurait. La
+## mesure m'a DÉMENTI (39,3 -> 30,5 m², raie dominante 58 % -> 20 %),
+## mais un défaut vu que rien ne mesure revient à la passe suivante.
+const GROUND_AREA_MAX_M2: float = 34.0      # r02 : 39,3 ; R2B.1 : 30,5
+const GROUND_STUMP_RATIO_MAX: float = 20.0  # r02 : 24,8 ; R2B.1 : 15,6
+const GROUND_HARMONIC_MAX: float = 0.45     # r02 : 0,58 ; R2B.1 : 0,20
 
 
 func _tree() -> SceneTree:
@@ -729,3 +738,100 @@ func test_le_sol_brule_n_est_ni_etoile_ni_plaque() -> void:
 		% [faults.size(), _capped(faults)])
 	var clean: bool = await restore_root()
 	check(clean, "démontage propre (sol brûlé) — %s" % restore_root_reason())
+
+
+## -- 8. La masse sombre au sol n'écrase ni le pied ni la lecture ----------
+##
+## Le disque, les contreforts-racines et les bois tombés forment ENSEMBLE
+## une tache sombre au pied. Chacun pris seul peut être sobre pendant que
+## leur somme redevient le « socle » puis l'« étoile » que le lead a
+## rejetés. On mesure donc la SILHOUETTE de cette union : rayon maximal par
+## secteur de 5°, puis aire en éventail, rapport à l'emprise de souche, et
+## répartition spectrale du profil — la même lecture que pour le bord du
+## disque, appliquée à tout ce qui est au sol.
+func test_la_masse_sombre_au_sol_reste_sobre() -> void:
+	remember_root()
+	var faults: Array[String] = []
+	var packed: PackedScene = load(TREE_SCENE) as PackedScene
+	var place: Node3D = null if packed == null else packed.instantiate() as Node3D
+	if place == null:
+		faults.append("la scène du lieu ne s'instancie pas")
+	else:
+		_tree().root.add_child(place)
+		await _tree().process_frame
+		var foot: Vector3 = Vector3.ZERO
+		for node: Node in place.find_children("SolBrule", "MeshInstance3D",
+				true, false):
+			foot = (node as MeshInstance3D).global_transform.origin
+		var sol: Dictionary = {}
+		var souche: Dictionary = {}
+		for node: Node in place.find_children("*", "MeshInstance3D", true, false):
+			var mi: MeshInstance3D = node as MeshInstance3D
+			if mi.mesh == null:
+				continue
+			var nom: String = String(mi.name)
+			var au_sol: bool = nom.contains("SolBrule") or nom.contains("Roots") \
+				or nom.contains("Branch")
+			var est_souche: bool = nom.contains("Bark")
+			if not au_sol and not est_souche:
+				continue
+			for s2: int in range(mi.mesh.get_surface_count()):
+				var arr: Array = mi.mesh.surface_get_arrays(s2)
+				var vs: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
+				for v: Vector3 in vs:
+					var p: Vector3 = mi.global_transform * v - foot
+					var r: float = Vector2(p.x, p.z).length()
+					if r < 0.4:
+						continue
+					var ang: float = fposmod(atan2(p.z, p.x), TAU)
+					if au_sol and p.y <= 0.75:
+						var s3: int = int(ang / TAU * 72.0)
+						sol[s3] = maxf(sol.get(s3, 0.0), r)
+					if est_souche and p.y <= 0.30:
+						var s4: int = int(ang / TAU * 24.0)
+						souche[s4] = maxf(souche.get(s4, 0.0), r)
+		if sol.size() < 36 or souche.size() < 8:
+			faults.append("masse au sol non mesurable (%d secteurs sol, %d souche)"
+				% [sol.size(), souche.size()])
+		else:
+			var aire: float = 0.0
+			var moyen: float = 0.0
+			for s5: int in sol.keys():
+				aire += 0.5 * pow(sol[s5], 2.0) * TAU / 72.0
+				moyen += sol[s5]
+			moyen /= float(sol.size())
+			var aire_souche: float = 0.0
+			for s6: int in souche.keys():
+				aire_souche += 0.5 * pow(souche[s6], 2.0) * TAU / 24.0
+			var ratio: float = aire / maxf(0.01, aire_souche)
+			var total: float = 0.0
+			var raies: Array[float] = []
+			for k: int in range(1, 13):
+				var re: float = 0.0
+				var im: float = 0.0
+				for s7: int in sol.keys():
+					var a2: float = (float(s7) + 0.5) / 72.0 * TAU
+					re += (sol[s7] - moyen) * cos(float(k) * a2)
+					im += (sol[s7] - moyen) * sin(float(k) * a2)
+				var pw: float = re * re + im * im
+				raies.append(pw)
+				total += pw
+			var dominante: float = 0.0
+			for pw2: float in raies:
+				dominante = maxf(dominante, pw2 / maxf(1.0e-9, total))
+			if aire > GROUND_AREA_MAX_M2:
+				faults.append("masse sombre de %.1f m² au pied, plafond %.0f"
+					% [aire, GROUND_AREA_MAX_M2])
+			if ratio > GROUND_STUMP_RATIO_MAX:
+				faults.append("masse sombre = %.1f fois l'emprise de souche, "
+					% ratio + "plafond %.0f" % GROUND_STUMP_RATIO_MAX)
+			if dominante > GROUND_HARMONIC_MAX:
+				faults.append("masse sombre en étoile : %.0f%% de l'énergie dans "
+					% (dominante * 100.0) + "une seule raie, plafond %.0f%%"
+					% (GROUND_HARMONIC_MAX * 100.0))
+		place.queue_free()
+	check(faults.is_empty(),
+		"la masse sombre au sol reste sobre (%d écart(s)) — %s"
+		% [faults.size(), _capped(faults)])
+	var clean: bool = await restore_root()
+	check(clean, "démontage propre (masse au sol) — %s" % restore_root_reason())
