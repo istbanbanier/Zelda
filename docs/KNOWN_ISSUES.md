@@ -1599,9 +1599,20 @@ les diagnostics de sortie de processus.
 
 **Aucune classe nouvelle. Trois types sur quatre sont identiques au chiffre
 près.** Le seul écart est de +100 sur `DummyMaterial` et le compte ObjectDB —
-c'est-à-dire **le même objet compté deux fois**, et il est proportionnel au
-contenu ajouté : dix tests de plus, et la ferme duplique désormais un
-`StandardMaterial3D` par surface pour porter les textures du kit.
+c'est-à-dire **le même objet compté deux fois**.
+
+**Explication : HYPOTHÈSE, pas mesure.** Dix tests de plus, et la ferme duplique
+désormais un `StandardMaterial3D` par surface pour porter les textures du kit ;
++100 serait donc du contenu et non une fuite nouvelle. **C'est une histoire
+plausible et je l'écris comme telle** — le recoupement, compter les surfaces
+réellement peintes par `_peindre_glb()` et vérifier que 100 tombe juste, est
+demandé à l'audit indépendant. Si le compte ne tombe pas, cette entrée sera
+corrigée dans ce sens plutôt que de garder une explication commode.
+
+**Ce qui EST mesuré, en revanche, et qui tient sans l'hypothèse** : quatre
+classes sur cinq strictement identiques d'une passe à l'autre. Une fuite nouvelle
+aurait fait bouger au moins une classe figée. Ce n'est pas une preuve d'absence
+de régression — c'est un faisceau, et il est publié comme tel.
 
 Journal : `evidence/world_v2/v2_3_r2b2/validation/validate_fast_R2B2.log`.
 
