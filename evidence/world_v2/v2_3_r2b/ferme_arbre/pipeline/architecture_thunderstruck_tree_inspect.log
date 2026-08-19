@@ -1,0 +1,20 @@
+=== INSPECTION glTF : assets/architecture/flora/SM_ThunderstruckTree.glb ===
+  format                 : GLB v2, 54340 octets
+  chunk_binaire          : 50960 octets
+  generateur             : Khronos glTF Blender I/O v4.0.44
+  version_gltf           : 2.0
+  meshes                 : 4
+  materiaux              : 2 (MAT_Tree_CharredBark, MAT_Tree_Heartwood)
+  textures               : 0 image(s), 0 texture(s)
+  noeuds                 : 4 (SM_ThunderstruckTree_Bark, SM_ThunderstruckTree_Heart, SM_ThunderstruckTree_BranchA, SM_ThunderstruckTree_BranchB)
+  skins                  : 0
+  animations             : 0 (aucune)
+  triangles              : 937
+  bbox_min               : [-4.39, 0, -3.1314]
+  bbox_max               : [3.7604, 11.02, 1.133]
+  dimensions_m           : [8.1504, 11.02, 4.2644]
+  [AVERT] mesh 'SM_ThunderstruckTree_Bark': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_ThunderstruckTree_Heart': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_ThunderstruckTree_BranchA': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_ThunderstruckTree_BranchB': pas d'UV0 — lightmap et matériaux limités
+=== VALIDE ===

@@ -1,0 +1,8 @@
+Blender 4.0.2
+[thunderstruck_tree] SM_ThunderstruckTree_Bark     609 tris
+[thunderstruck_tree] SM_ThunderstruckTree_Heart    184 tris
+[thunderstruck_tree] SM_ThunderstruckTree_BranchA   72 tris
+[thunderstruck_tree] SM_ThunderstruckTree_BranchB   72 tris
+[thunderstruck_tree] emprise X -4.39..3.76  Y -1.13..3.13  Z 0.000..15.02 — 937 tris (budget 6000)
+[thunderstruck_tree] ERREUR: hauteur 15.02 hors de [10 ; 12] — REFUS d'enregistrer
+RC=2

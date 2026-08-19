@@ -1,0 +1,28 @@
+=== INSPECTION glTF : assets/architecture/farm/SM_Farm_Ruins.glb ===
+  format                 : GLB v2, 44284 octets
+  chunk_binaire          : 36432 octets
+  generateur             : Khronos glTF Blender I/O v4.0.44
+  version_gltf           : 2.0
+  meshes                 : 5
+  materiaux              : 3 (MAT_Farm_Wood, MAT_Farm_BrokenWood, MAT_Farm_Tiles)
+  textures               : 0 image(s), 0 texture(s)
+  noeuds                 : 5 (SM_Farm_Truss, SM_Farm_RoofPan_Intact, SM_Farm_RoofPan_Fallen, SM_Farm_Debris_A, SM_Farm_Debris_B)
+  skins                  : 0
+  animations             : 0 (aucune)
+  triangles              : 676
+  bbox_min               : [-3.0824, 0, -3.4]
+  bbox_max               : [3.55, 2.1612, 3.4]
+  dimensions_m           : [6.6324, 2.1612, 6.8]
+  [AVERT] mesh 'SM_Farm_Truss': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_Farm_Truss': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_Farm_RoofPan_Intact': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_Farm_RoofPan_Intact': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_Farm_RoofPan_Fallen': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_Farm_RoofPan_Fallen': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_Farm_Debris_A': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_Farm_Debris_A': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_Farm_Debris_A': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_Farm_Debris_B': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_Farm_Debris_B': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_Farm_Debris_B': pas d'UV0 — lightmap et matériaux limités
+=== VALIDE ===

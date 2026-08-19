@@ -1,0 +1,48 @@
+=== Blender: Blender 4.0.2 ===
+
+--- farm_ruins : génération de la source ---
+  [farm_ruins] SM_Farm_Truss             212 tris  X -3.08..3.08  Y -3.15..3.35  Z 0.000..1.43
+  [farm_ruins] SM_Farm_RoofPan_Intact    108 tris  X 0.00..3.55  Y -3.40..3.40  Z 0.000..0.14
+  [farm_ruins] SM_Farm_RoofPan_Fallen    108 tris  X 0.00..3.15  Y -1.72..1.77  Z 0.000..2.16
+  [farm_ruins] SM_Farm_Debris_A          124 tris  X -0.61..0.82  Y -0.61..0.54  Z 0.000..0.68
+  [farm_ruins] SM_Farm_Debris_B          124 tris  X -0.48..0.69  Y -0.49..0.54  Z 0.000..0.69
+  [farm_ruins] total 676 triangles (budget 4500)
+  [farm_ruins] source enregistrée -> /home/user/zelda-r2b/b_ferme_arbre/source_assets/blender/architecture/SM_Farm_Ruins.blend
+--- farm_ruins : export .glb ---
+  [export_gltf] Blender 4.0.2
+  [export_gltf] io_scene_gltf2 version (4, 0, 44)
+  [export_gltf] preset: export_animation_mode=ACTIONS, export_animations=False, export_apply=True, export_cameras=False, export_extras=False, export_force_sampling=True, export_format=GLB, export_lights=False, export_materials=EXPORT, export_normals=True, export_optimize_animation_size=False, export_skins=True, export_tangents=True, export_texcoords=True, export_yup=True, use_selection=False, use_visible=True
+  [export_gltf] OK -> /home/user/zelda-r2b/b_ferme_arbre/assets/architecture/farm/SM_Farm_Ruins.glb (44284 octets)
+  frais: assets/architecture/farm/SM_Farm_Ruins.glb (44284 octets)
+--- farm_ruins : inspection glTF hors moteur ---
+  === INSPECTION glTF : assets/architecture/farm/SM_Farm_Ruins.glb ===
+    format                 : GLB v2, 44284 octets
+    chunk_binaire          : 36432 octets
+    generateur             : Khronos glTF Blender I/O v4.0.44
+    version_gltf           : 2.0
+    meshes                 : 5
+    materiaux              : 3 (MAT_Farm_Wood, MAT_Farm_BrokenWood, MAT_Farm_Tiles)
+    textures               : 0 image(s), 0 texture(s)
+    noeuds                 : 5 (SM_Farm_Truss, SM_Farm_RoofPan_Intact, SM_Farm_RoofPan_Fallen, SM_Farm_Debris_A, SM_Farm_Debris_B)
+    skins                  : 0
+    animations             : 0 (aucune)
+    triangles              : 676
+    bbox_min               : [-3.0824, 0, -3.4]
+    bbox_max               : [3.55, 2.1612, 3.4]
+    dimensions_m           : [6.6324, 2.1612, 6.8]
+    [AVERT] mesh 'SM_Farm_Truss': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_Farm_Truss': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_Farm_RoofPan_Intact': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_Farm_RoofPan_Intact': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_Farm_RoofPan_Fallen': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_Farm_RoofPan_Fallen': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_Farm_Debris_A': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_Farm_Debris_A': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_Farm_Debris_A': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_Farm_Debris_B': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_Farm_Debris_B': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_Farm_Debris_B': pas d'UV0 — lightmap et matériaux limités
+  === VALIDE ===
+
+=== EXPORT ARCHITECTURE : VERT ===
+RC=0

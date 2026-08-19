@@ -37,6 +37,8 @@ SUJETS=(
   "waterfall_cave_r2a358|source_assets/blender/environment/make_waterfall_cave_r2a358.py|source_assets/blender/environment/SM_WaterfallCave_r2a358.blend|assets/environment/caves/SM_WaterfallCave_r2a358.glb"
   "village_quay|source_assets/blender/village/make_village_quay.py|source_assets/blender/village/SM_Village_Quay.blend|assets/architecture/village/SM_Village_Quay.glb"
   "village_wall|source_assets/blender/village/make_village_wall.py|source_assets/blender/village/SM_Village_Wall.blend|assets/architecture/village/SM_Village_Wall.glb"
+  "farm_ruins|source_assets/blender/architecture/make_farm_ruins.py|source_assets/blender/architecture/SM_Farm_Ruins.blend|assets/architecture/farm/SM_Farm_Ruins.glb"
+  "thunderstruck_tree|source_assets/blender/environment/make_thunderstruck_tree.py|source_assets/blender/environment/SM_ThunderstruckTree.blend|assets/architecture/flora/SM_ThunderstruckTree.glb"
 )
 
 DEMANDE="${1:-}"
