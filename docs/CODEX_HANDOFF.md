@@ -150,6 +150,81 @@ si la visière recouvre la zone fautive, **non vérifié**.
 
 ---
 
+## 0quater. ÉTAT AU 2026-08-19 — R2B.2 close en `PARTIAL`
+
+**Ce paragraphe prime sur tout ce qui suit dans ce document tant qu'il n'est pas
+daté plus récemment.** Les sections 8 à 11 décrivent la directive R2a-3.5.2 et
+son outillage ; elles sont **historiques**.
+
+**Branche** `claude/world-v2-reconstruction`. **Base** `c44f430b`.
+**HEAD au moment de la clôture** — voir §2, relu depuis Git.
+19 commits cherry-pickés de deux voies d'agents, plus les commits du lead.
+
+### Verdict, en une phrase
+
+**La matière est gagnée et mesurée ; la forme ne l'est pas.** Passe close en
+`PARTIAL` sur un défaut nommé — ISS-060.
+
+### FAIT REPRODUIT — je l'ai mesuré moi-même
+
+| grandeur | avant | après |
+|---|---:|---:|
+| socle, plus grande composante plate **toutes teintes** sur `ferme_seuil` | **11,44 %** (grise) | **3,67 %** (beige) |
+| ferme, aplat beige `max` sur `ferme_seuil` (liant ≤ 8 %) | 7,32 % | **2,92 %** |
+| ferme, UV0 | 0/25 primitives | **25/25**, `gltf_inspect` 23 → **0** avertissement |
+| ferme, arête d'arrachement, résidu `min(lin, log)` | 1,7 % | **18,3 %** |
+| arbre, plan de fourche | 9,0° | **38,9°** — 100,3′ d'arc à 94 m |
+| arbre, cicatrice, CV lissé sur 3 stations | 0,155 | **0,392** |
+| arbre, racines, emprise / aspect | 4,52 m / 5,26 : 1 | **3,02 m / 3,33 : 1** |
+| arbre, traversabilité hors collider | 0,382 m | **0,253 m** (`step_height` 0,34) |
+| budgets | — | ferme **2 080**/4 500 · arbre **3 574**/6 000 |
+| suite `world_v2` | — | **95/95, RC=0** |
+| boot smoke | — | **23 assertions, RC=0** |
+| golden masters | — | **6/6** |
+
+### BLOQUANT pour un `PASS`, non bloquant pour la revue
+
+**ISS-060 — boîtitude `hexa` à 79,6 % contre un plafond de 25.** Le domaine du
+seuil a été mis en cause par le lead, qui s'est engagé **par écrit avant la
+mesure** sur trois issues ; la mesure en a donné une quatrième, contre lui. La
+localisation est ce qui rend le ticket actionnable : **la charpente est en pavés
+droits — juste ; la maçonnerie en boîtes déformées — acceptable ; les débris en
+pavés droits à 96,8 % — c'est le défaut.** Geste borné : `Debris_A`/`_B`,
+248 triangles, budget disponible 2 420.
+
+### Résidus nommés, portés à la revue et non corrigés
+
+- `BranchA` garde une lecture de **madrier** sous l'angle rasant de `arbre_pied`
+  — une caméra imposée, et la directive interdit de remplacer un cadrage
+  défavorable ;
+- l'arbre n'a **aucun UV0** — hors des neuf points de la directive, publié comme
+  témoin ;
+- `ferme_arriere` cadre surtout la face **ouest** : la brèche du mur nord n'y est
+  pas visible et n'est prouvée, sur cette vue, que par le profil mesuré. D'où les
+  **dix-neuf vues d'orbite** ajoutées ;
+- deux grandes taches saumon à bords flous sur l'herbe dans `arbre_lointain_94`
+  — **terrain gelé, hors périmètre**, noté pour ne pas être rangé dans « rien à
+  signaler » ;
+- ISS-061 — champ `commit` de provenance à `inconnu` dans les manifestes de
+  capture ; le `sha256`, lui, est correct et c'est lui que le §7 exige.
+
+### Preuves
+
+`evidence/world_v2/v2_3_r2b2/` — `preuves_lead/captures_r2b2/` (15 caméras
+**imposées inchangées**, sha256 du plan vérifié, 15/15 identiques champ par
+champ), `captures_orbites/` (19 vues ajoutées), `triptyques/` (6 vues décisives
+en `R2B / R2B.1 / R2B.2`, trois panneaux d'un seul fichier de caméras),
+`planches/` (niveaux de gris, luminance Rec. 709), `VERIFICATIONS_LEAD.md`
+(32 sections, chaque mesure avec sa commande), `ARBITRAGE_PLANS_R2B2.md`
+(13 décisions, dont les critères que j'ai **retirés** quand la mesure a montré
+qu'ils ne mesuraient pas ce qui était demandé).
+
+### PROCHAINE ACTION EXACTE
+
+Attendre le verdict visuel Codex/Istvan. **Ne rien propager aux 31 POI** :
+`GO_V2_3_B=FALSE`.
+
+
 ## 1. Branche
 
 ```
