@@ -1,0 +1,21 @@
+=== CONTRÔLES A / B / D — ROUGE AVANT LE GESTE ===
+commit: c44f430b1a231e46bb0c46499c76115550c1e82a
+date:   2026-08-19T16:37:52Z
+cmd:    godot --headless --path . --script tools/godot/test_runner.gd -- --filter=r2b2_ferme
+
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: r2b2_ferme
+  ÉCHEC test_world_v2_r2b2_ferme.gd::test_chaque_piece_porte_uv0_et_une_texture — les 27 surfaces des pièces SM_Farm_* portent UV0 et une texture (27 sans UV0, 0 sans texture) — SM_Farm_Truss_maille s0 : pas d'UV0 ; SM_Farm_Truss_maille s1 : pas d'UV0 ; SM_Farm_RoofPan_Intact_maille s0 : pas d'UV0 ; SM_Farm_RoofPan_Intact_maille s1 : pas d'UV0 ; SM_Farm_RoofPan_Fallen_maille s0 : pas d'UV0 ; SM_Farm_RoofPan_Fallen_maille s1 : pas d'UV0 ; (+21 autres)
+  ÉCHEC test_world_v2_r2b2_ferme.gd::test_les_pieces_frontales_entrent_dans_le_mur — tableaux et pignon entrent dans le mur au lieu d'être plaqués (6 écart(s)) — pignon épais de 0.68 m (max 0.42) sur un mur de 0,40 — il déborde des deux côtés ; pignon en surplomb de 0.34 m devant le parement (max 0.12) ; SM_Farm_Jamb_Door SAILLE de 0.42 m devant le parement (max 0.02) — pilastre plaqué, pas un tableau de baie ; SM_Farm_Jamb_Door n'entre que de 0.10 m dans la tranche (min 0.30) ; SM_Farm_Jamb_Breach SAILLE de 0.42 m devant le parement (max 0.02) — pilastre plaqué, pas un tableau de baie ; SM_Farm_Jamb_Breach n'entre que de 0.10 m dans la tranche (min 0.30)
+  ÉCHEC test_world_v2_r2b2_ferme.gd::test_le_pignon_est_solidaire_du_mur_nord — le pignon partage le plan et les assises hautes du mur nord (2 écart(s)) — le pignon ne recouvre l'arase que de 0.06 m (min 0.45) — il COIFFE une arête au lieu d'être les assises hautes du mur ; le pignon déborde de 0.34 m hors du parement nord (max 0.06) — bandeau en surplomb, donc plaque posée
+  ÉCHEC test_world_v2_r2b2_ferme.gd::test_le_sommet_du_mur_nord_manque — le sommet du mur nord montre un manque structurel (2 écart(s)) — arase nord d'écart-type 0.029 m sur 15 colonnes (min 0.35) — le mur est un rectangle ; point bas de l'arase nord à 3.00 m (max 2.10) — rien ne MANQUE au mur
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 0 réussi(s), 4 échoué(s) ===
+  ÉCHEC: test_world_v2_r2b2_ferme.gd::test_chaque_piece_porte_uv0_et_une_texture — les 27 surfaces des pièces SM_Farm_* portent UV0 et une texture (27 sans UV0, 0 sans texture) — SM_Farm_Truss_maille s0 : pas d'UV0 ; SM_Farm_Truss_maille s1 : pas d'UV0 ; SM_Farm_RoofPan_Intact_maille s0 : pas d'UV0 ; SM_Farm_RoofPan_Intact_maille s1 : pas d'UV0 ; SM_Farm_RoofPan_Fallen_maille s0 : pas d'UV0 ; SM_Farm_RoofPan_Fallen_maille s1 : pas d'UV0 ; (+21 autres)
+  ÉCHEC: test_world_v2_r2b2_ferme.gd::test_les_pieces_frontales_entrent_dans_le_mur — tableaux et pignon entrent dans le mur au lieu d'être plaqués (6 écart(s)) — pignon épais de 0.68 m (max 0.42) sur un mur de 0,40 — il déborde des deux côtés ; pignon en surplomb de 0.34 m devant le parement (max 0.12) ; SM_Farm_Jamb_Door SAILLE de 0.42 m devant le parement (max 0.02) — pilastre plaqué, pas un tableau de baie ; SM_Farm_Jamb_Door n'entre que de 0.10 m dans la tranche (min 0.30) ; SM_Farm_Jamb_Breach SAILLE de 0.42 m devant le parement (max 0.02) — pilastre plaqué, pas un tableau de baie ; SM_Farm_Jamb_Breach n'entre que de 0.10 m dans la tranche (min 0.30)
+  ÉCHEC: test_world_v2_r2b2_ferme.gd::test_le_pignon_est_solidaire_du_mur_nord — le pignon partage le plan et les assises hautes du mur nord (2 écart(s)) — le pignon ne recouvre l'arase que de 0.06 m (min 0.45) — il COIFFE une arête au lieu d'être les assises hautes du mur ; le pignon déborde de 0.34 m hors du parement nord (max 0.06) — bandeau en surplomb, donc plaque posée
+  ÉCHEC: test_world_v2_r2b2_ferme.gd::test_le_sommet_du_mur_nord_manque — le sommet du mur nord montre un manque structurel (2 écart(s)) — arase nord d'écart-type 0.029 m sur 15 colonnes (min 0.35) — le mur est un rectangle ; point bas de l'arase nord à 3.00 m (max 2.10) — rien ne MANQUE au mur
+RC=1

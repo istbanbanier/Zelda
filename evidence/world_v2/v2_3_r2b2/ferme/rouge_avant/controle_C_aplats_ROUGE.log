@@ -1,0 +1,22 @@
+=== CONTRÔLE C — APLATS, ROUGE AVANT LE GESTE ===
+commit: c44f430b1a231e46bb0c46499c76115550c1e82a
+date:   2026-08-19T16:38:27Z
+cible:  evidence/world_v2/v2_3_r2b1/apres_integre (état livré par R2B.1)
+cmd:    python3 tools/controle_aplats_ferme.py evidence/world_v2/v2_3_r2b1/apres_integre
+
+vue                     max %  total % baseline    verdict
+ferme_approche           0.80     1.43     3.92       VERT
+ferme_arriere            1.25     4.05     6.89       VERT
+ferme_composition        0.84     1.52     3.03       VERT
+ferme_facade             1.29     6.49     4.83      ROUGE
+      total 6.49 >= baseline R2B 4.83 — regression non effacee
+ferme_laterale           3.15    11.99    11.91      ROUGE
+      total 11.99 >= baseline R2B 11.91 — regression non effacee
+      composante unique 3.15 > 3.0 (controle interne)
+ferme_seuil              7.32    35.34    23.74      ROUGE
+      total 35.34 > 12.0 (portail lead)
+      total 35.34 >= baseline R2B 23.74 — regression non effacee
+      composante unique 7.32 > 3.0 (controle interne)
+portail lead (importe, non modifie) : max <= 8.0 %, total <= 12.0 % ; controle interne : composante unique <= 3.0 %
+ROUGE : 6 critere(s) en echec
+RC=1
