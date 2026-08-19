@@ -58,6 +58,32 @@ const CAMP_MODULE_CEILING: int = 45
 const CAMP_VISUAL_CEILING: int = 90
 const CAMP_COLLIDER_CEILING: int = 24
 
+## PLANCHERS — posés par le LEAD le 2026-08-19, APRÈS qu'un camp à ZÉRO
+## module est passé au VERT.
+##
+## L'INCIDENT. Le lead reproduisait ce contrôle et a cassé le bâtisseur pour
+## vérifier qu'il savait rougir. Le lieu s'est monté vide, et le contrôle a
+## imprimé « budget §4 tenu : 0/45 modules, 0/90 visuels, 0/24 collisions »
+## puis a rendu VERT. Un plafond seul déclare conforme tout ce qui n'existe
+## pas : 0 ≤ 45. Erreur de parsing, nœud renommé, bâtisseur qui lève, chemin
+## de scène changé — tout produit 0, et 0 passe.
+##
+## La suite complète avait bien rougi, mais par ISS-027 (détecteur d'erreur
+## de script), pas par ce contrôle. Un filet qui dépend d'un AUTRE filet pour
+## signaler l'absence de son propre sujet n'est pas un portail.
+##
+## CE QUE LES PLANCHERS NE SONT PAS : une exigence de densité. Descendre sous
+## le plafond reste libre. Ils disent seulement « il y a bien un camp ici à
+## mesurer ». Valeurs choisies sous les deux camps mesurés — braise 45/70/10,
+## checkpoint 34/47/5 — avec une marge franche, pour rougir sur un lieu vide
+## ou décapité sans rougir sur une composition légitimement plus sobre.
+##
+## GÉNÉRALISATION : en ajoutant un camp ici, poser SES planchers d'après SA
+## mesure. Un plancher hérité d'un autre lieu ne prouve rien sur celui-ci.
+const CAMP_MODULE_FLOOR: int = 30
+const CAMP_VISUAL_FLOOR: int = 45
+const CAMP_COLLIDER_FLOOR: int = 4
+
 var _world: Node3D = null
 
 
@@ -90,6 +116,18 @@ func test_le_camp_braise_tient_son_budget_de_modules() -> void:
 			faults.append("%d/%d nœuds visuels" % [built["visuals"], CAMP_VISUAL_CEILING])
 		if int(built["bodies"]) > CAMP_COLLIDER_CEILING:
 			faults.append("%d/%d collisions" % [built["bodies"], CAMP_COLLIDER_CEILING])
+		# Les planchers : « il y a bien un camp ici ». Voir l'incident du
+		# 2026-08-19 en tête de fichier — sans eux, un lieu qui ne se
+		# construit pas est déclaré conforme.
+		if int(built["modules"]) < CAMP_MODULE_FLOOR:
+			faults.append("%d modules seulement (plancher %d) — le camp ne s'est pas construit"
+				% [built["modules"], CAMP_MODULE_FLOOR])
+		if int(built["visuals"]) < CAMP_VISUAL_FLOOR:
+			faults.append("%d nœuds visuels seulement (plancher %d) — le camp ne s'est pas construit"
+				% [built["visuals"], CAMP_VISUAL_FLOOR])
+		if int(built["bodies"]) < CAMP_COLLIDER_FLOOR:
+			faults.append("%d collisions seulement (plancher %d) — le camp ne s'est pas construit"
+				% [built["bodies"], CAMP_COLLIDER_FLOOR])
 		if faults.is_empty():
 			print("[braise] budget §4 tenu : %d/%d modules, %d/%d visuels, %d/%d collisions"
 				% [built["modules"], CAMP_MODULE_CEILING, built["visuals"],

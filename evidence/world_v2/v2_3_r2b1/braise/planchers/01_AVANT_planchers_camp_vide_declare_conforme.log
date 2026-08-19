@@ -1,0 +1,12 @@
+sabotage posé avec un module RÉELLEMENT présent au camp
+[braise] bâtisseur 0 modules / 0 nœuds visuels / 0 collisions
+[braise] total monté 0 / 0 / 0 (écart = récompense sous RewardAnchor)
+[braise] budget §4 tenu : 0/45 modules, 0/90 visuels, 0/24 collisions
+  ok   test_world_v2_r2b1_braise.gd::test_le_camp_braise_tient_son_budget_de_modules (2 assertions)
+  ÉCHEC ISS-027 : 1 SCRIPT ERROR dans le journal — un test a pu être avorté en silence
+=== RÉSULTAT: 1 réussi(s), 1 échoué(s) ===
+  ÉCHEC: ISS-027 : 1 SCRIPT ERROR dans le journal — un test a pu être avorté en silence
+LEAD_SABOTAGE2_RC=1
+restauré, arbre C propre côté scripts: 0
+
+[exited with code 0]

@@ -1,0 +1,10 @@
+bâtisseur neutralisé proprement (return en tête de _build)
+[braise] bâtisseur 0 modules / 0 nœuds visuels / 0 collisions
+[braise] total monté 0 / 0 / 0 (écart = récompense sous RewardAnchor)
+  ÉCHEC test_world_v2_r2b1_braise.gd::test_le_camp_braise_tient_son_budget_de_modules — le camp braise tient le budget §4 (camp ≤ 45 modules, ≤ 90 visuels, ≤ 24 collisions) — 0 modules seulement (plancher 30) — le camp ne s'est pas construit ; 0 nœuds visuels seulement (plancher 45) — le camp ne s'est pas construit ; 0 collisions seulement (plancher 4) — le camp ne s'est pas construit
+=== RÉSULTAT: 0 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_r2b1_braise.gd::test_le_camp_braise_tient_son_budget_de_modules — le camp braise tient le budget §4 (camp ≤ 45 modules, ≤ 90 visuels, ≤ 24 collisions) — 0 modules seulement (plancher 30) — le camp ne s'est pas construit ; 0 nœuds visuels seulement (plancher 45) — le camp ne s'est pas construit ; 0 collisions seulement (plancher 4) — le camp ne s'est pas construit
+PLANCHER_RC=1
+restauré: 0
+
+[exited with code 0]
