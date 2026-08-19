@@ -223,3 +223,73 @@ section circulaire** (50 %). Ce n'est pas un portail desserré, c'est une
 géométrie qui a changé. Et le seuil déplacé n'appartient à aucun des portails
 d'aplats que la directive gèle : il naît dans le plan de B et meurt dans son
 plan, remplacé par plus exigeant.
+
+## 10. Caméras imposées — vérifiées champ par champ, aucun cadrage remplacé
+
+La directive §7 exige de réutiliser **impérativement** les caméras R2B.1 et
+interdit de remplacer un cadrage défavorable. Vérifié, et pas par sondage :
+
+- `evidence/world_v2/v2_3_r2b1/shots_r2b1.json`, sha256 `3eeb8d4aa68bf462…` —
+  **inchangé** depuis R2B.1 ;
+- manifeste de l'agent B (`.../arbre/apres/manifest.json`) : commit `c6ee953b34`,
+  `repo_dirty: false`, **15 vues comparées, 15 identiques, 0 divergente, 0 hors
+  référence**, sur `from`, `look` et `fov` à 1e-9 près.
+
+## 11. Ordre d'intégration — une dépendance que la vérification a révélée
+
+Le manifeste de B porte `sha256: None` pour ses deux rôles de provenance. Ce
+n'est pas une négligence de B : l'ajout du sha256 au manifeste de capture vit
+dans `tools/godot/capture_poi_batch.gd`, **modifié par l'agent A**, et l'arbre de
+travail de B ne l'a pas.
+
+Conséquence directe sur l'ordre du cherry-pick, et elle n'est pas cosmétique :
+le §7 exige que les captures finales portent le **hash des GLB capturés**. Cette
+exigence n'est satisfaite que par le changement d'A. Donc **la voie A entre
+avant mes captures finales**, sans quoi mes propres preuves naîtraient sans les
+empreintes que la directive réclame.
+
+Ordre retenu :
+
+1. voie A (ferme) — apporte `capture_poi_batch.gd` (sha256 au manifeste) et le
+   correctif du verrou `validate_fast.sh` en arbre de travail ;
+2. voie B (arbre) ;
+3. résolution du seul conflit attendu, `docs/assets/ASSET_MANIFEST.csv`, par
+   **propriété d'asset** : ligne `SM_Farm_Ruins` de A, ligne
+   `SM_ThunderstruckTree` de B, les 198 autres lignes inchangées ;
+4. import Godot headless — **piège mesuré en R2B** : après un cherry-pick qui
+   apporte un `.glb`, la suite rougit en « aucun maillage visuel » tant que
+   `--headless --path . --import` n'a pas été rejoué ;
+5. mes captures finales, au SHA intégré, arbre propre ;
+6. l'audit rejoue au SHA.
+
+### Le correctif de verrou d'A, vérifié plutôt que cru
+
+A modifie `tools/validate_fast.sh`, infrastructure partagée : le verrou passait
+par `$PROJECT_DIR/.git/validate_fast.lock`, or **dans un arbre de travail git
+`.git` est un FICHIER**, d'où `Not a directory` et un `BLOQUÉ` (code 3) alors
+qu'aucune suite ne tournait. A bascule sur `git rev-parse --git-common-dir`.
+
+Vérifié par moi sur les trois arbres :
+
+| arbre | `--git-common-dir` rend |
+|---|---|
+| `/home/user/Zelda` (principal) | `.git` — **relatif**, donc préfixé par `PROJECT_DIR` : chemin **identique à avant** |
+| `/home/user/zelda-r2b2/a_ferme` | `/home/user/Zelda/.git` — absolu, utilisé tel quel |
+| `/home/user/zelda-r2b2/b_arbre` | `/home/user/Zelda/.git` — idem |
+
+Le comportement dans l'arbre principal est donc **inchangé au caractère près**,
+et `--git-common-dir` (et non `--git-dir`) est le bon choix : c'est le `.git`
+**partagé**, or deux arbres de travail partagent `user://saves` — leurs suites
+DOIVENT se sérialiser.
+
+## 12. Réserve de l'agent B que je lève moi-même à l'intégration
+
+B signale honnêtement que son A/B à 94 m compare **deux commits différents**, le
+verrou Godot partagé ayant fait expirer ses deux tentatives d'A/B à commit
+identique. Sa mitigation est que la ROI exclut la ferme.
+
+Ce n'est pas suffisant et B le dit. Je lève la réserve après intégration, où je
+tiens le verrou : deux commits qui ne diffèrent **que** par
+`SM_ThunderstruckTree.glb` — l'intégré, et un commit jetable où seul l'ancien
+GLB est restauré. Deux arbres propres, un seul fichier d'écart, la mesure
+devient attribuable.
