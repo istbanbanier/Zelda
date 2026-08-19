@@ -20,6 +20,7 @@ on:
   push:
     tags:
       - 'playtest-*'
+      - 'world-v2-playtest-*'
   workflow_dispatch:
     inputs:
       selftest:
@@ -34,6 +35,13 @@ on:
           OBLIGATOIRE et l'app est inspectée avant publication ; tag
           playtest-full-visual-<sha>, GUIDE_JOUEUR.md et SHA256SUMS.txt
           joints à la Release.
+        type: boolean
+        default: false
+      gm4:
+        description: >-
+          Checkpoint World V2 « GM 4/4 » : paquet PROJET uniquement
+          (Projet_Godot_WorldV2_R2a_GM4_<sha>.zip, déterministe), tag
+          world-v2-playtest-r2a-gm4-<sha court>, pas d'export binaire.
         type: boolean
         default: false
 
@@ -67,12 +75,20 @@ jobs:
               playtest-full-visual-*) FULLVIS=true ;;
               *)                      FULLVIS=false ;;
             esac
+            case "$TAG" in
+              world-v2-playtest-r2a-gm4-*) GM4=true ;;
+              *)                           GM4=false ;;
+            esac
           else
             SELFTEST="${{ inputs.selftest }}"
             FULLVIS="${{ inputs.full_visual }}"
+            GM4="${{ inputs.gm4 }}"
             [ "$FULLVIS" = "true" ] || FULLVIS=false
+            [ "$GM4" = "true" ] || GM4=false
             if [ "$SELFTEST" = "true" ]; then
               TAG="playtest-selftest-${SHORT}"
+            elif [ "$GM4" = "true" ]; then
+              TAG="world-v2-playtest-r2a-gm4-${SHORT}"
             elif [ "$FULLVIS" = "true" ]; then
               TAG="playtest-full-visual-${SHORT}"
             else
@@ -85,6 +101,7 @@ jobs:
             echo "tag=$TAG"
             echo "selftest=$SELFTEST"
             echo "full_visual=$FULLVIS"
+            echo "gm4=$GM4"
           } >> "$GITHUB_OUTPUT"
           echo "commit      : $COMMIT"
           echo "tag         : $TAG"
@@ -95,7 +112,12 @@ jobs:
         if: steps.cible.outputs.selftest == 'false'
         run: |
           set -euo pipefail
-          bash tools/make_playable_zip.sh
+          if [ "${{ steps.cible.outputs.gm4 }}" = "true" ]; then
+            NOM_OVERRIDE="Projet_Godot_WorldV2_R2a_GM4_${{ steps.cible.outputs.short }}" \
+              bash tools/make_playable_zip.sh
+          else
+            bash tools/make_playable_zip.sh
+          fi
 
       # Un paquet minimal ne sert qu'à prouver que les permissions de Release
       # fonctionnent : éprouver la plomberie ne demande pas de transporter le
@@ -131,7 +153,7 @@ jobs:
       # publication de l'archive source. D'où le `continue-on-error` sur
       # l'étape et le `|| true` sur chaque export.
       - name: Exporter les binaires autonomes (meilleur effort)
-        if: steps.cible.outputs.selftest == 'false'
+        if: steps.cible.outputs.selftest == 'false' && steps.cible.outputs.gm4 == 'false'
         continue-on-error: true
         run: |
           set -euo pipefail
@@ -283,7 +305,7 @@ jobs:
       # intégrité du ZIP, structure .app, exécutable Mach-O non vide, pack de
       # ressources présent, aucun pointeur Git LFS. Échec = pas de Release.
       - name: Vérifier l'application macOS (obligatoire en full_visual)
-        if: steps.cible.outputs.selftest == 'false'
+        if: steps.cible.outputs.selftest == 'false' && steps.cible.outputs.gm4 == 'false'
         run: |
           set -euo pipefail
           FULLVIS="${{ steps.cible.outputs.full_visual }}"
@@ -322,7 +344,7 @@ jobs:
           # `|| true` : avec pipefail, un `ls` dont UN des deux motifs ne
           # matche rien (cas normal — on produit l'un OU l'autre) sort en 2
           # et tuait l'étape. Le garde-fou "aucune archive" suffit derrière.
-          ZIP="$(ls -1 builds/EclatsDOrage_MondeOuvert_*.zip builds/EclatsDOrage_SelfTest_*.zip 2>/dev/null | head -1 || true)"
+          ZIP="$(ls -1 builds/Projet_Godot_WorldV2_R2a_GM4_*.zip builds/EclatsDOrage_MondeOuvert_*.zip builds/EclatsDOrage_SelfTest_*.zip 2>/dev/null | head -1 || true)"
           [ -n "$ZIP" ] || { echo "aucune archive produite"; exit 1; }
           unzip -t "$ZIP"
           sha256sum "$ZIP" | awk '{print $1}' > "${ZIP}.sha256"

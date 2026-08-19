@@ -15,7 +15,10 @@ set -uo pipefail
 cd "$(dirname "$0")/.."
 OUT_DIR="${OUT_DIR:-builds}"
 STAMP="$(git rev-parse --short HEAD 2>/dev/null || echo nogit)"
-NAME="EclatsDOrage_MondeOuvert_${STAMP}"
+# GM4 (checkpoint World V2) : le nom est imposé par la directive et le
+# contenu du guide change — voir plus bas. NOM_OVERRIDE ne change RIEN
+# d'autre au paquet.
+NAME="${NOM_OVERRIDE:-EclatsDOrage_MondeOuvert_${STAMP}}"
 STAGE="$(mktemp -d)"
 TARGET="$STAGE/$NAME"
 mkdir -p "$TARGET" "$OUT_DIR"
@@ -121,7 +124,61 @@ Vous pouvez le faire vous-même une fois le projet ouvert :
 le propose, puis exporter.
 GUIDE
 
-( cd "$STAGE" && zip -qr "$NAME.zip" "$NAME" )
+if [ -n "${NOM_OVERRIDE:-}" ]; then
+  cat > "$TARGET/COMMENT_JOUER.md" <<GUIDE2
+# Éclats d'Orage — checkpoint World V2 (GM 4/4)
+
+## Ce que c'est
+
+Le projet Godot complet, à ouvrir dans l'éditeur. **Ce n'est pas un
+exécutable** : il faut Godot pour le lancer.
+
+Commit : $(git rev-parse HEAD 2>/dev/null || echo inconnu)
+
+## Lancer
+
+1. Installer **Godot 4.7.1-stable**, édition standard (pas .NET) :
+   <https://godotengine.org/download/archive/>
+2. Ouvrir Godot, **Importer**, choisir le \\`project.godot\\` de ce dossier.
+3. Attendre le premier import (plusieurs minutes, une seule fois), puis **F5**.
+4. Dans le menu : **Nouvelle partie** → vous arrivez dans la vallée World V2,
+   caméra à l'épaule du personnage.
+
+## Ce que ce checkpoint contient
+
+- **World V2** comme monde de Nouvelle partie : 64 chunks de terrain,
+  9 lieux montés, routes, rivière, orage.
+- Les **quatre golden masters validés visuellement** : hameau de la
+  rivière, pont de pierre, pylône, et la grotte de la cascade dans sa
+  révision R2a-3.5.8 (collider assaini, traversée intérieure prouvée).
+- La **caméra POV du joueur** reprise après le montage du monde (correctif
+  Codex vérifié par 23 assertions automatiques).
+
+## Touches (AZERTY)
+
+Avancer Z · Gauche Q · Reculer S · Droite D · Courir Maj gauche ·
+Sauter Espace · Interagir E · Pause Échap. Manette prise en charge.
+
+## Limites, dites franchement
+
+- Aucune mesure de performance : le conteneur de construction n'a pas de
+  GPU. La fluidité chez vous est inconnue.
+- Hors des quatre golden masters, les lieux de la vallée sont des
+  compositions de kit en attente de leur passe artistique (R2B en cours).
+- Le rendu n'a été contrôlé qu'en rendu logiciel, pour la régression.
+GUIDE2
+fi
+
+# DÉTERMINISME (GM4 et au-delà) : le même commit doit produire le même ZIP
+# ici et sur le runner GitHub — c'est ce qui permet de comparer l'asset
+# publié au fichier validé localement, octet par octet. Trois causes de
+# divergence neutralisées : les mtimes (fixés à la date du commit), l'ordre
+# des entrées (trié), les champs d'extension unix du zip (-X). TZ=UTC car
+# le zip stocke des heures LOCALES.
+EPOQUE="$(git log -1 --format=%ct 2>/dev/null || echo 315532800)"
+find "$TARGET" -exec env TZ=UTC touch -d "@$EPOQUE" {} +
+( cd "$STAGE" && find "$NAME" -type f | LC_ALL=C sort \
+    | TZ=UTC zip -q -X "$NAME.zip" -@ )
 mv "$STAGE/$NAME.zip" "$OUT_DIR/"
 rm -rf "$STAGE"
 
