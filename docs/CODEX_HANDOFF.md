@@ -3183,3 +3183,34 @@ Exécution : GLB actif par défaut = `SM_WaterfallCave_r2a358.glb`
 canonique courbe + sonde sous surplombs (rouge corde archivé,
 `gm4_promotion/`) ; 5 captures de promotion sans variable ;
 `GO_V2_3_R2B=TRUE`, `GO_V2_3_B=FALSE`.
+
+## 43. V2.3-A.R2B — cinq lieux pilotes reconstruits, checkpoint GM4 publié, revue visuelle attendue
+
+Checkpoint téléchargeable : Release publique
+`world-v2-playtest-r2a-gm4-5f821e5`
+(https://github.com/istbanbanier/Zelda/releases/tag/world-v2-playtest-r2a-gm4-5f821e5),
+ZIP `Projet_Godot_WorldV2_R2a_GM4_5f821e5.zip`, sha256 `556458d7…`,
+426 184 998 octets — validé depuis l'asset TÉLÉCHARGÉ (import RC=0, boot
+23 assertions, grotte `5ff4ec6e`). Instructions dans
+`evidence/world_v2/v2_3_r2b/checkpoint_gm4/CHECKPOINT.md`.
+
+R2B : trois voies depuis la base `5f821e5`, plans arbitrés d'abord
+(`ARBITRAGE_PLANS.md`), 21 commits cherry-pickés, fichiers disjoints.
+Camp checkpoint = halle charpentée en modules ; camp braise = enceinte
+brûlée + guet vertical + foyer ÉTEINT (grammaires d'abri disjointes,
+testé) ; ferme = ruine à charpente PORTÉE (GLB original 676 tris) ;
+arbre foudroyé = loft à cœur pâle et couronne d'échardes (GLB original
+977 tris, générateur à refus hors bornes) ; bassin = margelle appareillée
+en kit, classe/graphe/état fonctionnel INTACTS. 12 contrôles négatifs
+rouges d'abord ; suite intégrée 68/68 RC=0 ; boot 23 assertions ;
+golden masters byte-identiques 6/6 ; zéro ressource téléchargée.
+
+validate_fast : 916/916 tests verts ; harness global ROUGE sur ISS-059
+seul — mêmes 4 types de RID, aucune classe nouvelle, passe filtrée
+propre, amplitude proportionnelle au contenu (détail à ISS-059).
+
+**Ce qui est attendu de Codex/Istvan** : la revue VISUELLE des cinq lieux
+sur `evidence/world_v2/v2_3_r2b/preuves_lead/` — 5 montages A/B à caméra
+identique, carte, planches couleur et niveaux de gris, métriques,
+inventaire licences. AUCUN verdict artistique n'est auto-déclaré.
+`GO_V2_3_B=FALSE` : aucune propagation aux 31 POI sans ce verdict.

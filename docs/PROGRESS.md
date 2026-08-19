@@ -793,3 +793,40 @@ archivé, 8/8 sur les deux géométries.
 publish-playtest, entrée gm4=true sur le SHA final) puis ouvrir R2B :
 trois worktrees (A camps, B ferme+arbre, C bassin), plans courts arbitrés
 avant toute implémentation.
+
+## 2026-08-19 — V2.3-A.R2B : les cinq lieux pilotes reconstruits, intégrés, checkpoint GM4 publié
+
+Checkpoint jouable d'abord : ZIP `Projet_Godot_WorldV2_R2a_GM4_5f821e5.zip`
+publié en Release GitHub publique (tag `world-v2-playtest-r2a-gm4-5f821e5`,
+sha256 `556458d7…`, 426 184 998 octets), validé depuis L'ASSET TÉLÉCHARGÉ
+(import RC=0, boot smoke 23 assertions, grotte `5ff4ec6e`).
+
+R2B en trois worktrees depuis la même base `5f821e5`, plans arbitrés avant
+toute implémentation (`evidence/world_v2/v2_3_r2b/ARBITRAGE_PLANS.md`) :
+A = deux camps aux identités distinctes (halle charpentée au checkpoint ;
+enceinte brûlée, guet vertical, foyer éteint au braise) ; B = ferme à
+charpente portée + arbre foudroyé, deux GLB Blender ORIGINAUX à générateurs
+committés ; C = bassin à margelle appareillée en modules kit, classe et
+graphe électrique intacts. 12 contrôles négatifs rouges d'abord, verts après,
+seuils inchangés. Intégration par cherry-pick strict (21 commits, fichiers
+disjoints), golden masters byte-identiques 6/6.
+
+Validation intégrée : suite world_v2 **68/68 RC=0** (56+5+4+3, le compte
+exact) ; boot smoke 23 assertions RC=0 ; validate_fast **916/916 tests
+verts**, harness global ROUGE sur ISS-059 seul — mêmes 4 types de RID,
+aucune classe nouvelle, passe filtrée propre, croissance proportionnelle au
+contenu (mise à jour consignée à ISS-059). Pièges consignés : `--filter
+world_v2` (espace) est IGNORÉ par le runner (syntaxe correcte
+`--filter=world_v2`) ; après cherry-pick de GLB neufs, rejouer l'import
+headless sinon la suite rougit en « aucun maillage visuel ».
+
+Preuves du lead : 5 montages A/B à caméra STRICTEMENT identique (17 paires
+from/look/fov vérifiées contre le manifeste 4100f66), carte des cinq lieux,
+planches couleur et niveaux de gris, métriques par lieu (dépassement braise
+54/45 accepté et motivé), inventaire actifs/licences, journal des contrôles
+négatifs — `evidence/world_v2/v2_3_r2b/preuves_lead/`.
+
+**Prochaine action exacte** : recueillir la revue visuelle Codex/Istvan sur
+les planches et montages de `preuves_lead/` ; aucune propagation aux 31 POI
+sans son verdict (`GO_V2_3_B=FALSE`). Dette : ISS-059 (bissection),
+UV0 des deux GLB originaux, 8 lignes héritées non conformes du manifeste.

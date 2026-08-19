@@ -1558,3 +1558,15 @@ vert (`PROMPT4_METHOD` §3, discipline du budget rouge).
 **Propriétaire** : prochaine session de dette technique — bissection par
 moitiés de la liste des tests dans un même processus, puis `--verbose` sur
 le sous-ensemble coupable.
+
+**Mise à jour 2026-08-19 (intégration R2B)** : validate_fast rejoué sur la
+branche intégrée (`evidence/world_v2/v2_3_r2b/integration/validate_fast_integree.log`) —
+**916 tests verts, 0 échoué**, rouge toujours porté par la seule signature de
+sortie. Mêmes QUATRE types de RID, aucune classe nouvelle ; l'amplitude a
+suivi le contenu : ObjectDB 3409→5103 (+1694), DummyMaterial 3057→4749
+(+1692), resources 238→239, DummyShader 13→14, DummyTexture 57→58,
+DummyMesh 42→42 inchangé. La passe filtrée `world_v2` (68 tests) sort avec
+ZÉRO ligne de fuite : le profil « suite complète seulement » est inchangé, et
+la croissance est proportionnelle aux instances de modules des cinq lieux
+reconstruits que la suite monte de nombreuses fois — pas une classe de fuite
+nouvelle. Le verdict validate_fast reste ROUGE (règle du budget rouge).
