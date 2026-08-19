@@ -139,7 +139,7 @@ Commit : $(git rev-parse HEAD 2>/dev/null || echo inconnu)
 
 1. Installer **Godot 4.7.1-stable**, édition standard (pas .NET) :
    <https://godotengine.org/download/archive/>
-2. Ouvrir Godot, **Importer**, choisir le \\`project.godot\\` de ce dossier.
+2. Ouvrir Godot, **Importer**, choisir le fichier project.godot de ce dossier.
 3. Attendre le premier import (plusieurs minutes, une seule fois), puis **F5**.
 4. Dans le menu : **Nouvelle partie** → vous arrivez dans la vallée World V2,
    caméra à l'épaule du personnage.
