@@ -1582,6 +1582,35 @@ nouvelle par rapport à la base**. Le verdict validate_fast reste ROUGE.
 
 ---
 
+### Signature au 2026-08-19, après R2B.2 — QUATRE types identiques, aucune classe nouvelle
+
+`validate_fast.sh` rejoué **une seule fois**, à la fin de R2B.2, au SHA `ea93460`.
+**943 tests réussis, 0 échoué.** Le rouge vient exclusivement du filtre N1 sur
+les diagnostics de sortie de processus.
+
+| | R2B.1 (933 tests) | **R2B.2 (943 tests)** | écart |
+|---|---:|---:|---:|
+| `ObjectDB instances` | 5 103 | **5 203** | +100 |
+| `resources still in use` | 239 | **239** | **0** |
+| `DummyMaterial` | 4 749 | **4 849** | +100 |
+| `DummyShader` | 14 | **14** | **0** |
+| `DummyMesh` | 42 | **42** | **0** |
+| `DummyTexture` | 58 | **58** | **0** |
+
+**Aucune classe nouvelle. Trois types sur quatre sont identiques au chiffre
+près.** Le seul écart est de +100 sur `DummyMaterial` et le compte ObjectDB —
+c'est-à-dire **le même objet compté deux fois**, et il est proportionnel au
+contenu ajouté : dix tests de plus, et la ferme duplique désormais un
+`StandardMaterial3D` par surface pour porter les textures du kit.
+
+Journal : `evidence/world_v2/v2_3_r2b2/validation/validate_fast_R2B2.log`.
+
+**Non réparé dans cette passe, conformément à la directive.** Le harness global
+est donc `ROUGE`, et il est **rapporté comme tel** : la passe ne se déclare pas
+verte.
+
+---
+
 ## ISS-060 — les débris de la ferme sont des pavés droits à 96,8 % — S3, OUVERT
 
 Mesuré le 2026-08-19 à la clôture de R2B.2, sur `SM_Farm_Ruins.glb` au SHA
