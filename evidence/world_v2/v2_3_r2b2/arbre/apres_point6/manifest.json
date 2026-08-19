@@ -1,15 +1,15 @@
 {
   "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
-  "commit": "c5b5d9e28c95e65a8a0c5029c689e3e32e2ae0b6",
+  "commit": "b9b9a13e0bb3f258a52bf1447c7457aa0182f2eb",
   "engine": "4.7.1-stable (custom_build)",
   "provenance": {
     "generateur": {
       "chemin": "source_assets/blender/environment/make_thunderstruck_tree.py",
-      "commit": "c5b5d9e28c95e65a8a0c5029c689e3e32e2ae0b6"
+      "commit": "b9b9a13e0bb3f258a52bf1447c7457aa0182f2eb"
     },
     "glb_arbre": {
       "chemin": "assets/architecture/flora/SM_ThunderstruckTree.glb",
-      "commit": "c5b5d9e28c95e65a8a0c5029c689e3e32e2ae0b6"
+      "commit": "b9b9a13e0bb3f258a52bf1447c7457aa0182f2eb"
     }
   },
   "renderer": "forward_plus",
