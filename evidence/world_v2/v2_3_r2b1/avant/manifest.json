@@ -1,0 +1,237 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "63c40972f2cd3ef901579cc5f1eacac59c180a10",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 60.0,
+      "from": [
+        -40.0,
+        7.0,
+        84.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b1/avant/ferme_approche.png",
+      "look": [
+        -52.0,
+        5.5,
+        92.0
+      ],
+      "name": "ferme_approche"
+    },
+    {
+      "fov": 52.0,
+      "from": [
+        -39.0,
+        9.5,
+        80.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b1/avant/ferme_composition.png",
+      "look": [
+        -52.0,
+        6.0,
+        91.0
+      ],
+      "name": "ferme_composition"
+    },
+    {
+      "fov": 50.0,
+      "from": [
+        -50.5,
+        6.6,
+        100.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b1/avant/ferme_facade.png",
+      "look": [
+        -53.5,
+        5.8,
+        91.5
+      ],
+      "name": "ferme_facade"
+    },
+    {
+      "fov": 50.0,
+      "from": [
+        -44.0,
+        6.6,
+        92.5
+      ],
+      "image": "evidence/world_v2/v2_3_r2b1/avant/ferme_laterale.png",
+      "look": [
+        -53.5,
+        5.6,
+        91.0
+      ],
+      "name": "ferme_laterale"
+    },
+    {
+      "fov": 52.0,
+      "from": [
+        -62.0,
+        7.4,
+        86.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b1/avant/ferme_arriere.png",
+      "look": [
+        -53.5,
+        5.6,
+        91.5
+      ],
+      "name": "ferme_arriere"
+    },
+    {
+      "fov": 66.0,
+      "from": [
+        -52.4,
+        6.2,
+        96.2
+      ],
+      "image": "evidence/world_v2/v2_3_r2b1/avant/ferme_seuil.png",
+      "look": [
+        -54.6,
+        5.4,
+        89.5
+      ],
+      "name": "ferme_seuil"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -80.0,
+        10.0,
+        126.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b1/avant/arbre_approche.png",
+      "look": [
+        -92.0,
+        9.0,
+        132.0
+      ],
+      "name": "arbre_approche"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -15.0,
+        25.0,
+        85.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b1/avant/arbre_lointain_94.png",
+      "look": [
+        -92.0,
+        10.0,
+        132.0
+      ],
+      "name": "arbre_lointain_94"
+    },
+    {
+      "fov": 45.0,
+      "from": [
+        -88.2,
+        9.5,
+        129.6
+      ],
+      "image": "evidence/world_v2/v2_3_r2b1/avant/arbre_fracture.png",
+      "look": [
+        -92.2,
+        8.8,
+        132.2
+      ],
+      "name": "arbre_fracture"
+    },
+    {
+      "fov": 52.0,
+      "from": [
+        -97.5,
+        8.6,
+        126.5
+      ],
+      "image": "evidence/world_v2/v2_3_r2b1/avant/arbre_troisquarts_g.png",
+      "look": [
+        -92.0,
+        7.5,
+        132.2
+      ],
+      "name": "arbre_troisquarts_g"
+    },
+    {
+      "fov": 52.0,
+      "from": [
+        -85.5,
+        8.6,
+        137.5
+      ],
+      "image": "evidence/world_v2/v2_3_r2b1/avant/arbre_troisquarts_d.png",
+      "look": [
+        -92.0,
+        7.5,
+        132.2
+      ],
+      "name": "arbre_troisquarts_d"
+    },
+    {
+      "fov": 58.0,
+      "from": [
+        -86.3,
+        9.3,
+        127.6
+      ],
+      "image": "evidence/world_v2/v2_3_r2b1/avant/arbre_pied.png",
+      "look": [
+        -92.2,
+        7.8,
+        132.2
+      ],
+      "name": "arbre_pied"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        107.0,
+        13.0,
+        133.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b1/avant/braise_composition.png",
+      "look": [
+        96.0,
+        7.0,
+        120.0
+      ],
+      "name": "braise_composition"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        102.0,
+        8.4,
+        127.5
+      ],
+      "image": "evidence/world_v2/v2_3_r2b1/avant/braise_proche.png",
+      "look": [
+        95.5,
+        6.6,
+        119.5
+      ],
+      "name": "braise_proche"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        104.0,
+        9.0,
+        112.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b1/avant/braise_guet.png",
+      "look": [
+        95.0,
+        8.0,
+        120.0
+      ],
+      "name": "braise_guet"
+    }
+  ],
+  "size": "1280x720"
+}
