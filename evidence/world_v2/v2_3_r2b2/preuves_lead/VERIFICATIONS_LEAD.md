@@ -398,3 +398,73 @@ caméra de référence à 000° est à 2,744 m, dans la moitié haute de cette p
 mais un observateur libre à 30° verra quatre fois moins d'écart. Publié tel
 quel : c'est une propriété de l'objet, pas un défaut, et la revue visuelle doit
 l'avoir sous les yeux plutôt que de la découvrir en tournant autour.
+
+## 15. Inspection visuelle en taille réelle des vues d'arbre — un point de la directive N'EST PAS tenu
+
+Le §7 impose l'inspection individuelle en taille réelle. Faite sur les captures
+de l'agent B, puis **remesurée sur les octets du GLB** pour ne pas m'en tenir à
+une impression.
+
+### Ce que l'agent B avait lui-même signalé, et que je confirme
+
+- `arbre_fracture` : un **vide noir** subsiste sous la crête, en haut du cadre,
+  là où la lèvre surplombe l'écorce. Il ne se lit pas comme une ombre mais
+  comme un trou de modélisation.
+- `arbre_pied` : le bois tombé de premier plan est un madrier à bords
+  parallèles sous cet angle rasant.
+
+Aucun des dix-huit contrôles de B ne les attrape ; il l'écrit lui-même.
+
+### Ce que l'inspection a trouvé en plus, et qui bloque
+
+Directive, point 6 : « donner du volume aux racines — **aucune grande plaque
+radiale ne doit rester visible** ».
+
+Sur `arbre_approche`, la masse au pied se lit comme une **aile sombre découpée
+posée sur l'herbe** : large, plate, à bords francs, sans relief vertical. Sur
+`arbre_pied`, l'angle rasant l'aplatit complètement.
+
+Mesuré sur les 1 456 sommets du nœud `SM_ThunderstruckTree_Roots`, séparés par
+l'emprise du collider du tronc (`|x| ≤ 1,05`, `|z| ≤ 0,95`, la borne du contrôle
+C2d de B lui-même) :
+
+| | sommets | Y max |
+|---|---:|---:|
+| **DANS** l'emprise du collider | 460 (32 %) | **0,875 m** |
+| **HORS** emprise | 996 (**68 %**) | **0,280 m** (plafond 0,32) |
+
+Emprise X −1,51…+2,02 · Z −1,72…+2,81 · Y 0,015…0,875.
+**Rapport d'aspect : 4,52 m de large pour 0,86 m de haut, soit 5,3 : 1.**
+
+Deux lectures, et la seconde est le défaut :
+
+1. **B a utilisé l'autorisation** — 0,875 m près du tronc, là où le collider
+   interdit déjà le passage. Le raisonnement est juste et je l'accorde.
+2. **68 % de la matière est une jupe de 28 cm étalée sur 2 à 3 m.** C'est elle
+   qu'on voit. **Le volume est là où on ne le voit pas ; la platitude est là où
+   on la voit.**
+
+Et le contrôle C2a ne peut pas l'attraper : il mesure l'**orientation des
+normales** d'une section. Une aile mince a des flancs arrondis en section — d'où
+les 33,0 % — tout en formant une galette vue de trois quarts. La grandeur
+manquante est le **rapport d'aspect**, ou l'étendue verticale de la silhouette
+depuis une caméra basse. Quatrième instrument de la passe à mesurer autre chose
+que ce qu'on lui demandait.
+
+La contrainte de traversabilité est réelle et ne bouge pas : `ROOT_STEP_MAX_M`
+= 0,32 découle du `step_height` de 0,34, et B vient précisément de corriger le
+défaut préexistant. Renvoyé à B avec trois voies compatibles — fragmenter la
+jupe, rentrer sa portée de 2,8 m à 1,6–1,8 m, ou les deux — plus l'exigence
+d'écrire la mesure qui aurait attrapé la galette, **rouge d'abord à 5,3 : 1**.
+
+### Ce que la vue à 94 m dit, et une observation hors périmètre
+
+`arbre_lointain_94` : l'arbre se lit comme une silhouette verticale sombre à
+**fourche visible**. Le point 9 tient à ce cadrage — ce que la mesure de fourche
+laissait attendre.
+
+**Hors périmètre, noté et NON corrigé** : ce cadrage montre deux grandes taches
+saumon à bords très flous sur l'herbe, sans variation interne. Elles se lisent
+comme des taches de mélange plutôt que comme du sol sec. Le terrain appartient à
+World V2.2 et à la liste gelée ; je n'y touche pas et je ne la range pas non
+plus dans « rien à signaler ». À porter à la revue visuelle.
