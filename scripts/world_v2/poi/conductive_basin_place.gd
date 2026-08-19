@@ -41,13 +41,19 @@ const BRIGHT_COPPER: Color = Color(0.66, 0.46, 0.28)
 
 ## R2B : l'habillage passe des `stone_block` procéduraux aux MODULES du kit
 ## (rejet du lead : « des primitives »). Les teintes ci-dessous sont des
-## MULTIPLICATEURS sur des textures qui portent déjà leur valeur — le piège
-## consigné dans `scripts/CLAUDE.md` (« une teinte foncée la doublait et les
-## rochers devenaient des trous noirs ») interdit de réutiliser CUT_STONE
-## (calibrée pour un matériau PLEIN sans texture) telle quelle. La bande de
-## valeur de la margelle est jugée sur capture par
-## `tools/check_value_bands.py` (cible p50 ∈ [35, 65] %, p90 ≤ 70 %).
-const KIT_CUT_STONE: Color = Color(0.86, 0.80, 0.71)
+## MULTIPLICATEURS sur des textures qui portent déjà leur valeur — la bande
+## de valeur se MESURE sur capture (`tools/check_value_bands.py`, cible
+## p50 ∈ [35, 65] %, p90 ≤ 70 %), elle ne se prédit pas depuis l'albédo
+## (gain non linéaire, scripts/CLAUDE.md).
+##
+## MESURÉ sur `bassin_proche` (commit 70780a0) : avec un multiplicateur
+## prudent (0,86/0,80/0,71) — choisi par crainte du piège inverse, le
+## double assombrissement des roches sombres du donjon — la texture
+## RockPath, CLAIRE, sortait à p50 = 72,9 % / p90 = 87,1 % sur crop pierre
+## seule (herbe témoin : p90 = 58 %). Correction par le ratio mesuré
+## (~0,77) : la valeur de palette CUT_STONE convient à CE kit-là. Les deux
+## pièges sont réels et opposés — d'où : mesurer, jamais présumer.
+const KIT_CUT_STONE: Color = Color(0.66, 0.60, 0.52)
 const KIT_RAIL_COPPER: Color = Color(0.357, 0.4675, 0.425)  # PATINA × 0,85
 ## Pente : un module de 2 m dont l'empreinte enjambe plus de ça se scinde
 ## en modules de 1 m (arbitrage R2B, décision transverse).
