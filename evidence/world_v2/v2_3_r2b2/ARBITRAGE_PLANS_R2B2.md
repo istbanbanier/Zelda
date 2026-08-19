@@ -491,11 +491,21 @@ de l'agent, pas du lead.
 
 > Mieux vaut un verdict absent qu'un verdict faux.
 
-### Ordre imposé à l'audit au SHA intégré
+### Ordre imposé à l'audit — DEUX temps, et le titre le dit maintenant
+
+L'audit a relevé que ce titre disait « au SHA intégré » alors que la note
+de fin dit l'inverse pour les points 1 et 2. Il a raison : un titre qui
+contredit sa propre note est une ambiguïté, pas un détail. Corrigé.
+
+**Temps 1 — SUR L'ÉTAT DE DÉPART `c44f430b`, avant toute intégration.**
+Ces deux mesures disparaissent à l'instant du cherry-pick :
 
 1. **double rendu du même état** → bande d'incertitude de la densité, publiée
    AVANT toute comparaison ;
-2. **couverture des six vues** → arrêt de la liste des vues qualifiantes ;
+2. **couverture des six vues** → arrêt de la liste des vues qualifiantes.
+
+**Temps 2 — AU SHA INTÉGRÉ.**
+
 3. **point zéro complet** rejoué ;
 4. densité liante + couverture, coût, part attribuée et densité du kit sur les
    six vues, avec marquage des vues triviales ;
@@ -542,3 +552,60 @@ Conséquence opérationnelle : **aucune recapture d'un état ancien n'est
 nécessaire**, et le risque de substituer un cadrage favorable au panneau R2B est
 écarté par construction, puisque les trois panneaux sortent d'un seul et même
 fichier de caméras.
+
+---
+
+## Décision 8 — l'audit corrige l'indicateur que je venais de prescrire, en espace log
+
+Je venais de demander à l'agent A un **résidu à l'ajustement linéaire** pour
+attraper le couronnement nord tiré à la règle (RMS 0,065 m pour 1,98 m de
+chute, soit 3,3 % — voir `preuves_lead/VERIFICATIONS_LEAD.md` §3). L'audit a
+appliqué le même correctif à son propre indicateur de variété, puis a trouvé
+qu'il était **aveugle à son tour** :
+
+> les volumes de branches ont des rapports successifs **0,411 / 0,476 / 0,376 /
+> 0,376** — une rampe **géométrique**. Le résidu linéaire rend **15,2 %** et les
+> déclare irrégulières ; en espace **log** il tombe à **1,7 %**.
+
+| instrument | verdict sur les branches |
+|---|---|
+| étendue min–max | « variées » — faux, une rampe la maximise |
+| résidu linéaire | 15,2 %, « irrégulières » — faux |
+| `min(linéaire, log)` | **1,7 %**, balayage strict — juste |
+
+**Un balayage de paramètre est multiplicatif ; le chercher additivement ne le
+voit pas.** L'indicateur devient `min(résidu linéaire, résidu log)`, et il est
+transmis à l'agent A pour le profil de couronnement : le cas mesuré chez A est
+additif, mais rien ne garantit que le suivant le sera.
+
+Mesures corrigées sur l'état de départ : branches **1,7 %** · boîtes de l'arbre
+5,2 % · racines 13,7 % · écorces 20,1 % · **boîtes de la ferme 4,7 %** sur 118
+membres · veines du pylône 6,5 %.
+
+**Et ce chiffre ne devient PAS un portail.** Raison mesurée, la même qui avait
+déjà écarté la périodicité : les **trois pieds du pylône golden master** sont à
+**0,0 % de résidu pour une amplitude nulle** — trois volumes rigoureusement
+identiques — et le pylône a passé la revue visuelle. **Une architecture se
+répète légitimement.** Le chiffre est rapporté et lu par classe d'asset ; il ne
+lie personne.
+
+C'est la troisième fois de la passe qu'un indicateur proposé comme robuste se
+révèle contournable ou faussement accusateur, et la deuxième fois que c'est
+l'audit qui le démontre contre son propre travail. Il l'écrit lui-même :
+« mon angle mort était pire puisque je l'avais introduit en croyant corriger ».
+
+## Décision 9 — la densité d'aplat de l'ARBRE : mesurée, publiée, non liante
+
+Vérifié par moi sur le GLB : `SM_ThunderstruckTree.glb` porte **0 primitive
+avec `TEXCOORD_0`** et aucune texture, là où la ferme vient d'en recevoir.
+
+Ce n'est **pas** hors contrat. Le dépliage UV0 est le point 1 des exigences de
+la **ferme** ; les neuf points de l'arbre portent sur la géométrie, la fracture,
+les racines et les bois tombés. L'agent B a répondu en géométrie et en paliers
+de valeur, ce qui était la demande.
+
+Je n'invente pas une exigence en cours de passe. Mais je ne laisse pas la
+question sans chiffre : **la densité d'aplat de l'arbre est mesurée et publiée
+comme témoin sur ses vues, sans portail.** Si elle est mauvaise, c'est un
+**résidu nommé** porté à la revue visuelle — pas un échec technique, et surtout
+pas un silence.
