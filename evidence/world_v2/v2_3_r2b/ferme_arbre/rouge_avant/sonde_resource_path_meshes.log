@@ -1,0 +1,8 @@
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+IMPORTE Prop_Wagon -> 'res://assets/environment/dungeon/Prop_Wagon.gltf::ArrayMesh_4r0ps'
+IMPORTE SM_VillageWall_Course -> 'res://assets/architecture/village/SM_Village_Wall.glb::ArrayMesh_c0ycj'
+IMPORTE SM_VillageWall_Coping -> 'res://assets/architecture/village/SM_Village_Wall.glb::ArrayMesh_y84va'
+RUNTIME -> ''
+FIN NOMINALE
+RC=0
