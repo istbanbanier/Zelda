@@ -5,6 +5,63 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-19 — R2B.2 : la matière est gagnée, la forme ne l'est pas · `PARTIAL`
+
+**Ce que la passe a obtenu, et qui se voit.** La ferme a reçu la pierre du kit :
+UV0 dépliées sur **25 primitives sur 25**, densité UV à **1,6 % de celle du
+kit**, `gltf_inspect` passé de 23 avertissements à **zéro**. Et surtout le
+**socle** — la plus grande surface plate de la vue décisive, **11,44 % d'écran,
+une dalle grise unie de 132 pixels de haut** — a été texturé par projection
+triplanaire monde sans qu'un octet du golden master `SM_Village_Wall` ne bouge.
+Il tombe à **3,67 %**. L'arbre a rendu sa fourche lisible à 94 m (plan de 9,0° à
+**38,9°**, 100′ d'arc là où les deux moitiés se superposaient), sa cicatrice a
+cessé d'être un ruban peint (CV lissé **0,155 → 0,392**), et ses racines ont
+cessé d'être une plaque (**5,26 : 1 → 3,33 : 1**) — en **améliorant** au passage
+la marge de traversabilité, 0,382 → 0,253 m sous un `step_height` de 0,34.
+
+**Ce qui échoue, et que je ne masque pas.** Le liant de boîtitude que j'avais
+posé rend **79,6 %** contre un plafond de 25. J'avais une hypothèse pour
+l'excuser — « un lieu bâti en modules de kit est légitimement boîteux » — et je
+m'étais engagé **par écrit, avant la mesure**, sur trois issues. La mesure en a
+donné une quatrième, contre moi : le GLB ne contient **aucun** module de kit, et
+un module de kit n'est **pas** une boîte (0,0 %, quatre composantes pour
+56 triangles). Le seuil est dans son domaine. Le liant échoue.
+
+**Ce que le chiffre dit vraiment.** Il mesure une **forme**, pas une matière. La
+localisation rend la question utilisable par une revue : la charpente est en
+pavés droits — c'est juste, un bois est scié d'équerre ; la maçonnerie est en
+boîtes déformées — c'est acceptable ; **les débris sont en pavés droits à
+96,8 % — c'est le défaut**, parce que des débris sont par définition ce qui n'a
+plus de forme.
+
+**Six instruments ont menti dans cette passe, dont trois étaient de moi.** σ qui
+mesure la dispersion et non l'irrégularité, laissant passer une diagonale tirée
+à la règle. Un résidu linéaire aveugle à une rampe **géométrique** — corrigé en
+`min(linéaire, log)`. Un portail d'aplats **aveugle au gris**, qui déclarait
+2,92 % là où la plus grande surface plate faisait 11,44 %. Un détecteur de
+boîtes à moi qui rendait 0,0 % parce que j'avais fusionné soudage et connexité.
+Une identité de **statistique** prise pour une identité de **géométrie** sur les
+deux pans de toit — réfutée par le spectre des distances au centroïde, écart
+1,854 m. Et deux impressions visuelles de ma part qui n'ont pas survécu à la
+mesure.
+
+**Quatre garde-fous nous ont sauvés d'un résultat qui ressemblait à un
+résultat** : `flock` sans RC testé (deux vues perdues en silence), `| head` qui
+tue par SIGPIPE avant l'écriture du JSON, un fichier de plan au mauvais format
+(`RC=3`, zéro image), et un fichier non suivi pendant une capture qui aurait
+écrit `repo_dirty: true`. Les deux premiers sont consignés dans
+`tools/CLAUDE.md`.
+
+**PROCHAINE ACTION EXACTE.** Attendre le verdict visuel Codex/Istvan sur
+`evidence/world_v2/v2_3_r2b2/preuves_lead/` — 15 caméras imposées inchangées,
+19 vues d'orbite, 6 triptyques `R2B / R2B.1 / R2B.2`, 2 planches en niveaux de
+gris. **Ne rien propager aux 31 POI** : `GO_V2_3_B=FALSE`. Si la revue juge que
+les débris prismatiques valent une passe, le geste est borné et localisé —
+`Debris_A` et `_B` dans `make_farm_ruins.py`, 248 triangles au total, budget
+disponible 2 420 sur 4 500.
+
+---
+
 ## 2026-08-17 — R2a-3.5.5 : au rebord d'une bouche, il n'y a pas d'épaisseur · `PARTIAL`
 
 **Le gate d'épaisseur ne peut pas être rendu décisif, et c'est démontré.** Le
