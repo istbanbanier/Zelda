@@ -30,7 +30,12 @@ const TREE_SCENE: String = "res://scenes/world_v2/poi/ThunderstruckTreePlace.tsc
 const TREE_GLB: String = "res://assets/architecture/flora/SM_ThunderstruckTree.glb"
 const FARM_GLB: String = "res://assets/architecture/farm/SM_Farm_Ruins.glb"
 const EXPORT_CHAIN: String = "res://tools/blender/export_architecture.sh"
-const PIPELINE_DIR: String = "res://evidence/pipeline"
+## Les journaux ARCHIVÉS du pipeline — pas `evidence/pipeline/`, qui est
+## gitignoré : un clone frais doit pouvoir vérifier la preuve committée.
+## Si quelqu'un régénère un GLB sans réarchiver ses journaux, la taille
+## inspectée divergera de celle du dépôt et ce filet rougira — c'est le
+## contrat « une preuve datée reliée au commit » (.claude/rules/evidence.md).
+const PIPELINE_DIR: String = "res://evidence/world_v2/v2_3_r2b/ferme_arbre/pipeline"
 
 ## L'exemption de l'arbitrage R2B : le nom EXACT du nœud, rien d'autre.
 const RUNTIME_MESH_EXEMPT: Array[String] = ["SolBrule"]

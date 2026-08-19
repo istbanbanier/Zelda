@@ -1,0 +1,26 @@
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+[assise] modules demandés — 16 module(s)
+[assise] emprise et pivot MESURÉS après KitScale.factor() puis
+[assise] KitPlacement.seat(), exactement comme WorldV2PlaceKit.module()
+
+module                                 facteur  assise  emprise L×H×P (m)       pivot dans l'emprise      surfaces
+Floor_Brick                             1.000   0.000    2.00 ×  0.02 ×  2.00  centre / centre / centre  1
+Wall_UnevenBrick_Straight               1.000   0.000    2.00 ×  3.12 ×  0.41  centre / min / 0.77       3
+Wall_UnevenBrick_Door_Round             1.000   0.000    2.00 ×  3.12 ×  0.41  centre / min / 0.77       3
+Wall_UnevenBrick_Window_Thin_Round      1.000   0.000    2.00 ×  3.12 ×  0.41  centre / min / 0.77       3
+Corner_Exterior_Brick                   1.000   0.000    0.53 ×  3.02 ×  0.58  0.67 / min / 0.35         1
+Door_1_Round                            1.000   0.000    1.12 ×  2.32 ×  0.12  min / min / centre        2
+Prop_WoodenFence_Single                 1.000   0.000    2.06 ×  0.84 ×  0.12  centre / min / centre     1
+Prop_Wagon                              1.000   0.000    1.95 ×  1.53 ×  4.02  centre / min / 0.78       1
+FarmCrate_Empty                         1.000   0.000    0.71 ×  0.24 ×  0.41  centre / min / centre     2
+FarmCrate_Apple                         1.000   0.000    0.71 ×  0.24 ×  0.41  centre / min / centre     3
+CommonTree_4                            1.000   0.000    3.83 ×  9.44 ×  3.76  centre / min / centre     2
+Bush_Common_Flowers                     1.000   0.000    1.91 ×  1.58 ×  1.97  centre / min / centre     2
+Bush_Common                             1.000   0.000    1.91 ×  1.58 ×  1.97  centre / min / centre     1
+Plant_1                                 0.542   0.000    1.27 ×  1.01 ×  1.39  centre / min / centre     1
+Prop_Vine1                              1.000   0.000    1.54 ×  2.60 ×  0.22  centre / 0.81 / 0.20      1
+Prop_Vine2                              1.000   0.000    1.39 ×  2.60 ×  0.21  0.36 / 0.81 / 0.21        1
+
+[assise] tous les modules demandés existent.
+RC=0
