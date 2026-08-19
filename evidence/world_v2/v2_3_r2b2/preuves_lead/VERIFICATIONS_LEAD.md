@@ -121,3 +121,72 @@ pas un silence.
   pas ;
 - la lisibilité de l'arbre à 94 m après les corrections de champ proche
   (point 9 de la directive) : capture en cours chez B.
+
+## 6. Fourche de l'arbre — le défaut que J'AVAIS trouvé en R2B.1 est corrigé, et je l'ai remesuré
+
+En R2B.1 j'avais établi que la caméra de silhouette à l'azimut **000°** regardait
+**dans le plan de la fourche** : `chemin_vivant(1) = (2,09 ; 0,33)` et
+`chemin_mort(1) = (−1,50 ; −0,24)` donnaient ΔX 3,59 · ΔY 0,57, soit un plan à
+**9,0°**. Les deux moitiés se superposaient très exactement sous la vue qui
+devait prouver la lisibilité lointaine.
+
+Constantes de B après correction, lues dans le générateur et recalculées par moi :
+
+| | R2B.1 | R2B.2 |
+|---|---:|---:|
+| azimut du chemin vivant | — | **+15,0°** |
+| azimut du chemin mort | — | **−104,6°** |
+| divergence des deux azimuts | ≈ coplanaires | **119,6°** |
+| plan de la fourche | **9,0°** | **38,9°** |
+| écart horizontal des deux cimes | — | **4,371 m** |
+
+Séparation **apparente** des deux cimes selon l'azimut de caméra, à 94 m :
+
+| azimut | écart latéral | angle apparent |
+|---:|---:|---:|
+| **000°** (caméra de silhouette) | **2,744 m** | **100,3′ d'arc** |
+| 030° / 210° (le pire) | 0,675 m | 24,7′ |
+| 090° | 3,403 m | 124,4′ |
+| 120° / 300° (le meilleur) | 4,319 m | 157,8′ |
+
+La vue qui échouait est passée de **superposition** à **100 minutes d'arc**
+d'écart, soit plus d'un degré et demi. Le pire azimut de tout le tour reste à
+24,7′, ce qui est encore résolu — et ce n'est aucune des caméras de référence.
+
+Deuxième rupture de cime, exigée au point 2 de la directive : cime morte à
+`z = 5,90` et membre arraché à `z = 7,55`, **1,65 m d'écart** — deux ruptures
+franchement séparées, à des hauteurs différentes.
+
+Hauteur totale 10,80 m, dans les bornes [10 ; 12] que le générateur refuse de
+franchir.
+
+## 7. Cicatrice de l'arbre — mesurée sur l'instrument QUI AVAIT DIAGNOSTIQUÉ le défaut
+
+Le « ruban peint » de R2B.1 avait été établi ainsi : CV **brut** de la largeur
+0,402 — rassurant — mais CV **lissé sur 3 stations**, l'échelle que l'œil
+intègre, à **0,155**, avec une autocorrélation de rang 1 de −0,483. C'est le
+lissage qui révélait la largeur constante sous un bruit station-à-station.
+
+J'ai vérifié que le contrôle C4a de B lisse **de la même façon** — moyenne
+glissante `(a + b + c) / 3` — et que son en-tête cite explicitement le 0,402
+d'origine comme motif du contrôle. Les deux chiffres sont donc comparables :
+
+| | R2B.1 | R2B.2 |
+|---|---:|---:|
+| CV de la largeur **lissée sur 3 stations** | **0,155** | **0,392** |
+
+Le rapport largeur max/min lissée est de 3,98, la profondeur radiale du bois nu
+va de 0,084 à 0,385 m sur 17 stations (rapport 4,58), et deux plans de rupture
+sont détectés avec 7 échardes le long du parcours. La cicatrice n'est plus une
+bande de largeur constante.
+
+## 8. Budget de l'arbre — recompté depuis les accesseurs d'indices
+
+**3 574 triangles** pour un plafond de 6 000. Le chiffre annoncé par B est
+exact ; je ne l'ai pas lu dans son journal, je l'ai recalculé en sommant
+`count / 3` sur les accesseurs d'indices des 12 primitives du GLB.
+
+Racines : hauteur maximale hors collider **0,280 m**, **0 sommet** au-dessus de
+0,32. À noter — cela corrige au passage le défaut de traversabilité préexistant
+consigné avant la passe (16 sommets de racine à 0,382 m, au-dessus du
+`step_height` de 0,34). Ce n'était pas demandé ; c'est acquis.
