@@ -1,0 +1,34 @@
+=== Blender: Blender 4.0.2 ===
+
+--- farm_ruins : génération de la source ---
+  [farm_ruins] SM_Farm_Truss             212 tris  X -3.08..3.08  Y -3.15..3.35  Z 0.000..1.43
+  [farm_ruins] SM_Farm_RoofPan_Intact    108 tris  X 0.00..3.55  Y -3.40..3.40  Z 0.000..0.14
+  [farm_ruins] SM_Farm_RoofPan_Fallen    108 tris  X 0.00..3.15  Y -1.72..1.77  Z 0.000..2.16
+  [farm_ruins] SM_Farm_Debris_A          124 tris  X -0.61..0.82  Y -0.61..0.54  Z 0.000..0.68
+  [farm_ruins] SM_Farm_Debris_B          124 tris  X -0.48..0.69  Y -0.49..0.54  Z 0.000..0.69
+  [farm_ruins] SM_Farm_GableBreak         96 tris  X -3.21..3.10  Y -0.34..0.34  Z 0.000..1.25
+  [farm_ruins] SM_Farm_WallStub_East      84 tris  X -1.19..1.03  Y -0.22..0.26  Z 0.000..1.15
+  [farm_ruins] SM_Farm_Rubble_Wall       184 tris  X -1.27..1.13  Y -0.74..0.74  Z 0.000..0.62
+  [farm_ruins] SM_Farm_Jamb_Door          36 tris  X -0.98..0.98  Y -0.27..0.27  Z 0.000..2.10
+  [farm_ruins] SM_Farm_Jamb_Breach        44 tris  X -0.98..0.98  Y -0.27..0.27  Z 0.000..1.72
+  [farm_ruins] SM_Farm_InteriorFrame      72 tris  X 0.01..0.74  Y -2.60..2.40  Z 0.000..2.88
+  [farm_ruins] SM_Farm_JoistStubs         76 tris  X 0.00..1.18  Y -2.02..1.98  Z 0.000..0.39
+  [farm_ruins] total 1268 triangles (budget 4500)
+  [farm_ruins] pignon : asymetrie 0.017, 12 gradin(s) d'arrachement
+  [farm_ruins] ERREUR: le pignon n'est pas ROMPU (asymetrie 0.017 < 0.12 ou 12 gradin(s) < 3) — un pignon intact est un mur de plus, pas une rupture de silhouette
+  ÉCHEC: la génération a rendu non-zéro — voir /tmp/sonde_a/sab_logs/architecture_farm_ruins_make.log
+  | [farm_ruins] SM_Farm_Debris_A          124 tris  X -0.61..0.82  Y -0.61..0.54  Z 0.000..0.68
+  | [farm_ruins] SM_Farm_Debris_B          124 tris  X -0.48..0.69  Y -0.49..0.54  Z 0.000..0.69
+  | [farm_ruins] SM_Farm_GableBreak         96 tris  X -3.21..3.10  Y -0.34..0.34  Z 0.000..1.25
+  | [farm_ruins] SM_Farm_WallStub_East      84 tris  X -1.19..1.03  Y -0.22..0.26  Z 0.000..1.15
+  | [farm_ruins] SM_Farm_Rubble_Wall       184 tris  X -1.27..1.13  Y -0.74..0.74  Z 0.000..0.62
+  | [farm_ruins] SM_Farm_Jamb_Door          36 tris  X -0.98..0.98  Y -0.27..0.27  Z 0.000..2.10
+  | [farm_ruins] SM_Farm_Jamb_Breach        44 tris  X -0.98..0.98  Y -0.27..0.27  Z 0.000..1.72
+  | [farm_ruins] SM_Farm_InteriorFrame      72 tris  X 0.01..0.74  Y -2.60..2.40  Z 0.000..2.88
+  | [farm_ruins] SM_Farm_JoistStubs         76 tris  X 0.00..1.18  Y -2.02..1.98  Z 0.000..0.39
+  | [farm_ruins] total 1268 triangles (budget 4500)
+  | [farm_ruins] pignon : asymetrie 0.017, 12 gradin(s) d'arrachement
+  | [farm_ruins] ERREUR: le pignon n'est pas ROMPU (asymetrie 0.017 < 0.12 ou 12 gradin(s) < 3) — un pignon intact est un mur de plus, pas une rupture de silhouette
+
+=== EXPORT ARCHITECTURE : ROUGE ===
+RC=1

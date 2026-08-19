@@ -1,0 +1,24 @@
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: r2b1_ferme
+  ÉCHEC test_world_v2_r2b1_ferme.gd::test_l_arase_de_maconnerie_casse — l'arase de maçonnerie casse (1 écart(s)) — l'arase est une LIGNE DROITE : écart-type 0.000 m sur 22 pièces (min 0.45)
+  ÉCHEC test_world_v2_r2b1_ferme.gd::test_des_pans_de_mur_s_arretent_a_mi_hauteur — des pans de mur s'arrêtent à mi-hauteur (1 écart(s)) — 0 pan(s) de maçonnerie arrêté(s) entre 0.80 et 2.40 m (min 2) — un mur écroulé ne se distingue pas d'un trou entre deux murs pleins
+  ÉCHEC test_world_v2_r2b1_ferme.gd::test_le_pignon_est_rompu_et_massif — le pignon est rompu et massif (1 écart(s)) — aucun pignon SM_Farm_GableBreak — rien ne rompt la ligne du toit
+  ÉCHEC test_world_v2_r2b1_ferme.gd::test_la_masse_effondree_git_au_pied_de_la_breche — la masse effondrée gît au pied de la brèche (2 écart(s)) — aucun talus SM_Farm_Rubble_Wall — la matière du mur écroulé n'est nulle part ; aucun moignon SM_Farm_WallStub — la brèche est un trou net, pas un arrachement
+  ÉCHEC test_world_v2_r2b1_ferme.gd::test_l_interieur_n_est_pas_une_coque_vide — l'intérieur porte une ossature (1 écart(s)) — 0 élément(s) d'ossature intérieure au-dessus de 1.20 m (min 4) — l'intérieur est une coque
+  ÉCHEC test_world_v2_r2b1_ferme.gd::test_le_verger_est_un_alignement — le verger est un alignement (1 écart(s)) — 2 arbre(s) (min 4) — un arbre isolé n'est pas un verger
+  ÉCHEC test_world_v2_r2b1_ferme.gd::test_la_face_brique_des_murs_regarde_dehors — la face brique des murs regarde dehors (10 écart(s)) — Wall_UnevenBrick_Straight_11 montre son PLÂTRE dehors ; Wall_UnevenBrick_Straight montre son PLÂTRE dehors ; Wall_UnevenBrick_Straight_13 montre son PLÂTRE dehors ; Wall_UnevenBrick_Straight montre son PLÂTRE dehors ; Wall_UnevenBrick_Straight_21 montre son PLÂTRE dehors ; Wall_UnevenBrick_Straight montre son PLÂTRE dehors ; (+4 autres)
+  ÉCHEC test_world_v2_r2b1_ferme.gd::test_le_budget_tient_et_les_pieces_r2b_survivent — le budget tient et les pièces R2B survivent (1 écart(s)) — 676 triangles seulement (plancher 900) — la ruine n'a pas gagné de masse
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 0 réussi(s), 8 échoué(s) ===
+  ÉCHEC: test_world_v2_r2b1_ferme.gd::test_l_arase_de_maconnerie_casse — l'arase de maçonnerie casse (1 écart(s)) — l'arase est une LIGNE DROITE : écart-type 0.000 m sur 22 pièces (min 0.45)
+  ÉCHEC: test_world_v2_r2b1_ferme.gd::test_des_pans_de_mur_s_arretent_a_mi_hauteur — des pans de mur s'arrêtent à mi-hauteur (1 écart(s)) — 0 pan(s) de maçonnerie arrêté(s) entre 0.80 et 2.40 m (min 2) — un mur écroulé ne se distingue pas d'un trou entre deux murs pleins
+  ÉCHEC: test_world_v2_r2b1_ferme.gd::test_le_pignon_est_rompu_et_massif — le pignon est rompu et massif (1 écart(s)) — aucun pignon SM_Farm_GableBreak — rien ne rompt la ligne du toit
+  ÉCHEC: test_world_v2_r2b1_ferme.gd::test_la_masse_effondree_git_au_pied_de_la_breche — la masse effondrée gît au pied de la brèche (2 écart(s)) — aucun talus SM_Farm_Rubble_Wall — la matière du mur écroulé n'est nulle part ; aucun moignon SM_Farm_WallStub — la brèche est un trou net, pas un arrachement
+  ÉCHEC: test_world_v2_r2b1_ferme.gd::test_l_interieur_n_est_pas_une_coque_vide — l'intérieur porte une ossature (1 écart(s)) — 0 élément(s) d'ossature intérieure au-dessus de 1.20 m (min 4) — l'intérieur est une coque
+  ÉCHEC: test_world_v2_r2b1_ferme.gd::test_le_verger_est_un_alignement — le verger est un alignement (1 écart(s)) — 2 arbre(s) (min 4) — un arbre isolé n'est pas un verger
+  ÉCHEC: test_world_v2_r2b1_ferme.gd::test_la_face_brique_des_murs_regarde_dehors — la face brique des murs regarde dehors (10 écart(s)) — Wall_UnevenBrick_Straight_11 montre son PLÂTRE dehors ; Wall_UnevenBrick_Straight montre son PLÂTRE dehors ; Wall_UnevenBrick_Straight_13 montre son PLÂTRE dehors ; Wall_UnevenBrick_Straight montre son PLÂTRE dehors ; Wall_UnevenBrick_Straight_21 montre son PLÂTRE dehors ; Wall_UnevenBrick_Straight montre son PLÂTRE dehors ; (+4 autres)
+  ÉCHEC: test_world_v2_r2b1_ferme.gd::test_le_budget_tient_et_les_pieces_r2b_survivent — le budget tient et les pièces R2B survivent (1 écart(s)) — 676 triangles seulement (plancher 900) — la ruine n'a pas gagné de masse
+RC=1
