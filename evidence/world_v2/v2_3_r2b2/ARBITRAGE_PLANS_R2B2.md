@@ -403,3 +403,108 @@ Six, dont **cinq portaient sur des choses affirmées ou écrites sans mesure** :
 
 Le lead a écrit deux portails contournables de suite. L'audit a fourni la
 grandeur invariante qui ferme les quatre voies de contournement.
+
+---
+
+## Décision 7 — quatrième tour de l'audit sur le portail : quatre remarques, quatre acceptées, une clause ajoutée
+
+L'audit a relu la forme finale ci-dessus et a produit quatre remarques. Toutes
+sont acceptées. Trois portent sur le domaine de validité des liants ; la
+quatrième est un aveu d'ignorance de l'audit sur son propre instrument, et c'est
+la plus importante.
+
+### 7.1 — La garde d'anti-vacuité échouerait À TORT sur les vues lointaines
+
+> « Les 24,07 % de couverture sont ceux de `ferme_seuil`, où les pièces sont le
+> sujet. Sur `ferme_approche`, `ferme_composition`, `ferme_arriere`, les pièces
+> sont vues de loin et leur couverture tombera **mécaniquement** sous 10 %. »
+
+Exact, et c'est une faute de ma part : j'ai posé un plancher tiré d'une vue de
+seuil sans vérifier qu'il avait un sens sur une vue d'approche. Un lot correct
+serait déclaré vide par la seule distance de la caméra.
+
+**Correction : la garde ne s'applique qu'aux VUES QUALIFIANTES**, c'est-à-dire
+celles où les pièces sont réellement le sujet.
+
+**Et la clause que la formulation de l'audit n'avait pas** — je l'ajoute parce
+qu'elle rouvrirait sinon la voie du rétrécissement par la porte de service :
+
+> **La liste des vues qualifiantes est arrêtée sur la couverture de l'ÉTAT DE
+> DÉPART, jamais sur celle de l'état corrigé.**
+
+Sans cette clause, rétrécir les pièces les ferait sortir du portail au lieu de
+les y soumettre : la garde d'anti-vacuité se désarmerait elle-même. Critère :
+**toute vue dont la couverture au point zéro atteint 15 % entre dans la liste et
+y reste**, quelle que soit sa couverture après correction.
+
+### 7.2 — La densité n'a pas de sens sur un petit échantillon
+
+> « Sur une vue à 0,5 % de couverture, elle se calcule sur **4 608 px**. »
+
+Accepté. Une densité est un rapport ; sur quelques milliers de pixels, son bruit
+dépasse ce qu'elle mesure.
+
+**La densité ne LIE qu'au-dessus de 2 % de couverture** (18 432 px à 1280×720),
+même règle d'état de départ que ci-dessus. En dessous, elle reste **publiée**
+avec le marquage `VUE TRIVIALE` déjà prévu, et ne conclut rien.
+
+### 7.3 — La dilution par ajout reste ouverte sur la densité
+
+> « Pour atteindre 45 % sans toucher un seul aplat, il faut porter la couverture
+> de **24,07 à 37,04 %** — **+54 % de surface visible**, la part attribuée
+> restant clouée à 16,67 %. »
+
+La densité est invariante d'échelle, pas invariante d'ajout : gonfler le
+dénominateur avec de la matière neuve fait baisser le rapport sans corriger un
+seul aplat. Le vecteur est réel mais coûteux et parfaitement visible, et le
+témoin qui le trahit — la part attribuée — est déjà publié à chaque vue.
+
+**Il ne devient donc pas un liant de plus, mais une RÈGLE DE LECTURE, opposable
+au verdict :**
+
+> **Une densité qui baisse à part attribuée CONSTANTE est une dilution, pas une
+> correction — et elle est refusée comme réussite.**
+
+C'est le même refus que celui de la réussite vide, appliqué au dénominateur au
+lieu du numérateur.
+
+### 7.4 — L'audit ne connaît pas la bande d'incertitude de sa propre densité
+
+> « Ma bande d'incertitude de 1,08 point porte sur un **total**. La densité est
+> un **rapport de deux grandeurs** ; sa bande n'en découle pas, et je ne l'ai pas
+> établie. »
+
+C'est la remarque que je retiens le plus, parce que l'audit l'a formulée **avant
+de s'en servir**, alors qu'elle affaiblit son propre instrument. C'est
+exactement la discipline que la règle de vérité du projet exige, et elle vient
+de l'agent, pas du lead.
+
+**Conséquence, opposable à moi-même :**
+
+1. **Le double rendu du même état est une PRÉCONDITION à tout verdict chiffré
+   sur la densité.** Il se mesure sur l'état de départ, parce qu'une bande se
+   lit entre deux rendus du MÊME état ; la mesurer après correction mêlerait le
+   bruit de l'instrument à l'effet de la correction.
+2. **Si la bande se révèle large au point que 45 ne discrimine plus, aucun
+   verdict chiffré ne sera rendu sur la densité.** L'écart sera publié avec sa
+   bande et porté brut à la revue.
+
+> Mieux vaut un verdict absent qu'un verdict faux.
+
+### Ordre imposé à l'audit au SHA intégré
+
+1. **double rendu du même état** → bande d'incertitude de la densité, publiée
+   AVANT toute comparaison ;
+2. **couverture des six vues** → arrêt de la liste des vues qualifiantes ;
+3. **point zéro complet** rejoué ;
+4. densité liante + couverture, coût, part attribuée et densité du kit sur les
+   six vues, avec marquage des vues triviales ;
+5. boîtitude en paire (≤ 25 % des triangles, orthogonalité plafonnée à 73,1 %) ;
+6. densité apparente à 94 m dans les deux états ;
+7. triptyques R2B / R2B.1 / R2B.2 des six vues décisives ;
+8. vérification des caméras par sha256 puis égalité champ par champ.
+
+Les points 1 et 2 portent sur l'ÉTAT DE DÉPART et sont donc les seuls que
+l'audit peut mesurer avant le SHA — ils disparaissent à l'instant de
+l'intégration. L'audit les a engagés de lui-même pour cette raison ; c'est
+conforme.
