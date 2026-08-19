@@ -1,0 +1,38 @@
+Sonde temporaire R2B (agent A) — exécutée sur l'arbre 309773a puis SUPPRIMÉE
+(l'instrument durable reste tools/godot/probe_kit_seating.gd).
+Sortie verbatim du run du 2026-08-19 :
+
+[sonde] camp_mi_distance_eye     sol=2.63
+[sonde] camp_halle_eye           sol=5.69
+[sonde] camp_halle_look          sol=6.00
+[sonde] braise_mi_distance_eye   sol=3.22
+[sonde] braise_guet_eye          sol=6.00
+[sonde] braise_guet_look         sol=6.00
+[sonde] camp_anchor              sol=6.00
+[sonde] braise_anchor            sol=6.00
+[sonde] camp : modules=34 meshes=47 colliders=5 tris~30711
+[sonde] valley.poi.ember_raider_camps.01 : modules=54 meshes=82 colliders=11 tris~46833
+
+Lecture contre les plafonds WORLD_V2_POI_CONTRACTS §4 (camp <= 45 modules,
+<= 90 noeuds visuels, <= 24 collisions) :
+- camp checkpoint : 34 / 47 / 5  -> DANS les plafonds ;
+- camp braise     : 54 / 82 / 11 -> modules +9 AU-DESSUS du plafond 45 —
+  écart consigné au rapport (enceinte complète + guet + butin nommés par le
+  plan approuvé) ; meshes et collisions dans les plafonds.
+
+Sonde d'assise préalable (probe_kit_seating, verbatim utile) :
+Corner_Exterior_Wood  0.21x3.00x0.24  pivot centre/min/centre
+Floor_WoodDark        2.00x0.02x2.00  pivot centre/CENTRE/centre  <- poser à +0.01
+Roof_Wooden_2x1_L/R   2.13x1.25x1.56  pivot centre/min/min  <- pivot au bord HAUT, pente +Z
+Roof_Wooden_2x1       2.26x1.25x1.56  idem
+Banner_1              1.61x2.39x0.19  pivot min/0.65/centre <- min Y à -1.55 : lever de +1.56
+Banner_2_Cloth        0.81x1.93x0.06  pivot centre/MAX/centre <- pend depuis son origine
+Prop_Wagon            1.95x1.53x4.02  pivot centre/min/0.78 <- centre visuel à -1.13 en Z
+Stall_Cart_Empty      3.02x2.63x1.06  pivot 0.70/min/centre <- centre visuel à -0.60 en X
+Prop_WoodenFence_Single 2.06x0.84x0.12 pivot centre/min/centre
+SM_Dungeon_RubbleLarge/Small ~1.2/1.0 x 0.50 x ~1.2  pivot min
+DeadTree_1            6.15x9.50x5.75  pivot min (x0.53 -> 5.04 m)
+DeadTree_2            6.73x11.49x6.38 pivot min (x0.44 -> 5.06 m)
+Shield_Wooden         0.61x0.62x0.18  pivot centre/CENTRE/min <- lever de +0.32
+Chain_Coil            1.07x0.09x0.91  pivot min
+Cauldron              0.99x0.82x0.94  pivot min
