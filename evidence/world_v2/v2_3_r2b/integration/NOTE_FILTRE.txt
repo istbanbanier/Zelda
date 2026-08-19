@@ -1,0 +1,5 @@
+Note du lead (2026-08-19) : un premier lancement avec « --filter world_v2 »
+(espace au lieu de =) a été IGNORÉ par _read_filter() du runner — la suite
+COMPLÈTE est partie et a été tronquée par timeout 1800 s (RC=124).
+Le journal tronqué a été supprimé ; la passe ci-dessous utilise la syntaxe
+correcte « --filter=world_v2 » (tools/godot/test_runner.gd ligne 5).
