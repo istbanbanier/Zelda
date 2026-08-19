@@ -3168,3 +3168,18 @@ le collider recule HORS du vide, DANS la roche.
 > avec une bouche, un virage et une poche intérieure cohérents, ou
 > reste-t-elle visuellement inférieure à R2a-3.4 malgré ses améliorations
 > techniques ? »
+
+## 42. GM4 — PASS visuel, promotion, 4/4 gelés
+
+Verdict du lead (2026-08-19) sur les preuves du §41 : **PASS**. La grotte
+R2a-3.5.8 est le quatrième golden master. Constats : massif cohérent, trois
+masses hiérarchisées, seuil anguleux sans demi-cercle, collerette intégrée,
+flanc/arrière continus, intérieur traversable. Réserves NON bloquantes :
+intérieur austère, strates arrière chargées, porche très anguleux.
+
+Exécution : GLB actif par défaut = `SM_WaterfallCave_r2a358.glb`
+(`5ff4ec6e…`, bytes intacts) ; R2a-3.4 en fallback
+(`WORLD_V2_GROTTE_FALLBACK=r2a34`) ; filet grotte passé à la route
+canonique courbe + sonde sous surplombs (rouge corde archivé,
+`gm4_promotion/`) ; 5 captures de promotion sans variable ;
+`GO_V2_3_R2B=TRUE`, `GO_V2_3_B=FALSE`.

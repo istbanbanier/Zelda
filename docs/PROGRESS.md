@@ -774,3 +774,22 @@ montages_ab/`) ; si le candidat est retenu, l'activation est un petit commit
 de bascule (chemins + constantes appariées déjà en place) ; sinon, R2a-3.4
 reste active et le candidat demeure archivé. Ensuite : CHECKPOINT JOUABLE
 pour Istvan (tâches #89/#90), dont le PLAYABLE_SHA dépend de ce verdict.
+
+## 2026-08-19 — VERDICT VISUEL PASS : la grotte R2a-3.5.8 est le quatrième golden master, PROMUE
+
+Le lead a inspecté les 15 captures et les 4 montages A/B : PASS. Décisions :
+`R2a-3.5.8_VISUAL_GATE=PASS`, `GOLDEN_MASTERS=4/4` (hameau, pont, pylône,
+grotte — tous gelés), `GO_V2_3_R2B=TRUE`, `GO_V2_3_B=FALSE`, aucune
+propagation aux 31 POI.
+
+Promotion exécutée sans retouche : GLB `5ff4ec6e…` déplacé par git mv
+(hash vérifié identique), actif par défaut sans variable ; R2a-3.4 reste au
+dépôt en fallback explicite (`WORLD_V2_GROTTE_FALLBACK=r2a34`). Le filet
+grotte marchait la CORDE droite et sondait le sol depuis le ciel : corrigé
+(route canonique en meta, sonde consciente des surplombs), rouge d'abord
+archivé, 8/8 sur les deux géométries.
+
+**Prochaine action exacte** : checkpoint téléchargeable (workflow
+publish-playtest, entrée gm4=true sur le SHA final) puis ouvrir R2B :
+trois worktrees (A camps, B ferme+arbre, C bassin), plans courts arbitrés
+avant toute implémentation.
