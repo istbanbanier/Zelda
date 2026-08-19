@@ -730,3 +730,80 @@ contradiction.
 
 **Les deux vont au rapport avec leur définition, et surtout pas leur moyenne :
 un chiffre sans sa définition est une opinion.**
+
+---
+
+## Décision 10 bis — la mesure a donné une QUATRIÈME issue, et elle m'est défavorable
+
+Je m'étais engagé sur trois issues avant de connaître le résultat. L'audit en a
+produit une quatrième, et elle **réfute mon hypothèse**.
+
+### Mon hypothèse était : « la ferme est boîteuse parce qu'elle est faite de modules de kit »
+
+**Elle est fausse sur les deux moitiés.**
+
+**Première moitié — l'objet mesuré ne contient AUCUN module de kit.**
+`SM_Farm_Ruins.glb` porte quatorze meshes, tous `SM_Farm_*` construits pour ce
+lieu : `Truss`, `RoofPan_Intact`, `RoofPan_Fallen`, `Debris_A/B`, `GableBreak`,
+`WallStub_East`, `Rubble_Wall`, `Jamb_Door`, `Jamb_Breach`, `InteriorFrame`,
+`JoistStubs`, `WallBreak_North`, `Rubble_North`. Les `Wall_UnevenBrick_*` vivent
+dans des **fichiers séparés**, instanciés au runtime par le script de lieu :
+**ils n'entrent pas dans le 79,6 %.** Cet asset est un GLB construit pour un
+lieu, exactement comme les cinq golden masters. Sa classe de comparaison est la
+leur, et pas une autre.
+
+**Seconde moitié — un module de kit n'est même pas une boîte.**
+
+| asset | composantes | triangles | **`hexa` tri** | ortho |
+|---|---:|---:|---:|---:|
+| `Wall_UnevenBrick_Straight` (kit) | 4 | 56 | **0,0 %** | 100,0 % |
+| `Corner_Exterior_Brick` (kit) | 27 | 3 102 | **0,0 %** | 62,5 % |
+| `Floor_Brick` (kit) | 2 | 4 | **0,0 %** | 100,0 % |
+| `SM_Village_Quay` (hameau, gelé) | 30 | 2 264 | **0,0 %** | 85,8 % |
+| `SM_Village_Wall` (hameau, gelé) | 2 | 488 | **0,0 %** | 82,3 % |
+| **`SM_Farm_Ruins`** au SHA | 154 | 2 080 | **79,6 %** | 76,7 % |
+
+Un mur de kit n'est pas un cube à douze triangles : quatre composantes pour
+56 triangles, vingt-sept pour l'angle. **C'est précisément pour cela qu'il se lit
+comme de la maçonnerie et pas comme un carton.**
+
+### Conclusion, et je ne la contourne pas
+
+> **Le plafond de 25 % est DANS son domaine pour `SM_Farm_Ruins.glb`. Le 79,6 %
+> n'est pas un artefact de classe d'objet. Le liant de boîtitude ÉCHOUE.**
+
+Aucune des trois issues que j'avais préparées ne s'applique : je n'ai ni à
+déclarer le seuil hors domaine, ni à publier trois nombres ambigus. La quatrième
+issue est nette, et elle est contre moi.
+
+Ce que l'engagement préalable a produit, très concrètement : l'audit a pu m'écrire
+« la quatrième issue t'est défavorable » sans que je puisse déplacer la
+calibration après coup. C'est exactement ce à quoi il servait.
+
+### Ce que ce chiffre prouve, et ce qu'il ne prouve pas
+
+Il mesure une **forme**, pas une **matière**. La correction d'A a traité la
+matière — pierre du kit, UV0 dépliées, `max` d'aplat de 7,32 à 2,92 % — et n'a
+pas retouché la forme des volumes. Les pièces sont donc restées largement
+prismatiques **et se lisent maintenant comme de la maçonnerie, parce qu'elles
+portent une texture de pierre**.
+
+Les deux constats sont vrais en même temps, et le rapport les portera tous les
+deux :
+
+- la ferme a **gagné sa matière** — c'est mesurable, c'est visible, c'est le
+  point 2 de la directive ;
+- la ferme n'a **pas gagné sa forme** — 79,6 % de boîtes canoniques contre un
+  plafond de 25, et 87,2 % avant, donc un progrès réel de 7,6 points qui ne
+  franchit pas le portail.
+
+**Le verdict d'un gate est le plus faible de ses critères, jamais leur moyenne.**
+Ce liant échoue, donc la passe ne peut pas être annoncée toute verte.
+
+### Un dernier point de l'audit, qui vaut pour la suite
+
+L'orthogonalité **ne sépare toujours rien** : `Wall_UnevenBrick_Straight` et
+`Floor_Brick` sont à **100 %** — un mur droit est droit. C'est `hexa`, et lui
+seul, qui distingue une maçonnerie d'un empilement de cubes. La paire que j'avais
+construite tenait sur une seule jambe depuis le début ; c'est la troisième fois
+de la passe que l'audit me le démontre, et cette fois sur le liant lui-même.
