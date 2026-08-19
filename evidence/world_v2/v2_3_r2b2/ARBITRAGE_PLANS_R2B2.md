@@ -165,7 +165,7 @@ pas un critère, c'est un verdict déguisé.
 
 **Le lead ne le déplace pas sur une intuition.** Une hypothèse précise est
 testée avant toute décision : *c'est une correction EXIGÉE PAR LE LEAD qui
-aurait fait monter le chiffre*. En R2B.1, cinq murs présentaient leur face
+aurait fait monter le chiffre*. En R2B.1, quatre murs présentaient leur face
 brique vers l'intérieur et ont été retournés — correction juste, saluée. Mais là
 où l'on voyait du plâtre lisse on voit désormais de la brique texturée, et à 2 m
 chaque pierre peinte dépasse `MIN_COMPOSANTE`. Corriger l'orientation aurait

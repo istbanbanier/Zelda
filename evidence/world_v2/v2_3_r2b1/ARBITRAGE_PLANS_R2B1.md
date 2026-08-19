@@ -135,7 +135,7 @@ Le contrôle négatif final a été fait proprement, par un `return` en tête de
 **LEAD-2 — Ferme : PARTIAL assumé, le résiduel est nommé et NON maquillé.**
 La voie A a supprimé le défaut principal — le panneau beige uni plein cadre de
 `ferme_laterale` a disparu, remplacé par du parement des deux côtés, toit crevé,
-intérieur ouvert. Elle a aussi démontré et corrigé un vrai bug : **cinq murs
+intérieur ouvert. Elle a aussi démontré et corrigé un vrai bug : **quatre murs
 présentaient leur face brique VERS L'INTÉRIEUR** (yaw 90°/270° inversés), prouvé
 en image par une même façade montrant pierre au nord et plâtre uni à l'est.
 Portail visuel du lead : **max ≤ 8 % PASS sur les six vues** ; total ≤ 12 %

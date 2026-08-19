@@ -26,7 +26,7 @@ plan strict à Z=0,000, face plâtre à Z=−0,200, rien entre les deux ; la fac
 intérieure est **un quad de 6,00 m² pour 2 triangles**. À l'écran : 24,5 %
 d'aplats unis, dont un seul de 17,0 %.
 
-**Bug réel trouvé et corrigé en chemin** : cinq murs présentaient leur face
+**Bug réel trouvé et corrigé en chemin** : QUATRE murs présentaient leur face
 brique **vers l'intérieur** (yaw 90°/270° inversés). Démontré, pas supposé —
 une même façade montrait la pierre au nord et le plâtre uni à l'est ; un mur
 crépi le serait sur ses quatre faces.
@@ -108,3 +108,14 @@ lit « 45/45, aucune place » au lieu de le découvrir en rougissant.
 - Mur nord de la ferme encore rectangulaire (pignon excepté).
 - Branche morte de `_palisade` (`kind == 0` implique `index` pair) — antérieure à la passe, consignée, non corrigée.
 - Marge de budget nulle au camp braise.
+
+---
+
+## RECTIFICATION (audit indépendant R2B.2, 2026-08-19)
+
+Ce rapport disait « cinq murs » : **le compte est QUATRE.** `for i in range(3)`
+produit 3 murs ouest à 270° plus 1 mur est à 90° quand `i == 0`. Le code et la
+mesure concordent à 4 ; le « cinq » venait du message de commit `73b5929` et ne
+correspondait à rien de mesurable. Le lead avait relayé ce chiffre sans le
+vérifier. **L'attendu d'un contrôle se lit dans le CODE, jamais dans la prose
+d'un commit.**
