@@ -87,11 +87,17 @@ func _build() -> void:
 		Vector3(1.8, 1.2, 2.2))
 
 	# — DEUX BANNIÈRES `Banner_1` : les signes verticaux de la halte,
-	# loin de la bande de visée (perp 9,4 m et 11,2 m).
-	K.module(self, &"Banner_1", _seated(9.0, -3.0), -30.0, 1.0, K.TONE_CLOTH)
-	K.module(self, &"Banner_1", _seated(-9.5, -6.0), 140.0, 1.0, K.TONE_CLOTH)
-	declare_support(_seated(9.0, -3.0))
-	declare_support(_seated(-9.5, -6.0))
+	# loin de la bande de visée (perp 9,4 m et 11,2 m). PIÈGE MESURÉ à la
+	# sonde d'assise : le pivot Y de Banner_1 est à 65 % de sa hauteur
+	# (min à −1,55 m) et l'assise du kit ne corrige pas — posée au sol
+	# elle serait enterrée d'1,55 m (défaut préexistant, jamais relevé).
+	for banner_data: Array in [[9.0, -3.0, -30.0], [-9.5, -6.0, 140.0]]:
+		var banner: Node3D = K.module(self, &"Banner_1",
+			_seated(float(banner_data[0]), float(banner_data[1])),
+			float(banner_data[2]), 1.0, K.TONE_CLOTH)
+		if banner != null:
+			banner.position.y += 1.56
+		declare_support(_seated(float(banner_data[0]), float(banner_data[1])))
 
 	# — Sol vécu : dalles de pas entre l'entrée ouest et le feu (conservées).
 	for slab: Array in [[-6.5, 4.0], [-4.2, 3.0], [-1.8, 2.1], [0.6, 1.4],

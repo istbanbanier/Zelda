@@ -163,12 +163,15 @@ func _collapsed_stretch(at: Vector3, facing: float, radians: float,
 	K.stone_block(self, "Eboulis_%d" % index,
 		at + Vector3(0.0, berm * 0.5, 0.0), Vector3(1.7, berm, 1.35),
 		facing, EARTH, 10150 + index, 0.22)
-	# Un panneau arraché, couché en travers sur le remblai.
+	# Un panneau arraché, couché À PLAT sur le remblai : la bascule se
+	# fait autour de son axe LONG (rotation.x), pas autour de son
+	# épaisseur — un roll.z aurait dressé sa longueur à la verticale et
+	# enterré 0,89 m de panneau (calculé sur l'emprise sondée).
 	var fallen: Node3D = K.module(self, &"Prop_WoodenFence_Single",
-		at + Vector3(-cos(radians) * 0.9, berm - 0.15, -sin(radians) * 0.9),
+		at + Vector3(-cos(radians) * 0.9, berm + 0.10, -sin(radians) * 0.9),
 		facing + 78.0, 1.3, K.TONE_CHARRED)
 	if fallen != null:
-		fallen.rotation.z = deg_to_rad(86.0)
+		fallen.rotation.x = deg_to_rad(80.0)
 	if index % 2 == 0:
 		# Une souche de montant, cassée à ras — la preuve du mur.
 		K.stone_block(self, "SoucheMontant_%d" % index,
@@ -242,7 +245,9 @@ func _hearth_zone() -> void:
 		250.0, 1.0, K.TONE_CHARRED)
 	if cauldron != null:
 		cauldron.rotation.z = deg_to_rad(104.0)
-		cauldron.position.y += 0.42
+		# Emprise 0,99 × 0,82 basculée : le bord bas descend à −0,67 sous
+		# le pivot — remonté pour reposer DANS la cendre (10 cm enfoncé).
+		cauldron.position.y += 0.60
 	# UN appentis charbon adossé au nord, ouvert vers le feu (le plan §4
 	# borne le camp à 45 modules : le second abri est la toile roulée).
 	_lean_to("AppentisNord", 2.6, 4.9, 196.0, 1.0)
@@ -334,14 +339,20 @@ func _retreat_zone() -> void:
 	var shield: Node3D = K.module(self, &"Shield_Wooden", _seated(5.0, 4.35),
 		200.0, 1.0, K.TONE_CHARRED)
 	if shield != null:
+		# Pivot CENTRÉ en Y (sonde d'assise) : posé au sol il serait à
+		# moitié enterré — remonté d'une demi-hauteur, adossé au montant.
 		shield.rotation.z = deg_to_rad(14.0)
+		shield.position.y += 0.32
 	K.module(self, &"Chain_Coil", _seated(7.0, 4.3), 55.0, 1.0, K.TONE_STONE)
 	# Le wagon renversé : le pillage interrompu, couché sur le flanc.
 	var wagon: Node3D = K.module(self, &"Prop_Wagon", _seated(7.4, 1.6),
 		305.0, 0.9, K.TONE_CHARRED)
 	if wagon != null:
 		wagon.rotation.z = deg_to_rad(104.0)
-		wagon.position.y += 0.95
+		# Emprise 1,95 de large basculée à 104° : le flanc descend à
+		# −1,32 sous le pivot (calculé sur la sonde) — remonté pour que
+		# le plateau touche le sol sans s'y enfoncer.
+		wagon.position.y += 1.35
 		K.collider_box(self, "WagonRenverse_col",
 			_seated(7.4, 1.6) + Vector3(0.0, 0.9, 0.0),
 			Vector3(2.0, 1.8, 3.6), 305.0)
