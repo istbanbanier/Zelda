@@ -776,3 +776,84 @@ que d'en faire un blocage technique.
 est la bonne trouvaille : *le rapport seul se trafiquerait en relevant la jupe ;
 la largeur en mètres ne se trafique par rien.* Rouge d'abord sur le GLB livré à
 **5,26 : 1 et 4,52 m** — mes valeurs exactes.
+
+## 23. La graine balayée — acceptée, et pourquoi
+
+L'agent A a déclaré de lui-même avoir **balayé la graine** du bruit d'arrachement
+contre l'indicateur, ce qui est un réglage sur la mesure. Je lui ai demandé la
+distribution plutôt que le seul chiffre retenu, parce qu'une graine ne coûte
+rien à changer : la recherche est illimitée et 27 tirages finissent par en
+trouver un qui plaît.
+
+Distribution mesurée, configuration figée, indicateur `min(linéaire, log)` sur
+l'arête **contiguë** :
+
+| | |
+|---|---:|
+| minimum | 9,7 % |
+| **Q1** | **14,1 %** |
+| **médiane** | **15,7 %** |
+| Q3 | 17,9 % |
+| maximum | 26,0 % |
+| passent le plancher de 12 % | **22 / 27 — 81 %** |
+| graine retenue `6,3` | 21,8 %, **rang 24/27** |
+
+**La médiane ET le premier quartile passent le plancher.** La dentelure est donc
+irrégulière **par construction** : même une graine sous la médiane satisfait le
+critère, et le résultat ne repose pas sur le tirage. Accepté.
+
+**Et il faut dire l'autre moitié, que A dit lui-même** : `6,3` est au rang 24 sur
+27, dans le quartile haut. Ce n'est pas une graine médiane. La formulation
+honnête, qui ira au rapport, est donc : *indicateur 21,8 % sur une graine choisie
+au rang 24/27 dans une famille dont la médiane vaut 15,7 % et dont 81 % des
+tirages passent.* Les deux moitiés de la phrase comptent.
+
+27 tirages et non 29 : deux graines donnent une arête de moins de cinq colonnes,
+où l'indicateur n'est pas défini.
+
+## 24. Une correction que je NE demande PAS — mesurée avant d'y renoncer
+
+Sur `ferme_approche`, le grand pan crème au cœur du bâtiment m'a paru un aplat
+majeur : c'est la **face plâtre intérieure** du module de kit, vue par le flanc
+ouvert de la ruine. `T_Plaster_BaseColor.png`, `_Normal` et `_ORM` **existent**
+dans le dépôt, et l'agent A vient de construire exactement la machinerie qui
+saurait les brancher.
+
+J'allais donc lui demander une passe de plus. J'ai mesuré d'abord :
+
+| vue | plus grande composante **beige** | grise |
+|---|---:|---:|
+| `ferme_approche` | **0,25 %** | 1,25 % |
+
+Le pan crème n'est **une grande composante plate dans aucune vue mesurée**. Mon
+œil l'a grossi parce qu'il est clair et central, pas parce qu'il est grand.
+
+**Je n'envoie rien.** Une passe de plus en fin de session, sur une lane presque
+close, pour un défaut que trois instruments ne voient pas, serait du périmètre
+gagné sur une impression. Consigné pour la revue visuelle, qui tranchera avec
+ses yeux — c'est son travail, pas celui d'un seuil.
+
+## 25. Le socle, implémenté — ce que l'agent A a fait de mes deux gardes
+
+Mes deux gardes étaient : vérifier les propriétés contre la 4.7.1 installée, et
+garder l'override local à la ferme. A les a traitées ainsi :
+
+1. `uv1_triplanar`, `uv1_world_triplanar`, `uv1_scale` — **présentes et
+   affectables sur le 4.7.1-stable installé, vérifiées par sonde avant usage**,
+   et non reprises de ma mémoire. C'est la règle du projet appliquée à ma propre
+   suggestion.
+2. Projection **monde et non locale**, et c'est mesuré : chaque run du socle
+   porte `scale.x = longueur / ASSISE_L`, donc une projection locale s'étirerait
+   différemment sur chaque côté. La contrepartie habituelle du triplanaire monde
+   — l'objet qui glisse dans sa texture quand il bouge — ne s'applique pas : le
+   socle ne bouge jamais.
+3. **Périmètre contrôlé, pas espéré** : matériau importé **dupliqué** avant toute
+   écriture ; clé de cache portant désormais le **mode** (`|tri` / `|uv`) — sans
+   lui, un appelant non triplanaire de la ferme aurait reçu le matériau du socle ;
+   et un contrôle E qui **recharge `SM_Village_Wall.glb` à neuf** pour exiger que
+   son matériau de base soit resté nu. Il rougirait sur une fuite.
+
+Golden masters vérifiés par moi dans son arbre : **6/6 OK**, `SM_Village_Wall`
+toujours à `24f39047…`.
+
+Reste à voir l'image : une propriété affectable n'est pas une matière à l'écran.
