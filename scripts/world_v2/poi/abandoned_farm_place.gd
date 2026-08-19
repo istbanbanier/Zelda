@@ -2,15 +2,46 @@
 ## rurale et RUINE récente : la maison tient encore, le toit a cédé d'un
 ## pan, la clôture est rompue, le verger repousse en friche.
 ##
-## La ruine raconte l'abandon par l'asymétrie : un pan de toit affaissé
-## (incliné, glissé), l'autre absent ; la porte arrachée posée au sol ;
-## des caisses de récolte éventrées ; le lierre qui reprend les murs.
+## REJET DU LEAD (V2.3-A.R2) : « de longues planches plantées dans le
+## bâtiment » — la charpente en `K.stone_block` ne portait sur rien, et le
+## socle en blocs juxtaposés reproduisait « le gros rectangle de
+## fondation » à l'échelle du bloc.
+##
+## R2B : la ruine de toiture est un asset GLB (`SM_Farm_Ruins.glb`,
+## générateur `make_farm_ruins.py`) — une CHARPENTE d'un seul trait
+## (faîtière cassée en deux, chevrons SOLIDAIRES du faîte à l'arase,
+## sablières posées sur les murs), un pan de couverture intact posé à 22°
+## sur le versant ouest, un pan TOMBÉ dont la géométrie porte le pli (un
+## bout au sol, un bout contre le mur est), deux tas de gravats fusionnés.
+## Le socle est un anneau d'assises loftées `SM_Village_Wall.glb` (golden
+## master réutilisé en LECTURE — arbitrage R2B). L'effondrement est MOTIVÉ :
+## les murs ouest et nord portent, le mur est réduit a lâché — le pan est
+## tombé de ce côté-là.
+##
+## Pièges consignés appliqués : `Floor_Brick` a son pivot CENTRÉ en X/Z
+## (probe_kit_seating 2026-08-19 : 2,00 × 0,02 × 2,00, pivot centre) — les
+## dalles posées à ±1 m couvrent 4 × 4 m autour du centre, jamais « à
+## l'œil » ; Wall_UnevenBrick_* mesure 2,00 × 3,12 × 0,41, l'arase est à
+## 3,12 m et c'est là que la charpente pose son plan zéro.
 class_name AbandonedFarmPlace
 extends WorldV2Place
 
 const K: GDScript = preload("res://scripts/world_v2/poi/world_v2_place_kit.gd")
+const FERME_SCENE: PackedScene = preload(
+	"res://assets/architecture/farm/SM_Farm_Ruins.glb")
+const MUR_SCENE: PackedScene = preload(
+	"res://assets/architecture/village/SM_Village_Wall.glb")
+
 const MODULE: float = 2.0
 const WALL_H: float = 3.12
+## Assise mesurée du module de mur (`SM_Village_Wall.glb`) : 0,45 m de
+## haut, 4,00 m de long — mêmes cotes que le hameau qui l'a produit.
+const ASSISE_H: float = 0.45
+const ASSISE_L: float = 4.00
+## Plafond painterly commun aux GLB du monde (même règle que le hameau).
+const ALBEDO_MAX: float = 0.80
+
+static var _cache_materiaux: Dictionary = {}
 
 
 func default_place_id() -> StringName:
@@ -70,8 +101,8 @@ func _build() -> void:
 		_seated(7.0, -4.2) + Vector3(0, 0.1, 0), Vector3(-1.4, 0.0, 1.0))
 
 
-## La maison de ferme : quatre murs de brique inégale, un pan de toit
-## AFFAISSÉ, l'autre parti — le ciel entre par le trou.
+## La maison de ferme : quatre murs de brique inégale, la ruine de toiture
+## GLB posée dessus — le ciel entre par le trou du versant est.
 func _ruined_house(at: Vector3, yaw_deg: float) -> void:
 	var house: Node3D = Node3D.new()
 	house.name = "Fermette"
@@ -88,13 +119,15 @@ func _ruined_house(at: Vector3, yaw_deg: float) -> void:
 		declare_support(Vector3(at.x + rotated.x, ground, at.z + rotated.z))
 	house.position = Vector3(at.x, top + 0.05, at.z)
 	house.rotation.y = deg_to_rad(yaw_deg)
-	# SOCLE D'APPAREIL, jamais une boîte : le lead a vu « le gros
-	# rectangle de fondation » du premier jet. Le socle est une assise de
-	# blocs qui suit le pourtour et descend jusque sous le point bas.
-	_footing(house, 3.3, top - low + 0.7, Color(0.50, 0.42, 0.35), 6600)
+	# SOCLE D'ASSISES LOFTÉES, jamais une boîte ni des blocs juxtaposés :
+	# l'anneau reprend `SM_Village_Wall.glb` (golden master, lecture seule),
+	# volume continu à fruit et joints creusés dans le profil.
+	_socle_assises(house, half, top - low)
 	K.collider_box(house, "Fermette_plinthe", Vector3(0, -0.2, 0),
 		Vector3(6.4, 0.6, 6.4))
 	# Sol de terre battue : dalles de brique disjointes, pas un plancher.
+	# `Floor_Brick` a son pivot CENTRÉ (2×2 m d'emprise autour du point) :
+	# quatre dalles à ±1 m couvrent le cœur des 6×6 m sans sortir des murs.
 	for tile: Array in [[-1.0, -1.0], [1.0, -1.0], [-1.0, 1.0], [1.0, 0.6]]:
 		K.module(house, &"Floor_Brick",
 			Vector3(float(tile[0]), 0.03, float(tile[1])), 0.0, 1.0,
@@ -102,7 +135,8 @@ func _ruined_house(at: Vector3, yaw_deg: float) -> void:
 	K.collider_box(house, "Fermette_sol", Vector3(0, -0.1, 0),
 		Vector3(6.2, 0.26, 6.2))
 	# Faces : la porte SUD est une baie VIDE (la porte gît au sol) ; le mur
-	# est n'a plus que deux segments ; l'ouest tient.
+	# est n'a plus que deux segments — c'est LUI qui motive l'effondrement ;
+	# l'ouest et le nord portent.
 	for i: int in range(3):
 		var x: float = (float(i) - 1.0) * MODULE
 		if i == 1:
@@ -122,7 +156,7 @@ func _ruined_house(at: Vector3, yaw_deg: float) -> void:
 			Vector3(-half, 0, half), Vector3(half, 0, half)]:
 		K.module(house, &"Corner_Exterior_Brick", corner, 0.0, 1.0,
 			K.TONE_STONE)
-	_broken_roof(house, half)
+	_toiture_rompue(house)
 	# La porte ARRACHÉE, posée à plat devant le seuil.
 	var door: Node3D = K.module(house, &"Door_1_Round",
 		Vector3(0.7, 0.10, half + 1.2), 24.0, 1.0, K.TONE_WOOD)
@@ -133,6 +167,116 @@ func _ruined_house(at: Vector3, yaw_deg: float) -> void:
 		K.TONE_PLANT)
 	K.module(house, &"Prop_Vine2", Vector3(1.0, 0.0, -half + 0.1), 180.0, 1.0,
 		K.TONE_PLANT)
+
+
+## LA RUINE DE TOITURE — quatre pièces du GLB, posées sur ce qui les porte.
+##
+## La charpente pose son plan zéro sur l'ARASE mesurée des murs (3,12 m),
+## enfoncée de 6 cm : les sablières mordent l'arase au lieu de flotter
+## dessus. Le pan intact est tourné à 22° sur le versant OUEST — les
+## rotations composées de Godot s'appliquent Z puis Y : le roulis de -22°
+## couche le pan sur sa pente, le lacet de 180° l'envoie côté ouest. Le pan
+## TOMBÉ porte son pli dans sa géométrie : posé au sol de la maison, son
+## bout relevé s'appuie vers le mur est réduit — le trou par lequel il a
+## cédé. Les gravats s'entassent sous lui et hors de la brèche.
+func _toiture_rompue(house: Node3D) -> void:
+	_piece_ferme(house, "SM_Farm_Truss",
+		Vector3(0.0, WALL_H - 0.06, 0.0), Vector3.ZERO)
+	_piece_ferme(house, "SM_Farm_RoofPan_Intact",
+		Vector3(0.0, WALL_H + 1.32, 0.0),
+		Vector3(0.0, PI, deg_to_rad(-22.0)))
+	_piece_ferme(house, "SM_Farm_RoofPan_Fallen",
+		Vector3(-0.7, 0.14, 0.5), Vector3(0.0, deg_to_rad(-12.0), 0.0))
+	_piece_ferme(house, "SM_Farm_Debris_A",
+		Vector3(1.9, 0.12, 1.8), Vector3(0.0, deg_to_rad(40.0), 0.0))
+	_piece_ferme(house, "SM_Farm_Debris_B",
+		Vector3(3.6, -0.05, 2.5), Vector3(0.0, deg_to_rad(-70.0), 0.0))
+
+
+## Extrait UNE pièce du GLB de ruine : l'instance est élaguée AVANT
+## d'entrer dans l'arbre, et porte le nom de la pièce — le filet R2B la
+## désigne par ce nom, et Godot ne renomme jamais un enfant unique.
+func _piece_ferme(parent: Node3D, piece: String, at: Vector3,
+		rot: Vector3) -> Node3D:
+	var instance: Node3D = FERME_SCENE.instantiate() as Node3D
+	instance.name = piece
+	for enfant: Node in instance.get_children():
+		if String(enfant.name) != piece:
+			instance.remove_child(enfant)
+			enfant.free()
+	parent.add_child(instance)
+	instance.position = at
+	instance.rotation = rot
+	_peindre_glb(instance)
+	return instance
+
+
+## L'anneau de socle : quatre assises loftées sur le pourtour, ajustées EN
+## LONGUEUR seulement (les joints s'étirent, jamais les hauteurs d'assise —
+## règle du hameau). Couronnement retiré : c'est une plinthe sous un mur,
+## pas un parapet. Le site est un pad plat (sonde du 2026-08-19 :
+## dénivelé 0,000 sous les quatre coins) : une assise enterrée de 0,35 m
+## suffit, et chaque run déclare son appui.
+func _socle_assises(house: Node3D, half: float, drop: float) -> void:
+	var socle: Node3D = Node3D.new()
+	socle.name = "Socle"
+	house.add_child(socle)
+	var base_y: float = -ASSISE_H + 0.10 - drop
+	var runs: Array[Array] = [
+		[Vector3(-half - 0.30, base_y, -half - 0.30), 0.0, half * 2.0 + 0.6],
+		[Vector3(half + 0.30, base_y, half + 0.30), 180.0, half * 2.0 + 0.6],
+		[Vector3(-half - 0.30, base_y, half + 0.30), 90.0, half * 2.0 + 0.6],
+		[Vector3(half + 0.30, base_y, -half - 0.30), -90.0, half * 2.0 + 0.6],
+	]
+	for i: int in range(runs.size()):
+		var depart: Vector3 = runs[i][0] as Vector3
+		var yaw: float = float(runs[i][1])
+		var longueur: float = float(runs[i][2])
+		var assise: Node3D = MUR_SCENE.instantiate() as Node3D
+		assise.name = "SocleAssise_%d" % i
+		for enfant: Node in assise.get_children():
+			if String(enfant.name).contains("Coping"):
+				assise.remove_child(enfant)
+				enfant.free()
+		socle.add_child(assise)
+		assise.position = depart
+		assise.rotation.y = deg_to_rad(yaw)
+		assise.scale = Vector3(longueur / ASSISE_L, 1.0, 1.0)
+		_peindre_glb(assise)
+		# L'appui du run, au sol du lieu (coordonnées locales du lieu).
+		var milieu: Vector3 = house.position + (depart + Vector3(
+			cos(deg_to_rad(yaw)) * longueur * 0.5, 0.0,
+			-sin(deg_to_rad(yaw)) * longueur * 0.5)).rotated(
+			Vector3.UP, house.rotation.y)
+		declare_support(Vector3(milieu.x,
+			ground_local_y(milieu.x, milieu.z), milieu.z))
+
+
+## Les GLB portent déjà leurs valeurs (sRGB converti en linéaire dans le
+## générateur). On borne rugosité, spéculaire et albédo pour rester dans
+## le langage painterly du monde — matériaux DUPLIQUÉS et mis en cache.
+func _peindre_glb(racine: Node3D) -> void:
+	for node: Node in racine.find_children("*", "MeshInstance3D", true, false):
+		var instance: MeshInstance3D = node as MeshInstance3D
+		if instance.mesh == null:
+			continue
+		for surface: int in range(instance.mesh.get_surface_count()):
+			var base: StandardMaterial3D = instance.get_active_material(
+				surface) as StandardMaterial3D
+			if base == null:
+				continue
+			var cle: String = "glb|%d" % base.get_instance_id()
+			var mat: StandardMaterial3D = \
+				_cache_materiaux.get(cle) as StandardMaterial3D
+			if mat == null:
+				mat = base.duplicate() as StandardMaterial3D
+				mat.roughness = maxf(mat.roughness, 0.95)
+				mat.metallic_specular = 0.1
+				var a: Color = mat.albedo_color
+				mat.albedo_color = Color(minf(a.r, ALBEDO_MAX),
+					minf(a.g, ALBEDO_MAX), minf(a.b, ALBEDO_MAX), a.a)
+				_cache_materiaux[cle] = mat
+			instance.set_surface_override_material(surface, mat)
 
 
 func _wall(parent: Node3D, at: Vector3, yaw: float, kind: StringName) -> void:
@@ -160,94 +304,3 @@ func _jambs(parent: Node3D, at: Vector3, yaw: float) -> void:
 
 func _seated(local_x: float, local_z: float) -> Vector3:
 	return Vector3(local_x, ground_local_y(local_x, local_z), local_z)
-
-
-## CHARPENTE ROMPUE — ce que le lead a rejeté : « de longues planches
-## plantées dans le bâtiment et dans l'arbre ». Une toiture qui s'effondre
-## garde sa LOGIQUE : une panne faîtière cassée en deux, des chevrons qui
-## tiennent encore d'un côté, un pan de couverture intact, un pan TOMBÉ
-## qui repose réellement au sol, et des tuiles descendues par gravité.
-func _broken_roof(house: Node3D, half: float) -> void:
-	var frame: Node3D = Node3D.new()
-	frame.name = "Charpente"
-	house.add_child(frame)
-	var wood: Color = Color(0.36, 0.26, 0.17)
-	var ridge_y: float = WALL_H + 1.5
-	# Panne faîtière : deux tronçons, celui de l'est a plié vers le vide.
-	K.stone_block(frame, "Faitiere_ouest", Vector3(0.0, ridge_y, -1.7),
-		Vector3(0.24, 0.26, 3.0), 0.0, wood, 7101, 0.03)
-	var broken: MeshInstance3D = K.stone_block(frame, "Faitiere_est",
-		Vector3(0.0, ridge_y - 0.65, 1.5), Vector3(0.22, 0.24, 2.8), 0.0,
-		wood, 7102, 0.03)
-	broken.rotation.x = deg_to_rad(-13.0)
-	# Chevrons : quatre entiers au nord, deux cassés au sud.
-	for i: int in range(5):
-		var z: float = -2.4 + float(i) * 1.2
-		var intact: bool = i < 3
-		var length: float = 3.9 if intact else 2.3
-		for side: int in [-1, 1]:
-			if not intact and side > 0:
-				continue
-			var rafter: MeshInstance3D = K.stone_block(frame,
-				"Chevron_%d_%d" % [i, side],
-				Vector3(float(side) * (half * 0.5), WALL_H + 0.72
-					- (0.0 if intact else 0.5), z),
-				Vector3(length, 0.17, 0.15), 0.0, wood, 7110 + i * 3 + side,
-				0.03)
-			rafter.rotation.z = deg_to_rad(float(side) * (-22.0
-				if intact else -46.0))
-	# Pan de couverture INTACT au nord : trois plaques de tuiles posées
-	# sur les chevrons, dans leur pente.
-	for i: int in range(3):
-		var pan: Node3D = K.module(frame, &"Roof_Wooden_2x1_L",
-			Vector3(-1.35, WALL_H + 1.05, -2.4 + float(i) * 1.2), 0.0, 1.35,
-			K.TONE_WOOD)
-		if pan != null:
-			pan.rotation.z = deg_to_rad(-22.0)
-	# Pan TOMBÉ : il a glissé au sol à l'intérieur et s'appuie sur le mur
-	# nord — un bout au sol, un bout en l'air, comme il serait tombé.
-	var fallen: Node3D = K.module(frame, &"Roof_Wooden_2x1_R",
-		Vector3(1.1, 0.75, -0.4), 8.0, 2.1, K.TONE_WOOD)
-	if fallen != null:
-		fallen.rotation.z = deg_to_rad(58.0)
-	var fallen2: Node3D = K.module(frame, &"Roof_Wooden_2x1_Center",
-		Vector3(1.9, 0.28, 1.7), -14.0, 1.7, K.TONE_WOOD)
-	if fallen2 != null:
-		fallen2.rotation.x = deg_to_rad(74.0)
-	# Tuiles et gravats descendus : au sol, en tas contre le mur.
-	for debris: Array in [[2.1, 2.4, 0.55], [1.4, 3.1, 0.42],
-			[-2.4, 2.9, 0.5], [2.6, -1.6, 0.38], [0.4, 3.4, 0.46]]:
-		K.stone_block(frame, "Gravat_%d" % frame.get_child_count(),
-			Vector3(float(debris[0]), float(debris[2]) * 0.4,
-				float(debris[1])),
-			Vector3(float(debris[2]) * 1.5, float(debris[2]) * 0.5,
-				float(debris[2]) * 1.2), float(debris[0]) * 37.0,
-			Color(0.58, 0.40, 0.32), 7200 + frame.get_child_count(), 0.14)
-
-
-## Assise de blocs sur le pourtour — un socle, pas une boîte.
-func _footing(parent: Node3D, half: float, height: float, tone: Color,
-		seed_base: int) -> void:
-	var footing: Node3D = Node3D.new()
-	footing.name = "Socle"
-	parent.add_child(footing)
-	var blocks: int = 5
-	for side: int in range(4):
-		for b: int in range(blocks):
-			var t: float = (float(b) + 0.5) / float(blocks)
-			var along: float = lerpf(-half - 0.2, half + 0.2, t)
-			var at: Vector3 = Vector3(along, -height * 0.5 + 0.12,
-				half + 0.18)
-			if side == 1:
-				at = Vector3(along, -height * 0.5 + 0.12, -half - 0.18)
-			elif side == 2:
-				at = Vector3(half + 0.18, -height * 0.5 + 0.12, along)
-			elif side == 3:
-				at = Vector3(-half - 0.18, -height * 0.5 + 0.12, along)
-			var size: Vector3 = Vector3((half * 2.4) / float(blocks), height,
-				0.75)
-			if side >= 2:
-				size = Vector3(0.75, height, (half * 2.4) / float(blocks))
-			K.stone_block(footing, "socle_%d_%d" % [side, b], at, size,
-				float((side * 3 + b) % 4) * 1.5 - 2.0, tone,
-				seed_base + side * 7 + b, 0.045)
