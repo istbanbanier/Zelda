@@ -1,0 +1,14 @@
+
+=== SM_WaterfallCave.glb ===
+    /home/user/zelda-r2a355/a_epaisseur/assets/environment/caves/SM_WaterfallCave.glb
+  noeud COL_WaterfallCave
+    V=442  E=1320  F=880   composantes=1
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+  noeud SM_WaterfallCave
+    V=10037  E=30105  F=20070   composantes=1
+    aretes a 1 face  (BORD LIBRE)   : 0
+    aretes a >2 faces (NON-MANIFOLD): 0
+    khi = V-E+F = 2   ->  genre 0
+RC=0

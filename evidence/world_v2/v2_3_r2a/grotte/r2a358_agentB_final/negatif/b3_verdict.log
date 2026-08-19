@@ -1,0 +1,32 @@
+=== CONTROLE NEGATIF (b) — paroi invisible artificielle dans la niche ===
+Deplacement 1,0 m : la marge figee admet 1,41 m de recul TOTAL dans la
+fenetre d'alcove ; le recul reel pre-correctif est ~0,68 — il faut
+depasser 1,47 pour rougir, soit un sabotage > 0,79 m. On mesure ce que
+le sabotage enleve AVANT de croire son rouge :
+
+--- d_COL vers l'ancre AVANT sabotage (jauge, extrait du rodage 08) ---
+[RODAGE-PRE-MASSIF] [poche] vers l'ancre : u=7.04 axe (3.41, -3.06) y=sol+0.50 | d_SM=2.8490 d_COL=2.1739 diff=0.6752 | ampl_col estime = 1.1848 m (AMPL=1.20, ML*asym=0.660 ; hypotheses F~1, w~1, erreur ~0,06 m)
+
+[sabotage] fichier avant : sha256 40714c46544e27d23fce271d2814020c0683aa78f71106934215ee8666dc11a0
+[sabotage]   geo COL_WaterfallCave  f17852ba628a8dc6e369a797d3931a5fe4ab3c94212bd94c586a1a088fa85860
+[sabotage]   geo SM_WaterfallCave   dd3ea5c6bf9cee3b1788fb3c71122848f4927fd3e79cad2ae026fe9db3c99434
+[sabotage] noeud COL_WaterfallCave : 1784 sommets vus, 119 BOUGES, |d|max 1.000 m, cylindre (2.70, -3.95) r=1.10 y=[0.00, 2.50], vers (3.10, -2.88) d=+1.00
+[sabotage] fichier apres : sha256 0ef95e4f2113cb3bb30fbe7a06e59b4cdad58cc4a1022328f9ad8b089ea7ba82
+[sabotage]   geo COL_WaterfallCave  9a9d072ef5df734ae4b480ed5e0ad9852c0055d79876911aa876c88875c7708c  MODIFIE
+[sabotage]   geo SM_WaterfallCave   dd3ea5c6bf9cee3b1788fb3c71122848f4927fd3e79cad2ae026fe9db3c99434  INCHANGE
+FIN NOMINALE
+RC_sabotage=0
+
+--- instrument paroi invisible sur le sabote (verdict de poche ARME) ---
+RC_paroi=0
+[NEGATIF-B] [paroi] ATTEINTE DE LA NICHE : la capsule r=0.45 tient contre COL_ jusqu'a 0.000 m de l'ancre de niche (portee d'interaction du projet : 1,8-2,4 m)
+[NEGATIF-B]          +0.0350 m  niche t=0.85 (2.71, -3.43)  th=080 y=0.50 cote=D prof=0.180 d_COL=1.618 mp=0.145
+[NEGATIF-B]          +0.0346 m  niche t=0.76 (2.70, -3.33)  th=080 y=0.50 cote=D prof=0.181 d_COL=1.539 mp=0.146
+[NEGATIF-B]          +0.0307 m  niche t=1.04 (2.73, -3.62)  th=062 y=1.30 cote=D prof=0.139 d_COL=1.049 mp=0.109
+[NEGATIF-B]          +0.0298 m  niche t=0.95 (2.72, -3.52)  th=058 y=1.30 cote=D prof=0.139 d_COL=0.994 mp=0.109
+[NEGATIF-B]          +0.0277 m  niche t=0.66 (2.69, -3.24)  th=046 y=1.30 cote=D prof=0.137 d_COL=0.857 mp=0.109
+[NEGATIF-B] [poche] ventre : u=6.00 axe (3.10, -2.88) y=sol+0.50 | d_SM=4.8422 d_COL=4.0318 diff=0.8103 | ampl_col estime = 1.0657 m (AMPL=1.20, ML*asym=0.676 ; hypotheses F~1, w~1, erreur ~0,06 m)
+[NEGATIF-B] [poche] vers l'ancre : u=7.04 axe (3.41, -3.06) y=sol+0.50 | d_SM=2.8490 d_COL=0.0203 diff=2.8288 | ampl_col estime = -0.9688 m (AMPL=1.20, ML*asym=0.660 ; hypotheses F~1, w~1, erreur ~0,06 m)
+[NEGATIF-B] [paroi] CHAMP : aucun exces au-dela du seuil 0.061 m (plancher 0.010 + etalonnage 0.051)
+[NEGATIF-B] [paroi] FONCTIONNEL : la capsule r=0.45 n'est bloquee par COL_ dans du vide SM_ nulle part
+RC=0

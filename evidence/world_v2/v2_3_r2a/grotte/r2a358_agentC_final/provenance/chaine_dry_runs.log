@@ -1,0 +1,44 @@
+=== T-jonction sur S0 (dry-run puis application, cible nommee S1.py) ===
+checking file S1.py
+RC=0
+patching file S1.py
+RC=0
+S1 sha256: 24fb636c6033c6f83ff8ea3e76fedbed10e161012e057559aa789d5c4fcbded8
+arbre a_epaisseur: 24fb636c6033c6f83ff8ea3e76fedbed10e161012e057559aa789d5c4fcbded8
+=== massif_lissage (5b9d4734) sur S1 (dry-run puis application, cible nommee S2.py) ===
+checking file S2.py
+Hunk #3 FAILED at 2841.
+Hunk #4 succeeded at 3260 (offset 411 lines).
+Hunk #5 succeeded at 5418 (offset 411 lines).
+Hunk #6 succeeded at 6459 (offset 464 lines).
+1 out of 6 hunks FAILED
+RC=1
+patching file S2.py
+Hunk #3 FAILED at 2841.
+Hunk #4 succeeded at 3260 (offset 411 lines).
+Hunk #5 succeeded at 5418 (offset 411 lines).
+Hunk #6 succeeded at 6459 (offset 464 lines).
+1 out of 6 hunks FAILED -- saving rejects to file S2.py.rej
+RC=1
+S2 sha256: e90feb8edc413a2571b1aed95ad172316ad2b98b891f6cb76f945415353fdfa1
+=== intersections v2 (86b01ece) sur S2 (dry-run puis application, cible nommee S3.py) ===
+checking file S3.py
+Hunk #1 succeeded at 2528 (offset 297 lines).
+Hunk #2 succeeded at 2612 (offset 297 lines).
+Hunk #3 succeeded at 3480 (offset 410 lines).
+Hunk #4 succeeded at 5502 (offset 410 lines).
+RC=0
+patching file S3.py
+Hunk #1 succeeded at 2528 (offset 297 lines).
+Hunk #2 succeeded at 2612 (offset 297 lines).
+Hunk #3 succeeded at 3480 (offset 410 lines).
+Hunk #4 succeeded at 5502 (offset 410 lines).
+RC=0
+S3 sha256: 1a361d91da7a15f42bab9f4a650ba6d6e280104aa504b5526f98a8129ae9977c
+=== CONTRE-VERIF massif_lissage sur S0 nu (531cdd8) — attendu 6/6 RC=0 comme en 3.5.7 ===
+checking file X0.py
+Hunk #3 succeeded at 3125 (offset 284 lines).
+Hunk #4 succeeded at 3134 (offset 284 lines).
+Hunk #5 succeeded at 5292 (offset 284 lines).
+Hunk #6 succeeded at 6286 (offset 290 lines).
+RC=0

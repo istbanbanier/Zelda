@@ -1,0 +1,38 @@
+=== B1. massif_lissage sur S0 ===
+patching file M1.py
+Hunk #3 succeeded at 3125 (offset 284 lines).
+Hunk #4 succeeded at 3134 (offset 284 lines).
+Hunk #5 succeeded at 5292 (offset 284 lines).
+Hunk #6 succeeded at 6286 (offset 290 lines).
+RC=0
+M1 sha256: 63a00579de315a3845032f1b4f532a78a9e26eeb491e4a36b29a63278b045f22
+=== B2. intersections v2 (86b01ece) sur M1 (etat MASSIF-seul) ===
+checking file M2.py
+Hunk #1 succeeded at 2515 (offset 284 lines).
+Hunk #2 succeeded at 2599 (offset 284 lines).
+Hunk #3 succeeded at 3354 (offset 284 lines).
+Hunk #4 succeeded at 5376 (offset 284 lines).
+RC=0
+patching file M2.py
+Hunk #1 succeeded at 2515 (offset 284 lines).
+Hunk #2 succeeded at 2599 (offset 284 lines).
+Hunk #3 succeeded at 3354 (offset 284 lines).
+Hunk #4 succeeded at 5376 (offset 284 lines).
+RC=0
+M2 sha256: 0d5f564a8ff35fdd796bd9352ff5d1d7828d11e7a5749fbf73bf0fc9cbe119ce
+=== B3. T-jonction sur M2 ===
+checking file M3.py
+Hunk #1 succeeded at 2245 (offset 40 lines).
+Hunk #2 succeeded at 2908 (offset 117 lines).
+Hunk #3 FAILED at 3184.
+Hunk #4 succeeded at 6436 (offset 437 lines).
+1 out of 4 hunks FAILED
+RC=1
+=== C2. T-jonction sur M1 (apres massif seul) ===
+checking file C2.py
+Hunk #1 succeeded at 2245 (offset 40 lines).
+Hunk #2 succeeded at 2831 (offset 40 lines).
+Hunk #3 FAILED at 3184.
+Hunk #4 succeeded at 6349 (offset 350 lines).
+1 out of 4 hunks FAILED
+RC=1

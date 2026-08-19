@@ -1,0 +1,107 @@
+[NEGATIF-B] [paroi] reference figee 5e09940e23f1632c… : ML=0.40 AMP=0.085 ALCOVE(ampl=1.20, i0=5, i1=7, dtheta=52 deg)
+[NEGATIF-B] [paroi] COL 880 tris, SM 20070 tris ; plancher 0.010 m ; |cos| >= 0.30 ; pas angulaire 2.0 deg
+[NEGATIF-B] [paroi] chemin canonique 6.20 m (63 pts) + salle->niche 1.52 m (17 pts), pas 0.10 m
+[NEGATIF-B] [paroi] calibration du cote a u=6.0 : gauche = normale -
+
+[NEGATIF-B]       fam    t_m    x       z       u      jeuB_COL   jeuB_SM     dsol exces_max occ_SM
+[NEGATIF-B]       canon  0.00   0.00    1.15    0.00     0.2114    0.4373  -0.0000       nan    non  
+[NEGATIF-B]       canon  0.10   0.00    1.05    0.09     0.1839    0.4381   0.0011       nan    non  
+[NEGATIF-B]       canon  0.20   0.00    0.95    0.17     0.1735    0.4394   0.0021       nan    non  
+[NEGATIF-B]       canon  0.30   0.00    0.85    0.26     0.1771    0.4870   0.0032       nan    non  
+[NEGATIF-B]       canon  0.40   0.00    0.75    0.35     0.1898    0.4901   0.0023       nan    non  
+[NEGATIF-B]       canon  0.50   0.00    0.65    0.43     0.2002    0.5006   0.0013       nan    non  
+[NEGATIF-B]       canon  0.60   0.00    0.55    0.52     0.2106    0.5112   0.0003       nan    non  
+[NEGATIF-B]       canon  0.70   0.00    0.45    0.61     0.2210    0.5205  -0.0005       nan    non  
+[NEGATIF-B]       canon  0.80   0.00    0.35    0.70     0.2314    0.5270  -0.0004       nan    non  
+[NEGATIF-B]       canon  0.90   0.00    0.25    0.78     0.2418    0.5341  -0.0003       nan    non  
+[NEGATIF-B]       canon  1.00   0.00    0.15    0.87     0.2507    0.5419  -0.0002       nan    non  
+[NEGATIF-B]       canon  1.10   0.00    0.05    0.96     0.2511    0.5504  -0.0001       nan    non  
+[NEGATIF-B]       canon  1.20   0.01    -0.05   1.05     0.2526    0.5601   0.0001    0.0254    oui  
+[NEGATIF-B]       canon  1.30   0.03    -0.15   1.14     0.2571    0.5697   0.0002    0.0163    oui  
+[NEGATIF-B]       canon  1.40   0.05    -0.24   1.23     0.2737    0.5798   0.0001    0.0257    oui  
+[NEGATIF-B]       canon  1.50   0.07    -0.34   1.33     0.3034    0.5972   0.0000    0.0150    oui  
+[NEGATIF-B]       canon  1.60   0.09    -0.44   1.42     0.3418    0.6238   0.0000    0.0257    oui  
+[NEGATIF-B]       canon  1.70   0.11    -0.54   1.51     0.3806    0.6588   0.0000    0.0196    oui  
+[NEGATIF-B]       canon  1.80   0.13    -0.64   1.61     0.4195    0.6616  -0.0000    0.0257    oui  
+[NEGATIF-B]       canon  1.90   0.15    -0.73   1.70     0.3937    0.6028  -0.0000    0.0256    oui  
+[NEGATIF-B]       canon  2.00   0.17    -0.83   1.79     0.3422    0.5464   0.0001    0.0256    oui  
+[NEGATIF-B]       canon  2.10   0.19    -0.93   1.89     0.2912    0.4972   0.0002    0.0261    oui  
+[NEGATIF-B]       canon  2.20   0.22    -1.03   1.98     0.2484    0.4563  -0.0000    0.0254    oui  
+[NEGATIF-B]       canon  2.30   0.28    -1.10   2.08     0.2725    0.4798  -0.0000    0.0258    oui  
+[NEGATIF-B]       canon  2.40   0.36    -1.15   2.18     0.3235    0.5285  -0.0000    0.0260    oui  
+[NEGATIF-B]       canon  2.50   0.44    -1.21   2.29     0.3775    0.5846  -0.0000    0.0272    oui  
+[NEGATIF-B]       canon  2.60   0.52    -1.27   2.39     0.4315    0.6444  -0.0000    0.0258    oui  
+[NEGATIF-B]       canon  2.70   0.60    -1.33   2.49     0.4855    0.7042  -0.0000    0.0256    oui  
+[NEGATIF-B]       canon  2.80   0.69    -1.39   2.60     0.5396    0.7641  -0.0000    0.0255    oui  
+[NEGATIF-B]       canon  2.90   0.77    -1.45   2.70     0.5936    0.8239   0.0000    0.0261    oui  
+[NEGATIF-B]       canon  3.00   0.85    -1.51   2.80     0.6476    0.8838   0.0004    0.0260    oui  
+[NEGATIF-B]       canon  3.10   0.93    -1.57   2.91     0.7017    0.9430   0.0005    0.0258    oui  
+[NEGATIF-B]       canon  3.20   1.01    -1.63   3.01     0.7473    0.8752  -0.0000    0.0257    oui  
+[NEGATIF-B]       canon  3.30   1.09    -1.68   3.12     0.6809    0.8060   0.0002    0.0262    oui  
+[NEGATIF-B]       canon  3.40   1.18    -1.73   3.22     0.6144    0.7411   0.0005    0.0261    oui  
+[NEGATIF-B]       canon  3.50   1.27    -1.78   3.32     0.5482    0.6814   0.0009    0.0260    oui  
+[NEGATIF-B]       canon  3.60   1.35    -1.83   3.43     0.4867    0.6277   0.0013    0.0259    oui  
+[NEGATIF-B]       canon  3.70   1.44    -1.89   3.53     0.4323    0.5808   0.0017    0.0258    oui  
+[NEGATIF-B]       canon  3.80   1.52    -1.94   3.64     0.3863    0.5419   0.0022    0.0262    oui  
+[NEGATIF-B]       canon  3.90   1.61    -1.99   3.74     0.3502    0.5118   0.0023    0.0261    oui  
+[NEGATIF-B]       canon  4.00   1.69    -2.04   3.84     0.3255    0.4913   0.0024    0.0261    oui  
+[NEGATIF-B]       canon  4.10   1.78    -2.09   3.95     0.3131    0.4812   0.0025    0.0263    oui  
+[NEGATIF-B]       canon  4.20   1.86    -2.14   4.05     0.3050    0.4742   0.0023    0.0263    oui  
+[NEGATIF-B]       canon  4.30   1.95    -2.19   4.16     0.2956    0.4656   0.0020    0.0265    oui  
+[NEGATIF-B]       canon  4.40   2.04    -2.24   4.27     0.2861    0.4571   0.0016    0.0265    oui  
+[NEGATIF-B]       canon  4.50   2.12    -2.29   4.38     0.2767    0.4486   0.0013    0.0267    oui  
+[NEGATIF-B]       canon  4.60   2.21    -2.34   4.49     0.2672    0.4400   0.0009    0.0266    oui  
+[NEGATIF-B]       canon  4.70   2.30    -2.39   4.60     0.2577    0.4315   0.0006    0.0268    oui  
+[NEGATIF-B]       canon  4.80   2.38    -2.44   4.70     0.2524    0.4093  -0.0015    0.0268    oui  
+[NEGATIF-B]       canon  4.90   2.47    -2.49   4.81     0.2247    0.3481  -0.0053    0.0268    oui  
+[NEGATIF-B]       canon  5.00   2.56    -2.54   4.92     0.1663    0.2868  -0.0091    0.0269    oui  
+[NEGATIF-B]       canon  5.10   2.64    -2.59   5.05     0.1088    0.2245  -0.0199    0.0270    oui  
+[NEGATIF-B]       canon  5.20   2.73    -2.65   5.22     0.0184    0.1607  -0.0494    0.0270    oui  
+[NEGATIF-B]       canon  5.30   2.81    -2.70   5.40    -0.0808    0.0953  -0.0789    0.0270    oui  etroit (COL et SM)
+[NEGATIF-B]       canon  5.40   2.90    -2.75   5.58    -0.1797    0.0317  -0.1084    0.0271    oui  etroit (COL et SM)
+[NEGATIF-B]       canon  5.50   2.98    -2.81   5.75    -0.2777   -0.0183  -0.1378       nan    non  etroit (COL et SM)
+[NEGATIF-B]       canon  5.60   3.07    -2.86   5.93    -0.3715   -0.0608  -0.0781       nan    non  etroit (COL et SM)
+[NEGATIF-B]       canon  5.70   3.15    -2.91   6.17    -0.4403   -0.1107  -0.0004       nan    non  etroit (COL et SM)
+[NEGATIF-B]       canon  5.80   3.24    -2.96   6.46    -0.4500   -0.1656  -0.0004       nan    non  etroit (COL et SM)
+[NEGATIF-B]       canon  5.90   3.32    -3.01   6.75    -0.4500   -0.2232  -0.0004       nan    non  etroit (COL et SM)
+[NEGATIF-B]       canon  6.00   3.41    -3.07   7.05    -0.4500   -0.3363   0.0775       nan    non  etroit (COL et SM)
+[NEGATIF-B]       canon  6.10   3.49    -3.12   7.53    -0.4500   -0.4500   0.0381       nan    non  etroit (COL et SM)
+[NEGATIF-B]       canon  6.20   3.58    -3.17   8.00    -0.4459   -0.4500   0.0000       nan    non  etroit (COL et SM)
+[NEGATIF-B]       niche  0.00   2.62    -2.58   5.00     0.1237    0.2420  -0.0120    0.0269    oui  
+[NEGATIF-B]       niche  0.09   2.63    -2.67   5.10     0.0856    0.2658  -0.0325    0.0269    oui  
+[NEGATIF-B]       niche  0.19   2.64    -2.77   5.21     0.0379    0.2901  -0.0530    0.0269    oui  
+[NEGATIF-B]       niche  0.28   2.65    -2.86   5.31    -0.0057    0.3152  -0.0694    0.0269    oui  
+[NEGATIF-B]       niche  0.38   2.66    -2.96   5.41    -0.0505    0.3497  -0.0851    0.0270    oui  etroit (COL et SM)
+[NEGATIF-B]       niche  0.47   2.67    -3.05   5.52    -0.0952    0.3919  -0.0990    0.0270    oui  etroit (COL et SM)
+[NEGATIF-B]       niche  0.57   2.68    -3.15   5.62    -0.1399    0.3677  -0.1125    0.0271    oui  etroit (COL et SM)
+[NEGATIF-B]       niche  0.66   2.69    -3.24   5.72    -0.1767    0.3105  -0.0762    0.0277    oui  etroit (COL et SM)
+[NEGATIF-B]       niche  0.76   2.70    -3.33   5.83    -0.2159    0.2471   0.0014    0.0346    oui  etroit (COL et SM)
+[NEGATIF-B]       niche  0.85   2.71    -3.43   5.93    -0.2744    0.1838   0.0063    0.0350    oui  etroit (COL et SM)
+[NEGATIF-B]       niche  0.95   2.72    -3.52   6.02    -0.3602    0.1200   0.0763    0.0298    oui  etroit (COL et SM)
+[NEGATIF-B]       niche  1.04   2.73    -3.62   6.18    -0.4431    0.0549   0.1242    0.0307    oui  etroit (COL et SM)
+[NEGATIF-B]       niche  1.14   2.74    -3.71   6.34    -0.4500   -0.0103   0.1431       nan    non  etroit (COL et SM)
+[NEGATIF-B]       niche  1.23   2.75    -3.81   6.51    -0.4500   -0.0831   0.1881       nan    non  etroit (COL et SM)
+[NEGATIF-B]       niche  1.33   2.76    -3.90   6.67    -0.3945   -0.1643   0.2801       nan    non  etroit (COL et SM)
+[NEGATIF-B]       niche  1.42   2.77    -4.00   6.83   aucun sol (COL)
+[NEGATIF-B]       niche  1.52   2.78    -4.09   7.04     0.1970   -0.3240  -1.7806       nan    non  
+
+[NEGATIF-B] [paroi] ATTEINTE DE LA NICHE : la capsule r=0.45 tient contre COL_ jusqu'a 0.000 m de l'ancre de niche (portee d'interaction du projet : 1,8-2,4 m)
+
+[NEGATIF-B] [paroi] examine : 42660 rayons, 37062 doubles touches, 0 rasants ecartes, 1543 ecarts negatifs (COL derriere SM — couloir collision, publie non juge), 1372 impacts uniques (bouche/saillie exterieure : preexistant, publie non juge)
+[NEGATIF-B] [paroi] detectabilite au pire impact retenu : une plaque plus etroite que 0.153 m peut passer entre deux rayons
+[NEGATIF-B] [paroi] cinq pires exces (ecart*cos - marge_prevue) :
+[NEGATIF-B]          +0.0350 m  niche t=0.85 (2.71, -3.43)  th=080 y=0.50 cote=D prof=0.180 d_COL=1.618 mp=0.145
+[NEGATIF-B]          +0.0346 m  niche t=0.76 (2.70, -3.33)  th=080 y=0.50 cote=D prof=0.181 d_COL=1.539 mp=0.146
+[NEGATIF-B]          +0.0307 m  niche t=1.04 (2.73, -3.62)  th=062 y=1.30 cote=D prof=0.139 d_COL=1.049 mp=0.109
+[NEGATIF-B]          +0.0298 m  niche t=0.95 (2.72, -3.52)  th=058 y=1.30 cote=D prof=0.139 d_COL=0.994 mp=0.109
+[NEGATIF-B]          +0.0277 m  niche t=0.66 (2.69, -3.24)  th=046 y=1.30 cote=D prof=0.137 d_COL=0.857 mp=0.109
+[NEGATIF-B] [poche] ventre : u=6.00 axe (3.10, -2.88) y=sol+0.50 | d_SM=4.8422 d_COL=4.0318 diff=0.8103 | ampl_col estime = 1.0657 m (AMPL=1.20, ML*asym=0.676 ; hypotheses F~1, w~1, erreur ~0,06 m)
+[NEGATIF-B] [poche] vers l'ancre : u=7.04 axe (3.41, -3.06) y=sol+0.50 | d_SM=2.8490 d_COL=0.0203 diff=2.8288 | ampl_col estime = -0.9688 m (AMPL=1.20, ML*asym=0.660 ; hypotheses F~1, w~1, erreur ~0,06 m)
+[NEGATIF-B] [paroi] CHAMP : aucun exces au-dela du seuil 0.061 m (plancher 0.010 + etalonnage 0.051)
+[NEGATIF-B] [paroi] FONCTIONNEL : la capsule r=0.45 n'est bloquee par COL_ dans du vide SM_ nulle part
+[NEGATIF-B] [paroi] NOTE : 21 passage(s) etroit(s) contre les DEUX maillages — traversabilite, pas paroi invisible : canon t=5.30; canon t=5.40; canon t=5.50; canon t=5.60
+[NEGATIF-B] [paroi] POCHE : ampl_col estime 1.0657 m >= plancher 0.524 m
+FIN NOMINALE
+
+[archivage] annexe du journal b3_verdict.log ; RC de l outil au moment de la course : 0
+RC=0

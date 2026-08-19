@@ -1,0 +1,42 @@
+=== CONTROLE NEGATIF (c) — reduction du passage sous la capsule, au seuil (st1) ===
+--- AVANT : st1 sur l'intact (extrait du rodage 01) ---
+      1    0.00    0.00       -0.077     0.4498   -0.0002    0.45   tri 70
+
+[sabotage] fichier avant : sha256 40714c46544e27d23fce271d2814020c0683aa78f71106934215ee8666dc11a0
+[sabotage]   geo COL_WaterfallCave  f17852ba628a8dc6e369a797d3931a5fe4ab3c94212bd94c586a1a088fa85860
+[sabotage]   geo SM_WaterfallCave   dd3ea5c6bf9cee3b1788fb3c71122848f4927fd3e79cad2ae026fe9db3c99434
+[sabotage] noeud COL_WaterfallCave : 1784 sommets vus, 80 BOUGES, |d|max 0.400 m, cylindre (0.00, 0.00) r=1.20 y=[-0.30, 2.30], vers (0.00, 0.00) d=+0.40
+[sabotage] fichier apres : sha256 599a3b48f46ab19ad54dde4ddaf5d55ea676da00c02e75f8249263f07af56cad
+[sabotage]   geo COL_WaterfallCave  4fed6d4b1ed2c538f52edfd982e63c637c161651924a5801d3437e9298d1909c  MODIFIE
+[sabotage]   geo SM_WaterfallCave   dd3ea5c6bf9cee3b1788fb3c71122848f4927fd3e79cad2ae026fe9db3c99434  INCHANGE
+FIN NOMINALE
+RC_sabotage=0
+
+--- instrument capsule exact aux stations, sur le sabote ---
+      1    0.00    0.00       -0.075     0.2772   -0.1728    1.40   tri 44
+      3    1.00    -1.62      -0.017     0.4497   -0.0003    0.45   tri 148
+[seuil]   r=0.45 h=1.85 : NE PASSE PAS a 1 station(s) — jeu st1 -0.1728
+[seuil]   r=0.35 h=1.85 : NE PASSE PAS a 1 station(s) — jeu st1 -0.1161
+RC_largeur=0
+
+--- champ paroi invisible sur le sabote (fonctionnel attendu ROUGE au seuil) ---
+RC_paroi=1
+[NEGATIF-C]       canon  1.00   0.00    0.15    0.87    -0.0965    0.5419   0.0025       nan    non  PAROI INVISIBLE (fonctionnelle)
+[NEGATIF-C]       canon  1.10   0.00    0.05    0.96    -0.1318    0.5504   0.0024       nan    non  PAROI INVISIBLE (fonctionnelle)
+[NEGATIF-C]       canon  1.20   0.01    -0.05   1.05    -0.1442    0.5601   0.0021    0.3954    oui  PAROI INVISIBLE (fonctionnelle)
+[NEGATIF-C]       canon  1.30   0.03    -0.15   1.14    -0.1238    0.5697   0.0023    0.3939    oui  PAROI INVISIBLE (fonctionnelle)
+[NEGATIF-C]       canon  1.40   0.05    -0.24   1.23    -0.0770    0.5798   0.0030    0.3901    oui  PAROI INVISIBLE (fonctionnelle)
+[NEGATIF-C]       canon  1.50   0.07    -0.34   1.33    -0.0140    0.5972   0.0038    0.3940    oui  PAROI INVISIBLE (fonctionnelle)
+[NEGATIF-C] [paroi] CHAMP : 18 point(s) au-dela du seuil 0.061 m (plancher 0.010 + etalonnage 0.051) -> PAROI INVISIBLE
+[NEGATIF-C] [paroi] FONCTIONNEL : capsule r=0.45 bloquee par COL_ dans du vide SM_ a 6 point(s)
+[NEGATIF-C]       canon  1.00   0.00    0.15    0.87    -0.0965    0.5419   0.0025       nan    non  PAROI INVISIBLE (fonctionnelle)
+[NEGATIF-C]       canon  1.10   0.00    0.05    0.96    -0.1318    0.5504   0.0024       nan    non  PAROI INVISIBLE (fonctionnelle)
+[NEGATIF-C]       canon  1.20   0.01    -0.05   1.05    -0.1442    0.5601   0.0021    0.3954    oui  PAROI INVISIBLE (fonctionnelle)
+[NEGATIF-C]       canon  1.30   0.03    -0.15   1.14    -0.1238    0.5697   0.0023    0.3939    oui  PAROI INVISIBLE (fonctionnelle)
+[NEGATIF-C]       canon  1.40   0.05    -0.24   1.23    -0.0770    0.5798   0.0030    0.3901    oui  PAROI INVISIBLE (fonctionnelle)
+RC=0
+RC_paroi_sabote_v4d=1
+[NEGATIF-C] [paroi] CHAMP : 18 point(s) au-dela du seuil 0.061 m (plancher 0.010 + etalonnage 0.051) -> PAROI INVISIBLE
+[NEGATIF-C] [paroi] FONCTIONNEL : capsule r=0.45 bloquee par COL_ dans du vide SM_ a 4 point(s)
+[NEGATIF-C] [paroi] POCHE : ampl_col estime 1.0654 m (pire direction 'ventre') >= plancher 0.524 m
+RC=0

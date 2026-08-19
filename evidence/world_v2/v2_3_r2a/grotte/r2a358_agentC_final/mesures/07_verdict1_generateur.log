@@ -1,0 +1,30 @@
+FINAL (arbre a_collider) : 28535fb3f48d80c6546d76d7c42c8af4f3c7053b8ee444170c75b5ed0fddc3af
+=== application INVERSE du delta 750151d5 (259 l) sur FINAL ===
+patching file PRE.py
+RC=0
+PRE (= etat fusionne pre-correctif attendu 102cc33d) : 102cc33d3836d07fdb0b13951b3fa780187dc5388fafb43aa34bf8e05f0f4bb5
+=== controle aller : PRE + delta == FINAL ===
+patching file REFWD.py
+RC=0
+PRE+delta == FINAL : IDENTIQUES
+=== (1) soustraire() : PRE vs S1 ===
+PRE : 66 lignes, sha256 97ee5b3cc792175e
+S1  : 66 lignes, sha256 97ee5b3cc792175e
+VERDICT 1.1 : BYTE-IDENTIQUES
+=== (2) survivances de _desamorcer_ngones_colineaires ===
+PRE.py : 0 occurrence(s)
+FINAL.py : 0 occurrence(s)
+=== (3) reconstruction independante : S1 + massif{1,2,5,6} + 86b01ece ===
+massif_1256.patch : 4 hunks gardes sur 6
+patching file PRESCRIT.py
+Hunk #3 succeeded at 5307 (offset 411 lines).
+Hunk #4 succeeded at 6348 (offset 464 lines).
+RC=0
+patching file PRESCRIT.py
+Hunk #1 succeeded at 2528 (offset 297 lines).
+Hunk #2 succeeded at 2612 (offset 297 lines).
+Hunk #3 succeeded at 3369 (offset 299 lines).
+Hunk #4 succeeded at 5391 (offset 299 lines).
+RC=0
+PRESCRIT : 102cc33d3836d07fdb0b13951b3fa780187dc5388fafb43aa34bf8e05f0f4bb5
+VERDICT 1.3 : PRESCRIT == PRE (102cc33d) BYTE-IDENTIQUES

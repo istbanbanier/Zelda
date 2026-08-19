@@ -1,0 +1,24 @@
+=== CONTROLE NEGATIF (a) — intersection artificielle du collider ===
+--- baseline complete (candidat intact) ---
+62
+[exact] TOTAL : 0 face(s) d'aire exactement nulle, 62 penetration(s) reelle(s)
+
+--- sabotage : cavite du coude poussee hors de l'enveloppe ---
+[sabotage] fichier avant : sha256 40714c46544e27d23fce271d2814020c0683aa78f71106934215ee8666dc11a0
+[sabotage]   geo COL_WaterfallCave  f17852ba628a8dc6e369a797d3931a5fe4ab3c94212bd94c586a1a088fa85860
+[sabotage]   geo SM_WaterfallCave   dd3ea5c6bf9cee3b1788fb3c71122848f4927fd3e79cad2ae026fe9db3c99434
+[sabotage] noeud COL_WaterfallCave : 1784 sommets vus, 84 BOUGES, |d|max 1.200 m, cylindre (1.00, -1.62) r=1.60 y=[0.30, 2.40], vers (1.00, -1.62) d=-1.20
+[sabotage] fichier apres : sha256 488cacb4e2a7ec9daaea29b89086268d13410a6f1e9e9696e0a1868e29ede0f9
+[sabotage]   geo COL_WaterfallCave  48a3a81d45caba2ddf898748d2229968933a87813e8b80c2350bbe10e4506cd6  MODIFIE
+[sabotage]   geo SM_WaterfallCave   dd3ea5c6bf9cee3b1788fb3c71122848f4927fd3e79cad2ae026fe9db3c99434  INCHANGE
+FIN NOMINALE
+RC_sabotage=0
+
+--- mesure sur le sabote ---
+[exact] TOTAL : 0 face(s) d'aire exactement nulle, 62 penetration(s) reelle(s)
+
+--- localisation : penetrations NOUVELLES dans la boite du sabotage ---
+baseline : 62 penetrations, dont 11 dans la boite du coude (r 3 m)
+sabote   : 62 penetrations, dont 11 dans la boite du coude
+VERDICT (a) : ECHEC DU CONTROLE — le rouge n'est pas la ou le sabotage a agi
+RC=0

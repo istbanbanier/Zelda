@@ -1,0 +1,7 @@
+=== /home/user/zelda-r2a358/a_collider/assets/environment/caves/SM_WaterfallCave.glb ===
+    fichier entier : 5ff4ec6ee7a5bb6fef95114055354f348e2372f39cf4a104b8164f1b212a8d75 (1488700 octets)
+    COL_WaterfallCave      prim=1 sommets=1784 tris=880
+      sha256_geom = 98034206db67e6c9b00efd2153b5a83596ae9c7e4845d3734791e4e4149f33cd  (prefixe 98034206db67e6c9)
+    SM_WaterfallCave       prim=6 sommets=54764 tris=20070
+      sha256_geom = e6a4bdb0471b628138692cd8871d97f395ce123ade4bcf5bc49892d3508c91d0  (prefixe e6a4bdb0471b6281)
+RC=0

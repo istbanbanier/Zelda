@@ -1,0 +1,13 @@
+=== /home/user/zelda-r2a355/a_epaisseur/assets/environment/caves/SM_WaterfallCave.glb ===
+    fichier entier : 40714c46544e27d23fce271d2814020c0683aa78f71106934215ee8666dc11a0 (1488700 octets)
+    COL_WaterfallCave      prim=1 sommets=1784 tris=880
+      sha256_geom = eb26d38edf163462bc562df662516e32d7d182a6a3a60f39b3ceb2cf0c863eac  (prefixe eb26d38edf163462)
+    SM_WaterfallCave       prim=6 sommets=54764 tris=20070
+      sha256_geom = e6a4bdb0471b628138692cd8871d97f395ce123ade4bcf5bc49892d3508c91d0  (prefixe e6a4bdb0471b6281)
+=== /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/provenance358/pre_tjonction_3a80ae71.glb ===
+    fichier entier : 3a80ae71c89bfc97db10e0fd31fa9a6233a332df5b0219e880ff4d3684c0b000 (1488532 octets)
+    COL_WaterfallCave      prim=1 sommets=1784 tris=880
+      sha256_geom = eb26d38edf163462bc562df662516e32d7d182a6a3a60f39b3ceb2cf0c863eac  (prefixe eb26d38edf163462)
+    SM_WaterfallCave       prim=6 sommets=54757 tris=20070
+      sha256_geom = 8ec0d74c7c9a3138f627e62a284057cfb3a698a2fe5febc92070e5b7d15e549e  (prefixe 8ec0d74c7c9a3138)
+RC=0

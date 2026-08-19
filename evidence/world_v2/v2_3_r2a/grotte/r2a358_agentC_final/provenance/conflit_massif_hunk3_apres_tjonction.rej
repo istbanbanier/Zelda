@@ -1,0 +1,10 @@
+--- make_waterfall_cave.py
++++ make_waterfall_cave.py
+@@ -2841,6 +2881,7 @@ def soustraire(base, outil):
+     apres = sum(1 for e in bm.edges if len(e.link_faces) != 2)
+     print("[grotte] nettoyage de la soustraction : %d -> %d arete(s) "
+           "irreguliere(s)" % (avant, apres))
++    _desamorcer_ngones_colineaires(bm)
+     bm.to_mesh(maillage)
+     bm.free()
+     maillage.update()

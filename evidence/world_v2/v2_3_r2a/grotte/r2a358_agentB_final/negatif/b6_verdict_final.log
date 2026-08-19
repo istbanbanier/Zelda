@@ -1,0 +1,10 @@
+=== (b) re-verdict avec jauge min-directions (v4c) sur le MEME sabote ===
+RC_paroi_sabote=1
+[NEGATIF-B] [poche] ventre : u=6.00 axe (3.10, -2.88) y=sol+0.50 | d_SM=4.8422 d_COL=4.0318 diff=0.8103 | ampl_col estime = 1.0657 m (AMPL=1.20, ML*asym=0.676 ; hypotheses F~1, w~1, erreur ~0,06 m)
+[NEGATIF-B] [poche] vers l'ancre : u=7.04 axe (3.41, -3.06) y=sol+0.50 | d_SM=2.8490 d_COL=0.0203 diff=2.8288 | ampl_col estime = -0.9688 m (AMPL=1.20, ML*asym=0.660 ; hypotheses F~1, w~1, erreur ~0,06 m)
+[NEGATIF-B] [paroi] POCHE : ampl_col estime -0.9688 m (direction 'vers l'ancre') < plancher 0.524 m (arbitrage lead) -> ROUGE DE GATE
+
+=== contre-epreuve : la baseline INTACTE reste verte avec la jauge armee ===
+RC_baseline=0
+[RODAGE-JAUGE-ARMEE] [paroi] POCHE : ampl_col estime 1.0654 m (pire direction 'ventre') >= plancher 0.524 m
+RC=0

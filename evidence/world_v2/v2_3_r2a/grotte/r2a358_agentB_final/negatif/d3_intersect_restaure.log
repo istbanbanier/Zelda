@@ -1,0 +1,266 @@
+[exact] fichier evidence/world_v2/v2_3_r2a/grotte/r2a358_agentB/SM_WaterfallCave_candidat.glb
+[exact] noeud COL_WaterfallCave        matrice=non translation=None rotation=None echelle=None
+[exact] noeud SM_WaterfallCave         matrice=non translation=None rotation=None echelle=None
+[exact] COL_WaterfallCave : 1784 positions brutes -> 442 apres soudure
+[exact] === COL_WaterfallCave : 442 sommets soudes, 880 triangles
+[exact] aire EXACTEMENT nulle : 0 face(s)
+[exact] aire < 1e-9 m2 mais NON nulle : 0 face(s)
+[exact] paires a boites chevauchantes : 6888
+[exact]   CONTACT              5732
+[exact]   COPLANAIRE           1
+[exact]   DISJOINT             1093
+[exact]   PENETRATION          62
+[exact] PENETRATIONS REELLES : 62
+[exact]   faces 254 / 636  sommets communs 0
+[exact]     centres (1.9982, 1.7448, -4.9026) et (1.6531, 2.4544, -5.5983)
+[exact]     enfoncement 0.000020 m   etendue de couture 0.000048 m
+[exact]     point interieur commun (1.679422074, 1.609660255, -5.303307417)
+[exact]   faces 254 / 677  sommets communs 0
+[exact]     centres (1.9982, 1.7448, -4.9026) et (1.9247, 1.7529, -5.1752)
+[exact]     enfoncement 0.000020 m   etendue de couture 0.000134 m
+[exact]     point interieur commun (1.679472069, 1.609616207, -5.303291764)
+[exact]   faces 256 / 638  sommets communs 0
+[exact]     centres (1.6262, 1.1954, -5.5085) et (1.4482, 1.6041, -5.8804)
+[exact]     enfoncement 0.203975 m   etendue de couture 0.544729 m
+[exact]     point interieur commun (1.594980544, 1.311574876, -5.493453232)
+[exact]   faces 256 / 639  sommets communs 0
+[exact]     centres (1.6262, 1.1954, -5.5085) et (1.1997, 1.4217, -6.4931)
+[exact]     enfoncement 0.203975 m   etendue de couture 0.175061 m
+[exact]     point interieur commun (1.505338719, 1.030035342, -5.698932196)
+[exact]   faces 258 / 640  sommets communs 0
+[exact]     centres (1.3477, 0.6328, -5.9625) et (1.4286, 0.6148, -5.9187)
+[exact]     enfoncement 0.316982 m   etendue de couture 0.319866 m
+[exact]     point interieur commun (1.454937864, 0.634935216, -5.847911269)
+[exact]   faces 260 / 640  sommets communs 0
+[exact]     centres (1.4297, 0.4346, -5.8280) et (1.4286, 0.6148, -5.9187)
+[exact]     enfoncement 0.261101 m   etendue de couture 0.223639 m
+[exact]     point interieur commun (1.505716595, 0.441169771, -5.741563588)
+[exact]   faces 261 / 640  sommets communs 0
+[exact]     centres (1.7563, 0.5048, -5.5323) et (1.4286, 0.6148, -5.9187)
+[exact]     enfoncement 0.257306 m   etendue de couture 0.060750 m
+[exact]     point interieur commun (1.454534681, 0.475675955, -5.869660683)
+[exact]   faces 256 / 678  sommets communs 0
+[exact]     centres (1.6262, 1.1954, -5.5085) et (1.9672, 1.0080, -5.2717)
+[exact]     enfoncement 0.134235 m   etendue de couture 0.526893 m
+[exact]     point interieur commun (1.820938426, 1.243634053, -5.289847563)
+[exact]   faces 257 / 638  sommets communs 0
+[exact]     centres (2.0871, 1.3924, -4.9917) et (1.4482, 1.6041, -5.8804)
+[exact]     enfoncement 0.092012 m   etendue de couture 0.092070 m
+[exact]     point interieur commun (1.671114588, 1.566477727, -5.321040938)
+[exact]   faces 257 / 678  sommets communs 0
+[exact]     centres (2.0871, 1.3924, -4.9917) et (1.9672, 1.0080, -5.2717)
+[exact]     enfoncement 0.005465 m   etendue de couture 0.128694 m
+[exact]     point interieur commun (1.697664035, 1.546526348, -5.302041547)
+[exact]   faces 254 / 637  sommets communs 0
+[exact]     centres (1.9982, 1.7448, -4.9026) et (1.3418, 2.4724, -6.2652)
+[exact]     enfoncement 0.000020 m   etendue de couture 0.000019 m
+[exact]     point interieur commun (1.679407077, 1.609644403, -5.303333136)
+[exact]   faces 254 / 638  sommets communs 0
+[exact]     centres (1.9982, 1.7448, -4.9026) et (1.4482, 1.6041, -5.8804)
+[exact]     enfoncement 0.092012 m   etendue de couture 0.001536 m
+[exact]     point interieur commun (1.679165152, 1.609173938, -5.303903342)
+[exact]   faces 254 / 678  sommets communs 0
+[exact]     centres (1.9982, 1.7448, -4.9026) et (1.9672, 1.0080, -5.2717)
+[exact]     enfoncement 0.093717 m   etendue de couture 0.001407 m
+[exact]     point interieur commun (1.679976484, 1.609038594, -5.303230171)
+[exact]   faces 259 / 639  sommets communs 0
+[exact]     centres (1.8349, 0.8403, -5.4044) et (1.1997, 1.4217, -6.4931)
+[exact]     enfoncement 0.182582 m   etendue de couture 0.098190 m
+[exact]     point interieur commun (1.476534627, 0.915407003, -5.764706292)
+[exact]   faces 259 / 640  sommets communs 0
+[exact]     centres (1.8349, 0.8403, -5.4044) et (1.4286, 0.6148, -5.9187)
+[exact]     enfoncement 0.231813 m   etendue de couture 0.084894 m
+[exact]     point interieur commun (1.467660127, 0.828186315, -5.789830919)
+[exact]   faces 258 / 678  sommets communs 0
+[exact]     centres (1.3477, 0.6328, -5.9625) et (1.9672, 1.0080, -5.2717)
+[exact]     enfoncement 0.045950 m   etendue de couture 0.070022 m
+[exact]     point interieur commun (2.002991423, 0.580663400, -5.278188995)
+[exact]   faces 259 / 678  sommets communs 0
+[exact]     centres (1.8349, 0.8403, -5.4044) et (1.9672, 1.0080, -5.2717)
+[exact]     enfoncement 0.084730 m   etendue de couture 0.393910 m
+[exact]     point interieur commun (1.960899775, 0.808716682, -5.278683013)
+[exact]   faces 262 / 640  sommets communs 0
+[exact]     centres (1.7036, 0.3865, -5.3817) et (1.4286, 0.6148, -5.9187)
+[exact]     enfoncement 0.216488 m   etendue de couture 0.318458 m
+[exact]     point interieur commun (1.620909516, 0.367017768, -5.452804719)
+[exact]   faces 263 / 640  sommets communs 0
+[exact]     centres (1.9538, 0.4676, -5.2089) et (1.4286, 0.6148, -5.9187)
+[exact]     enfoncement 0.216488 m   etendue de couture 0.048569 m
+[exact]     point interieur commun (1.554726846, 0.408604978, -5.618839636)
+[exact]   faces 260 / 679  sommets communs 0
+[exact]     centres (1.4297, 0.4346, -5.8280) et (1.8020, 0.8411, -5.3099)
+[exact]     enfoncement 0.292241 m   etendue de couture 0.079518 m
+[exact]     point interieur commun (1.915273285, 0.489616284, -5.299833496)
+[exact]   faces 261 / 678  sommets communs 0
+[exact]     centres (1.7563, 0.5048, -5.5323) et (1.9672, 1.0080, -5.2717)
+[exact]     enfoncement 0.313298 m   etendue de couture 0.044116 m
+[exact]     point interieur commun (1.992666005, 0.535148354, -5.281297459)
+[exact]   faces 261 / 679  sommets communs 0
+[exact]     centres (1.7563, 0.5048, -5.5323) et (1.8020, 0.8411, -5.3099)
+[exact]     enfoncement 0.292241 m   etendue de couture 0.029905 m
+[exact]     point interieur commun (1.961542931, 0.516319430, -5.288027206)
+[exact]   faces 262 / 680  sommets communs 0
+[exact]     centres (1.7036, 0.3865, -5.3817) et (1.9980, 0.1339, -5.2458)
+[exact]     enfoncement 0.366089 m   etendue de couture 0.037205 m
+[exact]     point interieur commun (1.835834930, 0.428051837, -5.287954839)
+[exact]   faces 262 / 681  sommets communs 0
+[exact]     centres (1.7036, 0.3865, -5.3817) et (1.8731, 0.0900, -5.2418)
+[exact]     enfoncement 0.366089 m   etendue de couture 0.161117 m
+[exact]     point interieur commun (1.757368735, 0.374792862, -5.288974253)
+[exact]   faces 263 / 679  sommets communs 0
+[exact]     centres (1.9538, 0.4676, -5.2089) et (1.8020, 0.8411, -5.3099)
+[exact]     enfoncement 0.370823 m   etendue de couture 0.023245 m
+[exact]     point interieur commun (1.871695655, 0.464765051, -5.310939416)
+[exact]   faces 263 / 680  sommets communs 0
+[exact]     centres (1.9538, 0.4676, -5.2089) et (1.9980, 0.1339, -5.2458)
+[exact]     enfoncement 0.365772 m   etendue de couture 0.029330 m
+[exact]     point interieur commun (1.853846141, 0.449706451, -5.305658421)
+[exact]   faces 265 / 640  sommets communs 0
+[exact]     centres (2.2104, 0.4354, -4.7876) et (1.4286, 0.6148, -5.9187)
+[exact]     enfoncement 0.096173 m   etendue de couture 0.008186 m
+[exact]     point interieur commun (1.679819779, 0.330399973, -5.304962403)
+[exact]   faces 265 / 681  sommets communs 0
+[exact]     centres (2.2104, 0.4354, -4.7876) et (1.8731, 0.0900, -5.2418)
+[exact]     enfoncement 0.100076 m   etendue de couture 0.008663 m
+[exact]     point interieur commun (1.685145639, 0.331736691, -5.300541813)
+[exact]   faces 458 / 802  sommets communs 0
+[exact]     centres (3.3302, 0.3187, 1.5873) et (3.6107, 0.5281, 1.2303)
+[exact]     enfoncement 0.397300 m   etendue de couture 0.326153 m
+[exact]     point interieur commun (3.272425658, 0.292795783, 1.301421292)
+[exact]   faces 458 / 803  sommets communs 0
+[exact]     centres (3.3302, 0.3187, 1.5873) et (3.3113, 0.6574, 1.3080)
+[exact]     enfoncement 0.397300 m   etendue de couture 0.030180 m
+[exact]     point interieur commun (3.292877267, 0.469710835, 1.306380460)
+[exact]   faces 458 / 879  sommets communs 0
+[exact]     centres (3.3302, 0.3187, 1.5873) et (3.1519, -0.1104, 1.3266)
+[exact]     enfoncement 0.457261 m   etendue de couture 0.210017 m
+[exact]     point interieur commun (3.243174121, 0.026530653, 1.301922879)
+[exact]   faces 459 / 803  sommets communs 0
+[exact]     centres (3.4227, 0.6436, 1.3160) et (3.3113, 0.6574, 1.3080)
+[exact]     enfoncement 0.085533 m   etendue de couture 0.440192 m
+[exact]     point interieur commun (3.439006454, 0.648516566, 1.279257174)
+[exact]   faces 423 / 806  sommets communs 0
+[exact]     centres (3.2532, 2.6263, 1.1916) et (3.5354, 1.3436, 1.2278)
+[exact]     enfoncement 0.274923 m   etendue de couture 0.043362 m
+[exact]     point interieur commun (3.495660223, 1.962304228, 1.166907313)
+[exact]   faces 423 / 807  sommets communs 0
+[exact]     centres (3.2532, 2.6263, 1.1916) et (3.0029, 1.3723, 1.3118)
+[exact]     enfoncement 0.067740 m   etendue de couture 0.057066 m
+[exact]     point interieur commun (3.476559145, 2.008713308, 1.165304076)
+[exact]   faces 423 / 810  sommets communs 0
+[exact]     centres (3.2532, 2.6263, 1.1916) et (2.7916, 2.0715, 1.2341)
+[exact]     enfoncement 0.067740 m   etendue de couture 0.121955 m
+[exact]     point interieur commun (3.439812111, 2.089807818, 1.157292506)
+[exact]   faces 345 / 423  sommets communs 0
+[exact]     centres (2.6683, 3.1437, 0.8378) et (3.2532, 2.6263, 1.1916)
+[exact]     enfoncement 0.214160 m   etendue de couture 0.944071 m
+[exact]     point interieur commun (3.175882479, 2.528556335, 1.013279786)
+[exact]   faces 422 / 806  sommets communs 0
+[exact]     centres (3.5690, 2.5324, 1.8364) et (3.5354, 1.3436, 1.2278)
+[exact]     enfoncement 0.215534 m   etendue de couture 0.221085 m
+[exact]     point interieur commun (3.523703400, 1.833891613, 1.176506594)
+[exact]   faces 420 / 803  sommets communs 0
+[exact]     centres (3.6194, 1.4334, 1.8872) et (3.3113, 0.6574, 1.3080)
+[exact]     enfoncement 0.207054 m   etendue de couture 0.188927 m
+[exact]     point interieur commun (3.600570068, 0.905222328, 1.251078605)
+[exact]   faces 421 / 803  sommets communs 0
+[exact]     centres (3.6149, 1.6009, 1.4954) et (3.3113, 0.6574, 1.3080)
+[exact]     enfoncement 0.301738 m   etendue de couture 0.016860 m
+[exact]     point interieur commun (3.617042232, 1.006516353, 1.250509090)
+[exact]   faces 421 / 806  sommets communs 0
+[exact]     centres (3.6149, 1.6009, 1.4954) et (3.5354, 1.3436, 1.2278)
+[exact]     enfoncement 0.244613 m   etendue de couture 0.717309 m
+[exact]     point interieur commun (3.579902420, 1.370190151, 1.218064629)
+[exact]   faces 345 / 425  sommets communs 0
+[exact]     centres (2.6683, 3.1437, 0.8378) et (2.4947, 3.6383, 0.4826)
+[exact]     enfoncement 0.102345 m   etendue de couture 0.796672 m
+[exact]     point interieur commun (2.523823466, 3.747264856, 0.544051686)
+[exact]   faces 345 / 424  sommets communs 0
+[exact]     centres (2.6683, 3.1437, 0.8378) et (2.9609, 3.5325, 1.1397)
+[exact]     enfoncement 0.239342 m   etendue de couture 0.593870 m
+[exact]     point interieur commun (2.829975523, 3.167361556, 0.768743622)
+[exact]   faces 344 / 426  sommets communs 0
+[exact]     centres (2.8429, 3.4532, 0.5501) et (2.1703, 4.4355, 0.1701)
+[exact]     enfoncement 0.062698 m   etendue de couture 0.147149 m
+[exact]     point interieur commun (2.231209668, 4.415155650, 0.256660203)
+[exact]   faces 345 / 426  sommets communs 0
+[exact]     centres (2.6683, 3.1437, 0.8378) et (2.1703, 4.4355, 0.1701)
+[exact]     enfoncement 0.319483 m   etendue de couture 0.320962 m
+[exact]     point interieur commun (2.288730510, 4.213295586, 0.359717821)
+[exact]   faces 385 / 426  sommets communs 1
+[exact]     centres (2.3548, 4.0451, 0.1955) et (2.1703, 4.4355, 0.1701)
+[exact]     enfoncement 0.062698 m   etendue de couture 0.654826 m
+[exact]     point interieur commun (2.135603940, 4.164668913, 0.153617544)
+[exact]   faces 414 / 452  sommets communs 0
+[exact]     centres (2.1711, -0.9556, 0.1567) et (1.7123, -1.1840, -0.2213)
+[exact]     enfoncement 0.032381 m   etendue de couture 0.043474 m
+[exact]     point interieur commun (2.109243208, -1.102036469, 0.202119024)
+[exact]   faces 414 / 453  sommets communs 1
+[exact]     centres (2.1711, -0.9556, 0.1567) et (1.7726, -1.0327, -0.0562)
+[exact]     enfoncement 0.023574 m   etendue de couture 0.301423 m
+[exact]     point interieur commun (2.016135052, -1.004200131, 0.102156275)
+[exact]   faces 374 / 452  sommets communs 0
+[exact]     centres (2.2313, -1.1947, 0.5357) et (1.7123, -1.1840, -0.2213)
+[exact]     enfoncement 0.233261 m   etendue de couture 0.018703 m
+[exact]     point interieur commun (2.134271737, -1.102367627, 0.219673999)
+[exact]   faces 374 / 453  sommets communs 0
+[exact]     centres (2.2313, -1.1947, 0.5357) et (1.7726, -1.0327, -0.0562)
+[exact]     enfoncement 0.058969 m   etendue de couture 0.101577 m
+[exact]     point interieur commun (2.181087700, -1.077074363, 0.245498680)
+[exact]   faces 374 / 454  sommets communs 0
+[exact]     centres (2.2313, -1.1947, 0.5357) et (2.3787, -0.9520, 0.5164)
+[exact]     enfoncement 0.058969 m   etendue de couture 0.342823 m
+[exact]     point interieur commun (2.326227910, -1.039492716, 0.399629747)
+[exact]   faces 375 / 454  sommets communs 0
+[exact]     centres (2.5756, -1.2153, 0.8523) et (2.3787, -0.9520, 0.5164)
+[exact]     enfoncement 0.132525 m   etendue de couture 0.044028 m
+[exact]     point interieur commun (2.445877744, -1.031411727, 0.549751166)
+[exact]   faces 375 / 495  sommets communs 0
+[exact]     centres (2.5756, -1.2153, 0.8523) et (3.0449, -0.9016, 0.9983)
+[exact]     enfoncement 0.132525 m   etendue de couture 0.353916 m
+[exact]     point interieur commun (2.626542631, -1.018133777, 0.624348318)
+[exact]   faces 495 / 874  sommets communs 0
+[exact]     centres (3.0449, -0.9016, 0.9983) et (2.9799, -0.9758, 1.2379)
+[exact]     enfoncement 0.193166 m   etendue de couture 0.356050 m
+[exact]     point interieur commun (3.277306213, -0.839537297, 1.197073700)
+[exact]   faces 376 / 495  sommets communs 0
+[exact]     centres (2.9143, -0.7757, 0.5736) et (3.0449, -0.9016, 0.9983)
+[exact]     enfoncement 0.015242 m   etendue de couture 0.337696 m
+[exact]     point interieur commun (2.930820972, -0.970465270, 0.775813882)
+[exact]   faces 456 / 875  sommets communs 0
+[exact]     centres (2.9622, -0.5524, 1.1696) et (2.8771, -0.7722, 1.3342)
+[exact]     enfoncement 0.337402 m   etendue de couture 0.060162 m
+[exact]     point interieur commun (2.988055951, -0.679880364, 1.344398293)
+[exact]   faces 496 / 874  sommets communs 0
+[exact]     centres (3.8315, -0.6913, 1.7822) et (2.9799, -0.9758, 1.2379)
+[exact]     enfoncement 0.106246 m   etendue de couture 0.124410 m
+[exact]     point interieur commun (3.046020242, -0.823960425, 1.259864912)
+[exact]   faces 496 / 875  sommets communs 0
+[exact]     centres (3.8315, -0.6913, 1.7822) et (2.8771, -0.7722, 1.3342)
+[exact]     enfoncement 0.098899 m   etendue de couture 0.001848 m
+[exact]     point interieur commun (2.984980816, -0.822284289, 1.275875697)
+[exact]   faces 497 / 875  sommets communs 0
+[exact]     centres (3.6245, -0.5169, 1.9121) et (2.8771, -0.7722, 1.3342)
+[exact]     enfoncement 0.098899 m   etendue de couture 0.130600 m
+[exact]     point interieur commun (2.980231404, -0.764152192, 1.305734713)
+[exact]   faces 377 / 495  sommets communs 0
+[exact]     centres (3.2750, -0.7409, 0.8713) et (3.0449, -0.9016, 0.9983)
+[exact]     enfoncement 0.044506 m   etendue de couture 0.480674 m
+[exact]     point interieur commun (3.259001661, -0.897597515, 1.008816009)
+[exact]   faces 456 / 878  sommets communs 0
+[exact]     centres (2.9622, -0.5524, 1.1696) et (3.4185, -0.3336, 1.2463)
+[exact]     enfoncement 0.274176 m   etendue de couture 0.307612 m
+[exact]     point interieur commun (3.044895553, -0.506706922, 1.350215081)
+[exact]   faces 457 / 878  sommets communs 0
+[exact]     centres (3.0517, -0.2439, 1.0263) et (3.4185, -0.3336, 1.2463)
+[exact]     enfoncement 0.194586 m   etendue de couture 0.016524 m
+[exact]     point interieur commun (3.093849850, -0.352410502, 1.346280253)
+[exact]   faces 457 / 879  sommets communs 0
+[exact]     centres (3.0517, -0.2439, 1.0263) et (3.1519, -0.1104, 1.3266)
+[exact]     enfoncement 0.388190 m   etendue de couture 0.301913 m
+[exact]     point interieur commun (3.165183897, -0.211463376, 1.326461426)
+[exact]   ENFONCEMENT MAXIMAL 0.457261 m  (seuil livrable 0.020 m)  ETENDUE MAXIMALE 0.944071 m
+[exact] TOTAL : 0 face(s) d'aire exactement nulle, 62 penetration(s) reelle(s)
+
+[archivage] annexe du journal d4_verdict.log ; RC de l outil au moment de la course : 0
+RC=0

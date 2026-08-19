@@ -1,0 +1,27 @@
+=== CONTROLE NEGATIF (d) — restauration exacte -> VERT ===
+--- destruction des copies sabotees (leurs hash vivent dans les journaux a/b/c) ---
+copies sabotees detruites
+
+--- restauration : re-copie depuis la source et comparaison aux empreintes de l'etape 00 ---
+cmp source == copie de travail : IDENTIQUES
+40714c46544e27d23fce271d2814020c0683aa78f71106934215ee8666dc11a0  evidence/world_v2/v2_3_r2a/grotte/r2a358_agentB/SM_WaterfallCave_candidat.glb
+attendu (etape 00) : 40714c46544e27d23fce271d2814020c0683aa78f71106934215ee8666dc11a0
+geo COL_WaterfallCave  f17852ba628a8dc6e369a797d3931a5fe4ab3c94212bd94c586a1a088fa85860  OK
+geo SM_WaterfallCave   dd3ea5c6bf9cee3b1788fb3c71122848f4927fd3e79cad2ae026fe9db3c99434  OK
+RESTAURATION PAR MAILLAGE : PROUVEE
+
+--- instrument 1 : capsule stations 1,3 (attendu PASSE) ---
+RC_largeur=0
+[seuil]   r=0.45 h=1.85 : PASSE partout ; jeu le plus faible -0.0003 m
+[seuil]   r=0.35 h=1.85 : PASSE partout ; jeu le plus faible -0.0003 m
+
+--- instrument 2 : paroi invisible, jauge armee (attendu RC=0) ---
+RC_paroi=0
+[RESTAURE] [paroi] CHAMP : aucun exces au-dela du seuil 0.061 m (plancher 0.010 + etalonnage 0.051)
+[RESTAURE] [paroi] FONCTIONNEL : la capsule r=0.45 n'est bloquee par COL_ dans du vide SM_ nulle part
+[RESTAURE] [paroi] POCHE : ampl_col estime 1.0654 m (pire direction 'ventre') >= plancher 0.524 m
+
+--- instrument 3 : intersections exactes (attendu : baseline 62 reproduite) ---
+[exact] TOTAL : 0 face(s) d'aire exactement nulle, 62 penetration(s) reelle(s)
+positions des 62 penetrations : IDENTIQUES a la baseline (diff vide)
+RC=0

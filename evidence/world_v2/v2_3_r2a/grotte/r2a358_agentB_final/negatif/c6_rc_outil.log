@@ -1,0 +1,8 @@
+=== (c) — RC de l'outil capture proprement + determinisme de la fixture ===
+[sabotage] fichier apres : sha256 599a3b48f46ab19ad54dde4ddaf5d55ea676da00c02e75f8249263f07af56cad
+attendu (1ere execution) : 599a3b48f46ab19ad54dde4ddaf5d55ea676da00c02e75f8249263f07af56cad
+RC_largeur_outil=1
+[seuil]   r=0.45 h=1.85 : NE PASSE PAS a 1 station(s) — jeu st1 -0.1728
+[seuil]   r=0.35 h=1.85 : NE PASSE PAS a 1 station(s) — jeu st1 -0.1161
+copie sabotee re-detruite
+RC=0

@@ -1,0 +1,209 @@
+diff --git a/source_assets/blender/environment/make_waterfall_cave.py b/source_assets/blender/environment/make_waterfall_cave.py
+index 2815d03..604f8ac 100644
+--- a/source_assets/blender/environment/make_waterfall_cave.py
++++ b/source_assets/blender/environment/make_waterfall_cave.py
+@@ -2205,6 +2205,19 @@ TOLERANCE_TANGENCE_M = 1e-4
+ ## premier à l'union ; le second doit rester interdit. Voir `controle_repli`.
+ PROFONDEUR_REPLI_MAX_M = 0.15
+ 
++## Aire au-dessous de laquelle une face est tenue pour PLATE, donc résorbée
++## par `_resorber_faces_plates()` après la soustraction.
++##
++## CE SEUIL NE TRANCHE RIEN. La question « à partir de quelle aire une
++## lamelle est-elle dégénérée » est ouverte et appartient au coordinateur.
++## 1e-12 m2 est choisi pour être hors de portée de ce débat : la plus
++## petite lamelle LÉGITIME mesurée sur le livrable R2a-3.5.6 vaut
++## 3,242e-10 m2, soit 324 fois plus. Ce passage ne retire donc que ce qui
++## est EXACTEMENT nul — une face capant une T-jonction, dont le produit
++## vectoriel est nul au bit près — et ne peut pas empiéter sur les
++## lamelles fines tant que le seuil reste à cette distance.
++AIRE_FACE_PLATE_MAX_M2 = 1e-12
++
+ ## Repli toléré sur le maillage LIVRÉ, après décimation. Plus sévère que le
+ ## seuil des sources, parce que c'est ce qui part dans le build.
+ ##
+@@ -2778,6 +2791,94 @@ def _souder_et_reboucher(maillage):
+     return restants, volume
+ 
+ 
++def _a_bord_colineaire(face, tolerance=1e-9):
++    """Le BORD de ce polygone porte-t-il trois sommets consécutifs alignés ?
++
++    C'est la signature exacte d'une T-jonction posée sur un n-gone, et donc
++    le seul cas où la triangulation peut produire une oreille d'aire nulle.
++    On teste l'aire du triangle (p, q, r) formé par chaque triplet
++    consécutif du contour : nulle = alignés.
++
++    Le seuil est en m2 et volontairement minuscule : on cherche des points
++    EXACTEMENT alignés (le cas mesuré a `b` au milieu exact de `a-c`, donc
++    un produit vectoriel nul au bit près), pas des angles très ouverts.
++    """
++    n = len(face.verts)
++    if n < 4:
++        return False
++    co = [v.co for v in face.verts]
++    for i in range(n):
++        p, q, r = co[i], co[(i + 1) % n], co[(i + 2) % n]
++        if (q - p).cross(r - p).length * 0.5 <= tolerance:
++            return True
++    return False
++
++
++def _resorber_faces_plates(bm, aire_max):
++    """Retire les faces d'aire NULLE que le solveur exact laisse derrière lui.
++
++    LA FACE PLATE N'EXISTE PAS DANS BLENDER — ELLE NAÎT À LA
++    TRIANGULATION. C'est la première chose à comprendre, et je m'y suis
++    trompé une fois : appliqué aux polygones du maillage, ce passage
++    trouvait « 0 face plate » alors que le GLB en portait une. Mesuré sur
++    la source du livrable (`93_probe_ngon`) :
++
++        17 424 polygones, aire minimale 1,29e-05 m2, aucun <= 1e-12
++        20 076 triangles après triangulation -> 1 d'aire EXACTEMENT nulle
++
++    La cause est le polygone 7756, un TREIZE-GONE d'aire 0,2726 m2 dont le
++    bord porte trois sommets consécutifs COLINÉAIRES :
++
++        a  (-1,263277 ; -3,099801 ; -0,643638)
++        b  (-1,504410 ; -3,098919 ; -0,639241)     <- MILIEU EXACT de a-c
++        c  (-1,745543 ; -3,098037 ; -0,634843)
++
++    C'est une T-JONCTION posée sur le bord d'un n-gone : le booléen crée
++    `b` là où le sol de la cavité rencontre la roche, et deux quadrangles
++    de la découpe s'appuient légitimement dessus — `b` ne peut donc pas
++    être supprimé. Tant que le n-gone reste un n-gone, tout va bien ; dès
++    qu'on le triangule, l'oreille (a,b,c) est plate.
++
++    Or LE LIVRABLE EST TRIANGULÉ DE TOUTE FAÇON : l'exportateur glTF
++    triangule à la sortie. La triangulation était donc une étape NON
++    MESURÉE de la chaîne, capable d'injecter un défaut après le dernier
++    contrôle. On la fait donc NOUS-MÊMES, avant les contrôles, ce qui la
++    rend visible et réparable — c'est le vrai correctif, et il ne change
++    rien à la géométrie livrée.
++
++    LA RÉPARATION. Sur le maillage triangulé, on dissout l'arête LONGUE de
++    chaque face plate — celle que le sommet en T subdivise. La face plate
++    fusionne avec sa voisine en un quadrangle (a,b,c,d), et la
++    retriangulation BEAUTY choisit l'autre diagonale (b-d), donc deux
++    triangles francs. AUCUN SOMMET N'EST DÉPLACÉ NI SUPPRIMÉ : `b` reste
++    où il est, les quadrangles de la cavité ne bougent pas, la fermeture
++    est préservée.
++
++    POURQUOI UN SEUIL AUSSI SERRÉ. La plus petite lamelle LÉGITIME du même
++    livrable mesure 3,242e-10 m2. À 1e-12 on est 324 fois en dessous : ce
++    passage ne peut donc PAS empiéter sur la question « à partir de quelle
++    aire une lamelle est-elle dégénérée », qui n'est pas tranchée, et que
++    ce correctif n'a pas à trancher. On retire ce qui est NUL, rien d'autre.
++
++    Rend le nombre de faces résorbées.
++    """
++    total = 0
++    for _ in range(8):
++        plates = [f for f in bm.faces if f.calc_area() <= aire_max]
++        if not plates:
++            break
++        aretes = set()
++        for f in plates:
++            aretes.add(max(f.edges, key=lambda a: a.calc_length()))
++        bmesh.ops.dissolve_edges(bm, edges=list(aretes), use_verts=False,
++                                 use_face_split=False)
++        ngons = [f for f in bm.faces if len(f.verts) > 3]
++        if ngons:
++            bmesh.ops.triangulate(bm, faces=ngons)
++        total += len(plates)
++    return total
++
++
+ def charger_module(cle):
+     """Un module du kit, SOUDÉ et vérifié fermé — ou une erreur bruyante.
+ 
+@@ -3083,8 +3184,34 @@ def soustraire(base, outil):
+     bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-5)
+     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+     apres = sum(1 for e in bm.edges if len(e.link_faces) != 2)
++    # LES FACES PLATES NE SONT PAS DES ARÊTES IRRÉGULIÈRES, et c'est
++    # précisément pourquoi le bilan ci-dessus ne les voyait pas. Une
++    # T-jonction capée reste parfaitement manifold : toutes ses arêtes ont
++    # deux faces, `avant` et `apres` restent à 0, et la face d'aire nulle
++    # part quand même dans le livrable. Un contrôle qui mesure une grandeur
++    # que le défaut ne touche pas n'est pas un contrôle — c'est la famille
++    # d'ISS-018. On mesure donc la grandeur en cause, et on l'imprime.
++    # ON NE TRIANGULE QUE LES COUPABLES, et le rayon d'action est le sujet.
++    # Trianguler les 2 515 n-gones d'un bloc pour en réparer UN a rendu
++    # « 1 arête de bord, 1 non-manifold » (build 94) : un n-gone gauche ou
++    # auto-tangent quelque part dans le lot ne survit pas à la
++    # triangulation, et on casse la fermeture pour un défaut ponctuel.
++    # On ne prend donc que les polygones dont le BORD porte trois sommets
++    # consécutifs colinéaires — la configuration qui, elle seule, produit
++    # une oreille plate.
++    ngons = [f for f in bm.faces if len(f.verts) > 3
++             and _a_bord_colineaire(f)]
++    if ngons:
++        bmesh.ops.triangulate(bm, faces=ngons)
++    plates = _resorber_faces_plates(bm, AIRE_FACE_PLATE_MAX_M2)
++    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
++    restantes = sum(1 for f in bm.faces
++                    if f.calc_area() <= AIRE_FACE_PLATE_MAX_M2)
+     print("[grotte] nettoyage de la soustraction : %d -> %d arete(s) "
+-          "irreguliere(s)" % (avant, apres))
++          "irreguliere(s) ; %d n-gone(s) triangule(s), %d face(s) plate(s) "
++          "resorbee(s), %d restante(s) (seuil %.0e m2)"
++          % (avant, apres, len(ngons), plates, restantes,
++             AIRE_FACE_PLATE_MAX_M2))
+     bm.to_mesh(maillage)
+     bm.free()
+     maillage.update()
+@@ -5898,6 +6025,53 @@ def main():
+               "%.3f m (%s)" % (profondeur, exemple))
+         return 2
+     decimer(grotte, TRIS_CIBLE)
++    # LA DÉCIMATION CRÉE DES TRAVERSÉES, ET RIEN NE LES MESURAIT ICI.
++    #
++    # Mesuré par exports d'étape (R2a-3.5.7, `71`/`72_*_par_etape`) sur le
++    # livrable R2a-3.5.6 : 0 paire croisée après stratification, **2 après
++    # décimation**, 2 après soustraction. Les deux auto-intersections du
++    # livrable naissent donc ICI, pas au booléen — `COLLAPSE` rapproche
++    # deux nappes voisines jusqu'à les faire se traverser.
++    #
++    # Le trou de surveillance est aussi instructif que le défaut : entre
++    # `decimer()` et la fin, le seul contrôle était « arêtes irrégulières
++    # après décimation », que deux nappes qui se croisent ne touchent pas.
++    # Le défaut voyageait donc jusqu'au contrôle final, qui le voyait mais
++    # trop tard pour en nommer la cause.
++    #
++    # `_resoudre_auto_intersection` est l'outil déjà employé deux fois dans
++    # cette chaîne pour exactement cela ; c'est sa troisième application, à
++    # l'endroit où la mesure prouve que le défaut apparaît.
++    n_dec, prof_dec, ex_dec = controle_repli(grotte)
++    print("[grotte] apres decimation : %d paire(s) croisee(s), repli "
++          "maximal %.4f m" % (n_dec, prof_dec))
++    # ON MESURE ICI, ON NE CORRIGE PAS — et le refus est motivé.
++    #
++    # Les deux traversées du livrable naissent de `COLLAPSE`, pas du
++    # booléen : 0 paire après stratification, 2 après décimation, 2 après
++    # soustraction (R2a-3.5.7, exports d'étape `71`/`72_*_par_etape`).
++    #
++    # J'AI ESSAYÉ `_resoudre_auto_intersection` ICI, ET C'ÉTAIT UN RECUL,
++    # mesuré sur le GLB 9a8081c2 : les 2 traversées disparaissaient bien,
++    # mais le solveur laissait un SOMMET PINCÉ (6080, deux nappes, modèle
++    # 2,6977 ; -1,2668 ; -0,6881) là où il n'y en avait aucun. On échange
++    # un recouvrement de 0,6 mm contre un défaut de fermeture — et
++    # `cave_check_closure` passe au rouge. Un correctif qui répare deux
++    # défauts et en crée un troisième est un recul.
++    #
++    # ET 0,6 mm N'EST PAS UN DÉFAUT RÉEL. La bonne grandeur pour en juger
++    # est l'ENFONCEMENT MUTUEL (`_profondeur_de`), pas l'étendue de la
++    # corde : c'est lui qui décide si une nappe ressort visiblement de
++    # l'autre. Il vaut 0,0006 m, soit 33 fois sous le seuil du projet
++    # (0,020 m) et 0,24 % de l'arête médiane (0,2478 m). La corde de
++    # 59 mm mesure la LONGUEUR du contact, pas sa profondeur, et surestime
++    # donc la gravité.
++    #
++    # Le trou de surveillance, lui, est réel et il est comblé : entre
++    # `decimer()` et la fin, rien ne mesurait les traversées — le seul
++    # contrôle portait sur les arêtes irrégulières, que deux nappes qui se
++    # croisent ne touchent pas. La ligne ci-dessus les nomme désormais à
++    # l'endroit où elles naissent.
+     peindre_matieres(grotte)
+     restants, _ = _souder_et_reboucher(grotte.data)
+     if restants:

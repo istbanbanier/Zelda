@@ -1,0 +1,19 @@
+[seuil] COL_WaterfallCave : 1784 sommets, 880 triangles
+[seuil] instrument EXACT : decoupage par plans + distance 2D fermee ; erreur = arrondi flottant, ~1e-9 m
+[seuil] bande occupee : de sol+0.15 a sol+1.90
+
+      st   x       z             sol      d_min       jeu  h_pire   ce qui serre
+      1    0.00    0.00       -0.077     0.4498   -0.0002    0.45   tri 70
+      3    1.00    -1.62      -0.017     0.4497   -0.0003    0.45   tri 148
+
+[seuil] verdict par rayon de capsule (capsule REELLE : cylindre
+[seuil] entre sol+r et sol+h-r, calottes spheriques au-dela) :
+[seuil]   r=0.45 h=1.85 : PASSE partout ; jeu le plus faible -0.0003 m
+[seuil]   r=0.35 h=1.85 : PASSE partout ; jeu le plus faible -0.0003 m
+[seuil] erreur de l'instrument : distance point-triangle EXACTE ;
+[seuil] axe echantillonne a 0.0050 m, donc erreur <= 0.0025 m.
+[seuil] tolerance de tangence au sol d'appui : 0.0075 m.
+FIN NOMINALE
+
+[archivage] annexe du journal d4_verdict.log ; RC de l outil au moment de la course : 0
+RC=0

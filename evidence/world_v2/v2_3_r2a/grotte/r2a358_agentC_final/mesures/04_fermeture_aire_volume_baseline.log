@@ -1,0 +1,23 @@
+==========================================================================
+FICHIER : /home/user/zelda-r2a355/a_epaisseur/assets/environment/caves/SM_WaterfallCave.glb
+sha256  : 40714c46544e27d23fce271d2814020c0683aa78f71106934215ee8666dc11a0
+noeud   : SM_WaterfallCave   (leve si absent — pas de repli sur COL_)
+soudure : 54764 sommets bruts -> 10037 soudes (44727 doublons fusionnes)
+          20070 triangles -> 20070 retenus (0 degeneres retires)
+boite modele : x[-8.772 8.174] ay[-3.135 11.899] az[-3.551 8.192]
+--------------------------------------------------------------------------
+aretes a 1 face  (bord libre)   : 0
+aretes a >2 faces (non-manifold): 0
+aretes mal orientees            : 0
+SOMMETS PINCES (lien a >1 cycle): 0      <-- LE TEST QUI MANQUAIT
+sommets partages entre composantes : 0
+composantes de faces : 1
+--------------------------------------------------------------------------
+  comp 0 : V=10037 E=30105 F=20070  aire 842.188236 m2
+           dans la composante : 0 bord(s) libre(s), 0 non-manifold, 0 arete(s) partagee(s) au dehors
+           khi naif = 2   pincements = 0   khi CORRIGE = 2
+           genre = 0 (sphere — aucune anse)
+
+==========================================================================
+VERDICT : toutes fermees, manifold, orientees, sans sommet pince.
+RC=0
