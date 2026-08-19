@@ -331,3 +331,75 @@ l'accompagne systématiquement pour que ce cas se distingue d'une vraie réussit
    aucune n'avait tort, le lead a mélangé les deux.
 2. **« 21,85 % » en tête de constat** : décrit l'orientation d'AVANT, pas l'état
    livré. Dans l'orientation livrée, le kit seul produit **26,37 %**.
+
+### Décision 6 — FORME FINALE du portail : trois liants, quatre témoins
+
+L'audit a trouvé **deux trous de plus** dans la paire de la décision 5, et la
+grandeur qui les ferme :
+
+- **la SUPPRESSION passe les deux liants** : retirer les pièces met le coût à 0
+  et la part attribuée à 0 — deux seuils satisfaits sans qu'aucune surface ait
+  été traitée, et la ferme perd son détail de ruine ;
+- **le RÉTRÉCISSEMENT passe un plafond ABSOLU** : simulation à pièces divisées
+  par deux, **sans aucun traitement** — couverture 24,07 → 12,04 %, part
+  attribuée 16,67 → **8,34 %** (frôle le plafond de 8,0), **densité d'aplat
+  inchangée à 69,3 %**, défaut intact.
+
+**La grandeur qui ne se contourne pas : `densité d'aplat = part ÷ couverture`,
+INVARIANTE D'ÉCHELLE.**
+
+| source | couverture | aplat | **densité** |
+|---|---:|---:|---:|
+| `FERME_pieces_ajoutees` | 24,07 % | 16,67 % | **69,3 %** |
+| `KIT_maconnerie` | 51,07 % | 17,56 % | **34,4 %** |
+
+> **Les pièces ajoutées sont deux fois plus plates, par unité de surface
+> visible, que la maçonnerie de kit qu'elles côtoient** — indépendamment du
+> cadrage et de leur taille.
+
+C'est la formulation la plus nue du défaut de toute la passe, et celle qui sera
+portée à la revue : elle ne dépend d'aucun seuil.
+
+**LIANTS — les trois doivent tenir :**
+1. **`max ≤ 8 %`** — inchangé depuis R2B.1 (7,32 avec pièces, 3,81 sans).
+2. **`densité d'aplat des pièces ≤ 45 %`** — aujourd'hui 69,3 %. La cible réelle
+   est le kit lui-même à **34,4 %** ; le seuil est à 45 parce qu'une pièce peut
+   être légitimement plate (un pan de couverture EST plat) et qu'on ne condamne
+   pas une géométrie honnête. **Toute valeur entre 34,4 et 45 est publiée comme
+   résidu nommé**, jamais comme une réussite.
+3. **GARDE D'ANTI-VACUITÉ** — `couverture ≥ 10 %` **et** présence vérifiée des
+   pièces structurelles nommées. Un lot dont la couverture s'effondre est refusé
+   comme **réussite vide**, quels que soient les autres chiffres. Même garde-fou
+   que les planchers posés au budget du camp braise après qu'un camp à zéro
+   module est passé au vert. Plancher à 10 % et non plus haut : la correction
+   d'axe va légitimement RENTRER les tableaux de 42 cm dans le mur, donc réduire
+   leur couverture pour une bonne raison — un plancher serré punirait la
+   correction juste.
+
+**TÉMOINS PUBLIÉS à chaque vue, sans portail** : coût d'ablation · part
+attribuée · couverture d'écran · densité du kit en regard · marquage
+`VUE TRIVIALE` sous 2 % de couverture.
+
+Le coût d'ablation et la part attribuée **cessent d'être liants** : la densité
+les subsume. Mieux vaut un liant qu'on ne contourne pas que trois qu'on
+contourne.
+
+## Bilan des corrections apportées AU LEAD par l'audit indépendant
+
+Six, dont **cinq portaient sur des choses affirmées ou écrites sans mesure** :
+
+1. le compte des murs retournés — **quatre**, pas cinq (prose de commit contre
+   code) ;
+2. la distance « à 2 m » — jamais mesurée ; vérifié par le lead : **7,10 m** au
+   point visé, **1,64 m** à la face de mur la plus proche, deux mesures justes
+   de deux choses différentes ;
+3. le « 21,85 % » en tête de constat — décrit l'orientation d'AVANT, l'état
+   livré donne **26,37 %** ;
+4. le récit « chaque pierre dépasse `MIN_COMPOSANTE` » — **faux**, mesuré :
+   composantes 42 → 41, médiane inchangée, beige +0,3 % contre plat +9,4 % ;
+5. l'**angle mot** du portail de la décision 5 — une pièce plate posée à plat
+   contre un mur plat coûte ≈ 0 ;
+6. les **deux trous** de la paire — suppression et rétrécissement.
+
+Le lead a écrit deux portails contournables de suite. L'audit a fourni la
+grandeur invariante qui ferme les quatre voies de contournement.
