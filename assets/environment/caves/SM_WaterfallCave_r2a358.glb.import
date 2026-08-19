@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bo1udxqpftt0p"
-path="res://.godot/imported/SM_WaterfallCave_r2a358.glb-78dc3f465cac700e522e37b8138cc76f.scn"
+uid="uid://bk6t25tsiq0c8"
+path="res://.godot/imported/SM_WaterfallCave_r2a358.glb-86b615ae468087d1f39c58e2641eacab.scn"
 
 [deps]
 
-source_file="res://assets/environment/caves/candidates/SM_WaterfallCave_r2a358.glb"
-dest_files=["res://.godot/imported/SM_WaterfallCave_r2a358.glb-78dc3f465cac700e522e37b8138cc76f.scn"]
+source_file="res://assets/environment/caves/SM_WaterfallCave_r2a358.glb"
+dest_files=["res://.godot/imported/SM_WaterfallCave_r2a358.glb-86b615ae468087d1f39c58e2641eacab.scn"]
 
 [params]
 

@@ -80,17 +80,16 @@ extends WorldV2Place
 const K: GDScript = preload("res://scripts/world_v2/poi/world_v2_place_kit.gd")
 const OUVRAGE: String = "res://assets/environment/caves/SM_WaterfallCave.glb"
 
-## ---- Bascule de REVUE R2a-3.5.8 -----------------------------------------
-## Le candidat au quatrième golden master (GLB 5ff4ec6e) est committé sous
-## candidates/ SANS remplacer la production : R2a-3.4 reste la grotte servie
-## au joueur jusqu'au verdict visuel Codex/Istvan. La bascule n'est lue qu'au
-## montage et seule la chaîne de CAPTURE la pose
-## (WORLD_V2_GROTTE_CANDIDAT=r2a358) — même motif que WORLD_V2_DIAGNOSTIC.
-## Chaque constante _R2A358 est le pendant candidat d'une constante de ce
-## fichier, reprise du script de lieu des arbres candidats (7eb402f3).
-## Couplage dur consigné en R2a-3.5.7 §4 : afficher un GLB sans ses repères
-## met la récompense et les lampes dans la roche.
-const OUVRAGE_R2A358: String = "res://assets/environment/caves/candidates/SM_WaterfallCave_r2a358.glb"
+## ---- Grotte de PRODUCTION : R2a-3.5.8, quatrième golden master ----------
+## PASS visuel prononcé par le lead le 2026-08-19 (15 captures + 4 montages
+## A/B inspectés). Le GLB actif est 5ff4ec6e, byte-identique au binaire
+## mesuré par les trois couloirs de la passe et aux captures de revue.
+## R2a-3.4 (8bf1a1b3) reste dans le dépôt comme FALLBACK HISTORIQUE : la
+## bascule WORLD_V2_GROTTE_FALLBACK=r2a34 — outillage seulement, même motif
+## que WORLD_V2_DIAGNOSTIC — remonte l'ancienne grotte avec ses repères
+## appariés. Couplage dur consigné en R2a-3.5.7 §4 : afficher un GLB sans
+## ses repères met la récompense et les lampes dans la roche.
+const OUVRAGE_R2A358: String = "res://assets/environment/caves/SM_WaterfallCave_r2a358.glb"
 const MODELE_SALLE_R2A358: Vector3 = Vector3(2.62, 0.09, -2.58)
 const MODELE_NICHE_R2A358: Vector3 = Vector3(2.78, 0.50, -4.09)
 const LAMPE_SEUIL_R2A358: Vector3 = Vector3(0.15, 1.50, -1.20)
@@ -156,24 +155,24 @@ const MODELE_SALLE: Vector3 = Vector3(1.05, 0.22, -6.25)
 const MODELE_NICHE: Vector3 = Vector3(-1.20, 0.43, -8.20)
 
 
-func _revue_candidat_r2a358() -> bool:
-	return OS.get_environment("WORLD_V2_GROTTE_CANDIDAT") == "r2a358"
+func _fallback_r2a34() -> bool:
+	return OS.get_environment("WORLD_V2_GROTTE_FALLBACK") == "r2a34"
 
 
 func _ouvrage_chemin() -> String:
-	return OUVRAGE_R2A358 if _revue_candidat_r2a358() else OUVRAGE
+	return OUVRAGE if _fallback_r2a34() else OUVRAGE_R2A358
 
 
 func _modele_salle() -> Vector3:
-	return MODELE_SALLE_R2A358 if _revue_candidat_r2a358() else MODELE_SALLE
+	return MODELE_SALLE if _fallback_r2a34() else MODELE_SALLE_R2A358
 
 
 func _modele_niche() -> Vector3:
-	return MODELE_NICHE_R2A358 if _revue_candidat_r2a358() else MODELE_NICHE
+	return MODELE_NICHE if _fallback_r2a34() else MODELE_NICHE_R2A358
 
 
 func _appuis_modele() -> Array[Vector2]:
-	return APPUIS_MODELE_R2A358 if _revue_candidat_r2a358() else APPUIS_MODELE
+	return APPUIS_MODELE if _fallback_r2a34() else APPUIS_MODELE_R2A358
 
 
 func default_place_id() -> StringName:
@@ -277,8 +276,8 @@ func _eclairer(ouvrage: Node3D) -> void:
 	seuil.omni_range = 5.5
 	seuil.omni_attenuation = 1.6
 	seuil.shadow_enabled = true
-	seuil.position = LAMPE_SEUIL_R2A358 if _revue_candidat_r2a358() \
-		else Vector3(0.20, 1.50, -2.60)
+	seuil.position = Vector3(0.20, 1.50, -2.60) if _fallback_r2a34() \
+		else LAMPE_SEUIL_R2A358
 	ouvrage.add_child(seuil)
 
 	# Le coude est ce qui permet d'avoir À LA FOIS une bouche noire et une
@@ -297,8 +296,8 @@ func _eclairer(ouvrage: Node3D) -> void:
 	# contre-jour et la noyait dans l'ombre de sa propre niche. Une
 	# récompense en scène est une récompense que la lumière désigne DE
 	# FACE.
-	salle.position = LAMPE_SALLE_R2A358 if _revue_candidat_r2a358() \
-		else Vector3(0.20, 1.90, -7.20)
+	salle.position = Vector3(0.20, 1.90, -7.20) if _fallback_r2a34() \
+		else LAMPE_SALLE_R2A358
 	ouvrage.add_child(salle)
 
 
@@ -309,8 +308,8 @@ func _eclairer(ouvrage: Node3D) -> void:
 func _habiller(transformation: Transform3D) -> void:
 	var niche: Vector3 = transformation * _modele_niche()
 	K.module(self, &"Mushroom_Common", niche, 24.0, 1.15, K.TONE_PLANT)
-	var voisin: Vector3 = transformation * (VOISIN_NICHE_R2A358
-		if _revue_candidat_r2a358() else Vector3(-1.60, 0.55, -8.20))
+	var voisin: Vector3 = transformation * (Vector3(-1.60, 0.55, -8.20)
+		if _fallback_r2a34() else VOISIN_NICHE_R2A358)
 	K.module(self, &"Mushroom_Common", voisin, 200.0, 0.9, K.TONE_PLANT)
 	# LES DEUX FOUGÈRES MASQUAIENT LA BOUCHE, ET C'ÉTAIT MOI.
 	#
