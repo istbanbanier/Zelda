@@ -702,3 +702,77 @@ de `flock` que je venais d'y consigner, et il appartient exactement à ce
 fichier. Je note l'écart de périmètre sans en faire une affaire — sa raison
 d'être était d'éviter les conflits d'édition, et ses seize lignes s'ajoutent en
 fin de fichier là où les miennes sont au milieu.
+
+## 22. Point 6 corrigé — vérifié sur le GLB, et l'agent B me contredit avec raison
+
+### Ce que j'ai remesuré moi-même sur `SM_ThunderstruckTree.glb`
+
+| grandeur | avant | après | plafond |
+|---|---:|---:|---:|
+| emprise en plan des racines | 4,52 m | **3,02 m** | 3,60 |
+| rapport d'aspect | 5,26 : 1 | **3,33 : 1** | 4,20 |
+| Y max **hors** collider | 0,280 m | **0,253 m** | 0,32 inchangé |
+| Y max **dans** l'emprise du collider | 0,875 m | 0,922 m | — |
+| triangles | 3 574 | **3 574** | 6 000 |
+
+Chiffres identiques à ceux de B. Le plafond de traversabilité n'a pas bougé et
+la marge s'est **agrandie** (0,253 contre 0,280). Longueurs des bois tombés :
+3,90 · 2,51 · 2,01 · 1,45 · 1,09 m — une hiérarchie franche, point 7 tenu.
+
+**Une différence de métrique à ne pas lire comme un désaccord** : B annonce
+« surface sous 0,30 m : 59,1 → 47,7 % », je compte **82,5 % des sommets** sous
+0,30 m. B mesure une **aire**, je compte des **sommets** — et un comptage de
+sommets est biaisé vers les zones finement maillées. La mesure d'aire est la
+bonne ; je consigne l'écart pour que personne ne croie plus tard que l'un de
+nous s'est trompé.
+
+### Là où B m'a contredit, mesure à l'appui, et où il a raison
+
+J'avais attribué **à la jupe de racine** l'aile sombre qui traverse `arbre_pied`.
+B a recapturé après sa correction, l'aile était **toujours là**, et il a mesuré
+les angles depuis la caméra imposée :
+
+- **`Roots` : 19,8°** · **`BranchA` : 56,1°** · `BranchD` : 12,2°
+- champ horizontal 89°, recadrage inspecté 62°
+
+La masse qui traverse tout le cadre **ne pouvait pas** être la jupe : c'était
+`BranchA`, un bois de 4,20 m dont le pied gonflait à **0,68 m de diamètre**,
+posé à plat et vu presque en enfilade. Renflement ramené à 0,54 m et relevé
+porté à 0,38 : la pièce s'appuie au lieu de gésir.
+
+**Ma correction restait juste — la jupe ÉTAIT une plaque, la mesure le dit — mais
+elle ne pouvait pas, seule, faire disparaître ce que je voyais.** J'avais raison
+sur le défaut et tort sur son auteur. C'est exactement ce qu'on attend d'un agent
+qui connaît sa géométrie mieux que le lead ne lit une image.
+
+### Ce que l'image donne maintenant, et ce qui reste
+
+`arbre_pied` après correction : la masse au pied est **franchement plus
+compacte**, on distingue des contreforts séparés, des échardes, un bois relevé
+à droite avec du jour dessous. Le grand drap continu a disparu.
+
+**Résidu nommé, non bloquant** : `BranchA` garde une lecture de **madrier** sous
+cet angle rasant précis — bords parallèles, dessus plat. C'est une pièce vue
+presque en enfilade depuis **une** caméra imposée. La directive interdit de
+remplacer un cadrage défavorable ; je le porte donc tel quel à la revue plutôt
+que d'en faire un blocage technique.
+
+### Trois déclarations de B que je retiens
+
+1. **La hauteur passe de 0,86 à 0,91 m** pour que deux contreforts cessent de se
+   recouvrir en projection — et B démontre que ce n'est pas ce qui porte le
+   résultat : à hauteur gelée à 0,86, l'aspect vaudrait **3,51 : 1**, déjà sous
+   le plafond de 4,20. Le gain vient de la largeur.
+2. **Un défaut introduit puis corrigé** : le relevé avait détaché un chicot resté
+   au sol, écrêté à 0,02 — « un losange brun plat posé sur l'herbe ». Vu à l'œil
+   au recadrage, **par aucune assertion**.
+3. **Un effet de bord assumé** : fermer le trou noir de `arbre_fracture` en
+   donnant un fond au surplomb fait passer **C4d de 4,58 à 3,66**, plancher 3,50.
+   Déclaré plutôt que dissimulé, et toujours au-dessus du plancher.
+
+### Le contrôle qui manquait, écrit par B
+
+`C2e` : **rapport d'aspect ≤ 4,20 : 1** ET **largeur ≤ 3,60 m**. La seconde borne
+est la bonne trouvaille : *le rapport seul se trafiquerait en relevant la jupe ;
+la largeur en mètres ne se trafique par rien.* Rouge d'abord sur le GLB livré à
+**5,26 : 1 et 4,52 m** — mes valeurs exactes.
