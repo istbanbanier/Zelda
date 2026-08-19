@@ -1,0 +1,43 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "clip_below": null,
+  "commit": "e71676604d8580982c957a3f1265789b2287e184",
+  "emprise_m": [
+    15.0854415893555,
+    11.2077560424805,
+    10.2942657470703
+  ],
+  "engine": "4.7.1-stable (custom_build)",
+  "mode": "lieu dans le monde monté",
+  "place_id": "valley.poi.thunderstruck_tree.01",
+  "projection": "orthogonale",
+  "provenance": {
+    "arbre": {
+      "chemin": "assets/architecture/flora/SM_ThunderstruckTree.glb",
+      "commit": "1e9ef7dcba21a4c7429ebc04d38abfe4106bd522"
+    },
+    "lieu": {
+      "chemin": "scripts/world_v2/poi/thunderstruck_tree_place.gd",
+      "commit": "1444018ad1b242192bb26db2ad69c00f19d05030"
+    }
+  },
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "size": "900x1200",
+  "sujet": "arbre_r2b",
+  "vues": [
+    {
+      "angle_deg": 0.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_r2b/ferme_arbre/silhouettes/silhouette_arbre_r2b_000.png",
+      "sujet_pct": 2.97925925925926
+    },
+    {
+      "angle_deg": 90.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_r2b/ferme_arbre/silhouettes/silhouette_arbre_r2b_090.png",
+      "sujet_pct": 3.37851851851852
+    }
+  ]
+}

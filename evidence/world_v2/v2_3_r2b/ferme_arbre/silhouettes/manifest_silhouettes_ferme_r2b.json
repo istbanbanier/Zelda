@@ -1,0 +1,43 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "clip_below": 5.0,
+  "commit": "07234a5a85b0f2dbfc1700c871479b42e2f6ef98",
+  "emprise_m": [
+    19.1922836303711,
+    10.111515045166,
+    18.2909164428711
+  ],
+  "engine": "4.7.1-stable (custom_build)",
+  "mode": "lieu dans le monde monté",
+  "place_id": "valley.poi.abandoned_farm.01",
+  "projection": "orthogonale",
+  "provenance": {
+    "ferme": {
+      "chemin": "assets/architecture/farm/SM_Farm_Ruins.glb",
+      "commit": "1e9ef7dcba21a4c7429ebc04d38abfe4106bd522"
+    },
+    "lieu": {
+      "chemin": "scripts/world_v2/poi/abandoned_farm_place.gd",
+      "commit": "07234a5a85b0f2dbfc1700c871479b42e2f6ef98"
+    }
+  },
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "size": "900x1200",
+  "sujet": "ferme_r2b",
+  "vues": [
+    {
+      "angle_deg": 0.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_r2b/ferme_arbre/silhouettes/silhouette_ferme_r2b_000.png",
+      "sujet_pct": 8.0862962962963
+    },
+    {
+      "angle_deg": 90.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_r2b/ferme_arbre/silhouettes/silhouette_ferme_r2b_090.png",
+      "sujet_pct": 8.06666666666667
+    }
+  ]
+}
