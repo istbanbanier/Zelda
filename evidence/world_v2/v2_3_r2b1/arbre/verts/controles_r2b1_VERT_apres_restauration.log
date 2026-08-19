@@ -1,0 +1,15 @@
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: r2b1_arbre
+  ok   test_world_v2_r2b1_arbre.gd::test_l_arbre_ouvre_sa_silhouette_sous_tout_azimut (1 assertions)
+  ok   test_world_v2_r2b1_arbre.gd::test_deux_ruptures_principales_a_des_hauteurs_differentes (1 assertions)
+  ok   test_world_v2_r2b1_arbre.gd::test_le_fut_n_est_pas_un_cone (1 assertions)
+  ok   test_world_v2_r2b1_arbre.gd::test_les_saillies_ne_forment_ni_grappe_ni_etoile (1 assertions)
+  ok   test_world_v2_r2b1_arbre.gd::test_les_bois_tombes_sont_hierarchises (1 assertions)
+  ok   test_world_v2_r2b1_arbre.gd::test_la_fracture_est_du_bois_arrache (1 assertions)
+  ok   test_world_v2_r2b1_arbre.gd::test_le_sol_brule_n_est_ni_etoile_ni_plaque (2 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 7 réussi(s), 0 échoué(s) ===
+RC=0

@@ -1,0 +1,9 @@
+=== SABOTAGE : les deux ruptures ramenées dans le PLAN de la moitié vivante (AZ_MORT et AZ_MEMBRE = 180°, comme le r02 rejeté). Rien d'autre n'est touché. ===
+[thunderstruck_tree] emprise X -4.56..4.14  Y -4.38..4.10  Z 0.000..11.02 — 2526 tris (budget 6000)
+FIN NOMINALE
+  === VALIDE ===
+
+=== EXPORT ARCHITECTURE : VERT ===
+  ÉCHEC test_world_v2_r2b1_arbre.gd::test_l_arbre_ouvre_sa_silhouette_sous_tout_azimut — la silhouette de l'arbre s'ouvre sous les 24 azimuts (2 écart(s)) — emprise latérale 2.65 m au pire azimut (0°), plancher 3.60, anisotropie 2.19 (pire 2.65 m / meilleur 5.81 m), plafond 1.35
+=== RÉSULTAT: 6 réussi(s), 1 échoué(s) ===
+RC=1

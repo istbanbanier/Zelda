@@ -284,11 +284,20 @@ func test_deux_ruptures_principales_a_des_hauteurs_differentes() -> void:
 			for v: Vector3 in body:
 				radii.append(Vector2(v.x - bc.x, v.z - bc.z).length())
 			var dia: float = 2.0 * _median(radii)
+			# LE PLAN DE RUPTURE, PAS LE SOMMET DE LA PIÈCE. Premier jet :
+			# on retenait `top`, c'est-à-dire la pointe la plus haute de la
+			# couronne d'échardes. Deux cassures situées à 5,90 et 7,55 m —
+			# 1,65 m d'écart — ressortaient alors espacées de 0,92 m, parce
+			# que la longueur des échardes s'ajoutait à la hauteur de
+			# cassure et que les deux variables se compensaient. Le bas du
+			# bois mis à nu EST la face de cassure : c'est lui qu'on lit.
 			var pale: int = 0
+			var face: float = 1.0e9
 			for w: Vector3 in hv:
 				if absf(w.y - top) < 1.6 \
 						and Vector2(w.x - rc.x, w.z - rc.z).length() < 0.9:
 					pale += 1
+					face = minf(face, w.y)
 			# crête dentelée : dispersion des hauteurs max par secteur de 30°
 			var sector: Dictionary = {}
 			for v: Vector3 in rim:
@@ -306,7 +315,7 @@ func test_deux_ruptures_principales_a_des_hauteurs_differentes() -> void:
 				sd += pow(sector[s3] - mean, 2.0)
 			sd = sqrt(sd / float(sector.size()))
 			if pale > 0 and dia >= BREAK_DIA_MIN_M and sd >= 0.15:
-				heights.append(top)
+				heights.append(face)
 		if heights.size() < BREAK_MIN:
 			faults.append("%d rupture(s) principale(s), plancher %d"
 				% [heights.size(), BREAK_MIN])
@@ -443,7 +452,12 @@ func test_les_saillies_ne_forment_ni_grappe_ni_etoile() -> void:
 			var aabb: AABB = AABB(comp[0], Vector3.ZERO)
 			for v: Vector3 in comp:
 				aabb = aabb.expand(v)
-			if aabb.size.length() > 3.4:
+			# 4,2 m : la branche maîtresse arrachée est une saillie latérale
+			# à part entière, et sa couronne rompue lui donne une diagonale
+			# de 3,6 m. Le plafond ne sert qu'à écarter le fût et la moitié
+			# morte — que la borne de base (z ≥ 3,0) écarte déjà, sur le r02
+			# comme ici : le ROUGE de référence est inchangé par ce réglage.
+			if aabb.size.length() > 4.2:
 				continue
 			var c: Vector3 = _centroid(comp)
 			var t: float = (c.y - foot.y) / maxf(0.01, apex.y - foot.y)
@@ -643,11 +657,23 @@ func test_le_sol_brule_n_est_ni_etoile_ni_plaque() -> void:
 		else:
 			var arr: Array = disc.mesh.surface_get_arrays(0)
 			var vs: PackedVector3Array = arr[Mesh.ARRAY_VERTEX]
-			var rim: Array = []
+			# LE BORD, ET RIEN QUE LE BORD. Un simple « rayon > 0,5 m »
+			# marchait tant que le disque n'avait qu'un anneau ; dès qu'il
+			# en a deux, l'anneau intérieur entre dans l'échantillon et
+			# rmax/rmin mesure l'écart entre les deux anneaux au lieu de la
+			# forme du bord. On retient donc, PAR SECTEUR ANGULAIRE, le
+			# sommet le plus éloigné : c'est la silhouette du disque, quel
+			# que soit le nombre d'anneaux dessous.
+			var far: Dictionary = {}
 			for v: Vector3 in vs:
 				var r: float = Vector2(v.x, v.z).length()
-				if r > 0.5:
-					rim.append([fposmod(atan2(v.z, v.x), TAU), r])
+				if r < 0.3:
+					continue
+				var ang: float = fposmod(atan2(v.z, v.x), TAU)
+				var sect: int = int(ang / TAU * 72.0)
+				if not far.has(sect) or r > float((far[sect] as Array)[1]):
+					far[sect] = [ang, r]
+			var rim: Array = far.values()
 			if rim.size() < 12:
 				faults.append("bord du disque non mesurable (%d sommets)" % rim.size())
 			else:
