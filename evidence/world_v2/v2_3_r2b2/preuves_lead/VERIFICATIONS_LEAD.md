@@ -190,3 +190,36 @@ Racines : hauteur maximale hors collider **0,280 m**, **0 sommet** au-dessus de
 0,32. À noter — cela corrige au passage le défaut de traversabilité préexistant
 consigné avant la passe (16 sommets de racine à 0,382 m, au-dessus du
 `step_height` de 0,34). Ce n'était pas demandé ; c'est acquis.
+
+## 9. Le seul seuil déplacé de la passe côté agent — vérifié, et il est justifié
+
+L'agent B a déplacé un seuil de son propre plan (`40856c1`), ce qui appelle la
+règle : « ne pas modifier ou abaisser un seuil pour faire passer une
+géométrie ». J'ai vérifié le raisonnement plutôt que le verdict.
+
+Le plan de B proposait « flanc des racines ≥ 28 % » — la part de surface dont
+la normale est à plus de 70° de la verticale. B a calculé après coup que pour
+une section elliptique cette part vaut ≈ 22 % pour un **cercle parfait**. J'ai
+refait le seul calcul vérifiable à la main : sur un cercle, les normales à plus
+de 70° de la verticale occupent quatre arcs de 20°, soit **4 × 20 / 360 =
+22,2 %**. B a raison au dixième près.
+
+**Un seuil de 28 % exigeait donc une section plus haute que large : une
+nageoire, pas un contrefort.** C'est le même défaut que celui de mon propre
+critère `total ≤ 12 %` retiré plus haut — un seuil qu'on ne peut atteindre
+qu'en fabriquant un autre défaut n'est pas une exigence.
+
+Ce qui rend le geste acceptable n'est pas l'abaissement, c'est ce qui
+l'accompagne : B **ajoute** la mesure qui décrit vraiment « une plaque », la
+part de surface à moins de 45° de la verticale, plafonnée à 60 %.
+
+| mesure | R2B.1 | seuil | R2B.2 |
+|---|---:|---:|---:|
+| flanc (normale > 70° de la verticale) | 10,0 % | ≥ 15 % | **33,0 %** |
+| surface presque horizontale (< 45°) | 68,5 % | ≤ 60 % | **31,8 %** |
+
+Le second chiffre est le décisif : 31,8 % est **meilleur qu'un cylindre à
+section circulaire** (50 %). Ce n'est pas un portail desserré, c'est une
+géométrie qui a changé. Et le seuil déplacé n'appartient à aucun des portails
+d'aplats que la directive gèle : il naît dans le plan de B et meurt dans son
+plan, remplacé par plus exigeant.
