@@ -162,10 +162,14 @@ func _ruined_house(at: Vector3, yaw_deg: float) -> void:
 		Vector3(0.7, 0.10, half + 1.2), 24.0, 1.0, K.TONE_WOOD)
 	if door != null:
 		door.rotation.x = deg_to_rad(-86.0)
-	# Le lierre reprend deux murs.
-	K.module(house, &"Prop_Vine1", Vector3(-half + 0.1, 0.0, -1.0), 90.0, 1.0,
+	# Le lierre reprend deux murs. MESURÉ (sonde du 2026-08-19, silhouette
+	# 0°) : `Prop_Vine*` a son pivot à 0,81 de sa hauteur et
+	# `KitPlacement.seat()` ne le corrige pas — posé à y=0, le lierre
+	# pendait 2,07 m SOUS la maison et n'en montrait que la pointe. Posé à
+	# +2,07, il drape le mur de 0 à 2,60 m.
+	K.module(house, &"Prop_Vine1", Vector3(-half + 0.1, 2.07, -1.0), 90.0, 1.0,
 		K.TONE_PLANT)
-	K.module(house, &"Prop_Vine2", Vector3(1.0, 0.0, -half + 0.1), 180.0, 1.0,
+	K.module(house, &"Prop_Vine2", Vector3(1.0, 2.07, -half + 0.1), 180.0, 1.0,
 		K.TONE_PLANT)
 
 
