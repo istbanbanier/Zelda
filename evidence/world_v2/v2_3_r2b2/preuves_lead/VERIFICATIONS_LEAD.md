@@ -1188,3 +1188,78 @@ Trois panneaux, une seule caméra :
 
 C'est la valeur du triptyque : il montre que la passe intermédiaire a **aggravé**
 la vue décisive, et que la correction ne fait pas que revenir en arrière.
+
+## 33. Ce que l'audit indépendant a confirmé sur MES chiffres
+
+Mesures faites par l'audit dans **son** arbre de travail, avec **son** outil, sur
+mes captures.
+
+### Le socle — 3,66 contre 3,67
+
+| grandeur | base `c44f430b` | SHA, ma capture | mon chiffre |
+|---|---:|---:|---:|
+| plus grande composante plate | **10,00 %** `NEUTRE`, RGB (65, 64, 59) | **3,66 %**, TEINTÉE, RGB (63, 36, 18) | 3,67 % |
+| part neutre | 11,82 % | **0,00 %** | 1,49 % |
+
+**La plus grande composante n'est plus neutre : elle est teintée.** C'est la
+formulation la plus nette du résultat — le socle n'est pas devenu plus petit, il
+est devenu de la matière.
+
+L'écart sur la part neutre (0,00 contre 1,49) est une différence de définition,
+pas une contradiction : l'audit ne compte que les composantes **retenues**
+(≥ `MIN_COMPOSANTE`), je compte tout pixel plat neutre. Les deux disent que le
+défaut est levé.
+
+### Caméras — 15/15, zéro écart
+
+`sha256` de `shots_r2b1.json` inchangé à `3eeb8d4aa68bf462…`, manifeste à
+`c0374839e6`, `repo_dirty=False`, **égalité stricte champ par champ** sur `from`,
+`look` et `fov`. Aucun cadrage remplacé, et ce n'est pas une déclaration : c'est
+une comparaison.
+
+### Provenance — cinq empreintes vérifiées contre les blobs réels
+
+`glb_ferme`, `glb_arbre`, `gen_ferme`, `lieu_ferme`, `lieu_arbre` : toutes
+exactes. L'audit qualifie mon `commit: inconnu` de **cosmétique** — le `sha256`
+épingle le contenu, et le commit se retrouve depuis le dépôt. Ma décision de ne
+pas relancer une troisième capture est confirmée par lui, ce qui vaut mieux que
+si je l'avais seulement décidée.
+
+### LE MAILLON QUE PERSONNE N'AVAIT POSÉ
+
+L'audit a audité la géométrie à **`ea6b51f6`** ; mes captures sont à
+**`c0374839e6`**. Rien ne garantissait que ses nombres et mes images décrivent le
+même état.
+
+Il l'a vérifié plutôt que de le supposer :
+
+- les deux GLB sont **identiques** entre les deux commits ;
+- `ea6b51f6` est **ancêtre** de `c0374839e6` ;
+- `git log ea6b51f6..c0374839e6 -- assets scripts source_assets` est **VIDE**.
+
+Son audit géométrique — boîtitude 79,6 %, UV0 0/25, arbre 10,4 % — s'applique
+donc **verbatim** à l'état capturé. Sans ce contrôle, deux séries de preuves
+auraient pu décrire deux états différents sans que personne ne s'en aperçoive.
+C'est exactement la règle de provenance de R2B.1, appliquée cette fois **entre
+deux commits du lead** et non entre un agent et le livrable.
+
+### Triptyques — vérifiés autrement que prévu
+
+Mes triptyques n'ont pas de manifeste JSON, donc le vérificateur de l'audit ne
+s'y appliquait pas. Il a découpé les panneaux — séparateurs détectés
+automatiquement à `x 0–9 · 863–872 · 1726–1735 · 2589–2598`, panneaux
+**853 × 480** — et construit une **matrice de correspondance** contre les trois
+lots sources :
+
+| | R2B | R2B.1 | R2B.2 |
+|---|---:|---:|---:|
+| **panneau 1** | **6,20** | 12,49 | 9,85 |
+| **panneau 2** | 12,50 | **6,13** | 12,68 |
+| **panneau 3** | 9,59 | 12,48 | **5,92** |
+
+**Matrice diagonale, hors-diagonale au double.** Le résidu de ~6 est l'erreur de
+rééchantillonnage, pas une différence de contenu. Les trois panneaux viennent
+bien des trois états annoncés.
+
+Un outil qui ne s'applique pas n'est pas une raison de ne pas vérifier : c'est
+une raison d'écrire l'autre mesure.
