@@ -1,0 +1,297 @@
+{
+ "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+ "commit": "16d8a11f0f23bc754d26afe63bfcce3b7db551f0",
+ "engine": "4.7.1-stable (custom_build)",
+ "provenance": {},
+ "renderer": "forward_plus",
+ "repo_dirty": false,
+ "scene": "res://scenes/world_v2/WorldV2.tscn",
+ "shots": [
+  {
+   "fov": 52.0,
+   "from": [
+    -54.24,
+    8.6,
+    80.94
+   ],
+   "image": "evidence/world_v2/v2_3_r2b2/preuves_lead/captures_orbites/ferme_orb000.png",
+   "look": [
+    -54.24,
+    6.9,
+    91.94
+   ],
+   "name": "ferme_orb000"
+  },
+  {
+   "fov": 52.0,
+   "from": [
+    -46.46,
+    8.6,
+    84.16
+   ],
+   "image": "evidence/world_v2/v2_3_r2b2/preuves_lead/captures_orbites/ferme_orb045.png",
+   "look": [
+    -54.24,
+    6.9,
+    91.94
+   ],
+   "name": "ferme_orb045"
+  },
+  {
+   "fov": 52.0,
+   "from": [
+    -43.24,
+    8.6,
+    91.94
+   ],
+   "image": "evidence/world_v2/v2_3_r2b2/preuves_lead/captures_orbites/ferme_orb090.png",
+   "look": [
+    -54.24,
+    6.9,
+    91.94
+   ],
+   "name": "ferme_orb090"
+  },
+  {
+   "fov": 52.0,
+   "from": [
+    -46.46,
+    8.6,
+    99.72
+   ],
+   "image": "evidence/world_v2/v2_3_r2b2/preuves_lead/captures_orbites/ferme_orb135.png",
+   "look": [
+    -54.24,
+    6.9,
+    91.94
+   ],
+   "name": "ferme_orb135"
+  },
+  {
+   "fov": 52.0,
+   "from": [
+    -54.24,
+    8.6,
+    102.94
+   ],
+   "image": "evidence/world_v2/v2_3_r2b2/preuves_lead/captures_orbites/ferme_orb180.png",
+   "look": [
+    -54.24,
+    6.9,
+    91.94
+   ],
+   "name": "ferme_orb180"
+  },
+  {
+   "fov": 52.0,
+   "from": [
+    -62.02,
+    8.6,
+    99.72
+   ],
+   "image": "evidence/world_v2/v2_3_r2b2/preuves_lead/captures_orbites/ferme_orb225.png",
+   "look": [
+    -54.24,
+    6.9,
+    91.94
+   ],
+   "name": "ferme_orb225"
+  },
+  {
+   "fov": 52.0,
+   "from": [
+    -65.24,
+    8.6,
+    91.94
+   ],
+   "image": "evidence/world_v2/v2_3_r2b2/preuves_lead/captures_orbites/ferme_orb270.png",
+   "look": [
+    -54.24,
+    6.9,
+    91.94
+   ],
+   "name": "ferme_orb270"
+  },
+  {
+   "fov": 52.0,
+   "from": [
+    -62.02,
+    8.6,
+    84.16
+   ],
+   "image": "evidence/world_v2/v2_3_r2b2/preuves_lead/captures_orbites/ferme_orb315.png",
+   "look": [
+    -54.24,
+    6.9,
+    91.94
+   ],
+   "name": "ferme_orb315"
+  },
+  {
+   "fov": 50.0,
+   "from": [
+    -92.0,
+    11.4,
+    117.0
+   ],
+   "image": "evidence/world_v2/v2_3_r2b2/preuves_lead/captures_orbites/arbre_orb000.png",
+   "look": [
+    -92.0,
+    12.5,
+    132.0
+   ],
+   "name": "arbre_orb000"
+  },
+  {
+   "fov": 50.0,
+   "from": [
+    -81.39,
+    11.4,
+    121.39
+   ],
+   "image": "evidence/world_v2/v2_3_r2b2/preuves_lead/captures_orbites/arbre_orb045.png",
+   "look": [
+    -92.0,
+    12.5,
+    132.0
+   ],
+   "name": "arbre_orb045"
+  },
+  {
+   "fov": 50.0,
+   "from": [
+    -77.0,
+    11.4,
+    132.0
+   ],
+   "image": "evidence/world_v2/v2_3_r2b2/preuves_lead/captures_orbites/arbre_orb090.png",
+   "look": [
+    -92.0,
+    12.5,
+    132.0
+   ],
+   "name": "arbre_orb090"
+  },
+  {
+   "fov": 50.0,
+   "from": [
+    -81.39,
+    11.4,
+    142.61
+   ],
+   "image": "evidence/world_v2/v2_3_r2b2/preuves_lead/captures_orbites/arbre_orb135.png",
+   "look": [
+    -92.0,
+    12.5,
+    132.0
+   ],
+   "name": "arbre_orb135"
+  },
+  {
+   "fov": 50.0,
+   "from": [
+    -92.0,
+    11.4,
+    147.0
+   ],
+   "image": "evidence/world_v2/v2_3_r2b2/preuves_lead/captures_orbites/arbre_orb180.png",
+   "look": [
+    -92.0,
+    12.5,
+    132.0
+   ],
+   "name": "arbre_orb180"
+  },
+  {
+   "fov": 50.0,
+   "from": [
+    -102.61,
+    11.4,
+    142.61
+   ],
+   "image": "evidence/world_v2/v2_3_r2b2/preuves_lead/captures_orbites/arbre_orb225.png",
+   "look": [
+    -92.0,
+    12.5,
+    132.0
+   ],
+   "name": "arbre_orb225"
+  },
+  {
+   "fov": 50.0,
+   "from": [
+    -107.0,
+    11.4,
+    132.0
+   ],
+   "image": "evidence/world_v2/v2_3_r2b2/preuves_lead/captures_orbites/arbre_orb270.png",
+   "look": [
+    -92.0,
+    12.5,
+    132.0
+   ],
+   "name": "arbre_orb270"
+  },
+  {
+   "fov": 50.0,
+   "from": [
+    -102.61,
+    11.4,
+    121.39
+   ],
+   "image": "evidence/world_v2/v2_3_r2b2/preuves_lead/captures_orbites/arbre_orb315.png",
+   "look": [
+    -92.0,
+    12.5,
+    132.0
+   ],
+   "name": "arbre_orb315"
+  },
+  {
+   "fov": 72.0,
+   "from": [
+    -52.64,
+    6.7,
+    93.54
+   ],
+   "image": "evidence/world_v2/v2_3_r2b2/preuves_lead/captures_orbites/ferme_interieur.png",
+   "look": [
+    -55.64,
+    7.2,
+    89.34
+   ],
+   "name": "ferme_interieur"
+  },
+  {
+   "fov": 58.0,
+   "from": [
+    -88.6,
+    9.5,
+    135.4
+   ],
+   "image": "evidence/world_v2/v2_3_r2b2/preuves_lead/captures_orbites/arbre_racines_proche.png",
+   "look": [
+    -92.0,
+    8.5,
+    132.0
+   ],
+   "name": "arbre_racines_proche"
+  },
+  {
+   "fov": 42.0,
+   "from": [
+    -79.55,
+    12.0,
+    142.05
+   ],
+   "image": "evidence/world_v2/v2_3_r2b2/preuves_lead/captures_orbites/arbre_fourche_profil.png",
+   "look": [
+    -92.0,
+    13.5,
+    132.0
+   ],
+   "name": "arbre_fourche_profil"
+  }
+ ],
+ "size": "1280x720"
+}

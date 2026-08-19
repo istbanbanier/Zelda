@@ -961,3 +961,230 @@ partager un arbre de travail. Corrigé **après** la suite, et le hash d'arbre e
 | UV0 ferme | **25/25** primitives |
 | arbre propre | oui |
 | push | fast-forward, local == distant |
+
+## 28. Boîtitude — j'ai mesuré moi-même, et j'ai d'abord cassé mon propre instrument
+
+### Le bug que j'ai commis, et comment je l'ai vu
+
+Ma première version du détecteur a rendu **0,0 %** de boîtes canoniques sur
+`SM_Farm_Ruins.glb`. Je ne l'ai pas cru : l'audit annonçait 79,6 %, et une pièce
+comme un pan de couverture est visiblement un pavé.
+
+Cause : j'avais fusionné **le soudage par position** et **la connexité** dans une
+seule union-find. Chaque composante s'effondrait donc sur un unique sommet
+racine, et aucune ne pouvait présenter huit sommets. Le test « 8 sommets » ne
+pouvait jamais être vrai — l'instrument répondait toujours « aucune boîte ».
+
+**Je l'ai attrapé parce que le résultat était invraisemblable, pas parce que le
+code m'a alerté.** C'est le sixième instrument de cette passe à mesurer autre
+chose que la question posée, et le troisième qui est de moi.
+
+Corrigé : soudage par position d'abord, union-find sur les **identifiants
+géométriques** ensuite.
+
+### Ma mesure, avec son prédicat écrit
+
+Prédicat : **composante de 12 triangles exactement, 8 sommets géométriques
+distincts après soudage, les 8 à équidistance du centroïde à 2 % près** — la
+propriété qui caractérise un pavé droit quelle que soit son orientation.
+
+| pièce | comp. | tri | tri en boîtes | % |
+|---|---:|---:|---:|---:|
+| `RoofPan_Intact` | 9 | 108 | 108 | **100,0** |
+| `RoofPan_Fallen` | 9 | 108 | 108 | **100,0** |
+| `InteriorFrame` | 6 | 72 | 72 | **100,0** |
+| `Debris_A` | 11 | 124 | 120 | **96,8** |
+| `Debris_B` | 11 | 124 | 120 | **96,8** |
+| `Truss` | 21 | 212 | 192 | **90,6** |
+| `JoistStubs` | 9 | 76 | 48 | 63,2 |
+| `Jamb_Door` | 9 | 108 | 36 | 33,3 |
+| `Jamb_Breach` | 7 | 92 | 24 | 26,1 |
+| `GableBreak` | 14 | 308 | 24 | 7,8 |
+| `Rubble_Wall` | 16 | 184 | 12 | 6,5 |
+| `WallBreak_North` | 16 | 336 | 12 | 3,6 |
+| `WallStub_East` | 4 | 84 | 0 | **0,0** |
+| `Rubble_North` | 12 | 144 | 0 | **0,0** |
+| **TOTAL** | **154** | **2 080** | **876** | **42,1 %** |
+
+### Deux instruments, un facteur deux, et je ne choisis pas le mien
+
+L'audit rend **79,6 %**, je rends **42,1 %**. Les deux dépassent le plafond de
+25 %, donc **le verdict ne change pas** — mais un facteur deux sur un liant qui
+échoue mérite mieux qu'un haussement d'épaules. Prédicat de l'audit demandé.
+
+Même règle que pour le 16,1 contre 18,3 de l'arête : **les deux chiffres au
+rapport avec leur définition, jamais une moyenne.**
+
+### Ce que la localisation change à la question
+
+**Les boîtes sont la CHARPENTE** — pannes, solives, pans de couverture,
+ossature. Un madrier **est** un pavé droit, et c'est la primitive juste pour du
+bois de charpente. À l'inverse, `Rubble_North` et `WallStub_East` sont déjà à
+**0,0 %** : la fonction `moellon()` produit des volumes irréguliers.
+
+Le portail ne dit donc pas « la maçonnerie est en cubes ». Il dit **« la
+charpente est en madriers droits »**. C'est une question différente, et c'est
+celle qui va à la revue.
+
+### L'échelle à trois barreaux — l'écart n'était pas une erreur
+
+L'audit a implémenté mon prédicat dans son outil et **reproduit mon 42,1 % au
+dixième**. Nos deux chiffres ne se contredisaient pas : ils mesurent trois
+questions différentes.
+
+| prédicat | définition | résultat |
+|---|---|---:|
+| `hexa` (le liant) | 12 triangles + 8 sommets soudés | **79,6 %** |
+| équidistance (le mien) | + 8 coins à 2 % du centroïde | **42,1 %** |
+| `droite` | + 6 directions de normale | **9,2 %** |
+
+« Solide à huit coins », « pavé quelle que soit son orientation », « pavé aligné
+sur les axes ». Mes deux hypothèses sur l'écart étaient fausses **dans les deux
+sens** : l'audit a une mesure plus lâche **et** une plus stricte que la mienne.
+
+**Et il m'a corrigé sur les moellons.** J'avais écrit que `Rubble_North` à 0,0 %
+prouve que `moellon()` produit des volumes irréguliers. Faux : il rend **100 %
+sous `hexa`** et 0 % sous l'équidistance. `moellon()` produit des **boîtes
+déformées** — un cube dont on a bougé les coins. Mon 0,0 % ne disait pas
+« irrégulier », il disait « pas un pavé droit ».
+
+### Le second défaut nommé par l'audit — RÉFUTÉ par la mesure
+
+L'audit a écrit : « `RoofPan_Fallen` à 100 % de pavés, **géométriquement
+identique** au pan intact — la chute n'a pas été modélisée, seulement la pose ».
+J'ai vérifié avant de le porter au rapport.
+
+| | X | Y | Z |
+|---|---|---|---|
+| `RoofPan_Intact` | 0,000…3,550 | 0,000…**0,143** | −3,400…+3,400 |
+| `RoofPan_Fallen` | 0,000…3,150 | 0,000…**2,161** | −1,766…+1,717 |
+
+Et le test décisif : le **spectre des distances au centroïde**, invariant par
+toute transformation rigide et donc insensible à la pose, diffère de
+**1,854 m au maximum** sur 216 sommets de part et d'autre. Deux formes
+identiques à une rotation près auraient un spectre identique au millième.
+
+**Le pan tombé est plié, pas incliné. La chute EST modélisée.**
+
+Ce que les deux nombres de l'audit disaient réellement : même **compte** de
+triangles, même **composition en boîtes**. Une identité de statistique, pas de
+géométrie. L'audit l'a reproduit, puis a trouvé qu'il **avait la donnée** dans
+son propre relevé du point zéro et avait conclu à partir d'un autre chiffre sans
+se relire. La règle qu'il en tire, et que je reprends : **avant d'affirmer que
+deux géométries sont identiques, exiger un invariant de forme — spectre, volume,
+aire, boîte — jamais un compte de primitives.**
+
+### Ce qui reste, et la formule qui va à la revue
+
+`Debris_A` et `_B` à **96,8 % de pavés** tient : le constat repose sur la
+composition, pas sur une comparaison entre meshes. Et le jugement de l'audit sur
+la charpente est le bon — un bois de charpente est scié d'équerre.
+
+> **La charpente est en pavés droits — c'est juste. La maçonnerie est en boîtes
+> déformées — c'est acceptable. Les débris sont en pavés droits — c'est le
+> défaut.**
+
+Bien plus utile à une revue que « 79,6 % contre 25 % ».
+
+## 29. Le socle après triplanaire — mesuré sur MES captures finales
+
+| `ferme_seuil` | avant socle | après socle |
+|---|---:|---:|
+| plus grande composante plate, **toutes teintes** | **11,44 %** (grise) | **3,67 %** (beige) |
+| part grise / neutre | 13,77 % | **1,49 %** |
+| aplat beige `max` (liant ≤ 8 %) | 7,32 % | **2,92 %** |
+
+La dalle grise unie de 132 pixels de haut a disparu de l'image : le bas du cadre
+est de la pierre appareillée. **Le liant passe désormais sur les deux
+instruments** — celui de R2B.1, aveugle au gris, et celui que j'ai écrit pour
+contourner cet aveuglement. L'angle mort que j'avais trouvé est fermé par une
+correction, pas par un argument.
+
+Les six vues au SHA final, aplat beige `max` : approche 0,63 · composition 0,84 ·
+façade 0,27 · latérale **0,17** · arrière 0,60 · **seuil 2,92**. Toutes sous 8.
+
+## 30. Ce que les orbites ont montré, et une impression encore infirmée
+
+`ferme_orb045` — un azimut que les six caméras imposées n'offrent pas — montre
+la ruine sous un angle très favorable : socle texturé sur tout le pourtour,
+travée ouverte, moignon de mur avec ses gravats au pied.
+
+J'y ai vu un grand pan crème sans matière et j'allais le signaler. Mesuré
+d'abord : la plus grande composante plate de cette vue fait **9,62 % et elle est
+VERTE** — c'est l'herbe. Le beige n'occupe que **1,39 %**. Mon œil a de nouveau
+grossi une surface claire et centrale.
+
+**Deuxième fois de la passe qu'une impression visuelle ne survit pas à la
+mesure**, et les deux étaient de moi. Je les consigne toutes les deux : un lead
+qui ne publie que ses intuitions justes fabrique une réputation, pas une preuve.
+
+## 31. Le hook a évité un manifeste faux
+
+Un fichier non suivi traînait — le composeur de triptyques — **pendant qu'une
+capture tournait**. Le manifeste aurait porté `repo_dirty: true`, ce que le §7
+refuse, et j'aurais découvert l'invalidité après coup en relisant le manifeste.
+
+Le hook de fin de tour l'a signalé **avant** que le manifeste ne soit écrit.
+C'est la quatrième fois de cette passe qu'un garde-fou attrape ce qu'un humain
+attentif aurait laissé passer — après `flock` sans RC testé, `| head` qui tue par
+SIGPIPE, et un fichier de plan au mauvais format.
+
+## 32. Les preuves du §7 — ce qu'elles portent, et un défaut de l'outil
+
+**`captures_r2b2/`** — les **quinze caméras imposées**, `shots_r2b1.json`
+inchangé. Manifeste : commit `c0374839e6`, **`repo_dirty: false`**, renderer
+`forward_plus`, adaptateur `llvmpipe`, 1280 × 720.
+
+Empreintes des six rôles, lues **sur l'octet** au moment de la capture :
+
+| rôle | sha256 |
+|---|---|
+| `glb_ferme` | `9c7b94e1848dc1a1…` |
+| `glb_arbre` | `c44f9c1e474de23f…` |
+| `gen_ferme` | `35510a603a12dd90…` |
+| `gen_arbre` | `429287b8108f5cc7…` |
+| `lieu_ferme` | `297048d5105d4afe…` |
+| `lieu_arbre` | `86c989b328fa563c…` |
+
+Les deux GLB correspondent exactement à ce que j'avais vérifié à l'intégration.
+**C'est l'exigence du §7 — « hash des GLB capturés » — et elle est tenue.**
+
+**Défaut de l'outil, consigné et non corrigé ici** : le champ `commit` de chaque
+rôle vaut `inconnu`. `_provenance_par_role()` passe le chemin `res://…` tel quel
+à `git log`, qui ne connaît pas ce préfixe. Le `sha256`, lui, passe par
+`FileAccess` qui le résout. Un chemin **sans** préfixe fonctionnerait pour les
+deux. Je ne relance pas une troisième capture pour un champ redondant — le
+commit de l'arbre est déjà en tête de manifeste — mais le défaut est réel et
+mérite une ligne dans la prochaine passe.
+
+**Premier lot capturé sans `--provenance`** : son manifeste portait
+`provenance: {}`. J'ai refait le lot plutôt que de livrer un manifeste
+incomplet. Un drapeau oublié ne se rattrape pas en prose.
+
+**`captures_orbites/`** — les **dix-neuf vues supplémentaires**, manifeste au
+commit `16d8a11f0f`, `repo_dirty: false`. Elles s'ajoutent, elles ne remplacent
+rien.
+
+**`triptyques/`** — six vues décisives en `R2B / R2B.1 / R2B.2`, aux **trois
+mêmes caméras**. Le composeur **refuse** de composer si les trois panneaux n'ont
+pas la même taille : un triptyque à trois résolutions comparerait des surfaces
+et non des images.
+
+**`planches/`** — niveaux de gris des six vues de ferme et des six d'arbre,
+dérivés des captures couleur en luminance Rec. 709. Dérivés et non re-rendus :
+mêmes pixels, même caméra, aucun second rendu qui pourrait différer.
+
+### Ce que le triptyque de `ferme_seuil` montre, et pourquoi il compte
+
+Trois panneaux, une seule caméra :
+
+- **R2B** — murs de pierre, une bande grise unie en bas, un grand pan beige plat
+  en haut ;
+- **R2B.1** — **pire** : quatre pilastres beiges massifs bouchent la baie. C'est
+  la régression que la directive a nommée, et le panneau la rend indiscutable ;
+- **R2B.2** — les pilastres ont disparu, l'œil traverse jusqu'à l'intérieur et au
+  pan de toit tombé, et **le bas du cadre est de la pierre appareillée** au lieu
+  d'une dalle grise.
+
+C'est la valeur du triptyque : il montre que la passe intermédiaire a **aggravé**
+la vue décisive, et que la correction ne fait pas que revenir en arrière.

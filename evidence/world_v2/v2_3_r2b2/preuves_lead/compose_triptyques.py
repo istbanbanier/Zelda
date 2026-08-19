@@ -43,7 +43,7 @@ def compose(vue, dossier_r2b2, sortie):
     for i, (im, (_, nom)) in enumerate(zip(ims, chemins)):
         x = MARGE + i * (l2 + MARGE)
         planche.paste(im.resize((l2, h2), Image.LANCZOS), (x, MARGE + BANDEAU))
-        d.text((x + 4, MARGE + 8), "%s  —  %s" % (nom, vue), fill=TEXTE)
+        d.text((x + 4, MARGE + 8), "%s  /  %s" % (nom, vue), fill=TEXTE)
     chemin = os.path.join(sortie, "triptyque_%s.png" % vue)
     planche.save(chemin)
     print("%s  (%dx%d)" % (chemin, planche.size[0], planche.size[1]))
