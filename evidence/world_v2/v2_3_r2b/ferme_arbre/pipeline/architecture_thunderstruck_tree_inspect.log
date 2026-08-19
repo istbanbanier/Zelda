@@ -1,5 +1,5 @@
 === INSPECTION glTF : assets/architecture/flora/SM_ThunderstruckTree.glb ===
-  format                 : GLB v2, 200544 octets
+  format                 : GLB v2, 200548 octets
   chunk_binaire          : 191604 octets
   generateur             : Khronos glTF Blender I/O v4.0.44
   version_gltf           : 2.0
@@ -11,8 +11,8 @@
   animations             : 0 (aucune)
   triangles              : 3574
   bbox_min               : [-4.5594, 0, -4.0916]
-  bbox_max               : [4.2267, 11.02, 4.3729]
-  dimensions_m           : [8.7861, 11.02, 8.4645]
+  bbox_max               : [4.165, 11.02, 4.3729]
+  dimensions_m           : [8.7244, 11.02, 8.4645]
   [AVERT] mesh 'SM_ThunderstruckTree_Bark': pas d'UV0 — lightmap et matériaux limités
   [AVERT] mesh 'SM_ThunderstruckTree_Bark': pas d'UV0 — lightmap et matériaux limités
   [AVERT] mesh 'SM_ThunderstruckTree_Bark': pas d'UV0 — lightmap et matériaux limités
