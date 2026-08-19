@@ -1,6 +1,6 @@
 === INSPECTION glTF : assets/architecture/flora/SM_ThunderstruckTree.glb ===
-  format                 : GLB v2, 54340 octets
-  chunk_binaire          : 50960 octets
+  format                 : GLB v2, 56500 octets
+  chunk_binaire          : 53120 octets
   generateur             : Khronos glTF Blender I/O v4.0.44
   version_gltf           : 2.0
   meshes                 : 4
@@ -9,7 +9,7 @@
   noeuds                 : 4 (SM_ThunderstruckTree_Bark, SM_ThunderstruckTree_Heart, SM_ThunderstruckTree_BranchA, SM_ThunderstruckTree_BranchB)
   skins                  : 0
   animations             : 0 (aucune)
-  triangles              : 937
+  triangles              : 977
   bbox_min               : [-4.39, 0, -3.1314]
   bbox_max               : [3.7604, 11.02, 1.133]
   dimensions_m           : [8.1504, 11.02, 4.2644]

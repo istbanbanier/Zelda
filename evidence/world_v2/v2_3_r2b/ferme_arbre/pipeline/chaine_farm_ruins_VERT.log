@@ -12,11 +12,11 @@
   [export_gltf] Blender 4.0.2
   [export_gltf] io_scene_gltf2 version (4, 0, 44)
   [export_gltf] preset: export_animation_mode=ACTIONS, export_animations=False, export_apply=True, export_cameras=False, export_extras=False, export_force_sampling=True, export_format=GLB, export_lights=False, export_materials=EXPORT, export_normals=True, export_optimize_animation_size=False, export_skins=True, export_tangents=True, export_texcoords=True, export_yup=True, use_selection=False, use_visible=True
-  [export_gltf] OK -> /home/user/zelda-r2b/b_ferme_arbre/assets/architecture/farm/SM_Farm_Ruins.glb (44284 octets)
-  frais: assets/architecture/farm/SM_Farm_Ruins.glb (44284 octets)
+  [export_gltf] OK -> /home/user/zelda-r2b/b_ferme_arbre/assets/architecture/farm/SM_Farm_Ruins.glb (44280 octets)
+  frais: assets/architecture/farm/SM_Farm_Ruins.glb (44280 octets)
 --- farm_ruins : inspection glTF hors moteur ---
   === INSPECTION glTF : assets/architecture/farm/SM_Farm_Ruins.glb ===
-    format                 : GLB v2, 44284 octets
+    format                 : GLB v2, 44280 octets
     chunk_binaire          : 36432 octets
     generateur             : Khronos glTF Blender I/O v4.0.44
     version_gltf           : 2.0

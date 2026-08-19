@@ -301,9 +301,9 @@ def coeur(bm):
     # --- le coin de la fente : un wedge lofté qui tapisse le fond du col,
     # s'affine en montant entre les deux départs de moitiés.
     fente = []
-    for k, (z, largeur, profondeur) in enumerate(((1.52, 0.74, 0.62),
-                                                  (2.05, 0.58, 0.46),
-                                                  (2.60, 0.34, 0.28))):
+    for k, (z, largeur, profondeur) in enumerate(((1.42, 0.95, 0.80),
+                                                  (2.10, 0.72, 0.58),
+                                                  (2.95, 0.40, 0.30))):
         fente.append([(-largeur * 0.5, -profondeur * 0.5, z),
                       (largeur * 0.5, -profondeur * 0.5, z),
                       (largeur * 0.5, profondeur * 0.5, z),
@@ -314,7 +314,7 @@ def coeur(bm):
     # spirale (angle_cicatrice), rayon entre le fond du retrait (×0,80) et
     # la pleine écorce — il affleure sans dépasser.
     etapes = []
-    n = 9
+    n = 14
     for k in range(n):
         z = CICATRICE_HAUT - 0.25 - (CICATRICE_HAUT - CICATRICE_BAS - 0.5) \
             * k / (n - 1)
@@ -325,7 +325,7 @@ def coeur(bm):
             centre = (0.0, 0.0, z)
             rayon = 0.86 - (z / FOURCHE_Z) * 0.22
         a = angle_cicatrice(z)
-        r = rayon * (CICATRICE_RETRAIT + 0.075)
+        r = rayon * (CICATRICE_RETRAIT + 0.13)
         p = (centre[0] + math.cos(a) * r, centre[1] + math.sin(a) * r, z)
         normale = (math.cos(a), math.sin(a), 0.0)
         etapes.append((p, normale, a))
@@ -339,18 +339,18 @@ def coeur(bm):
         norme = math.sqrt(sum(c * c for c in tangente)) or 1.0
         tangente = tuple(c / norme for c in tangente)
         chemin.append((p, normale, tangente))
-    ruban(bm, chemin, 0.115, 0.10)
+    ruban(bm, chemin, 0.15, 0.14)
 
     # --- cœurs d'échardes : trois pointes pâles au centre de la couronne
     # rompue — le bois frais que la rupture expose au ciel.
     centre_mort, _ = chemin_mort(1.0)
-    for i, (dx, dy, h) in enumerate(((0.10, -0.06, 1.05), (-0.14, 0.10, 0.72),
-                                     (0.02, 0.16, 0.55))):
+    for i, (dx, dy, h) in enumerate(((0.10, -0.06, 1.45), (-0.14, 0.10, 1.05),
+                                     (0.02, 0.16, 0.80))):
         base_z = centre_mort[2] - 0.10
         b = (centre_mort[0] + dx, centre_mort[1] + dy, base_z)
         rangs_pointe = [
-            [(b[0] - 0.09, b[1] - 0.09, b[2]), (b[0] + 0.09, b[1] - 0.09, b[2]),
-             (b[0] + 0.09, b[1] + 0.09, b[2]), (b[0] - 0.09, b[1] + 0.09, b[2])],
+            [(b[0] - 0.11, b[1] - 0.11, b[2]), (b[0] + 0.11, b[1] - 0.11, b[2]),
+             (b[0] + 0.11, b[1] + 0.11, b[2]), (b[0] - 0.11, b[1] + 0.11, b[2])],
             [(b[0] - 0.02 + dx * 0.4, b[1] - 0.02 + dy * 0.4, b[2] + h),
              (b[0] + 0.02 + dx * 0.4, b[1] - 0.02 + dy * 0.4, b[2] + h),
              (b[0] + 0.02 + dx * 0.4, b[1] + 0.02 + dy * 0.4, b[2] + h),

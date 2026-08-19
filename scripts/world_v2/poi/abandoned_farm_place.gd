@@ -242,7 +242,9 @@ func _socle_assises(house: Node3D, half: float, drop: float) -> void:
 		assise.position = depart
 		assise.rotation.y = deg_to_rad(yaw)
 		assise.scale = Vector3(longueur / ASSISE_L, 1.0, 1.0)
-		_peindre_glb(assise)
+		# ×1,55 : mesuré sur `ferme_proche` — à l'ombre des faces est et
+		# nord, la pierre du hameau rendait un bandeau noir sous les murs.
+		_peindre_glb(assise, 1.55)
 		# L'appui du run, au sol du lieu (coordonnées locales du lieu).
 		var milieu: Vector3 = house.position + (depart + Vector3(
 			cos(deg_to_rad(yaw)) * longueur * 0.5, 0.0,
@@ -255,7 +257,13 @@ func _socle_assises(house: Node3D, half: float, drop: float) -> void:
 ## Les GLB portent déjà leurs valeurs (sRGB converti en linéaire dans le
 ## générateur). On borne rugosité, spéculaire et albédo pour rester dans
 ## le langage painterly du monde — matériaux DUPLIQUÉS et mis en cache.
-func _peindre_glb(racine: Node3D) -> void:
+##
+## `gain` : multiplicateur d'albédo local, plafonné. Mesuré sur la
+## capture `ferme_proche` du 2026-08-19 : le socle en pierre du hameau
+## (albédo 0,232) vit ici sur les faces à l'OMBRE et rendait un bandeau
+## NOIR — le gain réel du monde à l'ombre est bien plus bas que le ×1,8
+## du plein soleil (scripts/CLAUDE.md, gain non linéaire).
+func _peindre_glb(racine: Node3D, gain: float = 1.0) -> void:
 	for node: Node in racine.find_children("*", "MeshInstance3D", true, false):
 		var instance: MeshInstance3D = node as MeshInstance3D
 		if instance.mesh == null:
@@ -265,7 +273,7 @@ func _peindre_glb(racine: Node3D) -> void:
 				surface) as StandardMaterial3D
 			if base == null:
 				continue
-			var cle: String = "glb|%d" % base.get_instance_id()
+			var cle: String = "glb|%d|%.2f" % [base.get_instance_id(), gain]
 			var mat: StandardMaterial3D = \
 				_cache_materiaux.get(cle) as StandardMaterial3D
 			if mat == null:
@@ -273,8 +281,9 @@ func _peindre_glb(racine: Node3D) -> void:
 				mat.roughness = maxf(mat.roughness, 0.95)
 				mat.metallic_specular = 0.1
 				var a: Color = mat.albedo_color
-				mat.albedo_color = Color(minf(a.r, ALBEDO_MAX),
-					minf(a.g, ALBEDO_MAX), minf(a.b, ALBEDO_MAX), a.a)
+				mat.albedo_color = Color(minf(a.r * gain, ALBEDO_MAX),
+					minf(a.g * gain, ALBEDO_MAX), minf(a.b * gain, ALBEDO_MAX),
+					a.a)
 				_cache_materiaux[cle] = mat
 			instance.set_surface_override_material(surface, mat)
 
