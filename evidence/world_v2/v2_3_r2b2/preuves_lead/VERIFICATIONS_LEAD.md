@@ -857,3 +857,33 @@ Golden masters vérifiés par moi dans son arbre : **6/6 OK**, `SM_Village_Wall`
 toujours à `24f39047…`.
 
 Reste à voir l'image : une propriété affectable n'est pas une matière à l'écran.
+
+## 26. Voie B close — `6f8ec80`, et l'A/B à caméra identique montre le point 6
+
+L'arbre de travail de B est **propre** (seul `PLAN_B_ARBRE_R2B2.md` reste non
+committé, comme demandé) et ses **golden masters sont 6/6 OK**. Lane close.
+
+J'ai inspecté `ab_pied_point6.png`, montage à **caméra strictement identique** :
+
+- **avant** — une aile sombre continue s'étale à droite du tronc, fondant jupe de
+  racine et bois tombé en **une seule masse** à bord festonné. C'est la plaque ;
+- **après** — l'aile a disparu. La masse racinaire est compacte autour du tronc,
+  le bois tombé est une pièce **distincte**, et l'herbe se voit entre les
+  éléments.
+
+Le point 6 se lit dans l'image, pas seulement dans les nombres. C'est la
+différence entre un contrôle vert et une correction réussie, et ici les deux
+coïncident.
+
+Détail sans conséquence : un petit losange brun plat subsiste en bas du panneau
+« après » du montage. C'est très probablement le chicot détaché que B a corrigé
+au commit **suivant** (`b9b9a13`) ; la capture finale `apres_point6/arbre_pied.png`
+ne le montre plus. Noté pour qu'un relecteur du montage ne le prenne pas pour un
+défaut résiduel.
+
+### Agent B n'est plus joignable
+
+Sa session n'a plus de transcript — même incident qu'en R2B.1 avec deux agents.
+Sa voie était **déjà déclarée close** et son arbre est propre : rien n'est perdu.
+Les corrections restantes, s'il en fallait, seraient de mon fait et signées comme
+telles dans le message de commit.
