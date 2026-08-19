@@ -1,6 +1,6 @@
 {
   "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
-  "commit": "8e9180e7f88a086d2d521e77902b53e9c881dd9d",
+  "commit": "b75e3e52157058aa1d9ca138d12dd1d1849ded99",
   "engine": "4.7.1-stable (custom_build)",
   "provenance": {
     "arbre": {
@@ -49,44 +49,44 @@
     {
       "fov": 45.0,
       "from": [
-        -88.2,
-        9.5,
-        129.6
+        -87.5,
+        12.0,
+        129.5
       ],
       "image": "evidence/world_v2/v2_3_r2b1/arbre/apres/arbre_fracture.png",
       "look": [
-        -92.2,
-        8.8,
-        132.2
+        -92.0,
+        11.0,
+        132.0
       ],
       "name": "arbre_fracture"
     },
     {
-      "fov": 52.0,
+      "fov": 55.0,
       "from": [
-        -97.5,
-        8.6,
-        126.5
+        -99.0,
+        11.5,
+        126.0
       ],
       "image": "evidence/world_v2/v2_3_r2b1/arbre/apres/arbre_troisquarts_g.png",
       "look": [
-        -92.0,
-        7.5,
+        -92.2,
+        11.5,
         132.2
       ],
       "name": "arbre_troisquarts_g"
     },
     {
-      "fov": 52.0,
+      "fov": 55.0,
       "from": [
-        -85.5,
-        8.6,
-        137.5
+        -84.5,
+        11.5,
+        138.0
       ],
       "image": "evidence/world_v2/v2_3_r2b1/arbre/apres/arbre_troisquarts_d.png",
       "look": [
-        -92.0,
-        7.5,
+        -92.2,
+        11.5,
         132.2
       ],
       "name": "arbre_troisquarts_d"
