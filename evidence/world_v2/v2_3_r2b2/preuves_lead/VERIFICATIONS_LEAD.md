@@ -1263,3 +1263,44 @@ bien des trois états annoncés.
 
 Un outil qui ne s'applique pas n'est pas une raison de ne pas vérifier : c'est
 une raison d'écrire l'autre mesure.
+
+## 34. Le « trou noir » de `arbre_fracture` — une correction que je ne peux PAS confirmer
+
+L'agent B a déclaré avoir fermé le vide sous la crête « en donnant un fond au
+surplomb, biseau à 26 % », avec pour prix déclaré `C4d` de 4,58 à 3,66.
+
+J'ai comparé sa capture **d'avant** le lot point 6 et la mienne au **SHA final**,
+à la caméra imposée `arbre_fracture`, sur la zone concernée :
+
+| zone | état | `L_min` | `L_moy` | pixels sous L = 18 |
+|---|---|---:|---:|---:|
+| crête, x 600–700 · y 175–235 | avant point 6 | **23,0** | 99,1 | **0** |
+| crête, x 600–700 · y 175–235 | SHA final | **23,0** | 99,1 | **0** |
+| élargie, x 560–760 · y 140–280 | avant point 6 | 23,0 | 97,5 | 0 |
+| élargie, x 560–760 · y 140–280 | SHA final | 23,0 | 96,7 | 0 |
+
+**Aucun changement mesurable à ce cadrage.** `L_min` identique au dixième,
+moyenne identique sur la zone étroite.
+
+Deux constats, et je ne vais pas au-delà :
+
+1. **Il n'y a AUCUN pixel sous L = 18** dans toute la zone, dans les deux états.
+   Ce que B et moi avons décrit comme « un trou noir » est une **ombre profonde à
+   L ≈ 23**, pas une percée sur le fond. Ma propre lecture — « il se lit comme un
+   trou de modélisation » — était plus affirmative que ce que l'image permet.
+2. **Je ne peux pas confirmer la correction.** Soit le biseau est invisible à
+   cette caméra, soit il visait un autre endroit du cadre. Je ne dispose pas
+   d'un test géométrique bon marché qui tranche : une percée montrerait
+   l'intérieur du fût ou le terrain, tous deux sombres, donc la photométrie seule
+   ne décide pas.
+
+**Ce que j'écris au rapport, et pas autre chose : correction déclarée, effet non
+mesurable à la caméra imposée, zone sombre inchangée à L_min 23,0.** Le prix
+déclaré, lui, est réel — `C4d` est bien passé de 4,58 à 3,66, au-dessus de son
+plancher de 3,50.
+
+C'est la troisième fois de cette passe qu'une affirmation ne survit pas à la
+vérification, et la première qui concerne un geste **déclaré fait** plutôt qu'un
+défaut supposé. La règle vaut dans les deux sens : je n'ai pas plus le droit de
+confirmer une correction que je n'ai pu mesurer que d'accuser un défaut que je
+n'ai pas mesuré.
