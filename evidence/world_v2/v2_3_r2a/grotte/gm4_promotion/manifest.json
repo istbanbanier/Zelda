@@ -1,0 +1,96 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "a8eb4d8fbde8486550c25a6dfd10cd8fef0015cd",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {
+    "geometrie": {
+      "chemin": "assets/environment/caves/SM_WaterfallCave_r2a358.glb",
+      "commit": "487cc25af15207bd6aec3dce2029d5cc6c29df3d"
+    },
+    "lieu": {
+      "chemin": "scripts/world_v2/poi/waterfall_cave_place.gd",
+      "commit": "0735fd0ffbe56ece97caa18001af90394b494dc5"
+    }
+  },
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 55.0,
+      "from": [
+        -99.97,
+        5.2,
+        12.18
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/gm4_promotion/02_approche_joueur.png",
+      "look": [
+        -104.87,
+        3.6,
+        4.63
+      ],
+      "name": "02_approche_joueur"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -105.97,
+        4.99,
+        -0.18
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/gm4_promotion/05_interieur_niche.png",
+      "look": [
+        -106.93,
+        4.0,
+        -1.36
+      ],
+      "name": "05_interieur_niche"
+    },
+    {
+      "fov": 40.0,
+      "from": [
+        -101.4,
+        4.9,
+        10.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/gm4_promotion/AB_seuil_cadre.png",
+      "look": [
+        -106.0,
+        4.3,
+        3.9
+      ],
+      "name": "AB_seuil_cadre"
+    },
+    {
+      "fov": 45.0,
+      "from": [
+        -96.0,
+        8.0,
+        16.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/gm4_promotion/AB_trois_masses.png",
+      "look": [
+        -107.0,
+        6.0,
+        3.0
+      ],
+      "name": "AB_trois_masses"
+    },
+    {
+      "fov": 44.0,
+      "from": [
+        -95.0,
+        6.2,
+        -11.5
+      ],
+      "image": "evidence/world_v2/v2_3_r2a/grotte/gm4_promotion/AB_flanc_arriere.png",
+      "look": [
+        -108.2,
+        5.6,
+        -3.2
+      ],
+      "name": "AB_flanc_arriere"
+    }
+  ],
+  "size": "1280x720"
+}
