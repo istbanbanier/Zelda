@@ -830,3 +830,35 @@ négatifs — `evidence/world_v2/v2_3_r2b/preuves_lead/`.
 les planches et montages de `preuves_lead/` ; aucune propagation aux 31 POI
 sans son verdict (`GO_V2_3_B=FALSE`). Dette : ISS-059 (bissection),
 UV0 des deux GLB originaux, 8 lignes héritées non conformes du manifeste.
+
+## 2026-08-19 — R2B.1 : corrective ferme et arbre, budget du camp braise
+
+Trois worktrees depuis `7c3d3ca`, plans rendus AVANT toute implémentation,
+arbitrage figé dans `evidence/world_v2/v2_3_r2b1/ARBITRAGE_PLANS_R2B1.md`.
+Intégration par cherry-pick strict — 27 commits, un seul conflit (le manifeste,
+résolu en rendant chaque ligne à la voie qui possède l'actif).
+
+Validation : suite `world_v2` **85/85 RC=0**, boot 23 assertions RC=0, golden
+masters **6/6 byte-identiques**, `gltf_inspect` VALIDE, plafonds de triangles
+inchangés, `git diff --check` propre.
+
+Les trois causes premières ont été MESURÉES, pas devinées : le mur de kit sans
+tranche (quad de 6 m² en 2 triangles) ; le plan de fourche à 9,0° où la caméra
+de silhouette regarde dedans ; le 54ᵉ module du braise qui est le coffre de
+récompense instancié au runtime.
+
+Quatre pièges de portail attrapés dans cette passe, dont trois sur des tests
+qui rendaient VERT à tort : le portail de budget déclarait « 0/45 tenu » sur un
+camp qui ne s'était pas construit (planchers posés par le lead) ; le 8ᵉ portail
+de l'arbre passait au vert sur la géométrie d'avant, parce qu'il sommait les
+secteurs occupés et récompensait donc le maillage le plus pauvre (attrapé par
+l'agent) ; le sabotage prescrit par le lead ne mordait pas, il comptait le
+coffre exempté (attrapé par l'agent). Le quatrième est du lead : cinq caméras
+de preuve posées au jugé, deux sous le terrain et trois visant le pied au lieu
+du fût — corrigées, baseline recapturée.
+
+**Prochaine action exacte** : revue visuelle Codex/Istvan sur
+`evidence/world_v2/v2_3_r2b1/preuves_lead/` (15 montages A/B à caméras
+vérifiées identiques + RAPPORT_R2B1.md). Aucune propagation aux 31 POI sans
+son verdict. Dettes : UV0 des `SM_Farm_*`, mur nord encore rectangulaire,
+branche morte de `_palisade`, marge de budget nulle au braise, ISS-059.
