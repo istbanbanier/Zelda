@@ -1091,7 +1091,15 @@ def branche(bm, bx, by, yaw, longueur, rayon, releve, cotes, fleche,
         r = rayon * _effilement(loi, pos)
         perp = (-math.sin(yaw), math.cos(yaw))
         s = rayon * 0.42
-        base_z = r * 0.9
+        # LE CHICOT SUIT L AXE DE LA PIECE, pas le sol. Premiere version :
+        # `base_z = r * 0.9`, sans tenir compte du `releve`. Tant qu aucune
+        # piece a chicot ne se relevait, ca ne se voyait pas. Des que BranchA
+        # a recu un releve de 0,38, son chicot descendant est reste en bas,
+        # detache du bois — et son sommet, ecrete a 0,02, s est affiche comme
+        # un LOSANGE BRUN PLAT POSE SUR L HERBE, visible sur `arbre_pied`.
+        # Le recalage de base au sol du GLB l a meme pris pour le point bas de
+        # la piece entiere. Defaut introduit par moi, vu a l oeil, corrige ici.
+        base_z = (r + releve * (pos ** 1.5) + 0.05 * math.sin(pos * math.pi))
         haut = taille * sens
         rangs_chicot = [
             [(cx - s, cy - s, base_z), (cx + s, cy - s, base_z),

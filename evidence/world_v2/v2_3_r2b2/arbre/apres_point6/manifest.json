@@ -1,0 +1,111 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "c5b5d9e28c95e65a8a0c5029c689e3e32e2ae0b6",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {
+    "generateur": {
+      "chemin": "source_assets/blender/environment/make_thunderstruck_tree.py",
+      "commit": "c5b5d9e28c95e65a8a0c5029c689e3e32e2ae0b6"
+    },
+    "glb_arbre": {
+      "chemin": "assets/architecture/flora/SM_ThunderstruckTree.glb",
+      "commit": "c5b5d9e28c95e65a8a0c5029c689e3e32e2ae0b6"
+    }
+  },
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 60.0,
+      "from": [
+        -80.0,
+        10.0,
+        126.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b2/arbre/apres_point6/arbre_approche.png",
+      "look": [
+        -92.0,
+        9.0,
+        132.0
+      ],
+      "name": "arbre_approche"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -15.0,
+        25.0,
+        85.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b2/arbre/apres_point6/arbre_lointain_94.png",
+      "look": [
+        -92.0,
+        10.0,
+        132.0
+      ],
+      "name": "arbre_lointain_94"
+    },
+    {
+      "fov": 45.0,
+      "from": [
+        -87.5,
+        12.0,
+        129.5
+      ],
+      "image": "evidence/world_v2/v2_3_r2b2/arbre/apres_point6/arbre_fracture.png",
+      "look": [
+        -92.0,
+        11.0,
+        132.0
+      ],
+      "name": "arbre_fracture"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        -99.0,
+        11.5,
+        126.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b2/arbre/apres_point6/arbre_troisquarts_g.png",
+      "look": [
+        -92.2,
+        11.5,
+        132.2
+      ],
+      "name": "arbre_troisquarts_g"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        -84.5,
+        11.5,
+        138.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b2/arbre/apres_point6/arbre_troisquarts_d.png",
+      "look": [
+        -92.2,
+        11.5,
+        132.2
+      ],
+      "name": "arbre_troisquarts_d"
+    },
+    {
+      "fov": 58.0,
+      "from": [
+        -86.3,
+        9.3,
+        127.6
+      ],
+      "image": "evidence/world_v2/v2_3_r2b2/arbre/apres_point6/arbre_pied.png",
+      "look": [
+        -92.2,
+        7.8,
+        132.2
+      ],
+      "name": "arbre_pied"
+    }
+  ],
+  "size": "1280x720"
+}
