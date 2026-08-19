@@ -630,3 +630,103 @@ question sans chiffre : **la densité d'aplat de l'arbre est mesurée et publié
 comme témoin sur ses vues, sans portail.** Si elle est mauvaise, c'est un
 **résidu nommé** porté à la revue visuelle — pas un échec technique, et surtout
 pas un silence.
+
+---
+
+## Décision 10 — la boîtitude : je m'engage sur les trois issues AVANT de connaître la mesure
+
+**Écrit et committé avant que l'audit ne mesure. C'est la seule chose qui
+distingue une calibration d'un arrangement.**
+
+L'audit rapporte sur la ferme au SHA intégré :
+
+| | base | SHA | plafond |
+|---|---:|---:|---:|
+| `hexa` triangles | 87,2 % | **79,6 %** | ≤ 25 % |
+| orthogonalité | 73,1 % | **76,7 %** | ≤ 73,1 % |
+
+Les deux moitiés de la paire échouent **ensemble**, dans la configuration exacte
+que ma clause anti-contournement décrit — `hexa` baisse pendant que
+l'orthogonalité monte. La mesure n'est pas en cause.
+
+**Le domaine du seuil l'est.** Le plafond de 25 % a été calibré sur les **cinq
+golden masters**, qui sont tous des **meshes sculptés** : grotte, pylône, pont,
+quai, mur. La ferme n'est pas un mesh sculpté — c'est un **assemblage de modules
+de kit**, et un module de mur EST une boîte. Une maçonnerie faite de murs
+rectangulaires est légitimement boîteuse, au même titre que les trois pieds du
+pylône sont légitimement identiques : c'est l'audit lui-même qui a établi ce
+second point, et le pylône a passé la revue.
+
+La question n'est donc pas « faut-il abaisser le seuil » — la directive
+l'interdit et je ne le ferai pas. Elle est : **ce seuil s'applique-t-il à un lieu
+bâti en modules ?**
+
+### La mesure qui tranche : la boîtitude du HAMEAU DE LA RIVIÈRE
+
+Lieu **gelé**, bâti des **mêmes modules de kit**, et qui a **passé sa revue
+visuelle**. Trois issues, et je m'engage sur les trois **avant** de les
+connaître :
+
+| si le hameau vaut | alors |
+|---|---|
+| **≈ 80 %** | le plafond de 25 % est **HORS DOMAINE** pour un lieu en modules. Je ne l'abaisse pas : je le **déclare inapplicable à ce sujet**, avec la mesure comme raison — exactement comme j'ai retiré `total ≤ 12 %` quand l'audit a montré qu'il mesurait la maçonnerie de kit et non le travail. |
+| **≈ 30 %** | la ferme est réellement plus boîteuse qu'un lieu comparable approuvé. Le portail tient, et c'est un **ÉCHEC** que je porte comme tel. |
+| **entre les deux** | je publie les trois nombres côte à côte et **je ne rends aucun verdict** ; la revue tranche. |
+
+Le camp braise et le bassin conducteur sont ajoutés si le coût est faible : deux
+autres lieux en modules déjà déclarés `PASS` et gelés. Trois points valent mieux
+qu'un.
+
+> **Ce que je m'interdis, et qu'on doit pouvoir me reprocher : choisir la
+> calibration APRÈS avoir vu le résultat de la ferme.** C'est pour cela que cet
+> engagement est écrit et committé avant la mesure, et non après.
+
+## Décision 11 — la bande de la densité, corrigée par l'audit contre lui-même
+
+L'audit avait annoncé une bande d'incertitude de **1,08 point** et m'avait
+demandé, à juste titre, de ne rendre aucun verdict chiffré avant de l'établir.
+Double rendu du **même état** :
+
+| grandeur | bande réelle |
+|---|---:|
+| total | **0,00 pt** |
+| couverture | **0,00 pt** |
+| **densité** | **0,125 pt** |
+
+Le 1,08 séparait deux **commits**, pas deux rendus. L'écart 69,3 → 45 ne vaut
+donc pas 2,2 fois la bande mais **192 fois**.
+
+C'est la deuxième fois de la passe que l'audit démonte son propre instrument
+**contre son intérêt** — la première étant le résidu linéaire qu'il venait
+d'introduire. **La précondition que j'avais posée est levée** : le verdict chiffré
+sur la densité est interprétable.
+
+## Décision 12 — `ferme_facade` passe le liant sans qu'aucun travail ait eu lieu
+
+Mesuré par l'audit : `ferme_facade` est **déjà à 44,1 % de densité au point
+zéro**, sous mon seuil de 45. Une vue peut donc passer le liant sans correction.
+C'est une réussite vide déguisée, et l'audit a eu raison de la nommer.
+
+Trois décisions, aucune ne touche un seuil :
+
+1. **Le verdict se lit sur les vues où le défaut vit** — `ferme_seuil` (69,3 % au
+   départ) et `ferme_laterale`. Une vue déjà sous le seuil au point zéro est
+   **publiée avec son point zéro à côté**, jamais comptée comme un gain.
+2. **La liste des vues qualifiantes est arrêtée telle que la mesure la produit** :
+   `ferme_seuil` (24,07 % de couverture) et `ferme_laterale` (16,71 %). **Deux
+   vues, pas six.** C'est peu, et c'est le nombre que la mesure donne ; je ne
+   l'élargis pas pour avoir l'air plus complet.
+3. **`ferme_arriere`** — 6,25 % de couverture pour **0,00 % d'aplat**, densité 0 :
+   publié tel quel avec la phrase de l'audit, « c'est le cadrage qui décide, pas
+   une platitude intrinsèque ». Cette vue ne prouve rien, dans un sens ni dans
+   l'autre.
+
+## Décision 13 — deux chiffres pour l'arête, et pas de moyenne
+
+L'audit mesure **16,1 %** là où j'annonce **18,3 %** sur l'arête d'arrachement.
+Nous ne regroupons pas le même ensemble : lui la famille de 108 triangles × 8,
+moi les colonnes du profil sous `plus_haut − 0,30`. Ce n'est pas une
+contradiction.
+
+**Les deux vont au rapport avec leur définition, et surtout pas leur moyenne :
+un chiffre sans sa définition est une opinion.**
