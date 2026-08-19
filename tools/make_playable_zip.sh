@@ -35,6 +35,11 @@ done
 # Le cache d'import est régénéré au premier lancement ; l'embarquer double le
 # poids et se périme au premier changement de version.
 rm -rf "$TARGET/.godot"
+# Les caches Python non suivis par git (\_\_pycache\_\_) : le runner GitHub
+# construit depuis un checkout PROPRE et ne les a pas — les embarquer ici
+# a rendu le zip local plus GROS que l'asset publié (798 804 octets d'écart
+# mesuré au checkpoint GM4) et a cassé la comparaison octet à octet.
+find "$TARGET" -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null
 # Les sources Blender et les preuves ne servent pas à JOUER.
 rm -rf "$TARGET/source_assets" "$TARGET/evidence" "$TARGET/builds"
 
