@@ -1,0 +1,81 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "d8a71e4665208526d942eec42f70b8e23f78c12b",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {
+    "filet": {
+      "chemin": "tests/world_v2/test_world_v2_r2b_basin.gd",
+      "commit": "539f2b96813aaffe502855cc0753b7b53c39c884"
+    },
+    "habillage": {
+      "chemin": "scripts/world_v2/poi/conductive_basin_place.gd",
+      "commit": "d8a71e4665208526d942eec42f70b8e23f78c12b"
+    }
+  },
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 52.0,
+      "from": [
+        17.0,
+        4.6,
+        33.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b/bassin/bassin_composition.png",
+      "look": [
+        26.0,
+        1.4,
+        24.0
+      ],
+      "name": "bassin_composition"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        24.0,
+        3.0,
+        34.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b/bassin/bassin_approche.png",
+      "look": [
+        26.0,
+        1.5,
+        24.0
+      ],
+      "name": "bassin_approche"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        23.0,
+        2.2,
+        28.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b/bassin/bassin_proche.png",
+      "look": [
+        27.0,
+        1.0,
+        23.0
+      ],
+      "name": "bassin_proche"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        20.0,
+        2.5,
+        20.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b/bassin/bassin_fonctionnel.png",
+      "look": [
+        28.0,
+        1.0,
+        26.0
+      ],
+      "name": "bassin_fonctionnel"
+    }
+  ],
+  "size": "1280x720"
+}

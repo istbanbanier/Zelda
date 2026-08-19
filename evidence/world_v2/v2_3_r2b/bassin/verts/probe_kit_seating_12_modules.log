@@ -1,0 +1,22 @@
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+[assise] modules demandés — 12 module(s)
+[assise] emprise et pivot MESURÉS après KitScale.factor() puis
+[assise] KitPlacement.seat(), exactement comme WorldV2PlaceKit.module()
+
+module                                 facteur  assise  emprise L×H×P (m)       pivot dans l'emprise      surfaces
+Prop_ExteriorBorder_Straight1           1.000   0.000    2.00 ×  0.13 ×  0.70  centre / min / min        1
+RockPath_Square_Wide                    1.000   0.000    2.05 ×  0.18 ×  1.99  centre / min / centre     1
+RockPath_Square_Small_1                 1.000   0.000    1.02 ×  0.15 ×  0.97  centre / min / centre     1
+SM_Dungeon_PillarStub                   1.000   0.000    1.00 ×  1.31 ×  1.00  centre / min / centre     1
+SM_Dungeon_ArchBlock                    1.000   0.000    0.93 ×  1.01 ×  0.93  centre / min / centre     1
+RockPath_Round_Thin                     1.000   0.000    1.46 ×  0.11 ×  2.09  centre / min / centre     1
+SM_Dungeon_RubbleSmall                  1.000   0.000    1.03 ×  0.50 ×  1.11  centre / min / centre     1
+SM_Dungeon_RubbleLarge                  1.000   0.000    1.20 ×  0.50 ×  1.35  centre / min / centre     1
+Prop_Brick1                             1.000   0.000    0.35 ×  0.21 ×  0.25  centre / centre / centre  1
+Chain_Coil                              1.000   0.000    1.07 ×  0.09 ×  0.91  centre / min / centre     1
+DoorFrame_Round_Brick                   1.000   0.000    1.60 ×  2.59 ×  0.48  centre / min / centre     1
+Wall_Arch                               1.000   0.000    2.00 ×  3.00 ×  0.06  centre / min / min        1
+
+[assise] tous les modules demandés existent.
+RC=0

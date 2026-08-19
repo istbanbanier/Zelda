@@ -1,0 +1,21 @@
+# Bandes de valeur — margelle de bassin_proche (agent C, V2.3-A.R2B)
+# Outil : tools/check_value_bands.py (mode crop). Cible : p50 dans [35,65] %, p90 <= 70 %.
+# Mesure de référence prise sur les captures du commit 3fff75e (manifest repo_dirty=false).
+#
+# HISTORIQUE DES MESURES (rendu logiciel llvmpipe, jamais une mesure de perf) :
+# 1. AVANT R2B (baseline captures_v23ar) crop 0.28,0.40,0.88,0.85 :
+#      p50=51.4 %  p90=89.0 %  -> VIOLATION p90 : margelle procédurale brûlée.
+# 2. Habillage kit, teinte prudente 0.86/0.80/0.71 (commit 70780a0) :
+#      crop pierre seule 0.33,0.62,0.70,0.80 : p50=72.9 %  p90=87.1 %  (herbe témoin p90=58 %)
+#      -> la texture RockPath est claire ; correction par ratio mesuré ~0.77.
+# 3. Teinte CUT_STONE (commit f3fa748) : pierre seule p50=54.1 %  p90=67.8 %  OK.
+#    Un crop élargi (0.28,0.55,0.95,0.90) rougissait encore (p90=85.1 %) : cause
+#    mesurée = la NAPPE canonique (eau p50=85.9 %), hors périmètre R2B — le crop
+#    margelle suit donc la bande de la margelle, eau exclue.
+#
+# MESURE FINALE (captures du commit 3fff75e) :
+crop margelle     (0.30,0.60)-(0.92,0.86)  p50= 49.4 %  p90= 66.3 %  (37318 px échantillonnés)
+  min=7.5 %  p95=84.3 %  max=100.0 %
+OK bandes: 1 crop(s) dans les seuils demandés.
+FIN NOMINALE
+RC=0

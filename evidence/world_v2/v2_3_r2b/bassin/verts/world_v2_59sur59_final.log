@@ -1,0 +1,942 @@
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: world_v2
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 9859 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+  ok   test_world_v2_anchors.gd::test_les_ancres_immuables_ont_un_sol_conforme (26 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5609 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_anchors.gd::test_chaque_lieu_a_son_marqueur_au_sol (22 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5536 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_borders.gd::test_le_monde_est_ferme_sur_tous_les_azimuts (2 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5635 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+  ok   test_world_v2_borders.gd::test_les_gardes_sont_visibles_et_hors_de_la_zone_jouable (3 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5729 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_cameras.gd::test_les_six_fenetres_sont_posees_et_degagees (3 assertions)
+  ok   test_world_v2_dungeon_pins.gd::test_les_positions_de_gameplay_des_salles_sont_epinglees (7 assertions)
+  ok   test_world_v2_dungeon_pins.gd::test_la_geometrie_de_l_arene_est_epinglee (6 assertions)
+  ok   test_world_v2_dungeon_pins.gd::test_la_topologie_des_salles_est_epinglee (9 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5728 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_flora_scale.gd::test_aucune_fleur_plantee_ne_depasse_le_plafond_de_la_bible (8 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5737 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_flora_scale.gd::test_les_elements_non_floraux_sont_inchanges (5 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5907 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_hydrology.gd::test_l_eau_coule_dans_un_lit_qui_la_contient (2 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 6042 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_hydrology.gd::test_les_trois_gues_sont_praticables_meme_en_diagonale (3 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5685 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_hydrology.gd::test_le_lac_est_un_bol_sous_sa_surface (5 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5900 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_hydrology.gd::test_le_pont_magnetique_enjambe_l_eau (5 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5747 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_landscape_contract.gd::test_les_six_cameras_v2_1_sont_gelees_par_litteraux (3 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5795 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_landscape_contract.gd::test_chaque_chunk_porte_le_materiau_de_paysage (3 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5946 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_landscape_contract.gd::test_la_vegetation_est_cellulaire_et_presente_ou_le_masterplan_l_exige (8 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5928 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_landscape_contract.gd::test_la_vegetation_est_ancree_au_sol_et_hors_des_couloirs (3 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 6212 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 6238 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+  ok   test_world_v2_landscape_contract.gd::test_le_paysage_se_reconstruit_a_l_identique (3 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 6246 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_landscape_contract.gd::test_les_diagnostics_sont_caches_par_defaut (3 assertions)
+  ok   test_world_v2_layout.gd::test_la_carte_directrice_est_valide (3 assertions)
+  ok   test_world_v2_layout.gd::test_le_validateur_sait_dire_non (8 assertions)
+  ok   test_world_v2_layout.gd::test_aucun_lieu_declare_en_v1_nest_oublie (3 assertions)
+  ok   test_world_v2_layout.gd::test_les_identifiants_de_monde_sont_distincts (4 assertions)
+  ok   test_world_v2_navigation.gd::test_les_quatre_quadrants_sont_cuits_et_bornes (1 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 6141 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_navigation.gd::test_la_navigation_relie_les_ancres_mais_pas_le_lac (5 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5720 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_places_behavior.gd::test_la_grotte_a_un_seuil_et_un_interieur_praticables (2 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 6044 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_places_behavior.gd::test_le_bassin_conducteur_garde_son_comportement (2 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5876 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_places_behavior.gd::test_les_recompenses_canoniques_sont_raccordees (2 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 6000 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_places_behavior.gd::test_le_pylone_est_un_repere_majeur (2 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5543 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_places_contract.gd::test_le_lot_pilote_est_fait_de_lieux_reels (2 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+  ok   test_world_v2_places_contract.gd::test_chaque_scene_du_registre_est_autonome (3 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5716 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_places_contract.gd::test_les_fondations_epousent_le_terrain_gele (2 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5875 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_places_contract.gd::test_aucun_acteur_et_les_routes_restent_libres (3 assertions)
+  ok   test_world_v2_proof_boards.gd::test_les_planches_de_preuve_portent_vraiment_leurs_sujets (1 assertions)
+  ok   test_world_v2_protection.gd::test_le_schema_de_sauvegarde_reste_en_version_4 (1 assertions)
+  ok   test_world_v2_protection.gd::test_les_ancres_du_layout_restent_celles_du_master_spec (17 assertions)
+  ok   test_world_v2_r2b_basin.gd::test_l_habillage_du_bassin_vient_du_kit_avec_uv (3 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5717 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_r2b_basin.gd::test_le_bassin_garde_comportement_et_contrat_dans_le_monde (2 assertions)
+  ok   test_world_v2_r2b_basin.gd::test_les_lampes_gardent_leur_noyau_et_l_habillage_n_emet_pas (2 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5743 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_routes.gd::test_chaque_route_a_un_sol_physique_continu (7 assertions)
+  ok   test_world_v2_skeleton.gd::test_la_v2_est_le_flux_normal (6 assertions)
+  ok   test_world_v2_skeleton.gd::test_aucune_reference_croisee_interdite (3 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5891 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_skeleton.gd::test_le_squelette_porte_le_vrai_joueur_sans_toucher_la_sauvegarde (24 assertions)
+[world_v2] bootstrap    : squelette V2.0 — entrée développeur explicite
+[world_v2] Godot        : 4.7.1-stable (custom_build)
+[world_v2] carte        : valide (neris_v2)
+[world_v2] transition vers le monde V2.
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5847 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+  ok   test_world_v2_skeleton.gd::test_l_entree_developpeur_charge_v2_separement (5 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5865 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+  ok   test_world_v2_terrain.gd::test_le_monde_porte_exactement_64_chunks_raccordes (72 assertions)
+  ok   test_world_v2_terrain.gd::test_le_relief_n_est_pas_un_assemblage_de_dalles (5 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5848 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_traversal.gd::test_le_trajet_principal_se_marche_du_spawn_a_la_porte (8 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 6035 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_traversal.gd::test_la_route_de_la_riviere_traverse_gues_et_pont (6 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 6028 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_traversal.gd::test_la_route_des_hauteurs_grimpe_et_redescend_a_la_rampe (6 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5384 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_traversal.gd::test_la_route_des_ruines_rejoint_la_rampe_par_le_coeur (6 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5781 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_water_confluence.gd::test_la_confluence_est_une_jonction_topologique (2 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5748 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_water_junctions.gd::test_chaque_extremite_de_ruban_est_raccordee (2 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5789 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_water_mesh.gd::test_les_rubans_d_eau_n_ont_aucun_quad_de_torsion (3 assertions)
+  ok   test_world_v2_waterways_contract.gd::test_chaque_traversee_de_riviere_passe_par_un_gue_ou_le_pont (7 assertions)
+  ok   test_world_v2_waterways_contract.gd::test_chaque_gue_est_pose_sur_son_cours (1 assertions)
+  ok   test_world_v2_waterways_contract.gd::test_aucun_lieu_dans_l_eau (2 assertions)
+  ok   test_world_v2_waterways_contract.gd::test_les_checkpoints_et_ancres_sont_hors_d_eau (2 assertions)
+  ok   test_world_v2_waterways_contract.gd::test_le_cours_n_a_pas_de_longue_ligne_droite (2 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 59 réussi(s), 0 échoué(s) ===
+RC=0
