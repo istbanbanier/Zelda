@@ -1,0 +1,93 @@
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: test_world_v2_r2b1_arbre,test_world_v2_r2b2_arbre,test_world_v2_r2b_farm_tree,test_world_v2_flora_scale
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 11198 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+  ok   test_world_v2_flora_scale.gd::test_aucune_fleur_plantee_ne_depasse_le_plafond_de_la_bible (8 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 7052 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_flora_scale.gd::test_les_elements_non_floraux_sont_inchanges (5 assertions)
+  ok   test_world_v2_r2b1_arbre.gd::test_l_arbre_ouvre_sa_silhouette_sous_tout_azimut (1 assertions)
+  ok   test_world_v2_r2b1_arbre.gd::test_deux_ruptures_principales_a_des_hauteurs_differentes (1 assertions)
+  ok   test_world_v2_r2b1_arbre.gd::test_le_fut_n_est_pas_un_cone (1 assertions)
+  ok   test_world_v2_r2b1_arbre.gd::test_les_saillies_ne_forment_ni_grappe_ni_etoile (1 assertions)
+  ok   test_world_v2_r2b1_arbre.gd::test_les_bois_tombes_sont_hierarchises (1 assertions)
+  ok   test_world_v2_r2b1_arbre.gd::test_la_fracture_est_du_bois_arrache (1 assertions)
+  ok   test_world_v2_r2b1_arbre.gd::test_le_sol_brule_n_est_ni_etoile_ni_plaque (2 assertions)
+  ok   test_world_v2_r2b1_arbre.gd::test_la_masse_sombre_au_sol_reste_sobre (2 assertions)
+[r2b2-arbre] C1a rotation inter-anneau |Δφ| moyen 4.183° sur 8 couples
+[r2b2-arbre] C1b écart-type de Δφ 3.893° ; rotation nette 16.1°
+[r2b2-arbre] C1c cohérence verticale du relief +0.770 sur 4 couples
+[r2b2-arbre] C1d crête-à-crête du profil radial 0.225 du rayon moyen
+  ok   test_world_v2_r2b2_arbre.gd::test_c1_le_fut_n_est_plus_un_prisme (1 assertions)
+[r2b2-arbre] C2a flanc 33.0 % / surface presque horizontale 31.8 % sur 11.60 m²
+[r2b2-arbre] C2b sagitta en plan des 7 racines : [8.75657496618967, 7.66324102885918, 8.73079617166091, 8.9164474495251, 13.4097842070431, 15.5194570472796, 13.0428139103264] (min 7.66 %)
+[r2b2-arbre] C2c écarts d'azimut des racines [79.9480404353498, 19.9187343952329, 98.8521299434922, 39.8972119822575, 121.383883243668] → max/min 6.09
+[r2b2-arbre] C2d hauteur max des racines hors collider 0.280 m (0 sommet(s) au-dessus de 0.32)
+  ok   test_world_v2_r2b2_arbre.gd::test_c2_les_racines_ont_du_volume (1 assertions)
+[r2b2-arbre] C3a sagitta en plan des bois : [10.6861302134807, 7.63238222011011, 8.6516380901882, 10.4910078364407, 11.2714894495138]
+[r2b2-arbre] C3b effilements [0.32244539445776, 0.86454835200539, 0.54885872061984, 0.45665430984696, 0.27299163753021] → max/min 3.167
+[r2b2-arbre] C3c triangles par bois [132, 66, 80, 148, 68] → 5 compte(s) distinct(s)
+  ok   test_world_v2_r2b2_arbre.gd::test_c3_les_bois_tombes_ne_sont_plus_homothetiques (1 assertions)
+[r2b2-arbre] C4c fragments de ruban : 3
+[r2b2-arbre] C4a CV de la largeur LISSÉE sur 3 stations 0.392
+[r2b2-arbre] C4b largeur lissée max/min 3.98
+[r2b2-arbre] C4d profondeur radiale du bois nu, lissée : [0.08401742022462, 0.11276614960459, 0.14459947304547, 0.19964492110528, 0.3077506465123, 0.38491941875388, 0.36720511359051, 0.34118235720361, 0.29742946024754, 0.30240699481227, 0.25734507904203, 0.22305481138236, 0.20231256800192, 0.17902947007573, 0.18368858219646, 0.14645975274208, 0.10569922933269]
+[r2b2-arbre] C4d profondeur radiale sur 17 stations : min 0.084 m max 0.385 m → max/min 4.58
+[r2b2-arbre] C4e plans de rupture détectés [5.77985954284668, 4.24995613098145] ; échardes LE LONG du parcours 7
+  ok   test_world_v2_r2b2_arbre.gd::test_c4_la_cicatrice_est_un_volume_arrache (1 assertions)
+[r2b2-arbre] C5 luminances [0.13304460996687, 0.21774201580286, 0.43051001288295, 0.74754200210571] → 3 palier(s) séparé(s) d'au moins 0.12
+[r2b2-arbre] C5 teintes 0.0196..0.1092 (étendue 0.0896), saturation max 0.346
+[r2b2-arbre] C5 budget : 3574 triangles (plafond 6000)
+  ok   test_world_v2_r2b2_arbre.gd::test_c5_paliers_de_valeur_et_budget (1 assertions)
+  ok   test_world_v2_r2b_farm_tree.gd::test_zero_bloc_procedural_hors_exemption_nommee (2 assertions)
+  ok   test_world_v2_r2b_farm_tree.gd::test_la_charpente_est_portee_par_ses_murs (2 assertions)
+  ok   test_world_v2_r2b_farm_tree.gd::test_l_arbre_est_un_asset_glb_valide (2 assertions)
+  ok   test_world_v2_r2b_farm_tree.gd::test_le_pipeline_blender_est_frais_et_verifie (1 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 19 réussi(s), 0 échoué(s) ===
+RC=0

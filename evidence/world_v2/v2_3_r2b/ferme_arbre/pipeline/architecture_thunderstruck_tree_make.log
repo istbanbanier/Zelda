@@ -1,15 +1,20 @@
 Blender 4.0.2
-[thunderstruck_tree] SM_ThunderstruckTree_Bark        1370 tris
-[thunderstruck_tree] SM_ThunderstruckTree_Heart        436 tris
-[thunderstruck_tree] SM_ThunderstruckTree_Roots        280 tris
-[thunderstruck_tree] SM_ThunderstruckTree_BranchA       88 tris
-[thunderstruck_tree] SM_ThunderstruckTree_BranchB       88 tris
-[thunderstruck_tree] SM_ThunderstruckTree_BranchC       88 tris
-[thunderstruck_tree] SM_ThunderstruckTree_BranchD       88 tris
-[thunderstruck_tree] SM_ThunderstruckTree_BranchE       88 tris
-[thunderstruck_tree] emprise X -4.56..4.14  Y -4.38..4.10  Z 0.000..11.02 — 2526 tris (budget 6000)
-[thunderstruck_tree] cicatrice : rayon relatif 0.791 dans la bande (14 sommets), 0.941 hors bande (47) — creux 0.150
+[thunderstruck_tree] phase : |dphi| moyen 4.51 deg, ecart-type 4.53, net 6.43 deg, repliement a +-10.00 deg (max |pas| 5.99)
+[thunderstruck_tree] cicatrice : largeur 0.096..0.632 m (rapport 6.58), 3 station(s) sur 26 interrompue(s) par un pont d'ecorce
+[thunderstruck_tree] racines : ecarts d'azimut 56, 66, 98, 34, 106 deg, max/min 3.12
+[thunderstruck_tree] SM_ThunderstruckTree_Bark        1660 tris
+[thunderstruck_tree] SM_ThunderstruckTree_Heart        664 tris
+[thunderstruck_tree] SM_ThunderstruckTree_Roots        756 tris
+[thunderstruck_tree] SM_ThunderstruckTree_BranchA      132 tris
+[thunderstruck_tree] SM_ThunderstruckTree_BranchB       66 tris
+[thunderstruck_tree] SM_ThunderstruckTree_BranchC       80 tris
+[thunderstruck_tree] SM_ThunderstruckTree_BranchD      148 tris
+[thunderstruck_tree] SM_ThunderstruckTree_BranchE       68 tris
+[thunderstruck_tree] emprise X -4.56..4.23  Y -4.37..4.09  Z 0.000..11.02 — 3574 tris (budget 6000)
+[thunderstruck_tree] souche large de 2.12 m (attendu 2.1 ± 0,35)
+[thunderstruck_tree] racines : hauteur max hors collider 0.280 m (plafond 0.32)
+[thunderstruck_tree] cicatrice : rayon relatif 0.717 dans la bande (14 sommets), 0.963 hors bande (66) — creux 0.245
 Info: Total files 0 | Changed 0 | Failed 0
 Info: Saved "SM_ThunderstruckTree.blend"
-[thunderstruck_tree] source enregistrée -> /home/user/zelda-r2b1/b_arbre/source_assets/blender/environment/SM_ThunderstruckTree.blend
+[thunderstruck_tree] source enregistrée -> /home/user/zelda-r2b2/b_arbre/source_assets/blender/environment/SM_ThunderstruckTree.blend
 FIN NOMINALE

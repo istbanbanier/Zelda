@@ -207,7 +207,17 @@ CICATRICE_PROFIL = (
 )
 # DEUX INTERRUPTIONS : l'écorce fait pont au-dessus du bois nu. R2B.1 avait un
 # seul segment ininterrompu de 6,55 m.
-CICATRICE_PONTS = ((5.05, 0.24), (2.28, 0.20))
+#
+# LEUR PLACEMENT N'EST PAS LIBRE, et la première tentative (5,05 et 2,28) a
+# fait ROUGIR UN CONTRÔLE R2B.1 QUI ÉTAIT VERT. Le filet R2B.1 mesure le CV
+# BRUT de la largeur sur la PLUS GROSSE composante du cœur ; en coupant la
+# cicatrice en trois, on lui donne à mesurer un fragment plus court, donc une
+# portion d'enveloppe plus plate — CV tombé à 0,284 pour un plancher de 0,30.
+# Les ponts sont donc placés de façon que le plus grand fragment traverse la
+# plus grande variation d'enveloppe : de 0,60 m à 0,10 m entre 3,00 m et le
+# pied. Un contrôle antérieur qui rougit à cause d'une amélioration reste un
+# rouge : c'est la nouvelle géométrie qui cède, pas le seuil ancien.
+CICATRICE_PONTS = ((5.60, 0.20), (3.20, 0.20))
 CICATRICE_LEVRE = 1.085     # l'écorce se soulève au bord du sillon
 CICATRICE_RETRAIT_MIN = 0.46
 
