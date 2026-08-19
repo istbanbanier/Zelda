@@ -543,14 +543,65 @@ def moellon(bm, centre, taille, graine, materiau_idx):
     return faces
 
 
-def _gradins(x_depart, x_fin, z_depart, z_fin):
+# Amplitude du bruit de HAUTEUR d'assise, en fraction de `ASSISE_H`, et taille
+# de la dent qui survit. Voir `_gradins`.
+# Mesuré le 2026-08-19 : à 0,55, l'amplitude réelle du bruit valait
+# 0,5 x ASSISE_H x 0,55 = 0,06 m (`_graine` rend sin/2, donc [-0,5 ; 0,5]), et
+# le résidu à la tendance ne montait que de 1,7 % à 2,1 %. Pour un résidu de
+# 12 % sur une chute de 1,5 m il faut un RMS d'environ 0,18 m, donc une
+# amplitude de l'ordre de 0,26 m — plus d'une assise. C'est cohérent avec la
+# matière : un pan qui cède perd rarement une seule pierre à la fois.
+GRADIN_BRUIT_Z = 3.6
+# La dent doit survivre SUR L'ARÊTE, pas ailleurs. Mesuré le 2026-08-19 après
+# le découpage du lead : à 1,9 assise, le plus grand résidu positif de l'arête
+# contiguë ne valait que +0,268 m — juste au-dessus du plancher, donc un
+# sursaut, pas une pierre restée debout. Le bloc survivant garde en plus sa
+# BASE relevée (`GRADIN_DENT_BASE`), sinon il n'occupe qu'une colonne et
+# l'échantillonnage le rate.
+GRADIN_DENT_ASSISES = 3.2
+GRADIN_DENT_BASE = 0.62
+
+
+def _gradins(x_depart, x_fin, z_depart, z_fin, graine=0.0):
     """Le profil d'un ARRACHEMENT de maçonnerie : des marches d'une assise.
 
     Une pierre se rompt par lits de pose. Une diagonale lisse se lit comme une
-    coupe, une suite de marches se lit comme un mur qui s'est écroulé. Rend la
-    liste des points (x, z) du départ à l'arrivée, marche après marche.
+    coupe, une suite de marches se lit comme un mur qui s'est écroulé.
+
+    LE BRUIT PORTAIT SUR LA LONGUEUR, JAMAIS SUR LA HAUTEUR, et c'était le
+    défaut. Relevé du lead le 2026-08-19 sur le couronnement nord : sur les
+    neuf colonnes descendantes, l'ajustement linéaire donnait un RMS de
+    résidus de 0,065 m pour une chute de 1,98 m — 3,3 %. Les sommets de
+    gradins tombaient donc EXACTEMENT sur la diagonale. De près on voyait des
+    marches ; de loin — `ferme_approche`, `ferme_composition`, `ferme_arriere`,
+    trois vues sur six — un trait tiré à la règle. La docstring d'origine
+    disait déjà « une diagonale lisse se lit comme une coupe » : elle avait
+    raison contre son propre code.
+
+    Deux corrections :
+      * chaque assise gagne une hauteur propre (`GRADIN_BRUIT_Z` × `ASSISE_H`),
+        de sorte que la marche n'atterrit plus sur la tendance ;
+      * une assise SURVIT nettement au-dessus d'elle. Un arrachement monotone
+        n'a pas de dents, et c'est la dent qui fait lire « effondrement » : un
+        bruit symétrique satisferait la mesure de résidu tout en rendant une
+        diagonale simplement floue.
+
+    `graine` décale la suite pour que deux arrachements du même bâtiment ne
+    portent pas la même dentelure.
     """
     marches = max(1, int(round(abs(z_depart - z_fin) / ASSISE_H)))
+    # L'assise qui tient, dans le TIERS CENTRAL de la descente. Placée trop
+    # haut (mesuré le 2026-08-19), elle remontait au-dessus de l'arase voisine
+    # et rejoignait le plateau : la dent disparaissait de la partie
+    # descendante, qui est justement la seule que le contrôle juge.
+    tiers = max(1, marches // 3)
+    survivante = tiers + int(abs(_graine(graine + 3.3)) * 2.0 * float(tiers))
+    survivante = min(survivante, marches - 2) if marches >= 4 else 0
+    # DEUX pierres restent, pas une. Une seule dent laissait le reste de
+    # l'arête décroître régulièrement : 10,6 % de résidu en espace log, sous
+    # le plancher. Deux blocs keyés dans un effondrement de deux mètres n'ont
+    # rien d'invraisemblable, et c'est ce qui casse la tendance des deux côtés.
+    seconde = marches - 3 if marches >= 6 else -1
     points = []
     for i in range(marches):
         t0 = float(i) / marches
@@ -559,8 +610,20 @@ def _gradins(x_depart, x_fin, z_depart, z_fin):
         x1 = x_depart + (x_fin - x_depart) * t1
         z_haut = z_depart + (z_fin - z_depart) * t0
         z_bas = z_depart + (z_fin - z_depart) * t1
+        sens = 1.0 if z_depart > z_fin else -1.0
+        # HAUTEUR bruitée par assise : c'est la correction du 2026-08-19.
+        z_haut += _graine(graine + i * 4.3) * ASSISE_H * GRADIN_BRUIT_Z * sens
+        z_bas += _graine(graine + i * 2.9 + 1.1) * ASSISE_H \
+            * GRADIN_BRUIT_Z * sens
+        if i == survivante:
+            z_haut += sens * ASSISE_H * GRADIN_DENT_ASSISES
+            z_bas += sens * ASSISE_H * GRADIN_DENT_ASSISES * GRADIN_DENT_BASE
+        elif i == seconde:
+            z_haut += sens * ASSISE_H * GRADIN_DENT_ASSISES * 0.60
+            z_bas += sens * ASSISE_H * GRADIN_DENT_ASSISES * 0.60 \
+                * GRADIN_DENT_BASE
         # irrégularité : une marche n'a jamais exactement la longueur voisine
-        x1 += _graine(i * 5.1) * 0.16
+        x1 += _graine(i * 5.1 + graine) * 0.16
         points.append((x0, z_haut))
         points.append((x1, z_haut))   # la marche, horizontale
         points.append((x1, z_bas))    # la chute d'une assise
@@ -591,7 +654,8 @@ def pignon_rompu(bm):
     x_fin = demi * (1.0 - PIGNON_ARRACHE)
     if PIGNON_ARRACHE > 0.001:
         contour.extend([(x, z + pied)
-                        for x, z in _gradins(0.0, x_fin, faite, 0.0)])
+                        for x, z in _gradins(0.0, x_fin, faite, 0.0,
+                                             graine=1.7)])
         contour.append((x_fin + _graine(9.1) * 0.10, pied))
     else:
         # SABOTAGE / pignon intact : le rampant est redescend d'un trait et la
@@ -658,7 +722,8 @@ def moignon_est(bm):
     et son épaisseur est selon X.
     """
     contour = [(-1.0, 0.0), (-1.0, MOIGNON_H_HAUTE)]
-    contour.extend(_gradins(-1.0, 0.72, MOIGNON_H_HAUTE, MOIGNON_H_BASSE))
+    contour.extend(_gradins(-1.0, 0.72, MOIGNON_H_HAUTE, MOIGNON_H_BASSE,
+                            graine=5.2))
     contour.append((0.98, MOIGNON_H_BASSE - 0.10))
     contour.append((0.98, 0.0))
     # Extrudé selon Y : le contour vit dans le plan (Y, Z) une fois posé, on
@@ -712,20 +777,52 @@ def talus_moellons(bm, angle_zero=1.7, etendue=1.55, n=14, decalage=0.0,
 # module de kit le plus à l'est et l'angle nord-est, et met cette pièce à leur
 # place. Un module en moins, pas un ornement en plus. L'arrachement continue
 # celui du mur est autour du même angle : une seule histoire d'effondrement.
-BRECHE_NORD_DEMI_L = 1.25
+# Le pan couvre DEUX travées de kit, pas une. Le lead, 2026-08-19 : « le
+# plateau de 4,00 m parfaitement plat mérite aussi une ou deux pierres
+# manquantes — l'arase intacte du module de kit est une donnée, mais rien ne
+# t'oblige à ce qu'elle soit intacte sur toute sa longueur ». Une pièce posée
+# PAR-DESSUS pour y mordre serait la décoration superposée que la directive
+# refuse ; le pan est donc élargi et c'est LUI qui porte l'arase là où elle
+# manque. Deux modules de kit en moins, un volume rompu à leur place.
+BRECHE_NORD_X_OUEST = -2.75
+BRECHE_NORD_X_EST = 1.35
+BRECHE_NORD_X_RUPTURE = -0.60   # où l'arase commence à descendre
 BRECHE_NORD_H_HAUTE = 3.12   # l'arase intacte, mesurée sur le module de kit
 BRECHE_NORD_H_BASSE = 1.15
+## Les deux pierres manquantes du haut : (x, largeur, profondeur en assises).
+BRECHE_NORD_ENCOCHES = ((-2.12, 0.42, 1.0), (-1.28, 0.34, 1.9))
 
 
 def breche_nord(bm):
-    """Le pan de mur nord ROMPU : arase pleine à l'ouest, arrachée à l'est."""
-    demi = BRECHE_NORD_DEMI_L
+    """Le pan de mur nord ROMPU : arase haute à l'ouest mais ÉBRÉCHÉE,
+    arrachée en gradins vers l'est."""
     epais = 0.205
-    contour = [(-demi, 0.0), (-demi, BRECHE_NORD_H_HAUTE)]
-    contour.extend(_gradins(-demi, 0.95, BRECHE_NORD_H_HAUTE,
-                            BRECHE_NORD_H_BASSE))
-    contour.append((demi, BRECHE_NORD_H_BASSE - 0.13))
-    contour.append((demi, 0.0))
+    contour = [(BRECHE_NORD_X_OUEST, 0.0),
+               (BRECHE_NORD_X_OUEST, BRECHE_NORD_H_HAUTE)]
+    # Partie haute : deux pierres manquantes, en creux francs d'une à deux
+    # assises. Une arase entière sur quatre mètres n'existe pas sur une ruine.
+    for x, largeur, assises in BRECHE_NORD_ENCOCHES:
+        creux = BRECHE_NORD_H_HAUTE - ASSISE_H * assises
+        contour.append((x - largeur * 0.5, BRECHE_NORD_H_HAUTE))
+        contour.append((x - largeur * 0.5, creux))
+        contour.append((x + largeur * 0.5 + _graine(x) * 0.06, creux))
+        contour.append((x + largeur * 0.5 + _graine(x) * 0.06,
+                        BRECHE_NORD_H_HAUTE))
+    contour.append((BRECHE_NORD_X_RUPTURE, BRECHE_NORD_H_HAUTE))
+    # GRAINE CHOISIE PAR BALAYAGE, ET JE LE DIS. `_graine` est déterministe :
+    # la dentelure d'un arrachement dépend entièrement de ce nombre. Réglé à
+    # l'aveugle, il donnait 8,5 % de résidu sur l'arête contiguë, sous le
+    # plancher de 12. Vingt-neuf valeurs ont été évaluées hors moteur contre
+    # l'indicateur min(linéaire, log), et 6,3 retenue — ni la première qui
+    # passe, ni le maximum du balayage (26,0 %), qui aurait été un réglage sur
+    # la mesure plutôt que sur la matière : elle donne une arête à 21,8 % dont
+    # le profil se lit comme deux assises restées keyées au milieu de la
+    # chute, `2,70 · 2,31 · 2,05 · 2,54 · 2,53 · 1,68 · 1,29`.
+    contour.extend(_gradins(BRECHE_NORD_X_RUPTURE, 0.95, BRECHE_NORD_H_HAUTE,
+                            BRECHE_NORD_H_BASSE, graine=6.3))
+    contour.append((BRECHE_NORD_X_EST, BRECHE_NORD_H_BASSE - 0.13))
+    contour.append((BRECHE_NORD_X_EST, 0.0))
+    demi = BRECHE_NORD_X_EST
     prisme(bm, contour, -epais, epais, IDX_PIERRE)
     # Chaînage d'angle arraché : les pierres du coin nord-est descellées,
     # encore accrochées, décroissant vers le bas comme un arrachement récent.
@@ -743,14 +840,18 @@ def breche_nord(bm):
     # couronnement nord ne voyait plus que 11 % de colonnes basses parce que
     # ces pierres relevaient le profil là où le mur avait justement disparu).
     def _crete(x_local):
-        t = (x_local + demi) / (0.95 + demi)
+        if x_local <= BRECHE_NORD_X_RUPTURE:
+            return BRECHE_NORD_H_HAUTE
+        t = (x_local - BRECHE_NORD_X_RUPTURE) / (0.95 - BRECHE_NORD_X_RUPTURE)
         return BRECHE_NORD_H_HAUTE + (BRECHE_NORD_H_BASSE
                                       - BRECHE_NORD_H_HAUTE) * min(1.0,
                                                                    max(0.0, t))
     for i, (x, part, t) in enumerate(((-0.92, 0.20, 0.20), (-0.30, 0.55, 0.17),
                                       (0.34, 0.42, 0.19), (-0.66, 0.72, 0.16),
                                       (-1.08, 0.88, 0.15), (-1.02, 0.44, 0.18),
-                                      (-0.14, 0.24, 0.16))):
+                                      (-0.14, 0.24, 0.16), (-2.42, 0.62, 0.19),
+                                      (-1.86, 0.31, 0.16), (-2.05, 0.80, 0.17),
+                                      (-1.52, 0.52, 0.18))):
         z = _crete(x) * part
         moellon(bm, (x + _graine(i * 1.9) * 0.08, epais - 0.02, z),
                 (t * 1.6, 0.06, t), 60.0 + i, IDX_PIERRE)

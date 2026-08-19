@@ -84,6 +84,46 @@ const NORD_POINT_BAS_MAX_M: float = 2.10
 ## (PROMPT4_METHOD §2). On exige donc qu'une PART du couronnement manque.
 const NORD_MANQUE_SEUIL_M: float = 2.60
 const NORD_MANQUE_PART_MIN: float = 0.18
+## UN ÉCART-TYPE MESURE LA DISPERSION, PAS L'IRRÉGULARITÉ — et une diagonale
+## parfaite a une grande dispersion. Le lead a repris le profil colonne par
+## colonne le 2026-08-19 : les sommets de gradins tombaient sur une droite à
+## 3,3 % près (1,7 % sur l'échantillonnage de ce contrôle), et les 16 colonnes
+## du plateau avaient un écart-type de 0,0000 m. De près on voyait des
+## marches ; de loin — trois vues sur six — un trait tiré à la règle. Cause
+## dans `_gradins` : le bruit était appliqué à `x1` seulement, donc à la
+## LONGUEUR des marches, jamais à leur HAUTEUR.
+##
+## Trois critères, chacun contre un aspect distinct :
+##   * RÉSIDU — la partie descendante ne doit pas coller à sa tendance, et la
+##     tendance se cherche EN LINÉAIRE **ET** EN LOG, indicateur = le minimum
+##     des deux. Correction du lead du 2026-08-19, démontrée par l'audit sur
+##     son propre indicateur : une rampe GÉOMÉTRIQUE (rapports successifs
+##     0,411 / 0,476 / 0,376 / 0,376) rend 15,2 % de résidu linéaire — donc
+##     « irrégulière » — et 1,7 % en espace log, où elle apparaît pour ce
+##     qu'elle est. Un balayage de paramètre est multiplicatif ; le chercher
+##     additivement ne le voit pas. Mon défaut mesuré est additif (gradins à
+##     -0,22 m constants), mais rien ne garantit qu'une correction ne
+##     remplace pas une rampe additive par une rampe géométrique ;
+##   * DENT — au moins une assise doit SURVIVRE nettement au-dessus de la
+##     tendance. Un bruit symétrique satisferait le résidu tout en rendant une
+##     diagonale floue ; une dent, c'est ce qui fait lire « effondrement » ;
+##   * PLATEAU — une arase intacte sur 4 m est une donnée du module de kit,
+##     pas une fatalité : rien n'oblige à la laisser entière sur sa longueur.
+## 12 %, calibré sur les mesures de l'audit du 2026-08-19 : boîtes de la ferme
+## 4,7 % sur 118 membres · boîtes de l'arbre 5,2 % · veines du pylône 6,5 % ·
+## racines 13,7 % · écorces 20,1 %. Ce seuil ne vise QUE la partie descendante
+## d'un arrachement, jamais un ouvrage debout : les trois pieds du pylône
+## golden master sont à 0,0 % pour une amplitude nulle — trois volumes
+## rigoureusement identiques — et le pylône a passé la revue visuelle. Une
+## architecture se répète légitimement ; une maçonnerie ROMPUE, non (directive
+## point 7 : « arêtes de rupture irrégulières et une logique de gravité »).
+const NORD_RESIDU_PART_MIN: float = 0.12
+const NORD_DENT_MIN_M: float = 0.25
+const NORD_PLAT_MAX_COLONNES: int = 10
+const NORD_PLAT_TOLERANCE_M: float = 0.02
+## La partie « descendante » : tout ce qui est nettement sous le point haut.
+const NORD_DESCENTE_MARGE_M: float = 0.30
+const NORD_DESCENTE_MIN_COLONNES: int = 5
 
 
 func _tree() -> SceneTree:
@@ -145,6 +185,68 @@ func _bounds_in(node: Node3D, frame: Node3D) -> AABB:
 		else:
 			merged = merged.merge(box)
 	return merged
+
+
+## RMS des résidus d'un ajustement linéaire, rapporté à l'amplitude, dans
+## l'espace demandé. `en_log` cherche une tendance MULTIPLICATIVE : une rampe
+## géométrique y devient une droite et se démasque.
+func _part_residu(xs: Array[float], ys: Array[float], en_log: bool) -> float:
+	var vals: Array[float] = []
+	for v: float in ys:
+		if en_log:
+			if v <= 1e-4:
+				return 1e9   # log indéfini : l'indicateur linéaire tranchera
+			vals.append(log(v))
+		else:
+			vals.append(v)
+	var n: int = xs.size()
+	var mx: float = 0.0
+	var my: float = 0.0
+	for k: int in range(n):
+		mx += xs[k]
+		my += vals[k]
+	mx /= float(n)
+	my /= float(n)
+	var sxy: float = 0.0
+	var sxx: float = 0.0
+	for k: int in range(n):
+		sxy += (xs[k] - mx) * (vals[k] - my)
+		sxx += (xs[k] - mx) * (xs[k] - mx)
+	var pente: float = sxy / maxf(sxx, 1e-9)
+	var ord0: float = my - pente * mx
+	var carres: float = 0.0
+	var bas: float = 1e9
+	var haut: float = -1e9
+	for k: int in range(n):
+		var r: float = vals[k] - (pente * xs[k] + ord0)
+		carres += r * r
+		bas = minf(bas, vals[k])
+		haut = maxf(haut, vals[k])
+	return sqrt(carres / float(n)) / maxf(haut - bas, 1e-6)
+
+
+## Le plus grand résidu POSITIF de l'ajustement linéaire, en mètres : la dent
+## qui survit au-dessus de la tendance.
+func _plus_grand_residu(xs: Array[float], ys: Array[float]) -> float:
+	var n: int = xs.size()
+	var mx: float = 0.0
+	var my: float = 0.0
+	for k: int in range(n):
+		mx += xs[k]
+		my += ys[k]
+	mx /= float(n)
+	my /= float(n)
+	var sxy: float = 0.0
+	var sxx: float = 0.0
+	for k: int in range(n):
+		sxy += (xs[k] - mx) * (ys[k] - my)
+		sxx += (xs[k] - mx) * (xs[k] - mx)
+	var pente: float = sxy / maxf(sxx, 1e-9)
+	var ord0: float = my - pente * mx
+	var dent: float = -1e9
+	for k: int in range(n):
+		dent = maxf(dent, ys[k] - (pente * xs[k] + ord0))
+	return dent
 
 
 func _named_child(root: Node3D, prefix: String) -> Node3D:
@@ -439,6 +541,89 @@ func test_le_sommet_du_mur_nord_manque() -> void:
 				for h: float in hauteurs:
 					if h <= NORD_MANQUE_SEUIL_M:
 						basses += 1
+				# — irrégularité de l'arrachement, et plateau non intact —
+				var ordre: Array = colonnes.keys()
+				ordre.sort()
+				var profil: Array[float] = []
+				for cle: int in ordre:
+					profil.append(float(colonnes[cle]))
+				var plus_haut: float = 0.0
+				for h: float in profil:
+					plus_haut = maxf(plus_haut, h)
+				# L'ARÊTE D'ARRACHEMENT SEULE, ET CONTIGUË.
+				#
+				# La première version retenait TOUTES les colonnes sous le
+				# seuil, à index conservés. Le lead a reproduit le calcul le
+				# 2026-08-19 et montré que la sélection n'était pas contiguë :
+				# trois colonnes d'ENCOCHES du plateau (idx 9, 10, 13) très à
+				# gauche, sept colonnes d'ARRACHEMENT (idx 18-24) très à
+				# droite. Aucune droite ne passe par les deux paquets, donc le
+				# résidu était gonflé par la DISTANCE entre eux : 16,3 % pour
+				# l'ensemble, mais 8,6 % pour l'arête seule. Un numéro unique
+				# mesurait deux propriétés, et la présence d'encoches ailleurs
+				# payait pour l'irrégularité de l'arête.
+				#
+				# Les encoches restent couvertes — par la règle de plateau
+				# (≤ 10 colonnes identiques), qui est faite pour elles. Ici on
+				# ne juge QUE le plus long segment contigu sous le seuil.
+				var ix: Array[float] = []
+				var hy: Array[float] = []
+				var debut: int = -1
+				var longueur: int = 0
+				var course: int = 0
+				for k: int in range(profil.size() + 1):
+					var dedans: bool = k < profil.size() \
+						and profil[k] < plus_haut - NORD_DESCENTE_MARGE_M
+					if dedans:
+						course += 1
+					else:
+						if course > longueur:
+							longueur = course
+							debut = k - course
+						course = 0
+				for k: int in range(debut, debut + longueur):
+					if k < 0:
+						break
+					ix.append(float(k))
+					hy.append(profil[k])
+				if ix.size() < NORD_DESCENTE_MIN_COLONNES:
+					faults.append("%d colonne(s) descendante(s) seulement "
+						% ix.size() + "(min %d) — pas d'arrachement à juger"
+						% NORD_DESCENTE_MIN_COLONNES)
+				else:
+					var lin: float = _part_residu(ix, hy, false)
+					var log_: float = _part_residu(ix, hy, true)
+					var indic: float = minf(lin, log_)
+					var dent: float = _plus_grand_residu(ix, hy)
+					if indic < NORD_RESIDU_PART_MIN:
+						faults.append("l'arête d'arrachement (%d colonnes "
+							% ix.size() + "contiguës) colle à sa tendance : "
+							+ "résidu %.1f %% en linéaire, %.1f %% en log, "
+							% [lin * 100.0, log_ * 100.0]
+							+ "indicateur %.1f %% (min %.0f %%) — de loin "
+							% [indic * 100.0, NORD_RESIDU_PART_MIN * 100.0]
+							+ "c'est un trait tiré à la règle, pas une "
+							+ "maçonnerie rompue")
+					if dent < NORD_DENT_MIN_M:
+						faults.append("aucune assise ne survit sur l'ARÊTE "
+							+ "au-dessus de sa tendance : plus grand résidu "
+							+ "positif %+.3f m (min %.2f) — un arrachement "
+							% [dent, NORD_DENT_MIN_M]
+							+ "monotone n'a pas de dents")
+				var plat: int = 1
+				var plat_max: int = 1
+				for k: int in range(1, profil.size()):
+					if absf(profil[k] - profil[k - 1]) < NORD_PLAT_TOLERANCE_M:
+						plat += 1
+					else:
+						plat = 1
+					plat_max = maxi(plat_max, plat)
+				if plat_max > NORD_PLAT_MAX_COLONNES:
+					faults.append("%d colonnes d'arase strictement identiques "
+						% plat_max + "d'affilée, soit %.2f m (max %d colonnes)"
+						% [float(plat_max) * NORD_COLONNE_M,
+						   NORD_PLAT_MAX_COLONNES] + " — le pan resté debout "
+						+ "n'a pas perdu une seule pierre")
 				var part: float = float(basses) / float(hauteurs.size())
 				if part < NORD_MANQUE_PART_MIN:
 					faults.append("seulement %.0f %% du couronnement nord "

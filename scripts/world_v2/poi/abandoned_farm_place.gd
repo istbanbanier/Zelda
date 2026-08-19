@@ -102,7 +102,14 @@ const TEINTES_TEXTUREES: Dictionary = {
 	"MAT_Farm_Stone": Color(0.86, 0.70, 0.54),
 	"MAT_Farm_Wood": Color(0.62, 0.50, 0.38),
 	"MAT_Farm_BrokenWood": Color(0.82, 0.74, 0.60),
-	"MAT_Farm_Tiles": Color(0.74, 0.54, 0.42),
+	# TUILES DÉSATURÉES, sur mesure et contre une règle écrite. `T_RoundTiles`
+	# est une terre cuite vive ; mesuré sur `ferme_composition` du 2026-08-19,
+	# le pan tombé rendait une saturation HSV de 0,69 quand le mur de pierre
+	# est à 0,36 et l'herbe à 0,46 — l'élément le plus saturé de tout le cadre,
+	# sur une ruine. VISUAL_ASSET_BIBLE §1.4 borne les accents saturés et §1.5
+	# demande que les tuiles restent SOUS les murs. L'écart rouge-bleu de la
+	# teinte passe de 0,32 à 0,20.
+	"MAT_Farm_Tiles": Color(0.68, 0.56, 0.48),
 }
 
 static var _cache_materiaux: Dictionary = {}
@@ -244,8 +251,14 @@ func _ruined_house(at: Vector3, yaw_deg: float) -> void:
 		# gradins d'assise), pas une décoration superposée. Le COLLIDER reste
 		# pleine hauteur : la brèche est haute, personne ne passe, et le
 		# navmesh gelé n'a rien à réapprendre.
-		if i == 2:
-			K.collider_box(house, "mur_nord_breche_col",
+		if i >= 1:
+			# DEUX travées, pas une (R2B.2, second relevé du lead) : le pan
+			# rompu porte aussi l'arase ÉBRÉCHÉE de la travée centrale. Une
+			# arase intacte sur quatre mètres n'existe pas sur une ruine, et
+			# une pièce posée par-dessus pour y mordre serait la décoration
+			# superposée que la directive refuse. Le COLLIDER reste pleine
+			# hauteur : le mur tient encore, il a seulement perdu des pierres.
+			K.collider_box(house, "mur_nord_breche_col_%d" % i,
 				Vector3(x, 0, -half) + Vector3(0, WALL_H * 0.5, 0),
 				Vector3(MODULE, WALL_H, 0.4))
 		else:
@@ -340,7 +353,7 @@ func _maconnerie_rompue(house: Node3D) -> void:
 	# extérieure affleure le parement à 2 cm près (emprise locale Z ∈
 	# [-0,26 ; +0,29], posée à -2,76 ⇒ dehors à -3,02).
 	_piece_ferme(house, "SM_Farm_WallBreak_North",
-		Vector3(1.75, 0.0, -2.76), Vector3.ZERO)
+		Vector3(1.70, 0.0, -2.76), Vector3.ZERO)
 	# Et sa matière au sol, DEHORS, au pied de la brèche : un mur qui disparaît
 	# sans laisser de trace se lit « inachevé », pas « effondré ».
 	_piece_ferme(house, "SM_Farm_Rubble_North",
