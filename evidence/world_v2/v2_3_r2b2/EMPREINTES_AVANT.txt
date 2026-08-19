@@ -8,3 +8,11 @@ ddf7f6b9f1b1b6559f02d4755971327ade9650f2d7081dda776b5e3667c4c961  assets/archite
 # Triangles et taille au point zéro :
 SM_Farm_Ruins.glb                                      101364 octets  triangles              : 1624
 SM_ThunderstruckTree.glb                               142584 octets  triangles              : 2526
+
+# VÉRIFIÉ PAR LE LEAD le 2026-08-19, sur la base c44f430b :
+#   SM_Farm_Ruins.glb ........... 23 avertissements « pas d'UV0 », puis === VALIDE ===
+#   Wall_UnevenBrick_Straight.gltf .. 0 avertissement — le module de kit PORTE ses UV
+# Le contraste est la cause exacte du « carton découpé » : des pièces sans UV ni
+# texture posées contre une maçonnerie texturée. L'inspecteur avertissait depuis
+# le début et personne n'a agi — défaut de portail consigné, outil non modifié
+# dans cette passe.
