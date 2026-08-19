@@ -210,9 +210,23 @@ Les quatre points de l'audit, sur `ferme_seuil` (rendus réels, même caméra) :
 +4,52 pts (pièces retirées). Cohérents entre eux par le masquage.
 **Confirmé indépendamment par l'attribution** : `KIT_maconnerie` 15,23 → 17,56
 (+2,33), `FERME_pieces_ajoutees` 16,58 → 16,67 (+0,09, du bruit) — **96 % de
-l'effet porte sur la maçonnerie de kit**. Mécanisme exact : du plâtre lisse
-devient de la brique peinte, et à 2 m chaque pierre dépasse `MIN_COMPOSANTE`.
-Effet 4,2× la bande de bruit (1,08 pt).
+l'effet porte sur la maçonnerie de kit**. Effet 4,2× la bande de bruit (1,08 pt).
+
+**RÉCIT DU MÉCANISME : RETIRÉ, IL ÉTAIT FAUX.** Une première version de ce
+document — et du rapport d'audit — affirmait qu'« à cette distance chaque pierre
+peinte de `T_UnevenBrick` dépasse `MIN_COMPOSANTE` ». **Mesuré depuis, c'est
+faux** : à pièces retirées de part et d'autre, les composantes passent de 42 à
+**41** (−1, alors qu'elles exploseraient si chaque pierre formait la sienne), la
+médiane ne bouge pas (2 177 px), la plus grande gagne 48 %, la couverture
+**beige** gagne 0,3 % quand la surface **plate** gagne 9,4 %. Ni la
+fragmentation ni le prédicat de couleur ne sont le moteur : ce sont les grandes
+régions déjà présentes qui grossissent.
+
+**Le seul fait établi** : la face brique se lit **9,4 % plus plate** que la face
+plâtre, à couverture beige et nombre de composantes constants. Aucune
+explication vérifiée du pourquoi, et l'audit a refusé d'en inventer une seconde.
+**La MESURE du coût de rotation tient inchangée ; c'est son RÉCIT qui était
+faux.**
 
 **Prudence de l'audit, retenue** : seules les paires 1↔3 et 2↔4 sont propres.
 Comparer le point 4 aux 23,74 % de R2B mêlerait quatre commits sur la ferme, un
@@ -259,10 +273,13 @@ Le portail ≤ 12 % était celui du lead : il peut le retirer. Le gel du kit vie
 de la directive : il ne le lève pas. Constat porté nommé et chiffré à la
 clôture, pour que la revue décide :
 
-> à 2 m et FOV 66, la maçonnerie de kit produit à elle seule **21,85 %**
-> d'aplats mesurés ; **aucune correction confinée à la ferme ne peut amener
-> cette vue sous 12 %** ; changer cela demanderait de toucher au kit, donc à
-> des lieux GELÉS dont le hameau riverain.
+> sur `ferme_seuil` — caméra à **7,10 m de son point visé** et **1,64 m de la
+> face de mur la plus proche**, FOV 66 — la maçonnerie de kit produit à elle
+> seule **26,37 %** d'aplats dans l'ORIENTATION LIVRÉE (21,85 % dans
+> l'orientation d'avant R2B.1, retenue seulement comme point de comparaison).
+> **Aucune correction confinée à la ferme ne peut amener cette vue sous 12 %** ;
+> il faudrait toucher au kit `Wall_UnevenBrick_*`, donc à des lieux GELÉS dont
+> le hameau riverain.
 
 ### Trois défauts d'instrument trouvés par l'audit dans ses PROPRES outils
 
@@ -280,3 +297,37 @@ clôture, pour que la revue décide :
 Le pivot de l'audit est appliqué au RUNTIME, aucun fichier de lieu touché : la
 restauration est acquise par construction, pas par une remise en état qu'on
 pourrait oublier.
+
+### Décision 5 — le nouveau portail avait un ANGLE MORT, trouvé par l'audit
+
+Par construction, `coût d'ablation = aplat DESSINÉ par les pièces − aplat de kit
+RÉVÉLÉ en les retirant`. **Une pièce plate posée à plat contre un mur plat coûte
+donc ≈ 0** : elle dessine autant qu'elle cache. Ce n'est pas théorique — les
+deux termes sont DÉJÀ déséquilibrés : les pièces **dessinent 16,67 %** pour n'en
+coûter que **7,89**, donc elles en cachent déjà 8,78. Élargir les pièces en les
+laissant plates ferait tomber le coût vers zéro **sans rien améliorer**.
+
+**Le portail devient une PAIRE**, sur le modèle de la lecture appariée
+boîtitude/orthogonalité, et les deux termes doivent tenir ensemble :
+
+  - **coût d'ablation ≤ +2,0 points** (aujourd'hui +7,89) ;
+  - **ET part attribuée aux pièces `SM_Farm_*` ≤ 8,0 %** (aujourd'hui 16,67 %).
+
+Aucun des deux ne se contourne seul : élargir des pièces plates fait tomber le
+coût mais fait MONTER la part attribuée au-dessus de son plafond ; les rétrécir
+fait baisser les deux mais se voit dans l'image. Le seuil de 8,0 % est à 7,4×
+la bande de bruit et demande une division par deux d'un chiffre que le travail
+contrôle directement.
+
+**Les deux chiffres sont publiés à CHAQUE vue.** Sur certaines, un coût proche
+de zéro sera **trivial** faute de pièces à l'écran : la part attribuée
+l'accompagne systématiquement pour que ce cas se distingue d'une vraie réussite.
+
+### Deux affirmations du lead corrigées par l'audit
+
+1. **« à 2 m »** : chiffre jamais mesuré par l'audit. Vérifié par le lead —
+   la caméra est à **7,10 m de son point visé** et à **1,64 m de la face de mur
+   la plus proche**. Les deux voies mesuraient des distances différentes ;
+   aucune n'avait tort, le lead a mélangé les deux.
+2. **« 21,85 % » en tête de constat** : décrit l'orientation d'AVANT, pas l'état
+   livré. Dans l'orientation livrée, le kit seul produit **26,37 %**.
