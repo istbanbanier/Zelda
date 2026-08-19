@@ -636,6 +636,16 @@ def tableaux(bm, hauteur, arrache):
         # est à Y = 0) et se lisaient comme des poteaux plaqués sur la façade.
         # Le tableau d'une baie affleure son parement, il ne le double pas.
         prisme(bm, contour, -EPAISSEUR_MUR + 0.06, 0.04, IDX_PIERRE)
+        # HARPES : une pierre sur deux déborde dans le mur. Sans elles, le
+        # tableau est un bandeau lisse — mesuré sur capture, il se lisait
+        # comme une colonne pleine, plus unie que tout ce qui l'entoure.
+        for k, z in enumerate((0.28, 0.86, 1.44)):
+            if z > haut - 0.15:
+                continue
+            moellon(bm, (cote * 0.86 + cote * 0.10, -EPAISSEUR_MUR * 0.5 + 0.05,
+                         z + _graine(k * 2.3) * 0.06),
+                    (0.30, EPAISSEUR_MUR * 0.62, 0.19), 40.0 + k + cote,
+                    IDX_PIERRE)
     # Seuil : la pierre usée du passage, débordante des deux côtés.
     prisme(bm, [(-0.94, 0.0), (0.94, 0.0), (0.94, 0.15), (-0.94, 0.15)],
            -EPAISSEUR_MUR - 0.02, 0.10, IDX_PIERRE)

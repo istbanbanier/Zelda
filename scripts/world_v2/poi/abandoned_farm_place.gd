@@ -279,14 +279,18 @@ func _maconnerie_rompue(house: Node3D) -> void:
 		Vector3(0.0, WALL_H - 0.06, -half), Vector3.ZERO)
 	_piece_ferme(house, "SM_Farm_WallStub_East",
 		Vector3(half - 0.18, 0.0, 2.0),
-		Vector3(0.0, deg_to_rad(90.0), 0.0))
+		Vector3(0.0, deg_to_rad(90.0), 0.0), "", 1.20)
 	_piece_ferme(house, "SM_Farm_Rubble_Wall",
 		Vector3(half + 1.05, 0.0, 1.9),
 		Vector3(0.0, deg_to_rad(35.0), 0.0))
+	# ×1,45 sur les tableaux : ils vivent dans l'embrasure, donc à l'ombre
+	# portée du mur, et la pierre y rendait GRIS UNI — le même écart que
+	# celui déjà consigné pour le socle d'assises. Mesuré sur `ferme_seuil` :
+	# deux colonnes plus sombres et plus unies que tout ce qui les entoure.
 	_piece_ferme(house, "SM_Farm_Jamb_Door",
-		Vector3(0.0, 0.01, half), Vector3.ZERO)
+		Vector3(0.0, 0.01, half), Vector3.ZERO, "", 1.45)
 	_piece_ferme(house, "SM_Farm_Jamb_Breach",
-		Vector3(MODULE, 0.01, half), Vector3.ZERO)
+		Vector3(MODULE, 0.01, half), Vector3.ZERO, "", 1.45)
 	# Ossature : les poteaux vont aux murs QUI PORTENT (ouest, nord) ; les
 	# bouts de solives aux deux autres, où le plancher était seulement scellé.
 	# Chaque pièce saille vers +X dans sa source : la rotation la retourne
@@ -315,7 +319,7 @@ func _maconnerie_rompue(house: Node3D) -> void:
 ## d'entrer dans l'arbre, et porte le nom de la pièce — le filet R2B la
 ## désigne par ce nom, et Godot ne renomme jamais un enfant unique.
 func _piece_ferme(parent: Node3D, piece: String, at: Vector3,
-		rot: Vector3, suffixe: String = "") -> Node3D:
+		rot: Vector3, suffixe: String = "", gain: float = 1.0) -> Node3D:
 	var instance: Node3D = FERME_SCENE.instantiate() as Node3D
 	# MESURÉ le 2026-08-19 : deux instances de la MÊME pièce posées sous le
 	# même parent sortent de `add_child` sous le nom `@Node3D@3` — Godot ne
@@ -331,7 +335,7 @@ func _piece_ferme(parent: Node3D, piece: String, at: Vector3,
 	parent.add_child(instance)
 	instance.position = at
 	instance.rotation = rot
-	_peindre_glb(instance)
+	_peindre_glb(instance, gain)
 	return instance
 
 

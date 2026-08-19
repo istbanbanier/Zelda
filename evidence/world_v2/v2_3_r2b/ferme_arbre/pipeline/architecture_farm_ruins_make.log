@@ -7,11 +7,11 @@ Blender 4.0.2
 [farm_ruins] SM_Farm_GableBreak        332 tris  X -3.21..2.11  Y -0.34..0.34  Z 0.000..1.25
 [farm_ruins] SM_Farm_WallStub_East      84 tris  X -1.19..1.03  Y -0.22..0.26  Z 0.000..1.15
 [farm_ruins] SM_Farm_Rubble_Wall       184 tris  X -1.27..1.13  Y -0.74..0.74  Z 0.000..0.62
-[farm_ruins] SM_Farm_Jamb_Door          36 tris  X -0.96..0.96  Y -0.42..0.10  Z 0.000..2.10
-[farm_ruins] SM_Farm_Jamb_Breach        44 tris  X -0.96..0.96  Y -0.42..0.10  Z 0.000..1.72
+[farm_ruins] SM_Farm_Jamb_Door         108 tris  X -1.13..1.13  Y -0.42..0.10  Z 0.000..2.10
+[farm_ruins] SM_Farm_Jamb_Breach        92 tris  X -1.13..1.13  Y -0.42..0.10  Z 0.000..1.72
 [farm_ruins] SM_Farm_InteriorFrame      72 tris  X 0.01..0.74  Y -2.60..2.40  Z 0.000..2.88
 [farm_ruins] SM_Farm_JoistStubs         76 tris  X 0.00..1.18  Y -2.02..1.98  Z 0.000..0.39
-[farm_ruins] total 1504 triangles (budget 4500)
+[farm_ruins] total 1624 triangles (budget 4500)
 [farm_ruins] pignon : asymetrie 0.206, 51 gradin(s) d'arrachement
 Info: Total files 0 | Changed 0 | Failed 0
 Info: Saved "SM_Farm_Ruins.blend"
