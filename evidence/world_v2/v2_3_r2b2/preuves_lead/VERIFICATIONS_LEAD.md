@@ -1304,3 +1304,99 @@ vérification, et la première qui concerne un geste **déclaré fait** plutôt 
 défaut supposé. La règle vaut dans les deux sens : je n'ai pas plus le droit de
 confirmer une correction que je n'ai pu mesurer que d'accuser un défaut que je
 n'ai pas mesuré.
+
+## 35. Tableau final de l'audit — le liant de densité est VERT, et les trois contournements sont fermés
+
+### Densité d'aplat des pièces, plafond 45 %
+
+| vue qualifiante | départ | SHA | |
+|---|---:|---:|---|
+| `ferme_seuil` | **69,3 %** | **5,7 %** | **VERT** |
+| `ferme_laterale` | **62,5 %** | **0,0 %** | **VERT** |
+
+Non seulement sous le plafond de 45, mais **sous la densité du kit lui-même**
+(34,4 %), qui était la cible réelle.
+
+### Les trois voies de contournement, chacune fermée par son témoin
+
+| contournement | signature attendue | mesuré |
+|---|---|---|
+| **dilution par ajout** | aplat constant, couverture en hausse | aplat **16,67 → 1,14** — il s'effondre |
+| **rétrécissement** | les deux baissent | couvertures **19,84** et **18,48**, l'une **monte** |
+| **suppression** | couverture s'effondre | garde d'anti-vacuité **VERTE** (≥ 10 %) |
+
+C'est à cela que servaient les quatre témoins publiés à chaque vue : non pas à
+décorer le verdict, mais à rendre chaque contournement **visible dans les
+chiffres**.
+
+### Le coût d'ablation est NÉGATIF
+
+**−2,79** et **−3,18**. Les pièces ajoutées dessinent désormais **moins** d'aplat
+que la maçonnerie qu'elles masquent.
+
+C'est le résultat que le portail autorisait explicitement et qu'**aucun
+contournement ne peut produire** : pour l'obtenir, il faut avoir réellement
+traité les surfaces. Un lot qui aurait rétréci, dilué ou supprimé donnerait un
+coût nul ou positif.
+
+## 36. Lisibilité à 94 m — aucune régression, et le témoin le prouve
+
+| sujet | départ | SHA | écart |
+|---|---|---|---:|
+| `SM_ThunderstruckTree` | 11,2 / 11,7 % | **11,2 / 11,6 %** | **−0,0 / −0,1** |
+| `CommonTree_1` (témoin du kit, non touché) | 27,2 / 27,5 % | **27,2 / 27,5 %** | **0,0** |
+
+**Le témoin est rigoureusement identique.** C'est lui qui donne sa valeur au
+reste : il prouve que la règle de cadrage n'a pas bougé entre les deux états, et
+donc que l'écart de l'arbre est mesuré dans le **même repère**. Sans témoin, un
+−0,1 pourrait aussi bien venir de la mesure que du sujet.
+
+Et l'emprise de l'arbre, elle, **a changé** — 8,70 → 8,72 en X, 8,48 → 8,46 en
+Z : **la géométrie a bougé sans que le remplissage bouge.** C'est exactement ce
+que le point 9 demandait — corriger le champ proche sans perdre la lecture
+lointaine.
+
+L'audit avait proposé de me dire, sans atténuation, si la densité avait baissé,
+alors qu'aucun seuil ne le lui demandait. La réponse est non, et elle vaut parce
+que la question a été posée avant de connaître le résultat.
+
+## 37. Le `+100` de la fuite — l'audit REFUSE de me le confirmer
+
+Structure vérifiée par lui : **16 pièces** (son journal d'ablation en masque 16,
+confirmation indépendante), **4 matériaux** dans le GLB, cache `static` à clé
+`instance_id|gain|mode`. Le nombre de matériaux dupliqués est donc **borné et
+petit**, ce qui rend l'ordre de grandeur plausible.
+
+> **Mais il ne confirme pas 100 sans instrumenter Godot, et il ne l'a pas fait.**
+
+C'est la bonne réponse, et elle m'oblige : mon explication reste une **histoire
+plausible et bornée**, pas une mesure. Ce qui porte seul le constat, c'est le
+faisceau — **239 → 239, 14 → 14, 42 → 42, 58 → 58**, quatre classes figées au
+chiffre près pour un seul mouvement. Une fuite nouvelle aurait fait bouger au
+moins une classe figée.
+
+**Ce n'est pas une preuve d'absence de régression, et ISS-059 ne doit pas
+l'écrire comme telle.**
+
+## 38. Ce que l'audit indépendant a produit, et qui se transpose
+
+Six corrections au lead, dont **cinq sur des affirmations non mesurées**. Et
+**trois contre lui-même**, dont deux ont changé ses propres conclusions :
+
+- sa bande d'incertitude de 1,08 pt séparait deux **commits** et non deux rendus
+  — ce qui rendait ses écarts **19 à 192 fois** plus significatifs qu'il ne
+  l'avait écrit, donc plus favorables au verdict qu'il combattait ;
+- son résidu de rampe **linéaire** ratait les rampes **géométriques** ;
+- son affirmation sur `RoofPan_Fallen` était réfutée par une donnée qui se
+  trouvait **dans son propre relevé du point zéro**.
+
+Et trois de ses instruments ont rougi **sur eux-mêmes avant de servir** : le
+sélecteur de pivot à « 0 nœud », `hexa` contourné par son propre cas témoin de
+subdivision, l'attribution qui refuse d'écrire quand son masque diverge du
+portail.
+
+> **Aucune de ces trouvailles ne vient d'une intuition.**
+
+C'est la seule chose de cette passe qui se transpose telle quelle à la suivante :
+un cas témoin qui rougit tout seul vaut mieux qu'un lecteur attentif, parce qu'il
+n'a pas de bons jours.
