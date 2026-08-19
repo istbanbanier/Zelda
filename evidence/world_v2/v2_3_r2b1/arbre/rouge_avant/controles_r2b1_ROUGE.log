@@ -1,0 +1,22 @@
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: r2b1_arbre
+  ÉCHEC test_world_v2_r2b1_arbre.gd::test_l_arbre_ouvre_sa_silhouette_sous_tout_azimut — la silhouette de l'arbre s'ouvre sous les 24 azimuts (2 écart(s)) — emprise latérale 2.32 m au pire azimut (150°), plancher 3.60, anisotropie 1.81 (pire 2.32 m / meilleur 4.18 m), plafond 1.35
+  ÉCHEC test_world_v2_r2b1_arbre.gd::test_deux_ruptures_principales_a_des_hauteurs_differentes — deux ruptures principales à des hauteurs différentes (1 écart(s)) — 1 rupture(s) principale(s), plancher 2
+  ÉCHEC test_world_v2_r2b1_arbre.gd::test_le_fut_n_est_pas_un_cone — le fût s'affine et le pied se creuse (3 écart(s)) — fût affine : résidu 0.037 du rayon moyen, plancher 0.07, 0 renflement(s) de collet, plancher 2, souche rectiligne ou bombée : concavité -0.025 m, plancher 0.06
+  ÉCHEC test_world_v2_r2b1_arbre.gd::test_les_saillies_ne_forment_ni_grappe_ni_etoile — les saillies ne forment ni grappe ni étoile (2 écart(s)) — deux saillies à 1.4° l'une de l'autre, plancher 20°, saillies en grappe : écarts max/min 186.3, plafond 2.6
+  ÉCHEC test_world_v2_r2b1_arbre.gd::test_les_bois_tombes_sont_hierarchises — les bois tombés sont hiérarchisés et au moins un est appuyé (4 écart(s)) — 2 bois tombé(s), plancher 4, longueurs trop proches : max/min 1.25, plancher 1.80, épaisseurs trop proches : max/min 1.00, plancher 1.60, aucun bois appuyé : dénivelé bout-à-bout max 0.054 m, plancher 0.35
+  ÉCHEC test_world_v2_r2b1_arbre.gd::test_la_fracture_est_du_bois_arrache — la fracture est du bois arraché (2 écart(s)) — cicatrice de largeur constante : CV 0.121, plancher 0.30, 1 plan(s) de rupture portant 3 échardes ou plus, plancher 2
+  ÉCHEC test_world_v2_r2b1_arbre.gd::test_le_sol_brule_n_est_ni_etoile_ni_plaque — le sol brûlé n'est ni une étoile ni une plaque (4 écart(s)) — bord en étoile : rmax/rmin 2.07, plafond 1.55, bord harmonique : 68% de l'énergie dans une seule raie, plafond 45%, disque de 34.5 m², plafond 24, teinte de sommet périodique : 78/78 sommets identiques à 12 rangs d'écart
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 0 réussi(s), 7 échoué(s) ===
+  ÉCHEC: test_world_v2_r2b1_arbre.gd::test_l_arbre_ouvre_sa_silhouette_sous_tout_azimut — la silhouette de l'arbre s'ouvre sous les 24 azimuts (2 écart(s)) — emprise latérale 2.32 m au pire azimut (150°), plancher 3.60, anisotropie 1.81 (pire 2.32 m / meilleur 4.18 m), plafond 1.35
+  ÉCHEC: test_world_v2_r2b1_arbre.gd::test_deux_ruptures_principales_a_des_hauteurs_differentes — deux ruptures principales à des hauteurs différentes (1 écart(s)) — 1 rupture(s) principale(s), plancher 2
+  ÉCHEC: test_world_v2_r2b1_arbre.gd::test_le_fut_n_est_pas_un_cone — le fût s'affine et le pied se creuse (3 écart(s)) — fût affine : résidu 0.037 du rayon moyen, plancher 0.07, 0 renflement(s) de collet, plancher 2, souche rectiligne ou bombée : concavité -0.025 m, plancher 0.06
+  ÉCHEC: test_world_v2_r2b1_arbre.gd::test_les_saillies_ne_forment_ni_grappe_ni_etoile — les saillies ne forment ni grappe ni étoile (2 écart(s)) — deux saillies à 1.4° l'une de l'autre, plancher 20°, saillies en grappe : écarts max/min 186.3, plafond 2.6
+  ÉCHEC: test_world_v2_r2b1_arbre.gd::test_les_bois_tombes_sont_hierarchises — les bois tombés sont hiérarchisés et au moins un est appuyé (4 écart(s)) — 2 bois tombé(s), plancher 4, longueurs trop proches : max/min 1.25, plancher 1.80, épaisseurs trop proches : max/min 1.00, plancher 1.60, aucun bois appuyé : dénivelé bout-à-bout max 0.054 m, plancher 0.35
+  ÉCHEC: test_world_v2_r2b1_arbre.gd::test_la_fracture_est_du_bois_arrache — la fracture est du bois arraché (2 écart(s)) — cicatrice de largeur constante : CV 0.121, plancher 0.30, 1 plan(s) de rupture portant 3 échardes ou plus, plancher 2
+  ÉCHEC: test_world_v2_r2b1_arbre.gd::test_le_sol_brule_n_est_ni_etoile_ni_plaque — le sol brûlé n'est ni une étoile ni une plaque (4 écart(s)) — bord en étoile : rmax/rmin 2.07, plafond 1.55, bord harmonique : 68% de l'énergie dans une seule raie, plafond 45%, disque de 34.5 m², plafond 24, teinte de sommet périodique : 78/78 sommets identiques à 12 rangs d'écart
+RC=1
