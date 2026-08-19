@@ -144,3 +144,52 @@ Le STATUS de R2B.1 disait « Techniquement VERT (ferme PARTIAL) » ; l'audit
 indépendant l'a lu comme si le portail visuel avait été déclaré vert. Il ne
 l'était pas — l'échec de `ferme_seuil` était écrit et la passe close en PARTIAL —
 mais le libellé prêtait à confusion. Corrigé.
+
+## Le critère du lead, mis en cause par l'audit — mesure en cours
+
+L'audit indépendant a exécuté DEUX méthodes sur `ferme_seuil` :
+- **attribution** : kit 17,56 % d'écran (51,2 % des aplats), pièces `SM_Farm_*`
+  16,67 % (48,7 %) ;
+- **ablation** : retirer les 14 pièces fait tomber le total de 34,26 à
+  **26,37 %** — soit −7,89 points quand elles en DESSINENT 16,67.
+
+L'écart de 8,78 points est le mur de kit qu'elles masquaient, et le nombre de
+composantes **augmente** au retrait (39 → 41) : signature du dévoilement.
+L'attribution de l'image d'ablation donne **100,0 %** du résidu au kit. Bande
+d'incertitude déclarée : 1,08 point, contre des écarts de 8 à 18 points.
+
+**Conséquence : le critère « retour sous 23,74 % » que le lead avait gravé est
+INATTEIGNABLE.** Même en supprimant jusqu'à la dernière pièce ajoutée, le
+plancher vaut 26,37 %. Un critère qu'aucune correction ne peut satisfaire n'est
+pas un critère, c'est un verdict déguisé.
+
+**Le lead ne le déplace pas sur une intuition.** Une hypothèse précise est
+testée avant toute décision : *c'est une correction EXIGÉE PAR LE LEAD qui
+aurait fait monter le chiffre*. En R2B.1, cinq murs présentaient leur face
+brique vers l'intérieur et ont été retournés — correction juste, saluée. Mais là
+où l'on voyait du plâtre lisse on voit désormais de la brique texturée, et à 2 m
+chaque pierre peinte dépasse `MIN_COMPOSANTE`. Corriger l'orientation aurait
+donc AUGMENTÉ la mesure d'aplats alors que l'image est meilleure.
+
+Mesure commandée à l'audit — quatre points, la rotation isolée :
+
+| état | pièces présentes | pièces retirées |
+|---|---:|---:|
+| murs actuels (orientation corrigée) | 34,26 % | 26,37 % |
+| murs d'avant R2B.1 (plâtre dehors) | à mesurer | **à mesurer ← se compare aux 23,74 % de R2B** |
+
+Les variantes sont des INSTRUMENTS, pas des livrables : construites, mesurées,
+restaurées, restauration prouvée. **L'orientation corrigée reste la
+production** — le lead ne revient pas sur une correction juste parce qu'un
+instrument la note mal.
+
+Trois issues possibles, à trancher sur la mesure : la hausse vient de la
+rotation → le seuil est mal spécifié et devient une comparaison à
+ISO-ORIENTATION ; elle vient d'ailleurs → le critère tient et la vraie cause
+reste à trouver ; les deux contribuent → part de chacun.
+
+**Écart non résolu entre les deux voies** : l'agent A annonce 8,11 % pour le kit
+seul et 24,15 % pour ses pièces ; l'audit trouve 17,56/26,37 et 16,67/7,89.
+L'audit refuse de trancher sans voir la méthode de A — c'est la bonne posture.
+**C'est l'attribution de l'AUDIT qui fait foi pour la clôture**, comme gravé
+plus haut.
