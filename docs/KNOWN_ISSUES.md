@@ -1570,3 +1570,12 @@ ZÉRO ligne de fuite : le profil « suite complète seulement » est inchangé, 
 la croissance est proportionnelle aux instances de modules des cinq lieux
 reconstruits que la suite monte de nombreuses fois — pas une classe de fuite
 nouvelle. Le verdict validate_fast reste ROUGE (règle du budget rouge).
+
+**Mise à jour 2026-08-19 (R2B.1)** : rejoué sur la branche intégrée
+(`evidence/world_v2/v2_3_r2b1/integration/validate_fast.log`) — **933 tests
+verts, 0 échoué**, rouge toujours porté par la seule signature de sortie.
+Cette signature est **IDENTIQUE AU CHIFFRE PRÈS** à celle de l'intégration
+R2B : ObjectDB 5103, resources 239, DummyMaterial 4749, DummyShader 14,
+DummyMesh 42, DummyTexture 58. R2B.1 n'ajoute donc **aucun** objet à la fuite,
+alors qu'elle ajoute 17 tests et deux GLB régénérés — **aucune différence
+nouvelle par rapport à la base**. Le verdict validate_fast reste ROUGE.
