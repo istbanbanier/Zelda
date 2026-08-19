@@ -288,7 +288,9 @@ RACINE_RAYON_POINTE = 0.012
 # (x, y, yaw, longueur, rayon, relevé | côtés, flèche, position de flèche,
 #  loi d'effilement, nombre de chicots)
 BRANCHES = (
-    (2.95, 1.75, 2.05, 4.20, 0.260, 0.00, 8, 0.42, 0.38, "renfle", 2),
+    # Le releve de 0,00 a 0,38 fait decoller un bout : la piece s'appuie au
+    # lieu de gesir a plat, et cesse de presenter une dalle continue.
+    (2.95, 1.75, 2.05, 4.20, 0.260, 0.38, 8, 0.42, 0.38, "renfle", 2),
     (-3.30, 2.15, -0.75, 3.10, 0.195, 0.62, 7, -0.24, 0.55, "troncon", 0),
     (-1.20, -3.35, 0.95, 2.30, 0.155, 0.00, 6, 0.20, 0.62, "noeud", 1),
     (3.05, -2.40, 2.60, 1.60, 0.115, 0.41, 6, -0.17, 0.45, "fourchue", 3),
@@ -985,7 +987,13 @@ def _effilement(loi, t):
     étagés — et pas du tout sur la FORME. C'est ce que le lead a lu comme
     « des poutres identiques »."""
     if loi == "renfle":
-        return 0.42 + 0.88 * ((1.0 - t) ** 1.8)
+        # RENFLEMENT RAMENE DE 1,30 A 1,04. Mesure faite depuis la camera
+        # `arbre_pied` : les racines n'y sous-tendent que 19,8 degres, tandis
+        # que CE bois-ci en sous-tend 56,1 — c'est-a-dire la quasi-totalite du
+        # cadre. L'« aile sombre posee sur l'herbe » que le lead a vue au pied
+        # n'etait donc pas la jupe de racine : c'etait ce madrier de 4,20 m
+        # dont le pied gonfle a 0,68 m de diametre, vu presque en enfilade.
+        return 0.42 + 0.62 * ((1.0 - t) ** 1.8)
     if loi == "troncon":
         return 1.00 - 0.12 * t
     if loi == "noeud":
