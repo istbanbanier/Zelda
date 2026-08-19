@@ -1,0 +1,46 @@
+Blender 4.0.2
+Read blend: "/home/user/zelda-r2b2/a_ferme/source_assets/blender/architecture/SM_Farm_Ruins.blend"
+[export_gltf] Blender 4.0.2
+[export_gltf] io_scene_gltf2 version (4, 0, 44)
+[export_gltf] preset: export_animation_mode=ACTIONS, export_animations=False, export_apply=True, export_cameras=False, export_extras=False, export_force_sampling=True, export_format=GLB, export_lights=False, export_materials=EXPORT, export_normals=True, export_optimize_animation_size=False, export_skins=True, export_tangents=True, export_texcoords=True, export_yup=True, use_selection=False, use_visible=True
+16:44:53 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
+16:44:54 | INFO: Starting glTF 2.0 export
+16:44:54 | INFO: Extracting primitive: SM_Farm_Truss
+16:44:54 | INFO: Primitives created: 2
+16:44:54 | INFO: Extracting primitive: SM_Farm_RoofPan_Intact
+16:44:54 | INFO: Primitives created: 2
+16:44:54 | INFO: Extracting primitive: SM_Farm_RoofPan_Fallen
+16:44:54 | INFO: Primitives created: 2
+16:44:54 | INFO: Extracting primitive: SM_Farm_Debris_A
+16:44:54 | INFO: Primitives created: 3
+16:44:54 | INFO: Extracting primitive: SM_Farm_Debris_B
+16:44:54 | INFO: Primitives created: 3
+16:44:54 | INFO: Extracting primitive: SM_Farm_GableBreak
+Error: Tangent space can only be computed for tris/quads, aborting
+16:44:54 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+16:44:54 | INFO: Primitives created: 1
+16:44:54 | INFO: Extracting primitive: SM_Farm_WallStub_East
+Error: Tangent space can only be computed for tris/quads, aborting
+16:44:54 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+16:44:54 | INFO: Primitives created: 1
+16:44:54 | INFO: Extracting primitive: SM_Farm_Rubble_Wall
+16:44:54 | INFO: Primitives created: 3
+16:44:54 | INFO: Extracting primitive: SM_Farm_Jamb_Door
+16:44:54 | INFO: Primitives created: 1
+16:44:54 | INFO: Extracting primitive: SM_Farm_Jamb_Breach
+Error: Tangent space can only be computed for tris/quads, aborting
+16:44:54 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+16:44:54 | INFO: Primitives created: 1
+16:44:54 | INFO: Extracting primitive: SM_Farm_InteriorFrame
+16:44:54 | INFO: Primitives created: 1
+16:44:54 | INFO: Extracting primitive: SM_Farm_JoistStubs
+16:44:54 | INFO: Primitives created: 3
+16:44:54 | INFO: Extracting primitive: SM_Farm_WallBreak_North
+Error: Tangent space can only be computed for tris/quads, aborting
+16:44:54 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+16:44:54 | INFO: Primitives created: 1
+16:44:54 | INFO: Extracting primitive: SM_Farm_Rubble_North
+16:44:54 | INFO: Primitives created: 1
+16:44:54 | INFO: Finished glTF 2.0 export in 0.05778980255126953 s
+
+[export_gltf] OK -> /home/user/zelda-r2b2/a_ferme/assets/architecture/farm/SM_Farm_Ruins.glb (198272 octets)

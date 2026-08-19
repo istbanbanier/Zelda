@@ -69,6 +69,42 @@ const ASSISE_L: float = 4.00
 ## Plafond painterly commun aux GLB du monde (même règle que le hameau).
 const ALBEDO_MAX: float = 0.80
 
+## R2B.2 — LA MATIÈRE. Les pièces du GLB sortaient en COULEUR PLATE : sonde
+## Godot du 2026-08-19, 23 surfaces sur 23 sans UV0 et sans `albedo_texture`,
+## quand le module de kit qui les touche porte `T_UnevenBrick_BaseColor.png`.
+## C'est cette discontinuité de matière, mur contre mur, que le lead a nommée
+## « plaques opaques sans matière » et « carton découpé ».
+##
+## Les cartes du kit sont DÉJÀ dans le dépôt (CC0, `ATTRIBUTIONS.md`). Elles
+## sont branchées ICI et non dans le GLB : mesuré le 2026-08-19, les douze
+## cartes utiles pèsent 1,2 à 4,4 Mo, soit ≈ 30 Mo embarqués contre 101 Ko
+## pour le GLB entier. Le point d'accroche existait déjà — `_peindre_glb()`
+## duplique un `StandardMaterial3D` par surface depuis R2B.
+##
+## LA PIERRE DE LA RUINE EST CELLE DU MUR, littéralement : `T_UnevenBrick`.
+## Un moellon tombé d'un mur est fait de ce mur ; lui donner une autre pierre
+## le remettrait en rupture avec ce qui l'entoure.
+const TEX_DIR: String = "res://assets/environment/village/"
+const TEXTURES_PAR_MATERIAU: Dictionary = {
+	"MAT_Farm_Stone": ["T_UnevenBrick_BaseColor", "T_UnevenBrick_Normal",
+		"T_UnevenBrick_Roughness"],
+	"MAT_Farm_Wood": ["T_WoodTrim_BaseColor", "T_WoodTrim_Normal",
+		"T_WoodTrim_Roughness"],
+	"MAT_Farm_BrokenWood": ["T_WoodTrim_BaseColor", "T_WoodTrim_Normal",
+		"T_WoodTrim_Roughness"],
+	"MAT_Farm_Tiles": ["T_RoundTiles_BaseColor", "T_RoundTiles_Normal",
+		"T_RoundTiles_Roughness"],
+}
+## Teintes appliquées SUR la texture. La pierre reprend EXACTEMENT la teinte
+## des modules de mur ci-dessous (0,86 / 0,70 / 0,54) : c'est la condition pour
+## que la maçonnerie neuve et celle du kit soient la même matière à l'écran.
+const TEINTES_TEXTUREES: Dictionary = {
+	"MAT_Farm_Stone": Color(0.86, 0.70, 0.54),
+	"MAT_Farm_Wood": Color(0.62, 0.50, 0.38),
+	"MAT_Farm_BrokenWood": Color(0.82, 0.74, 0.60),
+	"MAT_Farm_Tiles": Color(0.74, 0.54, 0.42),
+}
+
 static var _cache_materiaux: Dictionary = {}
 
 
@@ -200,7 +236,21 @@ func _ruined_house(at: Vector3, yaw_deg: float) -> void:
 		else:
 			_wall(house, Vector3(x, 0, half), 0.0,
 				&"Wall_UnevenBrick_Window_Thin_Round")
-		_wall(house, Vector3(x, 0, -half), 180.0, &"Wall_UnevenBrick_Straight")
+		# R2B.2 — LE MODULE NORD-EST N'EST PLUS POSÉ. Mesuré avant le geste :
+		# l'arase du seul mur nord était plate, écart-type 0,029 m sur 15
+		# colonnes, point bas 3,00 m — un rectangle intact, exactement ce que
+		# le lead a vu sur `ferme_arriere`. La réponse est un module de kit EN
+		# MOINS, remplacé par `SM_Farm_WallBreak_North` (arase arrachée en
+		# gradins d'assise), pas une décoration superposée. Le COLLIDER reste
+		# pleine hauteur : la brèche est haute, personne ne passe, et le
+		# navmesh gelé n'a rien à réapprendre.
+		if i == 2:
+			K.collider_box(house, "mur_nord_breche_col",
+				Vector3(x, 0, -half) + Vector3(0, WALL_H * 0.5, 0),
+				Vector3(MODULE, WALL_H, 0.4))
+		else:
+			_wall(house, Vector3(x, 0, -half), 180.0,
+				&"Wall_UnevenBrick_Straight")
 		var z: float = (float(i) - 1.0) * MODULE
 		# 270° et 90°, PAS 90° et 270° : la face brique du module est en +Z
 		# local, et l'ancienne paire présentait le plâtre à l'extérieur sur
@@ -212,7 +262,9 @@ func _ruined_house(at: Vector3, yaw_deg: float) -> void:
 		if i == 0:
 			_wall(house, Vector3(half, 0, z), 90.0,
 				&"Wall_UnevenBrick_Straight")
-	for corner: Vector3 in [Vector3(-half, 0, -half), Vector3(half, 0, -half),
+	# L'angle NORD-EST tombe avec le pan de mur : un chaînage d'angle intact
+	# au-dessus d'une brèche redonnerait le rectangle qu'on vient d'ouvrir.
+	for corner: Vector3 in [Vector3(-half, 0, -half),
 			Vector3(-half, 0, half), Vector3(half, 0, half)]:
 		K.module(house, &"Corner_Exterior_Brick", corner, 0.0, 1.0,
 			K.TONE_STONE)
@@ -278,8 +330,21 @@ func _toiture_rompue(house: Node3D) -> void:
 ##     murs qui portent, bouts de solives rompus contre les deux autres.
 func _maconnerie_rompue(house: Node3D) -> void:
 	var half: float = 3.0
+	# Le pignon DESCEND de 0,55 m dans le mur : il ne coiffe plus une arête,
+	# il EST les assises hautes. Son contour a gagné le même pied, donc le
+	# faîte n'a pas bougé d'un centimètre. Mesuré avant : recouvrement 0,06 m
+	# et débord 0,34 m devant le parement — les deux causes du « posé dessus ».
 	_piece_ferme(house, "SM_Farm_GableBreak",
-		Vector3(0.0, WALL_H - 0.06, -half), Vector3.ZERO)
+		Vector3(0.0, WALL_H - 0.61, -half), Vector3.ZERO)
+	# Le pan de mur nord ROMPU, à la place exacte du module retiré. Sa face
+	# extérieure affleure le parement à 2 cm près (emprise locale Z ∈
+	# [-0,26 ; +0,29], posée à -2,76 ⇒ dehors à -3,02).
+	_piece_ferme(house, "SM_Farm_WallBreak_North",
+		Vector3(1.75, 0.0, -2.76), Vector3.ZERO)
+	# Et sa matière au sol, DEHORS, au pied de la brèche : un mur qui disparaît
+	# sans laisser de trace se lit « inachevé », pas « effondré ».
+	_piece_ferme(house, "SM_Farm_Rubble_North",
+		Vector3(2.35, 0.0, -4.05), Vector3(0.0, deg_to_rad(-25.0), 0.0))
 	_piece_ferme(house, "SM_Farm_WallStub_East",
 		Vector3(half - 0.18, 0.0, 2.0),
 		Vector3(0.0, deg_to_rad(90.0), 0.0), "", 1.20)
@@ -290,10 +355,13 @@ func _maconnerie_rompue(house: Node3D) -> void:
 	# portée du mur, et la pierre y rendait GRIS UNI — le même écart que
 	# celui déjà consigné pour le socle d'assises. Mesuré sur `ferme_seuil` :
 	# deux colonnes plus sombres et plus unies que tout ce qui les entoure.
+	# GAINS RAMENÉS À 1,0 (R2B.2) : le ×1,45 corrigeait une pierre UNIE qui
+	# rendait gris dans l'embrasure. C'est la carte qui porte la variation
+	# désormais ; le gain ne ferait plus que délaver la matière.
 	_piece_ferme(house, "SM_Farm_Jamb_Door",
-		Vector3(0.0, 0.01, half), Vector3.ZERO, "", 1.45)
+		Vector3(0.0, 0.01, half), Vector3.ZERO)
 	_piece_ferme(house, "SM_Farm_Jamb_Breach",
-		Vector3(MODULE, 0.01, half), Vector3.ZERO, "", 1.45)
+		Vector3(MODULE, 0.01, half), Vector3.ZERO)
 	# Ossature : les poteaux vont aux murs QUI PORTENT (ouest, nord) ; les
 	# bouts de solives aux deux autres, où le plancher était seulement scellé.
 	# Chaque pièce saille vers +X dans sa source : la rotation la retourne
@@ -316,6 +384,8 @@ func _maconnerie_rompue(house: Node3D) -> void:
 		Vector3(half - 0.18, 0.42, 2.0), Vector3(0.44, 0.84, 2.10))
 	K.collider_box(house, "Talus_col",
 		Vector3(half + 1.05, 0.26, 1.9), Vector3(2.30, 0.52, 1.60), 35.0)
+	K.collider_box(house, "Talus_nord_col",
+		Vector3(2.35, 0.24, -4.05), Vector3(1.70, 0.48, 1.30), -25.0)
 
 
 ## Extrait UNE pièce du GLB de ruine : l'instance est élaguée AVANT
@@ -404,6 +474,7 @@ func _peindre_glb(racine: Node3D, gain: float = 1.0) -> void:
 				surface) as StandardMaterial3D
 			if base == null:
 				continue
+			var famille: String = base.resource_name
 			var cle: String = "glb|%d|%.2f" % [base.get_instance_id(), gain]
 			var mat: StandardMaterial3D = \
 				_cache_materiaux.get(cle) as StandardMaterial3D
@@ -411,10 +482,31 @@ func _peindre_glb(racine: Node3D, gain: float = 1.0) -> void:
 				mat = base.duplicate() as StandardMaterial3D
 				mat.roughness = maxf(mat.roughness, 0.95)
 				mat.metallic_specular = 0.1
-				var a: Color = mat.albedo_color
-				mat.albedo_color = Color(minf(a.r * gain, ALBEDO_MAX),
-					minf(a.g * gain, ALBEDO_MAX), minf(a.b * gain, ALBEDO_MAX),
-					a.a)
+				if TEXTURES_PAR_MATERIAU.has(famille):
+					# TEXTURÉE : la teinte REMPLACE l'albédo plat, elle ne le
+					# multiplie pas — la couleur plate du générateur était la
+					# couleur finale, la garder assombrirait la carte deux fois.
+					# Et le `gain` calibré sans texture est ignoré ici : il
+					# corrigeait une pierre unie à l'ombre, or c'est la carte
+					# qui porte désormais la variation.
+					var noms: Array = TEXTURES_PAR_MATERIAU[famille] as Array
+					mat.albedo_texture = load(
+						TEX_DIR + String(noms[0]) + ".png") as Texture2D
+					var nrm: Texture2D = load(
+						TEX_DIR + String(noms[1]) + ".png") as Texture2D
+					if nrm != null:
+						mat.normal_enabled = true
+						mat.normal_texture = nrm
+						mat.normal_scale = 0.65
+					mat.roughness_texture = load(
+						TEX_DIR + String(noms[2]) + ".png") as Texture2D
+					mat.roughness = 1.0
+					mat.albedo_color = TEINTES_TEXTUREES[famille] as Color
+				else:
+					var a: Color = mat.albedo_color
+					mat.albedo_color = Color(minf(a.r * gain, ALBEDO_MAX),
+						minf(a.g * gain, ALBEDO_MAX),
+						minf(a.b * gain, ALBEDO_MAX), a.a)
 				_cache_materiaux[cle] = mat
 			instance.set_surface_override_material(surface, mat)
 

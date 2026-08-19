@@ -129,6 +129,19 @@ ASSISE_H = 0.22         # hauteur d'assise ; c'est le PAS des gradins
 # redevient un triangle intact, donc un mur de plus au lieu d'une rupture.
 PIGNON_ARRACHE = 0.45
 
+# R2B.2 — LE PIED DU PIGNON. Il ne coiffe plus l'arase, il DESCEND dedans :
+# le lieu le pose 0,55 m plus bas et le contour gagne d'autant, si bien que le
+# faîte ne bouge pas d'un centimètre. Mesuré avant le geste : le pignon
+# n'entrait que de 0,06 m dans l'arase et débordait de 0,34 m devant le
+# parement — un bandeau en surplomb sur un mur qui n'est qu'un plan, donc une
+# plaque posée. Cinq assises de recouvrement et le même parement suppriment
+# les deux causes d'un coup.
+PIGNON_PIED_Z = 0.55
+# Épaisseur du pignon : Blender y ∈ [-0,34 ; 0,00] ⇒ Godot z ∈ [0,00 ; 0,34],
+# et le relief de parement ressort de 4 cm vers Godot -z, côté extérieur.
+PIGNON_Y_DEDANS = -0.34
+PIGNON_RELIEF_Y = 0.005
+
 MOIGNON_H_HAUTE = 1.15  # ce qui reste debout du mur est, côté nord
 MOIGNON_H_BASSE = 0.48  # ... et côté sud, là où l'arrachement a mordu
 
@@ -166,6 +179,72 @@ IDX_CASSURE = 2
 IDX_PIERRE = 3
 ORDRE_MATERIAUX = ("MAT_Farm_Wood", "MAT_Farm_Tiles", "MAT_Farm_BrokenWood",
                    "MAT_Farm_Stone")
+
+
+# ---------------------------------------------------------------------------
+# DÉPLIAGE UV0 (R2B.2) — ET POURQUOI IL EXISTE
+#
+# Sonde Godot du 2026-08-19 : les 12 pièces de ce fichier sortaient avec
+# 23 surfaces sur 23 SANS `ARRAY_FORMAT_TEX_UV` et sans texture, quand le
+# module de kit qui les touche, `Wall_UnevenBrick_Straight`, a UV0 sur ses
+# 3 surfaces et porte `T_UnevenBrick_BaseColor.png`. C'est cette discontinuité
+# de MATIÈRE, mur contre mur, qui produit le « carton découpé » du lead — pas
+# un manque d'épaisseur : la mesure dit qu'une seule pièce sur douze est une
+# plaque, et que les tableaux sont plus épais que le mur qu'ils bordent.
+#
+# LES ÉCHELLES SONT MESURÉES, PAS CHOISIES. Sur `Wall_UnevenBrick_Straight`,
+# 1 tuile UV couvre 2,00 m en U et 2,11 m en V, soit ~0,48 UV/m : les pierres
+# des pièces ajoutées auront donc la taille apparente de celles du kit.
+# `T_RoundTiles` (module `Roof_Dormer_RoundTile`) : 2,054 UV sur 1,92 m en U,
+# 0,806 UV sur ~2,4 m de pente en V. `T_WoodTrim` (`Roof_FrontSupports`) :
+# 3,597 UV sur 5,49 m, bande V de 0,788.
+#
+# PIÈGE : `T_WoodTrim` et `T_RoundTiles` sont des TRIM SHEETS directionnels —
+# une projection boîte libre y traverse les bandes et raye la matière. Leur V
+# est donc REPLIÉ dans une bande mesurée. La pierre, elle, se répète sans
+# couture (le kit lui-même monte à v = 1,423) : aucun repli.
+#
+# Projection boîte déterministe par face selon l'axe dominant de la normale :
+# aucun `bpy.ops`, aucun contexte éditeur, aucun `smart_project` dont le
+# résultat dépendrait de la version de Blender.
+#
+#   (echelle_u, echelle_v, bande_min, bande_etendue)   bande None = pas de repli
+PROJECTION_UV = {
+    0: (0.65, 0.65, 0.02, 0.28),    # IDX_BOIS      — T_WoodTrim
+    1: (1.05, 0.34, 0.00, 0.80),    # IDX_TUILES    — T_RoundTiles
+    2: (0.65, 0.65, 0.02, 0.28),    # IDX_CASSURE   — T_WoodTrim (cœur clair)
+    3: (0.48, 0.48, None, None),    # IDX_PIERRE    — T_UnevenBrick / T_RockTrim
+}
+
+
+def deplier_boite(bm):
+    """Pose UV0 sur toutes les faces, par projection boîte.
+
+    L'axe de projection est celui où la normale de la face est la plus forte :
+    une face verticale reçoit sa hauteur réelle en V, une face horizontale
+    reçoit son plan. Les mètres deviennent des tuiles à l'échelle du kit.
+    """
+    couche = bm.loops.layers.uv.verify()
+    for face in bm.faces:
+        eu, ev, bande_min, bande_etendue = PROJECTION_UV.get(
+            face.material_index, (0.48, 0.48, None, None))
+        n = face.normal
+        ax, ay, az = abs(n.x), abs(n.y), abs(n.z)
+        for boucle in face.loops:
+            co = boucle.vert.co
+            if az >= ax and az >= ay:
+                u, v = co.x, co.y          # face horizontale
+            elif ax >= ay:
+                u, v = co.y, co.z          # face regardant X
+            else:
+                u, v = co.x, co.z          # face regardant Y
+            u *= eu
+            v *= ev
+            if bande_min is not None:
+                # Repli dans la bande du trim sheet : `math.fmod` garde le
+                # signe, on passe donc par la partie fractionnaire positive.
+                v = bande_min + (v % bande_etendue)
+            boucle[couche].uv = (u, v)
 
 
 def srgb_vers_lineaire(canal):
@@ -500,31 +579,52 @@ def pignon_rompu(bm):
     """
     demi = DEMI_PORTEE
     faite = FAITE_Z
-    # Base légèrement débordante : un pignon coiffe le mur, il ne s'y encastre
-    # pas. Le retour de 0,26 m côté ouest donne l'épaulement d'égout.
-    contour = [(-demi - 0.05, 0.0), (-demi - 0.05, 0.26)]
+    pied = PIGNON_PIED_Z
+    # Le pignon commence 0,55 m SOUS l'arase : ces assises-là sont le mur.
+    contour = [(-demi - 0.05, 0.0), (-demi - 0.05, pied + 0.26)]
     # rampant ouest, en trois ressauts de taille (jamais une droite parfaite)
     for i, t in enumerate((0.34, 0.68, 1.0)):
         x = -demi - 0.05 + (demi + 0.05) * t
-        z = 0.26 + (faite - 0.26) * t + _graine(i * 2.7) * 0.05
+        z = pied + 0.26 + (faite - 0.26) * t + _graine(i * 2.7) * 0.05
         contour.append((x, z))
     # arrachement vers l'est
     x_fin = demi * (1.0 - PIGNON_ARRACHE)
     if PIGNON_ARRACHE > 0.001:
-        contour.extend(_gradins(0.0, x_fin, faite, 0.0))
-        contour.append((x_fin + _graine(9.1) * 0.10, 0.0))
+        contour.extend([(x, z + pied)
+                        for x, z in _gradins(0.0, x_fin, faite, 0.0)])
+        contour.append((x_fin + _graine(9.1) * 0.10, pied))
     else:
         # SABOTAGE / pignon intact : le rampant est redescend d'un trait et la
         # silhouette redevient un triangle symétrique.
-        contour.append((demi + 0.05, 0.26))
-        contour.append((demi + 0.05, 0.0))
-    prisme(bm, contour, -EPAISSEUR_MUR * 0.5, EPAISSEUR_MUR * 0.5, IDX_PIERRE)
+        contour.append((demi + 0.05, pied + 0.26))
+        contour.append((demi + 0.05, pied))
+    # BORD BAS EN DENTS D'ASSISE : une plaque posée a une arête basse droite,
+    # un mur arraché n'en a pas. C'est ce qui empêche la jonction avec le
+    # module de kit d'être une ligne horizontale continue.
+    x_est = x_fin + _graine(9.1) * 0.10
+    x_ouest = -demi - 0.05
+    dents = 7
+    z_dent = 0.20
+    contour.append((x_est, z_dent))
+    for k in range(dents):
+        t = float(k + 1) / dents
+        x = x_est + (x_ouest - x_est) * t + _graine(k * 3.7) * 0.06
+        if k == dents - 1:
+            x = x_ouest
+        suivant = 0.04 if z_dent > 0.12 else 0.20
+        contour.append((x, z_dent))      # la marche, horizontale
+        contour.append((x, suivant))     # la chute d'une assise
+        z_dent = suivant
+    prisme(bm, contour, PIGNON_Y_DEDANS, 0.0, IDX_PIERRE)
     # Corniche d'égout côté ouest : la pierre plate qui reçoit la couverture.
-    poutre(bm, (-demi - 0.14, -EPAISSEUR_MUR * 0.5 - 0.06, 0.13),
-           (-demi * 0.42, -EPAISSEUR_MUR * 0.5 - 0.06, 0.62),
+    # Corniche d'égout ramenée DANS l'épaisseur (elle débordait de 26 cm) :
+    # deux cours de pierre plate dans le plan du parement, pas deux bandeaux
+    # en console.
+    poutre(bm, (-demi - 0.14, PIGNON_Y_DEDANS + 0.08, pied + 0.13),
+           (-demi * 0.42, PIGNON_Y_DEDANS + 0.08, pied + 0.62),
            0.16, 0.14, IDX_PIERRE)
-    poutre(bm, (-demi - 0.14, EPAISSEUR_MUR * 0.5 + 0.06, 0.13),
-           (-demi * 0.42, EPAISSEUR_MUR * 0.5 + 0.06, 0.62),
+    poutre(bm, (-demi - 0.14, -0.08, pied + 0.13),
+           (-demi * 0.42, -0.08, pied + 0.62),
            0.16, 0.14, IDX_PIERRE)
     # RELIEF DE PAREMENT, ajouté après capture : vu du nord, le pignon était
     # un triangle d'un seul tenant, sans une arête pour accrocher la lumière —
@@ -535,17 +635,15 @@ def pignon_rompu(bm):
                                    (-1.44, 0.66, 0.19), (-0.82, 0.90, 0.16),
                                    (-2.30, 0.72, 0.15), (-1.10, 0.28, 0.18),
                                    (-0.34, 1.06, 0.14))):
-        for face in (-1.0, 1.0):
-            moellon(bm, (x + _graine(i * 1.7) * 0.10,
-                         face * (EPAISSEUR_MUR * 0.5 + 0.045), z),
-                    (t * 1.7, 0.11, t), 30.0 + i * 2 + face, IDX_PIERRE)
+        moellon(bm, (x + _graine(i * 1.7) * 0.10, PIGNON_RELIEF_Y, z + pied),
+                (t * 1.7, 0.05, t), 30.0 + i * 2, IDX_PIERRE)
 
     # Quatre pierres descellées, encore accrochées au bord de la cassure : la
     # rupture est RÉCENTE, elle n'est pas nettoyée.
     for i, (x, z, t) in enumerate(((0.30, 0.92, 0.20), (0.86, 0.66, 0.17),
                                    (1.44, 0.40, 0.19), (1.92, 0.14, 0.16))):
-        moellon(bm, (x + _graine(i) * 0.12, _graine(i * 3.3) * 0.16, z),
-                (t * 1.5, EPAISSEUR_MUR * 0.75, t), 4.0 + i, IDX_PIERRE)
+        moellon(bm, (x + _graine(i) * 0.12, -0.17, z + pied),
+                (t * 1.5, 0.26, t), 4.0 + i, IDX_PIERRE)
 
 
 def moignon_est(bm):
@@ -572,32 +670,81 @@ def moignon_est(bm):
                 (0.30, EPAISSEUR_MUR * 0.95, 0.22), 11.0 + i, IDX_PIERRE)
 
 
-def talus_moellons(bm):
+def talus_moellons(bm, angle_zero=1.7, etendue=1.55, n=14, decalage=0.0,
+                   bois=True):
     """La matière du mur écroulé, au pied de la brèche.
 
     Sans elle, un mur disparaît sans laisser de trace — le défaut le plus
     coûteux d'une ruine : on lit « inachevé » et non « effondré ». Le talus
     est plus haut contre le mur et s'étale en s'éloignant, comme un éboulis.
     """
-    for i in range(14):
-        angle = i * 2.399 + 1.7           # angle d'or : aucun alignement
-        rayon = 1.55 * (0.18 + 0.82 * abs(_graine(i * 1.7 + 0.3)))
+    for i in range(n):
+        angle = i * 2.399 + angle_zero    # angle d'or : aucun alignement
+        rayon = etendue * (0.18 + 0.82 * abs(_graine(i * 1.7 + 0.3 + decalage)))
         x = math.cos(angle) * rayon
         y = math.sin(angle) * rayon * 0.62
         # profil d'éboulis : haut près de l'origine (le pied du mur), bas loin
         # Profil d'éboulis, et une exigence de composition : le talus doit
         # COUVRIR le soubassement mis à nu par la brèche, sinon on lit une
         # « fondation découverte » au lieu d'un mur écroulé.
-        proche = max(0.0, 1.0 - rayon / 1.55)
-        taille = 0.24 + abs(_graine(i * 2.3)) * 0.26
-        z = 0.08 + proche * 0.66 + abs(_graine(i * 3.1)) * 0.12
+        proche = max(0.0, 1.0 - rayon / etendue)
+        taille = 0.24 + abs(_graine(i * 2.3 + decalage)) * 0.26
+        z = 0.08 + proche * 0.66 + abs(_graine(i * 3.1 + decalage)) * 0.12
         moellon(bm, (x, y, z), (taille * 1.35, taille * 1.1, taille),
-                20.0 + i, IDX_PIERRE)
+                20.0 + i + decalage, IDX_PIERRE)
+    if not bois:
+        return
     # Deux bouts de sablière tombés avec le mur : la charpente a suivi.
     poutre(bm, (-1.25, -0.42, 0.12), (0.55, -0.10, 0.30),
            0.15, 0.13, IDX_BOIS, roulis=0.4)
     echarde(bm, (0.55, -0.10, 0.30), (1.0, 0.15, 0.10), 0.30, 0.15,
             IDX_CASSURE)
+
+
+# R2B.2 — LE MUR NORD DOIT MANQUER.
+#
+# Mesuré le 2026-08-19 : la ligne d'arase du SEUL mur nord était plate, écart-
+# type 0,029 m sur 15 colonnes, point bas 3,00 m. Le filet R2B.1 ne l'attrapait
+# pas — il mesure la dispersion sur TOUTE la maçonnerie, et le pignon suffisait
+# à la faire passer pendant que le mur restait un rectangle intact.
+#
+# La réponse n'est PAS une décoration posée sur le mur : le lieu RETIRE le
+# module de kit le plus à l'est et l'angle nord-est, et met cette pièce à leur
+# place. Un module en moins, pas un ornement en plus. L'arrachement continue
+# celui du mur est autour du même angle : une seule histoire d'effondrement.
+BRECHE_NORD_DEMI_L = 1.25
+BRECHE_NORD_H_HAUTE = 3.12   # l'arase intacte, mesurée sur le module de kit
+BRECHE_NORD_H_BASSE = 1.15
+
+
+def breche_nord(bm):
+    """Le pan de mur nord ROMPU : arase pleine à l'ouest, arrachée à l'est."""
+    demi = BRECHE_NORD_DEMI_L
+    epais = 0.205
+    contour = [(-demi, 0.0), (-demi, BRECHE_NORD_H_HAUTE)]
+    contour.extend(_gradins(-demi, 0.95, BRECHE_NORD_H_HAUTE,
+                            BRECHE_NORD_H_BASSE))
+    contour.append((demi, BRECHE_NORD_H_BASSE - 0.13))
+    contour.append((demi, 0.0))
+    prisme(bm, contour, -epais, epais, IDX_PIERRE)
+    # Chaînage d'angle arraché : les pierres du coin nord-est descellées,
+    # encore accrochées, décroissant vers le bas comme un arrachement récent.
+    for i, (x, z, t) in enumerate(((demi - 0.06, 0.30, 0.24),
+                                   (demi - 0.02, 0.72, 0.21),
+                                   (demi - 0.10, 1.06, 0.18))):
+        moellon(bm, (x, _graine(i * 2.7) * 0.06, z),
+                (t, epais * 1.9, t * 0.9), 51.0 + i, IDX_PIERRE)
+    # RELIEF DE PAREMENT côté DEHORS (Blender +y ⇒ Godot -z) : sans lui, le pan
+    # neuf est une face lisse à côté d'un module de kit appareillé.
+    for i, (x, z, t) in enumerate(((-0.92, 0.42, 0.20), (-0.30, 1.05, 0.17),
+                                   (0.34, 1.72, 0.19), (-0.66, 2.28, 0.16),
+                                   (0.08, 2.74, 0.15), (-1.02, 1.62, 0.18))):
+        moellon(bm, (x + _graine(i * 1.9) * 0.08, epais - 0.02, z),
+                (t * 1.6, 0.06, t), 60.0 + i, IDX_PIERRE)
+    # Le lit de rupture : deux pierres basculées au sommet de l'arrachement.
+    poutre(bm, (0.42, -epais * 0.5, BRECHE_NORD_H_BASSE - 0.02),
+           (0.96, epais * 0.4, BRECHE_NORD_H_BASSE + 0.16),
+           0.34, 0.20, IDX_PIERRE, roulis=0.28)
 
 
 def tableaux(bm, hauteur, arrache):
@@ -631,24 +778,34 @@ def tableaux(bm, hauteur, arrache):
         else:
             contour.extend([(cote * 0.86 + 0.10, haut),
                             (cote * 0.86 - 0.10, haut)])
-        # ENFONCÉS DANS L'ÉPAISSEUR, mesuré sur capture : centrés sur le
-        # pivot, ils saillaient de 0,20 m DEVANT le parement de brique (qui
-        # est à Y = 0) et se lisaient comme des poteaux plaqués sur la façade.
-        # Le tableau d'une baie affleure son parement, il ne le double pas.
-        prisme(bm, contour, -EPAISSEUR_MUR + 0.06, 0.04, IDX_PIERRE)
+        # R2B.2 — LE SIGNE ÉTAIT INVERSÉ, ET C'EST TOUT LE DÉFAUT.
+        # R2B.1 extrudait de -0,42 à +0,10 « pour entrer de 42 cm DANS le
+        # mur ». Mais l'export Y-up donne `Godot z = -y` : le GLB rendait
+        # Z ∈ [-0,10 ; +0,42] et les quatre tableaux SAILLAIENT de 42 cm
+        # DEVANT la façade (mesuré sur le GLB le 2026-08-19). Ce sont eux, et
+        # eux seuls, qui « bouchent la lecture » de `ferme_seuil` : 7,32 +
+        # 5,32 + 2,92 + 1,31 % du cadre, et leur fusion fait tomber le nombre
+        # de composantes de 45 à 40 pendant que le total double.
+        # Bornes retournées : Blender y ∈ [-0,02 ; +0,42] ⇒ Godot
+        # z ∈ [-0,42 ; +0,02]. Deux centimètres de saillie, pas quarante-deux.
+        prisme(bm, contour, -0.02, EPAISSEUR_MUR + 0.02, IDX_PIERRE)
         # HARPES : une pierre sur deux déborde dans le mur. Sans elles, le
         # tableau est un bandeau lisse — mesuré sur capture, il se lisait
         # comme une colonne pleine, plus unie que tout ce qui l'entoure.
         for k, z in enumerate((0.28, 0.86, 1.44)):
             if z > haut - 0.15:
                 continue
-            moellon(bm, (cote * 0.86 + cote * 0.10, -EPAISSEUR_MUR * 0.5 + 0.05,
+            # Harpes retournées avec le tableau : elles mordent la TRANCHE,
+            # côté intérieur du parement, jamais sa face.
+            moellon(bm, (cote * 0.86 + cote * 0.10, EPAISSEUR_MUR * 0.5,
                          z + _graine(k * 2.3) * 0.06),
                     (0.30, EPAISSEUR_MUR * 0.62, 0.19), 40.0 + k + cote,
                     IDX_PIERRE)
     # Seuil : la pierre usée du passage, débordante des deux côtés.
+    # Le seuil s'enfonce vers l'intérieur (il porte le passage) et affleure
+    # dehors : Blender y ∈ [-0,02 ; +0,50] ⇒ Godot z ∈ [-0,50 ; +0,02].
     prisme(bm, [(-0.94, 0.0), (0.94, 0.0), (0.94, 0.15), (-0.94, 0.15)],
-           -EPAISSEUR_MUR - 0.02, 0.10, IDX_PIERRE)
+           -0.02, EPAISSEUR_MUR + 0.10, IDX_PIERRE)
 
 
 PLANCHER_Z = 2.35       # hauteur du plancher d'étage disparu
@@ -711,6 +868,9 @@ def objet_depuis(nom, remplir):
     bm = bmesh.new()
     remplir(bm)
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    # UV0 APRÈS le recalcul des normales : la projection choisit son axe
+    # d'après la normale de face, une normale retournée déplie à l'envers.
+    deplier_boite(bm)
     bm.to_mesh(maillage)
     bm.free()
     # CHAQUE pièce se pose par son point bas : on cale min-Z à 0 ICI, une
@@ -758,6 +918,12 @@ def main():
                      lambda bm: tableaux(bm, 1.72, True)),
         objet_depuis("SM_Farm_InteriorFrame", ossature_interieure),
         objet_depuis("SM_Farm_JoistStubs", solives_rompues),
+        # R2B.2 — le manque STRUCTUREL du mur nord, et sa matière au sol.
+        objet_depuis("SM_Farm_WallBreak_North", breche_nord),
+        objet_depuis("SM_Farm_Rubble_North",
+                     lambda bm: talus_moellons(bm, angle_zero=0.9,
+                                               etendue=1.35, n=12,
+                                               decalage=5.0, bois=False)),
     ]
 
     total = 0
