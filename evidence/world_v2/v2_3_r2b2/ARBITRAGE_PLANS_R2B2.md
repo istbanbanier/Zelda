@@ -508,3 +508,37 @@ Les points 1 et 2 portent sur l'ÉTAT DE DÉPART et sont donc les seuls que
 l'audit peut mesurer avant le SHA — ils disparaissent à l'instant de
 l'intégration. L'audit les a engagés de lui-même pour cette raison ; c'est
 conforme.
+
+---
+
+## Annexe — provenance des trois panneaux du triptyque, vérifiée par le lead
+
+Le §7 exige un triptyque `R2B / R2B.1 / R2B.2` sur les vues décisives, **aux
+mêmes caméras**. Le piège évident serait de prendre le panneau R2B dans
+`evidence/world_v2/v2_3_r2b/ferme_arbre/captures/`, qui existe — mais dont les
+cadrages sont **autres** (`ferme_proche`, `ferme_structure`, absents des quinze
+caméras R2B.1). Un triptyque à trois cadrages différents ne compare rien.
+
+La bonne source existe déjà, et c'est le lot `avant/` de R2B.1 :
+
+| panneau | dossier | commit | dirty |
+|---|---|---|---|
+| **R2B** | `evidence/world_v2/v2_3_r2b1/avant/` | `4a2b43aa` | `False` |
+| **R2B.1** | `evidence/world_v2/v2_3_r2b1/apres_integre/` | `e2bf32ab` | `False` |
+| **R2B.2** | à capturer au SHA intégré | — | `False` exigé |
+
+Vérifications faites par le lead, et non déduites :
+
+- les deux manifestes portent **15 vues** et les mêmes `from` / `look` / `fov`
+  champ par champ sur les vues contrôlées ;
+- `7c3d3ca` (base R2B.1) est **ancêtre** de `4a2b43aa`, lui-même **ancêtre** de
+  `e2bf32ab` ;
+- surtout : `git diff 7c3d3ca..4a2b43aa -- source_assets/blender
+  assets/architecture scripts/world_v2/poi` est **VIDE**. Le lot `avant/` montre
+  donc bien la géométrie de R2B, capturée aux caméras de R2B.1 — `4a2b43aa` ne
+  corrigeait que trois caméras d'arbre qui visaient le pied.
+
+Conséquence opérationnelle : **aucune recapture d'un état ancien n'est
+nécessaire**, et le risque de substituer un cadrage favorable au panneau R2B est
+écarté par construction, puisque les trois panneaux sortent d'un seul et même
+fichier de caméras.
