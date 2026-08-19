@@ -1,65 +1,104 @@
 # SOURCE DE GÉNÉRATION REPRODUCTIBLE — L'Arbre foudroyé, hero asset de la
-# prairie aux mille fleurs (V2.3-A.R2B.1, agent B).
+# prairie aux mille fleurs (V2.3-A.R2B.2, agent B).
 #
-# POURQUOI CETTE RÉVISION EXISTE. Le r02 était un LOFT correct — une seule
-# surface, une vraie fente, une cicatrice creusée — et il a quand même été
-# rejeté : « un pilier noir polygonal posé sur une étoile de planches ».
-# La mesure a donné la cause, et ce n'était pas le détail :
+# POURQUOI CETTE RÉVISION EXISTE. R2B.1 a réglé la SILHOUETTE LOINTAINE — la
+# fourche se lit à 94 m, anisotropie 1,81 -> 1,17 — et le lead l'a gardée.
+# Mais en vue rapprochée il a maintenu PARTIAL : « un tronc prismatique, une
+# fracture qui ressemble à un ruban peint, des racines en éventail de plaques
+# plates, des branches tombées qui ressemblent à des poutres droites ».
 #
-#   * LE PLAN DE FOURCHE ÉTAIT UNIQUE. Les deux moitiés divergeaient de
-#     3,59 m en X pour 0,57 m en Y — un plan à 9°. Une caméra qui regarde
-#     DANS ce plan voit les deux moitiés se superposer exactement, et
-#     l'arbre redevient un trait. Les caméras de preuve du lead sont à
-#     −31°, soit 22° du plan. D'où l'emprise latérale au-dessus de la
-#     fourche : 2,32 m au pire azimut contre 4,18 m au meilleur —
-#     anisotropie 1,81, élancement 4,8. C'est l'obélisque, chiffré.
-#   * LE FÛT ÉTAIT AFFINE. `0,50 − t·0,34` : un cône exact. Résidu
-#     d'ajustement linéaire 3,7 %, zéro renflement de collet.
-#   * LA SOUCHE ÉTAIT RECTILIGNE ET BOMBÉE : concavité −0,025 m.
-#   * LES SAILLIES ÉTAIENT EN GRAPPE : deux moignons à 1,4° l'un de
-#     l'autre, pentes toutes identiques (+22,8°).
-#   * LES BOIS AU SOL ÉTAIENT DEUX PLANCHES JUMELLES : rayon 0,155
-#     identique, dénivelé bout-à-bout 0,054 m pour les deux.
-#   * LA CICATRICE ÉTAIT UNE BANDE DE LARGEUR CONSTANTE (0,15 sur 7 m).
+# L'ÉCART ENTRE DES MÉTRIQUES AMÉLIORÉES ET UNE LECTURE ENCORE SYMBOLIQUE A
+# UNE CAUSE, ET ELLE EST MESURÉE :
 #
-# CE QUE FAIT CETTE RÉVISION. Elle ne « détaille » pas l'objet : elle casse
-# les trois régularités qui le faisaient lire comme un solide de
-# révolution. La fourche sort de son plan (trois extrémités réparties en
-# azimut au lieu de deux opposées), le rayon suit une loi de puissance
-# ponctuée de collets, et les terminaisons deviennent inégales.
+#   R2B.1 MESURAIT LA RÉPARTITION ; LE LEAD LIT LA LOI DE FORME D'UNE PIÈCE.
+#   Anisotropie, écarts d'azimut, raie dominante du disque, rapports
+#   longueur/rayon : ce sont des statistiques de l'ENVELOPPE EN PLAN et des
+#   RAPPORTS ENTRE PIÈCES — du champ lointain. L'œil de près lit comment une
+#   section évolue le long de son axe, en combien de mètres se creuse un
+#   sillon. Un objet peut être parfaitement irrégulier en répartition et
+#   rester fait de cinq prismes, d'un ruban et de cinq cônes droits.
 #
-# LA CIME VIVANTE RESTE VIVANTE — arbitrage explicite du lead. Le récit du
-# lieu est « un arbre foudroyé qui a survécu d'un côté » ; la casser
-# réécrirait la fiction. Les DEUX ruptures principales sont donc toutes
-# deux du côté frappé : la moitié morte rompue net à 5,9 m, et une grosse
-# branche maîtresse arrachée à 7,55 m. Écart 1,65 m.
+# LES CINQ DÉFAUTS, CHIFFRÉS SUR LE GLB R2B.1 (2 526 tris) :
+#   * `anneau()` échantillonnait toujours `a = 2πi/n` depuis LA MÊME ORIGINE.
+#     Rotation inter-anneau mesurée : 0,003°. Les arêtes longitudinales
+#     étaient donc des MÉRIDIENS EXACTS et chaque facette une bande réglée
+#     courant tout le membre — dièdre longitudinal médian 1,1° sur 3–7 m,
+#     facette de 0,156 m à r = 0,35 et 0,328 m à la souche.
+#   * le relief radial était tiré INDÉPENDAMMENT à chaque anneau : corrélation
+#     du profil d'un anneau au suivant −0,320, crête-à-crête 0,123. Du bruit,
+#     pas des cannelures. Un maillage numériquement non plan partout, et
+#     visuellement un prisme.
+#   * la cicatrice alternait de largeur une station sur deux (autocorrélation
+#     lag-1 −0,483). Son CV BRUT valait 0,402 — rassurant — mais son CV LISSÉ
+#     SUR TROIS STATIONS, à l'échelle où l'œil intègre, valait 0,212, et sa
+#     profondeur radiale était un ruban de 0,110 m CONSTANT.
+#   * les racines : hexagone aplati 1,80 dont les trois sommets bas étaient
+#     écrêtés par `max(0.01, …)` — 68,5 % de surface presque horizontale,
+#     10,0 % de flanc, sagitta en plan NULLE, écarts d'azimut max/min 1,55.
+#   * les bois tombés : axe droit EXACT (sagitta 0,000 m pour les cinq), mêmes
+#     8 côtés, même effilement `1 − 0,38t`, et 88 triangles CINQ FOIS.
 #
-# CINQ OBJETS, UN SEUL GLB :
-#   * `_Bark`    — souche, moitié vivante, moitié morte, membre arraché,
-#                  cinq moignons. DEUX emplacements de matériau : écorce
-#                  saine et zones calcinées (côté frappé).
-#   * `_Heart`   — le bois MIS À NU : coin de fente, ruban de cicatrice à
-#                  largeur VARIABLE, échardes des deux plans de rupture,
-#                  bouts de moignons, cassures des bois au sol.
-#   * `_Roots`   — cinq contreforts-racines. OBJET SÉPARÉ à dessein : le
-#                  garde-fou `SOUCHE_LARGEUR` mesure les sommets sous
-#                  z = 0,3 ; y verser les racines lui ferait avaler autre
-#                  chose que la souche et le ferait rougir à tort. On ne
-#                  desserre pas un seuil pour lui faire passer une
-#                  géométrie — on range la géométrie ailleurs.
-#   * `_BranchA..E` — cinq bois tombés hiérarchisés, dont deux appuyés.
+# CE QUE FAIT CETTE RÉVISION. Elle n'ajoute pas du détail : elle change les
+# LOIS DE FORME, et les deux gestes principaux ne coûtent AUCUN triangle.
+#   1. LA PHASE D'ÉCHANTILLONNAGE TOURNE d'un anneau au suivant, de façon
+#      irrégulière et de somme nulle. Les méridiens deviennent des hélices
+#      brisées, chaque quad se vrille, sa triangulation cesse d'être
+#      coplanaire, et la bande de 4 m d'une seule valeur se casse en marches.
+#   2. LE RELIEF EST VERROUILLÉ SUR L'AZIMUT au lieu d'être tiré par anneau :
+#      il survit d'un anneau au suivant, donc il devient une arête filante qui
+#      accroche la lumière rasante au lieu d'une moucheture.
 #
-# BUDGET VERROUILLÉ AVANT MODÉLISATION (arbitrage R2B) : ≤ 6 000 triangles.
-# LE GÉNÉRATEUR REFUSE D'ENREGISTRER si la hauteur totale sort de [10 ; 12],
-# si la base n'est pas à Z = 0, si le budget est dépassé, si la souche sort
-# de sa largeur de plan ou si la cicatrice n'est pas creusée. Ces refus ne
-# bougent pas d'un iota dans cette révision.
+# LE GEL — CE QUI NE BOUGE PAS, PARCE QUE LA FOURCHE À 94 m EN DÉPEND. À cette
+# caméra, 1 px = 0,147 m : une cannelure de 0,035 m vaut 0,24 px et une loupe
+# de 0,12 m vaut 0,82 px, contre 2,7 px pour un bras de fourche et 75 px pour
+# la hauteur. Le détail rapproché est SOUS-PIXELLAIRE là-bas — à condition que
+# les masses ne bougent pas. Sont donc gelés, à la valeur exacte de R2B.1 :
+#     AZ_VIVANT · AZ_MORT · AZ_MEMBRE · PORTEE_VIVANT · PORTEE_MORT ·
+#     PORTEE_MEMBRE · FOURCHE_Z · VIVANT_SOMMET · MORT_SOMMET ·
+#     MEMBRE_BASE_Z · MEMBRE_RUPTURE_Z · les (z, yaw, longueur) des cinq
+#     moignons · les cinq empreintes (x, y) et longueurs des bois tombés.
+# Toutes les corrections agissent SUR LA PEAU de masses inchangées.
+#
+# LA CIME VIVANTE RESTE VIVANTE — arbitrage du lead, inchangé. Les DEUX
+# ruptures principales restent du côté frappé : moitié morte rompue à 5,9 m,
+# branche maîtresse arrachée à 7,55 m, écart 1,65 m.
+#
+# QUATRIÈME MATÉRIAU — AUTORISATION EXPLICITE DU LEAD, 2026-08-19. La limite
+# passe de 3 à 4. RAISON : il n'existait AUCUNE valeur intermédiaire entre
+# l'écorce (luminance 0,218) et le cœur (0,748), rapport 3,43, et la directive
+# demande « une transition entre écorce brûlée, cœur pâle exposé et éclats ».
+# Une transition entre deux valeurs sans palier ne se fabrique pas par la
+# géométrie seule. CONDITION DU LEAD : palier de VALEUR, pas teinte neuve —
+# `MAT_Tree_ScorchedSap` reste dans l'enveloppe de teinte et de saturation
+# déjà admise par les trois autres (étendue de teinte 0,0896, saturation max
+# 0,346), et le filet `test_world_v2_r2b2_arbre.gd` le vérifie.
+#
+# CINQ FAMILLES D'OBJETS, UN SEUL GLB :
+#   * `_Bark`   — souche, moitié vivante, moitié morte, membre arraché, cinq
+#                 moignons. Trois emplacements de matériau désormais : écorce
+#                 saine, zones calcinées, et l'aubier grillé des lèvres du
+#                 sillon.
+#   * `_Heart`  — le bois MIS À NU : coin de fente, TROIS fragments de
+#                 cicatrice séparés par deux ponts d'écorce, huit échardes le
+#                 long du parcours, échardes des deux plans de rupture, bouts
+#                 de moignons, cassures des bois au sol.
+#   * `_Roots`  — cinq contreforts courbes, dont deux fourchent. OBJET SÉPARÉ
+#                 à dessein : le garde-fou `SOUCHE_LARGEUR` mesure les sommets
+#                 sous z = 0,3 ; y verser les racines lui ferait avaler autre
+#                 chose que la souche.
+#   * `_BranchA..E` — cinq bois tombés à cinq LOIS DE FORME distinctes.
+#
+# BUDGET VERROUILLÉ : ≤ 6 000 triangles. Le plafond n'a pas bougé. LE
+# GÉNÉRATEUR REFUSE D'ENREGISTRER si la hauteur sort de [10 ; 12], si la base
+# n'est pas à Z = 0, si le budget est dépassé, si la souche sort de sa largeur
+# de plan, si la cicatrice n'est pas creusée, ou — refus AJOUTÉ en R2B.2 — si
+# un contrefort dépasse 0,32 m hors de l'emprise du collider du tronc : à
+# 0,382 m il était déjà, AVANT cette passe, au-dessus du `step_height` de 0,34
+# de `locomotion_default.tres`, donc infranchissable sans collider. C'est un
+# défaut PRÉEXISTANT que cette révision corrige au passage.
 #
 # Blender est Z-up ; l'export convertit en Y-up : Blender (x, y, z) devient
-# Godot (x, z, −y). Un azimut Godot φ correspond donc à un azimut Blender
-# −φ. La moitié vivante garde son orientation vers +X (est) — les caméras
-# existantes restent justes ; ce sont la moitié morte et le membre qui
-# quittent le plan.
+# Godot (x, z, −y).
 #
 # Usage :
 #   blender --background --python-exit-code 1 \
@@ -73,70 +112,68 @@ import bmesh
 import bpy
 
 # ---------------------------------------------------------------------------
-# Cotes
+# Cotes — LE BLOC GELÉ D'ABORD
 # ---------------------------------------------------------------------------
-SOUCHE_LARGEUR = 2.1        # au sol, lobes de contrefort compris
+FOURCHE_Z = 2.2             # GELÉ — le tronc est UN jusqu'ici
+VIVANT_SOMMET = 10.8        # GELÉ — moitié vivante, cime INTACTE
+MORT_SOMMET = 5.9           # GELÉ — moitié morte, rupture basse
+MEMBRE_BASE_Z = 6.30        # GELÉ — branche maîtresse arrachée
+MEMBRE_RUPTURE_Z = 7.55     # GELÉ — rupture haute
+AZ_VIVANT = math.radians(15.0)      # GELÉ
+AZ_MORT = math.radians(-104.6)      # GELÉ
+AZ_MEMBRE = math.radians(137.9)     # GELÉ
+PORTEE_VIVANT = 2.40        # GELÉ
+PORTEE_MORT = 2.08          # GELÉ
+PORTEE_MEMBRE = 2.34        # GELÉ
+
+SOUCHE_LARGEUR = 2.1        # seuil INCHANGÉ, ± 0,35
 SOUCHE_RAYON_BAS = 0.84
 SOUCHE_RAYON_HAUT = 0.62
 SOUCHE_PUISSANCE = 2.8      # > 1 => profil CONCAVE (le pied se creuse)
-FOURCHE_Z = 2.2             # le tronc est UN jusqu'ici
-VIVANT_SOMMET = 10.8        # moitié vivante — cime INTACTE
-MORT_SOMMET = 5.9           # moitié morte, rompue net (rupture basse)
-MEMBRE_BASE_Z = 6.30        # branche maîtresse arrachée (rupture haute)
-MEMBRE_RUPTURE_Z = 7.55
 HAUTEUR_MIN, HAUTEUR_MAX = 10.0, 12.0
-BUDGET_TRIS = 6000
+BUDGET_TRIS = 6000          # plafond INCHANGÉ
 BASE_TOL = 0.005
 
-ANNEAU_SOUCHE = 16
-ANNEAU_MOITIE = 14
-ANNEAU_MEMBRE = 10
+# Emprise du collider `Tronc_col` du lieu (2,1 × 3,4 × 1,9 centré en x=z=0) et
+# `step_height` de locomotion_default.tres. Hors de cette emprise, un
+# contrefort plus haut que la marche est un mur invisible.
+COLLIDER_DEMI_X = 1.05
+COLLIDER_DEMI_Y = 0.95
+RACINE_HAUTEUR_MAX_HORS = 0.32
 
-# Azimuts BLENDER des trois extrémités. En Godot : −15,0° (vivant),
-# +104,6° (mort), +222,1° (membre) — écarts en plan 119,6° / 117,5° /
-# 122,9°, donc PRESQUE ÉGAUX, et c'est voulu : trois masses réparties à
-# 120° sont ce qui rend l'emprise comparable sous tout azimut (anisotropie
-# mesurée 1,17). L'irrégularité qui compte n'est pas là — elle est dans
-# les SAILLIES, dont les écarts vont de 41° à 78°. Répartir les grandes
-# masses régulièrement et les petites irrégulièrement : l'inverse donne
-# soit un pilier, soit une étoile.
-# Les DEUX ruptures restent du côté frappé,
-# secteur 105..222, à l'opposé de la moitié survivante : elles
-# appartiennent à la même blessure (restriction du lead).
-#
-# Ces trois valeurs, les longueurs et les yaws de moignon viennent d'une
-# RECHERCHE SOUS CONTRAINTE, pas d'un réglage à la main : emprise au pire
-# azimut ≥ 4,0 m, anisotropie ≤ 1,24, écarts de saillie ≥ 26° et de
-# rapport max/min dans [1,4 ; 2,2]. Trois passes de tâtonnement n'y
-# arrivaient pas, parce que l'azimut APPARENT d'un moignon n'est pas son
-# yaw — le fût penche, et le décalage mesuré va de −18° à +35°.
-AZ_VIVANT = math.radians(15.0)
-AZ_MORT = math.radians(-104.6)
-AZ_MEMBRE = math.radians(137.9)
-PORTEE_VIVANT = 2.40
-PORTEE_MORT = 2.08
-PORTEE_MEMBRE = 2.34
+# Nombres de côtés. La facette de souche de R2B.1 mesurait 0,328 m — la plus
+# large de l'asset, et c'est elle que voit la caméra `arbre_pied`.
+ANNEAU_SOUCHE = 22          # R2B.1 : 16 -> facette 0,328 m ramenée à 0,239 m
+ANNEAU_VIVANT = 18          # R2B.1 : 14 -> facette 0,156 m ramenée à 0,121 m
+ANNEAU_MORT = 16            # R2B.1 : 14
+ANNEAU_MEMBRE = 12          # R2B.1 : 10
 
-# La cicatrice : bande qui DESCEND en spirale du départ de la fourche
-# jusqu'au pied, sur la face frappée.
-CICATRICE_HAUT = 7.4
-CICATRICE_BAS = 0.35
-CICATRICE_DEMI_ANGLE = 0.42
-CICATRICE_RETRAIT = 0.80    # rayon × 0,80 au droit de la bande
-CICATRICE_TOURS_RAD = 3.4
-# Largeurs du ruban de cœur, station par station. Le r02 avait 0,15
-# CONSTANT sur sept mètres : c'est exactement ce que le lead a vu comme
-# « une bande blanche droite peinte ». Une cassure de bois n'a pas de
-# largeur constante.
-CICATRICE_LARGEURS = (0.30, 0.13, 0.22, 0.09, 0.26, 0.11, 0.19, 0.31, 0.12,
-                      0.24, 0.10, 0.20, 0.28, 0.14, 0.09, 0.17, 0.25, 0.11)
+# LA PHASE. Le pas doit rester NETTEMENT SOUS π/n, sans quoi la rotation
+# s'aliase sur le pas d'échantillonnage et devient indiscernable de zéro —
+# c'est aussi ce que mesure le filet, qui replie Δφ dans ±π/n.
+PHASE_PAS = 0.80            # fraction de π/n — mesuré : 0,42 ne donnait
+#                             que 2,19° de |Δφ| moyen, sous le plancher de 4°
+PHASE_MIN = 0.45            # amplitude minimale d'un pas, en fraction de PHASE_PAS
 
-# Moignons : (z, yaw Blender, longueur, pente, rayon au collet). Les
-# azimuts sont VISÉS APRÈS MESURE : un moignon naît de la paroi d'un
-# fût penché, donc son azimut vu depuis l'axe n'est pas son yaw — le
-# décalage mesuré va de −18° à +35° selon la hauteur et la longueur.
-# Cible : six saillies (cinq moignons + le membre) à écarts inégaux
-# mais bornés, sans secteur vide de plus de 90°.
+# LES CANNELURES, verrouillées sur l'AZIMUT. `CANNELURE_DERIVE` fait
+# lentement tourner le motif avec l'altitude : une arête d'écorce monte en
+# vrille douce, elle ne monte pas au cordeau.
+CANNELURE_AMP = 0.175
+# DÉRIVE EN RADIANS PAR MÈTRE. Premier jet : la dérive était multipliée par 8
+# dans `anneau()`, soit 0,36 rad/m — 177° sur le fût. Les cannelures tournaient
+# tellement d'un anneau au suivant que leur cohérence verticale retombait à
+# 0,587, à peine au-dessus du plancher : le relief redevenait presque du bruit.
+CANNELURE_DERIVE = 0.045    # 0,39 rad soit 22° sur 8,6 m
+
+# Deux LOUPES sur le fût vivant : renflements SECTORIELS (120°), donc non
+# axisymétriques. À 94 m elles valent 0,82 px.
+LOUPES = (
+    # (z, sigma, amplitude, azimut du secteur)
+    (4.35, 0.30, 0.30, math.radians(-58.0)),
+    (7.15, 0.26, 0.22, math.radians(112.0)),
+)
+
+# Moignons — (z, yaw, longueur) GELÉS ; pente et rayon de collet inchangés.
 MOIGNONS = (
     (3.90, math.radians(-323.7), 1.38, 0.14, 0.22),
     (5.20, math.radians(-3.1), 0.94, 0.62, 0.19),
@@ -145,42 +182,112 @@ MOIGNONS = (
     (9.50, math.radians(-62.7), 1.37, 0.45, 0.11),
 )
 
-# Racines : (yaw Blender, portée, crête). La crête reste sous 0,30 m,
-# c'est-à-dire sous le `step_height` de 0,34 de locomotion_default.tres :
-# ces contreforts n'ont pas de collider et le joueur doit pouvoir les
-# enjamber sans les ressentir comme un mur.
-RACINES = (
-    (math.radians(-8.0), 2.15, 0.28),
-    (math.radians(-75.0), 1.55, 0.19),
-    (math.radians(-140.0), 1.95, 0.26),
-    (math.radians(-200.0), 1.65, 0.22),
-    (math.radians(-275.0), 2.05, 0.30),
+# LA CICATRICE. R2B.1 donnait à sa largeur 18 valeurs qui alternaient une
+# station sur deux : CV brut 0,402, CV lissé 0,212. L'enveloppe est désormais
+# exprimée EN MÈTRES et de BASSE FRÉQUENCE — large à l'impact, effilée au
+# pied — parce que c'est une largeur en mètres que l'œil lit, pas un angle :
+# un demi-angle constant sur un fût qui s'affine donne une largeur presque
+# constante, ce qui était exactement le défaut.
+CICATRICE_HAUT = 7.4
+CICATRICE_BAS = 0.35
+CICATRICE_TOURS_RAD = 3.4
+# (z, largeur en mètres, profondeur radiale en mètres)
+CICATRICE_PROFIL = (
+    (7.40, 0.10, 0.040),
+    (6.55, 0.19, 0.075),
+    (5.60, 0.28, 0.105),
+    (4.60, 0.41, 0.150),
+    (3.85, 0.55, 0.190),
+    (3.20, 0.62, 0.205),
+    (2.55, 0.52, 0.170),
+    (2.00, 0.44, 0.140),
+    (1.45, 0.31, 0.100),
+    (0.90, 0.20, 0.062),
+    (0.35, 0.09, 0.030),
+)
+# DEUX INTERRUPTIONS : l'écorce fait pont au-dessus du bois nu. R2B.1 avait un
+# seul segment ininterrompu de 6,55 m.
+CICATRICE_PONTS = ((5.05, 0.24), (2.28, 0.20))
+CICATRICE_LEVRE = 1.085     # l'écorce se soulève au bord du sillon
+CICATRICE_RETRAIT_MIN = 0.46
+
+# ÉCHARDES LE LONG DU PARCOURS — R2B.1 n'en avait aucune hors des deux plans
+# de rupture. (z, décalage d'azimut, hauteur, demi-largeur, pente)
+# LES ALTITUDES SONT CHOISIES, PAS RÉPARTIES. Trois contraintes se croisent et
+# le premier jet en violait deux, ce qui coûtait trois échardes sur huit :
+#   * ne pas tomber sur un PONT D'ÉCORCE (2,08..2,48 et 4,81..5,29) — là,
+#     `cicatrice_metres` rend 0 et l'écharde n'est tout simplement pas posée ;
+#   * rester à plus de 0,60 m des DEUX PLANS DE RUPTURE (5,78 et 7,45), sinon
+#     le filet les agrège au plan et ne les compte plus « le long du
+#     parcours » — une écharde à 6,95 m avait même volé au plan haut son
+#     statut de plan, faussant le comptage des deux côtés.
+ECHARDES_PARCOURS = (
+    (0.90, 0.22, 0.36, 0.042, 0.55),
+    (1.50, -0.26, 0.44, 0.048, 0.35),
+    (2.60, 0.19, 0.58, 0.056, 0.62),
+    (3.15, -0.30, 0.62, 0.060, 0.28),
+    (3.70, 0.27, 0.51, 0.050, 0.70),
+    (4.25, -0.21, 0.39, 0.044, 0.40),
+    (4.60, 0.24, 0.42, 0.045, 0.58),
+    (6.45, -0.18, 0.34, 0.040, 0.33),
 )
 
-# Bois tombés : (x, y Blender, yaw, longueur, rayon, hauteur du bout
-# relevé). Les deux derniers champs portent la hiérarchie que le r02
-# n'avait pas : cinq épaisseurs distinctes, et deux pièces APPUYÉES —
-# une sur la souche, une en travers de la première.
+# RACINES — (yaw, portée, crête, dérive de yaw, t de fourche ou None).
+# Écarts d'azimut R2B.1 : 60..93°, max/min 1,55 — un éventail régulier.
+# Ici : 34 / 98 / 66 / 56 / 106°, max/min 3,1.
+# LES DÉRIVES DE YAW SONT MESURÉES, PAS DEVINÉES, et il a fallu trois passes.
+# 26° sur une portée de 2,15 m ne rendent que 4,5 % de sagitta ; 44° en rendent
+# 5,5 %. La cause est que le filet mesure la sagitta sur la composante ENTIÈRE,
+# épaisseur comprise : sur une racine courte et grosse, l'axe principal est
+# tiré par la section et absorbe une part de la courbure. Il faut donc environ
+# 60° de dérive — une flexion douce sur deux mètres, pas un crochet — pour
+# qu'une racine cesse de se mesurer comme un rayon droit.
+RACINES = (
+    (math.radians(-8.0), 2.30, 0.26, math.radians(74.0), 0.58),
+    # Portée relevée de 1,05 à 1,45 m : à 1,05 m la racine est aussi épaisse
+    # que longue, son axe principal est tiré par sa section, et même 52° de
+    # dérive ne rendaient que 6,1 % de sagitta. Allonger est ici plus honnête
+    # que courber davantage — au-delà, une racine devient un crochet.
+    (math.radians(-42.0), 1.45, 0.20, math.radians(-60.0), None),
+    (math.radians(-140.0), 2.55, 0.24, math.radians(60.0), None),
+    (math.radians(-206.0), 1.60, 0.22, math.radians(-54.0), 0.66),
+    (math.radians(-262.0), 1.75, 0.25, math.radians(44.0), None),
+)
+RACINE_COTES = 8
+RACINE_LATERAL = 1.06       # R2B.1 : 1,35 (et 0,75 en vertical -> aplati 1,80)
+RACINE_VERTICAL = 0.94      # aplatissement ramené à 1,13
+RACINE_R0 = 0.38
+RACINE_DECROISSANCE = 0.70
+
+# BOIS TOMBÉS — empreintes, longueurs et rayons GELÉS (ils portent l'acquis
+# R2B.1 et l'enveloppe en plan). Ce qui change, c'est la LOI DE FORME :
+# (x, y, yaw, longueur, rayon, relevé | côtés, flèche, position de flèche,
+#  loi d'effilement, nombre de chicots)
 BRANCHES = (
-    (2.95, 1.75, 2.05, 4.20, 0.260, 0.00),
-    (-3.30, 2.15, -0.75, 3.10, 0.195, 0.62),
-    (-1.20, -3.35, 0.95, 2.30, 0.155, 0.00),
-    (3.05, -2.40, 2.60, 1.60, 0.115, 0.41),
-    (0.35, 3.55, 1.35, 1.10, 0.085, 0.00),
+    (2.95, 1.75, 2.05, 4.20, 0.260, 0.00, 8, 0.42, 0.38, "renfle", 2),
+    (-3.30, 2.15, -0.75, 3.10, 0.195, 0.62, 7, -0.24, 0.55, "troncon", 0),
+    (-1.20, -3.35, 0.95, 2.30, 0.155, 0.00, 6, 0.20, 0.62, "noeud", 1),
+    (3.05, -2.40, 2.60, 1.60, 0.115, 0.41, 6, -0.17, 0.45, "fourchue", 3),
+    (0.35, 3.55, 1.35, 1.10, 0.085, 0.00, 5, 0.13, 0.50, "fouet", 1),
 )
 
 # ---------------------------------------------------------------------------
-# Matériaux — sRGB converti en linéaire. TROIS valeurs, pas deux : le lead
-# demande de distinguer écorce brûlée, cœur exposé et zones calcinées.
-# §1.6 : jamais de noir pur — le calciné reste une valeur sombre lisible.
+# Matériaux — sRGB converti en linéaire. QUATRE valeurs depuis le 2026-08-19.
+# §1.6 : jamais de noir pur.
 # ---------------------------------------------------------------------------
 MATERIAUX = {
     "MAT_Tree_CharredBark": (0.26, 0.21, 0.17, 0.96),
     "MAT_Tree_Heartwood": (0.84, 0.74, 0.55, 0.88),
     "MAT_Tree_Charcoal": (0.145, 0.130, 0.128, 0.99),
+    # LE PALIER INTERMÉDIAIRE. Luminance 0,432, entre l'écorce (0,218) et le
+    # cœur (0,748). Teinte 0,072 et saturation 0,340 : DANS l'enveloppe des
+    # trois autres (teintes 0,0196..0,1092, saturation max 0,346). C'est un
+    # palier de valeur, pas une couleur neuve — condition du lead.
+    "MAT_Tree_ScorchedSap": (0.50, 0.42, 0.33, 0.94),
 }
 IDX_ECORCE = 0
 IDX_CALCINE = 1
+IDX_AUBIER = 2
 
 
 def srgb_vers_lineaire(canal):
@@ -207,10 +314,8 @@ def _graine(x):
     return math.sin(x * 12.9898) * 0.5
 
 
-# Bruit angulaire à phases irrégulières. Le r02 modulait ses contreforts
-# par `max(0, sin(3a + 0,7))²` — trois lobes IDENTIQUES à 120°, c'est-à-dire
-# une étoile à trois branches. Ici la somme d'harmoniques déphasées ne
-# laisse aucune période dominante.
+# Bruit angulaire à phases irrégulières : somme d'harmoniques déphasées, sans
+# période dominante.
 _HARMONIQUES = ((2, 1.00, 0.71), (3, 0.86, 2.93), (5, 0.71, 1.34),
                 (7, 0.58, 4.42), (9, 0.50, 0.19))
 _NORME = sum(a for _, a, _ in _HARMONIQUES)
@@ -223,74 +328,211 @@ def bruit(angle, graine=0.0):
     return total / _NORME
 
 
+def _interp(table, z):
+    """Interpolation linéaire dans une table (z, …) DÉCROISSANTE en z."""
+    if z >= table[0][0]:
+        return table[0][1:]
+    if z <= table[-1][0]:
+        return table[-1][1:]
+    for i in range(len(table) - 1):
+        z0, z1 = table[i][0], table[i + 1][0]
+        if z1 <= z <= z0:
+            t = (z0 - z) / (z0 - z1)
+            return tuple(a + (b - a) * t
+                         for a, b in zip(table[i][1:], table[i + 1][1:]))
+    return table[-1][1:]
+
+
 # ---------------------------------------------------------------------------
-# La spirale de cicatrice — UNE définition, partagée par le retrait de
-# l'écorce ET par le ruban de cœur : deux codes qui redérivent la même
-# spirale finissent par diverger (tools/CLAUDE.md).
+# LA PHASE D'ÉCHANTILLONNAGE — le geste principal, à coût nul en triangles.
+# ---------------------------------------------------------------------------
+def phases(n_anneaux, n_cotes, graine):
+    """Rotation cumulée de l'échantillonnage, anneau par anneau.
+
+    TROIS CONTRAINTES, et elles se contredisent :
+      * assez grande pour casser les méridiens — le filet exige |Δφ| moyen
+        ≥ 4° et un écart-type ≥ 2° ;
+      * NETTEMENT sous π/n, sinon la rotation s'aliase sur le pas
+        d'échantillonnage et redevient indiscernable de zéro (c'est aussi ce
+        que replie le filet, donc un pas trop grand se mesurerait plus PETIT
+        qu'il n'est) ;
+      * de somme nulle sur le membre, sinon le fût part en vrille et l'on
+        remplace un prisme par un mât de barbier.
+    La somme est donc retranchée explicitement : la rotation nette est nulle
+    à la précision machine, pas « à peu près ».
+    """
+    pas = PHASE_PAS * math.pi / n_cotes
+    bruts = []
+    for j in range(n_anneaux):
+        amp = PHASE_MIN + (1.0 - PHASE_MIN) * abs(bruit(j * 1.31 + graine, graine))
+        signe = 1.0 if bruit(j * 2.17 + graine * 0.5, graine * 1.7) >= 0.0 else -1.0
+        bruts.append(signe * amp * pas)
+    moyenne = sum(bruts) / len(bruts)
+    bruts = [x - moyenne for x in bruts]
+    out = [0.0]
+    for x in bruts[:-1]:
+        out.append(out[-1] + x)
+    return out
+
+
+# ---------------------------------------------------------------------------
+# La cicatrice — UNE définition, partagée par l'écorce ET par le cœur.
 # ---------------------------------------------------------------------------
 def angle_cicatrice(z):
     t = (CICATRICE_HAUT - z) / (CICATRICE_HAUT - CICATRICE_BAS)
     return -0.55 + t * CICATRICE_TOURS_RAD
 
 
-def dans_cicatrice(z, angle):
-    if z > CICATRICE_HAUT or z < CICATRICE_BAS:
-        return False
-    ecart = (angle - angle_cicatrice(z) + math.pi) % (2.0 * math.pi) - math.pi
-    return abs(ecart) < CICATRICE_DEMI_ANGLE
+def _pont(z):
+    """Vrai si l'écorce fait pont au-dessus du bois nu à cette altitude."""
+    for zc, demi in CICATRICE_PONTS:
+        if abs(z - zc) < demi:
+            return True
+    return False
+
+
+def cicatrice_metres(z):
+    """Rend (largeur, profondeur) EN MÈTRES, ou (0, 0) sur un pont d'écorce.
+
+    L'enveloppe est de BASSE FRÉQUENCE : c'est ce que l'œil intègre. R2B.1
+    faisait alterner la largeur d'une station à l'autre — CV brut 0,402, CV
+    lissé sur trois stations 0,212, et la bande se lisait peinte. Le jitter
+    résiduel est volontairement petit devant l'enveloppe.
+    """
+    if z > CICATRICE_HAUT or z < CICATRICE_BAS or _pont(z):
+        return 0.0, 0.0
+    largeur, prof = _interp(CICATRICE_PROFIL, z)
+    jitter = 1.0 + 0.16 * bruit(z * 2.9, 3.7)
+    return largeur * jitter, prof * jitter
+
+
+def cicatrice_profil(z, rayon):
+    """Rend (demi-angle du fond, demi-angle de la lèvre, facteur de retrait)."""
+    largeur, prof = cicatrice_metres(z)
+    if largeur <= 0.0 or rayon <= 0.02:
+        return 0.0, 0.0, 1.0
+    demi = min(1.05, 0.5 * largeur / rayon)
+    retrait = max(CICATRICE_RETRAIT_MIN, 1.0 - prof / rayon)
+    return demi, demi * 1.55, retrait
+
+
+def facteur_cicatrice(z, angle, rayon):
+    """Multiplicateur de rayon : fond du sillon, flanc, puis LÈVRE soulevée.
+
+    La lèvre est ce qui fait la différence entre un sillon et une bande
+    peinte : l'écorce ne s'arrête pas net au bord d'un arrachement, elle se
+    relève.
+    """
+    demi, levre, retrait = cicatrice_profil(z, rayon)
+    if demi <= 0.0:
+        return 1.0, False
+    ecart = abs((angle - angle_cicatrice(z) + math.pi) % (2.0 * math.pi) - math.pi)
+    if ecart <= demi * 0.70:
+        return retrait, True
+    if ecart <= demi:
+        t = (ecart - demi * 0.70) / (demi * 0.30)
+        return retrait + (1.0 - retrait) * t, True
+    if ecart <= levre:
+        t = (ecart - demi) / max(1.0e-6, levre - demi)
+        return 1.0 + (CICATRICE_LEVRE - 1.0) * math.sin(math.pi * t), True
+    return 1.0, False
 
 
 # ---------------------------------------------------------------------------
 # Loft d'anneaux fermés
 # ---------------------------------------------------------------------------
-def anneau(centre, rayon, n, z, lobes=0.0, graine=0.0, aplati=None,
-           applique_cicatrice=True):
-    """Un anneau fermé. `lobes` module le rayon par un BRUIT à phases
-    irrégulières (contreforts de souche), `aplati` = (angle, force) écrase
-    la face qui regarde la fente, et la bande de cicatrice CREUSE le
-    profil — le retrait est dans l'écorce, pas plaqué dessus."""
+def anneau(centre, rayon, n, z, phase=0.0, lobes=0.0, lobes_azimuts=(),
+           cannelure=0.0, cannelure_graine=0.0, aplati=None,
+           applique_cicatrice=True, loupes=()):
+    """Un anneau fermé, échantillonné à partir de `phase`.
+
+    LE RELIEF EST FONCTION DE L'AZIMUT, PAS DE L'INDICE. R2B.1 écrivait
+    `_graine(graine + i * 1.7)` avec une graine qui changeait à chaque
+    anneau : le motif était retiré à neuf tous les 0,6 m, corrélation −0,320
+    d'un anneau au suivant. Le maillage en devenait numériquement non plan
+    partout — assez pour verdir un contrôle de planéité — sans rien donner à
+    l'œil : 0,031 m de gigue, soit une moucheture sur une facette de 46 px.
+    Ici `bruit(a + dérive·z)` ne dépend que de l'azimut et d'une lente
+    dérive : le relief SURVIT d'un anneau au suivant et devient une arête
+    filante.
+    """
     points = []
+    zones = []
     for i in range(n):
-        a = 2.0 * math.pi * i / n
-        r = rayon * (1.0 + _graine(graine + i * 1.7) * 0.10)
-        if lobes > 0.0:
-            # 0,5 + 0,5·bruit plutôt que max(0, bruit) : tout le tour reçoit
-            # un contrefort, d'intensité irrégulière. Avec `max` seule la
-            # moitié du tour s'élargissait et la souche tombait à 1,71 m,
-            # sous le plancher de 1,75 du garde-fou de largeur.
-            r *= 1.0 + lobes * (0.5 + 0.5 * bruit(a, graine * 0.37))
+        a = 2.0 * math.pi * i / n + phase
+        r = rayon
+        if cannelure > 0.0:
+            r *= 1.0 + cannelure * bruit(a + CANNELURE_DERIVE * z,
+                                         cannelure_graine)
+        if lobes > 0.0 and lobes_azimuts:
+            # LES CONTREFORTS DE SOUCHE SONT VERROUILLÉS SUR LES RACINES.
+            # R2B.1 les modulait par un bruit dont la phase changeait à chaque
+            # anneau : les lobes ne montaient nulle part et les racines
+            # démarraient contre une paroi lisse — d'où la couture franche au
+            # pied que le lead décrit comme « peu de transition organique ».
+            bosse = 0.0
+            for yaw in lobes_azimuts:
+                c = math.cos(a - yaw)
+                if c > 0.0:
+                    bosse = max(bosse, c ** 5)
+            r *= 1.0 + lobes * (0.34 + 0.66 * bosse)
+        for zl, sigma, amp, azl in loupes:
+            c2 = math.cos(a - azl)
+            if c2 > 0.0:
+                r *= 1.0 + amp * math.exp(-((z - zl) / sigma) ** 2) * (c2 ** 2)
         if aplati is not None:
             ecart = (a - aplati[0] + math.pi) % (2.0 * math.pi) - math.pi
             if abs(ecart) < 1.05:
                 r *= 1.0 - aplati[1] * (1.0 - abs(ecart) / 1.05)
-        if applique_cicatrice and dans_cicatrice(z, a):
-            r *= CICATRICE_RETRAIT
+        zone = 0
+        if applique_cicatrice:
+            facteur, touche = facteur_cicatrice(z, a, rayon)
+            r *= facteur
+            if touche:
+                zone = 1 if facteur < 1.0 else 2
         points.append((centre[0] + math.cos(a) * r,
                        centre[1] + math.sin(a) * r, z))
-    return points
+        zones.append(zone)
+    return points, zones
 
 
-def loft(bm, anneaux, mat_idx=0, fermer_bas=False, fermer_haut=False):
+def loft(bm, anneaux, mat_idx=0, fermer_bas=False, fermer_haut=False,
+         mat_par_point=None, zones=None):
+    """`zones` porte, point par point, le code de bord de cicatrice rendu par
+    `anneau()` : 0 écorce saine, 1 fond ou flanc du sillon, 2 lèvre soulevée.
+    Une face qui touche une zone non nulle passe en AUBIER GRILLÉ — c'est
+    ainsi que la transition écorce -> aubier -> cœur existe dans la
+    géométrie, et pas seulement dans l'intention."""
     rangs = [[bm.verts.new(p) for p in a] for a in anneaux]
     faces = []
+    idx_face = []
     for e in range(len(rangs) - 1):
         bas, haut = rangs[e], rangs[e + 1]
         n = len(bas)
         for i in range(n):
             j = (i + 1) % n
             faces.append(bm.faces.new((bas[i], bas[j], haut[j], haut[i])))
+            if mat_par_point is not None:
+                idx_face.append(mat_par_point(e, i))
+            elif zones is not None:
+                z_max = max(zones[e][i], zones[e][j],
+                            zones[e + 1][i], zones[e + 1][j])
+                idx_face.append(IDX_AUBIER if z_max > 0 else mat_idx)
+            else:
+                idx_face.append(mat_idx)
     if fermer_bas:
         faces.append(bm.faces.new(tuple(reversed(rangs[0]))))
+        idx_face.append(mat_idx)
     if fermer_haut:
         faces.append(bm.faces.new(tuple(rangs[-1])))
-    for f in faces:
-        f.material_index = mat_idx
+        idx_face.append(mat_idx)
+    for f, m in zip(faces, idx_face):
+        f.material_index = m
     return rangs
 
 
 def couronne_rompue(bm, sommet, centre, hauteurs, mat_idx):
-    """Une cassure : le dernier anneau part en pointes INÉGALES au lieu de
-    se refermer à plat. C'est ce qui distingue une rupture d'une coupe."""
+    """Une cassure : le dernier anneau part en pointes INÉGALES."""
     n = len(sommet)
     fond = bm.verts.new((centre[0], centre[1], centre[2] - 0.30))
     for i in range(n):
@@ -308,12 +550,9 @@ def couronne_rompue(bm, sommet, centre, hauteurs, mat_idx):
 
 
 # ---------------------------------------------------------------------------
-# Chemins — loi de PUISSANCE, pas une droite.
+# Chemins — GELÉS, sauf le profil de rayon qui reçoit les loupes.
 # ---------------------------------------------------------------------------
 def _collets(z):
-    """Renflement local à chaque départ de moignon. Un tronc ne s'affine
-    pas régulièrement : il épaissit là où part une branche. Sans ces
-    bosses le profil reste monotone et l'œil lit un cône."""
     facteur = 1.0
     for zm, _, _, _, _ in MOIGNONS:
         facteur *= 1.0 + 0.14 * math.exp(-((z - zm) / 0.55) ** 2)
@@ -321,8 +560,6 @@ def _collets(z):
 
 
 def chemin_vivant(t):
-    """Centre et rayon de la moitié vivante à t ∈ [0;1]. La course en plan
-    s'incurve (t**1.25) au lieu de filer droit."""
     course = PORTEE_VIVANT * (t ** 1.25)
     z = FOURCHE_Z + t * (VIVANT_SOMMET - FOURCHE_Z)
     rayon = (0.15 + 0.37 * ((1.0 - t) ** 0.62)) * _collets(z)
@@ -339,11 +576,6 @@ def chemin_mort(t):
 
 
 def chemin_membre(t):
-    """La branche maîtresse arrachée : elle NAÎT du fût vivant à 6,30 m et
-    se rompt à 7,55 m. Elle reste ÉPAISSE à la cassure (0,30 de rayon,
-    0,60 de diamètre) — la foudre casse gros, elle n'effile pas en
-    brindille, et c'est cette masse qui donne à l'arbre sa lecture
-    latérale à 90 m."""
     depart = chemin_vivant((MEMBRE_BASE_Z - FOURCHE_Z)
                            / (VIVANT_SOMMET - FOURCHE_Z))[0]
     course = PORTEE_MEMBRE * t
@@ -354,28 +586,48 @@ def chemin_membre(t):
 
 
 def _souche_rayon(z):
-    """Profil CONCAVE : le pied se creuse au lieu de descendre en ligne
-    droite. Le r02 avait une concavité de −0,025 m — il bombait."""
     u = min(1.0, max(0.0, z / FOURCHE_Z))
     return SOUCHE_RAYON_HAUT + (SOUCHE_RAYON_BAS - SOUCHE_RAYON_HAUT) \
         * ((1.0 - u) ** SOUCHE_PUISSANCE)
+
+
+def rayon_local(z):
+    """Rayon nominal du fût à l'altitude z, pour convertir une largeur de
+    cicatrice en mètres vers un demi-angle."""
+    if z <= FOURCHE_Z:
+        return _souche_rayon(z)
+    t = min(1.0, (z - FOURCHE_Z) / (VIVANT_SOMMET - FOURCHE_Z))
+    return chemin_vivant(t)[1]
+
+
+def centre_local(z):
+    if z <= FOURCHE_Z:
+        return (0.0, 0.0, z)
+    t = min(1.0, (z - FOURCHE_Z) / (VIVANT_SOMMET - FOURCHE_Z))
+    return chemin_vivant(t)[0]
 
 
 # ---------------------------------------------------------------------------
 # SM_ThunderstruckTree_Bark
 # ---------------------------------------------------------------------------
 def ecorce(bm):
-    # --- la souche : UN anneau, contreforts irréguliers qui s'estompent.
-    souche = []
+    azimuts_racines = tuple(r[0] for r in RACINES)
+
+    # --- la souche : contreforts VERROUILLÉS sur les azimuts de racine.
+    ph = phases(9, ANNEAU_SOUCHE, 4.1)
+    souche, zones_s = [], []
     for k in range(9):
         z = FOURCHE_Z * (k / 8.0)
-        souche.append(anneau((0.0, 0.0), _souche_rayon(z), ANNEAU_SOUCHE, z,
-                             lobes=0.30 * ((1.0 - z / FOURCHE_Z) ** 1.4),
-                             graine=k * 3.3))
-    rangs = loft(bm, souche, mat_idx=IDX_ECORCE, fermer_bas=True)
+        p, zn = anneau((0.0, 0.0), _souche_rayon(z), ANNEAU_SOUCHE, z,
+                       phase=ph[k],
+                       lobes=0.30 * ((1.0 - z / FOURCHE_Z) ** 1.4),
+                       lobes_azimuts=azimuts_racines)
+        souche.append(p)
+        zones_s.append(zn)
+    rangs = loft(bm, souche, mat_idx=IDX_ECORCE, fermer_bas=True,
+                 zones=zones_s)
 
-    # --- le col : l'entonnoir qui descend ENTRE les moitiés — les joues de
-    # la fente. Le sommet de souche se referme vers un centre ABAISSÉ.
+    # --- le col : l'entonnoir qui descend ENTRE les moitiés.
     haut = rangs[-1]
     col = bm.verts.new((0.0, 0.0, 1.58))
     for i in range(ANNEAU_SOUCHE):
@@ -384,128 +636,182 @@ def ecorce(bm):
         f.material_index = IDX_CALCINE
 
     # --- moitié vivante : loft continu jusqu'à 10,8 m, cime INTACTE.
-    vivant = []
+    ph = phases(15, ANNEAU_VIVANT, 17.3)
+    vivant, zones_v = [], []
     for k in range(15):
         t = k / 14.0
         centre, rayon = chemin_vivant(t)
-        vivant.append(anneau(centre, rayon, ANNEAU_MOITIE, centre[2],
-                             graine=40.0 + k * 2.1,
-                             aplati=(AZ_MORT, 0.30 * (1.0 - t))))
-    rangs_vivant = loft(bm, vivant, mat_idx=IDX_ECORCE)
+        p, zn = anneau(centre, rayon, ANNEAU_VIVANT, centre[2], phase=ph[k],
+                       cannelure=CANNELURE_AMP, cannelure_graine=1.9,
+                       aplati=(AZ_MORT, 0.30 * (1.0 - t)), loupes=LOUPES)
+        vivant.append(p)
+        zones_v.append(zn)
+    rangs_vivant = loft(bm, vivant, mat_idx=IDX_ECORCE, zones=zones_v)
     cime_centre, _ = chemin_vivant(1.0)
     cime = bm.verts.new((cime_centre[0] + 0.06, cime_centre[1] - 0.04,
                          cime_centre[2] + 0.22))
     dessus = rangs_vivant[-1]
-    for i in range(ANNEAU_MOITIE):
-        j = (i + 1) % ANNEAU_MOITIE
+    for i in range(ANNEAU_VIVANT):
+        j = (i + 1) % ANNEAU_VIVANT
         f = bm.faces.new((dessus[i], dessus[j], cime))
         f.material_index = IDX_ECORCE
 
-    # --- moitié morte : RUPTURE BASSE à 5,9 m, écorce calcinée.
+    # --- moitié morte : RUPTURE BASSE à 5,9 m, écorce calcinée. La cicatrice
+    # ne s'y applique plus : la blessure court sur le fût SURVIVANT, et un
+    # sillon non rempli sur la moitié morte donnait deux rubans pâles là où le
+    # récit n'en veut qu'un.
+    ph = phases(10, ANNEAU_MORT, 31.7)
     mort = []
     for k in range(10):
         t = k / 9.0
         centre, rayon = chemin_mort(t)
-        mort.append(anneau(centre, rayon, ANNEAU_MOITIE, centre[2],
-                           graine=80.0 + k * 1.9,
-                           aplati=(AZ_VIVANT, 0.28 * (1.0 - t))))
+        p, _zn = anneau(centre, rayon, ANNEAU_MORT, centre[2], phase=ph[k],
+                        cannelure=CANNELURE_AMP * 0.9, cannelure_graine=5.3,
+                        aplati=(AZ_VIVANT, 0.28 * (1.0 - t)),
+                        applique_cicatrice=False)
+        mort.append(p)
     rangs_mort = loft(bm, mort, mat_idx=IDX_CALCINE)
     couronne_rompue(bm, rangs_mort[-1], chemin_mort(1.0)[0],
                     (1.35, 0.24, 0.82, 0.15, 1.08, 0.31, 0.66, 0.13,
-                     0.95, 0.27, 0.50, 0.19, 1.18, 0.22), IDX_CALCINE)
+                     0.95, 0.27, 0.50, 0.19, 1.18, 0.22, 0.71, 0.16),
+                    IDX_CALCINE)
 
     # --- membre arraché : RUPTURE HAUTE à 7,55 m.
+    ph = phases(6, ANNEAU_MEMBRE, 47.9)
     membre = []
     for k in range(6):
         t = k / 5.0
         centre, rayon = chemin_membre(t)
-        membre.append(anneau((centre[0], centre[1]), rayon, ANNEAU_MEMBRE,
-                             centre[2], graine=130.0 + k * 2.7,
-                             applique_cicatrice=False))
+        p, _zn = anneau((centre[0], centre[1]), rayon, ANNEAU_MEMBRE,
+                        centre[2], phase=ph[k], cannelure=CANNELURE_AMP * 0.8,
+                        cannelure_graine=9.1, applique_cicatrice=False)
+        membre.append(p)
     rangs_membre = loft(bm, membre, mat_idx=IDX_CALCINE, fermer_bas=True)
     couronne_rompue(bm, rangs_membre[-1], chemin_membre(1.0)[0],
                     (0.62, 0.14, 0.44, 0.21, 0.55, 0.11, 0.36, 0.17,
-                     0.48, 0.13), IDX_CALCINE)
+                     0.48, 0.13, 0.40, 0.19), IDX_CALCINE)
 
-    # --- moignons : cinq branches arrachées encore accrochées, générées du
-    # MÊME chemin de tronc. Pentes et épaisseurs toutes différentes : le
-    # r02 avait cinq fois la même pente et deux moignons à 1,4° l'un de
-    # l'autre.
+    # --- moignons : cinq branches arrachées encore accrochées.
     for z, yaw, longueur, pente, rcol in MOIGNONS:
         t = (z - FOURCHE_Z) / (VIVANT_SOMMET - FOURCHE_Z)
         centre, rayon = chemin_vivant(t)
         direction = (math.cos(yaw), math.sin(yaw), pente)
         base = (centre[0] + direction[0] * rayon * 0.8,
                 centre[1] + direction[1] * rayon * 0.8, z)
+        ph = phases(4, 8, z * 3.7)
         anneaux_moignon = []
         for e in range(4):
             te = e / 3.0
             c = (base[0] + direction[0] * longueur * te,
                  base[1] + direction[1] * longueur * te,
                  base[2] + direction[2] * longueur * te)
-            anneaux_moignon.append(anneau(
-                (c[0], c[1]), rcol * (1.0 - te * 0.42), 8, c[2],
-                graine=z * 4.1 + e, applique_cicatrice=False))
+            p, _zn = anneau((c[0], c[1]), rcol * (1.0 - te * 0.42), 8, c[2],
+                            phase=ph[e], cannelure=0.13,
+                            cannelure_graine=z * 2.3,
+                            applique_cicatrice=False)
+            anneaux_moignon.append(p)
         loft(bm, anneaux_moignon, mat_idx=IDX_CALCINE, fermer_haut=True)
 
 
 # ---------------------------------------------------------------------------
 # SM_ThunderstruckTree_Roots — contreforts au sol, OBJET SÉPARÉ
 # ---------------------------------------------------------------------------
+def _contrefort(bm, yaw0, d0, portee, crete, dyaw, echelle, graine):
+    """Un contrefort COURBE, à section presque ronde.
+
+    R2B.1 : hexagone de demi-largeur 1,35 r et de demi-hauteur 0,75 r —
+    aplatissement 1,80 — dont les TROIS sommets bas étaient écrasés par
+    `max(0.01, …)`. Le dessous était donc plat par construction, et 68,5 % de
+    la surface se trouvait à moins de 45° de la verticale : une plaque. Ici la
+    LIGNE MÉDIANE est relevée d'exactement une demi-hauteur, si bien que le
+    bas de la section affleure le sol SANS ÉCRÊTAGE, et l'aplatissement tombe
+    à 1,13.
+
+    LA HAUTEUR EST BORNÉE HORS DE L'EMPRISE DU COLLIDER : à 0,382 m, R2B.1
+    dépassait déjà le `step_height` de 0,34 — un contrefort sans collider que
+    le joueur ne peut pas enjamber est un mur invisible. La décroissance du
+    rayon est calibrée pour que le sommet reste sous 0,32 m dès d = 0,95.
+    """
+    n_rings = 7
+    ph = phases(n_rings, RACINE_COTES, graine)
+    anneaux_racine = []
+    for k in range(n_rings):
+        t = k / float(n_rings - 1)
+        d = d0 + portee * t
+        yaw = yaw0 + dyaw * (t - 0.35 * t * t)
+        r = max(0.045, RACINE_R0 * echelle
+                * math.exp(-(d - d0) / RACINE_DECROISSANCE))
+        r *= 1.0 + 0.08 * _graine(graine * 7.0 + k)
+        collet = crete * (max(0.0, 1.0 - d / 0.95) ** 1.7)
+        zc = 0.015 + RACINE_VERTICAL * r + collet
+        cx = math.cos(yaw) * d
+        cy = math.sin(yaw) * d
+        px = -math.sin(yaw)
+        py = math.cos(yaw)
+        pts = []
+        for i in range(RACINE_COTES):
+            a = 2.0 * math.pi * i / RACINE_COTES + ph[k]
+            lat = math.cos(a) * r * RACINE_LATERAL
+            ver = math.sin(a) * r * RACINE_VERTICAL
+            pts.append((cx + px * lat, cy + py * lat, zc + ver))
+        anneaux_racine.append(pts)
+    loft(bm, anneaux_racine, fermer_bas=True, fermer_haut=True)
+    return anneaux_racine
+
+
 def racines(bm):
-    for yaw, portee, crete in RACINES:
-        anneaux_racine = []
-        for k in range(5):
-            t = k / 4.0
-            d = 0.55 + portee * t
-            z = crete * (1.0 - t) ** 1.6 + 0.045
-            r = (0.30 - t * 0.24) * (1.0 + _graine(yaw * 7.0 + k) * 0.18)
-            c = (math.cos(yaw) * d, math.sin(yaw) * d)
-            pts = []
-            for i in range(6):
-                a = 2.0 * math.pi * i / 6
-                # section aplatie : une racine est plus large que haute
-                pts.append((c[0] - math.sin(yaw) * math.cos(a) * r * 1.35,
-                            c[1] + math.cos(yaw) * math.cos(a) * r * 1.35,
-                            max(0.01, z + math.sin(a) * r * 0.75)))
-            anneaux_racine.append(pts)
-        loft(bm, anneaux_racine, fermer_bas=True, fermer_haut=True)
+    for yaw0, portee, crete, dyaw, fourche_t in RACINES:
+        _contrefort(bm, yaw0, 0.30, portee, crete, dyaw, 1.0, yaw0 * 3.1)
+        if fourche_t is None:
+            continue
+        # LA FOURCHE : une racine qui se divise. Loft SÉPARÉ à dessein — le
+        # filet mesure la sagitta par composante connexe, et une fourche
+        # soudée à son parent rendrait une « courbure » qui n'est que
+        # l'écartement des deux bras.
+        d = 0.30 + portee * fourche_t
+        yaw = yaw0 + dyaw * (fourche_t - 0.35 * fourche_t * fourche_t)
+        # LA DÉRIVE DU BRAS N'EST PAS MONOTONE, et je m'y suis fait prendre :
+        # à −0,34 rad la sonde mesure 13,0 et 13,4 % de sagitta, à −0,78 rad
+        # elle mesure 2,4 et 2,5 %. Au-delà d'un certain angle, l'arc devient
+        # assez large pour que l'axe principal du nuage de points bascule, et
+        # la « sagitta » mesurée s'effondre alors que la pièce est PLUS courbe.
+        # C'est une limite de l'estimateur, pas de la géométrie ; on reste donc
+        # du côté où il mesure ce qu'il prétend mesurer.
+        _contrefort(bm, yaw + 0.52, d, portee * (1.0 - fourche_t) * 0.85,
+                    0.0, -0.34, 0.36, yaw0 * 5.7 + 2.0)
 
 
 # ---------------------------------------------------------------------------
 # SM_ThunderstruckTree_Heart — le bois mis à nu
 # ---------------------------------------------------------------------------
-def ruban(bm, points, largeurs, epaisseur):
-    """Ruban lofté le long d'une polyligne, à demi-largeur VARIABLE et
-    section hexagonale. Une cassure de bois n'a pas de largeur constante ;
-    une bande de largeur constante se lit comme de la peinture."""
-    anneaux_ruban = []
-    for (p, normale, tangente), demi in zip(points, largeurs):
-        # LA LARGEUR PART SUR LA BINORMALE, pas sur la tangente. Premier
-        # jet (et r02 avant lui) : le décalage latéral se faisait le long
-        # de `tangente`, c'est-à-dire le long du CHEMIN — donc à la
-        # verticale. Toute la variation de largeur partait dans la
-        # longueur du ruban et n'élargissait rien : mesuré CV 0,204 au lieu
-        # des 0,39 dessinés. Un chiffre juste appliqué au mauvais axe.
-        bx = normale[1] * tangente[2] - normale[2] * tangente[1]
-        by = normale[2] * tangente[0] - normale[0] * tangente[2]
-        bz = normale[0] * tangente[1] - normale[1] * tangente[0]
-        bn = math.sqrt(bx * bx + by * by + bz * bz) or 1.0
-        binormale = (bx / bn, by / bn, bz / bn)
-        section = []
-        for i in range(6):
-            a = 2.0 * math.pi * i / 6
-            lat = math.cos(a) * demi
-            prof = math.sin(a) * epaisseur
-            section.append((p[0] + binormale[0] * lat - normale[0] * (prof + epaisseur),
-                            p[1] + binormale[1] * lat - normale[1] * (prof + epaisseur),
-                            p[2] + binormale[2] * lat - normale[2] * (prof + epaisseur)))
-        anneaux_ruban.append(section)
-    loft(bm, anneaux_ruban, fermer_bas=True, fermer_haut=True)
+def _section_cicatrice(z, largeur, prof):
+    """Un COIN de bois arraché, pas un ruban d'épaisseur constante.
+
+    R2B.1 loftait une section hexagonale de 0,110 m d'épaisseur CONSTANTE sur
+    tout le parcours : profondeur radiale max/min 2,22, ce qui n'est que le
+    bruit de rotation de la section. Ici la profondeur SUIT la largeur —
+    profonde à l'impact, effacée au pied — et le profil se referme en V.
+    """
+    a = angle_cicatrice(z)
+    centre = centre_local(z)
+    radial = (math.cos(a), math.sin(a))
+    tang = (-math.sin(a), math.cos(a))
+    r_ext = rayon_local(z) * 1.005
+    w = largeur * 0.5
+    # (latéral, radial) — polygone simple parcouru dans l'ordre
+    profil = ((w, 0.0), (0.0, prof * 0.12), (-w, 0.0),
+              (-w * 0.62, -prof * 0.45), (-w * 0.30, -prof),
+              (0.0, -prof * 1.15), (w * 0.30, -prof), (w * 0.62, -prof * 0.45))
+    pts = []
+    for lat, rad in profil:
+        rr = r_ext + rad
+        pts.append((centre[0] + radial[0] * rr + tang[0] * lat,
+                    centre[1] + radial[1] * rr + tang[1] * lat, z))
+    return pts
 
 
-def _echarde(bm, base, direction, hauteur, largeur):
-    """Une écharde : un éclat de bois frais qui pointe hors de la cassure."""
+def _echarde(bm, base, direction, hauteur, largeur, mat_idx=0):
+    """Un éclat de bois frais qui pointe hors de la cassure."""
     b = base
     s = largeur
     rangs_pointe = [
@@ -520,7 +826,7 @@ def _echarde(bm, base, direction, hauteur, largeur):
          (b[0] - s * 0.18 + direction[0] * hauteur * 0.4,
           b[1] + s * 0.18 + direction[1] * hauteur * 0.4, b[2] + hauteur)],
     ]
-    loft(bm, rangs_pointe, fermer_bas=True, fermer_haut=True)
+    loft(bm, rangs_pointe, mat_idx=mat_idx, fermer_bas=True, fermer_haut=True)
 
 
 def coeur(bm):
@@ -534,37 +840,46 @@ def coeur(bm):
                       (-largeur * 0.5, profondeur * 0.5, z)])
     loft(bm, fente, fermer_bas=True, fermer_haut=True)
 
-    # --- le ruban de cicatrice, logé DANS le retrait de l'écorce : même
-    # spirale (angle_cicatrice), largeur variable station par station.
-    etapes = []
-    n = len(CICATRICE_LARGEURS)
-    for k in range(n):
-        z = CICATRICE_HAUT - 0.25 - (CICATRICE_HAUT - CICATRICE_BAS - 0.5) \
-            * k / (n - 1)
-        if z > FOURCHE_Z:
-            t = (z - FOURCHE_Z) / (VIVANT_SOMMET - FOURCHE_Z)
-            centre, rayon = chemin_vivant(t)
-        else:
-            centre = (0.0, 0.0, z)
-            rayon = _souche_rayon(z)
-        a = angle_cicatrice(z)
-        r = rayon * (CICATRICE_RETRAIT + 0.13)
-        p = (centre[0] + math.cos(a) * r, centre[1] + math.sin(a) * r, z)
-        etapes.append((p, (math.cos(a), math.sin(a), 0.0)))
-    chemin = []
-    for k in range(n):
-        p, normale = etapes[k]
-        p_suiv = etapes[min(k + 1, n - 1)][0]
-        p_prec = etapes[max(k - 1, 0)][0]
-        tangente = (p_suiv[0] - p_prec[0], p_suiv[1] - p_prec[1],
-                    p_suiv[2] - p_prec[2])
-        norme = math.sqrt(sum(c * c for c in tangente)) or 1.0
-        tangente = tuple(c / norme for c in tangente)
-        chemin.append((p, normale, tangente))
-    ruban(bm, chemin, CICATRICE_LARGEURS, 0.055)
+    # --- LA CICATRICE, en fragments séparés par les ponts d'écorce.
+    stations = 26
+    fragment = []
+    fragments = []
+    for k in range(stations):
+        z = CICATRICE_HAUT - 0.04 - (CICATRICE_HAUT - CICATRICE_BAS - 0.08) \
+            * k / (stations - 1)
+        largeur, prof = cicatrice_metres(z)
+        if largeur <= 0.0:
+            if len(fragment) >= 4:
+                fragments.append(fragment)
+            fragment = []
+            continue
+        fragment.append(_section_cicatrice(z, largeur, prof))
+    if len(fragment) >= 4:
+        fragments.append(fragment)
+    for frag in fragments:
+        # Les deux arêtes et la crête reçoivent l'AUBIER GRILLÉ : c'est le
+        # palier de valeur entre l'écorce (0,218) et le cœur (0,748) que le
+        # lead a autorisé le 2026-08-19. Sans lui, la transition est un saut
+        # de rapport 3,43 et la bande se lit comme une décalcomanie.
+        loft(bm, frag, fermer_bas=True, fermer_haut=True,
+             mat_par_point=lambda e, i: 1 if i in (0, 1, 7) else 0)
 
-    # --- PLAN DE RUPTURE BAS : quatre échardes de longueurs distinctes au
-    # cœur de la couronne morte.
+    # --- ÉCHARDES LE LONG DU PARCOURS. R2B.1 n'en avait aucune hors des deux
+    # plans de rupture : la cicatrice n'était bordée d'aucun éclat, donc rien
+    # ne disait qu'elle était arrachée plutôt que peinte.
+    for z, decal, hauteur, demi, pente in ECHARDES_PARCOURS:
+        largeur, prof = cicatrice_metres(z)
+        if largeur <= 0.0:
+            continue
+        a = angle_cicatrice(z) + decal
+        centre = centre_local(z)
+        r_ext = rayon_local(z) * 0.99
+        base = (centre[0] + math.cos(a) * r_ext,
+                centre[1] + math.sin(a) * r_ext, z)
+        _echarde(bm, base, (math.cos(a) * pente, math.sin(a) * pente),
+                 hauteur, demi, mat_idx=0 if hauteur > 0.45 else 1)
+
+    # --- PLAN DE RUPTURE BAS : quatre échardes de longueurs distinctes.
     cm = chemin_mort(1.0)[0]
     for dx, dy, h, w in ((0.11, -0.07, 1.55, 0.115), (-0.15, 0.10, 1.15, 0.100),
                          (0.03, 0.17, 0.85, 0.085), (-0.05, -0.16, 0.60, 0.075)):
@@ -578,7 +893,7 @@ def coeur(bm):
         _echarde(bm, (cb[0] + dx, cb[1] + dy, cb[2] - 0.10),
                  (dx * 2.0, dy * 2.0), h, w)
 
-    # --- bouts pâles des moignons (mêmes cotes que l'écorce).
+    # --- bouts pâles des moignons.
     for z, yaw, longueur, pente, rcol in MOIGNONS:
         t = (z - FOURCHE_Z) / (VIVANT_SOMMET - FOURCHE_Z)
         centre, rayon = chemin_vivant(t)
@@ -599,9 +914,9 @@ def coeur(bm):
         ]
         loft(bm, rangs_bout, fermer_bas=True, fermer_haut=True)
 
-    # --- cassures des bois au sol : la face pâle REGARDE l'arbre — ils sont
-    # tombés d'ici, pas apportés par le vent.
-    for bx, by, yaw, longueur, rayon, releve in BRANCHES:
+    # --- cassures des bois au sol : la face pâle REGARDE l'arbre.
+    for spec in BRANCHES:
+        bx, by, yaw, longueur, rayon = spec[0], spec[1], spec[2], spec[3], spec[4]
         vers_arbre = math.atan2(-by, -bx)
         bout = (bx + math.cos(vers_arbre) * longueur * 0.52,
                 by + math.sin(vers_arbre) * longueur * 0.52, 0.16)
@@ -624,48 +939,126 @@ def coeur(bm):
 
 
 # ---------------------------------------------------------------------------
-# Bois tombés — dans le MÊME GLB : la chute appartient à l'arbre.
+# Bois tombés — CINQ LOIS DE FORME, pas cinq homothéties.
 # ---------------------------------------------------------------------------
-def branche(bm, bx, by, yaw, longueur, rayon, releve):
-    perp = (-math.sin(yaw), math.cos(yaw))
+def _effilement(loi, t):
+    """R2B.1 appliquait `1 − 0,38t` aux CINQ pièces : rapports d'effilement
+    mesurés [0,632 ; 0,668 ; 0,622 ; 0,630 ; 0,655], max/min 1,073. La
+    hiérarchie de R2B.1 portait sur l'ÉCHELLE — longueurs et rayons bien
+    étagés — et pas du tout sur la FORME. C'est ce que le lead a lu comme
+    « des poutres identiques »."""
+    if loi == "renfle":
+        return 0.42 + 0.88 * ((1.0 - t) ** 1.8)
+    if loi == "troncon":
+        return 1.00 - 0.12 * t
+    if loi == "noeud":
+        return 1.0 - 0.45 * t + 0.35 * math.exp(-((t - 0.44) / 0.10) ** 2)
+    if loi == "fourchue":
+        return 1.0 - 0.55 * t
+    return 1.0 - 0.72 * t
+
+
+_ANNEAUX_LOI = {"renfle": 7, "troncon": 5, "noeud": 6, "fourchue": 6,
+                "fouet": 6}
+_CHICOTS_LOI = {
+    "renfle": ((0.22, 0.34, 0.9), (0.71, 0.26, -0.6)),
+    "troncon": (),
+    "noeud": ((0.44, 0.30, 0.7),),
+    "fourchue": ((0.18, 0.24, 0.8), (0.40, 0.17, -0.9), (0.79, 0.13, 0.5)),
+    "fouet": ((0.58, 0.19, -0.7),),
+}
+
+
+def _axe_branche(bx, by, yaw, longueur, fleche, pos_fleche, t):
+    """L'axe est COURBE. R2B.1 : `c = (bx + cos(yaw)·L·(t−0,5), …)`, une droite
+    EXACTE — sagitta en plan 0,000 m pour les cinq pièces."""
+    g = math.log(0.5) / math.log(max(0.05, min(0.95, pos_fleche)))
+    lat = fleche * math.sin(math.pi * (t ** g))
+    ux, uy = math.cos(yaw), math.sin(yaw)
+    px, py = -uy, ux
+    return (bx + ux * longueur * (t - 0.5) + px * lat,
+            by + uy * longueur * (t - 0.5) + py * lat)
+
+
+def branche(bm, bx, by, yaw, longueur, rayon, releve, cotes, fleche,
+            pos_fleche, loi, chicots):
+    n_rings = _ANNEAUX_LOI[loi]
+    aplat = 0.88 if releve <= 0.001 else 1.0   # une pièce posée s'écrase un peu
+    ph = phases(n_rings, cotes, rayon * 97.0)
     anneaux_branche = []
-    for k in range(5):
-        t = k / 4.0
-        c = (bx + math.cos(yaw) * longueur * (t - 0.5),
-             by + math.sin(yaw) * longueur * (t - 0.5))
-        r = rayon * (1.0 - t * 0.38)
-        # `releve` soulève UN bout : la pièce s'appuie au lieu de gésir à
-        # plat. Le r02 avait deux planches parfaitement posées, dénivelé
-        # bout-à-bout 0,054 m pour les deux — d'où « planches identiques ».
+    for k in range(n_rings):
+        t = k / float(n_rings - 1)
+        cx, cy = _axe_branche(bx, by, yaw, longueur, fleche, pos_fleche, t)
+        r = rayon * _effilement(loi, t)
         z = r + releve * (t ** 1.5) + 0.05 * math.sin(t * math.pi)
+        if loi == "fouet" and t > 0.65:
+            z -= 0.16 * ((t - 0.65) / 0.35) ** 2   # la pointe ploie
+        perp = (-math.sin(yaw), math.cos(yaw))
         pts = []
-        for i in range(8):
-            a = 2.0 * math.pi * i / 8
-            rr = r * (1.0 + _graine(k * 5.0 + i + rayon * 31.0) * 0.14)
-            pts.append((c[0] + perp[0] * math.cos(a) * rr,
-                        c[1] + perp[1] * math.cos(a) * rr,
-                        z + math.sin(a) * rr))
+        for i in range(cotes):
+            a = 2.0 * math.pi * i / cotes + ph[k]
+            rr = r * (1.0 + 0.10 * bruit(a, rayon * 31.0))
+            pts.append((cx + perp[0] * math.cos(a) * rr,
+                        cy + perp[1] * math.cos(a) * rr,
+                        max(0.01, z + math.sin(a) * rr * aplat)))
         anneaux_branche.append(pts)
-    loft(bm, anneaux_branche, fermer_bas=True, fermer_haut=True)
-    # un chicot latéral, pour que la branche ne soit pas un tube
-    c_mid = (bx + math.cos(yaw) * longueur * 0.1,
-             by + math.sin(yaw) * longueur * 0.1)
-    s = rayon * 0.42
-    rangs_chicot = [
-        [(c_mid[0] - s, c_mid[1] - s, rayon * 0.9),
-         (c_mid[0] + s, c_mid[1] - s, rayon * 0.9),
-         (c_mid[0] + s, c_mid[1] + s, rayon * 0.9),
-         (c_mid[0] - s, c_mid[1] + s, rayon * 0.9)],
-        [(c_mid[0] - s * 0.5 + perp[0] * 0.5, c_mid[1] - s * 0.5 + perp[1] * 0.5,
-          rayon * 0.9 + 0.37),
-         (c_mid[0] + s * 0.5 + perp[0] * 0.5, c_mid[1] - s * 0.5 + perp[1] * 0.5,
-          rayon * 0.9 + 0.37),
-         (c_mid[0] + s * 0.5 + perp[0] * 0.5, c_mid[1] + s * 0.5 + perp[1] * 0.5,
-          rayon * 0.9 + 0.37),
-         (c_mid[0] - s * 0.5 + perp[0] * 0.5, c_mid[1] + s * 0.5 + perp[1] * 0.5,
-          rayon * 0.9 + 0.37)],
-    ]
-    loft(bm, rangs_chicot, fermer_bas=True, fermer_haut=True)
+    # `noeud` est FENDUE EN LONG : sa moitié supérieure montre le cœur pâle
+    # sur toute sa longueur. C'est la pièce qui porte, au sol, la même
+    # transition écorce -> cœur que la cicatrice porte sur le fût.
+    if loi == "noeud":
+        loft(bm, anneaux_branche, fermer_bas=True, fermer_haut=True,
+             mat_par_point=lambda e, i, n=cotes: 1 if i < n // 2 else 0)
+    else:
+        loft(bm, anneaux_branche, fermer_bas=True, fermer_haut=True)
+
+    if loi == "fourchue":
+        # LE SECOND BRAS, loft séparé : une pièce fourchue, pas un tube.
+        t0 = 0.55
+        cx0, cy0 = _axe_branche(bx, by, yaw, longueur, fleche, pos_fleche, t0)
+        r0 = rayon * _effilement(loi, t0) * 0.72
+        yaw2 = yaw + 0.62
+        ph2 = phases(4, cotes, rayon * 53.0)
+        bras = []
+        for k in range(4):
+            t = k / 3.0
+            d = longueur * 0.42 * t
+            cx = cx0 + math.cos(yaw2) * d
+            cy = cy0 + math.sin(yaw2) * d
+            r = r0 * (1.0 - 0.62 * t)
+            z = r + releve * 0.4 * t + 0.04
+            perp = (-math.sin(yaw2), math.cos(yaw2))
+            pts = []
+            for i in range(cotes):
+                a = 2.0 * math.pi * i / cotes + ph2[k]
+                pts.append((cx + perp[0] * math.cos(a) * r,
+                            cy + perp[1] * math.cos(a) * r,
+                            max(0.01, z + math.sin(a) * r)))
+            bras.append(pts)
+        loft(bm, bras, fermer_bas=True, fermer_haut=True)
+
+    # CHICOTS : R2B.1 en donnait UN à chaque pièce, à la même position
+    # relative et de la même hauteur. Ici zéro à trois, de tailles et
+    # d'orientations différentes, certains plongeant dans l'herbe.
+    for pos, taille, sens in _CHICOTS_LOI[loi]:
+        cx, cy = _axe_branche(bx, by, yaw, longueur, fleche, pos_fleche, pos)
+        r = rayon * _effilement(loi, pos)
+        perp = (-math.sin(yaw), math.cos(yaw))
+        s = rayon * 0.42
+        base_z = r * 0.9
+        haut = taille * sens
+        rangs_chicot = [
+            [(cx - s, cy - s, base_z), (cx + s, cy - s, base_z),
+             (cx + s, cy + s, base_z), (cx - s, cy + s, base_z)],
+            [(cx - s * 0.5 + perp[0] * taille * 1.3,
+              cy - s * 0.5 + perp[1] * taille * 1.3, max(0.02, base_z + haut)),
+             (cx + s * 0.5 + perp[0] * taille * 1.3,
+              cy - s * 0.5 + perp[1] * taille * 1.3, max(0.02, base_z + haut)),
+             (cx + s * 0.5 + perp[0] * taille * 1.3,
+              cy + s * 0.5 + perp[1] * taille * 1.3, max(0.02, base_z + haut)),
+             (cx - s * 0.5 + perp[0] * taille * 1.3,
+              cy + s * 0.5 + perp[1] * taille * 1.3, max(0.02, base_z + haut))],
+        ]
+        loft(bm, rangs_chicot, fermer_bas=True, fermer_haut=True)
 
 
 # ---------------------------------------------------------------------------
@@ -704,21 +1097,56 @@ def emprise(objets):
     return (min(xs), max(xs)), (min(ys), max(ys)), (min(zs), max(zs))
 
 
+def _diagnostics():
+    """Ce que le générateur SAIT de lui-même, imprimé pour que le journal
+    porte les chiffres et pas seulement le verdict."""
+    d = phases(15, ANNEAU_VIVANT, 17.3)
+    pas = [math.degrees(d[k + 1] - d[k]) for k in range(len(d) - 1)]
+    moy = sum(abs(x) for x in pas) / len(pas)
+    m = sum(pas) / len(pas)
+    sd = (sum((x - m) ** 2 for x in pas) / len(pas)) ** 0.5
+    net = math.degrees(d[-1] - d[0])
+    alias = math.degrees(math.pi / ANNEAU_VIVANT)
+    print("[thunderstruck_tree] phase : |dphi| moyen %.2f deg, ecart-type %.2f, "
+          "net %.2f deg, repliement a +-%.2f deg (max |pas| %.2f)"
+          % (moy, sd, net, alias, max(abs(x) for x in pas)))
+    largeurs = []
+    for k in range(26):
+        z = CICATRICE_HAUT - 0.04 - (CICATRICE_HAUT - CICATRICE_BAS - 0.08) \
+            * k / 25.0
+        largeurs.append(cicatrice_metres(z)[0])
+    non_nulles = [x for x in largeurs if x > 0.0]
+    print("[thunderstruck_tree] cicatrice : largeur %.3f..%.3f m (rapport %.2f), "
+          "%d station(s) sur %d interrompue(s) par un pont d'ecorce"
+          % (min(non_nulles), max(non_nulles),
+             max(non_nulles) / min(non_nulles),
+             len(largeurs) - len(non_nulles), len(largeurs)))
+    azs = sorted(math.degrees(r[0]) % 360.0 for r in RACINES)
+    ecarts = [(azs[(i + 1) % len(azs)] - azs[i]) % 360.0 for i in range(len(azs))]
+    print("[thunderstruck_tree] racines : ecarts d'azimut %s deg, max/min %.2f"
+          % (", ".join("%.0f" % e for e in ecarts), max(ecarts) / min(ecarts)))
+
+
 def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    ecorce_mats = ["MAT_Tree_CharredBark", "MAT_Tree_Charcoal"]
+    _diagnostics()
+    mats_ecorce = ["MAT_Tree_CharredBark", "MAT_Tree_Charcoal",
+                   "MAT_Tree_ScorchedSap"]
     pieces = [
-        objet_depuis("SM_ThunderstruckTree_Bark", ecorce, ecorce_mats, True),
+        objet_depuis("SM_ThunderstruckTree_Bark", ecorce, mats_ecorce, True),
         objet_depuis("SM_ThunderstruckTree_Heart", coeur,
-                     ["MAT_Tree_Heartwood"], False),
+                     ["MAT_Tree_Heartwood", "MAT_Tree_ScorchedSap"], False),
         objet_depuis("SM_ThunderstruckTree_Roots", racines,
                      ["MAT_Tree_CharredBark"], False),
     ]
     for suffixe, spec in zip("ABCDE", BRANCHES):
+        mats = ["MAT_Tree_CharredBark"]
+        if spec[9] == "noeud":
+            mats.append("MAT_Tree_Heartwood")
         pieces.append(objet_depuis(
             "SM_ThunderstruckTree_Branch%s" % suffixe,
             lambda bm, s=spec: branche(bm, *s),
-            ["MAT_Tree_CharredBark"], True))
+            mats, True))
 
     total = 0
     for obj in pieces:
@@ -731,8 +1159,8 @@ def main():
           % (x0, x1, y0, y1, z0, z1, total, BUDGET_TRIS))
 
     # LES REFUS DU PLAN APPROUVÉ — le générateur n'enregistre pas un arbre
-    # hors contrat, il ne le « signale » pas : il échoue. Aucun de ces
-    # seuils n'a bougé en R2B.1.
+    # hors contrat, il ne le « signale » pas : il échoue. Aucun de ces seuils
+    # n'a bougé en R2B.2 ; le dernier est AJOUTÉ.
     if not (HAUTEUR_MIN <= z1 <= HAUTEUR_MAX):
         print("[thunderstruck_tree] ERREUR: hauteur %.2f hors de [%.0f ; %.0f]"
               " — REFUS d'enregistrer" % (z1, HAUTEUR_MIN, HAUTEUR_MAX))
@@ -745,47 +1173,61 @@ def main():
         print("[thunderstruck_tree] ERREUR: budget dépassé — REFUS "
               "d'enregistrer")
         return 2
-    # La souche doit avoir sa largeur de plan (2,1 m ± 0,35 lobes compris).
-    # Le contrôle porte sur l'ÉCORCE SEULE : les contreforts-racines sont un
-    # objet distinct précisément pour que cette mesure reste la mesure de la
-    # souche.
     ecorce_obj = pieces[0]
     bas_xs = [v.co.x for v in ecorce_obj.data.vertices if v.co.z < 0.3]
     bas_ys = [v.co.y for v in ecorce_obj.data.vertices if v.co.z < 0.3]
     largeur_souche = max(max(bas_xs) - min(bas_xs), max(bas_ys) - min(bas_ys))
+    print("[thunderstruck_tree] souche large de %.2f m (attendu %.1f ± 0,35)"
+          % (largeur_souche, SOUCHE_LARGEUR))
     if abs(largeur_souche - SOUCHE_LARGEUR) > 0.35:
         print("[thunderstruck_tree] ERREUR: souche large de %.2f m "
               "(attendu %.1f ± 0,35)" % (largeur_souche, SOUCHE_LARGEUR))
         return 2
+
+    # REFUS AJOUTÉ EN R2B.2 — TRAVERSABILITÉ. Hors de l'emprise du collider du
+    # tronc, un contrefort sans collider plus haut que le `step_height` de
+    # 0,34 de locomotion_default.tres est un mur invisible. R2B.1 était à
+    # 0,382 m sur 20 sommets : défaut PRÉEXISTANT, corrigé ici.
+    racines_obj = pieces[2]
+    haut_hors = 0.0
+    for v in racines_obj.data.vertices:
+        if abs(v.co.x) <= COLLIDER_DEMI_X and abs(v.co.y) <= COLLIDER_DEMI_Y:
+            continue
+        haut_hors = max(haut_hors, v.co.z)
+    print("[thunderstruck_tree] racines : hauteur max hors collider %.3f m "
+          "(plafond %.2f)" % (haut_hors, RACINE_HAUTEUR_MAX_HORS))
+    if haut_hors > RACINE_HAUTEUR_MAX_HORS:
+        print("[thunderstruck_tree] ERREUR: contrefort de %.3f m hors de "
+              "l'emprise du collider — non enjambable" % haut_hors)
+        return 2
+
     # La cicatrice est réellement CREUSÉE. Contrôle PAR SOMMET, normalisé :
-    # chaque sommet du fût vivant est comparé au rayon nominal de SON anneau
-    # (le fût s'affine), contre l'angle de la spirale à SON z (la bande
-    # descend). Le premier jet comparait tout à un seul z ET prenait pour
-    # témoin la face APLATIE de la fente — il mesurait la joue, pas la
-    # cicatrice.
+    # chaque sommet du fût vivant est comparé au rayon nominal de SON anneau,
+    # contre l'angle de la spirale à SON z. Le témoin exclut la face APLATIE
+    # de la fente, qui n'est ni bande ni témoin.
     ratios_dans, ratios_hors = [], []
-    # La joue de la fente regarde désormais la moitié morte : le témoin
-    # doit suivre, sinon le contrôle mesure la paroi ronde et croit que
-    # la cicatrice n'est pas creusée.
     joue = AZ_MORT
     for v in ecorce_obj.data.vertices:
         z = v.co.z
         if not (3.4 <= z <= 6.8):
-            continue    # fenêtre franche du fût vivant, loin fourche et cime
+            continue
         t = (z - FOURCHE_Z) / (VIVANT_SOMMET - FOURCHE_Z)
         centre, rayon_nominal = chemin_vivant(t)
         distance = math.hypot(v.co.x - centre[0], v.co.y - centre[1])
-        if distance > rayon_nominal * 1.10 or distance < rayon_nominal * 0.4:
-            continue    # moignon ou bruit, pas la paroi du fût
+        if distance > rayon_nominal * 1.25 or distance < rayon_nominal * 0.4:
+            continue
         angle = math.atan2(v.co.y - centre[1], v.co.x - centre[0])
         ecart_joue = (angle - joue + math.pi) % (2 * math.pi) - math.pi
         if abs(ecart_joue) < 1.1:
-            continue    # face aplatie de la fente : ni bande, ni témoin
+            continue
+        demi, _levre, _retrait = cicatrice_profil(z, rayon_nominal)
+        if demi <= 0.0:
+            continue
         ecart = (angle - angle_cicatrice(z) + math.pi) % (2 * math.pi) - math.pi
         ratio = distance / rayon_nominal
-        if abs(ecart) < CICATRICE_DEMI_ANGLE * 0.75:
+        if abs(ecart) < demi * 0.70:
             ratios_dans.append(ratio)
-        elif abs(ecart) > CICATRICE_DEMI_ANGLE * 1.6:
+        elif abs(ecart) > demi * 1.75:
             ratios_hors.append(ratio)
     if not ratios_dans or not ratios_hors:
         print("[thunderstruck_tree] ERREUR: contrôle de cicatrice sans "

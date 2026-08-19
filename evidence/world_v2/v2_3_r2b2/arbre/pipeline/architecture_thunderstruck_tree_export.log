@@ -1,0 +1,26 @@
+Blender 4.0.2
+Read blend: "/home/user/zelda-r2b2/b_arbre/source_assets/blender/environment/SM_ThunderstruckTree.blend"
+[export_gltf] Blender 4.0.2
+[export_gltf] io_scene_gltf2 version (4, 0, 44)
+[export_gltf] preset: export_animation_mode=ACTIONS, export_animations=False, export_apply=True, export_cameras=False, export_extras=False, export_force_sampling=True, export_format=GLB, export_lights=False, export_materials=EXPORT, export_normals=True, export_optimize_animation_size=False, export_skins=True, export_tangents=True, export_texcoords=True, export_yup=True, use_selection=False, use_visible=True
+17:01:56 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
+17:01:56 | INFO: Starting glTF 2.0 export
+17:01:56 | INFO: Extracting primitive: SM_ThunderstruckTree_Bark
+17:01:56 | INFO: Primitives created: 3
+17:01:56 | INFO: Extracting primitive: SM_ThunderstruckTree_Heart
+17:01:56 | INFO: Primitives created: 2
+17:01:56 | INFO: Extracting primitive: SM_ThunderstruckTree_Roots
+17:01:56 | INFO: Primitives created: 1
+17:01:56 | INFO: Extracting primitive: SM_ThunderstruckTree_BranchA
+17:01:56 | INFO: Primitives created: 1
+17:01:56 | INFO: Extracting primitive: SM_ThunderstruckTree_BranchB
+17:01:56 | INFO: Primitives created: 1
+17:01:56 | INFO: Extracting primitive: SM_ThunderstruckTree_BranchC
+17:01:56 | INFO: Primitives created: 2
+17:01:56 | INFO: Extracting primitive: SM_ThunderstruckTree_BranchD
+17:01:56 | INFO: Primitives created: 1
+17:01:56 | INFO: Extracting primitive: SM_ThunderstruckTree_BranchE
+17:01:56 | INFO: Primitives created: 1
+17:01:56 | INFO: Finished glTF 2.0 export in 0.026141881942749023 s
+
+[export_gltf] OK -> /home/user/zelda-r2b2/b_arbre/assets/architecture/flora/SM_ThunderstruckTree.glb (201192 octets)

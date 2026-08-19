@@ -659,29 +659,38 @@ func test_c3_les_bois_tombes_ne_sont_plus_homothetiques() -> void:
 		# perpendiculairement à l'axe ; on les retrouve en groupant par
 		# coordonnée le long de l'axe, et le rayon est la distance max au
 		# centroïde de l'anneau.
-		var par_u: Dictionary = {}
+		# TROISIÈME MISE AU POINT, et la raison est instructive : grouper les
+		# sommets par coordonnée le long de l'axe PCA marchait tant que l'axe
+		# était DROIT. Dès que les bois ont reçu une flèche de 6 à 11 %, les
+		# anneaux ont cessé d'être perpendiculaires à cet axe, leurs sommets se
+		# sont éparpillés sur plusieurs cases, et seules DEUX pièces sur cinq
+		# rendaient encore trois anneaux propres. On mesure donc les deux
+		# BOUTS — les 10 % extrêmes de la course, où un seul anneau se trouve —
+		# au lieu de reconstruire toute la série.
+		var lo_u: float = 1.0e9
+		var hi_u: float = -1.0e9
 		for p4: Vector3 in log_piece:
 			var t2: float = (p4.x - c.x) * u.x + (p4.z - c.z) * u.y
-			var kk: int = roundi(t2 * 500.0)
-			if not par_u.has(kk):
-				par_u[kk] = PackedVector3Array()
-			var bucket: PackedVector3Array = par_u[kk]
-			bucket.append(p4)
-			par_u[kk] = bucket
-		var cles: Array = par_u.keys()
-		cles.sort()
+			lo_u = minf(lo_u, t2)
+			hi_u = maxf(hi_u, t2)
+		var course: float = hi_u - lo_u
 		var rayons_anneaux: Array[float] = []
-		for kk2: int in cles:
-			var ring: PackedVector3Array = par_u[kk2]
-			if ring.size() < 4:
+		for bout: int in range(2):
+			var groupe: PackedVector3Array = PackedVector3Array()
+			for p5: Vector3 in log_piece:
+				var t3: float = (p5.x - c.x) * u.x + (p5.z - c.z) * u.y
+				var d3: float = t3 - lo_u if bout == 0 else hi_u - t3
+				if d3 < course * 0.10:
+					groupe.append(p5)
+			if groupe.size() < 4:
 				continue
 			var cc: Vector3 = Vector3.ZERO
-			for p5: Vector3 in ring:
-				cc += p5
-			cc /= float(ring.size())
+			for p6: Vector3 in groupe:
+				cc += p6
+			cc /= float(groupe.size())
 			var r: float = 0.0
-			for p6: Vector3 in ring:
-				r = maxf(r, (p6 - cc).length())
+			for p7: Vector3 in groupe:
+				r = maxf(r, (p7 - cc).length())
 			rayons_anneaux.append(r)
 		# ORIENTATION — deuxième faux départ, corrigé après mesure. Le signe de
 		# l'axe PCA est arbitraire : pour deux bois sur cinq, « premier anneau »
@@ -690,7 +699,7 @@ func test_c3_les_bois_tombes_ne_sont_plus_homothetiques() -> void:
 		# pourtant 2,549 — encore VERT sur le défaut à attraper. On rend donc un
 		# effilement INDÉPENDANT DE L'ORIENTATION : petit bout / gros bout.
 		var rayons: Array[float] = [0.0, 0.0]
-		if rayons_anneaux.size() >= 3:
+		if rayons_anneaux.size() >= 2:
 			var ra: float = rayons_anneaux[0]
 			var rb: float = rayons_anneaux[rayons_anneaux.size() - 1]
 			rayons[0] = maxf(ra, rb)
