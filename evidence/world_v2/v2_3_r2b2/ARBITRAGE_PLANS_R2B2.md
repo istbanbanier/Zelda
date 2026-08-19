@@ -514,10 +514,31 @@ Ces deux mesures disparaissent à l'instant du cherry-pick :
 7. triptyques R2B / R2B.1 / R2B.2 des six vues décisives ;
 8. vérification des caméras par sha256 puis égalité champ par champ.
 
-Les points 1 et 2 portent sur l'ÉTAT DE DÉPART et sont donc les seuls que
+~~Les points 1 et 2 portent sur l'ÉTAT DE DÉPART et sont donc les seuls que
 l'audit peut mesurer avant le SHA — ils disparaissent à l'instant de
-l'intégration. L'audit les a engagés de lui-même pour cette raison ; c'est
-conforme.
+l'intégration.~~
+
+**RECTIFIÉ le 2026-08-19 — cette phrase était FAUSSE, et elle est de moi.**
+L'intégration ne détruit rien. Mesuré sur l'arbre de travail de l'audit :
+
+    git diff --stat c44f430..74723b2 -- source_assets assets scripts tests project.godot   -> VIDE
+    git diff --name-only c44f430..74723b2 | grep -vE '^(evidence/|tools/)'                 -> VIDE
+
+**L'arbre de l'audit EST l'état de départ, géométriquement** — il n'a touché que
+`evidence/` et `tools/`. Et un arbre de travail ne bouge pas quand j'intègre :
+le cherry-pick s'applique à `/home/user/Zelda`, pas à
+`/home/user/zelda-r2b2/c_audit`. `c44f430b` est de toute façon immuable dans
+git. Les points 1 et 2 peuvent donc être mesurés **avant ou après** mon SHA,
+sans course.
+
+Trois conséquences : l'audit n'est plus pressé ; **je ne suis plus bloqué par
+lui pour intégrer** ; et sa preuve devient plus forte, puisque « géométrie
+identique à `c44f430b` sur les chemins de production » est une affirmation plus
+**précise** que `repo_dirty: false` — elle nomme ce qui doit être identique.
+
+C'est la deuxième contrainte de calendrier que je m'étais inventée dans cette
+passe. Les deux venaient de la même faute : écrire une conséquence sans la
+vérifier.
 
 ---
 
