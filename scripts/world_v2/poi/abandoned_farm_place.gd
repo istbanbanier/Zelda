@@ -18,6 +18,34 @@
 ## les murs ouest et nord portent, le mur est réduit a lâché — le pan est
 ## tombé de ce côté-là.
 ##
+## R2B.1 — SECONDE REVUE DU LEAD : « se lit comme une boîte beige inachevée
+## ou un greybox ; murs rectangulaires lisses, charpente trop vide, peu de
+## masse effondrée et presque aucune histoire structurelle visible ». Deux
+## causes MESURÉES, jamais supposées (sonde du 2026-08-19) :
+##
+##   1. `ARASES : n=15 min=3.059 max=3.173 moy=3.142 ecart_type=0.050 m` — les
+##      onze modules de mur sont TOUS à 3,173 m. Cinq centimètres de
+##      dispersion sur 6,4 m de bâtiment : la maçonnerie ne casse nulle part,
+##      d'où le contour « rectangle + chapeau ».
+##   2. Le module de kit `Wall_UnevenBrick_Straight` est fait de DEUX PLANS
+##      STRICTS sans face de chant (inspection glTF : `MI_UnevenBrick` à
+##      Z = 0,000 en 4 tris, `MI_Plaster` à Z = -0,200 en 2 tris). Sa face
+##      intérieure est UN quad de 2,00 × 3,00 m — 6,00 m² pour deux triangles.
+##
+## ET UNE ERREUR DE ROTATION, établie par le calcul puis confirmée en image :
+## la face brique du module est en +Z local, donc `yaw` 0° (sud) et 180°
+## (nord) la présentent dehors, mais `yaw` 90° (ouest) et 270° (est) la
+## présentaient DEDANS — les cinq modules de ces deux murs montraient leur
+## plâtre à l'extérieur. C'est le grand panneau uni de `ferme_laterale`. Les
+## yaw sont corrigés à 270° et 90° ci-dessous ; `_wall()` en tire un collider
+## identique (`along.abs()` ne distingue pas 90 de 270).
+##
+## Réponse géométrique : cinq pièces de maçonnerie ajoutées au GLB — pignon
+## nord ROMPU en gradins d'assise, moignon du mur est, talus de moellons au
+## pied de la brèche, tableaux de baie, ossature intérieure — plus un verger
+## qui devient un ALIGNEMENT. Le contraste est préservé : ouest et nord
+## portent encore et restent couverts.
+##
 ## Pièges consignés appliqués : `Floor_Brick` a son pivot CENTRÉ en X/Z
 ## (probe_kit_seating 2026-08-19 : 2,00 × 0,02 × 2,00, pivot centre) — les
 ## dalles posées à ±1 m couvrent 4 × 4 m autour du centre, jamais « à
@@ -79,11 +107,29 @@ func _build() -> void:
 
 	# — Le verger en friche : l'arbre porteur du fruit de soin, un buisson
 	# de baies, la repousse.
-	K.module(self, &"CommonTree_4", _seated(7.5, -5.5), 70.0, 1.1, K.TONE_PLANT)
+	# UN VERGER EST UN RANG. Trois arbres alignés à 3,8-4,3 m de pas disent
+	# « planté par quelqu'un » ; un arbre isolé ne dit rien. Le rang part du
+	# porteur de fruits et fuit vers le sud-ouest, et la friche le désaligne
+	# juste assez pour qu'il ne soit pas une rangée mécanique.
+	for verger: Array in [[7.5, -5.5, 70.0, 1.10], [4.7, -8.1, 15.0, 1.02],
+			[1.6, -11.0, -40.0, 1.14]]:
+		var pos: Vector3 = _seated(float(verger[0]), float(verger[1]))
+		K.module(self, &"CommonTree_4", pos, float(verger[2]),
+			float(verger[3]), K.TONE_PLANT)
+		declare_support(pos)
+	# Le quatrième arbre a poussé HORS du rang, contre le pignon : c'est la
+	# repousse, pas la plantation.
+	var repousse: Vector3 = _seated(9.4, 0.6)
+	K.module(self, &"CommonTree_4", repousse, -25.0, 0.94, K.TONE_PLANT)
+	declare_support(repousse)
+	# Un tuteur rompu et une souche : le verger a été entretenu, puis laissé.
+	var tuteur: Node3D = K.module(self, &"Prop_WoodenFence_Single",
+		_seated(6.1, -6.9), 20.0, 0.8, K.TONE_WOOD)
+	if tuteur != null:
+		tuteur.rotation.z = deg_to_rad(28.0)
 	K.module(self, &"Bush_Common_Flowers", _seated(6.0, -3.4), 0.0, 1.0,
 		K.TONE_PLANT)
 	K.module(self, &"Bush_Common", _seated(8.8, -2.8), 45.0, 1.0, K.TONE_PLANT)
-	declare_support(_seated(7.5, -5.5))
 
 	# — Découverte + récompense canonique (ingrédient — fruit de soin).
 	var poi: PointOfInterest = PointOfInterest.new()
@@ -148,9 +194,15 @@ func _ruined_house(at: Vector3, yaw_deg: float) -> void:
 				&"Wall_UnevenBrick_Window_Thin_Round")
 		_wall(house, Vector3(x, 0, -half), 180.0, &"Wall_UnevenBrick_Straight")
 		var z: float = (float(i) - 1.0) * MODULE
-		_wall(house, Vector3(-half, 0, z), 90.0, &"Wall_UnevenBrick_Straight")
-		if i != 2:
-			_wall(house, Vector3(half, 0, z), 270.0,
+		# 270° et 90°, PAS 90° et 270° : la face brique du module est en +Z
+		# local, et l'ancienne paire présentait le plâtre à l'extérieur sur
+		# les deux murs latéraux (5 modules, 6,00 m² de quad chacun).
+		_wall(house, Vector3(-half, 0, z), 270.0, &"Wall_UnevenBrick_Straight")
+		# Le mur EST n'a plus qu'UN segment debout : c'est lui qui a lâché,
+		# et c'est ce qui motive la chute du pan de toiture de ce côté. Le
+		# vide est occupé par le moignon arraché, pas laissé en trou net.
+		if i == 0:
+			_wall(house, Vector3(half, 0, z), 90.0,
 				&"Wall_UnevenBrick_Straight")
 	for corner: Vector3 in [Vector3(-half, 0, -half), Vector3(half, 0, -half),
 			Vector3(-half, 0, half), Vector3(half, 0, half)]:
@@ -195,19 +247,82 @@ func _toiture_rompue(house: Node3D) -> void:
 		Vector3(1.9, 0.12, 1.8), Vector3(0.0, deg_to_rad(40.0), 0.0))
 	_piece_ferme(house, "SM_Farm_Debris_B",
 		Vector3(3.6, -0.05, 2.5), Vector3(0.0, deg_to_rad(-70.0), 0.0))
+	_maconnerie_rompue(house)
+
+
+## LA MAÇONNERIE ROMPUE (R2B.1) — ce que le kit de murs ne sait pas produire.
+##
+## Le kit ne connaît qu'un module plein hauteur : avec lui, une arase ne casse
+## jamais et une brèche est un trou net entre deux murs pleins. Les cinq
+## pièces posées ici apportent la masse manquante, chacune sur ce qui la
+## justifie :
+##
+##   * le PIGNON coiffe le mur nord, enfoncé de 6 cm dans l'arase comme la
+##     charpente ; son arrachement regarde l'EST, du côté où le mur a cédé —
+##     la rupture haute et la rupture basse racontent le même effondrement ;
+##   * le MOIGNON occupe le vide du mur est, reculé de 8 cm du plan des
+##     modules pour qu'aucune face ne soit coplanaire avec le parement ;
+##   * le TALUS gît dehors au pied de la brèche : la matière d'un mur écroulé
+##     doit se retrouver au sol, et elle couvre le soubassement mis à nu ;
+##   * les TABLEAUX donnent au percement la tranche que les deux plans du
+##     module n'ont pas ;
+##   * l'OSSATURE et les SOLIVES disent l'étage disparu — poteaux contre les
+##     murs qui portent, bouts de solives rompus contre les deux autres.
+func _maconnerie_rompue(house: Node3D) -> void:
+	var half: float = 3.0
+	_piece_ferme(house, "SM_Farm_GableBreak",
+		Vector3(0.0, WALL_H - 0.06, -half), Vector3.ZERO)
+	_piece_ferme(house, "SM_Farm_WallStub_East",
+		Vector3(half - 0.18, 0.0, 2.0),
+		Vector3(0.0, deg_to_rad(90.0), 0.0))
+	_piece_ferme(house, "SM_Farm_Rubble_Wall",
+		Vector3(half + 1.05, 0.0, 1.9),
+		Vector3(0.0, deg_to_rad(35.0), 0.0))
+	_piece_ferme(house, "SM_Farm_Jamb_Door",
+		Vector3(0.0, 0.01, half), Vector3.ZERO)
+	_piece_ferme(house, "SM_Farm_Jamb_Breach",
+		Vector3(MODULE, 0.01, half), Vector3.ZERO)
+	# Ossature : les poteaux vont aux murs QUI PORTENT (ouest, nord) ; les
+	# bouts de solives aux deux autres, où le plancher était seulement scellé.
+	# Chaque pièce saille vers +X dans sa source : la rotation la retourne
+	# vers l'intérieur, jamais vers le mur.
+	_piece_ferme(house, "SM_Farm_InteriorFrame",
+		Vector3(-half + 0.42, 0.02, -0.20), Vector3.ZERO, "ouest")
+	_piece_ferme(house, "SM_Farm_InteriorFrame",
+		Vector3(0.10, 0.02, -half + 0.42),
+		Vector3(0.0, deg_to_rad(-90.0), 0.0), "nord")
+	_piece_ferme(house, "SM_Farm_JoistStubs",
+		Vector3(half - 0.48, 2.05, 0.10),
+		Vector3(0.0, deg_to_rad(180.0), 0.0), "est")
+	_piece_ferme(house, "SM_Farm_JoistStubs",
+		Vector3(-0.10, 2.05, half - 0.48),
+		Vector3(0.0, deg_to_rad(90.0), 0.0), "sud")
+	# Deux volumes solides seulement : ce qui bloque réellement le passage.
+	# L'ossature n'en reçoit pas — des poteaux de 17 cm espacés de 2 m se
+	# franchissent, et un collider invisible entre eux serait un mur fantôme.
+	K.collider_box(house, "Moignon_est_col",
+		Vector3(half - 0.18, 0.42, 2.0), Vector3(0.44, 0.84, 2.10))
+	K.collider_box(house, "Talus_col",
+		Vector3(half + 1.05, 0.26, 1.9), Vector3(2.30, 0.52, 1.60), 35.0)
 
 
 ## Extrait UNE pièce du GLB de ruine : l'instance est élaguée AVANT
 ## d'entrer dans l'arbre, et porte le nom de la pièce — le filet R2B la
 ## désigne par ce nom, et Godot ne renomme jamais un enfant unique.
 func _piece_ferme(parent: Node3D, piece: String, at: Vector3,
-		rot: Vector3) -> Node3D:
+		rot: Vector3, suffixe: String = "") -> Node3D:
 	var instance: Node3D = FERME_SCENE.instantiate() as Node3D
-	instance.name = piece
+	# MESURÉ le 2026-08-19 : deux instances de la MÊME pièce posées sous le
+	# même parent sortent de `add_child` sous le nom `@Node3D@3` — Godot ne
+	# suffixe pas, il rebaptise, et le nom de la pièce disparaît. Toute pièce
+	# posée plus d'une fois doit donc porter son propre suffixe.
+	instance.name = piece if suffixe.is_empty() else "%s_%s" % [piece, suffixe]
 	for enfant: Node in instance.get_children():
 		if String(enfant.name) != piece:
 			instance.remove_child(enfant)
 			enfant.free()
+		else:
+			enfant.name = "%s_maille" % instance.name
 	parent.add_child(instance)
 	instance.position = at
 	instance.rotation = rot
