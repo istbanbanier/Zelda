@@ -1614,6 +1614,20 @@ classes sur cinq strictement identiques d'une passe à l'autre. Une fuite nouvel
 aurait fait bouger au moins une classe figée. Ce n'est pas une preuve d'absence
 de régression — c'est un faisceau, et il est publié comme tel.
 
+**Recoupement demandé à l'audit indépendant : il REFUSE de me le confirmer.**
+Il a vérifié la *structure* — `SM_Farm_Ruins.glb` porte **16 pièces** (compte
+indépendant, recoupé avec son propre journal d'ablation) et **4 matériaux** ;
+le cache de `_peindre_glb()` est `static`, à clé `instance_id|gain|mode`. Le
+nombre de `StandardMaterial3D` dupliqués est donc **borné et petit**, ce qui
+rend l'ordre de grandeur plausible. **Mais il ne confirme pas 100 sans
+instrumenter Godot, et il ne l'a pas fait.**
+
+**Correction consignée, dans le sens exact qu'il a demandé** : « proportionnel
+au contenu ajouté » reste une **histoire plausible et bornée, pas une mesure**.
+Elle n'est pas retirée du dossier — elle est rétrogradée au rang d'hypothèse
+non recoupée, et le `+100` demeure **NON EXPLIQUÉ**. Détail :
+`evidence/world_v2/v2_3_r2b2/preuves_lead/VERIFICATIONS_LEAD.md` §37.
+
 Journal : `evidence/world_v2/v2_3_r2b2/validation/validate_fast_R2B2.log`.
 
 **Non réparé dans cette passe, conformément à la directive.** Le harness global

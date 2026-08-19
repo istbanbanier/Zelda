@@ -74,6 +74,51 @@ qu'on l'ait demandé.
 | caméras imposées | **15/15 identiques champ par champ**, `sha256` du plan inchangé |
 | `validate_fast` (une seule fois, à la fin) | **943 tests verts, 0 échoué — harness ROUGE sur ISS-059 seul** |
 
+### Le liant de densité — **VERT**, et les trois contournements fermés
+
+Le liant décisif de la directive — « `ferme_seuil` doit passer sur l'image
+réelle, pas par une nouvelle classification » — est mesuré par l'audit
+indépendant, plafond **45 %** :
+
+| vue qualifiante | départ | au SHA livré | |
+|---|---:|---:|---|
+| `ferme_seuil` | 69,3 % | **5,7 %** | **VERT** |
+| `ferme_laterale` | 62,5 % | **0,0 %** | **VERT** |
+
+Non seulement sous le plafond, mais **sous la densité du kit lui-même (34,4 %)**,
+qui était la cible réelle. **Aucun seuil d'aplat n'a été relevé** — le domaine
+et les constantes de `mesure_aplats.py` sont inchangés depuis R2B.1.
+
+Les trois façons de faire tomber ce chiffre sans traiter la matière étaient
+chacune surveillée par son propre témoin :
+
+| contournement | signature attendue | mesuré |
+|---|---|---|
+| dilution par ajout | aplat constant, couverture en hausse | aplat **16,67 → 1,14** — il s'effondre |
+| rétrécissement | les deux baissent | couvertures **19,84** et **18,48**, l'une **monte** |
+| suppression | couverture s'effondre | garde d'anti-vacuité **VERTE** (≥ 10 %) |
+
+Et le **coût d'ablation est NÉGATIF — −2,79 et −3,18** : les pièces ajoutées
+dessinent désormais **moins** d'aplat que la maçonnerie qu'elles masquent.
+C'est le seul résultat qu'aucun contournement ne peut produire ; pour l'obtenir
+il faut avoir réellement traité les surfaces.
+
+### Lisibilité à 94 m — aucune régression, prouvée par un témoin
+
+| sujet | départ | au SHA livré | écart |
+|---|---|---|---:|
+| `SM_ThunderstruckTree` | 11,2 / 11,7 % | **11,2 / 11,6 %** | −0,0 / −0,1 |
+| `CommonTree_1` (témoin du kit, non touché) | 27,2 / 27,5 % | **27,2 / 27,5 %** | **0,0** |
+
+Le témoin est **rigoureusement identique** : c'est lui qui prouve que la règle
+de cadrage n'a pas bougé entre les deux états, et donc que l'écart de l'arbre
+est lu dans le même repère. Sans témoin, un −0,1 pourrait venir de la mesure
+autant que du sujet. L'emprise de l'arbre, elle, **a changé** (8,70 → 8,72 en X,
+8,48 → 8,46 en Z) : **la géométrie a bougé sans que le remplissage bouge** —
+exactement ce que le point 9 demandait.
+
+Détail et journaux : `preuves_lead/VERIFICATIONS_LEAD.md` §35 et §36.
+
 ---
 
 ## 3. Ce qui échoue — ISS-060
@@ -174,8 +219,8 @@ que j'avais affirmées sans mesurer.** C'est ce qui rend ce dossier lisible.
 | `preuves_lead/captures_orbites/` | 19 vues ajoutées — deux orbites de huit azimuts, trois gros plans |
 | `preuves_lead/triptyques/` | 6 vues décisives en `R2B / R2B.1 / R2B.2`, trois panneaux d'un **seul** fichier de caméras |
 | `preuves_lead/planches/` | niveaux de gris, luminance Rec. 709, **dérivés** et non re-rendus |
-| `preuves_lead/VERIFICATIONS_LEAD.md` | 34 sections, chaque mesure avec sa commande — **y compris celles qui m'ont donné tort** |
-| `ARBITRAGE_PLANS_R2B2.md` | 13 décisions, dont les critères retirés et l'engagement préalable sur la boîtitude |
+| `preuves_lead/VERIFICATIONS_LEAD.md` | 38 sections, chaque mesure avec sa commande — **y compris celles qui m'ont donné tort** |
+| `ARBITRAGE_PLANS_R2B2.md` | 13 décisions plus la 10 bis, dont les critères retirés et l'engagement préalable sur la boîtitude |
 | `ferme/`, `arbre/` | rouges d'avant, sabotages, chaînes de pipeline, journaux de contrôle des deux voies |
 | `validation/` | `validate_fast_R2B2.log` |
 
@@ -185,6 +230,13 @@ que j'avais affirmées sans mesurer.** C'est ce qui rend ce dossier lisible.
 
 **Attendre le verdict visuel Codex/Istvan.** Ne rien propager aux 31 POI :
 `GO_V2_3_B=FALSE`.
+
+**Dette laissée ouverte et consignée, non réparée ici** : ISS-060 (débris en
+pavés droits, geste borné chiffré ci-dessus), ISS-061 (champ `commit` de
+provenance), ISS-059 (fuite de fin de processus — l'audit **refuse** de
+confirmer le `+100`, qui reste donc **NON EXPLIQUÉ** ; seul le faisceau des
+quatre classes figées porte le constat, et il n'est **pas** une preuve
+d'absence de régression).
 
 Rien dans ce rapport ne constitue un verdict artistique. Les contrôles servent
 de garde-fous ; ils ne remplacent aucune paire d'yeux.

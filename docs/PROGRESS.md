@@ -919,3 +919,50 @@ du fût — corrigées, baseline recapturée.
 vérifiées identiques + RAPPORT_R2B1.md). Aucune propagation aux 31 POI sans
 son verdict. Dettes : UV0 des `SM_Farm_*`, mur nord encore rectangulaire,
 branche morte de `_palisade`, marge de budget nulle au braise, ISS-059.
+
+## 2026-08-19 — R2B.2 : fermeture visuelle ferme et arbre (close en PARTIAL)
+
+Trois worktrees depuis `c44f430b` — agent A ferme, agent B arbre, **agent C
+audit indépendant produisant ZÉRO géométrie de production**. 19 commits
+cherry-pickés, un seul conflit (le manifeste, résolu par propriété d'actif).
+Aucun merge, aucun push d'agent ; Godot et Blender sérialisés par `flock`.
+
+**Verdict : `PARTIAL`. La matière est gagnée et mesurée ; la forme ne l'est
+pas.** Le verdict d'un gate est le plus faible de ses critères, jamais leur
+moyenne — un liant échoue, donc la passe ne se déclare pas verte.
+
+Ce qui est obtenu : UV0 **25/25** sur la ferme (0 avertissement `gltf_inspect`
+contre 23), densité UV à 1,6 % du kit ; **liant de densité d'aplat VERT** —
+`ferme_seuil` 69,3 → **5,7 %**, `ferme_laterale` 62,5 → **0,0 %**, sous la
+densité du kit lui-même (34,4 %), **aucun seuil relevé** ; **coût d'ablation
+NÉGATIF** (−2,79 · −3,18), le seul résultat qu'aucun contournement ne produit ;
+fourche de l'arbre 9,0° → **38,9°**, 100,3′ d'arc à 94 m, et la lisibilité
+lointaine **préservée avec témoin du kit rigoureusement identique**.
+
+Ce qui échoue : **ISS-060** — les débris de la ferme sont des pavés droits à
+96,8 % ; le liant `hexa` rend 79,6 % contre un plafond de 25. Je m'étais engagé
+par écrit sur trois issues AVANT de mesurer ; la mesure en a donné une
+quatrième, contre moi, et je l'ai acceptée.
+
+Six instruments ont menti dans cette passe, **trois étaient les miens** : le
+prédicat d'aplat est aveugle au gris (`r > v > b` strict), mon détecteur de
+boîtes rendait 0,0 % par une union-find fusionnée à tort, ma prescription de
+résidu linéaire était aveugle aux rampes géométriques. Deux de mes impressions
+visuelles ont été réfutées par la mesure, et un agent m'a corrigé sur l'aile
+sombre d'`arbre_pied`.
+
+**ISS-059 corrigée dans le sens demandé par l'audit** : il refuse de confirmer
+le `+100` sans instrumenter Godot ; « proportionnel au contenu ajouté » est
+rétrogradée en hypothèse non recoupée, le `+100` reste **NON EXPLIQUÉ**, et le
+faisceau des quatre classes figées n'est **pas** une preuve d'absence de
+régression.
+
+**Prochaine action exacte** : **s'arrêter pour la revue visuelle
+Codex/Istvan** sur `evidence/world_v2/v2_3_r2b2/` — 15 caméras imposées
+inchangées, 19 vues d'orbite, 6 triptyques `R2B / R2B.1 / R2B.2`, 2 planches
+en niveaux de gris, `RAPPORT_R2B2.md`. **Aucune propagation aux 31 POI**
+(`GO_V2_3_B=FALSE`), **aucune nouvelle release jouable** avant ce verdict. La
+directive V2.3-B et la reconstruction du ZIP ne viennent qu'après le PASS.
+Dettes ouvertes : ISS-059, ISS-060 (geste borné chiffré : `Debris_A/B`,
+248 tris, 2 420 de budget disponible), ISS-061, UV0 de l'arbre, branche morte
+de `_palisade`, marge nulle du camp braise.
