@@ -293,3 +293,73 @@ tiens le verrou : deux commits qui ne diffèrent **que** par
 `SM_ThunderstruckTree.glb` — l'intégré, et un commit jetable où seul l'ancien
 GLB est restauré. Deux arbres propres, un seul fichier d'écart, la mesure
 devient attribuable.
+
+## 13. J'ai rejoué moi-même la mesure d'aplats sur les deux états antérieurs
+
+`tools/mesure_aplats.py` ne dépend que de Pillow — `numpy` est cassé dans ce
+conteneur, l'outil ne s'en sert pas. Je n'ai donc pas eu besoin du verrou Godot
+pour reproduire les chiffres au lieu de les lire.
+
+### Ferme — R2B puis R2B.1
+
+| vue | R2B `max` | R2B `total` | R2B.1 `max` | R2B.1 `total` |
+|---|---:|---:|---:|---:|
+| `ferme_approche` | 2,39 | 3,92 | **0,80** | **1,43** |
+| `ferme_composition` | 2,13 | 3,03 | **0,84** | **1,52** |
+| `ferme_arriere` | 1,66 | 6,89 | **1,25** | **4,05** |
+| `ferme_facade` | 1,95 | 4,83 | 1,29 | **6,49** |
+| `ferme_laterale` | 6,66 | 11,91 | **3,15** | 11,99 |
+| `ferme_seuil` | 2,92 | 23,74 | **7,32** | **35,34** |
+
+Mes chiffres reproduisent ceux de l'agent A au centième près : son
+`controle_aplats_ferme.py` enveloppe fidèlement `mesure_aplats.py`.
+
+Ce que la table dit, et que ni A ni moi n'avions formulé ainsi : **R2B.1 a
+amélioré les vues lointaines et dégradé les vues proches.** Approche et
+composition tombent de plus de moitié ; seuil et façade montent. La maçonnerie
+ajoutée aide la silhouette de loin et fabrique de la surface plate de près.
+C'est exactement le verdict visuel rendu sur les images, retrouvé dans les
+nombres.
+
+### Une seconde grandeur invariante d'échelle dormait déjà dans l'outil de R2B.1
+
+La colonne `plats_pct_beige` — « quelle part du bâti beige est décrite par un
+seul plan ? » — est **indépendante du cadrage** par construction, et son auteur
+l'avait documentée comme telle sans qu'elle serve de portail :
+
+| vue | R2B | R2B.1 |
+|---|---:|---:|
+| `ferme_seuil` | 55,0 % | **65,7 %** |
+| `ferme_laterale` | 57,4 % | 56,2 % |
+| `ferme_approche` | 46,6 % | 33,7 % |
+
+Elle raconte la même histoire que la densité d'aplat de l'audit (69,3 % contre
+34,4 % pour le kit), par un chemin **entièrement différent** : celui-ci part de
+la surface bâtie, celui-là de la couverture d'écran. Deux instruments
+indépendants qui désignent le même défaut valent mieux qu'un seul.
+
+Elle sera **publiée à côté** de la densité au verdict. Elle ne devient pas un
+troisième liant : je n'en connais pas la bande d'incertitude, et l'audit vient
+de me rappeler ce que vaut un rapport dont on ignore le bruit.
+
+### Arbre — le témoin décidé en décision 9, état de départ
+
+| vue | R2B `max`/`total` | R2B.1 `max`/`total` |
+|---|---:|---:|
+| `arbre_approche` | 2,17 / 2,40 | 2,17 / 2,40 |
+| `arbre_fracture` | 0,78 / 3,17 | 0,65 / **1,69** |
+| `arbre_pied` | 0,51 / 1,22 | 0,99 / 1,19 |
+| `arbre_troisquarts_d` | 0,71 / 1,35 | 0,59 / 1,74 |
+| `arbre_troisquarts_g` | 1,36 / 17,49 | 1,33 / **16,20** |
+| `arbre_lointain_94` | 0,37 / 0,88 | 0,37 / 0,88 |
+
+**Réserve, et elle est lourde : ces chiffres ne sont PAS attribués à l'arbre.**
+`mesure_aplats.py` mesure l'image entière ; sur une vue d'arbre, le terrain, la
+ferme et le ciel entrent dans le total. Les 16,20 % de `arbre_troisquarts_g` se
+répartissent sur **26 composantes** — une dispersion qui ressemble à du sol, pas
+à une plaque. La mesure attribuée est celle de l'audit, et elle seule conclura.
+
+Sous cette réserve, un fait tient déjà : **le `max` de l'arbre ne dépasse jamais
+2,17 %**, contre 7,32 % pour la ferme. L'arbre n'a pas le défaut d'aplat de la
+ferme, même sans aucune texture. Cela ne dispense pas de le mesurer proprement ;
+cela dit seulement où porter l'attention.
