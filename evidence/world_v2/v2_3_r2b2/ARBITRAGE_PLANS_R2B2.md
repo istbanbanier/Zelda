@@ -193,3 +193,90 @@ seul et 24,15 % pour ses pièces ; l'audit trouve 17,56/26,37 et 16,67/7,89.
 L'audit refuse de trancher sans voir la méthode de A — c'est la bonne posture.
 **C'est l'attribution de l'AUDIT qui fait foi pour la clôture**, comme gravé
 plus haut.
+
+## RÉSULTAT : l'hypothèse est confirmée, et le lead RETIRE deux de ses critères
+
+Les quatre points de l'audit, sur `ferme_seuil` (rendus réels, même caméra) :
+
+| # | état | max % | total % |
+|---|---|---:|---:|
+| 1 | actuel, pièces présentes | 7,32 | **34,26** |
+| 2 | actuel, pièces retirées | 5,64 | **26,37** |
+| 3 | murs d'AVANT, pièces présentes | 7,32 | **31,83** |
+| 4 | murs d'AVANT, pièces retirées | 3,81 | **21,85** |
+| — | référence R2B | 2,92 | *23,74* |
+
+**Coût de la rotation, mesuré deux fois** : +2,43 pts (pièces présentes),
++4,52 pts (pièces retirées). Cohérents entre eux par le masquage.
+**Confirmé indépendamment par l'attribution** : `KIT_maconnerie` 15,23 → 17,56
+(+2,33), `FERME_pieces_ajoutees` 16,58 → 16,67 (+0,09, du bruit) — **96 % de
+l'effet porte sur la maçonnerie de kit**. Mécanisme exact : du plâtre lisse
+devient de la brique peinte, et à 2 m chaque pierre dépasse `MIN_COMPOSANTE`.
+Effet 4,2× la bande de bruit (1,08 pt).
+
+**Prudence de l'audit, retenue** : seules les paires 1↔3 et 2↔4 sont propres.
+Comparer le point 4 aux 23,74 % de R2B mêlerait quatre commits sur la ferme, un
+GLB 2,3× plus lourd (44 280 → 101 364 octets) et un **gain d'albédo** (`74a2834`)
+qui touche directement le prédicat `est_beige`.
+
+### Décision 1 — le critère « retour sous 23,74 % » est RETIRÉ
+
+Il comparait deux ORIENTATIONS, donc il ne mesurait pas ce qu'il prétendait.
+Équivalent iso-orientation consigné pour mémoire : **26,17 %**. Il ne sert pas
+de portail, pour la raison ci-dessous.
+
+### Décision 2 — le portail « total ≤ 12 % » sur `ferme_seuil` est RETIRÉ
+
+À orientation d'avant **et toutes pièces retirées**, le résidu vaut encore
+**21,85 %, attribué à 100 % au kit**. Aucune correction confinée à la ferme ne
+peut passer sous 12 %. Un portail que rien d'autorisé ne peut satisfaire ne
+discrimine pas : il condamne d'avance.
+
+**Ce n'est PAS assouplir un seuil pour faire passer une géométrie.** Aucun
+chiffre n'est relevé : un critère est retiré parce que la mesure a prouvé qu'il
+ne mesure pas ce qu'on lui demandait — la règle même du projet (« quand un test
+échoue, la question est *que mesure-t-il vraiment*, pas *quel seuil le ferait
+passer* »).
+
+### Décision 3 — ce qui le remplace est PLUS exigeant
+
+- **`max ≤ 8 %` : INCHANGÉ.** Il suit la grosse tache unique qui fait lire
+  « carton ». Aujourd'hui 7,32 avec pièces contre 3,81 sans : les pièces
+  ajoutent +3,51 au max.
+- **NOUVEAU PORTAIL — coût d'ablation des pièces ≤ +2,0 points.** Aujourd'hui
+  **+7,89** (34,26 − 26,37). Il mesure exactement ce que le travail contrôle,
+  sur deux rendus RÉELS du moteur et non sur une reclassification. Et il dit la
+  bonne chose : des pièces correctement texturées ne devraient pas ajouter
+  d'aplat par rapport au mur qu'elles couvrent — aujourd'hui elles en DESSINENT
+  16,67 pour n'en coûter que 7,89, donc elles sont **pires que la maçonnerie
+  qu'elles masquent**. Seuil à 1,9× la bande de bruit, exigeant une division
+  par quatre.
+- **Le total reste PUBLIÉ à chaque vue, plancher de kit nommé, sans portail.**
+
+### Décision 4 — la question de périmètre est REMONTÉE, pas tranchée
+
+Le portail ≤ 12 % était celui du lead : il peut le retirer. Le gel du kit vient
+de la directive : il ne le lève pas. Constat porté nommé et chiffré à la
+clôture, pour que la revue décide :
+
+> à 2 m et FOV 66, la maçonnerie de kit produit à elle seule **21,85 %**
+> d'aplats mesurés ; **aucune correction confinée à la ferme ne peut amener
+> cette vue sous 12 %** ; changer cela demanderait de toucher au kit, donc à
+> des lieux GELÉS dont le hameau riverain.
+
+### Trois défauts d'instrument trouvés par l'audit dans ses PROPRES outils
+
+1. Le sélecteur de pivot rendait « 0 nœud pivoté » — il remontait depuis les
+   `GeometryInstance3D` au lieu de descendre. Mesure jetée, instrument réécrit.
+2. Le motif attrapait **7 nœuds dont 3 dans le hameau GELÉ** — les pivoter
+   aurait faussé la mesure en silence tout en violant le périmètre. D'où
+   `--pivot-sous-arbre=abandoned_farm`, qui n'en retient que les 4 de la ferme.
+3. **La prose du commit `73b5929` dit « 5 modules », le code en produit 4**
+   (`range(3)` → 3 ouest + 1 est). Le lead avait relayé ce « cinq » trois fois
+   sans le vérifier — STATUS, rapport R2B.1, deux arbitrages ; corrigé partout.
+   **Règle : l'attendu d'un contrôle se lit dans le CODE, jamais dans la prose
+   d'un commit.**
+
+Le pivot de l'audit est appliqué au RUNTIME, aucun fichier de lieu touché : la
+restauration est acquise par construction, pas par une remise en état qu'on
+pourrait oublier.
