@@ -1,0 +1,20 @@
+=== SABOTAGE 3 / 4 — LE PIGNON EST REPOSÉ SUR L'ARASE ===
+cibles : (a) pose à WALL_H - 0,06 au lieu de - 0,61 ;
+         (b) dalle recentrée sur l'épaisseur, comme en R2B.1.
+attendu : contrôle D1 rouge (recouvrement 0,06) ET contrôle B rouge côté
+          EXTÉRIEUR — c'est ce second point qui prouve que la correction
+          de côté du contrôle B peut encore rougir.
+
+scripts/world_v2/poi/abandoned_farm_place.gd:338:		Vector3(0.0, WALL_H - 0.06, -half), Vector3.ZERO)  # SABOTAGE
+source_assets/blender/architecture/make_farm_ruins.py:142:PIGNON_Y_DEDANS = -0.20  # SABOTAGE : dalle recentrée
+source_assets/blender/architecture/make_farm_ruins.py:143:PIGNON_RELIEF_Y = 0.245  # SABOTAGE : relief en surplomb
+source_assets/blender/architecture/make_farm_ruins.py:597:        # SABOTAGE / pignon intact : le rampant est redescend d'un trait et la
+[farm_ruins] SM_Farm_GableBreak        308 tris  X -3.21..2.11  Y -0.32..0.27  Z 0.000..1.80
+FIN NOMINALE
+  ÉCHEC test_world_v2_r2b2_ferme.gd::test_les_pieces_frontales_entrent_dans_le_mur — tableaux et pignon entrent dans le mur au lieu d'être plaqués (2 écart(s)) — pignon épais de 0.59 m (max 0.42) sur un mur de 0,40 — il déborde des deux côtés ; pignon en surplomb de 0.27 m devant le parement nord (max 0.12)
+  ÉCHEC test_world_v2_r2b2_ferme.gd::test_le_pignon_est_solidaire_du_mur_nord — le pignon partage le plan et les assises hautes du mur nord (2 écart(s)) — le pignon ne recouvre l'arase que de 0.06 m (min 0.45) — il COIFFE une arête au lieu d'être les assises hautes du mur ; le pignon déborde de 0.27 m hors du parement nord (max 0.06) — bandeau en surplomb, donc plaque posée
+=== RÉSULTAT: 2 réussi(s), 2 échoué(s) ===
+
+--- RESTAURATION : git checkout ---
+=== RÉSULTAT: 4 réussi(s), 0 échoué(s) ===
+RC=0

@@ -1,0 +1,14 @@
+=== SABOTAGE 2 / 4 — LE SIGNE DES TABLEAUX EST REMIS À L'ENVERS ===
+cible : prisme(bm, contour, -0.02, EPAISSEUR_MUR + 0.02) -> bornes R2B.1
+attendu : contrôle B rouge (saillie 0,42 m devant la façade)
+
+791:        prisme(bm, contour, -EPAISSEUR_MUR + 0.06, 0.04, IDX_PIERRE)  # SABOTAGE
+[farm_ruins] SM_Farm_Jamb_Door         108 tris  X -1.13..1.13  Y -0.34..0.50  Z 0.000..2.10
+[farm_ruins] SM_Farm_Jamb_Breach        92 tris  X -1.13..1.13  Y -0.34..0.50  Z 0.000..1.72
+FIN NOMINALE
+  ÉCHEC test_world_v2_r2b2_ferme.gd::test_les_pieces_frontales_entrent_dans_le_mur — tableaux et pignon entrent dans le mur au lieu d'être plaqués (2 écart(s)) — SM_Farm_Jamb_Door SAILLE de 0.34 m devant le parement (max 0.02) — pilastre plaqué, pas un tableau de baie ; SM_Farm_Jamb_Breach SAILLE de 0.34 m devant le parement (max 0.02) — pilastre plaqué, pas un tableau de baie
+=== RÉSULTAT: 3 réussi(s), 1 échoué(s) ===
+
+--- RESTAURATION : git checkout ---
+=== RÉSULTAT: 4 réussi(s), 0 échoué(s) ===
+RC=0

@@ -76,6 +76,14 @@ const NORD_COLONNE_M: float = 0.25
 const NORD_COLONNES_MIN: int = 12
 const NORD_ECART_TYPE_MIN_M: float = 0.35
 const NORD_POINT_BAS_MAX_M: float = 2.10
+## LE MANQUE EST UNE ÉTENDUE, PAS UN POINT — durci après un sabotage qui ne
+## rougissait pas. Reposer le module de kit nord-est PAR-DESSUS le pan rompu
+## laissait l'écart-type et le point bas satisfaits : deux colonnes basses au
+## bout de la pièce suffisaient, alors que le mur redevenait visuellement
+## intact. Un contrôle qu'un sabotage ne peut pas faire rougir ne compte pas
+## (PROMPT4_METHOD §2). On exige donc qu'une PART du couronnement manque.
+const NORD_MANQUE_SEUIL_M: float = 2.60
+const NORD_MANQUE_PART_MIN: float = 0.18
 
 
 func _tree() -> SceneTree:
@@ -338,15 +346,69 @@ func test_le_sommet_du_mur_nord_manque() -> void:
 					continue
 				var vers_maison: Transform3D = inverse \
 					* instance.global_transform
-				var arrays: Array = instance.mesh.surface_get_arrays(0)
-				var sommets: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
-				for v: Vector3 in sommets:
-					var p: Vector3 = vers_maison * v
-					if p.z > NORD_BANDE_Z_MAX:
-						continue
-					var cle: int = int(floor(p.x / NORD_COLONNE_M))
-					if not colonnes.has(cle) or float(colonnes[cle]) < p.y:
-						colonnes[cle] = p.y
+				# ÉCHANTILLONNAGE PAR TRIANGLE, PAS PAR SOMMET — corrigé
+				# après un sabotage qui ne rougissait pas. Le module de kit
+				# décrit sa face par DEUX triangles : lire ses sommets ne
+				# donne que deux colonnes, et un mur de 2 m remis en place
+				# pesait autant qu'un caillou dans le profil. Un triangle
+				# COUVRE l'intervalle de colonnes qu'il traverse.
+				for s: int in range(instance.mesh.get_surface_count()):
+					var arrays: Array = instance.mesh.surface_get_arrays(s)
+					var sommets: PackedVector3Array = \
+						arrays[Mesh.ARRAY_VERTEX]
+					var index: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+					var total: int = index.size() if index.size() > 0 \
+						else sommets.size()
+					var t: int = 0
+					while t + 2 < total:
+						var trio: Array[Vector3] = []
+						for k: int in range(3):
+							var idx: int = index[t + k] if index.size() > 0 \
+								else t + k
+							trio.append(vers_maison * sommets[idx])
+						t += 3
+						var dedans: bool = false
+						for q: Vector3 in trio:
+							if q.z <= NORD_BANDE_Z_MAX:
+								dedans = true
+						if not dedans:
+							continue
+						var x0: float = minf(trio[0].x,
+							minf(trio[1].x, trio[2].x))
+						var x1: float = maxf(trio[0].x,
+							maxf(trio[1].x, trio[2].x))
+						var c0: int = int(floor(x0 / NORD_COLONNE_M))
+						var c1: int = int(floor(x1 / NORD_COLONNE_M))
+						for cle: int in range(c0, c1 + 1):
+							# LA COUPE DU TRIANGLE À L'ABSCISSE DE LA COLONNE,
+							# pas son sommet le plus haut. Deuxième correction
+							# du même contrôle : le prisme d'un pan arraché a
+							# une face avant en N-GON, et sa triangulation
+							# produit des triangles qui vont du faîte au pied
+							# en traversant toute la pièce. Prendre leur y_max
+							# relevait le couronnement partout et effaçait
+							# précisément le manque qu'on mesure.
+							var xc: float = (float(cle) + 0.5) \
+								* NORD_COLONNE_M
+							if xc < x0 or xc > x1:
+								continue
+							var haut: float = -1e9
+							for k: int in range(3):
+								var a: Vector3 = trio[k]
+								var b: Vector3 = trio[(k + 1) % 3]
+								if absf(b.x - a.x) < 1e-6:
+									if absf(a.x - xc) <= NORD_COLONNE_M * 0.5:
+										haut = maxf(haut, maxf(a.y, b.y))
+									continue
+								var u: float = (xc - a.x) / (b.x - a.x)
+								if u < 0.0 or u > 1.0:
+									continue
+								haut = maxf(haut, a.y + (b.y - a.y) * u)
+							if haut < -1e8:
+								continue
+							if not colonnes.has(cle) \
+									or float(colonnes[cle]) < haut:
+								colonnes[cle] = haut
 			var hauteurs: Array[float] = []
 			for cle: int in colonnes.keys():
 				hauteurs.append(float(colonnes[cle]))
@@ -373,6 +435,17 @@ func test_le_sommet_du_mur_nord_manque() -> void:
 					faults.append("point bas de l'arase nord à %.2f m "
 						% bas + "(max %.2f) — rien ne MANQUE au mur"
 						% NORD_POINT_BAS_MAX_M)
+				var basses: int = 0
+				for h: float in hauteurs:
+					if h <= NORD_MANQUE_SEUIL_M:
+						basses += 1
+				var part: float = float(basses) / float(hauteurs.size())
+				if part < NORD_MANQUE_PART_MIN:
+					faults.append("seulement %.0f %% du couronnement nord "
+						% (part * 100.0) + "est sous %.2f m (min %.0f %%) — "
+						% [NORD_MANQUE_SEUIL_M, NORD_MANQUE_PART_MIN * 100.0]
+						+ "%d colonne(s) sur %d : un creux ponctuel, pas un "
+						% [basses, hauteurs.size()] + "pan de mur qui manque")
 		_dismount(place)
 	check(faults.is_empty(),
 		"le sommet du mur nord montre un manque structurel (%d écart(s)) — %s"

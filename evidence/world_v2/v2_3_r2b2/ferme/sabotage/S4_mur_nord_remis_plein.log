@@ -1,0 +1,26 @@
+=== SABOTAGE 4 / 4 — LE MODULE NORD-EST EST REPOSÉ PLEINE HAUTEUR ===
+cible : la branche i == 2 du mur nord
+attendu : contrôle D2 rouge — le manque doit être une ÉTENDUE
+
+NOTE HONNÊTE : au premier essai ce sabotage N'A PAS rougi. Le contrôle
+ne demandait qu'un écart-type et un point bas, que deux colonnes au bout
+du pan rompu suffisaient à satisfaire pendant que le mur redevenait
+visuellement intact. Le contrôle a été DURCI (part du couronnement sous
+2,60 m >= 18 %) et une erreur de modélisation trouvée au passage : six
+pierres de relief FLOTTAIENT au-dessus de l'arrachement. Ci-dessous le
+sabotage rejoué contre le contrôle durci.
+
+
+--- REJEU 3 contre le contrôle deux fois durci ---
+durcissement 1 : part du couronnement sous 2,60 m >= 18 %
+durcissement 2 : échantillonnage par TRIANGLE et par COUPE à l'abscisse
+                 de la colonne (un plan de kit ne donne que 2 sommets ;
+                 un n-gon triangulé donne des triangles pleine largeur)
+
+mur nord : module nord-est reposé pleine hauteur
+  ÉCHEC test_world_v2_r2b2_ferme.gd::test_le_sommet_du_mur_nord_manque — le sommet du mur nord montre un manque structurel (3 écart(s)) — arase nord d'écart-type 0.023 m sur 25 colonnes (min 0.35) — le mur est un rectangle ; point bas de l'arase nord à 3.00 m (max 2.10) — rien ne MANQUE au mur ; seulement 0 % du couronnement nord est sous 2.60 m (min 18 %) — 0 colonne(s) sur 25 : un creux ponctuel, pas un pan de mur qui manque
+=== RÉSULTAT: 3 réussi(s), 1 échoué(s) ===
+
+--- RESTAURATION : git checkout ---
+=== RÉSULTAT: 4 réussi(s), 0 échoué(s) ===
+RC=0

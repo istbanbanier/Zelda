@@ -1,0 +1,18 @@
+=== SABOTAGE 1 / 4 — LE DÉPLIAGE UV0 EST RETIRÉ ===
+cible : l'appel deplier_boite() dans objet_depuis()
+attendu : contrôle A rouge (27 surfaces sans UV0)
+
+873:    pass  # SABOTAGE R2B.2 : dépliage retiré
+[farm_ruins] total 1984 triangles (budget 4500)
+FIN NOMINALE
+25
+^ avertissements UV0 réapparus dans l'inspection
+  ÉCHEC test_world_v2_r2b2_ferme.gd::test_chaque_piece_porte_uv0_et_une_texture — les 29 surfaces des pièces SM_Farm_* portent UV0 et une texture (29 sans UV0, 0 sans texture) — SM_Farm_Truss_maille s0 : pas d'UV0 ; SM_Farm_Truss_maille s1 : pas d'UV0 ; SM_Farm_RoofPan_Intact_maille s0 : pas d'UV0 ; SM_Farm_RoofPan_Intact_maille s1 : pas d'UV0 ; SM_Farm_RoofPan_Fallen_maille s0 : pas d'UV0 ; SM_Farm_RoofPan_Fallen_maille s1 : pas d'UV0 ; (+23 autres)
+=== RÉSULTAT: 3 réussi(s), 1 échoué(s) ===
+RC=0
+
+--- RESTAURATION : git checkout ---
+1
+^ appel deplier_boite() restauré
+=== RÉSULTAT: 4 réussi(s), 0 échoué(s) ===
+RC=0

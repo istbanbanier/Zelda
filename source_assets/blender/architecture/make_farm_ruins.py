@@ -736,9 +736,22 @@ def breche_nord(bm):
                 (t, epais * 1.9, t * 0.9), 51.0 + i, IDX_PIERRE)
     # RELIEF DE PAREMENT côté DEHORS (Blender +y ⇒ Godot -z) : sans lui, le pan
     # neuf est une face lisse à côté d'un module de kit appareillé.
-    for i, (x, z, t) in enumerate(((-0.92, 0.42, 0.20), (-0.30, 1.05, 0.17),
-                                   (0.34, 1.72, 0.19), (-0.66, 2.28, 0.16),
-                                   (0.08, 2.74, 0.15), (-1.02, 1.62, 0.18))):
+    #
+    # CHAQUE PIERRE EST CALÉE SOUS LE COURONNEMENT LOCAL, et ce n'est pas un
+    # détail : posées à des hauteurs fixes, six d'entre elles FLOTTAIENT
+    # au-dessus de l'arrachement (mesuré le 2026-08-19 — le contrôle du
+    # couronnement nord ne voyait plus que 11 % de colonnes basses parce que
+    # ces pierres relevaient le profil là où le mur avait justement disparu).
+    def _crete(x_local):
+        t = (x_local + demi) / (0.95 + demi)
+        return BRECHE_NORD_H_HAUTE + (BRECHE_NORD_H_BASSE
+                                      - BRECHE_NORD_H_HAUTE) * min(1.0,
+                                                                   max(0.0, t))
+    for i, (x, part, t) in enumerate(((-0.92, 0.20, 0.20), (-0.30, 0.55, 0.17),
+                                      (0.34, 0.42, 0.19), (-0.66, 0.72, 0.16),
+                                      (-1.08, 0.88, 0.15), (-1.02, 0.44, 0.18),
+                                      (-0.14, 0.24, 0.16))):
+        z = _crete(x) * part
         moellon(bm, (x + _graine(i * 1.9) * 0.08, epais - 0.02, z),
                 (t * 1.6, 0.06, t), 60.0 + i, IDX_PIERRE)
     # Le lit de rupture : deux pierres basculées au sommet de l'arrachement.
