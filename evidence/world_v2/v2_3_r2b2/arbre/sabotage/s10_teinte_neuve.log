@@ -1,0 +1,93 @@
+=== SABOTAGE s10_teinte_neuve — aubier repeint en vert ===
+SABOTAGE: le 4e materiau prend une teinte VERTE — il sort de l enveloppe de la famille
+=== Blender: Blender 4.0.2 ===
+
+--- thunderstruck_tree : génération de la source ---
+  [thunderstruck_tree] phase : |dphi| moyen 4.51 deg, ecart-type 4.53, net 6.43 deg, repliement a +-10.00 deg (max |pas| 5.99)
+  [thunderstruck_tree] cicatrice : largeur 0.096..0.632 m (rapport 6.58), 3 station(s) sur 26 interrompue(s) par un pont d'ecorce
+  [thunderstruck_tree] racines : ecarts d'azimut 56, 66, 98, 34, 106 deg, max/min 3.12
+  [thunderstruck_tree] SM_ThunderstruckTree_Bark        1660 tris
+  [thunderstruck_tree] SM_ThunderstruckTree_Heart        676 tris
+  [thunderstruck_tree] SM_ThunderstruckTree_Roots        756 tris
+  [thunderstruck_tree] SM_ThunderstruckTree_BranchA      132 tris
+  [thunderstruck_tree] SM_ThunderstruckTree_BranchB       66 tris
+  [thunderstruck_tree] SM_ThunderstruckTree_BranchC       80 tris
+  [thunderstruck_tree] SM_ThunderstruckTree_BranchD      148 tris
+  [thunderstruck_tree] SM_ThunderstruckTree_BranchE       68 tris
+  [thunderstruck_tree] emprise X -4.56..4.23  Y -4.37..4.09  Z 0.000..11.02 — 3586 tris (budget 6000)
+  [thunderstruck_tree] souche large de 2.12 m (attendu 2.1 ± 0,35)
+  [thunderstruck_tree] racines : hauteur max hors collider 0.280 m (plafond 0.32)
+  [thunderstruck_tree] cicatrice : rayon relatif 0.715 dans la bande (11 sommets), 0.969 hors bande (53) — creux 0.254
+  [thunderstruck_tree] source enregistrée -> /home/user/zelda-r2b2/b_arbre/source_assets/blender/environment/SM_ThunderstruckTree.blend
+--- thunderstruck_tree : export .glb ---
+  [export_gltf] Blender 4.0.2
+  [export_gltf] io_scene_gltf2 version (4, 0, 44)
+  [export_gltf] preset: export_animation_mode=ACTIONS, export_animations=False, export_apply=True, export_cameras=False, export_extras=False, export_force_sampling=True, export_format=GLB, export_lights=False, export_materials=EXPORT, export_normals=True, export_optimize_animation_size=False, export_skins=True, export_tangents=True, export_texcoords=True, export_yup=True, use_selection=False, use_visible=True
+  [export_gltf] OK -> /home/user/zelda-r2b2/b_arbre/assets/architecture/flora/SM_ThunderstruckTree.glb (201196 octets)
+  frais: assets/architecture/flora/SM_ThunderstruckTree.glb (201196 octets)
+--- thunderstruck_tree : inspection glTF hors moteur ---
+  === INSPECTION glTF : assets/architecture/flora/SM_ThunderstruckTree.glb ===
+    format                 : GLB v2, 201196 octets
+    chunk_binaire          : 192252 octets
+    generateur             : Khronos glTF Blender I/O v4.0.44
+    version_gltf           : 2.0
+    meshes                 : 8
+    materiaux              : 4 (MAT_Tree_CharredBark, MAT_Tree_Charcoal, MAT_Tree_ScorchedSap, MAT_Tree_Heartwood)
+    textures               : 0 image(s), 0 texture(s)
+    noeuds                 : 8 (SM_ThunderstruckTree_Bark, SM_ThunderstruckTree_Heart, SM_ThunderstruckTree_Roots, SM_ThunderstruckTree_BranchA, SM_ThunderstruckTree_BranchB, SM_ThunderstruckTree_BranchC, SM_ThunderstruckTree_BranchD, SM_ThunderstruckTree_BranchE)
+    skins                  : 0
+    animations             : 0 (aucune)
+    triangles              : 3586
+    bbox_min               : [-4.5594, 0, -4.0916]
+    bbox_max               : [4.2267, 11.02, 4.3729]
+    dimensions_m           : [8.7861, 11.02, 8.4645]
+    [AVERT] mesh 'SM_ThunderstruckTree_Bark': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_ThunderstruckTree_Bark': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_ThunderstruckTree_Bark': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_ThunderstruckTree_Heart': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_ThunderstruckTree_Heart': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_ThunderstruckTree_Roots': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_ThunderstruckTree_BranchA': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_ThunderstruckTree_BranchB': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_ThunderstruckTree_BranchC': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_ThunderstruckTree_BranchC': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_ThunderstruckTree_BranchD': pas d'UV0 — lightmap et matériaux limités
+    [AVERT] mesh 'SM_ThunderstruckTree_BranchE': pas d'UV0 — lightmap et matériaux limités
+  === VALIDE ===
+
+=== EXPORT ARCHITECTURE : VERT ===
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: world_v2_r2b2_arbre
+[r2b2-arbre] C1a rotation inter-anneau |Δφ| moyen 4.183° sur 8 couples
+[r2b2-arbre] C1b écart-type de Δφ 3.893° ; rotation nette 16.1°
+[r2b2-arbre] C1c cohérence verticale du relief +0.770 sur 4 couples
+[r2b2-arbre] C1d crête-à-crête du profil radial 0.225 du rayon moyen
+  ok   test_world_v2_r2b2_arbre.gd::test_c1_le_fut_n_est_plus_un_prisme (1 assertions)
+[r2b2-arbre] C2a flanc 33.0 % / surface presque horizontale 31.8 % sur 11.60 m²
+[r2b2-arbre] C2b sagitta en plan des 7 racines : [8.75657496618967, 7.66324102885918, 8.73079617166091, 8.9164474495251, 13.4097842070431, 15.5194570472796, 13.0428139103264] (min 7.66 %)
+[r2b2-arbre] C2c écarts d'azimut des racines [79.9480404353498, 19.9187343952329, 98.8521299434922, 39.8972119822575, 121.383883243668] → max/min 6.09
+[r2b2-arbre] C2d hauteur max des racines hors collider 0.280 m (0 sommet(s) au-dessus de 0.32)
+  ok   test_world_v2_r2b2_arbre.gd::test_c2_les_racines_ont_du_volume (1 assertions)
+[r2b2-arbre] C3a sagitta en plan des bois : [10.6861302134807, 7.63238222011011, 8.6516380901882, 10.4910078364407, 11.2714894495138]
+[r2b2-arbre] C3b effilements [0.32244539445776, 0.86454835200539, 0.54885872061984, 0.45665430984696, 0.27299163753021] → max/min 3.167
+[r2b2-arbre] C3c triangles par bois [132, 66, 80, 148, 68] → 5 compte(s) distinct(s)
+  ok   test_world_v2_r2b2_arbre.gd::test_c3_les_bois_tombes_ne_sont_plus_homothetiques (1 assertions)
+[r2b2-arbre] C4c fragments de ruban : 3
+[r2b2-arbre] C4a CV de la largeur LISSÉE sur 3 stations 0.401
+[r2b2-arbre] C4b largeur lissée max/min 4.11
+[r2b2-arbre] C4d profondeur radiale du bois nu, lissée : [0.08401742022462, 0.11276614960459, 0.14459947304547, 0.16292081145299, 0.24061918626052, 0.3430747809131, 0.38533379029898, 0.38971864970571, 0.32067893033863, 0.30240179387429, 0.23506448246388, 0.1939752068994, 0.17590719906338, 0.17137020429638, 0.18969696583813, 0.18369124886463, 0.14645975274208, 0.10569922933269]
+[r2b2-arbre] C4d profondeur radiale sur 18 stations : min 0.084 m max 0.390 m → max/min 4.64
+[r2b2-arbre] C4e plans de rupture détectés [5.77985954284668, 3.1499662399292] ; échardes LE LONG du parcours 8
+  ok   test_world_v2_r2b2_arbre.gd::test_c4_la_cicatrice_est_un_volume_arrache (1 assertions)
+[r2b2-arbre] C5 luminances [0.13304460996687, 0.21774201580286, 0.45375000382066, 0.74754200210571] → 3 palier(s) séparé(s) d'au moins 0.12
+[r2b2-arbre] C5 teintes 0.0196..0.3627 (étendue 0.3431), saturation max 0.346
+[r2b2-arbre] C5 budget : 3586 triangles (plafond 6000)
+  ÉCHEC test_world_v2_r2b2_arbre.gd::test_c5_paliers_de_valeur_et_budget — C5 paliers de valeur et budget (1 écart(s)) — C5 teinte neuve introduite : étendue de teinte 0.3431, plafond 0.0950
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 4 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_r2b2_arbre.gd::test_c5_paliers_de_valeur_et_budget — C5 paliers de valeur et budget (1 écart(s)) — C5 teinte neuve introduite : étendue de teinte 0.3431, plafond 0.0950
+RESTAURATION: git checkout -- <generateur> <glb>
+RC=1
