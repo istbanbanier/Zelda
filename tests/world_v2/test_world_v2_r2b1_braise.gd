@@ -32,6 +32,21 @@
 ##     d'exempter, le contrôle serait resté vert, et ce vert aurait été
 ##     pris pour une preuve. Un plafond ne se vérifie qu'en le franchissant
 ##     avec le compte qui fait foi.
+##
+## ┌──────────────────────────────────────────────────────────────────────┐
+## │ LE CAMP BRAISE EST À 45/45. MARGE NULLE. AUCUNE PLACE.                │
+## │                                                                      │
+## │ Ajouter UN SEUL module au camp braise fera rougir ce contrôle. Ce    │
+## │ n'est pas un accident : neuf modules ont été coupés le 2026-08-19,   │
+## │ puis le poteau de palissade 280° a été REMIS sur arbitrage du lead — │
+## │ l'A/B l'avait montré visible (3 535 px, 0,384 % du cadre au plan     │
+## │ `braise_guet`). Le lead a refusé d'échanger cette place contre une   │
+## │ dixième coupe, qui aurait été plus voyante que ce qu'elle rachetait. │
+## │                                                                      │
+## │ Pour ajouter quelque chose ici : il faut d'abord en retirer autre    │
+## │ chose, et le justifier par une emprise écran MESURÉE                 │
+## │ (tools/godot/probe_ember_modules.gd), pas au jugé.                   │
+## └──────────────────────────────────────────────────────────────────────┘
 extends GateTestCase
 
 const WORLD_V2_SCENE: String = "res://scenes/world_v2/WorldV2.tscn"

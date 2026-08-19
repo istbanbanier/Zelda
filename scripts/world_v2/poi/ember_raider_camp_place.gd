@@ -22,16 +22,22 @@
 ##
 ## R2B.1 (2026-08-19) — BUDGET. Le lieu montait 54 modules pour un
 ## plafond de 45 (`WORLD_V2_POI_CONTRACTS.md` §4). Le lead a arbitré la
-## coupe de NEUF modules, choisis par emprise écran mesurée aux cinq
+## coupe de neuf modules, dont HUIT retenus, choisis par emprise écran
+## mesurée aux cinq
 ## plans de preuve, sans toucher à la composition validée :
 ##  - `Pouch_Large` et les deux poteaux ARRIÈRE de l'appentis —
 ##    invisibles (≤ 0,088 % de cadre), les seconds occultés par le toit
 ##    qu'ils portaient ;
 ##  - le MENU butin `Pot_1`, `Shield_Wooden`, `Chain_Coil` — le tas
 ##    survit par `Prop_Wagon`, `WeaponStand` et `Crate_Wooden` ;
-##  - trois des quatre poteaux de palissade (100°, 200°, 280°), bâtons
-##    de 0,25 m plantés contre des panneaux de 3,5 m ; le poteau 0°
-##    reste, ainsi que les 12 panneaux et les 4 coupures d'éboulis.
+##  - DEUX des quatre poteaux de palissade (100°, 200°), bâtons de
+##    0,25 m plantés contre des panneaux de 3,5 m ; les poteaux 0° et
+##    280° restent, avec les 12 panneaux et les 4 coupures d'éboulis.
+##    Le 280° avait d'abord été coupé lui aussi : l'A/B au plan
+##    `braise_guet` du lead l'a montré visible (3 535 px, 0,384 % du
+##    cadre — le plus voyant des neuf, et une verticale d'avant-plan).
+##    Remis sur arbitrage du lead : le lieu tient donc à 45/45,
+##    MARGE NULLE, choix assumé et non accident.
 ## INTOUCHÉS : guet, enceinte, chicots, trois approches, seuil, foyer
 ## mort, sentier d'usure, teintes et positions. Le contrôle exécutable
 ## du plafond vit dans `tests/world_v2/test_world_v2_r2b1_braise.gd`.
@@ -141,13 +147,21 @@ func _palisade() -> void:
 			facing, fence_scale, K.TONE_CHARRED)
 		if fence != null:
 			fence.rotation.z = deg_to_rad(lean)
-		if index == 1:
-			# UN SEUL poteau sur l'anneau (R2B.1, arbitrage du lead du
-			# 2026-08-19). Les trois autres — 100°, 200°, 280° — étaient des
-			# bâtons de 0,22–0,31 m plantés CONTRE un panneau de 3,3–4,0 m
-			# dont l'emprise écran vaut 10 à 30 fois la leur (mesuré : 1,10 /
-			# 1,05 / 0,31 % de cadre cumulés sur les cinq plans de preuve).
-			# Coupés pour tenir le plafond §4 sans toucher aux panneaux.
+		if index == 1 or index == 13:
+			# DEUX poteaux sur l'anneau : 0° (index 1) et 280° (index 13).
+			#
+			# R2B.1, arbitrage du lead du 2026-08-19. Les poteaux 100° et
+			# 200° sont coupés pour tenir le plafond §4 : des bâtons de
+			# 0,22–0,31 m plantés CONTRE un panneau de 3,3–4,0 m dont
+			# l'emprise écran vaut 10 à 30 fois la leur.
+			#
+			# LE 280° A ÉTÉ REMIS après l'A/B : coupé, il se voyait. Le
+			# diff de pixels au plan `braise_guet` du lead donnait 3 535 px
+			# (0,384 % du cadre) — le plus visible des neuf, et une
+			# VERTICALE en avant-plan : une verticale qui disparaît change
+			# la lecture d'un cadre, un objet posé au sol non. Il appartient
+			# de plus à la palissade, que la directive nomme parmi ce qui
+			# doit survivre intact.
 			# Le poteau qui tient le tronçon : décalé le long de la
 			# tangente, légèrement hors d'aplomb lui aussi.
 			var tangent: Vector3 = Vector3(-sin(radians), 0.0, cos(radians))
