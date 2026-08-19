@@ -111,16 +111,21 @@ func _build() -> void:
 	# « planté par quelqu'un » ; un arbre isolé ne dit rien. Le rang part du
 	# porteur de fruits et fuit vers le sud-ouest, et la friche le désaligne
 	# juste assez pour qu'il ne soit pas une rangée mécanique.
-	for verger: Array in [[7.5, -5.5, 70.0, 1.10], [4.7, -8.1, 15.0, 1.02],
-			[1.6, -11.0, -40.0, 1.14]]:
+	# ÉCHELLE RECALÉE SUR CAPTURE : posés à 1,0-1,14, ces `CommonTree_4`
+	# montaient à 9-10,5 m et masquaient la ferme sur `ferme_composition`
+	# comme sur `arbre_lointain_94` — cinq troncs de futaie au premier plan
+	# là où il n'y en avait qu'un. Un verger, ce sont des fruitiers de 4-5 m,
+	# et le rang passe DERRIÈRE le bâtiment plutôt que devant sa façade.
+	for verger: Array in [[8.2, -2.0, 70.0, 0.52], [9.0, -5.8, 15.0, 0.48],
+			[9.8, -9.6, -40.0, 0.55]]:
 		var pos: Vector3 = _seated(float(verger[0]), float(verger[1]))
 		K.module(self, &"CommonTree_4", pos, float(verger[2]),
 			float(verger[3]), K.TONE_PLANT)
 		declare_support(pos)
 	# Le quatrième arbre a poussé HORS du rang, contre le pignon : c'est la
 	# repousse, pas la plantation.
-	var repousse: Vector3 = _seated(9.4, 0.6)
-	K.module(self, &"CommonTree_4", repousse, -25.0, 0.94, K.TONE_PLANT)
+	var repousse: Vector3 = _seated(5.4, 2.6)
+	K.module(self, &"CommonTree_4", repousse, -25.0, 0.46, K.TONE_PLANT)
 	declare_support(repousse)
 	# Un tuteur rompu et une souche : le verger a été entretenu, puis laissé.
 	var tuteur: Node3D = K.module(self, &"Prop_WoodenFence_Single",

@@ -6,26 +6,26 @@
   [farm_ruins] SM_Farm_RoofPan_Fallen    108 tris  X 0.00..3.15  Y -1.72..1.77  Z 0.000..2.16
   [farm_ruins] SM_Farm_Debris_A          124 tris  X -0.61..0.82  Y -0.61..0.54  Z 0.000..0.68
   [farm_ruins] SM_Farm_Debris_B          124 tris  X -0.48..0.69  Y -0.49..0.54  Z 0.000..0.69
-  [farm_ruins] SM_Farm_GableBreak        164 tris  X -3.21..2.11  Y -0.34..0.34  Z 0.000..1.25
+  [farm_ruins] SM_Farm_GableBreak        332 tris  X -3.21..2.11  Y -0.34..0.34  Z 0.000..1.25
   [farm_ruins] SM_Farm_WallStub_East      84 tris  X -1.19..1.03  Y -0.22..0.26  Z 0.000..1.15
   [farm_ruins] SM_Farm_Rubble_Wall       184 tris  X -1.27..1.13  Y -0.74..0.74  Z 0.000..0.62
-  [farm_ruins] SM_Farm_Jamb_Door          36 tris  X -0.98..0.98  Y -0.27..0.27  Z 0.000..2.10
-  [farm_ruins] SM_Farm_Jamb_Breach        44 tris  X -0.98..0.98  Y -0.27..0.27  Z 0.000..1.72
+  [farm_ruins] SM_Farm_Jamb_Door          36 tris  X -0.96..0.96  Y -0.42..0.10  Z 0.000..2.10
+  [farm_ruins] SM_Farm_Jamb_Breach        44 tris  X -0.96..0.96  Y -0.42..0.10  Z 0.000..1.72
   [farm_ruins] SM_Farm_InteriorFrame      72 tris  X 0.01..0.74  Y -2.60..2.40  Z 0.000..2.88
   [farm_ruins] SM_Farm_JoistStubs         76 tris  X 0.00..1.18  Y -2.02..1.98  Z 0.000..0.39
-  [farm_ruins] total 1336 triangles (budget 4500)
-  [farm_ruins] pignon : asymetrie 0.206, 17 gradin(s) d'arrachement
+  [farm_ruins] total 1504 triangles (budget 4500)
+  [farm_ruins] pignon : asymetrie 0.206, 51 gradin(s) d'arrachement
   [farm_ruins] source enregistrée -> /home/user/zelda-r2b1/a_ferme/source_assets/blender/architecture/SM_Farm_Ruins.blend
 --- farm_ruins : export .glb ---
   [export_gltf] Blender 4.0.2
   [export_gltf] io_scene_gltf2 version (4, 0, 44)
   [export_gltf] preset: export_animation_mode=ACTIONS, export_animations=False, export_apply=True, export_cameras=False, export_extras=False, export_force_sampling=True, export_format=GLB, export_lights=False, export_materials=EXPORT, export_normals=True, export_optimize_animation_size=False, export_skins=True, export_tangents=True, export_texcoords=True, export_yup=True, use_selection=False, use_visible=True
-  [export_gltf] OK -> /home/user/zelda-r2b1/a_ferme/assets/architecture/farm/SM_Farm_Ruins.glb (85808 octets)
-  frais: assets/architecture/farm/SM_Farm_Ruins.glb (85808 octets)
+  [export_gltf] OK -> /home/user/zelda-r2b1/a_ferme/assets/architecture/farm/SM_Farm_Ruins.glb (94880 octets)
+  frais: assets/architecture/farm/SM_Farm_Ruins.glb (94880 octets)
 --- farm_ruins : inspection glTF hors moteur ---
   === INSPECTION glTF : assets/architecture/farm/SM_Farm_Ruins.glb ===
-    format                 : GLB v2, 85808 octets
-    chunk_binaire          : 70776 octets
+    format                 : GLB v2, 94880 octets
+    chunk_binaire          : 79848 octets
     generateur             : Khronos glTF Blender I/O v4.0.44
     version_gltf           : 2.0
     meshes                 : 12
@@ -34,7 +34,7 @@
     noeuds                 : 12 (SM_Farm_Truss, SM_Farm_RoofPan_Intact, SM_Farm_RoofPan_Fallen, SM_Farm_Debris_A, SM_Farm_Debris_B, SM_Farm_GableBreak, SM_Farm_WallStub_East, SM_Farm_Rubble_Wall)
     skins                  : 0
     animations             : 0 (aucune)
-    triangles              : 1336
+    triangles              : 1504
     bbox_min               : [-3.2074, 0, -3.4]
     bbox_max               : [3.55, 2.882, 3.4]
     dimensions_m           : [6.7574, 2.882, 6.8]

@@ -148,9 +148,17 @@ MATERIAUX = {
     "MAT_Farm_Tiles": (0.450, 0.330, 0.250, 0.92),
     "MAT_Farm_BrokenWood": (0.720, 0.620, 0.460, 0.90),
     # PIERRE À NU (R2B.1) : un mur écroulé montre son moellon, pas son crépi.
-    # Volontairement plus sombre et plus froid que les murs debout teintés du
-    # kit (≈ 0,45 rendu), pour que la masse tombée se DÉTACHE de ce qui tient.
-    "MAT_Farm_Stone": (0.400, 0.358, 0.312, 0.94),
+    #
+    # RECALÉ SUR CAPTURE le 2026-08-19, et c'est la raison d'être de la règle
+    # « un albédo n'est pas une valeur rendue ». La première valeur
+    # (0,400 / 0,358 / 0,312) visait « plus sombre et plus froid que le mur ».
+    # À l'écran elle est sortie GRIS ARDOISE : le pignon se lisait comme un
+    # carton posé sur la maison et les jambages comme des poteaux métalliques,
+    # tous deux en rupture franche avec la pierre ocre du kit. Le défaut
+    # n'était pas la luminance mais la SATURATION — désaturée à ce point, la
+    # pierre quitte la famille chromatique du lieu. Re-saturée vers l'ocre et
+    # descendue d'un cran, elle reste sous les murs debout sans les renier.
+    "MAT_Farm_Stone": (0.430, 0.337, 0.243, 0.94),
 }
 IDX_BOIS = 0
 IDX_TUILES = 1
@@ -518,6 +526,20 @@ def pignon_rompu(bm):
     poutre(bm, (-demi - 0.14, EPAISSEUR_MUR * 0.5 + 0.06, 0.13),
            (-demi * 0.42, EPAISSEUR_MUR * 0.5 + 0.06, 0.62),
            0.16, 0.14, IDX_PIERRE)
+    # RELIEF DE PAREMENT, ajouté après capture : vu du nord, le pignon était
+    # un triangle d'un seul tenant, sans une arête pour accrocher la lumière —
+    # un aplat de plus, exactement le défaut qu'il devait corriger. Ces
+    # moellons saillants lui donnent les ombres portées qui manquaient, et
+    # rappellent l'appareillage du mur qu'il coiffe.
+    for i, (x, z, t) in enumerate(((-2.62, 0.18, 0.20), (-2.05, 0.44, 0.17),
+                                   (-1.44, 0.66, 0.19), (-0.82, 0.90, 0.16),
+                                   (-2.30, 0.72, 0.15), (-1.10, 0.28, 0.18),
+                                   (-0.34, 1.06, 0.14))):
+        for face in (-1.0, 1.0):
+            moellon(bm, (x + _graine(i * 1.7) * 0.10,
+                         face * (EPAISSEUR_MUR * 0.5 + 0.045), z),
+                    (t * 1.7, 0.11, t), 30.0 + i * 2 + face, IDX_PIERRE)
+
     # Quatre pierres descellées, encore accrochées au bord de la cassure : la
     # rupture est RÉCENTE, elle n'est pas nettoyée.
     for i, (x, z, t) in enumerate(((0.30, 0.92, 0.20), (0.86, 0.66, 0.17),
@@ -609,12 +631,14 @@ def tableaux(bm, hauteur, arrache):
         else:
             contour.extend([(cote * 0.86 + 0.10, haut),
                             (cote * 0.86 - 0.10, haut)])
-        prisme(bm, contour, -EPAISSEUR_MUR * 0.5, EPAISSEUR_MUR * 0.5,
-               IDX_PIERRE)
+        # ENFONCÉS DANS L'ÉPAISSEUR, mesuré sur capture : centrés sur le
+        # pivot, ils saillaient de 0,20 m DEVANT le parement de brique (qui
+        # est à Y = 0) et se lisaient comme des poteaux plaqués sur la façade.
+        # Le tableau d'une baie affleure son parement, il ne le double pas.
+        prisme(bm, contour, -EPAISSEUR_MUR + 0.06, 0.04, IDX_PIERRE)
     # Seuil : la pierre usée du passage, débordante des deux côtés.
-    prisme(bm, [(-0.98, 0.0), (0.98, 0.0), (0.98, 0.15), (-0.98, 0.15)],
-           -EPAISSEUR_MUR * 0.5 - 0.07, EPAISSEUR_MUR * 0.5 + 0.07,
-           IDX_PIERRE)
+    prisme(bm, [(-0.94, 0.0), (0.94, 0.0), (0.94, 0.15), (-0.94, 0.15)],
+           -EPAISSEUR_MUR - 0.02, 0.10, IDX_PIERRE)
 
 
 PLANCHER_Z = 2.35       # hauteur du plancher d'étage disparu

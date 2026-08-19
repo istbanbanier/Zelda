@@ -3,32 +3,32 @@ Read blend: "/home/user/zelda-r2b1/a_ferme/source_assets/blender/architecture/SM
 [export_gltf] Blender 4.0.2
 [export_gltf] io_scene_gltf2 version (4, 0, 44)
 [export_gltf] preset: export_animation_mode=ACTIONS, export_animations=False, export_apply=True, export_cameras=False, export_extras=False, export_force_sampling=True, export_format=GLB, export_lights=False, export_materials=EXPORT, export_normals=True, export_optimize_animation_size=False, export_skins=True, export_tangents=True, export_texcoords=True, export_yup=True, use_selection=False, use_visible=True
-11:03:38 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
-11:03:38 | INFO: Starting glTF 2.0 export
-11:03:38 | INFO: Extracting primitive: SM_Farm_Truss
-11:03:38 | INFO: Primitives created: 2
-11:03:38 | INFO: Extracting primitive: SM_Farm_RoofPan_Intact
-11:03:38 | INFO: Primitives created: 2
-11:03:38 | INFO: Extracting primitive: SM_Farm_RoofPan_Fallen
-11:03:38 | INFO: Primitives created: 2
-11:03:38 | INFO: Extracting primitive: SM_Farm_Debris_A
-11:03:38 | INFO: Primitives created: 3
-11:03:38 | INFO: Extracting primitive: SM_Farm_Debris_B
-11:03:38 | INFO: Primitives created: 3
-11:03:38 | INFO: Extracting primitive: SM_Farm_GableBreak
-11:03:38 | INFO: Primitives created: 1
-11:03:38 | INFO: Extracting primitive: SM_Farm_WallStub_East
-11:03:38 | INFO: Primitives created: 1
-11:03:38 | INFO: Extracting primitive: SM_Farm_Rubble_Wall
-11:03:38 | INFO: Primitives created: 3
-11:03:38 | INFO: Extracting primitive: SM_Farm_Jamb_Door
-11:03:38 | INFO: Primitives created: 1
-11:03:38 | INFO: Extracting primitive: SM_Farm_Jamb_Breach
-11:03:38 | INFO: Primitives created: 1
-11:03:38 | INFO: Extracting primitive: SM_Farm_InteriorFrame
-11:03:38 | INFO: Primitives created: 1
-11:03:38 | INFO: Extracting primitive: SM_Farm_JoistStubs
-11:03:38 | INFO: Primitives created: 3
-11:03:38 | INFO: Finished glTF 2.0 export in 0.02336263656616211 s
+11:48:11 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
+11:48:12 | INFO: Starting glTF 2.0 export
+11:48:12 | INFO: Extracting primitive: SM_Farm_Truss
+11:48:12 | INFO: Primitives created: 2
+11:48:12 | INFO: Extracting primitive: SM_Farm_RoofPan_Intact
+11:48:12 | INFO: Primitives created: 2
+11:48:12 | INFO: Extracting primitive: SM_Farm_RoofPan_Fallen
+11:48:12 | INFO: Primitives created: 2
+11:48:12 | INFO: Extracting primitive: SM_Farm_Debris_A
+11:48:12 | INFO: Primitives created: 3
+11:48:12 | INFO: Extracting primitive: SM_Farm_Debris_B
+11:48:12 | INFO: Primitives created: 3
+11:48:12 | INFO: Extracting primitive: SM_Farm_GableBreak
+11:48:12 | INFO: Primitives created: 1
+11:48:12 | INFO: Extracting primitive: SM_Farm_WallStub_East
+11:48:12 | INFO: Primitives created: 1
+11:48:12 | INFO: Extracting primitive: SM_Farm_Rubble_Wall
+11:48:12 | INFO: Primitives created: 3
+11:48:12 | INFO: Extracting primitive: SM_Farm_Jamb_Door
+11:48:12 | INFO: Primitives created: 1
+11:48:12 | INFO: Extracting primitive: SM_Farm_Jamb_Breach
+11:48:12 | INFO: Primitives created: 1
+11:48:12 | INFO: Extracting primitive: SM_Farm_InteriorFrame
+11:48:12 | INFO: Primitives created: 1
+11:48:12 | INFO: Extracting primitive: SM_Farm_JoistStubs
+11:48:12 | INFO: Primitives created: 3
+11:48:12 | INFO: Finished glTF 2.0 export in 0.023279905319213867 s
 
-[export_gltf] OK -> /home/user/zelda-r2b1/a_ferme/assets/architecture/farm/SM_Farm_Ruins.glb (85808 octets)
+[export_gltf] OK -> /home/user/zelda-r2b1/a_ferme/assets/architecture/farm/SM_Farm_Ruins.glb (94880 octets)
