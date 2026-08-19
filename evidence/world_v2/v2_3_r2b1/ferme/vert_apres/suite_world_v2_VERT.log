@@ -5,7 +5,7 @@ filtre: world_v2
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 11281 ms
+[world_v2] terrain      : 64 chunks, montage 10982 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -29,7 +29,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6297 ms
+[world_v2] terrain      : 64 chunks, montage 6332 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -53,7 +53,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6488 ms
+[world_v2] terrain      : 64 chunks, montage 6437 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -77,7 +77,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6421 ms
+[world_v2] terrain      : 64 chunks, montage 6441 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -99,7 +99,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6729 ms
+[world_v2] terrain      : 64 chunks, montage 6446 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -126,7 +126,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6493 ms
+[world_v2] terrain      : 64 chunks, montage 6596 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -150,7 +150,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6358 ms
+[world_v2] terrain      : 64 chunks, montage 6635 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -174,7 +174,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6464 ms
+[world_v2] terrain      : 64 chunks, montage 6384 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -198,7 +198,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 7080 ms
+[world_v2] terrain      : 64 chunks, montage 6664 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -222,7 +222,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6457 ms
+[world_v2] terrain      : 64 chunks, montage 6564 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -246,7 +246,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6483 ms
+[world_v2] terrain      : 64 chunks, montage 6726 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -270,7 +270,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6762 ms
+[world_v2] terrain      : 64 chunks, montage 6533 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -294,7 +294,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6797 ms
+[world_v2] terrain      : 64 chunks, montage 6455 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -318,7 +318,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6403 ms
+[world_v2] terrain      : 64 chunks, montage 6502 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -342,7 +342,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6644 ms
+[world_v2] terrain      : 64 chunks, montage 6510 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -366,7 +366,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6513 ms
+[world_v2] terrain      : 64 chunks, montage 6306 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -389,7 +389,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6439 ms
+[world_v2] terrain      : 64 chunks, montage 6326 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -413,7 +413,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6473 ms
+[world_v2] terrain      : 64 chunks, montage 6416 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -442,7 +442,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6440 ms
+[world_v2] terrain      : 64 chunks, montage 6611 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -466,7 +466,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6475 ms
+[world_v2] terrain      : 64 chunks, montage 6649 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -490,7 +490,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6682 ms
+[world_v2] terrain      : 64 chunks, montage 6894 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -514,7 +514,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6498 ms
+[world_v2] terrain      : 64 chunks, montage 6279 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -538,7 +538,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6602 ms
+[world_v2] terrain      : 64 chunks, montage 6398 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -562,7 +562,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6408 ms
+[world_v2] terrain      : 64 chunks, montage 6517 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -588,7 +588,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6381 ms
+[world_v2] terrain      : 64 chunks, montage 6559 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -612,7 +612,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6342 ms
+[world_v2] terrain      : 64 chunks, montage 6378 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -648,7 +648,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6545 ms
+[world_v2] terrain      : 64 chunks, montage 6489 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -673,7 +673,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6307 ms
+[world_v2] terrain      : 64 chunks, montage 6605 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -697,7 +697,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6424 ms
+[world_v2] terrain      : 64 chunks, montage 6293 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -721,7 +721,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6477 ms
+[world_v2] terrain      : 64 chunks, montage 6499 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -745,7 +745,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6303 ms
+[world_v2] terrain      : 64 chunks, montage 6603 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -769,7 +769,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6452 ms
+[world_v2] terrain      : 64 chunks, montage 6432 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -797,7 +797,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6301 ms
+[world_v2] terrain      : 64 chunks, montage 6699 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -823,7 +823,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6635 ms
+[world_v2] terrain      : 64 chunks, montage 6450 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -851,7 +851,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6515 ms
+[world_v2] terrain      : 64 chunks, montage 6296 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -875,7 +875,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6413 ms
+[world_v2] terrain      : 64 chunks, montage 6531 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -898,7 +898,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6412 ms
+[world_v2] terrain      : 64 chunks, montage 6398 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -922,7 +922,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6181 ms
+[world_v2] terrain      : 64 chunks, montage 6827 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -946,7 +946,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6324 ms
+[world_v2] terrain      : 64 chunks, montage 6369 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -970,7 +970,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6654 ms
+[world_v2] terrain      : 64 chunks, montage 6964 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -994,7 +994,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6318 ms
+[world_v2] terrain      : 64 chunks, montage 6670 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -1018,7 +1018,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6513 ms
+[world_v2] terrain      : 64 chunks, montage 6217 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -1042,7 +1042,7 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 6659 ms
+[world_v2] terrain      : 64 chunks, montage 6481 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 9 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)

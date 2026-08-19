@@ -1,9 +1,9 @@
 image                         max %  total %      n plat/beige
-ferme_approche.png             0.71     1.37      3      31.4%
-ferme_composition.png          0.84     0.84      1      30.6%
+ferme_approche.png             0.80     1.43      2      33.7%
+ferme_composition.png          0.84     1.52      3      35.0%
 ferme_facade.png               1.29     6.49     13      43.7%
-ferme_laterale.png             3.15    11.99     14      56.1%
-ferme_arriere.png              2.06     5.93      8      44.5%
-ferme_seuil.png                7.32    35.29     40      65.7%
+ferme_laterale.png             3.15    12.00     14      56.1%
+ferme_arriere.png              1.61     4.03      8      34.4%
+ferme_seuil.png                7.32    35.46     40      65.7%
 portail R2B.1 (lead) : max <= 8.0 %, total <= 12.0 %
 RC=0
