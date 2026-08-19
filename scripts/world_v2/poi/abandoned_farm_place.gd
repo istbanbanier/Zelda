@@ -116,16 +116,19 @@ func _build() -> void:
 	# comme sur `arbre_lointain_94` — cinq troncs de futaie au premier plan
 	# là où il n'y en avait qu'un. Un verger, ce sont des fruitiers de 4-5 m,
 	# et le rang passe DERRIÈRE le bâtiment plutôt que devant sa façade.
-	for verger: Array in [[8.2, -2.0, 70.0, 0.52], [9.0, -5.8, 15.0, 0.48],
-			[9.8, -9.6, -40.0, 0.55]]:
+	for verger: Array in [[8.2, -5.2, 70.0, 0.50], [9.0, -9.0, 15.0, 0.46],
+			[9.8, -12.8, -40.0, 0.53]]:
 		var pos: Vector3 = _seated(float(verger[0]), float(verger[1]))
 		K.module(self, &"CommonTree_4", pos, float(verger[2]),
 			float(verger[3]), K.TONE_PLANT)
 		declare_support(pos)
 	# Le quatrième arbre a poussé HORS du rang, contre le pignon : c'est la
 	# repousse, pas la plantation.
-	var repousse: Vector3 = _seated(5.4, 2.6)
-	K.module(self, &"CommonTree_4", repousse, -25.0, 0.46, K.TONE_PLANT)
+	# La repousse est passée DERRIÈRE le bâtiment : plantée devant, elle
+	# masquait la façade sur `ferme_composition` — un arbre de verger ne doit
+	# pas coûter la lisibilité du lieu qu'il habille.
+	var repousse: Vector3 = _seated(-5.8, -6.4)
+	K.module(self, &"CommonTree_4", repousse, -25.0, 0.44, K.TONE_PLANT)
 	declare_support(repousse)
 	# Un tuteur rompu et une souche : le verger a été entretenu, puis laissé.
 	var tuteur: Node3D = K.module(self, &"Prop_WoodenFence_Single",
