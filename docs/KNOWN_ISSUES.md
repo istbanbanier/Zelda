@@ -1579,3 +1579,75 @@ R2B : ObjectDB 5103, resources 239, DummyMaterial 4749, DummyShader 14,
 DummyMesh 42, DummyTexture 58. R2B.1 n'ajoute donc **aucun** objet à la fuite,
 alors qu'elle ajoute 17 tests et deux GLB régénérés — **aucune différence
 nouvelle par rapport à la base**. Le verdict validate_fast reste ROUGE.
+
+---
+
+## ISS-060 — les débris de la ferme sont des pavés droits à 96,8 % — S3, OUVERT
+
+Mesuré le 2026-08-19 à la clôture de R2B.2, sur `SM_Farm_Ruins.glb` au SHA
+`c0374839`. Trois prédicats indépendants, publiés ensemble parce qu'ils
+répondent à trois questions différentes :
+
+| prédicat | définition | résultat sur le GLB |
+|---|---|---:|
+| `hexa` (le liant, plafond 25 %) | 12 triangles + 8 sommets soudés | **79,6 %** |
+| équidistance | + 8 coins à 2 % du centroïde | **42,1 %** |
+| `droite` | + 6 directions de normale | 9,2 % |
+
+Le liant **échoue** : 79,6 % contre un plafond de 25 (87,2 % avant la passe,
+donc 7,6 points de progrès réel qui ne franchissent pas le portail).
+
+**Le domaine du seuil a été mis en cause, puis confirmé par la mesure.** Le lead
+a émis l'hypothèse qu'un lieu bâti en modules de kit est légitimement boîteux,
+et s'est engagé **par écrit avant la mesure** sur trois issues. La mesure en a
+donné une quatrième : `SM_Farm_Ruins.glb` ne contient **aucun** module de kit —
+ses quatorze meshes sont tous `SM_Farm_*`, les `Wall_UnevenBrick_*` vivant dans
+des fichiers séparés instanciés au runtime — et un module de kit n'est **pas**
+une boîte : `Wall_UnevenBrick_Straight` rend **0,0 %** avec quatre composantes
+pour 56 triangles, `Corner_Exterior_Brick` **0,0 %** avec vingt-sept. Les deux
+GLB héros du hameau gelé sont également à 0,0 %.
+
+**Localisation, qui est ce qui rend le ticket actionnable :**
+
+| pièce | tri | % en pavés (équidistance) | lecture |
+|---|---:|---:|---|
+| `RoofPan_Intact` / `_Fallen` | 108 ch. | **100,0** | pan de couverture — primitive juste |
+| `InteriorFrame` | 72 | **100,0** | ossature — primitive juste |
+| `Truss` | 212 | **90,6** | charpente — primitive juste |
+| **`Debris_A` / `_B`** | **124 ch.** | **96,8** | **DÉFAUT — des débris n'ont plus de forme** |
+| `Rubble_North` / `WallStub_East` | 144 / 84 | **0,0** | moellons déjà irréguliers |
+
+> **La charpente est en pavés droits — c'est juste, un bois est scié d'équerre.
+> La maçonnerie est en boîtes déformées — c'est acceptable. Les débris sont en
+> pavés droits — c'est le défaut.**
+
+**Geste borné si la revue le demande** : `Debris_A` et `_B` dans
+`source_assets/blender/architecture/make_farm_ruins.py`, **248 triangles au
+total**, budget disponible **2 420 sur 4 500**. Aucune autre pièce n'est en
+cause.
+
+**Ce qui ne doit PAS être fait** : un bruit sous-pixel qui ferait tomber `hexa`
+sans rien changer à l'image. Ce contrôle existe parce qu'un pavé parfait se lit
+comme du carton ; une correction qui ne se voit pas ne corrige rien.
+
+Deux instruments, deux chiffres, aucune moyenne — les définitions sont dans
+`evidence/world_v2/v2_3_r2b2/preuves_lead/VERIFICATIONS_LEAD.md` §28.
+
+---
+
+## ISS-061 — `capture_poi_batch.gd` : le champ `commit` de provenance vaut toujours « inconnu » — S4, OUVERT
+
+Mesuré le 2026-08-19 sur le manifeste de `preuves_lead/captures_r2b2/`.
+
+`_provenance_par_role()` passe le chemin tel quel à `git log -1 --format=%H --
+<chemin>`. Avec un chemin `res://assets/…`, git ne connaît pas le préfixe et
+rend une sortie vide : le champ vaut `inconnu` pour **tous** les rôles. Le
+`sha256`, lui, passe par `FileAccess` qui résout `res://` et fonctionne — c'est
+lui que le §7 exige, et il est correct.
+
+**Correctif** : passer un chemin **sans** préfixe. Le code accepte déjà les deux
+côté `FileAccess` (`chemin if chemin.begins_with("res://") else "res://" +
+chemin`), donc une seule forme suffirait aux deux usages.
+
+Non bloquant : le commit de l'arbre est déjà en tête de manifeste, et la preuve
+d'identité du fichier est le sha256.
