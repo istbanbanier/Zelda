@@ -55,6 +55,11 @@ const BRIGHT_COPPER: Color = Color(0.66, 0.46, 0.28)
 ## pièges sont réels et opposés — d'où : mesurer, jamais présumer.
 const KIT_CUT_STONE: Color = Color(0.66, 0.60, 0.52)
 const KIT_RAIL_COPPER: Color = Color(0.357, 0.4675, 0.425)  # PATINA × 0,85
+## La texture de `Prop_Brick1` est PÂLE (vu sur capture : nue, la brique
+## lisait comme un cube blanc ; teintée pierre, comme un cube beige) — la
+## terre cuite est donc imposée par le multiplicateur, c'est lui qui porte
+## l'identité « brique » de la rupture.
+const TERRACOTTA: Color = Color(0.72, 0.44, 0.32)
 ## Pente : un module de 2 m dont l'empreinte enjambe plus de ça se scinde
 ## en modules de 1 m (arbitrage R2B, décision transverse).
 const SLAB_GROUND_SPAN_MAX: float = 0.07
@@ -302,15 +307,13 @@ func _source_side() -> void:
 		rubble_large.name = "RuptureGravatsB"
 	# Deux briques éparses. Pivot Y CENTRÉ mesuré à la sonde d'assise
 	# (`probe_kit_seating`) : posées telles quelles, elles s'enterrent à
-	# moitié — on les remonte d'une demi-hauteur (0,105 m). SANS teinte :
-	# vu sur capture (diagnose_screen_occupants sur bassin_fonctionnel),
-	# la teinte pierre effaçait la terre cuite et la brique lisait comme
-	# un cube beige — sa matière naturelle EST son identité de brique.
+	# moitié — on les remonte d'une demi-hauteur (0,105 m). Teinte
+	# TERRACOTTA : voir la constante — la texture du module est pâle.
 	for brick: Array in [[-4.9, 0.7, 40.0], [-3.75, -0.4, 155.0]]:
 		var laid: Node3D = K.module(self, &"Prop_Brick1",
 			_seated(float(brick[0]), float(brick[1]))
 				+ Vector3(0.0, 0.105, 0.0),
-			float(brick[2]), 1.0)
+			float(brick[2]), 1.0, TERRACOTTA)
 		if laid != null:
 			laid.name = "RuptureBrique_%d" % int(brick[2])
 	# Dalles descellées, culbutées hors du caniveau.
