@@ -47,7 +47,22 @@ fi
 #     kill) qui partagerait quand même user://saves.
 #
 # Sortie en 3 (BLOQUÉ), jamais en silence : .claude/rules/evidence.md.
-LOCK_FILE="$PROJECT_DIR/.git/validate_fast.lock"
+# DANS UN ARBRE DE TRAVAIL GIT, `.git` EST UN FICHIER, PAS UN DOSSIER.
+# Mesuré le 2026-08-19 depuis /home/user/zelda-r2b2/a_ferme :
+#   .git/validate_fast.lock: Not a directory ; flock: 9: Bad file descriptor
+#   -> BLOQUÉ (code 3) alors qu'aucune suite ne tournait.
+# La règle du projet EXIGE un arbre de travail séparé par tâche (CLAUDE.md) :
+# le verrou doit donc suivre le dépôt, pas le répertoire. `--git-common-dir`
+# et non `--git-dir` : c'est le .git PARTAGÉ, et c'est bien ce qu'on veut —
+# deux arbres de travail partagent `user://saves`, donc leurs suites doivent
+# se sérialiser. Repli sur l'ancien chemin si git est absent.
+LOCK_DIR="$(git -C "$PROJECT_DIR" rev-parse --git-common-dir 2>/dev/null || true)"
+case "$LOCK_DIR" in
+  "") LOCK_DIR="$PROJECT_DIR/.git" ;;
+  /*) ;;
+  *)  LOCK_DIR="$PROJECT_DIR/$LOCK_DIR" ;;
+esac
+LOCK_FILE="$LOCK_DIR/validate_fast.lock"
 exec 9>"$LOCK_FILE"
 if ! flock -n 9; then
   echo "BLOQUÉ: une autre suite validate_fast détient le verrou ($LOCK_FILE)." >&2

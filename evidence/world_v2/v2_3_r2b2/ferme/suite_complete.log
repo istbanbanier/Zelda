@@ -1,0 +1,49 @@
+=== SUITE COMPLÈTE — jouée en QUATRE tranches ===
+commit: c8641b70dec5729d5d0757efd4b28814bec1229e
+date:   2026-08-19T17:19:24Z
+note:   la suite entière dépasse la fenêtre d'exécution disponible en
+        avant-plan ; elle est jouée par répertoire, sans filtre de sujet,
+        donc sans test omis. Une tranche par appel, toutes archivées ici.
+
+--- tranche 1/4 : tests/unit ---
+erreurs de script dans le journal : 0
+=== RÉSULTAT: 137 réussi(s), 0 échoué(s) ===
+RC=0
+
+--- tranche 2/4 : tests/world_v2 ---
+
+--- tranche 2/5 : world_v2 (anchors..places_contract) ---
+erreurs de script dans le journal : 0
+=== RÉSULTAT: 34 réussi(s), 0 échoué(s) ===
+RC=0
+
+--- tranche 3/5 : world_v2 (proof_boards..farm_tree) ---
+  ÉCHEC test_world_v2_r2b_farm_tree.gd::test_le_pipeline_blender_est_frais_et_verifie — le pipeline Blender est frais et vérifié pour les deux sujets (1 écart(s)) — farm_ruins : l'inspection VALIDE porte sur 198272 octets, le GLB du dépôt en fait 199124 — journal d'un AUTRE fichier
+erreurs de script dans le journal : 0
+=== RÉSULTAT: 35 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_r2b_farm_tree.gd::test_le_pipeline_blender_est_frais_et_verifie — le pipeline Blender est frais et vérifié pour les deux sujets (1 écart(s)) — farm_ruins : l'inspection VALIDE porte sur 198272 octets, le GLB du dépôt en fait 199124 — journal d'un AUTRE fichier
+RC=0
+
+--- tranche 3/5 REJOUÉE après réexport (journaux archivés rafraîchis) ---
+erreurs de script dans le journal : 0
+=== RÉSULTAT: 36 réussi(s), 0 échoué(s) ===
+RC=0
+
+--- tranche 4/5 : world_v2 (routes..waterways) + playthrough ---
+
+--- tranche 4a/6 : world_v2 (routes, skeleton, terrain, traversal) ---
+erreurs de script dans le journal : 0
+=== RÉSULTAT: 11 réussi(s), 0 échoué(s) ===
+RC=0
+
+--- tranche 4b/6 : world_v2 (water_*) ---
+erreurs de script dans le journal : 0
+=== RÉSULTAT: 8 réussi(s), 0 échoué(s) ===
+RC=0
+
+--- tranche 5/6 : tests/playthrough ---
+erreurs de script dans le journal : 0
+=== RÉSULTAT: 7 réussi(s), 0 échoué(s) ===
+RC=0
+
+--- tranche 6a/6 : tests/integration a-d (36 filets) ---

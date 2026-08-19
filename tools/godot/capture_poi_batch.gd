@@ -295,9 +295,28 @@ func _provenance_par_role() -> Dictionary:
 		var sha: String = ""
 		if rc == 0 and not out.is_empty():
 			sha = String(out[0]).strip_edges()
+		# LE COMMIT DIT QUAND, LE HASH DIT QUOI (exigence R2B.2 du lead).
+		# Un commit prouve la date du dernier changement suivi ; il ne prouve
+		# PAS que le fichier présent sur le disque au moment de la capture est
+		# celui-là. Un GLB régénéré et non committé porte le même commit et un
+		# autre contenu — c'est très exactement le piège « journal d'un AUTRE
+		# fichier » que le filet R2B attrape côté pipeline. Le sha256 est lu
+		# sur l'octet, il ne peut pas mentir.
+		var empreinte: String = "absent"
+		var fichier: FileAccess = FileAccess.open(
+			chemin if chemin.begins_with("res://") else "res://" + chemin,
+			FileAccess.READ)
+		if fichier != null:
+			var ctx: HashingContext = HashingContext.new()
+			ctx.start(HashingContext.HASH_SHA256)
+			while not fichier.eof_reached():
+				ctx.update(fichier.get_buffer(1 << 20))
+			fichier.close()
+			empreinte = ctx.finish().hex_encode()
 		sortie[role] = {
 			"chemin": chemin,
 			"commit": sha if not sha.is_empty() else "inconnu",
+			"sha256": empreinte,
 		}
 	return sortie
 
