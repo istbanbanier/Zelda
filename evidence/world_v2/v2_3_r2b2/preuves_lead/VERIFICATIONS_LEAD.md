@@ -887,3 +887,77 @@ Sa session n'a plus de transcript — même incident qu'en R2B.1 avec deux agent
 Sa voie était **déjà déclarée close** et son arbre est propre : rien n'est perdu.
 Les corrections restantes, s'il en fallait, seraient de mon fait et signées comme
 telles dans le message de commit.
+
+## 27. Intégration — `ea6b51f`, 49 commits sur `c44f430b`
+
+Cherry-pick **strict**, aucun merge, aucun rebase des voies. Six commits de la
+voie ferme (`a8ddb0c` → `1178e12`), treize de la voie arbre (`2736505` →
+`6f8ec80`), puis mes commits de lead.
+
+### Le seul conflit attendu, résolu comme prévu
+
+`docs/assets/ASSET_MANIFEST.csv`, par **propriété d'asset** : fichier de A, ligne
+`SM_ThunderstruckTree` de B. Vérifié après coup — les deux lignes conformes à
+leur voie, **aucune autre ligne ne diffère de la version d'A**, 200 lignes, et
+les **14 doublons d'identifiant sont préexistants au même compte** (`DeadTree_1`,
+`Shield_Wooden`, `Chain_Coil`, …). Consignés, pas réparés.
+
+### Une faute de ma part, attrapée par le contrôle du §8
+
+Ma résolution a écrit le fichier avec `csv.writer(f)`, dont le `lineterminator`
+par défaut est `\r\n` : **200 retours chariot** dans un fichier qui n'en avait
+aucun, ni à la base ni chez A. `git diff --check` les a vus comme 200 espaces en
+fin de ligne.
+
+Le contenu était juste, la **forme** changeait tout le fichier. C'est le dégât
+exact qu'une résolution de conflit peut enfouir, et la raison d'être de ce
+contrôle. Corrigé en commit **additif**, 81 312 → 81 112 octets, 0 CR.
+
+Restent 49 lignes à espace final : **préexistantes** (49 à la base, 49 ici),
+espaces à l'intérieur d'un champ CSV de notes.
+
+### La suite intégrée a trouvé un vrai défaut, et c'était le bon
+
+**94 réussis, 1 échoué** :
+
+> `thunderstruck_tree : l'inspection VALIDE porte sur 200544 octets, le GLB du
+> dépôt en fait 200548 — journal d'un AUTRE fichier`
+
+Cause : l'agent B a rejoué sa chaîne au commit `7f09f55`, puis a corrigé le
+point 6 en **trois commits suivants** qui ont changé le GLB. Les journaux de
+pipeline attestaient donc l'état d'avant. Aucun mensonge, un oubli — et un oubli
+qu'aucune relecture humaine n'aurait vu, les deux fichiers portant le même nom.
+
+**J'ai rejoué la chaîne entière** (make → export → inspection), pas seulement le
+journal qui rougissait : rafraîchir le seul log en échec serait faire passer le
+test au lieu de rétablir la vérité.
+
+> **Et le résultat mérite d'être dit : le GLB régénéré est IDENTIQUE OCTET POUR
+> OCTET à celui livré** — `c44f9c1e474de23f`, 200 548 octets.
+
+Le générateur Blender de l'arbre est donc **reproductible**, ce qui n'avait
+jamais été démontré sur ce sujet et ce qui donne son sens à la chaîne contrôlée.
+Le `.blend`, lui, change à chaque génération : il porte des horodatages, pas la
+géométrie. `test_world_v2_r2b_farm_tree` : **4/4** après correction.
+
+### Signatures
+
+Deux de mes commits étaient non signés — j'avais passé `-c commit.gpgsign=false`
+alors que `commit.gpgsign=true` est configuré. **Je ne les ai pas corrigés
+pendant que la suite tournait** : le `git rebase` commence par un checkout qui
+retire brièvement du disque le correctif du manifeste, et ce dépôt a déjà
+fabriqué huit faux échecs de sauvegarde le 2026-08-11 en laissant deux processus
+partager un arbre de travail. Corrigé **après** la suite, et le hash d'arbre est
+**identique avant et après le rebase** — seule la signature a changé.
+
+### Vérifications d'intégration
+
+| contrôle | résultat |
+|---|---|
+| golden masters | **6/6 OK** |
+| GLB ferme intégré == voie A | `9c7b94e1848d…`, **oui** |
+| GLB arbre intégré == voie B | `c44f9c1e474d…`, **oui** |
+| budgets | ferme **2 080** / 4 500 · arbre **3 574** / 6 000 |
+| UV0 ferme | **25/25** primitives |
+| arbre propre | oui |
+| push | fast-forward, local == distant |
