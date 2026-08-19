@@ -1,0 +1,10 @@
+# Empreintes AVANT R2B.2 — base c44f430b1a231e46bb0c46499c76115550c1e82a
+# Les deux GLB que R2B.2 va régénérer. Toute capture finale doit porter le hash
+# de l'état qu'elle montre : ces valeurs prouvent que le changement a eu lieu.
+
+db0172dc316797fe4c99df252129707595e1a6d9bfd2f6edd97fb21083cddad5  assets/architecture/farm/SM_Farm_Ruins.glb
+ddf7f6b9f1b1b6559f02d4755971327ade9650f2d7081dda776b5e3667c4c961  assets/architecture/flora/SM_ThunderstruckTree.glb
+
+# Triangles et taille au point zéro :
+SM_Farm_Ruins.glb                                      101364 octets  triangles              : 1624
+SM_ThunderstruckTree.glb                               142584 octets  triangles              : 2526
