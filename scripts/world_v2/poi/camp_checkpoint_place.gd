@@ -1,24 +1,46 @@
-## CAMP / CHECKPOINT (r05_terrasse_du_camp) — le premier lieu habité sûr.
+## CAMP / CHECKPOINT (r05_terrasse_du_camp) — la halte de route ENTRETENUE.
 ##
-## Langage (VISUAL_ASSET_BIBLE §10.2) : masses basses et irrégulières,
-## auvents asymétriques à trois appuis (`AwningTent` — jamais de tipi),
-## bois fendu, corde, textiles, feu lisible de loin. Trois pôles
-## d'activité : repos (auvents), cuisine (feu + réserve), garde (râtelier
-## + bannières).
+## R2B (plan approuvé, agent A) : la peau du lieu est faite de MODULES du
+## kit CC0 — plus aucune primitive procédurale hors le feu canonique
+## (`CampfireProp`, exemption NOMMÉE de l'arbitrage R2B, décision c). La
+## halle procédurale, le mât à fanions et la fumée en boîtes translucides
+## disparaissent (fumée : SUPPRIMÉE SANS REMPLACEMENT — décision lead,
+## pas de VFX dans cette passe).
+##
+## Identité : une halte de route — halle charpentée (poteaux
+## `Corner_Exterior_Wood`, plancher `Floor_WoodDark` ×4, toit
+## `Roof_Wooden_2x1_L/R` en deux rangées), wagon et étal à l'entrée NO,
+## deux bannières `Banner_1`, le feu, les dalles de pas. Teintes chaudes.
 ##
 ## Contraintes MESURÉES qui gouvernent l'implantation :
 ##  - l'ancre §3.3 `(45, 6, 65)` est l'ORIGINE locale : son rayon
 ##    vertical doit continuer de toucher le terrain nu — rien au centre ;
-##  - le rayon de visée de `cam02_camp_pylone` traverse le camp par
-##    l'origine, direction locale (0.61, −0.79), à ≈3,7 m au-dessus du
-##    sol : la bande |perp| < 4 m reste BASSE (< 1,5 m) ;
-##  - la route principale entre par le nord-ouest local (−15, 9) et
-##    ressort vers (25, −25) : aucun collider à moins de 1,2 m de ces
-##    segments, et le feu est décalé pour que la marche ne le traverse pas.
+##  - `cam02_camp_pylone` traverse le camp par l'origine, direction
+##    locale (0,61 ; −0,79) : la bande |perp| < 4 m reste BASSE
+##    (< 1,5 m), et la perpendiculaire se mesure au BORD de l'emprise,
+##    pas au centre. La halle axis-alignée avait son coin de toit à
+##    3,45 m du rayon (6,06 − [2,13·0,79 + 1,52·0,61]) : elle est donc
+##    TOURNÉE de 52,3° pour aligner son faîte sur le rayon — demi-emprise
+##    perpendiculaire 1,52 m, bord à 4,54 m > 4 m ;
+##  - le camp est un CARREFOUR à quatre couloirs (principale NO et SE,
+##    hauteurs ENE, ruines SSO) : wagon et étal tiennent ≥ 2,5 m des
+##    fils, mesuré en AABB monde (wagon AABB nord [−7,1;−2,7]×[7,6;11,4]
+##    à 2,88 m du fil NO ; étal sud [−14,6;−11,5]×[0,9;3,3] à 3,02 m) ;
+##  - le wagon vit DANS la bande basse de cam02 (perp centre 1,93 m) :
+##    il est réduit à 0,95 — hauteur 1,45 m < 1,5 m.
 class_name CampCheckpointPlace
 extends WorldV2Place
 
 const K: GDScript = preload("res://scripts/world_v2/poi/world_v2_place_kit.gd")
+
+## Lacet de la halle : faîte aligné sur le rayon de `cam02_camp_pylone`
+## (direction locale (0,61 ; −0,79) → 52,3°).
+const HALL_YAW_DEG: float = 52.3
+## Hauteur du plan d'appui des sablières (origine des panneaux, bord haut) :
+## dessous du toit à 2,42 − 0,16 = 2,26 m, faîte à 2,42 + 1,09 = 3,51 m.
+## Le plan annonçait ~3,2 m : le module impose 1,25 m de pente — écart
+## mesuré, consigné au rapport.
+const HALL_EAVE_M: float = 2.42
 
 
 func default_place_id() -> StringName:
@@ -26,11 +48,9 @@ func default_place_id() -> StringName:
 
 
 func _build() -> void:
-	# — Pôle cuisine : feu réel (visuel + interactable canonique). Le camp
-	# est un CARREFOUR : quatre couloirs de route partent de l'ancre
-	# (principale NO et SE, hauteurs ENE, ruines SSO) — chaque pôle vit
-	# dans un SECTEUR libre entre deux couloirs, mesuré à ≥ 2,5 m des
-	# fils. Le feu tient le secteur est, sous le rayon de cam02.
+	# — Pôle cuisine : feu réel (visuel + interactable canonique). Le feu
+	# tient le secteur est du carrefour, sous le rayon de cam02 (1,1 m de
+	# haut — bande basse respectée).
 	var fire_pos: Vector3 = _seated(5.1, -1.0)
 	var fire_visual: CampfireProp = CampfireProp.new()
 	fire_visual.name = "FeuVisuel"
@@ -44,92 +64,13 @@ func _build() -> void:
 	K.module(self, &"Cauldron", _seated(6.0, -0.2), 140.0, 1.0, K.TONE_WOOD)
 	K.module(self, &"Bucket_Wooden_1", _seated(6.9, -1.6), 30.0, 1.0, K.TONE_WOOD)
 
-	# — LA HALLE : la masse DOMINANTE qui manquait. Charpente de bois
-	# fendu, toile en deux pans superposés de hauteurs différentes,
-	# ouverte au sud — elle donne au camp une silhouette au lieu d'objets
-	# éparpillés dans une prairie (rejet du lead).
-	var hall: Node3D = Node3D.new()
-	hall.name = "Halle"
-	# MESURÉ : posée à (−2,0 ; 6,4), l'emprise de la halle mordait le
-	# couloir de `main_path` au point monde (40, 68) — le filet de route a
-	# rougi. Reculée au nord-est, elle libère le passage ET se place
-	# DERRIÈRE le feu vue de l'arrivée : la masse dominante ferme le fond
-	# du camp au lieu de barrer son entrée.
-	# Contrôle de la bande de visée gelée de `cam02_camp_pylone`
-	# (direction locale (0,61 ; −0,79)) : perpendiculaire de la halle
-	# = |1,8 × (−0,79) − 7,6 × 0,61| = 6,06 m > 4 m — hors bande basse,
-	# elle a donc le droit d'être haute.
-	var hall_at: Vector2 = Vector2(1.8, 7.6)
-	hall.position = _seated(hall_at.x, hall_at.y)
-	add_child(hall)
-	declare_support(hall.position)
-	var wood: Color = Color(0.40, 0.28, 0.18)
-	for post: Array in [[-2.7, -2.0, 3.5], [2.7, -2.0, 3.1],
-			[-2.7, 2.0, 2.6], [2.7, 2.0, 2.3]]:
-		K.stone_block(hall, "PoteauHalle_%d" % hall.get_child_count(),
-			Vector3(float(post[0]), float(post[2]) * 0.5, float(post[1])),
-			Vector3(0.30, float(post[2]), 0.30),
-			float(post[0]) * 2.0, wood, 8100 + hall.get_child_count(), 0.04)
-	K.stone_block(hall, "PoutreHalle_ouest", Vector3(-2.7, 3.05, 0.0),
-		Vector3(0.24, 0.26, 4.3), 0.0, wood, 8120, 0.03)
-	K.stone_block(hall, "PoutreHalle_est", Vector3(2.7, 2.7, 0.0),
-		Vector3(0.24, 0.26, 4.3), 0.0, wood, 8121, 0.03)
-	for pan: Array in [[-1.3, 3.35, -13.0, 3.6], [1.4, 2.95, 12.0, 3.2]]:
-		var canvas: MeshInstance3D = K.stone_block(hall,
-			"ToileHalle_%d" % hall.get_child_count(),
-			Vector3(float(pan[0]), float(pan[1]), 0.0),
-			Vector3(float(pan[3]), 0.10, 4.5), 0.0,
-			Color(0.62, 0.34, 0.22), 8130 + hall.get_child_count(), 0.02)
-		canvas.rotation.z = deg_to_rad(float(pan[2]))
-	K.collider_box(self, "Halle_col", hall.position + Vector3(0, 1.6, 0),
-		Vector3(5.6, 3.2, 4.4))
-	K.module(hall, &"Bed_Twin1", Vector3(-1.6, 0.1, 1.2), 10.0, 0.9,
-		K.TONE_CLOTH)
-	K.module(hall, &"Bag", Vector3(1.5, 0.1, 1.4), 30.0, 1.0, K.TONE_CLOTH)
-	K.module(hall, &"Rope_1", Vector3(2.2, 0.1, -1.3), 70.0, 1.0, K.TONE_WOOD)
+	_hall()
+	_northwest_entrance()
 
-	# — DEUX SIGNES VERTICAUX lisibles à 70–110 m : le mât à bannière et
-	# la colonne de fumée du foyer.
-	# Le mât sort lui aussi de la bande basse de `cam02_camp_pylone` :
-	# perpendiculaire = |−8,6 × (−0,79) − 0,6 × 0,61| = 6,43 m > 4 m. À
-	# (−6,0 ; 4,2) elle valait 2,18 m — un mât de 5,8 m plein travers du
-	# rayon de la caméra gelée.
-	var mast_at: Vector3 = _seated(-8.6, 0.6)
-	K.stone_block(self, "Mat", mast_at + Vector3(0, 2.9, 0),
-		Vector3(0.22, 5.8, 0.22), 4.0, wood, 8200, 0.02)
-	for flag: int in range(3):
-		K.stone_block(self, "Fanion_%d" % flag,
-			mast_at + Vector3(0.55, 4.5 - float(flag) * 0.75, 0.0),
-			Vector3(1.05, 0.62, 0.06), 6.0 - float(flag) * 4.0,
-			Color(0.72, 0.38, 0.24), 8210 + flag, 0.03)
-	declare_support(mast_at)
-	_smoke_column(fire_pos + Vector3(0.0, 1.1, 0.0))
-
-	# — Pôle repos : deux auvents asymétriques, hors de la bande de visée
-	# (|perp| ≥ 6,8 m), ouverts vers le feu.
-	# MESURÉ : à (6,6 ; 5,4), l'auvent nord était à 39° — la route des
-	# hauteurs part du camp à 23°, et l'AABB de son collider tourné
-	# mordait le couloir en (51, 67), (51, 68) et (52, 68). Le camp est un
-	# CARREFOUR à quatre couloirs ; l'auvent revient dans le secteur nord
-	# libre (111°), à 6,2 m du fil de `main_path`.
-	for tent_data: Array in [[-3.6, 9.4, -200.0, "AuventNord"],
-			[-8.6, -1.8, 75.0, "AuventOuest"]]:
-		var tent: AwningTent = AwningTent.new()
-		tent.name = tent_data[3] as String
-		tent.position = _seated(float(tent_data[0]), float(tent_data[1]))
-		tent.rotation.y = deg_to_rad(float(tent_data[2]))
-		add_child(tent)
-		declare_support(tent.position)
-		K.collider_box(self, (tent_data[3] as String) + "_col",
-			tent.position + Vector3(0, 1.1, 0), Vector3(3.2, 2.2, 2.8),
-			float(tent_data[2]))
-	K.module(self, &"Bed_Twin1", _seated(-2.4, 10.6), -200.0, 0.85, K.TONE_CLOTH)
-
-	# — Pôle garde / réserve : râtelier, caisses, tonneaux, table.
+	# — Pôle garde / réserve : râtelier, caisses, tonneaux, table — tous
+	# modules, positions héritées (couloirs déjà mesurés : cluster caisses
+	# à 5,1 m du fil SE).
 	K.module(self, &"WeaponStand", _seated(-3.8, 3.6), 100.0, 1.0, K.TONE_WOOD)
-	# Les caisses tiennent l'écart de la route principale (sortie sud-est
-	# locale (0,0)→(25,−25)) : cluster décalé en perpendiculaire, mesuré
-	# à 5,1 m du fil — le filet de couloir rougissait à (50, 60).
 	var crates: Node3D = K.module(self, &"Crate_Wooden", _seated(8.7, -1.3),
 		15.0, 1.0, K.TONE_WOOD)
 	K.module(self, &"Crate_Wooden", _seated(9.6, -0.4), 65.0, 0.85, K.TONE_WOOD)
@@ -145,19 +86,14 @@ func _build() -> void:
 	K.collider_box(self, "Tonneaux_col", _seated(-7.2, -3.2) + Vector3(0, 0.6, 0),
 		Vector3(1.8, 1.2, 2.2))
 
-	# — Bannières hautes LOIN de la bande de visée (perp ≥ 10 m).
+	# — DEUX BANNIÈRES `Banner_1` : les signes verticaux de la halte,
+	# loin de la bande de visée (perp 9,4 m et 11,2 m).
 	K.module(self, &"Banner_1", _seated(9.0, -3.0), -30.0, 1.0, K.TONE_CLOTH)
-	K.module(self, &"Banner_2", _seated(-8.0, -6.5), 140.0, 1.0, K.TONE_CLOTH)
+	K.module(self, &"Banner_1", _seated(-9.5, -6.0), 140.0, 1.0, K.TONE_CLOTH)
 	declare_support(_seated(9.0, -3.0))
-	declare_support(_seated(-8.0, -6.5))
+	declare_support(_seated(-9.5, -6.0))
 
-	# — Paravent tressé : coupe-vent derrière l'auvent est.
-	K.module(self, &"Prop_WoodenFence_Single", _seated(-6.2, 9.0), -25.0, 1.0,
-		K.TONE_WOOD)
-	K.module(self, &"Prop_WoodenFence_Extension1", _seated(-7.6, 8.0), -25.0,
-		1.0, K.TONE_WOOD)
-
-	# — Sol vécu : dalles de pas entre l'entrée ouest et le feu.
+	# — Sol vécu : dalles de pas entre l'entrée ouest et le feu (conservées).
 	for slab: Array in [[-6.5, 4.0], [-4.2, 3.0], [-1.8, 2.1], [0.6, 1.4],
 			[2.8, 0.6], [4.2, -0.2]]:
 		K.module(self, &"RockPath_Round_Small_1",
@@ -165,28 +101,91 @@ func _build() -> void:
 			float(slab[0]) * 37.0, 1.0, K.TONE_STONE)
 
 
-## COLONNE DE FUMÉE : six panneaux croisés, de plus en plus larges,
-## pâles et transparents en montant — le signe vertical qui fait lire un
-## camp habité depuis l'autre versant.
-func _smoke_column(base: Vector3) -> void:
-	var smoke: Node3D = Node3D.new()
-	smoke.name = "Fumee"
-	add_child(smoke)
-	for i: int in range(6):
-		var t: float = float(i) / 5.0
-		var puff: MeshInstance3D = MeshInstance3D.new()
-		puff.name = "Bouffee_%d" % i
-		puff.mesh = K.irregular_box_mesh(
-			Vector3(0.8 + t * 2.2, 1.5, 0.7 + t * 1.9), 0.22, 8300 + i)
-		var material: StandardMaterial3D = K.flat_material(
-			Color(0.86, 0.84, 0.80))
-		material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-		material.albedo_color.a = 0.34 - t * 0.20
-		material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		puff.mesh.surface_set_material(0, material)
-		puff.position = base + Vector3(t * 1.5, 1.0 + t * 5.4, t * 0.7)
-		puff.rotation.y = t * 2.2
-		smoke.add_child(puff)
+## LA HALLE : masse dominante du camp, entièrement en modules. Charpente
+## `Corner_Exterior_Wood`, plancher `Floor_WoodDark` ×4 (4 × 4 m), toit à
+## deux rangées `Roof_Wooden_2x1_L/R` (faîte le long de l'axe local X de
+## la halle, tourné sur le rayon de cam02 — voir l'en-tête).
+func _hall() -> void:
+	var hall_at: Vector2 = Vector2(1.8, 7.6)
+	# Plan d'assise : le sol le plus HAUT sous les quatre pieds — un
+	# plancher posé sur le point bas laisserait l'angle amont enterré.
+	var cos_y: float = cos(deg_to_rad(HALL_YAW_DEG))
+	var sin_y: float = sin(deg_to_rad(HALL_YAW_DEG))
+	var base_y: float = ground_local_y(hall_at.x, hall_at.y)
+	var post_feet: Array[Vector2] = []
+	for corner: Vector2 in [Vector2(1.9, 1.35), Vector2(1.9, -1.35),
+			Vector2(-1.9, 1.35), Vector2(-1.9, -1.35)]:
+		var world_xz: Vector2 = Vector2(
+			hall_at.x + corner.x * cos_y + corner.y * sin_y,
+			hall_at.y - corner.x * sin_y + corner.y * cos_y)
+		post_feet.append(world_xz)
+		base_y = maxf(base_y, ground_local_y(world_xz.x, world_xz.y))
+	var hall: Node3D = Node3D.new()
+	hall.name = "Halle"
+	hall.position = Vector3(hall_at.x, base_y + 0.02, hall_at.y)
+	hall.rotation.y = deg_to_rad(HALL_YAW_DEG)
+	add_child(hall)
+	for foot: Vector2 in post_feet:
+		declare_support(_seated(foot.x, foot.y))
+
+	# Plancher : quatre dalles de 2 × 2 m (pivot CENTRÉ en Y, mesuré à la
+	# sonde d'assise — posées à +0,01, dessus à +0,02).
+	for tile: Vector2 in [Vector2(1.0, 1.0), Vector2(1.0, -1.0),
+			Vector2(-1.0, 1.0), Vector2(-1.0, -1.0)]:
+		K.module(hall, &"Floor_WoodDark", Vector3(tile.x, 0.01, tile.y),
+			0.0, 1.0, K.TONE_WOOD)
+	# Quatre poteaux d'angle sous les rampants (0,78 × 3,00 = 2,34 m :
+	# la tête perce le dessous du toit, mesuré à 2,24–2,40 m).
+	for post: Vector2 in [Vector2(1.9, 1.35), Vector2(1.9, -1.35),
+			Vector2(-1.9, 1.35), Vector2(-1.9, -1.35)]:
+		K.module(hall, &"Corner_Exterior_Wood", Vector3(post.x, 0.0, post.y),
+			0.0, 0.78, K.TONE_WOOD)
+	# Toit : deux rangées dos à dos. Le pivot du panneau est à son bord
+	# HAUT (sonde d'assise : y min à −0,16, faîte à +1,09, pente vers +Z
+	# local) : les deux rangées se posent sur la ligne de faîte z = 0.
+	# Rangée sud (pente vers +Z) : L à −1,0 (déborde à l'ouest), R à +1,0.
+	K.module(hall, &"Roof_Wooden_2x1_L", Vector3(-1.0, HALL_EAVE_M, 0.0),
+		0.0, 1.0, K.TONE_WOOD)
+	K.module(hall, &"Roof_Wooden_2x1_R", Vector3(1.0, HALL_EAVE_M, 0.0),
+		0.0, 1.0, K.TONE_WOOD)
+	# Rangée nord (yaw 180° — les débords L/R s'inversent avec la rotation).
+	K.module(hall, &"Roof_Wooden_2x1_L", Vector3(1.0, HALL_EAVE_M, 0.0),
+		180.0, 1.0, K.TONE_WOOD)
+	K.module(hall, &"Roof_Wooden_2x1_R", Vector3(-1.0, HALL_EAVE_M, 0.0),
+		180.0, 1.0, K.TONE_WOOD)
+	# Pôle repos SOUS la halle : lit, sac, corde — sur le plancher.
+	K.module(hall, &"Bed_Twin1", Vector3(-0.85, 0.02, 0.3), 4.0, 0.9,
+		K.TONE_CLOTH)
+	K.module(hall, &"Bag", Vector3(1.3, 0.02, -1.0), 30.0, 1.0, K.TONE_CLOTH)
+	K.module(hall, &"Rope_1", Vector3(1.5, 0.02, 1.1), 70.0, 1.0, K.TONE_WOOD)
+	K.collider_box(self, "Halle_col",
+		Vector3(hall_at.x, base_y + 1.6, hall_at.y),
+		Vector3(4.6, 3.2, 3.4), HALL_YAW_DEG)
+
+
+## L'ENTRÉE NORD-OUEST : le wagon et l'étal de la halte, de part et
+## d'autre du couloir de `main_path` ((−15, 9) → origine). Positions
+## MESURÉES en AABB monde contre les quatre couloirs (≥ 2,5 m du fil,
+## voir l'en-tête) ; le wagon, dans la bande basse de cam02, est réduit
+## à 0,95 (1,45 m de haut < 1,5 m).
+func _northwest_entrance() -> void:
+	var wagon: Node3D = K.module(self, &"Prop_Wagon", _seated(-3.9, 8.9),
+		121.0, 0.95, K.TONE_WOOD)
+	if wagon != null:
+		declare_support(wagon.position)
+		# Pivot mesuré à 78 % de l'emprise Z : le centre visuel est à
+		# (−4,9 ; 9,5) — le collider le suit, pas l'origine du nœud.
+		K.collider_box(self, "Wagon_col",
+			_seated(-4.87, 9.48) + Vector3(0.0, 0.75, 0.0),
+			Vector3(2.0, 1.5, 3.9), 121.0)
+	var stall: Node3D = K.module(self, &"Stall_Cart_Empty", _seated(-12.5, 1.8),
+		31.0, 1.0, K.TONE_WOOD)
+	if stall != null:
+		declare_support(stall.position)
+		# Pivot mesuré à 70 % de l'emprise X : centre visuel à (−13,0 ; 2,1).
+		K.collider_box(self, "Etal_col",
+			_seated(-13.01, 2.11) + Vector3(0.0, 1.2, 0.0),
+			Vector3(3.1, 2.4, 1.1), 31.0)
 
 
 ## Position locale posée sur le sol réel (terrain gelé).

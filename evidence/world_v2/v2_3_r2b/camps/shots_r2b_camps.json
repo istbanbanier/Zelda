@@ -1,0 +1,156 @@
+[
+ {
+  "name": "camp_approche",
+  "from": [
+   32,
+   9,
+   76
+  ],
+  "look": [
+   45,
+   7.5,
+   65
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "camp_composition",
+  "from": [
+   25,
+   14,
+   85
+  ],
+  "look": [
+   45,
+   8,
+   65
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "camp_proche",
+  "from": [
+   41,
+   7.6,
+   69
+  ],
+  "look": [
+   45,
+   7,
+   65
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "camp_feu",
+  "from": [
+   43,
+   7.3,
+   67
+  ],
+  "look": [
+   45.5,
+   6.8,
+   64
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "camp_halle",
+  "from": [
+   40.3,
+   7.6,
+   81.0
+  ],
+  "look": [
+   46.8,
+   7.6,
+   72.6
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "camp_mi_distance",
+  "from": [
+   12,
+   5.6,
+   98
+  ],
+  "look": [
+   45,
+   8,
+   65
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "camp_braise_approche",
+  "from": [
+   84,
+   8,
+   110
+  ],
+  "look": [
+   96,
+   7,
+   120
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "camp_braise_composition",
+  "from": [
+   79.0,
+   12.5,
+   127.0
+  ],
+  "look": [
+   97.5,
+   6.5,
+   118.5
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "camp_braise_proche",
+  "from": [
+   92,
+   7.2,
+   116
+  ],
+  "look": [
+   98,
+   6.5,
+   122
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "braise_guet",
+  "from": [
+   96.6,
+   7.8,
+   119.2
+  ],
+  "look": [
+   102.1,
+   10.0,
+   125.2
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "camp_braise_mi_distance",
+  "from": [
+   74,
+   6.2,
+   90
+  ],
+  "look": [
+   96,
+   7.5,
+   120
+  ],
+  "fov": 60.0
+ }
+]
