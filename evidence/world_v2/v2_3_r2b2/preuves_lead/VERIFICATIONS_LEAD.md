@@ -544,3 +544,79 @@ grise et la plus grande composante grise sont mesurées et publiées à chaque v
 au même titre que la densité. Si l'attribution confirme le socle, c'est un
 **résidu visuel nommé** qui va à la revue — et il pèsera sur la formule de
 clôture du §9.
+
+## 17. La plaque grise est IDENTIFIÉE : c'est le socle, et sa cause est un golden master sans UV0
+
+Suite du §16. Je ne me suis pas arrêté au soupçon.
+
+### Coupe verticale dans l'image, à `x = 300`
+
+| y | RGB |
+|---:|---|
+| 500 → 536 | (85–99, 68–80, 50–58) — pierre chaude du mur |
+| **548 → 680** | **(64–65, 64, 59)**, sur **132 pixels de haut** |
+| 692 → 716 | (54–57, 80–86, 61–62) — herbe |
+
+**Zéro variation sur 132 pixels.** Ce n'est pas de l'herbe à l'ombre — celle-ci
+reste verte et varie. C'est une **surface géométrique unique à couleur
+constante**, à arête supérieure franche, entre la maçonnerie texturée et le
+gazon. Le recadrage ×1,5 (`zoom_bande_grise.png`) ne laisse aucun doute :
+**une dalle grise absolument unie, sans texture, sans relief, sans grain.**
+
+C'est le **socle d'assises**, et c'est très exactement « une plaque opaque sans
+matière » — le point 4 des exigences de la ferme, mot pour mot : « supprimer
+toute lecture de panneau beige ou de **carton découpé** ».
+
+### La cause, trouvée dans le code puis vérifiée sur les octets
+
+`_socle_assises()` lofte l'anneau de socle à partir de **`SM_Village_Wall.glb`**.
+Mesuré par moi sur le fichier :
+
+- **2 primitives, 0 avec `TEXCOORD_0`** ; matériaux `MAT_Village_WallStone` et
+  `MAT_Village_Coping` ;
+- et il est **golden master GELÉ** — ligne 6 de `GM_BASELINE_SHA256.txt`,
+  sha256 `24f39047…`.
+
+**Le socle ne peut donc pas recevoir de texture par UV : son maillage n'en a
+pas, et on n'a pas le droit d'y toucher.** Voilà pourquoi il rend gris uni
+pendant que les murs voisins, eux, viennent de recevoir la pierre du kit. Le
+contraste que je vois dans l'image est la conséquence directe de la correction
+d'A : en texturant les murs, elle a rendu le socle **plus** visible qu'avant.
+
+### La sortie, sans toucher au gelé
+
+`StandardMaterial3D` sait plaquer **sans UV** : `uv1_triplanar`, avec
+`uv1_world_triplanar` et `uv1_scale`. Une projection triplanaire sur
+l'**override runtime** donnerait au socle la matière du kit sans modifier d'un
+octet le golden master.
+
+Deux gardes indispensables, et la seconde est critique :
+
+1. vérifier ces propriétés contre la **4.7.1 installée** avant de s'en servir —
+   je les donne de mémoire, elles doivent être prouvées ;
+2. **l'override doit rester local à `abandoned_farm_place.gd`.**
+   `SM_Village_Wall` sert aussi au **hameau de la rivière**, qui est un lieu
+   GELÉ ayant passé sa revue. Un matériau modifié en amont changerait un lieu
+   que la directive interdit de toucher.
+
+Ce n'est pas une réserve de forme : c'est le chemin par lequel une correction
+légitime deviendrait une violation de périmètre.
+
+### Ce que je RETIRE de mon alerte du §16
+
+La part grise n'est **pas** du bâti partout, et je l'ai vérifié plutôt que de
+laisser courir le chiffre. Sur `ferme_composition`, la plus grande composante
+grise (7,15 %) a pour boîte `X 986..1276 · Y 31..309` et une couleur moyenne
+(89, 94, 95) : c'est le **relief de fond en haut à droite**, pas la ferme.
+
+Donc : **le gris est un candidat de bâti, pas une preuve de bâti.** Sur
+`ferme_seuil` c'est le socle ; sur `ferme_composition` c'est la montagne.
+L'attribution reste le travail de l'audit, et ma mesure ne fait que désigner où
+regarder.
+
+### Hors périmètre, noté
+
+`ferme_composition` montre une petite fleur ronde saumon dont le canal rouge
+sature à **255** en pleine zone d'ombre. Ce n'est pas un placeholder — le
+recadrage montre une corolle sur tige, un asset de flore réel. Végétation gelée,
+je n'y touche pas ; c'est chaud pour §1.4 de la bible mais minuscule.
