@@ -468,3 +468,79 @@ saumon à bords très flous sur l'herbe, sans variation interne. Elles se lisent
 comme des taches de mélange plutôt que comme du sol sec. Le terrain appartient à
 World V2.2 et à la liste gelée ; je n'y touche pas et je ne la range pas non
 plus dans « rien à signaler ». À porter à la revue visuelle.
+
+## 16. LE LIANT D'APLATS EST AVEUGLE AU GRIS — et la plus grande surface plate du seuil est grise
+
+C'est le constat le plus lourd de ma passe, et il porte sur **le seul seuil que
+j'avais gardé** : `max ≤ 8 %`.
+
+### Le prédicat, lu dans le code
+
+```python
+def est_beige(couleur):
+    r, v, b = couleur
+    return r > 60 and r > v > b and 18 < (r - b) < 110
+```
+
+`r > v > b` **strict** et `r − b > 18` : une surface **neutre** (r ≈ v ≈ b) ne
+peut pas satisfaire ce prédicat. L'instrument ne voit donc **que les aplats
+beiges chauds**. Personne ne l'avait dit, et son en-tête ne le dit pas non plus.
+
+### Ce que la mesure donne quand on retire ce seul filtre
+
+Même prédicat de platitude, même `SEUIL = 18`, même `MIN_COMPOSANTE = 1500`,
+même connexité — **seul le filtre de teinte est retiré** (outil joint,
+`aplats_toutes_teintes.py`, écrit par moi) :
+
+| vue (état livré par A) | beige, **vu** | gris/neutre, **invisible** | plus grande composante |
+|---|---:|---:|---|
+| **`ferme_seuil`** | 21,17 % | **13,77 %** | **11,44 % — GRISE** |
+| `ferme_composition` | ~0 | **10,37 %** | 7,15 % grise |
+| `ferme_facade` | 0,41 % | **7,72 %** | 3,07 % grise |
+| `ferme_laterale` | 0,33 % | **5,67 %** | 2,41 % grise |
+| `ferme_approche` | 0,25 % | 1,25 % | — |
+| `ferme_arriere` | 4,77 % | 0,47 % | 1,52 % beige |
+
+**Sur `ferme_seuil`, l'agent A rapporte `max = 2,92 %` et passe le liant. La
+plus grande surface réellement plate de cette image fait 11,44 %, soit quatre
+fois plus — et elle DÉPASSERAIT le plafond de 8 %.** Elle n'est pas comptée
+parce qu'elle est grise.
+
+### Ce que j'en sais, et ce que je ne fais que soupçonner
+
+**Mesuré :** boîte `X 3..949 · Y 530..703` sur 1280 × 720, remplissage de sa
+boîte 65 %, couleur moyenne **RGB (64, 64, 58)** — écart max-min de **6**, donc
+franchement neutre. Présente **avant** le geste d'A : `10,12 %` sur le
+`ferme_seuil` de R2B.1, même boîte, même couleur moyenne. Elle passe à 11,62 %.
+
+**Donc : ce n'est pas une régression d'A. C'est un défaut que le portail n'a
+jamais vu, ni en R2B.1 ni ici.**
+
+**Soupçonné, non prouvé :** que ce soit le **socle d'assises**. Trois indices —
+la bande basse à arête horizontale franche visible dans l'image, la neutralité
+de la couleur (de l'herbe à l'ombre resterait verte : `max − min` de l'ordre de
+30, pas de 6), et le commentaire d'A lui-même dans
+`abandoned_farm_place.gd`, qui parle d'un « écart déjà consigné pour le socle
+d'assises » rendant « GRIS UNI ». **L'attribution appartient à l'audit** et à son
+instrument ; je ne conclus pas à sa place.
+
+### Une chose que je ne surinterprète pas
+
+Le `TOTAL` toutes teintes tourne autour de **40 %** sur les vues proches, mais
+il comprend l'**herbe** et le **ciel**, légitimement plats dans ce rendu. Ce
+chiffre-là ne dit rien d'un défaut. Seule la part **grise/neutre**, et surtout la
+**plus grande composante grise**, sont des candidats de bâti.
+
+### Conséquence pour le verdict
+
+Le liant `max ≤ 8 %` n'est pas faux : il mesure exactement ce que son prédicat
+définit. Mais **il ne mesure pas ce que la directive demande** — « aucune plaque
+opaque sans matière » ne parle pas d'une teinte. C'est le **cinquième**
+instrument de cette passe à mesurer autre chose que la question posée, et le
+premier à être un liant.
+
+Il ne sera **pas relevé, ni abaissé, ni retiré**. Il est **complété** : la part
+grise et la plus grande composante grise sont mesurées et publiées à chaque vue,
+au même titre que la densité. Si l'attribution confirme le socle, c'est un
+**résidu visuel nommé** qui va à la revue — et il pèsera sur la formule de
+clôture du §9.
