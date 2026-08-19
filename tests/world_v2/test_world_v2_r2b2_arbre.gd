@@ -72,6 +72,22 @@ const ROOT_PLATE_MAX_PCT: float = 60.0   # R2B.1 : 68,5 ; cercle parfait : 50
 const ROOT_SAG_MIN_PCT: float = 7.0      # R2B.1 : 0,0
 const ROOT_GAP_RATIO_MIN: float = 2.20   # R2B.1 : 1,55
 const ROOT_STEP_MAX_M: float = 0.32      # R2B.1 : 0,382 (défaut PRÉEXISTANT)
+## LA MESURE QUI MANQUAIT — ajoutée après un rejet du lead, et il faut dire
+## pourquoi les dix-huit autres ne l'ont pas vue. C2a mesure l'ORIENTATION DES
+## NORMALES d'une section : une aile mince peut avoir des flancs parfaitement
+## arrondis en section — 33,0 % de flanc, vert — et former malgré tout une
+## galette vue de trois quarts. L'orientation d'une normale ne dit rien de
+## l'ÉTALEMENT d'une masse. Mesuré sur le GLB rejeté : emprise 4,52 m de large
+## pour 0,86 m de haut, soit 5,26 : 1, et 68 % des sommets hors de l'emprise du
+## collider, plafonnés à 0,28 m. Le volume était là où on ne le voit pas ; la
+## platitude là où on la voit.
+##
+## DEUX BORNES, ET LA SECONDE EST LA PRINCIPALE. Le rapport d'aspect se
+## trafiquerait en RELEVANT la jupe — ce que le plafond de traversabilité
+## interdit et que je ne ferai pas. La largeur en mètres, elle, ne se trafique
+## par rien.
+const ROOT_ASPECT_MAX: float = 4.20      # GLB rejeté : 5,26
+const ROOT_SPAN_MAX_M: float = 3.60      # GLB rejeté : 4,52
 const FALLEN_SAG_MIN_PCT: float = 5.0    # R2B.1 : 0,0
 const FALLEN_TAPER_RATIO_MIN: float = 1.60  # R2B.1 : 1,00
 const FALLEN_DISTINCT_TRIS_MIN: int = 4  # R2B.1 : 1 (cinq fois 88)
@@ -605,6 +621,39 @@ func test_c2_les_racines_ont_du_volume() -> void:
 	if haut_hors > ROOT_STEP_MAX_M:
 		faults.append("C2d contrefort non enjambable : %.3f m hors collider, plafond %.2f m"
 			% [haut_hors, ROOT_STEP_MAX_M])
+
+	# --- C2e : AUCUNE GRANDE PLAQUE RADIALE (directive, point 6).
+	var x0: float = 1.0e9
+	var x1: float = -1.0e9
+	var z0: float = 1.0e9
+	var z1: float = -1.0e9
+	var y0: float = 1.0e9
+	var y1: float = -1.0e9
+	for v3: Vector3 in verts:
+		x0 = minf(x0, v3.x)
+		x1 = maxf(x1, v3.x)
+		z0 = minf(z0, v3.z)
+		z1 = maxf(z1, v3.z)
+		y0 = minf(y0, v3.y)
+		y1 = maxf(y1, v3.y)
+	var span: float = maxf(x1 - x0, z1 - z0)
+	var aspect: float = span / maxf(0.05, y1 - y0)
+	var aire_basse: float = 0.0
+	for t2: int in range(0, idx.size() - 2, 3):
+		var a2: Vector3 = verts[idx[t2]]
+		var b2: Vector3 = verts[idx[t2 + 1]]
+		var c2: Vector3 = verts[idx[t2 + 2]]
+		if (a2.y + b2.y + c2.y) / 3.0 >= 0.30:
+			continue
+		aire_basse += (b2 - a2).cross(c2 - a2).length() * 0.5
+	print("[r2b2-arbre] C2e emprise des racines %.2f x %.2f m -> aspect %.2f : 1 ; %.1f %% de surface sous 0,30 m"
+		% [span, y1 - y0, aspect, 100.0 * aire_basse / maxf(1.0e-6, aire_tot)])
+	if span > ROOT_SPAN_MAX_M:
+		faults.append("C2e jupe trop étalée : %.2f m de large, plafond %.2f m"
+			% [span, ROOT_SPAN_MAX_M])
+	if aspect > ROOT_ASPECT_MAX:
+		faults.append("C2e grande plaque radiale : %.2f : 1, plafond %.2f : 1"
+			% [aspect, ROOT_ASPECT_MAX])
 	check(faults.is_empty(), "C2 les racines ont du volume (%d écart(s)) — %s"
 		% [faults.size(), _capped(faults)])
 
