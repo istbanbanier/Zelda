@@ -274,10 +274,7 @@ func _contract_faults(place: Node3D) -> Array[String]:
 		if _inside(basin, instance) or not instance.is_visible_in_tree() \
 				or instance.mesh == null:
 			continue
-		var local: AABB = _to_local_aabb(to_basin, instance.global_transform,
-			instance.mesh.get_aabb())
-		if local.position.y <= 1.1 and local.end.y >= -0.3 \
-				and _box_enters_swim_ellipse(local):
+		if _mesh_enters_swim_water(to_basin, instance):
 			faults.append("%s : habillage DANS l'eau garantie de la nappe"
 				% instance.name)
 		var world_box: AABB = instance.global_transform * instance.mesh.get_aabb()
@@ -349,14 +346,34 @@ func _to_local_aabb(to_basin: Transform3D, from_global: Transform3D,
 	return (to_basin * from_global) * box
 
 
-## Le point de la boîte (locale au bassin) le plus proche du centre de la
-## nappe entre-t-il dans l'ellipse d'eau garantie ?
-func _box_enters_swim_ellipse(local: AABB) -> bool:
-	var nearest_x: float = clampf(0.0, local.position.x, local.end.x)
-	var nearest_z: float = clampf(0.0, local.position.z, local.end.z)
-	var nx: float = nearest_x / SWIM_ELLIPSE_HALF_X
-	var nz: float = nearest_z / SWIM_ELLIPSE_HALF_Z
-	return nx * nx + nz * nz < 1.0
+## La boîte ORIENTÉE du maillage entre-t-elle dans l'eau garantie ?
+##
+## MESURE CALIBRÉE, deuxième leçon du même rouge : transformer l'AABB
+## (`Transform3D * AABB`) rend la boîte ENGLOBANTE de la boîte tournée —
+## une dalle de couronnement en biais gagnait ainsi des coins fantômes qui
+## trempaient dans l'eau alors que la dalle physique restait sèche. On
+## échantillonne donc le treillis 3×3×3 de la boîte RÉELLE transformée
+## point par point : assez fin pour attraper toute pièce de kit (< 2,1 m)
+## qui atteindrait une ellipse de 3 à 3,6 m de large, sans jamais accuser
+## un coin qui n'existe pas.
+func _mesh_enters_swim_water(to_basin: Transform3D,
+		instance: MeshInstance3D) -> bool:
+	var box: AABB = instance.mesh.get_aabb()
+	var into: Transform3D = to_basin * instance.global_transform
+	for i: int in range(3):
+		for j: int in range(3):
+			for k: int in range(3):
+				var point: Vector3 = into * (box.position + Vector3(
+					box.size.x * 0.5 * float(i),
+					box.size.y * 0.5 * float(j),
+					box.size.z * 0.5 * float(k)))
+				if point.y < -0.3 or point.y > 1.1:
+					continue
+				var nx: float = point.x / SWIM_ELLIPSE_HALF_X
+				var nz: float = point.z / SWIM_ELLIPSE_HALF_Z
+				if nx * nx + nz * nz < 1.0:
+					return true
+	return false
 
 
 ## Distance horizontale (XZ) d'un point à une AABB monde.
