@@ -1,0 +1,57 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "d2c235dd3afab633bb3778dec6010a04148e0bce",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 55.0,
+      "from": [
+        107.0,
+        13.0,
+        133.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b1/apres2/braise_composition.png",
+      "look": [
+        96.0,
+        7.0,
+        120.0
+      ],
+      "name": "braise_composition"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        102.0,
+        8.4,
+        127.5
+      ],
+      "image": "evidence/world_v2/v2_3_r2b1/apres2/braise_proche.png",
+      "look": [
+        95.5,
+        6.6,
+        119.5
+      ],
+      "name": "braise_proche"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        104.0,
+        9.0,
+        112.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b1/apres2/braise_guet.png",
+      "look": [
+        95.0,
+        8.0,
+        120.0
+      ],
+      "name": "braise_guet"
+    }
+  ],
+  "size": "1280x720"
+}

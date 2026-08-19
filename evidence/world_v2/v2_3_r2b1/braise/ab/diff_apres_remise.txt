@@ -1,0 +1,11 @@
+1) ZONE DU POTEAU 280° au plan braise_guet, boîte x1080-1160 y440-584
+   AVANT (poteau présent) vs APRÈS-9-coupes (poteau absent) :  3529 px  0.383 % du cadre
+   AVANT (poteau présent) vs APRÈS-remise                   :    29 px  0.003 % du cadre
+
+2) LES DEUX AUTRES PLANS ONT-ILS BOUGÉ ? (APRÈS-9-coupes vs APRÈS-remise)
+   braise_composition     2503 px changés  0.272 % du cadre
+   braise_proche          1503 px changés  0.163 % du cadre
+   braise_guet            9284 px changés  1.007 % du cadre
+
+3) TÉMOIN de scintillement (colline lointaine SANS géométrie du camp, plan guet)
+   2222 px sur 46784 (4.75 % de la zone) — même ordre que le bruit déjà mesuré
