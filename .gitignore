@@ -9,6 +9,12 @@
 # C'est de l'etat de machine : jamais versionne, jamais dans l'archive jouable
 # (tools/make_playable_zip.sh copie une liste explicite qui ne le contient pas).
 .godot_user/
+
+# Vidage `--verbose` de la suite complete : ~60 Mo de trace moteur, produit
+# pour ENUMERER un residu de fin de processus (ISS-059). Ce qui vaut d'etre
+# versionne est sa DECOMPOSITION — quelques dizaines de lignes — pas le vidage.
+# Un depot n'est pas un endroit ou stocker ce que personne ne relira.
+evidence/**/suite_complete_verbose.log
 /android/
 *.translation
 
