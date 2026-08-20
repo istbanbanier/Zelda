@@ -129,27 +129,40 @@ func _run() -> void:
 	#
 	# Ces images sont des IMAGES DE MESURE, jamais des preuves : une capture de
 	# preuve garde le vent du jeu.
-	var geles: int = 0
+	var geles: Dictionary = {}
 	if _paires:
 		for node: Node in monde.find_children("*", "GeometryInstance3D", true, false):
 			var gi: GeometryInstance3D = node as GeometryInstance3D
-			for k: int in range(maxi(1, gi.get_surface_override_material_count())):
-				var mat: Material = gi.get_surface_override_material(k)
-				if mat == null and gi is MeshInstance3D:
-					var mi: MeshInstance3D = gi as MeshInstance3D
-					if mi.mesh != null and k < mi.mesh.get_surface_count():
+			# `get_surface_override_material*` N'EXISTE QUE SUR MeshInstance3D.
+			#
+			# MESURÉ le 2026-08-20 : appelé sur la base `GeometryInstance3D`, il
+			# levait « Nonexistent function 'get_surface_override_material_count'
+			# in base 'MultiMeshInstance3D' » dès la première cellule d'herbe —
+			# l'herbe de WorldV2 EST un MultiMeshInstance3D. Or une erreur
+			# GDScript n'arrête pas le SceneTree : `_run()` mourait, `quit()`
+			# n'était jamais atteint, le processus tournait jusqu'au kill externe
+			# et AUCUN png n'était écrit, APRÈS avoir imprimé une ligne
+			# « TÉMOIN » parfaitement rassurante. Vérifié par ClassDB :
+			# la méthode est propre à MeshInstance3D, absente de
+			# GeometryInstance3D comme de MultiMeshInstance3D.
+			var mi: MeshInstance3D = gi as MeshInstance3D
+			if mi != null:
+				for k: int in range(mi.get_surface_override_material_count()):
+					var mat: Material = mi.get_surface_override_material(k)
+					if mat == null and mi.mesh != null and k < mi.mesh.get_surface_count():
 						mat = mi.mesh.surface_get_material(k)
-				var sm: ShaderMaterial = mat as ShaderMaterial
-				if sm != null and sm.get_shader_parameter(&"sway_amplitude") != null:
-					sm.set_shader_parameter(&"sway_amplitude", 0.0)
-					geles += 1
-			var mm: Material = gi.material_override
-			var smo: ShaderMaterial = mm as ShaderMaterial
-			if smo != null and smo.get_shader_parameter(&"sway_amplitude") != null:
-				smo.set_shader_parameter(&"sway_amplitude", 0.0)
-				geles += 1
-		print("[ablation] vent gelé sur %d matériau(x)" % geles)
-		if geles == 0:
+					_geler_vent(mat, geles)
+			# L'herbe et les roseaux sont des MultiMeshInstance3D : leur matériau
+			# vit sur `material_override` (world_v2_vegetation_builder.gd) ou sur
+			# les surfaces du maillage porté par le MultiMesh.
+			var mmi: MultiMeshInstance3D = gi as MultiMeshInstance3D
+			if mmi != null and mmi.multimesh != null and mmi.multimesh.mesh != null:
+				var maille: Mesh = mmi.multimesh.mesh
+				for k: int in range(maille.get_surface_count()):
+					_geler_vent(maille.surface_get_material(k), geles)
+			_geler_vent(gi.material_override, geles)
+		print("[ablation] vent gelé sur %d matériau(x) distinct(s)" % geles.size())
+		if geles.is_empty():
 			printerr("BLOQUÉ : aucun `sway_amplitude` trouvé — le vent n'est pas "
 				+ "gelé, et la mesure serait du bruit qui ressemble à un résultat")
 			quit(2)
@@ -185,8 +198,7 @@ func _run() -> void:
 			await process_frame
 			var sans: Image = root.get_texture().get_image()
 			if avec == null or sans == null:
-				printerr("ÉCHEC : rendu nul sur %s — lancer sous xvfb-run, "
-					+ "SANS --headless" % nom)
+				printerr("ÉCHEC : rendu nul sur %s — lancer sous xvfb-run, SANS --headless" % nom)
 				quit(2)
 				return
 			avec.save_png("%s/%s_avec.png" % [_out, nom])
@@ -194,8 +206,7 @@ func _run() -> void:
 			continue
 		var img: Image = root.get_texture().get_image()
 		if img == null:
-			printerr("ÉCHEC : rendu nul sur %s — lancer sous xvfb-run, "
-				+ "SANS --headless" % nom)
+			printerr("ÉCHEC : rendu nul sur %s — lancer sous xvfb-run, SANS --headless" % nom)
 			quit(2)
 			return
 		img.save_png("%s/%s.png" % [_out, nom])
@@ -208,3 +219,26 @@ func _cacher_interface(node: Node) -> void:
 		(node as CanvasLayer).visible = false
 	for enfant: Node in node.get_children():
 		_cacher_interface(enfant)
+
+
+## Met `sway_amplitude` à zéro sur un matériau de feuillage, UNE SEULE FOIS.
+##
+## Deux pièges tenus ici :
+## 1. les matériaux d'herbe sont MUTUALISÉS (cache statique du builder) ; sans
+##    déduplication, le compte annoncé serait celui des cellules, pas des
+##    matériaux, et surestimerait le gel d'un ordre de grandeur ;
+## 2. on interroge le CODE du shader, pas `get_shader_parameter()` : ce dernier
+##    rend `null` quand le matériau se contente de la valeur par défaut du
+##    shader (`uniform float sway_amplitude = 0.07;`), et un feuillage laissé à
+##    sa valeur par défaut aurait continué à balancer pendant qu'on annonce
+##    « vent gelé ».
+func _geler_vent(mat: Material, vus: Dictionary) -> void:
+	var sm: ShaderMaterial = mat as ShaderMaterial
+	if sm == null or sm.shader == null:
+		return
+	if not sm.shader.code.contains("sway_amplitude"):
+		return
+	if vus.has(sm.get_instance_id()):
+		return
+	sm.set_shader_parameter(&"sway_amplitude", 0.0)
+	vus[sm.get_instance_id()] = true
