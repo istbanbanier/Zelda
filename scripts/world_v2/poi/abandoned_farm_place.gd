@@ -606,3 +606,20 @@ func _jambs(parent: Node3D, at: Vector3, yaw: float) -> void:
 
 func _seated(local_x: float, local_z: float) -> Vector3:
 	return Vector3(local_x, ground_local_y(local_x, local_z), local_z)
+
+## ISS-059 — fin de vie du cache statique. Inscrite au démarrage du
+## script par `_static_init()`, appelée UNE fois à l'extinction du moteur
+## par `SceneFlow._exit_tree()`. Sans elle, ces entrées vivent jusqu'à la
+## mort du processus et sortent au rapport de fuite : mesure et ablation à
+## variable unique, `evidence/…/v2_3_r2b3_1/iss059/CHAINE_CAUSALE.md`.
+##
+## Le sens de la dépendance est imposé : le porteur connaît le noyau, le
+## noyau ne connaît aucun porteur (test_aucune_reference_croisee_interdite).
+static func _static_init() -> void:
+	StaticResourceCaches.enregistrer("AbandonedFarmPlace", liberer_caches)
+
+
+static func liberer_caches() -> int:
+	var n: int = _cache_materiaux.size()
+	_cache_materiaux.clear()
+	return n

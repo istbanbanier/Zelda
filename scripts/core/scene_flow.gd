@@ -32,6 +32,25 @@ func _ready() -> void:
 	_build_fade_layer()
 
 
+## ISS-059 — EXTINCTION DU MOTEUR : on relâche les caches statiques.
+##
+## Un autoload quitte l'arbre quand la `SceneTree` est détruite, c'est-à-dire à
+## l'extinction du processus et AVANT que le moteur ne compte ses fuites. C'est
+## le seul point du projet où l'on sait que plus personne n'utilisera les caches
+## de ressources — et ils n'avaient jusqu'ici aucun propriétaire pour le dire.
+##
+## Ce n'est pas un nettoyage de confort : sans lui, une seule montée de
+## `WorldV2.tscn` laisse `281 DummyMaterial` et `214 DummyMesh` au rapport de
+## sortie, alors que le nœud est bien libéré. Mesure et ablation à variable
+## unique : `evidence/…/v2_3_r2b3_1/iss059/CHAINE_CAUSALE.md`.
+##
+## `SceneFlow` porte l'appel parce qu'il est l'autoload qui décide de ce qui est
+## chargé et quand — c'est le propriétaire naturel de la fin de vie de ce qui
+## a été chargé pour le monde.
+func _exit_tree() -> void:
+	StaticResourceCaches.liberer_tout()
+
+
 func is_busy() -> bool:
 	return _busy
 

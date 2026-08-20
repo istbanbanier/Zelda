@@ -851,3 +851,20 @@ func _find_mesh(node: Node) -> Mesh:
 		if found != null:
 			return found
 	return null
+
+## ISS-059 — fin de vie du cache statique. Inscrite au démarrage du
+## script par `_static_init()`, appelée UNE fois à l'extinction du moteur
+## par `SceneFlow._exit_tree()`. Sans elle, ces entrées vivent jusqu'à la
+## mort du processus et sortent au rapport de fuite : mesure et ablation à
+## variable unique, `evidence/…/v2_3_r2b3_1/iss059/CHAINE_CAUSALE.md`.
+##
+## Le sens de la dépendance est imposé : le porteur connaît le noyau, le
+## noyau ne connaît aucun porteur (test_aucune_reference_croisee_interdite).
+static func _static_init() -> void:
+	StaticResourceCaches.enregistrer("WorldV2VegetationBuilder", liberer_caches)
+
+
+static func liberer_caches() -> int:
+	var n: int = _grass_materials.size()
+	_grass_materials.clear()
+	return n
