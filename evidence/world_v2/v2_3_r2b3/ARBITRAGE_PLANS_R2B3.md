@@ -152,3 +152,98 @@ puisse être prise plus tard pour une preuve.
 Nouvelle règle tirée de l'incident : **une caméra n'est acquise qu'après avoir
 été regardée à taille réelle.** Une capture qui sort à 11/11 avec un manifeste
 propre ne prouve que le fonctionnement de l'outil.
+
+## Décision 9 — le conteneur a été recréé DEUX FOIS ; le distant est la seule mémoire
+
+Au pré-vol de la reprise, `HEAD` local pointait de nouveau sur `c44f430b`, et
+`/tmp` était vide. Le premier retour en arrière avait déjà coûté un
+fast-forward de 64 commits ; le second a **tué une mesure en cours** sans
+laisser ni jeton, ni journal, ni verrou.
+
+Deux règles en découlent, et elles ne sont pas cosmétiques :
+
+1. **Pousser tôt et souvent.** Un commit local n'est pas une sauvegarde dans ce
+   conteneur. Tout ce qui n'était pas poussé au moment de la recréation aurait
+   été perdu — les worktrees des trois agents l'ont d'ailleurs été.
+2. **Toute mesure longue doit écrire son jeton et sa sortie dans l'arbre suivi,
+   pas dans `/tmp`.** `/tmp` disparaît avec le conteneur, et son absence ne
+   ressemble pas à un échec : elle ressemble à « la mesure n'a jamais eu lieu ».
+
+L'interruption a été **démontrée avant d'être supposée** : jeton absent, journal
+absent, répertoire de sortie absent, verrou libre, zéro processus Godot, uptime
+de 435 secondes. C'est la leçon de RC 143 appliquée en amont — ne jamais
+conclure « expiré » ou « tourne encore » sans preuve indépendante.
+
+## Décision 10 — `XDG_DATA_HOME` isole `user://`, et c'est le correctif d'ISS-063
+
+Mesuré, pas supposé :
+
+```
+sans isolation : user:// = /root/.local/share/godot/app_userdata/Eclats d'Orage/
+XDG_DATA_HOME  : user:// = /tmp/ud_test/godot/app_userdata/Eclats d'Orage/
+```
+
+Tous les arbres de travail écrivaient donc dans **le même** répertoire de
+sauvegarde. C'est ce partage — et non une négligence d'agent — qui a fabriqué
+`slot0 est identique à l'octet près`, un échec qu'aucun chemin de code ne peut
+produire.
+
+Conséquence adoptée : toute invocation de Godot passe désormais par une
+enveloppe qui crée un `XDG_DATA_HOME` unique, le nettoie par `trap`, prend le
+verrou du dépôt via `git rev-parse --git-common-dir`, teste le RC du `flock`, et
+**refuse `--filtre=`**, la faute qui a lancé une suite entière en silence.
+
+## Décision 11 — le portail de forme reçoit un SECOND contrôle, indépendant du premier
+
+`hexa` et `pave6` raisonnent par composante connexe, donc se contournent en
+changeant ce qui compte comme une composante : dix-huit pavés soudés par un coin
+rendent 0,00 %. Plutôt que de durcir un prédicat déjà cassé cinq fois, on en
+ajoute un **d'une autre nature** : la **rectangularité**, mesurée sur les plaques
+planes et les angles dièdres, qui est **invariante à la soudure**.
+
+Deux instruments de familles différentes valent mieux qu'un instrument durci :
+le second n'hérite pas de la faille du premier.
+
+Le seuil est écrit **avant** de mesurer le sujet, et calibré sur des témoins
+acceptés du dépôt — pas sur le sujet.
+
+## Décision 12 — la corrective des débris n'est PAS élargie à l'anneau de gravats
+
+Les montages A/B montrent qu'à distance d'orbite la différence est à peine
+perceptible, parce que l'anneau bas — `Rubble_Wall`, `WallStub_East`, socle —
+domine le cadre et n'est pas dans le périmètre.
+
+La tentation serait de l'élargir. **Refusé** : la directive borne la corrective
+à `Debris_A/B`, et une passe qui déborde son périmètre pendant que le verdict
+artistique n'est pas rendu est exactement ce que R2B.2 a appris à ne pas faire.
+Le constat est **porté à la revue** comme une question, pas traité en silence.
+
+## Décision 13 — l'audit a trouvé un trou que l'agent avait mesuré sans le dire
+
+`limite_bruitage.txt` contenait la ligne qui démolit la conclusion de son propre
+auteur : à 20 mm de bruit, indice 2,77 % **et** boîtitude 0,00 %, les deux
+portails aveugles sur la même page. Ce fichier n'avait ni en-tête, ni commande,
+ni script producteur, et n'était cité nulle part dans le rapport.
+
+**La mesure existait ; elle n'a pas été portée.** C'est le mode d'échec le plus
+coûteux du projet, et il ne se corrige pas par plus de mesures : il se corrige
+par l'obligation de publier **ce qui contredit**, au même endroit que ce qui
+confirme.
+
+Retenu comme règle : tout fichier de preuve porte son en-tête, sa commande et
+son script producteur — sinon il n'est pas une preuve, c'est une note.
+
+## Décision 14 — un second plafond plutôt qu'un durcissement du `min`
+
+Le contournement à 2 mm exploite exactement ce que le `min` était censé
+protéger. Deux corrections possibles : durcir `RECT_COPLAN_DIST` pour que la
+planéité tolère 2 mm — ce qui aurait rendu l'instrument sourd à de vraies
+irrégularités — ou **ajouter un plafond indépendant sur `ortho`**.
+
+Retenu le second, pour une raison qui se dit en une phrase : **un `min` protège
+contre le cas où une seule grandeur suffirait à ABSOUDRE ; il ne protège pas
+contre le cas où une seule grandeur suffit à ACCUSER.**
+
+Le seuil n'a pas été inventé : il est dérivé par la **règle déjà écrite** avant
+la passe, appliquée à `ortho` sur la famille nature/débris. M = 4,80 → 52.
+Aucun seuil existant n'a bougé.

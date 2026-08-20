@@ -1,0 +1,9 @@
+
+=== 0. Version du moteur ===
+  4.7.1.stable.custom_build.a13da4feb
+  [OK]   Godot 4.7.1-stable confirmé
+
+=== 1. Import des ressources (parse/import smoke) ===
+  [OK]   import sans parse error (code retour 0)
+
+=== 1b. Parse de TOUS les scripts GDScript ===
