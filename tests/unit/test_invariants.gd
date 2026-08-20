@@ -250,6 +250,11 @@ func test_tout_lancement_godot_prend_verrou_et_cloison() -> void:
 	_fichiers_du_depot("res://tools", fichiers, EXTENSIONS_EXECUTABLES)
 	_fichiers_du_depot("res://.github", fichiers, EXTENSIONS_EXECUTABLES)
 	_fichiers_du_depot("res://scripts", fichiers, EXTENSIONS_EXECUTABLES)
+	# Les crochets git n'ont PAS d'extension : `pre-push` aurait echappe au
+	# filtre, alors qu'il lance un moteur par `.gd` modifie a chaque `git push`
+	# — c'est-a-dire le site le plus frequemment declenche du depot. Trou
+	# trouve dans mon propre garde-fou, pas signale par un autre.
+	_fichiers_du_depot("res://.githooks", fichiers, [""])
 	# GARDE-FOU contre l'assertion sautée : si le balayage rend zéro fichier, ce
 	# test passerait en ne regardant rien. Le compte réel au 2026-08-20 est de
 	# plusieurs dizaines ; on exige seulement qu'il ne soit pas vide.
@@ -271,9 +276,23 @@ func test_tout_lancement_godot_prend_verrou_et_cloison() -> void:
 		# verrou CANONIQUE est nommé ; que `flock` réussisse est l'affaire de
 		# l'exécution, pas d'un balayage de fichiers. La limite est réelle et
 		# elle est écrite ici plutôt que découverte plus tard.
-		var conforme: bool = texte.contains("godot_env.sh") \
-			or texte.contains("lancer_godot.sh") \
-			or texte.contains("heavy_tools.lock")
+		#
+		# LE JETON DOIT ÊTRE SUR UNE LIGNE EXÉCUTABLE. Trouvé en sabotant ce
+		# test le 2026-08-20 : en retirant la PRISE du verrou de
+		# `.githooks/pre-push` mais en laissant sa ligne `# shellcheck
+		# source=…/godot_env.sh`, le fichier restait « conforme » — un
+		# commentaire suffisait. Un test qui se contente d'une mention valide
+		# exactement ce qu'il est censé interdire.
+		var conforme: bool = false
+		for ligne_c: String in texte.split("\n"):
+			var nette_c: String = ligne_c.strip_edges()
+			if nette_c.begins_with("#"):
+				continue
+			if nette_c.contains("godot_env.sh") \
+					or nette_c.contains("lancer_godot.sh") \
+					or nette_c.contains("heavy_tools.lock"):
+				conforme = true
+				break
 		if not conforme:
 			fautifs.append(relatif)
 	check(fautifs.is_empty(),
