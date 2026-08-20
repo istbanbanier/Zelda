@@ -115,6 +115,48 @@ func _run() -> void:
 	cam.far = 1600.0
 	monde.add_child(cam)
 	DirAccess.make_dir_recursive_absolute(_out)
+	# GELER LE VENT AVANT DE MESURER — quatrième tentative, et la seule qui vaut.
+	#
+	# Pairer les deux états à une trame d'écart ne suffisait PAS : mesuré le
+	# 2026-08-20, `ferme_seuil` rendait encore 0,84 % de pixels changés avec une
+	# boîte plein cadre, alors que les débris n'y sont pas. Une seule trame de
+	# balancement déplace assez de brins fins et contrastés pour noyer le signal.
+	#
+	# On ne contourne donc plus le confondant : on l'éteint. `sway_amplitude` est
+	# le paramètre du shader d'herbe (`world_v2_vegetation_builder.gd`). Mis à
+	# zéro, la végétation est immobile et la seule variable restante est la
+	# visibilité de l'objet.
+	#
+	# Ces images sont des IMAGES DE MESURE, jamais des preuves : une capture de
+	# preuve garde le vent du jeu.
+	var geles: int = 0
+	if _paires:
+		for node: Node in monde.find_children("*", "GeometryInstance3D", true, false):
+			var gi: GeometryInstance3D = node as GeometryInstance3D
+			for k: int in range(maxi(1, gi.get_surface_override_material_count())):
+				var mat: Material = gi.get_surface_override_material(k)
+				if mat == null and gi is MeshInstance3D:
+					var mi: MeshInstance3D = gi as MeshInstance3D
+					if mi.mesh != null and k < mi.mesh.get_surface_count():
+						mat = mi.mesh.surface_get_material(k)
+				var sm: ShaderMaterial = mat as ShaderMaterial
+				if sm != null and sm.get_shader_parameter(&"sway_amplitude") != null:
+					sm.set_shader_parameter(&"sway_amplitude", 0.0)
+					geles += 1
+			var mm: Material = gi.material_override
+			var smo: ShaderMaterial = mm as ShaderMaterial
+			if smo != null and smo.get_shader_parameter(&"sway_amplitude") != null:
+				smo.set_shader_parameter(&"sway_amplitude", 0.0)
+				geles += 1
+		print("[ablation] vent gelé sur %d matériau(x)" % geles)
+		if geles == 0:
+			printerr("BLOQUÉ : aucun `sway_amplitude` trouvé — le vent n'est pas "
+				+ "gelé, et la mesure serait du bruit qui ressemble à un résultat")
+			quit(2)
+			return
+		for i: int in range(12):
+			await process_frame
+
 	var cibles: Array[MeshInstance3D] = []
 	for node: Node in monde.find_children("*", "MeshInstance3D", true, false):
 		var chemin: String = String(monde.get_path_to(node))
