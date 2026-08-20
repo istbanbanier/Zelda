@@ -1,0 +1,193 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "5de2750df8ca4a28553329b250c43ee3dc498bf6",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {
+    "gen_ferme": {
+      "chemin": "res://source_assets/blender/architecture/make_farm_ruins.py",
+      "commit": "inconnu",
+      "sha256": "85d11abf7a6b60c1bc6c480ad8877d725f066a863b1bb94ed019925c2868d4ca"
+    },
+    "glb_ferme": {
+      "chemin": "res://assets/architecture/farm/SM_Farm_Ruins.glb",
+      "commit": "inconnu",
+      "sha256": "ead79105e3deaf70629c1bd928e68d355261217dbd2d5150384b4a7590cf9060"
+    },
+    "lieu_ferme": {
+      "chemin": "res://scripts/world_v2/poi/abandoned_farm_place.gd",
+      "commit": "inconnu",
+      "sha256": "297048d5105d4afe221fd173df67143474c532bcefca7395fd312c6645ebce30"
+    }
+  },
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 66.0,
+      "from": [
+        -52.4,
+        6.2,
+        96.2
+      ],
+      "image": "evidence/world_v2/v2_3_r2b3/preuves_lead/apres_r2b3/ferme_seuil.png",
+      "look": [
+        -54.6,
+        5.4,
+        89.5
+      ],
+      "name": "ferme_seuil"
+    },
+    {
+      "fov": 50.0,
+      "from": [
+        -44.0,
+        6.6,
+        92.5
+      ],
+      "image": "evidence/world_v2/v2_3_r2b3/preuves_lead/apres_r2b3/ferme_laterale.png",
+      "look": [
+        -53.5,
+        5.6,
+        91.0
+      ],
+      "name": "ferme_laterale"
+    },
+    {
+      "fov": 52.0,
+      "from": [
+        -62.0,
+        7.4,
+        86.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b3/preuves_lead/apres_r2b3/ferme_arriere.png",
+      "look": [
+        -53.5,
+        5.6,
+        91.5
+      ],
+      "name": "ferme_arriere"
+    },
+    {
+      "fov": 50.0,
+      "from": [
+        -50.5,
+        6.6,
+        100.0
+      ],
+      "image": "evidence/world_v2/v2_3_r2b3/preuves_lead/apres_r2b3/ferme_facade.png",
+      "look": [
+        -53.5,
+        5.8,
+        91.5
+      ],
+      "name": "ferme_facade"
+    },
+    {
+      "fov": 30.0,
+      "from": [
+        -47.6,
+        10.2,
+        90.2
+      ],
+      "image": "evidence/world_v2/v2_3_r2b3/preuves_lead/apres_r2b3/debris_a_proche.png",
+      "look": [
+        -51.44,
+        5.45,
+        91.75
+      ],
+      "name": "debris_a_proche"
+    },
+    {
+      "fov": 30.0,
+      "from": [
+        -45.8,
+        9.4,
+        90.3
+      ],
+      "image": "evidence/world_v2/v2_3_r2b3/preuves_lead/apres_r2b3/debris_b_proche.png",
+      "look": [
+        -49.59,
+        5.3,
+        91.8
+      ],
+      "name": "debris_b_proche"
+    },
+    {
+      "fov": 34.0,
+      "from": [
+        -47.0,
+        12.5,
+        91.8
+      ],
+      "image": "evidence/world_v2/v2_3_r2b3/preuves_lead/apres_r2b3/debris_plongee.png",
+      "look": [
+        -50.5,
+        5.4,
+        91.78
+      ],
+      "name": "debris_plongee"
+    },
+    {
+      "fov": 52.0,
+      "from": [
+        -54.24,
+        8.6,
+        80.94
+      ],
+      "image": "evidence/world_v2/v2_3_r2b3/preuves_lead/apres_r2b3/ferme_orb000.png",
+      "look": [
+        -54.24,
+        6.9,
+        91.94
+      ],
+      "name": "ferme_orb000"
+    },
+    {
+      "fov": 52.0,
+      "from": [
+        -43.24,
+        8.6,
+        91.94
+      ],
+      "image": "evidence/world_v2/v2_3_r2b3/preuves_lead/apres_r2b3/ferme_orb090.png",
+      "look": [
+        -54.24,
+        6.9,
+        91.94
+      ],
+      "name": "ferme_orb090"
+    },
+    {
+      "fov": 52.0,
+      "from": [
+        -54.24,
+        8.6,
+        102.94
+      ],
+      "image": "evidence/world_v2/v2_3_r2b3/preuves_lead/apres_r2b3/ferme_orb180.png",
+      "look": [
+        -54.24,
+        6.9,
+        91.94
+      ],
+      "name": "ferme_orb180"
+    },
+    {
+      "fov": 52.0,
+      "from": [
+        -65.24,
+        8.6,
+        91.94
+      ],
+      "image": "evidence/world_v2/v2_3_r2b3/preuves_lead/apres_r2b3/ferme_orb270.png",
+      "look": [
+        -54.24,
+        6.9,
+        91.94
+      ],
+      "name": "ferme_orb270"
+    }
+  ],
+  "size": "1280x720"
+}
