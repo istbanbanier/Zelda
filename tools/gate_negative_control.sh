@@ -34,6 +34,16 @@ set -uo pipefail
 cd "$(dirname "$0")/.."
 REPO="$PWD"
 GODOT_BIN="${GODOT_BIN:-/usr/local/bin/godot}"
+
+# ISS-063 — verrou canonique + cloison `user://`.
+# Mesuré le 2026-08-20 : 13 fichiers et 35 sites lancent le moteur dans ce
+# dépôt, et 11 fichiers ne prenaient NI verrou NI cloison. Un correctif qui vit
+# dans `tools/lancer_godot.sh` ne protège que ceux qui appellent le lanceur.
+# Détail et inventaire : evidence/world_v2/v2_3_r2b3_1/iss063/.
+# shellcheck source=lib/godot_env.sh
+. "$PWD/tools/lib/godot_env.sh"
+godot_cloison_arbre || exit 3
+godot_verrou_prendre 8 3000 || exit 3
 FILTER="${FILTER:-boot_smoke}"
 
 WT=""

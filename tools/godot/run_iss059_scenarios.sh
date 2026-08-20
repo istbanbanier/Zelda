@@ -7,6 +7,16 @@
 set -u
 GODOT_BIN="${GODOT_BIN:-/usr/local/bin/godot}"
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+
+# ISS-063 — CE SCRIPT PRENAIT `/tmp/godot.lock`, le TROISIÈME verrou du dépôt.
+# Un verrou que personne d'autre ne prend ne sérialise rien : mesuré le
+# 2026-08-20, il était le seul site du dépôt à l'utiliser
+# (evidence/world_v2/v2_3_r2b3_1/iss063/). Il prend désormais le verrou
+# canonique, comme tout le reste, et une cloison `user://` d'arbre.
+# shellcheck source=../lib/godot_env.sh
+. "$PROJECT_DIR/tools/lib/godot_env.sh"
+godot_cloison_arbre || exit 3
+godot_verrou_prendre 8 3600 || exit 3
 ETIQUETTE="${1:?usage: run_iss059_scenarios.sh <etiquette> [cycles]}"
 CYCLES="${2:-3}"
 OUT="evidence/world_v2/v2_3_r2b3/iss059"
@@ -15,7 +25,7 @@ mkdir -p "$PROJECT_DIR/$OUT/journaux"
 for SC in temoin ferme arbre ferme_arbre monde; do
   echo "### scenario=$SC cycles=$CYCLES etiquette=$ETIQUETTE"
   LOG="$PROJECT_DIR/$OUT/journaux/${ETIQUETTE}_${SC}_c${CYCLES}.log"
-  flock -w 3600 /tmp/godot.lock timeout 3000 "$GODOT_BIN" --headless \
+  timeout 3000 "$GODOT_BIN" --headless \
     --path "$PROJECT_DIR" --script tools/godot/instrumente_materiaux.gd -- \
     "--scenario=$SC" "--cycles=$CYCLES" \
     "--sortie=res://$OUT/${ETIQUETTE}_${SC}_c${CYCLES}.json" > "$LOG" 2>&1

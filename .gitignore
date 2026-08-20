@@ -1,5 +1,14 @@
 # Godot
 .godot/
+
+# ISS-063 — cloison `user://` par arbre de travail (tools/lib/godot_env.sh).
+# `user://` ne derive PAS du repertoire de travail mais de
+# `application/config/name` : sans XDG_DATA_HOME, tous les arbres ecrivent dans
+# le meme ~/.local/share/godot/app_userdata/. Deux runners y ont deja FABRIQUE
+# huit echecs de sauvegarde qui n'existaient pas (2026-08-11, tools/CLAUDE.md).
+# C'est de l'etat de machine : jamais versionne, jamais dans l'archive jouable
+# (tools/make_playable_zip.sh copie une liste explicite qui ne le contient pas).
+.godot_user/
 /android/
 *.translation
 

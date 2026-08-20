@@ -44,6 +44,7 @@ import asyncio
 import json
 import os
 import signal
+import fcntl
 import subprocess
 import time
 from datetime import datetime, timezone
@@ -179,6 +180,61 @@ def _write_max_sensitivity(home: Path) -> None:
         "[input]\n\nmouse_sensitivity=0.005\n", encoding="utf-8")
 
 
+
+_VERROU_FD = None
+
+
+def _verrou_lourd_chemin() -> Path:
+    """Verrou canonique du dépôt — le `.git` PARTAGÉ, pas le répertoire.
+
+    Dans un arbre de travail git, `.git` est un FICHIER : verrouiller
+    `.git/heavy_tools.lock` y échoue. `--git-common-dir` rend le `.git`
+    partagé, qui est bien ce qu'on veut : deux arbres se disputent le même
+    `.godot/imported` et le même processeur.
+    """
+    try:
+        out = subprocess.run(["git", "-C", str(PROJECT), "rev-parse",
+                              "--git-common-dir"], capture_output=True,
+                             text=True, timeout=10).stdout.strip()
+    except Exception:
+        out = ""
+    base = Path(out) if out else PROJECT / ".git"
+    if not base.is_absolute():
+        base = PROJECT / base
+    return base / "heavy_tools.lock"
+
+
+def _prendre_verrou_lourd() -> None:
+    """Prend le verrou lourd, sans attendre indéfiniment.
+
+    Attente bornée : un joueur boîte noire qui se bloque une heure derrière une
+    suite est inutilisable. Si le verrou n'est pas obtenu, on le DIT dans le
+    journal et on démarre quand même — c'est un choix explicite, pas un oubli :
+    la cloison `user://` protège déjà l'état, et seule la contention processeur
+    reste. Le contraire (refuser de démarrer) casserait l'outil sur un défaut
+    qu'il ne cause pas.
+    """
+    global _VERROU_FD
+    if _VERROU_FD is not None:
+        return
+    chemin = _verrou_lourd_chemin()
+    try:
+        fd = os.open(str(chemin), os.O_CREAT | os.O_RDWR, 0o644)
+    except OSError as exc:
+        print(f"[blackbox] verrou inouvrable ({chemin}): {exc}", flush=True)
+        return
+    debut = time.time()
+    while time.time() - debut < 120.0:
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            _VERROU_FD = fd
+            print(f"[blackbox] verrou lourd pris : {chemin}", flush=True)
+            return
+        except OSError:
+            time.sleep(2.0)
+    os.close(fd)
+    print("[blackbox] verrou lourd NON obtenu après 120 s — démarrage quand "
+          "même, sans sérialisation (user:// reste cloisonné).", flush=True)
 def _ensure_game() -> None:
     """Démarre Xvfb puis Godot, une seule fois, en fenêtre 1024x768.
 
@@ -207,6 +263,16 @@ def _ensure_game() -> None:
             "--resolution", f"{WIDTH}x{HEIGHT}", "--position", "0,0"]
     if START_SCENE:
         argv.append(START_SCENE)
+    # ISS-063 — VERROU CANONIQUE, pris ici et pas ailleurs.
+    # `user://` est déjà cloisonné plus haut (XDG_DATA_HOME=home). Ce qui
+    # manquait, c'est le verrou : `.mcp.json` démarre ce serveur au chargement
+    # d'une session, et un appel d'outil suffit à lancer un moteur SANS qu'une
+    # seule ligne de shell soit écrite. Aucun garde-fou de commande ne peut voir
+    # ce lancement — mesuré le 2026-08-20,
+    # evidence/world_v2/v2_3_r2b3_1/iss063/. Le descripteur est gardé dans
+    # `_state` : le verrou tient tant que le moteur tourne, et le noyau le rend
+    # à la mort du processus, crash compris.
+    _prendre_verrou_lourd()
     _state["godot"] = subprocess.Popen(argv, env=env, stdout=log,
                                        stderr=subprocess.STDOUT)
     # Le premier import et la compilation des shaders prennent du temps en

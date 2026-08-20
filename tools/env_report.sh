@@ -7,6 +7,20 @@ set -uo pipefail
 GODOT_BIN="${GODOT_BIN:-/usr/local/bin/godot}"
 OUT="${1:-}"
 
+# ISS-063 — `--headless --quit` DÉMARRE un moteur, donc crée `user://`.
+# Cloison obligatoire ; verrou avec une attente COURTE : un rapport
+# d'environnement ne doit pas se bloquer 50 min derrière une suite. Verrou
+# indisponible -> on le DIT et on continue sans le moteur, plutôt que d'écrire
+# une capacité non vérifiée (ligne directrice : ne jamais annoncer une capacité
+# que ce script n'a pas confirmée).
+# shellcheck source=lib/godot_env.sh
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/tools/lib/godot_env.sh"
+godot_cloison_arbre || exit 3
+if ! godot_verrou_prendre 8 10 >/dev/null 2>&1; then
+  echo "AVERTISSEMENT: verrou moteur occupé — les capacités Godot ne sont PAS vérifiées." >&2
+  GODOT_BIN="/nonexistent-godot-verrou-occupe"
+fi
+
 report() {
   echo "=== RAPPORT D'ENVIRONNEMENT ==="
   echo "date_utc            : $(date -u +%Y-%m-%dT%H:%M:%SZ)"

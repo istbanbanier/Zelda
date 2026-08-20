@@ -65,6 +65,22 @@ fi
 # 2) Parse des scripts .gd modifiés, si Godot est là. Absent (conteneur sans
 # moteur construit), on le DIT au lieu de laisser croire que le contrôle a tourné.
 GODOT="${GODOT_BIN:-/usr/local/bin/godot}"
+# ISS-063 — ce crochet se déclenche sur un geste quotidien (`git push`) et
+# lance UN moteur par fichier `.gd` modifié, sans verrou ni cloison. Il pouvait
+# donc démarrer en plein `validate_fast` et écrire dans le même `user://`.
+# Il prend le verrou canonique, mais SANS attendre : bloquer un push pendant
+# 50 min serait pire que le défaut. Verrou indisponible -> on saute le parse en
+# le DISANT, plutôt que de le faire dans de mauvaises conditions.
+# shellcheck source=../tools/lib/godot_env.sh
+. "$root/tools/lib/godot_env.sh"
+# Ni la cloison ni le verrou ne doivent BLOQUER un push : ce crochet vérifie,
+# il ne garde pas la porte. En cas d'indisponibilité on saute le parse en le
+# DISANT — un contrôle sauté annoncé vaut mieux qu'un push refusé pour une
+# raison qui n'a rien à voir avec le diff.
+if ! godot_cloison_arbre >/dev/null 2>&1 || ! godot_verrou_prendre 8 5 >/dev/null 2>&1; then
+  echo "  plancher QA : moteur occupé, parse des .gd SAUTÉ (non vérifié)." >&2
+  GODOT="/nonexistent-godot-verrou-occupe"
+fi
 if [ -x "$GODOT" ] || command -v "$GODOT" >/dev/null 2>&1; then
   if [ -n "$range" ]; then
     changed=$(git diff --name-only --diff-filter=ACMR "$range" -- '*.gd' 2>/dev/null || true)

@@ -16,6 +16,21 @@ SRC_DIR="${GODOT_SRC_DIR:-/opt/src/godot}"
 DEST="${GODOT_BIN:-/usr/local/bin/godot}"
 JOBS="${JOBS:-$(nproc)}"
 
+# ISS-063 — CE SCRIPT EST LE PLUS DANGEREUX DU DÉPÔT, ET IL N'AVAIT AUCUN VERROU.
+# Signalé par la contre-épreuve du 2026-08-20 : il compile ~90 min avec
+# `scons -j$(nproc)`, puis REMPLACE le binaire par un lien symbolique — sous les
+# pieds de tout moteur en cours d'exécution. L'exempter parce qu'il « ne touche
+# pas user:// » aurait exempté le plus gros consommateur processeur du conteneur
+# ET le seul écrivain du binaire.
+#
+# Le verrou est pris AVANT le test de version : ce test exécute déjà le binaire,
+# et le binaire peut être en cours de remplacement par une autre invocation.
+# Attente longue, à dessein : mieux vaut attendre une suite que compiler pendant
+# qu'elle tourne.
+# shellcheck source=lib/godot_env.sh
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/godot_env.sh"
+godot_verrou_prendre 8 7200 || exit 3
+
 if [ -x "$DEST" ] && "$DEST" --version 2>&1 | grep -q '^4\.7\.1\.stable'; then
   echo "Godot 4.7.1-stable déjà présent : $DEST"
   "$DEST" --version

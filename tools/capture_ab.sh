@@ -32,6 +32,14 @@ set -euo pipefail
 GODOT_BIN="${GODOT_BIN:-/usr/local/bin/godot}"
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 
+# ISS-063 — verrou canonique + cloison `user://`. Inventaire et mesure :
+# evidence/world_v2/v2_3_r2b3_1/iss063/. Un correctif qui vit dans
+# `tools/lancer_godot.sh` ne protège que ceux qui appellent le lanceur.
+# shellcheck source=lib/godot_env.sh
+. "$REPO_ROOT/tools/lib/godot_env.sh"
+godot_cloison_arbre || exit 3
+godot_verrou_prendre 8 3000 || exit 3
+
 SCENE=""
 LABEL=""
 BASE="HEAD~1"

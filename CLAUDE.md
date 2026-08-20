@@ -76,12 +76,23 @@ python3 tools/gltf_inspect.py <glb>  # validation glTF hors Godot
 
 Binaire Godot : `$GODOT_BIN` (défaut `/usr/local/bin/godot`).
 
+**Ne jamais lancer le moteur nu.** `tools/lancer_godot.sh` prend le verrou
+canonique du dépôt et cloisonne `user://` : sans lui, deux processus écrivent la
+même sauvegarde et FABRIQUENT des échecs qui n'existent pas (huit, le
+2026-08-11). Ces quatre lignes étaient nues ici jusqu'au 2026-08-20, et la
+dérive était donc enseignée, pas subie.
+
 ```bash
-godot --headless --path . --import                 # import des ressources
-godot --headless --path . --check-only --script <f.gd>   # parse d'un script
-godot --headless --path . --script tools/godot/test_runner.gd  # tests
-godot --path .                                     # lancer (nécessite un affichage)
+tools/lancer_godot.sh --path . --import                          # import
+tools/lancer_godot.sh --path . --check-only --script <f.gd>      # parse
+tools/lancer_godot.sh --path . --script tools/godot/test_runner.gd -- --filter=<nom>
+tools/lancer_godot.sh --rendu --path . --script <capture.gd>     # capture (xvfb)
 ```
+
+`--filter=`, jamais `--filtre=` : un drapeau inconnu est ignoré EN SILENCE et la
+suite entière part (~1 h). Le lanceur le refuse. Un script du dépôt qui lance le
+moteur source `tools/lib/godot_env.sh` — `tests/unit/test_invariants.gd` échoue
+sinon.
 
 ## Invariants non négociables
 

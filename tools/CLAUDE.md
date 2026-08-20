@@ -49,9 +49,18 @@ passe à la vue d'après : le journal montre `### ferme_seuil` puis
 Deux vues ont été perdues ainsi, sans un seul message d'erreur.
 
 ```bash
-flock -w 3600 /tmp/godot.lock timeout 900 "$GODOT_BIN" ... ; RC=$?
+# ISS-063, corrigé le 2026-08-20 : `/tmp/godot.lock` était le TROISIÈME verrou
+# du dépôt, et un seul script le prenait. Deux invocations qui prennent chacune
+# un verrou DIFFÉRENT ne se sérialisent pas — elles tournent en parallèle.
+# Le verrou canonique est `<git-common-dir>/heavy_tools.lock`, et le mécanisme
+# unique est `tools/lib/godot_env.sh`.
+. "$PWD/tools/lib/godot_env.sh"
+godot_cloison_arbre    || exit 3   # XDG_DATA_HOME : user:// par arbre de travail
+godot_verrou_prendre 8 3600 || exit 3   # sort en 3 : RIEN n'a tourné
+
+timeout 900 "$GODOT_BIN" ... ; RC=$?
 if [ "$RC" -ne 0 ]; then
-  echo "BLOQUE: <vue> RC=$RC — verrou non obtenu ou rendu échoué, RIEN écrit" >&2
+  echo "BLOQUE: <vue> RC=$RC — rendu échoué, RIEN écrit" >&2
   exit 3          # jamais 0, jamais « on continue »
 fi
 ```

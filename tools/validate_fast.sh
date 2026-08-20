@@ -70,6 +70,29 @@ if ! flock -n 9; then
   echo "        user://saves et fabriquent des échecs de sauvegarde." >&2
   exit 3
 fi
+# ISS-063 — LE SECOND VERROU, ET LA CLOISON.
+#
+# Mesuré le 2026-08-20 (`evidence/world_v2/v2_3_r2b3_1/iss063/`) : ce script
+# était le plus gros consommateur de moteur du dépôt — quatre invocations,
+# ~20 min — et il ne prenait QUE `validate_fast.lock`. `lancer_godot.sh`, lui,
+# ne prend que `heavy_tools.lock`. Deux invocations qui prennent chacune un
+# verrou DIFFÉRENT ne se sérialisent pas : elles tournent en parallèle. Nommer
+# un verrou n'est pas le prendre.
+#
+# Les deux sont désormais pris, imbriqués et dans cet ordre :
+#   9 = validate_fast.lock  (flock -n : deux suites, échec IMMÉDIAT, c'est voulu)
+#   8 = heavy_tools.lock    (flock -w : attendre une sonde ou un export en cours)
+# Aucun cycle possible : `lancer_godot.sh` ne prend jamais que le second.
+#
+# Et la CLOISON, qui n'est pas un verrou : sans `XDG_DATA_HOME`, `user://` dérive
+# de `application/config/name` — identique dans TOUS les arbres de travail. Deux
+# suites y écrivaient la même sauvegarde. Ici on prend la cloison D'ARBRE, pas
+# une éphémère : l'étape 3 relit ce que l'étape 2 a écrit.
+# shellcheck source=lib/godot_env.sh
+. "$PROJECT_DIR/tools/lib/godot_env.sh"
+godot_cloison_arbre || exit 3
+godot_verrou_prendre 8 3000 || exit 3
+
 if pgrep -f "test_runner\.gd" >/dev/null 2>&1; then
   echo "BLOQUÉ: un test runner Godot tourne déjà (pgrep -f test_runner.gd)." >&2
   echo "        Il ne tient pas le verrou (lancé hors validate_fast), mais il" >&2
