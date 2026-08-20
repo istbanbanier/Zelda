@@ -966,3 +966,58 @@ directive V2.3-B et la reconstruction du ZIP ne viennent qu'après le PASS.
 Dettes ouvertes : ISS-059, ISS-060 (geste borné chiffré : `Debris_A/B`,
 248 tris, 2 420 de budget disponible), ISS-061, UV0 de l'arbre, branche morte
 de `_palisade`, marge nulle du camp braise.
+
+## 2026-08-20 — R2B.3 : micro-corrective des débris et fuite ISS-059 (close en PARTIAL)
+
+Base `291a621`, atteinte après **deux recréations de conteneur** — la seconde a
+tué une mesure en cours. Interruption **démontrée** avant d'être supposée :
+jeton absent, journal absent, sortie absente, verrou libre, zéro processus,
+uptime 435 s. Leçon appliquée depuis : **le distant est la seule mémoire**, et
+toute mesure longue écrit son jeton dans l'arbre suivi, pas dans `/tmp`.
+
+**Verdict : `PARTIAL` sur une cause mesurée** — le `+100` d'ISS-059, devenu un
+résidu de 281, n'est toujours pas causalement expliqué.
+
+**La forme est gagnée et mesurée deux fois.** Liant 96,8 → 0,00 % ;
+rectangularité 71,42 → 0,32 %. `0,00 %` est la valeur des tas de gravats
+acceptés du kit. Le geste est structurel : `eclat()` rend `k+k+1` sommets, donc
+jamais huit — le liant ne peut pas remonter par accident.
+
+**Trois portails ont été trompés pendant cette passe, et chacun a été fermé.**
+Un nom de mesh inconnu rendait `RC=0` et « OK » sur un ensemble vide. Dix-huit
+pavés soudés par un coin rendaient 0,00 %. Puis un bruit cohérent de 2 mm —
+invisible, 1,06 % d'une arête — rendait **les dix contrôles verts sur une
+géométrie qui n'est que des boîtes**. Le troisième a été trouvé par l'audit
+adverse dans un fichier que l'agent avait produit **et n'avait pas porté**.
+
+**Trois instruments ont menti, tous les trois de mon côté.** L'autotest de
+boîtitude échouait sur un cube unité (`abs(dot)` rangeait +X avec −X). Mon
+plancher d'arête rejetait la grotte, le pont et l'arbre — trois assets gelés et
+validés — parce que j'avais lu la fin de ma propre sortie. Et mon gel du vent ne
+gelait rien : il appelait une méthode de `MeshInstance3D` sur l'herbe, qui est
+un `MultiMeshInstance3D` ; l'erreur ne tuait pas le `SceneTree`, le processus
+tournait sans fin **après avoir imprimé une ligne rassurante**, et n'écrivait
+aucune image.
+
+**ISS-063 est passé d'un soupçon à un mécanisme.** `user://` ne dérive pas du
+répertoire de travail : tous les arbres en partageaient un seul, et deux runners
+y ont **fabriqué un échec impossible**. En isolation, `world_v2` rend **99/0**
+là où il rendait 96/1. Un verrou sérialise dans le temps ; une cloison sépare
+dans l'espace.
+
+**ISS-059 a changé de nature** : `DummyMaterial` **4 849 → 281**, et le résidu
+restant est **exactement** celui qu'une sonde reproduit en 97 secondes hors de
+la suite. Le problème est passé d'« une heure de suite pour un faisceau » à
+« une minute et demie pour la même fuite, localisée à trois scènes ».
+
+**Prochaine action exacte** : **s'arrêter pour la revue visuelle Codex/Istvan**
+sur `evidence/world_v2/v2_3_r2b3/` — 11 montages A/B à caméras vérifiées
+identiques, `RAPPORT_R2B3.md`, `preuves_lead/LECTURE_VISUELLE_LEAD.md`.
+**Aucune propagation aux 31 POI** (`GO_V2_3_B=FALSE`), aucune release jouable,
+aucun lancement de V2.3-B avant le PASS.
+
+Dettes ouvertes : **ISS-059** (nommer l'objet qui retient les `PackedScene` —
+la sonde de 97 s est prête), **ISS-062** (rien ne dit qu'il n'existe pas un
+troisième contournement), **ISS-063** (un seul verrou et un `user://` par arbre
+restent à poser au fond), ISS-060 (verdict visuel), ISS-061, UV0 de l'arbre,
+branche morte de `_palisade`, marge nulle du camp braise.
