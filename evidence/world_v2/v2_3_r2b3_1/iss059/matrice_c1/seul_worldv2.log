@@ -1,0 +1,168 @@
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_6ow9eksR
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/sonde_iss059_proprietaire.gd -- --scenes=worldv2 --cycles=1 --ablation=aucune --detail=oui
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== SONDE ISS-059 PROPRIETAIRE ===
+scenes=worldv2 cycles=1 ablation=aucune
+MESURE apres_autoloads_avant_tout_cycle | objets=1590 ressources=13 noeuds=23 orphelins=0
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 17582 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+  cycle 1 : worldv2 monte puis demonte
+MESURE fin_cycle_1 | objets=2875 ressources=861 noeuds=23 orphelins=0
+--- etat des conteneurs candidats ---
+CACHE WorldV2PlaceKit._scene_cache    = 89
+CACHE WorldV2PlaceKit._material_cache = 98
+CACHE WorldV2PlaceKit._index          = 212
+CACHE AssetRegistry._model_cache      = 21
+CACHE AssetRegistry._model_index      = 157
+  kit[Cauldron] chemin=res://assets/environment/props/Cauldron.gltf refs=2
+  kit[Bucket_Wooden_1] chemin=res://assets/environment/props/Bucket_Wooden_1.gltf refs=2
+  kit[Floor_WoodDark] chemin=res://assets/environment/dungeon/Floor_WoodDark.gltf refs=2
+  kit[Corner_Exterior_Wood] chemin=res://assets/environment/dungeon/Corner_Exterior_Wood.gltf refs=2
+  kit[Roof_Wooden_2x1_L] chemin=res://assets/environment/village/Roof_Wooden_2x1_L.gltf refs=2
+  kit[Roof_Wooden_2x1_R] chemin=res://assets/environment/village/Roof_Wooden_2x1_R.gltf refs=2
+  kit[Bed_Twin1] chemin=res://assets/environment/props/Bed_Twin1.gltf refs=2
+  kit[Bag] chemin=res://assets/environment/props/Bag.gltf refs=2
+  kit[Rope_1] chemin=res://assets/environment/props/Rope_1.gltf refs=2
+  kit[Prop_Wagon] chemin=res://assets/environment/dungeon/Prop_Wagon.gltf refs=2
+  kit[Stall_Cart_Empty] chemin=res://assets/environment/props/Stall_Cart_Empty.gltf refs=2
+  kit[WeaponStand] chemin=res://assets/environment/props/WeaponStand.gltf refs=2
+  kit[Crate_Wooden] chemin=res://assets/environment/props/Crate_Wooden.gltf refs=2
+  kit[Barrel] chemin=res://assets/environment/props/Barrel.gltf refs=2
+  kit[Barrel_Apples] chemin=res://assets/environment/props/Barrel_Apples.gltf refs=2
+  kit[Table_Large] chemin=res://assets/environment/props/Table_Large.gltf refs=2
+  kit[Stool] chemin=res://assets/environment/props/Stool.gltf refs=2
+  kit[Banner_1] chemin=res://assets/environment/props/Banner_1.gltf refs=2
+  kit[RockPath_Round_Small_1] chemin=res://assets/environment/rocks/RockPath_Round_Small_1.gltf refs=2
+  kit[Floor_WoodLight] chemin=res://assets/environment/village/Floor_WoodLight.gltf refs=2
+  kit[Wall_Plaster_Straight] chemin=res://assets/environment/dungeon/Wall_Plaster_Straight.gltf refs=2
+  kit[Wall_Plaster_Window_Wide_Round] chemin=res://assets/environment/dungeon/Wall_Plaster_Window_Wide_Round.gltf refs=2
+  kit[Wall_Plaster_Door_Round] chemin=res://assets/environment/dungeon/Wall_Plaster_Door_Round.gltf refs=2
+  kit[Roof_RoundTiles_6x8] chemin=res://assets/environment/dungeon/Roof_RoundTiles_6x8.gltf refs=2
+  kit[Roof_Front_Brick6] chemin=res://assets/environment/village/Roof_Front_Brick6.gltf refs=2
+  kit[Overhang_Plaster_Long] chemin=res://assets/environment/village/Overhang_Plaster_Long.gltf refs=2
+  kit[Prop_Chimney] chemin=res://assets/environment/dungeon/Prop_Chimney.gltf refs=2
+  kit[Balcony_Simple_Straight] chemin=res://assets/environment/dungeon/Balcony_Simple_Straight.gltf refs=2
+  kit[Pot_1] chemin=res://assets/environment/props/Pot_1.gltf refs=2
+  kit[Shelf_Simple] chemin=res://assets/environment/props/Shelf_Simple.gltf refs=2
+  kit[Shelf_Arch] chemin=res://assets/environment/props/Shelf_Arch.gltf refs=2
+  kit[Bench] chemin=res://assets/environment/props/Bench.gltf refs=2
+  kit[Chair_1] chemin=res://assets/environment/props/Chair_1.gltf refs=2
+  kit[Mug] chemin=res://assets/environment/props/Mug.gltf refs=2
+  kit[Bottle_1] chemin=res://assets/environment/props/Bottle_1.gltf refs=2
+  kit[CandleStick] chemin=res://assets/environment/props/CandleStick.gltf refs=2
+  kit[Book_Stack_1] chemin=res://assets/environment/props/Book_Stack_1.gltf refs=2
+  kit[Barrel_Holder] chemin=res://assets/environment/props/Barrel_Holder.gltf refs=2
+  kit[FarmCrate_Apple] chemin=res://assets/environment/props/FarmCrate_Apple.gltf refs=2
+  kit[Chest_Wood] chemin=res://assets/environment/props/Chest_Wood.gltf refs=2
+  kit[Stair_Interior_Simple] chemin=res://assets/environment/village/Stair_Interior_Simple.gltf refs=2
+  kit[Lantern_Wall] chemin=res://assets/environment/props/Lantern_Wall.gltf refs=2
+  kit[Floor_Brick] chemin=res://assets/environment/dungeon/Floor_Brick.gltf refs=2
+  kit[Wall_UnevenBrick_Straight] chemin=res://assets/environment/dungeon/Wall_UnevenBrick_Straight.gltf refs=2
+  kit[Wall_UnevenBrick_Window_Wide_Round] chemin=res://assets/environment/dungeon/Wall_UnevenBrick_Window_Wide_Round.gltf refs=2
+  kit[Wall_UnevenBrick_Door_Round] chemin=res://assets/environment/dungeon/Wall_UnevenBrick_Door_Round.gltf refs=2
+  kit[Roof_RoundTiles_4x6] chemin=res://assets/environment/dungeon/Roof_RoundTiles_4x6.gltf refs=2
+  kit[Roof_Front_Brick4] chemin=res://assets/environment/village/Roof_Front_Brick4.gltf refs=2
+  kit[Overhang_UnevenBrick_Long] chemin=res://assets/environment/village/Overhang_UnevenBrick_Long.gltf refs=2
+  kit[Overhang_Roof_UnevenBricks] chemin=res://assets/environment/village/Overhang_Roof_UnevenBricks.gltf refs=2
+  kit[Anvil_Log] chemin=res://assets/environment/props/Anvil_Log.gltf refs=2
+  kit[Anvil] chemin=res://assets/environment/props/Anvil.gltf refs=2
+  kit[Workbench] chemin=res://assets/environment/props/Workbench.gltf refs=2
+  kit[Whetstone] chemin=res://assets/environment/props/Whetstone.gltf refs=2
+  kit[FarmCrate_Carrot] chemin=res://assets/environment/props/FarmCrate_Carrot.gltf refs=2
+  kit[Axe_Bronze] chemin=res://assets/environment/props/Axe_Bronze.gltf refs=2
+  kit[Torch_Metal] chemin=res://assets/environment/props/Torch_Metal.gltf refs=2
+  kit[RockPath_Square_Wide] chemin=res://assets/environment/rocks/RockPath_Square_Wide.gltf refs=2
+  kit[RockPath_Round_Wide] chemin=res://assets/environment/rocks/RockPath_Round_Wide.gltf refs=2
+  kit[Bucket_Metal] chemin=res://assets/environment/props/Bucket_Metal.gltf refs=2
+  kit[Crate_Metal] chemin=res://assets/environment/props/Crate_Metal.gltf refs=2
+  kit[Chain_Coil] chemin=res://assets/environment/props/Chain_Coil.gltf refs=2
+  kit[FarmCrate_Empty] chemin=res://assets/environment/props/FarmCrate_Empty.gltf refs=2
+  kit[Prop_WoodenFence_Single] chemin=res://assets/environment/dungeon/Prop_WoodenFence_Single.gltf refs=2
+  kit[RockPath_Round_Thin] chemin=res://assets/environment/rocks/RockPath_Round_Thin.gltf refs=2
+  kit[Wall_UnevenBrick_Window_Thin_Round] chemin=res://assets/environment/dungeon/Wall_UnevenBrick_Window_Thin_Round.gltf refs=2
+  kit[Corner_Exterior_Brick] chemin=res://assets/environment/dungeon/Corner_Exterior_Brick.gltf refs=2
+  kit[Door_1_Round] chemin=res://assets/environment/dungeon/Door_1_Round.gltf refs=2
+  kit[Prop_Vine1] chemin=res://assets/environment/dungeon/Prop_Vine1.gltf refs=2
+  kit[Prop_Vine2] chemin=res://assets/environment/dungeon/Prop_Vine2.gltf refs=2
+  kit[CommonTree_4] chemin=res://assets/environment/foliage/CommonTree_4.gltf refs=3
+  kit[Bush_Common_Flowers] chemin=res://assets/environment/foliage/Bush_Common_Flowers.gltf refs=2
+  kit[Bush_Common] chemin=res://assets/environment/foliage/Bush_Common.gltf refs=2
+  kit[Mushroom_Common] chemin=res://assets/environment/foliage/Mushroom_Common.gltf refs=2
+  kit[Fern_1] chemin=res://assets/environment/foliage/Fern_1.gltf refs=2
+  kit[Plant_1] chemin=res://assets/environment/foliage/Plant_1.gltf refs=2
+  kit[SM_Dungeon_RubbleLarge] chemin=res://assets/environment/dungeon/SM_Dungeon_RubbleLarge.glb refs=2
+  kit[Banner_2_Cloth] chemin=res://assets/environment/props/Banner_2_Cloth.gltf refs=2
+  kit[SM_Dungeon_RubbleSmall] chemin=res://assets/environment/dungeon/SM_Dungeon_RubbleSmall.glb refs=2
+  kit[Roof_Wooden_2x1] chemin=res://assets/environment/dungeon/Roof_Wooden_2x1.gltf refs=2
+  kit[DeadTree_1] chemin=res://assets/environment/foliage/DeadTree_1.gltf refs=3
+  kit[DeadTree_2] chemin=res://assets/environment/foliage/DeadTree_2.gltf refs=3
+  kit[Prop_ExteriorBorder_Straight1] chemin=res://assets/environment/dungeon/Prop_ExteriorBorder_Straight1.gltf refs=2
+  kit[RockPath_Square_Small_1] chemin=res://assets/environment/rocks/RockPath_Square_Small_1.gltf refs=2
+  kit[SM_Dungeon_PillarStub] chemin=res://assets/environment/dungeon/SM_Dungeon_PillarStub.glb refs=2
+  kit[SM_Dungeon_ArchBlock] chemin=res://assets/environment/dungeon/SM_Dungeon_ArchBlock.glb refs=2
+  kit[Prop_Brick1] chemin=res://assets/environment/dungeon/Prop_Brick1.gltf refs=2
+  kit[DoorFrame_Round_Brick] chemin=res://assets/environment/dungeon/DoorFrame_Round_Brick.gltf refs=2
+  kit[Grass_Common_Tall] chemin=res://assets/environment/foliage/Grass_Common_Tall.gltf refs=2
+  kit : 0 entrees SANS resource_path
+  registry[Rock_Medium_3] chemin=res://assets/environment/rocks/Rock_Medium_3.gltf refs=2
+  registry[Rock_Medium_1] chemin=res://assets/environment/rocks/Rock_Medium_1.gltf refs=2
+  registry[DeadTree_2] chemin=res://assets/environment/foliage/DeadTree_2.gltf refs=3
+  registry[Pebble_Square_1] chemin=res://assets/environment/rocks/Pebble_Square_1.gltf refs=2
+  registry[Pebble_Round_4] chemin=res://assets/environment/rocks/Pebble_Round_4.gltf refs=2
+  registry[Pebble_Round_2] chemin=res://assets/environment/rocks/Pebble_Round_2.gltf refs=2
+  registry[Rock_Medium_2] chemin=res://assets/environment/rocks/Rock_Medium_2.gltf refs=2
+  registry[DeadTree_1] chemin=res://assets/environment/foliage/DeadTree_1.gltf refs=3
+  registry[TwistedTree_3] chemin=res://assets/environment/foliage/TwistedTree_3.gltf refs=2
+  registry[TwistedTree_1] chemin=res://assets/environment/foliage/TwistedTree_1.gltf refs=2
+  registry[TwistedTree_2] chemin=res://assets/environment/foliage/TwistedTree_2.gltf refs=2
+  registry[CommonTree_5] chemin=res://assets/environment/foliage/CommonTree_5.gltf refs=2
+  registry[CommonTree_1] chemin=res://assets/environment/foliage/CommonTree_1.gltf refs=2
+  registry[Pine_4] chemin=res://assets/environment/foliage/Pine_4.gltf refs=2
+  registry[Flower_4_Group] chemin=res://assets/environment/foliage/Flower_4_Group.gltf refs=2
+  registry[CommonTree_2] chemin=res://assets/environment/foliage/CommonTree_2.gltf refs=2
+  registry[CommonTree_4] chemin=res://assets/environment/foliage/CommonTree_4.gltf refs=3
+  registry[Flower_3_Group] chemin=res://assets/environment/foliage/Flower_3_Group.gltf refs=2
+  registry[Pine_3] chemin=res://assets/environment/foliage/Pine_3.gltf refs=2
+  registry[Pine_1] chemin=res://assets/environment/foliage/Pine_1.gltf refs=2
+  registry[CommonTree_3] chemin=res://assets/environment/foliage/CommonTree_3.gltf refs=2
+--- survie apres demontage (WeakRef) ---
+  noeud[worldv2] vivant=non
+  paquet[worldv2] vivant=OUI refs=3 chemin=res://scenes/world_v2/WorldV2.tscn
+=== SONDE TERMINEE ===
+WARNING: 951 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 626 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+ERROR: Pages in use exist at exit in PagedAllocator: N12VariantPools12BucketMediumE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:170)
+ERROR: Pages in use exist at exit in PagedAllocator: N12VariantPools11BucketSmallE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:170)
+ERROR: 281 RID allocations of type 'N13RendererDummy15MaterialStorage13DummyMaterialE' were leaked at exit.
+ERROR: 11 RID allocations of type 'N13RendererDummy15MaterialStorage11DummyShaderE' were leaked at exit.
+ERROR: 214 RID allocations of type 'N13RendererDummy9DummyMeshE' were leaked at exit.
+ERROR: 65 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.
+LANCER_GODOT: RC_GODOT=0

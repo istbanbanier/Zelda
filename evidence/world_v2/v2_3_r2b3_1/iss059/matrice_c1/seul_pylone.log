@@ -1,0 +1,26 @@
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_67gYZdPl
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/sonde_iss059_proprietaire.gd -- --scenes=pylone --cycles=1 --ablation=aucune --detail=oui
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== SONDE ISS-059 PROPRIETAIRE ===
+scenes=pylone cycles=1 ablation=aucune
+MESURE apres_autoloads_avant_tout_cycle | objets=1590 ressources=13 noeuds=23 orphelins=0
+  cycle 1 : pylone monte puis demonte
+MESURE fin_cycle_1 | objets=1630 ressources=35 noeuds=23 orphelins=0
+--- etat des conteneurs candidats ---
+CACHE WorldV2PlaceKit._scene_cache    = 3
+CACHE WorldV2PlaceKit._material_cache = 3
+CACHE WorldV2PlaceKit._index          = 212
+CACHE AssetRegistry._model_cache      = 0
+CACHE AssetRegistry._model_index      = 0
+  kit[RockPath_Square_Wide] chemin=res://assets/environment/rocks/RockPath_Square_Wide.gltf refs=2
+  kit[Pot_1] chemin=res://assets/environment/props/Pot_1.gltf refs=2
+  kit[Rope_1] chemin=res://assets/environment/props/Rope_1.gltf refs=2
+  kit : 0 entrees SANS resource_path
+--- survie apres demontage (WeakRef) ---
+  noeud[pylone] vivant=non
+  paquet[pylone] vivant=OUI refs=3 chemin=res://scenes/world_v2/landmarks/ResonancePylon.tscn
+=== SONDE TERMINEE ===
+LANCER_GODOT: RC_GODOT=0

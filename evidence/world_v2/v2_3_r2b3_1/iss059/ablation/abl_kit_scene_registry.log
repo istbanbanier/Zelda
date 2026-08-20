@@ -1,0 +1,60 @@
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_kkK4sENC
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/sonde_iss059_proprietaire.gd -- --scenes=worldv2 --cycles=1 --ablation=kit_scene+registry_model --detail=non
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== SONDE ISS-059 PROPRIETAIRE ===
+scenes=worldv2 cycles=1 ablation=kit_scene+registry_model
+MESURE apres_autoloads_avant_tout_cycle | objets=1590 ressources=13 noeuds=23 orphelins=0
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 15038 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 9 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+  cycle 1 : worldv2 monte puis demonte
+MESURE fin_cycle_1 | objets=2875 ressources=861 noeuds=23 orphelins=0
+--- etat des conteneurs candidats ---
+CACHE WorldV2PlaceKit._scene_cache    = 89
+CACHE WorldV2PlaceKit._material_cache = 98
+CACHE WorldV2PlaceKit._index          = 212
+CACHE AssetRegistry._model_cache      = 21
+CACHE AssetRegistry._model_index      = 157
+--- survie apres demontage (WeakRef) ---
+  noeud[worldv2] vivant=non
+  paquet[worldv2] vivant=OUI refs=3 chemin=res://scenes/world_v2/WorldV2.tscn
+--- ABLATION DIAGNOSTIQUE : kit_scene+registry_model ---
+  vide WorldV2PlaceKit._scene_cache (89)
+  vide AssetRegistry._model_cache (21)
+MESURE apres_ablation | objets=2207 ressources=315 noeuds=23 orphelins=0
+=== SONDE TERMINEE ===
+WARNING: 312 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 107 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+ERROR: Pages in use exist at exit in PagedAllocator: N12VariantPools12BucketMediumE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:170)
+ERROR: Pages in use exist at exit in PagedAllocator: N12VariantPools11BucketSmallE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:170)
+ERROR: 102 RID allocations of type 'N13RendererDummy15MaterialStorage13DummyMaterialE' were leaked at exit.
+ERROR: 11 RID allocations of type 'N13RendererDummy15MaterialStorage11DummyShaderE' were leaked at exit.
+ERROR: 52 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.
+LANCER_GODOT: RC_GODOT=0
