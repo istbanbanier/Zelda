@@ -501,3 +501,39 @@ réécrit le `.blend` qu'on croyait protégé.
 > **Un garde-fou vaut par son observation, pas par son intention.** Écrire qu'on
 > protège quelque chose et ne pas vérifier que la protection s'est déclenchée est
 > la façon la plus régulière de fabriquer une preuve fausse dans ce dépôt.
+
+## Un conteneur recréé laisse `.godot/imported` décrire un checkout PLUS ANCIEN
+
+Mesuré le 2026-08-20, ouverture de R2B.3. Le conteneur avait été recréé sur
+`c44f430b` — **64 commits en retard** sur la branche poussée. Après
+`git merge --ff-only`, les fichiers `.glb` étaient ceux de R2B.2, mais
+`.godot/imported/` décrivait encore la géométrie d'avant.
+
+`tools/godot/capture_poi_batch.gd` a refusé de capturer, code **3** :
+
+```
+[poi] BLOQUÉ : 2 asset(s) modifié(s) depuis leur import. La capture rendrait
+la GÉOMÉTRIE PRÉCÉDENTE, et l'image serait parfaitement crédible.
+```
+
+C'est le garde-fou qui a fonctionné, pas le piège. **Le piège est ce qui serait
+arrivé sans lui** : un lot de captures montrant l'ancienne ferme, avec un
+manifeste correct, un `repo_dirty: false` correct et un sha256 de GLB correct —
+puisque le GLB, lui, est bien le nouveau. Rien dans la preuve n'aurait signalé
+que l'image ne vient pas du fichier annoncé.
+
+Deux conséquences opérationnelles :
+
+1. **Après tout `git merge`, `checkout`, `cherry-pick` ou recréation de
+   conteneur qui touche un `.glb`, relancer `godot --headless --path . --import`
+   AVANT toute capture ou toute mesure lue depuis le moteur.**
+2. Un outil qui rend une image ou une géométrie doit **comparer le mtime de la
+   source à celui de son import** et bloquer, pas avertir. Un avertissement dans
+   un journal de 400 lignes ne sera pas lu ; un code 3 arrête la passe.
+
+Corollaire pour les mesures **hors moteur** (`gltf_inspect.py`,
+`mesure_boititude.py`) : elles lisent le `.glb` directement et ne sont donc
+**pas** concernées. D'où un écart possible et déroutant — l'outil Python dit
+« 96,8 % » sur la nouvelle géométrie pendant que le moteur dessine l'ancienne.
+Quand un chiffre et une image se contredisent, **soupçonner le cache d'import
+avant de soupçonner la mesure**.
