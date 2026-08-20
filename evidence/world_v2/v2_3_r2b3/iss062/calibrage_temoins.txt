@@ -1,0 +1,93 @@
+########## assets/environment/dungeon/SM_Dungeon_RubbleLarge.glb
+mesh                        prim    tris  plaques      RECT%    ortho% rectiligne%   aire_med
+ rocks-large                   1     150       65      0.62%     0.00%       0.62%   0.051306
+TOTAL                                          65      0.62%     0.00%       0.62%           
+indice_boite = min(RECT, ortho) = 0.00%
+RC=0
+########## assets/environment/dungeon/SM_Dungeon_RubbleSmall.glb
+mesh                        prim    tris  plaques      RECT%    ortho% rectiligne%   aire_med
+ rocks-small                   1     140       60      0.42%     0.00%       0.42%   0.032928
+TOTAL                                          60      0.42%     0.00%       0.42%           
+indice_boite = min(RECT, ortho) = 0.00%
+RC=0
+########## assets/architecture/flora/SM_ThunderstruckTree.glb
+mesh                        prim    tris  plaques      RECT%    ortho% rectiligne%   aire_med
+ SM_ThunderstruckTree_Bark     3    1660     1489      0.41%     0.51%       0.41%   0.035460
+ SM_ThunderstruckTree_Heart     2     664      479     13.23%    28.77%      13.23%   0.013905
+ SM_ThunderstruckTree_Roots     1     756      642      0.19%     0.33%       0.19%   0.008179
+ SM_ThunderstruckTree_BranchA     1     132      110      2.29%     0.72%       2.29%   0.042543
+ SM_ThunderstruckTree_BranchB     1      66       58      0.00%     1.26%       0.00%   0.062871
+ SM_ThunderstruckTree_BranchC     2      80       62      5.87%     1.88%       5.87%   0.032358
+ SM_ThunderstruckTree_BranchD     1     148      118      2.78%     0.57%       2.78%   0.010431
+ SM_ThunderstruckTree_BranchE     1      68       56      1.59%     8.49%       1.59%   0.007374
+TOTAL                                        3014      2.66%     4.80%       2.66%           
+indice_boite = min(RECT, ortho) = 2.66%
+RC=0
+########## assets/architecture/stone_bridge/SM_StoneBridge_Arch.glb
+mesh                        prim    tris  plaques      RECT%    ortho% rectiligne%   aire_med
+ SM_Bridge_ArchRing            1    1484      682     65.45%     2.57%      65.45%   0.021888
+ SM_Bridge_Spandrel_N          1    2348      372     29.72%     7.02%      29.72%   0.017971
+ SM_Bridge_Spandrel_S          1    2348      372     29.72%     7.02%      29.72%   0.017971
+ SM_Bridge_Deck                1     908      184     93.18%     0.40%      93.18%   0.030442
+ SM_Bridge_AbutmentBase_W      1     140       29     28.84%    26.81%      28.84%   0.546928
+ SM_Bridge_AbutmentBase_E      1     140       29     28.84%    26.81%      28.84%   0.546928
+ SM_Bridge_Abutment_W          1     492      120     46.95%    13.46%      46.95%   0.048083
+ SM_Bridge_Abutment_E          1     492      120     46.95%    13.46%      46.95%   0.048083
+ SM_Bridge_Causeway_W          1     124       39     78.62%    11.31%      78.62%   0.068103
+ SM_Bridge_Causeway_E          1      92       37     68.38%     3.45%      68.38%   0.049481
+ SM_Bridge_Apron_W             1      92       10     78.17%    52.71%      78.17%   1.896596
+ SM_Bridge_Apron_E             1      92       10     78.17%    52.71%      78.17%   1.896596
+ SM_Bridge_StringCourse_N      1     492       10     99.49%     0.88%      99.49%   1.063488
+ SM_Bridge_StringCourse_S      1     492       10     99.49%     0.88%      99.49%   1.063488
+ SM_Bridge_Parapet_N           1    1052       97     39.58%     1.91%      39.58%   0.081956
+ SM_Bridge_Parapet_S           1    1260       78     27.64%     1.91%      27.64%   0.082095
+ SM_Bridge_Coping_N            1     876       58     90.50%     0.13%      90.50%   0.119302
+ SM_Bridge_Coping_S            1    1260       70     55.98%     0.13%      55.98%   0.118113
+ SM_Bridge_Impost_WN           1     108       10     96.12%     6.67%      96.12%   0.172933
+ SM_Bridge_Impost_WS           1     108       10     96.12%     6.67%      96.12%   0.172933
+ SM_Bridge_Impost_EN           1     108       10     96.12%     6.67%      96.12%   0.172933
+ SM_Bridge_Impost_ES           1     108       10     96.12%     6.67%      96.12%   0.172933
+ SM_Bridge_Wing_WN             1     108       22      0.00%     1.20%       0.00%   0.140420
+ SM_Bridge_Wing_WS             1     108       22      0.00%     1.20%       0.00%   0.140420
+ SM_Bridge_Wing_EN             1     108       40      0.29%     1.15%       0.29%   0.033894
+ SM_Bridge_Wing_ES             1     108       40      0.29%     1.15%       0.29%   0.033894
+ SM_Bridge_Course_WN_33        1      92       10     97.39%     4.48%      97.39%   0.146925
+ SM_Bridge_Course_WS_33        1      92       10     97.39%     4.48%      97.39%   0.146925
+ SM_Bridge_Course_EN_33        1      92       10     97.39%     4.48%      97.39%   0.146925
+ SM_Bridge_Course_ES_33        1      92       10     97.39%     4.48%      97.39%   0.146925
+ SM_Bridge_Course_WN_44        1      92       10     97.99%     3.46%      97.99%   0.192276
+ SM_Bridge_Course_WS_44        1      92       10     97.99%     3.46%      97.99%   0.192276
+ SM_Bridge_Course_EN_44        1      92       10     97.99%     3.46%      97.99%   0.192276
+ SM_Bridge_Course_ES_44        1      92       10     97.99%     3.46%      97.99%   0.192276
+TOTAL                                        2571     56.91%     6.46%      56.91%           
+indice_boite = min(RECT, ortho) = 6.46%
+RC=0
+########## assets/architecture/village/SM_Village_Wall.glb
+mesh                        prim    tris  plaques      RECT%    ortho% rectiligne%   aire_med
+ SM_VillageWall_Course         1     428      171     43.27%     7.49%      43.27%   0.010796
+ SM_VillageWall_Coping         1      60       26     11.07%     0.00%      11.07%   0.025438
+TOTAL                                         197     28.22%     4.53%      28.22%           
+indice_boite = min(RECT, ortho) = 4.53%
+RC=0
+########## assets/architecture/pylon/SM_Pylon_Resonance.glb
+mesh                        prim    tris  plaques      RECT%    ortho% rectiligne%   aire_med
+ SM_Pylon_Ring                 1     484      124     56.45%    49.27%      56.45%   0.291742
+ SM_Pylon_Plinth               1     476      101     23.00%    85.56%      23.00%   0.690338
+ SM_Pylon_Collar               1     284      110     36.77%     0.00%      36.77%   0.232078
+ SM_Pylon_ShaftCore            1     860       50     91.95%     2.06%      91.95%   3.523054
+ SM_Pylon_Shaft                1    3596      446     57.83%     6.32%      57.83%   0.545935
+ SM_Pylon_Vein                 1     540      162    100.00%   100.00%     100.00%   0.055000
+ SM_Pylon_Leg_A                1     172       78     29.77%     9.24%      29.77%   0.338562
+ SM_Pylon_Leg_B                1     172       78     29.77%     9.24%      29.77%   0.338562
+ SM_Pylon_Leg_C                1     172       78     29.77%     9.24%      29.77%   0.338562
+ SM_Pylon_Belt_0               1     380      146     34.61%     0.00%      34.61%   0.115580
+ SM_Pylon_Belt_1               1     380      146     38.49%     0.00%      38.49%   0.100358
+ SM_Pylon_RingBracket_0        1      36       18     37.11%    62.50%      37.11%   0.855232
+ SM_Pylon_RingBracket_1        1      36       18     37.11%    62.50%      37.11%   0.855231
+ SM_Pylon_Crown_Tall           1     156       74     26.90%     3.37%      26.90%   0.423813
+ SM_Pylon_Crown_Short          1     156       74     11.21%     3.87%      11.21%   0.254356
+ SM_Pylon_CrownCap_Tall        1      76       34     25.48%     0.00%      25.48%   0.062995
+ SM_Pylon_CrownCap_Short       1      76       34     45.24%     0.00%      45.24%   0.053310
+TOTAL                                        1771     48.84%    15.68%      48.84%           
+indice_boite = min(RECT, ortho) = 15.68%
+RC=0

@@ -1,0 +1,14 @@
+jitter(m)         RECT%     ortho%     indice | boititude%
+0.000           100.00%    100.00%    100.00% |      0.00%
+0.001            67.59%    100.00%     67.59% |    100.00%
+0.003            22.22%    100.00%     22.22% |    100.00%
+0.005            13.90%    100.00%     13.90% |    100.00%
+0.010             6.48%    100.00%      6.48% |    100.00%
+0.020             2.74%     90.01%      2.74% |    100.00%
+0.050             0.86%     63.56%      0.86% |    100.00%
+0.100             0.00%     35.12%      0.00% |    100.00%
+
+montage                                RECT%    ortho%    indice | boititude%
+coins soudes exacts, jitter 0 mm     100.00%   100.00%   100.00% |      0.00%  (composantes=1)
+coins soudes exacts, jitter 20 mm      2.77%    92.72%     2.77% |      0.00%  (composantes=1)
+coins soudes exacts, jitter 50 mm      0.92%    63.50%     0.92% |      0.00%  (composantes=1)

@@ -1,0 +1,17 @@
+cube seul                              rect=100.00% ortho=100.00% plaques=   6 -> OK
+18 cubes soudés par un coin            rect=100.00% ortho=100.00% plaques= 108 -> OK
+  invariance soudure (18 vs 1)         ecart<0.01 pt -> OK
+18 cubes disjoints == 18 soudés        ecart<0.01 pt -> OK
+18 cubes en rangée fusionnée           rect=100.00% ortho=100.00% plaques=  40 -> OK
+18 pavés TOURNÉS soudés par un coin    rect=100.00% ortho=100.00% plaques= 108 -> OK
+tétraèdre régulier                     rect=  0.00% ortho=  0.00% plaques=   4 -> OK
+tétraèdre-coin de boîte (attendu 41,42%) rect=  0.00% ortho= 41.42% plaques=   4 -> OK
+icosphère (320 faces)                  rect=  0.00% ortho=  0.00% plaques= 320 -> OK
+cube, face subdivisée au barycentre    rect=100.00% ortho=100.00% plaques=   6 -> OK
+cube, jonction en T sur une arête      rect=100.00% ortho=100.00% plaques=   6 -> OK
+cylindre 24 côtés                      rect= 66.86% ortho= 20.70% -> OK   (rect HAUT, ortho BAS : c'est pourquoi une seule grandeur ne suffit pas)
+pavé sur deux primitives               rect=100.00% ortho=100.00% plaques=   6 -> OK
+L de trois cubes fusionnés             rect= 66.67% rectiligne=100.00% ortho=100.00% -> OK
+cube à un coin tiré de 25 cm           rect= 43.84% (doit tomber sous 60) -> OK
+
+15 cas, 15 OK, 0 ECHEC

@@ -1,0 +1,297 @@
+{
+  "fichier": "assets/architecture/farm/SM_Farm_Ruins.glb",
+  "meshes": [
+    {
+      "triangles": 212,
+      "plaques": 148,
+      "aire_totale": 26.74149,
+      "aire_mediane_plaque": 0.222951,
+      "part_rectangulaire": 43.28598,
+      "part_rectiligne": 43.28598,
+      "part_orthogonale": 96.957132,
+      "indice_boite": 43.28598,
+      "longueur_jonctions": 225.697251,
+      "longueur_degeneree": 101.385867,
+      "refus": {
+        "bord_ambigu": 0,
+        "trous": 0,
+        "pas_4_coins": 84,
+        "angles": 0
+      },
+      "mesh": "SM_Farm_Truss",
+      "primitives": 2
+    },
+    {
+      "triangles": 108,
+      "plaques": 60,
+      "aire_totale": 61.266442,
+      "aire_mediane_plaque": 0.237661,
+      "part_rectangulaire": 97.913128,
+      "part_rectiligne": 97.913128,
+      "part_orthogonale": 87.086046,
+      "indice_boite": 87.086046,
+      "longueur_jonctions": 244.643038,
+      "longueur_degeneree": 0.0,
+      "refus": {
+        "bord_ambigu": 0,
+        "trous": 0,
+        "pas_4_coins": 12,
+        "angles": 3
+      },
+      "mesh": "SM_Farm_RoofPan_Intact",
+      "primitives": 2
+    },
+    {
+      "triangles": 108,
+      "plaques": 64,
+      "aire_totale": 27.260868,
+      "aire_mediane_plaque": 0.111751,
+      "part_rectangulaire": 93.219133,
+      "part_rectiligne": 93.219133,
+      "part_orthogonale": 42.425067,
+      "indice_boite": 42.425067,
+      "longueur_jonctions": 136.266372,
+      "longueur_degeneree": 0.0,
+      "refus": {
+        "bord_ambigu": 0,
+        "trous": 0,
+        "pas_4_coins": 20,
+        "angles": 13
+      },
+      "mesh": "SM_Farm_RoofPan_Fallen",
+      "primitives": 2
+    },
+    {
+      "triangles": 198,
+      "plaques": 177,
+      "aire_totale": 4.070421,
+      "aire_mediane_plaque": 0.013862,
+      "part_rectangulaire": 0.31383,
+      "part_rectiligne": 0.31383,
+      "part_orthogonale": 15.501739,
+      "indice_boite": 0.31383,
+      "longueur_jonctions": 62.474284,
+      "longueur_degeneree": 5.28079,
+      "refus": {
+        "bord_ambigu": 0,
+        "trous": 0,
+        "pas_4_coins": 169,
+        "angles": 7
+      },
+      "mesh": "SM_Farm_Debris_A",
+      "primitives": 4
+    },
+    {
+      "triangles": 198,
+      "plaques": 176,
+      "aire_totale": 4.028159,
+      "aire_mediane_plaque": 0.013406,
+      "part_rectangulaire": 0.317122,
+      "part_rectiligne": 0.317122,
+      "part_orthogonale": 14.435627,
+      "indice_boite": 0.317122,
+      "longueur_jonctions": 62.244837,
+      "longueur_degeneree": 3.191924,
+      "refus": {
+        "bord_ambigu": 0,
+        "trous": 0,
+        "pas_4_coins": 168,
+        "angles": 7
+      },
+      "mesh": "SM_Farm_Debris_B",
+      "primitives": 4
+    },
+    {
+      "triangles": 304,
+      "plaques": 181,
+      "aire_totale": 24.245976,
+      "aire_mediane_plaque": 0.028297,
+      "part_rectangulaire": 35.097704,
+      "part_rectiligne": 35.097704,
+      "part_orthogonale": 79.014856,
+      "indice_boite": 35.097704,
+      "longueur_jonctions": 101.380201,
+      "longueur_degeneree": 24.409038,
+      "refus": {
+        "bord_ambigu": 0,
+        "trous": 0,
+        "pas_4_coins": 119,
+        "angles": 13
+      },
+      "mesh": "SM_Farm_GableBreak",
+      "primitives": 1
+    },
+    {
+      "triangles": 84,
+      "plaques": 52,
+      "aire_totale": 7.665056,
+      "aire_mediane_plaque": 0.044641,
+      "part_rectangulaire": 36.800893,
+      "part_rectiligne": 36.800893,
+      "part_orthogonale": 75.387731,
+      "indice_boite": 36.800893,
+      "longueur_jonctions": 32.392427,
+      "longueur_degeneree": 5.294584,
+      "refus": {
+        "bord_ambigu": 0,
+        "trous": 0,
+        "pas_4_coins": 40,
+        "angles": 0
+      },
+      "mesh": "SM_Farm_WallStub_East",
+      "primitives": 1
+    },
+    {
+      "triangles": 184,
+      "plaques": 177,
+      "aire_totale": 12.391425,
+      "aire_mediane_plaque": 0.067758,
+      "part_rectangulaire": 6.371459,
+      "part_rectiligne": 6.371459,
+      "part_orthogonale": 60.477225,
+      "indice_boite": 6.371459,
+      "longueur_jonctions": 85.059585,
+      "longueur_degeneree": 31.467883,
+      "refus": {
+        "bord_ambigu": 0,
+        "trous": 0,
+        "pas_4_coins": 170,
+        "angles": 1
+      },
+      "mesh": "SM_Farm_Rubble_Wall",
+      "primitives": 3
+    },
+    {
+      "triangles": 108,
+      "plaques": 88,
+      "aire_totale": 10.558531,
+      "aire_mediane_plaque": 0.032506,
+      "part_rectangulaire": 79.586827,
+      "part_rectiligne": 79.586827,
+      "part_orthogonale": 85.009534,
+      "indice_boite": 79.586827,
+      "longueur_jonctions": 52.699897,
+      "longueur_degeneree": 9.22787,
+      "refus": {
+        "bord_ambigu": 0,
+        "trous": 0,
+        "pas_4_coins": 68,
+        "angles": 2
+      },
+      "mesh": "SM_Farm_Jamb_Door",
+      "primitives": 1
+    },
+    {
+      "triangles": 92,
+      "plaques": 67,
+      "aire_totale": 7.788743,
+      "aire_mediane_plaque": 0.034516,
+      "part_rectangulaire": 77.238032,
+      "part_rectiligne": 81.27668,
+      "part_orthogonale": 86.747637,
+      "indice_boite": 77.238032,
+      "longueur_jonctions": 40.793122,
+      "longueur_degeneree": 6.04164,
+      "refus": {
+        "bord_ambigu": 0,
+        "trous": 0,
+        "pas_4_coins": 48,
+        "angles": 1
+      },
+      "mesh": "SM_Farm_Jamb_Breach",
+      "primitives": 1
+    },
+    {
+      "triangles": 72,
+      "plaques": 48,
+      "aire_totale": 9.419468,
+      "aire_mediane_plaque": 0.216003,
+      "part_rectangulaire": 51.919842,
+      "part_rectiligne": 51.919842,
+      "part_orthogonale": 96.321615,
+      "indice_boite": 51.919842,
+      "longueur_jonctions": 70.894148,
+      "longueur_degeneree": 28.122919,
+      "refus": {
+        "bord_ambigu": 0,
+        "trous": 0,
+        "pas_4_coins": 24,
+        "angles": 0
+      },
+      "mesh": "SM_Farm_InteriorFrame",
+      "primitives": 1
+    },
+    {
+      "triangles": 76,
+      "plaques": 54,
+      "aire_totale": 3.202996,
+      "aire_mediane_plaque": 0.064627,
+      "part_rectangulaire": 51.431586,
+      "part_rectiligne": 51.431586,
+      "part_orthogonale": 76.217071,
+      "indice_boite": 51.431586,
+      "longueur_jonctions": 27.346295,
+      "longueur_degeneree": 6.038842,
+      "refus": {
+        "bord_ambigu": 0,
+        "trous": 0,
+        "pas_4_coins": 32,
+        "angles": 2
+      },
+      "mesh": "SM_Farm_JoistStubs",
+      "primitives": 3
+    },
+    {
+      "triangles": 336,
+      "plaques": 200,
+      "aire_totale": 34.269876,
+      "aire_mediane_plaque": 0.023129,
+      "part_rectangulaire": 26.597185,
+      "part_rectiligne": 26.597185,
+      "part_orthogonale": 68.199333,
+      "indice_boite": 26.597185,
+      "longueur_jonctions": 104.142109,
+      "longueur_degeneree": 10.115803,
+      "refus": {
+        "bord_ambigu": 0,
+        "trous": 0,
+        "pas_4_coins": 132,
+        "angles": 19
+      },
+      "mesh": "SM_Farm_WallBreak_North",
+      "primitives": 1
+    },
+    {
+      "triangles": 144,
+      "plaques": 141,
+      "aire_totale": 10.527503,
+      "aire_mediane_plaque": 0.071471,
+      "part_rectangulaire": 2.765446,
+      "part_rectiligne": 2.765446,
+      "part_orthogonale": 59.2884,
+      "indice_boite": 2.765446,
+      "longueur_jonctions": 65.492661,
+      "longueur_degeneree": 27.550067,
+      "refus": {
+        "bord_ambigu": 0,
+        "trous": 0,
+        "pas_4_coins": 138,
+        "angles": 1
+      },
+      "mesh": "SM_Farm_Rubble_North",
+      "primitives": 1
+    }
+  ],
+  "retenus": [
+    "SM_Farm_Debris_A",
+    "SM_Farm_Debris_B"
+  ],
+  "part_rectangulaire": 0.32,
+  "part_rectiligne": 0.32,
+  "part_orthogonale": 14.97,
+  "indice_boite": 0.32,
+  "plaques": 353,
+  "longueur_jonctions": 124.71912,
+  "longueur_degeneree": 8.47271,
+  "aire_totale": 8.09858
+}
