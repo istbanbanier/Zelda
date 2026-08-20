@@ -1,0 +1,45 @@
+########## SAIN — reference avant sabotage ##########
+ead79105e3deaf70629c1bd928e68d355261217dbd2d5150384b4a7590cf9060  assets/architecture/farm/SM_Farm_Ruins.glb
+
+########## A. APPLICATION DU SABOTAGE ##########
+SABOTAGE APPLIQUE ET RELU: True
+RC_patch=0
+
+########## B. REGENERATION SABOTEE ##########
+RC_chaine=0
+  [farm_ruins] total 2108 triangles (budget 4500)
+  [farm_ruins] gravats SM_Farm_Debris_A   12 comp 138 tris  liant  87.0%  aire 7.2149  med 0.59940  fine 0.0000%  arete 0.055800  emprise Godot 1.5237 x 0.6841 x 1.1434
+  [farm_ruins] gravats SM_Farm_Debris_B   12 comp 138 tris  liant  87.0%  aire 7.1338  med 0.56125  fine 0.0000%  arete 0.055800  emprise Godot 1.2520 x 0.6883 x 0.9416
+=== EXPORT ARCHITECTURE : VERT ===
+
+########## C. LE GLB A-T-IL REELLEMENT CHANGE ? ##########
+27ae4863be089a857e7f212e5ffec6dec86dce04b8231272f7c6406ef687905f  assets/architecture/farm/SM_Farm_Ruins.glb
+
+########## D. INSTRUMENT SUR LE GLB SABOTE ##########
+ SM_Farm_WallBreak_North    1    16    336    53.6%    53.6%     3.6%     0.0%   0.17829  0.053621   0.000%
+ SM_Farm_Rubble_North       1    12    144   100.0%   100.0%     0.0%     0.0%   0.88536  0.301751   0.000%
+MESHES RETENUS                         276    87.0%    87.0%    87.0%    87.0%            0.055800   0.000%
+ECHEC : liant 87.0% > plafond 25.0%
+RC_instrument=1
+
+########## E. FILET GODOT — DOIT ROUGIR ##########
+RC_import=0
+RC_test=1
+[r2b3_debris] SM_Farm_Debris_A     comp=12 tris=138 liant=87.0% aire_tot=7.2149 aire_med=0.59941 fine=0.0000% arete_min=0.055796 emprise=1.5237 x 0.6841 x 1.1434
+[r2b3_debris] SM_Farm_Debris_B     comp=12 tris=138 liant=87.0% aire_tot=7.1338 aire_med=0.56123 fine=0.0000% arete_min=0.055796 emprise=1.2520 x 0.6883 x 0.9416
+[r2b3_debris] ferme entière : 2108 triangles, 27 surfaces
+=== RÉSULTAT: 1 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_r2b3_debris.gd::test_les_gravats_ne_sont_pas_des_paves — les gravats de la ferme sont des fragments et non des pavés (2 écart(s)) — SM_Farm_Debris_A : 87.0 % de triangles en PAVÉS (liant = 12 triangles et 8 sommets, OU 6 plans et 8 coins), plafond 25.0 % — 10 composante(s) sur 12 en sont ; le tas se lit comme une bordure construite ; SM_Farm_Debris_B : 87.0 % de triangles en PAVÉS (liant = 12 triangles et 8 sommets, OU 6 plans et 8 coins), plafond 25.0 % — 10 composante(s) sur 12 en sont ; le tas se lit comme une bordure construite
+
+########## F. RESTAURATION ##########
+sabotage encore present ? 0
+RC_chaine_restauration=0
+  [farm_ruins] gravats SM_Farm_Debris_A   12 comp 198 tris  liant   0.0%  aire 4.0704  med 0.31417  fine 0.0000%  arete 0.059032  emprise Godot 1.5044 x 0.6841 x 1.2194
+  [farm_ruins] gravats SM_Farm_Debris_B   12 comp 198 tris  liant   0.0%  aire 4.0282  med 0.32056  fine 0.0000%  arete 0.064464  emprise Godot 1.1803 x 0.6883 x 0.9542
+=== EXPORT ARCHITECTURE : VERT ===
+
+########## G. RETOUR A L'OCTET PRES ? ##########
+ead79105e3deaf70629c1bd928e68d355261217dbd2d5150384b4a7590cf9060  assets/architecture/farm/SM_Farm_Ruins.glb
+git status assets/ (vide = identique au commit) :
+[fin]
+RC=0

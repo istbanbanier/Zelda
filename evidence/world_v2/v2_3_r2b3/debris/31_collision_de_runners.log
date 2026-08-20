@@ -1,0 +1,34 @@
+=== COLLISION DE RUNNERS PENDANT 27_world_v2_regression_finale.log ===
+Constat pris pendant la suite, 2026-08-20T01:29:11+00:00 :
+
+16539 /usr/local/bin/godot --headless --path . --script tools/godot/test_runner.gd
+21989 /usr/local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=world_v2
+
+cwd de chaque runner :
+  PID 16539 -> /home/user/wt_r2b3_b_iss059  (demarre Thu Aug 20 01:17:32 2026)
+  PID 21989 -> /home/user/wt_r2b3_a_debris  (demarre Thu Aug 20 01:19:24 2026)
+
+Detenteurs des verrous :
+  /home/user/Zelda/.git/heavy_tools.lock :  21562 21563 21988 21989
+  /home/user/Zelda/.git/validate_fast.lock : (personne)
+
+
+LECTURE. Deux runners tournent en meme temps, dans DEUX worktrees differents, et
+tous les worktrees partagent un seul `user://`
+(/root/.local/share/godot/app_userdata/Eclats d'Orage) — c'est le mecanisme
+d'ISS-038, consigne mot pour mot dans tools/CLAUDE.md :
+
+  « Deux suites concurrentes fabriquent des echecs de sauvegarde. [...] Les deux
+    partageaient user://saves et le meme log : 8 echecs de sauvegarde FABRIQUES
+    [...] Les memes tests passaient 6/6 isolement. »
+
+Mon invocation prend `heavy_tools.lock` ; l'autre ne prend NI celui-la NI
+`validate_fast.lock`. Les deux verrous du depot sont des mutex DISTINCTS : se
+serialiser sur l'un ne protege pas de l'autre.
+
+CONSEQUENCE POUR CE JOURNAL : l'echec
+`test_world_v2_skeleton.gd::test_le_squelette_porte_le_vrai_joueur_sans_toucher_la_sauvegarde`
+(« slot0 est identique a l'octet pres ») est un echec de SAUVEGARDE pendant une
+collision. Il ne peut pas venir de mon changement, qui ne touche que la
+geometrie de deux tas de gravats dans un GLB. Le meme test etait VERT dans
+14_world_v2_regression.log, joue avant. Il est rejoue au propre en 30_.

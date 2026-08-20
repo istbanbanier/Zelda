@@ -53,16 +53,20 @@
 ## même 96,8 % en rouge puis le même chiffre en vert, c'est le prédicat qui est
 ## vérifié, pas une seule ligne de code. Le journal rouge publie les deux.
 ##
-## PIÈGE DE SOUDAGE, mesuré et non supposé. L'instrument Python soude à 10 µm sur
-## les flottants bruts du GLB. Ici les positions passent par l'importeur Godot,
-## dont `meshes/force_disable_compression=false` (voir `SM_Farm_Ruins.glb.import`)
-## quantifie les positions sur l'AABB — l'erreur peut dépasser 10 µm et casserait
-## le soudage, donc les comptes de sommets, donc le prédicat. La tolérance est
-## portée à 0,1 mm : 300 fois plus fine que l'arête minimale exigée (0,03 m), donc
-## incapable de fusionner deux coins distincts, et assez large pour absorber la
-## quantification. La preuve que ce choix est juste est le rouge lui-même : il
-## doit rendre EXACTEMENT les 11 composantes / 124 triangles / 96,8 % que
-## l'instrument Python rend sur les mêmes meshes.
+## PIÈGE DE SOUDAGE, mesuré et non supposé. Ici les positions passent par
+## l'importeur Godot, dont `meshes/force_disable_compression=false` (voir
+## `SM_Farm_Ruins.glb.import`) quantifie les positions sur l'AABB. Une tolérance
+## de 10 µm — celle de la première version de l'instrument — serait cassée par
+## cette quantification, donc les comptes de sommets, donc le prédicat. 0,1 mm
+## absorbe la quantification tout en restant plusieurs centaines de fois sous la
+## plus courte arête du tas (0,059 m), donc incapable de fusionner deux coins
+## distincts. L'instrument Python a convergé vers la même valeur pour une raison
+## voisine : l'audit y a montré qu'à 10 µm un coin déplacé de 12 µm se dédoublait.
+##
+## LA PREUVE QUE CE CHOIX EST JUSTE EST LE ROUGE LUI-MÊME : le filet a rendu
+## EXACTEMENT les 11 composantes / 124 triangles / 96,8 % que l'instrument Python
+## rend sur les mêmes meshes, à 4 µm près sur l'arête minimale — écart qui EST la
+## quantification, et qui est publié plutôt que caché.
 extends GateTestCase
 
 const FARM_GLB: String = "res://assets/architecture/farm/SM_Farm_Ruins.glb"

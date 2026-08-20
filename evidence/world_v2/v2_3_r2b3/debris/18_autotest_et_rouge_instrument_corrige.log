@@ -1,0 +1,22 @@
+=== AUTOTEST DE L'INSTRUMENT CORRIGE (7cacd54) ===
+39d99fedff4d99fe04c4720f98de0a33c58c662d6b763b369c545d7d4d17a814  tools/mesure_boititude.py
+
+cube unité                         liant=True  attendu=True  hexa=True pave6=True equi=True droite=True -> OK
+cube à sommets éclatés             liant=True  attendu=True  sommets=8 -> OK
+boîte déformée                     liant=True  attendu=True  equi=False (doit être False) -> OK
+deux cubes disjoints               liant=True  attendu=True  composantes=2 (doit être 2) -> OK
+tétraèdre                          liant=False attendu=False plans=4 -> OK
+cube + triangle d'aire nulle       liant=True  attendu=True  tris retenus=12 -> OK
+cube subdivisé au barycentre       liant=True  attendu=True  sommets=9 plans=6 coins=8 -> OK
+coin décalé de 12 µm               liant=True  attendu=True  sommets=8 -> OK
+pavé sur deux primitives           liant=True  attendu=True  composantes=1 -> OK
+cube de 1 mm                       aire_fine=100.0% (doit être 100) -> OK
+RC_autotest=0
+
+=== ROUGE D'AVANT, RELU AVEC L'INSTRUMENT CORRIGE ===
+GLB de base (git show db69716), sha256 :
+9c7b94e1848dc1a1d33967343ee1c2a7868b38ab239d003de6cf4dcbc3216b3c  /tmp/claude-0/-home-user-Zelda/3f49d367-f832-522e-bb57-a1c4a650c5ad/scratchpad/glb_avant.glb
+*SM_Farm_Debris_A           3    11    124    96.8%    96.8%    96.8%     0.0%   0.32639  0.060000   0.000%
+*SM_Farm_Debris_B           3    11    124    96.8%    96.8%    96.8%     0.0%   0.46180  0.060000   0.000%
+MESHES RETENUS                         248    96.8%    96.8%    96.8%     0.0%            0.060000   0.000%
+ECHEC : liant 96.8% > plafond 25.0%

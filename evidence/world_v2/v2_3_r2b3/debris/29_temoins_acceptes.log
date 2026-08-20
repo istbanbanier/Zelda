@@ -1,0 +1,45 @@
+=== TEMOINS ACCEPTES — la meme famille d'objet, mesuree avec le meme instrument ===
+(designes par l'audit independant ; c'est la cible de forme, pas le plafond de 25)
+
+--- assets/environment/dungeon/SM_Dungeon_RubbleLarge.glb
+mesh                     prim  comp   tris    LIANT     hexa     equi   droite  aire_med arete_min    fine%
+ rocks-large                1    10    150     0.0%     0.0%     0.0%     0.0%   0.62456  0.040725   0.000%
+TOTAL                                  150     0.0%     0.0%     0.0%     0.0%            0.040725   0.000%
+
+--- assets/environment/dungeon/SM_Dungeon_RubbleSmall.glb
+mesh                     prim  comp   tris    LIANT     hexa     equi   droite  aire_med arete_min    fine%
+ rocks-small                1     9    140     0.0%     0.0%     0.0%     0.0%   0.40109  0.040725   0.000%
+TOTAL                                  140     0.0%     0.0%     0.0%     0.0%            0.040725   0.000%
+
+=== LE SUJET, apres correction ===
+*SM_Farm_Debris_A           4    12    198     0.0%     0.0%     0.0%     0.0%   0.31417  0.059032   0.000%
+*SM_Farm_Debris_B           4    12    198     0.0%     0.0%     0.0%     0.0%   0.32056  0.064464   0.000%
+MESHES RETENUS                         396     0.0%     0.0%     0.0%     0.0%            0.059032   0.000%
+OK : liant 0.0% <= plafond 25.0%
+
+=== FORME DES FRAGMENTS DU TEMOIN (RubbleLarge) ===
+  20 tris, 12 sommets, 8 plans, 12 coins, aire 1.0534
+  20 tris, 12 sommets, 8 plans, 12 coins, aire 0.6246
+  20 tris, 12 sommets, 8 plans, 12 coins, aire 0.8465
+  20 tris, 12 sommets, 8 plans, 12 coins, aire 0.6721
+  20 tris, 12 sommets, 8 plans, 12 coins, aire 0.6721
+  10 tris,  8 sommets, 5 plans, 4 coins, aire 0.0289
+  10 tris,  8 sommets, 5 plans, 4 coins, aire 0.0134
+  10 tris,  8 sommets, 5 plans, 4 coins, aire 0.0289
+  10 tris,  8 sommets, 5 plans, 4 coins, aire 0.0289
+  10 tris,  8 sommets, 5 plans, 4 coins, aire 0.0134
+
+=== FORME DES FRAGMENTS DU SUJET (SM_Farm_Debris_A) ===
+  14 tris,  9 sommets, 13 plans, 9 coins, aire 0.2886
+  10 tris,  8 sommets, 7 plans, 6 coins, aire 0.5608
+  14 tris,  9 sommets, 13 plans, 9 coins, aire 0.3142
+  22 tris, 13 sommets, 19 plans, 13 coins, aire 0.1814
+  18 tris, 11 sommets, 16 plans, 11 coins, aire 0.1792
+  18 tris, 11 sommets, 17 plans, 11 coins, aire 0.1478
+   4 tris,  5 sommets, 4 plans, 1 coins, aire 0.0386
+   4 tris,  4 sommets, 4 plans, 4 coins, aire 0.0300
+  22 tris, 13 sommets, 20 plans, 13 coins, aire 0.8489
+  18 tris, 11 sommets, 15 plans, 11 coins, aire 0.5449
+  18 tris, 11 sommets, 16 plans, 11 coins, aire 0.3337
+  14 tris,  9 sommets, 13 plans, 9 coins, aire 0.1987
+  22 tris, 13 sommets, 19 plans, 13 coins, aire 0.4038
