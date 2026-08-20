@@ -69,6 +69,22 @@
 #                                découpe le quad de 6 m² et empêche l'intérieur
 #                                de se lire comme une coque vide.
 #
+# R2B.3 — LE DERNIER DÉFAUT BLOQUANT DU LOT (ISS-060). Verdict visuel du lead
+# sur R2B.2 : la ferme passe, SAUF `SM_Farm_Debris_A` et `_B`, qui « lisent
+# encore comme des pavés droits alignés, donc comme une bordure construite
+# plutôt que comme des débris d'effondrement ». Mesuré avant d'être corrigé :
+# 96,8 % des triangles des deux tas appartenaient à des composantes de
+# 12 triangles et 8 sommets — dix `poutre()` sur onze composantes.
+#
+# Deux gestes, et aucun des deux n'est cosmétique :
+#   * la primitive : `eclat()` remplace `poutre()` dans les gravats. 2k+1
+#     sommets, donc JAMAIS huit, quel que soit k — c'est une propriété de
+#     construction, pas un réglage ;
+#   * le semis : `SEMIS_GRAVATS` est écrit à la main — cœur haut, deux grappes,
+#     morceaux projetés, et 122° de VIDE — là où l'angle d'or produisait une
+#     couronne de densité uniforme, c'est-à-dire la bordure rejetée.
+# `controle_gravats()` refuse d'enregistrer si l'un des six planchers cède.
+#
 # BUDGET VERROUILLÉ AVANT MODÉLISATION (arbitrage R2B) : ferme ≤ 4 500
 # triangles au total, 3 matériaux, sRGB converti en linéaire explicitement.
 # Le générateur REFUSE d'enregistrer au-delà — le budget se vérifie à
@@ -343,6 +359,108 @@ def echarde(bm, base, direction, longueur, largeur, materiau_idx):
     return 4
 
 
+def _rotation_xyz(p, angles):
+    """Roulis (X), tangage (Y), lacet (Z) — dans cet ordre, appliqués au point.
+
+    `poutre` ne connaît qu'un `roulis` autour de son propre axe : un fragment
+    posé par elle garde ses faces parallèles au sol. C'est exactement ce que le
+    lead a vu — « des pavés droits ALIGNÉS ». Un débris tombe sur un coin, pas
+    à plat.
+    """
+    ax, ay, az = angles
+    x, y, z = p
+    c, s = math.cos(ax), math.sin(ax)
+    y, z = y * c - z * s, y * s + z * c
+    c, s = math.cos(ay), math.sin(ay)
+    x, z = x * c + z * s, -x * s + z * c
+    c, s = math.cos(az), math.sin(az)
+    x, y = x * c - y * s, x * s + y * c
+    return (x, y, z)
+
+
+# ---------------------------------------------------------------------------
+# `eclat` — LE FRAGMENT, ET POURQUOI CE N'EST PAS UNE BOÎTE (R2B.3, ISS-060)
+#
+# LE DÉFAUT. `gravats()` construisait chaque morceau avec `poutre()`. Une
+# poutre EST un pavé : huit sommets, six faces, douze triangles. Dix poutres
+# pour onze composantes, d'où les 96,8 % de boîtitude mesurés par
+# `tools/mesure_boititude.py` sur `SM_Farm_Debris_A` et `_B` — et, à l'écran,
+# une bordure construite là où il fallait un effondrement.
+#
+# CE QU'IL FALLAIT CHANGER, ET CE QU'IL NE SUFFISAIT PAS DE CHANGER. Le liant
+# du portail est le prédicat le plus LÂCHE des trois : « 12 triangles ET
+# 8 sommets soudés ». Secouer les coins d'un cube ne le fait pas tomber — une
+# boîte déformée reste `hexa`. Il faut changer la TOPOLOGIE.
+#
+# LA FORME RETENUE, et sa garantie structurelle. Trois étages :
+#     * un anneau de BASE de k sommets, rayons et angles irréguliers, qui pose
+#       le fragment au sol ;
+#     * un anneau d'ÉPAULE de k sommets, VRILLÉ d'un demi-pas et plus étroit :
+#       c'est lui qui donne les facettes obliques d'une cassure ;
+#     * un SOMMET unique, décentré : l'arête vive du morceau arraché.
+#
+# Donc 2k + 1 sommets et 4k − 2 triangles. **Le compte de sommets est toujours
+# IMPAIR : un éclat ne peut jamais en avoir huit, quel que soit k.** Ce n'est
+# pas un réglage heureux qu'un paramètre pourrait défaire plus tard, c'est une
+# propriété de la construction — et c'est la seule raison honnête pour laquelle
+# la boîtitude tombe ici.
+#
+# CE QUE CE N'EST PAS. Aucun détail sous-pixel : l'arête la plus courte du tas
+# reste de l'ordre de 6 cm. Le chiffre ne tombe pas parce qu'on a pulvérisé la
+# géométrie, il tombe parce que les morceaux ont changé de forme — et
+# `controle_gravats()`, plus bas, REFUSE d'enregistrer si l'une des deux
+# tricheries voisines (rétrécir, pulvériser) avait servi à la place.
+# ---------------------------------------------------------------------------
+def eclat(bm, centre, taille, graine, materiau_idx, cotes=5,
+          rotation=(0.0, 0.0, 0.0), pose=0.0):
+    """Un fragment anguleux irrégulier. `pose` est l'altitude de son point BAS.
+
+    Poser par le point bas plutôt que par le centre a une raison mesurée :
+    `objet_depuis()` recale ensuite le min-Z de la pièce ENTIÈRE à zéro. Un
+    fragment fortement basculé dont le coin descendrait sous les autres ferait
+    donc REMONTER tout le tas d'autant, et le lieu poserait un tas flottant.
+    En posant chaque morceau par son point bas, l'altitude est un choix
+    d'empilement — centre haut, bords au sol — et non un effet de bord.
+    """
+    k = max(3, min(7, int(cotes)))
+    dx, dy, dz = taille
+    locaux = []
+    for i in range(k):                       # anneau de base
+        a = 2.0 * math.pi * i / k + _graine(graine * 5.1 + i * 3.3) * (1.0 / k)
+        r = 0.5 * (1.0 + _graine(graine * 2.7 + i * 1.7) * 0.55)
+        locaux.append((
+            math.cos(a) * r * dx, math.sin(a) * r * dy,
+            -0.50 * dz + _graine(graine * 4.3 + i * 2.9) * 0.08 * dz))
+    for i in range(k):                       # anneau d'épaule, vrillé
+        a = 2.0 * math.pi * (i + 0.5) / k \
+            + _graine(graine * 3.9 + i * 2.1) * (1.0 / k)
+        r = 0.5 * (0.86 + _graine(graine * 1.9 + i * 4.1) * 0.55)
+        locaux.append((
+            math.cos(a) * r * dx, math.sin(a) * r * dy,
+            0.06 * dz + _graine(graine * 6.1 + i * 1.3) * 0.14 * dz))
+    ap = 2.0 * math.pi * _graine(graine * 7.7) + graine
+    ar = 0.22 * (1.0 + _graine(graine * 8.3))
+    locaux.append((math.cos(ap) * ar * dx, math.sin(ap) * ar * dy, 0.50 * dz))
+
+    tournes = [_rotation_xyz(p, rotation) for p in locaux]
+    bas = min(p[2] for p in tournes)
+    sommets = [bm.verts.new((centre[0] + p[0], centre[1] + p[1],
+                             centre[2] + p[2] - bas + pose)) for p in tournes]
+
+    faces = [bm.faces.new(tuple(sommets[:k]))]
+    for i in range(k):
+        j = (i + 1) % k
+        faces.append(bm.faces.new((sommets[i], sommets[j],
+                                   sommets[k + j], sommets[k + i])))
+    for i in range(k):
+        j = (i + 1) % k
+        faces.append(bm.faces.new((sommets[k + i], sommets[k + j],
+                                   sommets[2 * k])))
+    for f in faces:
+        f.material_index = materiau_idx
+    return faces
+
+
 # ---------------------------------------------------------------------------
 # SM_Farm_Truss — la charpente rompue, d'un seul trait
 # ---------------------------------------------------------------------------
@@ -473,28 +591,97 @@ def pan_tombe(bm):
                0.34, 0.05, IDX_TUILES, roulis=_graine(i) * 0.35)
 
 
+# ---------------------------------------------------------------------------
+# LE SEMIS EST ÉCRIT À LA MAIN, ET C'EST LA MOITIÉ DE LA CORRECTION.
+#
+# L'ancien tas plaçait ses morceaux sur un angle d'or : neuf fragments répartis
+# à intervalle rigoureusement égal autour du centre. Un angle d'or empêche
+# l'alignement local, mais il produit exactement ce que le lead a rejeté — une
+# COURONNE de densité uniforme, donc « une bordure construite ». Un tas
+# d'effondrement n'est pas équiréparti : il a un cœur haut, des grappes serrées
+# là où la masse est tombée, des morceaux projetés au loin, et un secteur VIDE
+# du côté d'où rien n'est venu.
+#
+# Le vide est ici entre 0,70 et 1,04 tour, soit ~122°. Il est aussi important
+# que les fragments : sans lui le tas se referme en anneau.
+#
+#   (tour, rayon rel., échelle XY, échelle Z, côtés, genre, pose du point bas)
+# ---------------------------------------------------------------------------
+SEMIS_GRAVATS = (
+    (0.04, 0.12, 1.30, 1.55, 6, "pierre", 0.16),   # cœur : le plus gros, le
+    (0.36, 0.22, 1.10, 1.25, 5, "pierre", 0.10),   # plus haut, et son voisin
+    (0.58, 0.18, 0.85, 1.10, 4, "tuile", 0.13),    # appuyé dessus
+    (0.11, 0.62, 0.95, 0.75, 5, "pierre", 0.02),   # grappe A — serrée
+    (0.16, 0.74, 0.72, 0.60, 4, "pierre", 0.00),
+    (0.21, 0.58, 0.62, 0.55, 6, "tuile", 0.03),
+    (0.45, 0.66, 1.00, 0.70, 6, "pierre", 0.01),   # grappe B — plus lâche
+    (0.51, 0.86, 0.66, 0.50, 5, "tuile", 0.00),
+    (0.66, 0.50, 0.80, 0.65, 4, "bois", 0.04),     # bout de chevron éclaté
+    (0.70, 0.95, 0.58, 0.45, 5, "tuile", 0.00),    # projeté, isolé
+)                                                  # puis 122° de VIDE
+
+# Gabarit d'un fragment moyen, en mètres, avant les échelles du semis.
+ECLAT_BASE_XY = (0.52, 0.44)
+ECLAT_BASE_Z = 0.20
+# Par genre : (allongement en X, aplatissement en Z). Une tuile cassée est
+# large et mince ; un bout de bois est long et mince ; un moellon est trapu.
+# Le matériau suit le genre — la pierre du mur écroulé se lit comme de la
+# PIERRE, pas comme de la terre cuite (c'est la raison du 4e matériau, ouverte
+# en R2B.1 et déjà payée dans le budget).
+ECLAT_GENRE = {
+    "pierre": (1.00, 1.00, IDX_PIERRE),
+    "tuile": (1.25, 0.62, IDX_TUILES),
+    "bois": (1.45, 0.55, IDX_BOIS),
+}
+# ÉTALEMENT DU SEMIS — et ces deux nombres sont un PLANCHER RESPECTÉ, pas un
+# réglage esthétique. L'implantation validée en R2B.2 est un plancher du lead
+# (emprise Godot X et Z à ±20 %, hauteur Y à ±30 %) : les fragments étant plus
+# gros que les anciens, le semis se resserre d'autant pour que le tas occupe la
+# place que le lieu lui a donnée.
+#
+# LA PREMIÈRE TENTATIVE A ÉTÉ REFUSÉE PAR `controle_gravats()` — emprise Godot
+# X = 1,7277 m contre 1,4279 ± 0,2856. Le garde a fait exactement son travail,
+# et les valeurs ci-dessous sont celles qui rentrent AVEC MARGE (A : X +4,7 %,
+# Z +5,8 % ; B : X +1,1 %, Z −7,4 %), pas celles qui frôlent la tolérance.
+SEMIS_ETALE_X = 0.82
+SEMIS_APLATI_Y = 0.66
+# Bascule maximale d'un fragment, en radians, sur X ET sur Y (0,62 ≈ 35°).
+SEMIS_BASCULE = 0.62
+# Où finit le chevron cassé, en fraction de l'étendue du tas. C'est lui, avec
+# son écharde, qui portait l'emprise X hors tolérance.
+GRAVATS_CHEVRON_BOUT = 0.58
+
+
 def gravats(bm, graine, etendue):
-    """Un tas fusionné : éclats de tuiles et bouts de chevrons, jamais un
-    semis de cubes réguliers."""
-    n = 9
-    for i in range(n):
-        angle = i * 2.399 + graine          # angle d'or : pas d'alignement
-        rayon = etendue * (0.25 + 0.75 * abs(_graine(i * 1.3 + graine)))
-        x = math.cos(angle) * rayon
-        y = math.sin(angle) * rayon * 0.8
-        taille = 0.22 + abs(_graine(i * 2.1 + graine)) * 0.30
-        z = taille * 0.18
-        if i % 3 == 0:
-            poutre(bm, (x - taille, y, z), (x + taille, y + 0.15, z + 0.05),
-                   0.11, 0.10, IDX_BOIS, roulis=_graine(i) * 0.9)
-        else:
-            poutre(bm, (x - taille * 0.7, y - 0.05, z),
-                   (x + taille * 0.7, y + 0.08, z + 0.03),
-                   taille * 1.1, 0.06, IDX_TUILES, roulis=_graine(i + 9) * 0.7)
+    """Un tas d'effondrement : fragments anguleux irréguliers, densité inégale,
+    cœur haut, un secteur vide — jamais un semis de pavés droits alignés."""
+    for i, reglage in enumerate(SEMIS_GRAVATS):
+        tour, rayon_rel, ech_xy, ech_z, cotes, genre, pose = reglage
+        allonge, aplati, idx = ECLAT_GENRE[genre]
+        taille = (ECLAT_BASE_XY[0] * ech_xy * allonge,
+                  ECLAT_BASE_XY[1] * ech_xy,
+                  ECLAT_BASE_Z * ech_z * aplati)
+        g = graine * 3.1 + i * 1.37
+        # TROIS AXES, et c'est le point : l'ancien code ne variait qu'un
+        # roulis, donc toutes les faces restaient parallèles au sol.
+        rotation = (_graine(g * 1.7) * SEMIS_BASCULE,
+                    _graine(g * 2.3) * SEMIS_BASCULE,
+                    2.0 * math.pi * (tour + _graine(g * 3.1) * 0.25))
+        angle = 2.0 * math.pi * tour
+        eclat(bm,
+              (math.cos(angle) * rayon_rel * etendue * SEMIS_ETALE_X,
+               math.sin(angle) * rayon_rel * etendue * SEMIS_APLATI_Y,
+               0.0),
+              taille, g, idx, cotes=cotes, rotation=rotation, pose=pose)
     # Un chevron cassé émerge du tas — la cause au milieu des conséquences.
-    poutre(bm, (-etendue * 0.5, 0.1, 0.05), (etendue * 0.7, -0.2, 0.55),
+    # IL RESTE UNE POUTRE, ET C'EST VOULU : un bois de charpente est scié
+    # d'équerre, le rendre anguleux serait mentir sur la matière pour flatter
+    # un compteur. C'est la seule composante `hexa` du tas — 12 triangles sur
+    # ~196, soit ~6 %, très en deçà du plafond de 25.
+    bout = etendue * GRAVATS_CHEVRON_BOUT
+    poutre(bm, (-etendue * 0.5, 0.1, 0.05), (bout, -0.2, 0.55),
            CHEVRON_SECTION[0], CHEVRON_SECTION[1], IDX_BOIS)
-    echarde(bm, (etendue * 0.7, -0.2, 0.55), (0.8, -0.3, 0.4), 0.26,
+    echarde(bm, (bout, -0.2, 0.55), (0.8, -0.3, 0.4), 0.26,
             CHEVRON_SECTION[0], IDX_CASSURE)
 
 
@@ -1002,6 +1189,147 @@ def objet_depuis(nom, remplir):
     return obj
 
 
+# ---------------------------------------------------------------------------
+# LE GARDE DES GRAVATS (R2B.3, ISS-060) — SIX PLANCHERS, ET POURQUOI SIX
+#
+# Il y a trois façons de faire tomber un pourcentage de boîtitude sans traiter
+# le sujet : SUPPRIMER les débris, les RÉTRÉCIR, les PULVÉRISER en poussière.
+# Le plafond seul récompenserait les trois. Les planchers qui l'accompagnent
+# sont donc liants au même titre, et le générateur REFUSE d'enregistrer si l'un
+# d'eux cède — comme il refuse déjà un budget dépassé ou un pignon droit.
+#
+# LES VALEURS SONT CELLES DU LEAD, mesurées sur le GLB de départ
+# (sha256 9c7b94e1…). Aucune n'est relevée ici : un seuil déplacé pour faire
+# passer sa propre correction est la façon exacte dont un portail s'affaiblit
+# sans que personne ne mente (PROMPT4_METHOD §2).
+#
+# UNE SEULE A ÉTÉ CORRIGÉE, PAR LE LEAD, ET DANS LE SENS STRICT → LÂCHE :
+# l'arête minimale passe de 0,03 m à 0,005 m. Raison mesurée par lui sur
+# `SM_ThunderstruckTree.glb`, asset ACCEPTÉ visuellement au verdict R2B.2 :
+# `BranchE` descend à 0,0071 m d'arête. Un plancher de 30 mm aurait donc
+# interdit ici une finesse de fracture qui existe déjà dans un sujet validé du
+# même projet — il aurait bloqué du bon travail plutôt qu'un contournement. Le
+# vrai garde anti-pulvérisation reste l'AIRE MÉDIANE de composante, qui ne
+# bouge pas ; `arete_min` n'attrape plus que la poussière sub-millimétrique.
+#
+# CALIBRAGE, pour ne pas viser 24,9 % : le même arbre accepté rend 10,4 % de
+# boîtitude sur 3 574 triangles. Le plafond de 25 est donc largement atteignable
+# par le travail déjà validé de ce projet.
+#
+# HYPOTHÈSE ASSUMÉE DE CE CONTRÔLE : ici la connexité se lit sur les indices de
+# sommets de Blender, alors que l'instrument du portail soude d'abord par
+# POSITION à 10 µm. Les deux ne coïncident que si aucun fragment ne touche son
+# voisin à 10 µm près. C'est le cas — et si ça cessait de l'être, c'est
+# `tools/mesure_boititude.py` sur le GLB, puis le filet Godot, qui trancheraient.
+# Ce garde est le premier filet, jamais le dernier mot.
+# ---------------------------------------------------------------------------
+GRAVATS_HEXA_PLAFOND = 0.25
+GRAVATS_COMPOSANTES_MIN = 9
+GRAVATS_AIRE_MIN = {"SM_Farm_Debris_A": 3.20, "SM_Farm_Debris_B": 3.35}
+GRAVATS_AIRE_MEDIANE_MIN = 0.08
+GRAVATS_ARETE_MIN = 0.005
+# Emprise mesurée sur le GLB de R2B.2, dans le repère GODOT (X, Y hauteur, Z).
+GRAVATS_EMPRISE_GODOT = {
+    "SM_Farm_Debris_A": (1.4279, 0.6841, 1.1525),
+    "SM_Farm_Debris_B": (1.1721, 0.6852, 1.0310),
+}
+GRAVATS_TOL_XZ = 0.20
+GRAVATS_TOL_Y = 0.30
+
+
+def _composantes(obj):
+    """Composantes connexes d'un maillage : (n_triangles, n_sommets, aire,
+    arête la plus courte)."""
+    maillage = obj.data
+    maillage.calc_loop_triangles()
+    parent = list(range(len(maillage.vertices)))
+
+    def racine(a):
+        while parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+
+    triangles = []
+    for boucle in maillage.loop_triangles:
+        a, b, c = boucle.vertices
+        triangles.append((a, b, c))
+        for x, y in ((a, b), (b, c)):
+            rx, ry = racine(x), racine(y)
+            if rx != ry:
+                parent[ry] = rx
+
+    groupes = {}
+    for tri in triangles:
+        groupes.setdefault(racine(tri[0]), []).append(tri)
+
+    co = [v.co for v in maillage.vertices]
+    sortie = []
+    for membres in groupes.values():
+        vus = set()
+        aire = 0.0
+        arete = float("inf")
+        for a, b, c in membres:
+            vus.update((a, b, c))
+            aire += (co[b] - co[a]).cross(co[c] - co[a]).length * 0.5
+            for x, y in ((a, b), (b, c), (c, a)):
+                d = (co[x] - co[y]).length
+                if 0.0 < d < arete:
+                    arete = d
+        sortie.append((len(membres), len(vus), aire, arete))
+    return sortie
+
+
+def controle_gravats(obj):
+    """Rend la liste des écarts. Vide = le tas est un tas de FRAGMENTS."""
+    nom = obj.name
+    comps = _composantes(obj)
+    tris = sum(c[0] for c in comps)
+    tris_hexa = sum(c[0] for c in comps if c[0] == 12 and c[1] == 8)
+    part = (tris_hexa / tris) if tris else 0.0
+    aires = sorted(c[2] for c in comps)
+    aire_totale = sum(aires)
+    mediane = aires[len(aires) // 2] if aires else 0.0
+    arete = min((c[3] for c in comps), default=0.0)
+    (bx0, bx1), (by0, by1), (bz0, bz1) = emprise(obj)
+    # Blender (x, y, z) -> Godot (x, z, -y) : l'emprise Godot Y est la HAUTEUR.
+    vue = (bx1 - bx0, bz1 - bz0, by1 - by0)
+    attendue = GRAVATS_EMPRISE_GODOT[nom]
+
+    print("[farm_ruins] gravats %-18s %2d comp %3d tris  hexa %5.1f%%  "
+          "aire %6.4f  med %7.5f  arete %8.6f  emprise Godot "
+          "%.4f x %.4f x %.4f" % (nom, len(comps), tris, 100.0 * part,
+                                  aire_totale, mediane, arete,
+                                  vue[0], vue[1], vue[2]))
+
+    ecarts = []
+    if part > GRAVATS_HEXA_PLAFOND:
+        ecarts.append("%s : boîtitude %.1f %% > plafond %.1f %% — le tas est "
+                      "encore fait de pavés"
+                      % (nom, 100.0 * part, 100.0 * GRAVATS_HEXA_PLAFOND))
+    if len(comps) < GRAVATS_COMPOSANTES_MIN:
+        ecarts.append("%s : %d composante(s) < %d — supprimer des fragments "
+                      "n'est pas les corriger"
+                      % (nom, len(comps), GRAVATS_COMPOSANTES_MIN))
+    if aire_totale < GRAVATS_AIRE_MIN[nom]:
+        ecarts.append("%s : aire %.4f m² < %.2f m² — tas rétréci"
+                      % (nom, aire_totale, GRAVATS_AIRE_MIN[nom]))
+    if mediane < GRAVATS_AIRE_MEDIANE_MIN:
+        ecarts.append("%s : aire médiane %.5f m² < %.2f m² — tas pulvérisé"
+                      % (nom, mediane, GRAVATS_AIRE_MEDIANE_MIN))
+    if arete < GRAVATS_ARETE_MIN:
+        ecarts.append("%s : arête minimale %.6f m < %.3f m — poussière"
+                      % (nom, arete, GRAVATS_ARETE_MIN))
+    for k, axe, tol in ((0, "X", GRAVATS_TOL_XZ), (1, "Y", GRAVATS_TOL_Y),
+                        (2, "Z", GRAVATS_TOL_XZ)):
+        if abs(vue[k] - attendue[k]) > tol * attendue[k]:
+            ecarts.append("%s : emprise Godot %s = %.4f m, attendue %.4f "
+                          "± %.4f — l'implantation du lieu a bougé"
+                          % (nom, axe, vue[k], attendue[k],
+                             tol * attendue[k]))
+    return ecarts
+
+
 def tris_de(obj):
     obj.data.calc_loop_triangles()
     return len(obj.data.loop_triangles)
@@ -1103,6 +1431,18 @@ def main():
         print("[farm_ruins] ERREUR: le pignon n'est pas ROMPU (asymetrie "
               "%.3f < 0.12 ou %d gradin(s) < 3) — un pignon intact est un mur "
               "de plus, pas une rupture de silhouette" % (asymetrie, gradins))
+        return 2
+
+    # GARDE R2B.3 — LES GRAVATS SONT DES FRAGMENTS, PAS DES PAVÉS (ISS-060).
+    ecarts = []
+    for obj in pieces:
+        if obj.name in GRAVATS_EMPRISE_GODOT:
+            ecarts.extend(controle_gravats(obj))
+    if ecarts:
+        for message in ecarts:
+            print("[farm_ruins] ERREUR: %s" % message)
+        print("[farm_ruins] ERREUR: le générateur REFUSE d'enregistrer — "
+              "voir ISS-060")
         return 2
 
     sortie = os.path.join(os.path.dirname(os.path.abspath(__file__)),

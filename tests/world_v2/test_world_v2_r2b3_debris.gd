@@ -18,6 +18,12 @@
 ## poutre EST un pavé — douze triangles, huit sommets soudés. Dix poutres sur
 ## onze composantes, d'où 120/124.
 ##
+## CALIBRAGE DU PLAFOND, pour qu'il ne se lise pas comme un chiffre arbitraire :
+## le lead a passé l'instrument sur `SM_ThunderstruckTree.glb`, sujet qu'il a
+## ACCEPTÉ à l'œil au verdict R2B.2 — 3 574 triangles, boîtitude **10,4 %**. Un
+## travail déjà validé de ce projet tient donc très en deçà de 25 %. Le plafond
+## n'est pas à négocier et ne se vise pas à 24,9 %.
+##
 ## POURQUOI SIX CRITÈRES ET NON UN SEUL. Il existe trois façons de faire tomber
 ## un pourcentage sans traiter le sujet : **supprimer** les débris, les
 ## **rétrécir**, les **pulvériser** en bruit sous-pixel. Un plafond de boîtitude
@@ -76,7 +82,22 @@ const AIRE_MEDIANE_MIN_M2: float = 0.08
 ## -- Plancher 4 : pas de bruit sous-pixel -------------------------------------
 ## La directive l'interdit explicitement : « aucun détail sous-pixel destiné
 ## seulement à faire tomber le chiffre ».
-const ARETE_MIN_M: float = 0.03
+##
+## CORRIGÉ PAR LE LEAD, DANS LE SENS STRICT → LÂCHE, ET AVANT DE VOIR LE
+## RÉSULTAT : 0,03 m devient 0,005 m. Raison mesurée par lui sur
+## `assets/architecture/flora/SM_ThunderstruckTree.glb`, asset ACCEPTÉ
+## visuellement au verdict R2B.2 — `..._BranchE` y descend à 0,007089 m
+## d'arête, `..._BranchD` à 0,021946 m. Un plancher de 30 mm aurait donc
+## interdit ici une finesse de fracture qui existe déjà dans un sujet validé du
+## même projet : il aurait bloqué du bon travail au lieu d'un contournement.
+##
+## LE GARDE ANTI-PULVÉRISATION NE BOUGE PAS POUR AUTANT : c'est l'aire médiane
+## de composante ci-dessus qui empêche de faire tomber le chiffre en réduisant
+## le tas en poussière. `arete_min` n'attrape plus que le sub-millimétrique.
+## Le tas livré rend ~0,06 m, soit douze fois le plancher corrigé et deux fois
+## l'ancien : la correction du seuil ne change rien au verdict ici, et c'est
+## pour cela qu'elle peut être rapportée sans soupçon.
+const ARETE_MIN_M: float = 0.005
 
 ## -- Plancher 5 : l'implantation ne bouge pas ---------------------------------
 ## Emprise POSITION du GLB de départ, repère local du mesh (X, Y = hauteur, Z),

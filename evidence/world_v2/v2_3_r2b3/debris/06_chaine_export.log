@@ -1,0 +1,48 @@
+=== Blender: Blender 4.0.2 ===
+
+--- farm_ruins : génération de la source ---
+  [farm_ruins] SM_Farm_Truss             212 tris  X -3.08..3.08  Y -3.15..3.35  Z 0.000..1.43
+  [farm_ruins] SM_Farm_RoofPan_Intact    108 tris  X 0.00..3.55  Y -3.40..3.40  Z 0.000..0.14
+  [farm_ruins] SM_Farm_RoofPan_Fallen    108 tris  X 0.00..3.15  Y -1.72..1.77  Z 0.000..2.16
+  [farm_ruins] SM_Farm_Debris_A          196 tris  X -0.79..0.70  Y -0.69..0.53  Z 0.000..0.67
+  [farm_ruins] SM_Farm_Debris_B          196 tris  X -0.60..0.58  Y -0.51..0.45  Z 0.000..0.66
+  [farm_ruins] SM_Farm_GableBreak        308 tris  X -3.21..2.11  Y -0.34..0.03  Z 0.000..2.23
+  [farm_ruins] SM_Farm_WallStub_East      84 tris  X -1.19..1.03  Y -0.22..0.26  Z 0.000..1.46
+  [farm_ruins] SM_Farm_Rubble_Wall       184 tris  X -1.27..1.13  Y -0.74..0.74  Z 0.000..0.62
+  [farm_ruins] SM_Farm_Jamb_Door         108 tris  X -1.13..1.13  Y -0.02..0.50  Z 0.000..2.10
+  [farm_ruins] SM_Farm_Jamb_Breach        92 tris  X -1.13..1.13  Y -0.02..0.50  Z 0.000..1.72
+  [farm_ruins] SM_Farm_InteriorFrame      72 tris  X 0.01..0.74  Y -2.60..2.40  Z 0.000..2.88
+  [farm_ruins] SM_Farm_JoistStubs         76 tris  X 0.00..1.18  Y -2.02..1.98  Z 0.000..0.39
+  [farm_ruins] SM_Farm_WallBreak_North   336 tris  X -2.75..1.45  Y -0.29..0.26  Z 0.000..3.28
+  [farm_ruins] SM_Farm_Rubble_North      144 tris  X -0.71..0.81  Y -0.46..0.50  Z 0.000..0.52
+  [farm_ruins] total 2224 triangles (budget 4500)
+  [farm_ruins] pignon : asymetrie 0.521, 39 gradin(s) d'arrachement
+  [farm_ruins] gravats SM_Farm_Debris_A   12 comp 196 tris  hexa   6.1%  aire 3.9967  med 0.31417  arete 0.059032  emprise Godot 1.4944 x 0.6662 x 1.2194
+  [farm_ruins] gravats SM_Farm_Debris_B   12 comp 196 tris  hexa   6.1%  aire 3.9549  med 0.32056  arete 0.064464  emprise Godot 1.1853 x 0.6626 x 0.9542
+  [farm_ruins] source enregistrée -> /home/user/wt_r2b3_a_debris/source_assets/blender/architecture/SM_Farm_Ruins.blend
+--- farm_ruins : export .glb ---
+  [export_gltf] Blender 4.0.2
+  [export_gltf] io_scene_gltf2 version (4, 0, 44)
+  [export_gltf] preset: export_animation_mode=ACTIONS, export_animations=False, export_apply=True, export_cameras=False, export_extras=False, export_force_sampling=True, export_format=GLB, export_lights=False, export_materials=EXPORT, export_normals=True, export_optimize_animation_size=False, export_skins=True, export_tangents=True, export_texcoords=True, export_yup=True, use_selection=False, use_visible=True
+  [export_gltf] OK -> /home/user/wt_r2b3_a_debris/assets/architecture/farm/SM_Farm_Ruins.glb (211336 octets)
+  frais: assets/architecture/farm/SM_Farm_Ruins.glb (211336 octets)
+--- farm_ruins : inspection glTF hors moteur ---
+  === INSPECTION glTF : assets/architecture/farm/SM_Farm_Ruins.glb ===
+    format                 : GLB v2, 211336 octets
+    chunk_binaire          : 187400 octets
+    generateur             : Khronos glTF Blender I/O v4.0.44
+    version_gltf           : 2.0
+    meshes                 : 14
+    materiaux              : 4 (MAT_Farm_Wood, MAT_Farm_BrokenWood, MAT_Farm_Tiles, MAT_Farm_Stone)
+    textures               : 0 image(s), 0 texture(s)
+    noeuds                 : 14 (SM_Farm_Truss, SM_Farm_RoofPan_Intact, SM_Farm_RoofPan_Fallen, SM_Farm_Debris_A, SM_Farm_Debris_B, SM_Farm_GableBreak, SM_Farm_WallStub_East, SM_Farm_Rubble_Wall)
+    skins                  : 0
+    animations             : 0 (aucune)
+    triangles              : 2224
+    bbox_min               : [-3.2074, 0, -3.4]
+    bbox_max               : [3.55, 3.2787, 3.4]
+    dimensions_m           : [6.7574, 3.2787, 6.8]
+  === VALIDE ===
+
+=== EXPORT ARCHITECTURE : VERT ===
+RC=0
