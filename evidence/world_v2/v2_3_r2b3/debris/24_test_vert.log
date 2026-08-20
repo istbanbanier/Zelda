@@ -1,0 +1,12 @@
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: r2b3_debris
+[r2b3_debris] SM_Farm_Debris_A     comp=12 tris=198 liant=0.0% aire_tot=4.0704 aire_med=0.31416 fine=0.0000% arete_min=0.059027 emprise=1.5044 x 0.6841 x 1.2194
+[r2b3_debris] SM_Farm_Debris_B     comp=12 tris=198 liant=0.0% aire_tot=4.0282 aire_med=0.32057 fine=0.0000% arete_min=0.064450 emprise=1.1803 x 0.6883 x 0.9542
+  ok   test_world_v2_r2b3_debris.gd::test_les_gravats_ne_sont_pas_des_paves (1 assertions)
+[r2b3_debris] ferme entière : 2228 triangles, 27 surfaces
+  ok   test_world_v2_r2b3_debris.gd::test_le_budget_tient_et_toute_primitive_porte_ses_uv (1 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 2 réussi(s), 0 échoué(s) ===

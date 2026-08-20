@@ -76,14 +76,20 @@
 # 96,8 % des triangles des deux tas appartenaient à des composantes de
 # 12 triangles et 8 sommets — dix `poutre()` sur onze composantes.
 #
-# Deux gestes, et aucun des deux n'est cosmétique :
+# Trois gestes, et aucun des trois n'est cosmétique :
 #   * la primitive : `eclat()` remplace `poutre()` dans les gravats. 2k+1
 #     sommets, donc JAMAIS huit, quel que soit k — c'est une propriété de
 #     construction, pas un réglage ;
 #   * le semis : `SEMIS_GRAVATS` est écrit à la main — cœur haut, deux grappes,
 #     morceaux projetés, et 122° de VIDE — là où l'angle d'or produisait une
-#     couronne de densité uniforme, c'est-à-dire la bordure rejetée.
-# `controle_gravats()` refuse d'enregistrer si l'un des six planchers cède.
+#     couronne de densité uniforme, c'est-à-dire la bordure rejetée ;
+#   * le chevron : `poutre_rompue()` remplace `poutre()`. Un premier jet le
+#     laissait en pavé — 6,1 % de liant, sous le plafond de 25 mais au-dessus
+#     du témoin que le lead a fini par retenir, les tas de gravats DÉJÀ
+#     ACCEPTÉS du donjon, à 0,00 %. Un bois qui gît dans les décombres a cassé :
+#     scié d'équerre d'un bout, déchiré de l'autre. Plus vrai ET à zéro.
+# `controle_gravats()` refuse d'enregistrer si l'un des six planchers cède, et
+# il l'a fait deux fois pendant cette passe.
 #
 # BUDGET VERROUILLÉ AVANT MODÉLISATION (arbitrage R2B) : ferme ≤ 4 500
 # triangles au total, 3 matériaux, sRGB converti en linéaire explicitement.
@@ -403,13 +409,22 @@ def _rotation_xyz(p, angles):
 # IMPAIR : un éclat ne peut jamais en avoir huit, quel que soit k.** Ce n'est
 # pas un réglage heureux qu'un paramètre pourrait défaire plus tard, c'est une
 # propriété de la construction — et c'est la seule raison honnête pour laquelle
-# la boîtitude tombe ici.
+# la boîtitude tombe ici. Le second prédicat du liant, `pave6` (exactement
+# 6 plans et 8 coins), ne peut pas davantage s'y appliquer : les deux anneaux
+# sont vrillés et bruités, aucune face n'est plane à 1 mm près de sa voisine.
+#
+# L'ÉCONOMIE EST CELLE DES TAS DÉJÀ ACCEPTÉS. `SM_Dungeon_RubbleLarge` — que
+# le lead a retenu comme témoin après l'audit — porte des fragments de 20
+# triangles pour 12 sommets et 8 plans, et de 10 triangles pour 8 sommets et
+# 5 plans. Les éclats ci-dessus font 14, 18 ou 22 triangles. Même famille,
+# même densité : le portail n'est pas franchi en dépensant de la géométrie.
 #
 # CE QUE CE N'EST PAS. Aucun détail sous-pixel : l'arête la plus courte du tas
-# reste de l'ordre de 6 cm. Le chiffre ne tombe pas parce qu'on a pulvérisé la
-# géométrie, il tombe parce que les morceaux ont changé de forme — et
-# `controle_gravats()`, plus bas, REFUSE d'enregistrer si l'une des deux
-# tricheries voisines (rétrécir, pulvériser) avait servi à la place.
+# reste de l'ordre de 6 cm, et la part d'aire sous 2 mm est nulle. Le chiffre
+# ne tombe pas parce qu'on a pulvérisé la géométrie, il tombe parce que les
+# morceaux ont changé de forme — et `controle_gravats()`, plus bas, REFUSE
+# d'enregistrer si l'une des trois tricheries voisines (rétrécir, pulvériser,
+# subdiviser) avait servi à la place.
 # ---------------------------------------------------------------------------
 def eclat(bm, centre, taille, graine, materiau_idx, cotes=5,
           rotation=(0.0, 0.0, 0.0), pose=0.0):
@@ -459,6 +474,65 @@ def eclat(bm, centre, taille, graine, materiau_idx, cotes=5,
     for f in faces:
         f.material_index = materiau_idx
     return faces
+
+
+def poutre_rompue(bm, depart, arrivee, largeur, hauteur, materiau_idx,
+                  materiau_pointe, pointe_m=0.24, jitter=0.006):
+    """Un bois SCIÉ à un bout et ROMPU à l'autre — 9 sommets, 14 triangles.
+
+    POURQUOI IL EXISTE (R2B.3, seconde passe). Le chevron qui émerge des
+    gravats était une `poutre()`, donc un pavé, donc la seule composante liante
+    du tas : 6,1 %. Le témoin que le lead a fini par retenir — les tas de
+    gravats DÉJÀ ACCEPTÉS du donjon, `SM_Dungeon_RubbleLarge`, 150 triangles
+    pour 10 composantes — rend **0,00 %**. Six pour cent ne fait pas échouer le
+    portail, mais c'est un pavé dans un tas de gravats, c'est-à-dire exactement
+    l'objet du verdict visuel.
+
+    LA CORRECTION N'EST PAS UN ARRANGEMENT DE COMPTEUR, elle est plus VRAIE :
+    ce bois est dans les décombres parce qu'il a CASSÉ. Un bout scié d'équerre,
+    l'autre déchiré — quatre coins qui s'arrêtent à des distances différentes,
+    puis une pointe d'éclat en bois clair. Une section franche aux deux bouts
+    se lit comme une pièce de charpente posée là, pas comme une rupture.
+    """
+    dx = [arrivee[i] - depart[i] for i in range(3)]
+    longueur = math.sqrt(sum(c * c for c in dx))
+    axe = [c / longueur for c in dx]
+    if abs(axe[2]) < 0.99:
+        cote = [-axe[1], axe[0], 0.0]
+        n = math.sqrt(sum(c * c for c in cote)) or 1.0
+        cote = [c / n for c in cote]
+    else:
+        cote = [1.0, 0.0, 0.0]
+    haut = [axe[1] * cote[2] - axe[2] * cote[1],
+            axe[2] * cote[0] - axe[0] * cote[2],
+            axe[0] * cote[1] - axe[1] * cote[0]]
+
+    def coin(point, sc, sh, avance, j):
+        return bm.verts.new(tuple(
+            point[k] + cote[k] * (largeur * 0.5 * sc + j)
+            + haut[k] * hauteur * 0.5 * sh + axe[k] * avance
+            for k in range(3)))
+
+    signes = ((-1, -1), (1, -1), (1, 1), (-1, 1))
+    proches = [coin(depart, sc, sh, 0.0, _graine(sc * 2.3 + sh * 4.7) * jitter)
+               for sc, sh in signes]
+    # LA RUPTURE EST DENTELÉE : chaque coin du bout cassé s'arrête à une
+    # distance différente. Une section franche se lirait comme une COUPE.
+    loins = [coin(arrivee, sc, sh,
+                  abs(_graine(i * 3.7 + 1.1)) * pointe_m * 1.1,
+                  _graine(sc * 1.9 + sh * 3.1) * jitter)
+             for i, (sc, sh) in enumerate(signes)]
+    pointe = bm.verts.new(tuple(
+        arrivee[k] + axe[k] * pointe_m + cote[k] * largeur * 0.20
+        - haut[k] * hauteur * 0.16 for k in range(3)))
+
+    for f in [bm.faces.new(tuple(proches))] + [
+            bm.faces.new((proches[i], loins[i], loins[(i + 1) % 4],
+                          proches[(i + 1) % 4])) for i in range(4)]:
+        f.material_index = materiau_idx
+    for i in range(4):
+        f = bm.faces.new((loins[i], loins[(i + 1) % 4], pointe))
+        f.material_index = materiau_pointe
 
 
 # ---------------------------------------------------------------------------
@@ -673,16 +747,18 @@ def gravats(bm, graine, etendue):
                math.sin(angle) * rayon_rel * etendue * SEMIS_APLATI_Y,
                0.0),
               taille, g, idx, cotes=cotes, rotation=rotation, pose=pose)
-    # Un chevron cassé émerge du tas — la cause au milieu des conséquences.
-    # IL RESTE UNE POUTRE, ET C'EST VOULU : un bois de charpente est scié
-    # d'équerre, le rendre anguleux serait mentir sur la matière pour flatter
-    # un compteur. C'est la seule composante `hexa` du tas — 12 triangles sur
-    # ~196, soit ~6 %, très en deçà du plafond de 25.
+    # Un chevron CASSÉ émerge du tas — la cause au milieu des conséquences.
+    # Scié d'équerre côté racine, déchiré côté pointe : c'est la rupture qui
+    # explique sa présence dans les décombres. Voir `poutre_rompue` pour la
+    # raison de ne PAS le laisser en pavé.
     bout = etendue * GRAVATS_CHEVRON_BOUT
-    poutre(bm, (-etendue * 0.5, 0.1, 0.05), (bout, -0.2, 0.55),
-           CHEVRON_SECTION[0], CHEVRON_SECTION[1], IDX_BOIS)
-    echarde(bm, (bout, -0.2, 0.55), (0.8, -0.3, 0.4), 0.26,
-            CHEVRON_SECTION[0], IDX_CASSURE)
+    poutre_rompue(bm, (-etendue * 0.5, 0.1, 0.05), (bout, -0.2, 0.55),
+                  CHEVRON_SECTION[0], CHEVRON_SECTION[1], IDX_BOIS,
+                  IDX_CASSURE)
+    # Un second éclat, détaché, tombé plus bas : le bois clair est le seul
+    # accent lumineux du tas, il doit apparaître à deux endroits.
+    echarde(bm, (-etendue * 0.14, -etendue * 0.34, 0.02),
+            (0.55, -0.50, 0.60), 0.28, CHEVRON_SECTION[0], IDX_CASSURE)
 
 
 # ---------------------------------------------------------------------------
@@ -1192,42 +1268,64 @@ def objet_depuis(nom, remplir):
 # ---------------------------------------------------------------------------
 # LE GARDE DES GRAVATS (R2B.3, ISS-060) — SIX PLANCHERS, ET POURQUOI SIX
 #
-# Il y a trois façons de faire tomber un pourcentage de boîtitude sans traiter
-# le sujet : SUPPRIMER les débris, les RÉTRÉCIR, les PULVÉRISER en poussière.
-# Le plafond seul récompenserait les trois. Les planchers qui l'accompagnent
-# sont donc liants au même titre, et le générateur REFUSE d'enregistrer si l'un
-# d'eux cède — comme il refuse déjà un budget dépassé ou un pignon droit.
+# Il y a quatre façons de faire tomber un pourcentage de boîtitude sans traiter
+# le sujet : SUPPRIMER les débris, les RÉTRÉCIR, les PULVÉRISER en poussière,
+# les SUBDIVISER. Le plafond seul récompenserait les quatre. Les planchers qui
+# l'accompagnent sont donc liants au même titre, et le générateur REFUSE
+# d'enregistrer si l'un d'eux cède — comme il refuse déjà un budget dépassé ou
+# un pignon droit.
 #
-# LES VALEURS SONT CELLES DU LEAD, mesurées sur le GLB de départ
-# (sha256 9c7b94e1…). Aucune n'est relevée ici : un seuil déplacé pour faire
-# passer sa propre correction est la façon exacte dont un portail s'affaiblit
-# sans que personne ne mente (PROMPT4_METHOD §2).
+# LES VALEURS SONT CELLES DU LEAD. Aucune n'est relevée ici : un seuil déplacé
+# pour faire passer sa propre correction est la façon exacte dont un portail
+# s'affaiblit sans que personne ne mente (PROMPT4_METHOD §2). Deux ont bougé,
+# les deux par le LEAD, sur constat de l'audit indépendant du 2026-08-20, et
+# les deux AVANT de voir ce résultat :
 #
-# UNE SEULE A ÉTÉ CORRIGÉE, PAR LE LEAD, ET DANS LE SENS STRICT → LÂCHE :
-# l'arête minimale passe de 0,03 m à 0,005 m. Raison mesurée par lui sur
-# `SM_ThunderstruckTree.glb`, asset ACCEPTÉ visuellement au verdict R2B.2 :
-# `BranchE` descend à 0,0071 m d'arête. Un plancher de 30 mm aurait donc
-# interdit ici une finesse de fracture qui existe déjà dans un sujet validé du
-# même projet — il aurait bloqué du bon travail plutôt qu'un contournement. Le
-# vrai garde anti-pulvérisation reste l'AIRE MÉDIANE de composante, qui ne
-# bouge pas ; `arete_min` n'attrape plus que la poussière sub-millimétrique.
+#   * le plancher d'arête minimale est SUPPRIMÉ. Il rejetait la grotte
+#     (0,000365 m), le pont (0,000573 m) et le cœur de l'arbre (0,003941 m) —
+#     trois assets GELÉS et validés. Remplacé par `aire_fine`, part d'aire
+#     portée par des triangles de moins de 2 mm d'arête, mesurée à 0,0000 % sur
+#     les huit assets acceptés. `arete_min` reste PUBLIÉE, sans être liante ;
+#   * un plafond de 600 triangles PAR TAS est ajouté : le budget global de
+#     4 500 laissait un facteur ×13,4 sur la densité des débris.
 #
-# CALIBRAGE, pour ne pas viser 24,9 % : le même arbre accepté rend 10,4 % de
-# boîtitude sur 3 574 triangles. Le plafond de 25 est donc largement atteignable
-# par le travail déjà validé de ce projet.
+# CALIBRAGE — ET LE PREMIER TÉMOIN ÉTAIT MAUVAIS. Le lead avait calibré sur
+# l'arbre foudroyé (10,4 %). L'audit a proposé la MÊME FAMILLE D'OBJET :
+# `SM_Dungeon_RubbleLarge`, tas de gravats accepté, 150 triangles pour
+# 10 composantes — soit 15 triangles par fragment — rend **0,00 %**. C'est cette
+# valeur qu'on vise, pas 24,9. Les éclats ci-dessus tiennent 14 à 22 triangles
+# chacun : la même économie.
 #
 # HYPOTHÈSE ASSUMÉE DE CE CONTRÔLE : ici la connexité se lit sur les indices de
 # sommets de Blender, alors que l'instrument du portail soude d'abord par
-# POSITION à 10 µm. Les deux ne coïncident que si aucun fragment ne touche son
-# voisin à 10 µm près. C'est le cas — et si ça cessait de l'être, c'est
-# `tools/mesure_boititude.py` sur le GLB, puis le filet Godot, qui trancheraient.
-# Ce garde est le premier filet, jamais le dernier mot.
+# POSITION à 0,1 mm et fusionne les primitives. Les deux ne coïncident que si
+# aucun fragment ne touche son voisin à 0,1 mm près. C'est le cas — et si ça
+# cessait de l'être, c'est `tools/mesure_boititude.py` sur le GLB, puis le filet
+# Godot, qui trancheraient. Ce garde est le premier filet, jamais le dernier mot.
 # ---------------------------------------------------------------------------
 GRAVATS_HEXA_PLAFOND = 0.25
 GRAVATS_COMPOSANTES_MIN = 9
 GRAVATS_AIRE_MIN = {"SM_Farm_Debris_A": 3.20, "SM_Farm_Debris_B": 3.35}
 GRAVATS_AIRE_MEDIANE_MIN = 0.08
-GRAVATS_ARETE_MIN = 0.005
+# Part d'aire portée par des triangles dont la PLUS LONGUE arête est sous 2 mm.
+# Remplace un plancher d'arête minimale que le lead a retiré après que l'audit
+# eut montré qu'il rejetait la grotte (0,000365 m), le pont (0,000573 m) et le
+# cœur de l'arbre (0,003941 m) — trois assets GELÉS et validés. La cause de
+# fond n'est pas le nombre : `arete_min` est une statistique d'ordre extrême,
+# fixée par un triangle sur 3 574. Une PART D'AIRE, elle, ne monte qu'en
+# pulvérisant réellement la géométrie. Mesurée à 0,0000 % sur les huit assets
+# acceptés — donc une marge immense, pas un seuil taillé sur son sujet.
+GRAVATS_AIRE_FINE_MAX = 0.01
+GRAVATS_FINESSE_M = 2e-3
+# Budget PAR TAS. Le plafond global de 4 500 laisse encore un facteur ×13,4 sur
+# la densité des débris : assez pour faire tomber le liant en subdivisant plutôt
+# qu'en changeant de forme. Plancher ajouté par le lead sur constat de l'audit.
+GRAVATS_TRIS_MAX = 600
+# Tolérances de plan, reprises À L'IDENTIQUE de `tools/mesure_boititude.py` :
+# un garde plus lâche que le portail ne garde rien.
+GRAVATS_NORMALE_DOT = 0.999
+GRAVATS_PLAN_EPS = 1e-3
+GRAVATS_AIRE_NULLE = 1e-10
 # Emprise mesurée sur le GLB de R2B.2, dans le repère GODOT (X, Y hauteur, Z).
 GRAVATS_EMPRISE_GODOT = {
     "SM_Farm_Debris_A": (1.4279, 0.6841, 1.1525),
@@ -1238,10 +1336,22 @@ GRAVATS_TOL_Y = 0.30
 
 
 def _composantes(obj):
-    """Composantes connexes d'un maillage : (n_triangles, n_sommets, aire,
-    arête la plus courte)."""
+    """Composantes connexes : (n_tri, n_sommets, liant, aire, aire_fine, arête).
+
+    `liant` reprend MOT POUR MOT le prédicat de `tools/mesure_boititude.py`
+    depuis sa correction du 2026-08-20 : `hexa` (12 triangles ET 8 sommets) OU
+    `pave6` (exactement 6 plans ET 8 coins, un coin étant un sommet touchant au
+    moins trois plans). `hexa` seul tombait à 0 % sous quatre perturbations qui
+    ne changent RIEN à l'image — triangle d'aire nulle, subdivision coplanaire,
+    coin décalé de 12 µm, pavé réparti sur deux primitives. Ce n'était pas un
+    risque de fraude, c'était un VERT ACCIDENTEL après remaillage.
+
+    Les triangles dégénérés sont écartés AVANT tout comptage, pour la même
+    raison : un seul d'entre eux faisait passer un pavé de 12 à 13 triangles.
+    """
     maillage = obj.data
     maillage.calc_loop_triangles()
+    co = [v.co for v in maillage.vertices]
     parent = list(range(len(maillage.vertices)))
 
     def racine(a):
@@ -1250,33 +1360,59 @@ def _composantes(obj):
             a = parent[a]
         return a
 
-    triangles = []
+    vivants = []
     for boucle in maillage.loop_triangles:
         a, b, c = boucle.vertices
-        triangles.append((a, b, c))
+        brut = (co[b] - co[a]).cross(co[c] - co[a])
+        aire = brut.length * 0.5
+        if aire <= GRAVATS_AIRE_NULLE:
+            continue
+        vivants.append(((a, b, c), brut.normalized(), aire))
         for x, y in ((a, b), (b, c)):
             rx, ry = racine(x), racine(y)
             if rx != ry:
                 parent[ry] = rx
 
     groupes = {}
-    for tri in triangles:
-        groupes.setdefault(racine(tri[0]), []).append(tri)
+    for entree in vivants:
+        groupes.setdefault(racine(entree[0][0]), []).append(entree)
 
-    co = [v.co for v in maillage.vertices]
     sortie = []
     for membres in groupes.values():
         vus = set()
         aire = 0.0
+        aire_fine = 0.0
         arete = float("inf")
-        for a, b, c in membres:
-            vus.update((a, b, c))
-            aire += (co[b] - co[a]).cross(co[c] - co[a]).length * 0.5
-            for x, y in ((a, b), (b, c), (c, a)):
-                d = (co[x] - co[y]).length
-                if 0.0 < d < arete:
-                    arete = d
-        sortie.append((len(membres), len(vus), aire, arete))
+        plans = []                      # [(normale, d, {sommets})]
+        for tri, n, a in membres:
+            vus.update(tri)
+            aire += a
+            d = n.dot(co[tri[0]])
+            trouve = None
+            for plan in plans:
+                if (n.dot(plan[0]) >= GRAVATS_NORMALE_DOT
+                        and abs(d - plan[1]) <= GRAVATS_PLAN_EPS):
+                    trouve = plan
+                    break
+            if trouve is None:
+                plans.append((n, d, set(tri)))
+            else:
+                trouve[2].update(tri)
+            longueurs = [(co[tri[i]] - co[tri[(i + 1) % 3]]).length
+                         for i in range(3)]
+            if max(longueurs) < GRAVATS_FINESSE_M:
+                aire_fine += a
+            for longueur in longueurs:
+                if 0.0 < longueur < arete:
+                    arete = longueur
+        incidences = {}
+        for _n, _d, sommets_du_plan in plans:
+            for s in sommets_du_plan:
+                incidences[s] = incidences.get(s, 0) + 1
+        coins = sum(1 for k in incidences.values() if k >= 3)
+        liant = ((len(membres) == 12 and len(vus) == 8)
+                 or (len(plans) == 6 and coins == 8))
+        sortie.append((len(membres), len(vus), liant, aire, aire_fine, arete))
     return sortie
 
 
@@ -1285,41 +1421,46 @@ def controle_gravats(obj):
     nom = obj.name
     comps = _composantes(obj)
     tris = sum(c[0] for c in comps)
-    tris_hexa = sum(c[0] for c in comps if c[0] == 12 and c[1] == 8)
-    part = (tris_hexa / tris) if tris else 0.0
-    aires = sorted(c[2] for c in comps)
+    tris_liant = sum(c[0] for c in comps if c[2])
+    part = (tris_liant / tris) if tris else 0.0
+    aires = sorted(c[3] for c in comps)
     aire_totale = sum(aires)
     mediane = aires[len(aires) // 2] if aires else 0.0
-    arete = min((c[3] for c in comps), default=0.0)
+    fine = (sum(c[4] for c in comps) / aire_totale) if aire_totale else 0.0
+    arete = min((c[5] for c in comps), default=0.0)
     (bx0, bx1), (by0, by1), (bz0, bz1) = emprise(obj)
     # Blender (x, y, z) -> Godot (x, z, -y) : l'emprise Godot Y est la HAUTEUR.
     vue = (bx1 - bx0, bz1 - bz0, by1 - by0)
     attendue = GRAVATS_EMPRISE_GODOT[nom]
 
-    print("[farm_ruins] gravats %-18s %2d comp %3d tris  hexa %5.1f%%  "
-          "aire %6.4f  med %7.5f  arete %8.6f  emprise Godot "
+    print("[farm_ruins] gravats %-18s %2d comp %3d tris  liant %5.1f%%  "
+          "aire %6.4f  med %7.5f  fine %6.4f%%  arete %8.6f  emprise Godot "
           "%.4f x %.4f x %.4f" % (nom, len(comps), tris, 100.0 * part,
-                                  aire_totale, mediane, arete,
+                                  aire_totale, mediane, 100.0 * fine, arete,
                                   vue[0], vue[1], vue[2]))
 
     ecarts = []
     if part > GRAVATS_HEXA_PLAFOND:
-        ecarts.append("%s : boîtitude %.1f %% > plafond %.1f %% — le tas est "
+        ecarts.append("%s : liant %.1f %% > plafond %.1f %% — le tas est "
                       "encore fait de pavés"
                       % (nom, 100.0 * part, 100.0 * GRAVATS_HEXA_PLAFOND))
     if len(comps) < GRAVATS_COMPOSANTES_MIN:
         ecarts.append("%s : %d composante(s) < %d — supprimer des fragments "
                       "n'est pas les corriger"
                       % (nom, len(comps), GRAVATS_COMPOSANTES_MIN))
+    if tris > GRAVATS_TRIS_MAX:
+        ecarts.append("%s : %d triangles > %d — un tas subdivisé fait tomber "
+                      "le liant sans changer de forme"
+                      % (nom, tris, GRAVATS_TRIS_MAX))
     if aire_totale < GRAVATS_AIRE_MIN[nom]:
         ecarts.append("%s : aire %.4f m² < %.2f m² — tas rétréci"
                       % (nom, aire_totale, GRAVATS_AIRE_MIN[nom]))
     if mediane < GRAVATS_AIRE_MEDIANE_MIN:
         ecarts.append("%s : aire médiane %.5f m² < %.2f m² — tas pulvérisé"
                       % (nom, mediane, GRAVATS_AIRE_MEDIANE_MIN))
-    if arete < GRAVATS_ARETE_MIN:
-        ecarts.append("%s : arête minimale %.6f m < %.3f m — poussière"
-                      % (nom, arete, GRAVATS_ARETE_MIN))
+    if fine > GRAVATS_AIRE_FINE_MAX:
+        ecarts.append("%s : aire fine %.4f %% > %.2f %% — poussière sous 2 mm"
+                      % (nom, 100.0 * fine, 100.0 * GRAVATS_AIRE_FINE_MAX))
     for k, axe, tol in ((0, "X", GRAVATS_TOL_XZ), (1, "Y", GRAVATS_TOL_Y),
                         (2, "Z", GRAVATS_TOL_XZ)):
         if abs(vue[k] - attendue[k]) > tol * attendue[k]:

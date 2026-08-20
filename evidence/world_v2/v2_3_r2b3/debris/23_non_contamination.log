@@ -1,0 +1,18 @@
+mesh                     AVANT tris / emprise         APRÈS tris / emprise         verdict
+SM_Farm_Debris_A          124  1.4279 0.6841 1.1525    198  1.5044 0.6841 1.2194   PÉRIMÈTRE (changement attendu)
+SM_Farm_Debris_B          124  1.1721 0.6852 1.0310    198  1.1803 0.6883 0.9542   PÉRIMÈTRE (changement attendu)
+SM_Farm_GableBreak        308  5.3213 2.2325 0.3760    308  5.3213 2.2325 0.3760   identique
+SM_Farm_InteriorFrame      72  0.7211 2.8819 4.9907     72  0.7211 2.8819 4.9907   identique
+SM_Farm_Jamb_Breach        92  2.2625 1.7200 0.5200     92  2.2625 1.7200 0.5200   identique
+SM_Farm_Jamb_Door         108  2.2625 2.1000 0.5200    108  2.2625 2.1000 0.5200   identique
+SM_Farm_JoistStubs         76  1.1794 0.3950 3.9934     76  1.1794 0.3950 3.9934   identique
+SM_Farm_RoofPan_Fallen    108  3.1500 2.1612 3.4823    108  3.1500 2.1612 3.4823   identique
+SM_Farm_RoofPan_Intact    108  3.5500 0.1430 6.8000    108  3.5500 0.1430 6.8000   identique
+SM_Farm_Rubble_North      144  1.5218 0.5207 0.9558    144  1.5218 0.5207 0.9558   identique
+SM_Farm_Rubble_Wall       184  2.3947 0.6221 1.4789    184  2.3947 0.6221 1.4789   identique
+SM_Farm_Truss             212  6.1647 1.4283 6.5000    212  6.1647 1.4283 6.5000   identique
+SM_Farm_WallBreak_North   336  4.1986 3.2787 0.5536    336  4.1986 3.2787 0.5536   identique
+SM_Farm_WallStub_East      84  2.2233 1.4580 0.4762     84  2.2233 1.4580 0.4762   identique
+
+12 mesh(es) comparé(s) hors périmètre, 0 écart(s)
+=== NON CONTAMINÉ ===

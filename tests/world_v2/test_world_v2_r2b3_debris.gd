@@ -10,29 +10,43 @@
 ## `9c7b94e1848dc1a1d33967343ee1c2a7868b38ab239d003de6cf4dcbc3216b3c`, journal
 ## `evidence/world_v2/v2_3_r2b3/debris/02_instrument_rouge_avant.log` :
 ##
-##   mesh               comp  tris    hexa   aire tot.  aire méd.  arête min
-##   SM_Farm_Debris_A     11   124   96,8 %    3,9764    0,32639     0,060
-##   SM_Farm_Debris_B     11   124   96,8 %    4,1805    0,46180     0,060
+##   mesh               comp  tris   liant   aire tot.  aire méd.  aire fine
+##   SM_Farm_Debris_A     11   124   96,8 %    3,9764    0,32639     0,000 %
+##   SM_Farm_Debris_B     11   124   96,8 %    4,1805    0,46180     0,000 %
 ##
 ## Cause exacte : `gravats()` construit chaque éclat avec `poutre()`, et une
 ## poutre EST un pavé — douze triangles, huit sommets soudés. Dix poutres sur
 ## onze composantes, d'où 120/124.
 ##
-## CALIBRAGE DU PLAFOND, pour qu'il ne se lise pas comme un chiffre arbitraire :
-## le lead a passé l'instrument sur `SM_ThunderstruckTree.glb`, sujet qu'il a
-## ACCEPTÉ à l'œil au verdict R2B.2 — 3 574 triangles, boîtitude **10,4 %**. Un
-## travail déjà validé de ce projet tient donc très en deçà de 25 %. Le plafond
-## n'est pas à négocier et ne se vise pas à 24,9 %.
+## CALIBRAGE DU PLAFOND — ET LE PREMIER TÉMOIN ÉTAIT MAUVAIS. Le lead avait
+## calibré sur `SM_ThunderstruckTree.glb` (10,4 %). L'audit indépendant a
+## proposé la MÊME FAMILLE D'OBJET que celle jugée ici :
+## `SM_Dungeon_RubbleLarge`, tas de gravats accepté, **0,00 %** pour
+## 150 triangles et 10 composantes — soit 15 triangles par fragment. C'est cette
+## valeur qu'on vise, pas 24,9. Le plafond de 25 est un plafond, pas une cible.
 ##
-## POURQUOI SIX CRITÈRES ET NON UN SEUL. Il existe trois façons de faire tomber
-## un pourcentage sans traiter le sujet : **supprimer** les débris, les
-## **rétrécir**, les **pulvériser** en bruit sous-pixel. Un plafond de boîtitude
-## seul récompenserait les trois. Les cinq planchers qui l'accompagnent sont donc
-## aussi liants que lui, et aucun ne doit être relevé : un seuil déplacé pour
-## faire passer une correction est un portail qui s'affaiblit sans que personne
-## ne mente (`tests/CLAUDE.md`, « ne jamais assouplir un seuil »).
+## LE LIANT A CHANGÉ DE DÉFINITION LE 2026-08-20, DANS LE SENS STRICT. Il vaut
+## désormais `hexa` **OU** `pave6` : 12 triangles et 8 sommets, ou exactement
+## 6 plans et 8 coins (un coin étant un sommet touchant au moins trois plans).
+## Raison mesurée par l'audit : `hexa` seul tombait à 0 % sous quatre
+## perturbations qui ne changent RIEN à l'image — un triangle d'aire nulle, une
+## subdivision coplanaire, un coin décalé de 12 µm, un pavé réparti sur deux
+## primitives — et `Debris_A` en portait déjà trois. Le risque n'était pas la
+## fraude : c'était un VERT ACCIDENTEL après remaillage, qui aurait fait croire
+## à une réussite. Ce fichier recalcule donc le prédicat CORRIGÉ, à l'identique.
 ##
-## POURQUOI CE FILET RECALCULE `hexa` EN GDSCRIPT au lieu d'appeler
+## POURQUOI SEPT CRITÈRES ET NON UN SEUL. Il existe quatre façons de faire
+## tomber un pourcentage sans traiter le sujet : **supprimer** les débris, les
+## **rétrécir**, les **pulvériser** en bruit sous-pixel, les **subdiviser**. Un
+## plafond de boîtitude seul récompenserait les quatre. Les planchers qui
+## l'accompagnent sont donc aussi liants que lui, et aucun ne doit être relevé :
+## un seuil déplacé pour faire passer une correction est un portail qui
+## s'affaiblit sans que personne ne mente (`tests/CLAUDE.md`, « ne jamais
+## assouplir un seuil »). Deux ont bougé pendant cette passe — le plancher
+## d'arête, RETIRÉ, et le budget par tas, AJOUTÉ — les deux décidés par le lead
+## sur constat de l'audit indépendant, et les deux avant de voir ce résultat.
+##
+## POURQUOI CE FILET RECALCULE LE LIANT EN GDSCRIPT au lieu d'appeler
 ## `tools/mesure_boititude.py`. Un test Godot ne lance pas de processus, et un
 ## second calcul indépendant vaut mieux qu'un appel : si les deux implémentations
 ## — Python sur les octets du GLB, GDScript sur le maillage importé — rendent le
@@ -56,8 +70,17 @@ const FARM_GLB: String = "res://assets/architecture/farm/SM_Farm_Ruins.glb"
 const DEBRIS_A: String = "SM_Farm_Debris_A"
 const DEBRIS_B: String = "SM_Farm_Debris_B"
 
-## Soudage par position. Voir le piège documenté en tête de fichier.
+## Soudage par position. Voir le piège documenté en tête de fichier. La valeur
+## est celle de l'instrument depuis sa correction du 2026-08-20 : à 10 µm,
+## déplacer un coin de 12 µm dédoublait le sommet et suffisait à faire tomber le
+## liant sans qu'un pixel bouge.
 const SOUDAGE_M: float = 1.0e-4
+## Tolérances de plan, reprises À L'IDENTIQUE de `tools/mesure_boititude.py`.
+const NORMALE_DOT: float = 0.999
+const PLAN_EPS: float = 1.0e-3
+const AIRE_NULLE: float = 1.0e-10
+## Un triangle dont la plus longue arête est sous 2 mm est de la poussière.
+const FINESSE_M: float = 2.0e-3
 
 ## -- Le liant : le plafond de boîtitude --------------------------------------
 ## `hexa` = composante de 12 triangles ET 8 sommets géométriques après soudage.
@@ -83,21 +106,20 @@ const AIRE_MEDIANE_MIN_M2: float = 0.08
 ## La directive l'interdit explicitement : « aucun détail sous-pixel destiné
 ## seulement à faire tomber le chiffre ».
 ##
-## CORRIGÉ PAR LE LEAD, DANS LE SENS STRICT → LÂCHE, ET AVANT DE VOIR LE
-## RÉSULTAT : 0,03 m devient 0,005 m. Raison mesurée par lui sur
-## `assets/architecture/flora/SM_ThunderstruckTree.glb`, asset ACCEPTÉ
-## visuellement au verdict R2B.2 — `..._BranchE` y descend à 0,007089 m
-## d'arête, `..._BranchD` à 0,021946 m. Un plancher de 30 mm aurait donc
-## interdit ici une finesse de fracture qui existe déjà dans un sujet validé du
-## même projet : il aurait bloqué du bon travail au lieu d'un contournement.
+## DEUX FOIS CORRIGÉ PAR LE LEAD, ET LA SECONDE FOIS LE CRITÈRE A ÉTÉ RETIRÉ.
+## Il exigeait d'abord `arete_min ≥ 0,03 m`, puis `≥ 0,005 m`. L'audit
+## indépendant a montré que même 0,005 rejetait la grotte (0,000365 m), le pont
+## (0,000573 m) et le cœur de l'arbre foudroyé (0,003941 m) — trois assets
+## GELÉS et VALIDÉS de ce projet. Le défaut n'était pas le nombre : `arete_min`
+## est une statistique d'ordre extrême, fixée par UN triangle sur 3 574, donc
+## un plancher qui juge un maillage entier sur son pire point isolé.
 ##
-## LE GARDE ANTI-PULVÉRISATION NE BOUGE PAS POUR AUTANT : c'est l'aire médiane
-## de composante ci-dessus qui empêche de faire tomber le chiffre en réduisant
-## le tas en poussière. `arete_min` n'attrape plus que le sub-millimétrique.
-## Le tas livré rend ~0,06 m, soit douze fois le plancher corrigé et deux fois
-## l'ancien : la correction du seuil ne change rien au verdict ici, et c'est
-## pour cela qu'elle peut être rapportée sans soupçon.
-const ARETE_MIN_M: float = 0.005
+## REMPLACÉ PAR UNE PART D'AIRE, qui ne peut monter qu'en pulvérisant vraiment
+## la géométrie : `aire_fine` = part de l'aire portée par des triangles dont la
+## plus longue arête est sous 2 mm. Mesurée à 0,0000 % sur les huit assets
+## acceptés, et à 0,0000 % ici. `arete_min` reste PUBLIÉE dans la trace du test,
+## sans être liante — un nombre qu'on regarde n'est pas un nombre qui bloque.
+const AIRE_FINE_MAX_PCT: float = 1.0
 
 ## -- Plancher 5 : l'implantation ne bouge pas ---------------------------------
 ## Emprise POSITION du GLB de départ, repère local du mesh (X, Y = hauteur, Z),
@@ -109,7 +131,15 @@ const EMPRISE_BASE_B: Vector3 = Vector3(1.1721, 0.6852, 1.0310)
 const EMPRISE_TOL_XZ: float = 0.20
 const EMPRISE_TOL_Y: float = 0.30
 
-## -- Plancher 6 : le budget de la ferme ---------------------------------------
+## -- Plancher 6 : le budget PAR TAS -------------------------------------------
+## Ajouté par le lead sur constat de l'audit : le plafond global de 4 500
+## laissait un facteur ×13,4 sur la densité des débris — assez pour faire tomber
+## le liant en subdivisant les faces plutôt qu'en changeant de forme. Le témoin
+## de la bonne économie est `SM_Dungeon_RubbleLarge`, tas accepté : 150 triangles
+## pour 10 composantes, soit 15 par fragment.
+const TRIS_MAX_PAR_TAS: int = 600
+
+## -- Plancher 7 : le budget de la ferme ---------------------------------------
 ## Le plafond du générateur, inchangé depuis R2B.
 const BUDGET_TRIS_MAX: int = 4500
 ## Plancher de masse : la ruine porte 2 080 triangles avant cette passe ; un
@@ -147,17 +177,23 @@ func test_les_gravats_ne_sont_pas_des_paves() -> void:
 				pct = 100.0 * float(m["tris_hexa"]) / float(tris)
 			# LE LIANT.
 			if pct > HEXA_PLAFOND_PCT:
-				faults.append(("%s : %.1f %% de triangles en PAVÉS (hexa = 12 "
-					+ "triangles et 8 sommets), plafond %.1f %% — %d composante(s) "
-					+ "sur %d en sont ; le tas se lit comme une bordure "
-					+ "construite") % [nom, pct, HEXA_PLAFOND_PCT,
-					int(m["comp_hexa"]), int(m["composantes"])])
+				faults.append(("%s : %.1f %% de triangles en PAVÉS (liant = "
+					+ "12 triangles et 8 sommets, OU 6 plans et 8 coins), "
+					+ "plafond %.1f %% — %d composante(s) sur %d en sont ; le "
+					+ "tas se lit comme une bordure construite")
+					% [nom, pct, HEXA_PLAFOND_PCT, int(m["comp_hexa"]),
+					   int(m["composantes"])])
 			# PLANCHER 1 — les débris ne disparaissent pas.
 			if int(m["composantes"]) < COMPOSANTES_MIN:
 				faults.append("%s : %d composante(s), plancher %d — supprimer "
 					% [nom, int(m["composantes"]), COMPOSANTES_MIN]
 					+ "des fragments ferait tomber la boîtitude sans corriger "
 					+ "l'image")
+			# PLANCHER 6 — pas de subdivision.
+			if tris > TRIS_MAX_PAR_TAS:
+				faults.append("%s : %d triangles, plafond %d par tas — "
+					% [nom, tris, TRIS_MAX_PAR_TAS] + "subdiviser les faces "
+					+ "fait tomber le liant sans changer la forme")
 			# PLANCHER 2 — pas de rétrécissement.
 			var aire_min: float = float((attendus[nom] as Dictionary)["aire"])
 			if float(m["aire_totale"]) < aire_min:
@@ -171,10 +207,12 @@ func test_les_gravats_ne_sont_pas_des_paves() -> void:
 					+ "plancher %.2f m² — le tas est pulvérisé, pas fracturé"
 					% AIRE_MEDIANE_MIN_M2)
 			# PLANCHER 4 — pas de bruit sous-pixel.
-			if float(m["arete_min"]) < ARETE_MIN_M:
-				faults.append("%s : arête minimale %.6f m, plancher %.3f m — "
-					% [nom, float(m["arete_min"]), ARETE_MIN_M]
-					+ "un détail invisible à l'écran ne corrige aucune lecture")
+			if float(m["aire_fine_pct"]) > AIRE_FINE_MAX_PCT:
+				faults.append("%s : %.4f %% de l'aire portée par des triangles "
+					% [nom, float(m["aire_fine_pct"])]
+					+ "de moins de 2 mm, plafond %.2f %% — un détail invisible "
+					% AIRE_FINE_MAX_PCT
+					+ "à l'écran ne corrige aucune lecture")
 			# PLANCHER 5 — l'implantation ne bouge pas.
 			var base: Vector3 = (attendus[nom] as Dictionary)["emprise"]
 			var vue: Vector3 = m["emprise"]
@@ -188,11 +226,11 @@ func test_les_gravats_ne_sont_pas_des_paves() -> void:
 					faults.append("%s : emprise %s = %.4f m, attendue %.4f "
 						% [nom, noms_axes[k], vue[k], att]
 						+ "± %.4f m — l'implantation du lieu a bougé" % tol)
-			print("[r2b3_debris] %-20s comp=%d tris=%d hexa=%.1f%% "
+			print("[r2b3_debris] %-20s comp=%d tris=%d liant=%.1f%% "
 				% [nom, int(m["composantes"]), tris, pct]
-				+ "aire_tot=%.4f aire_med=%.5f arete_min=%.6f "
+				+ "aire_tot=%.4f aire_med=%.5f fine=%.4f%% arete_min=%.6f "
 				% [float(m["aire_totale"]), float(m["aire_mediane"]),
-				   float(m["arete_min"])]
+				   float(m["aire_fine_pct"]), float(m["arete_min"])]
 				+ "emprise=%.4f x %.4f x %.4f" % [vue.x, vue.y, vue.z])
 		root.free()
 	if inspectes < 2:
@@ -267,29 +305,24 @@ func test_le_budget_tient_et_toute_primitive_porte_ses_uv() -> void:
 ## 79,6 %. Le même piège attend ici.
 
 func _morphometrie(mesh: Mesh) -> Dictionary:
-	var composantes: int = 0
-	var comp_hexa: int = 0
-	var triangles: int = 0
-	var tris_hexa: int = 0
-	var aire_totale: float = 0.0
-	var arete_min: float = INF
-	var aires: Array[float] = []
 	var lo: Vector3 = Vector3(INF, INF, INF)
 	var hi: Vector3 = Vector3(-INF, -INF, -INF)
 
+	# ÉTAPE 1 — soudage par POSITION, sur TOUTES les primitives à la fois.
+	# Les surfaces sont fusionnées avant l'analyse : un pavé réparti sur deux
+	# primitives par un découpage matériau resterait sinon invisible au liant,
+	# et c'est un des quatre verts accidentels que l'audit a démontrés.
+	var grille: Dictionary = {}
+	var coord: Array[Vector3] = []
+	var tris: Array[Vector3i] = []
 	for s: int in range(mesh.get_surface_count()):
 		var arrays: Array = mesh.surface_get_arrays(s)
 		var sommets: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
 		var indices: PackedInt32Array = arrays[Mesh.ARRAY_INDEX]
+		var geo_de: Array[int] = []
 		for v: Vector3 in sommets:
 			lo = Vector3(minf(lo.x, v.x), minf(lo.y, v.y), minf(lo.z, v.z))
 			hi = Vector3(maxf(hi.x, v.x), maxf(hi.y, v.y), maxf(hi.z, v.z))
-
-		# ÉTAPE 1 — soudage par POSITION, jamais fusionné avec l'étape 2.
-		var grille: Dictionary = {}
-		var geo_de: Array[int] = []
-		var coord: Array[Vector3] = []
-		for v: Vector3 in sommets:
 			var cle: Vector3i = Vector3i(
 				roundi(v.x / SOUDAGE_M), roundi(v.y / SOUDAGE_M),
 				roundi(v.z / SOUDAGE_M))
@@ -297,69 +330,131 @@ func _morphometrie(mesh: Mesh) -> Dictionary:
 				grille[cle] = coord.size()
 				coord.append(v)
 			geo_de.append(int(grille[cle]))
-
-		# ÉTAPE 2 — connexité sur les identifiants GÉOMÉTRIQUES.
-		var parent: Array[int] = []
-		parent.resize(coord.size())
-		for i: int in range(coord.size()):
-			parent[i] = i
-		var tris: Array[Vector3i] = []
 		var t: int = 0
 		while t + 2 < indices.size():
-			var a: int = geo_de[indices[t]]
-			var b: int = geo_de[indices[t + 1]]
-			var c: int = geo_de[indices[t + 2]]
-			tris.append(Vector3i(a, b, c))
-			_unir(parent, a, b)
-			_unir(parent, b, c)
+			tris.append(Vector3i(geo_de[indices[t]], geo_de[indices[t + 1]],
+				geo_de[indices[t + 2]]))
 			t += 3
-		triangles += tris.size()
 
-		var groupes: Dictionary = {}
-		for tri: Vector3i in tris:
-			var r: int = _racine(parent, tri.x)
-			if not groupes.has(r):
-				groupes[r] = []
-			(groupes[r] as Array).append(tri)
+	# LES TRIANGLES DÉGÉNÉRÉS SONT ÉCARTÉS AVANT TOUT COMPTAGE : un seul
+	# triangle d'aire nulle ajouté à un pavé le faisait passer de 12 à 13
+	# triangles, donc « pas une boîte », sans qu'un pixel ne change.
+	var vivants: Array[Vector3i] = []
+	var normales: Array[Vector3] = []
+	var surfaces: Array[float] = []
+	for tri: Vector3i in tris:
+		var brut: Vector3 = (coord[tri.y] - coord[tri.x]).cross(
+			coord[tri.z] - coord[tri.x])
+		var aire_tri: float = 0.5 * brut.length()
+		if aire_tri <= AIRE_NULLE:
+			continue
+		vivants.append(tri)
+		normales.append(brut.normalized())
+		surfaces.append(aire_tri)
 
-		for cle_g: int in groupes.keys():
-			var membres: Array = groupes[cle_g]
-			var vus: Dictionary = {}
-			var aire: float = 0.0
-			for tri: Vector3i in membres:
-				vus[tri.x] = true
-				vus[tri.y] = true
-				vus[tri.z] = true
-				var pa: Vector3 = coord[tri.x]
-				var pb: Vector3 = coord[tri.y]
-				var pc: Vector3 = coord[tri.z]
-				aire += 0.5 * (pb - pa).cross(pc - pa).length()
-				for paire: Vector2i in [Vector2i(tri.x, tri.y),
-						Vector2i(tri.y, tri.z), Vector2i(tri.z, tri.x)]:
-					if paire.x == paire.y:
-						continue
-					var d: float = coord[paire.x].distance_to(coord[paire.y])
-					if d > 0.0 and d < arete_min:
-						arete_min = d
-			composantes += 1
-			aires.append(aire)
-			aire_totale += aire
-			if membres.size() == 12 and vus.size() == 8:
-				comp_hexa += 1
-				tris_hexa += 12
+	# ÉTAPE 2 — connexité sur les identifiants GÉOMÉTRIQUES.
+	var parent: Array[int] = []
+	parent.resize(coord.size())
+	for i: int in range(coord.size()):
+		parent[i] = i
+	for tri: Vector3i in vivants:
+		_unir(parent, tri.x, tri.y)
+		_unir(parent, tri.y, tri.z)
+
+	var groupes: Dictionary = {}
+	for i: int in range(vivants.size()):
+		var r: int = _racine(parent, vivants[i].x)
+		if not groupes.has(r):
+			groupes[r] = []
+		(groupes[r] as Array).append(i)
+
+	var composantes: int = 0
+	var comp_liant: int = 0
+	var tris_liant: int = 0
+	var aire_totale: float = 0.0
+	var aire_fine: float = 0.0
+	var arete_min: float = INF
+	var aires: Array[float] = []
+
+	for cle_g: int in groupes.keys():
+		var membres: Array = groupes[cle_g]
+		var vus: Dictionary = {}
+		var aire: float = 0.0
+		# Un PLAN : normale signée + distance à l'origine, avec les mêmes
+		# tolérances que l'instrument (0,999 sur le produit scalaire, 1 mm sur
+		# la distance). Un sommet né d'une subdivision coplanaire ne touche
+		# qu'un plan ; il n'est donc pas un COIN.
+		var plan_n: Array[Vector3] = []
+		var plan_d: Array[float] = []
+		var plan_s: Array[Dictionary] = []
+		for idx: int in membres:
+			var tri: Vector3i = vivants[idx]
+			var n: Vector3 = normales[idx]
+			vus[tri.x] = true
+			vus[tri.y] = true
+			vus[tri.z] = true
+			aire += surfaces[idx]
+			var d: float = n.dot(coord[tri.x])
+			var trouve: int = -1
+			for p: int in range(plan_n.size()):
+				if n.dot(plan_n[p]) >= NORMALE_DOT \
+						and absf(d - plan_d[p]) <= PLAN_EPS:
+					trouve = p
+					break
+			if trouve < 0:
+				plan_n.append(n)
+				plan_d.append(d)
+				plan_s.append({tri.x: true, tri.y: true, tri.z: true})
+			else:
+				plan_s[trouve][tri.x] = true
+				plan_s[trouve][tri.y] = true
+				plan_s[trouve][tri.z] = true
+			var longue: float = 0.0
+			for paire: Vector2i in [Vector2i(tri.x, tri.y),
+					Vector2i(tri.y, tri.z), Vector2i(tri.z, tri.x)]:
+				if paire.x == paire.y:
+					continue
+				var dist: float = coord[paire.x].distance_to(coord[paire.y])
+				longue = maxf(longue, dist)
+				if dist > 0.0 and dist < arete_min:
+					arete_min = dist
+			if longue < FINESSE_M:
+				aire_fine += surfaces[idx]
+		var incidences: Dictionary = {}
+		for p: int in range(plan_s.size()):
+			for s_id: int in plan_s[p].keys():
+				incidences[s_id] = int(incidences.get(s_id, 0)) + 1
+		var coins: int = 0
+		for k: int in incidences.values():
+			if k >= 3:
+				coins += 1
+		composantes += 1
+		aires.append(aire)
+		aire_totale += aire
+		if (membres.size() == 12 and vus.size() == 8) \
+				or (plan_n.size() == 6 and coins == 8):
+			comp_liant += 1
+			tris_liant += membres.size()
 
 	aires.sort()
 	var mediane: float = 0.0
 	if not aires.is_empty():
 		mediane = aires[aires.size() >> 1]
+	var fine_pct: float = 0.0
+	if aire_totale > 0.0:
+		fine_pct = 100.0 * aire_fine / aire_totale
+	var arete: float = 0.0
+	if arete_min != INF:
+		arete = arete_min
 	return {
 		"composantes": composantes,
-		"comp_hexa": comp_hexa,
-		"triangles": triangles,
-		"tris_hexa": tris_hexa,
+		"comp_hexa": comp_liant,
+		"triangles": vivants.size(),
+		"tris_hexa": tris_liant,
 		"aire_totale": aire_totale,
 		"aire_mediane": mediane,
-		"arete_min": 0.0 if arete_min == INF else arete_min,
+		"aire_fine_pct": fine_pct,
+		"arete_min": arete,
 		"emprise": hi - lo,
 	}
 

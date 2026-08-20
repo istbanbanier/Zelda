@@ -1,0 +1,64 @@
+########## 1. CHAINE CONTROLEE (sujet OBLIGATOIRE) ##########
+RC_chaine=0
+  [farm_ruins] total 2228 triangles (budget 4500)
+  [farm_ruins] gravats SM_Farm_Debris_A   12 comp 198 tris  liant   0.0%  aire 4.0704  med 0.31417  fine 0.0000%  arete 0.059032  emprise Godot 1.5044 x 0.6841 x 1.2194
+  [farm_ruins] gravats SM_Farm_Debris_B   12 comp 198 tris  liant   0.0%  aire 4.0282  med 0.32056  fine 0.0000%  arete 0.064464  emprise Godot 1.1803 x 0.6883 x 0.9542
+  frais: assets/architecture/farm/SM_Farm_Ruins.glb (211852 octets)
+  === VALIDE ===
+=== EXPORT ARCHITECTURE : VERT ===
+
+########## 2. sha256 du GLB produit ##########
+ead79105e3deaf70629c1bd928e68d355261217dbd2d5150384b4a7590cf9060  assets/architecture/farm/SM_Farm_Ruins.glb
+
+########## 3. INSTRUMENT (noms COMPLETS) ##########
+RC_mesure=0
+RC_plafond=0
+*SM_Farm_Debris_B           4    12    198     0.0%     0.0%     0.0%     0.0%   0.32056  0.064464   0.000%
+ SM_Farm_GableBreak         1    14    304    51.3%    51.3%     7.9%     0.0%   0.29824  0.040000   0.000%
+ SM_Farm_WallStub_East      1     4     84    42.9%    42.9%     0.0%     0.0%   0.57290  0.033982   0.000%
+ SM_Farm_Rubble_Wall        3    16    184    97.8%    97.8%     6.5%     0.0%   0.98015  0.117154   0.000%
+ SM_Farm_Jamb_Door          1     9    108   100.0%   100.0%    33.3%    33.3%   0.38015  0.150000   0.000%
+ SM_Farm_Jamb_Breach        1     7     92    78.3%    78.3%    26.1%    26.1%   0.38015  0.080000   0.000%
+ SM_Farm_InteriorFrame      1     6     72   100.0%   100.0%   100.0%     0.0%   1.89664  0.114175   0.000%
+ SM_Farm_JoistStubs         3     9     76    78.9%    78.9%    63.2%     0.0%   0.48526  0.101533   0.000%
+ SM_Farm_WallBreak_North    1    16    336    53.6%    53.6%     3.6%     0.0%   0.17829  0.053621   0.000%
+ SM_Farm_Rubble_North       1    12    144   100.0%   100.0%     0.0%     0.0%   0.88536  0.301751   0.000%
+MESHES RETENUS                         396     0.0%     0.0%     0.0%     0.0%            0.059032   0.000%
+OK : liant 0.0% <= plafond 25.0%
+
+########## 4. gltf_inspect ##########
+RC_inspect=0
+  materiaux              : 4 (MAT_Farm_Wood, MAT_Farm_BrokenWood, MAT_Farm_Tiles, MAT_Farm_Stone)
+  triangles              : 2228
+=== VALIDE ===
+
+########## 4b. PREUVE DE PIPELINE VERSIONNEE — SEULEMENT LA FERME ##########
+  format                 : GLB v2, 211852 octets
+  LISEZMOI_controle_negatif.md
+  architecture_farm_ruins_export.log
+  architecture_farm_ruins_inspect.log
+  architecture_farm_ruins_make.log
+  architecture_thunderstruck_tree_export.log
+  architecture_thunderstruck_tree_inspect.log
+  architecture_thunderstruck_tree_make.log
+  chaine_farm_ruins_VERT.log
+  chaine_thunderstruck_tree_VERT.log
+  controle_negatif_hauteur_REFUS.log
+
+########## 5. NON-CONTAMINATION ##########
+RC_contamination=0
+SM_Farm_WallStub_East      84  2.2233 1.4580 0.4762     84  2.2233 1.4580 0.4762   identique
+
+12 mesh(es) comparé(s) hors périmètre, 0 écart(s)
+=== NON CONTAMINÉ ===
+
+########## 6. IMPORT GODOT (obligatoire apres regeneration) ##########
+RC_import=0
+
+########## 7. FILET GODOT ##########
+RC_test=0
+[r2b3_debris] SM_Farm_Debris_A     comp=12 tris=198 liant=0.0% aire_tot=4.0704 aire_med=0.31416 fine=0.0000% arete_min=0.059027 emprise=1.5044 x 0.6841 x 1.2194
+[r2b3_debris] SM_Farm_Debris_B     comp=12 tris=198 liant=0.0% aire_tot=4.0282 aire_med=0.32057 fine=0.0000% arete_min=0.064450 emprise=1.1803 x 0.6883 x 0.9542
+[r2b3_debris] ferme entière : 2228 triangles, 27 surfaces
+=== RÉSULTAT: 2 réussi(s), 0 échoué(s) ===
+RC=0
