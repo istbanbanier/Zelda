@@ -134,11 +134,18 @@ def compose(vue, racine):
     # moitiés de 32 caractères sur deux lignes, ce qui laisse la place d'une
     # police assez grande. Les 64 caractères restent tous présents et
     # concaténables — on ne tronque rien, on replie.
+    #
+    # Les chemins sont donnes RELATIVEMENT au dossier de preuves, nomme une
+    # fois en tete : ecrits en entier, la ligne DEBORDAIT du cadre a droite et
+    # le rectangle de recadrage etait coupe — donc invisible, donc invérifiable.
+    # Constate en ouvrant la planche, pas deduit.
+    base = "evidence/world_v2/v2_3_r2b3/preuves_lead"
     pied = [
-        "AVANT  %s  crop %s" % (os.path.join(SRC_AVANT, "%s.png" % vue), rect),
+        "sources sous %s/" % base,
+        "AVANT  avant_r2b2/%s.png   crop %s" % (vue, rect),
         "  sha256 %s" % h_av[:32],
         "         %s" % h_av[32:],
-        "APRES  %s  crop %s" % (os.path.join(SRC_APRES, "%s.png" % vue), rect),
+        "APRES  apres_r2b3/%s.png   crop %s" % (vue, rect),
         "  sha256 %s" % h_ap[:32],
         "         %s" % h_ap[32:],
     ]

@@ -24,9 +24,9 @@ netteté. Le rectangle de recadrage est une seule variable par vue, lue dans
 
 | fichier | dimensions | qualité JPEG | octets | plafond 900 000 octets |
 |---|---|---|---|---|
-| `ab_leger_debris_a_proche.jpg` | 1280×1730 | 92 (4:4:4) | 576211 | marge 323789 octets |
-| `ab_leger_debris_b_proche.jpg` | 1280×1730 | 92 (4:4:4) | 563094 | marge 336906 octets |
-| `ab_leger_ferme_laterale.jpg` | 1280×1730 | 92 (4:4:4) | 669562 | marge 230438 octets |
-| `ab_leger_ferme_orb090.jpg` | 1280×1730 | 92 (4:4:4) | 706681 | marge 193319 octets |
+| `ab_leger_debris_a_proche.jpg` | 1280×1780 | 92 (4:4:4) | 592660 | marge 307340 octets |
+| `ab_leger_debris_b_proche.jpg` | 1280×1780 | 92 (4:4:4) | 579774 | marge 320226 octets |
+| `ab_leger_ferme_laterale.jpg` | 1280×1780 | 92 (4:4:4) | 685792 | marge 214208 octets |
+| `ab_leger_ferme_orb090.jpg` | 1280×1780 | 92 (4:4:4) | 721093 | marge 178907 octets |
 
 Reproduire : `python3 tools/planches_legeres.py` depuis la racine du dépôt.
