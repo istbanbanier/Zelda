@@ -1,0 +1,49 @@
+=== R2B.3 — ROUGE D'AVANT, base 1491ee4 ===
+date UTC : 2026-08-20T00:29:05Z
+GLB      : 9c7b94e1848dc1a1d33967343ee1c2a7868b38ab239d003de6cf4dcbc3216b3c  assets/architecture/farm/SM_Farm_Ruins.glb
+
+--- autotest de l'instrument (doit être RC=0 AVANT toute mesure) ---
+cube unité            : hexa=True equi=True droite=True  -> OK
+cube à sommets éclatés: sommets=8 hexa=True -> OK
+boîte déformée        : hexa=True equi=False -> OK
+deux cubes disjoints  : composantes=2 -> OK
+tétraèdre             : hexa=False -> OK
+autotest RC=0
+
+--- boîtitude par mesh ---
+mesh                    comp   tris     hexa     equi   droite  aire_med arete_min
+ SM_Farm_Truss            21    212    90.6%    90.6%    90.6%   1.51204  0.070292
+ SM_Farm_RoofPan_Intact     9    108   100.0%   100.0%    66.7%   9.91536  0.055000
+ SM_Farm_RoofPan_Fallen     9    108   100.0%   100.0%    44.4%   0.97680  0.050000
+ SM_Farm_Debris_A         11    124    96.8%    96.8%     9.7%   0.32639  0.060000
+ SM_Farm_Debris_B         11    124    96.8%    96.8%     9.7%   0.46180  0.060000
+ SM_Farm_GableBreak       14    308    50.6%     7.8%     7.8%   0.29824  0.040000
+ SM_Farm_WallStub_East     4     84    42.9%     0.0%     0.0%   0.57290  0.033982
+ SM_Farm_Rubble_Wall      16    184    97.8%     6.5%     6.5%   0.98015  0.117154
+ SM_Farm_Jamb_Door         9    108   100.0%    33.3%    33.3%   0.38015  0.150000
+ SM_Farm_Jamb_Breach       7     92    78.3%    26.1%    26.1%   0.38015  0.080000
+ SM_Farm_InteriorFrame     6     72   100.0%   100.0%    66.7%   1.89664  0.114175
+ SM_Farm_JoistStubs        9     76    78.9%    63.2%    63.2%   0.48526  0.101533
+ SM_Farm_WallBreak_North    16    336    53.6%     3.6%     3.6%   0.17829  0.053621
+ SM_Farm_Rubble_North     12    144   100.0%     0.0%     0.0%   0.88536  0.301751
+TOTAL                          2080    79.6%    42.1%    26.0%
+
+--- LIANT : Debris_A + Debris_B seuls, plafond 25 % ---
+mesh                    comp   tris     hexa     equi   droite  aire_med arete_min
+ SM_Farm_Truss            21    212    90.6%    90.6%    90.6%   1.51204  0.070292
+ SM_Farm_RoofPan_Intact     9    108   100.0%   100.0%    66.7%   9.91536  0.055000
+ SM_Farm_RoofPan_Fallen     9    108   100.0%   100.0%    44.4%   0.97680  0.050000
+*SM_Farm_Debris_A         11    124    96.8%    96.8%     9.7%   0.32639  0.060000
+*SM_Farm_Debris_B         11    124    96.8%    96.8%     9.7%   0.46180  0.060000
+ SM_Farm_GableBreak       14    308    50.6%     7.8%     7.8%   0.29824  0.040000
+ SM_Farm_WallStub_East     4     84    42.9%     0.0%     0.0%   0.57290  0.033982
+ SM_Farm_Rubble_Wall      16    184    97.8%     6.5%     6.5%   0.98015  0.117154
+ SM_Farm_Jamb_Door         9    108   100.0%    33.3%    33.3%   0.38015  0.150000
+ SM_Farm_Jamb_Breach       7     92    78.3%    26.1%    26.1%   0.38015  0.080000
+ SM_Farm_InteriorFrame     6     72   100.0%   100.0%    66.7%   1.89664  0.114175
+ SM_Farm_JoistStubs        9     76    78.9%    63.2%    63.2%   0.48526  0.101533
+ SM_Farm_WallBreak_North    16    336    53.6%     3.6%     3.6%   0.17829  0.053621
+ SM_Farm_Rubble_North     12    144   100.0%     0.0%     0.0%   0.88536  0.301751
+les meshes retenus              248    96.8%    96.8%     9.7%
+ECHEC : hexa 96.8% > plafond 25.0%
+RC=1
