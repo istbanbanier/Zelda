@@ -1885,6 +1885,46 @@ Preuves : `evidence/world_v2/v2_3_r2b3_1/iss059/CHAINE_CAUSALE.md`, matrices
 `matrice_c1/` et `matrice_c2/`, ablation `ablation/`, après-correctif
 `apres_correctif/`.
 
+#### La suite COMPLÈTE, mesurée une seule fois à la fin — la signature s'effondre
+
+`tools/validate_fast.sh`, une exécution, isolée. **949 tests réussis, 0 échoué.**
+
+| classe | R2B.3 | **R2B.3.1** | écart |
+|---|---:|---:|---|
+| `ObjectDB instances` | 1 003 | **138** | **−86 %** |
+| `resources still in use` | 657 | **74** | **−89 %** |
+| **`DummyMaterial`** | **281** | **ligne absente** | **−100 %** |
+| **`DummyMesh`** | **214** | **ligne absente** | **−100 %** |
+| **`DummyTexture`** | **67** | **ligne absente** | **−100 %** |
+| `DummyShader` | 14 | **3** | −79 % |
+
+**Trois des quatre classes de RID disparaissent complètement du rapport.** Ce
+n'est pas une reduction de compte : la ligne n'est plus imprimee, donc le
+compte est zero.
+
+**LE HARNESS RESTE ROUGE, ET IL EST RAPPORTÉ COMME TEL.** Cinq lignes le
+maintiennent rouge, toutes de fin de processus :
+
+```
+WARNING: 138 ObjectDB instances were leaked at exit
+ERROR:   74 resources still in use at exit
+ERROR:   Pages in use exist at exit in PagedAllocator: BucketMedium
+ERROR:   Pages in use exist at exit in PagedAllocator: BucketSmall
+ERROR:   3 RID allocations of type 'DummyShader' were leaked at exit
+```
+
+Les deux lignes `PagedAllocator` sont les `Variant` que portent les objets
+survivants : elles suivront le residu, elles ne sont pas une cause distincte.
+
+**CE QUI MANQUE, ET QUI INTERDIT DE DIRE « VERT »** : la **composition** de ces
+138 objets sur la SUITE COMPLÈTE n'est pas énumérée. Je la connais sur la sonde
+isolée — 55 `GDScript` + 45 `GDScriptNativeClass` + un flux audio — et
+l'extrapoler à la suite serait exactement la déduction que la méthode interdit.
+Le seuil du filtre N1 n'a **pas** été touché, et ne le sera pas pour faire
+passer un rouge.
+
+Journal : `evidence/world_v2/v2_3_r2b3_1/validation/validate_fast_R2B3_1.log`.
+
 ---
 
 

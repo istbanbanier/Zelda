@@ -1084,6 +1084,17 @@ contrainte, et provenance illisible.
   besoin de rétention. Dette nommée, non traitée : la toucher changerait le
   comportement de teinte des lieux en pleine passe de gel géométrique.
 
+### validate_fast, une seule exécution à la fin
+
+**949 tests réussis, 0 échoué. HARNESS ROUGE.** La signature de sortie
+s'effondre : `ObjectDB 1003 → 138`, `resources 657 → 74`, et les lignes
+`DummyMaterial` (281), `DummyMesh` (214), `DummyTexture` (67) **disparaissent**
+du rapport. `DummyShader 14 → 3`.
+
+Le rouge tient à cinq lignes de fin de processus. Ce qui manque pour dire vert :
+la **composition** des 138 sur la suite complète n'est pas énumérée. Le seuil du
+filtre N1 n'a pas été touché — un rouge préexistant ne se rebaptise pas vert.
+
 **Aucune géométrie touchée.** `SM_Farm_Ruins.glb` reste `ead79105e3deaf70`,
 octet pour octet. `GO_V2_3_B=FALSE`.
 
