@@ -92,6 +92,16 @@ godot_verrou_prendre() {
     echo "        RIEN N'A TOURNÉ." >&2
     return 3
   fi
+  # Attendre EN SILENCE est indistinguable d'un blocage. Un premier essai non
+  # bloquant permet de le DIRE avant de se mettre en attente : sinon un script
+  # lancé pendant une suite reste muet jusqu'à 50 min, et l'opérateur croit à
+  # un plantage. Le coût est nul quand le verrou est libre.
+  if ! flock -n "$fd"; then
+    echo "verrou « $fichier » occupé — attente jusqu'à ${attente} s..." >&2
+  else
+    export GODOT_VERROU_PRIS="$fichier"
+    return 0
+  fi
   if ! flock -w "$attente" "$fd"; then
     echo "BLOQUÉ: verrou « $fichier » non obtenu après ${attente} s." >&2
     echo "        RIEN N'A TOURNÉ : aucun fichier écrit, aucune mesure prise." >&2
