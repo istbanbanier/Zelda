@@ -337,11 +337,26 @@ func _diagnostic_kit() -> Dictionary:
 ## `PackedScene` est épinglée pour la durée du processus, donc leurs clés
 ## tiennent. Le kit est le seul à charger sans retenir.
 func _kit_sans_retention() -> Dictionary:
-	var chemin: String = String(WorldV2PlaceKit._index.get(KIT_TEMOIN, ""))
+	# LE CHEMIN EST RÉSOLU ICI, ET PAS PAR `WorldV2PlaceKit`, pour deux raisons
+	# qui ont chacune failli fausser la mesure.
+	#   1. `_index` est construit PARESSEUSEMENT dans `scene_for()`. Le lire
+	#      avant tout appel rendait "" ; `ResourceLoader.has_cached("")` répond
+	#      alors `false` par accident, et la ligne « plus en cache » ressemblait
+	#      à une preuve alors qu'elle n'en était pas une. Piège attrapé le
+	#      2026-08-20, après coup.
+	#   2. Depuis la correction, `scene_for()` RETIENT la PackedScene : passer
+	#      par lui épinglerait justement ce que cette expérience doit voir
+	#      mourir. On mesure donc le comportement du MOTEUR, `load()` nu, qui
+	#      est la condition d'avant correction.
+	var chemin: String = _resoudre_module(KIT_TEMOIN)
 	var ids: Array[Array] = []
 	var caches: Array[bool] = []
+	if chemin.is_empty():
+		return {"erreur": "module %s introuvable dans MODULE_DIRS" % KIT_TEMOIN}
 	for essai: int in range(2):
-		var packed: PackedScene = WorldV2PlaceKit.scene_for(KIT_TEMOIN)
+		var packed: PackedScene = load(chemin) as PackedScene
+		if packed == null:
+			continue
 		var noeud: Node = packed.instantiate()
 		var lot: Array[int] = []
 		for n: Node in _mailles(noeud):
@@ -370,6 +385,17 @@ func _kit_sans_retention() -> Dictionary:
 		"ids_chargement_1": ids[0] if ids.size() > 0 else [],
 		"ids_chargement_2": ids[1] if ids.size() > 1 else [],
 	}
+
+
+## Résout un module de kit par nom canonique, SANS passer par
+## `WorldV2PlaceKit` — voir la raison dans `_kit_sans_retention()`.
+func _resoudre_module(nom: StringName) -> String:
+	for dossier: String in WorldV2PlaceKit.MODULE_DIRS:
+		for extension: String in [".gltf", ".glb"]:
+			var candidat: String = "%s/%s%s" % [dossier, nom, extension]
+			if ResourceLoader.exists(candidat, "PackedScene"):
+				return candidat
+	return ""
 
 
 ## Recense les matériaux RÉELLEMENT posés sur les surfaces montées : c'est

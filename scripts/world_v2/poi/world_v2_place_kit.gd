@@ -37,7 +37,8 @@ const TONE_CHARRED: Color = Color(0.30, 0.27, 0.25)
 ##
 ## Mesuré le 2026-08-20 : les six dossiers portent 212 modèles au total, dont
 ## 89 distincts sont réellement posés par le monde entier (compte indépendant :
-## `KitPlacement._base_cache`, dont la clé est un CHEMIN). Leur géométrie
+## `KitPlacement._base_cache`, dont la clé est le NOM du modèle et non un
+## identifiant d'instance — c'est pourquoi lui reste stable). Leur géométrie
 ## (`.gltf` + `.bin`) pèse 15 Mo pour les 212 — les textures, elles, sont des
 ## ressources séparées déjà retenues par les matériaux teintés du cache
 ## ci-dessous, donc cette rétention n'en ajoute aucune.

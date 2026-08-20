@@ -32,8 +32,10 @@
 ## Les huit lieux échappent au défaut parce qu'ils font `const … = preload(…)`,
 ## ce qui épingle leur `PackedScene` : leurs caches propres sont mesurés
 ## STABLES (ferme 6/6/6, arbre 4/4/4). `KitPlacement._base_cache`, qui a la
-## même forme mais une clé de CHEMIN, est stable lui aussi (15/15/15). Ce n'est
-## donc pas la mise en cache qui est fautive, c'est la clé.
+## même forme mais une clé de chaîne STABLE (le nom du modèle ici, le chemin
+## de scène chez les appelants V1), est stable lui aussi (15/15/15). Ce n'est
+## donc pas la mise en cache qui est fautive, ni même `get_instance_id()` en
+## soi : c'est la durée de vie de ce sur quoi la clé est bâtie.
 ##
 ## CE TEST NE MESURE PAS UNE TAILLE ABSOLUE, et c'est délibéré : la suite
 ## complète monte ces lieux dans beaucoup de tests, le cache est donc déjà
