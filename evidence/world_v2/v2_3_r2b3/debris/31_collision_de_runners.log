@@ -32,3 +32,26 @@ CONSEQUENCE POUR CE JOURNAL : l'echec
 collision. Il ne peut pas venir de mon changement, qui ne touche que la
 geometrie de deux tas de gravats dans un GLB. Le meme test etait VERT dans
 14_world_v2_regression.log, joue avant. Il est rejoue au propre en 30_.
+=== POST-MORTEM DE 27_ (ecrit APRES le jeton RC=, jamais pendant) ===
+
+Verdict : 96 reussis, 1 echoue, RC=1, 30 fichiers sur 30.
+
+L'UNIQUE ECHEC EST FABRIQUE PAR LA COLLISION consignee ci-dessus :
+  test_world_v2_skeleton.gd::test_le_squelette_porte_le_vrai_joueur_sans_toucher_la_sauvegarde
+  « slot0 est identique a l'octet pres apres le passage en V2 »
+
+C'est un echec de SAUVEGARDE pendant que deux runners partageaient user://.
+Il ne peut pas venir de ce changement, qui ne touche que la geometrie de deux
+tas de gravats dans un GLB : aucun chemin ne relie une primitive Blender a un
+slot de sauvegarde. Le meme test etait VERT dans 14_world_v2_regression.log,
+joue avant la seconde passe.
+
+SYMETRIQUEMENT : la suite de l'agent B, lancee a 01:17:32 depuis
+/home/user/wt_r2b3_b_iss059, est contaminee de la meme facon. Son verdict de
+sauvegarde n'est pas plus fiable que le mien.
+
+CE QUI EST VERT ET NON CONTAMINE dans ce meme journal :
+  test_world_v2_r2b3_debris.gd                    2/2, liant 0,0 %
+  test_world_v2_r2b_farm_tree.gd::test_le_pipeline_blender_est_frais_et_verifie
+                                                  ok — la regression que
+                                                  j'avais introduite est reparee
