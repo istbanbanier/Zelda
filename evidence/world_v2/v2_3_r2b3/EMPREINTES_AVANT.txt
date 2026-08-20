@@ -1,0 +1,21 @@
+# R2B.3 — empreintes AVANT intégration
+# commit : 435fa2552ed7e6b959ae39f2fd2d361e866c8a7c
+# date   : 2026-08-20T00:53:57Z
+
+## GELÉS par le verdict visuel du lead sur R2B.2
+c44f9c1e474de23fe53b3bbc14ab63785f90bb8083003bb820c5b0d75c2aab47  assets/architecture/flora/SM_ThunderstruckTree.glb
+8bf1a1b309aee79f92c77371f0f5137c3e6ceefc1ecf4842f038af4f48c77110  assets/environment/caves/SM_WaterfallCave.glb
+5ff4ec6ee7a5bb6fef95114055354f348e2372f39cf4a104b8164f1b212a8d75  assets/environment/caves/SM_WaterfallCave_r2a358.glb
+f98fe307f2b826e519beee094fec9d2206c4147c6f1254386df95b102a331dc6  assets/architecture/pylon/SM_Pylon_Resonance.glb
+032e438936449225d4c3bb8e2bc94489b4ced8706a2fbcef77630d67a4af35fa  assets/architecture/stone_bridge/SM_StoneBridge_Arch.glb
+177205ea99a2d1c6c3bdd61a6b87f414049c252774dbded3970940c4a47361e6  assets/architecture/village/SM_Village_Quay.glb
+24f390476abece0d5e02c1aa359292eec784aa27e89904cb883a49411b5176df  assets/architecture/village/SM_Village_Wall.glb
+
+## Scripts de lieu gelés
+86c989b328fa563c6109b89e932ecb7773b9a09405bbee56bbe1026a840f52bf  scripts/world_v2/poi/thunderstruck_tree_place.gd
+297048d5105d4afe221fd173df67143474c532bcefca7395fd312c6645ebce30  scripts/world_v2/poi/abandoned_farm_place.gd
+429287b8108f5cc7aaad7c73285562c6fcb471ad3a4fe3fba75885fe45b82efc  source_assets/blender/environment/make_thunderstruck_tree.py
+
+## EN COURS DE MODIFICATION par la voie A
+9c7b94e1848dc1a1d33967343ee1c2a7868b38ab239d003de6cf4dcbc3216b3c  assets/architecture/farm/SM_Farm_Ruins.glb
+35510a603a12dd90ecc938d24ea2091c71f8c31b2224e767c219f4b05ea9f159  source_assets/blender/architecture/make_farm_ruins.py
