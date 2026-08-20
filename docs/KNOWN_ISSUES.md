@@ -392,6 +392,41 @@ Aucun `S0`/`S1` ouvert n'est admis pour un build candidat.
 
 ---
 
+## ISS-064 — un flux audio survit au démontage du monde · `S4` · OUVERT
+
+Trouvé le 2026-08-20 en instrumentant ISS-059, pas cherché pour lui-même.
+
+Après le correctif des caches statiques, `WorldV2.tscn` montée puis démontée
+laisse au rapport de sortie, en plus du cache de scripts du moteur :
+
+```
+  1  AudioStreamWAV            res://assets/audio/sfx/land_soft.wav
+  1  AudioStreamPlaybackWAV
+```
+
+Journal : `evidence/world_v2/v2_3_r2b3_1/iss059/apres_correctif/worldv2_verbose.log`.
+
+`land_soft.wav` est le son de réception du joueur. Il apparaît parce que le
+personnage instancié dans la scène tombe au sol au spawn. Un `AudioStreamPlaybackWAV`
+vivant à la sortie veut dire qu'une lecture n'a jamais été arrêtée — le nœud a
+probablement été libéré pendant qu'elle jouait.
+
+**Un objet, aucune classe de RID.** Ce n'est pas la fuite d'ISS-059 et ce n'est
+pas ce que la directive R2B.3.1 demandait de corriger ; l'élargir au chemin audio
+en pleine passe de fuite mémoire aurait été exactement l'élargissement que la
+méthode interdit.
+
+**Ce qui n'est PAS su** : d'où vient la lecture. Trois candidats non départagés —
+le joueur lui-même, un pool d'`AudioManager`, ou un `AudioStreamPlayer3D` libéré
+en cours de lecture. Aucune reproduction hors de `WorldV2` n'a été tentée.
+
+**Précédent de la même famille** : `42ee1db` (2026-08-09), où la cause d'une
+signature de fuite était l'ambiance audio.
+
+**Propriétaire** : prochaine session de dette technique.
+
+---
+
 ## Résolus
 
 ## ISS-R01 — Export glTF produisait un preset vide · `S2` · RÉSOLU 2026-07-31
@@ -1529,7 +1564,7 @@ l'intérieur, donc `d(p)` est localement **sous-estimée** et l'exigence avec el
 Les `FAIL` publiés sont donc valides et probablement **sous-estimés** ; en
 revanche **aucun `PASS` de production ne pourrait être cru** sur cette base.
 
-## ISS-059 — fuites de fin de processus sur la suite COMPLÈTE : validate_fast ROUGE, préexistant — S3, OUVERT
+## ISS-059 — fuites de fin de processus sur la suite COMPLÈTE — S3, **CAUSE NOMMÉE ET CORRIGÉE À LA SOURCE le 2026-08-20 (R2B.3.1)**
 
 Constaté le 2026-08-18 au premier `validate_fast.sh` complet depuis V2.3-A.R
 (chaque passe R2a-3.x avait interdiction de le lancer). **Les 904 tests sont
@@ -1731,13 +1766,124 @@ sonde. Elle comparait un résidu post-correctif à un chiffre pré-correctif ; s
 propre §0 signalait cet écart de SHA comme « la limite d'attribution de tout ce
 qui suit ».
 
-**Ce qui manque encore, et qui interdit de fermer** : **quel objet retient** les
-`PackedScene` épinglées à l'instanciation. La sonde le montre, elle ne le nomme
-pas. Sans causalité mesurée, pas de fermeture.
-
-Le harness reste **ROUGE**, et il est rapporté comme tel.
+**Ce qui manquait alors, et qui interdisait de fermer** : **quel objet retient**
+les `PackedScene` épinglées à l'instanciation. La sonde le montrait, elle ne le
+nommait pas. — *Répondu en R2B.3.1, ci-dessous.*
 
 Preuves : `evidence/world_v2/v2_3_r2b3/iss059/`.
+
+---
+
+### 2026-08-20 (R2B.3.1) — la chaîne causale, nommée par ablation à variable unique
+
+**Il n'y a pas un objet : il y en a trois, et ce sont des variables `static` de
+GDScript sans propriétaire ni fin de vie.**
+
+```
+WorldV2PlaceKit._scene_cache      (world_v2_place_kit.gd:71)   89 PackedScene
+   └─ SceneState └─ ArrayMesh · StandardMaterial3D · CompressedTexture2D · Image
+AssetRegistry._model_cache        (asset_registry.gd:61)       21 PackedScene
+WorldV2PlaceKit._material_cache   (world_v2_place_kit.gd:54)   98 StandardMaterial3D dupliqués
+```
+
+`89 + 21 − 3 communes = **107**` — **exactement** le compte de `PackedScene`
+vivantes de la bissection, et son compte de `SceneState`. La contre-épreuve
+indépendante a vérifié plus fort que la cardinalité : la **différence symétrique
+entre l'union des chemins des deux caches et l'ensemble des `PackedScene`
+fuitées est VIDE**.
+
+**Le reproducteur se réduit d'un facteur trois.** La bissection localisait
+« entre la 71ᵉ et la 74ᵉ scène », donc trois suspectes. Montées séparément :
+`ResonancePylon.tscn` est **innocente** (zéro ligne) ; `WorldV2.tscn` **seule**
+porte la signature entière, en **22 s** au lieu de 97 ; toute combinaison qui la
+contient donne le même chiffre au chiffre près. C'est une allocation qui
+**sature**, pas une dose par scène.
+
+| ablation, juste avant `quit()` | ObjectDB | resources | Material | Mesh |
+|---|---:|---:|---:|---:|
+| aucune — témoin | 951 | 626 | **281** | **214** |
+| `_material_cache` (98 entrées) | 853 | 626 | 183 | 214 |
+| `AssetRegistry._model_cache` (21) | 841 | 538 | 251 | 178 |
+| `_scene_cache` (89) | 438 | 208 | 136 | 42 |
+| `_scene_cache` + `_model_cache` | 312 | 107 | 102 | **0** |
+| les cinq conteneurs | **128** | **64** | **4** | **0** |
+
+`_material_cache` retire **exactement 98** matériaux — sa taille — et aucun
+maillage : ce sont des `duplicate()`. Les deux caches de scènes emportent
+**100 % des maillages**. Les cinq emportent **98,6 % des matériaux**.
+
+**STABLE, PAS CUMULATIF.** Deux cycles montage/démontage dans le même processus :
+`objets=2875 ressources=861` aux DEUX cycles, à l'unité près. Avant le correctif
+R2B.3 c'était `+27 matériaux par cycle sans palier`. La rétention avait converti
+une croissance linéaire en plateau — **ce n'était donc pas la rétention qu'il
+fallait corriger, c'était son absence de fin de vie.**
+
+#### Deux affirmations de ce dossier étaient FAUSSES, et sont corrigées ici
+
+1. « Les `static` GDScript sont libérés avant ce rapport. » **Faux.** Si c'était
+   vrai, les vider juste avant `quit()` ne changerait rien au rapport. Cela le
+   change de 951 à 128.
+2. « Les 107 `PackedScene` n'ont pas de `resource_path`, donc ce sont des
+   sous-ressources embarquées. » **Artefact du format du rapport.**
+   `ObjectDB::cleanup()` enchaîne trois `if` qui écrasent la même variable
+   (`Node` → chemin, `Resource` → chemin, `RefCounted` → compteur) ; `Resource`
+   héritant de `RefCounted`, le troisième gagne toujours : le moteur n'imprime
+   **jamais** le `resource_path` d'une ressource. Contre-preuve prise dans le
+   processus : `kit : 0 entrees SANS resource_path`.
+
+Une troisième correction, de méthode : `WorldV2Bootstrap.tscn` n'est **pas** un
+montage/démontage — son `_ready()` appelle `SceneFlow.go_to()`, la scène devient
+`current_scene` et RESTE dans `root` (`noeuds=3858` contre 23). Les lignes de
+matrice qui l'impliquent restent publiées mais sont `NON VÉRIFIÉES` comme
+mesures de cycle. Trouvé par la contre-épreuve, pas par le lead.
+
+#### Le correctif, à la source
+
+Un cache de durée de vie « processus » sans propriétaire ne peut pas être
+relâché. Trois gestes :
+
+1. `scripts/core/static_resource_caches.gd` — `StaticResourceCaches`, un registre.
+2. `static func liberer_caches() -> int` sur les onze porteurs, **inscrite par
+   `_static_init()`** — l'inscription est aussi paresseuse que le cache : un
+   porteur jamais chargé n'a rien à relâcher.
+3. `SceneFlow._exit_tree()` appelle `liberer_tout()` : un autoload quitte l'arbre
+   à l'extinction du moteur, avant qu'il ne compte ses fuites.
+
+**Le sens de la dépendance est imposé par un test existant.** Une première
+version portait la liste des porteurs dans le noyau, par chemin ;
+`test_aucune_reference_croisee_interdite` l'a refusée, et il avait raison. Le
+porteur connaît le noyau ; le noyau ne connaît aucun porteur.
+
+| après correctif, 2 cycles | ObjectDB | resources | Material | Shader | Mesh | Texture |
+|---|---:|---:|---:|---:|---:|---:|
+| témoin | 0 | 0 | 0 | 0 | 0 | 0 |
+| `ResonancePylon.tscn` | 0 | 0 | 0 | 0 | 0 | 0 |
+| **`WorldV2.tscn`** | **104** | **55** | **0** | **0** | **0** | **0** |
+
+**Les quatre classes de RID de la signature disparaissent** : `281 → 0`,
+`214 → 0`, `65 → 0`, `11 → 0`. Cycle 1 = cycle 2.
+
+#### Ce qui reste, énuméré et non résumé
+
+`55 GDScript + 45 GDScriptNativeClass` — le cache de scripts du moteur, qu'un
+chargement de `.tscn` épingle ; le témoin est à zéro et les suites lancées par le
+runner sortent propres, donc ce résidu appartient au chemin `--script` d'une
+sonde, pas au harnais. Plus **un** flux audio, nommé ici pour la première fois :
+`res://assets/audio/sfx/land_soft.wav` (`AudioStreamWAV` +
+`AudioStreamPlaybackWAV`), le son de réception du joueur qui apparaît au spawn.
+Un objet, aucune classe de RID. **Non corrigé** : c'est le chemin audio, hors du
+périmètre d'ISS-059. Ticket à ouvrir.
+
+**Dette de conception nommée, non traitée** : la clé de `_material_cache` est
+`"%d|%s" % [base.get_instance_id(), tone]`. Un identifiant d'instance est plus
+court que la vie du cache ; c'est pour le stabiliser qu'il faut retenir la
+`PackedScene`. Changer cette clé supprimerait le besoin de rétention — mais
+c'est une modification du comportement de teinte des lieux, en pleine passe où la
+géométrie est gelée.
+
+Preuves : `evidence/world_v2/v2_3_r2b3_1/iss059/CHAINE_CAUSALE.md`, matrices
+`matrice_c1/` et `matrice_c2/`, ablation `ablation/`, après-correctif
+`apres_correctif/`.
 
 ---
 
@@ -1920,7 +2066,7 @@ comme preuve de forme — c'est déjà ce qu'énonce ISS-060.
 
 ---
 
-## ISS-063 — trois mutex distincts, et `user://` partagé entre tous les worktrees — S2, OUVERT
+## ISS-063 — trois mutex distincts, et `user://` partagé entre tous les worktrees — S2, **CORRIGÉ POUR GODOT le 2026-08-20 ; BLENDER RESTE OUVERT**
 
 Mesuré le 2026-08-20 (R2B.3), constat de la voie A confirmé par le lead et
 l'audit.
@@ -1956,3 +2102,60 @@ et un `user://` distinct par arbre de travail.
 
 **Propriétaire** : prochaine session de dette technique. Tant que ce ticket est
 ouvert, deux sessions simultanées produisent des échecs qui n'existent pas.
+
+---
+
+### Correctif R2B.3.1 (2026-08-20) — le remède de fond, pour Godot
+
+**Dette comptée AVANT le correctif**, comme l'exige `PROMPT4_METHOD` §1 :
+**13 fichiers exécutables versionnés, 35 sites** lancent le moteur. **Deux**
+étaient conformes (`tools/lancer_godot.sh` et son contrôle négatif). **Onze ne
+prenaient ni verrou canonique ni cloison.** L'inventaire ligne à ligne est dans
+`evidence/world_v2/v2_3_r2b3_1/iss063/INVENTAIRE_POINTS_ENTREE.md`, et la
+contre-épreuve indépendante l'a complété de neuf sites, d'un **quatrième**
+fichier de verrou (dans un scratchpad de session), d'un lancement Blender en
+Python, et d'un vecteur documentaire sous-compté d'un facteur 7.
+
+**Un seul mécanisme** : `tools/lib/godot_env.sh`, sourcé par les scripts.
+`godot_verrou_prendre` (verrou canonique `<git-common-dir>/heavy_tools.lock`,
+pris SUR UN DESCRIPTEUR pour qu'un échec de verrou ne se confonde pas avec un
+échec de commande) et `godot_cloison_arbre` / `godot_cloison_ephemere`
+(`XDG_DATA_HOME`). Le `user://` par arbre vit dans `<arbre>/.godot_user`,
+ignoré par git et absent de l'archive jouable.
+
+**Onze fichiers convertis**, dont les trois qui comptaient le plus :
+`validate_fast.sh` (le plus gros consommateur — il ne se sérialisait avec RIEN),
+`.githooks/pre-push` (un moteur par `.gd` modifié, sur un geste quotidien), et
+`tools/blackbox_player/server.py` (démarré par `.mcp.json` sans qu'aucune ligne
+de shell existe — aucun garde-fou de commande ne peut le voir). Trois attentes
+de verrou différentes, chacune justifiée sur place : 5 s pour `pre-push`, 10 s
+pour `env_report.sh`, 7200 s pour `setup_godot.sh` qui compile 90 min et
+REMPLACE le binaire sous les pieds des moteurs en cours.
+
+**Ce qui ne dépend plus de la discipline d'appel** :
+`tests/unit/test_invariants.gd::test_tout_lancement_godot_prend_verrou_et_cloison`.
+Prédicat volontairement LARGE : sa première version exigeait un ` --` après le
+binaire et RATAIT `tools/capture_ab.sh`, qui lance par tableau d'arguments — la
+contre-épreuve a reproduit cette panne. Cycle rouge d'abord tenu : vert →
+sabotage (verrou retiré d'un script) → **ÉCHEC nommant le fichier** →
+restauration au sha256 → vert.
+
+`CLAUDE.md` enseignait les quatre commandes NUES sans mentionner le lanceur : la
+dérive était enseignée, pas subie. Corrigé.
+
+**CE QUI RESTE OUVERT, et pourquoi le ticket ne se ferme pas** :
+
+1. **Blender.** `heavy_tools.lock` est défini comme sérialisant « tout usage
+   lourd de Godot **ou Blender** ». Mesuré : **30 fichiers** de `tools/` lancent
+   Blender, **4** prennent un verrou. Hors périmètre de la directive R2B.3.1 §2,
+   qui parle des points d'entrée Godot — non élargi de moi-même.
+2. **La commande tapée à la volée** n'écrit aucun fichier : aucun test ne la
+   voit. Un hook `PreToolUse` la couvrirait, au prix de faux positifs sur tout
+   fichier qui PARLE du binaire. Décision du propriétaire.
+3. **Le `kill` par `pgrep -x godot`** de `tools/blackbox_player/play.sh` : un
+   verrou ne protège pas d'un `kill`.
+4. **`tools/cave_oracle_batterie.py --verrou`** : opt-out officiel du verrou
+   partagé, avec un chemin absolu par défaut.
+5. **46 lignes de commandes nues dans 19 fichiers de `docs/`** et le `README`.
+
+Preuves : `evidence/world_v2/v2_3_r2b3_1/iss063/CORRECTIF.md`.

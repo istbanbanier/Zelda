@@ -1021,3 +1021,74 @@ la sonde de 97 s est prête), **ISS-062** (rien ne dit qu'il n'existe pas un
 troisième contournement), **ISS-063** (un seul verrou et un `user://` par arbre
 restent à poser au fond), ISS-060 (verdict visuel), ISS-061, UV0 de l'arbre,
 branche morte de `_palisade`, marge nulle du camp braise.
+
+---
+
+## 2026-08-20 — R2B.3.1 : ISS-059 fermée sur causalité mesurée, ISS-063 étendue à tous les points d'entrée, dossier visuel léger
+
+Base `06b865b`, après une **troisième recréation de conteneur** (HEAD retombé à
+`c44f430`) : récupération par `git merge --ff-only` sur le distant, strictement
+additive, jamais de reset. Base conforme à la directive vérifiée au SHA avant
+de commencer.
+
+**Organisation.** Le lead a tenu le verrou Godot et pris **toutes** les mesures
+lui-même. Trois agents ont travaillé **sans jamais lancer le moteur** — audit
+statique des points d'entrée, analyse statique des rétentions, fabrication des
+planches — chacun suivi d'une contre-épreuve dont la mission était de le
+réfuter. Ce que la contre-épreuve a corrigé est signalé comme tel.
+
+### §1 — ISS-059 : le propriétaire est nommé
+
+La question ouverte de R2B.3 était : *quel objet retient les `PackedScene`
+épinglées ?* Réponse mesurée : **trois variables `static` de GDScript sans
+propriétaire ni fin de vie** — `WorldV2PlaceKit._scene_cache` (89),
+`AssetRegistry._model_cache` (21), `WorldV2PlaceKit._material_cache` (98).
+`89 + 21 − 3 = 107`, exactement le compte de la bissection ; la contre-épreuve
+a montré que la **différence symétrique est VIDE**.
+
+Le reproducteur passe de 97 s à **22 s** : `WorldV2.tscn` seule porte tout, le
+pylône est innocent. **Stable, pas cumulatif** : deux cycles → mêmes comptes à
+l'unité. Ablation à variable unique : les cinq conteneurs emportent 98,6 % des
+matériaux et 100 % des maillages.
+
+**Correctif à la source** : `liberer_caches()` sur onze porteurs, inscrite par
+`_static_init()`, appelée par `SceneFlow._exit_tree()`. Ce n'était pas la
+rétention qu'il fallait corriger — elle borne une fuite pire — c'était son
+absence de fin de vie. `DummyMaterial 281 → 0`, `DummyMesh 214 → 0`,
+`DummyTexture 65 → 0`, `DummyShader 11 → 0`.
+
+**Une erreur de conception rattrapée par un test existant** : la première
+version portait la liste des porteurs dans `scripts/core/`, par chemin.
+`test_aucune_reference_croisee_interdite` l'a refusée. Le sens est désormais
+imposé : le porteur connaît le noyau, jamais l'inverse.
+
+### §2 — ISS-063 : onze points d'entrée convertis, deux invariants posés
+
+Dette comptée AVANT : 13 fichiers, 35 sites, **11 sans verrou ni cloison**.
+Un mécanisme unique (`tools/lib/godot_env.sh`), onze conversions, et deux
+invariants exécutables dont le cycle rouge d'abord a été joué.
+
+### §3 — quatre planches légères
+
+Dérivées des PNG existants, aucun rendu relancé. Deux défauts trouvés par le
+contrôleur indépendant et corrigés : plafond de poids réglé plus haut que la
+contrainte, et provenance illisible.
+
+### Ce qui reste ouvert
+
+- **ISS-064** ouverte : un flux audio (`land_soft.wav`) survit au démontage.
+- **Blender hors verrou** : 30 fichiers, 4 avec verrou. Hors périmètre de cette
+  directive, nommé comme dette.
+- La **commande tapée à la volée** échappe à tout test de fichier.
+- La clé `get_instance_id()` de `_material_cache` reste la cause de fond du
+  besoin de rétention. Dette nommée, non traitée : la toucher changerait le
+  comportement de teinte des lieux en pleine passe de gel géométrique.
+
+**Aucune géométrie touchée.** `SM_Farm_Ruins.glb` reste `ead79105e3deaf70`,
+octet pour octet. `GO_V2_3_B=FALSE`.
+
+**Prochaine action exacte** : la revue visuelle Codex/Istvan sur
+`evidence/world_v2/v2_3_r2b3_1/revue_legere/` (quatre planches légères) et
+`evidence/world_v2/v2_3_r2b3/preuves_lead/` (les 11 montages pleine
+résolution). Aucune propagation aux 31 POI, aucune release jouable, aucun
+lancement de V2.3-B avant ce PASS.
