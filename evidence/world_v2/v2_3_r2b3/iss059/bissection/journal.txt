@@ -1,0 +1,17 @@
+=== 00_import RC=0 wall=6s 12:04:48Z
+=== E_atmo3 RC=0 wall=45s filtre='test_valley_atmosphere.gd' verbose='' 12:05:42Z
+=== T_boss_temoin RC=0 wall=44s filtre='test_boss_arena.gd' verbose='' 12:08:08Z
+=== E_dress9 RC=0 wall=97s filtre='test_valley_dressing.gd' verbose='' 12:09:45Z
+=== E_43valley RC=0 wall=1483s filtre='test_bestiary_gate.gd,test_boss_victory.gd,test_camera_never_enters_the_hero.gd,test_camp_composes_three_activity_poles.gd,test_camp_props.gd,test_camp_smoke_column.gd,test_citadel_carries_voids_and_asymmetry.gd,test_citadel_dressing.gd,test_citadel_masses_wear_battered_cladding.gd,test_cooking_ui.gd,test_gate_cameras_are_not_buried.gd,test_ground_carriers_keep_their_material.gd,test_heads_reach_the_real_valley.gd,test_hud_and_inventory.gd,test_ingredients.gd,test_interact_is_never_silent.gd,test_interaction_reachable.gd,test_kit_scale.gd,test_meals_and_buffs.gd,test_mesas_wear_talus.gd,test_mount_and_dev_fly.gd,test_mouse_camera.gd,test_nature_biome.gd,test_opening_dressing_rests_on_ground.gd,test_paths_belong_to_the_ground.gd,test_phase_e_chain.gd,test_phase_h_silhouettes.gd,test_plains_carry_flanking_relief.gd,test_reward_anchors.gd,test_river_stones_reach_the_bed.gd,test_riverside_village.gd,test_roofs_are_supported.gd,test_save_continuity.gd,test_save_merge_and_vitals.gd,test_save_player_position.gd,test_shell_binding.gd,test_storm_cloud_hangs_above_the_spire.gd,test_valley_atmosphere.gd,test_valley_dressing.gd,test_valley_painterly.gd,test_valley_world.gd,test_world_bounds_and_death.gd,test_world_dressing.gd' verbose='' 12:35:45Z
+=== S1_temoin_aucun RC=0 wall=0s mode='aucun' verbose='' extra='' 12:36:42Z
+=== S2_charge_tout RC=0 wall=13s mode='tout' verbose='' extra='' 12:37:05Z
+=== S3_charge_tout_verbose RC=0 wall=11s mode='tout' verbose='verbose' extra='' 12:37:33Z
+=== S4a_glb_seuls RC=0 wall=3s mode='glb' verbose='' extra='' 12:38:07Z
+=== S4b_scenes_seules RC=0 wall=9s mode='scenes' verbose='' extra='' 12:38:16Z
+=== S5_instancie_tout RC=0 wall=98s mode='scenes' verbose='' extra='--instancie=oui' 12:40:06Z
+=== S6_instancie_verbose RC=0 wall=98s mode='scenes' verbose='verbose' extra='--instancie=oui' 12:42:03Z
+=== S7a_instancie_20 RC=0 wall=22s mode='scenes' verbose='' extra='--instancie=oui --limite=20' 12:43:08Z
+=== S7b_instancie_41 RC=0 wall=28s mode='scenes' verbose='' extra='--instancie=oui --limite=41' 12:43:36Z
+=== S8a_instancie_70 RC=0 wall=69s mode='scenes' verbose='' extra='--instancie=oui --limite=70' 12:45:12Z
+=== S8b_instancie_74 RC=0 wall=97s mode='scenes' verbose='' extra='--instancie=oui --limite=74' 12:46:59Z
+=== S8c_instancie_71 RC=0 wall=78s mode='scenes' verbose='' extra='--instancie=oui --limite=71' 12:48:54Z

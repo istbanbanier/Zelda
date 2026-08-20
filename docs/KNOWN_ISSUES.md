@@ -1832,6 +1832,48 @@ Pistes non retenues faute de périmètre : mesurer la boîtitude sur la
 plancher de **nombre de composantes attendu** par tas, ce qui déplace le
 problème sans le résoudre.
 
+### Mise à jour 2026-08-20 — le trou de la SOUDURE est fermé ; un SECOND trou a été trouvé, puis fermé lui aussi
+
+**Soudure — FERMÉ.** `tools/mesure_rectangularite.py` juge les plaques planes et
+les angles dièdres, donc **ne raisonne jamais par composante** : la soudure ne le
+déplace pas. Autotest 15 cas, dont le contre-exemple exact — 18 pavés tournés
+soudés par un coin rendent `rect = 100 %`, `ortho = 100 %`. Sabotage joué :
+l'ancien portail rend `liant 0,0 %` et **RC 0** sur une géométrie qui n'est que
+des boîtes, le nouveau rend 100,00 % et le filet rougit avec le motif nommé.
+Restauration byte-identique.
+
+**Bruit cohérent — trouvé par l'audit adverse, puis fermé.** Déplacer chaque
+POSITION UNIQUE de **2 mm** garde les coins soudés — donc l'ancien portail reste
+aveugle — mais casse la planéité des faces, donc `part_rectangulaire` s'effondre
+à 38,80 %, et `min(RECT, ortho)` la retient. **Les dix contrôles rendaient vert
+sur une géométrie qui n'est que des boîtes.** 2 mm sur des arêtes de 189 mm, soit
+1,06 % : invisible. La marge de l'instrument valait **un millimètre**.
+
+L'agent avait la mesure et ne l'a pas portée : `iss062/limite_bruitage.txt`
+montre, à 20 mm, indice 2,77 % et boîtitude 0,00 % — les deux portails aveugles
+sur la même page, dans un fichier sans en-tête cité nulle part.
+
+Correction : **un second plafond, INDÉPENDANT, sur `part_orthogonale` seule**.
+Un `min` protège contre le cas où une seule grandeur suffirait à ABSOUDRE ; il ne
+protège pas contre le cas où une seule grandeur suffit à ACCUSER. Seuil dérivé
+par la **même règle pré-enregistrée** (`iss062/regle_seuil.md`), appliquée à
+`ortho` sur la famille NATURE/DÉBRIS : M = 4,80 → plafond **52**.
+
+| | `part_orthogonale` | |
+|---|---:|---|
+| sujet livré | 14,97 % | PASS |
+| pylône · pont · mur acceptés | 15,68 · 6,46 · 4,53 % | PASS |
+| sabotage soudé · bruit 2 mm | 100,00 % | **FAIL** |
+| bruit 20 mm · 50 mm | 92,72 · 63,50 % | **FAIL** |
+
+Cycle rejoué par le lead : sujet `RC=0`, contre-exemple `RC=1` **avec un seul
+écart**, restauration `RC=0` et sha256 `ead79105…` à l'octet près.
+Preuves : `evidence/world_v2/v2_3_r2b3/iss062/bruit_coherent/`.
+
+**Le ticket reste OUVERT.** Deux instruments de familles différentes rendent la
+régression difficile ; rien ne dit qu'il n'existe pas un troisième contournement,
+et aucun des deux ne juge si un tas est beau.
+
 **Propriétaire** : la prochaine passe qui touche un générateur susceptible de
 souder. En attendant, le liant reste valable comme **anti-régression** et non
 comme preuve de forme — c'est déjà ce qu'énonce ISS-060.

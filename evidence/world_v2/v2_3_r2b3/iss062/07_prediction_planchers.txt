@@ -1,0 +1,5 @@
+mesh                  comp  tris     aire  aire_med     fine% aretemin    emprise
+SM_Farm_Debris_A         9   216   8.2211   0.89855   0.0000  0.191548  1.5044 x 0.6841 x 1.2194
+    planchers : comp>=9 OK | tris<=600 OK | aire>=3.20 OK | med>=0.08 OK | fine<=1.00 OK | X OK | Y OK | Z OK
+SM_Farm_Debris_B         9   216   8.3224   0.90961   0.0000  0.192724  1.1803 x 0.6883 x 0.9543
+    planchers : comp>=9 OK | tris<=600 OK | aire>=3.35 OK | med>=0.08 OK | fine<=1.00 OK | X OK | Y OK | Z OK

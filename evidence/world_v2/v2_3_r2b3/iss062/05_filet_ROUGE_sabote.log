@@ -1,0 +1,16 @@
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: r2b3_debris
+[r2b3_debris] SM_Farm_Debris_A     comp=9 tris=216 liant=0.0% aire_tot=8.2211 aire_med=0.89854 fine=0.0000% arete_min=0.191544 emprise=1.5044 x 0.6841 x 1.2194
+[r2b3_debris] SM_Farm_Debris_A     plaques=108 RECT=100.00% ortho=100.00% rectiligne=100.00% jonction=58.6135 m degeneree=0.0000 m
+[r2b3_debris] SM_Farm_Debris_B     comp=9 tris=216 liant=0.0% aire_tot=8.3223 aire_med=0.90960 fine=0.0000% arete_min=0.192720 emprise=1.1803 x 0.6883 x 0.9543
+[r2b3_debris] SM_Farm_Debris_B     plaques=108 RECT=100.00% ortho=100.00% rectiligne=100.00% jonction=58.9734 m degeneree=0.0000 m
+[r2b3_debris] AGRÉGAT A+B : plaques=216 RECT=100.00% ortho=100.00% indice_boite=100.00% (plafond 51.00%)
+  ÉCHEC test_world_v2_r2b3_debris.gd::test_les_gravats_ne_sont_pas_des_paves — les gravats de la ferme sont des fragments et non des pavés (1 écart(s)) — SM_Farm_Debris_A + SM_Farm_Debris_B : indice_boite (rectangularité) = 100.00 %, plafond 51.00 % — RECT=100.00 % ortho=100.00 % sur 216 plaques ; des BOÎTES DROITES restent des boîtes même SOUDÉES PAR LES COINS, et la soudure ne déplace pas cette mesure (ISS-062) — le tas se lit comme une bordure construite
+[r2b3_debris] ferme entière : 2264 triangles, 27 surfaces
+  ok   test_world_v2_r2b3_debris.gd::test_le_budget_tient_et_toute_primitive_porte_ses_uv (1 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 1 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_r2b3_debris.gd::test_les_gravats_ne_sont_pas_des_paves — les gravats de la ferme sont des fragments et non des pavés (1 écart(s)) — SM_Farm_Debris_A + SM_Farm_Debris_B : indice_boite (rectangularité) = 100.00 %, plafond 51.00 % — RECT=100.00 % ortho=100.00 % sur 216 plaques ; des BOÎTES DROITES restent des boîtes même SOUDÉES PAR LES COINS, et la soudure ne déplace pas cette mesure (ISS-062) — le tas se lit comme une bordure construite

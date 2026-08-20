@@ -1,0 +1,47 @@
+# ISS-062 — mesures PYTHON, arbre propre (sujet NON sabote)
+# depot claude/world-v2-reconstruction, HEAD 291a6219 + travail non commite
+# 2026-08-20T12:15:45Z
+
+$ sha256sum assets/architecture/farm/SM_Farm_Ruins.glb
+ead79105e3deaf70629c1bd928e68d355261217dbd2d5150384b4a7590cf9060  assets/architecture/farm/SM_Farm_Ruins.glb
+
+$ python3 tools/mesure_rectangularite.py assets/architecture/farm/SM_Farm_Ruins.glb --mesh SM_Farm_Debris_A --mesh SM_Farm_Debris_B --plafond 51
+mesh                        prim    tris  plaques      RECT%    ortho% rectiligne%   aire_med
+ SM_Farm_Truss                 2     212      148     43.29%    96.96%      43.29%   0.222951
+ SM_Farm_RoofPan_Intact        2     108       60     97.91%    87.09%      97.91%   0.237661
+ SM_Farm_RoofPan_Fallen        2     108       64     93.22%    42.43%      93.22%   0.111751
+*SM_Farm_Debris_A              4     198      177      0.31%    15.50%       0.31%   0.013862
+*SM_Farm_Debris_B              4     198      176      0.32%    14.44%       0.32%   0.013406
+ SM_Farm_GableBreak            1     304      181     35.10%    79.01%      35.10%   0.028297
+ SM_Farm_WallStub_East         1      84       52     36.80%    75.39%      36.80%   0.044641
+ SM_Farm_Rubble_Wall           3     184      177      6.37%    60.48%       6.37%   0.067758
+ SM_Farm_Jamb_Door             1     108       88     79.59%    85.01%      79.59%   0.032506
+ SM_Farm_Jamb_Breach           1      92       67     77.24%    86.75%      81.28%   0.034516
+ SM_Farm_InteriorFrame         1      72       48     51.92%    96.32%      51.92%   0.216003
+ SM_Farm_JoistStubs            3      76       54     51.43%    76.22%      51.43%   0.064627
+ SM_Farm_WallBreak_North       1     336      200     26.60%    68.20%      26.60%   0.023129
+ SM_Farm_Rubble_North          1     144      141      2.77%    59.29%       2.77%   0.071471
+MESHES RETENUS                                353      0.32%    14.97%       0.32%           
+indice_boite = min(RECT, ortho) = 0.32%
+OK : indice_boite 0.32% <= plafond 51.00%
+RC=0
+
+$ python3 tools/mesure_boititude.py assets/architecture/farm/SM_Farm_Ruins.glb --mesh SM_Farm_Debris_A --mesh SM_Farm_Debris_B --plafond 25
+mesh                     prim  comp   tris    LIANT     hexa     equi   droite  aire_med arete_min    fine%
+ SM_Farm_Truss              2    21    212    90.6%    90.6%    90.6%     0.0%   1.51204  0.070292   0.000%
+ SM_Farm_RoofPan_Intact     2     9    108   100.0%   100.0%   100.0%    66.7%   9.91536  0.055000   0.000%
+ SM_Farm_RoofPan_Fallen     2     9    108   100.0%   100.0%   100.0%    44.4%   0.97680  0.050000   0.000%
+*SM_Farm_Debris_A           4    12    198     0.0%     0.0%     0.0%     0.0%   0.31417  0.059032   0.000%
+*SM_Farm_Debris_B           4    12    198     0.0%     0.0%     0.0%     0.0%   0.32056  0.064464   0.000%
+ SM_Farm_GableBreak         1    14    304    51.3%    51.3%     7.9%     0.0%   0.29824  0.040000   0.000%
+ SM_Farm_WallStub_East      1     4     84    42.9%    42.9%     0.0%     0.0%   0.57290  0.033982   0.000%
+ SM_Farm_Rubble_Wall        3    16    184    97.8%    97.8%     6.5%     0.0%   0.98015  0.117154   0.000%
+ SM_Farm_Jamb_Door          1     9    108   100.0%   100.0%    33.3%    33.3%   0.38015  0.150000   0.000%
+ SM_Farm_Jamb_Breach        1     7     92    78.3%    78.3%    26.1%    26.1%   0.38015  0.080000   0.000%
+ SM_Farm_InteriorFrame      1     6     72   100.0%   100.0%   100.0%     0.0%   1.89664  0.114175   0.000%
+ SM_Farm_JoistStubs         3     9     76    78.9%    78.9%    63.2%     0.0%   0.48526  0.101533   0.000%
+ SM_Farm_WallBreak_North    1    16    336    53.6%    53.6%     3.6%     0.0%   0.17829  0.053621   0.000%
+ SM_Farm_Rubble_North       1    12    144   100.0%   100.0%     0.0%     0.0%   0.88536  0.301751   0.000%
+MESHES RETENUS                         396     0.0%     0.0%     0.0%     0.0%            0.059032   0.000%
+OK : liant 0.0% <= plafond 25.0%
+RC=0

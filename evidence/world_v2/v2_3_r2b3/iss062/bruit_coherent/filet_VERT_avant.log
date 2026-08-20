@@ -1,0 +1,20 @@
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_SNac2C99
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=r2b3_debris
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: r2b3_debris
+[r2b3_debris] SM_Farm_Debris_A     comp=12 tris=198 liant=0.0% aire_tot=4.0704 aire_med=0.31416 fine=0.0000% arete_min=0.059027 emprise=1.5044 x 0.6841 x 1.2194
+[r2b3_debris] SM_Farm_Debris_A     plaques=175 RECT=0.31% ortho=15.50% rectiligne=0.31% jonction=62.4744 m degeneree=4.0598 m
+[r2b3_debris] SM_Farm_Debris_B     comp=12 tris=198 liant=0.0% aire_tot=4.0282 aire_med=0.32057 fine=0.0000% arete_min=0.064450 emprise=1.1803 x 0.6883 x 0.9542
+[r2b3_debris] SM_Farm_Debris_B     plaques=176 RECT=0.32% ortho=14.50% rectiligne=0.32% jonction=61.9894 m degeneree=3.1919 m
+[r2b3_debris] AGRÉGAT A+B : plaques=351 RECT=0.32% ortho=15.00% indice_boite=0.32% (plafond 51.00%)
+  ok   test_world_v2_r2b3_debris.gd::test_les_gravats_ne_sont_pas_des_paves (1 assertions)
+[r2b3_debris] ferme entière : 2228 triangles, 27 surfaces
+  ok   test_world_v2_r2b3_debris.gd::test_le_budget_tient_et_toute_primitive_porte_ses_uv (1 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 2 réussi(s), 0 échoué(s) ===
+LANCER_GODOT: RC_GODOT=0

@@ -1,0 +1,29 @@
+########## PLANCHER A/A (masquer=AUCUN) ##########
+vue                     pixels     part  boîte des pixels de l'objet
+debris_a_proche              0    0.00%  —
+debris_b_proche              0    0.00%  —
+debris_plongee               0    0.00%  —
+ferme_arriere                0    0.00%  —
+ferme_facade                 0    0.00%  —
+ferme_laterale               0    0.00%  —
+ferme_orb000                 0    0.00%  —
+ferme_orb090                 0    0.00%  —
+ferme_orb180                 0    0.00%  —
+ferme_orb270                 0    0.00%  —
+ferme_seuil                  0    0.00%  —
+seuil par canal : 8
+
+########## SIGNAL (masquer=SM_Farm_Debris_A,SM_Farm_Debris_B) ##########
+vue                     pixels     part  boîte des pixels de l'objet
+debris_a_proche          34217    3.71%  x 299–757  y 258–719
+debris_b_proche          23851    2.59%  x 507–883  y 34–473
+debris_plongee           16756    1.82%  x 537–717  y 176–574
+ferme_arriere                0    0.00%  —
+ferme_facade              1637    0.18%  x 630–1061  y 392–457
+ferme_laterale            3415    0.37%  x 542–673  y 361–507
+ferme_orb000               205    0.02%  x 333–488  y 433–464
+ferme_orb090              3752    0.41%  x 595–804  y 478–663
+ferme_orb180               204    0.02%  x 303–966  y 270–478
+ferme_orb270                 0    0.00%  —
+ferme_seuil                  0    0.00%  —
+seuil par canal : 8

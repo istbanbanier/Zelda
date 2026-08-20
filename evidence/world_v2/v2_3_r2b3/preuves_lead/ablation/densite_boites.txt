@@ -1,0 +1,16 @@
+Compacite du signal : un petit nombre de pixels ETALE sur une grande
+boite est une frange d'occlusion, pas une masse lisible.
+
+vue                  pixels    part     boite (px) remplissage
+----------------------------------------------------------------
+debris_a_proche       34217   3.71%        459x462      16.1%
+debris_b_proche       23851   2.59%        377x440      14.4%
+debris_plongee        16756   1.82%        181x399      23.2%
+ferme_arriere             0   0.00%              —          —
+ferme_facade           1637   0.18%         432x66       5.7%
+ferme_laterale         3415   0.37%        132x147      17.6%
+ferme_orb000            205   0.02%         156x32       4.1%
+ferme_orb090           3752   0.41%        210x186       9.6%
+ferme_orb180            204   0.02%        664x209       0.1%
+ferme_orb270              0   0.00%              —          —
+ferme_seuil               0   0.00%              —          —

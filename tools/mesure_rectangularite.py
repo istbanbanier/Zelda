@@ -741,6 +741,11 @@ def main():
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--mesh", action="append", default=None,
                     help="restreindre le verdict à ces meshes (répétable)")
+    ap.add_argument("--plafond-ortho", type=float, default=None,
+                    dest="plafond_ortho",
+                    help="plafond INDÉPENDANT sur part_orthogonale ; sort 1 si dépassé. "
+                         "Nécessaire parce que `min(RECT, ortho)` se contourne : un "
+                         "bruit cohérent de 2 mm effondre RECT sans toucher ortho.")
     ap.add_argument("--plafond", type=float, default=None,
                     help="indice_boite maximum toléré ; sort 1 si dépassé")
     ap.add_argument("--autotest", action="store_true")
@@ -820,6 +825,29 @@ def main():
             (g_ortho if g_ortho is not None else -1.0), g_rectil, ""))
         print("indice_boite = min(RECT, ortho) = %.2f%%" % indice)
 
+    # DEUX PLAFONDS INDÉPENDANTS, ET C'EST LE POINT.
+    #
+    # Trouvé par l'audit adverse le 2026-08-20 : `indice_boite = min(RECT, ortho)`
+    # se contourne avec un bruit COHÉRENT de 2 mm appliqué par POSITION (donc les
+    # coins soudés le restent). Les faces cessent d'être planes à mieux que
+    # RECT_COPLAN_DIST, RECT s'effondre à 38,80 %, et le `min` le retient — alors
+    # qu'`ortho` reste à 100,00 % et dit la vérité : l'objet est TOUJOURS fait de
+    # boîtes. Les dix contrôles rendaient vert sur une géométrie qui n'est que des
+    # boîtes. La marge de l'instrument contre le bruit était d'UN millimètre.
+    #
+    # Un `min` protège contre le cas où une seule grandeur suffirait à absoudre ;
+    # il ne protège pas contre le cas où une seule grandeur suffit à ACCUSER.
+    # D'où un second plafond, posé sur `ortho` SEULE, jamais à travers le `min`.
+    if a.plafond_ortho is not None:
+        if g_ortho is not None and g_ortho > a.plafond_ortho:
+            sys.stderr.write("ECHEC : part_orthogonale %.2f%% > plafond %.2f%% — "
+                             "des angles droits partout, quelle que soit la "
+                             "planéité des faces (ISS-062)\n"
+                             % (g_ortho, a.plafond_ortho))
+            return 1
+        sys.stderr.write("OK : part_orthogonale %s <= plafond %.2f%%\n"
+                         % ("%.2f%%" % g_ortho if g_ortho is not None
+                            else "(indéfinie)", a.plafond_ortho))
     if a.plafond is not None:
         if indice > a.plafond:
             sys.stderr.write("ECHEC : indice_boite %.2f%% > plafond %.2f%%\n"

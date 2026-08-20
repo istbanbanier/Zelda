@@ -1,0 +1,67 @@
+lignes « Leaked instance » : 994
+avec resource_path : 0 ; sans : 994
+
+-- par classe --
+     276  StandardMaterial3D
+     214  ArrayMesh
+     107  SceneState
+     107  PackedScene
+      73  GDScript
+      67  Image
+      64  CompressedTexture2D
+      61  GDScriptNativeClass
+       5  Shader
+       4  ShaderMaterial
+       4  Animation
+       3  NoiseTexture2D
+       3  FastNoiseLite
+       1  OggPacketSequence
+       1  AudioStreamOggVorbis
+       1  Skin
+       1  AnimationLibrary
+       1  AudioStreamPlaybackWAV
+       1  AudioStreamWAV
+
+-- top chemins de ressource fuités --
+
+-- « Resource still in use » --
+       1  res://scripts/core/user_settings.gd
+       1  res://scripts/ui/hud_style.gd
+       1  res://assets/audio/ui/ui_hover.ogg::OggPacketSequence_ri4aq
+       1  res://assets/audio/ui/ui_hover.ogg
+       1  res://scripts/dungeon/pushable_block.gd
+       1  res://scripts/electricity/electric_node.gd
+       1  res://scripts/electricity/electric_graph.gd
+       1  res://scripts/dungeon/puzzle_hint_tracker.gd
+       1  res://scripts/combat/damage_event.gd
+       1  res://scripts/components/health_component.gd
+       1  res://resources/combat/attack_definition.gd
+       1  res://resources/weapons/weapon_definition.gd
+       1  res://scripts/inventory/weapon_instance.gd
+       1  res://resources/ingredients/ingredient_definition.gd
+       1  res://scripts/components/inventory_component.gd
+       1  res://resources/tuning/locomotion_tuning.gd
+       1  res://scripts/player/camera_rig.gd
+       1  res://scripts/components/input_intent.gd
+       1  res://scripts/core/latency_probe.gd
+       1  res://scripts/components/player_input_reader.gd
+       1  res://scripts/reaction/resonance_link_node.gd
+       1  res://scripts/reaction/material_profile.gd
+       1  res://scripts/reaction/material_state_component.gd
+       1  res://scripts/reaction/resonance_target_component.gd
+       1  res://scripts/enemies/noise_events.gd
+       1  res://resources/tuning/stamina_tuning.gd
+       1  res://scripts/components/stamina_component.gd
+       1  res://scripts/reaction/resonance_controller.gd
+       1  res://resources/tuning/climb_tuning.gd
+       1  res://scripts/components/climbing_component.gd
+       1  res://scripts/components/ledge_detector_component.gd
+       1  res://scripts/components/action_alignment_component.gd
+       1  res://scripts/components/hurtbox_component.gd
+       1  res://scripts/combat/damage_formula.gd
+       1  res://scripts/components/hitbox_component.gd
+       1  res://scripts/combat/attack_controller.gd
+       1  res://scripts/components/lock_on_component.gd
+       1  res://scripts/combat/arrow_projectile.gd
+       1  res://resources/combat/bow_tuning.gd
+       1  res://scripts/combat/bow_component.gd

@@ -1,0 +1,21 @@
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_4Heixzui
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=r2b3_debris
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: r2b3_debris
+[r2b3_debris] SM_Farm_Debris_A     comp=9 tris=216 liant=0.0% aire_tot=8.2184 aire_med=0.89921 fine=0.0000% arete_min=0.189072 emprise=1.5067 x 0.6870 x 1.2218
+[r2b3_debris] SM_Farm_Debris_A     plaques=170 RECT=44.74% ortho=100.00% rectiligne=44.74% jonction=58.6069 m degeneree=23.3319 m
+[r2b3_debris] SM_Farm_Debris_B     comp=9 tris=216 liant=0.0% aire_tot=8.3186 aire_med=0.91111 fine=0.0000% arete_min=0.189908 emprise=1.1830 x 0.6919 x 0.9552
+[r2b3_debris] SM_Farm_Debris_B     plaques=181 RECT=32.94% ortho=100.00% rectiligne=32.94% jonction=58.9576 m degeneree=28.0871 m
+[r2b3_debris] AGRÉGAT A+B : plaques=351 RECT=38.80% ortho=100.00% indice_boite=38.80% (plafond 51.00%)
+  ÉCHEC test_world_v2_r2b3_debris.gd::test_les_gravats_ne_sont_pas_des_paves — les gravats de la ferme sont des fragments et non des pavés (1 écart(s)) — SM_Farm_Debris_A + SM_Farm_Debris_B : part_orthogonale = 100.00 %, plafond 52.00 % — des angles droits PARTOUT, quelle que soit la planéité des faces. Un bruit cohérent de 2 mm effondre la part rectangulaire sans rien changer aux dièdres ni à l'image : ce contrôle-ci ne s'y laisse pas prendre (ISS-062)
+[r2b3_debris] ferme entière : 2264 triangles, 27 surfaces
+  ok   test_world_v2_r2b3_debris.gd::test_le_budget_tient_et_toute_primitive_porte_ses_uv (1 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 1 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_world_v2_r2b3_debris.gd::test_les_gravats_ne_sont_pas_des_paves — les gravats de la ferme sont des fragments et non des pavés (1 écart(s)) — SM_Farm_Debris_A + SM_Farm_Debris_B : part_orthogonale = 100.00 %, plafond 52.00 % — des angles droits PARTOUT, quelle que soit la planéité des faces. Un bruit cohérent de 2 mm effondre la part rectangulaire sans rien changer aux dièdres ni à l'image : ce contrôle-ci ne s'y laisse pas prendre (ISS-062)
+LANCER_GODOT: RC_GODOT=1

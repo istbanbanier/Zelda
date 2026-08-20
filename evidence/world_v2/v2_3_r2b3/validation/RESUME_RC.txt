@@ -1,0 +1,16 @@
+godot etrangers = 0 a 11:37:30Z (attente 555s)
+verrou PRIS a 11:37:30Z ; user:// = /tmp/ud_suites
+--- LOT world_v2  (--filter=world_v2)
+    RC=0  duree=791s  octets_log=96842
+    godot_concurrents avant=0 apres=0
+    === RÉSULTAT: 99 réussi(s), 0 échoué(s) ===
+--- LOT boss_arena  (--filter=boss_arena)
+    RC=0  duree=42s  octets_log=1493
+    godot_concurrents avant=0 apres=0
+    === RÉSULTAT: 11 réussi(s), 0 échoué(s) ===
+--- LOT boot_smoke  (--filter=boot_smoke)
+    RC=0  duree=31s  octets_log=4557
+    godot_concurrents avant=0 apres=0
+    === RÉSULTAT: 1 réussi(s), 0 échoué(s) ===
+verrou RENDU a 11:51:54Z
+flock/inner RC=0

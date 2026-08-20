@@ -1,0 +1,22 @@
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: test_boss_arena.gd
+  ok   test_boss_arena.gd::test_the_arena_is_a_disc_between_32_and_42_metres (6 assertions)
+  ok   test_boss_arena.gd::test_nothing_stands_in_the_middle_of_the_arena (6 assertions)
+  ok   test_boss_arena.gd::test_a_raised_pylon_is_powered_by_the_ground_rail (11 assertions)
+  ok   test_boss_arena.gd::test_the_closed_ground_ring_terminates (2 assertions)
+  ok   test_boss_arena.gd::test_the_guardian_never_leaves_the_arena (2 assertions)
+  ok   test_boss_arena.gd::test_the_guardian_cannot_push_the_player_through_the_wall (1 assertions)
+  ok   test_boss_arena.gd::test_the_camera_widens_progressively_near_the_boss (6 assertions)
+  ok   test_boss_arena.gd::test_the_arena_restores_the_antechamber_checkpoint (7 assertions)
+  ok   test_boss_arena.gd::test_retry_reloads_the_arena_not_the_valley (5 assertions)
+  ok   test_boss_arena.gd::test_the_hud_shows_a_boss_bar_only_in_the_arena (4 assertions)
+  ok   test_boss_arena.gd::test_the_arena_is_never_a_one_way_trap (7 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 11 réussi(s), 0 échoué(s) ===
+WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 1 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

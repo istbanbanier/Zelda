@@ -1,0 +1,20 @@
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== SONDE ISS-059 — mode=scenes limite=41 garder=false ===
+[boot] Godot            : 4.7.1-stable (custom_build)
+[boot] renderer         : forward_plus
+[boot] physique 3D      : Jolt Physics
+[boot] tick physique    : 60 Hz
+[boot] pilote de rendu  : headless
+[boot] autoloads        : GameState, EventBus, SaveSystem, AudioManager, SceneFlow
+[boot] flux             : BOOT
+[boot] fondation vérifiée — Phase A.
+[boot] transition vers le menu principal.
+WARNING: [pickup] arme au sol sans définition — inerte.
+     at: push_warning (core/variant/variant_utility.cpp:1033)
+     GDScript backtrace (most recent call first):
+         [0] _ready (res://scripts/interaction/weapon_pickup.gd:24)
+         [1] _initialize (res://tools/godot/probe_iss059_charge.gd:59)
+chemins=41 chargés=41 échecs=0 gardés=0 montés=41
+objets vivants avant sortie : 2053
+=== SONDE TERMINÉE ===
