@@ -1622,6 +1622,14 @@ nombre de `StandardMaterial3D` dupliqués est donc **borné et petit**, ce qui
 rend l'ordre de grandeur plausible. **Mais il ne confirme pas 100 sans
 instrumenter Godot, et il ne l'a pas fait.**
 
+**Correction de fait, 2026-08-20 (R2B.3)** : l'audit de R2B.3 a recompté —
+`SM_Farm_Ruins.glb` porte **14 pièces, pas 16**, et **2 076 triangles, pas
+2 080** (quatre triangles d'aire nulle, tous dans `GableBreak`, sont écartés
+dès qu'on les compte correctement ; `docs/assets/ASSET_MANIFEST.csv` annonce
+en outre 1 996). Le « 16 » venait de l'audit de R2B.2 et je l'avais recopié
+sans le vérifier. L'hypothèse du `+100` reposait en partie sur ce compte : elle
+en sort **plus faible encore**, pas plus forte.
+
 **Correction consignée, dans le sens exact qu'il a demandé** : « proportionnel
 au contenu ajouté » reste une **histoire plausible et bornée, pas une mesure**.
 Elle n'est pas retirée du dossier — elle est rétrogradée au rang d'hypothèse
