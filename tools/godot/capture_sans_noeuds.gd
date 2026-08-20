@@ -43,7 +43,8 @@ func _initialize() -> void:
 		return
 	if _masques.is_empty():
 		printerr("BLOQUÉ : --masquer= requis — sans lui cet outil duplique "
-			+ "capture_poi_batch et son résultat serait pris pour une ablation")
+			+ "capture_poi_batch et son résultat serait pris pour une ablation. "
+			+ "Pour le TÉMOIN, écrire --masquer=AUCUN explicitement.")
 		quit(3)
 		return
 	_run()
@@ -66,17 +67,30 @@ func _run() -> void:
 	for i: int in range(90):
 		await process_frame
 
+	# LE TÉMOIN DOIT PASSER PAR LE MÊME CODE QUE L'ABLATION.
+	#
+	# Mesuré le 2026-08-20 : comparer un lot de `capture_poi_batch` à un lot de
+	# cet outil-ci rendait 2 à 5 % de pixels changés sur TOUTES les vues, y
+	# compris celles où l'objet éteint n'est pas visible — donc du bruit
+	# d'exécution (llvmpipe, nombre de trames de stabilisation différent), pas
+	# une contribution. Un témoin capturé par le MÊME chemin de code isole la
+	# seule variable qui compte : les deux maillages éteints.
+	var temoin: bool = (_masques.size() == 1 and _masques[0] == "AUCUN")
 	var eteints: int = 0
-	for node: Node in monde.find_children("*", "MeshInstance3D", true, false):
-		var chemin: String = String(monde.get_path_to(node))
-		for motif: String in _masques:
-			if chemin.contains(motif):
-				(node as MeshInstance3D).visible = false
-				eteints += 1
-				break
-	print("[ablation] %d maillage(s) éteint(s) pour %s" % [eteints,
-		", ".join(_masques)])
-	if eteints == 0:
+	if not temoin:
+		for node: Node in monde.find_children("*", "MeshInstance3D", true, false):
+			var chemin: String = String(monde.get_path_to(node))
+			for motif: String in _masques:
+				if chemin.contains(motif):
+					(node as MeshInstance3D).visible = false
+					eteints += 1
+					break
+	if temoin:
+		print("[ablation] TÉMOIN : aucun maillage éteint, même chemin de code")
+	else:
+		print("[ablation] %d maillage(s) éteint(s) pour %s" % [eteints,
+			", ".join(_masques)])
+	if eteints == 0 and not temoin:
 		printerr("BLOQUÉ : aucun maillage éteint — le motif ne correspond à rien, "
 			+ "et l'image serait IDENTIQUE tout en passant pour une ablation")
 		quit(2)
