@@ -1697,6 +1697,46 @@ signature R2B.2 a été relevée. Statut : **`BLOQUÉ`**, pour non-attribuabilit
 pas pour durée : la suite complète prend **environ une heure**, pas 3 h 30 comme
 estimé d'abord par division par une durée qui n'avait pas eu lieu.
 
+### Signature au 2026-08-20, APRÈS le correctif — elle s'est effondrée
+
+`validate_fast.sh` rejoué **une seule fois**, à la fin de R2B.3, isolé. RC 1.
+**947 tests réussis, 0 échoué.**
+
+| classe | R2B.2 (`ea93460`) | **R2B.3** | écart |
+|---|---:|---:|---|
+| `ObjectDB` | 5 203 | **1 003** | **−4 200** |
+| `resources still in use` | 239 | **657** | +418 |
+| **`DummyMaterial`** | **4 849** | **281** | **−4 568 (−94 %)** |
+| `DummyShader` | 14 | **14** | **0** |
+| `DummyMesh` | 42 | **214** | +172 |
+| `DummyTexture` | 58 | **67** | +9 |
+
+**Et le résidu restant est exactement celui que la sonde de bissection reproduit
+en 97 secondes hors de la suite** : `Material 281 · Shader 14 · Mesh 214 ·
+Texture 67`, **les quatre au chiffre près**. Ce n'est plus un faisceau : c'est la
+même fuite, isolée, rejouable en une minute et demie au lieu d'une heure.
+
+Identité énumérée : 276 `StandardMaterial3D` + 4 `ShaderMaterial`, 214
+`ArrayMesh`, 67 `Image` + 64 `CompressedTexture2D`, 107 `PackedScene` avec autant
+de `SceneState`, **aucune avec `resource_path`** — des sous-ressources de scènes
+épinglées par l'**instanciation** (le chargement seul n'en épingle aucune).
+Localisation : tout apparaît **entre la 71ᵉ et la 74ᵉ scène** — `WorldV2.tscn`,
+`WorldV2Bootstrap.tscn`, `ResonancePylon.tscn`.
+
+**Une conclusion de la bissection est corrigée ici.** Elle écrivait « la suite
+fuit 115 matériaux par maillage et la sonde 1,3 — ce n'est donc pas la même
+fuite ». Vrai contre la signature d'**avant** le correctif, faux contre celle
+d'**après** : la suite rend aujourd'hui 281/214 = **1,31**, le rapport de la
+sonde. Elle comparait un résidu post-correctif à un chiffre pré-correctif ; son
+propre §0 signalait cet écart de SHA comme « la limite d'attribution de tout ce
+qui suit ».
+
+**Ce qui manque encore, et qui interdit de fermer** : **quel objet retient** les
+`PackedScene` épinglées à l'instanciation. La sonde le montre, elle ne le nomme
+pas. Sans causalité mesurée, pas de fermeture.
+
+Le harness reste **ROUGE**, et il est rapporté comme tel.
+
 Preuves : `evidence/world_v2/v2_3_r2b3/iss059/`.
 
 ---
