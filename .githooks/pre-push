@@ -79,7 +79,8 @@ GODOT="${GODOT_BIN:-/usr/local/bin/godot}"
 # raison qui n'a rien à voir avec le diff.
 if ! godot_cloison_arbre >/dev/null 2>&1 || ! godot_verrou_prendre 8 5 >/dev/null 2>&1; then
   echo "  plancher QA : moteur occupé, parse des .gd SAUTÉ (non vérifié)." >&2
-  GODOT="/nonexistent-godot-verrou-occupe"
+  GODOT=""            # vide : la branche ci-dessous ne s'exécute pas
+  VERROU_OCCUPE=1
 fi
 if [ -x "$GODOT" ] || command -v "$GODOT" >/dev/null 2>&1; then
   if [ -n "$range" ]; then
@@ -92,7 +93,15 @@ if [ -x "$GODOT" ] || command -v "$GODOT" >/dev/null 2>&1; then
     done
   fi
 else
-  echo "  note : Godot introuvable ($GODOT) — parse des scripts NON exécuté (voir tools/setup_godot.sh)"
+  # Deux raisons DIFFÉRENTES de ne pas avoir parsé, et les confondre envoie
+  # sur une fausse piste : « lancer setup_godot.sh » quand le moteur est là
+  # mais occupé fait perdre 25 minutes de compilation pour rien.
+  if [ "${VERROU_OCCUPE:-0}" -eq 1 ]; then
+    echo "  note : le moteur EXISTE mais son verrou est tenu — rien à réparer."
+    echo "         Le parse complet est fait par tools/validate_fast.sh."
+  else
+    echo "  note : Godot introuvable ($GODOT) — parse des scripts NON exécuté (voir tools/setup_godot.sh)"
+  fi
 fi
 
 if [ ${#fails[@]} -gt 0 ]; then
