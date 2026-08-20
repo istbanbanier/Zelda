@@ -1644,7 +1644,97 @@ verte.
 
 ---
 
-## ISS-060 — les débris de la ferme sont des pavés droits à 96,8 % — S3, OUVERT
+### Mise à jour 2026-08-20 (R2B.3) — une VRAIE fuite trouvée et corrigée, mais ce n'est PAS celle-ci
+
+**Verdict : `FAIL` sur une fuite réelle, `NON VÉRIFIÉ` sur la signature de sortie.**
+
+La cause enfin nommée, et ce n'était aucun des deux suspects du dossier.
+`WorldV2PlaceKit.scene_for()` faisait `load(path)` **sans rien retenir** : au
+démontage la `PackedScene` perdait sa dernière référence, le moteur vidait ses
+sous-ressources, et le montage suivant reconstruisait des **matériaux de base
+neufs**. Deux caches `static` à clé `base.get_instance_id()` ne pouvaient donc
+plus jamais faire mouche — et, étant `static`, ils **gardaient chaque
+génération**.
+
+| scénario, un seul processus | avant (c0/c1/c2) | croissance | après |
+|---|---|---:|---|
+| témoin | 0 / 0 / 0 | 0 | 0 / 0 / 0 |
+| ferme | 48 / 75 / 102 | **+27** | 48 / 48 / 48 |
+| arbre | 11 / 15 / 19 | **+4** | 11 / 11 / 11 |
+| monde | 334 / 536 / 738 | **+202** | 334 / 334 / 334 |
+
+Vingt cycles : 48 → 561, **+27 sur chacun des dix-neuf intervalles, sans
+plateau**. Corrigé en retenant la scène, sur le modèle de `AssetRegistry.model()`
+dont le commentaire documentait déjà ce danger exact. Filet de régression :
+`tests/world_v2/test_world_v2_iss059_cache_kit.gd`.
+
+**Et ce n'est pas la fuite de cette entrée.** 561 matériaux retenus produisent
+**zéro** ligne de fuite au rapport de sortie. Les `static` GDScript sont libérés
+avant ce rapport.
+
+**Formulation corrigée après audit** : ce constat est une **observation directe**
+des 561, pas une déduction depuis le contrôle positif. Le contrôle positif
+(100 `MeshInstance3D` orphelins → `200 ObjectDB` / `100 DummyMaterial`) prouve
+seulement que **le rapporteur parle** ; un nœud orphelin et un matériau retenu
+par un dictionnaire `static` sont deux régimes différents. C'est une **borne
+empirique forte, pas un mécanisme**.
+
+**Le `+100` reste NON EXPLIQUÉ**, et le mécanisme proposé par l'audit de la
+phase 0 est **falsifié** : `AssetRegistry._model_cache` vaut 0 dans trois
+scénarios et 21 dans le monde — jamais son plafond de 48, donc sa purge ne
+s'exécute jamais.
+
+**Un fait contre le texte de cette entrée** : « aucun lot isolé ne fuit » est
+**trop fort**. `boss_arena` seul émet `2 ObjectDB` + `1 resource` — mais **aucune
+ligne de RID, aucun `DummyMaterial`**. Le plancher est petit et sans matériau,
+ce qui reformule la bissection : chercher ce qui **multiplie** un petit résidu
+par des milliers, pas ce qui le crée.
+
+**Ce qui n'a PAS été obtenu, sans atténuation** : la décomposition du `+100`, et
+l'effet du correctif sur la signature. Les deux exigent **deux suites complètes
+au MÊME SHA** — la base de la voie B est 6 commits après `ea93460`, où la
+signature R2B.2 a été relevée. Statut : **`BLOQUÉ`**, pour non-attribuabilité,
+pas pour durée : la suite complète prend **environ une heure**, pas 3 h 30 comme
+estimé d'abord par division par une durée qui n'avait pas eu lieu.
+
+Preuves : `evidence/world_v2/v2_3_r2b3/iss059/`.
+
+---
+
+
+---
+
+## ISS-060 — les débris de la ferme sont des pavés droits — **CORRIGÉ TECHNIQUEMENT le 2026-08-20, verdict visuel NON VÉRIFIÉ**
+
+**Mise à jour R2B.3.** Le liant passe de **96,8 % à 0,00 %** sur `SM_Farm_Debris_A`
+et `_B`, mesuré par le lead au SHA intégré et reproduit par l'audit indépendant.
+`0,00 %` est exactement la valeur des témoins acceptés `SM_Dungeon_RubbleLarge`
+et `RubbleSmall`, tas de gravats de la même famille d'objet.
+
+Le geste est **structurel, pas un réglage** : la primitive `eclat()` construit
+`k + k + 1` sommets avec `k` borné à [3 ; 7], donc **toujours impair, jamais
+huit**. Relevé sur le maillage livré : sommets `[4,9,9,9,9,11,11,11,11,13,13,13]`,
+plans `[4,11,13,13,14,16,17,17,17,21,22,22]` — **zéro composante à 8 sommets,
+zéro à 6 plans**. `hexa` et `pave6` sont l'un comme l'autre impossibles.
+
+Neuf planchers anti-contournement tenus, non-contamination des 12 autres meshes
+vérifiée au sha256 du flux de positions trié (Δemprise 0,00000 sur les trois
+axes), sabotage à variable unique (liant 0,0 → 87,0 %, les huit autres planchers
+inchangés), restauration byte-identique.
+
+**Ce qui reste ouvert, et c'est le point qui compte** : le liant est
+**nécessaire, pas suffisant**. Rien n'empêche un fragment à neuf sommets de
+ressembler à une boîte. Ni l'agent ni l'audit n'ont vu le tas — pas de GPU.
+**Le verdict visuel appartient à Codex/Istvan.**
+
+Deux changements que la revue doit connaître avant de regarder :
+`MAT_Farm_Stone` passe de **0 à 94 triangles (47 %)**, les tuiles de 58 à 36 %,
+le bois de 39 à 12 % — le tas change de **matière**, pas seulement de forme ; et
+l'emprise de `Debris_A` gagne ~5 % en X comme en Z.
+
+Historique du défaut, conservé :
+
+## ISS-060 (état d'origine) — les débris de la ferme sont des pavés droits à 96,8 % — S3
 
 Mesuré le 2026-08-19 à la clôture de R2B.2, sur `SM_Farm_Ruins.glb` au SHA
 `c0374839`. Trois prédicats indépendants, publiés ensemble parce qu'ils
@@ -1713,3 +1803,74 @@ chemin`), donc une seule forme suffirait aux deux usages.
 
 Non bloquant : le commit de l'arbre est déjà en tête de manifeste, et la preuve
 d'identité du fichier est le sha256.
+
+---
+
+## ISS-062 — le portail de boîtitude reste contournable par FUSION de composantes — S3, OUVERT
+
+Trouvé par l'audit indépendant le 2026-08-20, **après** que les cinq
+perturbations précédentes ont été fermées (`tools/mesure_boititude.py`,
+autotest 10/10).
+
+Contre-exemple construit et mesuré : **dix-huit pavés droits parfaits**, posés
+tangents dès l'origine et **soudés par un coin latéral**, rendent **0,00 % de
+liant** et franchissent **les neuf planchers** — emprise en Y identique, aucune
+écharde, aire et médiane conformes.
+
+Cause de principe : `hexa` comme `pave6` raisonnent **par composante connexe**.
+Le prédicat est donc cassable en changeant *ce qui compte comme une composante*,
+et le soudage — que l'on a justement rendu plus tolérant (0,1 mm) pour fermer le
+défaut du coin décalé de 12 µm — élargit cette prise.
+
+**Non exploité par la voie A** : ses fragments n'ont aucun pavé à fusionner, et
+le relevé du maillage livré ne contient **aucune** composante à 8 sommets ni à
+6 plans. Le risque n'est pas la fraude, c'est le **vert accidentel après un
+remaillage qui soude**.
+
+Pistes non retenues faute de périmètre : mesurer la boîtitude sur la
+**décomposition convexe** plutôt que sur la composante connexe ; ou ajouter un
+plancher de **nombre de composantes attendu** par tas, ce qui déplace le
+problème sans le résoudre.
+
+**Propriétaire** : la prochaine passe qui touche un générateur susceptible de
+souder. En attendant, le liant reste valable comme **anti-régression** et non
+comme preuve de forme — c'est déjà ce qu'énonce ISS-060.
+
+---
+
+## ISS-063 — trois mutex distincts, et `user://` partagé entre tous les worktrees — S2, OUVERT
+
+Mesuré le 2026-08-20 (R2B.3), constat de la voie A confirmé par le lead et
+l'audit.
+
+Le dépôt possède **trois verrous indépendants** : `.git/heavy_tools.lock`
+(scripts du dépôt), `validate_fast.lock` (`validate_fast.sh` seul), et
+`/tmp/godot.lock` (convention des briefs d'agent, absente du dépôt). Deux
+invocations qui prennent chacune un verrou différent **tournent en parallèle**,
+et **tous les arbres de travail partagent le même `user://`** — mécanisme
+d'ISS-038.
+
+Dégât constaté, pas déduit : deux runners simultanés, mtimes se chevauchant à la
+minute près, et un échec **impossible** dans la suite d'une voie —
+`test_world_v2_skeleton.gd … slot0 est identique à l'octet près`, alors
+qu'aucun chemin ne relie une primitive Blender à un slot de sauvegarde et que le
+même test était vert au tour précédent.
+
+**Ce que cela invalide, et rien de plus** : les **suites finales des deux voies
+comme verdicts de non-régression**. Tout le reste — boîtitude, morphométrie,
+non-contamination, sha256, sabotage, comptes de cache — est hors moteur ou
+déterministe, et tient.
+
+Remède immédiat, appliqué par le lead depuis : prendre **les deux verrous du
+dépôt**, imbriqués, et jamais `/tmp/godot.lock` seul :
+
+```bash
+flock -w 3000 /tmp/godot.lock \
+  flock -w 3000 "$(git rev-parse --git-common-dir)/heavy_tools.lock" bash -c '…'
+```
+
+Remède de fond, non fait : **un seul** verrou, pris par tout ce qui lance Godot,
+et un `user://` distinct par arbre de travail.
+
+**Propriétaire** : prochaine session de dette technique. Tant que ce ticket est
+ouvert, deux sessions simultanées produisent des échecs qui n'existent pas.
