@@ -1,0 +1,6 @@
+cube unité            : hexa=True equi=True droite=True  -> OK
+cube à sommets éclatés: sommets=8 hexa=True -> OK
+boîte déformée        : hexa=True equi=False -> OK
+deux cubes disjoints  : composantes=2 -> OK
+tétraèdre             : hexa=False -> OK
+RC=0

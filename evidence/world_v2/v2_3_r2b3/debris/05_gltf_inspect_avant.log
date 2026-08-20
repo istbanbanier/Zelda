@@ -1,0 +1,17 @@
+=== INSPECTION glTF : assets/architecture/farm/SM_Farm_Ruins.glb ===
+  format                 : GLB v2, 205128 octets
+  chunk_binaire          : 182104 octets
+  generateur             : Khronos glTF Blender I/O v4.0.44
+  version_gltf           : 2.0
+  meshes                 : 14
+  materiaux              : 4 (MAT_Farm_Wood, MAT_Farm_BrokenWood, MAT_Farm_Tiles, MAT_Farm_Stone)
+  textures               : 0 image(s), 0 texture(s)
+  noeuds                 : 14 (SM_Farm_Truss, SM_Farm_RoofPan_Intact, SM_Farm_RoofPan_Fallen, SM_Farm_Debris_A, SM_Farm_Debris_B, SM_Farm_GableBreak, SM_Farm_WallStub_East, SM_Farm_Rubble_Wall)
+  skins                  : 0
+  animations             : 0 (aucune)
+  triangles              : 2080
+  bbox_min               : [-3.2074, 0, -3.4]
+  bbox_max               : [3.55, 3.2787, 3.4]
+  dimensions_m           : [6.7574, 3.2787, 6.8]
+=== VALIDE ===
+RC=0

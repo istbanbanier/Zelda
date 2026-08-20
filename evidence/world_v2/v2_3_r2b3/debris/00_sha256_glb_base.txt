@@ -1,0 +1,1 @@
+9c7b94e1848dc1a1d33967343ee1c2a7868b38ab239d003de6cf4dcbc3216b3c  assets/architecture/farm/SM_Farm_Ruins.glb
