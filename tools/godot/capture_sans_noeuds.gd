@@ -10,6 +10,16 @@ extends SceneTree
 ##
 ## Le diff se fait ensuite hors moteur, contre un lot capturé aux MÊMES caméras.
 ##
+## MODE `--paires` — LE SEUL QUI MESURE QUELQUE CHOSE DANS CE MONDE.
+## Mesuré le 2026-08-20 : deux exécutions séparées du MÊME code, sans rien
+## éteindre, diffèrent déjà de 0,9 % à 6,4 % des pixels, sur des vues où l'objet
+## visé n'apparaît même pas. La cause est la végétation animée : deux processus
+## ne se stabilisent pas à la même phase du vent, et toute l'herbe change. Un
+## diff inter-processus ne peut donc RIEN attribuer ici.
+## En mode `--paires`, chaque vue est rendue deux fois dans le MÊME processus,
+## à une trame d'écart : avec l'objet, puis sans. Le vent n'a avancé que d'une
+## trame, et la seule variable qui reste est la visibilité.
+##
 ## Usage :
 ##   godot --path . --script tools/godot/capture_sans_noeuds.gd -- \
 ##     --scene=… --shots=… --out-dir=… --size=1280x720 --masquer=Motif1,Motif2
@@ -20,6 +30,7 @@ var _out: String = ""
 var _w: int = 1280
 var _h: int = 720
 var _masques: PackedStringArray = PackedStringArray()
+var _paires: bool = false
 
 
 func _initialize() -> void:
@@ -32,6 +43,8 @@ func _initialize() -> void:
 			_out = arg.trim_prefix("--out-dir=")
 		elif arg.begins_with("--masquer="):
 			_masques = arg.trim_prefix("--masquer=").split(",", false)
+		elif arg == "--paires":
+			_paires = true
 		elif arg.begins_with("--size="):
 			var p: PackedStringArray = arg.trim_prefix("--size=").split("x")
 			if p.size() == 2:
@@ -102,8 +115,16 @@ func _run() -> void:
 	cam.far = 1600.0
 	monde.add_child(cam)
 	DirAccess.make_dir_recursive_absolute(_out)
+	var cibles: Array[MeshInstance3D] = []
+	for node: Node in monde.find_children("*", "MeshInstance3D", true, false):
+		var chemin: String = String(monde.get_path_to(node))
+		for motif: String in _masques:
+			if chemin.contains(motif):
+				cibles.append(node as MeshInstance3D)
+				break
 	for plan: Variant in plans:
 		var d: Dictionary = plan as Dictionary
+		var nom: String = String(d.get("name", "plan"))
 		var f: Array = d.get("from", [0, 10, 0]) as Array
 		var l: Array = d.get("look", [0, 0, 0]) as Array
 		cam.fov = float(d.get("fov", 60.0))
@@ -112,13 +133,30 @@ func _run() -> void:
 		cam.make_current()
 		for i: int in range(6):
 			await process_frame
+		if _paires:
+			for c: MeshInstance3D in cibles:
+				c.visible = true
+			await process_frame
+			var avec: Image = root.get_texture().get_image()
+			for c: MeshInstance3D in cibles:
+				c.visible = false
+			await process_frame
+			var sans: Image = root.get_texture().get_image()
+			if avec == null or sans == null:
+				printerr("ÉCHEC : rendu nul sur %s — lancer sous xvfb-run, "
+					+ "SANS --headless" % nom)
+				quit(2)
+				return
+			avec.save_png("%s/%s_avec.png" % [_out, nom])
+			sans.save_png("%s/%s_sans.png" % [_out, nom])
+			continue
 		var img: Image = root.get_texture().get_image()
 		if img == null:
 			printerr("ÉCHEC : rendu nul sur %s — lancer sous xvfb-run, "
-				+ "SANS --headless" % String(d.get("name", "?")))
+				+ "SANS --headless" % nom)
 			quit(2)
 			return
-		img.save_png("%s/%s.png" % [_out, String(d.get("name", "plan"))])
+		img.save_png("%s/%s.png" % [_out, nom])
 	print("[ablation] OK : %d plans" % plans.size())
 	quit(0)
 
