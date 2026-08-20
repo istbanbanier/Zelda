@@ -33,8 +33,41 @@ const TONE_CLOTH: Color = Color(0.88, 0.66, 0.48)
 const TONE_DARK_STONE: Color = Color(0.62, 0.58, 0.55)
 const TONE_CHARRED: Color = Color(0.30, 0.27, 0.25)
 
+## ISS-059 — PLAFOND DE RÉTENTION DES `PackedScene` DE KIT.
+##
+## Mesuré le 2026-08-20 : les six dossiers portent 212 modèles au total, dont
+## 89 distincts sont réellement posés par le monde entier (compte indépendant :
+## `KitPlacement._base_cache`, dont la clé est un CHEMIN). Leur géométrie
+## (`.gltf` + `.bin`) pèse 15 Mo pour les 212 — les textures, elles, sont des
+## ressources séparées déjà retenues par les matériaux teintés du cache
+## ci-dessous, donc cette rétention n'en ajoute aucune.
+##
+## Le plafond est donc au-dessus de tout ce qui peut exister aujourd'hui : la
+## branche de vidage est une soupape, pas un chemin courant. Et c'est
+## VOULU — vider ce cache relâcherait les `PackedScene`, ferait renaître des
+## matériaux de base aux identifiants neufs, et rouvrirait exactement la fuite
+## que `tests/world_v2/test_world_v2_iss059_cache_kit.gd` verrouille.
+const SCENE_CACHE_MAX: int = 256
+
 static var _index: Dictionary = {}
 static var _material_cache: Dictionary = {}
+## ISS-059 — ON GARDE LA RÉFÉRENCE, pour la même raison qu'`AssetRegistry`
+## la garde (voir le commentaire de `AssetRegistry.model()`), plus une seconde
+## qui est la cause de la fuite mesurée.
+##
+## Sans cette rétention, l'appelant instancie puis jette la `PackedScene` ; son
+## compteur tombe à zéro, la ressource SORT du cache du moteur avec ses
+## sous-ressources, et le montage suivant du même module recrée des matériaux
+## de base NEUFS. Or `_material_cache` ci-dessus — et `_cache_teintes` du
+## hameau, qui teinte les modules posés ici — indexent sur
+## `base.get_instance_id()`. Une clé bâtie sur une identité plus courte que le
+## cache ne peut jamais retomber juste : le cache est `static`, donc jamais
+## vidé, et chaque remontage y déposait une génération de matériaux de plus.
+##
+## Mesuré avant correction (`evidence/world_v2/v2_3_r2b3/iss059/`), croissance
+## LINÉAIRE et sans palier sur vingt cycles : +27 entrées par montage de la
+## ferme seule, +4 pour l'arbre, +202 pour le monde entier.
+static var _scene_cache: Dictionary = {}
 
 
 ## `PackedScene` d'une pièce de kit par nom canonique, ou null.
@@ -50,10 +83,20 @@ static func scene_for(model_name: StringName) -> PackedScene:
 					if not _index.has(StringName(file.get_basename())):
 						_index[StringName(file.get_basename())] = \
 							dir_path + "/" + file
+	var cached: Variant = _scene_cache.get(model_name)
+	if cached != null:
+		return cached as PackedScene
 	var path: String = String(_index.get(model_name, ""))
+	var scene: PackedScene = null
 	if path.is_empty():
-		return AssetRegistry.model(model_name)
-	return load(path) as PackedScene
+		scene = AssetRegistry.model(model_name)
+	else:
+		scene = load(path) as PackedScene
+	if scene != null:
+		if _scene_cache.size() >= SCENE_CACHE_MAX:
+			_scene_cache.clear()
+		_scene_cache[model_name] = scene
+	return scene
 
 
 ## Pose une pièce de kit : échelle corrigée, assise corrigée, teinte
