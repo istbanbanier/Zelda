@@ -1916,12 +1916,35 @@ ERROR:   3 RID allocations of type 'DummyShader' were leaked at exit
 Les deux lignes `PagedAllocator` sont les `Variant` que portent les objets
 survivants : elles suivront le residu, elles ne sont pas une cause distincte.
 
-**CE QUI MANQUE, ET QUI INTERDIT DE DIRE « VERT »** : la **composition** de ces
-138 objets sur la SUITE COMPLÈTE n'est pas énumérée. Je la connais sur la sonde
-isolée — 55 `GDScript` + 45 `GDScriptNativeClass` + un flux audio — et
-l'extrapoler à la suite serait exactement la déduction que la méthode interdit.
-Le seuil du filtre N1 n'a **pas** été touché, et ne le sera pas pour faire
-passer un rouge.
+**CE QUI RESTE, ÉNUMÉRÉ SUR LA SUITE COMPLÈTE ET NON PLUS DÉDUIT.** La passe
+précédente laissait la composition des 138 inconnue et refusait de l'extrapoler
+depuis la sonde. Elle a depuis été **mesurée** : suite entière relancée en
+`--verbose`, 949 tests réussis, 0 échoué, et le vidage décomposé.
+
+| ligne du rapport de sortie | compte | décomposition mesurée |
+|---|---:|---|
+| `ObjectDB instances were leaked` | **138** | 74 `GDScript` + 61 `GDScriptNativeClass` + 3 `Shader` |
+| `resources still in use` | **74** | 71 `.gd` + 3 `.gdshader` |
+| `RID allocations 'DummyShader'` | **3** | les 3 `Shader` ci-dessus |
+
+La somme tombe juste au dernier objet, et **il ne reste rien d'autre** : pas un
+matériau, pas un maillage, pas une texture, pas un flux audio.
+
+**UNE seule cause, pas deux.** Charger une `.tscn` épingle les `GDScript`
+qu'elle attache et leurs `GDScriptNativeClass` : c'est le cache de scripts du
+moteur (`GDScriptCache`), qu'**aucune API GDScript ne purge**. Les trois shaders
+survivants sont des constantes `preload()` de `scripts/lookdev/hero_shot_lab.gd`,
+script lui-même épinglé — donc une **conséquence** des 135 autres, pas une cause
+distincte. `liberer_caches()` vide des variables, jamais une table de constantes.
+
+Le résidu est donc **entièrement attribué au moteur**, et plus aucun conteneur
+du projet n'y participe. Cela ne rend pas le harnais vert, et ce fichier ne le
+prétend pas : cinq lignes de fin de processus subsistent. Le seuil du filtre N1
+n'a **pas** été touché, et ne le sera pas pour faire passer un rouge.
+
+Décomposition complète, provenance des 74 `.gd` par dossier, et refus argumenté
+du changement cosmétique `preload` → `load` :
+`evidence/world_v2/v2_3_r2b3_1/iss059/RESIDU_SUITE_COMPLETE.md`.
 
 Journal : `evidence/world_v2/v2_3_r2b3_1/validation/validate_fast_R2B3_1.log`.
 

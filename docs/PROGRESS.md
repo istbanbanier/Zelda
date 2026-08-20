@@ -1091,9 +1091,30 @@ s'effondre : `ObjectDB 1003 → 138`, `resources 657 → 74`, et les lignes
 `DummyMaterial` (281), `DummyMesh` (214), `DummyTexture` (67) **disparaissent**
 du rapport. `DummyShader 14 → 3`.
 
-Le rouge tient à cinq lignes de fin de processus. Ce qui manque pour dire vert :
-la **composition** des 138 sur la suite complète n'est pas énumérée. Le seuil du
-filtre N1 n'a pas été touché — un rouge préexistant ne se rebaptise pas vert.
+Le rouge tient à cinq lignes de fin de processus. **La composition des 138 n'est
+plus déduite : elle est mesurée.** Suite entière relancée en `--verbose` (949
+réussis, 0 échoué), vidage décomposé :
+
+```
+138 objets    = 74 GDScript + 61 GDScriptNativeClass + 3 Shader
+ 74 ressources = 71 .gd      + 3 .gdshader
+  3 DummyShader = ces 3 mêmes Shader
+```
+
+La somme tombe juste au dernier objet, et il ne reste **ni matériau, ni
+maillage, ni texture, ni flux audio**. **Une seule cause** : charger une `.tscn`
+épingle ses `GDScript` et leurs `GDScriptNativeClass` — le cache de scripts du
+moteur, qu'aucune API GDScript ne purge. Les trois shaders sont des constantes
+`preload()` de `hero_shot_lab.gd`, script lui-même épinglé : une conséquence des
+135 autres, pas une cause distincte. Le résidu est donc **entièrement attribué
+au moteur ; plus aucun conteneur du projet n'y participe**.
+
+Cela ne rend pas le harnais vert et n'est pas présenté comme tel. Le changement
+`preload` → `load` qui retirerait la ligne `DummyShader` est **cosmétique** — il
+ne rendrait rien vert — donc refusé, et le raisonnement est écrit plutôt que
+caché : `evidence/world_v2/v2_3_r2b3_1/iss059/RESIDU_SUITE_COMPLETE.md`. Le
+seuil du filtre N1 n'a pas été touché — un rouge préexistant ne se rebaptise
+pas vert.
 
 **Aucune géométrie touchée.** `SM_Farm_Ruins.glb` reste `ead79105e3deaf70`,
 octet pour octet. `GO_V2_3_B=FALSE`.
