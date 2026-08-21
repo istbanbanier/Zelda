@@ -277,6 +277,16 @@ monté au bon endroit tout en portant sa position en dur : le filet de site
 layout. Le contrat §4 nomme d'ailleurs ce révélateur : « recherche de littéraux
 de position dans les scripts de lieu ».
 
+> **CE CRITÈRE A ÉTÉ CORRIGÉ APRÈS MESURE, avant livraison.** Sa première
+> version cherchait les deux coordonnées du site n'importe où dans le fichier.
+> Rejouée sur les neuf lieux ACCEPTÉS, elle en accusait **trois** : `camp`
+> (45, 65), `stone_bridge` (-10, 22), `ember_raider_camps` (96, 120) — des
+> entiers ronds trop banals pour qu'une double présence signifie quoi que ce
+> soit. La version retenue cherche la FORME du défaut — un `Vector3(x, *, z)`,
+> une affectation `position.x =`, ou l'origine d'un `Transform3D` de scène — et
+> accuse **zéro** lieu accepté tout en voyant les quatre formes du défaut.
+> Journal : `evidence/world_v2/v2_3_b/lot1/controles/D5_calibration_faux_positifs_20260821.md`.
+
 **Rougirait-il ?** Oui, par construction : le sabotage EST l'écriture du
 littéral.
 **Sabotage** : insérer `position = Vector3(-160.0, 26.0, 40.0)` dans un script

@@ -528,16 +528,12 @@ func test_d5_aucune_position_de_site_n_est_codee_en_dur() -> void:
 			if texte.is_empty():
 				faults.append("D5 %s : fichier illisible — %s" % [id, chemin])
 				continue
-			# On EXIGE LES DEUX coordonnées dans le même fichier avant de
-			# crier. Un lieu peut légitimement porter `40.0` comme rayon ;
-			# porter `-160` ET `40` par hasard, non. La probabilité d'un faux
-			# positif tombe au produit de deux coïncidences.
-			var a_x: bool = _porte_litteral(texte, site.x)
-			var a_z: bool = _porte_litteral(texte, site.z)
-			if a_x and a_z:
+			var preuve: String = _litteral_de_site(texte, site)
+			if not preuve.is_empty():
 				faults.append(("D5 %s : littéral de site (%.0f, %.0f) TROUVÉ dans "
-					+ "%s — la position vient du layout, pas du fichier de lieu")
-					% [id, site.x, site.z, chemin.get_file()])
+					+ "%s — « %s ». La position vient du layout, pas du fichier "
+					+ "de lieu.")
+					% [id, site.x, site.z, chemin.get_file(), preuve])
 		# `default_place_id()` doit rendre une constante, jamais une position :
 		# c'est l'identité, et la base la documente ainsi.
 		if not script_path.is_empty():
@@ -1143,15 +1139,58 @@ func _script_de_scene(scene_path: String) -> String:
 	return ""
 
 
-## Le littéral est cherché en TOKEN, pas en sous-chaîne : sans les gardes, le
-## « 40 » de `-160` et celui de `0.40` compteraient tous les deux.
-func _porte_litteral(texte: String, valeur: float) -> bool:
-	var entier: String = "%d" % int(round(valeur))
-	var motif: RegEx = RegEx.new()
-	if motif.compile("(?<![0-9.])" + entier.replace("-", "\\-")
-			+ "(\\.0+)?(?![0-9.])") != OK:
-		return false
-	return motif.search(texte) != null
+## Cherche la FORME du défaut, pas deux nombres épars.
+##
+## PREMIÈRE VERSION MESURÉE FAUSSE, ET C'EST POUR ÇA QU'ELLE A CHANGÉ. Elle
+## exigeait la présence des deux coordonnées du site n'importe où dans le
+## fichier, en pensant qu'une double coïncidence serait improbable. Rejouée sur
+## les NEUF lieux ACCEPTÉS le 2026-08-21, elle en accusait TROIS : `camp`
+## (site 45, 65), `stone_bridge` (-10, 22) et `ember_raider_camps` (96, 120) —
+## des entiers ronds trop courants pour qu'une double présence veuille dire
+## quoi que ce soit. Un filet qui crie au loup sur un tiers du corpus validé
+## finit désarmé, et c'est une façon de perdre un contrôle sans que personne ne
+## mente.
+##
+## Le défaut D5 n'est pas « le fichier contient 45 et 65 ». C'est « le fichier
+## CONSTRUIT une position avec le site ». On cherche donc trois formes :
+##   a. un littéral `Vector3(x, *, z)` dont x et z sont ceux du site ;
+##   b. une affectation `position.x = <site.x>` ou `.z = <site.z>` ;
+##   c. dans une `.tscn`, un `Transform3D(...)` dont l'origine porte le site.
+## Rejouée sur le corpus accepté, cette version accuse ZÉRO lieu, et elle voit
+## les deux formes du défaut quand on les lui présente (journal du 2026-08-21,
+## rapport de la voie C).
+##
+## Rend la PREUVE (le texte trouvé) plutôt qu'un booléen : une accusation sans
+## sa citation se conteste, et se re-vérifie à la main.
+func _litteral_de_site(texte: String, site: Vector3) -> String:
+	var triplet: RegEx = RegEx.new()
+	if triplet.compile("(?:Vector3|Transform3D)\\s*\\(([^()]*)\\)") != OK:
+		return ""
+	for trouve: RegExMatch in triplet.search_all(texte):
+		var bruts: PackedStringArray = trouve.get_string(1).split(",", false)
+		if bruts.size() < 3:
+			continue
+		# `Vector3` : origine en 0 et 2. `Transform3D` : douze champs, origine
+		# en 9 et 11 — une transformation codée en dur dans une scène place le
+		# lieu tout aussi sûrement qu'une ligne de code.
+		var ix: int = 9 if bruts.size() >= 12 else 0
+		var iz: int = 11 if bruts.size() >= 12 else 2
+		var vx: String = bruts[ix].strip_edges()
+		var vz: String = bruts[iz].strip_edges()
+		if not vx.is_valid_float() or not vz.is_valid_float():
+			continue
+		if absf(vx.to_float() - site.x) < 0.001 \
+				and absf(vz.to_float() - site.z) < 0.001:
+			return trouve.get_string(0)
+	var affectation: RegEx = RegEx.new()
+	if affectation.compile(
+			"(?:global_)?position\\.([xz])\\s*=\\s*(-?[0-9]+(?:\\.[0-9]+)?)") != OK:
+		return ""
+	for trouve: RegExMatch in affectation.search_all(texte):
+		var attendu: float = site.x if trouve.get_string(1) == "x" else site.z
+		if absf(trouve.get_string(2).to_float() - attendu) < 0.001:
+			return trouve.get_string(0)
+	return ""
 
 
 ## Contenu d'une récompense, sous la forme « kind:id ». Rendre "" quand le
