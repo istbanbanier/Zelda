@@ -120,8 +120,9 @@ const SOUDAGE_M: float = 1.0e-4
 ## plafond, pas une cible : le témoin accepté `SM_Dungeon_RubbleLarge` vaut
 ## 0,00 %.
 const HEXA_PLAFOND_PCT: float = 25.0
-## Sous ce compte de triangles, une composante n'est pas assez fournie pour
-## qu'un pourcentage veuille dire quelque chose : on la publie sans la juger.
+## Sous ce compte de triangles RUNTIME cumulés sur un lieu, un pourcentage ne
+## veut rien dire : deux pavés au plus, donc pas encore un empilement. Au-delà,
+## la boîtitude agrégée est jugée.
 const TRIS_MIN_POUR_JUGER: int = 24
 
 ## Plafond de part d'aire RUNTIME, à CALIBRER sur le corpus accepté selon la
@@ -204,6 +205,8 @@ func test_d1_aucun_lieu_ne_lit_comme_un_assemblage_de_primitives() -> void:
 		var exemptions: Array[String] = _exemptions_runtime(lieu)
 		var aire_totale: float = 0.0
 		var aire_runtime: float = 0.0
+		var tris_runtime: int = 0
+		var tris_hexa: int = 0
 		for noeud: Node in lieu.find_children("*", "MeshInstance3D", true, false):
 			var instance: MeshInstance3D = noeud as MeshInstance3D
 			if instance.mesh == null:
@@ -216,18 +219,26 @@ func test_d1_aucun_lieu_ne_lit_comme_un_assemblage_de_primitives() -> void:
 			if exemptions.has(String(instance.name)):
 				continue
 			aire_runtime += aire
-			# D1b — LE LIANT SANS CALIBRATION : la boîtitude d'un maillage
+			# D1b — LE LIANT SANS CALIBRATION : la boîtitude de ce que le lieu
 			# construit en runtime. `K.stone_block` déplace les coins d'une
 			# boîte ; la TOPOLOGIE reste 12 triangles / 8 sommets, donc `hexa`
 			# le voit là où « ça ressemble à une boîte » ne le verrait pas.
+			#
+			# AGRÉGÉ SUR LE LIEU, et non jugé maillage par maillage. Un pavé
+			# isolé de 12 triangles resterait sous n'importe quel plancher de
+			# significativité ; c'est L'EMPILEMENT qui est le défaut — la ferme
+			# et l'arbre rejetés en R2B étaient « un empilement de blocs ».
+			# Douze pavés jugés séparément passent ; agrégés, ils rendent
+			# 100 %.
 			var forme: Dictionary = _boititude(instance.mesh)
-			var tris: int = int(forme["tris"])
-			if tris < TRIS_MIN_POUR_JUGER:
-				continue
-			var pct: float = float(forme["hexa_pct"])
-			if pct > HEXA_PLAFOND_PCT:
-				faults.append("D1 %s/%s : boîtitude hexa %.1f %% > %.1f %% (%d triangles)"
-					% [id, instance.name, pct, HEXA_PLAFOND_PCT, tris])
+			tris_runtime += int(forme["tris"])
+			tris_hexa += int(forme["hexa_tris"])
+		if tris_runtime >= TRIS_MIN_POUR_JUGER:
+			var pct_hexa: float = 100.0 * float(tris_hexa) / float(tris_runtime)
+			if pct_hexa > HEXA_PLAFOND_PCT:
+				faults.append(("D1 %s : boîtitude hexa %.1f %% du runtime "
+					+ "> %.1f %% (%d/%d triangles) — un empilement de blocs")
+					% [id, pct_hexa, HEXA_PLAFOND_PCT, tris_hexa, tris_runtime])
 		# D1a — la part d'aire portée par du runtime. Les `MultiMeshInstance3D`
 		# sont HORS PÉRIMÈTRE, et c'est dit plutôt que tu : un semis instancié
 		# pose une question de densité (D7), pas d'assemblage de primitives, et
@@ -680,6 +691,84 @@ func test_d8_aucun_element_gele_n_a_bouge() -> void:
 	check(faults.is_empty(),
 		"D8 régression sur le gel (%d écart(s)) : %s"
 		% [faults.size(), _plafonner(faults)])
+
+
+## ---------------------------------------------------------------------------
+## TÉMOINS ANALYTIQUES — les instruments de ce fichier savent-ils voir ?
+##
+## Les six sujets du lot n'existent pas encore : les contrôles D1 à D7 ne
+## peuvent donc PAS être éprouvés sur eux aujourd'hui. Ce qui peut l'être tout
+## de suite, c'est l'INSTRUMENT — et c'est ce qui compte le plus, parce qu'un
+## instrument aveugle produirait des verts crédibles le jour où les lieux
+## arriveront. Même discipline que `tools/mesure_boititude.py --autotest`, qui
+## fabrique un cube et EXIGE 100 %.
+##
+## Ces deux tests sont aussi les gardiens ANTI-ISS-018 de mes propres mesures :
+## si quelqu'un « simplifie » un jour le compteur de collisions vers
+## `StaticBody3D`, ou l'emprise vers `MeshInstance3D`, ils rougissent.
+## ---------------------------------------------------------------------------
+func test_temoin_l_instrument_de_boititude_voit_un_pave() -> void:
+	var pave: BoxMesh = BoxMesh.new()
+	pave.size = Vector3(2.0, 1.0, 3.0)
+	var mesure_pave: Dictionary = _boititude(pave)
+	# Un `BoxMesh` porte 24 sommets (normales séparées) et 12 triangles. Après
+	# soudage PAR POSITION il reste 8 coins : c'est exactement `hexa`. Si ce
+	# chiffre n'est pas 100, le soudage ou la connexité est cassé, et TOUT
+	# pourcentage rendu par D1 est faux — dans le sens permissif, celui qui
+	# laisse passer le défaut.
+	check_approx(float(mesure_pave["hexa_pct"]), 100.0, 0.001,
+		"témoin — un pavé rend 100 %% de boîtitude (12 tris obtenus : %d)"
+		% int(mesure_pave["tris"]))
+	var sphere: SphereMesh = SphereMesh.new()
+	sphere.radial_segments = 16
+	sphere.rings = 8
+	var mesure_sphere: Dictionary = _boititude(sphere)
+	check(float(mesure_sphere["hexa_pct"]) < 0.001,
+		"témoin — une sphère rend 0 %% de boîtitude (obtenu %.3f %% sur %d tris)"
+		% [float(mesure_sphere["hexa_pct"]), int(mesure_sphere["tris"])])
+	check(int(mesure_sphere["tris"]) > 100,
+		"témoin — la sphère porte assez de triangles pour que le 0 %% ait un sens (%d)"
+		% int(mesure_sphere["tris"]))
+
+
+func test_temoin_les_compteurs_voient_ce_qu_ils_pretendent_compter() -> void:
+	var boucle: SceneTree = Engine.get_main_loop() as SceneTree
+	var faux_lieu: Node3D = Node3D.new()
+	faux_lieu.name = "TemoinLieu"
+	# Un semis instancié — la forme attendue d'un champ de fleurs. Un compteur
+	# qui regarde `MeshInstance3D` ne le voit PAS et annonce « 0 visuel ».
+	var semis: MultiMeshInstance3D = MultiMeshInstance3D.new()
+	var multi: MultiMesh = MultiMesh.new()
+	multi.transform_format = MultiMesh.TRANSFORM_3D
+	multi.mesh = BoxMesh.new()
+	multi.instance_count = 4
+	semis.multimesh = multi
+	faux_lieu.add_child(semis)
+	# UN corps, TROIS formes. Un compteur qui regarde `StaticBody3D` annonce
+	# « 1 collision » là où il y en a trois — et un micro-POI au budget 6
+	# passerait avec dix-huit formes.
+	var corps: StaticBody3D = StaticBody3D.new()
+	faux_lieu.add_child(corps)
+	for i: int in range(3):
+		var forme: CollisionShape3D = CollisionShape3D.new()
+		forme.shape = BoxShape3D.new()
+		corps.add_child(forme)
+	boucle.root.add_child(faux_lieu)
+	await boucle.process_frame
+
+	var compte: Dictionary = _compter_budget(faux_lieu)
+	check_equal(int(compte["collisions"]), 3,
+		"témoin — le compteur voit les FORMES de collision et non le corps")
+	check_equal(int(compte["visuels"]), 1,
+		"témoin — le compteur voit le MultiMeshInstance3D comme nœud visuel")
+	var emprise: AABB = _emprise_visuelle(faux_lieu)
+	check(emprise.size != Vector3.ZERO,
+		"témoin — l'emprise visuelle voit un MultiMesh (obtenu %s) ; un calcul "
+		% str(emprise.size) + "fondé sur MeshInstance3D rendrait Vector3.ZERO "
+		+ "et conclurait « aucun maillage visuel » sur le champ de fleurs")
+
+	faux_lieu.queue_free()
+	await boucle.process_frame
 
 
 ## ===========================================================================
