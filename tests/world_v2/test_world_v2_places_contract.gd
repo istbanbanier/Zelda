@@ -28,6 +28,29 @@ const PILOT_PLACES: Array[StringName] = [
 	&"pylon",
 ]
 
+## LE LOT 1 de V2.3-B (docs/V2_3_B_LOT1_CONTRAT.md §1) — six sujets, jamais
+## moins.
+##
+## ÉCRIT ROUGE D'ABORD (2026-08-21, voie A). Au moment de son écriture, les
+## six sujets sont de simples marqueurs `WorldV2MarkersBuilder` et le
+## registre du bâtisseur ne les connaît pas : chacune des assertions
+## ci-dessous nomme un écart réel, aucune n'est décorative. Vert seulement
+## quand la voie B aura livré six scènes autonomes, enregistrées, assises sur
+## le terrain gelé et sûres pour les routes et les six fenêtres.
+const LOT1_PLACES: Array[StringName] = [
+	&"valley.poi.watchtower_ruin.01",
+	&"valley.poi.overlook_summit.01",
+	&"valley.poi.turquoise_spring.01",
+	&"valley.poi.forest_shrine.01",
+	&"valley.poi.barrow_cemetery.01",
+	&"valley.poi.flower_field.01",
+]
+
+## La visée doit rester libre sur cette fraction du trajet caméra → cible.
+## MÊME valeur que `test_world_v2_cameras.gd` : ce filet-ci ne dit pas si la
+## fenêtre est bouchée — l'autre le fait déjà — il dit PAR QUI, ce qu'un
+## verdict global ne donne pas.
+const CLEAR_SIGHT_FRACTION: float = 0.6
 ## Assise : écart maximal entre un point de support DÉCLARÉ et le sol gelé.
 const SUPPORT_TOLERANCE_M: float = 0.65
 ## La racine d'un lieu est ancrée au sol par le bâtisseur.
@@ -46,6 +69,16 @@ var _world: Node3D = null
 var _heightmap: RefCounted = null
 
 
+## Tout ce qui DOIT être un lieu réel à ce stade du projet. Les assertions
+## partagées ci-dessous s'appliquent au lot pilote ET au lot 1 : un lot qui
+## n'entrerait pas ici pourrait rester marqueur sans qu'un seul test rougisse.
+static func _lot_attendu() -> Array[StringName]:
+	var tout: Array[StringName] = []
+	tout.append_array(PILOT_PLACES)
+	tout.append_array(LOT1_PLACES)
+	return tout
+
+
 func test_le_lot_pilote_est_fait_de_lieux_reels() -> void:
 	await _mount()
 	var faults: Array[String] = []
@@ -62,9 +95,9 @@ func test_le_lot_pilote_est_fait_de_lieux_reels() -> void:
 	for registered: StringName in WorldV2PlacesBuilder.REGISTRY.keys():
 		if not known.has(registered):
 			faults.append("registre : ID inconnu du layout — %s" % registered)
-	for pilot: StringName in PILOT_PLACES:
-		if not WorldV2PlacesBuilder.REGISTRY.has(pilot):
-			faults.append("%s : RESTÉ SIMPLE MARQUEUR (absent du registre)" % pilot)
+	for attendu: StringName in _lot_attendu():
+		if not WorldV2PlacesBuilder.REGISTRY.has(attendu):
+			faults.append("%s : RESTÉ SIMPLE MARQUEUR (absent du registre)" % attendu)
 
 	# Chaque lieu monté : une vraie PackedScene, identifiée, posée au site
 	# du layout, ancrée au sol gelé.
@@ -96,16 +129,16 @@ func test_le_lot_pilote_est_fait_de_lieux_reels() -> void:
 			if absf(place.global_position.y - ground) > ROOT_GROUND_TOLERANCE_M:
 				faults.append("%s : racine à y=%.2f, sol à %.2f"
 					% [place_id, place.global_position.y, ground])
-	for pilot: StringName in PILOT_PLACES:
-		if not by_id.has(pilot) \
-				and WorldV2PlacesBuilder.REGISTRY.has(pilot):
-			faults.append("%s : enregistré mais ABSENT du monde monté" % pilot)
+	for attendu: StringName in _lot_attendu():
+		if not by_id.has(attendu) \
+				and WorldV2PlacesBuilder.REGISTRY.has(attendu):
+			faults.append("%s : enregistré mais ABSENT du monde monté" % attendu)
 
 	var shown: Array[String] = faults.slice(0, 6)
 	if faults.size() > 6:
 		shown.append("… et %d autres" % (faults.size() - 6))
 	check(faults.is_empty(),
-		"le lot pilote est fait de lieux réels (%d écart(s)) — %s"
+		"les lots pilote et 1 sont faits de lieux réels (%d écart(s)) — %s"
 		% [faults.size(), " ; ".join(shown)])
 	await _unmount()
 
@@ -135,9 +168,9 @@ func test_chaque_scene_du_registre_est_autonome() -> void:
 		await loop.process_frame
 	# ROUGE tant que le lot pilote n'est pas couvert : un registre vide ne
 	# peut pas verdir ce filet par absence de sujets.
-	check(WorldV2PlacesBuilder.REGISTRY.size() >= PILOT_PLACES.size(),
-		"le registre couvre le lot pilote (%d/%d)"
-		% [WorldV2PlacesBuilder.REGISTRY.size(), PILOT_PLACES.size()])
+	check(WorldV2PlacesBuilder.REGISTRY.size() >= _lot_attendu().size(),
+		"le registre couvre les lots pilote et 1 (%d/%d)"
+		% [WorldV2PlacesBuilder.REGISTRY.size(), _lot_attendu().size()])
 	check(faults.is_empty(),
 		"chaque scène du registre est autonome (%d écart(s)) — %s"
 		% [faults.size(), " ; ".join(faults.slice(0, 5))])
@@ -151,9 +184,9 @@ func test_les_fondations_epousent_le_terrain_gele() -> void:
 	var places: Array[Node] = _world.get_tree().get_nodes_in_group(
 		&"world_v2_places")
 	var faults: Array[String] = []
-	if places.size() < PILOT_PLACES.size():
+	if places.size() < _lot_attendu().size():
 		faults.append("seulement %d lieu(x) monté(s) sur %d attendus"
-			% [places.size(), PILOT_PLACES.size()])
+			% [places.size(), _lot_attendu().size()])
 	for node: Node in places:
 		var place: Node3D = node as Node3D
 		var place_id: StringName = place.get_meta(&"place_id", &"?") as StringName
@@ -249,6 +282,117 @@ func test_aucun_acteur_et_les_routes_restent_libres() -> void:
 	check(faults.is_empty(),
 		"aucun acteur ni blocage de route (%d écart(s)) — %s"
 		% [faults.size(), " ; ".join(faults.slice(0, 6))])
+	await _unmount()
+
+
+## LOT 1 — ce que les assertions partagées ci-dessus ne disent PAS.
+##
+## Trois écarts nommés, choisis parce qu'aucun autre filet ne les attrape :
+##
+##  1. **chemin de scène mort** — une entrée de `REGISTRY` qui pointe vers un
+##     `.tscn` inexistant produit un `push_error` à CHAQUE montage du monde,
+##     dans toutes les suites, sans qu'aucun test ne désigne le coupable ;
+##  2. **collider dans une bande creusée** — les demi-largeurs de creusement
+##     de `WorldV2Heightmap` sont interdites à un lieu (contrat du lot §2.4).
+##     Le filet des fondations mesure la RACINE ; il ne dit rien d'une jetée,
+##     d'un contrefort ou d'un éboulis qui s'avance vers le lit ;
+##  3. **fenêtre gelée bouchée, et PAR QUI** — `test_world_v2_cameras.gd`
+##     rougit déjà si un rayon est coupé, mais son verdict porte sur la
+##     caméra. Ici on remonte au `place_id` propriétaire : c'est la
+##     différence entre « cam05 est bouchée » et « le belvédère la bouche ».
+func test_le_lot_1_ne_gene_ni_l_eau_ni_les_fenetres() -> void:
+	await _mount()
+	var faults: Array[String] = []
+
+	# 1. Registre vivant.
+	for wanted: StringName in LOT1_PLACES:
+		if not WorldV2PlacesBuilder.REGISTRY.has(wanted):
+			faults.append("%s : absent du registre du bâtisseur de lieux" % wanted)
+			continue
+		var path: String = String(WorldV2PlacesBuilder.REGISTRY[wanted])
+		if not ResourceLoader.exists(path):
+			faults.append("%s : CHEMIN DE SCÈNE MORT (%s) — erreur à chaque montage"
+				% [wanted, path])
+
+	# Les lieux du lot 1 réellement montés, et leurs colliders.
+	var mounted: Dictionary = {}
+	for node: Node in _world.get_tree().get_nodes_in_group(&"world_v2_places"):
+		var place: Node3D = node as Node3D
+		var place_id: StringName = place.get_meta(&"place_id", &"") as StringName
+		if LOT1_PLACES.has(place_id):
+			mounted[place_id] = place
+	# PLANCHER : sans lui, ce test verdirait sur un monde où aucun sujet du
+	# lot 1 n'existe — le piège de l'assertion sautée (tests/CLAUDE.md).
+	check_equal(mounted.size(), LOT1_PLACES.size(),
+		"les six sujets du lot 1 sont montés dans le monde")
+
+	# 2. Aucun collider du lot 1 dans une bande creusée d'eau.
+	var main_course: PackedVector2Array = _heightmap.call(
+		"river_main_polyline") as PackedVector2Array
+	var tributary: PackedVector2Array = _heightmap.call(
+		"river_trib_polyline") as PackedVector2Array
+	var lake_center: Vector2 = _heightmap.call("lake_center") as Vector2
+	var lake_radius: float = float(_heightmap.call("lake_radius"))
+	var main_band: float = WorldV2Heightmap.RIVER_BED_HALF_W \
+		+ WorldV2Heightmap.RIVER_BANK_W
+	var trib_band: float = WorldV2Heightmap.TRIB_BED_HALF_W \
+		+ WorldV2Heightmap.TRIB_BANK_W
+	var lake_band: float = lake_radius + 2.0
+	for place_id: StringName in mounted.keys():
+		var place: Node3D = mounted[place_id] as Node3D
+		for body: Node in place.find_children("*", "StaticBody3D", true, false):
+			for shape_node: Node in (body as StaticBody3D).find_children(
+					"*", "CollisionShape3D", false, false):
+				var box: AABB = _shape_bounds(shape_node as CollisionShape3D)
+				if box.size == Vector3.ZERO:
+					continue
+				var d_main: float = _distance_box_polyline(box, main_course)
+				if d_main < main_band:
+					faults.append("%s/%s à %.2f m du cours principal (bande %.1f m)"
+						% [place_id, body.name, d_main, main_band])
+				var d_trib: float = _distance_box_polyline(box, tributary)
+				if d_trib < trib_band:
+					faults.append("%s/%s à %.2f m de l'affluent (bande %.1f m)"
+						% [place_id, body.name, d_trib, trib_band])
+				var d_lake: float = _distance_box_point(box, lake_center)
+				if d_lake < lake_band:
+					faults.append("%s/%s à %.2f m du centre du lac (bande %.1f m)"
+						% [place_id, body.name, d_lake, lake_band])
+
+	# 3. Les six fenêtres gelées, et le NOM du lieu qui les bouche.
+	var space: PhysicsDirectSpaceState3D = _world.get_world_3d().direct_space_state
+	var windows: int = 0
+	for node: Node in _world.get_tree().get_nodes_in_group(
+			&"world_v2_capture_cameras"):
+		var camera: Camera3D = node as Camera3D
+		if camera == null:
+			continue
+		windows += 1
+		var target: Vector3 = camera.get_meta(&"target", Vector3.ZERO) as Vector3
+		if target == Vector3.ZERO:
+			continue
+		var eye: Vector3 = camera.global_position
+		var sight_end: Vector3 = eye.lerp(target, CLEAR_SIGHT_FRACTION)
+		var query: PhysicsRayQueryParameters3D = \
+			PhysicsRayQueryParameters3D.create(eye, sight_end, 1)
+		var hit: Dictionary = space.intersect_ray(query)
+		if hit.is_empty():
+			continue
+		var owner_id: StringName = _owning_place(hit["collider"] as Node)
+		if not LOT1_PLACES.has(owner_id):
+			continue
+		var at: Vector3 = hit["position"] as Vector3
+		faults.append("%s bouche %s à %.0f m (en %.0f, %.0f)"
+			% [owner_id, camera.name, eye.distance_to(at), at.x, at.z])
+	# Second plancher : un monde sans caméra ne prouve rien sur les fenêtres.
+	check_equal(windows, 6, "les six fenêtres gelées sont là pour être éprouvées")
+
+	var shown: Array[String] = faults.slice(0, 6)
+	if faults.size() > 6:
+		shown.append("… et %d autres" % (faults.size() - 6))
+	check(faults.is_empty(),
+		"le lot 1 laisse l'eau et les fenêtres libres (%d écart(s)) — %s"
+		% [faults.size(), " ; ".join(shown)])
 	await _unmount()
 
 
@@ -351,3 +495,38 @@ func _shape_bounds(shape_node: CollisionShape3D) -> AABB:
 	else:
 		return AABB()
 	return shape_node.global_transform * local
+
+
+## Distance XZ minimale entre le rectangle d'une boîte et une polyligne.
+## Échantillonnage métrique le long de chaque segment : c'est la même
+## granularité que le contrôle de route ci-dessus, et un lit de rivière ne
+## change pas de côté en moins d'un mètre.
+func _distance_box_polyline(box: AABB, line: PackedVector2Array) -> float:
+	if line.size() < 2:
+		return INF
+	var best: float = INF
+	for i: int in range(line.size() - 1):
+		var a: Vector2 = line[i]
+		var b: Vector2 = line[i + 1]
+		var steps: int = maxi(1, int(a.distance_to(b)))
+		for s: int in range(steps + 1):
+			best = minf(best, _distance_box_point(box,
+				a.lerp(b, float(s) / float(steps))))
+	return best
+
+
+## Distance XZ d'un point au rectangle d'une boîte (0 s'il est dedans).
+func _distance_box_point(box: AABB, p: Vector2) -> float:
+	var dx: float = maxf(maxf(box.position.x - p.x, p.x - box.end.x), 0.0)
+	var dz: float = maxf(maxf(box.position.z - p.y, p.y - box.end.z), 0.0)
+	return sqrt(dx * dx + dz * dz)
+
+
+## Remonte au `place_id` du lieu propriétaire d'un nœud, &"" si aucun.
+func _owning_place(node: Node) -> StringName:
+	var current: Node = node
+	while current != null:
+		if current.has_meta(&"place_id"):
+			return current.get_meta(&"place_id", &"") as StringName
+		current = current.get_parent()
+	return &""
