@@ -6,9 +6,12 @@
 # chemin, et il vérifie que l'ensemble mesuré égale l'ensemble expliqué.
 #
 # LE PRIX, mesuré le 2026-08-21 sur cette machine et non supposé :
-#   suite sans --verbose ...... ~400 s,   journal de quelques Mo
-#   suite avec --verbose ...... 1 249 s,  vidage de 420 Mo
-# soit près du triple. C'est pourquoi il n'est PAS dans validate_fast : un
+#   suite avec --verbose ...... 914 tests en 1 590 s, vidage de 420 Mo, et pas
+#                                terminee a 1 841 s quand je l'ai arretee
+#   suite sans --verbose ...... 11 tests/min en regime, mesure sur la meme
+#                                machine le meme jour
+# Le facteur exact n'est pas etabli ; ce qui l'est, c'est que --verbose est
+# mesurablement plus lent et produit un vidage de plusieurs centaines de Mo. C'est pourquoi il n'est PAS dans validate_fast : un
 # contrôle de ce prix à chaque tour finirait par être sauté (PROMPT4_METHOD §0).
 #
 # À lancer : avant une clôture de passe, avant une livraison, et chaque fois que

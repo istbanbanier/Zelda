@@ -164,10 +164,14 @@ step "2. Tests unitaires"
 UNIT_LOG="$LOG_DIR/02_unit.log"
 # LA SUITE RESTE NON VERBEUSE, ET C'EST UNE DÉCISION MESURÉE.
 # `--verbose` donnerait la composition objet par objet du résidu de sortie, ce
-# que le portail A aimerait avoir. Mesuré le 2026-08-21 sur cette machine :
-# 1 085 s et 412 Mo de vidage contre ~400 s sans, soit près du TRIPLE. Un
-# contrôle trop lourd placé trop tôt finit contourné (PROMPT4_METHOD §0) — et un
-# `validate_fast` de trois quarts d'heure ne serait plus lancé.
+# que le portail A aimerait avoir. Mesuré le 2026-08-21 sur cette machine, et
+# c'est une mesure, pas une estimation :
+#   suite en --verbose ....... 914 tests en 1 590 s, 420 Mo de vidage, et elle
+#                              n'avait pas fini a 1 841 s quand je l'ai arretee
+#   suite sans --verbose ..... 11 tests/min en regime, soit ~85 min pour 949
+# Le facteur exact n'est donc pas etabli — mais `--verbose` est mesurablement
+# plus lent ET produit un vidage de plusieurs centaines de Mo. Un controle de ce
+# prix a chaque tour finit contourne (PROMPT4_METHOD §0).
 # La répartition retenue :
 #   * à CHAQUE passe : le portail A sur la signature agrégée, comparée AU CHIFFRE
 #     PRÈS au contrat committé. Bon marché, et strict : toute ressource du projet

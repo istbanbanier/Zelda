@@ -30,11 +30,34 @@ Par POI, tous obligatoires :
 3. **Fondations sur le terrain gelé** : chaque appui structurel déclaré par
    `declare_support()`, et sondé contre `height_at`. Rien ne flotte, rien n'est
    enterré.
-4. **Zéro obstruction** : routes 2,3 m, gués 12 m, checkpoints 4,5 m restent
-   parcourables ; aucun collider dans le couloir de visée des six caméras gelées
-   (6 m + segment).
+4. **Zéro obstruction**, aux seuils RÉELLEMENT APPLIQUÉS AUX LIEUX — voir le
+   piège de nommage ci-dessous : `ROUTE_CLEAR_M = 1,2 m` autour de chaque
+   échantillon de route, `SITE_XZ_TOLERANCE_M = 0,5 m` d'écart maximal entre la
+   racine et le site du layout, `ROOT_GROUND_TOLERANCE_M = 1,0 m`,
+   `SUPPORT_TOLERANCE_M = 0,65 m` sur chaque appui déclaré. Les bandes creusées
+   de l'eau sont interdites à tout site : **9,5 m** de demi-largeur sur le cours
+   principal, **6,3 m** sur l'affluent, **2 m** de dégagement autour du lac
+   (rayon 14).
 5. **Navigation conservée** : le navmesh cuit est gelé ; aucun collider de lieu
-   n'empiète sur les couloirs marchés.
+   n'empiète sur les couloirs marchés. Les six caméras gelées exigent un trajet
+   **libre jusqu'à 60 %** de la distance vers leur cible
+   (`CLEAR_SIGHT_FRACTION = 0.6`, masque 1).
+
+> **PIÈGE DE NOMMAGE, vérifié dans le code plutôt que dans la prose.** Deux
+> constantes s'appellent `ROUTE_CLEAR_M` et ne valent pas la même chose :
+> **1,2 m** dans `tests/world_v2/test_world_v2_places_contract.gd`, qui est le
+> seuil qui rougit pour un LIEU ; **2,3 m** dans
+> `scripts/world_v2/world_v2_vegetation_builder.gd`, qui est l'exclusion
+> VÉGÉTALE et appartient au domaine gelé V2.2. Le §4 de
+> `WORLD_V2_POI_CONTRACTS.md` annonce en prose « routes 2,3 m, gués 12 m,
+> checkpoints 4,5 m, caméras 6 m » : ce sont les valeurs de la végétation. Les
+> reprendre pour un lieu serait se donner une marge quatre fois trop large sur
+> les gués et deux fois trop large sur les routes — et découvrir l'écart au
+> moment du filet.
+>
+> Autre écart entre document et code : le tableau `sightlines` du layout n'est
+> lu par **aucun** code (`grep -rn sightlines scripts/ tests/ tools/` ne rend
+> rien). Ce qui est réellement vérifié, ce sont les six caméras gelées.
 6. **Interaction canonique** raccordée par `DiscoveryRewards.PLAN` et
    `PointOfInterest.bind(DiscoveryLog)` — la table existe déjà, on ne l'invente
    pas.
