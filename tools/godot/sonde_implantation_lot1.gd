@@ -9,6 +9,17 @@
 ##       --script tools/godot/sonde_implantation_lot1.gd > sortie.log
 ##   # le document JSON se lit entre === IMPLANTATION_BEGIN/END ===
 ##
+## CONTRÔLE NÉGATIF — une sonde qui n'a jamais rien condamné ne prouve rien :
+##
+##   tools/lancer_godot.sh --headless --path . \
+##       --script tools/godot/sonde_implantation_lot1.gd -- --controle-negatif
+##
+## Elle mesure alors TROIS points fabriqués dont le verdict est connu
+## d'avance : au milieu du cours principal, au centre du lac, et sur un
+## waypoint de route. Si l'un d'eux ressort `POSABLE`, la sonde est aveugle et
+## le tableau qu'elle produit ne vaut rien. Ces points ne sont PAS des sujets :
+## ils vivent dans une section séparée du document.
+##
 ## CE QU'ELLE MESURE, et pourquoi chacune de ces grandeurs est ici :
 ##
 ##  1. hauteur du terrain gelé au site et ÉCART avec le `y` du layout — le
@@ -93,6 +104,15 @@ const LECTURE_BANDE_CONFORT_M: float = 5.0
 ## Le filet : écart maximal admis entre la racine et le sol.
 const ROOT_GROUND_TOLERANCE_M: float = 1.0
 
+## Points fabriqués du contrôle négatif : [étiquette, x, z, défaut attendu].
+## Les coordonnées viennent du layout gelé — milieu d'un segment du cours
+## principal, centre du lac, waypoint de `heights_route`.
+const CONTROLE_NEGATIF: Array[Array] = [
+	["negatif_dans_le_cours", 36.0, 6.0, "IMPOSSIBLE"],
+	["negatif_dans_le_lac", -15.0, -140.0, "IMPOSSIBLE"],
+	["negatif_sur_une_route", 168.0, 52.0, "CONTRAINT"],
+]
+
 var _bloques: Array[String] = []
 
 
@@ -114,9 +134,23 @@ func _executer() -> void:
 		_sortir({})
 		return
 
+	# Les CENTRES d'intérêt sont connus avant la collecte : les six sites, plus
+	# les points du contrôle négatif. La végétation est filtrée à la lecture —
+	# garder les ~100 000 instances du monde entier pour en compter quelques
+	# dizaines serait une allocation massive sans usage.
+	var centres: PackedVector2Array = PackedVector2Array()
+	for sujet: StringName in SUJETS:
+		var site_centre: Vector3 = _site_du_layout(layout, sujet)
+		if site_centre != Vector3.INF:
+			centres.append(Vector2(site_centre.x, site_centre.z))
+	for point: Array in CONTROLE_NEGATIF:
+		centres.append(Vector2(float(point[1]), float(point[2])))
+
 	var plantes: Array[Dictionary] = []
-	var repere: Dictionary = _collecter_vegetation(monde, heightmap, plantes)
-	var colliders: Array[Dictionary] = _collecter_colliders_vegetaux(monde)
+	var repere: Dictionary = _collecter_vegetation(monde, heightmap, centres,
+		plantes)
+	var colliders: Array[Dictionary] = _collecter_colliders_vegetaux(monde,
+		centres)
 	var cameras: Array[Dictionary] = _collecter_cameras(monde)
 	if cameras.size() != 6:
 		_bloquer("%d caméra(s) gelée(s) trouvée(s), 6 attendues" % cameras.size())
@@ -129,8 +163,8 @@ func _executer() -> void:
 		"rayon_vegetation_m": RAYON_VEGETATION_M,
 		"rayon_pente_m": RAYON_PENTE_M,
 		"repere_vegetation": repere,
-		"vegetation_instances_monde": plantes.size(),
-		"colliders_vegetaux_monde": colliders.size(),
+		"vegetation_instances_retenues": plantes.size(),
+		"colliders_vegetaux_retenus": colliders.size(),
 		"seuils_de_lecture": {
 			"route_confort_m": LECTURE_ROUTE_CONFORT_M,
 			"camera_confort_m": LECTURE_CAMERA_CONFORT_M,
@@ -155,8 +189,47 @@ func _executer() -> void:
 			segments_routes, gues, cameras, plantes, colliders)
 	doc["sujets"] = sujets
 
+	if OS.get_cmdline_user_args().has("--controle-negatif"):
+		doc["controle_negatif"] = _controle_negatif(heightmap, segments_routes,
+			gues, cameras, plantes, colliders)
+
 	_imprimer_tableau(doc, sujets)
 	_sortir(doc)
+
+
+## LE CONTRÔLE NÉGATIF. Il ne mesure pas le lot : il mesure la SONDE.
+##
+## Trois points dont le défaut est connu avant la mesure. Leur `y` est posé à
+## la hauteur du terrain pour que l'écart layout/sol soit nul — sinon ce seul
+## écart suffirait à les condamner, et le contrôle prouverait la mauvaise
+## chose : le sabotage doit retirer LA chose testée, pas ce qui est en dessous
+## (tools/CLAUDE.md).
+##
+## Si l'un des trois ressort `POSABLE`, la sonde est aveugle : on BLOQUE, et
+## le tableau des six sujets ne doit pas être publié.
+func _controle_negatif(heightmap: WorldV2Heightmap, segments_routes: Dictionary,
+		gues: Array[Dictionary], cameras: Array[Dictionary],
+		plantes: Array[Dictionary],
+		colliders: Array[Dictionary]) -> Dictionary:
+	var sortie: Dictionary = {}
+	for point: Array in CONTROLE_NEGATIF:
+		var etiquette: String = String(point[0])
+		var x: float = float(point[1])
+		var z: float = float(point[2])
+		var attendu: String = String(point[3])
+		var site: Vector3 = Vector3(x, heightmap.height_at(x, z), z)
+		var mesure: Dictionary = _mesurer(site, heightmap, segments_routes,
+			gues, cameras, plantes, colliders)
+		var verdict: String = String(mesure["verdict"])
+		var famille: String = verdict.split(" (")[0]
+		mesure["defaut_attendu"] = attendu
+		mesure["controle"] = "VU" if famille == attendu else "AVEUGLE"
+		if famille != attendu:
+			_bloquer(("contrôle négatif %s : attendu %s, obtenu %s — la sonde "
+				+ "ne voit pas le défaut qu'elle est censée voir")
+				% [etiquette, attendu, famille])
+		sortie[etiquette] = mesure
+	return sortie
 
 
 ## -- mesure d'un site ---------------------------------------------------------
@@ -413,7 +486,7 @@ func _mesurer(site: Vector3, heightmap: WorldV2Heightmap,
 ## dizaines de mètres. Si les deux se valent, on BLOQUE — un compte pris dans
 ## le mauvais repère serait précis, plausible et faux (famille ISS-018).
 func _collecter_vegetation(monde: Node, heightmap: WorldV2Heightmap,
-		sortie: Array[Dictionary]) -> Dictionary:
+		centres: PackedVector2Array, sortie: Array[Dictionary]) -> Dictionary:
 	var cellules: Array[Node] = monde.get_tree().get_nodes_in_group(
 		&"world_v2_vegetation")
 	var sans_plan: int = 0
@@ -437,7 +510,12 @@ func _collecter_vegetation(monde: Node, heightmap: WorldV2Heightmap,
 		var pas: int = maxi(1, int(origines.size() / 8))
 		for i: int in range(origines.size()):
 			var brut: Vector3 = origines[i]
-			sortie.append({"p": brut, "couche": couche, "cellule": multi.name})
+			if _proche_d_un_centre(Vector2(brut.x, brut.z), centres):
+				sortie.append({"p": brut, "couche": couche,
+					"cellule": multi.name})
+			# Le RÉSIDU d'ancrage, lui, s'échantillonne sur TOUT le monde :
+			# vérifier le repère sur les seules instances déjà filtrées par ce
+			# repère serait circulaire.
 			if i % pas == 0:
 				var transforme: Vector3 = vers_monde * brut
 				residu_brut += absf(brut.y - heightmap.height_at(brut.x, brut.z))
@@ -468,15 +546,27 @@ func _collecter_vegetation(monde: Node, heightmap: WorldV2Heightmap,
 	}
 
 
-func _collecter_colliders_vegetaux(monde: Node) -> Array[Dictionary]:
+func _collecter_colliders_vegetaux(monde: Node,
+		centres: PackedVector2Array) -> Array[Dictionary]:
 	var sortie: Array[Dictionary] = []
 	for noeud: Node in monde.get_tree().get_nodes_in_group(
 			&"world_v2_vegetation_colliders"):
 		var corps: Node3D = noeud as Node3D
 		if corps == null:
 			continue
-		sortie.append({"nom": corps.name, "p": corps.global_position})
+		var p: Vector3 = corps.global_position
+		if not _proche_d_un_centre(Vector2(p.x, p.z), centres):
+			continue
+		sortie.append({"nom": corps.name, "p": p})
 	return sortie
+
+
+## Vrai si le point est dans le rayon d'inspection d'AU MOINS un centre.
+func _proche_d_un_centre(p: Vector2, centres: PackedVector2Array) -> bool:
+	for centre: Vector2 in centres:
+		if p.distance_squared_to(centre) <= RAYON_VEGETATION_M * RAYON_VEGETATION_M:
+			return true
+	return false
 
 
 func _collecter_cameras(monde: Node) -> Array[Dictionary]:
@@ -568,8 +658,8 @@ func _imprimer_tableau(doc: Dictionary, sujets: Dictionary) -> void:
 	print("=== IMPLANTATION LOT 1 — MESURES SOUS MOTEUR ===")
 	print("commit %s (dirty=%s)" % [doc["commit"], doc["repo_dirty"]])
 	var repere: Dictionary = doc["repere_vegetation"] as Dictionary
-	print("végétation : %d instance(s) dans le monde ; repère %s "
-		% [doc["vegetation_instances_monde"],
+	print("végétation : %d instance(s) retenue(s) autour des centres ; repère %s "
+		% [doc["vegetation_instances_retenues"],
 			"VÉRIFIÉ" if bool(repere.get("verifie", false)) else "INDÉCIDABLE"]
 		+ "(résidu brut %s m, transformé %s m)"
 		% [repere.get("residu_ancrage_brut_m", "?"),
