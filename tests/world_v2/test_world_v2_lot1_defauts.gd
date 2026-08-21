@@ -733,6 +733,7 @@ func test_temoin_l_instrument_de_boititude_voit_un_pave() -> void:
 
 func test_temoin_les_compteurs_voient_ce_qu_ils_pretendent_compter() -> void:
 	var boucle: SceneTree = Engine.get_main_loop() as SceneTree
+	remember_root()
 	var faux_lieu: Node3D = Node3D.new()
 	faux_lieu.name = "TemoinLieu"
 	# Un semis instancié — la forme attendue d'un champ de fleurs. Un compteur
@@ -769,6 +770,9 @@ func test_temoin_les_compteurs_voient_ce_qu_ils_pretendent_compter() -> void:
 
 	faux_lieu.queue_free()
 	await boucle.process_frame
+	var propre: bool = await restore_root()
+	check(propre, "démontage propre (témoin des compteurs) — %s"
+		% restore_root_reason())
 
 
 ## ===========================================================================
