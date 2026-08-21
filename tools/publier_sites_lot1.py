@@ -73,6 +73,48 @@ def main() -> int:
               % (len(doc["bloques"]), " ; ".join(doc["bloques"])), file=sys.stderr)
         return 3
 
+    # --- CONTRÔLE CROISÉ ------------------------------------------------------
+    # Les mêmes distances sont calculées DEUX FOIS, par deux implémentations
+    # qui ne partagent pas une ligne : Python sur les polylignes du layout, et
+    # GDScript sur celles qu'expose la heightmap. Elles doivent tomber
+    # d'accord. Un écart signifie qu'une des deux se trompe — et publier un
+    # tableau sans le savoir donnerait des nombres précis, plausibles et faux.
+    #
+    # Le seuil est serré A DESSEIN : ce ne sont pas deux mesures physiques,
+    # ce sont deux calculs du même segment. Ils doivent coïncider à l'arrondi
+    # de publication près (deux décimales des deux côtés).
+    TOLERANCE = 0.02
+    ecarts: list[str] = []
+    for pid in SUJETS:
+        g, sd = geo[pid], son[pid]
+        paires = [
+            ("route %s" % g["route_la_plus_proche"][0],
+             g["route_la_plus_proche"][1], sd["route_la_plus_proche"][1]),
+            ("gué %s" % g["gue_le_plus_proche"][0],
+             g["gue_le_plus_proche"][1], sd["gue_le_plus_proche"][1]),
+            ("cours principal",
+             g["cours_principal"]["distance_m"], sd["cours_principal_m"]),
+            ("affluent", g["affluent"]["distance_m"], sd["affluent_m"]),
+            ("lac (centre)",
+             g["lac"]["distance_au_centre_m"], sd["lac_centre_m"]),
+        ]
+        for nom, py, gd in paires:
+            if abs(float(py) - float(gd)) > TOLERANCE:
+                ecarts.append("%s / %s : Python %.3f m, moteur %.3f m"
+                              % (court(pid), nom, py, gd))
+        # Le nom de la route la plus proche doit être le même des deux côtés.
+        if g["route_la_plus_proche"][0] != sd["route_la_plus_proche"][0]:
+            ecarts.append("%s : route la plus proche « %s » (Python) contre "
+                          "« %s » (moteur)"
+                          % (court(pid), g["route_la_plus_proche"][0],
+                             sd["route_la_plus_proche"][0]))
+    if ecarts:
+        print("BLOQUÉ : les deux implémentations ne s'accordent pas (%d écart(s)) :"
+              % len(ecarts), file=sys.stderr)
+        for e in ecarts:
+            print("  " + e, file=sys.stderr)
+        return 3
+
     repere = doc.get("repere_vegetation", {})
     out: list[str] = []
     a = out.append
@@ -94,6 +136,8 @@ def main() -> int:
     a("| arbre sale au moment de la mesure | `%s` |" % doc.get("repo_dirty", "?"))
     a("| sonde | `%s` |" % doc.get("sonde", "?"))
     a("| géométrie XZ | `tools/mesure_implantation_lot1.py` |")
+    a("| contrôle croisé Python ↔ moteur | %d distances concordantes à %s m près |"
+      % (len(SUJETS) * 5, fr(TOLERANCE, "%.2f")))
     a("| rayon de végétation | %s m |" % fr(doc.get("rayon_vegetation_m", 0), "%.0f"))
     a("| disque de pente | %s m |" % fr(doc.get("rayon_pente_m", 0), "%.0f"))
     a("| fraction de visée exigée libre | %s |" % fr(
