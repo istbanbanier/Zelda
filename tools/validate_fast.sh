@@ -109,6 +109,16 @@ case "$VERSION" in
   *) bad "version inattendue — MASTER_SPEC §5.1 exige 4.7.1-stable" ;;
 esac
 
+step "0b. Gel V2.3-B"
+# Placé AVANT tout ce qui coûte : quelques millisecondes, et il répond à la
+# question qui rend inutile le reste si la réponse est mauvaise — « quelqu'un
+# a-t-il touché un élément gelé ? ». Périmètre et raison : tools/gel_verifier.sh.
+if tools/gel_verifier.sh; then
+  ok "aucun élément gelé n'a bougé"
+else
+  bad "GEL ROMPU — voir docs/contrats/gel_v2_3_b.sha256 et la directive R2B.3.1 §4"
+fi
+
 step "1. Import des ressources (parse/import smoke)"
 IMPORT_LOG="$LOG_DIR/01_import.log"
 "$GODOT_BIN" --headless --path "$PROJECT_DIR" --import > "$IMPORT_LOG" 2>&1
@@ -152,7 +162,20 @@ fi
 
 step "2. Tests unitaires"
 UNIT_LOG="$LOG_DIR/02_unit.log"
-"$GODOT_BIN" --headless --path "$PROJECT_DIR" --script tools/godot/test_runner.gd > "$UNIT_LOG" 2>&1
+# LA SUITE RESTE NON VERBEUSE, ET C'EST UNE DÉCISION MESURÉE.
+# `--verbose` donnerait la composition objet par objet du résidu de sortie, ce
+# que le portail A aimerait avoir. Mesuré le 2026-08-21 sur cette machine :
+# 1 085 s et 412 Mo de vidage contre ~400 s sans, soit près du TRIPLE. Un
+# contrôle trop lourd placé trop tôt finit contourné (PROMPT4_METHOD §0) — et un
+# `validate_fast` de trois quarts d'heure ne serait plus lancé.
+# La répartition retenue :
+#   * à CHAQUE passe : le portail A sur la signature agrégée, comparée AU CHIFFRE
+#     PRÈS au contrat committé. Bon marché, et strict : toute ressource du projet
+#     qui survivrait déplacerait ces comptes.
+#   * sur COMMANDE et en niveau release : `tools/gate_fuite_composition.sh`, qui
+#     relance la suite en `--verbose` et énumère classe par classe.
+"$GODOT_BIN" --headless --path "$PROJECT_DIR" \
+  --script tools/godot/test_runner.gd > "$UNIT_LOG" 2>&1
 UNIT_RC=$?
 grep -E '^\s+(ok|ÉCHEC)|^=== RÉSULTAT' "$UNIT_LOG" | sed 's/^/  /'
 if [ $UNIT_RC -eq 0 ]; then ok "suite unitaire verte"; else bad "suite unitaire rouge (code $UNIT_RC, voir $UNIT_LOG)"; fi
@@ -172,12 +195,102 @@ if [ $UNIT_RC -eq 0 ]; then ok "suite unitaire verte"; else bad "suite unitaire 
 # référencées, parce que `AudioManager` est un autoload et que le test ne rendait
 # pas le processus tel qu'il l'avait trouvé. La suite complète, elle, était
 # propre — ajouter ces motifs ne masque donc aucune dette existante.
-UNIT_ERR_PATTERN='SCRIPT ERROR|^ERROR:|ASSERTION ÉCHOUÉE SANS REPORTER|Cannot call method|Invalid access|String formatting error|Out of bounds|Method not found|Cannot open file|Failed loading resource|Resource file not found|ObjectDB instances were leaked|resources still in use'
+#
+# CLÔTURE R2B.3.1 (2026-08-21) : les deux motifs de fuite ajoutés ce jour-là
+# (`ObjectDB instances were leaked`, `resources still in use`) SONT RETIRÉS DE CE
+# FILTRE — et remplacés par l'étape 2b, qui est STRICTEMENT PLUS SÉVÈRE. Ce n'est
+# pas un affaiblissement, et voici pourquoi, vérifiable :
+#
+#   ce filtre-ci        : grep sur deux comptes AGRÉGÉS. Rouge dès qu'un objet
+#                         survit, quelle que soit sa nature. Il ne sait pas
+#                         distinguer une texture du projet d'un `GDScript`
+#                         retenu par le cache du moteur.
+#   l'étape 2b          : énumère CLASSE PAR CLASSE et CHEMIN PAR CHEMIN, exige
+#                         que l'ensemble mesuré égale l'ensemble expliqué, et
+#                         rougit sur toute classe non attribuée au moteur — donc
+#                         sur strictement plus de cas que le grep agrégé.
+#
+# Ce qui change n'est donc pas la sévérité, c'est la SÉPARATION de deux domaines
+# qui ne mesurent pas la même propriété : une ressource du projet qui survit est
+# corrigible et bloque ; un script retenu par `GDScriptCache` n'est corrigible
+# par AUCUNE API GDScript (ISS-065) et ne peut pas porter un rouge permanent sans
+# entraîner l'équipe à ignorer la ligne rouge. Décision du lead, tracée dans
+# `docs/KNOWN_ISSUES.md` ISS-059 et ISS-065.
+UNIT_ERR_PATTERN='SCRIPT ERROR|^ERROR:|ASSERTION ÉCHOUÉE SANS REPORTER|Cannot call method|Invalid access|String formatting error|Out of bounds|Method not found|Cannot open file|Failed loading resource|Resource file not found'
 if grep -qE "$UNIT_ERR_PATTERN" "$UNIT_LOG"; then
   bad "erreurs signalées pendant la suite de tests (voir $UNIT_LOG)"
   grep -E "$UNIT_ERR_PATTERN" "$UNIT_LOG" | head -10 | sed 's/^/    /'
 else
   ok "aucune erreur signalée dans le journal des tests"
+fi
+
+step "2b. Résidu de fin de processus — DEUX verdicts séparés"
+# Pourquoi deux et pas un : voir l'explication de l'étape 2, `ISS-059` et
+# `ISS-065`. En résumé — une ressource du PROJET qui survit est un défaut que
+# nous pouvons corriger, donc bloquant ; un script retenu par le cache du MOTEUR
+# n'est corrigible par aucune API GDScript, donc suivi mais non bloquant TANT
+# QU'IL NE DÉRIVE PAS.
+#
+# Le portail se prouve avant de servir : son propre contrôle négatif tourne
+# d'abord, en quelques millisecondes. Sept fixtures, sept verdicts attendus,
+# dont cinq sabotages qui doivent rougir chacun pour sa raison propre. Sans ce
+# contrôle, un portail cassé rendrait un vert silencieux — le mode de panne
+# exact qu'il existe pour empêcher.
+step_gate_ok=1
+if ! tools/gate_fuite_controle_negatif.sh; then
+  bad "le contrôle négatif du portail de fuite échoue — son verdict ne peut pas être cru"
+  step_gate_ok=0
+fi
+
+GATE_LOG="$LOG_DIR/02b_fuite.log"
+GATE_JSON="$LOG_DIR/02b_fuite.json"
+CONTRAT_MOTEUR="docs/contrats/residu_cache_moteur.json"
+if [ $step_gate_ok -eq 1 ]; then
+  # Aucune ligne brute du moteur n'est masquée : elles sont extraites telles
+  # quelles, puis CLASSÉES. L'extraction ne juge pas, elle sélectionne les lignes
+  # que le moteur imprime sur le sujet.
+  grep -E 'Leaked instance:|Resource still in use:|ObjectDB instances were leaked|resources still in use|RID allocations' \
+    "$UNIT_LOG" > "$GATE_LOG" || true
+  python3 tools/gate_fuite_ressources.py "$GATE_LOG" --mode=agregat \
+    --racine "$PROJECT_DIR" --reference "$CONTRAT_MOTEUR" --json "$GATE_JSON" \
+    | sed 's/^/  /'
+  GATE_RC=${PIPESTATUS[0]}
+  case $GATE_RC in
+    0) ok "PROJECT_RESOURCE_LEAK_GATE vert ; télémétrie du cache moteur dans son enveloppe" ;;
+    1) bad "PROJECT_RESOURCE_LEAK_GATE ROUGE — une ressource du projet survit (voir $GATE_LOG)" ;;
+    2) bad "ENGINE_SCRIPT_CACHE_TELEMETRY EN DÉRIVE — redevient bloquante (voir $GATE_LOG)" ;;
+    3) bad "BLOQUÉ — le journal ne permet pas de conclure sur le résidu (voir $GATE_LOG)" ;;
+    *) bad "code retour inattendu $GATE_RC du portail de fuite" ;;
+  esac
+fi
+
+step "2c. Croissance cumulative du résidu (deux cycles dans UN processus)"
+# Un résidu STABLE est une empreinte ; un résidu qui CROÎT à chaque montage est
+# une fuite. Les deux donnent la même ligne de fin de processus — seule la
+# comparaison de deux cycles dans le MÊME processus les distingue, et c'est la
+# condition n°3 du portail A. La sonde monte puis démonte `WorldV2.tscn`, la
+# seule scène qui portait la signature (mesuré R2B.3.1 : 22 s, contre 97 s pour
+# le trio initial).
+CYCLE_LOG="$LOG_DIR/02c_cycles.log"
+"$GODOT_BIN" --headless --path "$PROJECT_DIR" \
+  --script tools/godot/sonde_iss059_proprietaire.gd -- \
+  --scenes=worldv2 --cycles=2 --ablation=aucune > "$CYCLE_LOG" 2>&1 || true
+# `fin_cycle_` UNIQUEMENT. La sonde imprime aussi une mesure de référence
+# `apres_autoloads_avant_tout_cycle`, dont le compte diffère forcément de celui
+# d'après un montage : la compter donnerait deux empreintes distinctes sur un
+# résidu parfaitement stable, donc un ROUGE FABRIQUÉ. Piège vérifié en lisant la
+# sonde avant d'écrire ce filtre, pas après l'avoir vu échouer.
+EMPREINTES=$(grep -oE 'MESURE fin_cycle_[0-9]+ \| objets=[0-9]+ ressources=[0-9]+' "$CYCLE_LOG" \
+  | sed 's/^MESURE fin_cycle_[0-9]* //' | sort -u)
+CYCLES=$(printf '%s\n' "$EMPREINTES" | grep -c 'objets=')
+NB_MESURES=$(grep -cE 'MESURE fin_cycle_[0-9]+' "$CYCLE_LOG")
+grep -E 'MESURE fin_cycle_' "$CYCLE_LOG" | sed 's/^/    /'
+if [ "$NB_MESURES" -lt 2 ]; then
+  bad "$NB_MESURES mesure(s) de fin de cycle au lieu de 2 — la sonde n'a pas tourné (voir $CYCLE_LOG)"
+elif [ "$CYCLES" = "1" ]; then
+  ok "$NB_MESURES cycles, une seule empreinte — résidu STABLE, aucune croissance cumulative"
+else
+  bad "$CYCLES empreintes différentes sur $NB_MESURES cycles — le résidu CROÎT (voir $CYCLE_LOG)"
 fi
 
 step "3. Scène d'intégration (lancement réel : Boot -> MainMenu)"

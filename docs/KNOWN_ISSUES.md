@@ -1564,7 +1564,19 @@ l'intérieur, donc `d(p)` est localement **sous-estimée** et l'exigence avec el
 Les `FAIL` publiés sont donc valides et probablement **sous-estimés** ; en
 revanche **aucun `PASS` de production ne pourrait être cru** sur cette base.
 
-## ISS-059 — fuites de fin de processus sur la suite COMPLÈTE — S3, **CAUSE NOMMÉE ET CORRIGÉE À LA SOURCE le 2026-08-20 (R2B.3.1)**
+## ISS-059 — fuites de ressources du PROJET en fin de processus — **FERMÉE le 2026-08-21 par décision du lead (clôture R2B.3.1)**
+
+> **Portée de la fermeture, à lire avant d'invoquer ce ticket.** ISS-059 ne
+> couvre QUE les ressources appartenant au projet : matériaux, maillages,
+> textures, flux audio, scènes. Elles sont libérées, mesuré et vérifié. Le
+> résidu de scripts que le moteur retient dans son propre `GDScriptCache` est
+> un domaine DIFFÉRENT, suivi séparément par **ISS-065**, et il n'est pas
+> bloquant. Les confondre était l'erreur que cette fermeture corrige : un
+> rouge que personne ne peut lever entraîne à ignorer la ligne rouge.
+>
+> Les deux verdicts sont désormais rendus séparément à chaque `validate_fast` :
+> `PROJECT_RESOURCE_LEAK_GATE` (bloquant) et `ENGINE_SCRIPT_CACHE_TELEMETRY`
+> (WARN, qui **redevient bloquante** à la moindre dérive).
 
 Constaté le 2026-08-18 au premier `validate_fast.sh` complet depuis V2.3-A.R
 (chaque passe R2a-3.x avait interdiction de le lancer). **Les 904 tests sont
@@ -2222,3 +2234,71 @@ dérive était enseignée, pas subie. Corrigé.
 5. **46 lignes de commandes nues dans 19 fichiers de `docs/`** et le `README`.
 
 Preuves : `evidence/world_v2/v2_3_r2b3_1/iss063/CORRECTIF.md`.
+
+---
+
+## ISS-065 — le moteur retient ses scripts jusqu'à la sortie (`GDScriptCache`) — **LIMITATION MOTEUR, NON BLOQUANTE, SURVEILLÉE**
+
+Ouverte le 2026-08-21 en séparant ISS-059 en deux domaines. Ce ticket n'est pas
+un bug du projet et n'a **aucun correctif disponible depuis GDScript** : il
+existe pour que la limitation soit *suivie*, pas oubliée — et pour qu'une dérive
+redevienne visible.
+
+### Le fait
+
+Charger une `.tscn` épingle les `GDScript` qu'elle attache, plus leurs
+`GDScriptNativeClass`. Godot les conserve dans son cache de scripts interne
+jusqu'à la fin du processus, et les imprime alors comme « fuite ». Aucune API
+GDScript ne purge ce cache : `liberer_caches()` vide des variables `static` du
+projet, ce qui est un autre sujet, et n'a par construction aucune prise sur les
+tables du moteur.
+
+### L'enveloppe mesurée, pas déduite
+
+Suite complète en `--verbose`, une exécution. La décomposition tombe juste au
+dernier objet — c'est ce qui autorise à parler d'attribution plutôt que de
+corrélation :
+
+| ligne imprimée par le moteur | compte | décomposition |
+|---|---:|---|
+| `ObjectDB instances were leaked` | 138 | 74 `GDScript` + 61 `GDScriptNativeClass` + 3 `Shader` |
+| `resources still in use` | 74 | 71 `.gd` + 3 `.gdshader` |
+| `RID allocations 'DummyShader'` | 3 | les 3 `Shader` ci-dessus |
+
+Il ne reste **ni matériau, ni maillage, ni texture, ni flux audio** : les classes
+de RID qui portaient ISS-059 ne sont plus imprimées du tout.
+
+Les trois `Shader` sont des constantes `preload()` de
+`scripts/lookdev/hero_shot_lab.gd`, script lui-même épinglé. Une constante vit
+dans la table de constantes de son script : tant que le script est retenu, elle
+l'est aussi. C'est donc une **conséquence** des 135 autres objets, pas une cause
+distincte — et le portail le vérifie mécaniquement en cherchant le `preload`
+dans le dépôt, plutôt que de le déclarer dans une table qu'on pourrait mentir.
+
+### Ce qui est refusé, et pourquoi c'est écrit plutôt que caché
+
+Remplacer ces trois `preload()` par des `load()` paresseux retirerait la ligne
+`DummyShader` entière du rapport. Ce n'est **pas** fait :
+
+- cela ne rendrait rien vert — les 135 objets de script demeurent ;
+- `hero_shot_lab.gd` est un laboratoire de look-dev, hors du chemin critique ;
+- retoucher du code légitime pour retrancher des lignes d'un rapport qui reste
+  rouge relève du même travers qu'ajuster un seuil pour flatter un verdict.
+
+### Comment la dérive redeviendrait bloquante
+
+`tools/gate_fuite_ressources.py` compare la mesure au contrat committé
+`docs/contrats/residu_cache_moteur.json`. La télémétrie reste `WARN` tant que
+l'enveloppe tient ; elle sort en **code 2, bloquant**, dès qu'une classe croît,
+qu'une extension nouvelle apparaît, ou qu'un répertoire de provenance inconnu
+entre dans l'ensemble. Une amélioration (classe disparue) est signalée elle
+aussi — pour qu'on entérine le nouveau contrat au lieu de le laisser dériver
+vers le bas sans trace.
+
+### Ce qui lèverait ce ticket
+
+Une API moteur permettant de purger `GDScriptCache`, ou une version de Godot qui
+ne compte plus ces objets comme fuite. À réévaluer à chaque montée de version.
+
+Preuves : `evidence/world_v2/v2_3_r2b3_1/iss059/RESIDU_SUITE_COMPLETE.md` et
+`evidence/world_v2/v2_3_r2b3_1/cloture/`.

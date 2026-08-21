@@ -1,0 +1,6 @@
+Leaked instance: GDScript:100000001 - Refcount: 1
+Leaked instance: StandardMaterial3D:100000002 - Refcount: 1
+Resource still in use: res://scripts/lookdev/hero_shot_lab.gd (GDScript)
+Resource still in use: res://materials/instances/MAT_Rock_Ochre_Dry.tres (StandardMaterial3D)
+WARNING: 2 ObjectDB instances were leaked at exit.
+ERROR: 2 resources still in use at exit.

@@ -1,0 +1,9 @@
+{
+  "doc": "Contrat FIGÉ pour les fixtures du contrôle négatif. Il ne suit PAS le contrat réel du dépôt : les fixtures doivent rendre le même verdict dans dix ans, même si le résidu du moteur change. Le contrat vivant est docs/contrats/residu_cache_moteur.json.",
+  "classes": {"GDScript": 74, "GDScriptNativeClass": 61, "Shader": 3},
+  "extensions": {".gd": 71, ".gdshader": 3},
+  "provenances": ["scripts/components"],
+  "rids": {"DummyShader": 3},
+  "total_objets": 138,
+  "total_ressources": 74
+}
