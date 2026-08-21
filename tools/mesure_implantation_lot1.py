@@ -183,6 +183,9 @@ def main() -> int:
         "FORD_INFLUENCE_M": const_float(HEIGHTMAP, "FORD_INFLUENCE_M"),
         "ROUTE_CLEAR_M": const_float_dans_bloc(TEST_PLACES, "ROUTE_CLEAR_M"),
         "SITE_XZ_TOLERANCE_M": const_float_dans_bloc(TEST_PLACES, "SITE_XZ_TOLERANCE_M"),
+        "ROOT_GROUND_TOLERANCE_M": const_float_dans_bloc(
+            TEST_PLACES, "ROOT_GROUND_TOLERANCE_M"),
+        "SUPPORT_TOLERANCE_M": const_float_dans_bloc(TEST_PLACES, "SUPPORT_TOLERANCE_M"),
         "CLEAR_SIGHT_FRACTION": const_float_dans_bloc(TEST_CAMERAS, "CLEAR_SIGHT_FRACTION"),
         "EYE_HEIGHT": const_float(CAMERAS, "EYE_HEIGHT"),
     }

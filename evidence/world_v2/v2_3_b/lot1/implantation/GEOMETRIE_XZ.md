@@ -100,7 +100,7 @@ ne pose pas de problème ; les décors qui l'entourent, si.
 ### 2. `overlook_summit` — cam05 est posée à 2,83 m du site
 
 `cam05_belvedere_crete` est en `(166, 54)`, regarde `(0, 26, 170)`. Le site
-est en `(168, 52)` : **2,828 m derrière l'objectif**. « Derrière » est
+est en `(168, 52)` : **2,83 m derrière l'objectif**. « Derrière » est
 mesuré, pas supposé — le produit scalaire de la direction de visée
 `(-166 ; 116)` par le vecteur caméra→site `(+2 ; -2)` vaut **−564 m²**, donc
 le paramètre d'approche est nul et le point du segment le plus proche est la
@@ -149,14 +149,14 @@ terrain gelé creuse activement, et où rien ne peut s'asseoir proprement.
 
 | sujet | entité de layout la + proche | lieu déjà bâti le + proche |
 |---|---|---|
-| `watchtower_ruin` | `turquoise_spring` 24,0 m | `waterfall_cave` 60,5 m |
-| `overlook_summit` | `veil_falls` 42,5 m | `anchor.pylon` 93,5 m |
-| `turquoise_spring` | `watchtower_ruin` 24,0 m | `riverside_village` 41,2 m |
-| `forest_shrine` | `logging_hamlet` 38,8 m | `checkpoint.camp` 42,0 m |
-| `barrow_cemetery` | `wind_gorge` 46,6 m | `anchor.pylon` 70,7 m |
-| `flower_field` | `abandoned_farm` 32,2 m | `abandoned_farm` 32,2 m |
+| `watchtower_ruin` | `turquoise_spring` 24,00 m | `waterfall_cave` 60,46 m |
+| `overlook_summit` | `veil_falls` 42,52 m | `anchor.pylon` 93,48 m |
+| `turquoise_spring` | `watchtower_ruin` 24,00 m | `riverside_village` 41,23 m |
+| `forest_shrine` | `logging_hamlet` 38,83 m | `checkpoint.camp` 41,98 m |
+| `barrow_cemetery` | `wind_gorge` 46,65 m | `anchor.pylon` 70,72 m |
+| `flower_field` | `abandoned_farm` 32,25 m | `abandoned_farm` 32,25 m |
 
-Les 24,0 m entre le guet et la source sont exactement ceux que le contrat du
+Les 24,00 m entre le guet et la source sont exactement ceux que le contrat du
 lot annonce (« à 24 m du guet : ils se lisent ensemble »). Les deux sujets
 partagent une lecture : leurs silhouettes doivent se compléter, pas se
 concurrencer.
