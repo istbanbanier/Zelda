@@ -90,6 +90,14 @@ d'un échantillon de route, et les échantillons sont pris au mètre le long des
 segments : un seul corps de collision posé au centre du site rougit
 `test_aucun_acteur_et_les_routes_restent_libres`.
 
+**Où se trouve le couloir, exactement.** Les deux jambes de route qui se
+rejoignent au sommet partent toutes les deux vers le **nord** (convention du
+layout : `+Z = sud`) : le waypoint précédent `(158, 42)` est à 14,14 m au
+nord-ouest, le suivant `(190, 30)` à 31,11 m au nord-est. `cam05` est à 2,83 m
+au **sud-ouest**. Le secteur libre de toute contrainte est donc le
+**sud-est** — c'est là qu'une masse peut se poser sans toucher ni le couloir de
+route ni le champ immédiat de l'objectif.
+
 Ce n'est pas un défaut du layout — c'est son intention : la route des hauteurs
 passe PAR le belvédère, on le gravit en chemin. Mais cela impose une facture
 précise : **le sommet reste marchable et libre**, et toute masse de collision
