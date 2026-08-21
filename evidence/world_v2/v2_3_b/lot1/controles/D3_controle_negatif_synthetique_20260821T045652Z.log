@@ -1,0 +1,54 @@
+/home/user/wt-voie_c/tools/lot1_repetition.py:131: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels = list(image.getdata())
+règle R-D3 — docs/V2_3_B_LOT1_CONTROLES.md §3
+commit dfdb163d9996 · dirty=True
+
+--- 30 m — seuil S = 0.7177 (calibré sur 15 paires acceptées, paire calibrante : camp / valley.poi.stone_bridge.01) ---
+a                                      b                                          IoU  dprofil
+valley.poi.forest_shrine.01            valley.poi.thunderstruck_tree.01        1.0000   0.0000  <== SIGNALÉ
+valley.poi.watchtower_ruin.01          pylon                                   0.6850   0.0672
+valley.poi.watchtower_ruin.01          valley.poi.forest_shrine.01             0.3333   0.3050
+valley.poi.watchtower_ruin.01          valley.poi.thunderstruck_tree.01        0.3333   0.3050
+valley.poi.forest_shrine.01            pylon                                   0.2829   0.2743
+valley.poi.watchtower_ruin.01          valley.poi.abandoned_farm.01            0.2743   0.2656
+valley.poi.forest_shrine.01            valley.poi.abandoned_farm.01            0.2579   0.1394
+valley.poi.watchtower_ruin.01          valley.poi.stone_bridge.01              0.1899   0.3006
+valley.poi.watchtower_ruin.01          camp                                    0.1330   0.2899
+valley.poi.watchtower_ruin.01          valley.poi.riverside_village.01         0.0891   0.4005
+valley.poi.forest_shrine.01            valley.poi.stone_bridge.01              0.0771   0.2735
+valley.poi.forest_shrine.01            valley.poi.riverside_village.01         0.0548   0.3189
+valley.poi.forest_shrine.01            camp                                    0.0358   0.3441
+
+--- 80 m — seuil S = 0.6897 (calibré sur 15 paires acceptées, paire calibrante : camp / valley.poi.stone_bridge.01) ---
+a                                      b                                          IoU  dprofil
+valley.poi.forest_shrine.01            valley.poi.thunderstruck_tree.01        1.0000   0.0000  <== SIGNALÉ
+valley.poi.watchtower_ruin.01          pylon                                   0.6888   0.0673
+valley.poi.watchtower_ruin.01          valley.poi.forest_shrine.01             0.3458   0.3052
+valley.poi.watchtower_ruin.01          valley.poi.thunderstruck_tree.01        0.3458   0.3052
+valley.poi.watchtower_ruin.01          valley.poi.abandoned_farm.01            0.2916   0.2650
+valley.poi.forest_shrine.01            pylon                                   0.2846   0.2748
+valley.poi.forest_shrine.01            valley.poi.abandoned_farm.01            0.2561   0.1405
+valley.poi.watchtower_ruin.01          valley.poi.stone_bridge.01              0.1986   0.3028
+valley.poi.watchtower_ruin.01          camp                                    0.1354   0.2899
+valley.poi.watchtower_ruin.01          valley.poi.riverside_village.01         0.0942   0.3908
+valley.poi.forest_shrine.01            valley.poi.stone_bridge.01              0.0779   0.2771
+valley.poi.forest_shrine.01            valley.poi.riverside_village.01         0.0554   0.3101
+valley.poi.forest_shrine.01            camp                                    0.0347   0.3447
+
+--- 160 m — seuil S = 0.6820 (calibré sur 15 paires acceptées, paire calibrante : camp / valley.poi.stone_bridge.01) ---
+a                                      b                                          IoU  dprofil
+valley.poi.forest_shrine.01            valley.poi.thunderstruck_tree.01        1.0000   0.0000  <== SIGNALÉ
+valley.poi.watchtower_ruin.01          pylon                                   0.6900   0.0692  <== SIGNALÉ
+valley.poi.watchtower_ruin.01          valley.poi.forest_shrine.01             0.3428   0.3046
+valley.poi.watchtower_ruin.01          valley.poi.thunderstruck_tree.01        0.3428   0.3046
+valley.poi.watchtower_ruin.01          valley.poi.abandoned_farm.01            0.2942   0.2560
+valley.poi.forest_shrine.01            pylon                                   0.2786   0.2729
+valley.poi.forest_shrine.01            valley.poi.abandoned_farm.01            0.2560   0.1463
+valley.poi.watchtower_ruin.01          valley.poi.stone_bridge.01              0.1985   0.3026
+valley.poi.watchtower_ruin.01          camp                                    0.1337   0.2933
+valley.poi.watchtower_ruin.01          valley.poi.riverside_village.01         0.0888   0.3962
+valley.poi.forest_shrine.01            valley.poi.stone_bridge.01              0.0761   0.2763
+valley.poi.forest_shrine.01            valley.poi.riverside_village.01         0.0423   0.3245
+valley.poi.forest_shrine.01            camp                                    0.0346   0.3542
+
+VERDICT : BLOQUE — silhouettes absentes pour valley.poi.overlook_summit.01, valley.poi.turquoise_spring.01, valley.poi.barrow_cemetery.01, valley.poi.flower_field.01 — un détecteur qui ne voit pas un sujet ne peut pas le déclarer distinct. DE PLUS, 4 paire(s) DÉJÀ signalée(s) parmi les sujets présents : valley.poi.forest_shrine.01 ≈ valley.poi.thunderstruck_tree.01 à 30 m (IoU 1.000 > S 0.718); valley.poi.forest_shrine.01 ≈ valley.poi.thunderstruck_tree.01 à 80 m (IoU 1.000 > S 0.690); valley.poi.watchtower_ruin.01 ≈ pylon à 160 m (IoU 0.690 > S 0.682); valley.poi.forest_shrine.01 ≈ valley.poi.thunderstruck_tree.01 à 160 m (IoU 1.000 > S 0.682)

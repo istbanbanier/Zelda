@@ -385,11 +385,22 @@ def main() -> int:
 
     verdict["signalees"] = signalees
     if manquants:
+        # BLOQUÉ prime sur FAIL — mais il ne doit pas le CACHER. Un résumé qui
+        # ne parlerait que des absents laisserait croire que rien n'a été
+        # signalé, alors que les paires signalées sont dans `signalees` et
+        # méritent d'être traitées tout de suite.
         verdict["verdict"] = "BLOQUE"
         verdict["resume"] = (
             "silhouettes absentes pour " + ", ".join(manquants) +
             " — un détecteur qui ne voit pas un sujet ne peut pas le "
             "déclarer distinct.")
+        if signalees:
+            verdict["resume"] += (
+                f" DE PLUS, {len(signalees)} paire(s) DÉJÀ signalée(s) parmi "
+                "les sujets présents : " + "; ".join(
+                    f"{s['a']} ≈ {s['b']} à {int(s['distance_m'])} m "
+                    f"(IoU {s['iou']:.3f} > S {s['seuil']:.3f})"
+                    for s in signalees[:5]))
         code = 3
     elif signalees:
         verdict["verdict"] = "FAIL"
