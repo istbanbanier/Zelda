@@ -2285,15 +2285,33 @@ Remplacer ces trois `preload()` par des `load()` paresseux retirerait la ligne
 - retoucher du code légitime pour retrancher des lignes d'un rapport qui reste
   rouge relève du même travers qu'ajuster un seuil pour flatter un verdict.
 
-### Comment la dérive redeviendrait bloquante
+### Comment la dérive redevient bloquante — et ce que chaque niveau voit VRAIMENT
 
-`tools/gate_fuite_ressources.py` compare la mesure au contrat committé
-`docs/contrats/residu_cache_moteur.json`. La télémétrie reste `WARN` tant que
-l'enveloppe tient ; elle sort en **code 2, bloquant**, dès qu'une classe croît,
-qu'une extension nouvelle apparaît, ou qu'un répertoire de provenance inconnu
-entre dans l'ensemble. Une amélioration (classe disparue) est signalée elle
-aussi — pour qu'on entérine le nouveau contrat au lieu de le laisser dériver
-vers le bas sans trace.
+Une première rédaction de ce paragraphe promettait que la télémétrie « sort en
+code 2 dès qu'une classe croît, qu'une extension nouvelle apparaît, ou qu'un
+répertoire de provenance inconnu entre dans l'ensemble ». **C'était une
+intention, pas un garde-fou** : le mode qui juge ces trois choses n'était appelé
+par aucun chemin automatique du dépôt. La revue contradictoire l'a démontré par
+un `grep`. Corrigé, et écrit ici tel que le câblage l'exécute :
+
+| niveau | ce qu'il compare | ce qu'il ne peut PAS voir |
+|---|---|---|
+| `validate_fast` étape 2b, **à chaque passe** | les trois comptes agrégés au chiffre près, et les classes de RID | l'attribution : une substitution à somme nulle passe |
+| `validate_release` étape 4b, **avant livraison** | chaque classe, chaque chemin, l'égalité mesure/explication, les provenances | — |
+
+Les deux rendent **code 1** si une classe de RID étrangère apparaît (portail A,
+une ressource du projet survit) et **code 2** si l'enveloppe a bougé sans qu'une
+classe étrangère apparaisse (télémétrie B, bloquante). La distinction compte :
+ajouter six scripts de lieu épingle six `GDScript` de plus, donc déplace les
+comptes — signaler cela « une ressource du projet survit » enverrait chercher un
+défaut là où il n'y en a pas.
+
+Entériner une nouvelle enveloppe se fait par
+`tools/gate_fuite_composition.sh --entériner`, avec une justification écrite
+dans `docs/DECISIONS.md`. Ce geste **refuse d'écrire tant que le portail A est
+rouge** : sans cette garde, entériner une passe qui fuit gravait la fuite dans
+la ligne de base, et la passe suivante repassait au vert. Le contrat lui-même
+est **gelé** (`docs/contrats/gel_v2_3_b.sha256`) : le modifier à la main rougit.
 
 ### Ce qui lèverait ce ticket
 

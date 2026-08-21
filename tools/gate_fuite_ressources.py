@@ -152,8 +152,18 @@ def analyser(texte: str, racine: str) -> dict:
     ressources = RE_RESSOURCE.findall(texte)
     agg_objets = [int(m) for m in RE_AGG_OBJETS.findall(texte)]
     agg_ressources = [int(m) for m in RE_AGG_RESSOURCES.findall(texte)]
-    rids = {normaliser_classe_rid(classe): int(n)
-            for n, classe in RE_AGG_RID.findall(texte)}
+    # SOMMER, pas écraser. Une compréhension de dictionnaire perdait un compte
+    # entier dès que deux symboles manglés distincts partageaient leur dernier
+    # composant :
+    #   N13RendererDummy15MaterialStorage11DummyShaderE  (3)
+    #   N13RendererDummy13CanvasStorage11DummyShaderE    (999)
+    #     -> {'DummyShader': 999}   # les 3 premiers, disparus sans trace
+    # La comparaison au contrat portait alors sur une valeur fausse. Trouvé par
+    # la revue contradictoire.
+    rids: dict[str, int] = {}
+    for n, classe in RE_AGG_RID.findall(texte):
+        cle = normaliser_classe_rid(classe)
+        rids[cle] = rids.get(cle, 0) + int(n)
     return {
         "classes": classes,
         "ressources": ressources,
@@ -281,6 +291,7 @@ def verdict_agregat(mesure: dict, reference: dict | None) -> dict:
     plus. D'où `tools/gate_fuite_composition.sh`, qui énumère vraiment.
     """
     rouges: list[str] = []
+    derives: list[str] = []
     rids: dict = mesure["rids"]
 
     if reference is None:
@@ -294,25 +305,33 @@ def verdict_agregat(mesure: dict, reference: dict | None) -> dict:
     attendu_res = reference.get("total_ressources")
     attendu_rids = reference.get("rids", {})
 
-    if mesure["agg_objets"] != attendu_objets:
-        rouges.append("objets fuités = %s, contrat = %s"
-                      % (mesure["agg_objets"], attendu_objets))
-    if mesure["agg_ressources"] != attendu_res:
-        rouges.append("ressources retenues = %s, contrat = %s"
-                      % (mesure["agg_ressources"], attendu_res))
+    # DEUX SIGNAUX QUI NE DISENT PAS LA MÊME CHOSE, et les confondre étiquetait
+    # un innocent. Une CLASSE DE RID inconnue ne peut venir que d'une ressource
+    # du projet : c'est le portail A. Un COMPTE qui bouge alors que les classes
+    # de RID restent conformes, c'est l'enveloppe du cache de scripts du moteur
+    # qui a changé — typiquement parce qu'on vient d'AJOUTER des scripts et des
+    # scènes, ce que fait chaque lot de V2.3-B. Le signaler « une ressource du
+    # projet survit » enverrait chercher un défaut là où il n'y en a pas.
+    #
+    # Trouvé par la revue contradictoire, qui a mesuré le faux positif : 139
+    # objets au lieu de 138 suffisaient à faire accuser le projet.
     for classe, n in sorted(rids.items()):
         if classe not in RID_MOTEUR:
             rouges.append("classe de RID appartenant au projet : %s=%d" % (classe, n))
         elif int(attendu_rids.get(classe, -1)) != n:
-            rouges.append("RID %s = %d, contrat = %s"
-                          % (classe, n, attendu_rids.get(classe, "absent")))
+            derives.append("RID %s = %d, contrat = %s"
+                           % (classe, n, attendu_rids.get(classe, "absent")))
     for classe, n in sorted(attendu_rids.items()):
         if classe not in rids:
-            rouges.append("classe de RID du contrat ABSENTE de la mesure : %s=%s "
-                          "— si c'est une amélioration, entériner le contrat "
-                          "plutôt que la laisser dériver sans trace"
-                          % (classe, n))
-    return {"bloque": 0, "rouges_a": rouges, "derives_b": [], "mesure": mesure,
+            derives.append("classe de RID du contrat ABSENTE de la mesure : %s=%s"
+                           % (classe, n))
+    if mesure["agg_objets"] != attendu_objets:
+        derives.append("objets fuités = %s, contrat = %s"
+                       % (mesure["agg_objets"], attendu_objets))
+    if mesure["agg_ressources"] != attendu_res:
+        derives.append("ressources retenues = %s, contrat = %s"
+                       % (mesure["agg_ressources"], attendu_res))
+    return {"bloque": 0, "rouges_a": rouges, "derives_b": derives, "mesure": mesure,
             "justifies": [], "scripts": [], "shaders": [], "projet_res": []}
 
 
@@ -324,7 +343,12 @@ def main() -> int:
                     help="contrat JSON de l'enveloppe connue du cache moteur")
     ap.add_argument("--racine", default=".", help="racine du dépôt")
     ap.add_argument("--ecrire-reference", default="",
-                    help="écrit le contrat mesuré à ce chemin (ne juge pas)")
+                    help=("écrit le contrat mesuré à ce chemin. REFUSE si le "
+                          "portail A est rouge — entériner un rouge graverait "
+                          "la fuite dans la ligne de base."))
+    ap.add_argument("--forcer-reference", action="store_true",
+                    help=("écrit le contrat MÊME si le portail A est rouge. "
+                          "Exige une justification écrite dans docs/DECISIONS.md."))
     ap.add_argument("--json", default="", help="écrit le verdict structuré à ce chemin")
     ap.add_argument("--mode", default="composition", choices=["composition", "agregat"],
                     help=("composition : exige l'énumération objet par objet (journal "
@@ -332,12 +356,34 @@ def main() -> int:
                           "DIT qu'il n'a pas vu la composition."))
     args = ap.parse_args()
 
-    texte = lire(args.journal)
+    # BLOQUÉ (3), PAS ROUGE (1). Une exception Python — journal absent, contrat
+    # mal formé après un merge — sortait en 1, et `validate_fast` l'imprimait
+    # « une ressource du projet survit ». On serait allé chercher un défaut dans
+    # le jeu pour un fichier corrompu. Ne pas pouvoir conclure n'est ni réussir
+    # ni échouer : c'est BLOQUÉ (`tools/CLAUDE.md`).
+    try:
+        texte = lire(args.journal)
+    except OSError as e:
+        print("BLOQUÉ — journal illisible : %s" % e)
+        return 3
     mesure = analyser(texte, args.racine)
     reference = None
-    if args.reference and os.path.isfile(args.reference):
-        with open(args.reference, encoding="utf-8") as f:
-            reference = json.load(f)
+    if args.reference:
+        # Un `--reference` FOURNI mais introuvable était ignoré en silence, et le
+        # mode composition rendait alors VERT en ne jugeant rien — la famille
+        # « une commande qui réussit en ne faisant rien », déjà consignée trois
+        # fois dans `tools/CLAUDE.md`. Supprimer le contrat ne doit pas verdir.
+        if not os.path.isfile(args.reference):
+            print("BLOQUÉ — contrat de référence introuvable : %s" % args.reference)
+            print("         Le fournir et qu'il manque n'est pas « pas de contrat » :")
+            print("         c'est un contrat perdu, et rien ne peut être jugé.")
+            return 3
+        try:
+            with open(args.reference, encoding="utf-8") as f:
+                reference = json.load(f)
+        except (OSError, ValueError) as e:
+            print("BLOQUÉ — contrat de référence illisible : %s" % e)
+            return 3
 
     if args.mode == "agregat":
         v = verdict_agregat(mesure, reference)
@@ -357,8 +403,9 @@ def main() -> int:
               % (mesure["agg_ressources"], (reference or {}).get("total_ressources")))
         for classe, n in sorted(mesure["rids"].items()):
             print("  RID %-20s %d" % (classe, n))
-        print("  NON VÉRIFIÉ ICI : la composition objet par objet. Elle exige")
-        print("                    --verbose (mesuré : ~3x la durée de la suite).")
+        print("  NON VÉRIFIÉ ICI : la composition objet par objet, donc")
+        print("                    l'ATTRIBUTION du résidu au cache du moteur.")
+        print("                    Elle exige --verbose (mesuré : ~3x la durée).")
         print("                    Commande dédiée : tools/gate_fuite_composition.sh")
         print()
         if v["rouges_a"]:
@@ -366,27 +413,39 @@ def main() -> int:
             for r in v["rouges_a"]:
                 print("    * %s" % r)
         else:
-            print("PROJECT_RESOURCE_LEAK_GATE : VERT sur la signature agrégée")
-        if v["rouges_a"]:
-            print("ENGINE_SCRIPT_CACHE_TELEMETRY : non jugée — le portail A rougit, "
-                  "la signature n'est pas celle du contrat")
+            print("PROJECT_RESOURCE_LEAK_GATE : VERT — aucune classe de RID "
+                  "étrangère au résidu moteur connu")
+        if v["derives_b"]:
+            print("ENGINE_SCRIPT_CACHE_TELEMETRY : DÉRIVE — redevient BLOQUANTE")
+            for d in v["derives_b"]:
+                print("    * %s" % d)
+            print("    L'enveloppe du cache moteur a bougé. Si c'est attendu — un")
+            print("    lot de lieux ajoute des scripts et des scènes, donc des")
+            print("    GDScript épinglés — entériner le contrat :")
+            print("      tools/gate_fuite_composition.sh --entériner")
+            print("    et justifier dans docs/DECISIONS.md. Ce n'est PAS le signe")
+            print("    qu'une ressource du projet fuit : cela, c'est le portail A.")
         else:
-            print("ENGINE_SCRIPT_CACHE_TELEMETRY : WARN — RÉSIDU MOTEUR CONNU, "
-                  "signature conforme au contrat")
+            print("ENGINE_SCRIPT_CACHE_TELEMETRY : WARN — signature agrégée "
+                  "conforme au contrat (attribution non vérifiée dans ce mode)")
         if args.json:
             with open(args.json, "w", encoding="utf-8") as f:
                 json.dump({
                     "mode": "agregat",
                     "portail_a": "ROUGE" if v["rouges_a"] else "VERT",
                     "motifs_a": v["rouges_a"],
-                    "telemetrie_b": "WARN",
+                    "telemetrie_b": "DERIVE" if v["derives_b"] else "WARN",
+                    "motifs_b": v["derives_b"],
                     "agg_objets": mesure["agg_objets"],
                     "agg_ressources": mesure["agg_ressources"],
                     "rids": mesure["rids"],
                     "composition_verifiee": False,
+                    "attribution_verifiee": False,
                 }, f, ensure_ascii=False, indent=2, sort_keys=True)
                 f.write("\n")
-        return 1 if v["rouges_a"] else 0
+        if v["rouges_a"]:
+            return 1
+        return 2 if v["derives_b"] else 0
 
     print("=== RÉSIDU DE FIN DE PROCESSUS — DÉCOMPOSITION BRUTE ===")
     print("  objets annoncés     : %s" % mesure["agg_objets"])
@@ -403,6 +462,24 @@ def main() -> int:
         print("  shader justifié     : %s" % j)
 
     if args.ecrire_reference:
+        # REFUS D'ENTÉRINER UN ROUGE. Sans cette garde, `--entériner` sur une
+        # passe qui fuit gravait la fuite dans la ligne de base : le contrat
+        # produit contenait alors `"StandardMaterial3D": 1`, et le
+        # `validate_fast` suivant comparait à ce contrat empoisonné puis passait
+        # VERT. Le fichier affirmait pourtant en toutes lettres que ce geste
+        # « accepte une nouvelle enveloppe » et « ne fait pas taire un rouge ».
+        # C'était faux ; c'est vrai maintenant. Trouvé par la revue
+        # contradictoire, démontré sur la fixture 02.
+        if v["rouges_a"]:
+            print("\nREFUS D'ÉCRIRE LE CONTRAT : le portail A est ROUGE.")
+            for r in v["rouges_a"]:
+                print("    * %s" % r)
+            print("Entériner ici graverait la fuite dans la ligne de base.")
+            print("Corriger d'abord, ou employer --forcer-reference avec une")
+            print("justification écrite dans docs/DECISIONS.md.")
+            if not args.forcer_reference:
+                return 1
+            print("--forcer-reference fourni : écriture malgré le rouge.")
         prov = sorted({"/".join(s[len("res://"):].split("/")[:2])
                        for s in v["scripts"]})
         contrat = {

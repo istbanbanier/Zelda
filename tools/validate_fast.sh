@@ -201,20 +201,30 @@ if [ $UNIT_RC -eq 0 ]; then ok "suite unitaire verte"; else bad "suite unitaire 
 # FILTRE — et remplacés par l'étape 2b, qui est STRICTEMENT PLUS SÉVÈRE. Ce n'est
 # pas un affaiblissement, et voici pourquoi, vérifiable :
 #
-#   ce filtre-ci        : grep sur deux comptes AGRÉGÉS. Rouge dès qu'un objet
-#                         survit, quelle que soit sa nature. Il ne sait pas
-#                         distinguer une texture du projet d'un `GDScript`
-#                         retenu par le cache du moteur.
-#   l'étape 2b          : énumère CLASSE PAR CLASSE et CHEMIN PAR CHEMIN, exige
-#                         que l'ensemble mesuré égale l'ensemble expliqué, et
-#                         rougit sur toute classe non attribuée au moteur — donc
-#                         sur strictement plus de cas que le grep agrégé.
+# CE QUI EST VRAI, ET CE QUI NE L'EST PAS. Une première rédaction de ce
+# commentaire affirmait que le nouveau dispositif est « strictement plus
+# sévère ». C'EST FAUX pour ce qui tourne ici, et la revue contradictoire l'a
+# démontré par un contre-exemple exécuté. Écrit honnêtement :
 #
-# Ce qui change n'est donc pas la sévérité, c'est la SÉPARATION de deux domaines
-# qui ne mesurent pas la même propriété : une ressource du projet qui survit est
-# corrigible et bloque ; un script retenu par `GDScriptCache` n'est corrigible
-# par AUCUNE API GDScript (ISS-065) et ne peut pas porter un rouge permanent sans
-# entraîner l'équipe à ignorer la ligne rouge. Décision du lead, tracée dans
+#   ce filtre-ci        : grep sur deux comptes AGRÉGÉS. Rouge dès qu'un objet
+#                         survit, quelle que soit sa nature — donc rouge en
+#                         PERMANENCE, puisque le moteur en retient toujours.
+#   l'étape 2b, ici     : compare ces mêmes comptes AU CHIFFRE PRÈS à un contrat
+#                         committé, et vérifie les classes de RID. Elle ACCEPTE
+#                         une enveloppe connue au lieu de rougir dessus. Sur
+#                         l'enveloppe 138/74/3, elle est donc PLUS PERMISSIVE.
+#   l'étape 2b, en mode composition (tools/gate_fuite_composition.sh) : énumère
+#                         classe par classe et chemin par chemin, et exige que
+#                         l'ensemble mesuré égale l'ensemble expliqué. CELLE-LÀ
+#                         est plus sévère — mais elle n'est pas ici, elle coûte
+#                         le triple d'une suite.
+#
+# Ce qui change est donc bien une SÉPARATION de deux domaines, et elle
+# s'accompagne d'une permissivité assumée sur une enveloppe mesurée : un script
+# retenu par `GDScriptCache` n'est corrigible par AUCUNE API GDScript (ISS-065)
+# et ne peut pas porter un rouge permanent sans entraîner l'équipe à ignorer la
+# ligne rouge. Ce que nous surveillons en échange, à chaque passe, c'est que
+# cette enveloppe ne bouge pas d'une unité. Décision du lead, tracée dans
 # `docs/KNOWN_ISSUES.md` ISS-059 et ISS-065.
 UNIT_ERR_PATTERN='SCRIPT ERROR|^ERROR:|ASSERTION ÉCHOUÉE SANS REPORTER|Cannot call method|Invalid access|String formatting error|Out of bounds|Method not found|Cannot open file|Failed loading resource|Resource file not found'
 if grep -qE "$UNIT_ERR_PATTERN" "$UNIT_LOG"; then
@@ -232,8 +242,8 @@ step "2b. Résidu de fin de processus — DEUX verdicts séparés"
 # QU'IL NE DÉRIVE PAS.
 #
 # Le portail se prouve avant de servir : son propre contrôle négatif tourne
-# d'abord, en quelques millisecondes. Sept fixtures, sept verdicts attendus,
-# dont cinq sabotages qui doivent rougir chacun pour sa raison propre. Sans ce
+# d'abord, en quelques millisecondes. Douze fixtures, douze verdicts attendus,
+# dont huit défauts qui doivent rougir chacun pour sa raison propre. Sans ce
 # contrôle, un portail cassé rendrait un vert silencieux — le mode de panne
 # exact qu'il existe pour empêcher.
 step_gate_ok=1
@@ -258,7 +268,10 @@ if [ $step_gate_ok -eq 1 ]; then
   case $GATE_RC in
     0) ok "PROJECT_RESOURCE_LEAK_GATE vert ; télémétrie du cache moteur dans son enveloppe" ;;
     1) bad "PROJECT_RESOURCE_LEAK_GATE ROUGE — une ressource du projet survit (voir $GATE_LOG)" ;;
-    2) bad "ENGINE_SCRIPT_CACHE_TELEMETRY EN DÉRIVE — redevient bloquante (voir $GATE_LOG)" ;;
+    2) bad "ENGINE_SCRIPT_CACHE_TELEMETRY EN DÉRIVE — l'enveloppe du cache moteur a bougé.
+          Ce n'est PAS une fuite du projet ; si la dérive est attendue (un lot de lieux
+          ajoute des scripts et des scènes), entériner le contrat avec
+          tools/gate_fuite_composition.sh --entériner et justifier dans DECISIONS.md" ;;
     3) bad "BLOQUÉ — le journal ne permet pas de conclure sur le résidu (voir $GATE_LOG)" ;;
     *) bad "code retour inattendu $GATE_RC du portail de fuite" ;;
   esac
@@ -274,21 +287,41 @@ step "2c. Croissance cumulative du résidu (deux cycles dans UN processus)"
 CYCLE_LOG="$LOG_DIR/02c_cycles.log"
 "$GODOT_BIN" --headless --path "$PROJECT_DIR" \
   --script tools/godot/sonde_iss059_proprietaire.gd -- \
-  --scenes=worldv2 --cycles=2 --ablation=aucune > "$CYCLE_LOG" 2>&1 || true
+  --scenes=worldv2 --cycles=2 --ablation=aucune > "$CYCLE_LOG" 2>&1
+CYCLE_RC=$?
+# LA SONDE A-T-ELLE VRAIMENT MONTÉ QUELQUE CHOSE ? Sans cette vérification,
+# l'étape rendait VERT en ne faisant rien : la sonde replie silencieusement
+# `--scenes=` sur « aucune » si l'argument n'arrive pas (un `--` disparu suffit),
+# la boucle de montage ne fait alors rien, et deux mesures identiques et
+# minuscules donnaient « résidu STABLE ». Un vert obtenu sans travail, sans un
+# mot. Trouvé par la revue contradictoire.
+MONTAGES=$(grep -cE 'cycle [0-9]+ : worldv2 monte puis demonte' "$CYCLE_LOG")
+# Et une scène peut s'INSTANCIER en échouant à se construire — c'est exactement
+# le visage du cache de classes périmé (tools/CLAUDE.md). Deux mesures
+# identiques et vides passeraient aussi.
+CYCLE_ERR=$(grep -cE 'SCRIPT ERROR|^ERROR:' "$CYCLE_LOG")
 # `fin_cycle_` UNIQUEMENT. La sonde imprime aussi une mesure de référence
 # `apres_autoloads_avant_tout_cycle`, dont le compte diffère forcément de celui
 # d'après un montage : la compter donnerait deux empreintes distinctes sur un
 # résidu parfaitement stable, donc un ROUGE FABRIQUÉ. Piège vérifié en lisant la
 # sonde avant d'écrire ce filtre, pas après l'avoir vu échouer.
-EMPREINTES=$(grep -oE 'MESURE fin_cycle_[0-9]+ \| objets=[0-9]+ ressources=[0-9]+' "$CYCLE_LOG" \
+# La ligne ENTIÈRE : la sonde publie objets, ressources, noeuds ET orphelins ;
+# n'en comparer que deux jetait deux signaux pour rien.
+EMPREINTES=$(grep -oE 'MESURE fin_cycle_[0-9]+ \|.*$' "$CYCLE_LOG" \
   | sed 's/^MESURE fin_cycle_[0-9]* //' | sort -u)
 CYCLES=$(printf '%s\n' "$EMPREINTES" | grep -c 'objets=')
 NB_MESURES=$(grep -cE 'MESURE fin_cycle_[0-9]+' "$CYCLE_LOG")
 grep -E 'MESURE fin_cycle_' "$CYCLE_LOG" | sed 's/^/    /'
-if [ "$NB_MESURES" -lt 2 ]; then
-  bad "$NB_MESURES mesure(s) de fin de cycle au lieu de 2 — la sonde n'a pas tourné (voir $CYCLE_LOG)"
+if [ $CYCLE_RC -ne 0 ]; then
+  bad "la sonde est sortie en $CYCLE_RC — sa mesure ne peut pas être crue (voir $CYCLE_LOG)"
+elif [ "$MONTAGES" -lt 2 ]; then
+  bad "$MONTAGES montage(s) de WorldV2 au lieu de 2 — la sonde n'a rien monté (voir $CYCLE_LOG)"
+elif [ "$CYCLE_ERR" -gt 0 ]; then
+  bad "$CYCLE_ERR erreur(s) pendant les cycles — la scène s'est montée en échouant (voir $CYCLE_LOG)"
+elif [ "$NB_MESURES" -lt 2 ]; then
+  bad "$NB_MESURES mesure(s) de fin de cycle au lieu de 2 — la sonde n'a pas mesuré (voir $CYCLE_LOG)"
 elif [ "$CYCLES" = "1" ]; then
-  ok "$NB_MESURES cycles, une seule empreinte — résidu STABLE, aucune croissance cumulative"
+  ok "$MONTAGES montages, $NB_MESURES mesures, UNE empreinte — résidu STABLE"
 else
   bad "$CYCLES empreintes différentes sur $NB_MESURES cycles — le résidu CROÎT (voir $CYCLE_LOG)"
 fi

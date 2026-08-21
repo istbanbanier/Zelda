@@ -41,9 +41,19 @@ CAS=(
 # ces cas changeraient de verdict à chaque re-baseline, et un contrôle qui
 # change de verdict tout seul n'en est plus un.
 CONTRAT_FIXE="$FIX/contrat_essai.json"
+#
+# LE TROU QUE CES TROIS DERNIERS CAS FERMENT. La revue contradictoire a muté le
+# code : elle a SUPPRIMÉ la comparaison des deux comptes — le cœur même du mode
+# qui tourne à chaque passe — et les neuf cas sont restés VERTS. Raison : le cas
+# 09 rougissait par sa classe de RID, jamais par ses comptes. On pouvait donc
+# effacer le contrôle sans qu'aucun contrôle ne s'en aperçoive. C'est exactement
+# le « test qui ne peut pas échouer » de PROMPT4_METHOD §2.
 CAS_AGREGAT=(
-  "08_agregat_temoin.log|0|PROJECT_RESOURCE_LEAK_GATE : VERT sur la signature agrégée"
+  "08_agregat_temoin.log|0|PROJECT_RESOURCE_LEAK_GATE : VERT"
   "09_agregat_materiau.log|1|classe de RID appartenant au projet : DummyMaterial"
+  "10_agregat_objets.log|2|objets fuités = 139, contrat = 138"
+  "11_agregat_ressources.log|2|ressources retenues = 75, contrat = 74"
+  "12_agregat_rid_disparu.log|2|classe de RID du contrat ABSENTE de la mesure : DummyShader"
 )
 
 for cas in "${CAS[@]}"; do

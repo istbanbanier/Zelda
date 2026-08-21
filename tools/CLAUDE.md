@@ -17,6 +17,43 @@ tools/validate_fast.sh > log 2>&1; RC=$?    # sans tube
 cmd | tee log; RC=${PIPESTATUS[0]}          # avec tube, si nécessaire
 ```
 
+## Après une recréation de conteneur : `--import` AVANT toute suite
+
+Mesuré le 2026-08-21, et ça a coûté une heure d'enquête sur une fausse piste.
+
+Le conteneur est reparti de `c44f430` puis a été avancé par fast-forward jusqu'à
+`a27e559`. Son `.godot/global_script_class_cache.cfg` avait donc été bâti pour
+l'ANCIEN code, et ignorait toute classe globale née entre les deux — ici
+`StaticResourceCaches`, créée à `139cda5`.
+
+Conséquence, sans `--import` préalable : chaque `_static_init()` qui référence
+cette classe inconnue échoue, et le script APPELANT se résout ensuite en
+`GDScript` nu pour tout le monde. Relevé :
+
+```
+SCRIPT ERROR: Invalid call. Nonexistent function 'seat' in base 'GDScript'.
+```
+
+**253 288 erreurs** sur une suite complète — `seat` (KitPlacement), `model` et
+`resolve` (AssetRegistry), `plaque` et `play_ui` (HudStyle), `paint_world`
+(PainterlyRecipe)… les onze classes qui portent un `_static_init`, et elles
+seules. La suite met 30 min au lieu de 7 et rend des échecs qui ne sont pas des
+défauts du code.
+
+Ce qui rend le piège coûteux, c'est qu'il **ressemble à une régression** : les
+symboles fautifs correspondent exactement au dernier changement committé. La
+corrélation était parfaite, et fausse.
+
+```bash
+godot --headless --path . --import        # D'ABORD, toujours, sur conteneur neuf
+tools/lancer_godot.sh --headless --path . --script tools/godot/test_runner.gd
+```
+
+`validate_fast.sh` importe à son étape 1 : il est immunisé. C'est la commande
+lancée À LA MAIN qui mord — celle-là même que le `CLAUDE.md` racine enseigne.
+`tools/gate_fuite_composition.sh` importe désormais lui aussi, pour la même
+raison : mesurer un état dégradé et le publier serait une fausse preuve.
+
 ## Un script de validation ne retourne JAMAIS 0 sur une étape sautée
 
 `.claude/rules/evidence.md`. Une étape impossible sort en **3 (BLOQUÉ)**, jamais

@@ -18,6 +18,27 @@
 #     modules doivent pouvoir y entrer.
 #   * tout ce qui est neuf : un lieu non encore construit n'a rien à geler.
 #
+# CE QUE CE GEL NE COUVRE PAS, nommé par la revue contradictoire plutôt que
+# découvert plus tard :
+#
+#  1. LES SEUILS. La directive gèle « les seuils et contrôles acquis » ; aucun
+#     fichier de seuil n'est ici. Un seuil peut donc être abaissé sans que le
+#     gel bronche. Le garde-fou qui reste est la revue du diff et la règle
+#     `tools/CLAUDE.md` : ne jamais changer la mesure ET fixer un nouveau seuil
+#     dans la même passe. C'est un garde-fou humain, pas exécutable — dit ici
+#     pour que personne ne croie le contraire.
+#  2. LE KIT PARTAGÉ. `scripts/world_v2/poi/world_v2_place_kit.gd` n'est PAS
+#     gelé, parce que V2.3-B doit pouvoir y ajouter des familles de modules. Or
+#     un lieu gelé s'en sert : modifier le kit change la géométrie de ce lieu
+#     sans qu'un seul sha256 bouge. La contrepartie est que chaque lot rejoue
+#     les captures des lieux existants — c'est là, et seulement là, que cette
+#     dérive se verrait.
+#  3. AJOUTER N'EST PAS TOUCHER. Le périmètre est ÉNUMÉRÉ, jamais globé sur un
+#     répertoire qui va grossir : créer un nouveau lieu ne rougit pas. En
+#     échange, un fichier qui DEVRAIT entrer dans le gel n'y entre pas tout
+#     seul — il faut l'ajouter à `gel_fichiers()`. C'est un choix : un gel qui
+#     empêche de construire serait contourné dès le premier lot.
+#
 # LEVER LE GEL SUR UN FICHIER se fait en régénérant le manifeste
 # (`--ecrire`) ET en justifiant la régression dans `docs/DECISIONS.md`. Le
 # manifeste est committé : le changement se voit en revue. Il n'existe
@@ -28,6 +49,12 @@ cd "$(dirname "$0")/.."
 MANIFESTE="docs/contrats/gel_v2_3_b.sha256"
 
 # --- LE PÉRIMÈTRE GELÉ, énuméré ici et nulle part ailleurs -------------------
+# LES CHEMINS SONT ÉNUMÉRÉS, JAMAIS GLOBÉS SUR UN RÉPERTOIRE QUI VA GROSSIR.
+# Une première version faisait `ls scenes/world_v2/poi/*.tscn`. Conséquence
+# mesurée par la revue contradictoire : créer `WatchtowerRuinPlace.tscn` portait
+# le périmètre à 43 contre 42 au manifeste, donc `[GEL INCOMPLET]`, donc
+# `validate_fast` ROUGE. **Le lot 1 n'aurait pas pu ajouter un seul lieu.**
+# Un gel doit interdire de TOUCHER l'existant, pas d'AJOUTER du neuf.
 gel_fichiers() {
   # V2.2 : terrain, eau, végétation, routes, frontières, lumière, orage, caméras.
   ls scripts/world_v2/*.gd 2>/dev/null
@@ -49,7 +76,16 @@ gel_fichiers() {
            world_v2_place; do
     echo "scripts/world_v2/poi/$f.gd"
   done
-  ls scenes/world_v2/poi/*.tscn scenes/world_v2/landmarks/*.tscn 2>/dev/null
+  for s in AbandonedFarmPlace CampCheckpointPlace ConductiveBasinPlace \
+           EmberRaiderCampPlace RiversideVillagePlace StoneBridgePlace \
+           ThunderstruckTreePlace WaterfallCavePlace; do
+    echo "scenes/world_v2/poi/$s.tscn"
+  done
+  echo scenes/world_v2/landmarks/ResonancePylon.tscn
+  # Le CONTRAT du portail de fuite. La géométrie était protégée, la ligne de
+  # base du portail qui la surveille ne l'était pas — c'était le chemin le plus
+  # court pour rendre vert un dépôt qui fuit. Trouvé par la revue.
+  echo docs/contrats/residu_cache_moteur.json
   # Les cadrages R2B.3 : le plan de prises de vue qui rend les A/B comparables.
   echo evidence/world_v2/v2_3_r2b3/preuves_lead/shots_r2b3.json
 }

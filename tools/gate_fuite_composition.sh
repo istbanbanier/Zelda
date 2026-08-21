@@ -34,6 +34,31 @@ mkdir -p "$SORTIE"
 VIDAGE="$(mktemp "${TMPDIR:-/tmp}/composition_verbose.XXXXXX.log")"
 trap 'rm -f "$VIDAGE"' EXIT
 
+# L'IMPORT D'ABORD, ET CE N'EST PAS UNE PRÉCAUTION DE CONFORT.
+# Mesuré le 2026-08-21 dans un conteneur neuf : lancer la suite SANS `--import`
+# préalable produit des milliers de `SCRIPT ERROR: Invalid call. Nonexistent
+# function 'seat' in base 'GDScript'` — 5 614 sur le seul `test_basin_placement`.
+# Les classes globales (`KitPlacement`, `AssetRegistry`, `HudStyle`…) se
+# résolvent en `GDScript` nu au lieu de leur type, parce que le cache de classes
+# globales n'a pas été régénéré. `validate_fast` importe à son étape 1 et n'a
+# donc jamais ce visage — mais un outil lancé seul, si. Mesurer un état dégradé
+# et le publier comme la composition du dépôt serait une fausse preuve.
+echo "=== import préalable (régénère le cache de classes globales) ==="
+tools/lancer_godot.sh --attente=7200 --headless --path . --import \
+  > "${TMPDIR:-/tmp}/composition_import.log" 2>&1
+RC_IMPORT=$?
+echo "  import : code $RC_IMPORT"
+# IMPRIMER UN CODE N'EST PAS LE TESTER. Si `lancer_godot.sh` sort en 3 (verrou
+# expiré), l'import n'a pas eu lieu, et la suite `--verbose` mesurerait
+# exactement l'état dégradé que le commentaire ci-dessus décrit comme une fausse
+# preuve. `tools/CLAUDE.md` porte déjà la règle : tester le RC après tout
+# `flock`, s'arrêter au premier échec. Trouvé par la revue contradictoire.
+if [ $RC_IMPORT -ne 0 ]; then
+  echo "BLOQUÉ : l'import a échoué (code $RC_IMPORT) — sans lui, la composition" >&2
+  echo "         mesurée serait celle d'un cache de classes périmé." >&2
+  exit 3
+fi
+
 echo "=== suite complète en --verbose (comptez ~20 min) ==="
 DEBUT=$(date +%s)
 tools/lancer_godot.sh --attente=7200 --headless --path . --verbose \

@@ -104,6 +104,30 @@ case $BANDS_RC in
 esac
 
 echo
+echo "=== 4b. Composition du résidu de fin de processus (ISS-059 / ISS-065) ==="
+# LE MODE COMPOSITION VIT ICI, ET NULLE PART AILLEURS EN AUTOMATIQUE.
+# `validate_fast` juge la signature AGRÉGÉE — trois entiers — pour rester dans
+# le tour de boucle. Ce niveau-ci paie le `--verbose` (mesuré : près du triple
+# d'une suite) et énumère classe par classe : c'est le seul chemin qui vérifie
+# l'ATTRIBUTION du résidu au cache du moteur, et le seul qui peut rendre le
+# code 2 de dérive de télémétrie.
+#
+# Sans ce câblage, le code 2 était mort et `ISS-065` décrivait une intention, pas
+# un garde-fou — « un invariant qui ne vit que dans un document se dégrade en
+# silence » (PROMPT4_METHOD §0). Trouvé par la revue contradictoire.
+if tools/gate_fuite_composition.sh --sortie=evidence/gate_fuite; then
+  echo "  [OK]   composition énumérée, portail A vert, télémétrie dans l'enveloppe"
+else
+  RC_COMPO=$?
+  case $RC_COMPO in
+    1) echo "  [ÉCHEC] PROJECT_RESOURCE_LEAK_GATE ROUGE — une ressource du projet survit" ;;
+    2) echo "  [ÉCHEC] ENGINE_SCRIPT_CACHE_TELEMETRY EN DÉRIVE — enveloppe à entériner" ;;
+    3) echo "  [BLOQUÉ] la composition n'a pas pu être mesurée" ;;
+    *) echo "  [ÉCHEC] code retour inattendu $RC_COMPO" ;;
+  esac
+  BLOCKERS="${BLOCKERS:-}composition du résidu (code $RC_COMPO) · "
+fi
+
 echo "=== 4/6/7. Golden path, performance, soak ==="
 echo "  NON EXÉCUTÉS : ces niveaux exigent respectivement la boucle complète"
 echo "  (Gate G), un matériel de référence documenté (§20.1) et un build exporté."
