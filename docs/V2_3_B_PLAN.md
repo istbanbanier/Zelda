@@ -100,6 +100,27 @@ aucun push d'agent, aucun merge commit, le lead cueille par cherry-pick.
 | Voie | Périmètre | Interdits |
 |---|---|---|
 | **A — implantation** | positions issues du layout seul, sondes de terrain, routes/gués/eau/caméras/navigation, fondations et collisions | aucun travail artistique sur les assets gelés |
+
+**Précision que la revue contradictoire a rendue nécessaire.** Le périmètre de
+la voie A — terrain, hydrologie, caméras, marqueurs — est *intégralement gelé*
+(`docs/contrats/gel_v2_3_b.sha256`). Ce n'est pas une contradiction : la voie A
+**lit** ces bâtisseurs pour savoir où poser un lieu, elle ne les **modifie**
+jamais. Si un site du layout s'avère impossible — fondation sous l'eau, collider
+en travers d'un gué — la réponse n'est pas de retoucher le terrain gelé : c'est
+une régression précise et reproductible à porter au propriétaire, comme la
+directive §4 l'exige.
+
+Corollaire opérationnel : le gel n'interdit pas d'**ajouter**. Créer
+`WatchtowerRuinPlace.tscn` et son script ne rougit pas — le périmètre gelé est
+énuméré, pas globé sur des répertoires qui vont grossir. Vérifié.
+
+Deuxième corollaire, à connaître avant de s'en étonner : chaque lot qui ajoute
+des scripts et des scènes **déplace la signature du résidu de fin de processus**
+(chaque `.tscn` chargée épingle ses `GDScript`). `validate_fast` le signalera en
+`ENGINE_SCRIPT_CACHE_TELEMETRY : DÉRIVE`, code 2, **bloquant**. C'est attendu et
+ce n'est pas une fuite : entériner la nouvelle enveloppe avec
+`tools/gate_fuite_composition.sh --entériner` en fin de lot, et justifier dans
+`docs/DECISIONS.md`.
 | **B — scènes et assets** | construction des six lieux, réemploi des kits CC0 attribués, Blender si nécessaire, identité propre à chacun | aucun assemblage final composé uniquement de primitives génériques |
 | **C — contrats et preuves** | tests rouges d'abord, budgets, provenance et licences, contrôles négatifs, plans de captures, détection de répétition | ne construit aucun lieu |
 
