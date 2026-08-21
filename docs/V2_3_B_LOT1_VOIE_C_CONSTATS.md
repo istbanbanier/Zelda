@@ -113,6 +113,33 @@ sinon le verdict est jeté.
 `S(d)` n'a pas encore de valeur : il se calcule à la capture. **Aucune valeur
 n'est annoncée ici, et aucune ne doit l'être avant que la chaîne ait tourné.**
 
+## 4bis. `gate_select.sh` ne reliera PAS ce filet aux nouveaux lieux
+
+Mesuré en lisant `tools/gate_select.sh` : un `.gd` modifié sélectionne les
+tests qui mentionnent son **stem de fichier** ou son `class_name`. Mon filet
+mentionne `WorldV2PlacesBuilder`, `WorldV2Layout`, `WorldV2Heightmap`,
+`DiscoveryLog`, `PointOfInterest`, `RewardAnchor` et les quatre classes
+d'interactable — donc il est bien sélectionné quand on touche le bâtisseur ou
+le layout.
+
+Il ne mentionne **aucun** des six scripts de lieu à venir, pour une raison
+mécanique : les voies A et B n'ont pas encore choisi leurs noms. Conséquence
+concrète : *éditer `watchtower_ruin_place.gd` ne rejouera pas ce filet dans la
+boucle rapide.* Ce n'est pas un défaut de `gate_select`, c'est sa limite
+assumée — « une régression hors du diff lui est invisible par construction »
+(`tests/CLAUDE.md`).
+
+Deux remèdes, au choix du lead :
+
+1. ajouter les six `class_name` en commentaire dans l'en-tête du filet une
+   fois les lieux livrés (une ligne, et la sélection les relie) ;
+2. ou simplement lancer `--filter=lot1_defauts` explicitement, ce que fait
+   déjà la procédure du §6.
+
+Le second suffit tant que la procédure est suivie ; le premier la rend
+inoubliable. Dit ici pour que personne ne croie la boucle rapide plus large
+qu'elle n'est.
+
 ## 5. Ce qui reste `NON VÉRIFIÉ`, et pourquoi
 
 | élément | état | raison |
