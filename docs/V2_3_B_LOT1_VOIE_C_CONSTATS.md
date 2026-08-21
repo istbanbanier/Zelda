@@ -61,6 +61,40 @@ soit c'est un résidu que le gel a figé par inadvertance. Dans les deux cas, la
 règle `.claude/rules/assets.md` — « tout asset entre au manifeste AVANT le
 build » — n'est pas tenue sur ce fichier.
 
+## 3bis. Un critère à moi était FAUX, mesuré avant livraison
+
+La première version du contrôle D5 cherchait les deux coordonnées du site
+n'importe où dans le fichier du lieu. Rejouée sur les **neuf lieux acceptés**,
+elle en accusait **trois** — `camp` (45, 65), `stone_bridge` (-10, 22),
+`ember_raider_camps` (96, 120). Des entiers ronds trop banals pour qu'une
+double présence signifie quoi que ce soit.
+
+Corrigée : on cherche la FORME du défaut — `Vector3(x, *, z)`, une affectation
+`position.x =`, ou l'origine d'un `Transform3D` de scène. Nouvelle mesure :
+**0 faux positif sur 9**, scripts et scènes confondus, et les quatre formes du
+défaut sont vues.
+
+Journal :
+`evidence/world_v2/v2_3_b/lot1/controles/D5_calibration_faux_positifs_20260821.md`.
+
+Ce paragraphe est ici plutôt que caché parce que c'est le mode de panne que ce
+lot doit apprendre à voir : le critère avait l'air raisonnable, il ne l'était
+pas, et seule la mesure sur un corpus dont on connaît la réponse l'a montré.
+
+## 3ter. Le détecteur D3 sait rougir sur des images
+
+Contrôle négatif de bout en bout sur silhouettes synthétiques : six sujets
+« acceptés » de formes franchement différentes calibrent le seuil, un sujet
+« du lot » est la **copie pixel pour pixel** d'un accepté.
+
+Résultat : la copie est signalée aux trois distances (`IoU = 1,0000`,
+`dprofil = 0,0000`) contre des seuils calibrés de 0,718 / 0,690 / 0,682 ; le
+témoin dégénéré est signalé aux trois distances ; le verdict final est `BLOQUÉ`
+parce que quatre sujets du lot n'ont pas de silhouette — le comportement voulu.
+
+Journal et détail :
+`evidence/world_v2/v2_3_b/lot1/controles/README.md`.
+
 ## 4. Le seuil de répétition : la règle, avant les nombres
 
 Écrite dans `docs/V2_3_B_LOT1_CONTROLES.md` §3.4 et committée le 2026-08-21,
