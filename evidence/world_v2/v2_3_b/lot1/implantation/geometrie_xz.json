@@ -1,0 +1,737 @@
+{
+  "source": "tools/mesure_implantation_lot1.py",
+  "portee": "géométrie XZ seule — hauteurs, pentes, eau et végétation exigent le moteur",
+  "seuils": {
+    "RIVER_BED_HALF_W": 3.0,
+    "RIVER_BANK_W": 6.5,
+    "TRIB_BED_HALF_W": 1.8,
+    "TRIB_BANK_W": 4.5,
+    "LAKE_SHORE_W": 10.0,
+    "FORD_INFLUENCE_M": 24.0,
+    "ROUTE_CLEAR_M": 1.2,
+    "SITE_XZ_TOLERANCE_M": 0.5,
+    "CLEAR_SIGHT_FRACTION": 0.6,
+    "EYE_HEIGHT": 2.4
+  },
+  "bandes_creusees_interdites_m": {
+    "cours_principal": 9.5,
+    "affluent": 6.3,
+    "lac": 16.0
+  },
+  "sujets": {
+    "valley.poi.watchtower_ruin.01": {
+      "v2_site": [
+        -160.0,
+        26.0,
+        40.0
+      ],
+      "routes": {
+        "main_path": {
+          "distance_m": 177.1,
+          "segment": 2
+        },
+        "river_route": {
+          "distance_m": 66.48,
+          "segment": 7
+        },
+        "heights_route": {
+          "distance_m": 206.52,
+          "segment": 0
+        },
+        "ruins_route": {
+          "distance_m": 158.49,
+          "segment": 1
+        }
+      },
+      "route_la_plus_proche": [
+        "river_route",
+        66.48
+      ],
+      "marge_route_m": 65.28,
+      "gues": {
+        "ford.east": 257.12,
+        "ford.central": 158.49,
+        "ford.west": 66.48
+      },
+      "gue_le_plus_proche": [
+        "ford.west",
+        66.48
+      ],
+      "sous_influence_de_gue": false,
+      "cours_principal": {
+        "distance_m": 143.19,
+        "segment": 11,
+        "bande_interdite_m": 9.5,
+        "marge_m": 133.69
+      },
+      "affluent": {
+        "distance_m": 30.59,
+        "segment": 0,
+        "bande_interdite_m": 6.3,
+        "marge_m": 24.29
+      },
+      "lac": {
+        "distance_au_centre_m": 231.14,
+        "bande_interdite_m": 16.0,
+        "marge_m": 215.14
+      },
+      "cameras": {
+        "cam01_spawn_vista": {
+          "distance_camera_m": 196.76,
+          "distance_segment_vise_m": 160.55,
+          "fin_segment_xz": [
+            0.3,
+            -64.6
+          ]
+        },
+        "cam02_camp_pylone": {
+          "distance_camera_m": 199.28,
+          "distance_segment_vise_m": 199.28,
+          "fin_segment_xz": [
+            83.4,
+            15.4
+          ]
+        },
+        "cam03_pylone_marche": {
+          "distance_camera_m": 277.31,
+          "distance_segment_vise_m": 248.99,
+          "fin_segment_xz": [
+            44.8,
+            -101.6
+          ]
+        },
+        "cam04_falaise_cuvette": {
+          "distance_camera_m": 48.37,
+          "distance_segment_vise_m": 48.37,
+          "fin_segment_xz": [
+            -41.2,
+            80.8
+          ]
+        },
+        "cam05_belvedere_crete": {
+          "distance_camera_m": 326.3,
+          "distance_segment_vise_m": 241.34,
+          "fin_segment_xz": [
+            66.4,
+            123.6
+          ]
+        },
+        "cam06_plateau_vallee": {
+          "distance_camera_m": 262.42,
+          "distance_segment_vise_m": 175.13,
+          "fin_segment_xz": [
+            0.0,
+            -31.2
+          ]
+        }
+      },
+      "voisin_le_plus_proche": [
+        "valley.poi.turquoise_spring.01",
+        24.0
+      ],
+      "lieu_bati_le_plus_proche": [
+        "valley.poi.waterfall_cave.01",
+        60.46
+      ],
+      "camera_la_plus_proche_en_visee": [
+        "cam04_falaise_cuvette",
+        48.37
+      ]
+    },
+    "valley.poi.overlook_summit.01": {
+      "v2_site": [
+        168.0,
+        22.0,
+        52.0
+      ],
+      "routes": {
+        "main_path": {
+          "distance_m": 80.45,
+          "segment": 7
+        },
+        "river_route": {
+          "distance_m": 185.83,
+          "segment": 3
+        },
+        "heights_route": {
+          "distance_m": 0.0,
+          "segment": 4
+        },
+        "ruins_route": {
+          "distance_m": 123.69,
+          "segment": 0
+        }
+      },
+      "route_la_plus_proche": [
+        "heights_route",
+        0.0
+      ],
+      "marge_route_m": -1.2,
+      "gues": {
+        "ford.east": 80.5,
+        "ford.central": 176.59,
+        "ford.west": 265.7
+      },
+      "gue_le_plus_proche": [
+        "ford.east",
+        80.5
+      ],
+      "sous_influence_de_gue": false,
+      "cours_principal": {
+        "distance_m": 32.06,
+        "segment": 0,
+        "bande_interdite_m": 9.5,
+        "marge_m": 22.56
+      },
+      "affluent": {
+        "distance_m": 196.98,
+        "segment": 4,
+        "bande_interdite_m": 6.3,
+        "marge_m": 190.68
+      },
+      "lac": {
+        "distance_au_centre_m": 265.24,
+        "bande_interdite_m": 16.0,
+        "marge_m": 249.24
+      },
+      "cameras": {
+        "cam01_spawn_vista": {
+          "distance_camera_m": 195.54,
+          "distance_segment_vise_m": 167.42,
+          "fin_segment_xz": [
+            0.3,
+            -64.6
+          ]
+        },
+        "cam02_camp_pylone": {
+          "distance_camera_m": 134.16,
+          "distance_segment_vise_m": 92.18,
+          "fin_segment_xz": [
+            83.4,
+            15.4
+          ]
+        },
+        "cam03_pylone_marche": {
+          "distance_camera_m": 86.56,
+          "distance_segment_vise_m": 86.56,
+          "fin_segment_xz": [
+            44.8,
+            -101.6
+          ]
+        },
+        "cam04_falaise_cuvette": {
+          "distance_camera_m": 286.25,
+          "distance_segment_vise_m": 211.17,
+          "fin_segment_xz": [
+            -41.2,
+            80.8
+          ]
+        },
+        "cam05_belvedere_crete": {
+          "distance_camera_m": 2.83,
+          "distance_segment_vise_m": 2.83,
+          "fin_segment_xz": [
+            66.4,
+            123.6
+          ]
+        },
+        "cam06_plateau_vallee": {
+          "distance_camera_m": 276.81,
+          "distance_segment_vise_m": 187.47,
+          "fin_segment_xz": [
+            0.0,
+            -31.2
+          ]
+        }
+      },
+      "voisin_le_plus_proche": [
+        "valley.poi.veil_falls.01",
+        42.52
+      ],
+      "lieu_bati_le_plus_proche": [
+        "anchor.pylon",
+        93.48
+      ],
+      "camera_la_plus_proche_en_visee": [
+        "cam05_belvedere_crete",
+        2.83
+      ]
+    },
+    "valley.poi.turquoise_spring.01": {
+      "v2_site": [
+        -136.0,
+        12.0,
+        40.0
+      ],
+      "routes": {
+        "main_path": {
+          "distance_m": 155.63,
+          "segment": 2
+        },
+        "river_route": {
+          "distance_m": 43.86,
+          "segment": 7
+        },
+        "heights_route": {
+          "distance_m": 182.72,
+          "segment": 0
+        },
+        "ruins_route": {
+          "distance_m": 134.94,
+          "segment": 1
+        }
+      },
+      "route_la_plus_proche": [
+        "river_route",
+        43.86
+      ],
+      "marge_route_m": 42.66,
+      "gues": {
+        "ford.east": 233.24,
+        "ford.central": 134.94,
+        "ford.west": 43.86
+      },
+      "gue_le_plus_proche": [
+        "ford.west",
+        43.86
+      ],
+      "sous_influence_de_gue": false,
+      "cours_principal": {
+        "distance_m": 120.64,
+        "segment": 11,
+        "bande_interdite_m": 9.5,
+        "marge_m": 111.14
+      },
+      "affluent": {
+        "distance_m": 8.49,
+        "segment": 0,
+        "bande_interdite_m": 6.3,
+        "marge_m": 2.19
+      },
+      "lac": {
+        "distance_au_centre_m": 216.89,
+        "bande_interdite_m": 16.0,
+        "marge_m": 200.89
+      },
+      "cameras": {
+        "cam01_spawn_vista": {
+          "distance_camera_m": 177.69,
+          "distance_segment_vise_m": 136.55,
+          "fin_segment_xz": [
+            0.3,
+            -64.6
+          ]
+        },
+        "cam02_camp_pylone": {
+          "distance_camera_m": 175.73,
+          "distance_segment_vise_m": 175.73,
+          "fin_segment_xz": [
+            83.4,
+            15.4
+          ]
+        },
+        "cam03_pylone_marche": {
+          "distance_camera_m": 253.81,
+          "distance_segment_vise_m": 229.64,
+          "fin_segment_xz": [
+            44.8,
+            -101.6
+          ]
+        },
+        "cam04_falaise_cuvette": {
+          "distance_camera_m": 30.0,
+          "distance_segment_vise_m": 30.0,
+          "fin_segment_xz": [
+            -41.2,
+            80.8
+          ]
+        },
+        "cam05_belvedere_crete": {
+          "distance_camera_m": 302.32,
+          "distance_segment_vise_m": 218.99,
+          "fin_segment_xz": [
+            66.4,
+            123.6
+          ]
+        },
+        "cam06_plateau_vallee": {
+          "distance_camera_m": 248.52,
+          "distance_segment_vise_m": 153.51,
+          "fin_segment_xz": [
+            0.0,
+            -31.2
+          ]
+        }
+      },
+      "voisin_le_plus_proche": [
+        "valley.poi.watchtower_ruin.01",
+        24.0
+      ],
+      "lieu_bati_le_plus_proche": [
+        "valley.poi.riverside_village.01",
+        41.23
+      ],
+      "camera_la_plus_proche_en_visee": [
+        "cam04_falaise_cuvette",
+        30.0
+      ]
+    },
+    "valley.poi.forest_shrine.01": {
+      "v2_site": [
+        86.0,
+        7.0,
+        74.0
+      ],
+      "routes": {
+        "main_path": {
+          "distance_m": 35.36,
+          "segment": 5
+        },
+        "river_route": {
+          "distance_m": 112.73,
+          "segment": 3
+        },
+        "heights_route": {
+          "distance_m": 7.28,
+          "segment": 1
+        },
+        "ruins_route": {
+          "distance_m": 41.98,
+          "segment": 0
+        }
+      },
+      "route_la_plus_proche": [
+        "heights_route",
+        7.28
+      ],
+      "marge_route_m": 6.08,
+      "gues": {
+        "ford.east": 58.86,
+        "ford.central": 109.29,
+        "ford.west": 189.28
+      },
+      "gue_le_plus_proche": [
+        "ford.east",
+        58.86
+      ],
+      "sous_influence_de_gue": false,
+      "cours_principal": {
+        "distance_m": 55.56,
+        "segment": 4,
+        "bande_interdite_m": 9.5,
+        "marge_m": 46.06
+      },
+      "affluent": {
+        "distance_m": 128.28,
+        "segment": 4,
+        "bande_interdite_m": 6.3,
+        "marge_m": 121.98
+      },
+      "lac": {
+        "distance_au_centre_m": 236.64,
+        "bande_interdite_m": 16.0,
+        "marge_m": 220.64
+      },
+      "cameras": {
+        "cam01_spawn_vista": {
+          "distance_camera_m": 116.46,
+          "distance_segment_vise_m": 85.37,
+          "fin_segment_xz": [
+            0.3,
+            -64.6
+          ]
+        },
+        "cam02_camp_pylone": {
+          "distance_camera_m": 50.04,
+          "distance_segment_vise_m": 38.15,
+          "fin_segment_xz": [
+            83.4,
+            15.4
+          ]
+        },
+        "cam03_pylone_marche": {
+          "distance_camera_m": 91.76,
+          "distance_segment_vise_m": 91.76,
+          "fin_segment_xz": [
+            44.8,
+            -101.6
+          ]
+        },
+        "cam04_falaise_cuvette": {
+          "distance_camera_m": 204.24,
+          "distance_segment_vise_m": 127.38,
+          "fin_segment_xz": [
+            -41.2,
+            80.8
+          ]
+        },
+        "cam05_belvedere_crete": {
+          "distance_camera_m": 82.46,
+          "distance_segment_vise_m": 29.43,
+          "fin_segment_xz": [
+            66.4,
+            123.6
+          ]
+        },
+        "cam06_plateau_vallee": {
+          "distance_camera_m": 256.83,
+          "distance_segment_vise_m": 135.88,
+          "fin_segment_xz": [
+            0.0,
+            -31.2
+          ]
+        }
+      },
+      "voisin_le_plus_proche": [
+        "valley.poi.logging_hamlet.01",
+        38.83
+      ],
+      "lieu_bati_le_plus_proche": [
+        "checkpoint.camp",
+        41.98
+      ],
+      "camera_la_plus_proche_en_visee": [
+        "cam05_belvedere_crete",
+        29.43
+      ]
+    },
+    "valley.poi.barrow_cemetery.01": {
+      "v2_site": [
+        56.0,
+        4.0,
+        -64.0
+      ],
+      "routes": {
+        "main_path": {
+          "distance_m": 38.18,
+          "segment": 11
+        },
+        "river_route": {
+          "distance_m": 68.59,
+          "segment": 13
+        },
+        "heights_route": {
+          "distance_m": 45.23,
+          "segment": 11
+        },
+        "ruins_route": {
+          "distance_m": 44.94,
+          "segment": 3
+        }
+      },
+      "route_la_plus_proche": [
+        "main_path",
+        38.18
+      ],
+      "marge_route_m": 36.98,
+      "gues": {
+        "ford.east": 89.44,
+        "ford.central": 96.83,
+        "ford.west": 174.64
+      },
+      "gue_le_plus_proche": [
+        "ford.east",
+        89.44
+      ],
+      "sous_influence_de_gue": false,
+      "cours_principal": {
+        "distance_m": 72.8,
+        "segment": 7,
+        "bande_interdite_m": 9.5,
+        "marge_m": 63.3
+      },
+      "affluent": {
+        "distance_m": 107.63,
+        "segment": 4,
+        "bande_interdite_m": 6.3,
+        "marge_m": 101.33
+      },
+      "lac": {
+        "distance_au_centre_m": 104.0,
+        "bande_interdite_m": 16.0,
+        "marge_m": 88.0
+      },
+      "cameras": {
+        "cam01_spawn_vista": {
+          "distance_camera_m": 224.3,
+          "distance_segment_vise_m": 55.68,
+          "fin_segment_xz": [
+            0.3,
+            -64.6
+          ]
+        },
+        "cam02_camp_pylone": {
+          "distance_camera_m": 141.42,
+          "distance_segment_vise_m": 83.99,
+          "fin_segment_xz": [
+            83.4,
+            15.4
+          ]
+        },
+        "cam03_pylone_marche": {
+          "distance_camera_m": 75.07,
+          "distance_segment_vise_m": 14.0,
+          "fin_segment_xz": [
+            44.8,
+            -101.6
+          ]
+        },
+        "cam04_falaise_cuvette": {
+          "distance_camera_m": 216.01,
+          "distance_segment_vise_m": 174.4,
+          "fin_segment_xz": [
+            -41.2,
+            80.8
+          ]
+        },
+        "cam05_belvedere_crete": {
+          "distance_camera_m": 161.32,
+          "distance_segment_vise_m": 159.73,
+          "fin_segment_xz": [
+            66.4,
+            123.6
+          ]
+        },
+        "cam06_plateau_vallee": {
+          "distance_camera_m": 118.12,
+          "distance_segment_vise_m": 56.0,
+          "fin_segment_xz": [
+            0.0,
+            -31.2
+          ]
+        }
+      },
+      "voisin_le_plus_proche": [
+        "valley.poi.wind_gorge.01",
+        46.65
+      ],
+      "lieu_bati_le_plus_proche": [
+        "anchor.pylon",
+        70.72
+      ],
+      "camera_la_plus_proche_en_visee": [
+        "cam03_pylone_marche",
+        14.0
+      ]
+    },
+    "valley.poi.flower_field.01": {
+      "v2_site": [
+        -56.0,
+        5.0,
+        124.0
+      ],
+      "routes": {
+        "main_path": {
+          "distance_m": 50.16,
+          "segment": 1
+        },
+        "river_route": {
+          "distance_m": 35.9,
+          "segment": 1
+        },
+        "heights_route": {
+          "distance_m": 116.97,
+          "segment": 0
+        },
+        "ruins_route": {
+          "distance_m": 116.41,
+          "segment": 0
+        }
+      },
+      "route_la_plus_proche": [
+        "river_route",
+        35.9
+      ],
+      "marge_route_m": 34.7,
+      "gues": {
+        "ford.east": 186.46,
+        "ford.central": 123.48,
+        "ford.west": 109.56
+      },
+      "gue_le_plus_proche": [
+        "ford.west",
+        109.56
+      ],
+      "sous_influence_de_gue": false,
+      "cours_principal": {
+        "distance_m": 123.13,
+        "segment": 10,
+        "bande_interdite_m": 9.5,
+        "marge_m": 113.63
+      },
+      "affluent": {
+        "distance_m": 105.47,
+        "segment": 3,
+        "bande_interdite_m": 6.3,
+        "marge_m": 99.17
+      },
+      "lac": {
+        "distance_au_centre_m": 267.16,
+        "bande_interdite_m": 16.0,
+        "marge_m": 251.16
+      },
+      "cameras": {
+        "cam01_spawn_vista": {
+          "distance_camera_m": 63.96,
+          "distance_segment_vise_m": 56.74,
+          "fin_segment_xz": [
+            0.3,
+            -64.6
+          ]
+        },
+        "cam02_camp_pylone": {
+          "distance_camera_m": 103.77,
+          "distance_segment_vise_m": 103.77,
+          "fin_segment_xz": [
+            83.4,
+            15.4
+          ]
+        },
+        "cam03_pylone_marche": {
+          "distance_camera_m": 217.41,
+          "distance_segment_vise_m": 217.41,
+          "fin_segment_xz": [
+            44.8,
+            -101.6
+          ]
+        },
+        "cam04_falaise_cuvette": {
+          "distance_camera_m": 86.28,
+          "distance_segment_vise_m": 45.36,
+          "fin_segment_xz": [
+            -41.2,
+            80.8
+          ]
+        },
+        "cam05_belvedere_crete": {
+          "distance_camera_m": 232.77,
+          "distance_segment_vise_m": 122.4,
+          "fin_segment_xz": [
+            66.4,
+            123.6
+          ]
+        },
+        "cam06_plateau_vallee": {
+          "distance_camera_m": 297.32,
+          "distance_segment_vise_m": 164.99,
+          "fin_segment_xz": [
+            0.0,
+            -31.2
+          ]
+        }
+      },
+      "voisin_le_plus_proche": [
+        "valley.poi.abandoned_farm.01",
+        32.25
+      ],
+      "lieu_bati_le_plus_proche": [
+        "valley.poi.abandoned_farm.01",
+        32.25
+      ],
+      "camera_la_plus_proche_en_visee": [
+        "cam04_falaise_cuvette",
+        45.36
+      ]
+    }
+  }
+}

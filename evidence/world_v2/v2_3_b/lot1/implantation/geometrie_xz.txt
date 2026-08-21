@@ -1,0 +1,37 @@
+=== IMPLANTATION LOT 1 — GÉOMÉTRIE XZ (hors moteur) ===
+bandes creusées interdites : cours 9.5 m · affluent 6.3 m · lac 16.0 m
+seuil de route pour un LIEU : 1.2 m (test_world_v2_places_contract.gd)
+visée libre exigée : 60 % du trajet caméra → cible
+
+sujet                                route (laquelle)            gué    cours    affl.    lac-c caméra la + proche     d.visée
+watchtower_ruin                       66.5 river_route          66.5    143.2     30.6    231.1 cam04_falaise_cuvette     48.4
+overlook_summit                        0.0 heights_route        80.5     32.1    197.0    265.2 cam05_belvedere_crete      2.8
+turquoise_spring                      43.9 river_route          43.9    120.6      8.5    216.9 cam04_falaise_cuvette     30.0
+forest_shrine                          7.3 heights_route        58.9     55.6    128.3    236.6 cam05_belvedere_crete     29.4
+barrow_cemetery                       38.2 main_path            89.4     72.8    107.6    104.0 cam03_pylone_marche       14.0
+flower_field                          35.9 river_route         109.6    123.1    105.5    267.2 cam04_falaise_cuvette     45.4
+
+--- marges (positif = dégagé) ---
+  watchtower_ruin                    route  +65.28  cours  +133.69  affluent   +24.29  lac  +215.14
+  overlook_summit                    route   -1.20  cours   +22.56  affluent  +190.68  lac  +249.24
+  turquoise_spring                   route  +42.66  cours  +111.14  affluent    +2.19  lac  +200.89
+  forest_shrine                      route   +6.08  cours   +46.06  affluent  +121.98  lac  +220.64
+  barrow_cemetery                    route  +36.98  cours   +63.30  affluent  +101.33  lac   +88.00
+  flower_field                       route  +34.70  cours  +113.63  affluent   +99.17  lac  +251.16
+
+--- distance de CHAQUE site à CHAQUE segment de visée gelé (m) ---
+sujet                cam01_spawn_vi cam02_camp_pyl cam03_pylone_m cam04_falaise_ cam05_belveder cam06_plateau_
+watchtower_ruin               160.6          199.3          249.0           48.4          241.3          175.1
+overlook_summit               167.4           92.2           86.6          211.2            2.8          187.5
+turquoise_spring              136.6          175.7          229.6           30.0          219.0          153.5
+forest_shrine                  85.4           38.1           91.8          127.4           29.4          135.9
+barrow_cemetery                55.7           84.0           14.0          174.4          159.7           56.0
+flower_field                   56.7          103.8          217.4           45.4          122.4          165.0
+
+--- voisinage : entité du layout la plus proche (hors le sujet lui-même) ---
+  watchtower_ruin      layout valley.poi.turquoise_spring.01        24.0 m   |  lieu bâti valley.poi.waterfall_cave.01          60.5 m
+  overlook_summit      layout valley.poi.veil_falls.01              42.5 m   |  lieu bâti anchor.pylon                          93.5 m
+  turquoise_spring     layout valley.poi.watchtower_ruin.01         24.0 m   |  lieu bâti valley.poi.riverside_village.01       41.2 m
+  forest_shrine        layout valley.poi.logging_hamlet.01          38.8 m   |  lieu bâti checkpoint.camp                       42.0 m
+  barrow_cemetery      layout valley.poi.wind_gorge.01              46.6 m   |  lieu bâti anchor.pylon                          70.7 m
+  flower_field         layout valley.poi.abandoned_farm.01          32.2 m   |  lieu bâti valley.poi.abandoned_farm.01          32.2 m
