@@ -240,9 +240,10 @@ func test_d1_aucun_lieu_ne_lit_comme_un_assemblage_de_primitives() -> void:
 					+ "> %.1f %% (%d/%d triangles) — un empilement de blocs")
 					% [id, pct_hexa, HEXA_PLAFOND_PCT, tris_hexa, tris_runtime])
 		# D1a — la part d'aire portée par du runtime. Les `MultiMeshInstance3D`
-		# sont HORS PÉRIMÈTRE, et c'est dit plutôt que tu : un semis instancié
-		# pose une question de densité (D7), pas d'assemblage de primitives, et
-		# sa géométrie source reste jugée par D1b comme n'importe quelle autre.
+		# sont HORS PÉRIMÈTRE, et l'exemption est ÉCRITE plutôt que tacite : un
+		# semis instancié pose une question de densité (D7), pas d'assemblage de
+		# primitives, et sa géométrie source reste jugée par D1b comme
+		# n'importe quelle autre.
 		if aire_totale <= 0.0:
 			faults.append("D1 %s : aucune aire de maillage — lieu vide ?" % id)
 			continue
