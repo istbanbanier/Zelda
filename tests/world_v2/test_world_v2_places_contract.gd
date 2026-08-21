@@ -11,6 +11,14 @@
 ## Ce que ce filet attrape (directive §6) : POI resté marqueur · scène non
 ## autonome · ID inconnu ou dupliqué · placement divergent du layout ·
 ## bâti flottant ou enterré · collision sur une route · acteur prématuré.
+##
+## V2.3-B lot 1 (2026-08-21) : le même filet couvre désormais SIX sujets de
+## plus (`LOT1_PLACES`). Les assertions partagées s'appliquent à l'union des
+## deux lots — un lot qui n'y entrerait pas pourrait rester marqueur sans
+## qu'un seul test rougisse. S'y ajoute
+## `test_le_lot_1_ne_gene_ni_l_eau_ni_les_fenetres`, qui couvre trois écarts
+## qu'aucun autre filet n'attrape : chemin de scène mort, collider dans une
+## bande creusée d'eau, et fenêtre gelée bouchée AVEC le nom du coupable.
 extends GateTestCase
 
 const WORLD_V2_SCENE: String = "res://scenes/world_v2/WorldV2.tscn"
@@ -83,7 +91,7 @@ func test_le_lot_pilote_est_fait_de_lieux_reels() -> void:
 	await _mount()
 	var faults: Array[String] = []
 
-	# Le registre ne connaît que des IDs légitimes, et couvre le lot pilote.
+	# Le registre ne connaît que des IDs légitimes, et couvre les deux lots.
 	var layout: Dictionary = WorldV2Layout.load_layout()
 	var known: Dictionary = {}
 	for poi: Dictionary in layout.get("pois", []) as Array:
