@@ -73,3 +73,45 @@ Portée : les 3 lieux du SAUVETAGE d'abord (les plus risqués), puis les 6 scèn
 fondations sur le vrai terrain, filets D1–D8. Tout cela exige le moteur —
 passe 2, après le commit de clôture. Les trois lieux sauvés restent marqués
 NON TESTÉS jusqu'à là.
+
+## Inspection du lead — passe 2 (SOUS MOTEUR, 2026-08-23)
+
+La passe 1 s'arrêtait à « tout cela exige le moteur ». Fait. Chronologie
+réelle, avec les verdicts au moment où ils sont tombés :
+
+1. **Filet lot1_defauts, premier passage sur les lieux réels** : 5 échecs —
+   D1 (plafond non calibré), D2 ×2, D3 (verdict image absent), D4 ×2, D7 ×3.
+2. **Trois pièges d'instrument mesurés et corrigés** (test + sonde, commit
+   `426d1ff`) : `surface_get_primitive_type` n'existe que sur `ArrayMesh` ;
+   `get_meta(nom, null)` déclenche quand même l'erreur d'absence ; l'AABB
+   d'un MultiMesh sous renderer factice est TOUJOURS (0,0,0) — emprise
+   recalculée côté CPU. Une calibration D1a exécutée avec la sonde boguée
+   avait rendu 20,63 % : chiffre REJETÉ, jamais inscrit.
+3. **Calibration D1a saine** : RC=0, zéro SCRIPT ERROR, maximum 20,37 %
+   (ember_raider_camps) sur les 9 lieux acceptés → plafond 20,4 inscrit
+   avec journal daté (`controles/calibration_d1a_2026-08-23.log`).
+4. **Défauts réels des lieux corrigés** (commit `4a67589`) :
+   - D2 : les pièces portées des extrémités déclarent leur assise (guet :
+     plaques couchées + roc d'angle ; source : dalles du déversoir) ;
+   - D4 : le filet ramassait les sphères de DÉCOUVERTE (`PointOfInterest`,
+     un Area3D) — 75 faux empiétements au sanctuaire, un faux « dans le
+     lit » à la source. Aligné sur le filet de référence : formes portées
+     par un `StaticBody3D` seulement. Amendement daté au contrat §D4 ;
+   - D7 : les trois micro-POI portent chacun EXACTEMENT 12 pièces de
+     composition ; c'est la machinerie de récompense (3 nœuds/arme,
+     2/ingrédient, structure de `_grant()`) qui débordait. Amendement §2
+     daté : le sous-arbre d'un `RewardAnchor` ne compte pas. Le plafond 12
+     ne bouge pas ; la nappe de la source RESTE comptée (anti-empilement)
+     et la source a cédé son `Plant_7` — le budget a mordu une vraie pièce ;
+   - D1 : l'exemption d'aire revendiquée en prose (tertres du cimetière,
+     nappe de la source) n'était câblée nulle part — 55,7 % au cimetière.
+     Titre vérifié dans le code avant la pose des métas (chaque sommet de
+     tertre appelle `ground_local_y`).
+5. **Filet rejoué : 10/11 verts.** Seul D3 (étage image) reste, par
+   construction : ses captures n'existaient pas encore.
+6. **Incident de discipline, avoué** : la première campagne de silhouettes
+   a été lancée puis une ligne d'ASSET_MANIFEST ajoutée PENDANT les prises —
+   manifestes `repo_dirty=true`. Captures supprimées, ligne commitée
+   (`bc55474`), campagne relancée d'un arbre propre.
+7. **Dette voie C soldée** : `SM_WaterfallCave_r2a358.glb` (grotte promue,
+   gelée) a désormais sa ligne de manifeste — mesures par `gltf_inspect.py`.

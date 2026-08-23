@@ -1,0 +1,34 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "clip_below": null,
+  "commit": "bc55474662ee92849ecf164c705dd4dc22196d5d",
+  "emprise_m": [
+    22.6126327514648,
+    11.7431755065918,
+    22.6126384735107
+  ],
+  "engine": "4.7.1-stable (custom_build)",
+  "mode": "lieu dans le monde monté",
+  "place_id": "valley.poi.waterfall_cave.01",
+  "projection": "orthogonale",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "size": "900x1200",
+  "sujet": "waterfall_cave",
+  "vues": [
+    {
+      "angle_deg": 0.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_b/lot1/silhouettes/silhouette_waterfall_cave_000.png",
+      "sujet_pct": 11.8333333333333
+    },
+    {
+      "angle_deg": 90.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_b/lot1/silhouettes/silhouette_waterfall_cave_090.png",
+      "sujet_pct": 12.1422222222222
+    }
+  ]
+}

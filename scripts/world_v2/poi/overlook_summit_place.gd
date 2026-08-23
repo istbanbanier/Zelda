@@ -23,7 +23,8 @@
 ##     (`ROUTE_CLEAR_M` du TEST — 1,2 m, et non les 2,3 m de la
 ##     végétation). Les distances perpendiculaires à la diagonale
 ##     (0,0) → (+22,−22) sont donc calculées, pas estimées : corne 7,4 m,
-##     aile nord 7,8 m, aile sud 8,2 m, épaule 7,8 m.
+##     aile nord 8,5 m (avant-poste détaché, R-D3 2026-08-23), aile sud
+##     8,2 m, épaule 7,8 m.
 ##  3. LA BUTTE SE MONTE À PIED. `world_v2_heightmap.gd` porte la trace de
 ##     l'incident : à rayon 22, l'anneau du belvédère tombait de 5 m en
 ##     quelques mètres et « le parcours réel y restait cloué ». Le rayon a
@@ -74,7 +75,18 @@ func _build() -> void:
 	# famille, ni de la même hauteur, ni au même azimut : deux fins
 	# identiques en vis-à-vis feraient une porte, et une porte se lit
 	# construite.
-	var aile_n: Vector3 = _seated(9.5, 1.5)
+	#
+	# L'AILE NORD EST UN AVANT-POSTE DÉTACHÉ (13 ; −1), pas un contrefort
+	# collé — corrigé le 2026-08-23 sur verdict R-D3 : groupée à (9,5 ; 1,5),
+	# la formation se projetait en UN SEUL amas triangulaire et recouvrait la
+	# silhouette de la Grotte du couchant à IoU 0,56-0,57 aux trois distances
+	# (seuils 0,49-0,55, paire calibrante ferme×pont). Détachée, la crête
+	# devient BIMODALE — deux masses, du ciel entre elles — sur les deux axes
+	# de lecture, ce qu'aucun lieu accepté ne présente. Le vide fondateur du
+	# lieu s'élargit ; il ne change pas de nature. Distances refaites au
+	# calcul : 8,5 m de la diagonale de route (marge collider 6,2 m), et
+	# x > 0 donc toujours DERRIÈRE cam05.
+	var aile_n: Vector3 = _seated(13.0, -1.0)
 	var nord: Node3D = K.module(self, &"SM_Dungeon_CaveWallTop", aile_n, 118.0,
 		1.15, TONE_CREST)
 	if nord != null:
@@ -113,10 +125,10 @@ func _build() -> void:
 
 	# — LES ÉCLATS ET L'HERBE SÈCHE. Peu, et jamais au centre : le sommet
 	# doit rester dégagé, on y arrive par la route et on en repart par elle.
-	K.module(self, &"rock_smallB", _seated(8.2, 6.6), 37.0, 1.05, TONE_CREST)
+	K.module(self, &"rock_smallB", _seated(14.6, 1.2), 37.0, 1.05, TONE_CREST)
 	K.module(self, &"rock_smallB", _seated(5.4, 9.6), -62.0, 0.75, TONE_CREST)
 	K.module(self, &"Bush_Common", _seated(7.8, 8.4), 22.0, 0.62, TONE_DRY)
-	K.module(self, &"Bush_Common", _seated(11.0, 4.2), -48.0, 0.5, TONE_DRY)
+	K.module(self, &"Bush_Common", _seated(14.2, -2.4), -48.0, 0.5, TONE_DRY)
 	K.module(self, &"Grass_Wispy_Tall", _seated(3.0, 10.2), 15.0, 1.0, TONE_DRY)
 	K.module(self, &"Grass_Wispy_Tall", _seated(9.0, 7.0), -30.0, 1.0, TONE_DRY)
 
@@ -149,7 +161,7 @@ func _collisions() -> void:
 		_seated(6.5, 4.0) + Vector3(0.0, 3.0, 0.0), Vector3(3.4, 6.0, 3.6),
 		28.0)
 	K.collider_box(self, "Belvedere_aile_nord",
-		_seated(9.5, 1.5) + Vector3(0.0, 2.4, 0.0), Vector3(4.4, 4.8, 1.4),
+		_seated(13.0, -1.0) + Vector3(0.0, 2.4, 0.0), Vector3(4.4, 4.8, 1.4),
 		118.0)
 	K.collider_box(self, "Belvedere_aile_sud",
 		_seated(4.0, 7.6) + Vector3(0.0, 1.7, 0.0), Vector3(1.8, 3.4, 1.6),
