@@ -1,0 +1,18 @@
+=== RÉSIDU DE FIN DE PROCESSUS — DÉCOMPOSITION BRUTE ===
+  objets annoncés     : 138
+  objets énumérés     : 138
+      GDScript                 74
+      GDScriptNativeClass      61
+      Shader                   3
+  ressources annoncées: 74
+  ressources énumérées: 74  (71 .gd + 3 .gdshader + 0 autres)
+  RID DummyShader          3
+  shader justifié     : res://shaders/characters/SH_CharacterPainterlyCutout.gdshader  <- preload de res://scripts/lookdev/hero_shot_lab.gd
+  shader justifié     : res://shaders/characters/SH_CharacterPainterly.gdshader  <- preload de res://scripts/lookdev/hero_shot_lab.gd
+  shader justifié     : res://shaders/foliage/SH_FoliageWindPainterly.gdshader  <- preload de res://scripts/lookdev/hero_shot_lab.gd
+
+PROJECT_RESOURCE_LEAK_GATE : VERT — aucune ressource du projet ne survit
+ENGINE_SCRIPT_CACHE_TELEMETRY : WARN — RÉSIDU MOTEUR CONNU ET STABLE
+
+suite : code 1, 3804s
+portail : code 0  (0 vert · 1 ressource du projet · 2 dérive télémétrie · 3 bloqué)

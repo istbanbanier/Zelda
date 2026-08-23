@@ -129,11 +129,16 @@ const TRIS_MIN_POUR_JUGER: int = 24
 ## règle du §4 (D1) de `docs/V2_3_B_LOT1_CONTROLES.md` : le maximum observé sur
 ## les neuf lieux déjà validés.
 ##
-## `-1.0` = NON CALIBRÉ, et le test ROUGIT en le disant. C'est délibéré : un
-## plafond non calibré ne doit pas passer pour un plafond franchi, et un chiffre
-## inventé ici serait exactement le mensonge que ce fichier existe pour empêcher.
-## Renseigner APRÈS la calibration, avec le journal daté en commentaire.
-const AIRE_RUNTIME_PLAFOND_PCT: float = -1.0
+## CALIBRÉ le 2026-08-23 par `tools/godot/sonde_budget_lot1.gd --calibrer`
+## (outil corrigé : `_primitive_de()` pour PrimitiveMesh, garde `has_meta`),
+## RC=0, zéro SCRIPT ERROR. Journal mesuré sur les neuf lieux acceptés :
+##   camp 3.76 % · riverside_village 9.69 % · abandoned_farm 0.02 % ·
+##   stone_bridge 0.13 % · waterfall_cave 0.03 % · thunderstruck_tree 9.41 % ·
+##   ember_raider_camps 20.37 % (MAXIMUM) · conductive_basin 7.18 % ·
+##   pylon 0.00 %.
+## Une exécution antérieure de la sonde BOGUÉE avait rendu 20.63 % : chiffre
+## rejeté, jamais inscrit. Arrondi au dixième supérieur du maximum, pas plus.
+const AIRE_RUNTIME_PLAFOND_PCT: float = 20.4
 
 ## -- D6 : le contenu canonique, recopié du contrat §1 -------------------------
 ## Recopié de la table du contrat, JAMAIS lu depuis `DiscoveryRewards.PLAN` :
@@ -740,6 +745,14 @@ func test_temoin_les_compteurs_voient_ce_qu_ils_pretendent_compter() -> void:
 	multi.transform_format = MultiMesh.TRANSFORM_3D
 	multi.mesh = BoxMesh.new()
 	multi.instance_count = 4
+	# POSER LES TRANSFORMS, sinon le témoin ment : un tampon d'instances neuf
+	# est rempli de zéros, une base NULLE dégénère chaque boîte en un point à
+	# l'origine, et l'AABB de l'ensemble mesure (0,0,0). Le témoin accusait
+	# alors le compteur — qui voyait juste — d'être aveugle au MultiMesh.
+	# Mesuré le 2026-08-23 ; un vrai semis pose toujours ses transforms.
+	for i: int in range(4):
+		multi.set_instance_transform(i,
+			Transform3D(Basis.IDENTITY, Vector3(float(i) * 2.0, 0.0, 0.0)))
 	semis.multimesh = multi
 	faux_lieu.add_child(semis)
 	# UN corps, TROIS formes. Un compteur qui regarde `StaticBody3D` annonce
@@ -825,7 +838,12 @@ func _appuis(lieu: Node3D) -> PackedVector3Array:
 ## NOMMÉE ; il n'y a pas d'exemption tacite.
 func _exemptions_runtime(lieu: Node3D) -> Array[String]:
 	var noms: Array[String] = []
-	var meta: Variant = lieu.get_meta(&"exemption_runtime", null)
+	# `has_meta` D'ABORD. Mesuré : `get_meta(nom, null)` déclenche quand même
+	# l'erreur « does not have meta » — un défaut `null` est traité comme
+	# l'absence de défaut par le binding. Le garde explicite est le seul sûr.
+	var meta: Variant = null
+	if lieu.has_meta(&"exemption_runtime"):
+		meta = lieu.get_meta(&"exemption_runtime")
 	if meta is PackedStringArray:
 		for nom: String in meta as PackedStringArray:
 			noms.append(nom)
@@ -835,13 +853,39 @@ func _exemptions_runtime(lieu: Node3D) -> Array[String]:
 	return noms
 
 
-## Emprise MONDE sur les `VisualInstance3D` — MultiMesh compris.
+## Emprise MONDE sur les `VisualInstance3D` — MultiMesh compris, et pour de vrai.
+##
+## MESURÉ le 2026-08-23, sonde à l'appui : sous le renderer FACTICE de
+## `--headless`, l'AABB d'un `MultiMesh` est TOUJOURS (0,0,0) — `get_aabb()`,
+## `custom_aabb` et `RenderingServer.multimesh_get_aabb()` rendent tous vide.
+## Le témoin de ce fichier a attrapé exactement cette cécité. Un MultiMesh se
+## mesure donc CÔTÉ CPU : transforms d'instances × AABB du maillage, données
+## toujours disponibles, renderer ou pas.
+func _emprise_multimesh(instance: MultiMeshInstance3D) -> AABB:
+	var mm: MultiMesh = instance.multimesh
+	if mm == null or mm.mesh == null or mm.instance_count == 0:
+		return AABB()
+	var base: AABB = mm.mesh.get_aabb()
+	var totale: AABB = AABB()
+	var premier: bool = true
+	for i: int in range(mm.instance_count):
+		var boite: AABB = mm.get_instance_transform(i) * base
+		if premier:
+			totale = boite
+			premier = false
+		else:
+			totale = totale.merge(boite)
+	return instance.global_transform * totale
+
+
 func _emprise_visuelle(lieu: Node3D) -> AABB:
 	var totale: AABB = AABB()
 	var premier: bool = true
 	for noeud: Node in lieu.find_children("*", "VisualInstance3D", true, false):
 		var instance: VisualInstance3D = noeud as VisualInstance3D
-		var boite: AABB = instance.global_transform * instance.get_aabb()
+		var mmi: MultiMeshInstance3D = noeud as MultiMeshInstance3D
+		var boite: AABB = _emprise_multimesh(mmi) if mmi != null \
+			else instance.global_transform * instance.get_aabb()
 		if boite.size == Vector3.ZERO:
 			continue
 		if premier:
@@ -928,7 +972,7 @@ func _compter_budget(lieu: Node3D) -> Dictionary:
 func _triangles(mesh: Mesh) -> int:
 	var total: int = 0
 	for s: int in range(mesh.get_surface_count()):
-		if mesh.surface_get_primitive_type(s) != Mesh.PRIMITIVE_TRIANGLES:
+		if _primitive_de(mesh, s) != Mesh.PRIMITIVE_TRIANGLES:
 			continue
 		var arrays: Array = mesh.surface_get_arrays(s)
 		var index: PackedInt32Array = _index_de(arrays)
@@ -942,6 +986,21 @@ func _triangles(mesh: Mesh) -> int:
 ## `ARRAY_INDEX` vaut `null` sur une surface NON INDEXÉE, et `null as
 ## PackedInt32Array` ne rend pas un tableau vide : il casse. Un seul point
 ## d'entrée, pour que les trois mesures traitent le cas de la même façon.
+## Type de primitive d'une surface, sûr pour TOUT `Mesh`.
+##
+## PIÈGE MESURÉ (2026-08-23, 36 SCRIPT ERROR) : `surface_get_primitive_type`
+## n'existe QUE sur `ArrayMesh`. Sur un `BoxMesh` ou un `SphereMesh` — les
+## TÉMOINS fabriqués de ce fichier ! — l'appel n'existe pas, D1 avortait, et
+## son monde resté monté DOUBLAIT tout le reste de la suite (12 caméras au
+## lieu de 6, quinze place_id « dupliqués »). Un `PrimitiveMesh` produit
+## toujours des triangles : c'est sa définition.
+func _primitive_de(mesh: Mesh, s: int) -> int:
+	var tableau: ArrayMesh = mesh as ArrayMesh
+	if tableau != null:
+		return tableau.surface_get_primitive_type(s)
+	return Mesh.PRIMITIVE_TRIANGLES
+
+
 func _index_de(arrays: Array) -> PackedInt32Array:
 	var brut: Variant = arrays[Mesh.ARRAY_INDEX]
 	if brut == null:
@@ -955,7 +1014,7 @@ func _aire_monde(instance: MeshInstance3D) -> float:
 	var base: Basis = instance.global_transform.basis
 	var total: float = 0.0
 	for s: int in range(instance.mesh.get_surface_count()):
-		if instance.mesh.surface_get_primitive_type(s) != Mesh.PRIMITIVE_TRIANGLES:
+		if _primitive_de(instance.mesh, s) != Mesh.PRIMITIVE_TRIANGLES:
 			continue
 		var arrays: Array = instance.mesh.surface_get_arrays(s)
 		var sommets: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX] as PackedVector3Array
@@ -989,7 +1048,7 @@ func _boititude(mesh: Mesh) -> Dictionary:
 	var positions: PackedVector3Array = PackedVector3Array()
 	var triangles: Array[Vector3i] = []
 	for s: int in range(mesh.get_surface_count()):
-		if mesh.surface_get_primitive_type(s) != Mesh.PRIMITIVE_TRIANGLES:
+		if _primitive_de(mesh, s) != Mesh.PRIMITIVE_TRIANGLES:
 			continue
 		var arrays: Array = mesh.surface_get_arrays(s)
 		var sommets: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX] as PackedVector3Array

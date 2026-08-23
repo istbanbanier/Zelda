@@ -1,0 +1,17 @@
+{
+  "classes": {
+    "GDScript": 74,
+    "GDScriptNativeClass": 61,
+    "Shader": 3
+  },
+  "motifs_a": [],
+  "motifs_b": [],
+  "portail_a": "VERT",
+  "ressources_gd": 71,
+  "ressources_gdshader": 3,
+  "ressources_projet": [],
+  "rids": {
+    "DummyShader": 3
+  },
+  "telemetrie_b": "WARN"
+}

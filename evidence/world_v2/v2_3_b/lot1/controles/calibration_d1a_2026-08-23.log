@@ -1,0 +1,49 @@
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_rZb8eGgn
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/sonde_budget_lot1.gd -- --calibrer
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 10058 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+CALIBRATION D1a — part d'aire RUNTIME du CORPUS ACCEPTÉ.
+Règle : le plafond du lot 1 est le MAXIMUM observé ici. Mesuré sur
+des lieux déjà validés par le lead, avant que le lot 1 n'existe.
+
+camp                                   aire runtime   3.76 %  (aire totale     245.2 m²)
+valley.poi.riverside_village.01        aire runtime   9.69 %  (aire totale    3194.7 m²)
+valley.poi.abandoned_farm.01           aire runtime   0.02 %  (aire totale    1095.4 m²)
+valley.poi.stone_bridge.01             aire runtime   0.13 %  (aire totale    1265.4 m²)
+valley.poi.waterfall_cave.01           aire runtime   0.03 %  (aire totale     844.7 m²)
+valley.poi.thunderstruck_tree.01       aire runtime   9.41 %  (aire totale     214.5 m²)
+valley.poi.ember_raider_camps.01       aire runtime  20.37 %  (aire totale     412.0 m²)
+valley.poi.conductive_basin.01         aire runtime   7.18 %  (aire totale     227.6 m²)
+pylon                                  aire runtime   0.00 %  (aire totale    1281.0 m²)
+
+MAXIMUM = 20.37 % (valley.poi.ember_raider_camps.01) sur 9 sujets acceptés.
+Inscrire AIRE_RUNTIME_PLAFOND_PCT = 20.4 dans
+tests/world_v2/test_world_v2_lot1_defauts.gd, avec ce journal daté
+en commentaire. Ne PAS arrondir vers le haut au-delà du dixième :
+un plafond desserré « pour la marge » est un plafond qui ne tient rien.
+LANCER_GODOT: RC_GODOT=0

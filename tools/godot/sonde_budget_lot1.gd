@@ -165,7 +165,12 @@ func _compter(lieu: Node3D) -> Dictionary:
 	var aire_totale: float = 0.0
 	var aire_runtime: float = 0.0
 	var exemptions: Array[String] = []
-	var meta: Variant = lieu.get_meta(&"exemption_runtime", null)
+	# `has_meta` D'ABORD. Mesuré : `get_meta(nom, null)` déclenche quand même
+	# l'erreur « does not have meta » — un défaut `null` est traité comme
+	# l'absence de défaut par le binding. Le garde explicite est le seul sûr.
+	var meta: Variant = null
+	if lieu.has_meta(&"exemption_runtime"):
+		meta = lieu.get_meta(&"exemption_runtime")
 	if meta is PackedStringArray:
 		for nom: String in meta as PackedStringArray:
 			exemptions.append(nom)
@@ -188,13 +193,23 @@ func _compter(lieu: Node3D) -> Dictionary:
 		"aire_totale": aire_totale, "runtime_pct": pct}
 
 
+## Type de primitive d'une surface, sûr pour TOUT `Mesh` — même piège que le
+## filet D : `surface_get_primitive_type` n'existe que sur `ArrayMesh`, et un
+## `PrimitiveMesh` produit toujours des triangles par définition.
+func _primitive_de(mesh: Mesh, s: int) -> int:
+	var tableau: ArrayMesh = mesh as ArrayMesh
+	if tableau != null:
+		return tableau.surface_get_primitive_type(s)
+	return Mesh.PRIMITIVE_TRIANGLES
+
+
 ## Aire MONDE : l'aire est ce qu'on voit, donc elle se mesure après la
 ## transformation, pas dans le repère local du maillage.
 func _aire(instance: MeshInstance3D) -> float:
 	var base: Basis = instance.global_transform.basis
 	var total: float = 0.0
 	for s: int in range(instance.mesh.get_surface_count()):
-		if instance.mesh.surface_get_primitive_type(s) != Mesh.PRIMITIVE_TRIANGLES:
+		if _primitive_de(instance.mesh, s) != Mesh.PRIMITIVE_TRIANGLES:
 			continue
 		var arrays: Array = instance.mesh.surface_get_arrays(s)
 		var sommets: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX] as PackedVector3Array
