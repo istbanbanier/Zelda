@@ -1124,3 +1124,35 @@ octet pour octet. `GO_V2_3_B=FALSE`.
 `evidence/world_v2/v2_3_r2b3/preuves_lead/` (les 11 montages pleine
 résolution). Aucune propagation aux 31 POI, aucune release jouable, aucun
 lancement de V2.3-B avant ce PASS.
+
+## 2026-08-21 — Clôture R2B.3.1 : PASS du lead, double portail, GO_V2_3_B
+
+Le lead a rendu son verdict sur les quatre planches légères : **R2B.3 PASS
+visuel et technique** — Debris_A, Debris_B, ferme_laterale, ferme_orb090,
+quatre PASS. ISS-059 est FERMÉE pour les ressources du projet ; le résidu
+moteur vit dans ISS-065 (limitation, non bloquante, surveillée par contrat).
+La clause « harness global vert » est explicitement remplacée par le double
+verdict : `PROJECT_RESOURCE_LEAK_GATE` bloquant · `ENGINE_SCRIPT_CACHE_TELEMETRY`
+WARN qui redevient bloquante à la moindre dérive.
+
+Validation finale (une exécution, 3 805 s) : **949 tests, 0 échec**, portail A
+**VERT**, télémétrie **WARN conforme**, sonde de cycles à empreintes identiques.
+RC du script = 1 sur deux méprises du JUGE — le filtre générique re-jugeait le
+domaine de 2b avec l'ancienne sémantique, et la garde 2c comptait les lignes de
+fin de processus que toute sonde émet. Corrigées, prouvées par rejugement des
+mêmes journaux (4→0, 3→0) et contre-épreuve. Une exécution complète est
+relancée sur le commit de clôture pour l'enregistrement RC=0.
+
+Lot 1 pendant ce temps : trois voies livrées en worktrees détachés — A (sonde
+d'implantation, mesures XZ, filet LOT1_PLACES écrit rouge), B (six lieux, plan
+des silhouettes arrêté avant construction), C (filet des huit défauts, règle D3
+pré-enregistrée avec deux garde-fous et témoin dégénéré). Deux sauvetages de
+travail interrompu committés dans LEURS arbres, marqués non relus. Zéro
+recouvrement de fichier entre les trois. Inspection passe 1 du lead : structure
+saine, zéro primitive, récompenses cohérentes avec le PLAN canonique.
+
+**Prochaine action exacte** : attendre le RC=0 de l'exécution relancée, puis
+cueillette dans l'ordre de `evidence/world_v2/v2_3_b/lot1/RECOLTE.md` —
+B (6 lieux) → A (le filet passe ROUGE, c'est voulu et archivé) → câblage
+REGISTRY par le lead (`/tmp` : patch prêt, gardé) → C (8 filets) → UNE
+validation → captures → checkpoint. AUCUN push entre les vagues.

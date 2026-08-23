@@ -65,3 +65,34 @@ coûteux, c'est qu'il ressemble à une régression ».*
   1 n'est pas construit à l'heure de ce rapport ;
 - les **seuils** ne sont pas dans le gel : la garde qui reste est humaine, et
   c'est écrit dans `tools/gel_verifier.sh` plutôt que passé sous silence.
+
+## 5. Verdict de la validation finale (exécution du 2026-08-21, 3 805 s)
+
+| critère | résultat |
+|---|---|
+| tests unitaires | **949 réussis, 0 échoué** |
+| gel V2.3-B (43 fichiers) | VERT |
+| parse des 429 scripts | VERT |
+| contrôle négatif du portail (12 fixtures) | 12/12 |
+| **PROJECT_RESOURCE_LEAK_GATE** | **VERT** — signature agrégée conforme au contrat |
+| **ENGINE_SCRIPT_CACHE_TELEMETRY** | **WARN — RÉSIDU MOTEUR CONNU ET STABLE**, dans son enveloppe |
+| sonde de cycles | empreintes IDENTIQUES aux deux cycles (2876/862/23/0) |
+| boot → menu, continuité des 6 personnages, plancher 949/586 | VERT |
+| **RC du script** | **1 (ROUGE)** — et voici pourquoi ce rouge ne contredit pas ce qui précède |
+
+Le RC=1 venait de DEUX MÉPRISES DU JUGE, pas d'un défaut du projet :
+
+1. le filtre générique `^ERROR:` de l'étape 2 attrapait les lignes de fin de
+   processus du moteur — celles-là mêmes que l'étape 2b juge au chiffre près
+   contre le contrat, et rendait VERTES dans la même exécution. Le même fait,
+   deux juges, deux verdicts.
+2. la garde d'erreurs de l'étape 2c comptait ces mêmes lignes dans le journal
+   de la sonde, qui les émettra toujours : l'étape ne POUVAIT pas être verte,
+   alors que les empreintes des deux cycles étaient identiques à l'unité.
+
+Les deux juges sont corrigés (chaque fait n'a plus qu'UN juge ; rien n'est
+masqué, les lignes restent aux journaux) et le correctif est prouvé de deux
+façons : rejugement des MÊMES journaux (4→0 et 3→0 correspondances), et
+contre-épreuve montrant qu'une vraie `SCRIPT ERROR` rougit toujours. Une
+exécution complète sur le commit de clôture est relancée pour laisser un
+enregistrement RC=0 propre — aucune cueillette avant son verdict.

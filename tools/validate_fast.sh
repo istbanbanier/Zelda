@@ -231,11 +231,24 @@ if [ $UNIT_RC -eq 0 ]; then ok "suite unitaire verte"; else bad "suite unitaire 
 # cette enveloppe ne bouge pas d'une unité. Décision du lead, tracée dans
 # `docs/KNOWN_ISSUES.md` ISS-059 et ISS-065.
 UNIT_ERR_PATTERN='SCRIPT ERROR|^ERROR:|ASSERTION ÉCHOUÉE SANS REPORTER|Cannot call method|Invalid access|String formatting error|Out of bounds|Method not found|Cannot open file|Failed loading resource|Resource file not found'
-if grep -qE "$UNIT_ERR_PATTERN" "$UNIT_LOG"; then
+# CHAQUE FAIT A UN SEUL JUGE. Les lignes de FIN DE PROCESSUS du moteur —
+# ressources retenues, RID, ObjectDB, PagedAllocator — commencent par `ERROR:`
+# et tombaient donc AUSSI dans ce filtre générique, alors que l'étape 2b les
+# juge déjà AU CHIFFRE PRÈS contre le contrat committé. Résultat mesuré à la
+# première exécution après la clôture : 949 tests verts, portail A VERT,
+# télémétrie conforme — et cette étape-ci ROUGE sur les mêmes lignes, avec
+# l'ancienne sémantique confondue que la directive supprime. Le même fait jugé
+# deux fois par deux juges en désaccord n'est pas une double sécurité, c'est un
+# verdict incohérent. Ces lignes RESTENT dans le journal (rien n'est masqué) ;
+# elles sont simplement retirées du périmètre de CE juge-ci, parce que 2b est
+# le leur. Les deux lignes PagedAllocator suivent le même domaine : ce sont les
+# Variant des objets survivants (KNOWN_ISSUES, ISS-059), pas une cause propre.
+FIN_DE_PROCESSUS='resources still in use at exit|RID allocations of type|ObjectDB instances were leaked|Pages in use exist at exit in PagedAllocator'
+if grep -vE "$FIN_DE_PROCESSUS" "$UNIT_LOG" | grep -qE "$UNIT_ERR_PATTERN"; then
   bad "erreurs signalées pendant la suite de tests (voir $UNIT_LOG)"
-  grep -E "$UNIT_ERR_PATTERN" "$UNIT_LOG" | head -10 | sed 's/^/    /'
+  grep -vE "$FIN_DE_PROCESSUS" "$UNIT_LOG" | grep -E "$UNIT_ERR_PATTERN" | head -10 | sed 's/^/    /'
 else
-  ok "aucune erreur signalée dans le journal des tests"
+  ok "aucune erreur signalée dans le journal des tests (le résidu de sortie est jugé en 2b)"
 fi
 
 step "2b. Résidu de fin de processus — DEUX verdicts séparés"
@@ -303,7 +316,15 @@ MONTAGES=$(grep -cE 'cycle [0-9]+ : worldv2 monte puis demonte' "$CYCLE_LOG")
 # Et une scène peut s'INSTANCIER en échouant à se construire — c'est exactement
 # le visage du cache de classes périmé (tools/CLAUDE.md). Deux mesures
 # identiques et vides passeraient aussi.
-CYCLE_ERR=$(grep -cE 'SCRIPT ERROR|^ERROR:' "$CYCLE_LOG")
+#
+# EXCLUSION DES LIGNES DE FIN DE PROCESSUS, la même qu'à l'étape 2. La sonde
+# TERMINE par le rapport de résidu du moteur — c'est structurel, tout processus
+# Godot de ce dépôt l'imprime — et la première version de cette garde comptait
+# ces lignes comme « erreurs pendant les cycles » : l'étape ne POUVAIT pas être
+# verte. Mesuré à la première exécution : empreintes IDENTIQUES aux deux cycles
+# (2876/862/23/0), sonde saine, verdict rouge quand même. Ce qu'on cherche ici,
+# ce sont les erreurs PENDANT le montage, pas le constat de sortie.
+CYCLE_ERR=$(grep -vE "$FIN_DE_PROCESSUS" "$CYCLE_LOG" | grep -cE 'SCRIPT ERROR|^ERROR:')
 # `fin_cycle_` UNIQUEMENT. La sonde imprime aussi une mesure de référence
 # `apres_autoloads_avant_tout_cycle`, dont le compte diffère forcément de celui
 # d'après un montage : la compter donnerait deux empreintes distinctes sur un
