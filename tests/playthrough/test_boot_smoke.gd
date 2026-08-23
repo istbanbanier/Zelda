@@ -245,8 +245,12 @@ func test_boot_smoke_from_boot_to_playable_world_v2() -> void:
 		"B8 — une intention joueur déplace le héros de %.2f m dans World V2" % walked)
 	check_equal(_tree().get_nodes_in_group(&"world_v2_terrain").size(), 64,
 		"…les 64 chunks du monde sont réellement montés")
-	check_equal(_tree().get_nodes_in_group(&"world_v2_places").size(), 9,
-		"…et les neuf lieux du lot pilote sont présents")
+	# 15 et non 9 depuis le 2026-08-23 : le REGISTRY porte les 9 lieux du lot
+	# pilote PLUS les 6 du lot 1 de V2.3-B (câblage `f010a4d`). L'égalité
+	# reste EXACTE — un compte plancher laisserait passer une perte comme une
+	# pousse silencieuse ; ce rouge-ci a précisément attrapé la pousse.
+	check_equal(_tree().get_nodes_in_group(&"world_v2_places").size(), 15,
+		"…et les quinze lieux (lot pilote + lot 1) sont présents")
 
 	# --- B9. Le CÂBLAGE santé → mort → panneau → reprise --------------------
 	#
