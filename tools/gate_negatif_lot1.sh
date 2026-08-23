@@ -42,11 +42,10 @@ REPO="$PWD"
 GODOT_BIN="${GODOT_BIN:-/usr/local/bin/godot}"
 FILTER="lot1_defauts"
 
-# ISS-063 — verrou canonique + cloison `user://`.
+# ISS-063 — verrou canonique + cloison `user://`. SOURCÉ ici, mais le verrou
+# n'est PRIS qu'au dernier moment (voir plus bas).
 # shellcheck source=lib/godot_env.sh
 . "$PWD/tools/lib/godot_env.sh"
-godot_cloison_arbre || exit 3
-godot_verrou_prendre 8 3000 || exit 3
 
 MODE="lot1"
 SEULEMENT=""
@@ -70,7 +69,18 @@ mkdir -p "$JOURNAUX"
 # ─── Résolution des cibles du lot, depuis le REGISTRY et le layout ───────────
 # Jamais un nom de fichier deviné : les voies A et B nomment leurs scènes, et
 # une cible périmée produirait « fichier absent », donc un contrôle qui se tait.
-resoudre() {  # $1 = place_id ; imprime "scene<TAB>script<TAB>x<TAB>z"
+# PIEGE MESURE LE 2026-08-21, corrige apres l'avoir vu dans `bash -x`.
+# La premiere version rendait « scene<TAB>script<TAB>x<TAB>z » et lisait avec
+# `IFS=$'\t' read -r sc sp _ _`. Or la TABULATION est un caractere d'espacement
+# d'IFS : bash COLLAPSE les delimiteurs consecutifs et fait disparaitre les
+# champs vides. Sur un lot non construit, la sortie « <TAB><TAB>56<TAB>-64 »
+# donnait donc `sc=56` et `sp=-64` : la garde `[ -z "$sc" ]` etait fausse, le
+# script passait la detection de « lot non construit », attendait UNE HEURE le
+# verrou, puis aurait sabote un fichier nomme « 56 ».
+# Trace : `bash -x tools/gate_negatif_lot1.sh --lot1` -> « + '[' -z 56 ']' ».
+#
+# UNE LIGNE PAR CHAMP, lue par `mapfile -t` : une ligne vide reste une ligne.
+resoudre() {  # $1 = place_id ; imprime scene / script / x / z, une par ligne
   python3 - "$1" <<'PY'
 import json, re, sys
 pid = sys.argv[1]
@@ -90,8 +100,22 @@ lay = json.load(open("resources/world_v2/world_v2_layout.json", encoding="utf-8"
 for poi in lay.get("pois", []):
     if poi.get("id") == pid:
         x, z = f"{poi['v2_site'][0]:g}", f"{poi['v2_site'][2]:g}"
-print("\t".join([scene, script, x, z]))
+print(scene)
+print(script)
+print(x)
+print(z)
 PY
+}
+
+## Lit les quatre champs de `resoudre` dans les variables nommees, en
+## preservant les champs vides.
+resoudre_dans() {  # $1=place_id  $2..$5 = noms de variables
+  local -a champs=()
+  mapfile -t champs < <(resoudre "$1")
+  printf -v "$2" '%s' "${champs[0]-}"
+  printf -v "$3" '%s' "${champs[1]-}"
+  printf -v "$4" '%s' "${champs[2]-}"
+  printf -v "$5" '%s' "${champs[3]-}"
 }
 
 # ─── Les tableaux PARALLÈLES (jamais des champs collés par un séparateur : la
@@ -139,7 +163,8 @@ else
   SUJET_D5="valley.poi.forest_shrine.01"
   SUJET_D7="valley.poi.turquoise_spring.01"
   for sujet in "$SUJET_D1" "$SUJET_D2" "$SUJET_D4" "$SUJET_D5" "$SUJET_D7"; do
-    IFS=$'\t' read -r sc sp _ _ <<< "$(resoudre "$sujet")"
+    sc=""; sp=""; sx=""; sz=""
+    resoudre_dans "$sujet" sc sp sx sz
     if [ -z "$sc" ] || [ -z "$sp" ]; then
       echo "BLOQUÉ: $sujet n'a ni scène ni script dans le REGISTRY."
       echo "        Le lot 1 n'est pas construit : ce contrôle ne peut RIEN prouver."
@@ -147,11 +172,11 @@ else
       exit 3
     fi
   done
-  IFS=$'\t' read -r _ SC_D1 _ _ <<< "$(resoudre "$SUJET_D1")"
-  IFS=$'\t' read -r _ SC_D2 _ _ <<< "$(resoudre "$SUJET_D2")"
-  IFS=$'\t' read -r _ SC_D4 _ _ <<< "$(resoudre "$SUJET_D4")"
-  IFS=$'\t' read -r _ SC_D5 X_D5 Z_D5 <<< "$(resoudre "$SUJET_D5")"
-  IFS=$'\t' read -r _ SC_D7 _ _ <<< "$(resoudre "$SUJET_D7")"
+  resoudre_dans "$SUJET_D1" _TSC SC_D1 _TX _TZ
+  resoudre_dans "$SUJET_D2" _TSC SC_D2 _TX _TZ
+  resoudre_dans "$SUJET_D4" _TSC SC_D4 _TX _TZ
+  resoudre_dans "$SUJET_D5" _TSC SC_D5 X_D5 Z_D5
+  resoudre_dans "$SUJET_D7" _TSC SC_D7 _TX _TZ
 
   # D1 — l'empilement de blocs revient. Quatre pavés runtime : 48 triangles,
   # 100 % hexa, au-dessus du plancher de significativité et du plafond de 25 %.
@@ -223,6 +248,16 @@ func _ready() -> void:\
     '$a\## sabotage du contrôle négatif' \
     "D8 gel|D8 régression sur le gel"
 fi
+
+# ─── LE VERROU EST PRIS ICI, ET PAS PLUS TÔT ────────────────────────────────
+# Le verrou lourd de ce dépôt peut être tenu une heure par une autre session.
+# Une première version le prenait en tête de fichier : en mode `--lot1` sur un
+# dépôt où les six lieux n'existent pas encore, on attendait donc UNE HEURE pour
+# s'entendre dire « BLOQUÉ, le lot n'est pas construit ». Tout ce qui précède
+# — résolution des cibles depuis le REGISTRY, lecture du layout, alignement des
+# tableaux — ne lance aucun moteur et n'a aucune raison d'attendre.
+godot_cloison_arbre || exit 3
+godot_verrou_prendre 8 3000 || exit 3
 
 DECLARES="${#LABELS[@]}"
 if [ "${#CIBLES[@]}" -ne "$DECLARES" ] || [ "${#ACTIONS[@]}" -ne "$DECLARES" ] \
