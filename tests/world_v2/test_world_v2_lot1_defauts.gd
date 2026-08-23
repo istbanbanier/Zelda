@@ -941,9 +941,18 @@ func _couverture_appuis(id: StringName, lieu: Node3D,
 
 ## Signature de composition : multi-ensemble trié des sources de maillage et de
 ## leur échelle. Deux lieux qui la partagent sont le MÊME lieu bâti deux fois.
+##
+## SANS le sous-arbre de récompense — mesuré le 2026-08-23 par le contrôle
+## négatif : signature RÉCOMPENSE COMPRISE, un copier-coller de lieu restait
+## invisible dès que les deux copies portaient des récompenses canoniques
+## différentes (l'arc de l'un, le coffre de l'autre) — la machinerie de
+## `_grant()` différenciait deux compositions identiques, exactement le
+## défaut que cette signature existe pour attraper.
 func _signature_composition(lieu: Node3D) -> String:
 	var pieces: Array[String] = []
 	for noeud: Node in lieu.find_children("*", "MeshInstance3D", true, false):
+		if _sous_ancrage(noeud, lieu):
+			continue
 		var instance: MeshInstance3D = noeud as MeshInstance3D
 		if instance.mesh == null:
 			continue

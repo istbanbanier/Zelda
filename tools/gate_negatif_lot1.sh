@@ -173,8 +173,8 @@ else
     fi
   done
   resoudre_dans "$SUJET_D1" _TSC SC_D1 _TX _TZ
-  resoudre_dans "$SUJET_D2" _TSC SC_D2 _TX _TZ
-  resoudre_dans "$SUJET_D4" _TSC SC_D4 _TX _TZ
+  resoudre_dans "$SUJET_D2" TSC_D2 SC_D2 _TX _TZ
+  resoudre_dans "$SUJET_D4" TSC_D4 SC_D4 _TX _TZ
   resoudre_dans "$SUJET_D5" _TSC SC_D5 X_D5 Z_D5
   resoudre_dans "$SUJET_D7" _TSC SC_D7 _TX _TZ
 
@@ -207,7 +207,7 @@ func _ready() -> void:\
   # D3 — deux lieux du lot pointent vers la même scène (le copier-coller).
   ajouter "D3" "deux lieux du lot partagent la même PackedScene" \
     "scripts/world_v2/poi/world_v2_places_builder.gd" \
-    "s#\"res://$SC_D4\"#\"res://$SC_D2\"#" \
+    "s#\"res://$TSC_D4\"#\"res://$TSC_D2\"#" \
     "D3 .*signature de composition IDENTIQUE"
   # D4 — le site part dans la bande creusée du cours principal.
   ajouter "D4" "le lieu est déplacé dans le lit de la rivière" "$SC_D4" \
