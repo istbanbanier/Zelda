@@ -115,3 +115,39 @@ réelle, avec les verdicts au moment où ils sont tombés :
    (`bc55474`), campagne relancée d'un arbre propre.
 7. **Dette voie C soldée** : `SM_WaterfallCave_r2a358.glb` (grotte promue,
    gelée) a désormais sa ligne de manifeste — mesures par `gltf_inspect.py`.
+
+## D3 — l'étage image a mordu, et la correction est de composition
+
+Chronologie (commits `aa4f689` puis `cbb0611`) :
+
+1. Campagne : 15 sujets × 2 angles, arbre committé, `repo_dirty=false`
+   partout. Trois sujets PLATS (champ de fleurs, camp, +1) repris en
+   paysage 1200×900 — c'est le cadrage portrait qui noyait un sujet bas
+   dans du vide, le seuil de bimodalité de l'outil n'a pas bougé.
+2. Détecteur R-D3 : **FAIL** — `overlook_summit ≈ waterfall_cave` à
+   IoU 0,568/0,560/0,570 contre S 0,493/0,491/0,546 (calibration
+   ferme×pont, 36 paires, témoin dégénéré signalé aux trois distances).
+   Le belvédère groupé se projetait en un seul amas triangulaire — la
+   même lecture que la grotte. Preuves archivées :
+   `controles/d3_avant_rework/`.
+3. Correction DE COMPOSITION, aucun seuil touché : l'aile nord devient un
+   avant-poste détaché (9,5;1,5 → 13;−1), la crête se lit bimodale sur
+   les deux axes. Marges refaites au calcul : 8,5 m de la diagonale de
+   route, toujours derrière cam05.
+4. Recapture depuis l'arbre committé, détecteur rejoué : **PASS** —
+   overlook×cave 0,481 < 0,493, aucune autre paire au-dessus, témoin
+   toujours signalé. Avant/après : `controles/d3_avant_apres.png`.
+5. Filet complet rejoué : **11/11 VERTS** (D1 à D8).
+
+## Captures POI et planche
+
+13 plans (`poi/`, manifeste commit+repo_dirty), planche 13 vignettes,
+carte du lot. Deux reprises de cadrage documentées dans
+`shots_lot1.json` ; l'approche nord du sanctuaire bute sur un tronc GELÉ
+de la végétation V2.2 (le site n'est pas exclu du scatter — constat déjà
+porté par l'en-tête du lieu, confirmé en image).
+
+Observations versées à la passe art, NON bloquantes au niveau graybox du
+lot : roches de kit terracotta au belvédère et à la source là où r04/r07
+demandent un minéral plus froid ; nappe de la source quasi blanche au
+rendu (piège albédo ≠ valeur rendue, gain ≈ 1,8, scripts/CLAUDE.md).

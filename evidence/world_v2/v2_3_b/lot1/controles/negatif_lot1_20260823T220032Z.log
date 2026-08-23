@@ -1,0 +1,58 @@
+=== D1 — un empilement de pavés runtime est ajouté au lieu ===
+    cible     : scripts/world_v2/poi/barrow_cemetery_place.gd
+    signature : D1 .*boîtitude hexa
+      ÉCHEC test_world_v2_lot1_defauts.gd::test_d1_aucun_lieu_ne_lit_comme_un_assemblage_de_primitives — D1 assemblage de primitives (1 écart(s)) : D1 valley.poi.barrow_cemetery.01 : boîtitude hexa 100.0 % du runtime > 25.0 % (48/48 triangles) — un empilement de blocs
+    === RÉSULTAT: 10 réussi(s), 1 échoué(s) ===
+      ÉCHEC: test_world_v2_lot1_defauts.gd::test_d1_aucun_lieu_ne_lit_comme_un_assemblage_de_primitives — D1 assemblage de primitives (1 écart(s)) : D1 valley.poi.barrow_cemetery.01 : boîtitude hexa 100.0 % du runtime > 25.0 % (48/48 triangles) — un empilement de blocs
+  [OK]   le filet a VU le sabotage, sur SON critère.
+=== D2 — le lieu est soulevé de 2 m au-dessus du sol gelé ===
+    cible     : scripts/world_v2/poi/watchtower_ruin_place.gd
+    signature : D2 .*(racine à|appui)
+      ÉCHEC test_world_v2_lot1_defauts.gd::test_d2_rien_ne_flotte_et_rien_n_est_enterre — D2 bâti flottant ou enterré (11 écart(s)) : D2 valley.poi.watchtower_ruin.01 : racine à y=28.00, sol gelé à 26.00 ; D2 valley.poi.watchtower_ruin.01 : appui (-164.2, 38.4) à 2.00 m du sol (tol 0.65) ; D2 valley.poi.watchtower_ruin.01 : appui (-160.2, 38.4) à 2.00 m du sol (tol 0.65) ; D2 valley.poi.watchtower_ruin.01 : appui (-164.2, 42.4) à 2.00 m du sol (tol 0.65) ; D2 valley.poi.watchtower_ruin.01 : appui (-160.2, 42.4) à 2.00 m du sol (tol 0.65) ; D2 valley.poi.watchtower_ruin.01 : appui (-158.4, 38.8) à 2.00 m du sol (tol 0.65) ; … et 5 autre(s)
+    === RÉSULTAT: 10 réussi(s), 1 échoué(s) ===
+      ÉCHEC: test_world_v2_lot1_defauts.gd::test_d2_rien_ne_flotte_et_rien_n_est_enterre — D2 bâti flottant ou enterré (11 écart(s)) : D2 valley.poi.watchtower_ruin.01 : racine à y=28.00, sol gelé à 26.00 ; D2 valley.poi.watchtower_ruin.01 : appui (-164.2, 38.4) à 2.00 m du sol (tol 0.65) ; D2 valley.poi.watchtower_ruin.01 : appui (-160.2, 38.4) à 2.00 m du sol (tol 0.65) ; D2 valley.poi.watchtower_ruin.01 : appui (-164.2, 42.4) à 2.00 m du sol (tol 0.65) ; D2 valley.poi.watchtower_ruin.01 : appui (-160.2, 42.4) à 2.00 m du sol (tol 0.65) ; D2 valley.poi.watchtower_ruin.01 : appui (-158.4, 38.8) à 2.00 m du sol (tol 0.65) ; … et 5 autre(s)
+  [OK]   le filet a VU le sabotage, sur SON critère.
+=== D3 — deux lieux du lot partagent la même PackedScene ===
+    cible     : scripts/world_v2/poi/world_v2_places_builder.gd
+    signature : D3 .*signature de composition IDENTIQUE
+  [ÉCHEC] le sabotage n'a RIEN changé : le motif ne correspond plus.
+          Un contrôle négatif qui ne casse rien est un faux témoin.
+=== D4 — le lieu est déplacé dans le lit de la rivière ===
+    cible     : scripts/world_v2/poi/overlook_summit_place.gd
+    signature : D4 .*(bande creusée|posé en)
+      ÉCHEC test_world_v2_lot1_defauts.gd::test_d2_rien_ne_flotte_et_rien_n_est_enterre — D2 bâti flottant ou enterré (6 écart(s)) : D2 valley.poi.overlook_summit.01 : racine à y=22.00, sol gelé à -1.22 ; D2 valley.poi.overlook_summit.01 : appui (6.5, 14.0) à 22.85 m du sol (tol 0.65) ; D2 valley.poi.overlook_summit.01 : appui (13.0, 9.0) à 22.90 m du sol (tol 0.65) ; D2 valley.poi.overlook_summit.01 : appui (4.0, 17.6) à 22.30 m du sol (tol 0.65) ; D2 valley.poi.overlook_summit.01 : appui (2.6, 18.4) à 22.41 m du sol (tol 0.65) ; D2 valley.poi.overlook_summit.01 : appui (3.8, 15.6) à 22.93 m du sol (tol 0.65)
+      ÉCHEC test_world_v2_lot1_defauts.gd::test_d4_ni_route_ni_eau_ni_camera_ne_sont_obstruees — D4 obstruction (7 écart(s)) : D4 valley.poi.overlook_summit.01 : site à 0.0 m du cours principal (bande creusée 9.5 m) ; D4 valley.poi.overlook_summit.01 : posé en (0.0, 10.0), layout (168.0, 52.0) ; D4 valley.poi.overlook_summit.01 bloque ruins_route vers (5, 20) — dégagement 1.2 m ; D4 valley.poi.overlook_summit.01 bloque ruins_route vers (5, 19) — dégagement 1.2 m ; D4 valley.poi.overlook_summit.01 bloque ruins_route vers (5, 19) — dégagement 1.2 m ; D4 … 14 empiétement(s) de route au total ; … et 1 autre(s)
+    === RÉSULTAT: 9 réussi(s), 2 échoué(s) ===
+      ÉCHEC: test_world_v2_lot1_defauts.gd::test_d2_rien_ne_flotte_et_rien_n_est_enterre — D2 bâti flottant ou enterré (6 écart(s)) : D2 valley.poi.overlook_summit.01 : racine à y=22.00, sol gelé à -1.22 ; D2 valley.poi.overlook_summit.01 : appui (6.5, 14.0) à 22.85 m du sol (tol 0.65) ; D2 valley.poi.overlook_summit.01 : appui (13.0, 9.0) à 22.90 m du sol (tol 0.65) ; D2 valley.poi.overlook_summit.01 : appui (4.0, 17.6) à 22.30 m du sol (tol 0.65) ; D2 valley.poi.overlook_summit.01 : appui (2.6, 18.4) à 22.41 m du sol (tol 0.65) ; D2 valley.poi.overlook_summit.01 : appui (3.8, 15.6) à 22.93 m du sol (tol 0.65)
+      ÉCHEC: test_world_v2_lot1_defauts.gd::test_d4_ni_route_ni_eau_ni_camera_ne_sont_obstruees — D4 obstruction (7 écart(s)) : D4 valley.poi.overlook_summit.01 : site à 0.0 m du cours principal (bande creusée 9.5 m) ; D4 valley.poi.overlook_summit.01 : posé en (0.0, 10.0), layout (168.0, 52.0) ; D4 valley.poi.overlook_summit.01 bloque ruins_route vers (5, 20) — dégagement 1.2 m ; D4 valley.poi.overlook_summit.01 bloque ruins_route vers (5, 19) — dégagement 1.2 m ; D4 valley.poi.overlook_summit.01 bloque ruins_route vers (5, 19) — dégagement 1.2 m ; D4 … 14 empiétement(s) de route au total ; … et 1 autre(s)
+  [OK]   le filet a VU le sabotage, sur SON critère.
+=== D5 — le site du layout est recopié en dur dans le script ===
+    cible     : scripts/world_v2/poi/forest_shrine_place.gd
+    signature : D5 .*littéral de site
+      ÉCHEC test_world_v2_lot1_defauts.gd::test_d5_aucune_position_de_site_n_est_codee_en_dur — D5 placement codé en dur (1 écart(s)) : D5 valley.poi.forest_shrine.01 : littéral de site (86, 74) TROUVÉ dans forest_shrine_place.gd — « Vector3(86, 0.0, 74) ». La position vient du layout, pas du fichier de lieu.
+    === RÉSULTAT: 10 réussi(s), 1 échoué(s) ===
+      ÉCHEC: test_world_v2_lot1_defauts.gd::test_d5_aucune_position_de_site_n_est_codee_en_dur — D5 placement codé en dur (1 écart(s)) : D5 valley.poi.forest_shrine.01 : littéral de site (86, 74) TROUVÉ dans forest_shrine_place.gd — « Vector3(86, 0.0, 74) ». La position vient du layout, pas du fichier de lieu.
+  [OK]   le filet a VU le sabotage, sur SON critère.
+=== D6 — la table des récompenses change le contenu canonique ===
+    cible     : scripts/world/discovery_rewards.gd
+    signature : D6 .*récompense
+      ÉCHEC test_world_v2_lot1_defauts.gd::test_d6_chaque_recompense_canonique_est_raccordee — D6 récompense non raccordée (1 écart(s)) : D6 valley.poi.watchtower_ruin.01 : récompense « arrows:5 », le contrat §1 dit « arrows:15 »
+    === RÉSULTAT: 10 réussi(s), 1 échoué(s) ===
+      ÉCHEC: test_world_v2_lot1_defauts.gd::test_d6_chaque_recompense_canonique_est_raccordee — D6 récompense non raccordée (1 écart(s)) : D6 valley.poi.watchtower_ruin.01 : récompense « arrows:5 », le contrat §1 dit « arrows:15 »
+  [OK]   le filet a VU le sabotage, sur SON critère.
+=== D7 — quarante formes de collision sont ajoutées à un micro-POI ===
+    cible     : scripts/world_v2/poi/turquoise_spring_place.gd
+    signature : D7 .*budget collisions
+      ÉCHEC test_world_v2_lot1_defauts.gd::test_d7_aucun_budget_de_lieu_n_est_depasse — D7 budget dépassé (1 écart(s)) : D7 valley.poi.turquoise_spring.01 (micro) : budget collisions 44 > 6
+    === RÉSULTAT: 10 réussi(s), 1 échoué(s) ===
+      ÉCHEC: test_world_v2_lot1_defauts.gd::test_d7_aucun_budget_de_lieu_n_est_depasse — D7 budget dépassé (1 écart(s)) : D7 valley.poi.turquoise_spring.01 (micro) : budget collisions 44 > 6
+  [OK]   le filet a VU le sabotage, sur SON critère.
+=== D8 — un fichier gelé reçoit un commentaire ===
+    cible     : scripts/world_v2/world_v2_heightmap.gd
+    signature : D8 gel|D8 régression sur le gel
+      ÉCHEC test_world_v2_lot1_defauts.gd::test_d8_aucun_element_gele_n_a_bouge — D8 régression sur le gel (1 écart(s)) : D8 gel : scripts/world_v2/world_v2_heightmap.gd a BOUGÉ (sha256 8af52b24df04… au lieu de 5f703a82a4f6…)
+    === RÉSULTAT: 10 réussi(s), 1 échoué(s) ===
+      ÉCHEC: test_world_v2_lot1_defauts.gd::test_d8_aucun_element_gele_n_a_bouge — D8 régression sur le gel (1 écart(s)) : D8 gel : scripts/world_v2/world_v2_heightmap.gd a BOUGÉ (sha256 8af52b24df04… au lieu de 5f703a82a4f6…)
+  [OK]   le filet a VU le sabotage, sur SON critère.
+
+=== CONTRÔLE NÉGATIF LOT 1 (mode lot1) — 8 déclaré(s), 7 joué(s), 1 ignoré(s), 7 validé(s) ===
