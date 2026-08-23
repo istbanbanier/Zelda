@@ -158,8 +158,14 @@ func _calibration(lieux: Dictionary) -> void:
 
 
 func _compter(lieu: Node3D) -> Dictionary:
+	# Amendement §2 du 2026-08-23 : le sous-arbre d'un `RewardAnchor` ne compte
+	# pas comme MODULE (machinerie de contrat, jugée par D6, pas une pièce de
+	# composition). L'AIRE, elle, reste sommée sur tout le lieu : le plafond
+	# D1a a été calibré récompenses comprises, des deux côtés de la comparaison.
 	var modules: int = 0
 	for noeud: Node in lieu.find_children("*", "Node", true, false):
+		if _sous_ancrage(noeud, lieu):
+			continue
 		if not noeud.scene_file_path.is_empty():
 			modules += 1
 	var aire_totale: float = 0.0
@@ -181,7 +187,8 @@ func _compter(lieu: Node3D) -> Dictionary:
 		var aire: float = _aire(instance)
 		aire_totale += aire
 		if instance.mesh.resource_path.is_empty():
-			modules += 1
+			if not _sous_ancrage(noeud, lieu):
+				modules += 1
 			if not exemptions.has(String(instance.name)):
 				aire_runtime += aire
 	var visuels: int = lieu.find_children("*", "VisualInstance3D", true, false).size()
@@ -191,6 +198,17 @@ func _compter(lieu: Node3D) -> Dictionary:
 		pct = 100.0 * aire_runtime / aire_totale
 	return {"modules": modules, "visuels": visuels, "collisions": collisions,
 		"aire_totale": aire_totale, "runtime_pct": pct}
+
+
+## Vrai si `noeud` est un `RewardAnchor` ou vit dans son sous-arbre, en
+## s'arrêtant à la racine du lieu — même règle que le filet D7.
+func _sous_ancrage(noeud: Node, lieu: Node3D) -> bool:
+	var courant: Node = noeud
+	while courant != null and courant != lieu:
+		if courant is RewardAnchor:
+			return true
+		courant = courant.get_parent()
+	return false
 
 
 ## Type de primitive d'une surface, sûr pour TOUT `Mesh` — même piège que le

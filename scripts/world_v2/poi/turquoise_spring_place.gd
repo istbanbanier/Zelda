@@ -113,16 +113,24 @@ func _build() -> void:
 
 	# — LE FIL QUI S'EN VA. Trois dalles mouillées, à demi enfoncées, qui
 	# descendent au nord-est vers la tête de l'affluent (local +6 ; −6). La
-	# dernière s'arrête à 5,0 m d'elle : le lit gelé reste libre.
+	# dernière s'arrête à 5,0 m d'elle : le lit gelé reste libre. Chacune
+	# DÉCLARE son assise : ce sont les seules pièces portées du tiers est de
+	# l'emprise (x jusqu'à +1,6), et le filet D2 exige un appui là-bas —
+	# la vasque et la gueule, tout à l'ouest, ne prouvent rien de ce côté.
 	for spec: Array in [[-1.2, -3.4, 24.0, &"RockPath_Round_Small_1"],
 			[0.6, -4.4, -51.0, &"RockPath_Square_Small_1"],
 			[1.6, -5.0, 12.0, &"RockPath_Round_Small_1"]]:
+		var assise: Vector3 = _seated(float(spec[0]), float(spec[1]))
 		K.module(self, spec[3] as StringName,
-			_seated(float(spec[0]), float(spec[1]))
-				+ Vector3(0.0, -0.05, 0.0), float(spec[2]), 1.0, TONE_RIM)
-	# La frange humide : elle marque le fil de l'eau sans le border.
+			assise + Vector3(0.0, -0.05, 0.0), float(spec[2]), 1.0, TONE_RIM)
+		declare_support(assise)
+	# La frange humide : elle marque le fil de l'eau sans le border. Une seule
+	# pièce — le lieu a cédé son Plant_7 au budget D7 (2026-08-23) :
+	# `NappeSource` est un module runtime qui COMPTE (règle anti-empilement du
+	# §2, pas d'exemption), donc 12 pièces de kit + la nappe faisaient 13.
+	# C'est la fougère du déversoir qui reste : elle borde les dalles portées,
+	# la plante isolée du sud ne marquait rien.
 	K.module(self, &"Fern_1", _seated(-5.6, -4.4), 28.0, 1.0, K.TONE_PLANT)
-	K.module(self, &"Plant_7", _seated(-4.4, 4.2), -63.0, 1.0, K.TONE_PLANT)
 
 	_collisions()
 
@@ -160,6 +168,11 @@ func _build() -> void:
 ## Deux anneaux, et une valeur de sommet par anneau : sans dégradé, une
 ## nappe turquoise unie se lit comme une décalcomanie posée sur l'herbe.
 func _nappe() -> void:
+	# L'exemption d'AIRE revendiquée dans l'en-tête, RÉELLEMENT posée (même
+	# omission de câblage que les tertres du cimetière, corrigée le
+	# 2026-08-23). Elle ne porte QUE sur D1a : au budget D7 la nappe reste un
+	# module compté — c'est pour ça que le lieu a cédé son Plant_7.
+	set_meta(&"exemption_runtime", PackedStringArray(["NappeSource"]))
 	var nappe: MeshInstance3D = MeshInstance3D.new()
 	nappe.name = "NappeSource"
 	var segments: int = 40

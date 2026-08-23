@@ -72,6 +72,23 @@ trois nombres se lisent sur la **scène montée**, jamais sur le source :
   compte une pièce de kit instanciée, le second une pièce **construite en
   runtime** — R2B a rejeté « un empilement de blocs » précisément parce qu'un
   bloc procédural est un module comme un autre. La racine du lieu ne compte pas.
+
+  **Amendement mesuré du 2026-08-23 — le sous-arbre de `AncrageRecompense` ne
+  compte pas.** Mesuré sur la scène montée : les trois micro-POI du lot portent
+  chacun EXACTEMENT 12 modules de composition, et c'est la machinerie de
+  récompense qui déborde — 3 nœuds pour une arme
+  (`WeaponPickup.tscn` + `SimpleBow.tscn` + `SM_SimpleBow.glb`), 2 maillages
+  runtime pour un ingrédient (`Berry` + `Stem`) — une structure dictée par
+  `RewardAnchor._grant()`, identique pour toute récompense du même genre,
+  sur laquelle l'auteur du lieu n'a aucun choix. La compter ferait varier le
+  budget de composition effectif selon le GENRE de récompense (9 pour une
+  arme, 10 pour un ingrédient), une asymétrie que la table du §1 n'a jamais
+  voulue ; et la récompense a déjà son juge, D6, qui la compare au littéral du
+  contrat. Le plafond (12) ne bouge pas ; l'exclusion est STRICTEMENT le
+  sous-arbre d'un nœud de classe `RewardAnchor`. `NappeSource` (source aux
+  reflets) reste comptée : c'est une pièce construite par l'auteur, la règle
+  anti-empilement s'y applique pleinement — et c'est pourquoi la source a dû
+  céder une vraie pièce de kit au lieu de passer par l'amendement.
 - **nœud visuel** = `VisualInstance3D`, **et non** `MeshInstance3D`. La
   distinction n'est pas cosmétique : un `MultiMeshInstance3D` — la forme
   attendue d'un champ de fleurs — échappe entièrement au second, et un compteur
@@ -245,7 +262,16 @@ et l'étage image est éprouvé par son propre témoin dégénéré (§3.5).
 
 ### D4 — obstruction
 
-**Mesure.** Sur les `CollisionShape3D` des lieux du lot, trois familles :
+**Mesure.** Sur les `CollisionShape3D` **portées par un `StaticBody3D`** des
+lieux du lot, trois familles.
+
+*Précision mesurée du 2026-08-23 : « portées par un `StaticBody3D` ». La
+première version ramassait toute `CollisionShape3D`, donc aussi la sphère de
+découverte (`PointOfInterest extends Area3D`, un déclencheur qui n'obstrue
+rien) — 75 faux empiétements au sanctuaire et un faux « DANS LE LIT » à la
+source, sans qu'aucun corps solide n'approche. Le filet de référence
+(`test_world_v2_places_contract.gd`) ne compte que les formes d'un
+`StaticBody3D` ; ce contrat s'y aligne.*
 
 - routes contractuelles, dégagement **1,2 m** autour de chaque échantillon ;
 - **bandes creusées de l'eau** : 9,5 m du cours principal, 6,3 m de l'affluent,

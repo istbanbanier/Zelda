@@ -432,18 +432,29 @@ func test_d4_ni_route_ni_eau_ni_camera_ne_sont_obstruees() -> void:
 	# LIT d'un cours d'eau. Le lit et non la berge : le contrat demande un
 	# belvédère « au bord de son bassin », et un filet qui interdirait la berge
 	# rejetterait ce que le contrat exige.
+	#
+	# CORPS SOLIDES SEULEMENT. Mesuré le 2026-08-23 : la première version de ce
+	# filet ramassait toute `CollisionShape3D`, donc aussi la sphère de
+	# DÉCOUVERTE des lieux (`PointOfInterest extends Area3D`, un déclencheur qui
+	# n'obstrue rien) — 75 faux empiétements au sanctuaire (sphère r = 9 m sur
+	# la route des hauteurs) et un faux « DANS LE LIT » à la source (sphère
+	# r = 12 m sur l'affluent), alors qu'aucun corps solide n'approche. Le filet
+	# de référence (`test_world_v2_places_contract.gd`) ne compte que les formes
+	# portées par un `StaticBody3D` ; celui-ci fait pareil.
 	var empreintes: Array[AABB] = []
 	var porteurs: Array[StringName] = []
 	for id: StringName in LOT1:
 		var lieu: Node3D = _lieu(id)
 		if lieu == null:
 			continue
-		for noeud: Node in lieu.find_children("*", "CollisionShape3D", true, false):
-			var boite: AABB = _emprise_forme(noeud as CollisionShape3D)
-			if boite.size == Vector3.ZERO:
-				continue
-			empreintes.append(boite)
-			porteurs.append(id)
+		for corps: Node in lieu.find_children("*", "StaticBody3D", true, false):
+			for noeud: Node in (corps as StaticBody3D).find_children(
+					"*", "CollisionShape3D", false, false):
+				var boite: AABB = _emprise_forme(noeud as CollisionShape3D)
+				if boite.size == Vector3.ZERO:
+					continue
+				empreintes.append(boite)
+				porteurs.append(id)
 	var bloquages: int = 0
 	for route: Node in _world.get_tree().get_nodes_in_group(&"world_v2_routes"):
 		var jalons: Array = route.get_meta(&"waypoints_xz", []) as Array
@@ -949,13 +960,22 @@ func _signature_composition(lieu: Node3D) -> String:
 	return "|".join(pieces)
 
 
-## Les trois compteurs du budget, définis dans docs/V2_3_B_LOT1_CONTROLES.md §2.
+## Les trois compteurs du budget, définis dans docs/V2_3_B_LOT1_CONTROLES.md §2
+## (amendement du 2026-08-23 compris : le sous-arbre d'un `RewardAnchor` ne
+## compte pas comme module — c'est de la machinerie de contrat, identique pour
+## toute récompense du même genre, et D6 est son juge. Mesuré : la compter
+## faisait déborder les trois micro-POI alors que leur composition tient
+## exactement dans 12).
 func _compter_budget(lieu: Node3D) -> Dictionary:
 	var modules: int = 0
 	for noeud: Node in lieu.find_children("*", "Node", true, false):
+		if _sous_ancrage(noeud, lieu):
+			continue
 		if not (noeud as Node).scene_file_path.is_empty():
 			modules += 1
 	for noeud: Node in lieu.find_children("*", "MeshInstance3D", true, false):
+		if _sous_ancrage(noeud, lieu):
+			continue
 		var instance: MeshInstance3D = noeud as MeshInstance3D
 		if instance.mesh != null and instance.mesh.resource_path.is_empty():
 			modules += 1
@@ -967,6 +987,17 @@ func _compter_budget(lieu: Node3D) -> Dictionary:
 	# micro-POI passerait sans que rien ne bronche.
 	var collisions: int = lieu.find_children("*", "CollisionShape3D", true, false).size()
 	return {"modules": modules, "visuels": visuels, "collisions": collisions}
+
+
+## Vrai si `noeud` est un `RewardAnchor` ou vit dans le sous-arbre d'un tel
+## ancrage, en s'arrêtant à la racine du lieu.
+func _sous_ancrage(noeud: Node, lieu: Node3D) -> bool:
+	var courant: Node = noeud
+	while courant != null and courant != lieu:
+		if courant is RewardAnchor:
+			return true
+		courant = courant.get_parent()
+	return false
 
 
 func _triangles(mesh: Mesh) -> int:

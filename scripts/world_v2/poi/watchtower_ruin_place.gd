@@ -204,12 +204,16 @@ func _talus(base_y: float) -> void:
 	K.module(pente, &"SM_Dungeon_RubbleSmall", _seated(0.9, 2.6), 12.0, 0.95,
 		TONE_FALLEN)
 	# Deux panneaux de mur COUCHÉS : la maçonnerie du haut est retombée
-	# entière par plaques, elle ne s'est pas dissoute en cailloux.
+	# entière par plaques, elle ne s'est pas dissoute en cailloux. Chaque
+	# plaque DÉCLARE son assise : ce sont elles qui portent l'emprise au sud
+	# (z = −3,0) et au nord (z = +3,2) — sans ces appuis, le filet D2 a
+	# raison de dire qu'un appui central ne prouve rien du tiers bas.
 	for spec: Array in [[2.2, -3.0, 27.0, 84.0], [4.1, 3.2, -14.0, 79.0]]:
+		var assise: Vector3 = _seated(float(spec[0]), float(spec[1]))
 		var plaque: Node3D = K.module(self, &"Wall_UnevenBrick_Straight",
-			_seated(float(spec[0]), float(spec[1])), float(spec[2]), 1.0,
-			TONE_FALLEN)
+			assise, float(spec[2]), 1.0, TONE_FALLEN)
 		_coucher(plaque, float(spec[3]), 0.02)
+		declare_support(assise)
 	# LE BLOC DE COURONNE, resté pris sous la lèvre. À 6,4 m à l'est le sol
 	# est déjà 2,6 m plus bas : il est franchement dans la pente, et c'est
 	# lui qui raconte que la tour est tombée dans le vide.
@@ -223,8 +227,10 @@ func _talus(base_y: float) -> void:
 	# 4,83 (0,321 m natif → 1,55 m de cible), et l'échelle d'appel se
 	# MULTIPLIE à cette correction. À 1,35 ce caillou de pied aurait fait
 	# 6,9 m de large — mesure faite avant de poser, pas après capture.
-	K.module(self, &"rock_largeC", _seated(-5.1, -3.6), -21.0, 0.37,
-		K.TONE_DARK_STONE)
+	# Lui aussi déclare son assise : c'est le point porté le plus au sud-ouest.
+	var pied: Vector3 = _seated(-5.1, -3.6)
+	K.module(self, &"rock_largeC", pied, -21.0, 0.37, K.TONE_DARK_STONE)
+	declare_support(pied)
 	_collisions(base_y)
 
 

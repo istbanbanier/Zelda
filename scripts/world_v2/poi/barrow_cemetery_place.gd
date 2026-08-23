@@ -59,6 +59,14 @@ func default_place_id() -> StringName:
 
 
 func _build() -> void:
+	# L'exemption revendiquée dans l'en-tête, RÉELLEMENT posée — mesuré le
+	# 2026-08-23 : revendiquée en prose mais jamais câblée, elle n'exemptait
+	# rien, et D1a rendait 55,7 % d'aire runtime sur ce lieu. Le titre de
+	# l'exemption est vérifié dans `_tertre()` : chaque sommet appelle
+	# `ground_local_y(x, z)` — un gonflement du terrain gelé ne peut pas être
+	# un GLB, même famille que `SolBrule`.
+	set_meta(&"exemption_runtime", PackedStringArray(
+		["Tertre_Grand", "Tertre_Moyen", "Tertre_Petit"]))
 	for spec: Array in TERTRES:
 		_tertre(String(spec[0]), float(spec[1]), float(spec[2]),
 			float(spec[3]), float(spec[4]), int(spec[5]))
