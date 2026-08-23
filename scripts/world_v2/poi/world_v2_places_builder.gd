@@ -38,6 +38,18 @@ const REGISTRY: Dictionary = {
 	&"valley.poi.conductive_basin.01":
 		"res://scenes/world_v2/poi/ConductiveBasinPlace.tscn",
 	&"pylon": "res://scenes/world_v2/landmarks/ResonancePylon.tscn",
+	&"valley.poi.watchtower_ruin.01":
+		"res://scenes/world_v2/poi/WatchtowerRuinPlace.tscn",
+	&"valley.poi.overlook_summit.01":
+		"res://scenes/world_v2/poi/OverlookSummitPlace.tscn",
+	&"valley.poi.turquoise_spring.01":
+		"res://scenes/world_v2/poi/TurquoiseSpringPlace.tscn",
+	&"valley.poi.forest_shrine.01":
+		"res://scenes/world_v2/poi/ForestShrinePlace.tscn",
+	&"valley.poi.barrow_cemetery.01":
+		"res://scenes/world_v2/poi/BarrowCemeteryPlace.tscn",
+	&"valley.poi.flower_field.01":
+		"res://scenes/world_v2/poi/FlowerFieldPlace.tscn",
 }
 
 var _heightmap: WorldV2Heightmap = null
