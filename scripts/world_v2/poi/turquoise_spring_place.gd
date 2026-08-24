@@ -11,44 +11,95 @@
 ## sol rend de la roche stratifiée au-delà de 55° : la paroi EST là, et
 ## elle est déjà minérale. Ce lieu n'a donc aucune falaise à construire.
 ##
-## LE CADRE COMMUN, calculé avant de poser une pierre : depuis la vasque,
-## un œil à 1,70 m qui vise le sommet de la tour (24 m à l'ouest, +23,1 m)
-## passe à 20,4 m d'altitude relative au droit de la lèvre, laquelle n'est
-## qu'à 14,0 m — le haut de la tour se détache donc sur le ciel. Le même
-## calcul vers le PIED de la tour (+14,0 m) passe à 12,5 m au droit de la
-## lèvre : le pied, lui, reste caché. On voit la ruine, jamais son assise.
-## C'est ce qui fait d'elle un but plutôt qu'un décor.
+## REWORK V2.3-B LOT 1.R (voie A). Le verdict Codex a rejeté la version
+## précédente : « elle ne se lit ni comme turquoise ni comme une source
+## cohérente » — nappe QUASI BLANCHE (le piège albédo/gain exact de
+## `scripts/CLAUDE.md`), `SM_Dungeon_CaveArch` architecturale posée devant
+## l'eau, épaules terracotta (captures :
+## `evidence/world_v2/v2_3_b/lot1/poi/turquoise_spring_identite.png`).
+## Trois décisions en découlent, aucune négociable :
+##
+##  1. L'EAU EST CELLE DE LA RIVIÈRE — même shader
+##     (`shaders/world_v2/SH_WorldV2Water.gdshader`, lu sans être modifié),
+##     même bruit (`WorldV2GroundMaterial.grain_texture()`), même
+##     convention de sommets que `world_v2_hydrology_builder.gd` :
+##     COLOR.r = profondeur 0-1 (pas de DEPTH_FULL_M 2,5 m ici : la vasque
+##     encode directement son facteur), COLOR.gb = courant (0,5 = immobile),
+##     COLOR.a = opacité. La continuité de teinte avec la rivière V2.2 est
+##     donc DE CONSTRUCTION, pas de calibrage.
+##  2. AUCUNE ARCHE, AUCUN PANNEAU : la famille `SM_Dungeon_*` est bannie
+##     du lieu. L'eau sort d'une FENTE sombre entre deux mâchoires de
+##     roche froide au pied de la pente (pieds enterrés, penchées l'une
+##     vers l'autre), coiffées d'un troisième rocher qui ferme le haut du
+##     creux — la bouche est un creux fermé, pas un intervalle.
+##  3. LA VASQUE A UN FOND : un lit sombre qui épouse le terrain sous la
+##     nappe — sans lui, une eau transparente posée sur l'herbe du pad se
+##     lit comme une décalcomanie (c'est la nappe blanche rejetée).
 ##
 ## L'AFFLUENT NAÎT ICI. Premier point de `west_tributary_xz` : (−130 ; 34),
 ## soit 8,49 m au nord-est du site — et `_trib_bed_curve(0)` vaut 11,0,
 ## donc une surface d'eau à 11,6 m, quarante centimètres SOUS le pad de la
 ## source (12,0). Le déversoir n'a rien à inventer : il pointe vers un lit
-## qui existe déjà et qui descend. Aucune pièce de ce lieu ne porte de
-## collider à moins de 5 m de cette tête de lit — la bande creusée de
+## qui existe déjà et qui descend. Le fil qui s'en va est une LANGUE du
+## maillage de nappe (même module, même shader) qui suit le sol vers les
+## dalles, et s'éteint bien avant la tête de lit. Aucune pièce de ce lieu
+## ne porte de collider à moins de 5 m de cette tête — la bande creusée de
 ## l'affluent (6,3 m de demi-largeur au contrat du lot) reste libre.
+##
+## LE LIEU AVAIT LA PROPORTION LA PLUS COMMUNE DU CORPUS (v7). Le détecteur
+## R-D3 rejoué sur les silhouettes du rework a rendu FAIL : source × ferme
+## abandonnée, IoU 0,506 à 30 m (seuil 0,493) et 0,494 à 80 m (seuil 0,491),
+## et source × belvédère 0,511 à 30 m. En aplat noir, cinq lieux du monde
+## rendent la même barre basse — hauteur ÷ emprise entre 0,25 et 0,30 :
+## ferme (0,255), camps de pillards (0,258), source (0,280), belvédère
+## (0,296), pont de pierre (0,300). Trois retouches sortent la source de
+## cette bande sans rien retirer à la fiction : la bouche baisse (mâchoires
+## ×1,35/×1,30 → ×1,15/×1,12, couronne redescendue), le bloc tombé cesse
+## d'être enfoui à −0,95 m, et le lieu s'étire sur son axe COURT (margelles
+## nord et sud écartées, bloc reculé au sud). La vasque, elle, GRANDIT
+## (R 3,0 → 3,3) : elle est la seule surface claire du ravin, donc sa part
+## d'image est la promesse elle-même.
 ##
 ## CE LIEU N'AJOUTE PAS D'EAU AU MONDE. `NappeSource` est un maillage
 ## visuel, sans collision, sans `WaterMatterComponent`, sans nœud de
-## graphe : l'hydrologie V2.2 est gelée et reste seule maîtresse. Et le
-## turquoise employé est celui de la bible §1.4 (`#4FAFB2` peu profond,
-## `#2A7182` au fond) — jamais le cyan de Résonance, qui est réservé aux
-## sites systémiques et au pylône.
+## graphe : l'hydrologie V2.2 est gelée et reste seule maîtresse. Le
+## turquoise est celui du shader de rivière — jamais le cyan de Résonance,
+## réservé aux sites systémiques et au pylône.
 class_name TurquoiseSpringPlace
 extends WorldV2Place
 
 const K: GDScript = preload("res://scripts/world_v2/poi/world_v2_place_kit.gd")
 
-## Roche du couchant : ocre froid, un ton sous la falaise pour que les
-## pièces posées se détachent du terrain au lieu de s'y dissoudre.
-const TONE_ROCK: Color = Color(0.82, 0.74, 0.63)
-const TONE_RIM: Color = Color(0.95, 0.90, 0.80)
-## Eau : clair au centre (peu profond, fond visible), sombre au bord.
-const EAU_CLAIRE: Color = Color(0.310, 0.686, 0.698)
-const EAU_PROFONDE: Color = Color(0.165, 0.443, 0.510)
+## Roche du couchant — RECETTE V2.2 (v3), jugée sur captures v1/v2 :
+##  - `Rock_Medium_*` (atlas Rocks) : couleurs de sommet COUPÉES
+##    (`vertex_color_use_as_albedo = false`, comme
+##    `world_v2_vegetation_builder.gd::_model_mesh` — sinon PISTACHE au
+##    soleil) + multiplicateur de la famille V2.2, un ton plus froid ici
+##    (ravin à l'ombre) ;
+##  - pièces Kenney (`rock_large*`) : matériaux à couleur PLATE — albédo
+##    POSÉ en absolu (un multiplicateur y rendait saumon/vert sapin en
+##    v2) : corps de roche froide humide, coiffe de mousse olive sombre.
+const TONE_ROCK_A: Color = Color(0.88, 0.85, 0.78)
+const TONE_ROCK_B: Color = Color(0.82, 0.80, 0.75)
+const TONE_RIM: Color = Color(0.80, 0.80, 0.78)
+## Lit de vasque : v4 — le CENTRE tire vers la sarcelle (dépôt minéral :
+## c'est le mécanisme réel d'une source turquoise — l'eau se colore par
+## son fond), le BORD reste terre humide. La teinte par sommet porte le
+## dégradé de HUE (elle multiplie par canal, pas seulement en valeur).
+const TONE_LIT: Color = Color(0.27, 0.27, 0.25)
+const LIT_CENTRE: Color = Color(0.52, 1.0, 0.98)
+const LIT_BORD: Color = Color(1.0, 0.92, 0.80)
 ## Centre de la vasque, dans le repère du lieu — au pied de la paroi.
 const BASSIN_X: float = -5.4
 const BASSIN_Z: float = 0.2
-const BASSIN_R: float = 3.0
+## 3,0 → 3,3 (v7). Deux raisons, aucune décorative : la vasque est la seule
+## surface CLAIRE d'un ravin sombre, donc sa part d'image EST la promesse
+## (addendum §3) ; et le rayon haché monte à R×1,08, soit 3,56 m — l'ancre
+## du fruit, à 3,84 m du centre, reste sur la berge avec 28 cm de marge.
+const BASSIN_R: float = 3.3
+## Direction du déversoir : de la vasque vers les dalles puis la tête
+## d'affluent (local +6 ; −6). Normalisée de (7,0 ; −5,2).
+const FIL_DIR: Vector2 = Vector2(0.803, -0.596)
 
 
 func default_place_id() -> StringName:
@@ -56,67 +107,98 @@ func default_place_id() -> StringName:
 
 
 func _build() -> void:
-	# — LA GUEULE. Une arche de roche au pied de la paroi, réduite à 0,62 :
-	# `SM_Dungeon_CaveArch` mesure 4,00 × 4,05 × 2,45 m, donc 2,48 × 2,51 ×
-	# 1,52 ici, pour une ouverture d'environ 1,2 m. C'est une FENTE dont
-	# l'eau sort, pas une grotte où l'on entre — la Grotte du couchant
-	# existe déjà à 43 m d'ici et c'est elle qui a le droit d'être une
-	# poche. Posée à 10,6 m à l'ouest, là où le sol commence tout juste à
-	# se relever (+0,62 m mesuré à r = 10,5).
-	var gueule: Vector3 = _seated(-10.6, 0.3)
-	K.module(self, &"SM_Dungeon_CaveArch", gueule, 92.0, 0.62, TONE_ROCK)
-	declare_support(gueule)
+	# — LES DEUX MÂCHOIRES. Deux rochers massifs au PIED de la pente,
+	# penchés l'un vers l'autre, qui ouvrent entre eux une fente sombre à
+	# (−9,6 ; 0,2) : c'est de là que l'eau sort. Ce n'est PAS une porte —
+	# deux modèles différents, deux azimuts, deux roulis opposés, pieds
+	# enterrés de 0,55 m.
+	#
+	# CHOIX DE FAMILLE JUGÉ SUR CAPTURE (v1, commit 63af918) : les pièces
+	# `cliff_*` posées haut sur la pente de 54° rendaient des plaques
+	# beiges FLOTTANTES contre la paroi sombre — refusées. `Rock_Medium_*`
+	# (atlas Rocks) rend gris-vert froid et s'assied au pied de pente.
+	# Dimensions calculées : nord Rock_Medium_1 ×1,15 → 3,7 × 2,6 × 3,4 m ;
+	# sud Rock_Medium_3 ×1,12 → 3,8 × 2,6 × 3,9 m.
+	#
+	# ÉCHELLES BAISSÉES EN v7 (×1,35 → ×1,15 ; ×1,30 → ×1,12), et ce n'est
+	# pas un renoncement. Le détecteur R-D3 rejoué sur le rework a rendu
+	# FAIL : source × ferme abandonnée, IoU 0,506 à 30 m et 0,494 à 80 m
+	# pour des seuils de 0,493 et 0,491. Le lieu tombait dans la bande de
+	# proportion la plus encombrée du corpus (H/emprise ≈ 0,26–0,30 : ferme,
+	# camps, pont, belvédère) — en aplat noir, cinq lieux y rendent la même
+	# barre basse. Baisser la bouche de ~0,5 m et élargir le lieu en Z sort
+	# la source de cette bande. L'intention y gagne aussi : « on veut
+	# s'approcher » (addendum §3) demande un creux à hauteur d'épaule, pas
+	# un porche — à 2,6 m la mâchoire fait encore une fois et demie le
+	# héros (1,78 m).
+	var machoire_n: Vector3 = _seated(-9.8, -1.9)
+	_teinter(_roche(&"Rock_Medium_1", -9.8, -1.9, 105.0, -8.0, 1.15, 0.55),
+		TONE_ROCK_A, TONE_ROCK_A, false)
+	declare_support(machoire_n)
+	var machoire_s: Vector3 = _seated(-9.5, 2.4)
+	_teinter(_roche(&"Rock_Medium_3", -9.5, 2.4, 244.0, 9.0, 1.12, 0.55),
+		TONE_ROCK_B, TONE_ROCK_B, false)
+	declare_support(machoire_s)
+	# — LA COURONNE : un troisième rocher plus petit, posé plus haut sur la
+	# pente entre les deux mâchoires, qui ferme le haut de la fente — l'eau
+	# sort d'un creux fermé, pas d'un intervalle entre deux objets.
+	# v7 : redescendue d'un demi-mètre le long de la pente (x −11,0 → −10,4,
+	# le sol y est ~0,35 m plus bas) et enfoncée plus franchement — elle
+	# COIFFE la fente au lieu de la surplomber.
+	var couronne: Vector3 = _seated(-10.4, 0.3)
+	_teinter(_roche(&"Rock_Medium_2", -10.4, 0.3, 12.0, 4.0, 0.85, 0.50),
+		TONE_ROCK_A, TONE_ROCK_A, false)
+	declare_support(couronne)
 
-	# — LES DEUX ÉPAULES, plus haut sur la pente, de tailles et d'azimuts
-	# différents : elles rattachent la fente à la paroi. Sans elles, une
-	# arche isolée sur un talus d'herbe se lit « posée ».
-	var epaule_n: Vector3 = _seated(-12.4, -2.6)
-	var nord: Node3D = K.module(self, &"SM_Dungeon_CaveWallHalf", epaule_n,
-		74.0, 1.0, TONE_ROCK)
-	if nord != null:
-		nord.rotation.z = deg_to_rad(6.0)
-	declare_support(epaule_n)
-	var epaule_s: Vector3 = _seated(-12.0, 3.4)
-	var sud: Node3D = K.module(self, &"SM_Dungeon_CaveWallHalf", epaule_s,
-		104.0, 0.85, TONE_ROCK)
-	if sud != null:
-		sud.rotation.z = deg_to_rad(-9.0)
-	declare_support(epaule_s)
-
-	# — LA VASQUE. La nappe D'ABORD, les margelles ensuite : les pierres se
-	# posent au bord de l'eau, pas l'inverse.
+	# — LA VASQUE. Le lit D'ABORD, la nappe ensuite, les margelles au bord
+	# de l'eau — jamais l'inverse.
+	_lit()
 	_nappe()
 	# ANNEAU ROMPU, jamais un cercle : trois margelles inégales au nord, à
 	# l'est et au sud, et RIEN à l'ouest — c'est de ce côté que l'eau
 	# arrive, et une margelle y boucherait la fente.
-	# Les échelles sont des MULTIPLICATEURS de la correction `KitScale` :
-	# `rock_largeA` y vaut ×4,23 et `rock_largeC` ×4,83. Les valeurs
-	# ci-dessous donnent des margelles de 2,20 / 1,55 / 2,00 m d'emprise —
-	# vérifiées au calcul avant la pose, pas devinées à la capture.
+	# v5 — mesuré sur captures v3/v4 : les pièces Kenney en margelles
+	# rendaient BLEU MARINE à couvercle noir dans l'ombre du ravin, même
+	# re-teintées (44-52 ; 58-66 ; 66-67). Les margelles rejoignent la
+	# famille `Rock_Medium` des mâchoires : MÊME matière, petite échelle,
+	# demi-enterrées — l'anneau appartient alors à la formation.
+	# La margelle EST fait aussi l'ÉCRIN de la récompense (audit v1 : le
+	# fruit flottait sans écrin) : le fruit se niche à son pied, côté eau.
+	# v7 — les margelles nord et sud suivent le nouveau rivage (R 3,0 → 3,3)
+	# et s'écartent d'un demi-mètre de plus sur l'axe nord-sud : c'est
+	# l'axe le plus court du lieu, et c'est en l'allongeant qu'on quitte la
+	# proportion « barre basse » partagée avec la ferme (voir la note des
+	# mâchoires). La margelle EST ne bouge pas : elle est l'écrin du fruit.
 	var margelles: Array[Array] = [
-		[-6.9, -2.5, 118.0, 0.51], [-3.4, -3.2, -34.0, 0.30],
-		[-6.2, 2.9, 61.0, 0.39],
+		[-7.3, -3.4, 118.0, 7.0, 0.52, &"Rock_Medium_2", 0.35],
+		[-3.0, 1.6, -34.0, -5.0, 0.42, &"Rock_Medium_1", 0.30],
+		[-6.8, 3.9, 61.0, 8.0, 0.40, &"Rock_Medium_3", 0.32],
 	]
 	for spec: Array in margelles:
 		var at: Vector3 = _seated(float(spec[0]), float(spec[1]))
-		var modele: StringName = &"rock_largeA" \
-			if float(spec[3]) > 0.45 else &"rock_largeC"
-		K.module(self, modele, at + Vector3(0.0, -0.10, 0.0),
-			float(spec[2]), float(spec[3]), TONE_RIM)
+		var margelle: Node3D = _roche(spec[5] as StringName, float(spec[0]),
+			float(spec[1]), float(spec[2]), float(spec[3]), float(spec[4]),
+			float(spec[6]))
+		_teinter(margelle, TONE_ROCK_A, TONE_ROCK_A, false)
 		declare_support(at)
 	# Un bloc TOMBÉ DE LA PAROI, demi-enterré au sud de la vasque : c'est
 	# lui qui donne l'échelle de la falaise au premier plan.
-	var bloc: Vector3 = _seated(-8.6, 4.6)
-	K.module(self, &"Rock_Medium_2", bloc + Vector3(0.0, -0.95, 0.0), 150.0,
-		1.0, TONE_ROCK)
+	# v7 : 1,9 m plus au sud (il tombe du même mur, plus loin le long de sa
+	# base) et moins enfoui (−0,95 → −0,60) — c'est lui qui tirait le bas de
+	# l'emprise à −0,95 m sans rien montrer de plus.
+	var bloc: Vector3 = _seated(-8.3, 6.5)
+	_teinter(K.module(self, &"Rock_Medium_2",
+		bloc + Vector3(0.0, -0.60, 0.0), 150.0, 1.0, Color.WHITE),
+		TONE_ROCK_B, TONE_ROCK_B, false)
 	declare_support(bloc)
 
 	# — LE FIL QUI S'EN VA. Trois dalles mouillées, à demi enfoncées, qui
-	# descendent au nord-est vers la tête de l'affluent (local +6 ; −6). La
-	# dernière s'arrête à 5,0 m d'elle : le lit gelé reste libre. Chacune
-	# DÉCLARE son assise : ce sont les seules pièces portées du tiers est de
-	# l'emprise (x jusqu'à +1,6), et le filet D2 exige un appui là-bas —
-	# la vasque et la gueule, tout à l'ouest, ne prouvent rien de ce côté.
+	# descendent au nord-est vers la tête de l'affluent (local +6 ; −6),
+	# le long de la langue d'eau de la nappe. La dernière s'arrête à 5,0 m
+	# de la tête : le lit gelé reste libre. Chacune DÉCLARE son assise :
+	# ce sont les seules pièces portées du tiers est de l'emprise, et le
+	# filet D2 exige un appui là-bas — la vasque et la fente, tout à
+	# l'ouest, ne prouvent rien de ce côté.
 	for spec: Array in [[-1.2, -3.4, 24.0, &"RockPath_Round_Small_1"],
 			[0.6, -4.4, -51.0, &"RockPath_Square_Small_1"],
 			[1.6, -5.0, 12.0, &"RockPath_Round_Small_1"]]:
@@ -124,13 +206,9 @@ func _build() -> void:
 		K.module(self, spec[3] as StringName,
 			assise + Vector3(0.0, -0.05, 0.0), float(spec[2]), 1.0, TONE_RIM)
 		declare_support(assise)
-	# La frange humide : elle marque le fil de l'eau sans le border. Une seule
-	# pièce — le lieu a cédé son Plant_7 au budget D7 (2026-08-23) :
-	# `NappeSource` est un module runtime qui COMPTE (règle anti-empilement du
-	# §2, pas d'exemption), donc 12 pièces de kit + la nappe faisaient 13.
-	# C'est la fougère du déversoir qui reste : elle borde les dalles portées,
-	# la plante isolée du sud ne marquait rien.
-	K.module(self, &"Fern_1", _seated(-5.6, -4.4), 28.0, 1.0, K.TONE_PLANT)
+	# (La fougère d'avant a cédé sa place au budget D7 : le lit de vasque
+	# est un module runtime qui COMPTE — 10 pièces de kit + nappe + lit
+	# font exactement 12.)
 
 	_collisions()
 
@@ -147,35 +225,161 @@ func _build() -> void:
 	poi.add_child(shape)
 	add_child(poi)
 	# Le fruit de soin pousse au bord de l'eau, côté est — le côté par
-	# lequel on arrive, et le seul qui ne soit pas contre la paroi.
+	# lequel on arrive, et le seul qui ne soit pas contre la paroi. Il est
+	# POSÉ AU SOL, niché au pied de la margelle est (audit v1 : il flottait
+	# à 0,3-0,5 m sans écrin — l'ancrage descend à +0,04 et la margelle
+	# déplacée en (−3,0 ; 1,6) lui fait un dos de pierre).
+	# −0,06 : `IngredientPickup` dessine sa baie centrée à +0,22 (rayon
+	# 0,14) au-dessus de l'ancre — la baie touche donc le sol au lieu de
+	# flotter (audit : trois captures avec le fruit en lévitation).
 	RewardAnchor.attach(self, default_place_id(),
 		RewardAnchor.Kind.INGREDIENT,
-		_seated(-2.6, 2.4) + Vector3(0.0, 0.12, 0.0), Vector3(2.0, 0.0, 2.0))
+		_seated(-2.4, 2.6) + Vector3(0.0, -0.06, 0.0), Vector3(2.0, 0.0, 2.0))
 
 
-## LA NAPPE — le SEUL maillage construit en runtime de ce lieu, et le seul
-## du lot de la voie B avec les tertres du cimetière. L'exemption est
-## NOMMÉE, comme `SolBrule` de l'arbre foudroyé et `rock_floor_mesh` de la
-## grotte, et pour la même raison : une surface d'eau doit être DE NIVEAU
-## dans une cuvette dont le fond est le terrain gelé. Aucun module de kit
-## ne peut faire ça, et un plan importé serait faux dès que le pad bougerait.
+## LE LIT DE VASQUE — terre noyée sombre qui ÉPOUSE le terrain (chaque
+## sommet échantillonne le sol gelé, +3 cm), sous la nappe et sous sa
+## langue de déversoir. Exemption D1a NOMMÉE, même titre que la nappe :
+## une surface qui suit le terrain sommet par sommet, comme `SolBrule` de
+## l'arbre foudroyé. Sans lui, l'eau transparente laisse voir l'herbe du
+## pad et la vasque se lit décalcomanie — c'est le défaut rejeté.
+func _lit() -> void:
+	var lit: MeshInstance3D = MeshInstance3D.new()
+	lit.name = "FondVasque"
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var segments: int = 40
+	var rayons: PackedFloat32Array = _rayons_vasque(segments)
+	var centre_y: float = _y_sol(BASSIN_X, BASSIN_Z, 0.03)
+	var bord: PackedVector3Array = PackedVector3Array()
+	for i: int in range(segments):
+		var angle: float = TAU * float(i) / float(segments)
+		# STRICTEMENT SOUS la nappe (−0,15) : en v1 puis v2 le lit
+		# débordait du rivage et dessinait un ANNEAU NOIR autour de l'eau
+		# (mesuré sur les deux captures). Le bord du lit doit mourir sous
+		# l'eau ; c'est l'herbe du pad qui rencontre la rive, et la mousse
+		# du shader qui fait la transition.
+		var r: float = rayons[i] - 0.15 + _bosse_ouest(angle) * 1.15
+		var px: float = BASSIN_X + cos(angle) * r
+		var pz: float = BASSIN_Z + sin(angle) * r
+		bord.append(Vector3(px, _y_sol(px, pz, 0.03), pz))
+	var centre: Vector3 = Vector3(BASSIN_X, centre_y, BASSIN_Z)
+	for i: int in range(segments):
+		var j: int = (i + 1) % segments
+		# Centre SARCELLE, bord terre : le dégradé de teinte du fond est
+		# ce qui colore l'eau transparente au-dessus de lui.
+		var t_bord: Color = Color(
+			LIT_BORD.r * (0.90 + 0.08 * _alea(float(i) * 3.1)),
+			LIT_BORD.g * (0.90 + 0.08 * _alea(float(i) * 3.1)),
+			LIT_BORD.b * (0.90 + 0.08 * _alea(float(i) * 3.1)), 1.0)
+		_tri_couleur(st, centre, bord[i], bord[j], LIT_CENTRE, t_bord)
+	# L'ombre du fil : une bande humide sous la langue du déversoir, un
+	# peu plus large qu'elle — le sol mouillé déborde toujours l'eau.
+	_bande(st, 2.65, 5.1, 1.15, 0.62, 0.03, Color(0.88, 0.84, 0.74, 1.0),
+		Color(1.0, 0.95, 0.85, 1.0))
+	lit.mesh = st.commit()
+	var terre: StandardMaterial3D = K.flat_material(TONE_LIT)
+	terre.vertex_color_use_as_albedo = true
+	lit.mesh.surface_set_material(0, terre)
+	add_child(lit)
+
+
+## LA NAPPE — le maillage d'eau du lieu : la vasque, sa bouche sous la
+## fente, et la LANGUE du déversoir qui suit le sol vers les dalles.
+## Un seul module runtime, un seul matériau : le shader de la rivière V2.2.
 ##
 ## Le bord n'est PAS harmonique. L'arbre foudroyé a payé une revue pour
 ## avoir modulé son disque par deux sinus purs : cinq lobes réguliers, une
 ## « étoile ». Ici le rayon vient d'un hachage par secteur lissé sur trois
 ## voisins — la modulation n'a plus de période.
 ##
-## Deux anneaux, et une valeur de sommet par anneau : sans dégradé, une
-## nappe turquoise unie se lit comme une décalcomanie posée sur l'herbe.
+## Couleurs de sommet = convention EXACTE de l'hydrologie V2.2 :
+## R profondeur (0 = rive mousseuse, 1 = fond), GB courant encodé
+## (0,5 = immobile), A opacité. Le shader fait le reste — turquoise au
+## bord, pétrole au centre, mousse cassée à la rive, rides dérivantes.
 func _nappe() -> void:
-	# L'exemption d'AIRE revendiquée dans l'en-tête, RÉELLEMENT posée (même
-	# omission de câblage que les tertres du cimetière, corrigée le
-	# 2026-08-23). Elle ne porte QUE sur D1a : au budget D7 la nappe reste un
-	# module compté — c'est pour ça que le lieu a cédé son Plant_7.
-	set_meta(&"exemption_runtime", PackedStringArray(["NappeSource"]))
+	# L'exemption d'AIRE des maillages runtime, RÉELLEMENT posée : nappe ET
+	# lit — les deux épousent le terrain, aucun autre nœud runtime au lieu.
+	# Elle ne porte QUE sur D1a : au budget D7 les deux modules COMPTENT
+	# (c'est pour ça que le lieu a cédé sa fougère).
+	set_meta(&"exemption_runtime",
+		PackedStringArray(["NappeSource", "FondVasque"]))
 	var nappe: MeshInstance3D = MeshInstance3D.new()
 	nappe.name = "NappeSource"
 	var segments: int = 40
+	var rayons: PackedFloat32Array = _rayons_vasque(segments)
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	# 0,08 au-dessus du pad : assez pour noyer la base des margelles, assez
+	# bas pour que la tranche d'eau au rivage ne montre pas de falaise.
+	var niveau: float = _y_sol(BASSIN_X, BASSIN_Z, 0.08)
+	var interieur: PackedVector3Array = PackedVector3Array()
+	var exterieur: PackedVector3Array = PackedVector3Array()
+	var teintes_ext: PackedColorArray = PackedColorArray()
+	for i: int in range(segments):
+		var angle: float = TAU * float(i) / float(segments)
+		# La bouche : vers l'ouest, la nappe s'étire jusque sous le seuil
+		# de la fente — l'eau SORT de la paroi, elle n'apparaît pas au
+		# milieu de l'herbe.
+		var r_ext: float = rayons[i] + _bosse_ouest(angle) * 1.15
+		var r_int: float = rayons[i] * (0.50 + 0.08 * _alea(float(i) * 4.7))
+		interieur.append(Vector3(BASSIN_X + cos(angle) * r_int, niveau,
+			BASSIN_Z + sin(angle) * r_int))
+		exterieur.append(Vector3(BASSIN_X + cos(angle) * r_ext, niveau,
+			BASSIN_Z + sin(angle) * r_ext))
+		# Rive peu profonde partout (mousse cassée), nettement plus creuse
+		# à la bouche (l'eau y arrive, elle n'y meurt pas).
+		# v5 — mesuré sur la capture P1 : à profondeur faible, l'eau au
+		# ras rend GRIS CIEL (alpha 0,6 + spéculaire) et la « tache
+		# turquoise » de la promesse n'existe pas à distance. La vasque
+		# est donc PROFONDE : alpha 0,9, couleur pétrole saturée du
+		# shader — c'est le levier autorisé par l'arbitrage (« profondeur
+		# au centre via couleurs de sommet »).
+		# Rive à 0,12 — SOUS le seuil de mousse du shader (0,16) : l'anneau
+		# de mousse cassée est ce qui accroche l'œil aux vues rasantes, où
+		# la teinte de l'eau disparaît dans le reflet du ciel (mesuré P1).
+		var prof_rive: float = 0.45 if _bosse_ouest(angle) > 0.3 else 0.12
+		var courant: Vector2 = Vector2(0.5, 0.5)
+		if _bosse_ouest(angle) > 0.3:
+			# À la bouche, l'eau pousse vers l'est (elle sort de la fente).
+			courant = Vector2(0.5 + 0.9 * 0.35, 0.5)
+		teintes_ext.append(Color(prof_rive, courant.x, courant.y, 1.0))
+	var teinte_centre: Color = Color(0.85, 0.5, 0.5, 1.0)
+	var teinte_int: Color = Color(0.62, 0.5, 0.5, 1.0)
+	var centre: Vector3 = Vector3(BASSIN_X, niveau, BASSIN_Z)
+	for i: int in range(segments):
+		var j: int = (i + 1) % segments
+		_tri_eau(st, [centre, interieur[i], interieur[j]],
+			[teinte_centre, teinte_int, teinte_int])
+		_tri_eau(st, [interieur[i], exterieur[i], exterieur[j]],
+			[teinte_int, teintes_ext[i], teintes_ext[j]])
+		_tri_eau(st, [interieur[i], exterieur[j], interieur[j]],
+			[teinte_int, teintes_ext[j], teinte_int])
+	# LA LANGUE DU DÉVERSOIR : une bande mince qui quitte la vasque vers
+	# les dalles, épouse le sol (+4,5 cm) et s'amincit jusqu'à s'éteindre —
+	# le fil lisible exigé, dans le MÊME module et le MÊME shader.
+	# Départ à 2,85 (et non 2,55) : le rivage a grandi avec BASSIN_R, la
+	# langue doit toujours NAÎTRE sous la nappe, jamais à côté d'elle.
+	# Bout de langue : (0,78 ; −4,39) local, soit 5,47 m de la tête
+	# d'affluent gelée (+6 ; −6) — le lit reste libre (contrat ≥ 5 m).
+	var gb: Vector2 = Vector2(FIL_DIR.x * 0.5 + 0.5, FIL_DIR.y * 0.5 + 0.5)
+	_bande(st, 2.85, 4.8, 0.85, 0.34, 0.045,
+		Color(0.20, gb.x, gb.y, 0.95), Color(0.06, gb.x, gb.y, 0.45))
+	nappe.mesh = st.commit()
+	var eau: ShaderMaterial = ShaderMaterial.new()
+	eau.shader = load("res://shaders/world_v2/SH_WorldV2Water.gdshader") \
+		as Shader
+	eau.set_shader_parameter(&"wave_noise",
+		WorldV2GroundMaterial.grain_texture())
+	nappe.mesh.surface_set_material(0, eau)
+	add_child(nappe)
+	declare_support(Vector3(BASSIN_X, _y_sol(BASSIN_X, BASSIN_Z, 0.0),
+		BASSIN_Z))
+
+
+## Rayons hachés de la vasque — déterministes (pas de `randf()` : la
+## régression visuelle compare deux montages, ils doivent être identiques).
+func _rayons_vasque(segments: int) -> PackedFloat32Array:
 	var brut: PackedFloat32Array = PackedFloat32Array()
 	for i: int in range(segments):
 		brut.append(_alea(float(i) * 2.3 + 7.1))
@@ -184,56 +388,62 @@ func _nappe() -> void:
 		var lisse: float = (brut[(i - 1 + segments) % segments] + brut[i]
 			+ brut[(i + 1) % segments]) / 3.0
 		rayons.append(BASSIN_R * (0.88 + 0.20 * lisse))
-	var st: SurfaceTool = SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var interieur: PackedVector3Array = PackedVector3Array()
-	var exterieur: PackedVector3Array = PackedVector3Array()
-	for i: int in range(segments):
-		var angle: float = TAU * float(i) / float(segments)
-		var r_ext: float = rayons[i]
-		var r_int: float = r_ext * (0.44 + 0.10 * _alea(float(i) * 4.7 + 13.0))
-		interieur.append(Vector3(cos(angle) * r_int, 0.0, sin(angle) * r_int))
-		exterieur.append(Vector3(cos(angle) * r_ext, 0.0, sin(angle) * r_ext))
-	for i: int in range(segments):
-		var j: int = (i + 1) % segments
-		_triangle(st, Vector3.ZERO, interieur[i], interieur[j], 1.00)
-		_triangle(st, interieur[i], exterieur[i], exterieur[j], 0.62)
-		_triangle(st, interieur[i], exterieur[j], interieur[j], 0.62)
-	nappe.mesh = st.commit()
-	# `vertex_color_use_as_albedo` : la valeur de sommet PORTE le dégradé
-	# clair-au-centre / sombre-au-bord, sans seconde surface ni shader.
-	# La teinte du matériau est la MOYENNE des deux eaux de la bible ; la
-	# valeur de sommet (1,00 au centre, 0,62 au bord) la module ensuite.
-	# Le produit des deux donne le dégradé sans second matériau ni shader.
-	var eau: StandardMaterial3D = K.flat_material(
-		EAU_PROFONDE.lerp(EAU_CLAIRE, 0.5))
-	eau.vertex_color_use_as_albedo = true
-	# La nappe est LISSE : c'est la seule surface non rugueuse du lieu, et
-	# c'est ce qui la fait lire comme de l'eau à côté d'une roche mate.
-	eau.roughness = 0.18
-	eau.metallic_specular = 0.55
-	nappe.mesh.surface_set_material(0, eau)
-	# Le fond de vasque étant le pad plat, la nappe se pose 10 cm au-dessus
-	# du sol réel de son centre : assez pour noyer la base des margelles,
-	# trop peu pour flotter.
-	var centre: Vector3 = _seated(BASSIN_X, BASSIN_Z)
-	nappe.position = centre + Vector3(0.0, 0.10, 0.0)
-	add_child(nappe)
-	declare_support(centre)
+	return rayons
+
+
+## Poids de la bouche ouest : 1 plein ouest, 0 hors du secteur ±38°.
+func _bosse_ouest(angle: float) -> float:
+	var delta: float = absf(wrapf(rad_to_deg(angle) - 180.0, -180.0, 180.0))
+	return clampf(1.0 - delta / 38.0, 0.0, 1.0)
+
+
+## Bande de quads le long du fil du déversoir, du bord de vasque vers les
+## dalles — elle ÉPOUSE le sol gelé (+`sur_sol`) sommet par sommet. Les
+## teintes portent les données du matériau appelant : convention d'eau
+## pour la nappe, valeur multiplicative pour le lit.
+func _bande(st: SurfaceTool, depart_r: float, longueur: float,
+		larg_depart: float, larg_fin: float, sur_sol: float,
+		teinte_depart: Color, teinte_fin: Color) -> void:
+	var pas: int = 8
+	var perp: Vector2 = Vector2(-FIL_DIR.y, FIL_DIR.x)
+	var origine: Vector2 = Vector2(BASSIN_X, BASSIN_Z) + FIL_DIR * depart_r
+	var precedent_g: Vector3 = Vector3.ZERO
+	var precedent_d: Vector3 = Vector3.ZERO
+	var precedent_t: Color = teinte_depart
+	for k: int in range(pas + 1):
+		var t: float = float(k) / float(pas)
+		var centre2: Vector2 = origine + FIL_DIR * (longueur * t)
+		# Ondulation légère du fil — un ruisselet droit se lit tracé.
+		centre2 += perp * (0.22 * sin(t * 9.4 + 1.3) * (1.0 - t))
+		var demi: float = lerpf(larg_depart, larg_fin, t) * 0.5
+		var g2: Vector2 = centre2 + perp * demi
+		var d2: Vector2 = centre2 - perp * demi
+		var gauche: Vector3 = Vector3(g2.x, _y_sol(g2.x, g2.y, sur_sol), g2.y)
+		var droite: Vector3 = Vector3(d2.x, _y_sol(d2.x, d2.y, sur_sol), d2.y)
+		var teinte: Color = teinte_depart.lerp(teinte_fin, t)
+		if k > 0:
+			_tri_eau(st, [precedent_g, gauche, droite],
+				[precedent_t, teinte, teinte])
+			_tri_eau(st, [precedent_g, droite, precedent_d],
+				[precedent_t, teinte, precedent_t])
+		precedent_g = gauche
+		precedent_d = droite
+		precedent_t = teinte
 
 
 ## Trois volumes seulement — et AUCUN sur le fil de l'eau : les dalles du
 ## déversoir sont à plat et se franchissent, un corps solide dessus ferait
-## une marche au milieu d'un ruisseau.
+## une marche au milieu d'un ruisseau. Tous à plus de 16 m de la tête
+## d'affluent (+6 ; −6) : la bande gelée reste libre.
 func _collisions() -> void:
-	K.collider_box(self, "Source_gueule",
-		_seated(-10.6, 0.3) + Vector3(0.0, 1.25, 0.0), Vector3(1.6, 2.5, 2.4),
-		92.0)
-	K.collider_box(self, "Source_epaule_nord",
-		_seated(-12.4, -2.6) + Vector3(0.0, 2.0, 0.0), Vector3(2.1, 4.0, 1.9),
-		74.0)
+	K.collider_box(self, "Source_machoire_nord",
+		_seated(-9.8, -1.9) + Vector3(0.0, 1.0, 0.0), Vector3(2.9, 2.0, 2.6),
+		105.0)
+	K.collider_box(self, "Source_machoire_sud",
+		_seated(-9.5, 2.4) + Vector3(0.0, 1.0, 0.0), Vector3(2.9, 2.0, 2.9),
+		244.0)
 	K.collider_box(self, "Source_bloc",
-		_seated(-8.6, 4.6) + Vector3(0.0, 0.45, 0.0), Vector3(2.9, 0.9, 2.4),
+		_seated(-8.3, 6.5) + Vector3(0.0, 0.45, 0.0), Vector3(2.9, 0.9, 2.4),
 		150.0)
 
 
@@ -245,12 +455,99 @@ func _alea(graine: float) -> float:
 	return (v - floor(v)) * 2.0 - 1.0
 
 
-func _triangle(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3,
-		valeur: float) -> void:
-	for point: Vector3 in [a, b, c]:
-		st.set_color(Color(valeur, valeur, valeur, 1.0))
+## Triangle d'eau : couleur de sommet = données du shader (R profondeur,
+## GB courant, A opacité), normale verticale comme les rubans V2.2.
+func _tri_eau(st: SurfaceTool, points: Array[Vector3],
+		teintes: Array[Color]) -> void:
+	for k: int in range(3):
+		st.set_color(teintes[k])
 		st.set_normal(Vector3.UP)
-		st.add_vertex(point)
+		st.add_vertex(points[k])
+
+
+## Triangle du lit : couleur par sommet (dégradé de teinte centre → bord),
+## normale verticale.
+func _tri_couleur(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3,
+		c_centre: Color, c_bord: Color) -> void:
+	for donnee: Array in [[a, c_centre], [b, c_bord], [c, c_bord]]:
+		st.set_color(donnee[1] as Color)
+		st.set_normal(Vector3.UP)
+		st.add_vertex(donnee[0] as Vector3)
+
+
+## Hauteur du sol gelé + surcote, en local.
+func _y_sol(local_x: float, local_z: float, sur_sol: float) -> float:
+	return ground_local_y(local_x, local_z) + sur_sol
+
+
+## POSER UNE ROCHE PENCHÉE, RECENTRÉE SUR SA VRAIE EMPRISE, PIED ENTERRÉ.
+##
+## Même détour mesuré qu'au belvédère (brief commun, piège 4) :
+## `cliff_half_rock` a son origine sur une ARÊTE (bbox z ∈ [0,0815 ; 0,500])
+## et `KitPlacement.seat()` mesure AVANT le roulis ajouté ici. On pose, on
+## penche, on REMESURE l'emprise dans le repère du parent, on recentre son
+## milieu sur (x ; z) voulu, on enfonce de la profondeur voulue. Les
+## distances (tête d'affluent, caméras) portent sur ces centres d'emprise.
+## (Même famille que `_coucher()` de la voie B ; candidat
+## `world_v2_place_kit.gd` par la règle de trois, remonté au lead.)
+func _roche(modele: StringName, x: float, z: float, yaw_deg: float,
+		roulis_deg: float, extra: float, enfoncement: float) -> Node3D:
+	var piece: Node3D = K.module(self, modele, Vector3(x, 0.0, z), yaw_deg,
+		extra, Color.WHITE)
+	if piece == null:
+		return null
+	piece.rotation.z = deg_to_rad(roulis_deg)
+	var boite: AABB = Transform3D(piece.transform.basis, Vector3.ZERO) \
+		* KitPlacement.local_aabb(piece)
+	var centre: Vector3 = boite.get_center()
+	piece.position.x = x - centre.x
+	piece.position.z = z - centre.z
+	piece.position.y = ground_local_y(x, z) - boite.position.y - enfoncement
+	return piece
+
+
+## TEINTE PAR SURFACE, recette V2.2 — deux défauts mesurés sur capture :
+## (v1) la coiffe « grass » Kenney rend MENTHE VIF (les « bols turquoise »
+## des margelles) ; (v2) `K.apply_tone` laisse `vertex_color_use_as_albedo`
+## allumé et l'atlas Rocks rend PISTACHE au soleil, là où le bâtisseur de
+## végétation V2.2 l'éteint (`_model_mesh`). Ici : couleurs de sommet
+## COUPÉES, puis chaque surface reçoit SA teinte — « grass » (nom, ou
+## albédo à dominante verte) vers `ton_coiffe`, le reste vers `ton_roche`.
+## `absolu` POSE l'albédo (matériaux Kenney à couleur plate) au lieu de le
+## multiplier (atlas texturés). Matériaux DUPLIQUÉS, jamais mutés — ils
+## meurent avec la pièce, aucun cache statique (fuite ISS-059 = cache).
+func _teinter(piece: Node3D, ton_roche: Color, ton_coiffe: Color,
+		absolu: bool) -> void:
+	if piece == null:
+		return
+	var cibles: Array[Node] = piece.find_children("*", "MeshInstance3D",
+		true, false)
+	for noeud: Node in cibles:
+		var instance: MeshInstance3D = noeud as MeshInstance3D
+		if instance.mesh == null:
+			continue
+		for surface: int in range(instance.mesh.get_surface_count()):
+			var actif: Material = instance.get_active_material(surface)
+			var base: StandardMaterial3D = actif as StandardMaterial3D
+			if base == null:
+				continue
+			var coiffe: bool = base.resource_name.to_lower().contains("grass") \
+				or (base.albedo_color.g > base.albedo_color.r
+					and base.albedo_color.g > base.albedo_color.b)
+			var ton: Color = ton_coiffe if coiffe else ton_roche
+			var copie: StandardMaterial3D = base.duplicate() \
+				as StandardMaterial3D
+			copie.vertex_color_use_as_albedo = false
+			if absolu:
+				copie.albedo_color = Color(ton.r, ton.g, ton.b,
+					base.albedo_color.a)
+			else:
+				copie.albedo_color = Color(base.albedo_color.r * ton.r,
+					base.albedo_color.g * ton.g, base.albedo_color.b * ton.b,
+					base.albedo_color.a)
+			copie.roughness = maxf(copie.roughness, 0.95)
+			copie.metallic_specular = 0.1
+			instance.set_surface_override_material(surface, copie)
 
 
 func _seated(local_x: float, local_z: float) -> Vector3:

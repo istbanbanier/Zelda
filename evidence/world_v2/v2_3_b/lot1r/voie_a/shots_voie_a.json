@@ -1,0 +1,268 @@
+[
+ {
+  "name": "overlook_summit_identite",
+  "from": [
+   150.0,
+   30.0,
+   39.4
+  ],
+  "look": [
+   168,
+   24.0,
+   52
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "overlook_summit_joueur",
+  "from": [
+   159.8,
+   23.7,
+   56.8
+  ],
+  "look": [
+   168,
+   23.2,
+   52
+  ],
+  "fov": 65.0
+ },
+ {
+  "name": "turquoise_spring_identite",
+  "from": [
+   -117.2,
+   20.0,
+   46.8
+  ],
+  "look": [
+   -136,
+   14.0,
+   40
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "turquoise_spring_joueur",
+  "from": [
+   -126.5,
+   13.7,
+   40.0
+  ],
+  "look": [
+   -136,
+   13.2,
+   40
+  ],
+  "fov": 65.0
+ },
+ {
+  "name": "overlook_gros_crete",
+  "from": [
+   166.0,
+   25.4,
+   49.5
+  ],
+  "look": [
+   174.2,
+   25.8,
+   56.4
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "overlook_gros_poste",
+  "from": [
+   176.0,
+   25.4,
+   44.5
+  ],
+  "look": [
+   182.2,
+   24.6,
+   50.4
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "spring_gros_eau",
+  "from": [
+   -135.2,
+   14.2,
+   36.6
+  ],
+  "look": [
+   -141.4,
+   12.1,
+   40.2
+  ],
+  "fov": 50.0
+ },
+ {
+  "name": "spring_gros_fente",
+  "from": [
+   -137.6,
+   13.8,
+   40.4
+  ],
+  "look": [
+   -146.8,
+   13.4,
+   40.3
+  ],
+  "fov": 50.0
+ },
+ {
+  "name": "spring_gue_riviere",
+  "from": [
+   -101.5,
+   15.5,
+   27.5
+  ],
+  "look": [
+   -96,
+   10.8,
+   22
+  ],
+  "fov": 50.0
+ },
+ {
+  "name": "overlook_breche_montee",
+  "from": [
+   163.0,
+   23.5,
+   47.0
+  ],
+  "look": [
+   170.0,
+   24.0,
+   54.0
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "spring_promesse_p1",
+  "from": [
+   -118.0,
+   15.0,
+   50.0
+  ],
+  "look": [
+   -141.0,
+   12.0,
+   40.0
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "overlook_seuil_p4",
+  "from": [
+   168.0,
+   23.6,
+   52.0
+  ],
+  "look": [
+   0.0,
+   26.0,
+   170.0
+  ],
+  "fov": 65.0
+ },
+ {
+  "name": "overlook_tablette_p5",
+  "from": [
+   171.8,
+   23.8,
+   57.6
+  ],
+  "look": [
+   120.0,
+   8.0,
+   90.0
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "spring_approche_p2",
+  "from": [
+   -124.0,
+   13.9,
+   44.0
+  ],
+  "look": [
+   -138.0,
+   12.5,
+   40.0
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "spring_approche_p3",
+  "from": [
+   -129.5,
+   12.6,
+   37.5
+  ],
+  "look": [
+   -145.0,
+   13.0,
+   40.0
+  ],
+  "fov": 60.0
+ },
+ {
+  "name": "overlook_breche_ouest",
+  "from": [
+   172.2,
+   24.9,
+   41.9
+  ],
+  "look": [
+   187.4,
+   24.0,
+   56.4
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "overlook_breche_est",
+  "from": [
+   191.0,
+   21.5,
+   59.9
+  ],
+  "look": [
+   175.8,
+   24.5,
+   45.4
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "overlook_gros_tablette",
+  "from": [
+   168.6,
+   24.7,
+   60.8
+  ],
+  "look": [
+   171.9,
+   23.6,
+   57.6
+  ],
+  "fov": 50.0
+ },
+ {
+  "name": "spring_gros_fruit",
+  "from": [
+   -135.4,
+   13.2,
+   44.6
+  ],
+  "look": [
+   -138.4,
+   12.3,
+   42.6
+  ],
+  "fov": 45.0
+ }
+]

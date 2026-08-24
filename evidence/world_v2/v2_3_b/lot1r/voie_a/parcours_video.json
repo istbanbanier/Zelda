@@ -1,0 +1,189 @@
+{
+  "commentaire": "Parcours joueur 20-40 s par lieu (ADDENDUM_DA §MISE EN SCÈNE). Points monde [x,y,z] + regard [x,y,z]. Séquence : promesse → approche → révélation → proximité → récompense → sortie. MESURÉ en v7 et corrigé : depuis la montée nord-ouest, la brèche du belvédère ne montre PAS de ciel — la falaise gelée du couchant ferme le fond dans cette direction (capture final/overlook_breche_ouest.png). Le vide se lit depuis l'EST, en sortant : final/overlook_breche_est.png y montre ciel, mesas lointaines et le pylône ENTRE les deux masses. L'étape 'sortie' du belvédère joue donc ce regard de retour. Les points du parcours restent des positions monde, pas des caméras gelées.",
+  "overlook_summit": [
+    {
+      "etape": "promesse",
+      "pos": [
+        150.0,
+        24.0,
+        36.0
+      ],
+      "regard": [
+        168.0,
+        26.0,
+        52.0
+      ]
+    },
+    {
+      "etape": "approche",
+      "pos": [
+        158.0,
+        24.0,
+        42.0
+      ],
+      "regard": [
+        168.0,
+        25.0,
+        52.0
+      ]
+    },
+    {
+      "etape": "approche_crete",
+      "pos": [
+        163.0,
+        23.5,
+        47.0
+      ],
+      "regard": [
+        170.0,
+        24.0,
+        54.0
+      ]
+    },
+    {
+      "etape": "revelation_seuil",
+      "pos": [
+        168.0,
+        23.6,
+        52.0
+      ],
+      "regard": [
+        0.0,
+        26.0,
+        170.0
+      ]
+    },
+    {
+      "etape": "proximite_recompense",
+      "pos": [
+        171.8,
+        23.8,
+        57.6
+      ],
+      "regard": [
+        120.0,
+        8.0,
+        90.0
+      ]
+    },
+    {
+      "etape": "sortie_par_la_breche",
+      "pos": [
+        189.0,
+        21.8,
+        58.5
+      ],
+      "regard": [
+        175.8,
+        24.5,
+        45.4
+      ]
+    },
+    {
+      "etape": "sortie",
+      "pos": [
+        190.0,
+        21.0,
+        30.0
+      ],
+      "regard": [
+        240.0,
+        30.0,
+        0.0
+      ]
+    }
+  ],
+  "turquoise_spring": [
+    {
+      "etape": "promesse",
+      "pos": [
+        -118.0,
+        15.0,
+        50.0
+      ],
+      "regard": [
+        -141.0,
+        12.0,
+        40.0
+      ]
+    },
+    {
+      "etape": "approche",
+      "pos": [
+        -124.0,
+        13.5,
+        44.0
+      ],
+      "regard": [
+        -138.0,
+        12.5,
+        40.0
+      ]
+    },
+    {
+      "etape": "approche_dalles",
+      "pos": [
+        -129.5,
+        12.2,
+        37.5
+      ],
+      "regard": [
+        -145.0,
+        13.0,
+        40.0
+      ]
+    },
+    {
+      "etape": "revelation_bouche",
+      "pos": [
+        -138.5,
+        12.1,
+        38.5
+      ],
+      "regard": [
+        -146.0,
+        14.0,
+        40.0
+      ]
+    },
+    {
+      "etape": "regard_tour",
+      "pos": [
+        -138.5,
+        12.1,
+        38.5
+      ],
+      "regard": [
+        -160.0,
+        25.0,
+        40.0
+      ]
+    },
+    {
+      "etape": "recompense",
+      "pos": [
+        -138.6,
+        12.2,
+        42.4
+      ],
+      "regard": [
+        -138.6,
+        12.0,
+        42.4
+      ]
+    },
+    {
+      "etape": "sortie_suivre_l_eau",
+      "pos": [
+        -133.0,
+        12.0,
+        36.0
+      ],
+      "regard": [
+        -124.0,
+        12.0,
+        28.0
+      ]
+    }
+  ]
+}
