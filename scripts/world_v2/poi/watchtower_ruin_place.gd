@@ -14,46 +14,86 @@
 ## `x_local = −0,2`, quatre mètres AVANT le début de la pente. Rien ne
 ## flotte au-dessus du vide ; ce qui est dans le vide y est TOMBÉ.
 ##
-## LA RUINE EST MOTIVÉE, comme celle de la ferme : la tour s'est ouverte
-## du côté où le sol se dérobe. L'angle nord-est manque, la brèche est de
-## ce côté, le talus s'étale de ce côté, et deux blocs de la couronne sont
-## restés pris dans la pente sous la lèvre. Les murs ouest et nord, eux,
-## portent encore et montent le plus haut.
+## LOT 1.R — CORRECTIVE VISUELLE. Le gate visuel a rejeté la version en
+## modules de kit : « elle se lit encore comme un empilement de boîtes ».
+## Cause mesurée (même défaut que la ferme R2B.1) : les modules
+## `Wall_UnevenBrick_Straight` sont des PLANS sans chant, toutes les arases
+## tombent sur la même cote, et les gravats `SM_Dungeon_*` rendent
+## terracotta sous la lumière du monde. La maçonnerie est donc désormais un
+## GLB dédié (`SM_Watchtower_Ruin.glb`, générateur
+## `make_watchtower_ruin.py`, même famille de formes que `SM_Farm_Ruins`,
+## le précédent accepté) : quatre murs d'ÉPAISSEUR réelle aux arases
+## 8,95 / 6,45 / 5,85 / 3,05 m rompues en gradins d'assise, brèche
+## nord-est qui reste l'ENTRÉE, volées d'escalier INTÉGRÉES à la
+## maçonnerie, corbeaux et bouts de solives des deux planchers disparus,
+## talus d'éclats et pans de mur tombés entiers. La pierre est celle du
+## monde : cartes `T_UnevenBrick_*` du kit (recette de la ferme), teinte
+## plus froide — la tour a quinze hivers de plus que la ferme.
 ##
-## POURQUOI PAS UN FÛT ROND. Un tambour octogonal de huit panneaux de 2 m
-## est une répétition équidistante, ce que `WORLD_V2_POI_CONTRACTS.md` §4
-## interdit explicitement — et huit fois le même panneau au même azimut se
-## lit comme un empilement, exactement le reproche déjà porté deux fois par
-## le lead. Le carré, lui, autorise trois assises INÉGALES (7, 4 puis 2
-## panneaux) et une arase brisée : la silhouette est une diagonale, pas un
-## anneau.
-##
-## PIÈGES CONSIGNÉS APPLIQUÉS. `Wall_UnevenBrick_Straight` porte sa face
-## de brique en +Z local (inspection glTF : bbox z ∈ [−0,314 ; +0,092]) —
-## donc yaw 270° pour un mur OUEST et 90° pour un mur EST, jamais
-## l'inverse, faute de quoi le plâtre sort dehors (erreur mesurée sur la
-## ferme, R2B.1). `Prop_Vine1` a son ancrage à 2,12 m AU-DESSUS du bas de
-## sa géométrie : posé à y = 0 il pend sous le lieu, d'où le +2,07 ci-dessous.
+## L'IMPLANTATION, LES CONTRATS ET LES COLLIDERS NE CHANGENT PAS : site,
+## fût vers CORE_X/CORE_Z, coffre de flèches dans le fût, découverte 13 m,
+## appuis déclarés aux mêmes emprises. Seul le collider du mur nord est
+## RACCOURCI (le mur s'arrête désormais à la brèche : un corps au-delà du
+## mur serait un mur fantôme dans l'entrée).
 class_name WatchtowerRuinPlace
 extends WorldV2Place
 
 const K: GDScript = preload("res://scripts/world_v2/poi/world_v2_place_kit.gd")
+const TOUR_SCENE: PackedScene = preload(
+	"res://assets/architecture/watchtower/SM_Watchtower_Ruin.glb")
 
-## Module de mur mesuré : 2,00 × 3,1227 × 0,4065 m, base à y = 0.
-const MODULE_L: float = 2.0
-const COURSE_H: float = 3.1227
-## Demi-emprise du fût : quatre mètres de côté, deux panneaux par face.
+## Demi-entraxe des murs du fût (le GLB est modélisé sur les axes ±2,0 m,
+## épaisseur 0,45 m — les cotes des colliders).
 const HALF: float = 2.0
 ## Centre du fût, en local. Sa face est tombe alors à x = −0,2, soit
 ## 3,8 m avant le premier mètre de pente (mesuré à r = 4).
 const CORE_X: float = -2.2
 const CORE_Z: float = 0.4
+## Enfoncement du GLB dans le sol : une assise enterrée — un mur posé SUR
+## l'herbe se lit comme un meuble (leçon du pignon de la ferme, R2B.2).
+const ENFONCEMENT: float = 0.28
 
-## Pierre du guet : plus froide et plus grise que celle de la ferme — la
-## tour est plus vieille, elle a pris quinze hivers de plus face au vent
-## d'ouest. Reste dans la famille ocre de la bible §1.4.
-const TONE_TOWER: Color = Color(0.80, 0.72, 0.62)
-const TONE_FALLEN: Color = Color(0.72, 0.66, 0.60)
+## Cartes du kit branchées sur les matériaux du GLB (recette de la ferme,
+## R2B.2 : la couleur plate du générateur n'est pas une matière). La teinte
+## multiplie la carte : plus froide et plus grise que la ferme (0,86 /
+## 0,70 / 0,54) — quinze hivers de plus face au vent d'ouest.
+const TEX_DIR: String = "res://assets/environment/village/"
+const TEXTURES_PAR_MATERIAU: Dictionary = {
+	"MAT_Tower_Stone": ["T_UnevenBrick_BaseColor", "T_UnevenBrick_Normal",
+		"T_UnevenBrick_Roughness"],
+	"MAT_Tower_Wood": ["T_WoodTrim_BaseColor", "T_WoodTrim_Normal",
+		"T_WoodTrim_Roughness"],
+	"MAT_Tower_StoneInner": ["T_UnevenBrick_BaseColor", "T_UnevenBrick_Normal",
+		"T_UnevenBrick_Roughness"],
+}
+## RECALÉ SUR CAPTURE (itération 1, `lot1r/voie_b/iter/tour1/`) : à
+## (0,78 / 0,70 / 0,60) la maçonnerie sortait BRUN ROUILLE — plus chaude
+## que la pierre du kit qu'elle prolonge. Remontée et refroidie d'un cran.
+## Le parement INTÉRIEUR est volontairement plus sombre : sous llvmpipe
+## l'intérieur vu par la brèche rendait aussi clair que l'extérieur au
+## soleil, et la tour éventrée se relisait comme une boîte fermée.
+const TEINTES_TEXTUREES: Dictionary = {
+	"MAT_Tower_Stone": Color(0.90, 0.86, 0.78),
+	"MAT_Tower_Wood": Color(0.52, 0.43, 0.34),
+	# Itération 2 : à 0,50 l'intérieur rendait un aplat NOIR sans matière.
+	# Remonté pour garder la lecture « ombre portée » sans perdre la pierre.
+	"MAT_Tower_StoneInner": Color(0.63, 0.61, 0.57),
+}
+## Les pièces TOMBÉES (talus, pans, bloc de couronne) : APLAT painterly,
+## SANS texture. Mesuré en itérations 2 à 4 : la carte de mur box-projetée
+## sur des facettes de 0,3 m échantillonne surtout le mortier et ses
+## rehauts peints — les éclats sortaient « chocolat glacé ». La famille
+## qui s'intègre au terrain est celle des falaises (aplat + facettes),
+## `BRIEF_COMMUN` §matériaux ; on la rejoint. Valeur à mi-chemin entre le
+## mur clair et les blocs sombres gelés du pad.
+const ALBEDO_TOMBEE: Color = Color(0.40, 0.38, 0.345)
+## Le caillou de pied : gris froid neutre, sans ocre. Il n'est pas de la
+## maçonnerie — c'est la roche du plateau, et elle ne doit ni tirer chaud
+## (la famille `SM_Dungeon_*` rejetée) ni tirer teal (la surface « grass »
+## des pièces `cliff_*` / `rock_large*`, cause mesurée ci-dessous).
+const TONE_PIED: Color = Color(0.66, 0.66, 0.63)
+
+static var _cache_materiaux: Dictionary = {}
 
 
 func default_place_id() -> StringName:
@@ -77,10 +117,11 @@ func _build() -> void:
 	add_child(core)
 	core.position = Vector3(CORE_X, base_y, CORE_Z)
 
-	_course_basse(core)
-	_course_mediane(core)
-	_couronne_rompue(core)
+	# LE FÛT — un seul asset, arases rompues, brèche à l'est-nord-est.
+	_piece_tour(core, "SM_Watchtower_Shell",
+		Vector3(0.0, -ENFONCEMENT, 0.0), Vector3.ZERO)
 	_interieur(core)
+	_ascension(core)
 	_talus(base_y)
 	_vegetation_de_fissure(core)
 
@@ -105,153 +146,196 @@ func _build() -> void:
 		Vector3(CORE_X + 3.4, 0.0, CORE_Z - 1.2))
 
 
-## ASSISE BASSE (0 → 3,12 m) — sept panneaux. Le huitième, à l'angle
-## nord-est, est la BRÈCHE : c'est par là que la tour s'est vidée, et
-## c'est par là qu'on entre.
-func _course_basse(core: Node3D) -> void:
-	for side: float in [-1.0, 1.0]:
-		_panneau(core, Vector3(-HALF, 0.0, side * (MODULE_L * 0.5)), 270.0)
-		_panneau(core, Vector3(side * (MODULE_L * 0.5), 0.0, HALF), 0.0)
-		_panneau(core, Vector3(side * (MODULE_L * 0.5), 0.0, -HALF), 180.0)
-	# Mur EST : une seule travée, côté sud. Au nord, la brèche.
-	_panneau(core, Vector3(HALF, 0.0, MODULE_L * 0.5), 90.0)
-	# Chaînages : trois angles sur quatre. Le nord-est est tombé avec la
-	# brèche — un chaînage intact au-dessus d'un trou redonnerait le
-	# rectangle qu'on vient d'ouvrir (leçon R2B.2 de la ferme).
-	for corner: Vector2 in [Vector2(-HALF, -HALF), Vector2(-HALF, HALF),
-			Vector2(HALF, HALF)]:
-		K.module(core, &"Corner_Exterior_Brick",
-			Vector3(corner.x, 0.0, corner.y), 0.0, 1.0, K.TONE_STONE)
-
-
-## ASSISE MÉDIANE (3,12 → 6,25 m) — quatre panneaux : l'ouest entier, une
-## travée au nord et une au sud. Le mur est n'existe plus à cette hauteur.
-func _course_mediane(core: Node3D) -> void:
-	for side: float in [-1.0, 1.0]:
-		_panneau(core, Vector3(-HALF, COURSE_H, side * (MODULE_L * 0.5)), 270.0)
-	_panneau(core, Vector3(-MODULE_L * 0.5, COURSE_H, HALF), 0.0)
-	_panneau(core, Vector3(-MODULE_L * 0.5, COURSE_H, -HALF), 180.0)
-	for corner: Vector2 in [Vector2(-HALF, -HALF), Vector2(-HALF, HALF)]:
-		K.module(core, &"Corner_Exterior_Brick",
-			Vector3(corner.x, COURSE_H, corner.y), 0.0, 1.0, K.TONE_STONE)
-
-
-## COURONNE ROMPUE (6,25 → 9,12 m) — deux panneaux à l'ouest SEULEMENT, et
-## ENFONCÉS de 0,25 et 0,62 m dans l'assise du dessous.
-##
-## C'est la correction que la ferme a payée en une revue : ses onze modules
-## de mur arrivaient tous à 3,173 m, écart-type 0,050 m sur 6,4 m de
-## bâtiment — « la maçonnerie ne casse nulle part », d'où le contour
-## « rectangle + chapeau ». Ici les deux derniers panneaux ne montent pas à
-## la même hauteur, et trois masses de gravats posées SUR les arases
-## achèvent de casser la ligne. Écart d'arase attendu : 0,37 m entre les
-## deux panneaux hauts, 2,87 m entre l'ouest et le nord.
-func _couronne_rompue(core: Node3D) -> void:
-	var enfoncements: Array[float] = [0.25, 0.62]
-	for i: int in range(2):
-		var side: float = -1.0 if i == 0 else 1.0
-		_panneau(core, Vector3(-HALF, COURSE_H * 2.0 - enfoncements[i],
-			side * (MODULE_L * 0.5)), 270.0)
-	K.module(core, &"Corner_Exterior_Brick",
-		Vector3(-HALF, COURSE_H * 2.0 - 0.25, -HALF), 0.0, 1.0, K.TONE_STONE)
-	# Gravats POSÉS SUR les arases : ce qui reste des assises manquantes.
-	# Chacun mord son arase de quelques centimètres — un bloc qui affleure
-	# sans mordre se lit « décoration superposée ».
-	K.module(core, &"SM_Dungeon_ArchBlock",
-		Vector3(-0.35, COURSE_H * 2.0 - 0.16, -HALF + 0.05), 24.0, 0.85,
-		TONE_TOWER)
-	K.module(core, &"SM_Dungeon_ArchBlock",
-		Vector3(-1.25, COURSE_H * 2.0 - 0.22, HALF - 0.08), -37.0, 0.72,
-		TONE_TOWER)
-	K.module(core, &"SM_Dungeon_RubbleSmall",
-		Vector3(HALF - 0.12, COURSE_H - 0.14, MODULE_L * 0.5 + 0.2), 63.0,
-		0.9, TONE_TOWER)
-
-
-## L'INTÉRIEUR, visible par la brèche : deux volées d'escalier qui montent
-## en tournant, et deux dalles de sol. Sans elles la tour est un tube vide,
-## et un tube vide ne dit pas ce qu'était la tour.
+## L'INTÉRIEUR, visible par la brèche : les volées d'escalier vivent dans
+## le GLB (scellées à la maçonnerie) ; restent les dalles du sol d'origine,
+## enfoncées — un intérieur qui a un sol n'est pas un tube vide.
 func _interieur(core: Node3D) -> void:
 	K.module(core, &"Floor_UnevenBrick", Vector3(-0.5, 0.04, -0.4), 0.0, 1.0,
 		K.TONE_STONE)
 	K.module(core, &"Floor_UnevenBrick", Vector3(0.7, 0.04, 1.0), 0.0, 1.0,
 		K.TONE_STONE)
-	# Première volée le long du mur nord, seconde contre le mur ouest, un
-	# quart de tour plus haut : c'est ainsi qu'on monte dans une tour.
-	K.module(core, &"Stairs_Exterior_Straight", Vector3(-0.6, 0.0, -0.85),
-		90.0, 1.0, TONE_TOWER)
-	K.module(core, &"Stairs_Exterior_Straight", Vector3(-0.9, 1.2, 0.75),
-		180.0, 1.0, TONE_TOWER)
+
+
+## L'ASCENSION EST PHYSIQUE, PAS DÉCLARÉE (arbitrage « La vigie
+## retrouvée », condition 1). Les marches du GLB sont décoratives : ce qui
+## porte la capsule, ce sont ces quatre corps — deux rampes inclinées qui
+## suivent la ligne des nez de marche (39,0° et 31,9°, sous les 46° du
+## contrôleur), le palier tournant, et la dalle de la vigie à 3,05 m.
+## Toutes les cotes sont en local au fût, enfoncement du GLB compris.
+## La redescente est toujours possible (condition 2) : par les rampes, ou
+## en sautant des bords libres de la vigie — 3,05 m, sous le seuil de
+## dégâts de chute (~6 m, §8.2). Aucune barrière invisible (condition 3) :
+## les seuls garde-corps sont les murs ouest et sud eux-mêmes.
+func _ascension(core: Node3D) -> void:
+	var e: float = ENFONCEMENT
+	_collider_rampe(core, "Guet_rampe_1",
+		Vector3(1.05, 0.0 - e, -1.385), Vector3(-1.05, 1.70 - e, -1.385), 0.80)
+	_collider_rampe(core, "Guet_rampe_2",
+		Vector3(-1.375, 1.76 - e, -1.45), Vector3(-1.375, 3.05 - e, 0.62), 0.75)
+	K.collider_box(core, "Guet_palier_tournant",
+		Vector3(-1.15, 1.52 - e, -1.42), Vector3(0.90, 0.20, 0.70))
+	K.collider_box(core, "Guet_vigie",
+		Vector3(-1.065, 2.94 - e, 1.19), Vector3(1.42, 0.22, 1.18))
+
+
+## Un corps incliné dont la FACE SUPÉRIEURE passe par le segment
+## depart→arrivee (la ligne des nez de marche). La base est construite,
+## jamais devinée : axe long = le segment, latérale = horizontale
+## perpendiculaire, normale = leur produit — redressée vers le haut.
+func _collider_rampe(parent: Node3D, nom: String, depart: Vector3,
+		arrivee: Vector3, largeur: float) -> void:
+	var axe: Vector3 = (arrivee - depart).normalized()
+	var laterale: Vector3 = axe.cross(Vector3.UP).normalized()
+	var normale: Vector3 = laterale.cross(axe).normalized()
+	if normale.y < 0.0:
+		normale = -normale
+		laterale = -laterale
+	var corps: StaticBody3D = StaticBody3D.new()
+	corps.name = nom
+	corps.collision_layer = 1
+	corps.collision_mask = 0
+	var forme: CollisionShape3D = CollisionShape3D.new()
+	forme.name = nom + "_forme"
+	var boite: BoxShape3D = BoxShape3D.new()
+	var epaisseur: float = 0.24
+	boite.size = Vector3(largeur, epaisseur,
+		depart.distance_to(arrivee) + 0.30)
+	forme.shape = boite
+	corps.add_child(forme)
+	corps.basis = Basis(laterale, normale, axe)
+	corps.position = (depart + arrivee) * 0.5 - normale * (epaisseur * 0.5)
+	parent.add_child(corps)
 
 
 ## LE TALUS ET LES BLOCS PRIS DANS LA PENTE — la seconde et la troisième
-## masse de la silhouette.
-##
-## Chaque pièce est assise sur SON sol : le talus est encore sur le plat,
-## mais les deux blocs de couronne sont sur une face à 57° et doivent la
-## suivre, sinon l'un flotte et l'autre s'enterre (le défaut mesuré sur les
-## dalles de la grotte, groupe 1).
+## masse de la silhouette. Tout vient du même GLB que la tour : le talus
+## est fait des MÊMES pierres, les pans tombés correspondent aux manques
+## visibles dans les murs (le mur est n'a plus qu'une travée, le nord
+## s'arrête à la brèche — voilà où est parti le reste).
 func _talus(base_y: float) -> void:
-	var pente: Node3D = Node3D.new()
-	pente.name = "Talus"
-	add_child(pente)
-	# Sur le plat, au pied de la brèche.
-	for spec: Array in [[1.6, -1.2, 41.0, 1.0], [2.9, 1.5, -68.0, 0.85]]:
-		var at: Vector3 = _seated(float(spec[0]), float(spec[1]))
-		K.module(pente, &"SM_Dungeon_RubbleLarge", at, float(spec[2]),
-			float(spec[3]), TONE_FALLEN)
-		declare_support(at)
-	K.module(pente, &"SM_Dungeon_RubbleSmall", _seated(0.9, 2.6), 12.0, 0.95,
-		TONE_FALLEN)
-	# Deux panneaux de mur COUCHÉS : la maçonnerie du haut est retombée
-	# entière par plaques, elle ne s'est pas dissoute en cailloux. Chaque
-	# plaque DÉCLARE son assise : ce sont elles qui portent l'emprise au sud
-	# (z = −3,0) et au nord (z = +3,2) — sans ces appuis, le filet D2 a
-	# raison de dire qu'un appui central ne prouve rien du tiers bas.
-	for spec: Array in [[2.2, -3.0, 27.0, 84.0], [4.1, 3.2, -14.0, 79.0]]:
-		var assise: Vector3 = _seated(float(spec[0]), float(spec[1]))
-		var plaque: Node3D = K.module(self, &"Wall_UnevenBrick_Straight",
-			assise, float(spec[2]), 1.0, TONE_FALLEN)
-		_coucher(plaque, float(spec[3]), 0.02)
-		declare_support(assise)
+	# Le talus d'éclats, au pied de la brèche, en éventail vers l'est.
+	var talus_at: Vector3 = _seated(1.9, -0.3)
+	_piece_tour(self, "SM_Watchtower_Talus", talus_at, Vector3.ZERO, "tombee")
+	declare_support(talus_at)
+	# Deux pans de mur TOMBÉS entiers : la maçonnerie du haut est retombée
+	# par plaques, elle ne s'est pas dissoute en cailloux. Enfoncés de
+	# 0,20 m : ils émergent sous la hauteur de marche — on les enjambe.
+	# Chaque pan DÉCLARE son assise : ce sont eux qui portent l'emprise au
+	# sud (z = +3,2) et au nord (z = −3,15).
+	#
+	# LOT 1.R, FINITION 2 — « une dalle pavée coupée par le bord droit du
+	# cadre, sans liaison lisible avec la tour » (audit, points 11 et B-t4-2,
+	# signalé trois fois). Deux causes, deux corrections :
+	#   a. « PAVÉE » venait de la carte de brique box-projetée sur la plaque ;
+	#      elle est traitée par la variante `tombee` en aplat (commit
+	#      précédent) — la plaque est désormais de la pierre, pas un dallage.
+	#   b. « SANS LIAISON » venait de l'isolement : 2,7 m d'herbe rase entre
+	#      le talus et la plaque, et rien entre les deux. Le pan recule de
+	#      0,65 m vers l'ouest (il quitte le bord du cadre et perd du poids
+	#      apparent), son grand axe pointe vers la brèche, et une TRAÎNÉE de
+	#      chutes le relie au talus. On lit alors une coulée d'effondrement,
+	#      pas une dalle posée.
+	#   c. RESTE APRÈS PREMIÈRE CAPTURE (tour5) : dégrisée et reliée, la
+	#      plaque lisait encore « banc de pierre » — une grande face SUPÉRIEURE
+	#      plate de 2,3 × 2,7 m au soleil, bordée du côté DROIT de son contour,
+	#      qui est le seul bord non déchiré du maillage (`pan_tombe` :
+	#      `[(0,0)] + profil + [(longueur,0)]`, la ligne y = 0 est rectiligne).
+	#      Trois corrections mesurables : le lacet tourne de 90° pour présenter
+	#      le bord DÉCHIRÉ à la caméra, le roulis passe de 4° à 13° pour que
+	#      la grande face cesse d'être horizontale (elle cesse alors de
+	#      recevoir le soleil à plat, ce qui la faisait sortir sable clair),
+	#      et l'enfoncement passe de 0,20 à 0,34 m.
+	var pan_a: Vector3 = _seated(1.55, -3.15)
+	_piece_tour(self, "SM_Watchtower_Slab_A",
+		pan_a + Vector3(0.0, -0.34, 0.0),
+		Vector3(deg_to_rad(13.0), deg_to_rad(142.0), 0.0), "tombee")
+	declare_support(pan_a)
+	_trainee_de_chute()
+	var pan_b: Vector3 = _seated(4.1, 3.2)
+	_piece_tour(self, "SM_Watchtower_Slab_B",
+		pan_b + Vector3(0.0, -0.20, 0.0),
+		Vector3(deg_to_rad(-3.0), deg_to_rad(-104.0), 0.0), "tombee")
+	declare_support(pan_b)
 	# LE BLOC DE COURONNE, resté pris sous la lèvre. À 6,4 m à l'est le sol
 	# est déjà 2,6 m plus bas : il est franchement dans la pente, et c'est
 	# lui qui raconte que la tour est tombée dans le vide.
 	var bloc: Vector3 = _seated(6.4, -0.6)
-	var caillou: Node3D = K.module(self, &"SM_Dungeon_CaveRock", bloc, 118.0,
-		0.82, TONE_FALLEN)
-	if caillou != null:
-		caillou.rotation.z = deg_to_rad(-14.0)
+	_piece_tour(self, "SM_Watchtower_CrownBlock",
+		bloc + Vector3(0.0, -0.30, 0.0),
+		Vector3(0.0, deg_to_rad(118.0), deg_to_rad(-14.0)), "tombee")
 	declare_support(bloc)
-	# 0,37 et non 1,35 : `KitScale` corrige DÉJÀ `rock_largeC` d'un facteur
-	# 4,83 (0,321 m natif → 1,55 m de cible), et l'échelle d'appel se
-	# MULTIPLIE à cette correction. À 1,35 ce caillou de pied aurait fait
-	# 6,9 m de large — mesure faite avant de poser, pas après capture.
-	# Lui aussi déclare son assise : c'est le point porté le plus au sud-ouest.
+	# LE CAILLOU DE PIED. Il déclare son assise : c'est le point porté le plus
+	# à l'ouest, et il tient le tiers bas de l'axe X pour D2.
+	#
+	# LOT 1.R, FINITION 3 — « un petit disque TEAL plat posé dans l'herbe
+	# derrière la tour » (audit, points 12 et B-t4-3, signalé trois fois).
+	# IDENTIFIÉ, pas deviné : la sonde écran le place à 11,5 m de la caméra
+	# joueur, emprise pixel 725-892 × 364-413, qui couvre le rectangle
+	# incriminé 790-840 × 365-385 — et aucun autre nœud ne le couvre. Le
+	# coupable est ce caillou, et la cause est dans son glTF :
+	# `rock_largeC.glb` porte DEUX matériaux, `dirt` et **`grass`**, et la
+	# surface « grass » des kits Kenney rend menthe/sarcelle sous la lumière
+	# de ce monde (audit, point 16 transverse : même teal en chapeau de
+	# crête, en vasque et ici en disque au sol). Le caillou était donc une
+	# galette brune de 1,90 m posée sur une flaque verte plate.
+	#
+	# Corrigé par CHANGEMENT DE FAMILLE, pas par teinte : `Rock_Medium_2`
+	# (atlas `Rocks_Diffuse`, matériau unique « Rocks », rendu gris neutre —
+	# BRIEF_COMMUN §matériaux) n'a pas de surface d'herbe à rendre teal.
+	# Échelle : natif 3,05 × 1,90 × 2,48 m, `KitScale` ne le corrige pas
+	# (facteur 1,0) ; à 0,30 il fait 0,91 × 0,57 × 0,74 m — même hauteur
+	# apparente que la galette qu'il remplace, donc ni collider nouveau ni
+	# changement de franchissement, mais une vraie masse au lieu d'un disque.
 	var pied: Vector3 = _seated(-5.1, -3.6)
-	K.module(self, &"rock_largeC", pied, -21.0, 0.37, K.TONE_DARK_STONE)
+	K.module(self, &"Rock_Medium_2", pied, -21.0, 0.30, TONE_PIED)
 	declare_support(pied)
 	_collisions(base_y)
 
 
+## LA TRAÎNÉE DE CHUTE — trois poignées d'éclats entre le talus et le pan
+## tombé nord. C'est le MÊME maillage que le talus (`SM_Watchtower_Talus`,
+## un éventail de neuf éclats), réduit et retourné : la matière est donc de
+## la maçonnerie de la tour par construction, et non un caillou du kit posé
+## là pour combler. Aucun collider : à 0,3 et 0,2 d'échelle ces chutes font
+## 7 et 5 cm de haut, très en dessous de la hauteur de marche.
+func _trainee_de_chute() -> void:
+	for spec: Array in [[2.05, -1.75, 0.34, 41.0], [1.35, -2.45, 0.26, -68.0],
+			[2.55, -2.60, 0.21, 133.0]]:
+		var at: Vector3 = _seated(float(spec[0]), float(spec[1]))
+		var chute: Node3D = _piece_tour(self, "SM_Watchtower_Talus",
+			at + Vector3(0.0, -0.06, 0.0),
+			Vector3(0.0, deg_to_rad(float(spec[3])), 0.0), "tombee",
+			"Chute_%d" % int(float(spec[2]) * 100.0))
+		chute.scale = Vector3.ONE * float(spec[2])
+
+
 ## Collisions : QUATRE murs et TROIS masses, jamais un corps par panneau.
-## Le filet de couloir compte les corps et leur emprise, pas les copeaux —
-## et un collider par module ferait quatorze corps pour un seul volume.
+## Mêmes volumes qu'avant la corrective, à une exception près : le mur
+## nord s'arrête désormais à la brèche (x local +0,95), son collider aussi
+## — un corps au-delà du mur serait un mur fantôme dans l'entrée.
 func _collisions(base_y: float) -> void:
 	var y0: float = base_y
 	K.collider_box(self, "Guet_mur_ouest",
 		Vector3(CORE_X - HALF, y0 + 4.55, CORE_Z), Vector3(0.45, 9.1, 4.45))
+	# Mur nord : de l'angle ouest à la brèche — centre x = −0,6375 local au
+	# fût, longueur 3,175 m.
 	K.collider_box(self, "Guet_mur_nord",
-		Vector3(CORE_X, y0 + 3.13, CORE_Z - HALF), Vector3(4.45, 6.25, 0.45))
+		Vector3(CORE_X - 0.64, y0 + 3.13, CORE_Z - HALF),
+		Vector3(3.18, 6.25, 0.45))
 	K.collider_box(self, "Guet_mur_sud",
-		Vector3(CORE_X, y0 + 3.13, CORE_Z + HALF), Vector3(4.45, 6.25, 0.45))
+		Vector3(CORE_X, y0 + 2.95, CORE_Z + HALF), Vector3(4.45, 5.9, 0.45))
 	# Mur est : la seule travée debout. La brèche, au nord, reste ouverte —
 	# c'est l'entrée, elle ne doit rien porter.
 	K.collider_box(self, "Guet_mur_est",
-		Vector3(CORE_X + HALF, y0 + 1.6, CORE_Z + MODULE_L * 0.5),
+		Vector3(CORE_X + HALF, y0 + 1.6, CORE_Z + 1.0),
 		Vector3(0.45, 3.2, 2.2))
+	# Le talus ne couvre plus que la moitié SUD du tas : le couloir d'entrée
+	# (l'axe de la brèche, z −1,5..−0,4) reste marchable — la sonde
+	# d'ascension a mesuré une contremarche de 0,68 m sur l'ancien volume,
+	# au-dessus du step_height. Les petits éclats du couloir (≤ 0,2 m) ne
+	# portent pas de corps, comme les cailloux du kit.
 	K.collider_box(self, "Guet_talus",
-		_seated(2.2, 0.1) + Vector3(0.0, 0.34, 0.0), Vector3(3.6, 0.68, 4.2),
+		_seated(2.2, 0.9) + Vector3(0.0, 0.34, 0.0), Vector3(3.6, 0.68, 2.6),
 		18.0)
 	K.collider_box(self, "Guet_bloc_pente",
 		_seated(6.4, -0.6) + Vector3(0.0, 1.4, 0.0), Vector3(2.2, 2.8, 2.3),
@@ -270,41 +354,88 @@ func _vegetation_de_fissure(core: Node3D) -> void:
 		K.TONE_PLANT)
 	K.module(self, &"Bush_Common", _seated(-2.6, -5.2), 34.0, 0.9, K.TONE_PLANT)
 	K.module(self, &"Bush_Common", _seated(0.6, -4.4), -76.0, 0.7, K.TONE_PLANT)
-	K.module(self, &"Plant_7", _seated(1.9, -2.2), 18.0, 1.0, K.TONE_PLANT)
+	# LOT 1.R, FINITION 1 — « les pétales violets géants » (audit, points 10
+	# et B-t4-1, signalé trois fois, confirmé depuis le palier). C'était
+	# `Plant_7` : 1,05 × 0,25 × 0,96 m au glTF, matériau unique « Leaves »
+	# rendu VIOLET saturé, posé à plat — quatre pétales d'un demi-mètre
+	# chacun dans l'herbe, à une échelle qu'aucune plante de ce monde n'a.
+	# Il n'appartenait à aucun langage du lieu (ni gravat, ni fissure) et il
+	# tirait le regard hors de la brèche. Une touffe d'herbe sèche prend sa
+	# place : même rôle de rupture au pied des gravats, aucun accent saturé.
+	K.module(self, &"Grass_Common_Tall", _seated(1.9, -2.2), 18.0, 0.9,
+		K.TONE_PLANT)
 
 
-## Un panneau de mur, teinté et tourné. La face de BRIQUE du module est en
-## +Z local : yaw 0 la met au sud, 180 au nord, 270 à l'ouest, 90 à l'est.
-func _panneau(core: Node3D, at: Vector3, yaw: float) -> void:
-	K.module(core, &"Wall_UnevenBrick_Straight", at, yaw, 1.0, TONE_TOWER)
+## Extrait UNE pièce du GLB de la tour (recette `_piece_ferme` de la
+## ferme) : l'instance est élaguée AVANT d'entrer dans l'arbre et porte le
+## nom de la pièce — Godot rebaptise les homonymes en `@Node3D@366` et plus
+## aucun test ne peut les désigner.
+## `nom` sert quand la MÊME pièce est instanciée plusieurs fois (la traînée
+## de chute reprend le talus) : sans nom distinct, `add_child` rebaptise les
+## homonymes en `@Node3D@366` et plus aucun test ne peut les désigner
+## (`scripts/CLAUDE.md`). Il est posé AVANT l'entrée dans l'arbre, sinon la
+## collision de noms a déjà eu lieu.
+func _piece_tour(parent: Node3D, piece: String, at: Vector3,
+		rot: Vector3, variante: String = "mur", nom: String = "") -> Node3D:
+	var instance: Node3D = TOUR_SCENE.instantiate() as Node3D
+	instance.name = piece
+	for enfant: Node in instance.get_children():
+		if String(enfant.name) != piece:
+			instance.remove_child(enfant)
+			enfant.free()
+		else:
+			enfant.name = "%s_maille" % instance.name
+	if not nom.is_empty():
+		instance.name = nom
+	parent.add_child(instance)
+	instance.position = at
+	instance.rotation = rot
+	_peindre_glb(instance, variante)
+	return instance
+
+
+## Branche les cartes du kit sur les matériaux plats du GLB — matériaux
+## DUPLIQUÉS et mis en cache, jamais de mutation d'une ressource importée
+## (recette `_peindre_glb` de la ferme, R2B.2).
+func _peindre_glb(racine: Node3D, variante: String = "mur") -> void:
+	for node: Node in racine.find_children("*", "MeshInstance3D", true, false):
+		var instance: MeshInstance3D = node as MeshInstance3D
+		if instance.mesh == null:
+			continue
+		for surface: int in range(instance.mesh.get_surface_count()):
+			var base: StandardMaterial3D = instance.get_active_material(
+				surface) as StandardMaterial3D
+			if base == null:
+				continue
+			var famille: String = base.resource_name
+			var cle: String = "guet|%s|%d" % [variante, base.get_instance_id()]
+			var mat: StandardMaterial3D = \
+				_cache_materiaux.get(cle) as StandardMaterial3D
+			if mat == null:
+				mat = base.duplicate() as StandardMaterial3D
+				mat.roughness = maxf(mat.roughness, 0.95)
+				mat.metallic_specular = 0.1
+				if variante == "tombee":
+					# Aplat painterly : la géométrie à facettes porte la
+					# lecture, pas la carte (voir ALBEDO_TOMBEE).
+					mat.albedo_color = ALBEDO_TOMBEE
+				elif TEXTURES_PAR_MATERIAU.has(famille):
+					var noms: Array = TEXTURES_PAR_MATERIAU[famille] as Array
+					mat.albedo_texture = load(
+						TEX_DIR + String(noms[0]) + ".png") as Texture2D
+					var nrm: Texture2D = load(
+						TEX_DIR + String(noms[1]) + ".png") as Texture2D
+					if nrm != null:
+						mat.normal_enabled = true
+						mat.normal_texture = nrm
+						mat.normal_scale = 0.65
+					mat.roughness_texture = load(
+						TEX_DIR + String(noms[2]) + ".png") as Texture2D
+					mat.roughness = 1.0
+					mat.albedo_color = TEINTES_TEXTUREES[famille] as Color
+				_cache_materiaux[cle] = mat
+			instance.set_surface_override_material(surface, mat)
 
 
 func _seated(local_x: float, local_z: float) -> Vector3:
 	return Vector3(local_x, ground_local_y(local_x, local_z), local_z)
-
-## COUCHER UNE PIÈCE, ET LA RÉASSEOIR SUR SA VRAIE EMPRISE.
-##
-## `KitPlacement.seat()` mesure AVANT que l'appelant n'ajoute un roulis ou un
-## basculement — il ne peut donc rien pour une pièce qu'on couche ensuite. Et
-## le décalage à rattraper n'est pas devinable : mesuré au glTF,
-## `cliff_half_rock` a son épaisseur en +Z (bbox z ∈ [0,0815 ; 0,500]) et son
-## origine sur une ARÊTE, si bien qu'un basculement de +86° l'envoie
-## ENTIÈREMENT sous le sol — 11 cm visibles sur 1,06 m. `SM_Dungeon_PillarStub`
-## est centré en X/Z et se comporte autrement, `Wall_UnevenBrick_Straight`
-## autrement encore (z ∈ [−0,314 ; +0,092]).
-##
-## On ne devine donc pas : on bascule, on remesure l'emprise dans le repère du
-## parent, et on enfonce de la fraction VOULUE. `enfoncement` est la profondeur
-## en mètres sous le sol — zéro pose la pièce exactement dessus.
-##
-## (Troisième emploi dans ce lot : sa place serait `world_v2_place_kit.gd`
-## selon la règle de trois. Il reste ici parce que ce fichier-là est partagé
-## par les trois voies du lot et qu'une édition concurrente y coûte une fusion ;
-## remonté au lead pour intégration.)
-func _coucher(piece: Node3D, deg_x: float, enfoncement: float) -> void:
-	if piece == null:
-		return
-	piece.rotation.x = deg_to_rad(deg_x)
-	var boite: AABB = Transform3D(piece.transform.basis, Vector3.ZERO) \
-		* KitPlacement.local_aabb(piece)
-	piece.position.y -= boite.position.y + enfoncement

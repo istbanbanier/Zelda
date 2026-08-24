@@ -1,0 +1,42 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "c923eead69e6a115af997dc5c4997c528db25a22",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 55.0,
+      "from": [
+        -140.3,
+        34.0,
+        53.8
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_b/iter/tour1/watchtower_ruin_identite.png",
+      "look": [
+        -160.0,
+        28.0,
+        40.0
+      ],
+      "name": "watchtower_ruin_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        -154.5,
+        27.7,
+        40.5
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_b/iter/tour1/watchtower_ruin_joueur.png",
+      "look": [
+        -160.0,
+        27.2,
+        40.0
+      ],
+      "name": "watchtower_ruin_joueur"
+    }
+  ],
+  "size": "1280x720"
+}

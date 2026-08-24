@@ -1,0 +1,141 @@
+{
+ "place_id": "valley.poi.watchtower_ruin.01",
+ "commentaire": "La sentinelle abandonnée. L'ascension jusqu'à la vigie est PROUVÉE physiquement par tools/godot/probe_vigie_ascension.gd (contremarches ≤ 0,38 m, capsule libre, gain 2,7 m) : le pilote la marche, il ne téléporte pas. Si un jalon d'ascension est manqué, la vidéo est à rejeter et non à rafistoler. Schéma de tools/godot/lot1r_video.gd (voie C) : coordonnées MONDE, pos = [x, z], regard = [x, y, z], allure = norme d'intention §8.2 (marche 0,55-0,65). Séquence ADDENDUM_DA : promesse → approche → révélation → exploration → récompense → sortie. NON JOUÉ par la voie B : aucun .avi n'entre dans git (décision du lead), l'outil d'enregistrement appartient à la voie C.",
+ "etapes": [
+  {
+   "pos": [
+    -138.0,
+    56.0
+   ],
+   "regard": [
+    -160.0,
+    30.0,
+    40.0
+   ],
+   "pause_s": 2.5,
+   "sprint": false,
+   "allure": 0.55,
+   "note": "promesse : la dent brisée sur la lèvre de la falaise, ciel dans la brèche"
+  },
+  {
+   "pos": [
+    -148.0,
+    47.0
+   ],
+   "regard": [
+    -159.0,
+    29.0,
+    40.0
+   ],
+   "pause_s": 1.0,
+   "sprint": false,
+   "allure": 0.6,
+   "note": "approche : les quatre arases se séparent, le talus apparaît"
+  },
+  {
+   "pos": [
+    -158.7,
+    39.6
+   ],
+   "regard": [
+    -162.0,
+    27.6,
+    40.2
+   ],
+   "pause_s": 1.5,
+   "sprint": false,
+   "allure": 0.55,
+   "note": "pied de la brèche : jambages, épaisseur du mur, intérieur sombre"
+  },
+  {
+   "pos": [
+    -160.1,
+    39.6
+   ],
+   "regard": [
+    -161.6,
+    28.6,
+    39.6
+   ],
+   "pause_s": 1.5,
+   "sprint": false,
+   "allure": 0.5,
+   "note": "révélation : on entre dans la sentinelle PAR sa blessure"
+  },
+  {
+   "pos": [
+    -161.35,
+    39.2
+   ],
+   "regard": [
+    -163.4,
+    29.5,
+    39.4
+   ],
+   "pause_s": 0.8,
+   "sprint": false,
+   "allure": 0.5,
+   "note": "pied de l'escalier scellé dans la maçonnerie"
+  },
+  {
+   "pos": [
+    -163.75,
+    39.18
+   ],
+   "regard": [
+    -163.6,
+    31.0,
+    41.0
+   ],
+   "pause_s": 0.8,
+   "sprint": false,
+   "allure": 0.5,
+   "note": "palier tournant, à mi-montée"
+  },
+  {
+   "pos": [
+    -163.57,
+    41.79
+   ],
+   "regard": [
+    -140.0,
+    20.0,
+    42.0
+   ],
+   "pause_s": 4.0,
+   "sprint": false,
+   "allure": 0.45,
+   "note": "LA VIGIE : le paysage est la récompense AVANT les flèches — vallée, rivière, hameau, pylône, cadrés par la maçonnerie de la brèche"
+  },
+  {
+   "pos": [
+    -160.9,
+    39.8
+   ],
+   "regard": [
+    -158.0,
+    27.4,
+    39.4
+   ],
+   "pause_s": 2.0,
+   "sprint": false,
+   "allure": 0.55,
+   "note": "redescente, puis le coffre de flèches dans l'angle abrité"
+  },
+  {
+   "pos": [
+    -157.5,
+    39.4
+   ],
+   "regard": [
+    -150.0,
+    24.0,
+    30.0
+   ],
+   "pause_s": 2.5,
+   "sprint": false,
+   "allure": 0.55,
+   "note": "sortie par la brèche, regard vers le sud-est"
+  }
+ ]
+}

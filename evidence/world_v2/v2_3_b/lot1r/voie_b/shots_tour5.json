@@ -1,0 +1,72 @@
+[
+ {
+  "name": "watchtower_ruin_identite",
+  "from": [
+   -140.3,
+   34.0,
+   53.8
+  ],
+  "look": [
+   -160.0,
+   28.0,
+   40.0
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "watchtower_ruin_joueur",
+  "from": [
+   -154.5,
+   27.7,
+   40.5
+  ],
+  "look": [
+   -160.0,
+   27.2,
+   40.0
+  ],
+  "fov": 65.0
+ },
+ {
+  "name": "watchtower_gp_lointain",
+  "from": [
+   -90.0,
+   38.0,
+   90.0
+  ],
+  "look": [
+   -160.0,
+   30.0,
+   40.0
+  ],
+  "fov": 45.0
+ },
+ {
+  "name": "watchtower_gp_vigie_pov",
+  "from": [
+   -163.6,
+   30.6,
+   41.8
+  ],
+  "look": [
+   -140.0,
+   20.0,
+   42.0
+  ],
+  "fov": 65.0
+ },
+ {
+  "name": "watchtower_gp_breche",
+  "from": [
+   -152.6,
+   28.6,
+   39.0
+  ],
+  "look": [
+   -162.0,
+   27.4,
+   40.3
+  ],
+  "fov": 55.0
+ }
+]

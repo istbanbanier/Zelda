@@ -1,0 +1,19 @@
+Blender 4.0.2
+[barrow_stones] SM_Barrow_Jamb_A         70 tris  X  -0.47.. 0.51  Y  -0.22.. 0.21  Z  0.000.. 2.45  lichen 7 faces
+[barrow_stones] SM_Barrow_Jamb_B         70 tris  X  -0.41.. 0.41  Y  -0.19.. 0.19  Z  0.000.. 1.91  lichen 7 faces
+[barrow_stones] SM_Barrow_Lintel         70 tris  X  -0.46.. 0.54  Y  -1.95.. 0.02  Z  0.000.. 0.41  lichen 36 faces
+[barrow_stones] SM_Barrow_Stele_A        70 tris  X  -0.32.. 0.32  Y  -0.14.. 0.13  Z  0.000.. 1.57  lichen 7 faces
+[barrow_stones] SM_Barrow_Stele_B        70 tris  X  -0.29.. 0.28  Y  -0.12.. 0.12  Z  0.000.. 0.92  lichen 7 faces
+[barrow_stones] SM_Barrow_Lame_A         70 tris  X  -0.46.. 0.34  Y  -1.41.. 0.02  Z  0.000.. 0.31  lichen 35 faces
+[barrow_stones] SM_Barrow_Lame_B         70 tris  X  -0.32.. 0.40  Y  -1.08.. 0.03  Z  0.000.. 0.25  lichen 37 faces
+[barrow_stones] SM_Barrow_Lame_C         70 tris  X  -0.44.. 0.29  Y  -0.88.. 0.05  Z  0.000.. 0.24  lichen 37 faces
+[barrow_stones] SM_Barrow_Deblais       158 tris  X  -1.42.. 1.37  Y  -1.21.. 0.38  Z  0.000.. 0.37  lichen 34 faces
+[barrow_stones] total 718 triangles (budget 4000)
+[barrow_stones] lames : étendues décroissantes 1.44, 1.11, 0.93
+[barrow_stones] déblais : éventail X -1.42..1.37, Y -1.21..0.38, haut 0.37 — quadrant d'accès nord LIBRE (0 sommet)
+[barrow_stones] gueule : montants 2.45 et 1.91 m, linteau 1.97 m de portée (jambage le plus haut 2.45)
+[barrow_stones] COLOR_0 : 9 pièce(s), attribut actif ET de rendu, étendue de valeur 0.61 à 0.82
+Info: Total files 0 | Changed 0 | Failed 0
+Info: Saved "SM_Barrow_Stones.blend"
+[barrow_stones] source enregistrée -> /home/user/wt-lot1r-b/source_assets/blender/architecture/SM_Barrow_Stones.blend
+FIN NOMINALE

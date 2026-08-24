@@ -1,0 +1,117 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "89a3009ed6662f0c06a717c767bbad6ecd9119eb",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 55.0,
+      "from": [
+        -140.3,
+        34.0,
+        53.8
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_b/avant/watchtower_ruin_identite.png",
+      "look": [
+        -160.0,
+        28.0,
+        40.0
+      ],
+      "name": "watchtower_ruin_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        -154.5,
+        27.7,
+        40.5
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_b/avant/watchtower_ruin_joueur.png",
+      "look": [
+        -160.0,
+        27.2,
+        40.0
+      ],
+      "name": "watchtower_ruin_joueur"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        80.5,
+        15.0,
+        59.0
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_b/avant/forest_shrine_identite.png",
+      "look": [
+        86.0,
+        9.0,
+        74.0
+      ],
+      "name": "forest_shrine_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        91.5,
+        8.7,
+        64.5
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_b/avant/forest_shrine_joueur.png",
+      "look": [
+        86.0,
+        8.2,
+        74.0
+      ],
+      "name": "forest_shrine_joueur"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        80.5,
+        8.7,
+        64.5
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_b/avant/forest_shrine_joueur_b.png",
+      "look": [
+        86.0,
+        8.2,
+        74.0
+      ],
+      "name": "forest_shrine_joueur_b"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        67.0,
+        12.0,
+        -83.1
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_b/avant/barrow_cemetery_identite.png",
+      "look": [
+        56.0,
+        6.0,
+        -64.0
+      ],
+      "name": "barrow_cemetery_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        50.0,
+        5.7,
+        -53.6
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_b/avant/barrow_cemetery_joueur.png",
+      "look": [
+        56.0,
+        5.2,
+        -64.0
+      ],
+      "name": "barrow_cemetery_joueur"
+    }
+  ],
+  "size": "1280x720"
+}

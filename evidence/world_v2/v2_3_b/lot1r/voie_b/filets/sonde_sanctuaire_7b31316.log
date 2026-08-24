@@ -1,0 +1,54 @@
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_vGLjaYQB
+LANCER_GODOT: CWD=/home/user/wt-lot1r-b
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/probe_sanctuaire.gd
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 10456 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[sanctuaire] plafond : 17 maillages de bâti ; le plus haut est « SM_Shrine_Chevet_maille » à 2.092 m au-dessus du sol gelé — MARGE 0.308 m sous le plafond d'identité de 2.40 m
+[sanctuaire] nef : 32 appuis sondés, plus grande marche 0.300 m (hauteur de marche du héros 0.38 m)
+[sanctuaire] couloir : dégagement latéral minimal 0.65 m à z = -1.20 (rayon de capsule 0.40 m)
+[sanctuaire] gel : 159 instance(s) de végétation V2.2 dans 14 m du site, en 8 groupe(s) — INTOUCHÉES par ce lieu
+[sanctuaire]   AVERTISSEMENT : 16651 transform(s) d'instance rendent l'identité — les positions ci-dessous sont celles de la CELLULE, pas de l'arbre. Le COMPTE et l'ESPÈCE restent lisibles ; la position, non.
+[sanctuaire]   gelé : veg_c10r10_grass             × 145  local (-6, 6)
+[sanctuaire]   gelé : veg_c10r10_rock_Pebble_Round_2 × 2    local (-6, 6)
+[sanctuaire]   gelé : veg_c10r10_rock_Pebble_Square_1 × 1    local (-6, 6)
+[sanctuaire]   gelé : veg_c10r10_tree_CommonTree_1 × 1    local (-6, 6)
+[sanctuaire]   gelé : veg_c10r10_tree_CommonTree_2 × 1    local (-6, 6)
+[sanctuaire]   gelé : veg_c10r10_tree_CommonTree_4 × 3    local (-6, 6)
+[sanctuaire]   gelé : veg_c10r10_tree_Pine_1       × 2    local (-6, 6)
+[sanctuaire]   gelé : veg_c10r10_tree_Pine_3       × 4    local (-6, 6)
+[sanctuaire]   du lieu : Pine_3_30 en local (-5.90, -1.40)
+[sanctuaire]   du lieu : Pine_3_31 en local (5.70, -2.20)
+[sanctuaire]   du lieu : CommonTree_3_32 en local (-6.40, 1.20)
+[sanctuaire] le lieu plante 3 tronc(s) — ce sont ceux-là, et eux seuls, que la corrective déplace
+
+[sanctuaire] VERDICT : PASS — plafond d'identité 0.308 m de marge, nef marchable, couloir 0.65 m, 3 tronc(s) du lieu
+WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 1 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+LANCER_GODOT: RC_GODOT=0

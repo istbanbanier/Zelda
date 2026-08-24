@@ -1,0 +1,111 @@
+{
+ "place_id": "valley.poi.forest_shrine.01",
+ "commentaire": "Le sacré repris par la nature. La promesse de ce lieu est NÉGATIVE : la première étape se joue SUR LA ROUTE, à 7,3 m du sanctuaire, et il ne faut RIEN y voir — c'est l'identité du lieu, et c'est aussi la preuve d'un gate (capture shrine_gp_route_p1 au même point). On contourne par l'ouest, on entre par le seuil nord, on descend la nef. Schéma de tools/godot/lot1r_video.gd (voie C) : coordonnées MONDE, pos = [x, z], regard = [x, y, z], allure = norme d'intention §8.2 (marche 0,55-0,65). Séquence ADDENDUM_DA : promesse → approche → révélation → exploration → récompense → sortie. NON JOUÉ par la voie B : aucun .avi n'entre dans git (décision du lead), l'outil d'enregistrement appartient à la voie C.",
+ "etapes": [
+  {
+   "pos": [
+    84.0,
+    81.0
+   ],
+   "regard": [
+    86.0,
+    8.2,
+    74.0
+   ],
+   "pause_s": 2.5,
+   "sprint": false,
+   "allure": 0.55,
+   "note": "sur la route : RIEN. Une ombre plus dense au nord, deux troncs plus vieux"
+  },
+  {
+   "pos": [
+    82.5,
+    77.5
+   ],
+   "regard": [
+    86.0,
+    8.0,
+    72.5
+   ],
+   "pause_s": 1.2,
+   "sprint": false,
+   "allure": 0.6,
+   "note": "on quitte la route par l'ouest : des masses grises entre les fougères"
+  },
+  {
+   "pos": [
+    86.0,
+    68.4
+   ],
+   "regard": [
+    86.0,
+    8.0,
+    74.0
+   ],
+   "pause_s": 2.0,
+   "sprint": false,
+   "allure": 0.55,
+   "note": "le seuil nord : deux montants inégaux et la marche enfoncée"
+  },
+  {
+   "pos": [
+    86.0,
+    70.9
+   ],
+   "regard": [
+    86.0,
+    7.9,
+    74.2
+   ],
+   "pause_s": 1.5,
+   "sprint": false,
+   "allure": 0.5,
+   "note": "la nef : les socles convergent de 2,68 à 1,64 m d'entraxe"
+  },
+  {
+   "pos": [
+    85.9,
+    71.4
+   ],
+   "regard": [
+    85.9,
+    7.5,
+    72.2
+   ],
+   "pause_s": 1.5,
+   "sprint": false,
+   "allure": 0.45,
+   "note": "la pierre couchée barre la nef — on l'enjambe (marche mesurée 0,30 m)"
+  },
+  {
+   "pos": [
+    86.0,
+    73.0
+   ],
+   "regard": [
+    86.0,
+    7.9,
+    74.05
+   ],
+   "pause_s": 4.0,
+   "sprint": false,
+   "allure": 0.45,
+   "note": "RÉVÉLATION et récompense : la table fendue, la moitié glissée, l'épice dorée posée dessus, le chevet en fond"
+  },
+  {
+   "pos": [
+    86.5,
+    76.8
+   ],
+   "regard": [
+    84.5,
+    8.0,
+    81.5
+   ],
+   "pause_s": 2.5,
+   "sprint": false,
+   "allure": 0.55,
+   "note": "sortie : la route réapparaît entre les fougères — on est passé à 7 m sans rien voir"
+  }
+ ]
+}

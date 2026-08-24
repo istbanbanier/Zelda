@@ -1,0 +1,87 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "8d6774ca76cca859083d1386e440248a56031080",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 55.0,
+      "from": [
+        -140.3,
+        34.0,
+        53.8
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_b/iter/tour5/watchtower_ruin_identite.png",
+      "look": [
+        -160.0,
+        28.0,
+        40.0
+      ],
+      "name": "watchtower_ruin_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        -154.5,
+        27.7,
+        40.5
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_b/iter/tour5/watchtower_ruin_joueur.png",
+      "look": [
+        -160.0,
+        27.2,
+        40.0
+      ],
+      "name": "watchtower_ruin_joueur"
+    },
+    {
+      "fov": 45.0,
+      "from": [
+        -90.0,
+        38.0,
+        90.0
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_b/iter/tour5/watchtower_gp_lointain.png",
+      "look": [
+        -160.0,
+        30.0,
+        40.0
+      ],
+      "name": "watchtower_gp_lointain"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        -163.6,
+        30.6,
+        41.8
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_b/iter/tour5/watchtower_gp_vigie_pov.png",
+      "look": [
+        -140.0,
+        20.0,
+        42.0
+      ],
+      "name": "watchtower_gp_vigie_pov"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        -152.6,
+        28.6,
+        39.0
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_b/iter/tour5/watchtower_gp_breche.png",
+      "look": [
+        -162.0,
+        27.4,
+        40.3
+      ],
+      "name": "watchtower_gp_breche"
+    }
+  ],
+  "size": "1280x720"
+}

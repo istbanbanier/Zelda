@@ -10,48 +10,95 @@
 ## plat). L'invisibilité ne peut donc venir ni de la distance ni du
 ## dénivelé : elle vient de deux décisions mesurables —
 ##
-##   1. **RIEN DU BÂTI NE DÉPASSE 2,4 m.** Le plus haut moignon monte à
-##      2,34 m, l'autel à 1,13 m, le moignon couché à 1,32 m. Seuls les
-##      troncs montent (7,4 et 8,0 m) — et c'est précisément le contraste
-##      voulu : ce qui dépasse est du bois, ce qui est bâti reste sous
-##      l'herbe haute. C'est le seul lieu du lot dont toute la maçonnerie
-##      tienne sous la hauteur d'un héros et demi.
+##   1. **RIEN DU BÂTI NE DÉPASSE 2,4 m.** La pierre de chevet, la seule
+##      verticale du lieu, monte à 2,05 m sur son maillage ; la marge réelle
+##      sur le nœud POSÉ est mesurée par `tools/godot/probe_sanctuaire.gd` et
+##      reportée dans `RAPPORT_VOIE.md` — jamais déduite.
 ##   2. **UN RIDEAU SUR L'ARC SUD**, entre le sanctuaire et la route :
-##      fougères et buissons à 4,5-6,0 m, SANS collider — ils masquent
+##      fougères et buissons à 2,2-6,2 m, SANS collider — ils masquent
 ##      sans rien fermer, et le filet des routes ne compte que les corps
 ##      solides (`ROUTE_CLEAR_M = 1,2 m` autour de chaque échantillon).
 ##      Les trois troncs, eux, vont au nord et à l'ouest : un tronc porte
 ##      un collider, et un collider à 7 m d'une route est un pari inutile.
 ##
-## LA GRAMMAIRE EST CELLE DU VESTIGE (§2 du contrat : « plus ancien que la
-## ruine : masses tombées, racines, céramique ivoire »), et le motif est
-## celui du monde : un ANNEAU INCOMPLET (`VISUAL_ASSET_BIBLE` §2.3). Cinq
-## moignons de quatre hauteurs différentes, à pas irréguliers, dont un
-## COUCHÉ en travers — la plus grande brèche de l'anneau regarde le nord,
-## à l'opposé de la route, pour qu'on découvre le lieu en y entrant et non
-## en passant à côté.
+## ---------------------------------------------------------------------------
+## LOT 1.R — CORRECTIVE VISUELLE, COMPOSITION B « LA NEF AVALÉE ».
 ##
-## POURQUOI PAS UNE CHAPELLE. Le hameau bûcheron est à 38,8 m et le camp
-## des pillards à 47,1 m : tout ce qui aurait un mur, un toit ou une
-## enceinte doublerait l'un des deux. Ici, aucun mur — une table, un
-## anneau rompu, et le bois qui reprend.
+## Le gate visuel a rejeté la version en modules de kit : « les murs beige
+## rectangulaires restent du graybox ». Cause mesurée, et elle n'est pas une
+## affaire de teinte : l'anneau était fait de `SM_Dungeon_PillarStub` (des
+## moignons à faces planes) et l'autel d'un `SM_Dungeon_ArchBlock` (un cube),
+## et cette famille de trimsheet rend TERRACOTTA/BEIGE sous la lumière de ce
+## monde. Aucun albédo ne répare une forme de cube.
+##
+## La maçonnerie du vestige est donc désormais un GLB dédié
+## (`SM_Shrine_Vestige.glb`, générateur `make_forest_shrine.py`, 878 tris pour
+## un budget de 6 000) : neuf pierres à pans impairs, fuseau et sommet CASSÉ,
+## une mousse posée par règle de nature (faces tournées vers le haut + la
+## chaussette de pied), et une table d'offrande FENDUE dont une moitié a
+## glissé de 0,21 m.
+##
+## ET LA COMPOSITION CHANGE, pas seulement la matière. L'anneau devient un
+## AXE court nord→sud : le seuil (deux montants franchement inégaux, 1,57 et
+## 1,24 m, plus une marche enfoncée), deux rangées basses qui CONVERGENT vers
+## le cœur, la pierre couchée qui barre à demi la nef, la table, et derrière
+## elle la seule verticale — le chevet. Trois raisons, dans cet ordre :
+##
+##   * l'intention imposée (ADDENDUM_DA §4) demande « un seuil, un centre
+##     rituel, une lumière ou une ouverture qui guide le regard » : un anneau
+##     fait TOURNER le regard autour du centre, un axe l'y CONDUIT ;
+##   * D3 par construction : le cercle de pierres levées INTACT appartient à
+##     `watchers_circle` (lot futur), et la voie C fabrique en ce moment des
+##     stèles PÂLES ET PENCHÉES dans la couleur ouverte pour la Porte du
+##     champ. Ici les pierres sont grises-vertes, moussues, basses, sous
+##     couvert, et la seule verticale est un DOSSIER derrière une table —
+##     jamais un jalon planté dans le vide ;
+##   * les trois caméras du plan gelé arrivent toutes du NORD (local z ≈ −9,5
+##     à −15) : l'axe de la nef est exactement leur axe de visée, et la
+##     composition se lit donc dans les cadres qui la jugent.
+##
+## L'implantation du SITE, la récompense et son genre, le `poi_id` et le rayon
+## de découverte ne changent pas. Ce qui change : la position VERTICALE de
+## l'ancre de récompense, qui suit le dessus de la nouvelle table (0,89 m au
+## lieu de 0,95 m) — une offrande qui flotte au-dessus de sa table est
+## précisément le défaut que l'audit a relevé chez une autre voie.
 class_name ForestShrinePlace
 extends WorldV2Place
 
 const K: GDScript = preload("res://scripts/world_v2/poi/world_v2_place_kit.gd")
+const VESTIGE_SCENE: PackedScene = preload(
+	"res://assets/architecture/shrine/SM_Shrine_Vestige.glb")
 
-## Pierre du vestige : plus grise et plus sourde que celle des ruines — ce
-## bâti-là est de plusieurs siècles leur aîné.
-const TONE_ANCIENNE: Color = Color(0.70, 0.70, 0.64)
-## Céramique ivoire de la bible §1.4 (`#D8C8A1`), la matière isolante du
-## monde. C'est le seul accent clair du lieu, et il tient dans une tablette
-## de 0,90 m — un vestige n'a pas de vitrine.
-const TONE_IVOIRE: Color = Color(0.85, 0.78, 0.63)
-## Mousse : le dallage et les moignons ont pris le bois par en dessous.
+## Dessus de la table d'offrande, mesuré sur le maillage exporté
+## (`SM_Shrine_Table`, Z 0,000..0,890). Ce n'est pas un choix : c'est une cote
+## lue dans le journal de la chaîne Blender, et si le générateur change, ce
+## nombre doit être relu et non deviné.
+const TABLE_DESSUS: float = 0.89
+
+## TEINTES DU VESTIGE — albédos ABSOLUS, pas des multiplicateurs.
+##
+## Le générateur pose déjà une couleur de base, mais elle n'est pas la matière
+## finale : ces deux constantes-ci sont le seul endroit à toucher pour
+## recalibrer, sans repasser par Blender. Et elles se jugent sur CAPTURE
+## RENDUE, jamais sur leur valeur : le gain de lumière de ce monde vaut 1,4 à
+## 1,8 et n'est pas linéaire (`scripts/CLAUDE.md`). Cible de la bande §1.5,
+## sous couvert : pierre 0,32-0,45 rendu, mousse 0,26-0,34.
+## RECALÉ SUR CAPTURE (apres/forest_shrine_joueur.png + shrine_gp_nef.png) :
+## à 0,455 la pierre RENDAIT 0,39-0,42, c'est-à-dire PLUS CLAIRE que le
+## sous-bois qui l'entoure (0,351 mesuré) — le vestige sortait en dalles
+## pâles et lisses, exactement la lecture dont le lead a demandé de
+## s'écarter (les stèles de la voie C sont pâles, en couleur ouverte).
+## Descendue à 0,375 : la pierre passe sous la valeur de l'herbe et se lit
+## avalée par le bois, ce qui est l'intention du lieu.
+const TEINTES_VESTIGE: Dictionary = {
+	"MAT_Shrine_Stone": Color(0.375, 0.378, 0.358),
+	"MAT_Shrine_Moss": Color(0.232, 0.278, 0.182),
+}
+
+## Mousse du dallage avalé — le sol du sanctuaire existait, le bois l'a repris.
 const TONE_MOUSSE: Color = Color(0.62, 0.68, 0.55)
 
-## Hauteur du dessus de l'autel, dans le repère du lieu.
-const AUTEL_Y: float = 0.95
+static var _cache_vestige: Dictionary = {}
 
 
 func default_place_id() -> StringName:
@@ -59,10 +106,12 @@ func default_place_id() -> StringName:
 
 
 func _build() -> void:
-	_autel()
-	_anneau_rompu()
+	_seuil()
+	_nef()
+	_coeur()
 	_dallage_avale()
 	_rideau_sud()
+	_sous_bois()
 	_couvert()
 	_collisions()
 
@@ -81,200 +130,376 @@ func _build() -> void:
 	shape.shape = sphere
 	poi.add_child(shape)
 	add_child(poi)
-	# L'épice rare est POSÉE SUR L'AUTEL : c'est une offrande laissée là,
-	# pas une plante qui aurait poussé. On y arrive par la brèche nord.
+	# L'épice rare est POSÉE SUR LA TABLE : c'est une offrande laissée là,
+	# pas une plante qui aurait poussé. On arrive par le seuil, au nord.
+	# L'ALTITUDE DE L'ANCRE APPARTIENT AU LIEU (arbitrage du lead) : le VISUEL
+	# de la récompense vient d'une ressource partagée, mais la cote à laquelle
+	# il se pose est une décision d'implantation. `IngredientPickup` dessine sa
+	# tige depuis SON origine et la baie 0,22 m plus haut ; à +0,10 au-dessus
+	# du dessus de table, la baie flottait donc 0,32 m au-dessus de la dalle —
+	# mesuré par l'audit sur `apres/shrine_gp_nef.png`. À −0,05 la tige mord
+	# la dalle de cinq centimètres et l'offrande est POSÉE.
 	RewardAnchor.attach(self, default_place_id(),
 		RewardAnchor.Kind.INGREDIENT,
-		_seated(0.0, 0.0) + Vector3(0.0, AUTEL_Y + 0.16, 0.0),
-		Vector3(0.6, 0.0, -2.6))
+		_seated(0.0, 0.0) + Vector3(0.0, TABLE_DESSUS - 0.05, 0.0),
+		Vector3(0.45, 0.0, -2.40))
+	var ancre: Node = get_node_or_null("AncrageRecompense")
+	if ancre != null:
+		ancre.child_entered_tree.connect(_sur_recompense)
 
 
-## L'AUTEL — deux dés, une dalle, une tablette. Une TABLE basse, jamais un
-## cube : c'est l'horizontale qui distingue un vestige d'une ruine, et
-## c'est elle qui donne au lieu sa première masse.
+## HABILLAGE LOCAL DE LA RÉCOMPENSE (autorisé par le lead, lot 1.R). L'audit
+## a mesuré la baie à (255, 255, 113) : saturée au maximum, et donc le point
+## le plus lumineux d'un lieu dont l'intention est « calme, mystère, respect ».
+## Le MODÈLE est partagé et ne se remplace pas ; la surface, elle, s'habille
+## sur une COPIE, pour cette instance seulement.
 ##
-## `SM_Dungeon_ArchBlock` mesure 0,93 × 1,01 × 0,93 m, base à 0 ;
-## `RockPath_Square_Wide` mesure 2,05 × 0,176 × 1,99 m, pivot centré. La
-## dalle repose donc à 0,95 m, un peu moins que la hauteur des dés — elle
-## MORD sur eux de six centimètres au lieu d'affleurer. Une dalle qui
-## affleure se lit posée ; une dalle qui mord se lit scellée.
-func _autel() -> void:
-	var socle: Vector3 = _seated(0.0, 0.0)
-	declare_support(socle)
-	var autel: Node3D = Node3D.new()
-	autel.name = "Autel"
-	add_child(autel)
-	autel.position = socle
-	K.module(autel, &"SM_Dungeon_ArchBlock", Vector3(-0.78, 0.0, -0.34),
-		17.0, 1.0, TONE_ANCIENNE)
-	K.module(autel, &"SM_Dungeon_ArchBlock", Vector3(0.78, 0.0, 0.34),
-		-41.0, 1.0, TONE_ANCIENNE)
-	var dalle: Node3D = K.module(autel, &"RockPath_Square_Wide",
-		Vector3(0.0, AUTEL_Y, 0.0), 24.0, 1.0, TONE_ANCIENNE)
-	if dalle != null:
-		# La dalle a glissé : elle ne repose plus d'aplomb sur ses dés. Deux
-		# degrés suffisent — au-delà, elle tomberait.
-		dalle.rotation.z = deg_to_rad(-2.4)
-	# LA TABLETTE DE CÉRAMIQUE IVOIRE : `Floor_Brick` réduit à 0,45, soit
-	# 0,90 m de côté pour deux centimètres d'épaisseur. C'est la matière
-	# isolante du monde, et le seul objet clair du sanctuaire.
-	K.module(autel, &"Floor_Brick", Vector3(-0.12, AUTEL_Y + 0.12, 0.08),
-		-9.0, 0.45, TONE_IVOIRE)
+## Le réglage est plus doux que celui du coffre du cimetière (35 % de
+## désaturation contre 55 %) et volontairement : l'épice est le SEUL point
+## chaud voulu de ce sanctuaire (conception, « aucun accent saturé sauf
+## l'offrande »). On veut qu'elle attire, pas qu'elle crève l'image.
+func _sur_recompense(noeud: Node) -> void:
+	if noeud.is_node_ready():
+		_habiller_recompense(noeud)
+	else:
+		noeud.ready.connect(_habiller_recompense.bind(noeud), CONNECT_ONE_SHOT)
 
 
-## L'ANNEAU ROMPU — cinq moignons, quatre hauteurs, cinq azimuts
-## irréguliers, et un COUCHÉ. La plus grande brèche (≈ 100°) regarde le
-## nord, à l'opposé de la route : on entre par là.
+func _habiller_recompense(racine: Node) -> void:
+	if racine == null or not is_instance_valid(racine):
+		return
+	var cibles: Array[Node] = racine.find_children("*", "MeshInstance3D",
+		true, false)
+	if racine is MeshInstance3D:
+		cibles.append(racine)
+	for noeud: Node in cibles:
+		var instance: MeshInstance3D = noeud as MeshInstance3D
+		if instance.mesh == null:
+			continue
+		for surface: int in range(instance.mesh.get_surface_count()):
+			var base: StandardMaterial3D = instance.get_active_material(
+				surface) as StandardMaterial3D
+			if base == null:
+				continue
+			var mat: StandardMaterial3D = base.duplicate() as StandardMaterial3D
+			var c: Color = mat.albedo_color
+			var gris: float = c.get_luminance()
+			mat.albedo_color = Color(
+				lerpf(c.r, gris, 0.35) * 0.86,
+				lerpf(c.g, gris, 0.35) * 0.84,
+				lerpf(c.b, gris, 0.35) * 0.86, c.a)
+			mat.roughness = maxf(mat.roughness, 0.92)
+			mat.metallic_specular = 0.1
+			# `material_override` PRIME sur les surcharges de surface : écrire
+			# une surcharge sur une instance qui en porte un ne ferait RIEN,
+			# en silence.
+			if instance.material_override != null:
+				instance.material_override = mat
+			else:
+				instance.set_surface_override_material(surface, mat)
+
+
+## LE SEUIL — deux montants FRANCHEMENT inégaux et une marche enfoncée.
 ##
-## `SM_Dungeon_PillarStub` fait 1,00 × 1,31 × 1,00 m ; les facteurs
-## ci-dessous donnent 0,85 / 1,35 / 1,95 / 2,35 m. Aucun n'est d'aplomb :
-## un anneau de moignons verticaux et réguliers redeviendrait un cercle de
-## pierres levées, ce qui appartient à un autre lieu du layout
-## (`watchers_circle`), et se lirait « bâti hier ».
-func _anneau_rompu() -> void:
-	var debout: Array[Array] = [
-		[3.40, -1.60, 1.79, 26.0, -5.5],
-		[1.40, -3.50, 0.65, -63.0, 4.0],
-		[-1.90, -3.30, 1.03, 108.0, -3.0],
-		[-3.60, -0.60, 1.49, -22.0, 6.5],
-	]
-	for spec: Array in debout:
-		var at: Vector3 = _seated(float(spec[0]), float(spec[1]))
-		var moignon: Node3D = K.module(self, &"SM_Dungeon_PillarStub", at,
-			float(spec[3]), float(spec[2]), TONE_ANCIENNE)
-		if moignon != null:
-			moignon.rotation.z = deg_to_rad(float(spec[4]))
+## L'inégalité n'est pas un caprice : deux montants jumeaux se lisent
+## « portique », donc bâti et symétrique, donc récent. 1,57 contre 1,24 m,
+## deux fruits différents, deux cassures différentes — on lit une porte qui a
+## vieilli de travers. La marche est le seul élément encore à peu près à sa
+## place, et c'est elle qui dit « on entre ICI » sans un mot.
+func _seuil() -> void:
+	var a: Vector3 = _seated(-0.94, -3.52)
+	_piece_vestige("SM_Shrine_Montant_A", a,
+		Vector3(0.0, deg_to_rad(24.0), deg_to_rad(5.0)))
+	declare_support(a)
+	var b: Vector3 = _seated(0.82, -3.74)
+	_piece_vestige("SM_Shrine_Montant_B", b,
+		Vector3(0.0, deg_to_rad(-58.0), deg_to_rad(-8.0)))
+	declare_support(b)
+	# Enfoncée de 8 cm : une dalle qui affleure l'herbe se lit neuve.
+	var marche: Vector3 = _seated(-0.05, -3.00)
+	_piece_vestige("SM_Shrine_Step", marche + Vector3(0.0, -0.08, 0.0),
+		Vector3(0.0, deg_to_rad(9.0), 0.0))
+	declare_support(marche)
+
+
+## LA NEF — deux rangées qui CONVERGENT, et la pierre couchée qui barre.
+##
+## Les socles passent de |x| = 1,34 au seuil à |x| = 0,82 devant la table :
+## le couloir se resserre de 2,68 m à 1,64 m d'entraxe. C'est la perspective
+## forcée des nefs, et c'est ce qui fait que le regard arrive au cœur au lieu
+## d'errer. Les hauteurs alternent (0,97 / 0,60 / 0,81 à l'ouest, 0,81 / 0,97 /
+## 0,60 à l'est) pour qu'aucune rangée ne réponde à l'autre.
+##
+## LA PIERRE COUCHÉE est un montant tombé — même famille, même matière. Elle
+## barre la nef en travers et n'émerge que de 0,32 m.
+##
+## ELLE PORTE UN CORPS, ET C'EST LA SONDE QUI L'A EXIGÉ. Première version :
+## aucun collider, au motif que 0,32 m passe sous la hauteur de marche du
+## héros (0,30-0,38 m, §8.2) — le raisonnement du kit pour les cailloux. Mais
+## `probe_sanctuaire.gd` a mesuré « plus grande marche 0,000 m sur 32 appuis » :
+## sans corps, le rayon traverse la pierre, le héros aussi, et « on l'enjambe »
+## n'était pas une cote mais un espoir. Le corps fait donc 0,30 m de haut —
+## juste SOUS la hauteur de marche : on monte dessus d'un pas et on redescend,
+## ce qui est exactement enjamber. La sonde le mesure désormais pour de vrai.
+const SOCLES: Array[Array] = [
+	["SM_Shrine_Socle_A", -1.34, -2.52, 37.0, -4.0],
+	["SM_Shrine_Socle_C", -1.06, -1.70, -68.0, 3.0],
+	["SM_Shrine_Socle_B", -0.83, -0.96, 121.0, 6.0],
+	["SM_Shrine_Socle_B", 1.30, -2.36, -21.0, 5.0],
+	["SM_Shrine_Socle_A", 1.00, -1.58, 92.0, -7.0],
+	["SM_Shrine_Socle_C", 0.82, -0.90, -134.0, 2.0],
+]
+## Enfoncement de la pierre couchée. 0,19 m sous le sol : son maillage fait
+## 0,51 m d'épaisseur apparente, il n'en émerge donc que 0,32 m.
+const COUCHEE_ENFONCEMENT: float = 0.19
+
+
+func _nef() -> void:
+	for index: int in range(SOCLES.size()):
+		var spec: Array = SOCLES[index]
+		var at: Vector3 = _seated(float(spec[1]), float(spec[2]))
+		_piece_vestige(String(spec[0]), at,
+			Vector3(0.0, deg_to_rad(float(spec[3])),
+				deg_to_rad(float(spec[4]))),
+			"Socle_%d" % index)
 		declare_support(at)
-	# LE CINQUIÈME EST TOMBÉ, en travers du sud-ouest — vers la route, comme
-	# si on l'avait poussé de l'intérieur. Couché, son diamètre devient sa
-	# hauteur : 1,2 m au sol, une masse qu'on enjambe.
-	var chute: Vector3 = _seated(-2.4, 2.6)
-	var couche: Node3D = K.module(self, &"SM_Dungeon_PillarStub", chute,
-		34.0, 1.20, TONE_ANCIENNE)
-	_coucher(couche, 83.0, 0.06)
-	declare_support(chute)
+	var couchee: Vector3 = _seated(-0.10, -2.10)
+	_piece_vestige("SM_Shrine_Fallen",
+		couchee + Vector3(0.0, -COUCHEE_ENFONCEMENT, 0.0),
+		Vector3(0.0, deg_to_rad(82.0), deg_to_rad(3.0)))
+	declare_support(couchee)
 
 
-## LE DALLAGE AVALÉ — trois dalles enfoncées de huit centimètres et
-## quelques galets. Le sol du sanctuaire existait ; le bois l'a repris.
-## Enfoncées, jamais posées : une dalle qui affleure l'herbe se lit neuve.
+## LE CŒUR — la table fendue et son chevet.
+##
+## La table est l'élément héroïque du lieu : une dalle cassée en deux dont une
+## moitié a GLISSÉ de 0,21 m, posée sur deux dés inégaux, et l'épice rare
+## dessus. C'est le seul endroit du lot où la récompense EST la narration —
+## quelqu'un dépose encore une offrande sur une table brisée.
+##
+## Le chevet est la seule verticale du sanctuaire, et c'est un DOSSIER : il se
+## tient derrière la table, du côté de la route, à 0,95 m. Deux fonctions dans
+## la même pierre — il donne au cœur son fond, et il ajoute une masse de plus
+## entre la table et la route.
+func _coeur() -> void:
+	var table: Vector3 = _seated(0.0, 0.0)
+	_piece_vestige("SM_Shrine_Table", table,
+		Vector3(0.0, deg_to_rad(12.0), 0.0))
+	declare_support(table)
+	var chevet: Vector3 = _seated(0.16, 0.95)
+	_piece_vestige("SM_Shrine_Chevet", chevet,
+		Vector3(0.0, deg_to_rad(-34.0), deg_to_rad(6.0)))
+	declare_support(chevet)
+
+
+## LE DALLAGE AVALÉ — trois dalles enfoncées de huit centimètres, dans l'axe
+## de la nef. Le sol du sanctuaire existait ; le bois l'a repris.
 func _dallage_avale() -> void:
-	for spec: Array in [[-1.60, 1.40, 31.0], [1.50, 1.70, -18.0],
-			[0.20, -2.00, 57.0]]:
+	for spec: Array in [[-0.35, -1.25, 31.0], [0.45, -2.35, -18.0],
+			[-0.20, -0.35, 57.0]]:
 		K.module(self, &"Floor_UnevenBrick",
 			_seated(float(spec[0]), float(spec[1]))
 				+ Vector3(0.0, -0.08, 0.0), float(spec[2]), 1.0, TONE_MOUSSE)
-	for spec: Array in [[2.30, 0.90, &"Pebble_Round_3"],
-			[-0.90, 3.10, &"Pebble_Square_1"],
-			[-3.10, 1.90, &"Pebble_Round_5"]]:
-		K.module(self, spec[2] as StringName,
-			_seated(float(spec[0]), float(spec[1])), 0.0, 1.0, TONE_MOUSSE)
 
 
 ## LE RIDEAU SUD — ce qui rend le lieu invisible depuis la route, à 7,3 m.
-## Fougères et buissons, AUCUN collider : ils masquent, ils ne ferment pas,
-## et le filet des routes ne compte que les corps solides.
 ##
-## `Fern_1` mesure 9,05 m de large en natif ; `KitScale` le ramène à 0,62 m
-## de haut (facteur 0,2306), soit 2,09 m d'envergure — la bonne échelle
-## pour une frange, et la raison pour laquelle il n'en faut que quatre.
+## RENFORCÉ pour le lot 1.R, et pour une raison mesurable : la composition B
+## dresse au sud du cœur une pierre de 2,05 m là où l'ancienne version n'avait
+## qu'un moignon de 1,32 m. Le rideau avance donc de 4,5-6,0 m à 2,2-6,2 m et
+## gagne en hauteur. Toujours AUCUN collider : ils masquent, ils ne ferment
+## pas, et le filet des routes ne compte que les corps solides.
+##
+## `Fern_1` mesure 9,05 m de large en natif ; `KitScale` le ramène à 0,62 m de
+## haut (facteur 0,2306), soit 2,09 m d'envergure. `Bush_Common` est la seule
+## masse du kit qui monte assez pour couvrir un chevet vu de 7 m.
 func _rideau_sud() -> void:
-	for spec: Array in [[-2.60, 4.90, 41.0, 1.00], [0.90, 5.40, -27.0, 1.15],
-			[3.60, 4.20, 66.0, 0.90], [-4.80, 3.40, 12.0, 1.05]]:
-		K.module(self, &"Fern_1", _seated(float(spec[0]), float(spec[1])),
-			float(spec[2]), float(spec[3]), K.TONE_PLANT)
-	for spec: Array in [[-1.20, 6.40, 74.0, 0.95], [2.60, 6.10, -38.0, 1.10],
-			[5.10, 3.90, 21.0, 0.80]]:
+	# LE SIXIÈME BUISSON EST UNE MESURE, PAS UNE DÉCORATION. La capture
+	# `apres2/shrine_gp_route_p1.png` — prise depuis la route, au point P1
+	# (84, 7, 81), regard nord — montre le rideau faisant son travail SAUF sur
+	# une bande : le chevet dépasse d'une trentaine de centimètres au-dessus
+	# des buissons, en (630-690, 285-390). La ligne P1 → chevet passe par le
+	# local (−0,93 ; 4,0) ; c'est là que va le buisson manquant, et les deux
+	# voisins montent d'un cran. Aucun collider, comme tout le rideau : il
+	# masque, il ne ferme pas.
+	for spec: Array in [[-2.20, 2.95, 41.0, 1.40], [1.45, 3.35, -27.0, 1.55],
+			[-0.40, 4.55, 66.0, 1.55], [3.15, 3.75, 12.0, 1.15],
+			[-3.55, 4.15, -74.0, 1.25], [-0.95, 3.95, 28.0, 1.62]]:
 		K.module(self, &"Bush_Common", _seated(float(spec[0]), float(spec[1])),
 			float(spec[2]), float(spec[3]), K.TONE_PLANT)
-	# Ce qui pousse à l'ombre d'un vestige : trois champignons et deux
-	# plantes basses, au pied des moignons et de l'autel.
-	K.module(self, &"Mushroom_Common", _seated(-3.10, -1.80), 0.0, 1.0,
+	for spec: Array in [[-1.60, 2.25, 41.0, 1.10], [0.90, 2.55, -27.0, 1.20],
+			[2.40, 2.90, 66.0, 1.00], [-3.05, 2.70, 12.0, 1.05]]:
+		K.module(self, &"Fern_1", _seated(float(spec[0]), float(spec[1])),
+			float(spec[2]), float(spec[3]), K.TONE_PLANT)
+	# Le bord sud du rideau porte l'emprise visuelle du lieu vers le sud : il
+	# DÉCLARE donc son assise, sinon le tiers haut de l'axe Z n'aurait aucun
+	# appui et D2 aurait raison de le dire.
+	declare_support(_seated(-0.40, 4.55))
+	declare_support(_seated(-3.55, 4.15))
+
+
+## Ce qui pousse à l'ombre d'un vestige. Les champignons vont au PIED des
+## pierres, jamais au milieu du passage : ils accompagnent la masse, ils ne
+## meublent pas le vide.
+func _sous_bois() -> void:
+	K.module(self, &"Mushroom_Common", _seated(-1.62, -2.72), 0.0, 1.0,
 		K.TONE_PLANT)
-	K.module(self, &"Mushroom_Common", _seated(2.90, -2.60), 90.0, 0.85,
+	K.module(self, &"Mushroom_Common", _seated(1.55, -1.42), 90.0, 0.85,
 		K.TONE_PLANT)
-	K.module(self, &"Mushroom_Laetiporus", _seated(-4.20, 1.20), -55.0, 0.75,
+	K.module(self, &"Mushroom_Laetiporus", _seated(-1.10, 0.55), -55.0, 0.75,
 		K.TONE_PLANT)
-	K.module(self, &"Plant_7", _seated(1.90, 3.20), 23.0, 1.0, K.TONE_PLANT)
-	K.module(self, &"Plant_7", _seated(-2.20, -4.40), -71.0, 1.0, K.TONE_PLANT)
+	K.module(self, &"Pebble_Round_3", _seated(0.95, -3.35), 24.0, 1.0,
+		TONE_MOUSSE)
+	K.module(self, &"Pebble_Square_1", _seated(-1.80, -0.25), -61.0, 1.0,
+		TONE_MOUSSE)
 
 
 ## LE COUVERT — trois troncs, tous au NORD et à l'OUEST, jamais au sud.
 ##
 ## Deux raisons, et la seconde décide : au sud passe la route, et un tronc
-## porte un collider ; à 7,3 m d'un échantillon de route, l'emprise XZ d'un
-## corps de 0,9 m plus la marge de 1,2 m entre dans la fenêtre du filet. On
-## ne place pas un collider à cette distance pour un effet qu'un buisson
-## sans collider obtient aussi bien.
+## porte un collider ; on ne place pas un collider à cette distance pour un
+## effet qu'un buisson sans collider obtient aussi bien.
 ##
-## À VÉRIFIER SOUS MOTEUR : la végétation V2.2 gelée n'exclut PAS les sites
-## de POI (lecture de `world_v2_vegetation_builder.gd` : elle n'écarte que
-## routes, gués, checkpoints et caméras). La note du layout « clairière
-## calme garantie » n'est donc appliquée par aucun code. Si
-## `probe_vegetation_near` montre des troncs gelés dans ces rayons, ce sont
-## CES trois-là qui sautent, pas les gelés.
+## LOT 1.R — ILS SONT DÉPLACÉS, ET LA VÉRIFICATION EXIGÉE PAR LE LEAD EST
+## FAITE DANS LE CODE : ces trois troncs-là sont posés PAR CE FICHIER, ligne
+## ci-dessous, et n'appartiennent donc pas au semis V2.2 gelé (lequel est bâti
+## par `world_v2_vegetation_builder.gd` sous `WorldV2/Vegetation`, un autre
+## sous-arbre, que ce lieu ne touche jamais). Le gel reste intact : si un
+## tronc GELÉ bloque encore l'approche nord, il reste où il est et la
+## composition fait avec — c'est l'arbitrage du lead, et `probe_sanctuaire.gd`
+## recense ce qui est gelé autour du site pour que le constat soit une mesure.
+##
+## Ils passent de r ≈ 7,5-9 m à r ≈ 4,5-6,5 m et se placent en FLANC de la
+## nef, hors de l'axe de visée des trois caméras du plan (qui arrivent toutes
+## du nord) : ils encadrent au lieu de masquer, et le couvert se referme sur
+## les côtés pendant que le dessus du cœur reste ouvert.
 func _couvert() -> void:
-	for spec: Array in [[-7.50, -6.50, 33.0, 1.00, &"Pine_3"],
-			[8.00, -5.50, -47.0, 0.90, &"Pine_3"],
-			[-9.00, -1.00, 15.0, 0.85, &"CommonTree_3"]]:
+	# RECALÉS SUR CAPTURE : à (−4,60 ; −4,20) et (4,40 ; −3,60) les deux pins
+	# tombaient SUR l'axe de visée de `forest_shrine_joueur_b` et de
+	# `shrine_gp_nef` — un tronc en plein milieu de la nef, ce qui est
+	# précisément le reproche « les arbres masquent au lieu de cadrer ». Les
+	# lignes de visée des trois caméras gelées passent par le centre du lieu ;
+	# à z ≈ −2 elles sont à |x| ≤ 1,3 m. Les pins vont donc à |x| ≈ 6 : ils
+	# tiennent le bord du cadre et laissent la nef libre.
+	for spec: Array in [[-5.90, -1.40, 33.0, 1.00, &"Pine_3"],
+			[5.70, -2.20, -47.0, 0.90, &"Pine_3"],
+			[-6.40, 1.20, 15.0, 0.85, &"CommonTree_3"]]:
 		var at: Vector3 = _seated(float(spec[0]), float(spec[1]))
 		K.module(self, spec[4] as StringName, at, float(spec[2]),
 			float(spec[3]), K.TONE_PLANT)
 		declare_support(at)
 
 
-## Sept volumes : l'autel, les deux moignons qui montent assez haut pour
-## qu'on s'y cogne, le moignon couché, et les trois troncs. Les deux petits
-## moignons (0,85 m et 1,35 m) n'en reçoivent pas — on les enjambe, et un
-## collider sur chacun ferait sept corps dans un cercle de sept mètres.
+## LES COLLISIONS — onze volumes, et le choix de ce qui n'en reçoit PAS est
+## aussi délibéré que celui de ce qui en reçoit.
+##
+## En reçoivent : la table, le chevet, les deux montants du seuil, les quatre
+## socles d'au moins 0,80 m, les trois troncs. N'en reçoivent pas : les deux
+## socles de 0,60 m et la pierre couchée (0,32 m d'émergence) — on les
+## enjambe, et un corps sur chacun ferait treize volumes dans un cercle de
+## sept mètres. Le rideau sud n'en a aucun, par contrat : il masque, il ne
+## ferme pas.
+##
+## Le couloir libre entre les deux rangées vaut 1,64 m d'entraxe moins deux
+## demi-emprises de 0,30 m, soit 1,04 m au plus étroit : la capsule du héros
+## passe. Vérifié par sonde physique, pas par ce calcul.
 func _collisions() -> void:
-	K.collider_box(self, "Sanctuaire_autel",
-		_seated(0.0, 0.0) + Vector3(0.0, 0.56, 0.0), Vector3(2.2, 1.12, 2.1),
-		24.0)
-	K.collider_box(self, "Sanctuaire_moignon_est",
-		_seated(3.40, -1.60) + Vector3(0.0, 1.18, 0.0),
-		Vector3(0.95, 2.35, 0.95), 26.0)
-	K.collider_box(self, "Sanctuaire_moignon_ouest",
-		_seated(-3.60, -0.60) + Vector3(0.0, 0.98, 0.0),
-		Vector3(0.85, 1.95, 0.85), -22.0)
-	# Le moignon couché fait 1,32 m d'épaisseur apparente une fois basculé
-	# de 83° (1,20 m de diamètre plus le reliquat de sa longueur) : au-dessus
-	# de la hauteur de marche, donc il porte un corps.
-	K.collider_box(self, "Sanctuaire_moignon_couche",
-		_seated(-2.40, 2.60) + Vector3(0.0, 0.66, 0.0),
-		Vector3(1.60, 1.32, 1.25), 34.0)
-	for spec: Array in [[-7.50, -6.50], [8.00, -5.50], [-9.00, -1.00]]:
+	K.collider_box(self, "Sanctuaire_table",
+		_seated(0.0, 0.0) + Vector3(0.0, 0.45, 0.0), Vector3(1.70, 0.90, 1.20),
+		12.0)
+	K.collider_box(self, "Sanctuaire_chevet",
+		_seated(0.16, 0.95) + Vector3(0.0, 1.02, 0.0),
+		Vector3(1.00, 2.05, 0.55), -34.0)
+	K.collider_box(self, "Sanctuaire_montant_ouest",
+		_seated(-0.94, -3.52) + Vector3(0.0, 0.79, 0.0),
+		Vector3(0.60, 1.57, 0.46), 24.0)
+	K.collider_box(self, "Sanctuaire_montant_est",
+		_seated(0.82, -3.74) + Vector3(0.0, 0.62, 0.0),
+		Vector3(0.48, 1.24, 0.50), -58.0)
+	for index: int in range(SOCLES.size()):
+		var spec: Array = SOCLES[index]
+		var hauteur: float = 0.97 if String(spec[0]).ends_with("_A") else \
+			(0.81 if String(spec[0]).ends_with("_B") else 0.60)
+		if hauteur < 0.80:
+			continue
+		K.collider_box(self, "Sanctuaire_socle_%d" % index,
+			_seated(float(spec[1]), float(spec[2]))
+				+ Vector3(0.0, hauteur * 0.5, 0.0),
+			Vector3(0.60, hauteur, 0.55), float(spec[3]))
+	# La pierre couchée : un corps de 0,30 m, sous la hauteur de marche. Voir
+	# `_nef()` — sans lui la sonde mesurait une marche de 0,000 m, c'est-à-dire
+	# une traversée.
+	K.collider_box(self, "Sanctuaire_pierre_couchee",
+		_seated(-0.10, -2.10) + Vector3(0.0, 0.15, 0.0),
+		Vector3(1.85, 0.30, 0.58), 82.0)
+	for spec: Array in [[-5.90, -1.40], [5.70, -2.20], [-6.40, 1.20]]:
 		K.collider_box(self, "Sanctuaire_tronc_%d" % get_child_count(),
 			_seated(float(spec[0]), float(spec[1]))
 				+ Vector3(0.0, 2.6, 0.0), Vector3(0.85, 5.2, 0.85))
 
 
+## Extrait UNE pièce du GLB du vestige (recette `_piece_tour` de la tour) :
+## l'instance est élaguée AVANT d'entrer dans l'arbre et porte un nom
+## explicite — Godot rebaptise les homonymes en `@Node3D@366`, et six socles
+## tirés de trois maillages en produiraient trois paires (`scripts/CLAUDE.md`).
+func _piece_vestige(piece: String, at: Vector3, rot: Vector3,
+		nom: String = "") -> Node3D:
+	var instance: Node3D = VESTIGE_SCENE.instantiate() as Node3D
+	instance.name = piece
+	for enfant: Node in instance.get_children():
+		if String(enfant.name) != piece:
+			instance.remove_child(enfant)
+			enfant.free()
+		else:
+			enfant.name = "%s_maille" % piece
+	if not nom.is_empty():
+		instance.name = nom
+	add_child(instance)
+	instance.position = at
+	instance.rotation = rot
+	_peindre_vestige(instance)
+	return instance
+
+
+## Aplat painterly sur les matériaux du GLB — matériaux DUPLIQUÉS et mis en
+## cache, jamais de mutation d'une ressource importée (recette `_peindre_glb`
+## de la ferme R2B.2 et de la tour).
+##
+## AUCUNE CARTE N'EST BRANCHÉE ICI, et c'est une leçon payée dans ce même lot :
+## sur les pièces tombées de la tour, `T_UnevenBrick_BaseColor` box-projetée
+## sur des facettes de 0,3 m échantillonne surtout le mortier peint et sort
+## « chocolat glacé ». La famille qui s'intègre au terrain gelé est celle des
+## falaises — aplat plus facettes. Un vestige moussu est de cette famille-là.
+func _peindre_vestige(racine: Node3D) -> void:
+	for node: Node in racine.find_children("*", "MeshInstance3D", true, false):
+		var instance: MeshInstance3D = node as MeshInstance3D
+		if instance.mesh == null:
+			continue
+		for surface: int in range(instance.mesh.get_surface_count()):
+			var base: StandardMaterial3D = instance.get_active_material(
+				surface) as StandardMaterial3D
+			if base == null:
+				continue
+			var famille: String = base.resource_name
+			var cle: String = "sanctuaire|%d" % base.get_instance_id()
+			var mat: StandardMaterial3D = \
+				_cache_vestige.get(cle) as StandardMaterial3D
+			if mat == null:
+				mat = base.duplicate() as StandardMaterial3D
+				mat.roughness = maxf(mat.roughness, 0.95)
+				mat.metallic_specular = 0.1
+				# LE MULTIPLICATEUR DE COULEUR DE SOMMET, sans quoi le
+				# `COLOR_0` du GLB ne sert à rien : Godot ne l'active pas
+				# forcément à l'import, et un aplat sans variation est
+				# exactement ce que la première capture a montré (ISS-066).
+				# L'albédo ci-dessous devient donc une TEINTE, et la variation
+				# vient du maillage : strates, veines, pied assombri.
+				mat.vertex_color_use_as_albedo = true
+				if TEINTES_VESTIGE.has(famille):
+					mat.albedo_color = TEINTES_VESTIGE[famille] as Color
+				_cache_vestige[cle] = mat
+			instance.set_surface_override_material(surface, mat)
+
+
 func _seated(local_x: float, local_z: float) -> Vector3:
 	return Vector3(local_x, ground_local_y(local_x, local_z), local_z)
-
-## COUCHER UNE PIÈCE, ET LA RÉASSEOIR SUR SA VRAIE EMPRISE.
-##
-## `KitPlacement.seat()` mesure AVANT que l'appelant n'ajoute un roulis ou un
-## basculement — il ne peut donc rien pour une pièce qu'on couche ensuite. Et
-## le décalage à rattraper n'est pas devinable : mesuré au glTF,
-## `cliff_half_rock` a son épaisseur en +Z (bbox z ∈ [0,0815 ; 0,500]) et son
-## origine sur une ARÊTE, si bien qu'un basculement de +86° l'envoie
-## ENTIÈREMENT sous le sol — 11 cm visibles sur 1,06 m. `SM_Dungeon_PillarStub`
-## est centré en X/Z et se comporte autrement, `Wall_UnevenBrick_Straight`
-## autrement encore (z ∈ [−0,314 ; +0,092]).
-##
-## On ne devine donc pas : on bascule, on remesure l'emprise dans le repère du
-## parent, et on enfonce de la fraction VOULUE. `enfoncement` est la profondeur
-## en mètres sous le sol — zéro pose la pièce exactement dessus.
-##
-## (Troisième emploi dans ce lot : sa place serait `world_v2_place_kit.gd`
-## selon la règle de trois. Il reste ici parce que ce fichier-là est partagé
-## par les trois voies du lot et qu'une édition concurrente y coûte une fusion ;
-## remonté au lead pour intégration.)
-func _coucher(piece: Node3D, deg_x: float, enfoncement: float) -> void:
-	if piece == null:
-		return
-	piece.rotation.x = deg_to_rad(deg_x)
-	var boite: AABB = Transform3D(piece.transform.basis, Vector3.ZERO) \
-		* KitPlacement.local_aabb(piece)
-	piece.position.y -= boite.position.y + enfoncement

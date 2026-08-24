@@ -1,11 +1,11 @@
 {
   "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
   "clip_below": null,
-  "commit": "bc55474662ee92849ecf164c705dd4dc22196d5d",
+  "commit": "7b31316e5ac832d775a619960c97e57c8f8012fe",
   "emprise_m": [
-    27.4902610778809,
-    2.86098384857178,
-    24.2074737548828
+    23.5518951416016,
+    2.76213359832764,
+    19.349479675293
   ],
   "engine": "4.7.1-stable (custom_build)",
   "mode": "lieu dans le monde monté",
@@ -15,20 +15,20 @@
   "renderer": "forward_plus",
   "repo_dirty": false,
   "scene": "res://scenes/world_v2/WorldV2.tscn",
-  "size": "900x1200",
+  "size": "1200x900",
   "sujet": "barrow_cemetery",
   "vues": [
     {
       "angle_deg": 0.0,
       "hors_bandes_pct": 0.0,
       "image": "evidence/world_v2/v2_3_b/lot1/silhouettes/silhouette_barrow_cemetery_000.png",
-      "sujet_pct": 2.05148148148148
+      "sujet_pct": 3.50666666666667
     },
     {
       "angle_deg": 90.0,
       "hors_bandes_pct": 0.0,
       "image": "evidence/world_v2/v2_3_b/lot1/silhouettes/silhouette_barrow_cemetery_090.png",
-      "sujet_pct": 2.20222222222222
+      "sujet_pct": 3.87888888888889
     }
   ]
 }
