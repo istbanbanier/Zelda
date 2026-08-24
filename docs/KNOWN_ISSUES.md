@@ -2449,3 +2449,71 @@ prenait la **première** occurrence de « N octets » dans les notes, donc la
 valeur *périmée* que la note cite avant de la corriger. Elle rougissait sur une
 ligne juste. Un garde-fou qui rougit à tort finit désactivé dans l'heure
 (`PROMPT4_METHOD` §1, règle 2).
+
+## ISS-069 — 24 des 32 commits cités par les preuves du lot V2.3-B n'existent plus : la capture en arbre détaché tue son propre pointeur de provenance — S2, OUVERT
+
+**Trouvé** le 2026-08-24, d'abord par un relecteur du pré-screen, **puis
+vérifié indépendamment par le lead** — un balayage de tous les sha40 cités
+sous `evidence/world_v2/v2_3_b/`, chacun soumis à `git cat-file -t`.
+
+| Mesure | Valeur |
+|---|---:|
+| Commits cités par les preuves du lot | **32** |
+| Présents dans le dépôt | **8** |
+| **Absents** | **24** |
+| Parmi les 8 présents, ancêtres de HEAD | 7 |
+
+Les absents ne sont pas des détails d'étape. Ils incluent :
+
+- `dd3de2eb`, `7b31316e`, `0894bd55` — les manifestes des **silhouettes de la
+  baseline lot 1**, c'est-à-dire du **corpus que le détecteur R-D3 compare** ;
+- `0f94194d` — le verdict R-D3 `PASS` du lot 1.R, déjà repassé `NON VÉRIFIÉ`
+  pour cette raison ;
+- les manifestes de toutes les itérations des voies A et C (`v1`…`v5`,
+  `avant`, `apres2`, `iter2`…).
+
+## Le mécanisme, et pourquoi il est systémique
+
+Les captures sont faites dans un **arbre de travail détaché** (la règle du
+dépôt : un worktree par tâche). L'outil de capture inscrit dans son manifeste
+le `HEAD` de cet arbre. Ensuite le lead **cueille les fichiers** par
+cherry-pick — les PNG et les JSON entrent dans la branche, **le commit de
+l'arbre, non**. L'objet finit par disparaître (recréation de conteneur, ou
+simple absence de référence).
+
+Résultat : la preuve survit, **son pointeur de provenance meurt**. Le manifeste
+continue d'afficher `repo_dirty: false` et un sha d'apparence sérieuse que
+personne ne peut vérifier. C'est la forme la plus insidieuse du problème, parce
+que le document a l'air plus rigoureux que s'il n'avait rien écrit.
+
+**Piège de méthode associé** : `git rev-parse --short <40 hex>` **abrège sans
+vérifier l'existence** et répond de bonne grâce sur un objet absent. Seuls
+`git cat-file -t` et `git merge-base --is-ancestor` répondent vraiment.
+
+## Ce qui n'est PAS remis en cause
+
+Les images elles-mêmes. Elles sont committées, leur contenu est intact, et les
+mesures faites dessus restent des mesures. Ce qui est perdu, c'est la capacité
+de **relier une image à l'état de code exact** qui l'a produite — donc de
+rejouer une capture à l'identique, ou de prouver qu'une preuve n'a pas été
+prise sur un arbre différent de celui qu'elle annonce.
+
+## Déjà corrigé pour le lot 1.R
+
+Les manifestes de `evidence/world_v2/v2_3_b/lot1r/final/` citent `7c58573a`,
+qui **est** un ancêtre de HEAD : la passe a été lancée dans le dépôt principal,
+sur un arbre committé et poussé. C'est la conduite à généraliser.
+
+## Ce qui lèverait ce ticket
+
+1. Faire échouer bruyamment tout outil de capture dont le `HEAD` n'est **pas
+   un ancêtre d'une branche poussée** — un manifeste ne doit pas pouvoir
+   naître avec un pointeur mort.
+2. Un contrôle, dans `validate_fast.sh`, qui balaye `evidence/` et rougit sur
+   tout sha40 introuvable — avec la liste exacte.
+3. Décider du sort des 24 pointeurs morts : soit recapturer sur HEAD, soit les
+   marquer `PROVENANCE PERDUE` dans leur manifeste. **Ne pas les laisser
+   afficher un sha invérifiable.**
+
+Chantier de la chaîne de preuve, pas de la corrective d'un lot de lieux — mais
+il touche la crédibilité de tout le dossier, d'où S2.
