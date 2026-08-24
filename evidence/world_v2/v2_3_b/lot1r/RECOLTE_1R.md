@@ -288,3 +288,34 @@ famille de panne silencieuse qu'ISS-066.
 | Contrôle négatif (8 sabotages) | `tools/gate_negatif_lot1.sh --lot1` | *(en cours)* |
 | Détecteur R-D3 du lot | *(à régénérer)* | *(à venir)* |
 | `validate_fast.sh` | *(une seule fois, en fin)* | *(à venir)* |
+
+### 2026-08-24 — le verdict D3 PASS pointe sur un commit INTROUVABLE
+
+Contrôle de provenance fait avant d'utiliser le verdict, et non après.
+
+`d3_integre/verdict_PASS_0f94194.json` déclare
+`commit: 0f94194d57cf50c4b1d39aaa38462a56a979e6ec`, `repo_dirty: false`.
+**Cet objet n'existe pas dans le dépôt** :
+
+```
+$ git cat-file -t 0f94194d57cf50c4b1d39aaa38462a56a979e6ec
+fatal: git cat-file: could not get object info
+```
+
+Le verdict FAIL du même dossier, lui, pointe sur `213e1a2`, qui existe et est
+un ancêtre de HEAD. La différence n'est pas anodine : le PASS a été calculé
+sur un commit local jamais poussé, perdu avec la recréation du conteneur.
+
+**Piège de méthode à retenir** : `git rev-parse --short <40 hex>` ABRÈGE sans
+vérifier l'existence — il a répondu `0f94194` de bonne grâce sur un objet
+absent. Seul `git cat-file -t` ou `git merge-base --is-ancestor` répond
+vraiment. Une preuve qui cite un commit doit être vérifiée par l'un de ces
+deux-là, jamais par `rev-parse`.
+
+**Conséquence, sans adoucissement** : le PASS du détecteur R-D3 sur le lot est
+`NON VÉRIFIÉ` tant qu'il n'est pas rejoué sur un commit atteignable. Il n'est
+pas faux — la correction de composition du cimetière (`d527d70`) est bien dans
+l'histoire — il est **improuvable en l'état**. Le détecteur est donc rejoué sur
+HEAD, avec ses silhouettes recapturées, et le nouveau verdict remplace celui-ci
+dans le dossier de revue. L'ancien reste committé : on ne supprime pas une
+preuve périmée, on la date.
