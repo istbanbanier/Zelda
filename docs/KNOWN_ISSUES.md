@@ -2396,3 +2396,56 @@ captures, pour que le constat aille au bon endroit.
 (les sept ingrédients ont chacun une forme décrite dans
 `VISUAL_ASSET_BIBLE` §17.2), posé au sol et non flottant. Chantier de la passe
 « props de gameplay », pas de la corrective d'un lot de lieux.
+
+## ISS-068 — `ASSET_MANIFEST.csv` n'est lu par AUCUN test : un sha256 faux y a vécu, et huit lignes sont malformées — S3, OUVERT
+
+**Trouvé** le 2026-08-24 par le lead, en vérifiant ses propres écritures du lot
+1.R plutôt qu'en les croyant.
+
+`docs/assets/ASSET_MANIFEST.csv` est présenté partout comme une **preuve** de
+provenance : source, licence, export, empreinte, cotes. Aucun test ne l'ouvre.
+`tests/` et `tools/validate_fast.sh` ne contiennent pas une seule occurrence de
+son nom. C'est la même famille que ISS-066 — un contrôle vert parce qu'il ne
+regarde pas — mais appliquée au document qui **atteste** de la chaîne d'assets.
+
+**Ce que le manque a laissé passer**, mesuré sur les quatre lignes du lot 1.R :
+
+| Ligne | Inscrit | Disque | Verdict |
+|---|---|---|---|
+| `SM_Watchtower_Ruin` | `8d1b56bf` | `d7c710e9` | **FAUX** |
+| `SM_Barrow_Stones` | *(aucun)* | `8ffc48ec` | **manquant** |
+| `SM_Shrine_Vestige` | `a48af851` | `a48af851` | juste |
+| `SM_FlowerField_Steles` | `fb32ba37` | `fb32ba37` | juste |
+
+`8d1b56bf` ne correspond à aucune version du GLB dans l'histoire : le fichier
+n'a qu'un seul blob, posé par `9bb38a1`. La note de la ligne affirmait pourtant
+que la valeur avait été recalculée sur l'arbre intégré.
+
+**Deuxième défaut, structurel** : le format n'a **pas de colonne `sha256`**.
+L'empreinte vit dans le texte libre de `notes`, sous forme de préfixe à huit
+caractères. Une preuve rangée dans un champ de prose ne peut pas être contrôlée
+sans expression régulière, et une ligne peut donc n'en porter aucune sans que
+rien ne proteste.
+
+**Troisième défaut, préexistant** : sur 204 lignes, **huit portent 20 à 22
+colonnes** au lieu de 19 — `Male_Peasant`, `AL_RaiderStates`,
+`Superhero_Male_FullBody`, `SK_StormGuardian`, `AwningTent`, `ui_back`,
+`ui_error`, `ui_open`. Des virgules non échappées dans des champs libres. Aucun
+lecteur ne s'en plaint puisqu'il n'y a pas de lecteur.
+
+**Fermeture partielle déjà en place** : `tools/verifier_manifeste_lot1r.py`
+vérifie les quatre lignes du lot 1.R — export présent, préfixe sha256 conforme,
+nombre d'octets annoncé conforme — et a été éprouvé par sabotage (sha faussé →
+RC 1 nommant l'écart ; restauré → RC 0). Il ne couvre **que ces quatre lignes**.
+
+**Ce qui lèverait ce ticket** : un contrôle du manifeste **entier** dans
+`validate_fast.sh`, avec une colonne `sha256` dédiée, la réparation des huit
+lignes malformées, et un contrôle négatif qui prouve qu'il rougit. Chantier de
+la passe « chaîne d'assets », pas de la corrective d'un lot de lieux — mais il
+ne doit pas se perdre : c'est le document dont dépend la revue de licences.
+
+**Piège de méthode né du même contrôle** : la première version du vérificateur
+prenait la **première** occurrence de « N octets » dans les notes, donc la
+valeur *périmée* que la note cite avant de la corriger. Elle rougissait sur une
+ligne juste. Un garde-fou qui rougit à tort finit désactivé dans l'heure
+(`PROMPT4_METHOD` §1, règle 2).
