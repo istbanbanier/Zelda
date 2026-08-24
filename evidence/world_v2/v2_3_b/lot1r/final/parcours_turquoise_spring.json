@@ -1,0 +1,111 @@
+{
+ "place_id": "valley.poi.turquoise_spring.01",
+ "commentaire": "Converti par le lead depuis voie_a/parcours_video.json, qui portait DEUX lieux dans un seul fichier et des positions [x,y,z] la ou tools/godot/lot1r_video.gd attend [x,z] : joue tel quel, le pilote aurait lu z=y et marche vers un point qui n'est pas le lieu. Allure 0,55 (marche) et pauses de 2,5 s pour tenir les 20-40 s du contrat — le premier enregistrement du lot mesurait 12,8 s parce que le pilote COURAIT un parcours contemplatif. Parcours joueur 20-40 s par lieu (ADDENDUM_DA §MISE EN SCÈNE). Points monde [x,y,z] + regard [x,y,z]. Séquence : promesse → approche → révélation → proximité → récompense → sortie. MESURÉ en v7 et corrigé : depuis la montée nord-ouest, la brèche du belvédère ne montre PAS de ciel — la falaise gelée du couchant ferme le fond dans cette direction (capture final/overlook_breche_ouest.png). Le vide se lit depuis l'EST, en sortant : final/overlook_breche_est.png y montre ciel, mesas lointaines et le pylône ENTRE les deux masses. L'étape 'sortie' du belvédère joue donc ce regard de retour. Les points du parcours restent des positions monde, pas des caméras gelées.",
+ "etapes": [
+  {
+   "pos": [
+    -118.0,
+    50.0
+   ],
+   "regard": [
+    -141.0,
+    12.0,
+    40.0
+   ],
+   "pause_s": 2.5,
+   "sprint": false,
+   "allure": 0.55,
+   "note": "promesse"
+  },
+  {
+   "pos": [
+    -124.0,
+    44.0
+   ],
+   "regard": [
+    -138.0,
+    12.5,
+    40.0
+   ],
+   "pause_s": 2.5,
+   "sprint": false,
+   "allure": 0.55,
+   "note": "approche"
+  },
+  {
+   "pos": [
+    -129.5,
+    37.5
+   ],
+   "regard": [
+    -145.0,
+    13.0,
+    40.0
+   ],
+   "pause_s": 2.5,
+   "sprint": false,
+   "allure": 0.55,
+   "note": "approche_dalles"
+  },
+  {
+   "pos": [
+    -138.5,
+    38.5
+   ],
+   "regard": [
+    -146.0,
+    14.0,
+    40.0
+   ],
+   "pause_s": 2.5,
+   "sprint": false,
+   "allure": 0.55,
+   "note": "revelation_bouche"
+  },
+  {
+   "pos": [
+    -138.5,
+    38.5
+   ],
+   "regard": [
+    -160.0,
+    25.0,
+    40.0
+   ],
+   "pause_s": 2.5,
+   "sprint": false,
+   "allure": 0.55,
+   "note": "regard_tour"
+  },
+  {
+   "pos": [
+    -138.6,
+    42.4
+   ],
+   "regard": [
+    -138.6,
+    12.0,
+    42.4
+   ],
+   "pause_s": 2.5,
+   "sprint": false,
+   "allure": 0.55,
+   "note": "recompense"
+  },
+  {
+   "pos": [
+    -133.0,
+    36.0
+   ],
+   "regard": [
+    -124.0,
+    12.0,
+    28.0
+   ],
+   "pause_s": 2.5,
+   "sprint": false,
+   "allure": 0.55,
+   "note": "sortie_suivre_l_eau"
+  }
+ ]
+}
