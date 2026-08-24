@@ -159,4 +159,37 @@ Deux défauts visibles dans les captures **n'appartiennent pas aux lieux** :
 
 ## 8. Journal
 
-*(vide — se remplit à l'intégration)*
+### 2026-08-24 — vérification indépendante des artefacts, AVANT cueillette
+
+Le lead a rejoué lui-même, sur les arbres de travail, ce que les voies
+annonçaient. Rien n'a été cru sur parole.
+
+**Manifestes de captures** — voie A `final/` : commit `dd3de2e`,
+`repo_dirty: false`, 20 images sur disque, et le commit des captures est bien
+un ancêtre du HEAD de la voie. Voie C `apres4/` : commit `0894bd5`,
+`repo_dirty: false`. **Conformes.**
+
+**Modèles glTF** — relecture directe du bloc JSON de chaque `.glb` (attributs,
+comptage de triangles depuis les accesseurs d'indices, min Y depuis
+l'accesseur POSITION, sha256 du fichier entier) :
+
+| GLB | octets | triangles | matériaux | `COLOR_0` | min Y |
+|---|---|---|---|---|---|
+| `SM_FlowerField_Steles` | 128 132 ✔ | 1 008 ✔ | 2 ✔ | présent | 0,0000 ✔ |
+| `SM_Watchtower_Ruin` | 81 156 ✔ | 1 110 ✔ | 3 ✔ | absent (cartes) | 0,0000 ✔ |
+| `SM_Shrine_Vestige` | 105 396 ✔ | 878 ✔ | 2 ✔ | présent | 0,0000 ✔ |
+| `SM_Barrow_Stones` | **91 588** (rapport : 91 592) | 718 ✔ | 2 ✔ | présent | 0,0000 ✔ |
+
+La voie C est exacte au chiffre près, sha256 compris. La voie A n'a pas de GLB.
+
+**Deux valeurs de la voie B ont bougé depuis la rédaction de son rapport** :
+le sha256 du vestige du sanctuaire (`a48af851…` mesuré contre `b6eb5891…`
+annoncé) et la taille des pierres du tertre (91 588 contre 91 592, avec un
+sha256 lui aussi différent). Ce n'est **pas une erreur de la voie** : elle
+itérait encore au moment du contrôle, et un ré-export change le fichier. Mais
+c'est la démonstration concrète de la règle posée au §3 — **les sha256 du
+manifeste sont recalculés par le lead à l'intégration, jamais recopiés d'un
+rapport**. Recopiés, ils auraient été faux dès le premier ré-export, et rien
+ne l'aurait signalé.
+
+À refaire donc au moment de la cueillette, sur l'état final de la voie B.
