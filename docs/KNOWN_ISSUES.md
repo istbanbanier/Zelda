@@ -2358,12 +2358,29 @@ qui échoue quand l'asset l'exige. Non fait ici : `gltf_inspect.py` est un outil
 PARTAGÉ et l'objectif unique du lot 1.R est la corrective visuelle de six lieux.
 À traiter dans un lot d'outillage, avec un test rouge d'abord.
 
-## ISS-067 — toute récompense d'ingrédient rend une SPHÈRE UNIE, dans tous les lieux — S3, OUVERT, hors périmètre du lot 1.R
+## ISS-067 — le visuel des récompenses n'appartient à aucun monde : sphère unie ou coffre de kit saturé, dans QUATRE lieux sur six — S2, OUVERT, hors périmètre du lot 1.R
 
 **Constaté** le 2026-08-24 par la voie C (sphère verte au pied de la grande
-stèle du champ), **vérifié par le lead** : `scripts/interaction/ingredient_pickup.gd`
-construit un `SphereMesh`. Le défaut n'appartient donc à aucun lieu : il
-appartient au système d'interaction, partagé et antérieur au lot.
+stèle du champ, sphère jaune au sanctuaire, coffre à la tour et au cimetière),
+**vérifié par le lead sur le code ET sur l'image** :
+`scripts/interaction/ingredient_pickup.gd` construit un `SphereMesh` ; et sur
+`voie_b/apres/barrow_cemetery_joueur.png`, le coffre est l'objet le plus clair
+ET le plus saturé du cadre (orange vif + bleu-gris), d'une famille de teinte
+étrangère à toute matière du monde. Le défaut n'appartient donc à aucun lieu :
+il appartient au système d'interaction, partagé et antérieur au lot.
+
+**Sévérité relevée de S3 à S2** après mesure de l'étendue : quatre lieux sur
+six sont touchés, et le défaut se manifeste au moment exact où le lieu doit
+tenir sa promesse — sa récompense.
+
+**Décision de lead du 2026-08-24 (lot 1.R), pour ne pas dépasser le périmètre**
+tout en rendant les lieux jugeables : un lieu est autorisé à **habiller son
+PROPRE exemplaire** — teinte par surface sur une COPIE du matériau, sans muter
+la ressource partagée, exactement la technique déjà employée pour les pierres
+de kit. Contraintes dures : l'objet reste lisible comme un contenant ouvrable ;
+la récompense, son ancre, son identifiant et la logique d'octroi ne bougent pas.
+Ce qu'un lieu ne peut PAS faire, et qui reste dans ce ticket : remplacer le
+modèle.
 
 **Pourquoi cela compte au-delà de l'esthétique.** L'addendum de direction
 artistique demande que la récompense « paraisse appartenir à l'histoire du lieu,
