@@ -1353,3 +1353,44 @@ manifestes `repo_dirty:false`), appliquer la barre « wahou » lieu par lieu,
 puis clore par la formule imposée. **Interdits jusqu'au verdict visuel de
 Codex/Istvan** : tout sujet du lot 2, toucher à la Release courante, publier
 une nouvelle Release, et tout verdict artistique auto-déclaré.
+
+### 2026-08-24, reprise après recréation du conteneur — la validation est MORTE, pas « en cours »
+
+Constat établi par deux mesures espacées de 60 s, et non par déduction.
+
+**Le conteneur a été recréé** (cinquième fois du projet), 17 minutes avant la
+reprise. Conséquences mesurées :
+
+| Fait | Mesure |
+|---|---|
+| Processus `validate_fast.sh` | **ABSENT** du scan `/proc` aux deux mesures |
+| Processus `godot` | **ABSENT** — les deux « présents » du premier scan étaient la ligne de commande du script de mesure lui-même, qui contient les mots cherchés |
+| Journal `/tmp/lot1r_int/validate_fast.log` | **DISPARU** — `/tmp` vidé |
+| Token de RC final | **INEXISTANT** — aucun n'a jamais été écrit |
+| Dernière étape réellement atteinte | `1b — parse de TOUS les scripts GDScript` |
+| Arbres de travail `wt-lot1r-*` | **DISPARUS**, y compris de la métadonnée git |
+| HEAD local avant reprise | `031f0ad`, vieux de trois jours |
+| HEAD distant | `a45b832` — tout le lot 1.R y était |
+
+**Cette passe de validation est donc INCOMPLÈTE et INVALIDE.** Elle n'a
+jamais rendu de verdict ; annoncer qu'elle « tournait » était une erreur de
+lecture — le code retour 0 reçu était celui du lanceur, pas de la validation.
+
+**Rien n'a été perdu** : le local était un ANCÊTRE du distant, l'avance
+rapide a été propre, et le dépôt est revenu à `a45b832` à l'identique.
+
+**Ce qui reste acquis et prouvé** (tout est sur le distant) : les trois voies
+cueillies (`c233ceb`, `9bb38a1`, `488df31`), les quatre lignes de manifeste
+aux empreintes recalculées (`5a35c99`), l'import RC 0, les filets 11/11 et
+5/5, le contrôle négatif **8 déclarés / 8 joués / 8 validés** (`213e1a2`), le
+détecteur R-D3 passé de FAIL à **PASS** par correction de composition
+(`d527d70`), et les captures couleur du cimetière avec la divergence de
+lecture portée à la revue (`a45b832`).
+
+**Ce qui manque, et rien d'autre** : l'unique passe `validate_fast.sh` de
+clôture, puis les preuves visuelles du lot et la clôture elle-même.
+
+**PROCHAINE ACTION EXACTE** : relancer UNE passe `tools/validate_fast.sh`
+depuis cet arbre committé propre, avec son journal écrit DANS le dépôt et un
+token de fin portant le code retour — pour qu'une recréation de conteneur ne
+puisse plus effacer la preuve ni laisser croire qu'un travail continue.
