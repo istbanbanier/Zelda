@@ -1156,3 +1156,38 @@ cueillette dans l'ordre de `evidence/world_v2/v2_3_b/lot1/RECOLTE.md` —
 B (6 lieux) → A (le filet passe ROUGE, c'est voulu et archivé) → câblage
 REGISTRY par le lead (`/tmp` : patch prêt, gardé) → C (8 filets) → UNE
 validation → captures → checkpoint. AUCUN push entre les vagues.
+
+## 2026-08-24 — V2.3-B lot 1 : six lieux verts sur les huit filets, R-D3 a mordu et a été satisfait, validate_fast 961/0
+
+Session lead, passe 2 (sous moteur) après l'intégration des trois voies.
+
+**Livré, avec preuve :**
+- Instruments corrigés (3 pièges mesurés) puis plafond D1a calibré 20,4
+  (`426d1ff`) ; défauts réels des lieux corrigés — appuis d'extrémité,
+  filet D4 aligné StaticBody3D, budget D7 hors machinerie de récompense,
+  exemptions d'aire câblées (`4a67589`).
+- Détecteur R-D3 : FAIL réel (belvédère ≈ grotte 0,568 vs 0,493) →
+  correction de COMPOSITION (aile nord en avant-poste, `aa4f689`) →
+  recapture → PASS 0,481 (`cbb0611`). Aucun seuil touché nulle part.
+- Contrôle négatif --lot1 : 8/8 familles vues sur LEUR critère ; la
+  faille de signature D3 récompense-comprise vue par le contrôle et
+  fermée (`2c95823`, `b7dc0c2`).
+- Captures : 15 silhouettes + 13 plans POI + planche + carte, tout
+  d'arbres committés, repo_dirty=false (`d16106c`).
+- Boot smoke : épinglage 9 → 15 lieux, la pousse était le câblage du
+  lot (`dc9330e`).
+- **validate_fast : 961 tests, 0 échec, RC=0, VERT** — portail A vert,
+  télémétrie moteur dans son enveloppe (138/74/3, aucun entérinement).
+  Journal : `evidence/world_v2/v2_3_b/lot1/validate_fast_RC0_dc9330e.log`.
+- Dette voie C soldée : ligne ASSET_MANIFEST de `SM_WaterfallCave_r2a358`.
+
+**Observations versées à la passe art (non bloquantes)** : roches de kit
+terracotta au belvédère/à la source (r04/r07 veulent un minéral froid) ;
+nappe de la source quasi blanche au rendu (piège albédo ≠ valeur rendue).
+
+**PROCHAINE ACTION EXACTE** : pousser la branche (`git push -u origin
+claude/world-v2-reconstruction`), vérifier le SHA distant, puis publier le
+checkpoint jouable : tag `world-v2-playtest-lot1-<sha court>` poussé sur ce
+commit — le workflow `publish-playtest.yml` construit le ZIP et la Release.
+Ensuite : verdict visuel du lead/propriétaire sur la planche du lot, puis
+lot 2 (5-6 sujets suivants de `docs/V2_3_B_PLAN.md`).
