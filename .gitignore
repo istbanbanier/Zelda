@@ -67,3 +67,15 @@ __pycache__/
 .DS_Store
 Thumbs.db
 *~
+
+# Vidéos — jamais dans l'historique. MESURÉ le 2026-08-24 : une vidéo joueur
+# de 17,7 s enregistrée par MovieMaker pèse 175 Mo (MJPEG ; le conteneur n'a
+# ni ffmpeg, ni imageio, ni cv2), et `.git` pesait déjà 1,9 Go. Six vidéos
+# de preuve ajouteraient plus d'un gigaoctet IRRÉVERSIBLE — git ne libère
+# pas un blob supprimé. La preuve committée d'une vidéo est sa PLANCHE
+# CONTACT (images extraites de l'AVI + PIL) plus son sha256 et ses
+# paramètres au manifeste ; le fichier part en pièce jointe de Release.
+*.avi
+*.mp4
+*.mkv
+*.mov
