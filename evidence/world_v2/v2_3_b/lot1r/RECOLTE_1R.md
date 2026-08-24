@@ -41,6 +41,46 @@ autres lieux y sont encore dans leur état rejeté. Cela vaut pour :
    déjà enregistrée fait exception vérifiée — son cadre ne contient aucun autre
    sujet du lot (village gelé seulement).
 
+## 2 bis. Deux découvertes des voies qui pilotent l'intégration
+
+Elles sont écrites ici parce qu'elles changent la façon dont le lead doit
+mener la passe intégrée — pas seulement parce qu'elles sont intéressantes.
+
+### Le contrôle de matière et le contrôle de répétition NE SONT PAS indépendants
+
+Mesuré par la voie A : sortir la famille d'assets Kenney d'un lieu a fait
+passer sa hauteur d'emprise de **7,01 à 7,34 m** — et cela a suffi, **à
+composition identique**, à faire rougir le détecteur R-D3. Changer de famille
+d'asset change la PROPORTION du lieu, donc son verdict de répétition.
+
+Conséquence directe pour l'intégration : la voie B a corrigé les matières ET
+les formes de ses trois lieux (tertres de cônes vers des dos arrondis, axe et
+chevet au sanctuaire, familles de pierre changées) **après** que la voie A a
+mesuré son propre `PASS`. Les silhouettes du voisinage ont donc bougé depuis.
+Le verdict du lot doit être rejoué, et il peut rougir sur des paires que
+ni l'une ni l'autre ne pouvait voir.
+
+Risque nommé : **le belvédère passe avec des marges fines** (−0,009 à 80 m),
+et il vit dans la bande de proportion la plus encombrée du corpus — trop bas
+il rejoint la ferme abandonnée, trop haut le hameau de la rive. Si le rouge
+survient, la correction est de COMPOSITION, jamais de seuil.
+
+### La saturation de l'eau dépend surtout de l'INCIDENCE, pas de l'ombre
+
+Le lead avait proposé l'ombre du ravin comme cause du turquoise absent. La
+voie A l'a testée au lieu de la croire : l'ombre joue (saturation de l'herbe
+0,181 contre 0,360 au soleil), mais **l'incidence domine** — la même vasque,
+même ravin, même heure, rend **0,058 de saturation vue au ras et 0,347 vue de
+plus haut**, un facteur six sans que rien du lieu n'ait changé.
+
+Conséquence : l'issue que le lead proposait (déplacer la vasque dans une poche
+de lumière) est mesurément impraticable — le soleil vient de l'ouest, c'est la
+paroi de 14 m à l'ouest qui fait l'ombre, et la seule zone éclairée est en haut
+du ravin, ce qui retirerait au lieu sa fiction (l'eau sort du pied du mur).
+Statut retenu : `PARTIAL` mesuré, porté tel quel à la revue. À incidence
+moyenne, vasque (77,107,118) et rivière gelée (68,105,107) rendent le même
+sarcelle — la continuité par construction est donc tenue.
+
 ## 3. Lignes de manifeste à écrire par le lead
 
 Quatre GLB neufs, tous **créations originales du projet** générées par script
