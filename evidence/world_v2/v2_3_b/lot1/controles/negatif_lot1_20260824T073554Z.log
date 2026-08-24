@@ -60,3 +60,9 @@
 === D8 — un fichier gelé reçoit un commentaire ===
     cible     : scripts/world_v2/world_v2_heightmap.gd
     signature : D8 gel|D8 régression sur le gel
+      ÉCHEC test_world_v2_lot1_defauts.gd::test_d8_aucun_element_gele_n_a_bouge — D8 régression sur le gel (1 écart(s)) : D8 gel : scripts/world_v2/world_v2_heightmap.gd a BOUGÉ (sha256 8af52b24df04… au lieu de 5f703a82a4f6…)
+    === RÉSULTAT: 10 réussi(s), 1 échoué(s) ===
+      ÉCHEC: test_world_v2_lot1_defauts.gd::test_d8_aucun_element_gele_n_a_bouge — D8 régression sur le gel (1 écart(s)) : D8 gel : scripts/world_v2/world_v2_heightmap.gd a BOUGÉ (sha256 8af52b24df04… au lieu de 5f703a82a4f6…)
+  [OK]   le filet a VU le sabotage, sur SON critère.
+
+=== CONTRÔLE NÉGATIF LOT 1 (mode lot1) — 8 déclaré(s), 8 joué(s), 0 ignoré(s), 8 validé(s) ===
