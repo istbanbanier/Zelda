@@ -1394,3 +1394,51 @@ clôture, puis les preuves visuelles du lot et la clôture elle-même.
 depuis cet arbre committé propre, avec son journal écrit DANS le dépôt et un
 token de fin portant le code retour — pour qu'une recréation de conteneur ne
 puisse plus effacer la preuve ni laisser croire qu'un travail continue.
+
+### 2026-08-24, la passe de clôture est sortie ROUGE — une cause, la bonne
+
+La passe relancée sur l'arbre intégré `29f06bc` a rendu un vrai verdict, et
+ce verdict était **ROUGE**. Le token de fin l'a écrit noir sur blanc :
+`sha=29f06bc rc=1`.
+
+| Mesure | Valeur |
+|---|---|
+| Tests exécutés | **960**, plancher 586 respecté |
+| Échoués | **1** |
+| Cause | `test_invariants.gd::test_tout_cache_statique_de_ressources_est_liberable` |
+| Fichiers en cause | `forest_shrine_place.gd`, `watchtower_ruin_place.gd`, `barrow_cemetery_place.gd` |
+
+Les trois lieux de la voie B ont gagné un cache statique en même temps que
+leur GLB dédié. **Aucune ligne du diff ne montrait le manque** — ce qui
+manquait, c'est une fonction ABSENTE. C'est le partage des rôles décrit dans
+`PROMPT4_METHOD` §2 : le hook regarde les lignes ajoutées, le test regarde
+l'état du projet. Ici seul le second pouvait voir.
+
+**Correctif** (`3fd004c`) : le motif déjà en place dans
+`abandoned_farm_place.gd` — un `static func liberer_caches() -> int` inscrit
+au démarrage du script par `_static_init()` auprès de `StaticResourceCaches`,
+appelé une fois à l'extinction par `SceneFlow._exit_tree()`. Vérifié en
+isolement : `--filter=invariants` → **9 réussis, 0 échoué, RC=0**.
+
+Le journal ROUGE est committé avec le correctif, sous
+`evidence/world_v2/v2_3_b/lot1r/validation/`. Un dossier qui ne garde que ses
+verdicts verts ne prouve rien.
+
+**Enveloppe de validation durable** : `/home/user/lot1r_validation/run.sh`
+écrit son journal HORS de `/tmp` et un `VERDICT_<sha>.token` portant
+`sha=`, `rc=`, `fin=`. **Sans token, il n'y a pas eu de verdict**, quoi
+qu'affiche un journal partiel — la règle née des cinq recréations de
+conteneur.
+
+**PROCHAINE ACTION EXACTE** : attendre le verdict de l'unique passe complète
+relancée sur `3fd004c` ; si vert, produire les preuves visuelles du lot sur
+l'arbre INTÉGRÉ (13 caméras gelées en A/B, gros plans, silhouettes 0°/90°,
+planches couleur et niveaux de gris, planche anonyme des six vues joueur avec
+clé dans un JSON séparé, preuve croisée `gp_lointain` tour + source dans une
+même image), **réenregistrer les six vidéos joueur sur l'arbre intégré** —
+celle de la voie C date d'un arbre où les cinq autres lieux étaient encore
+rejetés, donc son arrière-plan ne prouve pas le lot — puis appliquer la barre
+« wahou » lieu par lieu, mettre à jour STATUS/PROGRESS/RECOLTE, pousser, et
+clore par la formule imposée. **Interdits** : tout sujet du lot 2, toucher à
+la Release courante, publier une nouvelle Release, tout verdict artistique
+auto-déclaré.
