@@ -1,0 +1,4 @@
+  ÉCHEC: test_invariants.gd::test_tout_cache_statique_de_ressources_est_liberable — cache statique sans chemin de libération : ["res://scripts/world_v2/poi/forest_shrine_place.gd (aucun liberer_caches())", "res://scripts/world_v2/poi/watchtower_ruin_place.gd (aucun liberer_caches())", "res://scripts/world_v2/poi/barrow_cemetery_place.gd (aucun liberer_caches())"]
+        Ajouter `static func liberer_caches() -> int` au fichier et
+        l'inscrire par `_static_init()` auprès de StaticResourceCaches.
+WARNING: 138 ObjectDB instances were leaked at exit (run with `--verbose` for details).
