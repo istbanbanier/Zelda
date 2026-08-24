@@ -193,3 +193,58 @@ rapport**. Recopiés, ils auraient été faux dès le premier ré-export, et rie
 ne l'aurait signalé.
 
 À refaire donc au moment de la cueillette, sur l'état final de la voie B.
+
+### 2026-08-24 — cueillette des trois voies
+
+Faite **par chemins** plutôt que par relecture de commits : les trois voies
+totalisaient 63 commits, et plusieurs d'entre eux touchaient des chemins à ne
+pas cueillir (le verdict D3 du lot, l'échafaudage de session). Un cherry-pick
+commit par commit aurait donc demandé un filtrage manuel à chaque étape.
+Méthode retenue : pour chaque voie, `git checkout <HEAD-voie> -- <chemins
+filtrés>` puis **un** commit d'intégration. Additif, sans commit de fusion,
+et le filtrage est explicite plutôt que réparti sur soixante gestes.
+
+Contrôle préalable : **aucun fichier n'est écrit par deux voies**, hors
+l'échafaudage de racine qui n'est pas cueilli. Aucune suppression à gérer
+(94 + 111 + 71 ajouts, 8 + 12 + 4 modifications, zéro `D`).
+
+| Voie | HEAD cueilli | fichiers | commit d'intégration |
+|---|---|---:|---|
+| A — belvédère, source | `efaa97c` | 95 | `c233ceb` |
+| B — tour, sanctuaire, cimetière | `4cb5352` | 119 | `9bb38a1` |
+| C — champ, outils, audit | `15386fc` | 71 | `488df31` |
+
+Deux rangements faits au passage : le script de montage de la voie A passe de
+la racine à `tools/lot1r_montage_eau.py` (convention du dépôt) ; les briefs de
+conception, les rapports de voie et l'audit contradictoire sont préservés sous
+`evidence/.../lot1r/` au lieu d'être perdus avec les arbres de travail ou
+d'encombrer la racine.
+
+Vérification : **aucun `.avi` indexé** (compté à zéro).
+
+### 2026-08-24 — manifeste d'assets, et ce que le recalcul a attrapé
+
+Les quatre lignes sont écrites (`5a35c99`) avec les valeurs relues par le lead
+sur l'arbre intégré. **Trois valeurs des rapports de voie étaient périmées** :
+deux sha256 (vestige du sanctuaire, pierres du tertre) qui avaient bougé
+pendant les ré-exports, et surtout **l'échelle du cimetière annoncée à 1,566 m
+de haut, mesurée à 2,453 m** — la valeur du rapport datait d'avant le dernier
+reprofilage des tertres. Recopiées, ces trois valeurs seraient entrées fausses
+dans un fichier qu'aucun test ne vérifie.
+
+Constat annexe, **hors périmètre et non corrigé** : huit lignes PRÉEXISTANTES
+du manifeste portent 20 à 22 colonnes au lieu de 19 (`Male_Peasant`,
+`AL_RaiderStates`, `Superhero_Male_FullBody`, `SK_StormGuardian`,
+`AwningTent`, et trois icônes `ui_*`). Aucun contrôle ne les voit — même
+famille de panne silencieuse qu'ISS-066.
+
+### 2026-08-24 — validation technique sur l'arbre intégré
+
+| Étape | Commande | Résultat |
+|---|---|---|
+| Import | `tools/lancer_godot.sh --path . --import` | `RC_GODOT=0` |
+| Filet des huit défauts | `… --filter=lot1_defauts` | **11 réussis, 0 échoué**, RC 0 |
+| Contrat des lieux | `… --filter=places_contract` | **5 réussis, 0 échoué**, RC 0 |
+| Contrôle négatif (8 sabotages) | `tools/gate_negatif_lot1.sh --lot1` | *(en cours)* |
+| Détecteur R-D3 du lot | *(à régénérer)* | *(à venir)* |
+| `validate_fast.sh` | *(une seule fois, en fin)* | *(à venir)* |
