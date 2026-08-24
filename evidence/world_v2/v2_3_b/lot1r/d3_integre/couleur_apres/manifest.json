@@ -1,0 +1,42 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "d527d70116c20b23545d5f3f7df3fa7f1b79fb9c",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 65.0,
+      "from": [
+        50.0,
+        5.7,
+        -53.6
+      ],
+      "image": "/tmp/cim_apres/barrow_cemetery_joueur.png",
+      "look": [
+        56.0,
+        5.2,
+        -64.0
+      ],
+      "name": "barrow_cemetery_joueur"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        67.0,
+        12.0,
+        -83.1
+      ],
+      "image": "/tmp/cim_apres/barrow_cemetery_identite.png",
+      "look": [
+        56.0,
+        6.0,
+        -64.0
+      ],
+      "name": "barrow_cemetery_identite"
+    }
+  ],
+  "size": "1280x720"
+}

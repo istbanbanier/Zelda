@@ -157,6 +157,46 @@ Deux défauts visibles dans les captures **n'appartiennent pas aux lieux** :
    d'identité du lieu et tire la composition vers le graybox. La voie A n'a pas
    le droit d'y toucher, et il ne lui a pas été demandé de le faire.
 
+## 7 bis. Une divergence de lecture à porter à la revue, mesurée
+
+**Le lead ne tranche pas ce point** : il relève de l'appréciation artistique,
+et la directive lui interdit de s'en décerner le verdict. Les deux lectures
+sont données avec leur mesure ; la revue décide.
+
+Le fait, mesuré sur `d3_integre/couleur_apres/barrow_cemetery_identite.png`
+(arbre committé `d527d70`, `repo_dirty: false`) :
+
+| Surface | Luminance rendue |
+|---|---:|
+| Tertre dominant | **0,223** |
+| Tertre du premier plan | **0,248** |
+| Tertre gauche | **0,192** |
+| Steppe voisine | **0,459** |
+| Steppe du premier plan | **0,465** |
+
+**Lecture de la voie B, documentée AVANT construction** dans son
+`CONCEPTION_cimetiere.md` : « tertre ≈ 0,23 — sous la steppe à 0,42, les dômes
+sont DÉJÀ plus sombres que l'herbe, c'est correct pour des masses funéraires,
+à garder dans 0,22–0,30 ». Le rendu livré respecte donc exactement l'intention
+écrite, et ce n'est pas un accident.
+
+**Lecture du lead** : à la moitié de la valeur du sol qui les porte, et dans la
+bande que `VISUAL_ASSET_BIBLE` §1.5 réserve aux OMBRES (0,18–0,38) plutôt qu'à
+celle des sols (0,35–0,65), les tertres lisent comme des bâches drapées POSÉES
+sur l'herbe plutôt que comme des gonflements DU sol. Un tumulus est de la terre
+engazonnée : l'écart de valeur devrait venir de l'ombre des flancs, pas de la
+teinte de la masse.
+
+Ce qui n'est PAS en cause : la loi de forme est réglée (dos arrondis, aucune
+arête faîtière, aucune lecture de cône), la variation de valeur existe
+(76→99 mesurés par l'audit), et le trait d'identité du lieu — les signes
+secondaires d'abord, puis le tertre dominant et la tombe rouverte qui explique
+la hache — **se lit** dans la vue joueur.
+
+Enjeu si la revue suit la lecture du lead : c'est un changement de TEINTE, donc
+sans effet sur la silhouette, donc **sans risque pour le détecteur R-D3**. Le
+coût serait d'une itération de capture.
+
 ## 8. Journal
 
 ### 2026-08-24 — vérification indépendante des artefacts, AVANT cueillette
