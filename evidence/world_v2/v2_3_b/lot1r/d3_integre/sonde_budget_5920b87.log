@@ -1,0 +1,53 @@
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_J5bjw7ox
+LANCER_GODOT: CWD=/home/user/wt-lot1r-d3
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/sonde_budget_lot1.gd
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 11754 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+BUDGET DES LIEUX — scène montée. Définitions : docs/V2_3_B_LOT1_CONTROLES.md §2
+  module    = nœud à scene_file_path + maillage runtime (mesh sans resource_path)
+  visuel    = VisualInstance3D (MultiMesh COMPRIS)
+  collision = CollisionShape3D (la FORME, pas le corps)
+
+lieu                                   famille    modules   visuels  collisions  runtime%
+valley.poi.watchtower_ruin.01          ruine          15       19         12      0.0%
+valley.poi.overlook_summit.01          micro          12       14          5      0.0%
+valley.poi.turquoise_spring.01         micro          12       14          4      0.1%
+valley.poi.forest_shrine.01            vestige        33       35         13      0.0%
+valley.poi.barrow_cemetery.01          vestige        31       35         13      0.0%
+valley.poi.flower_field.01             micro           4       13          3      0.4%
+
+camp                                   (accepté)       47       47          5      3.8%
+valley.poi.riverside_village.01        (accepté)      263      277         54      9.7%
+valley.poi.abandoned_farm.01           (accepté)       56       58         19      0.0%
+valley.poi.stone_bridge.01             (accepté)        1       35          9      0.1%
+valley.poi.waterfall_cave.01           (accepté)        5        9          2      0.0%
+valley.poi.thunderstruck_tree.01       (accepté)        5       14          2      9.4%
+valley.poi.ember_raider_camps.01       (accepté)       70       74         12     20.4%
+valley.poi.conductive_basin.01         (accepté)       71       79          6      7.2%
+pylon                                  (accepté)        7       23          2      0.0%
+LANCER_GODOT: RC_GODOT=0

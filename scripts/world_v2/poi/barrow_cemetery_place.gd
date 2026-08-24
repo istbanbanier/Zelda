@@ -55,6 +55,31 @@
 ## L'ANCRE DE RÉGION `anchor.r08` EST À 5,66 m (local +4 ; +4). Le tertre
 ## moyen reste à (+9,0 ; +6,5) : son bord passe à 5,6 m de l'ancre au lieu de
 ## la recouvrir.
+##
+## ---------------------------------------------------------------------------
+## CORRECTION D3 (arbre intégré du lot 1.R) — LA PIERRE DOMINE LA TERRE
+##
+## Fait mesuré, et il n'a pu apparaître qu'à l'intégration : le détecteur de
+## répétition compare les lieux DEUX À DEUX, et une fois les six lieux
+## corrigés réunis, `valley.poi.overlook_summit.01 ≈ valley.poi.
+## barrow_cemetery.01` à 30 m — IoU 0,505 contre un seuil de 0,4931 calibré
+## sur `ferme abandonnée × pont de pierre`. Les deux aplats noirs lisaient la
+## même phrase : « masse dominante à gauche, vide, satellite détaché à
+## droite ». Le cimetière portait donc la composition du belvédère et non la
+## sienne.
+##
+## Cause exacte, en cotes : ses verticales ne perçaient pas le ciel. Le
+## linteau culminait à 1,92 m SOUS la crête de `Tertre_Grand` (2,15 m), les
+## deux stèles du chemin à 1,57 et 0,92 m. Le lieu n'avait donc, en
+## silhouette, que des dos — c'est-à-dire la même famille de formes que
+## n'importe quelle butte.
+##
+## Correction, et elle est de COMPOSITION : les six marques dressées prennent
+## leur taille de pierres levées, en crescendo le long du chemin d'arrivée,
+## et une PIERRE DU SEUIL de 4,33 m se dresse à la tête du dos dominant. Rien
+## n'est ajouté dans le vide entre les masses, aucune lame couchée ne bouge,
+## aucun autre lieu n'est touché, et le seuil du détecteur n'est pas effleuré.
+## Détail et cotes : § CHEMIN et § PIERRE_DU_SEUIL.
 class_name BarrowCemeteryPlace
 extends WorldV2Place
 
@@ -547,22 +572,78 @@ func _gueule_de_chambre() -> void:
 ## au-delà des trois dos sans le remplir : entre elles, il n'y a rien, et
 ## c'est voulu. Ce sont elles qui portent l'emprise, donc elles déclarent
 ## leur assise.
+##
+## ---------------------------------------------------------------------------
+## D3 — LA PIERRE FINIT DE PRENDRE LA HAUTEUR (lot 1.R, correction D3)
+##
+## Le geste précédent s'appelait « la hauteur passe de la TERRE à la PIERRE ».
+## Il n'est pas allé jusqu'au point où la pierre DOMINE la terre : le linteau
+## culminait à 1,92 m sous une crête de `Tertre_Grand` à 2,15 m, et sur
+## l'aplat noir il n'en restait qu'un éclat au-dessus du dos gauche. Le
+## cimetière lisait alors, comme le belvédère, « masse dominante à gauche,
+## vide, satellite détaché à droite » — même signature de composition, et
+## `tools/lot1_repetition.py` l'a mesuré sur l'arbre intégré : IoU 0,505 à
+## 30 m contre un seuil de 0,4931.
+##
+## Les six marques dressées prennent donc leur vraie taille, EN CRESCENDO le
+## long du chemin d'arrivée (sud-ouest → gueule) : la séquence « signes
+## secondaires d'abord, puis le dominant » cesse d'être un simple ordre de
+## rencontre et devient une montée. Les lames couchées ne bougent PAS —
+## « à demi avalées par l'herbe » reste la cote, et le vide entre les masses
+## n'est pas rempli : on ajoute UNE pierre, on n'en sème pas dix.
+##
+## Deux colonnes s'ajoutent aux spécifications : l'échelle EN TRAVERS et
+## l'échelle EN HAUTEUR. Elles sont dissociées parce qu'une pierre dressée
+## n'est pas une petite pierre agrandie — elle est plus élancée. Les strates
+## de `COLOR_0` s'étirent d'autant : sur un bloc de quatre mètres, un lit de
+## 0,45 m est plus juste qu'un lit de 0,17 m.
 const CHEMIN: Array[Array] = [
-	["SM_Barrow_Lame_A", -7.60, 6.40, 38.0, 0.11, 0.0],
-	["SM_Barrow_Stele_B", -6.05, 5.00, 62.0, 0.0, 24.0],
-	["SM_Barrow_Lame_B", -4.90, 4.90, 15.0, 0.09, 0.0],
-	["SM_Barrow_Stele_A", -4.25, 3.55, -28.0, 0.0, 17.0],
-	["SM_Barrow_Lame_C", -3.05, 4.45, 74.0, 0.07, 0.0],
+	# pièce, x, z, lacet, enfoncement, roulis, échelle_travers, échelle_hauteur
+	["SM_Barrow_Lame_A", -7.60, 6.40, 38.0, 0.11, 0.0, 1.00, 1.00],
+	["SM_Barrow_Stele_B", -6.05, 5.00, 62.0, 0.0, 24.0, 1.08, 1.72],
+	["SM_Barrow_Lame_B", -4.90, 4.90, 15.0, 0.09, 0.0, 1.00, 1.00],
+	["SM_Barrow_Stele_A", -4.25, 3.55, -28.0, 0.0, 17.0, 1.10, 1.58],
+	["SM_Barrow_Lame_C", -3.05, 4.45, 74.0, 0.07, 0.0, 1.00, 1.00],
 ]
 ## Les deux marques les plus lointaines se rapprochent de 1,4 et 1,0 m : le
 ## lieu fait 24 m de large pour 2 m de haut, et c'est ce RAPPORT qui décide si
 ## une silhouette portrait est lisible. Le vide reste l'identité — on le
 ## traverse toujours — mais il n'a pas besoin de vingt-trois mètres.
+## La stèle de l'est se dresse elle aussi : c'est la marque la plus lointaine
+## du côté opposé au chemin, et c'est elle qui empêche le rythme des
+## verticales de se tasser tout entier dans la moitié gauche du cadre.
 const MARQUES_ISOLEES: Array[Array] = [
-	["SM_Barrow_Stele_B", 6.40, -3.20, 71.0, 0.0, 31.0],
-	["SM_Barrow_Lame_C", 11.20, -1.80, -48.0, 0.08, 0.0],
-	["SM_Barrow_Lame_B", -9.40, -5.60, 23.0, 0.10, 0.0],
+	["SM_Barrow_Stele_B", 6.40, -3.20, 71.0, 0.0, 31.0, 1.05, 1.62],
+	["SM_Barrow_Lame_C", 11.20, -1.80, -48.0, 0.08, 0.0, 1.00, 1.00],
+	["SM_Barrow_Lame_B", -9.40, -5.60, 23.0, 0.10, 0.0, 1.00, 1.00],
 ]
+
+## LA PIERRE DU SEUIL — la seule verticale qui domine tout le lieu.
+##
+## Position : au bout HAUT du grand axe de `Tertre_Grand`, 1,2 m au-delà du
+## pied du dos, c'est-à-dire à la TÊTE de la tombe et à l'opposé de la gueule.
+## Trois raisons, toutes vérifiables :
+##   * elle n'entre ni dans le quadrant d'accès des déblais, ni dans le
+##     corridor d'arrivée : on continue de marcher jusqu'au coffre sans la
+##     contourner (elle est à 4,5 m de l'ancre de récompense) ;
+##   * vue depuis l'arrivée sud-ouest elle se dresse DERRIÈRE le dos
+##     dominant, donc elle couronne l'élément héroïque au lieu de le
+##     précéder — l'intention impose les signes secondaires D'ABORD ;
+##   * elle est assise sur le terrain gelé, hors de la jupe du tertre, donc
+##     `_seated()` suffit et rien ne flotte.
+##
+## Hauteur : `SM_Barrow_Stele_A` (1,57 m) étirée à 4,33 m, large de 0,99 m et
+## épaisse de 0,42 m. C'est une proportion de menhir, pas une stèle agrandie,
+## et c'est la cote qui fait basculer la lecture : contre une crête à 2,15 m,
+## la pierre gagne. Le sommet du lieu passe donc du linteau (1,92 m) à cette
+## pierre, et l'emprise Y du cadrage de silhouette avec lui — c'est le
+## mécanisme de la correction, mesuré et non supposé.
+##
+## L'emprise XZ n'est PAS touchée : x = +1,89 et z = +1,36 tombent loin à
+## l'intérieur des marques isolées (−9,4 … +11,2). Le cadre de capture est
+## piloté par la largeur (`max(Y, largeur × H/L)`), il reste donc identique,
+## et la comparaison avant/après porte sur la forme seule.
+const PIERRE_DU_SEUIL: Array = [1.886, 1.364, 34.0, 6.0, 1.55, 2.76]
 
 
 func _chemin_des_morts() -> void:
@@ -571,12 +652,29 @@ func _chemin_des_morts() -> void:
 		for spec: Array in lot:
 			index += 1
 			var at: Vector3 = _seated(float(spec[1]), float(spec[2]))
-			_piece_pierre(String(spec[0]),
+			var marque: Node3D = _piece_pierre(String(spec[0]),
 				at + Vector3(0.0, -float(spec[4]), 0.0),
 				Vector3(0.0, deg_to_rad(float(spec[3])),
 					deg_to_rad(float(spec[5]))),
 				"Marque_%d" % index)
+			marque.scale = Vector3(float(spec[6]), float(spec[7]),
+				float(spec[6]))
 			declare_support(at)
+	_pierre_du_seuil()
+
+
+## La pierre dressée de la tête de tombe. Elle est bâtie à part et non ajoutée
+## à `CHEMIN` : elle n'appartient pas au chemin, elle en est le terme.
+func _pierre_du_seuil() -> void:
+	var at: Vector3 = _seated(float(PIERRE_DU_SEUIL[0]),
+		float(PIERRE_DU_SEUIL[1]))
+	var pierre: Node3D = _piece_pierre("SM_Barrow_Stele_A", at,
+		Vector3(0.0, deg_to_rad(float(PIERRE_DU_SEUIL[2])),
+			deg_to_rad(float(PIERRE_DU_SEUIL[3]))),
+		"Pierre_du_seuil")
+	pierre.scale = Vector3(float(PIERRE_DU_SEUIL[4]),
+		float(PIERRE_DU_SEUIL[5]), float(PIERRE_DU_SEUIL[4]))
+	declare_support(at)
 
 
 ## LA STEPPE — trois touffes sèches, deux éclats, rien d'autre. Aucun
@@ -653,15 +751,31 @@ func _collisions() -> void:
 		_seated(-1.78, 2.22) + Vector3(0.0, 1.25, 0.0), Vector3(2.60, 2.50, 0.95),
 		96.0)
 	# Les deux stèles du chemin et celle de l'est — les lames se franchissent.
+	# Les trois boîtes SUIVENT l'étirement des pierres (§ CHEMIN) : une stèle
+	# qui double de hauteur sans son corps se traverserait par le haut.
+	#
+	# APPROXIMATION ASSUMÉE ET NOMMÉE, et c'est la MÊME que celle d'avant :
+	# la boîte reste D'APLOMB alors que la pierre penche (17°, 24°, 31°, 6°).
+	# Le sommet penché sort donc de son corps — jusqu'à 0,73 m sur la stèle
+	# haute. C'est délibéré et c'est le sens de l'arbitrage déjà pris pour les
+	# lames couchées : mieux vaut une masse traversable en haut qu'un mur
+	# invisible qu'on sent sans le voir. Le pied, lui, est couvert, et c'est
+	# lui qu'on heurte en marchant.
 	K.collider_box(self, "Stele_chemin_haute",
-		_seated(-4.25, 3.55) + Vector3(0.0, 0.78, 0.0),
-		Vector3(0.66, 1.56, 0.40), -28.0)
+		_seated(-4.25, 3.55) + Vector3(0.0, 1.23, 0.0),
+		Vector3(0.73, 2.46, 0.44), -28.0)
 	K.collider_box(self, "Stele_chemin_basse",
-		_seated(-6.05, 5.00) + Vector3(0.0, 0.44, 0.0),
-		Vector3(0.58, 0.88, 0.36), 62.0)
+		_seated(-6.05, 5.00) + Vector3(0.0, 0.76, 0.0),
+		Vector3(0.63, 1.51, 0.39), 62.0)
 	K.collider_box(self, "Stele_est",
-		_seated(6.40, -3.20) + Vector3(0.0, 0.42, 0.0),
-		Vector3(0.58, 0.84, 0.36), 71.0)
+		_seated(6.40, -3.20) + Vector3(0.0, 0.68, 0.0),
+		Vector3(0.61, 1.36, 0.38), 71.0)
+	# La pierre du seuil : 4,33 m de haut, elle a un corps sur toute sa
+	# hauteur — c'est la seule masse du lieu qu'on ne franchit pas.
+	K.collider_box(self, "Pierre_du_seuil_col",
+		_seated(float(PIERRE_DU_SEUIL[0]), float(PIERRE_DU_SEUIL[1]))
+			+ Vector3(0.0, 2.17, 0.0),
+		Vector3(1.02, 4.33, 0.46), float(PIERRE_DU_SEUIL[2]))
 
 
 ## Extrait UNE pièce du GLB des pierres funéraires (recette `_piece_tour` de
