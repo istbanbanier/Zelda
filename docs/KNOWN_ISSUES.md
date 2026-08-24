@@ -2320,3 +2320,62 @@ ne compte plus ces objets comme fuite. À réévaluer à chaque montée de versi
 
 Preuves : `evidence/world_v2/v2_3_r2b3_1/iss059/RESIDU_SUITE_COMPLETE.md` et
 `evidence/world_v2/v2_3_r2b3_1/cloture/`.
+
+## ISS-066 — `gltf_inspect.py` ne contrôle jamais `COLOR_0` : un asset à couleurs de sommet peut sortir VIDE et être déclaré VALIDE — S3, OUVERT
+
+**Trouvé** le 2026-08-24 par la voie C du lot 1.R, en fabriquant les stèles de
+la Porte des fleurs. **Vérifié indépendamment par le lead** en relisant l'outil.
+
+L'exporter glTF de Blender n'écrit `COLOR_0` que si le **matériau consomme
+l'attribut** (nœud Color Attribute → Base Color) ; il faut de plus que la couche
+soit l'attribut de couleur **actif ET de rendu** — une couche créée par bmesh ne
+l'est pas d'office. Sans ces deux conditions, le `.glb` sort avec `POSITION` et
+`NORMAL` seulement.
+
+Et l'outil de validation ne le voit pas. `tools/gltf_inspect.py` contrôle
+`POSITION` (erreur), `NORMAL` (avertissement), `TEXCOORD_0` (avertissement) et
+`JOINTS_0` (erreur si skin attendu). **`COLOR_0` n'apparaît nulle part dans le
+fichier.** Un asset dont toute la matière repose sur les couleurs de sommet peut
+donc perdre sa matière en silence et repartir avec un `VALIDE`.
+
+C'est le mode de panne que `PROMPT4_METHOD` §2 nomme « le test qui ne peut pas
+échouer » : le contrôle est vert parce qu'il ne regarde pas.
+
+**Mesure du cas réel** : le `.glb` des stèles est passé de 80 324 à 128 132
+octets une fois les deux conditions réunies ; la face rendue est passée d'une
+étendue de luminance de **1 niveau** (aplat) à **31–32 niveaux**.
+
+**Contournement en vigueur** : le producteur d'un asset à couleurs de sommet
+vérifie explicitement la présence de `COLOR_0` (taille du `.glb`, ou lecture des
+`attributes` du JSON glTF) et ne se fie pas au verdict de l'outil. Côté Godot,
+`flower_field_place.gd` force `vertex_color_use_as_albedo` sur une COPIE du
+matériau importé — si l'import cessait de le poser, la pierre redeviendrait un
+aplat sans qu'aucun test ne rougisse.
+
+**Ce qui lèverait ce ticket** : une ligne d'information « `COLOR_0` : présent /
+absent » dans le rapport de l'outil, et un drapeau strict (`--exige-couleurs`)
+qui échoue quand l'asset l'exige. Non fait ici : `gltf_inspect.py` est un outil
+PARTAGÉ et l'objectif unique du lot 1.R est la corrective visuelle de six lieux.
+À traiter dans un lot d'outillage, avec un test rouge d'abord.
+
+## ISS-067 — toute récompense d'ingrédient rend une SPHÈRE UNIE, dans tous les lieux — S3, OUVERT, hors périmètre du lot 1.R
+
+**Constaté** le 2026-08-24 par la voie C (sphère verte au pied de la grande
+stèle du champ), **vérifié par le lead** : `scripts/interaction/ingredient_pickup.gd`
+construit un `SphereMesh`. Le défaut n'appartient donc à aucun lieu : il
+appartient au système d'interaction, partagé et antérieur au lot.
+
+**Pourquoi cela compte au-delà de l'esthétique.** L'addendum de direction
+artistique demande que la récompense « paraisse appartenir à l'histoire du lieu,
+pas à un coffre posé au milieu ». Une sphère unie flottant dans l'herbe contredit
+cette intention **partout à la fois**, et elle le fait dans des captures dont le
+sujet est un lieu — au risque qu'une revue impute au lieu un défaut qu'il ne
+possède pas.
+
+**En attendant** : le signaler explicitement à toute revue visuelle qui verra ces
+captures, pour que le constat aille au bon endroit.
+
+**Ce qui lèverait ce ticket** : un visuel d'ingrédient tiré des modèles réels
+(les sept ingrédients ont chacun une forme décrite dans
+`VISUAL_ASSET_BIBLE` §17.2), posé au sol et non flottant. Chantier de la passe
+« props de gameplay », pas de la corrective d'un lot de lieux.
