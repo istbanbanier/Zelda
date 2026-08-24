@@ -1442,3 +1442,51 @@ rejetés, donc son arrière-plan ne prouve pas le lot — puis appliquer la barr
 clore par la formule imposée. **Interdits** : tout sujet du lot 2, toucher à
 la Release courante, publier une nouvelle Release, tout verdict artistique
 auto-déclaré.
+
+### 2026-08-24 — la passe de clôture est VERTE, et la passe de preuves est lancée
+
+    sha=3fd004c  rc=0  fin=2026-08-24T15:38:22Z
+    === RÉSULTAT: 961 réussi(s), 0 échoué(s) ===
+    961 test(s) exécuté(s), plancher 586 respecté
+    === VALIDATE_FAST : VERT ===
+
+Durée réelle **68 minutes** (14:30 → 15:38), rendu logiciel. L'estimation de
+20 minutes faite plus tôt était fausse d'un facteur trois : la passe ROUGE
+précédente avait duré 70 minutes (13:08 → 14:18), ce qui se lisait dans son
+propre journal.
+
+**Pourquoi 960 puis 961** — vérifié, pas supposé. Les deux journaux **nomment
+exactement 961 tests** ; l'ensemble est identique, zéro apparu, zéro disparu.
+La passe ROUGE affichait « 960 exécutés » parce que ce compteur ne comptait que
+les réussites : 960 + 1 échec = 961. **Rien n'a été ajouté pour verdir.**
+
+**Portée exacte du verdict** : il porte sur `3fd004c`. Depuis, HEAD n'a reçu
+que des documents, des preuves, et un outil autonome
+(`tools/verifier_manifeste_lot1r.py`). `validate_fast.sh` n'appelle que deux
+outils python — `gate_fuite_ressources.py` et `blender/check_continuity.py` —
+et aucun test ne l'importe. Le diff `3fd004c..HEAD` ne contient **aucun**
+script GDScript, scène, ressource, asset ni test.
+
+**Trois défauts trouvés en vérifiant mes propres écritures**, chacun corrigé et
+rendu exécutable :
+
+| Défaut | Ce qu'il aurait coûté | Fermeture |
+|---|---|---|
+| Le verdict D3 `PASS` cite un commit introuvable | une preuve invérifiable présentée à la revue | rejoué sur HEAD ; `git rev-parse --short` abrège sans vérifier — seuls `cat-file` et `merge-base` répondent |
+| `SM_Watchtower_Ruin` portait un sha256 d'aucun blob de l'histoire | un manifeste de provenance faux | corrigé ; `tools/verifier_manifeste_lot1r.py`, éprouvé par sabotage ; **ISS-068** ouverte |
+| Les parcours vidéo de la voie A étaient injouables | un film crédible et faux | convertis au schéma de l'outil, allure ramenée à la marche |
+
+**Pré-vol de la passe de preuves** (`final/PREVOL.md`) : huit contrôles avant de
+dépenser une heure de rendu, dont deux pièges attrapés — `lot1r_planches.py`
+**meurt** si les dossiers AVANT et APRÈS diffèrent d'une seule vue (40 plans
+contre 13 auraient fait échouer la dernière étape après tout le rendu), et la
+planche anonyme exige **exactement** six vues `*_joueur`.
+
+**PROCHAINE ACTION EXACTE** : à la fin de la passe de preuves (token
+`PREUVES_<sha>.token`), regarder les images **en taille réelle**, appliquer la
+barre « wahou » lieu par lieu en cherchant d'abord le trait d'identité, puis
+enregistrer les cinq vidéos joueur restantes (planche contact + sha256, l'AVI
+ne rentre pas dans git), remplir §6 et §7 de `RAPPORT_1R.md`, mettre à jour
+STATUS, pousser, et clore par la formule imposée. **Interdits** : tout sujet du
+lot 2, toucher à la Release courante, publier une nouvelle Release, tout
+verdict artistique auto-déclaré.
