@@ -1275,6 +1275,60 @@ partis à la voie C avec l'ordre de priorité.
 **Notes de reprise durables** : `HANDOFF_LEAD_A.md`, `HANDOFF_LEAD_B.md`,
 `HANDOFF_LEAD_C.md`, à la racine de chaque arbre de travail.
 
+### Mise à jour du même jour — le défaut transverse est identifié et mesuré
+
+Trois passages d'audit contradictoire plus tard, l'état est plus clair et
+**moins bon** qu'à l'entrée : le lot n'est pas présentable à la revue.
+
+**Le défaut central du lot est un APLAT DE VALEUR**, et il a une cause
+mesurée. Profils de luminance pris en travers d'une face : stèle du cimetière
+**109 constant sur 48 px**, linteau du dolmen **82 sur 135 px**, montants du
+sanctuaire **94 constant**, dalle au pied de la tour **141 constant** —
+étendue ZÉRO. Le tertre voisin, lui, varie (76→99) : ce n'est donc pas une
+limite du rendu, c'est une propriété de ces pièces. La cause, isolée par la
+voie C sur son propre asset : sur des faces quasi verticales sous ce ciel,
+l'irradiance ambiante domine et l'orientation ne rapporte presque rien — un
+maillage à **465 directions de normale distinctes rendait UNE seule valeur**.
+Les roches de kit se lisent en pierre grâce à leur ATLAS, pas à leur
+géométrie. Sans texture, la seule variation gratuite est `COLOR_0` : posée,
+la même face passe de 1 à **31–32 niveaux**. C'est la famille de défaut qui a
+fait rejeter le lot ; c'est donc le geste le plus rentable du lot.
+
+**Trois rulings de lead, à ne pas re-débattre :**
+
+1. *Le coffre et les sphères de récompense.* Quatre lieux sur six montrent un
+   visuel de récompense étranger au monde (ISS-067, relevé en S2). Un lieu est
+   autorisé à habiller son PROPRE exemplaire — teinte par surface sur une
+   copie, sans muter la ressource partagée, exactement la technique des
+   pierres ; il ne peut pas remplacer le modèle. Et l'ALTITUDE de l'ancre,
+   elle, appartient au lieu : une récompense qui flotte est un défaut du lieu.
+2. *Le panorama du belvédère.* Troisième passage identique — donc changement
+   d'hypothèse, pas quatrième tentative. La caméra gelée de ce lieu a été
+   posée avant cette composition, et l'intention de l'addendum est une
+   SÉQUENCE. Le trait d'identité se juge sur les vues AJOUTÉES du parcours et
+   sur la vidéo, qui sont des PLUS jamais des remplacements ; les vues gelées
+   restent livrées et jugées pour leurs propres défauts.
+3. *L'épaisseur de la tour.* L'audit s'est corrigé lui-même : l'épaisseur
+   EXISTE (arase en tranche, deux parements, vide intérieur, visibles depuis
+   le palier). Le défaut est que les caméras de revue ne la montrent pas —
+   **une capture supplémentaire**, pas une reconstruction.
+
+**Changement d'hypothèse sur le turquoise de la source** : la rivière GELÉE
+rend un bleu-sarcelle franc depuis un autre angle, donc le shader sait rendre
+turquoise dans ce monde. Ce qui diffère au lieu : la pénombre du ravin
+(l'herbe y rend (57, 81, 72)). À mesurer — même eau, un échantillon à l'ombre
+et un au soleil. Si l'ombre est la cause, le concept « contraste
+ombre/turquoise » s'auto-détruit et il faut soit une poche de lumière, soit un
+`PARTIAL` mesuré.
+
+**Deux tickets nés du lot** : ISS-066 (`gltf_inspect.py` ne regarde jamais
+`COLOR_0` — un asset à couleurs de sommet peut sortir vide et être déclaré
+VALIDE ; le « test qui ne peut pas échouer ») et ISS-067 ci-dessus.
+
+**Périmètre de la voie C clos** : champ en composition B, outils de preuve,
+vidéo joueur de 26,5 s aux vrais contrôles (planche contact committée, `.avi`
+hors dépôt), trois passages d'audit. Les voies A et B corrigent.
+
 **PROCHAINE ACTION EXACTE** : attendre les livraisons des trois voies, puis
 — sans rien pousser avant — reproduire et inspecter chaque lieu en taille
 réelle, cueillir par cherry-pick dans l'ordre A → B → C (un propriétaire par
