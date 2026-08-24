@@ -319,3 +319,55 @@ l'histoire — il est **improuvable en l'état**. Le détecteur est donc rejoué
 HEAD, avec ses silhouettes recapturées, et le nouveau verdict remplace celui-ci
 dans le dossier de revue. L'ancien reste committé : on ne supprime pas une
 preuve périmée, on la date.
+
+### 2026-08-24 — un sha256 du manifeste ne correspondait à aucun GLB de l'histoire
+
+Le §8 ci-dessus affirme que les quatre lignes du manifeste portent « les
+valeurs relues par le lead sur l'arbre intégré ». Vérification faite ligne par
+ligne, c'était vrai pour deux d'entre elles.
+
+| Ligne | Inscrit | Disque | Verdict |
+|---|---|---|---|
+| `SM_Watchtower_Ruin` | `8d1b56bf` | `d7c710e9` | **FAUX** |
+| `SM_Barrow_Stones` | *(aucun)* | `8ffc48ec` | **manquant** |
+| `SM_Shrine_Vestige` | `a48af851` | `a48af851` | juste |
+| `SM_FlowerField_Steles` | `fb32ba37` | `fb32ba37` | juste |
+
+`8d1b56bf` ne correspond à **aucune** version du GLB dans l'histoire : le
+fichier n'a qu'un seul blob, `d7c710e9`, posé par `9bb38a1`. C'est donc une
+valeur recopiée du rapport de voie, malgré la note de la ligne qui affirme le
+contraire. La ligne du cimetière, elle, **annonçait** un sha256 recalculé sans
+jamais l'écrire — seul le nombre d'octets avait été corrigé.
+
+Aucun test ne lit `ASSET_MANIFEST.csv`. C'est la panne silencieuse d'ISS-066
+appliquée au manifeste : un fichier que l'on tient pour une preuve et que
+personne ne relit. D'où `tools/verifier_manifeste_lot1r.py`, éprouvé par
+sabotage — sha faussé → RC 1 avec l'écart nommé, restauré → RC 0.
+
+**Une erreur de conduite à consigner** : ce sabotage a été joué pendant que la
+`validate_fast.sh` de clôture lisait le même arbre. Il se trouve qu'il était
+inoffensif — rien sous `tests/` ni dans `validate_fast.sh` ne lit ce fichier,
+ce qui a été *vérifié* et non supposé — mais c'est la forme exacte d'erreur qui
+FABRIQUE des échecs (`tools/CLAUDE.md`, les huit échecs de sauvegarde du
+2026-08-11). On ne sabote pas un fichier suivi pendant qu'une suite tourne
+dessus.
+
+### 2026-08-24 — les parcours vidéo de la voie A étaient injouables tels quels
+
+La voie A a livré **un seul document pour deux lieux**, avec des positions à
+trois composantes :
+
+```json
+{ "commentaire": "…", "overlook_summit": [ { "pos": [150.0, 24.0, 36.0], … } ] }
+```
+
+`tools/godot/lot1r_video.gd` attend un document **par lieu**, portant
+`place_id` et `etapes`, et lit `pos` comme **`[x, z]`**. Joué tel quel, le
+pilote aurait lu `z = 24` là où le parcours dit `z = 36`, et marché vers un
+point qui n'est pas le lieu — un film crédible et faux, la famille de panne
+déjà rencontrée avec `--scene=` manquant.
+
+Convertis sous `final/parcours_overlook_summit.json` et
+`final/parcours_turquoise_spring.json`, avec `allure = 0,55` (marche) et des
+pauses de 2,5 s : le premier enregistrement du lot mesurait 12,8 s parce que le
+pilote **courait** un parcours contemplatif, contre les 20-40 s du contrat.
