@@ -1251,9 +1251,22 @@ fleurs ».
    irréversible. La preuve committée est une PLANCHE CONTACT extraite de
    l'AVI MJPEG (balayage des marqueurs JPEG + PIL) plus le sha256 et les
    paramètres au manifeste ; la vidéo part en pièce jointe de Release.
-3. *Le disque teal derrière la tour appartient au monde GELÉ* (instance de
-   végétation V2.2, à confirmer par la voie B) : hors périmètre du lot 1.R,
-   constat consigné, ticket pour un lot ultérieur — on ne touche pas au gel.
+3. *Le disque teal derrière la tour* — **cette hypothèse était FAUSSE, et
+   c'est la mesure qui l'a démontrée.** J'avais écrit qu'il appartenait au
+   monde gelé (une instance de végétation V2.2), en le donnant à confirmer.
+   La voie B a sondé l'écran plutôt que de me croire : le disque est à 11,5 m
+   de la caméra joueur, emprise pixel 725-892 × 364-413, et le SEUL nœud
+   couvrant le rectangle incriminé est le caillou de pied `rock_largeC` —
+   un module du LIEU, pas du gel. La cause est dans son glTF : il porte
+   **deux matériaux, `dirt` et `grass`**, et la surface « grass » des kits
+   Kenney rend menthe/sarcelle sous cette lumière. Corrigé par changement de
+   FAMILLE (`Rock_Medium_2`, matériau unique, gris neutre) et non par teinte.
+   Aucun ticket à ouvrir, aucun gel en cause. **La même cause a été retirée
+   du cimetière** : `rock_largeA`, `rock_largeC` et `rock_smallB` portent tous
+   `grass` + `dirt` — c'étaient les « chapeaux turquoise » mesurés sur la
+   capture d'avant. C'est le vrai mécanisme derrière le teal qui a mordu
+   quatre fois dans ce lot ; il vaut mieux que la règle vague que j'en avais
+   tirée.
 
 **Acquis au moment d'écrire** (aucun verdict, ce sont des états) :
 voie A — géométrie des deux lieux committée (`149e79c`), preuves finales
