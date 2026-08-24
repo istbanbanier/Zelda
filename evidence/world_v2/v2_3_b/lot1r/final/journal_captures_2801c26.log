@@ -1,0 +1,1040 @@
+=== DÉBUT 2026-08-24T15:40:25Z sur 2801c26 ===
+
+--- 1. les 13 caméras gelées (15:40:25) ---
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_xH6z0FrZ
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=xvfb-run -a -s -screen 0 1280x720x24 /usr/local/bin/godot --path . --script tools/godot/capture_poi_batch.gd -- --scene=res://scenes/world_v2/WorldV2.tscn --shots=evidence/world_v2/v2_3_b/lot1r/final/shots_ab13.json --out-dir=evidence/world_v2/v2_3_b/lot1r/final/ab13
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+ERROR: Required Vulkan instance extension VK_KHR_surface not found.
+   at: _initialize_instance_extensions (drivers/vulkan/rendering_context_driver_vulkan.cpp:494)
+ERROR: Condition "err != OK" is true. Returning: err
+   at: initialize (drivers/vulkan/rendering_context_driver_vulkan.cpp:915)
+WARNING: Your video card drivers seem not to support the required Vulkan version, switching to OpenGL 3.
+     at: DisplayServerX11 (platform/linuxbsd/x11/display_server_x11.cpp:7124)
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.2 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) error evaluating name
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
+ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
+ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN
+   at: init_output_device (drivers/alsa/audio_driver_alsa.cpp:97)
+WARNING: All audio drivers failed, falling back to the dummy driver.
+     at: initialize (servers/audio/audio_server.cpp:258)
+
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 18784 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[poi] evidence/world_v2/v2_3_b/lot1r/final/ab13/watchtower_ruin_identite.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/ab13/watchtower_ruin_joueur.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/ab13/overlook_summit_identite.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/ab13/overlook_summit_joueur.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/ab13/turquoise_spring_identite.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/ab13/turquoise_spring_joueur.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/ab13/forest_shrine_identite.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/ab13/forest_shrine_joueur.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/ab13/forest_shrine_joueur_b.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/ab13/barrow_cemetery_identite.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/ab13/barrow_cemetery_joueur.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/ab13/flower_field_identite.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/ab13/flower_field_joueur.png
+[poi] OK : 13 plans
+LANCER_GODOT: RC_GODOT=0
+RC_AB13=0
+
+--- 2. les 27 gros plans d'identité (15:44:14) ---
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_0fuwkG51
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=xvfb-run -a -s -screen 0 1280x720x24 /usr/local/bin/godot --path . --script tools/godot/capture_poi_batch.gd -- --scene=res://scenes/world_v2/WorldV2.tscn --shots=evidence/world_v2/v2_3_b/lot1r/final/shots_gros_plans.json --out-dir=evidence/world_v2/v2_3_b/lot1r/final/gros_plans
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+ERROR: Required Vulkan instance extension VK_KHR_surface not found.
+   at: _initialize_instance_extensions (drivers/vulkan/rendering_context_driver_vulkan.cpp:494)
+ERROR: Condition "err != OK" is true. Returning: err
+   at: initialize (drivers/vulkan/rendering_context_driver_vulkan.cpp:915)
+WARNING: Your video card drivers seem not to support the required Vulkan version, switching to OpenGL 3.
+     at: DisplayServerX11 (platform/linuxbsd/x11/display_server_x11.cpp:7124)
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.2 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) error evaluating name
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
+ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
+ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN
+   at: init_output_device (drivers/alsa/audio_driver_alsa.cpp:97)
+WARNING: All audio drivers failed, falling back to the dummy driver.
+     at: initialize (servers/audio/audio_server.cpp:258)
+
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 16938 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/barrow_gp_chemin.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/barrow_gp_fosse.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/barrow_gp_gueule.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/flower_field_gp_chemin.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/flower_field_gp_nappe.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/overlook_breche_est.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/overlook_breche_montee.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/overlook_breche_ouest.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/overlook_gros_crete.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/overlook_gros_poste.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/overlook_gros_tablette.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/overlook_seuil_p4.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/overlook_tablette_p5.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/shrine_gp_coeur.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/shrine_gp_nef.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/shrine_gp_route_p1.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/spring_approche_p2.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/spring_approche_p3.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/spring_gros_eau.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/spring_gros_fente.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/spring_gros_fruit.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/spring_gue_riviere.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/spring_promesse_p1.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/watchtower_gp_arase.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/watchtower_gp_breche.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/watchtower_gp_lointain.png
+[poi] evidence/world_v2/v2_3_b/lot1r/final/gros_plans/watchtower_gp_vigie_pov.png
+[poi] OK : 27 plans
+LANCER_GODOT: RC_GODOT=0
+RC_GROS_PLANS=0
+
+--- 3. silhouettes 0/90 des six lieux (15:48:36) ---
+>>> silhouette watchtower_ruin
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_MV3gUybt
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=xvfb-run -a -s -screen 0 1280x720x24 /usr/local/bin/godot --path . --script tools/godot/capture_silhouette.gd -- --scene=res://scenes/world_v2/WorldV2.tscn --place=valley.poi.watchtower_ruin.01 --name=watchtower_ruin --angles=0,90 --size=1200x900 --out-dir=evidence/world_v2/v2_3_b/lot1r/final/silhouettes
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+ERROR: Required Vulkan instance extension VK_KHR_surface not found.
+   at: _initialize_instance_extensions (drivers/vulkan/rendering_context_driver_vulkan.cpp:494)
+ERROR: Condition "err != OK" is true. Returning: err
+   at: initialize (drivers/vulkan/rendering_context_driver_vulkan.cpp:915)
+WARNING: Your video card drivers seem not to support the required Vulkan version, switching to OpenGL 3.
+     at: DisplayServerX11 (platform/linuxbsd/x11/display_server_x11.cpp:7124)
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.2 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) error evaluating name
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
+ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
+ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN
+   at: init_output_device (drivers/alsa/audio_driver_alsa.cpp:97)
+WARNING: All audio drivers failed, falling back to the dummy driver.
+     at: initialize (servers/audio/audio_server.cpp:258)
+
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 13366 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[silhouette] mode lieu : valley.poi.watchtower_ruin.01 isolé, 1750 instance(s) masquée(s)
+[silhouette] watchtower_ruin — 19 maillages, emprise 13.11 × 11.99 × 11.70 m
+[silhouette] evidence/world_v2/v2_3_b/lot1r/final/silhouettes/silhouette_watchtower_ruin_000.png — sujet 16.2 % de l'image, hors bandes 0.000 %
+[silhouette] evidence/world_v2/v2_3_b/lot1r/final/silhouettes/silhouette_watchtower_ruin_090.png — sujet 10.9 % de l'image, hors bandes 0.000 %
+[silhouette] OK : 2 vue(s)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+LANCER_GODOT: RC_GODOT=0
+RC_SIL_watchtower_ruin=0
+>>> silhouette overlook_summit
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_f2xS479K
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=xvfb-run -a -s -screen 0 1280x720x24 /usr/local/bin/godot --path . --script tools/godot/capture_silhouette.gd -- --scene=res://scenes/world_v2/WorldV2.tscn --place=valley.poi.overlook_summit.01 --name=overlook_summit --angles=0,90 --size=1200x900 --out-dir=evidence/world_v2/v2_3_b/lot1r/final/silhouettes
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+ERROR: Required Vulkan instance extension VK_KHR_surface not found.
+   at: _initialize_instance_extensions (drivers/vulkan/rendering_context_driver_vulkan.cpp:494)
+ERROR: Condition "err != OK" is true. Returning: err
+   at: initialize (drivers/vulkan/rendering_context_driver_vulkan.cpp:915)
+WARNING: Your video card drivers seem not to support the required Vulkan version, switching to OpenGL 3.
+     at: DisplayServerX11 (platform/linuxbsd/x11/display_server_x11.cpp:7124)
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.2 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) error evaluating name
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
+ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
+ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN
+   at: init_output_device (drivers/alsa/audio_driver_alsa.cpp:97)
+WARNING: All audio drivers failed, falling back to the dummy driver.
+     at: initialize (servers/audio/audio_server.cpp:258)
+
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 12365 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[silhouette] mode lieu : valley.poi.overlook_summit.01 isolé, 1755 instance(s) masquée(s)
+[silhouette] overlook_summit — 14 maillages, emprise 22.41 × 6.96 × 20.41 m
+[silhouette] evidence/world_v2/v2_3_b/lot1r/final/silhouettes/silhouette_overlook_summit_000.png — sujet 10.4 % de l'image, hors bandes 0.000 %
+[silhouette] evidence/world_v2/v2_3_b/lot1r/final/silhouettes/silhouette_overlook_summit_090.png — sujet 12.9 % de l'image, hors bandes 0.000 %
+[silhouette] OK : 2 vue(s)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+LANCER_GODOT: RC_GODOT=0
+RC_SIL_overlook_summit=0
+>>> silhouette turquoise_spring
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_64kRkvuD
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=xvfb-run -a -s -screen 0 1280x720x24 /usr/local/bin/godot --path . --script tools/godot/capture_silhouette.gd -- --scene=res://scenes/world_v2/WorldV2.tscn --place=valley.poi.turquoise_spring.01 --name=turquoise_spring --angles=0,90 --size=1200x900 --out-dir=evidence/world_v2/v2_3_b/lot1r/final/silhouettes
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+ERROR: Required Vulkan instance extension VK_KHR_surface not found.
+   at: _initialize_instance_extensions (drivers/vulkan/rendering_context_driver_vulkan.cpp:494)
+ERROR: Condition "err != OK" is true. Returning: err
+   at: initialize (drivers/vulkan/rendering_context_driver_vulkan.cpp:915)
+WARNING: Your video card drivers seem not to support the required Vulkan version, switching to OpenGL 3.
+     at: DisplayServerX11 (platform/linuxbsd/x11/display_server_x11.cpp:7124)
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.2 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) error evaluating name
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
+ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
+ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN
+   at: init_output_device (drivers/alsa/audio_driver_alsa.cpp:97)
+WARNING: All audio drivers failed, falling back to the dummy driver.
+     at: initialize (servers/audio/audio_server.cpp:258)
+
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 12535 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[silhouette] mode lieu : valley.poi.turquoise_spring.01 isolé, 1755 instance(s) masquée(s)
+[silhouette] turquoise_spring — 14 maillages, emprise 14.44 × 3.19 × 14.16 m
+[silhouette] evidence/world_v2/v2_3_b/lot1r/final/silhouettes/silhouette_turquoise_spring_000.png — sujet 9.6 % de l'image, hors bandes 0.000 %
+[silhouette] evidence/world_v2/v2_3_b/lot1r/final/silhouettes/silhouette_turquoise_spring_090.png — sujet 5.6 % de l'image, hors bandes 0.000 %
+[silhouette] OK : 2 vue(s)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+LANCER_GODOT: RC_GODOT=0
+RC_SIL_turquoise_spring=0
+>>> silhouette forest_shrine
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_AN7Wy6TQ
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=xvfb-run -a -s -screen 0 1280x720x24 /usr/local/bin/godot --path . --script tools/godot/capture_silhouette.gd -- --scene=res://scenes/world_v2/WorldV2.tscn --place=valley.poi.forest_shrine.01 --name=forest_shrine --angles=0,90 --size=1200x900 --out-dir=evidence/world_v2/v2_3_b/lot1r/final/silhouettes
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+ERROR: Required Vulkan instance extension VK_KHR_surface not found.
+   at: _initialize_instance_extensions (drivers/vulkan/rendering_context_driver_vulkan.cpp:494)
+ERROR: Condition "err != OK" is true. Returning: err
+   at: initialize (drivers/vulkan/rendering_context_driver_vulkan.cpp:915)
+WARNING: Your video card drivers seem not to support the required Vulkan version, switching to OpenGL 3.
+     at: DisplayServerX11 (platform/linuxbsd/x11/display_server_x11.cpp:7124)
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.2 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) error evaluating name
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
+ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
+ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN
+   at: init_output_device (drivers/alsa/audio_driver_alsa.cpp:97)
+WARNING: All audio drivers failed, falling back to the dummy driver.
+     at: initialize (servers/audio/audio_server.cpp:258)
+
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 12768 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[silhouette] mode lieu : valley.poi.forest_shrine.01 isolé, 1734 instance(s) masquée(s)
+[silhouette] forest_shrine — 35 maillages, emprise 17.05 × 8.19 × 11.48 m
+[silhouette] evidence/world_v2/v2_3_b/lot1r/final/silhouettes/silhouette_forest_shrine_000.png — sujet 11.3 % de l'image, hors bandes 0.000 %
+[silhouette] evidence/world_v2/v2_3_b/lot1r/final/silhouettes/silhouette_forest_shrine_090.png — sujet 11.8 % de l'image, hors bandes 0.000 %
+[silhouette] OK : 2 vue(s)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+LANCER_GODOT: RC_GODOT=0
+RC_SIL_forest_shrine=0
+>>> silhouette barrow_cemetery
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_PERgLvai
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=xvfb-run -a -s -screen 0 1280x720x24 /usr/local/bin/godot --path . --script tools/godot/capture_silhouette.gd -- --scene=res://scenes/world_v2/WorldV2.tscn --place=valley.poi.barrow_cemetery.01 --name=barrow_cemetery --angles=0,90 --size=1200x900 --out-dir=evidence/world_v2/v2_3_b/lot1r/final/silhouettes
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+ERROR: Required Vulkan instance extension VK_KHR_surface not found.
+   at: _initialize_instance_extensions (drivers/vulkan/rendering_context_driver_vulkan.cpp:494)
+ERROR: Condition "err != OK" is true. Returning: err
+   at: initialize (drivers/vulkan/rendering_context_driver_vulkan.cpp:915)
+WARNING: Your video card drivers seem not to support the required Vulkan version, switching to OpenGL 3.
+     at: DisplayServerX11 (platform/linuxbsd/x11/display_server_x11.cpp:7124)
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.2 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) error evaluating name
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
+ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
+ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN
+   at: init_output_device (drivers/alsa/audio_driver_alsa.cpp:97)
+WARNING: All audio drivers failed, falling back to the dummy driver.
+     at: initialize (servers/audio/audio_server.cpp:258)
+
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 12839 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[silhouette] mode lieu : valley.poi.barrow_cemetery.01 isolé, 1734 instance(s) masquée(s)
+[silhouette] barrow_cemetery — 35 maillages, emprise 23.55 × 4.62 × 19.35 m
+[silhouette] evidence/world_v2/v2_3_b/lot1r/final/silhouettes/silhouette_barrow_cemetery_000.png — sujet 4.0 % de l'image, hors bandes 0.000 %
+[silhouette] evidence/world_v2/v2_3_b/lot1r/final/silhouettes/silhouette_barrow_cemetery_090.png — sujet 4.3 % de l'image, hors bandes 0.000 %
+[silhouette] OK : 2 vue(s)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+LANCER_GODOT: RC_GODOT=0
+RC_SIL_barrow_cemetery=0
+>>> silhouette flower_field
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_fJ5WVywI
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=xvfb-run -a -s -screen 0 1280x720x24 /usr/local/bin/godot --path . --script tools/godot/capture_silhouette.gd -- --scene=res://scenes/world_v2/WorldV2.tscn --place=valley.poi.flower_field.01 --name=flower_field --angles=0,90 --size=1200x900 --out-dir=evidence/world_v2/v2_3_b/lot1r/final/silhouettes
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+ERROR: Required Vulkan instance extension VK_KHR_surface not found.
+   at: _initialize_instance_extensions (drivers/vulkan/rendering_context_driver_vulkan.cpp:494)
+ERROR: Condition "err != OK" is true. Returning: err
+   at: initialize (drivers/vulkan/rendering_context_driver_vulkan.cpp:915)
+WARNING: Your video card drivers seem not to support the required Vulkan version, switching to OpenGL 3.
+     at: DisplayServerX11 (platform/linuxbsd/x11/display_server_x11.cpp:7124)
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.2 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) error evaluating name
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
+ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
+ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN
+   at: init_output_device (drivers/alsa/audio_driver_alsa.cpp:97)
+WARNING: All audio drivers failed, falling back to the dummy driver.
+     at: initialize (servers/audio/audio_server.cpp:258)
+
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 12497 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[silhouette] mode lieu : valley.poi.flower_field.01 isolé, 1756 instance(s) masquée(s)
+[silhouette] flower_field — 13 maillages, emprise 22.23 × 2.76 × 20.79 m
+[silhouette] evidence/world_v2/v2_3_b/lot1r/final/silhouettes/silhouette_flower_field_000.png — sujet 2.1 % de l'image, hors bandes 0.000 %
+[silhouette] evidence/world_v2/v2_3_b/lot1r/final/silhouettes/silhouette_flower_field_090.png — sujet 2.1 % de l'image, hors bandes 0.000 %
+[silhouette] OK : 2 vue(s)
+LANCER_GODOT: RC_GODOT=0
+RC_SIL_flower_field=0
+
+--- 4. corpus accepté recopié auprès des nouvelles silhouettes (15:55:27) ---
+corpus recopié : 9 manifeste(s) (9 attendus)
+
+--- 5. détecteur R-D3 du lot, sur un commit ATTEIGNABLE (15:55:27) ---
+/home/user/Zelda/tools/lot1_repetition.py:131: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels = list(image.getdata())
+règle R-D3 — docs/V2_3_B_LOT1_CONTROLES.md §3
+commit 7c58573a295c · dirty=True
+
+--- 30 m — seuil S = 0.4931 (calibré sur 36 paires acceptées, paire calibrante : valley.poi.abandoned_farm.01 / valley.poi.stone_bridge.01) ---
+a                                      b                                          IoU  dprofil
+valley.poi.overlook_summit.01          valley.poi.waterfall_cave.01            0.5073   0.1308  <== SIGNALÉ
+valley.poi.overlook_summit.01          valley.poi.riverside_village.01         0.4649   0.1316
+valley.poi.overlook_summit.01          valley.poi.turquoise_spring.01          0.4624   0.1338
+valley.poi.turquoise_spring.01         valley.poi.waterfall_cave.01            0.4590   0.0914
+valley.poi.turquoise_spring.01         valley.poi.stone_bridge.01              0.4429   0.1591
+valley.poi.watchtower_ruin.01          valley.poi.overlook_summit.01           0.4154   0.1596
+valley.poi.flower_field.01             valley.poi.ember_raider_camps.01        0.3947   0.0410
+valley.poi.overlook_summit.01          valley.poi.stone_bridge.01              0.3927   0.1987
+valley.poi.watchtower_ruin.01          pylon                                   0.3680   0.1594
+valley.poi.turquoise_spring.01         valley.poi.riverside_village.01         0.3493   0.1631
+valley.poi.turquoise_spring.01         valley.poi.abandoned_farm.01            0.3459   0.1241
+valley.poi.watchtower_ruin.01          valley.poi.riverside_village.01         0.3435   0.1200
+valley.poi.overlook_summit.01          valley.poi.barrow_cemetery.01           0.3280   0.1032
+valley.poi.barrow_cemetery.01          valley.poi.ember_raider_camps.01        0.3263   0.0826
+valley.poi.turquoise_spring.01         valley.poi.barrow_cemetery.01           0.3229   0.1377
+valley.poi.barrow_cemetery.01          valley.poi.riverside_village.01         0.3150   0.1209
+valley.poi.barrow_cemetery.01          valley.poi.waterfall_cave.01            0.3104   0.0863
+valley.poi.barrow_cemetery.01          valley.poi.stone_bridge.01              0.3056   0.1429
+valley.poi.watchtower_ruin.01          valley.poi.forest_shrine.01             0.3015   0.1574
+valley.poi.forest_shrine.01            pylon                                   0.2983   0.1302
+valley.poi.overlook_summit.01          valley.poi.abandoned_farm.01            0.2958   0.1332
+valley.poi.turquoise_spring.01         valley.poi.ember_raider_camps.01        0.2935   0.0883
+valley.poi.watchtower_ruin.01          valley.poi.waterfall_cave.01            0.2929   0.1722
+valley.poi.forest_shrine.01            valley.poi.waterfall_cave.01            0.2762   0.1450
+valley.poi.watchtower_ruin.01          valley.poi.turquoise_spring.01          0.2609   0.2125
+valley.poi.flower_field.01             camp                                    0.2465   0.1573
+valley.poi.watchtower_ruin.01          valley.poi.stone_bridge.01              0.2380   0.1659
+valley.poi.overlook_summit.01          valley.poi.ember_raider_camps.01        0.2362   0.1324
+valley.poi.forest_shrine.01            valley.poi.thunderstruck_tree.01        0.2303   0.1005
+valley.poi.forest_shrine.01            valley.poi.stone_bridge.01              0.2270   0.0807
+valley.poi.turquoise_spring.01         camp                                    0.2203   0.1959
+valley.poi.barrow_cemetery.01          camp                                    0.2079   0.1752
+valley.poi.barrow_cemetery.01          valley.poi.flower_field.01              0.2053   0.0798
+valley.poi.barrow_cemetery.01          valley.poi.conductive_basin.01          0.2053   0.1660
+valley.poi.watchtower_ruin.01          valley.poi.abandoned_farm.01            0.2027   0.1479
+valley.poi.flower_field.01             valley.poi.conductive_basin.01          0.1966   0.1239
+valley.poi.watchtower_ruin.01          valley.poi.thunderstruck_tree.01        0.1965   0.1542
+valley.poi.overlook_summit.01          camp                                    0.1888   0.2010
+valley.poi.overlook_summit.01          pylon                                   0.1821   0.2657
+valley.poi.turquoise_spring.01         valley.poi.forest_shrine.01             0.1808   0.2096
+valley.poi.barrow_cemetery.01          valley.poi.abandoned_farm.01            0.1795   0.1145
+valley.poi.turquoise_spring.01         valley.poi.conductive_basin.01          0.1782   0.2449
+valley.poi.watchtower_ruin.01          valley.poi.barrow_cemetery.01           0.1708   0.1682
+valley.poi.flower_field.01             valley.poi.riverside_village.01         0.1680   0.0833
+valley.poi.forest_shrine.01            valley.poi.abandoned_farm.01            0.1642   0.2109
+valley.poi.overlook_summit.01          valley.poi.forest_shrine.01             0.1611   0.2716
+valley.poi.turquoise_spring.01         valley.poi.flower_field.01              0.1579   0.0913
+valley.poi.overlook_summit.01          valley.poi.conductive_basin.01          0.1524   0.2752
+valley.poi.flower_field.01             valley.poi.abandoned_farm.01            0.1335   0.1276
+valley.poi.turquoise_spring.01         pylon                                   0.1331   0.2687
+valley.poi.watchtower_ruin.01          camp                                    0.1311   0.1483
+valley.poi.barrow_cemetery.01          valley.poi.thunderstruck_tree.01        0.1280   0.1842
+valley.poi.overlook_summit.01          valley.poi.flower_field.01              0.1270   0.1285
+valley.poi.flower_field.01             valley.poi.stone_bridge.01              0.1269   0.1692
+valley.poi.forest_shrine.01            valley.poi.riverside_village.01         0.1255   0.2053
+valley.poi.watchtower_ruin.01          valley.poi.ember_raider_camps.01        0.1245   0.1479
+valley.poi.forest_shrine.01            valley.poi.conductive_basin.01          0.1238   0.1110
+valley.poi.turquoise_spring.01         valley.poi.thunderstruck_tree.01        0.1236   0.2147
+valley.poi.overlook_summit.01          valley.poi.thunderstruck_tree.01        0.1197   0.2646
+valley.poi.flower_field.01             valley.poi.waterfall_cave.01            0.1184   0.0917
+valley.poi.barrow_cemetery.01          pylon                                   0.1077   0.1991
+valley.poi.watchtower_ruin.01          valley.poi.conductive_basin.01          0.1064   0.1960
+valley.poi.forest_shrine.01            valley.poi.barrow_cemetery.01           0.0934   0.1674
+valley.poi.flower_field.01             valley.poi.thunderstruck_tree.01        0.0710   0.1915
+valley.poi.watchtower_ruin.01          valley.poi.flower_field.01              0.0578   0.1783
+valley.poi.forest_shrine.01            camp                                    0.0566   0.2275
+valley.poi.forest_shrine.01            valley.poi.ember_raider_camps.01        0.0495   0.2313
+valley.poi.flower_field.01             pylon                                   0.0375   0.2794
+valley.poi.forest_shrine.01            valley.poi.flower_field.01              0.0339   0.2050
+
+--- 80 m — seuil S = 0.4912 (calibré sur 36 paires acceptées, paire calibrante : valley.poi.abandoned_farm.01 / valley.poi.stone_bridge.01) ---
+a                                      b                                          IoU  dprofil
+valley.poi.overlook_summit.01          valley.poi.waterfall_cave.01            0.5171   0.1301  <== SIGNALÉ
+valley.poi.overlook_summit.01          valley.poi.riverside_village.01         0.4668   0.1173
+valley.poi.overlook_summit.01          valley.poi.turquoise_spring.01          0.4556   0.1420
+valley.poi.turquoise_spring.01         valley.poi.waterfall_cave.01            0.4546   0.0905
+valley.poi.turquoise_spring.01         valley.poi.stone_bridge.01              0.4454   0.1471
+valley.poi.watchtower_ruin.01          valley.poi.overlook_summit.01           0.4187   0.1533
+valley.poi.flower_field.01             valley.poi.ember_raider_camps.01        0.3889   0.0361
+valley.poi.overlook_summit.01          valley.poi.stone_bridge.01              0.3810   0.2032
+valley.poi.turquoise_spring.01         valley.poi.riverside_village.01         0.3707   0.1965
+valley.poi.watchtower_ruin.01          pylon                                   0.3703   0.1594
+valley.poi.turquoise_spring.01         valley.poi.abandoned_farm.01            0.3592   0.1351
+valley.poi.watchtower_ruin.01          valley.poi.riverside_village.01         0.3418   0.1086
+valley.poi.barrow_cemetery.01          valley.poi.stone_bridge.01              0.3241   0.1339
+valley.poi.turquoise_spring.01         valley.poi.barrow_cemetery.01           0.3186   0.1324
+valley.poi.barrow_cemetery.01          valley.poi.waterfall_cave.01            0.3132   0.0888
+valley.poi.overlook_summit.01          valley.poi.barrow_cemetery.01           0.3067   0.1022
+valley.poi.barrow_cemetery.01          valley.poi.riverside_village.01         0.3049   0.1093
+valley.poi.turquoise_spring.01         valley.poi.ember_raider_camps.01        0.3013   0.0965
+valley.poi.forest_shrine.01            pylon                                   0.2967   0.1291
+valley.poi.watchtower_ruin.01          valley.poi.forest_shrine.01             0.2920   0.1566
+valley.poi.watchtower_ruin.01          valley.poi.waterfall_cave.01            0.2905   0.1726
+valley.poi.barrow_cemetery.01          valley.poi.ember_raider_camps.01        0.2902   0.0838
+valley.poi.overlook_summit.01          valley.poi.abandoned_farm.01            0.2877   0.1494
+valley.poi.forest_shrine.01            valley.poi.waterfall_cave.01            0.2765   0.1452
+valley.poi.watchtower_ruin.01          valley.poi.turquoise_spring.01          0.2632   0.1969
+valley.poi.forest_shrine.01            valley.poi.thunderstruck_tree.01        0.2489   0.0970
+valley.poi.overlook_summit.01          valley.poi.ember_raider_camps.01        0.2412   0.1228
+valley.poi.watchtower_ruin.01          valley.poi.stone_bridge.01              0.2380   0.1642
+valley.poi.forest_shrine.01            valley.poi.stone_bridge.01              0.2197   0.0872
+valley.poi.flower_field.01             camp                                    0.2129   0.1316
+valley.poi.barrow_cemetery.01          camp                                    0.2060   0.1288
+valley.poi.barrow_cemetery.01          valley.poi.flower_field.01              0.2058   0.0760
+valley.poi.watchtower_ruin.01          valley.poi.thunderstruck_tree.01        0.2047   0.1561
+valley.poi.watchtower_ruin.01          valley.poi.abandoned_farm.01            0.2033   0.1471
+valley.poi.turquoise_spring.01         camp                                    0.2015   0.1939
+valley.poi.barrow_cemetery.01          valley.poi.abandoned_farm.01            0.1863   0.1559
+valley.poi.overlook_summit.01          pylon                                   0.1859   0.2653
+valley.poi.turquoise_spring.01         valley.poi.forest_shrine.01             0.1829   0.2016
+valley.poi.overlook_summit.01          camp                                    0.1805   0.1861
+valley.poi.barrow_cemetery.01          valley.poi.conductive_basin.01          0.1746   0.2003
+valley.poi.watchtower_ruin.01          valley.poi.barrow_cemetery.01           0.1693   0.1569
+valley.poi.turquoise_spring.01         valley.poi.conductive_basin.01          0.1614   0.2665
+valley.poi.overlook_summit.01          valley.poi.forest_shrine.01             0.1609   0.2716
+valley.poi.forest_shrine.01            valley.poi.abandoned_farm.01            0.1603   0.2102
+valley.poi.turquoise_spring.01         valley.poi.flower_field.01              0.1591   0.0998
+valley.poi.flower_field.01             valley.poi.riverside_village.01         0.1572   0.1008
+valley.poi.overlook_summit.01          valley.poi.conductive_basin.01          0.1439   0.2738
+valley.poi.turquoise_spring.01         pylon                                   0.1322   0.2509
+valley.poi.forest_shrine.01            valley.poi.riverside_village.01         0.1310   0.1916
+valley.poi.flower_field.01             valley.poi.abandoned_farm.01            0.1297   0.1093
+valley.poi.watchtower_ruin.01          valley.poi.ember_raider_camps.01        0.1290   0.1573
+valley.poi.flower_field.01             valley.poi.stone_bridge.01              0.1268   0.1526
+valley.poi.overlook_summit.01          valley.poi.thunderstruck_tree.01        0.1251   0.2666
+valley.poi.flower_field.01             valley.poi.conductive_basin.01          0.1230   0.2335
+valley.poi.flower_field.01             valley.poi.waterfall_cave.01            0.1223   0.1169
+valley.poi.overlook_summit.01          valley.poi.flower_field.01              0.1204   0.1423
+valley.poi.watchtower_ruin.01          camp                                    0.1199   0.1471
+valley.poi.barrow_cemetery.01          valley.poi.thunderstruck_tree.01        0.1185   0.1797
+valley.poi.turquoise_spring.01         valley.poi.thunderstruck_tree.01        0.1167   0.2203
+valley.poi.forest_shrine.01            valley.poi.conductive_basin.01          0.1113   0.1482
+valley.poi.barrow_cemetery.01          pylon                                   0.1067   0.1929
+valley.poi.forest_shrine.01            valley.poi.barrow_cemetery.01           0.0994   0.1628
+valley.poi.watchtower_ruin.01          valley.poi.conductive_basin.01          0.0989   0.2247
+valley.poi.flower_field.01             valley.poi.thunderstruck_tree.01        0.0685   0.1821
+valley.poi.forest_shrine.01            camp                                    0.0631   0.2241
+valley.poi.watchtower_ruin.01          valley.poi.flower_field.01              0.0597   0.1648
+valley.poi.forest_shrine.01            valley.poi.ember_raider_camps.01        0.0564   0.2221
+valley.poi.flower_field.01             pylon                                   0.0378   0.2615
+valley.poi.forest_shrine.01            valley.poi.flower_field.01              0.0322   0.1921
+
+--- 160 m — seuil S = 0.5458 (calibré sur 36 paires acceptées, paire calibrante : valley.poi.abandoned_farm.01 / valley.poi.stone_bridge.01) ---
+a                                      b                                          IoU  dprofil
+valley.poi.overlook_summit.01          valley.poi.waterfall_cave.01            0.5231   0.1309
+valley.poi.flower_field.01             valley.poi.ember_raider_camps.01        0.4910   0.0604
+valley.poi.overlook_summit.01          valley.poi.riverside_village.01         0.4655   0.1192
+valley.poi.turquoise_spring.01         valley.poi.stone_bridge.01              0.4410   0.1121
+valley.poi.turquoise_spring.01         valley.poi.waterfall_cave.01            0.4362   0.1124
+valley.poi.overlook_summit.01          valley.poi.turquoise_spring.01          0.4331   0.1490
+valley.poi.watchtower_ruin.01          valley.poi.overlook_summit.01           0.4258   0.1399
+valley.poi.overlook_summit.01          valley.poi.stone_bridge.01              0.3950   0.2083
+valley.poi.turquoise_spring.01         valley.poi.abandoned_farm.01            0.3773   0.1026
+valley.poi.watchtower_ruin.01          pylon                                   0.3664   0.1556
+valley.poi.turquoise_spring.01         valley.poi.riverside_village.01         0.3582   0.2074
+valley.poi.watchtower_ruin.01          valley.poi.riverside_village.01         0.3449   0.1156
+valley.poi.overlook_summit.01          valley.poi.abandoned_farm.01            0.3328   0.1415
+valley.poi.barrow_cemetery.01          valley.poi.riverside_village.01         0.3324   0.0897
+valley.poi.overlook_summit.01          valley.poi.barrow_cemetery.01           0.3228   0.0966
+valley.poi.turquoise_spring.01         valley.poi.barrow_cemetery.01           0.3228   0.1868
+valley.poi.barrow_cemetery.01          valley.poi.stone_bridge.01              0.3075   0.1272
+valley.poi.barrow_cemetery.01          valley.poi.ember_raider_camps.01        0.3032   0.0994
+valley.poi.watchtower_ruin.01          valley.poi.forest_shrine.01             0.3021   0.1530
+valley.poi.flower_field.01             valley.poi.abandoned_farm.01            0.2991   0.1199
+valley.poi.turquoise_spring.01         valley.poi.ember_raider_camps.01        0.2978   0.1082
+valley.poi.flower_field.01             camp                                    0.2964   0.1344
+valley.poi.watchtower_ruin.01          valley.poi.waterfall_cave.01            0.2940   0.1800
+valley.poi.forest_shrine.01            pylon                                   0.2938   0.1300
+valley.poi.barrow_cemetery.01          valley.poi.waterfall_cave.01            0.2896   0.1046
+valley.poi.forest_shrine.01            valley.poi.waterfall_cave.01            0.2877   0.1479
+valley.poi.watchtower_ruin.01          valley.poi.turquoise_spring.01          0.2641   0.1773
+valley.poi.barrow_cemetery.01          valley.poi.flower_field.01              0.2536   0.0908
+valley.poi.flower_field.01             valley.poi.riverside_village.01         0.2480   0.1024
+valley.poi.turquoise_spring.01         valley.poi.flower_field.01              0.2440   0.0892
+valley.poi.watchtower_ruin.01          valley.poi.stone_bridge.01              0.2427   0.1607
+valley.poi.watchtower_ruin.01          valley.poi.abandoned_farm.01            0.2317   0.1450
+valley.poi.forest_shrine.01            valley.poi.thunderstruck_tree.01        0.2310   0.0961
+valley.poi.forest_shrine.01            valley.poi.stone_bridge.01              0.2278   0.0850
+valley.poi.overlook_summit.01          valley.poi.ember_raider_camps.01        0.2273   0.1432
+valley.poi.barrow_cemetery.01          valley.poi.abandoned_farm.01            0.2126   0.1202
+valley.poi.watchtower_ruin.01          valley.poi.thunderstruck_tree.01        0.2042   0.1495
+valley.poi.flower_field.01             valley.poi.conductive_basin.01          0.1917   0.1944
+valley.poi.overlook_summit.01          pylon                                   0.1874   0.2699
+valley.poi.turquoise_spring.01         valley.poi.forest_shrine.01             0.1811   0.1749
+valley.poi.flower_field.01             valley.poi.waterfall_cave.01            0.1755   0.0882
+valley.poi.forest_shrine.01            valley.poi.abandoned_farm.01            0.1726   0.2133
+valley.poi.watchtower_ruin.01          valley.poi.barrow_cemetery.01           0.1707   0.1500
+valley.poi.overlook_summit.01          valley.poi.forest_shrine.01             0.1690   0.2746
+valley.poi.flower_field.01             valley.poi.stone_bridge.01              0.1667   0.0936
+valley.poi.overlook_summit.01          valley.poi.flower_field.01              0.1564   0.1580
+valley.poi.turquoise_spring.01         valley.poi.conductive_basin.01          0.1538   0.2645
+valley.poi.barrow_cemetery.01          valley.poi.conductive_basin.01          0.1506   0.1909
+valley.poi.turquoise_spring.01         camp                                    0.1458   0.1782
+valley.poi.overlook_summit.01          valley.poi.conductive_basin.01          0.1396   0.2718
+valley.poi.overlook_summit.01          camp                                    0.1365   0.1896
+valley.poi.barrow_cemetery.01          camp                                    0.1336   0.1882
+valley.poi.barrow_cemetery.01          valley.poi.thunderstruck_tree.01        0.1320   0.1010
+valley.poi.forest_shrine.01            valley.poi.conductive_basin.01          0.1270   0.1534
+valley.poi.turquoise_spring.01         pylon                                   0.1265   0.2370
+valley.poi.forest_shrine.01            valley.poi.riverside_village.01         0.1259   0.2086
+valley.poi.overlook_summit.01          valley.poi.thunderstruck_tree.01        0.1209   0.2701
+valley.poi.watchtower_ruin.01          valley.poi.ember_raider_camps.01        0.1201   0.1411
+valley.poi.turquoise_spring.01         valley.poi.thunderstruck_tree.01        0.1151   0.1936
+valley.poi.watchtower_ruin.01          valley.poi.conductive_basin.01          0.1094   0.2125
+valley.poi.barrow_cemetery.01          pylon                                   0.0946   0.1859
+valley.poi.forest_shrine.01            valley.poi.barrow_cemetery.01           0.0870   0.1551
+valley.poi.flower_field.01             valley.poi.thunderstruck_tree.01        0.0855   0.1528
+valley.poi.watchtower_ruin.01          valley.poi.flower_field.01              0.0835   0.1383
+valley.poi.watchtower_ruin.01          camp                                    0.0815   0.1712
+valley.poi.forest_shrine.01            valley.poi.ember_raider_camps.01        0.0561   0.1811
+valley.poi.forest_shrine.01            valley.poi.flower_field.01              0.0542   0.1393
+valley.poi.forest_shrine.01            camp                                    0.0476   0.2300
+valley.poi.flower_field.01             pylon                                   0.0454   0.2118
+
+VERDICT : FAIL — valley.poi.overlook_summit.01 ≈ valley.poi.waterfall_cave.01 à 30 m (IoU 0.507 > S 0.493); valley.poi.overlook_summit.01 ≈ valley.poi.waterfall_cave.01 à 80 m (IoU 0.517 > S 0.491)
+RC_D3=1
+
+--- 6. planches A/B, couleur, gris, anonyme (15:55:29) ---
+13 vue(s) appariée(s), 17 fichier(s) écrit(s) dans evidence/world_v2/v2_3_b/lot1r/final/planches :
+  ab_barrow_cemetery_identite.png
+  ab_barrow_cemetery_joueur.png
+  ab_flower_field_identite.png
+  ab_flower_field_joueur.png
+  ab_forest_shrine_identite.png
+  ab_forest_shrine_joueur.png
+  ab_forest_shrine_joueur_b.png
+  ab_overlook_summit_identite.png
+  ab_overlook_summit_joueur.png
+  ab_turquoise_spring_identite.png
+  ab_turquoise_spring_joueur.png
+  ab_watchtower_ruin_identite.png
+  ab_watchtower_ruin_joueur.png
+  planche_couleur.png
+  planche_gris.png
+  planche_anonyme.png
+  planche_anonyme_cle.json
+RC_PLANCHES=0
+
+=== FIN 2026-08-24T15:55:35Z ===

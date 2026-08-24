@@ -1,0 +1,34 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "clip_below": null,
+  "commit": "7c58573a295ccad13dcea46446ff1a310c6cc74d",
+  "emprise_m": [
+    23.5518951416016,
+    4.62416553497314,
+    19.349479675293
+  ],
+  "engine": "4.7.1-stable (custom_build)",
+  "mode": "lieu dans le monde monté",
+  "place_id": "valley.poi.barrow_cemetery.01",
+  "projection": "orthogonale",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "size": "1200x900",
+  "sujet": "barrow_cemetery",
+  "vues": [
+    {
+      "angle_deg": 0.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_b/lot1r/final/silhouettes/silhouette_barrow_cemetery_000.png",
+      "sujet_pct": 3.98148148148148
+    },
+    {
+      "angle_deg": 90.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_b/lot1r/final/silhouettes/silhouette_barrow_cemetery_090.png",
+      "sujet_pct": 4.32740740740741
+    }
+  ]
+}

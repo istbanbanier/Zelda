@@ -1,0 +1,1554 @@
+{
+ "regle": "R-D3",
+ "source_regle": "docs/V2_3_B_LOT1_CONTROLES.md §3",
+ "distances_m": [
+  30.0,
+  80.0,
+  160.0
+ ],
+ "fov_vertical_deg": 44.0,
+ "toile_px": 96,
+ "corpus_accepte": [
+  "camp",
+  "valley.poi.riverside_village.01",
+  "valley.poi.abandoned_farm.01",
+  "valley.poi.stone_bridge.01",
+  "valley.poi.waterfall_cave.01",
+  "valley.poi.thunderstruck_tree.01",
+  "valley.poi.ember_raider_camps.01",
+  "valley.poi.conductive_basin.01",
+  "pylon"
+ ],
+ "lot1_present": [
+  "valley.poi.watchtower_ruin.01",
+  "valley.poi.overlook_summit.01",
+  "valley.poi.turquoise_spring.01",
+  "valley.poi.forest_shrine.01",
+  "valley.poi.barrow_cemetery.01",
+  "valley.poi.flower_field.01"
+ ],
+ "lot1_manquant": [],
+ "commit": "7c58573a295ccad13dcea46446ff1a310c6cc74d",
+ "repo_dirty": true,
+ "seuils": {
+  "30": {
+   "S": 0.4931,
+   "paire_calibrante": [
+    "valley.poi.abandoned_farm.01",
+    "valley.poi.stone_bridge.01"
+   ],
+   "paires_acceptees": 36
+  },
+  "80": {
+   "S": 0.4912,
+   "paire_calibrante": [
+    "valley.poi.abandoned_farm.01",
+    "valley.poi.stone_bridge.01"
+   ],
+   "paires_acceptees": 36
+  },
+  "160": {
+   "S": 0.5458,
+   "paire_calibrante": [
+    "valley.poi.abandoned_farm.01",
+    "valley.poi.stone_bridge.01"
+   ],
+   "paires_acceptees": 36
+  }
+ },
+ "temoin_degenere": {
+  "30": {
+   "sujet": "camp",
+   "iou": 1.0,
+   "signale": true
+  },
+  "80": {
+   "sujet": "camp",
+   "iou": 1.0,
+   "signale": true
+  },
+  "160": {
+   "sujet": "camp",
+   "iou": 1.0,
+   "signale": true
+  }
+ },
+ "signalees": [
+  {
+   "distance_m": 30.0,
+   "a": "valley.poi.overlook_summit.01",
+   "b": "valley.poi.waterfall_cave.01",
+   "iou": 0.5073,
+   "seuil": 0.4931,
+   "dprofil": 0.1308
+  },
+  {
+   "distance_m": 80.0,
+   "a": "valley.poi.overlook_summit.01",
+   "b": "valley.poi.waterfall_cave.01",
+   "iou": 0.5171,
+   "seuil": 0.4912,
+   "dprofil": 0.1301
+  }
+ ],
+ "matrice": {
+  "30": [
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.overlook_summit.01",
+    "iou": 0.4154,
+    "dprofil": 0.1596,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.turquoise_spring.01",
+    "iou": 0.2609,
+    "dprofil": 0.2125,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.forest_shrine.01",
+    "iou": 0.3015,
+    "dprofil": 0.1574,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.barrow_cemetery.01",
+    "iou": 0.1708,
+    "dprofil": 0.1682,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.flower_field.01",
+    "iou": 0.0578,
+    "dprofil": 0.1783,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.turquoise_spring.01",
+    "iou": 0.4624,
+    "dprofil": 0.1338,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.forest_shrine.01",
+    "iou": 0.1611,
+    "dprofil": 0.2716,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.barrow_cemetery.01",
+    "iou": 0.328,
+    "dprofil": 0.1032,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.flower_field.01",
+    "iou": 0.127,
+    "dprofil": 0.1285,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.forest_shrine.01",
+    "iou": 0.1808,
+    "dprofil": 0.2096,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.barrow_cemetery.01",
+    "iou": 0.3229,
+    "dprofil": 0.1377,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.flower_field.01",
+    "iou": 0.1579,
+    "dprofil": 0.0913,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.barrow_cemetery.01",
+    "iou": 0.0934,
+    "dprofil": 0.1674,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.flower_field.01",
+    "iou": 0.0339,
+    "dprofil": 0.205,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.flower_field.01",
+    "iou": 0.2053,
+    "dprofil": 0.0798,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "camp",
+    "iou": 0.1311,
+    "dprofil": 0.1483,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.riverside_village.01",
+    "iou": 0.3435,
+    "dprofil": 0.12,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.abandoned_farm.01",
+    "iou": 0.2027,
+    "dprofil": 0.1479,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.stone_bridge.01",
+    "iou": 0.238,
+    "dprofil": 0.1659,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.waterfall_cave.01",
+    "iou": 0.2929,
+    "dprofil": 0.1722,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.thunderstruck_tree.01",
+    "iou": 0.1965,
+    "dprofil": 0.1542,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.ember_raider_camps.01",
+    "iou": 0.1245,
+    "dprofil": 0.1479,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.conductive_basin.01",
+    "iou": 0.1064,
+    "dprofil": 0.196,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "pylon",
+    "iou": 0.368,
+    "dprofil": 0.1594,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "camp",
+    "iou": 0.1888,
+    "dprofil": 0.201,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.riverside_village.01",
+    "iou": 0.4649,
+    "dprofil": 0.1316,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.abandoned_farm.01",
+    "iou": 0.2958,
+    "dprofil": 0.1332,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.stone_bridge.01",
+    "iou": 0.3927,
+    "dprofil": 0.1987,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.waterfall_cave.01",
+    "iou": 0.5073,
+    "dprofil": 0.1308,
+    "signale": true
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.thunderstruck_tree.01",
+    "iou": 0.1197,
+    "dprofil": 0.2646,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.ember_raider_camps.01",
+    "iou": 0.2362,
+    "dprofil": 0.1324,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.conductive_basin.01",
+    "iou": 0.1524,
+    "dprofil": 0.2752,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "pylon",
+    "iou": 0.1821,
+    "dprofil": 0.2657,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "camp",
+    "iou": 0.2203,
+    "dprofil": 0.1959,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.riverside_village.01",
+    "iou": 0.3493,
+    "dprofil": 0.1631,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.abandoned_farm.01",
+    "iou": 0.3459,
+    "dprofil": 0.1241,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.stone_bridge.01",
+    "iou": 0.4429,
+    "dprofil": 0.1591,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.waterfall_cave.01",
+    "iou": 0.459,
+    "dprofil": 0.0914,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.thunderstruck_tree.01",
+    "iou": 0.1236,
+    "dprofil": 0.2147,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.ember_raider_camps.01",
+    "iou": 0.2935,
+    "dprofil": 0.0883,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.conductive_basin.01",
+    "iou": 0.1782,
+    "dprofil": 0.2449,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "pylon",
+    "iou": 0.1331,
+    "dprofil": 0.2687,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "camp",
+    "iou": 0.0566,
+    "dprofil": 0.2275,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.riverside_village.01",
+    "iou": 0.1255,
+    "dprofil": 0.2053,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.abandoned_farm.01",
+    "iou": 0.1642,
+    "dprofil": 0.2109,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.stone_bridge.01",
+    "iou": 0.227,
+    "dprofil": 0.0807,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.waterfall_cave.01",
+    "iou": 0.2762,
+    "dprofil": 0.145,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.thunderstruck_tree.01",
+    "iou": 0.2303,
+    "dprofil": 0.1005,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.ember_raider_camps.01",
+    "iou": 0.0495,
+    "dprofil": 0.2313,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.conductive_basin.01",
+    "iou": 0.1238,
+    "dprofil": 0.111,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "pylon",
+    "iou": 0.2983,
+    "dprofil": 0.1302,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "camp",
+    "iou": 0.2079,
+    "dprofil": 0.1752,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.riverside_village.01",
+    "iou": 0.315,
+    "dprofil": 0.1209,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.abandoned_farm.01",
+    "iou": 0.1795,
+    "dprofil": 0.1145,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.stone_bridge.01",
+    "iou": 0.3056,
+    "dprofil": 0.1429,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.waterfall_cave.01",
+    "iou": 0.3104,
+    "dprofil": 0.0863,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.thunderstruck_tree.01",
+    "iou": 0.128,
+    "dprofil": 0.1842,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.ember_raider_camps.01",
+    "iou": 0.3263,
+    "dprofil": 0.0826,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.conductive_basin.01",
+    "iou": 0.2053,
+    "dprofil": 0.166,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "pylon",
+    "iou": 0.1077,
+    "dprofil": 0.1991,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "camp",
+    "iou": 0.2465,
+    "dprofil": 0.1573,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.riverside_village.01",
+    "iou": 0.168,
+    "dprofil": 0.0833,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.abandoned_farm.01",
+    "iou": 0.1335,
+    "dprofil": 0.1276,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.stone_bridge.01",
+    "iou": 0.1269,
+    "dprofil": 0.1692,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.waterfall_cave.01",
+    "iou": 0.1184,
+    "dprofil": 0.0917,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.thunderstruck_tree.01",
+    "iou": 0.071,
+    "dprofil": 0.1915,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.ember_raider_camps.01",
+    "iou": 0.3947,
+    "dprofil": 0.041,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.conductive_basin.01",
+    "iou": 0.1966,
+    "dprofil": 0.1239,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "pylon",
+    "iou": 0.0375,
+    "dprofil": 0.2794,
+    "signale": false
+   }
+  ],
+  "80": [
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.overlook_summit.01",
+    "iou": 0.4187,
+    "dprofil": 0.1533,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.turquoise_spring.01",
+    "iou": 0.2632,
+    "dprofil": 0.1969,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.forest_shrine.01",
+    "iou": 0.292,
+    "dprofil": 0.1566,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.barrow_cemetery.01",
+    "iou": 0.1693,
+    "dprofil": 0.1569,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.flower_field.01",
+    "iou": 0.0597,
+    "dprofil": 0.1648,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.turquoise_spring.01",
+    "iou": 0.4556,
+    "dprofil": 0.142,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.forest_shrine.01",
+    "iou": 0.1609,
+    "dprofil": 0.2716,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.barrow_cemetery.01",
+    "iou": 0.3067,
+    "dprofil": 0.1022,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.flower_field.01",
+    "iou": 0.1204,
+    "dprofil": 0.1423,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.forest_shrine.01",
+    "iou": 0.1829,
+    "dprofil": 0.2016,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.barrow_cemetery.01",
+    "iou": 0.3186,
+    "dprofil": 0.1324,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.flower_field.01",
+    "iou": 0.1591,
+    "dprofil": 0.0998,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.barrow_cemetery.01",
+    "iou": 0.0994,
+    "dprofil": 0.1628,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.flower_field.01",
+    "iou": 0.0322,
+    "dprofil": 0.1921,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.flower_field.01",
+    "iou": 0.2058,
+    "dprofil": 0.076,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "camp",
+    "iou": 0.1199,
+    "dprofil": 0.1471,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.riverside_village.01",
+    "iou": 0.3418,
+    "dprofil": 0.1086,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.abandoned_farm.01",
+    "iou": 0.2033,
+    "dprofil": 0.1471,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.stone_bridge.01",
+    "iou": 0.238,
+    "dprofil": 0.1642,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.waterfall_cave.01",
+    "iou": 0.2905,
+    "dprofil": 0.1726,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.thunderstruck_tree.01",
+    "iou": 0.2047,
+    "dprofil": 0.1561,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.ember_raider_camps.01",
+    "iou": 0.129,
+    "dprofil": 0.1573,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.conductive_basin.01",
+    "iou": 0.0989,
+    "dprofil": 0.2247,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "pylon",
+    "iou": 0.3703,
+    "dprofil": 0.1594,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "camp",
+    "iou": 0.1805,
+    "dprofil": 0.1861,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.riverside_village.01",
+    "iou": 0.4668,
+    "dprofil": 0.1173,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.abandoned_farm.01",
+    "iou": 0.2877,
+    "dprofil": 0.1494,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.stone_bridge.01",
+    "iou": 0.381,
+    "dprofil": 0.2032,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.waterfall_cave.01",
+    "iou": 0.5171,
+    "dprofil": 0.1301,
+    "signale": true
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.thunderstruck_tree.01",
+    "iou": 0.1251,
+    "dprofil": 0.2666,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.ember_raider_camps.01",
+    "iou": 0.2412,
+    "dprofil": 0.1228,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.conductive_basin.01",
+    "iou": 0.1439,
+    "dprofil": 0.2738,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "pylon",
+    "iou": 0.1859,
+    "dprofil": 0.2653,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "camp",
+    "iou": 0.2015,
+    "dprofil": 0.1939,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.riverside_village.01",
+    "iou": 0.3707,
+    "dprofil": 0.1965,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.abandoned_farm.01",
+    "iou": 0.3592,
+    "dprofil": 0.1351,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.stone_bridge.01",
+    "iou": 0.4454,
+    "dprofil": 0.1471,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.waterfall_cave.01",
+    "iou": 0.4546,
+    "dprofil": 0.0905,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.thunderstruck_tree.01",
+    "iou": 0.1167,
+    "dprofil": 0.2203,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.ember_raider_camps.01",
+    "iou": 0.3013,
+    "dprofil": 0.0965,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.conductive_basin.01",
+    "iou": 0.1614,
+    "dprofil": 0.2665,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "pylon",
+    "iou": 0.1322,
+    "dprofil": 0.2509,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "camp",
+    "iou": 0.0631,
+    "dprofil": 0.2241,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.riverside_village.01",
+    "iou": 0.131,
+    "dprofil": 0.1916,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.abandoned_farm.01",
+    "iou": 0.1603,
+    "dprofil": 0.2102,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.stone_bridge.01",
+    "iou": 0.2197,
+    "dprofil": 0.0872,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.waterfall_cave.01",
+    "iou": 0.2765,
+    "dprofil": 0.1452,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.thunderstruck_tree.01",
+    "iou": 0.2489,
+    "dprofil": 0.097,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.ember_raider_camps.01",
+    "iou": 0.0564,
+    "dprofil": 0.2221,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.conductive_basin.01",
+    "iou": 0.1113,
+    "dprofil": 0.1482,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "pylon",
+    "iou": 0.2967,
+    "dprofil": 0.1291,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "camp",
+    "iou": 0.206,
+    "dprofil": 0.1288,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.riverside_village.01",
+    "iou": 0.3049,
+    "dprofil": 0.1093,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.abandoned_farm.01",
+    "iou": 0.1863,
+    "dprofil": 0.1559,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.stone_bridge.01",
+    "iou": 0.3241,
+    "dprofil": 0.1339,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.waterfall_cave.01",
+    "iou": 0.3132,
+    "dprofil": 0.0888,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.thunderstruck_tree.01",
+    "iou": 0.1185,
+    "dprofil": 0.1797,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.ember_raider_camps.01",
+    "iou": 0.2902,
+    "dprofil": 0.0838,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.conductive_basin.01",
+    "iou": 0.1746,
+    "dprofil": 0.2003,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "pylon",
+    "iou": 0.1067,
+    "dprofil": 0.1929,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "camp",
+    "iou": 0.2129,
+    "dprofil": 0.1316,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.riverside_village.01",
+    "iou": 0.1572,
+    "dprofil": 0.1008,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.abandoned_farm.01",
+    "iou": 0.1297,
+    "dprofil": 0.1093,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.stone_bridge.01",
+    "iou": 0.1268,
+    "dprofil": 0.1526,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.waterfall_cave.01",
+    "iou": 0.1223,
+    "dprofil": 0.1169,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.thunderstruck_tree.01",
+    "iou": 0.0685,
+    "dprofil": 0.1821,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.ember_raider_camps.01",
+    "iou": 0.3889,
+    "dprofil": 0.0361,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.conductive_basin.01",
+    "iou": 0.123,
+    "dprofil": 0.2335,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "pylon",
+    "iou": 0.0378,
+    "dprofil": 0.2615,
+    "signale": false
+   }
+  ],
+  "160": [
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.overlook_summit.01",
+    "iou": 0.4258,
+    "dprofil": 0.1399,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.turquoise_spring.01",
+    "iou": 0.2641,
+    "dprofil": 0.1773,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.forest_shrine.01",
+    "iou": 0.3021,
+    "dprofil": 0.153,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.barrow_cemetery.01",
+    "iou": 0.1707,
+    "dprofil": 0.15,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.flower_field.01",
+    "iou": 0.0835,
+    "dprofil": 0.1383,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.turquoise_spring.01",
+    "iou": 0.4331,
+    "dprofil": 0.149,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.forest_shrine.01",
+    "iou": 0.169,
+    "dprofil": 0.2746,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.barrow_cemetery.01",
+    "iou": 0.3228,
+    "dprofil": 0.0966,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.flower_field.01",
+    "iou": 0.1564,
+    "dprofil": 0.158,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.forest_shrine.01",
+    "iou": 0.1811,
+    "dprofil": 0.1749,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.barrow_cemetery.01",
+    "iou": 0.3228,
+    "dprofil": 0.1868,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.flower_field.01",
+    "iou": 0.244,
+    "dprofil": 0.0892,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.barrow_cemetery.01",
+    "iou": 0.087,
+    "dprofil": 0.1551,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.flower_field.01",
+    "iou": 0.0542,
+    "dprofil": 0.1393,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.flower_field.01",
+    "iou": 0.2536,
+    "dprofil": 0.0908,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "camp",
+    "iou": 0.0815,
+    "dprofil": 0.1712,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.riverside_village.01",
+    "iou": 0.3449,
+    "dprofil": 0.1156,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.abandoned_farm.01",
+    "iou": 0.2317,
+    "dprofil": 0.145,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.stone_bridge.01",
+    "iou": 0.2427,
+    "dprofil": 0.1607,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.waterfall_cave.01",
+    "iou": 0.294,
+    "dprofil": 0.18,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.thunderstruck_tree.01",
+    "iou": 0.2042,
+    "dprofil": 0.1495,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.ember_raider_camps.01",
+    "iou": 0.1201,
+    "dprofil": 0.1411,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "valley.poi.conductive_basin.01",
+    "iou": 0.1094,
+    "dprofil": 0.2125,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.watchtower_ruin.01",
+    "b": "pylon",
+    "iou": 0.3664,
+    "dprofil": 0.1556,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "camp",
+    "iou": 0.1365,
+    "dprofil": 0.1896,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.riverside_village.01",
+    "iou": 0.4655,
+    "dprofil": 0.1192,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.abandoned_farm.01",
+    "iou": 0.3328,
+    "dprofil": 0.1415,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.stone_bridge.01",
+    "iou": 0.395,
+    "dprofil": 0.2083,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.waterfall_cave.01",
+    "iou": 0.5231,
+    "dprofil": 0.1309,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.thunderstruck_tree.01",
+    "iou": 0.1209,
+    "dprofil": 0.2701,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.ember_raider_camps.01",
+    "iou": 0.2273,
+    "dprofil": 0.1432,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "valley.poi.conductive_basin.01",
+    "iou": 0.1396,
+    "dprofil": 0.2718,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.overlook_summit.01",
+    "b": "pylon",
+    "iou": 0.1874,
+    "dprofil": 0.2699,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "camp",
+    "iou": 0.1458,
+    "dprofil": 0.1782,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.riverside_village.01",
+    "iou": 0.3582,
+    "dprofil": 0.2074,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.abandoned_farm.01",
+    "iou": 0.3773,
+    "dprofil": 0.1026,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.stone_bridge.01",
+    "iou": 0.441,
+    "dprofil": 0.1121,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.waterfall_cave.01",
+    "iou": 0.4362,
+    "dprofil": 0.1124,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.thunderstruck_tree.01",
+    "iou": 0.1151,
+    "dprofil": 0.1936,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.ember_raider_camps.01",
+    "iou": 0.2978,
+    "dprofil": 0.1082,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "valley.poi.conductive_basin.01",
+    "iou": 0.1538,
+    "dprofil": 0.2645,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.turquoise_spring.01",
+    "b": "pylon",
+    "iou": 0.1265,
+    "dprofil": 0.237,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "camp",
+    "iou": 0.0476,
+    "dprofil": 0.23,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.riverside_village.01",
+    "iou": 0.1259,
+    "dprofil": 0.2086,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.abandoned_farm.01",
+    "iou": 0.1726,
+    "dprofil": 0.2133,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.stone_bridge.01",
+    "iou": 0.2278,
+    "dprofil": 0.085,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.waterfall_cave.01",
+    "iou": 0.2877,
+    "dprofil": 0.1479,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.thunderstruck_tree.01",
+    "iou": 0.231,
+    "dprofil": 0.0961,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.ember_raider_camps.01",
+    "iou": 0.0561,
+    "dprofil": 0.1811,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "valley.poi.conductive_basin.01",
+    "iou": 0.127,
+    "dprofil": 0.1534,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.forest_shrine.01",
+    "b": "pylon",
+    "iou": 0.2938,
+    "dprofil": 0.13,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "camp",
+    "iou": 0.1336,
+    "dprofil": 0.1882,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.riverside_village.01",
+    "iou": 0.3324,
+    "dprofil": 0.0897,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.abandoned_farm.01",
+    "iou": 0.2126,
+    "dprofil": 0.1202,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.stone_bridge.01",
+    "iou": 0.3075,
+    "dprofil": 0.1272,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.waterfall_cave.01",
+    "iou": 0.2896,
+    "dprofil": 0.1046,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.thunderstruck_tree.01",
+    "iou": 0.132,
+    "dprofil": 0.101,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.ember_raider_camps.01",
+    "iou": 0.3032,
+    "dprofil": 0.0994,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "valley.poi.conductive_basin.01",
+    "iou": 0.1506,
+    "dprofil": 0.1909,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.barrow_cemetery.01",
+    "b": "pylon",
+    "iou": 0.0946,
+    "dprofil": 0.1859,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "camp",
+    "iou": 0.2964,
+    "dprofil": 0.1344,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.riverside_village.01",
+    "iou": 0.248,
+    "dprofil": 0.1024,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.abandoned_farm.01",
+    "iou": 0.2991,
+    "dprofil": 0.1199,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.stone_bridge.01",
+    "iou": 0.1667,
+    "dprofil": 0.0936,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.waterfall_cave.01",
+    "iou": 0.1755,
+    "dprofil": 0.0882,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.thunderstruck_tree.01",
+    "iou": 0.0855,
+    "dprofil": 0.1528,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.ember_raider_camps.01",
+    "iou": 0.491,
+    "dprofil": 0.0604,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "valley.poi.conductive_basin.01",
+    "iou": 0.1917,
+    "dprofil": 0.1944,
+    "signale": false
+   },
+   {
+    "a": "valley.poi.flower_field.01",
+    "b": "pylon",
+    "iou": 0.0454,
+    "dprofil": 0.2118,
+    "signale": false
+   }
+  ]
+ },
+ "verdict": "FAIL",
+ "resume": "valley.poi.overlook_summit.01 ≈ valley.poi.waterfall_cave.01 à 30 m (IoU 0.507 > S 0.493); valley.poi.overlook_summit.01 ≈ valley.poi.waterfall_cave.01 à 80 m (IoU 0.517 > S 0.491)",
+ "_avertissement_lead": "VERDICT ARTEFACT — NE PAS UTILISER. Les six silhouettes d'entree ont ete capturees en 1200x900 alors que la baseline et le corpus gele emploient 900x1200 pour onze sujets sur quinze. Le cadrage de capture_silhouette.gd depend directement de ce rapport, donc les masques n'etaient pas comparables. Explication chiffree : final/ARTEFACT_D3.md. Les PNG d'entree ont ete ECRASES par la recapture aux bonnes tailles : ce FAIL n'est donc PAS reproductible depuis les fichiers courants, il reste ici comme trace d'une mesure fausse et de sa cause. Verdict qui fait foi : verdict_d3_31fbb85.json (PASS, repo_dirty false)."
+}

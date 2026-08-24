@@ -1,0 +1,207 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "7c58573a295ccad13dcea46446ff1a310c6cc74d",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 55.0,
+      "from": [
+        -140.3,
+        34.0,
+        53.8
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/final/ab13/watchtower_ruin_identite.png",
+      "look": [
+        -160.0,
+        28.0,
+        40.0
+      ],
+      "name": "watchtower_ruin_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        -154.5,
+        27.7,
+        40.5
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/final/ab13/watchtower_ruin_joueur.png",
+      "look": [
+        -160.0,
+        27.2,
+        40.0
+      ],
+      "name": "watchtower_ruin_joueur"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        150.0,
+        30.0,
+        39.4
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/final/ab13/overlook_summit_identite.png",
+      "look": [
+        168.0,
+        24.0,
+        52.0
+      ],
+      "name": "overlook_summit_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        159.8,
+        23.7,
+        56.8
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/final/ab13/overlook_summit_joueur.png",
+      "look": [
+        168.0,
+        23.2,
+        52.0
+      ],
+      "name": "overlook_summit_joueur"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        -117.2,
+        20.0,
+        46.8
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/final/ab13/turquoise_spring_identite.png",
+      "look": [
+        -136.0,
+        14.0,
+        40.0
+      ],
+      "name": "turquoise_spring_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        -126.5,
+        13.7,
+        40.0
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/final/ab13/turquoise_spring_joueur.png",
+      "look": [
+        -136.0,
+        13.2,
+        40.0
+      ],
+      "name": "turquoise_spring_joueur"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        80.5,
+        15.0,
+        59.0
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/final/ab13/forest_shrine_identite.png",
+      "look": [
+        86.0,
+        9.0,
+        74.0
+      ],
+      "name": "forest_shrine_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        91.5,
+        8.7,
+        64.5
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/final/ab13/forest_shrine_joueur.png",
+      "look": [
+        86.0,
+        8.2,
+        74.0
+      ],
+      "name": "forest_shrine_joueur"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        80.5,
+        8.7,
+        64.5
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/final/ab13/forest_shrine_joueur_b.png",
+      "look": [
+        86.0,
+        8.2,
+        74.0
+      ],
+      "name": "forest_shrine_joueur_b"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        67.0,
+        12.0,
+        -83.1
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/final/ab13/barrow_cemetery_identite.png",
+      "look": [
+        56.0,
+        6.0,
+        -64.0
+      ],
+      "name": "barrow_cemetery_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        50.0,
+        5.7,
+        -53.6
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/final/ab13/barrow_cemetery_joueur.png",
+      "look": [
+        56.0,
+        5.2,
+        -64.0
+      ],
+      "name": "barrow_cemetery_joueur"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        -66.0,
+        13.0,
+        141.3
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/final/ab13/flower_field_identite.png",
+      "look": [
+        -56.0,
+        7.0,
+        124.0
+      ],
+      "name": "flower_field_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        -51.2,
+        6.7,
+        132.2
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/final/ab13/flower_field_joueur.png",
+      "look": [
+        -56.0,
+        6.2,
+        124.0
+      ],
+      "name": "flower_field_joueur"
+    }
+  ],
+  "size": "1280x720"
+}
