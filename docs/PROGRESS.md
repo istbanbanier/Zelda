@@ -1208,3 +1208,81 @@ lead/propriétaire sur `evidence/world_v2/v2_3_b/lot1/planche_lot1.png`
 (+ observations d'art notées dans RECOLTE.md), puis lot 2 — 5 à 6 sujets
 suivants selon `docs/V2_3_B_PLAN.md`, sur DIRECTIVE explicite : le §8 de
 la directive courante interdit de lancer les lots suivants sans elle.
+
+## 2026-08-24 — V2.3-B LOT 1.R : corrective visuelle EN COURS (handoff mi-parcours)
+
+Entrée écrite **pendant** le travail, pas à sa clôture : trois sessions
+d'agent ont déjà été tuées net par un épuisement de crédits, et rien de ce
+qui suit ne doit être re-découvert.
+
+**Mandat.** Verdict Codex sur le lot 1 : gate technique `PASS`, gate visuel
+**REJET**, `GO_V2_3_B_LOT2=FALSE`. Objectif unique : corrective visuelle
+LOCALE des six lieux du lot 1, base `89a3009`, monde V2.2 et systèmes gelés,
+identifiants/récompenses/seuils/contrats inchangés. Un addendum de direction
+artistique impose ensuite six ÉMOTIONS, une conception écrite avant tout gel
+de géométrie (deux compositions réellement différentes par lieu, arbitrées
+par le lead sans attendre le propriétaire), une vidéo joueur de 20–40 s aux
+vrais contrôles par lieu, et une barre « wahou » appliquée par le lead.
+
+**Méthode.** Trois arbres de travail détachés de `89a3009` — voie A
+(belvédère, source), voie B (tour, sanctuaire, cimetière), voie C (champ,
+outils de preuve, audit contradictoire). Un propriétaire par fichier ; les
+voies ne poussent jamais ; le lead reproduit, inspecte et cueille.
+
+**Les six arbitrages sont rendus** (conditions détaillées transmises à
+chaque voie) : tour = B « La vigie retrouvée » · belvédère = A « La
+mâchoire » · source = A « La bouche » · sanctuaire = B « La nef avalée » ·
+cimetière = A « Le chemin des morts » renforcée · champ = B « La Porte des
+fleurs ».
+
+**Trois décisions de lead, chacune adossée à une mesure :**
+
+1. *La promesse turquoise de la source à incidence rasante n'existe pas.*
+   Vérifié par le lead sur `voie_a/v5/spring_promesse_p1.png` : la vasque ET
+   l'affluent GELÉ rendent le même ruban blanc dans le même cadre — miroir
+   spéculaire de ciel. Le shader V2.2 reste en lecture seule (un shader local
+   casserait la continuité que la directive exige) ; la promesse à distance
+   est un contraste de VALEUR, le turquoise doit apparaître tôt sur
+   l'approche, et si aucun point du parcours réel n'y parvient c'est
+   `PARTIAL` documenté — jamais une promesse inventée.
+2. *Aucun `.avi` n'entre dans git.* `.git` pèse déjà 1,9 Go ; une vidéo de
+   17,7 s pèse 175 Mo, et le conteneur n'a ni ffmpeg, ni imageio, ni cv2.
+   Six vidéos committées ajouteraient plus d'un gigaoctet d'historique
+   irréversible. La preuve committée est une PLANCHE CONTACT extraite de
+   l'AVI MJPEG (balayage des marqueurs JPEG + PIL) plus le sha256 et les
+   paramètres au manifeste ; la vidéo part en pièce jointe de Release.
+3. *Le disque teal derrière la tour appartient au monde GELÉ* (instance de
+   végétation V2.2, à confirmer par la voie B) : hors périmètre du lot 1.R,
+   constat consigné, ticket pour un lot ultérieur — on ne touche pas au gel.
+
+**Acquis au moment d'écrire** (aucun verdict, ce sont des états) :
+voie A — géométrie des deux lieux committée (`149e79c`), preuves finales
+manquantes ; voie B — tour compo B committée (`68cbdf6`), palier praticable
+prouvé par sonde physique, sanctuaire et cimetière non commencés ; voie C —
+champ compo B implémenté, deux outils de preuve livrés et auto-testés
+(`lot1r_planches.py`, `lot1r_manifeste.py`), vidéo réelle enregistrée mais
+trop courte (17,7 s pour 20–40 exigées), deux passages d'audit
+contradictoire livrés.
+
+**Deux inspections faites par le lead lui-même** (un juge par fait) :
+la vue du palier de la tour tient — vallée, rivière, hameau et pylône cadrés
+par la maçonnerie de la brèche : l'intention « le paysage est la récompense »
+est jouée ; le champ a gagné ses nappes (il est redevenu le sujet) mais son
+cheminement se lit en poches disjointes plutôt qu'en voie, et sa « Porte »
+ne se lit pas comme une porte dans la vue joueur — les deux constats sont
+partis à la voie C avec l'ordre de priorité.
+
+**Notes de reprise durables** : `HANDOFF_LEAD_A.md`, `HANDOFF_LEAD_B.md`,
+`HANDOFF_LEAD_C.md`, à la racine de chaque arbre de travail.
+
+**PROCHAINE ACTION EXACTE** : attendre les livraisons des trois voies, puis
+— sans rien pousser avant — reproduire et inspecter chaque lieu en taille
+réelle, cueillir par cherry-pick dans l'ordre A → B → C (un propriétaire par
+fichier, zéro conflit attendu), rejouer les filets du lot 1, les huit
+sabotages `tools/gate_negatif_lot1.sh --lot1`, UNE seule `validate_fast.sh`,
+produire les preuves (13 caméras gelées, planches couleur et niveaux de gris,
+planche anonyme des six vues joueur, silhouettes, planches contact vidéo,
+manifestes `repo_dirty:false`), appliquer la barre « wahou » lieu par lieu,
+puis clore par la formule imposée. **Interdits jusqu'au verdict visuel de
+Codex/Istvan** : tout sujet du lot 2, toucher à la Release courante, publier
+une nouvelle Release, et tout verdict artistique auto-déclaré.
