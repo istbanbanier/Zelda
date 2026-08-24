@@ -44,6 +44,14 @@ on:
           world-v2-playtest-r2a-gm4-<sha court>, pas d'export binaire.
         type: boolean
         default: false
+      lot1:
+        description: >-
+          Checkpoint World V2 « lot 1 » : paquet et exports du chemin par
+          défaut, seul le TAG change (world-v2-playtest-lot1-<sha court>).
+          Existe parce que le mandataire Git du conteneur refuse le push de
+          tags (403) — le nom du jalon doit donc naître ici.
+        type: boolean
+        default: false
 
 # Le minimum pour créer une Release et y téléverser des assets.
 permissions:
@@ -83,12 +91,16 @@ jobs:
             SELFTEST="${{ inputs.selftest }}"
             FULLVIS="${{ inputs.full_visual }}"
             GM4="${{ inputs.gm4 }}"
+            LOT1="${{ inputs.lot1 }}"
             [ "$FULLVIS" = "true" ] || FULLVIS=false
             [ "$GM4" = "true" ] || GM4=false
+            [ "$LOT1" = "true" ] || LOT1=false
             if [ "$SELFTEST" = "true" ]; then
               TAG="playtest-selftest-${SHORT}"
             elif [ "$GM4" = "true" ]; then
               TAG="world-v2-playtest-r2a-gm4-${SHORT}"
+            elif [ "$LOT1" = "true" ]; then
+              TAG="world-v2-playtest-lot1-${SHORT}"
             elif [ "$FULLVIS" = "true" ]; then
               TAG="playtest-full-visual-${SHORT}"
             else
