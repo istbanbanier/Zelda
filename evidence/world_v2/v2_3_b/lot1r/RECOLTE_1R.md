@@ -60,10 +60,25 @@ mesuré son propre `PASS`. Les silhouettes du voisinage ont donc bougé depuis.
 Le verdict du lot doit être rejoué, et il peut rougir sur des paires que
 ni l'une ni l'autre ne pouvait voir.
 
-Risque nommé : **le belvédère passe avec des marges fines** (−0,009 à 80 m),
-et il vit dans la bande de proportion la plus encombrée du corpus — trop bas
-il rejoint la ferme abandonnée, trop haut le hameau de la rive. Si le rouge
-survient, la correction est de COMPOSITION, jamais de seuil.
+**Le risque a ensuite été CHIFFRÉ, et il n'est pas là où le lead le
+craignait.** Sur demande, la voie A a mesuré sa distance à chaque paire :
+
+- les trois lieux repris par la voie B sont **très loin** — la plus proche de
+  leurs paires est à **−0,224** d'IoU (belvédère × tour de guet) ; il faudrait
+  qu'une silhouette gagne vingt-deux centièmes pour venir toucher ;
+- la seule paire réellement serrée parmi les sujets qui changent est
+  **belvédère × champ des mille fleurs, à −0,074** — et le champ appartient à
+  la voie C, pas à la voie B ;
+- **le seuil ne bougera pas** : R-D3 se calibre sur `ferme abandonnée × pont
+  de pierre`, deux lieux du corpus accepté que personne ne retouche. Les
+  0,4931 / 0,4912 / 0,5458 seront identiques à l'intégration — seules les
+  paires bougent, jamais la barre.
+
+Donc le vrai point de fragilité est celui qui **ne bougera pas** :
+**belvédère × hameau de la rive à 80 m, marge −0,009**, contre le corpus
+stable. C'est celui-là qu'il faut regarder en premier si la passe intégrée
+rougit, pas les nouvelles formes de la voie B. Si le rouge survient, la
+correction est de COMPOSITION, jamais de seuil.
 
 ### La saturation de l'eau dépend surtout de l'INCIDENCE, pas de l'ombre
 
