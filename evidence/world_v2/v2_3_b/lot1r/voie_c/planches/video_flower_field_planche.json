@@ -1,0 +1,74 @@
+{
+  "video": "evidence/world_v2/v2_3_b/lot1r/voie_c/video_flower_field.avi",
+  "octets": 267381996,
+  "sha256": "bdc0e09e626638a8f1cbf3eb3070a4151c51ce52b409d2e8d4303960b11bc06b",
+  "images_trouvees": 847,
+  "images_declarees": 841,
+  "fps": 30.0,
+  "duree_s": 28.233,
+  "resolution": "1920x1080",
+  "planche": "evidence/world_v2/v2_3_b/lot1r/voie_c/planches/video_flower_field_planche.png",
+  "vignettes": [
+    {
+      "image": 0,
+      "t_s": 0.0
+    },
+    {
+      "image": 60,
+      "t_s": 2.0
+    },
+    {
+      "image": 121,
+      "t_s": 4.033
+    },
+    {
+      "image": 181,
+      "t_s": 6.033
+    },
+    {
+      "image": 242,
+      "t_s": 8.067
+    },
+    {
+      "image": 302,
+      "t_s": 10.067
+    },
+    {
+      "image": 363,
+      "t_s": 12.1
+    },
+    {
+      "image": 423,
+      "t_s": 14.1
+    },
+    {
+      "image": 483,
+      "t_s": 16.1
+    },
+    {
+      "image": 544,
+      "t_s": 18.133
+    },
+    {
+      "image": 604,
+      "t_s": 20.133
+    },
+    {
+      "image": 665,
+      "t_s": 22.167
+    },
+    {
+      "image": 725,
+      "t_s": 24.167
+    },
+    {
+      "image": 786,
+      "t_s": 26.2
+    },
+    {
+      "image": 846,
+      "t_s": 28.2
+    }
+  ],
+  "note": "La video elle-meme n'entre pas dans git (decision lead 2026-08-24) : elle part en piece jointe de Release. Cette planche et ce sha256 sont la preuve committee."
+}

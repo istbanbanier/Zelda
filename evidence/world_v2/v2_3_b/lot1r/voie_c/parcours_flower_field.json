@@ -1,0 +1,41 @@
+{
+ "place_id": "valley.poi.flower_field.01",
+ "commentaire": "Sequence ADDENDUM_DA promesse->approche->revelation->recompense->sortie. Coordonnees MONDE ; pos = [x, z], regard = [x, y, z]. L'allure est la NORME de l'intention (§8.2) : sous 0,6 le controleur marche a 3,5 m/s, et c'est un PALIER, pas une rampe — on ne ralentit donc pas en baissant l'allure, on allonge les pauses. Duree visee ~26 s de jeu, contrat 20-40 s. Etape 4 recalee sur la Porte des fleurs et sur l'herbe d'endurance a son pied.",
+ "etapes": [
+  {
+   "pos": [-31.5, 143.5],
+   "regard": [-52.0, 6.5, 128.0],
+   "pause_s": 2.5,
+   "sprint": false,
+   "allure": 0.5
+  },
+  {
+   "pos": [-48.6, 131.4],
+   "regard": [-55.5, 6.3, 125.0],
+   "pause_s": 2.0,
+   "sprint": false,
+   "allure": 0.5
+  },
+  {
+   "pos": [-55.4, 125.4],
+   "regard": [-56.6, 6.6, 122.4],
+   "pause_s": 4.5,
+   "sprint": false,
+   "allure": 0.5
+  },
+  {
+   "pos": [-57.0, 122.8],
+   "regard": [-54.8, 6.0, 122.6],
+   "pause_s": 3.5,
+   "sprint": false,
+   "allure": 0.5
+  },
+  {
+   "pos": [-61.4, 120.8],
+   "regard": [-70.0, 5.5, 114.0],
+   "pause_s": 3.5,
+   "sprint": false,
+   "allure": 0.5
+  }
+ ]
+}

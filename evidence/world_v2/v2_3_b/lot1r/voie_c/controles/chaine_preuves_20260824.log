@@ -1,0 +1,639 @@
+=== ETAPE: silhouettes
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_ijVGsrY6
+LANCER_GODOT: CWD=/home/user/wt-lot1r-c
+LANCER_GODOT: CMD=xvfb-run -a -s -screen 0 1280x720x24 /usr/local/bin/godot --path . --script tools/godot/capture_silhouette.gd -- --scene=res://scenes/world_v2/WorldV2.tscn --place=valley.poi.flower_field.01 --name=flower_field --out-dir=evidence/world_v2/v2_3_b/lot1/silhouettes --angles=0,90 --size=1200x900
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+ERROR: Required Vulkan instance extension VK_KHR_surface not found.
+   at: _initialize_instance_extensions (drivers/vulkan/rendering_context_driver_vulkan.cpp:494)
+ERROR: Condition "err != OK" is true. Returning: err
+   at: initialize (drivers/vulkan/rendering_context_driver_vulkan.cpp:915)
+WARNING: Your video card drivers seem not to support the required Vulkan version, switching to OpenGL 3.
+     at: DisplayServerX11 (platform/linuxbsd/x11/display_server_x11.cpp:7124)
+WARNING: Could not set V-Sync mode, as changing V-Sync mode is not supported by the graphics driver.
+     at: set_use_vsync (platform/linuxbsd/x11/gl_manager_x11.cpp:372)
+OpenGL API 4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.2 - Compatibility - Using Device: Mesa - llvmpipe (LLVM 20.1.2, 256 bits)
+ALSA lib confmisc.c:855:(parse_card) cannot find card '0'
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_card_inum returned error: No such file or directory
+ALSA lib confmisc.c:422:(snd_func_concat) error evaluating strings
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_concat returned error: No such file or directory
+ALSA lib confmisc.c:1342:(snd_func_refer) error evaluating name
+ALSA lib conf.c:5208:(_snd_config_evaluate) function snd_func_refer returned error: No such file or directory
+ALSA lib conf.c:5731:(snd_config_expand) Evaluate error: No such file or directory
+ALSA lib pcm.c:2721:(snd_pcm_open_noupdate) Unknown PCM default
+ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN
+   at: init_output_device (drivers/alsa/audio_driver_alsa.cpp:97)
+WARNING: All audio drivers failed, falling back to the dummy driver.
+     at: initialize (servers/audio/audio_server.cpp:258)
+
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 10284 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[silhouette] mode lieu : valley.poi.flower_field.01 isolé, 1772 instance(s) masquée(s)
+[silhouette] flower_field — 19 maillages, emprise 22.74 × 2.44 × 20.33 m
+[silhouette] evidence/world_v2/v2_3_b/lot1/silhouettes/silhouette_flower_field_000.png — sujet 2.2 % de l'image, hors bandes 0.000 %
+[silhouette] evidence/world_v2/v2_3_b/lot1/silhouettes/silhouette_flower_field_090.png — sujet 2.3 % de l'image, hors bandes 0.000 %
+[silhouette] OK : 2 vue(s)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+ERROR: Parameter "material" is null.
+   at: material_casts_shadows (drivers/gles3/storage/material_storage.cpp:2592)
+ERROR: Parameter "material" is null.
+   at: material_is_animated (drivers/gles3/storage/material_storage.cpp:2579)
+ERROR: Parameter "material" is null.
+   at: material_get_instance_shader_parameters (drivers/gles3/storage/material_storage.cpp:2618)
+ERROR: Parameter "material" is null.
+   at: material_update_dependency (drivers/gles3/storage/material_storage.cpp:2630)
+LANCER_GODOT: RC_GODOT=0
+RC_SILHOUETTE=0
+=== ETAPE: repetition D3
+/home/user/wt-lot1r-c/tools/lot1_repetition.py:131: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+  pixels = list(image.getdata())
+règle R-D3 — docs/V2_3_B_LOT1_CONTROLES.md §3
+commit 19daece9bebd · dirty=True
+
+--- 30 m — seuil S = 0.4931 (calibré sur 36 paires acceptées, paire calibrante : valley.poi.abandoned_farm.01 / valley.poi.stone_bridge.01) ---
+a                                      b                                          IoU  dprofil
+valley.poi.overlook_summit.01          valley.poi.waterfall_cave.01            0.4813   0.0832
+valley.poi.watchtower_ruin.01          valley.poi.waterfall_cave.01            0.4110   0.1449
+valley.poi.overlook_summit.01          valley.poi.stone_bridge.01              0.3808   0.1342
+valley.poi.flower_field.01             valley.poi.ember_raider_camps.01        0.3454   0.0286
+valley.poi.watchtower_ruin.01          valley.poi.stone_bridge.01              0.3400   0.1846
+valley.poi.watchtower_ruin.01          pylon                                   0.3342   0.1444
+valley.poi.overlook_summit.01          valley.poi.riverside_village.01         0.3317   0.1369
+valley.poi.flower_field.01             valley.poi.abandoned_farm.01            0.3308   0.1344
+valley.poi.flower_field.01             valley.poi.conductive_basin.01          0.3262   0.1304
+valley.poi.forest_shrine.01            valley.poi.waterfall_cave.01            0.3007   0.1124
+valley.poi.overlook_summit.01          valley.poi.forest_shrine.01             0.2748   0.1321
+valley.poi.forest_shrine.01            valley.poi.stone_bridge.01              0.2740   0.1079
+valley.poi.watchtower_ruin.01          valley.poi.riverside_village.01         0.2719   0.1797
+valley.poi.overlook_summit.01          valley.poi.abandoned_farm.01            0.2719   0.1355
+valley.poi.turquoise_spring.01         valley.poi.stone_bridge.01              0.2674   0.0751
+valley.poi.turquoise_spring.01         valley.poi.waterfall_cave.01            0.2616   0.1280
+valley.poi.turquoise_spring.01         valley.poi.forest_shrine.01             0.2482   0.1688
+valley.poi.barrow_cemetery.01          valley.poi.abandoned_farm.01            0.2420   0.1123
+valley.poi.watchtower_ruin.01          valley.poi.abandoned_farm.01            0.2339   0.2445
+valley.poi.watchtower_ruin.01          valley.poi.overlook_summit.01           0.2336   0.2345
+valley.poi.flower_field.01             valley.poi.riverside_village.01         0.2333   0.0851
+valley.poi.forest_shrine.01            valley.poi.riverside_village.01         0.2229   0.1505
+valley.poi.watchtower_ruin.01          valley.poi.thunderstruck_tree.01        0.2169   0.1750
+valley.poi.overlook_summit.01          valley.poi.ember_raider_camps.01        0.2144   0.0647
+valley.poi.barrow_cemetery.01          valley.poi.conductive_basin.01          0.2139   0.1738
+valley.poi.watchtower_ruin.01          valley.poi.turquoise_spring.01          0.2079   0.1532
+valley.poi.flower_field.01             valley.poi.stone_bridge.01              0.1946   0.1581
+valley.poi.barrow_cemetery.01          valley.poi.stone_bridge.01              0.1923   0.1266
+valley.poi.flower_field.01             camp                                    0.1921   0.1545
+valley.poi.watchtower_ruin.01          valley.poi.forest_shrine.01             0.1907   0.1896
+valley.poi.forest_shrine.01            valley.poi.conductive_basin.01          0.1906   0.1505
+valley.poi.forest_shrine.01            valley.poi.thunderstruck_tree.01        0.1845   0.1765
+valley.poi.turquoise_spring.01         valley.poi.abandoned_farm.01            0.1821   0.1793
+valley.poi.forest_shrine.01            valley.poi.abandoned_farm.01            0.1792   0.1836
+valley.poi.turquoise_spring.01         valley.poi.riverside_village.01         0.1708   0.1400
+valley.poi.flower_field.01             valley.poi.waterfall_cave.01            0.1704   0.0793
+valley.poi.overlook_summit.01          valley.poi.turquoise_spring.01          0.1683   0.1514
+valley.poi.watchtower_ruin.01          valley.poi.conductive_basin.01          0.1587   0.1853
+valley.poi.barrow_cemetery.01          valley.poi.riverside_village.01         0.1574   0.1725
+valley.poi.overlook_summit.01          pylon                                   0.1563   0.2697
+valley.poi.barrow_cemetery.01          valley.poi.waterfall_cave.01            0.1563   0.0678
+valley.poi.overlook_summit.01          valley.poi.flower_field.01              0.1527   0.0844
+valley.poi.watchtower_ruin.01          valley.poi.ember_raider_camps.01        0.1476   0.1149
+valley.poi.barrow_cemetery.01          valley.poi.flower_field.01              0.1414   0.0477
+valley.poi.overlook_summit.01          valley.poi.barrow_cemetery.01           0.1368   0.1141
+valley.poi.overlook_summit.01          camp                                    0.1343   0.1719
+valley.poi.watchtower_ruin.01          camp                                    0.1312   0.1622
+valley.poi.overlook_summit.01          valley.poi.conductive_basin.01          0.1301   0.2235
+valley.poi.forest_shrine.01            valley.poi.barrow_cemetery.01           0.1280   0.1474
+valley.poi.turquoise_spring.01         valley.poi.barrow_cemetery.01           0.1158   0.1444
+valley.poi.overlook_summit.01          valley.poi.thunderstruck_tree.01        0.1139   0.2550
+valley.poi.forest_shrine.01            pylon                                   0.1114   0.1955
+valley.poi.turquoise_spring.01         camp                                    0.1068   0.2048
+valley.poi.forest_shrine.01            valley.poi.flower_field.01              0.1067   0.1360
+valley.poi.turquoise_spring.01         pylon                                   0.1063   0.1784
+valley.poi.forest_shrine.01            valley.poi.ember_raider_camps.01        0.1044   0.1664
+valley.poi.flower_field.01             valley.poi.thunderstruck_tree.01        0.1025   0.1956
+valley.poi.forest_shrine.01            camp                                    0.1021   0.1891
+valley.poi.watchtower_ruin.01          valley.poi.flower_field.01              0.0972   0.1990
+valley.poi.turquoise_spring.01         valley.poi.ember_raider_camps.01        0.0903   0.1795
+valley.poi.barrow_cemetery.01          valley.poi.ember_raider_camps.01        0.0898   0.0505
+valley.poi.watchtower_ruin.01          valley.poi.barrow_cemetery.01           0.0861   0.1599
+valley.poi.turquoise_spring.01         valley.poi.thunderstruck_tree.01        0.0857   0.1715
+valley.poi.barrow_cemetery.01          valley.poi.thunderstruck_tree.01        0.0804   0.1775
+valley.poi.barrow_cemetery.01          camp                                    0.0690   0.1631
+valley.poi.flower_field.01             pylon                                   0.0676   0.2716
+valley.poi.turquoise_spring.01         valley.poi.conductive_basin.01          0.0631   0.1570
+valley.poi.barrow_cemetery.01          pylon                                   0.0554   0.2362
+valley.poi.turquoise_spring.01         valley.poi.flower_field.01              0.0543   0.1501
+
+--- 80 m — seuil S = 0.4912 (calibré sur 36 paires acceptées, paire calibrante : valley.poi.abandoned_farm.01 / valley.poi.stone_bridge.01) ---
+a                                      b                                          IoU  dprofil
+valley.poi.overlook_summit.01          valley.poi.waterfall_cave.01            0.4806   0.0850
+valley.poi.watchtower_ruin.01          valley.poi.waterfall_cave.01            0.4108   0.1368
+valley.poi.overlook_summit.01          valley.poi.stone_bridge.01              0.3907   0.1376
+valley.poi.watchtower_ruin.01          valley.poi.stone_bridge.01              0.3432   0.1820
+valley.poi.watchtower_ruin.01          pylon                                   0.3327   0.1501
+valley.poi.overlook_summit.01          valley.poi.riverside_village.01         0.3263   0.1378
+valley.poi.forest_shrine.01            valley.poi.waterfall_cave.01            0.3001   0.1209
+valley.poi.flower_field.01             valley.poi.abandoned_farm.01            0.2979   0.1632
+valley.poi.forest_shrine.01            valley.poi.stone_bridge.01              0.2886   0.1018
+valley.poi.overlook_summit.01          valley.poi.forest_shrine.01             0.2798   0.1370
+valley.poi.flower_field.01             valley.poi.conductive_basin.01          0.2796   0.1822
+valley.poi.turquoise_spring.01         valley.poi.stone_bridge.01              0.2791   0.0799
+valley.poi.turquoise_spring.01         valley.poi.waterfall_cave.01            0.2676   0.1221
+valley.poi.overlook_summit.01          valley.poi.abandoned_farm.01            0.2661   0.1570
+valley.poi.watchtower_ruin.01          valley.poi.riverside_village.01         0.2637   0.1636
+valley.poi.flower_field.01             valley.poi.ember_raider_camps.01        0.2511   0.1178
+valley.poi.barrow_cemetery.01          valley.poi.abandoned_farm.01            0.2500   0.1130
+valley.poi.barrow_cemetery.01          valley.poi.conductive_basin.01          0.2500   0.1569
+valley.poi.turquoise_spring.01         valley.poi.forest_shrine.01             0.2455   0.1862
+valley.poi.watchtower_ruin.01          valley.poi.overlook_summit.01           0.2320   0.2386
+valley.poi.watchtower_ruin.01          valley.poi.thunderstruck_tree.01        0.2287   0.1789
+valley.poi.watchtower_ruin.01          valley.poi.abandoned_farm.01            0.2277   0.2346
+valley.poi.forest_shrine.01            valley.poi.riverside_village.01         0.2232   0.1694
+valley.poi.forest_shrine.01            valley.poi.conductive_basin.01          0.2171   0.1476
+valley.poi.flower_field.01             valley.poi.riverside_village.01         0.2104   0.1506
+valley.poi.overlook_summit.01          valley.poi.ember_raider_camps.01        0.2103   0.1005
+valley.poi.flower_field.01             valley.poi.stone_bridge.01              0.2038   0.1564
+valley.poi.watchtower_ruin.01          valley.poi.turquoise_spring.01          0.1964   0.1617
+valley.poi.watchtower_ruin.01          valley.poi.forest_shrine.01             0.1959   0.1880
+valley.poi.barrow_cemetery.01          valley.poi.flower_field.01              0.1888   0.1125
+valley.poi.turquoise_spring.01         valley.poi.abandoned_farm.01            0.1868   0.1846
+valley.poi.forest_shrine.01            valley.poi.abandoned_farm.01            0.1866   0.1794
+valley.poi.turquoise_spring.01         valley.poi.riverside_village.01         0.1832   0.1389
+valley.poi.forest_shrine.01            valley.poi.thunderstruck_tree.01        0.1816   0.1712
+valley.poi.barrow_cemetery.01          valley.poi.stone_bridge.01              0.1797   0.0981
+valley.poi.overlook_summit.01          valley.poi.turquoise_spring.01          0.1707   0.1581
+valley.poi.barrow_cemetery.01          valley.poi.riverside_village.01         0.1632   0.1252
+valley.poi.overlook_summit.01          pylon                                   0.1576   0.2743
+valley.poi.flower_field.01             valley.poi.waterfall_cave.01            0.1512   0.1377
+valley.poi.barrow_cemetery.01          valley.poi.waterfall_cave.01            0.1507   0.0953
+valley.poi.watchtower_ruin.01          valley.poi.ember_raider_camps.01        0.1436   0.1084
+valley.poi.watchtower_ruin.01          valley.poi.conductive_basin.01          0.1403   0.2219
+valley.poi.overlook_summit.01          valley.poi.barrow_cemetery.01           0.1393   0.1009
+valley.poi.overlook_summit.01          camp                                    0.1376   0.1573
+valley.poi.forest_shrine.01            valley.poi.flower_field.01              0.1374   0.1520
+valley.poi.turquoise_spring.01         valley.poi.barrow_cemetery.01           0.1297   0.1048
+valley.poi.flower_field.01             valley.poi.thunderstruck_tree.01        0.1264   0.1364
+valley.poi.overlook_summit.01          valley.poi.flower_field.01              0.1253   0.1906
+valley.poi.overlook_summit.01          valley.poi.conductive_basin.01          0.1253   0.2564
+valley.poi.forest_shrine.01            valley.poi.barrow_cemetery.01           0.1226   0.1296
+valley.poi.flower_field.01             camp                                    0.1214   0.1589
+valley.poi.barrow_cemetery.01          valley.poi.ember_raider_camps.01        0.1202   0.0680
+valley.poi.watchtower_ruin.01          camp                                    0.1153   0.1622
+valley.poi.forest_shrine.01            pylon                                   0.1132   0.1860
+valley.poi.overlook_summit.01          valley.poi.thunderstruck_tree.01        0.1131   0.2619
+valley.poi.turquoise_spring.01         camp                                    0.1103   0.2208
+valley.poi.watchtower_ruin.01          valley.poi.flower_field.01              0.1076   0.1775
+valley.poi.turquoise_spring.01         pylon                                   0.1060   0.1848
+valley.poi.forest_shrine.01            valley.poi.ember_raider_camps.01        0.1031   0.1648
+valley.poi.turquoise_spring.01         valley.poi.ember_raider_camps.01        0.1016   0.1427
+valley.poi.forest_shrine.01            camp                                    0.0970   0.1286
+valley.poi.turquoise_spring.01         valley.poi.thunderstruck_tree.01        0.0875   0.1647
+valley.poi.turquoise_spring.01         valley.poi.flower_field.01              0.0832   0.1554
+valley.poi.watchtower_ruin.01          valley.poi.barrow_cemetery.01           0.0785   0.1548
+valley.poi.flower_field.01             pylon                                   0.0774   0.1657
+valley.poi.turquoise_spring.01         valley.poi.conductive_basin.01          0.0721   0.2273
+valley.poi.barrow_cemetery.01          valley.poi.thunderstruck_tree.01        0.0705   0.1593
+valley.poi.barrow_cemetery.01          camp                                    0.0668   0.1449
+valley.poi.barrow_cemetery.01          pylon                                   0.0439   0.1771
+
+--- 160 m — seuil S = 0.5458 (calibré sur 36 paires acceptées, paire calibrante : valley.poi.abandoned_farm.01 / valley.poi.stone_bridge.01) ---
+a                                      b                                          IoU  dprofil
+valley.poi.overlook_summit.01          valley.poi.waterfall_cave.01            0.4488   0.0869
+valley.poi.watchtower_ruin.01          valley.poi.waterfall_cave.01            0.4128   0.1350
+valley.poi.overlook_summit.01          valley.poi.stone_bridge.01              0.3915   0.1536
+valley.poi.flower_field.01             valley.poi.conductive_basin.01          0.3898   0.0766
+valley.poi.watchtower_ruin.01          valley.poi.stone_bridge.01              0.3468   0.1860
+valley.poi.overlook_summit.01          valley.poi.riverside_village.01         0.3330   0.1237
+valley.poi.flower_field.01             valley.poi.abandoned_farm.01            0.3285   0.1968
+valley.poi.watchtower_ruin.01          pylon                                   0.3281   0.1425
+valley.poi.overlook_summit.01          valley.poi.abandoned_farm.01            0.3021   0.1416
+valley.poi.forest_shrine.01            valley.poi.stone_bridge.01              0.2919   0.0959
+valley.poi.forest_shrine.01            valley.poi.waterfall_cave.01            0.2810   0.1363
+valley.poi.watchtower_ruin.01          valley.poi.riverside_village.01         0.2772   0.1744
+valley.poi.turquoise_spring.01         valley.poi.waterfall_cave.01            0.2690   0.1360
+valley.poi.turquoise_spring.01         valley.poi.stone_bridge.01              0.2615   0.0688
+valley.poi.overlook_summit.01          valley.poi.forest_shrine.01             0.2576   0.1527
+valley.poi.watchtower_ruin.01          valley.poi.abandoned_farm.01            0.2494   0.2236
+valley.poi.flower_field.01             valley.poi.stone_bridge.01              0.2342   0.1811
+valley.poi.flower_field.01             valley.poi.ember_raider_camps.01        0.2328   0.1858
+valley.poi.watchtower_ruin.01          valley.poi.overlook_summit.01           0.2297   0.2319
+valley.poi.turquoise_spring.01         valley.poi.forest_shrine.01             0.2264   0.1847
+valley.poi.forest_shrine.01            valley.poi.conductive_basin.01          0.2255   0.1752
+valley.poi.barrow_cemetery.01          valley.poi.conductive_basin.01          0.2222   0.1074
+valley.poi.overlook_summit.01          valley.poi.ember_raider_camps.01        0.2219   0.0767
+valley.poi.watchtower_ruin.01          valley.poi.thunderstruck_tree.01        0.2175   0.1596
+valley.poi.forest_shrine.01            valley.poi.riverside_village.01         0.2110   0.1698
+valley.poi.watchtower_ruin.01          valley.poi.turquoise_spring.01          0.2054   0.1730
+valley.poi.forest_shrine.01            valley.poi.thunderstruck_tree.01        0.2016   0.1522
+valley.poi.turquoise_spring.01         valley.poi.abandoned_farm.01            0.1982   0.1928
+valley.poi.flower_field.01             valley.poi.riverside_village.01         0.1928   0.2441
+valley.poi.watchtower_ruin.01          valley.poi.forest_shrine.01             0.1888   0.1970
+valley.poi.barrow_cemetery.01          valley.poi.abandoned_farm.01            0.1867   0.2524
+valley.poi.forest_shrine.01            valley.poi.abandoned_farm.01            0.1851   0.1815
+valley.poi.overlook_summit.01          valley.poi.turquoise_spring.01          0.1743   0.1633
+valley.poi.barrow_cemetery.01          valley.poi.stone_bridge.01              0.1695   0.1637
+valley.poi.turquoise_spring.01         valley.poi.riverside_village.01         0.1688   0.1572
+valley.poi.flower_field.01             camp                                    0.1639   0.1810
+valley.poi.watchtower_ruin.01          valley.poi.conductive_basin.01          0.1588   0.2119
+valley.poi.flower_field.01             valley.poi.waterfall_cave.01            0.1567   0.2042
+valley.poi.overlook_summit.01          pylon                                   0.1523   0.2602
+valley.poi.flower_field.01             valley.poi.thunderstruck_tree.01        0.1466   0.1072
+valley.poi.barrow_cemetery.01          valley.poi.flower_field.01              0.1413   0.1644
+valley.poi.watchtower_ruin.01          valley.poi.ember_raider_camps.01        0.1403   0.1181
+valley.poi.barrow_cemetery.01          valley.poi.waterfall_cave.01            0.1295   0.2286
+valley.poi.forest_shrine.01            valley.poi.flower_field.01              0.1266   0.1750
+valley.poi.barrow_cemetery.01          valley.poi.riverside_village.01         0.1248   0.2550
+valley.poi.watchtower_ruin.01          valley.poi.flower_field.01              0.1220   0.2035
+valley.poi.overlook_summit.01          valley.poi.conductive_basin.01          0.1174   0.2431
+valley.poi.overlook_summit.01          camp                                    0.1173   0.1991
+valley.poi.overlook_summit.01          valley.poi.flower_field.01              0.1167   0.2261
+valley.poi.forest_shrine.01            valley.poi.barrow_cemetery.01           0.1155   0.1188
+valley.poi.forest_shrine.01            pylon                                   0.1145   0.1343
+valley.poi.overlook_summit.01          valley.poi.thunderstruck_tree.01        0.1090   0.2522
+valley.poi.turquoise_spring.01         valley.poi.flower_field.01              0.0986   0.1363
+valley.poi.forest_shrine.01            valley.poi.ember_raider_camps.01        0.0972   0.1221
+valley.poi.turquoise_spring.01         valley.poi.ember_raider_camps.01        0.0968   0.1424
+valley.poi.turquoise_spring.01         pylon                                   0.0952   0.1688
+valley.poi.turquoise_spring.01         valley.poi.barrow_cemetery.01           0.0892   0.1459
+valley.poi.overlook_summit.01          valley.poi.barrow_cemetery.01           0.0889   0.2170
+valley.poi.watchtower_ruin.01          camp                                    0.0872   0.2031
+valley.poi.turquoise_spring.01         valley.poi.thunderstruck_tree.01        0.0849   0.1457
+valley.poi.barrow_cemetery.01          camp                                    0.0825   0.2178
+valley.poi.flower_field.01             pylon                                   0.0802   0.0911
+valley.poi.barrow_cemetery.01          pylon                                   0.0797   0.0650
+valley.poi.turquoise_spring.01         valley.poi.conductive_basin.01          0.0731   0.1946
+valley.poi.turquoise_spring.01         camp                                    0.0729   0.2066
+valley.poi.barrow_cemetery.01          valley.poi.ember_raider_camps.01        0.0711   0.2552
+valley.poi.watchtower_ruin.01          valley.poi.barrow_cemetery.01           0.0669   0.2024
+valley.poi.forest_shrine.01            camp                                    0.0603   0.2298
+valley.poi.barrow_cemetery.01          valley.poi.thunderstruck_tree.01        0.0539   0.1419
+
+VERDICT : PASS — 6 sujet(s) du lot, aucun ne dépasse le seuil calibré sur le corpus accepté (30 m : S = 0.493, 80 m : S = 0.491, 160 m : S = 0.546)
+RC_D3=0
+=== ETAPE: filet lot1_defauts
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_7syuu1BJ
+LANCER_GODOT: CWD=/home/user/wt-lot1r-c
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=lot1_defauts
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: lot1_defauts
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 9419 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+  ok   test_world_v2_lot1_defauts.gd::test_d0_les_six_sujets_du_lot_1_existent_vraiment (3 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5316 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_lot1_defauts.gd::test_d1_aucun_lieu_ne_lit_comme_un_assemblage_de_primitives (3 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5369 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_lot1_defauts.gd::test_d2_rien_ne_flotte_et_rien_n_est_enterre (3 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5272 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_lot1_defauts.gd::test_d3_aucun_lieu_du_lot_n_en_repete_un_autre (6 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5317 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_lot1_defauts.gd::test_d4_ni_route_ni_eau_ni_camera_ne_sont_obstruees (4 assertions)
+  ok   test_world_v2_lot1_defauts.gd::test_d5_aucune_position_de_site_n_est_codee_en_dur (2 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5174 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_lot1_defauts.gd::test_d6_chaque_recompense_canonique_est_raccordee (4 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5325 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_lot1_defauts.gd::test_d7_aucun_budget_de_lieu_n_est_depasse (3 assertions)
+  ok   test_world_v2_lot1_defauts.gd::test_d8_aucun_element_gele_n_a_bouge (3 assertions)
+  ok   test_world_v2_lot1_defauts.gd::test_temoin_l_instrument_de_boititude_voit_un_pave (3 assertions)
+  ok   test_world_v2_lot1_defauts.gd::test_temoin_les_compteurs_voient_ce_qu_ils_pretendent_compter (4 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 11 réussi(s), 0 échoué(s) ===
+LANCER_GODOT: RC_GODOT=0
+RC_DEFAUTS=0
+=== ETAPE: filet places_contract
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_EIhlpylz
+LANCER_GODOT: CWD=/home/user/wt-lot1r-c
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=places_contract
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: places_contract
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 9687 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+  ok   test_world_v2_places_contract.gd::test_le_lot_pilote_est_fait_de_lieux_reels (2 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+  ok   test_world_v2_places_contract.gd::test_chaque_scene_du_registre_est_autonome (3 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5156 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_places_contract.gd::test_les_fondations_epousent_le_terrain_gele (2 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5246 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_places_contract.gd::test_aucun_acteur_et_les_routes_restent_libres (3 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5238 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ok   test_world_v2_places_contract.gd::test_le_lot_1_ne_gene_ni_l_eau_ni_les_fenetres (4 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 5 réussi(s), 0 échoué(s) ===
+LANCER_GODOT: RC_GODOT=0
+RC_CONTRACT=0
+RC_CHAINE=0

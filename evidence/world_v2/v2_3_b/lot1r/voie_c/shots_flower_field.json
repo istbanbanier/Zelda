@@ -1,0 +1,26 @@
+[
+ {
+  "name": "flower_field_identite",
+  "from": [-66.0, 13.0, 141.3],
+  "look": [-56, 7.0, 124],
+  "fov": 55.0
+ },
+ {
+  "name": "flower_field_joueur",
+  "from": [-51.2, 6.7, 132.2],
+  "look": [-56, 6.2, 124],
+  "fov": 65.0
+ },
+ {
+  "name": "flower_field_gp_nappe",
+  "from": [-54.0, 6.55, 118.8],
+  "look": [-62.0, 6.0, 122.5],
+  "fov": 55.0
+ },
+ {
+  "name": "flower_field_gp_chemin",
+  "from": [-52.6, 6.45, 128.6],
+  "look": [-61.4, 5.8, 120.8],
+  "fov": 60.0
+ }
+]

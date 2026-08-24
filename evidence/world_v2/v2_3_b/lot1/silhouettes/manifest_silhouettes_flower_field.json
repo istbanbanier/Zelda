@@ -1,11 +1,11 @@
 {
   "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
   "clip_below": null,
-  "commit": "bc55474662ee92849ecf164c705dd4dc22196d5d",
+  "commit": "0894bd5519cc2abed9beee754a9cb75e99ac0a64",
   "emprise_m": [
-    14.4134902954102,
-    3.18668556213379,
-    12.2274932861328
+    22.2279777526855,
+    2.76105642318726,
+    20.7940292358398
   ],
   "engine": "4.7.1-stable (custom_build)",
   "mode": "lieu dans le monde monté",
@@ -22,13 +22,13 @@
       "angle_deg": 0.0,
       "hors_bandes_pct": 0.0,
       "image": "evidence/world_v2/v2_3_b/lot1/silhouettes/silhouette_flower_field_000.png",
-      "sujet_pct": 3.47481481481482
+      "sujet_pct": 2.12962962962963
     },
     {
       "angle_deg": 90.0,
       "hors_bandes_pct": 0.0,
       "image": "evidence/world_v2/v2_3_b/lot1/silhouettes/silhouette_flower_field_090.png",
-      "sujet_pct": 3.73703703703704
+      "sujet_pct": 2.07962962962963
     }
   ]
 }
