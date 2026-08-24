@@ -297,7 +297,7 @@ def main() -> int:
         "lot1_present": nouveaux,
         "lot1_manquant": manquants,
         "commit": git(["rev-parse", "HEAD"], "inconnu"),
-        "repo_dirty": git(["status", "--porcelain"]) != "",
+        "repo_dirty": depot_sale(),
         "seuils": {},
         "temoin_degenere": {},
         "signalees": [],
@@ -426,6 +426,32 @@ def ecrire(chemin: Path, verdict: dict) -> None:
     chemin.parent.mkdir(parents=True, exist_ok=True)
     chemin.write_text(json.dumps(verdict, indent=2, ensure_ascii=False),
                       encoding="utf-8")
+
+
+
+def depot_sale() -> bool:
+    """Le dépôt porte-t-il une modification qui invaliderait cette mesure ?
+
+    MESURÉ le 2026-08-24 : la version précédente lisait `git status
+    --porcelain` tout court, donc comptait les fichiers NON SUIVIS. Or une
+    passe de captures vient d'écrire quelques dizaines de PNG sous
+    `evidence/` — le verdict sortait donc TOUJOURS `repo_dirty: true`, y
+    compris sur un arbre dont aucun fichier suivi n'avait bougé. Un champ qui
+    vaut toujours vrai n'informe de rien, et apprend à ignorer le champ.
+
+    Même définition que les outils de capture Godot
+    (`capture_silhouette.gd::_repo_is_dirty`) : fichiers SUIVIS seulement, et
+    `evidence/` exclu — une preuve qui s'écrit ne se salit pas elle-même.
+    """
+    sortie = git(["status", "--porcelain", "--untracked-files=no"])
+    for ligne in sortie.splitlines():
+        entree = ligne.strip()
+        if not entree:
+            continue
+        if entree[2:].strip().startswith("evidence/"):
+            continue
+        return True
+    return False
 
 
 def rendre(verdict: dict) -> None:
