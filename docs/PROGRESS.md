@@ -1191,3 +1191,20 @@ checkpoint jouable : tag `world-v2-playtest-lot1-<sha court>` poussé sur ce
 commit — le workflow `publish-playtest.yml` construit le ZIP et la Release.
 Ensuite : verdict visuel du lead/propriétaire sur la planche du lot, puis
 lot 2 (5-6 sujets suivants de `docs/V2_3_B_PLAN.md`).
+
+### Post-scriptum — checkpoint publié
+
+Le push du TAG est refusé par le mandataire Git (HTTP 403, cinq essais) ;
+le workflow `publish-playtest.yml` a reçu une entrée de dispatch `lot1`
+(nom du tag seulement) et a été déclenché sur `d78f007`. Release publiée
+et RELUE : `world-v2-playtest-lot1-d78f007`, 9 assets — projet Godot
+(407 Mo) ET les trois builds autonomes Windows/macOS/Linux, chacun avec
+son SHA-256. Le tag pointe sur le commit poussé, vérifié par l'API.
+
+https://github.com/istbanbanier/Zelda/releases/tag/world-v2-playtest-lot1-d78f007
+
+Le lot 1 est LIVRÉ. Prochaine action exacte : verdict visuel du
+lead/propriétaire sur `evidence/world_v2/v2_3_b/lot1/planche_lot1.png`
+(+ observations d'art notées dans RECOLTE.md), puis lot 2 — 5 à 6 sujets
+suivants selon `docs/V2_3_B_PLAN.md`, sur DIRECTIVE explicite : le §8 de
+la directive courante interdit de lancer les lots suivants sans elle.
