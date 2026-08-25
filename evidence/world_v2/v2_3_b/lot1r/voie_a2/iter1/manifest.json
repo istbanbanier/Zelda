@@ -1,0 +1,177 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "90f0d67b2ea477a61375c3d8e742bcbac79ec628",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 55.0,
+      "from": [
+        150.0,
+        30.0,
+        39.4
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_a2/iter1/overlook_summit_identite.png",
+      "look": [
+        168.0,
+        24.0,
+        52.0
+      ],
+      "name": "overlook_summit_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        159.8,
+        23.7,
+        56.8
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_a2/iter1/overlook_summit_joueur.png",
+      "look": [
+        168.0,
+        23.2,
+        52.0
+      ],
+      "name": "overlook_summit_joueur"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        -117.2,
+        20.0,
+        46.8
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_a2/iter1/turquoise_spring_identite.png",
+      "look": [
+        -136.0,
+        14.0,
+        40.0
+      ],
+      "name": "turquoise_spring_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        -126.5,
+        13.7,
+        40.0
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_a2/iter1/turquoise_spring_joueur.png",
+      "look": [
+        -136.0,
+        13.2,
+        40.0
+      ],
+      "name": "turquoise_spring_joueur"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        166.0,
+        25.4,
+        49.5
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_a2/iter1/overlook_gros_crete.png",
+      "look": [
+        174.2,
+        25.8,
+        56.4
+      ],
+      "name": "overlook_gros_crete"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        191.0,
+        21.5,
+        59.9
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_a2/iter1/overlook_breche_est.png",
+      "look": [
+        175.8,
+        24.5,
+        45.4
+      ],
+      "name": "overlook_breche_est"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        168.0,
+        23.6,
+        52.0
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_a2/iter1/overlook_seuil_p4.png",
+      "look": [
+        0.0,
+        26.0,
+        170.0
+      ],
+      "name": "overlook_seuil_p4"
+    },
+    {
+      "fov": 50.0,
+      "from": [
+        -135.2,
+        14.2,
+        36.6
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_a2/iter1/spring_gros_eau.png",
+      "look": [
+        -141.4,
+        12.1,
+        40.2
+      ],
+      "name": "spring_gros_eau"
+    },
+    {
+      "fov": 50.0,
+      "from": [
+        -137.6,
+        13.8,
+        40.4
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_a2/iter1/spring_gros_fente.png",
+      "look": [
+        -146.8,
+        13.4,
+        40.3
+      ],
+      "name": "spring_gros_fente"
+    },
+    {
+      "fov": 50.0,
+      "from": [
+        -101.5,
+        15.5,
+        27.5
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_a2/iter1/spring_gue_riviere.png",
+      "look": [
+        -96.0,
+        10.8,
+        22.0
+      ],
+      "name": "spring_gue_riviere"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -118.0,
+        15.0,
+        50.0
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_a2/iter1/spring_promesse_p1.png",
+      "look": [
+        -141.0,
+        12.0,
+        40.0
+      ],
+      "name": "spring_promesse_p1"
+    }
+  ],
+  "size": "1280x720"
+}

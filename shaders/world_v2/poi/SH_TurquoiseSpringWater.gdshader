@@ -52,15 +52,23 @@ render_mode cull_disabled;
 // Turquoise de rive et pétrole de fond. Plus saturés que ceux de la rivière
 // V2.2 : ce lieu est « l'œil turquoise », la seule note froide saturée d'un
 // ravin brun-vert, et c'est écrit au contrat.
-uniform vec4 shallow_color : source_color = vec4(0.155, 0.560, 0.545, 0.72);
-uniform vec4 deep_color : source_color = vec4(0.045, 0.295, 0.355, 0.96);
+// v2 — RABATTU SUR MESURE. Le premier jeu a fonctionné, et TROP : dans la
+// caméra joueur gelée la saturation est passée de 0,079 à 0,577, et le gros
+// plan est monté à 0,727 — plus du double de la rivière V2.2 de référence
+// (0,273 dans la même image). Une eau deux fois plus saturée que toute
+// l'eau du monde ne lit plus « source turquoise » mais « piscine ». Les
+// trois couleurs remontent donc leur canal rouge : l'écart avec la rivière
+// doit rester lisible — c'est « l'œil turquoise » du ravin — sans devenir
+// une couleur qui n'existe nulle part ailleurs dans la vallée.
+uniform vec4 shallow_color : source_color = vec4(0.225, 0.520, 0.500, 0.72);
+uniform vec4 deep_color : source_color = vec4(0.100, 0.288, 0.322, 0.96);
 uniform vec4 foam_color : source_color = vec4(0.70, 0.82, 0.80, 0.85);
 // LA COULEUR DU REFLET RASANT. C'est elle qui remplace le blanc du ciel.
 // Volontairement plus CLAIRE et plus saturée que le corps : au ras, la
 // surface doit s'allumer en turquoise, pas s'éteindre en gris.
-uniform vec4 glaze_color : source_color = vec4(0.200, 0.700, 0.690, 1.0);
+uniform vec4 glaze_color : source_color = vec4(0.340, 0.630, 0.612, 1.0);
 uniform float glaze_power : hint_range(0.5, 6.0) = 2.1;
-uniform float glaze_strength : hint_range(0.0, 1.0) = 0.78;
+uniform float glaze_strength : hint_range(0.0, 1.0) = 0.55;
 // Part d'opacité regagnée au ras (1 = totalement opaque de biais).
 uniform float grazing_opacity : hint_range(0.0, 1.0) = 0.95;
 

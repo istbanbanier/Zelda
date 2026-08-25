@@ -106,9 +106,26 @@ PENDAGE_DEG = 13.5
 ## masse sombre et bleue, jamais rivaliser de clarté avec l'arrière-plan.
 ## Bleu > vert > rouge : c'est la seule façon d'obtenir une teinte au-delà
 ## de 190° une fois la lumière chaude du monde appliquée.
-MAT_ARDOISE = (0.355, 0.395, 0.462, 1.0)
+## v2 — RECALÉ SUR CAPTURE, et la première valeur était FAUSSE de loin.
+## À (0,355 ; 0,395 ; 0,462) la face au soleil rendait **RGB(255,255,255)**,
+## c'est-à-dire ÉCRÊTÉE : la crête sortait en tour blanche (mesuré sur
+## `voie_a2/iter1/overlook_gros_crete.png`, face au soleil V=0,999, face à
+## l'ombre V=0,853). Deux enseignements, tous deux mesurés :
+##  * `baseColorFactor` glTF est LINÉAIRE. Une valeur qui « a l'air » d'un
+##    gris moyen y est en fait claire, et la lumière du monde la pousse
+##    au-delà de 1. C'est le piège d'albédo de `scripts/CLAUDE.md`, dans sa
+##    version glTF ;
+##  * la LUMIÈRE EST CHAUDE. À l'écrêtage, la face rendait (255,255,255) et
+##    même à l'ombre (217,218,211) : le rapport bleu/rouge de l'albédo se
+##    faisait manger. Pour rendre FROID sous un soleil miel, il faut un
+##    biais bleu bien plus fort que la teinte visée.
+## La cible est mesurée dans la MÊME image : les boulders de kit refroidis
+## du même lieu rendent RGB(103 ; 112 ; 138), H=223°, S=0,254, V=0,540 —
+## c'est exactement l'ardoise froide voulue, et c'est la seule façon que les
+## deux familles appartiennent au même lieu. Rapport visé 1 : 1,07 : 1,47.
+MAT_ARDOISE = (0.0714, 0.0764, 0.1050, 1.0)
 ## Le nu de fracture fraîche : à peine plus clair, franchement plus froid.
-MAT_FRACTURE = (0.400, 0.442, 0.520, 1.0)
+MAT_FRACTURE = (0.0820, 0.0880, 0.1220, 1.0)
 NIVEAU = 0.90
 ## Pied : plus sombre, un rien plus vert — la roche rejoint la terre.
 TEINTE_PIED = (0.62, 0.68, 0.60)
@@ -158,7 +175,11 @@ def _profil_bancs(nb: int, hauteur: float, graine: int):
     dans ce lot.
     """
     rng = random.Random(graine + 7)
-    epaisseurs = [rng.uniform(0.72, 1.35) for _ in range(nb)]
+    # v2 — ÉPAISSEURS BEAUCOUP PLUS INÉGALES. À (0,72 ; 1,35) les bancs
+    # sortaient quasi identiques et la pile lisait « pile d'assiettes »
+    # (capture iter1). Un banc mince entre deux gros est ce qui fait une
+    # stratification crédible.
+    epaisseurs = [rng.uniform(0.34, 1.90) for _ in range(nb)]
     somme = sum(epaisseurs)
     epaisseurs = [e * hauteur / somme for e in epaisseurs]
     facteurs = [1.18]  # le pied s'évase : point 4 de l'en-tête
@@ -171,7 +192,16 @@ def _profil_bancs(nb: int, hauteur: float, graine: int):
             pas = -rng.uniform(0.07, 0.17)
         courant = max(0.30, courant + pas)
         facteurs.append(courant)
-    return epaisseurs, facteurs
+    # LE RETRAIT EST LOPSIDE, ET C'EST LE CORRECTIF PRINCIPAL DE LA v2.
+    # En v1 chaque banc retirait de la même quantité sur TOUT son pourtour :
+    # la vire faisait donc un anneau complet, et une pile d'anneaux complets
+    # est une pièce montée, pas une falaise. Ici chaque banc reçoit une
+    # amplitude et un azimut propres : d'un côté il est en retrait franc (une
+    # large vire), de l'autre il affleure le banc du dessous (le mur reste
+    # continu). Aucun replat ne fait plus le tour.
+    amplitudes = [rng.uniform(0.13, 0.27) for _ in range(nb)]
+    azimuts = [rng.uniform(0.0, math.tau) for _ in range(nb)]
+    return epaisseurs, facteurs, amplitudes, azimuts
 
 
 def _teinte_banc(k: int, nb: int, t_haut: float, creux: float,
@@ -205,7 +235,8 @@ def _croc(nom: str, hauteur: float, demi_a: float, demi_b: float, nb_bancs: int,
           graine: int, mat_corps, mat_fracture):
     rng = random.Random(graine)
     relief = _diaclases(graine)
-    epaisseurs, facteurs = _profil_bancs(nb_bancs, hauteur, graine)
+    epaisseurs, facteurs, amplis, azimuts = _profil_bancs(
+        nb_bancs, hauteur, graine)
 
     dip = math.radians(PENDAGE_DEG)
     az = math.radians(PENDAGE_AZIMUT)
@@ -218,14 +249,18 @@ def _croc(nom: str, hauteur: float, demi_a: float, demi_b: float, nb_bancs: int,
 
     # Phase d'échantillonnage TOURNANTE : les arêtes longitudinales cessent
     # d'être des méridiens exacts, chaque quad se vrille légèrement.
-    def anneau(z: float, facteur: float, phase: float, jitter: float):
+    def anneau(z: float, facteur: float, phase: float, jitter: float,
+               ampli: float = 0.0, azimut: float = 0.0):
         sommets = []
         infos = []
         for j in range(COTES):
             angle = math.tau * j / COTES + phase
             creux = -min(0.0, relief(angle))
             rayon = 1.0 + relief(angle)
-            rayon *= facteur * (1.0 + rng.uniform(-jitter, jitter))
+            # Retrait LOPSIDE : le banc est plein d'un côté, retiré de
+            # l'autre. C'est ce qui empêche la vire de faire le tour.
+            rayon *= facteur * (1.0 + ampli * math.cos(angle - azimut))
+            rayon *= (1.0 + rng.uniform(-jitter, jitter))
             x = math.cos(angle) * demi_a * rayon
             y = math.sin(angle) * demi_b * rayon
             p = Vector((x, y, z)) + decal * z
@@ -243,9 +278,10 @@ def _croc(nom: str, hauteur: float, demi_a: float, demi_b: float, nb_bancs: int,
         haut = z + epaisseurs[k]
         phase = 0.11 * k
         # Le nu du banc : deux anneaux de MÊME rayon → paroi verticale.
-        bas, creux_bas = anneau(z, facteurs[k], phase, 0.020)
+        bas, creux_bas = anneau(z, facteurs[k], phase, 0.020, amplis[k],
+                                azimuts[k])
         sommet, creux_haut = anneau(haut, facteurs[k] * 0.985, phase + 0.03,
-                                    0.020)
+                                    0.020, amplis[k], azimuts[k])
         for j in range(COTES):
             m = (j + 1) % COTES
             faces_corps.append(bm.faces.new((bas[j], bas[m], sommet[m],
@@ -262,7 +298,7 @@ def _croc(nom: str, hauteur: float, demi_a: float, demi_b: float, nb_bancs: int,
         # un minimum.
         if k + 1 < nb_bancs:
             suivant, creux_s = anneau(haut, facteurs[k + 1], phase + 0.14,
-                                      0.020)
+                                      0.020, amplis[k + 1], azimuts[k + 1])
             surplomb = facteurs[k + 1] > facteurs[k]
             for j in range(COTES):
                 m = (j + 1) % COTES
@@ -285,12 +321,16 @@ def _croc(nom: str, hauteur: float, demi_a: float, demi_b: float, nb_bancs: int,
     for v in bas_precedent:
         centre_haut += v.co
     centre_haut /= COTES
-    centre_haut.z += hauteur * 0.055
+    # v2 — l'apex se DÉCALE vers l'aval du pendage et monte davantage : en
+    # v1 le chapeau était un cône presque symétrique, donc un couvercle.
+    centre_haut.z += hauteur * 0.105
+    centre_haut.x += pente.x * demi_a * 0.42
+    centre_haut.y += pente.y * demi_b * 0.42
     for v in bas_precedent:
         # Un côté monte vers l'arête vive, l'autre s'écroule.
         d = (Vector((v.co.x, v.co.y, 0.0)) - Vector((centre_haut.x,
              centre_haut.y, 0.0))).normalized().dot(pente)
-        v.co.z += hauteur * 0.035 * d
+        v.co.z += hauteur * 0.090 * d
     faîte = bm.verts.new(centre_haut)
     for j in range(COTES):
         m = (j + 1) % COTES
@@ -432,7 +472,12 @@ def main() -> int:
         if abs(base) > 0.001:
             print("%s ERREUR: %s base a z=%.4f, pas 0" % (TAG, nom, base))
             return 2
-        if not (hauteur * 0.92 <= haut_reel <= hauteur * 1.10):
+        # `hauteur` est celle de la PILE DE BANCS ; la couronne rompue ajoute
+        # par construction jusqu'à ~11 % (elle a été franchement dissymétrisée
+        # en v2 pour cesser de lire « couvercle »). La fourchette dit donc
+        # explicitement ce que le générateur fait, au lieu d'être ajustée en
+        # douce après coup pour laisser passer un résultat.
+        if not (hauteur * 0.92 <= haut_reel <= hauteur * 1.18):
             print("%s ERREUR: %s hauteur %.3f hors fourchette autour de %.3f"
                   % (TAG, nom, haut_reel, hauteur))
             return 2

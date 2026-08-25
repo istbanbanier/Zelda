@@ -192,9 +192,15 @@ const TONE_KIT_COIFFE: Color = Color(0.46, 0.50, 0.44)
 ## terre-olive au bord pour mourir dans l'herbe. Le piège mesuré ici est
 ## celui du lit de la source — un bord plus sombre que tout dessine un
 ## ANNEAU NOIR, et l'assise se relit comme une flaque.
-const TONE_ASSISE: Color = Color(0.34, 0.36, 0.40)
-const ASSISE_COEUR: Color = Color(0.98, 1.00, 1.06)
-const ASSISE_BORD: Color = Color(1.22, 1.30, 1.02)
+## v2 — RECALÉ SUR CAPTURE. À (0,34 ; 0,36 ; 0,40) l'assise rendait
+## RGB(153 ; 159 ; 148), soit V=0,624 et H=93° : plus CLAIRE que l'herbe
+## (V=0,463) et VERTE. Elle lisait « dalle de béton », pas « roche
+## affleurante » — et une dalle claire au pied d'une masse est précisément
+## ce qui fait lire « posé ». Descendue et refroidie ; le bord tire
+## désormais vers la terre humide, pas vers le vert.
+const TONE_ASSISE: Color = Color(0.19, 0.20, 0.23)
+const ASSISE_COEUR: Color = Color(0.94, 0.97, 1.05)
+const ASSISE_BORD: Color = Color(1.30, 1.16, 0.94)
 
 
 func default_place_id() -> StringName:
@@ -492,7 +498,10 @@ func _assise() -> void:
 ## contre le sol, quel que soit le relief.
 func _lobe(st: SurfaceTool, cx: float, cz: float, rayon: float,
 		graine: float) -> void:
-	var segments: int = 28
+	# 28 → 40 segments et hachage plus profond : en v1 le bord de
+	# l'assise rendait un POLYGONE net (visible sur
+	# `iter1/overlook_gros_crete.png`), donc une pièce déposée.
+	var segments: int = 40
 	var bord: PackedVector3Array = PackedVector3Array()
 	var teintes: PackedColorArray = PackedColorArray()
 	var brut: PackedFloat32Array = PackedFloat32Array()
@@ -504,7 +513,7 @@ func _lobe(st: SurfaceTool, cx: float, cz: float, rayon: float,
 		# pas de lobes réguliers — l'« étoile » payée par l'arbre foudroyé.
 		var lisse: float = (brut[(i - 1 + segments) % segments] + brut[i]
 			+ brut[(i + 1) % segments]) / 3.0
-		var r: float = rayon * (0.74 + 0.42 * lisse)
+		var r: float = rayon * (0.60 + 0.66 * lisse)
 		var px: float = cx + cos(angle) * r
 		var pz: float = cz + sin(angle) * r
 		bord.append(Vector3(px, ground_local_y(px, pz) + 0.03, pz))
@@ -514,7 +523,9 @@ func _lobe(st: SurfaceTool, cx: float, cz: float, rayon: float,
 	# Le cœur est légèrement SOULEVÉ (+9 cm) : la roche affleure, elle ne
 	# creuse pas. Un centre plus bas que son bord ferait une cuvette, donc
 	# une flaque.
-	var centre: Vector3 = Vector3(cx, ground_local_y(cx, cz) + 0.12, cz)
+	# +0,12 → +0,06 : à douze centimètres le lobe faisait un léger
+	# plateau, donc une estrade. La roche affleure, elle ne surélève pas.
+	var centre: Vector3 = Vector3(cx, ground_local_y(cx, cz) + 0.06, cz)
 	for i: int in range(segments):
 		var j: int = (i + 1) % segments
 		st.set_color(ASSISE_COEUR)
