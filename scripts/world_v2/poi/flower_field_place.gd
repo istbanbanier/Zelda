@@ -243,17 +243,35 @@ const LOBES_JAUNE: Array[Vector4] = [
 ]
 const LOBES_BLANC: Array[Vector4] = [
 	Vector4(-2.4, -5.8, 5.2, 3.5),  # le cœur profond du champ
-	Vector4(3.4, -2.2, 3.0, 2.3),   # ramené en avant, côté droit de la voie
+	Vector4(3.9, -1.2, 3.3, 2.5),   # avancé : il fermait mal le coin droit
+	# L'ÎLE DE LA FOURCHE. R1 a laissé une bande verte nue en travers du cadre
+	# joueur, entre le premier plan et les nappes du milieu ; c'est le triangle
+	# que les trois brins enferment. Mesuré : ce centre est à 2,00 m du brin de
+	# venue, 2,05 m de la branche sud-ouest et 1,99 m de la branche nord-ouest,
+	# pour un dégagement de 1,35 m — la masse lappe les trois couloirs sans en
+	# fermer aucun. BLANCHE, comme le cœur profond : la même couleur répétée à
+	# deux distances fabrique de la profondeur, une quatrième couleur ferait le
+	# hachis que la DA refuse.
+	Vector4(1.2, 4.2, 2.0, 1.8),
 ]
 const LOBES_BLEU: Array[Vector4] = [
-	Vector4(-7.4, 0.6, 3.3, 2.8),   # l'accent lointain (hors ombre de crête)
+	# ALLONGÉ SELON Z (2,6 × 3,4 et non 3,3 × 2,8). En vue identité, R1 rendait
+	# trois bandes PARALLÈLES — blanc, bleu, jaune étirés dans le même sens.
+	# La cause n'était pas la couleur : les cinq lobes étaient tous plus larges
+	# en X qu'en Z, donc toutes les masses s'étiraient selon X. Ce lobe est
+	# celui dont la rotation coûte le moins (accent rare, aucun couloir
+	# alentour), et il resserre au passage son emprise ouest.
+	Vector4(-7.4, 0.9, 2.6, 3.4),
 	Vector4(-3.0, 1.2, 1.9, 1.5),   # l'accent proche, juste après la Porte
 ]
 ## Nombre de fleurs visé par nappe, réparti entre les lobes au prorata de
 ## leur aire. Multiplié par ~1,7 à la troisième corrective : à 560 fleurs
 ## le champ rendait une prairie tachetée, pas une explosion.
 const CIBLE_JAUNE: int = 430
-const CIBLE_BLANC: int = 380
+## 380 → 450 à R2 : l'aire blanche passe de 79 à 94 m² (île de la fourche et
+## lobe avancé). La cible suit l'aire, sinon densifier une nappe reviendrait à
+## éclaircir celles d'à côté sans que rien ne le dise.
+const CIBLE_BLANC: int = 450
 const CIBLE_BLEU: int = 150
 
 var _emprise_min_x: Vector2 = Vector2.ZERO
