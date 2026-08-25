@@ -41,7 +41,12 @@ FENETRES = [
     ("turquoise_spring_identite", "eau vasque", (505, 352, 640, 385)),
     ("turquoise_spring_identite", "RIVIERE V2.2 (reference)", (930, 470, 1230, 555)),
     ("spring_gros_eau", "eau gros plan", (430, 300, 850, 430)),
-    ("spring_gue_riviere", "RIVIERE V2.2 au gue (reference)", (430, 330, 900, 520)),
+    # FENETRE CORRIGEE. La premiere (430,330,900,520) tombait sur l'HERBE de
+    # la rive gauche et rendait H=122 deg : une « reference d'eau » qui mesurait
+    # de la prairie. C'est la meme famille qu'ISS-018 — un chiffre juste sur la
+    # mauvaise chose. Verifie a l'oeil sur l'image avant d'etre repose ici.
+    ("spring_gue_riviere", "RIVIERE V2.2 au gue (reference)", (600, 640, 860, 715)),
+    ("spring_gue_riviere", "RIVIERE V2.2 au gue, amont", (830, 470, 930, 560)),
 ]
 
 

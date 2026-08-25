@@ -138,3 +138,55 @@ franc, et trop.
   la caméra joueur, S autour de 0,35–0,45 — au-dessus de la rivière V2.2
   (0,273), qui reste la référence, sans en être le double.
 - **Caméras** : les mêmes, à l'identique.
+
+## Résultat de l'itération 3, mesuré (`voie_a2/iter3`, commit e6dd5fb)
+
+| Vue | Zone | iter1 | iter3 | verdict |
+|---|---|---|---|---|
+| `turquoise_spring_joueur` (GELÉE) | eau | H 185° S 0,577 V 0,460 | **H 185° S 0,458 V 0,405** | tenu |
+| `spring_gros_eau` | eau | S 0,727 | S 0,598 | tenu (fond de vasque) |
+| `spring_gue_riviere` | **rivière V2.2** | H 176° S 0,368 V 0,394 | inchangée | la référence |
+| `overlook_gros_crete` | croc soleil | V 0,999 (écrêté) | **V 0,496, S 0,038** | valeur juste, FROID absent |
+| `overlook_gros_crete` | croc ombre | V 0,853 | V 0,545, S 0,019 | idem |
+| `overlook_summit_identite` | herbe, falaise V2.2 | — | inchangées au pixel | gel respecté |
+
+**La fenêtre de référence de l'eau était fausse et a été corrigée.** Celle de
+`spring_gue_riviere` tombait sur l'HERBE de la rive gauche (H = 122°) : une
+« référence d'eau » qui mesurait de la prairie. Repositionnée sur le cours
+lui-même après vérification à l'œil sur l'image, elle donne **H 176–185°,
+S 0,368–0,372, V 0,39–0,43**. C'est la vraie référence V2.2, et elle change la
+lecture : la source à S 0,458 est **au-dessus** de la rivière d'environ un
+quart, dans la même famille de teinte et de valeur. C'est ce que « l'œil
+turquoise, seule note froide saturée du ravin » demande — pas une couleur
+étrangère au monde. (La première référence, S 0,273, venait d'une fenêtre de
+`turquoise_spring_identite` qui mélangeait eau et berge.)
+
+Ce que je VOIS sur `iter3` : l'eau est franchement turquoise depuis la caméra
+joueur gelée, la chaîne vasque → déversoir → écoulement se lit, et le ruban
+s'élargit dans son premier tiers. Le belvédère a la bonne VALEUR (il est enfin
+plus sombre que la falaise du fond) mais il est **gris neutre**, et il lit
+toujours **« tambours empilés »** — la valeur juste rend même ce défaut plus
+net qu'en blanc.
+
+## Itération 4 — le froid, et casser la pile de tambours
+
+- **Défaut 1 : gris neutre.** Cause : la lumière du monde est chaude et mange
+  un biais bleu de 1 : 1,07 : 1,47. Levier : rapport porté à **1 : 1,20 :
+  2,03** en BAISSANT le rouge et le vert (monter le bleu réécrêterait).
+  Attendu : RGB proche de (100 ; 110 ; 135), S autour de 0,20–0,26.
+- **Défaut 2 : tambours empilés.** Deux causes, et la première n'avait pas
+  été traitée : (a) les diaclases n'avaient que 7 %/5 %/3 % d'amplitude, donc
+  chaque banc était un anneau quasi circulaire ; (b) le retrait cumulé
+  (−0,07..−0,17 par banc) faisait tomber le sommet à 0,40 du pied — un cône.
+  Levier : amplitudes portées à 18 %/13 %/7,5 % et trois entailles franches
+  (des CÔTES verticales qui traversent tous les bancs), retrait divisé par
+  deux (sommet vers 0,70), couronne rabaissée et décalée, 20 → 24 côtés.
+  Attendu : des contreforts verticaux visibles d'un banc à l'autre, une
+  silhouette qui garde son épaule au lieu de s'effiler.
+- **Défaut 3 : assise invisible.** À (0,19…) elle passait sous l'herbe et se
+  confondait avec l'ombre portée. Posée entre les deux essais, gris neutre
+  légèrement froid, et rayons réduits (4,25 → 4,00 ; 2,95 → 2,80) parce que
+  les crocs ont grossi : l'écart entre les deux lobes doit rester de l'herbe.
+- **Emprise des crocs** : crête 7,17 → 7,47 → **8,10 m**, éperon 4,77 → 4,96
+  → **5,54 m**. Écart entre les deux masses : 3,8 m → **3,0 m** (calcul sur
+  centres et demi-emprises). Le vide reste ouvert sur les deux axes.

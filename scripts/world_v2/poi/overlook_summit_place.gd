@@ -198,9 +198,16 @@ const TONE_KIT_COIFFE: Color = Color(0.46, 0.50, 0.44)
 ## affleurante » — et une dalle claire au pied d'une masse est précisément
 ## ce qui fait lire « posé ». Descendue et refroidie ; le bord tire
 ## désormais vers la terre humide, pas vers le vert.
-const TONE_ASSISE: Color = Color(0.19, 0.20, 0.23)
-const ASSISE_COEUR: Color = Color(0.94, 0.97, 1.05)
-const ASSISE_BORD: Color = Color(1.30, 1.16, 0.94)
+## v3 — entre les deux essais mesurés. À (0,34…) elle rendait V=0,62 et
+## VERTE (dalle de béton) ; à (0,19…) elle passait sous l'herbe et se
+## confondait avec l'ombre portée de la masse — une assise qu'on ne
+## distingue pas d'une ombre n'enracine rien. Posée au-dessus de l'ombre et
+## sous l'herbe, en gris neutre légèrement froid.
+const TONE_ASSISE: Color = Color(0.25, 0.255, 0.275)
+const ASSISE_COEUR: Color = Color(0.92, 0.95, 1.02)
+## Le bord tire vers la terre humide, jamais vers le vert : c'est le canal
+## VERT qui faisait lire « dalle » à la première mesure.
+const ASSISE_BORD: Color = Color(1.22, 1.12, 0.98)
 
 
 func default_place_id() -> StringName:
@@ -484,8 +491,12 @@ func _assise() -> void:
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	# [centre x, centre z, rayon moyen, graine]
-	_lobe(st, 8.0, 4.6, 4.25, 3.1)
-	_lobe(st, 17.8, -5.8, 2.95, 11.7)
+	# Rayons RÉDUITS en v3 : les crocs ont grossi (emprise 7,47 → 8,10 m et
+	# 4,96 → 5,54 m après l'approfondissement des diaclases), et à 4,25/2,95
+	# les deux lobes se seraient rejoints. L'écart entre leurs bords reste
+	# de l'herbe, sur les deux axes.
+	_lobe(st, 8.0, 4.6, 4.00, 3.1)
+	_lobe(st, 17.8, -5.8, 2.80, 11.7)
 	assise.mesh = st.commit()
 	var roche: StandardMaterial3D = K.flat_material(TONE_ASSISE)
 	roche.vertex_color_use_as_albedo = true
@@ -513,7 +524,7 @@ func _lobe(st: SurfaceTool, cx: float, cz: float, rayon: float,
 		# pas de lobes réguliers — l'« étoile » payée par l'arbre foudroyé.
 		var lisse: float = (brut[(i - 1 + segments) % segments] + brut[i]
 			+ brut[(i + 1) % segments]) / 3.0
-		var r: float = rayon * (0.60 + 0.66 * lisse)
+		var r: float = rayon * (0.62 + 0.58 * lisse)
 		var px: float = cx + cos(angle) * r
 		var pz: float = cz + sin(angle) * r
 		bord.append(Vector3(px, ground_local_y(px, pz) + 0.03, pz))

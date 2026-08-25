@@ -82,7 +82,7 @@ from mathutils import Vector
 
 TAG = "[overlook_crags]"
 
-COTES = 20
+COTES = 24
 BUDGET_TRIS = 3600
 ETENDUE_COULEUR_MIN = 0.20
 ## Une crête de 7 m porte forcément des facettes plus grandes qu'une stèle
@@ -123,9 +123,18 @@ PENDAGE_DEG = 13.5
 ## du même lieu rendent RGB(103 ; 112 ; 138), H=223°, S=0,254, V=0,540 —
 ## c'est exactement l'ardoise froide voulue, et c'est la seule façon que les
 ## deux familles appartiennent au même lieu. Rapport visé 1 : 1,07 : 1,47.
-MAT_ARDOISE = (0.0714, 0.0764, 0.1050, 1.0)
+## v3 — LA VALEUR ÉTAIT BONNE, LE FROID N'Y ÉTAIT PAS. Mesuré sur
+## `voie_a2/iter3` : la masse rend RGB(137 ; 133 ; 133) au loin et
+## (123 ; 122 ; 126) en gros plan, soit V ≈ 0,50–0,54 (juste) mais
+## **S = 0,02 à 0,04** — un gris parfaitement neutre. La lumière chaude du
+## monde mange un biais bleu de 1 : 1,07 : 1,47. La cible reste celle
+## mesurée dans la même image (boulders de kit refroidis, RGB 103/112/138,
+## B/R = 1,34) : il faut donc un rapport d'albédo de **1 : 1,20 : 2,03**,
+## obtenu en BAISSANT le rouge et le vert plutôt qu'en montant le bleu — le
+## bleu tient déjà la valeur, et le monter écrêterait de nouveau.
+MAT_ARDOISE = (0.0517, 0.0620, 0.1050, 1.0)
 ## Le nu de fracture fraîche : à peine plus clair, franchement plus froid.
-MAT_FRACTURE = (0.0820, 0.0880, 0.1220, 1.0)
+MAT_FRACTURE = (0.0600, 0.0715, 0.1210, 1.0)
 NIVEAU = 0.90
 ## Pied : plus sombre, un rien plus vert — la roche rejoint la terre.
 TEINTE_PIED = (0.62, 0.68, 0.60)
@@ -146,12 +155,19 @@ def _diaclases(graine: int):
     fixe, plus deux entailles profondes. La fonction ne dépend que de
     l'angle : le creux se retrouve à chaque banc et devient une fracture
     filante, au lieu d'un bruit qui change d'étage en étage."""
+    # v3 — AMPLITUDES PRESQUE TRIPLÉES, et c'est le correctif de fond.
+    # Aux amplitudes d'origine (7 %, 5 %, 3 %) chaque banc était un anneau
+    # quasi circulaire : une fois la valeur juste, la pile lisait « tambours
+    # empilés » encore plus nettement qu'en blanc (capture iter3). Un relief
+    # radial fort produit des CÔTES verticales qui traversent tous les bancs
+    # — une falaise se lit à ses contreforts autant qu'à ses strates. Et
+    # trois entailles franches, plus étroites, font de vraies diaclases.
     rng = random.Random(graine)
     harmoniques = []
-    for ordre, amplitude in ((2, 0.070), (3, 0.052), (5, 0.031)):
+    for ordre, amplitude in ((2, 0.185), (3, 0.130), (5, 0.075)):
         harmoniques.append((ordre, amplitude, rng.uniform(0.0, math.tau)))
-    entailles = [(rng.uniform(0.0, math.tau), rng.uniform(0.10, 0.14),
-                  rng.uniform(0.20, 0.30)) for _ in range(2)]
+    entailles = [(rng.uniform(0.0, math.tau), rng.uniform(0.22, 0.31),
+                  rng.uniform(0.14, 0.24)) for _ in range(3)]
 
     def relief(angle: float) -> float:
         v = 0.0
@@ -182,15 +198,18 @@ def _profil_bancs(nb: int, hauteur: float, graine: int):
     epaisseurs = [rng.uniform(0.34, 1.90) for _ in range(nb)]
     somme = sum(epaisseurs)
     epaisseurs = [e * hauteur / somme for e in epaisseurs]
-    facteurs = [1.18]  # le pied s'évase : point 4 de l'en-tête
+    facteurs = [1.10]  # le pied s'évase : point 4 de l'en-tête
     courant = 1.0
     for k in range(1, nb):
-        # Retrait franc en moyenne, mais un banc sur trois environ ressort.
-        if rng.random() < 0.30 and k not in (1, nb - 1):
-            pas = rng.uniform(0.03, 0.09)
+        # v3 — RETRAIT DIVISÉ PAR DEUX. À −0,07..−0,17 par banc, le sommet
+        # tombait à ~0,40 du pied après sept bancs : un CÔNE, et un cône
+        # régulier de disques est la « pièce montée » relevée sur capture.
+        # Ici le sommet reste vers 0,70 : une masse qui garde son épaule.
+        if rng.random() < 0.34 and k not in (1, nb - 1):
+            pas = rng.uniform(0.02, 0.07)
         else:
-            pas = -rng.uniform(0.07, 0.17)
-        courant = max(0.30, courant + pas)
+            pas = -rng.uniform(0.04, 0.11)
+        courant = max(0.45, courant + pas)
         facteurs.append(courant)
     # LE RETRAIT EST LOPSIDE, ET C'EST LE CORRECTIF PRINCIPAL DE LA v2.
     # En v1 chaque banc retirait de la même quantité sur TOUT son pourtour :
@@ -199,7 +218,7 @@ def _profil_bancs(nb: int, hauteur: float, graine: int):
     # amplitude et un azimut propres : d'un côté il est en retrait franc (une
     # large vire), de l'autre il affleure le banc du dessous (le mur reste
     # continu). Aucun replat ne fait plus le tour.
-    amplitudes = [rng.uniform(0.13, 0.27) for _ in range(nb)]
+    amplitudes = [rng.uniform(0.18, 0.34) for _ in range(nb)]
     azimuts = [rng.uniform(0.0, math.tau) for _ in range(nb)]
     return epaisseurs, facteurs, amplitudes, azimuts
 
@@ -323,9 +342,9 @@ def _croc(nom: str, hauteur: float, demi_a: float, demi_b: float, nb_bancs: int,
     centre_haut /= COTES
     # v2 — l'apex se DÉCALE vers l'aval du pendage et monte davantage : en
     # v1 le chapeau était un cône presque symétrique, donc un couvercle.
-    centre_haut.z += hauteur * 0.105
-    centre_haut.x += pente.x * demi_a * 0.42
-    centre_haut.y += pente.y * demi_b * 0.42
+    centre_haut.z += hauteur * 0.055
+    centre_haut.x += pente.x * demi_a * 0.62
+    centre_haut.y += pente.y * demi_b * 0.62
     for v in bas_precedent:
         # Un côté monte vers l'arête vive, l'autre s'écroule.
         d = (Vector((v.co.x, v.co.y, 0.0)) - Vector((centre_haut.x,
