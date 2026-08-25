@@ -762,3 +762,35 @@ il a évité de refaire exactement la faute de l'itération 6.
   lit pas comme des lignes horizontales, il se fond dans le facettage.
 - Belvédère, éperon contre falaise du fond : **ambigu**. 0,631 contre 0,643 —
   il ne s'en détache pas en valeur.
+
+## D3 REJOUÉ — INDICATIF, et il rougit sur MES DEUX LIEUX
+
+`tools/lot1_repetition.py` rejoué sur un jeu de silhouettes composé des DEUX
+sujets fraîchement capturés (commit `a910349`) et des quatre autres lieux du
+lot tels qu'ils étaient dans la candidate. Verdict versé :
+`voie_a3/controles/verdict_d3_indicatif_a910349.json`.
+
+**Ce résultat est INDICATIF et je ne le présente pas autrement.** Les quatre
+autres lieux sont reconstruits en ce moment même par d'autres agents : les
+paires qui les impliquent ne veulent rien dire aujourd'hui. En revanche, les
+paires de mes lieux contre le CORPUS ACCEPTÉ sont lisibles tout de suite,
+puisque ce corpus, lui, est gelé — et le seuil en dérive.
+
+    VERDICT indicatif : FAIL (seuil 30 m : S = 0,4931)
+
+    belvédère × source                 IoU 0,507
+    belvédère × hameau (corpus)        IoU 0,510
+    source    × hameau (corpus)        IoU 0,575
+    source    × pont de pierre (corpus) IoU 0,583
+    source    × grotte du couchant     IoU 0,517
+
+Avant cette passe, au commit `abd8ea0`, la SEULE paire signalée du lot était
+`flower_field × ember_raider_camps` — mes deux lieux passaient. **Ils ne
+passent plus, et c'est le prix direct de ce qui m'a été demandé.** Le détecteur
+NORMALISE l'échelle (cadrage sur l'AABB) : il ne juge donc pas la taille mais
+la FORME. En donnant à la source la présence qui lui manquait, je lui ai donné
+la forme la plus commune du corpus — une masse basse, large et bosselée — et
+c'est exactement ce que cinq lieux acceptés rendent déjà.
+
+Ce n'est pas un défaut d'exécution que je pourrais corriger seul : les deux
+exigences tirent en sens contraire, et l'arbitrage ne m'appartient pas.
