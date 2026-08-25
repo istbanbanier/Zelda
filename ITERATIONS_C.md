@@ -192,3 +192,58 @@ trois masses cessent d'être parallèles.
 **Caméra qui doit le montrer** : `flower_field_joueur` (bande du milieu),
 `flower_field_identite` (parallélisme), `flower_field_gp_chemin` (couloir
 toujours ouvert — c'est le risque de ce geste).
+
+### Mesure et lecture APRÈS R2 (`9334965`, `c3_iter2/`)
+
+Sonde : 1101 instances (1031 fleurs · blanche 451, jaune 430, bleue 150),
+emprise 21,2 × 18,6 m, budget micro 4/12 · 12/30 · 3/6. Parse RC = 0.
+
+- `flower_field_joueur` — **VISIBLE**. La bande verte qui coupait le cadre
+  est refermée par la masse blanche de la fourche ; la lecture devient
+  jaune dense au premier plan → blanc à mi-gauche → bleu → blanc à droite,
+  la voie dallée traversant le tout. C'est la première image où le champ,
+  et non le vert, occupe le bas du cadre.
+- `flower_field_identite` — **VISIBLE mais modeste**. La tache bleue est
+  devenue compacte au lieu d'être une barre ; le parallélisme des trois
+  masses est cassé. L'effet est réel et petit : c'est un lobe sur sept.
+- `flower_field_gp_chemin` — le couloir reste ouvert (risque écarté).
+
+**Défaut restant, lu sur les deux vues de jugement** : chaque masse rend UNE
+SEULE chroma. Le jaune du premier plan est un aplat jaune, le blanc un aplat
+blanc. La variation par instance existe pourtant déjà dans le code
+(`luma` tiré entre 0,86 et 1,10) — mais un tirage indépendant par fleur SE
+MOYENNE à l'œil : de loin, la masse redevient plate. Ce n'est pas un défaut
+de quantité de variation, c'est un défaut de LONGUEUR D'ONDE.
+
+---
+
+## Itération R3 — donner une lumière aux masses
+
+**Défaut** : masses monochromes ; et le profil de la strate haute ne se lit
+qu'au gros plan.
+
+**Cause supposée** : (1) la variation de teinte est un bruit par instance,
+donc de fréquence infinie : elle disparaît par moyennage dès qu'une masse
+occupe plus de quelques pixels ; (2) une fleur haute sur six est trop rare
+pour dessiner une silhouette.
+
+**Levier** :
+
+- la teinte d'instance devient une **onde de position monde** — longueurs
+  d'onde 11,4 m et 13,4 m (les motifs de 8-30 m de `VISUAL_ASSET_BIBLE`
+  §1.3), plus une harmonique courte pour la matière, et un reste aléatoire
+  réduit à ±4 % pour casser les isochromes. Les crêtes tirent vers le chaud,
+  les creux vers le froid : chaque masse gagne un versant ensoleillé et un
+  versant bleuté ;
+- strate haute 0,17 → **0,24**, plafond 1,50 → **1,60**. Le plafond ne monte
+  pas plus haut, et la raison est géométrique : le lobe de premier plan
+  commence à 1,25 m de l'œil joueur ; une fleur de 0,8 m à cette distance
+  boucherait le cadre qu'elle doit ouvrir.
+
+**Changement attendu dans les pixels** : les masses jaune et blanche cessent
+d'être des aplats — un dégradé lent les traverse, plus chaud d'un côté ; et
+la ligne de tête du champ devient irrégulière au lieu d'être rase.
+
+**Caméra qui doit le montrer** : `flower_field_joueur` (la grande masse jaune
+du premier plan est le meilleur juge d'un aplat) et `flower_field_gp_nappe`
+(le tapis blanc, à hauteur de fleur).

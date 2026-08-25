@@ -468,11 +468,15 @@ func _semer_lobe(lobe: Vector4, cible: int, modele: StringName,
 			continue
 		# LA STRATE HAUTE. La DA demande « variation de hauteur/taille » :
 		# une nappe dont toutes les fleurs font 0,4 m rend une moquette. Une
-		# fleur sur six monte à 1,12-1,50 fois l'échelle du kit — elle ne
+		# fleur sur quatre monte à 1,12-1,60 fois l'échelle du kit — elle ne
 		# change pas la masse de couleur, elle donne son PROFIL au champ.
+		# La proportion monte de 0,17 à 0,24 à R3 : à 0,17 le profil ne se
+		# lisait qu'au gros plan. Le plafond reste 1,60 et non davantage : le
+		# lobe de premier plan commence à 1,25 m de l'œil joueur, et une fleur
+		# de 0,8 m à cette distance boucherait le cadre qu'elle doit ouvrir.
 		var echelle: float = KitScale.factor(String(modele))
-		if rng.randf() < 0.17:
-			echelle *= rng.randf_range(1.12, 1.50)
+		if rng.randf() < 0.24:
+			echelle *= rng.randf_range(1.12, 1.60)
 		else:
 			echelle *= rng.randf_range(0.66, 0.98)
 		transforms.append(_pose(p.x, p.y, rng.randf() * TAU, echelle, -0.05))
@@ -565,9 +569,26 @@ func _semer(nom: String, modele: StringName, petale: Color, desat: float,
 	var scales: PackedFloat32Array = PackedFloat32Array()
 	for i: int in range(transforms.size()):
 		mm.set_instance_transform(i, transforms[i])
-		var luma: float = rng.randf_range(0.86, 1.10)
-		mm.set_instance_color(i, Color(luma * rng.randf_range(0.97, 1.03),
-			luma, luma * rng.randf_range(0.95, 1.05)))
+		# VARIATION MACRO, pas bruit par instance (R3). Un tirage indépendant
+		# par fleur se moyenne à l'œil : de loin la masse redevient un aplat,
+		# et c'est ce que rendaient les captures R1/R2 — une seule chroma par
+		# nappe. La bible §5.1 demande une « variation macro TRÈS LENTE » ;
+		# elle est donc fonction de la POSITION MONDE, avec des longueurs
+		# d'onde de 11 et 13 m (ordre de grandeur des motifs de 8-30 m de
+		# §1.3), plus une seconde harmonique courte pour la matière. Le
+		# tirage aléatoire subsiste, réduit, pour casser les isochromes.
+		var p: Vector3 = transforms[i].origin
+		var lente: float = sin(p.x * 0.55 + 1.7) * cos(p.z * 0.47 - 0.9)
+		var courte: float = sin(p.x * 1.13 - p.z * 0.97 + 0.4)
+		var onde: float = clampf(0.5 + 0.34 * lente + 0.16 * courte, 0.0, 1.0)
+		var luma: float = lerpf(0.84, 1.16, onde) * rng.randf_range(0.96, 1.04)
+		# Les crêtes chaudes de l'onde tirent vers le rouge, les creux vers le
+		# bleu : la masse gagne un versant ensoleillé et un versant froid,
+		# comme une vraie prairie sous une lumière rasante.
+		mm.set_instance_color(i, Color(
+			luma * lerpf(0.96, 1.05, onde),
+			luma,
+			luma * lerpf(1.06, 0.94, onde)))
 		origins.append(transforms[i].origin)
 		scales.append(transforms[i].basis.get_scale().x)
 	var instance: MultiMeshInstance3D = MultiMeshInstance3D.new()
