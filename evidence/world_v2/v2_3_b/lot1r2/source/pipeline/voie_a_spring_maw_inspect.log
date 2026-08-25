@@ -1,0 +1,34 @@
+=== INSPECTION glTF : assets/environment/rocks/SM_SpringMaw.glb ===
+  format                 : GLB v2, 919396 octets
+  chunk_binaire          : 912184 octets
+  generateur             : Khronos glTF Blender I/O v4.0.44
+  version_gltf           : 2.0
+  meshes                 : 4
+  materiaux              : 2 (MAT_Spring_Rock, MAT_Spring_Fracture)
+  textures               : 0 image(s), 0 texture(s)
+  noeuds                 : 4 (SM_Spring_Buttress, SM_Spring_Spout, SM_Spring_Shelf, SM_Spring_Sill)
+  skins                  : 0
+  animations             : 0 (aucune)
+  triangles              : 8990
+  bbox_min               : [-3.8697, -0.75, -4.5855]
+  bbox_max               : [7.4046, 5.4476, 3.4756]
+  dimensions_m           : [11.2743, 6.1976, 8.0611]
+  [AVERT] mesh 'SM_Spring_Buttress': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_Spring_Buttress': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_Spring_Spout': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_Spring_Spout': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_Spring_Shelf': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_Spring_Shelf': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_Spring_Sill': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] mesh 'SM_Spring_Sill': pas d'UV0 — lightmap et matériaux limités
+  [AVERT] min Y = -0.7500 (attendu ~0 : bas de l'objet au sol, §7.15)
+=== VALIDE ===
+mesh SM_Spring_Buttress       attributs ['COLOR_0', 'NORMAL', 'POSITION']
+mesh SM_Spring_Buttress       attributs ['COLOR_0', 'NORMAL', 'POSITION']
+mesh SM_Spring_Spout          attributs ['COLOR_0', 'NORMAL', 'POSITION']
+mesh SM_Spring_Spout          attributs ['COLOR_0', 'NORMAL', 'POSITION']
+mesh SM_Spring_Shelf          attributs ['COLOR_0', 'NORMAL', 'POSITION']
+mesh SM_Spring_Shelf          attributs ['COLOR_0', 'NORMAL', 'POSITION']
+mesh SM_Spring_Sill           attributs ['COLOR_0', 'NORMAL', 'POSITION']
+mesh SM_Spring_Sill           attributs ['COLOR_0', 'NORMAL', 'POSITION']
+COLOR_0 present sur toutes les primitives
