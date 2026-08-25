@@ -81,10 +81,51 @@
 ## « l'empilement de blocs » reproché deux fois par le lead. La marque du
 ## sommet est une masse unique et penchée, plus haute que tout ce qui
 ## l'entoure, plus un vide qui la traverse.
+## LOT 1.R — DEUXIÈME CORRECTIVE (agent A). LA MATIÈRE DU KIT A ÉTÉ ÉCARTÉE
+## DES DEUX MASSES, sur mesure au pixel et non sur impression.
+##
+## Mesuré sur les captures de `evidence/world_v2/v2_3_b/lot1r/final/` (commit
+## 7c58573, llvmpipe, lumière du monde gelée) :
+##
+##   masse au soleil    RGB(155 ; 149 ; 138)  H = 40°  S = 0,11  V = 0,61
+##   avant-poste        RGB(149 ; 147 ; 135)  H = 50°  S = 0,10  V = 0,59
+##   falaise V2.2 fond  RGB(161 ; 144 ; 132)  H = 26°  S = 0,18  V = 0,63
+##
+## Deux constats, et chacun condamne un aspect de la version précédente :
+##  1. la formation rendait CHAUD (H 40°) là où le contrat du lot exige
+##     « minéral FROID — gris bleuté, ardoise, pierre désaturée » ;
+##  2. elle rendait PLUS CLAIRE que la falaise du fond — donc elle ne se
+##     détachait pas en masse, elle s'y diluait.
+## Et sur `overlook_gros_crete.png`, la forme lit « des oreillers de pierre » :
+## `Rock_Medium_*` est une famille de GALETS ARRONDIS à coiffe de mousse.
+## Aucune valeur d'albédo ne fabrique une strate sur un galet : c'est une loi
+## de FORME, pas une couleur — le même verdict conditionnel que celui qui a
+## donné les stèles du champ de fleurs.
+##
+## D'où les deux changements de cette passe :
+##  * les deux masses deviennent un GLB dédié (`SM_OverlookCrags.glb`,
+##    générateur `source_assets/blender/environment/make_overlook_crags.py`) :
+##    des piles de BANCS — paroi verticale + vire horizontale — au PENDAGE
+##    PARTAGÉ (azimut 209°, 13,5°). Deux rochers voisins sont deux objets ;
+##    deux masses au même pendage sont une formation rompue en deux. La
+##    crête monte à 6,96 m (contre ~4,6 m visibles avant) : « l'échelle
+##    géologique » du contrat est une hauteur, pas une intention ;
+##  * une ASSISE ROCHEUSE runtime (`AssiseCrocs`) épouse le terrain autour
+##    de chaque pied. « Roches posées SUR le sol sans racine » est l'une des
+##    trois causes de rejet écrites au contrat : le remède est que le pied
+##    de la formation soit de la ROCHE, et que l'herbe la rencontre sur un
+##    bord irrégulier, pas sur la ligne nette d'une pièce déposée.
+##
+## L'assise est faite de DEUX LOBES DISJOINTS, jamais d'une nappe continue :
+## une dalle qui relierait les deux pieds refermerait au sol la brèche que
+## toute la composition existe pour ouvrir.
 class_name OverlookSummitPlace
 extends WorldV2Place
 
 const K: GDScript = preload("res://scripts/world_v2/poi/world_v2_place_kit.gd")
+## Les deux masses. Un seul GLB, deux objets : on instancie deux fois et on
+## ne garde que l'objet voulu (recette des stèles du champ).
+const CROCS_GLB: String = "res://assets/environment/rocks/SM_OverlookCrags.glb"
 
 ## Roche des hauteurs. JUGÉ SUR CAPTURE (v1, commit 63af918), pas sur
 ## l'albédo (gain ≈ 1,8, non linéaire — `scripts/CLAUDE.md`) :
@@ -109,10 +150,12 @@ const K: GDScript = preload("res://scripts/world_v2/poi/world_v2_place_kit.gd")
 ## v5 mesurait (141,139,130) pour une cible (149,148,119) — léger voile
 ## lilas : v6 ramène le bleu de 0,95 à 0,89. Trois itérations mesurées
 ## (v3 168,163,112 → v4 135,137,99 → v5 141,139,130 → cible).
-const TONE_CREST_A: Color = Color(0.82, 0.77, 0.89)
-const TONE_CREST_B: Color = Color(0.75, 0.72, 0.83)
-const TONE_CREST_C: Color = Color(0.71, 0.69, 0.80)
-const TONE_LEDGE: Color = Color(0.79, 0.75, 0.82)
+## (Les quatre multiplicateurs `TONE_CREST_*` / `TONE_LEDGE` de la première
+## corrective ont disparu avec les masses de kit qu'ils habillaient. Leur
+## histoire de mesure — v3 (168,163,112) → v4 (135,137,99) → v5 (141,139,130)
+## — reste consignée ci-dessus : elle documente le PIÈGE (teinter un atlas
+## texturé se fait par multiplication, et le gain n'est pas linéaire), et ce
+## piège s'applique encore aux pièces de kit qui restent.
 ## LA FAMILLE KENNEY `rock_*` A QUITTÉ LE LIEU (v7b) — mesure, pas goût.
 ## `tools/gltf_inspect.py assets/environment/cliffs/rock_largeC.glb` :
 ## **72 triangles, 0 texture, 2 matériaux à couleur plate**. Aucun réglage
@@ -127,10 +170,31 @@ const TONE_LEDGE: Color = Color(0.79, 0.75, 0.82)
 ## Le paramètre `absolu` de `_teinter()` reste : il documente le piège
 ## (multiplier un matériau à couleur plate rend saumon) même si plus aucune
 ## pièce d'ici ne l'emprunte.
-const TONE_SOCLE: Color = Color(0.78, 0.76, 0.82)
-const TONE_DALLE: Color = Color(0.86, 0.84, 0.82)
+## La tablette suit elle aussi le froid : c'était la « petite pièce pâle
+## isolée » relevée à quatre passages d'audit, et une dalle chaude au milieu
+## d'une ardoise bleue la rend encore plus isolée.
+const TONE_DALLE: Color = Color(0.62, 0.66, 0.80)
 ## Herbe sèche du sommet : le vert de la prairie n'y monte pas.
 const TONE_DRY: Color = Color(0.74, 0.70, 0.48)
+
+## LES PIÈCES DE KIT QUI RESTENT SUIVENT LES CROCS DANS LE FROID, sinon elles
+## font tache à côté d'eux. Le multiplicateur n'est pas choisi au jugé : il
+## est DÉRIVÉ de la mesure. Rendu actuel (155 ; 149 ; 138) sous les tons
+## (0,82 ; 0,77 ; 0,89) ; cible (110 ; 120 ; 132), soit un rapport
+## (0,71 ; 0,81 ; 0,96) → tons (0,58 ; 0,62 ; 0,85). Le gain n'étant pas
+## linéaire (`scripts/CLAUDE.md`), c'est une PREMIÈRE APPROXIMATION à
+## remesurer sur capture, pas une prédiction.
+const TONE_KIT_FROID: Color = Color(0.58, 0.62, 0.85)
+## La coiffe « grass » du kit rend menthe si on la laisse : rabattue en
+## olive sombre — de l'herbe rase brûlée par le vent, pas de la mousse.
+const TONE_KIT_COIFFE: Color = Color(0.46, 0.50, 0.44)
+## Assise rocheuse : ardoise mouillée d'ombre au contact de la pierre,
+## terre-olive au bord pour mourir dans l'herbe. Le piège mesuré ici est
+## celui du lit de la source — un bord plus sombre que tout dessine un
+## ANNEAU NOIR, et l'assise se relit comme une flaque.
+const TONE_ASSISE: Color = Color(0.34, 0.36, 0.40)
+const ASSISE_COEUR: Color = Color(0.98, 1.00, 1.06)
+const ASSISE_BORD: Color = Color(1.22, 1.30, 1.02)
 
 
 func default_place_id() -> StringName:
@@ -163,10 +227,13 @@ func _build() -> void:
 	# sous la masse la faisait lire PERCHÉE sur un socle (champignon). La
 	# strate part vers le sud-ouest (une marche vers l'épaule), la masse
 	# s'enterre de 0,9 m : sa partie la plus large touche le sol.
+	#
+	# CE QUI A CHANGÉ À LA DEUXIÈME CORRECTIVE : les trois pièces fondues
+	# deviennent UNE masse stratifiée, et le pied de la formation devient de
+	# la roche. Les points d'appui déclarés ne bougent pas — ce sont eux que
+	# le filet lit, et la composition arbitrée (crête à (8 ; 4,6),
+	# avant-poste à (17,8 ; −5,8), brèche entre les deux) est conservée.
 	var strate_at: Vector3 = _seated(5.0, 5.4)
-	var strate: Node3D = _roche(&"Rock_Medium_3", 5.0, 5.4, 24.0, 0.0, 1.55,
-		2.20)
-	_teinter(strate, TONE_SOCLE, TONE_SOCLE, false)
 	declare_support(strate_at)
 	# Enfoncement 1,25 et roulis ramené à 6° : l'audit v5 relevait une
 	# « fente d'ombre » sous le surplomb côté joueur — le contact doit être
@@ -187,12 +254,14 @@ func _build() -> void:
 	# masse porte la proportion du lieu à ≈ 0,33 et l'éloigne de cette
 	# bande. La forme suit ici l'intention, elle ne la contredit pas.
 	var masse_at: Vector3 = _seated(8.0, 4.6)
-	_teinter(_roche(&"Rock_Medium_3", 8.0, 4.6, 205.0, 6.0, 2.26, 1.25),
-		TONE_CREST_A, TONE_CREST_A, false)
+	# YAW 0 : le pendage du générateur (azimut 209° en repère Blender) sort à
+	# (−0,875 ; +0,485) en local Godot, soit presque exactement la direction
+	# de visée de `cam05` (−0,82 ; +0,573). Les VIRES regardent donc le
+	# panorama : elles se lisent comme des lignes horizontales depuis le seul
+	# endroit d'où on juge ce lieu. Toute rotation les mettrait de profil.
+	_croc(&"SM_Overlook_Crest", "Croc_crete", 8.0, 4.6, 0.0, 0.85)
 	declare_support(masse_at)
 	var epaulement_at: Vector3 = _seated(4.2, 8.2)
-	_teinter(_roche(&"Rock_Medium_1", 4.2, 8.2, 152.0, -7.0, 1.45, 0.50),
-		TONE_CREST_B, TONE_CREST_B, false)
 	declare_support(epaulement_at)
 
 	# — L'AVANT-POSTE DÉTACHÉ (17 ; −5) : un rocher penché et sa dalle de
@@ -205,31 +274,40 @@ func _build() -> void:
 	# de route (seuil 1,2 ; marge collider ≈ 6,0 m), et x > 0 donc toujours
 	# DERRIÈRE cam05.
 	var poste_at: Vector3 = _seated(17.8, -5.8)
-	_teinter(_roche(&"Rock_Medium_2", 17.8, -5.8, 30.0, -8.0, 1.75, 0.45),
-		TONE_CREST_C, TONE_CREST_C, false)
+	# 7° et pas davantage : au-delà, le pendage de l'éperon cesse d'être
+	# celui de la crête et les deux masses redeviennent deux objets voisins.
+	# La variété vient des formes (graines différentes), pas de l'azimut.
+	_croc(&"SM_Overlook_Spur", "Croc_poste", 17.8, -5.8, 7.0, 0.60)
 	declare_support(poste_at)
-	# La dalle de pied suit son rocher et RÉTRÉCIT (×0,9 → ×0,75) : à
-	# l'ancienne taille elle remontait jusqu'à z ≈ −0,4 et rebouchait en Z
-	# le vide que l'avant-poste venait d'ouvrir en X.
 	var pied_at: Vector3 = _seated(16.7, -4.0)
-	var pied: Node3D = _roche(&"Rock_Medium_2", 16.7, -4.0, -38.0, 0.0, 0.95,
-		0.60)
-	_teinter(pied, TONE_SOCLE, TONE_SOCLE, false)
 	declare_support(pied_at)
+
+	# — L'ASSISE. Deux lobes DISJOINTS de roche affleurante, un par masse,
+	# qui épousent le terrain sommet par sommet. Sans eux, la formation
+	# rencontre l'herbe sur une ligne nette et se relit « posée » — c'est
+	# la cause de rejet nº 2 du contrat. Le bord est haché et s'ÉCLAIRCIT
+	# vers l'extérieur : un bord plus sombre que tout dessinerait l'anneau
+	# noir déjà mesuré (et corrigé) au lit de la source.
+	_assise()
 
 	# — L'ÉPAULE : deux blocs DEMI-ENTERRÉS au bord de la rupture sud, qui
 	# forment une marche puis une tablette. Le sol est encore plat à 8,8 m
 	# (mesuré) et casse deux mètres plus loin : la tablette est donc juste
 	# au bord, et l'arc y est posé face au vide.
+	# Les deux blocs de l'épaule REJOIGNENT LE FROID des crocs : à côté d'une
+	# ardoise bleutée, un galet chaud du kit fait tache et ramène exactement
+	# le défaut mesuré. Ils s'enfoncent aussi d'un cran de plus (−0,90 →
+	# −1,15 ; −0,75 → −1,00) : une marche est une arête qui affleure, pas un
+	# caillou déposé.
 	var marche: Vector3 = _seated(1.0, 6.2)
 	_teinter(K.module(self, &"Rock_Medium_1",
-		marche + Vector3(0.0, -0.90, 0.0), 200.0, 1.0, Color.WHITE),
-		TONE_LEDGE, TONE_LEDGE, false)
+		marche + Vector3(0.0, -1.15, 0.0), 200.0, 1.0, Color.WHITE),
+		TONE_KIT_FROID, TONE_KIT_COIFFE, false)
 	declare_support(marche)
 	var socle: Vector3 = _seated(2.6, 8.4)
 	_teinter(K.module(self, &"Rock_Medium_2",
-		socle + Vector3(0.0, -0.75, 0.0), 41.0, 1.0, Color.WHITE),
-		TONE_LEDGE, TONE_LEDGE, false)
+		socle + Vector3(0.0, -1.00, 0.0), 41.0, 1.0, Color.WHITE),
+		TONE_KIT_FROID, TONE_KIT_COIFFE, false)
 	declare_support(socle)
 	# La tablette proprement dite : une dalle plate coincée entre la crête
 	# et l'épaule. C'est le seul plan horizontal du lieu, donc le seul
@@ -262,10 +340,10 @@ func _build() -> void:
 	# masse au lieu de la relier à l'autre.
 	_teinter(K.module(self, &"Rock_Medium_3",
 		_seated(19.6, -7.2) + Vector3(0.0, -0.15, 0.0), 37.0, 0.50,
-		Color.WHITE), TONE_CREST_C, TONE_CREST_C, false)
+		Color.WHITE), TONE_KIT_FROID, TONE_KIT_COIFFE, false)
 	_teinter(K.module(self, &"Rock_Medium_1",
 		_seated(5.4, 9.6) + Vector3(0.0, -0.30, 0.0), -62.0, 0.42,
-		Color.WHITE), TONE_CREST_B, TONE_CREST_B, false)
+		Color.WHITE), TONE_KIT_FROID, TONE_KIT_COIFFE, false)
 	K.module(self, &"Bush_Common", _seated(7.8, 8.4), 22.0, 0.62, TONE_DRY)
 	K.module(self, &"Bush_Common", _seated(18.8, -3.8), -48.0, 0.5, TONE_DRY)
 
@@ -299,49 +377,170 @@ func _build() -> void:
 ## étroits que les masses visuelles : le pied d'un rocher s'évase, on ne
 ## bute pas sur son évasement.
 func _collisions() -> void:
+	# La crête a grandi (6,96 m de GLB, ~6,1 m visibles) : son volume suit.
+	# Il reste plus ÉTROIT que la masse visible — le pied d'une formation
+	# s'évase, on ne bute pas sur son évasement, et l'assise affleurante est
+	# franchissable à pied.
 	K.collider_box(self, "Belvedere_crete",
-		_seated(7.3, 5.0) + Vector3(0.0, 2.5, 0.0), Vector3(5.6, 5.0, 4.8),
-		20.0)
+		_seated(8.0, 4.6) + Vector3(0.0, 2.9, 0.0), Vector3(5.4, 5.8, 4.4),
+		0.0)
 	K.collider_box(self, "Belvedere_epaulement",
 		_seated(4.2, 8.2) + Vector3(0.0, 1.2, 0.0), Vector3(3.6, 2.4, 3.0),
 		152.0)
 	K.collider_box(self, "Belvedere_poste",
-		_seated(17.8, -5.8) + Vector3(0.0, 1.3, 0.0), Vector3(4.0, 2.6, 3.2),
-		30.0)
+		_seated(17.8, -5.8) + Vector3(0.0, 1.7, 0.0), Vector3(3.7, 3.4, 3.2),
+		7.0)
 	K.collider_box(self, "Belvedere_epaule",
 		_seated(1.8, 7.3) + Vector3(0.0, 0.55, 0.0), Vector3(4.6, 1.1, 3.6),
 		24.0)
 
 
-## POSER UNE ROCHE PENCHÉE, RECENTRÉE SUR SA VRAIE EMPRISE, PIED ENTERRÉ.
+## POSER UNE MASSE DU GLB DÉDIÉ, recentrée sur son emprise et enterrée.
 ##
-## Deux défauts mesurés du kit imposent ce détour (brief commun, piège 4) :
-## `cliff_half_rock` a son origine sur une ARÊTE (bbox z ∈ [0,0815 ; 0,500])
-## — posé « à (x ; z) », son centre visuel part 2 m plus loin ; et
-## `KitPlacement.seat()` mesure AVANT le roulis ajouté ici — une pièce
-## penchée ensuite flotte ou s'enterre au hasard de sa forme.
+## Le GLB porte les DEUX crocs à la même origine : on instancie, on ne garde
+## que l'objet demandé, puis on recentre — un objet dont l'emprise n'est pas
+## centrée sur son origine se pose ailleurs qu'où on croit, et toutes les
+## distances de route et de brèche calculées dans l'en-tête porteraient sur
+## un point qui n'existe pas.
 ##
-## On ne devine donc pas : on pose, on penche, on REMESURE l'emprise dans
-## le repère du parent, on recentre le milieu de l'emprise sur (x ; z)
-## voulu et on enfonce de la profondeur VOULUE sous le sol de ce point.
-## Les distances de route et la bimodalité D3 calculées dans l'en-tête
-## portent sur ces centres d'emprise — le recentrage les rend vraies.
-## (Même famille que `_coucher()` des lieux de la voie B ; troisième
-## emploi → candidat `world_v2_place_kit.gd`, déjà remonté au lead.)
-func _roche(modele: StringName, x: float, z: float, yaw_deg: float,
-		roulis_deg: float, extra: float, enfoncement: float) -> Node3D:
-	var piece: Node3D = K.module(self, modele, Vector3(x, 0.0, z), yaw_deg,
-		extra, Color.WHITE)
-	if piece == null:
+## LA COULEUR DE SOMMET EST FORCÉE. La matière de ces masses vit dans leur
+## `COLOR_0` ; si le matériau importé ne la consommait pas, l'ardoise
+## redeviendrait un aplat — SANS erreur ni avertissement (ISS-066, et le
+## même geste est déjà fait sur les stèles du champ). On force le drapeau
+## sur une COPIE posée en override de surface : la ressource importée n'est
+## jamais mutée.
+func _croc(objet: StringName, nom: String, x: float, z: float,
+		yaw_deg: float, enfoncement: float) -> Node3D:
+	var packed: PackedScene = load(CROCS_GLB) as PackedScene
+	if packed == null:
+		push_error("[overlook] crocs introuvables — %s" % CROCS_GLB)
 		return null
-	piece.rotation.z = deg_to_rad(roulis_deg)
-	var boite: AABB = Transform3D(piece.transform.basis, Vector3.ZERO) \
-		* KitPlacement.local_aabb(piece)
+	var racine: Node3D = packed.instantiate() as Node3D
+	racine.name = nom
+	var garde: bool = false
+	for enfant: Node in racine.get_children():
+		if enfant.name == String(objet):
+			garde = true
+		else:
+			racine.remove_child(enfant)
+			enfant.queue_free()
+	if not garde:
+		push_error("[overlook] masse %s absente du GLB" % objet)
+		racine.queue_free()
+		return null
+	racine.transform = Transform3D(Basis(Vector3.UP, deg_to_rad(yaw_deg)),
+		Vector3(x, 0.0, z))
+	for noeud: Node in racine.find_children("*", "MeshInstance3D", true, false):
+		var instance: MeshInstance3D = noeud as MeshInstance3D
+		if instance.mesh == null:
+			continue
+		for s: int in range(instance.mesh.get_surface_count()):
+			var actif: StandardMaterial3D = \
+				instance.get_active_material(s) as StandardMaterial3D
+			if actif == null:
+				continue
+			var copie: StandardMaterial3D = actif.duplicate() \
+				as StandardMaterial3D
+			copie.vertex_color_use_as_albedo = true
+			copie.roughness = maxf(copie.roughness, 0.94)
+			copie.metallic_specular = 0.1
+			instance.set_surface_override_material(s, copie)
+	add_child(racine)
+	var boite: AABB = Transform3D(racine.transform.basis, Vector3.ZERO) \
+		* KitPlacement.local_aabb(racine)
 	var centre: Vector3 = boite.get_center()
-	piece.position.x = x - centre.x
-	piece.position.z = z - centre.z
-	piece.position.y = ground_local_y(x, z) - boite.position.y - enfoncement
-	return piece
+	racine.position.x = x - centre.x
+	racine.position.z = z - centre.z
+	racine.position.y = ground_local_y(x, z) - boite.position.y - enfoncement
+	return racine
+
+
+## L'ASSISE — deux lobes de roche affleurante, un par masse, qui épousent le
+## terrain sommet par sommet (exemption D1a nommée, même titre que le lit de
+## la source : une surface qui suit le sol, comme `SolBrule` de l'arbre
+## foudroyé).
+##
+## POURQUOI DEUX LOBES ET PAS UNE NAPPE. Une dalle continue relierait les
+## deux pieds au sol et refermerait la brèche que toute la composition
+## existe pour ouvrir — le défaut exact que la version v7 avait corrigé en
+## déplaçant un éclat hors de l'intervalle. Les lobes sont donc bornés, et
+## l'écart entre leurs bords (2,5 m au calcul) reste de l'herbe.
+##
+## POURQUOI LE BORD S'ÉCLAIRCIT. Le lit de la vasque de la source a payé
+## deux captures pour l'avoir appris : un bord plus sombre que ce qui
+## l'entoure dessine un ANNEAU, et la surface se relit comme une flaque
+## posée. Ici le cœur est de l'ardoise d'ombre, le bord tire vers l'olive
+## du terrain, et le contour est haché — jamais un disque.
+func _assise() -> void:
+	set_meta(&"exemption_runtime", PackedStringArray(["AssiseCrocs"]))
+	var assise: MeshInstance3D = MeshInstance3D.new()
+	assise.name = "AssiseCrocs"
+	var st: SurfaceTool = SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	# [centre x, centre z, rayon moyen, graine]
+	_lobe(st, 8.0, 4.6, 4.25, 3.1)
+	_lobe(st, 17.8, -5.8, 2.95, 11.7)
+	assise.mesh = st.commit()
+	var roche: StandardMaterial3D = K.flat_material(TONE_ASSISE)
+	roche.vertex_color_use_as_albedo = true
+	assise.mesh.surface_set_material(0, roche)
+	add_child(assise)
+
+
+## Un lobe d'assise : éventail de triangles du centre vers un bord haché,
+## chaque sommet posé sur le terrain gelé (+3 cm) — donc aucune arête vive
+## contre le sol, quel que soit le relief.
+func _lobe(st: SurfaceTool, cx: float, cz: float, rayon: float,
+		graine: float) -> void:
+	var segments: int = 28
+	var bord: PackedVector3Array = PackedVector3Array()
+	var teintes: PackedColorArray = PackedColorArray()
+	var brut: PackedFloat32Array = PackedFloat32Array()
+	for i: int in range(segments):
+		brut.append(_alea(float(i) * 2.7 + graine))
+	for i: int in range(segments):
+		var angle: float = TAU * float(i) / float(segments)
+		# Lissé sur trois voisins : la modulation n'a plus de période, donc
+		# pas de lobes réguliers — l'« étoile » payée par l'arbre foudroyé.
+		var lisse: float = (brut[(i - 1 + segments) % segments] + brut[i]
+			+ brut[(i + 1) % segments]) / 3.0
+		var r: float = rayon * (0.74 + 0.42 * lisse)
+		var px: float = cx + cos(angle) * r
+		var pz: float = cz + sin(angle) * r
+		bord.append(Vector3(px, ground_local_y(px, pz) + 0.03, pz))
+		var v: float = 0.94 + 0.10 * _alea(float(i) * 5.3 + graine)
+		teintes.append(Color(ASSISE_BORD.r * v, ASSISE_BORD.g * v,
+			ASSISE_BORD.b * v, 1.0))
+	# Le cœur est légèrement SOULEVÉ (+9 cm) : la roche affleure, elle ne
+	# creuse pas. Un centre plus bas que son bord ferait une cuvette, donc
+	# une flaque.
+	var centre: Vector3 = Vector3(cx, ground_local_y(cx, cz) + 0.12, cz)
+	for i: int in range(segments):
+		var j: int = (i + 1) % segments
+		st.set_color(ASSISE_COEUR)
+		st.set_normal(Vector3.UP)
+		st.add_vertex(centre)
+		st.set_color(teintes[i])
+		st.set_normal(Vector3.UP)
+		st.add_vertex(bord[i])
+		st.set_color(teintes[j])
+		st.set_normal(Vector3.UP)
+		st.add_vertex(bord[j])
+
+
+## Hachage déterministe dans [−1 ; 1]. Pas de `randf()` : la régression
+## visuelle compare deux montages, ils doivent être identiques.
+func _alea(graine: float) -> float:
+	var v: float = sin(graine * 127.1 + 311.7) * 43758.5453
+	return (v - floor(v)) * 2.0 - 1.0
+
+
+## (`_roche()` — poser/pencher/remesurer/recentrer/enterrer — a quitté ce
+## fichier avec les masses de kit. Le détour qu'il documentait reste VRAI et
+## reste utilisé ailleurs : `KitPlacement.seat()` mesure AVANT le roulis, et
+## certaines pièces ont leur origine sur une arête. Il vit encore dans
+## `turquoise_spring_place.gd` et dans les lieux de la voie B ; c'est
+## toujours un candidat `world_v2_place_kit.gd` par la règle de trois.)
 
 
 ## TEINTE PAR SURFACE, recette V2.2 — deux défauts mesurés sur capture :

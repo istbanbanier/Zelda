@@ -1,0 +1,9 @@
+Blender 4.0.2
+[overlook_crags] SM_Overlook_Crest : 600 tris, hauteur 6.963 m, base z 0.0000, emprise 7.166 m, vires 5, facette max 1.0023 m2, couleur p10 0.747 p90 0.976 (etendue 26.9 %)
+[overlook_crags] SM_Overlook_Spur : 520 tris, hauteur 4.378 m, base z 0.0000, emprise 4.774 m, vires 4, facette max 0.4474 m2, couleur p10 0.751 p90 0.976 (etendue 26.8 %)
+[overlook_crags] pendage partage : azimut 209.0 deg, angle 13.5 deg
+[overlook_crags] total 1120 triangles (plafond 3600)
+Info: Total files 0 | Changed 0 | Failed 0
+Info: Saved "SM_OverlookCrags.blend"
+[overlook_crags] source enregistree -> /home/user/wt1r-a/source_assets/blender/environment/SM_OverlookCrags.blend
+FIN NOMINALE
