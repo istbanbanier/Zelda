@@ -794,3 +794,67 @@ c'est exactement ce que cinq lieux acceptés rendent déjà.
 
 Ce n'est pas un défaut d'exécution que je pourrais corriger seul : les deux
 exigences tirent en sens contraire, et l'arbitrage ne m'appartient pas.
+
+## Emprises AVANT / APRÈS — sonde réelle `probe_place_metrics.gd`
+
+| Lieu | avant (publié en itération 4) | **après** | mesh | colls | appuis |
+|---|---|---|---:|---:|---:|
+| `valley.poi.overlook_summit.01` | 22,1 × 8,0 × 18,6 m | **22,8 × 8,4 × 19,4 m** | 12 | 4 | 8 |
+| `valley.poi.turquoise_spring.01` | 14,4 × 3,2 × 14,2 m | **17,2 × 5,9 × 16,8 m** | 11 | 3 | 10 |
+
+Le belvédère bouge à peine. **La source, elle, change de catégorie** : sa
+hauteur passe de 3,2 à 5,9 m et son emprise de 14,4 à 17,2 m, donc son rapport
+hauteur ÷ emprise de 0,224 à 0,347. C'est exactement le levier que la revue a
+demandé — de la présence — et c'est aussi la cause directe de ce qui suit.
+
+Budget D7 compté sur le code : belvédère **10/12** modules (inchangé),
+source **9/12** (elle était pleine à 12/12 ; sept pièces de kit ont fusionné
+dans quatre masses).
+
+## SIMULATION DE COMPOSITION SUR LES MASQUES — onze variantes, aucun engin lancé
+
+Méthode donnée par le lead : peindre l'entaille à la main dans la silhouette
+capturée, rejouer `lot1_repetition.py`, et ne RECAPTURER qu'une prédiction qui
+passe. Outils versés : `voie_a3/controles/simule.py`, `voir_masque.py`.
+
+**Un piège a failli rendre toute la simulation muette**, et il mérite d'être
+écrit : le manifeste porte le CHEMIN de l'image, et `charger()` le résout
+depuis le cwd. Peindre une COPIE ne change donc rien — le détecteur rouvre
+l'original et rend exactement le même verdict, ce qui ressemble parfaitement à
+« le geste ne sert à rien ». Mes deux premières simulations sont tombées dedans.
+La parade est dans `simule.py` : on réécrit le manifeste pour ne garder que le
+NOM du fichier, et la solution de repli `manifeste.parent / nom` s'applique.
+
+### Ce que la simulation dit, et c'est contre-intuitif
+
+Point de départ (`iter9`, réel) : source × pont 0,583 · source × hameau 0,575 ·
+source × grotte 0,517 · belvédère × hameau 0,510 · belvédère × source 0,507.
+
+| Geste simulé | Effet mesuré |
+|---|---|
+| A/B/C — source « une mâchoire HAUTE d'un côté, rebord bas » | source × hameau 0,575 → 0,503 et pont/grotte tombent, **mais belvédère × source 0,507 → 0,611** |
+| D/E/F — source en SELLE (deux mâchoires, entaille centrale, tout bas) | hameau 0,575 → **0,494**, pont 0,583 → 0,532, grotte sort, belvédère × source → 0,502 |
+| G — belvédère, col élargi aux deux angles | belvédère × hameau 0,510 → **0,504** |
+| H = F + G, les deux gestes ensemble | **tout entre 0,494 et 0,532 ; rien ne passe** |
+| I — source coupée EN DEUX jusqu'au sol | pont 0,532 → **0,553**, ça empire |
+| J — source resserrée (tiers est retiré) | hameau → **0,610 à 160 m**, ça empire beaucoup |
+| K — entaille plus large et décentrée | pont → 0,566, ça empire |
+
+**Le premier geste prescrit fait collisionner mes deux lieux entre eux.** Donner
+à la source « un pic dominant et un rebord bas », c'est lui donner la signature
+du belvédère : le détecteur normalise l'échelle, donc « une masse haute plus un
+satellite bas » est UNE seule forme, quelle que soit la taille. Ce n'est pas une
+objection au raisonnement du lead — c'est une conséquence que seule la mesure
+pouvait rendre visible, et elle a coûté deux minutes au lieu d'un cycle moteur.
+
+**Et la selle bute sur le pont de pierre**, pour une raison qu'on voit dans son
+masque à 90° : le pont EST une selle — un tablier plat sur deux jambes avec du
+vide entre elles. En regardant les masques plutôt que les nombres, on constate
+que les quatre profils qu'une masse basse et large peut prendre sont DÉJÀ pris :
+bloc plein = hameau, pic + queue = belvédère, selle = pont, deux blocs séparés =
+pont encore. La source a 5,9 m pour 17 m d'emprise ; à cette proportion, son
+contour a très peu de degrés de liberté.
+
+**Aucune prédiction ne passe, donc je ne recapture pas** — c'est la consigne, et
+elle est juste : recapturer une géométrie qu'on sait encore signalée coûterait
+un cycle moteur pour un rouge déjà connu.
