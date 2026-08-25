@@ -28,7 +28,7 @@
     "valley.poi.flower_field.01"
   ],
   "lot1_manquant": [],
-  "commit": "912a10b954c074522a2221693ce4967a8f43ce21",
+  "commit": "0f64ead72301b9654d12ca3164b01440178ad8e9",
   "repo_dirty": false,
   "seuils": {
     "30": {
@@ -73,59 +73,42 @@
       "signale": true
     }
   },
-  "signalees": [
-    {
-      "distance_m": 30.0,
-      "a": "valley.poi.watchtower_ruin.01",
-      "b": "valley.poi.waterfall_cave.01",
-      "iou": 0.4975,
-      "seuil": 0.4931,
-      "dprofil": 0.086
-    },
-    {
-      "distance_m": 80.0,
-      "a": "valley.poi.watchtower_ruin.01",
-      "b": "valley.poi.waterfall_cave.01",
-      "iou": 0.493,
-      "seuil": 0.4912,
-      "dprofil": 0.0865
-    }
-  ],
+  "signalees": [],
   "matrice": {
     "30": [
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.overlook_summit.01",
-        "iou": 0.3572,
-        "dprofil": 0.1522,
+        "iou": 0.2792,
+        "dprofil": 0.1566,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.turquoise_spring.01",
-        "iou": 0.2621,
-        "dprofil": 0.1883,
+        "iou": 0.2269,
+        "dprofil": 0.1531,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.forest_shrine.01",
-        "iou": 0.2955,
-        "dprofil": 0.1611,
+        "iou": 0.2538,
+        "dprofil": 0.1693,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.barrow_cemetery.01",
-        "iou": 0.2301,
-        "dprofil": 0.1375,
+        "iou": 0.2067,
+        "dprofil": 0.1364,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.flower_field.01",
-        "iou": 0.1306,
-        "dprofil": 0.1209,
+        "iou": 0.2624,
+        "dprofil": 0.0986,
         "signale": false
       },
       {
@@ -201,64 +184,64 @@
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "camp",
-        "iou": 0.1699,
-        "dprofil": 0.1845,
+        "iou": 0.1429,
+        "dprofil": 0.1784,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.riverside_village.01",
-        "iou": 0.4526,
-        "dprofil": 0.1273,
+        "iou": 0.3057,
+        "dprofil": 0.1347,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.abandoned_farm.01",
-        "iou": 0.2632,
-        "dprofil": 0.1647,
+        "iou": 0.2042,
+        "dprofil": 0.1691,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.stone_bridge.01",
-        "iou": 0.3507,
-        "dprofil": 0.1418,
+        "iou": 0.3247,
+        "dprofil": 0.1376,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.waterfall_cave.01",
-        "iou": 0.4975,
-        "dprofil": 0.086,
-        "signale": true
+        "iou": 0.4189,
+        "dprofil": 0.0942,
+        "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.thunderstruck_tree.01",
-        "iou": 0.1618,
-        "dprofil": 0.1798,
+        "iou": 0.1685,
+        "dprofil": 0.1595,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.ember_raider_camps.01",
-        "iou": 0.1751,
-        "dprofil": 0.138,
+        "iou": 0.1651,
+        "dprofil": 0.1389,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.conductive_basin.01",
-        "iou": 0.152,
-        "dprofil": 0.2114,
+        "iou": 0.1305,
+        "dprofil": 0.1956,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "pylon",
-        "iou": 0.2749,
-        "dprofil": 0.1909,
+        "iou": 0.2814,
+        "dprofil": 0.176,
         "signale": false
       },
       {
@@ -581,36 +564,36 @@
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.overlook_summit.01",
-        "iou": 0.3529,
-        "dprofil": 0.1616,
+        "iou": 0.2796,
+        "dprofil": 0.1589,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.turquoise_spring.01",
-        "iou": 0.2558,
-        "dprofil": 0.1937,
+        "iou": 0.2212,
+        "dprofil": 0.1793,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.forest_shrine.01",
-        "iou": 0.2879,
-        "dprofil": 0.1877,
+        "iou": 0.2554,
+        "dprofil": 0.1702,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.barrow_cemetery.01",
-        "iou": 0.2178,
-        "dprofil": 0.1343,
+        "iou": 0.1966,
+        "dprofil": 0.1351,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.flower_field.01",
-        "iou": 0.1307,
-        "dprofil": 0.1251,
+        "iou": 0.2697,
+        "dprofil": 0.1,
         "signale": false
       },
       {
@@ -686,64 +669,64 @@
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "camp",
-        "iou": 0.1579,
-        "dprofil": 0.1702,
+        "iou": 0.1334,
+        "dprofil": 0.166,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.riverside_village.01",
-        "iou": 0.4431,
-        "dprofil": 0.1332,
+        "iou": 0.3038,
+        "dprofil": 0.1427,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.abandoned_farm.01",
-        "iou": 0.2602,
-        "dprofil": 0.1672,
+        "iou": 0.208,
+        "dprofil": 0.19,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.stone_bridge.01",
-        "iou": 0.3463,
-        "dprofil": 0.139,
+        "iou": 0.3269,
+        "dprofil": 0.1356,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.waterfall_cave.01",
-        "iou": 0.493,
-        "dprofil": 0.0865,
-        "signale": true
+        "iou": 0.4093,
+        "dprofil": 0.094,
+        "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.thunderstruck_tree.01",
-        "iou": 0.1731,
-        "dprofil": 0.182,
+        "iou": 0.1803,
+        "dprofil": 0.158,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.ember_raider_camps.01",
-        "iou": 0.1764,
-        "dprofil": 0.142,
+        "iou": 0.1651,
+        "dprofil": 0.1374,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.conductive_basin.01",
-        "iou": 0.1365,
-        "dprofil": 0.2479,
+        "iou": 0.1177,
+        "dprofil": 0.227,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "pylon",
-        "iou": 0.2754,
-        "dprofil": 0.1911,
+        "iou": 0.2919,
+        "dprofil": 0.171,
         "signale": false
       },
       {
@@ -1066,36 +1049,36 @@
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.overlook_summit.01",
-        "iou": 0.357,
-        "dprofil": 0.1672,
+        "iou": 0.2732,
+        "dprofil": 0.1666,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.turquoise_spring.01",
-        "iou": 0.2581,
-        "dprofil": 0.1987,
+        "iou": 0.2219,
+        "dprofil": 0.1567,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.forest_shrine.01",
-        "iou": 0.2924,
-        "dprofil": 0.1855,
+        "iou": 0.2761,
+        "dprofil": 0.1689,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.barrow_cemetery.01",
-        "iou": 0.2342,
-        "dprofil": 0.15,
+        "iou": 0.2004,
+        "dprofil": 0.1315,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.flower_field.01",
-        "iou": 0.126,
-        "dprofil": 0.1229,
+        "iou": 0.2746,
+        "dprofil": 0.0938,
         "signale": false
       },
       {
@@ -1171,64 +1154,64 @@
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "camp",
-        "iou": 0.122,
-        "dprofil": 0.2194,
+        "iou": 0.108,
+        "dprofil": 0.2066,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.riverside_village.01",
-        "iou": 0.4798,
-        "dprofil": 0.1134,
+        "iou": 0.3142,
+        "dprofil": 0.129,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.abandoned_farm.01",
-        "iou": 0.3188,
-        "dprofil": 0.1701,
+        "iou": 0.243,
+        "dprofil": 0.1671,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.stone_bridge.01",
-        "iou": 0.3643,
-        "dprofil": 0.1401,
+        "iou": 0.329,
+        "dprofil": 0.1369,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.waterfall_cave.01",
-        "iou": 0.462,
-        "dprofil": 0.0915,
+        "iou": 0.4242,
+        "dprofil": 0.0985,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.thunderstruck_tree.01",
-        "iou": 0.1641,
-        "dprofil": 0.174,
+        "iou": 0.1771,
+        "dprofil": 0.1531,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.ember_raider_camps.01",
-        "iou": 0.1868,
-        "dprofil": 0.1359,
+        "iou": 0.1678,
+        "dprofil": 0.1313,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.conductive_basin.01",
-        "iou": 0.1512,
-        "dprofil": 0.2561,
+        "iou": 0.1318,
+        "dprofil": 0.2304,
         "signale": false
       },
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "pylon",
-        "iou": 0.2641,
-        "dprofil": 0.189,
+        "iou": 0.2942,
+        "dprofil": 0.1702,
         "signale": false
       },
       {
@@ -1548,6 +1531,6 @@
       }
     ]
   },
-  "verdict": "FAIL",
-  "resume": "valley.poi.watchtower_ruin.01 ≈ valley.poi.waterfall_cave.01 à 30 m (IoU 0.497 > S 0.493); valley.poi.watchtower_ruin.01 ≈ valley.poi.waterfall_cave.01 à 80 m (IoU 0.493 > S 0.491)"
+  "verdict": "PASS",
+  "resume": "6 sujet(s) du lot, aucun ne dépasse le seuil calibré sur le corpus accepté (30 m : S = 0.493, 80 m : S = 0.491, 160 m : S = 0.546)"
 }
