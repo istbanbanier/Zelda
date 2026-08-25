@@ -38,6 +38,18 @@
 ## tronçon retiré, et le couloir se juge à la FENÊTRE libre totale. Les seuils
 ## (MARCHE_MAX, CAPSULE_R, plafond) n'ont pas bougé.
 ##
+## TROISIÈME AMENDEMENT — LOT 1.R.2 : LA CAPSULE, POUR DE VRAI, DANS LES DEUX
+## SENS. La fenêtre du seuil se mesurait par DEUX TIRS DE RAYON additionnés
+## (§2b). C'est une bonne borne, mais un rayon est infiniment fin : il passe
+## entre deux pierres là où un corps de 0,80 m de diamètre accroche un coin,
+## et il ne dit rien du sens de traversée. ISS-070 s'est jouée à un
+## centimètre sur cette grandeur-là ; on ne referme pas un défaut d'un
+## centimètre avec l'instrument qui l'a mesuré, et lui seul. §2c BALAIE donc
+## la vraie capsule du héros à travers le seuil, du nord vers le sud PUIS du
+## sud vers le nord — entrer et sortir sont deux trajets différents dès que
+## les montants sont décalés en z, ce qu'ils sont. Les deux mesures sont
+## publiées ; aucun seuil existant n'a bougé.
+##
 ## Usage :
 ##   tools/lancer_godot.sh --path . --script tools/godot/probe_sanctuaire.gd
 extends SceneTree
@@ -289,6 +301,40 @@ func _initialize() -> void:
 	if fenetre_min < 2.0 * (CAPSULE_R + 0.05):
 		ecarts.append("fenêtre libre de %.2f m à z de nef %.2f — la capsule "
 			% [fenetre_min, ou_fenetre] + "ne passe pas")
+
+	# ---- 2c. LA CAPSULE FRANCHIT LE SEUIL, DANS LES DEUX SENS --------------
+	# `cast_motion` rend [sûr, non sûr] : la fraction du déplacement parcourue
+	# avant le premier contact. 1,0 des deux côtés = le corps passe. On part
+	# franchement AVANT le seuil et on finit franchement APRÈS, pour que le
+	# trajet contienne les deux montants quel que soit leur décalage en z.
+	var capsule: CapsuleShape3D = CapsuleShape3D.new()
+	capsule.radius = CAPSULE_R
+	capsule.height = CAPSULE_H
+	for sens: Array in [["entrée (nord -> sud)", -4.40, -2.30],
+			["sortie (sud -> nord)", -2.30, -4.40]]:
+		var za: float = float(sens[1])
+		var zb: float = float(sens[2])
+		var la: Vector2 = _nef_locale(0.0, za)
+		var lb: Vector2 = _nef_locale(0.0, zb)
+		var ma: Vector3 = lieu.to_global(Vector3(la.x, 0.0, la.y))
+		var mb: Vector3 = lieu.to_global(Vector3(lb.x, 0.0, lb.y))
+		var sol_a: float = hm.height_at(ma.x, ma.z)
+		var depart: Vector3 = Vector3(ma.x, sol_a + CAPSULE_H * 0.5, ma.z)
+		var arrivee: Vector3 = Vector3(mb.x, sol_a + CAPSULE_H * 0.5, mb.z)
+		var q: PhysicsShapeQueryParameters3D = \
+			PhysicsShapeQueryParameters3D.new()
+		q.shape = capsule
+		q.transform = Transform3D(Basis.IDENTITY, depart)
+		q.motion = arrivee - depart
+		q.collision_mask = 1
+		var r: PackedFloat32Array = space.cast_motion(q)
+		var sur: float = 1.0 if r.is_empty() else r[0]
+		print("[sanctuaire] seuil %s : la capsule du héros (Ø %.2f m) "
+			% [String(sens[0]), CAPSULE_R * 2.0]
+			+ "parcourt %.0f %% du trajet sans contact" % (sur * 100.0))
+		if sur < 0.999:
+			ecarts.append("la capsule bute à %.0f %% du seuil en %s"
+				% [sur * 100.0, String(sens[0])])
 
 	# ---- 3. QUI EST GELÉ AUTOUR DU SITE ------------------------------------
 	var origine_lieu: Vector3 = lieu.global_position
