@@ -869,7 +869,18 @@ func _gueule_de_chambre() -> void:
 	# on ne voit pas la base cesse d'être le premier plan.
 	# Lacet 180° : dans le GLB le quadrant libre regarde Blender +y, donc
 	# Godot −z ; il faut qu'il regarde +z, le sud, d'où l'on arrive.
-	var tas: Vector3 = _seated(-1.55, 5.30)
+	# PASSE 4 : LE BOURRELET PASSE ENFIN DEVANT LE COFFRE.
+	#
+	# À (−1,55 ; 5,30) il tombait à 751 px quand le coffre est à 704 : il était
+	# À CÔTÉ de lui, pas devant, et deux passes d'agrandissement n'y pouvaient
+	# rien — on grossissait un objet mal placé. À (−1,88 ; 4,98) il partage le
+	# latéral du coffre (l = 0,85) à p = 6,80 contre 7,53, donc il le précède
+	# de 0,73 m dans l'axe de l'objectif.
+	#
+	# Il n'a pas de corps, comme toutes les pièces du GLB : le couloir
+	# d'approche du sud reste physiquement libre, et son quadrant ouvert
+	# regarde toujours +z grâce au lacet 180°.
+	var tas: Vector3 = _seated(-1.88, 4.98)
 	var grand: Node3D = _piece_pierre("SM_Barrow_Deblais", tas,
 		Vector3(0.0, deg_to_rad(180.0), 0.0), "Deblais_grand", 0.88)
 	# PASSE 3 : le bourrelet grossit. Sur `it2` il coupe déjà le bas du coffre,
@@ -1169,15 +1180,36 @@ const ANCRE_COFFRE: Vector2 = Vector2(-1.5, 4.3)
 ##
 ## [pièce, angle sur l'arc en degrés, rayon en m, échelle]
 ##
-## PASSE 2 : QUATRE DALLES PLUS LARGES ET PLUS SERRÉES, PAS CINQ PETITES. Sur
-## `it1`, cinq dalles à échelle 0,95-1,15 se lisaient comme le même semis
-## d'éclats que le chemin. Une enceinte se lit à sa CONTINUITÉ : moins de
-## pièces, plus grandes, bord à bord.
+## PASSE 4 — DES PIERRES QUI MORDENT LES BORDS, PAS UN ARC DE DALLES À PLAT.
+##
+## Deux passes d'enceinte couchée n'ont rien produit dans le cadre, et la
+## raison se voit sur `it2` et `it3` : une dalle posée à plat n'a pas de
+## SILHOUETTE. Elle disparaît dans l'herbe à sept mètres, quelle que soit sa
+## taille. Une enceinte funéraire se lit à ses pierres levées.
+##
+## Deux pierres basses viennent donc border le coffre à 0,74 et 0,63 m de son
+## centre — 664 et 754 px, quand le coffre s'étend de 660 à 750. Elles mordent
+## donc ses deux bords et lui coupent le tiers inférieur des flancs. À 0,52 et
+## 0,55 m elles restent bien SOUS lui (0,9 m) : elles le bordent, elles ne le
+## cachent pas, et la corrective exige qu'il reste visible.
+##
+## AUCUN CORPS : `HAUTEUR_REELLE` ne connaît pas les pièces de cette table, et
+## de toute façon 0,94 × 0,55 − 0,20 = 0,32 m tombe sous le plancher de 0,35 m
+## de la boucle de collisions. C'est délibéré : le couloir d'approche du sud
+## passe à 0,33 m de la pierre de droite, et lui donner un corps fermerait
+## l'accès à la récompense — le « piège invisible » que ce fichier refuse
+## depuis le lot 1.R.
+##
+## Les deux dalles couchées restent, mais DERRIÈRE le coffre (615 et 696 px, à
+## p = 7,66 et 8,59 contre 7,53 pour lui) : elles ferment l'arc au fond du
+## renfoncement, là où une masse à plat lit encore comme du remblai.
+##
+## [pièce, x, z, lacet, enfoncement, échelle_travers, échelle_hauteur]
 const ENCEINTE: Array[Array] = [
-	["SM_Barrow_Lame_A", 165.0, 1.24, 1.45],
-	["SM_Barrow_Lame_B", 218.0, 1.22, 1.40],
-	["SM_Barrow_Lame_A", 272.0, 1.26, 1.35],
-	["SM_Barrow_Lame_C", 332.0, 1.28, 1.50],
+	["SM_Barrow_Stele_B", -2.14, 4.32, 74.0, 0.20, 1.05, 0.55],
+	["SM_Barrow_Stele_B", -1.14, 4.89, -52.0, 0.22, 0.95, 0.58],
+	["SM_Barrow_Lame_A", -2.55, 3.55, 118.0, 0.10, 1.35, 1.35],
+	["SM_Barrow_Lame_C", -0.85, 3.45, 24.0, 0.10, 1.40, 1.40],
 ]
 
 
@@ -1231,16 +1263,12 @@ func _enceinte_du_coffre() -> void:
 	var index: int = 0
 	for spec: Array in ENCEINTE:
 		index += 1
-		var a: float = deg_to_rad(float(spec[1]))
-		var r: float = float(spec[2])
-		var x: float = ANCRE_COFFRE.x + cos(a) * r
-		var z: float = ANCRE_COFFRE.y + sin(a) * r
-		var at: Vector3 = _seated(x, z)
-		var dalle: Node3D = _piece_pierre(String(spec[0]),
-			at + Vector3(0.0, -0.11, 0.0),
-			Vector3(0.0, deg_to_rad(-float(spec[1])), 0.0),
+		var at: Vector3 = _seated(float(spec[1]), float(spec[2]))
+		var piece: Node3D = _piece_pierre(String(spec[0]),
+			at + Vector3(0.0, -float(spec[4]), 0.0),
+			Vector3(0.0, deg_to_rad(float(spec[3])), 0.0),
 			"Enceinte_%d" % index, TEINTE_ENTERREE)
-		dalle.scale = Vector3.ONE * float(spec[3])
+		piece.scale = Vector3(float(spec[5]), float(spec[6]), float(spec[5]))
 		declare_support(at)
 
 
