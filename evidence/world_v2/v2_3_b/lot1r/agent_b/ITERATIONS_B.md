@@ -818,3 +818,66 @@ n'était plus qu'un cheveu, elle respire.
    ligne de sol, avec 2,4 m de marge.
 2. **La franchissabilité de la nef recomposée.** `probe_sanctuaire.gd`
    échantillonne l'ancien axe (piège 2). Son `PASS` est vide de sens ici.
+
+---
+
+## R4 — la pointe d'arase survivante (LOT 1.R.1, reprise B2, périmètre tour seule)
+
+**Le rouge repris.** Au premier assemblage complet des masques finaux, le lead
+mesure `watchtower_ruin × waterfall_cave` (CORPUS gelé), couple 0°×0° : IoU
+0,4975 à 30 m (seuil gelé 0,4931) et 0,4930 à 80 m (S 0,4912). Ni la voie B ni
+la voie A ne pouvaient le voir : le détecteur Python n'était pas dans
+l'acceptation de la voie B, et la voie A testait la tour candidate (0,4647,
+VERT). Cause mesurée sur les masques : la R3 a aplani le bord supérieur de
+l'arase et élargi les débris en Z — le masque 0° du fût se lisait « monticule ».
+
+**Le geste, un seul** (`make_watchtower_ruin.py`, commit `1f82535`) : un
+chaînage d'angle survivant au sommet du mur ouest, angle sud-ouest. Cotes
+quantifiées sur `ASSISE` depuis `H_OUEST` : pointe +7 assises (10,91 m),
+paliers +6/+5/+2, base 2 assises sous l'arase, borné à s = 1,57 (le plateau du
+profil tient h0 jusqu'à 1,575 — aucun joint flottant). 2,43 m² au-dessus de
+l'arase ≈ 59 px sur la toile 96×96 à 30 m, pour un besoin de +47 (30 m) et
++39 (80 m), en union pure : la zone au-dessus de la ligne ~24/96 était vide
+des deux côtés. Aucune pièce nouvelle (le merlon vit dans
+`SM_Watchtower_Shell` : D7 inchangé, 15/40 ; 19 maillages au montage, comme en
+R3), aucun collider (culmine hors de portée), 2 110 tris (budget 12 000).
+GARDE 5 neuve dans le générateur : 4 sommets minimum > 10,5 m à l'angle SO,
+sinon refus d'enregistrer.
+
+**Le second ordre, sondé et non simulé.** Emprise Y du lieu 11,99 → 13,94 m ;
+le cadrage silhouette reste gouverné par la largeur (14,06 × 1200/900 =
+18,75 m), donc l'échelle du corps normalisé ne bouge pas — il descend de ~4 px
+dans la toile, et la sonde réelle a tranché ce que l'arithmétique ne pouvait
+pas garantir.
+
+**Verdict (détecteur réel, manifestes d'intégration du lead, manifeste tour
+remplacé, arbre committé `1f82535`, `repo_dirty: false`,
+`it/r4/verdict_d3_tour.json`) :**
+
+| tour × grotte | avant (lead) | après | S | S−0,010 |
+|---|---:|---:|---:|---:|
+| 30 m | 0,4975 | **0,4189** | 0,4931 | 0,4831 |
+| 80 m | 0,4930 | **0,4093** | 0,4912 | 0,4812 |
+| 160 m | 0,4355 | **0,4242** | 0,5458 | 0,5358 |
+
+Pire paire de la tour aux trois distances : la grotte elle-même, marge ≥ 0,064
+sous S−0,010. Zéro paire signalée dans tout l'assemblage ; témoin dégénéré
+signalé. Une seule sonde silhouettes a suffi (budget : 2) ; la reprise
+`sonde1b` est la MÊME géométrie rejouée depuis l'arbre committé pour que le
+manifeste porte `repo_dirty: false`, pas une itération.
+
+**Capture joueur** (caméra gelée `watchtower_ruin_joueur`, paramètres copiés
+du plan, `it/r4/watchtower_ruin_joueur.png`) — constat descriptif, aucun
+verdict artistique : porte VISIBLE (rectangle sombre net au pied du pan
+éclairé, identique à R3) ; brèche VISIBLE (passage ouvert, identique) ;
+couronne — la pointe se lit comme une crête étagée qui comble l'échancrure de
+ciel visible en R3 en haut à gauche, appareil continu avec le chaînage,
+sommet dans le cadre ; le corps haut central reste coupé par cette caméra
+rapprochée, comme en R3.
+
+**NON VÉRIFIÉ, et à dire au verdict :** la vue d'identité (`watchtower_ruin_identite`)
+n'a pas été recapturée (budget : une seule capture joueur) — la lecture de la
+couronne complète à 24 m reste à constater ; le verdict R-D3 canonique
+(`--out` par défaut) reste à régénérer par le lead à l'intégration ; les deux
+points NON VÉRIFIÉS de R3 (arbre gelé du sanctuaire, franchissabilité de la
+nef) sont hors de ce périmètre et demeurent.
