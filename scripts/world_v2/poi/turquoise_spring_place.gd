@@ -221,19 +221,36 @@ func _build() -> void:
 	# (z ±1,9/2,4 → −3,4/+3,8). L'écartement n'est pas décoratif : à masses
 	# grossies et positions inchangées, les deux enveloppes se touchaient et
 	# la fente — le point d'où l'eau sort — se refermait.
-	var machoire_n: Vector3 = _seated(-9.9, -3.4)
-	_masse(&"SM_Spring_MawN", "Machoire_nord", -9.9, -3.4, 18.0, 0.22, true)
+	#
+	# ITÉRATION 12 — L'ANNEAU S'ÉLARGIT SUR LES DEUX AXES, et le geste est
+	# prouvé par l'arithmétique AVANT d'être bâti
+	# (`evidence/.../voie_a3/controles/controle_occlusion_iter12.py`, PASS au
+	# commit be98d97). Les mâchoires s'écartent encore en Z (−3,4 → −5,2 et
+	# +4,2 → +6,1) : la couronne de roche grandit AUTOUR de l'œil — la
+	# composition joueur y gagne, l'eau reste au centre. Leur amincissement en
+	# X (demi_a, côté générateur) recule leur face est : c'est la moitié ouest
+	# du corridor de 2,62 m dont les flancs est du rebord forment l'autre
+	# moitié. Le support de la mâchoire sud était déclaré à (−9,5 ; 3,8) — la
+	# position d'AVANT le commit 49b4913 — pendant que la masse était à
+	# (−10,1 ; 4,2) : un appui D2 qui flottait à 70 cm de sa pierre. Les deux
+	# suivent désormais le même littéral.
+	var machoire_n: Vector3 = _seated(-9.9, -5.2)
+	_masse(&"SM_Spring_MawN", "Machoire_nord", -9.9, -5.2, 18.0, 0.22, true)
 	declare_support(machoire_n)
-	var machoire_s: Vector3 = _seated(-9.5, 3.8)
-	_masse(&"SM_Spring_MawS", "Machoire_sud", -10.1, 4.2, -24.0, 0.22, true)
+	var machoire_s: Vector3 = _seated(-10.1, 6.1)
+	_masse(&"SM_Spring_MawS", "Machoire_sud", -10.1, 6.1, -24.0, 0.22, true)
 	declare_support(machoire_s)
 	# — LA COURONNE ferme le haut de la fente : l'eau sort d'un creux fermé,
 	# pas d'un intervalle entre deux objets.
 	# La couronne remonte sur la pente (−10,4 → −11,0) et s'enfonce davantage :
 	# le sol y gagne ≈ 1 m en un mètre et demi (profils mesurés en tête de
 	# fichier), et une masse posée à plat sur une pente montre sa jupe.
-	var couronne: Vector3 = _seated(-11.0, 0.3)
-	_masse(&"SM_Spring_Crown", "Couronne_fente", -11.0, 0.3, 40.0, 0.35, true)
+	# Itération 12 : la couronne recule d'un cran vers l'est (−11,0 → −10,6,
+	# le sol mesuré y est 40 cm plus bas : elle coiffe la fente sans remonter)
+	# et glisse au sud (0,3 → 0,85) pour laisser la respiration nord–couronne
+	# du masque 0° (mesurée 0,63 m au pré-contrôle).
+	var couronne: Vector3 = _seated(-10.6, 0.85)
+	_masse(&"SM_Spring_Crown", "Couronne_fente", -10.6, 0.85, 40.0, 0.35, true)
 	declare_support(couronne)
 
 	# — LA VASQUE. Le lit D'ABORD, la nappe ensuite, les margelles au bord
@@ -257,8 +274,10 @@ func _build() -> void:
 		false)
 	# Les appuis DÉCLARÉS suivent les lobes, pas l'objet : le filet D2 lit des
 	# points, et un point au centre de la vasque serait un appui sur de l'eau.
-	for lobe: Vector2 in [Vector2(-7.6, -3.4), Vector2(-1.5, 3.9),
-			Vector2(-8.2, 4.4)]:
+	# Itération 12 : les lobes nord et sud sont désormais les FLANCS EST
+	# (x −2,95, z −5,1/+6,2) — leurs appuis les suivent. L'écrin ne bouge pas.
+	for lobe: Vector2 in [Vector2(-2.95, -5.1), Vector2(-1.5, 3.9),
+			Vector2(-2.95, 6.2)]:
 		declare_support(_seated(lobe.x, lobe.y))
 	# — LE FIL QUI S'EN VA. Trois dalles mouillées, à demi enfoncées, qui
 	# descendent au nord-est vers la tête de l'affluent (local +6 ; −6),
@@ -612,25 +631,28 @@ func _bande(st: SurfaceTool, depart_r: float, longueur: float,
 		precedent_t = teinte
 
 
-## Trois volumes seulement — et AUCUN sur le fil de l'eau : les dalles du
-## déversoir sont à plat et se franchissent, un corps solide dessus ferait
-## une marche au milieu d'un ruisseau. Tous à plus de 16 m de la tête
-## d'affluent (+6 ; −6) : la bande gelée reste libre.
+## Quatre volumes — et AUCUN sur le fil de l'eau : les dalles du déversoir
+## sont à plat et se franchissent, un corps solide dessus ferait une marche
+## au milieu d'un ruisseau. Itération 12 : les deux flancs est portent
+## désormais ≈ 2,3 m de roche chacun — un joueur ne doit pas les traverser.
+## Quatre boîtes + la sphère du POI = 5 formes sur les 6 du budget micro.
+## Distances à la tête d'affluent gelée (+6 ; −6) : nord 15,9 m, sud 20,1 m,
+## flanc nord 9,0 m, flanc sud 15,1 m — le contrat en demande 5.
 func _collisions() -> void:
-	# Volumes recalés sur les masses du GLB (emprises visibles mesurées par le
-	# générateur : mâchoire nord 5,6 × 6,6 m pour 4,05 m de haut ; sud
-	# 7,4 × 5,2 m pour 3,68 m). Ils restent plus ÉTROITS que le visible : le
-	# pied s'évase et se franchit, on ne bute pas sur son évasement.
-	# Distances à la tête d'affluent gelée (+6 ; −6), recalculées : nord
-	# 16,1 m, sud 18,3 m, bloc 17,6 m — le contrat en demande 5.
+	# Volumes plus ÉTROITS que le visible : le pied s'évase et se franchit,
+	# on ne bute pas sur son évasement. Les mâchoires amincies en X (demi_a
+	# 1,50/1,30) reçoivent des boîtes amincies de même.
 	K.collider_box(self, "Source_machoire_nord",
-		_seated(-9.9, -3.4) + Vector3(0.0, 1.5, 0.0), Vector3(3.6, 3.0, 3.6),
+		_seated(-9.9, -5.2) + Vector3(0.0, 1.5, 0.0), Vector3(2.6, 3.0, 3.6),
 		18.0)
 	K.collider_box(self, "Source_machoire_sud",
-		_seated(-10.1, 4.2) + Vector3(0.0, 1.3, 0.0), Vector3(2.6, 2.6, 3.2),
+		_seated(-10.1, 6.1) + Vector3(0.0, 1.3, 0.0), Vector3(2.2, 2.6, 3.2),
 		-24.0)
-	K.collider_box(self, "Source_bloc",
-		_seated(-8.2, 4.4) + Vector3(0.0, 0.7, 0.0), Vector3(2.4, 1.4, 2.4),
+	K.collider_box(self, "Source_flanc_nord",
+		_seated(-2.95, -5.1) + Vector3(0.0, 0.9, 0.0), Vector3(2.4, 1.8, 2.2),
+		30.0)
+	K.collider_box(self, "Source_flanc_sud",
+		_seated(-2.95, 6.2) + Vector3(0.0, 0.8, 0.0), Vector3(2.2, 1.6, 2.0),
 		150.0)
 
 

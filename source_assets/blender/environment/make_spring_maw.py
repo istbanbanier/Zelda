@@ -182,14 +182,21 @@ MASSES = [
     # `demi_a` (X) TOMBE de 2,60 à 2,20 : c'est le « flanc est du bloc ouest »
     # que la simulation demande d'abaisser dans la vue 90°. La hauteur descend
     # un peu (4,10 → 3,80) pour adoucir le pic dans la vue 0°.
-    ("SM_Spring_MawN", 3.80, 2.20, 2.20, 0.45, 90311, (0.055, -0.085),
+    # ITÉRATION 12 — LE CORRIDOR EN X EST CONSTRUIT, PAS SIMULÉ. `demi_a` est
+    # la PROFONDEUR vue depuis la caméra joueur (qui regarde le long de −X) :
+    # l'amincir n'enlève rien à la présence perçue, mais recule la face est du
+    # groupe ouest — c'est la moitié ouest du corridor de 2,62 m prouvé par
+    # `voie_a3/controles/controle_occlusion_iter12.py` AVANT cette édition.
+    # 2,20 → 1,50 ; demi_b 2,20 → 2,05 (respiration nord–couronne du masque 0°).
+    ("SM_Spring_MawN", 3.80, 1.50, 2.05, 0.45, 90311, (0.055, -0.085),
      200.0, 1.15, [(0.0, 0.0, 1.0)]),
     # Mâchoire sud : penche vers le nord, symétrie ROMPUE (hauteur, graine,
     # inclinaison) — deux masses identiques miroir feraient une porte.
     # La mâchoire sud était la plus large en X (7,88 m d'emprise) : c'est elle
     # qui étirait le bloc ouest vers l'est et remplissait le corridor. `demi_a`
     # 2,50 → 1,60.
-    ("SM_Spring_MawS", 3.60, 1.60, 2.00, 0.45, 40277, (0.040, 0.095),
+    # ITÉRATION 12 : 1,60 → 1,30, même raison que la mâchoire nord.
+    ("SM_Spring_MawS", 3.60, 1.30, 2.00, 0.45, 40277, (0.040, 0.095),
      165.0, 1.05, [(0.0, 0.0, 1.0)]),
     # La couronne : plus haut sur la pente, elle FERME le haut de la fente.
     # Mouillage 0,40 → 0,85 m : à 0,40 le contrôle a rougi (part 0,04, juste
@@ -201,7 +208,11 @@ MASSES = [
     # à 1,90 m elle coiffe encore la fente sans combler le profil. La silhouette
     # passe d'un bloc plein à deux masses et un creux — le seul profil, mesuré
     # sur onze variantes, qui ne soit pas déjà celui d'un lieu accepté.
-    ("SM_Spring_Crown", 1.90, 2.05, 1.75, 0.45, 71553, (-0.070, 0.020),
+    # ITÉRATION 12 : demi_a 2,05 → 1,65 (corridor), demi_b 1,75 → 1,62 — au
+    # masque 0° la couronne est la masse CENTRALE basse entre les deux tours ;
+    # ses épaules devaient laisser 0,5 m de respiration de chaque côté
+    # (mesuré : 0,63 m au nord, 0,78 m au sud, pré-contrôle iter12).
+    ("SM_Spring_Crown", 1.90, 1.65, 1.62, 0.45, 71553, (-0.070, 0.020),
      150.0, 0.85, [(0.0, 0.0, 1.0)]),
     # Le rebord : trois lobes fondus autour de la vasque. Les décalages sont
     # exprimés en repère BLENDER, donc dy = −dz Godot.
@@ -216,11 +227,21 @@ MASSES = [
     # une queue haute redonnait un bloc plein. Sa jupe redescend à 0,50 : elle
     # avait été doublée pour absorber le relief sous trois lobes, mais elle
     # posait à elle seule le PLANCHER de l'emprise du lieu (−1,65 m).
-    ("SM_Spring_Rim", 1.70, 1.95, 1.60, 0.50, 26489, (0.030, 0.030),
-    # Les lobes nord et sud reculent vers l'OUEST (Blender dx −1,0 → −2,2 et
-    # −2,2 → −2,8) : ils occupaient le corridor en X que la vue 90° doit voir
-    # vide. L'écrin du fruit ne bouge pas — l'ancre est gelée.
-     215.0, 0.85, [(-2.2, 3.6, 0.92), (3.9, -3.7, 0.46), (-2.8, -4.2, 0.80)]),
+    # ITÉRATION 12 — LES LOBES NORD ET SUD TRAVERSENT LE CORRIDOR et
+    # deviennent les FLANCS EST de la couronne : Blender dx −2,2/−2,8 → +2,45,
+    # dy vers ±5,3/−6,0 (Godot x −2,95, z −5,1/+6,2 — de l'autre côté du
+    # corridor de 2,62 m). H 1,70 → 3,00 : les flancs doivent porter une
+    # vraie masse (≈ 2,3 m visibles), sinon la vue 90° relit « masse +
+    # satellite », la grammaire du belvédère qui a produit le FAIL d'iter11.
+    # L'écrin du fruit ne bouge PAS (l'ancre est gelée) ; son échelle
+    # 0,46 → 0,30 compense la hausse de H (hauteur visible ≈ 0,77 m, comme
+    # avant : un écrin qui masque l'eau qu'il encadre serait un contresens).
+    # `azim_mouille` 215 → 300 : les trois lobes sont désormais tous À L'EST
+    # de la vasque — leur côté trempé est l'OUEST/SUD-OUEST ; sur l'objet
+    # fusionné, l'azimut vit dans le repère des OFFSETS de lobes (mesuré :
+    # part 0,185, bande 0,04–0,40).
+    ("SM_Spring_Rim", 3.00, 1.95, 1.60, 0.50, 26489, (0.030, 0.030),
+     300.0, 0.85, [(2.45, 5.3, 0.92), (3.9, -3.7, 0.30), (2.45, -6.0, 0.80)]),
 ]
 RESOLUTION = {
     "SM_Spring_MawN": (22, 18, 3),

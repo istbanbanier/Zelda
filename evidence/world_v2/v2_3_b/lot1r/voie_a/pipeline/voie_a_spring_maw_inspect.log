@@ -1,6 +1,6 @@
 === INSPECTION glTF : assets/environment/rocks/SM_SpringMaw.glb ===
-  format                 : GLB v2, 583660 octets
-  chunk_binaire          : 576456 octets
+  format                 : GLB v2, 585136 octets
+  chunk_binaire          : 577936 octets
   generateur             : Khronos glTF Blender I/O v4.0.44
   version_gltf           : 2.0
   meshes                 : 4
@@ -10,9 +10,9 @@
   skins                  : 0
   animations             : 0 (aucune)
   triangles              : 5516
-  bbox_min               : [-4.9362, -0.46, -5.569]
-  bbox_max               : [5.2479, 3.5077, 6.2063]
-  dimensions_m           : [10.1841, 3.9677, 11.7754]
+  bbox_min               : [-2.3486, -0.46, -7.3849]
+  bbox_max               : [5.1481, 3.5077, 8.0164]
+  dimensions_m           : [7.4966, 3.9677, 15.4013]
   [AVERT] mesh 'SM_Spring_MawN': pas d'UV0 — lightmap et matériaux limités
   [AVERT] mesh 'SM_Spring_MawN': pas d'UV0 — lightmap et matériaux limités
   [AVERT] mesh 'SM_Spring_MawS': pas d'UV0 — lightmap et matériaux limités
