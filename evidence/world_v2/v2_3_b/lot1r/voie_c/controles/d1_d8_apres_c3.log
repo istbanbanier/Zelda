@@ -1,0 +1,19 @@
+# D1-D8 rejoués après la troisième corrective du champ (voie C)
+# commit du code : 764a4c83606925ac0bd148a938d51ff40e1a8075
+# commande : tools/lancer_godot.sh --headless --path . --script tools/godot/test_runner.gd -- --filter=lot1_defauts
+# date : 2026-08-25T13:57:44Z
+
+  ok   test_world_v2_lot1_defauts.gd::test_d0_les_six_sujets_du_lot_1_existent_vraiment (3 assertions)
+  ok   test_world_v2_lot1_defauts.gd::test_d1_aucun_lieu_ne_lit_comme_un_assemblage_de_primitives (3 assertions)
+  ok   test_world_v2_lot1_defauts.gd::test_d2_rien_ne_flotte_et_rien_n_est_enterre (3 assertions)
+  ok   test_world_v2_lot1_defauts.gd::test_d3_aucun_lieu_du_lot_n_en_repete_un_autre (6 assertions)
+  ok   test_world_v2_lot1_defauts.gd::test_d4_ni_route_ni_eau_ni_camera_ne_sont_obstruees (4 assertions)
+  ok   test_world_v2_lot1_defauts.gd::test_d5_aucune_position_de_site_n_est_codee_en_dur (2 assertions)
+  ok   test_world_v2_lot1_defauts.gd::test_d6_chaque_recompense_canonique_est_raccordee (4 assertions)
+  ok   test_world_v2_lot1_defauts.gd::test_d7_aucun_budget_de_lieu_n_est_depasse (3 assertions)
+  ok   test_world_v2_lot1_defauts.gd::test_d8_aucun_element_gele_n_a_bouge (3 assertions)
+  ok   test_world_v2_lot1_defauts.gd::test_temoin_l_instrument_de_boititude_voit_un_pave (3 assertions)
+  ok   test_world_v2_lot1_defauts.gd::test_temoin_les_compteurs_voient_ce_qu_ils_pretendent_compter (4 assertions)
+
+=== RÉSULTAT: 11 réussi(s), 0 échoué(s) ===
+RC=0
