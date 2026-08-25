@@ -764,3 +764,57 @@ trancher.
    pas modifiée : c'est un fichier de `tools/`, hors de ma voie. **La
    franchissabilité de la nef recomposée est donc NON VÉRIFIÉE**, et il faut
    soit recaler `CHEMIN`, soit le dire dans le verdict.
+
+---
+
+## Clôture R3 — silhouettes et sondes rejouées
+
+Les mesures ci-dessous sont postérieures au commit `3555c22` du journal ; elles
+sont versées ici pour que la lecture soit close au même endroit que le reste.
+
+### Emprises orthogonales, avant → après
+
+Silhouettes 900×1200, monde monté, `repo_dirty: false`. « Avant » = état
+`candidate`/`final` de la passe précédente ; « après » = R3.
+
+| | avant | après | Δ |
+|---|---:|---:|---:|
+| tour, emprise X | 13,11 m | **14,06 m** | +0,95 |
+| tour, sujet 0° | 13,50 % | 13,37 % | −0,13 |
+| tour, sujet 90° | 9,11 % | **9,33 %** | +0,22 |
+| sanctuaire, emprise X | 17,05 m | **18,25 m** | +1,20 |
+| sanctuaire, emprise Z | 11,48 m | **10,62 m** | −0,86 |
+| sanctuaire, sujet 0° | 6,36 % | **5,23 %** | −1,13 |
+| sanctuaire, sujet 90° | 6,63 % | **5,95 %** | −0,68 |
+
+Le sanctuaire **occupe moins** l'image orthogonale qu'avant. La cause est la
+même que pour la vue d'identité : une nef plus courte, tournée de 45°, s'étend
+moins dans la profondeur de chaque axe cardinal. Je ne présente pas cela comme
+un gain. Le pari de la passe est que la vue JOUEUR — celle qui a été rejetée —
+gagne ce que les vues cardinales perdent ; l'arbitrage appartient à la revue.
+
+### Sondes sur la géométrie R3
+
+`probe_vigie_ascension` : **PASS** — 62 appuis, premier appui 26,00, sommet
+28,79, gain 2,79 m, contremarches ≤ 0,38, capsule libre, redescente < 6 m.
+L'escalier déplacé reste physiquement praticable, volée 1 → palier tournant →
+volée 2.
+
+`sonde_budget_lot1` (D7, monde monté) :
+
+| lieu | famille | modules | visuels | collisions | plafond |
+|---|---|---:|---:|---:|---|
+| watchtower_ruin | ruine | 15 | 19 | 13 | 40 / 80 / 20 |
+| forest_shrine | vestige | 33 | 35 | 12 | 40 / 80 / 20 |
+
+Le sanctuaire était à **40 modules pile** avant la passe. Il est à 33 : la marge
+n'était plus qu'un cheveu, elle respire.
+
+### Ce qui reste NON VÉRIFIÉ, et le restera dans le rapport
+
+1. **La position exacte de l'arbre gelé qui masquait le sanctuaire.** Aucune
+   sonde ne peut la lire (voir le piège 1 ci-dessus). Tout le placement repose
+   sur une bande d'occultation mesurée à l'écran et une distance déduite de la
+   ligne de sol, avec 2,4 m de marge.
+2. **La franchissabilité de la nef recomposée.** `probe_sanctuaire.gd`
+   échantillonne l'ancien axe (piège 2). Son `PASS` est vide de sens ici.
