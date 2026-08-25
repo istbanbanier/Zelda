@@ -571,3 +571,95 @@ plafond d'invisibilité du générateur, `shrine_gp_route_p1` (doit continuer de
 montrer PEU), D7 ≤ 40 modules (le remplacement de 10 pièces par 3 REND 7
 modules), l'identifiant et le genre de récompense. L'ancre de récompense du
 sanctuaire est posée SUR la dalle du cœur : elle suit le cœur, et je le dis.
+
+## R1 — après capture (`it/r1/`, commit `07c230e`, manifeste **propre**)
+
+Chaîne : générateurs VERTS → export glTF VALIDE → `--check-only` RC=0 sur les
+deux scripts → **commit** → `--import` → capture. L'ordre est celui
+d'`evidence.md` : le code est committé AVANT l'image qui le prouve.
+
+### Tour — ce que je VOIS à taille réelle
+
+**Visible et net.** La baie du mur ouest est un **trou clair** au milieu de la
+masse sombre, à x 577-622 / y 107-175. C'était l'objet de la correction, et
+c'est le seul geste dont l'effet ne demande aucune interprétation : une
+ouverture se lit parce que ce qu'on voit à travers est plus clair que le mur.
+
+**Visible.** L'empattement double la lecture du pied ; le fût occupe x 260-830
+au lieu de 345-790 ; la silhouette 0° porte **deux trous** là où elle était un
+rectangle plein de 265 × 510 px. Emprise du lieu, manifeste de silhouette :
+**13,11 → 14,06 m** en X (Y et Z inchangés — ils sont portés par les gravats,
+pas par le fût).
+
+**ÉCHEC, et il est à moi.** La PORTE n'existe pas dans l'image. Mesuré :
+zone de la porte prédite (355-410 × 400-540) p50 **56,3** ; mur voisin
+(430-490 × 400-540) p50 **56,8**. Zéro contraste, donc zéro trou.
+
+La cause, trouvée en relisant les cotes et non en tâtonnant : la baie était
+percée en `y −2,175..−1,575`, et le **mur sud occupe `y −2,625..−1,775` sur
+toute la largeur du fût, angle compris**. Les deux tiers bas de la porte
+débouchaient dans la masse de l'angle sud-est. Le générateur comptait bien
+cinq baies, `gltf_inspect` disait VALIDE, et l'image ne montrait rien.
+
+> C'est ISS-018 en creux : une garde verte sur une propriété qui n'est pas
+> celle qu'on veut garantir. « La baie est percée » n'est pas « on voit à
+> travers ». La garde `BAIES_TOTAL == 5` reste utile — elle attrape le refus
+> silencieux — mais elle ne peut pas voir une ouverture qui donne sur un mur.
+
+**Faible.** La diagonale de l'escalier existe (assise de moellons sur le
+rampant, visible à ×2 vers x 700-800 / y 290-430) mais elle ne s'impose pas :
+le rampant est vu de champ, et seule sa crête accroche la lumière.
+
+### Sanctuaire — ce que je VOIS à taille réelle
+
+**Visible et net : l'arbre ne masque plus le lieu.** La composition occupe
+x 300-620 ; le tronc gelé (594-718) est passé à droite du sujet. C'était la
+cause du REJET, et elle est levée.
+
+**Visible.** Le cœur se lit comme une enclume : dossier vertical, dalle large
+ombrée dessous, et l'offrande **posée dessus** — pas flottante. Les murets se
+lisent comme des pans de mur liés et moussus ; à ×4 sur la vue d'identité, le
+lieu rend « une petite ruine reprise par le bois », ce que dix pierres levées
+ne rendaient pas.
+
+**Vérifié et négatif** : `shrine_gp_route_p1` ne montre **rien** du bâti. Le
+contrat d'invisibilité tient, et il le devait — c'était le risque du geste.
+
+**Faible.** Le seuil ne se lit pas comme une porte : les deux montants
+projettent à x ≈ 333 et 480, soit 147 px d'écart pour 2,02 m d'entraxe à 7 m,
+avec trois murets entre eux.
+
+**Régression mesurée, et elle est à moi.** Emprise de pierre dans la vue
+d'identité, même masque et même fenêtre (saturation ≤ 0,16, luminance 60-205,
+fenêtre 380-980 × 300-600) : **201 × 178 px → 180 × 80 px**. La hauteur du
+groupe s'effondre. La cause est géométrique et pas fautive en soi : la nef,
+raccourcie de 20 % et tournée de 45°, s'étend beaucoup moins dans la
+PROFONDEUR de cette caméra-là, et la profondeur est ce qui faisait la hauteur
+d'écran. Mais 80 px, c'est une bande, pas une masse.
+
+> Avertissement de mesure : ce masque n'est PAS celui des passes précédentes
+> (qui publiaient 258 × 178 px). Je publie donc l'avant ET l'après avec le
+> mien ; seule leur différence est comparable. La grandeur qui l'est
+> réellement d'une passe à l'autre est l'`emprise_m` du manifeste de
+> silhouette, produite par l'outil.
+
+## R2 — les deux corrections tirées de R1 (commit `fe99130`)
+
+Écrit avant modification. Défaut → cause → levier → attendu → caméra :
+
+- Tour, porte murée → l'angle sud occupe `y ≤ −1,775` → baie déplacée à
+  `s ∈ [1,05 ; 1,65]`, soit `y −1,575..−0,975`, 0,20 m de dégagement ;
+  jambages, seuil et linteau tombé suivent → un rectangle sombre dans le pan
+  éclairé, à x ≈ 420-490 → `watchtower_ruin_joueur`, `gp_breche`.
+- Sanctuaire, seuil illisible → 2,02 m d'entraxe et trois murets entre les
+  montants → entraxe 1,38 m, linteau incliné de 15° au lieu d'à plat →
+  deux montants qu'on relie, et une pièce qui a l'air TOMBÉE →
+  `forest_shrine_joueur`.
+- Sanctuaire, présence perdue en identité → murets trop bas → crêtes 0,92 /
+  0,84 / 0,66 m au lieu de 0,82 / 0,72 / 0,55 → l'emprise remonte sans que le
+  rapport cœur/muret descende sous 2,2 → `forest_shrine_identite`.
+
+**Hauteurs de collision RELUES dans le journal de génération**, jamais
+déduites de la hauteur demandée : la brisure rabote chaque crête (0,99 demandé
+→ 0,92 obtenu). Recopier la consigne aurait posé trois murs invisibles de 7 à
+10 cm trop hauts.
