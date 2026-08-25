@@ -1,0 +1,181 @@
+{
+ "lot": "V2.3-B LOT 1.R.1 — revue intermédiaire",
+ "commit_capture": "9ecf10de7",
+ "repo_dirty": false,
+ "note_provenance": "Captures depuis l'arbre COMMITTÉ 9ecf10d (token du driver : vues=0, sil=0, d3=0). Champ NON recapturé : image copiée octet pour octet depuis candidate/ab13 (cmp exact vérifié), manifeste silhouettes du champ repris de la candidate. Caméras : les plans gelés de lot1r/final/shots_ab13.json, aucune modification.",
+ "verdict_d3": {
+  "fichier": "verdict_d3_9ecf10d.json",
+  "verdict": "PASS",
+  "paires_signalees": 0
+ },
+ "fichiers": {
+  "cle_planches.json": {
+   "sha256": "1d1c9b73498d62ff",
+   "octets": 655
+  },
+  "planche_couleur_numerotee.png": {
+   "sha256": "3c6a567cf81fe4d0",
+   "octets": 3292257
+  },
+  "planche_gris.png": {
+   "sha256": "2d5b596955f196e9",
+   "octets": 1168413
+  },
+  "planche_joueur_anonyme.png": {
+   "sha256": "cc566da65b0c5995",
+   "octets": 1828822
+  },
+  "silhouettes/manifest_silhouettes_abandoned_farm.json": {
+   "sha256": "489cc19313813d86",
+   "octets": 959
+  },
+  "silhouettes/manifest_silhouettes_barrow_cemetery.json": {
+   "sha256": "c1fc1ce7da6fc5fe",
+   "octets": 1007
+  },
+  "silhouettes/manifest_silhouettes_camp.json": {
+   "sha256": "380fff5910a279c3",
+   "octets": 905
+  },
+  "silhouettes/manifest_silhouettes_conductive_basin.json": {
+   "sha256": "6f03c8b29ebd8544",
+   "octets": 967
+  },
+  "silhouettes/manifest_silhouettes_ember_raider_camps.json": {
+   "sha256": "588cf1c997d96e97",
+   "octets": 973
+  },
+  "silhouettes/manifest_silhouettes_flower_field.json": {
+   "sha256": "ba2f986602f9925c",
+   "octets": 973
+  },
+  "silhouettes/manifest_silhouettes_forest_shrine.json": {
+   "sha256": "56bb90a5d621af1c",
+   "octets": 998
+  },
+  "silhouettes/manifest_silhouettes_overlook_summit.json": {
+   "sha256": "d7edcb906ea66629",
+   "octets": 1006
+  },
+  "silhouettes/manifest_silhouettes_pylon.json": {
+   "sha256": "ac1028ed1e5389d6",
+   "octets": 908
+  },
+  "silhouettes/manifest_silhouettes_riverside_village.json": {
+   "sha256": "86ede787d66f9943",
+   "octets": 971
+  },
+  "silhouettes/manifest_silhouettes_stone_bridge.json": {
+   "sha256": "37fc373023d78375",
+   "octets": 951
+  },
+  "silhouettes/manifest_silhouettes_thunderstruck_tree.json": {
+   "sha256": "29a8690d69b50970",
+   "octets": 975
+  },
+  "silhouettes/manifest_silhouettes_turquoise_spring.json": {
+   "sha256": "99d6409f88605b86",
+   "octets": 1011
+  },
+  "silhouettes/manifest_silhouettes_watchtower_ruin.json": {
+   "sha256": "150f116bf416c65d",
+   "octets": 1007
+  },
+  "silhouettes/manifest_silhouettes_waterfall_cave.json": {
+   "sha256": "8bb23c437c11b74d",
+   "octets": 959
+  },
+  "silhouettes/silhouette_barrow_cemetery_000.png": {
+   "sha256": "a5bea3d2acfb2b65",
+   "octets": 8592
+  },
+  "silhouettes/silhouette_barrow_cemetery_090.png": {
+   "sha256": "429156a0d897c359",
+   "octets": 8906
+  },
+  "silhouettes/silhouette_forest_shrine_000.png": {
+   "sha256": "2f58b17484b9cfa8",
+   "octets": 12126
+  },
+  "silhouettes/silhouette_forest_shrine_090.png": {
+   "sha256": "4c0bef78cec31e25",
+   "octets": 12268
+  },
+  "silhouettes/silhouette_overlook_summit_000.png": {
+   "sha256": "3ee743db9d1b8101",
+   "octets": 8416
+  },
+  "silhouettes/silhouette_overlook_summit_090.png": {
+   "sha256": "90fedd730e9cd632",
+   "octets": 8907
+  },
+  "silhouettes/silhouette_turquoise_spring_000.png": {
+   "sha256": "32232d54f5c50496",
+   "octets": 8668
+  },
+  "silhouettes/silhouette_turquoise_spring_090.png": {
+   "sha256": "1ee57d618b2ac1a3",
+   "octets": 8013
+  },
+  "silhouettes/silhouette_watchtower_ruin_000.png": {
+   "sha256": "e3012289477982c7",
+   "octets": 8201
+  },
+  "silhouettes/silhouette_watchtower_ruin_090.png": {
+   "sha256": "18210ca029e2b093",
+   "octets": 8210
+  },
+  "verdict_d3_9ecf10d.json": {
+   "sha256": "828bacedcea517b4",
+   "octets": 38979
+  },
+  "vues/barrow_cemetery_identite.png": {
+   "sha256": "8aafec79495f93b6",
+   "octets": 1061357
+  },
+  "vues/barrow_cemetery_joueur.png": {
+   "sha256": "ea9eb93929c0be8a",
+   "octets": 898181
+  },
+  "vues/flower_field_joueur.png": {
+   "sha256": "c967d3ac23df2afb",
+   "octets": 1286905
+  },
+  "vues/forest_shrine_identite.png": {
+   "sha256": "3dfa356d825b71a5",
+   "octets": 980210
+  },
+  "vues/forest_shrine_joueur.png": {
+   "sha256": "e633d8086b18049b",
+   "octets": 926693
+  },
+  "vues/manifest.json": {
+   "sha256": "821e56aaf8116c5f",
+   "octets": 3395
+  },
+  "vues/overlook_summit_identite.png": {
+   "sha256": "9fdb01b4bb2fd5a0",
+   "octets": 998448
+  },
+  "vues/overlook_summit_joueur.png": {
+   "sha256": "f013c3284b4a7fa0",
+   "octets": 952529
+  },
+  "vues/turquoise_spring_identite.png": {
+   "sha256": "57d3aee4fe992fc2",
+   "octets": 890251
+  },
+  "vues/turquoise_spring_joueur.png": {
+   "sha256": "e1203b707ce86710",
+   "octets": 856345
+  },
+  "vues/watchtower_ruin_identite.png": {
+   "sha256": "347dcedaf296de0d",
+   "octets": 848408
+  },
+  "vues/watchtower_ruin_joueur.png": {
+   "sha256": "5d8b3fef0f5cbbc6",
+   "octets": 960996
+  }
+ }
+}

@@ -1,0 +1,24 @@
+{
+ "commit": "9ecf10d",
+ "planche_joueur_anonyme": {
+  "1": "forest_shrine_joueur",
+  "2": "overlook_summit_joueur",
+  "3": "turquoise_spring_joueur",
+  "4": "flower_field_joueur",
+  "5": "watchtower_ruin_joueur",
+  "6": "barrow_cemetery_joueur"
+ },
+ "planche_couleur_numerotee": {
+  "1": "watchtower_ruin_joueur",
+  "2": "barrow_cemetery_joueur",
+  "3": "overlook_summit_identite",
+  "4": "flower_field_joueur",
+  "5": "overlook_summit_joueur",
+  "6": "barrow_cemetery_identite",
+  "7": "forest_shrine_joueur",
+  "8": "forest_shrine_identite",
+  "9": "watchtower_ruin_identite",
+  "10": "turquoise_spring_joueur",
+  "11": "turquoise_spring_identite"
+ }
+}
