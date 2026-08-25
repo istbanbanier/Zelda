@@ -326,8 +326,19 @@ func _nef() -> void:
 ## entre la table et la route.
 func _coeur() -> void:
 	var table: Vector3 = _seated(0.0, 0.0)
-	_piece_vestige("SM_Shrine_Table", table,
+	var dalle: Node3D = _piece_vestige("SM_Shrine_Table", table,
 		Vector3(0.0, deg_to_rad(12.0), 0.0))
+	# LE CŒUR DOIT DOMINER LES MURS — c'est la phrase du contrat, et la capture
+	# `it/t2/shrine_gp_nef.png` montre l'inverse : la table est vue de champ,
+	# aussi large qu'un socle de nef, et rien ne dit que c'est ELLE le sujet.
+	# Elle s'élargit de 30 % au sol (1,60 × 1,12 m → 2,08 × 1,46 m), en XZ
+	# SEULEMENT.
+	# L'axe Y est laissé à 1,0 et ce n'est pas un détail : `TABLE_DESSUS` vaut
+	# 0,89 m, c'est une cote LUE dans le journal de la chaîne Blender, et
+	# l'ancre de récompense s'y appuie. L'étirer verticalement ferait flotter
+	# l'offrande de la hauteur exacte de l'étirement — le défaut que l'audit a
+	# relevé sur ce lieu (B-f-7) et qui vient d'être corrigé.
+	dalle.scale = Vector3(1.30, 1.0, 1.30)
 	declare_support(table)
 	var chevet: Vector3 = _seated(0.16, 0.95)
 	_piece_vestige("SM_Shrine_Chevet", chevet,
@@ -481,8 +492,10 @@ func _couvert() -> void:
 ## soit 1,70 m nets : la capsule du héros passe plus au large qu'avant, et
 ## aucune approche ne se referme. Vérifié par sonde physique, pas par ce calcul.
 func _collisions() -> void:
+	# Le corps suit l'élargissement de 30 % en XZ, pas en Y : la table est plus
+	# large, elle n'est pas plus haute.
 	K.collider_box(self, "Sanctuaire_table",
-		_seated(0.0, 0.0) + Vector3(0.0, 0.45, 0.0), Vector3(1.70, 0.90, 1.20),
+		_seated(0.0, 0.0) + Vector3(0.0, 0.45, 0.0), Vector3(2.21, 0.90, 1.56),
 		12.0)
 	K.collider_box(self, "Sanctuaire_chevet",
 		_seated(0.16, 0.95) + Vector3(0.0, 1.02, 0.0),

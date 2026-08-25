@@ -1,0 +1,240 @@
+[
+ {
+  "name": "watchtower_ruin_identite",
+  "from": [
+   -140.3,
+   34.0,
+   53.8
+  ],
+  "look": [
+   -160,
+   28.0,
+   40
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "watchtower_ruin_joueur",
+  "from": [
+   -154.5,
+   27.7,
+   40.5
+  ],
+  "look": [
+   -160,
+   27.2,
+   40
+  ],
+  "fov": 65.0
+ },
+ {
+  "name": "forest_shrine_identite",
+  "from": [
+   80.5,
+   15.0,
+   59.0
+  ],
+  "look": [
+   86,
+   9.0,
+   74
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "forest_shrine_joueur",
+  "from": [
+   91.5,
+   8.7,
+   64.5
+  ],
+  "look": [
+   86,
+   8.2,
+   74
+  ],
+  "fov": 65.0
+ },
+ {
+  "name": "forest_shrine_joueur_b",
+  "from": [
+   80.5,
+   8.7,
+   64.5
+  ],
+  "look": [
+   86,
+   8.2,
+   74
+  ],
+  "fov": 65.0
+ },
+ {
+  "name": "barrow_cemetery_identite",
+  "from": [
+   67.0,
+   12.0,
+   -83.1
+  ],
+  "look": [
+   56,
+   6.0,
+   -64
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "barrow_cemetery_joueur",
+  "from": [
+   50.0,
+   5.7,
+   -53.6
+  ],
+  "look": [
+   56,
+   5.2,
+   -64
+  ],
+  "fov": 65.0
+ },
+ {
+  "name": "watchtower_gp_lointain",
+  "from": [
+   -90.0,
+   38.0,
+   90.0
+  ],
+  "look": [
+   -160,
+   30.0,
+   40
+  ],
+  "fov": 45.0
+ },
+ {
+  "name": "watchtower_gp_vigie_pov",
+  "from": [
+   -163.6,
+   30.6,
+   41.8
+  ],
+  "look": [
+   -140,
+   20.0,
+   42
+  ],
+  "fov": 65.0
+ },
+ {
+  "name": "watchtower_gp_breche",
+  "from": [
+   -152.6,
+   28.6,
+   39.0
+  ],
+  "look": [
+   -162,
+   27.4,
+   40.3
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "shrine_gp_nef",
+  "from": [
+   86.6,
+   8.55,
+   67.6
+  ],
+  "look": [
+   86.0,
+   7.85,
+   74.0
+  ],
+  "fov": 52.0
+ },
+ {
+  "name": "shrine_gp_coeur",
+  "from": [
+   86.9,
+   8.45,
+   71.4
+  ],
+  "look": [
+   86.0,
+   7.95,
+   74.1
+  ],
+  "fov": 45.0
+ },
+ {
+  "name": "shrine_gp_route_p1",
+  "from": [
+   84.0,
+   8.7,
+   81.0
+  ],
+  "look": [
+   86.0,
+   8.2,
+   74.0
+  ],
+  "fov": 65.0
+ },
+ {
+  "name": "barrow_gp_gueule",
+  "from": [
+   54.6,
+   6.8,
+   -53.5
+  ],
+  "look": [
+   54.22,
+   6.2,
+   -61.6
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "barrow_gp_fosse",
+  "from": [
+   34.0,
+   17.0,
+   -34.0
+  ],
+  "look": [
+   52.5,
+   7.2,
+   -65.5
+  ],
+  "fov": 45.0
+ },
+ {
+  "name": "barrow_gp_chemin",
+  "from": [
+   45.5,
+   6.8,
+   -55.5
+  ],
+  "look": [
+   53.8,
+   6.2,
+   -61.4
+  ],
+  "fov": 55.0
+ },
+ {
+  "name": "watchtower_gp_arase",
+  "from": [
+   -157.6,
+   28.3,
+   39.1
+  ],
+  "look": [
+   -161.7,
+   29.9,
+   38.9
+  ],
+  "fov": 40.0
+ }
+]

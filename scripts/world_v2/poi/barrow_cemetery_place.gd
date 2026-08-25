@@ -100,7 +100,26 @@ const PIERRES_SCENE: PackedScene = preload(
 ## n'existe que par ses facettes, et c'est ce qui donnait la lecture « tente
 ## de toile ». La cible de la conception était 0,22-0,30 ; à 0,170 l'albédo
 ## rend ≈ 0,26. Rappel : on juge la valeur RENDUE, jamais l'albédo.
-const TERRE: Color = Color(0.170, 0.185, 0.120)
+## LOT 1.R, AGENT B — REMONTÉE APRÈS MESURE SUR CAPTURE.
+##
+## La revue avait posé une réserve en mots : « tumuli très bruns et sombres ».
+## Elle est désormais un chiffre : sur `agent_b/it/t2/barrow_cemetery_joueur.png`,
+## le flanc éclairé du dos rend **p50 = 69,8** quand l'herbe voisine, mesurée
+## dans la même image, rend **113,0** — quarante-trois niveaux d'écart. À cette
+## distance, une masse aussi basse ne se lit plus comme de la terre sous
+## l'herbe : elle se lit comme une OMBRE.
+##
+## L'intention ne change pas — un tertre funéraire doit rester PLUS SOMBRE que
+## la steppe, et la conception du lieu le dit. Ce qui change est l'ampleur de
+## l'écart : on vise ~20-25 niveaux, pas 43.
+##
+## Le facteur est 1,55 et il est raisonné, pas tâtonné : passer de 69,8 à ~90
+## en sortie sRGB demande ×1,29 à l'écran, soit ×1,73 si la chaîne était une
+## pure loi de puissance en 2,2. Elle ne l'est pas — le tonemapping comprime le
+## haut — d'où une valeur intermédiaire, à REMESURER sur la capture suivante et
+## non à déduire. `scripts/CLAUDE.md` : le gain de ce monde vaut 1,4 à 1,8 et
+## n'est pas linéaire.
+const TERRE: Color = Color(0.264, 0.287, 0.186)
 
 ## TEINTES DES PIERRES FUNÉRAIRES — albédos ABSOLUS, à recalibrer ICI et
 ## nulle part ailleurs, et à juger sur CAPTURE RENDUE (gain non linéaire).
@@ -615,9 +634,9 @@ func _gueule_de_chambre() -> void:
 const CHEMIN: Array[Array] = [
 	# pièce, x, z, lacet, enfoncement, roulis, échelle_travers, échelle_hauteur
 	["SM_Barrow_Lame_A", -7.60, 6.40, 38.0, 0.11, 0.0, 1.00, 1.00],
-	["SM_Barrow_Stele_B", -6.05, 5.00, 62.0, 0.0, 24.0, 1.08, 1.72],
+	["SM_Barrow_Stele_B", -6.05, 5.00, 62.0, 0.20, 27.0, 1.08, 1.72],
 	["SM_Barrow_Lame_B", -4.90, 4.90, 15.0, 0.09, 0.0, 1.00, 1.00],
-	["SM_Barrow_Stele_A", -4.25, 3.55, -28.0, 0.0, 17.0, 1.10, 1.58],
+	["SM_Barrow_Stele_A", -4.25, 3.55, -28.0, 0.26, 21.0, 1.10, 1.58],
 	["SM_Barrow_Lame_C", -3.05, 4.45, 74.0, 0.07, 0.0, 1.00, 1.00],
 ]
 ## Les deux marques les plus lointaines se rapprochent de 1,4 et 1,0 m : le
@@ -628,7 +647,7 @@ const CHEMIN: Array[Array] = [
 ## du côté opposé au chemin, et c'est elle qui empêche le rythme des
 ## verticales de se tasser tout entier dans la moitié gauche du cadre.
 const MARQUES_ISOLEES: Array[Array] = [
-	["SM_Barrow_Stele_B", 6.40, -3.20, 71.0, 0.0, 31.0, 1.05, 1.62],
+	["SM_Barrow_Stele_B", 6.40, -3.20, 71.0, 0.15, 31.0, 1.05, 1.62],
 	["SM_Barrow_Lame_C", 11.20, -1.80, -48.0, 0.08, 0.0, 1.00, 1.00],
 	["SM_Barrow_Lame_B", -9.40, -5.60, 23.0, 0.10, 0.0, 1.00, 1.00],
 ]
@@ -776,15 +795,21 @@ func _collisions() -> void:
 	# lames couchées : mieux vaut une masse traversable en haut qu'un mur
 	# invisible qu'on sent sans le voir. Le pied, lui, est couvert, et c'est
 	# lui qu'on heurte en marchant.
+	# LES TROIS CORPS SUIVENT L'ENFONCEMENT (lot 1.R). Les stèles descendent de
+	# 0,26 / 0,20 / 0,15 m dans le sol — « les tombes émergent de la colline,
+	# elles ne sont pas posées » — et un corps resté à sa cote flotterait
+	# d'autant au-dessus du pied qu'on heurte en marchant. Le centre baisse donc
+	# de la moitié de l'enfoncement, la hauteur de la totalité : la boîte épouse
+	# la partie ÉMERGÉE, qui est la seule qu'on puisse rencontrer.
 	K.collider_box(self, "Stele_chemin_haute",
-		_seated(-4.25, 3.55) + Vector3(0.0, 1.23, 0.0),
-		Vector3(0.73, 2.46, 0.44), -28.0)
+		_seated(-4.25, 3.55) + Vector3(0.0, 1.10, 0.0),
+		Vector3(0.73, 2.20, 0.44), -28.0)
 	K.collider_box(self, "Stele_chemin_basse",
-		_seated(-6.05, 5.00) + Vector3(0.0, 0.76, 0.0),
-		Vector3(0.63, 1.51, 0.39), 62.0)
+		_seated(-6.05, 5.00) + Vector3(0.0, 0.66, 0.0),
+		Vector3(0.63, 1.31, 0.39), 62.0)
 	K.collider_box(self, "Stele_est",
-		_seated(6.40, -3.20) + Vector3(0.0, 0.68, 0.0),
-		Vector3(0.61, 1.36, 0.38), 71.0)
+		_seated(6.40, -3.20) + Vector3(0.0, 0.61, 0.0),
+		Vector3(0.61, 1.21, 0.38), 71.0)
 	# La pierre du seuil : 4,33 m de haut, elle a un corps sur toute sa
 	# hauteur — c'est la seule masse du lieu qu'on ne franchit pas.
 	K.collider_box(self, "Pierre_du_seuil_col",

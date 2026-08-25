@@ -28,6 +28,43 @@ def lum(p):
     return 0.2126 * p[0] + 0.7152 * p[1] + 0.0722 * p[2]
 
 
+
+def oscillations(vals, seuil=6.0):
+    """Compte les RENVERSEMENTS de pente d'un profil, au-dessus d'un seuil.
+
+    POURQUOI CETTE MESURE EXISTE, et c'est un aveu. Le profil du dos d'un
+    tumulus a été mesuré avant et après le passage aux normales lissées : p50
+    68,4 -> 69,8, étendue p10-p90 identique à 59,1, nombre de valeurs
+    distinctes 61 -> 62. Autrement dit : **rien**. Or l'image, ouverte à taille
+    réelle, montre sans ambiguïté que les 48 bandes radiales ont disparu.
+
+    La statistique était simplement AVEUGLE à ce qu'on jugeait. Une moyenne, un
+    percentile et un compte de valeurs distinctes ignorent tous l'ARRANGEMENT
+    SPATIAL ; or une bande est un motif, pas une amplitude. Une surface lisse
+    et une surface rayée peuvent avoir exactement la même distribution.
+
+    Le nombre de renversements de pente, lui, compte les bandes : un dégradé
+    continu en a deux ou trois, une citrouille de 48 secteurs en a des dizaines.
+    Le seuil évite de compter le bruit de quantification du PNG.
+
+    C'est la leçon d'ISS-018 sous une autre forme : un chiffre vert sur une
+    grandeur qui n'est pas celle qu'on croit mesurer.
+    """
+    n = 0
+    direction = 0
+    ancre = vals[0]
+    for v in vals[1:]:
+        delta = v - ancre
+        if abs(delta) < seuil:
+            continue
+        d = 1 if delta > 0 else -1
+        if direction != 0 and d != direction:
+            n += 1
+        direction = d
+        ancre = v
+    return n
+
+
 def main(argv):
     if len(argv) < 3:
         print(__doc__)
@@ -45,6 +82,9 @@ def main(argv):
                  sum(vals) / len(vals)))
         print("  %d valeurs entieres distinctes : %s"
               % (len(uniques), uniques[:24]))
+        print("  RENVERSEMENTS de pente (>6 niveaux) : %d — c'est le compte de"
+              " BANDES,\n  la seule des trois mesures qui voie un motif spatial"
+              % oscillations(vals))
         return 0
     if mode == "zone":
         x0, y0, x1, y1 = (int(a) for a in argv[3:7])
