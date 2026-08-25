@@ -1,10 +1,10 @@
 {
   "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
   "clip_below": null,
-  "commit": "9ecf10de7209713a1a244a940d4194f2a5af3bdf",
+  "commit": "4cb18d9f5fb25dd2bf9d15879c28577bc9295530",
   "emprise_m": [
     18.2493438720703,
-    8.18526077270508,
+    8.51031684875488,
     10.6204528808594
   ],
   "engine": "4.7.1-stable (custom_build)",
@@ -21,14 +21,14 @@
     {
       "angle_deg": 0.0,
       "hors_bandes_pct": 0.0,
-      "image": "evidence/world_v2/v2_3_b/lot1r1/revue_intermediaire/silhouettes/silhouette_forest_shrine_000.png",
-      "sujet_pct": 5.22666666666667
+      "image": "evidence/world_v2/v2_3_b/lot1r2/sanctuaire/silhouettes/silhouette_forest_shrine_000.png",
+      "sujet_pct": 5.27777777777778
     },
     {
       "angle_deg": 90.0,
       "hors_bandes_pct": 0.0,
-      "image": "evidence/world_v2/v2_3_b/lot1r1/revue_intermediaire/silhouettes/silhouette_forest_shrine_090.png",
-      "sujet_pct": 5.9462962962963
+      "image": "evidence/world_v2/v2_3_b/lot1r2/sanctuaire/silhouettes/silhouette_forest_shrine_090.png",
+      "sujet_pct": 5.92296296296296
     }
   ]
 }
