@@ -353,10 +353,28 @@ kit ont disparu au profit des deux GLB) et la source reste **12/12** (rien
 d'ajouté : le fil élargi, ses renflements et la frange vivent dans les deux
 maillages runtime qui existaient déjà).
 
-**Ce compte de modules est `NON VÉRIFIÉ`** : `sonde_budget_lot1.gd` a été lancé
-et attend toujours le verrou partagé (journal
-`evidence/world_v2/v2_3_b/lot1r/voie_a2/budget_a2.log`, vide à l'heure où
-j'écris). Je ne le déclare pas vert par déduction.
+**MESURÉ APRÈS COUP — l'item n'est plus `NON VÉRIFIÉ`.** `sonde_budget_lot1.gd`
+a fini par obtenir le verrou partagé, `RC_SONDE=0`, journal
+`evidence/world_v2/v2_3_b/lot1r/voie_a2/budget_a2.log` :
+
+| Lieu | famille | modules | visuels | collisions | aire runtime |
+|---|---|---:|---:|---:|---:|
+| `valley.poi.overlook_summit.01` | micro | **10** / 12 | 12 / 30 | **5** / 6 | **0,0 %** / 20,4 % |
+| `valley.poi.turquoise_spring.01` | micro | **12** / 12 | 14 / 30 | **4** / 6 | **0,1 %** / 20,4 % |
+
+Le compte de modules établi sur le code était juste. Les trois budgets du
+contrat sont tenus sur les deux lieux.
+
+Un écart apparent avec `probe_place_metrics.gd` (qui annonçait 4 et 3 corps)
+n'en est pas un : cette sonde-là compte les `StaticBody3D`, celle-ci compte les
+`CollisionShape3D`. La forme de plus, dans chaque lieu, est la sphère
+`Decouverte_forme` du `PointOfInterest` — elle ne porte aucune collision de
+décor. Les deux nombres sont vrais ; ils ne répondent pas à la même question.
+
+L'aire runtime à 0,0 % et 0,1 % confirme aussi que l'exemption nommée
+fonctionne : `AssiseCrocs`, `NappeSource` et `FondVasque` sont bien exclues du
+calcul — ce qui rend l'arbitrage ci-dessous d'autant plus nécessaire, puisque
+c'est cette exemption qui produit ce 0,0 %.
 
 ### Une exemption D1a a été ajoutée, et c'est un choix à arbitrer
 
