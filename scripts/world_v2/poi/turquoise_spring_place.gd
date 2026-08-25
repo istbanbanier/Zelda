@@ -65,10 +65,51 @@
 ## graphe : l'hydrologie V2.2 est gelée et reste seule maîtresse. Le
 ## turquoise est celui du shader de rivière — jamais le cyan de Résonance,
 ## réservé aux sites systémiques et au pylône.
+## LOT 1.R — DEUXIÈME CORRECTIVE (agent A). LA CAUSE DE LA « NAPPE BLANCHE »
+## N'ÉTAIT PAS L'ALBÉDO : C'ÉTAIT L'ANGLE.
+##
+## La revue a laissé une réserve écrite — « source petite et sombre dans la
+## caméra joueur gelée ». Mesuré au pixel sur les captures du commit 7c58573,
+## la réserve se précise en un fait :
+##
+##   même vasque, caméra `_identite` (haute)   H = 190°  S = 0,237  V = 0,437
+##   même vasque, caméra `_joueur` (GELÉE)     H = 137°  S = 0,079  V = 0,534
+##   rivière V2.2 de référence, `_identite`    H = 179°  S = 0,273  V = 0,436
+##
+## La même eau, le même shader, la même exposition : vue d'en haut elle est
+## turquoise et se tient à côté de la rivière V2.2 ; vue depuis la caméra de
+## jugement elle est GRIS-VERT. Géométrie : la caméra joueur est à 1,6 m
+## au-dessus du plan d'eau pour 14,9 m de distance, soit une incidence de
+## 6,1°. À cet angle, la spéculaire renvoie le ciel blanc et l'alpha de rive
+## laisse passer l'herbe pâle — deux mécanismes qu'aucune valeur d'albédo ne
+## peut compenser.
+##
+## D'où le shader LOCAL `shaders/world_v2/poi/SH_TurquoiseSpringWater.gdshader`
+## (nouveau fichier, propre à ce lieu — l'hydrologie V2.2 et son shader
+## restent gelés et intouchés) : l'opacité MONTE avec l'incidence, et le
+## reflet rasant est TEINTÉ turquoise au lieu d'être le blanc du ciel. La
+## convention de sommet reste celle de l'hydrologie V2.2 au caractère près,
+## donc la continuité de construction avec la rivière est préservée.
+##
+## Deux réponses géométriques à « petite », toutes deux dans le même module :
+##  * le fil du déversoir s'élargit et porte DEUX RENFLEMENTS — des flaques
+##    où l'eau s'étale. Elles sont à 8–11 m de la caméra au lieu de 15, et
+##    sous une incidence de 9 à 12° au lieu de 6 : plus grandes à l'écran ET
+##    mieux vues. Elles ÉPOUSENT le sol comme le reste du fil : un plan
+##    d'eau posé à plat sur une pente est la troisième cause de rejet du
+##    contrat, et on ne l'échange pas contre de la surface ;
+##  * les rebords deviennent MOUILLÉS : le lit déborde le rivage d'une frange
+##    IRRÉGULIÈRE (chaque secteur tiré entre 0 et 0,55 m). Irrégulière parce
+##    qu'un débord constant redessinerait l'anneau noir déjà mesuré et
+##    corrigé en v3 — la frange se lit en taches de terre trempée, pas en
+##    cerne.
 class_name TurquoiseSpringPlace
 extends WorldV2Place
 
 const K: GDScript = preload("res://scripts/world_v2/poi/world_v2_place_kit.gd")
+## L'eau de ce lieu, et de lui seul. `SH_WorldV2Water` reste gelé.
+const EAU_SHADER: String = \
+	"res://shaders/world_v2/poi/SH_TurquoiseSpringWater.gdshader"
 
 ## Roche du couchant — RECETTE V2.2 (v3), jugée sur captures v1/v2 :
 ##  - `Rock_Medium_*` (atlas Rocks) : couleurs de sommet COUPÉES
@@ -273,10 +314,47 @@ func _lit() -> void:
 			LIT_BORD.g * (0.90 + 0.08 * _alea(float(i) * 3.1)),
 			LIT_BORD.b * (0.90 + 0.08 * _alea(float(i) * 3.1)), 1.0)
 		_tri_couleur(st, centre, bord[i], bord[j], LIT_CENTRE, t_bord)
+	# LA FRANGE MOUILLÉE. Le lit déborde le rivage, mais d'une largeur TIRÉE
+	# PAR SECTEUR entre 0 et 0,55 m : un débord constant redessinerait le
+	# cerne noir mesuré en v1/v2 et corrigé en v3. Ici certains secteurs ne
+	# débordent pas du tout, et la pierre trempée se lit en TACHES.
+	# La teinte s'ÉCLAIRCIT vers l'extérieur (0,72 au bord d'eau → 1,45 en
+	# pointe de frange) : c'est ce qui empêche la frange d'être un trait
+	# sombre autour de l'eau.
+	var frange: PackedVector3Array = PackedVector3Array()
+	var teintes_frange: PackedColorArray = PackedColorArray()
+	for i: int in range(segments):
+		var angle: float = TAU * float(i) / float(segments)
+		var tirage: float = 0.5 + 0.5 * _alea(float(i) * 1.7 + 19.3)
+		# Rien à l'ouest : c'est la fente, et la roche y descend.
+		var largeur: float = 0.55 * tirage * (1.0 - _bosse_ouest(angle) * 0.8)
+		var r: float = rayons[i] - 0.15 + _bosse_ouest(angle) * 1.15 + largeur
+		var px: float = BASSIN_X + cos(angle) * r
+		var pz: float = BASSIN_Z + sin(angle) * r
+		frange.append(Vector3(px, _y_sol(px, pz, 0.025), pz))
+		var v: float = 1.45 - 0.55 * (1.0 - tirage)
+		teintes_frange.append(Color(LIT_BORD.r * v, LIT_BORD.g * v,
+			LIT_BORD.b * v, 1.0))
+	var mouille: Color = Color(LIT_BORD.r * 0.72, LIT_BORD.g * 0.72,
+		LIT_BORD.b * 0.68, 1.0)
+	for i: int in range(segments):
+		var j: int = (i + 1) % segments
+		# Trois teintes distinctes, une par sommet : avec `_tri_couleur` (une
+		# teinte de centre, une de bord) le sommet `bord[j]` de la seconde
+		# face aurait reçu la teinte CLAIRE de la frange, et une pointe pâle
+		# serait apparue sur la ligne d'eau — exactement l'inverse de ce que
+		# la frange doit faire.
+		_tri3(st, bord[i], frange[i], frange[j], mouille, teintes_frange[i],
+			teintes_frange[j])
+		_tri3(st, bord[i], frange[j], bord[j], mouille, teintes_frange[j],
+			mouille)
+
 	# L'ombre du fil : une bande humide sous la langue du déversoir, un
-	# peu plus large qu'elle — le sol mouillé déborde toujours l'eau.
-	_bande(st, 2.65, 5.1, 1.15, 0.62, 0.03, Color(0.88, 0.84, 0.74, 1.0),
-		Color(1.0, 0.95, 0.85, 1.0))
+	# peu plus large qu'elle — le sol mouillé déborde toujours l'eau. Les
+	# mêmes renflements que l'eau, sinon les flaques déborderaient sur de
+	# l'herbe sèche.
+	_bande(st, 2.65, 5.1, 1.60, 0.90, 0.03, Color(0.88, 0.84, 0.74, 1.0),
+		Color(1.0, 0.95, 0.85, 1.0), true, false)
 	lit.mesh = st.commit()
 	var terre: StandardMaterial3D = K.flat_material(TONE_LIT)
 	terre.vertex_color_use_as_albedo = true
@@ -362,13 +440,19 @@ func _nappe() -> void:
 	# langue doit toujours NAÎTRE sous la nappe, jamais à côté d'elle.
 	# Bout de langue : (0,78 ; −4,39) local, soit 5,47 m de la tête
 	# d'affluent gelée (+6 ; −6) — le lit reste libre (contrat ≥ 5 m).
+	# LARGEURS RELEVÉES (0,85 → 1,30 au départ, 0,34 → 0,52 au bout) et DEUX
+	# RENFLEMENTS. C'est la réponse géométrique à « source petite » : dans la
+	# caméra joueur gelée, la vasque est à 14,9 m sous 6° d'incidence, alors
+	# que le milieu du fil est à ~10 m sous ~9° et son bout à ~8 m sous ~12°.
+	# Une surface d'eau placée LÀ est plus grande à l'écran et mieux vue,
+	# sans qu'aucune caméra n'ait bougé.
 	var gb: Vector2 = Vector2(FIL_DIR.x * 0.5 + 0.5, FIL_DIR.y * 0.5 + 0.5)
-	_bande(st, 2.85, 4.8, 0.85, 0.34, 0.045,
-		Color(0.20, gb.x, gb.y, 0.95), Color(0.06, gb.x, gb.y, 0.45))
+	_bande(st, 2.85, 4.8, 1.30, 0.52, 0.045,
+		Color(0.20, gb.x, gb.y, 0.95), Color(0.06, gb.x, gb.y, 0.45),
+		true, true)
 	nappe.mesh = st.commit()
 	var eau: ShaderMaterial = ShaderMaterial.new()
-	eau.shader = load("res://shaders/world_v2/SH_WorldV2Water.gdshader") \
-		as Shader
+	eau.shader = load(EAU_SHADER) as Shader
 	eau.set_shader_parameter(&"wave_noise",
 		WorldV2GroundMaterial.grain_texture())
 	nappe.mesh.surface_set_material(0, eau)
@@ -401,10 +485,23 @@ func _bosse_ouest(angle: float) -> float:
 ## dalles — elle ÉPOUSE le sol gelé (+`sur_sol`) sommet par sommet. Les
 ## teintes portent les données du matériau appelant : convention d'eau
 ## pour la nappe, valeur multiplicative pour le lit.
+##
+## `renflements` ajoute deux ÉLARGISSEMENTS le long du parcours : des flaques
+## où l'eau s'étale avant de repartir. Elles suivent le sol comme le reste de
+## la bande — c'est volontaire et non négociable : une surface plane posée en
+## travers d'une pente est un « plan d'eau flottant », l'une des trois causes
+## de rejet du lieu. On gagne de la surface vue, jamais en trichant sur
+## l'assise.
+##
+## `eau` dit si la teinte porte la convention d'eau (R = profondeur) ou une
+## valeur multiplicative (le lit). Sans ce drapeau, creuser les renflements
+## reviendrait à teinter le sol mouillé en ROUGE — le canal R ne veut pas
+## dire la même chose dans les deux matériaux.
 func _bande(st: SurfaceTool, depart_r: float, longueur: float,
 		larg_depart: float, larg_fin: float, sur_sol: float,
-		teinte_depart: Color, teinte_fin: Color) -> void:
-	var pas: int = 8
+		teinte_depart: Color, teinte_fin: Color,
+		renflements: bool = false, eau: bool = false) -> void:
+	var pas: int = 20 if renflements else 8
 	var perp: Vector2 = Vector2(-FIL_DIR.y, FIL_DIR.x)
 	var origine: Vector2 = Vector2(BASSIN_X, BASSIN_Z) + FIL_DIR * depart_r
 	var precedent_g: Vector3 = Vector3.ZERO
@@ -415,12 +512,23 @@ func _bande(st: SurfaceTool, depart_r: float, longueur: float,
 		var centre2: Vector2 = origine + FIL_DIR * (longueur * t)
 		# Ondulation légère du fil — un ruisselet droit se lit tracé.
 		centre2 += perp * (0.22 * sin(t * 9.4 + 1.3) * (1.0 - t))
-		var demi: float = lerpf(larg_depart, larg_fin, t) * 0.5
+		var bosse: float = 0.0
+		if renflements:
+			# Deux gaussiennes, largeurs et hauteurs différentes : deux
+			# flaques identiques se reliraient comme un motif.
+			bosse = 0.95 * exp(-pow((t - 0.34) / 0.135, 2.0)) \
+				+ 0.72 * exp(-pow((t - 0.74) / 0.115, 2.0))
+		var demi: float = lerpf(larg_depart, larg_fin, t) * 0.5 * (1.0 + bosse)
 		var g2: Vector2 = centre2 + perp * demi
 		var d2: Vector2 = centre2 - perp * demi
 		var gauche: Vector3 = Vector3(g2.x, _y_sol(g2.x, g2.y, sur_sol), g2.y)
 		var droite: Vector3 = Vector3(d2.x, _y_sol(d2.x, d2.y, sur_sol), d2.y)
 		var teinte: Color = teinte_depart.lerp(teinte_fin, t)
+		if eau and bosse > 0.0:
+			# Une flaque est plus PROFONDE qu'un filet : sa couleur tire vers
+			# le pétrole du fond, et elle cesse d'être un film transparent.
+			teinte.r = minf(1.0, teinte.r + 0.55 * bosse)
+			teinte.a = maxf(teinte.a, minf(0.98, 0.55 + 0.45 * bosse))
 		if k > 0:
 			_tri_eau(st, [precedent_g, gauche, droite],
 				[precedent_t, teinte, teinte])
@@ -469,7 +577,15 @@ func _tri_eau(st: SurfaceTool, points: Array[Vector3],
 ## normale verticale.
 func _tri_couleur(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3,
 		c_centre: Color, c_bord: Color) -> void:
-	for donnee: Array in [[a, c_centre], [b, c_bord], [c, c_bord]]:
+	_tri3(st, a, b, c, c_centre, c_bord, c_bord)
+
+
+## Triangle à TROIS teintes indépendantes. Nécessaire dès qu'une face a un
+## sommet sur la ligne d'eau et deux en frange : deux teintes ne peuvent pas
+## décrire ce cas sans mentir sur l'un des sommets.
+func _tri3(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3,
+		ca: Color, cb: Color, cc: Color) -> void:
+	for donnee: Array in [[a, ca], [b, cb], [c, cc]]:
 		st.set_color(donnee[1] as Color)
 		st.set_normal(Vector3.UP)
 		st.add_vertex(donnee[0] as Vector3)
