@@ -175,6 +175,26 @@ const CROCS_GLB: String = "res://assets/environment/rocks/SM_OverlookCrags.glb"
 ## d'une ardoise bleue la rend encore plus isolée.
 const TONE_DALLE: Color = Color(0.62, 0.66, 0.80)
 ## Herbe sèche du sommet : le vert de la prairie n'y monte pas.
+##
+## REVERT DOCUMENTÉ (itération 6). J'ai assombri cette teinte de 29 % pour
+## corriger « l'objet le plus CLAIR de la caméra joueur » — une tache ocre à
+## V 0,683 dans une herbe à 0,407, seule au milieu du pré. La capture a
+## infirmé la correction : **le pixel visé n'a pas bougé d'un centième**
+## (RGB 170,7 / 174,2 / 131,1 avant comme après). Mesuré ensuite sur toutes
+## les captures de la passe, il est IDENTIQUE depuis l'état de départ
+## `7c58573` — il n'a bronché ni quand les deux masses ont été remplacées, ni
+## quand les pièces de kit ont été refroidies.
+##
+## Cet objet n'appartient donc pas à ce lieu : c'est le semis de végétation
+## V2.2, gelé, et la règle transversale nº 1 du contrat interdit d'y toucher.
+## Mon diagnostic était faux, et il l'était pour la raison exacte qui a déjà
+## produit deux fenêtres de mesure fausses dans cette passe : j'ai attribué
+## l'objet à `TONE_DRY` sur la seule foi de sa COULEUR (ocre jaune-vert, comme
+## cette constante), sans jamais vérifier que c'était bien lui. La méthode qui
+## tranche vraiment est écrite dans `tools/CLAUDE.md` — repeindre le nœud
+## d'une couleur impossible, recapturer, mesurer le pixel — et je ne l'ai pas
+## appliquée. La valeur revient donc à ce qu'elle était : aucune mesure ne
+## demande de la changer.
 const TONE_DRY: Color = Color(0.74, 0.70, 0.48)
 
 ## LES PIÈCES DE KIT QUI RESTENT SUIVENT LES CROCS DANS LE FROID, sinon elles

@@ -1,0 +1,5 @@
+[
+{"name": "overlook_summit_identite", "from": [150.0, 30.0, 39.4], "look": [168, 24.0, 52], "fov": 55.0},
+{"name": "overlook_summit_joueur", "from": [159.8, 23.7, 56.8], "look": [168, 23.2, 52], "fov": 65.0},
+{"name": "overlook_gros_crete", "from": [166.0, 25.4, 49.5], "look": [174.2, 25.8, 56.4], "fov": 55.0}
+]

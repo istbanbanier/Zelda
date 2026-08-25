@@ -382,6 +382,93 @@ c'est cette exemption qui produit ce 0,0 %.
 `FondVasque` de la source. La convention du dépôt pour cette exemption est
 écrite dans la source elle-même : « une surface qui suit le terrain sommet par
 sommet, comme `SolBrule` de l'arbre foudroyé ». L'assise fait exactement cela.
-Mais c'est moi qui l'ai posée : **le lead doit la valider ou la refuser**, et
-si elle est refusée l'assise devra être re-dimensionnée pour tenir sous le
-plafond d'aire runtime (20,4 %).
+
+**ACCEPTÉE PAR LE LEAD** (précédent `NappeSource` / `FondVasque` et les trois
+`Tertre_*` du cimetière : exemption D1a seulement, comptée au D7). L'assise
+compte donc bien dans les 10 modules du belvédère, et n'entre pas dans la part
+d'aire runtime.
+
+## Itération 6 — les deux correctifs d'une ligne, désormais budgétés en capture
+
+Le lead a tranché : l'exemption `AssiseCrocs` est acceptée, les deux correctifs
+retenus sont commandés avec une passe de capture, et la lecture « dalles
+empilées » est présentée en l'état (trois hypothèses testées et mesurées
+suffisent pour cette passe ; le changement de topologie n'est pas commandé).
+
+- **Défaut 1 : la crête est plus sombre que les cailloux à son pied.** Mesuré
+  sur `iter5/overlook_gros_crete.png` : croc V 0,391 (face au soleil) et 0,468
+  (face à l'ombre) contre **0,540** pour les boulders de kit refroidis du même
+  lieu, mesurés dans la MÊME image. Cause connue et chiffrée : les trois
+  modulations ajoutées en v4 dans `COLOR_0` ont fait monter l'étendue (31 % →
+  66 %) mais baisser la moyenne (p10 0,716 → 0,474).
+- **Levier** : `MAT_ARDOISE` et `MAT_FRACTURE` × 1,35. Le facteur est calculé,
+  pas choisi — la face à l'ombre demande 0,253/0,184 = 1,375 en linéaire pour
+  passer de 0,468 à 0,540 ; retenu 1,35 pour garder la vire la plus claire sous
+  la valeur de la falaise V2.2 du fond (0,632), qui est le vrai plafond.
+- **Défaut 2 : le buisson sec est l'objet le plus CLAIR de la caméra joueur.**
+  Mesuré RGB(170 ; 174 ; 131), **V 0,683**, dans une herbe à 0,407 — et il y
+  est seul au milieu du pré.
+- **Levier** : `TONE_DRY` × 0,71. Calculé aussi : l'albédo est multiplié en
+  espace sRGB, donc un facteur k y vaut k^2,2 en linéaire ; pour un rapport
+  linéaire de 0,47 il faut k = 0,47^(1/2,2) ≈ 0,71. La teinte ocre ne bouge
+  pas — le défaut est une VALEUR, pas une couleur.
+- **Attendu dans les pixels** : croc autour de 0,50–0,54, donc dans la famille
+  des boulders de kit ; buisson autour de 0,48, au-dessus de l'herbe mais plus
+  jamais le point le plus clair du cadre.
+- **Caméras** : `overlook_summit_identite`, `overlook_summit_joueur`,
+  `overlook_gros_crete`. Une seule passe ; commit si l'image confirme, revert
+  documenté si elle infirme.
+- **Contrôle du GLB** : la taille du fichier est restée identique au bit près
+  (121 536 octets), ce qui est exactement le symptôme du piège « exporter à la
+  main rend l'ANCIEN maillage » de `tools/CLAUDE.md`. Vérifié par le CONTENU et
+  non par la taille : `baseColorFactor` du GLB lit bien
+  `[0,0767 ; 0,0919 ; 0,1557]` et `git diff` voit le binaire changer. La taille
+  ne bougeait pas parce que seuls des flottants ont été remplacés.
+
+## Résultat de l'itération 6, mesuré (`voie_a2/iter6`, capture RC=0)
+
+### Correctif 1 — CONFIRMÉ, gardé
+
+| Zone (`overlook_gros_crete`) | iter5 | **iter6** | cible mesurée |
+|---|---|---|---|
+| croc, face à l'ombre | 0,468 | **0,549** | boulder de kit : **0,540** |
+| croc, face au soleil | 0,391 | **0,457** | — |
+| masse (`_identite`) | 0,446 | **0,498** | falaise V2.2 : 0,632 (plafond) |
+
+Teinte inchangée (H 220–226°, S 0,19), et la vire la plus claire reste sous la
+falaise du fond. À taille réelle, la crête appartient enfin à la même famille
+que les cailloux à son pied — c'était exactement le défaut à corriger.
+
+### Correctif 2 — INFIRMÉ, reverté
+
+La capture n'a pas bougé **d'un centième** : RGB(170,7 ; 174,2 ; 131,1),
+V 0,683, avant comme après. Mesuré ensuite sur toute la série, le pixel est
+identique depuis l'état de départ `7c58573` — il n'a bronché ni au
+remplacement des deux masses, ni au refroidissement des pièces de kit.
+
+**Cet objet n'appartient pas au lieu** : c'est le semis de végétation V2.2,
+gelé, que la règle transversale nº 1 du contrat interdit de toucher. Mon
+diagnostic était faux, et pour la raison exacte qui a déjà produit deux
+fenêtres de mesure fausses dans cette passe : j'ai attribué l'objet à
+`TONE_DRY` sur la seule foi de sa COULEUR (même ocre jaune-vert), sans jamais
+vérifier que c'était bien lui. La méthode qui tranche est dans
+`tools/CLAUDE.md` — repeindre le nœud d'une couleur impossible, recapturer,
+mesurer le pixel — et je ne l'ai pas appliquée.
+
+`TONE_DRY` revient donc à (0,74 ; 0,70 ; 0,48). Aucune mesure ne demande de la
+changer, et un changement sans mesure n'entre pas.
+
+**Écart nommé** : les PNG d'`iter6` ont été rendus avec `TONE_DRY` assombri,
+que le code livré ne porte plus. L'écart ne concerne que les deux
+`Bush_Common` du lieu ; il ne touche aucune des grandeurs mesurées ci-dessus,
+qui portent toutes sur les crocs, les boulders de kit et la falaise. Je le
+signale plutôt que de le passer sous silence : la capture prouve le
+correctif 1, elle ne prouve rien sur `TONE_DRY`.
+
+### Point 3 du lead — « dalles empilées » présenté en l'état
+
+Trois hypothèses testées et mesurées (retrait lopside ; diaclases profondes +
+retrait divisé par deux ; valeur dans la face). Chacune a amélioré, aucune n'a
+supprimé la lecture. Le changement de topologie — masses non convexes,
+contrefort qui déborde d'un banc à l'autre, niche creusée — n'est pas un
+réglage et n'est pas commandé. La limite est nommée telle quelle.

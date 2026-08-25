@@ -132,9 +132,22 @@ PENDAGE_DEG = 13.5
 ## B/R = 1,34) : il faut donc un rapport d'albédo de **1 : 1,20 : 2,03**,
 ## obtenu en BAISSANT le rouge et le vert plutôt qu'en montant le bleu — le
 ## bleu tient déjà la valeur, et le monter écrêterait de nouveau.
-MAT_ARDOISE = (0.0568, 0.0681, 0.1153, 1.0)
+## v5 — REMONTÉES DE 35 %, ET C'EST UNE DETTE DE LA v4 QUI SE SOLDE.
+## Les trois modulations ajoutées dans `COLOR_0` (joint de banc, arête,
+## mouchetage) ont fait ce qu'on leur demandait — étendue 31 % → 66 % — mais
+## elles ont aussi baissé la MOYENNE : p10 0,716 → 0,474. Mesuré sur
+## `voie_a2/iter5/overlook_gros_crete.png`, la crête est tombée à V 0,391
+## (face au soleil) et 0,468 (face à l'ombre), alors que les boulders de kit
+## refroidis du MÊME lieu — la cible, mesurée dans la MÊME image — tiennent
+## V 0,540. Une formation plus sombre que les cailloux à son pied n'est pas
+## la famille qu'on visait.
+## Le facteur n'est pas choisi : la face à l'ombre demande un rapport de
+## 0,253/0,184 = 1,375 en linéaire pour passer de 0,468 à 0,540. Retenu 1,35
+## plutôt que 1,375 pour garder la vire la plus claire sous la valeur de la
+## falaise V2.2 du fond (0,632) — c'est elle qui plafonne, pas la moyenne.
+MAT_ARDOISE = (0.0767, 0.0919, 0.1557, 1.0)
 ## Le nu de fracture fraîche : à peine plus clair, franchement plus froid.
-MAT_FRACTURE = (0.0659, 0.0785, 0.1329, 1.0)
+MAT_FRACTURE = (0.0890, 0.1060, 0.1794, 1.0)
 ## v4 — 0,90 → 0,82 pour laisser de la place aux rehauts ajoutés dans
 ## `_teinte_banc` sans écrêter la couleur de sommet (au-delà de 1, l'export
 ## écrête EN SILENCE). Les trois couleurs de matériau sont remontées de

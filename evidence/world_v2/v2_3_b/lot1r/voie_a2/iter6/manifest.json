@@ -1,0 +1,57 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "3cb3befeb74929074f2dddb7b81709c647e7896e",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": true,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 55.0,
+      "from": [
+        150.0,
+        30.0,
+        39.4
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_a2/iter6/overlook_summit_identite.png",
+      "look": [
+        168.0,
+        24.0,
+        52.0
+      ],
+      "name": "overlook_summit_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        159.8,
+        23.7,
+        56.8
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_a2/iter6/overlook_summit_joueur.png",
+      "look": [
+        168.0,
+        23.2,
+        52.0
+      ],
+      "name": "overlook_summit_joueur"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        166.0,
+        25.4,
+        49.5
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_a2/iter6/overlook_gros_crete.png",
+      "look": [
+        174.2,
+        25.8,
+        56.4
+      ],
+      "name": "overlook_gros_crete"
+    }
+  ],
+  "size": "1280x720"
+}
