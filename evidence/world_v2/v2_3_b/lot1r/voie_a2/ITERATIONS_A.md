@@ -977,11 +977,34 @@ homologues :
 | source × pont | 0,456 | **0,506** | 0,388 | 0,322 |
 
 Le masque **90° de la source** est jugé contre le masque **0° des autres**.
-Élargir le vide en X y a fabriqué une lecture « grosse masse + satellite »…
-qui est exactement la grammaire du belvédère à 0°. J'ai donné à la source
-la silhouette de l'autre lieu que je possède.
+Le masque 90° de la source y lit « grosse masse + satellite »… qui est
+exactement la grammaire du belvédère à 0°. J'ai donné à la source la
+silhouette de l'autre lieu que je possède.
 
-### 3. Pourquoi la simulation passait — et c'est un défaut d'INSTRUMENT
+### 3. LA CAUSE PREMIÈRE : la séparation en X n'a jamais été construite
+
+L'arbitrage demandait deux mâchoires séparées EN X, « l'une reculée sous la
+paroi, l'autre avancée vers la vasque ». Les positions réelles, relevées dans
+`turquoise_spring_place.gd` avant et après le commit `49b4913` :
+
+| Masse | avant (x ; z) | **après iter11** |
+|---|---|---|
+| `Machoire_nord` | −9,9 ; −3,4 | −9,9 ; −3,4 |
+| `Machoire_sud` | −9,5 ; +3,8 | **−10,1 ; +4,2** |
+| **écart en X** | **0,40 m** | **0,20 m** |
+
+**J'ai RÉDUIT l'écart en X, de moitié.** Les deux mâchoires restent au même X
+à 20 cm près, comme en iter10. Ce que j'ai réellement construit, c'est un
+amincissement des masses (`demi_a` 2,60 → 2,20 et 2,50 → 1,60) et des lobes
+tirés vers l'ouest : des gestes de RETRAIT, pas la séparation demandée. Le
+masque 90° ne pouvait pas s'ouvrir — rien ne l'a écarté.
+
+Je l'écris net parce que c'est la faute la plus coûteuse de la passe, et
+qu'elle est de la même famille que les deux précédentes : **avoir vérifié le
+geste que je croyais avoir fait, jamais celui que le fichier porte.** Deux
+lignes de `grep` sur les positions le montraient avant la recapture.
+
+### 4. Et même le retrait ne rend pas ce que la peinture promet
 
 Le masque peint et le masque réel, à 90°, au même moment :
 
@@ -994,16 +1017,16 @@ La raison est structurelle, pas un réglage :
 > **Une silhouette est une UNION.** Peindre un rectangle supprime la matière
 > inconditionnellement ; déplacer une masse n'ouvre un vide que si AUCUN
 > autre corps n'occupe les mêmes colonnes. Derrière les mâchoires il y a la
-> couronne, les lobes du rebord, la lèvre de vasque et le lit : reculer
+> couronne, les lobes du rebord, la lèvre de vasque et le lit : amincir
 > `MawS` n'a pas creusé, il a **découvert ce qui était derrière**.
 
-C'est une famille distincte de l'erreur d'iter10 (bon geste, mauvais axe) :
-ici l'axe est bon et le geste est irréalisable par une translation. La
-simulation par peinture reste valide pour **retirer** de la matière
-(raccourcir, enterrer, plafonner) ; elle est **invalide pour tout geste de
-déplacement**, et ne doit plus être utilisée ainsi sans un test d'occlusion.
+La simulation par peinture reste donc valide pour prédire un **plafonnement**
+ou un **enterrement** (la matière retirée l'est pour de bon, sur toute la
+colonne) ; elle **surestime** tout geste latéral, où un autre corps reprend
+la colonne libérée. Ne plus s'en servir pour un déplacement sans vérifier ce
+qui occupe les colonnes visées.
 
-### 4. Le plancher d'AABB du belvédère, fermé à froid
+### 5. Le plancher d'AABB du belvédère, fermé à froid
 
 Bornes GLB (`gltf_inspect`) : crête `minY −0,400 / maxY +6,523` (H 6,923),
 éperon `minY −0,350 / maxY +4,325`. L'emprise mesurée du lieu est 8,102 m :
@@ -1014,7 +1037,7 @@ pas une mesure : la trancher demanderait de porter `world_v2_heightmap.gd`
 hors moteur, ce qui dépasse le budget d'un essai. Non bloquant : le
 belvédère ne rougit plus contre le corpus.
 
-### Ce que je VOIS à taille réelle
+### 6. Ce que je VOIS à taille réelle
 
 - Source, caméra joueur : la chaîne arrivée → vasque → déversoir reste
   lisible d'un coup d'œil ; l'ancre du fruit est dégagée (marge +0,68 m).
