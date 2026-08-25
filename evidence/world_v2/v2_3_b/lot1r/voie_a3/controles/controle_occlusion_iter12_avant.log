@@ -1,0 +1,59 @@
+=== 1. CE QUE LES FICHIERS PORTENT (grep, pas mémoire) ===
+  SM_Spring_MawN   place.gd (x;z;yaw) = (-9.9, -3.4, 18.0)   make.py (H;demi_a;demi_b) = (3.8, 2.2, 2.2)
+  SM_Spring_MawS   place.gd (x;z;yaw) = (-10.1, 4.2, -24.0)   make.py (H;demi_a;demi_b) = (3.6, 1.6, 2.0)
+  SM_Spring_Crown  place.gd (x;z;yaw) = (-11.0, 0.3, 40.0)   make.py (H;demi_a;demi_b) = (1.9, 2.05, 1.75)
+  SM_Spring_Rim    place.gd (x;z;yaw) = (-5.4, 0.2, 0.0)   make.py (H;demi_a;demi_b) = (1.7, 1.95, 1.6)
+  lobes du rebord (make.py, Blender) : [('-2.2', '3.6', '0.92'), ('3.9', '-3.7', '0.46'), ('-2.8', '-4.2', '0.80')]
+
+=== 2. LE PLAN ITER12 (mètres, pas intentions) ===
+  SM_Spring_MawN   (-9.9 ; -3.4) -> (-9.9 ; -5.2)
+  SM_Spring_MawS   (-10.1 ; 4.2) -> (-10.1 ; 6.1)
+  SM_Spring_Crown  (-11.0 ; 0.3) -> (-10.6 ; 0.8)
+  SM_Spring_Rim    (-5.4 ; 0.2) -> (-5.4 ; 0.2)
+  lobes du rebord (Blender) : [(-2.2, 3.6, 0.92), (3.9, -3.7, 0.46), (-2.8, -4.2, 0.8)] -> [(2.45, 5.3, 0.92), (3.9, -3.7, 0.3), (2.45, -6.0, 0.8)]
+
+=== 3. CORRIDOR EN X (masque 90°) ===
+  face est du groupe ouest  : x = -7.47
+  face ouest des flancs est : x = -4.85
+  corridor : 2.62 m (arbitrage : 2.5 à 4 m)
+
+  Occupation des colonnes du corridor [-7.47 ; -4.85], par bande :
+   y -0.80..-0.55 : OCCUPÉ par SM_Spring_Rim [-5.59;-0.25]  (bande basse : nappe/lit/jupes, admise)
+   y -0.55..-0.30 : OCCUPÉ par SM_Spring_Rim [-5.50;-0.54]  (bande basse : nappe/lit/jupes, admise)
+   y -0.30..-0.05 : OCCUPÉ par SM_Spring_Rim [-5.18;-0.83]  (bande basse : nappe/lit/jupes, admise)
+   y -0.05..+0.20 : OCCUPÉ par SM_Spring_Rim [-5.00;-0.83]  (bande basse : nappe/lit/jupes, admise)
+   y +0.20..+0.45 : vide
+   y +0.45..+0.70 : vide
+   y +0.70..+0.95 : vide
+   y +0.95..+1.20 : vide
+   y +1.20..+1.45 : vide
+   y +1.45..+1.70 : vide
+   y +1.70..+1.95 : vide
+   y +1.95..+2.20 : vide
+   y +2.20..+2.45 : vide
+   y +2.45..+2.70 : vide
+   y +2.70..+2.95 : vide
+   y +2.95..+3.20 : vide
+   y +3.20..+3.45 : vide
+   y +3.45..+3.70 : vide
+   y +3.70..+3.95 : vide
+   y +3.95..+4.20 : vide
+   y +4.20..+4.45 : vide
+   y +4.45..+4.70 : vide
+   y +4.70..+4.95 : vide
+  NB : la nappe (plan à +0,08), le lit (+0,03) et la langue qui
+  épouse le sol restent sous 0.30 m : ils traversent le corridor
+  dans la bande basse, ce qui est le déversoir lui-même — voulu.
+
+=== 4. LES DEUX VIDES DU MASQUE 0° (axe Z) ===
+  sommet de la couronne : y = 2.12
+  au-dessus : tour nord jusqu'à z -2.32, tour sud depuis z 4.06 -> vide central 6.38 m
+  sous la couronne : respiration nord–couronne ≥ 0.63 m, couronne–sud ≥ 0.78 m
+
+=== 5. GARDES DE FICTION (rien d'autre ne bouge) ===
+  flancs vs ancre du fruit (gelée, (−2,4 ; 2,6)) : 2.18 m
+  flancs vs langue du déversoir (inchangée) : 0.66 m
+  tous les colliders prévus ≥ 7 m de la tête d'affluent : vérifié
+  la bouche ouest (x ≈ -11.3) reste SOUS le groupe des mâchoires (x min -12.90) : vérifié
+
+VERDICT PRÉ-CONTRÔLE : PASS
