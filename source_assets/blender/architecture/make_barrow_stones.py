@@ -12,10 +12,11 @@
 # et les ceintures étaient des `rock_largeA/C`, dont le glTF porte une surface
 # `grass` qui rend TURQUOISE ici (chapeaux mesurés sur la capture d'avant).
 #
-# CE QUE LE GLB PORTE : neuf pierres, chacune sur SON origine, base à z = 0,
-# sans implantation — deux montants et un linteau GLISSÉ pour la gueule de la
-# chambre, deux stèles rompues, trois lames couchées de tailles décroissantes,
-# et le tas de déblais OUVERT qui berce le coffre. Le lieu
+# CE QUE LE GLB PORTE (LOT 1.R.1 : douze pierres, contre neuf) : chacune sur
+# SON origine, base à z = 0, sans implantation — deux montants et un linteau
+# GLISSÉ pour la gueule de la chambre, TROIS stèles rompues de familles
+# différentes, une PAIRE DE SEUIL inégale (l'entrée funéraire), trois lames
+# couchées de tailles décroissantes, et le tas de déblais OUVERT. Le lieu
 # (`barrow_cemetery_place.gd`) pose, oriente, enfonce et déclare ses appuis.
 #
 # LA FAMILLE DE FORME EST LA DALLE, PAS LE FÛT — et c'est une décision D3
@@ -223,54 +224,146 @@ def _rotation_xyz(p, angles):
 
 
 # ---------------------------------------------------------------------------
-# LA DALLE — la brique unique de ce cimetière
+# LA DALLE — reprise V2.3-B LOT 1.R.1 : LA SILHOUETTE AVANT LA MATIÈRE
 # ---------------------------------------------------------------------------
+# VERDICT QUI IMPOSE CETTE REPRISE (Codex, inspection réelle) : « le lieu
+# actuel lit comme des POTEAUX RECTANGULAIRES répartis autour de bosses
+# vertes ». Il est exact, et la cause est dans la fonction, pas dans un
+# réglage :
+#
+#   * la section était un hexagone CONSTANT ;
+#   * la seule variation sur la hauteur était `conique = 1 − fuseau·t`, un
+#     facteur UNIQUE appliqué aux deux côtés. Les deux arêtes de silhouette
+#     étaient donc les mêmes droites au signe près : **elles ne pouvaient pas
+#     ne pas être parallèles** ;
+#   * le jitter (±0,23) agit par sommet : il bruite le bord de quelques
+#     centimètres, il ne change pas sa DIRECTION ;
+#   * la « tête cassée » abaissait les six sommets du haut d'une quantité
+#     proche, donc la coupe restait quasi horizontale.
+#
+# Quatre leviers, chacun visant une de ces causes, et tous dans la GÉOMÉTRIE.
+# Aucune quantité de `COLOR_0`, de teinte ou de rugosité ne corrige une
+# silhouette — c'est la leçon que la passe précédente a payée : elle a rendu
+# la matière juste sur une forme qui restait un rectangle.
+#
+# 1. SECTION OCTOGONALE IRRÉGULIÈRE. Huit sommets, aucun symétrique de son
+#    opposé. Une pierre débitée à la main n'a pas de plan de symétrie.
+# 2. PROFIL DE LARGEUR PAR CÔTÉ. Quatre points de contrôle (pied, ventre,
+#    épaule, tête) POUR CHAQUE CÔTÉ, interpolés linéairement et mélangés en
+#    travers de la section. Un côté peut fuir pendant que l'autre reste droit :
+#    le parallélisme est structurellement impossible.
+# 3. ÉPAULE ARRACHÉE et ENTAILLE. Une marche franche d'un seul côté au-dessus
+#    d'une cote donnée ; un éclat manquant sur une bande de hauteur. Ce sont
+#    les deux accidents que l'œil lit comme « cassée » plutôt que « taillée ».
+# 4. TÊTE CASSÉE EN BIAIS, et c'est le changement le plus visible de loin.
+#    Chaque ARÊTE VERTICALE reçoit sa propre hauteur de rupture, tirée d'un
+#    plan incliné (azimut de la cassure tiré de la graine) plus une dent. Les
+#    anneaux ne sont plus posés à `t·hauteur` mais à `t · hauteur_de_cette
+#    arête` : la pile ne peut donc pas se croiser, aucun anneau ne perce le
+#    suivant, et le bord supérieur devient une ligne brisée oblique.
+#
+# `PROFIL` : demi-cotes en (largeur, épaisseur). Les extrêmes de silhouette
+# sont les indices 0 (x = −1,00) et 4 (x = +1,00) ; ils ne sont pas à la même
+# épaisseur, donc la pierre n'a pas de face « avant » plate.
+PROFIL = ((-1.00, -0.26), (-0.74, -0.88), (-0.02, -1.00), (0.72, -0.76),
+          (1.00, 0.18), (0.64, 0.94), (-0.18, 1.00), (-0.84, 0.72))
+
+ANNEAUX = (0.0, 0.14, 0.30, 0.46, 0.61, 0.74, 0.85, 0.94, 1.0)
+
+# Points de contrôle du profil de largeur, à t = 0 / 0,34 / 0,68 / 1,0.
+# Chaque famille donne DEUX courbes — côté gauche, côté droit — et elles ne
+# se ressemblent jamais. C'est là que meurt le rectangle.
+FAMILLES = {
+    # nom          gauche                        droite
+    "montant":  ((1.00, 0.99, 0.93, 0.84), (1.00, 0.87, 0.69, 0.50)),
+    "stele":    ((1.00, 0.82, 0.57, 0.34), (0.97, 0.96, 0.89, 0.80)),
+    "aiguille": ((1.00, 0.75, 0.47, 0.21), (1.00, 0.94, 0.73, 0.43)),
+    "souche":   ((1.00, 1.07, 0.84, 0.53), (0.91, 0.77, 0.63, 0.42)),
+    "lame":     ((1.00, 0.97, 0.86, 0.62), (1.00, 0.81, 0.65, 0.39)),
+}
+NOEUDS_PROFIL = (0.0, 0.34, 0.68, 1.0)
+
+## Paramètres de la dernière `dalle()` construite — voir la note en fin de
+## `dalle()`. Lu par `objet_depuis()`, jamais par autre chose.
+_DERNIERE_DALLE = {}
+
+
+def _interp_profil(points, t):
+    """Interpolation linéaire des quatre points de contrôle d'un côté."""
+    for k in range(len(NOEUDS_PROFIL) - 1):
+        a, b = NOEUDS_PROFIL[k], NOEUDS_PROFIL[k + 1]
+        if t <= b or k == len(NOEUDS_PROFIL) - 2:
+            f = 0.0 if b <= a else (t - a) / (b - a)
+            f = min(1.0, max(0.0, f))
+            return points[k] + (points[k + 1] - points[k]) * f
+    return points[-1]
+
+
 def dalle(bm, hauteur, largeur, epaisseur, graine, brisure=0.26,
           fuseau=0.12, rotation=(0.0, 0.0, 0.0), centre=(0.0, 0.0, 0.0),
-          voile=0.0):
-    """Une dalle de pierre débitée : mince, deux grandes faces, quatre chants.
+          voile=0.0, famille="stele", biais=0.55, epaule=None,
+          entaille=None):
+    """Une pierre funéraire débitée, cassée, ébréchée — jamais un prisme.
 
-    C'est une famille de forme DIFFÉRENTE du fût du sanctuaire, et la
-    différence est structurelle, pas décorative : la section n'est pas un
-    polygone régulier mais un hexagone APLATI (deux longs côtés, deux bouts
-    chanfreinés). Une dalle a une orientation ; un fût n'en a pas. C'est ce
-    qui permet à un cimetière de dalles couchées de faire un CHEMIN, là où
-    des fûts feraient un semis.
-
-    `voile` gauchit la dalle sur sa hauteur (rotation progressive de la
-    section) — une pierre débitée à la main n'est jamais plane.
+    `famille`  choisit les deux courbes de largeur (voir `FAMILLES`).
+    `biais`    règle l'inclinaison de la cassure de tête (0 = coupe droite).
+    `epaule`   = (t_depart, cote, profondeur) — un morceau d'épaule arraché.
+    `entaille` = (t_centre, demi_hauteur, cote, profondeur) — un éclat parti.
+    `fuseau`   reste un amincissement d'ensemble, secondaire désormais.
+    `voile`    gauchit la pierre sur sa hauteur.
     """
-    anneaux = (0.0, 0.24, 0.50, 0.74, 0.90, 1.0)
-    # Section : hexagone aplati. Les demi-cotes sont en (largeur, epaisseur).
-    profil = ((-1.00, -0.42), (-0.62, -1.00), (0.62, -1.00), (1.00, 0.42),
-              (0.62, 1.00), (-0.62, 1.00))
+    gauche, droite = FAMILLES[famille]
+    # Décalage par pièce : deux pierres de la même famille ne sont jamais la
+    # même pierre. ±0,07 sur chaque point de contrôle, indépendamment.
+    gauche = tuple(max(0.14, v + _graine(graine * 3.7 + i * 2.3) * 0.14)
+                   for i, v in enumerate(gauche))
+    droite = tuple(max(0.14, v + _graine(graine * 5.3 + i * 1.9) * 0.14)
+                   for i, v in enumerate(droite))
+
+    # LA CASSURE DE TÊTE, arête verticale par arête verticale. Le plan est
+    # tiré de la graine ; les dents s'y ajoutent. Le résultat borne la
+    # hauteur de CHAQUE colonne de sommets, ce qui interdit tout croisement.
+    phi = _graine(graine * 9.1) * 6.2832
+    nx, ny = math.cos(phi), math.sin(phi)
+    sommets_z = []
+    for i, (px, py) in enumerate(PROFIL):
+        s = px * nx + py * ny                       # dans [−1 ; 1] environ
+        chute = brisure * (0.08 + 1.55 * biais * (0.5 + 0.5 * s))
+        chute += brisure * 0.46 * abs(_graine(graine * 7.1 + i * 5.3))
+        sommets_z.append(hauteur * max(0.42, 1.0 - chute))
+
     grilles = []
-    for niveau, t in enumerate(anneaux):
-        conique = 1.0 - fuseau * t
+    for niveau, t in enumerate(ANNEAUX):
         gauchissement = voile * t
         cg, sg = math.cos(gauchissement), math.sin(gauchissement)
+        conique = 1.0 - fuseau * t
+        fg = _interp_profil(gauche, t)
+        fd = _interp_profil(droite, t)
         anneau = []
-        for i, (px, py) in enumerate(profil):
-            # Jitter relevé de 0,16/0,20 à 0,23/0,28 : à la première capture
-            # les dalles sortaient comme des marqueurs de plastique blanc, et
-            # la teinte n'était que la moitié de la cause — l'autre moitié
-            # était que leurs grandes faces sont PLANES et rendent donc un
-            # aplat parfait. Un débitage à la main ne l'est jamais.
-            jx = 1.0 + _graine(graine * 2.7 + i * 3.1 + niveau * 1.3) * 0.23
-            jy = 1.0 + _graine(graine * 4.1 + i * 1.9 + niveau * 0.7) * 0.28
-            x = px * largeur * 0.5 * conique * jx
-            y = py * epaisseur * 0.5 * conique * jy
+        for i, (px, py) in enumerate(PROFIL):
+            # Mélange des deux côtés en travers de la section : pas de
+            # couture, et le sommet px ≈ 0 hérite de la moyenne.
+            w = 0.5 + 0.5 * px
+            largeur_locale = fg + (fd - fg) * w
+            # ÉPAULE ARRACHÉE — une marche franche, d'un seul côté.
+            if epaule is not None:
+                t0, cote, prof = epaule
+                masse = w if cote > 0 else 1.0 - w
+                marche = min(1.0, max(0.0, (t - t0) / 0.06))
+                largeur_locale *= 1.0 - prof * marche * masse
+            # ENTAILLE — un éclat parti sur une bande de hauteur.
+            if entaille is not None:
+                tc, demi, cote, prof = entaille
+                masse = w if cote > 0 else 1.0 - w
+                d = abs(t - tc) / max(1e-6, demi)
+                creux = max(0.0, 1.0 - d * d)
+                largeur_locale *= 1.0 - prof * creux * masse
+            jx = 1.0 + _graine(graine * 2.7 + i * 3.1 + niveau * 1.3) * 0.17
+            jy = 1.0 + _graine(graine * 4.1 + i * 1.9 + niveau * 0.7) * 0.24
+            x = px * largeur * 0.5 * conique * largeur_locale * jx
+            y = py * epaisseur * 0.5 * conique * (0.62 + 0.38 * largeur_locale) * jy
             x, y = x * cg - y * sg, x * sg + y * cg
-            z = t * hauteur
-            if niveau == len(anneaux) - 1:
-                # LE SOMMET EST CASSÉ, pas coupé : plan incliné + dents.
-                pente = _graine(graine * 5.9)
-                z -= hauteur * brisure * (
-                    0.40 + 0.60 * (0.5 + 0.5 * math.cos(
-                        2.0 * math.pi * i / len(profil)
-                        + 6.0 * _graine(graine * 4.3))) * (0.6 + pente)
-                    + 0.26 * abs(_graine(graine * 7.1 + i * 5.3)))
-            anneau.append((x, y, z))
+            anneau.append((x, y, t * sommets_z[i]))
         grilles.append(anneau)
 
     def poser(p):
@@ -278,25 +371,35 @@ def dalle(bm, hauteur, largeur, epaisseur, graine, brisure=0.26,
         return bm.verts.new((centre[0] + q[0], centre[1] + q[1],
                              centre[2] + q[2]))
 
-    k = len(profil)
+    k = len(PROFIL)
     verts = [[poser(p) for p in anneau] for anneau in grilles]
     faces = [bm.faces.new(tuple(reversed(verts[0])))]
-    for niveau in range(len(anneaux) - 1):
+    for niveau in range(len(ANNEAUX) - 1):
         for i in range(k):
             j = (i + 1) % k
             faces.append(bm.faces.new((verts[niveau][i], verts[niveau][j],
                                        verts[niveau + 1][j],
                                        verts[niveau + 1][i])))
     haut = grilles[-1]
+    # LE CŒUR DE LA CASSURE EST CREUX : une tête arrachée laisse une cuvette,
+    # pas une calotte. Il est posé sous la moyenne des arêtes.
     z_moyen = sum(p[2] for p in haut) / k
-    coeur = poser((sum(p[0] for p in haut) / k + _graine(graine * 6.7) * 0.08,
-                   sum(p[1] for p in haut) / k + _graine(graine * 8.1) * 0.05,
-                   z_moyen - hauteur * brisure * 0.18))
+    coeur = poser((sum(p[0] for p in haut) / k + _graine(graine * 6.7) * 0.10,
+                   sum(p[1] for p in haut) / k + _graine(graine * 8.1) * 0.07,
+                   z_moyen - hauteur * brisure * 0.30))
     for i in range(k):
         j = (i + 1) % k
         faces.append(bm.faces.new((verts[-1][i], verts[-1][j], coeur)))
     for f in faces:
         f.material_index = IDX_PIERRE
+    # LES PARAMÈTRES RÉELLEMENT EMPLOYÉS, relevés ici et non recopiés ailleurs.
+    # La garde de silhouette doit comparer chaque pierre à l'ANCIENNE formule
+    # **à sa propre échelle et sur sa propre graine** ; une table parallèle
+    # tenue à la main aurait dérivé au premier changement de cote, et la garde
+    # aurait alors comparé une pierre à une autre sans rien dire.
+    _DERNIERE_DALLE.clear()
+    _DERNIERE_DALLE.update({"graine": graine, "fuseau": fuseau,
+                            "famille": famille})
     return faces
 
 
@@ -416,7 +519,9 @@ def deplier_boite(bm):
 def objet_depuis(nom, remplir, lichen_max_z=0.60):
     maillage = bpy.data.meshes.new(nom)
     bm = bmesh.new()
+    _DERNIERE_DALLE.clear()
     remplir(bm)
+    parametres = dict(_DERNIERE_DALLE)
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
     lichenees = poser_lichen(bm, lichen_max_z)
     deplier_boite(bm)
@@ -432,6 +537,9 @@ def objet_depuis(nom, remplir, lichen_max_z=0.60):
         obj.data.materials.append(materiau(nom_mat))
     bpy.context.collection.objects.link(obj)
     obj["lichenees"] = lichenees
+    obj["graine"] = float(parametres.get("graine", 0.0))
+    obj["fuseau"] = float(parametres.get("fuseau", 0.0))
+    obj["famille"] = str(parametres.get("famille", "—"))
     return obj
 
 
@@ -445,6 +553,97 @@ def emprise(obj):
     ys = [v.co.y for v in obj.data.vertices]
     zs = [v.co.z for v in obj.data.vertices]
     return (min(xs), max(xs)), (min(ys), max(ys)), (min(zs), max(zs))
+
+
+# ---------------------------------------------------------------------------
+# GARDE DE SILHOUETTE — celle qui aurait refusé la forme rejetée
+# ---------------------------------------------------------------------------
+# Trois grandeurs, mesurées sur la PROJECTION (x, z) — c'est-à-dire sur ce que
+# l'aplat noir montre, pas sur le volume :
+#
+#   remplissage  aire de la silhouette / aire de sa boîte englobante.
+#                Un rectangle vaut 1,00. Un fût légèrement fuselé vaut 0,9x.
+#   variation    coefficient de variation de la largeur sur la hauteur.
+#                Un rectangle vaut 0. C'est la mesure qui dit « les côtés ne
+#                sont pas parallèles ».
+#   dissymetrie  écart moyen entre le bord gauche et le bord droit, rapporté
+#                à la demi-largeur. Un fuseau symétrique vaut 0.
+#
+# LE PLANCHER N'EST PAS CHOISI : il est CALCULÉ à partir de l'ANCIENNE FORMULE,
+# reproduite à l'identique dans `_metriques_ancienne_dalle()`. La garde ne peut
+# donc pas accepter la géométrie que le verdict a rejetée — et elle ne peut pas
+# non plus être « calibrée sur le sujet », piège consigné dans `tools/CLAUDE.md`
+# (« un seuil calibré sur une géométrie ensuite rejetée est un plancher du
+# défaut »). Ici c'est l'inverse : le rejeté est la BORNE À BATTRE.
+MARGE_REMPLISSAGE = 0.88     # au plus 88 % du remplissage de l'ancienne forme
+FACTEUR_VARIATION = 2.0      # au moins le double de sa variation de largeur
+DISSYMETRIE_MIN = 0.10       # l'ancienne est symétrique par construction
+
+
+def _metriques_profil(largeurs_g, largeurs_d, hauteurs):
+    """Les trois grandeurs, depuis les demi-largeurs gauche/droite par bande."""
+    n = len(largeurs_g)
+    largeurs = [largeurs_g[i] + largeurs_d[i] for i in range(n)]
+    maxi = max(largeurs)
+    if maxi <= 1e-9:
+        return 1.0, 0.0, 0.0
+    aire = sum(largeurs) / n
+    remplissage = aire / maxi
+    moyenne = aire
+    ecart = (sum((v - moyenne) ** 2 for v in largeurs) / n) ** 0.5
+    variation = ecart / moyenne if moyenne > 1e-9 else 0.0
+    dissym = sum(abs(largeurs_g[i] - largeurs_d[i]) for i in range(n)) / n
+    dissymetrie = dissym / (moyenne * 0.5) if moyenne > 1e-9 else 0.0
+    return remplissage, variation, dissymetrie
+
+
+def _metriques_ancienne_dalle(hauteur, largeur, graine, fuseau, bandes=18):
+    """Reproduit EXACTEMENT le profil de largeur de la formule d'avant.
+
+    Section hexagonale constante, un seul `conique = 1 − fuseau·t`, jitter par
+    sommet ±0,23. Les extrêmes de silhouette étaient les indices 0 (px = −1,00)
+    et 3 (px = +1,00) de l'ancien `profil`.
+    """
+    anciens_anneaux = (0.0, 0.24, 0.50, 0.74, 0.90, 1.0)
+    g, d = [], []
+    for b in range(bandes):
+        t = b / float(bandes - 1)
+        # niveau le plus proche, pour reprendre le jitter réellement appliqué
+        niveau = min(range(len(anciens_anneaux)),
+                     key=lambda k: abs(anciens_anneaux[k] - t))
+        conique = 1.0 - fuseau * t
+        jg = 1.0 + _graine(graine * 2.7 + 0 * 3.1 + niveau * 1.3) * 0.23
+        jd = 1.0 + _graine(graine * 2.7 + 3 * 3.1 + niveau * 1.3) * 0.23
+        g.append(largeur * 0.5 * conique * jg)
+        d.append(largeur * 0.5 * conique * jd)
+    return _metriques_profil(g, d, None)
+
+
+def metriques_silhouette(obj, bandes=18):
+    """Les trois grandeurs, lues sur le maillage réellement construit."""
+    zs = [v.co.z for v in obj.data.vertices]
+    z0, z1 = min(zs), max(zs)
+    if z1 - z0 <= 1e-6:
+        return 1.0, 0.0, 0.0
+    xs_tot = [v.co.x for v in obj.data.vertices]
+    axe = (min(xs_tot) + max(xs_tot)) * 0.5
+    g, d = [], []
+    for b in range(bandes):
+        lo = z0 + (z1 - z0) * b / bandes
+        hi = z0 + (z1 - z0) * (b + 1) / bandes
+        dans = [v.co.x for v in obj.data.vertices if lo - 1e-6 <= v.co.z <= hi + 1e-6]
+        if not dans:
+            # bande vide : on interpole depuis la précédente plutôt que de
+            # compter zéro, ce qui gonflerait artificiellement la variation.
+            if g:
+                g.append(g[-1])
+                d.append(d[-1])
+            continue
+        g.append(max(0.0, axe - min(dans)))
+        d.append(max(0.0, max(dans) - axe))
+    if not g:
+        return 1.0, 0.0, 0.0
+    return _metriques_profil(g, d, None)
 
 
 def main():
@@ -465,51 +664,96 @@ def main():
         # à quoi ressemble une allée couverte mise à nu. Le tertre peut
         # redescendre à 2,15 m, la silhouette garde sa hauteur, et la gueule
         # gagne en lisibilité à 5-15 m — la condition du lead.
+        # Montant A : massif, épaule DROITE arrachée au-dessus de mi-hauteur —
+        # la marche est la première chose qui casse la lecture « poteau ».
         objet_depuis("SM_Barrow_Jamb_A",
-                     lambda bm: dalle(bm, 2.72, 0.92, 0.38, 4.3, brisure=0.20,
-                                      fuseau=0.10, voile=0.10)),
+                     lambda bm: dalle(bm, 2.72, 0.92, 0.38, 4.3, brisure=0.24,
+                                      fuseau=0.06, voile=0.10,
+                                      famille="montant", biais=0.62,
+                                      epaule=(0.58, 1, 0.34))),
+        # Montant B : plus court, taille de guêpe, un éclat parti à mi-fût sur
+        # le côté GAUCHE. Aucune parenté de silhouette avec A.
         objet_depuis("SM_Barrow_Jamb_B",
-                     lambda bm: dalle(bm, 2.12, 0.78, 0.34, 8.9, brisure=0.26,
-                                      fuseau=0.14, voile=-0.13)),
+                     lambda bm: dalle(bm, 2.12, 0.80, 0.34, 8.9, brisure=0.30,
+                                      fuseau=0.08, voile=-0.13,
+                                      famille="stele", biais=0.78,
+                                      entaille=(0.52, 0.20, -1, 0.42))),
         # Le linteau : une dalle COUCHÉE de 2,1 m. Il est modélisé à plat, le
         # lieu lui donne son dévers — une couverture d'aplomb se lit maçonnée,
         # une couverture qui a glissé se lit descellée.
         objet_depuis("SM_Barrow_Lintel",
                      lambda bm: dalle(bm, 2.10, 0.92, 0.36, 12.7,
-                                      brisure=0.14, fuseau=0.06, voile=0.07,
+                                      brisure=0.22, fuseau=0.06, voile=0.07,
+                                      famille="lame", biais=0.70,
+                                      entaille=(0.74, 0.22, 1, 0.30),
                                       rotation=(math.radians(90.0), 0.0,
                                                 math.radians(2.0))),
                      lichen_max_z=0.30),
-        # LES DEUX STÈLES qui précèdent la chambre. Minces, penchées par le
-        # lieu, cassées différemment.
+        # LES TROIS STÈLES — trois familles, trois accidents, aucune paire.
         objet_depuis("SM_Barrow_Stele_A",
                      # 1,74 nominal : la stèle du chemin doit se lire à
                      # 30-50 m (condition du lead) et porter, avec le tertre,
                      # le rapport hauteur/largeur du lieu.
-                     lambda bm: dalle(bm, 1.74, 0.62, 0.24, 17.1, brisure=0.30,
-                                      fuseau=0.18, voile=0.16)),
+                     # « aiguille » : elle fuit fortement à gauche et peu à
+                     # droite, et sa tête part à 55° — c'est cette pierre qui
+                     # sert de menhir du seuil, la plus regardée du lieu.
+                     lambda bm: dalle(bm, 1.74, 0.66, 0.24, 17.1, brisure=0.34,
+                                      fuseau=0.05, voile=0.16,
+                                      famille="aiguille", biais=0.86,
+                                      epaule=(0.72, -1, 0.30))),
         objet_depuis("SM_Barrow_Stele_B",
-                     lambda bm: dalle(bm, 1.02, 0.54, 0.21, 23.9, brisure=0.38,
-                                      fuseau=0.22, voile=-0.19)),
+                     # « souche » : trapue, ventrue au pied, cassée bas et
+                     # largement ébréchée. Une pierre à demi avalée.
+                     lambda bm: dalle(bm, 1.02, 0.60, 0.23, 23.9, brisure=0.46,
+                                      fuseau=0.04, voile=-0.19,
+                                      famille="souche", biais=0.48,
+                                      entaille=(0.66, 0.26, 1, 0.46))),
+        objet_depuis("SM_Barrow_Stele_C",
+                     # « stele » : le seul fût qui reste presque droit d'un
+                     # côté — la référence par rapport à laquelle les autres
+                     # se lisent comme cassées.
+                     lambda bm: dalle(bm, 1.42, 0.58, 0.22, 31.5, brisure=0.28,
+                                      fuseau=0.07, voile=0.11,
+                                      famille="stele", biais=0.66,
+                                      epaule=(0.64, 1, 0.26))),
+        # LA PAIRE DU SEUIL — l'entrée funéraire. Deux pierres INÉGALES : une
+        # encore debout, une rompue à mi-corps. Un seuil se lit à la paire
+        # dépareillée, pas à deux jumelles.
+        objet_depuis("SM_Barrow_Seuil_A",
+                     lambda bm: dalle(bm, 2.34, 0.86, 0.33, 47.3, brisure=0.26,
+                                      fuseau=0.07, voile=-0.09,
+                                      famille="montant", biais=0.74,
+                                      entaille=(0.38, 0.18, -1, 0.36))),
+        objet_depuis("SM_Barrow_Seuil_B",
+                     lambda bm: dalle(bm, 1.16, 0.78, 0.30, 53.9, brisure=0.52,
+                                      fuseau=0.03, voile=0.14,
+                                      famille="souche", biais=0.92,
+                                      epaule=(0.46, -1, 0.38))),
         # LES TROIS LAMES COUCHÉES — le chemin des morts. Elles sont modélisées
         # DÉJÀ couchées : le lieu ne les bascule pas, il les enfonce. C'est la
         # correction directe du piège `_coucher()` (une pièce basculée après
         # `seat()` s'enterre ou flotte, et le décalage n'est pas devinable).
         objet_depuis("SM_Barrow_Lame_A",
-                     lambda bm: dalle(bm, 1.55, 0.74, 0.26, 29.3, brisure=0.22,
-                                      fuseau=0.10, voile=0.12,
+                     lambda bm: dalle(bm, 1.55, 0.74, 0.26, 29.3, brisure=0.30,
+                                      fuseau=0.05, voile=0.12,
+                                      famille="lame", biais=0.80,
+                                      entaille=(0.58, 0.22, -1, 0.34),
                                       rotation=(math.radians(90.0), 0.0,
                                                 math.radians(-4.0))),
                      lichen_max_z=0.22),
         objet_depuis("SM_Barrow_Lame_B",
-                     lambda bm: dalle(bm, 1.18, 0.58, 0.22, 35.7, brisure=0.28,
-                                      fuseau=0.12, voile=-0.10,
+                     lambda bm: dalle(bm, 1.18, 0.60, 0.22, 35.7, brisure=0.36,
+                                      fuseau=0.06, voile=-0.10,
+                                      famille="souche", biais=0.64,
+                                      epaule=(0.54, 1, 0.32),
                                       rotation=(math.radians(90.0), 0.0,
                                                 math.radians(6.0))),
                      lichen_max_z=0.18),
         objet_depuis("SM_Barrow_Lame_C",
-                     lambda bm: dalle(bm, 0.94, 0.62, 0.19, 41.1, brisure=0.34,
-                                      fuseau=0.08, voile=0.15,
+                     lambda bm: dalle(bm, 0.94, 0.64, 0.19, 41.1, brisure=0.42,
+                                      fuseau=0.04, voile=0.15,
+                                      famille="aiguille", biais=0.90,
+                                      entaille=(0.44, 0.24, 1, 0.40),
                                       rotation=(math.radians(90.0), 0.0,
                                                 math.radians(-9.0))),
                      lichen_max_z=0.16),
@@ -570,7 +814,13 @@ def main():
     # doit être vide sur au moins 1,4 m de large : c'est par là qu'on arrive et
     # qu'on repart, et c'est la condition « coffre jamais enfermé » du lead
     # rendue vérifiable au lieu d'être promise.
-    tas = pieces[8]
+    # NOMMÉ, PAS INDEXÉ. `pieces[8]` a été juste tant que la liste comptait
+    # neuf entrées ; l'ajout de trois pierres au lot 1.R.1 l'aurait fait
+    # mesurer une stèle en croyant mesurer le tas, SANS erreur et avec un
+    # chiffre plausible. Un index dans une liste qu'on rallonge est un piège
+    # de la même famille que celui d'ISS-018.
+    par_nom = {o.name: o for o in pieces}
+    tas = par_nom["SM_Barrow_Deblais"]
     intrus = [v.co for v in tas.data.vertices
               if v.co.y > 0.10 and abs(v.co.x) < 0.70]
     if intrus:
@@ -585,18 +835,50 @@ def main():
     # GARDE 3 — LE LINTEAU EST UNE COUVERTURE, PAS UN MONTANT. Il doit être
     # plus long que les deux montants ne sont hauts, sinon il ne peut pas
     # porter à cheval sur la gueule.
-    linteau = pieces[2]
+    linteau = par_nom["SM_Barrow_Lintel"]
+    jamb_a = par_nom["SM_Barrow_Jamb_A"]
+    jamb_b = par_nom["SM_Barrow_Jamb_B"]
     (lx0, lx1), (ly0, ly1), (lz0, lz1) = emprise(linteau)
     portee = max(lx1 - lx0, ly1 - ly0)
-    jambages = max(emprise(pieces[0])[2][1], emprise(pieces[1])[2][1])
+    jambages = max(emprise(jamb_a)[2][1], emprise(jamb_b)[2][1])
     if portee < 1.60:
         print("[barrow_stones] ERREUR: linteau de %.2f m — trop court pour "
               "couvrir une gueule" % portee)
         return 2
     print("[barrow_stones] gueule : montants %.2f et %.2f m, linteau %.2f m "
           "de portée (jambage le plus haut %.2f)"
-          % (emprise(pieces[0])[2][1], emprise(pieces[1])[2][1], portee,
-             jambages))
+          % (emprise(jamb_a)[2][1], emprise(jamb_b)[2][1], portee, jambages))
+
+    # GARDE 4 — LA SILHOUETTE N'EST PLUS UN RECTANGLE, et c'est la garde qui
+    # répond au verdict. Chaque pierre DRESSÉE (les couchées et le tas sont
+    # jugés par la garde 1 et la garde 2) est comparée aux trois grandeurs de
+    # l'ANCIENNE formule, recalculées à sa propre échelle et sur sa propre
+    # graine. Le plancher est donc la forme rejetée elle-même.
+    dressees = [o for o in pieces
+                if o.name.startswith(("SM_Barrow_Jamb", "SM_Barrow_Stele",
+                                      "SM_Barrow_Seuil"))]
+    echecs = []
+    for obj in dressees:
+        (x0, x1), _, (z0, z1) = emprise(obj)
+        rempl, var, dis = metriques_silhouette(obj)
+        a_rempl, a_var, _ = _metriques_ancienne_dalle(
+            z1 - z0, x1 - x0, float(obj["graine"]), float(obj["fuseau"]))
+        ok = (rempl <= a_rempl * MARGE_REMPLISSAGE
+              and var >= a_var * FACTEUR_VARIATION
+              and dis >= DISSYMETRIE_MIN)
+        print("[barrow_stones] silhouette %-20s remplissage %.3f (ancien "
+              "%.3f, plafond %.3f) · variation %.3f (ancien %.3f, plancher "
+              "%.3f) · dissymétrie %.3f (plancher %.3f) %s"
+              % (obj.name, rempl, a_rempl, a_rempl * MARGE_REMPLISSAGE,
+                 var, a_var, a_var * FACTEUR_VARIATION, dis,
+                 DISSYMETRIE_MIN, "OK" if ok else "REFUS"))
+        if not ok:
+            echecs.append(obj.name)
+    if echecs:
+        print("[barrow_stones] ERREUR: %d pierre(s) dressée(s) restent des "
+              "prismes à côtés parallèles : %s" % (len(echecs),
+                                                   ", ".join(echecs)))
+        return 2
 
 
     # GARDE COLOR_0 — celle que `gltf_inspect.py` ne peut pas rendre.
