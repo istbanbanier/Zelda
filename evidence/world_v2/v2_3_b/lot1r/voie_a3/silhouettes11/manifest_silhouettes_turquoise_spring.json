@@ -1,0 +1,34 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "clip_below": null,
+  "commit": "49b49134a3fcb63473087b4a503c1a530e201dfa",
+  "emprise_m": [
+    17.1872253417969,
+    4.79061889648438,
+    16.2664012908936
+  ],
+  "engine": "4.7.1-stable (custom_build)",
+  "mode": "lieu dans le monde monté",
+  "place_id": "valley.poi.turquoise_spring.01",
+  "projection": "orthogonale",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "size": "900x1200",
+  "sujet": "turquoise_spring",
+  "vues": [
+    {
+      "angle_deg": 0.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_a3/silhouettes11/silhouette_turquoise_spring_000.png",
+      "sujet_pct": 8.13666666666667
+    },
+    {
+      "angle_deg": 90.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_a3/silhouettes11/silhouette_turquoise_spring_090.png",
+      "sujet_pct": 4.87925925925926
+    }
+  ]
+}
