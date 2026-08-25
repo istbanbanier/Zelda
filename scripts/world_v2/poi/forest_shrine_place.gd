@@ -70,9 +70,14 @@ const VESTIGE_SCENE: PackedScene = preload(
 	"res://assets/architecture/shrine/SM_Shrine_Vestige.glb")
 
 ## Dessus de la table d'offrande, mesuré sur le maillage exporté
-## (`SM_Shrine_Table`, Z 0,000..0,890). Ce n'est pas un choix : c'est une cote
-## lue dans le journal de la chaîne Blender, et si le générateur change, ce
-## nombre doit être relu et non deviné.
+## (désormais `SM_Shrine_Coeur`). Ce n'est pas un choix : c'est une cote lue
+## dans le journal de la chaîne Blender, et si le générateur change, ce nombre
+## doit être RELU et non deviné — l'ancre de récompense s'y appuie, et une
+## cote périmée ferait flotter l'offrande, ce qui est exactement le défaut
+## B-f-7 relevé par l'audit sur ce lieu.
+## LOT 1.R : la fusion table+chevet a élargi la dalle mais laissé son dessus
+## à 0,890 — c'est la raison pour laquelle le dossier a été construit À CÔTÉ
+## de la dalle et non dessous.
 const TABLE_DESSUS: float = 0.89
 
 ## TEINTES DU VESTIGE — albédos ABSOLUS, pas des multiplicateurs.
@@ -215,6 +220,17 @@ func _seuil() -> void:
 	_piece_vestige("SM_Shrine_Montant_B", b,
 		Vector3(0.0, deg_to_rad(-58.0), deg_to_rad(-8.0)))
 	declare_support(b)
+	# LE LINTEAU TOMBÉ — en travers, entre les deux montants et un peu en
+	# avant. C'est lui qui fait qu'on lit une PORTE et non deux pierres : la
+	# pièce est taillée là où tout le reste est de la pierre de champ, et elle
+	# est couchée là où tout le reste est debout. Enfoncée de 11 cm, elle
+	# n'émerge que de 0,22 m — sous la hauteur de marche du héros, donc aucun
+	# corps : on l'enjambe, exactement comme la pierre couchée de la nef.
+	var linteau: Vector3 = _seated(-0.24, -3.28)
+	_piece_vestige("SM_Shrine_Linteau",
+		linteau + Vector3(0.0, -0.11, 0.0),
+		Vector3(0.0, deg_to_rad(74.0), deg_to_rad(4.0)))
+	declare_support(linteau)
 	# Enfoncée de 8 cm : une dalle qui affleure l'herbe se lit neuve.
 	var marche: Vector3 = _seated(-0.05, -3.00)
 	_piece_vestige("SM_Shrine_Step", marche + Vector3(0.0, -0.08, 0.0),
@@ -257,13 +273,22 @@ func _seuil() -> void:
 ##
 ## La convergence est conservée exactement : c'est elle qui conduit le regard
 ## au cœur, et la perdre échangerait un défaut contre un autre.
+## Sixième colonne, LOT 1.R : le ROULIS. À 90° la pierre est COUCHÉE.
+##
+## « L'enceinte est une ruine, pas une palissade » — six fûts tous debout et
+## régulièrement espacés lisent exactement l'inverse. Deux d'entre eux sont
+## donc à terre : le troisième de la rangée ouest et le premier de la rangée
+## est, choisis pour qu'aucune paire couchée ne se fasse face (une symétrie
+## de ruine serait une symétrie quand même). Une pierre couchée n'a plus de
+## corps de collision : son émergence tombe sous la hauteur de marche, et la
+## boucle de `_collisions()` la saute par sa hauteur.
 const SOCLES: Array[Array] = [
-	["SM_Shrine_Socle_A", -1.95, -2.62, 37.0, -4.0],
-	["SM_Shrine_Socle_C", -1.52, -1.74, -68.0, 3.0],
-	["SM_Shrine_Socle_B", -1.16, -0.98, 121.0, 6.0],
-	["SM_Shrine_Socle_B", 1.90, -2.44, -21.0, 5.0],
-	["SM_Shrine_Socle_A", 1.44, -1.62, 92.0, -7.0],
-	["SM_Shrine_Socle_C", 1.14, -0.92, -134.0, 2.0],
+	["SM_Shrine_Socle_A", -1.95, -2.62, 37.0, -4.0, 0.0],
+	["SM_Shrine_Socle_C", -1.52, -1.74, -68.0, 3.0, 0.0],
+	["SM_Shrine_Socle_B", -1.16, -0.98, 121.0, 6.0, 90.0],
+	["SM_Shrine_Socle_B", 1.90, -2.44, -21.0, 5.0, 90.0],
+	["SM_Shrine_Socle_A", 1.44, -1.62, 92.0, -7.0, 0.0],
+	["SM_Shrine_Socle_C", 1.14, -0.92, -134.0, 2.0, 0.0],
 ]
 
 ## LES QUATRE MARQUES D'ANGLE — ce qui fait qu'une nef devient une ENCEINTE.
@@ -293,8 +318,12 @@ func _nef() -> void:
 	for index: int in range(SOCLES.size()):
 		var spec: Array = SOCLES[index]
 		var at: Vector3 = _seated(float(spec[1]), float(spec[2]))
-		_piece_vestige(String(spec[0]), at,
-			Vector3(0.0, deg_to_rad(float(spec[3])),
+		var couche: float = float(spec[5])
+		# Une pierre couchée s'enfonce : posée sur son flanc à la cote du sol,
+		# elle roulerait visuellement sur l'herbe au lieu d'y être prise.
+		var descente: float = 0.13 if couche > 45.0 else 0.0
+		_piece_vestige(String(spec[0]), at + Vector3(0.0, -descente, 0.0),
+			Vector3(deg_to_rad(couche), deg_to_rad(float(spec[3])),
 				deg_to_rad(float(spec[4]))),
 			"Socle_%d" % index)
 		declare_support(at)
@@ -326,7 +355,7 @@ func _nef() -> void:
 ## entre la table et la route.
 func _coeur() -> void:
 	var table: Vector3 = _seated(0.0, 0.0)
-	var dalle: Node3D = _piece_vestige("SM_Shrine_Table", table,
+	var dalle: Node3D = _piece_vestige("SM_Shrine_Coeur", table,
 		Vector3(0.0, deg_to_rad(12.0), 0.0))
 	# LE CŒUR DOIT DOMINER LES MURS — c'est la phrase du contrat, et la capture
 	# `it/t2/shrine_gp_nef.png` montre l'inverse : la table est vue de champ,
@@ -338,12 +367,15 @@ func _coeur() -> void:
 	# l'ancre de récompense s'y appuie. L'étirer verticalement ferait flotter
 	# l'offrande de la hauteur exacte de l'étirement — le défaut que l'audit a
 	# relevé sur ce lieu (B-f-7) et qui vient d'être corrigé.
-	dalle.scale = Vector3(1.30, 1.0, 1.30)
 	declare_support(table)
-	var chevet: Vector3 = _seated(0.16, 0.95)
-	_piece_vestige("SM_Shrine_Chevet", chevet,
-		Vector3(0.0, deg_to_rad(-34.0), deg_to_rad(6.0)))
-	declare_support(chevet)
+	# Le dossier n'est plus une pièce à part : il fait partie du CŒUR, et son
+	# corps de collision est donc enfant de la pièce — il hérite ainsi du lacet
+	# de 12°, ce qu'une boîte posée sur le lieu n'aurait pas fait. Cotes lues
+	# sur le générateur : dossier centré en (0,14 ; −0,74) Blender, c'est-à-dire
+	# (0,14 ; +0,74) en repère Godot, 2,05 m de haut.
+	K.collider_box(dalle, "Sanctuaire_coeur_dossier",
+		Vector3(0.14, 1.02, 0.74), Vector3(0.98, 2.05, 0.48))
+	declare_support(_seated(0.14, 0.74))
 
 
 ## LE DALLAGE AVALÉ — le sol du sanctuaire existait ; le bois l'a repris.
@@ -492,14 +524,16 @@ func _couvert() -> void:
 ## soit 1,70 m nets : la capsule du héros passe plus au large qu'avant, et
 ## aucune approche ne se referme. Vérifié par sonde physique, pas par ce calcul.
 func _collisions() -> void:
-	# Le corps suit l'élargissement de 30 % en XZ, pas en Y : la table est plus
-	# large, elle n'est pas plus haute.
-	K.collider_box(self, "Sanctuaire_table",
-		_seated(0.0, 0.0) + Vector3(0.0, 0.45, 0.0), Vector3(2.21, 0.90, 1.56),
+	# LA DALLE DU CŒUR. Emprise lue sur le générateur : contour elliptique
+	# 1,00 × 0,66 de demi-axes, plus deux contreforts à |x| ≈ 1,0 — soit
+	# 2,30 × 1,40 m au sol, dessus de dalle à 0,89 m.
+	K.collider_box(self, "Sanctuaire_coeur_dalle",
+		_seated(0.0, 0.0) + Vector3(0.0, 0.45, 0.0), Vector3(2.30, 0.90, 1.40),
 		12.0)
-	K.collider_box(self, "Sanctuaire_chevet",
-		_seated(0.16, 0.95) + Vector3(0.0, 1.02, 0.0),
-		Vector3(1.00, 2.05, 0.55), -34.0)
+	# LE CORPS DU DOSSIER N'EST PAS ICI : il est enfant de la pièce, posé dans
+	# `_coeur()`, pour hériter du lacet de 12° du cœur. Un `Sanctuaire_chevet`
+	# subsistait ici après la fusion table+chevet — un mur invisible de 2,05 m
+	# à l'endroit d'une pierre qui n'existe plus. Retiré.
 	K.collider_box(self, "Sanctuaire_montant_ouest",
 		_seated(-0.94, -3.52) + Vector3(0.0, 0.79, 0.0),
 		Vector3(0.60, 1.57, 0.46), 24.0)
@@ -510,6 +544,11 @@ func _collisions() -> void:
 		var spec: Array = SOCLES[index]
 		var hauteur: float = 0.97 if String(spec[0]).ends_with("_A") else \
 			(0.81 if String(spec[0]).ends_with("_B") else 0.60)
+		# Une pierre COUCHÉE n'émerge plus que de son épaisseur : elle passe
+		# sous la hauteur de marche et rejoint la famille des masses qu'on
+		# enjambe, comme la pierre couchée de la nef et le linteau du seuil.
+		if float(spec[5]) > 45.0:
+			continue
 		if hauteur < 0.80:
 			continue
 		K.collider_box(self, "Sanctuaire_socle_%d" % index,

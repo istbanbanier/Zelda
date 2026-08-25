@@ -3,44 +3,44 @@ Read blend: "/home/user/wt1r-b/source_assets/blender/architecture/SM_Shrine_Vest
 [export_gltf] Blender 4.0.2
 [export_gltf] io_scene_gltf2 version (4, 0, 44)
 [export_gltf] preset: export_animation_mode=ACTIONS, export_animations=False, export_apply=True, export_cameras=False, export_extras=False, export_force_sampling=True, export_format=GLB, export_lights=False, export_materials=EXPORT, export_normals=True, export_optimize_animation_size=False, export_skins=True, export_tangents=True, export_texcoords=True, export_yup=True, use_selection=False, use_visible=True
-13:47:29 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
-13:47:29 | INFO: Starting glTF 2.0 export
-13:47:29 | INFO: Extracting primitive: SM_Shrine_Montant_A
+14:16:36 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
+14:16:36 | INFO: Starting glTF 2.0 export
+14:16:36 | INFO: Extracting primitive: SM_Shrine_Montant_A
 Error: Tangent space can only be computed for tris/quads, aborting
-13:47:29 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-13:47:29 | INFO: Primitives created: 2
-13:47:29 | INFO: Extracting primitive: SM_Shrine_Montant_B
+14:16:36 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+14:16:36 | INFO: Primitives created: 2
+14:16:36 | INFO: Extracting primitive: SM_Shrine_Montant_B
 Error: Tangent space can only be computed for tris/quads, aborting
-13:47:29 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-13:47:29 | INFO: Primitives created: 2
-13:47:29 | INFO: Extracting primitive: SM_Shrine_Step
+14:16:36 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+14:16:36 | INFO: Primitives created: 2
+14:16:36 | INFO: Extracting primitive: SM_Shrine_Step
 Error: Tangent space can only be computed for tris/quads, aborting
-13:47:29 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-13:47:29 | INFO: Primitives created: 2
-13:47:29 | INFO: Extracting primitive: SM_Shrine_Socle_A
+14:16:36 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+14:16:36 | INFO: Primitives created: 2
+14:16:36 | INFO: Extracting primitive: SM_Shrine_Socle_A
 Error: Tangent space can only be computed for tris/quads, aborting
-13:47:29 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-13:47:29 | INFO: Primitives created: 2
-13:47:29 | INFO: Extracting primitive: SM_Shrine_Socle_B
+14:16:36 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+14:16:36 | INFO: Primitives created: 2
+14:16:36 | INFO: Extracting primitive: SM_Shrine_Socle_B
 Error: Tangent space can only be computed for tris/quads, aborting
-13:47:29 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-13:47:29 | INFO: Primitives created: 2
-13:47:29 | INFO: Extracting primitive: SM_Shrine_Socle_C
+14:16:36 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+14:16:36 | INFO: Primitives created: 2
+14:16:36 | INFO: Extracting primitive: SM_Shrine_Socle_C
 Error: Tangent space can only be computed for tris/quads, aborting
-13:47:29 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-13:47:29 | INFO: Primitives created: 2
-13:47:29 | INFO: Extracting primitive: SM_Shrine_Fallen
+14:16:36 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+14:16:36 | INFO: Primitives created: 2
+14:16:36 | INFO: Extracting primitive: SM_Shrine_Fallen
 Error: Tangent space can only be computed for tris/quads, aborting
-13:47:29 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-13:47:29 | INFO: Primitives created: 2
-13:47:29 | INFO: Extracting primitive: SM_Shrine_Table
+14:16:36 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+14:16:36 | INFO: Primitives created: 2
+14:16:36 | INFO: Extracting primitive: SM_Shrine_Coeur
 Error: Tangent space can only be computed for tris/quads, aborting
-13:47:29 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-13:47:29 | INFO: Primitives created: 2
-13:47:29 | INFO: Extracting primitive: SM_Shrine_Chevet
+14:16:36 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+14:16:36 | INFO: Primitives created: 2
+14:16:36 | INFO: Extracting primitive: SM_Shrine_Linteau
 Error: Tangent space can only be computed for tris/quads, aborting
-13:47:29 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-13:47:29 | INFO: Primitives created: 2
-13:47:29 | INFO: Finished glTF 2.0 export in 0.07153725624084473 s
+14:16:36 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+14:16:36 | INFO: Primitives created: 2
+14:16:37 | INFO: Finished glTF 2.0 export in 0.07089543342590332 s
 
-[export_gltf] OK -> /home/user/wt1r-b/assets/architecture/shrine/SM_Shrine_Vestige.glb (106468 octets)
+[export_gltf] OK -> /home/user/wt1r-b/assets/architecture/shrine/SM_Shrine_Vestige.glb (338700 octets)

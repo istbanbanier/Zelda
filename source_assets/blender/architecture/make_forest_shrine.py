@@ -329,41 +329,120 @@ def _prisme_plan(bm, contour, z_bas, epaisseur, materiau_idx,
     return faces
 
 
-def table_fendue(bm):
-    """Une dalle FENDUE en deux, dont une moitié a glissé.
 
-    La fente n'est pas un trait droit : elle traverse la dalle par trois
-    points intermédiaires décalés. Les deux moitiés sont deux solides
-    distincts — c'est ce qui permet à l'une de basculer sans que la
-    géométrie mente sur ce qui la porte.
-    """
-    # Deux dés de support, irréguliers, hauteurs légèrement différentes.
-    pierre_rompue(bm, 0.86, 0.30, 0.26, 21.7, cotes=5, brisure=0.16,
-                  fuseau=0.10, centre=(-0.50, -0.07, 0.0))
-    pierre_rompue(bm, 0.82, 0.27, 0.25, 33.1, cotes=5, brisure=0.14,
-                  fuseau=0.10, centre=(0.47, 0.09, 0.0))
+# ---------------------------------------------------------------------------
+# LE CŒUR RITUEL — UNE SILHOUETTE À LUI, ET C'EST TOUTE LA CORRECTION
+# ---------------------------------------------------------------------------
+# POURQUOI CETTE PIÈCE REMPLACE LA TABLE **ET** LE CHEVET.
+#
+# Constat que j'ai fait moi-même sur `agent_b/it/t2/shrine_gp_nef.png`, et que
+# le lead a retenu comme cause de rejet : « neuf pièces sur neuf sont le même
+# prisme dressé ». Le lieu ne peut donc pas lire « seuil → enceinte → cœur » :
+# trois RÔLES sont dessinés avec une SEULE forme, et à trois secondes l'œil
+# répond « des pierres », pas « un sanctuaire ». Ce n'était pas un défaut de
+# valeur ni d'implantation — les deux passes précédentes l'ont prouvé en les
+# corrigeant sans que la lecture change.
+#
+# La table et le chevet fusionnent donc en UNE masse : une dalle fendue posée
+# sur deux dés, deux contreforts bas qui l'épaulent, et un DOSSIER de pierre
+# qui monte derrière elle. La silhouette résultante est une enclume — large et
+# horizontale en bas, une verticale rompue décalée en haut. Aucune autre pièce
+# du lieu n'a cette forme, et c'est précisément ce qu'on lui demande.
+#
+# LA HAUTEUR N'EST PAS LE LEVIER, ET NE PEUT PAS L'ÊTRE. Le contrat
+# d'invisibilité depuis la route plafonne le bâti à 2,40 m, le générateur à
+# 2,20 m, et le rideau sud a déjà dû gagner un sixième buisson parce que le
+# chevet de 2,05 m dépassait de trente centimètres. Le dossier reste donc à la
+# hauteur du chevet qu'il remplace ; ce qui change est la MASSE et la FORME.
+#
+# Le dessus de dalle reste à 0,89 m — cote lue dans le journal de la chaîne et
+# dont dépend l'ancre de récompense. L'élargir en XZ ne la touche pas.
+def coeur_rituel(bm):
+    """Dalle fendue + dossier + contreforts, en une seule masse."""
+    # Les deux dés qui portent la dalle, écartés pour la nouvelle largeur.
+    pierre_rompue(bm, 0.86, 0.32, 0.27, 21.7, cotes=5, brisure=0.16,
+                  fuseau=0.10, centre=(-0.62, -0.09, 0.0))
+    pierre_rompue(bm, 0.82, 0.29, 0.26, 33.1, cotes=5, brisure=0.14,
+                  fuseau=0.10, centre=(0.58, 0.11, 0.0))
+    # LES DEUX CONTREFORTS — bas, larges, épaulant la dalle par ses bouts.
+    # Ce sont eux qui donnent au cœur son assise visuelle : sans eux la dalle
+    # flotte sur deux dés et la masse se lit encore « table de camping ».
+    pierre_rompue(bm, 0.52, 0.34, 0.30, 53.9, cotes=7, brisure=0.38,
+                  fuseau=0.06, centre=(-1.02, 0.30, 0.0))
+    pierre_rompue(bm, 0.44, 0.31, 0.28, 61.3, cotes=5, brisure=0.44,
+                  fuseau=0.06, centre=(0.98, -0.26, 0.0))
 
-    contour = _contour_ellipse(0.80, 0.54, 14, 9.3)
+    # LA DALLE FENDUE, élargie : 2,00 × 1,32 m d'emprise au lieu de 1,60 × 1,08.
+    contour = _contour_ellipse(1.00, 0.66, 16, 9.3)
     n = len(contour)
-    # Les deux bouts de la fente : deux sommets à peu près opposés.
     a0, a1 = 2, 2 + n // 2
     fente = []
     p0, p1 = contour[a0 % n], contour[a1 % n]
     for i in (1, 2, 3):
         t = i / 4.0
         fente.append((
-            p0[0] + (p1[0] - p0[0]) * t + _graine(9.3 * i + 4.1) * 0.17,
-            p0[1] + (p1[1] - p0[1]) * t + _graine(9.3 * i + 7.7) * 0.13))
+            p0[0] + (p1[0] - p0[0]) * t + _graine(9.3 * i + 4.1) * 0.19,
+            p0[1] + (p1[1] - p0[1]) * t + _graine(9.3 * i + 7.7) * 0.15))
     moitie_a = [contour[i % n] for i in range(a0, a1 + 1)] \
         + list(reversed(fente))
     moitie_b = [contour[i % n] for i in range(a1, a0 + n + 1)] + fente
-    # La moitié A repose ; la moitié B a GLISSÉ : 4,5° de bascule et 4 cm
-    # plus bas. Une dalle fendue dont les deux moitiés restent d'aplomb se
-    # relit « joint de maçonnerie », pas « cassure ».
     _prisme_plan(bm, moitie_a, 0.0, 0.13, IDX_PIERRE, centre=(0.0, 0.0, 0.76))
     _prisme_plan(bm, moitie_b, 0.0, 0.13, IDX_PIERRE,
                  rotation=(0.0, math.radians(4.5), math.radians(-3.0)),
                  centre=(0.03, -0.02, 0.72))
+
+    # LE DOSSIER — la verticale du cœur, décalée du centre pour que la
+    # silhouette soit une enclume et non un T symétrique. Il monte DERRIÈRE la
+    # dalle, côté route : il donne son fond au cœur et une masse de plus entre
+    # l'offrande et le chemin.
+    # `centre` en y NÉGATIF : Blender +y = Godot −z, et le dossier doit se
+    # tenir au SUD de la dalle, côté route — c'est la position qu'occupait le
+    # chevet, et elle a deux fonctions dont une n'est pas visuelle : il donne
+    # son fond au cœur, et il ajoute une masse entre l'offrande et le chemin.
+    pierre_rompue(bm, 2.30, 0.48, 0.23, 37.7, cotes=7, brisure=0.30,
+                  fuseau=0.30, rotation=(math.radians(5.0), 0.0, 0.0),
+                  centre=(0.14, -0.74, 0.0))
+
+
+# ---------------------------------------------------------------------------
+# LE LINTEAU TOMBÉ — ce qui fait qu'un seuil se lit comme un seuil
+# ---------------------------------------------------------------------------
+# Deux montants seuls se lisent « deux pierres ». Un linteau EN TRAVERS, à
+# terre, dit qu'il y avait une porte et qu'elle est tombée — et il le dit sans
+# un mot, ce que le contrat demande explicitement.
+#
+# IL EST DRESSÉ, ET C'EST LE POINT. Toutes les autres pièces du lieu sont des
+# pierres de champ à pans impairs ; celle-ci est TAILLÉE — un bloc à faces
+# planes, à arêtes droites sur trois côtés, rompu net au quatrième. C'est la
+# seule pièce du sanctuaire qui porte une trace d'outil, et c'est ce qui la
+# distingue d'un caillou tombé là. La rupture est l'unique bout irrégulier.
+def linteau_tombe(bm):
+    """Un bloc de linteau à terre, taillé sur trois faces, rompu au bout."""
+    demi_l, demi_e = 0.98, 0.21
+    contour = []
+    # Trois côtés droits, très légèrement irréguliers (une pierre taillée à la
+    # main n'est pas une pièce d'usine) ...
+    for x, y in ((-demi_l, -demi_e), (-0.30, -demi_e), (0.34, -demi_e),
+                 (demi_l * 0.78, -demi_e * 0.86)):
+        contour.append((x + _graine(x * 7.3) * 0.012,
+                        y + _graine(y * 5.1 + x) * 0.014))
+    # ... puis LA CASSURE : quatre points en dents de scie au bout est.
+    for i, t in enumerate((0.0, 0.34, 0.68, 1.0)):
+        contour.append((demi_l * (0.78 + 0.22 * t)
+                        + _graine(71.0 + i * 3.7) * 0.09,
+                        -demi_e * 0.86 + 2.0 * demi_e * 0.86 * t
+                        + _graine(79.0 + i * 2.9) * 0.07))
+    for x, y in ((demi_l * 0.78, demi_e * 0.86), (0.34, demi_e),
+                 (-0.30, demi_e), (-demi_l, demi_e)):
+        contour.append((x + _graine(x * 6.1 + 3.0) * 0.012,
+                        y + _graine(y * 4.7 + x) * 0.014))
+    _prisme_plan(bm, contour, 0.0, 0.33, IDX_PIERRE,
+                 rotation=(math.radians(2.5), math.radians(-3.5), 0.0))
+    # Deux éclats détachés au pied de la cassure.
+    pierre_rompue(bm, 0.16, 0.14, 0.12, 83.1, cotes=5, brisure=0.46,
+                  fuseau=0.05, centre=(1.06, 0.24, 0.0))
+    pierre_rompue(bm, 0.11, 0.11, 0.13, 89.7, cotes=5, brisure=0.50,
+                  fuseau=0.05, centre=(0.92, -0.31, 0.0))
 
 
 def marche_enfoncee(bm):
@@ -465,6 +544,30 @@ def objet_depuis(nom, remplir, mousse_max_z=MOUSSE_Z_DEFAUT):
     bm = bmesh.new()
     remplir(bm)
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    # SUBDIVISION DU PIED — le seul moyen d'adoucir la frontière de mousse
+    # sans changer la façon dont elle est posée.
+    #
+    # Constat mesuré sur `agent_b/it/t2/shrine_gp_nef.png` : chaque pierre
+    # portait une bande de mousse à BORD NET. Ma passe précédente avait bien
+    # fait varier la HAUTEUR de la chaussette d'une pierre à l'autre, mais pas
+    # la netteté du bord — et la cause est structurelle : la mousse est un
+    # INDEX DE MATÉRIAU PAR FACE. Une face est moussue ou ne l'est pas ; sur
+    # un fût de sept pans, le bord ne peut donc être qu'une arête franche.
+    #
+    # On ne change pas la règle, on change la GÉOMÉTRIE qu'elle décore :
+    # les arêtes de la bande de transition sont coupées deux fois, ce qui
+    # multiplie par trois le nombre de faces disponibles là où la frontière
+    # passe. Le bord devient dentelé au lieu d'être droit — la mousse suit les
+    # petites facettes au lieu de trancher le fût. Rien au-dessus de la bande
+    # n'est touché : le budget va où sert la lecture.
+    haut_brut = max((v.co.z for v in bm.verts), default=0.0)
+    bande = max(0.24, 0.62 * max(haut_brut, 1e-6))
+    a_couper = [e for e in bm.edges
+                if (e.verts[0].co.z + e.verts[1].co.z) * 0.5 < bande]
+    if a_couper:
+        bmesh.ops.subdivide_edges(bm, edges=a_couper, cuts=2,
+                                  use_grid_fill=False)
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
     moussues = poser_mousse(bm, mousse_max_z)
     deplier_boite(bm)
     bm.to_mesh(maillage)
@@ -533,12 +636,14 @@ def main():
                                                         0.0,
                                                         math.radians(6.0))),
                      mousse_max_z=0.45),
-        objet_depuis("SM_Shrine_Table", table_fendue, mousse_max_z=0.62),
-        # LE CHEVET — la SEULE verticale du lieu, et un dossier, pas un jalon.
-        objet_depuis("SM_Shrine_Chevet",
-                     lambda bm: pierre_rompue(bm, 2.33, 0.46, 0.24, 37.7,
-                                              cotes=7, brisure=0.22,
-                                              fuseau=0.30)),
+        # LE CŒUR — dalle fendue, contreforts et dossier en UNE masse. Il
+        # remplace `SM_Shrine_Table` ET `SM_Shrine_Chevet` : deux prismes de
+        # moins dans un lieu dont le défaut nommé est d'en avoir neuf du même
+        # gabarit, et une silhouette d'enclume que rien d'autre ne porte.
+        objet_depuis("SM_Shrine_Coeur", coeur_rituel, mousse_max_z=0.62),
+        # LE LINTEAU TOMBÉ — la seule pièce TAILLÉE du lieu, en travers du
+        # seuil. C'est elle qui transforme deux montants en une porte.
+        objet_depuis("SM_Shrine_Linteau", linteau_tombe, mousse_max_z=0.34),
     ]
 
     total = 0
@@ -601,8 +706,15 @@ def main():
     # GARDE 3 — LA TABLE EST FENDUE, ET LA FENTE SE VOIT. Deux moitiés
     # distinctes séparées d'au moins 2 cm à hauteur de dalle : une fente que
     # l'on ne voit pas est un joint, et un joint n'est pas une histoire.
-    table = pieces[7]
-    dalle = [v.co for v in table.data.vertices if v.co.z > 0.66]
+    # RECHERCHE PAR NOM, ET NON PAR INDEX. Cette garde lisait `pieces[7]`.
+    # Ajouter une pièce à la liste l'aurait fait mesurer le mauvais maillage —
+    # en silence, et avec un verdict parfaitement crédible. C'est la famille
+    # d'ISS-018 : un chiffre juste sur un objet qui n'est pas celui qu'on croit.
+    table = next((o for o in pieces if o.name == "SM_Shrine_Coeur"), None)
+    if table is None:
+        print("[forest_shrine] ERREUR: SM_Shrine_Coeur absent de la liste")
+        return 2
+    dalle = [v.co for v in table.data.vertices if 0.66 < v.co.z < 1.10]
     if len(dalle) < 24:
         print("[forest_shrine] ERREUR: la dalle de la table est absente "
               "(%d sommets au-dessus de 0,66 m)" % len(dalle))
