@@ -589,3 +589,127 @@ réelle, sans indulgence :
 - **Et la courbure d'axe descend de 0,085 à 0,050** : c'est elle qui donnait
   l'air « penché comme une bougie ». Un cisaillement de pendage suffit.
 - **Caméras** : les deux gelées, plus `overlook_gros_crete`.
+
+## Itération 8 bis — source : la présence, pas la couleur
+
+- **Défaut observé** (verdict, et je le vois moi-même sur
+  `iter5/turquoise_spring_joueur.png` à taille réelle) : « trop petite et
+  secondaire dans la caméra joueur ». Un filet turquoise dans le tiers bas du
+  cadre, cerné de cailloux bleu marine de 2,6 m, écrasé par le talus brun qui
+  occupe la moitié de l'image. La couleur, elle, est acquise et mesurée
+  (H 189°, S 0,490 contre H 176–185° S 0,368 pour la rivière V2.2).
+- **Cause** : le sujet du lieu est « l'œil » ENTIER — eau + mâchoires +
+  rebords — et cet œil n'a jamais existé à l'écran. Les pièces de kit ne
+  pouvaient pas le fabriquer : `Rock_Medium_*` est une famille de GALETS, et
+  un galet agrandi reste un galet. Même loi de FORME qu'au belvédère.
+- **Levier** : `SM_SpringMaw.glb` — quatre masses à surface continue,
+  nervurées, à jupe enterrée, qui remplacent SEPT pièces de kit. Mâchoires de
+  2,6 m à ≈ 4,0 m et ÉCARTÉES (à masses grossies et positions inchangées leurs
+  enveloppes se touchaient, et la fente d'où l'eau sort se refermait) ;
+  couronne qui ferme le haut de la fente ; rebord à trois lobes FONDUS dans un
+  seul objet. Vasque R 3,3 → 3,95, sauf du côté du fruit. Mouillage dans
+  `COLOR_0`.
+- **Ce que le cadrage NE fait PAS** : rien. Les deux caméras du lieu sont
+  recopiées du plan précédent au chiffre près, vérifié par script avant la
+  capture. Agrandir un sujet en rapprochant la caméra serait l'A/B malhonnête
+  que la règle transversale nº 4 interdit.
+- **Changement attendu dans les pixels** : la roche cesse d'être une poignée
+  de galets et devient un amphithéâtre ; la fente se lit comme un creux fermé ;
+  les rebords assombris au ras de l'eau ; la chaîne arrivée → vasque →
+  déversoir lisible d'un coup d'œil.
+- **Budget D7** : 12 − 7 + 4 = **9 modules sur 12**. Le lieu était PLEIN ; les
+  trois slots libérés le sont par fusion, pas par retrait de contenu.
+- **Caméras** : `turquoise_spring_joueur` et `_identite` (les deux gelées),
+  `spring_gros_eau`, `spring_gros_fente`, `spring_promesse_p1`, plus
+  `spring_gue_riviere` qui porte la RÉFÉRENCE d'eau V2.2 dans la même image.
+
+## Résultat de l'itération 8, mesuré (`voie_a3/iter8`, commit `58e8df1`, RC=0)
+
+### Belvédère — l'ombrage à facettes fait ce qu'on lui demandait
+
+Ce que je VOIS sur `overlook_gros_crete` à taille réelle : des plans francs,
+des arêtes, une crête fendue, un pied qui se perd dans l'herbe. La masse
+appartient enfin à la même matière que les falaises V2.2 et les rochers de kit,
+qui sont facettés eux aussi. La lecture « cire fondue » a disparu. **Visible.**
+
+Ce qui reste **faible** : les rainures de strate ne se lisent pas comme des
+lignes horizontales, elles se fondent dans le facettage. Le relief est mesuré
+(159 rainures, ceinture 0,31) mais il ne se voit pas en tant que STRATE.
+
+| Vue gelée | Zone | iter6 | **iter8** |
+|---|---|---|---|
+| `_identite` | crête | H 220-226° S 0,19 V 0,498 | **H 230° S 0,127 V 0,550** |
+| `_identite` | falaise V2.2 (plafond) | 0,632 | **0,643** (inchangée) |
+| `_identite` | éperon | — | H 224° S 0,172 V 0,631 |
+| `_joueur` | crête proche | — | H 223° S 0,213 V 0,446 |
+| `_joueur` | caillou de kit du lieu | — | H 222° S 0,187 V 0,563 |
+
+Deux réserves honnêtes sur ces chiffres : (1) mes deux fenêtres « face au
+soleil » et « face à l'ombre » rendent 0,550 et 0,567 — l'écart est dans le
+mauvais sens, donc je ne sais pas laquelle est laquelle et je ne le prétends
+pas ; (2) l'éperon à 0,631 est à un centième de la falaise du fond (0,643) :
+il ne s'en détache pas en valeur. À arbitrer.
+
+### Source — la présence est gagnée, la MATIÈRE ne suit pas
+
+**Visible** : la roche n'est plus une poignée de cailloux. Quatre masses
+forment un amphithéâtre qui occupe le milieu du cadre, l'eau en sort par
+dessous, et la chaîne vasque → déversoir se lit d'un coup d'œil.
+
+**Et quatre défauts, dont trois que J'AI introduits :**
+
+1. **La roche rend INDIGO.** Mesuré `H 221° S 0,441 V 0,358`, contre
+   S 0,13–0,21 pour les crocs du belvédère. À S 0,44 ce n'est plus de la
+   pierre froide, c'est du bleu. Pire : l'eau mesure S 0,554 dans la même
+   image — la roche est à quatre cinquièmes de la saturation de l'eau, donc
+   l'eau cesse d'être « la seule note froide saturée du ravin ».
+   **Cause, et elle est instructive** : l'albédo est le même rapport
+   1 : 1,20 : 2,03 qui rend S 0,13–0,21 au belvédère. Là-bas le soleil DIRECT
+   et chaud mange le biais bleu ; ici, dans un ravin à l'ombre d'une paroi de
+   54°, il n'y a que l'ambiante froide et le biais survit entier. **Le même
+   albédo ne donne pas la même couleur selon l'éclairage du lieu** — c'est le
+   piège d'albédo de `scripts/CLAUDE.md` dans une variante qu'il ne décrit pas.
+2. **Les masses lisent COUSSINS.** Le profil de dôme `(1 − t^q)^e` est trop
+   rond aux épaules ; même facettées, elles restent molles.
+3. **Deux coins NOIRS au bord de l'eau** (`spring_gros_eau`). Régression que
+   j'ai fabriquée en élargissant la vasque : le lit épouse le terrain
+   (sol + 3 cm) tandis que la nappe est un PLAN à hauteur du centre. En
+   grandissant, la vasque atteint du terrain plus haut que ce plan, et le lit
+   ressort AU-DESSUS de l'eau. C'est l'anneau noir de la v3, revenu par une
+   porte que je viens d'ouvrir moi-même.
+4. **L'ancre du fruit est DANS la pierre.** Vérifié au calcul avant même de
+   regarder l'image : le lobe est du rebord a son centre à 0,36 m de l'ancre
+   pour une demi-emprise de 1,01 m. La récompense est gelée, donc c'est le
+   lobe qui bouge.
+
+**Et un objet non identifié** : une pierre OLIVE, plate et anguleuse, au bord
+nord de la vasque, d'une famille étrangère au reste. Je ne sais pas ce que
+c'est, et je refuse de l'attribuer sur sa seule couleur — c'est exactement la
+faute qui a produit le revert de l'itération 6 (`TONE_DRY` accusé à tort). Elle
+peut être : (a) le fond de jupe d'un lobe du rebord, peint en `TEINTE_PIED`
+verdâtre et exposé parce que l'objet est assis sur le terrain du CENTRE de la
+vasque alors que ses lobes sont ailleurs ; (b) une pièce du semis V2.2 gelé,
+qu'il serait interdit de toucher.
+**Le test qui tranche est posé dans l'itération 9** : `TEINTE_PIED` de ce
+générateur passe du vert au gris froid. Si la pierre olive devient ardoise,
+elle est à moi ; si elle ne bouge pas d'un centième, elle ne l'est pas, et le
+semis gelé reste le seul suspect.
+
+## Itération 9 — source : la matière, et trois régressions à réparer
+
+- **Levier 1, couleur** : rapport d'albédo 1 : 1,20 : **2,03** → 1 : 1,07 :
+  **1,41**, et magnitude ×1,25. Cible RENDUE : S autour de 0,20 (famille des
+  crocs) et V autour de 0,42, pour que la roche cesse de concurrencer l'eau.
+  Les deux nombres sont dérivés de la mesure d'iter8, pas choisis — mais le
+  gain n'est pas linéaire, donc c'est une approximation à REMESURER.
+- **Levier 2, forme** : épaules carrées (`dome_q` 2,4–3,4 → 3,2–4,6,
+  `dome_e` 0,26–0,38 → 0,16–0,26), nervures relevées d'un tiers, fentes plus
+  profondes et plus étroites.
+- **Levier 3, coins noirs** : le lit est PLAFONNÉ sous le plan d'eau. Une
+  surface de fond qui passe au-dessus de son eau n'est pas un fond.
+- **Levier 4, ancre** : le lobe est part de (−2,6 ; 2,3) à (−1,5 ; 3,9) et
+  rétrécit ; l'ancre retrouve 0,68 m de marge. Et la jupe du rebord double
+  (0,60 → 1,10 m) avec un enfoncement de 0,25 → 0,55 : un objet à trois lobes
+  est assis sur UN point de terrain, donc il lui faut de quoi absorber le
+  relief sous les deux autres.
+- **Caméras** : les mêmes, inchangées.

@@ -253,11 +253,11 @@ func _build() -> void:
 	# Le mouillage de ces lobes est porté par leur `COLOR_0` (azimut 215°,
 	# hauteur 0,85 m) : la pierre est trempée du côté de l'eau, sèche de
 	# l'autre. C'est l'indice d'humidité demandé, et il ne coûte rien.
-	_masse(&"SM_Spring_Rim", "Rebord_vasque", BASSIN_X, BASSIN_Z, 0.0, 0.25,
+	_masse(&"SM_Spring_Rim", "Rebord_vasque", BASSIN_X, BASSIN_Z, 0.0, 0.55,
 		false)
 	# Les appuis DÉCLARÉS suivent les lobes, pas l'objet : le filet D2 lit des
 	# points, et un point au centre de la vasque serait un appui sur de l'eau.
-	for lobe: Vector2 in [Vector2(-6.4, -3.6), Vector2(-2.6, 2.3),
+	for lobe: Vector2 in [Vector2(-6.4, -3.6), Vector2(-1.5, 3.9),
 			Vector2(-7.6, 5.2)]:
 		declare_support(_seated(lobe.x, lobe.y))
 	# — LE FIL QUI S'EN VA. Trois dalles mouillées, à demi enfoncées, qui
@@ -321,6 +321,14 @@ func _lit() -> void:
 	var segments: int = 40
 	var rayons: PackedFloat32Array = _rayons_vasque(segments)
 	var centre_y: float = _y_sol(BASSIN_X, BASSIN_Z, 0.03)
+	# PLAFOND DU LIT — réparation d'une régression que J'AI faite en élargissant
+	# la vasque (R 3,3 → 3,95). Le lit épouse le terrain ; la nappe, elle, est
+	# un PLAN à la hauteur du centre. En grandissant, la vasque atteint du
+	# terrain PLUS HAUT que ce plan, et le lit ressortait au-dessus de son
+	# eau — deux coins NOIRS mesurés sur `iter8/spring_gros_eau.png`. C'est
+	# l'anneau noir de la v3, revenu par une porte que je venais d'ouvrir.
+	# Une surface de fond qui passe au-dessus de son eau n'est pas un fond.
+	var plafond: float = _y_sol(BASSIN_X, BASSIN_Z, 0.08) - 0.04
 	var bord: PackedVector3Array = PackedVector3Array()
 	for i: int in range(segments):
 		var angle: float = TAU * float(i) / float(segments)
@@ -332,8 +340,8 @@ func _lit() -> void:
 		var r: float = rayons[i] - 0.15 + _bosse_ouest(angle) * 1.60
 		var px: float = BASSIN_X + cos(angle) * r
 		var pz: float = BASSIN_Z + sin(angle) * r
-		bord.append(Vector3(px, _y_sol(px, pz, 0.03), pz))
-	var centre: Vector3 = Vector3(BASSIN_X, centre_y, BASSIN_Z)
+		bord.append(Vector3(px, minf(_y_sol(px, pz, 0.03), plafond), pz))
+	var centre: Vector3 = Vector3(BASSIN_X, minf(centre_y, plafond), BASSIN_Z)
 	for i: int in range(segments):
 		var j: int = (i + 1) % segments
 		# Centre SARCELLE, bord terre : le dégradé de teinte du fond est
