@@ -1,0 +1,39 @@
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_PVLyqeGj
+LANCER_GODOT: CWD=/tmp/zelda_validate_gdiVPADL
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=room2_vertical,room4_battery,dungeon_run
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: room2_vertical,room4_battery,dungeon_run
+  ok   test_room2_vertical.gd::test_the_shaft_starts_with_live_electrodes_and_a_dead_elevator (9 assertions)
+  ok   test_room2_vertical.gd::test_the_electrodes_beat_with_an_observable_rhythm (5 assertions)
+  ok   test_room2_vertical.gd::test_a_live_electrode_refuses_the_grip_and_shocks_the_player (3 assertions)
+  ok   test_room2_vertical.gd::test_electric_resistance_softens_the_shock (3 assertions)
+  ok   test_room2_vertical.gd::test_the_upper_switch_reroutes_the_current (12 assertions)
+  ok   test_room2_vertical.gd::test_the_reroute_cannot_be_undone (4 assertions)
+  ok   test_room2_vertical.gd::test_the_elevator_stops_rather_than_crushing_the_player (5 assertions)
+  ok   test_room2_vertical.gd::test_the_elevator_carries_the_player_upward (3 assertions)
+  ok   test_room2_vertical.gd::test_the_player_really_climbs_the_shaft (3 assertions)
+  ok   test_room2_vertical.gd::test_a_fall_lands_on_the_ledge_below (4 assertions)
+  ok   test_room2_vertical.gd::test_the_rerouted_room_reopens_rerouted (9 assertions)
+  ok   test_room2_vertical.gd::test_the_ids_are_unique_and_the_exit_exists (7 assertions)
+  ok   test_room4_battery.gd::test_the_water_is_live_and_the_far_side_is_dead (6 assertions)
+  ok   test_room4_battery.gd::test_the_battery_charges_only_in_its_socket (3 assertions)
+  ok   test_room4_battery.gd::test_cutting_the_current_makes_the_channel_safe (6 assertions)
+  ok   test_room4_battery.gd::test_a_battery_left_in_its_cradle_keeps_the_circuit_alive (5 assertions)
+  ok   test_room4_battery.gd::test_the_carried_battery_powers_the_far_door (4 assertions)
+  ok   test_room4_battery.gd::test_the_player_picks_up_carries_and_drops_the_battery (8 assertions)
+  ok   test_room4_battery.gd::test_the_plank_bridges_the_live_channel (4 assertions)
+  ok   test_room4_battery.gd::test_wading_into_a_live_channel_hurts_without_ending_the_run (2 assertions)
+  ok   test_room4_battery.gd::test_a_battery_lost_in_the_channel_returns_to_the_charge_bank (3 assertions)
+  ok   test_room4_battery.gd::test_no_door_stands_between_the_battery_and_its_charger (5 assertions)
+  ok   test_room4_battery.gd::test_the_solved_room_reopens_solved (4 assertions)
+  ok   test_room4_battery.gd::test_the_ids_are_unique_and_the_exit_exists (5 assertions)
+  ok   test_dungeon_run.gd::test_the_four_rooms_are_solvable_from_a_virgin_save (29 assertions)
+  ok   test_dungeon_run.gd::test_the_dungeon_resumes_from_an_intermediate_save (32 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 26 réussi(s), 0 échoué(s) ===
+LANCER_GODOT: RC_GODOT=0
