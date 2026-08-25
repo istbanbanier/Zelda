@@ -1044,3 +1044,56 @@ belvédère ne rougit plus contre le corpus.
   **Visible.**
 - Source, silhouette 90° : le vide est réel mais il compose « masse +
   satellite ». **C'est le défaut, et il est maintenant nommé.**
+
+---
+
+## Itération 12 (agent A2) — la séparation en X, CONSTRUITE cette fois, et prouvée avant d'être bâtie
+
+Reprise après perte de contexte de l'agent A ; tout l'état ci-dessus est relu,
+pas hérité. L'arbitrage du lead : séparer réellement les masses en X, de
+l'ordre de 2,5 à 4 m entre faces en regard — et le prouver par l'arithmétique
+des unions AVANT toute géométrie, parce que les deux échecs précédents ont la
+même cause : un geste vérifié dans sa tête, jamais dans le fichier, et une
+simulation par peinture qui ne sait pas qu'une silhouette est une union.
+
+- **Défaut observé** (verdict D3 iter11, FAIL) : six paires rouges, toutes par
+  la source. Les liantes sont CROISÉES : le masque 90° de la source (axe
+  horizontal = X) lit « grosse masse + satellite » — la grammaire du masque 0°
+  du hameau (0,565), du belvédère (0,551) — et le masque 0° (axe = Z), une
+  selle à deux tours, cale sur les JAMBES du pont vu à 90° (0,506).
+- **Cause, vue sur les recouvrements de masques** (outil neuf : masques
+  PRÉDITS depuis la géométrie réelle — union de faces projetées, jamais de la
+  peinture) : mes tours normalisées tombent SUR les jambes du pont et sur le
+  couple crête/éperon du belvédère, aux mêmes colonnes, aux mêmes largeurs.
+  Déplacer les pièces à l'intérieur de la même grammaire plafonne à IoU ≈ 0,50
+  — mesuré sur ~500 variantes prédites, quatre vagues.
+- **Levier** (le geste iter12, mètres exacts dans
+  `voie_a3/controles/controle_occlusion_iter12.py`) :
+  1. le groupe OUEST (mâchoires + couronne) reste la fente, AMINCI en X
+     (demi_a 2,20→1,50 / 1,60→1,30 / 2,05→1,65 — c'est la profondeur vue
+     caméra joueur, invisible pour elle) et ÉCARTÉ en Z (mâchoires z −3,4→−5,2
+     et +4,2→+6,1 ; l'anneau grandit autour de l'œil) ;
+  2. les lobes nord et sud du rebord traversent le corridor et deviennent les
+     FLANCS EST : x −7,6/−8,2 → −2,95, rim H 1,70 → 3,00 — la « couronne
+     élargie » demandée : l'œil est désormais cerné sur ses quatre côtés ;
+  3. le corridor en X : 2,62 m entre faces en regard, VIDE sur toute bande
+     au-dessus de 0,30 m (pré-contrôle, unions par bande de 25 cm, couronne,
+     lobes, dalles et nappes comprises) ;
+  4. le même vide existe sur l'AUTRE axe : au 0°, vide central de 6,38 m
+     au-dessus de la couronne, respirations latérales 0,63/0,78 m sous elle —
+     la leçon d'iter10 (« une séparation sur un seul axe ne donne qu'une
+     silhouette sur deux ») appliquée dans les deux sens.
+- **Le sol n'est plus supposé** : grille de la fonction de terrain gelée
+  sondée sous moteur (`controles/sol_iter12.log`, RC 0) ; les mâchoires
+  s'assoient à g +1,1/+1,7 m — mesuré, pas extrapolé.
+- **Attendu dans les pixels** (prédiction, PAS un verdict — le D3 réel seul
+  tranche) : instrument contrôlé sur iter11 — les 6 paires rouges réelles
+  toutes prédites rouges, erreur moyenne −0,000, écart-type 0,021 sur 42
+  paires. Sur le plan iter12 : AUCUNE paire au-dessus des seuils, pires
+  prédites ≈ 0,46 (pont@30, overlook@30) contre S 0,4931 — marge ~0,03,
+  au-dessus de l'écart-type de l'instrument mais pas de son pire cas :
+  d'où la sonde réelle qui suit.
+- **Caméras** : sonde silhouettes-seules 0°/90° (toile 900×1200), détecteur
+  réel contre corpus gelé + lot candidate + belvédère iter11 (masques
+  inchangés octet pour octet, sha `3ee743…`/`90fedd…`). Recapture complète
+  UNIQUEMENT si le détecteur est vert.
