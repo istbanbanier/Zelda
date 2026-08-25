@@ -550,8 +550,21 @@ func _tertre(nom: String, cx: float, cz: float, demi_long: float,
 			var s_crete: float = clampf(u / maxf(0.35, demi_axe), -1.0, 1.0)
 			var h_crete: float = hauteur \
 				* (0.70 + 0.30 * (0.5 - 0.5 * s_crete))
+			# DEUX FLANCS QUI NE SE RESSEMBLENT PAS (passe C3). L'exposant du
+			# profil était 1,25 dans TOUTES les directions : le dos était donc
+			# un solide de révolution déformé, et son ombre propre restait
+			# symétrique — d'où la lecture « dune » ou « tente » qui a survécu
+			# à C1 et à C2 malgré l'affaissement de crête et le relief de
+			# flanc. Un tumulus qui s'est tassé a un côté ÉBOULÉ, en pente
+			# courte, et un côté ÉTALÉ, en longue rampe.
+			# L'exposant suit donc `v`, la coordonnée en travers de la crête :
+			# sous 1 il gonfle le flanc (pente raide au pied), au-dessus il
+			# l'aplatit (longue rampe). Bornes serrées pour que le raccord au
+			# terrain reste tangent aux deux extrémités.
+			var pente: float = clampf(
+				1.25 + 0.62 * (v / maxf(0.35, rayons_t[i])), 0.72, 2.05)
 			var releve: float = h_crete \
-				* pow(maxf(cos(dn * PI * 0.5), 0.0), 1.25)
+				* pow(maxf(cos(dn * PI * 0.5), 0.0), pente)
 			# LE RELIEF DE FLANC — ET IL N'EST PLUS RADIAL, ce qui était la
 			# cause du « papier plié ». Première version : un multiplicateur
 			# par SECTEUR, constant du dos à la lisière. Quarante-huit
@@ -766,20 +779,30 @@ func _gueule_de_chambre() -> void:
 	# son origine). Il est donc posé sur le montant A et non au milieu, et son
 	# lacet est celui de la droite A→B : direction (0,980 ; 0,199), soit 78,5°.
 	#
-	# LE SIGNE DU DÉVERS EST CORRIGÉ (passe C2), et c'était un vrai défaut, pas
-	# un réglage. À `rotation.x = −9°` la capture `it/c1` montre l'extrémité
-	# LOINTAINE PLUS HAUTE que son appui : `rotation` emploie l'ordre d'Euler
-	# YXZ, donc le tangage s'applique APRÈS le lacet, et le signe qui semblait
-	# évident relevait le bout au lieu de l'abaisser. Le linteau lisait un
-	# plongeoir suspendu au-dessus du coffre.
+	# LE LINTEAU EST TOMBÉ — CHANGEMENT D'HYPOTHÈSE, PAS DE CONSTANTE (passe C3).
 	#
-	# La cote est maintenant calculée et non choisie : montant A 2,61 m,
-	# montant B 2,02 m, dénivelé 0,59 m sur 1,98 m de portée, soit 14,4° si le
-	# dessous doit toucher les deux arases. Appui à 2,50 m — 0,11 m sous
-	# l'arase de A, donc mordu dedans et non posé en équilibre.
-	_piece_pierre("SM_Barrow_Lintel",
-		_seated(-2.48, 4.08) + Vector3(0.0, 2.50, 0.0),
-		Vector3(deg_to_rad(14.4), deg_to_rad(78.5), deg_to_rad(-3.0)),
+	# Deux tentatives de le faire PORTER ont échoué de la même manière : sur
+	# `it/c1` (appui 2,20 m, dévers −9°) et sur `it/c2` (appui 2,50 m, dévers
+	# +14,4°, recalculé sur les arases réelles), la capture `barrow_gp_gueule`
+	# montre toujours une barre suspendue à ~0,26 m au-dessus des deux
+	# montants. La règle du dépôt est explicite : deux échecs sur la même
+	# hypothèse, on cesse de régler des constantes.
+	#
+	# Le geste change donc de nature. Une couverture qu'on est venu forcer ne
+	# reste pas en équilibre : elle est par terre. Le linteau part du SOL, à
+	# 1,26 m à l'ouest du montant A, et s'appuie contre son flanc à mi-hauteur.
+	# Un bout au sol ne peut pas flotter — la faute est structurellement
+	# impossible — et le ciel se dégage au-dessus du coffre, qui reste encadré
+	# par les deux montants seuls.
+	#
+	# Cotes : course horizontale 1,26 m pour une pièce de 1,98 m, donc
+	# `cos θ = 0,636` et θ = 50,5° ; le haut arrive à 1,53 m contre un montant
+	# de 2,63 m. Lacet : la direction (0,579 ; −0,817) donne 144,6°.
+	# LE SIGNE DU TANGAGE EST MESURÉ, PAS SUPPOSÉ : sur `it/c2`, `+14,4°`
+	# abaisse visiblement le bout lointain ; il faut donc **−50,5°** pour le
+	# relever.
+	_piece_pierre("SM_Barrow_Lintel", _seated(-3.35, 5.05),
+		Vector3(deg_to_rad(-50.5), deg_to_rad(144.6), deg_to_rad(7.0)),
 		"", 1.02)
 	# LES DÉBLAIS — trois tas, et leur rôle a changé. Ils ne « bercent » plus le
 	# coffre depuis le fond : ils forment maintenant deux BANQUETTES latérales
@@ -803,14 +826,14 @@ func _gueule_de_chambre() -> void:
 	# du coffre, un semis d'éclats anguleux gris qui lit « bris de poterie » et
 	# non « tas de déblais ». Un tas se lit à sa MASSE, pas au nombre de ses
 	# arêtes. Elles reculent aussi de 20 cm pour dégager le pied du coffre.
-	for index: int in range(2):
-		var spec: Array = [[-2.68, 4.95, 0.34, 62.0],
-			[-0.22, 5.05, 0.27, 231.0]][index]
-		var eclat: Node3D = _piece_pierre("SM_Barrow_Deblais",
-			_seated(float(spec[0]), float(spec[1])),
-			Vector3(0.0, deg_to_rad(float(spec[3])), 0.0),
-			"Deblais_pied_%d" % index, 0.86)
-		eclat.scale = Vector3.ONE * float(spec[2])
+	# UNE SEULE poignée d'éclats (passe C3). À deux, elles bordaient le coffre
+	# des deux côtés et l'entouraient d'un semis d'arêtes grises qui lit « bris
+	# de poterie ». Un tas de déblais se lit à sa masse ; ce qui restait était
+	# du bruit, et le bruit vole la lecture aux montants.
+	var eclat: Node3D = _piece_pierre("SM_Barrow_Deblais",
+		_seated(-2.72, 4.90), Vector3(0.0, deg_to_rad(62.0), 0.0),
+		"Deblais_pied", 0.86)
+	eclat.scale = Vector3.ONE * 0.40
 
 
 ## LE CHEMIN DES MORTS — la séquence qui fait la composition A.
