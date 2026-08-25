@@ -79,13 +79,30 @@ Le seuil masquait le cœur au lieu de le présenter.
 | Vues gelées | `it3/` (+ `it1/`, `it2/` pour l'historique) | copie exacte des trois plans |
 | Avant/après | `planche_avant_apres_joueur.png` | |
 
+## Contrôles faits en plus, et ce qu'ils disent
+
+**Suites du dépôt** (`tests/`) : `lot1_defauts` **11 réussis / 0 échoué**,
+`places_contract` **5 / 0**. Deux d'entre elles comptent particulièrement
+ici — `test_d7_aucun_budget_de_lieu_n_est_depasse`, parce que la composition
+a changé, et **`test_d8_aucun_element_gele_n_a_bouge`**, qui est la
+confirmation par le dépôt, et non par mon propre inventaire, que la
+recomposition n'a touché aucun élément gelé. Journaux dans `tests/`.
+
+**Invisibilité depuis la route** : le bâti et le rideau sud ayant tous deux
+bougé, le contrat « invisible depuis la route à 7,3 m » a été recapturé
+depuis P1 (84 ; 81), regard nord — `controle_route/shrine_controle_route_P1.png`.
+Sur cette image, aucune pierre du vestige n'apparaît : le rideau de buissons
+occupe toute la zone où il se projetterait. Mesure sous l'horizon (x 420-900,
+y 330-620), là où le vestige tomberait : **0,64 %** de pixels gris peu
+saturés, et ce résidu est du sol et des troncs, pas de la maçonnerie. Le
+décalage de +0,45 m du rideau, qui n'était qu'un calcul de ligne de vue, est
+donc confirmé par une capture.
+
 ## Ce qui reste NON VÉRIFIÉ
 
 - **Le verdict artistique.** Il appartient à Codex et à Istvan. Ce document
   décrit ce qui est visible, pas ce qui est réussi.
 - **La franchissabilité humaine du seuil** : aucune manette, aucun écran ici.
-- **L'invisibilité depuis la route (P1)** n'a pas été recapturée. Le rideau
-  sud a été décalé de +0,45 m en x par le calcul de la ligne P1 → dossier,
-  mais ce calcul n'est pas une capture, et je ne le présente pas comme telle.
-- **`tools/validate_fast.sh`** n'a pas été rejoué sur cet arbre : il appartient
-  à l'intégration du lead, qui seule voit les trois voies réunies.
+- **`tools/validate_fast.sh`** n'a pas été rejoué en entier sur cet arbre : il
+  appartient à l'intégration du lead, qui seule voit les trois voies réunies.
+  Deux suites l'ont été, et elles sont vertes (voir ci-dessous).

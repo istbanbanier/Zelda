@@ -1,0 +1,27 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "816a308982561a604ebf2dbe414de44ff3c9d301",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 65.0,
+      "from": [
+        84.0,
+        8.7,
+        81.0
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r2/sanctuaire/controle_route/shrine_controle_route_P1.png",
+      "look": [
+        86.0,
+        8.0,
+        74.0
+      ],
+      "name": "shrine_controle_route_P1"
+    }
+  ],
+  "size": "1280x720"
+}
