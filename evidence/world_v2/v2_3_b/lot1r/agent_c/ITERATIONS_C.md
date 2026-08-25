@@ -152,3 +152,126 @@ derrière lui : elle ne l'encadre pas, elle le double.
 (l'axe incomplet) · silhouettes 0/90 en aplat noir (le rectangle survit-il ?).
 
 ---
+
+### Après capture — `it/c1/` (commit `07db89c`, manifeste **propre**)
+
+Chaîne : générateur VERT (12 pièces, 1 720 tris / 4 000, `COLOR_0` sur 20
+primitives / 20 vérifié dans le JSON du GLB) · `--import` RC=0 ·
+`--check-only` RC=0 · **commit** · capture RC=0 · silhouettes RC=0.
+L'ordre est celui d'`evidence.md` — le code est committé AVANT la capture.
+
+**Zone TÉMOIN hors lieu, mesurée dans les mêmes images** : herbe p50
+110,6 → 110,1, RGB (104, 117, 68) → (104, 116, 68). **Le monde gelé n'a pas
+bougé** ; tout ce qui suit appartient au lieu.
+
+| Mesure | base (`candidate/ab13`) | `it/c1` |
+|---|---:|---:|
+| Tertre dominant, **rapport R/V** | 0,926 | **1,115** |
+| Tertre dominant, dos éclairé, p50 | 108,8 | **97,4** |
+| Tertre dominant, flanc à l'ombre, p50 | 85,6 | 72,5 |
+| Tertre dominant, saturation médiane | 0,244 | 0,271 → 0,321 (dos) |
+| **Coffre, p90** (sa pointe claire) | **122,5** | **73,0** |
+| Coffre, p50 | 69,4 | 54,6 |
+| Emprise du lieu (silhouette) | 23,55 × 4,74 × 19,35 m | **23,55 × 4,84 × 19,21 m** |
+| Occupation de la silhouette 0° / 90° | 3,98 % / 4,33 % | 3,10 % / 3,60 % |
+
+L'emprise est tenue : X identique au centième, Y +0,10 m, Z −0,14 m.
+L'occupation reste très au-dessus du plancher de 2,0 % de l'outil.
+
+### Ce que je VOIS à taille réelle, et où j'ai dépassé la cible
+
+**Acquis, et ils sont nets :**
+
+- **« Bosses vertes » : traité.** Le rapport R/V passe de 0,93 à 1,12 ; les
+  trois masses lisent de la terre, plus de l'herbe en relief. Sur la vue
+  d'identité, la hiérarchie 1 : 0,51 : 0,28 et les trois orientations se
+  lisent d'un coup d'œil : une tombe dominante et deux tombes secondaires.
+- **« Poteaux rectangulaires » : traité, et mesuré.** Aucune pierre n'a plus
+  de côtés parallèles ; la garde du générateur refuserait l'ancienne forme.
+- **Le coffre n'est plus le sujet.** Sa pointe claire tombe de 122,5 à 73,0
+  (−40 %), il est encadré par deux montants, et il se détache maintenant sur
+  le dos sombre du tertre au lieu de la prairie.
+- **La valeur du dos éclairé (97,4) reste au-dessus de l'acquis de l'agent B
+  (86,7)** : la consigne « ne pas régresser » est tenue.
+
+**Dépassements, et ce sont les miens :**
+
+1. **Les pierres sont devenues des LAMES.** À ×3 sur `barrow_cemetery_joueur`,
+   plusieurs stèles sont des éclats pointus plantés dans le sol, et la pierre
+   de tête est une AIGUILLE de 4,36 m — sur l'aplat noir 0°, c'est une
+   antenne. J'ai corrigé le rectangle en fabriquant son contraire. Cause
+   exacte, et elle est dans mes constantes : les points de contrôle de tête
+   descendaient jusqu'à 0,21, et la chute de cassure valait
+   `brisure · 1,55 · biais`, soit jusqu'à 0,48 · hauteur d'un seul côté.
+2. **Le linteau flotte.** Son extrémité lointaine est PLUS HAUTE que son appui
+   sur le montant B : `rotation.x = −9°` relève le bout au lieu de
+   l'abaisser (ordre d'Euler YXZ appliqué après le lacet). Il lit comme un
+   plongeoir, et sa face supérieure est lichénée donc VERTE.
+3. **Les strates de `COLOR_0` sont redevenues des bandes peintes** à cette
+   distance : quatre cycles à contraste 0,30 donnent des rubans clairs à
+   bord franc sur chaque pierre.
+4. **Le tertre est trop SATURÉ** : saturation médiane 0,32 sur le dos éclairé,
+   contre 0,265 pour l'herbe et **0,091** pour les sentiers de terre du monde
+   gelé. Il lit sable, pas terre sous herbe rase.
+5. Les déblais sont un semis d'éclats anguleux gris — du bruit autour du
+   coffre plutôt qu'un tas.
+
+---
+
+## C2 — émousser ce que C1 a trop aiguisé
+
+### Défaut
+
+Les cinq points ci-dessus. Le premier est le seul qui compte vraiment : une
+pierre funéraire est une masse ÉPAULÉE, pas une lame.
+
+### Cause supposée
+
+Une seule et même erreur de dosage, répétée : j'ai réglé chaque levier à son
+maximum pour être certain de tuer le rectangle. Points de contrôle de tête
+jusqu'à 0,21 · `biais` jusqu'à 0,92 · chute de cassure `×1,55` · `brisure`
+jusqu'à 0,52 · contraste de strate 0,30 sur quatre cycles · albédo à
+saturation 0,41.
+
+### Levier
+
+1. Générateur — **plancher de largeur haute** : points de contrôle de tête
+   remontés à 0,44 minimum, dispersion par pièce ramenée de ±0,14 à ±0,10,
+   `biais` ramené dans 0,34-0,55, chute de cassure `×1,55 → ×0,95`, plancher
+   de hauteur restante 0,42 → 0,55.
+2. Générateur — **GARDE 5, « pas d'aiguille »** : la largeur à 86 % de la
+   hauteur doit valoir au moins 42 % de la largeur maximale, et la largeur au
+   sommet au moins 26 %. Avec la garde 4 (« pas de rectangle »), les deux
+   encadrent la réponse par le haut ET par le bas — c'est exactement ce qui
+   manquait à C1, qui n'avait qu'une borne.
+3. Générateur — strates : 4,0 → 2,6 cycles, contraste 0,30 → 0,22, poids de
+   la marche 0,32 → 0,14. L'étendue de `COLOR_0` reste très au-dessus du
+   plancher de la garde existante (0,12).
+4. Lieu — linteau : `rotation.x` **positif** (+14°) et appui à 2,50 m, calculé
+   pour que les deux bouts portent (montant A 2,61 m, montant B 2,02 m,
+   dénivelé 0,49 m sur 1,98 m de portée) ; lichen du linteau ramené à sa
+   seule embase.
+5. Lieu — pierre de tête : échelle (1,55 ; 2,76) → (1,95 ; 2,30), soit
+   1,33 × 3,63 m au lieu de 1,05 × 4,36 m. Un menhir, pas une antenne. Le
+   collider suit.
+6. Lieu — `TERRE` désaturée à luminance d'albédo constante : (0,305 ; 0,272 ;
+   0,180) → (0,297 ; 0,272 ; 0,216). Saturation d'albédo 0,41 → 0,27, R/V
+   conservé au-dessus de 1.
+7. Lieu — déblais : deux éclats au lieu de deux, réduits, et relief de flanc
+   du tertre 0,115 → 0,17 pour que le dos cesse d'être une dune lisse.
+
+### Changement attendu dans les pixels
+
+- Sur l'aplat noir 0°, la pierre de tête doit devenir une masse dont la
+  largeur à mi-hauteur se mesure, et non un trait.
+- Sur `barrow_gp_gueule`, le linteau doit toucher les DEUX montants.
+- Sur `barrow_cemetery_joueur`, la saturation médiane du dos éclairé doit
+  descendre vers 0,20-0,24 (entre le sentier de terre à 0,09 et l'herbe à
+  0,265) sans que le p50 repasse sous 86,7.
+- Le profil en travers d'une stèle doit conserver son étendue mais perdre ses
+  bords de bande francs.
+
+### Caméras qui doivent le montrer
+
+`barrow_cemetery_joueur` · `barrow_gp_gueule` · `barrow_cemetery_identite` ·
+silhouettes 0/90.

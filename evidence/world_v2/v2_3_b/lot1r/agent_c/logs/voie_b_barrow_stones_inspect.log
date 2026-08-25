@@ -1,0 +1,16 @@
+=== INSPECTION glTF : assets/architecture/barrow/SM_Barrow_Stones.glb ===
+  format                 : GLB v2, 197880 octets
+  chunk_binaire          : 179104 octets
+  generateur             : Khronos glTF Blender I/O v4.0.44
+  version_gltf           : 2.0
+  meshes                 : 12
+  materiaux              : 2 (MAT_Barrow_Stone, MAT_Barrow_Lichen)
+  textures               : 0 image(s), 0 texture(s)
+  noeuds                 : 12 (SM_Barrow_Jamb_A, SM_Barrow_Jamb_B, SM_Barrow_Lintel, SM_Barrow_Stele_A, SM_Barrow_Stele_B, SM_Barrow_Stele_C, SM_Barrow_Seuil_A, SM_Barrow_Seuil_B)
+  skins                  : 0
+  animations             : 0 (aucune)
+  triangles              : 1720
+  bbox_min               : [-1.4195, 0, -0.3842]
+  bbox_max               : [1.368, 2.6117, 1.9778]
+  dimensions_m           : [2.7874, 2.6117, 2.3621]
+=== VALIDE ===
