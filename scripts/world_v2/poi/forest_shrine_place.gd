@@ -368,18 +368,20 @@ func _seuil() -> void:
 	# est couchée là où tout le reste est debout. Enfoncée de 11 cm, elle
 	# n'émerge que de 0,22 m — sous la hauteur de marche du héros, donc aucun
 	# corps : on l'enjambe, exactement comme la pierre couchée de la nef.
-	var linteau: Vector3 = _nef_seated(0.26, -3.44)
-	# LE LINTEAU SE RELÈVE ET S'APPUIE. À 15° d'inclinaison il restait couché
-	# dans l'herbe, et sur `it1/forest_shrine_joueur.png` il est indiscernable
-	# des blocs tombés : c'est pourtant LUI qui doit transformer deux pierres
-	# en une PORTE. À 50°, un bout au sol et l'autre calé contre le montant
-	# est, son bout haut monte à 0,85 m — il barre l'intervalle des montants
-	# en diagonale, et cette diagonale-là est ce qu'on lit comme un linteau
-	# tombé. Il reste sous la hauteur d'épaule : la porte est ruinée, pas
-	# reconstruite.
+	var linteau: Vector3 = _nef_seated(-1.28, -3.15)
+	# LE LINTEAU SORT DE LA TRAVÉE, ET C'EST UNE ERREUR DE PLUS QUE JE CORRIGE
+	# SUR CAPTURE. Relevé à 50° au milieu du seuil, il faisait bien une
+	# diagonale — mais sur `it2/forest_shrine_joueur.png` cette diagonale
+	# projette à x 456, entre le montant est (400) et le cœur (481) : elle
+	# MASQUE le sujet qu'elle était censée présenter. Un linteau tombé n'a
+	# aucune raison d'être au milieu du passage : il tombe au PIED d'un
+	# montant. Il va donc à l'extérieur du montant ouest (x 593 à l'écran,
+	# hors de la ligne caméra → cœur), incliné de 40°, un bout calé contre la
+	# pierre. On lit toujours la pièce taillée qui est tombée de la porte, et
+	# la travée est rendue au passage.
 	_piece_vestige("SM_Shrine_Linteau",
 		linteau + Vector3(0.0, -0.06, 0.0),
-		Vector3(0.0, deg_to_rad(_nef_yaw(78.0)), deg_to_rad(50.0)))
+		Vector3(0.0, deg_to_rad(_nef_yaw(62.0)), deg_to_rad(40.0)))
 	declare_support(linteau)
 	# Enfoncée de 8 cm : une dalle qui affleure l'herbe se lit neuve.
 	var marche: Vector3 = _nef_seated(-0.02, -3.02)
@@ -496,13 +498,22 @@ func _nef_enceinte() -> void:
 				deg_to_rad(float(spec[4]))),
 			"Muret_%d" % index)
 		declare_support(at)
-	# LA PIERRE COUCHÉE barre encore la nef en travers : c'est elle qu'on
-	# enjambe pour approcher, et son corps de 0,30 m — sous la hauteur de
-	# marche — est ce que la sonde a exigé (sans lui elle se traversait).
-	var couchee: Vector3 = _nef_seated(-0.10, -2.10)
+	# LA PIERRE COUCHÉE NE BARRE PLUS LA NEF, ELLE LA BORDE. Elle était en
+	# travers, au milieu du passage (x de nef −0,10) : 1,86 m de fût posés
+	# exactement là où l'œil doit trouver un couloir. Sur `it2` c'est la masse
+	# qui brouille le plus la travée. Elle glisse au bord ouest (x de nef
+	# −1,70) et se couche DANS l'axe au lieu d'en travers — un fût tombé le
+	# long de son mur, ce que la ruine raconte aussi bien.
+	#
+	# CE QUE ÇA CHANGE POUR LA SONDE, ET JE LE DIS AU LIEU DE LE TAIRE : la
+	# nef n'a plus de contremarche du tout sur son axe, donc la mesure de
+	# marche va tomber vers zéro. Ce n'est PAS un seuil qu'on abaisse —
+	# `MARCHE_MAX` ne bouge pas — mais le contrôle « la pierre couchée est
+	# franchissable » perd son objet, et l'en-tête de la sonde le dit.
+	var couchee: Vector3 = _nef_seated(-1.70, -1.30)
 	_piece_vestige("SM_Shrine_Fallen",
 		couchee + Vector3(0.0, -COUCHEE_ENFONCEMENT, 0.0),
-		Vector3(0.0, deg_to_rad(_nef_yaw(82.0)), deg_to_rad(3.0)))
+		Vector3(0.0, deg_to_rad(_nef_yaw(12.0)), deg_to_rad(3.0)))
 	declare_support(couchee)
 
 
@@ -583,9 +594,11 @@ func _coeur() -> void:
 ## ce qui DÉPASSE de l'herbe, c'est-à-dire les deux bordures.
 const DALLES: Array[Array] = [
 	# x, z, lacet, échelle, enfoncement
+	# DEUX, ET SUR L'AXE. Les deux autres tombaient dans la travée que la
+	# passe suivante a précisément dégagée ; elles n'y étaient pas visibles et
+	# elles y ajoutaient du bruit de forme. Restent le pied du cœur et le
+	# devant du seuil — les deux endroits où un sol dallé a encore un rôle.
 	[-0.15, -0.55, 57.0, 0.86, 0.075],
-	[0.42, -2.30, -18.0, 0.78, 0.085],
-	[-0.78, -2.86, 74.0, 0.62, 0.125],
 	[-0.06, -3.62, -41.0, 0.60, 0.135],
 ]
 
@@ -759,11 +772,13 @@ func _collisions() -> void:
 			_nef_seated(float(spec[1]), float(spec[2]))
 				+ Vector3(0.0, h * 0.5, 0.0),
 			Vector3(longueur, h, 0.58), _nef_yaw(float(spec[3])))
-	# La pierre couchée : un corps de 0,30 m, sous la hauteur de marche. Sans
-	# lui la sonde mesurait une marche de 0,000 m, c'est-à-dire une traversée.
+	# La pierre couchée : un corps de 0,30 m, sous la hauteur de marche. Il la
+	# suit au bord ouest, et son lacet suit sa nouvelle orientation — un corps
+	# resté sur l'ancienne position serait un mur invisible en travers d'une
+	# nef qu'on vient justement de dégager.
 	K.collider_box(self, "Sanctuaire_pierre_couchee",
-		_nef_seated(-0.10, -2.10) + Vector3(0.0, 0.15, 0.0),
-		Vector3(1.85, 0.30, 0.58), _nef_yaw(82.0))
+		_nef_seated(-1.70, -1.30) + Vector3(0.0, 0.15, 0.0),
+		Vector3(0.58, 0.30, 1.85), _nef_yaw(12.0))
 	# LES DEUX BORDURES DE NEF. Cotes RELUES sur le maillage exporté après
 	# leur relèvement, jamais recopiées de la demande : le générateur rabat
 	# les sommets par sa brisure.
