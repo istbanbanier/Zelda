@@ -241,13 +241,48 @@ func _seuil() -> void:
 ## n'était pas une cote mais un espoir. Le corps fait donc 0,30 m de haut —
 ## juste SOUS la hauteur de marche : on monte dessus d'un pas et on redescend,
 ## ce qui est exactement enjamber. La sonde le mesure désormais pour de vrai.
+## LOT 1.R — L'ENCEINTE S'ÉLARGIT, ET C'EST UNE QUESTION DE PRÉSENCE, PAS DE
+## CONFORT. Mesuré sur `agent_b/base/forest_shrine_identite.png` : le lieu
+## occupe 155 × 100 px dans un cadre de 1280 × 720, soit **1,7 % de sa propre
+## vue d'identité** — un tas de cailloux gris sous un arbre. L'audit le dit
+## autrement depuis la vue joueur (B-f-6) : « cinq plaques grises verticales,
+## sans seuil et sans centre lisible ».
+##
+## La hauteur est INTERDITE comme levier : rien du bâti ne dépasse 2,4 m, c'est
+## le contrat d'invisibilité depuis la route à 7,3 m, et il ne se négocie pas.
+## Le seul levier restant est donc l'EMPRISE. Les six socles s'écartent de
+## ~1,5× (l'entraxe du seuil passe de 2,68 à 3,90 m, celui du cœur de 1,64 à
+## 2,30 m) : la nef reste une nef — elle CONVERGE toujours vers la table — mais
+## elle a désormais des bords que l'œil peut suivre depuis 18 m.
+##
+## La convergence est conservée exactement : c'est elle qui conduit le regard
+## au cœur, et la perdre échangerait un défaut contre un autre.
 const SOCLES: Array[Array] = [
-	["SM_Shrine_Socle_A", -1.34, -2.52, 37.0, -4.0],
-	["SM_Shrine_Socle_C", -1.06, -1.70, -68.0, 3.0],
-	["SM_Shrine_Socle_B", -0.83, -0.96, 121.0, 6.0],
-	["SM_Shrine_Socle_B", 1.30, -2.36, -21.0, 5.0],
-	["SM_Shrine_Socle_A", 1.00, -1.58, 92.0, -7.0],
-	["SM_Shrine_Socle_C", 0.82, -0.90, -134.0, 2.0],
+	["SM_Shrine_Socle_A", -1.95, -2.62, 37.0, -4.0],
+	["SM_Shrine_Socle_C", -1.52, -1.74, -68.0, 3.0],
+	["SM_Shrine_Socle_B", -1.16, -0.98, 121.0, 6.0],
+	["SM_Shrine_Socle_B", 1.90, -2.44, -21.0, 5.0],
+	["SM_Shrine_Socle_A", 1.44, -1.62, 92.0, -7.0],
+	["SM_Shrine_Socle_C", 1.14, -0.92, -134.0, 2.0],
+]
+
+## LES QUATRE MARQUES D'ANGLE — ce qui fait qu'une nef devient une ENCEINTE.
+##
+## Deux rangées seules se lisent « allée » ; il faut fermer les bouts pour que
+## l'œil, de loin, reconnaisse un périmètre. Elles sont BRISÉES et INÉGALES :
+## une enceinte intacte serait un rectangle, et le contrat refuse explicitement
+## le rectangle fermé. Deux devant le seuil, deux derrière le cœur, aucune
+## alignée sur sa symétrique.
+##
+## Toutes sont des `Socle_C` (0,60 m) : sous la hauteur de marche du héros,
+## donc AUCUN collider — c'est la règle déjà posée pour les deux socles bas de
+## la nef, et elle évite de porter le lieu à quinze volumes dans un cercle de
+## sept mètres.
+const ANGLES: Array[Array] = [
+	[-2.34, -3.46, 18.0, -9.0],
+	[2.22, -3.62, -95.0, 6.0],
+	[-2.08, 0.38, 143.0, 5.0],
+	[1.72, 0.66, -47.0, -8.0],
 ]
 ## Enfoncement de la pierre couchée. 0,19 m sous le sol : son maillage fait
 ## 0,51 m d'épaisseur apparente, il n'en émerge donc que 0,32 m.
@@ -263,6 +298,14 @@ func _nef() -> void:
 				deg_to_rad(float(spec[4]))),
 			"Socle_%d" % index)
 		declare_support(at)
+	for index: int in range(ANGLES.size()):
+		var marque: Array = ANGLES[index]
+		var ou: Vector3 = _seated(float(marque[0]), float(marque[1]))
+		_piece_vestige("SM_Shrine_Socle_C", ou,
+			Vector3(0.0, deg_to_rad(float(marque[2])),
+				deg_to_rad(float(marque[3]))),
+			"Angle_%d" % index)
+		declare_support(ou)
 	var couchee: Vector3 = _seated(-0.10, -2.10)
 	_piece_vestige("SM_Shrine_Fallen",
 		couchee + Vector3(0.0, -COUCHEE_ENFONCEMENT, 0.0),
@@ -292,14 +335,45 @@ func _coeur() -> void:
 	declare_support(chevet)
 
 
-## LE DALLAGE AVALÉ — trois dalles enfoncées de huit centimètres, dans l'axe
-## de la nef. Le sol du sanctuaire existait ; le bois l'a repris.
+## LE DALLAGE AVALÉ — le sol du sanctuaire existait ; le bois l'a repris.
+##
+## LOT 1.R — DE TROIS DALLES À NEUF, ET C'EST CE QUI DESSINE LE LIEU DE LOIN.
+## Trois dalles éparses ne font pas un sol : elles font trois taches. Depuis la
+## caméra d'identité, à 18 m et 6 m au-dessus, la seule chose qui puisse dire
+## « il y a une enceinte ici » est une SURFACE plus sombre que l'herbe — un
+## sol dallé se lit comme une empreinte, exactement comme une trace de fouille
+## se lit d'avion. La mesure justifie le geste : le dallage rend p50 = 48,5
+## contre 67,4 pour l'herbe voisine (`base/shrine_gp_nef.png`), soit 19 niveaux
+## d'écart — assez pour marquer une forme sans assombrir le sous-bois.
+##
+## CE N'EST PAS UN PAVAGE CONTINU, et le contrat l'interdit explicitement
+## (« refus : rectangle fermé »). Les neuf dalles sont à des échelles de 0,52 à
+## 0,86 — soit 1,04 à 1,72 m pour un module natif de 2 m — avec de vraies
+## RESPIRATIONS entre elles, des orientations toutes différentes, et une
+## densité qui décroît vers les bords : au centre le sol tient encore, aux
+## marges la terre a gagné. Les profondeurs d'enfoncement sont toutes
+## distinctes (7 à 14 cm) : deux dalles coplanaires produiraient du z-fighting,
+## et le sol du sanctuaire n'a de toute façon aucune raison d'être de niveau.
+const DALLES: Array[Array] = [
+	# x, z, lacet, échelle, enfoncement
+	[-0.15, -0.55, 57.0, 0.86, 0.075],
+	[-0.92, -1.42, 31.0, 0.74, 0.095],
+	[0.88, -1.30, -22.0, 0.70, 0.110],
+	[0.42, -2.30, -18.0, 0.78, 0.085],
+	[-0.78, -2.86, 74.0, 0.62, 0.125],
+	[1.02, -3.05, 12.0, 0.55, 0.140],
+	[-1.24, 0.12, -63.0, 0.58, 0.130],
+	[0.96, 0.24, 108.0, 0.52, 0.120],
+	[-0.06, -3.62, -41.0, 0.60, 0.135],
+]
+
+
 func _dallage_avale() -> void:
-	for spec: Array in [[-0.35, -1.25, 31.0], [0.45, -2.35, -18.0],
-			[-0.20, -0.35, 57.0]]:
+	for spec: Array in DALLES:
 		K.module(self, &"Floor_UnevenBrick",
 			_seated(float(spec[0]), float(spec[1]))
-				+ Vector3(0.0, -0.08, 0.0), float(spec[2]), 1.0, TONE_MOUSSE)
+				+ Vector3(0.0, -float(spec[4]), 0.0),
+			float(spec[2]), float(spec[3]), TONE_MOUSSE)
 
 
 ## LE RIDEAU SUD — ce qui rend le lieu invisible depuis la route, à 7,3 m.
@@ -395,14 +469,17 @@ func _couvert() -> void:
 ##
 ## En reçoivent : la table, le chevet, les deux montants du seuil, les quatre
 ## socles d'au moins 0,80 m, les trois troncs. N'en reçoivent pas : les deux
-## socles de 0,60 m et la pierre couchée (0,32 m d'émergence) — on les
-## enjambe, et un corps sur chacun ferait treize volumes dans un cercle de
-## sept mètres. Le rideau sud n'en a aucun, par contrat : il masque, il ne
-## ferme pas.
+## socles de 0,60 m, les QUATRE marques d'angle (0,60 m elles aussi) et la
+## pierre couchée (0,32 m d'émergence) — on les enjambe, et un corps sur
+## chacun ferait dix-sept volumes dans un cercle de sept mètres. Le rideau sud
+## n'en a aucun, par contrat : il masque, il ne ferme pas.
 ##
-## Le couloir libre entre les deux rangées vaut 1,64 m d'entraxe moins deux
-## demi-emprises de 0,30 m, soit 1,04 m au plus étroit : la capsule du héros
-## passe. Vérifié par sonde physique, pas par ce calcul.
+## LOT 1.R : l'élargissement de l'enceinte ne coûte AUCUN volume nouveau — les
+## six socles bougent, leurs corps suivent (la boucle lit `SOCLES`), et les
+## quatre marques d'angle passent sous la hauteur de marche. Le couloir libre
+## entre les deux rangées s'ouvre de 1,64 à 2,30 m d'entraxe au plus étroit,
+## soit 1,70 m nets : la capsule du héros passe plus au large qu'avant, et
+## aucune approche ne se referme. Vérifié par sonde physique, pas par ce calcul.
 func _collisions() -> void:
 	K.collider_box(self, "Sanctuaire_table",
 		_seated(0.0, 0.0) + Vector3(0.0, 0.45, 0.0), Vector3(1.70, 0.90, 1.20),

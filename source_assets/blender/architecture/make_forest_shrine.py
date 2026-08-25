@@ -399,16 +399,42 @@ def poser_mousse(bm, mousse_max_z):
          pierre, quelle que soit l'orientation de la face. En sous-bois la
          mousse monte le long du fût depuis la litière ; sans ce terme, les
          verticales du sanctuaire resteraient de la pierre propre.
+
+    LA CHAUSSETTE N'EST PLUS UNE LIGNE DE NIVEAU — LOT 1.R, agent B.
+
+    Mesuré en ouvrant `agent_b/base/shrine_gp_nef.png` à taille réelle : chaque
+    pierre porte une bande vert sombre à bord NET et HORIZONTAL, toutes à la
+    même hauteur relative, sur les six socles comme sur les deux montants. Ce
+    n'est pas de la mousse, c'est une pierre TREMPÉE DANS LA PEINTURE — et
+    c'est la chose la plus artificielle de la vue rapprochée du lieu.
+
+    La cause est littérale : `pied = 0,30 · haut` est une constante par pièce,
+    donc une ligne de niveau. Deux termes la brisent, tous deux physiques :
+
+      * L'OMBRE PORTÉE. La mousse monte plus haut du côté qui garde
+        l'humidité. Le soleil de ce monde vient de l'ouest et du haut
+        (`DirectionalLight3D`, §22.1) ; la face abritée est donc l'est —
+        `+x` en repère Blender local. Une face tournée à l'est reçoit le
+        coefficient plein, une face plein ouest le tiers.
+      * LE GRAIN. Un bruit déterministe de position, pour qu'aucune pierre
+        n'ait la même chaussette que sa voisine et qu'aucune face n'ait un
+        bord parfaitement droit.
     """
     if not bm.faces:
         return 0
     haut = max(v.co.z for v in bm.verts)
-    pied = max(0.16, 0.30 * haut)
+    pied_moyen = max(0.16, 0.30 * haut)
     touchees = 0
     for face in bm.faces:
         centre_z = sum(v.co.z for v in face.verts) / len(face.verts)
+        cx = sum(v.co.x for v in face.verts) / len(face.verts)
+        cy = sum(v.co.y for v in face.verts) / len(face.verts)
         vers_le_haut = (face.normal.z >= MOUSSE_NORMALE_MIN
                         and centre_z <= mousse_max_z)
+        # `face.normal.x` ∈ [−1, 1] : +1 plein est (abrité), −1 plein ouest.
+        abri = 0.5 + 0.5 * face.normal.x
+        grain = _graine(cx * 4.3 + cy * 3.1 + haut * 1.7)
+        pied = pied_moyen * (0.42 + 0.96 * abri + 0.40 * grain)
         if vers_le_haut or centre_z <= pied:
             face.material_index = IDX_MOUSSE
             touchees += 1
