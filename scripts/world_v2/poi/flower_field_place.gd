@@ -577,6 +577,19 @@ func _semer(nom: String, modele: StringName, petale: Color, desat: float,
 		# d'onde de 11 et 13 m (ordre de grandeur des motifs de 8-30 m de
 		# §1.3), plus une seconde harmonique courte pour la matière. Le
 		# tirage aléatoire subsiste, réduit, pour casser les isochromes.
+		#
+		# RÉSULTAT MESURÉ, ET IL EST NÉGATIF — écrit ici pour qu'une session
+		# suivante ne refasse pas l'expérience. Sur la vue joueur, crop du
+		# premier plan (0,470)-(760,720), R2 → R3 : écart-type de luminance
+		# 46,2 → 45,3, écart-type de (R-B) 78,5 → 78,9. **Aucune variation
+		# gagnée.** La cause est un rapport d'échelle : l'écart-type déjà
+		# présent dans ce crop vaut ~18 % de la pleine échelle, porté par le
+		# contraste fleur/ombre, et une onde d'albédo de ±16 % s'y noie.
+		# Monter l'amplitude assez pour la voir salirait la masse et
+		# contredirait le « calme » exigé par §5.1 — donc on ne monte pas.
+		# Ce qui est conservé l'est parce que c'est la forme JUSTE (variation
+		# par position, pas bruit par instance) et qu'elle ne coûte rien, pas
+		# parce qu'elle a été démontrée visible.
 		var p: Vector3 = transforms[i].origin
 		var lente: float = sin(p.x * 0.55 + 1.7) * cos(p.z * 0.47 - 0.9)
 		var courte: float = sin(p.x * 1.13 - p.z * 0.97 + 0.4)

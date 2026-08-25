@@ -247,3 +247,56 @@ la ligne de tête du champ devient irrégulière au lieu d'être rase.
 **Caméra qui doit le montrer** : `flower_field_joueur` (la grande masse jaune
 du premier plan est le meilleur juge d'un aplat) et `flower_field_gp_nappe`
 (le tapis blanc, à hauteur de fleur).
+
+### Mesure et lecture APRÈS R3 (`691d182`, `c3_iter3/`)
+
+Sonde : 1101 instances inchangées ; hauteur moyenne rendue **0,46 → 0,49**
+(blanche), **0,49 → 0,52** (jaune), **0,46 → 0,48** (bleue). Parse RC = 0.
+Budget micro 4/12 · 12/30 · 3/6.
+
+Mesure de pixels sur les captures elles-mêmes (gain non linéaire : on mesure
+le RENDU, jamais l'albédo). Crops fixes, mêmes caméras, mêmes réglages :
+
+| vue joueur, premier plan (0,470)-(760,720) | base | R1 | R2 | R3 |
+|---|---:|---:|---:|---:|
+| pixels jaunes | 11,5 % | 45,0 % | 45,0 % | **50,3 %** |
+| vert nu | 76,2 % | 42,9 % | 38,1 % | **33,2 %** |
+| écart-type de luminance | 32,3 | 41,8 | 46,2 | 45,3 |
+| écart-type de (R−B) | 50,0 | 76,4 | 78,5 | 78,9 |
+
+| vue joueur, bande du milieu (250,360)-(1000,470) | base | R1 | R2 | R3 |
+|---|---:|---:|---:|---:|
+| pixels blancs | 2,9 % | 2,0 % | 3,7 % | **5,1 %** |
+| vert nu | 61,1 % | 60,9 % | 57,8 % | **55,6 %** |
+
+| vue identité, le champ (280,330)-(1000,660) | base | R1 | R2 | R3 |
+|---|---:|---:|---:|---:|
+| pixels jaunes | 6,6 % | 10,6 % | 10,6 % | **11,5 %** |
+| vert nu | 78,4 % | 72,3 % | 71,2 % | **69,6 %** |
+
+**Verdict R3, par partie, et il est mixte :**
+
+- **strate haute : VISIBLE et mesurée.** Hauteur moyenne +6 %, couverture
+  jaune du premier plan +5,3 points, vert nu −4,9 points. La ligne de tête du
+  champ est irrégulière là où elle était rase.
+- **onde de teinte : NON CONCLUANTE.** L'écart-type de luminance BAISSE
+  (46,2 → 45,3) et celui de (R−B) monte de 0,4 — du bruit. La cause est un
+  rapport d'échelle : l'écart-type déjà présent dans ce crop vaut ~18 % de la
+  pleine échelle, porté par le contraste fleur/ombre, et une onde d'albédo de
+  ±16 % s'y noie. Monter l'amplitude assez pour la voir salirait la masse et
+  contredirait le « calme » de la bible §5.1 — **donc je ne monte pas
+  l'amplitude, et je ne relance pas une deuxième fois la même hypothèse.**
+  Le code garde l'onde parce que c'est la forme juste (variation par position
+  et non bruit par instance) et qu'elle ne coûte rien, avec la mesure écrite
+  dans le commentaire pour qu'on ne refasse pas l'expérience. Elle se
+  supprime en un geste si le lead préfère.
+
+### Constat pour le lead, non corrigé ici
+
+Sur `planches_c3/planche_gris.png` (le test des valeurs, bible §30.1) : la
+hiérarchie tient sans la couleur — le champ est bien la masse claire du bas du
+cadre. Mais **le jaune et le blanc rendent la MÊME valeur** ; leurs phrases ne
+se distinguent que par la teinte. Les séparer demanderait d'assombrir le jaune
+(`TONE_PETALE_NATIF`), une valeur que `CONCEPTION_champ.md` déclare vérifiée
+sur capture à iter2. Je ne la change pas de ma propre initiative : c'est un
+arbitrage de palette, il appartient au lead et au propriétaire.
