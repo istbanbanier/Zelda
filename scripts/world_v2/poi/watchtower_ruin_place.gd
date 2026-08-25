@@ -42,9 +42,17 @@ const K: GDScript = preload("res://scripts/world_v2/poi/world_v2_place_kit.gd")
 const TOUR_SCENE: PackedScene = preload(
 	"res://assets/architecture/watchtower/SM_Watchtower_Ruin.glb")
 
-## Demi-entraxe des murs du fût (le GLB est modélisé sur les axes ±2,0 m,
-## épaisseur 0,45 m — les cotes des colliders).
-const HALF: float = 2.0
+## LIGNE MOYENNE des murs du fût. LOT 1.R.1 : 2,00 → 2,20 m et l'épaisseur
+## 0,45 → 0,85 m, l'épaisseur croissant vers l'EXTÉRIEUR — le nu intérieur
+## reste à 1,775 m, donc la vigie, l'escalier, les corbeaux et la garde de la
+## capsule du générateur ne bougent pas d'un millimètre. Ce qui bouge est
+## l'empreinte extérieure : 4,45 → 5,25 m, et 5,75 m au pied avec
+## l'empattement. C'est la réponse à « la tour reste trop mince », et le
+## terrain la permet — coupe mesurée le 2026-08-25 : plateau plat à 26,0 m
+## jusqu'à x = −157, la falaise ne tombe qu'à 3 m à l'est du fût.
+const HALF: float = 2.20
+## Épaisseur de mur, et donc de chaque corps de collision de mur.
+const EP: float = 0.85
 ## Centre du fût, en local. Sa face est tombe alors à x = −0,2, soit
 ## 3,8 m avant le premier mètre de pente (mesuré à r = 4).
 const CORE_X: float = -2.2
@@ -165,7 +173,11 @@ func _build() -> void:
 	# Pied de la montée : le seuil de la brèche, là où l'ascension commence.
 	# Sans lui, un lieu marqué `requires_traversal` est INCOMPLET et l'audit
 	# doit le dire au lieu de le laisser passer (`reward_anchor.gd`).
-	ancre.traversal_base = Vector3(CORE_X + 3.4, base_y, CORE_Z - 1.2)
+	# LE PIED DE LA MONTÉE EST DÉSORMAIS LA PORTE, pas l'angle arraché : c'est
+	# elle qu'on voit depuis la vue joueur, et c'est par elle qu'on entre.
+	# Cote lue sur le générateur : la baie du mur est occupe y −2,175..−1,575
+	# en repère Blender, soit z local +1,975..+2,575 dans le fût.
+	ancre.traversal_base = Vector3(CORE_X + 3.15, base_y, CORE_Z + 1.875)
 	ancre.child_entered_tree.connect(_sur_recompense)
 
 
@@ -262,12 +274,17 @@ func _interieur(core: Node3D) -> void:
 ## les seuls garde-corps sont les murs ouest et sud eux-mêmes.
 func _ascension(core: Node3D) -> void:
 	var e: float = ENFONCEMENT
+	# LOT 1.R.1 — la volée 1 passe de 6 à 7 marches et son pied avance de
+	# 0,85 à 1,28 m (générateur) : le corps suit la NOUVELLE ligne des nez de
+	# marche, sinon on monterait sur du vide au départ et dans la pierre à
+	# l'arrivée. Palier à 7 × 0,27 = 1,89 m ; volée 2 réduite à 4 marches
+	# pour rejoindre la vigie à 3,05 m sans la dépasser.
 	_collider_rampe(core, "Guet_rampe_1",
-		Vector3(1.05, 0.0 - e, -1.385), Vector3(-1.05, 1.70 - e, -1.385), 0.80)
+		Vector3(1.28, 0.0 - e, -1.385), Vector3(-0.82, 1.92 - e, -1.385), 0.80)
 	_collider_rampe(core, "Guet_rampe_2",
-		Vector3(-1.375, 1.76 - e, -1.45), Vector3(-1.375, 3.05 - e, 0.62), 0.75)
+		Vector3(-1.375, 1.92 - e, -1.42), Vector3(-1.375, 3.05 - e, 0.30), 0.75)
 	K.collider_box(core, "Guet_palier_tournant",
-		Vector3(-1.15, 1.52 - e, -1.42), Vector3(0.90, 0.20, 0.70))
+		Vector3(-1.20, 1.79 - e, -1.42), Vector3(0.90, 0.20, 0.70))
 	# LA VIGIE S'EST AGRANDIE (lot 1.R) : 1,90 m d'est en ouest, et 1,38 m de
 	# profondeur GARANTIE — le bord déchiré va jusqu'à 1,72 m par endroits,
 	# mais un corps de collision se dimensionne sur le MINIMUM du maillage,
@@ -350,7 +367,9 @@ func _talus(base_y: float) -> void:
 	#      la grande face cesse d'être horizontale (elle cesse alors de
 	#      recevoir le soleil à plat, ce qui la faisait sortir sable clair),
 	#      et l'enfoncement passe de 0,20 à 0,34 m.
-	var pan_a: Vector3 = _seated(1.55, -3.15)
+	# RECULÉ (lot 1.R.1) : le mur nord et son empattement portent désormais la
+	# face nord du fût à z = −2,475 ; à z = −3,15 la plaque aurait mordu dedans.
+	var pan_a: Vector3 = _seated(1.75, -3.60)
 	_piece_tour(self, "SM_Watchtower_Slab_A",
 		pan_a + Vector3(0.0, -0.34, 0.0),
 		Vector3(deg_to_rad(13.0), deg_to_rad(142.0), 0.0), "tombee")
@@ -391,7 +410,9 @@ func _talus(base_y: float) -> void:
 	# (facteur 1,0) ; à 0,30 il fait 0,91 × 0,57 × 0,74 m — même hauteur
 	# apparente que la galette qu'il remplace, donc ni collider nouveau ni
 	# changement de franchissement, mais une vraie masse au lieu d'un disque.
-	var pied: Vector3 = _seated(-5.1, -3.6)
+	# RECULÉ (lot 1.R.1) : l'empattement ouest atteint x = −5,075 ; le caillou
+	# était à −5,1, soit 2,5 cm de dégagement. Il part à l'ouest-nord-ouest.
+	var pied: Vector3 = _seated(-6.05, -3.95)
 	K.module(self, &"Rock_Medium_2", pied, -21.0, 0.30, TONE_PIED)
 	declare_support(pied)
 	_collisions(base_y)
@@ -421,19 +442,33 @@ func _trainee_de_chute() -> void:
 func _collisions(base_y: float) -> void:
 	var y0: float = base_y
 	K.collider_box(self, "Guet_mur_ouest",
-		Vector3(CORE_X - HALF, y0 + 4.55, CORE_Z), Vector3(0.45, 9.1, 4.45))
-	# Mur nord : de l'angle ouest à la brèche — centre x = −0,6375 local au
-	# fût, longueur 3,175 m.
+		Vector3(CORE_X - HALF, y0 + 4.55, CORE_Z), Vector3(EP, 9.1, 5.25))
+	# Mur nord : de l'angle ouest à la brèche — le mur court de x = −2,625 à
+	# x = +0,95 en local au fût, donc centre −0,8375 et longueur 3,575 m.
 	K.collider_box(self, "Guet_mur_nord",
-		Vector3(CORE_X - 0.64, y0 + 3.13, CORE_Z - HALF),
-		Vector3(3.18, 6.25, 0.45))
+		Vector3(CORE_X - 0.8375, y0 + 3.13, CORE_Z - HALF),
+		Vector3(3.575, 6.25, EP))
 	K.collider_box(self, "Guet_mur_sud",
-		Vector3(CORE_X, y0 + 2.95, CORE_Z + HALF), Vector3(4.45, 5.9, 0.45))
-	# Mur est : la seule travée debout. La brèche, au nord, reste ouverte —
-	# c'est l'entrée, elle ne doit rien porter.
-	K.collider_box(self, "Guet_mur_est",
-		Vector3(CORE_X + HALF, y0 + 1.6, CORE_Z + 1.0),
-		Vector3(0.45, 3.2, 2.2))
+		Vector3(CORE_X, y0 + 2.95, CORE_Z + HALF), Vector3(5.25, 5.9, EP))
+	# MUR EST : TROIS CORPS, ET LE TROU DU MILIEU EST LA PORTE.
+	#
+	# Le lot 1.R.1 perce une vraie porte dans cette travée (générateur, baie
+	# `(0.45, 1.05, 0.0, 1.85)` sur le mur est). Un corps unique en travers
+	# serait exactement ce que la règle interdit : une paroi invisible là où
+	# l'œil voit une ouverture. Les trois segments suivent la maçonnerie —
+	# et leur HAUTEUR suit l'arase qui descend vers le nord, sinon le corps
+	# dépasserait le maillage et rendrait, là encore, un mur fantôme.
+	#   z local : 3,025 (sud, arase 3,05) → 0,575 (nord, arase 1,35)
+	#   porte   : z 2,575 → 1,975
+	K.collider_box(self, "Guet_mur_est_sud",
+		Vector3(CORE_X + HALF, y0 + 1.385, CORE_Z + 2.80),
+		Vector3(EP, 2.77, 0.45))
+	K.collider_box(self, "Guet_mur_est_milieu",
+		Vector3(CORE_X + HALF, y0 + 1.05, CORE_Z + 1.675),
+		Vector3(EP, 2.10, 0.60))
+	K.collider_box(self, "Guet_mur_est_nord",
+		Vector3(CORE_X + HALF, y0 + 0.52, CORE_Z + 0.975),
+		Vector3(EP, 1.05, 0.80))
 	# Le talus ne couvre plus que la moitié SUD du tas : le couloir d'entrée
 	# (l'axe de la brèche, z −1,5..−0,4) reste marchable — la sonde
 	# d'ascension a mesuré une contremarche de 0,68 m sur l'ancien volume,
@@ -455,7 +490,8 @@ func _vegetation_de_fissure(core: Node3D) -> void:
 	# `Prop_Vine*` a son ancrage à 2,12 m au-dessus du bas de sa géométrie
 	# et `KitPlacement.seat()` ne corrige PAS vers le haut — posé à 0, il
 	# pend sous le lieu.
-	K.module(core, &"Prop_Vine1", Vector3(-1.0, 2.07, -HALF - 0.1), 180.0, 1.0,
+	K.module(core, &"Prop_Vine1",
+		Vector3(-1.0, 2.07, -(HALF + EP * 0.5) - 0.1), 180.0, 1.0,
 		K.TONE_PLANT)
 	K.module(self, &"Bush_Common", _seated(-2.6, -5.2), 34.0, 0.9, K.TONE_PLANT)
 	K.module(self, &"Bush_Common", _seated(0.6, -4.4), -76.0, 0.7, K.TONE_PLANT)
