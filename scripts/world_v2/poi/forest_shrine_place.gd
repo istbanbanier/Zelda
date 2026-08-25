@@ -461,14 +461,13 @@ func _rideau_sud() -> void:
 func _sous_bois() -> void:
 	K.module(self, &"Mushroom_Common", _seated(-1.62, -2.72), 0.0, 1.0,
 		K.TONE_PLANT)
-	K.module(self, &"Mushroom_Common", _seated(1.55, -1.42), 90.0, 0.85,
-		K.TONE_PLANT)
+	# D7 — consolidation d'intégration (lead) : l'itération structurelle a
+	# porté le lieu à 43 modules pour un plafond de 40. Retirés : le second
+	# Mushroom_Common et les deux Pebble_* — trois micro-décors qui ne portent
+	# aucun trait du contrat (seuil/enceinte/cœur et dallage avalé intacts).
+	# Le plafond n'a PAS bougé.
 	K.module(self, &"Mushroom_Laetiporus", _seated(-1.10, 0.55), -55.0, 0.75,
 		K.TONE_PLANT)
-	K.module(self, &"Pebble_Round_3", _seated(0.95, -3.35), 24.0, 1.0,
-		TONE_MOUSSE)
-	K.module(self, &"Pebble_Square_1", _seated(-1.80, -0.25), -61.0, 1.0,
-		TONE_MOUSSE)
 
 
 ## LE COUVERT — trois troncs, tous au NORD et à l'OUEST, jamais au sud.
