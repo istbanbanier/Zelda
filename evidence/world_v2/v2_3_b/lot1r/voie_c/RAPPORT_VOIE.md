@@ -426,3 +426,106 @@ pièce jointe de Release. La preuve committée est
 Réserve honnête : la planche est un échantillonnage régulier, pas une
 vidéo. Elle ne prouve ni la fluidité, ni le vent, ni l'absence de
 saccade. Le film reste la pièce à regarder pour cela.
+
+---
+
+## 11. TROISIÈME CORRECTIVE (V2.3-B lot 1.R, reprise voie C)
+
+Consigne d'entrée : l'état `de43152` est « correct » ; le faire passer à
+**« explosion mémorable »** — densité du premier plan dans la vue joueur,
+phrases de couleur plus franches, respirations plus nettes, couloir de
+traversée plus invitant.
+
+Journal complet des trois itérations, avec l'hypothèse écrite AVANT chaque
+modification : `ITERATIONS_C.md` à la racine du worktree.
+
+### 11.1 Le diagnostic, et il n'était pas une question de teinte
+
+Lu à taille réelle sur `apres4/flower_field_joueur.png` : les 40 % bas du
+cadre joueur rendaient de l'herbe nue. Trois causes, toutes structurelles :
+
+1. la clairière de l'œil joueur faisait **2,1 m de rayon** autour de la
+   position exacte de la caméra ;
+2. la « poche de premier plan » n'était **pas dans le cadre** — projetée
+   dans le repère de la vue joueur elle tombait à |x_écran| = 1,09 ;
+3. l'algorithme de nappe convergeait vers un **semis uniforme** dès qu'on le
+   densifiait : il tirait un centre au hasard et y posait 3 à 8 fleurs, donc
+   les taches finissaient par se recouvrir.
+
+### 11.2 Ce qui a changé
+
+`scripts/world_v2/poi/flower_field_place.gd` seul (plus une sonde d'instances
+dédiée, `tools/godot/lot1r_sonde_champ.gd`). Aucun autre lieu, aucun helper
+partagé, aucun asset nouveau, aucune caméra déplacée.
+
+- nappes en **LOBES** placés par projection dans le repère de la vue joueur,
+  chaque lobe creusé de **CŒURS** dont l'écartement minimum est une
+  contrainte : les respirations ne dépendent plus d'un tirage chanceux ;
+- œil dégagé 2,1 → **1,25 m** (réduit, pas fermé) et un troisième disc pour
+  la lentille de `gp_chemin` ;
+- **île de la fourche** : un lobe blanc dans le triangle enfermé par les
+  trois brins, mesuré à 1,99 m du plus proche pour un dégagement de 1,35 m ;
+- lobe bleu **allongé selon Z** pour casser le parallélisme des masses ;
+- **strate haute** : une fleur sur quatre à 1,12-1,60 × l'échelle du kit ;
+- fleurs lappant le pied des stèles (écart 1,35 → 0,85 et 1,05 → 0,70) ;
+- 560 → **1 031 fleurs**.
+
+### 11.3 Instances et budget — le chiffre que D7 ne voit pas
+
+D7 compte des NŒUDS visuels, et un `MultiMeshInstance3D` en vaut un qu'il
+porte trois fleurs ou trois mille : densifier une nappe est gratuit à son
+regard. D'où la sonde dédiée et le tableau ci-dessous.
+
+| | avant (`de43152`) | après (`691d182`) |
+|---|---:|---:|
+| instances MultiMesh | 628 | **1 101** |
+| dont fleurs | 560 | **1 031** |
+| nœuds visuels (budget 30) | 13 | **12** |
+| modules (budget 12) | 4 | 4 |
+| collisions (budget 6) | 3 | 3 |
+| emprise des instances | 21,4 × 20,1 m | 21,2 × 18,6 m |
+| hauteur moyenne rendue (jaune) | 0,46 m | 0,52 m |
+
+Un nœud visuel de MOINS pour 471 instances de plus : la poche hors cadre a
+fusionné dans la nappe jaune.
+
+### 11.4 Ce que la mesure de pixels dit du résultat
+
+Crops fixes sur les captures, mêmes caméras, mêmes réglages (on mesure le
+RENDU, jamais l'albédo — gain ≈ 1,8 non linéaire) :
+
+| vue joueur, premier plan (0,470)-(760,720) | `de43152` | final |
+|---|---:|---:|
+| vert nu | 76,2 % | **33,2 %** |
+| pixels jaunes | 11,5 % | **50,3 %** |
+
+| vue joueur, bande du milieu | `de43152` | final |
+|---|---:|---:|
+| pixels blancs | 2,9 % | **5,1 %** |
+| vert nu | 61,1 % | **55,6 %** |
+
+| vue identité, le champ | `de43152` | final |
+|---|---:|---:|
+| pixels jaunes | 6,6 % | **11,5 %** |
+| vert nu | 78,4 % | **69,6 %** |
+
+Planches A/B : `planches_c3/` (base → final) et `planches_c3_r2r3/`
+(l'itération R3 seule).
+
+### 11.5 Ce qui n'a PAS marché, et n'est pas caché
+
+L'onde de teinte macro de R3 est **NON CONCLUANTE** : l'écart-type de
+luminance du premier plan BAISSE (46,2 → 45,3) et celui de (R−B) monte de
+0,4, soit du bruit. La cause est écrite dans le code pour qu'on ne refasse
+pas l'expérience : l'écart-type déjà présent vaut ~18 % de la pleine échelle
+et une onde d'albédo de ±16 % s'y noie. L'amplitude n'a pas été remontée —
+règle des deux échecs, et « calme » exigé par la bible §5.1.
+
+### 11.6 Constat remis au lead, non corrigé
+
+`planches_c3/planche_gris.png` : la hiérarchie des valeurs tient sans la
+couleur, mais **le jaune et le blanc rendent la même valeur**. Leurs phrases
+ne se distinguent que par la teinte. Les séparer demanderait d'assombrir
+`TONE_PETALE_NATIF`, valeur que `CONCEPTION_champ.md` déclare vérifiée sur
+capture à iter2 : c'est un arbitrage de palette, il n'appartient pas à
+l'agent.
