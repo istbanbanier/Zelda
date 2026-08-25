@@ -29,12 +29,13 @@
 # azimut et en hauteur. Il n'existe plus de notion de banc, donc plus rien à
 # empiler. Six composantes, et aucune n'est décorative :
 #
-#  1. PROFIL VERTICAL NON MONOTONE. Le rayon d'ensemble suit une spline sur
-#     des points de contrôle tirés par une marche aléatoire bornée qui peut
-#     REMONTER. Une masse se resserre puis regrossit : elle porte un vrai
-#     surplomb, et sa section verticale cesse d'être convexe. Une pile qui ne
-#     fait que rétrécir est un cône, et un cône de disques est le défaut exact
-#     qu'on répare.
+#  1. PROFIL VERTICAL À PALIERS. Le rayon d'ensemble suit une spline sur des
+#     points de contrôle tirés par une marche décroissante dont le pas peut
+#     être NUL : un palier est une paroi verticale franche, et une falaise en
+#     a. Le profil ne remonte PAS — la première écriture le permettait, et
+#     mesuré, il produisait une taille de guêpe faisant le tour de la masse
+#     (contrôle de surplomb à 32/32, donc infalsifiable). Les surplombs sont
+#     LOCAUX et viennent des bombements, jamais du profil.
 #
 #  2. NERVURES VERROUILLÉES SUR L'AZIMUT. Conservées de la version précédente,
 #     et c'est le SEUL trait qui marchait : un relief radial fonction de

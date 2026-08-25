@@ -713,3 +713,52 @@ semis gelé reste le seul suspect.
   est assis sur UN point de terrain, donc il lui faut de quoi absorber le
   relief sous les deux autres.
 - **Caméras** : les mêmes, inchangées.
+
+## Résultat de l'itération 9, mesuré (`voie_a3/iter9`, commit `a33d154`, RC=0)
+
+### Le test de la pierre olive a TRANCHÉ, et il dit « pas à moi »
+
+`TEINTE_PIED` est passée du verdâtre au gris froid. La fenêtre mesurée sur la
+pierre olive rend **RGB(65,9 ; 73,4 ; 67,2)** dans `iter9` — identique au
+centième à `iter8`, et la pierre est visiblement inchangée à taille réelle.
+Ce n'est donc pas un fond de jupe à moi : elle appartient au décor gelé, que
+la règle transversale nº 1 interdit de toucher. Le test coûtait une ligne et
+il a évité de refaire exactement la faute de l'itération 6.
+
+### Ce qui est réparé, mesuré
+
+| Défaut d'iter8 | iter9 |
+|---|---|
+| roche indigo, S 0,441 | **S 0,334** — le levier marche, il n'est pas fini |
+| coins NOIRS au bord de l'eau | disparus ; il reste un liseré sombre de rive |
+| ancre du fruit dans la pierre | **le fruit est sur la berge**, visible |
+| masses en coussins | épaules plus franches, encore rondes de près |
+
+| Vue gelée | Zone | iter8 | **iter9** |
+|---|---|---|---|
+| `turquoise_spring_joueur` | roche haute | H 221° S 0,441 V 0,358 | **H 218° S 0,334 V 0,376** |
+| `turquoise_spring_joueur` | roche gauche | — | H 218° S 0,331 V 0,417 |
+| `turquoise_spring_joueur` | eau | H 190° S 0,554 V 0,462 | **inchangée** (H 190° S 0,554) |
+| `turquoise_spring_joueur` | herbe, talus | — | **identiques au centième** (rien de gelé n'a bougé) |
+
+### Ce que je VOIS à taille réelle, sans indulgence
+
+- Source, présence : **visible**. Quatre masses forment un amphithéâtre qui
+  tient le milieu du cadre ; l'eau en sort par-dessous et s'en va vers le
+  premier plan. Ce n'est plus une flaque cernée de cailloux.
+- Source, chaîne arrivée → vasque → déversoir : **visible**.
+- Source, fruit sur la berge : **visible**.
+- Source, matière : **faible**. À S 0,334 la roche reste plus bleue que la
+  pierre du monde (crocs : 0,13–0,21) et elle est encore à 60 % de la
+  saturation de l'eau, qui devrait rester seule saturée. **Non résolu, et
+  chiffré** : il faudrait descendre le rapport bleu/rouge de 1,41 vers ~1,20.
+- Source, formes : **ambigu**. Les épaules sont plus carrées qu'en iter8, mais
+  en gros plan les masses lisent encore « blocs arrondis » plutôt que
+  « mâchoires ».
+- Belvédère, formation : **visible**. La silhouette à 90° montre une crête
+  haute à couronne rompue, un éperon détaché et un vide franc entre les deux —
+  le « vide qui fait partie de la silhouette » du contrat.
+- Belvédère, strates : **faible**. Le relief existe et se mesure ; il ne se
+  lit pas comme des lignes horizontales, il se fond dans le facettage.
+- Belvédère, éperon contre falaise du fond : **ambigu**. 0,631 contre 0,643 —
+  il ne s'en détache pas en valeur.
