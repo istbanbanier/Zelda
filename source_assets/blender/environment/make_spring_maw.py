@@ -116,10 +116,33 @@ MOUILLAGE_PART_MAX = 0.40
 ## C'est une PREMIÈRE APPROXIMATION à remesurer sur capture — le gain n'est pas
 ## linéaire (`scripts/CLAUDE.md`), et prédire une valeur rendue depuis un
 ## albédo est exactement ce que ce dépôt interdit.
-MAT_ROCHE = (0.1074, 0.1287, 0.2180, 1.0)
-MAT_FRACTURE = (0.1246, 0.1484, 0.2512, 1.0)
+## v2 — RECALÉE SUR CAPTURE, et la mesure enseigne quelque chose que le
+## `scripts/CLAUDE.md` ne dit pas encore : **le même albédo ne rend pas la même
+## couleur selon l'éclairage du lieu.** Le rapport 1 : 1,20 : 2,03 rend
+## S 0,13–0,21 au belvédère, en plein soleil chaud, parce que la lumière
+## directe mange le biais bleu. Ici, dans un ravin à l'ombre d'une paroi de
+## 54°, il n'y a que l'ambiante froide : le biais survit entier et la roche a
+## rendu **H 221° S 0,441 V 0,358** — de l'indigo, pas de la pierre. Et l'eau
+## de la vasque mesure S 0,554 dans la MÊME image : à 0,441 la roche était aux
+## quatre cinquièmes de sa saturation, donc l'eau cessait d'être « la seule
+## note froide saturée du ravin ».
+## Rapport ramené à 1 : 1,07 : 1,41 et magnitude ×1,25. Cible RENDUE : S ≈ 0,20
+## (famille des crocs) et V ≈ 0,42, un cran plus clair que le talus brun
+## mesuré à 0,292 pour que la formation s'en détache. Approximation à
+## remesurer : le gain n'est pas linéaire.
+MAT_ROCHE = (0.1940, 0.2076, 0.2735, 1.0)
+MAT_FRACTURE = (0.2140, 0.2290, 0.3010, 1.0)
 NIVEAU = 0.82
-TEINTE_PIED = (0.62, 0.68, 0.60)
+## PIED — passé du VERDÂTRE au gris froid, et c'est un TEST autant qu'un
+## choix. Une pierre olive, plate et anguleuse, d'une famille étrangère au
+## reste, apparaît au bord nord de la vasque sur `iter8/spring_gros_eau.png`.
+## Je ne sais pas ce que c'est et je refuse de l'attribuer sur sa seule
+## couleur : c'est la faute exacte qui a produit le revert de l'itération 6.
+## Si cette pierre devient ardoise à la prochaine capture, c'est un fond de
+## jupe à moi, exposé parce qu'un objet à trois lobes est assis sur le terrain
+## d'UN point. Si elle ne bouge pas d'un centième, elle n'est pas à moi et le
+## semis V2.2 gelé — intouchable — reste le seul suspect.
+TEINTE_PIED = (0.56, 0.59, 0.66)
 ## Roche trempée : franchement plus sombre, et elle tire vers le pétrole — pas
 ## vers le noir. Un bord « plus sombre que tout » dessine un anneau, et c'est
 ## le défaut que le lit de cette vasque a déjà payé deux fois.
@@ -155,8 +178,11 @@ MASSES = [
     #   écrin est   Godot (+2,8 ; +2,1) → Blender (+2,8 ; −2,1) — bas, il
     #               encadre le fruit sans masquer l'eau
     #   bloc tombé  Godot (−2,2 ; +5,0) → Blender (−2,2 ; −5,0)
-    ("SM_Spring_Rim", 2.35, 1.95, 1.60, 0.60, 26489, (0.030, 0.030),
-     215.0, 0.85, [(-1.0, 3.8, 1.00), (2.8, -2.1, 0.52), (-2.2, -5.0, 0.86)]),
+    # JUPE DOUBLÉE (0,60 → 1,10). Un objet à trois lobes est assis sur le
+    # terrain d'UN SEUL point : il lui faut de quoi absorber le relief sous les
+    # deux autres, sinon un lobe flotte et montre le dessous de sa jupe.
+    ("SM_Spring_Rim", 2.35, 1.95, 1.60, 1.10, 26489, (0.030, 0.030),
+     215.0, 0.85, [(-1.0, 3.8, 1.00), (3.9, -3.7, 0.46), (-2.2, -5.0, 0.86)]),
 ]
 RESOLUTION = {
     "SM_Spring_MawN": (22, 18, 3),
@@ -203,18 +229,24 @@ class Bloc:
         # DÔME BRISÉ. `(1 − t^q)^e` : plat longtemps, puis il roule. `q` grand
         # = épaules carrées ; `e` petit = sommet aplati. Un bloc de pied de
         # paroi a des épaules, pas un profil d'œuf.
-        self.dome_q = rng.uniform(2.4, 3.4)
-        self.dome_e = rng.uniform(0.26, 0.38)
+        # v2 — ÉPAULES CARRÉES. À (2,4–3,4 ; 0,26–0,38) les masses rendaient
+        # des COUSSINS sur `iter8` : même facettées, elles restaient molles.
+        # `q` plus grand recule le moment où le dôme roule, `e` plus petit
+        # aplatit le sommet. Un bloc de pied de paroi a des épaules.
+        self.dome_q = rng.uniform(3.2, 4.6)
+        self.dome_e = rng.uniform(0.16, 0.26)
 
         # NERVURES VERROUILLÉES SUR L'AZIMUT — le seul relief qui survive d'une
         # tranche à l'autre et fabrique une arête filante plutôt qu'un bruit.
         self.harmoniques = [(ordre, amp, rng.uniform(0.0, math.tau))
-                            for ordre, amp in ((2, 0.155), (3, 0.108),
-                                               (5, 0.062), (7, 0.034))]
+                            for ordre, amp in ((2, 0.205), (3, 0.145),
+                                               (5, 0.084), (7, 0.046))]
         # Deux FENTES franches : ce sont elles qui font lire « bloc fracturé »
         # plutôt que « galet ».
-        self.fentes = [(rng.uniform(0.0, math.tau), rng.uniform(0.18, 0.28),
-                        rng.uniform(0.11, 0.20)) for _ in range(2)]
+        # Plus profondes et plus ÉTROITES : une fente large est une bosse
+        # inversée, une fente étroite est une fracture.
+        self.fentes = [(rng.uniform(0.0, math.tau), rng.uniform(0.26, 0.38),
+                        rng.uniform(0.085, 0.155)) for _ in range(2)]
 
         # BOMBEMENTS ET NICHES.
         self.bosses = []
