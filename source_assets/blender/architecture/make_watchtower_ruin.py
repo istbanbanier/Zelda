@@ -54,8 +54,29 @@ import bpy
 # ---------------------------------------------------------------------------
 # Cotes
 # ---------------------------------------------------------------------------
-HALF = 2.0            # demi-entraxe des murs
-EP = 0.45             # épaisseur de mur — VISIBLE dans les brèches
+# LOT 1.R.1 — LA TOUR CESSE D'ÊTRE MINCE, ET C'EST UNE COTE, PAS UN AVIS.
+#
+# Verdict Codex (inspection réelle) : « la tour reste trop mince ». Mesuré sur
+# `silhouette_watchtower_ruin_000.png` : un rectangle plein de 265 × 510 px,
+# sans un seul trou ; et sur `watchtower_gp_lointain.png` (86 m) : un bâton de
+# 50 × 95 px. Un mur de 0,45 m pour neuf mètres de haut est un DÉCOR de mur —
+# on ne voit jamais son épaisseur, parce qu'aucune arase rompue n'en montre la
+# coupe.
+#
+# Deux gestes, et le premier gouverne le second :
+#   * `EP` 0,45 -> 0,85 m. L'épaisseur croît VERS L'EXTÉRIEUR : `HALF` est la
+#     LIGNE MOYENNE du mur, et `HALF - EP/2` (le nu intérieur) reste à 1,775 m,
+#     exactement où il était. Toute la géométrie intérieure — vigie, corbeaux,
+#     escalier, solives — est écrite en `-HALF + EP*0.5` et ne bouge donc PAS
+#     d'un millimètre ; la garde de la capsule non plus.
+#   * empreinte extérieure 4,45 -> 5,25 m, plus un empattement de 0,25 m au
+#     pied : 5,75 m au sol. Le terrain le permet — coupe mesurée le 2026-08-25,
+#     `coupe_tour.log` : plateau plat à 26,0 m de x −168 à x −157, la falaise
+#     ne tombe qu'à partir de x = −156, soit 3 m à l'est du fût.
+HALF = 2.20           # LIGNE MOYENNE des murs (nu intérieur = HALF - EP/2)
+EP = 0.85             # épaisseur de mur — VISIBLE en coupe à chaque arase
+NU = HALF - EP * 0.5  # nu intérieur, invariant : 1,775 m
+EMPATTEMENT = 0.25    # débord du socle au pied du mur
 ASSISE = 0.28         # hauteur d'un lit de pose : le PAS des gradins
 BUDGET_TRIS = 12000
 BASE_TOL_DESSOUS = 0.005
@@ -298,8 +319,15 @@ def prisme_frame(bm, origine, u, w, contour, materiau_idx,
     return faces
 
 
-def moellon(bm, centre, taille, graine, materiau_idx):
-    """Une pierre : boîte aux huit sommets déplacés, jamais un cube net."""
+def moellon(bm, centre, taille, graine, materiau_idx, jitter=0.30):
+    """Une pierre : boîte aux huit sommets déplacés, jamais un cube net.
+
+    `jitter` bas (≈ 0,08) donne une pierre TAILLÉE — c'est ce qu'il faut pour
+    un linteau ou un jambage, qui doivent porter la trace de l'outil ; `jitter`
+    haut (0,30, le défaut) donne une pierre de champ.
+    ATTENTION, piège déjà payé une demi-heure : une pierre de centre `c` et de
+    taille `d` s'étend de `c ± (0,5 + jitter/2)·d`. Placer le CENTRE hors d'un
+    volume interdit NE SUFFIT PAS."""
     cx, cy, cz = centre
     dx, dy, dz = taille
     sommets = []
@@ -308,9 +336,10 @@ def moellon(bm, centre, taille, graine, materiau_idx):
                                       (1, 1, 1), (-1, 1, 1))):
         j = _graine(graine * 3.7 + i * 1.9)
         sommets.append(bm.verts.new((
-            cx + sx * dx * 0.5 * (1.0 + j * 0.30),
-            cy + sy * dy * 0.5 * (1.0 + _graine(graine + i * 2.3) * 0.30),
-            cz + sz * dz * 0.5 * (1.0 + _graine(graine * 1.3 + i) * 0.22))))
+            cx + sx * dx * 0.5 * (1.0 + j * jitter),
+            cy + sy * dy * 0.5 * (1.0 + _graine(graine + i * 2.3) * jitter),
+            cz + sz * dz * 0.5 * (1.0 + _graine(graine * 1.3 + i)
+                                  * jitter * 0.73))))
     bas, haut = sommets[:4], sommets[4:]
     faces = [bm.faces.new(tuple(reversed(bas))), bm.faces.new(tuple(haut))]
     for i in range(4):
@@ -453,6 +482,45 @@ def profil_dechire(longueur, h0, h1, graine, plateau=0.2, dent_pos=0.45):
     return points
 
 
+def hauteur_de_profil(profil, s):
+    """Hauteur du profil déchiré à l'abscisse `s` (escalier : dernier point
+    à gauche). Écrite UNE fois et réutilisée — la même lecture redérivée dans
+    trois branches est la façon exacte dont on se trompe (tools/CLAUDE.md,
+    la parité des rayons)."""
+    z = profil[0][1]
+    for ps, pz in profil:
+        if ps <= s + 1e-9:
+            z = pz
+        else:
+            break
+    return z
+
+
+def clip_profil(profil, a, b):
+    """Le profil restreint à [a, b], bornes comprises et interpolées."""
+    pts = [(a, hauteur_de_profil(profil, a))]
+    for ps, pz in profil:
+        if a + 1e-6 < ps < b - 1e-6:
+            pts.append((ps, pz))
+    pts.append((b, hauteur_de_profil(profil, b)))
+    return pts
+
+
+def nettoyer(contour):
+    """Retire les points consécutifs confondus : `bm.faces.new` lève sur un
+    sommet répété, et une face d'aire nulle est un triangle dégénéré que
+    `gltf_inspect` ne verra jamais (leçon de la T-jonction, tools/CLAUDE.md)."""
+    sortie = []
+    for p in contour:
+        if not sortie or abs(p[0] - sortie[-1][0]) > 1e-6 \
+                or abs(p[1] - sortie[-1][1]) > 1e-6:
+            sortie.append(p)
+    if len(sortie) > 1 and abs(sortie[0][0] - sortie[-1][0]) < 1e-6 \
+            and abs(sortie[0][1] - sortie[-1][1]) < 1e-6:
+        sortie.pop()
+    return sortie
+
+
 def compter_gradins(points):
     n = 0
     for i in range(1, len(points)):
@@ -482,42 +550,189 @@ def aire_contour(points):
     return abs(total) * 0.5
 
 
+BAIES_TOTAL = 0
+
+
 def mur(bm, origine, direction, longueur, h0, h1, graine, plateau, dent,
-        interieur_flip=False):
-    """Un mur déchiré. `interieur_flip` retourne l'axe d'épaisseur pour que
-    la face `+w` — celle qui reçoit `MAT_Tower_StoneInner` — soit toujours
-    le parement INTÉRIEUR, quel que soit le côté du fût."""
-    global GRADINS_TOTAL
+        interieur_flip=False, baies=(), socle=True):
+    """Un mur déchiré, avec ses OUVERTURES.
+
+    `interieur_flip` retourne l'axe d'épaisseur pour que la face `+w` — celle
+    qui reçoit `MAT_Tower_StoneInner` — soit toujours le parement INTÉRIEUR.
+
+    `baies` — LOT 1.R.1, et c'est la correction centrale du reproche « sa
+    plaque intérieure demeure uniforme ». Le mot n'est pas une mesure de
+    luminance : le profil en travers de cette plaque donne étendue 79, 65
+    valeurs, 47 renversements (`tools/mesure_valeur.py` sur la base). Ce qui
+    manque n'est pas de la matière, c'est un ÉVÉNEMENT CONSTRUIT — un trou.
+    Chaque entrée est `(s0, s1, z_bas, z_haut)` en coordonnées du mur ; le mur
+    est alors découpé en bandes verticales pleines, en allèges et en linteaux.
+    Aucune opération booléenne : le contour est simplement scindé, ce qui
+    garantit une topologie propre et un budget prévisible.
+
+    `socle` ajoute l'EMPATTEMENT : deux ressauts au pied, plus larges que le
+    mur. Un pied plus large est ce qui fait qu'une tour cesse de se lire comme
+    une planche posée de chant — et il se voit aussi à 86 m.
+    """
+    global GRADINS_TOTAL, BAIES_TOTAL
     profil = profil_dechire(longueur, h0, h1, graine, plateau, dent)
     GRADINS_TOTAL += compter_gradins(profil)
-    contour = [(0.0, 0.0)] + profil + [(longueur, 0.0)]
     w = (direction[1] * EP, -direction[0] * EP)
     if interieur_flip:
         w = (-w[0], -w[1])
-    prisme_frame(bm, (origine[0], origine[1], 0.0),
-                 (direction[0], direction[1]), (w[0], w[1]),
-                 contour, IDX_PIERRE, materiau_avant=IDX_PIERRE_INT)
+    base = (origine[0], origine[1], 0.0)
+    u = (direction[0], direction[1])
+
+    def poser(contour):
+        contour = nettoyer(contour)
+        if len(contour) < 3:
+            return
+        prisme_frame(bm, base, u, w, contour, IDX_PIERRE,
+                     materiau_avant=IDX_PIERRE_INT)
+
+    bornes = sorted(baies, key=lambda b: b[0])
+    s = 0.0
+    for s0, s1, z0, z1 in bornes:
+        s0 = max(s, min(s0, longueur))
+        s1 = max(s0, min(s1, longueur))
+        haut_min = min(hauteur_de_profil(profil, s0),
+                       hauteur_de_profil(profil, s1))
+        if z1 >= haut_min - 0.10:
+            # Pas de linteau possible : l'ouverture mangerait l'arase. On la
+            # refuse au lieu de produire une créneau involontaire — et le
+            # compteur de baies ne la comptera pas, donc la garde le dira.
+            continue
+        poser([(s, 0.0)] + clip_profil(profil, s, s0) + [(s0, 0.0)])
+        if z0 > 0.02:
+            poser([(s0, 0.0), (s0, z0), (s1, z0), (s1, 0.0)])
+        poser([(s0, z1)] + clip_profil(profil, s0, s1) + [(s1, z1)])
+        BAIES_TOTAL += 1
+        s = s1
+    poser([(s, 0.0)] + clip_profil(profil, s, longueur) + [(longueur, 0.0)])
+
+    if socle:
+        # L'EMPATTEMENT S'INTERROMPT AUX BAIES QUI DESCENDENT AU SOL.
+        #
+        # Bug attrapé AVANT la première capture, et il aurait été invisible sur
+        # l'image tout en étant fatal : la porte du mur est part de z = 0, et un
+        # socle plein sur toute la longueur l'aurait murée sur 1,06 m — une
+        # porte bouchée par un bandeau de pierre, avec un collider ouvert
+        # derrière. Le socle est donc scindé par les mêmes bornes que le mur,
+        # et ne saute QUE les baies dont le seuil descend dans son épaisseur.
+        coupures = [(b[0], b[1]) for b in bornes if b[2] < 1.10]
+        for hauteur, debord in ((0.74, EMPATTEMENT),
+                                (1.06, EMPATTEMENT * 0.48)):
+            we = (w[0] * (1.0 + 2.0 * debord / EP),
+                  w[1] * (1.0 + 2.0 * debord / EP))
+            travees = []
+            depart = 0.0
+            for c0, c1 in coupures:
+                travees.append((depart, max(depart, c0)))
+                depart = max(depart, c1)
+            travees.append((depart, longueur))
+            for t0, t1 in travees:
+                if t1 - t0 < 0.20:
+                    continue
+                crete = [(t0, 0.0)]
+                n = max(2, int(round((t1 - t0) / 0.90)) + 1)
+                for i in range(n + 1):
+                    si = t0 + (t1 - t0) * i / n
+                    crete.append((si, hauteur
+                                  + _graine(graine * 1.7 + i * 2.3
+                                            + hauteur) * 0.11))
+                crete.append((t1, 0.0))
+                prisme_frame(bm, base, u, we, nettoyer(crete), IDX_PIERRE,
+                             materiau_avant=IDX_PIERRE_INT)
     return profil
+
+
+def bandeau(bm, depart, u, longueur, z0, z1, saillie, normale, graine,
+            segments=4):
+    """LE RETRAIT DE MAÇONNERIE — un ressaut continu sur le nu INTÉRIEUR, à la
+    ligne d'un ancien plancher.
+
+    C'est ainsi qu'une tour est bâtie : le mur s'amincit à chaque étage et
+    laisse une banquette qui porte les solives. Visuellement, c'est une LIGNE
+    HORIZONTALE qui coupe le grand parement en registres — l'événement que
+    l'audit ne trouvait nulle part. Elle est posée en segments inégaux, avec
+    des manques : le ressaut aussi s'est effondré par endroits.
+    """
+    pose = 0.0
+    for i in range(segments):
+        part = longueur / segments
+        vide = part * (0.10 + 0.22 * abs(_graine(graine * 2.9 + i * 1.7)))
+        s0 = pose + vide * 0.5
+        s1 = pose + part - vide * 0.5
+        pose += part
+        if s1 - s0 < 0.18:
+            continue
+        e = saillie * (0.80 + 0.40 * abs(_graine(graine * 3.7 + i)))
+        # `prisme_frame` centre l'épaisseur sur la ligne donnée : on décale
+        # donc l'origine d'une demi-saillie pour que le ressaut parte du NU et
+        # aille vers l'intérieur, et non à cheval sur le parement.
+        base = (depart[0] + normale[0] * e * 0.5,
+                depart[1] + normale[1] * e * 0.5, 0.0)
+        contour = [(s0, z0), (s0, z1), (s1, z1), (s1, z0)]
+        prisme_frame(bm, base, u, (normale[0] * e, normale[1] * e),
+                     contour, IDX_PIERRE)
 
 
 def coquille(bm):
     """Le fût. Quatre murs, quatre arases, une brèche — et l'histoire des
     deux étages disparus, lisible par la brèche."""
-    global GRADINS_TOTAL, VIGIE_AIRE
+    global GRADINS_TOTAL, VIGIE_AIRE, BAIES_TOTAL
     GRADINS_TOTAL = 0
+    BAIES_TOTAL = 0
+    L_OUEST = 2.0 * HALF + EP
+    L_NORD = BRECHE_X_NORD + HALF + EP * 0.5
+    L_SUD = 2.0 * HALF + EP
+    L_EST = BRECHE_Y_EST + HALF + EP * 0.5
     # OUEST — le plus haut, face au couchant. Il court sur TOUTE la largeur.
-    mur(bm, (-HALF, -HALF - EP * 0.5), (0.0, 1.0), 2.0 * HALF + EP,
-        H_OUEST, H_OUEST_FIN, 11.0, 0.30, 0.52)
+    # DEUX OUVERTURES, et leur place est calculée sur le cadre joueur, pas
+    # choisie à l'œil : la baie du premier étage tombe à x ≈ 602 px, en plein
+    # milieu de la masse sombre que Codex dit « uniforme » ; l'archère du
+    # second monte à x ≈ 531 px, au bord haut du cadre, et sert surtout la
+    # silhouette et la vue lointaine.
+    mur(bm, (-HALF, -HALF - EP * 0.5), (0.0, 1.0), L_OUEST,
+        H_OUEST, H_OUEST_FIN, 11.0, 0.30, 0.52,
+        baies=((1.45, 1.70, 6.90, 8.05), (2.35, 3.15, 4.10, 5.35)))
     # NORD — s'arrête à la brèche, arase qui plonge vers l'arrachement.
-    mur(bm, (-HALF - EP * 0.5, HALF), (1.0, 0.0),
-        BRECHE_X_NORD + HALF + EP * 0.5, H_NORD, H_NORD_FIN, 23.0, 0.16, 0.60)
-    # SUD — entier mais bien plus bas que l'ouest.
-    mur(bm, (-HALF - EP * 0.5, -HALF), (1.0, 0.0), 2.0 * HALF + EP,
-        H_SUD, H_SUD_FIN, 37.0, 0.22, 0.72, interieur_flip=True)
-    # EST — la seule travée debout, au sud de la brèche.
-    mur(bm, (HALF, -HALF - EP * 0.5), (0.0, 1.0),
-        BRECHE_Y_EST + HALF + EP * 0.5, H_EST, H_EST_FIN, 47.0, 0.34, 0.62,
-        interieur_flip=True)
+    # Une archère, vue de biais par la brèche.
+    mur(bm, (-HALF - EP * 0.5, HALF), (1.0, 0.0), L_NORD,
+        H_NORD, H_NORD_FIN, 23.0, 0.16, 0.60,
+        baies=((1.15, 1.40, 2.30, 3.50),))
+    # SUD — entier mais bien plus bas que l'ouest. Son archère est pour la
+    # vue d'identité et les silhouettes : c'est la face qu'elles montrent.
+    mur(bm, (-HALF - EP * 0.5, -HALF), (1.0, 0.0), L_SUD,
+        H_SUD, H_SUD_FIN, 37.0, 0.22, 0.72, interieur_flip=True,
+        baies=((2.20, 2.45, 2.00, 3.20),))
+    # EST — la seule travée debout, au sud de la brèche. ELLE PORTE LA PORTE.
+    #
+    # C'est la correction de « l'entrée n'est pas lisible ». La brèche d'angle
+    # nord-est reste l'effondrement, et on peut toujours y passer ; mais un
+    # angle arraché ne se lit pas comme un seuil — il n'a ni jambage, ni
+    # linteau, ni rien qui dise « on entrait ICI ». La porte, elle, tombe à
+    # x ≈ 399 px, au milieu du seul pan ÉCLAIRÉ du cadre joueur : un
+    # rectangle sombre dans un mur clair, à 5,3 m de l'œil.
+    mur(bm, (HALF, -HALF - EP * 0.5), (0.0, 1.0), L_EST,
+        H_EST, H_EST_FIN, 47.0, 0.34, 0.62, interieur_flip=True,
+        baies=((0.45, 1.05, 0.0, 1.85),))
+
+    # LES RETRAITS DE MAÇONNERIE — deux lignes de plancher rendues visibles.
+    # Niveau 1 à 3,05 m (celui de la vigie) : le ressaut court sous la dalle
+    # sur les trois murs qui le portaient encore. Niveau 2 à 5,95 m : il ne
+    # reste que l'ouest, et un bout de nord — le ressaut S'ARRÊTE là où le mur
+    # est parti, et c'est le récit qu'on veut.
+    bandeau(bm, (-NU, -NU), (0.0, 1.0), 2.0 * NU, 2.59, 2.83, 0.20,
+            (1.0, 0.0), 5.0, segments=4)
+    bandeau(bm, (-NU, NU), (1.0, 0.0), NU + BRECHE_X_NORD, 2.59, 2.83, 0.20,
+            (0.0, -1.0), 9.0, segments=3)
+    bandeau(bm, (-NU, -NU), (1.0, 0.0), 2.0 * NU, 2.59, 2.83, 0.18,
+            (0.0, 1.0), 13.0, segments=4)
+    bandeau(bm, (-NU, -NU), (0.0, 1.0), 2.0 * NU, 5.49, 5.73, 0.20,
+            (1.0, 0.0), 17.0, segments=3)
+    bandeau(bm, (-NU, NU), (1.0, 0.0), 0.92, 5.49, 5.73, 0.20,
+            (0.0, -1.0), 21.0, segments=1)
 
     # CHAÎNAGES D'ANGLE : quelques carreaux qui débordent du nu du mur, aux
     # trois angles encore debout. Le nord-est n'en a pas — il est tombé.
@@ -556,10 +771,20 @@ def coquille(bm):
     # plancher. C'est ainsi qu'on montait ; c'est ce que la ruine raconte.
     # Volée 1 : massif plein sous les marches (un mur bas en gradins
     # RÉGULIERS d'escalier, ce sont des marches, pas un arrachement).
-    marches_1 = 6
+    # LOT 1.R.1 — L'ESCALIER AVANCE JUSQU'AU SEUIL ET REÇOIT SON RAMPANT.
+    #
+    # « L'ascension compréhensible depuis la vue joueur » : elle ne l'était
+    # pas, et la cause est géométrique. Toute la tour est faite de lignes
+    # horizontales et verticales ; il n'y a AUCUNE diagonale dans le cadre, et
+    # la diagonale est le seul signe qui dise « on monte » à trois secondes.
+    # Deux gestes : la volée passe de 6 à 7 marches et son pied avance de
+    # 0,85 à 1,28 m (juste sous la borne x = 1,30 de la garde 2, qui protège
+    # le passage de la brèche — la marge est calculée, pas espérée), et elle
+    # reçoit un MUR D'ÉCHIFFRE dont l'arête supérieure est un rampant continu.
+    marches_1 = 7
     tread = 0.30
     rise = 0.27
-    x_dep = 0.85
+    x_dep = 1.28
     largeur_marche = 0.78
     contour = [(0.0, 0.0)]
     for m in range(marches_1):
@@ -567,21 +792,45 @@ def coquille(bm):
         contour.append(((m + 1) * tread, (m + 1) * rise))
     contour.append((marches_1 * tread, 0.0))
     # le long du mur nord, on monte vers l'ouest : u = (-1, 0)
-    prisme_frame(bm, (x_dep, HALF - EP * 0.5 - largeur_marche * 0.5, 0.0),
+    y_axe = NU - largeur_marche * 0.5
+    prisme_frame(bm, (x_dep, y_axe, 0.0),
                  (-1.0, 0.0), (0.0, largeur_marche), contour, IDX_PIERRE)
+    # LE MUR D'ÉCHIFFRE, au SUD de la volée et hors de la bande marchable :
+    # le corps `Guet_rampe_1` occupe y 0,985..1,785 ; le rampant vit en
+    # 0,715..0,985, il ne rétrécit donc pas le passage d'un centimètre.
+    course = marches_1 * tread
+    rampant = [(0.0, 0.0), (0.0, 0.34)]
+    for i in range(5):
+        si = course * i / 4.0
+        rampant.append((si, 0.34 + si * (rise / tread)
+                        + _graine(151.0 + i * 3.1) * 0.09))
+    rampant.append((course, 0.0))
+    prisme_frame(bm, (x_dep, y_axe - largeur_marche * 0.5 - 0.135, 0.0),
+                 (-1.0, 0.0), (0.0, 0.27), nettoyer(rampant), IDX_PIERRE)
+    # ... et une assise de moellons SUR ce rampant. Leur face supérieure est
+    # horizontale, donc elle reçoit la lumière du ciel là où tout le reste du
+    # parement est vertical et sombre : c'est ce qui fait que la diagonale se
+    # VOIT, et non seulement qu'elle existe. Le premier moellon est centré à
+    # x = 1,10 — son sommet le plus à l'est atteint 1,10 + 0,575·0,30 = 1,27,
+    # sous la borne 1,30 de la garde 2.
+    for i in range(6):
+        xm = 1.10 - i * 0.34
+        moellon(bm, (xm, y_axe - largeur_marche * 0.5 - 0.135,
+                     0.46 + (x_dep - xm) * (rise / tread)),
+                (0.30, 0.24, 0.20), 161.0 + i * 2.7, IDX_PIERRE)
     # Volée 2 : le long du mur ouest, du palier tournant (z=1,62) à la
     # VIGIE (z=3,05 — arbitrage « La vigie retrouvée »). Marches en
     # encorbellement scellées dans le parement, contremarches 0,28 m
     # (step_height du contrôleur : 0,30–0,38) et girons 0,33 m — la montée
     # est jouable aux vrais contrôles, pas seulement dessinée.
     z0 = marches_1 * rise
-    marches_2 = 5
+    marches_2 = 4
     for m in range(marches_2):
         y = 1.20 - m * 0.33
-        moellon(bm, (-HALF + EP * 0.5 + 0.40, y, z0 + (m + 1) * 0.28 - 0.07),
-                (0.85, 0.55, 0.17), 71.0 + m * 1.9, IDX_PIERRE)
+        moellon(bm, (-NU + 0.40, y, z0 + (m + 1) * 0.28 - 0.07),
+                (0.95, 0.58, 0.20), 71.0 + m * 1.9, IDX_PIERRE)
     # Le palier d'angle entre les deux volées.
-    moellon(bm, (-HALF + 0.75, HALF - 0.55, z0 - 0.08),
+    moellon(bm, (-NU + 0.55, NU - 0.325, z0 - 0.08),
             (0.95, 0.75, 0.18), 83.0, IDX_PIERRE)
     # LA VIGIE — la moitié SUD-OUEST du premier plancher a TENU : une dalle
     # de pierre appuyée sur les murs ouest et sud, bord d'arrachement
@@ -699,10 +948,56 @@ def coquille(bm):
     poutre(bm, (-HALF + EP * 0.5, 0.72, 3.22),
            (-HALF + EP * 0.5 + 0.34, 0.74, 3.20), 0.12, 0.14, IDX_BOIS)
     for y in (-0.6, 0.7):
-        moellon(bm, (-HALF + EP * 0.5 + 0.14, y, 5.95),
+        moellon(bm, (-NU + 0.14, y, 5.95),
                 (0.30, 0.26, 0.22), 103.0 + y, IDX_PIERRE)
-    poutre(bm, (-HALF + EP * 0.5, 0.05, 6.10),
-           (-HALF + EP * 0.5 + 0.42, 0.08, 6.06), 0.12, 0.14, IDX_BOIS)
+    poutre(bm, (-NU, 0.05, 6.10),
+           (-NU + 0.42, 0.08, 6.06), 0.12, 0.14, IDX_BOIS)
+
+    # LE FRAGMENT DU SECOND PLANCHER — la deuxième trace d'ancien niveau.
+    #
+    # La vigie est la première : une moitié de plancher qui a tenu. Celle-ci
+    # est ce qu'il reste du second, accroché au mur ouest, bord est déchiré.
+    # Elle tombe à 5,7 m du sol, soit ≈ y 105 px dans le cadre joueur, juste
+    # sous la baie : on lit alors, de haut en bas, TROU / PLANCHER / RESSAUT,
+    # trois événements sur le pan que Codex trouvait sans structure.
+    frag_l = 1.05
+    frag_y0 = -0.35
+    prof_f = profil_dechire(frag_l, 1.28, 0.92, 173.0, plateau=0.15,
+                            dent_pos=0.55)
+    contour_f = nettoyer([(0.0, 0.0)]
+                         + [(s, min(1.30, max(0.55, z))) for s, z in prof_f]
+                         + [(frag_l, 0.0)])
+    haut_f = [bm.verts.new((-NU + s, frag_y0 + e, 5.95))
+              for s, e in contour_f]
+    bas_f = [bm.verts.new((-NU + s, frag_y0 + e, 5.73))
+             for s, e in contour_f]
+    faces_f = [bm.faces.new(tuple(reversed(haut_f))),
+               bm.faces.new(tuple(bas_f))]
+    for i in range(len(contour_f)):
+        j = (i + 1) % len(contour_f)
+        faces_f.append(bm.faces.new((haut_f[i], haut_f[j], bas_f[j],
+                                     bas_f[i])))
+    for f in faces_f:
+        f.material_index = IDX_PIERRE
+    poutre(bm, (-NU, 0.60, 5.86), (-NU + 0.95, 0.63, 5.84), 0.13, 0.15,
+           IDX_BOIS)
+
+    # LA PORTE, HABILLÉE. L'ouverture existe déjà dans la maçonnerie ; ce qui
+    # suit la rend LISIBLE : deux jambages qui débordent du nu, une pierre de
+    # seuil usée en travers, et le linteau tombé devant — la pièce qui dit
+    # « il y avait une porte, et elle est tombée » sans un mot, exactement
+    # comme au sanctuaire.
+    for zj in (0.62, 1.24, 1.72):
+        moellon(bm, (HALF + EP * 0.44, -2.175 - 0.03, zj),
+                (0.40, 0.34, 0.44), 201.0 + zj * 3.1, IDX_PIERRE, jitter=0.12)
+        moellon(bm, (HALF + EP * 0.44, -1.575 + 0.03, zj + 0.18),
+                (0.40, 0.32, 0.40), 211.0 + zj * 2.7, IDX_PIERRE, jitter=0.12)
+    moellon(bm, (2.86, -1.875, 0.33), (1.06, 0.80, 0.30), 181.0, IDX_PIERRE,
+            jitter=0.14)
+    moellon(bm, (3.78, -2.03, 0.37), (1.30, 0.54, 0.34), 191.0, IDX_PIERRE,
+            jitter=0.10)
+    moellon(bm, (4.42, -1.62, 0.36), (0.52, 0.44, 0.30), 197.0, IDX_PIERRE,
+            jitter=0.22)
 
 
 # ---------------------------------------------------------------------------
@@ -881,6 +1176,21 @@ def main():
         print("[watchtower_ruin] ERREUR: %d gradin(s) < 12 — la maçonnerie "
               "ne casse nulle part" % GRADINS_TOTAL)
         return 2
+
+    # GARDE 1b — LES OUVERTURES EXISTENT TOUTES LES CINQ.
+    #
+    # `mur()` REFUSE une baie dont le linteau mangerait l'arase : c'est le bon
+    # comportement (mieux vaut pas de baie qu'un créneau involontaire), mais
+    # un refus silencieux rendrait un mur plein en ayant l'air d'avoir marché.
+    # Le compte est donc vérifié ici, et il nomme le manque.
+    if BAIES_TOTAL != 5:
+        print("[watchtower_ruin] ERREUR: %d baie(s) percée(s) sur 5 — une "
+              "ouverture a été refusée (linteau trop mince sous l'arase). "
+              "Baisser son z_haut ou la déplacer vers le pied du mur."
+              % BAIES_TOTAL)
+        return 2
+    print("[watchtower_ruin] baies : %d percées (porte est, 2 ouest, "
+          "1 nord, 1 sud)" % BAIES_TOTAL)
 
     # GARDE 2 — L'ENTRÉE RESTE OUVERTE. Aucun sommet de la coquille dans le
     # volume de passage de la brèche nord-est (le lieu y fait passer le

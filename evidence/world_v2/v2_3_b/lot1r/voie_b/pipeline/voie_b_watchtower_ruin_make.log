@@ -1,16 +1,17 @@
 Blender 4.0.2
-[watchtower_ruin] SM_Watchtower_Shell          860 tris  X  -2.41.. 2.33  Y  -2.38.. 2.40  Z  0.000.. 8.96
+[watchtower_ruin] SM_Watchtower_Shell         1744 tris  X  -2.88.. 4.68  Y  -2.88.. 2.88  Z  0.000.. 8.96
 [watchtower_ruin] SM_Watchtower_Talus          158 tris  X  -0.27.. 1.56  Y  -1.08.. 1.19  Z  0.000.. 0.78
-[watchtower_ruin] SM_Watchtower_Slab_A          60 tris  X   0.00.. 2.35  Y   0.00.. 1.39  Z  0.000.. 0.59
-[watchtower_ruin] SM_Watchtower_Slab_B          60 tris  X   0.00.. 1.75  Y   0.00.. 1.51  Z  0.000.. 0.58
+[watchtower_ruin] SM_Watchtower_Slab_A          60 tris  X   0.00.. 2.35  Y   0.00.. 1.39  Z  0.000.. 0.95
+[watchtower_ruin] SM_Watchtower_Slab_B          60 tris  X   0.00.. 1.75  Y   0.00.. 1.51  Z  0.000.. 0.94
 [watchtower_ruin] SM_Watchtower_CrownBlock      52 tris  X  -0.69.. 1.21  Y  -0.77.. 0.99  Z  0.000.. 1.15
-[watchtower_ruin] total 1190 triangles (budget 12000)
-[watchtower_ruin] arases : 8.95, 6.45, 5.85, 3.05 — étendue 5.90 m, 18 gradins
+[watchtower_ruin] total 2074 triangles (budget 12000)
+[watchtower_ruin] arases : 8.95, 6.45, 5.85, 3.05 — étendue 5.90 m, 22 gradins
+[watchtower_ruin] baies : 5 percées (porte est, 2 ouest, 1 nord, 1 sud)
 [watchtower_ruin] brèche : volume de passage libre (0 sommet)
 [watchtower_ruin] vigie : dalle 3.457 m² (plancher 1.546 m², ancienne dalle)
-[watchtower_ruin] vigie : dalle présente (19 sommets), volume capsule libre
+[watchtower_ruin] vigie : dalle présente (17 sommets), volume capsule libre
 [watchtower_ruin] COLOR_0 : 5 pièces, active ET de rendu, étendue min 0.707
 Info: Total files 0 | Changed 0 | Failed 0
 Info: Saved "SM_Watchtower_Ruin.blend"
-[watchtower_ruin] source enregistrée -> /home/user/wt1r-b/source_assets/blender/architecture/SM_Watchtower_Ruin.blend
+[watchtower_ruin] source enregistrée -> /home/user/wt1r1-b/source_assets/blender/architecture/SM_Watchtower_Ruin.blend
 FIN NOMINALE
