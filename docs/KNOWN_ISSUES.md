@@ -2518,7 +2518,7 @@ sur un arbre committé et poussé. C'est la conduite à généraliser.
 Chantier de la chaîne de preuve, pas de la corrective d'un lot de lieux — mais
 il touche la crédibilité de tout le dossier, d'où S2.
 
-## ISS-070 — Sanctuaire : la fenêtre du seuil manque la marge de capsule d'un centimètre (0,89 m mesuré, 0,90 exigé) — S3, OUVERT
+## ISS-070 — Sanctuaire : la fenêtre du seuil manquait la marge de capsule d'un centimètre (0,89 m mesuré, 0,90 exigé) — S3, **FERMÉ le 2026-08-25**
 
 **Trouvé** le 2026-08-25, à l'intégration du LOT 1.R.1, par la sonde
 `tools/godot/probe_sanctuaire.gd` une fois ses deux défauts d'instrument
@@ -2543,3 +2543,30 @@ destination — l'en-tête de la sonde porte les deux récits).
 - **Prochaine action si le verdict visuel rouvre le sanctuaire** : écarter le
   montant le moins chargé de ~2 cm dans le générateur, ré-exporter, rejouer la
   sonde — et seulement dans ce cadre-là.
+
+### FERMETURE — LOT 1.R.2, le 2026-08-25
+
+Le verdict visuel a rouvert le sanctuaire (rejet Codex : « le seuil et l'axe
+rituel ne sont pas immédiatement lisibles »), et la corrective de composition
+ouvrait le seuil de toute façon : la condition posée ci-dessus est remplie.
+
+- **Mesure finale : fenêtre libre 1,31 m** à z de nef −3,20, contre 0,89 m,
+  pour un critère inchangé de 0,90 m. Journal :
+  `evidence/world_v2/v2_3_b/lot1r2/sanctuaire/sondes/probe_APRES.log`
+  (`VERDICT : PASS`, RC 0) ; l'état rouge d'avant est archivé à côté, dans
+  `probe_AVANT_ROUGE.log`, pour que la correction soit comparable.
+- **Ce qui a changé** : l'entraxe des montants passe de 1,20 à 1,62 en x de
+  nef (1,863 m réels). Pas 2 cm comme envisagé — le calcul de la voie B se
+  faisait sur le CÔTÉ des colliders et non sur leur demi-largeur EFFECTIVE
+  une fois tournés (24° et −58°), ce qui explique de rater la cible d'un
+  centimètre : la largeur utile vaut 0,392 et 0,357 m, pas 0,32 et 0,25.
+- **Aucun seuil n'a été déplacé** pour obtenir ce vert. `MARCHE_MAX`,
+  `CAPSULE_R` et le plafond d'identité sont ceux de la voie B, et la sonde a
+  GAGNÉ un contrôle : §2c balaie la vraie capsule du héros (Ø 0,80 m) à
+  travers le seuil dans les deux sens de traversée — 100 % du trajet sans
+  contact à l'entrée comme à la sortie. Un rayon est infiniment fin ; on ne
+  referme pas un défaut d'un centimètre avec le seul instrument qui l'a
+  mesuré.
+- **Reste NON VÉRIFIÉ** : la franchissabilité HUMAINE du seuil. Aucune
+  manette, aucun écran ici — cette part-là relève de
+  `docs/MANUAL_VALIDATION.md` et n'a pas bougé.
