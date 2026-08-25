@@ -1,6 +1,6 @@
 === INSPECTION glTF : assets/architecture/shrine/SM_Shrine_Vestige.glb ===
-  format                 : GLB v2, 389900 octets
-  chunk_binaire          : 372932 octets
+  format                 : GLB v2, 385532 octets
+  chunk_binaire          : 368564 octets
   generateur             : Khronos glTF Blender I/O v4.0.44
   version_gltf           : 2.0
   meshes                 : 9
@@ -9,7 +9,7 @@
   noeuds                 : 9 (SM_Shrine_Montant_A, SM_Shrine_Montant_B, SM_Shrine_Step, SM_Shrine_Muret_A, SM_Shrine_Muret_B, SM_Shrine_Muret_C, SM_Shrine_Fallen, SM_Shrine_Coeur)
   skins                  : 0
   animations             : 0 (aucune)
-  triangles              : 5240
+  triangles              : 5168
   bbox_min               : [-1.7182, 0, -0.7834]
   bbox_max               : [1.6555, 2.0293, 1.8638]
   dimensions_m           : [3.3738, 2.0293, 2.6472]
