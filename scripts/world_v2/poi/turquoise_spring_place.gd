@@ -123,13 +123,32 @@ const TONE_PLANTE_HUMIDE: Color = Color(0.50, 0.66, 0.55)
 ## La pierre trempée est plus sombre que la pierre SÈCHE, jamais plus sombre
 ## que TOUT. La valeur MONTE donc vers l'extérieur : rive < crête < talus.
 ## Approximation à remesurer — le gain n'est pas linéaire (`scripts/CLAUDE.md`).
-const TONE_LIT: Color = Color(0.46, 0.45, 0.42)
+## ITÉRATION 3 — J'AVAIS SUR-CORRIGÉ, ET LE CHIFFRE QUI LE DIT N'EST PAS LA
+## MOYENNE MAIS L'ÉCART-TYPE. Mesuré sur `iter2/spring_gros_deversoir.png`,
+## sur 10 513 pixels de berge : V moyen 0,384 pour une herbe voisine à 0,318,
+## **écart-type 0,0058**. Une surface parfaitement uniforme, plus claire que
+## tout ce qui l'entoure, et bleu-gris (S 0,12, H 195) : du béton coulé.
+##
+## La moyenne seule ne pouvait pas attraper ce défaut-là — j'avais visé « au
+## niveau de l'herbe » et je l'avais obtenu à 20 % près. Ce qui manquait est la
+## VARIATION : du gravier trempé n'a pas deux centimètres carrés de la même
+## valeur.
+##
+## Trois corrections, et le rapport rendu/albédo remesuré sur face éclairée
+## vaut 0,645 (0,52 seulement sur une face à l'ombre — d'où l'écart avec
+## l'estimation de l'itération 2) :
+##   * la base descend et se RÉCHAUFFE — du limon ocre, pas du ciment bleu ;
+##   * chaque secteur reçoit un multiplicateur haché (`_teinte_berge`), ce qui
+##     porte l'écart-type attendu autour de 0,03 ;
+##   * la berge RÉTRÉCIT (voir `_point_crete` et `_largeur_talus`) : à 2 m de
+##     large tout autour, elle occupait autant de cadre que la vasque.
+const TONE_LIT: Color = Color(0.40, 0.37, 0.32)
 ## Le lit sous l'eau garde sa sarcelle sombre : c'est LUI qui colore l'eau
 ## transparente au-dessus, et une eau posée sur du gravier clair est grise.
-const LIT_CENTRE: Color = Color(0.36, 0.72, 0.70)
-const LIT_RIVE: Color = Color(1.05, 1.00, 0.92)
-const LIT_CRETE: Color = Color(1.30, 1.26, 1.16)
-const LIT_TALUS: Color = Color(1.45, 1.41, 1.32)
+const LIT_CENTRE: Color = Color(0.38, 0.76, 0.74)
+const LIT_RIVE: Color = Color(0.98, 0.95, 0.88)
+const LIT_CRETE: Color = Color(1.20, 1.16, 1.06)
+const LIT_TALUS: Color = Color(1.32, 1.28, 1.20)
 
 ## Centre de la vasque, dans le repère du lieu.
 const BASSIN_X: float = -5.05
@@ -150,8 +169,8 @@ const BASSIN_B: float = 3.00
 ## reste au-dessus du pad — c'est la berge qui le contient — mais juste assez.
 const NIVEAU_EAU: float = 0.22
 ## Crête de berge au-dessus du sol, avant modulation par secteur.
-const CRETE_BASSE: float = 0.34
-const CRETE_HAUTE: float = 0.52
+const CRETE_BASSE: float = 0.30
+const CRETE_HAUTE: float = 0.48
 
 ## Direction du fil : de la vasque vers la tête d'affluent gelée (+6 ; −6).
 const FIL_DIR: Vector2 = Vector2(0.803, -0.596)
@@ -262,9 +281,15 @@ func _build() -> void:
 	# Elles sont placées PAR LA GÉOMÉTRIE DE LA BERGE (`_point_talus`), jamais
 	# par des coordonnées tapées à la main : la berge peut bouger, elles
 	# suivront, et aucune ne se retrouvera dans l'eau.
-	_plante(&"Plant_7_Big", -0.78, 0.35, 1.15)
-	_plante(&"Plant_7_Big", 0.80, 0.30, 0.95)
-	_plante(&"Fern_1", 2.40, 0.45, 1.10)
+	# `Plant_7_Big` est BANNI de ce lieu : il fleurit VIOLET, et l'itération 2
+	# l'a mis noir sur blanc (`iter2/spring_gros_deversoir.png`, bas-gauche —
+	# deux touffes de fleurs violettes au bord de l'eau). Le violet saturé
+	# n'existe nulle part dans la palette du ravin, et il volait l'accent que
+	# seule l'eau a le droit de porter. Le nom d'un module ne dit pas sa
+	# couleur : il faut la voir.
+	_plante(&"Fern_1", -0.78, 0.35, 1.20)
+	_plante(&"Fern_1", 0.80, 0.30, 0.95)
+	_plante(&"Bush_Common", 2.40, 0.55, 0.80)
 
 	_collisions()
 
@@ -351,9 +376,24 @@ func _crete(phi: float) -> float:
 
 
 ## Largeur du talus extérieur de la berge, à l'angle `phi`.
+## Itération 3 : 1,00–1,55 m → 0,50–0,95 m. À deux mètres de large tout autour,
+## la berge occupait dans le cadre autant de place que l'eau qu'elle borde.
 func _largeur_talus(phi: float) -> float:
 	var i: float = phi / TAU * float(SEGMENTS)
-	return 1.00 + 0.55 * (0.5 + 0.5 * _alea(floorf(i) * 3.7 + 11.9))
+	return 0.50 + 0.45 * (0.5 + 0.5 * _alea(floorf(i) * 3.7 + 11.9))
+
+
+## Multiplicateur de teinte de la berge, HACHÉ PAR SECTEUR.
+##
+## C'est la correction du défaut mesuré à l'itération 2 : écart-type 0,0058 sur
+## dix mille pixels, c'est-à-dire une surface sans grain. Le hachage porte sur
+## la valeur ET sur le rapport chaud/froid : certains secteurs sont du limon
+## ocre, d'autres du galet gris — jamais la même pierre deux fois de suite.
+func _teinte_berge(i: int, base: Color) -> Color:
+	var v: float = 1.0 + 0.15 * _alea(float(i) * 4.3 + 5.9)
+	var chaud: float = 0.06 * _alea(float(i) * 7.7 + 23.1)
+	return Color(base.r * v * (1.0 + chaud), base.g * v,
+		base.b * v * (1.0 - chaud), 1.0)
 
 
 ## Point de la ligne d'eau (plan XZ local).
@@ -372,15 +412,19 @@ func _point_rive(phi: float) -> Vector2:
 ## retrait s'applique donc aussi aux deux largeurs, et la marge remonte à
 ## 0,50 m. C'est la berge qui recule, jamais la récompense.
 func _point_crete(phi: float) -> Vector2:
-	var r: float = _rayon_rive(phi) + 0.42 * _retrait_ancre(phi)
+	var i: float = phi / TAU * float(SEGMENTS)
+	var large: float = 0.28 + 0.14 * (0.5 + 0.5 * _alea(floorf(i) * 2.9 + 3.3))
+	var r: float = _rayon_rive(phi) + large * _retrait_ancre(phi)
 	return Vector2(BASSIN_X, BASSIN_Z) + FIL_DIR * (r * cos(phi)) \
 		+ _perp() * (r * sin(phi))
 
 
 ## Point du PIED extérieur du talus de berge (plan XZ local).
 func _point_talus(phi: float) -> Vector2:
+	var i: float = phi / TAU * float(SEGMENTS)
+	var large: float = 0.28 + 0.14 * (0.5 + 0.5 * _alea(floorf(i) * 2.9 + 3.3))
 	var r: float = _rayon_rive(phi) \
-		+ (0.42 + _largeur_talus(phi)) * _retrait_ancre(phi)
+		+ (large + _largeur_talus(phi)) * _retrait_ancre(phi)
 	return Vector2(BASSIN_X, BASSIN_Z) + FIL_DIR * (r * cos(phi)) \
 		+ _perp() * (r * sin(phi))
 
@@ -424,6 +468,8 @@ func _bassin() -> void:
 	var crete: PackedVector3Array = PackedVector3Array()
 	var talus: PackedVector3Array = PackedVector3Array()
 	var t_crete: PackedColorArray = PackedColorArray()
+	var t_rive: PackedColorArray = PackedColorArray()
+	var t_talus: PackedColorArray = PackedColorArray()
 	for i: int in range(SEGMENTS):
 		var phi: float = TAU * float(i) / float(SEGMENTS)
 		var pr: Vector2 = _point_rive(phi)
@@ -435,27 +481,31 @@ func _bassin() -> void:
 		# La crête s'assombrit dans l'échancrure : c'est le seul endroit où
 		# l'eau passe PAR-DESSUS, donc le seul qui soit trempé en haut.
 		var mouille: float = _echancrure(phi)
-		t_crete.append(LIT_CRETE.lerp(LIT_RIVE, mouille * 0.85))
+		t_crete.append(_teinte_berge(i,
+			LIT_CRETE.lerp(LIT_RIVE, mouille * 0.85)))
+		t_rive.append(_teinte_berge(i + 97, LIT_RIVE))
+		t_talus.append(_teinte_berge(i + 211, LIT_TALUS))
 
 	# Le lit : un éventail du centre vers la ligne d'eau.
 	for i: int in range(SEGMENTS):
 		var j: int = (i + 1) % SEGMENTS
-		_tri3(st, centre, rive[i], rive[j], LIT_CENTRE, LIT_RIVE, LIT_RIVE)
+		_tri3(st, centre, rive[i], rive[j], LIT_CENTRE, t_rive[i], t_rive[j])
 	# La face intérieure de la berge : de la ligne d'eau à la crête.
 	# La lèvre du fil du déversoir n'y fait pas exception — elle est plus basse,
 	# c'est tout, et c'est `_crete()` qui le dit.
 	for i: int in range(SEGMENTS):
 		var j: int = (i + 1) % SEGMENTS
-		_tri3(st, rive[i], crete[i], crete[j], LIT_RIVE, t_crete[i], t_crete[j])
-		_tri3(st, rive[i], crete[j], rive[j], LIT_RIVE, t_crete[j], LIT_RIVE)
+		_tri3(st, rive[i], crete[i], crete[j], t_rive[i], t_crete[i],
+			t_crete[j])
+		_tri3(st, rive[i], crete[j], rive[j], t_rive[i], t_crete[j], t_rive[j])
 	# Le talus extérieur : de la crête au pied, où le gravier meurt dans
 	# l'herbe. C'est la valeur la PLUS CLAIRE du bassin, et c'est ce qui
 	# empêche la berge de cerner l'eau d'un trait sombre.
 	for i: int in range(SEGMENTS):
 		var j: int = (i + 1) % SEGMENTS
-		_tri3(st, crete[i], talus[i], talus[j], t_crete[i], LIT_TALUS,
-			LIT_TALUS)
-		_tri3(st, crete[i], talus[j], crete[j], t_crete[i], LIT_TALUS,
+		_tri3(st, crete[i], talus[i], talus[j], t_crete[i], t_talus[i],
+			t_talus[j])
+		_tri3(st, crete[i], talus[j], crete[j], t_crete[i], t_talus[j],
 			t_crete[j])
 
 	# L'OMBRE DU FIL : une bande humide sous la langue du déversoir, un peu
