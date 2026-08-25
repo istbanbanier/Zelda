@@ -157,11 +157,27 @@ def poser_couleurs(maillage, bandes, contraste, pied_facteur):
         # un dégradé sinusoïdal n'en a pas et se relit « ombrage ».
         onde = 0.5 + 0.5 * math.sin(t * bandes * 2.0 * math.pi
                                     + _graine(hauteur * 7.3) * 6.0)
-        # Les marches sont MÉLANGÉES à l'onde continue (65 / 35) : à
-        # contraste plein, une quantification pure sortait en blocs clairs et
-        # sombres — de l'ombrage en escalier, pas un lit de pierre. Le
-        # mélange garde le BORD de la strate et lui rend son épaisseur.
-        marche = 0.65 * (round(onde * 2.0) / 2.0) + 0.35 * onde
+        # Les marches sont MÉLANGÉES à l'onde continue : à contraste plein,
+        # une quantification pure sortait en blocs clairs et sombres — de
+        # l'ombrage en escalier, pas un lit de pierre. Le mélange garde le
+        # BORD de la strate et lui rend son épaisseur.
+        #
+        # DOSAGE REVU AU LOT 1.R (agent B), APRÈS LECTURE DE LA CAPTURE, et
+        # c'est la correction d'un défaut qui a REMPLACÉ le précédent.
+        # L'objectif de la passe d'avant est bien atteint : le profil en
+        # travers d'une stèle rend 23 valeurs distinctes et 97 niveaux
+        # d'étendue sur `agent_b/base/barrow_cemetery_joueur.png` (y = 430,
+        # x 240..330), contre « 109 constant » à l'audit — l'aplat est mort.
+        # Mais à l'agrandissement, la stèle porte quatre à cinq BANDES
+        # horizontales franches, à bords nets et à pas régulier : cela ne lit
+        # pas comme de la pierre, cela lit comme un poteau PEINT.
+        # Cause : à 0,65 la marche domine l'onde et impose ses paliers plats.
+        # Le poids descend à 0,32 — un tiers de marche suffit à casser la
+        # sinusoïde, donc le BORD de strate survit ; ce qui disparaît est le
+        # palier plat entre deux bords, qui était la lecture « peinture ».
+        # L'étendue ne dépend pas de ce partage : elle vient de `contraste`,
+        # de la seconde fréquence et des veines, tous inchangés.
+        marche = 0.32 * (round(onde * 2.0) / 2.0) + 0.68 * onde
         valeur = 1.0 - contraste * 0.5 + contraste * marche
         # SECONDE FRÉQUENCE, SUR L'AXE MOYEN — et elle n'est pas décorative.
         # Mesuré après la première passe : un profil pris EN TRAVERS d'un

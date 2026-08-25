@@ -430,16 +430,21 @@ func _tertre(nom: String, cx: float, cz: float, demi_long: float,
 	# croissant — parce que c'est l'enroulement d'une surface tournée VERS LE
 	# HAUT qui a déjà été validée sur ce moteur. Il n'y a plus d'éventail de
 	# sommet : l'anneau 0 est une crête, et il est cousu comme les autres.
+	var normales: Array[PackedVector3Array] = _normales_de_grille(grilles)
 	for anneau_index: int in range(anneaux.size() - 1):
 		var bas: PackedVector3Array = grilles[anneau_index + 1]
 		var haut: PackedVector3Array = grilles[anneau_index]
 		var t_bas: PackedFloat32Array = valeurs[anneau_index + 1]
 		var t_haut: PackedFloat32Array = valeurs[anneau_index]
+		var n_bas: PackedVector3Array = normales[anneau_index + 1]
+		var n_haut: PackedVector3Array = normales[anneau_index]
 		for i: int in range(secteurs):
 			_triangle_degrade(st, haut[i], bas[i], bas[i + 1],
-				t_haut[i], t_bas[i], t_bas[i + 1])
+				t_haut[i], t_bas[i], t_bas[i + 1],
+				n_haut[i], n_bas[i], n_bas[i + 1])
 			_triangle_degrade(st, haut[i], bas[i + 1], haut[i + 1],
-				t_haut[i], t_bas[i + 1], t_haut[i + 1])
+				t_haut[i], t_bas[i + 1], t_haut[i + 1],
+				n_haut[i], n_bas[i + 1], n_haut[i + 1])
 	# La crête elle-même se ferme en éventail sur son MILIEU — pas sur un
 	# sommet du dôme : ce point est au niveau de la crête, pas au-dessus.
 	var milieu: Vector3 = Vector3(cx, 0.0, cz)
@@ -448,9 +453,19 @@ func _tertre(nom: String, cx: float, cz: float, demi_long: float,
 		milieu += grilles[0][i]
 		somme += 1.0
 	milieu = (milieu - Vector3(cx, 0.0, cz)) / somme
+	# La normale du point de fermeture est la MOYENNE de celles de la crête :
+	# sans elle, l'éventail central retrouverait l'ombrage plat qu'on vient de
+	# retirer au reste du dos, et la crête porterait une étoile de facettes —
+	# exactement à l'endroit le plus regardé du tertre.
+	var n_milieu: Vector3 = Vector3.ZERO
+	for i: int in range(secteurs):
+		n_milieu += normales[0][i]
+	n_milieu = n_milieu.normalized() if n_milieu.length_squared() > 1e-8 \
+		else Vector3.UP
 	for i: int in range(secteurs):
 		_triangle_degrade(st, milieu, grilles[0][i], grilles[0][i + 1],
-			0.86, 0.86, 0.86)
+			0.86, 0.86, 0.86,
+			n_milieu, normales[0][i], normales[0][i + 1])
 
 	var dome: MeshInstance3D = MeshInstance3D.new()
 	dome.name = nom
@@ -842,26 +857,90 @@ func _alea(graine: float) -> float:
 	return (v - floor(v)) * 2.0 - 1.0
 
 
-## Un triangle dont CHAQUE SOMMET porte sa valeur : c'est le dégradé
-## couronne-terreuse → lisière-herbeuse qui fait fondre le bord du tertre
-## dans le terrain. Une valeur unique par triangle redonnerait des facettes.
+## Un triangle dont CHAQUE SOMMET porte sa valeur ET SA NORMALE.
+##
+## LA VALEUR : c'est le dégradé couronne-terreuse → lisière-herbeuse qui fait
+## fondre le bord du tertre dans le terrain. Une valeur unique par triangle
+## redonnerait des facettes.
+##
+## LA NORMALE — CORRECTION DU LOT 1.R, ET C'ÉTAIT LE DÉFAUT PRINCIPAL DU LIEU.
+## Cette fonction calculait jusqu'ici la normale de FACE et l'appliquait aux
+## trois sommets. C'est la définition de l'ombrage plat : chacune des
+## 48 × 8 facettes du dos recevait sa propre valeur d'éclairage, et le tertre
+## rendait une CITROUILLE — des bandes claires et sombres rayonnant de la
+## crête à la lisière, parfaitement visibles sur
+## `agent_b/base/barrow_cemetery_joueur.png` une fois la vue agrandie.
+##
+## C'est la même famille de reproche que l'audit a portée trois fois (« des
+## tentes de papier plié »), et les passes précédentes l'ont attaquée par la
+## GÉOMÉTRIE — profil, crête, relief lissé, teinte non radiale. La géométrie
+## est effectivement devenue ronde : la silhouette du dos, mesurée sur la
+## capture, n'a plus d'arête faîtière. Ce qui restait radial n'était pas la
+## forme, c'était l'ÉCLAIRAGE. Aucun réglage de profil ne pouvait le corriger.
+##
+## Les normales viennent désormais de `_normales_de_grille()`, par différences
+## finies sur la grille du dos : une surface de terre est lisse, et son
+## ombrage doit l'être aussi. Le redressement vers le haut est conservé — sans
+## lui, une erreur de signe d'enroulement donnerait un tertre NOIR, défaut qui
+## ne se voit qu'à la capture, jamais au parse ni au compte de maillages.
 func _triangle_degrade(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3,
-		ta: float, tb: float, tc: float) -> void:
-	# LA NORMALE EST REDRESSÉE VERS LE HAUT, et c'est délibéré. La normale
-	# d'un dos pointe toujours vers l'extérieur, donc jamais vers le bas ;
-	# l'imposer ici rend l'éclairage indépendant de la convention
-	# d'enroulement, laquelle est réglée séparément en recopiant celle de
-	# `SolBrule`. Sans ce redressement, une erreur de signe donnerait un
-	# tertre NOIR — un défaut qui ne se voit qu'à la capture, jamais au
-	# parse ni au compte de maillages.
-	var normale: Vector3 = (b - a).cross(c - a).normalized()
-	if normale.y < 0.0:
-		normale = -normale
-	for paire: Array in [[a, ta], [b, tb], [c, tc]]:
-		var t: float = float(paire[1])
-		st.set_color(Color(t, t, t, 1.0))
-		st.set_normal(normale)
-		st.add_vertex(paire[0] as Vector3)
+		ta: float, tb: float, tc: float,
+		na: Vector3 = Vector3.ZERO, nb: Vector3 = Vector3.ZERO,
+		nc: Vector3 = Vector3.ZERO) -> void:
+	var face: Vector3 = (b - a).cross(c - a).normalized()
+	if face.y < 0.0:
+		face = -face
+	var normales: Array[Vector3] = [
+		na if na.length_squared() > 0.5 else face,
+		nb if nb.length_squared() > 0.5 else face,
+		nc if nc.length_squared() > 0.5 else face,
+	]
+	var sommets: Array[Vector3] = [a, b, c]
+	var tons: Array[float] = [ta, tb, tc]
+	for index: int in range(3):
+		var n: Vector3 = normales[index]
+		if n.y < 0.0:
+			n = -n
+		st.set_color(Color(tons[index], tons[index], tons[index], 1.0))
+		st.set_normal(n)
+		st.add_vertex(sommets[index])
+
+
+## NORMALES LISSÉES d'une grille anneaux × secteurs, par différences finies.
+##
+## Chaque sommet interne prend le produit vectoriel de ses deux tangentes —
+## le long de l'anneau (voisins i−1, i+1, la grille est fermée) et en travers
+## des anneaux (r−1, r+1, bornés aux extrémités). C'est exact et sans soudure :
+## la grille partage déjà ses sommets logiques, il n'y a donc rien à souder,
+## et aucune tolérance à choisir. Une accumulation par face aurait exigé de
+## quantifier les positions, avec le risque connu de coller deux sommets qui
+## ne devaient pas l'être.
+func _normales_de_grille(
+		grilles: Array[PackedVector3Array]) -> Array[PackedVector3Array]:
+	var sortie: Array[PackedVector3Array] = []
+	var nb_anneaux: int = grilles.size()
+	for r: int in range(nb_anneaux):
+		var ligne: PackedVector3Array = PackedVector3Array()
+		var points: PackedVector3Array = grilles[r]
+		# Le dernier point de chaque anneau est la copie du premier (la grille
+		# est fermée) : les voisins se prennent donc modulo `secteurs`.
+		var secteurs: int = points.size() - 1
+		var bas: PackedVector3Array = grilles[mini(r + 1, nb_anneaux - 1)]
+		var haut: PackedVector3Array = grilles[maxi(r - 1, 0)]
+		for i: int in range(points.size()):
+			var j: int = i % secteurs
+			var tangente_u: Vector3 = points[(j + 1) % secteurs] \
+				- points[(j - 1 + secteurs) % secteurs]
+			var tangente_v: Vector3 = bas[j] - haut[j]
+			var n: Vector3 = tangente_v.cross(tangente_u)
+			if n.length_squared() < 1e-10:
+				n = Vector3.UP
+			n = n.normalized()
+			if n.y < 0.0:
+				n = -n
+			ligne.append(n)
+		sortie.append(ligne)
+	return sortie
 
 
 func _seated(local_x: float, local_z: float) -> Vector3:
