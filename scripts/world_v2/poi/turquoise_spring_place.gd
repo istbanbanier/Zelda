@@ -222,10 +222,10 @@ func _build() -> void:
 	# grossies et positions inchangées, les deux enveloppes se touchaient et
 	# la fente — le point d'où l'eau sort — se refermait.
 	var machoire_n: Vector3 = _seated(-9.9, -3.4)
-	_masse(&"SM_Spring_MawN", "Machoire_nord", -9.9, -3.4, 18.0, 0.30, true)
+	_masse(&"SM_Spring_MawN", "Machoire_nord", -9.9, -3.4, 18.0, 0.22, true)
 	declare_support(machoire_n)
 	var machoire_s: Vector3 = _seated(-9.5, 3.8)
-	_masse(&"SM_Spring_MawS", "Machoire_sud", -9.5, 3.8, -24.0, 0.30, true)
+	_masse(&"SM_Spring_MawS", "Machoire_sud", -9.5, 3.8, -24.0, 0.22, true)
 	declare_support(machoire_s)
 	# — LA COURONNE ferme le haut de la fente : l'eau sort d'un creux fermé,
 	# pas d'un intervalle entre deux objets.
@@ -233,7 +233,7 @@ func _build() -> void:
 	# le sol y gagne ≈ 1 m en un mètre et demi (profils mesurés en tête de
 	# fichier), et une masse posée à plat sur une pente montre sa jupe.
 	var couronne: Vector3 = _seated(-11.0, 0.3)
-	_masse(&"SM_Spring_Crown", "Couronne_fente", -11.0, 0.3, 40.0, 0.55, true)
+	_masse(&"SM_Spring_Crown", "Couronne_fente", -11.0, 0.3, 40.0, 0.35, true)
 	declare_support(couronne)
 
 	# — LA VASQUE. Le lit D'ABORD, la nappe ensuite, les margelles au bord
@@ -253,7 +253,7 @@ func _build() -> void:
 	# Le mouillage de ces lobes est porté par leur `COLOR_0` (azimut 215°,
 	# hauteur 0,85 m) : la pierre est trempée du côté de l'eau, sèche de
 	# l'autre. C'est l'indice d'humidité demandé, et il ne coûte rien.
-	_masse(&"SM_Spring_Rim", "Rebord_vasque", BASSIN_X, BASSIN_Z, 0.0, 0.55,
+	_masse(&"SM_Spring_Rim", "Rebord_vasque", BASSIN_X, BASSIN_Z, 0.0, 0.30,
 		false)
 	# Les appuis DÉCLARÉS suivent les lobes, pas l'objet : le filet D2 lit des
 	# points, et un point au centre de la vasque serait un appui sur de l'eau.
@@ -624,10 +624,10 @@ func _collisions() -> void:
 	# Distances à la tête d'affluent gelée (+6 ; −6), recalculées : nord
 	# 16,1 m, sud 18,3 m, bloc 17,6 m — le contrat en demande 5.
 	K.collider_box(self, "Source_machoire_nord",
-		_seated(-9.9, -3.4) + Vector3(0.0, 1.6, 0.0), Vector3(3.6, 3.2, 3.6),
+		_seated(-9.9, -3.4) + Vector3(0.0, 1.5, 0.0), Vector3(3.6, 3.0, 3.6),
 		18.0)
 	K.collider_box(self, "Source_machoire_sud",
-		_seated(-9.5, 3.8) + Vector3(0.0, 1.5, 0.0), Vector3(3.6, 3.0, 3.6),
+		_seated(-9.5, 3.8) + Vector3(0.0, 1.3, 0.0), Vector3(3.6, 2.6, 3.6),
 		-24.0)
 	K.collider_box(self, "Source_bloc",
 		_seated(-7.6, 5.2) + Vector3(0.0, 0.7, 0.0), Vector3(2.6, 1.4, 2.6),
