@@ -1,0 +1,72 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "635a62b70a410fc41dd91abd5594074c2cf5740c",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 55.0,
+      "from": [
+        -117.2,
+        20.0,
+        46.8
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r2/source/iter2/turquoise_spring_identite.png",
+      "look": [
+        -136.0,
+        14.0,
+        40.0
+      ],
+      "name": "turquoise_spring_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        -126.5,
+        13.7,
+        40.0
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r2/source/iter2/turquoise_spring_joueur.png",
+      "look": [
+        -136.0,
+        13.2,
+        40.0
+      ],
+      "name": "turquoise_spring_joueur"
+    },
+    {
+      "fov": 50.0,
+      "from": [
+        -137.6,
+        13.8,
+        40.4
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r2/source/iter2/spring_gros_arrivee.png",
+      "look": [
+        -146.8,
+        13.4,
+        40.3
+      ],
+      "name": "spring_gros_arrivee"
+    },
+    {
+      "fov": 50.0,
+      "from": [
+        -135.2,
+        14.2,
+        36.6
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r2/source/iter2/spring_gros_deversoir.png",
+      "look": [
+        -141.4,
+        12.1,
+        40.2
+      ],
+      "name": "spring_gros_deversoir"
+    }
+  ],
+  "size": "1280x720"
+}
