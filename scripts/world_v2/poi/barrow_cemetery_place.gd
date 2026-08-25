@@ -355,6 +355,7 @@ func _build() -> void:
 			FOSSE if dominant else [],
 			TRANCHEE if dominant else [],
 			AFFAISSEMENT if dominant else [])
+	_pierres_de_crete()
 	_ceintures()
 	_gueule_de_chambre()
 	_enceinte_du_coffre()
@@ -634,21 +635,13 @@ func _tertre(nom: String, cx: float, cz: float, demi_long: float,
 			# de terre affaissée a des creux et des bosses ; 11 % de modulation
 			# à quinze mètres ne se voient pas.
 			releve *= 1.0 + 0.17 * bosse * sin(dn * PI)
-			if not fosse.is_empty():
-				var du: float = (u - float(fosse[0])) / float(fosse[3])
-				var dv: float = (v - float(fosse[1])) / float(fosse[4])
-				releve -= float(fosse[2]) * exp(-(du * du + dv * dv))
+			releve -= _creux_gaussien(u, v, fosse)
 			# L'AFFAISSEMENT LARGE — une cuvette molle, pas un trou. Elle est
 			# posée à l'AUTRE bout du dos que la fosse de pillage : deux
 			# accidents de natures différentes, et c'est leur différence qui
 			# raconte l'âge du lieu. Rayons trois fois ceux de la fosse pour
 			# une profondeur deux fois moindre.
-			if not affaissement.is_empty():
-				var au: float = (u - float(affaissement[0])) \
-					/ float(affaissement[3])
-				var av: float = (v - float(affaissement[1])) \
-					/ float(affaissement[4])
-				releve -= float(affaissement[2]) * exp(-(au * au + av * av))
+			releve -= _creux_gaussien(u, v, affaissement)
 			# LA TRANCHÉE D'ACCÈS, en coordonnées LOCALES XZ. Distance du point
 			# au segment, gaussienne en travers, fondu aux deux bouts pour que
 			# la coupe ne s'arrête pas sur une marche.
@@ -753,6 +746,56 @@ func _creux_de_tranchee(p: Vector2, spec: Array) -> float:
 ##
 ## Pas d'espacement régulier : trois blocs sur le grand, deux sur le moyen,
 ## un sur le petit, à des azimuts qui ne se répondent pas.
+## Pose les pierres de crête du dominant. La cote est REPRODUITE ici depuis la
+## même formule que `_tertre()` — pas approchée : hauteur de crête affaissée,
+## moins la fosse, moins l'affaissement, moins la tranchée, plancher compris.
+## Les trois accidents sont lus dans leurs constantes, donc retoucher `FOSSE`
+## déplace la pierre avec le trou au lieu de la laisser en l'air.
+##
+## AUCUN CORPS, et c'est le même arbitrage que les lames : une pierre de 0,9 m
+## posée sur un dos qui porte déjà sa chaîne de sphères se franchit en
+## marchant ; lui donner une boîte poserait un mur invisible au sommet du
+## tertre, à l'endroit exact où l'on passe.
+func _pierres_de_crete() -> void:
+	var dominant: Array = TERTRES[0]
+	var centre: Vector2 = Vector2(float(dominant[1]), float(dominant[2]))
+	var hauteur: float = float(dominant[5])
+	var a_rad: float = deg_to_rad(float(dominant[6]))
+	var e: Vector2 = Vector2(cos(a_rad), sin(a_rad))
+	var demi_axe: float = float(dominant[3]) * 0.46
+	var index: int = 0
+	for spec: Array in CRETE:
+		index += 1
+		var u: float = float(spec[1])
+		var p: Vector2 = centre + e * u
+		var s_crete: float = clampf(u / maxf(0.35, demi_axe), -1.0, 1.0)
+		var releve: float = hauteur * (0.70 + 0.30 * (0.5 - 0.5 * s_crete))
+		releve -= _creux_gaussien(u, 0.0, FOSSE)
+		releve -= _creux_gaussien(u, 0.0, AFFAISSEMENT)
+		releve -= _creux_de_tranchee(p, TRANCHEE)
+		releve = maxf(releve, 0.04)
+		var pierre: Node3D = _piece_pierre(String(spec[0]),
+			_seated(p.x, p.y)
+				+ Vector3(0.0, releve - float(spec[4]), 0.0),
+			Vector3(0.0, deg_to_rad(float(spec[2])),
+				deg_to_rad(float(spec[3]))),
+			"Crete_%d" % index, TEINTE_ENTERREE)
+		pierre.scale = Vector3(float(spec[5]), float(spec[6]),
+			float(spec[5]))
+
+
+## La gaussienne des deux creux du dos — `[u, v, profondeur, rayon_u,
+## rayon_v]`. Extraite pour que `_tertre()` et `_pierres_de_crete()` ne
+## puissent pas en avoir deux versions : c'est exactement le genre de
+## duplication qui fait flotter une pierre trois passes plus tard.
+func _creux_gaussien(u: float, v: float, spec: Array) -> float:
+	if spec.is_empty():
+		return 0.0
+	var du: float = (u - float(spec[0])) / maxf(0.05, float(spec[3]))
+	var dv: float = (v - float(spec[1])) / maxf(0.05, float(spec[4]))
+	return float(spec[2]) * exp(-(du * du + dv * dv))
+
+
 func _ceintures() -> void:
 	# RAYONS RECALÉS SUR LES NOUVELLES COTES (lot 1.R.1). Ce ne sont pas des
 	# constantes esthétiques : chacun est l'extension de l'ellipse du tertre
@@ -1152,6 +1195,42 @@ const MARQUES_ISOLEES: Array[Array] = [
 ## d'une masse au lieu d'en être la rivale. Son élancement, 1,33 × 3,00,
 ## vaut 2,3 : 1, toujours dans la proportion d'une pierre levée réelle.
 const PIERRE_DE_TETE: Array = [1.886, 1.364, 34.0, 6.0, 1.95, 1.90]
+
+## LES PIERRES DE CRÊTE — le remède à « le dos lit comme une toile beige ».
+##
+## LA CAUSE, ET ELLE N'EST PAS LA COULEUR. `Tertre_Grand` est un GONFLEMENT du
+## terrain gelé : chaque sommet appelle `ground_local_y()`, c'est le titre même
+## de son exemption runtime, et sa teinte est donc celle de la steppe `r08` —
+## hors périmètre, pour tout le monde. Ce qui fait « toile » n'est pas la
+## nuance : c'est qu'une nappe claire, lisse et SANS RIEN QUI PROJETTE DESSUS
+## n'a aucune échelle. Sur `it1` à `it4`, toutes les pierres du lieu sont
+## DEVANT le dos ; aucune n'est dessus. Le flanc ne reçoit donc pas une seule
+## ombre portée.
+##
+## LE SOLEIL, MESURÉ ET NON SUPPOSÉ. `WorldV2.tscn`, nœud `Lighting/Sun` :
+## la base porte Z = (−0,8677 ; 0,3907 ; −0,3073), et une `DirectionalLight3D`
+## éclaire vers −Z. Les rayons vont donc vers **(+0,868 ; −0,391 ; +0,307)** :
+## élévation 23°, ombres au sol vers (+x ; +z). Une pierre dressée sur la
+## crête écrit donc une ombre longue de ~4 × sa hauteur, quasi le long de +e
+## (produit scalaire 0,97 avec l'axe du dos) — c'est-à-dire EN TRAVERS du dos
+## visible, du haut vers le bout est.
+##
+## POURQUOI SUR LA CRÊTE ET NULLE PART AILLEURS SUR LE DOS. La hauteur du
+## maillage hors crête dépend de `rayons_l[i]` et `rayons_t[i]`, deux bruits
+## indexés par SECTEUR : ce n'est pas une fonction continue de (x, z), et la
+## reproduire de mémoire poserait des pierres flottantes ou enterrées sans
+## qu'aucune capture ne le montre — ISS-018, encore. Sur la crête, en
+## revanche, `dn = 0`, le relief de flanc s'annule (`sin(dn·π) = 0`) et la
+## cote se réduit exactement à `h_crête − fosse − affaissement − tranchée`.
+## C'est calculable, donc c'est là qu'on pose.
+##
+## [pièce, u sur la crête, lacet, roulis, enfoncement, échelle_travers,
+##  échelle_hauteur]
+const CRETE: Array[Array] = [
+	["SM_Barrow_Lame_B", -0.20, 118.0, 0.0, 0.26, 1.25, 1.25],
+	["SM_Barrow_Stele_B", 0.90, 47.0, 13.0, 0.30, 1.00, 0.95],
+	["SM_Barrow_Stele_C", 2.30, -66.0, -9.0, 0.30, 0.92, 0.65],
+]
 
 ## L'ANCRE DE LA RÉCOMPENSE, en local. ELLE NE BOUGE PAS — c'est la ligne
 ## rouge de la corrective — et elle est nommée ici pour une raison précise :

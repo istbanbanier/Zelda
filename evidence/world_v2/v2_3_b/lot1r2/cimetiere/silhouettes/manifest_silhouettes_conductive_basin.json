@@ -1,0 +1,34 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "clip_below": null,
+  "commit": "bc55474662ee92849ecf164c705dd4dc22196d5d",
+  "emprise_m": [
+    18.1550178527832,
+    3.20567107200623,
+    10.0402336120605
+  ],
+  "engine": "4.7.1-stable (custom_build)",
+  "mode": "lieu dans le monde monté",
+  "place_id": "valley.poi.conductive_basin.01",
+  "projection": "orthogonale",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "size": "1200x900",
+  "sujet": "conductive_basin",
+  "vues": [
+    {
+      "angle_deg": 0.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_b/lot1/silhouettes/silhouette_conductive_basin_000.png",
+      "sujet_pct": 2.12814814814815
+    },
+    {
+      "angle_deg": 90.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_b/lot1/silhouettes/silhouette_conductive_basin_090.png",
+      "sujet_pct": 2.35185185185185
+    }
+  ]
+}
