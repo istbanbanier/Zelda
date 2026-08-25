@@ -1,6 +1,6 @@
 === INSPECTION glTF : assets/environment/rocks/SM_SpringMaw.glb ===
-  format                 : GLB v2, 583752 octets
-  chunk_binaire          : 576576 octets
+  format                 : GLB v2, 583800 octets
+  chunk_binaire          : 576616 octets
   generateur             : Khronos glTF Blender I/O v4.0.44
   version_gltf           : 2.0
   meshes                 : 4
@@ -10,9 +10,9 @@
   skins                  : 0
   animations             : 0 (aucune)
   triangles              : 5516
-  bbox_min               : [-4.4, -1.1, -5.9162]
-  bbox_max               : [5.2475, 4.0615, 7.1548]
-  dimensions_m           : [9.6475, 5.1615, 13.071]
+  bbox_min               : [-4.5165, -0.5, -5.9403]
+  bbox_max               : [5.2479, 3.7846, 7.1568]
+  dimensions_m           : [9.7644, 4.2846, 13.0971]
   [AVERT] mesh 'SM_Spring_MawN': pas d'UV0 — lightmap et matériaux limités
   [AVERT] mesh 'SM_Spring_MawN': pas d'UV0 — lightmap et matériaux limités
   [AVERT] mesh 'SM_Spring_MawS': pas d'UV0 — lightmap et matériaux limités
@@ -21,7 +21,7 @@
   [AVERT] mesh 'SM_Spring_Crown': pas d'UV0 — lightmap et matériaux limités
   [AVERT] mesh 'SM_Spring_Rim': pas d'UV0 — lightmap et matériaux limités
   [AVERT] mesh 'SM_Spring_Rim': pas d'UV0 — lightmap et matériaux limités
-  [AVERT] min Y = -1.1000 (attendu ~0 : bas de l'objet au sol, §7.15)
+  [AVERT] min Y = -0.5000 (attendu ~0 : bas de l'objet au sol, §7.15)
 === VALIDE ===
 mesh SM_Spring_MawN           attributs ['COLOR_0', 'NORMAL', 'POSITION']
 mesh SM_Spring_MawN           attributs ['COLOR_0', 'NORMAL', 'POSITION']

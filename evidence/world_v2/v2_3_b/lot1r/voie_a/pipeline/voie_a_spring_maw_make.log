@@ -1,12 +1,12 @@
 Blender 4.0.2
-[spring_maw] SM_Spring_MawN : 1144 tris, hauteur 4.062 m, fond -0.800 m, emprise visible 7.000 m, facette max 0.7048 m2, lobes 1
-[spring_maw] SM_Spring_MawN : surplombs 13/22 (plancher 2), ceinture de surplomb 0.45 (plafond 0.70), mouillage 0.05 (bande 0.04..0.40), couleur moy 0.732 p10 0.483 p90 0.888 (etendue 55.3 %)
-[spring_maw] SM_Spring_MawS : 1144 tris, hauteur 3.728 m, fond -0.750 m, emprise visible 7.880 m, facette max 0.6295 m2, lobes 1
-[spring_maw] SM_Spring_MawS : surplombs 5/22 (plancher 2), ceinture de surplomb 0.14 (plafond 0.70), mouillage 0.05 (bande 0.04..0.40), couleur moy 0.737 p10 0.483 p90 0.913 (etendue 58.4 %)
-[spring_maw] SM_Spring_Crown : 960 tris, hauteur 2.971 m, fond -0.700 m, emprise visible 5.267 m, facette max 0.4183 m2, lobes 1
-[spring_maw] SM_Spring_Crown : surplombs 8/20 (plancher 2), ceinture de surplomb 0.30 (plafond 0.70), mouillage 0.05 (bande 0.04..0.40), couleur moy 0.735 p10 0.483 p90 0.903 (etendue 57.1 %)
-[spring_maw] SM_Spring_Rim : 2268 tris, hauteur 2.170 m, fond -1.100 m, emprise visible 12.543 m, facette max 0.3283 m2, lobes 3
-[spring_maw] SM_Spring_Rim : surplombs 4/18 (plancher 2), ceinture de surplomb 0.22 (plafond 0.70), mouillage 0.06 (bande 0.04..0.40), couleur moy 0.722 p10 0.483 p90 0.886 (etendue 55.8 %)
+[spring_maw] SM_Spring_MawN : 1144 tris, hauteur 3.785 m, fond -0.450 m, emprise visible 6.997 m, facette max 0.7857 m2, lobes 1
+[spring_maw] SM_Spring_MawN : surplombs 13/22 (plancher 1), ceinture de surplomb 0.45 (plafond 0.70), mouillage 0.06 (bande 0.04..0.40), couleur moy 0.735 p10 0.483 p90 0.888 (etendue 55.1 %)
+[spring_maw] SM_Spring_MawS : 1144 tris, hauteur 3.356 m, fond -0.450 m, emprise visible 7.881 m, facette max 0.7082 m2, lobes 1
+[spring_maw] SM_Spring_MawS : surplombs 5/22 (plancher 1), ceinture de surplomb 0.14 (plafond 0.70), mouillage 0.06 (bande 0.04..0.40), couleur moy 0.740 p10 0.483 p90 0.916 (etendue 58.5 %)
+[spring_maw] SM_Spring_Crown : 960 tris, hauteur 1.764 m, fond -0.450 m, emprise visible 5.267 m, facette max 0.4074 m2, lobes 1
+[spring_maw] SM_Spring_Crown : surplombs 8/20 (plancher 1), ceinture de surplomb 0.30 (plafond 0.70), mouillage 0.09 (bande 0.04..0.40), couleur moy 0.738 p10 0.483 p90 0.903 (etendue 56.9 %)
+[spring_maw] SM_Spring_Rim : 2268 tris, hauteur 1.570 m, fond -0.500 m, emprise visible 12.551 m, facette max 0.3298 m2, lobes 3
+[spring_maw] SM_Spring_Rim : surplombs 4/18 (plancher 1), ceinture de surplomb 0.22 (plafond 0.70), mouillage 0.08 (bande 0.04..0.40), couleur moy 0.722 p10 0.483 p90 0.886 (etendue 55.8 %)
 [spring_maw] total 5516 triangles (plafond 8400)
 Info: Total files 0 | Changed 0 | Failed 0
 Info: Saved "SM_SpringMaw.blend"

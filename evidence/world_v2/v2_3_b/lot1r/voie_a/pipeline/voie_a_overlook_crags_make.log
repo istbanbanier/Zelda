@@ -1,8 +1,8 @@
 Blender 4.0.2
-[overlook_crags] SM_Overlook_Crest : 1820 tris, hauteur 6.871 m, fond de jupe -0.850 m, emprise totale 9.781 m, emprise visible 8.146 m, facette max 1.1018 m2
-[overlook_crags] SM_Overlook_Crest : ceinture max 0.31 (plafond 0.40) sur 159 rainures, surplombs 6/26 azimuts (plancher 3), ceinture de surplomb 0.19 (plafond 0.70), couleur moy 0.752 p10 0.542 p90 0.901 (etendue 47.8 %)
-[overlook_crags] SM_Overlook_Spur : 1232 tris, hauteur 4.325 m, fond de jupe -0.620 m, emprise totale 7.428 m, emprise visible 6.377 m, facette max 0.4297 m2
-[overlook_crags] SM_Overlook_Spur : ceinture max 0.27 (plafond 0.40) sur 95 rainures, surplombs 15/22 azimuts (plancher 3), ceinture de surplomb 0.64 (plafond 0.70), couleur moy 0.752 p10 0.542 p90 0.915 (etendue 49.5 %)
+[overlook_crags] SM_Overlook_Crest : 1820 tris, hauteur 6.523 m, fond de jupe -0.400 m, emprise totale 9.129 m, emprise visible 7.329 m, facette max 0.9733 m2
+[overlook_crags] SM_Overlook_Crest : ceinture max 0.31 (plafond 0.40) sur 148 rainures, surplombs 6/26 azimuts (plancher 3), ceinture de surplomb 0.19 (plafond 0.70), couleur moy 0.753 p10 0.547 p90 0.901 (etendue 47.0 %)
+[overlook_crags] SM_Overlook_Spur : 1232 tris, hauteur 4.325 m, fond de jupe -0.350 m, emprise totale 6.889 m, emprise visible 5.679 m, facette max 0.4137 m2
+[overlook_crags] SM_Overlook_Spur : ceinture max 0.27 (plafond 0.40) sur 95 rainures, surplombs 15/22 azimuts (plancher 3), ceinture de surplomb 0.64 (plafond 0.70), couleur moy 0.663 p10 0.477 p90 0.803 (etendue 49.2 %)
 [overlook_crags] pendage partage : azimut 209.0 deg, angle 13.5 deg, courbure 0.050
 [overlook_crags] total 3052 triangles (plafond 6400)
 Info: Total files 0 | Changed 0 | Failed 0
