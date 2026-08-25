@@ -858,3 +858,75 @@ contour a très peu de degrés de liberté.
 **Aucune prédiction ne passe, donc je ne recapture pas** — c'est la consigne, et
 elle est juste : recapturer une géométrie qu'on sait encore signalée coûterait
 un cycle moteur pour un rouge déjà connu.
+
+## Itération 10 — TROISIÈME VOIE : ce qui a marché, et l'erreur qui reste
+
+### Ce qui est ACQUIS et mesuré
+
+| Réserve | avant | **iter10** |
+|---|---|---|
+| Roche de la source, saturation | S 0,441 → 0,334 | **S 0,285** (eau 0,554 inchangée) |
+| Éperon du belvédère, valeur | V 0,631 (falaise 0,643) | **V 0,543** — il s'en détache enfin |
+| Emprise de la source | 5,94 m | **4,90 m** (cible 4,8 — atteinte) |
+| Emprise du belvédère | 8,43 m | 8,08 m (cible 7,4–7,6 — **manquée**) |
+
+Les jupes ont bien fait le travail sur la source : 1,0 m de hauteur de
+silhouette en moins **sans qu'un centimètre visible disparaisse**. Le
+découplage présence/répétition est réel et il se mesure.
+
+### Ce qui NE marche pas, et pourquoi — LE MASQUE LE DIT
+
+D3 rejoué sur la géométrie réelle : **FAIL**. Et une paire a EMPIRÉ :
+
+| Paire | avant iter10 | simulation prédisait | **réel iter10** |
+|---|---|---|---|
+| source × hameau (30 m) | 0,575 | 0,449 | **0,590** |
+| source × pont (30 m) | 0,583 | — | 0,505 |
+| belvédère × source (30 m) | 0,507 | 0,452 | 0,501 |
+
+**La simulation était honnête sur le MASQUE ; c'est moi qui l'ai traduite sur
+le mauvais AXE.** Le masque réel le montre sans discussion :
+
+    0°  ...###########################################...   bloc PLEIN
+    90° ...####################.......####........       deux masses et un vide
+
+À 90° la selle EXISTE. À 0° elle a disparu. La raison est géométrique et
+élémentaire une fois vue : **la vue à 0° projette LE LONG DE Z, la vue à 90°
+le long de X.** Mes deux mâchoires sont séparées en Z seulement — (−9,9 ; −3,4)
+et (−9,5 ; +3,8), soit le même X à 40 cm près. Le creux que j'ai ouvert entre
+elles est un creux EN Z : la vue à 90° le voit de face, la vue à 0° le voit
+par la tranche et le referme.
+
+Or l'entaille que j'avais peinte dans le masque 0° courait le long de son axe
+HORIZONTAL, c'est-à-dire dans X. J'ai simulé un vide en X et construit un vide
+en Z. Les deux gestes sont légitimes ; ils ne sont pas le même.
+
+**Conséquence transposable, et c'est le vrai acquis de cette passe :** un
+profil qui doit se lire aux DEUX angles doit exister sur les DEUX axes. Une
+séparation sur un seul axe ne donne jamais qu'une silhouette sur deux ; et
+comme le verdict retient le MAXIMUM sur les angles, la moitié qui échoue
+commande.
+
+C'est la même famille que les deux fenêtres de mesure fausses de cette passe
+et que la leçon de `tools/CLAUDE.md` : mesurer avec assurance une grandeur qui
+n'est pas celle qu'on croit.
+
+### Le belvédère a manqué sa cible de hauteur, et je ne sais pas encore pourquoi
+
+Jupes des crocs 0,85/0,62 → 0,40/0,35 et crête raccourcie de 35 cm : l'AABB
+n'a perdu que **0,35 m** (8,43 → 8,08) là où j'en attendais 0,79. Le plancher
+de l'emprise n'est donc PAS posé par les jupes des crocs — quelque chose
+d'autre descend plus bas (les pièces de kit enterrées sont le premier suspect,
+leur maillage dépassant leur ancrage). Je ne le déclare pas : il faut une
+sonde qui décompose l'AABB par maillage, et une hypothèse non vérifiée n'a pas
+sa place ici.
+
+### Ce que je VOIS à taille réelle
+
+- Source : les deux mâchoires et le creux se lisent **dans la caméra joueur** —
+  la présence n'a pas été perdue en abaissant l'emprise, ce qui valide le
+  découplage. La roche est enfin grise-ardoise et non plus indigo. **Visible.**
+- Belvédère : le vide entre crête et éperon est franchement plus large qu'en
+  iter9, et l'éperon assombri se détache de la falaise. **Visible.**
+- Source, silhouette à 0° : **bloc plein. Non résolu**, et la cause est
+  identifiée ci-dessus.
