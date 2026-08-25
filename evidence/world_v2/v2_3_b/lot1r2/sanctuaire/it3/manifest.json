@@ -1,0 +1,57 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "b260ee8f1b0c262f186960780e310e1dde1f9617",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 65.0,
+      "from": [
+        91.5,
+        8.7,
+        64.5
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r2/sanctuaire/it3/forest_shrine_joueur.png",
+      "look": [
+        86.0,
+        8.2,
+        74.0
+      ],
+      "name": "forest_shrine_joueur"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        80.5,
+        8.7,
+        64.5
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r2/sanctuaire/it3/forest_shrine_joueur_b.png",
+      "look": [
+        86.0,
+        8.2,
+        74.0
+      ],
+      "name": "forest_shrine_joueur_b"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        80.5,
+        15.0,
+        59.0
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r2/sanctuaire/it3/forest_shrine_identite.png",
+      "look": [
+        86.0,
+        9.0,
+        74.0
+      ],
+      "name": "forest_shrine_identite"
+    }
+  ],
+  "size": "1280x720"
+}
