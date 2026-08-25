@@ -1,0 +1,79 @@
+{
+ "planche": "evidence/world_v2/v2_3_b/lot1r/candidate/planches/planche_matiere.png",
+ "ordre": [
+  "watchtower_gp_arase",
+  "watchtower_gp_breche",
+  "overlook_gros_crete",
+  "spring_gros_eau",
+  "spring_gros_fente",
+  "shrine_gp_coeur",
+  "shrine_gp_nef",
+  "barrow_gp_gueule",
+  "barrow_gp_chemin",
+  "flower_field_gp_nappe",
+  "flower_field_gp_chemin",
+  "overlook_gros_tablette"
+ ],
+ "tuiles": [
+  {
+   "tuile": "watchtower_gp_arase",
+   "source": "evidence/world_v2/v2_3_b/lot1r/candidate/gros_plans/watchtower_gp_arase.png",
+   "sha256": "26c9e9e50cefd659"
+  },
+  {
+   "tuile": "watchtower_gp_breche",
+   "source": "evidence/world_v2/v2_3_b/lot1r/candidate/gros_plans/watchtower_gp_breche.png",
+   "sha256": "6f157b0f4dfe2bf8"
+  },
+  {
+   "tuile": "overlook_gros_crete",
+   "source": "evidence/world_v2/v2_3_b/lot1r/candidate/gros_plans/overlook_gros_crete.png",
+   "sha256": "9375f6bd9045fa1d"
+  },
+  {
+   "tuile": "spring_gros_eau",
+   "source": "evidence/world_v2/v2_3_b/lot1r/candidate/gros_plans/spring_gros_eau.png",
+   "sha256": "f2ab0914c9e17f3e"
+  },
+  {
+   "tuile": "spring_gros_fente",
+   "source": "evidence/world_v2/v2_3_b/lot1r/candidate/gros_plans/spring_gros_fente.png",
+   "sha256": "b50683a67845d35c"
+  },
+  {
+   "tuile": "shrine_gp_coeur",
+   "source": "evidence/world_v2/v2_3_b/lot1r/candidate/gros_plans/shrine_gp_coeur.png",
+   "sha256": "45105786ee29ea5c"
+  },
+  {
+   "tuile": "shrine_gp_nef",
+   "source": "evidence/world_v2/v2_3_b/lot1r/candidate/gros_plans/shrine_gp_nef.png",
+   "sha256": "2d457c22566bad0b"
+  },
+  {
+   "tuile": "barrow_gp_gueule",
+   "source": "evidence/world_v2/v2_3_b/lot1r/candidate/gros_plans/barrow_gp_gueule.png",
+   "sha256": "251e8849b67d402b"
+  },
+  {
+   "tuile": "barrow_gp_chemin",
+   "source": "evidence/world_v2/v2_3_b/lot1r/candidate/gros_plans/barrow_gp_chemin.png",
+   "sha256": "5aed7d09711489a7"
+  },
+  {
+   "tuile": "flower_field_gp_nappe",
+   "source": "evidence/world_v2/v2_3_b/lot1r/candidate/gros_plans/flower_field_gp_nappe.png",
+   "sha256": "4f33a93725aad2d9"
+  },
+  {
+   "tuile": "flower_field_gp_chemin",
+   "source": "evidence/world_v2/v2_3_b/lot1r/candidate/gros_plans/flower_field_gp_chemin.png",
+   "sha256": "a5d3bf79d0cd0404"
+  },
+  {
+   "tuile": "overlook_gros_tablette",
+   "source": "evidence/world_v2/v2_3_b/lot1r/candidate/gros_plans/overlook_gros_tablette.png",
+   "sha256": "c1f7d8b531c5d4b1"
+  }
+ ]
+}

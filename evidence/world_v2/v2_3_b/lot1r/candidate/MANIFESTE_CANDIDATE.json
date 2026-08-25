@@ -1,0 +1,366 @@
+{
+ "lot": "V2.3-B LOT 1.R — candidate visuelle",
+ "sha_manifeste": "c80b7763ea8293515f857c8e17d26daad010ae41",
+ "repo_dirty": false,
+ "note_sha": "Les captures portent chacune le commit de LEUR passe dans leur manifest.json de dossier (abd8ea0 pour la passe principale, 0e4adc4/0f90e6e pour la recapture du champ) ; tous sont des ancetres de ce manifeste. Les 13 cameras gelees viennent de evidence/world_v2/v2_3_b/lot1/poi/shots_lot1.json et n'ont pas bouge ; les vues diagnostiques sont des AJOUTS.",
+ "familles": {
+  "ab13": [
+   {
+    "image": "barrow_cemetery_identite.png",
+    "resolution": "1280x720",
+    "sha256": "e5753eb5cc23ce34"
+   },
+   {
+    "image": "barrow_cemetery_joueur.png",
+    "resolution": "1280x720",
+    "sha256": "6ac6611cd70d16cd"
+   },
+   {
+    "image": "flower_field_identite.png",
+    "resolution": "1280x720",
+    "sha256": "c5fc478972b63f09"
+   },
+   {
+    "image": "flower_field_joueur.png",
+    "resolution": "1280x720",
+    "sha256": "c967d3ac23df2afb"
+   },
+   {
+    "image": "forest_shrine_identite.png",
+    "resolution": "1280x720",
+    "sha256": "df819a436a939050"
+   },
+   {
+    "image": "forest_shrine_joueur.png",
+    "resolution": "1280x720",
+    "sha256": "a58595f6b3a78d63"
+   },
+   {
+    "image": "forest_shrine_joueur_b.png",
+    "resolution": "1280x720",
+    "sha256": "396a203d4edbe45b"
+   },
+   {
+    "image": "overlook_summit_identite.png",
+    "resolution": "1280x720",
+    "sha256": "0e10e7e7452640f0"
+   },
+   {
+    "image": "overlook_summit_joueur.png",
+    "resolution": "1280x720",
+    "sha256": "21bbb44579d316bc"
+   },
+   {
+    "image": "turquoise_spring_identite.png",
+    "resolution": "1280x720",
+    "sha256": "cb683259b2b987fe"
+   },
+   {
+    "image": "turquoise_spring_joueur.png",
+    "resolution": "1280x720",
+    "sha256": "05ec386205760aee"
+   },
+   {
+    "image": "watchtower_ruin_identite.png",
+    "resolution": "1280x720",
+    "sha256": "ad664b75dfcfeda1"
+   },
+   {
+    "image": "watchtower_ruin_joueur.png",
+    "resolution": "1280x720",
+    "sha256": "a9882b4eaf0da3e8"
+   }
+  ],
+  "gros_plans": [
+   {
+    "image": "barrow_gp_chemin.png",
+    "resolution": "1280x720",
+    "sha256": "5aed7d09711489a7"
+   },
+   {
+    "image": "barrow_gp_fosse.png",
+    "resolution": "1280x720",
+    "sha256": "e67e6963b5c51f2c"
+   },
+   {
+    "image": "barrow_gp_gueule.png",
+    "resolution": "1280x720",
+    "sha256": "251e8849b67d402b"
+   },
+   {
+    "image": "flower_field_gp_chemin.png",
+    "resolution": "1280x720",
+    "sha256": "a5d3bf79d0cd0404"
+   },
+   {
+    "image": "flower_field_gp_nappe.png",
+    "resolution": "1280x720",
+    "sha256": "4f33a93725aad2d9"
+   },
+   {
+    "image": "overlook_breche_est.png",
+    "resolution": "1280x720",
+    "sha256": "aad0754ef097cde0"
+   },
+   {
+    "image": "overlook_breche_montee.png",
+    "resolution": "1280x720",
+    "sha256": "0c02a9db4e296755"
+   },
+   {
+    "image": "overlook_breche_ouest.png",
+    "resolution": "1280x720",
+    "sha256": "6f441e34814a2c9d"
+   },
+   {
+    "image": "overlook_gros_crete.png",
+    "resolution": "1280x720",
+    "sha256": "9375f6bd9045fa1d"
+   },
+   {
+    "image": "overlook_gros_poste.png",
+    "resolution": "1280x720",
+    "sha256": "fa018f9533f999c1"
+   },
+   {
+    "image": "overlook_gros_tablette.png",
+    "resolution": "1280x720",
+    "sha256": "c1f7d8b531c5d4b1"
+   },
+   {
+    "image": "overlook_seuil_p4.png",
+    "resolution": "1280x720",
+    "sha256": "8ed8e6ce1257d630"
+   },
+   {
+    "image": "overlook_tablette_p5.png",
+    "resolution": "1280x720",
+    "sha256": "0c02d96b18091517"
+   },
+   {
+    "image": "shrine_gp_coeur.png",
+    "resolution": "1280x720",
+    "sha256": "45105786ee29ea5c"
+   },
+   {
+    "image": "shrine_gp_nef.png",
+    "resolution": "1280x720",
+    "sha256": "2d457c22566bad0b"
+   },
+   {
+    "image": "shrine_gp_route_p1.png",
+    "resolution": "1280x720",
+    "sha256": "15f346d8ce892061"
+   },
+   {
+    "image": "spring_approche_p2.png",
+    "resolution": "1280x720",
+    "sha256": "5abbbf9ae33884d0"
+   },
+   {
+    "image": "spring_approche_p3.png",
+    "resolution": "1280x720",
+    "sha256": "ac804178e16449da"
+   },
+   {
+    "image": "spring_gros_eau.png",
+    "resolution": "1280x720",
+    "sha256": "f2ab0914c9e17f3e"
+   },
+   {
+    "image": "spring_gros_fente.png",
+    "resolution": "1280x720",
+    "sha256": "b50683a67845d35c"
+   },
+   {
+    "image": "spring_gros_fruit.png",
+    "resolution": "1280x720",
+    "sha256": "f5f345e0783b64b2"
+   },
+   {
+    "image": "spring_gue_riviere.png",
+    "resolution": "1280x720",
+    "sha256": "8d9b1a69597479a8"
+   },
+   {
+    "image": "spring_promesse_p1.png",
+    "resolution": "1280x720",
+    "sha256": "e8170b703572586b"
+   },
+   {
+    "image": "watchtower_gp_arase.png",
+    "resolution": "1280x720",
+    "sha256": "26c9e9e50cefd659"
+   },
+   {
+    "image": "watchtower_gp_breche.png",
+    "resolution": "1280x720",
+    "sha256": "6f157b0f4dfe2bf8"
+   },
+   {
+    "image": "watchtower_gp_lointain.png",
+    "resolution": "1280x720",
+    "sha256": "7e2e6a1dea3345dc"
+   },
+   {
+    "image": "watchtower_gp_vigie_pov.png",
+    "resolution": "1280x720",
+    "sha256": "8cf90de20901daae"
+   }
+  ],
+  "silhouettes": [
+   {
+    "image": "silhouette_barrow_cemetery_000.png",
+    "resolution": "1200x900",
+    "sha256": "91c7c04352e7be1d"
+   },
+   {
+    "image": "silhouette_barrow_cemetery_090.png",
+    "resolution": "1200x900",
+    "sha256": "ec02ab0c03985828"
+   },
+   {
+    "image": "silhouette_flower_field_000.png",
+    "resolution": "1200x900",
+    "sha256": "ce4bad953cda23d0"
+   },
+   {
+    "image": "silhouette_flower_field_090.png",
+    "resolution": "1200x900",
+    "sha256": "6db685eb2b78ae5a"
+   },
+   {
+    "image": "silhouette_forest_shrine_000.png",
+    "resolution": "900x1200",
+    "sha256": "71d4ce55514b7525"
+   },
+   {
+    "image": "silhouette_forest_shrine_090.png",
+    "resolution": "900x1200",
+    "sha256": "1167dc7677eb77d4"
+   },
+   {
+    "image": "silhouette_overlook_summit_000.png",
+    "resolution": "900x1200",
+    "sha256": "957ff453dc4d9c4a"
+   },
+   {
+    "image": "silhouette_overlook_summit_090.png",
+    "resolution": "900x1200",
+    "sha256": "42ca825cc9181483"
+   },
+   {
+    "image": "silhouette_turquoise_spring_000.png",
+    "resolution": "900x1200",
+    "sha256": "a351ee65e8b68a83"
+   },
+   {
+    "image": "silhouette_turquoise_spring_090.png",
+    "resolution": "900x1200",
+    "sha256": "f6f3454fb77bbbbf"
+   },
+   {
+    "image": "silhouette_watchtower_ruin_000.png",
+    "resolution": "900x1200",
+    "sha256": "41c0dcbc2f076305"
+   },
+   {
+    "image": "silhouette_watchtower_ruin_090.png",
+    "resolution": "900x1200",
+    "sha256": "5257039edd194c1f"
+   }
+  ],
+  "planches": [
+   {
+    "image": "ab_barrow_cemetery_identite.png",
+    "resolution": "1316x428",
+    "sha256": "343b3057b9a21b6a"
+   },
+   {
+    "image": "ab_barrow_cemetery_joueur.png",
+    "resolution": "1316x428",
+    "sha256": "4dee6c32414c1e05"
+   },
+   {
+    "image": "ab_flower_field_identite.png",
+    "resolution": "1316x428",
+    "sha256": "42e3540c56e37a49"
+   },
+   {
+    "image": "ab_flower_field_joueur.png",
+    "resolution": "1316x428",
+    "sha256": "b2f6fc788482c6ed"
+   },
+   {
+    "image": "ab_forest_shrine_identite.png",
+    "resolution": "1316x428",
+    "sha256": "1903cdbe34e5b5b3"
+   },
+   {
+    "image": "ab_forest_shrine_joueur.png",
+    "resolution": "1316x428",
+    "sha256": "6b9b6c985fcb8535"
+   },
+   {
+    "image": "ab_forest_shrine_joueur_b.png",
+    "resolution": "1316x428",
+    "sha256": "eff80ecba9b595f4"
+   },
+   {
+    "image": "ab_overlook_summit_identite.png",
+    "resolution": "1316x428",
+    "sha256": "91722a7fe7046c5d"
+   },
+   {
+    "image": "ab_overlook_summit_joueur.png",
+    "resolution": "1316x428",
+    "sha256": "9757a097e3cc17f0"
+   },
+   {
+    "image": "ab_turquoise_spring_identite.png",
+    "resolution": "1316x428",
+    "sha256": "3a6ded34c3a6d550"
+   },
+   {
+    "image": "ab_turquoise_spring_joueur.png",
+    "resolution": "1316x428",
+    "sha256": "a184ce59ca1db735"
+   },
+   {
+    "image": "ab_watchtower_ruin_identite.png",
+    "resolution": "1316x428",
+    "sha256": "75c58917c182b5f6"
+   },
+   {
+    "image": "ab_watchtower_ruin_joueur.png",
+    "resolution": "1316x428",
+    "sha256": "12b421b1dbf2b4da"
+   },
+   {
+    "image": "planche_anonyme.png",
+    "resolution": "1316x1260",
+    "sha256": "8f91fe564670eac6"
+   },
+   {
+    "image": "planche_couleur.png",
+    "resolution": "1316x2924",
+    "sha256": "2618f140f1c8288b"
+   },
+   {
+    "image": "planche_gris.png",
+    "resolution": "1316x2924",
+    "sha256": "748a1b1fb80e0ec9"
+   },
+   {
+    "image": "planche_matiere.png",
+    "resolution": "1608x1404",
+    "sha256": "16bfdf482800b5b3"
+   },
+   {
+    "image": "planche_silhouettes.png",
+    "resolution": "2140x2259",
+    "sha256": "b8577c4b0b3e7933"
+   }
+  ]
+ }
+}
