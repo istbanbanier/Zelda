@@ -324,12 +324,13 @@ func _lit() -> void:
 			LIT_BORD.b * (0.90 + 0.08 * _alea(float(i) * 3.1)), 1.0)
 		_tri_couleur(st, centre, bord[i], bord[j], LIT_CENTRE, t_bord)
 	# LA FRANGE MOUILLÉE. Le lit déborde le rivage, mais d'une largeur TIRÉE
-	# PAR SECTEUR entre 0 et 0,55 m : un débord constant redessinerait le
+	# PAR SECTEUR entre 0 et 0,42 m : un débord constant redessinerait le
 	# cerne noir mesuré en v1/v2 et corrigé en v3. Ici certains secteurs ne
 	# débordent pas du tout, et la pierre trempée se lit en TACHES.
-	# La teinte s'ÉCLAIRCIT vers l'extérieur (0,72 au bord d'eau → 1,45 en
+	# La teinte s'ÉCLAIRCIT vers l'extérieur (1,30 au bord d'eau → 1,75 en
 	# pointe de frange) : c'est ce qui empêche la frange d'être un trait
-	# sombre autour de l'eau.
+	# sombre autour de l'eau. Ces deux nombres ont DÉJÀ été faux une fois —
+	# voir la note de régression ci-dessous ; ils sont recopiés du code.
 	var frange: PackedVector3Array = PackedVector3Array()
 	var teintes_frange: PackedColorArray = PackedColorArray()
 	for i: int in range(segments):
