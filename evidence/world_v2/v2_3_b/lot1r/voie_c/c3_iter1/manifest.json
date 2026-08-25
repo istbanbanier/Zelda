@@ -1,0 +1,72 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "5b932804249df0919e6c98c4b3ed7093256e3086",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 55.0,
+      "from": [
+        -66.0,
+        13.0,
+        141.3
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_c/c3_iter1/flower_field_identite.png",
+      "look": [
+        -56.0,
+        7.0,
+        124.0
+      ],
+      "name": "flower_field_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        -51.2,
+        6.7,
+        132.2
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_c/c3_iter1/flower_field_joueur.png",
+      "look": [
+        -56.0,
+        6.2,
+        124.0
+      ],
+      "name": "flower_field_joueur"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        -54.0,
+        6.55,
+        118.8
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_c/c3_iter1/flower_field_gp_nappe.png",
+      "look": [
+        -62.0,
+        6.0,
+        122.5
+      ],
+      "name": "flower_field_gp_nappe"
+    },
+    {
+      "fov": 60.0,
+      "from": [
+        -52.6,
+        6.45,
+        128.6
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/voie_c/c3_iter1/flower_field_gp_chemin.png",
+      "look": [
+        -61.4,
+        5.8,
+        120.8
+      ],
+      "name": "flower_field_gp_chemin"
+    }
+  ],
+  "size": "1280x720"
+}

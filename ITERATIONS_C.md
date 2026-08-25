@@ -110,3 +110,85 @@ Le lobe de premier plan a été replacé après ce calcul : (1,9 · 7,3) tombait
 x_écran +0,81, donc au bord ; (3,0 · 6,3) donne a = 2,55 m et x_écran +0,21 —
 plein bas du cadre. Un troisième œil dégagé (3,4 · 4,6 · 1,1 m) est ajouté pour
 la lentille du gros plan `gp_chemin`, que ce lobe recouvre désormais.
+
+### Mesure APRÈS R1 (`5b93280`, `repo_dirty: false`, `c3_iter1/`)
+
+```
+nœud                        instances    aire_xz    h_moy
+Voie_dalles_carrees                20      294.3     0.12
+Voie_dalles_rondes                 20      295.0     0.09
+Nappe_blanche                     380       83.5     0.46
+Nappe_jaune                       430      130.6     0.49
+Nappe_bleue                       150       33.8     0.47
+Ourlet_herbes                      30      355.5     0.72
+TOTAL INSTANCES MULTIMESH : 1030     (dont 960 fleurs)   [avant : 628 / 560]
+EMPRISE DES INSTANCES     : 21.2 x 18.6 m   [avant : 21.4 x 20.1]
+BUDGET micro (D7) : modules 4/12 ok · visuels 12/30 ok · collisions 3/6 ok
+```
+
+Un nœud visuel de MOINS qu'avant (12 contre 13) pour 400 fleurs de plus : la
+poche hors cadre a fusionné dans la nappe jaune. Parse ciblé RC = 0.
+
+### Ce que je VOIS, à taille réelle (R1)
+
+`flower_field_joueur` — **VISIBLE**, et c'est le changement attendu. Le bas du
+cadre porte une masse jaune dense à hauteur de genou ; une seconde masse jaune
+occupe le bord droit ; la voie dallée passe ENTRE les deux et se lit enfin
+comme un couloir de traversée. Bleu et blanc sont des bandes franches et non
+plus un saupoudrage. Les deux stèles ont cessé d'être le sujet.
+
+`flower_field_gp_nappe` — **VISIBLE** : le cœur blanc est un tapis continu, là
+où `apres4` montrait des fleurs espacées sur du vert.
+
+`flower_field_identite` — **VISIBLE** : deux masses jaunes, une bande bleue
+dense, une bande blanche. Le champ a une forme.
+
+`flower_field_gp_chemin` — **VISIBLE** sur la moitié haute (bleu et blanc
+densifiés) ; la moitié basse est inchangée.
+
+**Trois défauts restants, lus sur les mêmes images :**
+
+1. **Le triangle de la fourche est vide.** Dans la vue joueur, une bande verte
+   nue traverse tout le cadre entre la masse de premier plan et les nappes du
+   milieu ; `gp_chemin` montre la même chose par en dessous. En coordonnées
+   locales c'est le triangle entre les trois brins, autour de (1,2 · 4,2) — à
+   2,0 m de chaque branche, donc plantable sans toucher au couloir.
+2. **Vue identité : trois bandes PARALLÈLES.** Blanc, bleu et jaune s'étirent
+   tous selon le même axe. La cause est mécanique et se lit dans les données :
+   les cinq lobes sont des ellipses plus larges en X qu'en Z. Ce n'est pas un
+   défaut de couleur, c'est un défaut de forme des lobes.
+3. Le coin droit du cadre joueur garde un coin vert entre la voie et le lobe
+   blanc profond — le blanc s'arrête trop loin.
+
+---
+
+## Itération R2 — casser les bandes, planter la fourche
+
+**Défaut** : les trois ci-dessus.
+
+**Cause supposée** : (1) aucun lobe n'occupe le triangle de la fourche ;
+(2) toutes les ellipses de lobe sont allongées selon X, donc toutes les masses
+s'étirent dans la même direction ; (3) `BLANC_avant` est à 9,7 m de l'œil et
+laisse un coin vert devant lui.
+
+**Levier** :
+
+- un lobe BLANC « île de la fourche » en (1,2 · 4,2 · 2,0 · 1,8) — mesuré à
+  2,00 / 2,05 / 1,99 m des trois brins, donc il lappe le couloir sans le
+  fermer. Blanc et non bleu : la même couleur répétée à deux profondeurs
+  fabrique de la profondeur, une quatrième couleur ferait le hachis que la DA
+  refuse ;
+- `BLEU_loin` passe de (3,3 × 2,8) à (2,6 × 3,4) — **allongé selon Z** : c'est
+  ce qui casse le parallélisme, et cela resserre en prime son emprise ouest ;
+- `BLANC_avant` avance de (3,4 · -2,2 · 3,0 · 2,3) à (3,9 · -1,2 · 3,3 · 2,5) ;
+- cible blanche 380 → 450, pour tenir la densité (~4,8/m²) sur une aire qui
+  passe de 79 à 94 m².
+
+**Changement attendu dans les pixels** : la bande verte du milieu du cadre
+joueur se referme sur une masse blanche à mi-distance ; en vue identité, la
+tache bleue devient verticale au lieu d'être une barre horizontale, et les
+trois masses cessent d'être parallèles.
+
+**Caméra qui doit le montrer** : `flower_field_joueur` (bande du milieu),
+`flower_field_identite` (parallélisme), `flower_field_gp_chemin` (couloir
+toujours ouvert — c'est le risque de ce geste).
