@@ -2517,3 +2517,29 @@ sur un arbre committé et poussé. C'est la conduite à généraliser.
 
 Chantier de la chaîne de preuve, pas de la corrective d'un lot de lieux — mais
 il touche la crédibilité de tout le dossier, d'où S2.
+
+## ISS-070 — Sanctuaire : la fenêtre du seuil manque la marge de capsule d'un centimètre (0,89 m mesuré, 0,90 exigé) — S3, OUVERT
+
+**Trouvé** le 2026-08-25, à l'intégration du LOT 1.R.1, par la sonde
+`tools/godot/probe_sanctuaire.gd` une fois ses deux défauts d'instrument
+corrigés (axe pré-rotation, puis marche mesurée sur le collider de sa propre
+destination — l'en-tête de la sonde porte les deux récits).
+
+- **Mesure** : entre les deux montants du seuil (nef recomposée R3, colliders
+  déclarés `Sanctuaire_montant_ouest`/`_est`), à la station z de nef −3,20 et
+  à 0,55 m du sol, la fenêtre libre totale vaut **0,89 m** (0,34 + 0,55). Le
+  critère de la sonde est diamètre de capsule + marge : 0,80 + 2 × 0,05 =
+  **0,90 m**. Journal : `evidence/world_v2/v2_3_b/lot1r1/sondes/`.
+- **Ce que ça veut dire, ni plus ni moins** : le diamètre NU de la capsule
+  (0,80 m) passe avec 9 cm de jeu total ; c'est la marge de robustesse de la
+  sonde qui manque, d'un centimètre, au point le plus étroit du seuil. Aucun
+  blocage constaté ; aucun parcours réel joué non plus (la franchissabilité
+  humaine du seuil reste NON VÉRIFIÉE, comme l'avait déclaré la voie B).
+- **Pourquoi rien n'a été « corrigé »** : la voie B est close, la géométrie du
+  seuil est un choix de composition (« deux montants franchement inégaux »),
+  et élargir la marge ou déplacer une pierre d'un centimètre pour verdir une
+  sonde serait exactement le déplacement de seuil que le dépôt s'interdit. Le
+  FAIL reste au journal comme mesure.
+- **Prochaine action si le verdict visuel rouvre le sanctuaire** : écarter le
+  montant le moins chargé de ~2 cm dans le générateur, ré-exporter, rejouer la
+  sonde — et seulement dans ce cadre-là.
