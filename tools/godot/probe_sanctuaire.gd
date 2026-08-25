@@ -7,10 +7,19 @@
 ##      nœuds POSÉS (donc terrain compris), sous 2,40 m ; la marge est
 ##      IMPRIMÉE, jamais déduite. Les troncs sont exclus : le contrat dit
 ##      « rien au-dessus de 2,4 m HORS TRONCS ».
-##   2. LA PIERRE COUCHÉE EST FRANCHISSABLE — sonde physique sur les vrais
-##      colliders, du seuil à la table, au pas de 0,15 m : aucune contremarche
-##      au-dessus de la hauteur de marche du héros, volume de capsule libre,
-##      couloir assez large.
+##   2. LA NEF EST MARCHABLE — sonde physique sur les vrais colliders, du
+##      seuil à la table, au pas de 0,15 m : aucune contremarche au-dessus de
+##      la hauteur de marche du héros, volume de capsule libre, couloir assez
+##      large.
+##      AMENDEMENT LOT 1.R.2, ET IL FAUT LE DIRE : ce contrôle s'appelait
+##      « la pierre couchée est franchissable », parce que cette pierre-là
+##      barrait la nef en travers. La corrective visuelle l'a sortie du
+##      passage (elle borde désormais le côté ouest), et l'axe n'a donc plus
+##      de contremarche du tout : la mesure de marche va tomber vers zéro, et
+##      ce zéro-là ne prouve plus rien sur cette pierre. Ce qu'il prouve
+##      encore — et c'est pour cela que le contrôle reste — c'est qu'AUCUNE
+##      nouvelle masse n'est venue barrer la nef. `MARCHE_MAX` n'a pas
+##      bougé.
 ##   3. LES TROIS TRONCS DÉPLACÉS APPARTIENNENT AU LIEU — recensement de ce
 ##      qui est GELÉ autour du site (`WorldV2/Vegetation`, semis V2.2) contre
 ##      ce que le lieu plante lui-même. Le constat doit être une mesure : si

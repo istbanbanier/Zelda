@@ -1,0 +1,5 @@
+[
+ {"name": "forest_shrine_joueur",   "from": [91.5, 8.7, 64.5],  "look": [86, 8.2, 74], "fov": 65.0},
+ {"name": "forest_shrine_joueur_b", "from": [80.5, 8.7, 64.5],  "look": [86, 8.2, 74], "fov": 65.0},
+ {"name": "forest_shrine_identite", "from": [80.5, 15.0, 59.0], "look": [86, 9.0, 74], "fov": 55.0}
+]
