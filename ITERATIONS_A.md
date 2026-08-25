@@ -257,3 +257,83 @@ des constantes de FORME et je change d'hypothèse.
 - **Et les mâchoires de la source rendaient OLIVE** — même dérive qu'au
   belvédère, même cause (lumière chaude). Rapport bleu/rouge relevé, coiffe de
   mousse dotée de sa propre teinte pour qu'elle ne reparte pas en menthe.
+
+## Résultat de l'itération 5, mesuré (`voie_a2/iter5`, commit `1a72363`)
+
+### Bilan DÉPART → FIN, mesuré au pixel dans les caméras GELÉES
+
+| Vue gelée | Zone | départ (`7c58573`) | fin (`1a72363`) |
+|---|---|---|---|
+| `overlook_summit_identite` | masse de crête | (155;149;138) **H 40° S 0,112 V 0,607** | (102;104;114) **H 229° S 0,102 V 0,446** |
+| `overlook_summit_identite` | éperon | (118;124;111) H 85° S 0,102 V 0,485 | (99;107;116) **H 213° S 0,148 V 0,455** |
+| `overlook_summit_joueur` | masse proche | (157;150;139) H 36° V 0,614 | (91;95;101) **H 217° V 0,395** |
+| `turquoise_spring_joueur` | eau | (125;136;128) **H 137° S 0,079** | (54;98;105) **H 189° S 0,490** |
+| `turquoise_spring_identite` | eau | (85;107;112) H 190° S 0,237 | (50;94;101) H 189° S 0,503 |
+| — | **rivière V2.2 (référence)** | H 176–185° S 0,368–0,372 | **identique au pixel** |
+| — | herbe, falaise V2.2 du fond | — | **identiques au pixel** |
+
+Les deux masses du belvédère sont passées d'une teinte CHAUDE (H 36–85°) et
+plus claire que la falaise du fond, à une teinte FROIDE (H 213–229°) et plus
+sombre qu'elle (0,45 contre 0,632). L'eau de la source est passée du gris-vert
+(H 137°, S 0,079) au turquoise (H 189°, S 0,490), au-dessus de la rivière V2.2
+mesurée dans le même lot (S 0,368) — c'est bien « la seule note froide saturée
+du ravin », dans la famille de teinte du monde et non hors d'elle.
+
+**Une seconde fenêtre de mesure était fausse, trouvée de la même façon que la
+première.** Celle de l'« éperon » tombait sur la FALAISE V2.2 du fond : elle
+rendait donc un delta rigoureusement nul à chaque itération — un chiffre
+parfaitement stable qui ne mesurait pas le sujet. Corrigée après vérification
+à l'œil ; c'est la deuxième fois de cette passe, et les deux fois le symptôme
+était le même (une valeur qui « ne bouge pas »).
+
+### Ce que je VOIS à taille réelle sur `iter5` (visible / ambigu / faible / non concluant)
+
+- Belvédère, froideur et valeur : **visible**. Les deux masses lisent ardoise
+  bleutée et se détachent en masse sombre sur la falaise pâle.
+- Belvédère, bimodalité et brèche : **visible** — `overlook_breche_est` montre
+  du ciel et des montagnes lointaines entre les deux masses ; `overlook_seuil_p4`
+  montre le panorama entièrement dégagé.
+- Belvédère, strates : **visible** (paroi/vire alternées, joint de banc sombre
+  au pied de chaque lit).
+- Belvédère, « formation » plutôt que « rochers disposés » : **faible**. Les
+  masses lisent encore comme un EMPILEMENT DE DALLES INCLINÉES, pas comme une
+  falaise. Trois passes y ont travaillé (retrait lopside, diaclases profondes +
+  retrait divisé par deux, valeur dans la face) ; chacune a amélioré, aucune
+  n'a supprimé la lecture. **Non résolu.**
+- Belvédère, enracinement : **ambigu**. L'assise sombre se voit au pied en gros
+  plan, mais dans les deux caméras gelées elle se distingue mal de l'ombre
+  portée de la masse.
+- Source, turquoise dans la caméra joueur gelée : **visible**, et c'est le
+  changement le plus net de la passe.
+- Source, chaîne arrivée → vasque → déversoir → écoulement : **visible** ; le
+  fil élargi et ses deux renflements se lisent depuis la caméra joueur.
+- Source, roches froides : **visible**, et sans doute un cran TROP — mesuré
+  H 206–209° S 0,30, contre H 143–155° S 0,13 avant. Elles lisent « bleu »
+  plutôt que « pierre froide ». **À arbitrer.**
+- Source, rebords mouillés : **faible** dans les caméras gelées (l'incidence
+  rasante les écrase) ; l'anneau noir que j'avais introduit a bien disparu.
+
+### Ce qui reste non résolu, avec sa mesure
+
+1. **Le belvédère lit « dalles empilées ».** Trois hypothèses testées, aucune
+   suffisante. La suivante à essayer n'est plus un réglage : il faudrait des
+   masses NON CONVEXES (un contrefort qui déborde d'un banc à l'autre, une
+   niche creusée), ce qui demande de changer la topologie du générateur, pas
+   ses constantes.
+2. **La crête est devenue plus sombre que les boulders de kit qu'elle devait
+   rejoindre** : croc V 0,391–0,468 contre 0,540 pour la cible. Cause connue
+   et chiffrée : les modulations ajoutées dans `COLOR_0` ont baissé la moyenne
+   (p10 0,716 → 0,474). Correctif d'une ligne — remonter les trois couleurs de
+   `MAT_ARDOISE`/`MAT_FRACTURE` d'environ 15 % — mais il n'est PAS appliqué :
+   il ne serait pas capturé, donc pas vérifié, et je ne livre pas de changement
+   non vu.
+3. **Un objet pâle isolé dans la caméra joueur du belvédère** : mesuré
+   RGB(170;174;131), V **0,683** — l'objet le plus CLAIR du cadre, dans une
+   herbe à 0,407. C'est un `Bush_Common` teinté `TONE_DRY` (0,74 ; 0,70 ;
+   0,48). Même remarque : le correctif est d'une ligne, il n'est pas appliqué
+   faute de capture pour le vérifier.
+4. **L'eau reste plate en gros plan** : le dégradé de profondeur et la mousse
+   de rive se lisent peu à courte distance.
+5. **La tablette `RockPath_Square_Small_1` lit « pavage »** en gros plan (un
+   damier de petites dalles). Elle porte l'ancre de l'arc, dont la hauteur est
+   calée sur son sommet mesuré : la changer demande de recalculer l'ancre.

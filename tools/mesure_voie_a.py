@@ -33,7 +33,12 @@ from PIL import Image
 # partie qui arrange » : elles restent identiques entre l'avant et l'après.
 FENETRES = [
     ("overlook_summit_identite", "belvedere masse (soleil)", (590, 250, 700, 330)),
-    ("overlook_summit_identite", "belvedere eperon", (710, 290, 780, 370)),
+    # FENETRE CORRIGEE (meme faute que celle de la riviere, trouvee de la
+    # meme facon) : (710,290,780,370) tombait sur la FALAISE V2.2 du fond, et
+    # rendait donc exactement la meme valeur avant et apres chaque changement
+    # — un « delta 0,000 » parfaitement stable qui ne mesurait pas le sujet.
+    # Reposee sur l'eperon apres verification a l'oeil sur l'image.
+    ("overlook_summit_identite", "belvedere eperon", (310, 288, 375, 350)),
     ("overlook_summit_identite", "falaise V2.2 (fond, reference)", (950, 60, 1100, 220)),
     ("overlook_summit_identite", "herbe du sommet", (400, 420, 600, 520)),
     ("overlook_summit_joueur", "belvedere masse proche", (880, 190, 1140, 320)),
