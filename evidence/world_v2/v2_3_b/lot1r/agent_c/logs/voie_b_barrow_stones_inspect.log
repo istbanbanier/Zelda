@@ -1,6 +1,6 @@
 === INSPECTION glTF : assets/architecture/barrow/SM_Barrow_Stones.glb ===
-  format                 : GLB v2, 197880 octets
-  chunk_binaire          : 179104 octets
+  format                 : GLB v2, 197748 octets
+  chunk_binaire          : 178624 octets
   generateur             : Khronos glTF Blender I/O v4.0.44
   version_gltf           : 2.0
   meshes                 : 12
@@ -11,6 +11,6 @@
   animations             : 0 (aucune)
   triangles              : 1720
   bbox_min               : [-1.4195, 0, -0.3842]
-  bbox_max               : [1.368, 2.6117, 1.9778]
-  dimensions_m           : [2.7874, 2.6117, 2.3621]
+  bbox_max               : [1.368, 2.6253, 2.0136]
+  dimensions_m           : [2.7874, 2.6253, 2.3979]
 === VALIDE ===

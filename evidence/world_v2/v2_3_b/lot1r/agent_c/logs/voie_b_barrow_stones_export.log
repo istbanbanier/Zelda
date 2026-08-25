@@ -3,56 +3,56 @@ Read blend: "/home/user/wt1r1-c/source_assets/blender/architecture/SM_Barrow_Sto
 [export_gltf] Blender 4.0.2
 [export_gltf] io_scene_gltf2 version (4, 0, 44)
 [export_gltf] preset: export_animation_mode=ACTIONS, export_animations=False, export_apply=True, export_cameras=False, export_extras=False, export_force_sampling=True, export_format=GLB, export_lights=False, export_materials=EXPORT, export_normals=True, export_optimize_animation_size=False, export_skins=True, export_tangents=True, export_texcoords=True, export_yup=True, use_selection=False, use_visible=True
-17:55:15 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
-17:55:17 | INFO: Starting glTF 2.0 export
-17:55:17 | INFO: Extracting primitive: SM_Barrow_Jamb_A
+18:20:24 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
+18:20:24 | INFO: Starting glTF 2.0 export
+18:20:24 | INFO: Extracting primitive: SM_Barrow_Jamb_A
 Error: Tangent space can only be computed for tris/quads, aborting
-17:55:17 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-17:55:17 | INFO: Primitives created: 2
-17:55:17 | INFO: Extracting primitive: SM_Barrow_Jamb_B
+18:20:24 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+18:20:24 | INFO: Primitives created: 2
+18:20:24 | INFO: Extracting primitive: SM_Barrow_Jamb_B
 Error: Tangent space can only be computed for tris/quads, aborting
-17:55:17 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-17:55:17 | INFO: Primitives created: 2
-17:55:17 | INFO: Extracting primitive: SM_Barrow_Lintel
+18:20:24 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+18:20:24 | INFO: Primitives created: 2
+18:20:24 | INFO: Extracting primitive: SM_Barrow_Lintel
 Error: Tangent space can only be computed for tris/quads, aborting
-17:55:17 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-17:55:17 | INFO: Primitives created: 1
-17:55:17 | INFO: Extracting primitive: SM_Barrow_Stele_A
+18:20:24 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+18:20:25 | INFO: Primitives created: 2
+18:20:25 | INFO: Extracting primitive: SM_Barrow_Stele_A
 Error: Tangent space can only be computed for tris/quads, aborting
-17:55:17 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-17:55:17 | INFO: Primitives created: 2
-17:55:17 | INFO: Extracting primitive: SM_Barrow_Stele_B
+18:20:25 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+18:20:25 | INFO: Primitives created: 2
+18:20:25 | INFO: Extracting primitive: SM_Barrow_Stele_B
 Error: Tangent space can only be computed for tris/quads, aborting
-17:55:17 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-17:55:17 | INFO: Primitives created: 2
-17:55:17 | INFO: Extracting primitive: SM_Barrow_Stele_C
+18:20:25 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+18:20:25 | INFO: Primitives created: 2
+18:20:25 | INFO: Extracting primitive: SM_Barrow_Stele_C
 Error: Tangent space can only be computed for tris/quads, aborting
-17:55:17 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-17:55:17 | INFO: Primitives created: 2
-17:55:17 | INFO: Extracting primitive: SM_Barrow_Seuil_A
+18:20:25 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+18:20:25 | INFO: Primitives created: 2
+18:20:25 | INFO: Extracting primitive: SM_Barrow_Seuil_A
 Error: Tangent space can only be computed for tris/quads, aborting
-17:55:17 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-17:55:17 | INFO: Primitives created: 2
-17:55:17 | INFO: Extracting primitive: SM_Barrow_Seuil_B
+18:20:25 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+18:20:25 | INFO: Primitives created: 2
+18:20:25 | INFO: Extracting primitive: SM_Barrow_Seuil_B
 Error: Tangent space can only be computed for tris/quads, aborting
-17:55:17 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-17:55:17 | INFO: Primitives created: 2
-17:55:17 | INFO: Extracting primitive: SM_Barrow_Lame_A
+18:20:25 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+18:20:25 | INFO: Primitives created: 2
+18:20:25 | INFO: Extracting primitive: SM_Barrow_Lame_A
 Error: Tangent space can only be computed for tris/quads, aborting
-17:55:17 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-17:55:17 | INFO: Primitives created: 1
-17:55:17 | INFO: Extracting primitive: SM_Barrow_Lame_B
+18:20:25 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+18:20:25 | INFO: Primitives created: 1
+18:20:25 | INFO: Extracting primitive: SM_Barrow_Lame_B
 Error: Tangent space can only be computed for tris/quads, aborting
-17:55:17 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-17:55:17 | INFO: Primitives created: 1
-17:55:17 | INFO: Extracting primitive: SM_Barrow_Lame_C
+18:20:25 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+18:20:25 | INFO: Primitives created: 1
+18:20:25 | INFO: Extracting primitive: SM_Barrow_Lame_C
 Error: Tangent space can only be computed for tris/quads, aborting
-17:55:17 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-17:55:17 | INFO: Primitives created: 1
-17:55:17 | INFO: Extracting primitive: SM_Barrow_Deblais
+18:20:25 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+18:20:25 | INFO: Primitives created: 1
+18:20:25 | INFO: Extracting primitive: SM_Barrow_Deblais
 Error: Tangent space can only be computed for tris/quads, aborting
-17:55:17 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-17:55:17 | INFO: Primitives created: 2
-17:55:17 | INFO: Finished glTF 2.0 export in 0.0711522102355957 s
+18:20:25 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+18:20:25 | INFO: Primitives created: 2
+18:20:25 | INFO: Finished glTF 2.0 export in 0.06752777099609375 s
 
-[export_gltf] OK -> /home/user/wt1r1-c/assets/architecture/barrow/SM_Barrow_Stones.glb (197880 octets)
+[export_gltf] OK -> /home/user/wt1r1-c/assets/architecture/barrow/SM_Barrow_Stones.glb (197748 octets)

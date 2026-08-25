@@ -178,7 +178,7 @@ def poser_couleurs(maillage, bandes, contraste, pied_facteur):
         # palier plat entre deux bords, qui était la lecture « peinture ».
         # L'étendue ne dépend pas de ce partage : elle vient de `contraste`,
         # de la seconde fréquence et des veines, tous inchangés.
-        marche = 0.32 * (round(onde * 2.0) / 2.0) + 0.68 * onde
+        marche = 0.14 * (round(onde * 2.0) / 2.0) + 0.86 * onde
         valeur = 1.0 - contraste * 0.5 + contraste * marche
         # SECONDE FRÉQUENCE, SUR L'AXE MOYEN — et elle n'est pas décorative.
         # Mesuré après la première passe : un profil pris EN TRAVERS d'un
@@ -273,13 +273,24 @@ ANNEAUX = (0.0, 0.14, 0.30, 0.46, 0.61, 0.74, 0.85, 0.94, 1.0)
 # Points de contrôle du profil de largeur, à t = 0 / 0,34 / 0,68 / 1,0.
 # Chaque famille donne DEUX courbes — côté gauche, côté droit — et elles ne
 # se ressemblent jamais. C'est là que meurt le rectangle.
+# DOSAGE REVU AU LOT 1.R.1 PASSE C2, APRÈS LECTURE DE LA CAPTURE `it/c1`.
+# C1 a tué le rectangle en fabriquant son contraire : des LAMES. À ×3 sur
+# `barrow_cemetery_joueur`, plusieurs stèles sont des éclats pointus plantés
+# dans le sol et la pierre de tête est une aiguille de 4,36 m — sur l'aplat
+# noir, une antenne. Cause dans ces constantes : le point de contrôle de tête
+# descendait jusqu'à 0,21, et une dispersion de ±0,14 pouvait encore lui
+# retirer un tiers.
+# Une pierre funéraire est une masse ÉPAULÉE : elle garde sa largeur jusqu'à
+# l'épaule, puis casse. Les têtes remontent donc à 0,44 minimum et la
+# dispersion tombe à ±0,10. La garde 5 (« pas d'aiguille ») rend la règle
+# exécutable au lieu de la laisser dans ce commentaire.
 FAMILLES = {
     # nom          gauche                        droite
-    "montant":  ((1.00, 0.99, 0.93, 0.84), (1.00, 0.87, 0.69, 0.50)),
-    "stele":    ((1.00, 0.82, 0.57, 0.34), (0.97, 0.96, 0.89, 0.80)),
-    "aiguille": ((1.00, 0.75, 0.47, 0.21), (1.00, 0.94, 0.73, 0.43)),
-    "souche":   ((1.00, 1.07, 0.84, 0.53), (0.91, 0.77, 0.63, 0.42)),
-    "lame":     ((1.00, 0.97, 0.86, 0.62), (1.00, 0.81, 0.65, 0.39)),
+    "montant":  ((1.00, 0.99, 0.94, 0.86), (1.00, 0.90, 0.78, 0.63)),
+    "stele":    ((1.00, 0.86, 0.70, 0.52), (0.97, 0.96, 0.90, 0.83)),
+    "elancee":  ((1.00, 0.82, 0.63, 0.44), (1.00, 0.95, 0.82, 0.66)),
+    "souche":   ((1.00, 1.05, 0.88, 0.66), (0.92, 0.82, 0.72, 0.58)),
+    "lame":     ((1.00, 0.97, 0.88, 0.70), (1.00, 0.85, 0.72, 0.53)),
 }
 NOEUDS_PROFIL = (0.0, 0.34, 0.68, 1.0)
 
@@ -315,9 +326,9 @@ def dalle(bm, hauteur, largeur, epaisseur, graine, brisure=0.26,
     gauche, droite = FAMILLES[famille]
     # Décalage par pièce : deux pierres de la même famille ne sont jamais la
     # même pierre. ±0,07 sur chaque point de contrôle, indépendamment.
-    gauche = tuple(max(0.14, v + _graine(graine * 3.7 + i * 2.3) * 0.14)
+    gauche = tuple(max(0.34, v + _graine(graine * 3.7 + i * 2.3) * 0.10)
                    for i, v in enumerate(gauche))
-    droite = tuple(max(0.14, v + _graine(graine * 5.3 + i * 1.9) * 0.14)
+    droite = tuple(max(0.34, v + _graine(graine * 5.3 + i * 1.9) * 0.10)
                    for i, v in enumerate(droite))
 
     # LA CASSURE DE TÊTE, arête verticale par arête verticale. Le plan est
@@ -328,9 +339,14 @@ def dalle(bm, hauteur, largeur, epaisseur, graine, brisure=0.26,
     sommets_z = []
     for i, (px, py) in enumerate(PROFIL):
         s = px * nx + py * ny                       # dans [−1 ; 1] environ
-        chute = brisure * (0.08 + 1.55 * biais * (0.5 + 0.5 * s))
-        chute += brisure * 0.46 * abs(_graine(graine * 7.1 + i * 5.3))
-        sommets_z.append(hauteur * max(0.42, 1.0 - chute))
+        # COEFFICIENT RAMENÉ DE 1,55 À 0,95 (passe C2). À 1,55 et `biais` 0,86,
+        # la cassure emportait 0,48 · hauteur d'un seul côté : ce n'est plus
+        # une tête cassée, c'est un biseau, et un biseau fait une lame. Le
+        # plancher de hauteur restante monte de 0,42 à 0,55 pour la même
+        # raison.
+        chute = brisure * (0.08 + 0.95 * biais * (0.5 + 0.5 * s))
+        chute += brisure * 0.34 * abs(_graine(graine * 7.1 + i * 5.3))
+        sommets_z.append(hauteur * max(0.55, 1.0 - chute))
 
     grilles = []
     for niveau, t in enumerate(ANNEAUX):
@@ -530,7 +546,7 @@ def objet_depuis(nom, remplir, lichen_max_z=0.60):
     bas = min(v.co.z for v in maillage.vertices)
     for v in maillage.vertices:
         v.co.z -= bas
-    peints = poser_couleurs(maillage, 4.0, 0.30, 0.26)
+    peints = poser_couleurs(maillage, 2.6, 0.22, 0.26)
     obj = bpy.data.objects.new(nom, maillage)
     obj["peints"] = peints
     for nom_mat in ORDRE_MATERIAUX:
@@ -619,6 +635,32 @@ def _metriques_ancienne_dalle(hauteur, largeur, graine, fuseau, bandes=18):
     return _metriques_profil(g, d, None)
 
 
+def _largeurs_par_bande(obj, bandes=18):
+    """Largeur de la silhouette (x) par tranche de hauteur (z), du bas au haut.
+
+    Extraite de `metriques_silhouette()` plutôt que réécrite : deux codes qui
+    mesurent la même grandeur finissent par ne plus la mesurer pareil, et
+    `tools/CLAUDE.md` en porte le récit (« quand un défaut de mesure est
+    trouvé dans un outil, chercher tout de suite les AUTRES endroits qui font
+    la même mesure »).
+    """
+    zs = [v.co.z for v in obj.data.vertices]
+    z0, z1 = min(zs), max(zs)
+    if z1 - z0 <= 1e-6:
+        return [0.0]
+    sortie = []
+    for b in range(bandes):
+        lo = z0 + (z1 - z0) * b / bandes
+        hi = z0 + (z1 - z0) * (b + 1) / bandes
+        dans = [v.co.x for v in obj.data.vertices
+                if lo - 1e-6 <= v.co.z <= hi + 1e-6]
+        if not dans:
+            sortie.append(sortie[-1] if sortie else 0.0)
+            continue
+        sortie.append(max(dans) - min(dans))
+    return sortie
+
+
 def metriques_silhouette(obj, bandes=18):
     """Les trois grandeurs, lues sur le maillage réellement construit."""
     zs = [v.co.z for v in obj.data.vertices]
@@ -667,28 +709,28 @@ def main():
         # Montant A : massif, épaule DROITE arrachée au-dessus de mi-hauteur —
         # la marche est la première chose qui casse la lecture « poteau ».
         objet_depuis("SM_Barrow_Jamb_A",
-                     lambda bm: dalle(bm, 2.72, 0.92, 0.38, 4.3, brisure=0.24,
+                     lambda bm: dalle(bm, 2.72, 0.92, 0.38, 4.3, brisure=0.22,
                                       fuseau=0.06, voile=0.10,
-                                      famille="montant", biais=0.62,
-                                      epaule=(0.58, 1, 0.34))),
+                                      famille="montant", biais=0.42,
+                                      epaule=(0.58, 1, 0.28))),
         # Montant B : plus court, taille de guêpe, un éclat parti à mi-fût sur
         # le côté GAUCHE. Aucune parenté de silhouette avec A.
         objet_depuis("SM_Barrow_Jamb_B",
-                     lambda bm: dalle(bm, 2.12, 0.80, 0.34, 8.9, brisure=0.30,
+                     lambda bm: dalle(bm, 2.12, 0.80, 0.34, 8.9, brisure=0.26,
                                       fuseau=0.08, voile=-0.13,
-                                      famille="stele", biais=0.78,
-                                      entaille=(0.52, 0.20, -1, 0.42))),
+                                      famille="stele", biais=0.50,
+                                      entaille=(0.52, 0.20, -1, 0.32))),
         # Le linteau : une dalle COUCHÉE de 2,1 m. Il est modélisé à plat, le
         # lieu lui donne son dévers — une couverture d'aplomb se lit maçonnée,
         # une couverture qui a glissé se lit descellée.
         objet_depuis("SM_Barrow_Lintel",
                      lambda bm: dalle(bm, 2.10, 0.92, 0.36, 12.7,
-                                      brisure=0.22, fuseau=0.06, voile=0.07,
-                                      famille="lame", biais=0.70,
-                                      entaille=(0.74, 0.22, 1, 0.30),
+                                      brisure=0.20, fuseau=0.06, voile=0.07,
+                                      famille="lame", biais=0.55,
+                                      entaille=(0.74, 0.22, 1, 0.26),
                                       rotation=(math.radians(90.0), 0.0,
                                                 math.radians(2.0))),
-                     lichen_max_z=0.30),
+                     lichen_max_z=0.10),
         # LES TROIS STÈLES — trois familles, trois accidents, aucune paire.
         objet_depuis("SM_Barrow_Stele_A",
                      # 1,74 nominal : la stèle du chemin doit se lire à
@@ -697,63 +739,69 @@ def main():
                      # « aiguille » : elle fuit fortement à gauche et peu à
                      # droite, et sa tête part à 55° — c'est cette pierre qui
                      # sert de menhir du seuil, la plus regardée du lieu.
-                     lambda bm: dalle(bm, 1.74, 0.66, 0.24, 17.1, brisure=0.34,
+                     lambda bm: dalle(bm, 1.74, 0.66, 0.24, 17.1, brisure=0.26,
                                       fuseau=0.05, voile=0.16,
-                                      famille="aiguille", biais=0.86,
-                                      epaule=(0.72, -1, 0.30))),
+                                      famille="elancee", biais=0.46,
+                                      epaule=(0.72, -1, 0.26))),
         objet_depuis("SM_Barrow_Stele_B",
                      # « souche » : trapue, ventrue au pied, cassée bas et
                      # largement ébréchée. Une pierre à demi avalée.
-                     lambda bm: dalle(bm, 1.02, 0.60, 0.23, 23.9, brisure=0.46,
+                     lambda bm: dalle(bm, 1.02, 0.60, 0.23, 23.9, brisure=0.32,
                                       fuseau=0.04, voile=-0.19,
-                                      famille="souche", biais=0.48,
-                                      entaille=(0.66, 0.26, 1, 0.46))),
+                                      famille="souche", biais=0.34,
+                                      entaille=(0.66, 0.26, 1, 0.32))),
         objet_depuis("SM_Barrow_Stele_C",
                      # « stele » : le seul fût qui reste presque droit d'un
                      # côté — la référence par rapport à laquelle les autres
                      # se lisent comme cassées.
-                     lambda bm: dalle(bm, 1.42, 0.58, 0.22, 31.5, brisure=0.28,
+                     lambda bm: dalle(bm, 1.42, 0.58, 0.22, 31.5, brisure=0.24,
                                       fuseau=0.07, voile=0.11,
-                                      famille="stele", biais=0.66,
-                                      epaule=(0.64, 1, 0.26))),
+                                      famille="stele", biais=0.44,
+                                      epaule=(0.64, 1, 0.24))),
         # LA PAIRE DU SEUIL — l'entrée funéraire. Deux pierres INÉGALES : une
         # encore debout, une rompue à mi-corps. Un seuil se lit à la paire
         # dépareillée, pas à deux jumelles.
         objet_depuis("SM_Barrow_Seuil_A",
-                     lambda bm: dalle(bm, 2.34, 0.86, 0.33, 47.3, brisure=0.26,
+                     lambda bm: dalle(bm, 2.34, 0.86, 0.33, 47.3, brisure=0.22,
                                       fuseau=0.07, voile=-0.09,
-                                      famille="montant", biais=0.74,
-                                      entaille=(0.38, 0.18, -1, 0.36))),
+                                      famille="montant", biais=0.48,
+                                      entaille=(0.38, 0.18, -1, 0.30))),
         objet_depuis("SM_Barrow_Seuil_B",
-                     lambda bm: dalle(bm, 1.16, 0.78, 0.30, 53.9, brisure=0.52,
+                     # REFUSÉE PAR LA GARDE 5 au premier essai de la passe C2 :
+                     # largeur au sommet 0,249 pour un plancher de 0,26. Le
+                     # plancher ne bouge PAS — l'abaisser reviendrait à
+                     # calibrer le contrôle sur le sujet qu'il juge, piège
+                     # consigné dans `tools/CLAUDE.md`. C'est la pierre qui
+                     # cède : épaule 0,30 → 0,24, brisure 0,34 → 0,29.
+                     lambda bm: dalle(bm, 1.16, 0.78, 0.30, 53.9, brisure=0.29,
                                       fuseau=0.03, voile=0.14,
-                                      famille="souche", biais=0.92,
-                                      epaule=(0.46, -1, 0.38))),
+                                      famille="souche", biais=0.52,
+                                      epaule=(0.46, -1, 0.24))),
         # LES TROIS LAMES COUCHÉES — le chemin des morts. Elles sont modélisées
         # DÉJÀ couchées : le lieu ne les bascule pas, il les enfonce. C'est la
         # correction directe du piège `_coucher()` (une pièce basculée après
         # `seat()` s'enterre ou flotte, et le décalage n'est pas devinable).
         objet_depuis("SM_Barrow_Lame_A",
-                     lambda bm: dalle(bm, 1.55, 0.74, 0.26, 29.3, brisure=0.30,
+                     lambda bm: dalle(bm, 1.55, 0.74, 0.26, 29.3, brisure=0.26,
                                       fuseau=0.05, voile=0.12,
-                                      famille="lame", biais=0.80,
-                                      entaille=(0.58, 0.22, -1, 0.34),
+                                      famille="lame", biais=0.55,
+                                      entaille=(0.58, 0.22, -1, 0.30),
                                       rotation=(math.radians(90.0), 0.0,
                                                 math.radians(-4.0))),
                      lichen_max_z=0.22),
         objet_depuis("SM_Barrow_Lame_B",
-                     lambda bm: dalle(bm, 1.18, 0.60, 0.22, 35.7, brisure=0.36,
+                     lambda bm: dalle(bm, 1.18, 0.60, 0.22, 35.7, brisure=0.30,
                                       fuseau=0.06, voile=-0.10,
-                                      famille="souche", biais=0.64,
-                                      epaule=(0.54, 1, 0.32),
+                                      famille="souche", biais=0.45,
+                                      epaule=(0.54, 1, 0.28),
                                       rotation=(math.radians(90.0), 0.0,
                                                 math.radians(6.0))),
                      lichen_max_z=0.18),
         objet_depuis("SM_Barrow_Lame_C",
-                     lambda bm: dalle(bm, 0.94, 0.64, 0.19, 41.1, brisure=0.42,
+                     lambda bm: dalle(bm, 0.94, 0.64, 0.19, 41.1, brisure=0.32,
                                       fuseau=0.04, voile=0.15,
-                                      famille="aiguille", biais=0.90,
-                                      entaille=(0.44, 0.24, 1, 0.40),
+                                      famille="elancee", biais=0.55,
+                                      entaille=(0.44, 0.24, 1, 0.32),
                                       rotation=(math.radians(90.0), 0.0,
                                                 math.radians(-9.0))),
                      lichen_max_z=0.16),
@@ -878,6 +926,40 @@ def main():
         print("[barrow_stones] ERREUR: %d pierre(s) dressée(s) restent des "
               "prismes à côtés parallèles : %s" % (len(echecs),
                                                    ", ".join(echecs)))
+        return 2
+
+    # GARDE 5 — PAS D'AIGUILLE. C'est la borne que la passe C1 n'avait pas, et
+    # son absence a coûté une itération entière : n'ayant qu'un plafond de
+    # remplissage à respecter, j'ai poussé tous les leviers au maximum et
+    # fabriqué le contraire du défaut — des lames pointues. Une pierre
+    # funéraire est une masse ÉPAULÉE.
+    #
+    # Deux mesures, prises sur la même projection (x, z) que la garde 4 :
+    #   * la largeur à 86 % de la hauteur vaut au moins 42 % de la largeur max ;
+    #   * la largeur au sommet vaut au moins 26 % de la largeur max.
+    # Avec la garde 4, la réponse est désormais encadrée par le HAUT et par le
+    # BAS : ni prisme, ni lame.
+    EPAULE_MIN = 0.42
+    SOMMET_MIN = 0.26
+    pointues = []
+    for obj in dressees:
+        larg = _largeurs_par_bande(obj, bandes=18)
+        maxi_l = max(larg)
+        if maxi_l <= 1e-6:
+            continue
+        epaule_l = larg[int(round(0.86 * (len(larg) - 1)))] / maxi_l
+        sommet_l = larg[-1] / maxi_l
+        ok = epaule_l >= EPAULE_MIN and sommet_l >= SOMMET_MIN
+        print("[barrow_stones] emoussage %-20s largeur a 86%% %.3f (plancher "
+              "%.2f) · au sommet %.3f (plancher %.2f) %s"
+              % (obj.name, epaule_l, EPAULE_MIN, sommet_l, SOMMET_MIN,
+                 "OK" if ok else "REFUS"))
+        if not ok:
+            pointues.append(obj.name)
+    if pointues:
+        print("[barrow_stones] ERREUR: %d pierre(s) dressée(s) sont des LAMES "
+              "et non des masses épaulées : %s"
+              % (len(pointues), ", ".join(pointues)))
         return 2
 
 
