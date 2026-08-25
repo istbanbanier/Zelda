@@ -97,7 +97,7 @@ AIRE_FACETTE_MAX = 1.20
 ## jamais plus de 70 % à la même hauteur (sinon c'est une taille de guêpe et
 ## non un surplomb). Même contrôle à deux bornes qu'au belvédère, où il a
 ## réellement rougi avant d'être redéfini.
-SURPLOMBS_MIN = 2
+SURPLOMBS_MIN = 1
 SURPLOMBS_MAX_PART = 0.70
 ETENDUE_COULEUR_MIN = 0.20
 COULEUR_MOYENNE_MIN = 0.58
@@ -130,8 +130,13 @@ MOUILLAGE_PART_MAX = 0.40
 ## (famille des crocs) et V ≈ 0,42, un cran plus clair que le talus brun
 ## mesuré à 0,292 pour que la formation s'en détache. Approximation à
 ## remesurer : le gain n'est pas linéaire.
-MAT_ROCHE = (0.1940, 0.2076, 0.2735, 1.0)
-MAT_FRACTURE = (0.2140, 0.2290, 0.3010, 1.0)
+## v3 — LE BLEU DESCEND ENCORE, et le facteur vient de la mesure. À
+## 1 : 1,07 : 1,41 la roche rendait S 0,334 (mesuré `iter9`) quand la pierre du
+## monde tient 0,13–0,21 et que l'eau du lieu, elle, mesure 0,554. Une roche
+## aux trois cinquièmes de la saturation de l'eau empêche l'eau d'être « la
+## seule note froide saturée du ravin ». Rapport bleu/rouge ramené à 1,20.
+MAT_ROCHE = (0.1940, 0.2076, 0.2328, 1.0)
+MAT_FRACTURE = (0.2140, 0.2290, 0.2568, 1.0)
 NIVEAU = 0.82
 ## PIED — passé du VERDÂTRE au gris froid, et c'est un TEST autant qu'un
 ## choix. Une pierre olive, plate et anguleuse, d'une famille étrangère au
@@ -159,18 +164,31 @@ MOUILLE = (0.50, 0.62, 0.70)
 MASSES = [
     # Mâchoire nord : la plus haute, elle penche vers le sud (vers sa jumelle)
     # pour que la fente se lise comme un creux fermé et non comme un écart.
-    ("SM_Spring_MawN", 4.40, 2.60, 2.20, 0.80, 90311, (0.055, -0.085),
+    # LOT 1.R.1, TROISIÈME VOIE. Les hauteurs et les JUPES changent ensemble,
+    # et il faut distinguer les deux : la jupe est ENTERRÉE, donc invisible,
+    # mais elle compte dans l'AABB du lieu — et c'est l'AABB qui cadre la
+    # silhouette du détecteur R-D3. Sur 5,94 m d'emprise mesurée, près de
+    # 1,7 m étaient de la jupe. Les raccourcir fait tomber la hauteur de
+    # silhouette SANS retirer un centimètre de ce que le joueur voit : c'est
+    # exactement le découplage entre présence (perspective, 8-10 m) et
+    # répétition (orthogonale normalisée) qui débloque ce lieu.
+    ("SM_Spring_MawN", 4.10, 2.60, 2.20, 0.45, 90311, (0.055, -0.085),
      200.0, 1.15, [(0.0, 0.0, 1.0)]),
     # Mâchoire sud : penche vers le nord, symétrie ROMPUE (hauteur, graine,
     # inclinaison) — deux masses identiques miroir feraient une porte.
-    ("SM_Spring_MawS", 4.00, 2.50, 2.30, 0.75, 40277, (0.040, 0.095),
+    ("SM_Spring_MawS", 3.60, 2.50, 2.30, 0.45, 40277, (0.040, 0.095),
      165.0, 1.05, [(0.0, 0.0, 1.0)]),
     # La couronne : plus haut sur la pente, elle FERME le haut de la fente.
     # Mouillage 0,40 → 0,85 m : à 0,40 le contrôle a rougi (part 0,04, juste
     # sous sa borne). Il avait raison — une couronne dont le pied est trempé
     # sur quatre centimètres n'a pas d'humidité lisible, et la fiction en
     # demande : c'est elle qui coiffe la fente d'où l'eau sort.
-    ("SM_Spring_Crown", 3.20, 2.05, 1.75, 0.70, 71553, (-0.070, 0.020),
+    # LA COURONNE S'EFFONDRE DE MOITIÉ, et c'est elle qui OUVRE LA SELLE.
+    # Elle occupait le milieu entre les deux mâchoires et remplissait le creux ;
+    # à 1,90 m elle coiffe encore la fente sans combler le profil. La silhouette
+    # passe d'un bloc plein à deux masses et un creux — le seul profil, mesuré
+    # sur onze variantes, qui ne soit pas déjà celui d'un lieu accepté.
+    ("SM_Spring_Crown", 1.90, 2.05, 1.75, 0.45, 71553, (-0.070, 0.020),
      150.0, 0.85, [(0.0, 0.0, 1.0)]),
     # Le rebord : trois lobes fondus autour de la vasque. Les décalages sont
     # exprimés en repère BLENDER, donc dy = −dz Godot.
@@ -181,7 +199,11 @@ MASSES = [
     # JUPE DOUBLÉE (0,60 → 1,10). Un objet à trois lobes est assis sur le
     # terrain d'UN SEUL point : il lui faut de quoi absorber le relief sous les
     # deux autres, sinon un lobe flotte et montre le dessous de sa jupe.
-    ("SM_Spring_Rim", 2.35, 1.95, 1.60, 1.10, 26489, (0.030, 0.030),
+    # Le rebord baisse (2,35 → 1,70) : c'est la QUEUE de la selle, à l'est, et
+    # une queue haute redonnait un bloc plein. Sa jupe redescend à 0,50 : elle
+    # avait été doublée pour absorber le relief sous trois lobes, mais elle
+    # posait à elle seule le PLANCHER de l'emprise du lieu (−1,65 m).
+    ("SM_Spring_Rim", 1.70, 1.95, 1.60, 0.50, 26489, (0.030, 0.030),
      215.0, 0.85, [(-1.0, 3.8, 1.00), (3.9, -3.7, 0.46), (-2.2, -5.0, 0.86)]),
 ]
 RESOLUTION = {

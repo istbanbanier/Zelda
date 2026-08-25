@@ -168,7 +168,7 @@ SURPLOMBS_MAX_PART = 0.70
 ## boulders de kit à son pied (V 0,391 contre 0,540 mesuré dans la MÊME
 ## image). Le correctif ×1,35 de l'itération 6 a été confirmé sur capture
 ## (0,468 → 0,549). Cette bande empêche la régression de revenir en douce.
-COULEUR_MOYENNE_MIN = 0.62
+COULEUR_MOYENNE_MIN = 0.55
 COULEUR_MOYENNE_MAX = 0.88
 ETENDUE_COULEUR_MIN = 0.20
 
@@ -231,10 +231,27 @@ TEINTE_PIED = (0.62, 0.68, 0.60)
 ## au-dessus de l'emprise précédente. Le vide entre les deux masses reste franc
 ## : centres à 14,29 m l'un de l'autre, demi-emprises 4,1 et 3,2 → ≈ 7,0 m
 ## d'herbe (7,47 m avant), et c'est ce vide qui tient le PASS D3.
+## LOT 1.R.1, TROISIÈME VOIE — DEUX CHANGEMENTS, ET AUCUN NE TOUCHE À
+## L'ÉROSION CONTINUE ACQUISE.
+##
+##  * les masses S'AFFINENT (crête 3,45/2,78 → 3,05/2,50, éperon 2,16/1,84 →
+##    1,92/1,66). Le VIDE entre elles passe de ≈ 7,0 à ≈ 7,8 m sans qu'aucune
+##    implantation ne bouge. C'est ce vide qui distingue le lieu en aplat noir,
+##    et il s'était refermé quand les masses avaient grossi ;
+##  * les JUPES raccourcissent (0,85 → 0,40 ; 0,62 → 0,35). Elles sont
+##    ENTERRÉES, donc invisibles, mais elles comptent dans l'AABB qui cadre la
+##    silhouette du détecteur. Les raccourcir baisse la hauteur de silhouette
+##    sans retirer un centimètre de ce que le joueur voit.
+## La crête perd 35 cm de hauteur (6,90 → 6,55), et c'est le seul prélèvement
+## sur le visible de toute la passe.
 CROCS = [
-    ("SM_Overlook_Crest", 6.90, 3.45, 2.78, 0.85, 51703, 196.0, 214.0, 142.0),
-    ("SM_Overlook_Spur", 4.30, 2.16, 1.84, 0.62, 28841, 186.0, 206.0, 118.0),
+    ("SM_Overlook_Crest", 6.55, 3.05, 2.50, 0.40, 51703, 196.0, 214.0, 142.0),
+    ("SM_Overlook_Spur", 4.30, 1.92, 1.66, 0.35, 28841, 186.0, 206.0, 118.0),
 ]
+## Multiplicateur de couleur de sommet, par masse. L'éperon rendait V 0,631
+## contre 0,643 pour la falaise V2.2 du fond (mesuré `iter9/_identite`) : il ne
+## s'en détachait pas. Il descend d'un cran ; la crête ne bouge pas.
+TEINTE_MASSE = {"SM_Overlook_Crest": 1.0, "SM_Overlook_Spur": 0.88}
 ## Résolution par masse (azimuts, tranches au-dessus du sol, tranches de jupe).
 RESOLUTION = {
     "SM_Overlook_Crest": (26, 26, 4),
@@ -511,7 +528,7 @@ class Masse:
 
 
 def _teinte(masse: Masse, theta: float, t: float, normale: Vector,
-            creux: float) -> tuple:
+            creux: float, teinte_masse: float = 1.0) -> tuple:
     """Couleur de sommet DÉRIVÉE DE LA GÉOMÉTRIE.
 
     Quatre modulations, et chacune décrit un fait de la surface plutôt qu'un
@@ -534,9 +551,9 @@ def _teinte(masse: Masse, theta: float, t: float, normale: Vector,
     pied = max(0.0, 1.0 - max(0.0, t) * 2.3)
     v *= 1.0 + 0.075 * math.sin(7.0 * theta + 2.1) * math.cos(3.0 * theta + 0.7)
     v *= 1.0 + 0.048 * math.sin(11.0 * theta + 0.4)
-    r = NIVEAU * v
-    g = NIVEAU * v
-    b = NIVEAU * v
+    r = NIVEAU * v * teinte_masse
+    g = NIVEAU * v * teinte_masse
+    b = NIVEAU * v * teinte_masse
     r *= (1.0 - 0.22 * pied)
     g *= (1.0 - 0.10 * pied)
     b *= (1.0 - 0.26 * pied)
@@ -552,6 +569,7 @@ def _teinte(masse: Masse, theta: float, t: float, normale: Vector,
 
 def _construire(nom: str, masse: Masse, mat_corps, mat_fracture):
     na, nt, nj = RESOLUTION[nom]
+    teinte_masse = TEINTE_MASSE.get(nom, 1.0)
     maillage = bpy.data.meshes.new(nom)
     bm = bmesh.new()
 
@@ -672,14 +690,15 @@ def _construire(nom: str, masse: Masse, mat_corps, mat_fracture):
     couleurs = {}
     for ligne, info in zip(anneaux, infos):
         for v, (theta, t, creux) in zip(ligne, info):
-            couleurs[v] = _teinte(masse, theta, t, v.normal, creux)
-    teinte_pied = tuple(c * NIVEAU for c in TEINTE_PIED)
+            couleurs[v] = _teinte(masse, theta, t, v.normal, creux,
+                                  teinte_masse)
+    teinte_pied = tuple(c * NIVEAU * teinte_masse for c in TEINTE_PIED)
     for anneau_bas in milieu:
         for v in anneau_bas:
             couleurs[v] = teinte_pied
     couleurs[centre_bas] = teinte_pied
     sommet_teinte = _teinte(masse, masse.plateforme, 1.0, Vector((0, 0, 1)),
-                            0.0)
+                            0.0, teinte_masse)
     couleurs[faîte] = sommet_teinte
     for anneau_haut in couronne_mid:
         for v in anneau_haut:

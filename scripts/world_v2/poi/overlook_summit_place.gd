@@ -298,7 +298,7 @@ func _build() -> void:
 	# 1,70 m de roche et rendrait la crête plus BASSE qu'avant, alors que la
 	# revue demande de la présence. 0,25 suffit à garantir que le plan de sol
 	# reste sous le terrain là où il ondule ; la jupe fait le reste.
-	_croc(&"SM_Overlook_Crest", "Croc_crete", 8.0, 4.6, 0.0, 0.25)
+	_croc(&"SM_Overlook_Crest", "Croc_crete", 8.0, 4.6, 0.0, 0.18)
 	declare_support(masse_at)
 	var epaulement_at: Vector3 = _seated(4.2, 8.2)
 	declare_support(epaulement_at)
@@ -316,7 +316,7 @@ func _build() -> void:
 	# 7° et pas davantage : au-delà, le pendage de l'éperon cesse d'être
 	# celui de la crête et les deux masses redeviennent deux objets voisins.
 	# La variété vient des formes (graines différentes), pas de l'azimut.
-	_croc(&"SM_Overlook_Spur", "Croc_poste", 17.8, -5.8, 7.0, 0.20)
+	_croc(&"SM_Overlook_Spur", "Croc_poste", 17.8, -5.8, 7.0, 0.15)
 	declare_support(poste_at)
 	var pied_at: Vector3 = _seated(16.7, -4.0)
 	declare_support(pied_at)
@@ -340,12 +340,12 @@ func _build() -> void:
 	# caillou déposé.
 	var marche: Vector3 = _seated(1.0, 6.2)
 	_teinter(K.module(self, &"Rock_Medium_1",
-		marche + Vector3(0.0, -1.15, 0.0), 200.0, 1.0, Color.WHITE),
+		marche + Vector3(0.0, -0.75, 0.0), 200.0, 1.0, Color.WHITE),
 		TONE_KIT_FROID, TONE_KIT_COIFFE, false)
 	declare_support(marche)
 	var socle: Vector3 = _seated(2.6, 8.4)
 	_teinter(K.module(self, &"Rock_Medium_2",
-		socle + Vector3(0.0, -1.00, 0.0), 41.0, 1.0, Color.WHITE),
+		socle + Vector3(0.0, -0.65, 0.0), 41.0, 1.0, Color.WHITE),
 		TONE_KIT_FROID, TONE_KIT_COIFFE, false)
 	declare_support(socle)
 	# La tablette proprement dite : une dalle plate coincée entre la crête
@@ -424,7 +424,7 @@ func _collisions() -> void:
 	# Demi-largeur 2,8 m pour 8,9 m de la diagonale de route : marge 6,1 m,
 	# très au-dessus du seuil de 1,2 m du filet.
 	K.collider_box(self, "Belvedere_crete",
-		_seated(8.0, 4.6) + Vector3(0.0, 3.2, 0.0), Vector3(5.6, 6.4, 4.6),
+		_seated(8.0, 4.6) + Vector3(0.0, 3.0, 0.0), Vector3(5.0, 6.1, 4.2),
 		0.0)
 	K.collider_box(self, "Belvedere_epaulement",
 		_seated(4.2, 8.2) + Vector3(0.0, 1.2, 0.0), Vector3(3.6, 2.4, 3.0),
@@ -432,7 +432,7 @@ func _collisions() -> void:
 	# L'avant-poste : 4,30 m de GLB, 6,41 m d'emprise visible, enfoncé de 0,20.
 	# Demi-largeur 2,05 m pour 8,5 m de la diagonale de route : marge 6,4 m.
 	K.collider_box(self, "Belvedere_poste",
-		_seated(17.8, -5.8) + Vector3(0.0, 2.0, 0.0), Vector3(4.1, 4.2, 3.7),
+		_seated(17.8, -5.8) + Vector3(0.0, 2.0, 0.0), Vector3(3.7, 4.2, 3.3),
 		7.0)
 	K.collider_box(self, "Belvedere_epaule",
 		_seated(1.8, 7.3) + Vector3(0.0, 0.55, 0.0), Vector3(4.6, 1.1, 3.6),
@@ -539,8 +539,12 @@ func _assise() -> void:
 	# 4,96 → 5,54 m après l'approfondissement des diaclases), et à 4,25/2,95
 	# les deux lobes se seraient rejoints. L'écart entre leurs bords reste
 	# de l'herbe, sur les deux axes.
-	_lobe(st, 8.0, 4.6, 4.00, 3.1)
-	_lobe(st, 17.8, -5.8, 2.80, 11.7)
+	# LOBES RÉTRÉCIS (4,00 → 3,10 ; 2,80 → 2,20) : l'assise déborde les masses
+	# et empiétait sur le VIDE entre elles. Ce vide est le trait qui distingue
+	# le lieu en aplat noir — une assise qui le comble annule la composition
+	# qu'elle est censée enraciner.
+	_lobe(st, 8.0, 4.6, 3.10, 3.1)
+	_lobe(st, 17.8, -5.8, 2.20, 11.7)
 	assise.mesh = st.commit()
 	var roche: StandardMaterial3D = K.flat_material(TONE_ASSISE)
 	roche.vertex_color_use_as_albedo = true
