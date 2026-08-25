@@ -1534,3 +1534,43 @@ checkpoint**, puis filets 16/16, D1–D8 8/8, 26/26 isolés, continuité 6/6, et
 UNE `validate_fast.sh` depuis un worktree `/tmp` (faire `git worktree prune`
 d'abord si le conteneur a encore changé). Interdits inchangés : lot 2, toucher
 à la Release, verdict artistique auto-déclaré.
+
+### 2026-08-25 — LOT 1.R : candidate visuelle reconstruite, persistée, contrôles ciblés verts
+
+La directive maître du 2026-08-25 a été exécutée de bout en bout : recherche
+du bundle close, contrat visuel écrit et poussé AVANT la géométrie
+(`docs/V2_3_B_LOT1R_VISUAL_CONTRACT.md`, `de43152`), trois branches de
+récupération créées, trois agents en worktrees (plans courts arbitrés), trois
+checkpoints cueillis, prouvés et poussés.
+
+| Checkpoint | SHA poussé | Contenu |
+|---|---|---|
+| C — champ | `14153d8` | le proche planté (628 → 1 101 instances, vert nu 76 → 33 %), lobes-phrases, île de la fourche |
+| A — belvédère + source | `66e1cc8` | GLB `SM_OverlookCrags` stratifié froid + assise ; `SH_TurquoiseSpringWater` (S 0,079 → 0,490 caméra joueur gelée) |
+| B — tour + sanctuaire + cimetière | `4f66609` | COLOR_0 tour + récompense en hauteur ; cœur/seuil/ruine du sanctuaire ; normales lissées + valeur du cimetière |
+
+**Deux rouges RÉELS attrapés par les filets à l'intégration, corrigés sans
+toucher un seuil** :
+- D7 : sanctuaire 43 modules > 40 (le dallage 3 → 9) — consolidation lead,
+  trois micro-décors sans trait de contrat retirés (`4f66609`) ;
+- R-D3 : champ ≈ camp braise à 80 m (IoU 0,5101 > 0,4912) — cause mesurée en
+  rejouant le sous-échantillonnage du détecteur (bande incluse dans bande),
+  corrigée par la « variation de hauteur » que le contrat demande : l'arbre du
+  champ (`0e4adc4`), IoU retombée à **0,0839**, PASS rejoué (`c80b776`).
+
+**Erreur de ma fabrication, corrigée et dite** : mon shots_champ.json a envoyé
+deux vues gp dans `ab13/` — lot1r_planches est mort en code 2, comme conçu.
+
+**Candidate** : `evidence/world_v2/v2_3_b/lot1r/candidate/` — 70 images au
+manifeste global, 13 A/B, planches couleur/gris/anonyme (clé séparée)/
+silhouettes/matière, deux verdicts D3 (le FAIL gardé à côté du PASS), filet
+25/25, dossier de revue avec les six questions §19 SANS réponse du lead.
+
+**PROCHAINE ACTION EXACTE** : attendre le verdict visuel Codex/Istvan sur le
+dossier. Si REJET : corriger UNIQUEMENT les lieux rejetés, geler les acceptés,
+refaire leurs preuves, nouvelle candidate — sans lancer `validate_fast.sh`.
+Si PASS : geler les six lieux, rejouer les filets complets, les huit
+sabotages D1–D8, `validate_fast.sh` UNE fois depuis un worktree `/tmp`,
+checkpoint jouable, release Lot1.R sans écraser l'ancienne. **Interdits
+inchangés** : lot 2, toucher à la Release courante, verdict artistique
+auto-déclaré.
