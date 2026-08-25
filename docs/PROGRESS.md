@@ -1490,3 +1490,47 @@ ne rentre pas dans git), remplir §6 et §7 de `RAPPORT_1R.md`, mettre à jour
 STATUS, pousser, et clore par la formule imposée. **Interdits** : tout sujet du
 lot 2, toucher à la Release courante, publier une nouvelle Release, tout
 verdict artistique auto-déclaré.
+
+### 2026-08-25, reprise Codex — BLOQUÉ sur le bundle, tout le reste est prêt
+
+Directive reçue : intégrer les trois commits de Codex
+(`c29a6c54` quatre lieux reconstruits · `c23df0ce` preuves `codex_final/` ·
+`1adeb207` nettoyage des sauvegardes de tests) depuis
+`Zelda-Lot1R-Codex-handoff.bundle`, valider, pousser, remettre en revue.
+
+**Le bundle n'a jamais atteint ce conteneur.** Recréation numéro six : le HEAD
+local datait de trois jours, avancé proprement vers `19f70f7` — le SHA exact
+vérifié par Codex, rien de poussé n'est perdu. Mais la pièce jointe est morte
+avec l'ancien conteneur : aucun `.bundle` sur tout le disque, `/mnt/attach` et
+`/mnt/user-data/working` vides, les trois SHA absents de l'object store,
+aucune ref distante ne les porte. Détail et procédure de reprise exacte :
+`evidence/world_v2/v2_3_b/lot1r/reprise_codex/BLOCAGE_BUNDLE.md`.
+
+**Fait en attendant, prouvé, committé** (`65572be`) :
+
+| Préparation | Verdict |
+|---|---|
+| Godot 4.7.1-stable, binaire direct sans wrapper ZIP | présent |
+| Blender 4.0.2 + NumPy 1.26.4 | présents |
+| Continuité des SIX personnages, `check_continuity.py` réellement exécuté | **6/6 « UN SEUL corps solidaire », RC=0** |
+| Worktree détaché sous `/tmp`, import | RC=0 |
+| `room2_vertical,room4_battery,dungeon_run` ENSEMBLE, isolés | **26 réussis, 0 échoué, RC=0** |
+
+Le dernier point reproduit de notre côté le diagnostic de Codex : les huit
+rouges historiques venaient des restaurations externes dans le workspace
+synchronisé, pas du jeu.
+
+**Volontairement NON joué** : filets 16/16, sabotages D1–D8, validation
+complète — ils doivent tourner sur l'arbre INTÉGRÉ ; un vert du mauvais arbre
+est pire qu'aucun vert.
+
+**PROCHAINE ACTION EXACTE** : dès que le bundle est de nouveau accessible
+(re-joint à un conteneur vivant, ou poussé par Codex sur une branche neuve
+`codex/lot1r-handoff`) — vérifier son sha256
+(`03632748b950…`), `git bundle verify`, fetch dans
+`refs/heads/codex-lot1r-handoff`, `git cat-file -e` sur les trois SHA,
+cherry-pick dans l'ordre c29a6c54 → c23df0ce → 1adeb207, **push immédiat du
+checkpoint**, puis filets 16/16, D1–D8 8/8, 26/26 isolés, continuité 6/6, et
+UNE `validate_fast.sh` depuis un worktree `/tmp` (faire `git worktree prune`
+d'abord si le conteneur a encore changé). Interdits inchangés : lot 2, toucher
+à la Release, verdict artistique auto-déclaré.
