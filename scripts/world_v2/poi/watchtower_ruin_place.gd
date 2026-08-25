@@ -176,8 +176,8 @@ func _build() -> void:
 	# LE PIED DE LA MONTÉE EST DÉSORMAIS LA PORTE, pas l'angle arraché : c'est
 	# elle qu'on voit depuis la vue joueur, et c'est par elle qu'on entre.
 	# Cote lue sur le générateur : la baie du mur est occupe y −2,175..−1,575
-	# en repère Blender, soit z local +1,975..+2,575 dans le fût.
-	ancre.traversal_base = Vector3(CORE_X + 3.15, base_y, CORE_Z + 1.875)
+	# en repère Blender, soit z local +1,125..+2,025 dans le fût.
+	ancre.traversal_base = Vector3(CORE_X + 3.15, base_y, CORE_Z + 1.575)
 	ancre.child_entered_tree.connect(_sur_recompense)
 
 
@@ -458,17 +458,17 @@ func _collisions(base_y: float) -> void:
 	# l'œil voit une ouverture. Les trois segments suivent la maçonnerie —
 	# et leur HAUTEUR suit l'arase qui descend vers le nord, sinon le corps
 	# dépasserait le maillage et rendrait, là encore, un mur fantôme.
-	#   z local : 3,025 (sud, arase 3,05) → 0,575 (nord, arase 1,35)
-	#   porte   : z 2,575 → 1,975
+	#   z local : 3,025 (sud, arase 3,05) → 0,575 (nord, arase 2,05)
+	#   porte   : z 2,025 → 1,125  (baie élargie à 0,90 m au lot 1.R.1)
+	# Deux corps, pas trois : la baie a grandi et n'en laisse plus la place.
+	# Les hauteurs suivent l'arase — un corps unique à 3,2 m, comme avant la
+	# corrective, était déjà une paroi invisible d'un mètre au nord.
 	K.collider_box(self, "Guet_mur_est_sud",
-		Vector3(CORE_X + HALF, y0 + 1.385, CORE_Z + 2.80),
-		Vector3(EP, 2.77, 0.45))
-	K.collider_box(self, "Guet_mur_est_milieu",
-		Vector3(CORE_X + HALF, y0 + 1.05, CORE_Z + 1.675),
-		Vector3(EP, 2.10, 0.60))
+		Vector3(CORE_X + HALF, y0 + 1.335, CORE_Z + 2.525),
+		Vector3(EP, 2.67, 1.00))
 	K.collider_box(self, "Guet_mur_est_nord",
-		Vector3(CORE_X + HALF, y0 + 0.52, CORE_Z + 0.975),
-		Vector3(EP, 1.05, 0.80))
+		Vector3(CORE_X + HALF, y0 + 0.885, CORE_Z + 0.85),
+		Vector3(EP, 1.77, 0.55))
 	# Le talus ne couvre plus que la moitié SUD du tas : le couloir d'entrée
 	# (l'axe de la brèche, z −1,5..−0,4) reste marchable — la sonde
 	# d'ascension a mesuré une contremarche de 0,68 m sur l'ancien volume,

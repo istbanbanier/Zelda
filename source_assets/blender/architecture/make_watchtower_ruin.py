@@ -92,7 +92,13 @@ H_NORD_FIN = 1.55
 H_SUD = 5.85
 H_SUD_FIN = 3.05
 H_EST = 3.05
-H_EST_FIN = 1.35
+# 2,05 et non 1,35 : la travée est doit porter une PORTE de 1,85 m avec son
+# linteau, et l'arase plongeait trop vite pour lui laisser la place. Elle
+# descend toujours d'un mètre sur 2,45 m et reste la plus basse des quatre
+# (l'écart d'arases, que la garde 1 mesure, ne bouge pas : il se calcule sur
+# les hauteurs de DÉPART). Le paysage entre toujours par-dessus depuis la
+# vigie, dont la dalle est à 3,05 m.
+H_EST_FIN = 2.05
 
 # La brèche d'entrée (quadrant nord-est) : le mur nord s'arrête à cet x, la
 # travée est s'arrête à ce y. Entre les deux : RIEN — c'est la porte.
@@ -726,7 +732,7 @@ def coquille(bm):
     # dégagement du nu intérieur du mur sud, et on voit à travers.
     mur(bm, (HALF, -HALF - EP * 0.5), (0.0, 1.0), L_EST,
         H_EST, H_EST_FIN, 47.0, 0.34, 0.62, interieur_flip=True,
-        baies=((1.05, 1.65, 0.0, 1.70),))
+        baies=((1.00, 1.90, 0.0, 1.85),))
 
     # LES RETRAITS DE MAÇONNERIE — deux lignes de plancher rendues visibles.
     # Niveau 1 à 3,05 m (celui de la vigie) : le ressaut court sous la dalle
@@ -997,16 +1003,25 @@ def coquille(bm):
     # seuil usée en travers, et le linteau tombé devant — la pièce qui dit
     # « il y avait une porte, et elle est tombée » sans un mot, exactement
     # comme au sanctuaire.
-    for zj in (0.58, 1.14, 1.58):
-        moellon(bm, (HALF + EP * 0.44, -1.575 - 0.03, zj),
-                (0.40, 0.34, 0.44), 201.0 + zj * 3.1, IDX_PIERRE, jitter=0.12)
-        moellon(bm, (HALF + EP * 0.44, -0.975 + 0.03, zj + 0.18),
-                (0.40, 0.32, 0.40), 211.0 + zj * 2.7, IDX_PIERRE, jitter=0.12)
-    moellon(bm, (2.86, -1.275, 0.33), (1.06, 0.80, 0.30), 181.0, IDX_PIERRE,
+    # LES JAMBAGES SORTENT DE LA BAIE, et c'est une mesure, pas un scrupule.
+    # À la passe précédente ils étaient centrés SUR les bords de l'ouverture,
+    # avec 0,34 m d'emprise en y : ils mangeaient 0,34 m des 0,60 m de jour, et
+    # la porte rendait une fente de 38 px vue de biais. Ils sont désormais
+    # entièrement à l'extérieur du jour (centres à −1,78 et −0,57 pour une baie
+    # en −1,625..−0,725), et la baie passe de 0,60 à 0,90 m.
+    # La géométrie du dégagement, puisqu'elle décide : le mur fait 0,85 m
+    # d'épaisseur et la vue arrive à 19° du normal, donc l'ébrasement mange
+    # 0,85 × tan 19° = 0,29 m. Il reste 0,61 m de jour à 4,9 m, soit ≈ 70 px.
+    for zj in (0.58, 1.14, 1.62):
+        moellon(bm, (HALF + EP * 0.44, -1.78, zj),
+                (0.40, 0.26, 0.44), 201.0 + zj * 3.1, IDX_PIERRE, jitter=0.12)
+        moellon(bm, (HALF + EP * 0.44, -0.57, zj + 0.18),
+                (0.40, 0.24, 0.40), 211.0 + zj * 2.7, IDX_PIERRE, jitter=0.12)
+    moellon(bm, (2.86, -1.175, 0.33), (1.06, 0.86, 0.30), 181.0, IDX_PIERRE,
             jitter=0.14)
-    moellon(bm, (3.78, -1.43, 0.37), (1.30, 0.54, 0.34), 191.0, IDX_PIERRE,
+    moellon(bm, (3.78, -1.33, 0.37), (1.30, 0.54, 0.34), 191.0, IDX_PIERRE,
             jitter=0.10)
-    moellon(bm, (4.42, -1.02, 0.36), (0.52, 0.44, 0.30), 197.0, IDX_PIERRE,
+    moellon(bm, (4.42, -0.92, 0.36), (0.52, 0.44, 0.30), 197.0, IDX_PIERRE,
             jitter=0.22)
 
 
