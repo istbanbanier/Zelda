@@ -317,8 +317,12 @@ MASSES = [
     # caméra joueur (11 m), donc celles dont chaque centimètre pèse le plus à
     # l'écran — et les plus sombres, parce qu'elles sont trempées en
     # permanence par le fil qui les traverse.
-    ("SM_Spring_Sill", 1.15, 1.05, 0.88, 0.40, 60451, (0.070, 0.060),
-     200.0, 0.70, (0.70, 0.80, 0.90),
+    # ITÉRATION 2 : 1,15 → 0,78 m. À 1,15 les deux lobes rendaient, dans la
+    # caméra joueur, deux masses bleu sombre de part et d'autre du fil, à onze
+    # mètres — assez hautes pour COUPER la nappe de sa langue au moment précis
+    # où la lecture doit être continue. Un seuil se franchit ; il ne barre pas.
+    ("SM_Spring_Sill", 0.78, 1.05, 0.88, 0.40, 60451, (0.070, 0.060),
+     200.0, 0.48, (0.70, 0.80, 0.90),
      [(0.0, 0.0, 1.0),
       # lobe aval, de l'autre côté de l'échancrure : Godot (−1,10 ; −4,20)
       (1.10, -2.30, 0.85),

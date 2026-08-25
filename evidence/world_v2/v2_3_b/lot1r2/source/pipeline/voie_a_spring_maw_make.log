@@ -8,10 +8,10 @@ Blender 4.0.2
 [spring_maw] SM_Spring_Shelf : 1944 tris, hauteur 1.439 m, fond -0.450 m, emprise visible 8.054 m, facette max 0.5070 m2, lobes 3
 [spring_maw] SM_Spring_Shelf : surplombs 7/20 (plancher 1), ceinture de surplomb 0.15 (plafond 0.70), mouillage 0.10 (bande 0.04..0.52), couleur moy 0.747 p10 0.492 p90 0.978 (etendue 65.1 %)
 [spring_maw] SM_Spring_Shelf : ecretage 0.019 (plafond 0.02) sur 725 sommets peints
-[spring_maw] SM_Spring_Sill : 1386 tris, hauteur 1.071 m, fond -0.400 m, emprise visible 4.469 m, facette max 0.1141 m2, lobes 3
-[spring_maw] SM_Spring_Sill : surplombs 9/16 (plancher 1), ceinture de surplomb 0.38 (plafond 0.70), mouillage 0.18 (bande 0.04..0.52), couleur moy 0.562 p10 0.380 p90 0.712 (etendue 59.0 %)
+[spring_maw] SM_Spring_Sill : 1386 tris, hauteur 0.727 m, fond -0.400 m, emprise visible 4.459 m, facette max 0.1140 m2, lobes 3
+[spring_maw] SM_Spring_Sill : surplombs 9/16 (plancher 1), ceinture de surplomb 0.38 (plafond 0.70), mouillage 0.19 (bande 0.04..0.52), couleur moy 0.564 p10 0.380 p90 0.712 (etendue 58.8 %)
 [spring_maw] SM_Spring_Sill : ecretage 0.000 (plafond 0.02) sur 491 sommets peints
-[spring_maw] ecart de valeur entre masses : 0.185 (plancher 0.14) — la plus claire SM_Spring_Shelf 0.747, la plus sombre SM_Spring_Sill 0.562
+[spring_maw] ecart de valeur entre masses : 0.183 (plancher 0.14) — la plus claire SM_Spring_Shelf 0.747, la plus sombre SM_Spring_Sill 0.564
 [spring_maw] total 8990 triangles (plafond 9600)
 Info: Total files 0 | Changed 0 | Failed 0
 Info: Saved "SM_SpringMaw.blend"

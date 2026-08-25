@@ -107,11 +107,29 @@ const TONE_PLANTE_HUMIDE: Color = Color(0.50, 0.66, 0.55)
 ## minéral : c'est le mécanisme réel d'une source turquoise — l'eau se colore
 ## par son fond) ; la rive est de la terre trempée ; la crête de berge est du
 ## gravier, sombre côté eau et sec côté extérieur.
-const TONE_LIT: Color = Color(0.27, 0.27, 0.25)
-const LIT_CENTRE: Color = Color(0.52, 1.0, 0.98)
-const LIT_RIVE: Color = Color(0.86, 0.80, 0.70)
-const LIT_CRETE: Color = Color(1.42, 1.36, 1.22)
-const LIT_TALUS: Color = Color(1.72, 1.66, 1.50)
+## VALEURS RECALÉES SUR CAPTURE (itération 1 → 2), et c'est une correction de
+## ma propre régression. Mesuré sur `iter1/spring_gros_deversoir.png` :
+##
+##   berge (crête et face interne)   V 0,188–0,216   S 0,08–0,16
+##   herbe du pad, juste à côté      V 0,278–0,325
+##
+## La berge rendait donc aux deux tiers de la valeur de l'herbe, en gris
+## neutre : un ANNEAU SOMBRE autour de l'eau — exactement le défaut que le lit
+## de cette vasque a déjà payé deux fois, et que je venais de rouvrir en
+## construisant une berge. L'albédo posé valait (0,383 ; 0,367 ; 0,305) pour un
+## rendu de 0,20 : le rapport rendu/albédo mesuré est ≈ 0,52 dans ce ravin.
+## Pour rendre au-dessus de l'herbe il faut donc un albédo ≈ 0,65 sur la crête.
+##
+## La pierre trempée est plus sombre que la pierre SÈCHE, jamais plus sombre
+## que TOUT. La valeur MONTE donc vers l'extérieur : rive < crête < talus.
+## Approximation à remesurer — le gain n'est pas linéaire (`scripts/CLAUDE.md`).
+const TONE_LIT: Color = Color(0.46, 0.45, 0.42)
+## Le lit sous l'eau garde sa sarcelle sombre : c'est LUI qui colore l'eau
+## transparente au-dessus, et une eau posée sur du gravier clair est grise.
+const LIT_CENTRE: Color = Color(0.36, 0.72, 0.70)
+const LIT_RIVE: Color = Color(1.05, 1.00, 0.92)
+const LIT_CRETE: Color = Color(1.30, 1.26, 1.16)
+const LIT_TALUS: Color = Color(1.45, 1.41, 1.32)
 
 ## Centre de la vasque, dans le repère du lieu.
 const BASSIN_X: float = -5.05
@@ -121,11 +139,16 @@ const BASSIN_Z: float = -0.65
 ## orientée dit d'où l'eau vient et où elle va, ce qui EST la lecture continue
 ## que le verdict demande.
 ## `A` est la demi-longueur le long de `FIL_DIR`, `B` la demi-largeur.
-const BASSIN_A: float = 3.62
-const BASSIN_B: float = 2.62
+const BASSIN_A: float = 3.95
+const BASSIN_B: float = 3.00
 ## Hauteur du plan d'eau au-dessus du sol gelé. Ce n'est pas une nappe posée :
 ## la berge la contient (voir `_bassin`).
-const NIVEAU_EAU: float = 0.26
+## 0,26 → 0,22. Contre-intuitif et pourtant mesuré par la géométrie : la
+## hauteur d'écran d'un plan d'eau vaut `atan(h_œil/d_près) − atan(h_œil/d_loin)`
+## où `h_œil` est la hauteur de la caméra AU-DESSUS DU PLAN. Monter le plan
+## d'eau rapproche l'œil de sa surface et RÉDUIT la bande visible. Le plan
+## reste au-dessus du pad — c'est la berge qui le contient — mais juste assez.
+const NIVEAU_EAU: float = 0.22
 ## Crête de berge au-dessus du sol, avant modulation par secteur.
 const CRETE_BASSE: float = 0.34
 const CRETE_HAUTE: float = 0.52
@@ -147,16 +170,23 @@ const ANCRE_PHI: float = 1.525
 ## posé 0,18 m à l'est de cette face : là où une nervure ressort, il disparaît
 ## DANS la roche ; là où elle rentre, l'écart n'est pas visible depuis la
 ## caméra joueur, qui regarde le long de −X.
-const VOILE_HAUT: Vector3 = Vector3(-8.02, 2.35, 1.70)
-const VOILE_BAS: Vector3 = Vector3(-7.72, 0.30, 1.70)
-const VOILE_LARGEUR_HAUT: float = 0.95
-const VOILE_LARGEUR_BAS: float = 1.95
+const VOILE_HAUT: Vector3 = Vector3(-7.95, 2.35, 1.70)
+const VOILE_BAS: Vector3 = Vector3(-7.30, 0.30, 1.70)
+const VOILE_LARGEUR_HAUT: float = 1.30
+const VOILE_LARGEUR_BAS: float = 2.60
 
 ## Implantation des quatre masses, en local. Recopiée dans la table `MASSES`
 ## du générateur, qui la commente côté forme.
 const POSE_CONTREFORT: Vector2 = Vector2(-9.60, 4.20)
 const POSE_LEVRE: Vector2 = Vector2(-9.30, 1.70)
-const POSE_TABLE: Vector2 = Vector2(-6.60, -4.70)
+## ITÉRATION 2 : la table recule au nord (−4,70 → −6,20). Mesuré sur
+## `iter1/turquoise_spring_identite.png` : elle rendait à l'écran (693 ; 324)
+## quand le bord NORD de la vasque tombe à (648 ; 351) pour une profondeur
+## quasi identique (28,6 m contre 28,2) — elle masquait donc l'eau qu'elle est
+## censée border, et la part d'eau de la vue d'identité a BAISSÉ de 0,89 % à
+## 0,75 % entre les deux versions. Une rive qui cache sa vasque n'est pas une
+## rive.
+const POSE_TABLE: Vector2 = Vector2(-7.20, -6.20)
 const POSE_SEUIL: Vector2 = Vector2(-2.20, -1.90)
 
 const SEGMENTS: int = 48
@@ -197,7 +227,7 @@ func _build() -> void:
 	var table: Vector3 = _seated(POSE_TABLE.x, POSE_TABLE.y)
 	_masse(&"SM_Spring_Shelf", "Table_nord", POSE_TABLE, 0.22)
 	declare_support(table)
-	declare_support(_seated(-4.00, -5.20))
+	declare_support(_seated(-4.60, -6.70))
 
 	# ── LE SEUIL DU DÉVERSOIR. Deux lobes bas qui ENCADRENT l'échancrure sans
 	# la fermer. Ce sont les pièces les plus proches de la caméra joueur (11 m),
@@ -232,9 +262,9 @@ func _build() -> void:
 	# Elles sont placées PAR LA GÉOMÉTRIE DE LA BERGE (`_point_talus`), jamais
 	# par des coordonnées tapées à la main : la berge peut bouger, elles
 	# suivront, et aucune ne se retrouvera dans l'eau.
-	_plante(&"Plant_7_Big", -1.05, 0.55, 1.05)
-	_plante(&"Plant_7_Big", -2.05, 0.35, 0.85)
-	_plante(&"Fern_1", 2.35, 0.45, 1.10)
+	_plante(&"Plant_7_Big", -0.78, 0.35, 1.15)
+	_plante(&"Plant_7_Big", 0.80, 0.30, 0.95)
+	_plante(&"Fern_1", 2.40, 0.45, 1.10)
 
 	_collisions()
 
@@ -299,7 +329,7 @@ func _rayon_rive(phi: float) -> float:
 ## laisse une demi-largeur de berge sèche sous le fruit.
 func _retrait_ancre(phi: float) -> float:
 	var ecart: float = wrapf(phi - ANCRE_PHI, -PI, PI)
-	return 1.0 - 0.18 * exp(-pow(ecart / 0.80, 2.0))
+	return 1.0 - 0.28 * exp(-pow(ecart / 0.80, 2.0))
 
 
 ## Poids de l'échancrure : 1 plein est (le déversoir), 0 hors du secteur.
@@ -334,15 +364,23 @@ func _point_rive(phi: float) -> Vector2:
 
 
 ## Point de la CRÊTE de berge (plan XZ local) — un peu au-delà de la rive.
+##
+## LE RETRAIT PORTE SUR TOUTE LA BERGE, pas seulement sur la ligne d'eau. La
+## vasque agrandie (A 3,62 → 3,95 ; B 2,62 → 3,00) mettait sinon le PIED DE
+## TALUS à 4,00 m de l'axe pour une ancre de récompense gelée à 4,19 : dix-neuf
+## centimètres de berge sèche sous le fruit, ce qui n'est pas une berge. Le
+## retrait s'applique donc aussi aux deux largeurs, et la marge remonte à
+## 0,50 m. C'est la berge qui recule, jamais la récompense.
 func _point_crete(phi: float) -> Vector2:
-	var r: float = _rayon_rive(phi) + 0.42
+	var r: float = _rayon_rive(phi) + 0.42 * _retrait_ancre(phi)
 	return Vector2(BASSIN_X, BASSIN_Z) + FIL_DIR * (r * cos(phi)) \
 		+ _perp() * (r * sin(phi))
 
 
 ## Point du PIED extérieur du talus de berge (plan XZ local).
 func _point_talus(phi: float) -> Vector2:
-	var r: float = _rayon_rive(phi) + 0.42 + _largeur_talus(phi)
+	var r: float = _rayon_rive(phi) \
+		+ (0.42 + _largeur_talus(phi)) * _retrait_ancre(phi)
 	return Vector2(BASSIN_X, BASSIN_Z) + FIL_DIR * (r * cos(phi)) \
 		+ _perp() * (r * sin(phi))
 
@@ -499,9 +537,21 @@ func _nappe() -> void:
 ## shader n'y pose donc PAS son vernis rasant, et la couleur qui sort est celle
 ## de l'eau, pas celle du ciel.
 ##
-## Il s'ÉLARGIT en descendant (0,95 → 1,95 m) parce que c'est ce que fait une
-## lame d'eau qui quitte une lèvre, et parce que la roche s'évase de même : le
-## voile suit la face, il ne pend pas devant.
+## Il s'ÉLARGIT en descendant (1,30 → 2,60 m) parce que c'est ce que fait une
+## lame d'eau qui quitte une lèvre, et parce que la roche s'évase de même.
+##
+## ITÉRATION 2 — LE PIED DU VOILE RECULE DE 42 cm VERS L'EST, et la mesure a
+## tranché seule. À l'itération 1 le voile était posé 18 cm à l'est de la face
+## NOMINALE de la lèvre ; mais cette face porte des nervures de ±20 cm, et la
+## roche ressortait donc devant l'eau. Mesuré : la colonne d'eau la plus haute
+## de la caméra joueur valait 45 px pour 68 px projetés — un tiers du voile
+## était mangé, et l'échantillon pris à (585 ; 340) rendait H 214,7 / S 0,446,
+## c'est-à-dire de la PIERRE, pas de l'eau.
+##
+## Reculer le pied ne déplace PAS le voile à l'écran : la caméra joueur regarde
+## le long de −X, donc un décalage en X ne change que la profondeur. On gagne
+## la visibilité sans toucher à la composition — et le voile penche désormais
+## de 16°, ce que fait une vraie lame qui décroche d'une lèvre.
 func _voile(st: SurfaceTool) -> void:
 	var pas: int = 12
 	var lateral: Vector3 = Vector3(0.0, 0.0, 1.0)
@@ -684,7 +734,7 @@ func _plante(modele: StringName, phi: float, debord: float,
 ##
 ## Distances à la tête d'affluent gelée (+6 ; −6), toutes très au-delà des 5 m
 ## du contrat : contrefort 18,4 m, queue 16,0 m, lèvre 17,3 m, table 12,8 m,
-## seuil 9,3 m.
+## seuil 9,3 m. (La table a reculé au nord à l'itération 2 : 13,9 m.)
 ## ══════════════════════════════════════════════════════════════════════════
 func _collisions() -> void:
 	K.collider_box(self, "Source_contrefort",
@@ -697,10 +747,10 @@ func _collisions() -> void:
 		_seated(-9.30, 1.70) + Vector3(0.0, 1.15, 0.0), Vector3(2.2, 2.4, 2.6),
 		0.0)
 	K.collider_box(self, "Source_table_nord",
-		_seated(-5.90, -4.85) + Vector3(0.0, 0.60, 0.0), Vector3(5.4, 1.3, 2.8),
+		_seated(-6.50, -6.35) + Vector3(0.0, 0.60, 0.0), Vector3(5.4, 1.3, 2.8),
 		-8.0)
 	K.collider_box(self, "Source_seuil",
-		_seated(-1.75, -3.00) + Vector3(0.0, 0.45, 0.0), Vector3(2.6, 1.0, 3.4),
+		_seated(-1.75, -3.00) + Vector3(0.0, 0.32, 0.0), Vector3(2.4, 0.7, 3.2),
 		-24.0)
 
 
