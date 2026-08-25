@@ -1,0 +1,6 @@
+[
+{"name": "turquoise_spring_identite", "from": [-117.2, 20.0, 46.8], "look": [-136, 14.0, 40], "fov": 55.0},
+{"name": "turquoise_spring_joueur", "from": [-126.5, 13.7, 40.0], "look": [-136, 13.2, 40], "fov": 65.0},
+{"name": "spring_gros_arrivee", "from": [-137.6, 13.8, 40.4], "look": [-146.8, 13.4, 40.3], "fov": 50.0},
+{"name": "spring_gros_deversoir", "from": [-135.2, 14.2, 36.6], "look": [-141.4, 12.1, 40.2], "fov": 50.0}
+]
