@@ -663,3 +663,104 @@ d'écran. Mais 80 px, c'est une bande, pas une masse.
 déduites de la hauteur demandée : la brisure rabote chaque crête (0,99 demandé
 → 0,92 obtenu). Recopier la consigne aurait posé trois murs invisibles de 7 à
 10 cm trop hauts.
+
+## R2 puis R3 — après capture
+
+### R2 (`it/r2/`, commit `fe99130`) — la porte s'ouvre, et elle ne se voit pas
+
+La baie sort de l'angle sud et le contraste APPARAÎT — zone de la porte
+435-485 × 380-470 : p50 **52,6** contre **50,1** pour le mur voisin, là où R1
+donnait 56,3 contre 56,8. Le trou existe.
+
+Mais à ×4 il rend une **fente de 38 px**, pas une porte. Deux causes, toutes
+deux géométriques, toutes deux mesurables, et aucune n'est une affaire de goût :
+
+1. **Les jambages rebouchaient leur propre baie.** Ils étaient centrés SUR les
+   bords du jour, avec 0,26 m d'emprise de chaque côté : ils mangeaient 0,34 m
+   des 0,60 m d'ouverture.
+2. **L'ébrasement.** Le mur fait 0,85 m d'épaisseur et la vue arrive à 19° du
+   normal : la joue mange `0,85 × tan 19° = 0,29 m` de jour supplémentaire. Sur
+   0,60 m d'ouverture, il ne restait rien.
+
+C'est la contrepartie exacte du geste qui corrige « trop mince » : **un mur
+épais mange ses propres ouvertures**. Une baie percée dans un mur de 0,45 m et
+la même baie dans un mur de 0,85 m ne montrent pas la même chose, et le calcul
+de dégagement doit se faire AVANT, pas se découvrir sur l'image.
+
+### R3 (`it/r3/`, commit `a7202da`) — l'entrée se lit
+
+Baie portée à **0,90 m**, jambages sortis entièrement du jour, arase du mur est
+remontée de 1,35 à 2,05 m à son extrémité nord (sans quoi une porte de 1,85 m
+n'a pas de linteau là où elle est désormais ; l'écart d'arases que mesure la
+garde 1 ne bouge pas — il se calcule sur les hauteurs de DÉPART).
+
+| Mesure, `watchtower_ruin_joueur` | R1 (murée) | R2 | R3 |
+|---|---:|---:|---:|
+| p50 dans la porte | 56,3 | 52,6 | **42,8** |
+| p50 dans le mur voisin | 56,8 | 50,1 | 54,8 |
+| **écart** | **0,5** | 2,5 | **12,0** |
+| largeur du jour sombre (y = 350) | — | ~38 px | **55 px** |
+
+**Ce que je VOIS à ×4** : une ouverture avec son ébrasement (l'épaisseur du mur
+se lit comme une joue profonde à gauche), le sol clair de l'intérieur visible à
+travers, un jambage à droite, et la dalle de seuil qui y conduit depuis le
+premier plan. C'est une porte, pas une fente.
+
+**Reste, et je le nomme** : un des jambages rend un rectangle un peu plaqué sur
+le parement à ×4. Il n'est pas gênant à taille réelle ; il n'est pas corrigé.
+
+### Le lointain — la tour est moins mince, et c'est chiffré
+
+`watchtower_gp_lointain`, à 86 m, masque sombre `lum < 78` sur la fenêtre
+570-680 × 290-410 :
+
+| | avant | après |
+|---|---:|---:|
+| emprise | 62 × 90 px | **71 × 91 px** |
+| pixels sombres | 617 | **1 292** |
+
+Plus large de 15 %, et **deux fois plus dense** : l'empattement et l'épaisseur
+ne font pas que grandir la silhouette, ils la remplissent.
+
+### Sanctuaire — le bilan chiffré des deux vues jugées
+
+Même masque, mêmes fenêtres (saturation ≤ 0,16, luminance 60-205).
+
+| | avant | après |
+|---|---|---|
+| vue JOUEUR, emprise de pierre | 604 × 148 px | **338 × 157 px** |
+| vue JOUEUR, pixels de pierre | 1 182 | **2 810** |
+| vue IDENTITÉ, emprise de pierre | 201 × 178 px | **174 × 79 px** |
+| `shrine_gp_route_p1` | rien du bâti | **rien du bâti** |
+
+Le lieu cesse d'être un semis de 604 px coupé en deux par un tronc : il devient
+une masse compacte de 338 px portant **deux fois et demie** la surface de
+pierre. La vue d'identité, elle, PERD de la hauteur d'écran, et la cause est
+géométrique — la nef raccourcie et tournée de 45° s'étend beaucoup moins dans
+la profondeur de cette caméra-là, et cette profondeur est ce qui faisait la
+hauteur. C'est un échange, pas un progrès net, et c'est au jugement de le
+trancher.
+
+---
+
+## Deux pièges d'outil rencontrés, à verser aux règles locales
+
+1. **`probe_ecran_lot1r.gd` et `probe_vegetation_near.gd` ne peuvent PAS
+   localiser un arbre du semis V2.2.** `probe_sanctuaire.gd` l'imprime
+   lui-même : « **16 651 transform(s) d'instance rendent l'identité** — les
+   positions ci-dessous sont celles de la CELLULE, pas de l'arbre ». Toutes les
+   instances de végétation gelée se projettent donc à l'origine de leur cellule.
+   Conséquence concrète : le tronc qui masquait le sanctuaire **n'apparaît dans
+   la liste d'aucune sonde**, et un recensement à 3 m de sa position estimée
+   rend « 0 instance ». J'ai donc travaillé sur ce que l'image donne — bande
+   d'occultation x 594-718 mesurée colonne par colonne — et sur une distance
+   déduite de la ligne de sol (`y_base ≈ 530 px → D ≈ 5,7 m`), en gardant
+   **2,4 m de marge minimale** autour de la position estimée. La position exacte
+   du tronc reste **NON VÉRIFIÉE**, et rien dans cette passe n'en dépend.
+2. **`probe_sanctuaire.gd` mesure une nef qui n'existe plus.** Sa constante
+   `CHEMIN` est écrite en dur sur l'ancien axe (local (−0,05 ; −4,60) →
+   (0 ; −0,85)). Après la recomposition, elle échantillonne de l'herbe et rend
+   « plus grande marche 0,000 m » — un `PASS` qui ne veut rien dire. Je ne l'ai
+   pas modifiée : c'est un fichier de `tools/`, hors de ma voie. **La
+   franchissabilité de la nef recomposée est donc NON VÉRIFIÉE**, et il faut
+   soit recaler `CHEMIN`, soit le dire dans le verdict.
