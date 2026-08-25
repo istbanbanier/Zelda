@@ -172,11 +172,24 @@ MASSES = [
     # silhouette SANS retirer un centimètre de ce que le joueur voit : c'est
     # exactement le découplage entre présence (perspective, 8-10 m) et
     # répétition (orthogonale normalisée) qui débloque ce lieu.
-    ("SM_Spring_MawN", 4.10, 2.60, 2.20, 0.45, 90311, (0.055, -0.085),
+    # ITÉRATION 11 — LES GESTES SONT MAINTENANT ORIENTÉS PAR AXE, et c'est
+    # tout le sujet. Vérifié dans `capture_silhouette.gd` : la vue à 0° place
+    # la caméra en +X et regarde vers −X, donc elle RÉSOUT Z et écrase X ; la
+    # vue à 90° fait l'inverse. Un profil qui doit se lire aux deux angles doit
+    # donc exister sur les deux axes — l'itération 10 avait ouvert un creux en
+    # Z seulement, et la vue à 0° le regardait par la tranche.
+    #
+    # `demi_a` (X) TOMBE de 2,60 à 2,20 : c'est le « flanc est du bloc ouest »
+    # que la simulation demande d'abaisser dans la vue 90°. La hauteur descend
+    # un peu (4,10 → 3,80) pour adoucir le pic dans la vue 0°.
+    ("SM_Spring_MawN", 3.80, 2.20, 2.20, 0.45, 90311, (0.055, -0.085),
      200.0, 1.15, [(0.0, 0.0, 1.0)]),
     # Mâchoire sud : penche vers le nord, symétrie ROMPUE (hauteur, graine,
     # inclinaison) — deux masses identiques miroir feraient une porte.
-    ("SM_Spring_MawS", 3.60, 2.50, 2.30, 0.45, 40277, (0.040, 0.095),
+    # La mâchoire sud était la plus large en X (7,88 m d'emprise) : c'est elle
+    # qui étirait le bloc ouest vers l'est et remplissait le corridor. `demi_a`
+    # 2,50 → 1,60.
+    ("SM_Spring_MawS", 3.60, 1.60, 2.00, 0.45, 40277, (0.040, 0.095),
      165.0, 1.05, [(0.0, 0.0, 1.0)]),
     # La couronne : plus haut sur la pente, elle FERME le haut de la fente.
     # Mouillage 0,40 → 0,85 m : à 0,40 le contrôle a rougi (part 0,04, juste
@@ -204,7 +217,10 @@ MASSES = [
     # avait été doublée pour absorber le relief sous trois lobes, mais elle
     # posait à elle seule le PLANCHER de l'emprise du lieu (−1,65 m).
     ("SM_Spring_Rim", 1.70, 1.95, 1.60, 0.50, 26489, (0.030, 0.030),
-     215.0, 0.85, [(-1.0, 3.8, 1.00), (3.9, -3.7, 0.46), (-2.2, -5.0, 0.86)]),
+    # Les lobes nord et sud reculent vers l'OUEST (Blender dx −1,0 → −2,2 et
+    # −2,2 → −2,8) : ils occupaient le corridor en X que la vue 90° doit voir
+    # vide. L'écrin du fruit ne bouge pas — l'ancre est gelée.
+     215.0, 0.85, [(-2.2, 3.6, 0.92), (3.9, -3.7, 0.46), (-2.8, -4.2, 0.80)]),
 ]
 RESOLUTION = {
     "SM_Spring_MawN": (22, 18, 3),

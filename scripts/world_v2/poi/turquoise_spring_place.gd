@@ -225,7 +225,7 @@ func _build() -> void:
 	_masse(&"SM_Spring_MawN", "Machoire_nord", -9.9, -3.4, 18.0, 0.22, true)
 	declare_support(machoire_n)
 	var machoire_s: Vector3 = _seated(-9.5, 3.8)
-	_masse(&"SM_Spring_MawS", "Machoire_sud", -9.5, 3.8, -24.0, 0.22, true)
+	_masse(&"SM_Spring_MawS", "Machoire_sud", -10.1, 4.2, -24.0, 0.22, true)
 	declare_support(machoire_s)
 	# — LA COURONNE ferme le haut de la fente : l'eau sort d'un creux fermé,
 	# pas d'un intervalle entre deux objets.
@@ -257,8 +257,8 @@ func _build() -> void:
 		false)
 	# Les appuis DÉCLARÉS suivent les lobes, pas l'objet : le filet D2 lit des
 	# points, et un point au centre de la vasque serait un appui sur de l'eau.
-	for lobe: Vector2 in [Vector2(-6.4, -3.6), Vector2(-1.5, 3.9),
-			Vector2(-7.6, 5.2)]:
+	for lobe: Vector2 in [Vector2(-7.6, -3.4), Vector2(-1.5, 3.9),
+			Vector2(-8.2, 4.4)]:
 		declare_support(_seated(lobe.x, lobe.y))
 	# — LE FIL QUI S'EN VA. Trois dalles mouillées, à demi enfoncées, qui
 	# descendent au nord-est vers la tête de l'affluent (local +6 ; −6),
@@ -627,10 +627,10 @@ func _collisions() -> void:
 		_seated(-9.9, -3.4) + Vector3(0.0, 1.5, 0.0), Vector3(3.6, 3.0, 3.6),
 		18.0)
 	K.collider_box(self, "Source_machoire_sud",
-		_seated(-9.5, 3.8) + Vector3(0.0, 1.3, 0.0), Vector3(3.6, 2.6, 3.6),
+		_seated(-10.1, 4.2) + Vector3(0.0, 1.3, 0.0), Vector3(2.6, 2.6, 3.2),
 		-24.0)
 	K.collider_box(self, "Source_bloc",
-		_seated(-7.6, 5.2) + Vector3(0.0, 0.7, 0.0), Vector3(2.6, 1.4, 2.6),
+		_seated(-8.2, 4.4) + Vector3(0.0, 0.7, 0.0), Vector3(2.4, 1.4, 2.4),
 		150.0)
 
 
