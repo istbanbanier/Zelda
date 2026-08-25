@@ -1,30 +1,30 @@
 Blender 4.0.2
-Read blend: "/home/user/wt-lot1r-b/source_assets/blender/architecture/SM_Watchtower_Ruin.blend"
+Read blend: "/home/user/wt1r-b/source_assets/blender/architecture/SM_Watchtower_Ruin.blend"
 [export_gltf] Blender 4.0.2
 [export_gltf] io_scene_gltf2 version (4, 0, 44)
 [export_gltf] preset: export_animation_mode=ACTIONS, export_animations=False, export_apply=True, export_cameras=False, export_extras=False, export_force_sampling=True, export_format=GLB, export_lights=False, export_materials=EXPORT, export_normals=True, export_optimize_animation_size=False, export_skins=True, export_tangents=True, export_texcoords=True, export_yup=True, use_selection=False, use_visible=True
-03:56:05 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
-03:56:05 | INFO: Starting glTF 2.0 export
-03:56:05 | INFO: Extracting primitive: SM_Watchtower_Shell
+13:47:07 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
+13:47:08 | INFO: Starting glTF 2.0 export
+13:47:08 | INFO: Extracting primitive: SM_Watchtower_Shell
 Error: Tangent space can only be computed for tris/quads, aborting
-03:56:05 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-03:56:05 | INFO: Primitives created: 3
-03:56:05 | INFO: Extracting primitive: SM_Watchtower_Talus
+13:47:08 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+13:47:08 | INFO: Primitives created: 3
+13:47:08 | INFO: Extracting primitive: SM_Watchtower_Talus
 Error: Tangent space can only be computed for tris/quads, aborting
-03:56:05 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-03:56:05 | INFO: Primitives created: 1
-03:56:05 | INFO: Extracting primitive: SM_Watchtower_Slab_A
+13:47:08 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+13:47:08 | INFO: Primitives created: 1
+13:47:08 | INFO: Extracting primitive: SM_Watchtower_Slab_A
 Error: Tangent space can only be computed for tris/quads, aborting
-03:56:05 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-03:56:05 | INFO: Primitives created: 1
-03:56:05 | INFO: Extracting primitive: SM_Watchtower_Slab_B
+13:47:08 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+13:47:08 | INFO: Primitives created: 1
+13:47:08 | INFO: Extracting primitive: SM_Watchtower_Slab_B
 Error: Tangent space can only be computed for tris/quads, aborting
-03:56:05 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-03:56:05 | INFO: Primitives created: 1
-03:56:05 | INFO: Extracting primitive: SM_Watchtower_CrownBlock
+13:47:08 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+13:47:08 | INFO: Primitives created: 1
+13:47:08 | INFO: Extracting primitive: SM_Watchtower_CrownBlock
 Error: Tangent space can only be computed for tris/quads, aborting
-03:56:05 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
-03:56:05 | INFO: Primitives created: 1
-03:56:05 | INFO: Finished glTF 2.0 export in 0.014941930770874023 s
+13:47:08 | WARNING: Could not calculate tangents. Please try to triangulate the mesh first.
+13:47:08 | INFO: Primitives created: 1
+13:47:08 | INFO: Finished glTF 2.0 export in 0.024962902069091797 s
 
-[export_gltf] OK -> /home/user/wt-lot1r-b/assets/architecture/watchtower/SM_Watchtower_Ruin.glb (81156 octets)
+[export_gltf] OK -> /home/user/wt1r-b/assets/architecture/watchtower/SM_Watchtower_Ruin.glb (124008 octets)

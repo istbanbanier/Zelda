@@ -89,6 +89,37 @@ MATERIAUX = {
     # espérée de l'ombrage.
     "MAT_Tower_StoneInner": (0.560, 0.510, 0.450, 0.95),
 }
+# ---------------------------------------------------------------------------
+# COULEURS DE SOMMET — LOT 1.R, correction B-f-3 / B-f-4 / point 19 transverse
+# ---------------------------------------------------------------------------
+# CE QUE LA MESURE A DIT, ET POURQUOI CE FICHIER CHANGE. L'audit contradictoire
+# a mesuré, au troisième passage, un profil de luminance en travers des pièces
+# TOMBÉES de cette tour : « dalle claire au pied de la tour,
+# `watchtower_gp_breche.png`, y = 520 : 141 constant, puis 78 constant —
+# étendue 0 par plage ». Et le constat transverse (point 19) : sur des faces
+# quasi verticales sous ce ciel, l'irradiance ambiante domine, donc la
+# FACETTISATION ne rapporte presque rien ; la seule variation gratuite est
+# `COLOR_0`.
+#
+# Ce GLB était le SEUL des trois de la voie B à ne PAS porter `COLOR_0` — le
+# cimetière et le sanctuaire l'ont reçu, la tour non. Les pièces `tombee` sont
+# en outre peintes côté Godot par un APLAT (`ALBEDO_TOMBEE`), sans carte : sans
+# couleur de sommet, elles ne peuvent RIEN rendre d'autre qu'une valeur unique.
+#
+# DEUX CONDITIONS, AUCUNE AUTOMATIQUE (ISS-066, recette éprouvée de
+# `make_barrow_stones.py`) :
+#   1. le MATÉRIAU doit CONSOMMER l'attribut — un nœud Color Attribute
+#      multiplié dans Base Color ; sans lui l'exporteur glTF n'écrit rien ;
+#   2. la couche doit être l'attribut de couleur ACTIF **et** celui de RENDU.
+# `tools/gltf_inspect.py` ne regarde JAMAIS `COLOR_0` : il répondrait `VALIDE`
+# sur un asset qui les a perdues. La garde est donc ici, à la source.
+#
+# CE QUI DIFFÈRE DE LA RECETTE DU CIMETIÈRE, et c'est voulu : sur une pierre
+# funéraire, les strates suivent le plus grand axe (le lit de débitage). Sur de
+# la MAÇONNERIE, les lits sont HORIZONTAUX, et leur pas n'est pas libre — c'est
+# `ASSISE`. La strate du fût est donc calée sur la hauteur d'assise, ce qui
+# renforce l'appareil au lieu de le contredire.
+NOM_COULEUR = "Col"
 IDX_PIERRE = 0
 IDX_BOIS = 1
 IDX_PIERRE_INT = 2
@@ -122,7 +153,87 @@ def materiau(nom):
     bsdf.inputs["Base Color"].default_value = (r, v, b, 1.0)
     bsdf.inputs["Roughness"].default_value = rugosite
     bsdf.inputs["Metallic"].default_value = 0.0
+    # Le matériau CONSOMME l'attribut de couleur — sans ce nœud, l'exporteur
+    # glTF n'écrit pas `COLOR_0` et la pierre repart en aplat (ISS-066).
+    arbre = mat.node_tree
+    attribut = arbre.nodes.new("ShaderNodeVertexColor")
+    attribut.layer_name = NOM_COULEUR
+    melange = arbre.nodes.new("ShaderNodeMixRGB")
+    melange.blend_type = "MULTIPLY"
+    melange.inputs["Fac"].default_value = 1.0
+    melange.inputs["Color1"].default_value = (r, v, b, 1.0)
+    arbre.links.new(attribut.outputs["Color"], melange.inputs["Color2"])
+    arbre.links.new(melange.outputs["Color"], bsdf.inputs["Base Color"])
     return mat
+
+
+def poser_couleurs(maillage, periode, contraste, pied_facteur, veine,
+                   axe_strate="z", creux=0.0):
+    """Écrit `COLOR_0` : lits d'assise, veines fines, pied assombri.
+
+    Les valeurs sont des MULTIPLICATEURS centrés sur 1,0 — la teinte, elle, se
+    règle une seule fois côté Godot (`TEINTES_TEXTUREES` / `ALBEDO_TOMBEE`).
+    Centrer sur 1,0 et non sur 0,87 est délibéré : le fût est TEXTURÉ, et une
+    couleur de sommet centrée plus bas assombrirait une façade dont la valeur
+    rendue (p50 ≈ 0,33) est déjà au bas de la bande §1.5.
+
+    `axe_strate` vaut "z" pour la maçonnerie debout (les lits sont horizontaux,
+    de pas `ASSISE`) et "auto" pour une pièce tombée, dont le lit suit son plus
+    grand axe — une plaque au sol montre la tranche de son appareil.
+
+    `creux` assombrit ce qui est PRÈS DE L'AXE du fût : c'est le parement
+    intérieur et le fond de la brèche. B-f-1 reproche que « le pan sombre lit
+    comme un second appareil collé au premier » ; une valeur qui décroît vers
+    l'intérieur donne au mur sa profondeur au lieu de la laisser à l'ombrage.
+    """
+    sommets = maillage.vertices
+    if not sommets:
+        return 0
+    etendues = []
+    for axe in range(3):
+        valeurs = [v.co[axe] for v in sommets]
+        etendues.append((min(valeurs), max(valeurs)))
+    if axe_strate == "z":
+        axe = 2
+    else:
+        axe = max(range(3), key=lambda a: etendues[a][1] - etendues[a][0])
+    axe_moyen = max((a for a in range(3) if a != axe),
+                    key=lambda a: etendues[a][1] - etendues[a][0])
+    portee2 = max(1e-6, etendues[axe_moyen][1] - etendues[axe_moyen][0])
+    hauteur = max(1e-6, etendues[2][1])
+    couche = maillage.color_attributes.new(name=NOM_COULEUR,
+                                           type="FLOAT_COLOR", domain="POINT")
+    for i, v in enumerate(sommets):
+        # LIT D'ASSISE. Quantifié en marches puis MÉLANGÉ à l'onde continue
+        # (65/35) : une quantification pure sort en blocs clairs et sombres —
+        # de l'ombrage en escalier, pas un lit de pierre (leçon du cimetière).
+        onde = 0.5 + 0.5 * math.sin(v.co[axe] / periode * 2.0 * math.pi
+                                    + _graine(hauteur * 7.3) * 6.0)
+        marche = 0.65 * (round(onde * 2.0) / 2.0) + 0.35 * onde
+        valeur = 1.0 + contraste * (marche - 0.5)
+        # SECONDE FRÉQUENCE, sur l'axe moyen. Sans elle, un profil pris EN
+        # TRAVERS d'une face rend « étendue 2 » : les lits sont horizontaux,
+        # une coupe horizontale n'en traverse qu'un. Mesuré au cimetière.
+        t2 = (v.co[axe_moyen] - etendues[axe_moyen][0]) / portee2
+        valeur *= 1.0 + 0.17 * math.sin(t2 * 1.7 * 2.0 * math.pi
+                                        + _graine(hauteur * 3.9) * 6.0)
+        # Veines : bruit fin, pour qu'aucune face ne soit un aplat parfait.
+        valeur += _graine(v.co.x * 5.7 + v.co.y * 3.1 + v.co.z * 9.3) * veine
+        # LE PIED EST PLUS SOMBRE — terre, ombre et humidité s'y accumulent, et
+        # c'est ce qui ancre la pièce au sol au lieu de la poser dessus (B-f-3 :
+        # « aucun enfoncement dans le sol »).
+        assise = min(1.0, max(0.0, v.co.z / (pied_facteur * hauteur)))
+        valeur *= 0.68 + 0.32 * assise
+        if creux > 0.0:
+            # Distance à l'axe du fût, normalisée par le demi-entraxe.
+            r = max(abs(v.co.x), abs(v.co.y)) / (HALF + EP)
+            valeur *= 1.0 - creux * (1.0 - min(1.0, r))
+        valeur = min(1.34, max(0.48, valeur))
+        couche.data[i].color = (valeur, valeur, valeur, 1.0)
+    index = maillage.color_attributes.find(NOM_COULEUR)
+    maillage.color_attributes.active_color_index = index
+    maillage.color_attributes.render_color_index = index
+    return len(sommets)
 
 
 def _graine(x):
@@ -354,6 +465,21 @@ def compter_gradins(points):
 # SM_Watchtower_Shell — le fût : quatre murs, brèche, escalier, corbeaux
 # ---------------------------------------------------------------------------
 GRADINS_TOTAL = 0
+## Aire au sol de la dalle de la vigie, en m², mesurée sur son contour réel.
+## C'est la grandeur qui décide si on peut se tenir là-haut, et elle ne dépend
+## d'aucune hypothèse sur la position du bord déchiré — voir garde 3.
+VIGIE_AIRE = 0.0
+
+
+def aire_contour(points):
+    """Aire d'un polygone fermé donné par ses sommets (lacet de Gauss)."""
+    total = 0.0
+    n = len(points)
+    for i in range(n):
+        x0, y0 = points[i]
+        x1, y1 = points[(i + 1) % n]
+        total += x0 * y1 - x1 * y0
+    return abs(total) * 0.5
 
 
 def mur(bm, origine, direction, longueur, h0, h1, graine, plateau, dent,
@@ -377,7 +503,7 @@ def mur(bm, origine, direction, longueur, h0, h1, graine, plateau, dent,
 def coquille(bm):
     """Le fût. Quatre murs, quatre arases, une brèche — et l'histoire des
     deux étages disparus, lisible par la brèche."""
-    global GRADINS_TOTAL
+    global GRADINS_TOTAL, VIGIE_AIRE
     GRADINS_TOTAL = 0
     # OUEST — le plus haut, face au couchant. Il court sur TOUTE la largeur.
     mur(bm, (-HALF, -HALF - EP * 0.5), (0.0, 1.0), 2.0 * HALF + EP,
@@ -463,11 +589,38 @@ def coquille(bm):
     # Épaisseur 0,22 m, dessus à 3,05 m : la ligne des corbeaux. Le joueur
     # y monte, et le paysage entre par la brèche au-dessus de la travée
     # est (arase 3,05 → 1,35) : la récompense-paysage AVANT les flèches.
+    #
+    # LOT 1.R — LA VIGIE S'AGRANDIT, ET C'EST UNE CONTRAINTE, PAS UN CAPRICE.
+    # L'audit demande que la récompense vienne APRÈS l'ascension : le coffre
+    # monte donc sur ce palier. Or l'ancienne dalle mesurait 1,42 × 1,15 m,
+    # dont 1,15 × 0,95 m réservés à la capsule du joueur par la garde 3 : il
+    # n'y avait littéralement pas la place d'y poser autre chose. Elle passe à
+    # 1,90 × 1,38-1,72 m, soit ~2,9 m² au lieu de ~1,6 m².
+    #
+    # LA GARDE 3 NE BOUGE PAS D'UN MILLIMÈTRE (x −1,70..−0,55, y −1,70..−0,75).
+    # C'est délibéré : élargir le palier ET déplacer le contrôle qui prouve
+    # qu'on peut s'y tenir serait exactement la façon dont un portail
+    # s'affaiblit sans que personne ne mente (`tools/CLAUDE.md`). Tout le
+    # mobilier ajouté ci-dessous est donc posé HORS de cette boîte, et la
+    # boîte reste entièrement sur la dalle.
+    #
+    # Le bord déchiré est borné en profondeur (1,38 min) pour que le parapet
+    # puisse s'appuyer dessus au lieu de flotter au-dessus du vide.
+    # 2,325 m (et non 1,90) : le lot 1.R ouvre une BAIE EST sur la dalle.
+    # Raison mesurée, pas d'aisance : à 1,90 m, le coffre posé sur la dalle
+    # se trouvait à 1,3 m de l'œil dans `it/t1/watchtower_gp_vigie_pov.png`
+    # et occupait le quart du cadre de la vue-récompense — il masquait
+    # précisément le paysage qu'il est censé récompenser. La baie le recule
+    # à 1,7 m (surface apparente ×0,58) et lui donne, avec la pierre de
+    # vigie, une place qui n'empiète pas sur le volume de la capsule.
+    VIGIE_LONG = 2.325
     vigie_bas = 3.05 - 0.22
-    profil_bord = profil_dechire(1.42, 1.15, 0.62, 77.0, plateau=0.10,
-                                 dent_pos=0.45)
-    contour_vigie = [(0.0, 0.0)] + [(s, max(0.30, z)) for s, z in profil_bord] \
-        + [(1.42, 0.0)]
+    profil_bord = profil_dechire(VIGIE_LONG, 1.62, 1.44, 77.0, plateau=0.12,
+                                 dent_pos=0.50)
+    contour_vigie = [(0.0, 0.0)] \
+        + [(s, min(1.72, max(1.38, z))) for s, z in profil_bord] \
+        + [(VIGIE_LONG, 0.0)]
+    VIGIE_AIRE = aire_contour(contour_vigie)
     # Contour en plan (s = x depuis le mur ouest, z du profil = étendue y
     # depuis le mur sud), extrudé verticalement de vigie_bas à 3,05.
     avant_v = [bm.verts.new((-HALF + EP * 0.5 + s, -HALF + EP * 0.5 + e,
@@ -483,10 +636,47 @@ def coquille(bm):
     for f in faces_v:
         f.material_index = IDX_PIERRE
     # Deux corbeaux SOUS le bord libre de la vigie : ce qui la porte encore.
-    moellon(bm, (-HALF + EP * 0.5 + 1.30, -HALF + 0.55, vigie_bas - 0.10),
+    # Recalés sur le NOUVEAU bord (l'ancien passait à y = −1,225 / −0,625, donc
+    # désormais en plein sous la dalle, où un corbeau ne se voit pas).
+    moellon(bm, (-HALF + EP * 0.5 + 1.55, -HALF + 1.32, vigie_bas - 0.10),
             (0.30, 0.26, 0.24), 111.0, IDX_PIERRE)
-    moellon(bm, (-HALF + EP * 0.5 + 0.75, -HALF + 1.15, vigie_bas - 0.10),
+    moellon(bm, (-HALF + EP * 0.5 + 0.72, -HALF + 1.48, vigie_bas - 0.10),
             (0.26, 0.30, 0.24), 113.0, IDX_PIERRE)
+
+    # LE PARAPET ROMPU — la mise en scène du palier (lot 1.R).
+    #
+    # Ce que l'audit reproche à ce lieu n'est plus sa silhouette : c'est que
+    # rien ne dise qu'on a VEILLÉ ici. Cinq moellons sur le bord déchiré, de
+    # hauteurs franchement inégales, avec DEUX ouvertures : à l'ouest (x <
+    # −1,10) c'est l'arrivée de l'escalier, et on ne bâtit pas un parapet en
+    # travers d'une marche ; au milieu (x −0,62..−0,26) c'est la brèche du
+    # parapet lui-même — la pierre est partie avec le reste, et c'est par là
+    # que le regard sort vers la vallée.
+    #
+    # POSITIONNEMENT HORS DE LA BOÎTE DE LA GARDE 3, ET LA MARGE SE CALCULE.
+    # `moellon` déplace chacun de ses huit sommets de ±0,30 en x/y : une pierre
+    # de centre `c` et de taille `d` s'étend donc de `c ± 0,575·d`. Il ne suffit
+    # pas que le CENTRE soit hors de la boîte — c'est l'erreur qui a fait
+    # refuser la première tentative, pour UN sommet.
+    # Le parapet est entièrement au NORD de la boîte : y_min = −0,50 −
+    # 0,575·0,30 = −0,672 > −0,75. Et il reste au sud du bord déchiré le plus
+    # court (−1,775 + 1,38 = −0,395), donc réellement POSÉ sur la dalle.
+    for x_par, h_par, g_par in ((-1.06, 0.86, 121.0), (-0.84, 0.62, 123.0),
+                                (-0.62, 0.74, 127.0), (-0.26, 0.44, 131.0),
+                                (-0.04, 0.66, 133.0)):
+        moellon(bm, (x_par, -0.50, 3.05 + h_par * 0.5),
+                (0.24, 0.30, h_par), g_par, IDX_PIERRE)
+
+    # LA PIERRE DE VIGIE — un bloc bas adossé au mur sud, à l'est de la dalle.
+    # C'est le siège du guetteur : la seule pièce du lieu dont la fonction soit
+    # humaine et non structurelle. Elle donne au palier une ÉCHELLE — on lit
+    # tout de suite qu'on peut s'y asseoir — et un ancrage pour l'œil juste à
+    # côté du coffre.
+    # Elle se place au bord déchiré, dans la BRÈCHE du parapet : c'est de là
+    # qu'on regarde. Entièrement à l'EST de la boîte de la garde 3 :
+    # x_min = −0,05 − 0,575·0,50 = −0,338 > −0,55.
+    moellon(bm, (-0.05, -0.62, 3.05 + 0.19), (0.50, 0.44, 0.38), 137.0,
+            IDX_PIERRE)
 
     # LES ANCIENS NIVEAUX. Ligne de plancher 1 à 3,05 m : corbeaux de pierre
     # sur l'ouest et le sud, deux bouts de solives rompues en bois. Ligne 2 à
@@ -498,7 +688,10 @@ def coquille(bm):
     for y in (0.05, 1.25):
         moellon(bm, (-HALF + EP * 0.5 + 0.14, y, 3.05),
                 (0.30, 0.26, 0.22), 91.0 + y, IDX_PIERRE)
-    for x in (0.1, 1.0):
+    # RECALÉS (lot 1.R) : la vigie s'étend désormais jusqu'à x = +0,55 ; les
+    # corbeaux du mur sud à x = 0,1 seraient devenus une bosse SUR le sol
+    # praticable. Ils reculent à l'est, au-delà du bord de la dalle.
+    for x in (0.95, 1.50):
         moellon(bm, (x, -HALF + EP * 0.5 + 0.14, 3.05),
                 (0.26, 0.30, 0.22), 95.0 + x, IDX_PIERRE)
     poutre(bm, (-HALF + EP * 0.5, 0.35, 3.22),
@@ -590,6 +783,21 @@ def bloc_couronne(bm):
 # ---------------------------------------------------------------------------
 # Assemblage, gardes, enregistrement
 # ---------------------------------------------------------------------------
+# Réglages de `COLOR_0` par pièce. Le fût est TEXTURÉ (cartes du kit branchées
+# côté Godot) : la couleur de sommet n'y est qu'une macro-variation, calée sur
+# le pas d'assise, plus le creusement du parement intérieur. Les pièces TOMBÉES
+# sont en APLAT côté Godot : chez elles, `COLOR_0` est la SEULE matière, d'où un
+# contraste et des veines nettement plus forts.
+#     (période, contraste, pied_facteur, veine, axe, creux)
+COULEURS_PAR_PIECE = {
+    "SM_Watchtower_Shell": (2.0 * ASSISE, 0.26, 0.22, 0.10, "z", 0.16),
+    "SM_Watchtower_Talus": (0.34, 0.40, 0.75, 0.19, "auto", 0.0),
+    "SM_Watchtower_Slab_A": (0.52, 0.38, 0.60, 0.17, "auto", 0.0),
+    "SM_Watchtower_Slab_B": (0.46, 0.38, 0.60, 0.17, "auto", 0.0),
+    "SM_Watchtower_CrownBlock": (0.58, 0.36, 0.55, 0.16, "auto", 0.0),
+}
+
+
 def objet_depuis(nom, remplir):
     maillage = bpy.data.meshes.new(nom)
     bm = bmesh.new()
@@ -601,6 +809,11 @@ def objet_depuis(nom, remplir):
     bas = min(v.co.z for v in maillage.vertices)
     for v in maillage.vertices:
         v.co.z -= bas
+    # APRÈS le recalage de la base : `poser_couleurs` lit `v.co.z` pour
+    # assombrir le pied, et le ferait au mauvais endroit sur une pièce non
+    # recalée. Ordre non commutatif, d'où ce commentaire.
+    periode, contraste, pied, veine, axe, creux = COULEURS_PAR_PIECE[nom]
+    poser_couleurs(maillage, periode, contraste, pied, veine, axe, creux)
     obj = bpy.data.objects.new(nom, maillage)
     for nom_mat in ORDRE_MATERIAUX:
         obj.data.materials.append(materiau(nom_mat))
@@ -685,25 +898,93 @@ def main():
     print("[watchtower_ruin] brèche : volume de passage libre (0 sommet)")
 
     # GARDE 3 — LA VIGIE EXISTE ET ON PEUT S'Y TENIR (arbitrage compo B).
-    # a. une surface à 3,05 m d'au moins ~1 m² dans le quart sud-ouest ;
+    # a. une dalle à 3,05 m d'aire suffisante dans le quart sud-ouest ;
     # b. AUCUNE géométrie dans le volume où se tient la capsule du joueur
     #    au-dessus de la dalle (1,05–2,0 m au-dessus du sol de la vigie).
+    #
+    # LA MESURE DE (a) A CHANGÉ AU LOT 1.R, ET C'EST UNE CORRECTION, PAS UN
+    # ASSOUPLISSEMENT. L'ancienne comptait les sommets à z = 3,05 vérifiant
+    # `x < −0,30 et y < −0,55`. Ces deux bornes n'étaient pas le quart
+    # sud-ouest : c'était la position du BORD DÉCHIRÉ de la dalle d'alors.
+    # En agrandissant la dalle, son bord est parti vers le nord (y ≥ −0,395),
+    # et la garde a compté 4 sommets au lieu de 8 — donc REFUSÉ D'ENREGISTRER
+    # une dalle deux fois plus grande que celle qu'elle acceptait. Elle
+    # mesurait la forme d'hier, pas la propriété qu'on veut.
+    #
+    # La propriété qu'on veut est une AIRE. Elle est calculée sur le contour
+    # réel (lacet de Gauss) et comparée à celle de la dalle précédente, dont
+    # les cotes sont conservées ici pour que le plancher soit une MESURE et
+    # non un chiffre choisi : `profil_dechire(1.42, 1.15, 0.62, 77.0, 0.10,
+    # 0.45)` clampé à 0,30, soit 1,197 m². Le plancher est donc l'ancienne
+    # dalle elle-même : la garde ne peut pas accepter moins qu'avant.
+    ancien_profil = profil_dechire(1.42, 1.15, 0.62, 77.0, plateau=0.10,
+                                   dent_pos=0.45)
+    aire_ancienne = aire_contour(
+        [(0.0, 0.0)] + [(s, max(0.30, z)) for s, z in ancien_profil]
+        + [(1.42, 0.0)])
+    if VIGIE_AIRE < aire_ancienne:
+        print("[watchtower_ruin] ERREUR: dalle de vigie %.3f m² < plancher "
+              "%.3f m² (l'ancienne dalle)" % (VIGIE_AIRE, aire_ancienne))
+        return 2
+    # Et la dalle est bien LÀ, à la bonne cote, dans le bon quadrant : sans ce
+    # second contrôle, une aire correcte pourrait décrire un contour posé
+    # n'importe où. Les bornes sont ici celles du QUADRANT (le fût intérieur
+    # va de −1,775 à +1,775 ; son quart sud-ouest est x ≤ 0,20, y ≤ −0,20),
+    # pas celles d'un bord particulier.
     dalle = sum(1 for v in shell.data.vertices
-                if abs(v.co.z - 3.05) < 0.02 and v.co.x < -0.30
-                and v.co.y < -0.55)
+                if abs(v.co.z - 3.05) < 0.02 and v.co.x < 0.20
+                and v.co.y < -0.20)
     if dalle < 8:
         print("[watchtower_ruin] ERREUR: vigie absente (%d sommet(s) à "
               "z=3,05 dans le quart SO)" % dalle)
         return 2
-    obstacles = sum(1 for v in shell.data.vertices
-                    if -1.70 <= v.co.x <= -0.55 and -1.70 <= v.co.y <= -0.75
-                    and 3.30 <= v.co.z <= 4.90)
+    print("[watchtower_ruin] vigie : dalle %.3f m² (plancher %.3f m², "
+          "ancienne dalle)" % (VIGIE_AIRE, aire_ancienne))
+    # Les coupables sont NOMMÉS par leurs coordonnées : un compte seul oblige
+    # la passe suivante à deviner lequel des huit sommets jittés d'un moellon
+    # dépasse, et c'est une demi-heure perdue (mesuré ici même).
+    intrus_capsule = [(v.co.x, v.co.y, v.co.z) for v in shell.data.vertices
+                      if -1.70 <= v.co.x <= -0.55
+                      and -1.70 <= v.co.y <= -0.75 and 3.30 <= v.co.z <= 4.90]
+    obstacles = len(intrus_capsule)
     if obstacles:
         print("[watchtower_ruin] ERREUR: %d sommet(s) dans le volume de la "
-              "capsule au-dessus de la vigie" % obstacles)
+              "capsule au-dessus de la vigie : %s" % (obstacles, ", ".join(
+                  "(%.3f, %.3f, %.3f)" % p for p in intrus_capsule[:6])))
         return 2
     print("[watchtower_ruin] vigie : dalle présente (%d sommets), volume "
           "capsule libre" % dalle)
+
+    # GARDE 4 — COLOR_0 PRÉSENTE, ACTIVE ET DE RENDU (ISS-066).
+    # `tools/gltf_inspect.py` ne regarde JAMAIS COLOR_0 : il répondrait
+    # `VALIDE` sur un asset qui vient de perdre toute sa matière. La seule
+    # vérification possible est ici, à la source, et elle REFUSE d'enregistrer.
+    sans = [o.name for o in pieces
+            if o.data.color_attributes is None
+            or NOM_COULEUR not in o.data.color_attributes]
+    if sans:
+        print("[watchtower_ruin] ERREUR: %d pièce(s) sans COLOR_0 : %s"
+              % (len(sans), ", ".join(sans)))
+        return 2
+    mal_reglees = [o.name for o in pieces
+                   if o.data.color_attributes.active_color_index
+                   != o.data.color_attributes.find(NOM_COULEUR)
+                   or o.data.color_attributes.render_color_index
+                   != o.data.color_attributes.find(NOM_COULEUR)]
+    if mal_reglees:
+        print("[watchtower_ruin] ERREUR: COLOR_0 pas active/de rendu sur : %s"
+              % ", ".join(mal_reglees))
+        return 2
+    etendue_min = 9.9
+    for o in pieces:
+        valeurs = [d.color[0] for d in o.data.color_attributes[NOM_COULEUR].data]
+        etendue_min = min(etendue_min, max(valeurs) - min(valeurs))
+    if etendue_min < 0.20:
+        print("[watchtower_ruin] ERREUR: étendue de COLOR_0 trop faible "
+              "(min %.3f) — l'aplat reviendrait" % etendue_min)
+        return 2
+    print("[watchtower_ruin] COLOR_0 : %d pièces, active ET de rendu, "
+          "étendue min %.3f" % (len(pieces), etendue_min))
 
     sortie = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                           "SM_Watchtower_Ruin.blend")

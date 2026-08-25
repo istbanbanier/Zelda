@@ -125,10 +125,21 @@ func _build() -> void:
 	_talus(base_y)
 	_vegetation_de_fissure(core)
 
-	# — Découverte et récompense. Le coffre est DANS le fût, au pied de la
-	# brèche : c'est le seul endroit du lieu qui soit à la fois abrité et
-	# atteignable de plain-pied. L'approche vient de l'est, par la brèche
-	# elle-même — pas par un mur.
+	# — Découverte et récompense.
+	#
+	# LOT 1.R — LE COFFRE MONTE SUR LE PALIER, et c'est une correction de MISE
+	# EN SCÈNE, pas de décoration. L'intention imposée dit « du sommet, le
+	# paysage est la récompense AVANT les flèches » ; le coffre était au sol,
+	# au pied de la brèche, donc atteint AVANT toute ascension — l'ascension ne
+	# récompensait rien et le paysage n'était qu'un détour facultatif. Il est
+	# désormais sur la vigie, à côté de la pierre du guetteur : on monte, on
+	# voit la vallée, et le coffre est là.
+	#
+	# CE QUI NE CHANGE PAS, et c'est la limite du geste : le `Kind`,
+	# l'identifiant du lieu, la table de butin et le système de récompense.
+	# Seules bougent la position LOCALE, le point d'approche, et le drapeau de
+	# traversée — qui doit passer à `true` parce qu'une preuve par navigation
+	# serait complaisante pour un point à 2,77 m au-dessus du sol.
 	var poi: PointOfInterest = PointOfInterest.new()
 	poi.name = "Decouverte"
 	poi.poi_id = default_place_id()
@@ -141,9 +152,92 @@ func _build() -> void:
 	shape.shape = sphere
 	poi.add_child(shape)
 	add_child(poi)
-	RewardAnchor.attach(self, default_place_id(), RewardAnchor.Kind.CHEST,
-		_seated(CORE_X + 0.9, CORE_Z - 0.7) + Vector3(0.0, 0.1, 0.0),
-		Vector3(CORE_X + 3.4, 0.0, CORE_Z - 1.2))
+	# Cotes lues sur le maillage, pas devinées : la dalle de la vigie a son
+	# dessus à z = 3,05 dans le repère du GLB, lequel est enfoncé de
+	# `ENFONCEMENT` — d'où `base_y + 3,05 − ENFONCEMENT`. Le coffre est posé à
+	# l'EST de la dalle (x local au fût −0,15), hors du volume réservé à la
+	# capsule du joueur par la garde 3 du générateur (x −1,70..−0,55).
+	var vigie_y: float = base_y + 3.05 - ENFONCEMENT
+	var ancre: RewardAnchor = RewardAnchor.attach(self, default_place_id(),
+		RewardAnchor.Kind.CHEST,
+		Vector3(CORE_X + 0.30, vigie_y, CORE_Z + 1.50),
+		Vector3(CORE_X - 1.05, vigie_y, CORE_Z + 1.25), true)
+	# Pied de la montée : le seuil de la brèche, là où l'ascension commence.
+	# Sans lui, un lieu marqué `requires_traversal` est INCOMPLET et l'audit
+	# doit le dire au lieu de le laisser passer (`reward_anchor.gd`).
+	ancre.traversal_base = Vector3(CORE_X + 3.4, base_y, CORE_Z - 1.2)
+	ancre.child_entered_tree.connect(_sur_recompense)
+
+
+## HABILLAGE LOCAL DE LA RÉCOMPENSE — LOT 1.R, correction B-f-2.
+##
+## Ce que l'audit a mesuré : « le coffre rend une petite cabane à pignon
+## bleu-gris avec un disque brun ; sa famille de teinte n'appartient à aucune
+## matière du lieu ». Le MODÈLE de l'ancre est une ressource PARTAGÉE et ne se
+## remplace pas ; sa SURFACE, elle, s'habille sur une COPIE, pour cette
+## instance seulement — c'est le geste déjà employé au cimetière et au
+## sanctuaire, et il ne touche aucune ressource d'un autre lieu.
+##
+## Réglage : 45 % de désaturation et un refroidissement léger. Plus doux que le
+## cimetière (55 %) parce qu'ici le coffre est SEUL sur un palier de pierre
+## grise, sans champ de stèles pour lui disputer l'œil : trop l'éteindre le
+## ferait disparaître au moment précis où il est la récompense de l'ascension.
+## On désature et on assombrit ; on ne repeint pas — un coffre doit rester un
+## coffre ouvrable.
+func _sur_recompense(noeud: Node) -> void:
+	if noeud.is_node_ready():
+		_habiller_recompense(noeud)
+	else:
+		noeud.ready.connect(_habiller_recompense.bind(noeud), CONNECT_ONE_SHOT)
+
+
+func _habiller_recompense(racine: Node) -> void:
+	if racine == null or not is_instance_valid(racine):
+		return
+	var cibles: Array[Node] = racine.find_children("*", "MeshInstance3D",
+		true, false)
+	if racine is MeshInstance3D:
+		cibles.append(racine)
+	for noeud: Node in cibles:
+		var instance: MeshInstance3D = noeud as MeshInstance3D
+		if instance.mesh == null:
+			continue
+		for surface: int in range(instance.mesh.get_surface_count()):
+			var base: StandardMaterial3D = instance.get_active_material(
+				surface) as StandardMaterial3D
+			if base == null:
+				continue
+			var mat: StandardMaterial3D = base.duplicate() as StandardMaterial3D
+			var c: Color = mat.albedo_color
+			var gris: float = c.get_luminance()
+			# Le facteur multiplicatif est le SEUL levier quand la surface
+			# porte une texture : son `albedo_color` est alors quasi blanc, et
+			# désaturer du blanc ne fait rien (mesuré au cimetière). D'où les
+			# trois facteurs légèrement différents — ils refroidissent la carte
+			# sans la remplacer.
+			# LE SENS DES TROIS FACTEURS EST L'INVERSE DE CELUI DU CIMETIÈRE,
+			# ET C'EST MESURÉ. Première tentative, recopiée du cimetière :
+			# (0,74 / 0,77 / 0,83), donc le bleu MOINS atténué que le rouge —
+			# un refroidissement. Sur la capture `it/t1/gp_vigie_pov.png`, les
+			# ferrures du coffre rendaient un bleu franchement saturé au
+			# premier plan de la vue-récompense : refroidir un objet DÉJÀ bleu
+			# l'enfonce. Ici on atténue le bleu PLUS que le rouge, ce qui
+			# ramène les ferrures vers le gris-fer du lieu.
+			# La désaturation passe aussi de 0,45 à 0,55 : elle n'agit que sur
+			# les surfaces à couleur plate (le bois), mais elle y agit.
+			mat.albedo_color = Color(
+				lerpf(c.r, gris, 0.55) * 0.80,
+				lerpf(c.g, gris, 0.55) * 0.76,
+				lerpf(c.b, gris, 0.55) * 0.64, c.a)
+			mat.roughness = maxf(mat.roughness, 0.94)
+			mat.metallic_specular = 0.1
+			# `material_override` PRIME sur les surcharges de surface : écrire
+			# une surcharge sur une instance qui en porte un ne ferait RIEN,
+			# en silence.
+			if instance.material_override != null:
+				instance.material_override = mat
+			else:
+				instance.set_surface_override_material(surface, mat)
 
 
 ## L'INTÉRIEUR, visible par la brèche : les volées d'escalier vivent dans
@@ -174,8 +268,13 @@ func _ascension(core: Node3D) -> void:
 		Vector3(-1.375, 1.76 - e, -1.45), Vector3(-1.375, 3.05 - e, 0.62), 0.75)
 	K.collider_box(core, "Guet_palier_tournant",
 		Vector3(-1.15, 1.52 - e, -1.42), Vector3(0.90, 0.20, 0.70))
+	# LA VIGIE S'EST AGRANDIE (lot 1.R) : 1,90 m d'est en ouest, et 1,38 m de
+	# profondeur GARANTIE — le bord déchiré va jusqu'à 1,72 m par endroits,
+	# mais un corps de collision se dimensionne sur le MINIMUM du maillage,
+	# sinon il déborde dans le vide et fabrique une corniche invisible.
+	# Centre en x : (−1,775 + 0,55) / 2 = −0,6125 ; en z : 1,775 − 1,38/2.
 	K.collider_box(core, "Guet_vigie",
-		Vector3(-1.065, 2.94 - e, 1.19), Vector3(1.42, 0.22, 1.18))
+		Vector3(-0.6125, 2.94 - e, 1.085), Vector3(2.325, 0.22, 1.38))
 
 
 ## Un corps incliné dont la FACE SUPÉRIEURE passe par le segment
@@ -214,8 +313,14 @@ func _collider_rampe(parent: Node3D, nom: String, depart: Vector3,
 ## s'arrête à la brèche — voilà où est parti le reste).
 func _talus(base_y: float) -> void:
 	# Le talus d'éclats, au pied de la brèche, en éventail vers l'est.
+	# ENFONCÉ DE 14 cm (lot 1.R). L'audit reproche aux pièces tombées « aucune
+	# épaisseur visible sous cet angle, aucun enfoncement dans le sol » (B-f-3),
+	# et la capture le confirme : chaque éclat rencontre l'herbe sur une ligne
+	# nette, comme une découpe posée dessus. Un éboulis, lui, se BAT dans le sol
+	# — la ligne de contact doit disparaître sous l'herbe, pas la border.
 	var talus_at: Vector3 = _seated(1.9, -0.3)
-	_piece_tour(self, "SM_Watchtower_Talus", talus_at, Vector3.ZERO, "tombee")
+	_piece_tour(self, "SM_Watchtower_Talus",
+		talus_at + Vector3(0.0, -0.14, 0.0), Vector3.ZERO, "tombee")
 	declare_support(talus_at)
 	# Deux pans de mur TOMBÉS entiers : la maçonnerie du haut est retombée
 	# par plaques, elle ne s'est pas dissoute en cailloux. Enfoncés de
@@ -303,7 +408,7 @@ func _trainee_de_chute() -> void:
 			[2.55, -2.60, 0.21, 133.0]]:
 		var at: Vector3 = _seated(float(spec[0]), float(spec[1]))
 		var chute: Node3D = _piece_tour(self, "SM_Watchtower_Talus",
-			at + Vector3(0.0, -0.06, 0.0),
+			at + Vector3(0.0, -0.11, 0.0),
 			Vector3(0.0, deg_to_rad(float(spec[3])), 0.0), "tombee",
 			"Chute_%d" % int(float(spec[2]) * 100.0))
 		chute.scale = Vector3.ONE * float(spec[2])
@@ -415,6 +520,20 @@ func _peindre_glb(racine: Node3D, variante: String = "mur") -> void:
 				mat = base.duplicate() as StandardMaterial3D
 				mat.roughness = maxf(mat.roughness, 0.95)
 				mat.metallic_specular = 0.1
+				# LE MULTIPLICATEUR DE COULEUR DE SOMMET — LOT 1.R.
+				#
+				# Sans cette ligne, le `COLOR_0` que le générateur vient
+				# d'écrire dans le GLB ne sert À RIEN : Godot ne l'active pas
+				# d'office à l'import, et la surface repart en aplat
+				# (ISS-066). C'est le geste jumeau de celui de la source
+				# Blender ; l'un sans l'autre ne produit aucun pixel.
+				#
+				# Ce que la mesure reprochait : « dalle claire au pied de la
+				# tour, gp_breche y = 520 : 141 constant, puis 78 constant —
+				# étendue 0 par plage » (B-f-4) et « les blocs tombés sont des
+				# polygones plats » (B-f-3). Sur les pièces `tombee`, peintes
+				# en APLAT, la couleur de sommet est la seule matière possible.
+				mat.vertex_color_use_as_albedo = true
 				if variante == "tombee":
 					# Aplat painterly : la géométrie à facettes porte la
 					# lecture, pas la carte (voir ALBEDO_TOMBEE).
