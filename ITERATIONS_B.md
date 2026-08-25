@@ -212,10 +212,200 @@ laissée pour l'itération suivante : lisser les normales change la valeur
 moyenne, et la recaler maintenant reviendrait à calibrer sur un chiffre
 périmé.
 
-**Vérification due (demande du coordinateur)** : l'emprise du sanctuaire
-change (≈ 2,7 × 4,5 m → ≈ 4,7 × 5,5 m). Le verdict R-D3 doit donc être rejoué
-sur silhouettes — `tools/godot/capture_silhouette.gd` puis
-`tools/lot1_repetition.py` — avant la clôture. Le filet D4 et l'ancre de
-récompense ne sont PAS concernés ici : le lieu n'a pas été déplacé, aucune
-caméra gelée n'a bougé, aucun collider nouveau n'est apparu (les quatre
-marques d'angle sont sous la hauteur de marche) et l'ancre reste sur la table.
+### Après capture — `it/t2/` (commit `bc484a2`, manifeste **propre**)
+
+Chaîne : trois GLB régénérés VERT · `--import` RC=0 · trois `--check-only`
+RC=0 · capture RC=0. Zone TÉMOIN hors lieu, mesurée dans les mêmes images :
+herbe du cimetière p50 113,0 → 113,0 ; herbe du sanctuaire p50 87,8 → 87,9.
+**Le monde gelé n'a pas bougé** — les écarts qui suivent appartiennent bien
+aux lieux.
+
+#### T2-a Tour — **visible**
+
+| Sujet | Vue, ligne | base | t2 |
+|---|---|---|---|
+| Éboulis premier plan | `joueur`, y=560 | 37 valeurs | **52 valeurs** |
+| Ancien emplacement du coffre | `joueur`, zone | RVB (84, 88, 89) | **(62, 69, 58)** |
+| Pixels bleutés du coffre | `gp_vigie_pov` | 53 334 (t1) | **31 624 (−41 %)** |
+
+Ce que je vois : le coffre a quitté le sol et **s'aperçoit là-haut par la
+brèche** depuis la vue joueur — on comprend qu'il faut monter. Depuis le
+palier, la vallée est rouverte sur les deux tiers gauches et le coffre est
+devenu un premier plan de bord de cadre, ferrures gris-fer et non plus bleu
+vif. L'éboulis est mieux assis. L'intérieur de la tour montre enfin un plancher
+et une tranche d'arase depuis `identite` — la nuance de B-f-1.
+**Reste** : la grande plaque tan à droite de la vue joueur est toujours une
+face plane à arête droite ; elle a gagné de la matière, pas de la forme.
+
+#### T2-b Sanctuaire — **visible, insuffisant**
+
+Emprise de pierre dans la vue d'identité, mesurée par masque de saturation :
+**185 × 134 px → 258 × 154 px**, pixels de pierre 6 684 → 7 980 (+19 %).
+`shrine_gp_route_p1` ne montre **toujours rien** du lieu : l'élargissement n'a
+pas cassé le contrat d'invisibilité depuis la route, et c'était le risque.
+
+Ce que je vois : le lieu n'est plus coupé en deux par le tronc gelé — il
+déborde des deux côtés. Les chaussettes de mousse ne sont plus toutes à la
+même hauteur. Mais **chaque chaussette reste une bande à bord net**, et la
+cause est structurelle et nommable : la mousse est un MATÉRIAU PAR FACE sur
+une pierre de 58 à 196 triangles ; une face est moussue ou ne l'est pas, il
+n'existe aucun dégradé possible. Varier la hauteur par face déplace le bord,
+elle ne l'adoucit pas. Le corriger demanderait de porter la mousse par
+`COLOR_0` ou par une carte, pas par un index de matériau — c'est une reprise
+de fond, pas un réglage.
+Le lieu ne lit toujours pas « un seuil → une enceinte → un cœur » : le
+vocabulaire est un prisme dressé répété neuf fois.
+
+#### T2-c Cimetière — **visible et net sur le tertre**
+
+**La mesure que j'avais choisie n'a rien vu, et c'est le fait le plus utile de
+cette itération.** Sur le flanc du dos : p50 68,4 → 69,8, étendue p10-p90
+identique à 59,1, valeurs distinctes 61 → 62. Autrement dit rien — alors que
+l'image, ouverte à taille réelle, montre sans ambiguïté que les bandes
+radiales ont disparu.
+
+Moyenne, percentile et compte de valeurs distinctes sont **aveugles à
+l'arrangement spatial** : une surface lisse et une surface rayée peuvent avoir
+exactement la même distribution. C'est ISS-018 sous une autre forme — un
+chiffre juste sur une grandeur qui n'est pas celle qu'on croit mesurer. D'où
+`oscillations()` dans `tools/mesure_valeur.py` : le nombre de renversements de
+pente compte les BANDES.
+
+Sur une ligne entièrement dans le tertre secondaire, sans stèle pour polluer :
+
+| Ligne | base | t2 |
+|---|---|---|
+| y=375, x 1010→1230 | 4 renversements, profil en sauts (72..82, 85..90, 95, 99) | **0 renversement**, rampe continue 75…90 |
+| y=390, x 1010→1230 | 2 renversements | **1 renversement** |
+
+Le recadrage à ×4 est sans appel : avant, six à sept panneaux séparés par des
+plis nets ; après, un renflement continu. La citrouille est morte.
+Les stèles passent de 23 à 33 valeurs distinctes en travers (y=430) : la
+quantification s'est adoucie sans perdre l'étendue.
+
+**Reste, et c'est nommé** : le tertre est toujours 43 niveaux sous l'herbe
+(69,8 contre 113,0) — la réserve de revue tient. → traité en T3.
+
+---
+
+## T3 — la valeur de la terre, l'assise des stèles, le cœur du sanctuaire
+
+Trois changements, tous en GDScript (aucun générateur touché, donc aucun GLB
+régénéré). Journal et raisons complets dans le message du commit `26c9d2d`.
+Chaîne exécutée dans l'ordre imposé par `evidence.md` : parse → **commit** →
+capture, pour que le manifeste porte un arbre propre et le hash prouvé.
+
+Défaut → cause → levier → attendu → caméra :
+- Tertre 43 niveaux sous l'herbe → albédo `TERRE` calé pour une bande de
+  valeur qui n'est plus la bonne → ×1,55, raisonné depuis la sortie sRGB visée
+  et non tâtonné → p50 du flanc vers ~90, écart ramené à ~22 niveaux →
+  `barrow_cemetery_joueur` (avec la même zone témoin d'herbe).
+- Stèles posées sur l'herbe, ligne de contact nette → enfoncement à 0,0 →
+  0,26 / 0,20 / 0,15 m + deux inclinaisons d'un cran, colliders suivis →
+  les pierres émergent au lieu d'être posées → `barrow_cemetery_joueur`,
+  `barrow_gp_chemin`.
+- Table du sanctuaire vue de champ, aussi large qu'un socle → jamais élargie →
+  +30 % en XZ SEULEMENT (l'axe Y porte `TABLE_DESSUS`, dont dépend l'ancre) →
+  le cœur domine les murs → `shrine_gp_nef`, `shrine_gp_coeur`.
+
+### Après capture — `it/t3/` (commit `26c9d2d`, manifeste **`repo_dirty: true`**)
+
+> **Aveu, et il compte.** Le lot `it/t3` est complet et son code est bien celui
+> de `26c9d2d`, mais son manifeste porte `repo_dirty: true` : j'éditais CE
+> FICHIER pendant que le moteur rendait. Le seul fichier sale au moment de
+> l'écriture du manifeste était `ITERATIONS_B.md` — vérifié par
+> `git status --porcelain --untracked-files=no`, un document, ni code ni asset.
+> Mais `.claude/rules/evidence.md` ne connaît pas les demi-mesures : *« une
+> capture prise d'un arbre sale ne prouve rien et ne doit pas être versée »*.
+> **`it/t3` est donc un lot DIAGNOSTIQUE, pas une preuve de gate**, et les
+> chiffres ci-dessous se lisent comme tels. Le remède est mécanique — recapturer
+> d'un arbre propre — et coûte un lot complet (~50 min de verrou partagé) ; je
+> le laisse à l'arbitrage du lead plutôt que de le prendre sur le temps commun.
+> `it/t2` (`bc484a2`), lui, est propre.
+
+Chaîne : `--import` RC=0 · deux `--check-only` RC=0 · **commit** · capture.
+L'ordre est celui d'`evidence.md` — le code est committé AVANT la capture qui
+le prouve, pas l'inverse.
+
+#### Cimetière, la valeur — **visible, et l'objectif est atteint à 1,3 niveau près**
+
+| Zone | t2 | t3 |
+|---|---|---|
+| Flanc éclairé du dos | p50 **69,8**, p10 37,8 | p50 **86,7**, p10 56,4 |
+| Herbe TÉMOIN, même image | p50 113,0 | p50 **113,0** |
+| Écart tertre ↔ herbe | **43,2 niveaux** | **26,3 niveaux** |
+
+Visé : 20 à 25. Obtenu : 26,3 — un cran au-dessus, sans nouvelle itération,
+parce que l'écart restant est du bon ordre et que le tertre doit rester plus
+sombre que la steppe. Le p10 qui monte de 37,8 à 56,4 compte autant que la
+médiane : le flanc à l'ombre n'est plus un noir bouché.
+Le témoin est identique **au dixième** : l'écart appartient bien au lieu.
+
+Ce que je vois : les dos se lisent désormais comme de la **terre sous une
+herbe rase**, pas comme des ombres portées. Les trois masses se distinguent
+enfin les unes des autres et du sol.
+
+#### Cimetière, l'assise — **visible**
+
+Les trois stèles dressées s'enfoncent de 0,26 / 0,20 / 0,15 m et leurs corps
+suivent. Sur la capture, leur pied disparaît dans l'herbe et dans le flanc des
+dos au lieu de rencontrer le sol sur une ligne nette : « les tombes émergent de
+la colline » cesse d'être une phrase.
+
+#### Sanctuaire, le cœur — **faible**
+
+Largeur de la dalle de table sur `shrine_gp_nef`, ligne y=378 : **236 → 283 px**
+(+20 % ; le gain est inférieur aux 30 % appliqués à cause du raccourci
+perspectif, ce qui est cohérent). La table est donc mesurablement plus large et
+porte maintenant une ombre propre sous son plateau.
+Mais je ne prétendrai pas que « le cœur domine les murs » : à cette caméra, le
+lieu se lit encore comme une dispersion de fûts gris de même famille. Le gain
+est réel et petit.
+
+---
+
+## Ce qui reste, nommé
+
+1. **Sanctuaire — le vocabulaire.** Neuf pièces sur neuf sont des prismes
+   dressés irréguliers issus de la même fonction (`pierre_rompue`). Le contrat
+   demande un SEUIL, une ENCEINTE, un CŒUR : trois rôles, trois formes. Tant
+   qu'il n'y a qu'une forme, aucune implantation ne fera lire trois rôles.
+   C'est une reprise du générateur, pas un réglage.
+2. **Sanctuaire — la mousse.** Elle est portée par un INDEX DE MATÉRIAU par
+   face, sur des pièces de 58 à 196 triangles : une face est moussue ou ne
+   l'est pas. Le bord net est donc structurel. Le porter par `COLOR_0` (déjà
+   présent dans ce GLB) ou par une carte est le seul chemin.
+3. **Cimetière — la forme des stèles.** Ce sont encore des dalles à côtés
+   parallèles et bouts coupés net. Enfoncées et inclinées, elles sont mieux
+   assises ; elles ne sont pas cassées.
+4. **Tour — la grande plaque tan** de la vue joueur reste une face plane à
+   arête droite. `COLOR_0` lui a donné du dégradé, pas du volume.
+5. **Le coffre**, aux deux lieux qui en portent un, reste l'objet le plus
+   saturé de son cadre. Il est habillé LOCALEMENT au maximum de ce qu'une
+   copie de matériau permet (−41 % de pixels bleutés à la tour) ; au-delà, le
+   modèle est une ressource **partagée** et ne m'appartient pas — c'est le
+   point 17 transverse de l'audit, à trancher par le lead.
+6. **Vérification R-D3 : DUE, NON EXÉCUTÉE.** L'emprise du sanctuaire change
+   (≈ 2,7 × 4,5 m → ≈ 4,7 × 5,5 m) et le coordinateur l'a explicitement
+   demandée. Elle exige un lot de silhouettes en aplat noir puis le détecteur :
+   ```
+   tools/lancer_godot.sh --rendu --path . --script tools/godot/capture_silhouette.gd -- …
+   python3 tools/lot1_repetition.py --manifestes <…> --out <…>
+   ```
+   Je ne l'ai pas lancée : le verrou du moteur est partagé et chaque lot de
+   captures a coûté ~50 min ce soir. **Statut : `NON VÉRIFIÉ`**, à ne pas
+   convertir en `PASS` par déduction.
+
+**Les deux autres vérifications demandées par le coordinateur sont, elles,
+faites et négatives** — c'est-à-dire qu'il n'y avait rien à corriger :
+- **filet D4 / caméras gelées** : le sanctuaire n'a pas été DÉPLACÉ, seulement
+  élargi ; aucune caméra n'a bougé ; les quatre marques d'angle ajoutées sont
+  des `Socle_C` de 0,60 m, sous la hauteur de marche, donc **sans collider** —
+  le filet des routes ne compte que les corps solides. Contrôle visuel direct :
+  `it/t2/shrine_gp_route_p1.png` ne montre toujours **rien** du lieu depuis la
+  route à 7,3 m, ce qui est le contrat d'identité du sanctuaire.
+- **ancre de récompense** : au sanctuaire elle n'a pas bougé (la table s'élargit
+  en XZ seulement, `TABLE_DESSUS` inchangé à 0,89 m). À la tour elle a bougé
+  volontairement — position locale, point d'approche et `requires_traversal`
+  uniquement, avec `traversal_base` au seuil de la brèche ; ni `Kind`, ni
+  identifiant, ni table de butin, ni système.
