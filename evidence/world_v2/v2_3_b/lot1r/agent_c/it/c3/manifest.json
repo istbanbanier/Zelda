@@ -1,0 +1,83 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "4daddca1cf50237f1f45ea69fd89cacc9ea3a2c5",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {
+    "geometrie": {
+      "chemin": "assets/architecture/barrow/SM_Barrow_Stones.glb",
+      "commit": "3d9f5c9e31c5bf42630b8b6bef25f72553210ac3",
+      "sha256": "57c20e9530afa97c83f15748aa41ff5f804a2a1d48c274d806c48aac41140404"
+    },
+    "lieu": {
+      "chemin": "scripts/world_v2/poi/barrow_cemetery_place.gd",
+      "commit": "4daddca1cf50237f1f45ea69fd89cacc9ea3a2c5",
+      "sha256": "06d09ed20dfc88a0b87afd2dd528f42cbf0ff1eee6d7aa4bd32314f3658c06cb"
+    }
+  },
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 55.0,
+      "from": [
+        67.0,
+        12.0,
+        -83.1
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_c/it/c3/barrow_cemetery_identite.png",
+      "look": [
+        56.0,
+        6.0,
+        -64.0
+      ],
+      "name": "barrow_cemetery_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        50.0,
+        5.7,
+        -53.6
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_c/it/c3/barrow_cemetery_joueur.png",
+      "look": [
+        56.0,
+        5.2,
+        -64.0
+      ],
+      "name": "barrow_cemetery_joueur"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        54.6,
+        6.8,
+        -53.5
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_c/it/c3/barrow_gp_gueule.png",
+      "look": [
+        54.22,
+        6.2,
+        -61.6
+      ],
+      "name": "barrow_gp_gueule"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        45.5,
+        6.8,
+        -55.5
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_c/it/c3/barrow_gp_chemin.png",
+      "look": [
+        53.8,
+        6.2,
+        -61.4
+      ],
+      "name": "barrow_gp_chemin"
+    }
+  ],
+  "size": "1280x720"
+}

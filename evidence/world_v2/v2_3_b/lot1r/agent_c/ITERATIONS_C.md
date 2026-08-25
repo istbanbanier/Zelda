@@ -352,3 +352,47 @@ Les trois derniers points ci-dessus.
 ### Caméras qui doivent le montrer
 
 `barrow_gp_gueule` · `barrow_cemetery_identite` · silhouette 0°.
+
+### Après capture — `it/c3/` (commit `4daddca`, manifeste **propre**)
+
+Chaîne : aucun générateur touché (donc aucun GLB régénéré) · `--check-only`
+RC=0 · **commit** · capture RC=0.
+
+**Zone TÉMOIN hors lieu** : herbe p50 110,6 → 109,7 ; RGB (104, 117, 68) →
+(103, 115, 68) ; saturation 0,265 → 0,262. Écart sous 1 % sur les trois
+grandeurs : le monde gelé n'a pas bougé.
+
+| Mesure | base (`candidate/ab13`) | `it/c3` | commentaire |
+|---|---:|---:|---|
+| Tertre, p50 du dos | 85,6 | **94,5** | +8,9 — la valeur MONTE, elle ne régresse pas |
+| Tertre, rapport R/V | 0,926 | **1,100** | il cesse d'être vert |
+| Tertre, saturation médiane | 0,244 | **0,209** | entre l'herbe (0,262) et les sentiers de terre du monde gelé (0,091) |
+| Coffre, **p90** | **122,5** | **73,4** | −40 % : il n'est plus la pointe claire du cadre |
+| Coffre, p50 | 69,4 | 55,0 | |
+
+Repère de non-régression : l'acquis de l'agent B était **86,7** sur le dos
+éclairé. `it/c3` rend **94,5**. La consigne « ne pas régresser la valeur
+éclaircie » est tenue avec 7,8 niveaux de marge.
+
+### Ce que je VOIS à taille réelle
+
+- **Le linteau ne flotte plus** : sur `barrow_gp_gueule` c'est une dalle
+  couchée en biais, un bout au sol, l'autre contre le flanc du montant. La
+  faute est devenue structurellement impossible, elle n'a pas été réglée.
+- **Les pierres sont des masses épaulées.** Aucune lame, aucune aiguille,
+  aucun côté parallèle. La pierre de tête lit un menhir.
+- **Le coffre est subordonné** : entre deux montants, sombre, au pied du dos,
+  et il reste identifiable comme coffre à 7 m.
+- **La hiérarchie funéraire se lit** sur `barrow_cemetery_identite` : une
+  masse dominante, deux tombes nettement plus petites, trois orientations
+  franchement différentes, une entrée au sud-ouest.
+- **RÉSERVE, ET ELLE RESTE OUVERTE : le dos des tertres lit une TOILE, pas de
+  la terre.** Trois passes l'ont attaqué — affaissement de crête doublé (C1),
+  relief de flanc porté à 0,17 (C2), exposant de profil dissymétrique (C3) —
+  et à chaque fois la mesure bouge dans le bon sens pendant que la lecture
+  reste « bâche tendue » ou « dune ». Conformément à la règle des deux échecs,
+  je cesse de régler des constantes sur cette hypothèse et je la remonte
+  telle quelle. Ma cause supposée, non vérifiée : le maillage est une grille
+  de 48 × 9 quadrilatères aux normales lissées, donc une surface CONTINUE
+  partout ; une masse de terre a des ruptures de pente, et aucune modulation
+  continue n'en fabrique.
