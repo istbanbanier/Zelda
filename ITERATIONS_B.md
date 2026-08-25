@@ -364,17 +364,84 @@ est réel et petit.
 
 ---
 
+## S2 — sanctuaire : l'itération structurelle demandée par le lead
+
+Le lead a retenu comme cause de rejet **mon propre constat** : « neuf pièces
+sur neuf sont le même prisme dressé ». Trois RÔLES dessinés avec UNE forme —
+à trois secondes, l'œil répond « des pierres ». Ni la valeur ni l'implantation
+n'y pouvaient rien, et les deux passes précédentes l'ont prouvé en les
+corrigeant sans que la lecture change.
+
+Quatre gestes, tous dans le générateur que je possède, emprise inchangée :
+
+1. **`SM_Shrine_Coeur`** remplace `SM_Shrine_Table` **et** `SM_Shrine_Chevet` —
+   une masse unique : dalle fendue élargie, deux dés, deux **contreforts** bas,
+   un **dossier** qui monte derrière. Silhouette d'enclume. Deux prismes de
+   moins au compte.
+2. **`SM_Shrine_Linteau`** — un bloc **taillé** (trois côtés droits, un bout
+   rompu en dents de scie) couché en travers du seuil. La seule pièce du lieu
+   qui porte une trace d'outil.
+3. **Deux socles couchés** (roulis 90°, enfoncés de 13 cm), choisis pour
+   qu'aucune paire couchée ne se fasse face.
+4. **Frontière de mousse adoucie par la GÉOMÉTRIE** : les arêtes de la bande de
+   transition sont coupées deux fois avant la pose. On ne change pas la règle,
+   on change la géométrie qu'elle décore.
+
+### Gardes du générateur, toutes vertes
+
+| Garde | Mesure |
+|---|---|
+| Plafond d'identité | pièce la plus haute **2,01 m** (générateur 2,20 ; lieu 2,40) |
+| Budget | **4 850** tris / 6 000 — la subdivision coûte, elle tient |
+| Cœur, emprise | **2,69 × 1,72 m** contre 0,6 × 0,5 pour un socle |
+| Fente de la dalle | 332 sommets, glissement **0,288 m** |
+| `COLOR_0` | 9 pièces, active ET de rendu |
+
+### Après capture — `it/s2/` (commit `2fcc348`, manifeste **propre**)
+
+| Mesure | t2 | s2 |
+|---|---|---|
+| Emprise de pierre, vue d'identité | 258 × 180 px | **258 × 178 px** |
+| Pixels de pierre, même cadre | 8 465 | **8 851** |
+
+**L'emprise ne bouge pas, la masse augmente** : exactement la consigne du lead
+(rester dans ≈4,7 × 5,5 m pour ne pas re-changer la donne R-D3).
+`shrine_gp_route_p1` est **identique** à t2 — rien du lieu depuis la route ;
+le contrat d'invisibilité tient, et il le devait : le cœur culmine à 2,01 m
+contre 2,05 m pour le chevet qu'il remplace, donc plus bas qu'avant.
+
+Ce que je vois, recadré ×2 sur `shrine_gp_nef` : avant, un poteau étroit
+traversé d'une planche ; après, une masse à épaules larges avec sa dalle
+ombrée dessous et l'offrande posée dessus — un cœur, pas un socle de plus.
+Une pierre couchée supplémentaire apparaît au sol. Et les frontières de mousse
+qui étaient des lignes droites sont devenues des bords **dentelés à deux
+niveaux**.
+
+### Un échec de mesure, et je l'arrête au deuxième essai
+
+J'ai voulu chiffrer la dentelure de la frontière de mousse. **Deux tentatives,
+deux résultats identiques au centième entre t2 et s2** — ce qui est
+impossible si l'image a changé. Un diff pixel l'a expliqué : la zone qui bouge
+est x 320-800, et mon détecteur balayait des colonnes en x 45-200, c'est-à-dire
+un **caillou du kit** que mon générateur ne touche pas ; le second essai, lui,
+trouvait la frontière herbe/fond avant d'atteindre la pierre.
+Conformément à la règle des deux échecs, je n'ai pas réglé une troisième fois :
+la dentelure est **constatée à l'œil sur recadrage ×2, non chiffrée**. La
+leçon est la même que celle déjà consignée ce soir — vérifier ce que la mesure
+regarde AVANT de croire ce qu'elle dit.
+
+---
+
 ## Ce qui reste, nommé
 
-1. **Sanctuaire — le vocabulaire.** Neuf pièces sur neuf sont des prismes
-   dressés irréguliers issus de la même fonction (`pierre_rompue`). Le contrat
-   demande un SEUIL, une ENCEINTE, un CŒUR : trois rôles, trois formes. Tant
-   qu'il n'y a qu'une forme, aucune implantation ne fera lire trois rôles.
-   C'est une reprise du générateur, pas un réglage.
-2. **Sanctuaire — la mousse.** Elle est portée par un INDEX DE MATÉRIAU par
-   face, sur des pièces de 58 à 196 triangles : une face est moussue ou ne
-   l'est pas. Le bord net est donc structurel. Le porter par `COLOR_0` (déjà
-   présent dans ce GLB) ou par une carte est le seul chemin.
+1. ~~Sanctuaire — le vocabulaire.~~ **Traité en S2** : le cœur et le linteau
+   sortent de la famille du prisme dressé, deux socles sont couchés. Ce qui
+   subsiste est voulu — les six pierres de l'enceinte restent des fûts, parce
+   qu'une enceinte EST une répétition ; ce sont les trois rôles qui devaient
+   se distinguer, et ils se distinguent.
+2. ~~Sanctuaire — la mousse.~~ **Traité en S2 par la géométrie** plutôt que par
+   la règle : subdivision de la bande de transition avant la pose. Constaté à
+   l'œil, **non chiffré** — voir l'échec de mesure ci-dessus.
 3. **Cimetière — la forme des stèles.** Ce sont encore des dalles à côtés
    parallèles et bouts coupés net. Enfoncées et inclinées, elles sont mieux
    assises ; elles ne sont pas cassées.

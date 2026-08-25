@@ -1,0 +1,87 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "2fcc3487a7dd78b3d649186f034c1950331b4f21",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 55.0,
+      "from": [
+        80.5,
+        15.0,
+        59.0
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_b/it/s2/forest_shrine_identite.png",
+      "look": [
+        86.0,
+        9.0,
+        74.0
+      ],
+      "name": "forest_shrine_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        91.5,
+        8.7,
+        64.5
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_b/it/s2/forest_shrine_joueur.png",
+      "look": [
+        86.0,
+        8.2,
+        74.0
+      ],
+      "name": "forest_shrine_joueur"
+    },
+    {
+      "fov": 52.0,
+      "from": [
+        86.6,
+        8.55,
+        67.6
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_b/it/s2/shrine_gp_nef.png",
+      "look": [
+        86.0,
+        7.85,
+        74.0
+      ],
+      "name": "shrine_gp_nef"
+    },
+    {
+      "fov": 45.0,
+      "from": [
+        86.9,
+        8.45,
+        71.4
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_b/it/s2/shrine_gp_coeur.png",
+      "look": [
+        86.0,
+        7.95,
+        74.1
+      ],
+      "name": "shrine_gp_coeur"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        84.0,
+        8.7,
+        81.0
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_b/it/s2/shrine_gp_route_p1.png",
+      "look": [
+        86.0,
+        8.2,
+        74.0
+      ],
+      "name": "shrine_gp_route_p1"
+    }
+  ],
+  "size": "1280x720"
+}
