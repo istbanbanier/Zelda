@@ -714,9 +714,19 @@ def coquille(bm):
     # linteau, ni rien qui dise « on entrait ICI ». La porte, elle, tombe à
     # x ≈ 399 px, au milieu du seul pan ÉCLAIRÉ du cadre joueur : un
     # rectangle sombre dans un mur clair, à 5,3 m de l'œil.
+    # LA PORTE RECULE DE 0,60 m, ET C'EST UN BUG MESURÉ SUR LA CAPTURE, PAS UN
+    # RÉGLAGE. À `s ∈ [0,45 ; 1,05]` l'ouverture tombait en y −2,175..−1,575 ;
+    # or le MUR SUD occupe y −2,625..−1,775 sur TOUTE la largeur du fût, angle
+    # compris. Les deux tiers bas de la porte débouchaient donc dans la masse
+    # de l'angle sud-est : le trou existait dans le mur est, et il ne se voyait
+    # pas. Mesuré sur `it/r1/watchtower_ruin_joueur.png`, zone 355-410 × 400-540
+    # contre 430-490 × 400-540 : p50 56,3 contre 56,8 — aucun contraste, donc
+    # aucun trou. Un maillage juste et une image sans porte.
+    # `s ∈ [1,05 ; 1,65]` met la baie en y −1,575..−0,975 : 0,20 m de
+    # dégagement du nu intérieur du mur sud, et on voit à travers.
     mur(bm, (HALF, -HALF - EP * 0.5), (0.0, 1.0), L_EST,
         H_EST, H_EST_FIN, 47.0, 0.34, 0.62, interieur_flip=True,
-        baies=((0.45, 1.05, 0.0, 1.85),))
+        baies=((1.05, 1.65, 0.0, 1.70),))
 
     # LES RETRAITS DE MAÇONNERIE — deux lignes de plancher rendues visibles.
     # Niveau 1 à 3,05 m (celui de la vigie) : le ressaut court sous la dalle
@@ -987,16 +997,16 @@ def coquille(bm):
     # seuil usée en travers, et le linteau tombé devant — la pièce qui dit
     # « il y avait une porte, et elle est tombée » sans un mot, exactement
     # comme au sanctuaire.
-    for zj in (0.62, 1.24, 1.72):
-        moellon(bm, (HALF + EP * 0.44, -2.175 - 0.03, zj),
+    for zj in (0.58, 1.14, 1.58):
+        moellon(bm, (HALF + EP * 0.44, -1.575 - 0.03, zj),
                 (0.40, 0.34, 0.44), 201.0 + zj * 3.1, IDX_PIERRE, jitter=0.12)
-        moellon(bm, (HALF + EP * 0.44, -1.575 + 0.03, zj + 0.18),
+        moellon(bm, (HALF + EP * 0.44, -0.975 + 0.03, zj + 0.18),
                 (0.40, 0.32, 0.40), 211.0 + zj * 2.7, IDX_PIERRE, jitter=0.12)
-    moellon(bm, (2.86, -1.875, 0.33), (1.06, 0.80, 0.30), 181.0, IDX_PIERRE,
+    moellon(bm, (2.86, -1.275, 0.33), (1.06, 0.80, 0.30), 181.0, IDX_PIERRE,
             jitter=0.14)
-    moellon(bm, (3.78, -2.03, 0.37), (1.30, 0.54, 0.34), 191.0, IDX_PIERRE,
+    moellon(bm, (3.78, -1.43, 0.37), (1.30, 0.54, 0.34), 191.0, IDX_PIERRE,
             jitter=0.10)
-    moellon(bm, (4.42, -1.62, 0.36), (0.52, 0.44, 0.30), 197.0, IDX_PIERRE,
+    moellon(bm, (4.42, -1.02, 0.36), (0.52, 0.44, 0.30), 197.0, IDX_PIERRE,
             jitter=0.22)
 
 

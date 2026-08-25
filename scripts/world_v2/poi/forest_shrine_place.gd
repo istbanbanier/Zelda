@@ -278,12 +278,20 @@ func _habiller_recompense(racine: Node) -> void:
 ## deux fruits différents, deux cassures différentes — on lit une porte qui a
 ## vieilli de travers. La marche est le seul élément encore à peu près à sa
 ## place, et c'est elle qui dit « on entre ICI » sans un mot.
+## LOT 1.R.1, deuxième passe — LE SEUIL SE RESSERRE.
+##
+## Constat sur `it/r1/forest_shrine_joueur.png`, à ×3 : les deux montants
+## projettent à x ≈ 333 et 480, soit 147 px d'écart pour 2,02 m d'entraxe à
+## 7 m. Trois murets s'intercalent entre eux, et l'œil ne peut pas relier deux
+## pierres séparées par un tiers de l'image : le seuil ne se lit plus comme
+## une porte. L'entraxe passe de 2,02 à 1,38 m — l'écart apparent tombe à
+## ≈ 110 px, et le linteau tombé les relie enfin.
 func _seuil() -> void:
-	var a: Vector3 = _nef_seated(-0.94, -3.52)
+	var a: Vector3 = _nef_seated(-0.62, -3.30)
 	_piece_vestige("SM_Shrine_Montant_A", a,
 		Vector3(0.0, deg_to_rad(_nef_yaw(24.0)), deg_to_rad(5.0)))
 	declare_support(a)
-	var b: Vector3 = _nef_seated(0.82, -3.74)
+	var b: Vector3 = _nef_seated(0.58, -3.60)
 	_piece_vestige("SM_Shrine_Montant_B", b,
 		Vector3(0.0, deg_to_rad(_nef_yaw(-58.0)), deg_to_rad(-8.0)))
 	declare_support(b)
@@ -293,13 +301,17 @@ func _seuil() -> void:
 	# est couchée là où tout le reste est debout. Enfoncée de 11 cm, elle
 	# n'émerge que de 0,22 m — sous la hauteur de marche du héros, donc aucun
 	# corps : on l'enjambe, exactement comme la pierre couchée de la nef.
-	var linteau: Vector3 = _nef_seated(-0.24, -3.28)
+	var linteau: Vector3 = _nef_seated(-0.02, -3.42)
+	# LE LINTEAU S'INCLINE. À plat dans l'herbe il rendait une dalle de
+	# pavement ; incliné de 15°, un bout posé sur la marche et l'autre au sol,
+	# il rend ce qu'il est — une pièce TOMBÉE. Enfoncé de 6 cm seulement, pour
+	# que le bout haut se détache du sol.
 	_piece_vestige("SM_Shrine_Linteau",
-		linteau + Vector3(0.0, -0.11, 0.0),
-		Vector3(0.0, deg_to_rad(_nef_yaw(74.0)), deg_to_rad(4.0)))
+		linteau + Vector3(0.0, -0.06, 0.0),
+		Vector3(0.0, deg_to_rad(_nef_yaw(78.0)), deg_to_rad(15.0)))
 	declare_support(linteau)
 	# Enfoncée de 8 cm : une dalle qui affleure l'herbe se lit neuve.
-	var marche: Vector3 = _nef_seated(-0.05, -3.00)
+	var marche: Vector3 = _nef_seated(-0.02, -3.02)
 	_piece_vestige("SM_Shrine_Step", marche + Vector3(0.0, -0.08, 0.0),
 		Vector3(0.0, deg_to_rad(_nef_yaw(9.0)), 0.0))
 	declare_support(marche)
@@ -326,9 +338,9 @@ func _seuil() -> void:
 ## Ils sont ENFONCÉS de 10 cm : un muret posé sur l'herbe se lit neuf.
 ## `[pièce, x_nef, z_nef, lacet_nef, tangage, hauteur]`
 const MURETS: Array[Array] = [
-	["SM_Shrine_Muret_A", -1.75, -1.90, -84.0, 3.0, 0.82],
-	["SM_Shrine_Muret_B", 1.70, -1.75, -97.0, -4.0, 0.72],
-	["SM_Shrine_Muret_C", -0.40, 1.05, 10.0, 2.0, 0.55],
+	["SM_Shrine_Muret_A", -1.75, -1.90, -84.0, 3.0, 0.92],
+	["SM_Shrine_Muret_B", 1.70, -1.75, -97.0, -4.0, 0.84],
+	["SM_Shrine_Muret_C", -0.40, 1.05, 10.0, 2.0, 0.66],
 ]
 ## Enfoncement des murets, et de la pierre couchée.
 const MURET_ENFONCEMENT: float = 0.10
@@ -573,10 +585,10 @@ func _collisions() -> void:
 	# demandée) : leurs corps suivent, sinon deux murs invisibles dépasseraient
 	# la pierre de 20 cm.
 	K.collider_box(self, "Sanctuaire_montant_ouest",
-		_nef_seated(-0.94, -3.52) + Vector3(0.0, 0.665, 0.0),
+		_nef_seated(-0.62, -3.30) + Vector3(0.0, 0.665, 0.0),
 		Vector3(0.62, 1.33, 0.48), _nef_yaw(24.0))
 	K.collider_box(self, "Sanctuaire_montant_est",
-		_nef_seated(0.82, -3.74) + Vector3(0.0, 0.48, 0.0),
+		_nef_seated(0.58, -3.60) + Vector3(0.0, 0.48, 0.0),
 		Vector3(0.52, 0.96, 0.54), _nef_yaw(-58.0))
 	# LES TROIS MURETS. Ils reçoivent tous un corps, contrairement aux socles
 	# bas qu'ils remplacent : un muret est un MUR, et un mur qu'on traverse

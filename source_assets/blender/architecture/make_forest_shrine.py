@@ -699,14 +699,14 @@ def main():
         # levées. Longueurs et hauteurs franchement différentes, vérifiées
         # plus bas et non espérées.
         objet_depuis("SM_Shrine_Muret_A",
-                     lambda bm: muret_rompu(bm, 2.55, 0.85, 5.1, n=5),
-                     mousse_max_z=0.55),
+                     lambda bm: muret_rompu(bm, 2.55, 0.99, 5.1, n=5),
+                     mousse_max_z=0.60),
         objet_depuis("SM_Shrine_Muret_B",
-                     lambda bm: muret_rompu(bm, 2.05, 0.60, 17.9, n=4),
-                     mousse_max_z=0.44),
+                     lambda bm: muret_rompu(bm, 2.05, 0.74, 17.9, n=4),
+                     mousse_max_z=0.52),
         objet_depuis("SM_Shrine_Muret_C",
-                     lambda bm: muret_rompu(bm, 1.60, 0.44, 23.3, n=4),
-                     mousse_max_z=0.36),
+                     lambda bm: muret_rompu(bm, 1.60, 0.58, 23.3, n=4),
+                     mousse_max_z=0.42),
         # LA PIERRE COUCHÉE — un fût de 1,95 m basculé de 90° : c'est la MÊME
         # famille que les montants, tombée. On l'enjambe pour approcher.
         objet_depuis("SM_Shrine_Fallen",
