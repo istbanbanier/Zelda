@@ -307,7 +307,27 @@ const AFFAISSEMENT: Array = [-1.70, -0.35, 0.50, 2.90, 2.10]
 ## tombe éventrée d'une bâche, et c'est aussi ce qui donne au regard une raison
 ## d'aller au tertre. Le générateur la borne toujours à 5 cm au-dessus du
 ## terrain : elle ne peut pas percer.
-const FOSSE: Array = [0.90, 0.10, 0.95, 1.95, 1.45]
+##
+## PASSE 3 — LA FOSSE CHANGE DE PLACE, PARCE QU'ON NE LA VOYAIT PAS.
+##
+## C'est un changement de DISPOSITION, pas un réglage de plus : deux passes
+## avaient creusé le dos sans que rien n'apparaisse dans le cadre, et la
+## raison n'était pas la profondeur. À u = +0,90 la fosse tombe à 515 px —
+## exactement derrière la pierre penchée du chemin. On creusait un trou
+## d'un mètre derrière un obstacle.
+##
+## Elle passe à u = −1,35, v = +0,24, soit 400 px : la seule bande du dos qui
+## reste dégagée dans la vue joueur, entre le montant du seuil (232 px) et les
+## pierres du centre (450+). Un tertre a besoin d'un ACCIDENT pour se lire
+## comme une tombe et non comme une toile tendue, et c'est aussi ce qui donne
+## au regard une raison d'aller à la masse plutôt qu'au coffre.
+##
+## CE QUE ÇA COÛTE, ET C'EST BORNÉ : à u = −1,35 la crête locale vaut 2,31 m
+## au lieu de 2,50, donc la fosse descend à 1,36 m. Le point haut du lieu reste
+## au bout de crête (u = −2,78 ; 2,50 m), il n'est pas touché — c'est
+## précisément ce que la note « la fosse va au bout affaissé » cherchait à
+## protéger, et le contrôle vaut mieux ici que la règle recopiée.
+const FOSSE: Array = [-1.35, 0.24, 0.95, 1.95, 1.45]
 
 static var _cache_pierres: Dictionary = {}
 
@@ -852,7 +872,13 @@ func _gueule_de_chambre() -> void:
 	var tas: Vector3 = _seated(-1.55, 5.30)
 	var grand: Node3D = _piece_pierre("SM_Barrow_Deblais", tas,
 		Vector3(0.0, deg_to_rad(180.0), 0.0), "Deblais_grand", 0.88)
-	grand.scale = Vector3(1.45, 1.30, 1.20)
+	# PASSE 3 : le bourrelet grossit. Sur `it2` il coupe déjà le bas du coffre,
+	# et l'effet est visible ; il ne va simplement pas assez haut. Un objet dont
+	# on ne voit ni la base ni le tiers inférieur de la face cesse d'être un
+	# premier plan — c'est le seul levier d'ENVIRONNEMENT qui reste une fois la
+	# gueule et le dos sombre en place, et il ne touche ni la couleur du coffre
+	# ni sa logique.
+	grand.scale = Vector3(1.70, 1.55, 1.35)
 	declare_support(tas)
 	var tas_b: Node3D = _piece_pierre("SM_Barrow_Deblais",
 		_seated(-3.10, 4.55), Vector3(0.0, deg_to_rad(232.0), 0.0),
