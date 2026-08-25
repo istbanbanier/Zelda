@@ -245,8 +245,25 @@ const TONE_BLOC: Color = Color(0.72, 0.72, 0.70)
 ## deux mètres de lui. Il se détache donc sur une masse sombre au lieu d'une
 ## prairie claire. C'est la moitié de la subordination demandée ; l'autre
 ## moitié est la gueule, qui vient l'encadrer (§ GUEULE).
+##
+## LOT 1.R.2 — LA MASSE REPREND LE DESSUS SUR SES PROPRES PIERRES.
+##
+## Verdict Codex : « aucun tertre ne domine nettement la composition ». La
+## cause n'est pas la table des trois masses entre elles — 1 : 0,51 : 0,28
+## était déjà une hiérarchie — mais le rapport du dominant AUX PIERRES DU
+## LIEU. Sur la vue joueur gelée, le dominant culmine à 2,08 m quand la
+## pierre de tête en fait 3,63 et le montant A 2,88 : la terre était la
+## troisième masse de son propre cimetière.
+##
+## Le dominant passe donc à 2,50 m et s'étale à 6,05 × 3,80. Ce n'est pas
+## une augmentation disproportionnée et c'est vérifiable : 2,45 m était sa
+## cote au lot 1.R, acceptée alors, et l'élargissement suit le tassement déjà
+## écrit ici (« une tombe qui s'est tassée s'étale »). Le rapport aux deux
+## secondaires — inchangées — passe de 1 : 0,51 : 0,28 à 1 : 0,42 : 0,23,
+## donc la subordination demandée se renforce sans qu'aucune tombe secondaire
+## ne soit touchée.
 const TERTRES: Array[Array] = [
-	["Tertre_Grand", -3.30, -0.90, 5.60, 3.55, 2.08, 34.0, 4131],
+	["Tertre_Grand", -3.30, -0.90, 6.05, 3.80, 2.50, 34.0, 4131],
 	["Tertre_Moyen", 9.0, 6.2, 3.05, 2.30, 1.06, 96.0, 9077],
 	["Tertre_Petit", 2.4, -8.6, 2.70, 1.50, 0.58, 152.0, 2609],
 ]
@@ -309,6 +326,7 @@ func _build() -> void:
 			AFFAISSEMENT if dominant else [])
 	_ceintures()
 	_gueule_de_chambre()
+	_enceinte_du_coffre()
 	_chemin_des_morts()
 	_steppe()
 	_collisions()
@@ -331,8 +349,12 @@ func _build() -> void:
 	# posé DANS LES DÉBLAIS, devant la gueule : les pilleurs l'ont laissé là.
 	# Position inchangée depuis la version validée — le tas s'organise autour
 	# d'elle, pas l'inverse.
+	# POSITION, GENRE, IDENTIFIANT ET APPROCHE INCHANGÉS. `ANCRE_COFFRE` vaut
+	# exactement (−1,5 ; 4,3) : le littéral devient une constante pour que
+	# l'enceinte se calcule depuis lui, pas pour le déplacer.
 	RewardAnchor.attach(self, default_place_id(), RewardAnchor.Kind.CHEST,
-		_seated(-1.5, 4.3) + Vector3(0.0, 0.1, 0.0), Vector3(0.4, 0.0, 7.4))
+		_seated(ANCRE_COFFRE.x, ANCRE_COFFRE.y) + Vector3(0.0, 0.1, 0.0),
+		Vector3(0.4, 0.0, 7.4))
 	# HABILLAGE LOCAL DU COFFRE (autorisé par le lead, lot 1.R). Le coffre est
 	# posé par `DiscoveryRewards.furnish()`, APRÈS que tous les lieux soient
 	# bâtis : il n'existe pas encore ici. On s'abonne donc à son arrivée.
@@ -707,9 +729,14 @@ func _ceintures() -> void:
 	# valeur aurait posé trois blocs en l'air ou trois blocs sur le dos — un
 	# défaut que la capture montre mal et qu'aucun test ne voit.
 	var pierres: Array[Array] = [
-		[-3.30, -0.90, 5.30, 202.0, &"Rock_Medium_1", 0.42],
-		[-3.30, -0.90, 3.60, 300.0, &"Rock_Medium_3", 0.34],
-		[-3.30, -0.90, 3.45, 118.0, &"Rock_Medium_2", 0.28],
+		# RECALÉS SUR L'ELLIPSE DU LOT 1.R.2 (6,05 × 3,80). Le rayon d'une
+		# ellipse dans une direction donnée vaut
+		# `1 / sqrt((cos/a)² + (sin/b)²)` avec l'angle pris DANS le repère du
+		# tertre (azimut de la ceinture − 34°) ; les trois valeurs suivent
+		# donc l'agrandissement au lieu de laisser trois blocs sur le dos.
+		[-3.30, -0.90, 5.72, 202.0, &"Rock_Medium_1", 0.42],
+		[-3.30, -0.90, 3.85, 300.0, &"Rock_Medium_3", 0.34],
+		[-3.30, -0.90, 3.69, 118.0, &"Rock_Medium_2", 0.28],
 		[9.0, 6.2, 2.90, 41.0, &"Rock_Medium_2", 0.30],
 		[9.0, 6.2, 2.40, 236.0, &"Rock_Medium_1", 0.22],
 		[2.4, -8.6, 1.70, 154.0, &"Rock_Medium_3", 0.20],
@@ -901,15 +928,50 @@ func _gueule_de_chambre() -> void:
 ##   coffre      (−1,50 ; 4,30) → profondeur 7,53 ; latéral +0,85 → centre droit
 ##
 ## L'écart entre les deux pierres du seuil vaut 2,18 m : on passe entre elles.
+##
+## ---------------------------------------------------------------------------
+## LOT 1.R.2 — LE PORTAIL RECULE, SE RESSERRE, ET S'OUVRE SUR LE TERTRE
+##
+## Verdict Codex : « l'entrée n'est pas évidente ». Elle ne l'était pas, et la
+## cause est mesurable dans le cadre gelé plutôt que dans l'intention.
+##
+## PREMIÈRE MESURE, ET ELLE CORRIGE UNE ERREUR DE CE FICHIER. Les colonnes
+## « profondeur / latéral » ci-dessus supposaient un demi-champ horizontal de
+## `tan 32,5° = 0,637`. C'est faux : `shots_lot1.json` donne `fov 65`, et un
+## `Camera3D` en `KEEP_HEIGHT` — le défaut — traite `fov` comme VERTICAL. À
+## 1280 × 720 le demi-champ horizontal vaut donc `tan(32,5°) × 16/9 = 1,132`,
+## soit un champ de 97°, presque le double de ce qui était supposé. Toutes les
+## positions écran calculées au lot 1.R.1 étaient donc décalées vers les bords.
+## Vérification indépendante : le coffre, à `l/p = 0,1125`, tombe à
+## `640 + 640 × 0,1125 / 1,132 = 704 px` — et il est bien à 704 px sur
+## `lot1r1/revue_intermediaire/vues/barrow_cemetery_joueur.png`.
+##
+## DEUXIÈME MESURE, QUI EN DÉCOULE. Avec le bon champ, la pierre du seuil haut
+## tombait à 232 px et à 3,60 m de l'objectif : elle occupait 653 px de haut,
+## coupée par le bord bas — un menhir de premier plan, pas une entrée. Et sa
+## compagne tombait à 569 px : 337 px les séparaient, avec quatre autres
+## pierres entre elles. Deux pierres si écartées, avec du monde au milieu, ne
+## se lisent pas comme une porte.
+##
+## Le portail recule à `p = 4,5 / 4,9` et se resserre à 340 et 560 px. Entre
+## les deux, plus rien ne se dresse ; et derrière l'ouverture, à 346-472 px,
+## il y a exactement une chose : la crête du tertre dominant. L'entrée ouvre
+## donc SUR la masse, ce que la corrective demande.
+##
+## Le passage reste franchissable : 1,74 m entre les deux centres, moins les
+## demi-largeurs (0,43 et 0,39), soit 0,92 m de libre pour une capsule de
+## 0,40 m de rayon.
 const SEUIL: Array[Array] = [
 	# pièce, x, z, lacet, enfoncement, roulis, échelle_travers, échelle_hauteur
-	["SM_Barrow_Seuil_A", -6.45, 5.98, 58.0, 0.24, 11.0, 1.00, 1.00],
-	["SM_Barrow_Seuil_B", -4.30, 6.36, -41.0, 0.26, 24.0, 1.00, 1.00],
+	["SM_Barrow_Seuil_A", -5.82, 5.31, 58.0, 0.24, 11.0, 1.00, 1.00],
+	["SM_Barrow_Seuil_B", -4.15, 5.81, -41.0, 0.26, 24.0, 1.00, 1.00],
 	# LA RUPTURE DU SOL — deux lames posées EN TRAVERS de l'axe, à demi
 	# avalées. Ce sont elles qui disent « ici, le sol a été préparé » ; sans
 	# elles, deux pierres debout ne sont que deux pierres debout.
-	["SM_Barrow_Lame_A", -5.62, 6.32, 128.0, 0.13, 0.0, 1.00, 1.00],
-	["SM_Barrow_Lame_C", -5.08, 5.88, 141.0, 0.09, 0.0, 1.00, 1.00],
+	# Elles passent DEVANT le portail (0,35 m vers l'objectif) au lieu d'être
+	# semées de biais derrière lui : c'est le seuil qu'on foule avant d'entrer.
+	["SM_Barrow_Lame_A", -5.59, 5.73, 73.0, 0.13, 0.0, 1.00, 1.00],
+	["SM_Barrow_Lame_C", -4.76, 5.98, 96.0, 0.09, 0.0, 1.00, 1.00],
 ]
 
 ## L'AXE FUNÉRAIRE, ET IL EST INCOMPLET — c'est le contrat §5, « espaces vides
@@ -918,12 +980,36 @@ const SEUIL: Array[Array] = [
 ## dressées a des trous, et ces trous sont ce qui distingue un cimetière ancien
 ## d'une allée de jalons. Les hauteurs ne montent pas régulièrement non plus
 ## (1,24 puis 1,46) : une progression monotone se relit procédurale.
+##
+## LOT 1.R.2 — LE CHEMIN COURT DEMANDÉ PAR LA CORRECTIVE
+##
+## « Relier cette entrée au tertre dominant par un chemin court. » Les quatre
+## marques du lot précédent tombaient à 466, 518, 598 et 604 px : elles
+## partaient du portail et s'en allaient vers la GUEULE, c'est-à-dire vers le
+## coffre. Le chemin conduisait donc l'œil exactement là où il ne devait pas
+## aller, et la marque la plus haute (1,58 m, 466 px) se plantait sur la crête
+## du dominant (472 px) — elle le hachait au lieu de le montrer.
+##
+## Le nouvel axe part du MILIEU du portail (−4,985 ; 5,56) et vise le CENTRE
+## du dominant : direction (0,2524 ; −0,9676). Il est court par construction —
+## la lisière du dos est à 2,65 m — et c'est ce que la corrective demande.
+##
+## Trois lames couchées y sont posées à 0,75 / 1,55 / 2,35 m ; elles tombent à
+## 459, 462 et 464 px, c'est-à-dire sur une VERTICALE d'écran qui pointe la
+## crête. Deux stèles les bordent, une de chaque côté et à des distances
+## différentes (554 px à droite, 370 px à gauche) : une file bordée alterne,
+## elle ne fait pas une haie.
+##
+## Elles s'arrêtent AVANT la lisière : une lame posée par `_seated()` à
+## l'intérieur de la jupe serait enterrée par la terre du tertre, et rien dans
+## la capture ne le dirait — c'est le contrôle `dn < 1` fait à la main ici.
 const CHEMIN: Array[Array] = [
 	# pièce, x, z, lacet, enfoncement, roulis, échelle_travers, échelle_hauteur
-	["SM_Barrow_Stele_B", -4.90, 5.60, 63.0, 0.22, 22.0, 1.10, 1.55],
-	["SM_Barrow_Lame_A", -4.25, 4.95, 27.0, 0.12, 0.0, 0.92, 0.92],
-	["SM_Barrow_Stele_C", -3.55, 5.42, -24.0, 0.26, 17.0, 1.06, 1.28],
-	["SM_Barrow_Lame_C", -3.05, 4.55, 88.0, 0.08, 0.0, 1.05, 1.05],
+	["SM_Barrow_Lame_A", -4.80, 4.83, 22.0, 0.12, 0.0, 0.98, 0.98],
+	["SM_Barrow_Stele_B", -3.79, 4.74, 63.0, 0.22, 22.0, 1.10, 1.35],
+	["SM_Barrow_Lame_C", -4.59, 4.06, 44.0, 0.08, 0.0, 1.05, 1.05],
+	["SM_Barrow_Stele_C", -5.45, 3.37, -24.0, 0.26, 17.0, 1.06, 1.42],
+	["SM_Barrow_Lame_B", -4.39, 3.29, 15.0, 0.10, 0.0, 1.00, 1.00],
 ]
 ## Les deux marques les plus lointaines se rapprochent de 1,4 et 1,0 m : le
 ## lieu fait 24 m de large pour 2 m de haut, et c'est ce RAPPORT qui décide si
@@ -977,7 +1063,56 @@ const MARQUES_ISOLEES: Array[Array] = [
 ## 1,33 × 3,63 m, élancement 2,7 : 1, ce qui est la proportion d'une pierre
 ## levée réelle. Elle domine toujours largement la crête du dominant (2,08 m),
 ## qui est la raison d'être de la correction D3.
-const PIERRE_DE_TETE: Array = [1.886, 1.364, 34.0, 6.0, 1.95, 2.30]
+##
+## LOT 1.R.2 — ELLE CESSE D'ÉCRASER LA MASSE QU'ELLE EST CENSÉE COURONNER.
+##
+## À 3,63 m contre une crête de 2,08 m, elle faisait 1,75 fois la hauteur du
+## tertre, et elle tombe à 751 px — soit 47 px du coffre (704 px). Le duo
+## « grande pierre claire + coffre coloré » formait donc, à lui seul, le foyer
+## de la vue joueur, dans la moitié DROITE du cadre, pendant que le tertre
+## dominant restait un dos mou à gauche.
+##
+## Elle passe à 1,90 en hauteur, soit 3,00 m sur les 1,58 m réels de
+## `SM_Barrow_Stele_A`, pour un tertre remonté à 2,50 : le rapport passe de
+## 1,75 à 1,20. Elle reste la verticale la plus haute du lieu — c'est la
+## correction D3 et elle n'est pas défaite — mais elle redevient l'ACCENT
+## d'une masse au lieu d'en être la rivale. Son élancement, 1,33 × 3,00,
+## vaut 2,3 : 1, toujours dans la proportion d'une pierre levée réelle.
+const PIERRE_DE_TETE: Array = [1.886, 1.364, 34.0, 6.0, 1.95, 1.90]
+
+## L'ANCRE DE LA RÉCOMPENSE, en local. ELLE NE BOUGE PAS — c'est la ligne
+## rouge de la corrective — et elle est nommée ici pour une raison précise :
+## l'enceinte basse ci-dessous se calcule DEPUIS elle. Une enceinte posée sur
+## des littéraux recopiés dériverait à la première retouche sans que rien ne
+## le signale, et le coffre se retrouverait à côté de sa propre sépulture.
+const ANCRE_COFFRE: Vector2 = Vector2(-1.5, 4.3)
+
+## L'ENCEINTE BASSE — la corrective, mot pour mot : « intégrer le coffre dans
+## un renfoncement funéraire, une enceinte basse ou l'ombre du tertre ».
+##
+## Ce qui faisait du coffre le sujet n'était pas sa couleur — elle est déjà
+## désaturée et assombrie par `_habiller_recompense()`, et sa saturation
+## mesurée est INFÉRIEURE à celle de l'herbe. C'était son ISOLEMENT : entre le
+## montant A (619 px) et le montant B (771 px) il y avait 152 px de vide et,
+## au milieu, un objet posé à plat sur de l'herbe claire. Un objet seul au
+## centre d'un vide est un sujet, quelle que soit sa teinte.
+##
+## Cinq dalles couchées ferment donc un arc autour de lui, à 1,26-1,34 m, et
+## le SECTEUR D'APPROCHE RESTE OUVERT : rien entre 55° et 125°, c'est-à-dire
+## rien du côté d'où l'on vient et par où `RewardAnchor` fait approcher. Le
+## coffre reste visible — les dalles sont couchées et enfoncées, elles ne
+## montent pas devant lui — accessible, et sa logique n'est pas touchée.
+## Elles portent la teinte ENTERRÉE (0,88) : une enceinte qui brillerait plus
+## que le coffre déplacerait le problème au lieu de le résoudre.
+##
+## [pièce, angle sur l'arc en degrés, rayon en m, échelle]
+const ENCEINTE: Array[Array] = [
+	["SM_Barrow_Lame_A", 152.0, 1.32, 1.15],
+	["SM_Barrow_Lame_B", 205.0, 1.28, 1.05],
+	["SM_Barrow_Lame_A", 258.0, 1.30, 1.00],
+	["SM_Barrow_Lame_C", 310.0, 1.26, 1.10],
+	["SM_Barrow_Lame_B", 352.0, 1.34, 0.95],
+]
 
 
 ## LA TEINTE SUIT LE RÔLE, ET C'EST LE CONTRAT §5 : « pierre exposée ≠
@@ -992,6 +1127,55 @@ const PIERRE_DE_TETE: Array = [1.886, 1.364, 34.0, 6.0, 1.95, 2.30]
 ## un objet unique — le coffre — d'être le seul accident du cadre.
 const TEINTE_EXPOSEE: float = 1.06
 const TEINTE_ENTERREE: float = 0.88
+
+## LES COTES RÉELLES DES PIÈCES DRESSÉES, relevées à l'export du GLB et non
+## reprises des cotes NOMINALES passées à `dalle()` : le générateur ébrèche,
+## casse les têtes en biais et amincit, donc la pierre livrée est plus courte
+## que la valeur demandée (2,34 → 2,27 ; 1,74 → 1,58 ; 1,42 → 1,34…). C'est
+## sur ces cotes-là que les corps se calculent, sans quoi chaque boîte
+## flotterait de la différence.
+## Elles ne concernent QUE les pierres dressées : une lame couchée n'a pas de
+## corps, et lui en donner un ferait un seuil de 20 cm qu'on sent sans le voir.
+const HAUTEUR_REELLE: Dictionary = {
+	"SM_Barrow_Seuil_A": 2.27, "SM_Barrow_Seuil_B": 1.07,
+	"SM_Barrow_Stele_A": 1.58, "SM_Barrow_Stele_B": 0.94,
+	"SM_Barrow_Stele_C": 1.34,
+}
+const LARGEUR_REELLE: Dictionary = {
+	"SM_Barrow_Seuil_A": 0.86, "SM_Barrow_Seuil_B": 0.78,
+	"SM_Barrow_Stele_A": 0.68, "SM_Barrow_Stele_B": 0.60,
+	"SM_Barrow_Stele_C": 0.58,
+}
+const EPAISSEUR_REELLE: Dictionary = {
+	"SM_Barrow_Seuil_A": 0.33, "SM_Barrow_Seuil_B": 0.30,
+	"SM_Barrow_Stele_A": 0.24, "SM_Barrow_Stele_B": 0.23,
+	"SM_Barrow_Stele_C": 0.22,
+}
+
+
+## L'ENCEINTE BASSE DU COFFRE — un arc de dalles couchées, ouvert du côté par
+## lequel on vient.
+##
+## L'origine d'une lame du GLB n'est pas à son milieu ; la convention retenue
+## est celle, déjà éprouvée, des lames du chemin : on pose le point et on
+## laisse la pièce s'étendre. Le lacet vaut `−angle` pour que la dalle soit
+## TANGENTE à l'arc — une dalle radiale ferait un rayon de roue, une dalle
+## tangente ferme une enceinte.
+func _enceinte_du_coffre() -> void:
+	var index: int = 0
+	for spec: Array in ENCEINTE:
+		index += 1
+		var a: float = deg_to_rad(float(spec[1]))
+		var r: float = float(spec[2])
+		var x: float = ANCRE_COFFRE.x + cos(a) * r
+		var z: float = ANCRE_COFFRE.y + sin(a) * r
+		var at: Vector3 = _seated(x, z)
+		var dalle: Node3D = _piece_pierre(String(spec[0]),
+			at + Vector3(0.0, -0.11, 0.0),
+			Vector3(0.0, deg_to_rad(-float(spec[1])), 0.0),
+			"Enceinte_%d" % index, TEINTE_ENTERREE)
+		dalle.scale = Vector3.ONE * float(spec[3])
+		declare_support(at)
 
 
 func _chemin_des_morts() -> void:
@@ -1149,31 +1333,61 @@ func _collisions() -> void:
 	#   Seuil_A  2,27 × 1,00 − 0,24 = 2,03    Seuil_B  1,07 × 1,00 − 0,26 = 0,81
 	#   Marque m1 (Stele_B) 0,94 × 1,55 − 0,22 = 1,24
 	#   Marque m3 (Stele_C) 1,34 × 1,28 − 0,26 = 1,45
-	K.collider_box(self, "Seuil_pierre_haute",
-		_seated(-6.45, 5.98) + Vector3(0.0, 1.02, 0.0),
-		Vector3(0.88, 2.03, 0.36), 58.0)
-	K.collider_box(self, "Seuil_pierre_basse",
-		_seated(-4.30, 6.36) + Vector3(0.0, 0.41, 0.0),
-		Vector3(0.80, 0.81, 0.33), -41.0)
-	K.collider_box(self, "Chemin_marque_haute",
-		_seated(-3.55, 5.42) + Vector3(0.0, 0.73, 0.0),
-		Vector3(0.61, 1.45, 0.24), -24.0)
-	K.collider_box(self, "Chemin_marque_basse",
-		_seated(-4.90, 5.60) + Vector3(0.0, 0.62, 0.0),
-		Vector3(0.63, 1.24, 0.26), 63.0)
-	K.collider_box(self, "Stele_est",
-		_seated(6.40, -3.20) + Vector3(0.0, 0.68, 0.0),
-		Vector3(0.61, 1.37, 0.38), 71.0)
+	# LES CORPS DES PIERRES DRESSÉES SONT DÉRIVÉS DES TABLES, PLUS RECOPIÉS.
+	#
+	# C'est la correction d'un piège que ce fichier portait sans le dire : cinq
+	# `collider_box` répétaient à la main les positions, lacets, enfoncements
+	# et échelles de `SEUIL`, `CHEMIN` et `MARQUES_ISOLEES`. Déplacer une
+	# pierre — ce que le lot 1.R.2 fait pour six d'entre elles — laissait donc
+	# son corps derrière elle, et AUCUNE capture ne montre un collider. La
+	# boucle ci-dessous lit les mêmes tables que `_chemin_des_morts()` : les
+	# deux ne peuvent plus diverger.
+	#
+	# Seules les pierres DRESSÉES reçoivent un corps ; les lames couchées
+	# restent franchissables, arbitrage déjà pris et inchangé.
+	#
+	# APPROXIMATION ASSUMÉE, INCHANGÉE : la boîte reste d'aplomb alors que la
+	# pierre penche, donc la tête penchée sort de son corps. Mieux vaut une
+	# masse traversable en haut qu'un mur invisible qu'on sent sans le voir.
+	var index: int = 0
+	for lot: Array in [SEUIL, CHEMIN, MARQUES_ISOLEES]:
+		for spec: Array in lot:
+			index += 1
+			var piece: String = String(spec[0])
+			if not HAUTEUR_REELLE.has(piece):
+				continue
+			var enfoncement: float = float(spec[4])
+			var hauteur: float = float(HAUTEUR_REELLE[piece]) \
+				* float(spec[7]) - enfoncement
+			if hauteur <= 0.35:
+				continue
+			K.collider_box(self, "Marque_%d_col" % index,
+				_seated(float(spec[1]), float(spec[2]))
+					+ Vector3(0.0, hauteur * 0.5, 0.0),
+				Vector3(float(LARGEUR_REELLE[piece]) * float(spec[6]),
+					hauteur,
+					float(EPAISSEUR_REELLE[piece]) * float(spec[6])),
+				float(spec[3]))
 	# La pierre de tête : elle a un corps sur toute sa hauteur — c'est la
 	# seule masse du lieu qu'on ne franchit pas.
 	# COTE RECALCULÉE sur la géométrie du lot 1.R.1, passe C2 :
 	# `SM_Barrow_Stele_A` culmine à ~1,58 m ; × 2,30 cela fait 3,63 m, et sa
 	# largeur 0,68 × 1,95 fait 1,33 m. Un corps calé sur une cote périmée est
 	# exactement le genre de décalage qu'aucune capture ne montre.
+	# COTE DÉRIVÉE, elle aussi : `SM_Barrow_Stele_A` culmine à 1,58 m, donc
+	# 1,58 × 1,90 = 3,00 m après la réduction du lot 1.R.2, et 0,68 × 1,95 =
+	# 1,33 m de large. Un corps calé sur 3,63 m — la cote d'avant — aurait
+	# laissé 63 cm de mur invisible au-dessus de la pierre.
+	var h_tete: float = float(HAUTEUR_REELLE["SM_Barrow_Stele_A"]) \
+		* float(PIERRE_DE_TETE[5])
 	K.collider_box(self, "Pierre_de_tete_col",
 		_seated(float(PIERRE_DE_TETE[0]), float(PIERRE_DE_TETE[1]))
-			+ Vector3(0.0, 1.82, 0.0),
-		Vector3(1.33, 3.63, 0.55), float(PIERRE_DE_TETE[2]))
+			+ Vector3(0.0, h_tete * 0.5, 0.0),
+		Vector3(float(LARGEUR_REELLE["SM_Barrow_Stele_A"])
+			* float(PIERRE_DE_TETE[4]), h_tete,
+			float(EPAISSEUR_REELLE["SM_Barrow_Stele_A"])
+			* float(PIERRE_DE_TETE[4])),
+		float(PIERRE_DE_TETE[2]))
 
 
 ## Extrait UNE pièce du GLB des pierres funéraires (recette `_piece_tour` de
