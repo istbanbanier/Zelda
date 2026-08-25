@@ -1,6 +1,6 @@
 === INSPECTION glTF : assets/architecture/watchtower/SM_Watchtower_Ruin.glb ===
-  format                 : GLB v2, 208832 octets
-  chunk_binaire          : 201852 octets
+  format                 : GLB v2, 211928 octets
+  chunk_binaire          : 204948 octets
   generateur             : Khronos glTF Blender I/O v4.0.44
   version_gltf           : 2.0
   meshes                 : 5
@@ -9,8 +9,8 @@
   noeuds                 : 5 (SM_Watchtower_Shell, SM_Watchtower_Talus, SM_Watchtower_Slab_A, SM_Watchtower_Slab_B, SM_Watchtower_CrownBlock)
   skins                  : 0
   animations             : 0 (aucune)
-  triangles              : 2074
+  triangles              : 2110
   bbox_min               : [-2.875, 0, -2.875]
-  bbox_max               : [4.6819, 8.96, 2.875]
-  dimensions_m           : [7.5569, 8.96, 5.75]
+  bbox_max               : [4.6819, 10.91, 2.875]
+  dimensions_m           : [7.5569, 10.91, 5.75]
 === VALIDE ===

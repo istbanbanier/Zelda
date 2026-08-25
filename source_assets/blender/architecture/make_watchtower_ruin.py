@@ -702,6 +702,34 @@ def coquille(bm):
     mur(bm, (-HALF, -HALF - EP * 0.5), (0.0, 1.0), L_OUEST,
         H_OUEST, H_OUEST_FIN, 11.0, 0.30, 0.52,
         baies=((1.45, 1.70, 6.90, 8.05), (2.35, 3.15, 4.10, 5.35)))
+    # LA POINTE D'ARASE SURVIVANTE — l'angle sud-ouest a tenu plus haut que
+    # le blocage (LOT 1.R.4). Deux raisons, une constructive et une mesurée :
+    #   * constructive : un chaînage d'angle en pierres appareillées résiste
+    #     mieux que le blocage courant — c'est PRÉCISÉMENT là qu'une ruine
+    #     garde sa pointe, et la couronne y regagne la « verticalité
+    #     irrégulière » du contrat (« couronne incomplète », §1) ;
+    #   * mesurée : au premier assemblage complet des masques finaux, la
+    #     paire watchtower_ruin × waterfall_cave rend IoU 0,4975 à 30 m
+    #     (seuil gelé 0,4931) et 0,4930 à 80 m (S 0,4912), sur le couple
+    #     0°×0°. La R3 avait aplani le bord supérieur du masque — le fût se
+    #     lisait « monticule ». À 30 m il faut +47 px de tour HORS de
+    #     l'emprise de la grotte (toile 96×96) ; la zone au-dessus de la
+    #     ligne ~24/96 est vide des DEUX côtés, donc chaque pixel de pointe
+    #     est un pixel d'union pure. Ce contour rend 2,43 m² au-dessus de
+    #     l'arase (~59 px à 30 m, ~besoin 47 ; 80 m : besoin 39).
+    # Cotes QUANTIFIÉES sur ASSISE depuis H_OUEST (8,95) : pointe +7 assises
+    # (10,91), paliers +6 (10,63), +5 (10,35), +2 (9,51). La base (8,39,
+    # 2 assises SOUS l'arase) pénètre le plateau du profil ouest — aucun
+    # joint flottant possible : le plateau tient h0 jusqu'à s = 1,575 et le
+    # merlon s'arrête à 1,57. Même repère (base/u/w) que le mur ouest, même
+    # parement intérieur. Aucune pièce nouvelle : le merlon vit DANS
+    # SM_Watchtower_Shell, le compte D7 du lieu ne bouge pas ; il culmine à
+    # 10,91 m, hors de portée du joueur (vigie 3,05), aucun collider.
+    prisme_frame(bm, (-HALF, -HALF - EP * 0.5, 0.0), (0.0, 1.0), (EP, 0.0),
+                 ((0.0, 8.39), (0.0, 10.91), (0.60, 10.91), (0.60, 10.63),
+                  (1.02, 10.63), (1.02, 10.35), (1.30, 10.35), (1.30, 9.51),
+                  (1.57, 9.51), (1.57, 8.39)),
+                 IDX_PIERRE, materiau_avant=IDX_PIERRE_INT)
     # NORD — s'arrête à la brèche, arase qui plonge vers l'arrachement.
     # Une archère, vue de biais par la brèche.
     mur(bm, (-HALF - EP * 0.5, HALF), (1.0, 0.0), L_NORD,
@@ -1289,6 +1317,22 @@ def main():
         return 2
     print("[watchtower_ruin] vigie : dalle présente (%d sommets), volume "
           "capsule libre" % dalle)
+
+    # GARDE 5 — LA POINTE D'ARASE SURVIVANTE EXISTE (LOT 1.R.4). C'est le
+    # geste qui sépare le masque 0° de la tour du monticule de la grotte
+    # (paire R-D3 0,4975 / 0,4930 contre seuils 0,4931 / 0,4912) : s'il
+    # disparaît dans une passe future, la répétition revient sans qu'aucun
+    # diff de ce fichier ne le dise. Quatre sommets au moins au-dessus de
+    # 10,5 m dans l'emprise de l'angle sud-ouest du mur ouest.
+    pointe = sum(1 for v in shell.data.vertices
+                 if v.co.z > 10.5 and v.co.x < -1.7 and v.co.y < -1.0)
+    if pointe < 4:
+        print("[watchtower_ruin] ERREUR: pointe d'arase survivante absente "
+              "(%d sommet(s) > 10,5 m à l'angle SO) — le masque 0° redevient "
+              "un monticule (R-D3 tour × grotte)" % pointe)
+        return 2
+    print("[watchtower_ruin] pointe d'arase : %d sommets > 10,5 m à "
+          "l'angle SO" % pointe)
 
     # GARDE 4 — COLOR_0 PRÉSENTE, ACTIVE ET DE RENDU (ISS-066).
     # `tools/gltf_inspect.py` ne regarde JAMAIS COLOR_0 : il répondrait
