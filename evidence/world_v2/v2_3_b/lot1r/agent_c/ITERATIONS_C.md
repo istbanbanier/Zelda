@@ -396,3 +396,46 @@ Repère de non-régression : l'acquis de l'agent B était **86,7** sur le dos
   de 48 × 9 quadrilatères aux normales lissées, donc une surface CONTINUE
   partout ; une masse de terre a des ruptures de pente, et aucune modulation
   continue n'en fabrique.
+
+### Deux preuves de C3 restent EN COURS au moment où je rends — `NON VÉRIFIÉ`
+
+Le verrou du moteur est partagé avec deux autres agents. Au moment de la
+remise, un `capture_poi_batch` d'un autre arbre le détient, et ma chaîne
+(`bash …/capt_c3.sh`, pid vivant) attend derrière lui pour ses deux dernières
+étapes. Elles écriront d'elles-mêmes dans l'arbre, depuis un arbre PROPRE :
+
+| Preuve | Sortie attendue | Journal |
+|---|---|---|
+| Silhouettes 0/90 de `it/c3` | `agent_c/it/c3/silhouettes/` | `logs/silhouette_lot_c3.log` |
+| Filet D1–D8 (`--filter=lot1_defauts`) | — | `logs/filet_c3.log` |
+
+**Ni l'une ni l'autre n'est un `PASS` tant qu'elle n'a pas été lue.** Les
+commandes, si le lead préfère les rejouer :
+
+```bash
+tools/lancer_godot.sh --rendu --path <arbre> \
+  --script tools/godot/capture_silhouette.gd -- \
+  --scene=res://scenes/world_v2/WorldV2.tscn \
+  --place=valley.poi.barrow_cemetery.01 --name=barrow_cemetery \
+  --angles=0,90 --size=1200x900 --out-dir=<…>/it/c3/silhouettes
+tools/lancer_godot.sh --path <arbre> \
+  --script tools/godot/test_runner.gd -- --filter=lot1_defauts
+```
+
+Le filet D1–D8 compte parmi ces deux-là, et c'est celui qui manque le plus :
+**j'ai déplacé des colliders** (le volume unique de la gueule remplacé par deux
+boîtes, cinq boîtes de pierres recalées, la boîte de la pierre de tête
+redimensionnée), donc D4 (obstruction) et D7 (budget) sont les deux critères
+que cette passe a réellement remis en jeu.
+
+**Comptage D7 fait au SOURCE, à confirmer par le filet** — plafonds de la
+famille « vestige » : modules ≤ 40, nœuds visuels ≤ 80, collisions ≤ 20.
+
+| Compteur | Détail | Total |
+|---|---|---:|
+| Modules | 3 tertres + 6 ceintures + 6 gueule/déblais + 4 seuil + 4 chemin + 3 marques isolées + 1 pierre de tête + 5 steppe | **32 / 40** |
+| Collisions | 6 sphères de crête (2 par tertre) + 2 montants + 5 boîtes de pierres + 1 pierre de tête + 1 sphère de découverte | **15 / 20** |
+
+C'est un comptage de source, pas une lecture de scène montée : la définition
+du §2 compte sur la SCÈNE, et seul le filet la produit. À traiter comme un
+ordre de grandeur tant que `logs/filet_c3.log` n'est pas lu.
