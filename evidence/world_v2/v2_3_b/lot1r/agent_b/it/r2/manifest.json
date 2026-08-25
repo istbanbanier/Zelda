@@ -1,0 +1,203 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "1790c50c2028439206b55ff37d8bf9b4c502bb64",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {
+    "sanctuaire": {
+      "chemin": "assets/architecture/shrine/SM_Shrine_Vestige.glb",
+      "commit": "fe9913088fb8c585983c53563cf209de20ddae02",
+      "sha256": "c1e39a9f253edf99cadde2d8b49ee139032ca23d2b372593f4ba84a712d30091"
+    },
+    "tour": {
+      "chemin": "assets/architecture/watchtower/SM_Watchtower_Ruin.glb",
+      "commit": "fe9913088fb8c585983c53563cf209de20ddae02",
+      "sha256": "5a59395165c609594c6f9d6b5af6906ebe0f89852bf838cbf1de0e066f63b02f"
+    }
+  },
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 55.0,
+      "from": [
+        -140.3,
+        34.0,
+        53.8
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_b/it/r2/watchtower_ruin_identite.png",
+      "look": [
+        -160.0,
+        28.0,
+        40.0
+      ],
+      "name": "watchtower_ruin_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        -154.5,
+        27.7,
+        40.5
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_b/it/r2/watchtower_ruin_joueur.png",
+      "look": [
+        -160.0,
+        27.2,
+        40.0
+      ],
+      "name": "watchtower_ruin_joueur"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        80.5,
+        15.0,
+        59.0
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_b/it/r2/forest_shrine_identite.png",
+      "look": [
+        86.0,
+        9.0,
+        74.0
+      ],
+      "name": "forest_shrine_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        91.5,
+        8.7,
+        64.5
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_b/it/r2/forest_shrine_joueur.png",
+      "look": [
+        86.0,
+        8.2,
+        74.0
+      ],
+      "name": "forest_shrine_joueur"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        80.5,
+        8.7,
+        64.5
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_b/it/r2/forest_shrine_joueur_b.png",
+      "look": [
+        86.0,
+        8.2,
+        74.0
+      ],
+      "name": "forest_shrine_joueur_b"
+    },
+    {
+      "fov": 45.0,
+      "from": [
+        -90.0,
+        38.0,
+        90.0
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_b/it/r2/watchtower_gp_lointain.png",
+      "look": [
+        -160.0,
+        30.0,
+        40.0
+      ],
+      "name": "watchtower_gp_lointain"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        -163.6,
+        30.6,
+        41.8
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_b/it/r2/watchtower_gp_vigie_pov.png",
+      "look": [
+        -140.0,
+        20.0,
+        42.0
+      ],
+      "name": "watchtower_gp_vigie_pov"
+    },
+    {
+      "fov": 55.0,
+      "from": [
+        -152.6,
+        28.6,
+        39.0
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_b/it/r2/watchtower_gp_breche.png",
+      "look": [
+        -162.0,
+        27.4,
+        40.3
+      ],
+      "name": "watchtower_gp_breche"
+    },
+    {
+      "fov": 52.0,
+      "from": [
+        86.6,
+        8.55,
+        67.6
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_b/it/r2/shrine_gp_nef.png",
+      "look": [
+        86.0,
+        7.85,
+        74.0
+      ],
+      "name": "shrine_gp_nef"
+    },
+    {
+      "fov": 45.0,
+      "from": [
+        86.9,
+        8.45,
+        71.4
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_b/it/r2/shrine_gp_coeur.png",
+      "look": [
+        86.0,
+        7.95,
+        74.1
+      ],
+      "name": "shrine_gp_coeur"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        84.0,
+        8.7,
+        81.0
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_b/it/r2/shrine_gp_route_p1.png",
+      "look": [
+        86.0,
+        8.2,
+        74.0
+      ],
+      "name": "shrine_gp_route_p1"
+    },
+    {
+      "fov": 40.0,
+      "from": [
+        -157.6,
+        28.3,
+        39.1
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_b/it/r2/watchtower_gp_arase.png",
+      "look": [
+        -161.7,
+        29.9,
+        38.9
+      ],
+      "name": "watchtower_gp_arase"
+    }
+  ],
+  "size": "1280x720"
+}
