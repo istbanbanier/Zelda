@@ -275,3 +275,80 @@ saturation 0,41.
 
 `barrow_cemetery_joueur` · `barrow_gp_gueule` · `barrow_cemetery_identite` ·
 silhouettes 0/90.
+
+### Après capture — `it/c2/` (commit `3d9f5c9`, manifeste **propre**)
+
+Chaîne : générateur **ROUGE au premier essai** (garde 5 : `SM_Barrow_Seuil_B`
+à 0,249 pour un plancher de 0,26 — le plancher n'a pas bougé, la pierre a
+cédé), puis VERT · `--import` RC=0 · `--check-only` RC=0 · **commit** ·
+capture RC=0 · silhouettes RC=0.
+
+| Mesure | base | `it/c1` | `it/c2` |
+|---|---:|---:|---:|
+| Remplissage de silhouette, min…max | — | 0,405…0,669 | **0,556…0,760** |
+| Largeur à 86 % de la hauteur, min | — | non mesurée | **0,474** (plancher 0,42) |
+| Largeur au sommet, min | — | non mesurée | **0,269** (plancher 0,26) |
+| Emprise du lieu | 23,55 × 4,74 × 19,35 | 23,55 × 4,84 × 19,21 | **23,55 × 4,26 × 19,21** |
+| Occupation silhouette 0° / 90° | 3,98 / 4,33 % | 3,10 / 3,60 % | **3,20 / 3,80 %** |
+
+### Ce que je VOIS à taille réelle
+
+- **Les lames sont mortes.** Sur l'aplat noir 0°, la pierre de tête est une
+  masse dont la largeur se mesure à l'œil, et non plus un trait ; les stèles
+  sont épaulées. Le lieu se lit « longitudinal et bas, une masse dominante » —
+  ce que le contrat §5 demande.
+- **Le tertre n'est plus sable** : la teinte a reculé vers un kaki sourd.
+- **Le coffre est encadré** par deux montants et reste lisible comme coffre.
+- **Le linteau FLOTTE ENCORE.** Sur `barrow_gp_gueule`, c'est une barre
+  suspendue à environ 0,26 m au-dessus des deux montants, qui ne touche rien.
+  **Deuxième échec de la même hypothèse** — j'avais recalculé l'appui sur les
+  arases réelles et corrigé le signe du dévers, et le défaut est identique.
+- **Le dos du dominant reste une DUNE** : son profil est le même dans toutes
+  les directions, donc son ombre propre reste symétrique. Ni l'affaissement de
+  crête (C1) ni le relief de flanc (C2) n'ont changé cette lecture.
+- Les éclats de déblais restent un semis d'arêtes grises autour du coffre.
+
+---
+
+## C3 — le linteau tombe, et le dos cesse d'être un solide de révolution
+
+### Défaut
+
+Les trois derniers points ci-dessus.
+
+### Cause supposée
+
+1. **Linteau** : je l'ai traité deux fois comme un problème de COTE (hauteur
+   d'appui, angle de dévers). Deux échecs sur la même hypothèse : la règle du
+   dépôt dit d'arrêter de régler des constantes. Le vrai problème est que je
+   demande à une pièce posée en l'air de paraître portée, alors que rien dans
+   le code ne garantit qu'elle touche quoi que ce soit.
+2. **Dos** : l'exposant du profil (`cos(dn·π/2)^1,25`) est le MÊME dans toutes
+   les directions. Le dos est donc un solide de révolution déformé ; on peut
+   lui donner autant de crête affaissée et de relief de flanc qu'on veut, son
+   ombre propre reste symétrique et l'œil répond « dune ».
+
+### Levier
+
+1. **Le linteau tombe.** Il part du SOL, 1,26 m à l'ouest du montant A, et
+   s'appuie contre son flanc à 1,53 m (course 1,26 m pour 1,98 m de pièce →
+   50,5°). Un bout au sol ne peut pas flotter : la faute devient
+   structurellement impossible, au lieu d'être combattue par un réglage. Et le
+   ciel se dégage au-dessus du coffre, qui reste encadré par les deux montants
+   seuls. Le signe du tangage est MESURÉ sur `it/c2` (+14,4° abaisse le bout
+   lointain), donc −50,5° le relève.
+2. **Deux flancs qui ne se ressemblent pas** : l'exposant du profil suit `v`,
+   la coordonnée en travers de la crête — 0,72 d'un côté (flanc éboulé, pente
+   raide au pied), 2,05 de l'autre (longue rampe étalée).
+3. Une seule poignée d'éclats au lieu de deux.
+
+### Changement attendu dans les pixels
+
+- Sur `barrow_gp_gueule`, aucune arête du linteau ne doit être entourée de
+  ciel : il doit toucher le sol d'un bout et le montant de l'autre.
+- Sur `barrow_cemetery_identite` et l'aplat noir 0°, les deux flancs du dos
+  dominant doivent avoir des pentes visiblement différentes.
+
+### Caméras qui doivent le montrer
+
+`barrow_gp_gueule` · `barrow_cemetery_identite` · silhouette 0°.
