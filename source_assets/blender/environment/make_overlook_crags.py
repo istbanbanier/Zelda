@@ -183,7 +183,10 @@ PENDAGE_DEG = 13.5
 ## L'axe ne fait pas que se cisailler : il s'INFLÉCHIT. Un cisaillement pur
 ## est une transformation affine, et une masse affine se relit « penchée »,
 ## pas « érodée ». La courbure est partagée elle aussi.
-COURBURE = 0.085
+## 0,085 → 0,050 : à la première valeur la masse lisait « penchée comme une
+## bougie » sur `iter7`. Le cisaillement de pendage suffit à la faire vivre ;
+## la courbure n'est là que pour interdire une transformation affine pure.
+COURBURE = 0.050
 COURBURE_AZIMUT = 128.0
 
 ## ARDOISE FROIDE — INCHANGÉE, et c'est délibéré : la couleur est le seul
@@ -233,8 +236,8 @@ CROCS = [
 ]
 ## Résolution par masse (azimuts, tranches au-dessus du sol, tranches de jupe).
 RESOLUTION = {
-    "SM_Overlook_Crest": (32, 40, 5),
-    "SM_Overlook_Spur": (28, 30, 4),
+    "SM_Overlook_Crest": (26, 26, 4),
+    "SM_Overlook_Spur": (22, 20, 3),
 }
 
 
@@ -325,7 +328,9 @@ class Masse:
 
         # --- 3. STRATES EN RELIEF ------------------------------------------
         self.strate_periode = rng.uniform(0.78, 1.02)
-        self.strate_ampli = rng.uniform(0.075, 0.098)
+        # 0,075–0,098 → 0,135–0,165 : à l'ancienne amplitude les rainures
+        # existaient dans la géométrie et ne se voyaient pas à dix mètres.
+        self.strate_ampli = rng.uniform(0.135, 0.165)
         self.strate_phases = tuple(rng.uniform(0.0, math.tau) for _ in range(5))
         # Amplitude de la DÉRIVE en hauteur du lit, en mètres, et de la
         # variation d'ÉPAISSEUR du lit. Les deux sont nécessaires et elles ne
@@ -610,15 +615,24 @@ def _construire(nom: str, masse: Masse, mat_corps, mat_fracture):
     # point unique fabrique de grandes faces planes, et une grande face plane
     # est précisément ce que le contrôle existe pour interdire.
     faîte = bm.verts.new(apex)
+    # DEUX couronnes intermédiaires depuis que la résolution a baissé pour
+    # l'ombrage à facettes : à 26 azimuts, une seule ne suffisait plus et la
+    # chaîne a rougi à 1,377 m² pour un plafond de 1,20.
     couronne_mid = []
-    for v in dernier:
-        couronne_mid.append(bm.verts.new(v.co.lerp(apex, 0.5)))
+    for facteur in (0.34, 0.68):
+        couronne_mid.append([bm.verts.new(v.co.lerp(apex, facteur))
+                             for v in dernier])
     for j in range(na):
         m = (j + 1) % na
         faces_fracture.append(bm.faces.new((dernier[j], dernier[m],
-                                            couronne_mid[m], couronne_mid[j])))
-        faces_fracture.append(bm.faces.new((couronne_mid[j], couronne_mid[m],
-                                            faîte)))
+                                            couronne_mid[0][m],
+                                            couronne_mid[0][j])))
+        faces_fracture.append(bm.faces.new((couronne_mid[0][j],
+                                            couronne_mid[0][m],
+                                            couronne_mid[1][m],
+                                            couronne_mid[1][j])))
+        faces_fracture.append(bm.faces.new((couronne_mid[1][j],
+                                            couronne_mid[1][m], faîte)))
 
     # FOND DE JUPE. Le solide est fermé sous le terrain : un solide ouvert
     # laisserait voir son intérieur au moindre écart d'assise, et l'assise
@@ -629,7 +643,7 @@ def _construire(nom: str, masse: Masse, mat_corps, mat_fracture):
     # rayon, et un éventail depuis le centre y rendait des facettes bien
     # au-dessus du plafond.
     milieu = []
-    for facteur in (0.70, 0.38):
+    for facteur in (0.76, 0.52, 0.28):
         anneau_bas = []
         for v in premier:
             anneau_bas.append(bm.verts.new(Vector((v.co.x * facteur,
@@ -643,6 +657,8 @@ def _construire(nom: str, masse: Masse, mat_corps, mat_fracture):
         faces_corps.append(bm.faces.new((milieu[0][m], milieu[0][j],
                                          milieu[1][j], milieu[1][m])))
         faces_corps.append(bm.faces.new((milieu[1][m], milieu[1][j],
+                                         milieu[2][j], milieu[2][m])))
+        faces_corps.append(bm.faces.new((milieu[2][m], milieu[2][j],
                                          centre_bas)))
 
     for face in faces_fracture:
@@ -664,8 +680,9 @@ def _construire(nom: str, masse: Masse, mat_corps, mat_fracture):
     sommet_teinte = _teinte(masse, masse.plateforme, 1.0, Vector((0, 0, 1)),
                             0.0)
     couleurs[faîte] = sommet_teinte
-    for v in couronne_mid:
-        couleurs[v] = sommet_teinte
+    for anneau_haut in couronne_mid:
+        for v in anneau_haut:
+            couleurs[v] = sommet_teinte
 
     couche = bm.loops.layers.float_color.new("Col")
     bm.verts.index_update()
@@ -678,6 +695,17 @@ def _construire(nom: str, masse: Masse, mat_corps, mat_fracture):
     bm.normal_update()
     bm.to_mesh(maillage)
     bm.free()
+
+    # OMBRAGE À FACETTES — et c'est le correctif du défaut « cire fondue »
+    # mesuré sur `voie_a3/iter7`. Des normales de sommet LISSÉES sur une
+    # surface dense produisent un dégradé continu : la masse rendait molle et
+    # coulante là où TOUT le monde autour d'elle — falaises V2.2, rochers de
+    # kit, éboulis — est franchement facetté. Elle n'appartenait pas à la même
+    # matière. Le relief, lui, était bien là et mesuré ; c'est l'ombrage qui
+    # le dissolvait. La résolution suit ce choix : une facette doit se LIRE, et
+    # à 20 cm l'ombrage à facettes ne rendrait que du bruit.
+    for polygone in maillage.polygons:
+        polygone.use_smooth = False
 
     # La couche doit être l'attribut de couleur ACTIF et celui de RENDU :
     # l'exporter glTF 4.0 n'écrit `COLOR_0` que pour celui-là (ISS-066).
