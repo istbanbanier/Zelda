@@ -767,20 +767,29 @@ def main():
         # le seuil est à 7 m et le cœur à 10 m, donc à hauteur égale le seuil
         # écrase le cœur. La seconde est le contrat d'invisibilité : moins
         # haut, c'est moins de rideau à demander aux buissons.
-        # LOT 1.R.2 — LES MONTANTS BAISSENT ENCORE (1,55 → 1,34 et 1,12 →
-        # 0,98), et c'est de la hiérarchie mesurée, pas du goût. Dans le cadre
-        # joueur, le montant A est à 7,4 m et le dossier du cœur à 10,3 m :
-        # une pierre de 1,55 m à 7,4 m sous-tend 0,209 rad, le dossier de
-        # 2,03 m à 10,3 m en sous-tend 0,197 — le SEUIL était donc plus grand
-        # que le CŒUR à l'écran, ce qui est exactement l'inverse de ce qu'un
-        # axe rituel doit dire. À 1,34 m le montant tombe à 0,181 rad et rend
-        # au cœur son rang, sans cesser d'être une pierre à hauteur d'homme.
+        # LOT 1.R.2, SECONDE PASSE — LES MONTANTS REMONTENT, ET C'EST UNE
+        # CORRECTION DE MA PROPRE ERREUR, VUE SUR CAPTURE.
+        #
+        # Je les avais baissés (1,55 → 1,34 et 1,12 → 0,98) pour rendre au
+        # cœur son rang. Mauvais levier, et la capture `it1` le montre sans
+        # discussion : à 1,15 m de pierre réelle, les montants tombent au
+        # gabarit des murets et des blocs tombés qui les entourent, et le
+        # seuil DISPARAÎT dans l'amas. Or le verdict ne dit pas « le cœur est
+        # écrasé » — il dit « le seuil n'est pas lisible ».
+        #
+        # La hiérarchie ne se joue pas là. Elle était perdue parce que le
+        # seuil tombait À CÔTÉ du cœur au lieu de l'encadrer ; la rotation de
+        # l'axe de nef l'a réglé. Le cœur domine désormais par sa MASSE
+        # (dossier de 1,60 m de large, dalle de 3,37 m) et par sa position au
+        # centre de la porte — pas en rapetissant ce qui l'encadre. Dans une
+        # enfilade, la porte du premier plan DOIT être la plus grande : c'est
+        # elle qui dit « on entre ici ».
         objet_depuis("SM_Shrine_Montant_A",
-                     lambda bm: pierre_rompue(bm, 1.34, 0.31, 0.23, 3.7,
+                     lambda bm: pierre_rompue(bm, 1.92, 0.31, 0.23, 3.7,
                                               cotes=7, brisure=0.26,
                                               fuseau=0.24)),
         objet_depuis("SM_Shrine_Montant_B",
-                     lambda bm: pierre_rompue(bm, 0.98, 0.26, 0.28, 11.3,
+                     lambda bm: pierre_rompue(bm, 1.46, 0.26, 0.28, 11.3,
                                               cotes=5, brisure=0.42,
                                               fuseau=0.18)),
         objet_depuis("SM_Shrine_Step", marche_enfoncee),
@@ -825,13 +834,18 @@ def main():
         # nef −3,3, soit 2,64 m du cœur à l'échelle NEF_L = 0,80) et le bord
         # de la dalle (0,80 m de rayon dans l'axe), il reste 1,84 m d'axe
         # libre. Une bordure de 2,55 m entrerait DANS le cœur.
+        # HAUTEURS RELEVÉES APRÈS CAPTURE : à 0,44 et 0,32 m au maillage, moins
+        # 0,05 d'enfoncement, les bornes rendaient 0,39 et 0,27 m — soit 35 et
+        # 24 pixels à 8 m, sous l'herbe du semis V2.2 qui monte plus haut
+        # qu'elles. Sur `it1/forest_shrine_joueur.png` je ne distingue AUCUNE
+        # des six. Une bordure qu'on ne voit pas ne trace aucun axe.
         objet_depuis("SM_Shrine_Bordure_G",
                      lambda bm: bordure_de_nef(bm, 1.75, 13.9, n=3,
-                                               h_seuil=0.46, h_coeur=0.26),
+                                               h_seuil=0.72, h_coeur=0.40),
                      mousse_max_z=0.55),
         objet_depuis("SM_Shrine_Bordure_D",
                      lambda bm: bordure_de_nef(bm, 1.45, 27.3, n=3,
-                                               h_seuil=0.40, h_coeur=0.24),
+                                               h_seuil=0.62, h_coeur=0.36),
                      mousse_max_z=0.55),
     ]
 

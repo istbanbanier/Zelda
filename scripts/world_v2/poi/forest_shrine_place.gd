@@ -368,14 +368,18 @@ func _seuil() -> void:
 	# est couchée là où tout le reste est debout. Enfoncée de 11 cm, elle
 	# n'émerge que de 0,22 m — sous la hauteur de marche du héros, donc aucun
 	# corps : on l'enjambe, exactement comme la pierre couchée de la nef.
-	var linteau: Vector3 = _nef_seated(-0.02, -3.42)
-	# LE LINTEAU S'INCLINE. À plat dans l'herbe il rendait une dalle de
-	# pavement ; incliné de 15°, un bout posé sur la marche et l'autre au sol,
-	# il rend ce qu'il est — une pièce TOMBÉE. Enfoncé de 6 cm seulement, pour
-	# que le bout haut se détache du sol.
+	var linteau: Vector3 = _nef_seated(0.26, -3.44)
+	# LE LINTEAU SE RELÈVE ET S'APPUIE. À 15° d'inclinaison il restait couché
+	# dans l'herbe, et sur `it1/forest_shrine_joueur.png` il est indiscernable
+	# des blocs tombés : c'est pourtant LUI qui doit transformer deux pierres
+	# en une PORTE. À 50°, un bout au sol et l'autre calé contre le montant
+	# est, son bout haut monte à 0,85 m — il barre l'intervalle des montants
+	# en diagonale, et cette diagonale-là est ce qu'on lit comme un linteau
+	# tombé. Il reste sous la hauteur d'épaule : la porte est ruinée, pas
+	# reconstruite.
 	_piece_vestige("SM_Shrine_Linteau",
 		linteau + Vector3(0.0, -0.06, 0.0),
-		Vector3(0.0, deg_to_rad(_nef_yaw(78.0)), deg_to_rad(15.0)))
+		Vector3(0.0, deg_to_rad(_nef_yaw(78.0)), deg_to_rad(50.0)))
 	declare_support(linteau)
 	# Enfoncée de 8 cm : une dalle qui affleure l'herbe se lit neuve.
 	var marche: Vector3 = _nef_seated(-0.02, -3.02)
@@ -394,7 +398,7 @@ func _seuil() -> void:
 ## un sol. Sur la capture héritée, pas UNE des neuf dalles n'est discernable.
 ##
 ## Ce qui se voit dans l'herbe, c'est ce qui en dépasse. Deux rangées de
-## bornes basses (0,44 et 0,32 m au maillage) prolongent donc la ligne des
+## bornes basses (0,65 et 0,47 m au maillage) prolongent donc la ligne des
 ## deux montants jusqu'au cœur. Elles sont posées à |x| de nef 0,80, c'est-à-
 ## dire à 0,92 m réels de l'axe — les montants sont à 0,93 m : les bordures
 ## sont littéralement la CONTINUATION du seuil, et c'est ce qui fait qu'on lit
@@ -407,10 +411,16 @@ func _seuil() -> void:
 ## donc +6° et la droite −6°. Se tromper de signe donnerait deux rangées qui
 ## divergent vers le cœur — l'inverse exact d'un axe.
 ##
-## AUCUN CORPS DE COLLISION, et c'est le même contrat que la marche et le
-## linteau : 0,39 m au plus haut une fois enfoncées, sous la hauteur de marche
-## du héros (0,38 m au maillage, moins l'enfoncement) — on les enjambe. Leur
-## donner un corps rétrécirait le couloir que la sonde vient d'élargir.
+## ELLES REÇOIVENT UN CORPS, et c'est la conséquence de les avoir relevées.
+## À 0,39 m on les enjambait et le contrat de la marche et du linteau
+## s'appliquait ; à 0,60 et 0,42 m au-dessus du sol (cotes LUES sur le
+## maillage exporté — 0,65 et 0,47 moins l'enfoncement — et non recopiées de
+## la hauteur demandée, que la brisure du générateur rabat), une pierre qu'on
+## traverse est un mensonge physique. Le couloir n'en souffre pas, et le
+## chiffre le dit : les bordures sont à 0,92 m de l'axe, leurs corps font
+## 0,50 et 0,47 m de large, donc la fenêtre qu'elles laissent vaut
+## 2 × (0,92 − 0,25) = 1,34 m — au-dessus du 1,00 m visé et bien au-dessus du
+## critère de 0,90. Deux `CollisionShape3D` de plus : treize pour vingt.
 func _bordures_de_nef() -> void:
 	var g: Vector3 = _nef_seated(-0.80, -2.20)
 	_piece_vestige("SM_Shrine_Bordure_G",
@@ -444,16 +454,29 @@ func _bordures_de_nef() -> void:
 ##
 ## Ils sont ENFONCÉS de 10 cm : un muret posé sur l'herbe se lit neuf.
 ## `[pièce, x_nef, z_nef, lacet_nef, tangage, hauteur]`
+## LOT 1.R.2 — LES DEUX MURETS LATÉRAUX RECULENT VERS LE CŒUR, ET LA TRAVÉE
+## DU SEUIL SE VIDE.
+##
+## Constat sur `it1/forest_shrine_joueur.png`, à ×3 : entre le seuil et le
+## cœur, la travée est SATURÉE de blocs au même gabarit — deux murets, leurs
+## quatre blocs tombés, la pierre couchée et les bordures, tous entre 0,3 et
+## 0,9 m, tous dans les deux mètres qui suivent la porte. Un seuil ne se lit
+## que s'il a du VIDE autour de lui ; celui-ci en avait un mur.
+##
+## Les murets A et B passent donc de z de nef −1,90/−1,75 à −0,75/−0,55 :
+## ils cessent d'être l'enceinte de la NEF pour devenir celle du CŒUR, qu'ils
+## flanquent à ±2,1 m. La travée −3,3 → −1,5 ne garde que la pierre couchée
+## (0,52 m, qu'on enjambe) et les deux bordures qui tracent l'axe.
 const MURETS: Array[Array] = [
-	["SM_Shrine_Muret_A", -1.75, -1.90, -84.0, 3.0, 0.92],
-	["SM_Shrine_Muret_B", 1.70, -1.75, -97.0, -4.0, 0.84],
+	["SM_Shrine_Muret_A", -1.85, -0.75, -84.0, 3.0, 0.92],
+	["SM_Shrine_Muret_B", 1.80, -0.55, -97.0, -4.0, 0.84],
 	["SM_Shrine_Muret_C", -0.40, 1.05, 10.0, 2.0, 0.66],
 ]
 ## Enfoncement des murets, et de la pierre couchée.
 const MURET_ENFONCEMENT: float = 0.10
 ## Enfoncement des bordures de nef : leur assise fait 0,11 m d'épaisseur, et
 ## on l'enterre presque entièrement — c'est la ligne de pied qui doit se lire,
-## pas la semelle. 0,05 laisse les bornes à 0,39 et 0,27 m au-dessus du sol.
+## pas la semelle. 0,05 laisse les bornes à 0,60 et 0,42 m au-dessus du sol.
 const BORDURE_ENFONCEMENT: float = 0.05
 ## Longueurs des corps de collision, LUES sur le maillage exporté (2,65 /
 ## 2,22 / 1,69 m) et rognées d'un peu pour rester dans la pierre. Tableau
@@ -719,11 +742,11 @@ func _collisions() -> void:
 	# 1,33 laisserait un mur invisible dépasser la pierre de 18 cm, en
 	# silence — l'écart qu'aucune capture ne montre.
 	K.collider_box(self, "Sanctuaire_montant_ouest",
-		_nef_seated(-0.82, -3.30) + Vector3(0.0, 0.575, 0.0),
-		Vector3(0.64, 1.15, 0.49), _nef_yaw(24.0))
+		_nef_seated(-0.82, -3.30) + Vector3(0.0, 0.825, 0.0),
+		Vector3(0.64, 1.65, 0.49), _nef_yaw(24.0))
 	K.collider_box(self, "Sanctuaire_montant_est",
-		_nef_seated(0.80, -3.50) + Vector3(0.0, 0.42, 0.0),
-		Vector3(0.50, 0.84, 0.53), _nef_yaw(-58.0))
+		_nef_seated(0.80, -3.50) + Vector3(0.0, 0.625, 0.0),
+		Vector3(0.50, 1.26, 0.53), _nef_yaw(-58.0))
 	# LES TROIS MURETS. Ils reçoivent tous un corps, contrairement aux socles
 	# bas qu'ils remplacent : un muret est un MUR, et un mur qu'on traverse
 	# n'est pas une enceinte. Longueurs lues sur le maillage (2,65 / 2,22 /
@@ -741,6 +764,15 @@ func _collisions() -> void:
 	K.collider_box(self, "Sanctuaire_pierre_couchee",
 		_nef_seated(-0.10, -2.10) + Vector3(0.0, 0.15, 0.0),
 		Vector3(1.85, 0.30, 0.58), _nef_yaw(82.0))
+	# LES DEUX BORDURES DE NEF. Cotes RELUES sur le maillage exporté après
+	# leur relèvement, jamais recopiées de la demande : le générateur rabat
+	# les sommets par sa brisure.
+	K.collider_box(self, "Sanctuaire_bordure_g",
+		_nef_seated(-0.80, -2.20) + Vector3(0.0, 0.30, 0.0),
+		Vector3(0.50, 0.60, 1.76), _nef_yaw(6.0))
+	K.collider_box(self, "Sanctuaire_bordure_d",
+		_nef_seated(0.78, -2.35) + Vector3(0.0, 0.21, 0.0),
+		Vector3(0.47, 0.42, 1.46), _nef_yaw(-6.0))
 	for spec: Array in [[-5.90, -1.40], [6.90, 0.40], [-6.40, 1.20]]:
 		K.collider_box(self, "Sanctuaire_tronc_%d" % get_child_count(),
 			_seated(float(spec[0]), float(spec[1]))
