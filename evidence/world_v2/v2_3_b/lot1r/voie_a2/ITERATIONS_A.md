@@ -930,3 +930,94 @@ sa place ici.
   iter9, et l'éperon assombri se détache de la falaise. **Visible.**
 - Source, silhouette à 0° : **bloc plein. Non résolu**, et la cause est
   identifiée ci-dessus.
+
+---
+
+## Itération 11 — la séparation en X, et POURQUOI la simulation a menti
+
+Cycle unique conforme à l'arbitrage : géométrie → simulation qui passe →
+recapture (2 lieux, joueur + identité + silhouettes) → D3 réel → commit.
+Export VERT, parse VERT, capture VERTE (`RC_IMP/RC_CAP/RC_SIL_*/RC = 0`),
+commit de la géométrie `49b4913`.
+
+**D3 réel : FAIL.** Et une paire a EMPIRÉ. Le tableau, contre corpus gelé :
+
+| Paire (30 m) | iter10 | simulation U8 | **iter11 réel** |
+|---|---|---|---|
+| source × hameau | 0,590 | prédite < S | **0,565** |
+| source × pont | 0,505 | prédite < S | **0,506** |
+| **belvédère × source** | 0,501 | prédite < S | **0,551** ⬆ |
+
+Le belvédère n'a pas bougé d'un pixel (masques iter10 et iter11 identiques,
+vérifié) : c'est la source qui est venue vers lui.
+
+### 1. L'axe : la source dit enfin qui lit quoi
+
+Assez d'inférence. `tools/godot/capture_silhouette.gd` :
+
+```gdscript
+camera.position = centre + Vector3(cos(a), 0.0, sin(a)) * (rayon * 4.0 + 10.0)
+camera.look_at(centre, Vector3.UP)
+```
+
+À 0° la caméra est en **+X** ; sa base droite vaut `Y × Z = (0,0,−1)`.
+**L'axe horizontal du masque 0° est donc Z, et celui du masque 90° est X.**
+La note de travail qui disait l'inverse est fausse ; le commentaire de
+`sweep7.py` (« le masque 90 deg resout X ») avait raison.
+
+### 2. La paire liante est CROISÉE — personne ne l'avait regardé
+
+R-D3 dit « tous angles confondus ». Le maximum ne tombe pas sur les angles
+homologues :
+
+| Paire | 0×0 | 0×90 | **90×0** | 90×90 |
+|---|---|---|---|---|
+| source × hameau | 0,346 | 0,424 | **0,565** | 0,358 |
+| source × belvédère | 0,404 | 0,370 | **0,551** | 0,480 |
+| source × pont | 0,456 | **0,506** | 0,388 | 0,322 |
+
+Le masque **90° de la source** est jugé contre le masque **0° des autres**.
+Élargir le vide en X y a fabriqué une lecture « grosse masse + satellite »…
+qui est exactement la grammaire du belvédère à 0°. J'ai donné à la source
+la silhouette de l'autre lieu que je possède.
+
+### 3. Pourquoi la simulation passait — et c'est un défaut d'INSTRUMENT
+
+Le masque peint et le masque réel, à 90°, au même moment :
+
+    SIMULE U8    .....++#############+++........
+    REEL iter11  ....++####################+++++++...
+
+Le geste peint enlève **deux fois plus** de matière que le déplacement réel.
+La raison est structurelle, pas un réglage :
+
+> **Une silhouette est une UNION.** Peindre un rectangle supprime la matière
+> inconditionnellement ; déplacer une masse n'ouvre un vide que si AUCUN
+> autre corps n'occupe les mêmes colonnes. Derrière les mâchoires il y a la
+> couronne, les lobes du rebord, la lèvre de vasque et le lit : reculer
+> `MawS` n'a pas creusé, il a **découvert ce qui était derrière**.
+
+C'est une famille distincte de l'erreur d'iter10 (bon geste, mauvais axe) :
+ici l'axe est bon et le geste est irréalisable par une translation. La
+simulation par peinture reste valide pour **retirer** de la matière
+(raccourcir, enterrer, plafonner) ; elle est **invalide pour tout geste de
+déplacement**, et ne doit plus être utilisée ainsi sans un test d'occlusion.
+
+### 4. Le plancher d'AABB du belvédère, fermé à froid
+
+Bornes GLB (`gltf_inspect`) : crête `minY −0,400 / maxY +6,523` (H 6,923),
+éperon `minY −0,350 / maxY +4,325`. L'emprise mesurée du lieu est 8,102 m :
+**1,18 m viennent donc du relief traversé**, pas des jupes — les pièces
+s'étalent de x ≈ 1 à x ≈ 18 sur une butte dont le pad ne tient que 9 m de
+rayon avec 12 m de fondu. C'est une **hypothèse cohérente avec les nombres**,
+pas une mesure : la trancher demanderait de porter `world_v2_heightmap.gd`
+hors moteur, ce qui dépasse le budget d'un essai. Non bloquant : le
+belvédère ne rougit plus contre le corpus.
+
+### Ce que je VOIS à taille réelle
+
+- Source, caméra joueur : la chaîne arrivée → vasque → déversoir reste
+  lisible d'un coup d'œil ; l'ancre du fruit est dégagée (marge +0,68 m).
+  **Visible.**
+- Source, silhouette 90° : le vide est réel mais il compose « masse +
+  satellite ». **C'est le défaut, et il est maintenant nommé.**

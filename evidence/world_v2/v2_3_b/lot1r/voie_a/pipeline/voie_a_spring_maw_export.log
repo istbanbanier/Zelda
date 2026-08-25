@@ -3,16 +3,16 @@ Read blend: "/home/user/wt1r1-a/source_assets/blender/environment/SM_SpringMaw.b
 [export_gltf] Blender 4.0.2
 [export_gltf] io_scene_gltf2 version (4, 0, 44)
 [export_gltf] preset: export_animation_mode=ACTIONS, export_animations=False, export_apply=True, export_cameras=False, export_extras=False, export_force_sampling=True, export_format=GLB, export_lights=False, export_materials=EXPORT, export_normals=True, export_optimize_animation_size=False, export_skins=True, export_tangents=True, export_texcoords=True, export_yup=True, use_selection=False, use_visible=True
-18:57:43 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
-18:57:43 | INFO: Starting glTF 2.0 export
-18:57:43 | INFO: Extracting primitive: SM_Spring_MawN
-18:57:43 | INFO: Primitives created: 2
-18:57:43 | INFO: Extracting primitive: SM_Spring_MawS
-18:57:43 | INFO: Primitives created: 2
-18:57:43 | INFO: Extracting primitive: SM_Spring_Crown
-18:57:43 | INFO: Primitives created: 2
-18:57:43 | INFO: Extracting primitive: SM_Spring_Rim
-18:57:43 | INFO: Primitives created: 2
-18:57:43 | INFO: Finished glTF 2.0 export in 0.05603647232055664 s
+19:16:01 | ERROR: Draco mesh compression is not available because library could not be found at /usr/bin/4.0/python/lib/python3.12/site-packages/libextern_draco.so
+19:16:01 | INFO: Starting glTF 2.0 export
+19:16:01 | INFO: Extracting primitive: SM_Spring_MawN
+19:16:01 | INFO: Primitives created: 2
+19:16:01 | INFO: Extracting primitive: SM_Spring_MawS
+19:16:01 | INFO: Primitives created: 2
+19:16:01 | INFO: Extracting primitive: SM_Spring_Crown
+19:16:01 | INFO: Primitives created: 2
+19:16:01 | INFO: Extracting primitive: SM_Spring_Rim
+19:16:01 | INFO: Primitives created: 2
+19:16:01 | INFO: Finished glTF 2.0 export in 0.0502781867980957 s
 
-[export_gltf] OK -> /home/user/wt1r1-a/assets/environment/rocks/SM_SpringMaw.glb (583800 octets)
+[export_gltf] OK -> /home/user/wt1r1-a/assets/environment/rocks/SM_SpringMaw.glb (583660 octets)
