@@ -1,0 +1,34 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "clip_below": null,
+  "commit": "07c230ed4141a427ee7bcc888365003b79ab6be1",
+  "emprise_m": [
+    14.0636444091797,
+    11.9919509887695,
+    11.7011680603027
+  ],
+  "engine": "4.7.1-stable (custom_build)",
+  "mode": "lieu dans le monde monté",
+  "place_id": "valley.poi.watchtower_ruin.01",
+  "projection": "orthogonale",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "size": "900x1200",
+  "sujet": "watchtower_ruin",
+  "vues": [
+    {
+      "angle_deg": 0.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_b/it/r1/silhouettes/silhouette_watchtower_ruin_000.png",
+      "sujet_pct": 13.3722222222222
+    },
+    {
+      "angle_deg": 90.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_b/it/r1/silhouettes/silhouette_watchtower_ruin_090.png",
+      "sujet_pct": 9.33407407407407
+    }
+  ]
+}
