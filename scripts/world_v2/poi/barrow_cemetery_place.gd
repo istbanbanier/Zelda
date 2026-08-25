@@ -284,7 +284,12 @@ const TRANCHEE: Array = [-2.85, 0.60, -1.62, 4.05, 1.20, 1.05]
 ## (la chambre a cédé sous la terre). Deux accidents de natures différentes,
 ## et c'est leur différence qui raconte l'âge du lieu.
 ## [u, v, profondeur, rayon_u, rayon_v]
-const AFFAISSEMENT: Array = [-1.85, -0.45, 0.30, 2.45, 1.85]
+## PASSE 2 : CREUSÉ AVEC LE DOS. À 0,30 m de creux sur un dos de 2,08 m, la
+## cuvette valait 14 % de la masse ; sur un dos de 2,50 m elle n'en vaudrait
+## plus que 12 %, et sur `it1` le flanc rend une surface LISSE — c'est ce qui
+## lui donne encore la lecture « toile tendue ». Le creux suit donc la masse :
+## 0,50 m sur 2,50, soit 20 %, et les rayons s'élargissent d'autant.
+const AFFAISSEMENT: Array = [-1.70, -0.35, 0.50, 2.90, 2.10]
 
 ## LA FOSSE DE PILLAGE, sur le dominant seulement : centre en repère de
 ## crête (u le long du grand axe, v en travers), profondeur, rayons.
@@ -296,7 +301,13 @@ const AFFAISSEMENT: Array = [-1.85, -0.45, 0.30, 2.45, 1.85]
 ## `capture_silhouette.gd` refusait toujours d'écrire (1,8 % contre un
 ## plancher de 2,0 %). À u = +0,90 elle tombe du côté déjà affaissé — ce qui
 ## est d'ailleurs plus juste : on ouvre une tombe par où elle s'est tassée.
-const FOSSE: Array = [0.90, 0.15, 0.62, 1.55, 1.15]
+## PASSE 2 : la fosse suit la masse elle aussi — 0,95 m de creux sur un dos de
+## 2,50 m, rayons 1,95 × 1,45. Elle tombe à 514 px sur la vue joueur, en plein
+## sur le dos : un TROU d'ombre dans un flanc clair est ce qui distingue une
+## tombe éventrée d'une bâche, et c'est aussi ce qui donne au regard une raison
+## d'aller au tertre. Le générateur la borne toujours à 5 cm au-dessus du
+## terrain : elle ne peut pas percer.
+const FOSSE: Array = [0.90, 0.10, 0.95, 1.95, 1.45]
 
 static var _cache_pierres: Dictionary = {}
 
@@ -964,7 +975,11 @@ func _gueule_de_chambre() -> void:
 const SEUIL: Array[Array] = [
 	# pièce, x, z, lacet, enfoncement, roulis, échelle_travers, échelle_hauteur
 	["SM_Barrow_Seuil_A", -5.82, 5.31, 58.0, 0.24, 11.0, 1.00, 1.00],
-	["SM_Barrow_Seuil_B", -4.15, 5.81, -41.0, 0.26, 24.0, 1.00, 1.00],
+	# PASSE 2 : la pierre basse se relève de 1,07 à 1,55 m. À 1,07 m elle ne
+	# lisait pas comme un montant mais comme un caillou, et un portail dont un
+	# seul jambage tient debout n'est plus un portail. La paire reste
+	# franchement dépareillée — 2,27 contre 1,55 — ce que le seuil exige.
+	["SM_Barrow_Seuil_B", -4.15, 5.81, -41.0, 0.26, 24.0, 1.00, 1.45],
 	# LA RUPTURE DU SOL — deux lames posées EN TRAVERS de l'axe, à demi
 	# avalées. Ce sont elles qui disent « ici, le sol a été préparé » ; sans
 	# elles, deux pierres debout ne sont que deux pierres debout.
@@ -1003,13 +1018,34 @@ const SEUIL: Array[Array] = [
 ## Elles s'arrêtent AVANT la lisière : une lame posée par `_seated()` à
 ## l'intérieur de la jupe serait enterrée par la terre du tertre, et rien dans
 ## la capture ne le dirait — c'est le contrôle `dn < 1` fait à la main ici.
+##
+## PASSE 2 — LES LAMES COUCHÉES DU CHEMIN SONT RETIRÉES, ET C'EST LA CAPTURE
+## QUI L'A IMPOSÉ, PAS UN GOÛT.
+##
+## Sur `it1/barrow_cemetery_joueur.png`, les trois lames tombaient bien à 459,
+## 462 et 464 px — c'était le calcul, et il était juste. C'était l'INTENTION
+## qui était fausse : trois objets posés sur la ligne de visée ne font pas une
+## file, ils se RECOUVRENT. Le résultat lit un tas de dalles jetées, exactement
+## le « semis d'arêtes grises » que la passe C3 du lot précédent avait déjà
+## chassé autour du coffre. Une file ne se lit que vue de BIAIS.
+##
+## Le chemin devient donc une MONTÉE DE PIERRES DRESSÉES, décalées de part et
+## d'autre de l'axe et croissant vers la crête : 0,99 m à 552 px, 1,61 m à
+## 507 px, 1,83 m à 370 px. Le regard monte de droite à gauche et arrive sur le
+## point haut du dos (346 px). Trois verticales séparées de 45 à 137 px ne
+## peuvent pas se télescoper, et une allée de pierres levées ne demande aucune
+## explication.
+##
+## Les trois sont posées hors de la jupe du dominant, avec la marge du PIRE
+## secteur : le rayon en travers vaut `demi_large × (0,78 + 0,44 × lissé)`,
+## donc jusqu'à 4,64 m, et les trois sont à v = 4,80 / 5,01 / 5,24. Une pierre
+## posée par `_seated()` sous la terre du tertre y serait à moitié enterrée, et
+## aucune capture ne le dirait avant que la pierre n'ait disparu.
 const CHEMIN: Array[Array] = [
 	# pièce, x, z, lacet, enfoncement, roulis, échelle_travers, échelle_hauteur
-	["SM_Barrow_Lame_A", -4.80, 4.83, 22.0, 0.12, 0.0, 0.98, 0.98],
-	["SM_Barrow_Stele_B", -3.79, 4.74, 63.0, 0.22, 22.0, 1.10, 1.35],
-	["SM_Barrow_Lame_C", -4.59, 4.06, 44.0, 0.08, 0.0, 1.05, 1.05],
-	["SM_Barrow_Stele_C", -5.45, 3.37, -24.0, 0.26, 17.0, 1.06, 1.42],
-	["SM_Barrow_Lame_B", -4.39, 3.29, 15.0, 0.10, 0.0, 1.00, 1.00],
+	["SM_Barrow_Stele_B", -3.912, 5.013, 63.0, 0.20, 22.0, 1.05, 1.05],
+	["SM_Barrow_Stele_C", -4.159, 4.309, -24.0, 0.24, 17.0, 1.06, 1.20],
+	["SM_Barrow_Stele_B", -5.475, 3.675, 108.0, 0.26, -14.0, 1.15, 1.95],
 ]
 ## Les deux marques les plus lointaines se rapprochent de 1,4 et 1,0 m : le
 ## lieu fait 24 m de large pour 2 m de haut, et c'est ce RAPPORT qui décide si
@@ -1106,12 +1142,16 @@ const ANCRE_COFFRE: Vector2 = Vector2(-1.5, 4.3)
 ## que le coffre déplacerait le problème au lieu de le résoudre.
 ##
 ## [pièce, angle sur l'arc en degrés, rayon en m, échelle]
+##
+## PASSE 2 : QUATRE DALLES PLUS LARGES ET PLUS SERRÉES, PAS CINQ PETITES. Sur
+## `it1`, cinq dalles à échelle 0,95-1,15 se lisaient comme le même semis
+## d'éclats que le chemin. Une enceinte se lit à sa CONTINUITÉ : moins de
+## pièces, plus grandes, bord à bord.
 const ENCEINTE: Array[Array] = [
-	["SM_Barrow_Lame_A", 152.0, 1.32, 1.15],
-	["SM_Barrow_Lame_B", 205.0, 1.28, 1.05],
-	["SM_Barrow_Lame_A", 258.0, 1.30, 1.00],
-	["SM_Barrow_Lame_C", 310.0, 1.26, 1.10],
-	["SM_Barrow_Lame_B", 352.0, 1.34, 0.95],
+	["SM_Barrow_Lame_A", 165.0, 1.24, 1.45],
+	["SM_Barrow_Lame_B", 218.0, 1.22, 1.40],
+	["SM_Barrow_Lame_A", 272.0, 1.26, 1.35],
+	["SM_Barrow_Lame_C", 332.0, 1.28, 1.50],
 ]
 
 
