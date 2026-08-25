@@ -51,6 +51,30 @@
 ##    l'azimut, phase d'échantillonnage tournante — aucune facette ne
 ##    dépasse 0,010 m², donc aucun aplat possible.
 ##
+## TROISIÈME CORRECTIVE (V2.3-B lot 1.R, voie C) — « correcte » n'est pas
+## « mémorable ». Le défaut est mesuré sur `apres4/flower_field_joueur.png` :
+## les 40 % BAS du cadre joueur rendaient de l'herbe nue. Trois causes, et
+## aucune n'était une question de teinte :
+##
+##  * la clairière de l'œil joueur faisait **2,1 m de rayon** autour de la
+##    position exacte de la caméra — elle vidait tout ce que le bas du cadre
+##    regarde. Réduite à 1,25 m, pas fermée (voir `OEILS_DEGAGES`).
+##  * la « poche de premier plan » n'était PAS dans le cadre. Projetée dans
+##    le repère de la vue joueur, elle tombait à |x_écran| = 1,09 : hors
+##    champ à droite. Les lobes sont désormais placés par ce calcul, écrit
+##    au-dessus de `LOBES_JAUNE`, et vérifiés à sec avant capture.
+##  * la nappe tirait un centre au hasard et y posait 3 à 8 fleurs, en
+##    boucle : à faible cible cela fait des taches, à forte cible les taches
+##    se recouvrent et convergent vers un semis UNIFORME. Densifier sans
+##    changer la structure aurait donc effacé les phrases au lieu de les
+##    affirmer. La structure est maintenant explicite — LOBES (où la couleur
+##    habite) creusés de CŒURS (où elle est dense), le vide entre les cœurs
+##    étant une CONTRAINTE d'écartement et non un hasard de tirage.
+##
+## S'y ajoutent la strate HAUTE (une fleur sur six à 1,12-1,50 × l'échelle
+## du kit : un champ dont toutes les fleurs ont la même taille rend une
+## moquette) et les fleurs qui lappent enfin le pied des stèles.
+##
 ## Le vent des nappes est la grammaire V2.2 (`foliage_wind.gdshader`,
 ## relu jamais modifié) portée sur maillage texturé :
 ## `SH_FlowerFieldSway.gdshader`, LOCAL à ce lieu. Phase par position
@@ -139,9 +163,25 @@ const CHEMIN_DEGAGE_M: float = 1.35
 ## Points de vue à ne pas boucher (coordonnées LOCALES au lieu — jamais le
 ## site) : l'œil joueur du plan gelé et le gros plan « nappe au ras du
 ## sol ». [x, z, rayon].
+##
+## TROISIÈME CORRECTIVE — le rayon RÉTRÉCIT, il ne se ferme pas.
+## Ces discs ne sont exigés par AUCUN contrat : D4 ne teste que des
+## COLLIDERS contre les six caméras du bâtisseur, et les nappes n'en
+## portent aucun ; la conception ne les demande pas non plus. C'est un
+## garde-fou de composition inventé à la première corrective pour qu'une
+## fleur ne vienne pas coller à la lentille. À 2,1 m il faisait plus que
+## ça : il vidait tout le PROCHE de la vue joueur — les 40 % bas du cadre
+## rendaient de l'herbe nue, mesuré sur `apres4/flower_field_joueur.png`.
+## Le disc reste (une respiration au pied de l'observateur est juste), à
+## 1,25 m : les fleurs arrivent au bord bas du cadre sans le boucher.
+## Le TROISIÈME disc est celui du gros plan `flower_field_gp_chemin`, ajouté
+## par la même règle : le lobe de premier plan couvre maintenant sa position,
+## et une fleur collée à cette lentille-là cacherait le couloir qu'elle doit
+## justement montrer.
 const OEILS_DEGAGES: Array[Vector3] = [
-	Vector3(4.8, 8.2, 2.1),
-	Vector3(2.0, -5.2, 1.0),
+	Vector3(4.8, 8.2, 1.25),
+	Vector3(2.0, -5.2, 0.8),
+	Vector3(3.4, 4.6, 1.1),
 ]
 
 ## LA PORTE DES FLEURS (composition B du brief CONCEPTION_champ.md,
@@ -161,13 +201,60 @@ const OEILS_DEGAGES: Array[Vector3] = [
 ## centre du cadre ». Les deux stèles ENCADRENT donc l'axe au lieu de s'y
 ## asseoir : la grande à ~1,0 m d'un côté, la petite à ~1,9 m de l'autre, la
 ## voie passant entre les deux. [x, z, rayon d'écart des fleurs].
-const PORTE_GRANDE: Vector3 = Vector3(0.661, -0.752, 1.35)
-const PORTE_PETITE: Vector3 = Vector3(-1.247, 1.564, 1.05)
+##
+## Le troisième nombre est le rayon d'écart des fleurs. Il DESCEND à la
+## troisième corrective : la conception demande « les fleurs lappant leurs
+## pieds », et 1,35 m creusait au contraire une clairière ronde autour de
+## chaque pierre — les deux stèles se lisaient posées sur une pelouse. Les
+## colliders font 0,78 × 0,44 et 0,58 × 0,36 : leurs demi-diagonales sont
+## 0,45 et 0,34 m, donc 0,85 et 0,70 laissent encore les fleurs HORS du
+## corps solide.
+const PORTE_GRANDE: Vector3 = Vector3(0.661, -0.752, 0.85)
+const PORTE_PETITE: Vector3 = Vector3(-1.247, 1.564, 0.70)
 ## Chemin du GLB des deux stèles.
 const STELES_GLB: String = "res://assets/environment/rocks/SM_FlowerField_Steles.glb"
 ## Cap des faces larges : perpendiculaire à la voie au point de Porte, pour
 ## que le passant voie deux PLATS dressés et non deux tranches.
 const PORTE_CAP_DEG: float = 50.5
+
+## LES NAPPES, EN LOBES — troisième corrective.
+##
+## Une nappe n'est plus UNE ellipse semée à densité constante : c'est une
+## suite de LOBES (cx, cz, rx, rz, en local) qui se répondent, et chaque
+## lobe est lui-même creusé de CŒURS denses séparés par du vide (voir
+## `_coeurs`). Une ellipse unique rend un semis régulier ; des lobes à
+## cœurs rendent une masse qui a une forme, ce que la DA appelle des
+## « grandes phrases de couleur » avec « respirations ».
+##
+## LE PLACEMENT EST CALCULÉ POUR LA VUE JOUEUR, qui a une géométrie.
+## Œil local (4,8 · 8,2), visée (0 · 0) : l'avant vaut f = (-0,505 ; -0,863)
+## et la droite r = (0,863 ; -0,505). Un point P se projette en
+## profondeur a = (P-œil)·f et en écart b = (P-œil)·r ; à 65° vertical sur
+## 16:9 le demi-champ horizontal donne tan ≈ 1,13, donc l'abscisse écran
+## vaut b / (1,13·a). C'est ce calcul qui a montré que l'ancienne « poche
+## de premier plan » (6,6 · 3,4) tombait à |x_écran| = 1,09 : ELLE ÉTAIT
+## HORS CADRE À DROITE. Les lobes proches ci-dessous ont été replacés par le
+## même calcul, et vérifiés à sec avant toute capture.
+const LOBES_JAUNE: Array[Vector4] = [
+	Vector4(-5.0, 6.6, 5.0, 3.6),   # la grande coulée, bord gauche du cadre
+	Vector4(3.0, 6.3, 3.0, 2.4),    # LE PREMIER PLAN : a = 2,6 m devant l'œil,
+	                                # x_écran +0,21 — plein bas du cadre joueur
+	Vector4(5.7, 2.9, 2.4, 2.0),    # la poche AU-DELÀ de la voie (x_écran -0,74)
+]
+const LOBES_BLANC: Array[Vector4] = [
+	Vector4(-2.4, -5.8, 5.2, 3.5),  # le cœur profond du champ
+	Vector4(3.4, -2.2, 3.0, 2.3),   # ramené en avant, côté droit de la voie
+]
+const LOBES_BLEU: Array[Vector4] = [
+	Vector4(-7.4, 0.6, 3.3, 2.8),   # l'accent lointain (hors ombre de crête)
+	Vector4(-3.0, 1.2, 1.9, 1.5),   # l'accent proche, juste après la Porte
+]
+## Nombre de fleurs visé par nappe, réparti entre les lobes au prorata de
+## leur aire. Multiplié par ~1,7 à la troisième corrective : à 560 fleurs
+## le champ rendait une prairie tachetée, pas une explosion.
+const CIBLE_JAUNE: int = 430
+const CIBLE_BLANC: int = 380
+const CIBLE_BLEU: int = 150
 
 var _emprise_min_x: Vector2 = Vector2.ZERO
 var _emprise_max_x: Vector2 = Vector2.ZERO
@@ -232,27 +319,25 @@ func _build() -> void:
 	# — LES NAPPES. Le sujet du lieu. Trois couleurs, trois masses, des
 	# clairières — et la bande du chemin qui reste vide de bout en bout.
 	#
-	# Blanche : le cœur du champ, à droite et devant la fourche —
-	# pétales roses natifs DÉSATURÉS puis éclaircis (§1.4 : blanc).
+	# Blanche : le cœur profond du champ, plus un lobe ramené EN AVANT à
+	# droite de la voie — pétales roses natifs DÉSATURÉS puis éclaircis
+	# (§1.4 : blanc).
 	_nappe("Nappe_blanche", &"Flower_3_Group", TONE_PETALE_BLANC, 1.0, 11,
-		Vector2(-1.0, -4.5), Vector2(8.0, 5.5), 300,
+		LOBES_BLANC, CIBLE_BLANC,
 		[Vector3(-4.5, -7.5, 2.2), Vector3(3.2, -6.8, 1.8)])
-	# Jaune : le flanc sud — et la poche de premier plan au pied du
-	# joueur, celle qui met des fleurs dans le bas du cadre dès la
-	# première seconde.
+	# Jaune : la grande coulée sud, le PREMIER PLAN du joueur, et la poche
+	# au-delà de la voie. Trois lobes : c'est la couleur qui ouvre le cadre
+	# en bas et qui borde la voie des deux côtés.
 	_nappe("Nappe_jaune", &"Flower_4_Group", TONE_PETALE_NATIF, 0.0, 23,
-		Vector2(-4.2, 6.0), Vector2(5.8, 4.2), 150,
-		[Vector3(-8.2, 7.6, 1.9)])
-	_nappe("Nappe_jaune_avant", &"Flower_4_Group", TONE_PETALE_NATIF, 0.0, 31,
-		Vector2(6.6, 3.4), Vector2(2.6, 2.2), 40, [])
-	# Bleue : l'accent rare, au-delà de la Porte — sortie de l'ombre portée
-	# de la crête ouest (iter1 : elle y rendait violet éteint). RESSERRÉE :
-	# à 4,2 m de rayon depuis x = -8,6 elle atteignait x = -12,8 et devenait
-	# la pièce la plus à l'ouest du lieu — c'est ELLE, et non la voie, qui
-	# poussait l'emprise à 24 m et faisait rater son plancher à la capture
-	# de silhouette. Un accent rare n'a pas besoin d'être le point extrême.
+		LOBES_JAUNE, CIBLE_JAUNE, [Vector3(-8.2, 7.6, 1.9)])
+	# Bleue : l'accent rare. Le lobe lointain sort de l'ombre portée de la
+	# crête ouest (iter1 : il y rendait violet éteint) et reste RESSERRÉ —
+	# c'est lui, et non la voie, qui poussait l'emprise à 24 m et faisait
+	# rater son plancher à la capture de silhouette. Le second lobe est
+	# proche, juste après la Porte : un accent rare peut être près de l'œil
+	# sans être le point extrême du lieu.
 	_nappe("Nappe_bleue", &"Flower_3_Group", TONE_PETALE_BLEU, 1.0, 47,
-		Vector2(-7.6, 0.4), Vector2(3.5, 3.0), 70, [])
+		LOBES_BLEU, CIBLE_BLEU, [])
 	# L'ourlet d'herbes hautes : il borde le chemin des deux côtés — c'est
 	# lui qui raconte « l'herbe s'ouvre » sans toucher au semis gelé.
 	_ourlet_chemin("Ourlet_herbes", &"Grass_Wispy_Tall", 59)
@@ -289,38 +374,124 @@ func _build() -> void:
 			+ Vector3(0.0, 0.1, 0.0), Vector3(1.2, 0.0, 1.2))
 
 
-## Une nappe florale : phrases de 3 à 8 fleurs autour de centres tirés dans
-## une ellipse, clairières et chemin respectés, un seul nœud visuel.
+## Une nappe florale : plusieurs LOBES, chacun creusé de CŒURS denses
+## séparés par du vide, clairières et chemin respectés, un seul nœud visuel.
+##
+## POURQUOI PAS L'ANCIENNE FORME. La version précédente tirait un centre au
+## hasard dans une ellipse et y posait 3 à 8 fleurs, en boucle. À faible
+## cible cela donne des taches ; à forte cible les taches se recouvrent et
+## le résultat converge vers un semis UNIFORME — exactement ce que la DA
+## refuse. Densifier l'ancienne fonction aurait donc effacé les phrases au
+## lieu de les affirmer. La structure est ici EXPLICITE : le lobe dit où la
+## couleur habite, les cœurs disent où elle est dense, l'espace entre les
+## cœurs est la respiration, et il ne dépend d'aucun tirage chanceux.
+##
+## La cible totale se répartit entre les lobes au prorata de leur AIRE :
+## un petit lobe reste un accent, il ne devient pas un bloc compact.
 func _nappe(nom: String, modele: StringName, petale: Color, desat: float,
-		graine: int, centre: Vector2, rayons: Vector2, cible: int,
+		graine: int, lobes: Array[Vector4], cible: int,
 		clairieres: Array[Vector3]) -> void:
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.seed = hash([GRAINE, graine, nom])
+	var aires: Array[float] = []
+	var somme: float = 0.0
+	for lobe: Vector4 in lobes:
+		var aire: float = PI * lobe.z * lobe.w
+		aires.append(aire)
+		somme += aire
+	if somme <= 0.0:
+		push_error("[flower_field] nappe %s : aucun lobe" % nom)
+		return
 	var transforms: Array[Transform3D] = []
-	var essais: int = 0
-	while transforms.size() < cible and essais < cible * 40:
-		essais += 1
-		var cx: float = centre.x + rng.randf_range(-1.0, 1.0) * rayons.x
-		var cz: float = centre.y + rng.randf_range(-1.0, 1.0) * rayons.y
-		if not _dans_ellipse(cx, cz, centre, rayons):
-			continue
-		if not _degage(Vector2(cx, cz), clairieres):
-			continue
-		var phrase: int = rng.randi_range(3, 8)
-		for i: int in range(phrase):
-			if transforms.size() >= cible:
-				break
-			var px: float = cx + rng.randf_range(-1.3, 1.3)
-			var pz: float = cz + rng.randf_range(-1.3, 1.3)
-			if not _dans_ellipse(px, pz, centre, rayons):
-				continue
-			if not _degage(Vector2(px, pz), clairieres):
-				continue
-			var echelle: float = KitScale.factor(String(modele)) \
-				* rng.randf_range(0.69, 0.99)
-			transforms.append(_pose(px, pz, rng.randf() * TAU, echelle, -0.05))
-			_note_emprise(Vector2(px, pz))
+	for i: int in range(lobes.size()):
+		var part: int = int(round(float(cible) * aires[i] / somme))
+		_semer_lobe(lobes[i], part, modele, clairieres, rng, transforms)
 	_semer(nom, modele, petale, desat, TONE_FEUILLES, transforms, rng)
+
+
+## Sème UN lobe. Les cœurs sont tirés d'abord, avec un écartement minimum :
+## c'est cet écartement qui garantit du vert entre les masses. Les fleurs
+## sont ensuite posées DANS les cœurs, avec un biais radial vers leur
+## centre (`pow(u, 0.62)` au lieu de `sqrt(u)`) — un cœur plus dense au
+## milieu qu'au bord se lit comme une touffe, un cœur uniforme se lit comme
+## un disque découpé.
+func _semer_lobe(lobe: Vector4, cible: int, modele: StringName,
+		clairieres: Array[Vector3], rng: RandomNumberGenerator,
+		transforms: Array[Transform3D]) -> void:
+	if cible <= 0:
+		return
+	var centre: Vector2 = Vector2(lobe.x, lobe.y)
+	var rayons: Vector2 = Vector2(lobe.z, lobe.w)
+	var coeurs: Array[Vector3] = _coeurs(centre, rayons, rng)
+	if coeurs.is_empty():
+		return
+	var poids: float = 0.0
+	for coeur: Vector3 in coeurs:
+		poids += coeur.z * coeur.z
+	var pose_min: int = transforms.size()
+	var essais: int = 0
+	while transforms.size() - pose_min < cible and essais < cible * 30:
+		essais += 1
+		# Choix du cœur au prorata de son aire.
+		var tirage: float = rng.randf() * poids
+		var choisi: Vector3 = coeurs[coeurs.size() - 1]
+		for coeur: Vector3 in coeurs:
+			tirage -= coeur.z * coeur.z
+			if tirage <= 0.0:
+				choisi = coeur
+				break
+		var angle: float = rng.randf() * TAU
+		var rayon: float = choisi.z * pow(rng.randf(), 0.62)
+		var p: Vector2 = Vector2(choisi.x + cos(angle) * rayon,
+			choisi.y + sin(angle) * rayon)
+		if not _dans_ellipse(p.x, p.y, centre, rayons):
+			continue
+		if not _degage(p, clairieres):
+			continue
+		# LA STRATE HAUTE. La DA demande « variation de hauteur/taille » :
+		# une nappe dont toutes les fleurs font 0,4 m rend une moquette. Une
+		# fleur sur six monte à 1,12-1,50 fois l'échelle du kit — elle ne
+		# change pas la masse de couleur, elle donne son PROFIL au champ.
+		var echelle: float = KitScale.factor(String(modele))
+		if rng.randf() < 0.17:
+			echelle *= rng.randf_range(1.12, 1.50)
+		else:
+			echelle *= rng.randf_range(0.66, 0.98)
+		transforms.append(_pose(p.x, p.y, rng.randf() * TAU, echelle, -0.05))
+		_note_emprise(p)
+
+
+## Les CŒURS d'un lobe : deux à sept masses denses, écartées d'au moins la
+## somme de leurs rayons × 0,82 — elles peuvent se toucher, jamais se
+## confondre. C'est ce qui fabrique les respirations : le vide entre les
+## cœurs n'est pas un oubli du tirage, c'est une contrainte.
+func _coeurs(centre: Vector2, rayons: Vector2,
+		rng: RandomNumberGenerator) -> Array[Vector3]:
+	var aire: float = PI * rayons.x * rayons.y
+	var vises: int = clampi(int(round(aire / 8.5)), 2, 7)
+	var petit: float = minf(rayons.x, rayons.y)
+	var coeurs: Array[Vector3] = []
+	var essais: int = 0
+	while coeurs.size() < vises and essais < vises * 60:
+		essais += 1
+		var r: float = clampf(petit * rng.randf_range(0.34, 0.62), 0.75, 2.6)
+		# Le cœur reste DANS le lobe : on tire son centre sur l'ellipse
+		# réduite de son propre rayon, sinon la moitié de ses fleurs
+		# tomberait hors du lobe et le prorata d'aire mentirait.
+		var rx: float = maxf(rayons.x - r * 0.75, 0.35)
+		var rz: float = maxf(rayons.y - r * 0.75, 0.35)
+		var angle: float = rng.randf() * TAU
+		var t: float = sqrt(rng.randf())
+		var p: Vector2 = Vector2(centre.x + cos(angle) * rx * t,
+			centre.y + sin(angle) * rz * t)
+		var libre: bool = true
+		for autre: Vector3 in coeurs:
+			if p.distance_to(Vector2(autre.x, autre.y)) < (r + autre.z) * 0.82:
+				libre = false
+				break
+		if libre:
+			coeurs.append(Vector3(p.x, p.y, r))
+	return coeurs
 
 
 ## L'ourlet du chemin : herbes hautes à 0,7-1,3 m de l'axe, par touffes
