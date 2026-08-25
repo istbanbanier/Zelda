@@ -103,6 +103,46 @@
 ##    qu'un débord constant redessinerait l'anneau noir déjà mesuré et
 ##    corrigé en v3 — la frange se lit en taches de terre trempée, pas en
 ##    cerne.
+## LOT 1.R.1 — CONVERGENCE. LE VERDICT NE PORTE PLUS SUR LA COULEUR.
+##
+## « Trop petite et secondaire dans la caméra joueur. » L'eau, elle, est
+## acquise et mesurée (H 189°, S 0,490 dans la caméra gelée, contre H 176–185°
+## S 0,368 pour la rivière V2.2 du même lot) : ce qui manque n'est pas la
+## teinte, c'est la PRÉSENCE de ce qui l'entoure.
+##
+## Le sujet de ce lieu est « l'œil » ENTIER — l'eau, les mâchoires dont elle
+## sort, les rebords qui la tiennent. Sur `iter5/turquoise_spring_joueur.png`,
+## à taille réelle, cet œil n'existe pas : un filet turquoise dans le tiers bas
+## du cadre, cerné de cailloux bleu marine de 2,6 m, écrasé par le talus brun
+## qui occupe la moitié de l'image.
+##
+## Trois changements y répondent, et AUCUN ne touche au cadrage — déplacer une
+## caméra pour flatter une image est l'A/B malhonnête que la règle
+## transversale nº 4 du contrat interdit nommément :
+##
+##  1. LA ROCHE DEVIENT UN GLB DÉDIÉ (`SM_SpringMaw.glb`, générateur
+##     `source_assets/blender/environment/make_spring_maw.py`). Quatre masses
+##     à surface continue, nervurées, à jupe ENTERRÉE, remplacent SEPT pièces
+##     de kit. Les mâchoires passent de 2,6 m à ≈ 4,0 m et s'écartent, la
+##     couronne ferme la fente, un rebord à trois lobes fondus tient la vasque.
+##     Agrandir le kit n'aurait pas suffi : `Rock_Medium_*` est une famille de
+##     GALETS, et un galet agrandi reste un galet — c'est la même loi de FORME
+##     que celle déjà mesurée au belvédère, pas une affaire de teinte.
+##  2. LA VASQUE S'ÉLARGIT (R 3,3 → 3,95) mais PAS du côté du fruit : un
+##     retrait directionnel garde la berge sous l'ancre de récompense, qui est
+##     gelée. Sans lui, l'eau montait sur le fruit.
+##  3. LE MOUILLAGE EST DANS LA PIERRE. Chaque masse déclare le côté et la
+##     hauteur où l'eau la touche ; la roche y est plus sombre et tire vers le
+##     pétrole. C'est l'indice d'humidité demandé, il vit dans `COLOR_0` donc
+##     il survit à tous les presets, et il ne peut pas devenir un cerne : il
+##     dépend de l'AZIMUT autant que de la hauteur, parce qu'une roche trempée
+##     sur tout son pourtour se relit comme un socle sombre posé — l'anneau
+##     noir que le lit de cette vasque a déjà payé deux fois.
+##
+## BUDGET D7 : le lieu était PLEIN (12/12). 12 − 7 pièces de kit + 4 masses
+## = 9 modules. Les trois lobes du rebord ne comptent que pour UN : ils vivent
+## dans un seul objet du GLB, et c'est précisément pour cela qu'ils y sont
+## fondus plutôt que posés séparément.
 class_name TurquoiseSpringPlace
 extends WorldV2Place
 
@@ -110,27 +150,23 @@ const K: GDScript = preload("res://scripts/world_v2/poi/world_v2_place_kit.gd")
 ## L'eau de ce lieu, et de lui seul. `SH_WorldV2Water` reste gelé.
 const EAU_SHADER: String = \
 	"res://shaders/world_v2/poi/SH_TurquoiseSpringWater.gdshader"
+## Les quatre masses du lieu. Un seul GLB, quatre objets : on instancie, on ne
+## garde que l'objet demandé (même recette que les crocs du belvédère et que
+## les stèles du champ).
+const MAW_GLB: String = "res://assets/environment/rocks/SM_SpringMaw.glb"
 
-## Roche du couchant — RECETTE V2.2 (v3), jugée sur captures v1/v2 :
-##  - `Rock_Medium_*` (atlas Rocks) : couleurs de sommet COUPÉES
-##    (`vertex_color_use_as_albedo = false`, comme
-##    `world_v2_vegetation_builder.gd::_model_mesh` — sinon PISTACHE au
-##    soleil) + multiplicateur de la famille V2.2, un ton plus froid ici
-##    (ravin à l'ombre) ;
-##  - pièces Kenney (`rock_large*`) : matériaux à couleur PLATE — albédo
-##    POSÉ en absolu (un multiplicateur y rendait saumon/vert sapin en
-##    v2) : corps de roche froide humide, coiffe de mousse olive sombre.
-## v2 — REFROIDIES SUR MESURE. Sur `iter3/spring_gros_fente.png` les
-## mâchoires rendent OLIVE (vert-jaune) : la même dérive que celle mesurée
-## au belvédère, et la même cause — la lumière du monde est chaude, donc un
-## multiplicateur presque neutre ressort chaud. Le contrat du lieu demande
-## des « roches froides en mâchoires » et interdit les plaques terracotta.
-## Le rapport bleu/rouge est donc franchement relevé, et la COIFFE de mousse
-## reçoit sa propre teinte : à multiplicateur unique, la surface « grass »
-## de l'atlas repartait en menthe (défaut mesuré en v1 de la corrective).
-const TONE_ROCK_A: Color = Color(0.66, 0.71, 0.92)
-const TONE_ROCK_B: Color = Color(0.60, 0.65, 0.86)
-const TONE_MOUSSE: Color = Color(0.42, 0.47, 0.44)
+## (`TONE_ROCK_A/B` et `TONE_MOUSSE` ont quitté ce fichier avec les sept
+## pièces de kit qu'ils teintaient : la roche vient désormais d'un GLB dont la
+## matière vit dans `COLOR_0`. Les deux mesures qui les avaient produits
+## restent vraies et valent pour toute pièce de kit du dépôt : (v1) la coiffe
+## « grass » de l'atlas Rocks rend MENTHE VIF si on ne lui donne pas sa propre
+## teinte ; (v2) sous une lumière chaude, un multiplicateur presque neutre
+## ressort CHAUD — sur `iter3/spring_gros_fente.png` les mâchoires rendaient
+## olive, et il a fallu relever franchement le rapport bleu/rouge pour obtenir
+## le « froid » que le contrat demande.)
+##
+## `TONE_RIM` reste : les trois dalles du déversoir sont encore des pièces de
+## kit, et elles sont les seules du lieu à en être.
 const TONE_RIM: Color = Color(0.66, 0.70, 0.80)
 ## Lit de vasque : v4 — le CENTRE tire vers la sarcelle (dépôt minéral :
 ## c'est le mécanisme réel d'une source turquoise — l'eau se colore par
@@ -146,7 +182,16 @@ const BASSIN_Z: float = 0.2
 ## surface CLAIRE d'un ravin sombre, donc sa part d'image EST la promesse
 ## (addendum §3) ; et le rayon haché monte à R×1,08, soit 3,56 m — l'ancre
 ## du fruit, à 3,84 m du centre, reste sur la berge avec 28 cm de marge.
-const BASSIN_R: float = 3.3
+## 3,3 → 3,95 (lot 1.R.1). La vasque est la seule surface claire d'un ravin
+## sombre : sa part d'image EST la promesse. Elle ne grandit PAS uniformément
+## — voir `_retrait_ancre()`.
+const BASSIN_R: float = 3.95
+## Azimut de l'ancre du fruit vue du centre de vasque : l'ancre est en
+## (−2,4 ; 2,6), le centre en (−5,4 ; 0,2), soit un vecteur (+3,0 ; +2,4),
+## donc 38,7° = 0,675 rad. Le rivage se RETIRE dans ce secteur : sans cela
+## l'élargissement noierait la récompense, qui est gelée et ne se déplace pas
+## pour arranger une image.
+const ANCRE_AZIMUT: float = 0.675
 ## Direction du déversoir : de la vasque vers les dalles puis la tête
 ## d'affluent (local +6 ; −6). Normalisée de (7,0 ; −5,2).
 const FIL_DIR: Vector2 = Vector2(0.803, -0.596)
@@ -157,91 +202,64 @@ func default_place_id() -> StringName:
 
 
 func _build() -> void:
-	# — LES DEUX MÂCHOIRES. Deux rochers massifs au PIED de la pente,
-	# penchés l'un vers l'autre, qui ouvrent entre eux une fente sombre à
-	# (−9,6 ; 0,2) : c'est de là que l'eau sort. Ce n'est PAS une porte —
-	# deux modèles différents, deux azimuts, deux roulis opposés, pieds
-	# enterrés de 0,55 m.
+	# — LES DEUX MÂCHOIRES. Deux masses au PIED de la pente, penchées l'une
+	# vers l'autre, qui ouvrent entre elles la fente d'où l'eau sort. Ce n'est
+	# PAS une porte : deux formes différentes, deux inclinaisons, deux
+	# hauteurs, pieds enterrés.
 	#
-	# CHOIX DE FAMILLE JUGÉ SUR CAPTURE (v1, commit 63af918) : les pièces
-	# `cliff_*` posées haut sur la pente de 54° rendaient des plaques
-	# beiges FLOTTANTES contre la paroi sombre — refusées. `Rock_Medium_*`
-	# (atlas Rocks) rend gris-vert froid et s'assied au pied de pente.
-	# Dimensions calculées : nord Rock_Medium_1 ×1,15 → 3,7 × 2,6 × 3,4 m ;
-	# sud Rock_Medium_3 ×1,12 → 3,8 × 2,6 × 3,9 m.
+	# HISTOIRE DE LEUR TAILLE, ET ELLE SE CONTREDIT — c'est la question que
+	# cette passe laisse ouverte, autant l'écrire ici. En v7 les mâchoires
+	# avaient été BAISSÉES (×1,35 → ×1,15) pour sortir le lieu de la bande de
+	# proportion la plus encombrée du corpus : le détecteur R-D3 rendait FAIL
+	# (source × ferme abandonnée, IoU 0,506 à 30 m pour un seuil de 0,493) et
+	# cinq lieux y rendaient la même barre basse en aplat noir. Le lot 1.R.1
+	# demande l'inverse — de la PRÉSENCE — et les remonte à ≈ 4,0 m. Les deux
+	# demandes sont légitimes et elles tirent en sens contraire ; le détecteur
+	# rejoué tranchera, pas ce commentaire.
 	#
-	# ÉCHELLES BAISSÉES EN v7 (×1,35 → ×1,15 ; ×1,30 → ×1,12), et ce n'est
-	# pas un renoncement. Le détecteur R-D3 rejoué sur le rework a rendu
-	# FAIL : source × ferme abandonnée, IoU 0,506 à 30 m et 0,494 à 80 m
-	# pour des seuils de 0,493 et 0,491. Le lieu tombait dans la bande de
-	# proportion la plus encombrée du corpus (H/emprise ≈ 0,26–0,30 : ferme,
-	# camps, pont, belvédère) — en aplat noir, cinq lieux y rendent la même
-	# barre basse. Baisser la bouche de ~0,5 m et élargir le lieu en Z sort
-	# la source de cette bande. L'intention y gagne aussi : « on veut
-	# s'approcher » (addendum §3) demande un creux à hauteur d'épaule, pas
-	# un porche — à 2,6 m la mâchoire fait encore une fois et demie le
-	# héros (1,78 m).
-	var machoire_n: Vector3 = _seated(-9.8, -1.9)
-	_teinter(_roche(&"Rock_Medium_1", -9.8, -1.9, 105.0, -8.0, 1.15, 0.55),
-		TONE_ROCK_A, TONE_MOUSSE, false)
+	# LOT 1.R.1 : les mâchoires passent de 2,6 m à ≈ 4,0 m et S'ÉCARTENT
+	# (z ±1,9/2,4 → −3,4/+3,8). L'écartement n'est pas décoratif : à masses
+	# grossies et positions inchangées, les deux enveloppes se touchaient et
+	# la fente — le point d'où l'eau sort — se refermait.
+	var machoire_n: Vector3 = _seated(-9.9, -3.4)
+	_masse(&"SM_Spring_MawN", "Machoire_nord", -9.9, -3.4, 18.0, 0.30, true)
 	declare_support(machoire_n)
-	var machoire_s: Vector3 = _seated(-9.5, 2.4)
-	_teinter(_roche(&"Rock_Medium_3", -9.5, 2.4, 244.0, 9.0, 1.12, 0.55),
-		TONE_ROCK_B, TONE_MOUSSE, false)
+	var machoire_s: Vector3 = _seated(-9.5, 3.8)
+	_masse(&"SM_Spring_MawS", "Machoire_sud", -9.5, 3.8, -24.0, 0.30, true)
 	declare_support(machoire_s)
-	# — LA COURONNE : un troisième rocher plus petit, posé plus haut sur la
-	# pente entre les deux mâchoires, qui ferme le haut de la fente — l'eau
-	# sort d'un creux fermé, pas d'un intervalle entre deux objets.
-	# v7 : redescendue d'un demi-mètre le long de la pente (x −11,0 → −10,4,
-	# le sol y est ~0,35 m plus bas) et enfoncée plus franchement — elle
-	# COIFFE la fente au lieu de la surplomber.
-	var couronne: Vector3 = _seated(-10.4, 0.3)
-	_teinter(_roche(&"Rock_Medium_2", -10.4, 0.3, 12.0, 4.0, 0.85, 0.50),
-		TONE_ROCK_A, TONE_MOUSSE, false)
+	# — LA COURONNE ferme le haut de la fente : l'eau sort d'un creux fermé,
+	# pas d'un intervalle entre deux objets.
+	# La couronne remonte sur la pente (−10,4 → −11,0) et s'enfonce davantage :
+	# le sol y gagne ≈ 1 m en un mètre et demi (profils mesurés en tête de
+	# fichier), et une masse posée à plat sur une pente montre sa jupe.
+	var couronne: Vector3 = _seated(-11.0, 0.3)
+	_masse(&"SM_Spring_Crown", "Couronne_fente", -11.0, 0.3, 40.0, 0.55, true)
 	declare_support(couronne)
 
 	# — LA VASQUE. Le lit D'ABORD, la nappe ensuite, les margelles au bord
 	# de l'eau — jamais l'inverse.
 	_lit()
 	_nappe()
-	# ANNEAU ROMPU, jamais un cercle : trois margelles inégales au nord, à
-	# l'est et au sud, et RIEN à l'ouest — c'est de ce côté que l'eau
-	# arrive, et une margelle y boucherait la fente.
-	# v5 — mesuré sur captures v3/v4 : les pièces Kenney en margelles
-	# rendaient BLEU MARINE à couvercle noir dans l'ombre du ravin, même
-	# re-teintées (44-52 ; 58-66 ; 66-67). Les margelles rejoignent la
-	# famille `Rock_Medium` des mâchoires : MÊME matière, petite échelle,
-	# demi-enterrées — l'anneau appartient alors à la formation.
-	# La margelle EST fait aussi l'ÉCRIN de la récompense (audit v1 : le
-	# fruit flottait sans écrin) : le fruit se niche à son pied, côté eau.
-	# v7 — les margelles nord et sud suivent le nouveau rivage (R 3,0 → 3,3)
-	# et s'écartent d'un demi-mètre de plus sur l'axe nord-sud : c'est
-	# l'axe le plus court du lieu, et c'est en l'allongeant qu'on quitte la
-	# proportion « barre basse » partagée avec la ferme (voir la note des
-	# mâchoires). La margelle EST ne bouge pas : elle est l'écrin du fruit.
-	var margelles: Array[Array] = [
-		[-7.3, -3.4, 118.0, 7.0, 0.52, &"Rock_Medium_2", 0.35],
-		[-3.0, 1.6, -34.0, -5.0, 0.42, &"Rock_Medium_1", 0.30],
-		[-6.8, 3.9, 61.0, 8.0, 0.40, &"Rock_Medium_3", 0.32],
-	]
-	for spec: Array in margelles:
-		var at: Vector3 = _seated(float(spec[0]), float(spec[1]))
-		var margelle: Node3D = _roche(spec[5] as StringName, float(spec[0]),
-			float(spec[1]), float(spec[2]), float(spec[3]), float(spec[4]),
-			float(spec[6]))
-		_teinter(margelle, TONE_ROCK_A, TONE_MOUSSE, false)
-		declare_support(at)
-	# Un bloc TOMBÉ DE LA PAROI, demi-enterré au sud de la vasque : c'est
-	# lui qui donne l'échelle de la falaise au premier plan.
-	# v7 : 1,9 m plus au sud (il tombe du même mur, plus loin le long de sa
-	# base) et moins enfoui (−0,95 → −0,60) — c'est lui qui tirait le bas de
-	# l'emprise à −0,95 m sans rien montrer de plus.
-	var bloc: Vector3 = _seated(-8.3, 6.5)
-	_teinter(K.module(self, &"Rock_Medium_2",
-		bloc + Vector3(0.0, -0.60, 0.0), 150.0, 1.0, Color.WHITE),
-		TONE_ROCK_B, TONE_MOUSSE, false)
-	declare_support(bloc)
-
+	# — LE REBORD : trois lobes FONDUS dans un seul objet, donc un seul
+	# module. Ils remplacent les trois margelles de kit et le bloc tombé.
+	#
+	# ANNEAU ROMPU, jamais un cercle : nord, est et sud, RIEN à l'ouest —
+	# c'est de ce côté que l'eau arrive, et un rebord y boucherait la fente.
+	# Le lobe EST est l'ÉCRIN de la récompense (audit v1 : le fruit flottait
+	# sans écrin) et il est délibérément le plus BAS des trois : il se trouve
+	# entre la caméra du joueur et l'eau, et un rebord qui masque le sujet
+	# qu'il encadre est un contresens.
+	#
+	# Le mouillage de ces lobes est porté par leur `COLOR_0` (azimut 215°,
+	# hauteur 0,85 m) : la pierre est trempée du côté de l'eau, sèche de
+	# l'autre. C'est l'indice d'humidité demandé, et il ne coûte rien.
+	_masse(&"SM_Spring_Rim", "Rebord_vasque", BASSIN_X, BASSIN_Z, 0.0, 0.25,
+		false)
+	# Les appuis DÉCLARÉS suivent les lobes, pas l'objet : le filet D2 lit des
+	# points, et un point au centre de la vasque serait un appui sur de l'eau.
+	for lobe: Vector2 in [Vector2(-6.4, -3.6), Vector2(-2.6, 2.3),
+			Vector2(-7.6, 5.2)]:
+		declare_support(_seated(lobe.x, lobe.y))
 	# — LE FIL QUI S'EN VA. Trois dalles mouillées, à demi enfoncées, qui
 	# descendent au nord-est vers la tête de l'affluent (local +6 ; −6),
 	# le long de la langue d'eau de la nappe. La dernière s'arrête à 5,0 m
@@ -256,9 +274,10 @@ func _build() -> void:
 		K.module(self, spec[3] as StringName,
 			assise + Vector3(0.0, -0.05, 0.0), float(spec[2]), 1.0, TONE_RIM)
 		declare_support(assise)
-	# (La fougère d'avant a cédé sa place au budget D7 : le lit de vasque
-	# est un module runtime qui COMPTE — 10 pièces de kit + nappe + lit
-	# font exactement 12.)
+	# BUDGET D7 après le lot 1.R.1 : quatre masses de GLB + trois dalles de
+	# kit + la nappe + le lit = 9 modules sur 12. Le lieu était PLEIN ; il ne
+	# l'est plus, et les trois slots libérés le sont parce que sept pièces de
+	# kit ont fusionné dans quatre objets, pas parce qu'on a retiré du contenu.
 
 	_collisions()
 
@@ -276,9 +295,10 @@ func _build() -> void:
 	add_child(poi)
 	# Le fruit de soin pousse au bord de l'eau, côté est — le côté par
 	# lequel on arrive, et le seul qui ne soit pas contre la paroi. Il est
-	# POSÉ AU SOL, niché au pied de la margelle est (audit v1 : il flottait
-	# à 0,3-0,5 m sans écrin — l'ancrage descend à +0,04 et la margelle
-	# déplacée en (−3,0 ; 1,6) lui fait un dos de pierre).
+	# POSÉ AU SOL, niché au pied du lobe EST du rebord (audit v1 : il flottait
+	# à 0,3-0,5 m sans écrin). Le lobe est en (−2,6 ; 2,3) et lui fait un dos
+	# de pierre ; c'est aussi pour lui que le rivage se retire dans ce secteur
+	# (`_retrait_ancre`), sinon la vasque élargie serait montée sur le fruit.
 	# −0,06 : `IngredientPickup` dessine sa baie centrée à +0,22 (rayon
 	# 0,14) au-dessus de l'ancre — la baie touche donc le sol au lieu de
 	# flotter (audit : trois captures avec le fruit en lévitation).
@@ -309,7 +329,7 @@ func _lit() -> void:
 		# (mesuré sur les deux captures). Le bord du lit doit mourir sous
 		# l'eau ; c'est l'herbe du pad qui rencontre la rive, et la mousse
 		# du shader qui fait la transition.
-		var r: float = rayons[i] - 0.15 + _bosse_ouest(angle) * 1.15
+		var r: float = rayons[i] - 0.15 + _bosse_ouest(angle) * 1.60
 		var px: float = BASSIN_X + cos(angle) * r
 		var pz: float = BASSIN_Z + sin(angle) * r
 		bord.append(Vector3(px, _y_sol(px, pz, 0.03), pz))
@@ -338,7 +358,7 @@ func _lit() -> void:
 		var tirage: float = 0.5 + 0.5 * _alea(float(i) * 1.7 + 19.3)
 		# Rien à l'ouest : c'est la fente, et la roche y descend.
 		var largeur: float = 0.42 * tirage * (1.0 - _bosse_ouest(angle) * 0.8)
-		var r: float = rayons[i] - 0.15 + _bosse_ouest(angle) * 1.15 + largeur
+		var r: float = rayons[i] - 0.15 + _bosse_ouest(angle) * 1.60 + largeur
 		var px: float = BASSIN_X + cos(angle) * r
 		var pz: float = BASSIN_Z + sin(angle) * r
 		frange.append(Vector3(px, _y_sol(px, pz, 0.025), pz))
@@ -375,7 +395,12 @@ func _lit() -> void:
 	# peu plus large qu'elle — le sol mouillé déborde toujours l'eau. Les
 	# mêmes renflements que l'eau, sinon les flaques déborderaient sur de
 	# l'herbe sèche.
-	_bande(st, 2.65, 5.1, 1.60, 0.90, 0.03, Color(0.88, 0.84, 0.74, 1.0),
+	# Départ reculé (2,65 → 3,20) parce que le rivage a grandi, et LONGUEUR
+	# RACCOURCIE d'autant (5,1 → 4,55) : le bout de la bande retombe au
+	# centimètre près où il était. Sans cette compensation, la langue avançait
+	# de 55 cm vers la tête d'affluent et tombait sous les 5 m que le contrat
+	# du lot exige de laisser libres.
+	_bande(st, 3.20, 4.55, 1.85, 0.98, 0.03, Color(0.88, 0.84, 0.74, 1.0),
 		Color(1.0, 0.95, 0.85, 1.0), true, false)
 	lit.mesh = st.commit()
 	var terre: StandardMaterial3D = K.flat_material(TONE_LIT)
@@ -421,7 +446,7 @@ func _nappe() -> void:
 		# La bouche : vers l'ouest, la nappe s'étire jusque sous le seuil
 		# de la fente — l'eau SORT de la paroi, elle n'apparaît pas au
 		# milieu de l'herbe.
-		var r_ext: float = rayons[i] + _bosse_ouest(angle) * 1.15
+		var r_ext: float = rayons[i] + _bosse_ouest(angle) * 1.60
 		var r_int: float = rayons[i] * (0.50 + 0.08 * _alea(float(i) * 4.7))
 		interieur.append(Vector3(BASSIN_X + cos(angle) * r_int, niveau,
 			BASSIN_Z + sin(angle) * r_int))
@@ -469,7 +494,12 @@ func _nappe() -> void:
 	# Une surface d'eau placée LÀ est plus grande à l'écran et mieux vue,
 	# sans qu'aucune caméra n'ait bougé.
 	var gb: Vector2 = Vector2(FIL_DIR.x * 0.5 + 0.5, FIL_DIR.y * 0.5 + 0.5)
-	_bande(st, 2.85, 4.8, 1.30, 0.52, 0.045,
+	# Même compensation que pour le lit : 2,85 → 3,40 de départ, 4,8 → 4,25 de
+	# longueur. Le bout de langue reste à 5,47 m de la tête d'affluent gelée,
+	# la valeur déjà publiée. Largeurs relevées (1,30 → 1,55 ; 0,52 → 0,60) :
+	# c'est la portion d'eau la plus PROCHE de la caméra joueur, donc celle
+	# dont chaque centimètre compte le plus à l'écran.
+	_bande(st, 3.40, 4.25, 1.55, 0.60, 0.045,
 		Color(0.20, gb.x, gb.y, 0.95), Color(0.06, gb.x, gb.y, 0.45),
 		true, true)
 	nappe.mesh = st.commit()
@@ -493,8 +523,21 @@ func _rayons_vasque(segments: int) -> PackedFloat32Array:
 	for i: int in range(segments):
 		var lisse: float = (brut[(i - 1 + segments) % segments] + brut[i]
 			+ brut[(i + 1) % segments]) / 3.0
-		rayons.append(BASSIN_R * (0.88 + 0.20 * lisse))
+		var angle: float = TAU * float(i) / float(segments)
+		rayons.append(BASSIN_R * (0.88 + 0.20 * lisse) * _retrait_ancre(angle))
 	return rayons
+
+
+## LE RIVAGE SE RETIRE DEVANT LA RÉCOMPENSE.
+##
+## La vasque passe de R 3,3 à 3,95 pour gagner en présence. L'ancre du fruit,
+## elle, est GELÉE en (−2,4 ; 2,6), soit 3,84 m du centre : à rayon uniforme,
+## le rivage haché montait à 4,27 m et le fruit se serait retrouvé DANS l'eau.
+## Un retrait de 19 % dans son secteur ramène le rivage à ≈ 3,2 m et laisse
+## 0,6 m de berge — et c'est la berge qui bouge, jamais la récompense.
+func _retrait_ancre(angle: float) -> float:
+	var ecart: float = wrapf(angle - ANCRE_AZIMUT, -PI, PI)
+	return 1.0 - 0.19 * exp(-pow(ecart / 0.85, 2.0))
 
 
 ## Poids de la bouche ouest : 1 plein ouest, 0 hors du secteur ±38°.
@@ -566,14 +609,20 @@ func _bande(st: SurfaceTool, depart_r: float, longueur: float,
 ## une marche au milieu d'un ruisseau. Tous à plus de 16 m de la tête
 ## d'affluent (+6 ; −6) : la bande gelée reste libre.
 func _collisions() -> void:
+	# Volumes recalés sur les masses du GLB (emprises visibles mesurées par le
+	# générateur : mâchoire nord 5,6 × 6,6 m pour 4,05 m de haut ; sud
+	# 7,4 × 5,2 m pour 3,68 m). Ils restent plus ÉTROITS que le visible : le
+	# pied s'évase et se franchit, on ne bute pas sur son évasement.
+	# Distances à la tête d'affluent gelée (+6 ; −6), recalculées : nord
+	# 16,1 m, sud 18,3 m, bloc 17,6 m — le contrat en demande 5.
 	K.collider_box(self, "Source_machoire_nord",
-		_seated(-9.8, -1.9) + Vector3(0.0, 1.0, 0.0), Vector3(2.9, 2.0, 2.6),
-		105.0)
+		_seated(-9.9, -3.4) + Vector3(0.0, 1.6, 0.0), Vector3(3.6, 3.2, 3.6),
+		18.0)
 	K.collider_box(self, "Source_machoire_sud",
-		_seated(-9.5, 2.4) + Vector3(0.0, 1.0, 0.0), Vector3(2.9, 2.0, 2.9),
-		244.0)
+		_seated(-9.5, 3.8) + Vector3(0.0, 1.5, 0.0), Vector3(3.6, 3.0, 3.6),
+		-24.0)
 	K.collider_box(self, "Source_bloc",
-		_seated(-8.3, 6.5) + Vector3(0.0, 0.45, 0.0), Vector3(2.9, 0.9, 2.4),
+		_seated(-7.6, 5.2) + Vector3(0.0, 0.7, 0.0), Vector3(2.6, 1.4, 2.6),
 		150.0)
 
 
@@ -618,74 +667,80 @@ func _y_sol(local_x: float, local_z: float, sur_sol: float) -> float:
 	return ground_local_y(local_x, local_z) + sur_sol
 
 
-## POSER UNE ROCHE PENCHÉE, RECENTRÉE SUR SA VRAIE EMPRISE, PIED ENTERRÉ.
+## POSER UNE MASSE DU GLB DÉDIÉ, recentrée sur son emprise et enterrée.
 ##
-## Même détour mesuré qu'au belvédère (brief commun, piège 4) :
-## `cliff_half_rock` a son origine sur une ARÊTE (bbox z ∈ [0,0815 ; 0,500])
-## et `KitPlacement.seat()` mesure AVANT le roulis ajouté ici. On pose, on
-## penche, on REMESURE l'emprise dans le repère du parent, on recentre son
-## milieu sur (x ; z) voulu, on enfonce de la profondeur voulue. Les
-## distances (tête d'affluent, caméras) portent sur ces centres d'emprise.
-## (Même famille que `_coucher()` de la voie B ; candidat
-## `world_v2_place_kit.gd` par la règle de trois, remonté au lead.)
-func _roche(modele: StringName, x: float, z: float, yaw_deg: float,
-		roulis_deg: float, extra: float, enfoncement: float) -> Node3D:
-	var piece: Node3D = K.module(self, modele, Vector3(x, 0.0, z), yaw_deg,
-		extra, Color.WHITE)
-	if piece == null:
+## (`_roche()` et `_teinter()` ont quitté ce fichier avec les sept pièces de
+## kit qu'ils habillaient. Les deux pièges qu'ils documentaient restent VRAIS
+## et vivent ailleurs : `KitPlacement.seat()` mesure AVANT le roulis, donc une
+## pièce dont l'origine est sur une arête se pose ailleurs qu'où on croit — voir
+## les lieux de la voie B ; et `K.apply_tone` laisse
+## `vertex_color_use_as_albedo` allumé, ce qui fait rendre l'atlas Rocks en
+## PISTACHE au soleil et la coiffe « grass » en MENTHE. Ici la matière vient du
+## GLB, donc ni l'un ni l'autre ne s'applique.)
+##
+## L'ASSISE NE SE CALCULE PAS SUR LE BAS DE L'EMPRISE. Le GLB a un `min Y`
+## NÉGATIF, volontairement : chaque masse est prolongée SOUS son plan de sol
+## par une jupe évasée, et c'est elle qui supprime la ligne de contact
+## pierre/herbe. Le plan y = 0 du modèle EST le sol prévu. Soustraire
+## `boite.position.y` remonterait donc la masse de toute la hauteur de jupe et
+## la reposerait SUR l'herbe — le défaut qu'on répare, obtenu en croyant le
+## corriger, et rien dans le rendu ne le crierait.
+##
+## `recentrer` dit si l'objet doit être recentré sur son emprise. VRAI pour une
+## masse unique, dont l'origine n'est pas son milieu. FAUX pour le rebord :
+## ses trois lobes sont placés dans le GLB PAR RAPPORT À L'ORIGINE, et les
+## recentrer sur leur emprise commune les décalerait tous.
+##
+## LA COULEUR DE SOMMET EST FORCÉE (ISS-066) : la matière de ces masses — le
+## mouillage compris — vit dans leur `COLOR_0`. Si le matériau importé ne la
+## consommait pas, la roche redeviendrait un aplat SANS erreur ni
+## avertissement. On force le drapeau sur une COPIE posée en override de
+## surface ; la ressource importée n'est jamais mutée.
+func _masse(objet: StringName, nom: String, x: float, z: float,
+		yaw_deg: float, enfoncement: float, recentrer: bool) -> Node3D:
+	var packed: PackedScene = load(MAW_GLB) as PackedScene
+	if packed == null:
+		push_error("[source] masses introuvables — %s" % MAW_GLB)
 		return null
-	piece.rotation.z = deg_to_rad(roulis_deg)
-	var boite: AABB = Transform3D(piece.transform.basis, Vector3.ZERO) \
-		* KitPlacement.local_aabb(piece)
-	var centre: Vector3 = boite.get_center()
-	piece.position.x = x - centre.x
-	piece.position.z = z - centre.z
-	piece.position.y = ground_local_y(x, z) - boite.position.y - enfoncement
-	return piece
-
-
-## TEINTE PAR SURFACE, recette V2.2 — deux défauts mesurés sur capture :
-## (v1) la coiffe « grass » Kenney rend MENTHE VIF (les « bols turquoise »
-## des margelles) ; (v2) `K.apply_tone` laisse `vertex_color_use_as_albedo`
-## allumé et l'atlas Rocks rend PISTACHE au soleil, là où le bâtisseur de
-## végétation V2.2 l'éteint (`_model_mesh`). Ici : couleurs de sommet
-## COUPÉES, puis chaque surface reçoit SA teinte — « grass » (nom, ou
-## albédo à dominante verte) vers `ton_coiffe`, le reste vers `ton_roche`.
-## `absolu` POSE l'albédo (matériaux Kenney à couleur plate) au lieu de le
-## multiplier (atlas texturés). Matériaux DUPLIQUÉS, jamais mutés — ils
-## meurent avec la pièce, aucun cache statique (fuite ISS-059 = cache).
-func _teinter(piece: Node3D, ton_roche: Color, ton_coiffe: Color,
-		absolu: bool) -> void:
-	if piece == null:
-		return
-	var cibles: Array[Node] = piece.find_children("*", "MeshInstance3D",
-		true, false)
-	for noeud: Node in cibles:
+	var racine: Node3D = packed.instantiate() as Node3D
+	racine.name = nom
+	var garde: bool = false
+	for enfant: Node in racine.get_children():
+		if enfant.name == String(objet):
+			garde = true
+		else:
+			racine.remove_child(enfant)
+			enfant.queue_free()
+	if not garde:
+		push_error("[source] masse %s absente du GLB" % objet)
+		racine.queue_free()
+		return null
+	racine.transform = Transform3D(Basis(Vector3.UP, deg_to_rad(yaw_deg)),
+		Vector3(x, 0.0, z))
+	for noeud: Node in racine.find_children("*", "MeshInstance3D", true, false):
 		var instance: MeshInstance3D = noeud as MeshInstance3D
 		if instance.mesh == null:
 			continue
 		for surface: int in range(instance.mesh.get_surface_count()):
-			var actif: Material = instance.get_active_material(surface)
-			var base: StandardMaterial3D = actif as StandardMaterial3D
-			if base == null:
+			var actif: StandardMaterial3D = \
+				instance.get_active_material(surface) as StandardMaterial3D
+			if actif == null:
 				continue
-			var coiffe: bool = base.resource_name.to_lower().contains("grass") \
-				or (base.albedo_color.g > base.albedo_color.r
-					and base.albedo_color.g > base.albedo_color.b)
-			var ton: Color = ton_coiffe if coiffe else ton_roche
-			var copie: StandardMaterial3D = base.duplicate() \
+			var copie: StandardMaterial3D = actif.duplicate() \
 				as StandardMaterial3D
-			copie.vertex_color_use_as_albedo = false
-			if absolu:
-				copie.albedo_color = Color(ton.r, ton.g, ton.b,
-					base.albedo_color.a)
-			else:
-				copie.albedo_color = Color(base.albedo_color.r * ton.r,
-					base.albedo_color.g * ton.g, base.albedo_color.b * ton.b,
-					base.albedo_color.a)
-			copie.roughness = maxf(copie.roughness, 0.95)
+			copie.vertex_color_use_as_albedo = true
+			copie.roughness = maxf(copie.roughness, 0.94)
 			copie.metallic_specular = 0.1
 			instance.set_surface_override_material(surface, copie)
+	add_child(racine)
+	if recentrer:
+		var boite: AABB = Transform3D(racine.transform.basis, Vector3.ZERO) \
+			* KitPlacement.local_aabb(racine)
+		var centre: Vector3 = boite.get_center()
+		racine.position.x = x - centre.x
+		racine.position.z = z - centre.z
+	racine.position.y = ground_local_y(x, z) - enfoncement
+	return racine
 
 
 func _seated(local_x: float, local_z: float) -> Vector3:

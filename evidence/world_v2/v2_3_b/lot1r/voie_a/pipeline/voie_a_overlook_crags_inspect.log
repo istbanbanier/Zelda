@@ -1,6 +1,6 @@
 === INSPECTION glTF : assets/environment/rocks/SM_OverlookCrags.glb ===
-  format                 : GLB v2, 613516 octets
-  chunk_binaire          : 609424 octets
+  format                 : GLB v2, 341280 octets
+  chunk_binaire          : 337192 octets
   generateur             : Khronos glTF Blender I/O v4.0.44
   version_gltf           : 2.0
   meshes                 : 2
@@ -9,10 +9,10 @@
   noeuds                 : 2 (SM_Overlook_Crest, SM_Overlook_Spur)
   skins                  : 0
   animations             : 0 (aucune)
-  triangles              : 5144
-  bbox_min               : [-3.8735, -0.85, -5.7095]
-  bbox_max               : [5.2295, 6.9, 4.0733]
-  dimensions_m           : [9.103, 7.75, 9.7828]
+  triangles              : 3052
+  bbox_min               : [-3.8403, -0.85, -5.7498]
+  bbox_max               : [5.1551, 6.8711, 4.0316]
+  dimensions_m           : [8.9954, 7.7211, 9.7814]
   [AVERT] mesh 'SM_Overlook_Crest': pas d'UV0 — lightmap et matériaux limités
   [AVERT] mesh 'SM_Overlook_Crest': pas d'UV0 — lightmap et matériaux limités
   [AVERT] mesh 'SM_Overlook_Spur': pas d'UV0 — lightmap et matériaux limités

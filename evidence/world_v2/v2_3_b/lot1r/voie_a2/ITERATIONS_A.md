@@ -542,3 +542,50 @@ quelques galets, écrasés par le talus brun qui occupe la moitié de l'image.
 - **Caméras** : `overlook_summit_joueur` et `overlook_summit_identite` (les deux
   gelées, seules à juger), `overlook_gros_crete` (le contact et les rainures),
   silhouettes 0/90 (l'aplat noir dit si c'est une formation ou un tas).
+
+## Résultat de l'itération 7 — la topologie répond, la matière ne suit pas
+
+Captures `voie_a3/iter7`, commit `422808c`, RC=0. Ce que je VOIS à taille
+réelle, sans indulgence :
+
+- **« Pile de dalles » : DISPARU.** Plus un seul replat qui fait le tour, plus
+  de galettes empilées. La crête est une masse continue à crête brisée, avec
+  une encoche en V au sommet, des nervures verticales et une grande diaclase
+  qui la fend sur toute sa hauteur. Sur `overlook_summit_joueur`, c'est une
+  paroi qui entre dans le cadre, plus une pièce montée. **Visible.**
+- **Le contact avec l'herbe a cessé d'être une ligne.** Le pied s'évase et
+  plonge ; sur `overlook_gros_crete` le bas gauche de la masse se perd dans
+  l'herbe sans arête. **Visible.**
+- **La brèche et la bimodalité tiennent** : les deux masses se lisent séparées
+  sur `_identite`, du ciel entre elles. **Visible.**
+- **Le défaut qui reste, et il est net : ça lit CIRE FONDUE, pas roche.** La
+  surface est trop lisse, la silhouette trop coulante ; les rainures de strate
+  existent dans la géométrie mais ne se voient pas. **Faible.**
+- **Les deux éclats de kit au pied lisent comme une autre famille** : des
+  galets ronds et lisses contre une masse anguleuse. **Ambigu.**
+
+## Itération 8 — la cause du « cire fondue » est l'OMBRAGE, pas le relief
+
+- **Défaut** : la masse rend une surface molle et continue, alors que TOUT le
+  monde autour d'elle — falaises V2.2, rochers de kit, éboulis — est
+  franchement FACETTÉ. Elle n'appartient pas à la même matière.
+- **Cause** : `bm.normal_update()` produit des normales de sommet LISSÉES, et
+  l'exporteur les écrit telles quelles. Une surface de 32 × 45 échantillons
+  ombrée en douceur est, par construction, un dégradé continu — c'est-à-dire
+  de la cire. Ce n'est pas un manque de relief : le relief est là, mesuré
+  (ceinture 0,28, sept secteurs de surplomb), mais l'ombrage le dissout.
+- **Levier, en trois gestes** :
+  1. **ombrage à FACETTES** (`polygon.use_smooth = False`), ce qui aligne la
+     matière sur celle du monde V2.2 ;
+  2. **résolution BAISSÉE** (crête 32 × 40 → 26 × 26) : une facette doit se
+     LIRE. À 32 × 40 les facettes font 20 cm et l'ombrage à facettes rendrait
+     du bruit ; à 26 × 26 elles font ~75 × 30 cm, l'échelle des falaises du
+     fond ;
+  3. **rainures de strate presque doublées** (0,075–0,098 → 0,135–0,165) : à
+     l'amplitude précédente elles ne survivaient pas à l'échelle du cadre.
+- **Changement attendu dans les pixels** : des arêtes franches entre plans, un
+  contraste net entre face au soleil et face à l'ombre, des redents de strate
+  qui se lisent à dix mètres. La masse doit cesser d'avoir l'air molle.
+- **Et la courbure d'axe descend de 0,085 à 0,050** : c'est elle qui donnait
+  l'air « penché comme une bougie ». Un cisaillement de pendage suffit.
+- **Caméras** : les deux gelées, plus `overlook_gros_crete`.

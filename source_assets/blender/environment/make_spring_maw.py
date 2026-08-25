@@ -143,8 +143,12 @@ MASSES = [
     ("SM_Spring_MawS", 4.00, 2.50, 2.30, 0.75, 40277, (0.040, 0.095),
      165.0, 1.05, [(0.0, 0.0, 1.0)]),
     # La couronne : plus haut sur la pente, elle FERME le haut de la fente.
+    # Mouillage 0,40 → 0,85 m : à 0,40 le contrôle a rougi (part 0,04, juste
+    # sous sa borne). Il avait raison — une couronne dont le pied est trempé
+    # sur quatre centimètres n'a pas d'humidité lisible, et la fiction en
+    # demande : c'est elle qui coiffe la fente d'où l'eau sort.
     ("SM_Spring_Crown", 3.20, 2.05, 1.75, 0.70, 71553, (-0.070, 0.020),
-     150.0, 0.40, [(0.0, 0.0, 1.0)]),
+     150.0, 0.85, [(0.0, 0.0, 1.0)]),
     # Le rebord : trois lobes fondus autour de la vasque. Les décalages sont
     # exprimés en repère BLENDER, donc dy = −dz Godot.
     #   lobe nord   Godot (−1,0 ; −3,8) → Blender (−1,0 ; +3,8)
@@ -155,13 +159,13 @@ MASSES = [
      215.0, 0.85, [(-1.0, 3.8, 1.00), (2.8, -2.1, 0.52), (-2.2, -5.0, 0.86)]),
 ]
 RESOLUTION = {
-    "SM_Spring_MawN": (28, 26, 4),
-    "SM_Spring_MawS": (28, 26, 4),
-    "SM_Spring_Crown": (24, 22, 3),
+    "SM_Spring_MawN": (22, 18, 3),
+    "SM_Spring_MawS": (22, 18, 3),
+    "SM_Spring_Crown": (20, 16, 3),
     # Le rebord porte TROIS lobes : sa résolution est divisée en
     # conséquence, sinon il coûte à lui seul plus que les trois autres
     # masses réunies (mesuré : 3 888 triangles contre 5 200 au total).
-    "SM_Spring_Rim": (20, 16, 3),
+    "SM_Spring_Rim": (18, 13, 3),
 }
 
 
@@ -373,17 +377,20 @@ def _lobe(bm, bloc: Bloc, na: int, nt: int, nj: int, offset: Vector,
                    centre.y + vers.y * bloc.demi_b * echelle * 0.26,
                    z_haut + 0.030 * bloc.H * echelle))
     faîte = bm.verts.new(apex)
-    mid = [bm.verts.new(v.co.lerp(apex, 0.5)) for v in dernier]
+    mid = [[bm.verts.new(v.co.lerp(apex, f)) for v in dernier]
+           for f in (0.34, 0.68)]
     for j in range(na):
         m = (j + 1) % na
-        faces_fracture.append(bm.faces.new((dernier[j], dernier[m], mid[m],
-                                            mid[j])))
-        faces_fracture.append(bm.faces.new((mid[j], mid[m], faîte)))
+        faces_fracture.append(bm.faces.new((dernier[j], dernier[m], mid[0][m],
+                                            mid[0][j])))
+        faces_fracture.append(bm.faces.new((mid[0][j], mid[0][m], mid[1][m],
+                                            mid[1][j])))
+        faces_fracture.append(bm.faces.new((mid[1][j], mid[1][m], faîte)))
 
     premier = anneaux[0]
     z_fond = min(v.co.z for v in premier)
     rangs = []
-    for facteur in (0.70, 0.38):
+    for facteur in (0.76, 0.52, 0.28):
         rangs.append([bm.verts.new(Vector(
             (offset.x + (v.co.x - offset.x) * facteur,
              offset.y + (v.co.y - offset.y) * facteur, z_fond)))
@@ -393,7 +400,8 @@ def _lobe(bm, bloc: Bloc, na: int, nt: int, nj: int, offset: Vector,
         m = (j + 1) % na
         bm.faces.new((premier[m], premier[j], rangs[0][j], rangs[0][m]))
         bm.faces.new((rangs[0][m], rangs[0][j], rangs[1][j], rangs[1][m]))
-        bm.faces.new((rangs[1][m], rangs[1][j], centre_bas))
+        bm.faces.new((rangs[1][m], rangs[1][j], rangs[2][j], rangs[2][m]))
+        bm.faces.new((rangs[2][m], rangs[2][j], centre_bas))
 
     bm.normal_update()
     for ligne, meta in zip(anneaux, metas):
@@ -406,8 +414,9 @@ def _lobe(bm, bloc: Bloc, na: int, nt: int, nj: int, offset: Vector,
     couleurs[centre_bas] = teinte_pied
     sommet = _teinte(bloc, bloc.haut_azimut, 1.0, bloc.H, Vector((0, 0, 1)), 0.0)
     couleurs[faîte] = sommet
-    for v in mid:
-        couleurs[v] = sommet
+    for anneau_haut in mid:
+        for v in anneau_haut:
+            couleurs[v] = sommet
 
 
 def _construire(nom: str, bloc: Bloc, lobes, mat_corps, mat_fracture):
@@ -433,6 +442,17 @@ def _construire(nom: str, bloc: Bloc, lobes, mat_corps, mat_fracture):
     bm.normal_update()
     bm.to_mesh(maillage)
     bm.free()
+
+    # OMBRAGE À FACETTES — et c'est le correctif du défaut « cire fondue »
+    # mesuré sur `voie_a3/iter7`. Des normales de sommet LISSÉES sur une
+    # surface dense produisent un dégradé continu : la masse rendait molle et
+    # coulante là où TOUT le monde autour d'elle — falaises V2.2, rochers de
+    # kit, éboulis — est franchement facetté. Elle n'appartenait pas à la même
+    # matière. Le relief, lui, était bien là et mesuré ; c'est l'ombrage qui
+    # le dissolvait. La résolution suit ce choix : une facette doit se LIRE, et
+    # à 20 cm l'ombrage à facettes ne rendrait que du bruit.
+    for polygone in maillage.polygons:
+        polygone.use_smooth = False
 
     if "Col" in maillage.color_attributes:
         maillage.color_attributes.active_color_index = \
