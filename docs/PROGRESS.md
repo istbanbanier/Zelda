@@ -5,6 +5,60 @@ entrée fait office de handoff et doit indiquer **exactement** la prochaine acti
 
 ---
 
+## 2026-08-25 — LOT 1.R.1 : cinq correctives intégrées, revue intermédiaire persistée · `EN ATTENTE DU VERDICT`
+
+**Ce qui est fait, commit par commit, tout poussé sur
+`claude/world-v2-reconstruction` (distant vérifié `2f73bce`).** Les trois
+voies de la directive de convergence sont closes et intégrées par cherry-pick
+sans commit de merge : A (belvédère + source, branche `claude/lot1r1-a`,
+final `1e7e5e8`), B (tour + sanctuaire, `claude/lot1r1-b`, `2d1b372`),
+C (cimetière, `claude/lot1r1-c`, `3e5e2a4`), plus la corrective de tour B2
+(`claude/lot1r1-b2`, `594005e`) née d'un rouge découvert À L'INTÉGRATION :
+le premier assemblage des masques finaux a montré `tour × grotte` à
+0,4975/0,4930 contre S 0,4931/0,4912 — la tour candidate était verte, la R3
+avait rasé les pointes d'arase. Une pointe d'angle sud-ouest restaurée
+(+7 assises, aucune pièce nouvelle, D7 inchangé) le rend à 0,4189/0,4093,
+marges ≥ 0,064 sous S−0,010.
+
+**Portail technique de l'arbre intégré, tout VERT** (`lot1r1/controles/`) :
+gel du champ 7/7 empreintes, gel_verifier 43/43, parse des 5 scripts,
+filet `lot1_defauts,places_contract` 16/16, verdict D3 canonique PASS
+(0 paire signalée). Manifeste d'assets : 6/6 lignes du lot vérifiées,
+empreintes recalculées sur disque, ligne neuve `SM_SpringMaw`.
+
+**Deux instruments réparés au passage, leurs pièges documentés dans leurs
+en-têtes** : `probe_sanctuaire.gd` (axe pré-rotation → sonde infaillible ;
+puis marche mesurée sur le collider de sa propre destination) — sa première
+vraie mesure ouvre **ISS-070** (fenêtre du seuil 0,89 m contre 0,90 exigé,
+un centimètre de marge manquant, aucun seuil déplacé) ; et
+`verifier_manifeste_lot1r.py` étendu de 4 à 6 noms.
+
+**La revue intermédiaire est persistée** sous
+`evidence/world_v2/v2_3_b/lot1r1/revue_intermediaire/` : 5 vues joueur
+recapturées aux caméras gelées + champ copié octet pour octet depuis la
+candidate (cmp exact), 5 vues d'identité, silhouettes 0°/90° des cinq
+sujets, D3 de revue PASS, `planche_joueur_anonyme.png` (6 vues numérotées
+sans noms, clé dans `cle_planches.json`), planche couleur 11 vues, planche
+gris, manifeste 42 fichiers (`commit_capture 9ecf10d`, `repo_dirty: false`).
+
+**Limites nommées, sans verdict artistique** : la source se lit sombre
+depuis ses deux caméras gelées (ombre de falaise), l'eau comme une petite
+tache turquoise, la couronne comme des blocs épars plus que comme un écrin ;
+la fente d'iter11 est devenue un porche large (dilution du « creux sombre »,
+au jugement du réviseur) ; l'identité du sanctuaire sous couvert reste très
+discrète (régression R3 connue) ; l'identité de la tour à distance est brune
+et sombre ; NON VÉRIFIÉ : franchissabilité humaine du seuil du sanctuaire
+(ISS-070), marchabilité autour des flancs neufs de la source, budget de
+collision de la source re-sondé sous moteur.
+
+**PROCHAINE ACTION EXACTE : rien construire.** Attendre le verdict visuel
+Codex/Istvan sur `planche_joueur_anonyme.png`. GO_V2_3_B_LOT2=FALSE. Si le
+verdict rouvre un lieu, repartir de cette entrée et du contrat
+`docs/V2_3_B_LOT1R_VISUAL_CONTRACT.md` ; sinon, la validation complète et
+la release restent volontairement NON lancées.
+
+---
+
 ## 2026-08-19 — R2B.2 : la matière est gagnée, la forme ne l'est pas · `PARTIAL`
 
 **Ce que la passe a obtenu, et qui se voit.** La ferme a reçu la pierre du kit :
