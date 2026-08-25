@@ -190,3 +190,70 @@ net qu'en blanc.
 - **Emprise des crocs** : crête 7,17 → 7,47 → **8,10 m**, éperon 4,77 → 4,96
   → **5,54 m**. Écart entre les deux masses : 3,8 m → **3,0 m** (calcul sur
   centres et demi-emprises). Le vide reste ouvert sur les deux axes.
+
+## Résultat de l'itération 4, mesuré (`voie_a2/iter4`, commit 6de2930)
+
+| Vue | Zone | iter3 | iter4 | cible mesurée |
+|---|---|---|---|---|
+| `overlook_gros_crete` | croc face soleil | H 263° S 0,038 V 0,496 | **H 226° S 0,183 V 0,490** | boulder de kit refroidi : H 223° S 0,254 V 0,540 |
+| `overlook_gros_crete` | croc face ombre | H 187° S 0,019 V 0,545 | **H 219° S 0,181 V 0,545** | idem |
+| `overlook_summit_identite` | masse | H 351° S 0,032 V 0,538 | **H 229° S 0,113 V 0,519** | falaise V2.2 du fond : V 0,632 |
+| `overlook_summit_joueur` | masse proche | H 33° S 0,076 V 0,503 | **H 217° S 0,124 V 0,460** | — |
+| `turquoise_spring_joueur` | eau | S 0,458 | S 0,456 | rivière V2.2 : S 0,368 |
+
+Le **minéral froid est atteint et mesuré** : les crocs et les boulders de kit
+du même lieu appartiennent maintenant à la même famille (H 217–229° contre
+223°), et la formation est plus SOMBRE que la falaise du fond (0,49–0,52
+contre 0,632), là où au départ elle était plus claire ET chaude (H 40°,
+V 0,607).
+
+### Emprise, avant/après (demandée par le lead) — `probe_place_metrics.gd`
+
+| Lieu | avant (`de43152`) | après | mesh |
+|---|---|---|---|
+| `valley.poi.overlook_summit.01` | 22,4 × 7,0 × 20,4 m | **22,1 × 8,0 × 18,6 m** | 14 → 12 |
+| `valley.poi.turquoise_spring.01` | 14,4 × 3,2 × 14,2 m | **14,4 × 3,2 × 14,2 m** | 14 → 14 |
+
+Mesure réelle des deux états : le script remet les deux fichiers de lieu à
+`de43152`, mesure, restaure, et VÉRIFIE la restauration (`git diff --quiet`)
+avant de rendre la main — une mesure « avant » qui laisserait le dépôt dans
+l'état ancien serait pire qu'aucune mesure.
+
+Lecture pour R-D3 : le belvédère gagne un mètre de HAUT et perd 1,8 m en
+profondeur ; son rapport hauteur/emprise passe de 0,313 à **0,362**, ce qui
+l'ÉLOIGNE de la bande 0,25–0,30 où cinq lieux du corpus se ressemblaient.
+L'emprise de la source ne bouge pas d'un centimètre : le fil élargi, ses
+renflements et la frange restent dans l'enveloppe déjà fixée par les roches.
+
+## Itération 5 — changer d'hypothèse sur la forme, et réparer ma régression
+
+**Règle des deux échecs, appliquée.** Le défaut « pile de dalles » a résisté à
+DEUX passes de géométrie (retrait lopside ; puis diaclases profondes + retrait
+divisé par deux). Les deux ont changé les pixels — donc ni la scène, ni le
+SHA, ni la caméra, ni le matériau, ni la visibilité de la géométrie ne sont en
+cause : ce sont bien mes leviers qui ne suffisent pas. J'arrête donc de régler
+des constantes de FORME et je change d'hypothèse.
+
+- **Nouvelle hypothèse, et elle est déjà écrite dans le dépôt** : sur des
+  faces quasi verticales, sous ce ciel, l'irradiance ambiante domine et
+  l'orientation des normales ne rapporte presque rien — chiffré par le
+  générateur des stèles du champ (une face rendait UNE valeur, p10-p90 = 1
+  niveau, pour 465 normales distinctes). Ce n'est donc pas plus de relief
+  qu'il faut, c'est de la **valeur dans la face**.
+- **Levier** : trois modulations neuves dans `COLOR_0` — joint de banc sombre
+  au pied de chaque lit, arête haute plus claire, mouchetage verrouillé sur
+  l'azimut ; plus le creux de diaclase renforcé (0,30 → 0,45) et une
+  harmonique courte de plus. Mesure du générateur : **étendue de couleur de
+  sommet 31 % → 66 %**, sans écrêtage (p90 = 0,915).
+- **Attendu dans les pixels** : les grandes faces cessent d'être des aplats ;
+  une ligne sombre marque le pied de chaque banc ; la lecture « strate »
+  passe par la valeur et non plus seulement par le ressaut.
+- **Réparation d'une régression que J'AI introduite** : la frange mouillée de
+  la source sortait en **coins NOIRS** autour de l'eau (`iter3/spring_gros_eau`,
+  `spring_gros_fente`) — c'est l'anneau noir que la v3 de la première
+  corrective avait supprimé, revenu par la porte que la frange venait
+  d'ouvrir. La plage de teinte passe de 0,72–1,45 à 1,30–1,75 (de « un peu
+  sous l'herbe » à « herbe ») et la largeur max de 0,55 à 0,42 m.
+- **Et les mâchoires de la source rendaient OLIVE** — même dérive qu'au
+  belvédère, même cause (lumière chaude). Rapport bleu/rouge relevé, coiffe de
+  mousse dotée de sa propre teinte pour qu'elle ne reparte pas en menthe.

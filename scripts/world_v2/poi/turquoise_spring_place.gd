@@ -120,9 +120,18 @@ const EAU_SHADER: String = \
 ##  - pièces Kenney (`rock_large*`) : matériaux à couleur PLATE — albédo
 ##    POSÉ en absolu (un multiplicateur y rendait saumon/vert sapin en
 ##    v2) : corps de roche froide humide, coiffe de mousse olive sombre.
-const TONE_ROCK_A: Color = Color(0.88, 0.85, 0.78)
-const TONE_ROCK_B: Color = Color(0.82, 0.80, 0.75)
-const TONE_RIM: Color = Color(0.80, 0.80, 0.78)
+## v2 — REFROIDIES SUR MESURE. Sur `iter3/spring_gros_fente.png` les
+## mâchoires rendent OLIVE (vert-jaune) : la même dérive que celle mesurée
+## au belvédère, et la même cause — la lumière du monde est chaude, donc un
+## multiplicateur presque neutre ressort chaud. Le contrat du lieu demande
+## des « roches froides en mâchoires » et interdit les plaques terracotta.
+## Le rapport bleu/rouge est donc franchement relevé, et la COIFFE de mousse
+## reçoit sa propre teinte : à multiplicateur unique, la surface « grass »
+## de l'atlas repartait en menthe (défaut mesuré en v1 de la corrective).
+const TONE_ROCK_A: Color = Color(0.66, 0.71, 0.92)
+const TONE_ROCK_B: Color = Color(0.60, 0.65, 0.86)
+const TONE_MOUSSE: Color = Color(0.42, 0.47, 0.44)
+const TONE_RIM: Color = Color(0.66, 0.70, 0.80)
 ## Lit de vasque : v4 — le CENTRE tire vers la sarcelle (dépôt minéral :
 ## c'est le mécanisme réel d'une source turquoise — l'eau se colore par
 ## son fond), le BORD reste terre humide. La teinte par sommet porte le
@@ -174,11 +183,11 @@ func _build() -> void:
 	# héros (1,78 m).
 	var machoire_n: Vector3 = _seated(-9.8, -1.9)
 	_teinter(_roche(&"Rock_Medium_1", -9.8, -1.9, 105.0, -8.0, 1.15, 0.55),
-		TONE_ROCK_A, TONE_ROCK_A, false)
+		TONE_ROCK_A, TONE_MOUSSE, false)
 	declare_support(machoire_n)
 	var machoire_s: Vector3 = _seated(-9.5, 2.4)
 	_teinter(_roche(&"Rock_Medium_3", -9.5, 2.4, 244.0, 9.0, 1.12, 0.55),
-		TONE_ROCK_B, TONE_ROCK_B, false)
+		TONE_ROCK_B, TONE_MOUSSE, false)
 	declare_support(machoire_s)
 	# — LA COURONNE : un troisième rocher plus petit, posé plus haut sur la
 	# pente entre les deux mâchoires, qui ferme le haut de la fente — l'eau
@@ -188,7 +197,7 @@ func _build() -> void:
 	# COIFFE la fente au lieu de la surplomber.
 	var couronne: Vector3 = _seated(-10.4, 0.3)
 	_teinter(_roche(&"Rock_Medium_2", -10.4, 0.3, 12.0, 4.0, 0.85, 0.50),
-		TONE_ROCK_A, TONE_ROCK_A, false)
+		TONE_ROCK_A, TONE_MOUSSE, false)
 	declare_support(couronne)
 
 	# — LA VASQUE. Le lit D'ABORD, la nappe ensuite, les margelles au bord
@@ -220,7 +229,7 @@ func _build() -> void:
 		var margelle: Node3D = _roche(spec[5] as StringName, float(spec[0]),
 			float(spec[1]), float(spec[2]), float(spec[3]), float(spec[4]),
 			float(spec[6]))
-		_teinter(margelle, TONE_ROCK_A, TONE_ROCK_A, false)
+		_teinter(margelle, TONE_ROCK_A, TONE_MOUSSE, false)
 		declare_support(at)
 	# Un bloc TOMBÉ DE LA PAROI, demi-enterré au sud de la vasque : c'est
 	# lui qui donne l'échelle de la falaise au premier plan.
@@ -230,7 +239,7 @@ func _build() -> void:
 	var bloc: Vector3 = _seated(-8.3, 6.5)
 	_teinter(K.module(self, &"Rock_Medium_2",
 		bloc + Vector3(0.0, -0.60, 0.0), 150.0, 1.0, Color.WHITE),
-		TONE_ROCK_B, TONE_ROCK_B, false)
+		TONE_ROCK_B, TONE_MOUSSE, false)
 	declare_support(bloc)
 
 	# — LE FIL QUI S'EN VA. Trois dalles mouillées, à demi enfoncées, qui
@@ -327,16 +336,28 @@ func _lit() -> void:
 		var angle: float = TAU * float(i) / float(segments)
 		var tirage: float = 0.5 + 0.5 * _alea(float(i) * 1.7 + 19.3)
 		# Rien à l'ouest : c'est la fente, et la roche y descend.
-		var largeur: float = 0.55 * tirage * (1.0 - _bosse_ouest(angle) * 0.8)
+		var largeur: float = 0.42 * tirage * (1.0 - _bosse_ouest(angle) * 0.8)
 		var r: float = rayons[i] - 0.15 + _bosse_ouest(angle) * 1.15 + largeur
 		var px: float = BASSIN_X + cos(angle) * r
 		var pz: float = BASSIN_Z + sin(angle) * r
 		frange.append(Vector3(px, _y_sol(px, pz, 0.025), pz))
-		var v: float = 1.45 - 0.55 * (1.0 - tirage)
+		# v2 — REMONTÉE, ET C'EST UNE CORRECTION DE MA PROPRE RÉGRESSION.
+		# À (0,90 … 1,45) sur un matériau de base déjà sombre (0,27), la
+		# frange sortait en COINS NOIRS autour de l'eau (mesuré sur
+		# `iter3/spring_gros_eau.png` et `spring_gros_fente.png`) : c'est
+		# exactement l'anneau noir que la v3 de la première corrective avait
+		# supprimé, revenu par la porte que la frange venait d'ouvrir.
+		# La pierre trempée est plus sombre que la pierre sèche, pas plus
+		# sombre que TOUT : la plage va donc de « un peu sous l'herbe » à
+		# « herbe », et la frange meurt au lieu de cerner.
+		var v: float = 1.75 - 0.45 * (1.0 - tirage)
 		teintes_frange.append(Color(LIT_BORD.r * v, LIT_BORD.g * v,
 			LIT_BORD.b * v, 1.0))
-	var mouille: Color = Color(LIT_BORD.r * 0.72, LIT_BORD.g * 0.72,
-		LIT_BORD.b * 0.68, 1.0)
+	# 0,72 → 1,30 : le bord d'eau reste le point le plus sombre de la frange,
+	# mais il cesse d'être un trait noir. La différence avec la pointe de
+	# frange (1,75) suffit à lire « mouillé », et c'est ce qu'on voulait.
+	var mouille: Color = Color(LIT_BORD.r * 1.30, LIT_BORD.g * 1.28,
+		LIT_BORD.b * 1.20, 1.0)
 	for i: int in range(segments):
 		var j: int = (i + 1) % segments
 		# Trois teintes distinctes, une par sommet : avec `_tri_couleur` (une

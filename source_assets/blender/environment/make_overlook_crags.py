@@ -132,10 +132,16 @@ PENDAGE_DEG = 13.5
 ## B/R = 1,34) : il faut donc un rapport d'albédo de **1 : 1,20 : 2,03**,
 ## obtenu en BAISSANT le rouge et le vert plutôt qu'en montant le bleu — le
 ## bleu tient déjà la valeur, et le monter écrêterait de nouveau.
-MAT_ARDOISE = (0.0517, 0.0620, 0.1050, 1.0)
+MAT_ARDOISE = (0.0568, 0.0681, 0.1153, 1.0)
 ## Le nu de fracture fraîche : à peine plus clair, franchement plus froid.
-MAT_FRACTURE = (0.0600, 0.0715, 0.1210, 1.0)
-NIVEAU = 0.90
+MAT_FRACTURE = (0.0659, 0.0785, 0.1329, 1.0)
+## v4 — 0,90 → 0,82 pour laisser de la place aux rehauts ajoutés dans
+## `_teinte_banc` sans écrêter la couleur de sommet (au-delà de 1, l'export
+## écrête EN SILENCE). Les trois couleurs de matériau sont remontées de
+## 0,90/0,82 : l'albédo EFFECTIF est inchangé, donc la mesure de couleur
+## obtenue en iter4 (croc RGB 102/107/125, H=226°, contre la cible
+## 103/112/138) reste valable.
+NIVEAU = 0.82
 ## Pied : plus sombre, un rien plus vert — la roche rejoint la terre.
 TEINTE_PIED = (0.62, 0.68, 0.60)
 
@@ -164,7 +170,8 @@ def _diaclases(graine: int):
     # trois entailles franches, plus étroites, font de vraies diaclases.
     rng = random.Random(graine)
     harmoniques = []
-    for ordre, amplitude in ((2, 0.185), (3, 0.130), (5, 0.075)):
+    for ordre, amplitude in ((2, 0.185), (3, 0.130), (5, 0.075),
+                             (8, 0.042)):
         harmoniques.append((ordre, amplitude, rng.uniform(0.0, math.tau)))
     entailles = [(rng.uniform(0.0, math.tau), rng.uniform(0.22, 0.31),
                   rng.uniform(0.14, 0.24)) for _ in range(3)]
@@ -224,18 +231,50 @@ def _profil_bancs(nb: int, hauteur: float, graine: int):
 
 
 def _teinte_banc(k: int, nb: int, t_haut: float, creux: float,
-                 dessous: bool) -> tuple:
+                 dessous: bool, angle: float = 0.0,
+                 t_local: float = 0.5) -> tuple:
     """Couleur de sommet d'un coin de banc.
 
-    Quatre modulations, toutes lisibles à distance : bande de banc (les
-    strates alternent), hauteur (le pied est plus sombre et plus vert),
-    creux de diaclase (les fractures s'enfoncent), et dessous de vire (une
-    surface qui ne voit pas le ciel est plus froide).
+    v4 — LA TROISIÈME HYPOTHÈSE, ET ELLE N'EST PAS GÉOMÉTRIQUE.
+
+    Deux passes de géométrie (retrait lopside, puis diaclases profondes et
+    retrait divisé par deux) ont chacune changé les pixels, et le défaut
+    « pile de dalles » a persisté : les faces restent de GRANDS APLATS. La
+    règle des deux échecs dit d'arrêter de régler des constantes et de
+    changer d'hypothèse — c'est ce que fait cette passe.
+
+    La cause est déjà écrite dans le dépôt, chiffrée par le générateur des
+    stèles du champ : sur des faces quasi verticales, sous ce ciel,
+    l'irradiance ambiante domine et l'orientation des normales ne rapporte
+    presque rien (une face y rendait UNE seule valeur, p10-p90 = 1 niveau,
+    pour 465 normales distinctes). Ce n'est donc pas plus de relief qu'il
+    faut, c'est de la VALEUR dans la face.
+
+    Six modulations désormais, dont trois neuves :
+      * bande de banc (les strates alternent) ;
+      * hauteur d'ensemble (le pied s'assombrit et verdit) ;
+      * creux de diaclase, RENFORCÉ (0,30 → 0,45) ;
+      * dessous de vire (une surface qui ne voit pas le ciel est plus froide) ;
+      * **joint de banc** : le bas de chaque banc est nettement plus sombre
+        — c'est le trait qui fait lire un lit sédimentaire, et il vit dans la
+        valeur, pas dans la forme ;
+      * **arête haute** et **mouchetage verrouillé sur l'azimut** : la face
+        cesse d'être un aplat.
     """
     bande = 1.0 + (0.085 if k % 2 == 0 else -0.075)
     # `t_haut` 0 au pied, 1 au sommet : le pied s'assombrit et verdit.
     pied = max(0.0, 1.0 - t_haut * 2.4)
-    ombre = 1.0 - 0.30 * max(0.0, creux)
+    ombre = 1.0 - 0.45 * max(0.0, creux)
+    # Joint : sombre au pied du banc, remonte vite. Une strate se lit à son
+    # ombre de lit autant qu'à son ressaut.
+    ombre *= 0.70 + 0.30 * min(1.0, max(0.0, t_local) * 3.4)
+    # Arête haute du banc, là où la lumière frise.
+    if t_local > 0.86:
+        ombre *= 1.0 + 0.06 * (t_local - 0.86) / 0.14
+    # Mouchetage VERROUILLÉ SUR L'AZIMUT : il survit d'un banc au suivant et
+    # devient une trace verticale, au lieu d'un bruit qui change d'étage.
+    ombre *= 1.0 + 0.075 * math.sin(7.0 * angle + 2.1) \
+        * math.cos(3.0 * angle + 0.7)
     r = NIVEAU * bande * ombre
     g = NIVEAU * bande * ombre
     b = NIVEAU * bande * ombre
@@ -308,10 +347,11 @@ def _croc(nom: str, hauteur: float, demi_a: float, demi_b: float, nb_bancs: int,
         t0 = z / hauteur
         t1 = haut / hauteur
         for j in range(COTES):
-            couleurs[bas[j]] = _teinte_banc(k, nb_bancs, t0,
-                                                  creux_bas[j], False)
-            couleurs[sommet[j]] = _teinte_banc(k, nb_bancs, t1,
-                                                     creux_haut[j], False)
+            az_j = math.tau * j / COTES + phase
+            couleurs[bas[j]] = _teinte_banc(k, nb_bancs, t0, creux_bas[j],
+                                            False, az_j, 0.0)
+            couleurs[sommet[j]] = _teinte_banc(k, nb_bancs, t1, creux_haut[j],
+                                               False, az_j, 1.0)
         # La VIRE : l'anneau horizontal qui rejoint le banc suivant. C'est
         # elle qui fait la strate — on la compte, et le contrôle final exige
         # un minimum.
@@ -325,7 +365,8 @@ def _croc(nom: str, hauteur: float, demi_a: float, demi_b: float, nb_bancs: int,
                                                  suivant[m], suivant[j])))
             for j in range(COTES):
                 couleurs[suivant[j]] = _teinte_banc(
-                    k + 1, nb_bancs, t1, creux_s[j], surplomb)
+                    k + 1, nb_bancs, t1, creux_s[j], surplomb,
+                    math.tau * j / COTES + phase + 0.14, 0.0)
             if not surplomb:
                 vires += 1
             bas_precedent = suivant
@@ -342,7 +383,7 @@ def _croc(nom: str, hauteur: float, demi_a: float, demi_b: float, nb_bancs: int,
     centre_haut /= COTES
     # v2 — l'apex se DÉCALE vers l'aval du pendage et monte davantage : en
     # v1 le chapeau était un cône presque symétrique, donc un couvercle.
-    centre_haut.z += hauteur * 0.055
+    centre_haut.z += hauteur * 0.038
     centre_haut.x += pente.x * demi_a * 0.62
     centre_haut.y += pente.y * demi_b * 0.62
     for v in bas_precedent:
