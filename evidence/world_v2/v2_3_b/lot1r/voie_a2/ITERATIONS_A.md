@@ -1097,3 +1097,80 @@ simulation par peinture qui ne sait pas qu'une silhouette est une union.
   réel contre corpus gelé + lot candidate + belvédère iter11 (masques
   inchangés octet pour octet, sha `3ee743…`/`90fedd…`). Recapture complète
   UNIQUEMENT si le détecteur est vert.
+
+## Résultat de l'itération 12 — D3 réel PASS À LA PREMIÈRE SONDE
+
+Chaîne verte de bout en bout : pré-contrôle PASS (commit `be98d97`) →
+géométrie (`5460c9b`, `--verifie-fichiers` PASS : chaque mètre du plan est
+dans les fichiers AVANT l'export) → make/export/inspect verts, métriques
+Blender = port au millimètre → import → sonde silhouettes (RC 0) →
+détecteur réel : **PASS**, verdicts `controles/verdict_d3_sonde12.json` et
+`verdict_d3_iter12.json`.
+
+### Les six paires rouges d'iter11, au détecteur réel
+
+| Paire | iter11 | **iter12** | exigence (S − 0,010) |
+|---|---|---|---|
+| source × hameau, 30 m | 0,565 | **0,366** | ≤ 0,483 |
+| source × hameau, 80 m | 0,568 | **0,381** | ≤ 0,481 |
+| source × hameau, 160 m | 0,550 | **0,350** | ≤ 0,536 |
+| source × belvédère, 30 m | 0,551 | **0,429** | ≤ 0,483 |
+| source × belvédère, 80 m | 0,533 | **0,424** | ≤ 0,481 |
+| source × pont, 30 m | 0,506 | **0,450** | ≤ 0,483 |
+
+Aucune paire de la source au-dessus de S − 0,010 à aucune distance (pire
+restante : pont@30, 0,450, marge 0,043). Aucune paire nouvelle. Témoin
+dégénéré signalé aux trois distances. Masques du belvédère dans le jeu jugé :
+sha256 `3ee743db…` / `90fedd73…`, IDENTIQUES à iter10/iter11 — le belvédère
+n'a pas bougé d'un octet.
+
+### Pourquoi ça a marché cette fois, en une phrase par leçon
+
+1. **Le geste est dans les fichiers** : `--verifie-fichiers` a comparé le
+   plan aux littéraux AVANT l'export — l'erreur d'iter11 (écart en X divisé
+   par deux au lieu d'être porté à des mètres) ne pouvait plus passer.
+2. **L'union remplace la peinture** : le corridor a été prouvé vide par
+   l'arithmétique des intervalles par bande (pré-contrôle), puis prédit par
+   projection de la géométrie réelle — jamais en peignant un masque.
+3. **Le vide vit sur les DEUX axes** : corridor X de 2,62 m ET, au 0°,
+   vide central de 6,4 m au-dessus de la couronne — la moitié d'iter10 qui
+   manquait.
+4. **Le sol est mesuré, pas supposé** : grille moteur `sol_iter12.log` ; les
+   mâchoires s'assoient à +1,1/+1,7 m, l'emprise réelle (16,26 × 5,63 ×
+   19,17) est à 14 cm de la prédiction.
+
+### Recapture complète (les 6 caméras GELÉES, vérifiées champ par champ)
+
+`iter12/` : joueur, identité, gros_eau, gros_fente, gue_riviere, promesse_p1
+(RC 0, provenance géométrie/lieu dans le manifeste).
+
+### Ce que je VOIS à taille réelle, sans indulgence
+
+- **Vue joueur** : la couronne de roche est ÉLARGIE, pas éparpillée — l'œil
+  est désormais cerné sur quatre côtés (flanc sud à gauche, mâchoire sud et
+  couronne au fond, mâchoire nord et flanc nord à droite), et le site tient
+  ~45 % de la largeur du cadre contre ~28 % en iter11. L'eau reste au centre,
+  turquoise mesuré au centième près d'iter11 (H 190°, S 0,553 contre 0,552).
+  La chaîne vasque → déversoir → dalles se lit. Le fruit est visible sur sa
+  berge. **Visible.**
+- **La fente** : la bouche est désormais un porche LARGE coiffé par la
+  couronne entre deux mâchoires écartées — le creux sombre et resserré
+  d'iter11 est dilué ; sur `gros_fente`, de l'herbe se voit entre couronne et
+  mâchoires. La chaîne « l'eau sort de la roche » se lit encore, mais moins
+  serrée. **Ambigu — au jugement du lead sur les captures.**
+- **Liseré sombre de rive** sur `gros_eau` (bord sud-ouest et est) :
+  PRÉEXISTANT — présent au pixel près sur `iter11/spring_gros_eau.png` ;
+  pas une régression de cette passe.
+- Aucun coin noir nouveau, aucune jupe visible, aucun lobe flottant.
+
+### Budgets et périmètre
+
+- Modules D7 : **9/12, inchangé** (4 masses GLB + 3 dalles + nappe + lit —
+  aucun module ajouté ni retiré, les lobes ont seulement bougé).
+- Collisions : 4 boîtes (2 mâchoires amincies avec leur demi_a, 2 flancs
+  NEUFS — 2,3 m de roche traversable sinon) + sphère POI = **5/6**. Compté
+  sur le code, non re-sondé sous moteur.
+- Ancre du fruit : intouchée (marge mesurée du flanc le plus proche 2,18 m).
+- Eau, langue, tête d'affluent : aucun littéral touché ; bout de langue
+  toujours à 5,47 m de la tête.
+- Champ de fleurs, belvédère, V2.2, seuils, caméras : intouchés.

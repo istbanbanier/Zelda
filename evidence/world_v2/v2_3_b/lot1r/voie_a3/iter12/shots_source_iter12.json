@@ -1,0 +1,8 @@
+[
+{"name": "turquoise_spring_identite", "from": [-117.2, 20.0, 46.8], "look": [-136, 14.0, 40], "fov": 55.0},
+{"name": "turquoise_spring_joueur", "from": [-126.5, 13.7, 40.0], "look": [-136, 13.2, 40], "fov": 65.0},
+{"name": "spring_gros_eau", "from": [-135.2, 14.2, 36.6], "look": [-141.4, 12.1, 40.2], "fov": 50.0},
+{"name": "spring_gros_fente", "from": [-137.6, 13.8, 40.4], "look": [-146.8, 13.4, 40.3], "fov": 50.0},
+{"name": "spring_gue_riviere", "from": [-101.5, 15.5, 27.5], "look": [-96, 10.8, 22], "fov": 50.0},
+{"name": "spring_promesse_p1", "from": [-118.0, 15.0, 50.0], "look": [-141.0, 12.0, 40.0], "fov": 60.0}
+]
