@@ -337,3 +337,33 @@ parfaitement stable qui ne mesurait pas le sujet. Corrigée après vérification
 5. **La tablette `RockPath_Square_Small_1` lit « pavage »** en gros plan (un
    damier de petites dalles). Elle porte l'ancre de l'arc, dont la hauteur est
    calée sur son sommet mesuré : la changer demande de recalculer l'ancre.
+
+### Budgets — ce qui est mesuré et ce qui ne l'est pas
+
+`probe_place_metrics.gd` a réellement tourné (log `emprise_apres.log`) et rend,
+sur la scène montée : belvédère **12 maillages, 4 corps de collision,
+8 appuis** ; source **14 maillages, 3 corps, 11 appuis**. Les plafonds « micro »
+du contrat sont 12 modules / 30 nœuds visuels / 6 collisions.
+
+Le compteur de MODULES de D7 n'est pas celui-là (il compte les instances de
+scène + les maillages runtime, et exclut le sous-arbre d'un `RewardAnchor`) :
+compté sur le code, le belvédère tient **10/12** (deux GLB, une assise runtime,
+la marche, le socle, la tablette, deux éclats, deux buissons — cinq pièces de
+kit ont disparu au profit des deux GLB) et la source reste **12/12** (rien
+d'ajouté : le fil élargi, ses renflements et la frange vivent dans les deux
+maillages runtime qui existaient déjà).
+
+**Ce compte de modules est `NON VÉRIFIÉ`** : `sonde_budget_lot1.gd` a été lancé
+et attend toujours le verrou partagé (journal
+`evidence/world_v2/v2_3_b/lot1r/voie_a2/budget_a2.log`, vide à l'heure où
+j'écris). Je ne le déclare pas vert par déduction.
+
+### Une exemption D1a a été ajoutée, et c'est un choix à arbitrer
+
+`AssiseCrocs` est déclarée dans `exemption_runtime`, comme `NappeSource` et
+`FondVasque` de la source. La convention du dépôt pour cette exemption est
+écrite dans la source elle-même : « une surface qui suit le terrain sommet par
+sommet, comme `SolBrule` de l'arbre foudroyé ». L'assise fait exactement cela.
+Mais c'est moi qui l'ai posée : **le lead doit la valider ou la refuser**, et
+si elle est refusée l'assise devra être re-dimensionnée pour tenir sous le
+plafond d'aire runtime (20,4 %).
