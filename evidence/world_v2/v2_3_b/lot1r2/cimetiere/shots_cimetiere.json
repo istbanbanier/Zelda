@@ -1,0 +1,30 @@
+[
+  {
+    "name": "barrow_cemetery_identite",
+    "from": [
+      67.0,
+      12.0,
+      -83.1
+    ],
+    "look": [
+      56,
+      6.0,
+      -64
+    ],
+    "fov": 55.0
+  },
+  {
+    "name": "barrow_cemetery_joueur",
+    "from": [
+      50.0,
+      5.7,
+      -53.6
+    ],
+    "look": [
+      56,
+      5.2,
+      -64
+    ],
+    "fov": 65.0
+  }
+]
