@@ -103,6 +103,67 @@ const TEINTES_VESTIGE: Dictionary = {
 ## Mousse du dallage avalé — le sol du sanctuaire existait, le bois l'a repris.
 const TONE_MOUSSE: Color = Color(0.62, 0.68, 0.55)
 
+## ---------------------------------------------------------------------------
+## LE REPÈRE DE NEF — LOT 1.R.1, ET C'EST TOUTE LA CORRECTION DU REJET
+## ---------------------------------------------------------------------------
+## CE QUE CODEX A VU : « dans la caméra joueur, l'arbre central masque le lieu ».
+## Ce n'est pas une impression, et la géométrie le dit à la décimale.
+##
+## `forest_shrine_joueur` part du local (5,5 ; −9,5) et vise (0 ; 0), fov
+## VERTICAL 65° sur 1280 × 720 — donc `tan_h = tan(32,5°) × 16/9 = 1,1327`
+## pour 640 px. Le tronc gelé occupe **x 594 à 718** (mesuré colonne par
+## colonne sur les pixels bruns de `candidate/ab13/forest_shrine_joueur.png`),
+## soit une bande d'occultation en tangente de [−0,081 ; +0,138]. Le cœur, lui,
+## projette à **x 640,0** : au pixel près derrière le tronc. Le seuil projette
+## à 730-813, de l'AUTRE côté. Le lieu était coupé en deux par un arbre, et ses
+## deux pièces maîtresses de part et d'autre.
+##
+## L'arbre est GELÉ : il ne bouge pas. C'est le LIEU qui se recompose, par une
+## similitude appliquée aux offsets LOCAUX — rotation de l'axe de nef,
+## translation, et deux facteurs d'échelle (la nef raccourcit, elle s'élargit).
+## Les quatre paramètres sortent d'une recherche exhaustive sur la projection
+## des sept pièces maîtresses dans les trois caméras GELÉES ; les contraintes
+## étaient, dans cet ordre :
+##   1. cœur ET seuil hors de la bande du tronc, du MÊME côté ;
+##   2. aucune pièce à moins de 2,2 m du tronc (sa position est estimée à
+##      ±0,6 m par la ligne de sol : marge délibérée) ;
+##   3. `z` maximal ≤ celui d'aujourd'hui — le lieu ne s'approche PAS de la
+##      route, sinon le contrat d'invisibilité change de donne ;
+##   4. le lieu reste lisible depuis `forest_shrine_joueur_b` et `_identite`.
+## Résultat retenu : θ = 45°, T = (2,50 ; 0,25), nef ×0,80 en longueur et
+## ×1,15 en largeur. Le cœur passe de x 640 à x ≈ 510, le seuil à x ≈ 340-470,
+## et le tronc devient le montant DROIT du cadre. `z` maximal 0,77 contre 0,74
+## aujourd'hui : la route ne voit pas un centimètre de plus.
+const NEF_ROT_DEG: float = 45.0
+const NEF_T: Vector2 = Vector2(2.50, 0.25)
+const NEF_L: float = 0.80
+const NEF_W: float = 1.15
+
+
+## Un point du plan de nef -> le plan LOCAL du lieu.
+func _nef(x: float, z: float) -> Vector2:
+	var t: float = deg_to_rad(NEF_ROT_DEG)
+	var c: float = cos(t)
+	var s: float = sin(t)
+	var xx: float = x * NEF_W
+	var zz: float = z * NEF_L
+	return Vector2(xx * c - zz * s + NEF_T.x, xx * s + zz * c + NEF_T.y)
+
+
+## ... et posé au sol.
+func _nef_seated(x: float, z: float) -> Vector3:
+	var p: Vector2 = _nef(x, z)
+	return Vector3(p.x, ground_local_y(p.x, p.y), p.y)
+
+
+## Le lacet correspondant. Le signe n'est pas une convention libre : la
+## rotation de plan `(x, z) -> (x cosθ − z sinθ, x sinθ + z cosθ)` est celle
+## d'un lacet Godot de **−θ** (la matrice de rotation autour de +Y envoie
+## (1,0,0) sur (cos ψ, 0, −sin ψ)). Se tromper de signe laisserait les
+## positions justes et toutes les pierres tournées à l'envers.
+func _nef_yaw(deg: float) -> float:
+	return deg - NEF_ROT_DEG
+
 static var _cache_vestige: Dictionary = {}
 
 
@@ -112,7 +173,7 @@ func default_place_id() -> StringName:
 
 func _build() -> void:
 	_seuil()
-	_nef()
+	_nef_enceinte()
 	_coeur()
 	_dallage_avale()
 	_rideau_sud()
@@ -144,10 +205,16 @@ func _build() -> void:
 	# du dessus de table, la baie flottait donc 0,32 m au-dessus de la dalle —
 	# mesuré par l'audit sur `apres/shrine_gp_nef.png`. À −0,05 la tige mord
 	# la dalle de cinq centimètres et l'offrande est POSÉE.
+	# L'ANCRE SUIT LE CŒUR, ET C'EST LA GÉOMÉTRIE QUI L'EXIGE — je le dis au
+	# lieu de le glisser : l'offrande est POSÉE SUR la dalle, elle ne peut donc
+	# pas rester à l'ancien local (0 ; 0) quand la dalle est en (2,50 ; 0,25).
+	# Ne changent PAS : le `Kind`, l'identifiant du lieu, la table de butin,
+	# la cote `TABLE_DESSUS − 0,05`. Le point d'approche suit le même repère.
+	var approche: Vector2 = _nef(0.45, -2.40)
 	RewardAnchor.attach(self, default_place_id(),
 		RewardAnchor.Kind.INGREDIENT,
-		_seated(0.0, 0.0) + Vector3(0.0, TABLE_DESSUS - 0.05, 0.0),
-		Vector3(0.45, 0.0, -2.40))
+		_nef_seated(0.0, 0.0) + Vector3(0.0, TABLE_DESSUS - 0.05, 0.0),
+		Vector3(approche.x, 0.0, approche.y))
 	var ancre: Node = get_node_or_null("AncrageRecompense")
 	if ancre != null:
 		ancre.child_entered_tree.connect(_sur_recompense)
@@ -212,13 +279,13 @@ func _habiller_recompense(racine: Node) -> void:
 ## vieilli de travers. La marche est le seul élément encore à peu près à sa
 ## place, et c'est elle qui dit « on entre ICI » sans un mot.
 func _seuil() -> void:
-	var a: Vector3 = _seated(-0.94, -3.52)
+	var a: Vector3 = _nef_seated(-0.94, -3.52)
 	_piece_vestige("SM_Shrine_Montant_A", a,
-		Vector3(0.0, deg_to_rad(24.0), deg_to_rad(5.0)))
+		Vector3(0.0, deg_to_rad(_nef_yaw(24.0)), deg_to_rad(5.0)))
 	declare_support(a)
-	var b: Vector3 = _seated(0.82, -3.74)
+	var b: Vector3 = _nef_seated(0.82, -3.74)
 	_piece_vestige("SM_Shrine_Montant_B", b,
-		Vector3(0.0, deg_to_rad(-58.0), deg_to_rad(-8.0)))
+		Vector3(0.0, deg_to_rad(_nef_yaw(-58.0)), deg_to_rad(-8.0)))
 	declare_support(b)
 	# LE LINTEAU TOMBÉ — en travers, entre les deux montants et un peu en
 	# avant. C'est lui qui fait qu'on lit une PORTE et non deux pierres : la
@@ -226,119 +293,70 @@ func _seuil() -> void:
 	# est couchée là où tout le reste est debout. Enfoncée de 11 cm, elle
 	# n'émerge que de 0,22 m — sous la hauteur de marche du héros, donc aucun
 	# corps : on l'enjambe, exactement comme la pierre couchée de la nef.
-	var linteau: Vector3 = _seated(-0.24, -3.28)
+	var linteau: Vector3 = _nef_seated(-0.24, -3.28)
 	_piece_vestige("SM_Shrine_Linteau",
 		linteau + Vector3(0.0, -0.11, 0.0),
-		Vector3(0.0, deg_to_rad(74.0), deg_to_rad(4.0)))
+		Vector3(0.0, deg_to_rad(_nef_yaw(74.0)), deg_to_rad(4.0)))
 	declare_support(linteau)
 	# Enfoncée de 8 cm : une dalle qui affleure l'herbe se lit neuve.
-	var marche: Vector3 = _seated(-0.05, -3.00)
+	var marche: Vector3 = _nef_seated(-0.05, -3.00)
 	_piece_vestige("SM_Shrine_Step", marche + Vector3(0.0, -0.08, 0.0),
-		Vector3(0.0, deg_to_rad(9.0), 0.0))
+		Vector3(0.0, deg_to_rad(_nef_yaw(9.0)), 0.0))
 	declare_support(marche)
 
 
-## LA NEF — deux rangées qui CONVERGENT, et la pierre couchée qui barre.
+## L'ENCEINTE — TROIS MURETS ROMPUS, ET PLUS UN SEUL CERCLE DE PIERRES.
 ##
-## Les socles passent de |x| = 1,34 au seuil à |x| = 0,82 devant la table :
-## le couloir se resserre de 2,68 m à 1,64 m d'entraxe. C'est la perspective
-## forcée des nefs, et c'est ce qui fait que le regard arrive au cœur au lieu
-## d'errer. Les hauteurs alternent (0,97 / 0,60 / 0,81 à l'ouest, 0,81 / 0,97 /
-## 0,60 à l'est) pour qu'aucune rangée ne réponde à l'autre.
+## Ce qui était là : six socles dressés plus quatre marques d'angle, dix pièces
+## isolées. Mon propre constat de la passe précédente le disait déjà — « neuf
+## pièces sur neuf sont le même prisme dressé » — et l'exigence de niveau de
+## cette passe le tranche : « une petite ruine brisée, moussue, ENRACINÉE :
+## blocs irréguliers solidaires », « pas de cercle de pierres, pas d'amas
+## décoratif ».
 ##
-## LA PIERRE COUCHÉE est un montant tombé — même famille, même matière. Elle
-## barre la nef en travers et n'émerge que de 0,32 m.
+## Trois murets les remplacent : des blocs LIÉS sur une assise commune, crête
+## rompue, une brèche par pan, deux blocs tombés au pied de la brèche. Deux
+## conséquences mesurables et non deux opinions :
+##   * D7 — dix modules deviennent trois. Le lieu passe de 40 (le plafond
+##     PILE) à 33 : la marge revient au budget au lieu d'être consommée.
+##   * hiérarchie — le plus haut socle culminait à 1,13 m contre 2,03 m pour
+##     le cœur, soit 1,8. Les murets plafonnent à 0,82 / 0,72 / 0,55 m : le
+##     rapport passe à 2,5, et le cœur domine enfin ses murs.
 ##
-## ELLE PORTE UN CORPS, ET C'EST LA SONDE QUI L'A EXIGÉ. Première version :
-## aucun collider, au motif que 0,32 m passe sous la hauteur de marche du
-## héros (0,30-0,38 m, §8.2) — le raisonnement du kit pour les cailloux. Mais
-## `probe_sanctuaire.gd` a mesuré « plus grande marche 0,000 m sur 32 appuis » :
-## sans corps, le rayon traverse la pierre, le héros aussi, et « on l'enjambe »
-## n'était pas une cote mais un espoir. Le corps fait donc 0,30 m de haut —
-## juste SOUS la hauteur de marche : on monte dessus d'un pas et on redescend,
-## ce qui est exactement enjamber. La sonde le mesure désormais pour de vrai.
-## LOT 1.R — L'ENCEINTE S'ÉLARGIT, ET C'EST UNE QUESTION DE PRÉSENCE, PAS DE
-## CONFORT. Mesuré sur `agent_b/base/forest_shrine_identite.png` : le lieu
-## occupe 155 × 100 px dans un cadre de 1280 × 720, soit **1,7 % de sa propre
-## vue d'identité** — un tas de cailloux gris sous un arbre. L'audit le dit
-## autrement depuis la vue joueur (B-f-6) : « cinq plaques grises verticales,
-## sans seuil et sans centre lisible ».
-##
-## La hauteur est INTERDITE comme levier : rien du bâti ne dépasse 2,4 m, c'est
-## le contrat d'invisibilité depuis la route à 7,3 m, et il ne se négocie pas.
-## Le seul levier restant est donc l'EMPRISE. Les six socles s'écartent de
-## ~1,5× (l'entraxe du seuil passe de 2,68 à 3,90 m, celui du cœur de 1,64 à
-## 2,30 m) : la nef reste une nef — elle CONVERGE toujours vers la table — mais
-## elle a désormais des bords que l'œil peut suivre depuis 18 m.
-##
-## La convergence est conservée exactement : c'est elle qui conduit le regard
-## au cœur, et la perdre échangerait un défaut contre un autre.
-## Sixième colonne, LOT 1.R : le ROULIS. À 90° la pierre est COUCHÉE.
-##
-## « L'enceinte est une ruine, pas une palissade » — six fûts tous debout et
-## régulièrement espacés lisent exactement l'inverse. Deux d'entre eux sont
-## donc à terre : le troisième de la rangée ouest et le premier de la rangée
-## est, choisis pour qu'aucune paire couchée ne se fasse face (une symétrie
-## de ruine serait une symétrie quand même). Une pierre couchée n'a plus de
-## corps de collision : son émergence tombe sous la hauteur de marche, et la
-## boucle de `_collisions()` la saute par sa hauteur.
-const SOCLES: Array[Array] = [
-	["SM_Shrine_Socle_A", -1.95, -2.62, 37.0, -4.0, 0.0],
-	["SM_Shrine_Socle_C", -1.52, -1.74, -68.0, 3.0, 0.0],
-	["SM_Shrine_Socle_B", -1.16, -0.98, 121.0, 6.0, 90.0],
-	["SM_Shrine_Socle_B", 1.90, -2.44, -21.0, 5.0, 90.0],
-	["SM_Shrine_Socle_A", 1.44, -1.62, 92.0, -7.0, 0.0],
-	["SM_Shrine_Socle_C", 1.14, -0.92, -134.0, 2.0, 0.0],
+## Ils sont ENFONCÉS de 10 cm : un muret posé sur l'herbe se lit neuf.
+## `[pièce, x_nef, z_nef, lacet_nef, tangage, hauteur]`
+const MURETS: Array[Array] = [
+	["SM_Shrine_Muret_A", -1.75, -1.90, -84.0, 3.0, 0.82],
+	["SM_Shrine_Muret_B", 1.70, -1.75, -97.0, -4.0, 0.72],
+	["SM_Shrine_Muret_C", -0.40, 1.05, 10.0, 2.0, 0.55],
 ]
-
-## LES QUATRE MARQUES D'ANGLE — ce qui fait qu'une nef devient une ENCEINTE.
-##
-## Deux rangées seules se lisent « allée » ; il faut fermer les bouts pour que
-## l'œil, de loin, reconnaisse un périmètre. Elles sont BRISÉES et INÉGALES :
-## une enceinte intacte serait un rectangle, et le contrat refuse explicitement
-## le rectangle fermé. Deux devant le seuil, deux derrière le cœur, aucune
-## alignée sur sa symétrique.
-##
-## Toutes sont des `Socle_C` (0,60 m) : sous la hauteur de marche du héros,
-## donc AUCUN collider — c'est la règle déjà posée pour les deux socles bas de
-## la nef, et elle évite de porter le lieu à quinze volumes dans un cercle de
-## sept mètres.
-const ANGLES: Array[Array] = [
-	[-2.34, -3.46, 18.0, -9.0],
-	[2.22, -3.62, -95.0, 6.0],
-	[-2.08, 0.38, 143.0, 5.0],
-	[1.72, 0.66, -47.0, -8.0],
-]
-## Enfoncement de la pierre couchée. 0,19 m sous le sol : son maillage fait
-## 0,51 m d'épaisseur apparente, il n'en émerge donc que 0,32 m.
+## Enfoncement des murets, et de la pierre couchée.
+const MURET_ENFONCEMENT: float = 0.10
+## Longueurs des corps de collision, LUES sur le maillage exporté (2,65 /
+## 2,22 / 1,69 m) et rognées d'un peu pour rester dans la pierre. Tableau
+## TYPÉ : `[2.55, 2.15, 1.62][index]` rendrait un `Variant`, et
+## `unsafe_cast` est un avertissement ACTIF dans ce projet.
+const MURET_LONGUEURS: Array[float] = [2.55, 2.15, 1.62]
 const COUCHEE_ENFONCEMENT: float = 0.19
 
 
-func _nef() -> void:
-	for index: int in range(SOCLES.size()):
-		var spec: Array = SOCLES[index]
-		var at: Vector3 = _seated(float(spec[1]), float(spec[2]))
-		var couche: float = float(spec[5])
-		# Une pierre couchée s'enfonce : posée sur son flanc à la cote du sol,
-		# elle roulerait visuellement sur l'herbe au lieu d'y être prise.
-		var descente: float = 0.13 if couche > 45.0 else 0.0
-		_piece_vestige(String(spec[0]), at + Vector3(0.0, -descente, 0.0),
-			Vector3(deg_to_rad(couche), deg_to_rad(float(spec[3])),
+func _nef_enceinte() -> void:
+	for index: int in range(MURETS.size()):
+		var spec: Array = MURETS[index]
+		var at: Vector3 = _nef_seated(float(spec[1]), float(spec[2]))
+		_piece_vestige(String(spec[0]),
+			at + Vector3(0.0, -MURET_ENFONCEMENT, 0.0),
+			Vector3(0.0, deg_to_rad(_nef_yaw(float(spec[3]))),
 				deg_to_rad(float(spec[4]))),
-			"Socle_%d" % index)
+			"Muret_%d" % index)
 		declare_support(at)
-	for index: int in range(ANGLES.size()):
-		var marque: Array = ANGLES[index]
-		var ou: Vector3 = _seated(float(marque[0]), float(marque[1]))
-		_piece_vestige("SM_Shrine_Socle_C", ou,
-			Vector3(0.0, deg_to_rad(float(marque[2])),
-				deg_to_rad(float(marque[3]))),
-			"Angle_%d" % index)
-		declare_support(ou)
-	var couchee: Vector3 = _seated(-0.10, -2.10)
+	# LA PIERRE COUCHÉE barre encore la nef en travers : c'est elle qu'on
+	# enjambe pour approcher, et son corps de 0,30 m — sous la hauteur de
+	# marche — est ce que la sonde a exigé (sans lui elle se traversait).
+	var couchee: Vector3 = _nef_seated(-0.10, -2.10)
 	_piece_vestige("SM_Shrine_Fallen",
 		couchee + Vector3(0.0, -COUCHEE_ENFONCEMENT, 0.0),
-		Vector3(0.0, deg_to_rad(82.0), deg_to_rad(3.0)))
+		Vector3(0.0, deg_to_rad(_nef_yaw(82.0)), deg_to_rad(3.0)))
 	declare_support(couchee)
 
 
@@ -354,9 +372,9 @@ func _nef() -> void:
 ## la même pierre — il donne au cœur son fond, et il ajoute une masse de plus
 ## entre la table et la route.
 func _coeur() -> void:
-	var table: Vector3 = _seated(0.0, 0.0)
+	var table: Vector3 = _nef_seated(0.0, 0.0)
 	var dalle: Node3D = _piece_vestige("SM_Shrine_Coeur", table,
-		Vector3(0.0, deg_to_rad(12.0), 0.0))
+		Vector3(0.0, deg_to_rad(_nef_yaw(12.0)), 0.0))
 	# LE CŒUR DOIT DOMINER LES MURS — c'est la phrase du contrat, et la capture
 	# `it/t2/shrine_gp_nef.png` montre l'inverse : la table est vue de champ,
 	# aussi large qu'un socle de nef, et rien ne dit que c'est ELLE le sujet.
@@ -373,9 +391,14 @@ func _coeur() -> void:
 	# de 12°, ce qu'une boîte posée sur le lieu n'aurait pas fait. Cotes lues
 	# sur le générateur : dossier centré en (0,14 ; −0,74) Blender, c'est-à-dire
 	# (0,14 ; +0,74) en repère Godot, 2,05 m de haut.
+	# Cotes RELUES sur le générateur après l'élargissement : dossier centré en
+	# (0,16 ; −0,86) Blender, donc (0,16 ; +0,86) en repère Godot, rayons
+	# 0,54 × 0,26, sommet à 2,03 m. Recopier l'ancienne cote aurait laissé un
+	# mur invisible décalé de 12 cm — le genre d'écart qu'aucune capture ne
+	# montre et que seule une sonde physique attrape.
 	K.collider_box(dalle, "Sanctuaire_coeur_dossier",
-		Vector3(0.14, 1.02, 0.74), Vector3(0.98, 2.05, 0.48))
-	declare_support(_seated(0.14, 0.74))
+		Vector3(0.16, 1.03, 0.86), Vector3(1.12, 2.03, 0.56))
+	declare_support(_nef_seated(0.16, 0.86))
 
 
 ## LE DALLAGE AVALÉ — le sol du sanctuaire existait ; le bois l'a repris.
@@ -414,9 +437,9 @@ const DALLES: Array[Array] = [
 func _dallage_avale() -> void:
 	for spec: Array in DALLES:
 		K.module(self, &"Floor_UnevenBrick",
-			_seated(float(spec[0]), float(spec[1]))
+			_nef_seated(float(spec[0]), float(spec[1]))
 				+ Vector3(0.0, -float(spec[4]), 0.0),
-			float(spec[2]), float(spec[3]), TONE_MOUSSE)
+			_nef_yaw(float(spec[2])), float(spec[3]), TONE_MOUSSE)
 
 
 ## LE RIDEAU SUD — ce qui rend le lieu invisible depuis la route, à 7,3 m.
@@ -439,35 +462,42 @@ func _rideau_sud() -> void:
 	# local (−0,93 ; 4,0) ; c'est là que va le buisson manquant, et les deux
 	# voisins montent d'un cran. Aucun collider, comme tout le rideau : il
 	# masque, il ne ferme pas.
-	for spec: Array in [[-2.20, 2.95, 41.0, 1.40], [1.45, 3.35, -27.0, 1.55],
-			[-0.40, 4.55, 66.0, 1.55], [3.15, 3.75, 12.0, 1.15],
-			[-3.55, 4.15, -74.0, 1.25], [-0.95, 3.95, 28.0, 1.62]]:
+	# LOT 1.R.1 — LE RIDEAU SUIT LA RECOMPOSITION, ET DE COMBIEN SE CALCULE.
+	# Le bâti a glissé vers l'est ; les lignes de vue depuis P1 (local −2 ; +7)
+	# vers les pièces les plus hautes croisent désormais le plan z = 4,0 entre
+	# x = −0,7 (muret A) et x = +0,7 (montant B), contre x ≈ −1,1 auparavant.
+	# Le rideau se décale donc de +0,70 m en x — pas davantage : il ne
+	# s'approche pas de la route d'un centimètre, et il n'a toujours AUCUN
+	# collider, par contrat (il masque, il ne ferme pas).
+	for spec: Array in [[-1.50, 2.95, 41.0, 1.40], [2.15, 3.35, -27.0, 1.55],
+			[0.30, 4.55, 66.0, 1.55], [3.85, 3.75, 12.0, 1.15],
+			[-2.85, 4.15, -74.0, 1.25], [-0.25, 3.95, 28.0, 1.62]]:
 		K.module(self, &"Bush_Common", _seated(float(spec[0]), float(spec[1])),
 			float(spec[2]), float(spec[3]), K.TONE_PLANT)
-	for spec: Array in [[-1.60, 2.25, 41.0, 1.10], [0.90, 2.55, -27.0, 1.20],
-			[2.40, 2.90, 66.0, 1.00], [-3.05, 2.70, 12.0, 1.05]]:
+	for spec: Array in [[-0.90, 2.25, 41.0, 1.10], [1.60, 2.55, -27.0, 1.20],
+			[3.10, 2.90, 66.0, 1.00], [-2.35, 2.70, 12.0, 1.05]]:
 		K.module(self, &"Fern_1", _seated(float(spec[0]), float(spec[1])),
 			float(spec[2]), float(spec[3]), K.TONE_PLANT)
 	# Le bord sud du rideau porte l'emprise visuelle du lieu vers le sud : il
 	# DÉCLARE donc son assise, sinon le tiers haut de l'axe Z n'aurait aucun
 	# appui et D2 aurait raison de le dire.
-	declare_support(_seated(-0.40, 4.55))
-	declare_support(_seated(-3.55, 4.15))
+	declare_support(_seated(0.30, 4.55))
+	declare_support(_seated(-2.85, 4.15))
 
 
 ## Ce qui pousse à l'ombre d'un vestige. Les champignons vont au PIED des
 ## pierres, jamais au milieu du passage : ils accompagnent la masse, ils ne
 ## meublent pas le vide.
 func _sous_bois() -> void:
-	K.module(self, &"Mushroom_Common", _seated(-1.62, -2.72), 0.0, 1.0,
-		K.TONE_PLANT)
+	K.module(self, &"Mushroom_Common", _nef_seated(-1.62, -2.72),
+		_nef_yaw(0.0), 1.0, K.TONE_PLANT)
 	# D7 — consolidation d'intégration (lead) : l'itération structurelle a
 	# porté le lieu à 43 modules pour un plafond de 40. Retirés : le second
 	# Mushroom_Common et les deux Pebble_* — trois micro-décors qui ne portent
 	# aucun trait du contrat (seuil/enceinte/cœur et dallage avalé intacts).
 	# Le plafond n'a PAS bougé.
-	K.module(self, &"Mushroom_Laetiporus", _seated(-1.10, 0.55), -55.0, 0.75,
-		K.TONE_PLANT)
+	K.module(self, &"Mushroom_Laetiporus", _nef_seated(-1.10, 0.55),
+		_nef_yaw(-55.0), 0.75, K.TONE_PLANT)
 
 
 ## LE COUVERT — trois troncs, tous au NORD et à l'OUEST, jamais au sud.
@@ -497,8 +527,15 @@ func _couvert() -> void:
 	# lignes de visée des trois caméras gelées passent par le centre du lieu ;
 	# à z ≈ −2 elles sont à |x| ≤ 1,3 m. Les pins vont donc à |x| ≈ 6 : ils
 	# tiennent le bord du cadre et laissent la nef libre.
+	# LOT 1.R.1 — LE PIN DE L'EST DEVIENT LE MONTANT GAUCHE DU CADRE.
+	# Il était en (5,70 ; −2,20) ; le seuil recomposé y passe à 1,08 m, donc
+	# DANS son tronc. Il part en (6,90 ; 0,40) : 2,27 m du montant le plus
+	# proche, et il projette à x ≈ 196 px — le bord gauche du cadre joueur,
+	# exactement le rôle qu'on lui demande maintenant que le sujet est à
+	# gauche du tronc gelé. Les deux autres ne bougent pas : à x ≈ 823 et 898
+	# ils ferment déjà le cadre à droite, au-delà du tronc.
 	for spec: Array in [[-5.90, -1.40, 33.0, 1.00, &"Pine_3"],
-			[5.70, -2.20, -47.0, 0.90, &"Pine_3"],
+			[6.90, 0.40, -47.0, 0.90, &"Pine_3"],
 			[-6.40, 1.20, 15.0, 0.85, &"CommonTree_3"]]:
 		var at: Vector3 = _seated(float(spec[0]), float(spec[1]))
 		K.module(self, spec[4] as StringName, at, float(spec[2]),
@@ -509,58 +546,56 @@ func _couvert() -> void:
 ## LES COLLISIONS — onze volumes, et le choix de ce qui n'en reçoit PAS est
 ## aussi délibéré que celui de ce qui en reçoit.
 ##
-## En reçoivent : la table, le chevet, les deux montants du seuil, les quatre
-## socles d'au moins 0,80 m, les trois troncs. N'en reçoivent pas : les deux
-## socles de 0,60 m, les QUATRE marques d'angle (0,60 m elles aussi) et la
-## pierre couchée (0,32 m d'émergence) — on les enjambe, et un corps sur
-## chacun ferait dix-sept volumes dans un cercle de sept mètres. Le rideau sud
-## n'en a aucun, par contrat : il masque, il ne ferme pas.
+## En reçoivent : la dalle du cœur, son dossier (enfant de la pièce, pour
+## hériter du lacet), les deux montants du seuil, les TROIS MURETS, la pierre
+## couchée, les trois troncs. N'en reçoivent pas : la marche, le linteau tombé
+## et les blocs tombés au pied des murets — tous sous la hauteur de marche du
+## héros, on les enjambe. Le rideau sud n'en a aucun, par contrat : il masque,
+## il ne ferme pas.
 ##
-## LOT 1.R : l'élargissement de l'enceinte ne coûte AUCUN volume nouveau — les
-## six socles bougent, leurs corps suivent (la boucle lit `SOCLES`), et les
-## quatre marques d'angle passent sous la hauteur de marche. Le couloir libre
-## entre les deux rangées s'ouvre de 1,64 à 2,30 m d'entraxe au plus étroit,
-## soit 1,70 m nets : la capsule du héros passe plus au large qu'avant, et
-## aucune approche ne se referme. Vérifié par sonde physique, pas par ce calcul.
+## LOT 1.R.1 : le compte NE MONTE PAS malgré les trois murets, parce que dix
+## pièces disparaissent en même temps — quatre corps de socle deviennent trois
+## corps de muret. Onze `CollisionShape3D` pour un plafond de 20.
+## Le couloir libre entre les deux murets latéraux vaut ≈ 2,1 m au plus
+## étroit ; la capsule du héros (0,80 m) y passe. À VÉRIFIER PAR SONDE
+## PHYSIQUE, pas par ce calcul — `tools/godot/probe_sanctuaire.gd`.
 func _collisions() -> void:
-	# LA DALLE DU CŒUR. Emprise lue sur le générateur : contour elliptique
-	# 1,00 × 0,66 de demi-axes, plus deux contreforts à |x| ≈ 1,0 — soit
-	# 2,30 × 1,40 m au sol, dessus de dalle à 0,89 m.
+	# LA DALLE DU CŒUR. Emprise RELUE sur le générateur après l'élargissement :
+	# contour elliptique 1,26 × 0,80 de demi-axes, contreforts à |x| ≈ 1,3 —
+	# soit ≈ 2,95 × 1,75 m au sol, dessus de dalle toujours à 0,89 m.
 	K.collider_box(self, "Sanctuaire_coeur_dalle",
-		_seated(0.0, 0.0) + Vector3(0.0, 0.45, 0.0), Vector3(2.30, 0.90, 1.40),
-		12.0)
+		_nef_seated(0.0, 0.0) + Vector3(0.0, 0.45, 0.0),
+		Vector3(2.95, 0.90, 1.75), _nef_yaw(12.0))
 	# LE CORPS DU DOSSIER N'EST PAS ICI : il est enfant de la pièce, posé dans
-	# `_coeur()`, pour hériter du lacet de 12° du cœur. Un `Sanctuaire_chevet`
-	# subsistait ici après la fusion table+chevet — un mur invisible de 2,05 m
-	# à l'endroit d'une pierre qui n'existe plus. Retiré.
+	# `_coeur()`, pour hériter du lacet du cœur.
+	# Les montants ont BAISSÉ (1,33 et 0,96 m sur le maillage, brisure comprise
+	# — cotes lues dans le journal de génération, pas déduites de la hauteur
+	# demandée) : leurs corps suivent, sinon deux murs invisibles dépasseraient
+	# la pierre de 20 cm.
 	K.collider_box(self, "Sanctuaire_montant_ouest",
-		_seated(-0.94, -3.52) + Vector3(0.0, 0.79, 0.0),
-		Vector3(0.60, 1.57, 0.46), 24.0)
+		_nef_seated(-0.94, -3.52) + Vector3(0.0, 0.665, 0.0),
+		Vector3(0.62, 1.33, 0.48), _nef_yaw(24.0))
 	K.collider_box(self, "Sanctuaire_montant_est",
-		_seated(0.82, -3.74) + Vector3(0.0, 0.62, 0.0),
-		Vector3(0.48, 1.24, 0.50), -58.0)
-	for index: int in range(SOCLES.size()):
-		var spec: Array = SOCLES[index]
-		var hauteur: float = 0.97 if String(spec[0]).ends_with("_A") else \
-			(0.81 if String(spec[0]).ends_with("_B") else 0.60)
-		# Une pierre COUCHÉE n'émerge plus que de son épaisseur : elle passe
-		# sous la hauteur de marche et rejoint la famille des masses qu'on
-		# enjambe, comme la pierre couchée de la nef et le linteau du seuil.
-		if float(spec[5]) > 45.0:
-			continue
-		if hauteur < 0.80:
-			continue
-		K.collider_box(self, "Sanctuaire_socle_%d" % index,
-			_seated(float(spec[1]), float(spec[2]))
-				+ Vector3(0.0, hauteur * 0.5, 0.0),
-			Vector3(0.60, hauteur, 0.55), float(spec[3]))
-	# La pierre couchée : un corps de 0,30 m, sous la hauteur de marche. Voir
-	# `_nef()` — sans lui la sonde mesurait une marche de 0,000 m, c'est-à-dire
-	# une traversée.
+		_nef_seated(0.82, -3.74) + Vector3(0.0, 0.48, 0.0),
+		Vector3(0.52, 0.96, 0.54), _nef_yaw(-58.0))
+	# LES TROIS MURETS. Ils reçoivent tous un corps, contrairement aux socles
+	# bas qu'ils remplacent : un muret est un MUR, et un mur qu'on traverse
+	# n'est pas une enceinte. Longueurs lues sur le maillage (2,65 / 2,22 /
+	# 1,69 m), moins l'enfoncement sur la hauteur.
+	for index: int in range(MURETS.size()):
+		var spec: Array = MURETS[index]
+		var h: float = float(spec[5]) - MURET_ENFONCEMENT
+		var longueur: float = MURET_LONGUEURS[index]
+		K.collider_box(self, "Sanctuaire_muret_%d" % index,
+			_nef_seated(float(spec[1]), float(spec[2]))
+				+ Vector3(0.0, h * 0.5, 0.0),
+			Vector3(longueur, h, 0.58), _nef_yaw(float(spec[3])))
+	# La pierre couchée : un corps de 0,30 m, sous la hauteur de marche. Sans
+	# lui la sonde mesurait une marche de 0,000 m, c'est-à-dire une traversée.
 	K.collider_box(self, "Sanctuaire_pierre_couchee",
-		_seated(-0.10, -2.10) + Vector3(0.0, 0.15, 0.0),
-		Vector3(1.85, 0.30, 0.58), 82.0)
-	for spec: Array in [[-5.90, -1.40], [5.70, -2.20], [-6.40, 1.20]]:
+		_nef_seated(-0.10, -2.10) + Vector3(0.0, 0.15, 0.0),
+		Vector3(1.85, 0.30, 0.58), _nef_yaw(82.0))
+	for spec: Array in [[-5.90, -1.40], [6.90, 0.40], [-6.40, 1.20]]:
 		K.collider_box(self, "Sanctuaire_tronc_%d" % get_child_count(),
 			_seated(float(spec[0]), float(spec[1]))
 				+ Vector3(0.0, 2.6, 0.0), Vector3(0.85, 5.2, 0.85))

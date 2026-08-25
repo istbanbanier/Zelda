@@ -231,7 +231,8 @@ def _rotation_xyz(p, angles):
 # LA PIERRE LEVÉE ROMPUE — la brique unique de tout ce vestige
 # ---------------------------------------------------------------------------
 def pierre_rompue(bm, hauteur, rx, ry, graine, cotes=7, brisure=0.30,
-                  fuseau=0.20, rotation=(0.0, 0.0, 0.0), centre=(0.0, 0.0, 0.0)):
+                  fuseau=0.20, rotation=(0.0, 0.0, 0.0), centre=(0.0, 0.0, 0.0),
+                  anneaux=None):
     """Un fût de pierre à `cotes` pans, cassé net en haut.
 
     Trois propriétés portent la lecture, et aucune n'est décorative :
@@ -244,7 +245,12 @@ def pierre_rompue(bm, hauteur, rx, ry, graine, cotes=7, brisure=0.30,
         point plus bas que le plus haut d'entre eux. On lit une CASSURE.
     """
     k = max(5, int(cotes))
-    anneaux = (0.0, 0.19, 0.42, 0.66, 0.86, 1.0)
+    # `anneaux` réduit délibérément pour les blocs d'un muret : sept blocs à
+    # six anneaux mangeaient 2 038 triangles pour un seul pan de mur, et le
+    # budget de 6 000 est VERROUILLÉ AVANT MODÉLISATION — on ne le relève pas
+    # pour faire entrer ce qu'on vient de dessiner.
+    if anneaux is None:
+        anneaux = (0.0, 0.19, 0.42, 0.66, 0.86, 1.0)
     grilles = []
     for niveau, t in enumerate(anneaux):
         conique = 1.0 - fuseau * t
@@ -295,6 +301,64 @@ def pierre_rompue(bm, hauteur, rx, ry, graine, cotes=7, brisure=0.30,
     for f in faces:
         f.material_index = IDX_PIERRE
     return faces
+
+
+# ---------------------------------------------------------------------------
+# LE MURET ROMPU — LOT 1.R.1, ce qui remplace les six socles et les quatre
+# marques d'angle
+# ---------------------------------------------------------------------------
+# CE QUE LE VERDICT DIT, ET CE QU'IL NE DIT PAS. Codex rejette le lieu parce
+# que « dans la caméra joueur, l'arbre central masque le lieu ». C'est un
+# problème de plan, traité côté `forest_shrine_place.gd`. Mais l'exigence de
+# niveau qui l'accompagne — « une petite ruine brisée, moussue, ENRACINÉE :
+# blocs irréguliers solidaires », « pas de cercle de pierres, pas d'amas
+# décoratif » — est un problème de VOCABULAIRE, et il est ici.
+#
+# Dix pièces isolées et dressées, quel que soit leur profil, se lisent comme un
+# semis de pierres levées. Une enceinte de ruine, elle, est faite de blocs
+# LIÉS : ils se touchent, ils partagent une assise, leur crête est rompue, et
+# elle s'interrompt là où le mur est tombé. Trois murets remplacent donc les
+# dix pièces — sept modules RENDUS au budget D7, qui était à 40 pile.
+#
+# Le second effet est la hiérarchie, et il est mesurable : le plus haut socle
+# faisait 1,13 m contre 2,01 m pour le cœur, soit un rapport de 1,8. Les
+# murets plafonnent à 0,85 m : le rapport passe à 2,4, et le cœur domine.
+def muret_rompu(bm, longueur, hauteur, graine, n=5):
+    """Un pan de muret : `n` blocs LIÉS sur une assise commune, crête rompue.
+
+    Les blocs se recouvrent d'un quart de leur largeur — c'est ce qui fait
+    « solidaire » plutôt que « posé à côté ». Un bloc de la file est
+    volontairement arasé au tiers : c'est la brèche, et sans elle un muret de
+    crête irrégulière reste un mur, pas une ruine.
+    """
+    pas = longueur / float(n)
+    creux = 1 + int(abs(_graine(graine * 5.3)) * 4.0) % max(1, n - 2)
+    for i in range(n):
+        t = (i + 0.5) / n
+        x = -longueur * 0.5 + longueur * t
+        y = _graine(graine * 2.1 + i * 1.7) * 0.17
+        h = hauteur * (0.60 + 0.40 * (0.5 + 0.5 * math.cos(
+            (t - 0.26) * 5.1 + _graine(graine) * 3.0)))
+        h *= 1.0 + _graine(graine * 3.3 + i * 2.9) * 0.24
+        if i == creux:
+            h *= 0.34
+        pierre_rompue(bm, max(0.16, h), pas * 0.64,
+                      0.20 + 0.07 * abs(_graine(graine * 1.9 + i)),
+                      graine * 1.31 + i * 3.7,
+                      cotes=5, brisure=0.36, fuseau=0.12,
+                      rotation=(0.0, 0.0, _graine(graine * 4.7 + i) * 0.55),
+                      centre=(x, y, 0.0), anneaux=(0.0, 0.34, 0.70, 1.0))
+    # Deux blocs tombés au pied, du côté où la crête est la plus basse : la
+    # pierre qui manque en haut est celle qui est par terre.
+    for k, (dx, dy, hh) in enumerate(((-0.18, 0.34, 0.19),
+                                      (0.26, -0.31, 0.15))):
+        pierre_rompue(bm, hh, 0.26, 0.21, graine * 2.7 + k * 5.9,
+                      cotes=5, brisure=0.48, fuseau=0.06,
+                      rotation=(math.radians(90.0), 0.0,
+                                _graine(graine + k) * 1.2),
+                      centre=(-longueur * 0.5 + longueur * (creux + 0.5) / n
+                              + dx, dy, 0.0),
+                      anneaux=(0.0, 0.38, 1.0))
 
 
 # ---------------------------------------------------------------------------
@@ -360,20 +424,27 @@ def _prisme_plan(bm, contour, z_bas, epaisseur, materiau_idx,
 def coeur_rituel(bm):
     """Dalle fendue + dossier + contreforts, en une seule masse."""
     # Les deux dés qui portent la dalle, écartés pour la nouvelle largeur.
-    pierre_rompue(bm, 0.86, 0.32, 0.27, 21.7, cotes=5, brisure=0.16,
-                  fuseau=0.10, centre=(-0.62, -0.09, 0.0))
-    pierre_rompue(bm, 0.82, 0.29, 0.26, 33.1, cotes=5, brisure=0.14,
-                  fuseau=0.10, centre=(0.58, 0.11, 0.0))
+    pierre_rompue(bm, 0.86, 0.36, 0.30, 21.7, cotes=5, brisure=0.16,
+                  fuseau=0.10, centre=(-0.80, -0.11, 0.0))
+    pierre_rompue(bm, 0.82, 0.33, 0.29, 33.1, cotes=5, brisure=0.14,
+                  fuseau=0.10, centre=(0.75, 0.13, 0.0))
     # LES DEUX CONTREFORTS — bas, larges, épaulant la dalle par ses bouts.
     # Ce sont eux qui donnent au cœur son assise visuelle : sans eux la dalle
     # flotte sur deux dés et la masse se lit encore « table de camping ».
-    pierre_rompue(bm, 0.52, 0.34, 0.30, 53.9, cotes=7, brisure=0.38,
-                  fuseau=0.06, centre=(-1.02, 0.30, 0.0))
-    pierre_rompue(bm, 0.44, 0.31, 0.28, 61.3, cotes=5, brisure=0.44,
-                  fuseau=0.06, centre=(0.98, -0.26, 0.0))
+    pierre_rompue(bm, 0.56, 0.40, 0.35, 53.9, cotes=7, brisure=0.38,
+                  fuseau=0.06, centre=(-1.31, 0.34, 0.0))
+    pierre_rompue(bm, 0.47, 0.36, 0.33, 61.3, cotes=5, brisure=0.44,
+                  fuseau=0.06, centre=(1.26, -0.30, 0.0))
 
     # LA DALLE FENDUE, élargie : 2,00 × 1,32 m d'emprise au lieu de 1,60 × 1,08.
-    contour = _contour_ellipse(1.00, 0.66, 16, 9.3)
+    # LOT 1.R.1 — LA DALLE S'ÉLARGIT ENCORE, ET C'EST DE LA HIÉRARCHIE, PAS
+    # DU CONFORT. Dans le cadre joueur recomposé, le montant du seuil est à
+    # 7,0 m et le cœur à 10,0 m : à hauteur égale le montant SEMBLE plus grand.
+    # La seule variable qui rétablisse l'ordre sans toucher au plafond
+    # d'invisibilité est l'EMPRISE — 2,00 × 1,32 m → 2,52 × 1,60 m de dalle,
+    # soit ≈ 3,3 m avec les contreforts. Surface apparente du cœur ≈ 20 700 px²
+    # contre ≈ 6 300 px² pour le montant : le rapport passe de 1,0 à 3,3.
+    contour = _contour_ellipse(1.26, 0.80, 16, 9.3)
     n = len(contour)
     a0, a1 = 2, 2 + n // 2
     fente = []
@@ -399,9 +470,9 @@ def coeur_rituel(bm):
     # tenir au SUD de la dalle, côté route — c'est la position qu'occupait le
     # chevet, et elle a deux fonctions dont une n'est pas visuelle : il donne
     # son fond au cœur, et il ajoute une masse entre l'offrande et le chemin.
-    pierre_rompue(bm, 2.30, 0.48, 0.23, 37.7, cotes=7, brisure=0.30,
+    pierre_rompue(bm, 2.32, 0.54, 0.26, 37.7, cotes=7, brisure=0.30,
                   fuseau=0.30, rotation=(math.radians(5.0), 0.0, 0.0),
-                  centre=(0.14, -0.74, 0.0))
+                  centre=(0.16, -0.86, 0.0))
 
 
 # ---------------------------------------------------------------------------
@@ -564,8 +635,15 @@ def objet_depuis(nom, remplir, mousse_max_z=MOUSSE_Z_DEFAUT):
     bande = max(0.24, 0.62 * max(haut_brut, 1e-6))
     a_couper = [e for e in bm.edges
                 if (e.verts[0].co.z + e.verts[1].co.z) * 0.5 < bande]
-    if a_couper:
-        bmesh.ops.subdivide_edges(bm, edges=a_couper, cuts=2,
+    # DÉCOUPE ADAPTATIVE — LOT 1.R.1. `cuts=2` sur une pièce d'un seul fût
+    # coûte quelques dizaines de triangles ; sur un muret de sept blocs il en
+    # coûte 1 400, et le générateur a REFUSÉ D'ENREGISTRER (9 598 pour 6 000).
+    # La règle de mousse ne change pas ; c'est la finesse de la géométrie
+    # qu'elle décore qui s'adapte au nombre de faces déjà présentes.
+    brut = len(bm.faces)
+    coupes = 2 if brut < 90 else (1 if brut < 260 else 0)
+    if a_couper and coupes > 0:
+        bmesh.ops.subdivide_edges(bm, edges=a_couper, cuts=coupes,
                                   use_grid_fill=False)
         bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
     moussues = poser_mousse(bm, mousse_max_z)
@@ -603,29 +681,32 @@ def main():
     pieces = [
         # LE SEUIL — deux montants FRANCHEMENT inégaux (1,62 et 1,14 m) : une
         # porte se lit à l'inégalité, deux jumeaux se lisent « portique ».
+        # LOT 1.R.1 — les montants BAISSENT (1,82 → 1,55 et 1,44 → 1,12).
+        # Deux raisons, et la première décide : dans le cadre joueur recomposé
+        # le seuil est à 7 m et le cœur à 10 m, donc à hauteur égale le seuil
+        # écrase le cœur. La seconde est le contrat d'invisibilité : moins
+        # haut, c'est moins de rideau à demander aux buissons.
         objet_depuis("SM_Shrine_Montant_A",
-                     lambda bm: pierre_rompue(bm, 1.82, 0.29, 0.21, 3.7,
-                                              cotes=7, brisure=0.24,
+                     lambda bm: pierre_rompue(bm, 1.55, 0.31, 0.23, 3.7,
+                                              cotes=7, brisure=0.26,
                                               fuseau=0.24)),
         objet_depuis("SM_Shrine_Montant_B",
-                     lambda bm: pierre_rompue(bm, 1.44, 0.24, 0.26, 11.3,
-                                              cotes=5, brisure=0.40,
+                     lambda bm: pierre_rompue(bm, 1.12, 0.26, 0.28, 11.3,
+                                              cotes=5, brisure=0.42,
                                               fuseau=0.18)),
         objet_depuis("SM_Shrine_Step", marche_enfoncee),
-        # LES TROIS SOCLES — profils tous différents (nombre de pans, fuseau,
-        # brisure), et c'est vérifié plus bas, pas espéré.
-        objet_depuis("SM_Shrine_Socle_A",
-                     lambda bm: pierre_rompue(bm, 1.13, 0.27, 0.23, 5.1,
-                                              cotes=7, brisure=0.34,
-                                              fuseau=0.26)),
-        objet_depuis("SM_Shrine_Socle_B",
-                     lambda bm: pierre_rompue(bm, 0.94, 0.32, 0.20, 17.9,
-                                              cotes=5, brisure=0.46,
-                                              fuseau=0.12)),
-        objet_depuis("SM_Shrine_Socle_C",
-                     lambda bm: pierre_rompue(bm, 0.70, 0.22, 0.30, 23.3,
-                                              cotes=7, brisure=0.52,
-                                              fuseau=0.08)),
+        # LES TROIS MURETS — l'enceinte, en blocs LIÉS et non en pierres
+        # levées. Longueurs et hauteurs franchement différentes, vérifiées
+        # plus bas et non espérées.
+        objet_depuis("SM_Shrine_Muret_A",
+                     lambda bm: muret_rompu(bm, 2.55, 0.85, 5.1, n=5),
+                     mousse_max_z=0.55),
+        objet_depuis("SM_Shrine_Muret_B",
+                     lambda bm: muret_rompu(bm, 2.05, 0.60, 17.9, n=4),
+                     mousse_max_z=0.44),
+        objet_depuis("SM_Shrine_Muret_C",
+                     lambda bm: muret_rompu(bm, 1.60, 0.44, 23.3, n=4),
+                     mousse_max_z=0.36),
         # LA PIERRE COUCHÉE — un fût de 1,95 m basculé de 90° : c'est la MÊME
         # famille que les montants, tombée. On l'enjambe pour approcher.
         objet_depuis("SM_Shrine_Fallen",
@@ -684,7 +765,7 @@ def main():
     # GARDE 2 — LES PROFILS SONT VRAIMENT DIFFÉRENTS. Le reproche du gate est
     # la RÉPÉTITION ; trois socles au même gabarit la reproduiraient sous un
     # autre nom. On compare hauteur ET emprise au sol, deux à deux.
-    socles = [o for o in pieces if o.name.startswith("SM_Shrine_Socle")]
+    socles = [o for o in pieces if o.name.startswith("SM_Shrine_Muret")]
     gabarits = []
     for obj in socles:
         (x0, x1), (y0, y1), (z0, z1) = emprise(obj)
@@ -700,7 +781,7 @@ def main():
                       "(Δh %.1f %%, Δaire %.1f %%)" % (na, nb, dh * 100.0,
                                                        da * 100.0))
                 return 2
-    print("[forest_shrine] socles : %s"
+    print("[forest_shrine] murets : %s"
           % ", ".join("%s h=%.2f aire=%.3f" % g for g in gabarits))
 
     # GARDE 3 — LA TABLE EST FENDUE, ET LA FENTE SE VOIT. Deux moitiés
