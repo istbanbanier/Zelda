@@ -134,8 +134,52 @@ const TONE_MOUSSE: Color = Color(0.62, 0.68, 0.55)
 ## ×1,15 en largeur. Le cœur passe de x 640 à x ≈ 510, le seuil à x ≈ 340-470,
 ## et le tronc devient le montant DROIT du cadre. `z` maximal 0,77 contre 0,74
 ## aujourd'hui : la route ne voit pas un centimètre de plus.
-const NEF_ROT_DEG: float = 45.0
-const NEF_T: Vector2 = Vector2(2.50, 0.25)
+## ---------------------------------------------------------------------------
+## LOT 1.R.2 — L'AXE DE NEF SE COUCHE DANS L'AXE DE VISÉE, ET C'EST LA
+## CORRECTION DU SECOND REJET
+## ---------------------------------------------------------------------------
+## CE QUE CODEX A VU : « le seuil et l'axe rituel ne sont pas immédiatement
+## lisibles ». La cause est géométrique et je l'ai mesurée avant de toucher
+## quoi que ce soit, sur la capture héritée
+## `lot1r1/revue_intermediaire/vues/forest_shrine_joueur.png` — trois pièces
+## indépendantes valident le modèle de projection au pixel près (cœur prédit
+## x 510 / mesuré 502-515 ; sommet du dossier prédit y 317 / mesuré 312 ;
+## sommet du montant prédit y 346 / mesuré 357) :
+##
+##   * l'axe de visée du plan joueur a l'azimut −30,05° dans le repère local
+##     (caméra locale (5,5 ; −9,5) visant (0 ; 0)) ;
+##   * l'axe de la nef, à θ = 45°, avait l'azimut −45° : un écart de 15°.
+##
+## QUINZE DEGRÉS, C'EST LE PIRE DES DEUX MONDES. À 0° le seuil ENCADRE le
+## cœur — on regarde l'autel à travers la porte. À 45° la nef se voit de
+## trois-quarts et se lit comme une ligne. À 15° elle ne fait ni l'un ni
+## l'autre : les montants projetaient à x 357 et 461, le cœur à x 510 — donc
+## À CÔTÉ du seuil et non DEDANS, pendant que le montant le plus haut (x 461,
+## sommet y 346) venait se superposer au dossier (x 518, sommet y 317). Le
+## seuil masquait le cœur au lieu de le présenter.
+##
+## θ passe donc de 45° à 14,3° : l'azimut de la nef devient −30,05°, celui de
+## la visée. T suit (le cœur reste sur le même rayon, à la même distance),
+## et les sept pièces maîtresses se rangent d'elles-mêmes — montants à x 401
+## et 555, cœur à 481, dossier à 469, linteau et marche à 483. Le cœur tombe
+## au MILIEU de la porte.
+##
+## LA CONTRAINTE QUI DÉCIDE DE T N'EST PAS LE CENTRAGE, C'EST LE TRONC GELÉ.
+## Mesuré colonne par colonne sur la capture héritée, dans la bande de hauteur
+## du sujet (y 300..500) : les troncs occupent x 203-235, 661-717, 794-836,
+## 901-915 et 1239-1276. La plus large fenêtre LIBRE est **x 236 à 660**, soit
+## −35,6° à +2,0° de l'axe de visée — elle est donc entièrement à gauche de
+## l'axe, et le gros tronc central commence à +2,1°. Le lieu recomposé
+## s'étale de x 334 (muret B) à x 615 (muret A) : tout tient dans l'ouverture,
+## avec 45 px de marge sur le tronc. C'est cela, « déplacer les éléments dans
+## l'ouverture réellement visible » — une mesure, pas une intuition.
+##
+## Les deux autres plans gelés y gagnent au lieu d'y perdre : `_joueur_b`
+## (azimut +30,05°) et `_identite` (+20,1°) voient désormais la nef à 60° et
+## 50°, c'est-à-dire de trois-quarts — la lecture complémentaire de celle du
+## plan joueur, et celle qu'on demande à une vue d'identité.
+const NEF_ROT_DEG: float = 14.3
+const NEF_T: Vector2 = Vector2(3.02, 0.25)
 const NEF_L: float = 0.80
 const NEF_W: float = 1.15
 
@@ -173,6 +217,7 @@ func default_place_id() -> StringName:
 
 func _build() -> void:
 	_seuil()
+	_bordures_de_nef()
 	_nef_enceinte()
 	_coeur()
 	_dallage_avale()
@@ -286,12 +331,34 @@ func _habiller_recompense(racine: Node) -> void:
 ## pierres séparées par un tiers de l'image : le seuil ne se lit plus comme
 ## une porte. L'entraxe passe de 2,02 à 1,38 m — l'écart apparent tombe à
 ## ≈ 110 px, et le linteau tombé les relie enfin.
+## LOT 1.R.2 — LE SEUIL S'OUVRE, ET C'EST ISS-070 QUI SE FERME.
+##
+## La sonde mesurait une fenêtre libre de **0,89 m** entre les colliders des
+## deux montants, pour un critère de 0,90 (diamètre de capsule 0,80 + 0,05 de
+## marge par côté) : un centimètre, et un FAIL au journal depuis
+## l'intégration du lot 1.R.1. L'entraxe passe de 1,20 à **1,62 en x de nef**,
+## soit 1,863 m réels (× NEF_W = 1,15).
+##
+## LE CALCUL EST FAIT SUR LES COLLIDERS TOURNÉS, PAS SUR LEUR CÔTÉ — c'est ce
+## qui manquait au raisonnement précédent, et c'est ce qui expliquait de rater
+## la cible d'un centimètre. Le montant ouest porte un corps de 0,64 × 0,49
+## tourné de 24° dans le plan de nef : sa demi-largeur EFFECTIVE face au tir
+## latéral vaut (0,64 cos24° + 0,49 sin24°)/2 = 0,392 m, pas 0,32. L'est,
+## 0,50 × 0,53 tourné de −58°, vaut (0,50 cos58° + 0,53 sin58°)/2 = 0,357 m.
+## Fenêtre attendue : 1,863 − 0,392 − 0,357 = **1,114 m**, soit 0,214 m de
+## marge au-dessus du critère au lieu de −0,010. La cible du lot est « au
+## moins 1,00 m de largeur géométrique, pour éviter un résultat au centimètre
+## près » : elle est tenue par le calcul, et VÉRIFIÉE par la sonde — le seuil
+## du test, lui, ne bouge pas d'un millimètre.
+##
+## Le linteau relie encore : il mesure 2,21 m sur le maillage exporté, pour
+## 1,86 m d'entraxe.
 func _seuil() -> void:
-	var a: Vector3 = _nef_seated(-0.62, -3.30)
+	var a: Vector3 = _nef_seated(-0.82, -3.30)
 	_piece_vestige("SM_Shrine_Montant_A", a,
 		Vector3(0.0, deg_to_rad(_nef_yaw(24.0)), deg_to_rad(5.0)))
 	declare_support(a)
-	var b: Vector3 = _nef_seated(0.58, -3.60)
+	var b: Vector3 = _nef_seated(0.80, -3.50)
 	_piece_vestige("SM_Shrine_Montant_B", b,
 		Vector3(0.0, deg_to_rad(_nef_yaw(-58.0)), deg_to_rad(-8.0)))
 	declare_support(b)
@@ -315,6 +382,46 @@ func _seuil() -> void:
 	_piece_vestige("SM_Shrine_Step", marche + Vector3(0.0, -0.08, 0.0),
 		Vector3(0.0, deg_to_rad(_nef_yaw(9.0)), 0.0))
 	declare_support(marche)
+
+
+## LES DEUX BORDURES DE NEF — L'AXE, RENDU VISIBLE
+##
+## LOT 1.R.2. Le verdict dit « l'axe rituel n'est pas immédiatement lisible ».
+## La cause est nommable, et elle n'est pas une affaire de composition : avant
+## cette passe, l'axe n'existait QUE sous forme de dallage au sol — neuf
+## `Floor_UnevenBrick` enfoncés de 7 à 14 cm. Or l'herbe du semis V2.2 monte
+## plus haut que les dalles, et une caméra qui rase le sol à 10 m ne voit pas
+## un sol. Sur la capture héritée, pas UNE des neuf dalles n'est discernable.
+##
+## Ce qui se voit dans l'herbe, c'est ce qui en dépasse. Deux rangées de
+## bornes basses (0,44 et 0,32 m au maillage) prolongent donc la ligne des
+## deux montants jusqu'au cœur. Elles sont posées à |x| de nef 0,80, c'est-à-
+## dire à 0,92 m réels de l'axe — les montants sont à 0,93 m : les bordures
+## sont littéralement la CONTINUATION du seuil, et c'est ce qui fait qu'on lit
+## une nef et non deux alignements séparés.
+##
+## ELLES CONVERGENT DE 6°, ET LE SIGNE N'EST PAS LIBRE. Une rotation Godot de
+## lacet ψ envoie (x, z) sur (x cosψ + z sinψ, −x sinψ + z cosψ) ; le bout
+## d'une bordure côté seuil a z de nef NÉGATIF, donc pour l'écarter vers
+## l'extérieur il faut sinψ du signe de ce côté. La gauche (x négatif) prend
+## donc +6° et la droite −6°. Se tromper de signe donnerait deux rangées qui
+## divergent vers le cœur — l'inverse exact d'un axe.
+##
+## AUCUN CORPS DE COLLISION, et c'est le même contrat que la marche et le
+## linteau : 0,39 m au plus haut une fois enfoncées, sous la hauteur de marche
+## du héros (0,38 m au maillage, moins l'enfoncement) — on les enjambe. Leur
+## donner un corps rétrécirait le couloir que la sonde vient d'élargir.
+func _bordures_de_nef() -> void:
+	var g: Vector3 = _nef_seated(-0.80, -2.20)
+	_piece_vestige("SM_Shrine_Bordure_G",
+		g + Vector3(0.0, -BORDURE_ENFONCEMENT, 0.0),
+		Vector3(0.0, deg_to_rad(_nef_yaw(6.0)), deg_to_rad(2.0)))
+	declare_support(g)
+	var d: Vector3 = _nef_seated(0.78, -2.35)
+	_piece_vestige("SM_Shrine_Bordure_D",
+		d + Vector3(0.0, -BORDURE_ENFONCEMENT, 0.0),
+		Vector3(0.0, deg_to_rad(_nef_yaw(-6.0)), deg_to_rad(-3.0)))
+	declare_support(d)
 
 
 ## L'ENCEINTE — TROIS MURETS ROMPUS, ET PLUS UN SEUL CERCLE DE PIERRES.
@@ -344,6 +451,10 @@ const MURETS: Array[Array] = [
 ]
 ## Enfoncement des murets, et de la pierre couchée.
 const MURET_ENFONCEMENT: float = 0.10
+## Enfoncement des bordures de nef : leur assise fait 0,11 m d'épaisseur, et
+## on l'enterre presque entièrement — c'est la ligne de pied qui doit se lire,
+## pas la semelle. 0,05 laisse les bornes à 0,39 et 0,27 m au-dessus du sol.
+const BORDURE_ENFONCEMENT: float = 0.05
 ## Longueurs des corps de collision, LUES sur le maillage exporté (2,65 /
 ## 2,22 / 1,69 m) et rognées d'un peu pour rester dans la pierre. Tableau
 ## TYPÉ : `[2.55, 2.15, 1.62][index]` rendrait un `Variant`, et
@@ -408,8 +519,13 @@ func _coeur() -> void:
 	# 0,54 × 0,26, sommet à 2,03 m. Recopier l'ancienne cote aurait laissé un
 	# mur invisible décalé de 12 cm — le genre d'écart qu'aucune capture ne
 	# montre et que seule une sonde physique attrape.
+	# LOT 1.R.2 — le dossier est passé de 0,54 × 0,26 à 0,80 × 0,32 de rayons
+	# (1,60 m de large au lieu de 1,08) : son corps suit, rogné à 1,50 pour
+	# rester DANS la pierre. La hauteur, elle, n'a pas bougé d'un centimètre —
+	# c'est le plafond d'invisibilité depuis la route, et l'élargissement est
+	# le seul levier de masse qui ne l'entame pas.
 	K.collider_box(dalle, "Sanctuaire_coeur_dossier",
-		Vector3(0.16, 1.03, 0.86), Vector3(1.12, 2.03, 0.56))
+		Vector3(0.16, 1.02, 0.86), Vector3(1.50, 2.04, 0.62))
 	declare_support(_nef_seated(0.16, 0.86))
 
 
@@ -432,16 +548,21 @@ func _coeur() -> void:
 ## marges la terre a gagné. Les profondeurs d'enfoncement sont toutes
 ## distinctes (7 à 14 cm) : deux dalles coplanaires produiraient du z-fighting,
 ## et le sol du sanctuaire n'a de toute façon aucune raison d'être de niveau.
+## LOT 1.R.2 — NEUF DALLES DEVIENNENT QUATRE, ET C'EST LE VERDICT QUI LE
+## DEMANDE : « réduire les pierres décoratives sans rôle ».
+##
+## Le constat est une mesure, pas un avis. Sur la capture héritée, à la
+## caméra joueur, AUCUNE des neuf dalles n'est discernable : elles sont
+## enfoncées de 7 à 14 cm et l'herbe du semis V2.2 les recouvre. Neuf modules
+## du budget D7 pour zéro pixel. Les quatre qui restent sont celles qui
+## portent encore un rôle depuis les vues rasantes — le pied du cœur, deux
+## appuis de la nef et le devant du seuil ; l'axe, lui, est désormais tenu par
+## ce qui DÉPASSE de l'herbe, c'est-à-dire les deux bordures.
 const DALLES: Array[Array] = [
 	# x, z, lacet, échelle, enfoncement
 	[-0.15, -0.55, 57.0, 0.86, 0.075],
-	[-0.92, -1.42, 31.0, 0.74, 0.095],
-	[0.88, -1.30, -22.0, 0.70, 0.110],
 	[0.42, -2.30, -18.0, 0.78, 0.085],
 	[-0.78, -2.86, 74.0, 0.62, 0.125],
-	[1.02, -3.05, 12.0, 0.55, 0.140],
-	[-1.24, 0.12, -63.0, 0.58, 0.130],
-	[0.96, 0.24, 108.0, 0.52, 0.120],
 	[-0.06, -3.62, -41.0, 0.60, 0.135],
 ]
 
@@ -481,20 +602,27 @@ func _rideau_sud() -> void:
 	# Le rideau se décale donc de +0,70 m en x — pas davantage : il ne
 	# s'approche pas de la route d'un centimètre, et il n'a toujours AUCUN
 	# collider, par contrat (il masque, il ne ferme pas).
-	for spec: Array in [[-1.50, 2.95, 41.0, 1.40], [2.15, 3.35, -27.0, 1.55],
-			[0.30, 4.55, 66.0, 1.55], [3.85, 3.75, 12.0, 1.15],
-			[-2.85, 4.15, -74.0, 1.25], [-0.25, 3.95, 28.0, 1.62]]:
+	# LOT 1.R.2 — LE RIDEAU SUIT ENCORE, ET DE COMBIEN SE CALCULE. Le cœur a
+	# glissé de (2,50 ; 0,25) à (3,02 ; 0,25) et son dossier de (2,14 ; 0,87)
+	# à (3,03 ; 0,96). La ligne P1 (local −1,8 ; 7,1) → dossier croisait le
+	# plan z = 4,0 en x = 0,16 ; elle le croise maintenant en x = 0,64. Le
+	# rideau se décale donc de +0,45 m en x — pas davantage, et jamais vers le
+	# sud : il ne s'approche pas de la route d'un centimètre, et il n'a
+	# toujours AUCUN collider (il masque, il ne ferme pas).
+	for spec: Array in [[-1.05, 2.95, 41.0, 1.40], [2.60, 3.35, -27.0, 1.55],
+			[0.75, 4.55, 66.0, 1.55], [4.30, 3.75, 12.0, 1.15],
+			[-2.40, 4.15, -74.0, 1.25], [0.20, 3.95, 28.0, 1.62]]:
 		K.module(self, &"Bush_Common", _seated(float(spec[0]), float(spec[1])),
 			float(spec[2]), float(spec[3]), K.TONE_PLANT)
-	for spec: Array in [[-0.90, 2.25, 41.0, 1.10], [1.60, 2.55, -27.0, 1.20],
-			[3.10, 2.90, 66.0, 1.00], [-2.35, 2.70, 12.0, 1.05]]:
+	for spec: Array in [[-0.45, 2.25, 41.0, 1.10], [2.05, 2.55, -27.0, 1.20],
+			[3.55, 2.90, 66.0, 1.00], [-1.90, 2.70, 12.0, 1.05]]:
 		K.module(self, &"Fern_1", _seated(float(spec[0]), float(spec[1])),
 			float(spec[2]), float(spec[3]), K.TONE_PLANT)
 	# Le bord sud du rideau porte l'emprise visuelle du lieu vers le sud : il
 	# DÉCLARE donc son assise, sinon le tiers haut de l'axe Z n'aurait aucun
 	# appui et D2 aurait raison de le dire.
-	declare_support(_seated(0.30, 4.55))
-	declare_support(_seated(-2.85, 4.15))
+	declare_support(_seated(0.75, 4.55))
+	declare_support(_seated(-2.40, 4.15))
 
 
 ## Ce qui pousse à l'ombre d'un vestige. Les champignons vont au PIED des
@@ -584,12 +712,18 @@ func _collisions() -> void:
 	# — cotes lues dans le journal de génération, pas déduites de la hauteur
 	# demandée) : leurs corps suivent, sinon deux murs invisibles dépasseraient
 	# la pierre de 20 cm.
+	# LOT 1.R.2 — cotes RELUES dans le journal de génération après
+	# l'abaissement des montants, jamais recopiées : le maillage sort à
+	# 0,64 × 0,49 × 1,15 (ouest) et 0,50 × 0,53 × 0,84 (est), la brisure
+	# rabattant les sommets sous les 1,34 et 0,98 demandés. Garder l'ancien
+	# 1,33 laisserait un mur invisible dépasser la pierre de 18 cm, en
+	# silence — l'écart qu'aucune capture ne montre.
 	K.collider_box(self, "Sanctuaire_montant_ouest",
-		_nef_seated(-0.62, -3.30) + Vector3(0.0, 0.665, 0.0),
-		Vector3(0.62, 1.33, 0.48), _nef_yaw(24.0))
+		_nef_seated(-0.82, -3.30) + Vector3(0.0, 0.575, 0.0),
+		Vector3(0.64, 1.15, 0.49), _nef_yaw(24.0))
 	K.collider_box(self, "Sanctuaire_montant_est",
-		_nef_seated(0.58, -3.60) + Vector3(0.0, 0.48, 0.0),
-		Vector3(0.52, 0.96, 0.54), _nef_yaw(-58.0))
+		_nef_seated(0.80, -3.50) + Vector3(0.0, 0.42, 0.0),
+		Vector3(0.50, 0.84, 0.53), _nef_yaw(-58.0))
 	# LES TROIS MURETS. Ils reçoivent tous un corps, contrairement aux socles
 	# bas qu'ils remplacent : un muret est un MUR, et un mur qu'on traverse
 	# n'est pas une enceinte. Longueurs lues sur le maillage (2,65 / 2,22 /

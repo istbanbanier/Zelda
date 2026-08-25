@@ -362,6 +362,78 @@ def muret_rompu(bm, longueur, hauteur, graine, n=5):
 
 
 # ---------------------------------------------------------------------------
+# LA BORDURE DE NEF — LOT 1.R.2, CE QUI REND L'AXE VISIBLE
+# ---------------------------------------------------------------------------
+# CE QUE CODEX A VU : « le seuil et l'axe rituel ne sont pas immédiatement
+# lisibles ». Pour l'axe, la cause était nommable et elle n'était pas une
+# affaire de composition : l'axe existait UNIQUEMENT sous forme de dallage au
+# sol (neuf `Floor_UnevenBrick` enfoncés de 7 à 14 cm). Or un sol PLAT ne se
+# voit pas depuis une caméra qui rase l'herbe à 10 m — l'herbe du semis V2.2
+# monte plus haut que les dalles. La capture héritée le montre : sur
+# `lot1r1/revue_intermediaire/vues/forest_shrine_joueur.png`, pas une seule
+# dalle n'est discernable, alors que neuf sont posées.
+#
+# CE QUI SE VOIT DANS L'HERBE, C'EST CE QUI EN DÉPASSE. L'axe devient donc
+# deux rangées de bornes basses — 0,46 m au seuil, 0,26 m au cœur — au lieu
+# d'un pavage. Trois propriétés portent la lecture :
+#
+#   * elles DÉCROISSENT du seuil vers le cœur. Une rangée de hauteur
+#     constante, vue en enfilade, plonge d'autant plus vite qu'elle s'éloigne
+#     et se referme sur le sol ; une rangée qui décroît lentement garde une
+#     ligne franche jusqu'au cœur, et cette ligne EST l'axe ;
+#   * elles sont LIÉES par une assise plate à demi enterrée. C'est la leçon
+#     déjà payée sur l'enceinte (« blocs irréguliers solidaires », pas un
+#     semis) : quatre bornes posées à côté restent quatre cailloux ;
+#   * elles sont modélisées le long de Blender +y, donc de Godot −z : le lieu
+#     les pose avec le lacet de nef, et le gros bout regarde le seuil.
+#
+# Une rangée = UNE pièce, donc un module. Huit bornes éparses en auraient
+# coûté huit au budget D7, qui plafonne à 40 pour un vestige.
+def bordure_de_nef(bm, longueur, graine, n=4, h_seuil=0.46, h_coeur=0.26):
+    """Une rangée de bornes basses liées par une assise, décroissante."""
+    # L'ASSISE — plate, large comme les bornes, enterrée aux deux tiers par le
+    # lieu. Sans elle la rangée n'a pas de ligne de pied et se lit en pièces.
+    demi = longueur * 0.5
+    assise = []
+    # DEUX POINTS PAR CÔTÉ — UN QUAD, ET C'EST LE BUDGET QUI L'A DIT, TROIS
+    # FOIS DE SUITE. Le générateur a refusé d'enregistrer à neuf points
+    # (6 338 tris pour 6 000), puis à trois points avec quatre anneaux
+    # (6 108), puis à trois points avec trois anneaux (6 004 — quatre
+    # triangles). Le budget est verrouillé AVANT modélisation et ne se relève
+    # pas pour faire entrer ce qu'on vient de dessiner : c'est l'assise qui
+    # cède, parce qu'elle est enterrée aux deux tiers par le lieu et que
+    # personne n'a jamais vu son contour.
+    pas_a = 2
+    for i in range(pas_a):
+        t = i / float(pas_a - 1)
+        assise.append((0.17 + _graine(graine * 1.7 + i * 2.3) * 0.05,
+                       -demi + longueur * t))
+    for i in range(pas_a):
+        t = 1.0 - i / float(pas_a - 1)
+        assise.append((-0.17 + _graine(graine * 2.9 + i * 3.1) * 0.05,
+                       -demi + longueur * t))
+    _prisme_plan(bm, assise, 0.0, 0.11, IDX_PIERRE)
+    # LES BORNES. `y` va du cœur (−demi) au seuil (+demi) : la plus haute est
+    # au seuil, et c'est ce qui donne à la rangée sa pente lisible.
+    for i in range(n):
+        t = (i + 0.5) / n
+        y = -demi + longueur * t
+        h = h_coeur + (h_seuil - h_coeur) * t
+        h *= 1.0 + _graine(graine * 3.7 + i * 1.9) * 0.18
+        pierre_rompue(bm, h, 0.21 + 0.05 * abs(_graine(graine * 2.3 + i)),
+                      0.18 + 0.04 * abs(_graine(graine * 4.1 + i)),
+                      graine * 1.7 + i * 4.3,
+                      cotes=5, brisure=0.40, fuseau=0.16,
+                      rotation=(0.0, 0.0, _graine(graine * 5.1 + i) * 0.7),
+                      centre=(_graine(graine * 6.3 + i) * 0.09, y, 0.06),
+                      # TROIS ANNEAUX. À quatre, le générateur a refusé une
+                      # SECONDE fois (6 108 pour 6 000). Une borne de 0,30 m
+                      # vue à 8 m sous-tend 37 pixels de haut : le quatrième
+                      # anneau n'y était visible par personne.
+                      anneaux=(0.0, 0.45, 1.0))
+
+
+# ---------------------------------------------------------------------------
 # LA TABLE D'OFFRANDE FENDUE — l'élément héroïque du lieu
 # ---------------------------------------------------------------------------
 def _contour_ellipse(rx, ry, n, graine):
@@ -470,7 +542,16 @@ def coeur_rituel(bm):
     # tenir au SUD de la dalle, côté route — c'est la position qu'occupait le
     # chevet, et elle a deux fonctions dont une n'est pas visuelle : il donne
     # son fond au cœur, et il ajoute une masse entre l'offrande et le chemin.
-    pierre_rompue(bm, 2.32, 0.54, 0.26, 37.7, cotes=7, brisure=0.30,
+    # LOT 1.R.2 — LE DOSSIER S'ÉLARGIT, ET C'EST LA « MASSE CENTRALE » QUE LE
+    # verdict réclame. À 0,54 × 0,26 de rayons il faisait 1,08 m de large pour
+    # 2,03 m de haut : une PLAQUE, plus étroite que le montant de seuil qui la
+    # précède de trois mètres, donc écrasée par lui en perspective. À
+    # 0,80 × 0,32 il fait 1,60 m — la moitié de l'emprise de la dalle, ce qui
+    # le lie à elle au lieu de la surmonter. La HAUTEUR ne bouge pas d'un
+    # centimètre : le plafond d'identité (2,40 m au lieu, 2,20 m ici) est la
+    # contrainte d'invisibilité depuis la route, et l'élargissement est
+    # justement le seul levier qui ne l'entame pas.
+    pierre_rompue(bm, 2.32, 0.80, 0.32, 37.7, cotes=7, brisure=0.30,
                   fuseau=0.30, rotation=(math.radians(5.0), 0.0, 0.0),
                   centre=(0.16, -0.86, 0.0))
 
@@ -686,12 +767,20 @@ def main():
         # le seuil est à 7 m et le cœur à 10 m, donc à hauteur égale le seuil
         # écrase le cœur. La seconde est le contrat d'invisibilité : moins
         # haut, c'est moins de rideau à demander aux buissons.
+        # LOT 1.R.2 — LES MONTANTS BAISSENT ENCORE (1,55 → 1,34 et 1,12 →
+        # 0,98), et c'est de la hiérarchie mesurée, pas du goût. Dans le cadre
+        # joueur, le montant A est à 7,4 m et le dossier du cœur à 10,3 m :
+        # une pierre de 1,55 m à 7,4 m sous-tend 0,209 rad, le dossier de
+        # 2,03 m à 10,3 m en sous-tend 0,197 — le SEUIL était donc plus grand
+        # que le CŒUR à l'écran, ce qui est exactement l'inverse de ce qu'un
+        # axe rituel doit dire. À 1,34 m le montant tombe à 0,181 rad et rend
+        # au cœur son rang, sans cesser d'être une pierre à hauteur d'homme.
         objet_depuis("SM_Shrine_Montant_A",
-                     lambda bm: pierre_rompue(bm, 1.55, 0.31, 0.23, 3.7,
+                     lambda bm: pierre_rompue(bm, 1.34, 0.31, 0.23, 3.7,
                                               cotes=7, brisure=0.26,
                                               fuseau=0.24)),
         objet_depuis("SM_Shrine_Montant_B",
-                     lambda bm: pierre_rompue(bm, 1.12, 0.26, 0.28, 11.3,
+                     lambda bm: pierre_rompue(bm, 0.98, 0.26, 0.28, 11.3,
                                               cotes=5, brisure=0.42,
                                               fuseau=0.18)),
         objet_depuis("SM_Shrine_Step", marche_enfoncee),
@@ -725,6 +814,25 @@ def main():
         # LE LINTEAU TOMBÉ — la seule pièce TAILLÉE du lieu, en travers du
         # seuil. C'est elle qui transforme deux montants en une porte.
         objet_depuis("SM_Shrine_Linteau", linteau_tombe, mousse_max_z=0.34),
+        # LES DEUX BORDURES DE NEF — l'axe, rendu visible par ce qui dépasse
+        # de l'herbe et non par un dallage que l'herbe recouvre. Longueurs
+        # franchement inégales (2,55 et 2,20 m) et nombres de bornes
+        # différents : deux rangées jumelles se reliraient « allée plantée »,
+        # donc entretenue, donc récente — l'inverse d'un vestige avalé.
+        # `mousse_max_z` très haut : ces pierres-là sont au ras du sol, dans
+        # l'ombre du couvert, et doivent verdir sur toute leur hauteur.
+        # LONGUEURS MESURÉES SUR LA NEF, PAS CHOISIES : entre le seuil (z de
+        # nef −3,3, soit 2,64 m du cœur à l'échelle NEF_L = 0,80) et le bord
+        # de la dalle (0,80 m de rayon dans l'axe), il reste 1,84 m d'axe
+        # libre. Une bordure de 2,55 m entrerait DANS le cœur.
+        objet_depuis("SM_Shrine_Bordure_G",
+                     lambda bm: bordure_de_nef(bm, 1.75, 13.9, n=3,
+                                               h_seuil=0.46, h_coeur=0.26),
+                     mousse_max_z=0.55),
+        objet_depuis("SM_Shrine_Bordure_D",
+                     lambda bm: bordure_de_nef(bm, 1.45, 27.3, n=3,
+                                               h_seuil=0.40, h_coeur=0.24),
+                     mousse_max_z=0.55),
     ]
 
     total = 0
