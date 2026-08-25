@@ -1,0 +1,34 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "clip_below": null,
+  "commit": "0f90e6e686ec5a16e6321ec2228e53d0873c61fe",
+  "emprise_m": [
+    22.1934852600098,
+    7.54015254974365,
+    19.2327728271484
+  ],
+  "engine": "4.7.1-stable (custom_build)",
+  "mode": "lieu dans le monde monté",
+  "place_id": "valley.poi.flower_field.01",
+  "projection": "orthogonale",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "size": "1200x900",
+  "sujet": "flower_field",
+  "vues": [
+    {
+      "angle_deg": 0.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_b/lot1r/candidate/silhouettes/silhouette_flower_field_000.png",
+      "sujet_pct": 4.71222222222222
+    },
+    {
+      "angle_deg": 90.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_b/lot1r/candidate/silhouettes/silhouette_flower_field_090.png",
+      "sujet_pct": 4.88962962962963
+    }
+  ]
+}

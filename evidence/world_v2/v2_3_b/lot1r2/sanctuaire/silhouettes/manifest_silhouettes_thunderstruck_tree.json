@@ -1,0 +1,34 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "clip_below": null,
+  "commit": "bc55474662ee92849ecf164c705dd4dc22196d5d",
+  "emprise_m": [
+    15.0854415893555,
+    11.2077560424805,
+    10.2942657470703
+  ],
+  "engine": "4.7.1-stable (custom_build)",
+  "mode": "lieu dans le monde monté",
+  "place_id": "valley.poi.thunderstruck_tree.01",
+  "projection": "orthogonale",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "size": "900x1200",
+  "sujet": "thunderstruck_tree",
+  "vues": [
+    {
+      "angle_deg": 0.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_b/lot1/silhouettes/silhouette_thunderstruck_tree_000.png",
+      "sujet_pct": 4.13592592592593
+    },
+    {
+      "angle_deg": 90.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_b/lot1/silhouettes/silhouette_thunderstruck_tree_090.png",
+      "sujet_pct": 4.38666666666667
+    }
+  ]
+}
