@@ -33,11 +33,17 @@ import re
 import sys
 
 MANIFESTE = "docs/assets/ASSET_MANIFEST.csv"
+# Étendu à l'intégration LOT 1.R.1 : le belvédère a été reprofilé par la
+# corrective, et la source a gagné un asset NEUF (SM_SpringMaw) — un
+# vérifieur qui ne les couvre pas laisserait leurs empreintes pourrir en
+# silence, exactement ce qu'il existe pour empêcher.
 LIGNES_LOT1R = (
     "SM_Watchtower_Ruin",
     "SM_Shrine_Vestige",
     "SM_Barrow_Stones",
     "SM_FlowerField_Steles",
+    "SM_OverlookCrags",
+    "SM_SpringMaw",
 )
 
 
