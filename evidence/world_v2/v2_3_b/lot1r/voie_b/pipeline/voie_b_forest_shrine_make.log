@@ -2,17 +2,17 @@ Blender 4.0.2
 [forest_shrine] SM_Shrine_Montant_A       222 tris  X  -0.31.. 0.33  Y  -0.25.. 0.24  Z  0.000.. 1.33  mousse 12 faces
 [forest_shrine] SM_Shrine_Montant_B       158 tris  X  -0.23.. 0.27  Y  -0.27.. 0.26  Z  0.000.. 0.96  mousse 7 faces
 [forest_shrine] SM_Shrine_Step            756 tris  X  -0.85.. 0.83  Y  -0.50.. 0.45  Z  0.000.. 0.30  mousse 79 faces
-[forest_shrine] SM_Shrine_Muret_A         636 tris  X  -1.29.. 1.36  Y  -0.49.. 0.38  Z  0.000.. 0.82  mousse 95 faces
-[forest_shrine] SM_Shrine_Muret_B         548 tris  X  -1.09.. 1.13  Y  -0.47.. 0.35  Z  0.000.. 0.72  mousse 76 faces
-[forest_shrine] SM_Shrine_Muret_C         596 tris  X  -0.83.. 0.86  Y  -0.47.. 0.48  Z  0.000.. 0.55  mousse 128 faces
+[forest_shrine] SM_Shrine_Muret_A         636 tris  X  -1.29.. 1.36  Y  -0.49.. 0.38  Z  0.000.. 0.92  mousse 94 faces
+[forest_shrine] SM_Shrine_Muret_B         548 tris  X  -1.09.. 1.13  Y  -0.47.. 0.35  Z  0.000.. 0.84  mousse 72 faces
+[forest_shrine] SM_Shrine_Muret_C         524 tris  X  -0.83.. 0.86  Y  -0.47.. 0.48  Z  0.000.. 0.66  mousse 102 faces
 [forest_shrine] SM_Shrine_Fallen          414 tris  X  -0.30.. 0.46  Y  -1.86.. 0.03  Z  0.000.. 0.52  mousse 49 faces
 [forest_shrine] SM_Shrine_Coeur          1174 tris  X  -1.72.. 1.66  Y  -1.22.. 0.78  Z  0.000.. 2.03  mousse 116 faces
 [forest_shrine] SM_Shrine_Linteau         736 tris  X  -1.00.. 1.21  Y  -0.45.. 0.37  Z  0.000.. 0.46  mousse 95 faces
-[forest_shrine] total 5240 triangles (budget 6000)
+[forest_shrine] total 5168 triangles (budget 6000)
 [forest_shrine] pièce la plus haute : 2.03 m (plafond générateur 2.20 m, plafond d'identité du lieu 2,40 m)
-[forest_shrine] murets : SM_Shrine_Muret_A h=0.82 aire=2.303, SM_Shrine_Muret_B h=0.72 aire=1.811, SM_Shrine_Muret_C h=0.55 aire=1.620
+[forest_shrine] murets : SM_Shrine_Muret_A h=0.92 aire=2.303, SM_Shrine_Muret_B h=0.84 aire=1.811, SM_Shrine_Muret_C h=0.66 aire=1.620
 [forest_shrine] table : 203 sommets de dalle, glissement 0.301 m
-[forest_shrine] COLOR_0 : 9 pièce(s), attribut actif ET de rendu, étendue de valeur 0.71 à 0.82
+[forest_shrine] COLOR_0 : 9 pièce(s), attribut actif ET de rendu, étendue de valeur 0.69 à 0.82
 Info: Total files 0 | Changed 0 | Failed 0
 Info: Saved "SM_Shrine_Vestige.blend"
 [forest_shrine] source enregistrée -> /home/user/wt1r1-b/source_assets/blender/architecture/SM_Shrine_Vestige.blend

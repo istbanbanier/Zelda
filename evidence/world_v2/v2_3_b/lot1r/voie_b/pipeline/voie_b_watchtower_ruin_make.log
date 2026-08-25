@@ -5,7 +5,7 @@ Blender 4.0.2
 [watchtower_ruin] SM_Watchtower_Slab_B          60 tris  X   0.00.. 1.75  Y   0.00.. 1.51  Z  0.000.. 0.94
 [watchtower_ruin] SM_Watchtower_CrownBlock      52 tris  X  -0.69.. 1.21  Y  -0.77.. 0.99  Z  0.000.. 1.15
 [watchtower_ruin] total 2074 triangles (budget 12000)
-[watchtower_ruin] arases : 8.95, 6.45, 5.85, 3.05 — étendue 5.90 m, 22 gradins
+[watchtower_ruin] arases : 8.95, 6.45, 5.85, 3.05 — étendue 5.90 m, 23 gradins
 [watchtower_ruin] baies : 5 percées (porte est, 2 ouest, 1 nord, 1 sud)
 [watchtower_ruin] brèche : volume de passage libre (0 sommet)
 [watchtower_ruin] vigie : dalle 3.457 m² (plancher 1.546 m², ancienne dalle)
