@@ -174,7 +174,16 @@ const PIERRES_SCENE: PackedScene = preload(
 ## et n'est PAS linéaire. La luminance d'albédo ne prédit donc pas la
 ## luminance rendue — elle sert seulement à garantir qu'on ne DÉPLACE pas la
 ## valeur en changeant la teinte. Le verdict se prend sur la capture.
-const TERRE: Color = Color(0.305, 0.272, 0.180)
+##
+## PASSE C2 — DÉSATURÉE, ET C'EST ENCORE UNE MESURE. Sur `it/c1`, le dos
+## éclairé rend une saturation médiane de **0,321** quand l'herbe rend 0,265 et
+## quand les SENTIERS DE TERRE du monde gelé rendent **0,091**. Le tertre
+## n'était donc plus vert : il était devenu l'objet le plus saturé du cadre,
+## et il lisait sable. La luminance d'albédo est de nouveau conservée —
+## 0,2126·0,297 + 0,7152·0,272 + 0,0722·0,216 = **0,2732** — et le canal bleu
+## remonte de 0,180 à 0,216, ce qui fait tomber la saturation d'albédo de 0,41
+## à 0,27 sans toucher ni la valeur ni le rapport R/V (1,09, toujours > 1).
+const TERRE: Color = Color(0.297, 0.272, 0.216)
 
 ## TEINTES DES PIERRES FUNÉRAIRES — albédos ABSOLUS, à recalibrer ICI et
 ## nulle part ailleurs, et à juger sur CAPTURE RENDUE (gain non linéaire).
@@ -553,7 +562,12 @@ func _tertre(nom: String, cx: float, cz: float, demi_long: float,
 			# fréquences non commensurables dans le plan du tertre — donc il
 			# n'a plus aucune structure angulaire. `sin(π·dn)` l'annule au dos
 			# ET à la lisière : le dessus reste rond et le bord reste cousu.
-			releve *= 1.0 + 0.115 * bosse * sin(dn * PI)
+			# AMPLITUDE RELEVÉE 0,115 → 0,17 (passe C2) : sur `it/c1` le dos
+			# rend une surface lisse et continue — le défaut « papier plié »
+			# est bien mort, mais ce qui l'a remplacé est une DUNE. Une tombe
+			# de terre affaissée a des creux et des bosses ; 11 % de modulation
+			# à quinze mètres ne se voient pas.
+			releve *= 1.0 + 0.17 * bosse * sin(dn * PI)
 			if not fosse.is_empty():
 				var du: float = (u - float(fosse[0])) / float(fosse[3])
 				var dv: float = (v - float(fosse[1])) / float(fosse[4])
@@ -750,11 +764,22 @@ func _gueule_de_chambre() -> void:
 	# LE LINTEAU. Son origine est à UNE EXTRÉMITÉ (dans le GLB, Y court de
 	# −1,98 à 0,02, donc en Godot la pièce s'étend de z ≈ 0 à z ≈ +1,98 depuis
 	# son origine). Il est donc posé sur le montant A et non au milieu, et son
-	# lacet est celui de la droite A→B : direction (0,980 ; 0,199), soit
-	# 78,5°. Neuf degrés de dévers vers B : il a glissé, il n'a pas été posé.
+	# lacet est celui de la droite A→B : direction (0,980 ; 0,199), soit 78,5°.
+	#
+	# LE SIGNE DU DÉVERS EST CORRIGÉ (passe C2), et c'était un vrai défaut, pas
+	# un réglage. À `rotation.x = −9°` la capture `it/c1` montre l'extrémité
+	# LOINTAINE PLUS HAUTE que son appui : `rotation` emploie l'ordre d'Euler
+	# YXZ, donc le tangage s'applique APRÈS le lacet, et le signe qui semblait
+	# évident relevait le bout au lieu de l'abaisser. Le linteau lisait un
+	# plongeoir suspendu au-dessus du coffre.
+	#
+	# La cote est maintenant calculée et non choisie : montant A 2,61 m,
+	# montant B 2,02 m, dénivelé 0,59 m sur 1,98 m de portée, soit 14,4° si le
+	# dessous doit toucher les deux arases. Appui à 2,50 m — 0,11 m sous
+	# l'arase de A, donc mordu dedans et non posé en équilibre.
 	_piece_pierre("SM_Barrow_Lintel",
-		_seated(-2.55, 4.05) + Vector3(0.0, 2.20, 0.0),
-		Vector3(deg_to_rad(-9.0), deg_to_rad(78.5), deg_to_rad(-5.0)),
+		_seated(-2.48, 4.08) + Vector3(0.0, 2.50, 0.0),
+		Vector3(deg_to_rad(14.4), deg_to_rad(78.5), deg_to_rad(-3.0)),
 		"", 1.02)
 	# LES DÉBLAIS — trois tas, et leur rôle a changé. Ils ne « bercent » plus le
 	# coffre depuis le fond : ils forment maintenant deux BANQUETTES latérales
@@ -772,11 +797,15 @@ func _gueule_de_chambre() -> void:
 		_seated(-3.10, 4.55), Vector3(0.0, deg_to_rad(232.0), 0.0),
 		"Deblais_petit", 0.90)
 	tas_b.scale = Vector3(1.15, 0.95, 1.05)
-	# Deux poignées d'éclats serrées contre les montants, à des échelles
-	# décroissantes : la terre sortie de la tranchée, jetée sur les bords.
+	# Deux poignées d'éclats serrées contre les montants : la terre sortie de
+	# la tranchée, jetée sur les bords.
+	# ÉCHELLES RÉDUITES (passe C2) : à 0,46 et 0,36 elles produisaient, autour
+	# du coffre, un semis d'éclats anguleux gris qui lit « bris de poterie » et
+	# non « tas de déblais ». Un tas se lit à sa MASSE, pas au nombre de ses
+	# arêtes. Elles reculent aussi de 20 cm pour dégager le pied du coffre.
 	for index: int in range(2):
-		var spec: Array = [[-2.55, 5.05, 0.46, 62.0],
-			[-0.30, 5.15, 0.36, 231.0]][index]
+		var spec: Array = [[-2.68, 4.95, 0.34, 62.0],
+			[-0.22, 5.05, 0.27, 231.0]][index]
 		var eclat: Node3D = _piece_pierre("SM_Barrow_Deblais",
 			_seated(float(spec[0]), float(spec[1])),
 			Vector3(0.0, deg_to_rad(float(spec[3])), 0.0),
@@ -917,7 +946,15 @@ const MARQUES_ISOLEES: Array[Array] = [
 ## l'intérieur des marques isolées (−9,4 … +11,2). Le cadre de capture est
 ## piloté par la largeur (`max(Y, largeur × H/L)`), il reste donc identique,
 ## et la comparaison avant/après porte sur la forme seule.
-const PIERRE_DE_TETE: Array = [1.886, 1.364, 34.0, 6.0, 1.55, 2.76]
+##
+## PROPORTION CORRIGÉE (passe C2). À (1,55 ; 2,76) sur une pièce qui culmine
+## désormais à 1,58 m au lieu de 1,74 nominal, la pierre faisait 1,05 × 4,36 m,
+## soit un élancement de 4,2 : 1 — et sur l'aplat noir 0° de `it/c1` elle ne
+## lit pas un menhir, elle lit une ANTENNE. À (1,95 ; 2,30) elle fait
+## 1,33 × 3,63 m, élancement 2,7 : 1, ce qui est la proportion d'une pierre
+## levée réelle. Elle domine toujours largement la crête du dominant (2,08 m),
+## qui est la raison d'être de la correction D3.
+const PIERRE_DE_TETE: Array = [1.886, 1.364, 34.0, 6.0, 1.95, 2.30]
 
 
 ## LA TEINTE SUIT LE RÔLE, ET C'EST LE CONTRAT §5 : « pierre exposée ≠
@@ -1106,15 +1143,14 @@ func _collisions() -> void:
 		Vector3(0.61, 1.37, 0.38), 71.0)
 	# La pierre de tête : elle a un corps sur toute sa hauteur — c'est la
 	# seule masse du lieu qu'on ne franchit pas.
-	# COTE RECALCULÉE sur la géométrie du lot 1.R.1 : `SM_Barrow_Stele_A` a
-	# maintenant une tête cassée en biais et culmine à 1,58 m (contre 1,74
-	# nominal) ; × 2,76 cela fait 4,36 m, et non plus 4,33. L'écart est petit,
-	# mais un corps calé sur une cote périmée est exactement le genre de
-	# décalage qu'aucune capture ne montre.
+	# COTE RECALCULÉE sur la géométrie du lot 1.R.1, passe C2 :
+	# `SM_Barrow_Stele_A` culmine à ~1,58 m ; × 2,30 cela fait 3,63 m, et sa
+	# largeur 0,68 × 1,95 fait 1,33 m. Un corps calé sur une cote périmée est
+	# exactement le genre de décalage qu'aucune capture ne montre.
 	K.collider_box(self, "Pierre_de_tete_col",
 		_seated(float(PIERRE_DE_TETE[0]), float(PIERRE_DE_TETE[1]))
-			+ Vector3(0.0, 2.18, 0.0),
-		Vector3(1.05, 4.36, 0.44), float(PIERRE_DE_TETE[2]))
+			+ Vector3(0.0, 1.82, 0.0),
+		Vector3(1.33, 3.63, 0.55), float(PIERRE_DE_TETE[2]))
 
 
 ## Extrait UNE pièce du GLB des pierres funéraires (recette `_piece_tour` de
