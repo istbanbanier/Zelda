@@ -439,3 +439,38 @@ famille « vestige » : modules ≤ 40, nœuds visuels ≤ 80, collisions ≤ 20
 C'est un comptage de source, pas une lecture de scène montée : la définition
 du §2 compte sur la SCÈNE, et seul le filet la produit. À traiter comme un
 ordre de grandeur tant que `logs/filet_c3.log` n'est pas lu.
+
+### Le filet D1–D8 a fini — **11 réussis, 0 échoué**, `FILET_RC=0`
+
+`logs/filet_c3.log`, `--filter=lot1_defauts` sur l'arbre committé.
+
+```
+test_d0_les_six_sujets_du_lot_1_existent_vraiment
+test_d1_aucun_lieu_ne_lit_comme_un_assemblage_de_primitives
+test_d2_rien_ne_flotte_et_rien_n_est_enterre
+test_d3_aucun_lieu_du_lot_n_en_repete_un_autre
+test_d4_ni_route_ni_eau_ni_camera_ne_sont_obstruees
+test_d5_aucune_position_de_site_n_est_codee_en_dur
+test_d6_chaque_recompense_canonique_est_raccordee
+test_d7_aucun_budget_de_lieu_n_est_depasse
+test_d8_aucun_element_gele_n_a_bouge
++ les deux témoins d'instrument
+erreurs de script dans le journal : 0
+```
+
+Les quatre critères que cette passe remettait réellement en jeu sont donc
+verts sur la scène montée, et non sur ma lecture du source :
+
+- **D4** — j'ai remplacé le volume unique de la gueule par deux boîtes, recalé
+  cinq boîtes de pierres et redimensionné celle de la pierre de tête ; aucune
+  route, aucun gué, aucun couloir caméra n'est obstrué.
+- **D7** — budgets tenus (mon comptage au source donnait 32 modules / 40 et
+  15 collisions / 20 ; le filet confirme le verdict, pas mes chiffres).
+- **D1** — le lieu ne lit pas un assemblage de primitives, plafond de
+  boîtitude compris, malgré douze pierres neuves.
+- **D3** — le cimetière ne répète toujours aucun autre lieu du lot, alors même
+  que j'ai changé sa silhouette de fond en comble ; c'était le risque de la
+  passe, puisque la correction D3 d'origine reposait sur la pierre de tête que
+  j'ai raccourcie de 4,36 m à 3,63 m.
+
+Plus aucun `NON VÉRIFIÉ` sur cette passe.
