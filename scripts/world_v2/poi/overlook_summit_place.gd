@@ -292,7 +292,13 @@ func _build() -> void:
 	# de visée de `cam05` (−0,82 ; +0,573). Les VIRES regardent donc le
 	# panorama : elles se lisent comme des lignes horizontales depuis le seul
 	# endroit d'où on juge ce lieu. Toute rotation les mettrait de profil.
-	_croc(&"SM_Overlook_Crest", "Croc_crete", 8.0, 4.6, 0.0, 0.85)
+	# ENFONCEMENT RAMENÉ DE 0,85 À 0,25 (lot 1.R.1), et ce n'est pas un
+	# relâchement : la jupe enterrée du générateur descend maintenant 0,85 m
+	# sous le plan de sol du modèle. Garder l'ancien enfoncement enfouirait
+	# 1,70 m de roche et rendrait la crête plus BASSE qu'avant, alors que la
+	# revue demande de la présence. 0,25 suffit à garantir que le plan de sol
+	# reste sous le terrain là où il ondule ; la jupe fait le reste.
+	_croc(&"SM_Overlook_Crest", "Croc_crete", 8.0, 4.6, 0.0, 0.25)
 	declare_support(masse_at)
 	var epaulement_at: Vector3 = _seated(4.2, 8.2)
 	declare_support(epaulement_at)
@@ -310,7 +316,7 @@ func _build() -> void:
 	# 7° et pas davantage : au-delà, le pendage de l'éperon cesse d'être
 	# celui de la crête et les deux masses redeviennent deux objets voisins.
 	# La variété vient des formes (graines différentes), pas de l'azimut.
-	_croc(&"SM_Overlook_Spur", "Croc_poste", 17.8, -5.8, 7.0, 0.60)
+	_croc(&"SM_Overlook_Spur", "Croc_poste", 17.8, -5.8, 7.0, 0.20)
 	declare_support(poste_at)
 	var pied_at: Vector3 = _seated(16.7, -4.0)
 	declare_support(pied_at)
@@ -410,18 +416,23 @@ func _build() -> void:
 ## étroits que les masses visuelles : le pied d'un rocher s'évase, on ne
 ## bute pas sur son évasement.
 func _collisions() -> void:
-	# La crête a grandi (6,96 m de GLB, ~6,1 m visibles) : son volume suit.
-	# Il reste plus ÉTROIT que la masse visible — le pied d'une formation
-	# s'évase, on ne bute pas sur son évasement, et l'assise affleurante est
-	# franchissable à pied.
+	# Lot 1.R.1 : la crête mesure 6,90 m de GLB pour 8,15 m d'emprise VISIBLE
+	# (mesures du générateur), enfoncée de 0,25 → ≈ 6,65 m au-dessus du sol.
+	# Le volume suit la géométrie visible, en restant plus ÉTROIT qu'elle : le
+	# pied d'une formation s'évase et se franchit à pied, on ne bute pas sur
+	# son évasement, et la jupe est sous le terrain de toute façon.
+	# Demi-largeur 2,8 m pour 8,9 m de la diagonale de route : marge 6,1 m,
+	# très au-dessus du seuil de 1,2 m du filet.
 	K.collider_box(self, "Belvedere_crete",
-		_seated(8.0, 4.6) + Vector3(0.0, 2.9, 0.0), Vector3(5.4, 5.8, 4.4),
+		_seated(8.0, 4.6) + Vector3(0.0, 3.2, 0.0), Vector3(5.6, 6.4, 4.6),
 		0.0)
 	K.collider_box(self, "Belvedere_epaulement",
 		_seated(4.2, 8.2) + Vector3(0.0, 1.2, 0.0), Vector3(3.6, 2.4, 3.0),
 		152.0)
+	# L'avant-poste : 4,30 m de GLB, 6,41 m d'emprise visible, enfoncé de 0,20.
+	# Demi-largeur 2,05 m pour 8,5 m de la diagonale de route : marge 6,4 m.
 	K.collider_box(self, "Belvedere_poste",
-		_seated(17.8, -5.8) + Vector3(0.0, 1.7, 0.0), Vector3(3.7, 3.4, 3.2),
+		_seated(17.8, -5.8) + Vector3(0.0, 2.0, 0.0), Vector3(4.1, 4.2, 3.7),
 		7.0)
 	K.collider_box(self, "Belvedere_epaule",
 		_seated(1.8, 7.3) + Vector3(0.0, 0.55, 0.0), Vector3(4.6, 1.1, 3.6),
@@ -442,6 +453,19 @@ func _collisions() -> void:
 ## même geste est déjà fait sur les stèles du champ). On force le drapeau
 ## sur une COPIE posée en override de surface : la ressource importée n'est
 ## jamais mutée.
+##
+## L'ASSISE NE SE CALCULE PLUS SUR LE BAS DE L'EMPRISE (lot 1.R.1). Le GLB a
+## désormais un `min Y` NÉGATIF, volontairement : le générateur prolonge chaque
+## masse SOUS son plan de sol par une jupe évasée, et c'est cette jupe qui
+## supprime la ligne de contact pierre/herbe reprochée au lieu. Le plan y = 0
+## du modèle EST le sol prévu.
+##
+## Soustraire `boite.position.y` comme le faisait la version précédente
+## remonterait donc la masse de toute la hauteur de jupe et la reposerait sur
+## l'herbe — exactement le défaut qu'on répare, obtenu en croyant le corriger.
+## L'ancienne ligne était juste tant que `min Y` valait 0 ; elle est fausse
+## maintenant, et rien dans le rendu ne le crierait : la pièce aurait
+## simplement l'air « posée », comme avant.
 func _croc(objet: StringName, nom: String, x: float, z: float,
 		yaw_deg: float, enfoncement: float) -> Node3D:
 	var packed: PackedScene = load(CROCS_GLB) as PackedScene
@@ -484,7 +508,7 @@ func _croc(objet: StringName, nom: String, x: float, z: float,
 	var centre: Vector3 = boite.get_center()
 	racine.position.x = x - centre.x
 	racine.position.z = z - centre.z
-	racine.position.y = ground_local_y(x, z) - boite.position.y - enfoncement
+	racine.position.y = ground_local_y(x, z) - enfoncement
 	return racine
 
 

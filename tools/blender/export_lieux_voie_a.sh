@@ -27,6 +27,7 @@ command -v "$BLENDER" >/dev/null 2>&1 || { echo "ÉCHEC: Blender absent" >&2; ex
 
 SUJETS=(
   "overlook_crags|source_assets/blender/environment/make_overlook_crags.py|source_assets/blender/environment/SM_OverlookCrags.blend|assets/environment/rocks/SM_OverlookCrags.glb"
+  "spring_maw|source_assets/blender/environment/make_spring_maw.py|source_assets/blender/environment/SM_SpringMaw.blend|assets/environment/rocks/SM_SpringMaw.glb"
 )
 
 DEMANDE="${1:-}"

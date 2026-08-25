@@ -472,3 +472,73 @@ retrait divisé par deux ; valeur dans la face). Chacune a amélioré, aucune n'
 supprimé la lecture. Le changement de topologie — masses non convexes,
 contrefort qui déborde d'un banc à l'autre, niche creusée — n'est pas un
 réglage et n'est pas commandé. La limite est nommée telle quelle.
+
+---
+
+# CONVERGENCE LOT 1.R.1 — le verdict Codex rejette les deux lieux
+
+Verdict, inspection réelle des planches : belvédère **REJET** — « reste une pile
+de dalles bleues » ; source **REJET** — « trop petite et secondaire dans la
+caméra joueur ». Le niveau demandé n'est plus « identifiable » mais « lisible,
+composé et mémorable depuis la caméra du joueur ».
+
+Ce que je VOIS moi-même à taille réelle avant de toucher quoi que ce soit, sur
+`iter6/overlook_summit_identite.png` et `iter6/overlook_summit_joueur.png` :
+la crête est une **pièce montée de trois ou quatre galettes bleu-gris**, chacune
+avec un replat qui fait le tour ; le contact avec l'herbe est une **ligne
+franche** ; l'assise ne se distingue pas de l'ombre portée. L'éperon est la même
+pièce montée en plus petit. Le verdict est juste, et mes trois itérations de
+réglage (retrait lopside, diaclases profondes, valeur dans la face) n'ont
+jamais attaqué la cause : **la topologie elle-même est un empilement d'anneaux**.
+
+Sur `iter5/turquoise_spring_joueur.png` : l'eau est un **filet turquoise** dans
+le tiers bas du cadre, entouré de **cailloux bleu marine** — la couleur est
+acquise, la présence n'existe pas. Ce n'est pas « un œil » : c'est une flaque et
+quelques galets, écrasés par le talus brun qui occupe la moitié de l'image.
+
+## Itération 7 — belvédère : CHANGER LA TOPOLOGIE, pas les constantes
+
+- **Défaut observé** : « pile de dalles ». Chaque `banc` du générateur est un
+  couple d'anneaux (paroi verticale + vire horizontale) dont le rayon est
+  constant en azimut à un facteur près. Un anneau retiré fait donc **le tour**,
+  et une pile d'anneaux est une pièce montée. Le retrait « lopside » de la v2
+  modulait l'amplitude du retrait, jamais son EXISTENCE : la vire faisait
+  toujours le tour, plus large d'un côté.
+- **Cause** : la forme est engendrée par une boucle `for k in range(nb_bancs)`
+  qui empile des tranches. Aucune constante de cette boucle ne peut produire une
+  surface continue — c'est une propriété de la structure, pas de ses valeurs.
+  C'est exactement la conclusion écrite en fin d'itération 5 (« la suivante
+  n'est plus un réglage : masses NON CONVEXES, contrefort qui déborde d'un banc
+  à l'autre, niche creusée — changer la topologie du générateur »).
+- **Levier** : le générateur cesse d'empiler. Une seule surface continue
+  `r(θ, t)` par masse, échantillonnée finement, composée de :
+  1. un **profil vertical non monotone** (spline sur points de contrôle tirés) —
+     une masse peut se resserrer puis regrossir, donc porter un vrai surplomb ;
+  2. les **nervures verrouillées sur l'azimut** (conservées : c'est le seul
+     trait de l'ancien générateur qui marchait — elles font les contreforts) ;
+  3. les **strates en RELIEF et non en tranches** : une rainure douce à la base
+     de chaque lit, dont l'amplitude S'ANNULE sur des secteurs entiers et dont
+     la hauteur DÉRIVE avec l'azimut. Aucune rainure ne peut plus faire le tour ;
+  4. des **niches et des surplombs** — gaussiennes signées en (θ, t) — qui
+     rendent la section non convexe ;
+  5. des **contreforts de pied** et une **jupe enterrée** : la masse continue
+     sous z = 0 en s'évasant. Le contact avec l'herbe cesse d'exister comme
+     ligne ;
+  6. une **face d'ascension** (secteur où les rainures se creusent et la pente
+     s'adoucit), une **cassure de crête** (encoche en V) et une **plateforme
+     panoramique** au sommet.
+- **Ce que le générateur REFUSERA d'écrire**, et c'est le point qui rend le
+  changement vérifiable plutôt que déclaratif — deux contrôles neufs qui
+  échoueraient tous les deux sur l'ANCIENNE géométrie :
+  * `CEINTURE_MAX` : aucune rainure ne couvre plus de 55 % des azimuts dans une
+    tranche de 30 cm. L'ancien générateur y rendait 100 % à chaque banc ;
+  * `SURPLOMBS_MIN` : au moins trois secteurs d'azimut où le rayon AUGMENTE
+    avec la hauteur, mesuré sur le profil LISSE (strates exclues, sinon le test
+    serait tautologique — chaque rainure produit mécaniquement un dr/dt > 0).
+- **Changement attendu dans les pixels** : plus aucun replat qui fait le tour ;
+  une silhouette à surplombs et non à degrés ; un pied qui s'évase et disparaît
+  dans l'herbe sans ligne de contact ; des lignes de strate qui MONTENT et
+  DESCENDENT autour de la masse et s'interrompent.
+- **Caméras** : `overlook_summit_joueur` et `overlook_summit_identite` (les deux
+  gelées, seules à juger), `overlook_gros_crete` (le contact et les rainures),
+  silhouettes 0/90 (l'aplat noir dit si c'est une formation ou un tas).

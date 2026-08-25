@@ -1,69 +1,129 @@
-# SOURCE DE GÉNÉRATION REPRODUCTIBLE — LES DEUX CROCS FROIDS DU BELVÉDÈRE
-# (`valley.poi.overlook_summit.01`, lot 1.R, voie A).
+# SOURCE DE GÉNÉRATION REPRODUCTIBLE — LA FORMATION FROIDE DU BELVÉDÈRE
+# (`valley.poi.overlook_summit.01`, lot 1.R.1, voie A).
 #
-# POURQUOI CET ASSET EXISTE — LA CAUSE EST GÉOMÉTRIQUE, MESURÉE SUR CAPTURE.
+# ======================================================================
+# POURQUOI CE FICHIER A ÉTÉ RÉÉCRIT — LE DÉFAUT ÉTAIT STRUCTUREL
+# ======================================================================
 #
-# L'état de départ (de43152) posait la crête et l'éperon avec la famille
-# `Rock_Medium_*` du kit. Mesuré au pixel sur
-# `evidence/world_v2/v2_3_b/lot1r/final/gros_plans/overlook_gros_crete.png`
-# et `.../ab13/overlook_summit_identite.png` :
+# La version précédente empilait des BANCS : pour chaque `k`, deux anneaux de
+# même rayon (une paroi verticale) puis un anneau de raccord (une vire
+# horizontale). Trois passes de réglage ont été mesurées et publiées
+# (`evidence/world_v2/v2_3_b/lot1r/voie_a2/ITERATIONS_A.md`, itérations 1, 3,
+# 4/5) : retrait « lopside », diaclases profondes + retrait divisé par deux,
+# puis valeur dans la face. Chacune a changé les pixels, aucune n'a supprimé la
+# lecture, et le verdict d'inspection réelle est resté le même mot pour mot :
 #
-#   * la masse rend H=40° S=0,11 V=0,61 — une teinte CHAUDE, et une valeur
-#     PLUS CLAIRE que la falaise V2.2 du fond (H=25° V=0,63). Le contrat du
-#     lot demande « minéral FROID — gris bleuté, ardoise, pierre
-#     désaturée » : la matière posée dit exactement le contraire ;
-#   * la forme est un GALET ARRONDI FACETTÉ, coiffé de mousse pâle. À dix
-#     mètres la lecture est « des oreillers de pierre », pas « une
-#     formation ». Aucune valeur d'albédo ne fabrique une strate sur un
-#     galet : c'est une loi de forme, pas une couleur.
+#     « reste une pile de dalles bleues »
 #
-# C'est le même verdict conditionnel que celui des stèles du champ
-# (`make_flower_field_steles.py`) : l'essai en kit a été fait, la capture a
-# rendu « rocher posé », donc le GLB dédié.
+# La cause n'est PAS dans les constantes, elle est dans la boucle. Un anneau
+# retiré fait le TOUR de la masse ; une pile d'anneaux est une pièce montée.
+# Le retrait « lopside » modulait l'AMPLITUDE du retrait, jamais son
+# EXISTENCE : la vire faisait toujours le tour, plus large d'un côté. Aucune
+# valeur de ce générateur ne pouvait produire une surface continue.
 #
-# CE QUE FAIT CE GÉNÉRATEUR, ET POURQUOI CHAQUE GESTE
+# ======================================================================
+# CE QUE CE GÉNÉRATEUR FAIT MAINTENANT, ET POURQUOI CHAQUE GESTE
+# ======================================================================
 #
-#  1. UNE PILE DE STRATES, PAS UN GALET. Chaque banc est un prisme lobé :
-#     une PAROI verticale (le nu du banc) puis une VIRE horizontale (le
-#     replat). C'est l'alternance paroi/vire qui fait lire « sédimentaire »
-#     à toute distance — c'est le seul trait que la famille du kit ne peut
-#     pas produire.
-#  2. LE PENDAGE EST PARTAGÉ PAR LES DEUX MASSES. Les bancs sont cisaillés
-#     d'un même azimut et d'un même angle sur la crête ET sur l'éperon.
-#     Deux rochers voisins sont deux objets ; deux masses au MÊME pendage
-#     sont une formation rompue en deux. C'est ce qui répond à « les deux
-#     crocs », et non leur simple voisinage.
-#  3. LES DIACLASES SONT VERROUILLÉES SUR L'AZIMUT. Le relief radial est
-#     une fonction de l'ANGLE seul : le même creux se retrouve banc après
-#     banc et devient une fracture filante verticale. (Leçon reprise des
-#     stèles, elle-même reprise de l'arbre foudroyé où un relief tiré par
-#     anneau donnait « du bruit, pas des cannelures ».)
-#  4. LE PIED S'ÉVASE. Le banc du bas déborde de ~18 % : enterré côté
-#     Godot, il donne un contact franc et large au lieu d'une ligne nette
-#     entre pierre et herbe. « Roches posées SUR le sol sans racine » est
-#     une des trois causes de rejet écrites au contrat.
-#  5. LA COURONNE EST ROMPUE. Le dernier banc est tronqué par un plan
-#     incliné : une crête vive d'un côté, un écroulement de l'autre. Pas de
-#     chapeau plat — un chapeau plat se relit comme un empilement de boîtes.
-#  6. LA MATIÈRE EST DANS `COLOR_0`, PAS DANS LES NORMALES. Chiffré sur les
-#     stèles : une face quasi verticale rendait UNE SEULE valeur (p10-p90 =
-#     1 niveau) alors que le maillage portait 465 normales distinctes. Sous
-#     ce ciel, l'irradiance ambiante domine et l'orientation ne rapporte
-#     presque rien. Sans texture, la seule variation gratuite est la couleur
-#     de sommet : bandes de bancs alternées, creux de diaclase assombris,
-#     dessous de vire plus froid, pied plus sombre et plus vert. Un contrôle
-#     final mesure l'étendue et REFUSE d'écrire si elle est trop faible.
+# Une masse = UNE surface continue `r(θ, t)`, échantillonnée finement en
+# azimut et en hauteur. Il n'existe plus de notion de banc, donc plus rien à
+# empiler. Six composantes, et aucune n'est décorative :
 #
-# CONTRÔLES QUE LE GÉNÉRATEUR S'IMPOSE (il rend 2 et n'écrit rien) :
-#   * base à z = 0 (donc min Y ≈ 0 après export yup) ;
-#   * hauteurs dans leur fourchette ;
-#   * budget de triangles ;
-#   * étendue de couleur de sommet suffisante ;
-#   * couleur de sommet ≤ 1 (au-delà, l'export écrête EN SILENCE) ;
-#   * nombre de VIRES réellement produites — c'est le trait qui définit
-#     l'asset, et un contrôle qui ne le mesure pas laisserait passer un
-#     cylindre lisse sans que rien ne bronche ;
-#   * pendage IDENTIQUE sur les deux masses.
+#  1. PROFIL VERTICAL NON MONOTONE. Le rayon d'ensemble suit une spline sur
+#     des points de contrôle tirés par une marche aléatoire bornée qui peut
+#     REMONTER. Une masse se resserre puis regrossit : elle porte un vrai
+#     surplomb, et sa section verticale cesse d'être convexe. Une pile qui ne
+#     fait que rétrécir est un cône, et un cône de disques est le défaut exact
+#     qu'on répare.
+#
+#  2. NERVURES VERROUILLÉES SUR L'AZIMUT. Conservées de la version précédente,
+#     et c'est le SEUL trait qui marchait : un relief radial fonction de
+#     l'angle seul se retrouve à toute hauteur et devient un contrefort
+#     filant. (Leçon héritée des stèles du champ, elles-mêmes héritées de
+#     l'arbre foudroyé, où un relief tiré par anneau donnait « du bruit, pas
+#     des cannelures ».)
+#
+#  3. LES STRATES SONT UN RELIEF, PAS UNE TRANCHE. Une rainure douce marque la
+#     base de chaque lit — mais son amplitude S'ANNULE sur des secteurs
+#     entiers, sa hauteur DÉRIVE avec l'azimut (le lit suit le pendage et
+#     ondule), et son épaisseur varie d'un côté à l'autre. Le résultat se lit
+#     comme des lits sédimentaires creusés dans une paroi continue, jamais
+#     comme des galettes posées. C'est la traduction géométrique exacte de la
+#     consigne « les strates peuvent exister comme RELIEF, pas comme
+#     empilement de galettes ».
+#
+#  4. NICHES ET SURPLOMBS. Des gaussiennes signées en (θ, t) creusent des
+#     cavités et gonflent des bombements. Un bombement dont la moitié basse
+#     regrossit avec la hauteur EST un surplomb ; c'est ce qui rend la masse
+#     non convexe et la sort de la famille « caillou ».
+#
+#  5. CONTREFORTS ET JUPE ENTERRÉE. Le pied s'évase par de larges gaussiennes
+#     basses, puis la surface CONTINUE SOUS z = 0 en s'évasant encore. Le
+#     modèle a donc un `min Y` NÉGATIF, volontairement — voir la section
+#     « CONVENTION D'ASSISE » ci-dessous. Le contact pierre/herbe cesse
+#     d'exister comme ligne : la roche sort du sol.
+#
+#  6. FACE D'ASCENSION, CASSURE DE CRÊTE, PLATEFORME. Un secteur d'azimut
+#     reçoit des rainures plus creuses et une pente plus douce (on lit par où
+#     ça monte) ; le sommet est coupé par une encoche en V et laisse un replat
+#     tourné vers le panorama.
+#
+# LA MATIÈRE RESTE DANS `COLOR_0`, et elle est désormais DÉRIVÉE DE LA
+# GÉOMÉTRIE et non d'un indice de banc : creux local, orientation réelle de la
+# normale (une sous-face de surplomb ne voit pas le ciel), hauteur, grain
+# verrouillé sur l'azimut. Chiffré sur les stèles du champ : une face quasi
+# verticale rendait UNE SEULE valeur (p10-p90 = 1 niveau) pour 465 normales
+# distinctes — sous ce ciel l'irradiance ambiante domine et l'orientation ne
+# rapporte presque rien. Sans texture, la seule variation gratuite est la
+# couleur de sommet.
+#
+# ======================================================================
+# CONVENTION D'ASSISE — `min Y` EST NÉGATIF, ET C'EST VOULU
+# ======================================================================
+#
+# `.claude/rules/assets.md` demande « bas de l'objet au sol : min Y ≈ 0 ». Ce
+# modèle y déroge EXPRÈS et le déclare ici, parce que la règle sert à ce qu'un
+# asset ne flotte pas — or ici l'exigence est l'inverse : le pied doit PLONGER
+# sous le terrain, sans ligne de contact. Le plan z = 0 du modèle est donc le
+# PLAN DE SOL prévu, et la jupe descend sous lui.
+#
+# Conséquence pour l'appelant, et elle est obligatoire : le placeur ne doit
+# PAS soustraire `aabb.position.y` pour asseoir la pièce (ce qui la
+# remonterait de toute la hauteur de jupe). Il pose `y = sol - enfoncement`.
+# `scripts/world_v2/poi/overlook_summit_place.gd::_croc()` porte la même note.
+#
+# ======================================================================
+# CONTRÔLES QUE LE GÉNÉRATEUR S'IMPOSE (il rend 2 et n'écrit rien)
+# ======================================================================
+#
+# Deux d'entre eux sont NEUFS et visent nommément le défaut rejeté. Ils ne
+# sont pas calibrés sur le résultat : ils encodent la phrase du verdict.
+#
+#   * `CEINTURE_MAX` — aucune rainure de strate ne court sans interruption
+#     sur plus de 40 % du pourtour (≈ 144°, moins que l'arc visible d'une
+#     seule vue) à l'intérieur d'une tranche de 30 cm de hauteur. C'est la
+#     définition mesurable de « aucune tranche horizontale répétée ».
+#     L'ANCIEN générateur y rendait 100 % à chaque banc.
+#   * `SURPLOMBS_MIN` / `SURPLOMBS_MAX_PART` — au moins trois azimuts portant
+#     un vrai surplomb (sinon la masse est convexe partout : un caillou), et
+#     jamais plus de 70 % des azimuts surplombant À LA MÊME HAUTEUR (sinon ce
+#     n'est pas un surplomb, c'est une taille de guêpe). Mesuré sur le profil
+#     LISSE, strates EXCLUES : chaque rainure produit mécaniquement un
+#     dr/dt > 0 juste au-dessus d'elle, et un contrôle qui les compterait
+#     serait vrai par construction — donc faux au sens qui compte
+#     (`tools/CLAUDE.md`, « un test vert sur une grandeur qui n'est pas celle
+#     qu'on croit mesurer »).
+#
+# Les DEUX ont rougi pendant l'écriture, et c'est leur seule vraie garantie :
+# la ceinture à 0,62 puis 0,57, le surplomb à 32/32 (donc infalsifiable) avant
+# d'être redéfini. Un contrôle qui n'a jamais rien refusé ne prouve rien.
+#
+# Et les contrôles conservés : plan de sol réellement traversé, hauteur dans
+# sa fourchette, budget de triangles, aire de facette, présence et étendue de
+# la couleur de sommet, absence d'écrêtage (> 1 = écrêté EN SILENCE à
+# l'export), MOYENNE de couleur dans sa bande (c'est la dette de l'itération 4
+# qui avait fait tomber la crête sous les cailloux de son propre pied), et
+# pendage IDENTIQUE sur les deux masses.
 #
 # Chaîne : tools/blender/export_lieux_voie_a.sh overlook_crags
 #
@@ -82,365 +142,531 @@ from mathutils import Vector
 
 TAG = "[overlook_crags]"
 
-COTES = 24
-BUDGET_TRIS = 3600
+## Échantillonnage de la surface. La résolution verticale n'est pas
+## cosmétique : une rainure de strate fait ~25 cm, et il faut trois ou quatre
+## échantillons pour qu'elle se lise au lieu de se réduire à une arête.
+BUDGET_TRIS = 6400
+AIRE_FACETTE_MAX = 1.20
+## Contrôles NEUFS — voir l'en-tête. Ils encodent le verdict, pas un résultat.
+CEINTURE_MAX = 0.40
+CEINTURE_TRANCHE_M = 0.30
+## Le contrôle de surplomb est BORNÉ DES DEUX CÔTÉS, et la borne haute n'est
+## pas une coquetterie : à la première écriture il rendait 32 azimuts sur 32,
+## c'est-à-dire un test qui ne pouvait pas échouer (`PROMPT4_METHOD` §2). La
+## cause était réelle et instructive — le profil vertical remontait GLOBALEMENT
+## entre deux points de contrôle, donc la masse portait une taille de guêpe qui
+## faisait le tour. Un surplomb qui ceinture n'est pas un surplomb, c'est un
+## diabolo. Le profil est redevenu décroissant, les surplombs ne viennent plus
+## que des bombements LOCAUX, et le contrôle peut désormais rougir des deux
+## façons : trop peu (masse convexe = caillou), ou partout (taille de guêpe).
+SURPLOMBS_MIN = 3
+SURPLOMBS_MAX_PART = 0.70
+## Bande de MOYENNE de couleur de sommet. Dette de l'itération 4 : trois
+## modulations avaient fait monter l'étendue (31 % → 66 %) et TOMBER la
+## moyenne (p10 0,716 → 0,474), et la crête était devenue plus sombre que les
+## boulders de kit à son pied (V 0,391 contre 0,540 mesuré dans la MÊME
+## image). Le correctif ×1,35 de l'itération 6 a été confirmé sur capture
+## (0,468 → 0,549). Cette bande empêche la régression de revenir en douce.
+COULEUR_MOYENNE_MIN = 0.62
+COULEUR_MOYENNE_MAX = 0.88
 ETENDUE_COULEUR_MIN = 0.20
-## Une crête de 7 m porte forcément des facettes plus grandes qu'une stèle
-## de 2 m : le seuil suit l'échelle, il ne la copie pas. Repère : la face
-## plane de `rock_largeA` qui a fait rejeter l'essai en kit du champ mesure
-## ~0,8 m² sur une pierre de 2 m ; à l'échelle d'ici l'équivalent serait
-## ~10 m². Le plafond est posé bien en dessous.
-AIRE_FACETTE_MAX = 1.60
-## Nombre minimal de vires (replats horizontaux entre deux bancs) par masse.
-VIRES_MIN = 4
 
 ## PENDAGE PARTAGÉ — azimut (degrés, sens trigonométrique dans le plan XY de
-## Blender) et angle. Les deux masses le portent à l'identique : c'est ce
-## qui les fait lire comme une seule formation rompue.
+## Blender) et angle. Les deux masses le portent à l'identique : c'est ce qui
+## les fait lire comme une seule formation rompue en deux, et non comme deux
+## rochers voisins. Repère : Godot local (X ; Z) = Blender (x ; −y), donc
+## l'azimut 209° sort à (−0,875 ; +0,485) côté Godot, presque exactement la
+## direction de visée de `cam05_belvedere_crete` (−0,82 ; +0,573). Les lignes
+## de strate regardent donc le panorama.
 PENDAGE_AZIMUT = 209.0
 PENDAGE_DEG = 13.5
+## L'axe ne fait pas que se cisailler : il s'INFLÉCHIT. Un cisaillement pur
+## est une transformation affine, et une masse affine se relit « penchée »,
+## pas « érodée ». La courbure est partagée elle aussi.
+COURBURE = 0.085
+COURBURE_AZIMUT = 128.0
 
-## ARDOISE FROIDE. Base linéaire du matériau ; la couleur de sommet la
-## module autour de `NIVEAU`. Valeur volontairement PLUS SOMBRE que la
-## falaise V2.2 du fond (rendue V=0,63) : la formation doit se détacher en
-## masse sombre et bleue, jamais rivaliser de clarté avec l'arrière-plan.
-## Bleu > vert > rouge : c'est la seule façon d'obtenir une teinte au-delà
-## de 190° une fois la lumière chaude du monde appliquée.
-## v2 — RECALÉ SUR CAPTURE, et la première valeur était FAUSSE de loin.
-## À (0,355 ; 0,395 ; 0,462) la face au soleil rendait **RGB(255,255,255)**,
-## c'est-à-dire ÉCRÊTÉE : la crête sortait en tour blanche (mesuré sur
-## `voie_a2/iter1/overlook_gros_crete.png`, face au soleil V=0,999, face à
-## l'ombre V=0,853). Deux enseignements, tous deux mesurés :
-##  * `baseColorFactor` glTF est LINÉAIRE. Une valeur qui « a l'air » d'un
-##    gris moyen y est en fait claire, et la lumière du monde la pousse
-##    au-delà de 1. C'est le piège d'albédo de `scripts/CLAUDE.md`, dans sa
-##    version glTF ;
-##  * la LUMIÈRE EST CHAUDE. À l'écrêtage, la face rendait (255,255,255) et
-##    même à l'ombre (217,218,211) : le rapport bleu/rouge de l'albédo se
-##    faisait manger. Pour rendre FROID sous un soleil miel, il faut un
-##    biais bleu bien plus fort que la teinte visée.
-## La cible est mesurée dans la MÊME image : les boulders de kit refroidis
-## du même lieu rendent RGB(103 ; 112 ; 138), H=223°, S=0,254, V=0,540 —
-## c'est exactement l'ardoise froide voulue, et c'est la seule façon que les
-## deux familles appartiennent au même lieu. Rapport visé 1 : 1,07 : 1,47.
-## v3 — LA VALEUR ÉTAIT BONNE, LE FROID N'Y ÉTAIT PAS. Mesuré sur
-## `voie_a2/iter3` : la masse rend RGB(137 ; 133 ; 133) au loin et
-## (123 ; 122 ; 126) en gros plan, soit V ≈ 0,50–0,54 (juste) mais
-## **S = 0,02 à 0,04** — un gris parfaitement neutre. La lumière chaude du
-## monde mange un biais bleu de 1 : 1,07 : 1,47. La cible reste celle
-## mesurée dans la même image (boulders de kit refroidis, RGB 103/112/138,
-## B/R = 1,34) : il faut donc un rapport d'albédo de **1 : 1,20 : 2,03**,
-## obtenu en BAISSANT le rouge et le vert plutôt qu'en montant le bleu — le
-## bleu tient déjà la valeur, et le monter écrêterait de nouveau.
-## v5 — REMONTÉES DE 35 %, ET C'EST UNE DETTE DE LA v4 QUI SE SOLDE.
-## Les trois modulations ajoutées dans `COLOR_0` (joint de banc, arête,
-## mouchetage) ont fait ce qu'on leur demandait — étendue 31 % → 66 % — mais
-## elles ont aussi baissé la MOYENNE : p10 0,716 → 0,474. Mesuré sur
-## `voie_a2/iter5/overlook_gros_crete.png`, la crête est tombée à V 0,391
-## (face au soleil) et 0,468 (face à l'ombre), alors que les boulders de kit
-## refroidis du MÊME lieu — la cible, mesurée dans la MÊME image — tiennent
-## V 0,540. Une formation plus sombre que les cailloux à son pied n'est pas
-## la famille qu'on visait.
-## Le facteur n'est pas choisi : la face à l'ombre demande un rapport de
-## 0,253/0,184 = 1,375 en linéaire pour passer de 0,468 à 0,540. Retenu 1,35
-## plutôt que 1,375 pour garder la vire la plus claire sous la valeur de la
-## falaise V2.2 du fond (0,632) — c'est elle qui plafonne, pas la moyenne.
+## ARDOISE FROIDE — INCHANGÉE, et c'est délibéré : la couleur est le seul
+## point du lieu que la revue n'a PAS rejeté. Historique complet de sa
+## calibration (quatre mesures sur capture) :
+##   v1 (0,355 ; 0,395 ; 0,462) → face au soleil RGB(255,255,255), ÉCRÊTÉE.
+##       `baseColorFactor` glTF est LINÉAIRE : une valeur qui « a l'air » d'un
+##       gris moyen y est claire, et la lumière du monde la pousse au-delà
+##       de 1. C'est le piège d'albédo de `scripts/CLAUDE.md`, version glTF.
+##   v2 rapport 1 : 1,07 : 1,47 → valeur juste (V 0,50) mais S = 0,02 : gris
+##       neutre. La lumière du monde est CHAUDE et mange le biais bleu.
+##   v3 rapport 1 : 1,20 : 2,03, obtenu en BAISSANT rouge et vert (monter le
+##       bleu réécrêterait) → H 217–229°, S 0,18. Cible atteinte : les
+##       boulders de kit refroidis du même lieu rendent H 223° S 0,254 V 0,540.
+##   v4 ×1,35 (facteur CALCULÉ : la face à l'ombre demandait 0,253/0,184 en
+##       linéaire) → V 0,549 mesuré, contre 0,540 pour la cible, et la vire la
+##       plus claire reste sous la falaise V2.2 du fond (0,632) qui plafonne.
 MAT_ARDOISE = (0.0767, 0.0919, 0.1557, 1.0)
 ## Le nu de fracture fraîche : à peine plus clair, franchement plus froid.
 MAT_FRACTURE = (0.0890, 0.1060, 0.1794, 1.0)
-## v4 — 0,90 → 0,82 pour laisser de la place aux rehauts ajoutés dans
-## `_teinte_banc` sans écrêter la couleur de sommet (au-delà de 1, l'export
-## écrête EN SILENCE). Les trois couleurs de matériau sont remontées de
-## 0,90/0,82 : l'albédo EFFECTIF est inchangé, donc la mesure de couleur
-## obtenue en iter4 (croc RGB 102/107/125, H=226°, contre la cible
-## 103/112/138) reste valable.
 NIVEAU = 0.82
 ## Pied : plus sombre, un rien plus vert — la roche rejoint la terre.
 TEINTE_PIED = (0.62, 0.68, 0.60)
 
-## id | hauteur m | demi-largeur base m | demi-profondeur base m | bancs | graine
+## Les deux masses.
+##
+## `azim_*` sont des azimuts BLENDER en degrés. Ils ne sont pas décoratifs :
+##   * la face visible depuis `overlook_summit_joueur` est à ≈ 180° (la caméra
+##     regarde la crête presque plein est) ;
+##   * la face visible depuis `overlook_summit_identite` est à ≈ 146° ;
+##   * le panorama et l'approche sont à ≈ 215°.
+## Donc : ascension et plateforme regardent l'approche et le vide, l'encoche
+## de crête se découpe dans la vue d'identité.
+##
+## nom | H m | demi_a | demi_b | jupe m | graine | asc° | plateforme° | encoche°
+## Demi-axes RECALÉS SUR L'EMPRISE MESURÉE, pas choisis. Le profil est
+## désormais décroissant (il ne remonte plus), donc à demi-axes égaux la masse
+## est plus étroite qu'avant : mesuré 6,75 m d'emprise visible contre 8,10 m
+## pour la version rejetée. Or c'est la PRÉSENCE qu'il faut gagner, pas la
+## perdre. Les demi-axes sont donc multipliés par 8,20/6,75 ≈ 1,21 pour revenir
+## au-dessus de l'emprise précédente. Le vide entre les deux masses reste franc
+## : centres à 14,29 m l'un de l'autre, demi-emprises 4,1 et 3,2 → ≈ 7,0 m
+## d'herbe (7,47 m avant), et c'est ce vide qui tient le PASS D3.
 CROCS = [
-    ("SM_Overlook_Crest", 6.60, 2.95, 2.35, 7, 51703),
-    ("SM_Overlook_Spur", 4.15, 1.90, 1.62, 6, 28841),
+    ("SM_Overlook_Crest", 6.90, 3.45, 2.78, 0.85, 51703, 196.0, 214.0, 142.0),
+    ("SM_Overlook_Spur", 4.30, 2.16, 1.84, 0.62, 28841, 186.0, 206.0, 118.0),
 ]
+## Résolution par masse (azimuts, tranches au-dessus du sol, tranches de jupe).
+RESOLUTION = {
+    "SM_Overlook_Crest": (32, 40, 5),
+    "SM_Overlook_Spur": (28, 30, 4),
+}
 
 
 def _purge() -> None:
     bpy.ops.wm.read_factory_settings(use_empty=True)
 
 
-def _diaclases(graine: int):
-    """Relief radial VERROUILLÉ SUR L'AZIMUT — trois harmoniques de phase
-    fixe, plus deux entailles profondes. La fonction ne dépend que de
-    l'angle : le creux se retrouve à chaque banc et devient une fracture
-    filante, au lieu d'un bruit qui change d'étage en étage."""
-    # v3 — AMPLITUDES PRESQUE TRIPLÉES, et c'est le correctif de fond.
-    # Aux amplitudes d'origine (7 %, 5 %, 3 %) chaque banc était un anneau
-    # quasi circulaire : une fois la valeur juste, la pile lisait « tambours
-    # empilés » encore plus nettement qu'en blanc (capture iter3). Un relief
-    # radial fort produit des CÔTES verticales qui traversent tous les bancs
-    # — une falaise se lit à ses contreforts autant qu'à ses strates. Et
-    # trois entailles franches, plus étroites, font de vraies diaclases.
-    rng = random.Random(graine)
-    harmoniques = []
-    for ordre, amplitude in ((2, 0.185), (3, 0.130), (5, 0.075),
-                             (8, 0.042)):
-        harmoniques.append((ordre, amplitude, rng.uniform(0.0, math.tau)))
-    entailles = [(rng.uniform(0.0, math.tau), rng.uniform(0.22, 0.31),
-                  rng.uniform(0.14, 0.24)) for _ in range(3)]
+def _delta_angle(a: float, b: float) -> float:
+    """Écart angulaire signé minimal, dans (−π ; π]."""
+    return (a - b + math.pi) % math.tau - math.pi
 
-    def relief(angle: float) -> float:
+
+def _spline(controles, t: float) -> float:
+    """Catmull-Rom sur des points de contrôle ÉQUIDISTANTS en t ∈ [0 ; 1].
+
+    Utilisée pour le profil vertical. Elle interpole, donc les valeurs tirées
+    sont réellement atteintes ; et elle ne force aucune monotonie, ce qui est
+    tout l'intérêt : une masse qui se resserre puis regrossit porte un
+    surplomb.
+    """
+    n = len(controles) - 1
+    x = max(0.0, min(1.0, t)) * n
+    i = min(n - 1, int(math.floor(x)))
+    f = x - i
+    p0 = controles[max(0, i - 1)]
+    p1 = controles[i]
+    p2 = controles[i + 1]
+    p3 = controles[min(n, i + 2)]
+    return 0.5 * ((2.0 * p1)
+                  + (-p0 + p2) * f
+                  + (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3) * f * f
+                  + (-p0 + 3.0 * p1 - 3.0 * p2 + p3) * f * f * f)
+
+
+class Masse:
+    """Le champ `r(θ, t)` d'une masse — tout est ici, rien n'est empilé.
+
+    `t` vaut 0 au plan de sol et 1 au sommet ; il descend en NÉGATIF dans la
+    jupe enterrée. Chaque composante est séparée pour qu'un contrôle puisse en
+    mesurer une SANS les autres — c'est ce qui rend le test de surplomb
+    honnête (voir `SURPLOMBS_MIN` dans l'en-tête).
+    """
+
+    def __init__(self, hauteur, demi_a, demi_b, jupe, graine,
+                 azim_asc, azim_plateforme, azim_encoche):
+        self.H = hauteur
+        self.demi_a = demi_a
+        self.demi_b = demi_b
+        self.jupe = jupe
+        self.t_jupe = -jupe / hauteur
+        self.asc = math.radians(azim_asc)
+        self.plateforme = math.radians(azim_plateforme)
+        self.encoche = math.radians(azim_encoche)
+        rng = random.Random(graine)
+        self.rng = rng
+
+        # --- 1. PROFIL VERTICAL, DÉCROISSANT MAIS À PALIERS ----------------
+        # Sept points de contrôle. Le pas ne remonte JAMAIS — mesuré à la
+        # première écriture : un profil qui remontait globalement donnait une
+        # taille de guêpe faisant le tour de la masse, et le contrôle de
+        # surplomb rendait 32/32, donc ne mesurait rien. Les surplombs doivent
+        # être LOCAUX ; ils viennent des bombements, pas du profil.
+        # En revanche le pas peut être NUL : un palier est une paroi verticale
+        # franche, et une falaise en a. Les paliers sont plus probables en bas
+        # (une formation a un socle vertical) et la perte s'accélère en haut.
+        val = 1.0
+        ctrl = [val]
+        for k in range(6):
+            if rng.random() < 0.42 - 0.04 * k:
+                pas = 0.0
+            else:
+                pas = -rng.uniform(0.045, 0.085 + 0.030 * k)
+            val = max(0.40, val + pas)
+            ctrl.append(val)
+        # Le sommet ne peut pas être aussi large que le pied : une masse dont
+        # la couronne égale la base se relit « fût », pas « croc ».
+        ctrl[-1] = min(ctrl[-1], 0.60)
+        ctrl[-2] = min(ctrl[-2], 0.80)
+        self.profil_ctrl = ctrl
+
+        # --- 2. NERVURES VERROUILLÉES SUR L'AZIMUT --------------------------
+        self.harmoniques = [(ordre, amplitude, rng.uniform(0.0, math.tau))
+                            for ordre, amplitude in ((2, 0.170), (3, 0.122),
+                                                     (5, 0.071), (8, 0.040))]
+        self.entailles = [(rng.uniform(0.0, math.tau),
+                           rng.uniform(0.20, 0.30),
+                           rng.uniform(0.13, 0.23)) for _ in range(3)]
+
+        # --- 3. STRATES EN RELIEF ------------------------------------------
+        self.strate_periode = rng.uniform(0.78, 1.02)
+        self.strate_ampli = rng.uniform(0.075, 0.098)
+        self.strate_phases = tuple(rng.uniform(0.0, math.tau) for _ in range(5))
+        # Amplitude de la DÉRIVE en hauteur du lit, en mètres, et de la
+        # variation d'ÉPAISSEUR du lit. Les deux sont nécessaires et elles ne
+        # font pas le même travail — mesuré : avec la seule dérive, l'éperon
+        # rendait une ceinture de 0,61 (plafond 0,50). Une dérive supérieure à
+        # une période se replie sur elle-même et n'améliore plus rien ; ce qui
+        # décorrèle vraiment les rainures d'un azimut à l'autre, c'est que
+        # l'ÉCHELLE de la ladder change — les rungs s'écartent d'un côté et se
+        # resserrent de l'autre, donc leurs hauteurs divergent avec l'altitude.
+        self.strate_derive = self.strate_periode * rng.uniform(0.62, 0.88)
+        self.strate_biseau = rng.uniform(0.48, 0.62)
+
+        # --- 4. NICHES ET SURPLOMBS ----------------------------------------
+        # (θ, t, σθ, σt, amplitude). Amplitude négative = niche creusée ;
+        # positive placée haut = bombement dont la moitié basse SURPLOMBE.
+        self.bosses = []
+        for _ in range(3):
+            self.bosses.append((rng.uniform(0.0, math.tau),
+                                rng.uniform(0.28, 0.74),
+                                rng.uniform(0.42, 0.86),
+                                rng.uniform(0.09, 0.17),
+                                -rng.uniform(0.14, 0.24)))
+        for _ in range(3):
+            self.bosses.append((rng.uniform(0.0, math.tau),
+                                rng.uniform(0.40, 0.78),
+                                rng.uniform(0.50, 0.95),
+                                rng.uniform(0.10, 0.16),
+                                rng.uniform(0.13, 0.21)))
+        # --- 5. CONTREFORTS DE PIED ----------------------------------------
+        # Larges, bas, positifs : le pied s'étale en éperons au lieu de
+        # rencontrer l'herbe sur un cercle.
+        for _ in range(3):
+            self.bosses.append((rng.uniform(0.0, math.tau),
+                                rng.uniform(0.0, 0.14),
+                                rng.uniform(0.75, 1.25),
+                                rng.uniform(0.17, 0.26),
+                                rng.uniform(0.20, 0.33)))
+
+    # ------------------------------------------------------------------
+    def nervure(self, theta: float) -> float:
         v = 0.0
-        for ordre, amplitude, phase in harmoniques:
-            v += amplitude * math.sin(ordre * angle + phase)
-        for centre, profondeur, largeur in entailles:
-            d = abs((angle - centre + math.pi) % math.tau - math.pi)
+        for ordre, amplitude, phase in self.harmoniques:
+            v += amplitude * math.sin(ordre * theta + phase)
+        for centre, profondeur, largeur in self.entailles:
+            d = abs(_delta_angle(theta, centre))
             if d < largeur:
                 v -= profondeur * (0.5 + 0.5 * math.cos(math.pi * d / largeur))
         return v
 
-    return relief
+    def ascension(self, theta: float) -> float:
+        """Poids du secteur d'ascension : 1 dans son axe, 0 hors du secteur."""
+        d = abs(_delta_angle(theta, self.asc))
+        return math.exp(-(d / 0.72) ** 2)
+
+    def strate_amplitude(self, theta: float, z: float = 0.0) -> float:
+        """Amplitude de la rainure de lit, par AZIMUT **et par HAUTEUR**.
+
+        Deux masques, et le second a été ajouté sur MESURE, pas par goût.
+
+        Le premier annule la rainure sur des secteurs d'azimut entiers. Il ne
+        suffisait pas : mesuré, la pire fenêtre tenait encore 20 azimuts sur
+        32 (0,62 pour un plafond de 0,50). La cause est mécanique et vaut
+        d'être écrite — la dérive du lit est une fonction LISSE de l'azimut,
+        donc elle a des extrema, et au voisinage d'un extremum toute une bande
+        d'azimuts partage la même phase. Ces azimuts-là portent alors leur
+        rainure à la même hauteur : une ceinture, malgré le pendage.
+
+        Le second masque dépend de θ ET de z : la rainure n'existe que par
+        PLAQUES. Un lit s'interrompt, reprend trois mètres plus loin à une
+        autre hauteur — ce sont les « arêtes cassées » et les « redents
+        irréguliers » demandés, et c'est ce qui rend impossible une ligne
+        continue quelle que soit la géologie.
+
+        La face d'ascension échappe aux deux : ses rainures sont les prises,
+        et une prise qui s'interrompt ne se lit plus comme un chemin.
+        """
+        p1, p2 = self.strate_phases[0], self.strate_phases[1]
+        w = 0.55 * (0.5 + 0.5 * math.sin(2.0 * theta + p1)) \
+            + 0.45 * (0.5 + 0.5 * math.sin(3.0 * theta + p2))
+        w = max(0.0, min(1.0, (w - 0.34) / 0.42))
+        w = w * w * (3.0 - 2.0 * w)
+        p3, p4, p5 = self.strate_phases[2:5]
+        q = 0.55 * (0.5 + 0.5 * math.sin(2.0 * theta + p4 + 1.35 * z)) \
+            + 0.45 * (0.5 + 0.5 * math.sin(5.0 * theta + p5 - 0.85 * z))
+        q = max(0.0, min(1.0, (q - 0.30) / 0.34))
+        q = q * q * (3.0 - 2.0 * q)
+        asc = self.ascension(theta)
+        plaque = q + asc * (1.0 - q)
+        return self.strate_ampli * (w + 0.85 * asc * (1.0 - w)) * plaque
+
+    def strate(self, theta: float, t: float) -> float:
+        """Rainure douce à la base de chaque lit — un CREUX, jamais un gradin.
+
+        La hauteur du lit dérive avec l'azimut (il suit le pendage et ondule)
+        et son épaisseur varie d'un côté à l'autre de la masse.
+        """
+        z = t * self.H
+        amp = self.strate_amplitude(theta, z)
+        if amp <= 1e-6:
+            return 0.0
+        p1, p2, p3, p4, p5 = self.strate_phases
+        periode = self.strate_periode * (1.0 + self.strate_biseau * (
+            0.62 * math.sin(theta + p3) + 0.38 * math.sin(2.0 * theta + p4)))
+        derive = self.strate_derive * (
+            0.44 * math.cos(theta - math.radians(PENDAGE_AZIMUT))
+            + 0.32 * math.sin(2.0 * theta + p4)
+            + 0.24 * math.sin(5.0 * theta + p5))
+        u = (z - derive) / periode
+        f = u - math.floor(u)
+        # Creux à la base du lit, éteint au tiers de sa hauteur : le nu du lit
+        # reste une paroi continue, la rainure est un TRAIT dans cette paroi.
+        if f >= 0.34:
+            return 0.0
+        return -amp * (0.5 + 0.5 * math.cos(math.pi * f / 0.34))
+
+    def bosse(self, theta: float, t: float) -> float:
+        v = 0.0
+        for th, tt, sth, stt, amp in self.bosses:
+            dth = _delta_angle(theta, th) / sth
+            dt = (t - tt) / stt
+            e = dth * dth + dt * dt
+            if e < 9.0:
+                v += amp * math.exp(-e)
+        return v
+
+    def profil(self, t: float) -> float:
+        """Rayon d'ensemble, jupe comprise."""
+        if t >= 0.0:
+            return _spline(self.profil_ctrl, t)
+        # JUPE : sous le plan de sol la masse s'évase franchement. Le talus
+        # n'est pas décoratif — c'est lui qui supprime la ligne de contact.
+        u = min(1.0, t / self.t_jupe)
+        return self.profil_ctrl[0] * (1.0 + 0.30 * u * (2.0 - u))
+
+    def rayon_lisse(self, theta: float, t: float) -> float:
+        """Le rayon SANS les rainures de strate.
+
+        C'est sur lui que se mesurent les surplombs : compter les dr/dt > 0
+        produits par les rainures elles-mêmes rendrait le contrôle vrai par
+        construction.
+        """
+        return self.profil(t) * (1.0 + self.nervure(theta)) \
+            * (1.0 + self.bosse(theta, t))
+
+    def rayon(self, theta: float, t: float) -> float:
+        return self.rayon_lisse(theta, t) * (1.0 + self.strate(theta, t))
+
+    def couronne(self, theta: float) -> float:
+        """Abaissement du sommet, en fraction de H.
+
+        Zéro dans le secteur de la plateforme (c'est le point haut, et il est
+        tourné vers le panorama), franc ailleurs, et une ENCOCHE EN V — la
+        cassure de crête — sur un azimut étroit.
+        """
+        d_plat = abs(_delta_angle(theta, self.plateforme))
+        base = 0.135 * (1.0 - math.exp(-(d_plat / 0.62) ** 2))
+        d_enc = abs(_delta_angle(theta, self.encoche))
+        return base + 0.115 * math.exp(-(d_enc / 0.24) ** 2)
+
+    def point(self, theta: float, t: float) -> Vector:
+        r = self.rayon(theta, t)
+        z = t * self.H
+        x = math.cos(theta) * self.demi_a * r
+        y = math.sin(theta) * self.demi_b * r
+        return Vector((x, y, z)) + self.decalage(z)
+
+    def decalage(self, z: float) -> Vector:
+        """Cisaillement de pendage + inflexion de l'axe."""
+        az = math.radians(PENDAGE_AZIMUT)
+        cz = math.radians(COURBURE_AZIMUT)
+        shear = Vector((math.cos(az), math.sin(az), 0.0)) \
+            * (math.tan(math.radians(PENDAGE_DEG)) * z)
+        u = max(0.0, z) / self.H
+        courbe = Vector((math.cos(cz), math.sin(cz), 0.0)) \
+            * (COURBURE * self.H * u * u)
+        return shear + courbe
 
 
-def _profil_bancs(nb: int, hauteur: float, graine: int):
-    """Épaisseurs et retraits des bancs.
+def _teinte(masse: Masse, theta: float, t: float, normale: Vector,
+            creux: float) -> tuple:
+    """Couleur de sommet DÉRIVÉE DE LA GÉOMÉTRIE.
 
-    Le retrait n'est PAS monotone : un banc peut DÉBORDER celui du dessous
-    (corniche en surplomb). Une pile qui ne fait que rétrécir se relit comme
-    un cône, et un cône régulier est précisément le défaut reproché ailleurs
-    dans ce lot.
+    Quatre modulations, et chacune décrit un fait de la surface plutôt qu'un
+    indice de boucle :
+      * `creux` — déficit de rayon par rapport au profil lisse : les rainures
+        de strate, les entailles et les niches s'assombrissent ;
+      * `normale.z` — une face qui regarde le ciel le reçoit ; une sous-face
+        de surplomb ne le voit pas, elle est plus sombre ET plus froide ;
+      * la hauteur — le pied s'assombrit et verdit, la roche rejoint la terre ;
+      * un grain VERROUILLÉ SUR L'AZIMUT : il survit d'une tranche à l'autre
+        et devient une trace verticale, au lieu d'un bruit qui change d'étage.
     """
-    rng = random.Random(graine + 7)
-    # v2 — ÉPAISSEURS BEAUCOUP PLUS INÉGALES. À (0,72 ; 1,35) les bancs
-    # sortaient quasi identiques et la pile lisait « pile d'assiettes »
-    # (capture iter1). Un banc mince entre deux gros est ce qui fait une
-    # stratification crédible.
-    epaisseurs = [rng.uniform(0.34, 1.90) for _ in range(nb)]
-    somme = sum(epaisseurs)
-    epaisseurs = [e * hauteur / somme for e in epaisseurs]
-    facteurs = [1.10]  # le pied s'évase : point 4 de l'en-tête
-    courant = 1.0
-    for k in range(1, nb):
-        # v3 — RETRAIT DIVISÉ PAR DEUX. À −0,07..−0,17 par banc, le sommet
-        # tombait à ~0,40 du pied après sept bancs : un CÔNE, et un cône
-        # régulier de disques est la « pièce montée » relevée sur capture.
-        # Ici le sommet reste vers 0,70 : une masse qui garde son épaule.
-        if rng.random() < 0.34 and k not in (1, nb - 1):
-            pas = rng.uniform(0.02, 0.07)
-        else:
-            pas = -rng.uniform(0.04, 0.11)
-        courant = max(0.45, courant + pas)
-        facteurs.append(courant)
-    # LE RETRAIT EST LOPSIDE, ET C'EST LE CORRECTIF PRINCIPAL DE LA v2.
-    # En v1 chaque banc retirait de la même quantité sur TOUT son pourtour :
-    # la vire faisait donc un anneau complet, et une pile d'anneaux complets
-    # est une pièce montée, pas une falaise. Ici chaque banc reçoit une
-    # amplitude et un azimut propres : d'un côté il est en retrait franc (une
-    # large vire), de l'autre il affleure le banc du dessous (le mur reste
-    # continu). Aucun replat ne fait plus le tour.
-    amplitudes = [rng.uniform(0.18, 0.34) for _ in range(nb)]
-    azimuts = [rng.uniform(0.0, math.tau) for _ in range(nb)]
-    return epaisseurs, facteurs, amplitudes, azimuts
-
-
-def _teinte_banc(k: int, nb: int, t_haut: float, creux: float,
-                 dessous: bool, angle: float = 0.0,
-                 t_local: float = 0.5) -> tuple:
-    """Couleur de sommet d'un coin de banc.
-
-    v4 — LA TROISIÈME HYPOTHÈSE, ET ELLE N'EST PAS GÉOMÉTRIQUE.
-
-    Deux passes de géométrie (retrait lopside, puis diaclases profondes et
-    retrait divisé par deux) ont chacune changé les pixels, et le défaut
-    « pile de dalles » a persisté : les faces restent de GRANDS APLATS. La
-    règle des deux échecs dit d'arrêter de régler des constantes et de
-    changer d'hypothèse — c'est ce que fait cette passe.
-
-    La cause est déjà écrite dans le dépôt, chiffrée par le générateur des
-    stèles du champ : sur des faces quasi verticales, sous ce ciel,
-    l'irradiance ambiante domine et l'orientation des normales ne rapporte
-    presque rien (une face y rendait UNE seule valeur, p10-p90 = 1 niveau,
-    pour 465 normales distinctes). Ce n'est donc pas plus de relief qu'il
-    faut, c'est de la VALEUR dans la face.
-
-    Six modulations désormais, dont trois neuves :
-      * bande de banc (les strates alternent) ;
-      * hauteur d'ensemble (le pied s'assombrit et verdit) ;
-      * creux de diaclase, RENFORCÉ (0,30 → 0,45) ;
-      * dessous de vire (une surface qui ne voit pas le ciel est plus froide) ;
-      * **joint de banc** : le bas de chaque banc est nettement plus sombre
-        — c'est le trait qui fait lire un lit sédimentaire, et il vit dans la
-        valeur, pas dans la forme ;
-      * **arête haute** et **mouchetage verrouillé sur l'azimut** : la face
-        cesse d'être un aplat.
-    """
-    bande = 1.0 + (0.085 if k % 2 == 0 else -0.075)
-    # `t_haut` 0 au pied, 1 au sommet : le pied s'assombrit et verdit.
-    pied = max(0.0, 1.0 - t_haut * 2.4)
-    ombre = 1.0 - 0.45 * max(0.0, creux)
-    # Joint : sombre au pied du banc, remonte vite. Une strate se lit à son
-    # ombre de lit autant qu'à son ressaut.
-    ombre *= 0.70 + 0.30 * min(1.0, max(0.0, t_local) * 3.4)
-    # Arête haute du banc, là où la lumière frise.
-    if t_local > 0.86:
-        ombre *= 1.0 + 0.06 * (t_local - 0.86) / 0.14
-    # Mouchetage VERROUILLÉ SUR L'AZIMUT : il survit d'un banc au suivant et
-    # devient une trace verticale, au lieu d'un bruit qui change d'étage.
-    ombre *= 1.0 + 0.075 * math.sin(7.0 * angle + 2.1) \
-        * math.cos(3.0 * angle + 0.7)
-    r = NIVEAU * bande * ombre
-    g = NIVEAU * bande * ombre
-    b = NIVEAU * bande * ombre
+    up = max(-1.0, min(1.0, normale.z))
+    v = 1.0
+    v *= 1.0 - 0.52 * max(0.0, min(1.0, creux))
+    if up > 0.0:
+        v *= 1.0 + 0.13 * up
+    else:
+        v *= 1.0 + 0.26 * up
+    pied = max(0.0, 1.0 - max(0.0, t) * 2.3)
+    v *= 1.0 + 0.075 * math.sin(7.0 * theta + 2.1) * math.cos(3.0 * theta + 0.7)
+    v *= 1.0 + 0.048 * math.sin(11.0 * theta + 0.4)
+    r = NIVEAU * v
+    g = NIVEAU * v
+    b = NIVEAU * v
     r *= (1.0 - 0.22 * pied)
     g *= (1.0 - 0.10 * pied)
     b *= (1.0 - 0.26 * pied)
-    if dessous:
-        r *= 0.82
-        g *= 0.86
-        b *= 0.94
-    borne = lambda v: max(0.30, min(1.0, v))
+    # Sous-face : plus froide encore. Un surplomb qui ne bleuit pas se relit
+    # comme une ombre plate.
+    if up < -0.25:
+        froid = min(1.0, (-up - 0.25) / 0.75)
+        r *= 1.0 - 0.10 * froid
+        b *= 1.0 + 0.06 * froid
+    borne = lambda x: max(0.28, min(1.0, x))
     return (borne(r), borne(g), borne(b))
 
 
-def _croc(nom: str, hauteur: float, demi_a: float, demi_b: float, nb_bancs: int,
-          graine: int, mat_corps, mat_fracture):
-    rng = random.Random(graine)
-    relief = _diaclases(graine)
-    epaisseurs, facteurs, amplis, azimuts = _profil_bancs(
-        nb_bancs, hauteur, graine)
-
-    dip = math.radians(PENDAGE_DEG)
-    az = math.radians(PENDAGE_AZIMUT)
-    # Cisaillement : chaque mètre de hauteur décale le banc de tan(pendage)
-    # dans l'azimut du pendage. Les deux masses partagent az et dip.
-    decal = Vector((math.cos(az), math.sin(az), 0.0)) * math.tan(dip)
-
+def _construire(nom: str, masse: Masse, mat_corps, mat_fracture):
+    na, nt, nj = RESOLUTION[nom]
     maillage = bpy.data.meshes.new(nom)
     bm = bmesh.new()
 
-    # Phase d'échantillonnage TOURNANTE : les arêtes longitudinales cessent
-    # d'être des méridiens exacts, chaque quad se vrille légèrement.
-    def anneau(z: float, facteur: float, phase: float, jitter: float,
-               ampli: float = 0.0, azimut: float = 0.0):
-        sommets = []
-        infos = []
-        for j in range(COTES):
-            angle = math.tau * j / COTES + phase
-            creux = -min(0.0, relief(angle))
-            rayon = 1.0 + relief(angle)
-            # Retrait LOPSIDE : le banc est plein d'un côté, retiré de
-            # l'autre. C'est ce qui empêche la vire de faire le tour.
-            rayon *= facteur * (1.0 + ampli * math.cos(angle - azimut))
-            rayon *= (1.0 + rng.uniform(-jitter, jitter))
-            x = math.cos(angle) * demi_a * rayon
-            y = math.sin(angle) * demi_b * rayon
-            p = Vector((x, y, z)) + decal * z
-            sommets.append(bm.verts.new(p))
-            infos.append(creux)
-        return sommets, infos
+    # Grille (θ, t). Les t vont de la jupe au sommet ; le sommet de chaque
+    # colonne est abaissé par `couronne(θ)` de façon PROGRESSIVE, pour que la
+    # cassure de crête n'aille pas cisailler la masse entière.
+    thetas = [math.tau * j / na for j in range(na)]
+    ts = [masse.t_jupe * (1.0 - k / float(nj)) for k in range(nj)]
+    ts += [k / float(nt - 1) for k in range(nt)]
 
-    z = 0.0
+    anneaux = []
+    infos = []
+    for t in ts:
+        ligne = []
+        info = []
+        for theta in thetas:
+            p = masse.point(theta, t)
+            if t > 0.0:
+                # Abaissement de couronne, appliqué seulement dans le tiers
+                # haut et en douceur.
+                poids = max(0.0, (t - 0.60) / 0.40)
+                p.z -= masse.couronne(theta) * masse.H * poids * poids
+            ligne.append(bm.verts.new(p))
+            lisse = masse.profil(t) * (1.0 + max(0.0, masse.nervure(theta))) \
+                * (1.0 + max(0.0, masse.bosse(theta, t)))
+            reel = masse.rayon(theta, t)
+            info.append((theta, t, max(0.0, 1.0 - reel / max(lisse, 1e-6))))
+        anneaux.append(ligne)
+        infos.append(info)
+
     faces_corps = []
+    for i in range(len(anneaux) - 1):
+        bas = anneaux[i]
+        haut = anneaux[i + 1]
+        for j in range(na):
+            m = (j + 1) % na
+            faces_corps.append(bm.faces.new((bas[j], bas[m], haut[m], haut[j])))
+
+    # LA COURONNE. Le sommet n'est pas un cône : c'est un replat incliné,
+    # ancré du côté de la plateforme. Un apex centré redonnerait un couvercle,
+    # et un couvercle est exactement la lecture qu'on répare.
     faces_fracture = []
-    vires = 0
-    couleurs = {}
-    bas_precedent = None
-    for k in range(nb_bancs):
-        haut = z + epaisseurs[k]
-        phase = 0.11 * k
-        # Le nu du banc : deux anneaux de MÊME rayon → paroi verticale.
-        bas, creux_bas = anneau(z, facteurs[k], phase, 0.020, amplis[k],
-                                azimuts[k])
-        sommet, creux_haut = anneau(haut, facteurs[k] * 0.985, phase + 0.03,
-                                    0.020, amplis[k], azimuts[k])
-        for j in range(COTES):
-            m = (j + 1) % COTES
-            faces_corps.append(bm.faces.new((bas[j], bas[m], sommet[m],
-                                             sommet[j])))
-        t0 = z / hauteur
-        t1 = haut / hauteur
-        for j in range(COTES):
-            az_j = math.tau * j / COTES + phase
-            couleurs[bas[j]] = _teinte_banc(k, nb_bancs, t0, creux_bas[j],
-                                            False, az_j, 0.0)
-            couleurs[sommet[j]] = _teinte_banc(k, nb_bancs, t1, creux_haut[j],
-                                               False, az_j, 1.0)
-        # La VIRE : l'anneau horizontal qui rejoint le banc suivant. C'est
-        # elle qui fait la strate — on la compte, et le contrôle final exige
-        # un minimum.
-        if k + 1 < nb_bancs:
-            suivant, creux_s = anneau(haut, facteurs[k + 1], phase + 0.14,
-                                      0.020, amplis[k + 1], azimuts[k + 1])
-            surplomb = facteurs[k + 1] > facteurs[k]
-            for j in range(COTES):
-                m = (j + 1) % COTES
-                faces_corps.append(bm.faces.new((sommet[j], sommet[m],
-                                                 suivant[m], suivant[j])))
-            for j in range(COTES):
-                couleurs[suivant[j]] = _teinte_banc(
-                    k + 1, nb_bancs, t1, creux_s[j], surplomb,
-                    math.tau * j / COTES + phase + 0.14, 0.0)
-            if not surplomb:
-                vires += 1
-            bas_precedent = suivant
-        else:
-            bas_precedent = sommet
-        z = haut
+    dernier = anneaux[-1]
+    centre = Vector((0.0, 0.0, 0.0))
+    for v in dernier:
+        centre += v.co
+    centre /= na
+    vers_plateforme = Vector((math.cos(masse.plateforme),
+                              math.sin(masse.plateforme), 0.0))
+    # Hauteur du replat : celle des sommets du secteur de plateforme, moins un
+    # rien. Elle penche donc naturellement vers l'encoche.
+    hauts = [v.co.z for v, (theta, _, _) in zip(dernier, infos[-1])
+             if abs(_delta_angle(theta, masse.plateforme)) < 0.65]
+    z_plat = (sum(hauts) / len(hauts)) if hauts else centre.z
+    apex = Vector((centre.x + vers_plateforme.x * masse.demi_a * 0.30,
+                   centre.y + vers_plateforme.y * masse.demi_b * 0.30,
+                   z_plat + 0.035 * masse.H))
+    # UN ÉVENTAIL DIRECT DEPUIS L'APEX REND DES FACETTES DE 2 m² — mesuré, la
+    # chaîne a rougi dessus (plafond 1,20 m²). Une couronne intermédiaire, donc.
+    # C'est le même mode de panne que celui déjà consigné dans ce fichier pour
+    # le fond de jupe : sur un rayon de plusieurs mètres, un éventail depuis un
+    # point unique fabrique de grandes faces planes, et une grande face plane
+    # est précisément ce que le contrôle existe pour interdire.
+    faîte = bm.verts.new(apex)
+    couronne_mid = []
+    for v in dernier:
+        couronne_mid.append(bm.verts.new(v.co.lerp(apex, 0.5)))
+    for j in range(na):
+        m = (j + 1) % na
+        faces_fracture.append(bm.faces.new((dernier[j], dernier[m],
+                                            couronne_mid[m], couronne_mid[j])))
+        faces_fracture.append(bm.faces.new((couronne_mid[j], couronne_mid[m],
+                                            faîte)))
 
-    # LA COURONNE ROMPUE : le chapeau est coupé par un plan incliné. Un
-    # sommet plat se relit comme le couvercle d'une boîte.
-    pente = Vector((math.cos(az + 1.1), math.sin(az + 1.1), 0.0))
-    centre_haut = Vector((0.0, 0.0, 0.0))
-    for v in bas_precedent:
-        centre_haut += v.co
-    centre_haut /= COTES
-    # v2 — l'apex se DÉCALE vers l'aval du pendage et monte davantage : en
-    # v1 le chapeau était un cône presque symétrique, donc un couvercle.
-    centre_haut.z += hauteur * 0.038
-    centre_haut.x += pente.x * demi_a * 0.62
-    centre_haut.y += pente.y * demi_b * 0.62
-    for v in bas_precedent:
-        # Un côté monte vers l'arête vive, l'autre s'écroule.
-        d = (Vector((v.co.x, v.co.y, 0.0)) - Vector((centre_haut.x,
-             centre_haut.y, 0.0))).normalized().dot(pente)
-        v.co.z += hauteur * 0.090 * d
-    faîte = bm.verts.new(centre_haut)
-    for j in range(COTES):
-        m = (j + 1) % COTES
-        faces_fracture.append(bm.faces.new((bas_precedent[j],
-                                            bas_precedent[m], faîte)))
-    couleurs[faîte] = (0.98, 0.99, 1.00)
-
-    # Fond plat à z = 0 : la pièce sera enterrée, mais un solide ouvert
-    # laisserait voir l'intérieur au moindre écart d'assise.
-    premier = [v for v in bm.verts if abs(v.co.z) < 1e-6]
-    ordonne = sorted(premier, key=lambda v: math.atan2(v.co.y, v.co.x))
-    teinte_pied = tuple(c * NIVEAU for c in TEINTE_PIED)
-    # ANNEAU INTERMÉDIAIRE : un éventail direct depuis le centre sur un rayon
-    # de 3,5 m rend des facettes de 1,9 m² — au-dessus du plafond, et c'est
-    # exactement le mode de panne « grande face plane » que le contrôle existe
-    # pour interdire. Deux couronnes, donc.
+    # FOND DE JUPE. Le solide est fermé sous le terrain : un solide ouvert
+    # laisserait voir son intérieur au moindre écart d'assise, et l'assise
+    # d'ici est justement irrégulière.
+    premier = anneaux[0]
+    z_fond = min(v.co.z for v in premier)
+    # DEUX couronnes intermédiaires, pas une : le pied évasé atteint 4,5 m de
+    # rayon, et un éventail depuis le centre y rendait des facettes bien
+    # au-dessus du plafond.
     milieu = []
-    for v in ordonne:
-        w = bm.verts.new(Vector((v.co.x * 0.45, v.co.y * 0.45, 0.0)))
-        couleurs[w] = teinte_pied
-        milieu.append(w)
-    centre_bas = bm.verts.new(Vector((0.0, 0.0, 0.0)))
-    couleurs[centre_bas] = teinte_pied
-    n = len(ordonne)
-    for j in range(n):
-        m = (j + 1) % n
-        faces_corps.append(bm.faces.new((ordonne[m], ordonne[j], milieu[j],
-                                         milieu[m])))
-        faces_corps.append(bm.faces.new((milieu[m], milieu[j], centre_bas)))
+    for facteur in (0.70, 0.38):
+        anneau_bas = []
+        for v in premier:
+            anneau_bas.append(bm.verts.new(Vector((v.co.x * facteur,
+                                                   v.co.y * facteur, z_fond))))
+        milieu.append(anneau_bas)
+    centre_bas = bm.verts.new(Vector((0.0, 0.0, z_fond)))
+    for j in range(na):
+        m = (j + 1) % na
+        faces_corps.append(bm.faces.new((premier[m], premier[j], milieu[0][j],
+                                         milieu[0][m])))
+        faces_corps.append(bm.faces.new((milieu[0][m], milieu[0][j],
+                                         milieu[1][j], milieu[1][m])))
+        faces_corps.append(bm.faces.new((milieu[1][m], milieu[1][j],
+                                         centre_bas)))
 
     for face in faces_fracture:
         face.material_index = 1
 
-    # COULEUR DE SOMMET sur une couche de BOUCLE (par coin de face) — c'est
-    # ce que l'exporter glTF écrit en `COLOR_0`. `float_color` et non
-    # `color` : une couche d'OCTETS est interprétée en sRGB par Blender, une
-    # couche flottante est linéaire, et glTF/Godot attendent du linéaire.
+    bm.normal_update()
+
+    # Couleur de sommet, après calcul des normales : elle DÉCRIT la surface
+    # produite au lieu de décrire l'intention du générateur.
+    couleurs = {}
+    for ligne, info in zip(anneaux, infos):
+        for v, (theta, t, creux) in zip(ligne, info):
+            couleurs[v] = _teinte(masse, theta, t, v.normal, creux)
+    teinte_pied = tuple(c * NIVEAU for c in TEINTE_PIED)
+    for anneau_bas in milieu:
+        for v in anneau_bas:
+            couleurs[v] = teinte_pied
+    couleurs[centre_bas] = teinte_pied
+    sommet_teinte = _teinte(masse, masse.plateforme, 1.0, Vector((0, 0, 1)),
+                            0.0)
+    couleurs[faîte] = sommet_teinte
+    for v in couronne_mid:
+        couleurs[v] = sommet_teinte
+
     couche = bm.loops.layers.float_color.new("Col")
     bm.verts.index_update()
     for face in bm.faces:
@@ -465,16 +691,124 @@ def _croc(nom: str, hauteur: float, demi_a: float, demi_b: float, nb_bancs: int,
     maillage.materials.append(mat_fracture)
     objet = bpy.data.objects.new(nom, maillage)
     bpy.context.scene.collection.objects.link(objet)
-    return objet, vires
+    return objet
 
 
-## Matériau : `Base Color = couleur × attribut « Col »`.
-##
-## LE BRANCHEMENT N'EST PAS COSMÉTIQUE (ISS-066) : l'exporter glTF de
-## Blender 4.0 n'écrit `COLOR_0` que si le MATÉRIAU consomme réellement
-## l'attribut. Sans lui, le `.glb` sort avec POSITION et NORMAL seulement —
-## aucune erreur, aucun avertissement, un asset silencieusement plat.
+def _controle_ceinture(masse: Masse, na: int) -> tuple:
+    """« Aucune tranche horizontale répétée » — rendu mesurable.
+
+    On repère les rainures de strate le long de chaque colonne d'azimut (les
+    minima locaux du facteur de strate), on les range par tranche de hauteur,
+    et on regarde quelle est la tranche la PLUS peuplée. Si une tranche
+    contient une rainure sur plus de `CEINTURE_MAX` des azimuts, alors il
+    existe un replat qui fait presque le tour — c'est la pièce montée.
+
+    L'ancien générateur, qui posait une vire par banc à hauteur constante,
+    rendait ici 1,00 : le contrôle mesure bien le défaut rejeté.
+
+    LA FENÊTRE GLISSE, elle ne se range pas dans des cases fixes. Un découpage
+    en tranches alignées sur zéro laisserait passer une ceinture posée à cheval
+    sur deux cases — le verdict dépendrait alors de l'origine de l'axe, pas de
+    la forme. Ici, pour CHAQUE rainure trouvée, on regarde les azimuts qui en
+    portent une à moins d'une demi-tranche : même question, sans l'arbitraire.
+
+    ON COMPTE UN ARC CONTIGU, PAS UN TOTAL — et cette correction a été faite
+    après une mesure, pas avant. La première écriture comptait TOUS les azimuts
+    partageant une hauteur, où qu'ils soient. Deux rainures de même altitude
+    sur des faces OPPOSÉES y comptaient double alors qu'aucun regard ne les
+    voit ensemble : la grandeur mesurée n'était pas celle qui fait lire
+    « dalle ». Et le prix de cette erreur était réel — pour faire tomber le
+    chiffre, j'avais raréfié les strates au point de fabriquer une masse lisse,
+    c'est-à-dire un autre défaut. Ce qui fait la dalle est une rainure
+    CONTINUE sur l'arc qu'on voit d'un coup d'œil, donc c'est un arc contigu
+    (cyclique) qu'il faut mesurer, et un plafond de 0,40 vaut ≈ 144° — moins
+    que l'arc visible d'une seule vue.
+
+    Même famille que les deux fenêtres de mesure fausses déjà trouvées dans
+    cette passe, et que la leçon de `tools/CLAUDE.md` : quand un défaut résiste
+    à un contrôle, demander d'abord ce que le contrôle mesure réellement.
+    """
+    rainures = []
+    pas = 240
+    for j in range(na):
+        theta = math.tau * j / na
+        precedent = None
+        avant = None
+        for k in range(pas + 1):
+            t = k / float(pas)
+            s = masse.strate(theta, t)
+            if precedent is not None and avant is not None:
+                if precedent < avant and precedent <= s and precedent < -1e-4:
+                    rainures.append(((k - 1) / float(pas) * masse.H, j))
+            avant = precedent
+            precedent = s
+    if not rainures:
+        return 0.0, 0
+    demi = CEINTURE_TRANCHE_M * 0.5
+    pire = 0
+    for z0, _ in rainures:
+        presents = set(j for z, j in rainures if abs(z - z0) <= demi)
+        # Le plus long arc CONTIGU d'azimuts présents, en tenant compte du
+        # bouclage : c'est ce qu'un regard voit d'un seul tenant.
+        if len(presents) >= na:
+            pire = na
+            continue
+        depart = next(j for j in range(na) if j not in presents)
+        courant = 0
+        for k in range(1, na + 1):
+            j = (depart + k) % na
+            courant = courant + 1 if j in presents else 0
+            pire = max(pire, courant)
+    return pire / float(na), len(rainures)
+
+
+def _controle_surplombs(masse: Masse, na: int) -> tuple:
+    """Les surplombs, mesurés DEUX FOIS parce qu'il y a deux questions.
+
+    Mesuré sur `rayon_lisse` — strates EXCLUES — et au-dessus de t = 0,26,
+    donc hors de la zone d'évasement du pied, où un dr/dt > 0 ne serait que le
+    talus. Un surplomb ne compte que si le rayon regagne au moins 3,5 % sur
+    une remontée continue : sans ce plancher, la moindre remontée après une
+    niche compte, et le contrôle rend « partout » sans rien distinguer.
+
+    1. `secteurs` — combien d'azimuts portent un surplomb quelque part. Trop
+       peu = masse convexe = caillou. C'est le plancher.
+    2. `ceinture` — la plus grande fraction d'azimuts qui surplombent À LA
+       MÊME HAUTEUR. C'est le plafond, et c'est la vraie question : un
+       bombement local est un surplomb, une remontée simultanée sur tout le
+       pourtour est une taille de guêpe. Compter les azimuts qui surplombent
+       « quelque part » ne distinguait pas les deux — mesuré à la première
+       écriture : 28 sur 28 pour l'éperon, un test qui ne pouvait pas échouer.
+    """
+    montee = [[False] * na for _ in range(35)]
+    for j in range(na):
+        theta = math.tau * j / na
+        precedent = masse.rayon_lisse(theta, 0.26)
+        gain = 0.0
+        for k in range(35):
+            t = 0.28 + 0.02 * k
+            r = masse.rayon_lisse(theta, t)
+            if r > precedent:
+                gain += r - precedent
+                if gain > 0.035:
+                    montee[k][j] = True
+            else:
+                gain = 0.0
+            precedent = r
+    secteurs = sum(1 for j in range(na) if any(montee[k][j] for k in range(35)))
+    ceinture = max(sum(1 for j in range(na) if montee[k][j])
+                   for k in range(35)) / float(na)
+    return secteurs, ceinture
+
+
 def _materiau(nom: str, couleur, avec_couleur_sommet: bool = True):
+    """Matériau : `Base Color = couleur × attribut « Col »`.
+
+    LE BRANCHEMENT N'EST PAS COSMÉTIQUE (ISS-066) : l'exporter glTF de Blender
+    4.0 n'écrit `COLOR_0` que si le MATÉRIAU consomme réellement l'attribut.
+    Sans lui, le `.glb` sort avec POSITION et NORMAL seulement — aucune erreur,
+    aucun avertissement, un asset silencieusement plat.
+    """
     mat = bpy.data.materials.new(nom)
     mat.use_nodes = True
     arbre = mat.node_tree
@@ -509,9 +843,11 @@ def main() -> int:
     mat_fracture = _materiau("MAT_Crag_Fracture", MAT_FRACTURE)
 
     total_tris = 0
-    for nom, hauteur, demi_a, demi_b, nb_bancs, graine in CROCS:
-        objet, vires = _croc(nom, hauteur, demi_a, demi_b, nb_bancs, graine,
-                             mat_corps, mat_fracture)
+    for (nom, hauteur, demi_a, demi_b, jupe, graine, azim_asc, azim_plat,
+         azim_enc) in CROCS:
+        masse = Masse(hauteur, demi_a, demi_b, jupe, graine, azim_asc,
+                      azim_plat, azim_enc)
+        objet = _construire(nom, masse, mat_corps, mat_fracture)
         maillage = objet.data
         tris = len(maillage.polygons)
         total_tris += tris
@@ -519,9 +855,15 @@ def main() -> int:
         zs = [v.co.z for v in maillage.vertices]
         xs = [v.co.x for v in maillage.vertices]
         ys = [v.co.y for v in maillage.vertices]
-        base = min(zs)
         haut_reel = max(zs)
-        largeur = max(max(xs) - min(xs), max(ys) - min(ys))
+        fond = min(zs)
+        emprise = max(max(xs) - min(xs), max(ys) - min(ys))
+        # Emprise VISIBLE : la jupe est enterrée, elle ne compte pas dans la
+        # silhouette. Les deux nombres sont publiés — un seul choisirait la
+        # réponse avant de mesurer (`tools/CLAUDE.md`).
+        sur_sol = [v for v in maillage.vertices if v.co.z >= -0.02]
+        e_vis = max(max(v.co.x for v in sur_sol) - min(v.co.x for v in sur_sol),
+                    max(v.co.y for v in sur_sol) - min(v.co.y for v in sur_sol))
         aire_max = max(p.area for p in maillage.polygons)
 
         attribut = maillage.color_attributes.get("Col")
@@ -536,28 +878,48 @@ def main() -> int:
         moyenne = sum(luminances) / len(luminances)
         etendue = (p90 - p10) / max(moyenne, 1e-6)
 
-        print("%s %s : %d tris, hauteur %.3f m, base z %.4f, emprise %.3f m, "
-              "vires %d, facette max %.4f m2, couleur p10 %.3f p90 %.3f "
-              "(etendue %.1f %%)"
-              % (TAG, nom, tris, haut_reel, base, largeur, vires, aire_max,
-                 p10, p90, 100.0 * etendue))
+        na = RESOLUTION[nom][0]
+        ceinture, nb_rainures = _controle_ceinture(masse, na)
+        surplombs, ceint_surplomb = _controle_surplombs(masse, na)
 
-        if abs(base) > 0.001:
-            print("%s ERREUR: %s base a z=%.4f, pas 0" % (TAG, nom, base))
+        print("%s %s : %d tris, hauteur %.3f m, fond de jupe %.3f m, "
+              "emprise totale %.3f m, emprise visible %.3f m, "
+              "facette max %.4f m2" % (TAG, nom, tris, haut_reel, fond,
+                                       emprise, e_vis, aire_max))
+        print("%s %s : ceinture max %.2f (plafond %.2f) sur %d rainures, "
+              "surplombs %d/%d azimuts (plancher %d), ceinture de surplomb "
+              "%.2f (plafond %.2f), couleur moy %.3f p10 %.3f p90 %.3f "
+              "(etendue %.1f %%)"
+              % (TAG, nom, ceinture, CEINTURE_MAX, nb_rainures, surplombs, na,
+                 SURPLOMBS_MIN, ceint_surplomb, SURPLOMBS_MAX_PART,
+                 moyenne, p10, p90, 100.0 * etendue))
+
+        if fond > -0.05:
+            print("%s ERREUR: %s ne descend pas sous le plan de sol (%.3f) — "
+                  "sans jupe le contact redevient une ligne" % (TAG, nom, fond))
             return 2
-        # `hauteur` est celle de la PILE DE BANCS ; la couronne rompue ajoute
-        # par construction jusqu'à ~11 % (elle a été franchement dissymétrisée
-        # en v2 pour cesser de lire « couvercle »). La fourchette dit donc
-        # explicitement ce que le générateur fait, au lieu d'être ajustée en
-        # douce après coup pour laisser passer un résultat.
-        if not (hauteur * 0.92 <= haut_reel <= hauteur * 1.18):
+        if not (hauteur * 0.92 <= haut_reel <= hauteur * 1.08):
             print("%s ERREUR: %s hauteur %.3f hors fourchette autour de %.3f"
                   % (TAG, nom, haut_reel, hauteur))
             return 2
-        if vires < VIRES_MIN:
-            print("%s ERREUR: %s n'a que %d vire(s) (< %d) — sans vire c'est "
-                  "un galet, pas une strate ; c'est le defaut mesure"
-                  % (TAG, nom, vires, VIRES_MIN))
+        if ceinture > CEINTURE_MAX:
+            print("%s ERREUR: %s une rainure couvre %.0f %% des azimuts dans "
+                  "une tranche de %.2f m (> %.0f %%) — c'est un replat qui "
+                  "fait le tour, donc la pile de dalles rejetee"
+                  % (TAG, nom, 100.0 * ceinture, CEINTURE_TRANCHE_M,
+                     100.0 * CEINTURE_MAX))
+            return 2
+        if surplombs < SURPLOMBS_MIN:
+            print("%s ERREUR: %s n'a que %d secteur(s) de surplomb (< %d) — "
+                  "une masse convexe partout est un caillou, pas une formation"
+                  % (TAG, nom, surplombs, SURPLOMBS_MIN))
+            return 2
+        if ceint_surplomb > SURPLOMBS_MAX_PART:
+            print("%s ERREUR: %s surplombe sur %.0f %% des azimuts A LA MEME "
+                  "HAUTEUR (> %.0f %%) — un surplomb qui ceinture n'est pas un "
+                  "surplomb, c'est une taille de guepe"
+                  % (TAG, nom, 100.0 * ceint_surplomb,
+                     100.0 * SURPLOMBS_MAX_PART))
             return 2
         if aire_max > AIRE_FACETTE_MAX:
             print("%s ERREUR: %s porte une facette de %.4f m2 (> %.4f)"
@@ -568,13 +930,20 @@ def main() -> int:
                   "la face rendrait un aplat" % (TAG, nom, 100.0 * etendue,
                                                  100.0 * ETENDUE_COULEUR_MIN))
             return 2
+        if not (COULEUR_MOYENNE_MIN <= moyenne <= COULEUR_MOYENNE_MAX):
+            print("%s ERREUR: %s moyenne de couleur %.3f hors bande "
+                  "[%.2f ; %.2f] — c'est la regression mesuree de l'iteration "
+                  "4 (crete plus sombre que les cailloux de son pied)"
+                  % (TAG, nom, moyenne, COULEUR_MOYENNE_MIN,
+                     COULEUR_MOYENNE_MAX))
+            return 2
         if p90 > 1.0001:
             print("%s ERREUR: %s couleur de sommet > 1 (%.3f) — ecretee a "
                   "l export sans avertissement" % (TAG, nom, p90))
             return 2
 
-    print("%s pendage partage : azimut %.1f deg, angle %.1f deg"
-          % (TAG, PENDAGE_AZIMUT, PENDAGE_DEG))
+    print("%s pendage partage : azimut %.1f deg, angle %.1f deg, courbure %.3f"
+          % (TAG, PENDAGE_AZIMUT, PENDAGE_DEG, COURBURE))
     print("%s total %d triangles (plafond %d)" % (TAG, total_tris, BUDGET_TRIS))
     if total_tris > BUDGET_TRIS:
         print("%s ERREUR: budget de triangles depasse" % TAG)
