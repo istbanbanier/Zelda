@@ -1,0 +1,33 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "1f82535fe44602de88470a09985f5824e15f9805",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {
+    "tour": {
+      "chemin": "assets/architecture/watchtower/SM_Watchtower_Ruin.glb",
+      "commit": "1f82535fe44602de88470a09985f5824e15f9805",
+      "sha256": "4c7e5117dcf4ada4644ade8caf00d925a65b446c3a9ae03435b78bf04079eed3"
+    }
+  },
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 65.0,
+      "from": [
+        -154.5,
+        27.7,
+        40.5
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r/agent_b/it/r4/watchtower_ruin_joueur.png",
+      "look": [
+        -160.0,
+        27.2,
+        40.0
+      ],
+      "name": "watchtower_ruin_joueur"
+    }
+  ],
+  "size": "1280x720"
+}

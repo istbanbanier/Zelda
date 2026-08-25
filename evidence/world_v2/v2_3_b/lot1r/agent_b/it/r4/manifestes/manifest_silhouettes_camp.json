@@ -1,0 +1,34 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "clip_below": null,
+  "commit": "bc55474662ee92849ecf164c705dd4dc22196d5d",
+  "emprise_m": [
+    25.0215358734131,
+    3.59359455108643,
+    18.3501091003418
+  ],
+  "engine": "4.7.1-stable (custom_build)",
+  "mode": "lieu dans le monde monté",
+  "place_id": "camp",
+  "projection": "orthogonale",
+  "provenance": {},
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "size": "1200x900",
+  "sujet": "camp",
+  "vues": [
+    {
+      "angle_deg": 0.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_b/lot1/silhouettes/silhouette_camp_000.png",
+      "sujet_pct": 2.97851851851852
+    },
+    {
+      "angle_deg": 90.0,
+      "hors_bandes_pct": 0.0,
+      "image": "evidence/world_v2/v2_3_b/lot1/silhouettes/silhouette_camp_090.png",
+      "sujet_pct": 3.21814814814815
+    }
+  ]
+}
