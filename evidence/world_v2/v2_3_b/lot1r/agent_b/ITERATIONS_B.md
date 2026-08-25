@@ -476,3 +476,98 @@ faites et négatives** — c'est-à-dire qu'il n'y avait rien à corriger :
   volontairement — position locale, point d'approche et `requires_traversal`
   uniquement, avec `traversal_base` au seuil de la brèche ; ni `Kind`, ni
   identifiant, ni table de butin, ni système.
+
+---
+
+# PASSE 1.R.1 — après le verdict Codex (tour PARTIAL, sanctuaire REJET)
+
+Base A/B : `candidate/ab13/` et `candidate/gros_plans/` — **ce sont bien les
+images de HEAD** pour mes deux lieux, et je l'ai vérifié au lieu de le supposer :
+`git log` donne `2323be5` comme dernier commit de la tour et `4f66609` comme
+dernier du sanctuaire, tous deux ancêtres du commit de capture ; entre le commit
+de capture et HEAD, `git log --name-only` ne montre qu'un fichier de code,
+`flower_field_place.gd`, qui n'est pas à moi. Aucune recapture de base n'est donc
+nécessaire, et c'est ~50 min de verrou partagé économisées.
+
+## R1 — ce que je vois moi-même sur les deux images de base
+
+Ouvertes à taille réelle, plus un recadrage ×2 du cœur de chaque cadre.
+
+**Tour, `watchtower_ruin_joueur.png`.** Le fût occupe x 345-790. À gauche, la
+travée est debout, éclairée, texturée. À droite d'elle, **une seule grande masse
+sombre de 320 × 450 px** — le parement intérieur du mur ouest et le retour du
+mur nord. Trois corbeaux en sortent, le coffre se voit tout en haut à gauche, et
+c'est TOUT. Aucune ouverture, aucun plancher, aucun retrait, aucune diagonale.
+L'entrée n'est pas un seuil : c'est une encoche sombre entre deux masses sombres.
+
+**La mesure ne dit PAS « aplat », et c'est important.** Profil en travers de
+cette masse (`tools/mesure_valeur.py ligne … y=200 x 480→760`) : étendue 79,1 ;
+65 valeurs distinctes ; 47 renversements. La carte de brique varie beaucoup.
+Le reproche de Codex — « sa plaque intérieure demeure uniforme » — ne porte donc
+pas sur la luminance : il porte sur la **structure**. Cinq mètres sur huit de
+mur sans un seul événement construit. Aucune quantité de matière ne le corrige ;
+il faut des trous, des retraits et des planchers.
+
+**Tour, silhouette 0°.** `silhouette_watchtower_ruin_000.png` : un rectangle
+noir plein de 265 × 510 px, **sans un seul trou**. Une ruine qui ne laisse pas
+passer le ciel n'est pas une ruine, c'est un bloc. C'est là que « trop mince »
+se lit le plus durement : à 86 m (`watchtower_gp_lointain`), la tour est un
+bâton de 50 × 95 px qui se confond avec la falaise grise derrière.
+
+**Sanctuaire, `forest_shrine_joueur.png`.** Le tronc gelé occupe x 594-718
+(mesuré colonne par colonne sur les pixels bruns, y 300 à 510) — 124 px de
+large, du haut du cadre jusqu'au sol. Le cœur est à x 640 : **exactement
+derrière**. Le seuil, lui, projette à x 730-813, c'est-à-dire de l'autre côté du
+tronc. Le lieu est donc coupé en deux par le tronc, et ses deux pièces
+maîtresses sont chacune d'un côté. Rien ne peut se lire ainsi.
+
+## R1 — géométrie de la vue joueur du sanctuaire, calculée et non estimée
+
+Repère local du lieu (site (86 ; 74)). Caméra `forest_shrine_joueur` en local
+(5,5 ; −9,5), visée locale (0 ; 0), fov **vertical** 65° sur 1280 × 720 — donc
+`tan_h = tan(32,5°) × 16/9 = 1,1327` pour 640 px.
+
+Avec `f = (−0,5005 ; 0,8645)` et `droite = (−0,8654 ; −0,5011)` (le repère
+d'une caméra Godot, `droite = f × haut`, vérifié sur un cas connu) :
+
+| pièce | local | distance a | tan | x écran |
+|---|---|---:|---:|---:|
+| cœur | (0,00 ; 0,00) | 10,97 | 0,000 | **640** |
+| montant A | (−0,94 ; −3,52) | 8,39 | +0,307 | 813 |
+| montant B | (0,82 ; −3,74) | 7,32 | +0,159 | 730 |
+| marche | (−0,05 ; −3,00) | 8,40 | +0,184 | 744 |
+| tronc gelé (déduit du cadre) | ≈ (2,2 ; −4,3) | ≈ 6,2 | +0,044 | 665 |
+
+Le tronc est donc à **0,28 m de l'axe caméra→centre**, 4,8 m devant le cœur :
+il est planté exactement là où devrait se trouver le seuil. Aucun réglage de
+matière ne répare ça — c'est une question de plan.
+
+**Bande d'occultation du tronc, en tangente : [−0,081 ; +0,138].** Tout ce qui
+est derrière lui et dans cette bande est caché. Le cœur doit en sortir.
+
+## R1 — ce que je change, et le changement attendu dans les pixels
+
+### Tour — de la façade au volume habité
+
+| défaut | cause | levier | attendu dans les pixels | caméra |
+|---|---|---|---|---|
+| « trop mince » | mur de 0,45 m pour 9 m de haut ; empreinte 4,45 m ; jamais une arase vue en coupe | épaisseur 0,45 → 0,85 m en croissant VERS L'EXTÉRIEUR (nu intérieur inchangé à ±1,775) + empattement bas | l'arase de la travée est, vue de dessus à 5,5 m, devient une bande de pierre au lieu d'un fil ; la masse s'élargit de 16 % dans les trois vues | `joueur`, `identite`, `gp_lointain` |
+| plaque intérieure sans structure | aucune ouverture, aucun retrait, aucun plancher | baie ouest au 2ᵉ niveau + meurtrière nord ; retrait de maçonnerie continu à 3,05 m et 5,95 m ; fragment de plancher haut | un TROU clair dans la masse sombre ; deux lignes horizontales qui la coupent en registres | `joueur`, `gp_breche` |
+| silhouette sans trou | idem | les mêmes ouvertures | la silhouette 0° cesse d'être un rectangle plein | `silhouette_000/090` |
+| entrée illisible | la brèche n'a ni seuil, ni linteau, ni jambage lisible | pierre de seuil + linteau rompu couché en avant + jambages relevés | une porte se lit à 5 m | `joueur`, `gp_breche` |
+| ascension invisible | l'escalier est dans l'ombre et n'offre aucune diagonale | volée 1 avancée jusqu'au seuil (x 0,85 → 1,28, 7 marches) + mur d'échiffre rampant | une DIAGONALE claire traverse la masse sombre — le seul signe qui dise « on monte » | `joueur`, `gp_breche` |
+| gravats non solidaires | le talus est un tas à côté | l'empattement et les jambages donnent au tas une origine visible | le tas part du manque du mur | `joueur` |
+
+### Sanctuaire — recomposer autour de l'arbre gelé
+
+| défaut | cause | levier | attendu dans les pixels | caméra |
+|---|---|---|---|---|
+| l'arbre masque le lieu | le cœur est à tan 0,000, dans la bande [−0,081 ; +0,138] | **rotation + translation des offsets LOCAUX** : l'axe de nef bascule de ≈ 35° et le lieu glisse de ≈ 1,6 m, pour que cœur ET seuil sortent de la bande **du même côté** | le cœur passe de x 640 à x ≈ 530-570 ; le seuil à x ≈ 420-500 ; le tronc à 665 devient le montant DROIT du cadre | `forest_shrine_joueur` |
+| pas de hiérarchie | six socles dressés de 0,70 à 1,13 m contre un cœur de 2,01 m | les six socles + quatre marques d'angle deviennent **trois murets rompus** de 0,55 à 0,85 m, faits de blocs liés | le cœur domine d'un facteur 2,6 au lieu de 1,8 ; l'enceinte cesse d'être un cercle de pierres | `joueur`, `identite` |
+| « prismes droits » | fûts isolés à sommet peu cassé | blocs liés à silhouette rompue, enfoncés | une ruine, pas un amas | `identite`, `gp_nef` |
+
+**Ce que je ne touche pas, et je le vérifierai** : l'arbre gelé, les caméras, le
+plafond d'invisibilité du générateur, `shrine_gp_route_p1` (doit continuer de
+montrer PEU), D7 ≤ 40 modules (le remplacement de 10 pièces par 3 REND 7
+modules), l'identifiant et le genre de récompense. L'ancre de récompense du
+sanctuaire est posée SUR la dalle du cœur : elle suit le cœur, et je le dis.
