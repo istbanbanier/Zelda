@@ -334,6 +334,25 @@ func _build() -> void:
 	K.module(self, &"Bush_Common_Flowers", _seated(-5.6, 1.1), -24.0, 0.55,
 		K.TONE_PLANT)
 
+	# — L'ARBRE DU CHAMP. Correctif de composition d'intégration (lead) :
+	# le détecteur R-D3 a signalé champ ≈ camp braise à 80 m (IoU 0,5101,
+	# seuil gelé 0,4912). Cause MESURÉE en rejouant le sous-échantillonnage
+	# du détecteur : à 80 m les deux lieux s'écrasent en une bande de
+	# ~10 lignes sur 96, et la bande du champ (y 44-53) est INCLUSE dans
+	# celle du camp (y 41-54) — la densification florale l'a rendue pleine.
+	# Le seuil ne bouge jamais ; la réponse est la « variation de hauteur »
+	# que le contrat du champ demande déjà : UNE verticale vivante porte la
+	# silhouette de 2,76 m à ~7 m, la bande passe à ~28 lignes, et l'union
+	# fait retomber l'IoU. Position vérifiée contre les trois chemins
+	# (le NO finit à (-9,8;-6,4) — un premier candidat était DESSUS), les
+	# lobes, et le rayon de la caméra identité (approche minimale ~5,9 m).
+	var pied_arbre: Vector3 = _seated(-8.5, 4.5)
+	K.module(self, &"CommonTree_3", pied_arbre, 20.0, 0.80, K.TONE_PLANT)
+	declare_support(pied_arbre)
+	_note_emprise(Vector2(-8.5, 4.5))
+	K.collider_box(self, "Champ_arbre_tronc",
+		pied_arbre + Vector3(0.0, 1.1, 0.0), Vector3(0.5, 2.2, 0.5), 20.0)
+
 	# — LES NAPPES. Le sujet du lieu. Trois couleurs, trois masses, des
 	# clairières — et la bande du chemin qui reste vide de bout en bout.
 	#
