@@ -1,0 +1,8 @@
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_pwLSp57y
+LANCER_GODOT: CWD=/home/user/wt1r1-c
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path /home/user/wt1r1-c --check-only --script scripts/world_v2/poi/barrow_cemetery_place.gd
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+LANCER_GODOT: RC_GODOT=0

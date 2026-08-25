@@ -1,0 +1,29 @@
+Blender 4.0.2
+[barrow_stones] SM_Barrow_Jamb_A        142 tris  X  -0.45.. 0.48  Y  -0.21.. 0.19  Z  0.000.. 2.61  lichen 12 faces
+[barrow_stones] SM_Barrow_Jamb_B        142 tris  X  -0.39.. 0.41  Y  -0.19.. 0.17  Z  0.000.. 2.02  lichen 14 faces
+[barrow_stones] SM_Barrow_Lintel        142 tris  X  -0.46.. 0.49  Y  -1.98.. 0.02  Z  0.000.. 0.39  lichen 73 faces
+[barrow_stones] SM_Barrow_Stele_A       142 tris  X  -0.32.. 0.36  Y  -0.13.. 0.13  Z  0.000.. 1.58  lichen 14 faces
+[barrow_stones] SM_Barrow_Stele_B       142 tris  X  -0.31.. 0.26  Y  -0.12.. 0.12  Z  0.000.. 0.94  lichen 18 faces
+[barrow_stones] SM_Barrow_Stele_C       142 tris  X  -0.26.. 0.31  Y  -0.12.. 0.11  Z  0.000.. 1.34  lichen 13 faces
+[barrow_stones] SM_Barrow_Seuil_A       142 tris  X  -0.41.. 0.46  Y  -0.18.. 0.17  Z  0.000.. 2.27  lichen 13 faces
+[barrow_stones] SM_Barrow_Seuil_B       142 tris  X  -0.46.. 0.35  Y  -0.16.. 0.16  Z  0.000.. 1.07  lichen 27 faces
+[barrow_stones] SM_Barrow_Lame_A        142 tris  X  -0.40.. 0.41  Y  -1.46.. 0.03  Z  0.000.. 0.28  lichen 73 faces
+[barrow_stones] SM_Barrow_Lame_B        142 tris  X  -0.33.. 0.30  Y  -1.07.. 0.03  Z  0.000.. 0.24  lichen 73 faces
+[barrow_stones] SM_Barrow_Lame_C        142 tris  X  -0.34.. 0.34  Y  -0.86.. 0.05  Z  0.000.. 0.21  lichen 73 faces
+[barrow_stones] SM_Barrow_Deblais       158 tris  X  -1.42.. 1.37  Y  -1.21.. 0.38  Z  0.000.. 0.37  lichen 34 faces
+[barrow_stones] total 1720 triangles (budget 4000)
+[barrow_stones] lames : étendues décroissantes 1.48, 1.10, 0.91
+[barrow_stones] déblais : éventail X -1.42..1.37, Y -1.21..0.38, haut 0.37 — quadrant d'accès nord LIBRE (0 sommet)
+[barrow_stones] gueule : montants 2.61 et 2.02 m, linteau 1.99 m de portée (jambage le plus haut 2.61)
+[barrow_stones] silhouette SM_Barrow_Jamb_A     remplissage 0.669 (ancien 0.911, plafond 0.801) · variation 0.315 (ancien 0.067, plancher 0.134) · dissymétrie 0.597 (plancher 0.100) OK
+[barrow_stones] silhouette SM_Barrow_Jamb_B     remplissage 0.573 (ancien 0.918, plafond 0.807) · variation 0.406 (ancien 0.061, plancher 0.122) · dissymétrie 0.470 (plancher 0.100) OK
+[barrow_stones] silhouette SM_Barrow_Stele_A    remplissage 0.405 (ancien 0.913, plafond 0.804) · variation 0.576 (ancien 0.062, plancher 0.123) · dissymétrie 0.995 (plancher 0.100) OK
+[barrow_stones] silhouette SM_Barrow_Stele_B    remplissage 0.537 (ancien 0.920, plafond 0.810) · variation 0.465 (ancien 0.061, plancher 0.123) · dissymétrie 0.560 (plancher 0.100) OK
+[barrow_stones] silhouette SM_Barrow_Stele_C    remplissage 0.554 (ancien 0.910, plafond 0.801) · variation 0.394 (ancien 0.062, plancher 0.124) · dissymétrie 0.457 (plancher 0.100) OK
+[barrow_stones] silhouette SM_Barrow_Seuil_A    remplissage 0.612 (ancien 0.900, plafond 0.792) · variation 0.397 (ancien 0.069, plancher 0.138) · dissymétrie 0.621 (plancher 0.100) OK
+[barrow_stones] silhouette SM_Barrow_Seuil_B    remplissage 0.507 (ancien 0.923, plafond 0.812) · variation 0.694 (ancien 0.061, plancher 0.122) · dissymétrie 0.332 (plancher 0.100) OK
+[barrow_stones] COLOR_0 : 12 pièce(s), attribut actif ET de rendu, étendue de valeur 0.74 à 0.82
+Info: Total files 0 | Changed 0 | Failed 0
+Info: Saved "SM_Barrow_Stones.blend"
+[barrow_stones] source enregistrée -> /home/user/wt1r1-c/source_assets/blender/architecture/SM_Barrow_Stones.blend
+FIN NOMINALE
