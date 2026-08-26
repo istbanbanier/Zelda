@@ -1,6 +1,6 @@
 LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
 LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
-LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_Dvvap1Cz
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_LToiPXLF
 LANCER_GODOT: CWD=/home/user/wt1r2-sanctuaire
 LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/probe_sanctuaire.gd
 Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
@@ -8,7 +8,7 @@ Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - ht
 [hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 14990 ms
+[world_v2] terrain      : 64 chunks, montage 14105 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 15 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)
@@ -50,9 +50,5 @@ This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_err
 [sanctuaire] le lieu plante 3 tronc(s) — ce sont ceux-là, et eux seuls, que la corrective déplace
 
 [sanctuaire] VERDICT : PASS — plafond d'identité 0.361 m de marge, nef marchable, couloir 0.56 m, 3 tronc(s) du lieu
-WARNING: 2 ObjectDB instances were leaked at exit (run with `--verbose` for details).
-   at: cleanup (core/object/object.cpp:2536)
-ERROR: 1 resources still in use at exit (run with --verbose for details).
-   at: clear (core/io/resource.cpp:822)
 LANCER_GODOT: RC_GODOT=0
 RC=0

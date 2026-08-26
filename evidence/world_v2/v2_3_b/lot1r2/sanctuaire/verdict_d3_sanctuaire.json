@@ -28,7 +28,7 @@
     "valley.poi.flower_field.01"
   ],
   "lot1_manquant": [],
-  "commit": "4cb18d9f5fb25dd2bf9d15879c28577bc9295530",
+  "commit": "c00cc7baa9ccbeeb1343898a7c1a65831c1ce477",
   "repo_dirty": false,
   "seuils": {
     "30": {
@@ -93,8 +93,8 @@
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.forest_shrine.01",
-        "iou": 0.2395,
-        "dprofil": 0.1744,
+        "iou": 0.2528,
+        "dprofil": 0.1599,
         "signale": false
       },
       {
@@ -121,8 +121,8 @@
       {
         "a": "valley.poi.overlook_summit.01",
         "b": "valley.poi.forest_shrine.01",
-        "iou": 0.1217,
-        "dprofil": 0.1826,
+        "iou": 0.1066,
+        "dprofil": 0.191,
         "signale": false
       },
       {
@@ -142,8 +142,8 @@
       {
         "a": "valley.poi.turquoise_spring.01",
         "b": "valley.poi.forest_shrine.01",
-        "iou": 0.2314,
-        "dprofil": 0.1017,
+        "iou": 0.2139,
+        "dprofil": 0.1022,
         "signale": false
       },
       {
@@ -163,15 +163,15 @@
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.barrow_cemetery.01",
-        "iou": 0.1415,
-        "dprofil": 0.2301,
+        "iou": 0.1298,
+        "dprofil": 0.1484,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.flower_field.01",
-        "iou": 0.1506,
-        "dprofil": 0.1262,
+        "iou": 0.1473,
+        "dprofil": 0.133,
         "signale": false
       },
       {
@@ -373,64 +373,64 @@
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "camp",
-        "iou": 0.123,
-        "dprofil": 0.2057,
+        "iou": 0.1056,
+        "dprofil": 0.2056,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.riverside_village.01",
-        "iou": 0.2156,
-        "dprofil": 0.1185,
+        "iou": 0.2029,
+        "dprofil": 0.1156,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.abandoned_farm.01",
-        "iou": 0.2319,
-        "dprofil": 0.1987,
+        "iou": 0.2359,
+        "dprofil": 0.1914,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.stone_bridge.01",
-        "iou": 0.3862,
-        "dprofil": 0.0847,
+        "iou": 0.3706,
+        "dprofil": 0.0757,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.waterfall_cave.01",
-        "iou": 0.3735,
-        "dprofil": 0.1529,
+        "iou": 0.3938,
+        "dprofil": 0.1434,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.thunderstruck_tree.01",
-        "iou": 0.1953,
-        "dprofil": 0.1174,
+        "iou": 0.2064,
+        "dprofil": 0.1132,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.ember_raider_camps.01",
-        "iou": 0.0898,
-        "dprofil": 0.2236,
+        "iou": 0.0819,
+        "dprofil": 0.2107,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.conductive_basin.01",
-        "iou": 0.1952,
-        "dprofil": 0.0766,
+        "iou": 0.2027,
+        "dprofil": 0.0702,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "pylon",
-        "iou": 0.1815,
-        "dprofil": 0.1025,
+        "iou": 0.1822,
+        "dprofil": 0.1079,
         "signale": false
       },
       {
@@ -578,8 +578,8 @@
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.forest_shrine.01",
-        "iou": 0.2532,
-        "dprofil": 0.175,
+        "iou": 0.2505,
+        "dprofil": 0.1589,
         "signale": false
       },
       {
@@ -606,8 +606,8 @@
       {
         "a": "valley.poi.overlook_summit.01",
         "b": "valley.poi.forest_shrine.01",
-        "iou": 0.1104,
-        "dprofil": 0.1941,
+        "iou": 0.0935,
+        "dprofil": 0.1928,
         "signale": false
       },
       {
@@ -627,8 +627,8 @@
       {
         "a": "valley.poi.turquoise_spring.01",
         "b": "valley.poi.forest_shrine.01",
-        "iou": 0.2193,
-        "dprofil": 0.09,
+        "iou": 0.1978,
+        "dprofil": 0.1002,
         "signale": false
       },
       {
@@ -648,15 +648,15 @@
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.barrow_cemetery.01",
-        "iou": 0.1462,
-        "dprofil": 0.2343,
+        "iou": 0.1323,
+        "dprofil": 0.2201,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.flower_field.01",
-        "iou": 0.1455,
-        "dprofil": 0.1257,
+        "iou": 0.149,
+        "dprofil": 0.11,
         "signale": false
       },
       {
@@ -858,64 +858,64 @@
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "camp",
-        "iou": 0.1304,
-        "dprofil": 0.1986,
+        "iou": 0.1074,
+        "dprofil": 0.1852,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.riverside_village.01",
-        "iou": 0.2232,
-        "dprofil": 0.1184,
+        "iou": 0.2036,
+        "dprofil": 0.1266,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.abandoned_farm.01",
-        "iou": 0.2297,
-        "dprofil": 0.1875,
+        "iou": 0.2247,
+        "dprofil": 0.1911,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.stone_bridge.01",
-        "iou": 0.3885,
-        "dprofil": 0.1008,
+        "iou": 0.3642,
+        "dprofil": 0.0786,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.waterfall_cave.01",
-        "iou": 0.3802,
-        "dprofil": 0.1618,
+        "iou": 0.3898,
+        "dprofil": 0.1391,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.thunderstruck_tree.01",
-        "iou": 0.1885,
-        "dprofil": 0.1175,
+        "iou": 0.1847,
+        "dprofil": 0.1141,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.ember_raider_camps.01",
-        "iou": 0.08,
-        "dprofil": 0.2276,
+        "iou": 0.0676,
+        "dprofil": 0.1058,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.conductive_basin.01",
-        "iou": 0.1918,
-        "dprofil": 0.1255,
+        "iou": 0.1975,
+        "dprofil": 0.1083,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "pylon",
-        "iou": 0.1855,
-        "dprofil": 0.1155,
+        "iou": 0.1751,
+        "dprofil": 0.1049,
         "signale": false
       },
       {
@@ -1063,8 +1063,8 @@
       {
         "a": "valley.poi.watchtower_ruin.01",
         "b": "valley.poi.forest_shrine.01",
-        "iou": 0.2536,
-        "dprofil": 0.1664,
+        "iou": 0.2745,
+        "dprofil": 0.1609,
         "signale": false
       },
       {
@@ -1091,8 +1091,8 @@
       {
         "a": "valley.poi.overlook_summit.01",
         "b": "valley.poi.forest_shrine.01",
-        "iou": 0.1038,
-        "dprofil": 0.1918,
+        "iou": 0.0839,
+        "dprofil": 0.1933,
         "signale": false
       },
       {
@@ -1112,8 +1112,8 @@
       {
         "a": "valley.poi.turquoise_spring.01",
         "b": "valley.poi.forest_shrine.01",
-        "iou": 0.2413,
-        "dprofil": 0.1169,
+        "iou": 0.2132,
+        "dprofil": 0.1115,
         "signale": false
       },
       {
@@ -1133,15 +1133,15 @@
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.barrow_cemetery.01",
-        "iou": 0.1385,
-        "dprofil": 0.1433,
+        "iou": 0.1139,
+        "dprofil": 0.1914,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.flower_field.01",
-        "iou": 0.1534,
-        "dprofil": 0.1272,
+        "iou": 0.1529,
+        "dprofil": 0.1023,
         "signale": false
       },
       {
@@ -1343,64 +1343,64 @@
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "camp",
-        "iou": 0.0709,
-        "dprofil": 0.1675,
+        "iou": 0.0464,
+        "dprofil": 0.2266,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.riverside_village.01",
-        "iou": 0.225,
-        "dprofil": 0.1183,
+        "iou": 0.2052,
+        "dprofil": 0.113,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.abandoned_farm.01",
-        "iou": 0.2533,
-        "dprofil": 0.1924,
+        "iou": 0.2437,
+        "dprofil": 0.1931,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.stone_bridge.01",
-        "iou": 0.389,
-        "dprofil": 0.0951,
+        "iou": 0.3708,
+        "dprofil": 0.086,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.waterfall_cave.01",
-        "iou": 0.3834,
-        "dprofil": 0.1599,
+        "iou": 0.3983,
+        "dprofil": 0.1512,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.thunderstruck_tree.01",
-        "iou": 0.1964,
-        "dprofil": 0.1038,
+        "iou": 0.2123,
+        "dprofil": 0.1063,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.ember_raider_camps.01",
-        "iou": 0.092,
-        "dprofil": 0.2087,
+        "iou": 0.0652,
+        "dprofil": 0.1674,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "valley.poi.conductive_basin.01",
-        "iou": 0.235,
-        "dprofil": 0.1158,
+        "iou": 0.2376,
+        "dprofil": 0.1191,
         "signale": false
       },
       {
         "a": "valley.poi.forest_shrine.01",
         "b": "pylon",
-        "iou": 0.1943,
-        "dprofil": 0.1168,
+        "iou": 0.195,
+        "dprofil": 0.1015,
         "signale": false
       },
       {

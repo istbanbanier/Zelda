@@ -15,7 +15,9 @@ Les autres mesures sont vertes et servent de repère : plafond d'identité
 
 ## `probe_APRES.log` — la même sonde, après la corrective
 
-Rejouée sur `b260ee8`, arbre propre. Même script, mêmes seuils : **aucun
+Rejouée sur `c00cc7b`, arbre propre — une seconde fois, après le
+déplacement du linteau : une mesure prise avant le dernier changement ne
+prouverait rien sur le lieu livré. Même script, mêmes seuils : **aucun
 critère n'a été déplacé**, et deux ont été AJOUTÉS (§2c, le balayage de la
 vraie capsule dans les deux sens de traversée).
 
