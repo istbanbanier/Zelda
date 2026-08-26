@@ -1,0 +1,91 @@
+{
+ "lot": "V2.3-B LOT 1.R.2 — revue intermédiaire",
+ "commit_capture": "5d9d959",
+ "repo_dirty": false,
+ "note_provenance": "Captures des trois sujets CORRIGÉS depuis l'arbre COMMITTÉ 5d9d959 (token du driver : vues=0, copie=0, gel=0). Les trois sujets ACCEPTÉS par le verdict Codex ne sont PAS recapturés : leurs images de la revue 1.R.1 sont reprises octet pour octet et vérifiées par cmp. Caméras : les plans gelés de lot1/poi/shots_lot1.json, aucune modification, aucun recadrage.",
+ "sujets_corriges": [
+  "turquoise_spring",
+  "forest_shrine",
+  "barrow_cemetery"
+ ],
+ "sujets_geles_repris": {
+  "overlook_summit": {
+   "source": "evidence/world_v2/v2_3_b/lot1r1/revue_intermediaire/vues/overlook_summit_joueur.png",
+   "sha256": "f013c3284b4a7fa0",
+   "identique_octet_pour_octet": true
+  },
+  "watchtower_ruin": {
+   "source": "evidence/world_v2/v2_3_b/lot1r1/revue_intermediaire/vues/watchtower_ruin_joueur.png",
+   "sha256": "5d8b3fef0f5cbbc6",
+   "identique_octet_pour_octet": true
+  },
+  "flower_field": {
+   "source": "evidence/world_v2/v2_3_b/lot1r1/revue_intermediaire/vues/flower_field_joueur.png",
+   "sha256": "c967d3ac23df2afb",
+   "identique_octet_pour_octet": true
+  }
+ },
+ "controles_cibles": {
+  "seuil_sanctuaire": "PASS — fenêtre libre 1,31 m (exigé 0,90), ISS-070 fermée",
+  "marche_collisions_source": "PASS — 0 écart",
+  "gel_trois_sujets": "23/23 empreintes identiques ; gel_verifier 43/43"
+ },
+ "fichiers": {
+  "cle_planches.json": {
+   "sha256": "22bc94e193818524",
+   "octets": 583
+  },
+  "planche_couleur_numerotee.png": {
+   "sha256": "404726ed7f853a5f",
+   "octets": 2748737
+  },
+  "planche_gris.png": {
+   "sha256": "2700875509a37464",
+   "octets": 976325
+  },
+  "planche_joueur_anonyme.png": {
+   "sha256": "33aa15a14c694571",
+   "octets": 1834451
+  },
+  "vues/barrow_cemetery_identite.png": {
+   "sha256": "30a97cf97e838837",
+   "octets": 1060352
+  },
+  "vues/barrow_cemetery_joueur.png": {
+   "sha256": "d178c62762191584",
+   "octets": 910963
+  },
+  "vues/flower_field_joueur.png": {
+   "sha256": "c967d3ac23df2afb",
+   "octets": 1286905
+  },
+  "vues/forest_shrine_identite.png": {
+   "sha256": "a2e86d1fa4d2077c",
+   "octets": 980302
+  },
+  "vues/forest_shrine_joueur.png": {
+   "sha256": "7ced4ed595aaa0a6",
+   "octets": 930411
+  },
+  "vues/manifest.json": {
+   "sha256": "f514baa14ec0b268",
+   "octets": 2155
+  },
+  "vues/overlook_summit_joueur.png": {
+   "sha256": "f013c3284b4a7fa0",
+   "octets": 952529
+  },
+  "vues/turquoise_spring_identite.png": {
+   "sha256": "7781ec057c292840",
+   "octets": 883448
+  },
+  "vues/turquoise_spring_joueur.png": {
+   "sha256": "8e34045bf576c509",
+   "octets": 849246
+  },
+  "vues/watchtower_ruin_joueur.png": {
+   "sha256": "5d8b3fef0f5cbbc6",
+   "octets": 960996
+  }
+ }
+}
