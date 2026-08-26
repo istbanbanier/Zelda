@@ -1,0 +1,105 @@
+{
+  "A_assise_masses": [
+    {
+      "cellules": 52,
+      "cellules_en_surplomb": 0,
+      "jour_max_m": -0.248,
+      "masse": "Contrefort_sud",
+      "ou": "(-2.48 ; 3.20)"
+    },
+    {
+      "cellules": 17,
+      "cellules_en_surplomb": 0,
+      "jour_max_m": -0.797,
+      "masse": "Levre_arrivee",
+      "ou": "(-7.26 ; 0.91)"
+    },
+    {
+      "cellules": 34,
+      "cellules_en_surplomb": 0,
+      "jour_max_m": -0.527,
+      "masse": "Table_nord",
+      "ou": "(-1.62 ; -6.45)"
+    },
+    {
+      "cellules": 15,
+      "cellules_en_surplomb": 0,
+      "jour_max_m": -0.4,
+      "masse": "Seuil_deversoir",
+      "ou": "(0.14 ; -1.20)"
+    }
+  ],
+  "B_bandes_eau": [
+    {
+      "au_dessus_du_sol_max_m": 0.479,
+      "au_dessus_du_sol_min_m": 0.01,
+      "bande": [
+        -0.100000001490116,
+        0.75
+      ],
+      "maillage": "FondVasque",
+      "sommets": 852
+    },
+    {
+      "au_dessus_du_sol_max_m": 2.35,
+      "au_dessus_du_sol_min_m": 0.045,
+      "bande": [
+        -0.0599999986588955,
+        2.84999990463257
+      ],
+      "maillage": "NappeSource",
+      "sommets": 444
+    }
+  ],
+  "C_marche": {
+    "cases": 1763,
+    "cases_joignables_depuis_l_est": 1458,
+    "cases_libres": 1459,
+    "cibles": {
+      "ancre_de_recompense": true,
+      "nord_au_dela_de_la_table": true,
+      "ouest_pres_du_voile": true,
+      "rive_est_de_la_vasque": true,
+      "rive_sud_sous_le_contrefort": true
+    },
+    "temoin_negatif_coeur_du_contrefort_joignable": false
+  },
+  "D_bandes_creusees": {
+    "bande_affluent_m": 6.3,
+    "bande_cours_principal_m": 9.5,
+    "colliders": [
+      {
+        "corps": "Source_contrefort",
+        "distance_affluent_m": 15.28,
+        "distance_cours_principal_m": 127.8
+      },
+      {
+        "corps": "Source_queue_sud",
+        "distance_affluent_m": 13.46,
+        "distance_cours_principal_m": 125.22
+      },
+      {
+        "corps": "Source_levre",
+        "distance_affluent_m": 15.05,
+        "distance_cours_principal_m": 127.87
+      },
+      {
+        "corps": "Source_table_nord",
+        "distance_affluent_m": 9.39,
+        "distance_cours_principal_m": 121.46
+      },
+      {
+        "corps": "Source_seuil",
+        "distance_affluent_m": 7.19,
+        "distance_cours_principal_m": 120.13
+      }
+    ],
+    "eau_la_plus_proche_de_la_tete_m": 3.61,
+    "tete_affluent": [
+      -130.0,
+      34.0
+    ]
+  },
+  "ecarts": [],
+  "verdict": "PASS"
+}

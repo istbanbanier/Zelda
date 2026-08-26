@@ -683,7 +683,13 @@ func _deversoir(st: SurfaceTool, niveau: float, gb: Vector2) -> void:
 		precedent_g = gauche
 		precedent_d = droite
 		precedent_t = teinte
-	# LE FIL. Il part du pied du talus et descend vers la tête d'affluent, en
+	# LE FIL. Longueur 3,70 → 4,30 m à l'itération 3, pour compenser exactement
+	# ce que le rétrécissement de la berge lui avait pris : la langue part du
+	# PIED DE TALUS, qui a reculé de 0,5 m vers la vasque, donc elle s'arrêtait
+	# 0,5 m plus tôt et sa part de cadre a chuté de 1,63 % à 1,27 % entre deux
+	# captures. Un geste de composition peut en défaire un autre sans qu'aucune
+	# ligne ne le dise ; c'est la mesure qui l'a dit.
+	# Il part du pied du talus et descend vers la tête d'affluent, en
 	# ÉPOUSANT le sol. Deux renflements — des flaques où l'eau s'étale — le
 	# long du parcours : ils sont à 8–11 m de la caméra au lieu de 15, et sous
 	# 9 à 12° d'incidence au lieu de 6. Plus grands à l'écran ET mieux vus,
@@ -799,8 +805,13 @@ func _collisions() -> void:
 	K.collider_box(self, "Source_table_nord",
 		_seated(-6.50, -6.35) + Vector3(0.0, 0.60, 0.0), Vector3(5.4, 1.3, 2.8),
 		-8.0)
+	# LE SEUIL RECULE ET RÉTRÉCIT, et c'est une mesure qui l'a exigé.
+	# `outils/sonde_source.gd` l'a trouvé à 6,28 m de la polyligne de l'affluent
+	# pour une bande interdite de 6,30 m : deux centimètres du mauvais côté
+	# d'une règle que `test_world_v2_places_contract.gd` fait respecter. La
+	# boîte passe de 2,4 × 3,2 à 2,0 × 2,4 et son centre recule de 40 cm.
 	K.collider_box(self, "Source_seuil",
-		_seated(-1.75, -3.00) + Vector3(0.0, 0.32, 0.0), Vector3(2.4, 0.7, 3.2),
+		_seated(-2.15, -2.70) + Vector3(0.0, 0.30, 0.0), Vector3(2.0, 0.7, 2.4),
 		-24.0)
 
 
