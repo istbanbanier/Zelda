@@ -135,15 +135,26 @@ static func manifeste_iss071() -> Dictionary:
 ## `PackedScene` d'une pièce de kit par nom canonique, ou null.
 static func scene_for(model_name: StringName) -> PackedScene:
 	if _index.is_empty():
+		# ISS-071 — même règle que le registre, et même garde : chaque fichier
+		# SOURCE n'est vu qu'une fois, que le répertoire l'ait annoncé par la
+		# source (éditeur) ou par son `.import` (build exportée). Sans lui, une
+		# collision croisée serait publiée deux fois d'un côté et une seule de
+		# l'autre — ici le premier gagne, donc la comparaison de chemins
+		# ci-dessous resterait vraie au second passage.
+		var vus: Dictionary = {}
 		for dir_path: String in MODULE_DIRS:
 			var dir: DirAccess = DirAccess.open(dir_path)
 			if dir == null:
 				continue
 			for file: String in dir.get_files():
-				var lower: String = file.to_lower()
-				if lower.ends_with(".gltf") or lower.ends_with(".glb"):
-					var cle: StringName = StringName(file.get_basename())
-					var chemin: String = dir_path + "/" + file
+				var norme: PackedStringArray = \
+					AssetRegistry.normaliser_entree_modele(file)
+				if norme.size() == 2:
+					var cle: StringName = StringName(norme[0])
+					var chemin: String = dir_path + "/" + norme[1]
+					if vus.has(chemin):
+						continue
+					vus[chemin] = true
 					if not _index.has(cle):
 						_index[cle] = chemin
 					elif String(_index[cle]) != chemin:

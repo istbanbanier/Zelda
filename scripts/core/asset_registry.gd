@@ -66,6 +66,49 @@ const MODEL_CACHE_MAX: int = 48
 
 
 ## ---------------------------------------------------------------------------
+## ISS-071 — LA RÈGLE DE NORMALISATION, PARTAGÉE PAR LES DEUX RÉSOLVEURS.
+##
+## LE DÉFAUT QU'ELLE EMPÊCHE DE REVENIR. Dans une build exportée, le fichier
+## source n'est PAS empaqueté : seul son fichier de métadonnées
+## `<nom>.gltf.import` entre dans le PCK, le maillage vivant sous
+## `res://.godot/imported/<nom>.gltf-<md5>.scn`. `DirAccess.get_files()` ne rend
+## donc que les `.import`, tandis que `load()` sur le chemin SOURCE explicite
+## réussit dans les DEUX environnements — la redirection est transparente pour
+## un chemin, pas pour un listage. Les deux résolveurs testaient le suffixe
+## `.glb`/`.gltf` sur le nom LISTÉ : leur index sortait vide en build, 1 094
+## appels de placement échouaient et 110 modèles manquaient à l'écran sans que
+## le jeu plante. Mesuré au laboratoire, ISS-071.
+##
+## POURQUOI ICI. Une copie par résolveur divergerait — c'est exactement ainsi
+## qu'ISS-071 a survécu, chacun servant de recours à l'autre avec le même
+## défaut. Le point unique vit dans le noyau ; `WorldV2PlaceKit` l'appelle,
+## comme il appelle déjà `model()`, et le noyau ne connaît toujours aucun
+## porteur.
+const EXTENSIONS_MODELE: Array[String] = ["gltf", "glb"]
+const SUFFIXE_IMPORT: String = ".import"
+
+
+## Rend `[nom_canonique, fichier_source]` pour une entrée de répertoire, ou un
+## tableau VIDE si l'entrée n'est pas une scène glTF.
+##
+## L'ORDRE des deux opérations EST le contrat : on retire EXACTEMENT une fois le
+## suffixe `.import` final, PUIS on vérifie l'extension du nom reconstruit.
+## L'inverse laisserait entrer `Foo.bin.import` et `Foo.tres.import` — des
+## ressources qui ne sont pas des scènes — dans un index de `PackedScene`.
+##
+## La casse d'origine est PRÉSERVÉE dans le nom rendu : la comparaison se fait
+## en minuscules, le chemin reconstruit garde les octets du disque, car un
+## système de fichiers Linux distingue `Foo.GLB` de `Foo.glb`.
+static func normaliser_entree_modele(fichier: String) -> PackedStringArray:
+	var source: String = fichier
+	if source.to_lower().ends_with(SUFFIXE_IMPORT):
+		source = source.substr(0, source.length() - SUFFIXE_IMPORT.length())
+	if not EXTENSIONS_MODELE.has(source.get_extension().to_lower()):
+		return PackedStringArray()
+	return PackedStringArray([source.get_basename(), source])
+
+
+## ---------------------------------------------------------------------------
 ## ISS-071 — APPAREIL DE MESURE, PAS DE COMPORTEMENT.
 ## Même contrat que dans `WorldV2PlaceKit` : ces tables enregistrent ce qui a
 ## été demandé, résolu et manqué, pour rendre la parité éditeur/export
@@ -123,15 +166,26 @@ static func manifeste_iss071() -> Dictionary:
 ## `null` si absent : l'appelant garde son repli, jamais de ressource rose.
 static func model(model_name: StringName) -> PackedScene:
 	if _model_index.is_empty():
+		# ISS-071 — chaque fichier SOURCE n'est vu QU'UNE FOIS. En éditeur le
+		# répertoire porte `X.glb` ET `X.glb.import`, qui normalisent tous deux
+		# vers le même chemin ; en build il ne porte que le second. Sans ce
+		# garde, le balayage éditeur verrait chaque source DEUX fois et
+		# publierait une éventuelle collision croisée en double, là où la build
+		# la publierait une seule — les deux manifestes cesseraient d'être
+		# comparables, ce que le contrat interdit (I3, I6).
+		var vus: Dictionary = {}
 		for dir_path: String in MODEL_DIRS:
 			var dir: DirAccess = DirAccess.open(dir_path)
 			if dir == null:
 				continue
 			for file: String in dir.get_files():
-				var lower: String = file.to_lower()
-				if lower.ends_with(".gltf") or lower.ends_with(".glb"):
-					var cle: StringName = StringName(file.get_basename())
-					var chemin: String = dir_path + "/" + file
+				var norme: PackedStringArray = normaliser_entree_modele(file)
+				if norme.size() == 2:
+					var cle: StringName = StringName(norme[0])
+					var chemin: String = dir_path + "/" + norme[1]
+					if vus.has(chemin):
+						continue
+					vus[chemin] = true
 					if _model_index.has(cle) \
 							and String(_model_index[cle]) != chemin:
 						# ISS-071 : collision PUBLIÉE, priorité INCHANGÉE.
