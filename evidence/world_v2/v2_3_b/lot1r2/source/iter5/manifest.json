@@ -1,0 +1,83 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "bcf35af8d360383cd90368489a7c8aff09fbe5d8",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {
+    "glb": {
+      "chemin": "assets/environment/rocks/SM_SpringMaw.glb",
+      "commit": "bcf35af8d360383cd90368489a7c8aff09fbe5d8",
+      "sha256": "4b8d4a8142763df2ba2395bf70316d2659ff7396c5dbcf4ca31d78deff56f4d5"
+    },
+    "lieu": {
+      "chemin": "scripts/world_v2/poi/turquoise_spring_place.gd",
+      "commit": "bcf35af8d360383cd90368489a7c8aff09fbe5d8",
+      "sha256": "3b825eef24912eb72f5cff98c34cf941b9a8926dd373f0c9a65762109c472812"
+    }
+  },
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 55.0,
+      "from": [
+        -117.2,
+        20.0,
+        46.8
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r2/source/iter5/turquoise_spring_identite.png",
+      "look": [
+        -136.0,
+        14.0,
+        40.0
+      ],
+      "name": "turquoise_spring_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        -126.5,
+        13.7,
+        40.0
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r2/source/iter5/turquoise_spring_joueur.png",
+      "look": [
+        -136.0,
+        13.2,
+        40.0
+      ],
+      "name": "turquoise_spring_joueur"
+    },
+    {
+      "fov": 50.0,
+      "from": [
+        -137.6,
+        13.8,
+        40.4
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r2/source/iter5/spring_gros_arrivee.png",
+      "look": [
+        -146.8,
+        13.4,
+        40.3
+      ],
+      "name": "spring_gros_arrivee"
+    },
+    {
+      "fov": 50.0,
+      "from": [
+        -135.2,
+        14.2,
+        36.6
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r2/source/iter5/spring_gros_deversoir.png",
+      "look": [
+        -141.4,
+        12.1,
+        40.2
+      ],
+      "name": "spring_gros_deversoir"
+    }
+  ],
+  "size": "1280x720"
+}

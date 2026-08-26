@@ -205,10 +205,10 @@ const ANCRE_PHI: float = 1.525
 ## posé 0,18 m à l'est de cette face : là où une nervure ressort, il disparaît
 ## DANS la roche ; là où elle rentre, l'écart n'est pas visible depuis la
 ## caméra joueur, qui regarde le long de −X.
-const VOILE_HAUT: Vector3 = Vector3(-7.85, 3.35, 1.70)
-const VOILE_BAS: Vector3 = Vector3(-7.30, 0.30, 1.70)
+const VOILE_HAUT: Vector3 = Vector3(-7.60, 3.35, 1.70)
+const VOILE_BAS: Vector3 = Vector3(-6.95, 0.30, 1.70)
 const VOILE_LARGEUR_HAUT: float = 1.30
-const VOILE_LARGEUR_BAS: float = 2.60
+const VOILE_LARGEUR_BAS: float = 2.85
 
 ## Implantation des quatre masses, en local. Recopiée dans la table `MASSES`
 ## du générateur, qui la commente côté forme.
@@ -647,11 +647,20 @@ func _voile(st: SurfaceTool) -> void:
 		# décolle. 9 cm au plus — au-delà elle pendrait dans le vide.
 		axe.x += 0.09 * sin(PI * t) + 0.05 * sin(t * 7.3)
 		var demi: float = lerpf(VOILE_LARGEUR_HAUT, VOILE_LARGEUR_BAS, t) * 0.5
+		# BORDS IRRÉGULIERS. Sur `iter6` la lame rendait en trapèze net : deux
+		# arêtes rectilignes qui se lisent découpées aux ciseaux. Une lame
+		# d'eau qui décroche d'une lèvre a des bords qui s'effilochent, et
+		# chaque côté à son propre rythme — un même bruit sur les deux
+		# redonnerait un ruban qui ondule d'un bloc.
+		var frange_g: float = 0.16 * _alea(t * 17.3 + 4.1) \
+			+ 0.09 * sin(t * 11.7 + 0.6)
+		var frange_d: float = 0.16 * _alea(t * 13.9 + 31.7) \
+			+ 0.09 * sin(t * 9.1 + 2.9)
 		# Le sol du lieu est plat sous le voile : on ancre le bas au niveau
 		# d'eau, pour que la lame ENTRE dans la vasque au lieu de la percer.
 		var y: float = maxf(axe.y, _niveau() - 0.02)
-		var gauche: Vector3 = Vector3(axe.x, y, axe.z + demi)
-		var droite: Vector3 = Vector3(axe.x, y, axe.z - demi)
+		var gauche: Vector3 = Vector3(axe.x, y, axe.z + demi + frange_g)
+		var droite: Vector3 = Vector3(axe.x, y, axe.z - demi - frange_d)
 		# Une lame mince en haut (elle sort d'une gorge), épaisse et écumante en
 		# bas (elle frappe l'eau). `r` bas + alpha haut = la mousse du shader.
 		var teinte: Color = Color(lerpf(0.34, 0.06, t), 0.5,
