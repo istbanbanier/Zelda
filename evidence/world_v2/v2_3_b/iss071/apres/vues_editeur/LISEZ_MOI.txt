@@ -1,0 +1,20 @@
+SIX VUES DES LIEUX GELÉS — CÔTÉ ÉDITEUR, AU SHA a78ca3e
+======================================================
+
+Transforms LUS depuis les plans des preuves déjà acceptées, à l'identique
+(même from, look, fov, même convention look_at/make_current que
+tools/godot/capture_poi_batch.gd). Aucun recadrage : le verdict artistique
+reste clos.
+
+  barrow_cemetery_joueur.png     1920x1080 moy=0.434681 ecart=0.162103
+  flower_field_joueur.png        1920x1080 moy=0.478228 ecart=0.22817
+  forest_shrine_joueur.png       1920x1080 moy=0.340947 ecart=0.194513
+  overlook_summit_joueur.png     1920x1080 moy=0.448611 ecart=0.191363
+  turquoise_spring_joueur.png    1920x1080 moy=0.302435 ecart=0.0839775
+  watchtower_ruin_joueur.png     1920x1080 moy=0.292718 ecart=0.084694
+
+Ces six-là servent de RÉFÉRENCE à la comparaison éditeur/export du §10 :
+même outil, même résolution, même transform. La comparaison aux preuves
+acceptées du lot 1.R.2 n'est PAS faite ici — elles sont en 1280x720 et
+produites par un autre outil ; un RMSE entre deux rééchantillonnages
+mesurerait le rééchantillonnage, pas le monde.
