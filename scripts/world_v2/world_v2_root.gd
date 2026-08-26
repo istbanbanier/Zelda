@@ -113,6 +113,7 @@ func _ready() -> void:
 		(hit["collider"] as Node).name, (hit["position"] as Vector3).y])
 	print("[world_v2] fondation V2 vérifiée — vallée whitebox prête.")
 	_vider_manifeste_iss071_si_demande()
+	await _capturer_vues_iss071_si_demande()
 
 
 ## ISS-071 — vidage des manifestes de résolution, INERTE sans le drapeau.
@@ -126,13 +127,18 @@ func _ready() -> void:
 ## Le drapeau est cherché dans les DEUX listes : `get_cmdline_args()` couvre
 ## l'exécution éditeur, `get_cmdline_user_args()` couvre ce qui suit `--` dans
 ## une build exportée.
-func _vider_manifeste_iss071_si_demande() -> void:
-	var cible: String = ""
+func _argument_iss071(prefixe: String) -> String:
 	var args: PackedStringArray = OS.get_cmdline_args()
 	args.append_array(OS.get_cmdline_user_args())
+	var valeur: String = ""
 	for arg: String in args:
-		if arg.begins_with("--iss071-dump="):
-			cible = arg.substr("--iss071-dump=".length())
+		if arg.begins_with(prefixe):
+			valeur = arg.substr(prefixe.length())
+	return valeur
+
+
+func _vider_manifeste_iss071_si_demande() -> void:
+	var cible: String = _argument_iss071("--iss071-dump=")
 	if cible.is_empty():
 		return
 	var manifeste: Dictionary = {
@@ -366,3 +372,66 @@ func request_exit_to_menu() -> bool:
 		push_warning("[world_v2] SceneFlow absent — sortie impossible")
 		return false
 	return bool(flow.call("go_to", "res://scenes/ui/MainMenu.tscn"))
+
+
+## ISS-071 §10 — six vues des lieux gelés depuis la BUILD EXPORTÉE.
+##
+## POURQUOI CE CHEMIN. Une build release n'accepte pas `--script` : les outils
+## de capture du dépôt ne peuvent pas l'atteindre. Or la question posée par la
+## directive est précisément « l'habillage des six lieux est-il RÉELLEMENT
+## présent dans ce que le joueur télécharge ». Compter des lignes d'erreur
+## absentes n'y répond pas ; une image du monde empaqueté, si.
+##
+## Les transforms ne sont PAS écrits ici : ils sont lus depuis le fichier de
+## plans des preuves déjà acceptées, à l'identique — même `from`, même `look`,
+## même `fov`, même convention `look_at(..., Vector3.UP)` et même
+## `make_current()` que `tools/godot/capture_poi_batch.gd`. Recadrer serait
+## rouvrir un verdict artistique clos.
+##
+## Inerte sans les deux drapeaux :
+##   --iss071-vues=<fichier json ABSOLU>  --iss071-vues-out=<répertoire ABSOLU>
+func _capturer_vues_iss071_si_demande() -> void:
+	var plans_chemin: String = _argument_iss071("--iss071-vues=")
+	var sortie: String = _argument_iss071("--iss071-vues-out=")
+	if plans_chemin.is_empty() or sortie.is_empty():
+		return
+	var brut: String = FileAccess.get_file_as_string(plans_chemin)
+	if brut.is_empty():
+		push_error("[iss071] plans de vues illisibles : %s" % plans_chemin)
+		return
+	var plans: Variant = JSON.parse_string(brut)
+	if not (plans is Array):
+		push_error("[iss071] plans de vues : tableau JSON attendu")
+		return
+	DirAccess.make_dir_recursive_absolute(sortie)
+
+	var camera: Camera3D = Camera3D.new()
+	camera.name = "Iss071VueCamera"
+	camera.near = 0.2
+	camera.far = 1600.0
+	add_child(camera)
+	var ecrites: int = 0
+	for plan_brut: Variant in (plans as Array):
+		var plan: Dictionary = plan_brut as Dictionary
+		var nom: String = String(plan.get("name", "vue"))
+		var de: Array = plan.get("from", [0, 10, 0]) as Array
+		var vers: Array = plan.get("look", [0, 0, 0]) as Array
+		camera.fov = float(plan.get("fov", 60.0))
+		camera.position = Vector3(float(de[0]), float(de[1]), float(de[2]))
+		camera.look_at(Vector3(float(vers[0]), float(vers[1]),
+			float(vers[2])), Vector3.UP)
+		camera.make_current()
+		for i: int in range(12):
+			await get_tree().process_frame
+		var image: Image = get_viewport().get_texture().get_image()
+		if image == null:
+			push_error("[iss071] rendu nul sur %s" % nom)
+			continue
+		var chemin: String = "%s/%s.png" % [sortie, nom]
+		if image.save_png(chemin) != OK:
+			push_error("[iss071] écriture impossible : %s" % chemin)
+			continue
+		ecrites += 1
+		print("[iss071] vue %s" % chemin)
+	camera.queue_free()
+	print("[iss071] %d/%d vue(s) écrite(s)" % [ecrites, (plans as Array).size()])

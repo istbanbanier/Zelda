@@ -1,0 +1,86 @@
+[
+  {
+    "name": "watchtower_ruin_joueur",
+    "from": [
+      -154.5,
+      27.7,
+      40.5
+    ],
+    "look": [
+      -160,
+      27.2,
+      40
+    ],
+    "fov": 65.0
+  },
+  {
+    "name": "overlook_summit_joueur",
+    "from": [
+      159.8,
+      23.7,
+      56.8
+    ],
+    "look": [
+      168,
+      23.2,
+      52
+    ],
+    "fov": 65.0
+  },
+  {
+    "name": "flower_field_joueur",
+    "from": [
+      -51.2,
+      6.7,
+      132.2
+    ],
+    "look": [
+      -56,
+      6.2,
+      124
+    ],
+    "fov": 65.0
+  },
+  {
+    "name": "turquoise_spring_joueur",
+    "from": [
+      -126.5,
+      13.7,
+      40.0
+    ],
+    "look": [
+      -136,
+      13.2,
+      40
+    ],
+    "fov": 65.0
+  },
+  {
+    "name": "forest_shrine_joueur",
+    "from": [
+      91.5,
+      8.7,
+      64.5
+    ],
+    "look": [
+      86,
+      8.2,
+      74
+    ],
+    "fov": 65.0
+  },
+  {
+    "name": "barrow_cemetery_joueur",
+    "from": [
+      50.0,
+      5.7,
+      -53.6
+    ],
+    "look": [
+      56,
+      5.2,
+      -64
+    ],
+    "fov": 65.0
+  }
+]
