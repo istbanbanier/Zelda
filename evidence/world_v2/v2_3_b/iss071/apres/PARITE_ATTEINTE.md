@@ -58,3 +58,26 @@ Les invariants I4/I5 exigent que TOUT chemin indexé soit chargeable. Le
 portail n'a pu l'éprouver que sur les chemins réellement demandés au
 montage : 99 sur 215 côté kit, 21 sur 160 côté registre. Les 116 et 139
 autres ne bloquent pas la table §4, mais ils ne sont pas prouvés.
+
+---
+
+## Addendum — les deux `NON VÉRIFIÉ` sont fermés
+
+Seconde exécution du portail, avec `--iss071-chargeabilite` des deux côtés :
+
+```
+VERDICT ISS-071 : VERT (code 0)
+30 contrôle(s) exécutés · 0 ROUGE · 0 BLOQUÉ · 0 NON VÉRIFIÉ
+
+I4/I5 WorldV2PlaceKit : 215 chemins indexés, TOUS éprouvés par un vrai load()
+                        215/215 chargés, 0 défaillant
+I4/I5 AssetRegistry   : 160 chemins indexés, TOUS éprouvés
+                        160/160 chargés, 0 défaillant
+```
+
+Éprouvé **des deux côtés** : 215/215 et 160/160 en éditeur comme en export.
+
+Le contrôle de non-régression tient toujours : le manifeste éditeur, comparé
+hors du champ `chargeabilite` qui vient d'être ajouté, est **identique** à celui
+mesuré avant tout correctif (`275954a71a2eb5c5` sur les deux). Le correctif
+reste un no-op en éditeur.

@@ -1,0 +1,13 @@
+{
+  "sha_git_teste": "70c53cd221b564d8e49b2cca149b6eb354a15fad",
+  "fichiers_sales": 0,
+  "binaire_exporte": "/home/user/lead-out-i45/build/EclatsDOrage.x86_64",
+  "binaire_octets": 393760848,
+  "binaire_sha256": "338c4df1e11a019bd5c76d51be50ff98e3085b8dae649095b4d0923f205a44c3",
+  "luminance_monde": "0.299017",
+  "seuil_luminance": "0.02",
+  "artefacts_reutilises": 0,
+  "lignes_journal_jeu": 50,
+  "code_parite": 0,
+  "date": "2026-08-26T20:56:52+00:00"
+}
