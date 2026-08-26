@@ -3,7 +3,6 @@
   "_statut": "VIVANT",
   "_produit_par": "agent A, directive corrective S1 ISS-071, sur cb8c5d7",
   "_consomme_par": "un test GDScript écrit par l'agent B (tests/world_v2/…)",
-
   "_pourquoi": [
     "Dans une build exportée, DirAccess.get_files() ne rend PAS les fichiers",
     "sources : le PCK ne contient que les métadonnées « <nom>.gltf.import », la",
@@ -14,7 +13,6 @@
     "Cette table fige la règle de normalisation ATTENDUE, cas par cas, pour que",
     "la correction soit vérifiable par une machine et non par une relecture."
   ],
-
   "_regle_attendue": {
     "ordre_des_operations": [
       "1. minuscule = fichier.to_lower()  (le test d'extension est déjà",
@@ -52,7 +50,25 @@
       "vérifient ailleurs."
     ]
   },
-
+  "_portee_reelle": {
+    "_titre": "ce que le dépôt porte VRAIMENT, mesuré le 2026-08-26 sur cb8c5d7 — pour ne pas confondre garde-fou et cas observé",
+    "mesure": "find assets -type f \\( -iname '*.gltf' -o -iname '*.glb' \\)",
+    "gltf": 199,
+    "glb": 53,
+    "total": 252,
+    "extensions_en_majuscules": 0,
+    "noms_contenant_un_point": 0,
+    "consequence": [
+      "Les cas « Foo.GLTF », « Foo.GLB.IMPORT », « Foo.PNG », « A.B.glb » et",
+      "« A.B.glb.import » ne correspondent à AUCUN fichier actuel : ce sont des",
+      "garde-fous anti-régression, pas des cas observés. Ils restent utiles —",
+      "un asset livré demain peut les créer, et une règle qui les traite",
+      "différemment de leurs jumeaux minuscules échouerait EN SILENCE.",
+      "Les cas qui décrivent le défaut RÉEL sont « Foo.gltf.import » et",
+      "« Foo.glb.import » : 252 fichiers du dépôt n'existent que sous cette",
+      "forme dans une build exportée."
+    ]
+  },
   "_champs": {
     "entree": "le nom de fichier tel que DirAccess.get_files() le rend",
     "indexe": "true si la règle doit créer une entrée d'index",
@@ -61,9 +77,7 @@
     "environnement": "où ce nom apparaît réellement : editeur | export | les_deux",
     "pourquoi": "le piège que ce cas précis attrape"
   },
-
   "repertoire_exemple": "res://assets/environment/village",
-
   "cas": [
     {
       "entree": "Foo.gltf",
@@ -178,7 +192,6 @@
       "pourquoi": "après retrait il ne reste aucune extension de modèle : indexer ici créerait une clé « Foo » pointant vers un fichier inexistant, et I4/I5 rougiraient au chargement"
     }
   ],
-
   "repertoires_exemples": [
     {
       "_titre": "un même répertoire, listé dans les deux environnements, doit rendre le MÊME index — c'est I1 et I2 à l'échelle d'un test unitaire",
