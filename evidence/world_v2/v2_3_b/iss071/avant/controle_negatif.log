@@ -1,0 +1,210 @@
+==============================================================================
+CONTRÔLES NÉGATIFS DU PORTAIL D'EXPORT ISS-071
+arbre     : /home/user/wt-a
+artefacts : /home/user/wt-a-out
+SHA       : cb8c5d71a5188a18df49d0e48f37ed453a4b0c89
+date      : 2026-08-26T20:37:10+00:00
+==============================================================================
+empreintes des artefacts RÉELS avant tout contrôle (ils ne sont jamais
+modifiés : chaque sabotage travaille sur une COPIE) :
+  manifeste éditeur : 674c584288bec953116acea35e4261f53e444c5aab5c04e0ec0ea3886bde156a
+  manifeste export  : bd50b8997bb7c03244fb338d3be38bf5fa6b52ca177727276452b2e19e55f875
+  journal du jeu    : 5fc0791c80bf81dd89f6004378441092a432679d7c875ee3f0ad1f4ba7e73560
+
+base saine SIMULÉE construite (ce n'est PAS une preuve de correctif) :
+  export simulé = manifeste éditeur réel redéclaré « export »
+  journal sain  = journal réel privé de ses lignes des quatre familles
+  2239 lignes de journal réel -> 1145 lignes saines
+
+==============================================================
+CONTRÔLE 0 (préalable) — la base saine rend bien VERT
+==============================================================
+  -- état sain
+     code 0 ; VERDICT ISS-071 : VERT  (code 0)
+       30 contrôle(s) exécutés · 0 ROUGE · 0 BLOQUÉ · 2 NON VÉRIFIÉ
+
+==============================================================
+CONTRÔLE 1 — normalisation « .import » désactivée dans WorldV2PlaceKit
+==============================================================
+  -- état sain
+     sur cb8c5d7 la normalisation N'EXISTE PAS ENCORE : le code teste
+     directement le suffixe .gltf/.glb. Il n'y a rien à désactiver.
+  -- jumeau à l'échelle de la RÈGLE, jouable dès maintenant
+     sabotage: sans-import — le suffixe « .import » n'est plus retiré — c'est EXACTEMENT le défaut d'ISS-071, reproduit à l'échelle de la règle
+     examiné : 14 cas nommés + 7 entrées de listage réparties sur 1 répertoire(s)
+     écarts  : 5 ; code 1
+     cause attendue (« Foo.gltf.import » non indexé) retrouvée : oui
+     VERDICT : le sabotage a bien été attrapé (code 1, cause reconnue)
+  -- restauration
+     règle documentée sans sabotage : écarts  : 0
+     table inchangée : sha256 8b362031366faa5807f92bfa5818294d360eac25cba6d70c4ba32910739f7dd7
+     STATUT : NON VÉRIFIÉ — le sabotage sur le VRAI WorldV2PlaceKit exige le correctif de
+              l'agent B. Recette prête : retirer le retrait de « .import »
+              dans scene_for(), relancer tools/gate_export_parite.sh, exiger
+              un ROUGE de la famille « kit : modèle inconnu ».
+
+==============================================================
+CONTRÔLE 2 — normalisation désactivée dans AssetRegistry
+==============================================================
+  -- état sain
+     même situation qu'au contrôle 1 : rien à désactiver sur cb8c5d7.
+  -- ce que le portail voit aujourd'hui, sans aucun sabotage
+     journal réel de la build : 631 ligne(s) « modèle végétal introuvable »
+     la famille végétation est donc bien OBSERVABLE par le portail.
+     STATUT : NON VÉRIFIÉ — le sabotage sur le VRAI AssetRegistry exige le correctif.
+              Recette : même retrait dans model(), exiger un ROUGE de la
+              famille « modèle végétal introuvable » (elle passe par
+              AssetRegistry, et non par le kit).
+
+==============================================================
+CONTRÔLE 3 — faux chemin source reconstruit (extension remplacée)
+==============================================================
+  -- état sain
+     règle documentée : écarts  : 0
+  -- sabotage : le chemin indexé devient « <base>.scn » au lieu de la source
+     examiné : 14 cas nommés + 7 entrées de listage réparties sur 1 répertoire(s)
+     écarts  : 10 ; code 1
+     cause attendue (chemins en .scn au lieu de .gltf/.glb) : oui
+     VERDICT : le sabotage a bien été attrapé (code 1, cause reconnue)
+  -- restauration + preuve
+     écarts  : 0 ; table sha256 8b362031366faa5807f92bfa5818294d360eac25cba6d70c4ba32910739f7dd7
+
+==============================================================
+CONTRÔLE 4 — une entrée « .bin.import » ne doit JAMAIS devenir une scène
+==============================================================
+  -- état sain
+     la table attend « Foo.bin » et « Foo.bin.import » NON indexés
+  -- sabotage : la règle accepte aussi l'extension .bin
+     examiné : 14 cas nommés + 7 entrées de listage réparties sur 1 répertoire(s)
+     écarts  : 4 ; code 1
+     cause attendue (« Foo.bin » indexé à tort) : oui
+     conséquence réelle si ce sabotage passait : le tampon binaire d'un .gltf
+     porte le NOM du modèle ; il écraserait sa clé ou créerait une collision.
+     VERDICT : le sabotage a bien été attrapé (code 1, cause reconnue)
+  -- restauration + preuve
+     écarts  : 0 ; table sha256 8b362031366faa5807f92bfa5818294d360eac25cba6d70c4ba32910739f7dd7
+
+==============================================================
+CONTRÔLE 5 — le suffixe « .tres.import » doit être ignoré
+==============================================================
+  -- état sain
+     la table attend « Foo.tres.import » NON indexé
+  -- sabotage : la règle accepte aussi .tres
+     examiné : 14 cas nommés + 7 entrées de listage réparties sur 1 répertoire(s)
+     écarts  : 1 ; code 1
+     cause attendue (« Foo.tres.import » indexé à tort) : oui
+     conséquence : un PCK porte des centaines de .tres.import ; les indexer
+     gonflerait l'index et ferait rougir I1 pour une raison fausse.
+     VERDICT : le sabotage a bien été attrapé (code 1, cause reconnue)
+  -- restauration + preuve
+     écarts  : 0 ; table sha256 8b362031366faa5807f92bfa5818294d360eac25cba6d70c4ba32910739f7dd7
+  -- au passage : les deux autres sabotages de la même famille
+     split-point          code 1 · écarts  : 2
+     casse                code 1 · écarts  : 1
+     chemin-import        code 1 · écarts  : 6
+
+==============================================================
+CONTRÔLE 6 — une collision de nom vers DEUX chemins différents est PUBLIÉE
+==============================================================
+  -- état sain
+     manifestes sains : [VERT        ] I6 AssetRegistry — collisions publiées à l'identique 
+     code de la base saine : 0
+  -- sabotage : une collision est publiée d'un seul côté (export)
+     code 1
+     cause attendue (I6 rouge, collision NOMMÉE Prop_Crate) : oui
+                    mesure  : les listes diffèrent : éditeur seul=[] · export seul=['{"ignore": "res://assets/environment/props/Prop_Crate.gltf", "nom": "Prop_Crate", "retenu": "res://assets/environment/village/Prop_Crate.gltf"}']
+     VERDICT : le sabotage a bien été attrapé (code 1, cause reconnue)
+  -- restauration + preuve
+     base saine rejouée : code 0 (attendu 0)
+     manifeste export réel intact : bd50b8997bb7c03244fb338d3be38bf5fa6b52ca177727276452b2e19e55f875
+
+==============================================================
+CONTRÔLE 7 — un modèle retiré de l'index doit être NOMMÉ par le verdict
+==============================================================
+  -- état sain
+     « Prop_Crate » présent dans les deux index de la base saine
+  -- sabotage : « Prop_Crate » retiré du seul index export
+     sabotage effectif : Prop_Crate retiré de 1 index
+     code 1
+     le verdict NOMME « Prop_Crate » : oui
+                    examiné : 215 clés éditeur contre 214 clés export, union 215
+                    mesure  : 1 différence(s) : 1 seulement en éditeur, 0 seulement en export — ex. éditeur seul : Prop_Crate
+     VERDICT : le sabotage a bien été attrapé (code 1, cause reconnue)
+  -- restauration + preuve
+     base saine rejouée : code 0 (attendu 0)
+
+==============================================================
+CONTRÔLE 8 — durée de vie des caches : le filet ISS-059 reste décisif
+==============================================================
+  -- état sain (copie jetable, l'arbre n'est jamais touché)
+     code 0 ; 2 contrôle(s) I8
+     [VERT        ] I8 — plafond de rétention des PackedScene de kit (ISS-059)
+     [VERT        ] I8 — plafond de rétention des PackedScene du registre (ISS-059)
+  -- sabotage : SCENE_CACHE_MAX passé de 256 à 0 DANS LA COPIE
+     sabotage effectif : 1 occurrence(s) à 0
+     code 1
+     cause attendue (littéral de rétention absent) : oui
+     VERDICT : le sabotage a bien été attrapé (code 1, cause reconnue)
+  -- restauration + preuve
+     copie restaurée : diff vide sur 497 lignes comparées
+     fichiers de PRODUCTION inchangés :
+       world_v2_place_kit.gd f6192541247fb9efea64479324ef49ee18c16a9123c2d335b89588a14d6cab95
+                           -> f6192541247fb9efea64479324ef49ee18c16a9123c2d335b89588a14d6cab95
+       asset_registry.gd     ef0165c71be895521d11920ac33f9b88d712b56f9102ffec7d5be014bd9d2d02
+                           -> ef0165c71be895521d11920ac33f9b88d712b56f9102ffec7d5be014bd9d2d02
+     après restauration : code 0 (attendu 0)
+     STATUT : NON VÉRIFIÉ — le test ISS-059 lui-même (vidage de cache entre deux placements)
+              n'est pas rejoué ici : il exige le moteur et le verrou. Il vit
+              dans tests/world_v2/test_world_v2_iss059_cache_kit.gd et tourne
+              dans tools/validate_fast.sh.
+
+==============================================================
+CONTRÔLE 9 — photographier pendant l'écran de chargement : le portail se REFUSE
+==============================================================
+  -- état sain : la décision du portail, telle qu'écrite dans le portail
+     expression de décision : 365:    if awk -v l="$LUM" -v s="$SEUIL_LUMINANCE" 'BEGIN{exit !(l>s)}'; then
+     branche de refus       : 1 occurrence(s), suivie(s) de « fini 3 »
+     image « écran de chargement » (fidèle au repère 0,0027) : 0.00274662
+     image « monde affiché » (capture RÉELLE du portail)      : 0.292372
+  -- sabotage : soumettre l'écran de chargement à la décision du portail
+     la décision REFUSE (le portail sortirait en 3, BLOQUÉ)
+     VERDICT : le sabotage a bien été attrapé (code 3, cause reconnue)
+  -- restauration : la même décision sur le monde réellement affiché
+     la décision ACCEPTE le monde affiché : le portail poursuit. Correct.
+     STATUT : NON VÉRIFIÉ — le refus n'a pas encore été déclenché DE BOUT EN BOUT sur une
+              exécution réelle du portail — voir --seuil-luminance.
+
+==============================================================
+CONTRÔLE 10 — un journal filtré ne suffit PAS à obtenir un vert
+==============================================================
+  -- état sain : manifestes en parité + journal déjà filtré
+     code de la base saine : 0 (journal à 0 ligne des quatre familles)
+     vérification du filtrage : 0 ligne(s) des quatre familles dans le
+     journal sain, sur 1145 lignes
+  -- sabotage : on garde le journal FILTRÉ, on remet le manifeste export RÉEL
+     code 1 — attendu 1 (ROUGE) MALGRÉ un journal sans la moindre erreur
+     cause attendue (parité d'index + compteurs positifs, pas l'absence de
+     messages) : oui
+       - [ROUGE] I1 index AssetRegistry — mêmes noms canoniques indexés :: 160 différence(s) : 160 seulement en éditeur, 0 seulement en export — ex. éditeur seul : Anvil, Anvil_Log, Axe_Bronze, Bag, Balcony_Simple_Straight
+       - [ROUGE] I3 index AssetRegistry — la comparaison a porté sur quelque chose :: AUCUNE clé commune : les deux index sont disjoints, la comparaison de couples n'a rien pu examiner
+       - [ROUGE] §4 AssetRegistry — différence des modèles DEMANDÉS :: 90 différence(s) : Anvil, Anvil_Log, Axe_Bronze, Bag, Balcony_Simple_Straight, Banner_1, Banner_2_Cloth, Barrel
+       - [ROUGE] §4 AssetRegistry — différence des modèles CHARGÉS :: 21 différence(s) : CommonTree_1, CommonTree_2, CommonTree_3, CommonTree_4, CommonTree_5, DeadTree_1, DeadTree_2, Flower_3_Group
+       - [ROUGE] §4 AssetRegistry — modèle DEMANDÉ mais NON CHARGÉ :: 0 appel(s) manqué(s) en éditeur, 1321 en export — ex. export : Rock_Medium_1×145, Rock_Medium_2×132, Rock_Medium_3×127, Pebble_Round_2×93, Pebble_Square_1×92, Pebble_Round_4×91
+       - [ROUGE] I1 index WorldV2PlaceKit — mêmes noms canoniques indexés :: 215 différence(s) : 215 seulement en éditeur, 0 seulement en export — ex. éditeur seul : Anvil, Anvil_Log, Axe_Bronze, Bag, Balcony_Cross_Straight
+     VERDICT : le sabotage a bien été attrapé (code 1, cause reconnue)
+  -- restauration + preuve
+     journal réel intact : 5fc0791c80bf81dd89f6004378441092a432679d7c875ee3f0ad1f4ba7e73560
+                          (avant les contrôles : 5fc0791c80bf81dd89f6004378441092a432679d7c875ee3f0ad1f4ba7e73560)
+
+==============================================================
+CONTRÔLE FIN — intégrité de l'arbre et des artefacts
+==============================================================
+     manifeste éditeur : 674c584288bec953116acea35e4261f53e444c5aab5c04e0ec0ea3886bde156a (avant 674c584288bec953116acea35e4261f53e444c5aab5c04e0ec0ea3886bde156a)
+     manifeste export  : bd50b8997bb7c03244fb338d3be38bf5fa6b52ca177727276452b2e19e55f875 (avant bd50b8997bb7c03244fb338d3be38bf5fa6b52ca177727276452b2e19e55f875)
+     journal du jeu    : 5fc0791c80bf81dd89f6004378441092a432679d7c875ee3f0ad1f4ba7e73560 (avant 5fc0791c80bf81dd89f6004378441092a432679d7c875ee3f0ad1f4ba7e73560)
+     git status --porcelain scripts/ : 0 ligne(s) (0 exigé)
+
+==============================================================================
+CONTRÔLES NÉGATIFS ISS-071 : 12 joué(s), 0 échec(s), 4 NON VÉRIFIÉ(s)
+==============================================================================
+RC=0

@@ -1,0 +1,190 @@
+==============================================================================
+PORTAIL D'EXPORT ISS-071 — parité de résolution éditeur / build exportée
+arbre   : /home/user/wt-a
+sortie  : /home/user/wt-a-out   (HORS de l'arbre : un export dans l'arbre le salirait)
+date    : 2026-08-26T20:30:39+00:00
+==============================================================================
+
+### 0. état du dépôt — une preuve vient d'un arbre COMMITTÉ
+    SHA testé      : cb8c5d71a5188a18df49d0e48f37ed453a4b0c89
+    fichiers sales : 3
+      ?? tests/fixtures/iss071_noms.json
+      ?? tools/gate_export_parite.sh
+      ?? tools/iss071_parite.py
+
+### 1. verrou canonique et cloison user://
+    XDG_DATA_HOME (étapes éditeur) = /home/user/wt-a/.godot_user
+    verrou pris : /home/user/Zelda/.git/heavy_tools.lock
+    godot : 4.7.1.stable.custom_build.a13da4feb
+
+### 2. import — obligatoire, et pas une formalité
+    code retour import : 0 (3331 lignes)
+
+### 3. manifeste ÉDITEUR
+    code retour : 0
+    manifeste éditeur : /home/user/wt-a-out/manifeste_editeur.json (37132 octets)
+
+### 4. export Linux vers un chemin HORS de l'arbre
+    templates : android_debug.apk android_release.apk android_source.zip icudt_godot.dat ios.zip linux_debug.arm32 linux_debug.arm64 linux_debug.x86_32 linux_debug.x86_64 linux_release.arm32 linux_release.arm64 linux_release.x86_32 linux_release.x86_64 macos.zip version.txt web_debug.zip web_dlink_debug.zip web_dlink_nothreads_debug.zip web_dlink_nothreads_release.zip web_dlink_release.zip web_nothreads_debug.zip web_nothreads_release.zip web_release.zip windows_debug_arm64.exe windows_debug_arm64_console.exe windows_debug_x86_32.exe windows_debug_x86_32_console.exe windows_debug_x86_64.exe windows_debug_x86_64_console.exe windows_release_arm64.exe windows_release_arm64_console.exe windows_release_x86_32.exe windows_release_x86_32_console.exe windows_release_x86_64.exe windows_release_x86_64_console.exe 
+    code retour export : 0 (1570 lignes)
+    binaire : /home/user/wt-a-out/build/EclatsDOrage.x86_64
+    octets  : 393757344
+    sha256  : 13de524f6ade6137f02e26a667a8014f06f5c957e3466a9222a675a45c41881d
+
+### 5. lancement de la build AUTONOME, user:// VIERGE
+    profil vierge : /home/user/wt-a-out/profil_vierge (0 entrée(s) — 0 attendu)
+    Xvfb PID 6456 sur :91
+    jeu PID 6463 ; journal /home/user/wt-a-out/journaux/jeu_exporte_stdout.log
+    drapeau passé après « -- » : --iss071-dump=/home/user/wt-a-out/manifeste_export.json
+
+### 6. pilotage par le FOCUS X
+    fenêtre : 2097155
+    « Nouvelle partie » : Return envoyé par le focus, pas par --window
+
+### 7. attente du jalon de montage, PUIS de l'effacement du chargement
+    jalon atteint : [world_v2] fondation V2 vérifiée — vallée whitebox prête.
+    luminance moyenne mesurée : 0.292372 (seuil 0.02 ; chargement 0.0027)
+    monde affiché — capture /home/user/wt-a-out/02_monde.png
+
+### 8. manifeste EXPORT écrit par le jeu lui-même
+    manifeste export : /home/user/wt-a-out/manifeste_export.json (11927 octets)
+    [iss071] manifeste écrit : /home/user/wt-a-out/manifeste_export.json
+    jeu arrêté ; journal figé à 2239 lignes
+
+### 9. familles d'erreur au journal du jeu
+       457 ligne(s)  ::  kit : modèle inconnu
+       631 ligne(s)  ::  modèle végétal introuvable
+         4 ligne(s)  ::  \[flower_field\] modèle inconnu
+         2 ligne(s)  ::  \[flower_field\] modèle de dalle inconnu
+
+### 10. comparateur de parité (tools/iss071_parite.py)
+==============================================================================
+ISS-071 — CONTRÔLE DE PARITÉ ÉDITEUR / EXPORT
+contrat : docs/contrats/iss071_parite_resolveurs.md
+==============================================================================
+[VERT        ] lecture du manifeste editeur
+               examiné : /home/user/wt-a-out/manifeste_editeur.json (37132 o)
+               mesure  : environnement « editeur », godot 4.7.1-stable (custom_build), monde neris_v2
+[VERT        ] lecture du manifeste export
+               examiné : /home/user/wt-a-out/manifeste_export.json (11927 o)
+               mesure  : environnement « export », godot 4.7.1-stable (official), monde neris_v2
+[VERT        ] lecture du journal du jeu
+               examiné : /home/user/wt-a-out/journaux/jeu_exporte_stdout.log (2239 lignes)
+               mesure  : jalon « fondation V2 vérifiée » présent
+[VERT        ] I7 AssetRegistry — ordre des répertoires inchangé
+               examiné : 6 répertoire(s) éditeur, 6 export, comparés position par position
+               mesure  : listes identiques dans le même ordre
+[ROUGE       ] I1 index AssetRegistry — mêmes noms canoniques indexés
+               examiné : 160 clés éditeur contre 0 clés export, union 160
+               mesure  : 160 différence(s) : 160 seulement en éditeur, 0 seulement en export — ex. éditeur seul : Anvil, Anvil_Log, Axe_Bronze, Bag, Balcony_Simple_Straight
+[VERT        ] I2/I3 index AssetRegistry — même chemin source pour un même nom
+               examiné : 0 couple(s) nom→chemin comparés un à un (comparaison de couples, jamais de cardinaux)
+               mesure  : 0 couple(s) divergent(s)
+[ROUGE       ] I3 index AssetRegistry — la comparaison a porté sur quelque chose
+               examiné : 160 clés éditeur, 0 clés export
+               mesure  : AUCUNE clé commune : les deux index sont disjoints, la comparaison de couples n'a rien pu examiner
+[VERT        ] I6 AssetRegistry — collisions publiées à l'identique
+               examiné : 0 collision(s) publiée(s) en éditeur, 0 en export
+               mesure  : mêmes collisions des deux côtés
+[ROUGE       ] §4 AssetRegistry — différence des modèles DEMANDÉS
+               examiné : 21 nom(s) demandés en éditeur, 111 en export
+               mesure  : 90 différence(s) : Anvil, Anvil_Log, Axe_Bronze, Bag, Balcony_Simple_Straight, Banner_1, Banner_2_Cloth, Barrel
+[ROUGE       ] §4 AssetRegistry — différence des modèles CHARGÉS
+               examiné : 21 nom(s) chargés en éditeur, 0 en export
+               mesure  : 21 différence(s) : CommonTree_1, CommonTree_2, CommonTree_3, CommonTree_4, CommonTree_5, DeadTree_1, DeadTree_2, Flower_3_Group
+[ROUGE       ] §4 AssetRegistry — modèle DEMANDÉ mais NON CHARGÉ
+               examiné : table « manques » des deux manifestes : 0 nom(s) distincts en éditeur, 111 en export
+               mesure  : 0 appel(s) manqué(s) en éditeur, 1321 en export — ex. export : Rock_Medium_1×145, Rock_Medium_2×132, Rock_Medium_3×127, Pebble_Round_2×93, Pebble_Square_1×92, Pebble_Round_4×91
+[VERT        ] I7 WorldV2PlaceKit — ordre des répertoires inchangé
+               examiné : 6 répertoire(s) éditeur, 6 export, comparés position par position
+               mesure  : listes identiques dans le même ordre
+[ROUGE       ] I1 index WorldV2PlaceKit — mêmes noms canoniques indexés
+               examiné : 215 clés éditeur contre 0 clés export, union 215
+               mesure  : 215 différence(s) : 215 seulement en éditeur, 0 seulement en export — ex. éditeur seul : Anvil, Anvil_Log, Axe_Bronze, Bag, Balcony_Cross_Straight
+[VERT        ] I2/I3 index WorldV2PlaceKit — même chemin source pour un même nom
+               examiné : 0 couple(s) nom→chemin comparés un à un (comparaison de couples, jamais de cardinaux)
+               mesure  : 0 couple(s) divergent(s)
+[ROUGE       ] I3 index WorldV2PlaceKit — la comparaison a porté sur quelque chose
+               examiné : 215 clés éditeur, 0 clés export
+               mesure  : AUCUNE clé commune : les deux index sont disjoints, la comparaison de couples n'a rien pu examiner
+[VERT        ] I6 WorldV2PlaceKit — collisions publiées à l'identique
+               examiné : 0 collision(s) publiée(s) en éditeur, 0 en export
+               mesure  : mêmes collisions des deux côtés
+[ROUGE       ] §4 WorldV2PlaceKit — différence des modèles DEMANDÉS
+               examiné : 99 nom(s) demandés en éditeur, 100 en export
+               mesure  : 1 différence(s) : Wall_Arch
+[ROUGE       ] §4 WorldV2PlaceKit — différence des modèles CHARGÉS
+               examiné : 99 nom(s) chargés en éditeur, 0 en export
+               mesure  : 99 différence(s) : Anvil, Anvil_Log, Axe_Bronze, Bag, Balcony_Simple_Straight, Banner_1, Banner_2_Cloth, Barrel
+[ROUGE       ] §4 WorldV2PlaceKit — modèle DEMANDÉ mais NON CHARGÉ
+               examiné : table « manques » des deux manifestes : 0 nom(s) distincts en éditeur, 100 en export
+               mesure  : 0 appel(s) manqué(s) en éditeur, 468 en export — ex. export : RockPath_Square_Wide×31, RockPath_Round_Wide×28, RockPath_Square_Small_1×28, Corner_Exterior_Wood×26, Prop_WoodenFence_Single×26, Floor_WoodLight×24
+[ROUGE       ] §4 modules_instancies — positif et identique
+               examiné : clé « modules_instancies » des deux manifestes
+               mesure  : éditeur=459, export=0 — exigé : strictement > 0 des deux côtés ET égaux
+[ROUGE       ] §4 cellules_emises — positif et identique
+               examiné : clé « cellules_emises » des deux manifestes
+               mesure  : éditeur=631, export=0 — exigé : strictement > 0 des deux côtés ET égaux
+[ROUGE       ] §4 cellules_manquees — nulles des deux côtés
+               examiné : clé « vegetation.cellules_manquees » des deux manifestes
+               mesure  : éditeur=0, export=631 — une cellule manquée est une cellule de MultiMesh sautée ENTIÈRE, donc bien plus d'objets absents que d'appels manqués
+[VERT        ] §3 lieux_poses — positif et identique
+               examiné : clé « lieux_poses » des deux manifestes
+               mesure  : éditeur=16, export=16
+[ROUGE       ] §4 journal — lignes « kit : modèle inconnu »
+               examiné : 2239 ligne(s) de journal balayées
+               mesure  : 457 ligne(s), 96 modèle(s) distinct(s) : Anvil, Anvil_Log, Axe_Bronze, Bag, Balcony_Simple_Straight, Banner_1, Banner_2_Cloth, Barrel …
+[ROUGE       ] §4 journal — lignes « modèle végétal introuvable »
+               examiné : 2239 ligne(s) de journal balayées
+               mesure  : 631 ligne(s), 21 modèle(s) distinct(s) : CommonTree_1, CommonTree_2, CommonTree_3, CommonTree_4, CommonTree_5, DeadTree_1, DeadTree_2, Flower_3_Group …
+[ROUGE       ] §4 journal — lignes « flower_field : modèle inconnu »
+               examiné : 2239 ligne(s) de journal balayées
+               mesure  : 4 ligne(s), 3 modèle(s) distinct(s) : Flower_3_Group, Flower_4_Group, Grass_Wispy_Tall
+[ROUGE       ] §4 journal — lignes « flower_field : modèle de dalle inconnu »
+               examiné : 2239 ligne(s) de journal balayées
+               mesure  : 2 ligne(s), 2 modèle(s) distinct(s) : RockPath_Round_Small_1, RockPath_Square_Small_1
+[VERT        ] I9 — aucun manque silencieux
+               examiné : 1789 manque(s) comptés aux manifestes contre 1094 ligne(s) d'erreur au journal
+               mesure  : compteurs et journal concordent (tous deux nuls, ou tous deux positifs)
+[VERT        ] I4/I5 WorldV2PlaceKit — chemins indexés réellement chargeables
+               examiné : 0 chemin(s) indexés, dont 0 effectivement demandés au montage du monde
+               mesure  : 0 chemin(s) éprouvés par un vrai load() ; 0 chemin(s) indexés mais jamais demandés — le manifeste ne porte pas leur chargeabilité, ils restent NON VÉRIFIÉ (ils ne bloquent pas la table §4)
+[VERT        ] I4/I5 AssetRegistry — chemins indexés réellement chargeables
+               examiné : 0 chemin(s) indexés, dont 0 effectivement demandés au montage du monde
+               mesure  : 0 chemin(s) éprouvés par un vrai load() ; 0 chemin(s) indexés mais jamais demandés — le manifeste ne porte pas leur chargeabilité, ils restent NON VÉRIFIÉ (ils ne bloquent pas la table §4)
+[VERT        ] I8 — plafond de rétention des PackedScene de kit (ISS-059)
+               examiné : scripts/world_v2/poi/world_v2_place_kit.gd (497 lignes) cherché pour le littéral « const SCENE_CACHE_MAX: int = 256 »
+               mesure  : littéral présent, à l'identique
+[VERT        ] I8 — plafond de rétention des PackedScene du registre (ISS-059)
+               examiné : scripts/core/asset_registry.gd (231 lignes) cherché pour le littéral « const MODEL_CACHE_MAX: int = 48 »
+               mesure  : littéral présent, à l'identique
+
+inventaire nominatif écrit : /home/user/wt-a-out/inventaire_modeles_absents.txt (110 modèle(s) distinct(s))
+
+==============================================================================
+VERDICT ISS-071 : ROUGE  (code 1)
+  32 contrôle(s) exécutés · 17 ROUGE · 0 BLOQUÉ · 0 NON VÉRIFIÉ
+  - [ROUGE] I1 index AssetRegistry — mêmes noms canoniques indexés :: 160 différence(s) : 160 seulement en éditeur, 0 seulement en export — ex. éditeur seul : Anvil, Anvil_Log, Axe_Bronze, Bag, Balcony_Simple_Straight
+  - [ROUGE] I3 index AssetRegistry — la comparaison a porté sur quelque chose :: AUCUNE clé commune : les deux index sont disjoints, la comparaison de couples n'a rien pu examiner
+  - [ROUGE] §4 AssetRegistry — différence des modèles DEMANDÉS :: 90 différence(s) : Anvil, Anvil_Log, Axe_Bronze, Bag, Balcony_Simple_Straight, Banner_1, Banner_2_Cloth, Barrel
+  - [ROUGE] §4 AssetRegistry — différence des modèles CHARGÉS :: 21 différence(s) : CommonTree_1, CommonTree_2, CommonTree_3, CommonTree_4, CommonTree_5, DeadTree_1, DeadTree_2, Flower_3_Group
+  - [ROUGE] §4 AssetRegistry — modèle DEMANDÉ mais NON CHARGÉ :: 0 appel(s) manqué(s) en éditeur, 1321 en export — ex. export : Rock_Medium_1×145, Rock_Medium_2×132, Rock_Medium_3×127, Pebble_Round_2×93, Pebble_Square_1×92, Pebble_Round_4×91
+  - [ROUGE] I1 index WorldV2PlaceKit — mêmes noms canoniques indexés :: 215 différence(s) : 215 seulement en éditeur, 0 seulement en export — ex. éditeur seul : Anvil, Anvil_Log, Axe_Bronze, Bag, Balcony_Cross_Straight
+  - [ROUGE] I3 index WorldV2PlaceKit — la comparaison a porté sur quelque chose :: AUCUNE clé commune : les deux index sont disjoints, la comparaison de couples n'a rien pu examiner
+  - [ROUGE] §4 WorldV2PlaceKit — différence des modèles DEMANDÉS :: 1 différence(s) : Wall_Arch
+  - [ROUGE] §4 WorldV2PlaceKit — différence des modèles CHARGÉS :: 99 différence(s) : Anvil, Anvil_Log, Axe_Bronze, Bag, Balcony_Simple_Straight, Banner_1, Banner_2_Cloth, Barrel
+  - [ROUGE] §4 WorldV2PlaceKit — modèle DEMANDÉ mais NON CHARGÉ :: 0 appel(s) manqué(s) en éditeur, 468 en export — ex. export : RockPath_Square_Wide×31, RockPath_Round_Wide×28, RockPath_Square_Small_1×28, Corner_Exterior_Wood×26, Prop_WoodenFence_Single×26, Floor_WoodLight×24
+  - [ROUGE] §4 modules_instancies — positif et identique :: éditeur=459, export=0 — exigé : strictement > 0 des deux côtés ET égaux
+  - [ROUGE] §4 cellules_emises — positif et identique :: éditeur=631, export=0 — exigé : strictement > 0 des deux côtés ET égaux
+  - [ROUGE] §4 cellules_manquees — nulles des deux côtés :: éditeur=0, export=631 — une cellule manquée est une cellule de MultiMesh sautée ENTIÈRE, donc bien plus d'objets absents que d'appels manqués
+  - [ROUGE] §4 journal — lignes « kit : modèle inconnu » :: 457 ligne(s), 96 modèle(s) distinct(s) : Anvil, Anvil_Log, Axe_Bronze, Bag, Balcony_Simple_Straight, Banner_1, Banner_2_Cloth, Barrel …
+  - [ROUGE] §4 journal — lignes « modèle végétal introuvable » :: 631 ligne(s), 21 modèle(s) distinct(s) : CommonTree_1, CommonTree_2, CommonTree_3, CommonTree_4, CommonTree_5, DeadTree_1, DeadTree_2, Flower_3_Group …
+  - [ROUGE] §4 journal — lignes « flower_field : modèle inconnu » :: 4 ligne(s), 3 modèle(s) distinct(s) : Flower_3_Group, Flower_4_Group, Grass_Wispy_Tall
+  - [ROUGE] §4 journal — lignes « flower_field : modèle de dalle inconnu » :: 2 ligne(s), 2 modèle(s) distinct(s) : RockPath_Round_Small_1, RockPath_Square_Small_1
+==============================================================================
+rapport JSON : /home/user/wt-a-out/rapport_parite.json
+    code retour du comparateur : 1
+    contexte : /home/user/wt-a-out/contexte.json
+
+=== VERDICT PORTAIL EXPORT ISS-071 : code 1
+RC=1

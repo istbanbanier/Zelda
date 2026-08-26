@@ -1,0 +1,50 @@
+==============================================================================
+PORTAIL D'EXPORT ISS-071 — parité de résolution éditeur / build exportée
+arbre   : /home/user/wt-a
+sortie  : /home/user/wt-a-out-c9   (HORS de l'arbre : un export dans l'arbre le salirait)
+date    : 2026-08-26T20:37:37+00:00
+==============================================================================
+
+### 0. état du dépôt — une preuve vient d'un arbre COMMITTÉ
+    SHA testé      : cb8c5d71a5188a18df49d0e48f37ed453a4b0c89
+    fichiers sales : 6
+      ?? tests/fixtures/iss071_noms.json
+      ?? tools/gate_export_parite.sh
+      ?? tools/gate_export_parite_controle_negatif.sh
+      ?? tools/godot/iss071_manifeste_editeur.gd.uid
+      ?? tools/iss071_parite.py
+      ?? tools/iss071_regle_noms.py
+
+### 1. verrou canonique et cloison user://
+    XDG_DATA_HOME (étapes éditeur) = /home/user/wt-a/.godot_user
+    verrou pris : /home/user/Zelda/.git/heavy_tools.lock
+    godot : 4.7.1.stable.custom_build.a13da4feb
+
+### 2-4. RÉUTILISATION DES ARTEFACTS (contrôle négatif seulement)
+    !!! Ce n'est PAS une preuve de portail : import, manifeste éditeur
+    !!! et export ne sont PAS rejoués.
+    SHA enregistré = SHA courant = cb8c5d71a5188a18df49d0e48f37ed453a4b0c89
+    binaire réutilisé : /home/user/wt-a-out-c9/build/EclatsDOrage.x86_64
+    sha256 : 13de524f6ade6137f02e26a667a8014f06f5c957e3466a9222a675a45c41881d
+    binaire : /home/user/wt-a-out-c9/build/EclatsDOrage.x86_64
+    octets  : 393757344
+    sha256  : 13de524f6ade6137f02e26a667a8014f06f5c957e3466a9222a675a45c41881d
+
+### 5. lancement de la build AUTONOME, user:// VIERGE
+    profil vierge : /home/user/wt-a-out-c9/profil_vierge (0 entrée(s) — 0 attendu)
+    Xvfb PID 7701 sur :92
+    jeu PID 7717 ; journal /home/user/wt-a-out-c9/journaux/jeu_exporte_stdout.log
+    drapeau passé après « -- » : --iss071-dump=/home/user/wt-a-out-c9/manifeste_export.json
+
+### 6. pilotage par le FOCUS X
+    fenêtre : 2097155
+    « Nouvelle partie » : Return envoyé par le focus, pas par --window
+
+### 7. attente du jalon de montage, PUIS de l'effacement du chargement
+    jalon atteint : [world_v2] fondation V2 vérifiée — vallée whitebox prête.
+    luminance moyenne mesurée : 0.519749 (seuil 0.99 ; chargement 0.0027)
+BLOQUÉ: l'écran de chargement n'a jamais disparu (luminance 0.519749).
+        Le portail REFUSE de conclure sur cette exécution.
+
+=== VERDICT PORTAIL EXPORT ISS-071 : code 3
+RC=3
