@@ -4,6 +4,65 @@ Ordre **anti-chronologique** : l'entrée la plus récente est en haut. La derni�
 entrée fait office de handoff et doit indiquer **exactement** la prochaine action.
 
 ---
+## 2026-08-26 — LOT 1.R.2 : source, sanctuaire et cimetière corrigés · `EN ATTENTE DU VERDICT`
+
+**Le verdict Codex qui a ouvert la passe.** Lecture aveugle des six lieux, tous
+correctement identifiés : belvédère, tour et champ `PASS VISUEL` ; cimetière
+`PARTIAL` ; sanctuaire et source `REJET`. Les trois acceptés ont donc été gelés
+au sha256 **avant toute modification** (`GEL_VISUEL_3_SUJETS_529d767.sha256`,
+23 fichiers : scripts, scènes, GLB et `.import`, shaders, générateurs, `.blend`),
+et vérifiés intacts après chaque intégration et à la clôture — **23/23 à chaque
+fois**, plus `gel_verifier` 43/43.
+
+**Trois agents, trois worktrees, trois branches de checkpoint** poussées à
+chaque commit vérifié : `claude/lot1r2-cimetiere` (`e1e0376`),
+`claude/lot1r2-sanctuaire` (`b1323df`), et pour la source `claude/lot1r2-source`
+→ `-source2` → `-source3` (`3218bf7`) — l'agent a amendé puis rebasé de
+l'historique déjà publié, ce que ce dépôt interdit ; rien n'est perdu (les trois
+lignes sont sur le distant), la consigne a été redonnée et respectée ensuite.
+Intégration par cherry-pick, sans commit de merge : canonique `dc74b1c`.
+
+**Ce qui a été corrigé, par cause et non par réglage.** La source : la « petite
+tache » était géométrique — au ras, une nappe horizontale de 7,9 m ne sous-tend
+que 3,5°, donc verticalité (voile d'arrivée) plutôt que surface ; l'eau passe de
+0,81 % à 2,07 % du cadre, la colonne d'eau la plus haute de 35 px à 112 px.
+Le sanctuaire : l'axe de nef avait 15° d'écart avec l'axe de visée — « le pire
+des deux mondes » — il se couche dedans, dans l'ouverture entre les troncs gelés
+**mesurée colonne par colonne** (x 236-660, lieu recomposé 334-615). Le cimetière :
+le tertre lisait comme une toile faute d'**ombre portée**, sa teinte étant celle
+du terrain gelé et donc hors périmètre ; soleil mesuré dans la scène, pierres
+posées sur la crête.
+
+**Portail technique, tout mesuré sur l'arbre intégré** : seuil du sanctuaire
+**1,31 m** contre 0,90 exigé — **ISS-070 FERMÉE**, rouge d'avant archivé (0,89 m,
+FAIL) puis vert d'après, aucun seuil déplacé, la sonde ayant **gagné** un
+contrôle (balayage de la vraie capsule dans les deux sens) ; sonde de la source
+PASS 0 écart ; filet `lot1_defauts,places_contract` **16/16** ; R-D3 PASS pour
+les trois sujets ; manifeste d'assets **6/6, 0 écart**.
+
+**Une dette du lead rattrapée** : la ligne `SM_Watchtower_Ruin` du manifeste
+portait les valeurs d'avant la corrective d'arase du lot précédent, jamais
+rafraîchies après cette corrective tardive. C'est le vérifieur qui l'a attrapée ;
+le GLB de la tour, lui, est identique au gel.
+
+**Limites nommées, sans verdict artistique** : le dos du tertre garde la teinte
+de la steppe (terrain gelé) et l'entrée du cimetière ne se lit pas franchement
+comme une paire de jambages depuis le plan de biais ; le coffre reste le seul
+objet saturé du cadre — subordonné, pas effacé ; l'axe d'approche du sanctuaire
+est visible mais **faible**, ses bordures étant le maillon ténu ; la matière de
+la berge de la source est ambiguë entre gravier trempé et terre remuée, et un
+jour subsiste entre le voile et la roche vu de trois quarts ; le cimetière a
+signalé lui-même une dérive R-D3 contre le camp de pillards à 80 m (0,3534 →
+0,4483, marge encore positive). Captures en rendu **logiciel** : régression
+visuelle, jamais mesure.
+
+**PROCHAINE ACTION EXACTE : ne rien construire.** Attendre le verdict visuel
+Codex/Istvan sur `evidence/world_v2/v2_3_b/lot1r2/revue_intermediaire/planche_joueur_anonyme.png`
+(6 vues numérotées sans noms, clé dans `cle_planches.json`). GO_V2_3_B_LOT2=FALSE.
+Si le verdict rouvre un lieu, repartir de cette entrée ; sinon la validation
+complète et la release restent volontairement NON lancées.
+
+---
 
 ## 2026-08-25 — LOT 1.R.1 : cinq correctives intégrées, revue intermédiaire persistée · `EN ATTENTE DU VERDICT`
 
