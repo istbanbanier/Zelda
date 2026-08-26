@@ -73,10 +73,26 @@
 ## graphe. L'hydrologie V2.2 est gelée et reste seule maîtresse. Le turquoise
 ## est celui de la rivière — jamais le cyan de Résonance.
 ##
-## L'AFFLUENT NAÎT À L'EST. Premier point de `west_tributary_xz` : (−130 ; 34),
-## soit le local (+6 ; −6). Le bout de la langue est à 5,26 m de cette tête, et
-## aucune pièce de ce lieu ne porte de collider à moins de 8 m d'elle — la
-## bande creusée du contrat (6,3 m de demi-largeur) reste libre.
+## L'AFFLUENT NAÎT À L'EST, et voici le chiffre MESURÉ, pas celui que j'avais
+## d'abord écrit. Premier point de `west_tributary_xz` : (−130 ; 34), soit le
+## local (+6 ; −6). J'avais annoncé « 5,26 m » en calculant depuis le bout EST
+## de la vasque — alors que le code fait partir la langue du PIED DE TALUS de
+## la berge, qui est 1,4 m plus loin. `outils/sonde_source.gd`, qui parcourt
+## les sommets réels du maillage monté, rend **3,61 m**.
+##
+## Le nombre est corrigé plutôt que la géométrie, pour trois raisons
+## vérifiables :
+##
+##  * la règle du contrat porte sur les COLLIDERS, pas sur les maillages : les
+##    bandes creusées sont jugées par `test_world_v2_places_contract.gd`, qui
+##    parcourt les `CollisionShape3D`. La langue n'en porte aucun, et le
+##    collider le plus proche du lieu — le seuil — est à 7,19 m pour une bande
+##    de 6,30 ;
+##  * le lit de l'affluent a 1,8 m de demi-largeur d'eau (`TRIB_BED_HALF_W`) :
+##    à 3,6 m de sa tête, la langue reste à l'écart du ruban gelé, sans risque
+##    de z-fighting ;
+##  * et la fiction le demande — l'affluent NAÎT ici. Un fil qui s'arrêterait
+##    net à cinq mètres de la source de la rivière raconterait le contraire.
 ##
 ## RÉCOMPENSE ET INTERACTION INCHANGÉES : `default_place_id()`, la sphère de
 ## découverte, l'ancre `RewardAnchor` en (−2,40 ; +2,60) et la table de butin
@@ -510,7 +526,7 @@ func _bassin() -> void:
 
 	# L'OMBRE DU FIL : une bande humide sous la langue du déversoir, un peu
 	# plus large qu'elle — le sol mouillé déborde toujours l'eau.
-	_bande_fil(st, 0.55, 3.70, 2.05, 1.05, 0.02,
+	_bande_fil(st, 0.55, 4.30, 2.15, 1.10, 0.02,
 		Color(0.92, 0.87, 0.76, 1.0), Color(1.34, 1.27, 1.14, 1.0), false)
 
 	lit.mesh = st.commit()
@@ -694,7 +710,7 @@ func _deversoir(st: SurfaceTool, niveau: float, gb: Vector2) -> void:
 	# long du parcours : ils sont à 8–11 m de la caméra au lieu de 15, et sous
 	# 9 à 12° d'incidence au lieu de 6. Plus grands à l'écran ET mieux vus,
 	# sans qu'aucune caméra n'ait bougé.
-	_bande_fil(st, 0.55, 3.70, 1.55, 0.62, 0.045,
+	_bande_fil(st, 0.55, 4.30, 1.65, 0.66, 0.045,
 		Color(0.24, gb.x, gb.y, 0.94), Color(0.06, gb.x, gb.y, 0.46), true)
 
 
