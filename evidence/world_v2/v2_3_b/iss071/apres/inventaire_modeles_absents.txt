@@ -1,0 +1,12 @@
+# ISS-071 — inventaire NOMINATIF des modèles absents de la build
+# 0 ligne(s) d'erreur, 0 modèle(s) distinct(s)
+
+## kit : modèle inconnu — 0 ligne(s), 0 distinct(s)
+
+## modèle végétal introuvable — 0 ligne(s), 0 distinct(s)
+
+## flower_field : modèle inconnu — 0 ligne(s), 0 distinct(s)
+
+## flower_field : modèle de dalle inconnu — 0 ligne(s), 0 distinct(s)
+
+## union des familles — 0 distinct(s)

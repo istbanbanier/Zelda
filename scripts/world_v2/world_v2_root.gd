@@ -153,6 +153,11 @@ func _vider_manifeste_iss071_si_demande() -> void:
 		"vegetation": WorldV2VegetationBuilder.manifeste_iss071(),
 		"lieux_poses": ($Places as Node3D).get_child_count(),
 	}
+	if not _argument_iss071("--iss071-chargeabilite").is_empty():
+		for nom: Variant in (manifeste["resolveurs"] as Dictionary).keys():
+			var res: Dictionary = (manifeste["resolveurs"] as Dictionary)[nom]
+			res["chargeabilite"] = _eprouver_chargeabilite(
+				res.get("index", {}) as Dictionary)
 	var repertoire: String = cible.get_base_dir()
 	if not repertoire.is_empty():
 		DirAccess.make_dir_recursive_absolute(repertoire)
@@ -435,3 +440,42 @@ func _capturer_vues_iss071_si_demande() -> void:
 		print("[iss071] vue %s" % chemin)
 	camera.queue_free()
 	print("[iss071] %d/%d vue(s) écrite(s)" % [ecrites, (plans as Array).size()])
+
+
+## ISS-071 I4/I5 — ÉPROUVER TOUT CHEMIN INDEXÉ, pas seulement ceux que le monde
+## a demandés.
+##
+## POURQUOI CE COMPLÉMENT. Le portail ne pouvait juger la chargeabilité que des
+## chemins réellement sollicités au montage : 99 sur 215 côté kit, 21 sur 160
+## côté registre. Les autres restaient `NON VÉRIFIÉ` — un index peut contenir un
+## chemin qui ne se charge pas, et personne ne s'en apercevrait tant qu'aucun
+## lieu ne le demande.
+##
+## `ResourceLoader.exists()` NE SUFFIT PAS et c'est mesuré :
+## `ResourceFormatImporter::exists()` rend vrai dès qu'un `<chemin>.import`
+## existe, SANS regarder le type demandé — `exists("…/Bark_DeadTree.png",
+## "PackedScene")` rend donc vrai alors que le `load()` qui suit rend `null`.
+## Seul un vrai `load()` tranche, et c'est pour cela qu'on le fait ici.
+##
+## Coûteux (quelques centaines de chargements) : réservé au drapeau
+## `--iss071-chargeabilite`, jamais au chemin de jeu.
+func _eprouver_chargeabilite(index: Dictionary) -> Dictionary:
+	var existe: int = 0
+	var charge: int = 0
+	var defaillants: Array[String] = []
+	for cle: Variant in index.keys():
+		var chemin: String = String(index[cle])
+		if ResourceLoader.exists(chemin, "PackedScene"):
+			existe += 1
+		var scene: PackedScene = ResourceLoader.load(
+			chemin, "PackedScene", ResourceLoader.CACHE_MODE_IGNORE) as PackedScene
+		if scene != null:
+			charge += 1
+		else:
+			defaillants.append("%s -> %s" % [String(cle), chemin])
+	return {
+		"chemins": index.size(),
+		"exists_vrai": existe,
+		"load_reussi": charge,
+		"defaillants": defaillants,
+	}

@@ -216,7 +216,7 @@ etape "3. manifeste ÉDITEUR"
 rm -f "$MAN_EDITEUR"
 timeout "$DELAI_MANIFESTE_EDITEUR" "$GODOT_BIN" --headless --path "$ARBRE" \
   --script tools/godot/iss071_manifeste_editeur.gd \
-  -- "--iss071-dump=$MAN_EDITEUR" \
+  -- "--iss071-dump=$MAN_EDITEUR" "--iss071-chargeabilite=1" \
   > "$JOURNAUX/manifeste_editeur.log" 2>&1
 RC=$?
 info "code retour : $RC"
@@ -293,11 +293,14 @@ DISPLAY="$DISPLAY_NUM" XDG_DATA_HOME="$PROFIL_VIERGE" HOME="$PROFIL_VIERGE" \
   stdbuf -oL -eL "$BINAIRE" \
     --rendering-driver opengl3 \
     --resolution "${LARGEUR}x${HAUTEUR}" --windowed \
-    -- "--iss071-dump=$MAN_EXPORT" \
+    -- "--iss071-dump=$MAN_EXPORT" "--iss071-chargeabilite=1" \
   > "$JOURNAL_JEU" 2>&1 &
 PID_JEU=$!
 info "jeu PID $PID_JEU ; journal $JOURNAL_JEU"
-info "drapeau passé après « -- » : --iss071-dump=$MAN_EXPORT"
+info "drapeaux après « -- » : --iss071-dump=$MAN_EXPORT --iss071-chargeabilite=1"
+# ISS-071 I4/I5 : la chargeabilité est éprouvée sur CHAQUE chemin indexé, par
+# un vrai load(), et pas seulement sur ceux qu'un lieu a demandés. Sans ce
+# drapeau, 116 et 139 chemins restaient NON VÉRIFIÉ.
 
 # --------------------------------------------------------------------------
 etape "6. pilotage par le FOCUS X"

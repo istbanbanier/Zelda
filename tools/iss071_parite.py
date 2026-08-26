@@ -395,6 +395,28 @@ def controle_i4_i5(manifeste: dict[str, Any], rapport: Rapport) -> None:
     for nom_res, res in manifeste.get("resolveurs", {}).items():
         index = set(_couples(res.get("index", {})))
         demandes = set(res.get("demandes", {}))
+        # ISS-071, complément du lead : quand le monde a été monté avec
+        # `--iss071-chargeabilite`, le manifeste porte le résultat d'un VRAI
+        # `load()` sur CHAQUE chemin indexé, pas seulement sur ceux qu'un lieu
+        # a demandés. Le contrôle cesse alors d'être partiel.
+        #
+        # `ResourceLoader.exists()` seul ne suffirait pas :
+        # `ResourceFormatImporter::exists()` rend vrai dès qu'un
+        # `<chemin>.import` existe, sans regarder le type demandé — un `.png`
+        # y passe. Seul `load()` tranche, et c'est lui qui est compté ici.
+        charge = res.get("chargeabilite")
+        if isinstance(charge, dict) and int(charge.get("chemins", 0)) > 0:
+            total = int(charge["chemins"])
+            reussis = int(charge.get("load_reussi", 0))
+            defaillants = list(charge.get("defaillants", []))
+            rapport.note(
+                f"I4/I5 {nom_res} — chemins indexés réellement chargeables",
+                "VERT" if (reussis == total and not defaillants) else "ROUGE",
+                f"{total} chemin(s) indexés, TOUS éprouvés par un vrai load()",
+                (f"{reussis}/{total} chargés"
+                 + ("" if not defaillants
+                    else " — défaillants : " + ", ".join(defaillants[:6]))))
+            continue
         couverts = index & demandes
         non_couverts = index - demandes
         # Index vide : il n'y a pas « 0 chemin non couvert », il n'y a
