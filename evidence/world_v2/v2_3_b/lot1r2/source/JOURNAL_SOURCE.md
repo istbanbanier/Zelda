@@ -256,3 +256,30 @@ Je ne rends **aucun verdict artistique** : ce qui suit décrit ce que je vois.
   `docs/assets/ASSET_MANIFEST.csv` porte l'ancien sha256 et l'ancienne taille
   du GLB ; `tools/verifier_manifeste_lot1r.py` rougira à l'intégration. La
   ligne prête est dans `LIGNE_MANIFESTE_A_REMPLACER.txt`.
+
+---
+
+## 6. ADDENDUM — DEUX RÉÉCRITURES D'HISTORIQUE, ET LA RÈGLE QU'ELLES ONT COÛTÉE
+
+J'ai amendé `7c6f5d8` (message mutilé par des accents graves interprétés par
+le shell, et qui annonçait un patch dont l'assertion avait échoué sans que je
+le vérifie), puis rebasé quatre commits pour rendre au lead une avance rapide.
+Les deux gestes partaient d'une bonne intention et étaient **tous les deux des
+fautes** : le lead pousse au fil de l'eau, donc `7c6f5d8` et `4472c4a` étaient
+déjà publiés. Chaque réécriture a cassé le fast-forward et l'a obligé à ouvrir
+une branche de plus (`source2`, puis `source3`).
+
+La règle, désormais explicite pour toute session sur ce dépôt : **l'historique
+est ADDITIF.** Une correction — fût-elle d'un mot dans un message ou d'un
+chiffre dans un en-tête — est un NOUVEAU commit. Jamais `--amend`, jamais
+`rebase`, jamais `reset --hard`. La raison n'est pas le confort du lead : c'est
+que la traçabilité entre une preuve datée et le commit qui l'a produite est
+tout ce sur quoi repose la vérification. Un commit réécrit transforme un
+manifeste de capture en preuve orpheline — ce qui est exactement arrivé au
+manifeste de `final/`, qui pointait vers `4472c4a` devenu introuvable, et qu'il
+a fallu regénérer.
+
+Ce que j'aurais dû faire, et ce qu'il faut faire la prochaine fois : laisser le
+message fautif en place et pousser derrière lui un commit `correctif(journal)`
+qui dit ce que le précédent annonçait à tort. Un message faux corrigé
+publiquement vaut mieux qu'un message juste obtenu en effaçant le faux.

@@ -1,16 +1,16 @@
 {
   "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
-  "commit": "4472c4a2a25aab3a21fa3d4fee549aed09dd4a14",
+  "commit": "334428e9c75245e5a39fe010f3f2586f44546997",
   "engine": "4.7.1-stable (custom_build)",
   "provenance": {
     "glb": {
       "chemin": "assets/environment/rocks/SM_SpringMaw.glb",
-      "commit": "4472c4a2a25aab3a21fa3d4fee549aed09dd4a14",
+      "commit": "de43a4fe31a8fe9ca8ca67943c9ca9ab13a0b47a",
       "sha256": "e17a1b8df082aa03e4681eb7e186f803033738b13500d6be4dc28feb147fb278"
     },
     "lieu": {
       "chemin": "scripts/world_v2/poi/turquoise_spring_place.gd",
-      "commit": "4472c4a2a25aab3a21fa3d4fee549aed09dd4a14",
+      "commit": "de43a4fe31a8fe9ca8ca67943c9ca9ab13a0b47a",
       "sha256": "9c76f31b8d6687b38c0cb47dff28cef54f257808456989e47dd02427367292b5"
     },
     "shader": {
