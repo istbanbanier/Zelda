@@ -1,0 +1,205 @@
+{
+  "_titre": "ISS-071 — table de fixtures de NORMALISATION DES NOMS de modèle",
+  "_statut": "VIVANT",
+  "_produit_par": "agent A, directive corrective S1 ISS-071, sur cb8c5d7",
+  "_consomme_par": "un test GDScript écrit par l'agent B (tests/world_v2/…)",
+
+  "_pourquoi": [
+    "Dans une build exportée, DirAccess.get_files() ne rend PAS les fichiers",
+    "sources : le PCK ne contient que les métadonnées « <nom>.gltf.import », la",
+    "ressource vivant sous res://.godot/imported/<nom>.gltf-<md5>.scn. Les deux",
+    "résolveurs sous contrat testent le suffixe .glb / .gltf ; leur index sort",
+    "donc VIDE en export, et 1 094 appels de placement échouent sans que le jeu",
+    "plante (ISS-071, mesuré le 2026-08-26).",
+    "Cette table fige la règle de normalisation ATTENDUE, cas par cas, pour que",
+    "la correction soit vérifiable par une machine et non par une relecture."
+  ],
+
+  "_regle_attendue": {
+    "ordre_des_operations": [
+      "1. minuscule = fichier.to_lower()  (le test d'extension est déjà",
+      "   insensible à la casse dans le code actuel : ne pas régresser)",
+      "2. SI minuscule se termine par « .import » : retirer les 7 derniers",
+      "   caractères de fichier ET de minuscule -> « source »",
+      "   SINON source = fichier",
+      "3. SI minuscule se termine par « .gltf » ou « .glb » : indexer",
+      "4. clé   = source.get_basename()   (retire la DERNIÈRE extension seule)",
+      "5. chemin = repertoire + « / » + source"
+    ],
+    "point_le_plus_important": [
+      "Le chemin indexé est celui de la SOURCE (« …/Foo.gltf »), JAMAIS celui du",
+      "fichier de métadonnées (« …/Foo.gltf.import »).",
+      "Deux raisons, et chacune suffit :",
+      "  - INVARIANT I2 du contrat : le même nom doit sélectionner le même chemin",
+      "    en éditeur et en export. En éditeur le répertoire porte les DEUX",
+      "    fichiers ; si « .import » se mappait sur son propre chemin, les deux",
+      "    environnements donneraient deux chemins différents pour un seul nom.",
+      "  - load(« res://…/Foo.gltf ») RÉUSSIT dans une build exportée : la",
+      "    redirection vers .godot/imported/ est transparente POUR UN CHEMIN,",
+      "    pas pour un listage. Prouvé au laboratoire, pas déduit",
+      "    (evidence/…/lot1r2/cloture/fumee_build_exportee/lab_dir_access/)."
+    ],
+    "corollaire_collision": [
+      "En éditeur, « Foo.gltf » et « Foo.gltf.import » cohabitent et produisent",
+      "le MÊME couple (clé, chemin). Ce n'est donc PAS une collision et rien ne",
+      "doit être publié dans « collisions » : sinon la correction ferait naître",
+      "215 collisions fantômes côté éditeur et rougirait l'invariant I6."
+    ],
+    "hors_perimetre": [
+      "Cette table ne dit RIEN des priorités entre répertoires (invariant I7).",
+      "WorldV2PlaceKit garde le PREMIER chemin vu, AssetRegistry garde le",
+      "DERNIER : ces deux comportements historiques restent inchangés et se",
+      "vérifient ailleurs."
+    ]
+  },
+
+  "_champs": {
+    "entree": "le nom de fichier tel que DirAccess.get_files() le rend",
+    "indexe": "true si la règle doit créer une entrée d'index",
+    "cle_attendue": "clé canonique, ou \"\" si non indexé",
+    "chemin_source_attendu": "chemin complet attendu, ou \"\" si non indexé",
+    "environnement": "où ce nom apparaît réellement : editeur | export | les_deux",
+    "pourquoi": "le piège que ce cas précis attrape"
+  },
+
+  "repertoire_exemple": "res://assets/environment/village",
+
+  "cas": [
+    {
+      "entree": "Foo.gltf",
+      "indexe": true,
+      "cle_attendue": "Foo",
+      "chemin_source_attendu": "res://assets/environment/village/Foo.gltf",
+      "environnement": "editeur",
+      "pourquoi": "cas nominal actuel — il doit survivre à la correction"
+    },
+    {
+      "entree": "Foo.glb",
+      "indexe": true,
+      "cle_attendue": "Foo",
+      "chemin_source_attendu": "res://assets/environment/village/Foo.glb",
+      "environnement": "editeur",
+      "pourquoi": "second suffixe accepté aujourd'hui — ne doit pas régresser"
+    },
+    {
+      "entree": "Foo.gltf.import",
+      "indexe": true,
+      "cle_attendue": "Foo",
+      "chemin_source_attendu": "res://assets/environment/village/Foo.gltf",
+      "environnement": "export",
+      "pourquoi": "LE cas d'ISS-071 : c'est la SEULE entrée que le PCK porte pour un .gltf. Le chemin reste celui de la source, jamais celui du .import"
+    },
+    {
+      "entree": "Foo.glb.import",
+      "indexe": true,
+      "cle_attendue": "Foo",
+      "chemin_source_attendu": "res://assets/environment/village/Foo.glb",
+      "environnement": "export",
+      "pourquoi": "même cas pour les .glb — corriger un seul des deux suffixes laisserait la moitié des modèles absente"
+    },
+    {
+      "entree": "Foo.bin",
+      "indexe": false,
+      "cle_attendue": "",
+      "chemin_source_attendu": "",
+      "environnement": "editeur",
+      "pourquoi": "le tampon binaire d'un .gltf partage le nom du modèle : l'indexer créerait un doublon de clé et une collision fantôme"
+    },
+    {
+      "entree": "Foo.bin.import",
+      "indexe": false,
+      "cle_attendue": "",
+      "chemin_source_attendu": "",
+      "environnement": "export",
+      "pourquoi": "retirer « .import » ne doit PAS suffire à indexer : le test d'extension s'applique APRÈS le retrait, pas avant"
+    },
+    {
+      "entree": "Foo.tres.import",
+      "indexe": false,
+      "cle_attendue": "",
+      "chemin_source_attendu": "",
+      "environnement": "export",
+      "pourquoi": "un PCK porte des centaines de .import qui ne sont pas des modèles ; une règle « tout .import est un modèle » gonflerait l'index et ferait rougir I1"
+    },
+    {
+      "entree": "Foo.png",
+      "indexe": false,
+      "cle_attendue": "",
+      "chemin_source_attendu": "",
+      "environnement": "editeur",
+      "pourquoi": "une texture porte souvent le nom du modèle qu'elle habille"
+    },
+    {
+      "entree": "Foo.PNG",
+      "indexe": false,
+      "cle_attendue": "",
+      "chemin_source_attendu": "",
+      "environnement": "editeur",
+      "pourquoi": "la casse ne doit pas transformer un rejet en acceptation"
+    },
+    {
+      "entree": "Foo.GLTF",
+      "indexe": true,
+      "cle_attendue": "Foo",
+      "chemin_source_attendu": "res://assets/environment/village/Foo.GLTF",
+      "environnement": "editeur",
+      "pourquoi": "le test d'extension est DÉJÀ insensible à la casse (to_lower) : la correction ne doit pas le perdre. Le chemin conserve la casse RÉELLE du fichier, sinon load() échoue sur un système sensible à la casse"
+    },
+    {
+      "entree": "Foo.GLB.IMPORT",
+      "indexe": true,
+      "cle_attendue": "Foo",
+      "chemin_source_attendu": "res://assets/environment/village/Foo.GLB",
+      "environnement": "export",
+      "pourquoi": "le retrait de « .import » doit être insensible à la casse COMME le test d'extension. Un trim_suffix(\".import\") brut est sensible à la casse : ce cas serait alors rejeté alors que son jumeau minuscule passe, et rien ne le crierait"
+    },
+    {
+      "entree": "A.B.glb",
+      "indexe": true,
+      "cle_attendue": "A.B",
+      "chemin_source_attendu": "res://assets/environment/village/A.B.glb",
+      "environnement": "editeur",
+      "pourquoi": "get_basename() ne retire QUE la dernière extension. Une implémentation par split(\".\")[0] rendrait « A » et casserait la résolution de tout nom pointé"
+    },
+    {
+      "entree": "A.B.glb.import",
+      "indexe": true,
+      "cle_attendue": "A.B",
+      "chemin_source_attendu": "res://assets/environment/village/A.B.glb",
+      "environnement": "export",
+      "pourquoi": "jumeau export du précédent : deux extensions à retirer, dans le bon ordre, sans toucher au point interne"
+    },
+    {
+      "entree": "Foo.import",
+      "indexe": false,
+      "cle_attendue": "",
+      "chemin_source_attendu": "",
+      "environnement": "export",
+      "pourquoi": "après retrait il ne reste aucune extension de modèle : indexer ici créerait une clé « Foo » pointant vers un fichier inexistant, et I4/I5 rougiraient au chargement"
+    }
+  ],
+
+  "repertoires_exemples": [
+    {
+      "_titre": "un même répertoire, listé dans les deux environnements, doit rendre le MÊME index — c'est I1 et I2 à l'échelle d'un test unitaire",
+      "repertoire": "res://assets/environment/village",
+      "listage_editeur": [
+        "Floor_WoodLight.bin",
+        "Floor_WoodLight.gltf",
+        "Floor_WoodLight.gltf.import",
+        "SM_Barrow_Stones.glb",
+        "SM_Barrow_Stones.glb.import"
+      ],
+      "listage_export": [
+        "Floor_WoodLight.gltf.import",
+        "SM_Barrow_Stones.glb.import"
+      ],
+      "index_attendu": {
+        "Floor_WoodLight": "res://assets/environment/village/Floor_WoodLight.gltf",
+        "SM_Barrow_Stones": "res://assets/environment/village/SM_Barrow_Stones.glb"
+      },
+      "collisions_attendues": [],
+      "_source_du_listage": "mesuré au laboratoire, deux modèles réellement importés puis exportés avec les templates officiels 4.7.1 : evidence/world_v2/v2_3_b/lot1r2/cloture/fumee_build_exportee/lab_dir_access/"
+    }
+  ]
+}
