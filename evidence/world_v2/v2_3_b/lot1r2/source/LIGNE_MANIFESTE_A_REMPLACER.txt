@@ -1,0 +1,32 @@
+ACTION REQUISE DU LEAD — docs/assets/ASSET_MANIFEST.csv est hors du périmètre
+de l'agent SOURCE (fichier partagé par trois agents en parallèle : l'éditer
+ici fabriquerait un conflit de fusion, ce que la règle §1 de
+COMMENT_TRAVAILLER_ENSEMBLE interdit explicitement).
+
+Sans cette mise à jour, `tools/verifier_manifeste_lot1r.py` rougira à
+l'intégration sur DEUX champs : le sha256 et le nombre d'octets.
+
+VALEURS MESURÉES SUR LE GLB LIVRÉ :
+  fichier        assets/environment/rocks/SM_SpringMaw.glb
+  sha256         e17a1b8df082aa03e4681eb7e186f803033738b13500d6be4dc28feb147fb278
+  octets         920800
+  triangles      8990
+  dimensions_m   11.315 x 7.767 x 8.136
+  matériaux      MAT_Spring_Rock | MAT_Spring_Fracture
+  objets         SM_Spring_Buttress, SM_Spring_Spout, SM_Spring_Shelf, SM_Spring_Sill
+  min Y          -0.750  (enterrement voulu des jupes ; avertissement d'inspection assumé)
+
+Les champs à corriger dans la ligne `SM_SpringMaw` :
+  * colonne `dimensions_m` : 7.497x3.968x15.401  ->  11.315x7.767x8.136
+  * colonne `triangle_lod0` : 5516  ->  8990
+  * dans `notes` : le sha256 et la mention « 585136 octets » (le vérifieur lit
+    la DERNIÈRE occurrence du nombre d'octets dans les notes).
+
+Note de contenu pour la colonne `notes`, si le lead veut la recopier :
+Lot 1.R.2 - la couronne circulaire devient DEUX RIVES ET UNE OUVERTURE :
+contrefort sud 7,02 m a cinq lobes fondus descendant en marches jusqu'a
+l'ecrin du fruit, levre d'arrivee 3,63 m dont la face est porte le voile
+d'eau, table nord 1,44 m seche et claire, seuil 0,73 m encadrant l'echancrure
+du deversoir. Valeurs differenciees par masse et controlees (ecart 0,183,
+plancher 0,14). COLOR_0 consomme, 4 pieces assises par le lieu, aucune
+collision dans le glb. sha256 e17a1b8d... 920800 octets
