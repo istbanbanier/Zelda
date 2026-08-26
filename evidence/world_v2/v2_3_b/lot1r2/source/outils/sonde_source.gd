@@ -148,7 +148,7 @@ func _controle_eau() -> Array:
 	var lignes: Array = []
 	var bandes: Dictionary = {
 		"FondVasque": Vector2(-0.10, 0.75),
-		"NappeSource": Vector2(-0.06, 2.85),
+		"NappeSource": Vector2(-0.06, 3.85),
 	}
 	for nom: String in bandes.keys():
 		var noeud: MeshInstance3D = _place.find_child(nom, true, false) \
