@@ -65,6 +65,58 @@ static var _model_cache: Dictionary = {}
 const MODEL_CACHE_MAX: int = 48
 
 
+## ---------------------------------------------------------------------------
+## ISS-071 — APPAREIL DE MESURE, PAS DE COMPORTEMENT.
+## Même contrat que dans `WorldV2PlaceKit` : ces tables enregistrent ce qui a
+## été demandé, résolu et manqué, pour rendre la parité éditeur/export
+## MESURABLE. Elles ne portent ni Resource ni Node, et restent volontairement
+## hors de `liberer_caches()` — dont la valeur de retour est épinglée par les
+## tests d'ISS-059.
+static var _diag_demandes: Dictionary = {}
+static var _diag_resolus: Dictionary = {}
+static var _diag_manques: Dictionary = {}
+static var _diag_collisions: Array[Dictionary] = []
+
+
+static func _diag_compter(table: Dictionary, cle: StringName) -> void:
+	table[cle] = int(table.get(cle, 0)) + 1
+
+
+## Remet les compteurs de diagnostic à zéro. N'efface AUCUN cache de ressource.
+static func reinitialiser_diagnostic() -> void:
+	_diag_demandes.clear()
+	_diag_resolus.clear()
+	_diag_manques.clear()
+	_diag_collisions.clear()
+
+
+## Manifeste ISS-071 du registre d'assets : index nom -> chemin, collisions
+## observées à la construction de l'index, et compteurs de résolution.
+static func manifeste_iss071() -> Dictionary:
+	model(&"")   # force la construction de l'index
+	var index: Dictionary = {}
+	for cle: Variant in _model_index.keys():
+		index[String(cle)] = String(_model_index[cle])
+	var demandes: Dictionary = {}
+	for cle: Variant in _diag_demandes.keys():
+		demandes[String(cle)] = int(_diag_demandes[cle])
+	var resolus: Dictionary = {}
+	for cle: Variant in _diag_resolus.keys():
+		resolus[String(cle)] = int(_diag_resolus[cle])
+	var manques: Dictionary = {}
+	for cle: Variant in _diag_manques.keys():
+		manques[String(cle)] = int(_diag_manques[cle])
+	return {
+		"resolveur": "AssetRegistry",
+		"repertoires": MODEL_DIRS.duplicate(),
+		"index": index,
+		"collisions": _diag_collisions.duplicate(true),
+		"demandes": demandes,
+		"resolus": resolus,
+		"manques": manques,
+	}
+
+
 ## Résolution DIRECTE par nom canonique de modèle promu (V4 lot 3) : les
 ## ~130 modèles Quaternius du dépôt n'ont pas chacun un id de CATALOG —
 ## l'index paresseux associe `Pine_1` → `res://assets/.../Pine_1.gltf`.
@@ -78,15 +130,35 @@ static func model(model_name: StringName) -> PackedScene:
 			for file: String in dir.get_files():
 				var lower: String = file.to_lower()
 				if lower.ends_with(".gltf") or lower.ends_with(".glb"):
-					_model_index[StringName(file.get_basename())] = \
-						dir_path + "/" + file
+					var cle: StringName = StringName(file.get_basename())
+					var chemin: String = dir_path + "/" + file
+					if _model_index.has(cle) \
+							and String(_model_index[cle]) != chemin:
+						# ISS-071 : collision PUBLIÉE, priorité INCHANGÉE.
+						# Ici le DERNIER écrase — c'est le comportement
+						# historique de ce résolveur, et il n'est pas touché.
+						_diag_collisions.append({
+							"nom": String(cle),
+							"remplace": String(_model_index[cle]),
+							"par": chemin,
+						})
+					_model_index[cle] = chemin
+	if not String(model_name).is_empty():
+		_diag_compter(_diag_demandes, model_name)
 	var cached: Variant = _model_cache.get(model_name)
 	if cached != null:
+		if not String(model_name).is_empty():
+			_diag_compter(_diag_resolus, model_name)
 		return cached as PackedScene
 	var path: String = String(_model_index.get(model_name, ""))
 	if path.is_empty() or not ResourceLoader.exists(path, "PackedScene"):
+		if not String(model_name).is_empty():
+			_diag_compter(_diag_manques, model_name)
 		return null
 	var scene: PackedScene = load(path) as PackedScene
+	if not String(model_name).is_empty():
+		_diag_compter(
+			_diag_resolus if scene != null else _diag_manques, model_name)
 	if scene != null:
 		# On GARDE la référence. Sans elle, l'appelant instancie puis jette le
 		# `PackedScene` ; son compteur tombe à zéro, la ressource se retire du

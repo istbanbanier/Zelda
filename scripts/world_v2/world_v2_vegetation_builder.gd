@@ -679,14 +679,36 @@ func _emit_cells(cell_root: Node3D, layer: String, mesh: Mesh,
 	return true
 
 
+## ISS-071 — cellules de MultiMesh réellement émises / manquées.
+static var _diag_cellules_emises: int = 0
+static var _diag_cellules_manquees: int = 0
+
+
+static func reinitialiser_diagnostic() -> void:
+	_diag_cellules_emises = 0
+	_diag_cellules_manquees = 0
+
+
+static func manifeste_iss071() -> Dictionary:
+	return {
+		"cellules_emises": _diag_cellules_emises,
+		"cellules_manquees": _diag_cellules_manquees,
+	}
+
+
 func _emit_model_cells(cell_root: Node3D, layer: String, model: StringName,
 		transforms: Array[Transform3D]) -> bool:
 	if transforms.is_empty():
 		return false
 	var mesh: Mesh = _model_mesh(model, _category_tone(layer))
 	if mesh == null:
+		# ISS-071 — compteur de mesure, pas de comportement. Une cellule dont
+		# le modèle manque est sautée ENTIÈRE : sans ce compteur, « plus de
+		# warnings » se confondrait avec « la végétation est là ».
+		_diag_cellules_manquees += 1
 		push_warning("[world_v2] modèle végétal introuvable : %s" % model)
 		return false
+	_diag_cellules_emises += 1
 	var mm: MultiMesh = MultiMesh.new()
 	mm.transform_format = MultiMesh.TRANSFORM_3D
 	mm.mesh = mesh

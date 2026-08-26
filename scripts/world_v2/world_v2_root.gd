@@ -112,6 +112,52 @@ func _ready() -> void:
 	print("[world_v2] sol          : %s à y=%.2f" % [
 		(hit["collider"] as Node).name, (hit["position"] as Vector3).y])
 	print("[world_v2] fondation V2 vérifiée — vallée whitebox prête.")
+	_vider_manifeste_iss071_si_demande()
+
+
+## ISS-071 — vidage des manifestes de résolution, INERTE sans le drapeau.
+##
+## Pourquoi ici et pas dans un script d'outil : une build exportée en mode
+## release n'accepte pas `--script`. Le seul endroit d'où l'on peut lire l'index
+## RÉEL d'une build installée, c'est le jeu lui-même, une fois le monde monté.
+## Sans ce vidage, la parité éditeur/export exigée par la directive §8 resterait
+## une affirmation.
+##
+## Le drapeau est cherché dans les DEUX listes : `get_cmdline_args()` couvre
+## l'exécution éditeur, `get_cmdline_user_args()` couvre ce qui suit `--` dans
+## une build exportée.
+func _vider_manifeste_iss071_si_demande() -> void:
+	var cible: String = ""
+	var args: PackedStringArray = OS.get_cmdline_args()
+	args.append_array(OS.get_cmdline_user_args())
+	for arg: String in args:
+		if arg.begins_with("--iss071-dump="):
+			cible = arg.substr("--iss071-dump=".length())
+	if cible.is_empty():
+		return
+	var manifeste: Dictionary = {
+		"environnement": ("export" if OS.has_feature("template")
+			else "editeur"),
+		"godot": String(Engine.get_version_info().get("string", "?")),
+		"monde": WORLD_ID,
+		"resolveurs": {
+			"WorldV2PlaceKit": WorldV2PlaceKit.manifeste_iss071(),
+			"AssetRegistry": AssetRegistry.manifeste_iss071(),
+		},
+		"vegetation": WorldV2VegetationBuilder.manifeste_iss071(),
+		"lieux_poses": ($Places as Node3D).get_child_count(),
+	}
+	var repertoire: String = cible.get_base_dir()
+	if not repertoire.is_empty():
+		DirAccess.make_dir_recursive_absolute(repertoire)
+	var fichier: FileAccess = FileAccess.open(cible, FileAccess.WRITE)
+	if fichier == null:
+		push_error("[iss071] écriture impossible : %s (erreur %d)"
+			% [cible, FileAccess.get_open_error()])
+		return
+	fichier.store_string(JSON.stringify(manifeste, "\t", false))
+	fichier.close()
+	print("[iss071] manifeste écrit : %s" % cible)
 
 
 ## Navigation versionnée : quatre quadrants cuits hors-ligne

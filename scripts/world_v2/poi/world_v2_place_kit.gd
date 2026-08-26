@@ -71,6 +71,67 @@ static var _material_cache: Dictionary = {}
 static var _scene_cache: Dictionary = {}
 
 
+## ---------------------------------------------------------------------------
+## ISS-071 — APPAREIL DE MESURE, PAS DE COMPORTEMENT.
+##
+## Rien ici ne change ce que `scene_for()` résout : ces compteurs ENREGISTRENT
+## ce qui a été demandé, résolu et manqué, pour qu'un manifeste puisse être
+## comparé entre l'exécution éditeur et la build exportée. Sans eux, la parité
+## exigée par la directive §8 ne serait pas mesurable — et « plus de messages
+## d'erreur » se confondrait avec « les modèles sont là ».
+##
+## Ces tables sont VOLONTAIREMENT hors de `liberer_caches()` : elles ne portent
+## ni Resource ni Node, seulement des chaînes et des entiers bornés par le
+## nombre de noms distincts du dépôt (≈ 110). Les mêler au comptage d'ISS-059
+## changerait la valeur que ses tests épinglent, pour aucun gain.
+static var _diag_demandes: Dictionary = {}
+static var _diag_resolus: Dictionary = {}
+static var _diag_manques: Dictionary = {}
+static var _diag_collisions: Array[Dictionary] = []
+static var _diag_modules_instancies: int = 0
+
+
+static func _diag_compter(table: Dictionary, cle: StringName) -> void:
+	table[cle] = int(table.get(cle, 0)) + 1
+
+
+## Remet les compteurs de diagnostic à zéro. N'efface AUCUN cache de ressource.
+static func reinitialiser_diagnostic() -> void:
+	_diag_demandes.clear()
+	_diag_resolus.clear()
+	_diag_manques.clear()
+	_diag_collisions.clear()
+	_diag_modules_instancies = 0
+
+
+## Manifeste ISS-071 du résolveur de kit : index nom -> chemin, collisions
+## observées à la construction de l'index, et compteurs de placement.
+static func manifeste_iss071() -> Dictionary:
+	scene_for(&"")   # force la construction de l'index sans rien instancier
+	var index: Dictionary = {}
+	for cle: Variant in _index.keys():
+		index[String(cle)] = String(_index[cle])
+	var demandes: Dictionary = {}
+	for cle: Variant in _diag_demandes.keys():
+		demandes[String(cle)] = int(_diag_demandes[cle])
+	var resolus: Dictionary = {}
+	for cle: Variant in _diag_resolus.keys():
+		resolus[String(cle)] = int(_diag_resolus[cle])
+	var manques: Dictionary = {}
+	for cle: Variant in _diag_manques.keys():
+		manques[String(cle)] = int(_diag_manques[cle])
+	return {
+		"resolveur": "WorldV2PlaceKit",
+		"repertoires": MODULE_DIRS.duplicate(),
+		"index": index,
+		"collisions": _diag_collisions.duplicate(true),
+		"demandes": demandes,
+		"resolus": resolus,
+		"manques": manques,
+		"modules_instancies": _diag_modules_instancies,
+	}
+
+
 ## `PackedScene` d'une pièce de kit par nom canonique, ou null.
 static func scene_for(model_name: StringName) -> PackedScene:
 	if _index.is_empty():
@@ -81,11 +142,25 @@ static func scene_for(model_name: StringName) -> PackedScene:
 			for file: String in dir.get_files():
 				var lower: String = file.to_lower()
 				if lower.ends_with(".gltf") or lower.ends_with(".glb"):
-					if not _index.has(StringName(file.get_basename())):
-						_index[StringName(file.get_basename())] = \
-							dir_path + "/" + file
+					var cle: StringName = StringName(file.get_basename())
+					var chemin: String = dir_path + "/" + file
+					if not _index.has(cle):
+						_index[cle] = chemin
+					elif String(_index[cle]) != chemin:
+						# ISS-071 : deux chemins pour un même nom canonique.
+						# Le PREMIER reste retenu — la priorité historique ne
+						# bouge pas ; la collision est seulement PUBLIÉE.
+						_diag_collisions.append({
+							"nom": String(cle),
+							"retenu": String(_index[cle]),
+							"ignore": chemin,
+						})
+	if not String(model_name).is_empty():
+		_diag_compter(_diag_demandes, model_name)
 	var cached: Variant = _scene_cache.get(model_name)
 	if cached != null:
+		if not String(model_name).is_empty():
+			_diag_compter(_diag_resolus, model_name)
 		return cached as PackedScene
 	var path: String = String(_index.get(model_name, ""))
 	var scene: PackedScene = null
@@ -93,6 +168,9 @@ static func scene_for(model_name: StringName) -> PackedScene:
 		scene = AssetRegistry.model(model_name)
 	else:
 		scene = load(path) as PackedScene
+	if not String(model_name).is_empty():
+		_diag_compter(
+			_diag_resolus if scene != null else _diag_manques, model_name)
 	if scene != null:
 		if _scene_cache.size() >= SCENE_CACHE_MAX:
 			_scene_cache.clear()
@@ -110,6 +188,7 @@ static func module(parent: Node3D, model_name: StringName, local_pos: Vector3,
 		push_error("[world_v2] kit : modèle inconnu %s" % model_name)
 		return null
 	var node: Node3D = packed.instantiate() as Node3D
+	_diag_modules_instancies += 1
 	node.name = "%s_%d" % [model_name, parent.get_child_count()]
 	var factor: float = KitScale.factor(String(model_name)) * extra_scale
 	node.scale = Vector3.ONE * factor
