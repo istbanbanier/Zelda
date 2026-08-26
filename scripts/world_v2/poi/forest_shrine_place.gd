@@ -39,10 +39,18 @@
 ## glissé de 0,21 m.
 ##
 ## ET LA COMPOSITION CHANGE, pas seulement la matière. L'anneau devient un
-## AXE court nord→sud : le seuil (deux montants franchement inégaux, 1,57 et
-## 1,24 m, plus une marche enfoncée), deux rangées basses qui CONVERGENT vers
-## le cœur, la pierre couchée qui barre à demi la nef, la table, et derrière
-## elle la seule verticale — le chevet. Trois raisons, dans cet ordre :
+## AXE court nord→sud : le seuil (deux montants franchement inégaux, plus une
+## marche enfoncée et un linteau tombé en travers de l'approche), deux
+## bordures basses qui CONVERGENT vers le cœur, la table, et derrière elle la
+## seule verticale — le dossier. Trois raisons, dans cet ordre :
+##
+## COTES ET PLACEMENTS DE CE PARAGRAPHE : ils ont bougé au LOT 1.R.2 et les
+## chiffres ont été retirés d'ici plutôt que recopiés. Les hauteurs de
+## montants vivent dans `make_forest_shrine.py`, les positions dans
+## `_seuil()`, `_bordures_de_nef()` et `MURETS` — un nombre dupliqué dans un
+## préambule diverge du réel sans que personne le remarque, et l'ancrage du
+## dépôt l'interdit. La pierre couchée, en particulier, ne barre PLUS la nef :
+## elle la borde à l'ouest, et `_nef_enceinte()` dit pourquoi.
 ##
 ##   * l'intention imposée (ADDENDUM_DA §4) demande « un seuil, un centre
 ##     rituel, une lumière ou une ouverture qui guide le regard » : un anneau
@@ -319,9 +327,10 @@ func _habiller_recompense(racine: Node) -> void:
 ## LE SEUIL — deux montants FRANCHEMENT inégaux et une marche enfoncée.
 ##
 ## L'inégalité n'est pas un caprice : deux montants jumeaux se lisent
-## « portique », donc bâti et symétrique, donc récent. 1,57 contre 1,24 m,
-## deux fruits différents, deux cassures différentes — on lit une porte qui a
-## vieilli de travers. La marche est le seul élément encore à peu près à sa
+## « portique », donc bâti et symétrique, donc récent. Deux fruits différents,
+## deux cassures différentes, et un rapport de hauteur franc — on lit une
+## porte qui a vieilli de travers. Les cotes vivent dans le générateur, pas
+## ici. La marche est le seul élément encore à peu près à sa
 ## place, et c'est elle qui dit « on entre ICI » sans un mot.
 ## LOT 1.R.1, deuxième passe — LE SEUIL SE RESSERRE.
 ##
