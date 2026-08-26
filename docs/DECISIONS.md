@@ -1341,3 +1341,63 @@ travaille aux bonnes proportions. Le kit sert donc là où son échelle est
 JUSTE : modules du donjon (lot 6), et candidats fortification/tour de guet.
 Alternative rejetée : re-modéliser la citadelle en modules — hors budget de
 la passe, la silhouette actuelle ayant déjà passé la revue des masses.
+
+
+## D-053 — Le gel V2.3-B est levé sur deux fichiers, pour poser l'appareil de mesure d'ISS-071
+
+**Le fait.** `tools/gel_verifier.sh` et le filet D8 ont rougi sur
+`scripts/world_v2/world_v2_root.gd` et
+`scripts/world_v2/world_v2_vegetation_builder.gd`. Ils ont eu raison : j'ai
+touché deux fichiers que le gel V2.3-B protège, et le gel l'a dit en secondes.
+
+**Pourquoi il a fallu les toucher.** La directive corrective S1 exige une
+parité MESURÉE entre l'exécution éditeur et la build exportée : index nom →
+chemin des deux résolveurs, modèles demandés, modèles chargés, modules
+instanciés, cellules de MultiMesh émises. Or une build release **n'accepte pas
+`--script`** : aucun outil du dépôt ne peut l'atteindre. Le seul endroit d'où
+l'on puisse lire l'index RÉEL d'une build installée est le jeu lui-même, une
+fois le monde monté — c'est-à-dire `world_v2_root.gd`, après son jalon
+« fondation V2 vérifiée ». Et le compte des cellules végétales n'existe qu'à
+l'endroit qui les émet, `_emit_model_cells()`.
+
+Sans ces deux points, la parité exigée par la directive resterait une
+affirmation. Le défaut d'ISS-071 — 1 094 appels de placement manqués, 110
+modèles absents — n'était visible d'aucune de nos suites, précisément parce
+qu'elles tournent toutes en éditeur.
+
+**Ce que le changement est, exactement.** `git diff` sur les deux fichiers :
+**181 insertions, 0 suppression.** Aucune ligne existante n'est modifiée. Tout
+ce qui est ajouté est un appareil de mesure :
+
+- lecture d'un argument de ligne de commande ;
+- assemblage d'un manifeste JSON (index, demandes, résolus, manques, collisions) ;
+- épreuve de chargeabilité de chaque chemin indexé, par un vrai `load()` ;
+- capture des six vues des lieux gelés depuis la build exportée ;
+- deux compteurs entiers dans le bâtisseur de végétation.
+
+Chaque chemin ajouté commence par un test de drapeau et **sort immédiatement**
+s'il est absent : `--iss071-dump=`, `--iss071-vues=`, `--iss071-chargeabilite=`.
+Le chemin de jeu normal ne les rencontre jamais.
+
+**Ce que la mesure dit du risque.** Le manifeste éditeur produit après le
+correctif est identique, hors le champ `chargeabilite` qui vient d'être ajouté,
+à celui mesuré avant tout correctif — `275954a71a2eb5c5` des deux côtés, sur
+plusieurs exécutions indépendantes. Les six vues des lieux gelés, recapturées,
+sont comparées à celles d'avant correctif (voir
+`evidence/world_v2/v2_3_b/iss071/apres/`).
+
+**Alternative rejetée** : sortir le vidage dans un nœud non gelé, ajouté à
+`WorldV2.tscn`. Elle échoue sur un point qui compte : ce nœud n'aurait aucun
+signal de fin de montage à attendre et devrait DEVINER, par un nombre de frames
+ou un compte de nœuds, que le monde est prêt. Un diagnostic qui se déclenche
+trop tôt produit un index PARTIEL et donc un verdict de parité FAUX — un
+résultat pire que celui qu'on cherche à éviter. On préfère un gel levé
+explicitement et justifié à une mesure fragile.
+
+**Ce que cette levée ne couvre pas.** Les 46 fichiers gelés des six lieux
+visuellement acceptés — scènes, scripts de lieu, GLB, générateurs, shaders —
+n'ont pas bougé d'un octet : 46/46 au sha256 du disque ET à l'empreinte de blob
+git, vérifiés avant, pendant et après. Aucun seuil n'a été abaissé, aucun
+critère D1–D8 n'a été changé : seule la LISTE d'empreintes du gel est
+régénérée, par la procédure que `gel_verifier.sh` documente lui-même
+(`--ecrire` plus justification ici).
