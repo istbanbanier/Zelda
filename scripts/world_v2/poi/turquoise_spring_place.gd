@@ -205,7 +205,7 @@ const ANCRE_PHI: float = 1.525
 ## posé 0,18 m à l'est de cette face : là où une nervure ressort, il disparaît
 ## DANS la roche ; là où elle rentre, l'écart n'est pas visible depuis la
 ## caméra joueur, qui regarde le long de −X.
-const VOILE_HAUT: Vector3 = Vector3(-7.95, 2.35, 1.70)
+const VOILE_HAUT: Vector3 = Vector3(-7.85, 3.35, 1.70)
 const VOILE_BAS: Vector3 = Vector3(-7.30, 0.30, 1.70)
 const VOILE_LARGEUR_HAUT: float = 1.30
 const VOILE_LARGEUR_BAS: float = 2.60
@@ -214,14 +214,30 @@ const VOILE_LARGEUR_BAS: float = 2.60
 ## du générateur, qui la commente côté forme.
 const POSE_CONTREFORT: Vector2 = Vector2(-9.60, 4.20)
 const POSE_LEVRE: Vector2 = Vector2(-9.30, 1.70)
-## ITÉRATION 2 : la table recule au nord (−4,70 → −6,20). Mesuré sur
+## ITÉRATION 7 — LA TABLE DESCEND LE COURS. Les cinq itérations précédentes
+## réglaient des TAILLES pour éloigner la silhouette du belvédère ; toutes ont
+## échoué, dans les deux sens. Les masques normalisés, imprimés côte à côte
+## (`journal`, § R-D3), disent pourquoi : au couple d'angles fautif, la source
+## couvre 857 pixels de toile pour 582 au belvédère, et 477 leur sont communs.
+## Mon lieu ne remplit que 9 % de son propre cadre — deux sujets creux se
+## ressemblent forcément.
+##
+## Le levier n'est donc pas une dimension mais une IMPLANTATION : la table
+## quitte le flanc nord de la vasque et descend le long du fil, à l'est. La
+## bande de roche basse court alors sur toute la largeur de l'emprise au lieu
+## de s'arrêter au tiers — « une tour à un bout d'un long mur bas », profil que
+## ni le belvédère ni le hameau ne portent. Et elle canalise le déversoir, ce
+## que sa position précédente ne faisait pas.
+##
+## Trace de l'itération 2, toujours vraie : la table avait d'abord reculé au
+## nord (−4,70 → −6,20). Mesuré sur
 ## `iter1/turquoise_spring_identite.png` : elle rendait à l'écran (693 ; 324)
 ## quand le bord NORD de la vasque tombe à (648 ; 351) pour une profondeur
 ## quasi identique (28,6 m contre 28,2) — elle masquait donc l'eau qu'elle est
 ## censée border, et la part d'eau de la vue d'identité a BAISSÉ de 0,89 % à
 ## 0,75 % entre les deux versions. Une rive qui cache sa vasque n'est pas une
 ## rive.
-const POSE_TABLE: Vector2 = Vector2(-7.20, -6.20)
+const POSE_TABLE: Vector2 = Vector2(-6.30, -5.95)
 const POSE_SEUIL: Vector2 = Vector2(-2.20, -1.90)
 
 const SEGMENTS: int = 48
@@ -262,7 +278,7 @@ func _build() -> void:
 	var table: Vector3 = _seated(POSE_TABLE.x, POSE_TABLE.y)
 	_masse(&"SM_Spring_Shelf", "Table_nord", POSE_TABLE, 0.22)
 	declare_support(table)
-	declare_support(_seated(-4.60, -6.70))
+	declare_support(_seated(-3.70, -6.45))
 
 	# ── LE SEUIL DU DÉVERSOIR. Deux lobes bas qui ENCADRENT l'échancrure sans
 	# la fermer. Ce sont les pièces les plus proches de la caméra joueur (11 m),
@@ -810,16 +826,17 @@ func _plante(modele: StringName, phi: float, debord: float,
 ## ══════════════════════════════════════════════════════════════════════════
 func _collisions() -> void:
 	K.collider_box(self, "Source_contrefort",
-		_seated(-9.90, 4.00) + Vector3(0.0, 2.30, 0.0), Vector3(3.4, 4.8, 3.8),
+		_seated(-9.90, 4.00) + Vector3(0.0, 3.00, 0.0), Vector3(3.4, 6.2, 3.8),
 		0.0)
 	K.collider_box(self, "Source_queue_sud",
 		_seated(-5.60, 4.60) + Vector3(0.0, 0.85, 0.0), Vector3(3.2, 1.8, 2.6),
 		12.0)
+	# La lèvre a gagné un mètre (itération 6) : sa boîte suit.
 	K.collider_box(self, "Source_levre",
-		_seated(-9.30, 1.70) + Vector3(0.0, 1.15, 0.0), Vector3(2.2, 2.4, 2.6),
+		_seated(-9.30, 1.70) + Vector3(0.0, 1.60, 0.0), Vector3(2.4, 3.3, 2.8),
 		0.0)
 	K.collider_box(self, "Source_table_nord",
-		_seated(-6.50, -6.35) + Vector3(0.0, 0.60, 0.0), Vector3(5.4, 1.3, 2.8),
+		_seated(-5.60, -6.10) + Vector3(0.0, 0.60, 0.0), Vector3(5.4, 1.3, 2.8),
 		-8.0)
 	# LE SEUIL RECULE ET RÉTRÉCIT, et c'est une mesure qui l'a exigé.
 	# `outils/sonde_source.gd` l'a trouvé à 6,28 m de la polyligne de l'affluent
