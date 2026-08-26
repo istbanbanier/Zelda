@@ -1,7 +1,10 @@
 INVENTAIRE DES MODÈLES NON RÉSOLUS DANS LA BUILD EXPORTÉE
 ==============================================================
 
-kit de lieu (world_v2_place_kit) : 457 occurrence(s), 96 modèle(s) distinct(s)
+Source : session1_stdout.log du test de fumée final (2026-08-26),
+export Linux autonome du SHA 919511d. En exécution éditeur : 0 partout.
+
+kit de lieu (world_v2_place_kit.scene_for) : 457 occurrence(s), 96 modèle(s) distinct(s)
       31  RockPath_Square_Wide
       28  RockPath_Round_Wide
       26  Corner_Exterior_Wood
@@ -99,7 +102,7 @@ kit de lieu (world_v2_place_kit) : 457 occurrence(s), 96 modèle(s) distinct(s)
        1  Wall_Arch
        1  Mushroom_Laetiporus
 
-végétation (world_v2_vegetation_builder) : 631 occurrence(s), 21 modèle(s) distinct(s)
+végétation (asset_registry.model) : 631 occurrence(s), 21 modèle(s) distinct(s)
       93  Pebble_Round_2
       92  Pebble_Square_1
       91  Pebble_Round_4
@@ -122,8 +125,17 @@ végétation (world_v2_vegetation_builder) : 631 occurrence(s), 21 modèle(s) di
        3  CommonTree_3
        2  Pine_4
 
-dalles de champ (flower_field) : 2 occurrence(s), 2 modèle(s) distinct(s)
+champ des mille fleurs — modèles : 4 occurrence(s), 3 modèle(s) distinct(s)
+       2  Flower_3_Group
+       1  Flower_4_Group
+       1  Grass_Wispy_Tall
+
+champ des mille fleurs — dalles : 2 occurrence(s), 2 modèle(s) distinct(s)
        1  RockPath_Square_Small_1
        1  RockPath_Round_Small_1
 
-TOTAL : 1090 placements manqués, 109 modèles distincts introuvables.
+TOTAL : 1094 appels de placement manqués, 110 modèles distincts.
+
+Une cellule de MultiMesh végétal dont le modèle manque est sautée ENTIÈRE
+(_emit_model_cells rend false sans rien émettre) : le nombre d'OBJETS
+réellement absents à l'écran est très supérieur à ce total.

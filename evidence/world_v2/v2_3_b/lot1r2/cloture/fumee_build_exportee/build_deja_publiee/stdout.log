@@ -840,11 +840,71 @@ ERROR: [world_v2] kit : modèle inconnu Pot_1
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Rope_1
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Floor_UnevenBrick
+ERROR: [world_v2] kit : modèle inconnu Wall_UnevenBrick_Straight
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Wall_UnevenBrick_Straight
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Wall_UnevenBrick_Straight
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Wall_UnevenBrick_Straight
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Wall_UnevenBrick_Straight
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Wall_UnevenBrick_Straight
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Wall_UnevenBrick_Straight
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Corner_Exterior_Brick
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Corner_Exterior_Brick
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Corner_Exterior_Brick
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Wall_UnevenBrick_Straight
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Wall_UnevenBrick_Straight
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Wall_UnevenBrick_Straight
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Wall_UnevenBrick_Straight
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Corner_Exterior_Brick
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Corner_Exterior_Brick
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Wall_UnevenBrick_Straight
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Wall_UnevenBrick_Straight
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Corner_Exterior_Brick
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_ArchBlock
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_ArchBlock
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_RubbleSmall
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Floor_UnevenBrick
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Rock_Medium_2
+ERROR: [world_v2] kit : modèle inconnu Floor_UnevenBrick
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Stairs_Exterior_Straight
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Stairs_Exterior_Straight
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_RubbleLarge
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_RubbleLarge
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_RubbleSmall
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Wall_UnevenBrick_Straight
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Wall_UnevenBrick_Straight
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_CaveRock
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu rock_largeC
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Prop_Vine1
    at: push_error (core/variant/variant_utility.cpp:1023)
@@ -852,47 +912,83 @@ ERROR: [world_v2] kit : modèle inconnu Bush_Common
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Bush_Common
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Grass_Common_Tall
+ERROR: [world_v2] kit : modèle inconnu Plant_7
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_CaveRock
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_CaveWallTop
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_CaveWallHalf
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Rock_Medium_1
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Rock_Medium_2
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu RockPath_Square_Small_1
+ERROR: [world_v2] kit : modèle inconnu rock_largeC
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Rock_Medium_3
+ERROR: [world_v2] kit : modèle inconnu rock_smallB
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Rock_Medium_1
+ERROR: [world_v2] kit : modèle inconnu rock_smallB
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Bush_Common
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Bush_Common
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Bush_Common
+ERROR: [world_v2] kit : modèle inconnu Grass_Wispy_Tall
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Grass_Wispy_Tall
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_CaveArch
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_CaveWallHalf
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_CaveWallHalf
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu rock_largeA
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu rock_largeC
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu rock_largeC
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Rock_Medium_2
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu RockPath_Round_Small_1
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu RockPath_Square_Small_1
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Fern_1
+ERROR: [world_v2] kit : modèle inconnu RockPath_Round_Small_1
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Fern_1
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Bush_Common
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_ArchBlock
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_ArchBlock
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu RockPath_Square_Wide
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Floor_Brick
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_PillarStub
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_PillarStub
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_PillarStub
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_PillarStub
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_PillarStub
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Floor_UnevenBrick
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Floor_UnevenBrick
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Bush_Common
+ERROR: [world_v2] kit : modèle inconnu Floor_UnevenBrick
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Bush_Common
+ERROR: [world_v2] kit : modèle inconnu Pebble_Round_3
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Bush_Common
+ERROR: [world_v2] kit : modèle inconnu Pebble_Square_1
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Bush_Common
-   at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Bush_Common
-   at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Bush_Common
+ERROR: [world_v2] kit : modèle inconnu Pebble_Round_5
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Fern_1
    at: push_error (core/variant/variant_utility.cpp:1023)
@@ -901,28 +997,68 @@ ERROR: [world_v2] kit : modèle inconnu Fern_1
 ERROR: [world_v2] kit : modèle inconnu Fern_1
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Fern_1
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Bush_Common
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Bush_Common
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Bush_Common
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Mushroom_Common
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Mushroom_Common
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Mushroom_Laetiporus
    at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Plant_7
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu Plant_7
+   at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Pine_3
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Pine_3
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu CommonTree_3
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Rock_Medium_1
+ERROR: [world_v2] kit : modèle inconnu rock_largeC
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Rock_Medium_3
+ERROR: [world_v2] kit : modèle inconnu rock_largeA
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Rock_Medium_2
+ERROR: [world_v2] kit : modèle inconnu rock_largeC
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Rock_Medium_2
+ERROR: [world_v2] kit : modèle inconnu rock_largeA
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Rock_Medium_1
+ERROR: [world_v2] kit : modèle inconnu rock_largeC
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Rock_Medium_3
+ERROR: [world_v2] kit : modèle inconnu rock_largeC
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_ArchBlock
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_ArchBlock
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu RockPath_Square_Wide
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_RubbleLarge
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_RubbleSmall
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_RubbleSmall
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_PillarStub
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu SM_Dungeon_PillarStub
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu cliff_half_rock
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu cliff_half_rock
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu cliff_half_rock
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu RockPath_Square_Small_1
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu RockPath_Round_Small_1
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu RockPath_Square_Small_1
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Grass_Common_Tall
    at: push_error (core/variant/variant_utility.cpp:1023)
@@ -930,27 +1066,33 @@ ERROR: [world_v2] kit : modèle inconnu Grass_Common_Tall
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Grass_Common_Tall
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu Rock_Medium_3
+ERROR: [world_v2] kit : modèle inconnu rock_smallB
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu rock_smallB
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Rock_Medium_1
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [flower_field] modèle de dalle inconnu RockPath_Square_Small_1
+ERROR: [world_v2] kit : modèle inconnu RockPath_Round_Small_1
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [flower_field] modèle de dalle inconnu RockPath_Round_Small_1
+ERROR: [world_v2] kit : modèle inconnu RockPath_Round_Wide
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu RockPath_Square_Small_1
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu RockPath_Round_Small_1
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu RockPath_Square_Small_1
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu RockPath_Round_Small_1
+   at: push_error (core/variant/variant_utility.cpp:1023)
+ERROR: [world_v2] kit : modèle inconnu RockPath_Square_Small_1
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Bush_Common_Flowers
    at: push_error (core/variant/variant_utility.cpp:1023)
 ERROR: [world_v2] kit : modèle inconnu Bush_Common_Flowers
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [world_v2] kit : modèle inconnu CommonTree_3
+ERROR: [world_v2] kit : modèle inconnu Flower_4_Group
    at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [flower_field] modèle inconnu Flower_3_Group
-   at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [flower_field] modèle inconnu Flower_4_Group
-   at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [flower_field] modèle inconnu Flower_3_Group
-   at: push_error (core/variant/variant_utility.cpp:1023)
-ERROR: [flower_field] modèle inconnu Grass_Wispy_Tall
+ERROR: [world_v2] kit : modèle inconnu Grass_Wispy_Tall
    at: push_error (core/variant/variant_utility.cpp:1023)
 WARNING: [world_v2] modèle végétal introuvable : DeadTree_2
      at: push_warning (core/variant/variant_utility.cpp:1033)
@@ -2216,7 +2358,7 @@ WARNING: [world_v2] modèle végétal introuvable : Pebble_Square_1
      at: push_warning (core/variant/variant_utility.cpp:1033)
 [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [world_v2] carte        : 31 lieux + 3 sites systémiques, valide
-[world_v2] terrain      : 64 chunks, montage 7854 ms
+[world_v2] terrain      : 64 chunks, montage 9073 ms
 [world_v2] navigation   : 4 région(s) chargée(s)
 [world_v2] lieux        : 15 scène(s) posée(s) par le layout
 [world_v2] spawn        : (0.0, 24.4, 170.0)

@@ -63,6 +63,15 @@ def rmse(a: Path, b: Path) -> float:
     return -1.0
 
 
+def identify_moyenne(p: Path) -> float:
+    r = subprocess.run(["identify", "-format", "%[fx:mean]", str(p)],
+                       capture_output=True, text=True, timeout=30)
+    try:
+        return float((r.stdout or "0").strip())
+    except ValueError:
+        return -1.0
+
+
 def lire(journal: Path) -> str:
     return journal.read_text(encoding="utf-8", errors="replace") if journal.exists() else ""
 
@@ -157,8 +166,30 @@ def main() -> int:
         note("lieux posés par le layout", "PASS" if ligne_lieux else "FAIL",
              ligne_lieux or "aucune ligne [world_v2] lieux")
 
-        time.sleep(6)
+        pret = attendre_motif(j1, "fondation V2 vérifiée", 300)
+        note("monde monté (fondation V2 vérifiée)", "PASS" if pret else "FAIL",
+             f"jalon final du montage {'atteint' if pret else 'ABSENT'} "
+             "dans les 300 s")
+        # L'écran de chargement s'efface APRÈS le jalon : attendre qu'il
+        # bouge, sinon on photographie encore la barre de progression.
+        base = capture("02a_attente")
+        stable = 0
+        for _ in range(30):
+            time.sleep(5)
+            suiv = capture("02a_attente")
+            d = rmse(base, suiv)
+            if d > 0.02:
+                stable = 0
+            else:
+                stable += 1
+            base = suiv
+            if stable >= 2:
+                break
         a = capture("02_monde_avant")
+        note("écran de jeu affiché (plus l'écran de chargement)",
+             "PASS" if identify_moyenne(a) > 0.02 else "FAIL",
+             f"luminance moyenne {identify_moyenne(a):.4f} "
+             "(l'écran de chargement mesuré vaut 0.0027)")
 
         # --- 6. la caméra du JOUEUR répond à la souris ----------------------
         for _ in range(12):

@@ -15,15 +15,15 @@ pour cela qu'aucune suite ne l'avait vu.
 
 | Mesure | Build exportée | Exécution éditeur |
 |---|---:|---:|
-| `kit : modèle inconnu` | **457** | 0 |
+| `[world_v2] kit : modèle inconnu` | **457** | 0 |
 | `modèle végétal introuvable` | **631** | 0 |
-| `modèle de dalle inconnu` | **2** | 0 |
-| **Total appels de placement manqués** | **1 090** | **0** |
+| `[flower_field] modèle inconnu` | **4** | 0 |
+| `[flower_field] modèle de dalle inconnu` | **2** | 0 |
+| **Total appels de placement manqués** | **1 094** | **0** |
+| Modèles distincts introuvables | **110** | 0 |
 
-Une cellule végétale sautée emporte TOUTES ses instances : le nombre
-d'objets réellement absents est très supérieur à 1 090.
-
-| Modèles distincts introuvables | **109** | 0 |
+Une cellule de MultiMesh végétal sautée emporte TOUTES ses instances : le
+nombre d'objets réellement absents à l'écran est très supérieur à 1 094.
 
 Le monde se monte quand même — `[world_v2] lieux : 15 scène(s) posée(s)`,
 `terrain : 64 chunks` — mais **vide de ses modules** : ni murs, ni sols, ni
@@ -31,14 +31,14 @@ clôtures, ni chemins de pierre, ni arbres, ni rochers, ni galets.
 
 Inventaire nominatif complet : `inventaire_modeles_absents.txt`.
 
-## 2. La cause, lue dans la source du moteur installé
+## 2. La cause, PROUVÉE par un laboratoire, pas déduite
 
 Deux fonctions indexent les modèles en **balayant un répertoire** et en
 retenant les fichiers dont le nom finit par `.glb` ou `.gltf` :
 
 - `scripts/world_v2/poi/world_v2_place_kit.gd`, `scene_for()` ;
 - `scripts/core/asset_registry.gd`, `model()` — qui sert aussi de recours au
-  premier, donc les deux échouent ensemble.
+  premier, donc les deux échouent ensemble et aucune ne rattrape l'autre.
 
 ```gdscript
 for file: String in dir.get_files():
@@ -47,37 +47,38 @@ for file: String in dir.get_files():
         _index[StringName(file.get_basename())] = dir_path + "/" + file
 ```
 
-Dans un projet **exporté**, une ressource importée n'entre pas dans le PCK sous
-son nom d'origine : l'exporteur y place un fichier `<nom>.gltf.remap` dont le
-contenu pointe vers `res://.godot/imported/<nom>.gltf-<md5>.scn`. Vérifié sur
-le binaire produit : **343 entrées `.remap`** et **425 chemins
-`res://.godot/imported/…`**.
+**Correction d'une première hypothèse fausse.** J'avais d'abord écrit que le
+PCK rangeait la ressource sous `<nom>.gltf.remap`. Le binaire porte bien 343
+entrées `.remap` — mais pour des `.tres` et des `.gd`, **aucune** pour un
+`.gltf` ou un `.glb`. L'hypothèse était plausible et fausse ; un laboratoire l'a
+tranchée.
 
-Et le moteur n'enlève pas ce suffixe quand on liste un répertoire empaqueté —
-`core/io/file_access_pack.cpp` de la source 4.7.1 installée :
+Projet minimal (`lab_dir_access/`), deux modèles importés, une sonde qui
+imprime le répertoire, exporté avec les mêmes templates officiels 4.7.1 :
 
-```cpp
-String filename = simplified_path.get_file();
-if (!filename.is_empty()) {
-    cd->files.insert(filename);          // le nom PACKÉ, tel quel
-}
+```
+--- BUILD EXPORTÉE ---            --- MÊME SONDE, ÉDITEUR ---
+get_files() rend 2 entree(s)      get_files() rend 5 entree(s)
+  [Floor_WoodLight.gltf.import]     [Floor_WoodLight.bin]
+  [SM_Barrow_Stones.glb.import]     [Floor_WoodLight.gltf]
+                                    [Floor_WoodLight.gltf.import]
+                                    [SM_Barrow_Stones.glb]
+                                    [SM_Barrow_Stones.glb.import]
+load(gltf) = true                 load(gltf) = true
 ```
 
-```cpp
-Error DirAccessPack::list_dir_begin() {
-    for (const String &E : current->files) {
-        list_files.push_back(E);         // rendu verbatim par get_next()
-    }
-```
+**Le fichier SOURCE n'est pas empaqueté du tout.** Seul son fichier de
+métadonnées `<nom>.gltf.import` entre dans le PCK ; le maillage vit sous
+`res://.godot/imported/<nom>.gltf-<md5>.scn` (425 chemins de cette forme dans
+le binaire du jeu). Un balayage qui teste le suffixe `.glb`/`.gltf` ne trouve
+donc **jamais rien** dans une build exportée, tandis que `load()` sur un chemin
+explicite réussit — la redirection est transparente pour un chemin, pas pour un
+listage.
 
-Donc `DirAccess.get_files()` rend `Wall_Plaster_Straight.gltf.remap`, le test
-`ends_with(".gltf")` est **faux**, l'index reste vide, et chaque appel finit en
-`push_error("modèle inconnu")`.
-
-En exécution éditeur le même code lit le vrai système de fichiers, où
-`Wall_Plaster_Straight.gltf` existe : il marche. **Le défaut ne peut donc
-apparaître que dans une build exportée** — exactement l'angle mort que le test
-de fumée §4 existe pour couvrir.
+En exécution éditeur le même code lit le vrai système de fichiers, où les
+sources existent : il marche. **Le défaut ne peut donc apparaître que dans une
+build exportée** — exactement l'angle mort que le test de fumée §4 existe pour
+couvrir.
 
 ## 3. Ancienneté
 

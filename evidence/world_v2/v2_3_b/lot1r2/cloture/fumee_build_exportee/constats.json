@@ -30,24 +30,34 @@
     "mesure": "[world_v2] lieux        : 15 scène(s) posée(s) par le layout"
   },
   {
+    "point": "monde monté (fondation V2 vérifiée)",
+    "verdict": "PASS",
+    "mesure": "jalon final du montage atteint dans les 300 s"
+  },
+  {
+    "point": "écran de jeu affiché (plus l'écran de chargement)",
+    "verdict": "PASS",
+    "mesure": "luminance moyenne 0.5196 (l'écran de chargement mesuré vaut 0.0027)"
+  },
+  {
     "point": "rotation caméra à la souris",
-    "verdict": "FAIL",
-    "mesure": "RMSE 0.0000 entre 02 et 03 (seuil 0.0200)"
+    "verdict": "PASS",
+    "mesure": "RMSE 0.1482 entre 02 et 03 (seuil 0.0200)"
   },
   {
     "point": "déplacement à la touche Z",
-    "verdict": "FAIL",
-    "mesure": "RMSE 0.0000 entre 03 et 04 (seuil 0.0200)"
+    "verdict": "PASS",
+    "mesure": "RMSE 0.0549 entre 03 et 04 (seuil 0.0200)"
   },
   {
     "point": "gravité : saut puis retour au sol",
-    "verdict": "PARTIAL",
-    "mesure": "RMSE saut 0.0000 · RMSE après retombée 0.0000 (la vue s'écarte puis revient : le sol arrête la chute)"
+    "verdict": "PASS",
+    "mesure": "RMSE saut 0.0604 · RMSE après retombée 0.0575 (la vue s'écarte puis revient : le sol arrête la chute)"
   },
   {
     "point": "sauvegarde écrite dans user:// vierge",
     "verdict": "PASS",
-    "mesure": "246 fichier(s) créés, dont 1 de sauvegarde : godot/app_userdata/Eclats d'Orage/saves/slot0.json"
+    "mesure": "267 fichier(s) créés, dont 1 de sauvegarde : godot/app_userdata/Eclats d'Orage/saves/slot0.json"
   },
   {
     "point": "modèles de kit résolus dans la build exportée",

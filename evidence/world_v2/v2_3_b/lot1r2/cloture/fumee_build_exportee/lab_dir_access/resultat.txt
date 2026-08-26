@@ -1,0 +1,33 @@
+LABORATOIRE DirAccess — que rend get_files() dans une build EXPORTÉE ?
+======================================================================
+
+Projet minimal /tmp/lab_remap : deux modèles importés (un .gltf avec son
+.bin, un .glb autonome), une sonde qui imprime le contenu du répertoire.
+Exporté avec les MÊMES templates officiels 4.7.1 que le jeu.
+
+--- BUILD EXPORTÉE ---
+LAB: debut
+LAB: get_files() rend 2 entree(s)
+LAB:   [Floor_WoodLight.gltf.import]
+LAB:   [SM_Barrow_Stones.glb.import]
+LAB: ResourceLoader.exists(gltf) = true
+LAB: load(gltf) = true
+LAB: fin
+
+--- MÊME SONDE, EXÉCUTION ÉDITEUR ---
+LAB: debut
+LAB: get_files() rend 5 entree(s)
+LAB:   [Floor_WoodLight.bin]
+LAB:   [Floor_WoodLight.gltf]
+LAB:   [Floor_WoodLight.gltf.import]
+LAB:   [SM_Barrow_Stones.glb]
+LAB:   [SM_Barrow_Stones.glb.import]
+LAB: ResourceLoader.exists(gltf) = true
+LAB: load(gltf) = true
+LAB: fin
+
+VERDICT : dans le PCK, le fichier SOURCE (.gltf / .glb / .bin) N'EST PAS
+empaqueté. Seul son fichier de métadonnées <nom>.gltf.import l'est. Un
+balayage qui teste le suffixe .glb/.gltf ne trouve donc RIEN, alors que
+load("res://.../Floor_WoodLight.gltf") réussit — le chemin explicite est
+redirigé de façon transparente vers .godot/imported/*.scn.

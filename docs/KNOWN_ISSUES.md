@@ -2570,3 +2570,102 @@ ouvrait le seuil de toute façon : la condition posée ci-dessus est remplie.
 - **Reste NON VÉRIFIÉ** : la franchissabilité HUMAINE du seuil. Aucune
   manette, aucun écran ici — cette part-là relève de
   `docs/MANUAL_VALIDATION.md` et n'a pas bougé.
+
+## ISS-071 — La build EXPORTÉE ne résout aucun modèle indexé par balayage de répertoire : 1 094 placements manqués, 110 modèles absents — S1, OUVERT
+
+**Trouvé** le 2026-08-26 par le test de fumée §4 de la clôture LOT 1.R.2, sur
+l'export Linux autonome du SHA validé `919511d`. **Aucune suite du dépôt ne
+pouvait le voir** : le défaut n'existe QUE dans une build exportée, et toutes
+nos suites tournent en exécution éditeur. C'est l'angle mort exact que ce test
+de fumée existait pour couvrir, et il l'a couvert au premier passage.
+
+- **Mesure**, journal produit par le processus testé lui-même
+  (`evidence/world_v2/v2_3_b/lot1r2/cloture/fumee_build_exportee/session1_stdout.log`,
+  2 222 lignes) :
+
+  | | build exportée | exécution éditeur |
+  |---|---:|---:|
+  | `[world_v2] kit : modèle inconnu` | 457 | 0 |
+  | `modèle végétal introuvable` | 631 | 0 |
+  | `[flower_field] modèle inconnu` | 4 | 0 |
+  | `[flower_field] modèle de dalle inconnu` | 2 | 0 |
+  | **appels de placement manqués** | **1 094** | **0** |
+  | modèles distincts | **110** | 0 |
+
+  Une cellule de MultiMesh végétal dont le modèle manque est sautée ENTIÈRE —
+  `_emit_model_cells()` rend `false` sans rien émettre — donc le nombre
+  d'objets réellement absents à l'écran est très supérieur à 1 094. Inventaire
+  nominatif : `…/fumee_build_exportee/inventaire_modeles_absents.txt`.
+
+- **Cause, PROUVÉE par un laboratoire** (`…/fumee_build_exportee/lab_dir_access/`),
+  pas déduite. Deux fonctions indexent les modèles en balayant un répertoire et
+  en gardant les noms qui finissent par `.glb` ou `.gltf` :
+  `WorldV2PlaceKit.scene_for()` et `AssetRegistry.model()` — et la seconde sert
+  de recours à la première, ce qui explique qu'aucune n'ait rattrapé l'autre.
+
+  Projet minimal, deux modèles importés, exporté avec les mêmes templates
+  officiels 4.7.1 :
+
+  ```
+  --- BUILD EXPORTÉE ---            --- MÊME SONDE, ÉDITEUR ---
+  get_files() rend 2 entree(s)      get_files() rend 5 entree(s)
+    [Floor_WoodLight.gltf.import]     [Floor_WoodLight.bin]
+    [SM_Barrow_Stones.glb.import]     [Floor_WoodLight.gltf]
+                                      [Floor_WoodLight.gltf.import]
+                                      [SM_Barrow_Stones.glb]
+                                      [SM_Barrow_Stones.glb.import]
+  load(gltf) = true                 load(gltf) = true
+  ```
+
+  **Le fichier source n'est pas empaqueté du tout** : seul son fichier de
+  métadonnées `<nom>.gltf.import` entre dans le PCK, le maillage vivant sous
+  `res://.godot/imported/<nom>.gltf-<md5>.scn`. Un balayage qui teste `.glb` ou
+  `.gltf` ne trouve donc jamais rien, tandis que `load()` sur un chemin
+  explicite réussit : la redirection est transparente pour un chemin, pas pour
+  un listage.
+
+  **Hypothèse fausse corrigée en route** : j'avais d'abord écrit que le PCK
+  rangeait la ressource sous `<nom>.gltf.remap`. Le binaire porte bien 343
+  entrées `.remap` — mais pour des `.tres` et des `.gd`, aucune pour un `.gltf`
+  ni un `.glb`. Plausible, et faux ; c'est le lab qui a tranché, pas la lecture.
+
+- **Portée exacte**, ni exagérée ni minimisée
+  (`…/fumee_build_exportee/PORTEE_DU_DEFAUT.md`) :
+  - `preload()` / `load("res://…")` **fonctionnent**. Les six lieux gelés
+    chargent donc bien leur asset propre ; aucune erreur de leur part au journal.
+  - Le monde se monte entièrement : 64 chunks, 4 régions de navigation,
+    **15 scènes posées**, terrain/herbe/falaises/héros dessinés, caméra et
+    déplacement réactifs (mesurés : RMSE 0,1482 à la souris, 0,0549 en marche).
+  - Mais **les six lieux gelés appellent tous le kit** (7, 7, 8, 2, 6 et 4
+    sites d'appel), et le champ des mille fleurs perd en plus ses modèles de
+    fleurs. Leur masse est là, leur habillage non : la build ne montrerait pas
+    les six lieux tels qu'ils ont été validés sur captures éditeur.
+
+- **Ancienneté** : ce n'est PAS une régression du lot 1.R.2. Ni
+  `world_v2_place_kit.gd` ni `asset_registry.gd` n'appartiennent aux 46
+  fichiers gelés ; le balayage existe depuis `5428e96` (V2.3-A) pour le premier
+  et depuis le « Lot 9 » pour le second. **La build déjà publiée
+  `world-v2-playtest-lot1-d78f007` a été téléchargée depuis GitHub et lancée
+  ici : sur 145 s d'observation, 534 `modèle inconnu` et 631 `modèle végétal
+  introuvable`.** Les comptes ne se comparent pas au chiffre près d'une build à
+  l'autre — durées et séquences diffèrent — mais les deux sont très loin de
+  zéro. Istvan joue donc, depuis au moins le 24 août, un monde privé de ces
+  modèles.
+
+- **Conséquence** : aucune Release LOT 1.R.2 n'a été publiée. La clôture est
+  `PARTIAL`.
+
+- **Pistes de correction, NON APPLIQUÉES** — elles sortent du périmètre de
+  cette clôture et touchent la résolution d'assets de tout le jeu :
+  1. accepter aussi le suffixe `.import` au balayage
+     (`file.trim_suffix(".import")` avant le test d'extension), dans les **deux**
+     fonctions à la fois — corriger une seule laisserait l'autre en recours muet ;
+  2. ou remplacer le balayage par un index construit à l'import et versionné,
+     qui ne dépend plus de la façon dont le moteur empaquette ses fichiers.
+
+  Dans les deux cas le correctif doit être **ROUGE D'ABORD**, et le rouge n'est
+  atteignable que sur une build exportée : il faut donc d'abord un portail qui
+  exporte, lance et compte ces lignes. Sans lui, le même angle mort se
+  refermera. Les deux instruments écrits pour cette clôture — `fumee.py` et
+  `lab_dir_access/` — sont archivés à côté de la preuve et sont le point de
+  départ de ce portail.

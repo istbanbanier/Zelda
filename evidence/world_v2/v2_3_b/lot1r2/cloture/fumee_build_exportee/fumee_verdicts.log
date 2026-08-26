@@ -4,10 +4,12 @@
 [PASS    ] « Nouvelle partie » ouvre World V2 — [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
 [PASS    ] aucune vallée V1 chargée — 0 mention(s) de la vallée V1 dans la sortie du jeu
 [PASS    ] lieux posés par le layout — [world_v2] lieux        : 15 scène(s) posée(s) par le layout
-[FAIL    ] rotation caméra à la souris — RMSE 0.0000 entre 02 et 03 (seuil 0.0200)
-[FAIL    ] déplacement à la touche Z — RMSE 0.0000 entre 03 et 04 (seuil 0.0200)
-[PARTIAL ] gravité : saut puis retour au sol — RMSE saut 0.0000 · RMSE après retombée 0.0000 (la vue s'écarte puis revient : le sol arrête la chute)
-[PASS    ] sauvegarde écrite dans user:// vierge — 246 fichier(s) créés, dont 1 de sauvegarde : godot/app_userdata/Eclats d'Orage/saves/slot0.json
+[PASS    ] monde monté (fondation V2 vérifiée) — jalon final du montage atteint dans les 300 s
+[PASS    ] écran de jeu affiché (plus l'écran de chargement) — luminance moyenne 0.5196 (l'écran de chargement mesuré vaut 0.0027)
+[PASS    ] rotation caméra à la souris — RMSE 0.1482 entre 02 et 03 (seuil 0.0200)
+[PASS    ] déplacement à la touche Z — RMSE 0.0549 entre 03 et 04 (seuil 0.0200)
+[PASS    ] gravité : saut puis retour au sol — RMSE saut 0.0604 · RMSE après retombée 0.0575 (la vue s'écarte puis revient : le sol arrête la chute)
+[PASS    ] sauvegarde écrite dans user:// vierge — 267 fichier(s) créés, dont 1 de sauvegarde : godot/app_userdata/Eclats d'Orage/saves/slot0.json
 [FAIL    ] modèles de kit résolus dans la build exportée — 461 ligne(s) « kit : modèle inconnu » ; 99 modèles distincts
 [FAIL    ] aucune autre erreur bloquante (session 1) — 4 ERROR hors audio et hors kit, sur 2222 lignes ; 0 ligne(s) audio (pas de carte son dans ce conteneur)
     ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN
@@ -17,5 +19,5 @@
 [PASS    ] reprise après rechargement -> World V2 — [world_v2] monde présent ; 0 mention(s) V1
 [FAIL    ] aucune erreur bloquante (session 2) — 465 ligne(s) sur 2222
 
-=== 14 points observés, 5 FAIL ===
+=== 16 points observés, 3 FAIL ===
 RC=1

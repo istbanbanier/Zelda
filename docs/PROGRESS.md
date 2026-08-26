@@ -1687,3 +1687,75 @@ sabotages D1–D8, `validate_fast.sh` UNE fois depuis un worktree `/tmp`,
 checkpoint jouable, release Lot1.R sans écraser l'ancienne. **Interdits
 inchangés** : lot 2, toucher à la Release courante, verdict artistique
 auto-déclaré.
+
+---
+
+## 2026-08-26 — V2.3-B LOT 1.R.2, clôture : validation complète VERTE, test de fumée ROUGE, **aucune Release publiée**
+
+**SHA en jeu, distingués comme la directive l'exige** :
+
+| rôle | SHA |
+|---|---|
+| géométrie capturée / verdict visuel Codex | `51b7b29` |
+| gel des six lieux | `51b7b29` (46 fichiers, sha256 **et** blob) |
+| **validation et test de fumée** | **`919511d`** |
+| documentation finale | ce commit |
+
+**§1 gel** — 46 fichiers épinglés deux fois (disque + blob git). Vérifié
+46/46 avant la validation, 46/46 après les sabotages, 46/46 après
+`validate_fast.sh`, 46/46 après le test de fumée. Rien n'a bougé.
+
+**§3 validation complète, exécutée UNE fois, VERTE** :
+
+| portail | résultat |
+|---|---|
+| filets lot 1 complets | 23/23, RC=0 |
+| sabotages D1–D8 | 8 déclarés, 8 joués, **8 validés** |
+| `gel_verifier` | 43/43 |
+| ISS-070 | **PASS**, fenêtre 1,31 m, capsule réelle balayée dans les deux sens |
+| manifeste des six lieux | 6/6, 0 écart |
+| `tools/validate_fast.sh` | **VERT**, 961 tests, 0 échec, plancher 586 respecté |
+
+Aucun seuil déplacé pour obtenir un vert.
+
+**§4 test de fumée sur la build EXPORTÉE — ROUGE, et c'est lui qui a payé.**
+Templates d'export téléchargés, export Linux autonome produit depuis l'arbre
+committé (393 752 464 o), lancé en installation neuve avec un `user://`
+vierge sous Xvfb.
+
+Ce qui PASSE, chaque point adossé à une observation : démarrage, menu,
+« Nouvelle partie » → **World V2, jamais V1** (0 mention), monde monté
+(64 chunks, 4 régions, **15 scènes posées**, `fondation V2 vérifiée`), écran de
+jeu réellement affiché (luminance 0,5196 contre 0,0027 pour l'écran de
+chargement), **caméra qui tourne à la souris** (RMSE 0,1482), **déplacement à
+la touche Z** (0,0549), **gravité** (saut 0,0604 puis retour 0,0575),
+sauvegarde écrite dans un `user://` vierge, reprise qui rouvre World V2.
+
+Ce qui ÉCHOUE, **ISS-071** : **1 094 appels de placement manqués, 110 modèles
+distincts absents** — kit de lieu, végétation, dalles. Cause **prouvée par un
+laboratoire**, pas déduite : dans le PCK le fichier SOURCE n'est pas empaqueté,
+seul son `<nom>.gltf.import` l'est. Les deux fonctions qui indexent par
+balayage de répertoire (`WorldV2PlaceKit.scene_for`, `AssetRegistry.model`)
+testent le suffixe `.glb`/`.gltf` et ne trouvent donc jamais rien, alors que
+`load()` sur un chemin explicite réussit. En éditeur : **0**. Ma première
+hypothèse — un suffixe `.remap` — était plausible et FAUSSE ; c'est le lab qui
+a tranché. Les six lieux gelés chargent bien leur asset propre (chemin explicite,
+remap transparent) mais appellent tous le kit : leur masse est là, leur
+habillage non.
+
+**Ce n'est pas une régression du lot.** La build DÉJÀ PUBLIÉE
+`world-v2-playtest-lot1-d78f007` a été téléchargée et lancée ici : 534
+`modèle inconnu`, 631 `modèle végétal introuvable`.
+
+**§5 — AUCUNE Release publiée.** Aucune release existante touchée.
+
+**PROCHAINE ACTION EXACTE** : décider d'ouvrir, ou non, une passe ISS-071 —
+elle sort du périmètre de cette clôture et touche la résolution d'assets de
+TOUT le jeu. Si elle est ouverte, l'ordre imposé est : (1) un portail qui
+EXPORTE, LANCE et COMPTE ces lignes, rouge d'abord sur `919511d` ; (2) le
+correctif dans les **deux** fonctions à la fois ; (3) `validate_fast.sh` ;
+(4) nouveau test de fumée ; (5) alors seulement la Release Lot1.R.2. Le
+document joueur `docs/PLAYTEST_LOT1R2.md` et le mode `lot1r2` du workflow sont
+prêts et attendent, placeholders de SHA non remplis. **Interdits inchangés** :
+lot 2, propagation aux 25 POI restants, toucher à V2.2 ou à une Release
+existante, verdict artistique auto-déclaré.
