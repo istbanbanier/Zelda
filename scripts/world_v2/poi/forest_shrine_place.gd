@@ -368,20 +368,31 @@ func _seuil() -> void:
 	# est couchée là où tout le reste est debout. Enfoncée de 11 cm, elle
 	# n'émerge que de 0,22 m — sous la hauteur de marche du héros, donc aucun
 	# corps : on l'enjambe, exactement comme la pierre couchée de la nef.
-	var linteau: Vector3 = _nef_seated(-1.28, -3.15)
-	# LE LINTEAU SORT DE LA TRAVÉE, ET C'EST UNE ERREUR DE PLUS QUE JE CORRIGE
-	# SUR CAPTURE. Relevé à 50° au milieu du seuil, il faisait bien une
-	# diagonale — mais sur `it2/forest_shrine_joueur.png` cette diagonale
-	# projette à x 456, entre le montant est (400) et le cœur (481) : elle
-	# MASQUE le sujet qu'elle était censée présenter. Un linteau tombé n'a
-	# aucune raison d'être au milieu du passage : il tombe au PIED d'un
-	# montant. Il va donc à l'extérieur du montant ouest (x 593 à l'écran,
-	# hors de la ligne caméra → cœur), incliné de 40°, un bout calé contre la
-	# pierre. On lit toujours la pièce taillée qui est tombée de la porte, et
-	# la travée est rendue au passage.
+	var linteau: Vector3 = _nef_seated(-0.30, -4.05)
+	# LE LINTEAU PASSE DEVANT LE SEUIL, ET LA PROJECTION DIT POURQUOI C'EST
+	# POSSIBLE. Trois positions ont été essayées, et chacune a été jugée sur
+	# capture, pas sur intention :
+	#   * à plat entre les montants (`it1`) : indiscernable des blocs tombés ;
+	#   * relevé à 50° entre les montants (`it2`) : il projetait à x 456,
+	#     entre le montant est (400) et le cœur (481) — il MASQUAIT le sujet
+	#     qu'il était censé présenter ;
+	#   * au pied du montant ouest (`it3`) : il ne masque plus rien, mais il
+	#     ne relie plus les deux montants non plus, et le seuil retombe à
+	#     « deux pierres » au lieu d'« une porte ».
+	# La quatrième position est la bonne parce qu'elle sort du CONFLIT au lieu
+	# d'arbitrer entre ses deux termes : DEVANT le seuil, en travers de
+	# l'approche (z de nef −4,05). Il se projette alors à x 486, y 440 —
+	# c'est-à-dire 59 px SOUS le cœur (y 381) et 124 px sous le sommet du
+	# dossier (y 316). Il ne peut donc rien masquer : il est au premier plan
+	# bas, là où une barre de seuil se lit comme un pas à franchir.
+	#
+	# ENFONCÉ DE 12 CM, et ce n'est pas de l'esthétique : le maillage culmine
+	# à 0,46 m, et le contrat du lieu veut que le linteau s'ENJAMBE. À 0,34 m
+	# il reste sous la hauteur de marche du héros (0,38 m) et garde donc son
+	# droit de n'avoir aucun corps de collision, comme la marche.
 	_piece_vestige("SM_Shrine_Linteau",
-		linteau + Vector3(0.0, -0.06, 0.0),
-		Vector3(0.0, deg_to_rad(_nef_yaw(62.0)), deg_to_rad(40.0)))
+		linteau + Vector3(0.0, -0.12, 0.0),
+		Vector3(0.0, deg_to_rad(_nef_yaw(84.0)), deg_to_rad(8.0)))
 	declare_support(linteau)
 	# Enfoncée de 8 cm : une dalle qui affleure l'herbe se lit neuve.
 	var marche: Vector3 = _nef_seated(-0.02, -3.02)
