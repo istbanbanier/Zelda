@@ -67,6 +67,11 @@ Le seuil masquait le cœur au lieu de le présenter.
    le sujet qu'il présentait. Il tombe au pied du montant ouest, x 593.
 7. *(après `it2`)* **La pierre couchée cesse de barrer la nef** et la borde à
    l'ouest ; le dallage passe à deux dalles.
+8. *(après `it3`)* **Le linteau passe DEVANT le seuil**, en travers de
+   l'approche. Quatrième position pour cette pièce, et la première qui sorte
+   du conflit au lieu d'arbitrer entre ses deux termes : à x 486 / y 440, soit
+   59 px sous le cœur, elle ne peut rien masquer, et elle rend au seuil la
+   barre qui le fait lire comme une porte.
 
 ## Preuves
 
@@ -75,8 +80,10 @@ Le seuil masquait le cœur au lieu de le présenter.
 | Sonde AVANT | `sondes/probe_AVANT_ROUGE.log` | **FAIL**, fenêtre 0,89 m |
 | Sonde APRÈS | `sondes/probe_APRES.log` | **PASS**, fenêtre **1,31 m** |
 | Capsule réelle, entrée puis sortie | idem, §2c (contrôle AJOUTÉ) | **100 %** / **100 %** |
-| R-D3 | `verdict_d3_sanctuaire.json` | **PASS**, pire paire 0,389 / seuil 0,4912 |
-| Vues gelées | `it3/` (+ `it1/`, `it2/` pour l'historique) | copie exacte des trois plans |
+| R-D3 | `verdict_d3_sanctuaire.json` | **PASS**, pire paire **0,3983** / seuil 0,4912 |
+| Vues gelées | **`it4/`** (+ `it1/`…`it3/`, l'historique des quatre passes) | copie exacte des trois plans |
+| Invisibilité depuis la route | `controle_route/` | aucune pierre visible |
+| Suites du dépôt | `tests/` | 11 + 5 réussis, 0 échoué |
 | Avant/après | `planche_avant_apres_joueur.png` | |
 
 ## Contrôles faits en plus, et ce qu'ils disent
@@ -98,10 +105,35 @@ saturés, et ce résidu est du sol et des troncs, pas de la maçonnerie. Le
 décalage de +0,45 m du rideau, qui n'était qu'un calcul de ligne de vue, est
 donc confirmé par une capture.
 
+## Ce qui est VISIBLE sur la vue joueur finale (`it4/forest_shrine_joueur.png`)
+
+Description, pas verdict — le verdict appartient à Codex et à Istvan.
+
+- **L'arbre ne sépare plus.** Le lieu s'étend de x 334 à 615 ; le tronc gelé
+  occupe 661-717. Il n'y a plus aucun chevauchement, et le tronc joue le
+  montant droit du cadre au lieu de couper le sujet en deux.
+- **Ouverture d'entrée** — VISIBLE : une barre de pierre claire en travers au
+  premier plan bas (le linteau), et deux pierres dressées de part et d'autre,
+  franchement inégales (1,65 m à gauche du cadre, 1,26 m à droite).
+- **Axe d'approche** — VISIBLE MAIS FAIBLE : la progression se lit par le
+  linteau, puis la marche, puis les deux bordures qui bordent la travée, puis
+  le cœur. Les bordures restent le maillon discret : basses, sombres, et sous
+  le couvert. C'est l'élément que je signale comme le moins concluant.
+- **Cœur rituel** — VISIBLE, et c'est l'élément le plus lisible des trois :
+  dalle horizontale claire, dossier vertical de 1,60 m de large derrière, et
+  l'offrande, seul point chaud de l'image.
+- **Les trois sont dans la même image**, et la travée entre les montants est
+  désormais dégagée : le cœur s'y voit de bout en bout.
+
 ## Ce qui reste NON VÉRIFIÉ
 
 - **Le verdict artistique.** Il appartient à Codex et à Istvan. Ce document
   décrit ce qui est visible, pas ce qui est réussi.
+- **La lisibilité de l'axe** est le point faible que je désigne moi-même :
+  les bordures dépassent enfin de l'herbe, mais elles restent dans l'ombre du
+  couvert et leur ligne est ténue. Si le verdict rouvre le lieu, c'est là
+  qu'il faut porter la passe suivante — et probablement par la VALEUR (ce qui
+  se lit ici, ce sont les surfaces éclairées) plutôt que par la forme.
 - **La franchissabilité humaine du seuil** : aucune manette, aucun écran ici.
 - **`tools/validate_fast.sh`** n'a pas été rejoué en entier sur cet arbre : il
   appartient à l'intégration du lead, qui seule voit les trois voies réunies.
