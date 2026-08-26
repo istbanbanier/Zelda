@@ -1,0 +1,29 @@
+DÉTERMINISME DE LA MESURE ISS-071
+=================================
+
+Deux exécutions indépendantes de la sonde éditeur, sur le même arbre
+committé, à quelques minutes d'intervalle, dont la seconde sous xvfb
+avec le rendu ACTIF et la capture des six vues en plus.
+
+674c584288bec953116acea35e4261f53e444c5aab5c04e0ec0ea3886bde156a  editeur.json
+674c584288bec953116acea35e4261f53e444c5aab5c04e0ec0ea3886bde156a  editeur2.json
+
+37132 octets comparés, 0 différence : les deux manifestes sont
+BYTE-À-BYTE identiques.
+
+POURQUOI CE CONTRÔLE COMPTE. Sans lui, une différence éditeur/export
+pourrait n'être que du bruit de mesure — un ordre de parcours de
+répertoire instable, un cache tiède, une course de frames. Il est
+établi que ce n'est pas le cas : toute différence relevée ensuite est
+une différence RÉELLE entre les deux environnements.
+
+Six vues capturées à la seconde exécution, 1920x1080 :
+  barrow_cemetery_joueur.png       moy=0.434672 ecart=0.162092
+  flower_field_joueur.png          moy=0.478247 ecart=0.227902
+  forest_shrine_joueur.png         moy=0.340916 ecart=0.194505
+  overlook_summit_joueur.png       moy=0.448622 ecart=0.191288
+  turquoise_spring_joueur.png      moy=0.302383 ecart=0.0838867
+  watchtower_ruin_joueur.png       moy=0.292724 ecart=0.0846969
+
+L'écran de chargement mesure 0,003 de luminance moyenne : ces six
+images portent du contenu, pas une barre de progression.
