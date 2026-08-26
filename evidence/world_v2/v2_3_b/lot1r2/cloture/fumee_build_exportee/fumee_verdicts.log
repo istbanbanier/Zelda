@@ -1,0 +1,21 @@
+[PASS    ] profil user:// vierge — /home/user/smoke_lot1r2/profil_vierge recréé, 0 entrée(s) — installation neuve
+[PASS    ] fenêtre du build exportée — xdotool search «Eclats d'Orage» -> 2097155
+[PASS    ] menu principal atteint — journal 1685 o ; capture 01_menu.png
+[PASS    ] « Nouvelle partie » ouvre World V2 — [world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[PASS    ] aucune vallée V1 chargée — 0 mention(s) de la vallée V1 dans la sortie du jeu
+[PASS    ] lieux posés par le layout — [world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[FAIL    ] rotation caméra à la souris — RMSE 0.0000 entre 02 et 03 (seuil 0.0200)
+[FAIL    ] déplacement à la touche Z — RMSE 0.0000 entre 03 et 04 (seuil 0.0200)
+[PARTIAL ] gravité : saut puis retour au sol — RMSE saut 0.0000 · RMSE après retombée 0.0000 (la vue s'écarte puis revient : le sol arrête la chute)
+[PASS    ] sauvegarde écrite dans user:// vierge — 246 fichier(s) créés, dont 1 de sauvegarde : godot/app_userdata/Eclats d'Orage/saves/slot0.json
+[FAIL    ] modèles de kit résolus dans la build exportée — 461 ligne(s) « kit : modèle inconnu » ; 99 modèles distincts
+[FAIL    ] aucune autre erreur bloquante (session 1) — 4 ERROR hors audio et hors kit, sur 2222 lignes ; 0 ligne(s) audio (pas de carte son dans ce conteneur)
+    ERROR: Condition "status < 0" is true. Returning: ERR_CANT_OPEN
+    ERROR: [hameau] IMPLANTATION : SechoirFaitiere FLOTTE : dessous à 3.09 m du sol, rien dessous
+    ERROR: [flower_field] modèle de dalle inconnu RockPath_Square_Small_1
+    ERROR: [flower_field] modèle de dalle inconnu RockPath_Round_Small_1
+[PASS    ] reprise après rechargement -> World V2 — [world_v2] monde présent ; 0 mention(s) V1
+[FAIL    ] aucune erreur bloquante (session 2) — 465 ligne(s) sur 2222
+
+=== 14 points observés, 5 FAIL ===
+RC=1

@@ -1,0 +1,72 @@
+[
+  {
+    "point": "profil user:// vierge",
+    "verdict": "PASS",
+    "mesure": "/home/user/smoke_lot1r2/profil_vierge recréé, 0 entrée(s) — installation neuve"
+  },
+  {
+    "point": "fenêtre du build exportée",
+    "verdict": "PASS",
+    "mesure": "xdotool search «Eclats d'Orage» -> 2097155"
+  },
+  {
+    "point": "menu principal atteint",
+    "verdict": "PASS",
+    "mesure": "journal 1685 o ; capture 01_menu.png"
+  },
+  {
+    "point": "« Nouvelle partie » ouvre World V2",
+    "verdict": "PASS",
+    "mesure": "[world_v2] monde        : neris_v2 (vallée whitebox V2.1)"
+  },
+  {
+    "point": "aucune vallée V1 chargée",
+    "verdict": "PASS",
+    "mesure": "0 mention(s) de la vallée V1 dans la sortie du jeu"
+  },
+  {
+    "point": "lieux posés par le layout",
+    "verdict": "PASS",
+    "mesure": "[world_v2] lieux        : 15 scène(s) posée(s) par le layout"
+  },
+  {
+    "point": "rotation caméra à la souris",
+    "verdict": "FAIL",
+    "mesure": "RMSE 0.0000 entre 02 et 03 (seuil 0.0200)"
+  },
+  {
+    "point": "déplacement à la touche Z",
+    "verdict": "FAIL",
+    "mesure": "RMSE 0.0000 entre 03 et 04 (seuil 0.0200)"
+  },
+  {
+    "point": "gravité : saut puis retour au sol",
+    "verdict": "PARTIAL",
+    "mesure": "RMSE saut 0.0000 · RMSE après retombée 0.0000 (la vue s'écarte puis revient : le sol arrête la chute)"
+  },
+  {
+    "point": "sauvegarde écrite dans user:// vierge",
+    "verdict": "PASS",
+    "mesure": "246 fichier(s) créés, dont 1 de sauvegarde : godot/app_userdata/Eclats d'Orage/saves/slot0.json"
+  },
+  {
+    "point": "modèles de kit résolus dans la build exportée",
+    "verdict": "FAIL",
+    "mesure": "461 ligne(s) « kit : modèle inconnu » ; 99 modèles distincts"
+  },
+  {
+    "point": "aucune autre erreur bloquante (session 1)",
+    "verdict": "FAIL",
+    "mesure": "4 ERROR hors audio et hors kit, sur 2222 lignes ; 0 ligne(s) audio (pas de carte son dans ce conteneur)"
+  },
+  {
+    "point": "reprise après rechargement -> World V2",
+    "verdict": "PASS",
+    "mesure": "[world_v2] monde présent ; 0 mention(s) V1"
+  },
+  {
+    "point": "aucune erreur bloquante (session 2)",
+    "verdict": "FAIL",
+    "mesure": "465 ligne(s) sur 2222"
+  }
+]
