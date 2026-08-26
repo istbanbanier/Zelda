@@ -102,13 +102,27 @@ func _cas() -> Array[Dictionary]:
 		if not (entree is Dictionary):
 			continue
 		var d: Dictionary = entree as Dictionary
-		if not d.has("fichier"):
-			continue
-		sortie.append({
-			"fichier": String(d["fichier"]),
-			"nom": String(d.get("nom", "")),
-			"source": String(d.get("source", "")),
-		})
+		# Deux formes acceptées, et c'est délibéré : la table PARTAGÉE de la
+		# directive nomme ses champs `entree` / `indexe` / `cle_attendue` /
+		# `chemin_source_attendu`, la table interne de ce test les nomme
+		# `fichier` / `nom` / `source`. Lire les deux évite qu'une voie casse
+		# l'autre au moment de l'intégration — et un `continue` silencieux sur
+		# une forme inconnue rendrait la table invisible, ce que le `check()`
+		# plus bas interdit.
+		if d.has("fichier"):
+			sortie.append({
+				"fichier": String(d["fichier"]),
+				"nom": String(d.get("nom", "")),
+				"source": String(d.get("source", "")),
+			})
+		elif d.has("entree"):
+			var indexe: bool = bool(d.get("indexe", false))
+			var chemin: String = String(d.get("chemin_source_attendu", ""))
+			sortie.append({
+				"fichier": String(d["entree"]),
+				"nom": (String(d.get("cle_attendue", "")) if indexe else ""),
+				"source": (chemin.get_file() if indexe else ""),
+			})
 	check(not sortie.is_empty(),
 		("%s existe mais n'a livré aucun cas exploitable ; forme attendue : "
 		+ "un tableau JSON (ou une clé « cas ») d'objets "

@@ -1,0 +1,201 @@
+{
+  "verdict": "ROUGE",
+  "code": 1,
+  "editeur": "/home/user/lead-out-avant/manifeste_editeur.json",
+  "export": "/home/user/lead-out-avant/manifeste_export.json",
+  "journal": "/home/user/lead-out-avant/journaux/jeu_exporte_stdout.log",
+  "constats": [
+    {
+      "controle": "lecture du manifeste editeur",
+      "verdict": "VERT",
+      "examine": "/home/user/lead-out-avant/manifeste_editeur.json (37132 o)",
+      "mesure": "environnement « editeur », godot 4.7.1-stable (custom_build), monde neris_v2"
+    },
+    {
+      "controle": "lecture du manifeste export",
+      "verdict": "VERT",
+      "examine": "/home/user/lead-out-avant/manifeste_export.json (11927 o)",
+      "mesure": "environnement « export », godot 4.7.1-stable (official), monde neris_v2"
+    },
+    {
+      "controle": "lecture du journal du jeu",
+      "verdict": "VERT",
+      "examine": "/home/user/lead-out-avant/journaux/jeu_exporte_stdout.log (2239 lignes)",
+      "mesure": "jalon « fondation V2 vérifiée » présent"
+    },
+    {
+      "controle": "I7 AssetRegistry — ordre des répertoires inchangé",
+      "verdict": "VERT",
+      "examine": "6 répertoire(s) éditeur, 6 export, comparés position par position",
+      "mesure": "listes identiques dans le même ordre"
+    },
+    {
+      "controle": "I1 index AssetRegistry — mêmes noms canoniques indexés",
+      "verdict": "ROUGE",
+      "examine": "160 clés éditeur contre 0 clés export, union 160",
+      "mesure": "160 différence(s) : 160 seulement en éditeur, 0 seulement en export — ex. éditeur seul : Anvil, Anvil_Log, Axe_Bronze, Bag, Balcony_Simple_Straight"
+    },
+    {
+      "controle": "I2/I3 index AssetRegistry — même chemin source pour un même nom",
+      "verdict": "NON VÉRIFIÉ",
+      "examine": "0 couple(s) nom→chemin comparés un à un (comparaison de couples, jamais de cardinaux)",
+      "mesure": "0 couple(s) divergent(s)"
+    },
+    {
+      "controle": "I3 index AssetRegistry — la comparaison a porté sur quelque chose",
+      "verdict": "ROUGE",
+      "examine": "160 clés éditeur, 0 clés export",
+      "mesure": "AUCUNE clé commune : les deux index sont disjoints, la comparaison de couples n'a rien pu examiner"
+    },
+    {
+      "controle": "I6 AssetRegistry — collisions publiées à l'identique",
+      "verdict": "VERT",
+      "examine": "0 collision(s) publiée(s) en éditeur, 0 en export",
+      "mesure": "mêmes collisions des deux côtés"
+    },
+    {
+      "controle": "§4 AssetRegistry — différence des modèles DEMANDÉS",
+      "verdict": "ROUGE",
+      "examine": "21 nom(s) demandés en éditeur, 111 en export",
+      "mesure": "90 différence(s) : Anvil, Anvil_Log, Axe_Bronze, Bag, Balcony_Simple_Straight, Banner_1, Banner_2_Cloth, Barrel"
+    },
+    {
+      "controle": "§4 AssetRegistry — différence des modèles CHARGÉS",
+      "verdict": "ROUGE",
+      "examine": "21 nom(s) chargés en éditeur, 0 en export",
+      "mesure": "21 différence(s) : CommonTree_1, CommonTree_2, CommonTree_3, CommonTree_4, CommonTree_5, DeadTree_1, DeadTree_2, Flower_3_Group"
+    },
+    {
+      "controle": "§4 AssetRegistry — modèle DEMANDÉ mais NON CHARGÉ",
+      "verdict": "ROUGE",
+      "examine": "table « manques » des deux manifestes : 0 nom(s) distincts en éditeur, 111 en export",
+      "mesure": "0 appel(s) manqué(s) en éditeur, 1321 en export — ex. export : Rock_Medium_1×145, Rock_Medium_2×132, Rock_Medium_3×127, Pebble_Round_2×93, Pebble_Square_1×92, Pebble_Round_4×91"
+    },
+    {
+      "controle": "I7 WorldV2PlaceKit — ordre des répertoires inchangé",
+      "verdict": "VERT",
+      "examine": "6 répertoire(s) éditeur, 6 export, comparés position par position",
+      "mesure": "listes identiques dans le même ordre"
+    },
+    {
+      "controle": "I1 index WorldV2PlaceKit — mêmes noms canoniques indexés",
+      "verdict": "ROUGE",
+      "examine": "215 clés éditeur contre 0 clés export, union 215",
+      "mesure": "215 différence(s) : 215 seulement en éditeur, 0 seulement en export — ex. éditeur seul : Anvil, Anvil_Log, Axe_Bronze, Bag, Balcony_Cross_Straight"
+    },
+    {
+      "controle": "I2/I3 index WorldV2PlaceKit — même chemin source pour un même nom",
+      "verdict": "NON VÉRIFIÉ",
+      "examine": "0 couple(s) nom→chemin comparés un à un (comparaison de couples, jamais de cardinaux)",
+      "mesure": "0 couple(s) divergent(s)"
+    },
+    {
+      "controle": "I3 index WorldV2PlaceKit — la comparaison a porté sur quelque chose",
+      "verdict": "ROUGE",
+      "examine": "215 clés éditeur, 0 clés export",
+      "mesure": "AUCUNE clé commune : les deux index sont disjoints, la comparaison de couples n'a rien pu examiner"
+    },
+    {
+      "controle": "I6 WorldV2PlaceKit — collisions publiées à l'identique",
+      "verdict": "VERT",
+      "examine": "0 collision(s) publiée(s) en éditeur, 0 en export",
+      "mesure": "mêmes collisions des deux côtés"
+    },
+    {
+      "controle": "§4 WorldV2PlaceKit — différence des modèles DEMANDÉS",
+      "verdict": "ROUGE",
+      "examine": "99 nom(s) demandés en éditeur, 100 en export",
+      "mesure": "1 différence(s) : Wall_Arch"
+    },
+    {
+      "controle": "§4 WorldV2PlaceKit — différence des modèles CHARGÉS",
+      "verdict": "ROUGE",
+      "examine": "99 nom(s) chargés en éditeur, 0 en export",
+      "mesure": "99 différence(s) : Anvil, Anvil_Log, Axe_Bronze, Bag, Balcony_Simple_Straight, Banner_1, Banner_2_Cloth, Barrel"
+    },
+    {
+      "controle": "§4 WorldV2PlaceKit — modèle DEMANDÉ mais NON CHARGÉ",
+      "verdict": "ROUGE",
+      "examine": "table « manques » des deux manifestes : 0 nom(s) distincts en éditeur, 100 en export",
+      "mesure": "0 appel(s) manqué(s) en éditeur, 468 en export — ex. export : RockPath_Square_Wide×31, RockPath_Round_Wide×28, RockPath_Square_Small_1×28, Corner_Exterior_Wood×26, Prop_WoodenFence_Single×26, Floor_WoodLight×24"
+    },
+    {
+      "controle": "§4 modules_instancies — positif et identique",
+      "verdict": "ROUGE",
+      "examine": "clé « modules_instancies » des deux manifestes",
+      "mesure": "éditeur=459, export=0 — exigé : strictement > 0 des deux côtés ET égaux"
+    },
+    {
+      "controle": "§4 cellules_emises — positif et identique",
+      "verdict": "ROUGE",
+      "examine": "clé « cellules_emises » des deux manifestes",
+      "mesure": "éditeur=631, export=0 — exigé : strictement > 0 des deux côtés ET égaux"
+    },
+    {
+      "controle": "§4 cellules_manquees — nulles des deux côtés",
+      "verdict": "ROUGE",
+      "examine": "clé « vegetation.cellules_manquees » des deux manifestes",
+      "mesure": "éditeur=0, export=631 — une cellule manquée est une cellule de MultiMesh sautée ENTIÈRE, donc bien plus d'objets absents que d'appels manqués"
+    },
+    {
+      "controle": "§3 lieux_poses — positif et identique",
+      "verdict": "VERT",
+      "examine": "clé « lieux_poses » des deux manifestes",
+      "mesure": "éditeur=16, export=16"
+    },
+    {
+      "controle": "§4 journal — lignes « kit : modèle inconnu »",
+      "verdict": "ROUGE",
+      "examine": "2239 ligne(s) de journal balayées",
+      "mesure": "457 ligne(s), 96 modèle(s) distinct(s) : Anvil, Anvil_Log, Axe_Bronze, Bag, Balcony_Simple_Straight, Banner_1, Banner_2_Cloth, Barrel …"
+    },
+    {
+      "controle": "§4 journal — lignes « modèle végétal introuvable »",
+      "verdict": "ROUGE",
+      "examine": "2239 ligne(s) de journal balayées",
+      "mesure": "631 ligne(s), 21 modèle(s) distinct(s) : CommonTree_1, CommonTree_2, CommonTree_3, CommonTree_4, CommonTree_5, DeadTree_1, DeadTree_2, Flower_3_Group …"
+    },
+    {
+      "controle": "§4 journal — lignes « flower_field : modèle inconnu »",
+      "verdict": "ROUGE",
+      "examine": "2239 ligne(s) de journal balayées",
+      "mesure": "4 ligne(s), 3 modèle(s) distinct(s) : Flower_3_Group, Flower_4_Group, Grass_Wispy_Tall"
+    },
+    {
+      "controle": "§4 journal — lignes « flower_field : modèle de dalle inconnu »",
+      "verdict": "ROUGE",
+      "examine": "2239 ligne(s) de journal balayées",
+      "mesure": "2 ligne(s), 2 modèle(s) distinct(s) : RockPath_Round_Small_1, RockPath_Square_Small_1"
+    },
+    {
+      "controle": "I9 — aucun manque silencieux",
+      "verdict": "VERT",
+      "examine": "1789 manque(s) comptés aux manifestes contre 1094 ligne(s) d'erreur au journal",
+      "mesure": "compteurs et journal concordent (tous deux nuls, ou tous deux positifs)"
+    },
+    {
+      "controle": "I4/I5 WorldV2PlaceKit — chemins indexés réellement chargeables",
+      "verdict": "ROUGE",
+      "examine": "0 chemin(s) indexés, dont 0 effectivement demandés au montage du monde",
+      "mesure": "INDEX VIDE : aucun chemin n'a pu être éprouvé — ce n'est pas une couverture parfaite, c'est une absence de couverture"
+    },
+    {
+      "controle": "I4/I5 AssetRegistry — chemins indexés réellement chargeables",
+      "verdict": "ROUGE",
+      "examine": "0 chemin(s) indexés, dont 0 effectivement demandés au montage du monde",
+      "mesure": "INDEX VIDE : aucun chemin n'a pu être éprouvé — ce n'est pas une couverture parfaite, c'est une absence de couverture"
+    },
+    {
+      "controle": "I8 — plafond de rétention des PackedScene de kit (ISS-059)",
+      "verdict": "VERT",
+      "examine": "scripts/world_v2/poi/world_v2_place_kit.gd (497 lignes) cherché pour le littéral « const SCENE_CACHE_MAX: int = 256 »",
+      "mesure": "littéral présent, à l'identique"
+    },
+    {
+      "controle": "I8 — plafond de rétention des PackedScene du registre (ISS-059)",
+      "verdict": "VERT",
+      "examine": "scripts/core/asset_registry.gd (231 lignes) cherché pour le littéral « const MODEL_CACHE_MAX: int = 48 »",
+      "mesure": "littéral présent, à l'identique"
+    }
+  ]
+}

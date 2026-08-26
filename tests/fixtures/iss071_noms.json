@@ -190,6 +190,22 @@
       "chemin_source_attendu": "",
       "environnement": "export",
       "pourquoi": "après retrait il ne reste aucune extension de modèle : indexer ici créerait une clé « Foo » pointant vers un fichier inexistant, et I4/I5 rougiraient au chargement"
+    },
+    {
+      "entree": "Foo",
+      "indexe": false,
+      "cle_attendue": "",
+      "chemin_source_attendu": "",
+      "environnement": "garde-fou",
+      "pourquoi": "nom SANS extension : get_extension() rend une chaîne vide, qui ne doit pas passer pour une extension de scène. Cas apporté par la voie « correctif »."
+    },
+    {
+      "entree": "Foo.glb.import.import",
+      "indexe": false,
+      "cle_attendue": "",
+      "chemin_source_attendu": "",
+      "environnement": "garde-fou",
+      "pourquoi": "le suffixe .import se retire EXACTEMENT une fois : il reste « Foo.glb.import », dont l'extension est « import », donc rejet. Un retrait en boucle accepterait des entrées que le PCK ne produit jamais. Cas apporté par la voie « correctif »."
     }
   ],
   "repertoires_exemples": [
@@ -214,5 +230,6 @@
       "collisions_attendues": [],
       "_source_du_listage": "mesuré au laboratoire, deux modèles réellement importés puis exportés avec les templates officiels 4.7.1 : evidence/world_v2/v2_3_b/lot1r2/cloture/fumee_build_exportee/lab_dir_access/"
     }
-  ]
+  ],
+  "_fusion": "Les deux voies de la directive S1 ont écrit leur table de noms INDÉPENDAMMENT. Sur les 13 cas communs : ZÉRO désaccord de sémantique. Cette table est la fusion des deux — 14 cas de la voie « portail » plus les 2 que seule la voie « correctif » portait. Elle fait autorité ; le test GDScript la consomme."
 }
