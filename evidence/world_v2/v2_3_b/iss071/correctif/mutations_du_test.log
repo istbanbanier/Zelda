@@ -1,0 +1,16 @@
+### sain : sha256 0de4c97ad8b2bb333f31aa07d3231a7ba84428b478959adf651ec63103d7ff52
+### MUTATION M1 — sha256 f51dc79539a49eb5357fc7d2bfd27f59b090fc543bad09e838299c7ab5009599
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+RC_M1=1
+=== RÉSULTAT: 2 réussi(s), 9 échoué(s) ===
+  assertions en échec : 18
+  restauration EXACTE (0de4c97ad8b2bb333f31aa07d3231a7ba84428b478959adf651ec63103d7ff52)
+### MUTATION M2 — sha256 194c8ad9d66cebb82d02bd472fe4128e5c3ebce3308634dda3dce5f3b10dfa35
+ 1 file changed, 2 deletions(-)
+RC_M2=1
+=== RÉSULTAT: 2 réussi(s), 11 échoué(s) ===
+  assertions en échec : 22
+  restauration EXACTE (0de4c97ad8b2bb333f31aa07d3231a7ba84428b478959adf651ec63103d7ff52)
+### arbre final
+0
+RC=0

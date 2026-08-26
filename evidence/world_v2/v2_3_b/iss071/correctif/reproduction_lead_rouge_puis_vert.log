@@ -1,0 +1,21 @@
+### arbre : 0 modification(s) hors .uid non suivi
+### 1. AVANT le correctif — commit 69502e7 (test présent, résolveurs intacts)
+69502e7 test(iss071): épingle la règle de normalisation des noms de modèles
+RC_AVANT=1
+  ÉCHEC test_iss071_normalisation.gd::test_la_regle_de_normalisation_est_exposee — AssetRegistry n'expose pas la fonction statique normaliser_entree_modele : le correctif ISS-071 n'est pas posé, l'index reste bâti sur le suffixe du nom LISTÉ et sortira vide dans une build exportée
+  ÉCHEC test_iss071_normalisation.gd::test_table_de_normalisation — table non évaluée : normaliser_entree_modele absente d'AssetRegistry (correctif ISS-071 absent)
+  ÉCHEC test_iss071_normalisation.gd::test_cas_nominatif_barrow_de_la_directive — cas Barrow non évalué : normaliser_entree_modele absente (correctif ISS-071 absent)
+  ÉCHEC test_iss071_normalisation.gd::test_parite_index_et_vue_export_place_kit — parité non évaluée : normaliser_entree_modele absente (correctif ISS-071 absent)
+  ÉCHEC test_iss071_normalisation.gd::test_parite_index_et_vue_export_asset_registry — parité non évaluée : normaliser_entree_modele absente (correctif ISS-071 absent)
+  ÉCHEC test_iss071_normalisation.gd::test_aucune_ressource_non_scene_dans_les_index — non évalué : normaliser_entree_modele absente (correctif ISS-071 absent)
+=== RÉSULTAT: 0 réussi(s), 6 échoué(s) ===
+  ÉCHEC: test_iss071_normalisation.gd::test_la_regle_de_normalisation_est_exposee — AssetRegistry n'expose pas la fonction statique normaliser_entree_modele : le correctif ISS-071 n'est pas posé, l'index reste bâti sur le suffixe du nom LISTÉ et sortira vide dans une build exportée
+
+### 2. APRÈS le correctif — commit 3ef33d6
+3ef33d6 chore(iss071): verse le .uid du test de normalisation
+RC_APRES=0
+=== RÉSULTAT: 6 réussi(s), 0 échoué(s) ===
+
+### 3. gel des six lieux après manipulation
+46
+RC=0

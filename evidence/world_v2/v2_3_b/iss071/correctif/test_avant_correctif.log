@@ -1,0 +1,25 @@
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_pvz6Nhma
+LANCER_GODOT: CWD=/home/user/wt-b
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path /home/user/wt-b --script tools/godot/test_runner.gd -- --filter=iss071_normalisation
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: iss071_normalisation
+  ÉCHEC test_iss071_normalisation.gd::test_la_regle_de_normalisation_est_exposee — AssetRegistry n'expose pas la fonction statique normaliser_entree_modele : le correctif ISS-071 n'est pas posé, l'index reste bâti sur le suffixe du nom LISTÉ et sortira vide dans une build exportée
+  ÉCHEC test_iss071_normalisation.gd::test_table_de_normalisation — table non évaluée : normaliser_entree_modele absente d'AssetRegistry (correctif ISS-071 absent)
+  ÉCHEC test_iss071_normalisation.gd::test_cas_nominatif_barrow_de_la_directive — cas Barrow non évalué : normaliser_entree_modele absente (correctif ISS-071 absent)
+  ÉCHEC test_iss071_normalisation.gd::test_parite_index_et_vue_export_place_kit — parité non évaluée : normaliser_entree_modele absente (correctif ISS-071 absent)
+  ÉCHEC test_iss071_normalisation.gd::test_parite_index_et_vue_export_asset_registry — parité non évaluée : normaliser_entree_modele absente (correctif ISS-071 absent)
+  ÉCHEC test_iss071_normalisation.gd::test_aucune_ressource_non_scene_dans_les_index — non évalué : normaliser_entree_modele absente (correctif ISS-071 absent)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 0 réussi(s), 6 échoué(s) ===
+  ÉCHEC: test_iss071_normalisation.gd::test_la_regle_de_normalisation_est_exposee — AssetRegistry n'expose pas la fonction statique normaliser_entree_modele : le correctif ISS-071 n'est pas posé, l'index reste bâti sur le suffixe du nom LISTÉ et sortira vide dans une build exportée
+  ÉCHEC: test_iss071_normalisation.gd::test_table_de_normalisation — table non évaluée : normaliser_entree_modele absente d'AssetRegistry (correctif ISS-071 absent)
+  ÉCHEC: test_iss071_normalisation.gd::test_cas_nominatif_barrow_de_la_directive — cas Barrow non évalué : normaliser_entree_modele absente (correctif ISS-071 absent)
+  ÉCHEC: test_iss071_normalisation.gd::test_parite_index_et_vue_export_place_kit — parité non évaluée : normaliser_entree_modele absente (correctif ISS-071 absent)
+  ÉCHEC: test_iss071_normalisation.gd::test_parite_index_et_vue_export_asset_registry — parité non évaluée : normaliser_entree_modele absente (correctif ISS-071 absent)
+  ÉCHEC: test_iss071_normalisation.gd::test_aucune_ressource_non_scene_dans_les_index — non évalué : normaliser_entree_modele absente (correctif ISS-071 absent)
+LANCER_GODOT: RC_GODOT=1
