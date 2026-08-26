@@ -261,7 +261,35 @@ MASSES = [
     # à contre-jour, au pied d'une paroi de 54° — et c'est la seule du lieu
     # qui doive se détacher du TALUS BRUN mesuré à V 0,29 sur la capture de
     # référence. Elle joue donc sur le froid, pas sur la clarté.
-    ("SM_Spring_Buttress", 5.90, 2.05, 2.25, 0.75, 51307, (0.052, 0.030),
+    # ITÉRATION 4 — LA TOUR S'AFFINE EN Z ET S'ÉPAISSIT EN X, et c'est le
+    # détecteur R-D3 qui l'a exigé, pas l'œil. Contre le belvédère (dont les
+    # silhouettes sont GELÉES), la source rendait IoU 0,4895 à 30 m et 0,4896 à
+    # 80 m — sous le seuil officiel (0,4931 / 0,4912) mais AU-DESSUS de la
+    # limite stricte de ce lot (seuil − 0,010). Les deux masques se
+    # ressemblaient pour une raison mesurable : dans les deux, la masse haute
+    # occupe 38 % de la largeur du cadre normalisé.
+    #
+    # QUATRE RÉGLAGES TESTÉS ET ABANDONNÉS AVANT DE REGARDER LES MASQUES.
+    #   `demi_b` 2,25 → 1,72 (affiner) : IoU contre le belvédère 0,4896 → 0,5037
+    #   `demi_b` 2,25 → 2,75 (élargir) : 0,4960
+    #   lèvre 2,95 → 3,95 m            : 0,4958
+    #   table déplacée à l'est         : 0,5032
+    # Quatre coups dans le noir, dans les deux sens, sans modèle. Ce qui a
+    # débloqué, c'est d'IMPRIMER LES DEUX MASQUES normalisés côte à côte
+    # (journal § R-D3) : au couple d'angles fautif, les deux sujets sont des
+    # BANDEAUX PLATS posés au bas d'une toile portrait — le belvédère occupe
+    # sept demi-lignes sur quarante-huit, la source douze. Deux bandeaux plats
+    # se recouvrent toujours, quelles que soient leurs largeurs de lobes.
+    #
+    # La variable est donc le RAPPORT HAUTEUR / EMPRISE, et lui seul : 6,23 m
+    # pour 16,49 m, soit 0,38. La tour passe de 5,90 à 7,60 m (rendu ≈ 7,0),
+    # ce qui porte le rapport à ≈ 0,47 et transforme le bandeau en profil.
+    #
+    # Et c'est le SEUL des cinq essais qui serve aussi le verdict artistique :
+    # « aucun élément ne domine réellement la caméra joueur ». Une tour de sept
+    # mètres au pied d'une paroi de 54° est un éperon détaché, pas un monolithe
+    # posé — ses quatre lobes continuent de la faire descendre en marches.
+    ("SM_Spring_Buttress", 7.60, 2.05, 2.25, 0.75, 51307, (0.052, 0.030),
      48.0, 0.95, (0.88, 0.92, 1.00),
      [(0.0, 0.0, 1.0),
       # épaule ENFONCÉE dans la pente : Godot (−11,30 ; +2,20), le sol y est
@@ -284,8 +312,21 @@ MASSES = [
     #
     # Mouillage haut (2,30 m sur 2,95) : l'eau descend là. C'est pour cette
     # masse que `MOUILLAGE_PART_MAX` a été relevé, et pour elle seule.
-    ("SM_Spring_Spout", 2.95, 1.32, 1.58, 0.55, 33809, (0.115, -0.035),
-     22.0, 2.30, (0.74, 0.83, 0.94),
+    # LA LÈVRE MONTE : 2,95 → 3,95 m. Deux gains d'un seul geste, et c'est
+    # pour cela que ce levier a été retenu après l'échec des deux hypothèses de
+    # largeur ci-dessus :
+    #   * LE VOILE GRANDIT. L'eau sort désormais à 3,35 m au lieu de 2,35 : la
+    #     lame passe de 2,05 à 3,05 m, soit ≈ 106 px de haut dans la caméra
+    #     joueur gelée au lieu de 72. C'est la surface la plus rentable du lieu,
+    #     parce que c'est la seule qui soit VERTICALE.
+    #   * LE PROFIL GAGNE UNE MARCHE. À 2,95 m la lèvre disparaissait dans la
+    #     jupe du contrefort ; à 3,95 (72 % de sa hauteur) elle dessine une
+    #     épaule franche. Un pic unique est l'archétype le plus encombré du
+    #     corpus ; deux masses étagées ne le sont pas.
+    # Sa base s'élargit en conséquence (1,32 → 1,45 ; 1,58 → 1,72) : une lèvre
+    # de quatre mètres sur un pied d'un mètre trente serait une quille.
+    ("SM_Spring_Spout", 3.95, 1.45, 1.72, 0.55, 33809, (0.115, -0.035),
+     22.0, 2.90, (0.74, 0.83, 0.94),
      [(0.0, 0.0, 1.0),
       # appui qui la relie au contrefort : Godot (−9,60 ; +2,90)
       (-0.30, -1.20, 0.62),

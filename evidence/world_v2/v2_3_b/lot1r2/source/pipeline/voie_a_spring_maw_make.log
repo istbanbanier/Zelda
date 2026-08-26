@@ -1,9 +1,9 @@
 Blender 4.0.2
-[spring_maw] SM_Spring_Buttress : 3692 tris, hauteur 5.448 m, fond -0.750 m, emprise visible 10.832 m, facette max 0.4536 m2, lobes 5
-[spring_maw] SM_Spring_Buttress : surplombs 9/22 (plancher 1), ceinture de surplomb 0.32 (plafond 0.70), mouillage 0.08 (bande 0.04..0.52), couleur moy 0.660 p10 0.443 p90 0.817 (etendue 56.5 %)
+[spring_maw] SM_Spring_Buttress : 3692 tris, hauteur 7.017 m, fond -0.750 m, emprise visible 10.843 m, facette max 0.4751 m2, lobes 5
+[spring_maw] SM_Spring_Buttress : surplombs 9/22 (plancher 1), ceinture de surplomb 0.32 (plafond 0.70), mouillage 0.06 (bande 0.04..0.52), couleur moy 0.661 p10 0.443 p90 0.817 (etendue 56.5 %)
 [spring_maw] SM_Spring_Buttress : ecretage 0.000 (plafond 0.02) sur 1441 sommets peints
-[spring_maw] SM_Spring_Spout : 1968 tris, hauteur 2.714 m, fond -0.550 m, emprise visible 4.540 m, facette max 0.2417 m2, lobes 3
-[spring_maw] SM_Spring_Spout : surplombs 10/20 (plancher 1), ceinture de surplomb 0.30 (plafond 0.70), mouillage 0.23 (bande 0.04..0.52), couleur moy 0.575 p10 0.396 p90 0.730 (etendue 58.0 %)
+[spring_maw] SM_Spring_Spout : 1968 tris, hauteur 3.634 m, fond -0.550 m, emprise visible 4.835 m, facette max 0.3068 m2, lobes 3
+[spring_maw] SM_Spring_Spout : surplombs 10/20 (plancher 1), ceinture de surplomb 0.30 (plafond 0.70), mouillage 0.22 (bande 0.04..0.52), couleur moy 0.576 p10 0.396 p90 0.730 (etendue 57.9 %)
 [spring_maw] SM_Spring_Spout : ecretage 0.000 (plafond 0.02) sur 747 sommets peints
 [spring_maw] SM_Spring_Shelf : 1944 tris, hauteur 1.439 m, fond -0.450 m, emprise visible 8.054 m, facette max 0.5070 m2, lobes 3
 [spring_maw] SM_Spring_Shelf : surplombs 7/20 (plancher 1), ceinture de surplomb 0.15 (plafond 0.70), mouillage 0.10 (bande 0.04..0.52), couleur moy 0.747 p10 0.492 p90 0.978 (etendue 65.1 %)
