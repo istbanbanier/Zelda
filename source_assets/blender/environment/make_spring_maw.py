@@ -325,7 +325,14 @@ MASSES = [
     #     corpus ; deux masses étagées ne le sont pas.
     # Sa base s'élargit en conséquence (1,32 → 1,45 ; 1,58 → 1,72) : une lèvre
     # de quatre mètres sur un pied d'un mètre trente serait une quille.
-    ("SM_Spring_Spout", 3.95, 1.45, 1.72, 0.55, 33809, (0.115, -0.035),
+    # `demi_a` 1,45 → 1,30 : à 1,45, l'anneau de base de cette masse ressortait
+    # jusqu'à x ≈ −7,20 en local, c'est-à-dire À L'EST du voile d'eau, qu'elle
+    # AVALAIT (`iter5/spring_gros_arrivee.png` : la lame est derrière trois
+    # lumps de roche). Elle avait été élargie pour ne pas ressembler à une
+    # quille en montant à 3,95 m ; c'est `demi_b` qui s'en charge désormais
+    # (1,72 → 1,80), et il travaille dans l'axe où la caméra joueur voit la
+    # largeur, pas la profondeur.
+    ("SM_Spring_Spout", 3.95, 1.30, 1.80, 0.55, 33809, (0.115, -0.035),
      22.0, 2.90, (0.74, 0.83, 0.94),
      [(0.0, 0.0, 1.0),
       # appui qui la relie au contrefort : Godot (−9,60 ; +2,90)
