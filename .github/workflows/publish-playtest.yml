@@ -52,6 +52,14 @@ on:
           tags (403) — le nom du jalon doit donc naître ici.
         type: boolean
         default: false
+      lot1r2:
+        description: >-
+          Checkpoint World V2 « lot 1.R.2 » : paquet et exports du chemin par
+          défaut, tag world-v2-playtest-lot1r2-<sha court>, et
+          docs/PLAYTEST_LOT1R2.md joint à la Release. Même raison que lot1 :
+          le proxy Git du conteneur refuse le push de tags (403).
+        type: boolean
+        default: false
 
 # Le minimum pour créer une Release et y téléverser des assets.
 permissions:
@@ -92,13 +100,17 @@ jobs:
             FULLVIS="${{ inputs.full_visual }}"
             GM4="${{ inputs.gm4 }}"
             LOT1="${{ inputs.lot1 }}"
+            LOT1R2="${{ inputs.lot1r2 }}"
             [ "$FULLVIS" = "true" ] || FULLVIS=false
             [ "$GM4" = "true" ] || GM4=false
             [ "$LOT1" = "true" ] || LOT1=false
+            [ "$LOT1R2" = "true" ] || LOT1R2=false
             if [ "$SELFTEST" = "true" ]; then
               TAG="playtest-selftest-${SHORT}"
             elif [ "$GM4" = "true" ]; then
               TAG="world-v2-playtest-r2a-gm4-${SHORT}"
+            elif [ "$LOT1R2" = "true" ]; then
+              TAG="world-v2-playtest-lot1r2-${SHORT}"
             elif [ "$LOT1" = "true" ]; then
               TAG="world-v2-playtest-lot1-${SHORT}"
             elif [ "$FULLVIS" = "true" ]; then
@@ -114,6 +126,7 @@ jobs:
             echo "selftest=$SELFTEST"
             echo "full_visual=$FULLVIS"
             echo "gm4=$GM4"
+            echo "lot1r2=$LOT1R2"
           } >> "$GITHUB_OUTPUT"
           echo "commit      : $COMMIT"
           echo "tag         : $TAG"
@@ -467,6 +480,16 @@ jobs:
           # guide joueur et sommes de contrôle regroupées. Les fichiers
           # générés vivent dans $RUNNER_TEMP — jamais dans l'arbre Git.
           TITLE="Éclats d'Orage — archive jouable ($TAG)"
+          if [ "${{ steps.cible.outputs.lot1r2 }}" = "true" ]; then
+            TITLE="Éclats d'Orage — checkpoint jouable lot 1.R.2 (${{ steps.cible.outputs.short }})"
+            if [ -f docs/PLAYTEST_LOT1R2.md ]; then
+              cp docs/PLAYTEST_LOT1R2.md "$RUNNER_TEMP/PLAYTEST_LOT1R2.md"
+              ASSETS+=( "$RUNNER_TEMP/PLAYTEST_LOT1R2.md" )
+            else
+              echo "BLOQUÉ: docs/PLAYTEST_LOT1R2.md absent — la Release lot1r2 le REQUIERT" >&2
+              exit 1
+            fi
+          fi
           if [ "${{ steps.cible.outputs.full_visual }}" = "true" ]; then
             TITLE="Éclats d'Orage — Full World Visual Finish ${{ steps.cible.outputs.short }}"
             if [ -f docs/GUIDE_JOUEUR.md ]; then
