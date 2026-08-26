@@ -1,7 +1,7 @@
 {
   "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
   "clip_below": null,
-  "commit": "9853f023b221a5fc3b305c8195e78df59fb13381",
+  "commit": "4472c4a2a25aab3a21fa3d4fee549aed09dd4a14",
   "emprise_m": [
     16.5269622802734,
     7.80348777770996,
@@ -11,9 +11,18 @@
   "mode": "lieu dans le monde monté",
   "place_id": "valley.poi.turquoise_spring.01",
   "projection": "orthogonale",
-  "provenance": {},
+  "provenance": {
+    "glb": {
+      "chemin": "assets/environment/rocks/SM_SpringMaw.glb",
+      "commit": "4472c4a2a25aab3a21fa3d4fee549aed09dd4a14"
+    },
+    "lieu": {
+      "chemin": "scripts/world_v2/poi/turquoise_spring_place.gd",
+      "commit": "4472c4a2a25aab3a21fa3d4fee549aed09dd4a14"
+    }
+  },
   "renderer": "forward_plus",
-  "repo_dirty": true,
+  "repo_dirty": false,
   "scene": "res://scenes/world_v2/WorldV2.tscn",
   "size": "900x1200",
   "sujet": "turquoise_spring",
@@ -22,13 +31,13 @@
       "angle_deg": 0.0,
       "hors_bandes_pct": 0.0,
       "image": "evidence/world_v2/v2_3_b/lot1r2/source/silhouettes/silhouette_turquoise_spring_000.png",
-      "sujet_pct": 10.9992592592593
+      "sujet_pct": 11.0381481481481
     },
     {
       "angle_deg": 90.0,
       "hors_bandes_pct": 0.0,
       "image": "evidence/world_v2/v2_3_b/lot1r2/source/silhouettes/silhouette_turquoise_spring_090.png",
-      "sujet_pct": 10.592962962963
+      "sujet_pct": 10.55
     }
   ]
 }

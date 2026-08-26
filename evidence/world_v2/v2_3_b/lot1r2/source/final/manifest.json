@@ -1,0 +1,88 @@
+{
+  "adapter": "llvmpipe (LLVM 20.1.2, 256 bits)",
+  "commit": "4472c4a2a25aab3a21fa3d4fee549aed09dd4a14",
+  "engine": "4.7.1-stable (custom_build)",
+  "provenance": {
+    "glb": {
+      "chemin": "assets/environment/rocks/SM_SpringMaw.glb",
+      "commit": "4472c4a2a25aab3a21fa3d4fee549aed09dd4a14",
+      "sha256": "e17a1b8df082aa03e4681eb7e186f803033738b13500d6be4dc28feb147fb278"
+    },
+    "lieu": {
+      "chemin": "scripts/world_v2/poi/turquoise_spring_place.gd",
+      "commit": "4472c4a2a25aab3a21fa3d4fee549aed09dd4a14",
+      "sha256": "9c76f31b8d6687b38c0cb47dff28cef54f257808456989e47dd02427367292b5"
+    },
+    "shader": {
+      "chemin": "shaders/world_v2/poi/SH_TurquoiseSpringWater.gdshader",
+      "commit": "5c84d860b7eb72535de54d4652d175b8ff331e8c",
+      "sha256": "aa95443b984698f3d104485c766e79da2471e2f45c62b437e6563164b7734b2a"
+    }
+  },
+  "renderer": "forward_plus",
+  "repo_dirty": false,
+  "scene": "res://scenes/world_v2/WorldV2.tscn",
+  "shots": [
+    {
+      "fov": 55.0,
+      "from": [
+        -117.2,
+        20.0,
+        46.8
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r2/source/final/turquoise_spring_identite.png",
+      "look": [
+        -136.0,
+        14.0,
+        40.0
+      ],
+      "name": "turquoise_spring_identite"
+    },
+    {
+      "fov": 65.0,
+      "from": [
+        -126.5,
+        13.7,
+        40.0
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r2/source/final/turquoise_spring_joueur.png",
+      "look": [
+        -136.0,
+        13.2,
+        40.0
+      ],
+      "name": "turquoise_spring_joueur"
+    },
+    {
+      "fov": 50.0,
+      "from": [
+        -137.6,
+        13.8,
+        40.4
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r2/source/final/spring_gros_arrivee.png",
+      "look": [
+        -146.8,
+        13.4,
+        40.3
+      ],
+      "name": "spring_gros_arrivee"
+    },
+    {
+      "fov": 50.0,
+      "from": [
+        -135.2,
+        14.2,
+        36.6
+      ],
+      "image": "evidence/world_v2/v2_3_b/lot1r2/source/final/spring_gros_deversoir.png",
+      "look": [
+        -141.4,
+        12.1,
+        40.2
+      ],
+      "name": "spring_gros_deversoir"
+    }
+  ],
+  "size": "1280x720"
+}
