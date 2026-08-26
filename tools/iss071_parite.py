@@ -95,16 +95,25 @@ class Rapport:
               f"               examiné : {examine}\n"
               f"               mesure  : {mesure}", flush=True)
 
+    # C4 (contre-revue) : un « NON VÉRIFIÉ » n'est PAS un vert. PROMPT4_METHOD
+    # §12 : « tout critère non testé est NON VÉRIFIÉ, jamais implicitement
+    # réussi », et le verdict d'un gate est le PLUS FAIBLE de ses critères.
+    # Jusqu'ici ce statut n'affectait NI le verdict NI le code de sortie : le
+    # portail pouvait rendre 0 en n'ayant rien mesuré, ce qui est exactement le
+    # « test qui ne peut pas échouer » que ce dépôt traque depuis ISS-018.
+    ORDRE_DU_PIRE: tuple[str, ...] = ("BLOQUÉ", "ROUGE", "NON VÉRIFIÉ")
+    CODES: dict[str, int] = {"VERT": 0, "ROUGE": 1,
+                             "BLOQUÉ": 3, "NON VÉRIFIÉ": 3}
+
     def verdict(self) -> str:
         v = {c["verdict"] for c in self.constats}
-        if "BLOQUÉ" in v:
-            return "BLOQUÉ"
-        if "ROUGE" in v:
-            return "ROUGE"
+        for pire in self.ORDRE_DU_PIRE:
+            if pire in v:
+                return pire
         return "VERT"
 
     def code_sortie(self) -> int:
-        return {"VERT": 0, "ROUGE": 1, "BLOQUÉ": 3}[self.verdict()]
+        return self.CODES[self.verdict()]
 
 
 # --------------------------------------------------------------------------
@@ -197,9 +206,18 @@ def comparer_index(nom_res: str, ed: dict[str, Any], ex: dict[str, Any],
 
     # I1 — différence symétrique des CLÉS.
     diff = len(seulement_ed) + len(seulement_ex)
+    # C6 (contre-revue) : « 0 différence entre deux index VIDES » est le même
+    # vert-sur-rien que `diff` sur deux fichiers absents. Doctrine déjà
+    # appliquée à I2/I3 plus bas ; elle vaut ici aussi.
+    if not cles_a and not cles_b:
+        verdict_i1 = "NON VÉRIFIÉ"
+    elif diff == 0:
+        verdict_i1 = "VERT"
+    else:
+        verdict_i1 = "ROUGE"
     rapport.note(
         f"I1 index {nom_res} — mêmes noms canoniques indexés",
-        "VERT" if diff == 0 else "ROUGE",
+        verdict_i1,
         f"{len(cles_a)} clés éditeur contre {len(cles_b)} clés export, "
         f"union {len(cles_a | cles_b)}",
         f"{diff} différence(s) : {len(seulement_ed)} seulement en éditeur, "
@@ -248,9 +266,12 @@ def comparer_repertoires(nom_res: str, ed: dict[str, Any], ex: dict[str, Any],
     """
     a = [str(x) for x in ed.get("repertoires", [])]
     b = [str(x) for x in ex.get("repertoires", [])]
+    # C6 (contre-revue) : deux listes vides sont « identiques » sans rien
+    # prouver — le manifeste n'aurait alors simplement pas publié les
+    # répertoires balayés.
     rapport.note(
         f"I7 {nom_res} — ordre des répertoires inchangé",
-        "VERT" if a == b else "ROUGE",
+        "NON VÉRIFIÉ" if not a and not b else ("VERT" if a == b else "ROUGE"),
         f"{len(a)} répertoire(s) éditeur, {len(b)} export, comparés "
         "position par position",
         "listes identiques dans le même ordre" if a == b
@@ -287,16 +308,21 @@ def comparer_compteurs(nom_res: str, ed: dict[str, Any], ex: dict[str, Any],
     man_b = {str(k): int(v) for k, v in ex.get("manques", {}).items()}
 
     d = sorted(dem_a ^ dem_b)
+    # C6 (contre-revue) : si PERSONNE n'a rien demandé des deux côtés, la
+    # différence est nulle sans qu'aucun résolveur ait travaillé. C'est une
+    # absence de mesure, pas une parité.
     rapport.note(
         f"§4 {nom_res} — différence des modèles DEMANDÉS",
-        "VERT" if not d else "ROUGE",
+        "NON VÉRIFIÉ" if not dem_a and not dem_b
+        else ("VERT" if not d else "ROUGE"),
         f"{len(dem_a)} nom(s) demandés en éditeur, {len(dem_b)} en export",
         f"{len(d)} différence(s)" + (f" : {', '.join(d[:8])}" if d else ""))
 
     r = sorted(res_a ^ res_b)
     rapport.note(
         f"§4 {nom_res} — différence des modèles CHARGÉS",
-        "VERT" if not r else "ROUGE",
+        "NON VÉRIFIÉ" if not res_a and not res_b
+        else ("VERT" if not r else "ROUGE"),
         f"{len(res_a)} nom(s) chargés en éditeur, {len(res_b)} en export",
         f"{len(r)} différence(s)" + (f" : {', '.join(r[:8])}" if r else ""))
 
@@ -385,8 +411,15 @@ def controle_i9(manques_total: int, lignes_journal: int,
                    "l'appareil de mesure ne voit pas ce que le jeu signale"))
 
 
-def controle_i4_i5(manifeste: dict[str, Any], rapport: Rapport) -> None:
+def controle_i4_i5(manifeste: dict[str, Any], role: str,
+                   rapport: Rapport) -> None:
     """I4/I5 — chargeabilité de chaque chemin indexé.
+
+    C7 (contre-revue) : ce contrôle n'était appelé que sur le manifeste
+    d'EXPORT, alors que la preuve écrite affirmait « des deux côtés ». Un
+    chemin devenu non chargeable en ÉDITEUR — une régression de sens inverse —
+    serait passé inaperçu. Il prend donc désormais le rôle en argument et est
+    appelé une fois par environnement.
 
     HONNÊTETÉ : le manifeste ne porte PAS la chargeabilité des chemins jamais
     demandés. Ce contrôle couvre donc les noms réellement demandés (via
@@ -409,11 +442,22 @@ def controle_i4_i5(manifeste: dict[str, Any], rapport: Rapport) -> None:
             total = int(charge["chemins"])
             reussis = int(charge.get("load_reussi", 0))
             defaillants = list(charge.get("defaillants", []))
+            # C5 (contre-revue) : sans cette égalité, une régression qui
+            # n'éprouverait QU'UN SEUL chemin rendrait « 1/1 chargés », donc
+            # vert, en n'ayant presque rien mesuré. La couverture est exigée
+            # sur la TOTALITÉ de l'index publié, pas sur un échantillon.
+            complet = total == len(index)
+            ok = complet and reussis == total and not defaillants
             rapport.note(
-                f"I4/I5 {nom_res} — chemins indexés réellement chargeables",
-                "VERT" if (reussis == total and not defaillants) else "ROUGE",
-                f"{total} chemin(s) indexés, TOUS éprouvés par un vrai load()",
+                f"I4/I5 {role}/{nom_res} — chemins indexés réellement chargeables",
+                "VERT" if ok else "ROUGE",
+                f"{total} chemin(s) éprouvés par un vrai load(), pour "
+                f"{len(index)} chemin(s) publiés dans l'index",
                 (f"{reussis}/{total} chargés"
+                 + ("" if complet else
+                    f" — COUVERTURE PARTIELLE : {total} éprouvé(s) contre "
+                    f"{len(index)} indexé(s), la mesure ne porte pas sur "
+                    "tout l'index")
                  + ("" if not defaillants
                     else " — défaillants : " + ", ".join(defaillants[:6]))))
             continue
@@ -429,7 +473,7 @@ def controle_i4_i5(manifeste: dict[str, Any], rapport: Rapport) -> None:
         else:
             verdict_i45 = "VERT"
         rapport.note(
-            f"I4/I5 {nom_res} — chemins indexés réellement chargeables",
+            f"I4/I5 {role}/{nom_res} — chemins indexés réellement chargeables",
             verdict_i45,
             f"{len(index)} chemin(s) indexés, dont {len(couverts)} "
             "effectivement demandés au montage du monde",
@@ -438,8 +482,8 @@ def controle_i4_i5(manifeste: dict[str, Any], rapport: Rapport) -> None:
              if not index else
              f"{len(couverts)} chemin(s) éprouvés par un vrai load() ; "
              f"{len(non_couverts)} chemin(s) indexés mais jamais demandés — "
-             "le manifeste ne porte pas leur chargeabilité, ils restent "
-             "NON VÉRIFIÉ (ils ne bloquent pas la table §4)"))
+             "le manifeste ne porte pas leur chargeabilité ; relancer le "
+             "montage avec --iss071-chargeabilite=1 pour les éprouver"))
 
 
 def controle_i8(racine: Path | None, rapport: Rapport) -> None:
@@ -526,7 +570,8 @@ def analyser(ed: dict[str, Any], ex: dict[str, Any], lignes: list[str],
 
     total_lignes, noms = compter_familles(lignes, rapport)
     controle_i9(manques_total, total_lignes, rapport)
-    controle_i4_i5(ex, rapport)
+    controle_i4_i5(ed, "editeur", rapport)
+    controle_i4_i5(ex, "export", rapport)
     controle_i8(racine, rapport)
 
     if inventaire is not None:
@@ -588,69 +633,88 @@ def autotest() -> int:
     journal_sain = [f"ligne {i}" for i in range(50)] + [
         f"[world_v2] {JALON_MONDE} — vallée whitebox prête."]
     base = {"Foo": "res://a/Foo.gltf", "Bar": "res://b/Bar.glb"}
-    scenarios: list[tuple[str, dict, dict, list[str], str]] = [
+    # C4 (contre-revue) : le scénario « état sain » passait `source=None`, donc
+    # I8 rendait NON VÉRIFIÉ — et l'autotest le déclarait VERT. Il ratifiait
+    # ainsi le défaut qu'il était censé interdire. La racine est désormais
+    # déduite de l'emplacement du script, pas du répertoire courant.
+    racine = Path(__file__).resolve().parent.parent
+    # (racine, verdict attendu) : le dernier scénario prouve que NON VÉRIFIÉ
+    # bloque réellement, ce qui n'était pas le cas avant la contre-revue.
+    scenarios: list[tuple[str, dict, dict, list[str], Path | None, str]] = [
         ("état sain : index identiques, journal propre",
          _manifeste_synthetique("editeur", base),
-         _manifeste_synthetique("export", base), journal_sain, "VERT"),
+         _manifeste_synthetique("export", base), journal_sain,
+         racine, "VERT"),
 
         ("MÊME TAILLE, contenus différents (I3) — doit ROUGIR",
          _manifeste_synthetique("editeur", base),
          _manifeste_synthetique("export", {"Foo": "res://a/Foo.gltf",
                                            "Baz": "res://b/Baz.glb"}),
-         journal_sain, "ROUGE"),
+         journal_sain, racine, "ROUGE"),
 
         ("même taille, MÊMES clés, chemins différents (I2) — doit ROUGIR",
          _manifeste_synthetique("editeur", base),
          _manifeste_synthetique("export", {"Foo": "res://a/Foo.gltf",
                                            "Bar": "res://AUTRE/Bar.glb"}),
-         journal_sain, "ROUGE"),
+         journal_sain, racine, "ROUGE"),
 
         ("index export VIDE (le défaut d'ISS-071) — doit ROUGIR",
          _manifeste_synthetique("editeur", base),
          _manifeste_synthetique("export", {}, demandes={"Foo": 3},
                                 manques={"Foo": 3}, modules=0, cellules=0),
          journal_sain + ["ERROR: [world_v2] kit : modèle inconnu Foo"],
-         "ROUGE"),
+         racine, "ROUGE"),
 
         ("JOURNAL FILTRÉ : plus une seule ligne d'erreur, mais index export "
          "vide et compteurs à zéro — doit ROUGIR quand même (point 10)",
          _manifeste_synthetique("editeur", base),
          _manifeste_synthetique("export", {}, demandes={}, modules=0,
                                 cellules=0),
-         journal_sain, "ROUGE"),
+         journal_sain, racine, "ROUGE"),
 
         ("ordre des répertoires inversé (I7) — doit ROUGIR",
          _manifeste_synthetique("editeur", base,
                                 repertoires=["res://a", "res://b"]),
          _manifeste_synthetique("export", base,
                                 repertoires=["res://b", "res://a"]),
-         journal_sain, "ROUGE"),
+         journal_sain, racine, "ROUGE"),
 
         ("collision publiée d'un seul côté (I6) — doit ROUGIR",
          _manifeste_synthetique("editeur", base),
          _manifeste_synthetique("export", base, collisions=[
              {"nom": "Foo", "retenu": "res://a/Foo.gltf",
               "ignore": "res://b/Foo.gltf"}]),
-         journal_sain, "ROUGE"),
+         journal_sain, racine, "ROUGE"),
 
         ("modules_instancies = 0 des deux côtés — doit ROUGIR (un vert obtenu "
          "en ne faisant rien n'est pas un vert)",
          _manifeste_synthetique("editeur", base, modules=0),
          _manifeste_synthetique("export", base, modules=0),
-         journal_sain, "ROUGE"),
+         journal_sain, racine, "ROUGE"),
 
         ("journal sans le jalon de montage — doit BLOQUER",
          _manifeste_synthetique("editeur", base),
          _manifeste_synthetique("export", base),
-         ["une ligne quelconque"], "BLOQUÉ"),
+         ["une ligne quelconque"], racine, "BLOQUÉ"),
 
         ("manifestes intervertis — doit BLOQUER",
          _manifeste_synthetique("export", base),
-         _manifeste_synthetique("editeur", base), journal_sain, "BLOQUÉ"),
+         _manifeste_synthetique("editeur", base), journal_sain,
+         racine, "BLOQUÉ"),
+
+        # C4 — filet de régression de la contre-revue. Tout est parfait SAUF
+        # qu'un contrôle n'a pas pu être exécuté (pas de racine → I8 non relu).
+        # Avant la correction, ce cas rendait VERT et code 0 : le portail
+        # déclarait la parité atteinte en n'ayant pas tout mesuré.
+        ("un seul contrôle NON VÉRIFIÉ, tout le reste vert — ne doit PAS "
+         "rendre VERT (PROMPT4_METHOD §12 : jamais implicitement réussi)",
+         _manifeste_synthetique("editeur", base),
+         _manifeste_synthetique("export", base), journal_sain,
+         None, "NON VÉRIFIÉ"),
     ]
 
     echecs = 0
-    for titre, ed, ex, journal, attendu in scenarios:
+    for titre, ed, ex, journal, racine_sc, attendu in scenarios:
         rapport = Rapport()
         # On rejoue le chemin réel, gardes de lecture comprises.
         ok_ed = str(ed.get("environnement")) == "editeur"
@@ -662,12 +726,15 @@ def autotest() -> int:
             rapport.note("lecture du journal", "BLOQUÉ", "synthétique",
                          "jalon absent")
         else:
-            analyser(ed, ex, journal, None, rapport)
+            analyser(ed, ex, journal, racine_sc, rapport)
         obtenu = rapport.verdict()
-        bon = obtenu == attendu
+        # Le code de sortie fait partie du contrat : un verdict non-VERT qui
+        # rendrait 0 laisserait passer le portail dans gate_export_parite.sh.
+        code = rapport.code_sortie()
+        bon = obtenu == attendu and (code == 0) == (attendu == "VERT")
         echecs += 0 if bon else 1
         print(f"\n=== AUTOTEST [{'OK ' if bon else 'ÉCHEC'}] {titre}\n"
-              f"    attendu {attendu}, obtenu {obtenu} "
+              f"    attendu {attendu}, obtenu {obtenu} (code {code}) "
               f"(sur {len(rapport.constats)} contrôles)", flush=True)
     print(f"\n=== AUTOTEST : {len(scenarios)} scénarios, {echecs} échec(s)",
           flush=True)

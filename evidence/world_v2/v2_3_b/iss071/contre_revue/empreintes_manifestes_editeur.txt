@@ -1,0 +1,4 @@
+931edf1fc7667fa8  evidence/world_v2/v2_3_b/iss071/avant/manifeste_editeur.json
+931edf1fc7667fa8  evidence/world_v2/v2_3_b/iss071/mesure/manifeste_editeur_rejeu.json
+931edf1fc7667fa8  evidence/world_v2/v2_3_b/iss071/apres/manifeste_editeur.json
+931edf1fc7667fa8  evidence/world_v2/v2_3_b/iss071/apres/manifeste_editeur_i45.json

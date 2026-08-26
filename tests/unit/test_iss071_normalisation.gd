@@ -29,6 +29,35 @@ extends GateTestCase
 
 const CHEMIN_REGISTRE: String = "res://scripts/core/asset_registry.gd"
 const CHEMIN_PLACE_KIT: String = "res://scripts/world_v2/poi/world_v2_place_kit.gd"
+
+## I7 — oracle LITTÉRAL des répertoires balayés, et de leur ORDRE.
+##
+## POURQUOI (contre-revue de la passe ISS-071) : la version précédente lisait
+## `MODULE_DIRS` depuis le script, s'en servait comme vue d'export, puis se
+## contentait de `size() >= 6`. Elle comparait donc la constante à ELLE-MÊME —
+## le « test qui ne peut pas échouer » de PROMPT4_METHOD §2. Permuter deux
+## répertoires, ou en ajouter un septième, passait au vert alors que l'ordre
+## décide de la PRIORITÉ : le kit garde le premier trouvé, le registre garde le
+## dernier. Changer cet ordre change silencieusement quel modèle est retenu.
+##
+## Ces listes sont donc écrites à la main. Elles doivent être modifiées
+## sciemment, en même temps que le code, jamais recopiées depuis lui.
+const MODULE_DIRS_ATTENDUS: Array[String] = [
+	"res://assets/environment/village",
+	"res://assets/environment/dungeon",
+	"res://assets/environment/props",
+	"res://assets/environment/cliffs",
+	"res://assets/environment/rocks",
+	"res://assets/environment/foliage",
+]
+const MODEL_DIRS_ATTENDUS: Array[String] = [
+	"res://assets/environment/foliage",
+	"res://assets/environment/rocks",
+	"res://assets/environment/props",
+	"res://assets/environment/dungeon",
+	"res://assets/characters/hero",
+	"res://assets/characters/enemies",
+]
 const NOM_FONCTION: StringName = &"normaliser_entree_modele"
 
 ## Table partagée produite en parallèle par la voie « fixtures » de la directive
@@ -258,6 +287,21 @@ func _comparer(reel: Dictionary, attendu: Dictionary, quoi: String) -> void:
 			% [quoi, attendu.size(), str(manquants), str(en_trop), str(divergents)])
 
 
+func _epingler_repertoires(obtenus: Array, attendus: Array[String],
+		quoi: String) -> void:
+	## Comparaison POSITION PAR POSITION, pas par cardinal ni par ensemble :
+	## une permutation change la priorité de résolution sans changer ni la
+	## taille ni le contenu.
+	var lus: Array[String] = []
+	for d: Variant in obtenus:
+		lus.append(str(d))
+	check(lus == attendus,
+		("%s : répertoires balayés et leur ORDRE. attendu %s ; obtenu %s. "
+		+ "Cet ordre décide de la priorité de résolution — le modifier change "
+		+ "quel modèle est retenu en cas d'homonymie.")
+			% [quoi, str(attendus), str(lus)])
+
+
 func test_parite_index_et_vue_export_place_kit() -> void:
 	## I1/I2 du contrat, évalués ici : chaque nom que la vue d'export peut
 	## dériver doit être dans l'index, sur le MÊME chemin source. Ce test rougit
@@ -271,7 +315,7 @@ func test_parite_index_et_vue_export_place_kit() -> void:
 	var kit: Script = load(CHEMIN_PLACE_KIT) as Script
 	check_not_null(kit, "script de WorldV2PlaceKit lisible")
 	var dirs: Array = kit.get_script_constant_map().get("MODULE_DIRS", []) as Array
-	check(dirs.size() >= 6, "MODULE_DIRS doit garder ses six répertoires (%d)" % dirs.size())
+	_epingler_repertoires(dirs, MODULE_DIRS_ATTENDUS, "WorldV2PlaceKit.MODULE_DIRS")
 	var manifeste: Dictionary = kit.call(&"manifeste_iss071") as Dictionary
 	_comparer(_index_du_manifeste(manifeste), _vue_export(script, dirs, true),
 		"WorldV2PlaceKit")
@@ -284,7 +328,7 @@ func test_parite_index_et_vue_export_asset_registry() -> void:
 			% NOM_FONCTION)
 		return
 	var dirs: Array = script.get_script_constant_map().get("MODEL_DIRS", []) as Array
-	check(dirs.size() >= 6, "MODEL_DIRS doit garder ses six répertoires (%d)" % dirs.size())
+	_epingler_repertoires(dirs, MODEL_DIRS_ATTENDUS, "AssetRegistry.MODEL_DIRS")
 	var manifeste: Dictionary = script.call(&"manifeste_iss071") as Dictionary
 	_comparer(_index_du_manifeste(manifeste), _vue_export(script, dirs, false),
 		"AssetRegistry")

@@ -1,0 +1,20 @@
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_kHDYfmq5
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=iss071
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: iss071
+  ok   test_iss071_normalisation.gd::test_la_regle_de_normalisation_est_exposee (2 assertions)
+  ok   test_iss071_normalisation.gd::test_table_de_normalisation (34 assertions)
+  ok   test_iss071_normalisation.gd::test_cas_nominatif_barrow_de_la_directive (5 assertions)
+  ÉCHEC test_iss071_normalisation.gd::test_parite_index_et_vue_export_place_kit — WorldV2PlaceKit.MODULE_DIRS : répertoires balayés et leur ORDRE. attendu ["res://assets/environment/village", "res://assets/environment/dungeon", "res://assets/environment/props", "res://assets/environment/cliffs", "res://assets/environment/rocks", "res://assets/environment/foliage"] ; obtenu ["res://assets/environment/village", "res://assets/environment/dungeon", "res://assets/environment/props", "res://assets/environment/cliffs", "res://assets/environment/foliage", "res://assets/environment/rocks"]. Cet ordre décide de la priorité de résolution — le modifier change quel modèle est retenu en cas d'homonymie.
+  ok   test_iss071_normalisation.gd::test_parite_index_et_vue_export_asset_registry (3 assertions)
+  ok   test_iss071_normalisation.gd::test_aucune_ressource_non_scene_dans_les_index (3 assertions)
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 5 réussi(s), 1 échoué(s) ===
+  ÉCHEC: test_iss071_normalisation.gd::test_parite_index_et_vue_export_place_kit — WorldV2PlaceKit.MODULE_DIRS : répertoires balayés et leur ORDRE. attendu ["res://assets/environment/village", "res://assets/environment/dungeon", "res://assets/environment/props", "res://assets/environment/cliffs", "res://assets/environment/rocks", "res://assets/environment/foliage"] ; obtenu ["res://assets/environment/village", "res://assets/environment/dungeon", "res://assets/environment/props", "res://assets/environment/cliffs", "res://assets/environment/foliage", "res://assets/environment/rocks"]. Cet ordre décide de la priorité de résolution — le modifier change quel modèle est retenu en cas d'homonymie.
+LANCER_GODOT: RC_GODOT=1

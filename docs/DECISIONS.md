@@ -1381,8 +1381,20 @@ Le chemin de jeu normal ne les rencontre jamais.
 
 **Ce que la mesure dit du risque.** Le manifeste éditeur produit après le
 correctif est identique, hors le champ `chargeabilite` qui vient d'être ajouté,
-à celui mesuré avant tout correctif — `275954a71a2eb5c5` des deux côtés, sur
-plusieurs exécutions indépendantes. Les six vues des lieux gelés, recapturées,
+à celui mesuré avant tout correctif, sur plusieurs exécutions indépendantes.
+L'empreinte canonique est **`931edf1fc7667fa8`**, partagée par les quatre
+manifestes éditeur archivés, et elle se recalcule :
+
+```bash
+python3 tools/iss071_empreinte_manifeste.py --comparer \
+  evidence/world_v2/v2_3_b/iss071/avant/manifeste_editeur.json \
+  evidence/world_v2/v2_3_b/iss071/apres/manifeste_editeur_i45.json
+```
+
+Une première rédaction citait ici `275954a71a2eb5c5`, qu'aucun outil du dépôt ne
+reproduisait — une ancre morte, au sens exact où `CLAUDE.md` l'interdit. La
+contre-revue l'a relevé ; l'outil ci-dessus a été écrit pour que le nombre soit
+désormais vérifiable, et il confirme l'affirmation. Les six vues des lieux gelés, recapturées,
 sont comparées à celles d'avant correctif (voir
 `evidence/world_v2/v2_3_b/iss071/apres/`).
 

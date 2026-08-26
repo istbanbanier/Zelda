@@ -166,13 +166,23 @@ static func manifeste_iss071() -> Dictionary:
 ## `null` si absent : l'appelant garde son repli, jamais de ressource rose.
 static func model(model_name: StringName) -> PackedScene:
 	if _model_index.is_empty():
-		# ISS-071 — chaque fichier SOURCE n'est vu QU'UNE FOIS. En éditeur le
-		# répertoire porte `X.glb` ET `X.glb.import`, qui normalisent tous deux
-		# vers le même chemin ; en build il ne porte que le second. Sans ce
-		# garde, le balayage éditeur verrait chaque source DEUX fois et
-		# publierait une éventuelle collision croisée en double, là où la build
-		# la publierait une seule — les deux manifestes cesseraient d'être
-		# comparables, ce que le contrat interdit (I3, I6).
+		# ISS-071 — chaque chemin SOURCE n'est visité qu'une fois. En éditeur
+		# le répertoire porte `X.glb` ET `X.glb.import`, qui normalisent tous
+		# deux vers le même chemin ; en build exportée il ne porte que le
+		# second.
+		#
+		# HONNÊTETÉ SUR CE GARDE (correction de contre-revue) : la première
+		# rédaction affirmait que sans lui une collision croisée serait publiée
+		# en double côté éditeur. C'est FAUX, et le code juste dessous le
+		# montre : la collision n'est publiée que si le chemin déjà indexé
+		# DIFFÈRE du nouveau. Une seconde visite du même chemin ne publie donc
+		# rien et réécrit la même valeur — elle est idempotente.
+		#
+		# Le garde est conservé parce qu'il rend le balayage indépendant de ce
+		# que le répertoire annonce, et parce qu'il borne le travail au nombre
+		# de sources réelles plutôt qu'au nombre d'entrées listées. Il n'est
+		# PAS ce qui rend les deux manifestes comparables : c'est la
+		# normalisation, plus la comparaison de chemins ci-dessous.
 		var vus: Dictionary = {}
 		for dir_path: String in MODEL_DIRS:
 			var dir: DirAccess = DirAccess.open(dir_path)

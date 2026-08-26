@@ -135,12 +135,16 @@ static func manifeste_iss071() -> Dictionary:
 ## `PackedScene` d'une pièce de kit par nom canonique, ou null.
 static func scene_for(model_name: StringName) -> PackedScene:
 	if _index.is_empty():
-		# ISS-071 — même règle que le registre, et même garde : chaque fichier
-		# SOURCE n'est vu qu'une fois, que le répertoire l'ait annoncé par la
-		# source (éditeur) ou par son `.import` (build exportée). Sans lui, une
-		# collision croisée serait publiée deux fois d'un côté et une seule de
-		# l'autre — ici le premier gagne, donc la comparaison de chemins
-		# ci-dessous resterait vraie au second passage.
+		# ISS-071 — même règle que le registre, et même garde : chaque chemin
+		# SOURCE n'est visité qu'une fois, que le répertoire l'ait annoncé par
+		# la source (éditeur) ou par son `.import` (build exportée).
+		#
+		# HONNÊTETÉ SUR CE GARDE (correction de contre-revue) : la première
+		# rédaction affirmait qu'il évitait une double publication de
+		# collision. C'est FAUX ici aussi — le `elif` ci-dessous ne publie que
+		# si le chemin diffère, donc revisiter le MÊME chemin ne publie rien.
+		# Le garde borne le travail aux sources réelles ; il ne fonde pas la
+		# comparabilité des deux manifestes.
 		var vus: Dictionary = {}
 		for dir_path: String in MODULE_DIRS:
 			var dir: DirAccess = DirAccess.open(dir_path)

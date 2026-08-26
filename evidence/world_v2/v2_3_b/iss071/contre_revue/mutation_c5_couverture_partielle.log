@@ -1,0 +1,107 @@
+==============================================================================
+ISS-071 — CONTRÔLE DE PARITÉ ÉDITEUR / EXPORT
+contrat : docs/contrats/iss071_parite_resolveurs.md
+==============================================================================
+[VERT        ] lecture du manifeste editeur
+               examiné : /tmp/iss071_mut/c5_ed.json (34697 o)
+               mesure  : environnement « editeur », godot 4.7.1-stable (custom_build), monde neris_v2
+[VERT        ] lecture du manifeste export
+               examiné : /tmp/iss071_mut/c5_ex.json (34644 o)
+               mesure  : environnement « export », godot 4.7.1-stable (official), monde neris_v2
+[VERT        ] lecture du journal du jeu
+               examiné : evidence/world_v2/v2_3_b/iss071/apres/journaux/jeu_exporte_stdout.log (50 lignes)
+               mesure  : jalon « fondation V2 vérifiée » présent
+[VERT        ] I7 AssetRegistry — ordre des répertoires inchangé
+               examiné : 6 répertoire(s) éditeur, 6 export, comparés position par position
+               mesure  : listes identiques dans le même ordre
+[VERT        ] I1 index AssetRegistry — mêmes noms canoniques indexés
+               examiné : 160 clés éditeur contre 160 clés export, union 160
+               mesure  : 0 différence(s) : 0 seulement en éditeur, 0 seulement en export
+[VERT        ] I2/I3 index AssetRegistry — même chemin source pour un même nom
+               examiné : 160 couple(s) nom→chemin comparés un à un (comparaison de couples, jamais de cardinaux)
+               mesure  : 0 couple(s) divergent(s)
+[VERT        ] I6 AssetRegistry — collisions publiées à l'identique
+               examiné : 0 collision(s) publiée(s) en éditeur, 0 en export
+               mesure  : mêmes collisions des deux côtés
+[VERT        ] §4 AssetRegistry — différence des modèles DEMANDÉS
+               examiné : 21 nom(s) demandés en éditeur, 21 en export
+               mesure  : 0 différence(s)
+[VERT        ] §4 AssetRegistry — différence des modèles CHARGÉS
+               examiné : 21 nom(s) chargés en éditeur, 21 en export
+               mesure  : 0 différence(s)
+[VERT        ] §4 AssetRegistry — modèle DEMANDÉ mais NON CHARGÉ
+               examiné : table « manques » des deux manifestes : 0 nom(s) distincts en éditeur, 0 en export
+               mesure  : 0 appel(s) manqué(s) en éditeur, 0 en export
+[VERT        ] I7 WorldV2PlaceKit — ordre des répertoires inchangé
+               examiné : 6 répertoire(s) éditeur, 6 export, comparés position par position
+               mesure  : listes identiques dans le même ordre
+[VERT        ] I1 index WorldV2PlaceKit — mêmes noms canoniques indexés
+               examiné : 215 clés éditeur contre 215 clés export, union 215
+               mesure  : 0 différence(s) : 0 seulement en éditeur, 0 seulement en export
+[VERT        ] I2/I3 index WorldV2PlaceKit — même chemin source pour un même nom
+               examiné : 215 couple(s) nom→chemin comparés un à un (comparaison de couples, jamais de cardinaux)
+               mesure  : 0 couple(s) divergent(s)
+[VERT        ] I6 WorldV2PlaceKit — collisions publiées à l'identique
+               examiné : 0 collision(s) publiée(s) en éditeur, 0 en export
+               mesure  : mêmes collisions des deux côtés
+[VERT        ] §4 WorldV2PlaceKit — différence des modèles DEMANDÉS
+               examiné : 99 nom(s) demandés en éditeur, 99 en export
+               mesure  : 0 différence(s)
+[VERT        ] §4 WorldV2PlaceKit — différence des modèles CHARGÉS
+               examiné : 99 nom(s) chargés en éditeur, 99 en export
+               mesure  : 0 différence(s)
+[VERT        ] §4 WorldV2PlaceKit — modèle DEMANDÉ mais NON CHARGÉ
+               examiné : table « manques » des deux manifestes : 0 nom(s) distincts en éditeur, 0 en export
+               mesure  : 0 appel(s) manqué(s) en éditeur, 0 en export
+[VERT        ] §4 modules_instancies — positif et identique
+               examiné : clé « modules_instancies » des deux manifestes
+               mesure  : éditeur=459, export=459
+[VERT        ] §4 cellules_emises — positif et identique
+               examiné : clé « cellules_emises » des deux manifestes
+               mesure  : éditeur=631, export=631
+[VERT        ] §4 cellules_manquees — nulles des deux côtés
+               examiné : clé « vegetation.cellules_manquees » des deux manifestes
+               mesure  : éditeur=0, export=0 — une cellule manquée est une cellule de MultiMesh sautée ENTIÈRE, donc bien plus d'objets absents que d'appels manqués
+[VERT        ] §3 lieux_poses — positif et identique
+               examiné : clé « lieux_poses » des deux manifestes
+               mesure  : éditeur=16, export=16
+[VERT        ] §4 journal — lignes « kit : modèle inconnu »
+               examiné : 50 ligne(s) de journal balayées
+               mesure  : 0 ligne(s), 0 modèle(s) distinct(s)
+[VERT        ] §4 journal — lignes « modèle végétal introuvable »
+               examiné : 50 ligne(s) de journal balayées
+               mesure  : 0 ligne(s), 0 modèle(s) distinct(s)
+[VERT        ] §4 journal — lignes « flower_field : modèle inconnu »
+               examiné : 50 ligne(s) de journal balayées
+               mesure  : 0 ligne(s), 0 modèle(s) distinct(s)
+[VERT        ] §4 journal — lignes « flower_field : modèle de dalle inconnu »
+               examiné : 50 ligne(s) de journal balayées
+               mesure  : 0 ligne(s), 0 modèle(s) distinct(s)
+[VERT        ] I9 — aucun manque silencieux
+               examiné : 0 manque(s) comptés aux manifestes contre 0 ligne(s) d'erreur au journal
+               mesure  : compteurs et journal concordent (tous deux nuls, ou tous deux positifs)
+[VERT        ] I4/I5 editeur/WorldV2PlaceKit — chemins indexés réellement chargeables
+               examiné : 215 chemin(s) éprouvés par un vrai load(), pour 215 chemin(s) publiés dans l'index
+               mesure  : 215/215 chargés
+[VERT        ] I4/I5 editeur/AssetRegistry — chemins indexés réellement chargeables
+               examiné : 160 chemin(s) éprouvés par un vrai load(), pour 160 chemin(s) publiés dans l'index
+               mesure  : 160/160 chargés
+[ROUGE       ] I4/I5 export/WorldV2PlaceKit — chemins indexés réellement chargeables
+               examiné : 1 chemin(s) éprouvés par un vrai load(), pour 215 chemin(s) publiés dans l'index
+               mesure  : 1/1 chargés — COUVERTURE PARTIELLE : 1 éprouvé(s) contre 215 indexé(s), la mesure ne porte pas sur tout l'index
+[ROUGE       ] I4/I5 export/AssetRegistry — chemins indexés réellement chargeables
+               examiné : 1 chemin(s) éprouvés par un vrai load(), pour 160 chemin(s) publiés dans l'index
+               mesure  : 1/1 chargés — COUVERTURE PARTIELLE : 1 éprouvé(s) contre 160 indexé(s), la mesure ne porte pas sur tout l'index
+[VERT        ] I8 — plafond de rétention des PackedScene de kit (ISS-059)
+               examiné : scripts/world_v2/poi/world_v2_place_kit.gd (508 lignes) cherché pour le littéral « const SCENE_CACHE_MAX: int = 256 »
+               mesure  : littéral présent, à l'identique
+[VERT        ] I8 — plafond de rétention des PackedScene du registre (ISS-059)
+               examiné : scripts/core/asset_registry.gd (285 lignes) cherché pour le littéral « const MODEL_CACHE_MAX: int = 48 »
+               mesure  : littéral présent, à l'identique
+
+==============================================================================
+VERDICT ISS-071 : ROUGE  (code 1)
+  32 contrôle(s) exécutés · 2 ROUGE · 0 BLOQUÉ · 0 NON VÉRIFIÉ
+  - [ROUGE] I4/I5 export/WorldV2PlaceKit — chemins indexés réellement chargeables :: 1/1 chargés — COUVERTURE PARTIELLE : 1 éprouvé(s) contre 215 indexé(s), la mesure ne porte pas sur tout l'index
+  - [ROUGE] I4/I5 export/AssetRegistry — chemins indexés réellement chargeables :: 1/1 chargés — COUVERTURE PARTIELLE : 1 éprouvé(s) contre 160 indexé(s), la mesure ne porte pas sur tout l'index
+==============================================================================

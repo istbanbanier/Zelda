@@ -81,3 +81,42 @@ Le contrôle de non-régression tient toujours : le manifeste éditeur, comparé
 hors du champ `chargeabilite` qui vient d'être ajouté, est **identique** à celui
 mesuré avant tout correctif (`275954a71a2eb5c5` sur les deux). Le correctif
 reste un no-op en éditeur.
+
+---
+
+## ERRATUM — corrections issues de la contre-revue (agent C)
+
+Cette preuve n'est pas réécrite : elle est datée, et ce qu'elle a mesuré reste
+vrai. Deux de ses **formulations** étaient fausses, et une troisième citait un
+nombre que rien ne pouvait recalculer. Les voici corrigées.
+
+**1. « Éprouvé des deux côtés » (C7) — la phrase était en avance sur le code.**
+Les chiffres 215/215 et 160/160 étaient bien produits pour les deux
+environnements par le jeu, mais `tools/iss071_parite.py` n'appelait
+`controle_i4_i5()` que sur le manifeste d'**export**. Le portail ne vérifiait
+donc réellement qu'un côté : une régression de sens inverse — un chemin devenu
+non chargeable en éditeur — serait passée. Le contrôle porte désormais sur les
+deux manifestes, et un scénario de mutation le prouve (voir
+`CONTRE_REVUE_CORRECTIONS.md`).
+
+**2. L'empreinte `275954a71a2eb5c5` était une ancre morte (C8).**
+Aucun outil du dépôt ne la reproduisait, donc personne n'aurait pu constater
+qu'elle avait cessé d'être vraie — précisément ce que `CLAUDE.md` interdit.
+L'affirmation qu'elle appuyait, elle, est **exacte** et vérifiée depuis :
+
+```
+$ python3 tools/iss071_empreinte_manifeste.py --comparer \
+    evidence/world_v2/v2_3_b/iss071/avant/manifeste_editeur.json \
+    evidence/world_v2/v2_3_b/iss071/apres/manifeste_editeur_i45.json
+931edf1fc7667fa8  …/avant/manifeste_editeur.json
+931edf1fc7667fa8  …/apres/manifeste_editeur_i45.json
+IDENTIQUES (hors champs volatils : chargeabilite)
+```
+
+La valeur juste est **`931edf1fc7667fa8`**, et les quatre manifestes éditeur
+archivés (avant, rejeu de déterminisme, après, après+i45) la partagent. La
+conclusion tient donc inchangée : **le correctif est un no-op en éditeur**, et
+la parité vient d'avoir réparé l'export, non d'avoir nivelé les deux côtés.
+
+**3. Le compte de contrôles passe de 30 à 32**, I4/I5 étant désormais évalué
+une fois par environnement.
