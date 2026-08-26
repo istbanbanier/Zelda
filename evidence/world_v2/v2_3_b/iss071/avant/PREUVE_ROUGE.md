@@ -112,3 +112,33 @@ cd /home/user/wt-a
 nohup tools/gate_export_parite.sh --sortie /home/user/wt-a-out > gate.log 2>&1 &
 until grep -q '^RC=' gate.log; do sleep 20; done   # jamais `| tail` : le tube masque le RC
 ```
+
+---
+
+## 8. Exécution de CONFIRMATION, sur la version committée du portail
+
+La preuve des §1-§4 vient d'une exécution antérieure à deux correctifs du
+comparateur (`I2/I3` et `I4/I5` rendaient VERT en n'examinant rien — voir
+`CONTROLES_NEGATIFS.md` §3). Publier un portail dont la version versionnée n'a
+jamais tourné serait exactement la dérive que ce dépôt punit. Il a donc été
+rejoué **en entier**, sans réutilisation d'artefact, sur l'arbre committé.
+
+| | exécution 1 | confirmation |
+|---|---|---|
+| SHA git | `cb8c5d7` (3 fichiers sales : les outils eux-mêmes) | `2defdf4`, **0 fichier sale** |
+| verdict | ROUGE, code 1 | ROUGE, code 1 |
+| contrôles | 32 · 17 ROUGE · 2 verts fabriqués | 32 · **19 ROUGE** · 0 BLOQUÉ · 2 NON VÉRIFIÉ |
+| `kit : modèle inconnu` | 457 | **457** |
+| `modèle végétal introuvable` | 631 | **631** |
+| `flower_field` (2 familles) | 4 + 2 | **4 + 2** |
+| sha256 du binaire | `13de524f…5c41881d` | `13de524f…5c41881d` |
+| luminance du monde | 0,292 | 0,301 |
+| durée | ~4 min | ~2,5 min |
+
+Le binaire exporté est **identique au sha256 près** entre les deux exécutions,
+bien que trois commits soient intervenus : le preset exclut `tools/`, `tests/`
+et `docs/`, et sa graine est nulle. L'export est donc reproductible bit à bit,
+ce qui rend le sha256 utilisable comme identité de build.
+
+Journal : `gate_export_parite_confirmation.log` · contexte :
+`contexte_confirmation.json`.
