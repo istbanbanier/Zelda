@@ -4,6 +4,83 @@ Ordre **anti-chronologique** : l'entrée la plus récente est en haut. La derni�
 entrée fait office de handoff et doit indiquer **exactement** la prochaine action.
 
 ---
+## 2026-08-27 (fin) — l'audit des 18 domaines : la boucle du build livré est ROMPUE
+
+**37 agents, 0 erreur, 2 h 30.** Dix-huit domaines audités, puis attaqués par
+dix-huit sceptiques. **Les dix-huit ont rendu « à corriger »** : 68
+surclassements, 139 omissions. Aucun audit n'est passé indemne — c'est le
+résultat attendu d'une revue qui cherche la couverture et non le filtrage.
+
+### Le fait qui domine tout, vérifié à la main avant publication
+
+**Depuis « Nouvelle partie », zéro heure de campagne est atteignable.**
+
+| Vérification | Résultat |
+|---|---|
+| `grep -rn "SceneDoor" scripts/world_v2/ scenes/world_v2/` | **aucune occurrence** |
+| `scripts/ui/main_menu.gd:14` | ouvre `WorldV2.tscn` |
+| Retours pointant encore vers `ValleyWorld.tscn` (V1) | **4** |
+| `test_world_v2_places_contract.gd:251` | interdit tout **acteur** |
+| Appels `tr(` réels | **zéro** ; aucun fichier de traduction |
+
+Le menu ouvre World V2 ; World V2 n'a aucune porte vers le donjon. Donjon,
+boss, antichambre, coffre final et écran de victoire sont **inatteignables**.
+
+**Douze des dix-huit audits ont buté dessus depuis leur propre angle sans
+qu'aucun puisse voir qu'il s'agissait du même défaut.** C'est ce qu'une
+synthèse transversale apporte, et c'est aussi l'avertissement : aucune durée
+de campagne n'est mesurable tant que la boucle est ouverte, donc rien de ce
+qui en dépend n'est dimensionnable.
+
+**Pourquoi 111 tests verts ne l'ont pas vu.** Les suites `tests/world_v2/`
+vérifient le monde *pour lui-même* — terrain, routes, hydrologie, traversée
+pilotée par le vrai `PlayerController` — mais **aucune ne franchit le seuil**.
+Le mode de panne d'ISS-018 dans un autre domaine : des tests verts qui
+mesurent une grandeur voisine de celle qui compte.
+
+### J'ai corrigé ma propre feuille de route
+
+Elle plaçait « mesurer un parcours réel » en étape 0. C'était faux : **on ne
+peut pas mesurer une campagne qu'on ne peut pas jouer.** La réparation de la
+boucle passe devant, et la correction est datée dans le document avec sa cause.
+
+### Trois défauts consignés
+
+- **ISS-073** (S1) — boucle rompue. Une porte, quatre constantes, et un test
+  qui franchit réellement le seuil, écrit rouge d'abord.
+- **ISS-074** (S2) — zéro adversaire dans le monde livré, et le vide est
+  **verrouillé** par le contrat « acteur prématuré ». Ce contrat était juste
+  quand les lieux étaient des coquilles ; il est devenu le garde-fou qui
+  empêche le peuplement. À remplacer par un **budget d'IA**.
+- **ISS-075** (S3) — zéro localisation. Urgent **parce que** le volume est
+  minuscule : externaliser quatre fragments coûte une heure, 50 000 mots
+  coûtent plusieurs fois leur écriture.
+
+### Ce que l'audit dit de solide
+
+Le motif dominant du dépôt n'est ni l'incompétence ni le bluff : c'est la
+**construction de moteurs corrects que personne ne câble ensuite au contenu**.
+Le moteur d'IA n'a aucun ennemi à jouer, le Bracelet n'a que deux cibles dans
+le monde livré et zéro dans le donjon, `GameState.Difficulty` n'a aucun
+consommateur. La bonne nouvelle est proportionnelle : **ce sont des câblages
+manquants, pas des réécritures.**
+
+**PROCHAINE ACTION EXACTE.** Deux choses, dans cet ordre, et aucune n'est
+autorisée aujourd'hui :
+
+1. **Réparer la boucle** (ISS-073) — test rouge d'abord qui franchit le seuil,
+   puis la `SceneDoor` et les quatre constantes. C'est l'étape 0 du chemin
+   critique et la meilleure affaire de tout l'audit.
+2. **Lundi 31 août**, faire jouer Istvan : `docs/PROTOCOLE_SAUT_ISTVAN.md`
+   pour la gravité (S1.1, `BLOQUÉ` en attente planifiée), puis un parcours
+   chronométré une fois la boucle refermée.
+
+`GO_V2_3_B_LOT2` reste **FALSE**. Le lot 2 n'est plus la prochaine tranche :
+la réparation de la boucle passe devant, et deux corrections préalables
+(budget d'IA, registre d'acquisition) sont à trancher par le lead avant de
+construire six lieux de plus — sans elles, six lieux, c'est six reprises.
+
+---
 ## 2026-08-27 (suite) — l'appareil est sécurisé, la doctrine produit est posée, l'audit 30-50 h tourne
 
 **Trois façons de devenir vert sans rien prouver, toutes fermées.** Le
