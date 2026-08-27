@@ -617,3 +617,36 @@ Même famille que le `diff` sur deux fichiers absents et que
 réussit en ne faisant pas ce qu'on croit**. La règle du dépôt s'applique une
 fois de plus — vérifier l'effet auprès de la source, pas auprès de l'outil qui
 prétend l'avoir produit.
+
+## `git commit -m "..."` mange les backticks — le message part avec des trous
+
+Mesuré le 2026-08-27. Le commit a réussi, le push a réussi, et cinq phrases du
+message ont perdu leur sujet.
+
+```bash
+git commit -m "la sonde cherche des `class_name` déclarés"
+#  -> bash exécute `class_name`, « command not found », et le mot DISPARAÎT
+#  -> message publié : « la sonde cherche des  déclarés »
+```
+
+Entre guillemets doubles, le shell substitue les backticks avant que git ne
+voie quoi que ce soit. Rien n'échoue : les erreurs `command not found` partent
+sur stderr, le commit se fait, et le message amputé est déjà dans l'historique
+— où il ne peut plus être corrigé sans réécriture, interdite ici.
+
+C'est la même famille que le reste de ce fichier : **une commande qui réussit
+en ne faisant pas ce qu'on croit.** Et le dégât est permanent, contrairement à
+un fichier qu'on peut réécrire.
+
+Forme correcte, la seule à utiliser pour tout message non trivial :
+
+```bash
+git commit -F - <<'MSG'      # quotes autour de MSG : AUCUNE substitution
+titre
+
+Un corps avec des `backticks`, des $variables et des "guillemets" passe intact.
+MSG
+```
+
+Le `'MSG'` entre apostrophes est ce qui compte : sans elles, le heredoc
+substitue exactement comme les guillemets doubles.
