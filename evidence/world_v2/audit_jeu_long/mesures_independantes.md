@@ -5,7 +5,7 @@ rapports des sous-agents, pour que ces rapports puissent être
 confrontés à une base qu'ils n'ont pas écrite. Aucun chiffre de cette
 page ne vient d'un agent.
 
-Commit : `f705e7b` · arbre **1 fichier(s) modifié(s)** hors cette sortie
+Commit : `ece42a6` · arbre **1 fichier(s) modifié(s)** hors cette sortie
 
 ## Le monde
 
@@ -58,7 +58,7 @@ Non construits :
 
 ## Coût de production mesuré
 
-Chantier World V2 : **2026-08-12 → 2026-08-27**, **724 commits** au total.
+Chantier World V2 : **2026-08-12 → 2026-08-27**, **727 commits** au total.
 
 Commits touchant les fichiers de chaque lieu construit :
 
@@ -124,3 +124,32 @@ ont été faits en premier.
 | tests/world_v2 | 32 |
 
 Scènes `.tscn` : **88** · ressources `.tres` : **60**
+
+## Sondes ciblees — presence d'un systeme, pas d'un mot
+
+164 `class_name` declares dans `scripts/`, 6 autoloads.
+
+| Systeme | `class_name` | Autoload | Verdict |
+|---|---|---|---|
+| Quetes | — | — | **ABSENT** |
+| Dialogues | — | — | **ABSENT** |
+| PNJ | — | — | **ABSENT** |
+| New Game + | — | — | **ABSENT** |
+| Streaming de region | — | — | **ABSENT** |
+| Artisanat hors cuisine | — | — | **ABSENT** |
+| Marchand / economie | — | — | **ABSENT** |
+| Meteo / cycle jour | — | — | **ABSENT** |
+| Cuisine | `PainterlyRecipe RecipeRules` | — | present |
+| Sauvegarde | — | `SaveSystem` | present |
+| Resonance / Bracelet | `ResonanceController ResonanceLab ResonanceLinkNode ResonanceOverlay ResonancePylonLandmark ResonanceTargetComponent` | — | present |
+| Reaction materiaux | `MaterialProfile ReactionSystem` | — | present |
+| Graphe electrique | `ElectricDebugOverlay ElectricDoor ElectricGraph ElectricHazard ElectricNode ElectricRelay ElectricSwitch ElectricVisual` | — | present |
+| Boss | `BossArena BossDirector` | — | present |
+| IA utilitaire | `UtilityBrain` | — | present |
+| Inventaire | `InventoryComponent` | — | present |
+| Etat de jeu | — | `GameState` | present |
+
+Une absence de classe ET d'autoload est un signal fort dans ce depot,
+ou `CLAUDE.md` impose `class_name` pour tout type reutilisable. Elle ne
+vaut pas preuve formelle : un sujet peut vivre sans type nomme.
+

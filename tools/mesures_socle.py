@@ -124,6 +124,66 @@ def main() -> int:
     w(f"\nScènes `.tscn` : **{len(list(pathlib.Path('scenes').rglob('*.tscn')))}**"
       f" · ressources `.tres` : "
       f"**{len(list(pathlib.Path('resources').rglob('*.tres')))}**")
+    # --- SONDES CIBLEES : les systemes dont l'ABSENCE decide de 30-50 h ---
+    # Un grep sur un mot-cle ment : « quest » matche `request`. On cherche des
+    # CLASSES DECLAREES, qu'aucune sous-chaine ne peut fabriquer. La lecture se
+    # fait en Python, PAS en shell : passer un motif a travers heredoc, chaine
+    # Python, shell et grep a deja produit un motif vide qui declarait TOUT
+    # absent — un faux negatif silencieux, exactement ce qu'on traque.
+    #
+    # SECOND PIEGE, mesure ici meme : un autoload n'a JAMAIS de `class_name`.
+    # Son nom est deja un identifiant global et Godot refuse qu'une classe le
+    # masque (l'en-tete de dev_mode.gd l'explique). Une sonde qui ne
+    # regarderait que `class_name` declarerait `SaveSystem` ABSENT alors qu'il
+    # est autoloade et porte `save_slot`/`load_slot`. Fausse accusation —
+    # l'erreur symetrique du faux vert, et tout aussi grave.
+    classes: set[str] = set()
+    for gd in pathlib.Path("scripts").rglob("*.gd"):
+        for m in re.finditer(r"^class_name\s+(\w+)", gd.read_text(
+                encoding="utf-8", errors="replace"), re.M):
+            classes.add(m.group(1))
+    autoloads = [l.split("=")[0] for l in
+                 pathlib.Path("project.godot").read_text(
+                     encoding="utf-8").splitlines()
+                 if re.match(r"^[A-Za-z_]+=\"?\*?res://", l)]
+
+    w("\n## Sondes ciblees — presence d'un systeme, pas d'un mot\n")
+    w(f"{len(classes)} `class_name` declares dans `scripts/`, "
+      f"{len(autoloads)} autoloads.\n")
+    w("| Systeme | `class_name` | Autoload | Verdict |")
+    w("|---|---|---|---|")
+    sondes = [
+        ("Quetes",                 ["quest"],                    "quest"),
+        ("Dialogues",              ["dialog"],                   "dialog"),
+        ("PNJ",                    ["npc"],                      "npc"),
+        ("New Game +",             ["newgame"],                  "newgame"),
+        ("Streaming de region",    ["stream"],                   "stream"),
+        ("Artisanat hors cuisine", ["craft"],                    "craft"),
+        ("Marchand / economie",    ["shop", "merchant", "vendor"], "shop"),
+        ("Meteo / cycle jour",     ["weather", "daynight"],      "weather"),
+        ("Cuisine",                ["cook", "recipe", "meal"],   "cook"),
+        ("Sauvegarde",             ["save"],                     "save"),
+        ("Resonance / Bracelet",   ["resonance", "bracelet"],    "resonance"),
+        ("Reaction materiaux",     ["reaction", "materialprofile"], "reaction"),
+        ("Graphe electrique",      ["electric"],                 "electric"),
+        ("Boss",                   ["boss"],                     "boss"),
+        ("IA utilitaire",          ["utility", "perception", "behavior"], "perception"),
+        ("Inventaire",             ["inventory", "equipment"],   "inventory"),
+        ("Etat de jeu",            ["gamestate"],                "gamestate"),
+    ]
+    for nom, motifs, cle in sondes:
+        trouve = sorted(c for c in classes
+                        if any(m in c.lower() for m in motifs))
+        auto = [a for a in autoloads if cle in a.lower()]
+        present = bool(trouve) or bool(auto)
+        w("| %s | %s | %s | %s |" % (
+            nom,
+            ("`%s`" % " ".join(trouve)) if trouve else "—",
+            ("`%s`" % " ".join(auto)) if auto else "—",
+            "present" if present else "**ABSENT**"))
+    w("\nUne absence de classe ET d'autoload est un signal fort dans ce depot,")
+    w("ou `CLAUDE.md` impose `class_name` pour tout type reutilisable. Elle ne")
+    w("vaut pas preuve formelle : un sujet peut vivre sans type nomme.\n")
 
     chemin = pathlib.Path(SORTIE)
     chemin.parent.mkdir(parents=True, exist_ok=True)
