@@ -2714,3 +2714,82 @@ imprimé même quand le reste est vert. Hors de la bande 0,5–2,0, le verdict
 d'ensemble est `BLOQUÉ`.
 
 Preuves : `evidence/world_v2/v2_3_b/iss071/s1_1_gravite/`.
+
+## ISS-073 — La boucle est OUVERTE dans le build livré : donjon, boss et victoire inatteignables depuis « Nouvelle partie » — S1, OUVERT
+
+**Découvert** le 2026-08-27 par l'audit des 18 domaines, **vérifié à la main**
+avant publication. Douze des dix-huit audits ont buté dessus depuis leur propre
+angle sans qu'aucun voie qu'il s'agissait du même défaut.
+
+**Reproduction.** Lancer le jeu, « Nouvelle partie », chercher l'entrée du
+donjon. Elle n'existe pas.
+
+**Mesures.**
+
+| Vérification | Résultat |
+|---|---|
+| `grep -rn "SceneDoor" scripts/world_v2/ scenes/world_v2/` | **aucune occurrence** |
+| `scripts/ui/main_menu.gd:14` | `WORLD_SCENE = "res://scenes/world_v2/WorldV2.tscn"` |
+| Retours pointant encore vers `ValleyWorld.tscn` (V1) | **4** |
+
+Les quatre : `scripts/ui/victory_screen.gd:18` · `scripts/ui/gameplay_shell.gd:22`
+· `scripts/world/citadel_vestibule.gd:170` · `scripts/tools/reward_anchor_shot.gd:20`.
+
+Le seuil `dungeon_gate` existe mais n'est qu'un `Node3D` nu posé par
+`world_v2_markers_builder.gd`. La seule porte vers `CitadelVestibule.tscn` vit
+dans `scripts/world/valley_terrain.gd`, monde V1 que le menu n'ouvre plus.
+
+**Gravité.** C'est une rupture de la priorité n°2 du `CLAUDE.md` — « boucle
+complète jusqu'à la victoire ». Et c'est un défaut qui **invalide les mesures
+des autres** : aucune durée de campagne n'est mesurable tant qu'il tient, donc
+tout dimensionnement d'heures repose sur du vide.
+
+**Pourquoi aucun test ne l'a vu.** Les suites `tests/world_v2/` vérifient
+abondamment le monde V2 *pour lui-même* — terrain, routes, hydrologie,
+traversée physique — mais **aucune ne franchit le seuil**. Le contrat de
+traversée s'arrête au marqueur. C'est le mode de panne d'ISS-018 dans un autre
+domaine : des tests verts qui mesurent une grandeur voisine de celle qui
+compte.
+
+**Correction attendue** : une `SceneDoor` vers le donjon dans World V2, les
+quatre constantes redressées, et **un test qui franchit réellement le seuil** —
+écrit rouge d'abord, sinon le défaut reviendra sans bruit.
+
+Coût estimé : faible. Effet : total. C'est l'étape 0 du chemin critique
+(`docs/V2_LONG_GAME_ROADMAP.md`).
+
+## ISS-074 — Le monde livré ne contient AUCUN adversaire, et son vide est protégé par un contrat de test — S2, OUVERT
+
+Le conteneur `Encounters` est exigé par `scripts/world_v2/world_v2_root.gd:23`
+puis **jamais rempli**. Aucune référence à `EnemyBase`, `CombatCoordinator` ou
+`scenes/enemies/` sous `scripts/world_v2/`. Les douze à treize instances
+d'ennemis du dépôt vivent **toutes dans le monde V1**.
+
+Et le vide est **verrouillé** : `tests/world_v2/test_world_v2_places_contract.gd:251`
+compte tout acteur comme un « acteur prématuré », donc un écart. Le contrat
+était juste quand les lieux étaient des coquilles ; il est devenu un garde-fou
+qui empêche le peuplement.
+
+**Ce n'est pas un bug du contrat, c'est un contrat qui a survécu à sa raison.**
+Le remplacer par un **budget d'IA** — un plafond d'agents actifs, pas une
+interdiction — est la correction, et elle doit être faite avant le peuplement,
+pas pendant.
+
+Conséquence de second ordre relevée par l'audit : aucun respawn, aucun
+`LootComponent`, aucune `LootTableDefinition`. Tuer ne rapporte rien, et le
+contenu de combat d'une partie est fini et consommable une fois.
+
+## ISS-075 — Zéro localisation, et la dette croît à chaque phrase écrite — S3, OUVERT
+
+Mesuré : **zéro appel `tr(` réel** dans `scripts/` (le motif `tr(` seul matche
+`str(` — vérifié avec une limite de mot), **aucun** fichier de traduction,
+**aucune** section d'internationalisation dans `project.godot`.
+
+Toute la fiction du jeu tient aujourd'hui dans quatre fragments de deux phrases
+codés en dur dans `DiscoveryRewards.PLAN`.
+
+**Pourquoi c'est urgent alors que le volume est minuscule.** C'est précisément
+parce qu'il est minuscule. Externaliser quatre fragments coûte une heure ;
+externaliser les 30 000 à 80 000 mots qu'exigerait une campagne de 30-50 h
+coûte plusieurs fois le prix de leur écriture. **La localisation ne se rattrape
+pas** : elle se pose avant d'écrire, ou elle se paie deux fois.

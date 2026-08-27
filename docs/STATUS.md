@@ -11,7 +11,10 @@ la première région**, pas un jeu complet.
 | Doctrine produit canonique | **Établie** | `docs/V2_PRODUCT_DOCTRINE.md` |
 | Feuille de route, coût, chemin critique | **Établie** | `docs/V2_LONG_GAME_ROADMAP.md` |
 | Tranche exécutable région 1 lot 2 | **Prête, NON AUTORISÉE** | `docs/V2_REGION1_VERTICAL_SLICE.md` ; `GO_V2_3_B_LOT2 = FALSE` |
-| Audit des 18 domaines | **En cours** | `evidence/world_v2/audit_jeu_long/` |
+| Audit des 18 domaines | **COMPLET** — 9 BLOQUANT, 9 MAJEUR, aucun mineur | `docs/V2_LONG_GAME_GAP_AUDIT.md` ; rapports bruts dans `evidence/world_v2/audit_jeu_long/rapports_bruts/` |
+| **Boucle jouable du build livré** | **ROMPUE — `FAIL`** : aucune `SceneDoor` en World V2, 4 retours pointent encore vers V1 ; donjon, boss et victoire inatteignables | ISS-073, vérifié à la main |
+| Adversaires dans le monde livré | **`FAIL`** — zéro ennemi, et le vide est verrouillé par le contrat « acteur prématuré » | ISS-074 |
+| Localisation | **`ABSENT`** — zéro `tr()`, aucun fichier de traduction | ISS-075 |
 | Socle chiffré indépendant | **Mesuré** | `tools/mesures_socle.py` → `evidence/world_v2/audit_jeu_long/mesures_independantes.md` |
 
 **Les trois chiffres qui gouvernent.** 34 sujets déclarés au layout, **15

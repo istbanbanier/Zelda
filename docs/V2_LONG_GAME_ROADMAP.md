@@ -181,20 +181,31 @@ n'a pas dix trous ; il en a **deux, gros**, et ils sont adjacents.
 L'ordre ci-dessous n'est pas une préférence : chaque étape débloque
 littéralement la suivante.
 
+> **CORRECTION DU 2026-08-27, après l'audit des 18 domaines.** Cette table
+> plaçait la mesure d'un parcours réel en étape 0. C'était faux, et l'audit
+> l'a montré : **on ne peut pas mesurer une campagne qu'on ne peut pas
+> jouer.** Le build livré n'a aucune porte de scène vers le donjon (vérifié à
+> la main), donc le parcours à mesurer n'existe pas encore. La réparation de
+> la boucle passe devant. C'est une correction fondée sur une preuve, pas un
+> recul.
+
 | # | Étape | Pourquoi elle gouverne la date |
 |---|---|---|
-| **0** | **Mesurer un temps de parcours réel** | sans lui, toute estimation d'heures est une opinion ; c'est la seule étape qui coûte quelques minutes et change tout le reste |
-| **1** | **Finir la région 1** (21 lieux) | c'est ce qui calibre le coût unitaire pour de bon, et c'est la seule région dont l'infrastructure est déjà payée |
-| **2** | **PNJ + dialogue** | brique la plus basse de la chaîne rouge ; rien de la campagne longue n'existe sans elle |
-| **3** | **Système de quêtes** | dépend de 2, de la sauvegarde et de l'UI ; c'est lui qui transforme des lieux en campagne |
-| **4** | **Streaming + multi-régions** | dépend de la sauvegarde et du pipeline ; sans lui, le volume est plafonné à une vallée |
-| **5** | **Région 2** | première vraie mesure du coût marginal — la prédiction du §1 se vérifie ou s'effondre ici |
-| **6** | **Progression durable + rejouabilité** | dépend de 3 et 5 ; c'est ce qui porte les 80-120 h et les 200 h+ |
+| **0** | **Refermer la boucle** — une `SceneDoor` vers le donjon dans World V2, et les **quatre** retours qui pointent encore vers `ValleyWorld.tscn` (V1) redressés | sans elle, donjon, boss et victoire sont inatteignables et **aucune** durée de campagne n'est mesurable. Coût faible, effet total : c'est la meilleure affaire de tout l'audit |
+| **1** | **Mesurer un temps de parcours réel** | possible seulement après 0 ; toute estimation d'heures reste une opinion tant qu'elle n'a pas eu lieu |
+| **2** | **Finir la région 1** (21 lieux) | c'est ce qui calibre le coût unitaire pour de bon, et c'est la seule région dont l'infrastructure est déjà payée |
+| **3** | **PNJ + dialogue** | brique la plus basse de la chaîne rouge ; rien de la campagne longue n'existe sans elle |
+| **4** | **Système de quêtes** | dépend de 2, de la sauvegarde et de l'UI ; c'est lui qui transforme des lieux en campagne |
+| **5** | **Streaming + multi-régions** | dépend de la sauvegarde et du pipeline ; sans lui, le volume est plafonné à une vallée |
+| **6** | **Région 2** | première vraie mesure du coût marginal — la prédiction du §1 se vérifie ou s'effondre ici |
+| **7** | **Progression durable + rejouabilité** | dépend de 3 et 5 ; c'est ce qui porte les 80-120 h et les 200 h+ |
 
-**Étape 0 est sur le chemin critique et coûte cinq minutes.** C'est la meilleure
-affaire de cette feuille de route, et elle attend seulement lundi.
+**Les étapes 0 et 1 coûtent, ensemble, moins d'une journée** — une porte,
+quatre constantes, puis cinq minutes de jeu lundi. Elles débloquent la mesure
+de tout le reste. Rien d'autre dans cette feuille de route n'a ce rapport
+effet/coût.
 
-L'étape 2 est le vrai premier chantier : elle n'a **aucune** dépendance
+L'étape 3 est le vrai premier chantier de contenu : elle n'a **aucune** dépendance
 absente, elle est purement additive, et elle débloque à elle seule trois nœuds
 rouges sur six.
 
@@ -206,7 +217,7 @@ rouges sur six.
 Volume complet, quêtes, narration, rejouabilité. **~5 000 commits de contenu**
 au rythme mesuré, plus les systèmes absents. Défendable seulement si le coût
 marginal d'une région s'avère très inférieur à celui de la région 1 — ce que
-l'étape 5 seule peut établir. **Ne pas s'y engager avant l'étape 5.**
+l'étape 6 seule peut établir. **Ne pas s'y engager avant l'étape 6.**
 
 ### B — Réaliste : 15-25 h, trois régions, systèmes complets *(recommandé)*
 Trois régions, quêtes et PNJ, progression durable, rejouabilité légère.
@@ -220,11 +231,11 @@ un jeu jouable.
 ### C — Réduit : 6-10 h, une région, systèmes complets
 Région 1 finie, quêtes légères, une campagne courte mais entière.
 **~700 commits.** Sacrifie le volume, garde tout le reste. C'est le repli
-honnête si le temps manque — et c'est aussi, par construction, **l'étape 1 à 3
+honnête si le temps manque — et c'est aussi, par construction, **les étapes 0 à 4
 du scénario B**. Les deux ne divergent qu'après.
 
 **Recommandation : viser B, en construisant C d'abord.** Aucune décision prise
-avant l'étape 5 ne coûte quoi que ce soit à l'un ou à l'autre.
+avant l'étape 6 ne coûte quoi que ce soit à l'un ou à l'autre.
 
 ---
 
