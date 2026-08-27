@@ -1,0 +1,20 @@
+[PASS    ] empreinte de l'ARCHIVE publiée — sha256 mesuré 302643c7a5b59418d767121641f798ef0728d8358d6c0b8befec2e1241a8f91e
+[PASS    ] profil user:// vierge — /home/user/smoke_lot1r2/profil_gravite recréé vide
+[PASS    ] binaire extrait de l'archive vérifiée — EclatsDOrage.x86_64, sha256 dérivé 84025157adc8b7fa02b08d67a571b5b493830d919af66f29e8d6262704c848e5
+[PASS    ] serveur X virtuel possédé — Xvfb pid 4104 sur :0 choisi par -displayfd
+[PASS    ] fenêtre du jeu — xdotool -> 2097155
+[PASS    ] monde monté dans la build exportée — jalon « fondation V2 vérifiée » présent
+[PASS    ] télémétrie DevMode produite par le jeu — 111 marqueur(s) F4 lus dans dev_sessions/*/journal.jsonl
+[PASS    ] critère 1 — bruit au repos, aucune entrée — 4 marqueur(s) sans entrée ; Y de 24.0 à 24.0 m ; bruit=0.0 (≤0.1) ; états=['locomotion']
+[PASS    ] critère 2a — campagne 1/3 : sauts répétés, échantillonnage par battement — 17/26 marqueur(s) à ≥0.5 m au-dessus du sol (65%, seuil ≥25%) ; excursion max=1.4 m ; Y sol=24.0 m
+[FAIL    ] critère 3 — retour au sol après la campagne 1 — Y=25.3 m contre sol 24.0 m ; écart=1.3 (≤0.2)
+[PASS    ] critère 2a — campagne 2/3 : sauts répétés, échantillonnage par battement — 24/26 marqueur(s) à ≥0.5 m au-dessus du sol (92%, seuil ≥25%) ; excursion max=1.5 m ; Y sol=24.0 m
+[FAIL    ] critère 3 — retour au sol après la campagne 2 — Y=24.3 m contre sol 24.0 m ; écart=0.3 (≤0.2)
+[PASS    ] critère 2a — campagne 3/3 : sauts répétés, échantillonnage par battement — 23/26 marqueur(s) à ≥0.5 m au-dessus du sol (88%, seuil ≥25%) ; excursion max=1.4 m ; Y sol=24.0 m
+[FAIL    ] critère 3 — retour au sol après la campagne 3 — Y=24.9 m contre sol 24.0 m ; écart=0.9 (≤0.2)
+[FAIL    ] critère 2b — contrôle négatif : AUCUN saut demandé — 6/23 marqueur(s) à ≥0.5 m au-dessus du sol (26%, exigé EXACTEMENT 0) ; excursion max=0.9 m ; Y sol=24.0 m
+[FAIL    ] verdict de gravité (3 répétitions + contrôle négatif) — au moins une répétition hors tolérance
+
+=== 16 point(s) : 11 PASS · 5 FAIL — code 1 ===
+RC=1
+RC=1

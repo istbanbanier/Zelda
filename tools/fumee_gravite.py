@@ -82,6 +82,15 @@ REPETITIONS = 3
 # 0,683 s de vol) ; on échantillonne donc BEAUCOUP, à une période
 # incommensurable avec celle des sauts. Fraction de vol attendue :
 # 0,683 / 1,5 = 45,5 % ; seuil posé à 25 %, très au-dessus de zéro.
+# Cadence de l'échantillonneur automatique de DevMode, en SECONDES DE JEU
+# (`SAMPLE_INTERVAL` dans `scripts/tools/dev_mode.gd`). Ce n'est pas un
+# seuil de jugement : c'est une constante du sujet, recopiée.
+SAMPLE_INTERVAL_JEU = 1.0
+# Bande de cohérence entre temps moteur et temps mural. Large à dessein :
+# on ne cherche pas à mesurer la fluidité, seulement à détecter qu'une
+# horloge a décroché de l'autre au point de rendre le protocole caduc.
+RAPPORT_HORLOGE_MIN = 0.5
+RAPPORT_HORLOGE_MAX = 2.0
 T_SAUT_S = 1.5
 MARQUEURS_PAR_CAMPAGNE = 26
 FRACTION_ELEVEE_MIN = 0.25
@@ -197,30 +206,95 @@ def marqueurs_du_journal(racine_user: Path) -> list[dict]:
     return marques
 
 
-def campagne(saut: bool, sol: float | None = None) -> None:
-    """Campagne de battement. `saut=False` = contrôle négatif.
+def lire_evenements(racine_user: Path) -> list[dict]:
+    """TOUS les événements du recorder, enveloppe comprise, dans l'ordre."""
+    sessions = sorted(racine_user.glob("dev_sessions/*/journal.jsonl"))
+    if not sessions:
+        return []
+    evts: list[dict] = []
+    for ligne in sessions[-1].read_text(encoding="utf-8",
+                                        errors="replace").splitlines():
+        try:
+            evts.append(json.loads(ligne))
+        except json.JSONDecodeError:
+            continue
+    return evts
 
-    Deux fils de commande qui ne se synchronisent pas : les `Espace` toutes
-    les T_SAUT_S, les `F4` aussi vite que l'appareil les accepte (~1,03 s
-    mesurées). Les deux périodes dérivent, donc les marqueurs échantillonnent
-    la phase de vol proportionnellement à sa durée."""
-    fin = time.time() + MARQUEURS_PAR_CAMPAGNE * 1.10
-    prochain_saut = time.time()
-    poses = 0
-    while poses < MARQUEURS_PAR_CAMPAGNE and time.time() < fin + 20:
-        if saut and time.time() >= prochain_saut:
+
+def juger_horloge(evts: list[dict]) -> bool:
+    """COHÉRENCE DE L'HORLOGE — le contrôle qui doit passer AVANT tout
+    critère temporel, et qui décide s'il est seulement licite d'en juger un.
+
+    `DevMode._process()` accumule `delta` et écrit un événement `position`
+    chaque fois que la somme atteint `SAMPLE_INTERVAL = 1.0 s`. Le nombre de
+    ces événements est donc une mesure DIRECTE du temps que le moteur croit
+    avoir vécu. Le champ `t` du recorder, lui, avance en temps mural.
+
+    Si les deux divergent, le moteur ne partage plus l'horloge du harnais :
+    une consigne envoyée « toutes les 1,5 s » n'arrive plus toutes les 1,5 s
+    de temps de jeu, et AUCUNE inférence balistique n'est fondée. C'est une
+    mesure portant sur l'INSTRUMENT, jamais sur le sujet."""
+    positions = [e for e in evts
+                 if str(e.get("kind", e.get("type", ""))) == "position"]
+    horodates = [float(e.get("t", 0.0)) for e in evts if "t" in e]
+    if not horodates:
+        note("cohérence de l'horloge du moteur", "BLOQUÉ",
+             "aucun horodatage dans le journal")
+        return False
+    duree_murale = max(horodates) - min(horodates)
+    temps_moteur = len(positions) * SAMPLE_INTERVAL_JEU
+    if duree_murale <= 0.0:
+        note("cohérence de l'horloge du moteur", "BLOQUÉ",
+             "durée murale nulle")
+        return False
+    rapport = temps_moteur / duree_murale
+    fps = [float(e.get("data", e).get("fps", 0.0)) for e in positions
+           if "fps" in e.get("data", e)]
+    ok = RAPPORT_HORLOGE_MIN <= rapport <= RAPPORT_HORLOGE_MAX
+    note("cohérence de l'horloge du moteur", "PASS" if ok else "BLOQUÉ",
+         f"{len(positions)} échantillon(s) automatique(s) à "
+         f"{SAMPLE_INTERVAL_JEU:.0f} s = {temps_moteur:.0f} s de temps moteur "
+         f"pour {duree_murale:.0f} s de temps mural ; rapport={rapport:.3f} "
+         f"(attendu {RAPPORT_HORLOGE_MIN}–{RAPPORT_HORLOGE_MAX})"
+         + (f" ; FPS annoncés par le jeu : {fps}" if fps else ""))
+    return ok
+
+
+def campagne(saut: bool, sol: float | None = None) -> None:
+    """Campagne de battement, CADENCÉE SUR LE DÉBIT MESURÉ de l'appareil.
+
+    Piège corrigé après mesure : envoyer 26 `F4` en 2,6 s ne produit pas
+    26 marqueurs. Le jeu n'en draine qu'un par ~1,03 s (coût de la relecture
+    GPU dans `mark()`), la file s'accumule, et le script coupe
+    l'enregistrement avant qu'elle s'écoule — 14 marqueurs obtenus, le reste
+    perdu. L'émission est donc pilotée par le TEMPS, à 1,15 s d'intervalle,
+    légèrement au-dessus du débit mesuré pour qu'aucune file ne se forme.
+
+    Les sauts gardent leur propre horloge à T_SAUT_S : c'est l'écart entre
+    les deux périodes qui fait le battement, et donc l'échantillonnage."""
+    periode_f4 = 1.15                       # > 1,03 s mesurées
+    debut = time.time()
+    duree = MARQUEURS_PAR_CAMPAGNE * periode_f4 + 2.0
+    prochain_saut = debut
+    prochain_f4 = debut
+    while time.time() < debut + duree:
+        maintenant = time.time()
+        if saut and maintenant >= prochain_saut:
             xdo("key", "space")
-            prochain_saut = time.time() + T_SAUT_S
-        xdo("key", "F4")
-        poses += 1
-        time.sleep(0.05)
+            prochain_saut = maintenant + T_SAUT_S
+        if maintenant >= prochain_f4:
+            xdo("key", "F4")
+            prochain_f4 = maintenant + periode_f4
+        time.sleep(0.02)
 
 
 def repos(n: int) -> None:
-    """`n` marqueurs sans AUCUNE entrée : mesure du bruit de l'appareil."""
+    """`n` marqueurs sans AUCUNE entrée : mesure du bruit de l'appareil.
+    Même cadence que la campagne — un marqueur non drainé est un marqueur
+    perdu, pas un marqueur tardif."""
     for _ in range(n):
         xdo("key", "F4")
-        time.sleep(0.05)
+        time.sleep(1.15)
 
 
 def juger_repos(lot: list[dict], titre: str) -> tuple[bool, float]:
@@ -257,7 +331,13 @@ def juger_campagne(lot: list[dict], sol: float, titre: str,
         ok = fraction >= FRACTION_ELEVEE_MIN
     else:
         ok = len(eleves) == 0
-    note(titre, "PASS" if ok else "FAIL",
+    # Le contrat préenregistré tranche ce cas AVANT toute mesure : « si le
+    # contrôle négatif atteint le seuil, l'appareil ne discrimine pas un saut
+    # d'une absence de saut : le verdict d'ensemble est BLOQUÉ, jamais PASS ».
+    # Un FAIL imputerait au JEU ce qui est un défaut de l'APPAREIL — la faute
+    # exactement symétrique du faux vert qu'on est en train de corriger.
+    verdict = "PASS" if ok else ("FAIL" if attend_saut else "BLOQUÉ")
+    note(titre, verdict,
          f"{len(eleves)}/{len(ys)} marqueur(s) à ≥{EXCURSION_MIN_M} m "
          f"au-dessus du sol ({fraction:.0%}"
          + (f", seuil ≥{FRACTION_ELEVEE_MIN:.0%}" if attend_saut
@@ -382,6 +462,14 @@ def main() -> int:
     if not marques:
         return 3
 
+    # L'HORLOGE D'ABORD. Si le moteur ne partage plus le temps du harnais,
+    # les consignes n'arrivent pas quand on croit et aucun critère temporel
+    # n'est fondé. On le mesure AVANT de juger quoi que ce soit, et on le
+    # publie même si tout le reste est vert : un critère de gravité tiré
+    # d'une horloge décrochée serait un faux vert de la même famille que
+    # celui qu'on corrige.
+    horloge_ok = juger_horloge(lire_evenements(racine_user))
+
     # Découpage : 4 repos, puis (campagne + 2 repos) x REPETITIONS, puis la
     # campagne négative. On tranche sur les COMPTES demandés, jamais sur une
     # heuristique de valeurs — sinon le découpage lirait sa réponse chez le
@@ -417,10 +505,24 @@ def main() -> int:
         "critère 2b — contrôle négatif : AUCUN saut demandé",
         attend_saut=False)
 
-    note("verdict de gravité (3 répétitions + contrôle négatif)",
-         "PASS" if tous_ok and negatif_ok else "FAIL",
-         f"{REPETITIONS}/{REPETITIONS} répétitions conformes"
-         if tous_ok else "au moins une répétition hors tolérance")
+    if not horloge_ok:
+        note("verdict de gravité (3 répétitions + contrôle négatif)",
+             "BLOQUÉ",
+             "l'horloge du moteur a décroché du temps mural : les sauts et "
+             "les marqueurs n'ont pas été émis aux instants voulus DU JEU, "
+             "donc ni réussite ni échec de la gravité n'est démontrable")
+    elif not negatif_ok:
+        note("verdict de gravité (3 répétitions + contrôle négatif)",
+             "BLOQUÉ",
+             "le contrôle négatif a produit des marqueurs élevés SANS saut : "
+             "l'appareil ne distingue pas un saut d'une absence de saut, donc "
+             "aucune conclusion sur la gravité du jeu n'est tirable — ni dans "
+             "un sens ni dans l'autre")
+    else:
+        note("verdict de gravité (3 répétitions + contrôle négatif)",
+             "PASS" if tous_ok else "FAIL",
+             f"{REPETITIONS}/{REPETITIONS} répétitions conformes"
+             if tous_ok else "au moins une répétition hors tolérance")
 
     (OUT / "constats.json").write_text(
         json.dumps({"archive_sha256": reel_zip,

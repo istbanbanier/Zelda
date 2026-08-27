@@ -1,0 +1,14 @@
+REJUGEMENT HORS LIGNE — 111 marqueurs, logique corrigee
+
+[BLOQUÉ  ] cohérence de l'horloge du moteur — 2 échantillon(s) automatique(s) à 1 s = 2 s de temps moteur pour 152 s de temps mural ; rapport=0.013 (attendu 0.5–2.0) ; FPS annoncés par le jeu : [7.7, 7.4]
+[PASS    ] critere 1 — bruit au repos — 4 marqueur(s) sans entrée ; Y de 24.0 à 24.0 m ; bruit=0.0 (≤0.1) ; états=['locomotion']
+[PASS    ] critere 2a — campagne 1/3 — 17/26 marqueur(s) à ≥0.5 m au-dessus du sol (65%, seuil ≥25%) ; excursion max=1.4 m ; Y sol=24.0 m
+[FAIL    ] critere 3 — retour au sol apres campagne 1 — Y=25.3 contre sol 24.0 ; ecart=1.3
+[PASS    ] critere 2a — campagne 2/3 — 24/26 marqueur(s) à ≥0.5 m au-dessus du sol (92%, seuil ≥25%) ; excursion max=1.5 m ; Y sol=24.0 m
+[FAIL    ] critere 3 — retour au sol apres campagne 2 — Y=24.3 contre sol 24.0 ; ecart=0.3
+[PASS    ] critere 2a — campagne 3/3 — 23/26 marqueur(s) à ≥0.5 m au-dessus du sol (88%, seuil ≥25%) ; excursion max=1.4 m ; Y sol=24.0 m
+[FAIL    ] critere 3 — retour au sol apres campagne 3 — Y=24.9 contre sol 24.0 ; ecart=0.9
+[BLOQUÉ  ] critere 2b — controle negatif — 6/23 marqueur(s) à ≥0.5 m au-dessus du sol (26%, exigé EXACTEMENT 0) ; excursion max=0.9 m ; Y sol=24.0 m
+[BLOQUÉ  ] verdict de gravite — horloge du moteur decrochee
+
+CODE DE SORTIE REJUGE = 3
