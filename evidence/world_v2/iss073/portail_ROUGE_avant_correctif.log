@@ -1,0 +1,107 @@
+LANCER_GODOT: --headless ajouté (pas de --rendu : aucun affichage disponible).
+LANCER_GODOT: VERROU=/home/user/Zelda/.git/heavy_tools.lock
+LANCER_GODOT: XDG_DATA_HOME=/tmp/lancer_godot_ud_7KLAHB34
+LANCER_GODOT: CWD=/home/user/Zelda
+LANCER_GODOT: CMD=/usr/local/bin/godot --headless --path . --script tools/godot/test_runner.gd -- --filter=iss073
+Godot Engine v4.7.1.stable.custom_build.a13da4feb (2026-07-13 21:00:28 UTC) - https://godotengine.org
+
+=== TEST RUNNER — Godot 4.7.1-stable (custom_build) ===
+filtre: iss073
+  ok   test_world_v2_iss073_boucle.gd::test_le_menu_principal_ouvre_bien_world_v2 (2 assertions)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 13004 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ÉCHEC test_world_v2_iss073_boucle.gd::test_une_porte_de_scene_existe_au_seuil_du_donjon — AUCUNE SceneDoor dans World V2 : le donjon est inatteignable par le chemin du joueur (ISS-073). Un marqueur `dungeon_gate` n'est pas une porte — on ne peut pas interagir avec un Node3D nu
+  ÉCHEC test_world_v2_iss073_boucle.gd::test_une_porte_de_scene_existe_au_seuil_du_donjon — aucune porte ne vise le vestibule ; portes trouvées : (aucune)
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 5220 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ÉCHEC test_world_v2_iss073_boucle.gd::test_le_joueur_marche_au_seuil_puis_franchit_par_interaction — l'interaction au seuil doit demander le vestibule ; demandé : « (aucune porte au seuil) » (attendu res://scenes/world/citadel/CitadelVestibule.tscn, obtenu (aucune porte au seuil))
+  ÉCHEC test_world_v2_iss073_boucle.gd::test_le_joueur_marche_au_seuil_puis_franchit_par_interaction — la porte doit avoir posé le tag de retour AVANT la transition (attendu citadel_door, obtenu )
+[hameau] implantation vérifiée : 3 toiture(s), 10 collider(s), 24 appui(s) — aucune faute.
+[world_v2] monde        : neris_v2 (vallée whitebox V2.1)
+[world_v2] carte        : 31 lieux + 3 sites systémiques, valide
+[world_v2] terrain      : 64 chunks, montage 4947 ms
+[world_v2] navigation   : 4 région(s) chargée(s)
+[world_v2] lieux        : 15 scène(s) posée(s) par le layout
+[world_v2] spawn        : (0.0, 24.4, 170.0)
+WARNING: Navigation region synchronization had 2 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+WARNING: Navigation region synchronization had 38 edge error(s).
+More than 2 edges tried to occupy the same map rasterization space.
+This causes a logical error in the navigation mesh geometry and is commonly caused by overlap or too densely placed edges.
+Consider baking with a higher 'cell_size', greater geometry margin, and less detailed bake objects to cause fewer edges.
+Consider lowering the 'navigation/3d/merge_rasterizer_cell_scale' in the project settings.
+This warning can be toggled under 'navigation/3d/warnings/navmesh_edge_merge_errors' in the project settings.
+     at: _build_step_find_edge_connection_pairs (modules/navigation_3d/3d/nav_region_builder_3d.cpp:219)
+[world_v2] sol          : c4r6 à y=24.00
+[world_v2] fondation V2 vérifiée — vallée whitebox prête.
+  ÉCHEC test_world_v2_iss073_boucle.gd::test_le_retour_du_vestibule_replace_le_heros_devant_la_citadelle — World V2 doit CONSOMMER le tag d'apparition — sinon il resservira à la transition suivante et le héros repartira dans le vestibule (attendu , obtenu citadel_door)
+  ÉCHEC test_world_v2_iss073_boucle.gd::test_le_retour_du_vestibule_replace_le_heros_devant_la_citadelle — retour attendu DEVANT la citadelle ((0.0, -210.0)), obtenu (0.0, 170.0)
+  ÉCHEC test_world_v2_iss073_boucle.gd::test_le_retour_du_vestibule_replace_le_heros_devant_la_citadelle — le héros est réapparu au spawn initial (0.0, 24.4, 170.0) : le tag n'a pas été consommé, ou la position sauvegardée l'a emporté
+  ÉCHEC test_world_v2_iss073_boucle.gd::test_aucune_destination_runtime_ne_ramene_au_monde_v1 — 3 chemin(s) de retour visent encore le monde V1 : victory_screen.gd, gameplay_shell.gd, citadel_vestibule.gd — un joueur de la campagne V2 y serait déposé dans une vallée que le menu n'ouvre plus
+erreurs de script dans le journal : 0
+
+=== RÉSULTAT: 1 réussi(s), 8 échoué(s) ===
+  ÉCHEC: test_world_v2_iss073_boucle.gd::test_une_porte_de_scene_existe_au_seuil_du_donjon — AUCUNE SceneDoor dans World V2 : le donjon est inatteignable par le chemin du joueur (ISS-073). Un marqueur `dungeon_gate` n'est pas une porte — on ne peut pas interagir avec un Node3D nu
+  ÉCHEC: test_world_v2_iss073_boucle.gd::test_une_porte_de_scene_existe_au_seuil_du_donjon — aucune porte ne vise le vestibule ; portes trouvées : (aucune)
+  ÉCHEC: test_world_v2_iss073_boucle.gd::test_le_joueur_marche_au_seuil_puis_franchit_par_interaction — l'interaction au seuil doit demander le vestibule ; demandé : « (aucune porte au seuil) » (attendu res://scenes/world/citadel/CitadelVestibule.tscn, obtenu (aucune porte au seuil))
+  ÉCHEC: test_world_v2_iss073_boucle.gd::test_le_joueur_marche_au_seuil_puis_franchit_par_interaction — la porte doit avoir posé le tag de retour AVANT la transition (attendu citadel_door, obtenu )
+  ÉCHEC: test_world_v2_iss073_boucle.gd::test_le_retour_du_vestibule_replace_le_heros_devant_la_citadelle — World V2 doit CONSOMMER le tag d'apparition — sinon il resservira à la transition suivante et le héros repartira dans le vestibule (attendu , obtenu citadel_door)
+  ÉCHEC: test_world_v2_iss073_boucle.gd::test_le_retour_du_vestibule_replace_le_heros_devant_la_citadelle — retour attendu DEVANT la citadelle ((0.0, -210.0)), obtenu (0.0, 170.0)
+  ÉCHEC: test_world_v2_iss073_boucle.gd::test_le_retour_du_vestibule_replace_le_heros_devant_la_citadelle — le héros est réapparu au spawn initial (0.0, 24.4, 170.0) : le tag n'a pas été consommé, ou la position sauvegardée l'a emporté
+  ÉCHEC: test_world_v2_iss073_boucle.gd::test_aucune_destination_runtime_ne_ramene_au_monde_v1 — 3 chemin(s) de retour visent encore le monde V1 : victory_screen.gd, gameplay_shell.gd, citadel_vestibule.gd — un joueur de la campagne V2 y serait déposé dans une vallée que le menu n'ouvre plus
+WARNING: 102 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 54 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+ERROR: Pages in use exist at exit in PagedAllocator: N12VariantPools12BucketMediumE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:170)
+ERROR: Pages in use exist at exit in PagedAllocator: N12VariantPools11BucketSmallE
+   at: ~PagedAllocator (./core/templates/paged_allocator.h:170)
+LANCER_GODOT: RC_GODOT=1
