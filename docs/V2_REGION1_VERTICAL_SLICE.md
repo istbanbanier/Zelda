@@ -10,6 +10,37 @@ n'a été touché. Autorité amont : `docs/V2_PRODUCT_DOCTRINE.md` (l'ambition),
 
 ---
 
+> ## CORRECTION DU 2026-08-27 — CETTE TRANCHE N'EST PLUS LA PROCHAINE
+>
+> Écrite avant que l'audit des 18 domaines ne rende, elle supposait que
+> « finir la région 1 » était l'étape suivante. **L'audit a établi, et j'ai
+> vérifié à la main, que la boucle du build livré est rompue** : aucune
+> `SceneDoor` en World V2, quatre retours pointant encore vers le monde V1,
+> donc donjon, boss et victoire inatteignables depuis « Nouvelle partie »
+> (ISS-073).
+>
+> **La tranche qui passe devant est minuscule** — une porte, quatre
+> constantes, et **un test qui franchit réellement le seuil**, écrit rouge
+> d'abord. Coût faible, effet total : sans elle aucune durée de campagne n'est
+> mesurable, donc rien de ce qui suit n'est dimensionnable.
+>
+> Deux autres corrections préalables, du même ordre, sont à trancher par le
+> lead avant de construire des lieux :
+>
+> - **ISS-074** — le contrat « acteur prématuré »
+>   (`test_world_v2_places_contract.gd:251`) interdit tout adversaire. Il était
+>   juste quand les lieux étaient des coquilles ; il est devenu le garde-fou
+>   qui empêche le peuplement. Le remplacer par un **budget d'IA** — un
+>   plafond, pas une interdiction — avant de peupler, pas pendant.
+> - **Registre d'acquisition des capacités** — l'audit « Progression » le dit
+>   sans détour : il est **minuscule à écrire aujourd'hui et rétroactif à
+>   écrire plus tard**. Chaque lieu construit sans lui devra être repris pour
+>   poser ses verrous. Six lieux de plus, c'est six reprises de plus.
+>
+> **Ce document reste valide et exécutable tel quel** ; il n'est plus premier.
+> Le §11 « définition de terminé » et le §7 « tests rouges » s'appliquent
+> inchangés le jour où le lot 2 s'ouvre.
+
 ## 1. Où cette tranche se situe
 
 Le chemin critique de la feuille de route place « **finir la région 1** » en
