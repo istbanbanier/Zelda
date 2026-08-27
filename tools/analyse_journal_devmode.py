@@ -47,6 +47,8 @@ EXCURSION_MIN_M = 0.50   # 5 quanta ; 2,8x sous l'apex nominal de 1,401 m
 RETOUR_MAX_M = 0.20      # 2 quanta
 ETAT_ATTENDU = "locomotion"
 SAUTS_MIN = 3            # trois répétitions
+REPOS_INITIAL = 3        # marqueurs au repos AVANT le premier saut,
+#                          dont la MÉDIANE donne le sol de référence
 # Apex nominal, dérivé de resources/tuning/locomotion_default.tres :
 #   jump_velocity = 8.2 ; gravity = 24.0 ; apex = v^2/2g
 APEX_NOMINAL_M = 1.401
@@ -81,17 +83,69 @@ def genre(e: dict) -> str:
     return str(e.get("kind", e.get("type", "")))
 
 
-def altitudes(evts: list[dict]) -> list[dict]:
-    """Tous les échantillons portant une altitude, marqueurs ET positions
-    automatiques, dans l'ordre du temps. Prendre les deux double la densité
-    sans rien coûter — et les `position` sont gratuits, eux."""
-    lot = [e for e in evts
-           if genre(e) in ("marqueur", "position") and "y" in e]
-    lot.sort(key=lambda e: float(e.get("t", 0.0)))
+def marqueurs(evts: list[dict]) -> list[dict]:
+    """Les marqueurs F4 SEULS, dans l'ordre de `numero`.
+
+    POURQUOI PAS LES `position` AUTOMATIQUES. Ils tombent toutes les secondes
+    de temps moteur, et le vol nominal dure **0,683 s** — ils ratent donc les
+    sauts la plupart du temps, et rien ne signale qu'ils les ont ratés. Un
+    verdict tiré d'eux serait un tirage au sort. Les marqueurs, eux, sont
+    posés DÉLIBÉRÉMENT aux instants qui comptent : c'est le protocole qui les
+    place, pas le hasard d'un échantillonneur."""
+    lot = [e for e in evts if genre(e) == "marqueur" and "y" in e]
+    lot.sort(key=lambda e: int(e.get("numero", 0)))
     return lot
 
 
+def mediane(valeurs: list[float]) -> float:
+    """Médiane — jamais le minimum.
+
+    Le minimum global est un piège : si le héros tombe une fois sous son
+    niveau de départ, ce creux devient le « sol » et toutes les altitudes se
+    mesurent depuis un plancher qui n'existe pas. Un saut de 1,4 m au-dessus
+    d'un sol à 24 m paraîtrait alors une excursion de 5,4 m au-dessus d'un
+    faux sol à 20 m — et le retour au sol, lui, paraîtrait raté. La médiane
+    de trois relevés au repos ne bouge pas pour un accident."""
+    t = sorted(valeurs)
+    n = len(t)
+    if n == 0:
+        return 0.0
+    return t[n // 2] if n % 2 else (t[n // 2 - 1] + t[n // 2]) / 2.0
+
+
 # --------------------------------------------------------------------------
+def juger_horloge(evts: list[dict], constats: list[dict]) -> bool:
+    """GATE SÉPARÉ. Elle ne juge pas la gravité : elle dit si le temps du
+    moteur ressemble au temps réel. Une horloge décrochée n'invalide pas les
+    marqueurs — ils sont posés à la main, aux bons instants du JEU — mais elle
+    reste publiée, parce qu'elle change ce qu'on peut conclure d'un délai."""
+    positions = [e for e in evts if genre(e) == "position"]
+    horodates = [float(e["t"]) for e in evts if "t" in e]
+    if not horodates:
+        note(constats, "horloge du moteur (gate séparé)", "BLOQUÉ",
+             "aucun horodatage")
+        return False
+    mural = max(horodates) - min(horodates)
+    moteur = len(positions) * SAMPLE_INTERVAL_JEU
+    if mural <= 0.0:
+        note(constats, "horloge du moteur (gate séparé)", "BLOQUÉ",
+             "durée murale nulle")
+        return False
+    rapport = moteur / mural
+    ok = RAPPORT_MIN <= rapport <= RAPPORT_MAX
+    fps = sorted({float(e["fps"]) for e in positions if "fps" in e})
+    note(constats, "horloge du moteur (gate séparé)",
+         "PASS" if ok else "PARTIAL",
+         f"{len(positions)} échantillon(s) automatique(s) = {moteur:.0f} s "
+         f"moteur pour {mural:.0f} s mural ; rapport={rapport:.3f} "
+         f"(attendu {RAPPORT_MIN}–{RAPPORT_MAX})"
+         + (f" ; FPS {fps}" if fps else "")
+         + ("" if ok else " — machine lente ou horloge décrochée (ISS-072). "
+            "Les marqueurs restent jugeables : ils sont posés à la main aux "
+            "instants du JEU, pas par un échantillonneur"))
+    return ok
+
+
 def juger(evts: list[dict], constats: list[dict], source: str) -> None:
     if not evts:
         note(constats, "journal lisible", "BLOQUÉ",
@@ -100,171 +154,169 @@ def juger(evts: list[dict], constats: list[dict], source: str) -> None:
     note(constats, "journal lisible", "PASS",
          f"{source} : {len(evts)} événement(s)")
 
-    # --- 1. L'HORLOGE D'ABORD, elle décide s'il est licite de juger ---------
-    positions = [e for e in evts if genre(e) == "position"]
-    horodates = [float(e["t"]) for e in evts if "t" in e]
-    mural = (max(horodates) - min(horodates)) if horodates else 0.0
-    moteur = len(positions) * SAMPLE_INTERVAL_JEU
-    if mural <= 0.0:
-        note(constats, "cohérence de l'horloge du moteur", "BLOQUÉ",
-             "durée murale nulle ou horodatages absents")
-        horloge_ok = False
-    else:
-        rapport = moteur / mural
-        horloge_ok = RAPPORT_MIN <= rapport <= RAPPORT_MAX
-        fps = sorted({float(e["fps"]) for e in positions if "fps" in e})
-        note(constats, "cohérence de l'horloge du moteur",
-             "PASS" if horloge_ok else "BLOQUÉ",
-             f"{len(positions)} échantillon(s) automatique(s) = {moteur:.0f} s "
-             f"de temps moteur pour {mural:.0f} s de temps mural ; "
-             f"rapport={rapport:.3f} (attendu {RAPPORT_MIN}–{RAPPORT_MAX})"
-             + (f" ; FPS annoncés {fps}" if fps else "")
-             + ("" if horloge_ok else " — voir ISS-072 : aucune inférence "
-                "balistique n'est fondée sur une horloge décrochée"))
+    juger_horloge(evts, constats)
 
-    # --- 2. Altitudes -------------------------------------------------------
-    lot = altitudes(evts)
-    if len(lot) < 4:
-        note(constats, "échantillons d'altitude", "BLOQUÉ",
-             f"{len(lot)} échantillon(s) portant `y`, 4 minimum — le mode "
-             f"développement enregistrait-il bien (F3) ?")
+    # --- Les marqueurs, et le protocole qu'ils doivent suivre --------------
+    m = marqueurs(evts)
+    attendus = REPOS_INITIAL + 2 * SAUTS_MIN
+    if len(m) < attendus:
+        note(constats, "protocole de marqueurs suivi", "BLOQUÉ",
+             f"{len(m)} marqueur(s) F4 pour {attendus} attendus "
+             f"({REPOS_INITIAL} au repos, puis {SAUTS_MIN} paires "
+             f"montée/sol) — la séquence de docs/PROTOCOLE_SAUT_ISTVAN.md "
+             f"n'a pas été jouée en entier, rien n'est jugeable")
         return
-    note(constats, "échantillons d'altitude", "PASS",
-         f"{len(lot)} échantillon(s) portant `y` et `etat`")
+    note(constats, "protocole de marqueurs suivi", "PASS",
+         f"{len(m)} marqueur(s) F4 ; {attendus} exigés")
 
-    ys = [float(e["y"]) for e in lot]
-    etats = sorted({str(e.get("etat", "?")) for e in lot})
-    sol = min(ys)
-    haut = max(ys)
-    excursion = haut - sol
+    # --- Le SOL : médiane des trois premiers, jamais un minimum -----------
+    repos = m[:REPOS_INITIAL]
+    ys_repos = [float(e["y"]) for e in repos]
+    sol = mediane(ys_repos)
+    plus_bas = min(float(e["y"]) for e in m)
+    note(constats, "sol de référence", "PASS",
+         f"médiane des {REPOS_INITIAL} marqueurs de repos = {sol:.2f} m "
+         f"(relevés {[round(y, 2) for y in ys_repos]})"
+         + (f" ; le point le plus bas du journal est {plus_bas:.2f} m et "
+            f"n'est PAS pris pour sol" if plus_bas < sol - QUANTUM_M else ""))
 
-    # --- 3. État du héros ---------------------------------------------------
-    ok_etat = etats == [ETAT_ATTENDU]
-    note(constats, "critère 4 — état du contrôleur",
-         "PASS" if ok_etat else "FAIL",
-         f"états observés {etats} ; attendu uniquement « {ETAT_ATTENDU} » — "
-         f"le sujet doit être un héros debout, ni mort, ni blessé, ni en "
-         f"escalade")
-
-    # --- 4. Excursion -------------------------------------------------------
-    ok_exc = excursion >= EXCURSION_MIN_M
-    note(constats, "critère 2 — excursion verticale",
-         "PASS" if ok_exc else "FAIL",
-         f"sol={sol:.1f} m, sommet={haut:.1f} m, excursion={excursion:.2f} m "
-         f"(seuil ≥{EXCURSION_MIN_M}) ; apex nominal {APEX_NOMINAL_M} m")
-
-    # --- 5 & 6. Fronts : montées ACHEVÉES, et hauteur restée en l'air -------
-    # Un aller-retour = une montée au-dessus du seuil SUIVIE d'un retour au
-    # sol. On compte les FRONTS, pas les échantillons élevés : sinon un seul
-    # saut longuement échantillonné compterait pour trois.
-    #
-    # Le retour au sol se juge sur le DERNIER FRONT, pas sur le dernier
-    # échantillon du fichier. C'est un piège mesuré : les `position`
-    # automatiques sont émises tout du long, donc le dernier échantillon du
-    # journal est souvent une position au sol qui MASQUE un héros resté en
-    # l'air. Lire `ys[-1]` rendait alors PASS sur un cas où le héros ne
-    # redescend jamais — un faux vert de plus, attrapé par son sabotage.
-    seuil = sol + EXCURSION_MIN_M
-    plancher = sol + BRUIT_MAX_M
-    fronts_ouverts = 0      # montées observées
-    fronts_clos = 0         # montées SUIVIES d'un retour au sol
-    en_l_air = False
-    for y in ys:
-        if not en_l_air and y >= seuil:
-            en_l_air = True
-            fronts_ouverts += 1
-        elif en_l_air and y <= plancher:
-            en_l_air = False
-            fronts_clos += 1
-
-    ok_ret = fronts_ouverts > 0 and fronts_clos == fronts_ouverts
-    note(constats, "critère 3 — chaque montée est SUIVIE d'un retour au sol",
-         "PASS" if ok_ret else "FAIL",
-         f"{fronts_ouverts} montée(s) au-dessus de {seuil:.1f} m, dont "
-         f"{fronts_clos} redescendue(s) sous {plancher:.1f} m"
-         + ("" if fronts_ouverts else " — aucune montée : rien à faire "
-            "retomber, donc rien de prouvé")
-         + ("" if ok_ret or not fronts_ouverts
-            else f" — {fronts_ouverts - fronts_clos} montée(s) SANS retour : "
-                 f"le sol n'a pas arrêté la chute"))
-
-    ok_rep = fronts_clos >= SAUTS_MIN
-    note(constats, "critère 5 — répétitions",
-         "PASS" if ok_rep else ("PARTIAL" if fronts_clos else "FAIL"),
-         f"{fronts_clos} aller(s)-retour(s) COMPLET(s) ; {SAUTS_MIN} demandés")
-
-    # --- 7. Bruit au repos --------------------------------------------------
-    # Les échantillons au sol ne doivent pas dériver : sinon le « sol » n'est
-    # pas un sol, et le critère 2 mesurerait du bruit.
-    au_sol = [y for y in ys if y <= sol + BRUIT_MAX_M]
-    bruit = (max(au_sol) - min(au_sol)) if au_sol else 0.0
+    # --- Critère 1 — bruit au repos ---------------------------------------
+    bruit = max(ys_repos) - min(ys_repos)
     note(constats, "critère 1 — bruit au repos",
          "PASS" if bruit <= BRUIT_MAX_M else "FAIL",
-         f"{len(au_sol)} échantillon(s) au sol ; dispersion={bruit:.2f} m "
+         f"dispersion des {REPOS_INITIAL} relevés = {bruit:.2f} m "
          f"(≤{BRUIT_MAX_M})")
 
-    # --- 8. L'horloge décrochée DÉCLASSE tout jugement temporel -------------
-    if not horloge_ok:
-        note(constats, "verdict de gravité", "BLOQUÉ",
-             "l'horloge du moteur a décroché du temps mural : les critères "
-             "ci-dessus sont publiés pour information, mais ni réussite ni "
-             "échec de la gravité n'est démontrable à partir d'eux")
+    # --- Critère 4 — état du héros ----------------------------------------
+    etats = sorted({str(e.get("etat", "?")) for e in m})
+    note(constats, "critère 4 — état du contrôleur",
+         "PASS" if etats == [ETAT_ATTENDU] else "FAIL",
+         f"états sur les marqueurs : {etats} ; attendu « {ETAT_ATTENDU} »")
+
+    # --- Les trois sauts, par PAIRES (montée, sol) -------------------------
+    reussis = 0
+    for i in range(SAUTS_MIN):
+        haut = m[REPOS_INITIAL + 2 * i]
+        bas = m[REPOS_INITIAL + 2 * i + 1]
+        yh, yb = float(haut["y"]), float(bas["y"])
+        exc = yh - sol
+        ret = abs(yb - sol)
+        ok_h = exc >= EXCURSION_MIN_M
+        ok_b = ret <= RETOUR_MAX_M
+        if ok_h and ok_b:
+            reussis += 1
+        note(constats, f"saut {i + 1}/{SAUTS_MIN}",
+             "PASS" if (ok_h and ok_b) else "FAIL",
+             f"montée Y={yh:.2f} m soit +{exc:.2f} "
+             f"({'≥' if ok_h else '<'} {EXCURSION_MIN_M} exigé) ; "
+             f"retour Y={yb:.2f} m soit écart {ret:.2f} "
+             f"({'≤' if ok_b else '>'} {RETOUR_MAX_M} toléré)")
+
+    note(constats, f"critère 5 — {SAUTS_MIN} sauts complets",
+         "PASS" if reussis >= SAUTS_MIN else
+         ("PARTIAL" if reussis else "FAIL"),
+         f"{reussis}/{SAUTS_MIN} saut(s) conformes ; apex nominal "
+         f"{APEX_NOMINAL_M} m d'après le tuning committé")
+
+    note(constats, "verdict de gravité",
+         "PASS" if reussis >= SAUTS_MIN else "FAIL",
+         "les trois sauts montent puis retombent au sol de référence"
+         if reussis >= SAUTS_MIN else
+         f"{SAUTS_MIN - reussis} saut(s) hors tolérance")
 
 
-# --------------------------------------------------------------------------
 def autotest() -> int:
-    """Cas synthétiques, sabotages compris. Chaque cas nomme le piège fermé."""
+    """Cas synthétiques et SABOTAGES. Chaque cas nomme le piège qu'il ferme.
+    Un cas qui ne rougirait pas sans le correctif ne serait pas un test."""
     from lib.verdict import code_sortie
 
-    def piste(ys: list[float], etat: str = ETAT_ATTENDU,
-              rapport: float = 1.0) -> list[dict]:
-        """Une piste d'altitude COHÉRENTE, telle qu'un vrai journal la porte.
-
-        Les `position` automatiques d'un vrai enregistrement portent `y` comme
-        les marqueurs : les fixtures doivent en faire autant, sinon elles
-        testent un journal qui n'existe pas. `rapport` règle le décrochage
-        d'horloge — 1,0 = saine, 0,013 = celui mesuré en S1.1."""
-        n = len(ys)
-        mural = n / rapport if rapport else n * 1000.0
-        return [{"type": "position", "t": mural * i / max(n - 1, 1),
-                 "y": y, "etat": etat, "fps": 60.0}
-                for i, y in enumerate(ys)]
-
     SOL, HAUT = 24.0, 25.4
-    saut = [SOL, HAUT, SOL]
+    n = [0]
+
+    def mq(y: float, etat: str = ETAT_ATTENDU, t: float | None = None) -> dict:
+        n[0] += 1
+        return {"type": "marqueur", "numero": n[0], "y": y, "etat": etat,
+                "t": float(n[0]) if t is None else t}
+
+    def pos(ys: list[float], mural: float) -> list[dict]:
+        """Échantillons automatiques — ils servent l'horloge, PAS le verdict."""
+        k = len(ys)
+        return [{"type": "position", "t": mural * i / max(k - 1, 1), "y": y,
+                 "etat": ETAT_ATTENDU, "fps": 60.0} for i, y in enumerate(ys)]
+
+    def sequence(sauts: list[tuple[float, float]],
+                 repos: list[float] | None = None,
+                 etat: str = ETAT_ATTENDU,
+                 auto: list[float] | None = None,
+                 mural: float = 30.0) -> list[dict]:
+        """Le protocole complet : trois repos, puis (montée, sol) par saut."""
+        n[0] = 0
+        r = repos if repos is not None else [SOL] * REPOS_INITIAL
+        evts = [mq(y, etat) for y in r]
+        for h, b in sauts:
+            evts.append(mq(h, etat))
+            evts.append(mq(b, etat))
+        evts += pos(auto if auto is not None else [SOL] * int(mural), mural)
+        return evts
+
+    TROIS = [(HAUT, SOL)] * 3
 
     cas: list[tuple[str, list[dict], int]] = [
-        ("trois sauts nets, horloge saine",
-         piste([SOL] + saut * 3 + [SOL]), 0),
+        ("protocole complet, trois sauts nets", sequence(TROIS), 0),
 
         ("SABOTAGE — journal VIDE : ne rien lire n'est pas réussir", [], 3),
 
-        ("SABOTAGE — horloge décrochée : BLOQUÉ, jamais FAIL",
-         piste([SOL] + saut * 3 + [SOL], rapport=0.013), 3),
+        ("SABOTAGE — les échantillons AUTOMATIQUES à 1 Hz ratent les trois "
+         "sauts, mais les marqueurs les portent : le verdict doit rester VERT",
+         sequence(TROIS, auto=[SOL] * 30), 0),
 
-        ("SABOTAGE — AUCUN saut : excursion nulle, donc FAIL",
-         piste([SOL] * 10), 1),
+        ("SABOTAGE — le héros TOMBE sous son niveau initial : ce creux ne "
+         "doit PAS devenir le sol",
+         sequence([(HAUT, SOL), (HAUT, 20.0), (HAUT, SOL)]), 1),
 
-        ("SABOTAGE — le héros monte et NE REDESCEND PAS : critère 3 FAIL",
-         piste([SOL, SOL, HAUT, HAUT, HAUT, HAUT, HAUT]), 1),
+        ("SABOTAGE — protocole INCOMPLET : deux sauts au lieu de trois",
+         sequence([(HAUT, SOL), (HAUT, SOL)]), 3),
 
-        ("SABOTAGE — DEUX sauts finissent, le troisième reste en l'air",
-         piste([SOL] + saut * 2 + [SOL, HAUT, HAUT, HAUT]), 1),
+        ("SABOTAGE — aucun marqueur du tout, seulement l'automatique",
+         pos([SOL, HAUT, SOL] * 10, 30.0), 3),
 
-        ("SABOTAGE — un SEUL saut au lieu de trois : PARTIAL, pas PASS",
-         piste([SOL] + saut + [SOL, SOL]), 1),
+        ("SABOTAGE — AUCUN saut : les trois « montées » restent au sol",
+         sequence([(SOL, SOL)] * 3), 1),
 
-        ("SABOTAGE — héros MORT pendant l'enregistrement : critère 4 FAIL",
-         piste([SOL] + saut * 3 + [SOL], etat="mort"), 1),
+        ("SABOTAGE — le héros monte et NE REDESCEND PAS",
+         sequence([(HAUT, HAUT)] * 3), 1),
 
-        ("SABOTAGE — trop peu d'échantillons pour conclure",
-         piste([SOL, HAUT, SOL]), 3),
+        ("SABOTAGE — montée SOUS le seuil (0,3 m au lieu de 0,5)",
+         sequence([(24.3, SOL)] * 3), 1),
 
-        ("SABOTAGE — excursion SOUS le seuil (0,3 m) : ne doit pas passer",
-         piste([SOL, 24.3, SOL, 24.3, SOL, 24.3, SOL, SOL]), 1),
+        ("SABOTAGE — héros MORT pendant l'enregistrement",
+         sequence(TROIS, etat="mort"), 1),
 
-        ("SABOTAGE — le « sol » DÉRIVE de 0,8 m : ce n'est pas un sol",
-         piste([24.0, 24.4, 24.8, 24.4, 24.0, 24.4, 24.8]), 1),
+        ("SABOTAGE — le sol de repos DÉRIVE de 0,8 m : ce n'est pas un sol",
+         sequence(TROIS, repos=[24.0, 24.4, 24.8]), 1),
+
+        # Ce cas-ci est LE contrôle décisif entre médiane et minimum, et il
+        # est construit pour que les deux lectures DIVERGENT en couleur.
+        # Le héros ne saute JAMAIS : il oscille de 0,6 m entre 24,0 et 23,4.
+        #   - sol = MINIMUM global 23,4 -> chaque « montée » à 24,0 vaut
+        #     +0,6 m, donc ≥ 0,50 : les trois excursions passent ; chaque
+        #     « retour » à 23,4 donne un écart nul : les trois retours
+        #     passent. Verdict PASS. L'appareil déclarerait trois beaux
+        #     sauts là où le héros n'a pas quitté le sol une seule fois.
+        #   - sol = MÉDIANE des trois repos = 24,0 -> excursion 0,00 m,
+        #     donc FAIL. Correct.
+        ("SABOTAGE DÉCISIF — héros qui n'a JAMAIS sauté mais qui oscille de "
+         "0,6 m : le minimum global le déclarerait vert, la médiane le "
+         "refuse",
+         sequence([(24.0, 23.4)] * 3), 1),
+
+        ("un repos aberrant (24,0 / 24,0 / 20,0) ne déplace pas la médiane, "
+         "mais le bruit au repos le signale — rouge par le BON critère",
+         sequence(TROIS, repos=[24.0, 24.0, 20.0]), 1),
+
+        ("horloge décrochée mais marqueurs bons : PARTIAL sur l'horloge, "
+         "la gravité reste jugeable",
+         sequence(TROIS, auto=[SOL, SOL], mural=150.0), 1),
     ]
 
     echecs = 0
@@ -310,9 +362,10 @@ def main(argv: list[str] | None = None) -> int:
     constats: list[dict] = []
     juger(lire(chemin), constats, str(chemin))
     return publier_verdict(constats, {
-        "cohérence de l'horloge": "horloge",
-        "excursion verticale": "excursion",
-        "retour au sol": "retour au sol",
+        "horloge du moteur": "horloge",
+        "protocole de marqueurs": "protocole de marqueurs",
+        "sol de référence": "sol de référence",
+        "verdict de gravité": "verdict de gravité",
     })
 
 

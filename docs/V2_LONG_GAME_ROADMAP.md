@@ -12,7 +12,18 @@ comme **estimations**, et il faut lire la différence.
 
 ---
 
-## 1. Le modèle de coût, mesuré
+## 1. Ce que l'historique montre — des INDICATEURS D'ACTIVITÉ, pas des coûts
+
+> **CORRECTION DU 2026-08-27.** Ce chapitre présentait les commits comme un
+> « modèle de coût ». C'était abusif. **Un commit mesure une cadence de
+> travail, pas un effort** : il dépend de la façon dont on découpe, des
+> allers-retours de revue, des reprises. Deux lieux à 24 commits peuvent
+> avoir coûté du simple au triple.
+>
+> Ils restent utiles comme **indicateur d'activité comparatif** entre lieux
+> d'un même projet, ce qui est leur seul usage légitime. Les grandeurs qui
+> mesureraient vraiment un coût sont listées au §1.3 — et **aucune n'est
+> encore relevée**.
 
 | Grandeur | Mesure |
 |---|---:|
@@ -27,15 +38,33 @@ comme **estimations**, et il faut lire la différence.
 
 ### Le fait qui change la stratégie
 
-**La moitié du chantier n'est pas du contenu de lieu.** Terrain, hydrologie,
-végétation, caméras, matériaux, tests, outillage : 368 commits d'un coût
-**fixe, déjà payé**. Une deuxième région en hérite intégralement.
+**La moitié de l'activité ne porte pas sur un lieu.** Terrain, hydrologie,
+végétation, caméras, matériaux, tests, outillage : 368 commits.
 
-Conséquence directe, et elle est encourageante : le coût marginal d'une région
-supplémentaire est **le coût de son contenu**, pas le coût de la région 1. Ce
-qui a été cher n'était pas la vallée — c'était d'apprendre à faire une vallée.
+> **CORRECTION DU 2026-08-27, exigée par l'audit.** Ce paragraphe affirmait
+> qu'une deuxième région « en hérite intégralement ». **C'est faux, et
+> l'audit le démontre.** Une part de cette infrastructure est **spécifique à
+> Néris**, pas générique :
+>
+> - `WorldV2Heightmap._fields()` encode le relief en constantes réglées à la
+>   main pour cette vallée-ci ; l'emprise de 512 m y est **codée en dur**.
+> - `WorldV2Layout.CANONICAL_POI_IDS` **refuse** tout POI hors des 31
+>   littéraux de Néris.
+> - L'anneau de 36 gardes `unclimbable` est contractuellement sans brèche.
+> - Trois emprises divergentes (235,0 / 233,0 / 246,0) et quatre tables par
+>   région vivent en GDScript.
+>
+> Ce qu'une région 2 hérite réellement : les **outils** (chaîne Blender,
+> portails, filets, gel), les **conventions**, et la partie générique des
+> bâtisseurs. Ce qu'elle n'hérite pas : le relief, les limites, et plusieurs
+> règles qui devront d'abord être **extraites** en format de région. Ce
+> travail d'extraction n'est ni mesuré ni commencé.
 
-### Projections — ESTIMATIONS, pas mesures
+Ce qui reste vrai, et qui est encourageant : une part notable de l'activité a
+servi à **apprendre à faire une vallée**, et cet apprentissage-là ne se repaie
+pas. Mais dire « l'infrastructure est payée » serait un faux vert de plus.
+
+### 1.2 Projections — ESTIMATIONS d'activité, pas de coût
 
 | Portée | Lieux | Commits de contenu estimés |
 |---|---:|---:|
@@ -49,6 +78,30 @@ mais les sujets faciles ont été faits en premier (plus cher). Ils valent pour
 l'ordre de grandeur, pas pour la décimale.
 
 ---
+
+### 1.3 Ce qu'il faudrait mesurer pour parler de COÛT — et qui ne l'est pas
+
+Aucune des grandeurs ci-dessous n'est relevée aujourd'hui. Les nommer, c'est
+dire à quel point le §1.1 est un proxy et non une mesure.
+
+| Grandeur | Ce qu'elle capture | Comment la relever |
+|---|---|---|
+| **Temps écoulé par sujet** | la durée réelle du chantier d'un lieu, reprises comprises | horodatage du premier et du dernier commit touchant ses fichiers |
+| **Durée machine** | ce que coûtent Blender, l'export, l'import et les captures | chronométrer les scripts de chaîne, journal daté |
+| **Itérations avant acceptation** | le coût caché des reprises — le signal le plus utile de tous | compter les passes correctives par sujet (la grotte en a eu huit) |
+| **Temps de validation** | ce que coûte de PROUVER, par opposition à construire | durée de `validate_fast.sh`, des portails, des captures |
+| **Volume d'assets** | ce que le dépôt porte et ce qu'un joueur télécharge | octets et nombre de fichiers sous `assets/` et `evidence/` |
+
+**L'itération est probablement la grandeur dominante.** L'historique du dépôt
+le suggère fortement : la grotte a traversé R2a-3.1 à R2a-3.5.8, soit huit
+passes correctives nommées. Un lieu accepté du premier coup et un lieu repris
+huit fois portent le même nombre de commits à quelques unités près, et n'ont
+rien coûté de comparable.
+
+**À faire avant de citer un coût.** Tant que ces cinq grandeurs ne sont pas
+relevées, toute phrase de ce document contenant le mot « coût » désigne un
+indicateur d'activité, et il faut la lire ainsi.
+
 
 ## 2. L'inconnue qui domine tout : combien d'heures valent 34 lieux ?
 
@@ -76,6 +129,16 @@ suite décrit.
 
 **Première action de la reprise** : faire mesurer un temps de parcours réel.
 Le mode développement l'enregistre déjà ; il suffit qu'Istvan joue.
+
+> **CE QUE LE PARCOURS DE LUNDI MESURERA, ET CE QU'IL NE MESURERA PAS.**
+> Il portera sur la **boucle actuelle** : la traversée minimale de la vallée,
+> l'entrée dans le donjon, les transitions, le retour. C'est exactement ce
+> qu'il faut pour valider ISS-073 et donner un premier ordre de grandeur.
+>
+> Il **ne permettra pas** d'extrapoler une campagne de 30-50 h. Le monde livré
+> ne contient ni ennemi, ni quête, ni PNJ, et 21 de ses 34 lieux ne sont pas
+> construits. Multiplier son temps de parcours par un facteur inventé serait
+> exactement le genre de chiffre que ce dépôt s'interdit.
 
 ---
 
@@ -193,7 +256,7 @@ littéralement la suivante.
 |---|---|---|
 | **0** | **Refermer la boucle** — une `SceneDoor` vers le donjon dans World V2, et les **quatre** retours qui pointent encore vers `ValleyWorld.tscn` (V1) redressés | sans elle, donjon, boss et victoire sont inatteignables et **aucune** durée de campagne n'est mesurable. Coût faible, effet total : c'est la meilleure affaire de tout l'audit |
 | **1** | **Mesurer un temps de parcours réel** | possible seulement après 0 ; toute estimation d'heures reste une opinion tant qu'elle n'a pas eu lieu |
-| **2** | **Finir la région 1** (21 lieux) | c'est ce qui calibre le coût unitaire pour de bon, et c'est la seule région dont l'infrastructure est déjà payée |
+| **2** | **Finir la région 1** (21 lieux) | c'est ce qui calibre le coût unitaire pour de bon, sur la seule région dont le relief et les limites existent déjà |
 | **3** | **PNJ + dialogue** | brique la plus basse de la chaîne rouge ; rien de la campagne longue n'existe sans elle |
 | **4** | **Système de quêtes** | dépend de 2, de la sauvegarde et de l'UI ; c'est lui qui transforme des lieux en campagne |
 | **5** | **Streaming + multi-régions** | dépend de la sauvegarde et du pipeline ; sans lui, le volume est plafonné à une vallée |
@@ -219,14 +282,21 @@ au rythme mesuré, plus les systèmes absents. Défendable seulement si le coût
 marginal d'une région s'avère très inférieur à celui de la région 1 — ce que
 l'étape 6 seule peut établir. **Ne pas s'y engager avant l'étape 6.**
 
-### B — Réaliste : 15-25 h, trois régions, systèmes complets *(recommandé)*
+### B — Repli éventuel : 15-25 h, trois régions, systèmes complets
 Trois régions, quêtes et PNJ, progression durable, rejouabilité légère.
 **~2 000 commits de contenu.** Sacrifie la moitié de l'ambition affichée mais
 livre un jeu **entier**, avec sa boucle complète et son identité intacte.
 
-Recommandé parce que c'est le seul scénario où chaque étape est vérifiable au
-moment où on la franchit, et où un arrêt en cours de route laisse quand même
-un jeu jouable.
+> **CORRECTION DU 2026-08-27.** Ce scénario était marqué « recommandé ». Il
+> ne l'est plus : **la cible canonique reste 30-50 h / 80-120 h / 200 h+**,
+> fixée par `docs/V2_PRODUCT_DOCTRINE.md`. Réduire l'ambition est une
+> décision de produit qui appartient à Istvan, pas une conclusion technique
+> que je puisse tirer d'un audit.
+>
+> Il reste décrit ici comme **repli documenté**, à activer seulement sur
+> décision explicite. Sa propriété utile : chaque étape y est vérifiable au
+> moment où on la franchit, et un arrêt en cours de route laisse quand même
+> un jeu jouable.
 
 ### C — Réduit : 6-10 h, une région, systèmes complets
 Région 1 finie, quêtes légères, une campagne courte mais entière.
@@ -234,8 +304,15 @@ Région 1 finie, quêtes légères, une campagne courte mais entière.
 honnête si le temps manque — et c'est aussi, par construction, **les étapes 0 à 4
 du scénario B**. Les deux ne divergent qu'après.
 
-**Recommandation : viser B, en construisant C d'abord.** Aucune décision prise
-avant l'étape 6 ne coûte quoi que ce soit à l'un ou à l'autre.
+**La cible reste A — 30-50 h**, conformément à la doctrine. B et C sont des
+replis documentés, activables sur décision d'Istvan et sur elle seule.
+
+Le fait utile, et il vaut pour les trois : **les étapes 0 à 4 sont communes.**
+Refermer la boucle, mesurer, finir la région 1, poser PNJ et quêtes — rien de
+tout cela ne dépend du scénario retenu. Aucune décision de portée n'a besoin
+d'être prise avant l'étape 6, où le coût marginal d'une région sera enfin
+mesuré. **Ne pas trancher maintenant ne coûte rien ; trancher maintenant
+coûterait de le faire sans mesure.**
 
 ---
 

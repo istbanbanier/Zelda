@@ -23,30 +23,58 @@ Si tu l'as déjà téléchargée, c'est la bonne — je n'ai rien republié depu
 
 ---
 
-## Les six gestes
+## Les gestes — compte, ne chronomètre pas
 
-**1. Lance le jeu.**
+Le jeu enregistre tout seul une position par seconde. **Ça ne suffit pas** :
+un saut ne dure que sept dixièmes de seconde, donc l'enregistrement
+automatique le rate presque toujours. C'est toi qui poses les repères, avec
+`F4`, aux instants qui comptent.
 
-**2. Clique sur « Nouvelle partie »** et attends que le paysage apparaisse.
-   Le chargement peut prendre une minute : c'est normal.
+Rien n'est chronométré. Tu regardes l'écran et tu appuies.
 
-**3. Appuie une fois sur `F3`.**
-   Un petit panneau s'affiche en haut : l'enregistrement a démarré.
+---
 
-**4. Appuie sur `Espace` pour sauter. Attends que le héros soit bien
-   retombé, compte « et un, et deux » dans ta tête, puis recommence.
-   **Trois sauts en tout.** Ne touche à rien d'autre — ni ZQSD, ni la souris.
-   Reste sur place.
+**1. Lance le jeu, clique sur « Nouvelle partie »**, attends que le paysage
+apparaisse. Le chargement peut prendre une minute.
 
-**5. Appuie une fois sur `F3`.**
-   Le panneau disparaît : l'enregistrement est fini et le fichier est écrit.
+**2. `F3`** — un petit panneau s'affiche : l'enregistrement a démarré.
+
+**3. Trois fois `F4`, sans bouger**, en comptant « et un, et deux » entre
+chaque. **Ne touche à rien d'autre** : ni ZQSD, ni la souris. Ces trois
+repères disent à quelle hauteur est le sol sous les pieds du héros. C'est la
+mesure la plus importante des trois : tout le reste s'y compare.
+
+**4. Puis, trois fois de suite, ces trois gestes dans cet ordre :**
+
+&nbsp;&nbsp;&nbsp;&nbsp;**a.** `Espace` — le héros saute.
+&nbsp;&nbsp;&nbsp;&nbsp;**b.** `F4` **tout de suite**, pendant qu'il est en
+l'air, sans attendre. Vise le moment où il est haut ; si tu appuies un peu
+tard, ce n'est pas grave.
+&nbsp;&nbsp;&nbsp;&nbsp;**c.** Attends de **voir** qu'il a bien reposé les
+pieds au sol, compte « et un, et deux », puis `F4` de nouveau.
+
+Recommence depuis **a**. Trois sauts en tout.
+
+**5. `F3`** — le panneau disparaît, le fichier est écrit.
 
 **6. Quitte le jeu.**
 
-Si tu te trompes, ce n'est pas grave : refais les gestes 3 à 6. J'analyserai
-le dernier enregistrement.
-
 ---
+
+### Le compte, pour vérifier
+
+**Neuf appuis sur `F4` en tout** : trois au repos, puis deux par saut.
+
+Si tu en as fait plus ou moins, ce n'est pas grave — **refais simplement les
+gestes 2 à 6**. J'analyse le dernier enregistrement, et l'outil me dira
+lui-même si la séquence est incomplète plutôt que de deviner.
+
+### Pourquoi deux repères par saut, et pas un
+
+Le premier dit **jusqu'où il monte**. Le second dit **s'il redescend
+vraiment au sol**. Les deux questions sont différentes, et c'est la seconde
+qui m'intéresse le plus : un héros qui monte mais ne retombe pas exactement
+là où il était trahirait un défaut que je ne peux pas voir d'ici.
 
 ## Le fichier à m'envoyer
 
@@ -112,12 +140,21 @@ toute mesure, dans `docs/contrats/s1_1_gravite.md` :
 
 | Ce qu'il vérifie | Seuil |
 |---|---|
-| L'horloge de ta machine est-elle saine ? | temps moteur ≈ temps réel |
-| Le héros monte-t-il vraiment ? | au moins **0,50 m** |
-| Chaque montée est-elle suivie d'un retour au sol ? | oui, toutes |
-| Combien d'allers-retours complets ? | **3** demandés |
-| Le héros est-il debout, ni mort ni blessé ? | état `locomotion` |
-| Le sol reste-t-il stable quand il ne saute pas ? | dérive ≤ **0,10 m** |
+| Les neuf repères sont bien là | sinon il refuse de conclure |
+| Le sol, pris comme la **médiane** de tes trois premiers repères | jamais le point le plus bas — voir plus bas |
+| Le sol ne bouge pas pendant les trois repos | dérive ≤ **0,10 m** |
+| Chaque montée dépasse le sol | d'au moins **0,50 m** |
+| Chaque retour revient au sol | à **0,20 m** près |
+| Le héros est debout, ni mort ni blessé | état `locomotion` |
+| L'horloge de ta machine est saine | contrôle **à part**, qui n'annule pas les repères |
+
+**Pourquoi la médiane et pas le point le plus bas.** Si le héros trébuche une
+fois dans un creux, ce creux deviendrait le « sol » et tout se mesurerait
+depuis un plancher qui n'existe pas. J'ai construit le cas : un héros qui
+**ne saute jamais** mais oscille de 0,6 m serait déclaré faire trois beaux
+sauts. La médiane de trois relevés ne bouge pas pour un accident — il en
+faudrait deux. La démonstration est dans
+`evidence/.../appareil/preuve_mediane_contre_minimum.md`.
 
 Pour information, la valeur attendue : le héros doit monter à environ
 **1,40 m**, hauteur calculée à partir des réglages du jeu — vitesse de saut
