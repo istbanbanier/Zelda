@@ -1,0 +1,9 @@
+[PASS    ] empreinte de l'ARCHIVE publiée — sha256 mesuré 302643c7a5b59418d767121641f798ef0728d8358d6c0b8befec2e1241a8f91e
+[PASS    ] profil user:// vierge — /home/user/smoke_lot1r2/profil_gravite recréé vide
+[PASS    ] binaire extrait de l'archive vérifiée — EclatsDOrage.x86_64, sha256 dérivé 84025157adc8b7fa02b08d67a571b5b493830d919af66f29e8d6262704c848e5
+[PASS    ] serveur X virtuel possédé — Xvfb pid 2721 sur :0 choisi par -displayfd
+[PASS    ] fenêtre du jeu — xdotool -> 2097155
+[PASS    ] monde monté dans la build exportée — jalon « fondation V2 vérifiée » présent
+[PASS    ] télémétrie DevMode produite par le jeu — 14 marqueur(s) F4 lus dans dev_sessions/*/journal.jsonl
+[BLOQUÉ  ] nombre de marqueurs — 14 au lieu de 20 — l'appareil n'a pas capté toute la séquence, aucun verdict n'est tiré
+RC=3

@@ -77,6 +77,14 @@ EXCURSION_MIN_M = 0.50    # 5 quanta ; apex nominal 1,401 m, soit 2,8x
 RETOUR_MAX_M = 0.20       # 2 quanta
 ETAT_ATTENDU = "locomotion"
 REPETITIONS = 3
+# AMENDEMENT 2 : échantillonnage par battement. L'appareil ne peut pas placer
+# un marqueur à un instant CHOISI du vol (cadence mesurée 1,03 s contre
+# 0,683 s de vol) ; on échantillonne donc BEAUCOUP, à une période
+# incommensurable avec celle des sauts. Fraction de vol attendue :
+# 0,683 / 1,5 = 45,5 % ; seuil posé à 25 %, très au-dessus de zéro.
+T_SAUT_S = 1.5
+MARQUEURS_PAR_CAMPAGNE = 26
+FRACTION_ELEVEE_MIN = 0.25
 
 constats: list[dict] = []
 PROCS_POSSEDES: list[subprocess.Popen] = []
@@ -189,54 +197,72 @@ def marqueurs_du_journal(racine_user: Path) -> list[dict]:
     return marques
 
 
-def sequence(saut: bool) -> None:
-    """Une séquence de 5 marqueurs. `saut=False` = contrôle négatif.
+def campagne(saut: bool, sol: float | None = None) -> None:
+    """Campagne de battement. `saut=False` = contrôle négatif.
 
-    Les appuis sont groupés dans UN SEUL appel xdotool : son `sleep` interne
-    est bien plus régulier qu'un aller-retour de processus par touche, et le
-    contrat tolère de toute façon 250 ms de retard (à t=0,55 s l'altitude vaut
-    encore 0,88 m, soit 1,76 x le seuil d'excursion)."""
-    xdo("key", "F4")                       # M1 — sol
-    time.sleep(0.5)
-    xdo("key", "F4")                       # M2 — sol, sans aucune entrée
-    if saut:
-        xdo("key", "space", "sleep", "0.12", "key", "F4",
-            "sleep", "0.18", "key", "F4")  # M3 (+0,12 s), M4 (+0,30 s)
-    else:
-        xdo("sleep", "0.12", "key", "F4", "sleep", "0.18", "key", "F4")
-    time.sleep(1.7)
-    xdo("key", "F4")                       # M5 — +2,00 s
-    time.sleep(1.5)
+    Deux fils de commande qui ne se synchronisent pas : les `Espace` toutes
+    les T_SAUT_S, les `F4` aussi vite que l'appareil les accepte (~1,03 s
+    mesurées). Les deux périodes dérivent, donc les marqueurs échantillonnent
+    la phase de vol proportionnellement à sa durée."""
+    fin = time.time() + MARQUEURS_PAR_CAMPAGNE * 1.10
+    prochain_saut = time.time()
+    poses = 0
+    while poses < MARQUEURS_PAR_CAMPAGNE and time.time() < fin + 20:
+        if saut and time.time() >= prochain_saut:
+            xdo("key", "space")
+            prochain_saut = time.time() + T_SAUT_S
+        xdo("key", "F4")
+        poses += 1
+        time.sleep(0.05)
 
 
-def juger(lot: list[dict], titre: str, attend_saut: bool) -> bool:
-    """Applique les critères 1 à 4 du contrat à un lot de 5 marqueurs."""
-    if len(lot) != 5:
-        note(titre, "BLOQUÉ",
-             f"{len(lot)} marqueur(s) au lieu de 5 — séquence incomplète, "
-             "rien n'a pu être jugé")
-        return False
-    y = [float(m["y"]) for m in lot]
+def repos(n: int) -> None:
+    """`n` marqueurs sans AUCUNE entrée : mesure du bruit de l'appareil."""
+    for _ in range(n):
+        xdo("key", "F4")
+        time.sleep(0.05)
+
+
+def juger_repos(lot: list[dict], titre: str) -> tuple[bool, float]:
+    """Critères 1 et 4 : bruit au repos, et état du héros. Rend (ok, Y_sol)."""
+    if len(lot) < 2:
+        note(titre, "BLOQUÉ", f"{len(lot)} marqueur(s) au repos, 2 minimum")
+        return False, 0.0
+    ys = [float(m["y"]) for m in lot]
     etats = [str(m.get("etat", "?")) for m in lot]
-    bruit = abs(y[1] - y[0])
-    excursion = max(y[2], y[3]) - y[0]
-    retour = abs(y[4] - y[0])
-    etat_ok = etats[0] == ETAT_ATTENDU and etats[4] == ETAT_ATTENDU
+    bruit = max(ys) - min(ys)
+    sol = min(ys)
+    etat_ok = all(e == ETAT_ATTENDU for e in etats)
+    ok = bruit <= BRUIT_MAX_M and etat_ok
+    note(titre, "PASS" if ok else "FAIL",
+         f"{len(lot)} marqueur(s) sans entrée ; Y de {min(ys):.1f} à "
+         f"{max(ys):.1f} m ; bruit={bruit:.1f} (≤{BRUIT_MAX_M}) ; "
+         f"états={sorted(set(etats))}")
+    return ok, sol
 
-    mesure = (f"Y sol={y[0]:.1f} · repos={y[1]:.1f} · +0,12s={y[2]:.1f} · "
-              f"+0,30s={y[3]:.1f} · +2,00s={y[4]:.1f} m ; "
-              f"bruit={bruit:.1f} (≤{BRUIT_MAX_M}) · "
-              f"excursion={excursion:.1f} ({'≥' if attend_saut else '<'}"
-              f"{EXCURSION_MIN_M}) · retour={retour:.1f} "
-              f"(≤{RETOUR_MAX_M}) ; états={etats[0]}/{etats[4]}")
 
+def juger_campagne(lot: list[dict], sol: float, titre: str,
+                   attend_saut: bool) -> bool:
+    """Critères 2a/2b : fraction de marqueurs au-dessus du sol."""
+    if len(lot) < MARQUEURS_PAR_CAMPAGNE * 0.7:
+        note(titre, "BLOQUÉ",
+             f"{len(lot)} marqueur(s), moins de 70 % des "
+             f"{MARQUEURS_PAR_CAMPAGNE} demandés — campagne incomplète")
+        return False
+    ys = [float(m["y"]) for m in lot]
+    eleves = [y for y in ys if (y - sol) >= EXCURSION_MIN_M]
+    fraction = len(eleves) / len(ys)
+    hauteur_max = max(ys) - sol
     if attend_saut:
-        ok = (bruit <= BRUIT_MAX_M and excursion >= EXCURSION_MIN_M
-              and retour <= RETOUR_MAX_M and etat_ok)
+        ok = fraction >= FRACTION_ELEVEE_MIN
     else:
-        # Contrôle négatif : SANS saut, l'excursion doit rester sous le seuil.
-        ok = excursion < EXCURSION_MIN_M and bruit <= BRUIT_MAX_M
-    note(titre, "PASS" if ok else "FAIL", mesure)
+        ok = len(eleves) == 0
+    note(titre, "PASS" if ok else "FAIL",
+         f"{len(eleves)}/{len(ys)} marqueur(s) à ≥{EXCURSION_MIN_M} m "
+         f"au-dessus du sol ({fraction:.0%}"
+         + (f", seuil ≥{FRACTION_ELEVEE_MIN:.0%}" if attend_saut
+            else ", exigé EXACTEMENT 0")
+         + f") ; excursion max={hauteur_max:.1f} m ; Y sol={sol:.1f} m")
     return ok
 
 
@@ -333,9 +359,12 @@ def main() -> int:
         xdo("windowfocus", "--sync", fenetre)
         xdo("key", "F3")                   # démarre l'enregistrement DevMode
         time.sleep(2)
+        repos(4)                           # bruit, aucune entrée
         for _ in range(REPETITIONS):
-            sequence(saut=True)
-        sequence(saut=False)               # contrôle négatif, en dernier
+            campagne(saut=True)
+            time.sleep(3.0)                # retour au sol entre campagnes
+            repos(2)                       # retour au sol, critère 3
+        campagne(saut=False)               # contrôle négatif, en dernier
         xdo("key", "F3")                   # arrête et ferme le journal
         time.sleep(3)
 
@@ -353,21 +382,40 @@ def main() -> int:
     if not marques:
         return 3
 
-    attendus = 5 * (REPETITIONS + 1)
-    if len(marques) != attendus:
-        note("nombre de marqueurs", "BLOQUÉ",
-             f"{len(marques)} au lieu de {attendus} — l'appareil n'a pas "
-             "capté toute la séquence, aucun verdict n'est tiré")
-        return 3
-
-    tous_ok = True
-    for i in range(REPETITIONS):
-        lot = marques[i * 5:(i + 1) * 5]
-        tous_ok &= juger(lot, f"répétition {i + 1}/{REPETITIONS} — saut",
-                         attend_saut=True)
-    negatif_ok = juger(marques[REPETITIONS * 5:],
-                       "contrôle négatif — AUCUN saut demandé",
-                       attend_saut=False)
+    # Découpage : 4 repos, puis (campagne + 2 repos) x REPETITIONS, puis la
+    # campagne négative. On tranche sur les COMPTES demandés, jamais sur une
+    # heuristique de valeurs — sinon le découpage lirait sa réponse chez le
+    # sujet.
+    i = 0
+    repos_initial = marques[i:i + 4]
+    i += 4
+    repos_ok, sol = juger_repos(repos_initial,
+                                "critère 1 — bruit au repos, aucune entrée")
+    tous_ok = repos_ok
+    for r in range(REPETITIONS):
+        lot = marques[i:i + MARQUEURS_PAR_CAMPAGNE]
+        i += MARQUEURS_PAR_CAMPAGNE
+        tous_ok &= juger_campagne(
+            lot, sol, f"critère 2a — campagne {r + 1}/{REPETITIONS} : sauts "
+            "répétés, échantillonnage par battement", attend_saut=True)
+        apres_lot = marques[i:i + 2]
+        i += 2
+        if len(apres_lot) == 2:
+            retour = abs(float(apres_lot[-1]["y"]) - sol)
+            ok_r = retour <= RETOUR_MAX_M
+            tous_ok &= ok_r
+            note(f"critère 3 — retour au sol après la campagne {r + 1}",
+                 "PASS" if ok_r else "FAIL",
+                 f"Y={float(apres_lot[-1]['y']):.1f} m contre sol {sol:.1f} m "
+                 f"; écart={retour:.1f} (≤{RETOUR_MAX_M})")
+        else:
+            note(f"critère 3 — retour au sol après la campagne {r + 1}",
+                 "BLOQUÉ", "marqueurs de repos manquants")
+            tous_ok = False
+    negatif_ok = juger_campagne(
+        marques[i:i + MARQUEURS_PAR_CAMPAGNE], sol,
+        "critère 2b — contrôle négatif : AUCUN saut demandé",
+        attend_saut=False)
 
     note("verdict de gravité (3 répétitions + contrôle négatif)",
          "PASS" if tous_ok and negatif_ok else "FAIL",

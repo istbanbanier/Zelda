@@ -86,7 +86,75 @@ Le harnais vérifie donc l'archive AVANT toute chose, puis **extrait le binaire
 de cette archive-là** et lance celui-ci. Sans ce lien, « le ZIP est conforme »
 et « j'ai lancé ce binaire » resteraient deux affirmations sans rapport.
 
-## Séquence temporelle, par répétition
+## AMENDEMENT 1 — la cadence de l'appareil est MESURÉE, et elle interdit
+## l'échantillonnage déterministe
+
+Écrit après la première exécution, et il faut dire pourquoi cet amendement est
+légitime : il est justifié par une mesure portant sur l'**instrument**, jamais
+sur le sujet. Aucun seuil de jugement n'est touché.
+
+Première exécution : 14 marqueurs au lieu de 20, tous espacés de ~1,04 s alors
+que la séquence en demandait à 0,12 s et 0,18 s. Deux hypothèses posées, les
+deux RÉFUTÉES par la mesure :
+
+1. « la capture d'écran coûte cher, réduire la fenêtre la rendra rapide » —
+   sonde à trois résolutions, **au menu** : 1024×768 → 0,076 s ; 400×300 →
+   0,071 s ; 200×150 → 0,070 s. La résolution ne change rien.
+2. « le monde tourne à 1 image par seconde » — le journal du run réel ne porte
+   que **4 saccades > 100 ms** sur 20 s. Les images ne durent pas 1 s.
+
+Sonde décisive, une seule variable changée — 8 appuis `F4` séparés de 0,05 s :
+
+| Contexte | Marqueurs | Écarts observés |
+|---|---:|---|
+| Menu principal | 8/8 | 0,068 – 0,081 s |
+| **Monde V2 monté** | 8/8 | **1,02 – 1,04 s** |
+
+Les huit appuis partent en 0,59 s de temps mural et ressortent étalés sur
+7,2 s : aucun n'est perdu, ils sont **sérialisés**. La cause est le coût de
+`capture_screenshot()` — `get_texture().get_image()` est une relecture GPU
+d'une scène 3D complète sous llvmpipe — que `mark()` appelle à chaque
+marqueur, et que rien ne permet d'éviter sans modifier le jeu publié.
+
+**Conséquence, énoncée sans détour : l'appareil échantillonne au mieux toutes
+les 1,03 s, et le vol dure 0,683 s. Aucun marqueur ne peut être placé à un
+instant CHOISI du vol.** C'est la limite d'environnement que `CLAUDE.md`
+déclare déjà — rendu logiciel, « utilisable pour la régression visuelle,
+jamais pour une mesure ».
+
+## AMENDEMENT 2 — échantillonnage par BATTEMENT, et il durcit le critère
+
+Ce qui reste possible, et qui répond à la même question : ne plus choisir
+*quand* observer, mais observer **beaucoup**, à une période délibérément
+incommensurable avec celle des sauts.
+
+- sauts répétés à intervalle `T_saut = 1,5 s` ;
+- marqueurs à la cadence libre de l'appareil, ~1,03 s ;
+- les deux périodes dérivent l'une par rapport à l'autre, donc les marqueurs
+  échantillonnent la phase de vol **proportionnellement à sa durée**.
+
+Fraction de temps passée en l'air : `0,683 / 1,5 = 45,5 %`. Sur `N` marqueurs
+pris pendant une campagne de sauts, on attend donc ~45 % d'observations
+au-dessus du sol.
+
+| # | Critère amendé | Seuil |
+|---|---|---|
+| 2a | Marqueurs élevés (`Y − Y_sol ≥ 0,50 m`) pendant la campagne de sauts | **≥ 25 %** des marqueurs |
+| 2b | Marqueurs élevés pendant le contrôle négatif (aucun saut) | **= 0** |
+| 2c | Marqueurs total par campagne | **≥ 20** |
+
+Le seuil d'excursion **reste 0,50 m** : ce qui change est le nombre
+d'observations exigées, pas la hauteur exigée. Le critère est de fait plus dur
+qu'avant — une réussite isolée ne suffit plus, il en faut une sur quatre, et
+le contrôle négatif doit en produire **exactement zéro**. Le seuil de 25 %
+est posé sous les 45 % attendus pour tolérer la corrélation résiduelle entre
+les deux périodes, et très au-dessus de zéro.
+
+Les critères 1 (bruit), 3 (retour au sol) et 4 (état) sont inchangés et
+restent évalués sur des marqueurs au repos, où la cadence de 1,03 s ne gêne
+pas.
+
+## Séquence temporelle, par répétition (contrat initial, CONSERVÉ pour mémoire)
 
 Tous les repères sont des `F4`. Aucune touche de déplacement n'est pressée
 pendant la séquence : sans dérive horizontale, deux Y au sol sont comparables.
