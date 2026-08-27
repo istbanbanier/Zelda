@@ -92,8 +92,37 @@ def main() -> int:
     with journal.open("wb") as fh:
         proc = subprocess.Popen(argv, stdout=fh, stderr=subprocess.STDOUT,
                                 env=env)
+
+        # LE JEU DÉMARRE AU MENU, PAS DANS LE MONDE. Sans cette étape, le
+        # binaire reste sur « transition vers le menu principal », WorldV2Root
+        # n'est jamais instancié, et AUCUN drapeau --iss071-* n'a d'effet :
+        # ils sont lus au montage du monde. Neuf points rougissaient pour cette
+        # seule raison, qui n'est pas celle qu'ils prétendaient mesurer.
+        win = ""
+        for _ in range(24):
+            time.sleep(2)
+            r = subprocess.run(["xdotool", "search", "--name", TITRE],
+                               capture_output=True, text=True,
+                               env=dict(os.environ, DISPLAY=DISPLAY))
+            ids = [x for x in r.stdout.split() if x.strip()]
+            if ids:
+                win = ids[-1]
+                break
+        note("fenêtre du build exportée", "PASS" if win else "FAIL",
+             f"xdotool search «{TITRE}» -> {win or 'AUCUNE'}")
+        if win:
+            xenv = dict(os.environ, DISPLAY=DISPLAY)
+            subprocess.run(["xdotool", "windowfocus", "--sync", win],
+                           capture_output=True, env=xenv)
+            subprocess.run(["xdotool", "windowraise", win],
+                           capture_output=True, env=xenv)
+            time.sleep(2)
+            # « Nouvelle partie » est l'entrée par défaut du menu.
+            subprocess.run(["xdotool", "key", "Return"],
+                           capture_output=True, env=xenv)
+
         fini = False
-        for _ in range(120):          # 10 min max
+        for _ in range(180):          # 15 min max : montage + 6 rendus
             time.sleep(5)
             if proc.poll() is not None:
                 fini = True
