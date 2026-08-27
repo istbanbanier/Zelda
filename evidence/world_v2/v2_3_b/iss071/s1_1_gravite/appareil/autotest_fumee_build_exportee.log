@@ -1,0 +1,15 @@
+[OK  ] tout PASS — attendu 0, obtenu 0
+[OK  ] UN SEUL PARTIAL parmi des PASS — le faux vert de la passe S1 : doit rendre un code NON NUL — attendu 1, obtenu 1
+[OK  ] un FAIL — attendu 1, obtenu 1
+[OK  ] un BLOQUÉ — code DISTINCT de l'échec de mesure — attendu 3, obtenu 3
+[OK  ] un NON VÉRIFIÉ — attendu 3, obtenu 3
+[OK  ] BLOQUÉ l'emporte sur PARTIAL — attendu 3, obtenu 3
+BLOQUÉ: verdict(s) inconnu(s) : ['PRESQUE']
+[OK  ] verdict inconnu — jamais de vert par défaut — attendu 3, obtenu 3
+BLOQUÉ: aucun constat — un harnais qui n'observe rien ne prouve rien
+[OK  ] SABOTAGE — aucun constat : rien mesuré, donc rien prouvé — attendu 3, obtenu 3
+[OK  ] SABOTAGE — la GRAVITÉ omise alors que tout le reste passe : le harnais ne peut pas être vert — attendu 3, obtenu 3
+[OK  ] les CINQ points obligatoires présents et PASS -> vert — attendu 0, obtenu 0
+[OK  ] le résumé NOMME le PARTIAL — sortie : === 2 point(s) observé(s) : 1 PASS · 1 PARTIAL — verdict PARTIAL — code 1 ===
+
+=== AUTOTEST : 11 cas, 0 échec(s) ===

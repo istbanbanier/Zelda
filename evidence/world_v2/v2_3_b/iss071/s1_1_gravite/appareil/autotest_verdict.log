@@ -1,0 +1,26 @@
+[OK  ] tout PASS -> code 0 (attendu 0)
+[OK  ] UN SEUL PARTIAL parmi des PASS — LE FAUX VERT DE S1 : doit rendre un code NON NUL -> code 1 (attendu 1)
+[OK  ] un FAIL -> code 1 (attendu 1)
+[OK  ] PARTIAL et FAIL mêlés -> code 1 (attendu 1)
+[OK  ] un BLOQUÉ prime sur un FAIL -> code 3 (attendu 3)
+[OK  ] un NON VÉRIFIÉ prime sur un PARTIAL -> code 3 (attendu 3)
+[OK  ] BLOQUÉ seul -> code 3 (attendu 3)
+BLOQUÉ: aucun constat — un harnais qui n'observe rien ne prouve rien
+[OK  ] SABOTAGE — liste VIDE : ne rien observer n'est pas réussir -> code 3 (attendu 3)
+BLOQUÉ: verdict(s) inconnu(s) : ['SUPER']
+[OK  ] SABOTAGE — verdict inventé : ne doit pas retomber dans le vert -> code 3 (attendu 3)
+BLOQUÉ: verdict(s) inconnu(s) : ['None']
+[OK  ] SABOTAGE — verdict absent de la clé -> code 3 (attendu 3)
+BLOQUÉ: verdict(s) inconnu(s) : ['pass']
+[OK  ] SABOTAGE — casse différente : « pass » n'est pas « PASS » -> code 3 (attendu 3)
+
+--- exiger() : fermeture du vert PAR OMISSION ---
+[OK  ] tous les points obligatoires présents -> 0 manquant, code 0 (obtenu 0, 0)
+[OK  ] SABOTAGE — la gravité OMISE : 1 manquant et code 3, jamais 0 (obtenu 1, 3)
+[OK  ] SABOTAGE — harnais totalement vide -> 2 manquants et code 3 (obtenu 2, 3)
+[OK  ] pire() d'un lot tout PASS -> PASS (attendu PASS)
+[OK  ] pire() PASS+PARTIAL -> PARTIAL (attendu PARTIAL)
+[OK  ] pire() FAIL+BLOQUÉ -> BLOQUÉ (attendu BLOQUÉ)
+[OK  ] pire() d'un lot vide -> BLOQUÉ (attendu BLOQUÉ)
+
+=== AUTOTEST verdict.py : 0 échec(s) ===

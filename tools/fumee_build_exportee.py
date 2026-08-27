@@ -31,6 +31,11 @@ TITRE = "Eclats d'Orage"
 # échouer (PROMPT4_METHOD §2).
 LIEUX_ATTENDUS: int = 15
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from lib.verdict import code_sortie as _code  # noqa: E402
+from lib.verdict import exiger as _exiger  # noqa: E402
+from lib.verdict import publier_verdict as _publier  # noqa: E402
+
 constats: list[dict] = []
 
 # PROPRIÉTÉ STRICTE DES PROCESSUS (correction demandée par le propriétaire,
@@ -132,54 +137,36 @@ def note(cle: str, verdict: str, mesure: str) -> None:
     print(f"[{verdict:8s}] {cle} — {mesure}", flush=True)
 
 
-# CODE DE SORTIE — TOUT verdict autre que PASS rend un code NON NUL (S1.1).
+# CODE DE SORTIE ET RÈGLES DE VERDICT : `tools/lib/verdict.py`, source unique.
 #
-# POURQUOI CETTE CORRECTION EXISTE. L'ancienne ligne était
-#     echecs = [c for c in constats if c["verdict"] == "FAIL"]
-#     return 1 if echecs else 0
-# Un PARTIAL retombait donc dans le `else 0`. La checklist de la build
-# publiée contenait 16 PASS et UN PARTIAL sur « saut puis retour au sol »,
-# rendait RC=0, imprimait « 17 points observés, 0 FAIL » — et j'ai relayé ce
-# résumé en « 17/17 », ce qui affirme 17 PASS. Le produit n'a pas menti ;
-# l'appareil et son compte rendu, si.
+# Trois harnais portaient chacun leur copie de `return 1 if echecs else 0`.
+# Corrigé ici en premier, le défaut a survécu trois jours dans les deux
+# autres. La règle de trois de PROMPT4 §8 s'applique : on extrait.
 #
-# BLOQUÉ garde un code DISTINCT : « je n'ai pas pu mesurer » n'est pas
-# « ça rate », et confondre les deux ferait chercher un défaut là où il n'y
-# a qu'un environnement absent.
-CODES: dict[str, int] = {"PASS": 0, "PARTIAL": 1, "FAIL": 1,
-                         "NON VÉRIFIÉ": 3, "BLOQUÉ": 3}
-
-
-def code_sortie(liste: list[dict] | None = None) -> int:
-    verdicts = {c["verdict"] for c in (constats if liste is None else liste)}
-    inconnus = verdicts - set(CODES)
-    if inconnus:
-        # Un verdict jamais prévu ne doit pas retomber dans le vert par
-        # défaut : on bloque, bruyamment.
-        print(f"BLOQUÉ: verdict(s) inconnu(s) : {sorted(inconnus)}",
-              flush=True)
-        return 3
-    if "BLOQUÉ" in verdicts or "NON VÉRIFIÉ" in verdicts:
-        return 3
-    if "FAIL" in verdicts or "PARTIAL" in verdicts:
-        return 1
-    return 0
+# POINTS OBLIGATOIRES — le troisième vert frauduleux, celui PAR OMISSION.
+# Un harnais qui n'exécute jamais le contrôle qui fâche rendait 0 sur les
+# autres. Chaque motif ci-dessous DOIT apparaître dans un constat, sinon
+# `exiger()` fabrique un `NON VÉRIFIÉ` et le code passe à 3.
+#
+# La gravité y figure et ce n'est pas un oubli : ce harnais ne sait plus la
+# juger — son critère au pixel mesurait le vent — donc il ne peut plus être
+# vert tant qu'un journal DevMode ne l'a pas prouvée sur une vraie machine.
+# C'est le comportement voulu, pas une régression.
+OBLIGATOIRES: dict[str, str] = {
+    "démarrage du binaire": "démarr",
+    "menu principal": "menu",
+    "monde V2 monté": "monde",
+    "lieux posés par le layout": "lieux posés",
+    "gravité : saut puis retour au sol": "gravité",
+}
 
 
 def publier_verdict(liste: list[dict] | None = None) -> int:
-    """Résumé qui compte CHAQUE classe de verdict — jamais « N points, 0 FAIL »,
-    formule qui laisse croire à N réussites quand un PARTIAL se cache dedans."""
-    c = constats if liste is None else liste
-    comptes = {v: sum(1 for x in c if x["verdict"] == v) for v in CODES}
-    code = code_sortie(c)
-    detail = " · ".join(f"{n} {v}" for v, n in comptes.items() if n)
-    print(f"\n=== {len(c)} point(s) observé(s) : {detail or 'aucun'} "
-          f"— code {code} ===", flush=True)
-    for x in c:
-        if x["verdict"] != "PASS":
-            print(f"    [{x['verdict']}] {x['point']} :: {x['mesure']}",
-                  flush=True)
-    return code
+    return _publier(constats if liste is None else liste, OBLIGATOIRES)
+
+
+def code_sortie(liste: list[dict] | None = None) -> int:
+    return _code(constats if liste is None else liste)
 
 
 def ecrire_constats() -> None:
@@ -416,8 +403,35 @@ def main() -> int:
         f = capture("07_retombe")
         print(f"    [observation, SANS verdict] rmse(avant,air)={rmse(d, e):.4f} "
               f"rmse(avant,après)={rmse(d, f):.4f} — contaminé par le vent, "
-              "voir tools/fumee_gravite.py pour le verdict de gravité",
+              "voir tools/analyse_journal_devmode.py pour le verdict",
               flush=True)
+
+        # Le point de GRAVITÉ est POSÉ, jamais omis. Sans journal DevMode, il
+        # vaut NON VÉRIFIÉ — donc code 3 — parce que ce harnais ne sait plus
+        # trancher la question et qu'un instrument muet ne rend pas vert.
+        # Avec `--journal-gravite <chemin>`, il délègue à l'analyseur hors
+        # ligne, qui juge la position Y RÉELLE du héros contre les seuils
+        # préenregistrés de docs/contrats/s1_1_gravite.md.
+        journal_gravite = None
+        for i, a in enumerate(sys.argv):
+            if a == "--journal-gravite" and i + 1 < len(sys.argv):
+                journal_gravite = Path(sys.argv[i + 1])
+        if journal_gravite is None:
+            note("gravité : saut puis retour au sol", "NON VÉRIFIÉ",
+                 "aucun journal DevMode fourni — ce conteneur ne peut pas "
+                 "mesurer le temps (ISS-072). Rejouer sur une vraie machine : "
+                 "docs/PROTOCOLE_SAUT_ISTVAN.md, puis relancer avec "
+                 "--journal-gravite <journal.jsonl>")
+        else:
+            r = subprocess.run(
+                [sys.executable, str(Path(__file__).resolve().parent
+                                     / "analyse_journal_devmode.py"),
+                 str(journal_gravite)], capture_output=True, text=True)
+            print(r.stdout, flush=True)
+            verdict = {0: "PASS", 1: "FAIL"}.get(r.returncode, "BLOQUÉ")
+            note("gravité : saut puis retour au sol", verdict,
+                 f"analyse_journal_devmode.py sur {journal_gravite} "
+                 f"-> code {r.returncode}")
 
         # --- 8. sauvegarde écrite -------------------------------------------
         fichiers = [p for p in PROFIL.rglob("*") if p.is_file()]
@@ -524,12 +538,34 @@ def autotest() -> int:
         ("BLOQUÉ l'emporte sur PARTIAL", c("PARTIAL", "BLOQUÉ"), 3),
         ("verdict inconnu — jamais de vert par défaut",
          c("PASS", "PRESQUE"), 3),
-        ("aucun constat : rien n'a été mesuré, donc rien n'est prouvé",
-         [], 0),
+        # Cette attente valait 0 quand elle a été écrite — c'était encore un
+        # vert par défaut, de la même famille que celui qu'on corrigeait.
+        # Ne rien observer n'est pas réussir : le vide rend 3.
+        ("SABOTAGE — aucun constat : rien mesuré, donc rien prouvé", [], 3),
+        ("SABOTAGE — la GRAVITÉ omise alors que tout le reste passe : "
+         "le harnais ne peut pas être vert",
+         [{"point": "démarrage", "verdict": "PASS", "mesure": "m"},
+          {"point": "menu principal", "verdict": "PASS", "mesure": "m"},
+          {"point": "monde monté", "verdict": "PASS", "mesure": "m"},
+          {"point": "lieux posés par le layout", "verdict": "PASS",
+           "mesure": "m"}], 3),
+        ("les CINQ points obligatoires présents et PASS -> vert",
+         [{"point": "démarrage du binaire", "verdict": "PASS", "mesure": "m"},
+          {"point": "menu principal", "verdict": "PASS", "mesure": "m"},
+          {"point": "monde V2 monté", "verdict": "PASS", "mesure": "m"},
+          {"point": "lieux posés par le layout", "verdict": "PASS",
+           "mesure": "m"},
+          {"point": "gravité : saut puis retour au sol", "verdict": "PASS",
+           "mesure": "m"}], 0),
     ]
     echecs = 0
     for titre, liste, attendu in cas:
-        obtenu = code_sortie(liste)
+        # Les cas qui parlent d'OMISSION ou de points obligatoires doivent
+        # traverser `exiger()` ; les autres jugent le verdict pur.
+        if "obligatoire" in titre or "omise" in titre:
+            liste = list(liste)
+            _exiger(liste, OBLIGATOIRES, muet=True)
+        obtenu = _code(liste)
         bon = obtenu == attendu
         echecs += 0 if bon else 1
         print(f"[{'OK  ' if bon else 'ÉCHEC'}] {titre} — attendu {attendu}, "
@@ -540,7 +576,7 @@ def autotest() -> int:
     import contextlib
     tampon = io.StringIO()
     with contextlib.redirect_stdout(tampon):
-        publier_verdict(c("PASS", "PARTIAL"))
+        _publier(c("PASS", "PARTIAL"))
     texte = tampon.getvalue()
     dit_partial = "1 PARTIAL" in texte
     print(f"[{'OK  ' if dit_partial else 'ÉCHEC'}] le résumé NOMME le PARTIAL "

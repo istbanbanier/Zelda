@@ -1,0 +1,90 @@
+[PASS        ] journal lisible — autotest : 11 événement(s)
+[PASS        ] cohérence de l'horloge du moteur — 11 échantillon(s) automatique(s) = 11 s de temps moteur pour 11 s de temps mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS annoncés [60.0]
+[PASS        ] échantillons d'altitude — 11 échantillon(s) portant `y` et `etat`
+[PASS        ] critère 4 — état du contrôleur — états observés ['locomotion'] ; attendu uniquement « locomotion » — le sujet doit être un héros debout, ni mort, ni blessé, ni en escalade
+[PASS        ] critère 2 — excursion verticale — sol=24.0 m, sommet=25.4 m, excursion=1.40 m (seuil ≥0.5) ; apex nominal 1.401 m
+[PASS        ] critère 3 — chaque montée est SUIVIE d'un retour au sol — 3 montée(s) au-dessus de 24.5 m, dont 3 redescendue(s) sous 24.1 m
+[PASS        ] critère 5 — répétitions — 3 aller(s)-retour(s) COMPLET(s) ; 3 demandés
+[PASS        ] critère 1 — bruit au repos — 8 échantillon(s) au sol ; dispersion=0.00 m (≤0.1)
+[OK  ] trois sauts nets, horloge saine -> code 0 (attendu 0)
+[BLOQUÉ      ] journal lisible — autotest : aucun événement exploitable
+[OK  ] SABOTAGE — journal VIDE : ne rien lire n'est pas réussir -> code 3 (attendu 3)
+[PASS        ] journal lisible — autotest : 11 événement(s)
+[BLOQUÉ      ] cohérence de l'horloge du moteur — 11 échantillon(s) automatique(s) = 11 s de temps moteur pour 846 s de temps mural ; rapport=0.013 (attendu 0.5–2.0) ; FPS annoncés [60.0] — voir ISS-072 : aucune inférence balistique n'est fondée sur une horloge décrochée
+[PASS        ] échantillons d'altitude — 11 échantillon(s) portant `y` et `etat`
+[PASS        ] critère 4 — état du contrôleur — états observés ['locomotion'] ; attendu uniquement « locomotion » — le sujet doit être un héros debout, ni mort, ni blessé, ni en escalade
+[PASS        ] critère 2 — excursion verticale — sol=24.0 m, sommet=25.4 m, excursion=1.40 m (seuil ≥0.5) ; apex nominal 1.401 m
+[PASS        ] critère 3 — chaque montée est SUIVIE d'un retour au sol — 3 montée(s) au-dessus de 24.5 m, dont 3 redescendue(s) sous 24.1 m
+[PASS        ] critère 5 — répétitions — 3 aller(s)-retour(s) COMPLET(s) ; 3 demandés
+[PASS        ] critère 1 — bruit au repos — 8 échantillon(s) au sol ; dispersion=0.00 m (≤0.1)
+[BLOQUÉ      ] verdict de gravité — l'horloge du moteur a décroché du temps mural : les critères ci-dessus sont publiés pour information, mais ni réussite ni échec de la gravité n'est démontrable à partir d'eux
+[OK  ] SABOTAGE — horloge décrochée : BLOQUÉ, jamais FAIL -> code 3 (attendu 3)
+[PASS        ] journal lisible — autotest : 10 événement(s)
+[PASS        ] cohérence de l'horloge du moteur — 10 échantillon(s) automatique(s) = 10 s de temps moteur pour 10 s de temps mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS annoncés [60.0]
+[PASS        ] échantillons d'altitude — 10 échantillon(s) portant `y` et `etat`
+[PASS        ] critère 4 — état du contrôleur — états observés ['locomotion'] ; attendu uniquement « locomotion » — le sujet doit être un héros debout, ni mort, ni blessé, ni en escalade
+[FAIL        ] critère 2 — excursion verticale — sol=24.0 m, sommet=24.0 m, excursion=0.00 m (seuil ≥0.5) ; apex nominal 1.401 m
+[FAIL        ] critère 3 — chaque montée est SUIVIE d'un retour au sol — 0 montée(s) au-dessus de 24.5 m, dont 0 redescendue(s) sous 24.1 m — aucune montée : rien à faire retomber, donc rien de prouvé
+[FAIL        ] critère 5 — répétitions — 0 aller(s)-retour(s) COMPLET(s) ; 3 demandés
+[PASS        ] critère 1 — bruit au repos — 10 échantillon(s) au sol ; dispersion=0.00 m (≤0.1)
+[OK  ] SABOTAGE — AUCUN saut : excursion nulle, donc FAIL -> code 1 (attendu 1)
+[PASS        ] journal lisible — autotest : 7 événement(s)
+[PASS        ] cohérence de l'horloge du moteur — 7 échantillon(s) automatique(s) = 7 s de temps moteur pour 7 s de temps mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS annoncés [60.0]
+[PASS        ] échantillons d'altitude — 7 échantillon(s) portant `y` et `etat`
+[PASS        ] critère 4 — état du contrôleur — états observés ['locomotion'] ; attendu uniquement « locomotion » — le sujet doit être un héros debout, ni mort, ni blessé, ni en escalade
+[PASS        ] critère 2 — excursion verticale — sol=24.0 m, sommet=25.4 m, excursion=1.40 m (seuil ≥0.5) ; apex nominal 1.401 m
+[FAIL        ] critère 3 — chaque montée est SUIVIE d'un retour au sol — 1 montée(s) au-dessus de 24.5 m, dont 0 redescendue(s) sous 24.1 m — 1 montée(s) SANS retour : le sol n'a pas arrêté la chute
+[FAIL        ] critère 5 — répétitions — 0 aller(s)-retour(s) COMPLET(s) ; 3 demandés
+[PASS        ] critère 1 — bruit au repos — 2 échantillon(s) au sol ; dispersion=0.00 m (≤0.1)
+[OK  ] SABOTAGE — le héros monte et NE REDESCEND PAS : critère 3 FAIL -> code 1 (attendu 1)
+[PASS        ] journal lisible — autotest : 11 événement(s)
+[PASS        ] cohérence de l'horloge du moteur — 11 échantillon(s) automatique(s) = 11 s de temps moteur pour 11 s de temps mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS annoncés [60.0]
+[PASS        ] échantillons d'altitude — 11 échantillon(s) portant `y` et `etat`
+[PASS        ] critère 4 — état du contrôleur — états observés ['locomotion'] ; attendu uniquement « locomotion » — le sujet doit être un héros debout, ni mort, ni blessé, ni en escalade
+[PASS        ] critère 2 — excursion verticale — sol=24.0 m, sommet=25.4 m, excursion=1.40 m (seuil ≥0.5) ; apex nominal 1.401 m
+[FAIL        ] critère 3 — chaque montée est SUIVIE d'un retour au sol — 3 montée(s) au-dessus de 24.5 m, dont 2 redescendue(s) sous 24.1 m — 1 montée(s) SANS retour : le sol n'a pas arrêté la chute
+[PARTIAL     ] critère 5 — répétitions — 2 aller(s)-retour(s) COMPLET(s) ; 3 demandés
+[PASS        ] critère 1 — bruit au repos — 6 échantillon(s) au sol ; dispersion=0.00 m (≤0.1)
+[OK  ] SABOTAGE — DEUX sauts finissent, le troisième reste en l'air -> code 1 (attendu 1)
+[PASS        ] journal lisible — autotest : 6 événement(s)
+[PASS        ] cohérence de l'horloge du moteur — 6 échantillon(s) automatique(s) = 6 s de temps moteur pour 6 s de temps mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS annoncés [60.0]
+[PASS        ] échantillons d'altitude — 6 échantillon(s) portant `y` et `etat`
+[PASS        ] critère 4 — état du contrôleur — états observés ['locomotion'] ; attendu uniquement « locomotion » — le sujet doit être un héros debout, ni mort, ni blessé, ni en escalade
+[PASS        ] critère 2 — excursion verticale — sol=24.0 m, sommet=25.4 m, excursion=1.40 m (seuil ≥0.5) ; apex nominal 1.401 m
+[PASS        ] critère 3 — chaque montée est SUIVIE d'un retour au sol — 1 montée(s) au-dessus de 24.5 m, dont 1 redescendue(s) sous 24.1 m
+[PARTIAL     ] critère 5 — répétitions — 1 aller(s)-retour(s) COMPLET(s) ; 3 demandés
+[PASS        ] critère 1 — bruit au repos — 5 échantillon(s) au sol ; dispersion=0.00 m (≤0.1)
+[OK  ] SABOTAGE — un SEUL saut au lieu de trois : PARTIAL, pas PASS -> code 1 (attendu 1)
+[PASS        ] journal lisible — autotest : 11 événement(s)
+[PASS        ] cohérence de l'horloge du moteur — 11 échantillon(s) automatique(s) = 11 s de temps moteur pour 11 s de temps mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS annoncés [60.0]
+[PASS        ] échantillons d'altitude — 11 échantillon(s) portant `y` et `etat`
+[FAIL        ] critère 4 — état du contrôleur — états observés ['mort'] ; attendu uniquement « locomotion » — le sujet doit être un héros debout, ni mort, ni blessé, ni en escalade
+[PASS        ] critère 2 — excursion verticale — sol=24.0 m, sommet=25.4 m, excursion=1.40 m (seuil ≥0.5) ; apex nominal 1.401 m
+[PASS        ] critère 3 — chaque montée est SUIVIE d'un retour au sol — 3 montée(s) au-dessus de 24.5 m, dont 3 redescendue(s) sous 24.1 m
+[PASS        ] critère 5 — répétitions — 3 aller(s)-retour(s) COMPLET(s) ; 3 demandés
+[PASS        ] critère 1 — bruit au repos — 8 échantillon(s) au sol ; dispersion=0.00 m (≤0.1)
+[OK  ] SABOTAGE — héros MORT pendant l'enregistrement : critère 4 FAIL -> code 1 (attendu 1)
+[PASS        ] journal lisible — autotest : 3 événement(s)
+[PASS        ] cohérence de l'horloge du moteur — 3 échantillon(s) automatique(s) = 3 s de temps moteur pour 3 s de temps mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS annoncés [60.0]
+[BLOQUÉ      ] échantillons d'altitude — 3 échantillon(s) portant `y`, 4 minimum — le mode développement enregistrait-il bien (F3) ?
+[OK  ] SABOTAGE — trop peu d'échantillons pour conclure -> code 3 (attendu 3)
+[PASS        ] journal lisible — autotest : 8 événement(s)
+[PASS        ] cohérence de l'horloge du moteur — 8 échantillon(s) automatique(s) = 8 s de temps moteur pour 8 s de temps mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS annoncés [60.0]
+[PASS        ] échantillons d'altitude — 8 échantillon(s) portant `y` et `etat`
+[PASS        ] critère 4 — état du contrôleur — états observés ['locomotion'] ; attendu uniquement « locomotion » — le sujet doit être un héros debout, ni mort, ni blessé, ni en escalade
+[FAIL        ] critère 2 — excursion verticale — sol=24.0 m, sommet=24.3 m, excursion=0.30 m (seuil ≥0.5) ; apex nominal 1.401 m
+[FAIL        ] critère 3 — chaque montée est SUIVIE d'un retour au sol — 0 montée(s) au-dessus de 24.5 m, dont 0 redescendue(s) sous 24.1 m — aucune montée : rien à faire retomber, donc rien de prouvé
+[FAIL        ] critère 5 — répétitions — 0 aller(s)-retour(s) COMPLET(s) ; 3 demandés
+[PASS        ] critère 1 — bruit au repos — 5 échantillon(s) au sol ; dispersion=0.00 m (≤0.1)
+[OK  ] SABOTAGE — excursion SOUS le seuil (0,3 m) : ne doit pas passer -> code 1 (attendu 1)
+[PASS        ] journal lisible — autotest : 7 événement(s)
+[PASS        ] cohérence de l'horloge du moteur — 7 échantillon(s) automatique(s) = 7 s de temps moteur pour 7 s de temps mural ; rapport=1.000 (attendu 0.5–2.0) ; FPS annoncés [60.0]
+[PASS        ] échantillons d'altitude — 7 échantillon(s) portant `y` et `etat`
+[PASS        ] critère 4 — état du contrôleur — états observés ['locomotion'] ; attendu uniquement « locomotion » — le sujet doit être un héros debout, ni mort, ni blessé, ni en escalade
+[PASS        ] critère 2 — excursion verticale — sol=24.0 m, sommet=24.8 m, excursion=0.80 m (seuil ≥0.5) ; apex nominal 1.401 m
+[FAIL        ] critère 3 — chaque montée est SUIVIE d'un retour au sol — 2 montée(s) au-dessus de 24.5 m, dont 1 redescendue(s) sous 24.1 m — 1 montée(s) SANS retour : le sol n'a pas arrêté la chute
+[PARTIAL     ] critère 5 — répétitions — 1 aller(s)-retour(s) COMPLET(s) ; 3 demandés
+[PASS        ] critère 1 — bruit au repos — 2 échantillon(s) au sol ; dispersion=0.00 m (≤0.1)
+[OK  ] SABOTAGE — le « sol » DÉRIVE de 0,8 m : ce n'est pas un sol -> code 1 (attendu 1)
+
+=== AUTOTEST analyse_journal_devmode : 0 échec(s) ===

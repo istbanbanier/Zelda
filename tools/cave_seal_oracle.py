@@ -913,8 +913,16 @@ def main():
         echecs.append("le maillage source a ete modifie")
     rapport["sha256_apres"] = sha_apres
 
+    # LE VIDE N'EST PAS VERT. Un oracle qui n'a exerce AUCUN controle rendait
+    # 0 faute d'echec — la meme famille que le `diff` sur deux fichiers absents
+    # deja consignee dans tools/CLAUDE.md. Un verdict doit publier la TAILLE
+    # de ce qu'il a examine, pas seulement son resultat.
+    if not controles:
+        echecs.append("aucun controle exerce : un oracle qui n examine rien "
+                      "ne prouve rien")
     print()
     print("=" * 78)
+    print("CONTROLES EXERCES : %d" % len(controles))
     if echecs:
         for e in echecs:
             print("ECHEC : %s" % e)

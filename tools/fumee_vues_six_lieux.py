@@ -45,6 +45,9 @@ import sys
 import time
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from lib.verdict import publier_verdict as _publier  # noqa: E402
+
 # Racine du dépôt DE CE SCRIPT — pas le cwd, pas l'arbre principal : lancé
 # depuis un worktree, le harnais doit lire les plans de CET arbre
 # (contre-revue S1 ; même famille que le piège « --path . résout contre le
@@ -100,6 +103,13 @@ constats: list[dict] = []
 # pkill, aucun verrou X effacé : ces gestes globaux peuvent tuer le serveur
 # d'un autre travail en cours (COMMENT_TRAVAILLER_ENSEMBLE §4).
 PROCS_POSSEDES: list[subprocess.Popen] = []
+
+
+# POINTS OBLIGATOIRES : un harnais qui saute une vue ne peut pas être vert.
+OBLIGATOIRES: dict[str, str] = {
+    "monde monté": "monde",
+    "au moins une vue capturée": "vue",
+}
 
 
 def note(cle: str, verdict: str, mesure: str) -> None:
@@ -391,13 +401,11 @@ def main() -> int:
     (OUT / "empreintes_vues.json").write_text(
         json.dumps(empreintes, ensure_ascii=False, indent=2),
         encoding="utf-8")
-    echecs = [c for c in constats if c["verdict"] == "FAIL"]
-    bloques = [c for c in constats if c["verdict"] == "BLOQUÉ"]
-    print(f"\n=== {len(constats)} points observés, {len(echecs)} FAIL, "
-          f"{len(bloques)} BLOQUÉ ===", flush=True)
-    if bloques:
-        return 3
-    return 1 if echecs else 0
+    # Le MÊME `return 1 if echecs else 0` qui a produit le « 17/17 » vivait
+    # encore ici trois jours après sa correction dans l'autre harnais : un
+    # PARTIAL y retombait dans le vert, et zéro constat aussi. Verdict et
+    # code viennent désormais de la source unique `tools/lib/verdict.py`.
+    return _publier(constats, OBLIGATOIRES)
 
 
 if __name__ == "__main__":

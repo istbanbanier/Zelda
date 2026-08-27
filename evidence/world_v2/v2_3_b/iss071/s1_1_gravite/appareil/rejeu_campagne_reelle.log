@@ -1,0 +1,14 @@
+[PASS        ] journal lisible — evidence/world_v2/v2_3_b/iss071/s1_1_gravite/run3_battement/journal_devmode.jsonl : 355 événement(s)
+[BLOQUÉ      ] cohérence de l'horloge du moteur — 2 échantillon(s) automatique(s) = 2 s de temps moteur pour 152 s de temps mural ; rapport=0.013 (attendu 0.5–2.0) ; FPS annoncés [7.4, 7.7] — voir ISS-072 : aucune inférence balistique n'est fondée sur une horloge décrochée
+[PASS        ] échantillons d'altitude — 113 échantillon(s) portant `y` et `etat`
+[PASS        ] critère 4 — état du contrôleur — états observés ['locomotion'] ; attendu uniquement « locomotion » — le sujet doit être un héros debout, ni mort, ni blessé, ni en escalade
+[PASS        ] critère 2 — excursion verticale — sol=24.0 m, sommet=25.5 m, excursion=1.50 m (seuil ≥0.5) ; apex nominal 1.401 m
+[PASS        ] critère 3 — chaque montée est SUIVIE d'un retour au sol — 1 montée(s) au-dessus de 24.5 m, dont 1 redescendue(s) sous 24.1 m
+[PARTIAL     ] critère 5 — répétitions — 1 aller(s)-retour(s) COMPLET(s) ; 3 demandés
+[PASS        ] critère 1 — bruit au repos — 25 échantillon(s) au sol ; dispersion=0.00 m (≤0.1)
+[BLOQUÉ      ] verdict de gravité — l'horloge du moteur a décroché du temps mural : les critères ci-dessus sont publiés pour information, mais ni réussite ni échec de la gravité n'est démontrable à partir d'eux
+
+=== 9 point(s) observé(s) : 6 PASS · 1 PARTIAL · 2 BLOQUÉ — verdict BLOQUÉ — code 3 ===
+    [BLOQUÉ] cohérence de l'horloge du moteur :: 2 échantillon(s) automatique(s) = 2 s de temps moteur pour 152 s de temps mural ; rapport=0.013 (attendu 0.5–2.0) ; FPS annoncés [7.4, 7.7] — voir ISS-072 : aucune inférence balistique n'est fondée sur une horloge décrochée
+    [PARTIAL] critère 5 — répétitions :: 1 aller(s)-retour(s) COMPLET(s) ; 3 demandés
+    [BLOQUÉ] verdict de gravité :: l'horloge du moteur a décroché du temps mural : les critères ci-dessus sont publiés pour information, mais ni réussite ni échec de la gravité n'est démontrable à partir d'eux

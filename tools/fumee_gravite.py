@@ -95,6 +95,10 @@ T_SAUT_S = 1.5
 MARQUEURS_PAR_CAMPAGNE = 26
 FRACTION_ELEVEE_MIN = 0.25
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from lib.verdict import code_sortie as _code  # noqa: E402
+from lib.verdict import publier_verdict as _publier  # noqa: E402
+
 constats: list[dict] = []
 PROCS_POSSEDES: list[subprocess.Popen] = []
 
@@ -104,21 +108,17 @@ def note(cle: str, verdict: str, mesure: str) -> None:
     print(f"[{verdict:8s}] {cle} — {mesure}", flush=True)
 
 
-CODES: dict[str, int] = {"PASS": 0, "PARTIAL": 1, "FAIL": 1,
-                         "NON VÉRIFIÉ": 3, "BLOQUÉ": 3}
+# Verdict et code : source unique `tools/lib/verdict.py`. La copie locale
+# vivait ici ; trois copies du même jugement, c'est la règle de trois.
+OBLIGATOIRES: dict[str, str] = {
+    "empreinte de l'archive publiée": "empreinte",
+    "cohérence de l'horloge du moteur": "horloge",
+    "verdict de gravité": "verdict de gravité",
+}
 
 
 def code_sortie() -> int:
-    v = {c["verdict"] for c in constats}
-    inconnus = v - set(CODES)
-    if inconnus:
-        print(f"BLOQUÉ: verdict(s) inconnu(s) : {sorted(inconnus)}", flush=True)
-        return 3
-    if "BLOQUÉ" in v or "NON VÉRIFIÉ" in v:
-        return 3
-    if "FAIL" in v or "PARTIAL" in v:
-        return 1
-    return 0
+    return _code(constats)
 
 
 def nettoyer_processus() -> None:
@@ -534,12 +534,7 @@ def main() -> int:
     for src in racine_user.glob("dev_sessions/*/journal.jsonl"):
         shutil.copy(src, OUT / "journal_devmode.jsonl")
 
-    code = code_sortie()
-    comptes = {v: sum(1 for x in constats if x["verdict"] == v) for v in CODES}
-    detail = " · ".join(f"{n} {v}" for v, n in comptes.items() if n)
-    print(f"\n=== {len(constats)} point(s) : {detail} — code {code} ===",
-          flush=True)
-    return code
+    return _publier(constats, OBLIGATOIRES)
 
 
 if __name__ == "__main__":
