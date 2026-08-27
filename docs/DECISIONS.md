@@ -1413,3 +1413,67 @@ git, vérifiés avant, pendant et après. Aucun seuil n'a été abaissé, aucun
 critère D1–D8 n'a été changé : seule la LISTE d'empreintes du gel est
 régénérée, par la procédure que `gel_verifier.sh` documente lui-même
 (`--ecrire` plus justification ici).
+
+## D-054 — Trois défauts de l'appareil de mesure S1, corrigés sur ordre du propriétaire
+
+**Date** : 2026-08-27. **Contexte** : directive du propriétaire reçue au HEAD
+`01a1870` — arrêt avant toute validation et toute release, trois corrections
+d'abord.
+
+**1. `TITRE` non défini dans `tools/fumee_vues_six_lieux.py`.** Le harnais des
+six vues référençait `TITRE` (recherche de fenêtre xdotool) sans jamais le
+définir : `NameError` avant même l'appui sur « Nouvelle partie ». La constante
+est posée, et `pyflakes` — qui attrape exactement cette classe de défaut —
+tourne désormais sur les deux harnais avant commit. Zéro défaut relevé.
+
+**2. `pkill -x Xvfb` retiré des DEUX harnais.** Tuer tous les Xvfb de la
+machine et effacer le verrou X d'un display fixe sont des gestes GLOBAUX : ils
+peuvent abattre le serveur d'un autre travail en cours. C'est l'interdit de
+`COMMENT_TRAVAILLER_ENSEMBLE` §4 — la prudence va du côté de l'automatique.
+Remplacement : `Xvfb -displayfd` choisit lui-même un display LIBRE et écrit
+son numéro sur un descripteur ; le processus est enregistré dans
+`PROCS_POSSEDES`, comme chaque instance du jeu, et un `finally` au niveau de
+l'appelant termine — avec `wait()`, donc sans zombie — uniquement les
+processus que le script a créés, sur tous les chemins, exception comprise.
+
+**3. `lieux_poses` mesurait un nœud utilitaire.** La clé du manifeste ISS-071
+valait `($Places).get_child_count()`, soit 16 : les 15 scènes posées par le
+layout PLUS le nœud `Recompenses` que `_furnish_rewards()` ajoute après la
+pose. Le journal du jeu, lui, disait 15. La mesure compte désormais les seuls
+enfants porteurs de la marque `place_id` — posée par
+`WorldV2PlacesBuilder.build()` sur chaque scène de lieu, et sur elles seules.
+La fixture synthétique du portail passe de 16 à 15 pour ne pas enseigner la
+valeur fausse ; le contrôle §3 n'exige que « positif et identique », il ne
+change pas.
+
+**Gel V2.3-B.** `world_v2_root.gd` est gelé ; le filet a rougi en secondes,
+comme prévu. Levée sanctionnée par la directive du propriétaire, appliquée par
+la procédure documentée (`gel_verifier.sh --ecrire` + la présente
+justification). Diff du manifeste : UNE empreinte (`d9a211e9…` →
+`ae8726d8…`) et la ligne de date. Les six lieux gelés : 46/46 intacts, sha256
+et blobs git.
+
+**Conséquence sur les preuves datées** : les manifestes archivés sous
+`evidence/world_v2/v2_3_b/iss071/` portent `lieux_poses: 16` — ils restent
+vrais pour l'arbre qui les a produits et ne sont pas réécrits. Toute mesure
+POSTÉRIEURE à ce commit doit dire 15, des deux côtés.
+
+**Contre-revue de D-054** (trois vérificateurs adverses à contexte frais,
+avant commit). Verdict : les trois correctifs demandés étaient nécessaires
+mais le premier jet du harnais des vues aurait rougi pour une cause étrangère
+— un **bloquant** : le jeu y était lancé sans `stdbuf`, or une build release
+ne vide pas son tampon stdout (`flush_stdout_on_print` faux hors debug,
+vérifié dans la source du moteur) et Godot n'a aucun handler SIGTERM — le
+`terminate()` du chemin nominal détruisait les jalons déjà imprimés.
+Corrections intégrées en plus des trois demandées : `stdbuf -oL -eL` et
+`--rendering-driver opengl3` épinglés (aucun pilote Vulkan dans ce
+conteneur), appui « Nouvelle partie » conditionné au jalon « menu principal »
+lu en direct, fenêtre cherchée `--onlyvisible` avec `poll()` du binaire,
+BLOQUÉ (code 3) distinct du FAIL (code 1) pour les blocages d'environnement,
+dimensions des vues vérifiées ÉGALES aux références avant l'A/B, RMSE
+normalisé publié vue par vue, attente de la levée RÉELLE du voile de
+transition via `SceneFlow.is_busy()` côté jeu, enregistrement des Popen du
+jeu dans le registre du harnais de checklist (son contrat l'affirmait sans le
+faire), `kill()` toujours suivi de `wait()`, lecture `-displayfd` bornée à
+15 s, garde de confinement avant tout `rmtree` d'un chemin passé en argument,
+et trace `constats.json` écrite même sur sortie précoce.

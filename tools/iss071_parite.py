@@ -561,12 +561,22 @@ def analyser(ed: dict[str, Any], ex: dict[str, Any], lignes: list[str],
         "de MultiMesh sautée ENTIÈRE, donc bien plus d'objets absents que "
         "d'appels manqués")
     lp_a, lp_b = ed.get("lieux_poses"), ex.get("lieux_poses")
+    # Contre-revue S1 : les manifestes ARCHIVÉS d'avant D-054 portent 16 (le
+    # compte incluait le nœud utilitaire « Recompenses ») ; toute mesure
+    # postérieure dit 15. Apparier les deux générations rougirait ce contrôle
+    # pour le correctif de compteur, pas pour l'empaquetage — l'indice le dit.
+    indice = ""
+    if {lp_a, lp_b} == {15, 16}:
+        indice = (" — INDICE : 15 contre 16 est la signature de deux "
+                  "GÉNÉRATIONS de manifeste (avant/après D-054), pas d'un "
+                  "défaut d'empaquetage ; re-mesurer les deux côtés sur le "
+                  "même arbre")
     rapport.note(
         "§3 lieux_poses — positif et identique",
         "VERT" if isinstance(lp_a, int) and lp_a > 0 and lp_a == lp_b
         else "ROUGE",
         "clé « lieux_poses » des deux manifestes",
-        f"éditeur={lp_a}, export={lp_b}")
+        f"éditeur={lp_a}, export={lp_b}{indice}")
 
     total_lignes, noms = compter_familles(lignes, rapport)
     controle_i9(manques_total, total_lignes, rapport)
@@ -625,7 +635,11 @@ def _manifeste_synthetique(env: str, index: dict[str, str],
         "environnement": env, "godot": "4.7.1-stable", "monde": "neris_v2",
         "resolveurs": {"WorldV2PlaceKit": kit, "AssetRegistry": reg},
         "vegetation": {"cellules_emises": cellules, "cellules_manquees": 0},
-        "lieux_poses": 16,
+        # 15 = le compte RÉEL des scènes posées par le layout. L'ancienne
+        # fixture disait 16 parce que la mesure du jeu comptait aussi le nœud
+        # utilitaire « Recompenses » — défaut corrigé dans world_v2_root.gd
+        # (passe S1) ; le contrôle n'exige que « positif et identique ».
+        "lieux_poses": 15,
     }
 
 

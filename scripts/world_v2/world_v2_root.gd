@@ -137,6 +137,31 @@ func _argument_iss071(prefixe: String) -> String:
 	return valeur
 
 
+## Nombre de SCÈNES DE LIEU réellement posées par le layout — et rien d'autre.
+##
+## POURQUOI PAS `get_child_count()` (correction demandée par le propriétaire,
+## passe S1) : `$Places` porte aussi le nœud utilitaire `Recompenses`, ajouté
+## par `_furnish_rewards()` APRÈS la pose des lieux. Le compte brut rendait
+## donc 16 quand le layout pose 15 scènes — et le journal du jeu, lui, disait
+## bien 15. Deux compteurs qui prétendent mesurer la même chose et divergent
+## d'un nœud utilitaire, c'est exactement l'écart qu'ISS-071 traque.
+##
+## L'oracle est la marque `place_id`, posée par `WorldV2PlacesBuilder.build()`
+## sur chaque scène de lieu au moment de la pose. ATTENTION : parmi les
+## ENFANTS DIRECTS de `$Places`, seuls les lieux la portent — mais elle
+## existe AILLEURS dans le monde (les marqueurs de
+## `world_v2_markers_builder.gd` la portent aussi, sous `$POIs` et
+## `$Landmarks`). La restriction aux enfants directs n'est donc pas une
+## commodité : c'est ce qui rend l'oracle juste. Ne jamais le remplacer par
+## une recherche globale du meta.
+func _compter_lieux_poses() -> int:
+	var lieux: int = 0
+	for enfant: Node in ($Places as Node3D).get_children():
+		if enfant.has_meta(&"place_id"):
+			lieux += 1
+	return lieux
+
+
 func _vider_manifeste_iss071_si_demande() -> void:
 	var cible: String = _argument_iss071("--iss071-dump=")
 	if cible.is_empty():
@@ -151,7 +176,7 @@ func _vider_manifeste_iss071_si_demande() -> void:
 			"AssetRegistry": AssetRegistry.manifeste_iss071(),
 		},
 		"vegetation": WorldV2VegetationBuilder.manifeste_iss071(),
-		"lieux_poses": ($Places as Node3D).get_child_count(),
+		"lieux_poses": _compter_lieux_poses(),
 	}
 	if not _argument_iss071("--iss071-chargeabilite").is_empty():
 		for nom: Variant in (manifeste["resolveurs"] as Dictionary).keys():
@@ -409,6 +434,22 @@ func _capturer_vues_iss071_si_demande() -> void:
 		push_error("[iss071] plans de vues : tableau JSON attendu")
 		return
 	DirAccess.make_dir_recursive_absolute(sortie)
+
+	# Contre-revue S1 : le jalon « fondation V2 vérifiée » tombe pendant que
+	# SceneFlow tient encore son voile (le fondu final de `go_to()` court en
+	# CONCURRENCE avec cette coroutine). Photographier trop tôt assombrirait
+	# les vues — et la plus sombre des références éditeur (watchtower_ruin,
+	# moyenne 0,293) passerait sous un plancher de luminance sans qu'on sache
+	# pourquoi. `is_busy()` ne retombe qu'APRÈS `_fade_to(0.0)` : on attend
+	# cet observable, borné à ~10 s, au lieu de supposer un nombre de frames.
+	var flux_scene: Node = get_node_or_null(^"/root/SceneFlow")
+	var garde_voile: int = 600
+	while garde_voile > 0 and flux_scene != null \
+			and bool(flux_scene.call(&"is_busy")):
+		await get_tree().process_frame
+		garde_voile -= 1
+	if garde_voile == 0:
+		push_error("[iss071] voile de transition jamais levé en 600 frames")
 
 	var camera: Camera3D = Camera3D.new()
 	camera.name = "Iss071VueCamera"

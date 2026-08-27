@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import os
+import select
 import shutil
 import subprocess
 import sys
@@ -21,11 +22,66 @@ from pathlib import Path
 BUILD = Path("/home/user/smoke_lot1r2/build/EclatsDOrage.x86_64")
 OUT = Path("/home/user/smoke_lot1r2/resultat")
 PROFIL = Path("/home/user/smoke_lot1r2/profil_vierge")
-DISPLAY = ":78"
+DISPLAY = ""   # attribué par demarrer_xvfb() — jamais codé en dur
 W, H = 1024, 768
 TITRE = "Eclats d'Orage"
 
 constats: list[dict] = []
+
+# PROPRIÉTÉ STRICTE DES PROCESSUS (correction demandée par le propriétaire,
+# passe S1). Tout Popen créé par ce script est enregistré ici, et UNIQUEMENT
+# eux sont nettoyés — dans un finally au niveau de l'appelant, donc sur tous
+# les chemins, exception comprise. L'ancienne version faisait `pkill -x Xvfb`
+# et effaçait le verrou X d'un display fixe : deux gestes GLOBAUX capables de
+# tuer le serveur d'un AUTRE travail en cours — l'interdit exact de
+# COMMENT_TRAVAILLER_ENSEMBLE §4, la prudence va du côté de l'automatique.
+PROCS_POSSEDES: list[subprocess.Popen] = []
+
+
+def nettoyer_processus() -> None:
+    """Termine les processus de PROCS_POSSEDES, ordre inverse de création,
+    avec attente réelle : pas de zombie, pas de PID étranger."""
+    for proc in reversed(PROCS_POSSEDES):
+        if proc is None or proc.poll() is not None:
+            continue
+        proc.terminate()
+        try:
+            proc.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            proc.wait()
+
+
+def demarrer_xvfb(w: int, h: int) -> tuple[subprocess.Popen | None, str]:
+    """Xvfb POSSÉDÉ, sur un display choisi par LUI (`-displayfd`).
+
+    Xvfb prend le premier display libre et écrit son numéro sur le
+    descripteur : aucun conflit possible avec un serveur existant, donc plus
+    rien à tuer ni à déverrouiller qui ne soit à nous."""
+    lecteur, ecrivain = os.pipe()
+    try:
+        proc = subprocess.Popen(
+            ["Xvfb", "-displayfd", str(ecrivain),
+             "-screen", "0", f"{w}x{h}x24"],
+            pass_fds=(ecrivain,),
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    except OSError:
+        os.close(lecteur)
+        os.close(ecrivain)
+        return None, ""
+    PROCS_POSSEDES.append(proc)
+    os.close(ecrivain)
+    # Borné : un Xvfb qui démarre mais n'écrit jamais figerait le harnais
+    # sans message (contre-revue S1, démonstration T3 du vérificateur).
+    prets, _, _ = select.select([lecteur], [], [], 15)
+    if not prets:
+        os.close(lecteur)
+        return None, ""
+    with os.fdopen(lecteur) as flux:
+        numero = flux.readline().strip()
+    if not numero:
+        return None, ""
+    return proc, f":{numero}"
 
 
 def classer_erreurs(texte: str) -> tuple[list[str], list[str], list[str]]:
@@ -69,6 +125,16 @@ def classer_erreurs(texte: str) -> tuple[list[str], list[str], list[str]]:
 def note(cle: str, verdict: str, mesure: str) -> None:
     constats.append({"point": cle, "verdict": verdict, "mesure": mesure})
     print(f"[{verdict:8s}] {cle} — {mesure}", flush=True)
+
+
+def ecrire_constats() -> None:
+    """Appelée aussi depuis le finally de __main__ : une sortie PRÉCOCE
+    (build absente, fenêtre introuvable) laisse quand même sa trace JSON
+    (contre-revue S1)."""
+    if OUT.exists():
+        (OUT / "constats.json").write_text(
+            json.dumps(constats, ensure_ascii=False, indent=2),
+            encoding="utf-8")
 
 
 def sh(argv: list[str], timeout: float = 20.0) -> str:
@@ -131,6 +197,10 @@ def lancer(journal: Path):
                              "--rendering-driver", "opengl3",
                              "--resolution", f"{W}x{H}", "--windowed"],
                             stdout=fh, stderr=subprocess.STDOUT, env=env)
+    # Contre-revue S1 : sans cet enregistrement, le contrat du registre était
+    # FAUX — une exception entre lancer() et l'entrée du try laissait le jeu
+    # hors de tout nettoyage, le finally de __main__ ne connaissant que Xvfb.
+    PROCS_POSSEDES.append(proc)
     return proc, fh
 
 
@@ -145,8 +215,9 @@ def fenetre() -> str:
 
 def main() -> int:
     if not BUILD.exists():
-        note("build présente", "FAIL", f"{BUILD} absente")
-        return 1
+        # BLOQUÉ, pas FAIL : rien n'a été mesuré (.claude/rules/evidence.md).
+        note("build présente", "BLOQUÉ", f"{BUILD} absente — rien mesuré")
+        return 3
     OUT.mkdir(parents=True, exist_ok=True)
 
     # --- 1. profil user:// VIERGE ------------------------------------------
@@ -157,13 +228,15 @@ def main() -> int:
     note("profil user:// vierge", "PASS" if not restant else "FAIL",
          f"{PROFIL} recréé, {len(restant)} entrée(s) — installation neuve")
 
-    # --- Xvfb ---------------------------------------------------------------
-    subprocess.run(["pkill", "-x", "Xvfb"], capture_output=True)
-    time.sleep(1)
-    Path(f"/tmp/.X{DISPLAY.lstrip(':')}-lock").unlink(missing_ok=True)
-    xvfb = subprocess.Popen(["Xvfb", DISPLAY, "-screen", "0", f"{W}x{H}x24"],
-                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    time.sleep(2)
+    # --- Xvfb : display attribué, processus possédé -------------------------
+    global DISPLAY
+    xvfb, DISPLAY = demarrer_xvfb(W, H)
+    if xvfb is None:
+        note("serveur X virtuel", "BLOQUÉ",
+             "Xvfb n'a pas démarré — rien n'a été observé")
+        return 3
+    note("serveur X virtuel possédé", "PASS",
+         f"Xvfb pid {xvfb.pid} sur display {DISPLAY} choisi par -displayfd")
 
     j1 = OUT / "session1_stdout.log"
     proc, fh = lancer(j1)
@@ -181,7 +254,10 @@ def main() -> int:
         menu = capture("01_menu")
 
         # --- 3. menu atteint ------------------------------------------------
-        atteint = attendre_motif(j1, "menu principal", 60) or "Boot" in lire(j1)
+        # Contre-revue S1 : le repli « or "Boot" in lire(j1) » rendait ce
+        # point incapable d'échouer — n'importe quelle ligne [boot] le
+        # verdissait. Le motif seul décide.
+        atteint = attendre_motif(j1, "menu principal", 60)
         note("menu principal atteint", "PASS" if atteint else "PARTIAL",
              f"journal {len(lire(j1))} o ; capture {menu.name}")
 
@@ -295,6 +371,7 @@ def main() -> int:
             proc.wait(timeout=20)
         except subprocess.TimeoutExpired:
             proc.kill()
+            proc.wait()
         fh.close()
 
     # --- 9. RECHARGEMENT : « Continuer » ne renvoie pas en V1 ---------------
@@ -337,8 +414,8 @@ def main() -> int:
             proc2.wait(timeout=20)
         except subprocess.TimeoutExpired:
             proc2.kill()
+            proc2.wait()
         fh2.close()
-        xvfb.terminate()
 
     (OUT / "constats.json").write_text(
         json.dumps(constats, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -348,6 +425,14 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    code = main()
+    code = 3
+    try:
+        code = main()
+    finally:
+        # Sur TOUS les chemins — succès, FAIL, exception — seuls les
+        # processus créés par ce script sont terminés, et ils le sont tous ;
+        # et la trace JSON survit aux sorties précoces.
+        nettoyer_processus()
+        ecrire_constats()
     print(f"RC={code}", flush=True)
     sys.exit(code)

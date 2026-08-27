@@ -63,6 +63,7 @@ aussi des compteurs qui doivent être **non nuls et égaux** des deux côtés :
 | lignes `flower_field … inconnu` | 0 |
 | `modules_instancies` | > 0 et identique des deux côtés |
 | `cellules_emises` | > 0 et identique des deux côtés |
+| `lieux_poses` | > 0 et identique des deux côtés — l'outil l'exigeait déjà (§3 de `tools/iss071_parite.py`) ; cette ligne manquait à la table, écart contrat/outil relevé par la contre-revue S1 |
 
 ## 5. Ce que le contrat n'autorise pas
 

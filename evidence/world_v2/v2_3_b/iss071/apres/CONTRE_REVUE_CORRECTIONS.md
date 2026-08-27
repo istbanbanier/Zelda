@@ -90,14 +90,21 @@ empreinte `931edf1fc7667fa8`.
 
 ## Hors périmètre, consigné plutôt que corrigé
 
-C relève que **33 fichiers `.gltf`/`.glb` d'`assets/` vivent hors des huit
-répertoires indexés** — armes 6, `characters/parts` 5, `architecture/*` 10,
-grottes 5, divers 7. Ils échappent aux deux résolveurs, donc au portail comme à
-l'oracle de C : c'est un angle mort **partagé**, et non une régression
-d'ISS-071. Ces modèles sont chargés par chemin explicite ailleurs, ce qui est
-le mode de résolution qui fonctionne dans les deux environnements. Aucune
-action dans cette passe ; consigné pour qu'une passe ultérieure décide s'ils
-doivent entrer dans un index ou rester résolus par chemin.
+C relève des fichiers `.gltf`/`.glb` d'`assets/` hors des huit répertoires
+indexés. Recompte du lead, commande par commande : **31** (et non 33) — armes
+6, `characters/parts` 5, grottes 5, `architecture/*` 10, animations 2,
+créatures/monture/boss/divers 3. Ils échappent aux deux résolveurs, donc au
+portail comme à l'oracle de C : angle mort **partagé**, pas une régression
+d'ISS-071. Sur les 31 : **22** sont chargés par chemin explicite
+(`preload`/`const`) dans `scripts/`, `scenes/` ou `resources/` — le mode de
+résolution qui fonctionne dans les deux environnements — et **9** n'ont
+aucune référence d'exécution : ce sont des entrées d'OUTILS ou des prototypes
+périmés (`UAL{1,2}_Standard.glb` pour la cuisson d'animations,
+`characters/parts/*` pour l'extraction de tête, les trois
+`SM_CaveEnvelope_Proto*.glb` de R2a-3.5), cohérent avec l'`exclude_filter`
+des presets qui tient `tools/` hors du PCK. Aucune action dans cette passe ;
+consigné pour qu'une passe ultérieure décide s'ils doivent entrer dans un
+index ou rester résolus par chemin.
 
 ## Ce que ces corrections ne changent PAS
 
