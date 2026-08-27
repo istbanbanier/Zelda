@@ -152,4 +152,3 @@ Scènes `.tscn` : **88** · ressources `.tres` : **60**
 Une absence de classe ET d'autoload est un signal fort dans ce depot,
 ou `CLAUDE.md` impose `class_name` pour tout type reutilisable. Elle ne
 vaut pas preuve formelle : un sujet peut vivre sans type nomme.
-

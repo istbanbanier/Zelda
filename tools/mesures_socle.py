@@ -187,7 +187,8 @@ def main() -> int:
 
     chemin = pathlib.Path(SORTIE)
     chemin.parent.mkdir(parents=True, exist_ok=True)
-    chemin.write_text("\n".join(out) + "\n", encoding="utf-8")
+    chemin.write_text("\n".join(out).rstrip("\n") + "\n",
+                      encoding="utf-8")
     print(f"écrit -> {SORTIE}")
     print(f"  {len(declares)} sujets déclarés, {len(montes)} montés, "
           f"{len(reste)} restants ; médiane {med} commits/lieu")
