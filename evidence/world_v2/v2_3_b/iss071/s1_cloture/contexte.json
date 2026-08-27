@@ -1,0 +1,12 @@
+{
+  "date": "2026-08-27",
+  "sha_arbre_valide": "e033a3ccf82ae4e5d0df3b86083ecbc2fde34846",
+  "repo_dirty_hors_evidence": false,
+  "binaire_exporte_sha256": "c83acfe33054610f6a8225d639adcd51282a9710321475eeeaf92abf9f869111",
+  "chaine": [
+    "validate_fast VERT (JETON_FIN_RC=0)",
+    "export Linux neuf RC=0 (3 ERROR = résidu moteur de fin de processus, famille jugée en 2b)",
+    "checklist 17 points, 0 FAIL (fumee_build_exportee.py)",
+    "six vues 13 points, 0 FAIL, 0 BLOQUÉ (fumee_vues_six_lieux.py, oracle calibré)"
+  ]
+}

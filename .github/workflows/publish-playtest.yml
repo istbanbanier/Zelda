@@ -484,6 +484,16 @@ jobs:
             TITLE="Éclats d'Orage — checkpoint jouable lot 1.R.2 (${{ steps.cible.outputs.short }})"
             if [ -f docs/PLAYTEST_LOT1R2.md ]; then
               cp docs/PLAYTEST_LOT1R2.md "$RUNNER_TEMP/PLAYTEST_LOT1R2.md"
+              # Les SHA du guide sont remplis ICI, depuis le commit que ce
+              # run construit réellement — jamais recopiés à la main. Un
+              # nombre écrit d'avance serait soit circulaire (le commit qui
+              # se décrit lui-même), soit une ancre morte : la contre-revue
+              # C8 a montré ce que vaut un hash que rien ne recalcule.
+              sed -i "s/@@SHA_LONG@@/${COMMIT}/g; s/@@SHA_COURT@@/${{ steps.cible.outputs.short }}/g" "$RUNNER_TEMP/PLAYTEST_LOT1R2.md"
+              if grep -q '@@SHA' "$RUNNER_TEMP/PLAYTEST_LOT1R2.md"; then
+                echo "BLOQUÉ: placeholders @@SHA non résolus dans le guide" >&2
+                exit 1
+              fi
               ASSETS+=( "$RUNNER_TEMP/PLAYTEST_LOT1R2.md" )
             else
               echo "BLOQUÉ: docs/PLAYTEST_LOT1R2.md absent — la Release lot1r2 le REQUIERT" >&2

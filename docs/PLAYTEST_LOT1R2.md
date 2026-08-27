@@ -6,8 +6,8 @@ et aucune connaissance technique n'est nécessaire.
 | | |
 |---|---|
 | Version | checkpoint **Lot 1.R.2** |
-| `PLAYABLE_SHA` | `@@SHA_LONG@@` |
-| Court | `@@SHA_COURT@@` |
+| `PLAYABLE_SHA` | `@@SHA_LONG@@` <!-- rempli par la CI au moment de la Release, depuis le commit réellement construit --> |
+| Court | `@@SHA_COURT@@` <!-- idem — la même valeur que celle du tag --> |
 | Dépôt propre à la construction | `repo_dirty: false` |
 | Moteur | Godot 4.7.1-stable — **embarqué dans le build, rien à installer** |
 
