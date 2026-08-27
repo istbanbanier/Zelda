@@ -438,6 +438,37 @@ else
   bad "$ACTUAL_TESTS test(s) exécuté(s) pour un plancher de $MIN_TESTS — couverture perdue en silence ?"
 fi
 
+# --- AUTOTESTS DE L'APPAREIL DE MESURE ------------------------------------
+# Un garde-fou vaut par son exécution, pas par son intention (PROMPT4 §0). Ces
+# autotests ferment les TROIS façons de rendre vert sans rien prouver — un
+# PARTIAL non compté, une liste de constats vide, un contrôle jamais exécuté.
+# Ils sont instantanés et ne touchent ni Godot ni le réseau : les laisser hors
+# du portail reviendrait à les écrire pour personne.
+echo
+echo "APPAREIL DE MESURE — autotests des harnais"
+for outil in tools/lib/verdict.py tools/analyse_journal_devmode.py; do
+  case "$outil" in
+    *verdict.py) ARGS="" ;;
+    *)           ARGS="--autotest" ;;
+  esac
+  # Sans tube : `cmd | tail` rendrait le code de TAIL (tools/CLAUDE.md).
+  python3 "$outil" $ARGS > "$LOG_DIR/$(basename "$outil" .py).log" 2>&1
+  RC_AUTO=$?
+  if [ $RC_AUTO -eq 0 ]; then
+    ok "$(basename "$outil") — autotest vert"
+  else
+    bad "$(basename "$outil") — autotest ROUGE (code $RC_AUTO, voir $LOG_DIR)"
+  fi
+done
+python3 tools/fumee_build_exportee.py --autotest \
+  > "$LOG_DIR/fumee_build_exportee_autotest.log" 2>&1
+RC_AUTO=$?
+if [ $RC_AUTO -eq 0 ]; then
+  ok "fumee_build_exportee.py — autotest vert (dont : gravité omise -> code 3)"
+else
+  bad "fumee_build_exportee.py — autotest ROUGE (code $RC_AUTO)"
+fi
+
 printf '\n=== VALIDATE_FAST : %s ===\n' "$([ $FAIL -eq 0 ] && echo VERT || echo ROUGE)"
 echo "logs: $LOG_DIR"
 exit $FAIL
