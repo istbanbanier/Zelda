@@ -1,5 +1,47 @@
 # STATUS — état par fonctionnalité
 
+## Ambition produit — jeu long (2026-08-27)
+
+Autorité : `docs/V2_PRODUCT_DOCTRINE.md`. Cible : **30-50 h** de campagne,
+**80-120 h** de complétion, **200 h+** de jeu durable. La V2 est le **pilote de
+la première région**, pas un jeu complet.
+
+| Sujet | État | Preuve |
+|---|---|---|
+| Doctrine produit canonique | **Établie** | `docs/V2_PRODUCT_DOCTRINE.md` |
+| Feuille de route, coût, chemin critique | **Établie** | `docs/V2_LONG_GAME_ROADMAP.md` |
+| Tranche exécutable région 1 lot 2 | **Prête, NON AUTORISÉE** | `docs/V2_REGION1_VERTICAL_SLICE.md` ; `GO_V2_3_B_LOT2 = FALSE` |
+| Audit des 18 domaines | **En cours** | `evidence/world_v2/audit_jeu_long/` |
+| Socle chiffré indépendant | **Mesuré** | `tools/mesures_socle.py` → `evidence/world_v2/audit_jeu_long/mesures_independantes.md` |
+
+**Les trois chiffres qui gouvernent.** 34 sujets déclarés au layout, **15
+montés**, **21 restants** pour la seule région 1 — 44 % d'achèvement. Médiane
+de **24 commits par lieu** ; **49 %** des 723 commits du chantier touchent un
+fichier de lieu, donc **51 % sont une infrastructure déjà payée** dont une
+région 2 hériterait.
+
+**Les trous, mesurés par sonde de `class_name` et d'autoloads** (164 classes,
+6 autoloads) : **ABSENTS** — quêtes, dialogues, PNJ, new game +, streaming de
+région, artisanat, économie, météo. **PRÉSENTS** — cuisine, sauvegarde,
+résonance, réactions, graphe électrique, boss, IA utilitaire, inventaire, état
+de jeu. Le socle systémique est là ; c'est la couche de **jeu long** qui
+manque, et elle forme une seule chaîne : `PNJ → quêtes → narration →
+rejouabilité`.
+
+**Non vérifié, et il faut le dire :** aucun temps de jeu réel n'a jamais été
+mesuré sur ce projet. Toute estimation d'heures est un raisonnement.
+
+## Appareil de mesure (2026-08-27)
+
+| Sujet | État | Preuve |
+|---|---|---|
+| S1.1 — gravité de la build publiée | **`BLOQUÉ` — EN ATTENTE PLANIFIÉE DU TEST RÉEL (lundi 31 août)** | `evidence/world_v2/v2_3_b/iss071/s1_1_gravite/VERDICT.md` ; horloge moteur décrochée d'un facteur 17 à 76 (ISS-072) |
+| Gravité du jeu | **`NON VÉRIFIÉ`** — ni réussite ni échec démontré | idem ; protocole `docs/PROTOCOLE_SAUT_ISTVAN.md` |
+| Verdict et codes de sortie | **Validé** | source unique `tools/lib/verdict.py`, 18 cas dont 3 sabotages ; dans `validate_fast.sh` |
+| Analyseur de journal DevMode | **Validé** | `tools/analyse_journal_devmode.py`, 11 cas dont 10 sabotages ; rejeu des 2 journaux réels → RC=3 |
+| Portail anti-faux-vert | **Validé par contrôle négatif** | rouvrir `or "PARTIAL"` rougit les 3 autotests et le portail ; `appareil/controle_negatif_du_portail.md` |
+
+
 ## World V2 — reconstruction du monde (2026-08-13, `claude/world-v2-reconstruction`)
 
 | Phase | État | Preuve |
