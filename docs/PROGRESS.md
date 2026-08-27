@@ -4,6 +4,78 @@ Ordre **anti-chronologique** : l'entrée la plus récente est en haut. La derni�
 entrée fait office de handoff et doit indiquer **exactement** la prochaine action.
 
 ---
+## 2026-08-27 (suite) — l'appareil est sécurisé, la doctrine produit est posée, l'audit 30-50 h tourne
+
+**Trois façons de devenir vert sans rien prouver, toutes fermées.** Le
+« 17/17 » n'en était qu'une.
+
+1. **Par PARTIAL.** `return 1 if echecs else 0` ne comptait que les `FAIL`.
+   Corrigé la veille dans UN harnais — et toujours présent dans **deux
+   autres** : `fumee_vues_six_lieux.py` et `fumee_gravite.py`. C'est la leçon
+   déjà écrite dans `tools/CLAUDE.md`, non appliquée à elle-même : quand un
+   défaut de mesure est trouvé, chercher tout de suite les AUTRES endroits qui
+   font la même mesure. D'où `tools/lib/verdict.py`, source unique.
+2. **Par le vide.** Zéro constat, donc zéro échec, donc vert. `code_sortie([])`
+   rend 3. L'autotest existant **attendait 0** sur ce cas : l'attente était
+   elle-même un vert par défaut. `cave_seal_oracle.py` publie en plus le
+   nombre de contrôles exercés.
+3. **Par omission.** Ne jamais exécuter le contrôle qui fâche. `exiger()` :
+   chaque harnais déclare ses points obligatoires, un point absent devient un
+   `NON VÉRIFIÉ`. Conséquence assumée — `fumee_build_exportee.py` ne PEUT
+   PLUS être vert tant qu'un journal DevMode ne prouve pas le saut.
+
+**L'analyseur hors ligne** `tools/analyse_journal_devmode.py` juge un journal
+DevMode sans le jeu, contre les seuils préenregistrés, en vérifiant l'horloge
+d'abord. Un défaut attrapé par son propre sabotage : le critère « retour au
+sol » lisait `ys[-1]`, or les `position` automatiques sont émises tout du long
+et le dernier échantillon est souvent une position au sol qui MASQUE un héros
+resté en l'air. Il lit désormais les FRONTS — chaque montée doit être suivie
+d'une descente.
+
+**Le portail rougit vraiment.** Les autotests entrent dans `validate_fast.sh`
+et le contrôle négatif rouvre le défaut exact (`- or "PARTIAL" in verdicts`) :
+les **trois** autotests rougissent et le portail passe à `FAIL=1`. Ils se
+propagent tous les trois parce qu'ils partagent la même source — ce qu'on
+cherchait en l'extrayant. Restauration vérifiée au sha256.
+
+**Protocole manuel** — `docs/PROTOCOLE_SAUT_ISTVAN.md` : six gestes, cinq
+minutes, chemins Windows / macOS / Linux vérifiés contre `project.godot` (pas
+de `use_custom_user_dir`, dossier `Eclats d'Orage`). S1.1 est **EN ATTENTE
+PLANIFIÉE DU TEST RÉEL** — Istvan est indisponible jusqu'au lundi 31 août.
+Cette attente ne bloque rien d'autre.
+
+**Doctrine produit** — `docs/V2_PRODUCT_DOCTRINE.md`, document VIVANT qui
+surplombe les quatre cahiers sur la seule question qu'aucun ne tranchait :
+pour combien de temps de jeu construit-on ? 30-50 h de campagne, 80-120 h de
+complétion, 200 h+ de jeu durable. Il dit sans ménagement ce qu'est la V2 —
+le **pilote de la première région** — et ajoute un quatrième temps à la
+boucle : **restaurer**, le joueur laisse le monde différent de ce qu'il l'a
+trouvé.
+
+**Socle chiffré, mesuré à la main avant tout rapport d'agent**
+(`tools/mesures_socle.py`) :
+
+| | |
+|---|---:|
+| Sujets déclarés au layout | **34** (31 POI + 3 sites) |
+| Montés dans le REGISTRY | **15** |
+| Déclarés et NON construits | **21** |
+| Achèvement de la région 1 | **44 %** |
+| Chantier World V2 | 2026-08-12 → 08-27, **723 commits** |
+| Médiane par lieu construit | **24 commits** |
+
+Projection assumée comme estimation : ~504 commits pour finir la **seule**
+région 1. C'est le chiffre qui gouverne la doctrine — une région dont on
+ignore le coût ne peut pas être multipliée.
+
+**PROCHAINE ACTION EXACTE.** L'audit des 18 domaines tourne (un agent par
+sujet, chacun suivi d'un sceptique qui attaque ses notes « fonctionnel »).
+Quand il rend : écrire `docs/V2_LONG_GAME_GAP_AUDIT.md`, puis
+`docs/V2_LONG_GAME_ROADMAP.md`, puis
+`docs/V2_REGION1_VERTICAL_SLICE.md` — en confrontant chaque chiffre d'agent
+au socle ci-dessus. `GO_V2_3_B_LOT2` reste **FALSE** : aucune construction.
+
+---
 ## 2026-08-27 — S1.1 : le faux vert de gravité est fermé côté APPAREIL, la mesure se clôt en `BLOQUÉ`
 
 **L'appareil d'abord, parce que c'est lui qui avait menti.** Le harnais
