@@ -4,6 +4,91 @@ Ordre **anti-chronologique** : l'entrée la plus récente est en haut. La derni�
 entrée fait office de handoff et doit indiquer **exactement** la prochaine action.
 
 ---
+## 2026-08-27 — S1.1 : le faux vert de gravité est fermé côté APPAREIL, la mesure se clôt en `BLOQUÉ`
+
+**L'appareil d'abord, parce que c'est lui qui avait menti.** Le harnais
+`fumee_build_exportee.py` ne comptait que les `FAIL` (`return 1 if echecs
+else 0`) : un `PARTIAL` tombait dans le `else 0`. Le résumé disait « 17 points
+observés, 0 FAIL » et je l'ai relayé en **« 17/17 »**, ce qui laisse entendre
+17 `PASS`. Il y en avait **16, plus un `PARTIAL`** — le saut. Pire, la note de
+gravité imprimait, **même en `PARTIAL`**, la phrase codée en dur « la vue
+s'écarte puis revient : le sol arrête la chute » : une affirmation qui énonçait
+exactement ce que la mesure venait de nier.
+
+Corrections, toutes prouvées : tout verdict ≠ `PASS` rend un code non nul ;
+`BLOQUÉ` et `NON VÉRIFIÉ` gardent le **3**, distinct ; le résumé nomme chaque
+classe et liste les points non-`PASS` ; `lieux_poses` est analysé
+numériquement contre le littéral **15** ; la phrase affirmative est
+**supprimée** ; le verdict de gravité au pixel est **retiré, pas réparé** — il
+comparait des captures espacées de 3,35 s pendant lesquelles le tapis de
+fleurs animé dérive plus que le saut ne déplace la vue, donc il mesurait le
+vent. Autotest de 9 cas, dont *« un seul `PARTIAL` parmi des `PASS` »* → code
+**1**, et vérification que le résumé contient littéralement « 1 PARTIAL ».
+
+**La mesure de remplacement, honnête, sur le binaire publié.** Contrat
+préenregistré (`docs/contrats/s1_1_gravite.md`) avant toute exécution : on ne
+juge plus des pixels mais la **position Y réelle du héros**, produite par
+l'autoload `DevMode` que la release embarque déjà — `F3` enregistre, `F4` pose
+un marqueur portant `y` et `etat`. Aucune modification du jeu. L'exigence
+« exclure les fleurs » est satisfaite **par construction**, pas par recadrage :
+aucun pixel n'entre dans le verdict. Archive vérifiée au sha256 **avant**
+lancement, puis binaire **extrait de cette archive-là**.
+
+**Trois hypothèses, trois réfutations par la mesure.** (1) « La capture coûte
+cher, réduisons la fenêtre » — 1024×768 / 400×300 / 200×150 au menu :
+0,076 / 0,071 / 0,070 s. La résolution ne change rien. (2) « Le monde tourne à
+1 FPS » — 4 saccades > 100 ms sur 20 s. (3) « Le décrochage vient de `mark()`
+et de sa relecture GPU » — sonde à une seule variable, **zéro `F4`** : le
+décrochage est là quand même.
+
+**La cause, enfin nommée et mesurée.** `DevMode._process()` écrit un événement
+`position` par seconde de `delta` accumulé : c'est une mesure directe du temps
+que le moteur croit avoir vécu.
+
+| Exécution | Mural | `position` | Rapport | F4 |
+|---|---:|---:|---:|---:|
+| Campagne complète | 152 s | 2 | **0,013** | 111 |
+| Sonde dédiée | 120 s | 7 | **0,058** | **0** |
+
+Le moteur annonce dans le même temps **7,3–7,7 FPS** et aucune image au-delà
+de 150 ms — chiffres rassurants, et incompatibles avec les précédents. Une
+consigne émise « toutes les 1,5 s » n'arrive donc pas toutes les 1,5 s **de
+jeu** : les repos de 2,3 s murales valent des centièmes de seconde de jeu, le
+héros n'a pas atterri quand on le mesure « au repos », et le contrôle négatif
+rend **6 marqueurs élevés sur 23 sans un seul appui sur Espace**. Le contrat
+classait ce cas en `BLOQUÉ` **avant** de mesurer ; le harnais le fait
+désormais, au lieu d'un `FAIL` qui aurait imputé au jeu un défaut de
+l'appareil. Consigné en **ISS-072**.
+
+**Ce qui a été observé sans être surclassé.** Piste d'altitude de la sonde :
+repos `24,0 · 24,0` → sauts `25,1 · 25,1 · 25,1` → repos `24,0 · 24,0`, état
+`locomotion` de bout en bout ; excursions de la campagne complète **1,4 / 1,5 /
+1,4 m**, autour de l'apex nominal de **1,401 m** dérivé du tuning committé.
+C'est **encourageant, ce n'est pas un `PASS`** : sept échantillons ne
+satisfont ni le critère 2c ni les trois répétitions, et aucune affirmation
+temporelle ne se tire d'une horloge décrochée d'un facteur 17.
+
+**Aucun seuil n'a bougé.** Bruit ≤ 0,10 m, excursion ≥ 0,50 m, retour
+≤ 0,20 m, 3 sur 3, contrôle négatif à zéro : écrits avant, inchangés après.
+Les amendements ne portent que sur l'instrument.
+
+**Verdict : `S1.1 = BLOQUÉ`. Gravité du jeu = `NON VÉRIFIÉ`.**
+`GO_V2_3_B_LOT2 = FALSE`. Aucune nouvelle release ; la release
+`world-v2-playtest-lot1r2-05d0760` reste publiée et **inchangée** ; aucun
+`validate_fast.sh` rejoué, le produit n'ayant pas changé d'un octet.
+
+Preuves : `evidence/world_v2/v2_3_b/iss071/s1_1_gravite/` (verdict, campagne,
+sonde, diagnostic) et `../s1_cloture/RECTIFICATIF.md`.
+
+**PROCHAINE ACTION EXACTE.** Ne rien construire. Le Lot 2 reste fermé. La
+gravité se vérifie **sur une vraie machine** : lancer l'archive
+`EclatsDOrage_Linux_x86_64_05d0760.zip`, presser `F3`, sauter trois fois,
+presser `F3`, et lire `y` dans `user://dev_sessions/*/journal.jsonl` — un
+aller-retour au sol y sera lisible en quelques secondes, sur une horloge
+juste. Protocole : `docs/MANUAL_VALIDATION.md`. Tant que ce retour n'est pas
+là, S1.1 reste `BLOQUÉ` et le Lot 2 n'ouvre pas.
+
+---
 ## 2026-08-26 — LOT 1.R.2 : source, sanctuaire et cimetière corrigés · `EN ATTENTE DU VERDICT`
 
 **Le verdict Codex qui a ouvert la passe.** Lecture aveugle des six lieux, tous
@@ -1771,7 +1856,8 @@ D-054). (2) Contre-revue à trois vérificateurs AVANT la chaîne : un bloquant
 (jeu lancé sans `stdbuf` — une release ne vide pas stdout, `terminate()`
 détruisait les jalons) et neuf écarts, tous intégrés. (3) Chaîne unique sur
 l'arbre committé : `validate_fast` VERT ; export Linux neuf RC=0 ; checklist
-17/17 ; six vues 13/13 avec RMSE publiés (oracle calibré sur le bruit
+**16 PASS + 1 PARTIAL** (la gravité, jugée au pixel : critère invalide,
+voir S1.1) — annoncée à tort « 17/17 » dans le rapport initial ; six vues 13/13 avec RMSE publiés (oracle calibré sur le bruit
 run-à-run mesuré entre les deux runs éditeur committés — flower_field 0,125
 pour un bruit propre de 0,109 : c'était le vent, quadrants à l'appui). (4)
 Release `world-v2-playtest-lot1r2-05d0760` (run 33085639174) : les quatre

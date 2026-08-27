@@ -2669,3 +2669,48 @@ de fumée existait pour couvrir, et il l'a couvert au premier passage.
   refermera. Les deux instruments écrits pour cette clôture — `fumee.py` et
   `lab_dir_access/` — sont archivés à côté de la preuve et sont le point de
   départ de ce portail.
+
+## ISS-072 — L'horloge du moteur est décrochée du temps mural dans ce conteneur (facteur 17 à 76) : aucune mesure temporelle n'y est possible — S2, OUVERT
+
+**Reproduction.** Lancer la build exportée sous Xvfb + Mesa llvmpipe, presser
+`F3` pour démarrer l'enregistrement DevMode, ne rien faire pendant 120 s
+murales, presser `F3`. Compter les événements `position` du journal :
+`DevMode._process()` en écrit un par seconde de `delta` accumulé.
+
+**Attendu** : ~120 événements. **Observé** : **7**. Rapport 0,058.
+
+| Exécution | Mural | `position` | Rapport | F4 |
+|---|---:|---:|---:|---:|
+| Campagne de saut complète | 152 s | 2 | 0,013 | 111 |
+| Sonde dédiée, aucun F4 | 120 s | 7 | 0,058 | 0 |
+
+**Ce qui rend le défaut coûteux, c'est qu'il est INTERNE ET SILENCIEUX.** Le
+moteur annonce dans le même temps **7,3–7,7 FPS** et aucune image au-delà de
+150 ms — chiffres parfaitement rassurants, et incompatibles avec les
+précédents. Rien n'avertit ; il faut aller compter les échantillons.
+
+**Hypothèse réfutée**, à ne pas reposer : « c'est la relecture GPU de
+`capture_screenshot()` dans `mark()` ». La sonde ci-dessus ne presse **aucun**
+`F4` et mesure quand même 0,058.
+
+**Conséquence opérationnelle.** Tout protocole qui envoie des consignes en
+temps mural et attend une réponse à un instant donné du jeu est caduc ici :
+une phase de repos de 2,3 s murales vaut quelques centièmes de seconde de jeu.
+C'est ce qui a fermé S1.1 en `BLOQUÉ` — un contrôle négatif rendant 6
+marqueurs élevés sur 23 sans le moindre appui sur Espace.
+
+**Portée.** Ce défaut appartient à l'ENVIRONNEMENT, pas au jeu. Il ne dit rien
+de la gravité, du saut ni de la fluidité sur une vraie machine. Ne pas le
+citer comme un défaut du produit.
+
+**Contournement.** Aucun connu depuis ce conteneur. `CLAUDE.md` l'écrivait
+déjà pour le rendu : *« utilisable pour la régression visuelle, jamais pour
+une mesure »* — la règle vaut aussi pour le temps. Les vérifications
+temporelles passent par `docs/MANUAL_VALIDATION.md`.
+
+**Garde-fou posé.** `tools/fumee_gravite.py` publie désormais un point
+`cohérence de l'horloge du moteur`, évalué **avant** tout critère temporel et
+imprimé même quand le reste est vert. Hors de la bande 0,5–2,0, le verdict
+d'ensemble est `BLOQUÉ`.
+
+Preuves : `evidence/world_v2/v2_3_b/iss071/s1_1_gravite/`.

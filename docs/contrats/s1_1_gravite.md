@@ -196,3 +196,90 @@ contrôle négatif reste sous le seuil. Tout autre résultat est `PARTIAL`,
 `FAIL` ou `BLOQUÉ`, et dans ce cas — conformément à la directive — la passe
 s'arrête, `GO_V2_3_B_LOT2` reste `FALSE`, aucune release n'est publiée, et la
 cause exacte est nommée.
+
+---
+
+## AMENDEMENT 3 — la cause est l'HORLOGE DU MOTEUR, et elle ferme la mesure
+
+Écrit après la troisième exécution, complète cette fois : 111 marqueurs
+drainés contre 18 la précédente, la cadence d'émission ayant été portée à
+1,15 s (au-dessus des 1,03 s mesurées à l'AMENDEMENT 1).
+
+### Ce que la séquence complète a rendu
+
+| Critère | Mesure |
+|---|---|
+| 1 — bruit au repos | Y 24,0 → 24,0 m ; bruit 0,0 ; état `locomotion` — **PASS** |
+| 2a — campagne 1 | 17/26 marqueurs élevés (65 %) ; excursion max **1,4 m** |
+| 2a — campagne 2 | 24/26 (92 %) ; excursion max **1,5 m** |
+| 2a — campagne 3 | 23/26 (88 %) ; excursion max **1,4 m** |
+| 3 — retour au sol | 25,3 · 24,3 · 24,9 m contre un sol à 24,0 — **FAIL ×3** |
+| 2b — contrôle négatif | **6/23 marqueurs élevés SANS aucun appui sur Espace** |
+
+Le contrôle négatif est la ligne qui décide. Le contrat le disait déjà avant
+toute mesure : *« si le contrôle négatif atteint le seuil, l'appareil ne
+discrimine pas un saut d'une absence de saut : le verdict d'ensemble est
+BLOQUÉ, jamais PASS »*. Le harnais rendait `FAIL` sur ce point ; il rend
+désormais `BLOQUÉ`, comme écrit. Un `FAIL` aurait imputé au **jeu** un défaut
+de l'**appareil** — la faute exactement symétrique du faux vert qu'on corrige.
+
+### La mesure qui nomme la cause
+
+`DevMode._process()` accumule `delta` et écrit un événement `position` chaque
+fois que la somme atteint `SAMPLE_INTERVAL = 1,0 s`. Leur nombre mesure donc
+directement le temps que le moteur croit avoir vécu.
+
+| Exécution | Temps mural | `position` | Rapport | F4 |
+|---|---:|---:|---:|---:|
+| Campagne de battement | 152 s | 2 | **0,013** | 111 |
+| Sonde dédiée | 120 s | 7 | **0,058** | **0** |
+
+Le moteur annonce par ailleurs **7,3–7,7 FPS** et aucune image au-delà de
+150 ms. Ces deux faits sont **mutuellement incompatibles** : un moteur qui
+rend 7,5 images par seconde murale avec des `delta` honnêtes ferait avancer
+son accumulateur d'une seconde par seconde murale. Il en met 17 à 76.
+
+### Une hypothèse posée, puis RÉFUTÉE par la mesure
+
+Hypothèse : le décrochage vient de `mark()`, qui fait une relecture GPU par
+marqueur sous llvmpipe. Sonde dédiée, une seule variable changée — **aucun F4
+n'est pressé** : rapport **0,058**. Le décrochage est là **sans une seule
+capture**. L'hypothèse est fausse, et il faut l'écrire ainsi plutôt que la
+laisser vivre comme une explication commode.
+
+### Ce que la sonde montre quand même, et qu'il faut dire sans le surclasser
+
+Piste d'altitude de la sonde, échantillonnée par le moteur lui-même :
+
+| Phase murale | Y observés |
+|---|---|
+| repos, aucune entrée | 24,0 · 24,0 |
+| sauts | **25,1 · 25,1 · 25,1** |
+| repos, aucune entrée | 24,0 · 24,0 |
+
+Le héros quitte le sol quand on presse Espace et s'y retrouve ensuite, l'état
+restant `locomotion`. Les excursions mesurées — 1,4 / 1,5 / 1,4 m — encadrent
+l'apex nominal de **1,401 m** dérivé du tuning committé.
+
+**C'est une OBSERVATION, pas un `PASS`.** Sept échantillons ne satisfont ni le
+critère 2c (≥ 20 marqueurs par campagne) ni les trois répétitions, et surtout
+aucune affirmation *temporelle* — « il retombe en moins de tant » — n'est
+tirable d'une horloge décrochée d'un facteur 17.
+
+### Verdict
+
+**S1.1 = `BLOQUÉ`.** La gravité de la build publiée reste **`NON VÉRIFIÉ`** :
+ni réussite ni échec n'est démontré. Le protocole préenregistré ne peut pas
+être exécuté fidèlement dans ce conteneur, parce que les consignes sont
+émises en temps mural et que le sujet vit dans un temps qui n'est pas le
+même.
+
+Aucun seuil n'a été déplacé, à aucun moment. C'est `CLAUDE.md` qui l'avait
+déjà écrit : rendu logiciel, *« utilisable pour la régression visuelle,
+jamais pour une mesure »*. La vérification appartient à
+`docs/MANUAL_VALIDATION.md`, sur une vraie machine.
+
+Conformément à la directive : `GO_V2_3_B_LOT2 = FALSE`, aucune nouvelle
+release, aucun Lot 2.
+
+Preuves : `evidence/world_v2/v2_3_b/iss071/s1_1_gravite/`.

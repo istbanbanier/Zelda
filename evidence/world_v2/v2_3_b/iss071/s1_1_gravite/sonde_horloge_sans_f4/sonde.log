@@ -1,0 +1,18 @@
+temps mural enregistré  : 120.0 s
+événements position     : 7  (= 7 s moteur)
+marqueurs F4            : 0  (doit être 0)
+RAPPORT horloge         : 0.058
+phases murales          : repos 40s | sauts 40s | repos 40s
+
+track d'altitude (position, 1 Hz temps moteur) :
+  t=  14.13  y=  24.0  fps=7.6  locomotion
+  t=  29.07  y=  24.0  fps=7.4  locomotion
+  t=  44.41  y=  25.1  fps=7.4  locomotion
+  t=  60.51  y=  25.1  fps=7.3  locomotion
+  t=  76.57  y=  25.1  fps=7.6  locomotion
+  t=  91.77  y=  24.0  fps=7.5  locomotion
+  t= 106.58  y=  24.0  fps=7.7  locomotion
+
+journal copié -> /tmp/probe_horloge_journal.jsonl
+RC=0
+RC_SHELL=0
