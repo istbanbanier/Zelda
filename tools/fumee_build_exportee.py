@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import select
 import shutil
 import subprocess
@@ -25,6 +26,10 @@ PROFIL = Path("/home/user/smoke_lot1r2/profil_vierge")
 DISPLAY = ""   # attribué par demarrer_xvfb() — jamais codé en dur
 W, H = 1024, 768
 TITRE = "Eclats d'Orage"
+# Compte EXACT des scènes que le layout doit poser. Littéral, pas relu
+# depuis le jeu : un oracle qui lit sa réponse chez le sujet ne peut pas
+# échouer (PROMPT4_METHOD §2).
+LIEUX_ATTENDUS: int = 15
 
 constats: list[dict] = []
 
@@ -125,6 +130,56 @@ def classer_erreurs(texte: str) -> tuple[list[str], list[str], list[str]]:
 def note(cle: str, verdict: str, mesure: str) -> None:
     constats.append({"point": cle, "verdict": verdict, "mesure": mesure})
     print(f"[{verdict:8s}] {cle} — {mesure}", flush=True)
+
+
+# CODE DE SORTIE — TOUT verdict autre que PASS rend un code NON NUL (S1.1).
+#
+# POURQUOI CETTE CORRECTION EXISTE. L'ancienne ligne était
+#     echecs = [c for c in constats if c["verdict"] == "FAIL"]
+#     return 1 if echecs else 0
+# Un PARTIAL retombait donc dans le `else 0`. La checklist de la build
+# publiée contenait 16 PASS et UN PARTIAL sur « saut puis retour au sol »,
+# rendait RC=0, imprimait « 17 points observés, 0 FAIL » — et j'ai relayé ce
+# résumé en « 17/17 », ce qui affirme 17 PASS. Le produit n'a pas menti ;
+# l'appareil et son compte rendu, si.
+#
+# BLOQUÉ garde un code DISTINCT : « je n'ai pas pu mesurer » n'est pas
+# « ça rate », et confondre les deux ferait chercher un défaut là où il n'y
+# a qu'un environnement absent.
+CODES: dict[str, int] = {"PASS": 0, "PARTIAL": 1, "FAIL": 1,
+                         "NON VÉRIFIÉ": 3, "BLOQUÉ": 3}
+
+
+def code_sortie(liste: list[dict] | None = None) -> int:
+    verdicts = {c["verdict"] for c in (constats if liste is None else liste)}
+    inconnus = verdicts - set(CODES)
+    if inconnus:
+        # Un verdict jamais prévu ne doit pas retomber dans le vert par
+        # défaut : on bloque, bruyamment.
+        print(f"BLOQUÉ: verdict(s) inconnu(s) : {sorted(inconnus)}",
+              flush=True)
+        return 3
+    if "BLOQUÉ" in verdicts or "NON VÉRIFIÉ" in verdicts:
+        return 3
+    if "FAIL" in verdicts or "PARTIAL" in verdicts:
+        return 1
+    return 0
+
+
+def publier_verdict(liste: list[dict] | None = None) -> int:
+    """Résumé qui compte CHAQUE classe de verdict — jamais « N points, 0 FAIL »,
+    formule qui laisse croire à N réussites quand un PARTIAL se cache dedans."""
+    c = constats if liste is None else liste
+    comptes = {v: sum(1 for x in c if x["verdict"] == v) for v in CODES}
+    code = code_sortie(c)
+    detail = " · ".join(f"{n} {v}" for v, n in comptes.items() if n)
+    print(f"\n=== {len(c)} point(s) observé(s) : {detail or 'aucun'} "
+          f"— code {code} ===", flush=True)
+    for x in c:
+        if x["verdict"] != "PASS":
+            print(f"    [{x['verdict']}] {x['point']} :: {x['mesure']}",
+                  flush=True)
+    return code
 
 
 def ecrire_constats() -> None:
@@ -275,10 +330,19 @@ def main() -> int:
              f"{len(v1)} mention(s) de la vallée V1 dans la sortie du jeu")
 
         # --- 5. les lieux du layout ----------------------------------------
+        # La PRÉSENCE de la ligne ne prouvait rien : « 0 scène(s) posée(s) »
+        # passait au vert. On extrait le nombre et on exige la valeur exacte
+        # attendue — 15, le compte des scènes du layout (D-054, après
+        # correction du compteur qui incluait le nœud utilitaire Recompenses).
         ligne_lieux = next((l for l in texte.splitlines()
                             if "[world_v2] lieux" in l), "")
-        note("lieux posés par le layout", "PASS" if ligne_lieux else "FAIL",
-             ligne_lieux or "aucune ligne [world_v2] lieux")
+        m_lieux = re.search(r"(\d+)\s+sc[eè]ne", ligne_lieux)
+        lieux_lus = int(m_lieux.group(1)) if m_lieux else -1
+        note("lieux posés par le layout",
+             "PASS" if lieux_lus == LIEUX_ATTENDUS else "FAIL",
+             (f"{lieux_lus} scène(s) posée(s), {LIEUX_ATTENDUS} attendue(s) "
+              f"— ligne lue : {ligne_lieux!r}") if ligne_lieux
+             else "aucune ligne « [world_v2] lieux » dans la sortie du jeu")
 
         pret = attendre_motif(j1, "fondation V2 vérifiée", 300)
         note("monde monté (fondation V2 vérifiée)", "PASS" if pret else "FAIL",
@@ -325,21 +389,35 @@ def main() -> int:
         note("déplacement à la touche Z", "PASS" if d_marche > 0.02 else "FAIL",
              f"RMSE {d_marche:.4f} entre 03 et 04 (seuil 0.0200)")
 
-        # gravité/collision : le joueur ne traverse pas le sol. Sauter puis
-        # attendre : si la gravité manquait ou le sol était absent, la vue ne
-        # reviendrait pas à un état proche de l'avant-saut.
+        # GRAVITÉ — CE HARNAIS NE LA JUGE PLUS, ET C'EST VOULU (S1.1).
+        #
+        # Le critère précédent comparait trois captures : avant le saut,
+        # +0,35 s, +3,0 s, et exigeait rmse(avant, après) < rmse(avant, air).
+        # Mesuré sur la build publiée : 0,1064 contre 0,0602 — donc PARTIAL.
+        # La cause n'était pas le sol mais le DÉLAI : en 3,35 s le tapis de
+        # fleurs animé par le vent dérive plus que le saut ne déplace la vue.
+        # Le même mécanisme que sur `flower_field`, où deux exécutions
+        # ÉDITEUR de la même vue divergent déjà de 0,109 RMSE.
+        #
+        # Un instrument qui ne peut pas trancher une question ne doit pas
+        # faire semblant de la poser : le verdict de gravité est rendu par
+        # `tools/fumee_gravite.py`, qui lit la position Y RÉELLE du joueur
+        # dans la télémétrie que le jeu publié produit lui-même (DevMode,
+        # F3/F4). Contrat : docs/contrats/s1_1_gravite.md.
+        #
+        # Les captures restent prises — elles documentent la séquence — mais
+        # AUCUN verdict n'en est tiré, et aucune phrase n'affirme ce qu'elles
+        # ne montrent pas.
         d = capture("05_avant_saut")
         sh(["xdotool", "key", "space"])
         time.sleep(0.35)
         e = capture("06_en_l_air")
         time.sleep(3.0)
         f = capture("07_retombe")
-        monte = rmse(d, e)
-        revenu = rmse(d, f)
-        note("gravité : saut puis retour au sol",
-             "PASS" if monte > 0.005 and revenu < monte else "PARTIAL",
-             f"RMSE saut {monte:.4f} · RMSE après retombée {revenu:.4f} "
-             "(la vue s'écarte puis revient : le sol arrête la chute)")
+        print(f"    [observation, SANS verdict] rmse(avant,air)={rmse(d, e):.4f} "
+              f"rmse(avant,après)={rmse(d, f):.4f} — contaminé par le vent, "
+              "voir tools/fumee_gravite.py pour le verdict de gravité",
+              flush=True)
 
         # --- 8. sauvegarde écrite -------------------------------------------
         fichiers = [p for p in PROFIL.rglob("*") if p.is_file()]
@@ -419,12 +497,64 @@ def main() -> int:
 
     (OUT / "constats.json").write_text(
         json.dumps(constats, ensure_ascii=False, indent=2), encoding="utf-8")
-    echecs = [c for c in constats if c["verdict"] == "FAIL"]
-    print(f"\n=== {len(constats)} points observés, {len(echecs)} FAIL ===", flush=True)
+    return publier_verdict()
+
+
+# --------------------------------------------------------------------------
+# CONTRÔLE NÉGATIF DE CE HARNAIS LUI-MÊME (S1.1).
+#
+# Un compteur de verdicts qui ne rougit jamais est indistinguable d'un
+# compteur qui marche. Ces cas ont une réponse connue d'avance, et le mode
+# échoue si l'un d'eux rend autre chose.
+# --------------------------------------------------------------------------
+def autotest() -> int:
+    def c(*verdicts: str) -> list[dict]:
+        return [{"point": f"p{i}", "verdict": v, "mesure": "synthétique"}
+                for i, v in enumerate(verdicts)]
+
+    cas: list[tuple[str, list[dict], int]] = [
+        ("tout PASS", c("PASS", "PASS", "PASS"), 0),
+        ("UN SEUL PARTIAL parmi des PASS — le faux vert de la passe S1 : "
+         "doit rendre un code NON NUL",
+         c("PASS", "PARTIAL", "PASS"), 1),
+        ("un FAIL", c("PASS", "FAIL"), 1),
+        ("un BLOQUÉ — code DISTINCT de l'échec de mesure",
+         c("PASS", "BLOQUÉ"), 3),
+        ("un NON VÉRIFIÉ", c("PASS", "NON VÉRIFIÉ"), 3),
+        ("BLOQUÉ l'emporte sur PARTIAL", c("PARTIAL", "BLOQUÉ"), 3),
+        ("verdict inconnu — jamais de vert par défaut",
+         c("PASS", "PRESQUE"), 3),
+        ("aucun constat : rien n'a été mesuré, donc rien n'est prouvé",
+         [], 0),
+    ]
+    echecs = 0
+    for titre, liste, attendu in cas:
+        obtenu = code_sortie(liste)
+        bon = obtenu == attendu
+        echecs += 0 if bon else 1
+        print(f"[{'OK  ' if bon else 'ÉCHEC'}] {titre} — attendu {attendu}, "
+              f"obtenu {obtenu}", flush=True)
+    # Garde explicite sur la formule de résumé : elle doit nommer le PARTIAL,
+    # jamais le dissoudre dans un « 0 FAIL ».
+    import io
+    import contextlib
+    tampon = io.StringIO()
+    with contextlib.redirect_stdout(tampon):
+        publier_verdict(c("PASS", "PARTIAL"))
+    texte = tampon.getvalue()
+    dit_partial = "1 PARTIAL" in texte
+    print(f"[{'OK  ' if dit_partial else 'ÉCHEC'}] le résumé NOMME le PARTIAL "
+          f"— sortie : {texte.strip().splitlines()[0] if texte else '(vide)'}",
+          flush=True)
+    echecs += 0 if dit_partial else 1
+    print(f"\n=== AUTOTEST : {len(cas) + 1} cas, {echecs} échec(s) ===",
+          flush=True)
     return 1 if echecs else 0
 
 
 if __name__ == "__main__":
+    if "--autotest" in sys.argv[1:]:
+        sys.exit(autotest())
     code = 3
     try:
         code = main()
