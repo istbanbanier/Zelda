@@ -1,0 +1,17 @@
+=== tailles attendues contre reçues ===
+EclatsDOrage_Linux_x86_64_05d0760.zip        340491834 attendu   340491834
+EclatsDOrage_Windows_x86_64_05d0760.zip      350149483 attendu   350149483
+EclatsDOrage_macOS_05d0760.zip               372500355 attendu   372500355
+EclatsDOrage_MondeOuvert_05d0760.zip         427568993 attendu   427568993
+=== SHA-256 contre SHA256SUMS.txt de la release ===
+EclatsDOrage_MondeOuvert_05d0760.zip: OK
+EclatsDOrage_Windows_x86_64_05d0760.zip: OK
+EclatsDOrage_macOS_05d0760.zip: OK
+EclatsDOrage_Linux_x86_64_05d0760.zip: OK
+=== .sha256 individuels ===
+OK  EclatsDOrage_Linux_x86_64_05d0760.zip
+OK  EclatsDOrage_MondeOuvert_05d0760.zip
+OK  EclatsDOrage_Windows_x86_64_05d0760.zip
+OK  EclatsDOrage_macOS_05d0760.zip
+
+[exited with code 0]

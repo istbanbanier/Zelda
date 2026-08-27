@@ -1,0 +1,67 @@
+# Annoter une Release comme DÉPASSÉE — sans jamais rien supprimer.
+#
+# POURQUOI CE WORKFLOW EXISTE. La directive de release exige d'annoter
+# l'ancienne release quand une nouvelle la remplace — jamais de suppression,
+# l'historique des livraisons reste consultable (leçon du 2026-08-07, où un
+# ménage automatique a détruit l'archive jouable qui venait d'être livrée).
+# Or le conteneur de développement n'a ni gh, ni jeton GitHub : la seule
+# main qui puisse éditer une Release est le runner. Même famille de
+# limitation que le push de tags (refusé 403 par le mandataire Git), résolue
+# de la même façon : un point d'entrée MANUEL, explicite, borné.
+#
+# Ce workflow ne peut QUE préfixer un bandeau au corps d'une release.
+# Il ne touche ni aux assets, ni au tag, ni à aucune autre release.
+name: Annoter une release dépassée
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_depasse:
+        description: Tag de la release à annoter comme dépassée
+        required: true
+        type: string
+      tag_remplacant:
+        description: Tag de la release qui la remplace
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  annoter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Préfixer le bandeau de remplacement
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_DEPASSE: ${{ inputs.tag_depasse }}
+          TAG_REMPLACANT: ${{ inputs.tag_remplacant }}
+        run: |
+          set -euo pipefail
+          if [ "$TAG_DEPASSE" = "$TAG_REMPLACANT" ]; then
+            echo "REFUS: une release ne peut pas se remplacer elle-même." >&2
+            exit 1
+          fi
+          # Les deux releases doivent EXISTER : annoter vers un remplaçant
+          # fantôme serait un mensonge de plus, pas une annotation.
+          gh release view "$TAG_REMPLACANT" --repo "$GITHUB_REPOSITORY" \
+            --json tagName > /dev/null
+          CORPS_ACTUEL="$(gh release view "$TAG_DEPASSE" \
+            --repo "$GITHUB_REPOSITORY" --json body --jq .body)"
+          if printf '%s' "$CORPS_ACTUEL" | head -5 | grep -q "RELEASE DÉPASSÉE"; then
+            echo "Déjà annotée — aucune modification (idempotent)."
+            exit 0
+          fi
+          NOTES="$(mktemp)"
+          {
+            echo "> [!WARNING]"
+            echo "> **RELEASE DÉPASSÉE.** Une version plus récente la remplace :"
+            echo "> [\`${TAG_REMPLACANT}\`](https://github.com/${GITHUB_REPOSITORY}/releases/tag/${TAG_REMPLACANT})."
+            echo "> Cette page et ses fichiers restent en ligne pour l'historique."
+            echo
+            printf '%s\n' "$CORPS_ACTUEL"
+          } > "$NOTES"
+          gh release edit "$TAG_DEPASSE" --repo "$GITHUB_REPOSITORY" \
+            --notes-file "$NOTES"
+          echo "Annotée : $TAG_DEPASSE -> remplacée par $TAG_REMPLACANT"

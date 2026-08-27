@@ -1,0 +1,67 @@
+[
+  {
+    "point": "profil user:// vierge",
+    "verdict": "PASS",
+    "mesure": "/home/user/smoke_lot1r2/profil_vues recréé vide"
+  },
+  {
+    "point": "serveur X virtuel possédé",
+    "verdict": "PASS",
+    "mesure": "Xvfb pid 12871 sur display :0 choisi par -displayfd"
+  },
+  {
+    "point": "fenêtre du build exportée",
+    "verdict": "PASS",
+    "mesure": "xdotool search --onlyvisible «Eclats d'Orage» -> 2097155"
+  },
+  {
+    "point": "« Nouvelle partie » ouvre World V2",
+    "verdict": "PASS",
+    "mesure": "[world_v2] monde        : neris_v2 (vallée whitebox V2.1)"
+  },
+  {
+    "point": "monde monté dans la build exportée",
+    "verdict": "PASS",
+    "mesure": "jalon « fondation V2 vérifiée » présent"
+  },
+  {
+    "point": "manifeste écrit par la build",
+    "verdict": "PASS",
+    "mesure": "/home/user/smoke_lot1r2/retelechargement/resultat_retelecharge/manifeste_export.json (37363 o)"
+  },
+  {
+    "point": "vue exportée — barrow_cemetery",
+    "verdict": "PASS",
+    "mesure": "barrow_cemetery_joueur.png : 1920x1080, luminance 0.4346, RMSE contre la vue éditeur = 0.01576 ; bruit run-à-run mesuré entre les deux runs éditeur archivés = 0.01435 ; seuil retenu = max(0.05, 1.5×bruit) = 0.05000"
+  },
+  {
+    "point": "vue exportée — flower_field",
+    "verdict": "PASS",
+    "mesure": "flower_field_joueur.png : 1920x1080, luminance 0.4781, RMSE contre la vue éditeur = 0.08931 ; bruit run-à-run mesuré entre les deux runs éditeur archivés = 0.10934 ; seuil retenu = max(0.05, 1.5×bruit) = 0.16401"
+  },
+  {
+    "point": "vue exportée — forest_shrine",
+    "verdict": "PASS",
+    "mesure": "forest_shrine_joueur.png : 1920x1080, luminance 0.3409, RMSE contre la vue éditeur = 0.02023 ; bruit run-à-run mesuré entre les deux runs éditeur archivés = 0.01903 ; seuil retenu = max(0.05, 1.5×bruit) = 0.05000"
+  },
+  {
+    "point": "vue exportée — overlook_summit",
+    "verdict": "PASS",
+    "mesure": "overlook_summit_joueur.png : 1920x1080, luminance 0.4486, RMSE contre la vue éditeur = 0.03410 ; bruit run-à-run mesuré entre les deux runs éditeur archivés = 0.03794 ; seuil retenu = max(0.05, 1.5×bruit) = 0.05691"
+  },
+  {
+    "point": "vue exportée — turquoise_spring",
+    "verdict": "PASS",
+    "mesure": "turquoise_spring_joueur.png : 1920x1080, luminance 0.3024, RMSE contre la vue éditeur = 0.01591 ; bruit run-à-run mesuré entre les deux runs éditeur archivés = 0.01560 ; seuil retenu = max(0.05, 1.5×bruit) = 0.05000"
+  },
+  {
+    "point": "vue exportée — watchtower_ruin",
+    "verdict": "PASS",
+    "mesure": "watchtower_ruin_joueur.png : 1920x1080, luminance 0.2927, RMSE contre la vue éditeur = 0.01493 ; bruit run-à-run mesuré entre les deux runs éditeur archivés = 0.01577 ; seuil retenu = max(0.05, 1.5×bruit) = 0.05000"
+  },
+  {
+    "point": "les six vues sont DISTINCTES",
+    "verdict": "PASS",
+    "mesure": "6 image(s), 6 empreinte(s) distincte(s) — six images identiques signaleraient une photo de l'écran de chargement, pas six lieux"
+  }
+]
