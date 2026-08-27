@@ -583,3 +583,37 @@ Corollaire pour les mesures **hors moteur** (`gltf_inspect.py`,
 « 96,8 % » sur la nouvelle géométrie pendant que le moteur dessine l'ancienne.
 Quand un chiffre et une image se contredisent, **soupçonner le cache d'import
 avant de soupçonner la mesure**.
+
+## Une branche LOCALE périmée du même nom fait pousser autre chose que son HEAD
+
+Mesuré le 2026-08-27, et le push a affiché **un succès**.
+
+```bash
+git push -u origin claude/world-v2-reconstruction-khgmlu
+#  * [new branch]  claude/... -> claude/...        <- a l air parfait
+git ls-remote origin 'refs/heads/claude/world-v2-*'
+#  a04839b  refs/heads/claude/world-v2-reconstruction-khgmlu   <- commit d il y a des semaines
+```
+
+`git push origin <nom>` ne pousse pas `HEAD` : il pousse la **branche locale
+qui porte ce nom**. Un `git fetch` ancien en avait laissé une, restée sur un
+commit de l'époque V2.0. La session travaillait sur une branche voisine, le
+push a donc renvoyé au distant un ancêtre vieux de plusieurs semaines — et
+l'a annoncé comme une réussite, parce que c'en était une.
+
+Ce qui rend le piège coûteux : `[new branch]` et le message `set up to track`
+décrivent la création du **suivi local**, pas le contenu poussé. Rien ne
+distingue ce cas d'un vrai push du travail en cours.
+
+Deux parades, la seconde étant la seule qui ferme le cas :
+
+```bash
+git push origin HEAD:refs/heads/<branche>      # explicite : ce que J AI, où je veux
+git ls-remote origin 'refs/heads/<branche>'    # RELIRE le distant, jamais croire la sortie du push
+```
+
+Même famille que le `diff` sur deux fichiers absents et que
+`blender --background` qui rend 0 après avoir levé : **une commande qui
+réussit en ne faisant pas ce qu'on croit**. La règle du dépôt s'applique une
+fois de plus — vérifier l'effet auprès de la source, pas auprès de l'outil qui
+prétend l'avoir produit.
