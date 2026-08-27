@@ -1759,3 +1759,32 @@ document joueur `docs/PLAYTEST_LOT1R2.md` et le mode `lot1r2` du workflow sont
 prêts et attendent, placeholders de SHA non remplis. **Interdits inchangés** :
 lot 2, propagation aux 25 POI restants, toucher à V2.2 ou à une Release
 existante, verdict artistique auto-déclaré.
+
+## 2026-08-27 — S1 close : Release lot 1.R.2 publiée et revérifiée depuis GitHub
+
+Ordre du propriétaire exécuté en entier, dans l'ordre imposé. (1) Trois
+défauts corrigés — `TITRE` non défini (NameError), `pkill -x Xvfb` remplacé
+par `-displayfd` + registre `PROCS_POSSEDES` à nettoyage garanti,
+`lieux_poses` compte les 15 scènes du layout et plus le nœud `Recompenses`
+(oracle : meta `place_id` des enfants directs de `$Places` ; gel amendé,
+D-054). (2) Contre-revue à trois vérificateurs AVANT la chaîne : un bloquant
+(jeu lancé sans `stdbuf` — une release ne vide pas stdout, `terminate()`
+détruisait les jalons) et neuf écarts, tous intégrés. (3) Chaîne unique sur
+l'arbre committé : `validate_fast` VERT ; export Linux neuf RC=0 ; checklist
+17/17 ; six vues 13/13 avec RMSE publiés (oracle calibré sur le bruit
+run-à-run mesuré entre les deux runs éditeur committés — flower_field 0,125
+pour un bruit propre de 0,109 : c'était le vent, quadrants à l'appui). (4)
+Release `world-v2-playtest-lot1r2-05d0760` (run 33085639174) : les quatre
+archives RETÉLÉCHARGÉES depuis GitHub, tailles au octet et SHA-256 conformes
+aux deux registres, guide avec SHA remplis PAR la CI, et le binaire Linux
+retéléchargé LANCÉ — 13/13, manifeste 215/215+160/160, lieux_poses 15. (5)
+Ancienne release `world-v2-playtest-lot1-d78f007` annotée « dépassée » par le
+nouveau workflow `annotate-release.yml` (ajouté sur la branche par défaut,
+seul endroit d'où GitHub accepte un dispatch — additif, idempotent, jamais
+destructif) ; ses fichiers restent en ligne.
+
+**Prochaine action exacte** : rien n'est en vol. Le lot 1.R.2 est clos ; le
+prochain front est le lot 2 de V2.3-B (interdit jusqu'à levée explicite de
+GO_V2_3_B_LOT2=FALSE par le propriétaire). Hors périmètre consigné : 31
+modèles hors des huit répertoires indexés (22 par chemin explicite, 9
+outils/périmés) — décision d'indexation à prendre un jour, aucune urgence.
