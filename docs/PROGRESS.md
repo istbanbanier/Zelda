@@ -4,6 +4,84 @@ Ordre **anti-chronologique** : l'entrée la plus récente est en haut. La derni�
 entrée fait office de handoff et doit indiquer **exactement** la prochaine action.
 
 ---
+## 2026-08-28 — ISS-073 : la boucle de campagne est refermée, et prouvée dans une build
+
+**Le donjon était inatteignable.** Le menu ouvre World V2 ; World V2 ne portait
+aucune `SceneDoor`. Et même en y entrant autrement, ressortir replaçait le
+héros au spawn — World V2 ne consommait **aucun** `pending_spawn`.
+
+### Ce qui a été construit
+
+- `scripts/world_v2/world_v2_dungeon_door.gd` — une vraie porte au seuil §3.3
+  `(0, 34, -210)`, plus une ancre de retour 4 m devant, posée au sol.
+- `world_v2_root.gd` — consomme le tag d'arrivée, avec priorité au retour de
+  transition sur le spawn, et pose `GameState.Flow.VALLEY`.
+- **Cinq** chemins de retour redressés, pas quatre : l'écran de victoire, la
+  sortie du vestibule, « Recommencer », et — trouvé en route — le
+  « Réessayer » du vestibule, qui rechargeait la vallée V1.
+
+### Deux des quatre « coupables » de l'audit n'en étaient pas
+
+`gameplay_shell.gd::world_scene_path` est un `@export` que `WorldV2.tscn`
+surcharge déjà ; le changer aurait cassé le « Réessayer » du monde V1. Mon
+premier test le comptait comme coupable — **faux positif du mien**, corrigé et
+documenté dans le test. `reward_anchor_shot.gd` est un outil V1, hors sujet.
+
+### Les preuves
+
+| Portail | Verdict |
+|---|---|
+| `--filter=iss073` (10 cas, 60 assertions) | vert, 5 sabotages joués |
+| `tools/validate_fast.sh` sur `c3f1819` | **VERT, RC=0, 977 tests, 0 échec** |
+| `gate_export_parite.sh` (ISS-071) | **RC=0**, 32 contrôles, 0 rouge |
+| `gate_export_iss073.sh` (la boucle dans la build) | **RC=0**, 5 constats PASS |
+
+Le binaire autonome fait 398 840 568 octets, sha256 `6ba985ef…`. Le template
+d'export a dû être **recompilé depuis les sources** : le conteneur avait été
+recréé et l'avait perdu (28 min de link LTO).
+
+### Ce que la campagne a coûté, mesuré
+
+Le premier passage complet a rendu **979 tests et 4 échecs — les quatre causés
+par ma correction**, aucun autre test du projet n'ayant bougé. Deux étaient des
+contrats qui avaient survécu à leur raison, un était un faux positif du mien
+sur un COMMENTAIRE, et le quatrième venait d'avoir gelé un fichier au milieu
+de la passe qui l'écrit. Trois défauts de plus vivaient dans mes propres outils
+de mesure : un produit scalaire pris sur le mauvais nœud, un lambda GDScript
+qui capture par valeur, un compte extrait du mauvais nombre d'une ligne.
+
+**Aucun n'était un défaut du jeu. Tous auraient fait chercher au mauvais
+endroit.** C'est l'ordre de grandeur à retenir : le câblage est petit,
+l'appareil de preuve ne l'est pas.
+
+### Un défaut trouvé par la capture, et non corrigé
+
+**ISS-076** : World V2 fait apparaître le héros **dos à la vallée**. `ValleyWorld.tscn`
+porte en toutes lettres le commentaire de sa propre correction du même défaut ;
+World V2 ne l'a jamais reprise. S3, hors périmètre de cette corrective —
+la directive interdit la retouche artistique — et Istvan est prévenu dans son
+protocole.
+
+### Fronts mis de côté, avec leur prochaine action
+
+- **V2.3-B lot 1** reste gelé : `GO_V2_3_B_LOT2 = FALSE`, inchangé.
+- **Trois arbres de travail orphelins** (`/home/user/wt-voie_{a,b,c}`, 5,4 Gio)
+  portent du travail SALE à des commits **atteignables depuis aucune branche**.
+  Les supprimer détruirait ce travail. Prochaine action : décider avec Istvan
+  s'il faut le récupérer ou l'abandonner explicitement.
+
+**PROCHAINE ACTION EXACTE.**
+
+1. **Publier la candidate** en pré-publication depuis `911e52e` (workflow
+   `publish-playtest.yml`, entrée `iss073`), relever le SHA-256 et le lien.
+2. **Lundi**, faire jouer Istvan avec `docs/PLAYTEST_ISS073.md` : d'abord
+   atteindre le donjon à pied et **regarder où il réapparaît en ressortant**,
+   ensuite le protocole de saut S1.1.
+3. **T1 — persistance World V2**, sur une branche SÉPARÉE de la candidate,
+   contrats rouges d'abord. Ne rien fusionner dans la candidate avant
+   contre-revue.
+
+---
 ## 2026-08-27 (fin) — l'audit des 18 domaines : la boucle du build livré est ROMPUE
 
 **37 agents, 0 erreur, 2 h 30.** Dix-huit domaines audités, puis attaqués par
